@@ -88,6 +88,7 @@ import {
   Target,
   TreePine,
   Trophy,
+  User,
   Volume2,
   VolumeX,
   Vote,
@@ -168,6 +169,8 @@ export const ICONS = {
   languages: Languages,
   lightbulb: Lightbulb,
   lock: Lock,
+  /** Kéo sur la Carte du monde ouvert (« Toi »). */
+  toi: User,
   medal: Medal,
   mountain: Mountain,
   pizza: Pizza,

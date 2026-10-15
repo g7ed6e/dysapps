@@ -58,6 +58,8 @@ const C = {
   hull: 0x4f7fa3,
   hullTop: 0xa9784a,
   lamp: 0xffd36b,
+  /** La vitre éteinte de la lanterne de proue (le gris-bleu de la lanterne du Phare). */
+  glassOff: 0xbfd0d3,
   newRope: 0xc9a36a,
   newWood: 0xc28a52,
   paint: 0xd9a441,
@@ -665,13 +667,37 @@ function barque(b: FacetBuilder, at: Vec3, length: number, width: number): void 
   b.box({ x: at.x, y, z: at.z }, [length, 0.2, width], C.hull, C.hullTop);
   for (const side of [-1, 1]) b.box({ x: at.x, y, z: at.z + side * (width / 2 - wall / 2) }, [length, h, wall], C.hull, C.newWood);
   b.box({ x: at.x - length / 2 + wall / 2, y, z: at.z }, [wall, h, width], C.hull, C.newWood);
-  // La proue : un triangle dont la pointe sort loin de la coque (base contre le bout est, pointe à +x), plus haut que
-  // les bordés, et son étrave dressée au bout : la silhouette d'une barque, même de biais.
-  const r = width / Math.sqrt(3);
-  b.prism({ x: at.x + length / 2 + r / 2, y, z: at.z }, r, r, h + 0.2, 3, C.hull, C.newWood);
-  b.box({ x: at.x + length / 2 + 1.4 * r, y, z: at.z }, [0.2, h + 0.65, 0.2], C.hull, C.newWood);
+  // La proue (directeur artistique) : courte, à la largeur de la coque, ses deux bordés qui se rejoignent en pointe sur
+  // un fond en losange bas (creuse, comme le reste de la barque) ; l'étrave monte de la pointe, penchée vers l'avant, et
+  // porte la lanterne.
+  const bow = boatBow(at, length, width);
+  const end = at.x + length / 2;
+  const bowLen = bow.tip.x - end;
+  b.prism({ x: end, y, z: at.z }, width / 2, width / 2, 0.2, 4, C.hull, C.hullTop);
+  const side = Math.hypot(bowLen, width / 2);
+  const angle = Math.atan2(width / 2, bowLen);
+  for (const k of [-1, 1])
+    b.box({ x: end + bowLen / 2, y, z: at.z + (k * width) / 4, yaw: k * angle }, [side + wall / 2, h, wall], C.hull, C.newWood);
+  b.beam({ x: bow.tip.x - 0.08, y, z: at.z }, bow.stemTop, 0.2, C.hull);
+  // La lanterne de proue : son socle et son toit sombres, sa vitre éteinte entre les deux.
+  b.box({ x: bow.lantern.x, y: bow.lantern.y - 0.06, z: at.z }, [0.26, 0.06, 0.26], C.stoneDark);
+  b.box({ x: bow.lantern.x, y: bow.lantern.y, z: at.z }, [LANTERN_GLASS, LANTERN_GLASS, LANTERN_GLASS], C.glassOff);
+  b.box({ x: bow.lantern.x, y: bow.lantern.y + LANTERN_GLASS, z: at.z }, [0.3, 0.07, 0.3], C.stoneDark);
   // Deux bancs en travers, à la poupe et à la proue, hors de la place des caisses.
   for (const dx of [-length / 2 + 0.6, length / 2 - 0.6]) b.box({ x: at.x + dx, y: y + 0.42, z: at.z }, [0.34, 0.1, width - 2 * wall], C.newWood);
+}
+
+/** La longueur de la proue, en part de la largeur de la coque : une pointe courte. */
+const BOW_SHARE = 0.5;
+/** Le côté de la vitre de la lanterne de proue. */
+const LANTERN_GLASS = 0.2;
+
+/** La pointe de la proue, le haut de l'étrave et le bas de la vitre de sa lanterne, pour une barque. */
+function boatBow(at: Vec3, length: number, width: number): { tip: Vec3; stemTop: Vec3; lantern: Vec3 } {
+  const y = at.y - 0.3;
+  const tip = { x: at.x + length / 2 + BOW_SHARE * width, y, z: at.z };
+  const stemTop = { x: tip.x + 0.3, y: y + 1.35, z: at.z };
+  return { tip, stemTop, lantern: { x: stemTop.x, y: stemTop.y + 0.06, z: at.z } };
 }
 
 /** Le crochet de levage, au bout de la corde : une tige et un anneau ouvert (huit pavés). */
@@ -833,15 +859,10 @@ function quai(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'quai' }>, answ
   const x0 = o.x - 0.4 - Math.max(front.w, back.w) / 2 + CRATE_PITCH / 2;
   const zFront = edge - QUAY.strip - front.d + CRATE_PITCH / 2;
   const zBack = zFront - gap - back.d;
-  // La barque dans le bassin, contre le bord de pierre : assez grande pour les caisses qui partent ou arrivent.
-  const cargo = crateBlock(moved);
-  // Les caisses au milieu, les bancs libres aux deux bouts.
-  const boatLen = Math.max(4.2, cargo.w + 2.4);
-  const boatW = Math.max(1.8, cargo.d + 1);
-  // La proue toujours dans le cadre de la scénette (à droite, sous la grue) : une longue barque file vers l'ouest.
-  const boatAt = { x: Math.min(o.x - 0.8, o.x + 3.4 - boatW * 0.87 - boatLen / 2), y: 0, z: edge + 0.75 + boatW / 2 };
-  barque(b, boatAt, boatLen, boatW);
-  const onBoat = { x: boatAt.x - cargo.w / 2 + CRATE_PITCH / 2, y: boatAt.y - 0.11, z: boatAt.z - cargo.d / 2 + CRATE_PITCH / 2 };
+  // La barque dans le bassin, contre le bord de pierre.
+  const boat = quayBoat(scene, o);
+  barque(b, boat.at, boat.length, boat.width);
+  const onBoat = boat.cargo;
   // La grue au bout est du quai : son pied, son mât, sa flèche vers l'ouest au-dessus du quai, la corde et le crochet.
   const mast = { x: o.x + qw / 2 - 0.9, z: edge - QUAY.strip - 0.2 };
   const hook = craneHook(o, qw);
@@ -865,6 +886,47 @@ function quai(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'quai' }>, answ
   // Le haut de la caisse juste sous l'anneau du crochet.
   return { facets: r.build(), from: answerAt, to: { x: hook.x, y: hook.y - 0.4 - 0.7 * scale, z: hook.z }, arc: 1.2, stay: true };
 }
+
+/**
+ * La barque d'une scène de quai : assez grande pour les caisses qui partent ou arrivent (au milieu, un peu vers la
+ * poupe), une place libre devant elles, côté proue, pour la caisse que la grue y descend à la réussite de la mission
+ * (`hold`), et la vitre de sa lanterne de proue (`lantern`, son bas). La proue reste dans le cadre de la scénette (à
+ * droite, sous la grue) : une longue barque file vers l'ouest.
+ */
+export function quayBoat(scene: Extract<ItemScene, { kind: 'quai' }>, o: Vec3 = sceneSpot('quais')): { at: Vec3; length: number; width: number; cargo: Vec3; hold: Vec3; lantern: Vec3 } {
+  const cargo = crateBlock(Math.abs(scene.after - scene.before));
+  const length = Math.max(5.2, cargo.w + 3.4);
+  const width = Math.max(1.8, cargo.d + 1);
+  const edge = o.z + QUAY.depth / 2;
+  const at = { x: Math.min(o.x - 0.8, o.x + 3.4 - width / 2 - 0.3 - length / 2), y: 0, z: edge + 0.75 + width / 2 };
+  return {
+    at,
+    length,
+    width,
+    cargo: { x: at.x - cargo.w / 2 - 0.5 + CRATE_PITCH / 2, y: at.y - 0.11, z: at.z - cargo.d / 2 + CRATE_PITCH / 2 },
+    hold: { x: at.x + length / 2 - 1.25, y: at.y - 0.1, z: at.z },
+    lantern: boatBow(at, length, width).lantern,
+  };
+}
+
+/**
+ * La réussite de la mission aux Quais (directeur artistique) : la caisse du crochet descendue dans la barque, à sa
+ * place (`crate`, à l'échelle des caisses-réponses), et la vitre allumée de la lanterne de proue (`glass`, un peu plus
+ * grande que l'éteinte, qu'elle recouvre ; la vue la dessine sans lumière).
+ */
+export function quaySuccess(scene: Extract<ItemScene, { kind: 'quai' }>, scale: number): { crate: Facets; glass: Facets; hold: Vec3 } {
+  const boat = quayBoat(scene);
+  const c = new FacetBuilder();
+  answerCrate(c, boat.hold, scale);
+  const g = new FacetBuilder();
+  const k = LANTERN_GLASS * 1.15;
+  g.box({ x: boat.lantern.x, y: boat.lantern.y - (k - LANTERN_GLASS) / 2, z: boat.lantern.z }, [k, k, k], C.lamp);
+  return { crate: c.build(), glass: g.build(), hold: boat.hold };
+}
+
+/** La barque chargée laissée aux Quais par la réussite : dix caisses, et celle de la grue à la proue. */
+const LOADED_BOAT: Extract<ItemScene, { kind: 'quai' }> = { kind: 'quai', op: 'moitie', before: 20, after: 10 };
+const LOADED_BOAT_CRATE = 0.8;
 
 /** La grue du quai : la hauteur de sa flèche au-dessus du quai, et l'écart du crochet au bout est du quai. */
 const CRANE = { height: 4.2, reach: 5.2, hookDrop: 2 } as const;
@@ -937,6 +999,14 @@ export function placePieces(place: PlaceId, count: number): PlacePieces {
     // La grue remontée : son contrepoids et sa cabine, repeints.
     b.box({ x: x - 1.4, y: y0 + 5.7, z: z - 0.9 }, [1, 0.9, 0.9], C.paint);
     b.box({ x: x - 2.6, y: y0 + 4.6, z: z - 1.6 }, [1, 1, 1], C.paint, C.newWood);
+    // La barque chargée amarrée au bord de quai, sa lanterne de proue allumée : ce que la réussite de la scénette a
+    // laissé (directeur artistique), vu ensuite depuis le monde ouvert.
+    const boat = quayBoat(LOADED_BOAT);
+    barque(b, boat.at, boat.length, boat.width);
+    crates(b, 10, boat.cargo.x, boat.cargo.y, boat.cargo.z);
+    answerCrate(b, boat.hold, LOADED_BOAT_CRATE);
+    const g = quaySuccess(LOADED_BOAT, LOADED_BOAT_CRATE).glass;
+    b.append(g);
     if (count >= 2) {
       // Le quai rouvert : des bittes neuves et des caisses neuves au bord.
       for (const dx of [-3.5, -1.5, 0.5]) b.prism({ x: x + dx, y: y0, z: z - 3.4 }, 0.25, 0.25, 1, 6, C.paint);

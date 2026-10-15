@@ -131,8 +131,10 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   const scenette = scenetteOf(place);
   const layout = useMemo(() => {
     const base = questionLayout({ count, bells: place === 'phare', aid: hasAid, widen }, size.w || 1, size.h || 1);
-    return scenette ? scenetteLayout({ count, widen, small: place === 'phare', words: place === 'phare', column: place !== 'phare' && !grandTexte }, size.w || 1, size.h || 1, base) : base;
+    return scenette ? scenetteLayout({ count, widen, small: place === 'phare', words: place === 'phare', column: place !== 'phare' && !grandTexte, grand: grandTexte }, size.w || 1, size.h || 1, base) : base;
   }, [count, hasAid, place, size, widen, scenette, grandTexte]);
+  // La rangée des réponses à droite de la colonne (les Quais sur un écran bas) : le résultat reste dans la colonne.
+  const rowBeside = layout.low && layout.slots.length > 0 && Math.min(...layout.slots.map((sl) => sl.hit.left)) >= layout.panel.left + layout.panel.width;
   const [finished, setFinished] = useState(false);
   // La réussite de la mission (une étoile au moins) : dans une scénette, la lampe du lieu s'allume.
   const [success, setSuccess] = useState(false);
@@ -174,6 +176,8 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
   const [introDone, setIntroDone] = useState(false);
   const intro = layout.low && !introDone && !finished && !offer && !simple;
   const simpleLow = simple && layout.low && !finished;
+  // « Vue simple » ouverte d'elle-même au plus grand texte : une seule fois par question.
+  const autoSimple = useRef(false);
   const startItems = useCallback(() => {
     setIntroDone(true);
     // La consigne élargie pour être lue en entier : la colonne reprend sa largeur pour la scène.
@@ -196,15 +200,25 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
       setWiden(WIDEN_OFFER);
       return;
     }
-    if (offer || !layout.low) return;
+    const grandScene = scenette && grandTexte;
+    if (offer || (!layout.low && !grandScene)) return;
     const column = root.querySelector<HTMLElement>('.quiz.in-world');
     if (!column || !overflows(column)) return;
+    // Au plus grand texte, une scénette dont le panneau déborderait s'ouvre en « Vue simple », une fois : la consigne
+    // y tient entière, sans défiler (sur un écran bas, après l'avoir essayée en pleine largeur). Revenu à la scène,
+    // l'élève garde les crans d'avant.
+    if (grandScene && !autoSimple.current && !column.classList.contains('has-sheet') && (!layout.low || !intro || widen >= WIDEN_FULL)) {
+      autoSimple.current = true;
+      openSimple();
+      return;
+    }
+    if (!layout.low) return;
     // Dans une scénette, la consigne lue en entier au premier item prend d'abord toute la largeur (aux Quais, elle est
     // longue) ; « Commencer » rend la colonne à la scène. Ailleurs, ou si elle ne tient toujours pas : « Vue simple ».
     if (intro) setWiden(scenette && widen < WIDEN_FULL ? WIDEN_FULL : WIDEN_OFFER);
     else if (column.classList.contains('has-sheet')) setSheetWide(true);
     else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
-  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, simple, bare, scenette]);
+  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, simple, bare, scenette, grandTexte, openSimple]);
   // Le panneau de « Vue simple » défile : il s'ouvre en haut (le rôle, la consigne), et `data-suite` dit qu'il reste
   // de quoi lire plus bas (une ombre au-dessus de « Valider ») ou plus haut.
   useEffect(() => {
@@ -284,7 +298,8 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
         )}
         {offer && (
           // Le texte choisi ne tient pas ici : le repli franc, sans réduire le texte ; la voix reste (« Lire la phrase »).
-          <button type="button" className="button primary world-question-offer" onClick={openSimple}>
+          // Dans une scénette, un bouton secondaire sous le rôle, jamais un bouton plein avant la consigne (référent dys).
+          <button type="button" className={`button${scenette ? '' : ' primary'} world-question-offer`} onClick={openSimple}>
             <Icon name="liste" /> Vue simple
           </button>
         )}
@@ -338,7 +353,7 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
       className:
         simple && !finished
           ? `in-world scenette simple${layout.low ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}`
-          : `in-world${scenette ? ' scenette' : ''}${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut || (scenette && layout.low && offer) ? ' answers-out' : ''}${bare ? ' sans-image' : ''}`,
+          : `in-world${scenette ? ' scenette' : ''}${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut || (scenette && layout.low && offer) ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}`,
     };
   }, [
     exerciseId,
@@ -360,6 +375,7 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
     bare,
     simpleLow,
     consigneOpen,
+    rowBeside,
   ]);
 
   // La ligne repliée se coupe après un mot entier, jamais au milieu : les mots qui passeraient à la ligne sont cachés,

@@ -19,7 +19,6 @@ import { useBlocland } from '../../BloclandContext';
 import { getBiome } from '../../biomes';
 import { exercisesOf } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
-import { WorldButton } from '../../WorldButton';
 import { SettingsButton } from '../../WorldShortcuts';
 import { keepClear, missionOfPlace, nextMission, veiledPlaces, type MarkOnScreen, type ScreenRect } from '../../world/continu/mission';
 import { PLACES, placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
@@ -27,7 +26,8 @@ import { piecesOf } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { missionScreenInteraction } from './missionScreen';
-import { createOpenWorld, type LockOnScreen, type OpenWorld } from './scene';
+import { MapLabels } from './MapLabels';
+import { createOpenWorld, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { WorldQuestion } from './WorldQuestion';
 import './openWorld.css';
 
@@ -75,7 +75,11 @@ export default function OpenWorldPage() {
   // La Carte des lieux ouverts (lot 3) : un état de la page, pas une adresse (`/adventure/map` mène à la Carte du
   // monde en grille) ; ses lieux posés à chaque image par la scène, comme les cadenas.
   const [mapOpen, setMapOpen] = useState(false);
-  const mapPlacesRef = useRef<HTMLDivElement>(null);
+  // Ce que les rappels de la scène appellent sur la Carte : poser les étiquettes, choisir un lieu touché dans la 3D.
+  const mapPlacer = useRef<((spots: readonly MapSpotOnScreen[]) => void) | null>(null);
+  const mapClosed = useRef<((place: PlaceId) => void) | null>(null);
+  const mapPick = useRef<(place: PlaceId) => void>(() => {});
+  const mapButton = useRef<HTMLButtonElement>(null);
   // La distance au prochain lieu, pour la voix (avis du référent dys) : relue à chaque image, mais l'état ne change
   // qu'avec le palier (un, deux ou trois points) : le libellé de la marque n'est refait que là.
   const [far, setFar] = useState<1 | 2 | 3>(1);
@@ -127,8 +131,8 @@ export default function OpenWorldPage() {
         if (mission) setAsking({ place: placeId, mission });
       },
       onLocks: (locks) => placeLocks(locksRef.current, locks),
-      onMapPlaces: (places) => placeLocks(mapPlacesRef.current, places),
-      onMapPick: (placeId) => pickRef.current(placeId),
+      onMapPlaces: (spots) => mapPlacer.current?.(spots),
+      onMapPick: (placeId) => mapPick.current(placeId),
       onMark: (m) => {
         placeMark(markRef.current, arrowRef.current, m, layout);
         if (m && m.far !== farRef.current) {
@@ -163,14 +167,20 @@ export default function OpenWorldPage() {
   useEffect(() => {
     world.current?.map(mapOpen && !asking ? openPlaces : null);
   }, [mapOpen, asking, openPlaces, ready]);
-  /** Un lieu ouvert choisi sur la Carte : elle se ferme, Kéo y est déposé d'un coup (une coupe franche). */
+  /**
+   * Un lieu ouvert choisi sur la Carte : elle se ferme, Kéo y est déposé d'un coup (une coupe franche), et le focus
+   * revient sur le bouton de la Carte (consultant UX UI).
+   */
   const pickPlace = useCallback((placeId: PlaceId) => {
     setMapOpen(false);
     world.current?.map(null);
     world.current?.goTo(placeId, true);
+    mapButton.current?.focus();
   }, []);
-  const pickRef = useRef(pickPlace);
-  pickRef.current = pickPlace;
+  // Un lieu touché dans la 3D : ouvert, on y va ; fermé, la Carte le dit.
+  useEffect(() => {
+    mapPick.current = (placeId) => (openPlaces.includes(placeId) ? pickPlace(placeId) : mapClosed.current?.(placeId));
+  }, [openPlaces, pickPlace]);
   // Échap ferme la Carte, comme un panneau.
   useEffect(() => {
     if (!mapOpen) return;
@@ -241,31 +251,26 @@ export default function OpenWorldPage() {
             </span>
           ))}
         </div>
-        {/* La Carte : chaque lieu à sa place sur l'île ; un lieu ouvert est un bouton à son nom, un lieu sous la brume
-            garde son cadenas, sans texte (référent dys). Rien n'est écrit dans la 3D. */}
-        {mapOpen && !asking && (
-          <div ref={mapPlacesRef} className="open-world-map-places">
-            {PLACES.map((p) =>
-              openPlaces.includes(p.id) ? (
-                <button key={p.id} type="button" className="open-world-map-place" data-lieu={p.id} hidden aria-label={`Aller au lieu : ${p.name}`} onClick={() => pickPlace(p.id)}>
-                  {p.name}
-                </button>
-              ) : (
-                <span key={p.id} className="open-world-lock" data-lieu={p.id} role="img" aria-label={`${p.name} : sous la brume, pas encore ouvert`} hidden>
-                  <Icon name="lock" />
-                </span>
-              ),
-            )}
-          </div>
-        )}
+        {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
+        {mapOpen && !asking && <MapLabels openPlaces={openPlaces} onPick={pickPlace} placer={mapPlacer} closedRef={mapClosed} />}
         {!asking && <SettingsButton />}
         {asking && world.current && (
           <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} world={world.current} onClose={closeQuestion} onSimpleView={simpleView} />
         )}
         {/* La Carte : le même bouton que dans le reste du jeu, dans la barre du bas, à gauche (« Y aller » tient le milieu). */}
         {!asking && (
-          <nav className="world-bar open-world-bar" aria-label="Monde">
-            <WorldButton icon="map" name="Carte" word="Carte" tuto="carte" pressed={mapOpen} onClick={() => setMapOpen(!mapOpen)} />
+          <nav className="open-world-bar" aria-label="Monde">
+            {/* Un seul mot, toujours écrit sous l'icône, dans le bouton ; la Carte ouverte, il dit comment en sortir. */}
+            <button
+              type="button"
+              ref={mapButton}
+              className="button open-world-map-button"
+              data-tuto="carte"
+              onClick={() => setMapOpen(!mapOpen)}
+            >
+              <Icon name={mapOpen ? 'back' : 'map'} />
+              <span className="open-world-map-word">{mapOpen ? 'Retour' : 'Carte'}</span>
+            </button>
           </nav>
         )}
         {!asking && !mapOpen && (

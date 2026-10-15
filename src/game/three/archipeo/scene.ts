@@ -17,7 +17,7 @@ import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork, startOf } from '../../world/continu/paths';
 import { PLACES, TERRAIN, placeById, type PlaceId } from '../../world/continu/plan6e';
 import { modelOfPlace } from '../../world/continu/places';
-import { answerObjects, answerScale, itemScene, placePieces, questionPose, sceneSpot, veilleurPiece, type QuestionLayout, type Reaction } from '../../world/continu/questionScene';
+import { answerObjects, answerScale, itemScene, placePieces, questionPose, quaySuccess, sceneSpot, veilleurPiece, type QuestionLayout, type Reaction } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, veilleurAwake, type ItemScene } from '../../world/continu/questions';
 import { LANTERN, SCENETTE_CAMERA, SCENETTE_DECK, answersHang, bellPlane, scenetteHidesPlace, habitantHand, scenetteDecor, scenetteKeo, scenetteOf, scenettePose, scenetteSuccess } from '../../world/continu/scenette';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
@@ -46,8 +46,8 @@ export interface OpenWorldOptions {
    */
   onLocks(locks: readonly LockOnScreen[]): void;
   /** La Carte ouverte : la place à l'écran de chaque lieu, à chaque image (la même liste, remplie sur place). */
-  onMapPlaces(places: readonly LockOnScreen[]): void;
-  /** Sur la Carte, un lieu ouvert touché dans la 3D (la page ferme la Carte et y dépose Kéo). */
+  onMapPlaces(spots: readonly MapSpotOnScreen[]): void;
+  /** Sur la Carte, un lieu touché dans la 3D (ouvert, la page ferme la Carte et y dépose Kéo ; fermé, elle le dit). */
   onMapPick(place: PlaceId): void;
   /** Montrer le compteur de mesures (`?mesures`) ; `expose` : le laisser lire aux scripts. */
   meter: { show: boolean; expose: boolean };
@@ -86,7 +86,7 @@ export interface OpenWorld {
    */
   map(open: readonly PlaceId[] | null): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
-  info(): { calls: number; triangles: number };
+  info(): { calls: number; triangles: number; mapMs: number };
   dispose(): void;
 }
 
@@ -100,6 +100,14 @@ interface QuestionRequest {
 /** Le cadenas d'un lieu sous la brume, à l'écran : en pixels, et s'il se voit. */
 export interface LockOnScreen {
   place: PlaceId;
+  x: number;
+  y: number;
+  shown: boolean;
+}
+
+/** Sur la Carte, un lieu ou Kéo (`keo`) à l'écran : son point (le bas de son étiquette), en pixels, et s'il se voit. */
+export interface MapSpotOnScreen {
+  id: PlaceId | 'keo';
   x: number;
   y: number;
   shown: boolean;
@@ -137,6 +145,9 @@ const RING_MOVE = 3;
 const PLACE_BEYOND_FOG = 10;
 /** Le lever de la brume d'un lieu : un fondu court, en secondes (d'un bloc avec « Réduire les animations »). */
 const VEIL_FADE_SECONDS = 0.8;
+/** La réussite aux Quais : la caisse descend dans la barque, puis la lanterne de proue s'allume (1,5 s en tout). */
+const DOCK_DROP_SECONDS = 0.8;
+const DOCK_LAMP_SECONDS = 0.7;
 /** La lampe du Phare qui s'allume à la réussite : de la vitre éteinte à la lumière, en un fondu (fixe avec « Réduire les animations »). */
 const LAMP_SECONDS = 1.2;
 /** Le cadenas d'un lieu se tient au bord de l'écran de tant de pixels au moins, sinon il ne se montre pas. */
@@ -148,8 +159,11 @@ const FOLLOW_FAR = 500;
 const MAP_FAR = 2000;
 /** Sur la Carte, la brume du lointain commence au-delà de l'île : rien ne s'y efface (sans refaire les shaders). */
 const MAP_FOG = 5000;
-/** Sur la Carte, un toucher choisit le lieu ouvert le plus proche à moins de tant de pixels. */
+/** Sur la Carte, un toucher choisit le lieu le plus proche à moins de tant de pixels. */
 const MAP_TOUCH = 56;
+/** Les tuiles de la Carte faites au repos : sans `requestIdleCallback`, une tranche de tant de ms tous les tant de ms. */
+const IDLE_SLICE_MS = 6;
+const IDLE_DELAY_MS = 40;
 /** Sur la Carte, un lieu ne se montre qu'à tant de pixels des bords gauche et droit, et du haut (son nom au-dessus). */
 const MAP_LABEL_SIDE = 100;
 const MAP_LABEL_TOP = 64;
@@ -384,6 +398,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       body.dispose();
       body = corpsDuBonhomme('6e');
       keo.add(body.mesh);
+      mapDirty = true;
     });
   keo.scale.setScalar(KEO_SCALE);
   const ringGeometry = keep(new THREE.RingGeometry(KEO_RING.inner, KEO_RING.outer, 24).rotateX(-Math.PI / 2));
@@ -590,6 +605,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   const arrive = (place: PlaceId | null) => {
     walk = null;
+    startPrebuild();
     approach();
     options.onArrive(place);
   };
@@ -649,16 +665,21 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // La Carte des lieux ouverts (lot 3) : l'île entière, de haut ; les tuiles de loin de toute l'île dans l'anneau de
   // loin (un seul maillage, le même appel), celui de près vidé ; la brume du lointain repoussée au-delà de l'île, celle
   // des lieux fermés gardée. Un doigt la fait glisser, deux la pincent, la molette la zoome (comme la Carte du monde en
-  // grille) ; un toucher près d'un lieu ouvert le choisit. Fermée, les anneaux autour de Kéo reviennent.
-  let mapOpen: readonly PlaceId[] = [];
+  // grille) ; un toucher près d'un lieu le choisit. Fermée, les anneaux autour de Kéo reviennent.
   const mapCamera: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
   const allTiles = Array.from({ length: TERRAIN.tilesX * TERRAIN.tilesZ }, (_, i) => i);
-  const mapPlaces: LockOnScreen[] = PLACES.map((p) => ({ place: p.id, x: 0, y: 0, shown: false }));
+  const mapSpots: MapSpotOnScreen[] = [...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false })), { id: 'keo' as const, x: 0, y: 0, shown: false }];
+  // La Carte ne se redessine que si sa vue, la taille, la brume ou ce qu'elle montre change (expert frontend).
+  let mapDirty = false;
+  let mapMs = 0;
+  const keoPoint = new THREE.Vector3();
   const fingers = new Map<number, { x: number; y: number }>();
   let pinch: { gap: number; mx: number; my: number } | null = null;
   const aspect = () => viewW / viewH;
   const showMap = () => {
-    if (mapView) applyPose(mapPose(mapView, mapCamera));
+    if (!mapView) return;
+    applyPose(mapPose(mapView, mapCamera));
+    mapDirty = true;
   };
   /** Un point de l'écran (pixels du client) au sol de la Carte, au niveau de l'eau. */
   const mapGround = (cx: number, cy: number) => {
@@ -666,8 +687,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     return groundUnder(cx - r.left, cy - r.top, 0);
   };
   const reportMapPlaces = () => {
-    for (const l of mapPlaces) {
-      const mark = marks.get(l.place);
+    for (const l of mapSpots) {
+      const mark = l.id === 'keo' ? keoPoint.set(keoFeet.x, keoFeet.y, keoFeet.z) : marks.get(l.id);
       if (!mark) continue;
       projected.copy(mark).project(camera);
       l.x = ((projected.x + 1) / 2) * viewW;
@@ -675,14 +696,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Le nom d'un lieu, centré au-dessus de lui, reste entier à l'écran : assez loin des bords gauche et droit.
       l.shown = projected.z < 1 && l.x > MAP_LABEL_SIDE && l.x < viewW - MAP_LABEL_SIDE && l.y > MAP_LABEL_TOP && l.y < viewH - LOCK_MARGIN;
     }
-    options.onMapPlaces(mapPlaces);
+    options.onMapPlaces(mapSpots);
   };
   const setMap = (open: readonly PlaceId[] | null) => {
     if (open && asked) return;
     if (open) {
+      const t0 = performance.now();
       // Kéo s'arrête où il est : la Carte n'est pas un trajet.
       if (walk) arrive(null);
-      mapOpen = open;
       if (!mapView) mapView = mapStart(aspect());
       fog.near = MAP_FOG;
       fog.far = MAP_FOG + 1;
@@ -695,20 +716,43 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       options.onMark(null);
       hideLocks();
       showMap();
+      if (!mapMs) mapMs = performance.now() - t0;
       return;
     }
     if (!mapView) return;
     mapView = null;
     fingers.clear();
     pinch = null;
-    for (const l of mapPlaces) l.shown = false;
-    options.onMapPlaces(mapPlaces);
+    for (const l of mapSpots) l.shown = false;
+    options.onMapPlaces(mapSpots);
     fog.near = WORLD_FOG.near;
     fog.far = WORLD_FOG.far;
     camera.far = FOLLOW_FAR;
     camera.updateProjectionMatrix();
     updateRings(true, true);
     follow();
+  };
+  // Les tuiles de loin de toute l'île, faites au repos après la première arrivée (expert frontend) : la première
+  // ouverture de la Carte n'a plus qu'à les recopier. Sans `requestIdleCallback` (Safari), un court délai en tient lieu.
+  const idleQueue: number[] = [];
+  let idleHandle = 0;
+  let idleStarted = false;
+  const requestIdle = (cb: (d: { timeRemaining(): number }) => void): number =>
+    typeof window.requestIdleCallback === 'function' ? window.requestIdleCallback(cb) : window.setTimeout(() => {
+          const end = performance.now() + IDLE_SLICE_MS;
+          cb({ timeRemaining: () => end - performance.now() });
+        }, IDLE_DELAY_MS);
+  const cancelIdle = (handle: number) => (typeof window.cancelIdleCallback === 'function' ? window.cancelIdleCallback(handle) : window.clearTimeout(handle));
+  const prebuildFar = (d: { timeRemaining(): number }) => {
+    idleHandle = 0;
+    while (idleQueue.length && d.timeRemaining() > 1) tiles.build(idleQueue.pop()!, 'far');
+    if (idleQueue.length) idleHandle = requestIdle(prebuildFar);
+  };
+  const startPrebuild = () => {
+    if (idleStarted || disposed) return;
+    idleStarted = true;
+    idleQueue.push(...allTiles);
+    idleHandle = requestIdle(prebuildFar);
   };
   const mapDown = (e: PointerEvent) => {
     fingers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -760,16 +804,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     fingers.delete(e.pointerId);
     if (fingers.size < 2) pinch = null;
     if (!d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > TAP.pixels || performance.now() - d.t > TAP.ms) return;
-    // Le lieu ouvert le plus proche du toucher, à l'écran (le doigt n'a pas à viser le modèle, petit de si haut).
+    // Le lieu le plus proche du toucher, à l'écran (la page ouvre un lieu ouvert, dit qu'un lieu fermé l'est) (le doigt n'a pas à viser le modèle, petit de si haut).
     const r = renderer.domElement.getBoundingClientRect();
     const x = e.clientX - r.left;
     const y = e.clientY - r.top;
     let best: PlaceId | null = null;
     let bestD: number = MAP_TOUCH;
-    for (const l of mapPlaces) {
+    for (const l of mapSpots) {
+      if (l.id === 'keo') continue;
       const dd = Math.hypot(l.x - x, l.y - y);
-      if (l.shown && mapOpen.includes(l.place) && dd < bestD) {
-        best = l.place;
+      if (l.shown && dd < bestD) {
+        best = l.id;
         bestD = dd;
       }
     }
@@ -791,7 +836,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   // La question posée dans un lieu (lot 4) : sa pose fixe, la scène de l'item et les objets des réponses (un maillage),
   // la réaction (un maillage qui bouge une à deux secondes). Refaits par item, jamais par image.
-  let asked: { place: PlaceId; pose: CameraPose; objectsKey: string; itemKey: string; answered: boolean } | null = null;
+  let asked: { place: PlaceId; pose: CameraPose; objectsKey: string; itemKey: string; answered: boolean; scene: ItemScene; scale: number } | null = null;
   const itemMesh = new THREE.Mesh(new THREE.BufferGeometry(), landMaterial);
   const reactionMesh = new THREE.Mesh<THREE.BufferGeometry, THREE.Material>(new THREE.BufferGeometry(), landMaterial);
   itemMesh.visible = false;
@@ -846,6 +891,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const lampOn = new THREE.Color(LANTERN.on);
   let lampLit = false;
   let lampStart: number | null = null;
+  // Le fondu de la lampe : celle du Phare, ou la lanterne de proue des Quais, plus courte (elle suit la descente).
+  let lampSeconds: number = LAMP_SECONDS;
+  // La réussite aux Quais : la caisse du crochet qui descend dans la barque (d'où, quand), puis la lanterne de proue.
+  let dock: { from: THREE.Vector3; start: number; success: ReturnType<typeof quaySuccess> } | null = null;
+  let dockDone = false;
   // La scène de l'item est-elle à montrer (cachée le temps de la descente) ?
   let itemShown = false;
   const descent = {
@@ -880,7 +930,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   /** La lampe qui s'allume, à l'instant `t`. */
   const stepLamp = (t: number) => {
     if (lampStart === null) return;
-    const u = reduceMotion ? 1 : Math.min(1, (t - lampStart) / LAMP_SECONDS);
+    const u = reduceMotion ? 1 : Math.min(1, (t - lampStart) / lampSeconds);
     lampMaterial.color.lerpColors(lampOff, lampOn, u);
     if (u >= 1) lampStart = null;
   };
@@ -898,7 +948,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     scenette = place;
     setGeometry(decorMesh, scenetteDecor(place));
     // Aux Quais, la maquette du lieu (sa grue, son hangar) s'efface : le quai de la scénette a les siens.
-    if (scenetteHidesPlace(place)) placeMeshes.get(place)!.visible = false;
+    // Ses pièces durables aussi (la barque chargée y est amarrée à la place de celle de la scénette).
+    if (scenetteHidesPlace(place)) {
+      placeMeshes.get(place)!.visible = false;
+      piecesMesh.visible = false;
+    }
     const k = scenetteKeo(place);
     keo.position.set(k.at.x, k.at.y, k.at.z);
     keo.scale.setScalar(k.scale);
@@ -913,6 +967,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     descent.active = false;
     placeVisibility();
     unlitReaction();
+    dock = null;
+    dockDone = false;
+    piecesMesh.visible = (piecesMesh.geometry.getAttribute('position')?.count ?? 0) > 0;
     decorMesh.geometry.dispose();
     decorMesh.geometry = new THREE.BufferGeometry();
     decorMesh.visible = false;
@@ -1036,7 +1093,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       reaction = { r: facets.reaction, start: before?.answered ? -Infinity : performance.now() / 1000 };
       placeReaction(performance.now() / 1000);
     }
-    asked = { place, pose: qp.pose, objectsKey, itemKey, answered: item.answered };
+    asked = { place, pose: qp.pose, objectsKey, itemKey, answered: item.answered, scene: item.scene, scale };
     const labels = facets.labels.map((l) => {
       projected.set(l.at.x, l.at.y, l.at.z).project(camera);
       return { text: l.text, x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH };
@@ -1050,8 +1107,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const scenetteEnd = (lit: boolean) => {
     if (!asked || !scenette) return;
-    // Aux Quais, la scène reste telle qu'elle est : le quai, la barque, la dernière caisse au crochet.
-    if (!answersHang(scenette)) return;
+    // Aux Quais, la scène reste ; à la réussite, la grue descend la caisse du crochet dans la barque, puis la lanterne
+    // de proue s'allume (environ 1,5 s ; l'état final tout de suite avec « Réduire les animations »).
+    if (!answersHang(scenette)) {
+      if (!lit || dockDone || asked.scene.kind !== 'quai') return;
+      dockDone = true;
+      const success = quaySuccess(asked.scene, asked.scale);
+      const from = reactionMesh.visible ? reactionMesh.position.clone() : new THREE.Vector3(success.hold.x, success.hold.y, success.hold.z);
+      reaction = null;
+      dock = { from, start: performance.now() / 1000, success };
+      stepDock(dock.start);
+      return;
+    }
     itemShown = false;
     itemMesh.visible = false;
     reactionMesh.visible = false;
@@ -1063,8 +1130,34 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     reactionMesh.material = lampMaterial;
     reactionMesh.position.set(0, 0, 0);
     lampMaterial.color.copy(lampOff);
+    lampSeconds = LAMP_SECONDS;
     lampStart = performance.now() / 1000;
     stepLamp(lampStart);
+  };
+
+  /** La descente de la caisse dans la barque à l'instant `t`, puis, posée, la lanterne de proue qui s'allume. */
+  const stepDock = (t: number) => {
+    if (!dock || !scenette) return;
+    const { from, start, success } = dock;
+    const u = reduceMotion ? 1 : Math.min(1, (t - start) / DOCK_DROP_SECONDS);
+    const e = u * u * (3 - 2 * u);
+    reactionMesh.visible = true;
+    reactionMesh.position.set(mix(from.x, success.hold.x, e), mix(from.y, success.hold.y, e), mix(from.z, success.hold.z, e));
+    if (u < 1) return;
+    // Posée : elle rejoint le décor de près (aucun appel de plus), et le maillage de la réaction dessine la lanterne.
+    const decor = new FacetBuilder();
+    decor.append(scenetteDecor(scenette));
+    decor.append(success.crate);
+    setGeometry(decorMesh, decor.build());
+    setGeometry(reactionMesh, success.glass);
+    reactionMesh.material = lampMaterial;
+    reactionMesh.position.set(0, 0, 0);
+    lampLit = true;
+    lampSeconds = DOCK_LAMP_SECONDS;
+    lampMaterial.color.copy(lampOff);
+    lampStart = t;
+    stepLamp(t);
+    dock = null;
   };
 
   // Les pièces durables des lieux (un maillage pour tous), et la Roue des Écluses qui tourne (à part).
@@ -1087,6 +1180,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     if (veilleurAwake(counts, PLACES.map((p) => p.id))) all.append(veilleurPiece());
     setGeometry(piecesMesh, all.build());
+    if (scenette && scenetteHidesPlace(scenette)) piecesMesh.visible = false;
+    mapDirty = true;
     if (wheel) {
       setGeometry(wheelMesh, wheel.facets);
       wheelMesh.position.set(wheel.at.x, wheel.at.y, wheel.at.z);
@@ -1140,12 +1235,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     if (wheelMesh.visible && !reduceMotion) wheelMesh.rotation.x += dt * 0.6;
     // Le banc qui se lève finit son fondu, même si une question s'ouvre à l'arrivée.
+    // Un banc qui finit de se lever redessine la Carte jusqu'à sa dernière image.
+    if (fadeMesh.visible) mapDirty = true;
     fadeVeil(t);
     if (mapView) {
       // La Carte : rien ne bouge que ce que les doigts font glisser ; les lieux à l'écran, pour leurs étiquettes.
-      fadeVeil(t);
-      reportMapPlaces();
-      renderer.render(scene, camera);
+      if (mapDirty) {
+        mapDirty = false;
+        // Après le rendu : la caméra y a refait ses matrices, les points à l'écran sont ceux de l'image.
+        renderer.render(scene, camera);
+        reportMapPlaces();
+      }
       meter?.tick(renderer.info, now);
       return;
     }
@@ -1154,6 +1254,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // la réaction joue, puis la Roue tourne ; dans une scénette, Kéo se tient là, au repos, et la lampe s'allume.
       stepDescent(t);
       placeReaction(t);
+      stepDock(t);
       stepLamp(t);
       if (scenette) body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
       options.onMark(null);
@@ -1183,6 +1284,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     meter?.tick(renderer.info, now);
   };
   loop();
+  // L'arrivée dans le monde : les tuiles de la Carte se préparent au repos.
+  startPrebuild();
 
   return {
     goTo: (place, jump = false) => {
@@ -1198,20 +1301,23 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (place === markPlace) return;
       markPlace = place;
       placeVisibility();
+      mapDirty = true;
     },
     setVeiled: (places) => {
       veiled = places;
       approach();
       updateVeil();
+      mapDirty = true;
     },
     question: askQuestion,
     map: setMap,
     scenetteEnd,
     setPieces,
-    info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }),
+    info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, mapMs }),
     dispose: () => {
       disposed = true;
       cancelAnimationFrame(frame);
+      if (idleHandle) cancelIdle(idleHandle);
       observer.disconnect();
       renderer.domElement.removeEventListener('pointerdown', onDown);
       renderer.domElement.removeEventListener('pointerup', onUp);

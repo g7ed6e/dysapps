@@ -5,8 +5,9 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { seeded } from '../../../core/random';
 import { screenOf } from './camera';
+import { boundsOf } from './facets';
 import PLACE_ITEMS from './placeItems.json';
-import { ANSWER_LAYOUT, answerObjects, answerScale, craneHook, crateLayout, itemScene, placePieces, questionLayout, questionPose, sceneSpot, veilleurPiece, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placePieces, questionLayout, questionPose, sceneSpot, veilleurPiece, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
 import {
   BELLS_PER_ROUND,
   EXERCISES_WITH_TWINS,
@@ -386,6 +387,30 @@ describe('La scène d’un item', () => {
     const still = itemScene('quais', moitie, true, [at]).still.triangles;
     expect(still).toBeGreaterThan(0);
     expect(itemScene('quais', { kind: 'quai', op: 'double', before: 23, after: 46 }, true, [at]).reaction?.stay).toBe(true);
+  });
+
+  it('à la réussite aux Quais, la caisse descend dans la barque, à côté de ses caisses, et la lanterne de proue s’allume', () => {
+    for (const scene of [
+      { kind: 'quai', op: 'moitie', before: 98, after: 49 },
+      { kind: 'quai', op: 'double', before: 7, after: 14 },
+    ] as const) {
+      const boat = quayBoat(scene);
+      const success = quaySuccess(scene, 0.8);
+      const crate = boundsOf(success.crate);
+      // Dans la coque, devant le banc de proue, hors des caisses du calcul.
+      expect(crate.min[0]).toBeGreaterThan(boat.cargo.x);
+      expect(crate.max[0]).toBeLessThan(boat.at.x + boat.length / 2 - 0.4);
+      expect(crate.min[2]).toBeGreaterThan(boat.at.z - boat.width / 2);
+      expect(crate.max[2]).toBeLessThan(boat.at.z + boat.width / 2);
+      // La lanterne au bout de l'étrave, au-delà de la coque, plus haut que les bordés.
+      const glass = boundsOf(success.glass);
+      expect(glass.min[0]).toBeGreaterThan(boat.at.x + boat.length / 2);
+      expect(glass.min[1]).toBeGreaterThan(boat.at.y + 0.5);
+      // La proue reste dans le cadre de la scénette : sous la grue, pas plus loin que le quai.
+      expect(glass.max[0]).toBeLessThan(sceneSpot('quais').x + 4);
+    }
+    // La barque chargée et sa lanterne restent aux Quais dès la première pièce : un peu plus de triangles qu'avant.
+    expect(placePieces('quais', 1).still.triangles).toBeGreaterThan(placePieces('quais', 0).still.triangles + 100);
   });
 
   it('aux Quais, une caisse tentée penche, la caisse partie au crochet s’efface de la rangée', () => {

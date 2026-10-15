@@ -491,6 +491,16 @@
   margin-top: calc(var(--question-left) * 2 + 56px);
   max-height: calc(100% - var(--question-left) * 4 - 56px - 48px);
 }
+/* La rangée à droite de la colonne (les Quais) : le résultat reste dans la colonne, à sa largeur et jusqu'en bas,
+   jamais sur une réponse ; la phrase complétée laisse sa place à l'explication (la ligne de calcul la redit). */
+.world-question .quiz.in-world.scenette.low.has-sheet.rangee-a-cote {
+  width: var(--question-width);
+  margin-top: 0;
+  max-height: var(--question-max-height);
+}
+.world-question .in-world.scenette.low.has-sheet.rangee-a-cote .world-question-prompt.filled {
+  display: none;
+}
 /* La phrase complète sur un écran bas : sa voix est dans le résultat, le « Bravo » serré. */
 .world-question .in-world.low.has-sheet .world-question-prompt.filled .speak-button {
   display: none;
@@ -579,6 +589,12 @@
 /* Sur un écran bas, le bilan prend toute la largeur, à gauche de la pause. */
 .world-question .quiz.in-world.low.finished {
   width: calc(100% - 2 * var(--question-left) - 56px - 12px);
+}
+/* Aux Quais (la rangée à droite de la colonne), le bilan reste dans la colonne, de haut en bas : la barque chargée et sa
+   lanterne restent en vue à droite (directeur artistique). */
+.world-question .quiz.in-world.scenette.low.finished.rangee-a-cote {
+  width: var(--question-width);
+  max-height: calc(100% - var(--question-top) - var(--question-left));
 }
 .world-question .quiz.in-world > .reward-panel {
   flex: 0 1 auto;
@@ -707,27 +723,53 @@
   width: 22px;
   height: 22px;
 }
-/* La Carte des lieux ouverts (lot 3) : le bouton de la Carte, le même que dans le reste du jeu, dans la barre du bas,
-   à gauche (« Y aller » tient le milieu) ; sur la Carte, le nom de chaque lieu ouvert est un bouton posé au-dessus du
-   lieu (48 px de haut au moins, fond uni), un lieu fermé garde son cadenas. Les places viennent de la scène. */
-.world-bar.open-world-bar {
-  right: auto;
+/* La Carte des lieux ouverts (lot 3) : son bouton en bas à gauche, dans la marge de la zone sûre (« Y aller » tient le
+   milieu) ; un seul mot, toujours écrit sous l'icône, dans le bouton : « Carte », puis « Retour » quand elle est
+   ouverte (consultant UX UI, référent dys). */
+.open-world-bar {
+  position: absolute;
+  left: calc(0.6rem + env(safe-area-inset-left, 0px));
   bottom: calc(0.8rem + env(safe-area-inset-bottom, 0px));
   z-index: 3;
-  justify-content: flex-start;
 }
+.open-world-map-button {
+  flex-direction: column;
+  gap: 2px;
+  min-width: 64px;
+  min-height: 56px;
+  padding: 4px 10px 6px;
+  line-height: 1.1;
+}
+.open-world-map-button svg {
+  width: 28px;
+  height: 28px;
+}
+/* Sur la Carte : Kéo, le nom de chaque lieu ouvert, le cadenas et le nom atténué de chaque lieu fermé, sur fond uni,
+   posés par MapLabels.tsx (coin haut gauche en `transform`), jamais l'un sur l'autre. */
 .open-world-map-places {
   position: absolute;
   inset: 0;
   z-index: 2;
   pointer-events: none;
 }
-.open-world-map-place {
+.open-world-map-place,
+.open-world-map-closed,
+.open-world-map-keo {
   position: absolute;
   left: 0;
   top: 0;
-  /* Centré au-dessus de son lieu ; la scène pose la place par `transform`. */
-  translate: -50% -100%;
+  will-change: transform;
+}
+/* Au plus grand texte, un nom de deux mots se replie plus tôt : il trouve sa place près de son lieu. */
+:root[data-texte="grand"] .open-world-map-place {
+  max-width: 6em;
+}
+.open-world-map-place[hidden],
+.open-world-map-closed[hidden],
+.open-world-map-keo[hidden] {
+  display: none;
+}
+.open-world-map-place {
   min-height: 48px;
   padding: 0.3rem 0.9rem;
   border: var(--border-width, 2px) solid var(--text);
@@ -736,17 +778,108 @@
   color: var(--text);
   font: inherit;
   font-weight: 700;
-  white-space: nowrap;
+  /* Un nom long se replie entre ses mots (jamais au milieu d'un mot) plutôt que de couvrir un repère voisin. */
+  max-width: 9em;
+  text-align: center;
+  overflow-wrap: normal;
   cursor: pointer;
   pointer-events: auto;
-  will-change: transform;
 }
-.open-world-map-place[hidden] {
-  display: none;
-}
-.open-world-map-place:focus-visible {
+.open-world-map-place:focus-visible,
+.open-world-map-closed:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
+}
+/* Un lieu fermé : son cadenas au-dessus du lieu, son nom dessous sur un panneau atténué (trait en tirets, texte
+   adouci, contraste gardé), tu s'il gênerait une autre étiquette ; tout le bloc se touche. */
+.open-world-map-closed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+.open-world-map-closed .open-world-lock {
+  position: static;
+}
+.open-world-map-closed-name {
+  margin-top: 2px;
+  padding: 0.1rem 0.6rem;
+  border: var(--border-width, 2px) dashed var(--muted);
+  border-radius: var(--radius-control, 12px);
+  background: var(--secondary-bg);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.open-world-map-closed[data-nom='non'] .open-world-map-closed-name {
+  visibility: hidden;
+}
+/* Seuls le cadenas et le nom montré se touchent : le nom tu ne cache jamais une étiquette voisine. */
+.open-world-map-closed {
+  pointer-events: none;
+}
+.open-world-map-closed .open-world-lock,
+.open-world-map-closed[data-nom='oui'] .open-world-map-closed-name {
+  pointer-events: auto;
+}
+/* Kéo : une pastille ronde unie à sa silhouette, et « Toi » à côté, sur un panneau : la forme et le mot le distinguent
+   du nom d'un lieu (un rectangle seul), jamais la couleur seule. */
+.open-world-map-keo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+}
+.open-world-map-keo-disc {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--surface);
+}
+.open-world-map-keo-disc svg {
+  width: 26px;
+  height: 26px;
+}
+/* Trop serré : la pastille seule, « Toi » reste dit aux lecteurs d'écran. */
+.open-world-map-keo[data-nom='non'] .open-world-map-keo-word {
+  visibility: hidden;
+}
+.open-world-map-keo-word {
+  padding: 0.1rem 0.6rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+}
+/* « Fermé pour l'instant », au toucher d'un lieu fermé : en haut au milieu, sur fond uni, à une place fixe. */
+.open-world-map-status {
+  position: absolute;
+  top: calc(0.8rem + env(safe-area-inset-top, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  max-width: min(80vw, 24rem);
+  padding: 0.3rem 0.9rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+  text-align: center;
+}
+.open-world-map-status:empty {
+  display: none;
 }
 /* La scénette (lot 2) : le rôle de l'habitant en tête du panneau, en gras ; la place de sa phrase d'accueil dessous. */
 .world-scenette-head {

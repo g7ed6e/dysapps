@@ -112,3 +112,120 @@ export function mapPose(v: MapView, out?: CameraPose): CameraPose {
   pose.lens = 0;
   return pose;
 }
+
+/**
+ * Une étiquette de la Carte, à poser (pixels de l'écran) : Kéo (sa pastille et « Toi »), le nom d'un lieu ouvert (un
+ * bouton), un lieu fermé (son cadenas, et son nom atténué dessous) ; son point à l'écran et sa taille mesurée (pour un
+ * lieu fermé, avec son nom).
+ */
+export interface MapLabel {
+  id: string;
+  kind: 'keo' | 'open' | 'closed';
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/** Sa place : le coin haut gauche, et si son nom se montre (un lieu fermé peut n'en garder que le cadenas). */
+export interface MapLabelSpot {
+  id: string;
+  left: number;
+  top: number;
+  name: boolean;
+}
+
+/** Le cadenas d'un lieu fermé, en pixels, et l'écart gardé entre deux étiquettes (référent dys, consultant UX UI). */
+export const MAP_LOCK = 40;
+export const MAP_LABEL_GAP = 8;
+/** La pastille de Kéo seule, en pixels (sans « Toi »). */
+export const MAP_KEO_DISC = 44;
+
+/** Le pas et la portée de la recherche d'une place libre pour un nom, en pixels. */
+const SPIRAL = { step: 16, reach: 240, directions: 16 } as const;
+
+/** La première place libre (`ok`) autour de `r`, de plus en plus loin, ou rien. */
+function spiral(r: Rect, ok: (c: Rect) => boolean): Rect | undefined {
+  for (let d = SPIRAL.step; d <= SPIRAL.reach; d += SPIRAL.step)
+    for (let k = 0; k < SPIRAL.directions; k++) {
+      const a = (k * 2 * Math.PI) / SPIRAL.directions;
+      const dx = d * Math.cos(a), dy = d * Math.sin(a);
+      const c = { left: r.left + dx, top: r.top + dy, right: r.right + dx, bottom: r.bottom + dy };
+      if (ok(c)) return c;
+    }
+  return undefined;
+}
+
+/** Un rectangle de l'écran, en pixels. */
+export interface Rect {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+const rect = (left: number, top: number, w: number, h: number): Rect => ({ left, top, right: left + w, bottom: top + h });
+const clash = (a: Rect, b: Rect) =>
+  a.left < b.right + MAP_LABEL_GAP && b.left < a.right + MAP_LABEL_GAP && a.top < b.bottom + MAP_LABEL_GAP && b.top < a.bottom + MAP_LABEL_GAP;
+
+/**
+ * Pose les étiquettes de la Carte sans qu'aucune en recouvre une autre (au moins `MAP_LABEL_GAP` entre elles) : d'abord
+ * Kéo et les cadenas, à leur place ; puis le nom de chaque lieu ouvert, au-dessus de son point, sinon dessous, sinon à
+ * droite ou à gauche, sinon à la place libre la plus proche (il se montre toujours : on doit pouvoir le toucher),
+ * dans l'écran ; enfin le nom de chaque lieu fermé, sous
+ * son cadenas, tu s'il gêne (le toucher du lieu dit alors « Fermé pour l'instant »).
+ */
+export function layoutMapLabels(labels: readonly MapLabel[], obstacles: readonly Rect[] = [], screen = { width: Infinity, height: Infinity }): MapLabelSpot[] {
+  const first = attemptLayout(labels, obstacles, screen, false);
+  // Trop serré (Kéo devant son lieu, au plus grand texte) : Kéo garde sa pastille seule, sans « Toi », plutôt qu'un nom
+  // de lieu ne passe sur une autre étiquette.
+  return first.crowded ? attemptLayout(labels, obstacles, screen, true).spots : first.spots;
+}
+
+function attemptLayout(
+  labels: readonly MapLabel[],
+  obstacles: readonly Rect[],
+  screen: { width: number; height: number },
+  compactKeo: boolean,
+): { spots: MapLabelSpot[]; crowded: boolean } {
+  let crowded = false;
+  const onScreen = (r: Rect) => r.left >= 0 && r.top >= 0 && r.right <= screen.width && r.bottom <= screen.height;
+  // Les boutons de la page (« Retour », les réglages) d'abord : aucune étiquette ne passe dessous.
+  const placed: { id: string; r: Rect }[] = obstacles.map((r) => ({ id: '', r }));
+  const out = new Map<string, MapLabelSpot>();
+  const free = (r: Rect, self = '') => !placed.some((p) => p.id !== self && clash(p.r, r));
+  for (const l of labels) {
+    if (l.kind === 'keo') {
+      const r = compactKeo ? rect(l.x - MAP_KEO_DISC / 2, l.y - l.h, MAP_KEO_DISC, l.h) : rect(l.x - l.w / 2, l.y - l.h, l.w, l.h);
+      placed.push({ id: l.id, r });
+      out.set(l.id, { id: l.id, left: r.left, top: r.top, name: !compactKeo });
+    } else if (l.kind === 'closed') {
+      // Le cadenas au-dessus du point ; l'élément est centré sur lui, aussi large que son nom.
+      placed.push({ id: l.id, r: rect(l.x - MAP_LOCK / 2, l.y - MAP_LOCK, MAP_LOCK, MAP_LOCK) });
+      out.set(l.id, { id: l.id, left: l.x - Math.max(MAP_LOCK, l.w) / 2, top: l.y - MAP_LOCK, name: false });
+    }
+  }
+  for (const l of labels) {
+    if (l.kind !== 'open') continue;
+    const above = rect(l.x - l.w / 2, l.y - l.h, l.w, l.h);
+    const candidates = [
+      above,
+      rect(l.x - l.w / 2, l.y + MAP_LABEL_GAP, l.w, l.h),
+      rect(l.x + MAP_LABEL_GAP, l.y - l.h / 2, l.w, l.h),
+      rect(l.x - MAP_LABEL_GAP - l.w, l.y - l.h / 2, l.w, l.h),
+    ];
+    // Sinon, la place libre la plus proche autour du lieu, de plus en plus loin (une spirale de pas de 16 px).
+    const fits = candidates.find((c) => onScreen(c) && free(c)) ?? spiral(above, (c) => onScreen(c) && free(c));
+    if (!fits) crowded = true;
+    const r = fits ?? candidates.find(onScreen) ?? above;
+    placed.push({ id: l.id, r });
+    out.set(l.id, { id: l.id, left: r.left, top: r.top, name: true });
+  }
+  for (const l of labels) {
+    if (l.kind !== 'closed') continue;
+    const name = rect(l.x - l.w / 2, l.y, l.w, Math.max(0, l.h - MAP_LOCK));
+    if (!free(name, l.id)) continue;
+    placed.push({ id: l.id, r: name });
+    out.get(l.id)!.name = true;
+  }
+  return { spots: labels.map((l) => out.get(l.id)!), crowded };
+}

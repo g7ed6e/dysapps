@@ -129,6 +129,16 @@ describe('La place de la scénette à l’écran', () => {
         }
   });
 
+  it('au plus grand texte, en A, le panneau passe sous « Vue simple » et la pause, sur toute la largeur', () => {
+    for (const [w, h] of screens.filter(([, h]) => h >= ANSWER_LAYOUT.low)) {
+      const base = questionLayout({ count: 6, bells: true }, w, h);
+      const l = scenetteLayout({ count: 6, grand: true }, w, h, base);
+      expect(l.panel.top).toBeCloseTo(0.03 * h + SCENETTE_LAYOUT.grandTop, 6);
+      expect(l.panel.width).toBeCloseTo(w - 2 * 0.03 * w, 6);
+      expect(l.panel.top + l.panel.maxHeight).toBeLessThanOrEqual(Math.min(...l.slots.map((s) => s.hit.top)));
+    }
+  });
+
   it('les réponses gardent leur ordre et leur place d’un item à l’autre', () => {
     expect(layoutOf(6, 1024, 768).slots).toEqual(layoutOf(6, 1024, 768).slots);
     const xs = layoutOf(6, 1024, 768).slots.map((s) => s.foot.x);

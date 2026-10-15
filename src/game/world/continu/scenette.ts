@@ -49,6 +49,8 @@ export const SCENETTE_LAYOUT = {
   panelRight: 0.74,
   /** « Vue simple » et la pause, en haut à droite : la place gardée, en pixels. */
   topRight: 250,
+  /** Au plus grand texte, le panneau commence sous cette barre, en pixels sous le bord (son bouton y est plus haut). */
+  grandTop: 84,
   /**
    * La scène, un peu plus bas que la zone de l'UX UI (H 28-64) : le toit de la lanterne passe sous le panneau, qui
    * descend à 37 % environ avec le rôle, la consigne et le son (retour du directeur artistique).
@@ -75,6 +77,11 @@ export interface ScenetteNeeds {
   small?: boolean;
   /** Des mots à lire sous les objets (les cloches) : leurs étiquettes sont plus larges que celles des nombres. */
   words?: boolean;
+  /**
+   * Le plus grand texte : en A, le panneau passe sous la barre de « Vue simple » et de la pause (le bouton s'y élargit
+   * avec son mot) et prend toute la largeur, pour que la consigne tienne sans défiler.
+   */
+  grand?: boolean;
   /**
    * La colonne à gauche sur tous les écrans (la disposition B, même sur tablette) : la consigne, la phrase de l'item, sa
    * ligne de calcul et l'indice n'y tiennent pas en haut sans couvrir la scène (les Quais).
@@ -145,8 +152,8 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   // La rangée prend toute la largeur, à 12 px des bords : les mots des cloches, leur image devant, y tiennent.
   const rowRight = roomy ? width - L.edge : validate.left - S.validate.gap;
   const { slots, objectHeight } = rowSlots(n, L.edge, rowRight, S.row.top * height, rowBottom, lh, share);
-  const top = S.edge * height;
-  const panelWidth = Math.max(0, Math.min(S.panelRight * width, width - S.topRight) - edge);
+  const top = S.edge * height + (needs.grand ? S.grandTop : 0);
+  const panelWidth = needs.grand ? width - 2 * edge : Math.max(0, Math.min(S.panelRight * width, width - S.topRight) - edge);
   const highest = Math.min(...slots.map((s) => s.hit.top));
   const stage = { left: edge, top: S.stage.top * height, right: width - edge, bottom: Math.min(S.stage.bottom * height, highest - L.gap) };
   return {
@@ -288,7 +295,7 @@ const C = {
   head: 0xe3c08a,
   cap: 0x142b38,
   rope: 0xe5ebe3,
-  // Le docker (consultant Archipéo, fiche du lot 2) : gilet bleu lagon, tête sable, casquette jaune lanterne.
+  // Le docker (consultant Archipéo, fiche du lot 2) : gilet vert lagon, tête sable, casquette jaune lanterne.
   vest: 0x178078,
   vestShade: 0x12695f,
   dockCap: 0xffd866,
@@ -341,7 +348,7 @@ function gardienne(b: FacetBuilder, place: PlaceId): void {
 }
 
 /**
- * Le docker, immobile, en quatre volumes (consultant Archipéo) : le corps en cube arrondi (son gilet bleu lagon), la tête
+ * Le docker, immobile, en quatre volumes (consultant Archipéo) : le corps en cube arrondi (son gilet vert lagon), la tête
  * (une sphère sable), la casquette (un disque jaune lanterne et sa visière), un bras posé sur une caisse à sa gauche ;
  * de l'autre main, il tient son crochet de levage (un manche et un anneau).
  */
