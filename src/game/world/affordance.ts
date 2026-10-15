@@ -6,7 +6,7 @@
 // faire a la plus grande, bordée d'or, et c'est la seule qui bouge (une montée et descente lente) ; touchée, une bulle
 // s'écrase et rebondit. Ce qui n'est pas encore possible et les lieux n'ont pas de bulle : ils répondent au toucher.
 // Qui est touchable (`signesDesObjets`) : une borne à faire (jamais jouée, ou jouée sans étoile) ou pas jouable, un
-// Gardien pas encore rallumé, le Bloc-Navire, chaque chantier en fantôme (un ouvrage, un monument à bâtir), l'école, la
+// Gardien pas encore rallumé, la Nef, chaque chantier en fantôme (un ouvrage, un monument à bâtir), l'école, la
 // salle des trophées et un monument bâti ; leur état dit qui porte une bulle (« à faire »). Et la zone de toucher : au
 // moins 48 pixels à l'écran autour d'une borne ou d'un Gardien petits (`zoneDuToucher`), qui ne remplace jamais un
 // toucher direct ni une face en chantier. Code pur, sans Three.js : three/signs.ts dessine les bulles (avec les plaques
@@ -21,6 +21,7 @@ import type { ObjetDeLaFiche } from './layout';
 export type { ObjetDeLaFiche };
 import type { Cell, CreaturePlacement } from './paths';
 import { islandCenter, type VehiclePlacement } from './terrain';
+import { sentinelleDe } from './terrain/creatures';
 
 /** L'état d'un objet touchable : à faire (il porte une bulle), pas encore, un lieu (ils n'en portent pas). */
 export type EtatDuSigne = 'aFaire' | 'pasEncore' | 'lieu';
@@ -113,6 +114,44 @@ function boiteDe(cubes: readonly Cell[], o: Cell = { x: 0, y: 0, z: 0 }): Boite 
   return { min, max };
 }
 
+/**
+ * La boîte d'un personnage tel qu'il est dessiné : celle de ses cubes, ramenée à l'échelle de son dessin (`echelle`, un
+ * Gardien de Blocland : 0,5, GD-11) autour du milieu de son pied.
+ */
+function boiteDuPersonnage(p: Pick<CreaturePlacement, 'cubes' | 'origin' | 'echelle'>): Boite {
+  const b = boiteDe(p.cubes, p.origin);
+  const k = p.echelle ?? 1;
+  if (k === 1) return b;
+  const [cx, cy, z0] = [(b.min.x + b.max.x) / 2, (b.min.y + b.max.y) / 2, b.min.z];
+  return {
+    min: { x: cx + (b.min.x - cx) * k, y: cy + (b.min.y - cy) * k, z: z0 },
+    max: { x: cx + (b.max.x - cx) * k, y: cy + (b.max.y - cy) * k, z: z0 + (b.max.z - z0) * k },
+  };
+}
+
+/**
+ * La boîte d'un Gardien dessiné en sentinelle (Archipéo, `habillage.personnages` « modeles ») : la statue à l'échelle du
+ * monde, ses pieds au milieu de sa place (`pointDePose` de world/characters/merges.ts), pas la boîte de ses
+ * cubes, qui sont ceux du Gardien de Blocland en grand : sa bulle et sa zone de toucher suivent la statue qu'on voit.
+ */
+function boiteDeLaSentinelle(p: Pick<CreaturePlacement, 'id' | 'cubes' | 'origin'> & { centre?: { x: number; y: number } }): Boite {
+  const b = boiteDe(p.cubes, p.origin);
+  // Le milieu de sa place sur son carré, où se pose la statue (`pointDePose`), ou celui de ses cubes.
+  const [cx, cy, z0] = p.centre ? [p.centre.x, p.centre.y, p.origin.z] : [(b.min.x + b.max.x) / 2, (b.min.y + b.max.y) / 2, p.origin.z];
+  // Carrée : le lieu peut être tourné (GD-9), la boîte reste celle de la statue.
+  const { dx, dy, h } = sentinelleDe(p.id);
+  const d = Math.max(dx, dy);
+  return { min: { x: cx - d, y: cy - d, z: z0 }, max: { x: cx + d, y: cy + d, z: z0 + h } };
+}
+
+/**
+ * La boîte de chaque créature telle qu'elle est dessinée, à l'échelle de son dessin (GD-16 : 0,5 dans Blocland, comme
+ * les Gardiens) : une créature plus petite que 48 pixels à l'écran se touche aussi tout autour (three/affordance.ts).
+ */
+export function boitesDesCreatures(creatures: readonly CreaturePlacement[]): { id: BiomeId; boite: Boite }[] {
+  return creatures.filter((c) => c.kind !== 'guardian' && c.cubes.length).map((c) => ({ id: c.id, boite: boiteDuPersonnage(c) }));
+}
+
 /** Un objet et sa bulle, au-dessus du milieu de sa boîte. */
 function signeAuDessus(objet: ObjetTouche, etat: EtatDuSigne, iles: BiomeId[], boite: Boite): SigneDObjet {
   return { cle: cleDeLObjet(objet), objet, etat, x: (boite.min.x + boite.max.x) / 2, y: (boite.min.y + boite.max.y) / 2, z: boite.max.z + SIGNE.auDessus, iles, boite };
@@ -137,13 +176,15 @@ export interface EntreeDesSignes {
   vehicle?: VehiclePlacement | null;
   /** Ce que les cubes ne disent pas (world/model.ts) ; sans lui, tout ce qui n'est pas une borne à faire est « pas encore ». */
   etats?: EtatsDesObjets;
+  /** Les Gardiens dessinés en cubes (Blocland, à leur échelle) ou en sentinelles (Archipéo) : leur bulle suit leur dessin. */
+  gardiens?: 'cubes' | 'sentinelles';
 }
 
 /**
  * Les signes des objets touchables d'un archipel, en cases du monde : un par objet, dans cet ordre (bornes, lieux et
  * monuments, ouvrages, Gardiens, navire). Une borne d'une île fermée n'en a pas (l'île entière se lit fermée).
  */
-export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = null, etats }: EntreeDesSignes): SigneDObjet[] {
+export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = null, etats, gardiens = 'cubes' }: EntreeDesSignes): SigneDObjet[] {
   const prets = new Set(etats?.chantiersPrets ?? []);
   // Les cubes des bornes, des lieux (sans leur îlot) et des ouvrages en fantôme, en un passage.
   const bornes = new Map<string, VoxelCube[]>();
@@ -204,9 +245,9 @@ export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = 
   for (const g of creatures) {
     if (g.kind !== 'guardian' || g.beaten || !g.cubes.length) continue;
     const pret = etats ? etats.gardiensPrets.includes(g.id) : true;
-    out.push(signeAuDessus({ genre: 'gardien', id: g.id }, pret ? 'aFaire' : 'pasEncore', [g.id], boiteDe(g.cubes, g.origin)));
+    out.push(signeAuDessus({ genre: 'gardien', id: g.id }, pret ? 'aFaire' : 'pasEncore', [g.id], gardiens === 'sentinelles' ? boiteDeLaSentinelle(g) : boiteDuPersonnage(g)));
   }
-  // Le Bloc-Navire : à faire s'il a un bloc à poser ou s'il peut partir, sinon pas encore.
+  // La Nef : à faire s'il a un bloc à poser ou s'il peut partir, sinon pas encore.
   if (vehicle?.cubes.length)
     out.push(signeAuDessus({ genre: 'navire', port: vehicle.port }, etats?.navirePret ? 'aFaire' : 'pasEncore', [vehicle.port], boiteDe(vehicle.cubes, vehicle.origin)));
   return out;
@@ -239,7 +280,7 @@ export function centreDeLObjet(
     case 'creature': {
       const gardien = objet.genre === 'gardien';
       const p = creatures.find((c) => c.id === objet.id && (c.kind === 'guardian') === gardien);
-      return p?.cubes.length ? centre(boiteDe(p.cubes, p.origin)) : null;
+      return p?.cubes.length ? centre(boiteDuPersonnage(p)) : null;
     }
     case 'ile':
       return ile ? ile(objet.id) : null;
@@ -308,10 +349,10 @@ export function iconeDeLObjet(o: ObjetTouche): AnyIconName {
  * Sur la Carte (Blocland), l'image de la bulle d'or de la prochaine destination : celle de ce qu'on y fait, pour
  * que le même signe dise la même chose partout (piste B, choisie par le mainteneur le 4 octobre 2026). Une commande :
  * le bloc demandé ; un ouvrage : l'icône des ouvrages (GD-7 : celle du pli Ouvrages et de Mes blocs, celle de la
- * maquette choisie) ; le Bloc-Navire : le navire ; sinon (une mission, une île à reprendre) : l'étoile de « Jouer ».
+ * maquette choisie) ; la Nef : le navire ; sinon (une mission, une île à reprendre) : l'étoile de « Jouer ».
  */
-export function imageDeLaDestination(d: { ouvrage?: string; commande?: string }, o: { navire: boolean; bloc?: BlockId }): ImageDeLaBulle {
-  if (d.commande && o.bloc) return { bloc: o.bloc };
+export function imageDeLaDestination(d: { ouvrage?: string; commande?: string; story?: string }, o: { navire: boolean; bloc?: BlockId }): ImageDeLaBulle {
+  if ((d.commande || d.story) && o.bloc) return { bloc: o.bloc };
   if (d.ouvrage) return { icone: 'ouvrage' };
   if (o.navire) return { icone: 'ship' };
   return { icone: 'star' };
@@ -378,6 +419,11 @@ export interface ZoneDeToucher {
   h: number;
   /** La distance de la caméra au point le plus proche de l'objet. */
   distance: number;
+  /**
+   * Là où deux zones se chevauchent, celle de plus haute priorité gagne (0 par défaut) : une borne (1) passe avant un
+   * Gardien, que le Gardien se tienne près des bornes (GD-11, référent dys, téléphone).
+   */
+  priorite?: number;
 }
 
 /** La zone de toucher d'un objet, et sa boîte en cases du monde (le sol touché tout près d'elle garde la zone). */
@@ -391,8 +437,9 @@ export function zoneDeToucher(x0: number, y0: number, x1: number, y1: number, di
 }
 
 /**
- * La zone retenue sous le doigt levé, parmi les zones qui le contiennent : celle dont le centre est le plus proche du
- * doigt (en pixels), puis l'objet le plus proche de la caméra. Une zone est écartée quand le sol touché (`sol`, sa
+ * La zone retenue sous le doigt levé, parmi les zones qui le contiennent : la plus haute priorité (`priorite` : une
+ * borne avant un Gardien), puis celle dont le centre est le plus proche du doigt (en pixels), puis l'objet le plus
+ * proche de la caméra. Une zone est écartée quand le sol touché (`sol`, sa
  * distance le long du rayon, ou `null`) est plus proche que l'objet de `SIGNE.masque` blocs : l'objet est caché derrière
  * une colline, une maison ; et quand `garde` la refuse (appelée seulement pour une zone qui contient le doigt). L'indice
  * dans `zones`, ou −1.
@@ -400,14 +447,18 @@ export function zoneDeToucher(x0: number, y0: number, x1: number, y1: number, di
 export function zoneRetenue(zones: readonly ZoneDeToucher[], doigt: { x: number; y: number }, sol: number | null, garde?: (i: number) => boolean): number {
   let best = -1;
   let bestPx = Infinity;
+  let bestPriorite = -Infinity;
   zones.forEach((z, i) => {
     if (Math.abs(doigt.x - z.x) > z.w / 2 || Math.abs(doigt.y - z.y) > z.h / 2) return;
     if (sol !== null && sol < z.distance - SIGNE.masque) return;
+    const priorite = z.priorite ?? 0;
+    if (priorite < bestPriorite) return;
     const px = Math.hypot(doigt.x - z.x, doigt.y - z.y);
-    if (px > bestPx || (px === bestPx && z.distance >= zones[best].distance)) return;
+    if (priorite === bestPriorite && (px > bestPx || (px === bestPx && z.distance >= zones[best].distance))) return;
     if (garde && !garde(i)) return;
     best = i;
     bestPx = px;
+    bestPriorite = priorite;
   });
   return best;
 }

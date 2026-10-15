@@ -48,25 +48,25 @@ it('ensuite, l’ouvrage qui ouvre une île de la matière la moins jouée, depu
   const progress = Object.assign({}, ...iles.map((id) => joue(id)));
   const world = { place: 'french-6e-phonology', links: ['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions'] };
   const paye = sanitizeState({ progress, stock: { [BLOC.bois]: 4 }, world });
-  expect(nextDestination(paye)).toMatchObject({ island: 'french-6e-phonology', text: 'Tu peux poser le pont vers la Baie des mots. Il ouvre une île d’anglais.', have: 4, need: 4 });
+  expect(nextDestination(paye)).toMatchObject({ island: 'french-6e-phonology', text: 'Tu peux poser le pont vers l’Horloge des verbes. Il ouvre une île d’anglais.', have: 4, need: 4 });
   // La destination dit quelle liaison : la flèche de la Carte se pose sur elle, pas sur l'île.
-  expect(nextDestination(paye).ouvrage).toBe('french-6e-phonology-english-6e-vocabulary');
+  expect(nextDestination(paye).ouvrage).toBe('french-6e-phonology-english-6e-grammar');
   // Le panneau de la Forêt met la même liaison en avant (son seul « Poser » principal).
-  expect(nextGoalInfo(paye, 'french-6e-phonology', NOMS_ARCHIPELS, mots)?.ouvrage).toBe('french-6e-phonology-english-6e-vocabulary');
+  expect(nextGoalInfo(paye, 'french-6e-phonology', NOMS_ARCHIPELS, mots)?.ouvrage).toBe('french-6e-phonology-english-6e-grammar');
   const pauvre = sanitizeState({ progress, stock: { [BLOC.bois]: 1 }, world });
   // Sans blocs, aucune liaison ne se paie : la suggestion reprend l'ordre des matières (l'anglais, jamais joué).
-  expect(nextDestination(pauvre)).toMatchObject({ island: 'french-6e-phonology', text: 'Encore 3 blocs pour le pont vers la Baie des mots. Il ouvre une île d’anglais.', have: 1, need: 4, ouvrage: 'french-6e-phonology-english-6e-vocabulary' });
+  expect(nextDestination(pauvre)).toMatchObject({ island: 'french-6e-phonology', text: 'Encore 3 blocs pour le pont vers l’Horloge des verbes. Il ouvre une île d’anglais.', have: 1, need: 4, ouvrage: 'french-6e-phonology-english-6e-grammar' });
   // La même sauvegarde, la même suggestion : rien ne change tant que l'élève n'a rien fait.
   expect(nextDestination(structuredClone(paye))).toEqual(nextDestination(paye));
 });
 
-it('le Bloc-Navire prêt à partir passe devant tout', () => {
+it('la Nef prêt à partir passe devant tout', () => {
   const [coque] = VEHICLE_STAGES;
   const plans = Object.fromEntries(plansFor('maths-6e-calculation').map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const hull = { ...plans, [coque.id]: planCells(coque).map((c) => c.key) };
   const gardiens = Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion'].map((id) => [`${id}-challenge`, { stars: 2, attempts: 1, best: 1 }]));
   const state = sanitizeState({ progress: { ...gardiens, ...joue('french-6e-phonology', 1) }, world: { place: 'french-6e-phonology', parts: hull, links: ['french-6e-phonology-french-6e-letter-confusion'] } });
-  expect(nextDestination(state)).toMatchObject({ island: 'maths-6e-calculation', text: 'Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !' });
+  expect(nextDestination(state)).toMatchObject({ island: 'maths-6e-calculation', text: 'La Nef est prête : embarque vers les Îles Brumeuses !' });
 });
 
 it('sans objectif, la destination est le port, avec ce qu’il faut pour le village', () => {
@@ -75,7 +75,7 @@ it('sans objectif, la destination est le port, avec ce qu’il faut pour le vill
   expect(nextDestination(state).text).toMatch(/\.$/);
 });
 
-it('la destination est le Bloc-Navire quand c’est le port et que sa phrase est l’objectif du navire (« Y aller » ouvre sa fiche)', () => {
+it('la destination est la Nef quand c’est le port et que sa phrase est l’objectif du navire (« Y aller » ouvre sa fiche)', () => {
   const objectif = (state: Etat) => nextGoalInfo(state, 'maths-6e-calculation', NOMS_ARCHIPELS, mots);
   // Au début : une île à explorer, pas le navire.
   const debut = sanitizeState({});

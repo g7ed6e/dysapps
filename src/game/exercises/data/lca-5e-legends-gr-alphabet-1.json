@@ -1,0 +1,240 @@
+{
+  "id": "lca-5e-legends-gr-alphabet-1",
+  "biome": "lca-5e-legends",
+  "type": "gr-alphabet",
+  "level": 1,
+  "instruction": "Regarde la lettre ou le mot grec, puis choisis la bonne réponse. L’alphabet est affiché.",
+  "items": [
+    {
+      "key": "lca-5e-legends-gr-alphabet-1-0",
+      "prompt": "Quelle lettre de notre alphabet correspond à ρ ?",
+      "spoken": "Quelle lettre de notre alphabet correspond à cette lettre grecque ?",
+      "choices": [
+        "p",
+        "r",
+        "b"
+      ],
+      "answer": "r",
+      "hint": "Cherche cette lettre dans la cinquième ligne du rappel.",
+      "explanation": "Cette lettre s’appelle rhô et se lit r, même si elle ressemble à notre p. On la retrouve dans « rhinocéros ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’alphabet grec : la lettre, son nom, notre lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-1-1",
+      "prompt": "Quelle lettre de notre alphabet correspond à ν ?",
+      "spoken": "Quelle lettre de notre alphabet correspond à cette lettre grecque ?",
+      "choices": [
+        "v",
+        "u",
+        "n"
+      ],
+      "answer": "n",
+      "hint": "Cherche cette lettre dans la quatrième ligne du rappel.",
+      "explanation": "Cette lettre s’appelle nu et se lit n, même si elle ressemble à notre v. Le grec ancien n’a pas de lettre v.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’alphabet grec : la lettre, son nom, notre lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-1-2",
+      "prompt": "Quelle lettre de notre alphabet correspond à η ?",
+      "spoken": "Quelle lettre de notre alphabet correspond à cette lettre grecque ?",
+      "choices": [
+        "ê",
+        "n",
+        "h"
+      ],
+      "answer": "ê",
+      "hint": "Cherche cette lettre dans la deuxième ligne du rappel.",
+      "explanation": "Cette lettre s’appelle êta : c’est un e long, transcrit ê. Elle ressemble à notre n, mais c’est une voyelle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’alphabet grec : la lettre, son nom, notre lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-1-3",
+      "prompt": "Quelles lettres de notre alphabet correspondent à χ ?",
+      "spoken": "Quelles lettres de notre alphabet correspondent à cette lettre grecque ?",
+      "choices": [
+        "kh",
+        "x",
+        "k"
+      ],
+      "answer": "kh",
+      "hint": "Cherche cette lettre dans la dernière ligne du rappel.",
+      "explanation": "Cette lettre s’appelle khi et se transcrit kh ; dans nos mots, elle devient ch : chronologie, chorale. Notre x, lui, vient de la lettre xi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’alphabet grec : la lettre, son nom, notre lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-1-4",
+      "prompt": "Quelle lettre de notre alphabet correspond à ω ?",
+      "spoken": "Quelle lettre de notre alphabet correspond à cette lettre grecque ?",
+      "choices": [
+        "ô",
+        "w",
+        "m"
+      ],
+      "answer": "ô",
+      "hint": "Cherche cette lettre dans la dernière ligne du rappel.",
+      "explanation": "Cette lettre s’appelle oméga : c’est un o long, transcrit ô. C’est la dernière lettre de l’alphabet grec : « l’alpha et l’oméga », c’est le début et la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’alphabet grec : la lettre, son nom, notre lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-1-5",
+      "prompt": "Quelle lettre de notre alphabet correspond à γ ?",
+      "spoken": "Quelle lettre de notre alphabet correspond à cette lettre grecque ?",
+      "choices": [
+        "y",
+        "g",
+        "j"
+      ],
+      "answer": "g",
+      "hint": "Cherche cette lettre dans la première ligne du rappel.",
+      "explanation": "Cette lettre s’appelle gamma et se transcrit g, même si elle ressemble à notre y. Géographie commence par la racine gê, la terre, écrite avec un gamma.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’alphabet grec : la lettre, son nom, notre lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-1-6",
+      "prompt": "Un mot grec\nφιλος\nphilos : l’ami",
+      "question": "Quelle lettre grecque donne nos deux lettres p et h ?",
+      "spoken": "Un mot grec. Philos : l’ami.",
+      "choices": [
+        "θ",
+        "φ",
+        "ψ"
+      ],
+      "answer": "φ",
+      "hint": "Cherche nos lettres p et h dans la dernière ligne du rappel.",
+      "explanation": "C’est la lettre phi, transcrite ph : philos, l’ami, se retrouve dans philosophie. La lettre psi se transcrit ps, la lettre thêta th.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’alphabet grec : la lettre, son nom, notre lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-1-7",
+      "prompt": "Le mot alphabet\nα : alpha\nβ : bêta\nalpha et bêta : alphabet",
+      "question": "D’où vient le mot « alphabet » ?",
+      "spoken": "Le mot alphabet. Alpha. Bêta. Alpha et bêta : alphabet.",
+      "choices": [
+        "des deux dernières lettres grecques",
+        "du mot latin pour « lettre »",
+        "des deux premières lettres grecques"
+      ],
+      "answer": "des deux premières lettres grecques",
+      "hint": "Lis les deux premières lignes du document, puis la première ligne du rappel.",
+      "explanation": "Alpha et bêta, les deux premières lettres grecques, ont donné le mot « alphabet ». Les Grecs ont reçu leur alphabet des Phéniciens.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’alphabet grec : la lettre, son nom, notre lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-5e-legends",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

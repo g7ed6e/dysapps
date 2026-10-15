@@ -99,10 +99,22 @@ export const hauteurDansLaVague = (plan: PlanDeLaVague, rang: number, ms: number
 
 /** Les cubes de la partie, à poser en vague : ceux de `cubes` (en dur) qui tombent sur ses cases. */
 export function cubesDeLaVague(cubes: readonly VoxelCube[], cases: ReadonlySet<string>): VoxelCube[] {
-  return cubes.filter((c) => !c.ghost && cases.has(`${c.x},${c.y},${c.z}`));
+  const dans = surLesCases(cases);
+  return cubes.filter((c) => !c.ghost && dans(c));
 }
 
 /** Le monde sans la partie, tant que la vague ne l'a pas posée : ses cases restent vides (ni bloc, ni fantôme). */
 export function sansLaPartie(cubes: readonly VoxelCube[], cases: ReadonlySet<string>): VoxelCube[] {
-  return cubes.filter((c) => !cases.has(`${c.x},${c.y},${c.z}`));
+  const dans = surLesCases(cases);
+  return cubes.filter((c) => !dans(c));
+}
+
+/**
+ * Un cube est-il sur une des cases (« x,y,z ») ? Les x des cases d'abord, en nombres : le monde a des dizaines de
+ * milliers de cubes, la partie quelques colonnes, et la clé d'un cube ne se construit que dans l'une d'elles.
+ */
+function surLesCases(cases: ReadonlySet<string>): (c: VoxelCube) => boolean {
+  const xs = new Set<number>();
+  for (const k of cases) xs.add(Number(k.slice(0, k.indexOf(','))));
+  return (c) => xs.has(c.x) && cases.has(`${c.x},${c.y},${c.z}`);
 }

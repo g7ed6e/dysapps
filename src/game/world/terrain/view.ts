@@ -1,13 +1,15 @@
 // Le cadrage de la vue : l'étendue de l'archipel, la zone et l'angle de la vue d'une île, l'île sous la vue, la caméra
 // d'une île et sa projection, le cadre d'une traversée.
-import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, landBox, startingIsland, MAP } from '../map';
+import { type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, coeurDe, islandDef, type IslandDef, landBox, mapOf, startingIsland, MAP } from '../map';
 import { dockBox } from '../harbor';
 import { type BridgeDef, getArchipelago, islandsOf } from '../archipelago';
-import { type BiomeId, BIOMES } from '../../biomes';
-import { ISLET_GAP, ISLET_H } from './islets';
+import { type BiomeId, BIOMES, estLieuDOption } from '../../biomes';
 import { BAC_LONG, bridgePath } from './links';
 import { islandCenter } from './base';
-import { layoutCache } from '../placement';
+import { layoutCache, turnDirection, turnPoint } from '../placement';
+import { GD11_GUARDIAN_SQUARES, GUARDIAN_SQUARE_SIDE } from '../guardianSquares';
+import { featureSide, hasLagoon, LAGOON_MIDDLE } from '../formes';
+import { silhouetteDe } from '../silhouettes';
 import { frameOf } from '../footprint';
 import { placedLinksOf, neighboursOf } from '../linkGeometry';
 
@@ -26,15 +28,45 @@ export function worldBounds(a: ArchipelagoId): {
 }
 
 /**
- * L'étendue de la carte de départ d'une région, qui ne bouge jamais, terres, îlots et port compris : la mer y est
+ * La mer gardée devant chaque île (côté caméra), en cases : celle que prenait l'îlot de son Gardien et son eau jusqu'à
+ * GD-11 (8 octobre 2026). Le Gardien parti sur son île, la mer de la région reste semée de même (`bornesDeDepart`) ; la
+ * Carte, elle, ne la cadre plus (`bornesDesLieux`, `terresDe`).
+ */
+const MER_DEVANT = 15;
+
+/**
+ * L'étendue de la carte de départ d'une région, qui ne bouge jamais, terres et port compris : la mer y est
  * semée une fois pour toutes (`seaDecor`), serrée autour des lieux plutôt qu'au bord du cadre.
  */
 export function bornesDeDepart(a: ArchipelagoId): { minX: number; maxX: number; minY: number; maxY: number } {
   return bornesDesIles(a, MAP.filter((d) => archipelagoOfIsland(d.id) === a).map((d) => startingIsland(d.id)));
 }
 
-/** Les bornes de quelques îles d'un archipel, et de son port (la colonne centrale, `colonneCentrale`). */
-function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[]): { minX: number; maxX: number; minY: number; maxY: number } {
+/**
+ * L'étendue des lieux d'une région à leur place d'aujourd'hui (déplacés ou non, GD-9), port compris, sans la mer gardée
+ * devant eux : ce que la Carte cadre à l'ouverture (three/camera/framings.ts).
+ */
+export function bornesDesLieux(a: ArchipelagoId): { minX: number; maxX: number; minY: number; maxY: number } {
+  return bornesDesIles(a, mapOf(a), 2);
+}
+
+type Bornes = { minX: number; maxX: number; minY: number; maxY: number };
+
+/**
+ * Les terres des lieux d'une région à leur place d'aujourd'hui, une à une, et le quai de son port, chacune avec deux
+ * cases de marge (la couronne d'un grand arbre, l'écume d'une cascade débordent de la terre). La Carte les cadre à
+ * l'ouverture (three/camera/framings.ts) : vue de biais, une île au fond prend moins de place qu'un coin du rectangle
+ * qui les entoure toutes (GD-11, consultant UX UI).
+ */
+export function terresDe(a: ArchipelagoId): Bornes[] {
+  return [...mapOf(a).map((def) => landBox(def)), dockBox(getArchipelago(a).port)].map((b) => ({ minX: b.x0 - 2, maxX: b.x1 + 2, minY: b.y0 - 2, maxY: b.y1 + 2 }));
+}
+
+/**
+ * Les bornes de quelques îles d'un archipel, et de son port (la colonne centrale, `colonneCentrale`) ; `devant` : la mer
+ * gardée devant chaque île, côté caméra (`MER_DEVANT` par défaut).
+ */
+function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[], devant = MER_DEVANT): Bornes {
   let minX = Infinity;
   let maxX = -Infinity;
   let minY = Infinity;
@@ -44,7 +76,7 @@ function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[]): { minX: nu
     // Deux cases de marge : la couronne d'un grand arbre, l'écume d'une cascade débordent de la terre.
     minX = Math.min(minX, b.x0 - 2);
     maxX = Math.max(maxX, b.x1 + 2);
-    minY = Math.min(minY, b.y0 - ISLET_H - ISLET_GAP);
+    minY = Math.min(minY, b.y0 - devant);
     maxY = Math.max(maxY, b.y1 + 2);
   }
   const dock = dockBox(getArchipelago(a).port);
@@ -70,7 +102,7 @@ export const VIEW_YAW_MAX = (40 * Math.PI) / 180;
  * La zone que la caméra cadre quand le bonhomme se tient sur une île : cette île et ses voisines (reliées par un
  * ouvrage, construit ou non). Sur une île du bord, les voisines tirent l'image vers le continent : moins de mer.
  *
- * L'île de la LV2 (le Relais au 5e, le Jardin des heures au 4e) n'élargit jamais le cadrage de sa voisine (DA, 28/09,
+ * Un lieu d'option (GD-13 ; l'île de la LV2, le Relais au 5e, le Jardin des heures au 4e) n'élargit jamais le cadrage de sa voisine (DA, 28/09,
  * LV2-4) : avec « Pas de LV2 », la vue reste celle d'avant l'île ; avec une LV2, elle ne l'accueillerait que si son
  * Gardien et son étiquette tenaient entiers au-dessus des boutons en 1024 × 768, 1280 × 800 et 800 × 1280 sans que
  * l'île du bonhomme rapetisse, ce qui n'est pas le cas (au bout de la crête, l'étiquette sort de l'écran à gauche, de
@@ -82,7 +114,8 @@ export const VIEW_YAW_MAX = (40 * Math.PI) / 180;
 export function viewZone(home: BiomeId): { minX: number; maxX: number; minY: number; maxY: number } {
   const ids = new Set<BiomeId>([home]);
   for (const other of neighboursOf(home)) {
-    if (BIOMES.find((x) => x.id === other)?.subject === 'lv2') continue;
+    const voisine = BIOMES.find((x) => x.id === other);
+    if (voisine && estLieuDOption(voisine)) continue;
     ids.add(other);
   }
   let minX = Infinity;
@@ -113,7 +146,9 @@ export function viewYaw(home: BiomeId): number {
  * qui pourrait cacher une borne est tiré pour cette vue.
  */
 function yawDuLieu(home: BiomeId): number {
-  const def = startingIsland(home);
+  const depart = startingIsland(home);
+  // Depuis sa place d'avant GD-12, si les formes l'ont fait bouger (`vueDepuis`) : la vue de l'île ne change pas.
+  const def = depart.vueDepuis ? { ...depart, core: depart.vueDepuis } : depart;
   const c = coeurDe(def);
   // Seul l'écart est-ouest compte : la caméra regarde toujours vers le nord, on la tourne vers la colonne centrale.
   const dx = colonneCentrale(archipelagoOfIsland(home)) - (c.x0 + c.x1) / 2;
@@ -121,14 +156,52 @@ function yawDuLieu(home: BiomeId): number {
 }
 
 /**
+ * La colonne centrale d'un archipel dont les îles ont pris leur forme (GD-12), figée à sa valeur d'avant : les formes
+ * ont déplacé les îles et élargi leurs côtes, la colonne aurait bougé, et avec elle la vue de chaque île.
+ */
+const COLONNE_D_AVANT_LES_FORMES: Partial<Record<ArchipelagoId, number>> = { '6e': 72.5, '5e': 92.5, '4e': 77.5, '3e': 64 };
+
+/**
  * Les îles qui ne comptent pas dans la colonne centrale : le Refuge des carnets (3e), posé au bord de l'archipel, ne fait
  * pas pivoter les caméras des autres îles, qui gardent leur cadrage (DA, LV2-5) ; de même la Fouille des siècles et la
  * Pointe des paysages (6e, HG-2), au bout du second rang, puis la Vallée du vivant, le Laboratoire des éléments et le
- * Hangar des inventions (6e, SC-2), aux places qui restaient : le dessin des autres îles ne change pas. Le Relais des
+ * Hangar des inventions (6e, SC-2), aux places qui restaient, et le Préau des délégués (6e, EMC-2), puis le Fournil des partages et la Grotte des légendes (5e, EMC-2 et LCA-2) la Porte des libertés et la Colonnade des cités (4e), le Forum des débats et le Bosquet des sages (3e), aux deux places gardées par GD-12 dans chaque archipel : le dessin des autres îles ne change pas ; et les six îles
+ * d'histoire-géographie de 5e à 3e (HG-3) : comptées, celles des Îles Brumeuses, au-delà du cadre d'avant, faisaient
+ * tourner toutes les caméras du 5e de plusieurs degrés (et avec elles la place des petites constructions) ; de même les
+ * neuf îles de sciences de 5e à 3e (SC-3). Le Relais des
  * voyageurs (5e) et le Jardin des heures (4e) y comptent : leurs lots ont validé avec eux le cadrage de leur archipel,
  * qu'on ne rouvre pas.
  */
-export const HORS_DE_LA_COLONNE: readonly BiomeId[] = ['lv2-3e-travel', 'history-6e-antiquity', 'geography-6e-living', 'life-earth-sciences-6e-living-world', 'physics-chemistry-6e-matter-energy', 'technology-6e-objects'];
+export const HORS_DE_LA_COLONNE: readonly BiomeId[] = [
+  'lv2-3e-travel',
+  'history-6e-antiquity',
+  'geography-6e-living',
+  'life-earth-sciences-6e-living-world',
+  'physics-chemistry-6e-matter-energy',
+  'technology-6e-objects',
+  'civics-6e-democratic-society',
+  'civics-5e-equality-solidarity',
+  'lca-5e-legends',
+  'civics-4e-rights-freedoms',
+  'lca-4e-cities',
+  'civics-3e-democratic-life',
+  'lca-3e-ideas',
+  'history-5e-middle-ages',
+  'geography-5e-resources',
+  'history-4e-revolutions',
+  'geography-4e-globalization',
+  'history-3e-twentieth-century',
+  'geography-3e-france',
+  'life-earth-sciences-5e-active-planet',
+  'physics-chemistry-5e-matter-universe',
+  'technology-5e-design',
+  'life-earth-sciences-4e-cells-evolution',
+  'physics-chemistry-4e-signals-circuits',
+  'technology-4e-modeling',
+  'life-earth-sciences-3e-human-body',
+  'physics-chemistry-3e-motion-energy',
+  'technology-3e-digital',
+];
 
 const colonnes = new Map<ArchipelagoId, number>();
 
@@ -137,6 +210,8 @@ const colonnes = new Map<ArchipelagoId, number>();
  * `HORS_DE_LA_COLONNE`) et de son port, sur la carte de départ.
  */
 function colonneCentrale(a: ArchipelagoId): number {
+  const figee = COLONNE_D_AVANT_LES_FORMES[a];
+  if (figee !== undefined) return figee;
   const connue = colonnes.get(a);
   if (connue !== undefined) return connue;
   // La carte de départ : la colonne ne bouge pas quand l'élève déplace un lieu (GD-9).
@@ -174,11 +249,23 @@ export function ileDeLaVueGlissee(a: ArchipelagoId, ici: BiomeId, d: { x: number
   return islandAt(a, c.x + d.x, c.y + d.z);
 }
 
+/**
+ * La direction de la caméra de la Carte (x, y de la grille, et hauteur) : presque à la verticale, le même nord, un peu
+ * tournée (dx). Elle penche les directions vues à l'écran (world/placeSentence.ts les dit telles qu'on les voit).
+ */
+export const VUE_DE_LA_CARTE = { dx: 0.03, dy: -0.4, up: 1 };
+
 /** La direction de la vue d'une île (x, y de la grille, et hauteur) : de trois quarts avant-droite, plus haute que la vue du bonhomme. */
 export const VUE_DE_L_ILE = { dx: 0.7, dy: -0.7, up: 0.9 };
 
 /** La distance de la caméra de la vue d'une île au point visé (en paysage ; la vue en portrait recule, three/camera.ts). */
 export const DISTANCE_DE_LA_VUE_DE_L_ILE = 30;
+
+/**
+ * À combien de cases au-dessus du sol de son île flotte le nom d'une île (three/labels.ts) : la place du Gardien évite
+ * l'étiquette dans la vue de l'île (./creatures.ts, `guardianSpot`).
+ */
+export const HAUTEUR_DES_NOMS = 12;
 
 /** La caméra vise un bloc au-dessus du point qu'elle regarde (le centre d'une île à son altitude, le bonhomme). */
 export const VISEE_AU_DESSUS_DU_SOL = 1;
@@ -211,13 +298,77 @@ export function versLaCameraDuDessin(id: BiomeId): [number, number, number] {
 }
 
 /**
+ * La vue d'une île qui a un lagon (GD-12, le Bassin des maquettes, relecture du 9 octobre 2026) : visé au milieu de son
+ * cœur, le lagon, devant lui, tombait sous le panneau de l'île, presque absent de sa propre vue. La visée glisse de
+ * `towards` (en part du chemin du milieu du cœur au milieu du lagon), et la caméra recule de `pullBack` fois, pour que le
+ * lagon et sa passe tiennent à côté du cœur.
+ */
+const LAGOON_FRAMING = { towards: 0.55, pullBack: 1.3 } as const;
+
+
+/**
+ * Les îles dont la vue glisse vers le Gardien (piste C2 du directeur artistique, retenue par le mainteneur le
+ * 11 octobre 2026, GD-16 pour le 6e, GD-18 du 5e au 3e) : sur son carré au bord du cœur, il sortait en partie de la vue
+ * de l'île la plus étroite. La
+ * vue vise alors un point entre le milieu du cœur et le milieu de son carré, à `towards` du chemin : assez pour qu'il
+ * tienne entier dans le cadre, dans les deux univers (terrain.test.ts) ; le cœur, ses bornes et ses lieux restent vus.
+ */
+const GUARDIAN_FRAMING: Readonly<Partial<Record<BiomeId, { towards: number }>>> = {
+  'french-6e-grammar-spelling': { towards: 0.4 },
+  'french-6e-reading': { towards: 0.25 },
+  'maths-6e-calculation': { towards: 0.1 },
+  'technology-6e-objects': { towards: 0.1 },
+  'french-5e-conjugation': { towards: 0.15 },
+  'english-5e-grammar': { towards: 0.45 },
+  'maths-4e-powers': { towards: 0.15 },
+  'maths-4e-algebra': { towards: 0.5 },
+  'technology-4e-modeling': { towards: 0.1 },
+  'maths-3e-geometry': { towards: 0.15 },
+  'french-3e-close-reading': { towards: 0.4 },
+};
+
+/**
+ * Le point que vise la vue d'une île (x, y de la grille, z en hauteur) : le milieu de son cœur (`islandCenter`) ; pour
+ * une île qui a un lagon, glissé vers lui (`LAGOON_FRAMING`), son quart de tour compris ; pour une île de
+ * `GUARDIAN_FRAMING`, de là, glissé vers le carré de son Gardien (le Bassin des maquettes garde son lagon dans la vue).
+ */
+export function islandViewTarget(id: BiomeId): { x: number; y: number; z: number } {
+  const c = visee(id);
+  const vers = GUARDIAN_FRAMING[id];
+  const carre = GD11_GUARDIAN_SQUARES[id];
+  if (!vers || !carre) return c;
+  const def = islandDef(id);
+  const m = turnPoint(carre.x + GUARDIAN_SQUARE_SIDE / 2, carre.y + GUARDIAN_SQUARE_SIDE / 2, def.quarts);
+  const [gx, gy] = [def.core.x + m.x - 0.5, def.core.y + m.y - 0.5];
+  return { x: c.x + (gx - c.x) * vers.towards, y: c.y + (gy - c.y) * vers.towards, z: c.z };
+}
+
+/** Le point que vise la vue d'une île sans `GUARDIAN_FRAMING` : le milieu de son cœur, glissé vers son lagon. */
+function visee(id: BiomeId): { x: number; y: number; z: number } {
+  const c = islandCenter(id);
+  const f = silhouetteDe(id).forme;
+  if (!hasLagoon(f)) return c;
+  const def = islandDef(id);
+  const b = bornesDuCoeur(def);
+  const side = featureSide(f);
+  const t = turnDirection(side.u, side.v, def.quarts);
+  const k = LAGOON_FRAMING.towards * ((b.x1 - b.x0) / 2 + LAGOON_MIDDLE);
+  return { x: c.x + t.dx * k, y: c.y + t.dy * k, z: c.z };
+}
+
+/** De combien la caméra de la vue d'une île recule (`LAGOON_FRAMING`) : 1, sauf pour une île qui a un lagon. */
+export function islandViewPullBack(id: BiomeId): number {
+  return hasLagoon(silhouetteDe(id).forme) ? LAGOON_FRAMING.pullBack : 1;
+}
+
+/**
  * La place de la caméra de la vue d'une île (x, y de la grille, z en hauteur), en paysage et sans le glissement vers un
  * grand repère d'Archipéo (world/framing.ts) : ce que calcule three/camera.ts dans le cas simple.
  */
 export function cameraDeLIle(id: BiomeId): { x: number; y: number; z: number } {
-  const c = islandCenter(id);
+  const c = islandViewTarget(id);
   const [dx, dy, up] = directionDeLaVue(id);
-  const d = DISTANCE_DE_LA_VUE_DE_L_ILE;
+  const d = DISTANCE_DE_LA_VUE_DE_L_ILE * islandViewPullBack(id);
   return { x: c.x + d * dx, y: c.y + d * dy, z: c.z + VISEE_AU_DESSUS_DU_SOL + d * up };
 }
 
@@ -242,9 +393,9 @@ export type ProjectionDeLaVue = (x: number, y: number, z: number) => [number, nu
 export function projectionDeLaVueDeLIle(id: BiomeId): { projeter: ProjectionDeLaVue; cube: number; oeil: { x: number; y: number; z: number } } {
   const V = VUE_DE_L_ILE_PANNEAU_OUVERT;
   const aspect = V.largeur / V.hauteur;
-  const c = islandCenter(id);
+  const c = islandViewTarget(id);
   const [dx, dy, up] = directionDeLaVue(id);
-  const d = DISTANCE_DE_LA_VUE_DE_L_ILE * (aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1);
+  const d = DISTANCE_DE_LA_VUE_DE_L_ILE * islandViewPullBack(id) * (aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1);
   const cible = [c.x, c.z + VISEE_AU_DESSUS_DU_SOL, c.y];
   const oeil = [c.x + d * dx, c.z + VISEE_AU_DESSUS_DU_SOL + d * up, c.y + d * dy];
   const norme = (v: number[]) => {

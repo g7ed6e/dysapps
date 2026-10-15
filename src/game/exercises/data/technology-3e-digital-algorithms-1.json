@@ -1,0 +1,234 @@
+{
+  "id": "technology-3e-digital-algorithms-1",
+  "biome": "technology-3e-digital",
+  "type": "algorithms",
+  "level": 1,
+  "instruction": "Lis la phrase ou le programme, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-3e-digital-algorithms-1-0",
+      "prompt": "Une suite d’instructions, données dans l’ordre, est un …",
+      "spoken": "Une suite d’instructions, données dans l’ordre, est un  (mot manquant) ",
+      "choices": [
+        "algorithme",
+        "capteur",
+        "réseau"
+      ],
+      "answer": "algorithme",
+      "hint": "Relis la ligne « Un algorithme » du rappel.",
+      "explanation": "Une suite d’instructions dans l’ordre, c’est un algorithme, comme une recette de cuisine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un algorithme",
+          "lines": [
+            "Un algorithme : une suite d’instructions, dans l’ordre.",
+            "Un programme : l’algorithme écrit pour une machine.",
+            "Une séquence : les instructions, l’une après l’autre.",
+            "Une boucle : « répéter » refait les mêmes instructions.",
+            "Un événement : ce qui lance le programme, comme « quand on appuie »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-1-1",
+      "prompt": "Le programme du robot\nAvancer de 10 pas.\nTourner à droite.\nAvancer de 5 pas.",
+      "question": "Que fait le robot juste après avoir tourné ?",
+      "spoken": "Le programme du robot. Avancer de 10 pas. Tourner à droite. Avancer de 5 pas.",
+      "choices": [
+        "il avance de 10 pas",
+        "il avance de 5 pas",
+        "il tourne à gauche"
+      ],
+      "answer": "il avance de 5 pas",
+      "hint": "Cherche la ligne juste sous « Tourner à droite ».",
+      "explanation": "Les instructions se suivent dans l’ordre : après avoir tourné, le robot avance de 5 pas. Les 10 pas, c’était avant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un algorithme",
+          "lines": [
+            "Un algorithme : une suite d’instructions, dans l’ordre.",
+            "Un programme : l’algorithme écrit pour une machine.",
+            "Une séquence : les instructions, l’une après l’autre.",
+            "Une boucle : « répéter » refait les mêmes instructions.",
+            "Un événement : ce qui lance le programme, comme « quand on appuie »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-1-2",
+      "prompt": "« Répéter 4 fois » refait les mêmes instructions : c’est une …",
+      "spoken": "« Répéter 4 fois » refait les mêmes instructions : c’est une  (mot manquant) ",
+      "choices": [
+        "condition",
+        "boucle",
+        "variable"
+      ],
+      "answer": "boucle",
+      "hint": "Relis la ligne « Une boucle » du rappel.",
+      "explanation": "« Répéter » fait une boucle : les mêmes instructions reviennent plusieurs fois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un algorithme",
+          "lines": [
+            "Un algorithme : une suite d’instructions, dans l’ordre.",
+            "Un programme : l’algorithme écrit pour une machine.",
+            "Une séquence : les instructions, l’une après l’autre.",
+            "Une boucle : « répéter » refait les mêmes instructions.",
+            "Un événement : ce qui lance le programme, comme « quand on appuie »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-1-3",
+      "prompt": "Le programme de la lampe\nQuand on appuie sur le bouton :\nallumer la lampe,\nattendre 10 secondes,\néteindre la lampe.",
+      "question": "Qu’est-ce qui lance le programme ?",
+      "spoken": "Le programme de la lampe. Quand on appuie sur le bouton, allumer la lampe, attendre 10 secondes, éteindre la lampe.",
+      "choices": [
+        "la lampe qui s’allume",
+        "les 10 secondes",
+        "l’appui sur le bouton"
+      ],
+      "answer": "l’appui sur le bouton",
+      "hint": "Relis la ligne « Un événement » du rappel.",
+      "explanation": "« Quand on appuie sur le bouton » est l’événement qui lance le programme. Puis la lampe s’allume, attend, et s’éteint.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un algorithme",
+          "lines": [
+            "Un algorithme : une suite d’instructions, dans l’ordre.",
+            "Un programme : l’algorithme écrit pour une machine.",
+            "Une séquence : les instructions, l’une après l’autre.",
+            "Une boucle : « répéter » refait les mêmes instructions.",
+            "Un événement : ce qui lance le programme, comme « quand on appuie »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-1-4",
+      "prompt": "« Quand on appuie sur le bouton » lance le programme : c’est un …",
+      "spoken": "« Quand on appuie sur le bouton » lance le programme : c’est un  (mot manquant) ",
+      "choices": [
+        "événement",
+        "capteur",
+        "résultat"
+      ],
+      "answer": "événement",
+      "hint": "Relis la ligne « Un événement » du rappel.",
+      "explanation": "Ce qui lance le programme est un événement. Le bouton est un capteur, mais « quand on appuie » est l’événement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un algorithme",
+          "lines": [
+            "Un algorithme : une suite d’instructions, dans l’ordre.",
+            "Un programme : l’algorithme écrit pour une machine.",
+            "Une séquence : les instructions, l’une après l’autre.",
+            "Une boucle : « répéter » refait les mêmes instructions.",
+            "Un événement : ce qui lance le programme, comme « quand on appuie »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-1-5",
+      "prompt": "Le programme du robot\nRépéter 4 fois :\navancer de 10 pas,\ntourner à droite d’un quart de tour.",
+      "question": "Quelle forme le robot dessine-t-il ?",
+      "spoken": "Le programme du robot. Répéter 4 fois, avancer de 10 pas, tourner à droite d’un quart de tour.",
+      "choices": [
+        "un triangle",
+        "un carré",
+        "une ligne droite"
+      ],
+      "answer": "un carré",
+      "hint": "4 côtés pareils, et un quart de tour à chaque coin.",
+      "explanation": "Le robot fait 4 fois un côté de 10 pas, puis un quart de tour : 4 côtés égaux et 4 coins droits, c’est un carré.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un algorithme",
+          "lines": [
+            "Un algorithme : une suite d’instructions, dans l’ordre.",
+            "Un programme : l’algorithme écrit pour une machine.",
+            "Une séquence : les instructions, l’une après l’autre.",
+            "Une boucle : « répéter » refait les mêmes instructions.",
+            "Un événement : ce qui lance le programme, comme « quand on appuie »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-1-6",
+      "prompt": "Un algorithme écrit dans un langage que la machine comprend devient un …",
+      "spoken": "Un algorithme écrit dans un langage que la machine comprend devient un  (mot manquant) ",
+      "choices": [
+        "croquis",
+        "capteur",
+        "programme"
+      ],
+      "answer": "programme",
+      "hint": "Relis la ligne « Un programme » du rappel.",
+      "explanation": "Écrit pour la machine, l’algorithme devient un programme. La machine peut alors l’exécuter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un algorithme",
+          "lines": [
+            "Un algorithme : une suite d’instructions, dans l’ordre.",
+            "Un programme : l’algorithme écrit pour une machine.",
+            "Une séquence : les instructions, l’une après l’autre.",
+            "Une boucle : « répéter » refait les mêmes instructions.",
+            "Un événement : ce qui lance le programme, comme « quand on appuie »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-1-7",
+      "prompt": "Le programme de la sonnette\nQuand on appuie sur le bouton :\njouer la mélodie,\nallumer le voyant.",
+      "question": "Que fait la sonnette en premier ?",
+      "spoken": "Le programme de la sonnette. Quand on appuie sur le bouton, jouer la mélodie, allumer le voyant.",
+      "choices": [
+        "elle allume le voyant",
+        "elle joue la mélodie",
+        "elle attend"
+      ],
+      "answer": "elle joue la mélodie",
+      "hint": "Les instructions se font dans l’ordre, de haut en bas.",
+      "explanation": "C’est une séquence : d’abord la mélodie, puis le voyant, dans l’ordre des lignes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un algorithme",
+          "lines": [
+            "Un algorithme : une suite d’instructions, dans l’ordre.",
+            "Un programme : l’algorithme écrit pour une machine.",
+            "Une séquence : les instructions, l’une après l’autre.",
+            "Une boucle : « répéter » refait les mêmes instructions.",
+            "Un événement : ce qui lance le programme, comme « quand on appuie »."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-3e-digital",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

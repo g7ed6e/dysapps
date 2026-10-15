@@ -38,6 +38,24 @@ describe('zones couvertes par l’interface du monde (DA-10)', () => {
     expect(cleDesZones(zones)).toBe('985,51,50,50;480,133,680,210;315,668,130,48');
   });
 
+  it('compte « Recentrer » pour les étiquettes, mais pas pour la place libre du cadrage (bouton seul)', () => {
+    document.body.innerHTML = `
+      <div data-scene>
+        <div id="vue"></div>
+        <button class="world-menu-button" data-couvre="bouton"></button>
+        <button class="world-recentrer" data-couvre="etiquettes"></button>
+      </div>`;
+    const q = (s: string) => document.querySelector<HTMLElement>(s)!;
+    q('#vue').getBoundingClientRect = rect(0, 0, 1024, 768);
+    q('.world-menu-button').getBoundingClientRect = rect(960, 16, 48, 48);
+    q('.world-recentrer').getBoundingClientRect = rect(960, 300, 48, 48);
+    expect(zonesCouvertes(q('#vue'))).toEqual([
+      { x: 984, y: 40, w: 48, h: 48 },
+      { x: 984, y: 324, w: 48, h: 48 },
+    ]);
+    expect(zonesCouvertes(q('#vue'), 1, '[data-couvre="bouton"]')).toEqual([{ x: 984, y: 40, w: 48, h: 48 }]);
+  });
+
   it('ne trouve rien sans page autour (un aperçu)', () => {
     document.body.innerHTML = '<div id="vue"></div>';
     expect(zonesCouvertes(document.querySelector<HTMLElement>('#vue')!)).toEqual([]);

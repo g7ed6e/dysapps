@@ -1,0 +1,233 @@
+{
+  "id": "life-earth-sciences-4e-cells-evolution-species-evolution-2",
+  "biome": "life-earth-sciences-4e-cells-evolution",
+  "type": "species-evolution",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-2-0",
+      "prompt": "Des papillons sur des troncs d’arbres\nLa suie des usines rend les troncs tout noirs.\nSur ces troncs, les papillons clairs se voient bien : les oiseaux les mangent.\nLes papillons foncés se voient mal.",
+      "question": "Quels papillons seront les plus nombreux plus tard ?",
+      "spoken": "Des papillons sur des troncs d’arbres. La suie des usines rend les troncs tout noirs. Sur ces troncs, les papillons clairs se voient bien, les oiseaux les mangent. Les papillons foncés se voient mal.",
+      "choices": [
+        "les clairs",
+        "les foncés",
+        "autant des deux"
+      ],
+      "answer": "les foncés",
+      "hint": "Lesquels ont le plus de chances de survivre et d’avoir des petits ?",
+      "explanation": "Les papillons foncés, cachés sur les troncs noirs, survivent mieux et ont plus de petits : ils deviennent plus nombreux. C’est la sélection naturelle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La sélection naturelle",
+          "lines": [
+            "Dans une espèce, les individus sont un peu différents : la variation.",
+            "Certains sont mieux adaptés à leur milieu : ils survivent mieux.",
+            "Ils ont plus de petits, qui héritent de leurs caractères par les gènes.",
+            "Génération après génération, ces caractères deviennent plus fréquents.",
+            "C’est la sélection naturelle : le milieu trie, l’individu ne choisit pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-2-1",
+      "prompt": "Le milieu favorise les individus les mieux adaptés : c’est la sélection …",
+      "spoken": "Le milieu favorise les individus les mieux adaptés : c’est la sélection  (mot manquant) ",
+      "choices": [
+        "artificielle",
+        "naturelle",
+        "alimentaire"
+      ],
+      "answer": "naturelle",
+      "hint": "Relis la ligne « C’est la sélection naturelle » du rappel.",
+      "explanation": "Quand c’est le milieu qui trie les individus, c’est la sélection naturelle. La sélection artificielle, c’est l’éleveur qui choisit les animaux à faire reproduire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La sélection naturelle",
+          "lines": [
+            "Dans une espèce, les individus sont un peu différents : la variation.",
+            "Certains sont mieux adaptés à leur milieu : ils survivent mieux.",
+            "Ils ont plus de petits, qui héritent de leurs caractères par les gènes.",
+            "Génération après génération, ces caractères deviennent plus fréquents.",
+            "C’est la sélection naturelle : le milieu trie, l’individu ne choisit pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-2-2",
+      "prompt": "Une souris au pelage clair vit sur un sable clair : elle se cache mieux des rapaces. Elle a donc plus de chances de …",
+      "spoken": "Une souris au pelage clair vit sur un sable clair : elle se cache mieux des rapaces. Elle a donc plus de chances de  (mot manquant) ",
+      "choices": [
+        "changer de couleur",
+        "grandir plus vite",
+        "survivre"
+      ],
+      "answer": "survivre",
+      "hint": "Relis la ligne « Certains sont mieux adaptés » du rappel.",
+      "explanation": "Bien cachée, la souris claire est moins souvent mangée : elle survit mieux et a plus de petits. Elle ne change pas de couleur pour s’adapter : elle est née avec ce pelage.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La sélection naturelle",
+          "lines": [
+            "Dans une espèce, les individus sont un peu différents : la variation.",
+            "Certains sont mieux adaptés à leur milieu : ils survivent mieux.",
+            "Ils ont plus de petits, qui héritent de leurs caractères par les gènes.",
+            "Génération après génération, ces caractères deviennent plus fréquents.",
+            "C’est la sélection naturelle : le milieu trie, l’individu ne choisit pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-2-3",
+      "prompt": "Deux idées pour expliquer le long cou des girafes\nIdée 1 : chaque girafe a étiré son cou, et ses petits en ont hérité.\nIdée 2 : les girafes au cou plus long mangeaient mieux, et avaient plus de petits.",
+      "question": "Quelle idée correspond à la sélection naturelle ?",
+      "spoken": "Deux idées pour expliquer le long cou des girafes. Idée 1, chaque girafe a étiré son cou, et ses petits en ont hérité. Idée 2, les girafes au cou plus long mangeaient mieux, et avaient plus de petits.",
+      "choices": [
+        "l’idée 1",
+        "l’idée 2",
+        "aucune des deux"
+      ],
+      "answer": "l’idée 2",
+      "hint": "Dans quelle idée le milieu trie-t-il les individus ?",
+      "explanation": "Un cou étiré pendant la vie ne se transmet pas aux petits : ce sont les gènes qui se transmettent. Les girafes nées avec un cou plus long survivaient mieux et avaient plus de petits : c’est la sélection naturelle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La sélection naturelle",
+          "lines": [
+            "Dans une espèce, les individus sont un peu différents : la variation.",
+            "Certains sont mieux adaptés à leur milieu : ils survivent mieux.",
+            "Ils ont plus de petits, qui héritent de leurs caractères par les gènes.",
+            "Génération après génération, ces caractères deviennent plus fréquents.",
+            "C’est la sélection naturelle : le milieu trie, l’individu ne choisit pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-2-4",
+      "prompt": "Des bactéries et un antibiotique\nAu début : 1 000 bactéries, dont 5 résistantes à l’antibiotique.\nOn ajoute l’antibiotique.\nQuelques jours plus tard : beaucoup de bactéries, presque toutes résistantes.",
+      "question": "Que s’est-il passé ?",
+      "spoken": "Des bactéries et un antibiotique. Au début, mille bactéries, dont 5 résistantes à l’antibiotique. On ajoute l’antibiotique. Quelques jours plus tard, beaucoup de bactéries, presque toutes résistantes.",
+      "choices": [
+        "seules les résistantes ont survécu, puis se sont multipliées",
+        "l’antibiotique a rendu les bactéries résistantes",
+        "les bactéries ont choisi de résister"
+      ],
+      "answer": "seules les résistantes ont survécu, puis se sont multipliées",
+      "hint": "Combien de bactéries étaient résistantes au début ?",
+      "explanation": "Les 5 bactéries résistantes étaient là dès le début. L’antibiotique a tué les autres ; les résistantes se sont multipliées. C’est la sélection naturelle : l’antibiotique trie, il ne transforme pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La sélection naturelle",
+          "lines": [
+            "Dans une espèce, les individus sont un peu différents : la variation.",
+            "Certains sont mieux adaptés à leur milieu : ils survivent mieux.",
+            "Ils ont plus de petits, qui héritent de leurs caractères par les gènes.",
+            "Génération après génération, ces caractères deviennent plus fréquents.",
+            "C’est la sélection naturelle : le milieu trie, l’individu ne choisit pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-2-5",
+      "prompt": "Les petits héritent des caractères de leurs parents par les …",
+      "spoken": "Les petits héritent des caractères de leurs parents par les  (mot manquant) ",
+      "choices": [
+        "gènes",
+        "aliments",
+        "habitudes"
+      ],
+      "answer": "gènes",
+      "hint": "Relis la ligne « Ils ont plus de petits » du rappel.",
+      "explanation": "Les caractères se transmettent par les gènes, reçus des deux parents. Ce qu’un parent apprend ou mange pendant sa vie ne se transmet pas ainsi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La sélection naturelle",
+          "lines": [
+            "Dans une espèce, les individus sont un peu différents : la variation.",
+            "Certains sont mieux adaptés à leur milieu : ils survivent mieux.",
+            "Ils ont plus de petits, qui héritent de leurs caractères par les gènes.",
+            "Génération après génération, ces caractères deviennent plus fréquents.",
+            "C’est la sélection naturelle : le milieu trie, l’individu ne choisit pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-2-6",
+      "prompt": "Au fil des générations, une espèce peut changer : c’est …",
+      "spoken": "Au fil des générations, une espèce peut changer : c’est  (mot manquant) ",
+      "choices": [
+        "la métamorphose",
+        "la reproduction",
+        "l’évolution"
+      ],
+      "answer": "l’évolution",
+      "hint": "Le mot ressemble à « évoluer », qui veut dire changer peu à peu.",
+      "explanation": "Une espèce qui change au fil des générations évolue : c’est l’évolution des espèces. La métamorphose change un seul animal pendant sa vie, comme la chenille qui devient papillon.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La sélection naturelle",
+          "lines": [
+            "Dans une espèce, les individus sont un peu différents : la variation.",
+            "Certains sont mieux adaptés à leur milieu : ils survivent mieux.",
+            "Ils ont plus de petits, qui héritent de leurs caractères par les gènes.",
+            "Génération après génération, ces caractères deviennent plus fréquents.",
+            "C’est la sélection naturelle : le milieu trie, l’individu ne choisit pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-2-7",
+      "prompt": "Dans la sélection naturelle, ce qui trie les individus, c’est le …",
+      "spoken": "Dans la sélection naturelle, ce qui trie les individus, c’est le  (mot manquant) ",
+      "choices": [
+        "milieu",
+        "scientifique",
+        "animal lui-même"
+      ],
+      "answer": "milieu",
+      "hint": "Relis la ligne « C’est la sélection naturelle » du rappel.",
+      "explanation": "Le milieu trie : le froid, la nourriture, les prédateurs. L’animal ne choisit pas ses caractères : il naît avec, et le milieu le favorise ou non.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La sélection naturelle",
+          "lines": [
+            "Dans une espèce, les individus sont un peu différents : la variation.",
+            "Certains sont mieux adaptés à leur milieu : ils survivent mieux.",
+            "Ils ont plus de petits, qui héritent de leurs caractères par les gènes.",
+            "Génération après génération, ces caractères deviennent plus fréquents.",
+            "C’est la sélection naturelle : le milieu trie, l’individu ne choisit pas."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien raisonné !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-4e-cells-evolution",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

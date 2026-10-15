@@ -1,0 +1,238 @@
+{
+  "id": "french-3e-close-reading-literary-eras-2",
+  "biome": "french-3e-close-reading",
+  "type": "literary-eras",
+  "level": 2,
+  "instruction": "Lis l’œuvre et sa date. Situe-la dans son époque. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "french-3e-close-reading-literary-eras-2-0",
+      "prompt": "La Chanson de Roland, vers 1100\nLe chevalier Roland se bat jusqu’à la mort pour son roi, Charlemagne.",
+      "question": "À quelle époque appartient cette œuvre ?",
+      "spoken": "La Chanson de Roland, vers l’an mille cent. Le chevalier Roland se bat jusqu’à la mort pour son roi, Charlemagne.",
+      "choices": [
+        "le Moyen Âge",
+        "le XVIIe siècle",
+        "les Lumières"
+      ],
+      "answer": "le Moyen Âge",
+      "hint": "Regarde la date, puis la première ligne du rappel.",
+      "explanation": "Vers 1100, c’est bien avant 1500 : le Moyen Âge. Un chevalier fidèle à son roi, c’est le héros d’une chanson de geste.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Repères d’histoire littéraire",
+          "lines": [
+            "Le Moyen Âge, jusque vers 1500 : chansons de geste, romans de chevalerie.",
+            "Le XVIIe siècle, de 1601 à 1700 : le classicisme (Corneille, Molière, La Fontaine).",
+            "Le XVIIIe siècle, de 1701 à 1800 : les Lumières (Voltaire, Rousseau), la raison contre l’injustice.",
+            "Le XIXe siècle, de 1801 à 1900 : le romantisme (Hugo) dit les sentiments ; le réalisme (Balzac, Zola) peint la société.",
+            "Le XXe siècle, de 1901 à 2000 : des œuvres marquées par les deux guerres mondiales."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-2-1",
+      "prompt": "Pierre Corneille, Le Cid, 1637\nRodrigue doit venger son père, mais il aime la fille de l’ennemi.",
+      "question": "En quel siècle Corneille écrit-il Le Cid ?",
+      "spoken": "Pierre Corneille, Le Cid, mille six cent trente-sept. Rodrigue doit venger son père, mais il aime la fille de l’ennemi.",
+      "choices": [
+        "au XVIe siècle",
+        "au XVIIe siècle",
+        "au XVIIIe siècle"
+      ],
+      "answer": "au XVIIe siècle",
+      "hint": "1637 est entre quelles années du rappel ?",
+      "explanation": "1637 est entre 1601 et 1700 : c’est le XVIIe siècle. Les années en 16 sont au XVIIe siècle, pas au XVIe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Repères d’histoire littéraire",
+          "lines": [
+            "Le Moyen Âge, jusque vers 1500 : chansons de geste, romans de chevalerie.",
+            "Le XVIIe siècle, de 1601 à 1700 : le classicisme (Corneille, Molière, La Fontaine).",
+            "Le XVIIIe siècle, de 1701 à 1800 : les Lumières (Voltaire, Rousseau), la raison contre l’injustice.",
+            "Le XIXe siècle, de 1801 à 1900 : le romantisme (Hugo) dit les sentiments ; le réalisme (Balzac, Zola) peint la société.",
+            "Le XXe siècle, de 1901 à 2000 : des œuvres marquées par les deux guerres mondiales."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-2-2",
+      "prompt": "Jean de La Fontaine, Fables, 1668\nDes animaux parlent, et chaque fable donne une leçon sur les hommes.",
+      "question": "À quel mouvement appartiennent ces fables ?",
+      "spoken": "Jean de La Fontaine, Fables, mille six cent soixante-huit. Des animaux parlent, et chaque fable donne une leçon sur les hommes.",
+      "choices": [
+        "les Lumières",
+        "le romantisme",
+        "le classicisme"
+      ],
+      "answer": "le classicisme",
+      "hint": "En quel siècle est 1668 ? Cherche ce siècle dans le rappel.",
+      "explanation": "1668 est au XVIIe siècle, comme Corneille et Molière : c’est le classicisme. Les Lumières viennent au siècle suivant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Repères d’histoire littéraire",
+          "lines": [
+            "Le Moyen Âge, jusque vers 1500 : chansons de geste, romans de chevalerie.",
+            "Le XVIIe siècle, de 1601 à 1700 : le classicisme (Corneille, Molière, La Fontaine).",
+            "Le XVIIIe siècle, de 1701 à 1800 : les Lumières (Voltaire, Rousseau), la raison contre l’injustice.",
+            "Le XIXe siècle, de 1801 à 1900 : le romantisme (Hugo) dit les sentiments ; le réalisme (Balzac, Zola) peint la société.",
+            "Le XXe siècle, de 1901 à 2000 : des œuvres marquées par les deux guerres mondiales."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-2-3",
+      "prompt": "Voltaire, Candide, 1759\nUn conte où Voltaire se moque de la guerre, de l’intolérance et de l’injustice.",
+      "question": "À quel mouvement appartient ce conte ?",
+      "spoken": "Voltaire, Candide, mille sept cent cinquante-neuf. Un conte où Voltaire se moque de la guerre, de l’intolérance et de l’injustice.",
+      "choices": [
+        "les Lumières",
+        "le classicisme",
+        "le réalisme"
+      ],
+      "answer": "les Lumières",
+      "hint": "En quel siècle est 1759 ? Contre quoi se bat Voltaire ?",
+      "explanation": "1759 est au XVIIIe siècle, et Voltaire combat l’injustice par la raison et le rire : c’est l’esprit des Lumières.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Repères d’histoire littéraire",
+          "lines": [
+            "Le Moyen Âge, jusque vers 1500 : chansons de geste, romans de chevalerie.",
+            "Le XVIIe siècle, de 1601 à 1700 : le classicisme (Corneille, Molière, La Fontaine).",
+            "Le XVIIIe siècle, de 1701 à 1800 : les Lumières (Voltaire, Rousseau), la raison contre l’injustice.",
+            "Le XIXe siècle, de 1801 à 1900 : le romantisme (Hugo) dit les sentiments ; le réalisme (Balzac, Zola) peint la société.",
+            "Le XXe siècle, de 1901 à 2000 : des œuvres marquées par les deux guerres mondiales."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-2-4",
+      "prompt": "Jean-Jacques Rousseau, Les Confessions, publiées en 1782\nRousseau, mort en 1778, y raconte sa vie depuis son enfance.",
+      "question": "En quel siècle paraissent Les Confessions ?",
+      "spoken": "Jean-Jacques Rousseau, Les Confessions, publiées en mille sept cent quatre-vingt-deux. Rousseau, mort en mille sept cent soixante-dix-huit, y raconte sa vie depuis son enfance.",
+      "choices": [
+        "au XVIIe siècle",
+        "au XIXe siècle",
+        "au XVIIIe siècle"
+      ],
+      "answer": "au XVIIIe siècle",
+      "hint": "1782 est entre quelles années du rappel ?",
+      "explanation": "1782 est entre 1701 et 1800 : c’est le XVIIIe siècle, celui des Lumières. Rousseau les a écrites de son vivant ; elles paraissent en 1782, quatre ans après sa mort, toujours au XVIIIe siècle. Les années en 17 sont au XVIIIe siècle, pas au XVIIe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Repères d’histoire littéraire",
+          "lines": [
+            "Le Moyen Âge, jusque vers 1500 : chansons de geste, romans de chevalerie.",
+            "Le XVIIe siècle, de 1601 à 1700 : le classicisme (Corneille, Molière, La Fontaine).",
+            "Le XVIIIe siècle, de 1701 à 1800 : les Lumières (Voltaire, Rousseau), la raison contre l’injustice.",
+            "Le XIXe siècle, de 1801 à 1900 : le romantisme (Hugo) dit les sentiments ; le réalisme (Balzac, Zola) peint la société.",
+            "Le XXe siècle, de 1901 à 2000 : des œuvres marquées par les deux guerres mondiales."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-2-5",
+      "prompt": "Victor Hugo, Les Contemplations, 1856\nDemain, dès l’aube, à l’heure où blanchit la campagne,\nJe partirai. Vois-tu, je sais que tu m’attends.",
+      "question": "À quel mouvement appartient ce poème ?",
+      "spoken": "Victor Hugo, Les Contemplations, mille huit cent cinquante-six. Demain, dès l’aube, à l’heure où blanchit la campagne, je partirai. Vois-tu, je sais que tu m’attends.",
+      "choices": [
+        "les Lumières",
+        "le romantisme",
+        "le classicisme"
+      ],
+      "answer": "le romantisme",
+      "hint": "Le poète dit « je » et parle de ce qu’il ressent. En quel siècle est 1856 ?",
+      "explanation": "1856 est au XIXe siècle, et le poète dit ses sentiments, avec « je » : c’est le romantisme, dont Hugo est le grand poète.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Repères d’histoire littéraire",
+          "lines": [
+            "Le Moyen Âge, jusque vers 1500 : chansons de geste, romans de chevalerie.",
+            "Le XVIIe siècle, de 1601 à 1700 : le classicisme (Corneille, Molière, La Fontaine).",
+            "Le XVIIIe siècle, de 1701 à 1800 : les Lumières (Voltaire, Rousseau), la raison contre l’injustice.",
+            "Le XIXe siècle, de 1801 à 1900 : le romantisme (Hugo) dit les sentiments ; le réalisme (Balzac, Zola) peint la société.",
+            "Le XXe siècle, de 1901 à 2000 : des œuvres marquées par les deux guerres mondiales."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-2-6",
+      "prompt": "Émile Zola, Germinal, 1885\nLe roman montre la vie dure des mineurs du nord de la France, et leur grève.",
+      "question": "À quel mouvement appartient ce roman ?",
+      "spoken": "Émile Zola, Germinal, mille huit cent quatre-vingt-cinq. Le roman montre la vie dure des mineurs du nord de la France, et leur grève.",
+      "choices": [
+        "le romantisme",
+        "le réalisme",
+        "les Lumières"
+      ],
+      "answer": "le réalisme",
+      "hint": "Le roman dit-il les sentiments du poète, ou peint-il la société ?",
+      "explanation": "Zola peint la société de son temps, le travail et la misère des mineurs : c’est le réalisme, que Zola pousse plus loin et appelle le naturalisme. Le romantisme dit d’abord les sentiments.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Repères d’histoire littéraire",
+          "lines": [
+            "Le Moyen Âge, jusque vers 1500 : chansons de geste, romans de chevalerie.",
+            "Le XVIIe siècle, de 1601 à 1700 : le classicisme (Corneille, Molière, La Fontaine).",
+            "Le XVIIIe siècle, de 1701 à 1800 : les Lumières (Voltaire, Rousseau), la raison contre l’injustice.",
+            "Le XIXe siècle, de 1801 à 1900 : le romantisme (Hugo) dit les sentiments ; le réalisme (Balzac, Zola) peint la société.",
+            "Le XXe siècle, de 1901 à 2000 : des œuvres marquées par les deux guerres mondiales."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-literary-eras-2-7",
+      "prompt": "Henri Barbusse, Le Feu, 1916\nUn soldat raconte la vie de ses camarades dans les tranchées.",
+      "question": "Dans quel contexte Barbusse écrit-il ce roman ?",
+      "spoken": "Henri Barbusse, Le Feu, mille neuf cent seize. Un soldat raconte la vie de ses camarades dans les tranchées.",
+      "choices": [
+        "la Révolution française",
+        "la Première Guerre mondiale",
+        "la Seconde Guerre mondiale"
+      ],
+      "answer": "la Première Guerre mondiale",
+      "hint": "Regarde la date : quelle guerre a lieu en 1916 ?",
+      "explanation": "En 1916, la France est dans la Première Guerre mondiale, de 1914 à 1918, la guerre des tranchées. La Seconde Guerre mondiale commence en 1939.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Repères d’histoire littéraire",
+          "lines": [
+            "Le Moyen Âge, jusque vers 1500 : chansons de geste, romans de chevalerie.",
+            "Le XVIIe siècle, de 1601 à 1700 : le classicisme (Corneille, Molière, La Fontaine).",
+            "Le XVIIIe siècle, de 1701 à 1800 : les Lumières (Voltaire, Rousseau), la raison contre l’injustice.",
+            "Le XIXe siècle, de 1801 à 1900 : le romantisme (Hugo) dit les sentiments ; le réalisme (Balzac, Zola) peint la société.",
+            "Le XXe siècle, de 1901 à 2000 : des œuvres marquées par les deux guerres mondiales."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

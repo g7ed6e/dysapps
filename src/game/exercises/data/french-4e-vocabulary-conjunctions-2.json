@@ -1,0 +1,227 @@
+{
+  "id": "french-4e-vocabulary-conjunctions-2",
+  "biome": "french-4e-vocabulary",
+  "type": "conjunctions",
+  "level": 2,
+  "instruction": "Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.",
+  "programme": [
+    "c4.fr.langue.orthographe-lexicale",
+    "c4.fr.langue.classes-de-mots",
+    "c3.fr.langue.classes-de-mots"
+  ],
+  "items": [
+    {
+      "key": "french-5e-homophones-choices-2-0",
+      "prompt": "Il … a pas de pain.",
+      "spoken": "Il  (mot manquant)  a pas de pain.",
+      "choices": [
+        "ni",
+        "n’y",
+        "nid"
+      ],
+      "answer": "n’y",
+      "hint": "« n’y » = ne + y : il n’y a pas.",
+      "explanation": "Il n’y a pas de pain : ne + y.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les petits mots qui se disent pareil",
+          "lines": [
+            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
+            "si = condition ou oui. s’y = se + y (il s’y met).",
+            "quel / quelle : devant un nom (quel jour, quelle heure).",
+            "qu’elle = que + elle (on peut dire « qu’il »)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-choices-2-1",
+      "prompt": "Je n’aime … le froid … la pluie.",
+      "spoken": "Je n’aime  (mot manquant)  le froid  (mot manquant)  la pluie.",
+      "choices": [
+        "ni",
+        "n’y",
+        "nie"
+      ],
+      "answer": "ni",
+      "hint": "« ni » = et pas.",
+      "explanation": "Ni le froid ni la pluie : et pas l’un, et pas l’autre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les petits mots qui se disent pareil",
+          "lines": [
+            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
+            "si = condition ou oui. s’y = se + y (il s’y met).",
+            "quel / quelle : devant un nom (quel jour, quelle heure).",
+            "qu’elle = que + elle (on peut dire « qu’il »)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-choices-2-2",
+      "prompt": "Elle … met dès ce soir.",
+      "spoken": "Elle  (mot manquant)  met dès ce soir.",
+      "choices": [
+        "si",
+        "s’y",
+        "ci"
+      ],
+      "answer": "s’y",
+      "hint": "« s’y mettre » : on peut dire « je m’y mets ».",
+      "explanation": "Elle s’y met : se + y.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les petits mots qui se disent pareil",
+          "lines": [
+            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
+            "si = condition ou oui. s’y = se + y (il s’y met).",
+            "quel / quelle : devant un nom (quel jour, quelle heure).",
+            "qu’elle = que + elle (on peut dire « qu’il »)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-choices-2-3",
+      "prompt": "Viens … tu veux.",
+      "spoken": "Viens  (mot manquant)  tu veux.",
+      "choices": [
+        "si",
+        "s’y",
+        "ci"
+      ],
+      "answer": "si",
+      "hint": "« si » = à condition que.",
+      "explanation": "Viens si tu veux : condition.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les petits mots qui se disent pareil",
+          "lines": [
+            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
+            "si = condition ou oui. s’y = se + y (il s’y met).",
+            "quel / quelle : devant un nom (quel jour, quelle heure).",
+            "qu’elle = que + elle (on peut dire « qu’il »)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-choices-1-0",
+      "prompt": "… heure est-il ?",
+      "spoken": " (mot manquant)  heure est-il ?",
+      "choices": [
+        "Quel",
+        "Quelle",
+        "Qu’elle"
+      ],
+      "answer": "Quelle",
+      "hint": "« heure » est un nom féminin : on cherche le déterminant.",
+      "explanation": "« Quelle heure » : quelle accompagne le nom féminin « heure ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les petits mots qui se disent pareil",
+          "lines": [
+            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
+            "si = condition ou oui. s’y = se + y (il s’y met).",
+            "quel / quelle : devant un nom (quel jour, quelle heure).",
+            "qu’elle = que + elle (on peut dire « qu’il »)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-choices-1-1",
+      "prompt": "Je crois … viendra demain.",
+      "spoken": "Je crois  (mot manquant)  viendra demain.",
+      "choices": [
+        "quelle",
+        "qu’elle",
+        "quel"
+      ],
+      "answer": "qu’elle",
+      "hint": "Remplace par « qu’il » : si ça marche, c’est « qu’elle ».",
+      "explanation": "« Je crois qu’il viendra » fonctionne : c’est « qu’elle », que + elle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les petits mots qui se disent pareil",
+          "lines": [
+            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
+            "si = condition ou oui. s’y = se + y (il s’y met).",
+            "quel / quelle : devant un nom (quel jour, quelle heure).",
+            "qu’elle = que + elle (on peut dire « qu’il »)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-choices-1-6",
+      "prompt": "… beau match !",
+      "spoken": " (mot manquant)  beau match !",
+      "choices": [
+        "Quel",
+        "Quelle",
+        "Qu’elle"
+      ],
+      "answer": "Quel",
+      "hint": "« match » est un nom masculin.",
+      "explanation": "« Quel beau match » : quel accompagne le nom masculin « match ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les petits mots qui se disent pareil",
+          "lines": [
+            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
+            "si = condition ou oui. s’y = se + y (il s’y met).",
+            "quel / quelle : devant un nom (quel jour, quelle heure).",
+            "qu’elle = que + elle (on peut dire « qu’il »)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-homophones-choices-1-7",
+      "prompt": "Je pense … a raison.",
+      "spoken": "Je pense  (mot manquant)  a raison.",
+      "choices": [
+        "quelle",
+        "qu’elle",
+        "quel"
+      ],
+      "answer": "qu’elle",
+      "hint": "Remplace par « qu’il ».",
+      "explanation": "« Je pense qu’il a raison » fonctionne : c’est « qu’elle ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les petits mots qui se disent pareil",
+          "lines": [
+            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
+            "si = condition ou oui. s’y = se + y (il s’y met).",
+            "quel / quelle : devant un nom (quel jour, quelle heure).",
+            "qu’elle = que + elle (on peut dire « qu’il »)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

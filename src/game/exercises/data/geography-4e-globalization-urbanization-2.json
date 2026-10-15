@@ -1,0 +1,230 @@
+{
+  "id": "geography-4e-globalization-urbanization-2",
+  "biome": "geography-4e-globalization",
+  "type": "urbanization",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-4e-globalization-urbanization-2-0",
+      "prompt": "Les humains qui vivent en ville\n1950 : moins de 1 humain sur 3\nAujourd’hui : plus de 1 humain sur 2\n2050 : environ 2 humains sur 3",
+      "question": "Comment change la part des habitants des villes ?",
+      "spoken": "Les humains qui vivent en ville. Mille neuf cent cinquante : moins d’un humain sur trois. Aujourd’hui : plus d’un humain sur deux. Deux mille cinquante : environ deux humains sur trois.",
+      "choices": [
+        "elle augmente",
+        "elle baisse",
+        "elle ne change pas"
+      ],
+      "answer": "elle augmente",
+      "hint": "Lis les trois lignes, de haut en bas.",
+      "explanation": "Moins d’un sur trois, puis plus d’un sur deux, puis deux sur trois : la part des urbains augmente. C’est l’urbanisation.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "« 2 sur 3 » : deux personnes sur trois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-2-1",
+      "prompt": "Lagos, au Nigeria\nPlus de 10 millions d’habitants\nChaque jour, des familles arrivent des campagnes.",
+      "question": "Pourquoi Lagos grandit-elle ?",
+      "spoken": "Lagos, au Nigeria. Plus de dix millions d’habitants. Chaque jour, des familles arrivent des campagnes.",
+      "choices": [
+        "le tourisme",
+        "l’exode rural",
+        "la fermeture des usines"
+      ],
+      "answer": "l’exode rural",
+      "hint": "Relis la ligne qui commence par « Chaque jour ».",
+      "explanation": "Des familles quittent la campagne pour la ville : c’est l’exode rural. Il fait grandir Lagos très vite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "« 2 sur 3 » : deux personnes sur trois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-2-2",
+      "prompt": "Description d’une photo de Rio de Janeiro, au Brésil\nAu premier plan : une favela sur la colline\nÀ l’arrière-plan : des immeubles de luxe près de la plage",
+      "question": "Que montre cette photo ?",
+      "spoken": "Description d’une photo de Rio de Janeiro, au Brésil. Au premier plan : une favela sur la colline. À l’arrière-plan : des immeubles de luxe près de la plage.",
+      "choices": [
+        "l’exode rural",
+        "l’étalement urbain",
+        "la ségrégation"
+      ],
+      "answer": "la ségrégation",
+      "hint": "Une favela est un bidonville. Qui vit devant, qui vit au fond ?",
+      "explanation": "Les pauvres dans la favela, les riches dans les immeubles de luxe : les quartiers sont séparés. C’est la ségrégation.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "« 2 sur 3 » : deux personnes sur trois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-2-3",
+      "prompt": "Trois mégapoles\nSão Paulo : Brésil, Amérique du Sud\nLe Caire : Égypte, Afrique\nDacca : Bangladesh, Asie",
+      "question": "Quelle mégapole est en Asie ?",
+      "spoken": "Trois mégapoles. São Paulo : Brésil, Amérique du Sud. Le Caire : Égypte, Afrique. Dacca : Bangladesh, Asie.",
+      "choices": [
+        "São Paulo",
+        "Le Caire",
+        "Dacca"
+      ],
+      "answer": "Dacca",
+      "hint": "Cherche le mot « Asie » dans les lignes.",
+      "explanation": "Dacca est au Bangladesh, en Asie. Le Caire est en Afrique, São Paulo en Amérique du Sud.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "« 2 sur 3 » : deux personnes sur trois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-2-4",
+      "prompt": "Los Angeles, aux États-Unis\nDes maisons avec jardin sur des kilomètres\nDes autoroutes partout\nPeu de transports en commun",
+      "question": "Quel problème cause cet étalement ?",
+      "spoken": "Los Angeles, aux États-Unis. Des maisons avec jardin sur des kilomètres. Des autoroutes partout. Peu de transports en commun.",
+      "choices": [
+        "on dépend de la voiture",
+        "on va partout à pied",
+        "la ville manque de place"
+      ],
+      "answer": "on dépend de la voiture",
+      "hint": "Relis la ligne « Des autoroutes » et la ligne « Peu de transports ».",
+      "explanation": "Une ville très étalée, peu de transports en commun : il faut la voiture pour tout. Cela pollue et crée des embouteillages.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "« 2 sur 3 » : deux personnes sur trois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-2-5",
+      "prompt": "Le centre d’une grande ville\nLes loyers sont de plus en plus chers.\nLes familles modestes partent en banlieue.",
+      "question": "Qui quitte le centre ?",
+      "spoken": "Le centre d’une grande ville. Les loyers sont de plus en plus chers. Les familles modestes partent en banlieue.",
+      "choices": [
+        "les familles riches",
+        "les familles modestes",
+        "tous les habitants"
+      ],
+      "answer": "les familles modestes",
+      "hint": "Relis la ligne qui contient « partent ».",
+      "explanation": "Le centre devient trop cher : les familles modestes partent, des familles plus riches arrivent. Les quartiers se séparent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "« 2 sur 3 » : deux personnes sur trois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-2-6",
+      "prompt": "Projet pour une mégapole\nUne nouvelle ligne de métro\nMoins de voitures dans les rues",
+      "question": "À quoi sert ce projet ?",
+      "spoken": "Projet pour une mégapole. Une nouvelle ligne de métro. Moins de voitures dans les rues.",
+      "choices": [
+        "à attirer plus de voitures",
+        "à construire des autoroutes",
+        "à réduire les embouteillages"
+      ],
+      "answer": "à réduire les embouteillages",
+      "hint": "Relis la ligne qui commence par « Moins de voitures ».",
+      "explanation": "Avec le métro, moins de voitures roulent : moins d’embouteillages et moins de pollution. C’est une idée de la ville durable.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "« 2 sur 3 » : deux personnes sur trois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-2-7",
+      "prompt": "Où vivent les Français ?\nEnviron 8 sur 10 : dans une ville ou autour\nEnviron 2 sur 10 : à la campagne, loin des villes",
+      "question": "Où vivent la plupart des Français ?",
+      "spoken": "Où vivent les Français ? Environ huit sur dix : dans une ville ou autour. Environ deux sur dix : à la campagne, loin des villes.",
+      "choices": [
+        "à la campagne",
+        "en montagne",
+        "dans une ville ou autour"
+      ],
+      "answer": "dans une ville ou autour",
+      "hint": "Cherche le plus grand nombre.",
+      "explanation": "8 Français sur 10 vivent dans une ville ou autour : la France est un pays très urbanisé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "« 2 sur 3 » : deux personnes sur trois."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-4e-globalization",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -7,19 +7,23 @@ import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, typ
 import { playDone, playNope, sonDePose } from './sound';
 import { habillageDuMonde } from './skin';
 import { voyageId } from './world/archipelago';
-import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
+import { VEHICLE_STAGES, kitReady, savedCellAt, shownCellOf, stageAt, stageWords, type VehicleStage } from './world/vehicle';
+import { planOrigin } from './world/plans';
+import { METAMORPHOSIS_MS } from './world/metamorphosis';
+import { moinsDAnimations } from '../core/motion';
+import { renduDuMonde } from './rendering';
 import { placeAll, type Burst } from './cellByCellPose';
 import { allerChercher } from './world/uses';
 import { useHaptics } from '../core/haptics';
 import { decalageDuQuai } from './world/terrain';
 
 export interface VehicleBuilder {
-  /** Le chantier de ce port : l'étape du Bloc-Navire qui s'y construit, ou `null` (pas un port, ou navire déjà parti d'ici). */
+  /** Le chantier de ce port : l'étape de la Nef qui s'y construit, ou `null` (pas un port, ou navire déjà parti d'ici). */
   stage: VehicleStage | null;
   status: PlanStatus | null;
   /** Peut-on embarquer, et sinon pourquoi. */
   launch: LaunchResult | null;
-  /** Le kit (voile, ballon, feux) est arrivé : assez de Gardiens vaincus. */
+  /** Le kit (la voile, le haut de l'enveloppe, les ailerons) est arrivé : assez de Gardiens rallumés. */
   kit: boolean;
   canFill: boolean;
   notice: string | null;
@@ -32,10 +36,24 @@ export interface VehicleBuilder {
 }
 
 /**
- * Le chantier du Bloc-Navire sur une île-port : l'étape en cours, la pose d'un bloc (bouton ou case bleue touchée), les
+ * Le chantier de la Nef sur une île-port : l'étape en cours, la pose d'un bloc (bouton ou case bleue touchée), les
  * sons et les éclats. Même mécanique que les plans des îles ; le coffre de l'étape arrive avec sa dernière case, l'XP
  * avec le voyage.
  */
+/** Une case du chantier (en cases du plan, avec l'origine du quai) et sa place montrée : dans Archipéo, sur l'aéronef. */
+function shown(stage: VehicleStage, cell: { x: number; y: number; z: number }) {
+  const o = planOrigin(stage);
+  const at = shownCellOf(stage, { x: cell.x - o.x, y: cell.y - o.y, z: cell.z - o.z }, renduDuMonde() === 'archipeo');
+  return { x: at.x + o.x, y: at.y + o.y, z: at.z + o.z };
+}
+
+/** La case du chantier montrée à cette place (en cases du plan), ou `null`. */
+function saved(stage: VehicleStage, at: { x: number; y: number; z: number }) {
+  const o = planOrigin(stage);
+  const c = savedCellAt(stage, { x: at.x - o.x, y: at.y - o.y, z: at.z - o.z }, renduDuMonde() === 'archipeo');
+  return c ? { x: c.x + o.x, y: c.y + o.y, z: c.z + o.z } : null;
+}
+
 export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const { state, fillPlan } = useBlocland();
   const { settings, speak } = useSettings();
@@ -60,7 +78,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     const r = fillPlan(stage, x, y, z);
     if (!r.ok) {
       if (r.reason === 'plus-de-blocs' && r.block) setNotice(`Il te faut ${blockCount(r.block, 1)} : ${allerChercher(r.block)}.`);
-      else if (r.reason === 'deja-pose') setNotice('Ce bloc du Bloc-Navire est déjà posé.');
+      else if (r.reason === 'deja-pose') setNotice('Ce bloc de la Nef est déjà posé.');
       sound(playNope);
       return;
     }
@@ -75,16 +93,21 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const burstAt = (x: number, y: number, z: number, block: BlockId) => {
     // La clé (x, y, z) d'une case du navire est dessinée au quai : dans le repère de l'île, le cube (x, y, z + 1) décalé
     // de `decalageDuQuai` (nul tant que le quai n'a pas bougé).
+    // Dans Archipéo, la case se montre à sa place sur l'aéronef (world/vehicle.ts, `shownCellOf`).
     const d = stage ? decalageDuQuai(stage) : { x: 0, y: 0, z: 0 };
-    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x: x + d.x, y: y + d.y, z: z + d.z + 1 } }, color: BLOCKS[block].top }));
+    const at = stage ? shown(stage, { x, y, z }) : { x, y, z };
+    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x: at.x + d.x, y: at.y + d.y, z: at.z + d.z + 1 } }, color: BLOCKS[block].top }));
   };
   const finished = (done: VehicleStage) => {
     const msg = kit
-      ? `Le Bloc-Navire a tous ses blocs ! ${done.fin(textes.archipels[done.to])}`
-      : textes.libelles.navireAttend(done.guardians, done.short);
+      ? stageWords(done, textes.libelles.formesDeLaNef).fin(textes.archipels[done.to])
+      : textes.libelles.navireAttend(done.guardians, stageWords(done, textes.libelles.formesDeLaNef).short);
     setNotice(msg);
     sound(playDone);
-    if (settings.autoRead) speak(msg);
+    // La voix attend la fin de la mue de la Nef (GD-15, référent dys) : dans Blocland, quand l'appareil ne demande pas
+    // moins d'animations ; la mue se joue alors 3 s au plus.
+    const mue = kit && renduDuMonde() !== 'archipeo' && !moinsDAnimations();
+    if (settings.autoRead) window.setTimeout(() => speak(msg), mue ? METAMORPHOSIS_MS : 0);
   };
   const fillAll = () => {
     if (!stage) return;
@@ -92,7 +115,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     if (!last) return;
     burstAt(last.x, last.y, last.z, last.block);
     if (completed) return finished(stage);
-    setNotice(`${placed} bloc${placed > 1 ? 's' : ''} posé${placed > 1 ? 's' : ''} sur le Bloc-Navire.`);
+    setNotice(`${placed} bloc${placed > 1 ? 's' : ''} posé${placed > 1 ? 's' : ''} sur la Nef.`);
     sound(playPlace);
     haptics.place();
   };
@@ -105,8 +128,8 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     if (!stage || ile !== island) return false;
     // La case touchée est dans le repère de l'île ; la clé de la case du navire s'en déduit (`decalageDuQuai`).
     const d = decalageDuQuai(stage);
-    const k = { x: c.x - d.x, y: c.y - d.y, z: c.z - d.z };
-    if (!planCellAt(stage, k.x, k.y, k.z)) return false;
+    const k = saved(stage, { x: c.x - d.x, y: c.y - d.y, z: c.z - d.z });
+    if (!k || !planCellAt(stage, k.x, k.y, k.z)) return false;
     fillAt(k.x, k.y, k.z);
     return true;
   };

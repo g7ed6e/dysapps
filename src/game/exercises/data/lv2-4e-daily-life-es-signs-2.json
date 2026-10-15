@@ -1,0 +1,239 @@
+{
+  "id": "lv2-4e-daily-life-es-signs-2",
+  "biome": "lv2-4e-daily-life",
+  "type": "es-signs",
+  "level": 2,
+  "lang": "es",
+  "instruction": "Lis ou écoute la phrase en espagnol, puis choisis la bonne réaction. La règle est affichée.",
+  "items": [
+    {
+      "key": "lv2-4e-daily-life-es-signs-2-0",
+      "prompt": "¿Jugamos al ajedrez esta tarde?",
+      "spoken": "Jugamos al ajedrez esta tarde?",
+      "choices": [
+        "¡Genial!",
+        "¡Ánimo!",
+        "Yo tampoco."
+      ],
+      "answer": "¡Genial!",
+      "hint": "On te propose de jouer aux échecs : tu acceptes.",
+      "explanation": "¿Jugamos? = on joue ? Pour accepter : ¡Genial! (super !). ¡Ánimo! encourage quelqu’un ; yo tampoco répond à une phrase avec no.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reaccionar",
+          "lines": [
+            "¡Genial! ¡Qué bien! = super ! ; sin problema = pas de problème",
+            "claro = bien sûr ; ni hablar = pas question",
+            "¡Qué pena! = dommage ; ¡Ánimo! = courage ! ; tengo miedo = j’ai peur",
+            "yo también = moi aussi ; yo tampoco = moi non plus",
+            "tengo frío = j’ai froid ; tengo calor = j’ai chaud",
+            "tengo hambre = j’ai faim ; tengo sed = j’ai soif"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-2-1",
+      "prompt": "¿Vamos a correr a las seis de la mañana?",
+      "spoken": "Vamos a correr a las seis de la mañana?",
+      "choices": [
+        "¡Ni hablar!",
+        "Yo también.",
+        "De nada."
+      ],
+      "answer": "¡Ni hablar!",
+      "hint": "Courir à six heures du matin ? Tu refuses.",
+      "explanation": "¡Ni hablar! = pas question : tu refuses. Plus poliment, on dit : Lo siento, no puedo. Yo también ne répond pas à une question ; de nada répond à gracias.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reaccionar",
+          "lines": [
+            "¡Genial! ¡Qué bien! = super ! ; sin problema = pas de problème",
+            "claro = bien sûr ; ni hablar = pas question",
+            "¡Qué pena! = dommage ; ¡Ánimo! = courage ! ; tengo miedo = j’ai peur",
+            "yo también = moi aussi ; yo tampoco = moi non plus",
+            "tengo frío = j’ai froid ; tengo calor = j’ai chaud",
+            "tengo hambre = j’ai faim ; tengo sed = j’ai soif"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-2-2",
+      "prompt": "Mi gato está enfermo.",
+      "spoken": "Mi gato está enfermo.",
+      "choices": [
+        "¡Qué pena!",
+        "¡Genial!",
+        "¡Qué bien!"
+      ],
+      "answer": "¡Qué pena!",
+      "hint": "enfermo = malade. C’est une bonne ou une mauvaise nouvelle ?",
+      "explanation": "Son chat est malade : c’est triste, on dit ¡Qué pena! (dommage, c’est triste). ¡Genial! et ¡Qué bien! sont pour une bonne nouvelle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reaccionar",
+          "lines": [
+            "¡Genial! ¡Qué bien! = super ! ; sin problema = pas de problème",
+            "claro = bien sûr ; ni hablar = pas question",
+            "¡Qué pena! = dommage ; ¡Ánimo! = courage ! ; tengo miedo = j’ai peur",
+            "yo también = moi aussi ; yo tampoco = moi non plus",
+            "tengo frío = j’ai froid ; tengo calor = j’ai chaud",
+            "tengo hambre = j’ai faim ; tengo sed = j’ai soif"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-2-3",
+      "prompt": "¿Por qué no bebes agua?",
+      "spoken": "Por qué no bebes agua?",
+      "choices": [
+        "No tengo sed.",
+        "No tengo hambre.",
+        "No tengo frío."
+      ],
+      "answer": "No tengo sed.",
+      "hint": "Quand on ne boit pas, c’est qu’on n’a pas soif ou pas faim ?",
+      "explanation": "No tengo sed = je n’ai pas soif : c’est pour ça qu’on ne boit pas. hambre, c’est la faim ; frío, le froid.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reaccionar",
+          "lines": [
+            "¡Genial! ¡Qué bien! = super ! ; sin problema = pas de problème",
+            "claro = bien sûr ; ni hablar = pas question",
+            "¡Qué pena! = dommage ; ¡Ánimo! = courage ! ; tengo miedo = j’ai peur",
+            "yo también = moi aussi ; yo tampoco = moi non plus",
+            "tengo frío = j’ai froid ; tengo calor = j’ai chaud",
+            "tengo hambre = j’ai faim ; tengo sed = j’ai soif"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-2-4",
+      "prompt": "¿Por qué llevas el abrigo?",
+      "spoken": "Por qué llevas el abrigo?",
+      "choices": [
+        "Porque tengo frío.",
+        "Porque tengo calor.",
+        "Porque tengo sed."
+      ],
+      "answer": "Porque tengo frío.",
+      "hint": "el abrigo = le manteau. Pourquoi met-on un manteau ?",
+      "explanation": "On met un manteau (el abrigo) parce qu’on a froid : porque tengo frío. Tengo calor veut dire j’ai chaud.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reaccionar",
+          "lines": [
+            "¡Genial! ¡Qué bien! = super ! ; sin problema = pas de problème",
+            "claro = bien sûr ; ni hablar = pas question",
+            "¡Qué pena! = dommage ; ¡Ánimo! = courage ! ; tengo miedo = j’ai peur",
+            "yo también = moi aussi ; yo tampoco = moi non plus",
+            "tengo frío = j’ai froid ; tengo calor = j’ai chaud",
+            "tengo hambre = j’ai faim ; tengo sed = j’ai soif"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-2-5",
+      "prompt": "¡Ganamos el partido!",
+      "spoken": "Ganamos el partido!",
+      "choices": [
+        "¡Qué bien!",
+        "¡Qué pena!",
+        "Lo siento."
+      ],
+      "answer": "¡Qué bien!",
+      "hint": "ganar = gagner. C’est une bonne ou une mauvaise nouvelle ?",
+      "explanation": "¡Ganamos el partido! = on a gagné le match ! C’est une bonne nouvelle : ¡Qué bien! (super !). ¡Qué pena! et lo siento sont pour une mauvaise nouvelle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reaccionar",
+          "lines": [
+            "¡Genial! ¡Qué bien! = super ! ; sin problema = pas de problème",
+            "claro = bien sûr ; ni hablar = pas question",
+            "¡Qué pena! = dommage ; ¡Ánimo! = courage ! ; tengo miedo = j’ai peur",
+            "yo también = moi aussi ; yo tampoco = moi non plus",
+            "tengo frío = j’ai froid ; tengo calor = j’ai chaud",
+            "tengo hambre = j’ai faim ; tengo sed = j’ai soif"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-2-6",
+      "prompt": "Mañana tengo un examen y tengo miedo.",
+      "spoken": "Mañana tengo un examen y tengo miedo.",
+      "choices": [
+        "¡Ánimo!",
+        "¡Buen provecho!",
+        "¡Feliz cumpleaños!"
+      ],
+      "answer": "¡Ánimo!",
+      "hint": "Ton ami a peur de son examen. Que lui dis-tu pour l’aider ?",
+      "explanation": "Ton ami a peur de son examen : tu l’encourages avec ¡Ánimo! (courage !). ¡Buen provecho! se dit avant de manger ; ¡Feliz cumpleaños!, pour un anniversaire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reaccionar",
+          "lines": [
+            "¡Genial! ¡Qué bien! = super ! ; sin problema = pas de problème",
+            "claro = bien sûr ; ni hablar = pas question",
+            "¡Qué pena! = dommage ; ¡Ánimo! = courage ! ; tengo miedo = j’ai peur",
+            "yo también = moi aussi ; yo tampoco = moi non plus",
+            "tengo frío = j’ai froid ; tengo calor = j’ai chaud",
+            "tengo hambre = j’ai faim ; tengo sed = j’ai soif"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-2-7",
+      "prompt": "No entiendo. ¿Puedes repetir, por favor?",
+      "spoken": "No entiendo. Puedes repetir, por favor?",
+      "choices": [
+        "Sí, claro.",
+        "De nada.",
+        "¡Qué pena!"
+      ],
+      "answer": "Sí, claro.",
+      "hint": "Ton ami n’a pas compris : il te demande de répéter.",
+      "explanation": "¿Puedes repetir? = tu peux répéter ? On accepte : Sí, claro (oui, bien sûr), puis on redit plus lentement. De nada répond à gracias.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reaccionar",
+          "lines": [
+            "¡Genial! ¡Qué bien! = super ! ; sin problema = pas de problème",
+            "claro = bien sûr ; ni hablar = pas question",
+            "¡Qué pena! = dommage ; ¡Ánimo! = courage ! ; tengo miedo = j’ai peur",
+            "yo también = moi aussi ; yo tampoco = moi non plus",
+            "tengo frío = j’ai froid ; tengo calor = j’ai chaud",
+            "tengo hambre = j’ai faim ; tengo sed = j’ai soif"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bien répondu !"
+  },
+  "reward": {
+    "block": "lv2-4e-daily-life",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

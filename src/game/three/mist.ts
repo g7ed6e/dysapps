@@ -71,9 +71,11 @@ export function creerBrume(monde: Monde, lumiere: Lumiere, instant: Instant): Pa
         banc.position.set(r.dx, r.dy, 0);
         bancMat.opacity = (instant.carte ? 0.5 : 1) * r.opacite;
       }
-      // Sur la Carte, vue de très haut : pas de brume, tout le continent net. Archipéo : la brume de profondeur.
-      fog.near = instant.carte ? largeur * 8 : fiche ? ciel.brumeProche : largeur * 1.2;
-      fog.far = instant.carte ? largeur * 16 : fiche ? ciel.brumeLoin : largeur * 3;
+      // Sur la Carte, vue de très haut : pas de brume, tout le continent net. Archipéo : la brume de profondeur. Le monde
+      // vu de plus loin que son cadrage (le zoom du monde, ./camera.ts) : la brume recule d'autant que la caméra.
+      const recul = instant.carte ? 0 : (instant.recul ?? 0);
+      fog.near = recul + (instant.carte ? largeur * 8 : fiche ? ciel.brumeProche : largeur * 1.2);
+      fog.far = recul + (instant.carte ? largeur * 16 : fiche ? ciel.brumeLoin : largeur * 3);
       if (!reduit) for (const [i, mist] of mists.entries()) mist.position.y += Math.sin(t * 0.4 + i) * 0.002;
     },
     dispose: () => {

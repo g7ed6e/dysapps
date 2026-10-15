@@ -1,0 +1,242 @@
+{
+  "id": "life-earth-sciences-6e-living-world-life-enquiry-2",
+  "biome": "life-earth-sciences-6e-living-world",
+  "type": "life-enquiry",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-2-0",
+      "prompt": "Température moyenne de la Terre\nVers 1900 : la température de départ.\nVers 1960 : un peu plus chaud.\nVers 2020 : environ 1 degré de plus qu’en 1900.",
+      "question": "Que montrent ces relevés ?",
+      "spoken": "Température moyenne de la Terre. Vers 1900, la température de départ. Vers 1960, un peu plus chaud. Vers 2020, environ un degré de plus qu’en 1900.",
+      "choices": [
+        "la Terre se refroidit",
+        "la Terre se réchauffe",
+        "la température ne change pas"
+      ],
+      "answer": "la Terre se réchauffe",
+      "hint": "Compare la première et la dernière ligne.",
+      "explanation": "En 2020, la température moyenne est plus haute qu’en 1900 : la Terre se réchauffe. Un degré de plus en moyenne, sur toute la Terre, c’est beaucoup.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat et les preuves",
+          "lines": [
+            "Depuis plus de 100 ans, la température moyenne de la Terre monte.",
+            "Les gaz à effet de serre retiennent la chaleur autour de la Terre.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Atténuer : rejeter moins de ces gaz. S’adapter : vivre avec le climat qui change.",
+            "Un savoir scientifique repose sur des preuves : des mesures, des expériences.",
+            "Une croyance ou une opinion ne repose pas sur des preuves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-2-1",
+      "prompt": "Un glacier des Alpes\nPhoto de 1920 : la glace descend jusqu’au fond de la vallée.\nPhoto de 2020 : la glace s’arrête bien plus haut. On voit des rochers nus.",
+      "question": "Que montrent ces deux photos ?",
+      "spoken": "Un glacier des Alpes. Photo de 1920, la glace descend jusqu’au fond de la vallée. Photo de 2020, la glace s’arrête bien plus haut. On voit des rochers nus.",
+      "choices": [
+        "le glacier grandit",
+        "le glacier fond et recule",
+        "le glacier ne change pas"
+      ],
+      "answer": "le glacier fond et recule",
+      "hint": "Où s’arrête la glace sur la photo la plus récente ?",
+      "explanation": "En 2020, la glace s’arrête plus haut : le glacier a fondu et reculé. La fonte des glaciers est une des données qui montrent le réchauffement climatique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat et les preuves",
+          "lines": [
+            "Depuis plus de 100 ans, la température moyenne de la Terre monte.",
+            "Les gaz à effet de serre retiennent la chaleur autour de la Terre.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Atténuer : rejeter moins de ces gaz. S’adapter : vivre avec le climat qui change.",
+            "Un savoir scientifique repose sur des preuves : des mesures, des expériences.",
+            "Une croyance ou une opinion ne repose pas sur des preuves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-2-2",
+      "prompt": "Brûler du pétrole, du charbon ou du gaz rejette un gaz à effet de serre : …",
+      "spoken": "Brûler du pétrole, du charbon ou du gaz rejette un gaz à effet de serre :  (mot manquant) ",
+      "choices": [
+        "l’oxygène",
+        "l’hydrogène",
+        "le dioxyde de carbone"
+      ],
+      "answer": "le dioxyde de carbone",
+      "hint": "Relis la ligne « Brûler » du rappel.",
+      "explanation": "En brûlant, le pétrole, le charbon et le gaz rejettent du dioxyde de carbone, qui retient la chaleur. L’oxygène, lui, n’est pas rejeté : il est utilisé pour brûler. L’hydrogène n’est pas rejeté non plus.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat et les preuves",
+          "lines": [
+            "Depuis plus de 100 ans, la température moyenne de la Terre monte.",
+            "Les gaz à effet de serre retiennent la chaleur autour de la Terre.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Atténuer : rejeter moins de ces gaz. S’adapter : vivre avec le climat qui change.",
+            "Un savoir scientifique repose sur des preuves : des mesures, des expériences.",
+            "Une croyance ou une opinion ne repose pas sur des preuves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-2-3",
+      "prompt": "Venir au collège à vélo plutôt qu’en voiture, pour rejeter moins de gaz : c’est une action d’…",
+      "spoken": "Venir au collège à vélo plutôt qu’en voiture, pour rejeter moins de gaz : c’est une action d’ (mot manquant) ",
+      "choices": [
+        "adaptation",
+        "atténuation",
+        "observation"
+      ],
+      "answer": "atténuation",
+      "hint": "Relis la ligne « Atténuer » du rappel.",
+      "explanation": "Rejeter moins de gaz à effet de serre, c’est atténuer le réchauffement. S’adapter, c’est changer sa façon de vivre parce que le climat a déjà changé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat et les preuves",
+          "lines": [
+            "Depuis plus de 100 ans, la température moyenne de la Terre monte.",
+            "Les gaz à effet de serre retiennent la chaleur autour de la Terre.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Atténuer : rejeter moins de ces gaz. S’adapter : vivre avec le climat qui change.",
+            "Un savoir scientifique repose sur des preuves : des mesures, des expériences.",
+            "Une croyance ou une opinion ne repose pas sur des preuves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-2-4",
+      "prompt": "Les étés sont plus secs : des agriculteurs cultivent des plantes qui ont besoin de moins d’eau. C’est une action d’…",
+      "spoken": "Les étés sont plus secs : des agriculteurs cultivent des plantes qui ont besoin de moins d’eau. C’est une action d’ (mot manquant) ",
+      "choices": [
+        "atténuation",
+        "observation",
+        "adaptation"
+      ],
+      "answer": "adaptation",
+      "hint": "Le climat a déjà changé : que font les agriculteurs ?",
+      "explanation": "Les agriculteurs changent leurs cultures pour vivre avec un climat plus sec : ils s’adaptent. Cela ne fait pas baisser les gaz à effet de serre : ce n’est pas une atténuation.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat et les preuves",
+          "lines": [
+            "Depuis plus de 100 ans, la température moyenne de la Terre monte.",
+            "Les gaz à effet de serre retiennent la chaleur autour de la Terre.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Atténuer : rejeter moins de ces gaz. S’adapter : vivre avec le climat qui change.",
+            "Un savoir scientifique repose sur des preuves : des mesures, des expériences.",
+            "Une croyance ou une opinion ne repose pas sur des preuves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-2-5",
+      "prompt": "Relevés dans une mer d’Europe\nL’eau se réchauffe depuis des années.\nDes poissons des eaux chaudes y arrivent.\nDes poissons des eaux froides partent vers le nord.",
+      "question": "Que change le réchauffement dans cette mer ?",
+      "spoken": "Relevés dans une mer d’Europe. L’eau se réchauffe depuis des années. Des poissons des eaux chaudes y arrivent. Des poissons des eaux froides partent vers le nord.",
+      "choices": [
+        "les espèces qui y vivent",
+        "la couleur de l’eau",
+        "rien, les poissons restent"
+      ],
+      "answer": "les espèces qui y vivent",
+      "hint": "Relis les deux dernières lignes du document.",
+      "explanation": "Des espèces arrivent, d’autres partent : le réchauffement change le peuplement de la mer. Chaque espèce vit là où la température lui convient.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat et les preuves",
+          "lines": [
+            "Depuis plus de 100 ans, la température moyenne de la Terre monte.",
+            "Les gaz à effet de serre retiennent la chaleur autour de la Terre.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Atténuer : rejeter moins de ces gaz. S’adapter : vivre avec le climat qui change.",
+            "Un savoir scientifique repose sur des preuves : des mesures, des expériences.",
+            "Une croyance ou une opinion ne repose pas sur des preuves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-2-6",
+      "prompt": "Deux affirmations\nA : « Ce matin, j’avais froid. Donc la Terre ne se réchauffe pas. »\nB : « Les mesures de milliers de stations, sur plus de 100 ans, montrent que la température moyenne monte. »",
+      "question": "Laquelle repose sur une preuve ?",
+      "spoken": "Deux affirmations. A, ce matin, j’avais froid, donc la Terre ne se réchauffe pas. B, les mesures de milliers de stations, sur plus de cent ans, montrent que la température moyenne monte.",
+      "choices": [
+        "l’affirmation A",
+        "l’affirmation B",
+        "aucune des deux"
+      ],
+      "answer": "l’affirmation B",
+      "hint": "Laquelle s’appuie sur des mesures ?",
+      "explanation": "B s’appuie sur des mesures nombreuses, faites pendant longtemps : c’est une preuve. A parle du temps d’un seul matin, en un seul lieu : c’est la météo, pas le climat.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat et les preuves",
+          "lines": [
+            "Depuis plus de 100 ans, la température moyenne de la Terre monte.",
+            "Les gaz à effet de serre retiennent la chaleur autour de la Terre.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Atténuer : rejeter moins de ces gaz. S’adapter : vivre avec le climat qui change.",
+            "Un savoir scientifique repose sur des preuves : des mesures, des expériences.",
+            "Une croyance ou une opinion ne repose pas sur des preuves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-life-enquiry-2-7",
+      "prompt": "« Le fer à cheval porte bonheur. » Aucune mesure, aucune expérience ne le montre : c’est …",
+      "spoken": "« Le fer à cheval porte bonheur. » Aucune mesure, aucune expérience ne le montre : c’est  (mot manquant) ",
+      "choices": [
+        "une croyance",
+        "un savoir scientifique",
+        "une mesure"
+      ],
+      "answer": "une croyance",
+      "hint": "Relis les deux dernières lignes du rappel.",
+      "explanation": "Rien ne le prouve : c’est une croyance. Un savoir scientifique repose sur des preuves, comme des mesures ou des expériences.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le climat et les preuves",
+          "lines": [
+            "Depuis plus de 100 ans, la température moyenne de la Terre monte.",
+            "Les gaz à effet de serre retiennent la chaleur autour de la Terre.",
+            "Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.",
+            "Atténuer : rejeter moins de ces gaz. S’adapter : vivre avec le climat qui change.",
+            "Un savoir scientifique repose sur des preuves : des mesures, des expériences.",
+            "Une croyance ou une opinion ne repose pas sur des preuves."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien enquêté !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-6e-living-world",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

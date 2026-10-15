@@ -19,3 +19,4 @@ dist-docs
 .docs-src
 docs/_captures
 docs/.vitepress
+__pycache__/

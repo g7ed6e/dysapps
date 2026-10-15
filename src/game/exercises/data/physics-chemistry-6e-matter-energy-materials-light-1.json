@@ -1,0 +1,243 @@
+{
+  "id": "physics-chemistry-6e-matter-energy-materials-light-1",
+  "biome": "physics-chemistry-6e-matter-energy",
+  "type": "materials-light",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-1-0",
+      "prompt": "Sur le tapis du centre de tri\nUne boîte de conserve en acier.\nUne canette en aluminium.\nUne bouteille en plastique.\nUn gros aimant passe au-dessus.",
+      "question": "Quel déchet l’aimant soulève-t-il ?",
+      "spoken": "Sur le tapis du centre de tri. Une boîte de conserve en acier. Une canette en aluminium. Une bouteille en plastique. Un gros aimant passe au-dessus.",
+      "choices": [
+        "la canette en aluminium",
+        "la boîte de conserve en acier",
+        "la bouteille en plastique"
+      ],
+      "answer": "la boîte de conserve en acier",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "L’aimant attire l’acier : il soulève la boîte de conserve, et le tri est fait. L’aluminium est un métal, mais l’aimant ne l’attire pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Matériaux et transformations",
+          "lines": [
+            "L’aimant attire le fer et l’acier, pas l’aluminium ni le cuivre.",
+            "Conducteur thermique : il laisse passer la chaleur, comme les métaux.",
+            "Isolant thermique : il retient la chaleur, comme le bois ou la laine.",
+            "Dans la nature, un déchet met des mois, ou des siècles, à disparaître.",
+            "Transformation chimique : une matière nouvelle apparaît.",
+            "Ses signes : un gaz se forme, ou la couleur change."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-1-1",
+      "prompt": "Un matériau qui laisse passer la chaleur est un conducteur …",
+      "spoken": "Un matériau qui laisse passer la chaleur est un conducteur  (mot manquant) ",
+      "choices": [
+        "électrique",
+        "thermique",
+        "lumineux"
+      ],
+      "answer": "thermique",
+      "hint": "« Thermique » veut dire : qui a rapport à la chaleur.",
+      "explanation": "Laisser passer la chaleur, c’est être conducteur thermique. Conducteur électrique veut dire : qui laisse passer le courant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Matériaux et transformations",
+          "lines": [
+            "L’aimant attire le fer et l’acier, pas l’aluminium ni le cuivre.",
+            "Conducteur thermique : il laisse passer la chaleur, comme les métaux.",
+            "Isolant thermique : il retient la chaleur, comme le bois ou la laine.",
+            "Dans la nature, un déchet met des mois, ou des siècles, à disparaître.",
+            "Transformation chimique : une matière nouvelle apparaît.",
+            "Ses signes : un gaz se forme, ou la couleur change."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-1-2",
+      "prompt": "Trois cuillères dans un bol d’eau chaude\nCuillère en métal : le manche devient vite chaud.\nCuillère en bois : le manche reste froid.\nCuillère en plastique : le manche reste presque froid.",
+      "question": "Quelle cuillère est le meilleur conducteur thermique ?",
+      "spoken": "Trois cuillères dans un bol d’eau chaude. Cuillère en métal, le manche devient vite chaud. Cuillère en bois, le manche reste froid. Cuillère en plastique, le manche reste presque froid.",
+      "choices": [
+        "la cuillère en bois",
+        "la cuillère en plastique",
+        "la cuillère en métal"
+      ],
+      "answer": "la cuillère en métal",
+      "hint": "Dans quelle cuillère la chaleur monte-t-elle jusqu’au manche ?",
+      "explanation": "La chaleur de l’eau monte vite dans le métal : c’est le meilleur conducteur thermique. Le bois et le plastique la retiennent : ce sont des isolants thermiques.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Matériaux et transformations",
+          "lines": [
+            "L’aimant attire le fer et l’acier, pas l’aluminium ni le cuivre.",
+            "Conducteur thermique : il laisse passer la chaleur, comme les métaux.",
+            "Isolant thermique : il retient la chaleur, comme le bois ou la laine.",
+            "Dans la nature, un déchet met des mois, ou des siècles, à disparaître.",
+            "Transformation chimique : une matière nouvelle apparaît.",
+            "Ses signes : un gaz se forme, ou la couleur change."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-1-3",
+      "prompt": "Combien de temps pour disparaître dans la nature ?\nMouchoir en papier : quelques mois.\nBouteille en plastique : des centaines d’années.\nBouteille en verre : des milliers d’années.",
+      "question": "Quel déchet reste le plus longtemps ?",
+      "spoken": "Combien de temps pour disparaître dans la nature ? Mouchoir en papier, quelques mois. Bouteille en plastique, des centaines d’années. Bouteille en verre, des milliers d’années.",
+      "choices": [
+        "le mouchoir en papier",
+        "la bouteille en plastique",
+        "la bouteille en verre"
+      ],
+      "answer": "la bouteille en verre",
+      "hint": "Des centaines, ou des milliers : lequel est le plus grand ?",
+      "explanation": "Des milliers d’années, c’est plus que des centaines : la bouteille en verre reste le plus longtemps. Le plastique dure très longtemps aussi, et le papier disparaît en quelques mois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Matériaux et transformations",
+          "lines": [
+            "L’aimant attire le fer et l’acier, pas l’aluminium ni le cuivre.",
+            "Conducteur thermique : il laisse passer la chaleur, comme les métaux.",
+            "Isolant thermique : il retient la chaleur, comme le bois ou la laine.",
+            "Dans la nature, un déchet met des mois, ou des siècles, à disparaître.",
+            "Transformation chimique : une matière nouvelle apparaît.",
+            "Ses signes : un gaz se forme, ou la couleur change."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-1-4",
+      "prompt": "De la limaille de fer, de tout petits grains de fer, est mélangée à du sable. Pour la retirer, on utilise …",
+      "spoken": "De la limaille de fer, de tout petits grains de fer, est mélangée à du sable. Pour la retirer, on utilise  (mot manquant) ",
+      "choices": [
+        "un aimant",
+        "un filtre",
+        "de l’eau"
+      ],
+      "answer": "un aimant",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "L’aimant attire le fer, pas le sable : il retire la limaille. Un filtre ne sépare pas deux solides, et le fer comme le sable tombent au fond de l’eau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Matériaux et transformations",
+          "lines": [
+            "L’aimant attire le fer et l’acier, pas l’aluminium ni le cuivre.",
+            "Conducteur thermique : il laisse passer la chaleur, comme les métaux.",
+            "Isolant thermique : il retient la chaleur, comme le bois ou la laine.",
+            "Dans la nature, un déchet met des mois, ou des siècles, à disparaître.",
+            "Transformation chimique : une matière nouvelle apparaît.",
+            "Ses signes : un gaz se forme, ou la couleur change."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-1-5",
+      "prompt": "Vinaigre et bicarbonate\nOn verse du vinaigre sur de la poudre de bicarbonate.\nDes bulles apparaissent : un gaz se forme.\nLa poudre disparaît.",
+      "question": "Que s’est-il passé ?",
+      "spoken": "Vinaigre et bicarbonate. On verse du vinaigre sur de la poudre de bicarbonate. Des bulles apparaissent, un gaz se forme. La poudre disparaît.",
+      "choices": [
+        "la poudre a fondu",
+        "une transformation chimique",
+        "la poudre s’est seulement dissoute"
+      ],
+      "answer": "une transformation chimique",
+      "hint": "Un gaz nouveau apparaît-il ?",
+      "explanation": "Un gaz se forme : une matière nouvelle apparaît, c’est une transformation chimique. Une poudre qui se dissout seulement ne fait pas de bulles ; et rien ne chauffe ici pour la faire fondre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Matériaux et transformations",
+          "lines": [
+            "L’aimant attire le fer et l’acier, pas l’aluminium ni le cuivre.",
+            "Conducteur thermique : il laisse passer la chaleur, comme les métaux.",
+            "Isolant thermique : il retient la chaleur, comme le bois ou la laine.",
+            "Dans la nature, un déchet met des mois, ou des siècles, à disparaître.",
+            "Transformation chimique : une matière nouvelle apparaît.",
+            "Ses signes : un gaz se forme, ou la couleur change."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-1-6",
+      "prompt": "Deux mélanges\nMélange 1 : du sel dans l’eau. On ne voit plus le sel. Rien d’autre ne change.\nMélange 2 : du jus de chou rouge et du vinaigre. Le jus violet devient rose.",
+      "question": "Quel mélange montre une transformation chimique ?",
+      "spoken": "Deux mélanges. Mélange 1, du sel dans l’eau. On ne voit plus le sel. Rien d’autre ne change. Mélange 2, du jus de chou rouge et du vinaigre. Le jus violet devient rose.",
+      "choices": [
+        "le mélange 1",
+        "le mélange 2",
+        "les deux"
+      ],
+      "answer": "le mélange 2",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Dans le mélange 2, la couleur change : c’est le signe d’une transformation chimique. Dans le mélange 1, le sel se dissout seulement : l’eau salée garde sa couleur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Matériaux et transformations",
+          "lines": [
+            "L’aimant attire le fer et l’acier, pas l’aluminium ni le cuivre.",
+            "Conducteur thermique : il laisse passer la chaleur, comme les métaux.",
+            "Isolant thermique : il retient la chaleur, comme le bois ou la laine.",
+            "Dans la nature, un déchet met des mois, ou des siècles, à disparaître.",
+            "Transformation chimique : une matière nouvelle apparaît.",
+            "Ses signes : un gaz se forme, ou la couleur change."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-1-7",
+      "prompt": "Dans une transformation chimique, de nouvelles matières …",
+      "spoken": "Dans une transformation chimique, de nouvelles matières  (mot manquant) ",
+      "choices": [
+        "fondent",
+        "apparaissent",
+        "s’évaporent"
+      ],
+      "answer": "apparaissent",
+      "hint": "Relis la ligne « Transformation chimique » du rappel.",
+      "explanation": "Une transformation chimique fait apparaître des matières nouvelles, comme un gaz. Fondre ou s’évaporer, ce sont des changements d’état : la matière reste la même.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Matériaux et transformations",
+          "lines": [
+            "L’aimant attire le fer et l’acier, pas l’aluminium ni le cuivre.",
+            "Conducteur thermique : il laisse passer la chaleur, comme les métaux.",
+            "Isolant thermique : il retient la chaleur, comme le bois ou la laine.",
+            "Dans la nature, un déchet met des mois, ou des siècles, à disparaître.",
+            "Transformation chimique : une matière nouvelle apparaît.",
+            "Ses signes : un gaz se forme, ou la couleur change."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-6e-matter-energy",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

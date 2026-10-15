@@ -1,0 +1,75 @@
+# Réglages des bâtiments des plans d'Archipéo, une ligne par bâtiment, lus par scripts/rendu/modeles/batiments.py (la
+# chaîne entière d'un bâtiment, depuis son brut TRELLIS) et monument_lowpoly.py.
+# cibles : les couleurs des aplats (sRVB), dans l'ordre murs, toit, poutre ou bandeau, fond sombre de l'ouverture,
+# signature (cibles-57.csv, d'après les concepts, remises dans cet ordre) : la première est toujours celle des murs (la
+# grappe qui couvre le plus les murs la prend, et la coupe de l'étape 1 s'en ferme), la deuxième celle du toit (la grappe
+# qui couvre le plus le toit la prend si aucune ne l'a prise) ; a8a39a, la pierre du socle, ne va qu'au socle, que la
+# chaîne retire. Avis du directeur artistique sur l'essai de la forge (10 octobre 2026).
+# voxel : la finesse du remaillage, en part de la plus grande dimension (0,008 si vide).
+# avant-toit : la hauteur de la coupe de l'étape 1, en part de la hauteur du modèle sans son socle : au ras de
+# l'avant-toit (au-dessus de la poutre ou du bandeau), sous la galerie de la lanterne d'un phare, sous le dôme ou le chaume
+# d'un bâtiment rond. Vide : batiments.py la lit sur le modèle (le plus grand élargissement en montant) et l'inscrit.
+# quarts : les quarts de tour qu'aligner.py ajoute pour mettre la façade (la porte) au sud. Vide : lu de même et inscrit.
+# retouches : des mots séparés par des espaces, demandés par le directeur artistique et le consultant Archipéo (10 octobre
+# 2026), lus par monument_lowpoly.py (murs=tout, toit=tout, zone=a-b:src>dst[:v], grappe=src>dst) et batiment_loin.py
+# (loin-cube, loin-sans, loin-droit, loin-murs, loin-etages, loin-disque=hex, loin-plinthe=hex, loin-bloc, loin-baie=f,
+# loin-boite=hex) et batiments.py (pied=h, 11 octobre 2026) : leur sens est au skill modeles-3d.
+# batiment;cibles;voxel;avant-toit;quarts;retouches
+6e-batiment-forge-de-tunel;8c8173 a14f3c bdb8ad 6b4a2e 3a2a22;;0.410;0;zone=0-0.045:8c8173>3a332c:v loin-plinthe=3a332c
+6e-batiment-cabane-de-mousso;a27a4e 6e8c50 6b4a2e 3a2a22 5a4632 a8a39a;;0.550;0
+6e-batiment-four-de-rouxel;cdb088 4e6378 b9824e 6b4a2e 3a2a22 a8a39a;;0.580;1
+6e-batiment-etable-de-bloquette;e2d8c4 4e6378 6b4a2e 3a2a22 d9b864 a8a39a;;0.460;1
+6e-batiment-phare-de-grimoire;e2d8c4 4e6378 6b4a2e 3a2a22 e8c877 a8a39a;;0.550;0;zone=0.71-0.85:e2d8c4>e8c877
+6e-batiment-nid-de-coco;e2d8c4 a04a38 6b4a2e 3a2a22 2e2e30 a8a39a;;0.485;0
+6e-batiment-hutte-de-nenu;b9c2a0 b08a54 6b4a2e 3a2a22 5e8a5a 8e8a80;;0.535;2
+6e-batiment-abri-de-lavi;c98e5a 4e6378 55504c 6b4a2e 3a2a22 a8a39a;;0.615;3
+6e-batiment-cabine-de-robin;e2d8c4 4e6378 c8643c 3a2a22 4a4f55 a8a39a;;0.700;3;zone=0.66-0.70:e2d8c4>c8643c:v
+6e-batiment-tour-de-tick;cfc6b5 3f5a6b 6b4a2e 3a2a22 ede3c8 b08a4a;;0.760;0;loin-disque=ede3c8
+6e-batiment-musee-de-silex;d9b07a 4e6378 efe6d2 3a2a22 b8673e a8a39a;;0.870;0
+6e-batiment-quartier-de-boussole;e2d8c4 4e6378 daa66a 6b4a2e 3a2a22 a8a39a;;0.395;3;loin-etages
+6e-batiment-serre-de-fougere;cfc6b5 5e8f7e 6b4a2e 3a2a22 b8673e 5e8a5a;;0.590;2;grappe=754433>b8673e zone=0-0.045:cfc6b5>3a332c:v loin-plinthe=3a332c
+6e-batiment-laboratoire-de-bulle;e2d8c4 4e6378 6b4a2e 3a2a22 b5703c a8a39a;;0.500;1
+6e-batiment-atelier-de-pince;cfc6b5 3f5a6b 6b4a2e 3a2a22 c9a24a a8a39a;;0.620;1;grappe=76551f>c9a24a
+6e-batiment-preau-de-voix;d08a56 4e6378 6b4a2e 3a2a22 c9a24a a8a39a;;0.605;1
+5e-batiment-igloo-de-frimas;b8d0dc eef2f0 7fa0b4 2e3a44 a8a39a;;0.450;3;murs=tout
+5e-batiment-echoppe-de-bazar;e6dcc4 56685e 5e4430 33291f 438b82 8a6236;;0.675;1;loin-sans loin-droit
+5e-batiment-cabane-de-sema;cfc6b5 3f5a6b 6e9a4e 33291f 9aa39a a8a39a;;0.595;0;zone=0.555-0.595:cfc6b5>6e9a4e:v loin-droit
+5e-batiment-hutte-de-kroa;7e8a6a a08a5a 5e4430 33291f 6a5a44 a8a39a;;0.391;0;murs=tout toit=tout zone=0-0.415:a08a5a>7e8a6a:v pied=0.04
+5e-batiment-boutique-de-pudding;e6dcc4 56685e 8a3a34 5e4430 33291f a8a39a;;0.660;1
+5e-batiment-salon-de-moustache;9aa39a 4a5a52 e6dcc4 33291f a8a39a;;0.570;2;loin-sans
+5e-batiment-logis-de-velin;9aa39a 56685e e6dcc4 5e4430 33291f a8a39a;;0.635;1
+5e-batiment-moulin-de-sillon;e6dcc4 56685e 5e4430 33291f 8a6236 a8a39a;;0.630;1;loin-murs loin-droit
+5e-batiment-station-d-humus;d4b07a 56685e 5e4430 33291f 8a6236 a8a39a;;0.500;0;loin-cube loin-sans
+5e-batiment-chalet-de-perle;e8cfc4 56685e 5e4430 33291f f4f2ee a8a39a;;0.555;1
+5e-batiment-scierie-de-rabot;b08a5a 56685e 5e4430 33291f 8a6236 d9c08a;;0.585;1;toit=tout
+5e-batiment-fournil-de-mie;ead9bc 56685e 5e4430 33291f c98e5a a8a39a;;0.490;3
+5e-batiment-auberge-de-lina;e6dcc4 56685e 438b82 33291f 5e4430 a8a39a;;0.565;1
+5e-batiment-abri-de-lyre;c08a5a 56685e 8a938a 5e4430 33291f a8a39a;;0.640;3
+4e-batiment-atelier-de-braise;9a5a44 5c6a78 4a4f55 262628 b5703c a8a39a;;0.430;1
+4e-batiment-bureau-d-ixe;e3d3b0 5c6a78 4a4f55 262628 c9a24a a8a39a;;0.595;1
+4e-batiment-bergerie-de-clea;7a7c82 52575f 6b4a2e 262628 a88e86 a8a39a;;0.580;0
+4e-batiment-nid-de-plume;e3d3b0 3e4a5c 4a4f55 262628 c9a24a a8a39a;;0.560;0
+4e-batiment-loge-de-puck;8a2e2e 5c6a78 c9a24a 262628 e3d3b0 a8a39a;;0.755;1;loin-bloc loin-murs loin-baie=0.8
+4e-batiment-abri-de-vapeur;9a5a44 5c6a78 4a4f55 262628 a8a39a;;0.620;3;loin-murs
+4e-batiment-halle-de-typo;e3d3b0 5c6a78 2f7f86 262628 4a4f55 a8a39a;;0.630;1;grappe=56674c>2f7f86
+4e-batiment-entrepot-de-fret;7a7c82 5c6a78 4a4f55 262628 c0503c a8a39a;0.018;0.705;3;grappe=2d353a>7a7c82 grappe=cd0621>262628 loin-droit loin-murs loin-boite=c0503c
+4e-batiment-pepiniere-de-nectar;9a5a44 d9a84e 4a4f55 262628 d97a8a a8a39a;;0.620;0
+4e-batiment-pavillon-de-radar;7a7c82 3a78c0 4a4f55 262628 c9a24a a8a39a;;0.620;0
+4e-batiment-usine-de-manivelle;e3d3b0 5c6a78 4a4f55 262628 b5703c a8a39a;;0.555;0
+4e-batiment-loge-de-loquet;dccdb0 5c6a78 4a4f55 262628 6b4a2e a8a39a;0.014;0.695;1
+4e-batiment-cuisine-de-muscade;d8906a 5c6a78 4a4f55 262628 c9a24a a8a39a;;0.515;1
+4e-batiment-maison-de-figue;e2c9a0 c86a50 d6c8ab 262628 a8a39a;;0.800;1
+3e-batiment-kiosque-de-theo;ece8df 5f7fa8 cc9438 2b3a48 a8a39a;;0.550;0;loin-droit
+3e-batiment-dome-de-stat;d8d2c4 34507a cc9438 1e2630 a8a39a;;0.500;0
+3e-batiment-lanterne-de-fi;f2d27a 5f7fa8 cc9438 2b3a48 ece8df a8a39a;;0.600;0;loin-droit
+3e-batiment-lanterne-d-astra;d8d2c4 5f7fa8 cc9438 2b3a48 b8d8a8 a8a39a;;0.550;2
+3e-batiment-regie-d-echo;ece8df 5f7fa8 178078 2b3a48 cc9438 a8a39a;;0.615;1;zone=0.2-0.5:5f7fa8>178078:v
+3e-batiment-bibliotheque-de-memo;e2cfa6 5f7fa8 cc9438 2b3a48 f2ecdc a8a39a;;0.630;1
+3e-batiment-mairie-de-jalon;d8d2c4 5f7fa8 cc9438 2b3a48 ece8df a8a39a;;0.595;2;zone=0.53-0.595:d8d2c4>cc9438:v
+3e-batiment-infirmerie-d-olive;f2f0ea 5f7fa8 178078 2b3a48 7a8a4e a8a39a;;0.650;0;loin-droit
+3e-batiment-gymnase-de-virage;ece8df 5f7fa8 a8243a 2b3a48 cc9438 a8a39a;;0.560;1
+3e-batiment-poste-de-navette;d8d2c4 d9a43a 178078 2b3a48 a8a39a;;0.645;3
+3e-batiment-poste-de-timbre;d8d2c4 b5703c e2b43c 2b3a48 a8a39a;;0.575;0;zone=0.51-0.575:d8d2c4>e2b43c:v
+3e-batiment-bibliotheque-de-stylet;ece8df 5f7fa8 c08a5a 2b3a48 a8a39a;;0.810;1
+3e-batiment-tour-de-knight;d8d2c4 5f7fa8 b8262f 2b3a48 cc9438 a8a39a;0.012;0.450;0
+3e-batiment-tribune-de-brio;ece8df 8c949c e07a3a 2b3a48 a8a39a;;0.690;1

@@ -1,0 +1,242 @@
+{
+  "id": "civics-4e-rights-freedoms-security-defence-2",
+  "biome": "civics-4e-rights-freedoms",
+  "type": "security-defence",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-4e-rights-freedoms-security-defence-2-0",
+      "prompt": "D’après la Constitution, le chef des armées est le …",
+      "spoken": "D’après la Constitution, le chef des armées est le  (mot manquant) ",
+      "choices": [
+        "Premier ministre",
+        "président de la République",
+        "ministre de l’Intérieur"
+      ],
+      "answer": "président de la République",
+      "hint": "Qui est élu par tous les électeurs pour diriger le pays ?",
+      "explanation": "La Constitution fait du président de la République le chef des armées (article 15). Le ministre de l’Intérieur dirige la police et la gendarmerie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La défense du pays",
+          "lines": [
+            "Les armées : l’armée de Terre, la Marine nationale, l’armée de l’Air et de l’Espace.",
+            "Elles défendent le territoire, et le droit du pays à décider pour lui-même.",
+            "Elles agissent aussi avec d’autres pays, pour des missions des Nations unies.",
+            "La cyberdéfense protège les réseaux informatiques.",
+            "La guerre informationnelle : tromper un pays par de fausses informations.",
+            "La police de l’environnement protège la nature."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-security-defence-2-1",
+      "prompt": "Protéger les réseaux informatiques du pays contre les attaques, c’est la …",
+      "spoken": "Protéger les réseaux informatiques du pays contre les attaques, c’est la  (mot manquant) ",
+      "choices": [
+        "dissuasion",
+        "douane",
+        "cyberdéfense"
+      ],
+      "answer": "cyberdéfense",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "La cyberdéfense protège les réseaux informatiques du pays contre les attaques. C’est un nouvel enjeu de la défense.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La défense du pays",
+          "lines": [
+            "Les armées : l’armée de Terre, la Marine nationale, l’armée de l’Air et de l’Espace.",
+            "Elles défendent le territoire, et le droit du pays à décider pour lui-même.",
+            "Elles agissent aussi avec d’autres pays, pour des missions des Nations unies.",
+            "La cyberdéfense protège les réseaux informatiques.",
+            "La guerre informationnelle : tromper un pays par de fausses informations.",
+            "La police de l’environnement protège la nature."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-security-defence-2-2",
+      "prompt": "Des soldats français à l’étranger\nIls agissent avec des soldats d’autres pays.\nLa mission est décidée par les Nations unies.\nBut : protéger la population et ramener la paix.",
+      "question": "Pourquoi l’armée agit-elle hors de France, ici ?",
+      "spoken": "Des soldats français à l’étranger. Ils agissent avec des soldats d’autres pays. La mission est décidée par les Nations unies. But : protéger la population et ramener la paix.",
+      "choices": [
+        "pour une mission de paix des Nations unies",
+        "pour conquérir un territoire",
+        "pour contrôler des marchandises"
+      ],
+      "answer": "pour une mission de paix des Nations unies",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Les armées servent aussi la paix : avec d’autres pays, elles remplissent des missions décidées par l’Organisation des Nations unies.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La défense du pays",
+          "lines": [
+            "Les armées : l’armée de Terre, la Marine nationale, l’armée de l’Air et de l’Espace.",
+            "Elles défendent le territoire, et le droit du pays à décider pour lui-même.",
+            "Elles agissent aussi avec d’autres pays, pour des missions des Nations unies.",
+            "La cyberdéfense protège les réseaux informatiques.",
+            "La guerre informationnelle : tromper un pays par de fausses informations.",
+            "La police de l’environnement protège la nature."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-security-defence-2-3",
+      "prompt": "Viginum, un service de l’État\nIl repère les fausses informations venues de l’étranger.\nElles cherchent à diviser la population.",
+      "question": "Contre quoi lutte ce service ?",
+      "spoken": "Viginum, un service de l’État. Il repère les fausses informations venues de l’étranger. Elles cherchent à diviser la population.",
+      "choices": [
+        "les incendies de forêt",
+        "la manipulation de l’information venue de l’étranger",
+        "le vol de voitures"
+      ],
+      "answer": "la manipulation de l’information venue de l’étranger",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "Viginum repère les fausses informations venues de l’étranger, qui cherchent à diviser la population. Il protège le débat démocratique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La défense du pays",
+          "lines": [
+            "Les armées : l’armée de Terre, la Marine nationale, l’armée de l’Air et de l’Espace.",
+            "Elles défendent le territoire, et le droit du pays à décider pour lui-même.",
+            "Elles agissent aussi avec d’autres pays, pour des missions des Nations unies.",
+            "La cyberdéfense protège les réseaux informatiques.",
+            "La guerre informationnelle : tromper un pays par de fausses informations.",
+            "La police de l’environnement protège la nature."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-security-defence-2-4",
+      "prompt": "Une fausse information diffusée exprès pour tromper un pays est un outil de la guerre …",
+      "spoken": "Une fausse information diffusée exprès pour tromper un pays est un outil de la guerre  (mot manquant) ",
+      "choices": [
+        "froide",
+        "mondiale",
+        "informationnelle"
+      ],
+      "answer": "informationnelle",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Tromper un pays par de fausses informations, c’est la guerre informationnelle. La guerre froide est une période de l’histoire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La défense du pays",
+          "lines": [
+            "Les armées : l’armée de Terre, la Marine nationale, l’armée de l’Air et de l’Espace.",
+            "Elles défendent le territoire, et le droit du pays à décider pour lui-même.",
+            "Elles agissent aussi avec d’autres pays, pour des missions des Nations unies.",
+            "La cyberdéfense protège les réseaux informatiques.",
+            "La guerre informationnelle : tromper un pays par de fausses informations.",
+            "La police de l’environnement protège la nature."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-security-defence-2-5",
+      "prompt": "L’Office français de la biodiversité\nSes inspecteurs contrôlent la chasse et la pêche.\nIls protègent les espèces et les milieux naturels.\nIls constatent les infractions.",
+      "question": "Quel est son rôle ?",
+      "spoken": "L’Office français de la biodiversité. Ses inspecteurs contrôlent la chasse et la pêche. Ils protègent les espèces et les milieux naturels. Ils constatent les infractions.",
+      "choices": [
+        "éteindre les incendies",
+        "surveiller les frontières",
+        "protéger la nature, comme une police de l’environnement"
+      ],
+      "answer": "protéger la nature, comme une police de l’environnement",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "L’Office français de la biodiversité est une police de l’environnement : il protège les espèces et les milieux, et le droit de chacun à un environnement sain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La défense du pays",
+          "lines": [
+            "Les armées : l’armée de Terre, la Marine nationale, l’armée de l’Air et de l’Espace.",
+            "Elles défendent le territoire, et le droit du pays à décider pour lui-même.",
+            "Elles agissent aussi avec d’autres pays, pour des missions des Nations unies.",
+            "La cyberdéfense protège les réseaux informatiques.",
+            "La guerre informationnelle : tromper un pays par de fausses informations.",
+            "La police de l’environnement protège la nature."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-security-defence-2-6",
+      "prompt": "Les armées défendent le territoire et la … de la France : son droit de décider pour elle-même.",
+      "spoken": "Les armées défendent le territoire et la  (mot manquant)  de la France : son droit de décider pour elle-même.",
+      "choices": [
+        "souveraineté",
+        "fraternité",
+        "économie"
+      ],
+      "answer": "souveraineté",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "La souveraineté, c’est le droit d’un pays de décider pour lui-même, sans qu’un autre le lui impose. Les armées la défendent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La défense du pays",
+          "lines": [
+            "Les armées : l’armée de Terre, la Marine nationale, l’armée de l’Air et de l’Espace.",
+            "Elles défendent le territoire, et le droit du pays à décider pour lui-même.",
+            "Elles agissent aussi avec d’autres pays, pour des missions des Nations unies.",
+            "La cyberdéfense protège les réseaux informatiques.",
+            "La guerre informationnelle : tromper un pays par de fausses informations.",
+            "La police de l’environnement protège la nature."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-security-defence-2-7",
+      "prompt": "Incendies de forêt : protéger les maisons\nDébroussailler autour de la maison.\nNe pas faire de feu en forêt l’été.\nAppeler le 18 ou le 112 si l’on voit des flammes.",
+      "question": "Quel geste protège une maison du feu ?",
+      "spoken": "Incendies de forêt : protéger les maisons. Débroussailler autour de la maison. Ne pas faire de feu en forêt l’été. Appeler le dix-huit ou le cent douze si l’on voit des flammes.",
+      "choices": [
+        "planter des buissons contre les murs",
+        "débroussailler autour",
+        "ranger du bois contre la maison"
+      ],
+      "answer": "débroussailler autour",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "Débroussailler, c’est enlever les broussailles qui brûlent vite : le feu n’atteint plus la maison. Les buissons et le bois contre les murs l’attirent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La défense du pays",
+          "lines": [
+            "Les armées : l’armée de Terre, la Marine nationale, l’armée de l’Air et de l’Espace.",
+            "Elles défendent le territoire, et le droit du pays à décider pour lui-même.",
+            "Elles agissent aussi avec d’autres pays, pour des missions des Nations unies.",
+            "La cyberdéfense protège les réseaux informatiques.",
+            "La guerre informationnelle : tromper un pays par de fausses informations.",
+            "La police de l’environnement protège la nature."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-4e-rights-freedoms",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -7,7 +7,8 @@
 //   la scène). Les faces coplanaires d'une même couleur sont fusionnées en rectangles (fusion gloutonne par plan, par
 //   sens et par couleur) ; chaque bloc garde sa teinte, à ± `TEINTE` de luminosité, que le shader tire de sa case
 //   (`TEINTE_GLSL` sur `floor(position - normal * 0.25)`, ou l'attribut `teintes` pour un bloc hors de la grille) : la
-//   fusion ne l'efface pas. Le biseau des arêtes saillantes (celles où deux faces visibles d'un bloc se rencontrent) est
+//   fusion ne l'efface pas ; un bloc lissé (au 6e, ./architecture/volumes.ts) prend celle de son volume, une seule
+//   d'une case à l'autre. Le biseau des arêtes saillantes (celles où deux faces visibles d'un bloc se rencontrent) est
 //   peint par défaut : l'attribut `biseaux` donne la distance aux bords saillants de chaque rectangle, et le shader
 //   incline la normale sur une bande de `BISEAU` case, sans un triangle de plus. Le biseau taillé en géométrie (bandes,
 //   coins, petits triangles qui ferment un bout contre un bloc sans biseau) reste une option : il triple les triangles.
@@ -23,6 +24,11 @@
 // référence (world/decor/lighthouse.ts), en facettes peintes dans l'opaque (sa lanterne dans les fenêtres).
 // Le phare du large (5e, revue d'ensemble du directeur artistique, DA-4) : fini, le monument laisse la place à sa tour
 // ronde de pierre à feu ouvert (./offshoreLighthouse.ts), dans l'opaque (son feu dans les fenêtres).
+// Les monuments importés (./monumentModels.ts, chargés à la demande) : l'étape de chantier que suit l'avancée du plan
+// remplace les cubes posés, dans l'opaque (le feu du phare du large fini dans les fenêtres) ; les fantômes restent.
+// Chargé, le phare du large importé prend la place de son modèle taillé.
+// Les bâtiments des plans importés (./buildingModels.ts, chargés à la demande) : de même, l'étape que suit l'avancée des
+// deux premiers plans d'une île remplace leurs cubes posés, de près sur l'île `pres`, de loin ailleurs.
 //
 // L'architecture modulaire (lot 7, ./architecture/) : un bloc posé d'un plan d'île dont le kit de l'archipel peint le
 // mur garde sa géométrie et sa fusion, avec un motif par face (le colombage, le bardage, le soubassement, le chaperon,
@@ -43,31 +49,42 @@
 // des rôles (`settings.ts`), ce que le shader reprend (`shader.ts`), le genre des blocs (`kinds.ts`), le phare de
 // Grimoire (`lighthouse.ts`), les bâtiments et les lieux que le kit reprend (`buildings.ts`). Il en réexporte les noms publics.
 import type { Cell } from './view';
-import { architectureDe, assemblerLesPieces, type Kit, KITS, MOTIF } from './architecture';
+import { apartFromGhost, architectureDe, assemblerLesPieces, crystal, ingot, type Kit, KITS, LANTERNE_DE_COUR, MOTIF, motifDesRangees, RANGEES, rangeesReunies, RESTING_HEIGHT } from './architecture';
 import type { VoxelCube } from '../Voxel';
 import { ambianceDe, type Couleur, couleurDeMatiere, type Faces, MATIERES } from './palette';
 import { DELAVE, eclaircir, type FacettesDuDecor, hex, Pinceau, rgb } from './decor/brush';
 import { lineaire } from './landMesh';
 import type { ArchipelagoId } from './map';
 import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './bridges';
-import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, phareDuLarge } from './offshoreLighthouse';
+import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, PHARE_DU_LARGE, phareDuLarge } from './offshoreLighthouse';
+import { getImportedMonuments, type ImportedMonument, monumentsVersion } from './monumentModels';
+import { buildingsVersion, getImportedBuildings } from './buildingModels';
+import { petitesConstructionsDessinees } from './fixtureModels';
+import { drawnHeartDecor, drawnQuayObjects, drawnTrophies } from './objects/inTheWorld';
+import { drawnVillagePlaces } from './objects/villagePlaces';
+import type { BiomeId } from '../biomes';
 import { estUnePlaceDeTrophee } from './trophyHall';
 import { mixColor } from './daylight';
-import { couleursDuToit } from './roofs';
+import { couleursDuToit, toitDe } from './roofs';
 import type { TextureKind } from './pixels';
 import { dessinerPhare } from './decor/lighthouse';
 import { CREME_DU_PHARE, phareDeGrimoire } from './construction/lighthouse';
 import { cle, decalagesDe, genresDesBlocs } from './construction/kinds';
+import { allumesALaFin } from './construction/endGlow';
 import { type BlocAssemble, MOTIF_ASSEMBLE, SANS_BISEAU, teinteDeCase } from './construction/shader';
-import { BISEAU, couleurDuRole, FANTOME, LANTERNE, PROFONDEUR, RANG_DES_SOCLES, TOILE_DU_NAVIRE, TROPHEE, VERRE_HORS_MUR, VITRE_DE_JOUR } from './construction/settings';
-import { batimentsDe, blocsDArchipeoDe, caseDuLieu, enBlocsDArchipeo } from './construction/buildings';
+import { BISEAU, BLOC_EN_RETRAIT, couleurDuRole, FANTOME, LANTERNE, PROFONDEUR, RANG_DES_SOCLES, TOILE_DU_NAVIRE, TROPHEE, VERRE_HORS_MUR, VITRE_DE_JOUR } from './construction/settings';
+import { batimentsDe, blocsDArchipeoDe, caseDuLieu, coursDe, enBlocsDArchipeo } from './construction/buildings';
 export { ALLUMAGE, ARETE, ARETE_DU_VERRE, ARETE_FANTOME, BISEAU, couleursDesRoles, DECALAGE_MAX, ECART_SOMBRE, ECLAT_DU_BISEAU, FANTOME, FENETRES_ALLUMEES, LANTERNES_ALLUMEES, LUEUR, PLEINE_NUIT, TEINTE, TROPHEE, VITRE_DE_JOUR } from './construction/settings';
 export { BISEAU_GLSL, type BlocAssemble, detailDuMotif, ECLAT_GLSL, eclatDeFenetre, eclatDuBiseau, MOTIF_ASSEMBLE, MOTIF_ASSEMBLE_DEBUT, MOTIF_ASSEMBLE_GLSL, opaciteDesFantomes, SANS_BISEAU, TEINTE_GLSL, teinteDeCase } from './construction/shader';
 export { genresDesBlocs } from './construction/kinds';
 export { CREME_DU_PHARE, phareDeGrimoire } from './construction/lighthouse';
-export { batimentsDe, blocsDArchipeoDe, caseDuLieu, enBlocsDArchipeo, ETAPES_DU_BATIMENT, sansToursDuCoeur } from './construction/buildings';
+export { batimentsDe, blocsDArchipeoDe, caseDuLieu, coursDe, enBlocsDArchipeo, ETAPES_DU_BATIMENT, etapesDe, sansToursDuCoeur } from './construction/buildings';
 
 // ---------- Le maillage ----------
+
+/** Les trophées précieux (./architecture/precious.ts), faits une fois. */
+const INGOT = ingot();
+const CRYSTAL = crystal();
 
 /** Un groupe de la construction : un appel de dessin. Repère Three (X = x, Y = hauteur, Z = y). */
 export interface GroupeDeConstruction {
@@ -140,13 +157,21 @@ export interface MaillageDeLaConstruction {
   phareDuLarge?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[] };
   /** Les pièces d'architecture (./architecture/) : leurs triangles de l'opaque et la case de chacun, une tranche par île. */
   pieces?: TrancheDesPieces[];
+  /** Les monuments importés (./monumentModels.ts) : comme `phare`, leurs triangles et les cases posées qu'ils remplacent. */
+  monuments?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[]; halo?: HaloDuFeu }[];
+}
+
+/** Le halo d'un feu allumé la nuit (repère Three) : son centre et son côté ; un sprite additif, fixe (three/construction.ts). */
+interface HaloDuFeu {
+  centre: [number, number, number];
+  cote: number;
 }
 
 export interface OptionsDeLaConstruction {
   /**
    * Le biseau des arêtes saillantes : `peint` (par défaut : le shader incline la normale sur une bande de `largeur` le
    * long des arêtes saillantes, sans un triangle de plus), `taille` (en géométrie : bandes, coins et bouts ; trop cher
-   * pour un archipel, gardé pour un petit modèle comme le Bloc-Navire), `aucun`.
+   * pour un archipel, gardé pour un petit modèle comme la Nef), `aucun`.
    */
   biseau?: 'peint' | 'taille' | 'aucun';
   /** La largeur du biseau, en part de case. */
@@ -155,8 +180,13 @@ export interface OptionsDeLaConstruction {
   fusion?: boolean;
   /** Dessiner aussi les bornes (sinon elles sont laissées au poste « Bornes », instanciées à part). */
   bornes?: boolean;
-  /** Les cubes du Bloc-Navire : sa toile prend le crème Brume (et rien n'y devient pièce d'architecture). */
+  /** Les cubes de la Nef : sa toile prend le crème Brume (et rien n'y devient pièce d'architecture). */
   navire?: boolean;
+  /**
+   * Archipéo : la Nef importée (./nefModels.ts, `nefOf`), avec `navire` : la forme montrée en modèle à la place de ses
+   * cubes posés, sa lanterne dans les fenêtres ; les pièces de l'étape en chantier restent des cubes ou des fantômes.
+   */
+  nef?: ImportedMonument | null;
   /** Le kit d'architecture (lot 7, ./architecture/kits/) : par défaut, celui de l'archipel. */
   kit?: Kit;
   /**
@@ -164,6 +194,15 @@ export interface OptionsDeLaConstruction {
    * sol sous ses blocs) : les pilotis cherchent le sol jusqu'à `PROFONDEUR` cases plus bas, pas seulement juste dessous.
    */
   solEntier?: (x: number, y: number, z: number) => VoxelCube | undefined;
+  /** L'île de près (./buildingModels.ts) : son bâtiment importé de près, ceux des autres îles de loin ; `null` : tous de loin. */
+  pres?: BiomeId | null;
+}
+
+/** Les modèles importés qui remplacent des cubes posés : les monuments, puis les bâtiments des plans (de près sur `pres`). */
+function modelesImportes(cubes: readonly VoxelCube[], pres: BiomeId | null = null): ImportedMonument[] {
+  const batiments = getImportedBuildings(cubes, pres);
+  const monuments = getImportedMonuments(cubes);
+  return batiments.length ? [...monuments, ...batiments] : monuments;
 }
 
 type V3 = [number, number, number];
@@ -188,21 +227,33 @@ const signeDe = (d: number) => (d & 1 ? -1 : 1);
 
 const dir = (axe: number, signe: number) => axe * 2 + (signe > 0 ? 0 : 1);
 
-/** Les vitres et les lanternes d'un monde, et leur décalage d'allumage. */
-export type FenetresDuMonde = Map<VoxelCube, { genre: 'vitre' | 'lanterne'; decalage: number }>;
+/**
+ * Les vitres et les lanternes d'un monde, et leur décalage d'allumage ; `lueur` : le bloc d'un grand projet fini, qui prend
+ * la lueur de fin (./construction/endGlow.ts), allumé le premier.
+ */
+export type FenetresDuMonde = Map<VoxelCube, { genre: 'vitre' | 'lanterne' | 'lueur'; decalage: number }>;
 
 /**
  * Les vitres et les lanternes d'un monde, avec leur décalage d'allumage (négatif : jamais allumée), selon le même
  * `eclatDeFenetre` que la 3D : les tests de l'allumage le comparent au maillage. Les bornes n'en ont pas, ni les cases que le phare de
  * Grimoire remplace en 3D.
  */
-export function fenetresDe(cubes: VoxelCube[]): FenetresDuMonde {
+export function fenetresDe(cubes: VoxelCube[], imported: readonly ImportedMonument[] = modelesImportes(cubes)): FenetresDuMonde {
   // Les cases que le phare de Grimoire remplace en 3D ne s'allument pas (sa lanterne est à lui).
   const phare = phareDeGrimoire(cubes);
-  const genres = genresDesBlocs(cubes.filter((c) => !c.quest && !c.sol && !phare?.remplacees.has(cle(c.x, c.y, c.z))));
+  // Ni celles qu'un monument ou un bâtiment importé remplace (./monumentModels.ts, ./buildingModels.ts) ; `imported` : déjà
+  // calculés, pour ne pas les refaire.
+  const importedCells = new Set(imported.flatMap((m) => [...m.replaced]));
+  const genres = genresDesBlocs(cubes.filter((c) => !c.quest && !c.sol && !phare?.remplacees.has(cle(c.x, c.y, c.z)) && !importedCells.has(cle(c.x, c.y, c.z))));
   const decalages = decalagesDe(genres);
-  const out = new Map<VoxelCube, { genre: 'vitre' | 'lanterne'; decalage: number }>();
-  for (const [c, g] of genres) if (g === 'vitre' || g === 'lanterne') out.set(c, { genre: g, decalage: decalages.get(c) ?? -1 });
+  const out: FenetresDuMonde = new Map();
+  // La lueur de fin d'un grand projet ; celle du phare du large est à son modèle (son feu).
+  const large = phareDuLarge(cubes).remplacees;
+  const allumes = allumesALaFin(cubes.filter((c) => !c.quest && !large.has(cle(c.x, c.y, c.z)) && !importedCells.has(cle(c.x, c.y, c.z))));
+  for (const [c, g] of genres) {
+    if (allumes.has(c)) out.set(c, { genre: 'lueur', decalage: 0 });
+    else if (g === 'vitre' || g === 'lanterne') out.set(c, { genre: g, decalage: decalages.get(c) ?? -1 });
+  }
   return out;
 }
 
@@ -302,16 +353,45 @@ export function maillageDeLaConstruction(
   const phare = options.navire ? null : phareDeGrimoire(cubes, a);
   // Les ponts de pierre et de bois du 5e : un pont construit laisse la place à son modèle (./bridges.ts).
   const ponts = options.navire ? null : pontsDePierreEtDeBois(cubes);
-  // Le phare du large du 5e : fini, il laisse la place à son modèle (./offshoreLighthouse.ts).
-  const large = options.navire ? null : phareDuLarge(cubes);
-  const parUnModele = (c: VoxelCube) => {
+  // Les monuments et les bâtiments importés (./monumentModels.ts, ./buildingModels.ts), chargés : l'étape du chantier
+  // remplace les cubes posés.
+  // Les objets que le kit d'Archipéo dessine (`Kit.objetsDessines`, piste 3, au 6e et au 5e) : les petites
+  // constructions posées (./fixtureModels.ts), le bloc d'or des Gardiens rallumés, les objets du quai et le décor du cœur
+  // des îles (./objects/inTheWorld.ts), et les trois lieux du village, de près sur l'île `pres`
+  // (./objects/villagePlaces.ts) ; comme un modèle importé, ils remplacent leurs cubes.
+  const objets = !options.navire && (options.kit ?? KITS[a]).objetsDessines;
+  const imported = options.navire
+    ? options.nef
+      ? [options.nef]
+      : []
+    : [
+        ...modelesImportes(cubes, options.pres),
+        ...(objets
+          ? [
+              ...petitesConstructionsDessinees(a, cubes, options.pres),
+              ...drawnTrophies(a, cubes),
+              ...drawnQuayObjects(a, cubes),
+              ...drawnHeartDecor(a, cubes),
+              ...drawnVillagePlaces(a, cubes, options.pres),
+            ]
+          : []),
+      ];
+  const importedCells = new Set(imported.flatMap((m) => [...m.replaced]));
+  // Le phare du large du 5e : ses pièces finies laissent la place à son modèle (./offshoreLighthouse.ts), sauf s'il est importé.
+  const large = options.navire || imported.some((m) => m.id === PHARE_DU_LARGE) ? null : phareDuLarge(cubes);
+  const byModel = (c: VoxelCube) => {
     const k = cle(c.x, c.y, c.z);
-    return Boolean(phare?.remplacees.has(k) || ponts?.remplacees.has(k) || large?.remplacees.has(k));
+    return Boolean(phare?.remplacees.has(k) || ponts?.remplacees.has(k) || large?.remplacees.has(k) || importedCells.has(k));
   };
+  // La lueur de fin d'un grand projet (./construction/endGlow.ts) : ses blocs restent des blocs, dans les fenêtres.
+  const allumes = options.navire ? new Set<VoxelCube>() : allumesALaFin(cubes.filter((c) => !c.quest && !byModel(c)));
   // L'architecture modulaire (lot 7) : le voisinage se lit sur le plan entier (tous les cubes, fantômes compris) ; les
   // cases déjà prises par un modèle restent au modèle, et celles du phare de Grimoire en chantier à leur bloc. Seuls les
   // plans des îles prennent le kit de l'archipel (un kit passé à la main, celui d'un test, prend tout le plan).
   const kit = options.kit ?? KITS[a];
+  // Les blocs en retrait de leur case (`Kit.insetBlocks`, au 3e les lanternons du château d'eau), posés : chacun à part.
+  const enRetrait = new Set<VoxelCube>();
+  if (!options.navire && kit.insetBlocks) for (const c of cubes) if (!c.ghost && !c.quest && !byModel(c) && kit.insetBlocks(c)) enRetrait.add(c);
   // Sur le vide : rien de solide sous la case jusqu'à l'eau, ou jusqu'au large (`PROFONDEUR` cases plus bas) ; les pilotis.
   const solides = new Map<string, VoxelCube>();
   for (const c of [...cubes, ...sol]) if (!c.ghost && !c.quest) solides.set(cle(c.x, c.y, c.z), c);
@@ -329,18 +409,24 @@ export function maillageDeLaConstruction(
   const archi = options.navire
     ? null
     : architectureDe(a, cubes, {
-        exclure: (c) => parUnModele(c) || Boolean(phare?.enCours.has(cle(c.x, c.y, c.z))),
+        exclure: (c) => byModel(c) || allumes.has(c) || enRetrait.has(c) || Boolean(phare?.enCours.has(cle(c.x, c.y, c.z))),
         kit,
         batiments: options.kit ? undefined : batimentsDe(a),
+        cours: options.kit ? undefined : coursDe(a),
         toitures: options.kit ? undefined : blocsDArchipeoDe(a),
         surLeVide,
         caseDuLieu,
       });
-  const avantLesPieces = cubes.filter((c) => (options.bornes || !c.quest) && !parUnModele(c));
+  const avantLesPieces = cubes.filter((c) => (options.bornes || !c.quest) && !byModel(c));
   const dessines = archi?.remplacees.size ? avantLesPieces.filter((c) => !archi.remplacees.has(cle(c.x, c.y, c.z))) : avantLesPieces;
   // Le genre des blocs se lit avant les pièces : une vitre prise entre deux pièces de mur reste une vitre.
   const genres = genresDesBlocs(avantLesPieces);
   const decalages = decalagesDe(genres);
+  // La lueur de fin : comme une vitre, allumée la première (le décalage 0), sans compter parmi les vitres d'un bâtiment.
+  for (const c of allumes) {
+    genres.set(c, 'vitre');
+    decalages.set(c, 0);
+  }
   // Les trophées de la salle des trophées, quand le kit de l'archipel reprend la salle (au 6e, la halle en colombage ;
   // les autres archipels avec leur kit, lot 7c) : plus petits que leur case (`TROPHEE`), et le rang de chacun.
   const trophees = new Map<VoxelCube, number>();
@@ -352,7 +438,7 @@ export function maillageDeLaConstruction(
     }
   // Un fantôme ne cache rien, ni une lanterne ni un trophée (ils ne remplissent plus leur case).
   const plein = new Map<string, VoxelCube>();
-  for (const c of dessines) if (!c.ghost && genres.get(c) !== 'lanterne' && !trophees.has(c)) plein.set(cle(c.x, c.y, c.z), c);
+  for (const c of dessines) if (!c.ghost && genres.get(c) !== 'lanterne' && !trophees.has(c) && !enRetrait.has(c)) plein.set(cle(c.x, c.y, c.z), c);
   const sous = new Set(sol.map((c) => cle(c.x, c.y, c.z)));
 
   // Les couleurs d'un bloc, de jour.
@@ -362,20 +448,32 @@ export function maillageDeLaConstruction(
   /** Le mur peint d'un bloc (lot 7), s'il en est un. */
   const peintDe = (c: VoxelCube) => (archi?.peints.size ? archi.peints.get(cle(c.x, c.y, c.z)) : undefined);
   const couleursDe = (c: VoxelCube): Faces => {
-    const g = genres.get(c);
+    // Un bloc de la lueur de fin garde sa matière le jour (la nuit, la lueur).
+    const g = allumes.has(c) ? 'bloc' : genres.get(c);
     const fond = peintDe(c)?.peinture.fond ?? '';
     // Un toit prend la couverture de son île ; un bloc d'un lieu aussi, quand le kit le dit (le toit de la salle des trophées).
     const couvert = c.texture === 'toit' || Boolean(c.place && archi?.couverts.has(cle(c.x, c.y, c.z)));
     // Un bloc d'un lieu peut prendre la couleur d'une autre matière (la souche du clocheton, en pierre de taille).
     const repeint = c.place ? archi?.matieres.get(cle(c.x, c.y, c.z)) : undefined;
-    const k = `${repeint ?? ''}|${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${couvert ? `toit:${c.tag}` : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}|${fond}`;
+    // Dans un volume lissé (et seulement là), le dessus prend le milieu entre le dessus et les côtés de sa matière
+    // (décision du directeur artistique, 8 octobre 2026), même d'une seule case (le sable des angles du moulin) : les
+    // pièces dessinées (le bac « pièce seule ») et les bâtiments des plans gardent la convention dessus clair, côtés
+    // plus sombres.
+    const k0 = cle(c.x, c.y, c.z);
+    const lisse = Boolean(archi?.lisses.size && archi.lisses.has(k0) && !archi.remplacees.has(k0));
+    const k = `${repeint ?? ''}|${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${couvert ? `toit:${c.tag}` : ''}|${g}|${cremeDuPhare(c) ? 1 : 0}|${fond}|${lisse ? 1 : 0}`;
     let f = vues.get(k);
     if (f) return f;
     const delave = (x: Faces): Faces => (c.muted ? { dessus: mixColor(x.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(x.cote, DELAVE[0], DELAVE[1]) } : x);
-    const role = fond === 'remplissage' || fond === 'bardage' || fond === 'soubassement' ? couleurDuRole(a, kit, fond, c.muted) : null;
+    const role = fond === 'remplissage' || fond === 'bardage' || fond === 'soubassement' || fond === 'tole' || fond === 'galon' || fond === 'braise' || fond === 'masonry' ? couleurDuRole(a, kit, fond, c.muted) : null;
     if (role !== null) f = { dessus: role, cote: role };
     else if (repeint) f = delave(couleurDeMatiere(a, repeint));
-    else if (couvert) f = couleursDuToit(a, c.tag, c.muted);
+    else if (couvert) {
+      // Les toits enneigés du bâti (au 3e, `Kit.snowyRoofs`) : le dessus de l'ardoise dans la neige du kit, tenue à 70 du
+      // fantôme (le voile de l'archipel l'en rapproche).
+      const t = couleursDuToit(a, c.tag, c.muted);
+      f = kit.snowyRoofs && toitDe(c.tag) === 'ardoise' ? { dessus: apartFromGhost(couleurDuRole(a, kit, 'snow', c.muted)), cote: t.cote } : t;
+    }
     else if (g === 'bloc' && cremeDuPhare(c)) {
       const [teinte, force] = ambianceDe(a).voile;
       const creme = mixColor(CREME_DU_PHARE, teinte, force);
@@ -402,6 +500,11 @@ export function maillageDeLaConstruction(
       const x = hex(c.color);
       f = { dessus: c.top ? hex(c.top) : mixColor(x, 0xffffff, 0.12), cote: x };
     }
+    if (lisse) f = { dessus: mixColor(f.dessus, f.cote, 0.5), cote: f.cote };
+    // Une matière que le kit tient loin du fantôme Brume (au 5e : la glace, le sel, la toile ; le référent dys), qu'elle
+    // soit celle du bloc ou celle qu'un lieu lui donne (au 3e, la souche du clocheton en pierre de taille).
+    const texture = repeint ?? c.texture;
+    if (role === null && !options.navire && texture !== undefined && kit.ghostApart?.some((t) => t === texture)) f = { dessus: apartFromGhost(f.dessus), cote: apartFromGhost(f.cote) };
     vues.set(k, f);
     return f;
   };
@@ -416,8 +519,11 @@ export function maillageDeLaConstruction(
    * celui de son mur peint, délavé sur une île fermée ; 0 hors d'un mur peint.
    */
   const motifDe = (c: VoxelCube, d: number) => {
-    if (c.texture && c.texture in MOTIF_ASSEMBLE && genres.get(c) === 'bloc') return c.muted ? 0 : MOTIF_ASSEMBLE[c.texture as BlocAssemble];
-    const m = peintDe(c)?.peinture.motifs[FACE_PEINTE[d]] ?? 0;
+    // Un mur peint d'abord : une poutre posée dans un monument est du colombage (la table commune) ; un bloc assemblé
+    // seul (le bloc suspendu de la Halle) garde son motif.
+    const peint = peintDe(c);
+    if (!peint && c.texture && c.texture in MOTIF_ASSEMBLE && genres.get(c) === 'bloc') return c.muted ? 0 : MOTIF_ASSEMBLE[c.texture as BlocAssemble];
+    const m = peint?.peinture.motifs[FACE_PEINTE[d]] ?? 0;
     return m && c.muted ? m | MOTIF.delave : m;
   };
   /**
@@ -430,14 +536,23 @@ export function maillageDeLaConstruction(
     if (plein.has(voisine)) return false;
     if (archi?.couvre.size && ((archi.couvre.get(voisine) ?? 0) & FACE_DE_CASE[d ^ 1])) return false;
     if (d === BAS && sous.has(cle(c.x, c.y, c.z - 1))) return false;
+    // Un toit caché sous un autre (le reste du kit) : son dessus n'est jamais vu.
+    if (d === HAUT && archi?.sansDessus.size && archi.sansDessus.has(cle(c.x, c.y, c.z))) return false;
     return true;
   };
-  /** La teinte à porter par sommet : 0 sur la grille (le shader la calcule), celle de sa case d'origine hors de la grille. */
-  const teinteDe = (c: VoxelCube) =>
-    Number.isInteger(c.x) && Number.isInteger(c.y) && Number.isInteger(c.z) ? 0 : teinteDeCase(Math.floor(c.x), Math.floor(c.y), Math.floor(c.z));
+  /**
+   * La teinte à porter par sommet : 0 sur la grille (le shader la calcule), celle de sa case d'origine hors de la grille ;
+   * celle de la case d'ancrage de son volume pour un bloc lissé (./architecture/volumes.ts) : une seule teinte par
+   * volume, sans joint d'une case à l'autre, et la fusion en fait un rectangle par face.
+   */
+  const teinteDe = (c: VoxelCube) => {
+    const volume = archi?.lisses.size ? archi.lisses.get(cle(c.x, c.y, c.z)) : undefined;
+    if (volume) return teinteDeCase(volume.ancre.x, volume.ancre.y, volume.ancre.z);
+    return Number.isInteger(c.x) && Number.isInteger(c.y) && Number.isInteger(c.z) ? 0 : teinteDeCase(Math.floor(c.x), Math.floor(c.y), Math.floor(c.z));
+  };
   const taille = (c: VoxelCube) => b > 0 && genres.get(c) === 'bloc';
-  /** Le verre hors d'un mur porte une arête par case (dessinée par le shader). */
-  const areteDe = (c: VoxelCube) => (c.texture === 'verre' && genres.get(c) === 'bloc' && !cremeDuPhare(c) ? 1 : 0);
+  /** Le verre hors d'un mur porte une arête par case (dessinée par le shader), sauf peint en verrière (le kit). */
+  const areteDe = (c: VoxelCube) => (c.texture === 'verre' && genres.get(c) === 'bloc' && !cremeDuPhare(c) && !peintDe(c) ? 1 : 0);
   /** L'arête entre les faces `d` et `e` d'un bloc est-elle biseautée ? */
   const biseaute = (c: VoxelCube, d: number, e: number) => taille(c) && visible(c, d) && visible(c, e);
 
@@ -554,8 +669,17 @@ export function maillageDeLaConstruction(
     q([[x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [x0, y0, z1]], [-1, 0, 0], f.cote);
     q([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0], f.cote);
   };
+  /**
+   * Les lanternes de cour que le kit dessine sur poteau (./architecture/yardPieces.ts, au 6e) : dessinées avec les pièces
+   * d'architecture, à la fin (le toucher retrouve leur case par la table des pièces).
+   */
+  const lanternesDeCour: VoxelCube[] = [];
   /** Une lanterne : son corps sombre (opaque), son cœur (les fenêtres : éteint le jour, allumé la nuit), dans sa case. */
   const lanterne = (c: VoxelCube) => {
+    if (kit.yardLantern?.(c)) {
+      lanternesDeCour.push(c);
+      return;
+    }
     const m = (w: number) => [0.5 - w / 2, 0.5 + w / 2];
     const [a0, a1] = m(LANTERNE.corps);
     const [b0, b1] = m(LANTERNE.coeur);
@@ -566,24 +690,70 @@ export function maillageDeLaConstruction(
     boite(F, c.x + b0, c.x + b1, c.y + b0, c.y + b1, z0, z0 + LANTERNE.coeur, eteint, { extra: decalages.get(c) ?? -1 });
   };
 
+  /** Le dessin précieux d'un trophée (../architecture/precious.ts : le lingot d'or, le cristal), ou `null` : une boîte. */
+  const preciousOf = (c: VoxelCube): 'ingot' | 'crystal' | null => (c.texture === 'or' ? 'ingot' : c.texture === 'cristal' ? 'crystal' : null);
+  /** Là où se pose le trophée du dessus : le haut d'une boîte, d'un lingot, ou du prisme d'un cristal. */
+  const restingHeightOf = (c: VoxelCube | undefined) => {
+    const p = c ? preciousOf(c) : null;
+    return p ? RESTING_HEIGHT[p] : TROPHEE.hauteur;
+  };
+  const trophiesByCell = new Map<string, VoxelCube>();
   /**
    * Un trophée (`TROPHEE`) : une boîte au milieu de sa case, sans son dessous (il est posé) ni sa face du fond (contre le
-   * velours ou le trophée de derrière : la caméra regarde toujours vers le nord), aux couleurs de son bloc.
+   * velours ou le trophée de derrière : la caméra regarde toujours vers le nord), aux couleurs de son bloc. Le trophée
+   * d'or est un lingot, celui de cristal un cristal (intention du directeur artistique, 9 octobre 2026), sans leurs
+   * faces tournées vers le fond ; celui du second rang se pose sur le haut de celui du premier.
    */
   const trophee = (c: VoxelCube, rang: number) => {
     const premier = rang === RANG_DES_SOCLES;
     const w = premier ? TROPHEE.bas : TROPHEE.haut;
     const [x0, x1, y0, y1] = [c.x + 0.5 - w / 2, c.x + 0.5 + w / 2, c.y + 0.5 - w / 2, c.y + 0.5 + w / 2];
-    const z0 = premier ? c.z : c.z - 1 + TROPHEE.hauteur;
+    const z0 = premier ? c.z : c.z - 1 + restingHeightOf(trophiesByCell.get(cle(c.x, c.y, c.z - 1)));
     const z1 = z0 + TROPHEE.hauteur;
     const f = couleursDe(c);
     const sansBiseau = mode === 'peint' ? [0, 1, 2, 3].map(() => [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU]) : undefined;
+    const precieux = preciousOf(c);
+    if (precieux) {
+      const dessin = precieux === 'ingot' ? INGOT : CRYSTAL;
+      for (const fa of dessin.facettes) {
+        // La face du fond : jamais vue.
+        if (fa.normale[1] > 0.5) continue;
+        const pts = fa.points.map(([x, y, z]) => [c.x + x, c.y + y, z0 + z] as V3);
+        const col = fa.face === 'dessus' ? f.dessus : f.cote;
+        O.poly(pts, fa.normale, pts.map(() => col), { teinte: teinteDe(c), biseaux: sansBiseau ? pts.map(() => sansBiseau[0]) : undefined });
+      }
+      return;
+    }
     const q = (pts: V3[], n: V3, col: Couleur) => O.poly(pts, n, [col, col, col, col], { teinte: teinteDe(c), biseaux: sansBiseau });
     q([[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]], [0, 0, 1], f.dessus);
     q([[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]], [0, -1, 0], f.cote);
     q([[x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [x0, y0, z1]], [-1, 0, 0], f.cote);
     q([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0], f.cote);
   };
+
+  /**
+   * Un bloc en retrait de sa case (`BLOC_EN_RETRAIT`) : une boîte sans son dessous (il est posé), aux couleurs de son
+   * bloc ; fini, ses côtés prennent la lueur de fin (les fenêtres, allumés les premiers) et son dessus garde sa couleur.
+   */
+  const enRetraitDeSaCase = (c: VoxelCube) => {
+    const w = BLOC_EN_RETRAIT.large;
+    const [x0, x1, y0, y1] = [c.x + 0.5 - w / 2, c.x + 0.5 + w / 2, c.y + 0.5 - w / 2, c.y + 0.5 + w / 2];
+    const [z0, z1] = [c.z, c.z + BLOC_EN_RETRAIT.haut];
+    const f = couleursDe(c);
+    if (!allumes.has(c)) {
+      boite(O, x0, x1, y0, y1, z0, z1, f, { teinte: teinteDe(c) });
+      return;
+    }
+    const sansBiseau = mode === 'peint' ? [0, 1, 2, 3].map(() => [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU]) : undefined;
+    O.poly([[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]], [0, 0, 1], [f.dessus, f.dessus, f.dessus, f.dessus], { teinte: teinteDe(c), biseaux: sansBiseau });
+    const q = (pts: V3[], n: V3) => F.poly(pts, n, [f.cote, f.cote, f.cote, f.cote], { extra: 0 });
+    q([[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]], [0, -1, 0]);
+    q([[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]], [0, 1, 0]);
+    q([[x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [x0, y0, z1]], [-1, 0, 0]);
+    q([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0]);
+  };
+
+  for (const c of trophees.keys()) trophiesByCell.set(cle(c.x, c.y, c.z), c);
 
   // ---- Les faces des blocs, des vitres, des lanternes et des trophées.
   interface Case {
@@ -634,6 +804,10 @@ export function maillageDeLaConstruction(
       trophee(c, rang);
       continue;
     }
+    if (enRetrait.has(c)) {
+      enRetraitDeSaCase(c);
+      continue;
+    }
     for (let d = 0; d < 6; d++) {
       if (!visible(c, d)) continue;
       const k = axeDe(d);
@@ -646,6 +820,13 @@ export function maillageDeLaConstruction(
         biseaute(c, d, dir(j, -1)),
         biseaute(c, d, dir(j, 1)),
       ];
+      // La lueur de fin ne prend que les faces verticales (retouches du directeur artistique, 10 octobre 2026 : un aplat
+      // jaune sur le dessus se lisait comme un bloc peint, les hublots de la fusée comme des fenêtres) : le dessus et le
+      // dessous gardent la couleur de leur famille, dans le groupe opaque (assombris la nuit comme le reste).
+      if (allumes.has(c) && axeDe(d) === 2) {
+        rectangle(O, d, plan, base[i], base[i] + 1, base[j], base[j] + 1, SANS_BORDS, couleurDeFace(c, d), undefined, teinteDe(c));
+        continue;
+      }
       if (g !== 'bloc' || !fusion) {
         // Une face seule : les vitres et les lanternes ont chacune leur décalage.
         rectangle(groupeDe(c), d, plan, base[i], base[i] + 1, base[j], base[j] + 1, r, couleurDeFace(c, d), extraDe(c), teinteDe(c), areteDe(c), motifDe(c, d));
@@ -663,12 +844,21 @@ export function maillageDeLaConstruction(
     const [groupe, ds, ps] = pk.split('|');
     const d = Number(ds);
     const plan = Number(ps);
+    // Un mur (une face verticale du groupe opaque) réunit ses rangées malgré les bandes de son pied et de sa tête : le
+    // shader les peint par rangée (`motifDesRangees`).
+    const parRangees = groupe === 'o' && axeDe(d) < 2;
     const ordre = [...cases.values()].sort((p, q) => p.v - q.v || p.u - q.u);
     for (const s of ordre) {
       if (s.fait) continue;
+      const meme = (x: Case | undefined) => (x && !x.fait && x.couleur === s.couleur && x.teinte === s.teinte && x.arete === s.arete ? x : undefined);
       const at = (u: number, v: number) => {
-        const x = cases.get(`${u},${v}`);
-        return x && !x.fait && x.couleur === s.couleur && x.teinte === s.teinte && x.arete === s.arete && x.motif === s.motif ? x : undefined;
+        const x = meme(cases.get(`${u},${v}`));
+        return x && x.motif === s.motif ? x : undefined;
+      };
+      /** La case (u, v) d'une rangée au-dessus, dont le motif est `motif` (celui de toute la rangée). */
+      const auDessus = (u: number, v: number, motif: number) => {
+        const x = meme(cases.get(`${u},${v}`));
+        return x && x.motif === motif ? x : undefined;
       };
       // Le long de u : même couleur, mêmes retraits en v.
       let u1 = s.u;
@@ -680,12 +870,15 @@ export function maillageDeLaConstruction(
         u1++;
       }
       const bords = { gauche: s.r[0], droite: droite.r[1], bas: s.r[2], haut: s.r[3] };
-      // Puis le long de v, rangée par rangée.
+      // Puis le long de v, rangée par rangée (un mur : une rangée d'un même motif, qui se réunit à la précédente).
       let v1 = s.v;
+      let motifDuHaut = s.motif;
       for (;;) {
+        const premiere = meme(cases.get(`${s.u},${v1 + 1}`));
+        const motif = parRangees && premiere && v1 - s.v + 2 <= RANGEES.max && rangeesReunies(motifDuHaut, premiere.motif) ? premiere.motif : s.motif;
         const rangee: Case[] = [];
         for (let u = s.u; u <= u1; u++) {
-          const n = at(u, v1 + 1);
+          const n = parRangees ? auDessus(u, v1 + 1, motif) : at(u, v1 + 1);
           if (!n) break;
           rangee.push(n);
         }
@@ -698,6 +891,7 @@ export function maillageDeLaConstruction(
         if (bords.haut) break;
         v1++;
         bords.haut = haut;
+        motifDuHaut = motif;
       }
       for (let v = s.v; v <= v1; v++)
         for (let u = s.u; u <= u1; u++) {
@@ -705,7 +899,7 @@ export function maillageDeLaConstruction(
           if (c) c.fait = true;
         }
       if (groupe === 'g') fantome(d, plan, s.u, u1 + 1, s.v, v1 + 1);
-      else rectangle(O, d, plan, s.u, u1 + 1, s.v, v1 + 1, [bords.gauche, bords.droite, bords.bas, bords.haut], s.couleur, undefined, s.teinte, s.arete, s.motif);
+      else rectangle(O, d, plan, s.u, u1 + 1, s.v, v1 + 1, [bords.gauche, bords.droite, bords.bas, bords.haut], s.couleur, undefined, s.teinte, s.arete, parRangees ? motifDesRangees(s.motif, motifDuHaut, s.v, v1) : s.motif);
     }
   }
 
@@ -842,8 +1036,9 @@ export function maillageDeLaConstruction(
     dessinerPhareDuLarge(P, L, large.pose);
     const [t0] = O.facettes(P.fin(), { biseaux: mode === 'peint', teinte: 1 });
     // Ses hublots (GD-2, consultant Archipéo) : les vitraux du monument, ronds sur le fût, à mi-hauteur ; un carré de
-    // cadre jaune posé sur le pan, que le shader peint en hublot (`MOTIF_ASSEMBLE.vitrail`). Deux triangles chacun ; aucun sur une île fermée.
-    if (!large.pose.muted) {
+    // cadre jaune posé sur le pan, que le shader peint en hublot (`MOTIF_ASSEMBLE.vitrail`). Deux triangles chacun ; aucun sur une île fermée,
+    // ni avant que la lanterne (les vitraux du grand projet) soit finie.
+    if (!large.pose.muted && (large.pose.pieces?.has('lantern') ?? true)) {
       const cadre = couleurDeMatiere(a, 'vitrail').cote;
       const sansBiseau = mode === 'peint' ? [0, 1, 2, 3].map(() => [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU]) : undefined;
       for (const h of hublotsDuPhareDuLarge(large.pose))
@@ -856,22 +1051,59 @@ export function maillageDeLaConstruction(
     };
   }
 
+  // ---- Les monuments importés : l'étape du chantier dans l'opaque, le feu du phare du large fini dans les fenêtres
+  // (allumé le premier, sans pulser).
+  const monumentsDrawing: NonNullable<MaillageDeLaConstruction['monuments']> = imported.map((m) => ({
+    opaque: O.facettes(m.opaque, { biseaux: mode === 'peint', teinte: 1 }),
+    fenetres: F.facettes(m.fire, { extra: 0 }),
+    cellules: m.cellules,
+    ...(m.halo ? { halo: m.halo } : {}),
+  }));
+
   // ---- Les pièces d'architecture dessinées (lot 7) : assemblées (sans les facettes contre un bloc plein ni celles que
   // deux pièces partagent ; une rangée d'un tenant), dans l'opaque, à la fin, aux couleurs de la matière du bloc qu'elles
   // remplacent (ou d'un rôle du kit), avec sa teinte ; les cases de chaque triangle, pour le toucher (toute la case).
   let dessinDesPieces: MaillageDeLaConstruction['pieces'];
-  if (archi?.pieces.length) {
+  if (archi?.pieces.length || lanternesDeCour.length) {
     const t0 = O.idx.length / 3;
     const cases: number[] = [];
     const sansBiseau = mode === 'peint' ? [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU] : null;
     const estPlein = (x: number, y: number, z: number) => plein.has(cle(x, y, z)) || sous.has(cle(x, y, z));
     const cleDeCouleur = (c: VoxelCube) => `${c.texture ?? ''}|${c.color}|${c.top ?? ''}|${c.muted ? 1 : 0}|${c.tag ?? ''}`;
-    for (const { facette: f, cube: c, min, max } of assemblerLesPieces(archi.pieces, estPlein, cleDeCouleur)) {
-      const couleurs = couleursDe(c);
-      const col = f.role ? couleurDuRole(a, kit, f.role, c.muted) : f.face === 'dessus' ? couleurs.dessus : couleurs.cote;
-      const motif = f.motif && c.muted ? f.motif | MOTIF.delave : (f.motif ?? 0);
+    for (const { facette: f, cube: c, min, max } of assemblerLesPieces(archi?.pieces ?? [], estPlein, cleDeCouleur)) {
+      // La couleur du bloc de dessous (les flancs de pierre de la braise du cône), sinon celle du bloc ; tenue à l'écart du
+      // fantôme pour le pain de craie.
+      const couleurs = couleursDe((f.colourBelow && solides.get(cle(c.x, c.y, c.z - 1))) || c);
+      const teinteDeLaFacette = f.role ? couleurDuRole(a, kit, f.role, c.muted) : f.face === 'dessus' ? couleurs.dessus : couleurs.cote;
+      const col = f.ghostApart ? apartFromGhost(teinteDeLaFacette) : teinteDeLaFacette;
+      // Le motif du bloc lui-même (le bloc assemblé suspendu de la Halle), sinon celui de la facette, délavé sur une île fermée.
+      const motif = f.ownMotif
+        ? !c.muted && c.texture && Object.hasOwn(MOTIF_ASSEMBLE, c.texture)
+          ? MOTIF_ASSEMBLE[c.texture as BlocAssemble]
+          : 0
+        : f.motif && c.muted
+          ? f.motif | MOTIF.delave
+          : (f.motif ?? 0);
       O.poly(f.points, f.normale, f.points.map(() => col), { biseaux: sansBiseau ? f.points.map(() => sansBiseau) : undefined, teinte: teinteDeCase(c.x, c.y, c.z), motif });
       for (let i = 2; i < f.points.length; i++) cases.push(...min, ...max);
+    }
+    // Les lanternes de cour (./architecture/yardPieces.ts) : leur tête de bois, de fer et d'ardoise dans l'opaque, ses
+    // quatre vitres dans les fenêtres (pâles le jour, allumées la nuit avec les autres lanternes de la cour, sans
+    // clignoter), dans leur case.
+    for (const c of lanternesDeCour) {
+      const teinte = teinteDe(c);
+      const vitre = couleurDuRole(a, kit, 'lanternGlass', c.muted);
+      const extra = decalages.get(c) ?? -1;
+      for (const f of LANTERNE_DE_COUR) {
+        const pts = f.points.map(([x, y, z]) => [c.x + x, c.y + y, c.z + z] as V3);
+        if (f.vitre) {
+          F.poly(pts, f.normale, pts.map(() => vitre), { extra });
+          continue;
+        }
+        const col = couleurDuRole(a, kit, f.role ?? 'lanternFrame', c.muted);
+        O.poly(pts, f.normale, pts.map(() => col), { teinte, biseaux: sansBiseau ? pts.map(() => sansBiseau) : undefined });
+        for (let i = 2; i < pts.length; i++) cases.push(c.x, c.y, c.z, c.x, c.y, c.z);
+      }
     }
     dessinDesPieces = [{ opaque: [t0, O.idx.length / 3], cases: Int32Array.from(cases) }];
   }
@@ -888,6 +1120,7 @@ export function maillageDeLaConstruction(
   if (dessinDesPonts) m.ponts = dessinDesPonts;
   if (dessinDuLarge) m.phareDuLarge = dessinDuLarge;
   if (dessinDesPieces) m.pieces = dessinDesPieces;
+  if (monumentsDrawing.length) m.monuments = monumentsDrawing;
   return m;
 }
 
@@ -895,9 +1128,11 @@ export function maillageDeLaConstruction(
 export function coutDeLaConstruction(m: MaillageDeLaConstruction): { triangles: number; drawCalls: number; opaque: number; fantomes: number; fenetres: number } {
   const t = (g: GroupeDeConstruction) => g.indices.length / 3;
   const groupes = [m.opaque, m.fantomes, m.fenetres];
+  // Un halo (la nuit) : un sprite, deux triangles, un appel.
+  const halos = (m.monuments ?? []).filter((q) => q.halo).length;
   return {
-    triangles: groupes.reduce((n, g) => n + t(g), 0),
-    drawCalls: groupes.filter((g) => g.indices.length > 0).length,
+    triangles: groupes.reduce((n, g) => n + t(g), 0) + 2 * halos,
+    drawCalls: groupes.filter((g) => g.indices.length > 0).length + halos,
     opaque: t(m.opaque),
     fantomes: t(m.fantomes),
     fenetres: t(m.fenetres),
@@ -931,7 +1166,7 @@ export function caseDeLaConstruction(point: { x: number; y: number; z: number },
  * La case touchée sur un modèle qui remplace des cubes (`groupe` : le maillage touché, `triangle` : l'indice du
  * triangle), et la case devant, du côté où la facette regarde le plus :
  * - une pièce d'architecture (lot 7) : sa case, toute la case, lue dans la table triangle → case ;
- * - le phare de Grimoire ou le phare du large : la case remplacée la plus proche du point touché.
+ * - le phare de Grimoire, le phare du large ou un monument importé : la case remplacée la plus proche du point touché.
  * `null` si le triangle n'est à aucun d'eux (un bloc taillé : `caseDeLaConstruction`).
  */
 export function caseDeLaPiece(
@@ -957,8 +1192,8 @@ export function caseDeLaPiece(
       const { next } = caseDeLaConstruction({ x: cell.x + 0.5, y: cell.z + 0.5, z: cell.y + 0.5 }, normale);
       return { cell, next: { x: next.x, y: next.y, z: next.z } };
     }
-  // Le phare de Grimoire, ou le phare du large : celui dont les triangles contiennent le triangle touché.
-  const p = [m.phare, m.phareDuLarge].find((q) => q && triangle >= q[groupe][0] && triangle < q[groupe][1] && q.cellules.length);
+  // Le phare de Grimoire, le phare du large ou un monument importé : celui dont les triangles contiennent le triangle touché.
+  const p = [m.phare, m.phareDuLarge, ...(m.monuments ?? [])].find((q) => q && triangle >= q[groupe][0] && triangle < q[groupe][1] && q.cellules.length);
   if (!p) return null;
   // Repère Three : le point (x, hauteur, y), un quart de case derrière la facette, comme `caseDeLaConstruction`.
   const q = { x: point.x - normale.x * 0.25, y: point.z - normale.z * 0.25, z: point.y - normale.y * 0.25 };
@@ -979,24 +1214,30 @@ export interface CacheDeLaConstruction {
   iles: Map<string, { signature: string; maillage: MaillageDeLaConstruction }>;
   /** Le nombre de cubes du sol : s'il change, tout est refait. */
   sol: number;
+  /** La version des monuments et des bâtiments importés (./monumentModels.ts, ./buildingModels.ts) : un modèle arrivé, tout est refait. */
+  monuments: string;
 }
 
-export const cacheDeLaConstruction = (): CacheDeLaConstruction => ({ iles: new Map(), sol: -1 });
+export const cacheDeLaConstruction = (): CacheDeLaConstruction => ({ iles: new Map(), sol: -1, monuments: '' });
 
 /**
  * La construction d'un archipel, île par île : chaque île (les cubes d'une même étiquette) a son maillage, gardé tant
  * que ses cubes ne changent pas ; ils sont mis bout à bout dans les trois groupes (toujours trois appels). Poser un bloc
- * ne refait que son île. `refaites` : le nombre d'îles refaites ; `change` : faux si rien n'a changé.
+ * ne refait que son île. `refaites` : le nombre d'îles refaites ; `change` : faux si rien n'a changé. `pres` : l'île de près
+ * (son bâtiment importé de près) ; en changer ne refait que l'île quittée et l'île approchée.
  */
 export function construireParIle(
   a: ArchipelagoId,
   cubes: VoxelCube[],
   sol: VoxelCube[],
   cache: CacheDeLaConstruction,
+  pres: BiomeId | null = null,
 ): { maillage: MaillageDeLaConstruction; refaites: number; change: boolean } {
-  if (cache.sol !== sol.length) {
+  const versions = `${monumentsVersion()}|${buildingsVersion()}`;
+  if (cache.sol !== sol.length || cache.monuments !== versions) {
     cache.iles.clear();
     cache.sol = sol.length;
+    cache.monuments = versions;
   }
   const parIle = new Map<string, VoxelCube[]>();
   for (const c of cubes) {
@@ -1015,7 +1256,8 @@ export function construireParIle(
     refaites++;
   }
   for (const [k, l] of parIle) {
-    const signature = signatureDeLaConstruction(l, []);
+    // L'île de près se dessine à part (son bâtiment importé de près).
+    const signature = signatureDeLaConstruction(l, []) + (k === pres ? '|pres' : '');
     if (cache.iles.get(k)?.signature === signature) continue;
     // Le sol sous l'île : seulement les cubes du sol sous un de ses blocs (le sol cache le dessous d'un bloc posé).
     if (!solParIle || !index) {
@@ -1030,7 +1272,7 @@ export function construireParIle(
         solParIle.set(ki, s);
       }
     }
-    cache.iles.set(k, { signature, maillage: maillageDeLaConstruction(a, l, solParIle.get(k), { solEntier }) });
+    cache.iles.set(k, { signature, maillage: maillageDeLaConstruction(a, l, solParIle.get(k), { solEntier, pres }) });
     refaites++;
   }
   return { maillage: miseBoutABout([...cache.iles.values()].map((i) => i.maillage)), refaites, change: refaites > 0 };
@@ -1091,6 +1333,8 @@ export function miseBoutABout(liste: MaillageDeLaConstruction[]): MaillageDeLaCo
     const decaler = (t: [number, number]): [number, number] => [t[0] + o.debuts[i], t[1] + o.debuts[i]];
     for (const p of x.ponts ?? []) (m.ponts ??= []).push({ opaque: decaler(p.opaque) });
     for (const p of x.pieces ?? []) (m.pieces ??= []).push({ opaque: decaler(p.opaque), cases: p.cases });
+    for (const q of x.monuments ?? [])
+      (m.monuments ??= []).push({ opaque: decaler(q.opaque), fenetres: [q.fenetres[0] + f.debuts[i], q.fenetres[1] + f.debuts[i]], cellules: q.cellules, ...(q.halo ? { halo: q.halo } : {}) });
   });
   return m;
 }

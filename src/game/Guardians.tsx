@@ -8,6 +8,7 @@ import { habillageDuMonde } from './skin';
 import { PersonnageCanvas, VoxelCanvas, hasWebGL } from './three';
 import { VoxelScene } from './Voxel';
 import { GUARDIAN_CUBES } from './world/characters/guardians';
+import { guardianCameraOf, guardianPortraitView } from './world/characters/portraitView';
 import { gardienEnPartieRallume } from './world/terrain';
 import type { Allumage } from './world/characters/sentinel';
 
@@ -43,6 +44,9 @@ export function Guardian3D({ biome, label, mood = 'idle', seq = 0, allumage: don
   // (lot 6) ou, sans allumage donné, rallumée d'un coup une fois son défi réussi ; sinon en cubes, rallumés des pieds vers la tête (GD-8).
   const [dessine] = useState(() => habillageDuMonde().figures === 'modeles');
   const allumage = donne ?? (mood === 'beaten' ? 1 : 0);
+  // La vue du portrait d'un Gardien qui ne se lit pas dans celle de tous (la Libellule de jade, DA, HG-3).
+  const vueDuPortrait = guardianPortraitView(biome);
+  const vue = vueDuPortrait ? guardianCameraOf(vueDuPortrait) : null;
   const enCubes = <VoxelScene cubes={cubes} s={12} pad={6} className="creature guardian-svg" label={label} />;
   // Le temps que la sentinelle arrive : sa place, vide, à sa taille (pas le Gardien en cubes, qui sauterait).
   const place = <span className="creature guardian-svg" role="img" aria-label={label} />;
@@ -60,8 +64,8 @@ export function Guardian3D({ biome, label, mood = 'idle', seq = 0, allumage: don
       allumage={allumage}
       fondu={fondu}
       reduceMotion={reduceMotion}
-      cameraDirection={[-0.55, -0.85]}
-      elevation={0.35}
+      cameraDirection={vue?.direction ?? [-0.55, -0.85]}
+      elevation={vue?.elevation ?? 0.35}
       remplir
       className="creature-3d guardian-3d"
       label={label}

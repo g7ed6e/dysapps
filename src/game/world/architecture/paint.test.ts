@@ -4,7 +4,9 @@ import type { VoxelCube } from '../cube';
 import { toutConstruit } from '../budget';
 import { batimentsDe } from '../construction';
 import { worldCubes } from '../terrain';
-import { architectureDe, COLOMBAGE, decharge, indexDuPlan, MOTIF, MOTIF_GLSL, peintureDuMur, sensDeLaDecharge, voisinageDe, type Voisinage } from '.';
+import { architectureDe, CADRAN, CHAPERON_DE_LA_PIERRE, COLOMBAGE, decharge, indexDuPlan, MOTIF, MOTIF_FIN, MOTIF_GLSL, motifDeLaRangee, motifDesRangees, peintureDuMur, pointsDuCadran, RANGEES_DU_SOUBASSEMENT, rangeesReunies, sensDeLaDecharge, voisinageDe, type Voisinage } from '.';
+import { maillageDeLaConstruction, MOTIF_ASSEMBLE, MOTIF_ASSEMBLE_DEBUT } from '../construction';
+import { KIT_6E } from './kits/6e';
 
 const vois = (v: Partial<Voisinage>): Voisinage => ({
   texture: 'planches',
@@ -56,19 +58,21 @@ describe('Les murs peints', () => {
 
   it('les décharges : au rez, aux bouts et aux angles d’une façade, sur les faces du dehors, jamais sur un mur droit ni un té', () => {
     // À l'étage : aucune (une seule rangée de décharges par façade).
-    expect(peintureDuMur(vois({ cotes: 0b0011, dessous: 'mur' }), 'colombage', { exterieur: dehors }).motifs.some(aDesDecharges)).toBe(false);
+    expect(peintureDuMur(vois({ cotes: 0b0011, dessous: 'mur', dessus: 'toit' }), 'colombage', { exterieur: dehors }).motifs.some(aDesDecharges)).toBe(false);
     // Un mur droit le long de x : aucune décharge.
-    expect(peintureDuMur(vois({ cotes: 0b0101 }), 'colombage', { exterieur: dehors }).motifs.some(aDesDecharges)).toBe(false);
+    expect(peintureDuMur(vois({ cotes: 0b0101, dessus: 'toit' }), 'colombage', { exterieur: dehors }).motifs.some(aDesDecharges)).toBe(false);
     // Un té (voisines +x, +y, −x) : sa face −y a ses deux voisines le long de la face.
-    expect(peintureDuMur(vois({ cotes: 0b0111 }), 'colombage', { exterieur: dehors }).motifs.some(aDesDecharges)).toBe(false);
+    expect(peintureDuMur(vois({ cotes: 0b0111, dessus: 'toit' }), 'colombage', { exterieur: dehors }).motifs.some(aDesDecharges)).toBe(false);
     // Un angle (voisines +x et +y) : ses deux faces libres, −x et −y, en ont une chacune.
-    const angle = peintureDuMur(vois({ cotes: 0b0011 }), 'colombage', { exterieur: dehors }).motifs;
+    const angle = peintureDuMur(vois({ cotes: 0b0011, dessus: 'toit' }), 'colombage', { exterieur: dehors }).motifs;
     expect([0, 1, 2, 3].map((c) => aDesDecharges(angle[c]))).toEqual([false, false, true, true]);
     // Sur une face du dedans : aucune.
-    expect(peintureDuMur(vois({ cotes: 0b0011 }), 'colombage', { exterieur: () => false }).motifs.some(aDesDecharges)).toBe(false);
+    expect(peintureDuMur(vois({ cotes: 0b0011, dessus: 'toit' }), 'colombage', { exterieur: () => false }).motifs.some(aDesDecharges)).toBe(false);
     // Le bout d'un mur (voisine +x) : ses deux longues faces, pas son bout.
-    const bout = peintureDuMur(vois({ cotes: 0b0001 }), 'colombage', { exterieur: dehors }).motifs;
+    const bout = peintureDuMur(vois({ cotes: 0b0001, dessus: 'toit' }), 'colombage', { exterieur: dehors }).motifs;
     expect([0, 1, 2, 3].map((c) => aDesDecharges(bout[c]))).toEqual([false, true, false, true]);
+    // Sous un chaperon (un mur sans toit), le panneau est trop court : aucune, ni au bout ni à l'angle.
+    for (const cotes of [0b0001, 0b0011]) expect(peintureDuMur(vois({ cotes }), 'colombage', { exterieur: dehors }).motifs.some(aDesDecharges)).toBe(false);
   });
 
   it('toutes les décharges montent dans le même sens, vues du dehors : au plus une par panneau, jamais un chevron', () => {
@@ -182,5 +186,122 @@ describe('Les murs peints', () => {
     const index = indexDuPlan(plan);
     expect(voisinageDe(cube(1), index)!.cotes).toBe(0b0101);
     expect(voisinageDe(cube(3), index)!.cotes).toBe(0b0101);
+  });
+});
+
+describe('La table commune : les manières de peindre (8 octobre 2026)', () => {
+  it('la pierre : un mur plein dans sa teinte, un soubassement de pierre au pied, un chaperon sans rien au-dessus', () => {
+    const pied = peintureDuMur(vois({ texture: 'galet' }), 'plein');
+    expect(pied.fond).toBe('matiere');
+    for (const m of pied.motifs.slice(0, 4)) expect(m).toBe(MOTIF.plein | MOTIF.soubassement | MOTIF.chaperon);
+    // Le dessus du chaperon d'un mur plein : la teinte sombre de sa matière (le genre le dit au shader).
+    expect(pied.motifs[4]).toBe(MOTIF.plein | MOTIF.pierreEntiere);
+    const etage = peintureDuMur(vois({ texture: 'galet', dessous: 'mur', dessus: 'toit' }), 'plein');
+    for (const m of etage.motifs.slice(0, 4)) expect(m).toBe(MOTIF.plein);
+  });
+
+  it('la pierre garde la teinte de sa matière : soubassement seulement à partir de trois rangées, chaperon mince et sombre', () => {
+    // Un mur d'une ou deux rangées : pas de soubassement ; de trois, au pied seulement, une fois.
+    for (const rangees of [1, 2]) for (const m of peintureDuMur(vois({ texture: 'sable' }), 'plein', { rangees }).motifs.slice(0, 4)) expect(m & MOTIF.soubassement).toBe(0);
+    expect(RANGEES_DU_SOUBASSEMENT).toBe(3);
+    for (const m of peintureDuMur(vois({ texture: 'sable', dessus: 'mur' }), 'plein', { rangees: 3 }).motifs.slice(0, 4)) expect(m).toBe(MOTIF.plein | MOTIF.soubassement);
+    for (const m of peintureDuMur(vois({ texture: 'sable', dessous: 'mur', dessus: 'mur' }), 'plein', { rangees: 3 }).motifs.slice(0, 4)) expect(m).toBe(MOTIF.plein);
+    // Un mur bardé suit la même règle.
+    expect(peintureDuMur(vois({ texture: 'planches' }), 'colombage', { barde: true, rangees: 1 }).motifs[0]).toBe(MOTIF.bardage | MOTIF.chaperon);
+    // La teinte de la matière couvre au moins 85 % de la hauteur visible d'un mur d'une rangée, et d'un mur de trois.
+    expect(1 - COLOMBAGE.chaperonPlein).toBeGreaterThanOrEqual(0.85);
+    expect((3 - COLOMBAGE.soubassement - COLOMBAGE.chaperonPlein) / 3).toBeGreaterThanOrEqual(0.85);
+    expect(COLOMBAGE.chaperonPlein).toBeLessThan(COLOMBAGE.chaperon);
+    // Le chaperon et le dessus d'un mur plein : la teinte de sa matière, plus sombre, jamais la pierre du kit.
+    expect(CHAPERON_DE_LA_PIERRE).toBeGreaterThan(0.4);
+    expect(CHAPERON_DE_LA_PIERRE).toBeLessThan(0.8);
+    expect(MOTIF_GLSL).toContain(`c * ${CHAPERON_DE_LA_PIERRE.toFixed(4)}, smoothstep`);
+    expect(MOTIF_GLSL).toContain(`genre == ${MOTIF.plein} ? c * ${CHAPERON_DE_LA_PIERRE.toFixed(4)} : chap`);
+  });
+
+  it('le disque du cadran reste loin du crème Brume d’un fantôme, et s’efface de loin avec ses points', () => {
+    const lin = (v: number) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+    const srgb = (v: number) => (v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055);
+    const hex = (h: number) => [(h >> 16) & 255, (h >> 8) & 255, h & 255].map((v) => lin(v / 255));
+    // Le cadran des Premiers Rivages (#C8A454), éclairci comme dans le shader.
+    const disque = hex(0xc8a454).map((v) => srgb(v + (1 - v) * CADRAN.eclat) * 255);
+    const brume = [0xe5, 0xeb, 0xe3];
+    expect(Math.hypot(...disque.map((v, k) => v - brume[k]))).toBeGreaterThan(60);
+    expect(MOTIF_GLSL).toContain(`mix(c, vec3(1.0), ${CADRAN.eclat.toFixed(4)}), disque * loin)`);
+    expect(MOTIF_GLSL).toContain(`c * ${CADRAN.sombre.toFixed(4)}, point * loin)`);
+  });
+
+  it('le bardage : des clins dans la teinte de sa matière, un chaperon de pierre, sans soubassement', () => {
+    const p = peintureDuMur(vois({ texture: 'cabine' }), 'bardage');
+    expect(p.fond).toBe('matiere');
+    for (const m of p.motifs.slice(0, 4)) expect(m).toBe(MOTIF.bardage | MOTIF.chaperon);
+    // Les clins s'effacent de loin (le facteur `loin` du shader), comme le colombage.
+    expect(MOTIF_GLSL).toMatch(/c \*= 1\.0 - 0\.18 \* joint \* loin;/);
+  });
+
+  it('la porte : un vantail dans sa matière, dans un encadrement de pierre, sur ses quatre côtés seulement', () => {
+    const p = peintureDuMur(vois({ texture: 'porte', cotes: 0b0101, dessus: 'mur' }), 'vantail');
+    expect(p).toEqual({ fond: 'matiere', motifs: [MOTIF.vantail, MOTIF.vantail, MOTIF.vantail, MOTIF.vantail, 0, 0] });
+    // L'encadrement (deux côtés et le haut, aucune oblique) s'efface de loin.
+    expect(MOTIF_GLSL).toMatch(/return mix\(c, chap, cadre \* loin\);/);
+  });
+
+  it('le cadran : un disque clair à douze points, sans aiguilles, en tête de son mur, sur ses faces libres, jamais dans un angle', () => {
+    // Le milieu d'une face du haut de la tour de l'Horloge (sous son toit) : le cadran sur ses deux faces libres.
+    const milieu = peintureDuMur(vois({ texture: 'cadran', cotes: 0b0101, dessous: 'mur', dessus: 'toit' }), 'plein');
+    expect(milieu.motifs.slice(0, 4).map((m) => Boolean(m & MOTIF.cadran))).toEqual([false, true, false, true]);
+    // Un angle de la tour, un rang plus bas, ou une autre pierre : aucun.
+    expect(peintureDuMur(vois({ texture: 'cadran', cotes: 0b0011, dessous: 'mur' }), 'plein').motifs.some((m) => m & MOTIF.cadran)).toBe(false);
+    expect(peintureDuMur(vois({ texture: 'cadran', cotes: 0b0101, dessous: 'mur', dessus: 'mur' }), 'plein').motifs.some((m) => m & MOTIF.cadran)).toBe(false);
+    expect(peintureDuMur(vois({ texture: 'galet', cotes: 0b0101, dessus: 'toit' }), 'plein').motifs.some((m) => m & MOTIF.cadran)).toBe(false);
+    // Douze points sur un cercle, dans le disque, chacun à l'écart de ses voisins ; aucun trait (pas d'aiguille).
+    const pts = pointsDuCadran();
+    expect(pts).toHaveLength(12);
+    for (const [u, v] of pts) expect(Math.hypot(u - 0.5, v - 0.5) + CADRAN.point).toBeLessThan(CADRAN.disque);
+    expect(Math.hypot(pts[0][0] - pts[1][0], pts[0][1] - pts[1][1])).toBeGreaterThan(3 * CADRAN.point);
+  });
+
+  it('les bits des murs peints restent sous les blocs assemblés', () => {
+    expect(MOTIF_ASSEMBLE_DEBUT).toBe(MOTIF_FIN);
+    for (const v of Object.values(MOTIF)) expect(v).toBeLessThan(MOTIF_FIN);
+  });
+});
+
+describe('Peindre ne coûte aucun triangle : la fusion réunit les rangées d’un mur', () => {
+  it('deux rangées se réunissent malgré les bandes du pied (en bas) et de la tête (en haut), jamais à l’envers', () => {
+    const pied = MOTIF.plein | MOTIF.soubassement;
+    const tete = MOTIF.plein | MOTIF.chaperon;
+    expect(rangeesReunies(pied, MOTIF.plein)).toBe(true);
+    expect(rangeesReunies(MOTIF.plein, tete)).toBe(true);
+    expect(rangeesReunies(pied, tete)).toBe(true);
+    expect(rangeesReunies(tete, MOTIF.plein)).toBe(false);
+    expect(rangeesReunies(MOTIF.plein, pied)).toBe(false);
+    expect(rangeesReunies(MOTIF.plein, MOTIF.colombage)).toBe(false);
+    expect(rangeesReunies(MOTIF.plein | MOTIF.cadran, MOTIF.plein)).toBe(false);
+  });
+
+  it('le shader lit sur chaque rangée le motif qu’elle avait seule', () => {
+    const rangees = [MOTIF.colombage | MOTIF.soubassement | MOTIF.sabliereBasse | MOTIF.montante, MOTIF.colombage, MOTIF.colombage | MOTIF.sabliereHaute];
+    for (const z0 of [-3, 0, 5, 14]) {
+      const m = motifDesRangees(rangees[0], rangees[2], z0, z0 + 2);
+      expect(m & MOTIF.rangees).toBeTruthy();
+      rangees.forEach((r, i) => expect(motifDeLaRangee(m, z0 + i) & (MOTIF.rangees - 1), `${z0 + i}`).toBe(r));
+    }
+    // Une rangée seule, ou sans bande : le motif tel quel.
+    expect(motifDesRangees(rangees[0], rangees[0], 2, 2)).toBe(rangees[0]);
+    expect(motifDesRangees(MOTIF.plein, MOTIF.plein, 2, 4)).toBe(MOTIF.plein);
+    // Deux blocs assemblés empilés (deux miroirs) : leur motif reste le leur, sans bandes ni hauteurs de rangées.
+    expect(motifDesRangees(MOTIF_ASSEMBLE.miroir, MOTIF_ASSEMBLE.miroir, 2, 3)).toBe(MOTIF_ASSEMBLE.miroir);
+  });
+
+  it('un mur de pierre de trois rangées sur quatre cases, soubassement et chaperon compris : un rectangle par face', () => {
+    const cubes: VoxelCube[] = [];
+    for (let x = 0; x < 4; x++) for (let z = 1; z <= 3; z++) cubes.push({ x, y: 0, z, color: '#888888', texture: 'galet', tag: 't' });
+    const sol = Array.from({ length: 4 }, (_, x): VoxelCube => ({ x, y: 0, z: 0, color: '#888888', texture: 'herbe', tag: 't', sol: true }));
+    const m = maillageDeLaConstruction('6e', cubes, sol, { kit: KIT_6E });
+    // Deux grandes faces, deux bouts, le dessus : cinq rectangles, dix triangles.
+    expect(m.opaque.indices.length / 3).toBe(10);
+    const motifs = new Set(m.opaque.motifs);
+    expect([...motifs].some((v) => v & MOTIF.rangees)).toBe(true);
   });
 });

@@ -107,3 +107,5 @@ Le même jour : les deux îles d’anglais que la géographie ferme au port (le 
 Amendement du 6 octobre 2026, mainteneur : « 1 », les habitants des lieux d’histoire-géographie (HG-2) passent aussi une commande, comme ceux de français, de maths et d’anglais ; la LV2 reste sans commande.
 
 Amendement du 6 octobre 2026 (SC-2, consigne du lot, à confirmer par le mainteneur) : les habitants des trois lieux de sciences de 6e passent aussi une commande, comme ceux d’histoire-géographie.
+
+Amendement du 6 octobre 2026 (SC-3, décision du directeur artistique) : les habitants des neuf lieux de sciences de 5e à 3e passent aussi une commande, comme ceux de 6e.

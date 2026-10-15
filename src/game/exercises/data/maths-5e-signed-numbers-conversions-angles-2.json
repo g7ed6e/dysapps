@@ -1,0 +1,327 @@
+{
+  "id": "maths-5e-signed-numbers-conversions-angles-2",
+  "biome": "maths-5e-signed-numbers",
+  "type": "conversions-angles",
+  "level": 2,
+  "instruction": "Lis la phrase, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-5e-signed-numbers-conversions-angles-2-0",
+      "prompt": "Un prisme droit a une base de 15 cm² et une hauteur de 4 cm. Son volume est … cm³.",
+      "spoken": "Un prisme droit a une base de 15 centimètres carrés et une hauteur de 4 centimètres. Quel est son volume, en centimètres cubes ?",
+      "choices": [
+        "19",
+        "30",
+        "60"
+      ],
+      "answer": "60",
+      "hint": "Aire de la base × hauteur.",
+      "explanation": "15 × 4 = 60 cm³. 30, c’est diviser par 2 comme pour l’aire d’un triangle : le volume du prisme ne se divise pas. 19, c’est 15 + 4.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "aire de la base (cm²)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              15,
+              4,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Formules et angles",
+          "lines": [
+            "Prisme droit, cylindre : volume = aire de la base × hauteur.",
+            "Disque de rayon r : aire = π × r × r.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Deux angles opposés par le sommet ont la même mesure.",
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Triangle : aire = base × hauteur ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-conversions-angles-2-1",
+      "prompt": "Un disque a un rayon de 5 cm. Son aire est … cm².",
+      "spoken": "Un disque a un rayon de 5 centimètres. Quelle est son aire, en centimètres carrés ?",
+      "choices": [
+        "5π",
+        "10π",
+        "25π"
+      ],
+      "answer": "25π",
+      "hint": "π × r × r : le rayon est multiplié deux fois.",
+      "explanation": "π × 5 × 5 = 25π cm², environ 78 cm². 10π, c’est π × 2 × 5, le périmètre du cercle, pas l’aire. 5π, c’est oublier de multiplier une deuxième fois par le rayon.",
+      "figure": {
+        "kind": "plane-figure",
+        "props": {
+          "shape": "disc",
+          "values": [
+            5
+          ],
+          "area": "?"
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Formules et angles",
+          "lines": [
+            "Prisme droit, cylindre : volume = aire de la base × hauteur.",
+            "Disque de rayon r : aire = π × r × r.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Deux angles opposés par le sommet ont la même mesure.",
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Triangle : aire = base × hauteur ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-conversions-angles-2-2",
+      "prompt": "Un cylindre a un rayon de 3 cm et une hauteur de 2 cm. Son volume est … cm³.",
+      "spoken": "Un cylindre a un rayon de 3 centimètres et une hauteur de 2 centimètres. Quel est son volume, en centimètres cubes ?",
+      "choices": [
+        "6π",
+        "9π",
+        "18π"
+      ],
+      "answer": "18π",
+      "hint": "D’abord l’aire du disque de base, puis × la hauteur.",
+      "explanation": "La base est un disque : π × 3 × 3 = 9π cm². Puis 9π × 2 = 18π cm³. 9π, c’est l’aire de la base seule, sans la hauteur. 6π, c’est π × 3 × 2 : le rayon n’est pris qu’une fois.",
+      "figure": {
+        "kind": "solid",
+        "props": {
+          "solid": "cylinder",
+          "values": [
+            3,
+            2
+          ],
+          "volume": "?"
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Formules et angles",
+          "lines": [
+            "Prisme droit, cylindre : volume = aire de la base × hauteur.",
+            "Disque de rayon r : aire = π × r × r.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Deux angles opposés par le sommet ont la même mesure.",
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Triangle : aire = base × hauteur ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-conversions-angles-2-3",
+      "prompt": "Deux angles adjacents forment un angle plat. L’un mesure 130°, l’autre mesure …",
+      "spoken": "Deux angles adjacents forment un angle plat. L’un mesure 130 degrés. Combien mesure l’autre ?",
+      "choices": [
+        "50°",
+        "130°",
+        "230°"
+      ],
+      "answer": "50°",
+      "hint": "Un angle plat mesure 180°. Enlève l’angle connu.",
+      "explanation": "Ensemble, ils font un angle plat, 180° : 180 − 130 = 50°. 130°, c’est croire les deux angles égaux, comme des angles opposés par le sommet. 230°, c’est 360 − 130 : un angle plat ne fait pas 360°.",
+      "figure": {
+        "kind": "angle",
+        "props": {
+          "layout": "straight",
+          "values": [
+            130,
+            "?"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Formules et angles",
+          "lines": [
+            "Prisme droit, cylindre : volume = aire de la base × hauteur.",
+            "Disque de rayon r : aire = π × r × r.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Deux angles opposés par le sommet ont la même mesure.",
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Triangle : aire = base × hauteur ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-conversions-angles-2-4",
+      "prompt": "Deux droites se coupent. Deux angles opposés par le sommet : l’un mesure 70°, l’autre mesure …",
+      "spoken": "Deux droites se coupent. Deux angles opposés par le sommet : l’un mesure 70 degrés. Combien mesure l’autre ?",
+      "choices": [
+        "20°",
+        "70°",
+        "110°"
+      ],
+      "answer": "70°",
+      "hint": "Relis la ligne du rappel sur les angles opposés par le sommet.",
+      "explanation": "Deux angles opposés par le sommet ont la même mesure : 70°. 110°, c’est l’angle d’à côté, qui forme un angle plat avec lui : 70 + 110 = 180. 20°, c’est 90 − 70 : il n’y a pas d’angle droit ici.",
+      "figure": {
+        "kind": "angle",
+        "props": {
+          "layout": "crossed",
+          "values": [
+            70,
+            "?"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Formules et angles",
+          "lines": [
+            "Prisme droit, cylindre : volume = aire de la base × hauteur.",
+            "Disque de rayon r : aire = π × r × r.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Deux angles opposés par le sommet ont la même mesure.",
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Triangle : aire = base × hauteur ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-conversions-angles-2-5",
+      "prompt": "Un triangle a un angle de 45° et un angle de 75°. Le troisième mesure …",
+      "spoken": "Un triangle a un angle de 45 degrés et un angle de 75 degrés. Combien mesure le troisième ?",
+      "choices": [
+        "60°",
+        "120°",
+        "240°"
+      ],
+      "answer": "60°",
+      "hint": "Les trois angles font 180°. Enlève les deux angles connus.",
+      "explanation": "45 + 75 = 120, puis 180 − 120 = 60 : le troisième angle mesure 60°. 120°, c’est la somme des deux angles connus. 240°, c’est 360 − 120 : 360°, ce n’est pas la somme des angles d’un triangle.",
+      "figure": {
+        "kind": "triangle-angles",
+        "props": {
+          "angles": [
+            45,
+            75,
+            "?"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Formules et angles",
+          "lines": [
+            "Prisme droit, cylindre : volume = aire de la base × hauteur.",
+            "Disque de rayon r : aire = π × r × r.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Deux angles opposés par le sommet ont la même mesure.",
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Triangle : aire = base × hauteur ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-conversions-angles-2-6",
+      "prompt": "Un triangle a un angle droit et un angle de 35°. Le troisième mesure …",
+      "spoken": "Un triangle a un angle droit et un angle de 35 degrés. Combien mesure le troisième ?",
+      "choices": [
+        "55°",
+        "125°",
+        "145°"
+      ],
+      "answer": "55°",
+      "hint": "Un angle droit mesure 90°. Les trois angles font 180°.",
+      "explanation": "90 + 35 = 125, puis 180 − 125 = 55 : le troisième angle mesure 55°. 145°, c’est 180 − 35 : l’angle droit est oublié. 125°, c’est la somme des deux angles connus.",
+      "figure": {
+        "kind": "triangle-angles",
+        "props": {
+          "angles": [
+            90,
+            35,
+            "?"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Formules et angles",
+          "lines": [
+            "Prisme droit, cylindre : volume = aire de la base × hauteur.",
+            "Disque de rayon r : aire = π × r × r.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Deux angles opposés par le sommet ont la même mesure.",
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Triangle : aire = base × hauteur ÷ 2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-signed-numbers-conversions-angles-2-7",
+      "prompt": "Un triangle a une base de 8 cm et une hauteur de 5 cm. Son aire est … cm².",
+      "spoken": "Un triangle a une base de 8 centimètres et une hauteur de 5 centimètres. Quelle est son aire, en centimètres carrés ?",
+      "choices": [
+        "13",
+        "20",
+        "40"
+      ],
+      "answer": "20",
+      "hint": "Base × hauteur, puis divise par 2.",
+      "explanation": "8 × 5 = 40, puis 40 ÷ 2 = 20 cm². 40, c’est oublier de diviser par 2 : c’est l’aire du rectangle. 13, c’est 8 + 5.",
+      "figure": {
+        "kind": "plane-figure",
+        "props": {
+          "shape": "triangle",
+          "values": [
+            8,
+            5
+          ],
+          "area": "?"
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Formules et angles",
+          "lines": [
+            "Prisme droit, cylindre : volume = aire de la base × hauteur.",
+            "Disque de rayon r : aire = π × r × r.",
+            "Aigu : moins de 90°. Droit : 90°. Obtus : entre 90° et 180°. Plat : 180°.",
+            "Deux angles opposés par le sommet ont la même mesure.",
+            "Dans un triangle, les trois angles font 180° en tout.",
+            "Triangle : aire = base × hauteur ÷ 2."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-5e-signed-numbers",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

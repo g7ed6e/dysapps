@@ -544,6 +544,138 @@ Pour tous les items :
    - indice : Que raconte mon grand-père ? Cherche le nom avant la première virgule.
    - explication : Le participe apposé précise ces histoires, au féminin pluriel : racontées. Mon grand-père est tout près, mais ce n’est pas lui qu’on raconte.
 
+## Temps et ponctuation · `tense-meaning`
+
+- description : Ce que disent les temps et les modes, puis le rôle des signes de ponctuation.
+- compétences : c4.fr.langue.valeurs-des-temps · c4.fr.langue.ponctuation
+- bravo : Bien vu !
+- erreur : {explanation}
+- bloc gagné : french-4e-agreement
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `french-4e-agreement-tense-meaning-1`
+
+- consigne : Lis la phrase : que dit le temps ou le mode du verbe ? La règle est affichée.
+
+Pour tous les items :
+- aide « Ce que disent les temps et les modes » :
+  - Temps simple : l’action se fait (je range). Temps composé : elle est finie (j’ai rangé).
+  - Imparfait : l’action dure, c’est le décor. Passé simple : l’action vue en entier, qui fait avancer le récit.
+  - Indicatif : un fait réel. Subjonctif : ce qu’on veut ou ce qu’il faut (je veux que tu viennes).
+  - Conditionnel : un fait imaginé, ou une demande polie. Impératif : un ordre, un conseil.
+
+1. énoncé : « Quand il a fini ses devoirs, Tom joue aux cartes. » Ses devoirs sont-ils finis quand il joue ?
+   - lu : Quand il a fini ses devoirs, Tom joue aux cartes. Ses devoirs sont-ils finis quand il joue ?
+   - choix : oui, ils sont finis · non, il les fait encore
+   - réponse : oui, ils sont finis
+   - indice : « A fini » : temps simple ou temps composé ? Relis la règle.
+   - explication : « A fini » est un temps composé : l’action est finie avant que Tom joue. Avec un temps simple, « quand il finit ses devoirs », il serait encore en train de les faire.
+2. énoncé : « Elle lisait une page quand le téléphone sonna. » Au moment où le téléphone sonne, que fait-elle ?
+   - lu : Elle lisait une page quand le téléphone sonna. Au moment où le téléphone sonne, que fait-elle ?
+   - choix : elle a fini sa page · elle est en train de lire
+   - réponse : elle est en train de lire
+   - indice : « Lisait » est à l’imparfait : l’action est-elle vue en entier, ou en train de durer ?
+   - explication : L’imparfait montre l’action en train de durer : elle lisait encore quand le téléphone sonna. Rien ne dit qu’elle avait fini sa page.
+3. énoncé : « Ce soir-là, elle lut une page, puis elle éteignit. » A-t-elle lu la page en entier ?
+   - lu : Ce soir-là, elle lut une page, puis elle éteignit. A-t-elle lu la page en entier ?
+   - choix : oui, en entier · non, elle s’est arrêtée au milieu
+   - réponse : oui, en entier
+   - indice : « Lut » est au passé simple : l’action est-elle vue en entier ?
+   - explication : Le passé simple montre l’action en entier, du début à la fin : elle lut la page, puis elle éteignit. Les deux actions se suivent.
+4. énoncé : « Le soleil se couchait, les oiseaux se taisaient ; alors Hugo ferma les volets. » Quel verbe fait avancer le récit ?
+   - lu : Le soleil se couchait, les oiseaux se taisaient ; alors Hugo ferma les volets. Quel verbe fait avancer le récit ?
+   - choix : se couchait · ferma · se taisaient
+   - réponse : ferma
+   - indice : Lequel des trois verbes est au passé simple ?
+   - explication : « Ferma » est au passé simple : c’est l’action du récit, au premier plan. « Se couchait » et « se taisaient », à l’imparfait, posent le décor, à l’arrière-plan.
+5. énoncé : « Je sais que tu viens. » Que dit le mode du verbe « viens » ?
+   - lu : Je sais que tu viens. Que dit le mode du verbe « viens » ?
+   - choix : une volonté · un fait réel · un fait imaginé
+   - réponse : un fait réel
+   - indice : Après « je sais que », le fait est-il sûr ?
+   - explication : Après « je sais que », le verbe est à l’indicatif : il présente un fait réel, que l’on sait.
+6. énoncé : « Je veux que tu viennes. » Que dit le mode du verbe « viennes » ?
+   - lu : Je veux que tu viennes. Que dit le mode du verbe « viennes » ?
+   - choix : un fait réel · un fait imaginé · une volonté
+   - réponse : une volonté
+   - indice : Après « je veux que », dit-on ce qui est, ou ce qu’on souhaite ?
+   - explication : Après « je veux que », le verbe est au subjonctif : « viennes » dit ce que je veux, pas un fait réel. Tu n’es peut-être pas encore venu.
+7. énoncé : « Avec un chien, nous ferions de longues promenades. » Que dit le conditionnel « ferions » ?
+   - lu : Avec un chien, nous ferions de longues promenades. Que dit le conditionnel « ferions » ?
+   - choix : un fait imaginé · un fait réel · un ordre
+   - réponse : un fait imaginé
+   - indice : Les promenades ont-elles lieu, ou dépendent-elles d’une condition ?
+   - explication : Le conditionnel dit ce qui arriverait avec un chien : c’est un fait imaginé, qui dépend d’une condition. Un fait réel serait à l’indicatif : nous faisons de longues promenades.
+8. énoncé : « Pourrais-tu m’aider à porter ce sac ? » Pourquoi le conditionnel ?
+   - lu : Pourrais-tu m’aider à porter ce sac ? Pourquoi le conditionnel ?
+   - choix : pour parler de demain · pour demander poliment · pour donner un ordre
+   - réponse : pour demander poliment
+   - indice : Compare avec « Peux-tu m’aider ? » : laquelle est la plus douce ?
+   - explication : Le conditionnel adoucit la demande : « Pourrais-tu » est plus poli que « Peux-tu ». Ce n’est pas un futur : au futur, on dirait « pourras-tu », sans i.
+
+### Niveau 2 · `french-4e-agreement-tense-meaning-2`
+
+- consigne : Ponctuation : lis la phrase, puis réponds à la question. La règle est affichée.
+
+Pour tous les items :
+- aide « Les signes de ponctuation » :
+  - Virgule : sépare les mots d’une liste, isole celui à qui l’on parle, encadre un groupe qu’on peut enlever.
+  - Point-virgule : relie deux propositions proches par le sens. Après lui, pas de majuscule.
+  - Deux-points : annoncent une liste, une explication ou des paroles.
+  - Une relative entre virgules parle de tous ; sans virgules, elle trie : seulement certains.
+
+1. énoncé : « J’ai rangé mes livres … mes cahiers et mes crayons. » Quel signe va à la place du trou ?
+   - lu : J’ai rangé mes livres (signe manquant) mes cahiers et mes crayons. Quel signe va à la place du trou ?
+   - choix : un point · une virgule · deux-points
+   - réponse : une virgule
+   - indice : Les livres, les cahiers et les crayons forment-ils une liste ?
+   - explication : Livres, cahiers et crayons forment une liste : la virgule sépare les mots d’une liste, et « et » relie les deux derniers. Un point couperait la phrase en deux.
+2. énoncé : « J’ai trois matières préférées : le dessin, l’anglais et le sport. » À quoi servent les deux-points ?
+   - lu : J’ai trois matières préférées : le dessin, l’anglais et le sport. À quoi servent les deux-points ?
+   - choix : annoncer une liste · annoncer une explication · annoncer des paroles
+   - réponse : annoncer une liste
+   - indice : Que vient-il après les deux-points ?
+   - explication : Après les deux-points viennent les trois matières : les deux-points annoncent une liste. Personne ne parle, et rien n’est expliqué.
+3. énoncé : « Tom reste au lit : il a de la fièvre. » À quoi servent les deux-points ?
+   - lu : Tom reste au lit : il a de la fièvre. À quoi servent les deux-points ?
+   - choix : annoncer des paroles · annoncer une liste · annoncer une explication
+   - réponse : annoncer une explication
+   - indice : La fin de la phrase dit-elle pourquoi Tom reste au lit ?
+   - explication : « Il a de la fièvre » dit pourquoi Tom reste au lit : les deux-points annoncent une explication, ici une cause. Il n’y a ni liste, ni paroles.
+4. énoncé : Léa crie : « Attends-moi ! » À quoi servent les deux-points ?
+   - lu : Léa crie : Attends-moi ! À quoi servent les deux-points ?
+   - choix : annoncer une explication · annoncer des paroles · annoncer une liste
+   - réponse : annoncer des paroles
+   - indice : Après les deux-points, qui parle ? Regarde les guillemets.
+   - explication : Après « crie », les deux-points annoncent les mots exacts de Léa, entre guillemets : des paroles rapportées au discours direct.
+5. énoncé : « Le jour se lève ; les oiseaux chantent déjà. » À quoi sert le point-virgule ?
+   - lu : Le jour se lève ; les oiseaux chantent déjà. À quoi sert le point-virgule ?
+   - choix : relier deux propositions proches · annoncer une liste · séparer deux phrases sans lien
+   - réponse : relier deux propositions proches
+   - indice : Les deux parties de la phrase parlent-elles du même moment ?
+   - explication : Le point-virgule relie deux propositions qui vont ensemble : le jour se lève, et au même moment les oiseaux chantent. Il sépare moins qu’un point, et la suite ne prend pas de majuscule.
+6. énoncé : « Léo, range ta chambre. » Que montre la virgule ?
+   - lu : Léo, range ta chambre. Que montre la virgule ?
+   - choix : Léo est le sujet · on parle à Léo · on fait une liste
+   - réponse : on parle à Léo
+   - indice : Y a-t-il un sujet écrit devant « range » ?
+   - explication : La virgule isole Léo, celui à qui l’on parle ; « range » est à l’impératif, sans sujet. Sans virgule, « Léo range sa chambre » dirait ce que fait Léo.
+7. énoncé : « Les élèves, qui étaient fatigués, sont rentrés. » Tous les élèves étaient-ils fatigués ?
+   - lu : Les élèves, qui étaient fatigués, sont rentrés. Tous les élèves étaient-ils fatigués ?
+   - choix : oui, tous · non, seulement certains
+   - réponse : oui, tous
+   - indice : La relative est entre virgules. Relis la dernière ligne de la règle.
+   - explication : Entre virgules, la relative ajoute une précision sur tous les élèves : ils étaient tous fatigués, et ils sont tous rentrés. On pourrait l’enlever sans changer qui est rentré.
+8. énoncé : « Les élèves qui étaient fatigués sont rentrés. » De quels élèves parle la phrase ?
+   - lu : Les élèves qui étaient fatigués sont rentrés. De quels élèves parle la phrase ?
+   - choix : de tous les élèves · seulement des élèves fatigués
+   - réponse : seulement des élèves fatigués
+   - indice : Il n’y a pas de virgules autour de la relative. Relis la dernière ligne de la règle.
+   - explication : Sans virgules, la relative trie les élèves : la phrase ne parle que de ceux qui étaient fatigués, et ce sont eux qui sont rentrés. Avec des virgules, elle parlerait de tous.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

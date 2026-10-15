@@ -19,7 +19,7 @@ const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
 /** Une matière : sa jauge d'étoiles, ses chiffres, et les missions à retravailler (un lien les relance). */
 function SubjectPanel({ data }: { data: SubjectProgress }) {
   const { settings } = useSettings();
-  const info = subjectInfo(data.subject, settings.lv2);
+  const info = subjectInfo(data.subject, settings);
   const { earned, max } = data.stars;
   const univers = useUnivers();
   const percent = max ? Math.round((earned / max) * 100) : 0;
@@ -119,7 +119,7 @@ export function ProgressBody() {
   const { progress } = useProgress();
   const { state } = useBlocland();
   const { settings } = useSettings();
-  const subjects = visibleSubjects(settings.lv2).map((s) => subjectProgress(s, progress.apps, state));
+  const subjects = visibleSubjects(settings).map((s) => subjectProgress(s, progress.apps, state));
   const earned = BADGES.filter((b) => progress.badges[b.id]).length;
   const textes = useTextes();
   const rate = progress.totalAnswers ? Math.round((progress.correctAnswers / progress.totalAnswers) * 100) : 0;

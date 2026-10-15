@@ -1,0 +1,241 @@
+{
+  "id": "physics-chemistry-3e-motion-energy-motion-forces-2",
+  "biome": "physics-chemistry-3e-motion-energy",
+  "type": "motion-forces",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-2-0",
+      "prompt": "La masse se mesure en kilogrammes, et le poids en …",
+      "spoken": "La masse se mesure en kilogrammes, et le poids en  (mot manquant) ",
+      "choices": [
+        "kilogrammes",
+        "newtons",
+        "mètres"
+      ],
+      "answer": "newtons",
+      "hint": "Le poids est une force.",
+      "explanation": "Le poids est une force : il se mesure en newtons. La masse, elle, se mesure en kilogrammes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Forces, poids et masse",
+          "lines": [
+            "Une action mécanique se représente par une force : une flèche.",
+            "Une force se mesure en newtons (N), avec un dynamomètre.",
+            "La gravitation : deux objets qui ont une masse s’attirent.",
+            "Le poids : la force d’attraction de la planète, vers son centre.",
+            "La masse, en kilogrammes, est la même partout. Le poids change d’un astre à l’autre.",
+            "Sur la Terre, le poids en newtons vaut environ 10 fois la masse en kilogrammes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-2-1",
+      "prompt": "Une force se mesure avec un …",
+      "spoken": "Une force se mesure avec un  (mot manquant) ",
+      "choices": [
+        "dynamomètre",
+        "chronomètre",
+        "thermomètre"
+      ],
+      "answer": "dynamomètre",
+      "hint": "Relis la ligne « Une force » du rappel.",
+      "explanation": "Le dynamomètre mesure une force, en newtons. Le chronomètre mesure une durée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Forces, poids et masse",
+          "lines": [
+            "Une action mécanique se représente par une force : une flèche.",
+            "Une force se mesure en newtons (N), avec un dynamomètre.",
+            "La gravitation : deux objets qui ont une masse s’attirent.",
+            "Le poids : la force d’attraction de la planète, vers son centre.",
+            "La masse, en kilogrammes, est la même partout. Le poids change d’un astre à l’autre.",
+            "Sur la Terre, le poids en newtons vaut environ 10 fois la masse en kilogrammes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-2-2",
+      "prompt": "Sur la Lune, l’astronaute ne change pas de …",
+      "spoken": "Sur la Lune, l’astronaute ne change pas de  (mot manquant) ",
+      "choices": [
+        "poids",
+        "masse",
+        "force d’attraction"
+      ],
+      "answer": "masse",
+      "hint": "Relis la ligne « La masse » du rappel.",
+      "explanation": "La masse de l’astronaute ne change pas : c’est la même matière. Son poids, lui, est bien plus petit sur la Lune.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Forces, poids et masse",
+          "lines": [
+            "Une action mécanique se représente par une force : une flèche.",
+            "Une force se mesure en newtons (N), avec un dynamomètre.",
+            "La gravitation : deux objets qui ont une masse s’attirent.",
+            "Le poids : la force d’attraction de la planète, vers son centre.",
+            "La masse, en kilogrammes, est la même partout. Le poids change d’un astre à l’autre.",
+            "Sur la Terre, le poids en newtons vaut environ 10 fois la masse en kilogrammes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-2-3",
+      "prompt": "Le sac de Nina\nMasse : 5 kg (kilogrammes).\nSur la Terre, le poids en newtons vaut environ 10 fois la masse.",
+      "question": "Quel est le poids du sac ?",
+      "spoken": "Le sac de Nina. Masse, 5 kilogrammes. Sur la Terre, le poids en newtons vaut environ 10 fois la masse.",
+      "choices": [
+        "5 newtons",
+        "15 newtons",
+        "50 newtons"
+      ],
+      "answer": "50 newtons",
+      "hint": "Multiplie la masse par 10.",
+      "explanation": "5 fois 10 : le sac pèse environ 50 newtons. 5, c’est sa masse en kilogrammes, pas son poids.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Forces, poids et masse",
+          "lines": [
+            "Une action mécanique se représente par une force : une flèche.",
+            "Une force se mesure en newtons (N), avec un dynamomètre.",
+            "La gravitation : deux objets qui ont une masse s’attirent.",
+            "Le poids : la force d’attraction de la planète, vers son centre.",
+            "La masse, en kilogrammes, est la même partout. Le poids change d’un astre à l’autre.",
+            "Sur la Terre, le poids en newtons vaut environ 10 fois la masse en kilogrammes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-2-4",
+      "prompt": "Le même sac sur la Lune\nSur la Terre, sa masse est 5 kg (kilogrammes).\nSur la Lune, le poids est environ 6 fois plus petit.",
+      "question": "Quelle est la masse du sac sur la Lune ?",
+      "spoken": "Le même sac sur la Lune. Sur la Terre, sa masse est 5 kilogrammes. Sur la Lune, le poids est environ 6 fois plus petit.",
+      "choices": [
+        "moins de 5 kilogrammes",
+        "5 kilogrammes",
+        "plus de 5 kilogrammes"
+      ],
+      "answer": "5 kilogrammes",
+      "hint": "Le document parle du poids ; la question, de la masse.",
+      "explanation": "La masse est la même partout : 5 kilogrammes. C’est le poids qui est 6 fois plus petit sur la Lune.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Forces, poids et masse",
+          "lines": [
+            "Une action mécanique se représente par une force : une flèche.",
+            "Une force se mesure en newtons (N), avec un dynamomètre.",
+            "La gravitation : deux objets qui ont une masse s’attirent.",
+            "Le poids : la force d’attraction de la planète, vers son centre.",
+            "La masse, en kilogrammes, est la même partout. Le poids change d’un astre à l’autre.",
+            "Sur la Terre, le poids en newtons vaut environ 10 fois la masse en kilogrammes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-2-5",
+      "prompt": "La Terre et la Lune s’attirent, car elles ont une …",
+      "spoken": "La Terre et la Lune s’attirent, car elles ont une  (mot manquant) ",
+      "choices": [
+        "atmosphère",
+        "masse",
+        "lumière"
+      ],
+      "answer": "masse",
+      "hint": "Relis la ligne « La gravitation » du rappel.",
+      "explanation": "Deux objets qui ont une masse s’attirent : c’est la gravitation. Elle garde la Lune autour de la Terre, et la Terre autour du Soleil.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Forces, poids et masse",
+          "lines": [
+            "Une action mécanique se représente par une force : une flèche.",
+            "Une force se mesure en newtons (N), avec un dynamomètre.",
+            "La gravitation : deux objets qui ont une masse s’attirent.",
+            "Le poids : la force d’attraction de la planète, vers son centre.",
+            "La masse, en kilogrammes, est la même partout. Le poids change d’un astre à l’autre.",
+            "Sur la Terre, le poids en newtons vaut environ 10 fois la masse en kilogrammes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-2-6",
+      "prompt": "Le schéma de la force\nUne flèche part du ballon, vers le haut.\nSa longueur : 2 cm (centimètres).\nÉchelle : 1 cm pour 1 N (newton).",
+      "question": "Quelle est la valeur de la force ?",
+      "spoken": "Le schéma de la force. Une flèche part du ballon, vers le haut. Sa longueur, 2 centimètres. Échelle, un centimètre pour un newton.",
+      "choices": [
+        "1 newton",
+        "2 newtons",
+        "4 newtons"
+      ],
+      "answer": "2 newtons",
+      "hint": "Un centimètre de flèche, c’est un newton.",
+      "explanation": "La flèche mesure 2 centimètres, et chaque centimètre vaut un newton : la force vaut 2 newtons. La flèche monte : la force est dirigée vers le haut.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Forces, poids et masse",
+          "lines": [
+            "Une action mécanique se représente par une force : une flèche.",
+            "Une force se mesure en newtons (N), avec un dynamomètre.",
+            "La gravitation : deux objets qui ont une masse s’attirent.",
+            "Le poids : la force d’attraction de la planète, vers son centre.",
+            "La masse, en kilogrammes, est la même partout. Le poids change d’un astre à l’autre.",
+            "Sur la Terre, le poids en newtons vaut environ 10 fois la masse en kilogrammes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-motion-forces-2-7",
+      "prompt": "Sur la Terre, le poids d’un objet est dirigé vers le …",
+      "spoken": "Sur la Terre, le poids d’un objet est dirigé vers le  (mot manquant) ",
+      "choices": [
+        "haut",
+        "nord",
+        "centre de la Terre"
+      ],
+      "answer": "centre de la Terre",
+      "hint": "Relis la ligne « Le poids » du rappel.",
+      "explanation": "La Terre attire les objets vers son centre : le poids est vertical, dirigé vers le bas, vers le centre de la Terre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Forces, poids et masse",
+          "lines": [
+            "Une action mécanique se représente par une force : une flèche.",
+            "Une force se mesure en newtons (N), avec un dynamomètre.",
+            "La gravitation : deux objets qui ont une masse s’attirent.",
+            "Le poids : la force d’attraction de la planète, vers son centre.",
+            "La masse, en kilogrammes, est la même partout. Le poids change d’un astre à l’autre.",
+            "Sur la Terre, le poids en newtons vaut environ 10 fois la masse en kilogrammes."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-3e-motion-energy",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

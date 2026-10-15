@@ -1,15 +1,16 @@
 // La phrase écrite et lue qui dit où est une place (GD-9, « Aménager sa région ») : « au nord de la Forêt des sons, à
-// 2 cases ». La direction en mots (huit, le nord en haut de la Carte, l’est à sa droite), le voisin le plus proche, et l'écart en cases de
+// 2 cases ». La direction en mots (huit, le nord en haut de la Carte, l’est à sa droite, vue à l’écran), le voisin le plus proche, et l'écart en cases de
 // la grille des places (le mot « cases » choisi par le mainteneur, 5 octobre 2026). Les noms des lieux viennent de
 // l'appelant (les textes de l'univers) ; sans eux, ceux du jeu. Code pur, sans Three.js.
 import { type BiomeId, getBiome } from '../biomes';
 import type { World } from '../engine/state';
-import { guardianOf, placeIn, spotOf } from './arrange';
-import { archipelagoOfIsland, type IslandDef } from './map';
-import { footprintOf, gapBetween, landRectangle, placedIsland, poseOfSpot } from './footprint';
+import { placeIn, spotOf } from './arrange';
+import { archipelagoOfIsland } from './map';
+import { gapBetween, landRectangle, placedIsland, poseOfSpot } from './footprint';
 import { STEP, type Rectangle } from './placement';
 import { placesOf } from './routing';
-import type { LayoutGuardian, LayoutSpot } from './savedLayout';
+import { VUE_DE_LA_CARTE } from './terrain/view';
+import type { LayoutSpot } from './savedLayout';
 import { ofPlace } from './placeArticle';
 
 export { ofPlace, thePlace, toPlace } from './placeArticle';
@@ -38,12 +39,33 @@ export const DIRECTIONS = [
 type PlaceDirection = (typeof DIRECTIONS)[number];
 
 /**
- * La direction de `vers` vu depuis `depuis`, telle qu'on la voit sur la Carte : le nord en haut (y qui monte), l'est à
- * droite, du côté des x du monde qui descendent (la caméra de la Carte regarde depuis les y bas ; world/arrange.ts,
- * `DIRECTION_STEP`).
+ * Les axes de l'écran de la Carte sur le sol, en cases du monde (x, y de la grille) : la droite et le haut de l'image,
+ * pour la caméra de la Carte (`VUE_DE_LA_CARTE`, regardée comme three/camera/framings.ts la pose : `lookAt`, le haut
+ * du monde en haut). Projection parallèle : la même à tout zoom et à toute taille d'écran ; la perspective n'y ajoute
+ * que quelques degrés près des bords.
+ */
+const AXES_DE_LA_CARTE = (() => {
+  const v = VUE_DE_LA_CARTE;
+  const n = Math.hypot(v.dx, v.up, v.dy);
+  const u = { x: v.dx / n, y: v.up / n, z: v.dy / n };
+  // La droite : le haut du monde (0, 1, 0) vectoriel l'axe de la caméra, à plat.
+  const m = Math.hypot(u.z, u.x);
+  const droite = { x: u.z / m, y: 0, z: -u.x / m };
+  // Le haut de l'image : l'axe de la caméra vectoriel la droite.
+  const haut = { x: u.y * droite.z - u.z * droite.y, z: u.x * droite.y - u.y * droite.x };
+  return { droite: { x: droite.x, y: droite.z }, haut: { x: haut.x, y: haut.z } };
+})();
+
+/**
+ * La direction de `vers` vu depuis `depuis`, telle qu'on la voit sur la Carte : le nord en haut de l'image, l'est à sa
+ * droite (du côté des x du monde qui descendent ; world/arrange.ts, `DIRECTION_STEP`). L'angle est pris à l'écran, pas
+ * sur la grille : la caméra de la Carte, un peu penchée et tournée, le change de quelques degrés, assez pour changer
+ * de mot près d'une limite entre deux secteurs.
  */
 function directionOf(depuis: { x: number; y: number }, vers: { x: number; y: number }): PlaceDirection {
-  const angle = Math.atan2(vers.y - depuis.y, depuis.x - vers.x);
+  const g = { x: vers.x - depuis.x, y: vers.y - depuis.y };
+  const { droite, haut } = AXES_DE_LA_CARTE;
+  const angle = Math.atan2(g.x * haut.x + g.y * haut.y, g.x * droite.x + g.y * droite.y);
   const secteur = (((Math.round(angle / (Math.PI / 4)) % 8) + 8) % 8) as 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
   return DIRECTIONS[secteur];
 }
@@ -110,24 +132,4 @@ export function placeSigns(world: World, id: BiomeId, spot: LayoutSpot = spotOf(
   }
   if (!voisin) return null;
   return { voisin: nom(voisin.id), direction: directionOf(milieu(voisin.r), milieu(ici)), cases: casesOf(voisin.ecart) };
-}
-
-/** Où est l'îlot d'un Gardien autour de son lieu (à sa place par défaut) : « au nord de son île ». */
-export function guardianSentence(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'> = guardianOf(world, id)): string {
-  const def: IslandDef = placeIn(world, id);
-  const parts = footprintOf(id, def, g);
-  const terre = parts.find((p) => p.genre === 'terre')!;
-  const ilot = parts.find((p) => p.genre === 'ilot')!;
-  return `${directionWords(milieu(terre), milieu(ilot))} de son île`;
-}
-
-/**
- * Où est l'îlot d'un Gardien (à sa place par défaut), en signes, comme un lieu : son île pour repère, la direction et
- * l'écart en cases (« Mine des lettres ↑ 1 ⬚ »), dits en mots par `placeSignsSentence`.
- */
-export function guardianSigns(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'> = guardianOf(world, id), nom: PlaceName = NOM_DU_JEU): PlaceSigns {
-  const parts = footprintOf(id, placeIn(world, id), g);
-  const terre = parts.find((p) => p.genre === 'terre')!;
-  const ilot = parts.find((p) => p.genre === 'ilot')!;
-  return { voisin: nom(id), direction: directionOf(milieu(terre), milieu(ilot)), cases: casesOf(gapBetween(terre, ilot)) };
 }

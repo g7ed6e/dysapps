@@ -55,7 +55,7 @@ import { ARCHIPELAGOS } from './archipelago';
 import { pontsDePierreEtDeBois } from './bridges';
 import { phareDuLarge } from './offshoreLighthouse';
 import { kitVide } from './architecture';
-import { batimentsDe, ETAPES_DU_BATIMENT } from './construction';
+import { batimentsDe, coursDe, ETAPES_DU_BATIMENT } from './construction';
 
 type Etat = 'tout' | 'chantier' | 'dernier';
 
@@ -143,17 +143,54 @@ function rangerLesLanternes(cubes: VoxelCube[], a: ArchipelagoId = '6e') {
 }
 
 /**
- * Le triangle `i` d'un groupe est-il au phare de Grimoire, au phare du large (DA-4) ou à un pont de pierre et de bois
- * du 5e (des modèles, pas des blocs) ?
+ * Le triangle `i` d'un groupe est-il au phare de Grimoire, au phare du large (DA-4), à un pont de pierre et de bois
+ * du 5e, ou à un objet dessiné comme un modèle (le trophée d'un Gardien rallumé, un objet du quai, une petite
+ * construction : world/objects/) : des modèles, pas des blocs ?
  */
 const auPhare = (m: MaillageDeLaConstruction, groupe: 'opaque' | 'fenetres', i: number) =>
   Boolean(
     (m.phare && i >= m.phare[groupe][0] && i < m.phare[groupe][1]) ||
       (m.phareDuLarge && i >= m.phareDuLarge[groupe][0] && i < m.phareDuLarge[groupe][1]) ||
-      (groupe === 'opaque' && (m.ponts ?? []).some((p) => i >= p.opaque[0] && i < p.opaque[1])),
+      (groupe === 'opaque' && (m.ponts ?? []).some((p) => i >= p.opaque[0] && i < p.opaque[1])) ||
+      (m.monuments ?? []).some((p) => i >= p[groupe][0] && i < p[groupe][1]),
   );
 /** Les triangles des ponts de pierre et de bois du 5e (des modèles, comptés à part). */
 const auxPonts = (m: MaillageDeLaConstruction) => (m.ponts ?? []).reduce((n, p) => n + p.opaque[1] - p.opaque[0], 0);
+/** Les triangles des pièces d'architecture dessinées (lot 7) : comptées à part, au plus un cube pour ce qui est fait de main d'homme. */
+const auxPieces = (m: MaillageDeLaConstruction) => (m.pieces ?? []).reduce((n, p) => n + p.opaque[1] - p.opaque[0], 0);
+
+/**
+ * Les triangles des pièces communes de la cour (./architecture/yardPieces.ts, au 6e depuis le 11 octobre 2026 : la
+ * barrière, la marche, la lanterne sur poteau et ses vitres), et leurs cases : comptés à part.
+ */
+function auxCours(m: MaillageDeLaConstruction, a: ArchipelagoId): { triangles: number; cases: number } {
+  const cours = coursDe(a);
+  const dansLaCour = (k: string) => ['barriere', 'escalier', 'lanterne'].includes(cours.get(k) ?? '');
+  const vues = new Set<string>();
+  let n = 0;
+  for (const p of m.pieces ?? [])
+    for (let i = 0; i < p.cases.length; i += 6) {
+      const k = cle(p.cases[i], p.cases[i + 1], p.cases[i + 2]);
+      if (!dansLaCour(k)) continue;
+      vues.add(k);
+      n++;
+    }
+  triangles(m.fenetres).forEach((t) => {
+    const { cell } = caseDeLaConstruction(t.centre, t.n);
+    if (dansLaCour(cle(cell.x, cell.y, cell.z)) && cours.get(cle(cell.x, cell.y, cell.z)) === 'lanterne') n++;
+  });
+  return { triangles: n, cases: vues.size };
+}
+
+/** Les cases des pièces d'architecture dessinées (lot 7) : celles de chaque pièce, ou de chaque rangée d'un tenant. */
+function casesEnPiece(m: MaillageDeLaConstruction): number {
+  const vues = new Set<string>();
+  for (const p of m.pieces ?? [])
+    for (let i = 0; i < p.cases.length; i += 6)
+      for (let x = p.cases[i]; x <= p.cases[i + 3]; x++)
+        for (let y = p.cases[i + 1]; y <= p.cases[i + 4]; y++) for (let z = p.cases[i + 2]; z <= p.cases[i + 5]; z++) vues.add(cle(x, y, z));
+  return vues.size;
+}
 
 /** Un triangle d'une lanterne : le toucher retrouve la case de la lanterne. */
 function dansUneLanterne(lanternes: Map<string, VoxelCube>, t: { centre: { x: number; y: number; z: number }; n: { x: number; y: number; z: number } }) {
@@ -176,7 +213,7 @@ function sensJuste(g: GroupeDeConstruction): boolean {
 }
 
 describe('La construction taillée (lot R5)', () => {
-  it('chaque archipel tout construit tient dans son enveloppe (7 750 triangles aux Premiers Rivages depuis SC-2, 7 500 ailleurs) et 3 appels de dessin, fantômes et fenêtres compris', () => {
+  it('chaque archipel tout construit tient dans son enveloppe (7 750 triangles aux Premiers Rivages depuis SC-2, 8 000 ailleurs depuis SC-3) et 3 appels de dessin, fantômes et fenêtres compris', () => {
     for (const a of ARCHIPELAGO_IDS) {
       for (const etat of ['tout', 'chantier', 'dernier'] as Etat[]) {
         const { cubes, sol } = monde(a, etat);
@@ -185,10 +222,19 @@ describe('La construction taillée (lot R5)', () => {
         expect(cout.drawCalls, `${a} ${etat}`).toBeLessThanOrEqual(enveloppeDe('construction', a).drawCalls);
       }
       // Et bien moins que les cubes d'avant (bornes comprises, qui sortent vers leur poste), sans compter les ponts de
-      // pierre et de bois du 5e : un modèle qui remplace ses cubes de planches, dans l'enveloppe ci-dessus.
+      // pierre et de bois du 5e (un modèle qui remplace ses cubes de planches), dans l'enveloppe ci-dessus. Au 5e
+      // seulement, sans compter non plus les pièces d'architecture dessinées (lot 7 : les rochers, arbres, congères et
+      // poteaux du reste), bornées à part : au plus un cube (10 triangles) par case en pièce, en moyenne.
       const { cubes, sol } = monde(a);
       const m = maillageDeLaConstruction(a, cubes, sol);
-      expect(coutDeLaConstruction(m).triangles - auxPonts(m), a).toBeLessThan(faceCount(buildMesh(cubes, sol)) * 2 * 0.7);
+      const total = coutDeLaConstruction(m).triangles;
+      const pieces = a === '5e' ? auxPieces(m) : 0;
+      // Au 6e, au 4e et au 3e, les pièces communes de la cour (11 et 12 octobre 2026) : bornées à part, au plus 50
+      // triangles par case en moyenne (au 5e, comptées avec les pièces).
+      const cour = a !== '5e' ? auxCours(m, a) : { triangles: 0, cases: 0 };
+      expect(total - auxPonts(m) - pieces - cour.triangles, a).toBeLessThan(faceCount(buildMesh(cubes, sol)) * 2 * 0.7);
+      if (a === '5e') expect(pieces, a).toBeLessThanOrEqual(10 * casesEnPiece(m));
+      if (a !== '5e') expect(cour.triangles, a).toBeLessThanOrEqual(50 * cour.cases);
     }
   }, 60_000);
 
@@ -357,8 +403,9 @@ describe('La construction taillée (lot R5)', () => {
   });
 
   it('la fusion ne mêle pas deux matières : une face fusionnée n’a qu’une couleur, et les blocs gardent la leur', () => {
-    const { cubes, sol } = monde('5e');
-    const m = maillageDeLaConstruction('5e', cubes, sol);
+    // Au 4e, avec un kit vide (les blocs taillés de R5 ; avec leur kit, les volumes lissés portent la teinte de leur ancre).
+    const { cubes, sol } = monde('4e');
+    const m = maillageDeLaConstruction('4e', cubes, sol, { kit: kitVide() });
     const c = m.opaque.colors;
     // Les blocs seulement (quatre sommets et deux triangles par face) : les ponts de pierre et de bois, dessinés à la
     // fin, sont des facettes peintes.
@@ -389,7 +436,7 @@ describe('La construction taillée (lot R5)', () => {
       expect(part, `${a} : ${iles.join(', ')}`).toBeGreaterThanOrEqual(a === '5e' || a === '4e' ? 1 / 6 : 0.2);
       expect(part, a).toBeLessThanOrEqual(a === '3e' ? 1 / 3 : 0.3);
     }
-    expect(TERRE_CUITE_SUR).toHaveLength(7);
+    expect(TERRE_CUITE_SUR).toHaveLength(13);
     // Aux Îles du Ciel, le dessus est enneigé et les rives restent d'ardoise ; délavé sur une île fermée.
     const ciel = couleursDuToit('3e', 'maths-3e-functions');
     expect(ciel.dessus).not.toBe(ciel.cote);
@@ -536,6 +583,11 @@ describe('Les toits de terre cuite (lot R5)', () => {
       for (const [c, { genre, decalage }] of f) {
         expect(c.quest, a).toBeUndefined();
         if (c.muted) expect(decalage, a).toBe(-1);
+        // La lueur de fin d'un grand projet (./construction/endGlow.ts) : allumée la première, hors du compte des vitres.
+        if (genre === 'lueur') {
+          expect(decalage, a).toBe(0);
+          continue;
+        }
         if (decalage < 0) continue;
         const m = genre === 'lanterne' ? parCour : parBatiment;
         const k = `${c.tag}|${c.place ?? ''}`;
@@ -552,21 +604,36 @@ describe('Les toits de terre cuite (lot R5)', () => {
         const { cell } = caseDeLaConstruction(t.centre, t.n);
         allumes3D.add(cle(cell.x, cell.y, cell.z));
       });
-      const allumesOracle = new Set([...f].filter(([, v]) => v.decalage >= 0).map(([c]) => cle(c.x, c.y, c.z)));
+      // La lueur de fin ne prend que les faces verticales (retouches du directeur artistique, 10 octobre 2026) : un bloc
+      // enfermé de ses quatre côtés (le cœur de la ceinture de lentille de la colonne des solides, au 3e) n'a aucune face
+      // à allumer.
+      const pleins = new Set(cubes.filter((c) => !c.ghost).map((c) => cle(c.x, c.y, c.z)));
+      const enferme = (c: VoxelCube) => [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0]].every(([dx, dy, dz]) => pleins.has(cle(c.x + dx, c.y + dy, c.z + dz)));
+      // Les vitres d'un bloc qu'un modèle remplace (au 6e et au 5e, l'école dessinée, world/objects/villagePlaces.ts) sont
+      // dans son feu ; une lanterne qu'un modèle remplace (au 5e, la bougie éteinte de la tour du Manoir, un objet du cœur)
+      // ne compte plus parmi celles de sa cour : l'oracle se lit sans les cases des modèles, comme la 3D.
+      const parUnModele = new Set((m.monuments ?? []).flatMap((q) => q.cellules.map((c) => cle(c.x, c.y, c.z))));
+      const sansModeles = parUnModele.size ? fenetresDe(cubes.filter((c) => !parUnModele.has(cle(c.x, c.y, c.z)))) : f;
+      const allumesOracle = new Set([...sansModeles].filter(([c, v]) => v.decalage >= 0 && !(v.genre === 'lueur' && enferme(c))).map(([c]) => cle(c.x, c.y, c.z)));
       expect(allumes3D, a).toEqual(allumesOracle);
       expect(m.opaque.aretes.length, a).toBe(m.opaque.positions.length / 3);
     }
-    // Le verre hors d'un mur (au 6e : les jardinières de la Tour, les monuments) porte l'arête ; les autres blocs non.
-    const m = maillageDeLaConstruction('6e', monde('6e').cubes, monde('6e').sol);
+    // Le verre hors d'un mur (au 4e, avec un kit vide) porte l'arête ; les autres blocs non. Avec leur kit, le reste
+    // (9 octobre 2026 au 6e et au 5e, 10 octobre au 4e et au 3e) le peint en verrière ou en eau : plus aucune arête.
+    const m = maillageDeLaConstruction('4e', monde('4e').cubes, monde('4e').sol, { kit: kitVide() });
     const avec = [...m.opaque.aretes].filter((v) => v === 1).length;
     expect(avec).toBeGreaterThan(0);
     expect(avec).toBeLessThan(m.opaque.aretes.length / 4);
+    for (const a of ARCHIPELAGO_IDS) {
+      const mk = maillageDeLaConstruction(a, monde(a).cubes, monde(a).sol);
+      expect([...mk.opaque.aretes].filter((v) => v === 1).length, a).toBe(0);
+    }
   });
 });
 
 describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur artistique)', () => {
   /** L'archipel avec les 24 succès, rendu comme Archipéo le rend ; les trophées posés, et le coin de leur salle. */
-  function avecLesTrophees(a: ArchipelagoId) {
+  function avecLesTrophees(a: ArchipelagoId, kit?: ReturnType<typeof kitVide>) {
     const { progress, world: village } = toutConstruit();
     const tous = worldCubes(a, progress, village, false, BADGES.map((b) => trophyBlock(b.id)), false, 'halle');
     const sol = tous.filter((c) => c.sol);
@@ -576,34 +643,36 @@ describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur a
     const s = placeSpot('trophies', school)!;
     const coin = { x: s.x, y: s.y, z: islandDef(school).altitude + s.h };
     const places = TROPHY_SLOTS.map((t) => ({ x: coin.x + t.x, y: coin.y + t.y, z: coin.z + t.z }));
-    return { m: maillageDeLaConstruction(a, cubes, sol), cubes, coin, places };
+    return { m: maillageDeLaConstruction(a, cubes, sol, kit ? { kit } : {}), cubes, coin, places };
   }
   /** Les triangles posés au-dessus de l'intérieur d'une case (sans toucher ses bords) : ceux d'un trophée plus petit qu'elle. */
   const dansLaCase = (m: MaillageDeLaConstruction, x: number, y: number) =>
     triangles(m.opaque).filter((t) => t.p.every(([px, , pz]) => px > x + 0.05 && px < x + 0.95 && pz > y + 0.05 && pz < y + 0.95));
 
-  it('au 6e, chaque trophée est plus petit que sa case : il ne touche ni le pilier voisin ni la sablière, le fond se voit au-dessus', () => {
-    const { m, cubes, coin, places } = avecLesTrophees('6e');
-    // Les 24 trophées sont dans le monde, à leur place.
-    const poses = new Set(cubes.filter((c) => c.place === 'trophies').map((c) => cle(c.x, c.y, c.z)));
-    for (const p of places) expect(poses.has(cle(p.x, p.y, p.z))).toBe(true);
-    const toit = coin.z + 4;
-    for (const p of places) {
-      const t = dansLaCase(m, p.x, p.y).filter((u) => u.p.every(([, h]) => h >= p.z - 1 && h <= p.z + 1));
-      expect(t.length, cle(p.x, p.y, p.z)).toBeGreaterThan(0);
-      // De l'ombre au-dessus : le haut du trophée du second rang est à plus d'une demi-case sous le toit.
-      const haut = Math.max(...dansLaCase(m, p.x, p.y).map((u) => Math.max(...u.p.map(([, h]) => h))));
-      expect(haut, cle(p.x, p.y, p.z)).toBeLessThanOrEqual(coin.z + 2 + 2 * TROPHEE.hauteur + 1e-6);
-      expect(toit - haut).toBeGreaterThanOrEqual(0.5);
-    }
-    // Les deux rangs : celui du socle, puis le second, plus étroit, posé sur lui.
-    expect(TROPHEE.haut).toBeLessThan(TROPHEE.bas);
-    expect(TROPHEE.bas).toBeLessThan(1);
-  });
+  for (const a of ARCHIPELAGO_IDS) {
+    it(`au ${a}, chaque trophée est plus petit que sa case : il ne touche ni le pilier voisin ni la sablière, le fond se voit au-dessus`, () => {
+      const { m, cubes, coin, places } = avecLesTrophees(a);
+      // Les 24 trophées sont dans le monde, à leur place.
+      const poses = new Set(cubes.filter((c) => c.place === 'trophies').map((c) => cle(c.x, c.y, c.z)));
+      for (const p of places) expect(poses.has(cle(p.x, p.y, p.z))).toBe(true);
+      const toit = coin.z + 4;
+      for (const p of places) {
+        const t = dansLaCase(m, p.x, p.y).filter((u) => u.p.every(([, h]) => h >= p.z - 1 && h <= p.z + 1));
+        expect(t.length, cle(p.x, p.y, p.z)).toBeGreaterThan(0);
+        // De l'ombre au-dessus : le haut du trophée du second rang est à plus d'une demi-case sous le toit.
+        const haut = Math.max(...dansLaCase(m, p.x, p.y).map((u) => Math.max(...u.p.map(([, h]) => h))));
+        expect(haut, cle(p.x, p.y, p.z)).toBeLessThanOrEqual(coin.z + 2 + 2 * TROPHEE.hauteur + 1e-6);
+        expect(toit - haut).toBeGreaterThanOrEqual(0.5);
+      }
+      // Les deux rangs : celui du socle, puis le second, plus étroit, posé sur lui.
+      expect(TROPHEE.haut).toBeLessThan(TROPHEE.bas);
+      expect(TROPHEE.bas).toBeLessThan(1);
+    });
+  }
 
-  it('ailleurs, tant que le kit de l’archipel ne reprend pas la salle, les trophées restent des blocs entiers (et Blocland les garde)', () => {
-    for (const a of ['5e', '4e', '3e'] as const) {
-      const { m, places } = avecLesTrophees(a);
+  it('tant que le kit ne reprend pas la salle (un kit vide), les trophées restent des blocs entiers (et Blocland les garde)', () => {
+    for (const a of ['4e', '3e'] as const) {
+      const { m, places } = avecLesTrophees(a, kitVide());
       for (const p of places) expect(dansLaCase(m, p.x, p.y).length, `${a} ${cle(p.x, p.y, p.z)}`).toBe(0);
     }
   });

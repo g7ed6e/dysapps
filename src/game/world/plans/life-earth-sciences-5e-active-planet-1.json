@@ -1,0 +1,9 @@
+{
+  "id": "life-earth-sciences-5e-active-planet-1",
+  "biome": "life-earth-sciences-5e-active-planet",
+  "name": "La station d’Humus",
+  "reward": {
+    "xp": 40
+  },
+  "done": "Ma station ! Je vais noter le temps qu’il fait. Merci, bâtisseur."
+}

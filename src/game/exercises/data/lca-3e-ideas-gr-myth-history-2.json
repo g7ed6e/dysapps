@@ -1,0 +1,242 @@
+{
+  "id": "lca-3e-ideas-gr-myth-history-2",
+  "biome": "lca-3e-ideas",
+  "type": "gr-myth-history",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-3e-ideas-gr-myth-history-2-0",
+      "prompt": "Pisistrate\nVers 560 avant J.-C., il prend le pouvoir à Athènes, avec des hommes armés.\nIl gouverne seul.\nPourtant, il fait construire des fontaines et des temples.",
+      "question": "Pourquoi dit-on que Pisistrate est un tyran ?",
+      "spoken": "Pisistrate. Vers cinq cent soixante avant Jésus-Christ, il prend le pouvoir à Athènes, avec des hommes armés. Il gouverne seul. Pourtant, il fait construire des fontaines et des temples.",
+      "choices": [
+        "il est cruel avec tous",
+        "il prend seul le pouvoir, par la force",
+        "il est roi par sa naissance"
+      ],
+      "answer": "il prend seul le pouvoir, par la force",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Pour les Grecs, un tyran prend seul le pouvoir, sans y avoir droit, souvent par la force. Il n’est pas forcément cruel : Pisistrate embellit Athènes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Athènes, de la tyrannie à la démocratie",
+          "lines": [
+            "Selon le mythe, Thésée, roi d’Athènes, unit les villages de l’Attique en une seule cité.",
+            "Un tyran : un homme qui prend seul le pouvoir, souvent par la force, comme Pisistrate.",
+            "Vers 594 avant J.-C., Solon écrit des lois : plus d’esclavage pour dettes.",
+            "En 508 avant J.-C., Clisthène donne le pouvoir à tous les citoyens : la démocratie.",
+            "Au cinquième siècle avant J.-C., Périclès dirige Athènes et fait bâtir le Parthénon.",
+            "Démocratie : dêmos, le peuple, et kratos, le pouvoir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-2-1",
+      "prompt": "Le mot « tyran » a changé de sens : aujourd’hui, il désigne surtout un chef …",
+      "spoken": "Le mot « tyran » a changé de sens : aujourd’hui, il désigne surtout un chef  (mot manquant) ",
+      "choices": [
+        "cruel",
+        "élu",
+        "sage"
+      ],
+      "answer": "cruel",
+      "hint": "Pense au sens d’aujourd’hui : comment traite-t-il les autres ?",
+      "explanation": "Aujourd’hui, un tyran est un chef cruel. Chez les Grecs, le mot voulait d’abord dire : celui qui prend seul le pouvoir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Athènes, de la tyrannie à la démocratie",
+          "lines": [
+            "Selon le mythe, Thésée, roi d’Athènes, unit les villages de l’Attique en une seule cité.",
+            "Un tyran : un homme qui prend seul le pouvoir, souvent par la force, comme Pisistrate.",
+            "Vers 594 avant J.-C., Solon écrit des lois : plus d’esclavage pour dettes.",
+            "En 508 avant J.-C., Clisthène donne le pouvoir à tous les citoyens : la démocratie.",
+            "Au cinquième siècle avant J.-C., Périclès dirige Athènes et fait bâtir le Parthénon.",
+            "Démocratie : dêmos, le peuple, et kratos, le pouvoir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-2-2",
+      "prompt": "En 508 avant J.-C., … donne le pouvoir à tous les citoyens d’Athènes.",
+      "spoken": "En cinq cent huit avant Jésus-Christ, (mot manquant) donne le pouvoir à tous les citoyens d’Athènes.",
+      "choices": [
+        "Solon",
+        "Clisthène",
+        "Périclès"
+      ],
+      "answer": "Clisthène",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "En 508 avant J.-C., Clisthène organise la cité pour que tous les citoyens y prennent part : on date de lui le début de la démocratie athénienne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Athènes, de la tyrannie à la démocratie",
+          "lines": [
+            "Selon le mythe, Thésée, roi d’Athènes, unit les villages de l’Attique en une seule cité.",
+            "Un tyran : un homme qui prend seul le pouvoir, souvent par la force, comme Pisistrate.",
+            "Vers 594 avant J.-C., Solon écrit des lois : plus d’esclavage pour dettes.",
+            "En 508 avant J.-C., Clisthène donne le pouvoir à tous les citoyens : la démocratie.",
+            "Au cinquième siècle avant J.-C., Périclès dirige Athènes et fait bâtir le Parthénon.",
+            "Démocratie : dêmos, le peuple, et kratos, le pouvoir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-2-3",
+      "prompt": "Les lois de Solon\nUn paysan ne peut plus devenir esclave à cause de ses dettes.\nLes lois sont écrites et affichées.\nChacun peut les connaître.",
+      "question": "Pourquoi écrire les lois ?",
+      "spoken": "Les lois de Solon. Un paysan ne peut plus devenir esclave à cause de ses dettes. Les lois sont écrites et affichées. Chacun peut les connaître.",
+      "choices": [
+        "pour que chacun les connaisse",
+        "pour les cacher au peuple",
+        "pour les rendre plus dures"
+      ],
+      "answer": "pour que chacun les connaisse",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Écrites et affichées, les lois sont les mêmes pour tous, et chacun peut les connaître. Solon interdit aussi de rendre esclave un Athénien pour ses dettes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Athènes, de la tyrannie à la démocratie",
+          "lines": [
+            "Selon le mythe, Thésée, roi d’Athènes, unit les villages de l’Attique en une seule cité.",
+            "Un tyran : un homme qui prend seul le pouvoir, souvent par la force, comme Pisistrate.",
+            "Vers 594 avant J.-C., Solon écrit des lois : plus d’esclavage pour dettes.",
+            "En 508 avant J.-C., Clisthène donne le pouvoir à tous les citoyens : la démocratie.",
+            "Au cinquième siècle avant J.-C., Périclès dirige Athènes et fait bâtir le Parthénon.",
+            "Démocratie : dêmos, le peuple, et kratos, le pouvoir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-2-4",
+      "prompt": "Le temple d’Athéna sur l’Acropole, que fait bâtir Périclès, est …",
+      "spoken": "Le temple d’Athéna sur l’Acropole, que fait bâtir Périclès, est  (mot manquant) ",
+      "choices": [
+        "le Parthénon",
+        "le Colisée",
+        "le Panthéon"
+      ],
+      "answer": "le Parthénon",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "Le Parthénon, temple d’Athéna, domine l’Acropole d’Athènes. Le Panthéon est un temple romain, à Rome ; le Colisée, un amphithéâtre romain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Athènes, de la tyrannie à la démocratie",
+          "lines": [
+            "Selon le mythe, Thésée, roi d’Athènes, unit les villages de l’Attique en une seule cité.",
+            "Un tyran : un homme qui prend seul le pouvoir, souvent par la force, comme Pisistrate.",
+            "Vers 594 avant J.-C., Solon écrit des lois : plus d’esclavage pour dettes.",
+            "En 508 avant J.-C., Clisthène donne le pouvoir à tous les citoyens : la démocratie.",
+            "Au cinquième siècle avant J.-C., Périclès dirige Athènes et fait bâtir le Parthénon.",
+            "Démocratie : dêmos, le peuple, et kratos, le pouvoir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-2-5",
+      "prompt": "Selon le mythe, le héros qui unit les villages de l’Attique autour d’Athènes est …",
+      "spoken": "Selon le mythe, le héros qui unit les villages de l’Attique autour d’Athènes est  (mot manquant) ",
+      "choices": [
+        "Ulysse",
+        "Héraclès",
+        "Thésée"
+      ],
+      "answer": "Thésée",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Thésée, roi légendaire d’Athènes, unit selon le mythe les villages de l’Attique en une seule cité. C’est aussi lui qui tue le Minotaure.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Athènes, de la tyrannie à la démocratie",
+          "lines": [
+            "Selon le mythe, Thésée, roi d’Athènes, unit les villages de l’Attique en une seule cité.",
+            "Un tyran : un homme qui prend seul le pouvoir, souvent par la force, comme Pisistrate.",
+            "Vers 594 avant J.-C., Solon écrit des lois : plus d’esclavage pour dettes.",
+            "En 508 avant J.-C., Clisthène donne le pouvoir à tous les citoyens : la démocratie.",
+            "Au cinquième siècle avant J.-C., Périclès dirige Athènes et fait bâtir le Parthénon.",
+            "Démocratie : dêmos, le peuple, et kratos, le pouvoir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-2-6",
+      "prompt": "Périclès parle des Athéniens, d’après l’historien Thucydide\n« Notre régime s’appelle démocratie,\nparce qu’il est au service du plus grand nombre,\net non de quelques-uns. »",
+      "question": "Selon Périclès, pourquoi parle-t-on de démocratie ?",
+      "spoken": "Périclès parle des Athéniens, d’après l’historien Thucydide. Notre régime s’appelle démocratie, parce qu’il est au service du plus grand nombre, et non de quelques-uns.",
+      "choices": [
+        "le pouvoir est à un seul homme",
+        "le pouvoir sert le plus grand nombre",
+        "le pouvoir est aux plus riches"
+      ],
+      "answer": "le pouvoir sert le plus grand nombre",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "Pour Périclès, la démocratie sert le plus grand nombre, pas quelques-uns. Mais à Athènes, le peuple, ce sont les citoyens : ni les femmes, ni les étrangers, ni les esclaves.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Athènes, de la tyrannie à la démocratie",
+          "lines": [
+            "Selon le mythe, Thésée, roi d’Athènes, unit les villages de l’Attique en une seule cité.",
+            "Un tyran : un homme qui prend seul le pouvoir, souvent par la force, comme Pisistrate.",
+            "Vers 594 avant J.-C., Solon écrit des lois : plus d’esclavage pour dettes.",
+            "En 508 avant J.-C., Clisthène donne le pouvoir à tous les citoyens : la démocratie.",
+            "Au cinquième siècle avant J.-C., Périclès dirige Athènes et fait bâtir le Parthénon.",
+            "Démocratie : dêmos, le peuple, et kratos, le pouvoir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-2-7",
+      "prompt": "Athènes\nVers 594 avant J.-C. : les lois de Solon.\nVers 560 avant J.-C. : Pisistrate, tyran.\n508 avant J.-C. : les réformes de Clisthène.",
+      "question": "Qu’est-ce qui vient après la tyrannie de Pisistrate ?",
+      "spoken": "Athènes. Vers cinq cent quatre-vingt-quatorze avant Jésus-Christ : les lois de Solon. Vers cinq cent soixante avant Jésus-Christ : Pisistrate, tyran. Cinq cent huit avant Jésus-Christ : les réformes de Clisthène.",
+      "choices": [
+        "la guerre de Troie",
+        "les lois de Solon",
+        "les réformes de Clisthène"
+      ],
+      "answer": "les réformes de Clisthène",
+      "hint": "Avant J.-C., on compte à rebours : le plus petit nombre vient après.",
+      "explanation": "594, puis 560, puis 508 avant J.-C. : on compte à rebours. Après la tyrannie viennent les réformes de Clisthène, et la démocratie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Athènes, de la tyrannie à la démocratie",
+          "lines": [
+            "Selon le mythe, Thésée, roi d’Athènes, unit les villages de l’Attique en une seule cité.",
+            "Un tyran : un homme qui prend seul le pouvoir, souvent par la force, comme Pisistrate.",
+            "Vers 594 avant J.-C., Solon écrit des lois : plus d’esclavage pour dettes.",
+            "En 508 avant J.-C., Clisthène donne le pouvoir à tous les citoyens : la démocratie.",
+            "Au cinquième siècle avant J.-C., Périclès dirige Athènes et fait bâtir le Parthénon.",
+            "Démocratie : dêmos, le peuple, et kratos, le pouvoir."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-3e-ideas",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

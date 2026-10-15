@@ -116,9 +116,9 @@
     },
     {
       "key": "english-6e-grammar-story-2-4",
-      "prompt": "Lena has got a busy week.\nOn Monday, she goes to the library.\nOn Tuesday, she plays basketball.\nOn Thursday, she has a piano lesson.",
+      "prompt": "Lena has a busy week.\nOn Monday, she goes to the library.\nOn Tuesday, she plays basketball.\nOn Thursday, she has a piano lesson.",
       "question": "Quel jour Lena joue-t-elle au basket ?",
-      "spoken": "Lena has got a busy week. On Monday, she goes to the library. On Tuesday, she plays basketball. On Thursday, she has a piano lesson.",
+      "spoken": "Lena has a busy week. On Monday, she goes to the library. On Tuesday, she plays basketball. On Thursday, she has a piano lesson.",
       "choices": [
         "Le jeudi",
         "Le mardi",

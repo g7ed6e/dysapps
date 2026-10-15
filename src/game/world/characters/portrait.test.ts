@@ -1,7 +1,8 @@
 import { bonhommePeint } from './avatar';
 import { creaturePeinte } from './paintedCreatures';
 import { portraitDe } from './portrait';
-import { sentinellePeinte } from './paintedSentinels';
+import { sentinelleAuDefi, sentinellePeinte } from './paintedSentinels';
+import { guardianCameraOf, guardianPortraitView } from './portraitView';
 
 describe('Le portrait d’un personnage, sans WebGL', () => {
   it('ne garde que les facettes tournées vers l’élève, du fond vers l’avant, dans leur cadre', () => {
@@ -34,5 +35,17 @@ describe('Le portrait d’un personnage, sans WebGL', () => {
     const allumee = portraitDe(f, { allumage: 1 }).facettes.map((q) => q.couleur);
     expect(allumee).not.toEqual(eteinte);
     expect(allumee).toContain('#ffd866');
+  });
+
+  it('la Libellule de jade se prend de trois quarts, par au-dessus ; la même vue au défi en 3D (DA, HG-3)', () => {
+    const vue = guardianPortraitView('geography-5e-resources')!;
+    expect(Math.abs(vue.angle)).toBeGreaterThan(0.6);
+    expect(vue.plongee).toBeGreaterThanOrEqual(0.5);
+    const { direction, elevation } = guardianCameraOf(vue);
+    expect(Math.hypot(...direction)).toBeCloseTo(1);
+    expect(Math.atan(elevation)).toBeCloseTo(vue.plongee);
+    expect(portraitDe(sentinelleAuDefi('geography-5e-resources'), vue).facettes.length).toBeGreaterThan(0);
+    // Les autres Gardiens gardent la vue de tous.
+    expect(guardianPortraitView('french-6e-phonology')).toBeNull();
   });
 });

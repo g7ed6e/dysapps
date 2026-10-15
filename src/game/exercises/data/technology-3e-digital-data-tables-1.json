@@ -1,0 +1,233 @@
+{
+  "id": "technology-3e-digital-data-tables-1",
+  "biome": "technology-3e-digital",
+  "type": "data-tables",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-3e-digital-data-tables-1-0",
+      "prompt": "Dans la fiche d’un livre, « nombre de pages » est un …",
+      "spoken": "Dans la fiche d’un livre, « nombre de pages » est un  (mot manquant) ",
+      "choices": [
+        "objet",
+        "descripteur",
+        "type"
+      ],
+      "answer": "descripteur",
+      "hint": "Relis la ligne « Un descripteur » du rappel.",
+      "explanation": "Le nombre de pages est une caractéristique du livre : c’est un descripteur. L’objet, c’est le livre lui-même.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire avec des données",
+          "lines": [
+            "Un objet : ce que l’on décrit (un élève, un livre, un vélo).",
+            "Un descripteur : une caractéristique de l’objet (nom, prix, couleur).",
+            "Le type d’une donnée : un mot, un nombre ou un booléen.",
+            "Un booléen : seulement vrai ou faux.",
+            "Le bit : la plus petite donnée, qui vaut 0 ou 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-1-1",
+      "prompt": "Dans la colonne « Âge », la donnée 12 est de type …",
+      "spoken": "Dans la colonne « Âge », la donnée 12 est de type  (mot manquant) ",
+      "choices": [
+        "mot",
+        "nombre",
+        "booléen"
+      ],
+      "answer": "nombre",
+      "hint": "Relis la ligne « Le type d’une donnée » du rappel.",
+      "explanation": "12 est un nombre : on peut le comparer ou faire un calcul avec. Un booléen ne vaut que vrai ou faux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire avec des données",
+          "lines": [
+            "Un objet : ce que l’on décrit (un élève, un livre, un vélo).",
+            "Un descripteur : une caractéristique de l’objet (nom, prix, couleur).",
+            "Le type d’une donnée : un mot, un nombre ou un booléen.",
+            "Un booléen : seulement vrai ou faux.",
+            "Le bit : la plus petite donnée, qui vaut 0 ou 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-1-2",
+      "prompt": "La fiche du vélo\nMarque : Rando.\nPrix : 250 euros.\nÉlectrique : faux.",
+      "question": "Quel descripteur est un booléen ?",
+      "spoken": "La fiche du vélo. Marque, Rando. Prix, 250 euros. Électrique, faux.",
+      "choices": [
+        "Marque",
+        "Prix",
+        "Électrique"
+      ],
+      "answer": "Électrique",
+      "hint": "Relis la ligne « Un booléen » du rappel.",
+      "explanation": "« Électrique » vaut vrai ou faux : c’est un booléen. La marque est un mot, le prix un nombre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire avec des données",
+          "lines": [
+            "Un objet : ce que l’on décrit (un élève, un livre, un vélo).",
+            "Un descripteur : une caractéristique de l’objet (nom, prix, couleur).",
+            "Le type d’une donnée : un mot, un nombre ou un booléen.",
+            "Un booléen : seulement vrai ou faux.",
+            "Le bit : la plus petite donnée, qui vaut 0 ou 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-1-3",
+      "prompt": "« Le casier est fermé : vrai » est une donnée de type …",
+      "spoken": "« Le casier est fermé : vrai » est une donnée de type  (mot manquant) ",
+      "choices": [
+        "mot",
+        "nombre",
+        "booléen"
+      ],
+      "answer": "booléen",
+      "hint": "Combien de valeurs peut prendre cette donnée ?",
+      "explanation": "Le casier est fermé ou ne l’est pas : la donnée vaut vrai ou faux, c’est un booléen. Même écrit en lettres, « vrai » est ici une des deux valeurs d’un booléen.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire avec des données",
+          "lines": [
+            "Un objet : ce que l’on décrit (un élève, un livre, un vélo).",
+            "Un descripteur : une caractéristique de l’objet (nom, prix, couleur).",
+            "Le type d’une donnée : un mot, un nombre ou un booléen.",
+            "Un booléen : seulement vrai ou faux.",
+            "Le bit : la plus petite donnée, qui vaut 0 ou 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-1-4",
+      "prompt": "La plus petite donnée, qui vaut 0 ou 1, est le …",
+      "spoken": "La plus petite donnée, qui vaut 0 ou 1, est le  (mot manquant) ",
+      "choices": [
+        "bit",
+        "octet",
+        "pixel"
+      ],
+      "answer": "bit",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Le bit est la plus petite donnée : 0 ou 1. Un octet en réunit huit ; un pixel est un point d’une image.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire avec des données",
+          "lines": [
+            "Un objet : ce que l’on décrit (un élève, un livre, un vélo).",
+            "Un descripteur : une caractéristique de l’objet (nom, prix, couleur).",
+            "Le type d’une donnée : un mot, un nombre ou un booléen.",
+            "Un booléen : seulement vrai ou faux.",
+            "Le bit : la plus petite donnée, qui vaut 0 ou 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-1-5",
+      "prompt": "La fiche de Lina au club\nPrénom : Lina.\nÂge : 13.\nLicence payée : vrai.",
+      "question": "Quel est le type de la donnée « Lina » ?",
+      "spoken": "La fiche de Lina au club. Prénom, Lina. Âge, 13. Licence payée, vrai.",
+      "choices": [
+        "un mot",
+        "un nombre",
+        "un booléen"
+      ],
+      "answer": "un mot",
+      "hint": "« Lina » s’écrit-il avec des lettres ou avec des chiffres ?",
+      "explanation": "« Lina » est fait de lettres : c’est un mot. L’âge, 13, est un nombre ; « Licence payée » est un booléen.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire avec des données",
+          "lines": [
+            "Un objet : ce que l’on décrit (un élève, un livre, un vélo).",
+            "Un descripteur : une caractéristique de l’objet (nom, prix, couleur).",
+            "Le type d’une donnée : un mot, un nombre ou un booléen.",
+            "Un booléen : seulement vrai ou faux.",
+            "Le bit : la plus petite donnée, qui vaut 0 ou 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-1-6",
+      "prompt": "Les fiches de la bibliothèque\nChaque fiche décrit un livre.\nSur chaque fiche : le titre, l’auteur, l’année.",
+      "question": "Quel est l’objet décrit ?",
+      "spoken": "Les fiches de la bibliothèque. Chaque fiche décrit un livre. Sur chaque fiche, le titre, l’auteur, l’année.",
+      "choices": [
+        "le titre",
+        "le livre",
+        "l’année"
+      ],
+      "answer": "le livre",
+      "hint": "Relis la deuxième ligne du document.",
+      "explanation": "Chaque fiche décrit un livre : le livre est l’objet. Le titre et l’année sont ses descripteurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire avec des données",
+          "lines": [
+            "Un objet : ce que l’on décrit (un élève, un livre, un vélo).",
+            "Un descripteur : une caractéristique de l’objet (nom, prix, couleur).",
+            "Le type d’une donnée : un mot, un nombre ou un booléen.",
+            "Un booléen : seulement vrai ou faux.",
+            "Le bit : la plus petite donnée, qui vaut 0 ou 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-data-tables-1-7",
+      "prompt": "Un bit ne peut valoir que 0 ou …",
+      "spoken": "Un bit ne peut valoir que 0 ou  (mot manquant) ",
+      "choices": [
+        "1",
+        "2",
+        "10"
+      ],
+      "answer": "1",
+      "hint": "Relis la ligne « Le bit » du rappel.",
+      "explanation": "Un bit vaut 0 ou 1, rien d’autre. Dans l’ordinateur, toutes les données s’écrivent avec ces deux chiffres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Décrire avec des données",
+          "lines": [
+            "Un objet : ce que l’on décrit (un élève, un livre, un vélo).",
+            "Un descripteur : une caractéristique de l’objet (nom, prix, couleur).",
+            "Le type d’une donnée : un mot, un nombre ou un booléen.",
+            "Un booléen : seulement vrai ou faux.",
+            "Le bit : la plus petite donnée, qui vaut 0 ou 1."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-3e-digital",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

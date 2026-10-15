@@ -1,0 +1,241 @@
+{
+  "id": "lca-4e-cities-la-home-2",
+  "biome": "lca-4e-cities",
+  "type": "la-home",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-4e-cities-la-home-2-0",
+      "prompt": "La maison de Lucius\nOn entre dans l’atrium.\nAu centre, un bassin recueille la pluie.\nAu fond, un jardin entouré de colonnes.",
+      "question": "Comment s’appelle le bassin au centre de l’atrium ?",
+      "spoken": "La maison de Lucius. On entre dans l’atrium. Au centre, un bassin recueille la pluie. Au fond, un jardin entouré de colonnes.",
+      "choices": [
+        "l’impluvium",
+        "le péristyle",
+        "le triclinium"
+      ],
+      "answer": "l’impluvium",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "L’impluvium recueille l’eau de pluie qui tombe par l’ouverture du toit. Pluvia veut dire la pluie, comme dans « pluvieux ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La maison romaine",
+          "lines": [
+            "La domus : la maison d’une famille riche, tournée vers l’intérieur.",
+            "L’atrium : la pièce d’entrée, ouverte sur le ciel en son centre.",
+            "L’impluvium : le bassin de l’atrium, qui recueille l’eau de pluie.",
+            "Le péristyle : un jardin entouré de colonnes.",
+            "L’insula : un immeuble de plusieurs étages, où vit la plupart des habitants de Rome.",
+            "Le triclinium : la salle à manger ; on y mange allongé sur des lits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-2-1",
+      "prompt": "Le jardin entouré de colonnes, au fond de la domus, est le …",
+      "spoken": "Le jardin entouré de colonnes, au fond de la domus, est le  (mot manquant) ",
+      "choices": [
+        "triclinium",
+        "péristyle",
+        "atrium"
+      ],
+      "answer": "péristyle",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Le péristyle est un jardin entouré de colonnes. Le mot vient du grec : peri, autour, et stulos, la colonne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La maison romaine",
+          "lines": [
+            "La domus : la maison d’une famille riche, tournée vers l’intérieur.",
+            "L’atrium : la pièce d’entrée, ouverte sur le ciel en son centre.",
+            "L’impluvium : le bassin de l’atrium, qui recueille l’eau de pluie.",
+            "Le péristyle : un jardin entouré de colonnes.",
+            "L’insula : un immeuble de plusieurs étages, où vit la plupart des habitants de Rome.",
+            "Le triclinium : la salle à manger ; on y mange allongé sur des lits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-2-2",
+      "prompt": "Dans le triclinium, les Romains riches mangent …",
+      "spoken": "Dans le triclinium, les Romains riches mangent  (mot manquant) ",
+      "choices": [
+        "debout",
+        "assis sur des bancs",
+        "allongés sur des lits"
+      ],
+      "answer": "allongés sur des lits",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Au triclinium, on mange allongé sur des lits, appuyé sur un coude, autour d’une table basse. Tri- veut dire trois : trois lits.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La maison romaine",
+          "lines": [
+            "La domus : la maison d’une famille riche, tournée vers l’intérieur.",
+            "L’atrium : la pièce d’entrée, ouverte sur le ciel en son centre.",
+            "L’impluvium : le bassin de l’atrium, qui recueille l’eau de pluie.",
+            "Le péristyle : un jardin entouré de colonnes.",
+            "L’insula : un immeuble de plusieurs étages, où vit la plupart des habitants de Rome.",
+            "Le triclinium : la salle à manger ; on y mange allongé sur des lits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-2-3",
+      "prompt": "Une insula à Rome\nAu rez-de-chaussée : des boutiques.\nAux étages : des logements loués, petits et sombres.\nLe feu y prend souvent.",
+      "question": "Qui vit le plus souvent dans une insula ?",
+      "spoken": "Une innsoula à Rome. Au rez-de-chaussée : des boutiques. Aux étages : des logements loués, petits et sombres. Le feu y prend souvent.",
+      "choices": [
+        "les familles riches",
+        "la plupart des habitants de Rome",
+        "les esclaves seulement"
+      ],
+      "answer": "la plupart des habitants de Rome",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "La plupart des habitants de Rome vivent en insula, dans des logements loués ; les familles riches vivent dans une domus. Les incendies y sont fréquents.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La maison romaine",
+          "lines": [
+            "La domus : la maison d’une famille riche, tournée vers l’intérieur.",
+            "L’atrium : la pièce d’entrée, ouverte sur le ciel en son centre.",
+            "L’impluvium : le bassin de l’atrium, qui recueille l’eau de pluie.",
+            "Le péristyle : un jardin entouré de colonnes.",
+            "L’insula : un immeuble de plusieurs étages, où vit la plupart des habitants de Rome.",
+            "Le triclinium : la salle à manger ; on y mange allongé sur des lits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-2-4",
+      "prompt": "Le mot « domicile » vient du latin domus, qui veut dire …",
+      "spoken": "Le mot domicile vient du latin domouss, qui veut dire (mot manquant)",
+      "choices": [
+        "la maison",
+        "le maître",
+        "la porte"
+      ],
+      "answer": "la maison",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Domus, la maison, a donné domicile et domestique. Dominus, le maître, est le maître de la maison : c’est la même famille de mots.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La maison romaine",
+          "lines": [
+            "La domus : la maison d’une famille riche, tournée vers l’intérieur.",
+            "L’atrium : la pièce d’entrée, ouverte sur le ciel en son centre.",
+            "L’impluvium : le bassin de l’atrium, qui recueille l’eau de pluie.",
+            "Le péristyle : un jardin entouré de colonnes.",
+            "L’insula : un immeuble de plusieurs étages, où vit la plupart des habitants de Rome.",
+            "Le triclinium : la salle à manger ; on y mange allongé sur des lits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-2-5",
+      "prompt": "La journée d’un Romain\nLe matin : il travaille ou va au forum.\nL’après-midi : il va aux thermes, les bains publics.\nLe soir : il dîne au triclinium.",
+      "question": "Où va-t-il l’après-midi ?",
+      "spoken": "La journée d’un Romain. Le matin : il travaille ou va au forum. L’après-midi : il va aux thermes, les bains publics. Le soir : il dîne au triclinium.",
+      "choices": [
+        "au forum",
+        "au triclinium",
+        "aux thermes"
+      ],
+      "answer": "aux thermes",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "L’après-midi, beaucoup de Romains vont aux thermes, de grands bains publics, pour se laver, faire du sport et discuter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La maison romaine",
+          "lines": [
+            "La domus : la maison d’une famille riche, tournée vers l’intérieur.",
+            "L’atrium : la pièce d’entrée, ouverte sur le ciel en son centre.",
+            "L’impluvium : le bassin de l’atrium, qui recueille l’eau de pluie.",
+            "Le péristyle : un jardin entouré de colonnes.",
+            "L’insula : un immeuble de plusieurs étages, où vit la plupart des habitants de Rome.",
+            "Le triclinium : la salle à manger ; on y mange allongé sur des lits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-2-6",
+      "prompt": "L’atrium est ouvert sur …",
+      "spoken": "L’atrium est ouvert sur  (mot manquant) ",
+      "choices": [
+        "la rue",
+        "le ciel",
+        "la cuisine"
+      ],
+      "answer": "le ciel",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Le toit de l’atrium a une ouverture au centre : la lumière et la pluie entrent, et l’eau tombe dans l’impluvium.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La maison romaine",
+          "lines": [
+            "La domus : la maison d’une famille riche, tournée vers l’intérieur.",
+            "L’atrium : la pièce d’entrée, ouverte sur le ciel en son centre.",
+            "L’impluvium : le bassin de l’atrium, qui recueille l’eau de pluie.",
+            "Le péristyle : un jardin entouré de colonnes.",
+            "L’insula : un immeuble de plusieurs étages, où vit la plupart des habitants de Rome.",
+            "Le triclinium : la salle à manger ; on y mange allongé sur des lits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-home-2-7",
+      "prompt": "Une famille vit dans un immeuble de plusieurs étages : en latin, cet immeuble s’appelle une …",
+      "spoken": "Une famille vit dans un immeuble de plusieurs étages : en latin, cet immeuble s’appelle une  (mot manquant) ",
+      "choices": [
+        "domus",
+        "villa",
+        "insula"
+      ],
+      "answer": "insula",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "L’insula, un mot qui veut dire aussi « île », est un immeuble entouré de rues. La domus est une maison de ville ; la villa, une maison à la campagne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La maison romaine",
+          "lines": [
+            "La domus : la maison d’une famille riche, tournée vers l’intérieur.",
+            "L’atrium : la pièce d’entrée, ouverte sur le ciel en son centre.",
+            "L’impluvium : le bassin de l’atrium, qui recueille l’eau de pluie.",
+            "Le péristyle : un jardin entouré de colonnes.",
+            "L’insula : un immeuble de plusieurs étages, où vit la plupart des habitants de Rome.",
+            "Le triclinium : la salle à manger ; on y mange allongé sur des lits."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-4e-cities",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,240 @@
+{
+  "id": "civics-3e-democratic-life-civic-engagement-1",
+  "biome": "civics-3e-democratic-life",
+  "type": "civic-engagement",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-1-0",
+      "prompt": "Les électeurs répondent par oui ou par non à une question : c’est un …",
+      "spoken": "Les électeurs répondent par oui ou par non à une question : c’est un  (mot manquant) ",
+      "choices": [
+        "sondage",
+        "référendum",
+        "débat"
+      ],
+      "answer": "référendum",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Au référendum, les électeurs répondent oui ou non à une question. Un sondage, lui, ne décide rien.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élections",
+          "lines": [
+            "À 16 ans, on se fait recenser ; à 18 ans, on est inscrit sur les listes électorales.",
+            "Le vote n’est pas obligatoire, mais c’est un devoir civique.",
+            "Présidentielle et européennes : tous les 5 ans. Municipales : tous les 6 ans.",
+            "Législatives : l’élection des députés.",
+            "Suffrage direct : les citoyens votent eux-mêmes. Indirect : des élus votent.",
+            "Référendum : les électeurs répondent oui ou non à une question."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-1-1",
+      "prompt": "En France, voter est un droit, mais ce n’est pas …",
+      "spoken": "En France, voter est un droit, mais ce n’est pas  (mot manquant) ",
+      "choices": [
+        "secret",
+        "personnel",
+        "obligatoire"
+      ],
+      "answer": "obligatoire",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Le vote n’est pas obligatoire en France, mais c’est un devoir civique. Il est toujours secret et personnel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élections",
+          "lines": [
+            "À 16 ans, on se fait recenser ; à 18 ans, on est inscrit sur les listes électorales.",
+            "Le vote n’est pas obligatoire, mais c’est un devoir civique.",
+            "Présidentielle et européennes : tous les 5 ans. Municipales : tous les 6 ans.",
+            "Législatives : l’élection des députés.",
+            "Suffrage direct : les citoyens votent eux-mêmes. Indirect : des élus votent.",
+            "Référendum : les électeurs répondent oui ou non à une question."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-1-2",
+      "prompt": "Les élections municipales désignent les conseillers de la …",
+      "spoken": "Les élections municipales désignent les conseillers de la  (mot manquant) ",
+      "choices": [
+        "commune",
+        "région",
+        "nation"
+      ],
+      "answer": "commune",
+      "hint": "La mairie est celle de quoi ?",
+      "explanation": "Les élections municipales désignent le conseil municipal de la commune, qui élit ensuite le maire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élections",
+          "lines": [
+            "À 16 ans, on se fait recenser ; à 18 ans, on est inscrit sur les listes électorales.",
+            "Le vote n’est pas obligatoire, mais c’est un devoir civique.",
+            "Présidentielle et européennes : tous les 5 ans. Municipales : tous les 6 ans.",
+            "Législatives : l’élection des députés.",
+            "Suffrage direct : les citoyens votent eux-mêmes. Indirect : des élus votent.",
+            "Référendum : les électeurs répondent oui ou non à une question."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-1-3",
+      "prompt": "Le calendrier des élections\nPrésidentielle : tous les 5 ans.\nMunicipales : tous les 6 ans.\nEuropéennes : tous les 5 ans.",
+      "question": "Quelle élection a lieu tous les 6 ans ?",
+      "spoken": "Le calendrier des élections. Présidentielle, tous les 5 ans. Municipales, tous les 6 ans. Européennes, tous les 5 ans.",
+      "choices": [
+        "la présidentielle",
+        "les municipales",
+        "les européennes"
+      ],
+      "answer": "les municipales",
+      "hint": "Cherche le nombre 6 dans le document.",
+      "explanation": "Les municipales ont lieu tous les 6 ans. La présidentielle et les européennes, tous les 5 ans.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élections",
+          "lines": [
+            "À 16 ans, on se fait recenser ; à 18 ans, on est inscrit sur les listes électorales.",
+            "Le vote n’est pas obligatoire, mais c’est un devoir civique.",
+            "Présidentielle et européennes : tous les 5 ans. Municipales : tous les 6 ans.",
+            "Législatives : l’élection des députés.",
+            "Suffrage direct : les citoyens votent eux-mêmes. Indirect : des élus votent.",
+            "Référendum : les électeurs répondent oui ou non à une question."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-1-4",
+      "prompt": "À 18 ans, un jeune Français recensé est inscrit … sur les listes électorales.",
+      "spoken": "À 18 ans, un jeune Français recensé est inscrit  (mot manquant)  sur les listes électorales.",
+      "choices": [
+        "automatiquement",
+        "s’il paie",
+        "s’il a un emploi"
+      ],
+      "answer": "automatiquement",
+      "hint": "Relis la première ligne du rappel : faut-il payer, ou travailler ?",
+      "explanation": "À 18 ans, un jeune Français recensé est inscrit automatiquement sur les listes électorales. Voter ne dépend ni de l’argent ni du travail.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élections",
+          "lines": [
+            "À 16 ans, on se fait recenser ; à 18 ans, on est inscrit sur les listes électorales.",
+            "Le vote n’est pas obligatoire, mais c’est un devoir civique.",
+            "Présidentielle et européennes : tous les 5 ans. Municipales : tous les 6 ans.",
+            "Législatives : l’élection des députés.",
+            "Suffrage direct : les citoyens votent eux-mêmes. Indirect : des élus votent.",
+            "Référendum : les électeurs répondent oui ou non à une question."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-1-5",
+      "prompt": "Les députés sont élus lors des élections …",
+      "spoken": "Les députés sont élus lors des élections  (mot manquant) ",
+      "choices": [
+        "municipales",
+        "législatives",
+        "régionales"
+      ],
+      "answer": "législatives",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Les élections législatives élisent les députés de l’Assemblée nationale, qui votent les lois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élections",
+          "lines": [
+            "À 16 ans, on se fait recenser ; à 18 ans, on est inscrit sur les listes électorales.",
+            "Le vote n’est pas obligatoire, mais c’est un devoir civique.",
+            "Présidentielle et européennes : tous les 5 ans. Municipales : tous les 6 ans.",
+            "Législatives : l’élection des députés.",
+            "Suffrage direct : les citoyens votent eux-mêmes. Indirect : des élus votent.",
+            "Référendum : les électeurs répondent oui ou non à une question."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-1-6",
+      "prompt": "Avant une élection\nLes candidats présentent leurs idées.\nIls débattent à la télévision et dans des réunions.\nC’est la campagne électorale.",
+      "question": "À quoi sert la campagne électorale ?",
+      "spoken": "Avant une élection. Les candidats présentent leurs idées. Ils débattent à la télévision et dans des réunions. C’est la campagne électorale.",
+      "choices": [
+        "à compter les votes",
+        "à débattre et à faire connaître les idées",
+        "à choisir le président à la place des électeurs"
+      ],
+      "answer": "à débattre et à faire connaître les idées",
+      "hint": "Lis la deuxième et la troisième ligne du document.",
+      "explanation": "La campagne électorale est un moment de débat : les candidats font connaître leurs idées, et chaque électeur se fait son avis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élections",
+          "lines": [
+            "À 16 ans, on se fait recenser ; à 18 ans, on est inscrit sur les listes électorales.",
+            "Le vote n’est pas obligatoire, mais c’est un devoir civique.",
+            "Présidentielle et européennes : tous les 5 ans. Municipales : tous les 6 ans.",
+            "Législatives : l’élection des députés.",
+            "Suffrage direct : les citoyens votent eux-mêmes. Indirect : des élus votent.",
+            "Référendum : les électeurs répondent oui ou non à une question."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-civic-engagement-1-7",
+      "prompt": "Les sénateurs sont élus par des élus, les grands électeurs : c’est un suffrage …",
+      "spoken": "Les sénateurs sont élus par des élus, les grands électeurs : c’est un suffrage  (mot manquant) ",
+      "choices": [
+        "direct",
+        "censitaire",
+        "indirect"
+      ],
+      "answer": "indirect",
+      "hint": "Relis l’avant-dernière ligne du rappel : les citoyens votent-ils eux-mêmes ?",
+      "explanation": "Les citoyens élisent des élus, qui élisent les sénateurs : c’est un suffrage indirect. Pour les députés, le suffrage est direct.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élections",
+          "lines": [
+            "À 16 ans, on se fait recenser ; à 18 ans, on est inscrit sur les listes électorales.",
+            "Le vote n’est pas obligatoire, mais c’est un devoir civique.",
+            "Présidentielle et européennes : tous les 5 ans. Municipales : tous les 6 ans.",
+            "Législatives : l’élection des députés.",
+            "Suffrage direct : les citoyens votent eux-mêmes. Indirect : des élus votent.",
+            "Référendum : les électeurs répondent oui ou non à une question."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-3e-democratic-life",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

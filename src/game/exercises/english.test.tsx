@@ -1,8 +1,8 @@
 import type { ComponentType } from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SettingsProvider } from '../../core/SettingsContext';
-import { CalculationScreen } from './CalculationScreen';
+import { AssemblyScreen, CalculationScreen } from './CalculationScreen';
 import { autoReadText, dicteeAutoText } from './reading';
 import { StoryScreen } from './StoryScreen';
 import { DictationItem } from './DictationItem';
@@ -48,6 +48,18 @@ it('QCM : le mot anglais n’est pas découpé en syllabes, il est marqué et lu
   expect(screen.getByRole('button', { name: 'mercredi' }).querySelector('[lang="en"]')).toBeNull();
   await user.click(screen.getByRole('button', { name: /Écouter/ }));
   expect(utterances.at(-1)).toEqual({ text: 'Wednesday', lang: 'en-GB' });
+});
+
+it('question mêlée (GD-10) : chaque réponse en anglais a son bouton Écouter, lu en anglais ; pas en français', async () => {
+  const user = userEvent.setup();
+  renderScreen(AssemblyScreen, { prompt: 'Amy buys 6 bottles.', choices: ['Amy pays 6 pounds.', 'Amy pays 6 pound.'], answer: 'Amy pays 6 pounds.' }, 'en');
+  await user.click(screen.getByRole('button', { name: 'Écouter la réponse : Amy pays 6 pound.' }));
+  expect(utterances.at(-1)).toEqual({ text: 'Amy pays 6 pound.', lang: 'en-GB' });
+  // Écouter ne répond pas : la réponse se choisit sur son propre bouton.
+  expect(screen.getByRole('button', { name: 'Amy pays 6 pound.' })).toBeEnabled();
+  cleanup();
+  renderScreen(AssemblyScreen, { prompt: '2 + 2', choices: ['4', '5'], answer: '4' }, 'fr');
+  expect(screen.queryByRole('button', { name: /Écouter la réponse/ })).toBeNull();
 });
 
 it('calcul : énoncé et réponses en anglais, indice lu en français', async () => {

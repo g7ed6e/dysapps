@@ -1,0 +1,227 @@
+{
+  "id": "french-5e-conjugation-sentence-grammar-1",
+  "biome": "french-5e-conjugation",
+  "type": "sentence-grammar",
+  "level": 1,
+  "instruction": "Lis la phrase, puis réponds à la question. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-5e-conjugation-sentence-grammar-1-0",
+      "prompt": "« Ferme la porte, s’il te plaît. » Quel est le type de la phrase ?",
+      "spoken": "Ferme la porte, s’il te plaît. Quel est le type de la phrase ?",
+      "choices": [
+        "déclaratif",
+        "interrogatif",
+        "impératif"
+      ],
+      "answer": "impératif",
+      "hint": "La phrase finit par un point. Donne-t-elle une information, ou demande-t-elle d’agir ?",
+      "explanation": "La phrase demande de fermer la porte, avec un verbe sans sujet écrit : c’est un ordre poli, type impératif. Le point final ne suffit pas à la rendre déclarative.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase",
+          "lines": [
+            "Type déclaratif : on informe. Interrogatif : on demande. Impératif : on donne un ordre.",
+            "Forme négative : ne… pas, ne… plus, ne… jamais. À l’écrit, le « ne » ne s’oublie pas.",
+            "Phrase simple : un verbe conjugué. Complexe : plusieurs. Non verbale : aucun.",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car. Juxtaposées : par une virgule seule.",
+            "Discours direct : deux-points et guillemets. Indirect : après « dit que », sans guillemets."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-1-1",
+      "prompt": "« Tu viens avec nous ? » Quel est le type de la phrase ?",
+      "spoken": "Tu viens avec nous ? Quel est le type de la phrase ?",
+      "choices": [
+        "interrogatif",
+        "déclaratif",
+        "impératif"
+      ],
+      "answer": "interrogatif",
+      "hint": "Regarde le signe à la fin de la phrase.",
+      "explanation": "Les mots sont rangés comme dans une phrase déclarative, mais le point d’interrogation montre une question : type interrogatif. C’est une question de l’oral, où la voix monte ; à l’écrit soigné, on écrit plutôt « Viens-tu avec nous ? ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase",
+          "lines": [
+            "Type déclaratif : on informe. Interrogatif : on demande. Impératif : on donne un ordre.",
+            "Forme négative : ne… pas, ne… plus, ne… jamais. À l’écrit, le « ne » ne s’oublie pas.",
+            "Phrase simple : un verbe conjugué. Complexe : plusieurs. Non verbale : aucun.",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car. Juxtaposées : par une virgule seule.",
+            "Discours direct : deux-points et guillemets. Indirect : après « dit que », sans guillemets."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-1-2",
+      "prompt": "Léo dit : « J’ai pas fini. » Comment l’écrire dans une rédaction ?",
+      "spoken": "Léo dit : J’ai pas fini. Comment l’écrire dans une rédaction ?",
+      "choices": [
+        "J’ai pas fini.",
+        "Je n’ai pas fini."
+      ],
+      "answer": "Je n’ai pas fini.",
+      "hint": "À l’oral, un petit mot de la négation disparaît souvent. Lequel ?",
+      "explanation": "À l’oral, on avale souvent le « ne ». À l’écrit, la négation garde ses deux mots, « ne » et « pas » : je n’ai pas fini.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase",
+          "lines": [
+            "Type déclaratif : on informe. Interrogatif : on demande. Impératif : on donne un ordre.",
+            "Forme négative : ne… pas, ne… plus, ne… jamais. À l’écrit, le « ne » ne s’oublie pas.",
+            "Phrase simple : un verbe conjugué. Complexe : plusieurs. Non verbale : aucun.",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car. Juxtaposées : par une virgule seule.",
+            "Discours direct : deux-points et guillemets. Indirect : après « dit que », sans guillemets."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-1-3",
+      "prompt": "« Attention, chien méchant ! » Quelle sorte de phrase est-ce ?",
+      "spoken": "Attention, chien méchant ! Quelle sorte de phrase est-ce ?",
+      "choices": [
+        "phrase simple",
+        "phrase complexe",
+        "phrase non verbale"
+      ],
+      "answer": "phrase non verbale",
+      "hint": "Cherche un verbe conjugué dans la phrase.",
+      "explanation": "La phrase n’a aucun verbe conjugué : c’est une phrase non verbale. Elle a pourtant un sens complet, une majuscule et un signe final.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase",
+          "lines": [
+            "Type déclaratif : on informe. Interrogatif : on demande. Impératif : on donne un ordre.",
+            "Forme négative : ne… pas, ne… plus, ne… jamais. À l’écrit, le « ne » ne s’oublie pas.",
+            "Phrase simple : un verbe conjugué. Complexe : plusieurs. Non verbale : aucun.",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car. Juxtaposées : par une virgule seule.",
+            "Discours direct : deux-points et guillemets. Indirect : après « dit que », sans guillemets."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-1-4",
+      "prompt": "« Tom et Léa préparent un gâteau. » Quelle sorte de phrase est-ce ?",
+      "spoken": "Tom et Léa préparent un gâteau. Quelle sorte de phrase est-ce ?",
+      "choices": [
+        "phrase complexe",
+        "phrase simple",
+        "phrase non verbale"
+      ],
+      "answer": "phrase simple",
+      "hint": "Compte les verbes conjugués, pas les noms.",
+      "explanation": "Un seul verbe conjugué, « préparent », avec deux noms pour sujet : c’est une phrase simple. « Et » relie ici deux noms, pas deux propositions.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase",
+          "lines": [
+            "Type déclaratif : on informe. Interrogatif : on demande. Impératif : on donne un ordre.",
+            "Forme négative : ne… pas, ne… plus, ne… jamais. À l’écrit, le « ne » ne s’oublie pas.",
+            "Phrase simple : un verbe conjugué. Complexe : plusieurs. Non verbale : aucun.",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car. Juxtaposées : par une virgule seule.",
+            "Discours direct : deux-points et guillemets. Indirect : après « dit que », sans guillemets."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-1-5",
+      "prompt": "« J’ai couru, mais j’ai raté le bus. » Comment les deux propositions sont-elles reliées ?",
+      "spoken": "J’ai couru, mais j’ai raté le bus. Comment les deux propositions sont-elles reliées ?",
+      "choices": [
+        "elles sont juxtaposées",
+        "elles sont coordonnées"
+      ],
+      "answer": "elles sont coordonnées",
+      "hint": "Il y a une virgule, et aussi un petit mot. Est-il dans la liste de la règle ?",
+      "explanation": "« Mais » relie les deux propositions : elles sont coordonnées. Avec la virgule seule, elles seraient juxtaposées : « J’ai couru, j’ai raté le bus. »",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase",
+          "lines": [
+            "Type déclaratif : on informe. Interrogatif : on demande. Impératif : on donne un ordre.",
+            "Forme négative : ne… pas, ne… plus, ne… jamais. À l’écrit, le « ne » ne s’oublie pas.",
+            "Phrase simple : un verbe conjugué. Complexe : plusieurs. Non verbale : aucun.",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car. Juxtaposées : par une virgule seule.",
+            "Discours direct : deux-points et guillemets. Indirect : après « dit que », sans guillemets."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-1-6",
+      "prompt": "Le guide annonce que le musée ferme à midi. Discours direct ou indirect ?",
+      "spoken": "Le guide annonce que le musée ferme à midi. Discours direct ou indirect ?",
+      "choices": [
+        "direct",
+        "indirect"
+      ],
+      "answer": "indirect",
+      "hint": "Cherche les guillemets, puis les mots « annonce que ».",
+      "explanation": "Ni deux-points ni guillemets : les paroles viennent après « annonce que ». C’est le discours indirect. Au discours direct, on lirait : Le guide annonce : « Le musée ferme à midi. »",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase",
+          "lines": [
+            "Type déclaratif : on informe. Interrogatif : on demande. Impératif : on donne un ordre.",
+            "Forme négative : ne… pas, ne… plus, ne… jamais. À l’écrit, le « ne » ne s’oublie pas.",
+            "Phrase simple : un verbe conjugué. Complexe : plusieurs. Non verbale : aucun.",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car. Juxtaposées : par une virgule seule.",
+            "Discours direct : deux-points et guillemets. Indirect : après « dit que », sans guillemets."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-1-7",
+      "prompt": "Quelle phrase rapporte au discours direct les mots exacts de Maman ?",
+      "spoken": "Quelle phrase rapporte au discours direct les mots exacts de Maman ?",
+      "choices": [
+        "Maman dit qu’il est l’heure.",
+        "Maman dit : « Il est l’heure. »",
+        "Maman dit : il est l’heure."
+      ],
+      "answer": "Maman dit : « Il est l’heure. »",
+      "hint": "Au discours direct, deux signes encadrent les mots exacts. Relis la règle.",
+      "explanation": "Au discours direct, les mots exacts viennent après les deux-points, entre guillemets, avec une majuscule : Maman dit : « Il est l’heure. » Sans guillemets, on ne voit pas où commencent ses mots ; avec « dit que », c’est le discours indirect.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La phrase",
+          "lines": [
+            "Type déclaratif : on informe. Interrogatif : on demande. Impératif : on donne un ordre.",
+            "Forme négative : ne… pas, ne… plus, ne… jamais. À l’écrit, le « ne » ne s’oublie pas.",
+            "Phrase simple : un verbe conjugué. Complexe : plusieurs. Non verbale : aucun.",
+            "Coordonnées : reliées par mais, ou, et, donc, or, ni, car. Juxtaposées : par une virgule seule.",
+            "Discours direct : deux-points et guillemets. Indirect : après « dit que », sans guillemets."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne route !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-5e-conjugation",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

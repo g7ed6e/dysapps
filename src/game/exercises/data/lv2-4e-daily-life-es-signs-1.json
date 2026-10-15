@@ -1,0 +1,255 @@
+{
+  "id": "lv2-4e-daily-life-es-signs-1",
+  "biome": "lv2-4e-daily-life",
+  "type": "es-signs",
+  "level": 1,
+  "lang": "es",
+  "instruction": "Lis la question, puis trouve la bonne ligne du panneau ou du message en espagnol. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "lv2-4e-daily-life-es-signs-1-0",
+      "prompt": "Piscina municipal\nProhibido comer y beber\nObligatorio: gorro de baño",
+      "question": "À la piscine, que dois-tu porter ?",
+      "spoken": "Piscina municipal. Prohibido comer y beber. Obligatorio: gorro de baño.",
+      "choices": [
+        "Un bonnet de bain",
+        "Des lunettes de soleil",
+        "Un sac de sport"
+      ],
+      "choicesLang": "fr",
+      "answer": "Un bonnet de bain",
+      "hint": "Cherche la ligne Obligatorio. baño ressemble à bain.",
+      "explanation": "Obligatorio: gorro de baño = le bonnet de bain est obligatoire. Prohibido comer y beber : manger et boire sont interdits.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer carteles y mensajes",
+          "lines": [
+            "prohibido = interdit ; obligatorio = obligatoire",
+            "se puede = on peut ; no se puede = on ne peut pas",
+            "a la derecha = à droite ; a la izquierda = à gauche",
+            "lee = lis ; responde = réponds ; escribe = écris",
+            "nos vemos = on se voit ; vuelvo = je reviens",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-1-1",
+      "prompt": "Biblioteca\nNo se puede usar el móvil.\nHabla en voz baja.",
+      "question": "Qu’est-ce qu’on ne peut pas faire à la bibliothèque ?",
+      "spoken": "Biblioteca. No se puede usar el móvil. Habla en voz baja.",
+      "choices": [
+        "Utiliser le portable",
+        "Emprunter des livres",
+        "Parler à voix basse"
+      ],
+      "choicesLang": "fr",
+      "answer": "Utiliser le portable",
+      "hint": "Cherche la ligne qui commence par No se puede. el móvil ressemble à mobile.",
+      "explanation": "No se puede usar el móvil = on ne peut pas utiliser le portable. Habla en voz baja = parle à voix basse : ça, on peut le faire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer carteles y mensajes",
+          "lines": [
+            "prohibido = interdit ; obligatorio = obligatoire",
+            "se puede = on peut ; no se puede = on ne peut pas",
+            "a la derecha = à droite ; a la izquierda = à gauche",
+            "lee = lis ; responde = réponds ; escribe = écris",
+            "nos vemos = on se voit ; vuelvo = je reviens",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-1-2",
+      "prompt": "Instrucciones\n1. Lee el texto.\n2. Responde a las preguntas en español.\n3. Escribe tu nombre arriba.",
+      "question": "En quelle langue dois-tu répondre aux questions ?",
+      "spoken": "Instrucciones. Uno: lee el texto. Dos: responde a las preguntas en español. Tres: escribe tu nombre arriba.",
+      "choices": [
+        "En espagnol",
+        "En français",
+        "En anglais"
+      ],
+      "choicesLang": "fr",
+      "answer": "En espagnol",
+      "hint": "Cherche la consigne qui commence par Responde.",
+      "explanation": "Responde a las preguntas en español = réponds aux questions en espagnol. Lee el texto = lis le texte ; escribe tu nombre = écris ton prénom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer carteles y mensajes",
+          "lines": [
+            "prohibido = interdit ; obligatorio = obligatoire",
+            "se puede = on peut ; no se puede = on ne peut pas",
+            "a la derecha = à droite ; a la izquierda = à gauche",
+            "lee = lis ; responde = réponds ; escribe = écris",
+            "nos vemos = on se voit ; vuelvo = je reviens",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-1-3",
+      "prompt": "¡Hola, Leo!\nMañana no hay clase de música.\nNos vemos a las 10 en el parque.\nUn abrazo, Sara",
+      "question": "Où Sara te donne-t-elle rendez-vous ?",
+      "spoken": "Hola, Leo! Mañana no hay clase de música. Nos vemos a las diez en el parque. Un abrazo, Sara.",
+      "choices": [
+        "Au parc",
+        "Au cours de musique",
+        "Chez Leo"
+      ],
+      "choicesLang": "fr",
+      "answer": "Au parc",
+      "hint": "Cherche la ligne Nos vemos (on se voit).",
+      "explanation": "Nos vemos a las 10 en el parque = on se voit à 10 h au parc. No hay clase de música = il n’y a pas de cours de musique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer carteles y mensajes",
+          "lines": [
+            "prohibido = interdit ; obligatorio = obligatoire",
+            "se puede = on peut ; no se puede = on ne peut pas",
+            "a la derecha = à droite ; a la izquierda = à gauche",
+            "lee = lis ; responde = réponds ; escribe = écris",
+            "nos vemos = on se voit ; vuelvo = je reviens",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-1-4",
+      "prompt": "Mamá:\nEstoy en casa de Lucas.\nVuelvo a las 19:00.\nBesos, Hugo",
+      "question": "À quelle heure Hugo rentre-t-il ?",
+      "spoken": "Mamá: estoy en casa de Lucas. Vuelvo a las diecinueve. Besos, Hugo.",
+      "choices": [
+        "9 h 00",
+        "17 h 00",
+        "19 h 00"
+      ],
+      "choicesLang": "fr",
+      "answer": "19 h 00",
+      "hint": "Cherche la ligne Vuelvo (je reviens).",
+      "explanation": "Vuelvo a las 19:00 = je reviens à 19 h : diecinueve, c’est 19. nueve, c’est 9 ; diecisiete, 17.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer carteles y mensajes",
+          "lines": [
+            "prohibido = interdit ; obligatorio = obligatoire",
+            "se puede = on peut ; no se puede = on ne peut pas",
+            "a la derecha = à droite ; a la izquierda = à gauche",
+            "lee = lis ; responde = réponds ; escribe = écris",
+            "nos vemos = on se voit ; vuelvo = je reviens",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-1-5",
+      "prompt": "Parque de la Ribera\nProhibido jugar a la pelota\nZona de pícnic: a la derecha",
+      "question": "Que peux-tu faire à droite ?",
+      "spoken": "Parque de la Ribera. Prohibido jugar a la pelota. Zona de pícnic: a la derecha.",
+      "choices": [
+        "Pique-niquer",
+        "Jouer au ballon",
+        "Faire du vélo"
+      ],
+      "choicesLang": "fr",
+      "answer": "Pique-niquer",
+      "hint": "Cherche la ligne a la derecha (à droite).",
+      "explanation": "Zona de pícnic: a la derecha = le coin pique-nique est à droite. Jugar a la pelota (jouer au ballon) est prohibido, interdit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer carteles y mensajes",
+          "lines": [
+            "prohibido = interdit ; obligatorio = obligatoire",
+            "se puede = on peut ; no se puede = on ne peut pas",
+            "a la derecha = à droite ; a la izquierda = à gauche",
+            "lee = lis ; responde = réponds ; escribe = écris",
+            "nos vemos = on se voit ; vuelvo = je reviens",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-1-6",
+      "prompt": "Excursión al museo: el jueves\nSalida del instituto: 8:15\nTraed un bocadillo.",
+      "question": "Quel jour a lieu la sortie au musée ?",
+      "spoken": "Excursión al museo: el jueves. Salida del instituto: a las ocho y quince. Traed un bocadillo.",
+      "choices": [
+        "Le mardi",
+        "Le jeudi",
+        "Le vendredi"
+      ],
+      "choicesLang": "fr",
+      "answer": "Le jeudi",
+      "hint": "Lis la 1re ligne. jueves ou viernes ?",
+      "explanation": "el jueves = le jeudi. Le mardi se dit martes ; le vendredi, viernes. La salida, ici, c’est le départ du collège à 8 h 15.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer carteles y mensajes",
+          "lines": [
+            "prohibido = interdit ; obligatorio = obligatoire",
+            "se puede = on peut ; no se puede = on ne peut pas",
+            "a la derecha = à droite ; a la izquierda = à gauche",
+            "lee = lis ; responde = réponds ; escribe = écris",
+            "nos vemos = on se voit ; vuelvo = je reviens",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-signs-1-7",
+      "prompt": "¡Ojo!\nSuelo mojado",
+      "question": "Pourquoi ce panneau te dit-il de faire attention ?",
+      "spoken": "Ojo! Suelo mojado.",
+      "choices": [
+        "Le sol est mouillé",
+        "La porte est cassée",
+        "Le chien est méchant"
+      ],
+      "choicesLang": "fr",
+      "answer": "Le sol est mouillé",
+      "hint": "¡Ojo! veut dire attention. Regarde la 2e ligne : el suelo = le sol.",
+      "explanation": "Suelo mojado = sol mouillé : attention, on peut glisser. ¡Ojo! veut dire attention.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer carteles y mensajes",
+          "lines": [
+            "prohibido = interdit ; obligatorio = obligatoire",
+            "se puede = on peut ; no se puede = on ne peut pas",
+            "a la derecha = à droite ; a la izquierda = à gauche",
+            "lee = lis ; responde = réponds ; escribe = écris",
+            "nos vemos = on se voit ; vuelvo = je reviens",
+            "7:15 = 7 h 15 ; 16:45 = 16 h 45"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bien lu !"
+  },
+  "reward": {
+    "block": "lv2-4e-daily-life",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

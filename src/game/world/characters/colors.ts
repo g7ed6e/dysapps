@@ -16,10 +16,17 @@ export const OUTIL = { bois: 0x8a6236, fer: 0x5c6470, laiton: 0xc9a24a } as cons
 export const LUEUR: Couleur = 0xffd866;
 
 /**
- * La nuit, le liseré des vivants (le bonhomme et les créatures, jamais les sentinelles) du côté éclairé : clair et froid
- * (DA, 28/09) : les facettes du bord de la silhouette, vers le haut.
+ * L'ombre au sol des vivants d'Archipéo (le bonhomme et les créatures) : un disque Nuit océan, plus marqué la nuit
+ * (« lune en aplat », choix du mainteneur, 12 octobre 2026, sur la proposition du directeur artistique).
  */
-export const LISERE_DE_NUIT: Couleur = 0xb8cce0;
+export const OMBRE_DES_VIVANTS: Couleur = 0x142b38;
+
+/**
+ * L'ombre au sol des vivants (le bonhomme et les créatures) : un disque Nuit océan à bord net, sous les pieds, de
+ * `rayon` cases (la moitié de l'emprise de la créature, entre `min` et `max`), d'opacité `jour` le jour, `nuit` au cœur
+ * de la nuit, sans à-coup. Un seul appel de dessin pour tous (three/paintedCharacters.ts), de `cotes` triangles chacun.
+ */
+export const OMBRE_AU_SOL = { cotes: 8, min: 0.3, max: 0.6, bonhomme: 0.35, jour: 0.25, nuit: 0.5, dessus: 0.02 } as const;
 
 /**
  * Le verre de la lanterne de Fi : ambre pâle et mat le jour, la lueur la nuit (proposition du directeur artistique,
@@ -57,4 +64,28 @@ export const SENTINELLE = {
   rallumee: 0xdaa66a,
   orbite: 0x45423d,
   cendre: 0x6b6862,
+  /**
+   * Le rameau de la Colombe d'albâtre (HG-3) : éteint, une pierre à peine verte ; rallumé, il reste vert (`feuillage`),
+   * quand tout le reste passe au Sable (DA, relecture des planches : « jusqu'au rameau vert »).
+   */
+  rameau: 0x868a7c,
+  feuillage: 0x5a9a3e,
+  /**
+   * Le rocher de la Tortue d'ocre (SC-3) : une pierre grise un peu plus froide et plus sombre que la statue, qui ne se
+   * rallume pas : rallumée, la tortue passe au Sable et se détache de son rocher (DA, relecture des captures SC-3).
+   */
+  roche: 0x7c7f80,
+  /**
+   * L'Hirondelle de nacre (EMC-2) : éteinte, trois pierres à peine teintées (le dos un peu bleu, le ventre un peu plus
+   * clair, la gorge un peu rose) ; rallumée, ses couleurs à elle, le dos et les ailes de nacre bleutée, le ventre blanc,
+   * la gorge rose nacré, au lieu du Sable, qui en faisait un totem de bois (DA, relecture des captures emc-2). Rallumée,
+   * des valeurs claires : à l'ombre, une nacre moyenne paraissait gris ardoise ; la nacre pâle, le ventre presque blanc,
+   * la gorge rose pâle (DA, relecture des captures emc-2, passe 2).
+   */
+  nacre: 0x8a8d92,
+  nacreRallumee: 0xcad5ee,
+  ventre: 0x9a9891,
+  ventreRallume: 0xfdfbf6,
+  gorge: 0x938a88,
+  gorgeRallumee: 0xf3c6cc,
 } as const satisfies Record<string, Couleur>;

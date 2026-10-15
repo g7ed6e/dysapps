@@ -10,6 +10,8 @@ import {
   whalePassRoute,
 } from "./whalePass";
 
+// Chaque île de chaque archipel (51 îles depuis SC-3), sous la seconde depuis que `whaleSpots` ne parcourt plus toutes
+// les cases de terre pour chaque clairière (terrain/sea.ts) : le délai par défaut suffit.
 it("chaque île avec la mer a un passage de baleine sur l’eau libre, au large de cette île, jamais sur la terre", () => {
   for (const b of BIOMES) {
     const a = archipelagoOfIsland(b.id);
@@ -51,7 +53,7 @@ it("chaque île avec la mer a un passage de baleine sur l’eau libre, au large 
       expect(passingWhale(whaleSpots(a, []), r)).toBeGreaterThanOrEqual(0);
     }
   }
-}, 30_000);
+});
 
 it("le passage se voit depuis la caméra : derrière l’île, en haut de l’écran", () => {
   const south = whalePassRoute("maths-6e-calculation", [])!;

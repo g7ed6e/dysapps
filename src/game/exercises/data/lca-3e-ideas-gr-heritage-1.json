@@ -1,0 +1,241 @@
+{
+  "id": "lca-3e-ideas-gr-heritage-1",
+  "biome": "lca-3e-ideas",
+  "type": "gr-heritage",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-3e-ideas-gr-heritage-1-0",
+      "prompt": "Le théorème du triangle rectangle porte le nom d’un savant grec : …",
+      "spoken": "Le théorème du triangle rectangle porte le nom d’un savant grec : (mot manquant)",
+      "choices": [
+        "Hippocrate",
+        "Pythagore",
+        "Socrate"
+      ],
+      "answer": "Pythagore",
+      "hint": "Relis la deuxième ligne du rappel : qui fait des mathématiques ?",
+      "explanation": "Le théorème de Pythagore concerne le triangle rectangle. Hippocrate est un médecin ; Socrate, un philosophe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Grèce à nous",
+          "lines": [
+            "Rome adopte la culture grecque : les Romains cultivés apprennent le grec.",
+            "Des savants grecs : Pythagore et Thalès en mathématiques, Hippocrate en médecine.",
+            "Au Moyen Âge, les livres grecs sont copiés à Byzance, traduits par des savants arabes.",
+            "À la Renaissance, des savants apprennent à nouveau le grec et impriment ses auteurs.",
+            "Le serment d’Hippocrate : les médecins promettent encore de soigner sans nuire.",
+            "Beaucoup de mots savants français sont faits de racines grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-1-1",
+      "prompt": "Le serment d’Hippocrate aujourd’hui\nLe nouveau médecin promet de soigner tous les malades,\nsans leur nuire,\net de garder le secret médical.",
+      "question": "Pourquoi parle-t-on d’un héritage grec ?",
+      "spoken": "Le serment d’Hippocrate aujourd’hui. Le nouveau médecin promet de soigner tous les malades, sans leur nuire, et de garder le secret médical.",
+      "choices": [
+        "Hippocrate est un médecin grec de l’Antiquité",
+        "Hippocrate est un médecin d’aujourd’hui",
+        "le serment se prononce en grec"
+      ],
+      "answer": "Hippocrate est un médecin grec de l’Antiquité",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Hippocrate, médecin grec du cinquième siècle avant J.-C., est considéré comme le père de la médecine. Aujourd’hui encore, les médecins prêtent un serment qui porte son nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Grèce à nous",
+          "lines": [
+            "Rome adopte la culture grecque : les Romains cultivés apprennent le grec.",
+            "Des savants grecs : Pythagore et Thalès en mathématiques, Hippocrate en médecine.",
+            "Au Moyen Âge, les livres grecs sont copiés à Byzance, traduits par des savants arabes.",
+            "À la Renaissance, des savants apprennent à nouveau le grec et impriment ses auteurs.",
+            "Le serment d’Hippocrate : les médecins promettent encore de soigner sans nuire.",
+            "Beaucoup de mots savants français sont faits de racines grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-1-2",
+      "prompt": "Au Moyen Âge, beaucoup de livres grecs sont traduits et étudiés par …",
+      "spoken": "Au Moyen Âge, beaucoup de livres grecs sont traduits et étudiés par  (mot manquant) ",
+      "choices": [
+        "des chevaliers",
+        "des savants arabes",
+        "des explorateurs"
+      ],
+      "answer": "des savants arabes",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "À Bagdad notamment, des savants traduisent en arabe les livres grecs de science et de philosophie ; l’Europe en retrouve une partie par ces traductions. À Byzance, on continue de copier le grec.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Grèce à nous",
+          "lines": [
+            "Rome adopte la culture grecque : les Romains cultivés apprennent le grec.",
+            "Des savants grecs : Pythagore et Thalès en mathématiques, Hippocrate en médecine.",
+            "Au Moyen Âge, les livres grecs sont copiés à Byzance, traduits par des savants arabes.",
+            "À la Renaissance, des savants apprennent à nouveau le grec et impriment ses auteurs.",
+            "Le serment d’Hippocrate : les médecins promettent encore de soigner sans nuire.",
+            "Beaucoup de mots savants français sont faits de racines grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-1-3",
+      "prompt": "Les Romains cultivés apprennent …",
+      "spoken": "Les Romains cultivés apprennent  (mot manquant) ",
+      "choices": [
+        "le grec",
+        "le gaulois",
+        "l’égyptien"
+      ],
+      "answer": "le grec",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Pour les Romains cultivés, parler grec est un signe d’éducation : Cicéron le parle très bien. Leurs maîtres sont souvent des Grecs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Grèce à nous",
+          "lines": [
+            "Rome adopte la culture grecque : les Romains cultivés apprennent le grec.",
+            "Des savants grecs : Pythagore et Thalès en mathématiques, Hippocrate en médecine.",
+            "Au Moyen Âge, les livres grecs sont copiés à Byzance, traduits par des savants arabes.",
+            "À la Renaissance, des savants apprennent à nouveau le grec et impriment ses auteurs.",
+            "Le serment d’Hippocrate : les médecins promettent encore de soigner sans nuire.",
+            "Beaucoup de mots savants français sont faits de racines grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-1-4",
+      "prompt": "Des mots de l’école venus du grec\nmathématiques : mathêma, la connaissance\nhistoire : historia, l’enquête\ngéographie : gê, la terre, et graphein, écrire",
+      "question": "Pour un Grec, faire de l’histoire, c’est d’abord …",
+      "spoken": "Des mots de l’école venus du grec. Mathématiques : matêma, la connaissance. Histoire : historia, l’enquête. Géographie : guê, la terre, et grafeïnn, écrire.",
+      "choices": [
+        "inventer",
+        "enquêter",
+        "chanter"
+      ],
+      "answer": "enquêter",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "Historia, c’est l’enquête : l’historien enquête sur le passé. Hérodote, le premier historien grec, appelle son livre « Enquêtes ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Grèce à nous",
+          "lines": [
+            "Rome adopte la culture grecque : les Romains cultivés apprennent le grec.",
+            "Des savants grecs : Pythagore et Thalès en mathématiques, Hippocrate en médecine.",
+            "Au Moyen Âge, les livres grecs sont copiés à Byzance, traduits par des savants arabes.",
+            "À la Renaissance, des savants apprennent à nouveau le grec et impriment ses auteurs.",
+            "Le serment d’Hippocrate : les médecins promettent encore de soigner sans nuire.",
+            "Beaucoup de mots savants français sont faits de racines grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-1-5",
+      "prompt": "À la Renaissance, des savants européens …",
+      "spoken": "À la Renaissance, des savants européens (mot manquant)",
+      "choices": [
+        "interdisent le grec",
+        "inventent l’alphabet grec",
+        "apprennent à nouveau le grec"
+      ],
+      "answer": "apprennent à nouveau le grec",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Les humanistes de la Renaissance apprennent le grec et impriment Homère, Platon, Hippocrate : les textes anciens circulent de nouveau en Europe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Grèce à nous",
+          "lines": [
+            "Rome adopte la culture grecque : les Romains cultivés apprennent le grec.",
+            "Des savants grecs : Pythagore et Thalès en mathématiques, Hippocrate en médecine.",
+            "Au Moyen Âge, les livres grecs sont copiés à Byzance, traduits par des savants arabes.",
+            "À la Renaissance, des savants apprennent à nouveau le grec et impriment ses auteurs.",
+            "Le serment d’Hippocrate : les médecins promettent encore de soigner sans nuire.",
+            "Beaucoup de mots savants français sont faits de racines grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-1-6",
+      "prompt": "Le mot « école » vient du grec skholê, qui voulait d’abord dire …",
+      "spoken": "Le mot école vient du grec skolê, qui voulait d’abord dire (mot manquant)",
+      "choices": [
+        "le loisir",
+        "le travail",
+        "la punition"
+      ],
+      "answer": "le loisir",
+      "hint": "Pour un Grec riche, apprendre et discuter, c’est ce qu’on fait de son temps libre.",
+      "explanation": "Skholê, c’est d’abord le temps libre : on l’emploie à discuter et à apprendre. Le mot a donné « école » et « scolaire ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Grèce à nous",
+          "lines": [
+            "Rome adopte la culture grecque : les Romains cultivés apprennent le grec.",
+            "Des savants grecs : Pythagore et Thalès en mathématiques, Hippocrate en médecine.",
+            "Au Moyen Âge, les livres grecs sont copiés à Byzance, traduits par des savants arabes.",
+            "À la Renaissance, des savants apprennent à nouveau le grec et impriment ses auteurs.",
+            "Le serment d’Hippocrate : les médecins promettent encore de soigner sans nuire.",
+            "Beaucoup de mots savants français sont faits de racines grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-1-7",
+      "prompt": "Une racine grecque, plusieurs langues\nphôs, phôtos : la lumière\nfrançais : photographie\nanglais : photograph ; espagnol : fotografía",
+      "question": "Que montre ce document ?",
+      "spoken": "Une racine grecque, plusieurs langues. Fôss, fôtoss : la lumière. Français : photographie. Anglais : photograph. Espagnol : fotografía.",
+      "choices": [
+        "toutes les langues sont nées du grec",
+        "le mot a été inventé par l’anglais",
+        "une racine grecque sert dans plusieurs langues"
+      ],
+      "answer": "une racine grecque sert dans plusieurs langues",
+      "hint": "Lis le titre du document.",
+      "explanation": "La racine grecque phôs, phôtos (la lumière) se retrouve en français, en anglais, en espagnol : les mots savants d’Europe partagent des racines grecques. Ces langues ne sont pas nées du grec pour autant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la Grèce à nous",
+          "lines": [
+            "Rome adopte la culture grecque : les Romains cultivés apprennent le grec.",
+            "Des savants grecs : Pythagore et Thalès en mathématiques, Hippocrate en médecine.",
+            "Au Moyen Âge, les livres grecs sont copiés à Byzance, traduits par des savants arabes.",
+            "À la Renaissance, des savants apprennent à nouveau le grec et impriment ses auteurs.",
+            "Le serment d’Hippocrate : les médecins promettent encore de soigner sans nuire.",
+            "Beaucoup de mots savants français sont faits de racines grecques."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-3e-ideas",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

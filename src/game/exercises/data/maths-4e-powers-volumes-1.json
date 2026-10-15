@@ -1,0 +1,351 @@
+{
+  "id": "maths-4e-powers-volumes-1",
+  "biome": "maths-4e-powers",
+  "type": "volumes",
+  "level": 1,
+  "instruction": "Calcule, puis choisis la bonne réponse. Les formules sont affichées.",
+  "items": [
+    {
+      "key": "maths-4e-powers-volumes-1-0",
+      "prompt": "Un parallélogramme a une base de 6 cm et une hauteur de 4 cm. Son aire est …",
+      "spoken": "Un parallélogramme a une base de 6 centimètres et une hauteur de 4 centimètres. Son aire est (mot manquant).",
+      "choices": [
+        "12 cm²",
+        "20 cm²",
+        "24 cm²"
+      ],
+      "answer": "24 cm²",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Aire = base × hauteur = 6 × 4 = 24 cm². 12 divise par 2 : c’est la formule du triangle. 20, c’est 2 × (6 + 4) : on a pris la hauteur pour un côté et calculé le tour.",
+      "figure": {
+        "kind": "plane-figure",
+        "props": {
+          "shape": "parallelogram",
+          "values": [
+            6,
+            4
+          ],
+          "area": "?"
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires et volumes",
+          "lines": [
+            "Parallélogramme : aire = base × hauteur.",
+            "La hauteur tombe à angle droit sur la base : ce n’est pas le côté penché.",
+            "Prisme droit et cylindre : volume = aire de la base × hauteur.",
+            "Cube d’arête c : volume = c × c × c = c³.",
+            "Une aire se compte en cm², un volume en cm³."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-powers-volumes-1-1",
+      "prompt": "Un parallélogramme a une base de 5 cm, un côté penché de 4 cm et une hauteur de 3 cm. Son aire est …",
+      "spoken": "Un parallélogramme a une base de 5 centimètres, un côté penché de 4 centimètres et une hauteur de 3 centimètres. Son aire est (mot manquant).",
+      "choices": [
+        "15 cm²",
+        "18 cm²",
+        "20 cm²"
+      ],
+      "answer": "15 cm²",
+      "hint": "Le côté penché n’est pas la hauteur.",
+      "explanation": "Aire = base × hauteur = 5 × 3 = 15 cm². 5 × 4 = 20 prend le côté penché, et 18 est le périmètre, le tour de la figure.",
+      "figure": {
+        "kind": "plane-figure",
+        "props": {
+          "shape": "parallelogram",
+          "values": [
+            5,
+            3,
+            4
+          ],
+          "area": "?"
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires et volumes",
+          "lines": [
+            "Parallélogramme : aire = base × hauteur.",
+            "La hauteur tombe à angle droit sur la base : ce n’est pas le côté penché.",
+            "Prisme droit et cylindre : volume = aire de la base × hauteur.",
+            "Cube d’arête c : volume = c × c × c = c³.",
+            "Une aire se compte en cm², un volume en cm³."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-powers-volumes-1-2",
+      "prompt": "Le volume d’une boîte se mesure en …",
+      "spoken": "Le volume d’une boîte se mesure en  (mot manquant) ",
+      "choices": [
+        "cm",
+        "cm²",
+        "cm³"
+      ],
+      "answer": "cm³",
+      "hint": "Un volume a trois dimensions : longueur, largeur et hauteur.",
+      "explanation": "Un volume se mesure en centimètres cubes, cm³, car on multiplie trois longueurs. Le cm² sert pour une aire, le cm pour une longueur.",
+      "figure": {
+        "kind": "solid",
+        "props": {
+          "solid": "cube",
+          "values": [
+            1
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires et volumes",
+          "lines": [
+            "Parallélogramme : aire = base × hauteur.",
+            "La hauteur tombe à angle droit sur la base : ce n’est pas le côté penché.",
+            "Prisme droit et cylindre : volume = aire de la base × hauteur.",
+            "Cube d’arête c : volume = c × c × c = c³.",
+            "Une aire se compte en cm², un volume en cm³."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-powers-volumes-1-3",
+      "prompt": "Un prisme droit a une base d’aire 12 cm² et une hauteur de 5 cm. Son volume est …",
+      "spoken": "Un prisme droit a une base d’aire 12 centimètres carrés et une hauteur de 5 centimètres. Son volume est (mot manquant).",
+      "choices": [
+        "17 cm³",
+        "30 cm³",
+        "60 cm³"
+      ],
+      "answer": "60 cm³",
+      "hint": "Relis la ligne du prisme dans le rappel.",
+      "explanation": "Volume = aire de la base × hauteur = 12 × 5 = 60 cm³. 17 vient de 12 + 5 : il faut multiplier. 30 divise par 2 : le volume d’un prisme ne se divise pas.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "aire de la base (cm²)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              12,
+              5,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires et volumes",
+          "lines": [
+            "Parallélogramme : aire = base × hauteur.",
+            "La hauteur tombe à angle droit sur la base : ce n’est pas le côté penché.",
+            "Prisme droit et cylindre : volume = aire de la base × hauteur.",
+            "Cube d’arête c : volume = c × c × c = c³.",
+            "Une aire se compte en cm², un volume en cm³."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-powers-volumes-1-4",
+      "prompt": "Un cylindre a une base d’aire 20 cm² et une hauteur de 3 cm. Son volume est …",
+      "spoken": "Un cylindre a une base d’aire 20 centimètres carrés et une hauteur de 3 centimètres. Son volume est (mot manquant).",
+      "choices": [
+        "23 cm³",
+        "60 cm³",
+        "120 cm³"
+      ],
+      "answer": "60 cm³",
+      "hint": "Le cylindre se calcule comme le prisme droit.",
+      "explanation": "Volume = aire de la base × hauteur = 20 × 3 = 60 cm³. 23 vient de 20 + 3 : il faut multiplier. 120 multiplie encore par 2 : on ne double rien, la hauteur ne compte qu’une fois.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "aire de la base (cm²)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              20,
+              3,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires et volumes",
+          "lines": [
+            "Parallélogramme : aire = base × hauteur.",
+            "La hauteur tombe à angle droit sur la base : ce n’est pas le côté penché.",
+            "Prisme droit et cylindre : volume = aire de la base × hauteur.",
+            "Cube d’arête c : volume = c × c × c = c³.",
+            "Une aire se compte en cm², un volume en cm³."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-powers-volumes-1-5",
+      "prompt": "La base d’un prisme droit est un triangle d’aire 6 cm². Le prisme mesure 10 cm de haut. Son volume est …",
+      "spoken": "La base d’un prisme droit est un triangle d’aire 6 centimètres carrés. Le prisme mesure 10 centimètres de haut. Son volume est (mot manquant).",
+      "choices": [
+        "16 cm³",
+        "60 cm³",
+        "120 cm³"
+      ],
+      "answer": "60 cm³",
+      "hint": "L’aire de la base est déjà donnée.",
+      "explanation": "Volume = aire de la base × hauteur = 6 × 10 = 60 cm³. 16 vient de 6 + 10 : il faut multiplier. L’aire du triangle est déjà calculée : 120 la double, alors qu’on ne la touche plus.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "aire de la base (cm²)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              6,
+              10,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires et volumes",
+          "lines": [
+            "Parallélogramme : aire = base × hauteur.",
+            "La hauteur tombe à angle droit sur la base : ce n’est pas le côté penché.",
+            "Prisme droit et cylindre : volume = aire de la base × hauteur.",
+            "Cube d’arête c : volume = c × c × c = c³.",
+            "Une aire se compte en cm², un volume en cm³."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-powers-volumes-1-6",
+      "prompt": "La base d’un prisme droit est un rectangle de 3 cm sur 4 cm. Sa hauteur est 2 cm. Son volume est …",
+      "spoken": "La base d’un prisme droit est un rectangle de 3 centimètres sur 4 centimètres. Sa hauteur est 2 centimètres. Son volume est (mot manquant).",
+      "choices": [
+        "9 cm³",
+        "14 cm³",
+        "24 cm³"
+      ],
+      "answer": "24 cm³",
+      "hint": "Calcule d’abord l’aire du rectangle de base.",
+      "explanation": "Aire de la base = 3 × 4 = 12 cm². Volume = 12 × 2 = 24 cm³. 14 ajoute la hauteur au lieu de la multiplier ; 9 additionne les trois longueurs.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "longueur (cm)",
+            "largeur (cm)",
+            "hauteur (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              3,
+              4,
+              2,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires et volumes",
+          "lines": [
+            "Parallélogramme : aire = base × hauteur.",
+            "La hauteur tombe à angle droit sur la base : ce n’est pas le côté penché.",
+            "Prisme droit et cylindre : volume = aire de la base × hauteur.",
+            "Cube d’arête c : volume = c × c × c = c³.",
+            "Une aire se compte en cm², un volume en cm³."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-powers-volumes-1-7",
+      "prompt": "Un cube a des arêtes de 10 cm. Son volume est 10³ cm³, soit …",
+      "spoken": "Un cube a des arêtes de 10 centimètres. Son volume est 10 puissance 3 centimètres cubes, soit (mot manquant).",
+      "choices": [
+        "30 cm³",
+        "100 cm³",
+        "1 000 cm³"
+      ],
+      "answer": "1 000 cm³",
+      "hint": "10³, c’est 10 × 10 × 10.",
+      "explanation": "Volume = 10 × 10 × 10 = 10³ = 1 000 cm³. 10 × 3 = 30 n’est pas une puissance, et 10² = 100 cm² est l’aire d’une seule face.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "arête (cm)",
+            "arête (cm)",
+            "arête (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              10,
+              10,
+              10,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aires et volumes",
+          "lines": [
+            "Parallélogramme : aire = base × hauteur.",
+            "La hauteur tombe à angle droit sur la base : ce n’est pas le côté penché.",
+            "Prisme droit et cylindre : volume = aire de la base × hauteur.",
+            "Cube d’arête c : volume = c × c × c = c³.",
+            "Une aire se compte en cm², un volume en cm³."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-4e-powers",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

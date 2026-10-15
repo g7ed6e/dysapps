@@ -1,0 +1,308 @@
+{
+  "id": "assembly-project-4e-telegraph",
+  "bloc": "project-4e-telegraph",
+  "type": "assembly",
+  "level": 1,
+  "instruction": "Lis le document, puis choisis la phrase juste. Le rappel est affiché.",
+  "programme": [
+    "c4.fr.langue.formation-des-mots",
+    "c4.fr.langue.sens-des-mots",
+    "c4.pc.signaux.lumiere-son",
+    "c4.pc.energie.circuits",
+    "c4.pc.demarches.langages"
+  ],
+  "items": [
+    {
+      "key": "project-4e-telegraph-0",
+      "prompt": "1794 : le télégraphe de Chappe\nSur chaque tour, des bras de bois font des signes, vus de la tour suivante.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Mille sept cent quatre-vingt-quatorze : le télégraphe de Chappe. Sur chaque tour, des bras de bois font des signes, vus de la tour suivante.",
+      "choices": [
+        "Le télégraphe écrit au loin ; on voit ses signes grâce à la lumière.",
+        "Le télégraphe écrit de près ; on voit ses signes grâce à la lumière.",
+        "Le télégraphe écrit au loin ; on voit ses signes grâce au son."
+      ],
+      "answer": "Le télégraphe écrit au loin ; on voit ses signes grâce à la lumière.",
+      "hint": "D’abord : que veut dire télé- ? Puis : pour voir un objet, qu’est-ce qui doit entrer dans l’œil ?",
+      "explanation": "Télé- veut dire loin, -graphe veut dire écrire : le télégraphe écrit au loin. On voit les bras de bois parce que la lumière qu’ils renvoient entre dans l’œil ; le son, lui, s’entend.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Télé-graphe, et voir",
+          "lines": [
+            "télé- = loin ; -graphe = écrire.",
+            "Pour voir un objet, sa lumière doit entrer dans l’œil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-telegraph-1",
+      "prompt": "Dans un téléphone, la voix fait vibrer une petite plaque.\nCette vibration devient un signal électrique.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Dans un téléphone, la voix fait vibrer une petite plaque. Cette vibration devient un signal électrique.",
+      "choices": [
+        "Une voix entendue de loin : le son est une vibration.",
+        "Une image vue de loin : le son est une vibration.",
+        "Une voix entendue de loin : le son est un rayon de lumière."
+      ],
+      "answer": "Une voix entendue de loin : le son est une vibration.",
+      "hint": "D’abord : que veut dire -phone ? Puis : que fait la voix dans le document ?",
+      "explanation": "Télé- veut dire loin, -phone veut dire son, voix : le téléphone fait entendre une voix de loin. Le document le dit : la voix fait vibrer une plaque ; un son est une vibration de la matière, pas un rayon de lumière.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Télé-phone, et le son",
+          "lines": [
+            "télé- = loin ; -phone = son, voix.",
+            "Le son est une vibration ; il a besoin de matière pour avancer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-telegraph-2",
+      "prompt": "La chorale chante en polyphonie.\nLes voix aiguës et les voix graves chantent en même temps.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "La chorale chante en polyphonie. Les voix aiguës et les voix graves chantent en même temps.",
+      "choices": [
+        "Plusieurs voix ; les voix aiguës ont une grande fréquence.",
+        "Une seule voix ; les voix aiguës ont une grande fréquence.",
+        "Plusieurs voix ; les voix aiguës ont une petite fréquence."
+      ],
+      "answer": "Plusieurs voix ; les voix aiguës ont une grande fréquence.",
+      "hint": "D’abord : que veut dire poly- ? Puis : un son aigu vibre-t-il vite ou lentement ?",
+      "explanation": "Poly- veut dire plusieurs, -phonie vient de son, voix : la polyphonie, ce sont plusieurs voix ensemble. Un son aigu vibre vite : il a une grande fréquence ; un son grave, une petite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Poly-phonie, et la fréquence",
+          "lines": [
+            "poly- = plusieurs ; -phone = son, voix.",
+            "Grande fréquence : son aigu. Petite fréquence : son grave."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-telegraph-3",
+      "prompt": "Un télescope montre des étoiles très lointaines.\nLeur lumière a traversé l’espace, où il n’y a pas d’air.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Un télescope montre des étoiles très lointaines. Leur lumière a traversé l’espace, où il n’y a pas d’air.",
+      "choices": [
+        "Il sert à regarder loin : la lumière traverse le vide.",
+        "Il sert à écouter loin : la lumière traverse le vide.",
+        "Il sert à regarder loin : la lumière ne traverse pas le vide."
+      ],
+      "answer": "Il sert à regarder loin : la lumière traverse le vide.",
+      "hint": "D’abord : que veut dire -scope ? Puis : la lumière des étoiles arrive-t-elle jusqu’à nous ?",
+      "explanation": "Télé- veut dire loin, -scope veut dire regarder : le télescope sert à regarder loin. La lumière des étoiles arrive jusqu’à nous à travers l’espace vide ; c’est le son qui ne traverse pas le vide.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Télé-scope, et le vide",
+          "lines": [
+            "télé- = loin ; -scope = regarder.",
+            "La lumière traverse le vide ; le son, non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-telegraph-4",
+      "prompt": "Le sifflet de l’arbitre : 3 000 hertz.\nLa corne de brume du port : 100 hertz.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le sifflet de l’arbitre : trois mille hertz. La corne de brume du port : cent hertz.",
+      "choices": [
+        "Le sifflet est aigu, la corne est grave : deux antonymes.",
+        "Le sifflet est grave, la corne est aiguë : deux antonymes.",
+        "Le sifflet est aigu, la corne est grave : deux synonymes."
+      ],
+      "answer": "Le sifflet est aigu, la corne est grave : deux antonymes.",
+      "hint": "D’abord : quel son a la plus grande fréquence ? Puis : aigu et grave, ont-ils un sens proche ou contraire ?",
+      "explanation": "3 000 hertz, c’est une grande fréquence : le sifflet est aigu ; 100 hertz, une petite : la corne est grave. Aigu et grave ont des sens contraires : ce sont des antonymes, pas des synonymes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aigu et grave, deux contraires",
+          "lines": [
+            "Synonymes : sens proche. Antonymes : sens contraire.",
+            "Grande fréquence : son aigu. Petite fréquence : son grave."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-telegraph-5",
+      "prompt": "Nino veut connaître la tension aux bornes de la lampe.\nIl prend un voltmètre.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Nino veut connaître la tension aux bornes de la lampe. Il prend un voltmètre.",
+      "choices": [
+        "Il mesure la tension : on le branche aux deux bornes.",
+        "Il produit la tension : on le branche aux deux bornes.",
+        "Il mesure la tension : on le branche en série."
+      ],
+      "answer": "Il mesure la tension : on le branche aux deux bornes.",
+      "hint": "D’abord : que veut dire -mètre ? Puis : un voltmètre, où se branche-t-il ?",
+      "explanation": "-mètre veut dire mesure : le voltmètre mesure une tension, en volts ; c’est la pile qui la produit. Il se branche aux deux bornes de la lampe ; c’est l’ampèremètre qui se branche en série.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Volt-mètre, et ses bornes",
+          "lines": [
+            "-mètre = mesure (thermomètre, voltmètre).",
+            "Le voltmètre se branche aux deux bornes ; l’ampèremètre, en série."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-telegraph-6",
+      "prompt": "Le chien entend un sifflet à ultrasons : 30 000 hertz.\nLéa, elle, n’entend rien.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le chien entend un sifflet à ultrasons : trente mille hertz. Léa, elle, n’entend rien.",
+      "choices": [
+        "Pour Léa, ce son est inaudible : il dépasse 20 000 hertz.",
+        "Pour Léa, ce son est audible : il dépasse 20 000 hertz.",
+        "Pour Léa, ce son est inaudible : il est sous 20 hertz."
+      ],
+      "answer": "Pour Léa, ce son est inaudible : il dépasse 20 000 hertz.",
+      "hint": "D’abord : que veut dire in- devant un mot ? Puis : 30 000 hertz, c’est au-dessus ou en dessous de ce qu’on entend ?",
+      "explanation": "In- dit le contraire : audible, qu’on peut entendre ; inaudible, qu’on ne peut pas entendre. On entend de 20 à 20 000 hertz : 30 000 hertz, c’est au-dessus, un ultrason. Sous 20 hertz, ce sont les infrasons.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "In-audible, et les ultrasons",
+          "lines": [
+            "in-, im-, il-, ir- = contraire : audible, inaudible.",
+            "On entend de 20 à 20 000 hertz ; au-dessus, les ultrasons."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-telegraph-7",
+      "prompt": "Le phare envoie un rayon de lumière vers les bateaux.\nAu supermarché, Tom cherche le rayon des jouets.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le phare envoie un rayon de lumière vers les bateaux. Au supermarché, Tom cherche le rayon des jouets.",
+      "choices": [
+        "Le mot rayon a deux sens ; le rayon du phare va en ligne droite.",
+        "Le mot rayon a un seul sens ; le rayon du phare va en ligne droite.",
+        "Le mot rayon a deux sens ; le rayon du phare fait des courbes."
+      ],
+      "answer": "Le mot rayon a deux sens ; le rayon du phare va en ligne droite.",
+      "hint": "D’abord : le rayon du phare et celui des jouets, est-ce la même chose ? Puis : comment va la lumière ?",
+      "explanation": "Rayon a plusieurs sens : un trait de lumière, et une partie d’un magasin. C’est la polysémie. Dans l’air, la lumière va en ligne droite : on dessine son rayon par un trait droit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un mot, deux sens, et la lumière",
+          "lines": [
+            "Un mot peut avoir plusieurs sens : c’est la polysémie.",
+            "La lumière va en ligne droite ; on la dessine par un rayon."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-telegraph-8",
+      "prompt": "Pendant l’orage, Léa voit un éclair au loin.\nLe soir, elle a « un éclair de génie » pour son exposé.",
+      "question": "« Un éclair de génie » : quelle phrase est juste ?",
+      "spoken": "Pendant l’orage, Léa voit un éclair au loin. Le soir, elle a un éclair de génie pour son exposé.",
+      "choices": [
+        "Sens figuré ; le tonnerre arrive après l’éclair.",
+        "Sens propre ; le tonnerre arrive après l’éclair.",
+        "Sens figuré ; le tonnerre arrive avant l’éclair."
+      ],
+      "answer": "Sens figuré ; le tonnerre arrive après l’éclair.",
+      "hint": "D’abord : l’idée de Léa est-elle un vrai éclair ? Puis : qui va le plus vite, la lumière ou le son ?",
+      "explanation": "Un éclair de génie n’est pas un vrai éclair : c’est une image pour une idée soudaine, le sens figuré. La lumière va bien plus vite que le son : on voit l’éclair, puis on entend le tonnerre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Sens figuré, et la vitesse",
+          "lines": [
+            "Sens propre : le sens concret. Sens figuré : une image.",
+            "La lumière va bien plus vite que le son (340 mètres en une seconde)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-telegraph-9",
+      "prompt": "Dans l’espace, il n’y a pas d’air : c’est le vide.\nDeux astronautes ne s’entendent que par la radio.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Dans l’espace, il n’y a pas d’air : c’est le vide. Deux astronautes ne s’entendent que par la radio.",
+      "choices": [
+        "Dans l’espace, tout est silencieux : le son ne traverse pas le vide.",
+        "Dans l’espace, tout est bruyant : le son ne traverse pas le vide.",
+        "Dans l’espace, tout est silencieux : le son traverse le vide."
+      ],
+      "answer": "Dans l’espace, tout est silencieux : le son ne traverse pas le vide.",
+      "hint": "D’abord : silencieux, c’est avec ou sans bruit ? Puis : le son a-t-il besoin de matière ?",
+      "explanation": "Silencieux veut dire sans bruit ; bruyant, c’est son contraire. Le son a besoin de matière pour avancer, l’air ou un mur : dans le vide, il ne passe pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Silencieux, et le vide",
+          "lines": [
+            "silencieux = sans bruit ; bruyant = plein de bruit.",
+            "Le son a besoin de matière pour avancer. Dans le vide, rien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-telegraph-10",
+      "prompt": "« La lampe s’allume, le miroir brille, la pièce s’éclaire. »",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "La lampe s’allume, le miroir brille, la pièce s’éclaire.",
+      "choices": [
+        "C’est le champ lexical de la lumière ; seule la lampe en produit.",
+        "C’est le champ lexical du son ; seule la lampe en produit.",
+        "C’est le champ lexical de la lumière ; le miroir en produit aussi."
+      ],
+      "answer": "C’est le champ lexical de la lumière ; seule la lampe en produit.",
+      "hint": "D’abord : de quoi parlent s’allume, brille, s’éclaire ? Puis : le miroir fabrique-t-il sa lumière ?",
+      "explanation": "S’allumer, briller, s’éclairer parlent tous de la lumière : c’est son champ lexical. La lampe est une source : elle produit sa lumière. Le miroir brille parce qu’il renvoie la lumière qu’il reçoit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Champ lexical, et la source",
+          "lines": [
+            "Champ lexical : les mots qui parlent d’un même thème.",
+            "Une source produit sa lumière ; les autres objets renvoient celle qu’ils reçoivent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-4e-telegraph-11",
+      "prompt": "Pour éteindre la lampe, Lou appuie sur l’interrupteur.\nLe circuit est maintenant ouvert.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Pour éteindre la lampe, Lou appuie sur l’interrupteur. Le circuit est maintenant ouvert.",
+      "choices": [
+        "L’interrupteur interrompt le courant : circuit ouvert, lampe éteinte.",
+        "L’interrupteur fabrique le courant : circuit ouvert, lampe éteinte.",
+        "L’interrupteur interrompt le courant : circuit ouvert, lampe allumée."
+      ],
+      "answer": "L’interrupteur interrompt le courant : circuit ouvert, lampe éteinte.",
+      "hint": "D’abord : de quel verbe vient interrupteur ? Puis : dans un circuit ouvert, le courant passe-t-il ?",
+      "explanation": "Interrupteur vient du verbe interrompre, avec -eur, ce qui fait l’action : il interrompt le courant ; c’est la pile qui le fournit. Circuit ouvert : le courant ne passe plus, la lampe est éteinte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Interrupt-eur, et le circuit",
+          "lines": [
+            "-eur = celui ou ce qui fait l’action : un interrupteur interrompt.",
+            "Circuit ouvert : le courant ne passe pas. Circuit fermé : il passe."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien construit !",
+    "wrong": "{explanation}"
+  }
+}

@@ -1,0 +1,240 @@
+{
+  "id": "lca-4e-cities-la-forum-1",
+  "biome": "lca-4e-cities",
+  "type": "la-forum",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-4e-cities-la-forum-1-0",
+      "prompt": "La grande place de Rome, avec ses temples et ses marchés, est le …",
+      "spoken": "La grande place de Rome, avec ses temples et ses marchés, est le  (mot manquant) ",
+      "choices": [
+        "forum",
+        "cirque",
+        "Sénat"
+      ],
+      "answer": "forum",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Le forum est le cœur de la vie publique : on y prie, on y achète, on y juge, on y fait de la politique. Aujourd’hui, un forum est aussi un lieu où l’on discute.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Rome",
+          "lines": [
+            "Le forum : la grande place de Rome, avec ses temples, ses marchés, ses tribunaux.",
+            "Le Sénat se réunit à la Curie, sur le forum.",
+            "Les citoyens votent dans des assemblées : les comices.",
+            "Patriciens : les grandes familles anciennes. Plébéiens : le reste du peuple, la plèbe.",
+            "Un magistrat est élu pour un an : consul, préteur, édile.",
+            "Un candidat porte une toge blanchie à la craie : la toga candida."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-1-1",
+      "prompt": "Le mot « candidat » vient de la toge … que portait le Romain qui voulait être élu.",
+      "spoken": "Le mot candidat vient de la toge (mot manquant) que portait le Romain qui voulait être élu.",
+      "choices": [
+        "pourpre",
+        "blanche",
+        "noire"
+      ],
+      "answer": "blanche",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "candidus veut dire blanc éclatant : le candidat portait une toge blanchie à la craie, la toga candida, pour être bien vu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Rome",
+          "lines": [
+            "Le forum : la grande place de Rome, avec ses temples, ses marchés, ses tribunaux.",
+            "Le Sénat se réunit à la Curie, sur le forum.",
+            "Les citoyens votent dans des assemblées : les comices.",
+            "Patriciens : les grandes familles anciennes. Plébéiens : le reste du peuple, la plèbe.",
+            "Un magistrat est élu pour un an : consul, préteur, édile.",
+            "Un candidat porte une toge blanchie à la craie : la toga candida."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-1-2",
+      "prompt": "Patriciens et plébéiens\nLes patriciens viennent des grandes familles anciennes.\nLes plébéiens forment la plus grande partie du peuple.\nAu début de la République, seuls les patriciens peuvent être consuls.",
+      "question": "Qui peut être consul, au début de la République ?",
+      "spoken": "Patriciens et plébéiens. Les patriciens viennent des grandes familles anciennes. Les plébéiens forment la plus grande partie du peuple. Au début de la République, seuls les patriciens peuvent être consuls.",
+      "choices": [
+        "tous les citoyens",
+        "seulement les patriciens",
+        "seulement les plébéiens"
+      ],
+      "answer": "seulement les patriciens",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Au début, seuls les patriciens peuvent être consuls. Après une longue lutte, les plébéiens obtiennent le droit de l’être aussi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Rome",
+          "lines": [
+            "Le forum : la grande place de Rome, avec ses temples, ses marchés, ses tribunaux.",
+            "Le Sénat se réunit à la Curie, sur le forum.",
+            "Les citoyens votent dans des assemblées : les comices.",
+            "Patriciens : les grandes familles anciennes. Plébéiens : le reste du peuple, la plèbe.",
+            "Un magistrat est élu pour un an : consul, préteur, édile.",
+            "Un candidat porte une toge blanchie à la craie : la toga candida."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-1-3",
+      "prompt": "Le Sénat se réunit dans un bâtiment du forum : la …",
+      "spoken": "Le Sénat se réunit dans un bâtiment du forum : la  (mot manquant) ",
+      "choices": [
+        "domus",
+        "basilique",
+        "Curie"
+      ],
+      "answer": "Curie",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Les sénateurs se réunissent à la Curie, sur le forum. On peut encore la visiter à Rome.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Rome",
+          "lines": [
+            "Le forum : la grande place de Rome, avec ses temples, ses marchés, ses tribunaux.",
+            "Le Sénat se réunit à la Curie, sur le forum.",
+            "Les citoyens votent dans des assemblées : les comices.",
+            "Patriciens : les grandes familles anciennes. Plébéiens : le reste du peuple, la plèbe.",
+            "Un magistrat est élu pour un an : consul, préteur, édile.",
+            "Un candidat porte une toge blanchie à la craie : la toga candida."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-1-4",
+      "prompt": "Un consul, un préteur, un édile sont élus pour …",
+      "spoken": "Un consul, un préteur, un édile sont élus pour  (mot manquant) ",
+      "choices": [
+        "un an",
+        "dix ans",
+        "toute leur vie"
+      ],
+      "answer": "un an",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "Les magistrats sont élus pour un an, et à plusieurs : aucun ne garde le pouvoir longtemps. C’est le contraire d’un roi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Rome",
+          "lines": [
+            "Le forum : la grande place de Rome, avec ses temples, ses marchés, ses tribunaux.",
+            "Le Sénat se réunit à la Curie, sur le forum.",
+            "Les citoyens votent dans des assemblées : les comices.",
+            "Patriciens : les grandes familles anciennes. Plébéiens : le reste du peuple, la plèbe.",
+            "Un magistrat est élu pour un an : consul, préteur, édile.",
+            "Un candidat porte une toge blanchie à la craie : la toga candida."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-1-5",
+      "prompt": "Le mot « plébiscite » vient de plebs, la plèbe, c’est-à-dire le …",
+      "spoken": "Le mot plébiscite vient de plèbs, la plèbe, c’est-à-dire le (mot manquant)",
+      "choices": [
+        "peuple",
+        "Sénat",
+        "roi"
+      ],
+      "answer": "peuple",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "plebs, la plèbe, c’est le peuple. Le plébiscite était un vote de la plèbe ; aujourd’hui, un choix « plébiscité » est approuvé par presque tout le monde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Rome",
+          "lines": [
+            "Le forum : la grande place de Rome, avec ses temples, ses marchés, ses tribunaux.",
+            "Le Sénat se réunit à la Curie, sur le forum.",
+            "Les citoyens votent dans des assemblées : les comices.",
+            "Patriciens : les grandes familles anciennes. Plébéiens : le reste du peuple, la plèbe.",
+            "Un magistrat est élu pour un an : consul, préteur, édile.",
+            "Un candidat porte une toge blanchie à la craie : la toga candida."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-1-6",
+      "prompt": "Le vote des comices\nLes citoyens se rassemblent au Champ de Mars.\nIls votent par groupes.\nIls élisent les consuls.",
+      "question": "Qui élit les consuls ?",
+      "spoken": "Le vote des comices. Les citoyens se rassemblent au Champ de Mars. Ils votent par groupes. Ils élisent les consuls.",
+      "choices": [
+        "le Sénat",
+        "les citoyens, dans les comices",
+        "les patriciens seuls"
+      ],
+      "answer": "les citoyens, dans les comices",
+      "hint": "Lis la première et la dernière ligne du document.",
+      "explanation": "Les consuls sont élus par les citoyens, réunis en comices au Champ de Mars. Le Sénat conseille ; il n’élit pas les consuls.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Rome",
+          "lines": [
+            "Le forum : la grande place de Rome, avec ses temples, ses marchés, ses tribunaux.",
+            "Le Sénat se réunit à la Curie, sur le forum.",
+            "Les citoyens votent dans des assemblées : les comices.",
+            "Patriciens : les grandes familles anciennes. Plébéiens : le reste du peuple, la plèbe.",
+            "Un magistrat est élu pour un an : consul, préteur, édile.",
+            "Un candidat porte une toge blanchie à la craie : la toga candida."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-1-7",
+      "prompt": "Le mot « civique » vient du latin civis, qui veut dire …",
+      "spoken": "Le mot civique vient du latin kiwiss, qui veut dire (mot manquant)",
+      "choices": [
+        "la ville",
+        "le voisin",
+        "le citoyen"
+      ],
+      "answer": "le citoyen",
+      "hint": "Cherche un mot de la même famille : civisme, civil.",
+      "explanation": "Civis, le citoyen, a donné civique, civisme, civil. L’ensemble des citoyens se dit civitas, qui a donné le mot « cité ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie publique à Rome",
+          "lines": [
+            "Le forum : la grande place de Rome, avec ses temples, ses marchés, ses tribunaux.",
+            "Le Sénat se réunit à la Curie, sur le forum.",
+            "Les citoyens votent dans des assemblées : les comices.",
+            "Patriciens : les grandes familles anciennes. Plébéiens : le reste du peuple, la plèbe.",
+            "Un magistrat est élu pour un an : consul, préteur, édile.",
+            "Un candidat porte une toge blanchie à la craie : la toga candida."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-4e-cities",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

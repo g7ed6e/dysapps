@@ -2,7 +2,7 @@
 // relectures (consultants Archipéo et Blocland, référent dys) : le cadrage de la voisine, le pont avec « Pas de LV2 », le
 // cœur en herbe, Muscade et le Soleil de Blocland, la tonnelle, le poteau-lanterne, l'osier et le ponton.
 import { DEFAULT_SETTINGS, retenirReglages, type Lv2Choice } from '../../core/settings';
-import { BLOC, BIOMES, BLOCKS, type BiomeId } from '../biomes';
+import { BLOC, BIOMES, BLOCKS, estLieuDOption, getBiome, type BiomeId } from '../biomes';
 import { grantAccess } from './archipelago';
 import { neighboursOf } from './linkGeometry';
 import { buildingStages } from './architect';
@@ -38,8 +38,9 @@ it('l’île de la LV2 n’élargit jamais le cadrage de sa voisine (cadrage d�
     const box = landBox(islandDef(lv2));
     for (const voisine of neighboursOf(lv2)) {
       const z = viewZone(voisine);
-      // Sans l'île de la LV2 : la zone de la voisine et de ses autres voisines seulement.
-      const ids = [voisine, ...neighboursOf(voisine).filter((id) => id !== lv2)];
+      // Sans l'île de la LV2 : la zone de la voisine et de ses autres voisines seulement, sans les lieux d'option (la
+      // Colonnade des cités, voisine de l'Escale au 4e, n'élargit pas non plus le cadrage, `viewZone`).
+      const ids = [voisine, ...neighboursOf(voisine).filter((id) => id !== lv2 && !estLieuDOption(getBiome(id)!))];
       const boxes = ids.map((id) => landBox(islandDef(id)));
       expect(z).toEqual({
         minX: Math.min(...boxes.map((x) => x.x0)),

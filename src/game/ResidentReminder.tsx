@@ -60,7 +60,7 @@ export function useResidentReminder(biome: BiomeDef | undefined): Rappel | null 
   if (!biome || remises.has(biome.id)) return null;
   const dues = revisionsDeLIle(state.spaced, state.world.links, biome.id, settings.lv2);
   if (!dues.length) return null;
-  const mission = missionsJouables(biome, settings.lv2).find((m) => m.id === dues[0].type);
+  const mission = missionsJouables(biome, settings.lv2, settings.lca).find((m) => m.id === dues[0].type);
   const langue: LangueVivante | undefined = mission?.lv2 ?? (biome.subject === 'english' ? 'en' : undefined);
   return phraseDuRappel(textes, mission?.title ?? dues[0].label, langue, cheminDeRevision(dues[0]));
 }

@@ -68,7 +68,7 @@ interface LineProps {
 }
 
 /** Droite graduée ; seuls les entiers sont écrits, le point à trouver est marqué. */
-export function GraduatedLine({ start, units, perUnit, point, format = String }: LineProps) {
+export function GraduatedLine({ start, units, perUnit, point, format = (n) => (n < 0 ? `−${-n}` : String(n)) }: LineProps) {
   const total = units * perUnit;
   const x = (i: number) => 20 + (i / total) * 280;
   return (

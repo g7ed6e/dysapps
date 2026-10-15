@@ -5,9 +5,11 @@ import type { LabelBox } from './world/labelLayout';
 
 // La page marque ce qu'elle pose sur la scène (`data-scene`) par un attribut qui ne sert pas au style : `data-couvre`
 // « scene » sur un conteneur dont chaque enfant compte (le haut, la barre du bas), « bouton » sur un élément seul
-// (Pause, choix de l'archipel), « bulle » sur le conteneur des bulles du bas.
+// (Pause, choix de l'archipel), « bulle » sur le conteneur des bulles du bas, « etiquettes » sur un bouton que seules
+// les étiquettes évitent (« Recentrer », qui paraît avec la vue déplacée : la place libre du cadrage, ./freeSpace.ts, ne
+// le compte pas, la Carte s'ouvrirait autrement).
 /** Ce qui reste posé sur la scène : les étiquettes s'en écartent. */
-const DURABLES = '[data-couvre="scene"] > *, [data-couvre="bouton"]';
+const DURABLES = '[data-couvre="scene"] > *, [data-couvre="bouton"], [data-couvre="etiquettes"]';
 /** Les bulles du bas (le mot de la baleine, l'aide) : passagères, les étiquettes ne bougent pas pour elles, mais celles qu'elles couvrent se cachent le temps de la bulle. */
 const PASSAGERES = '[data-couvre="bulle"] > *';
 

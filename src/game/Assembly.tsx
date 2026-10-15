@@ -17,7 +17,7 @@ import { EarnLink } from './PlanSection';
 import { messageAssemble, questionPath } from './AssemblyQuestion';
 import { useSchoolIsland } from './School';
 import { BlockIcon } from './Voxel';
-import { planStatus } from './engine';
+import { monumentMissing } from './world/uses';
 import { ASSEMBLAGE_PATH, assemblables, manquePour, RECETTES, type Recette } from './world/assembly';
 import { archipelagoOf, getArchipelago, reachableIslands } from './world/archipelago';
 import { archipelagoOfIsland, type ArchipelagoId } from './world/archipelagos';
@@ -72,7 +72,7 @@ function RecetteCarte({ recette }: { recette: Recette }) {
   const manque = manquePour(state.stock, recette);
   const en = state.stock[recette.bloc] ?? 0;
   const pour = monumentsOf(recette.archipelago)
-    .map((m) => ({ m, n: planStatus(state, m).missing[recette.bloc] ?? 0 }))
+    .map((m) => ({ m, n: monumentMissing(state, m)[recette.bloc] ?? 0 }))
     .filter((x) => x.n > 0);
   // Assez pour un monument : on propose d'y retourner (rien à retenir).
   const retourPour = (apres: number) => pour.find(({ n }) => apres >= n)?.m ?? null;

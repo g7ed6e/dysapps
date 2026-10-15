@@ -1,0 +1,9 @@
+{
+  "id": "physics-chemistry-3e-motion-energy-3",
+  "biome": "physics-chemistry-3e-motion-energy",
+  "name": "La piste du gymnase",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Une piste en marches : élan, saut, atterrissage ! Le tremplin est complet, bâtisseur."
+}

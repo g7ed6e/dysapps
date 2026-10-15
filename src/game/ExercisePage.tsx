@@ -12,6 +12,7 @@ import { useLoaded } from '../core/useLoaded';
 import { exercisesToReview } from './review';
 import { useRememberPlace } from '../core/lastPlace';
 import { Loading } from '../components/Loading';
+import { ForeignWordsProvider } from '../components/ForeignWords';
 import { PARAM_REVISION } from './reminders';
 
 /** Lance l'exercice d'un type dans un biome, au niveau adapté à l'élève. */
@@ -23,8 +24,8 @@ export function ExercisePage() {
   // Une révision lancée par la créature de l'île (GD-4, étape 1) : à la fin, la suivante de l'île, puis l'île.
   const depuisLaCreature = useSearchParams()[0].get(PARAM_REVISION) === '1';
   const biome = getBiome(biomeId);
-  // Une mission d'une autre LV2 que celle des Réglages ne se joue pas (adresse tapée, ancien lien).
-  const type = biome && missionsJouables(biome, settings.lv2).find((e) => e.id === typeId);
+  // Une mission d'une autre LV2, ou d'une autre option, que celle des Réglages ne se joue pas (adresse tapée, ancien lien).
+  const type = biome && missionsJouables(biome, settings.lv2, settings.lca).find((e) => e.id === typeId);
   // « Ma dernière mission » (écran titre, menus) ramène ici.
   useRememberPlace(biome && type ? { path: `/adventure/${biome.id}/${type.id}`, label: `${type.title} · ${biome.name}` } : null);
   // L'exercice est choisi au lancement (et à chaque « Rejouer »), pas à chaque changement de progression :
@@ -47,7 +48,9 @@ export function ExercisePage() {
         <Icon name={biome.icon} /> {type.title}
       </h1>
       {loaded ? (
-        <ExerciseRunner key={`${loaded.id}-${run}`} biome={biome} def={loaded} onReplay={() => setRun((r) => r + 1)} revisionDeLIle={depuisLaCreature} />
+        <ForeignWordsProvider words={biome.foreignWords}>
+          <ExerciseRunner key={`${loaded.id}-${run}`} biome={biome} def={loaded} onReplay={() => setRun((r) => r + 1)} revisionDeLIle={depuisLaCreature} />
+        </ForeignWordsProvider>
       ) : (
         <Loading />
       )}

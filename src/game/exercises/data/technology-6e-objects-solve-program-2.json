@@ -1,0 +1,245 @@
+{
+  "id": "technology-6e-objects-solve-program-2",
+  "biome": "technology-6e-objects",
+  "type": "solve-program",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-6e-objects-solve-program-2-0",
+      "prompt": "Le programme du robot\nAvancer de 2 cases.\nTourner à gauche.\nAvancer de 1 case.\nS’arrêter.",
+      "question": "Que fait le robot juste avant de s’arrêter ?",
+      "spoken": "Le programme du robot. Avancer de 2 cases. Tourner à gauche. Avancer de 1 case. S’arrêter.",
+      "choices": [
+        "il avance de 2 cases",
+        "il tourne à gauche",
+        "il avance de 1 case"
+      ],
+      "answer": "il avance de 1 case",
+      "hint": "Cherche la ligne juste au-dessus de « S’arrêter ».",
+      "explanation": "Les instructions se font dans l’ordre, de haut en bas : juste avant de s’arrêter, le robot avance de 1 case. Il a tourné à gauche juste avant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un programme",
+          "lines": [
+            "Un programme : des instructions, lues dans l’ordre, de haut en bas.",
+            "« Répéter 3 fois » : refaire 3 fois les instructions qui suivent.",
+            "« Si un obstacle est devant, alors tourner » : le robot tourne seulement s’il y a un obstacle.",
+            "« Sinon » : ce que fait le robot quand ce n’est pas vrai.",
+            "Le capteur donne l’information ; le programme décide.",
+            "Un bon programme fait ce qu’on attend, sans instruction inutile."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-2-1",
+      "prompt": "Le programme de la lumière de l’escalier\nQuand on appuie sur le bouton :\nallumer la lumière,\nattendre 2 minutes,\néteindre la lumière.",
+      "question": "Que fait ce programme, dit en mots ?",
+      "spoken": "Le programme de la lumière de l’escalier. Quand on appuie sur le bouton, allumer la lumière, attendre 2 minutes, éteindre la lumière.",
+      "choices": [
+        "la lumière s’allume 2 minutes après l’appui",
+        "la lumière reste allumée 2 minutes, puis s’éteint",
+        "la lumière clignote 2 fois"
+      ],
+      "answer": "la lumière reste allumée 2 minutes, puis s’éteint",
+      "hint": "Lis les trois instructions dans l’ordre.",
+      "explanation": "D’abord la lumière s’allume, puis le programme attend 2 minutes, puis il l’éteint. Elle s’allume tout de suite, sans attendre : l’attente vient après. Et rien ne la fait clignoter : elle s’allume une seule fois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un programme",
+          "lines": [
+            "Un programme : des instructions, lues dans l’ordre, de haut en bas.",
+            "« Répéter 3 fois » : refaire 3 fois les instructions qui suivent.",
+            "« Si un obstacle est devant, alors tourner » : le robot tourne seulement s’il y a un obstacle.",
+            "« Sinon » : ce que fait le robot quand ce n’est pas vrai.",
+            "Le capteur donne l’information ; le programme décide.",
+            "Un bon programme fait ce qu’on attend, sans instruction inutile."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-2-2",
+      "prompt": "Le programme du robot\nRépéter 3 fois :\navancer de 1 case.",
+      "question": "De combien de cases le robot avance-t-il en tout ?",
+      "spoken": "Le programme du robot. Répéter 3 fois, avancer de 1 case.",
+      "choices": [
+        "1 case",
+        "3 cases",
+        "4 cases"
+      ],
+      "answer": "3 cases",
+      "hint": "Relis la ligne « Répéter » du rappel.",
+      "explanation": "L’instruction « avancer de 1 case » est faite 3 fois : le robot avance de 3 cases en tout. 1 case, ce serait sans la boucle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un programme",
+          "lines": [
+            "Un programme : des instructions, lues dans l’ordre, de haut en bas.",
+            "« Répéter 3 fois » : refaire 3 fois les instructions qui suivent.",
+            "« Si un obstacle est devant, alors tourner » : le robot tourne seulement s’il y a un obstacle.",
+            "« Sinon » : ce que fait le robot quand ce n’est pas vrai.",
+            "Le capteur donne l’information ; le programme décide.",
+            "Un bon programme fait ce qu’on attend, sans instruction inutile."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-2-3",
+      "prompt": "Le programme du robot aspirateur\nRépéter sans fin :\navancer ;\nsi un obstacle est devant, alors tourner.",
+      "question": "Le robot arrive contre un mur. Que fait-il ?",
+      "spoken": "Le programme du robot aspirateur. Répéter sans fin, avancer. Si un obstacle est devant, alors tourner.",
+      "choices": [
+        "il continue tout droit",
+        "il s’arrête pour toujours",
+        "il tourne"
+      ],
+      "answer": "il tourne",
+      "hint": "Le mur est un obstacle : lis la ligne qui commence par « si ».",
+      "explanation": "Le mur est un obstacle devant le robot : la condition est vraie, il tourne. Puis il repart, car la boucle recommence sans fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un programme",
+          "lines": [
+            "Un programme : des instructions, lues dans l’ordre, de haut en bas.",
+            "« Répéter 3 fois » : refaire 3 fois les instructions qui suivent.",
+            "« Si un obstacle est devant, alors tourner » : le robot tourne seulement s’il y a un obstacle.",
+            "« Sinon » : ce que fait le robot quand ce n’est pas vrai.",
+            "Le capteur donne l’information ; le programme décide.",
+            "Un bon programme fait ce qu’on attend, sans instruction inutile."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-2-4",
+      "prompt": "Le programme du robot aspirateur\nSi la batterie est faible, alors retourner à la base.\nSinon, continuer à aspirer.\nLa batterie est pleine.",
+      "question": "Que fait le robot ?",
+      "spoken": "Le programme du robot aspirateur. Si la batterie est faible, alors retourner à la base. Sinon, continuer à aspirer. La batterie est pleine.",
+      "choices": [
+        "il retourne à la base",
+        "il continue à aspirer",
+        "il s’arrête"
+      ],
+      "answer": "il continue à aspirer",
+      "hint": "La batterie est-elle faible ? Si non, lis la ligne « Sinon ».",
+      "explanation": "La batterie est pleine : elle n’est pas faible, la condition est fausse. Le robot fait la partie « Sinon » : il continue à aspirer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un programme",
+          "lines": [
+            "Un programme : des instructions, lues dans l’ordre, de haut en bas.",
+            "« Répéter 3 fois » : refaire 3 fois les instructions qui suivent.",
+            "« Si un obstacle est devant, alors tourner » : le robot tourne seulement s’il y a un obstacle.",
+            "« Sinon » : ce que fait le robot quand ce n’est pas vrai.",
+            "Le capteur donne l’information ; le programme décide.",
+            "Un bon programme fait ce qu’on attend, sans instruction inutile."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-2-5",
+      "prompt": "Dans le robot, l’information « un obstacle est devant » vient d’un …",
+      "spoken": "Dans le robot, l’information « un obstacle est devant » vient d’un  (mot manquant) ",
+      "choices": [
+        "moteur",
+        "écran",
+        "capteur"
+      ],
+      "answer": "capteur",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Le capteur repère l’obstacle et donne l’information au programme. Le moteur, lui, fait bouger le robot.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un programme",
+          "lines": [
+            "Un programme : des instructions, lues dans l’ordre, de haut en bas.",
+            "« Répéter 3 fois » : refaire 3 fois les instructions qui suivent.",
+            "« Si un obstacle est devant, alors tourner » : le robot tourne seulement s’il y a un obstacle.",
+            "« Sinon » : ce que fait le robot quand ce n’est pas vrai.",
+            "Le capteur donne l’information ; le programme décide.",
+            "Un bon programme fait ce qu’on attend, sans instruction inutile."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-2-6",
+      "prompt": "Deux programmes pour aller tout droit de A à B, 4 cases plus loin\nProgramme 1 : avancer de 4 cases.\nProgramme 2 : avancer de 2 cases, tourner à droite, tourner à gauche, avancer de 2 cases.",
+      "question": "Les deux arrivent en B. Lequel est le meilleur ?",
+      "spoken": "Deux programmes pour aller tout droit de A à B, 4 cases plus loin. Programme 1, avancer de 4 cases. Programme 2, avancer de 2 cases, tourner à droite, tourner à gauche, avancer de 2 cases.",
+      "choices": [
+        "le programme 1",
+        "le programme 2",
+        "ils se valent"
+      ],
+      "answer": "le programme 1",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Dans le programme 2, tourner à droite puis à gauche ne sert à rien : le robot perd du temps. Le programme 1 arrive au même endroit, plus vite, sans instruction inutile.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un programme",
+          "lines": [
+            "Un programme : des instructions, lues dans l’ordre, de haut en bas.",
+            "« Répéter 3 fois » : refaire 3 fois les instructions qui suivent.",
+            "« Si un obstacle est devant, alors tourner » : le robot tourne seulement s’il y a un obstacle.",
+            "« Sinon » : ce que fait le robot quand ce n’est pas vrai.",
+            "Le capteur donne l’information ; le programme décide.",
+            "Un bon programme fait ce qu’on attend, sans instruction inutile."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-solve-program-2-7",
+      "prompt": "Le but : le robot fait le tour d’un carré.\nLe programme de Sami :\nRépéter 3 fois :\navancer de 2 cases,\ntourner à droite.",
+      "question": "Que faut-il changer pour finir le carré ?",
+      "spoken": "Le but, le robot fait le tour d’un carré. Le programme de Sami. Répéter 3 fois, avancer de 2 cases, tourner à droite.",
+      "choices": [
+        "tourner à gauche au lieu de droite",
+        "répéter 4 fois au lieu de 3",
+        "avancer de 3 cases au lieu de 2"
+      ],
+      "answer": "répéter 4 fois au lieu de 3",
+      "hint": "Combien de côtés a un carré ?",
+      "explanation": "Un carré a 4 côtés : avec 3 répétitions, le robot n’en fait que 3. Il faut répéter 4 fois. Tourner à gauche ferait aussi un carré, mais de l’autre côté, toujours avec un côté de moins. Avancer de 3 cases agrandirait le carré sans le fermer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un programme",
+          "lines": [
+            "Un programme : des instructions, lues dans l’ordre, de haut en bas.",
+            "« Répéter 3 fois » : refaire 3 fois les instructions qui suivent.",
+            "« Si un obstacle est devant, alors tourner » : le robot tourne seulement s’il y a un obstacle.",
+            "« Sinon » : ce que fait le robot quand ce n’est pas vrai.",
+            "Le capteur donne l’information ; le programme décide.",
+            "Un bon programme fait ce qu’on attend, sans instruction inutile."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-6e-objects",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

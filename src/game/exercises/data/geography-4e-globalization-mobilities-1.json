@@ -1,0 +1,238 @@
+{
+  "id": "geography-4e-globalization-mobilities-1",
+  "biome": "geography-4e-globalization",
+  "type": "mobilities",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-4e-globalization-mobilities-1-0",
+      "prompt": "Une personne qui quitte son pays pour aller vivre dans un autre est un … .",
+      "spoken": "Une personne qui quitte son pays pour aller vivre dans un autre est un (mot manquant) .",
+      "choices": [
+        "touriste",
+        "migrant",
+        "navetteur"
+      ],
+      "answer": "migrant",
+      "hint": "Le touriste, lui, rentre chez lui après les vacances.",
+      "explanation": "Un migrant change de pays pour y vivre. Le touriste repart chez lui. Le navetteur fait chaque jour le trajet maison-travail.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des mobilités",
+          "lines": [
+            "Migrant : une personne qui va vivre dans un autre pays.",
+            "Émigrer : quitter son pays.",
+            "Immigrer : arriver dans un pays pour y vivre.",
+            "Réfugié : une personne qui fuit la guerre ou les persécutions.",
+            "Touriste : une personne qui voyage pour ses loisirs, puis rentre chez elle.",
+            "Transnational : qui traverse les frontières."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-mobilities-1-1",
+      "prompt": "Quitter son pays pour aller vivre ailleurs, c’est … .",
+      "spoken": "Quitter son pays pour aller vivre ailleurs, c’est (mot manquant) .",
+      "choices": [
+        "émigrer",
+        "immigrer",
+        "voyager"
+      ],
+      "answer": "émigrer",
+      "hint": "Cherche « quitter son pays » dans le rappel.",
+      "explanation": "Émigrer : quitter son pays. Immigrer : arriver dans un pays. La même personne émigre du Mali et immigre en France.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des mobilités",
+          "lines": [
+            "Migrant : une personne qui va vivre dans un autre pays.",
+            "Émigrer : quitter son pays.",
+            "Immigrer : arriver dans un pays pour y vivre.",
+            "Réfugié : une personne qui fuit la guerre ou les persécutions.",
+            "Touriste : une personne qui voyage pour ses loisirs, puis rentre chez elle.",
+            "Transnational : qui traverse les frontières."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-mobilities-1-2",
+      "prompt": "Une personne qui fuit la guerre dans son pays est un … .",
+      "spoken": "Une personne qui fuit la guerre dans son pays est un (mot manquant) .",
+      "choices": [
+        "réfugié",
+        "touriste",
+        "saisonnier"
+      ],
+      "answer": "réfugié",
+      "hint": "Elle cherche un refuge, un endroit sûr.",
+      "explanation": "Un réfugié fuit la guerre ou les persécutions : il cherche un refuge dans un autre pays.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des mobilités",
+          "lines": [
+            "Migrant : une personne qui va vivre dans un autre pays.",
+            "Émigrer : quitter son pays.",
+            "Immigrer : arriver dans un pays pour y vivre.",
+            "Réfugié : une personne qui fuit la guerre ou les persécutions.",
+            "Touriste : une personne qui voyage pour ses loisirs, puis rentre chez elle.",
+            "Transnational : qui traverse les frontières."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-mobilities-1-3",
+      "prompt": "Une personne qui vient travailler une saison, puis rentre chez elle, est un travailleur … .",
+      "spoken": "Une personne qui vient travailler une saison, puis rentre chez elle, est un travailleur (mot manquant) .",
+      "choices": [
+        "saisonnier",
+        "réfugié",
+        "touriste"
+      ],
+      "answer": "saisonnier",
+      "hint": "Une saison : l’été, ou le temps des vendanges.",
+      "explanation": "Le travailleur saisonnier vient pour une saison, puis repart. Le touriste voyage pour ses loisirs ; le réfugié fuit la guerre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des mobilités",
+          "lines": [
+            "Migrant : une personne qui va vivre dans un autre pays.",
+            "Émigrer : quitter son pays.",
+            "Immigrer : arriver dans un pays pour y vivre.",
+            "Réfugié : une personne qui fuit la guerre ou les persécutions.",
+            "Touriste : une personne qui voyage pour ses loisirs, puis rentre chez elle.",
+            "Transnational : qui traverse les frontières."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-mobilities-1-4",
+      "prompt": "Beaucoup de Mexicains émigrent vers les … .",
+      "spoken": "Beaucoup de Mexicains émigrent vers les (mot manquant) .",
+      "choices": [
+        "États-Unis",
+        "Philippines",
+        "Pays-Bas"
+      ],
+      "answer": "États-Unis",
+      "hint": "C’est le pays voisin, au nord du Mexique.",
+      "explanation": "Les États-Unis sont le voisin riche du Mexique : beaucoup de Mexicains y partent pour travailler.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des mobilités",
+          "lines": [
+            "Migrant : une personne qui va vivre dans un autre pays.",
+            "Émigrer : quitter son pays.",
+            "Immigrer : arriver dans un pays pour y vivre.",
+            "Réfugié : une personne qui fuit la guerre ou les persécutions.",
+            "Touriste : une personne qui voyage pour ses loisirs, puis rentre chez elle.",
+            "Transnational : qui traverse les frontières."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-mobilities-1-5",
+      "prompt": "Les pays du golfe Persique, comme le Qatar, attirent des travailleurs venus surtout d’… .",
+      "spoken": "Les pays du golfe Persique, comme le Qatar, attirent des travailleurs venus surtout d’(mot manquant) .",
+      "choices": [
+        "Europe",
+        "Asie",
+        "Amérique"
+      ],
+      "answer": "Asie",
+      "hint": "L’Inde et le Népal sont tout proches.",
+      "explanation": "Beaucoup de travailleurs viennent d’Asie, d’Inde, du Népal ou du Bangladesh, pour bâtir les villes du Golfe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des mobilités",
+          "lines": [
+            "Migrant : une personne qui va vivre dans un autre pays.",
+            "Émigrer : quitter son pays.",
+            "Immigrer : arriver dans un pays pour y vivre.",
+            "Réfugié : une personne qui fuit la guerre ou les persécutions.",
+            "Touriste : une personne qui voyage pour ses loisirs, puis rentre chez elle.",
+            "Transnational : qui traverse les frontières."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-mobilities-1-6",
+      "prompt": "Partir en vacances dans un autre pays, c’est du tourisme … .",
+      "spoken": "Partir en vacances dans un autre pays, c’est du tourisme (mot manquant) .",
+      "choices": [
+        "local",
+        "national",
+        "international"
+      ],
+      "answer": "international",
+      "hint": "« Inter » veut dire « entre » : entre deux pays.",
+      "explanation": "Le tourisme international traverse les frontières. Partir en vacances dans son propre pays, c’est du tourisme national.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des mobilités",
+          "lines": [
+            "Migrant : une personne qui va vivre dans un autre pays.",
+            "Émigrer : quitter son pays.",
+            "Immigrer : arriver dans un pays pour y vivre.",
+            "Réfugié : une personne qui fuit la guerre ou les persécutions.",
+            "Touriste : une personne qui voyage pour ses loisirs, puis rentre chez elle.",
+            "Transnational : qui traverse les frontières."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-mobilities-1-7",
+      "prompt": "En 2024, le pays qui reçoit le plus de touristes étrangers au monde est la … .",
+      "spoken": "En deux mille vingt-quatre, le pays qui reçoit le plus de touristes étrangers au monde est la (mot manquant).",
+      "choices": [
+        "France",
+        "Chine",
+        "Grèce"
+      ],
+      "answer": "France",
+      "hint": "La tour Eiffel, les châteaux de la Loire, la Côte d’Azur.",
+      "explanation": "La France est le pays le plus visité du monde : environ 100 millions de touristes étrangers en 2024.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des mobilités",
+          "lines": [
+            "Migrant : une personne qui va vivre dans un autre pays.",
+            "Émigrer : quitter son pays.",
+            "Immigrer : arriver dans un pays pour y vivre.",
+            "Réfugié : une personne qui fuit la guerre ou les persécutions.",
+            "Touriste : une personne qui voyage pour ses loisirs, puis rentre chez elle.",
+            "Transnational : qui traverse les frontières."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-4e-globalization",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

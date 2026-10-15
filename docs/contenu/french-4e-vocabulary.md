@@ -3,7 +3,7 @@ lieu : french-4e-vocabulary
 module : Vocabulaire
 matière : french
 classe : 4e
-description : Racines grecques et latines, préfixes et suffixes, sens propre et figuré, champ lexical, synonymes, registres et intensité.
+description : Racines, préfixes et suffixes, sens propre et figuré, synonymes et registres, puis les petits mots qui se disent pareil, et le subjonctif.
 gardien : le Hibou lexicographe
 icône : library
 créature : Plume
@@ -512,6 +512,206 @@ Pour tous les items :
    - réponse : apprécié
    - indice : Un exposé se fait en registre courant : pas de mot familier.
    - explication : « apprécié » est courant. « kiffé » et « adoré grave » sont familiers : on les dit entre amis.
+
+## Liens · `conjunctions`
+
+- description : Des petits mots qui se disent pareil, puis le subjonctif après « bien que », « pour que », « avant que ».
+- compétences : c4.fr.langue.orthographe-lexicale · c4.fr.langue.classes-de-mots · c3.fr.langue.classes-de-mots · c4.fr.langue.temps-a-memoriser · c4.fr.langue.morphologie-verbale
+- bravo : Bien vu !
+- erreur : {explanation}
+- bloc gagné : french-4e-vocabulary
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- trou lu : " (mot manquant) "
+
+### Niveau 1 · `french-4e-vocabulary-conjunctions-1`
+
+- consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
+- programme : c4.fr.langue.orthographe-lexicale · c4.fr.langue.classes-de-mots · c3.fr.langue.classes-de-mots
+
+Pour tous les items :
+- aide « Mais, mes, met, m’est » :
+  - mais = pourtant (petit, mais courageux).
+  - mes = pluriel de « mon » (mon ami, mes amis) : on peut dire « tes ».
+  - met = verbe mettre (il met, il mettait).
+  - m’est = me + est (cela m’est égal, cela t’est égal).
+
+1. clé : french-5e-homophones-choices-3-0
+   - énoncé : J’ai cherché partout, … je n’ai rien trouvé.
+   - choix : mais · mes · met
+   - réponse : mais
+   - indice : Remplace par « pourtant ».
+   - explication : « J’ai cherché partout, pourtant je n’ai rien trouvé » fonctionne : c’est « mais ».
+2. clé : french-5e-homophones-choices-3-1
+   - énoncé : … parents arrivent ce soir.
+   - choix : Mais · Mes · Met
+   - réponse : Mes
+   - indice : Remplace par « tes » : tes parents.
+   - explication : On peut dire « tes parents » : c’est « mes », le pluriel de « mon ».
+3. clé : french-5e-homophones-choices-3-2
+   - énoncé : Il … la table avant le dîner.
+   - choix : mes · m’est · met
+   - réponse : met
+   - indice : Remplace par « mettait ».
+   - explication : « Il mettait la table » fonctionne : c’est le verbe mettre, « met ».
+4. clé : french-5e-homophones-choices-3-3
+   - énoncé : Tu peux prendre … crayons de couleur.
+   - choix : mes · met · mais
+   - réponse : mes
+   - indice : Remplace par « tes » : tes crayons.
+   - explication : On peut dire « tes crayons » : c’est « mes », le pluriel de « mon ».
+5. clé : french-5e-homophones-choices-3-4
+   - énoncé : Elle … toujours son casque à vélo.
+   - choix : mais · met · m’est
+   - réponse : met
+   - indice : Remplace par « mettait ».
+   - explication : « Elle mettait son casque » fonctionne : c’est le verbe mettre, « met ».
+6. clé : french-5e-homophones-choices-3-5
+   - énoncé : Le film était long, … il était très drôle.
+   - choix : met · mes · mais
+   - réponse : mais
+   - indice : Remplace par « pourtant ».
+   - explication : « Le film était long, pourtant il était très drôle » fonctionne : c’est « mais ».
+7. clé : french-5e-homophones-choices-3-6
+   - énoncé : Ce qu’il pense … égal.
+   - choix : m’est · mais · mes
+   - réponse : m’est
+   - indice : Remplace par « t’est » : cela t’est égal.
+   - explication : « Cela m’est égal » : me + est, comme « cela t’est égal ».
+8. clé : french-5e-homophones-choices-3-7
+   - énoncé : Cette histoire … arrivée l’an dernier.
+   - choix : mais · m’est · met
+   - réponse : m’est
+   - indice : Remplace par « t’est » : elle t’est arrivée.
+   - explication : « Cette histoire m’est arrivée » : me + est, comme « elle t’est arrivée ».
+
+### Niveau 2 · `french-4e-vocabulary-conjunctions-2`
+
+- consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
+- programme : c4.fr.langue.orthographe-lexicale · c4.fr.langue.classes-de-mots · c3.fr.langue.classes-de-mots
+
+Pour tous les items :
+- aide « Les petits mots qui se disent pareil » :
+  - ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).
+  - si = condition ou oui. s’y = se + y (il s’y met).
+  - quel / quelle : devant un nom (quel jour, quelle heure).
+  - qu’elle = que + elle (on peut dire « qu’il »).
+
+1. clé : french-5e-homophones-choices-2-0
+   - énoncé : Il … a pas de pain.
+   - choix : ni · n’y · nid
+   - réponse : n’y
+   - indice : « n’y » = ne + y : il n’y a pas.
+   - explication : Il n’y a pas de pain : ne + y.
+2. clé : french-5e-homophones-choices-2-1
+   - énoncé : Je n’aime … le froid … la pluie.
+   - lu : Je n’aime  (mot manquant)  le froid  (mot manquant)  la pluie.
+   - choix : ni · n’y · nie
+   - réponse : ni
+   - indice : « ni » = et pas.
+   - explication : Ni le froid ni la pluie : et pas l’un, et pas l’autre.
+3. clé : french-5e-homophones-choices-2-2
+   - énoncé : Elle … met dès ce soir.
+   - choix : si · s’y · ci
+   - réponse : s’y
+   - indice : « s’y mettre » : on peut dire « je m’y mets ».
+   - explication : Elle s’y met : se + y.
+4. clé : french-5e-homophones-choices-2-3
+   - énoncé : Viens … tu veux.
+   - choix : si · s’y · ci
+   - réponse : si
+   - indice : « si » = à condition que.
+   - explication : Viens si tu veux : condition.
+5. clé : french-5e-homophones-choices-1-0
+   - énoncé : … heure est-il ?
+   - choix : Quel · Quelle · Qu’elle
+   - réponse : Quelle
+   - indice : « heure » est un nom féminin : on cherche le déterminant.
+   - explication : « Quelle heure » : quelle accompagne le nom féminin « heure ».
+6. clé : french-5e-homophones-choices-1-1
+   - énoncé : Je crois … viendra demain.
+   - choix : quelle · qu’elle · quel
+   - réponse : qu’elle
+   - indice : Remplace par « qu’il » : si ça marche, c’est « qu’elle ».
+   - explication : « Je crois qu’il viendra » fonctionne : c’est « qu’elle », que + elle.
+7. clé : french-5e-homophones-choices-1-6
+   - énoncé : … beau match !
+   - choix : Quel · Quelle · Qu’elle
+   - réponse : Quel
+   - indice : « match » est un nom masculin.
+   - explication : « Quel beau match » : quel accompagne le nom masculin « match ».
+8. clé : french-5e-homophones-choices-1-7
+   - énoncé : Je pense … a raison.
+   - choix : quelle · qu’elle · quel
+   - réponse : qu’elle
+   - indice : Remplace par « qu’il ».
+   - explication : « Je pense qu’il a raison » fonctionne : c’est « qu’elle ».
+
+### Niveau 3 · `french-4e-vocabulary-conjunctions-3`
+
+- consigne : Choisis le verbe au subjonctif présent après « bien que », « pour que », « avant que ».
+- programme : c4.fr.langue.temps-a-memoriser · c4.fr.langue.morphologie-verbale
+
+Pour tous les items :
+- aide « Le subjonctif après les mots qui relient » :
+  - Après bien que, pour que, avant que : le verbe est au subjonctif.
+  - Formé sur « ils » au présent : ils prennent → que je prenne.
+  - Terminaisons : -e, -es, -e, -ions, -iez, -ent.
+  - Irréguliers : être → que je sois, avoir → que j’aie, faire → que je fasse.
+
+1. clé : french-5e-conjugation-subjunctive-1-0
+   - énoncé : Je t’explique pour que tu … tes devoirs seul.
+   - choix : fasses · fais · feras
+   - réponse : fasses
+   - indice : « Pour que » appelle le subjonctif : que tu fasses.
+   - explication : Après « pour que » : subjonctif de faire, « fasses ». « Fais » est le présent, « feras » le futur.
+2. clé : french-5e-conjugation-subjunctive-1-1
+   - énoncé : Partez tôt pour que vous … à l’heure.
+   - choix : soyez · êtes · serez
+   - réponse : soyez
+   - indice : « Pour que » + subjonctif d’être : que vous soyez.
+   - explication : Après « pour que » : subjonctif d’être, « soyez ». « Êtes » est le présent, « serez » le futur.
+3. clé : french-5e-conjugation-subjunctive-1-2
+   - énoncé : Bien qu’il … froid, on sort.
+   - choix : fasse · fait · fera
+   - réponse : fasse
+   - indice : « Bien que » + subjonctif.
+   - explication : Après « bien que » : subjonctif, « fasse ».
+4. clé : french-5e-conjugation-subjunctive-1-3
+   - énoncé : Finissons le jeu avant que nous … .
+   - choix : partions · partons · partirons
+   - réponse : partions
+   - indice : Subjonctif avec nous : -ions.
+   - explication : Après « avant que » : subjonctif, « partions ». « Partons » est le présent, « partirons » le futur.
+5. clé : french-5e-conjugation-subjunctive-1-4
+   - énoncé : Je l’appelle pour qu’elle … .
+   - choix : vienne · vient · viendra
+   - réponse : vienne
+   - indice : Formé sur « ils viennent » : qu’elle vienne.
+   - explication : Après « pour que » : subjonctif, « vienne ».
+6. clé : french-5e-conjugation-subjunctive-1-5
+   - énoncé : Pour que tu …, il faut t’entraîner.
+   - choix : réussisses · réussis · réussiras
+   - réponse : réussisses
+   - indice : « Pour que » + subjonctif : que tu réussisses.
+   - explication : Après « pour que » : subjonctif, « réussisses ».
+7. clé : french-5e-conjugation-subjunctive-1-6
+   - énoncé : Bien que j’… peur, je saute dans l’eau.
+   - lu : Bien que je (mot manquant) peur, je saute dans l’eau.
+   - choix : aie · ai · aurai
+   - réponse : aie
+   - indice : Subjonctif d’avoir : que j’aie.
+   - explication : Après « bien que » : subjonctif d’avoir, « aie ». « Ai » est le présent : j’ai.
+8. clé : french-5e-conjugation-subjunctive-1-7
+   - énoncé : Avant que vous …, je vous donne mon adresse.
+   - choix : partiez · partez · partirez
+   - réponse : partiez
+   - indice : « Avant que » + subjonctif : que vous partiez.
+   - explication : Après « avant que » : subjonctif, « partiez ».
 
 ## Les plans
 

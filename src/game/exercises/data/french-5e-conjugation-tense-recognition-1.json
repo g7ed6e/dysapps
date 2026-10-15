@@ -1,0 +1,246 @@
+{
+  "id": "french-5e-conjugation-tense-recognition-1",
+  "biome": "french-5e-conjugation",
+  "type": "tense-recognition",
+  "level": 1,
+  "instruction": "Quel est le temps du verbe de la phrase ? Le tableau des temps est affiché.",
+  "items": [
+    {
+      "key": "french-5e-conjugation-subjunctive-2-0",
+      "prompt": "« Nous chanterions volontiers. »",
+      "spoken": "« Nous chanterions volontiers. »",
+      "choices": [
+        "conditionnel",
+        "futur",
+        "imparfait"
+      ],
+      "answer": "conditionnel",
+      "hint": "-rions : conditionnel.",
+      "explanation": "« chanterions » : -rions, conditionnel présent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : -e, -es, -ons, -ez, -ent, ou -s, -s, -t.",
+            "Imparfait : -ais, -ait, -ions, -iez, -aient.",
+            "Passé simple : -a, -it, -ut, -èrent, -irent.",
+            "Futur : -rai, -ras, -ra, -rons, -rez, -ront.",
+            "Conditionnel : -rais, -rait, -rions, -riez, -raient.",
+            "Passé composé : avoir ou être au présent + participe (j’ai mangé).",
+            "Plus-que-parfait : avoir ou être à l’imparfait + participe (j’avais mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-subjunctive-2-1",
+      "prompt": "« Ils ont couru jusqu’ici. »",
+      "spoken": "« Ils ont couru jusqu’ici. »",
+      "choices": [
+        "passé composé",
+        "passé simple",
+        "présent"
+      ],
+      "answer": "passé composé",
+      "hint": "Avoir + participe passé.",
+      "explanation": "« ont couru » : auxiliaire avoir au présent + participe, passé composé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : -e, -es, -ons, -ez, -ent, ou -s, -s, -t.",
+            "Imparfait : -ais, -ait, -ions, -iez, -aient.",
+            "Passé simple : -a, -it, -ut, -èrent, -irent.",
+            "Futur : -rai, -ras, -ra, -rons, -rez, -ront.",
+            "Conditionnel : -rais, -rait, -rions, -riez, -raient.",
+            "Passé composé : avoir ou être au présent + participe (j’ai mangé).",
+            "Plus-que-parfait : avoir ou être à l’imparfait + participe (j’avais mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-subjunctive-2-3",
+      "prompt": "« Vous finirez demain. »",
+      "spoken": "« Vous finirez demain. »",
+      "choices": [
+        "futur",
+        "conditionnel",
+        "présent"
+      ],
+      "answer": "futur",
+      "hint": "-rez : futur.",
+      "explanation": "« finirez » : futur simple.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : -e, -es, -ons, -ez, -ent, ou -s, -s, -t.",
+            "Imparfait : -ais, -ait, -ions, -iez, -aient.",
+            "Passé simple : -a, -it, -ut, -èrent, -irent.",
+            "Futur : -rai, -ras, -ra, -rons, -rez, -ront.",
+            "Conditionnel : -rais, -rait, -rions, -riez, -raient.",
+            "Passé composé : avoir ou être au présent + participe (j’ai mangé).",
+            "Plus-que-parfait : avoir ou être à l’imparfait + participe (j’avais mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-subjunctive-2-4",
+      "prompt": "« Le vent soufflait fort. »",
+      "spoken": "« Le vent soufflait fort. »",
+      "choices": [
+        "imparfait",
+        "passé simple",
+        "présent"
+      ],
+      "answer": "imparfait",
+      "hint": "-ait : imparfait.",
+      "explanation": "« soufflait » : imparfait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : -e, -es, -ons, -ez, -ent, ou -s, -s, -t.",
+            "Imparfait : -ais, -ait, -ions, -iez, -aient.",
+            "Passé simple : -a, -it, -ut, -èrent, -irent.",
+            "Futur : -rai, -ras, -ra, -rons, -rez, -ront.",
+            "Conditionnel : -rais, -rait, -rions, -riez, -raient.",
+            "Passé composé : avoir ou être au présent + participe (j’ai mangé).",
+            "Plus-que-parfait : avoir ou être à l’imparfait + participe (j’avais mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-subjunctive-2-5",
+      "prompt": "« Elle ouvrit les yeux. »",
+      "spoken": "« Elle ouvrit les yeux. »",
+      "choices": [
+        "passé simple",
+        "présent",
+        "imparfait"
+      ],
+      "answer": "passé simple",
+      "hint": "-it au passé, dans un récit : passé simple.",
+      "explanation": "« ouvrit » : passé simple.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : -e, -es, -ons, -ez, -ent, ou -s, -s, -t.",
+            "Imparfait : -ais, -ait, -ions, -iez, -aient.",
+            "Passé simple : -a, -it, -ut, -èrent, -irent.",
+            "Futur : -rai, -ras, -ra, -rons, -rez, -ront.",
+            "Conditionnel : -rais, -rait, -rions, -riez, -raient.",
+            "Passé composé : avoir ou être au présent + participe (j’ai mangé).",
+            "Plus-que-parfait : avoir ou être à l’imparfait + participe (j’avais mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-subjunctive-2-6",
+      "prompt": "« Nous prenons le bus. »",
+      "spoken": "« Nous prenons le bus. »",
+      "choices": [
+        "présent",
+        "futur",
+        "imparfait"
+      ],
+      "answer": "présent",
+      "hint": "Action maintenant : présent.",
+      "explanation": "« prenons » : présent de l’indicatif. À l’imparfait, on dirait « nous prenions ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : -e, -es, -ons, -ez, -ent, ou -s, -s, -t.",
+            "Imparfait : -ais, -ait, -ions, -iez, -aient.",
+            "Passé simple : -a, -it, -ut, -èrent, -irent.",
+            "Futur : -rai, -ras, -ra, -rons, -rez, -ront.",
+            "Conditionnel : -rais, -rait, -rions, -riez, -raient.",
+            "Passé composé : avoir ou être au présent + participe (j’ai mangé).",
+            "Plus-que-parfait : avoir ou être à l’imparfait + participe (j’avais mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "reflets-avions-fini",
+      "prompt": "« Nous avions fini le repas. »",
+      "spoken": "« Nous avions fini le repas. »",
+      "choices": [
+        "plus-que-parfait",
+        "passé composé",
+        "imparfait"
+      ],
+      "answer": "plus-que-parfait",
+      "hint": "Regarde l’auxiliaire : « avions », à quel temps est-il ?",
+      "explanation": "« avions fini » : avoir à l’imparfait + participe, c’est le plus-que-parfait. Au passé composé, on dirait « nous avons fini ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : -e, -es, -ons, -ez, -ent, ou -s, -s, -t.",
+            "Imparfait : -ais, -ait, -ions, -iez, -aient.",
+            "Passé simple : -a, -it, -ut, -èrent, -irent.",
+            "Futur : -rai, -ras, -ra, -rons, -rez, -ront.",
+            "Conditionnel : -rais, -rait, -rions, -riez, -raient.",
+            "Passé composé : avoir ou être au présent + participe (j’ai mangé).",
+            "Plus-que-parfait : avoir ou être à l’imparfait + participe (j’avais mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "reflets-viendrais",
+      "prompt": "« Tu viendrais avec nous ? »",
+      "spoken": "« Tu viendrais avec nous ? »",
+      "choices": [
+        "conditionnel",
+        "futur",
+        "imparfait"
+      ],
+      "answer": "conditionnel",
+      "hint": "-rais : futur ou conditionnel ?",
+      "explanation": "« viendrais » : -rais, conditionnel présent. Au futur, on dirait « tu viendras », sans i.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître le temps",
+          "lines": [
+            "Présent : -e, -es, -ons, -ez, -ent, ou -s, -s, -t.",
+            "Imparfait : -ais, -ait, -ions, -iez, -aient.",
+            "Passé simple : -a, -it, -ut, -èrent, -irent.",
+            "Futur : -rai, -ras, -ra, -rons, -rez, -ront.",
+            "Conditionnel : -rais, -rait, -rions, -riez, -raient.",
+            "Passé composé : avoir ou être au présent + participe (j’ai mangé).",
+            "Plus-que-parfait : avoir ou être à l’imparfait + participe (j’avais mangé)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne route !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-5e-conjugation",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

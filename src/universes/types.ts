@@ -7,6 +7,7 @@ import type { ArchipelagoId, NomsArchipels } from '../game/world/archipelago';
 import type { Tier } from '../core/progress';
 import type { IslandStateId } from '../game/world/islandState';
 import type { LieuDAssemblage, NomDeBloc } from '../game/world/assembly';
+import type { FormsWords } from '../game/world/vehicle';
 
 export type { UniversChoice as UniversId } from '../core/universe';
 
@@ -40,12 +41,12 @@ interface LibellesGardiens {
   resistance: (reste: number, total: number) => string;
   /** Ce que dit l'arène d'un Gardien dont le défi est déjà réussi (`gardien` : son nom, avec sa majuscule). */
   dejaFaitArene: (gardien: string) => string;
-  /** Ce qu'il manque pour le kit du Bloc-Navire, en bref. */
+  /** Ce qu'il manque pour le kit de la Nef, en bref. */
   encoreAFaire: (n: number) => string;
-  /** Le Bloc-Navire a tous ses blocs, mais pas encore ses Gardiens (`piece` : ce qu'ils apportent, « la voile »). */
+  /** La Nef a tous ses blocs, mais pas encore ses Gardiens (`piece` : ce qu'ils apportent, « la voile »). */
   navireAttend: (n: number, piece?: string) => string;
   /**
-   * Ce que dit la créature du port sur les Gardiens qu'attend le kit du Bloc-Navire (`piece` : « la voile »), ou qu'il
+   * Ce que dit la créature du port sur les Gardiens qu'attend le kit de la Nef (`piece` : « la voile »), ou qu'il
    * est arrivé.
    */
   navireGardiens: (faits: number, total: number, archipel: string, piece: string) => string;
@@ -64,10 +65,15 @@ interface LibellesGardiens {
    * qu'est un ouvrage et ce qu'il demande (des blocs ; une mission réussie pour l'escalier).
    */
   decouverteOuvrages: string;
-  /** Ce que dit la créature d'une île d'un autre archipel quand le Bloc-Navire attend encore des Gardiens (`archipel` : son nom). */
+  /** Ce que dit la créature d'une île d'un autre archipel quand la Nef attend encore des Gardiens (`archipel` : son nom). */
   navireGardiensManquants: (n: number, archipel: string) => string;
-  /** Dite une fois par appareil, à la première arrivée au port, par sa créature, après son accueil : le Bloc-Navire. */
+  /** Dite une fois par appareil, à la première arrivée au port, par sa créature, après son accueil : la Nef. */
   decouverteNavire: string;
+  /**
+   * Les formes de la Nef que l'univers nomme autrement (GD-15 : l'aéronef d'Archipéo) ; sans elles, les mots des étapes
+   * (world/vehicle.ts).
+   */
+  formesDeLaNef?: FormsWords;
 }
 
 /**
@@ -177,6 +183,11 @@ export interface TextesUnivers {
    */
   commandes?: TextesCommandes;
   /**
+   * Les quêtes des habitants (GD-10, mot neutre `story`) : leur nom et leurs gestes. Sans eux, l'univers ne montre pas
+   * les quêtes (ni arrivée, ni ligne, ni objet posé).
+   */
+  quetes?: TextesQuetes;
+  /**
    * La construction qui réunit deux lieux (GD-9, point 10 ; mot neutre `join`) : son nom, ce qu'elle est, ce que dit sa
    * fin. Sans elle, les mots communs (« La réunion »).
    */
@@ -217,6 +228,17 @@ interface TextesCommandes {
   tuEnAs: (have: number, count: number) => string;
   /** « Y aller » quand l'élève est déjà sur l'île qui donne le bloc. */
   tuYEs: string;
+}
+
+/** Les mots des quêtes des habitants dans un univers (GD-10). */
+interface TextesQuetes {
+  /** Le nom d'une quête, sur sa ligne et pour un lecteur d'écran. */
+  titre: string;
+  /** Le geste d'une étape faite d'un toucher, sur le bouton. */
+  donner: string;
+  apporter: string;
+  /** L'étape en cours, lue (« Étape 2 sur 3 ») ; à l'écran, « 2/3 ». */
+  etape: (n: number, total: number) => string;
 }
 
 /** Les noms qu'un univers donne à des blocs (GD-2 : les blocs assemblés). */

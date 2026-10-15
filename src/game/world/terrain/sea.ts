@@ -1,6 +1,5 @@
 // Le large : les baleines, le décor de la mer et les nappes de brume.
 import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, islandDef, landBox, landCells, startingIsland, mapOf } from '../map';
-import { BIOMES } from '../../biomes';
 import { dockBox } from '../harbor';
 import { BRIDGES, getArchipelago } from '../archipelago';
 import { footprintOf, monumentIslet } from '../footprint';
@@ -8,37 +7,102 @@ import { linkBetweenJoined, LONG_LENGTH, RegionRouter } from '../routing';
 import { MONUMENT_ISLET, monumentsOf } from '../monuments';
 import type { VoxelCube } from '../cube';
 import { semerLaMer } from '../decor';
-import { bossIsletOrigin, ISLET_H, ISLET_W, rectangleDeLIlot } from './islets';
 import { bridgePath } from './links';
 import { placedLinksOf } from '../linkGeometry';
 import { bornesDeDepart, worldBounds } from './view';
-import { chosenGuardian, layoutCache, type Rectangle } from '../placement';
+import { layoutCache, type Rectangle } from '../placement';
 
 /**
  * Les baleines replacées à la main, quand la clairière choisie par `whaleSpots` se cache derrière une île dans la vue
  * de l'archipel depuis le port (DA, 01/10/2026 : au 5e, celle de 91, 345 nageait derrière le Marché et seul son souffle
  * se voyait). `de` : la clairière choisie ; `vers` : la nouvelle, en eau libre ; le rond y garde trois cases de toute
- * terre, îlot ou ponton (`r` = éloignement − 3, comme ailleurs). Vérifié par terrain.test.ts et three/whales.test.ts.
+ * terre, îlot de monument ou ponton (`r` = éloignement − 3, comme ailleurs). Vérifié par terrain.test.ts et three/whales.test.ts.
  *
  * Depuis GD-9, les lieux se déplacent et les clairières suivent : celle du 5e, calée sur la clairière de 91, 345, ne
  * l'est plus. Au 6e, la clairière de 3, 109 passe d'un pas vers l'ouest (DA, 5 octobre 2026 : depuis la vue du port,
  * une côte cachait le bord de son rond) ; elle ne l'est que tant que la clairière choisie est celle-là. Depuis les îles
  * de sciences (SC-2), le Hangar des inventions au coin de devant, à l'ouest, une clairière s'ouvre derrière la Tour du
  * lecteur, qui la cache tout entière depuis le port : en -12, 73 au village tout construit, en -9, 76 sans liaison (les
- * liaisons posées la déplacent). Elle passe à 47, 85, au même rang, dans la passe entre la Ferme et la Forêt.
+ * liaisons posées la déplacent). Elle passe à 47, 85, au même rang, dans la passe entre la Ferme et la Forêt. Au 5e,
+ * depuis le cadre élargi de 24 cases (HG-3), la clairière de 29, 345 se cache derrière les îles de l'ouest : la baleine
+ * nage en 97, 313, au nord du port : la seule clairière (un rond de 4 cases) qui s'y voit entière. Depuis les îles de
+ * sciences (SC-3), les cadres des 5e et 4e s'approfondissent et les clairières qu'on voit depuis le port se cachent
+ * derrière les îles (three/whales.test.ts). Au 5e, celle de 131, 420 (131, 417 sans liaison) nage au nord du port, en
+ * 97, 304 ; celle de 29, 420 nage dans une autre clairière, au sud, en 93, 429 (DA, relecture des captures : les
+ * deux baleines nageaient l'une contre l'autre, en 97, 304 et 98, 314) : ronde de 5 cases, à plus de cent cases de la
+ * première, entière dans la vue du port. Au 4e, celle de 41, 715 (29, 706 sans liaison) passait en 82, 705.
+ *
+ * Depuis GD-11 (8 octobre 2026), les îlots des Gardiens ont quitté la mer et les îles ont grandi ; les clairières ont
+ * changé (mesuré avec three/whales.test.ts) : au 6e, celle de -12, 100, que la côte de l'ouest cache en partie depuis le
+ * port, nage en -8, 105, la clairière visible la plus proche ; au 5e, celle de 38, 414, cachée derrière les îles du sud,
+ * nage en 79, 362, la seule clairière visible à moins de 80 cases (un rond de 4 cases, au nord du Marais) ;
+ * au 4e, aucune baleine n'est plus dans le cadre de la vue du port. Depuis GD-12 (une forme par île, 8 octobre 2026), les
+ * îles du 6e ont changé de place : aucune de ses clairières n'est plus cachée depuis le port, aucune baleine n'y est
+ * replacée. Au 5e, depuis ses formes (9 octobre 2026), le cadre élargi et approfondi : la clairière de 35, 438, au coin
+ * du fond à l'ouest, a un point de son rond caché par le Carrefour ; la baleine nageait deux cases plus loin, en 37, 439.
+ * Depuis le Fournil des partages et la Grotte des légendes (EMC-2, LCA-2), posés au rang du fond, dans ce coin, la clairière
+ * du coin (38, 441) est cachée par le Fournil depuis le port, et aucune autre de ce coin ne se voit entière : la baleine
+ * nage entre les deux îles, en 57, 393 (un rond de 4 cases, entier dans la vue du port).
+ * Au 4e, depuis ses formes (9 octobre 2026), le cadre approfondi ramène deux clairières du fond dans la vue du port,
+ * en partie cachées par des îles : la baleine de 32, 739 nage en 37, 740, celle de 119, 736 en 110, 740 ; la première
+ * six cases plus à l'est, en 43, 738, depuis que l'Imprimerie recule d'un pas et le Théâtre avance d'un pas
+ * (relecture du 9 octobre 2026 : en 37, 740, cinq points de son rond passaient derrière une île). Depuis la Porte des
+ * libertés et la Colonnade des cités (EMC-2, LCA-2), posées au rang du fond, la clairière de 119, 736 n'est plus libre
+ * (la Colonnade y est) : la baleine qui en venait n'a plus à être replacée, une autre clairière, au large, la remplace ;
+ * celle de 43, 738 a deux points de son rond, plus large, derrière une île : elle nage trois cases plus à l'est et deux
+ * plus au fond, en 46, 740.
  */
 export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
-  '6e': [
-    { de: { x: 3, y: 109 }, vers: { x: -1, y: 109 } },
-    { de: { x: -9, y: 76 }, vers: { x: 47, y: 85 } },
-    { de: { x: -12, y: 73 }, vers: { x: 47, y: 85 } },
-  ],
+  '5e': [{ de: { x: 38, y: 441 }, vers: { x: 57, y: 393 } }],
+  '4e': [{ de: { x: 32, y: 739 }, vers: { x: 46, y: 740 } }],
 };
+
+/**
+ * La distance d'un point à la case la plus proche de `cells` (cases entières), la même qu'en les parcourant toutes,
+ * mais en ne regardant que les anneaux de cases autour du point, du plus proche au plus loin : rien sur l'anneau à
+ * k cases n'est à moins de k − ½, on s'arrête dès qu'on a trouvé mieux. Les parcourir toutes, pour chaque clairière
+ * possible, prenait plus d'une seconde au 6e (le test du passage de la baleine dépassait son délai en CI).
+ */
+function distanceToNearest(cells: readonly { x: number; y: number }[]): (x: number, y: number) => number {
+  if (!cells.length) return () => Infinity;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const c of cells) {
+    // Une case non entière ne s'écrirait pas dans la grille : les clairières grandiraient sans bruit.
+    if (!Number.isInteger(c.x) || !Number.isInteger(c.y)) throw new Error(`case non entière : ${c.x}, ${c.y}`);
+    x0 = Math.min(x0, c.x);
+    y0 = Math.min(y0, c.y);
+    x1 = Math.max(x1, c.x);
+    y1 = Math.max(y1, c.y);
+  }
+  const w = x1 - x0 + 1;
+  const filled = new Uint8Array(w * (y1 - y0 + 1));
+  for (const c of cells) filled[(c.y - y0) * w + (c.x - x0)] = 1;
+  return (x, y) => {
+    const cx = Math.round(x);
+    const cy = Math.round(y);
+    const far = Math.max(Math.abs(cx - x0), Math.abs(cx - x1), Math.abs(cy - y0), Math.abs(cy - y1));
+    let best = Infinity;
+    for (let k = 0; k <= far && best > k - 0.5; k++)
+      for (let dx = -k; dx <= k; dx++) {
+        const px = cx + dx;
+        if (px < x0 || px > x1) continue;
+        // Sur les bords de l'anneau, toute la colonne ; ailleurs, ses deux bouts.
+        const step = Math.abs(dx) === k ? 1 : 2 * k;
+        for (let dy = -k; dy <= k; dy += step) {
+          const py = cy + dy;
+          if (py < y0 || py > y1 || !filled[(py - y0) * w + (px - x0)]) continue;
+          const d = Math.hypot(px - x, py - y);
+          if (d < best) best = d;
+        }
+      }
+    return best;
+  };
+}
 
 const whaleCache = layoutCache<string, { x: number; y: number; r: number }[]>();
 
 /**
- * Les clairières des baleines : au large des lieux à leur place, des îlots, du quai, des écueils et des liaisons posées
+ * Les clairières des baleines : au large des lieux à leur place, des îlots des monuments, du quai, des écueils et des liaisons posées
  * (GD-9 : elles changent quand on pose une liaison ou qu'on déplace un lieu).
  */
 export function whaleSpots(a: ArchipelagoId, links: readonly string[]): { x: number; y: number; r: number }[] {
@@ -54,8 +118,6 @@ export function whaleSpots(a: ArchipelagoId, links: readonly string[]): { x: num
   const land: { x: number; y: number }[] = [];
   for (const def of mapOf(a)) {
     for (const c of landCells(def)) land.push(c);
-    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
-    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) land.push({ x: o.x + x, y: o.y + y });
   }
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) land.push({ x, y });
@@ -63,14 +125,7 @@ export function whaleSpots(a: ArchipelagoId, links: readonly string[]): { x: num
   for (const br of posees) land.push(...bridgePath(br, links));
   for (const c of seaDecor(a)) land.push(c);
   const b = worldBounds(a);
-  const clearance = (x: number, y: number) => {
-    let best = Infinity;
-    for (const c of land) {
-      const d = Math.hypot(c.x - x, c.y - y);
-      if (d < best) best = d;
-    }
-    return best;
-  };
+  const clearance = distanceToNearest(land);
   // Les baleines préfèrent le large : on note chaque clairière par sa largeur et son éloignement du centre.
   const cx = (b.minX + b.maxX) / 2;
   const cy = (b.minY + b.maxY) / 2;
@@ -110,10 +165,13 @@ export function whaleSpots(a: ArchipelagoId, links: readonly string[]): { x: num
 
 const seaCache = new Map<ArchipelagoId, VoxelCube[]>();
 
+/** La profondeur de la rade devant une île, en cases (l'îlot du Gardien et son eau, jusqu'à GD-11). */
+const RADE = 15;
+
 /**
  * L'habillage de la mer : des rochers qui affleurent (galet et pierre, un à quatre cubes) et des bancs de sable au
  * ras de l'eau, semés une fois pour toutes sur l'étendue de la carte de départ (GD-9), au hasard (bruit fixe), dans l'eau libre de
- * la carte de départ, à cinq cases au moins de toute terre, de tout îlot, du quai, et hors des couloirs des liaisons. Ce sont les écueils : ils ne bougent
+ * la carte de départ, à cinq cases au moins de toute terre et de la rade devant chaque île, de tout îlot de monument, du quai, et hors des couloirs des liaisons. Ce sont les écueils : ils ne bougent
  * pas quand un lieu bouge, et aucune liaison ne passe dessus (`ecueilsDe`). Plus denses au large.
  */
 export function seaDecor(a: ArchipelagoId): VoxelCube[] {
@@ -128,8 +186,10 @@ export function seaDecor(a: ArchipelagoId): VoxelCube[] {
   for (const id of mapOf(a).map((d) => d.id)) {
     const def = startingIsland(id);
     for (const c of landCells(def)) solid.add(`${c.x},${c.y}`);
-    const r = rectangleDeLIlot(def);
-    for (let x = r.x0; x < r.x1; x++) for (let y = r.y0; y < r.y1; y++) solid.add(`${x},${y}`);
+    // La rade devant l'île (côté caméra), où se tenait l'îlot de son Gardien jusqu'à GD-11 : aucun écueil n'y affleure,
+    // le premier plan de la vue reste dégagé, comme avant.
+    const r = landBox(def);
+    for (let x = r.x0; x < r.x1; x++) for (let y = r.y0 - RADE; y < r.y0; y++) solid.add(`${x},${y}`);
   }
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0 - 1; x <= dock.x1 + 1; x++) for (let y = dock.y0 - 1; y <= dock.y1 + 1; y++) solid.add(`${x},${y}`);
@@ -172,7 +232,7 @@ const MARGE_DES_ECUEILS = 1;
 
 /**
  * Les écueils d'une région qui restent à l'air, des lieux étant posés sur l'emprise `parts` (GD-9, mainteneur, 5 octobre
- * 2026, « Cacher ») : une île posée sur des écueils les cache sous elle (sa terre, l'îlot de son Gardien, ses îlots, à
+ * 2026, « Cacher ») : une île posée sur des écueils les cache sous elle (sa terre, ses îlots, à
  * `MARGE_DES_ECUEILS` près) ; ils reviennent quand elle repart. La mer semée ne change pas.
  */
 export function reefsOutside(a: ArchipelagoId, parts: readonly Rectangle[]): Set<string> {
@@ -191,7 +251,7 @@ const visiblesCache = layoutCache<ArchipelagoId, ReadonlySet<string>>();
 export function visibleReefs(a: ArchipelagoId): ReadonlySet<string> {
   let v = visiblesCache.get(a);
   if (!v) {
-    const parts = mapOf(a).flatMap((d) => footprintOf(d.id, islandDef(d.id), chosenGuardian(d.id)));
+    const parts = mapOf(a).flatMap((d) => footprintOf(d.id, islandDef(d.id)));
     visiblesCache.set(a, (v = reefsOutside(a, parts)));
   }
   return v;

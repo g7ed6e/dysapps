@@ -1,0 +1,240 @@
+{
+  "id": "lca-4e-cities-la-forum-2",
+  "biome": "lca-4e-cities",
+  "type": "la-forum",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-4e-cities-la-forum-2-0",
+      "prompt": "Une journée au cirque\nQuatre chars font sept tours de piste.\nLe public crie pour son équipe, les Verts ou les Bleus.\nL’entrée est gratuite.",
+      "question": "Quel spectacle ce document décrit-il ?",
+      "spoken": "Une journée au cirque. Quatre chars font sept tours de piste. Le public crie pour son équipe, les Verts ou les Bleus. L’entrée est gratuite.",
+      "choices": [
+        "une course de chars",
+        "un combat de gladiateurs",
+        "une comédie"
+      ],
+      "answer": "une course de chars",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Au cirque, comme au Circus Maximus de Rome, on assiste à des courses de chars. Le public soutient des équipes, comme les supporters d’aujourd’hui.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Spectacles, jeux et fêtes",
+          "lines": [
+            "Les jeux du cirque : des courses de chars, comme au Circus Maximus.",
+            "L’amphithéâtre : des combats de gladiateurs, comme au Colisée.",
+            "Le théâtre : des comédies et des tragédies, jouées par des acteurs masqués.",
+            "Les jeux sont offerts gratuitement au peuple par les magistrats.",
+            "« Du pain et des jeux » : le poète Juvénal se moque du peuple qui ne demande que cela.",
+            "Les Saturnales : une fête de décembre, où les maîtres servent leurs esclaves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-2-1",
+      "prompt": "« Du pain et des jeux » se dit en latin panem et circenses : les circenses, ce sont les jeux du …",
+      "spoken": "Du pain et des jeux se dit en latin panèmm ètt kirkénnsèss : les kirkénnsèss, ce sont les jeux du (mot manquant)",
+      "choices": [
+        "théâtre",
+        "cirque",
+        "forum"
+      ],
+      "answer": "cirque",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "circenses désigne les jeux du cirque, les courses de chars. Circus, en latin, veut dire le cercle : la piste fait le tour.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Spectacles, jeux et fêtes",
+          "lines": [
+            "Les jeux du cirque : des courses de chars, comme au Circus Maximus.",
+            "L’amphithéâtre : des combats de gladiateurs, comme au Colisée.",
+            "Le théâtre : des comédies et des tragédies, jouées par des acteurs masqués.",
+            "Les jeux sont offerts gratuitement au peuple par les magistrats.",
+            "« Du pain et des jeux » : le poète Juvénal se moque du peuple qui ne demande que cela.",
+            "Les Saturnales : une fête de décembre, où les maîtres servent leurs esclaves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-2-2",
+      "prompt": "À Rome, qui offre les jeux au peuple ?",
+      "choices": [
+        "les esclaves",
+        "les marchands",
+        "les magistrats"
+      ],
+      "answer": "les magistrats",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Les magistrats offrent les jeux, souvent à leurs frais, pour plaire au peuple et être élus plus tard à une charge plus haute.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Spectacles, jeux et fêtes",
+          "lines": [
+            "Les jeux du cirque : des courses de chars, comme au Circus Maximus.",
+            "L’amphithéâtre : des combats de gladiateurs, comme au Colisée.",
+            "Le théâtre : des comédies et des tragédies, jouées par des acteurs masqués.",
+            "Les jeux sont offerts gratuitement au peuple par les magistrats.",
+            "« Du pain et des jeux » : le poète Juvénal se moque du peuple qui ne demande que cela.",
+            "Les Saturnales : une fête de décembre, où les maîtres servent leurs esclaves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-2-3",
+      "prompt": "Juvénal, poète latin\nAutrefois, le peuple donnait le pouvoir.\nAujourd’hui, il ne désire plus que deux choses :\ndu pain et des jeux.",
+      "question": "Que reproche Juvénal au peuple ?",
+      "spoken": "Juvénal, poète latin. Autrefois, le peuple donnait le pouvoir. Aujourd’hui, il ne désire plus que deux choses : du pain et des jeux.",
+      "choices": [
+        "de travailler trop",
+        "de ne penser qu’à manger et se distraire",
+        "de trop voter"
+      ],
+      "answer": "de ne penser qu’à manger et se distraire",
+      "hint": "Lis les deux dernières lignes du document.",
+      "explanation": "Pour Juvénal, le peuple ne pense plus qu’à manger et à se distraire, et oublie la politique. On dit encore « du pain et des jeux ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Spectacles, jeux et fêtes",
+          "lines": [
+            "Les jeux du cirque : des courses de chars, comme au Circus Maximus.",
+            "L’amphithéâtre : des combats de gladiateurs, comme au Colisée.",
+            "Le théâtre : des comédies et des tragédies, jouées par des acteurs masqués.",
+            "Les jeux sont offerts gratuitement au peuple par les magistrats.",
+            "« Du pain et des jeux » : le poète Juvénal se moque du peuple qui ne demande que cela.",
+            "Les Saturnales : une fête de décembre, où les maîtres servent leurs esclaves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-2-4",
+      "prompt": "Les acteurs du théâtre romain jouent avec …",
+      "spoken": "Les acteurs du théâtre romain jouent avec  (mot manquant) ",
+      "choices": [
+        "un masque",
+        "une couronne",
+        "une lyre"
+      ],
+      "answer": "un masque",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Les acteurs portent des masques : un masque triste pour la tragédie, un masque rieur pour la comédie. Avec un autre masque, le même acteur joue un autre rôle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Spectacles, jeux et fêtes",
+          "lines": [
+            "Les jeux du cirque : des courses de chars, comme au Circus Maximus.",
+            "L’amphithéâtre : des combats de gladiateurs, comme au Colisée.",
+            "Le théâtre : des comédies et des tragédies, jouées par des acteurs masqués.",
+            "Les jeux sont offerts gratuitement au peuple par les magistrats.",
+            "« Du pain et des jeux » : le poète Juvénal se moque du peuple qui ne demande que cela.",
+            "Les Saturnales : une fête de décembre, où les maîtres servent leurs esclaves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-2-5",
+      "prompt": "Pendant les Saturnales, en décembre, …",
+      "spoken": "Pendant les Saturnales, en décembre : (mot manquant)",
+      "choices": [
+        "on fête le début de l’année",
+        "on élit les consuls de l’année",
+        "les maîtres servent leurs esclaves"
+      ],
+      "answer": "les maîtres servent leurs esclaves",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Aux Saturnales, la fête de Saturne, l’ordre est renversé pour quelques jours : ce sont les maîtres qui servent leurs esclaves, et l’on échange des cadeaux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Spectacles, jeux et fêtes",
+          "lines": [
+            "Les jeux du cirque : des courses de chars, comme au Circus Maximus.",
+            "L’amphithéâtre : des combats de gladiateurs, comme au Colisée.",
+            "Le théâtre : des comédies et des tragédies, jouées par des acteurs masqués.",
+            "Les jeux sont offerts gratuitement au peuple par les magistrats.",
+            "« Du pain et des jeux » : le poète Juvénal se moque du peuple qui ne demande que cela.",
+            "Les Saturnales : une fête de décembre, où les maîtres servent leurs esclaves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-2-6",
+      "prompt": "Le mot « personnage » vient du latin persona, qui veut dire …",
+      "spoken": "Le mot personnage vient du latin pèrsona, qui veut dire (mot manquant)",
+      "choices": [
+        "la voix",
+        "le masque",
+        "l’acteur"
+      ],
+      "answer": "le masque",
+      "hint": "Que porte un acteur romain sur le visage ?",
+      "explanation": "persona, c’est le masque de l’acteur : derrière le masque, un rôle. Le mot a donné « personnage » et « personne ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Spectacles, jeux et fêtes",
+          "lines": [
+            "Les jeux du cirque : des courses de chars, comme au Circus Maximus.",
+            "L’amphithéâtre : des combats de gladiateurs, comme au Colisée.",
+            "Le théâtre : des comédies et des tragédies, jouées par des acteurs masqués.",
+            "Les jeux sont offerts gratuitement au peuple par les magistrats.",
+            "« Du pain et des jeux » : le poète Juvénal se moque du peuple qui ne demande que cela.",
+            "Les Saturnales : une fête de décembre, où les maîtres servent leurs esclaves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-la-forum-2-7",
+      "prompt": "Les arènes de Nîmes\nUn bâtiment romain, de forme ovale.\nDes gradins tout autour de la piste.\nOn y voyait des combats de gladiateurs.",
+      "question": "Quel genre de bâtiment est-ce ?",
+      "spoken": "Les arènes de Nîmes. Un bâtiment romain, de forme ovale. Des gradins tout autour de la piste. On y voyait des combats de gladiateurs.",
+      "choices": [
+        "un théâtre",
+        "un cirque",
+        "un amphithéâtre"
+      ],
+      "answer": "un amphithéâtre",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Les arènes de Nîmes sont un amphithéâtre, comme le Colisée à Rome : des gradins tout autour d’une piste. Amphi- veut dire « des deux côtés », tout autour.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Spectacles, jeux et fêtes",
+          "lines": [
+            "Les jeux du cirque : des courses de chars, comme au Circus Maximus.",
+            "L’amphithéâtre : des combats de gladiateurs, comme au Colisée.",
+            "Le théâtre : des comédies et des tragédies, jouées par des acteurs masqués.",
+            "Les jeux sont offerts gratuitement au peuple par les magistrats.",
+            "« Du pain et des jeux » : le poète Juvénal se moque du peuple qui ne demande que cela.",
+            "Les Saturnales : une fête de décembre, où les maîtres servent leurs esclaves."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-4e-cities",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,236 @@
+{
+  "id": "civics-6e-democratic-society-representatives-2",
+  "biome": "civics-6e-democratic-society",
+  "type": "representatives",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-6e-democratic-society-representatives-2-0",
+      "prompt": "Le rôle du délégué\nIl écoute les élèves de la classe.\nIl parle en leur nom au conseil de classe.\nIl rapporte à la classe ce qui s’y est dit.",
+      "question": "Que fait le délégué après le conseil de classe ?",
+      "spoken": "Le rôle du délégué. Il écoute les élèves de la classe. Il parle en leur nom au conseil de classe. Il rapporte à la classe ce qui s’y est dit.",
+      "choices": [
+        "il décide des notes",
+        "il rapporte à la classe ce qui s’y est dit",
+        "il choisit le prochain délégué"
+      ],
+      "answer": "il rapporte à la classe ce qui s’y est dit",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Après le conseil, le délégué rapporte à la classe ce qui s’y est dit. Il ne décide pas des notes : ce sont les professeurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élus et leurs missions",
+          "lines": [
+            "La première ligne du document dit de quoi il parle.",
+            "Un élu est responsable : il parle au nom de ceux qui l’ont élu.",
+            "Il suit les règles de son conseil ou de son assemblée.",
+            "Une décision est adoptée quand la majorité vote pour.",
+            "L’intérêt général n’est pas toujours l’intérêt de chacun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-2-1",
+      "prompt": "Le vote des délégués\nInès présente ses idées à la classe.\nTom présente les siennes.\nPuis chaque élève vote en secret.",
+      "question": "Pourquoi le vote se fait-il en secret ?",
+      "spoken": "Le vote des délégués. Inès présente ses idées à la classe. Tom présente les siennes. Puis chaque élève vote en secret.",
+      "choices": [
+        "pour aller plus vite",
+        "pour que le professeur choisisse",
+        "pour que chacun choisisse librement"
+      ],
+      "answer": "pour que chacun choisisse librement",
+      "hint": "Pense à ce qui se passerait si chacun voyait le vote des autres.",
+      "explanation": "Le vote secret protège le choix de chacun : personne ne peut faire pression. Les élections en France sont secrètes, elles aussi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élus et leurs missions",
+          "lines": [
+            "La première ligne du document dit de quoi il parle.",
+            "Un élu est responsable : il parle au nom de ceux qui l’ont élu.",
+            "Il suit les règles de son conseil ou de son assemblée.",
+            "Une décision est adoptée quand la majorité vote pour.",
+            "L’intérêt général n’est pas toujours l’intérêt de chacun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-2-2",
+      "prompt": "Qui entretient les bâtiments ?\nLa commune : les écoles.\nLe département : les collèges.\nLa région : les lycées.",
+      "question": "Qui entretient les bâtiments des collèges ?",
+      "spoken": "Qui entretient les bâtiments ? La commune, les écoles. Le département, les collèges. La région, les lycées.",
+      "choices": [
+        "la commune",
+        "le département",
+        "la région"
+      ],
+      "answer": "le département",
+      "hint": "Cherche la ligne qui parle des collèges.",
+      "explanation": "Le département construit et entretient les collèges ; ses élus en décident. Les écoles sont à la commune, les lycées à la région.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élus et leurs missions",
+          "lines": [
+            "La première ligne du document dit de quoi il parle.",
+            "Un élu est responsable : il parle au nom de ceux qui l’ont élu.",
+            "Il suit les règles de son conseil ou de son assemblée.",
+            "Une décision est adoptée quand la majorité vote pour.",
+            "L’intérêt général n’est pas toujours l’intérêt de chacun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-2-3",
+      "prompt": "Le conseil municipal vote\nProjet : une piste cyclable vers le collège.\nPour : 20 conseillers.\nContre : 9 conseillers.",
+      "question": "Le projet est-il adopté ?",
+      "spoken": "Le conseil municipal vote. Projet, une piste cyclable vers le collège. Pour, 20 conseillers. Contre, 9 conseillers.",
+      "choices": [
+        "oui, la majorité a voté pour",
+        "non, il fallait que tous votent pour",
+        "non, le maire doit voter seul"
+      ],
+      "answer": "oui, la majorité a voté pour",
+      "hint": "Compare le nombre de « pour » et le nombre de « contre ».",
+      "explanation": "20 conseillers pour, 9 contre : la majorité a voté pour, le projet est adopté. Une décision n’a pas besoin de l’accord de tous.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élus et leurs missions",
+          "lines": [
+            "La première ligne du document dit de quoi il parle.",
+            "Un élu est responsable : il parle au nom de ceux qui l’ont élu.",
+            "Il suit les règles de son conseil ou de son assemblée.",
+            "Une décision est adoptée quand la majorité vote pour.",
+            "L’intérêt général n’est pas toujours l’intérêt de chacun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-2-4",
+      "prompt": "Un parc à la place d’un parking\nDes habitants perdent des places pour garer leur voiture.\nTout le quartier gagne un lieu pour jouer, à l’ombre.",
+      "question": "Que montre cet exemple ?",
+      "spoken": "Un parc à la place d’un parking. Des habitants perdent des places pour garer leur voiture. Tout le quartier gagne un lieu pour jouer, à l’ombre.",
+      "choices": [
+        "l’intérêt général peut gêner certains",
+        "l’intérêt général est toujours l’intérêt de chacun",
+        "l’intérêt général ne concerne que les élus"
+      ],
+      "answer": "l’intérêt général peut gêner certains",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Le parc sert tout le quartier, mais il gêne ceux qui perdent une place : l’intérêt général n’est pas toujours l’intérêt de chacun.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élus et leurs missions",
+          "lines": [
+            "La première ligne du document dit de quoi il parle.",
+            "Un élu est responsable : il parle au nom de ceux qui l’ont élu.",
+            "Il suit les règles de son conseil ou de son assemblée.",
+            "Une décision est adoptée quand la majorité vote pour.",
+            "L’intérêt général n’est pas toujours l’intérêt de chacun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-2-5",
+      "prompt": "Un élu parle au nom des électeurs et suit les règles de son conseil : il est …",
+      "spoken": "Un élu parle au nom des électeurs et suit les règles de son conseil : il est  (mot manquant) ",
+      "choices": [
+        "tout-puissant",
+        "responsable",
+        "libre de tout faire"
+      ],
+      "answer": "responsable",
+      "hint": "Un élu peut-il faire tout ce qu’il veut ?",
+      "explanation": "Un élu est responsable : il exprime la parole des électeurs et suit les règles de son assemblée. Il ne peut pas tout faire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élus et leurs missions",
+          "lines": [
+            "La première ligne du document dit de quoi il parle.",
+            "Un élu est responsable : il parle au nom de ceux qui l’ont élu.",
+            "Il suit les règles de son conseil ou de son assemblée.",
+            "Une décision est adoptée quand la majorité vote pour.",
+            "L’intérêt général n’est pas toujours l’intérêt de chacun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-2-6",
+      "prompt": "Les éco-délégués du collège\nIls proposent de trier les déchets à la cantine.\nLe conseil d’administration accepte.\nLe tri commence en janvier.",
+      "question": "Qui a proposé le tri des déchets ?",
+      "spoken": "Les éco-délégués du collège. Ils proposent de trier les déchets à la cantine. Le conseil d’administration accepte. Le tri commence en janvier.",
+      "choices": [
+        "le conseil d’administration",
+        "la cantine",
+        "les éco-délégués"
+      ],
+      "answer": "les éco-délégués",
+      "hint": "Lis la ligne qui contient le mot « proposent ».",
+      "explanation": "Les éco-délégués, élus par les élèves, ont proposé le tri ; le conseil d’administration l’a accepté. Une idée d’élèves peut devenir une décision du collège.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élus et leurs missions",
+          "lines": [
+            "La première ligne du document dit de quoi il parle.",
+            "Un élu est responsable : il parle au nom de ceux qui l’ont élu.",
+            "Il suit les règles de son conseil ou de son assemblée.",
+            "Une décision est adoptée quand la majorité vote pour.",
+            "L’intérêt général n’est pas toujours l’intérêt de chacun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-2-7",
+      "prompt": "Pour voter aux élections en France, un citoyen doit avoir au moins …",
+      "spoken": "Pour voter aux élections en France, un citoyen doit avoir au moins  (mot manquant) ",
+      "choices": [
+        "15 ans",
+        "16 ans",
+        "18 ans"
+      ],
+      "answer": "18 ans",
+      "hint": "C’est l’âge où l’on devient majeur.",
+      "explanation": "En France, on vote à partir de 18 ans, l’âge de la majorité. Avant, on peut déjà être élu délégué au collège.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les élus et leurs missions",
+          "lines": [
+            "La première ligne du document dit de quoi il parle.",
+            "Un élu est responsable : il parle au nom de ceux qui l’ont élu.",
+            "Il suit les règles de son conseil ou de son assemblée.",
+            "Une décision est adoptée quand la majorité vote pour.",
+            "L’intérêt général n’est pas toujours l’intérêt de chacun."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-6e-democratic-society",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,243 @@
+{
+  "id": "physics-chemistry-6e-matter-energy-materials-light-2",
+  "biome": "physics-chemistry-6e-matter-energy",
+  "type": "materials-light",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-2-0",
+      "prompt": "Ce qu’il y a dans 100 litres d’air\nAzote : 78 litres.\nOxygène : 21 litres.\nAutres gaz : 1 litre.",
+      "question": "Quel gaz y a-t-il le plus dans l’air ?",
+      "spoken": "Ce qu’il y a dans cent litres d’air. Azote, soixante-dix-huit litres. Oxygène, vingt et un litres. Autres gaz, un litre.",
+      "choices": [
+        "l’oxygène",
+        "l’azote",
+        "le dioxyde de carbone"
+      ],
+      "answer": "l’azote",
+      "hint": "Cherche le plus grand nombre de litres.",
+      "explanation": "L’azote fait 78 litres sur 100 : c’est le gaz le plus abondant de l’air. L’oxygène, que l’on respire, n’en fait que 21.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’air, les dangers, le Soleil",
+          "lines": [
+            "L’air : surtout de l’azote, puis de l’oxygène.",
+            "Le dioxyde de carbone retient la chaleur : c’est un gaz à effet de serre.",
+            "Pictogramme de danger : un losange au bord rouge, un dessin noir dedans.",
+            "La Terre tourne sur elle-même en un jour. Le côté face au Soleil est dans le jour.",
+            "En été, le Soleil monte haut et le jour est long.",
+            "En hiver, le Soleil reste bas et le jour est court."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-2-1",
+      "prompt": "Parmi les gaz de l’air, un gaz à effet de serre est …",
+      "spoken": "Parmi les gaz de l’air, un gaz à effet de serre est  (mot manquant) ",
+      "choices": [
+        "l’azote",
+        "le dioxyde de carbone",
+        "l’oxygène"
+      ],
+      "answer": "le dioxyde de carbone",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Le dioxyde de carbone retient la chaleur autour de la Terre : c’est un gaz à effet de serre. L’azote et l’oxygène, les deux gaz principaux de l’air, n’en sont pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’air, les dangers, le Soleil",
+          "lines": [
+            "L’air : surtout de l’azote, puis de l’oxygène.",
+            "Le dioxyde de carbone retient la chaleur : c’est un gaz à effet de serre.",
+            "Pictogramme de danger : un losange au bord rouge, un dessin noir dedans.",
+            "La Terre tourne sur elle-même en un jour. Le côté face au Soleil est dans le jour.",
+            "En été, le Soleil monte haut et le jour est long.",
+            "En hiver, le Soleil reste bas et le jour est court."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-2-2",
+      "prompt": "Le pictogramme d’un déboucheur pour évier\nUn losange au bord rouge.\nDedans, en noir : des gouttes qui rongent une main et une plaque.",
+      "question": "Quel danger annonce ce pictogramme ?",
+      "spoken": "Le pictogramme d’un déboucheur pour évier. Un losange au bord rouge. Dedans, en noir, des gouttes qui rongent une main et une plaque.",
+      "choices": [
+        "le produit prend feu facilement",
+        "le produit ronge la peau",
+        "le produit peut exploser"
+      ],
+      "answer": "le produit ronge la peau",
+      "hint": "Que font les gouttes à la main, sur le dessin ?",
+      "explanation": "Les gouttes rongent la main : le produit est corrosif, il brûle la peau et les yeux. On le manipule avec des gants. Une flamme dessinée, elle, voudrait dire qu’il prend feu facilement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’air, les dangers, le Soleil",
+          "lines": [
+            "L’air : surtout de l’azote, puis de l’oxygène.",
+            "Le dioxyde de carbone retient la chaleur : c’est un gaz à effet de serre.",
+            "Pictogramme de danger : un losange au bord rouge, un dessin noir dedans.",
+            "La Terre tourne sur elle-même en un jour. Le côté face au Soleil est dans le jour.",
+            "En été, le Soleil monte haut et le jour est long.",
+            "En hiver, le Soleil reste bas et le jour est court."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-2-3",
+      "prompt": "Le pictogramme d’une bombe de laque\nUn losange au bord rouge.\nDedans, en noir : une flamme.",
+      "question": "Où ranger cette bombe ?",
+      "spoken": "Le pictogramme d’une bombe de laque. Un losange au bord rouge. Dedans, en noir, une flamme.",
+      "choices": [
+        "près du radiateur",
+        "au soleil, sur la fenêtre",
+        "loin de la chaleur et des flammes"
+      ],
+      "answer": "loin de la chaleur et des flammes",
+      "hint": "Que dit le dessin de la flamme ?",
+      "explanation": "La flamme veut dire que le produit prend feu facilement. On le range loin de la chaleur et des flammes : ni près du radiateur, ni au soleil.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’air, les dangers, le Soleil",
+          "lines": [
+            "L’air : surtout de l’azote, puis de l’oxygène.",
+            "Le dioxyde de carbone retient la chaleur : c’est un gaz à effet de serre.",
+            "Pictogramme de danger : un losange au bord rouge, un dessin noir dedans.",
+            "La Terre tourne sur elle-même en un jour. Le côté face au Soleil est dans le jour.",
+            "En été, le Soleil monte haut et le jour est long.",
+            "En hiver, le Soleil reste bas et le jour est court."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-2-4",
+      "prompt": "Le jour et la nuit alternent parce que la Terre tourne …",
+      "spoken": "Le jour et la nuit alternent parce que la Terre tourne  (mot manquant) ",
+      "choices": [
+        "autour du Soleil",
+        "sur elle-même",
+        "autour de la Lune"
+      ],
+      "answer": "sur elle-même",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "En tournant sur elle-même, en un jour, la Terre présente chaque endroit au Soleil, puis le cache : c’est le jour, puis la nuit. Le tour du Soleil, lui, dure une année.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’air, les dangers, le Soleil",
+          "lines": [
+            "L’air : surtout de l’azote, puis de l’oxygène.",
+            "Le dioxyde de carbone retient la chaleur : c’est un gaz à effet de serre.",
+            "Pictogramme de danger : un losange au bord rouge, un dessin noir dedans.",
+            "La Terre tourne sur elle-même en un jour. Le côté face au Soleil est dans le jour.",
+            "En été, le Soleil monte haut et le jour est long.",
+            "En hiver, le Soleil reste bas et le jour est court."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-2-5",
+      "prompt": "Une maquette dans la classe, dans le noir\nUne lampe joue le Soleil.\nUn globe joue la Terre. Il tourne sur lui-même.\nUne gommette sur la France passe du côté éclairé au côté sombre.",
+      "question": "Que vit la France à ce moment-là ?",
+      "spoken": "Une maquette dans la classe, dans le noir. Une lampe joue le Soleil. Un globe joue la Terre. Il tourne sur lui-même. Une gommette sur la France passe du côté éclairé au côté sombre.",
+      "choices": [
+        "le lever du Soleil",
+        "midi",
+        "le coucher du Soleil"
+      ],
+      "answer": "le coucher du Soleil",
+      "hint": "La France quitte le côté éclairé : le jour commence, ou il finit ?",
+      "explanation": "La France passe du côté éclairé au côté sombre : le jour finit, c’est le coucher du Soleil. Le lever, c’est l’inverse : du côté sombre au côté éclairé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’air, les dangers, le Soleil",
+          "lines": [
+            "L’air : surtout de l’azote, puis de l’oxygène.",
+            "Le dioxyde de carbone retient la chaleur : c’est un gaz à effet de serre.",
+            "Pictogramme de danger : un losange au bord rouge, un dessin noir dedans.",
+            "La Terre tourne sur elle-même en un jour. Le côté face au Soleil est dans le jour.",
+            "En été, le Soleil monte haut et le jour est long.",
+            "En hiver, le Soleil reste bas et le jour est court."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-2-6",
+      "prompt": "Deux journées à Paris\nLe 21 juin : à midi, le Soleil est très haut. Le jour dure environ 16 heures.\nLe 21 décembre : à midi, le Soleil reste bas. Le jour dure environ 8 heures.",
+      "question": "Pourquoi fait-il plus chaud en juin ?",
+      "spoken": "Deux journées à Paris. Le 21 juin, à midi, le Soleil est très haut. Le jour dure environ seize heures. Le 21 décembre, à midi, le Soleil reste bas. Le jour dure environ huit heures.",
+      "choices": [
+        "la Terre est plus près du Soleil",
+        "le Soleil est plus haut et le jour plus long",
+        "il y a moins de nuages"
+      ],
+      "answer": "le Soleil est plus haut et le jour plus long",
+      "hint": "Compare les deux lignes : la hauteur du Soleil, puis la durée du jour.",
+      "explanation": "En juin, le Soleil monte plus haut et éclaire plus longtemps : le sol reçoit plus de chaleur. La distance au Soleil n’y est pour rien : la Terre en est même un peu plus près en janvier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’air, les dangers, le Soleil",
+          "lines": [
+            "L’air : surtout de l’azote, puis de l’oxygène.",
+            "Le dioxyde de carbone retient la chaleur : c’est un gaz à effet de serre.",
+            "Pictogramme de danger : un losange au bord rouge, un dessin noir dedans.",
+            "La Terre tourne sur elle-même en un jour. Le côté face au Soleil est dans le jour.",
+            "En été, le Soleil monte haut et le jour est long.",
+            "En hiver, le Soleil reste bas et le jour est court."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-materials-light-2-7",
+      "prompt": "À midi, l’ombre d’un bâton est plus courte en été qu’en hiver, car en été le Soleil est plus …",
+      "spoken": "À midi, l’ombre d’un bâton est plus courte en été qu’en hiver, car en été le Soleil est plus  (mot manquant) ",
+      "choices": [
+        "bas",
+        "haut",
+        "loin"
+      ],
+      "answer": "haut",
+      "hint": "Relis la ligne « En été » du rappel.",
+      "explanation": "Plus le Soleil est haut dans le ciel, plus l’ombre est courte. En été, il monte haut : l’ombre de midi raccourcit. En hiver, il reste bas : l’ombre s’allonge.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’air, les dangers, le Soleil",
+          "lines": [
+            "L’air : surtout de l’azote, puis de l’oxygène.",
+            "Le dioxyde de carbone retient la chaleur : c’est un gaz à effet de serre.",
+            "Pictogramme de danger : un losange au bord rouge, un dessin noir dedans.",
+            "La Terre tourne sur elle-même en un jour. Le côté face au Soleil est dans le jour.",
+            "En été, le Soleil monte haut et le jour est long.",
+            "En hiver, le Soleil reste bas et le jour est court."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-6e-matter-energy",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

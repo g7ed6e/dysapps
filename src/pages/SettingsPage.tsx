@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { DEFAULT_SETTINGS, FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, THEME_LABELS, spacingWord, speedWord, WORLD_LIGHT_LABELS, WORLD_VIEW_LABELS, type FontChoice } from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
 import { isSpeechAvailable } from '../core/speech';
@@ -7,12 +8,13 @@ import { SaveFilePanel } from '../components/SaveFilePanel';
 import { Syllabified } from '../components/Syllabified';
 import { OptionRow, Slider } from './settings/controls';
 import { Lv2Section } from './settings/Lv2Section';
+import { LcaSection } from './settings/LcaSection';
 import { UniverseSection } from './settings/UniverseSection';
 import { ApplicationSection } from './settings/ApplicationSection';
 import { EraseSection } from './settings/EraseSection';
 
 const SAMPLE = 'Le bâtisseur range ses blocs de bois dans la cabane. Il en a 3, il en pose 2 : il en reste 1.';
-const SAMPLE_EN = 'Hello! My name is Robin. I have got three blue blocks.';
+const SAMPLE_EN = 'Hello! My name is Robin. I have three blue blocks.';
 
 /** Le nom de chaque police, dans sa case. */
 const FONT_NAMES = Object.fromEntries((Object.keys(FONT_LABELS) as FontChoice[]).map((font) => [font, <span>{nomCoupable(FONT_LABELS[font])}</span>])) as Record<FontChoice, ReactNode>;
@@ -128,6 +130,8 @@ export function SettingsPage() {
 
         <Lv2Section />
 
+        <LcaSection />
+
         <fieldset className="panel">
           <legend>Vue du monde</legend>
           <OptionRow name="worldView" labels={WORLD_VIEW_LABELS} value={settings.worldView} onChange={(worldView) => update({ worldView })} />
@@ -156,6 +160,15 @@ export function SettingsPage() {
             <input type="checkbox" checked={settings.appBadge} onChange={(e) => update({ appBadge: e.target.checked })} />
             Pastille sur l’icône de l’appli quand des révisions attendent
           </label>
+        </fieldset>
+
+        {/* Le Tutoriel, qui était une ligne du Menu (retiré le 10 octobre 2026, « 2ok ») : l'aide du village, elle, reste
+            sur le « ? » de la barre du bas. */}
+        <fieldset className="panel">
+          <legend>Tutoriel</legend>
+          <Link to="/app/demo" className="button">
+            <Icon name="compass" /> Prendre les commandes en main
+          </Link>
         </fieldset>
 
         <UniverseSection />

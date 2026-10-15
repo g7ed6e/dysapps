@@ -4,15 +4,15 @@
 import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
-import { DIRECTIONS, freeSpots, guardianOf, isFreeSpot, linksToRelink, placeIn, spotOf, stationOf } from './arrange';
+import { DIRECTION_STEP, DIRECTIONS, freeSpots, isFreeSpot, linksBrokenBy, linksToRelink, placeIn, spotOf, stationOf } from './arrange';
 import { isLandInWorld, mapOf } from './map';
 import {
   type ArrangeChoice,
   choiceFits,
-  chooseGuardian,
+  choiceMiddle,
+  dragChoice,
   chooseIsland,
   chooseLanding,
-  chooseLinkEnd,
   chooseRelink,
   chooseStation,
   choiceSentence,
@@ -21,28 +21,31 @@ import {
   snapChoice,
   stepChoice,
   turnChoice,
-  turnGuardianNow,
 } from './arrangeMode';
 import { arrangeView } from './arrangeView';
+import { landRectangle } from './footprint';
 import { toutConstruit } from './budget';
 import { questStations } from './terrain/markers';
 import { startingPlaces } from './routing';
 
 const partie = (): World => toutConstruit().world;
 const VOLCAN: BiomeId = 'maths-6e-decimals';
+// Depuis les formes des îles (GD-12), le Volcan, au coin de devant, n'a que deux places : on glisse la Rivière, on défait
+// une liaison avec la Carrière (la Mine n'en défait plus depuis le Préau, EMC-2).
+const RIVIERE: BiomeId = 'maths-6e-fractions';
+const CARRIERE: BiomeId = 'french-6e-word-spelling';
 
 describe('choisir', () => {
   it('le lieu de départ ne se choisit pas ; un autre lieu part de sa place', () => {
     const w = partie();
     expect(chooseIsland(w, startingPlaces('6e')[0])).toBeNull();
     expect(chooseIsland(w, VOLCAN)).toEqual({ genre: 'lieu', id: VOLCAN, spot: spotOf(w, VOLCAN) });
-    expect(chooseGuardian(w, VOLCAN)).toEqual({ genre: 'gardien', id: VOLCAN, place: { side: 'front', step: 0 } });
     expect(chooseStation(w, `${VOLCAN}:inconnue`)).toBeNull();
   });
 });
 
 describe('un lieu : caler, décaler, tourner, poser', () => {
-  it('toucher la mer cale le fantôme sur une place libre ; les flèches avancent d’un cran, libre ou pris, jusqu’au bord', () => {
+  it('un point touché cale le fantôme sur une place libre ; les flèches avancent d’un cran, libre ou pris, jusqu’au bord', () => {
     const w = partie();
     const c = chooseIsland(w, VOLCAN)!;
     const cale = snapChoice(w, c, { x: 0, y: 0 });
@@ -74,40 +77,43 @@ describe('un lieu : caler, décaler, tourner, poser', () => {
     const w = partie();
     const c = chooseIsland(w, VOLCAN)!;
     if (c.genre !== 'lieu') throw new Error('lieu');
-    const t = turnChoice(c);
-    if (t.genre !== 'lieu') throw new Error('lieu');
+    const t = turnChoice(w, c);
+    if (t?.genre !== 'lieu') throw new Error('lieu');
     expect(t.spot).toEqual({ ...c.spot, turn: (c.spot.turn + 1) % 4 });
     expect(choiceFits(w, t)).toBe(isFreeSpot(w, VOLCAN, t.spot));
     // Sur une place libre, tourné : « Poser » le pose, et la phrase le dit.
     const libre = snapChoice(w, t, { x: 0, y: 0 });
     if (libre.genre !== 'lieu') throw new Error('lieu');
     expect(libre.spot.turn).toBe(t.spot.turn);
-    expect(choiceSentence(w, libre)).toMatch(/^Volcan des décimaux : (à l’|au )\S+.* de (la |l’|du ).+, à \d+ cases?\.$/);
+    expect(choiceSentence(w, libre)).toMatch(/^Volcan des décimaux : (à l’|au )\S+.* (de la |de l’|du |des ).+, à \d+ cases?\.$/);
     const r = poseChoice(w, libre);
     if (!r.ok) throw new Error(r.reason);
     expect(spotOf(r.world, VOLCAN)).toEqual(libre.spot);
     expect(poseSentence(r.world, libre)).toMatch(/^Volcan des décimaux : /);
   });
 
-  it('les places autour qui colleraient le lieu à un voisin portent l’icône de « Réunir » (choix 2a)', () => {
+  it('pendant le glissé, les places qui colleraient le lieu à un voisin portent l’icône de « Réunir » (choix 2a) ; au repos, rien sur l’eau', () => {
     const w = partie();
     const TOUR = 'french-6e-reading' as BiomeId;
     const c = chooseIsland(w, TOUR)!;
-    const v = arrangeView(w, c);
+    // Au repos, toucher la mer relâche le choix (mainteneur, 7 octobre 2026) : ni place jaune ni icône sur l'eau.
+    const auRepos = arrangeView(w, c);
+    expect(auRepos.reunions).toBeUndefined();
+    expect(auRepos.cases.some((x) => x.genre === 'place')).toBe(false);
+    const v = arrangeView(w, c, true);
     const reunions = v.reunions ?? [];
     expect(reunions.length).toBeGreaterThan(0);
     // Chaque icône est sur la jointure, sur l'eau où irait la construction : jamais sur une terre (ni celle du lieu
     // choisi, ni à sa place d'aujourd'hui), à fleur d'eau ; une par voisin au plus.
-    const places = v.cases.filter((x) => x.genre === 'place');
+    const eau = v.cases.find((x) => x.genre === 'grille')!.z;
     for (const r of reunions) {
       for (const l of mapOf('6e').map((d) => d.id)) expect(isLandInWorld(placeIn(w, l), Math.floor(r.x), Math.floor(r.y)), l).toBe(false);
-      expect(r.z).toBe(places[0].z + 1);
+      expect(r.z).toBe(eau + 1);
     }
-    // Pas toutes : seulement celles qui le colleraient à un voisin.
-    expect(reunions.length).toBeLessThan(places.length);
+    expect(new Set(reunions.map((r) => `${r.x},${r.y}`)).size).toBe(reunions.length);
   });
 
-  it('le dessin du choix : fantôme en pointillés, places autour seulement, liaisons retracées, barrées avec une croix', () => {
+  it('le dessin du choix : fantôme en pointillés, aucune place jaune au repos, liaisons retracées, barrées avec une croix', () => {
     const w = partie();
     const c = snapChoice(w, chooseIsland(w, VOLCAN)!, { x: 200, y: 200 });
     if (c.genre !== 'lieu') throw new Error('lieu');
@@ -117,8 +123,8 @@ describe('un lieu : caler, décaler, tourner, poser', () => {
     // Pointillés : jamais deux cases voisines.
     const k = new Set(fantome.map((x) => `${x.x},${x.y}`));
     for (const x of fantome) expect(k.has(`${x.x + 1},${x.y}`) || k.has(`${x.x},${x.y + 1}`)).toBe(false);
-    // Les places montrées : moins que toutes les places libres.
-    expect(v.cases.filter((x) => x.genre === 'place').length).toBeLessThan(freeSpots(w, VOLCAN).length);
+    // Aucune place jaune au repos : la mer touchée relâche le choix.
+    expect(v.cases.some((x) => x.genre === 'place')).toBe(false);
     // Loin de ses voisins, ses liaisons ne tiennent plus : barrées, chacune sous une croix.
     const barrees = v.barrees.length;
     expect(v.cases.filter((x) => x.genre === 'croix').length).toBe(barrees * 5);
@@ -138,21 +144,7 @@ describe('un lieu : caler, décaler, tourner, poser', () => {
   });
 });
 
-describe('un Gardien, une borne, une arrivée, une liaison à reposer', () => {
-  it('un Gardien se cale autour de son lieu, se pose, et tourne avec sa phrase', () => {
-    const w = partie();
-    const c = snapChoice(w, chooseGuardian(w, VOLCAN), { x: 0, y: 1000 });
-    if (c.genre !== 'gardien') throw new Error('gardien');
-    expect(c.place.side).not.toBe('front');
-    expect(choiceSentence(w, c)).toMatch(/^Le Gardien du Volcan des décimaux : .+ de son île\.$/);
-    const r = poseChoice(w, c);
-    if (!r.ok) throw new Error(r.reason);
-    expect(guardianOf(r.world, VOLCAN).side).toBe(c.place.side);
-    const t = turnGuardianNow(r.world, VOLCAN);
-    expect(t.sentence).toMatch(/^Il regarde/);
-    expect(arrangeView(w, c).cases.some((x) => x.genre === 'fantome')).toBe(true);
-  });
-
+describe('une borne, une arrivée, une liaison à reposer', () => {
   it('une borne se décale dans la bande de devant et se pose', () => {
     const w = partie();
     const key = `${VOLCAN}:${questStations(VOLCAN)[0].typeId}`;
@@ -180,14 +172,15 @@ describe('un Gardien, une borne, une arrivée, une liaison à reposer', () => {
     const autre = DIRECTIONS.map((d) => stepChoice(w, c!, d)).find(Boolean);
     if (autre) expect(poseChoice(w, autre).ok).toBe(true);
     expect(choiceSentence(w, c!)).toMatch(/^L’arrivée, sur la côte (nord|sud|est|ouest) /);
-    // La poignée d'un bout (choix 1a) choisit la même arrivée ; les flèches la mènent le long de la côte, d'un cran.
-    expect(chooseLinkEnd(w, lien, c!.genre === 'arrivee' ? c!.end : 'from')).toEqual(c);
-    expect(chooseLinkEnd(w, 'inconnue', 'from')).toBeNull();
   });
 
   it('une liaison séparée se repose entre deux voisins, gratuitement', () => {
     const w = partie();
-    const c = snapChoice(w, chooseIsland(w, VOLCAN)!, { x: 200, y: 200 });
+    // Une place de la Carrière qui défait une de ses liaisons.
+    const base = chooseIsland(w, CARRIERE)!;
+    if (base.genre !== 'lieu') throw new Error('lieu');
+    const spot = ([1, 2, 3, 0] as const).flatMap((t) => freeSpots(w, CARRIERE, t)).find((s) => linksBrokenBy(w, CARRIERE, s).length)!;
+    const c = { ...base, spot };
     const r = poseChoice(w, c);
     if (!r.ok) throw new Error(r.reason);
     const relink = linksToRelink(r.world, '6e');
@@ -200,5 +193,79 @@ describe('un Gardien, une borne, une arrivée, une liaison à reposer', () => {
       expect(p.ok).toBe(true);
       if (p.ok) expect(linksToRelink(p.world, '6e')).not.toContain(relink[0]);
     }
+  });
+});
+
+describe('glisser au doigt (7 octobre 2026, choix 1b, 2a, 3a, 6a du mainteneur)', () => {
+  /** Le coût de la grille et de l'empreinte d'un dessin : deux triangles par carré, barres comprises. */
+  const coutDuSol = (v: ReturnType<typeof arrangeView>) => 2 * v.cases.filter((k) => ['grille', 'empreinte', 'conflit', 'barre'].includes(k.genre)).length;
+
+  it('un lieu suit le doigt place par place, libre ou prise ; la grille et l’empreinte se dessinent, les flèches se cachent', () => {
+    const w = partie();
+    const c = chooseIsland(w, RIVIERE)!;
+    if (c.genre !== 'lieu') throw new Error('lieu');
+    const m = choiceMiddle(c)!;
+    // Sur sa place : rien ne bouge.
+    expect(dragChoice(w, c, { x: m.x + 1, y: m.y - 1 })).toEqual(c);
+    // Une place libre plus loin (pas au bord du cadre, où la grille s'arrête), puis une place prise (sur un voisin) : le
+    // fantôme y va quand même.
+    const libre = freeSpots(w, RIVIERE).find((s) => Math.abs(s.x - c.spot.x) + Math.abs(s.y - c.spot.y) > 3 && s.y > 1)!;
+    const versLibre = dragChoice(w, c, choiceMiddle({ ...c, spot: libre })!);
+    expect(versLibre).toEqual({ ...c, spot: libre });
+    expect(choiceFits(w, versLibre)).toBe(true);
+    const voisin = mapOf('6e').find((d) => d.id !== RIVIERE)!.id;
+    const surVoisin = dragChoice(w, c, { x: placeIn(w, voisin).core.x + 8, y: placeIn(w, voisin).core.y + 8 });
+    if (surVoisin.genre !== 'lieu') throw new Error('lieu');
+    expect(choiceFits(w, surVoisin)).toBe(false);
+    // Pendant le glissé : la grille (9 × 9 places autour), l'empreinte, pas de places jaunes ni de poignées.
+    const v = arrangeView(w, versLibre, true);
+    expect(v.poignees).toBeUndefined();
+    expect(v.cases.some((k) => k.genre === 'place')).toBe(false);
+    const grille = v.cases.filter((k) => k.genre === 'grille');
+    // Depuis les formes des îles (GD-12), l'empreinte d'un lieu couvre huit places sur neuf : la grille n'en est plus que
+    // le tour, sur l'eau.
+    expect(grille.length).toBeGreaterThan(4);
+    // La grille ne se pose que sur l'eau : jamais sur la terre d'un lieu, ni sur le lieu soulevé à sa place d'avant.
+    for (const k of grille)
+      for (const d of mapOf('6e')) {
+        const t = landRectangle(placeIn(w, d.id));
+        expect(k.x >= t.x0 && k.x < t.x1 && k.y >= t.y0 && k.y < t.y1, d.id).toBe(false);
+      }
+    // L'empreinte libre : le jaune des places libres sur son socle sombre ; la zone où les étiquettes s'estompent.
+    expect(v.cases.filter((k) => k.genre === 'empreinte').length).toBeGreaterThan(0);
+    expect(v.cases.filter((k) => k.genre === 'socle').length).toBe(v.cases.filter((k) => k.genre === 'empreinte').length);
+    expect(v.zoneDuGlisse).toBeDefined();
+    expect(v.cases.some((k) => k.genre === 'conflit')).toBe(false);
+    // Le nom du choix se pose au bord nord de l'empreinte (au-dessus d'elle à l'écran), jamais sur elle.
+    const empreinte = v.cases.filter((k) => k.genre === 'empreinte');
+    const nordDeLEmpreinte = DIRECTION_STEP.nord.dy > 0 ? Math.max(...empreinte.map((k) => k.y)) : Math.min(...empreinte.map((k) => k.y));
+    expect(v.nomAuNord).toBeDefined();
+    expect(Math.abs(v.nomAuNord!.y - nordDeLEmpreinte)).toBeLessThanOrEqual(4);
+    expect(v.nomAuNord!.x).toBeGreaterThanOrEqual(Math.min(...empreinte.map((k) => k.x)));
+    expect(v.nomAuNord!.x).toBeLessThanOrEqual(Math.max(...empreinte.map((k) => k.x)));
+    expect(arrangeView(w, versLibre).nomAuNord).toBeUndefined();
+    // Sur une place prise : les cases en conflit en gris pierre, chacune barrée de deux barres (jamais la couleur seule).
+    const vp = arrangeView(w, surVoisin, true);
+    const conflits = vp.cases.filter((k) => k.genre === 'conflit').length;
+    expect(conflits).toBeGreaterThan(0);
+    expect(vp.cases.filter((k) => k.genre === 'barre').length).toBe(2 * conflits);
+    // Hors du glissé : rien de tout cela, les flèches reviennent.
+    const hors = arrangeView(w, versLibre);
+    expect(hors.poignees).toBeDefined();
+    expect(hors.cases.some((k) => k.genre === 'grille' || k.genre === 'empreinte')).toBe(false);
+  });
+
+  it('la grille et l’empreinte tiennent sous ~400 triangles pour chaque lieu, libre ou en conflit', () => {
+    const w = partie();
+    let pire = 0;
+    for (const id of mapOf('6e').map((d) => d.id)) {
+      const choix = [chooseIsland(w, id)].filter((c) => c !== null);
+      for (const c of choix) {
+        const m = choiceMiddle(c)!;
+        for (const [dx, dy] of [[0, 0], [12, 0], [0, -12], [-20, 8]]) pire = Math.max(pire, coutDuSol(arrangeView(w, dragChoice(w, c, { x: m.x + dx, y: m.y + dy }), true)));
+      }
+    }
+    expect(pire).toBeGreaterThan(0);
+    expect(pire).toBeLessThanOrEqual(420);
   });
 });

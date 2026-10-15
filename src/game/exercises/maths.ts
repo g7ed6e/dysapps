@@ -8,6 +8,7 @@ import { CompareBars, DotGroups, FractionBar, FractionDisc, GraduatedLine } from
 import { DecimalTable } from '../../apps/decimaux/DecimalTable';
 import { DotArray, NumberLineJumps, PlaceValueTable, TenFrame } from '../../apps/tables/aids';
 import { BarList, ClassTable, ColumnOperation, Graph, LongDivision, NumberLineInt, RatioTable, RightTriangle, RuleCard, ThalesFigure } from './Aids';
+import { AngleFigure, CoordinatePlane, PlaneFigure, SolidFigure, TransformationFigure, TriangleAngles } from './GeometryAids';
 import { Scene } from './Scene';
 import { complement10, complement100, double, half, multiplicationFrom } from '../../apps/tables/generators';
 import { compare as compareDecimals, complementToOne, decimalFraction, onLine as decimalOnLine, readDigit, timesPower } from '../../apps/decimaux/generators';
@@ -43,6 +44,12 @@ export const AID_COMPONENTS: Record<string, (props: never) => ReactNode> = {
   'column-operation': ColumnOperation,
   'long-division': LongDivision,
   'class-table': ClassTable,
+  'triangle-angles': TriangleAngles,
+  angle: AngleFigure,
+  'plane-figure': PlaneFigure,
+  solid: SolidFigure,
+  transformation: TransformationFigure,
+  'coordinate-plane': CoordinatePlane,
   scene: Scene,
 };
 

@@ -1,0 +1,9 @@
+{
+  "id": "lca-5e-legends-3",
+  "biome": "lca-5e-legends",
+  "name": "Le cercle des conteurs",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Un cercle pour raconter les légendes. La grotte est finie, bâtisseur."
+}

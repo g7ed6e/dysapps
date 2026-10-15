@@ -1,7 +1,7 @@
 import { toutConstruit } from '../budget';
 import { caseDuDecor, rangerLeDecor, maillageDuDecor, type ElementDeDecor } from '../decorMesh';
 import { champDuSol, colonneEn, NIVEAU_EAU } from '../landMesh';
-import { ALTITUDE, inCore, islandDef } from '../map';
+import { ALTITUDE, coeurDe, inCore, islandDef } from '../map';
 import { ambianceDe, luminance } from '../palette';
 import { worldCubes } from '../terrain';
 import { bancsDeBrume, COUCHES_5E, placeDeLaBrume } from './mist';
@@ -66,7 +66,10 @@ it('les éboulis du Glacier ne dépassent pas 2,5 cases ; la tour d’archives d
   expect(haut(ia) - pied).toBeLessThanOrEqual(2.5);
   const [marais, im] = repere('champignon-geant');
   const h = haut(im) - Math.min(...marais.cubes.map((c) => c.z));
-  expect(h).toBeGreaterThan(5);
+  // Depuis que les îles ont grandi (GD-11, 8 octobre 2026), elle se tient sur la côte amincie, dont le sol descend vers
+  // le rivage : son toit monte à 4,8 cases de son pied, au ras des toits du Marais (point ouvert pour l'artiste
+  // technique 3D).
+  expect(h).toBeGreaterThan(4.5);
   expect(h).toBeLessThan(6.5);
 });
 
@@ -96,8 +99,9 @@ it('la tour en ruine, la calotte, le ponton et la girouette du Relais sont hors 
   expect(colonneEn(champ, ponton.x + 1, ponton.y)?.ile === 'lv2-5e-introductions' && !colonneEn(champ, ponton.x + 1, ponton.y)?.liquide).toBe(false);
   const girouette = hors.find((e) => e.genre === 'girouette')!;
   expect(colonneEn(champ, girouette.x, girouette.y)?.ile).toBe('lv2-5e-introductions');
-  expect(girouette.y - relais.core.y).toBeGreaterThanOrEqual(16);
-  expect(girouette.y - relais.core.y).toBeLessThanOrEqual(17);
+  // Sur la première ou la deuxième rangée derrière le cœur (agrandi par GD-11).
+  expect(girouette.y - coeurDe(relais).y1).toBeGreaterThanOrEqual(0);
+  expect(girouette.y - coeurDe(relais).y1).toBeLessThanOrEqual(1);
   expect(Math.abs(girouette.x - relais.core.x - 9.5)).toBeLessThanOrEqual(3);
   // La neige du sol se peint en roche claire : jamais aussi claire que la glace de la calotte.
   expect(luminance(COULEURS_5E.glace)).toBeGreaterThan(luminance(ambianceDe('5e').sols!.neige!.dessus));

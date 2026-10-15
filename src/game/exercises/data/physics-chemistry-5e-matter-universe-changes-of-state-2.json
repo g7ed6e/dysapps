@@ -1,0 +1,242 @@
+{
+  "id": "physics-chemistry-5e-matter-universe-changes-of-state-2",
+  "biome": "physics-chemistry-5e-matter-universe",
+  "type": "changes-of-state",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-2-0",
+      "prompt": "Sur le graphique de la température, la partie plate, où elle ne bouge pas, s’appelle un …",
+      "spoken": "Sur le graphique de la température, la partie plate, où elle ne bouge pas, s’appelle un  (mot manquant) ",
+      "choices": [
+        "palier",
+        "pic",
+        "creux"
+      ],
+      "answer": "palier",
+      "hint": "Relis la ligne « Un corps pur » du rappel.",
+      "explanation": "Pendant un changement d’état, la température d’un corps pur reste fixe : la courbe fait une partie plate, le palier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les changements d’état",
+          "lines": [
+            "Fusion : solide vers liquide. Solidification : l’inverse.",
+            "Vaporisation : liquide vers gaz. Liquéfaction : l’inverse.",
+            "Évaporation : lente, sans bulles. Ébullition : avec des bulles.",
+            "Un corps pur change d’état à une température fixe : c’est un palier.",
+            "Pendant un changement d’état, la masse se conserve.",
+            "Le volume peut changer : l’eau qui gèle prend plus de place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-2-1",
+      "prompt": "Le graphique de l’eau qu’on refroidit\nLa courbe descend jusqu’à 0 °C.\nPuis elle reste plate à 0 °C.\nPuis elle redescend : tout est glace.",
+      "question": "Que fait l’eau pendant la partie plate ?",
+      "spoken": "Le graphique de l’eau qu’on refroidit. La courbe descend jusqu’à 0 degré. Puis elle reste plate à 0 degré. Puis elle redescend, tout est glace.",
+      "choices": [
+        "elle se réchauffe",
+        "elle s’évapore",
+        "elle se solidifie"
+      ],
+      "answer": "elle se solidifie",
+      "hint": "Avant, elle est liquide ; après, tout est glace.",
+      "explanation": "Pendant le palier à 0 degré, l’eau liquide devient de la glace : c’est la solidification. La température ne bouge pas tant qu’elle n’est pas finie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les changements d’état",
+          "lines": [
+            "Fusion : solide vers liquide. Solidification : l’inverse.",
+            "Vaporisation : liquide vers gaz. Liquéfaction : l’inverse.",
+            "Évaporation : lente, sans bulles. Ébullition : avec des bulles.",
+            "Un corps pur change d’état à une température fixe : c’est un palier.",
+            "Pendant un changement d’état, la masse se conserve.",
+            "Le volume peut changer : l’eau qui gèle prend plus de place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-2-2",
+      "prompt": "On chauffe deux liquides\nLiquide A : un palier à 100 °C.\nLiquide B : pas de palier, la température monte en bouillant.",
+      "question": "Lequel est un corps pur ?",
+      "spoken": "On chauffe deux liquides. Liquide A, un palier à 100 degrés. Liquide B, pas de palier, la température monte en bouillant.",
+      "choices": [
+        "le liquide A",
+        "le liquide B",
+        "les deux"
+      ],
+      "answer": "le liquide A",
+      "hint": "Relis la ligne « Un corps pur » du rappel.",
+      "explanation": "Un corps pur bout à une température fixe : la courbe fait un palier, c’est le liquide A, de l’eau pure. Le liquide B, sans palier, est un mélange, comme l’eau salée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les changements d’état",
+          "lines": [
+            "Fusion : solide vers liquide. Solidification : l’inverse.",
+            "Vaporisation : liquide vers gaz. Liquéfaction : l’inverse.",
+            "Évaporation : lente, sans bulles. Ébullition : avec des bulles.",
+            "Un corps pur change d’état à une température fixe : c’est un palier.",
+            "Pendant un changement d’état, la masse se conserve.",
+            "Le volume peut changer : l’eau qui gèle prend plus de place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-2-3",
+      "prompt": "Une bouteille de verre pleine d’eau éclate au congélateur : en gelant, l’eau prend plus de …",
+      "spoken": "Une bouteille de verre pleine d’eau éclate au congélateur : en gelant, l’eau prend plus de  (mot manquant) ",
+      "choices": [
+        "masse",
+        "place",
+        "poids"
+      ],
+      "answer": "place",
+      "hint": "Relis la ligne « Le volume peut changer » du rappel.",
+      "explanation": "En gelant, l’eau garde la même masse, mais son volume augmente : elle prend plus de place et fait éclater le verre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les changements d’état",
+          "lines": [
+            "Fusion : solide vers liquide. Solidification : l’inverse.",
+            "Vaporisation : liquide vers gaz. Liquéfaction : l’inverse.",
+            "Évaporation : lente, sans bulles. Ébullition : avec des bulles.",
+            "Un corps pur change d’état à une température fixe : c’est un palier.",
+            "Pendant un changement d’état, la masse se conserve.",
+            "Le volume peut changer : l’eau qui gèle prend plus de place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-2-4",
+      "prompt": "Une bouteille d’eau au congélateur\nAvant : 500 g d’eau liquide.\nAprès : de la glace, et la bouteille est gonflée.",
+      "question": "Que montre la balance après ?",
+      "spoken": "Une bouteille d’eau au congélateur. Avant, 500 grammes d’eau liquide. Après, de la glace, et la bouteille est gonflée.",
+      "choices": [
+        "450 grammes",
+        "500 grammes",
+        "550 grammes"
+      ],
+      "answer": "500 grammes",
+      "hint": "Rien n’est entré dans la bouteille, rien n’en est sorti.",
+      "explanation": "Pendant la solidification, la masse se conserve : toujours 500 grammes. C’est le volume qui a augmenté, la bouteille a gonflé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les changements d’état",
+          "lines": [
+            "Fusion : solide vers liquide. Solidification : l’inverse.",
+            "Vaporisation : liquide vers gaz. Liquéfaction : l’inverse.",
+            "Évaporation : lente, sans bulles. Ébullition : avec des bulles.",
+            "Un corps pur change d’état à une température fixe : c’est un palier.",
+            "Pendant un changement d’état, la masse se conserve.",
+            "Le volume peut changer : l’eau qui gèle prend plus de place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-2-5",
+      "prompt": "Un glaçon fond dans un bocal fermé : la masse du bocal …",
+      "spoken": "Un glaçon fond dans un bocal fermé : la masse du bocal  (mot manquant) ",
+      "choices": [
+        "diminue",
+        "reste la même",
+        "augmente"
+      ],
+      "answer": "reste la même",
+      "hint": "Relis la ligne « Pendant un changement d’état » du rappel.",
+      "explanation": "Pendant la fusion, les molécules d’eau restent dans le bocal : la masse se conserve.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les changements d’état",
+          "lines": [
+            "Fusion : solide vers liquide. Solidification : l’inverse.",
+            "Vaporisation : liquide vers gaz. Liquéfaction : l’inverse.",
+            "Évaporation : lente, sans bulles. Ébullition : avec des bulles.",
+            "Un corps pur change d’état à une température fixe : c’est un palier.",
+            "Pendant un changement d’état, la masse se conserve.",
+            "Le volume peut changer : l’eau qui gèle prend plus de place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-2-6",
+      "prompt": "L’eau de la flaque part dans l’air sans bouillir : c’est …",
+      "spoken": "L’eau de la flaque part dans l’air sans bouillir : c’est  (mot manquant) ",
+      "choices": [
+        "l’ébullition",
+        "l’évaporation",
+        "la fusion"
+      ],
+      "answer": "l’évaporation",
+      "hint": "Y a-t-il des bulles dans la flaque ?",
+      "explanation": "La flaque sèche lentement, sans bulles : c’est l’évaporation. L’ébullition, c’est quand le liquide bout, avec des bulles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les changements d’état",
+          "lines": [
+            "Fusion : solide vers liquide. Solidification : l’inverse.",
+            "Vaporisation : liquide vers gaz. Liquéfaction : l’inverse.",
+            "Évaporation : lente, sans bulles. Ébullition : avec des bulles.",
+            "Un corps pur change d’état à une température fixe : c’est un palier.",
+            "Pendant un changement d’état, la masse se conserve.",
+            "Le volume peut changer : l’eau qui gèle prend plus de place."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-2-7",
+      "prompt": "Le graphique de l’eau qu’on chauffe\nAxe du bas : le temps, en minutes.\nAxe de gauche : la température, en degrés Celsius.\nLa courbe monte, puis reste plate à 100.",
+      "question": "Que lit-on sur l’axe de gauche ?",
+      "spoken": "Le graphique de l’eau qu’on chauffe. Axe du bas, le temps, en minutes. Axe de gauche, la température, en degrés Celsius. La courbe monte, puis reste plate à 100.",
+      "choices": [
+        "le temps",
+        "la température",
+        "la masse"
+      ],
+      "answer": "la température",
+      "hint": "Relis la troisième ligne du document.",
+      "explanation": "L’axe de gauche donne la température, en degrés Celsius ; l’axe du bas, le temps. La partie plate à 100 degrés, c’est le palier de l’ébullition.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les changements d’état",
+          "lines": [
+            "Fusion : solide vers liquide. Solidification : l’inverse.",
+            "Vaporisation : liquide vers gaz. Liquéfaction : l’inverse.",
+            "Évaporation : lente, sans bulles. Ébullition : avec des bulles.",
+            "Un corps pur change d’état à une température fixe : c’est un palier.",
+            "Pendant un changement d’état, la masse se conserve.",
+            "Le volume peut changer : l’eau qui gèle prend plus de place."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-5e-matter-universe",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

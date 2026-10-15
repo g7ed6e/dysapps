@@ -1,0 +1,244 @@
+{
+  "id": "english-5e-vocabulary-united-kingdom-2",
+  "biome": "english-5e-vocabulary",
+  "type": "united-kingdom",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Lis la question, puis le document en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "english-5e-vocabulary-united-kingdom-2-0",
+      "prompt": "Road signs in Wales\nThey are in two languages:\nWelsh and English.",
+      "question": "En quelles langues sont écrits les panneaux au pays de Galles ?",
+      "spoken": "Road signs in Wales. They are in two languages: Welsh and English.",
+      "choices": [
+        "En gallois et en anglais",
+        "En anglais seulement",
+        "En français et en anglais"
+      ],
+      "choicesLang": "fr",
+      "answer": "En gallois et en anglais",
+      "hint": "Lis la dernière ligne : elle donne les deux langues. Welsh ressemble à Wales.",
+      "explanation": "Welsh and English = le gallois et l’anglais : au pays de Galles, les panneaux sont écrits dans les deux langues. Le gallois est une autre langue que l’anglais.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Une langue, des lieux, l’école",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "lift = l’ascenseur (UK) ; elevator = l’ascenseur (US)",
+            "Wales = le pays de Galles ; language = la langue",
+            "jumper = le pull ; drama = le théâtre ; chess = les échecs",
+            "pupils = les élèves ; aged 10 = âgé de 10 ans"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-2-1",
+      "prompt": "British English / American English\nholiday / vacation\nautumn / fall\nbiscuit / cookie",
+      "question": "Comment dit-on « automne » aux États-Unis ?",
+      "spoken": "British English, American English. Holiday, vacation. Autumn, fall. Biscuit, cookie.",
+      "choices": [
+        "fall",
+        "autumn",
+        "vacation"
+      ],
+      "answer": "fall",
+      "hint": "Trouve la ligne de autumn, puis lis le mot de droite : c’est l’anglais américain.",
+      "explanation": "autumn (au Royaume-Uni) = fall (aux États-Unis) : les deux veulent dire automne. vacation, ce sont les vacances, aux États-Unis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Une langue, des lieux, l’école",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "lift = l’ascenseur (UK) ; elevator = l’ascenseur (US)",
+            "Wales = le pays de Galles ; language = la langue",
+            "jumper = le pull ; drama = le théâtre ; chess = les échecs",
+            "pupils = les élèves ; aged 10 = âgé de 10 ans"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-2-2",
+      "prompt": "A postcard from Scotland\nWe took a boat on Loch Ness.\nIn Scotland, a loch is a lake!",
+      "question": "Que veut dire le mot écossais loch ?",
+      "spoken": "A postcard from Scotland. We took a boat on Loch Ness. In Scotland, a loch is a lake!",
+      "choices": [
+        "Un lac",
+        "Une rivière",
+        "Une île"
+      ],
+      "choicesLang": "fr",
+      "answer": "Un lac",
+      "hint": "Lis la dernière ligne : lake ressemble à un mot français.",
+      "explanation": "a loch is a lake = un loch est un lac : en Écosse, loch veut dire lac. Une rivière se dit river, une île island.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Une langue, des lieux, l’école",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "lift = l’ascenseur (UK) ; elevator = l’ascenseur (US)",
+            "Wales = le pays de Galles ; language = la langue",
+            "jumper = le pull ; drama = le théâtre ; chess = les échecs",
+            "pupils = les élèves ; aged 10 = âgé de 10 ans"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-2-3",
+      "prompt": "Radio show: Voices of the UK\nIn London, Glasgow or Cardiff,\npeople speak English with different accents.",
+      "question": "De quoi parle cette émission ?",
+      "spoken": "Radio show: Voices of the UK. In London, Glasgow or Cardiff, people speak English with different accents.",
+      "choices": [
+        "Des accents de l’anglais",
+        "Des langues d’Europe",
+        "Des radios de Londres"
+      ],
+      "choicesLang": "fr",
+      "answer": "Des accents de l’anglais",
+      "hint": "Lis la dernière ligne jusqu’au bout : accents ressemble à un mot français.",
+      "explanation": "different accents = des accents différents : on parle anglais dans tout le Royaume-Uni, mais pas avec le même accent à Londres, à Glasgow (en Écosse) ou à Cardiff (au pays de Galles).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Une langue, des lieux, l’école",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "lift = l’ascenseur (UK) ; elevator = l’ascenseur (US)",
+            "Wales = le pays de Galles ; language = la langue",
+            "jumper = le pull ; drama = le théâtre ; chess = les échecs",
+            "pupils = les élèves ; aged 10 = âgé de 10 ans"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-2-4",
+      "prompt": "Oakfield School uniform\nGreen jumper, white shirt\nBlack trousers or skirt",
+      "question": "De quelle couleur est le pull de l’uniforme ?",
+      "spoken": "Oakfield School uniform. Green jumper, white shirt. Black trousers or skirt.",
+      "choices": [
+        "Vert",
+        "Blanc",
+        "Noir"
+      ],
+      "choicesLang": "fr",
+      "answer": "Vert",
+      "hint": "Trouve le mot jumper, puis lis la couleur juste avant.",
+      "explanation": "green jumper = un pull vert (jumper = pull, en anglais britannique). La chemise est blanche (white shirt), le pantalon ou la jupe noirs. Au Royaume-Uni, la plupart des élèves portent un uniforme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Une langue, des lieux, l’école",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "lift = l’ascenseur (UK) ; elevator = l’ascenseur (US)",
+            "Wales = le pays de Galles ; language = la langue",
+            "jumper = le pull ; drama = le théâtre ; chess = les échecs",
+            "pupils = les élèves ; aged 10 = âgé de 10 ans"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-2-5",
+      "prompt": "Hill Park School, England\nYear 7: pupils aged 11 to 12\nYear 8: pupils aged 12 to 13\nYear 9: pupils aged 13 to 14",
+      "question": "Dans quelle année sont les élèves de 12 à 13 ans ?",
+      "spoken": "Hill Park School, England. Year seven, pupils aged eleven to twelve. Year eight, pupils aged twelve to thirteen. Year nine, pupils aged thirteen to fourteen.",
+      "choices": [
+        "Year 7",
+        "Year 8",
+        "Year 9"
+      ],
+      "answer": "Year 8",
+      "hint": "Trouve la ligne qui dit 12 to 13 : les deux nombres, dans cet ordre.",
+      "explanation": "Year 8 = pupils aged 12 to 13, les élèves de 12 à 13 ans : c’est l’âge de la 5e en France. Year 7 a aussi des élèves de 12 ans, mais elle commence à 11 ans, comme la 6e.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Une langue, des lieux, l’école",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "lift = l’ascenseur (UK) ; elevator = l’ascenseur (US)",
+            "Wales = le pays de Galles ; language = la langue",
+            "jumper = le pull ; drama = le théâtre ; chess = les échecs",
+            "pupils = les élèves ; aged 10 = âgé de 10 ans"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-2-6",
+      "prompt": "After-school clubs\nMonday: chess club\nWednesday: drama club\nFriday: coding club",
+      "question": "Quel jour a lieu le club de théâtre ?",
+      "spoken": "After-school clubs. Monday, chess club. Wednesday, drama club. Friday, coding club.",
+      "choices": [
+        "Le mercredi",
+        "Le lundi",
+        "Le vendredi"
+      ],
+      "choicesLang": "fr",
+      "answer": "Le mercredi",
+      "hint": "Trouve la ligne du drama club, puis lis le jour au début.",
+      "explanation": "drama club = le club de théâtre : il a lieu le mercredi, Wednesday. Le lundi, c’est le club d’échecs (chess) ; le vendredi, le club de programmation (coding).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Une langue, des lieux, l’école",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "lift = l’ascenseur (UK) ; elevator = l’ascenseur (US)",
+            "Wales = le pays de Galles ; language = la langue",
+            "jumper = le pull ; drama = le théâtre ; chess = les échecs",
+            "pupils = les élèves ; aged 10 = âgé de 10 ans"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-united-kingdom-2-7",
+      "prompt": "Message from Jack, Manchester\nI play football with my club after school.\nMy cousin in Texas calls it soccer!",
+      "question": "Comment dit-on football aux États-Unis ?",
+      "spoken": "Message from Jack, Manchester. I play football with my club after school. My cousin in Texas calls it soccer!",
+      "choices": [
+        "soccer",
+        "football",
+        "basketball"
+      ],
+      "answer": "soccer",
+      "hint": "Le cousin de Jack vit au Texas, aux États-Unis. Lis la dernière ligne jusqu’au bout.",
+      "explanation": "My cousin calls it soccer = mon cousin l’appelle soccer : aux États-Unis, notre football se dit soccer. Là-bas, football veut dire le football américain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Une langue, des lieux, l’école",
+          "lines": [
+            "Lis la question, trouve la bonne ligne, puis lis-la jusqu’au bout.",
+            "lift = l’ascenseur (UK) ; elevator = l’ascenseur (US)",
+            "Wales = le pays de Galles ; language = la langue",
+            "jumper = le pull ; drama = le théâtre ; chess = les échecs",
+            "pupils = les élèves ; aged 10 = âgé de 10 ans"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-5e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

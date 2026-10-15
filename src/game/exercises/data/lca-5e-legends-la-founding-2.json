@@ -1,0 +1,241 @@
+{
+  "id": "lca-5e-legends-la-founding-2",
+  "biome": "lca-5e-legends",
+  "type": "la-founding",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-5e-legends-la-founding-2-0",
+      "prompt": "La fin des rois\nLe roi Tarquin le Superbe gouverne par la force.\nEn 509 avant J.-C., les Romains le chassent.\nIls ne veulent plus de roi.",
+      "question": "Que fondent alors les Romains ?",
+      "spoken": "La fin des rois. Le roi Tarquin le Superbe gouverne par la force. En cinq cent neuf avant Jésus-Christ, les Romains le chassent. Ils ne veulent plus de roi.",
+      "choices": [
+        "un empire",
+        "la République",
+        "une nouvelle royauté"
+      ],
+      "answer": "la République",
+      "hint": "Relis la troisième et la quatrième ligne du rappel.",
+      "explanation": "En 509 avant J.-C., les Romains chassent Tarquin le Superbe (superbe veut dire ici orgueilleux) et fondent la République. L’Empire viendra bien plus tard, avec Auguste.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les rois, puis la République",
+          "lines": [
+            "Rome a sept rois, de Romulus à Tarquin le Superbe.",
+            "Les Étrusques, un peuple voisin au nord de Rome : les deux rois Tarquins sont étrusques.",
+            "En 509 avant J.-C., les Romains chassent leur dernier roi.",
+            "Ils fondent la République : deux consuls, élus pour un an, la dirigent.",
+            "Le Sénat : l’assemblée des anciens, qui conseille les consuls.",
+            "Le poète Virgile raconte le voyage d’Énée dans l’Énéide ; Tite-Live, l’histoire de Rome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-2-1",
+      "prompt": "Sous la République, Rome est dirigée par deux … élus pour un an.",
+      "spoken": "Sous la République, Rome est dirigée par deux  (mot manquant)  élus pour un an.",
+      "choices": [
+        "consuls",
+        "rois",
+        "empereurs"
+      ],
+      "answer": "consuls",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Deux consuls, élus pour un an, dirigent la République : deux chefs, pour peu de temps, pour qu’aucun ne devienne roi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les rois, puis la République",
+          "lines": [
+            "Rome a sept rois, de Romulus à Tarquin le Superbe.",
+            "Les Étrusques, un peuple voisin au nord de Rome : les deux rois Tarquins sont étrusques.",
+            "En 509 avant J.-C., les Romains chassent leur dernier roi.",
+            "Ils fondent la République : deux consuls, élus pour un an, la dirigent.",
+            "Le Sénat : l’assemblée des anciens, qui conseille les consuls.",
+            "Le poète Virgile raconte le voyage d’Énée dans l’Énéide ; Tite-Live, l’histoire de Rome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-2-2",
+      "prompt": "Le mot « Sénat » vient du latin senex, qui veut dire …",
+      "spoken": "Le mot Sénat vient du latin sénèks, qui veut dire (mot manquant)",
+      "choices": [
+        "sage",
+        "vieil homme",
+        "soldat"
+      ],
+      "answer": "vieil homme",
+      "hint": "Relis la cinquième ligne du rappel : qui siège au Sénat ?",
+      "explanation": "Senex veut dire vieil homme : le Sénat est l’assemblée des anciens. Le mot « sénior » vient de la même famille.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les rois, puis la République",
+          "lines": [
+            "Rome a sept rois, de Romulus à Tarquin le Superbe.",
+            "Les Étrusques, un peuple voisin au nord de Rome : les deux rois Tarquins sont étrusques.",
+            "En 509 avant J.-C., les Romains chassent leur dernier roi.",
+            "Ils fondent la République : deux consuls, élus pour un an, la dirigent.",
+            "Le Sénat : l’assemblée des anciens, qui conseille les consuls.",
+            "Le poète Virgile raconte le voyage d’Énée dans l’Énéide ; Tite-Live, l’histoire de Rome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-2-3",
+      "prompt": "Les Tarquins, rois de Rome, viennent d’un peuple voisin : les …",
+      "spoken": "Les Tarquins, rois de Rome, viennent d’un peuple voisin : les  (mot manquant) ",
+      "choices": [
+        "Gaulois",
+        "Grecs",
+        "Étrusques"
+      ],
+      "answer": "Étrusques",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Les Tarquins sont étrusques. Les Étrusques vivent au nord de Rome, en Étrurie, la Toscane d’aujourd’hui.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les rois, puis la République",
+          "lines": [
+            "Rome a sept rois, de Romulus à Tarquin le Superbe.",
+            "Les Étrusques, un peuple voisin au nord de Rome : les deux rois Tarquins sont étrusques.",
+            "En 509 avant J.-C., les Romains chassent leur dernier roi.",
+            "Ils fondent la République : deux consuls, élus pour un an, la dirigent.",
+            "Le Sénat : l’assemblée des anciens, qui conseille les consuls.",
+            "Le poète Virgile raconte le voyage d’Énée dans l’Énéide ; Tite-Live, l’histoire de Rome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-2-4",
+      "prompt": "Le récit de Tite-Live\nTite-Live est un historien romain.\nIl raconte l’histoire de Rome depuis sa fondation.\nPour les premiers siècles, il reprend des légendes.",
+      "question": "Peut-on croire tout ce que raconte Tite-Live sur les débuts de Rome ?",
+      "spoken": "Le récit de Tite-Live. Tite-Live est un historien romain. Il raconte l’histoire de Rome depuis sa fondation. Pour les premiers siècles, il reprend des légendes.",
+      "choices": [
+        "non, il reprend aussi des légendes",
+        "oui, c’est un historien",
+        "oui, il écrit au moment de la fondation"
+      ],
+      "answer": "non, il reprend aussi des légendes",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Tite-Live écrit plus de sept siècles après la date de la fondation : pour les débuts de Rome, il reprend des légendes. L’historien sépare la légende de ce que l’on peut prouver.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les rois, puis la République",
+          "lines": [
+            "Rome a sept rois, de Romulus à Tarquin le Superbe.",
+            "Les Étrusques, un peuple voisin au nord de Rome : les deux rois Tarquins sont étrusques.",
+            "En 509 avant J.-C., les Romains chassent leur dernier roi.",
+            "Ils fondent la République : deux consuls, élus pour un an, la dirigent.",
+            "Le Sénat : l’assemblée des anciens, qui conseille les consuls.",
+            "Le poète Virgile raconte le voyage d’Énée dans l’Énéide ; Tite-Live, l’histoire de Rome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-2-5",
+      "prompt": "Le poète qui raconte le voyage d’Énée, de Troie au Latium, s’appelle …",
+      "spoken": "Le poète qui raconte le voyage d’Énée, de Troie au Latium, s’appelle  (mot manquant) ",
+      "choices": [
+        "Homère",
+        "Ovide",
+        "Virgile"
+      ],
+      "answer": "Virgile",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Virgile, poète latin, raconte le voyage d’Énée dans l’Énéide. Homère est le poète grec de l’Iliade et de l’Odyssée ; Ovide, un poète latin des métamorphoses.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les rois, puis la République",
+          "lines": [
+            "Rome a sept rois, de Romulus à Tarquin le Superbe.",
+            "Les Étrusques, un peuple voisin au nord de Rome : les deux rois Tarquins sont étrusques.",
+            "En 509 avant J.-C., les Romains chassent leur dernier roi.",
+            "Ils fondent la République : deux consuls, élus pour un an, la dirigent.",
+            "Le Sénat : l’assemblée des anciens, qui conseille les consuls.",
+            "Le poète Virgile raconte le voyage d’Énée dans l’Énéide ; Tite-Live, l’histoire de Rome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-2-6",
+      "prompt": "Trois dates de Rome\n753 avant J.-C. : fondation de Rome, selon la légende.\n509 avant J.-C. : début de la République.\n27 avant J.-C. : début de l’Empire.",
+      "question": "Quelle période suit le temps des rois ?",
+      "spoken": "Trois dates de Rome. Sept cent cinquante-trois avant Jésus-Christ : fondation de Rome, selon la légende. Cinq cent neuf avant Jésus-Christ : début de la République. Vingt-sept avant Jésus-Christ : début de l’Empire.",
+      "choices": [
+        "l’Empire",
+        "la République",
+        "la fondation"
+      ],
+      "answer": "la République",
+      "hint": "Avant J.-C., on compte à rebours : le plus grand nombre est le plus ancien.",
+      "explanation": "Avant J.-C., on compte à rebours : 753 est plus ancien que 509, puis vient 27. Après les rois vient la République, en 509 avant J.-C., puis l’Empire, en 27 avant J.-C.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les rois, puis la République",
+          "lines": [
+            "Rome a sept rois, de Romulus à Tarquin le Superbe.",
+            "Les Étrusques, un peuple voisin au nord de Rome : les deux rois Tarquins sont étrusques.",
+            "En 509 avant J.-C., les Romains chassent leur dernier roi.",
+            "Ils fondent la République : deux consuls, élus pour un an, la dirigent.",
+            "Le Sénat : l’assemblée des anciens, qui conseille les consuls.",
+            "Le poète Virgile raconte le voyage d’Énée dans l’Énéide ; Tite-Live, l’histoire de Rome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-la-founding-2-7",
+      "prompt": "Le mot « république » vient du latin res publica, la chose …",
+      "spoken": "Le mot république vient du latin réss poublika, la chose (mot manquant)",
+      "choices": [
+        "publique",
+        "privée",
+        "royale"
+      ],
+      "answer": "publique",
+      "hint": "Res publica : l’affaire d’une seule personne, ou de tous ?",
+      "explanation": "Res publica, c’est la chose publique, l’affaire de tous les citoyens. Le mot « république » en vient : le pouvoir n’appartient plus à un roi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les rois, puis la République",
+          "lines": [
+            "Rome a sept rois, de Romulus à Tarquin le Superbe.",
+            "Les Étrusques, un peuple voisin au nord de Rome : les deux rois Tarquins sont étrusques.",
+            "En 509 avant J.-C., les Romains chassent leur dernier roi.",
+            "Ils fondent la République : deux consuls, élus pour un an, la dirigent.",
+            "Le Sénat : l’assemblée des anciens, qui conseille les consuls.",
+            "Le poète Virgile raconte le voyage d’Énée dans l’Énéide ; Tite-Live, l’histoire de Rome."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-5e-legends",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

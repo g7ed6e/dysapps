@@ -1,0 +1,241 @@
+{
+  "id": "lca-3e-ideas-gr-greek-world-1",
+  "biome": "lca-3e-ideas",
+  "type": "gr-greek-world",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-3e-ideas-gr-greek-world-1-0",
+      "prompt": "Marathon, 490 avant J.-C.\nLes Athéniens battent l’armée perse.\nSelon la légende, un messager court jusqu’à Athènes pour annoncer la victoire.\nIl meurt en arrivant.",
+      "question": "Pourquoi la course du marathon porte-t-elle ce nom ?",
+      "spoken": "Marathon, quatre cent quatre-vingt-dix avant Jésus-Christ. Les Athéniens battent l’armée perse. Selon la légende, un messager court jusqu’à Athènes pour annoncer la victoire. Il meurt en arrivant.",
+      "choices": [
+        "elle rappelle la course d’un messager après la bataille",
+        "elle a été inventée par un athlète nommé Marathon",
+        "elle se court seulement en Grèce"
+      ],
+      "answer": "elle rappelle la course d’un messager après la bataille",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "Le marathon, une course d’environ quarante-deux kilomètres, rappelle la course légendaire du messager de Marathon à Athènes. Il a été créé pour les premiers jeux Olympiques modernes, en 1896.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Unies, puis divisées",
+          "lines": [
+            "Les Grecs partagent la langue, les dieux et les jeux ; mais chaque cité est indépendante.",
+            "Sparte : une cité de soldats ; les garçons sont formés à la guerre dès sept ans.",
+            "Les guerres médiques : des cités grecques s’unissent contre l’Empire perse.",
+            "Marathon (490 avant J.-C.) et Salamine (480 avant J.-C.) : deux victoires grecques.",
+            "La guerre du Péloponnèse, de 431 à 404 avant J.-C. : Athènes contre Sparte ; Sparte gagne.",
+            "Les Grecs appellent « barbares » ceux qui ne parlent pas grec."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-1-1",
+      "prompt": "Les guerres qui opposent les cités grecques à l’Empire perse s’appellent les guerres …",
+      "spoken": "Les guerres qui opposent les cités grecques à l’Empire perse s’appellent les guerres  (mot manquant) ",
+      "choices": [
+        "puniques",
+        "médiques",
+        "civiles"
+      ],
+      "answer": "médiques",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Les guerres médiques (les Grecs appelaient aussi les Perses les Mèdes) opposent les cités grecques à l’Empire perse, de 490 à 479 avant J.-C.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Unies, puis divisées",
+          "lines": [
+            "Les Grecs partagent la langue, les dieux et les jeux ; mais chaque cité est indépendante.",
+            "Sparte : une cité de soldats ; les garçons sont formés à la guerre dès sept ans.",
+            "Les guerres médiques : des cités grecques s’unissent contre l’Empire perse.",
+            "Marathon (490 avant J.-C.) et Salamine (480 avant J.-C.) : deux victoires grecques.",
+            "La guerre du Péloponnèse, de 431 à 404 avant J.-C. : Athènes contre Sparte ; Sparte gagne.",
+            "Les Grecs appellent « barbares » ceux qui ne parlent pas grec."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-1-2",
+      "prompt": "À Sparte, les garçons sont formés à la guerre dès …",
+      "spoken": "À Sparte, les garçons sont formés à la guerre dès  (mot manquant) ",
+      "choices": [
+        "sept ans",
+        "quinze ans",
+        "vingt ans"
+      ],
+      "answer": "sept ans",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Dès sept ans, le jeune Spartiate quitte sa famille pour une éducation très dure, en groupe, faite pour former des soldats. Aujourd’hui encore, « spartiate » veut dire dur, sans confort.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Unies, puis divisées",
+          "lines": [
+            "Les Grecs partagent la langue, les dieux et les jeux ; mais chaque cité est indépendante.",
+            "Sparte : une cité de soldats ; les garçons sont formés à la guerre dès sept ans.",
+            "Les guerres médiques : des cités grecques s’unissent contre l’Empire perse.",
+            "Marathon (490 avant J.-C.) et Salamine (480 avant J.-C.) : deux victoires grecques.",
+            "La guerre du Péloponnèse, de 431 à 404 avant J.-C. : Athènes contre Sparte ; Sparte gagne.",
+            "Les Grecs appellent « barbares » ceux qui ne parlent pas grec."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-1-3",
+      "prompt": "Salamine, 480 avant J.-C.\nLa flotte perse est plus nombreuse.\nLes trières grecques l’attirent dans un passage étroit, entre une île et la côte.\nLes navires perses, trop serrés, ne peuvent plus bouger.",
+      "question": "Comment les Grecs gagnent-ils ?",
+      "spoken": "Salamine, quatre cent quatre-vingts avant Jésus-Christ. La flotte perse est plus nombreuse. Les trières grecques l’attirent dans un passage étroit, entre une île et la côte. Les navires perses, trop serrés, ne peuvent plus bouger.",
+      "choices": [
+        "grâce à leur cavalerie",
+        "par un traité de paix",
+        "par une ruse sur la mer"
+      ],
+      "answer": "par une ruse sur la mer",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "À Salamine, les Grecs, menés par l’Athénien Thémistocle, attirent la flotte perse dans un passage étroit : trop serrés, les navires perses sont battus.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Unies, puis divisées",
+          "lines": [
+            "Les Grecs partagent la langue, les dieux et les jeux ; mais chaque cité est indépendante.",
+            "Sparte : une cité de soldats ; les garçons sont formés à la guerre dès sept ans.",
+            "Les guerres médiques : des cités grecques s’unissent contre l’Empire perse.",
+            "Marathon (490 avant J.-C.) et Salamine (480 avant J.-C.) : deux victoires grecques.",
+            "La guerre du Péloponnèse, de 431 à 404 avant J.-C. : Athènes contre Sparte ; Sparte gagne.",
+            "Les Grecs appellent « barbares » ceux qui ne parlent pas grec."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-1-4",
+      "prompt": "Les Grecs appellent « barbares » ceux qui …",
+      "spoken": "Les Grecs appellent barbares ceux qui (mot manquant)",
+      "choices": [
+        "sont cruels",
+        "ne parlent pas grec",
+        "vivent loin de la mer"
+      ],
+      "answer": "ne parlent pas grec",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Pour un Grec, un barbaros est quelqu’un qui ne parle pas grec : sa langue fait « bar-bar » à l’oreille. Le sens de « cruel » est venu plus tard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Unies, puis divisées",
+          "lines": [
+            "Les Grecs partagent la langue, les dieux et les jeux ; mais chaque cité est indépendante.",
+            "Sparte : une cité de soldats ; les garçons sont formés à la guerre dès sept ans.",
+            "Les guerres médiques : des cités grecques s’unissent contre l’Empire perse.",
+            "Marathon (490 avant J.-C.) et Salamine (480 avant J.-C.) : deux victoires grecques.",
+            "La guerre du Péloponnèse, de 431 à 404 avant J.-C. : Athènes contre Sparte ; Sparte gagne.",
+            "Les Grecs appellent « barbares » ceux qui ne parlent pas grec."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-1-5",
+      "prompt": "La guerre du Péloponnèse oppose …",
+      "spoken": "La guerre du Péloponnèse oppose  (mot manquant) ",
+      "choices": [
+        "les Grecs et les Perses",
+        "Athènes et Sparte",
+        "Rome et Carthage"
+      ],
+      "answer": "Athènes et Sparte",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "De 431 à 404 avant J.-C., Athènes et ses alliés affrontent Sparte et les siens. Sparte gagne ; les cités grecques sortent affaiblies. L’historien Thucydide raconte cette guerre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Unies, puis divisées",
+          "lines": [
+            "Les Grecs partagent la langue, les dieux et les jeux ; mais chaque cité est indépendante.",
+            "Sparte : une cité de soldats ; les garçons sont formés à la guerre dès sept ans.",
+            "Les guerres médiques : des cités grecques s’unissent contre l’Empire perse.",
+            "Marathon (490 avant J.-C.) et Salamine (480 avant J.-C.) : deux victoires grecques.",
+            "La guerre du Péloponnèse, de 431 à 404 avant J.-C. : Athènes contre Sparte ; Sparte gagne.",
+            "Les Grecs appellent « barbares » ceux qui ne parlent pas grec."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-1-6",
+      "prompt": "Malgré leurs guerres, les cités grecques partagent …",
+      "spoken": "Malgré leurs guerres, les cités grecques partagent  (mot manquant) ",
+      "choices": [
+        "un même roi",
+        "une même capitale",
+        "la même langue et les mêmes dieux"
+      ],
+      "answer": "la même langue et les mêmes dieux",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Les Grecs partagent la langue, les dieux, les grands sanctuaires et les jeux, comme à Olympie : c’est leur unité. Mais chaque cité garde ses lois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Unies, puis divisées",
+          "lines": [
+            "Les Grecs partagent la langue, les dieux et les jeux ; mais chaque cité est indépendante.",
+            "Sparte : une cité de soldats ; les garçons sont formés à la guerre dès sept ans.",
+            "Les guerres médiques : des cités grecques s’unissent contre l’Empire perse.",
+            "Marathon (490 avant J.-C.) et Salamine (480 avant J.-C.) : deux victoires grecques.",
+            "La guerre du Péloponnèse, de 431 à 404 avant J.-C. : Athènes contre Sparte ; Sparte gagne.",
+            "Les Grecs appellent « barbares » ceux qui ne parlent pas grec."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-greek-world-1-7",
+      "prompt": "La Grèce au cinquième siècle avant J.-C.\n490 : Marathon.\n480 : Salamine.\n431 : début de la guerre du Péloponnèse.",
+      "question": "Quel événement est le plus récent ?",
+      "spoken": "La Grèce au cinquième siècle avant Jésus-Christ. Quatre cent quatre-vingt-dix : Marathon. Quatre cent quatre-vingts : Salamine. Quatre cent trente et un : début de la guerre du Péloponnèse.",
+      "choices": [
+        "Marathon",
+        "Salamine",
+        "le début de la guerre du Péloponnèse"
+      ],
+      "answer": "le début de la guerre du Péloponnèse",
+      "hint": "Avant J.-C., on compte à rebours : le plus petit nombre est le plus récent.",
+      "explanation": "431 est plus petit que 480 et 490 : avant J.-C., c’est le plus récent. Unis contre les Perses, les Grecs se divisent ensuite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Unies, puis divisées",
+          "lines": [
+            "Les Grecs partagent la langue, les dieux et les jeux ; mais chaque cité est indépendante.",
+            "Sparte : une cité de soldats ; les garçons sont formés à la guerre dès sept ans.",
+            "Les guerres médiques : des cités grecques s’unissent contre l’Empire perse.",
+            "Marathon (490 avant J.-C.) et Salamine (480 avant J.-C.) : deux victoires grecques.",
+            "La guerre du Péloponnèse, de 431 à 404 avant J.-C. : Athènes contre Sparte ; Sparte gagne.",
+            "Les Grecs appellent « barbares » ceux qui ne parlent pas grec."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-3e-ideas",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

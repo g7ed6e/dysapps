@@ -1,0 +1,234 @@
+{
+  "id": "technology-3e-digital-computer-networks-2",
+  "biome": "technology-3e-digital",
+  "type": "computer-networks",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-3e-digital-computer-networks-2-0",
+      "prompt": "Les règles communes que suivent les appareils pour échanger des données forment un …",
+      "spoken": "Les règles communes que suivent les appareils pour échanger des données forment un  (mot manquant) ",
+      "choices": [
+        "protocole",
+        "programme",
+        "paquet"
+      ],
+      "answer": "protocole",
+      "hint": "Relis la ligne « Un protocole » du rappel.",
+      "explanation": "Un protocole, ce sont les règles communes pour échanger : grâce à lui, des appareils différents se comprennent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Internet et les données",
+          "lines": [
+            "Internet : un réseau de réseaux, dans le monde entier.",
+            "Un protocole : des règles communes pour échanger, comme une langue partagée.",
+            "Les données voyagent en petits paquets, remis dans l’ordre à l’arrivée.",
+            "Stocker en ligne : les fichiers sont gardés sur des serveurs, dans des centres de données.",
+            "Ces centres consomment beaucoup d’électricité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-2-1",
+      "prompt": "Internet relie des millions de réseaux dans le monde : c’est un réseau de …",
+      "spoken": "Internet relie des millions de réseaux dans le monde : c’est un réseau de  (mot manquant) ",
+      "choices": [
+        "sites",
+        "câbles",
+        "réseaux"
+      ],
+      "answer": "réseaux",
+      "hint": "Relis la ligne « Internet » du rappel.",
+      "explanation": "Internet relie entre eux des millions de réseaux : c’est un réseau de réseaux. Les sites sont des services qu’on y trouve.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Internet et les données",
+          "lines": [
+            "Internet : un réseau de réseaux, dans le monde entier.",
+            "Un protocole : des règles communes pour échanger, comme une langue partagée.",
+            "Les données voyagent en petits paquets, remis dans l’ordre à l’arrivée.",
+            "Stocker en ligne : les fichiers sont gardés sur des serveurs, dans des centres de données.",
+            "Ces centres consomment beaucoup d’électricité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-2-2",
+      "prompt": "La vidéo envoyée\nLa vidéo est coupée en petits paquets.\nLes paquets prennent des chemins différents.\nÀ l’arrivée, ils sont remis dans l’ordre.",
+      "question": "Comment la vidéo voyage-t-elle ?",
+      "spoken": "La vidéo envoyée. La vidéo est coupée en petits paquets. Les paquets prennent des chemins différents. À l’arrivée, ils sont remis dans l’ordre.",
+      "choices": [
+        "en un seul gros morceau",
+        "en petits paquets",
+        "par un seul câble"
+      ],
+      "answer": "en petits paquets",
+      "hint": "Relis la deuxième ligne du document.",
+      "explanation": "La vidéo est coupée en petits paquets, qui peuvent prendre des chemins différents. À l’arrivée, ils sont remis dans l’ordre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Internet et les données",
+          "lines": [
+            "Internet : un réseau de réseaux, dans le monde entier.",
+            "Un protocole : des règles communes pour échanger, comme une langue partagée.",
+            "Les données voyagent en petits paquets, remis dans l’ordre à l’arrivée.",
+            "Stocker en ligne : les fichiers sont gardés sur des serveurs, dans des centres de données.",
+            "Ces centres consomment beaucoup d’électricité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-2-3",
+      "prompt": "Les photos de Mia\nMia range ses photos dans un espace en ligne.\nElle les voit sur son téléphone et sur l’ordinateur du salon.",
+      "question": "Où sont vraiment gardées les photos ?",
+      "spoken": "Les photos de Mia. Mia range ses photos dans un espace en ligne. Elle les voit sur son téléphone et sur l’ordinateur du salon.",
+      "choices": [
+        "seulement dans le téléphone",
+        "dans la box de la maison",
+        "sur des serveurs, dans un centre de données"
+      ],
+      "answer": "sur des serveurs, dans un centre de données",
+      "hint": "Relis la ligne « Stocker en ligne » du rappel.",
+      "explanation": "Stocker en ligne, c’est garder ses fichiers sur des serveurs, dans un centre de données : on les voit depuis chaque appareil relié.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Internet et les données",
+          "lines": [
+            "Internet : un réseau de réseaux, dans le monde entier.",
+            "Un protocole : des règles communes pour échanger, comme une langue partagée.",
+            "Les données voyagent en petits paquets, remis dans l’ordre à l’arrivée.",
+            "Stocker en ligne : les fichiers sont gardés sur des serveurs, dans des centres de données.",
+            "Ces centres consomment beaucoup d’électricité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-2-4",
+      "prompt": "Les centres de données, pleins de serveurs, consomment beaucoup d’…",
+      "spoken": "Les centres de données, pleins de serveurs, consomment beaucoup d’ (mot manquant) ",
+      "choices": [
+        "essence",
+        "électricité",
+        "encre"
+      ],
+      "answer": "électricité",
+      "hint": "Relis la ligne « Ces centres consomment » du rappel.",
+      "explanation": "Les serveurs marchent jour et nuit, et il faut les refroidir : les centres de données consomment beaucoup d’électricité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Internet et les données",
+          "lines": [
+            "Internet : un réseau de réseaux, dans le monde entier.",
+            "Un protocole : des règles communes pour échanger, comme une langue partagée.",
+            "Les données voyagent en petits paquets, remis dans l’ordre à l’arrivée.",
+            "Stocker en ligne : les fichiers sont gardés sur des serveurs, dans des centres de données.",
+            "Ces centres consomment beaucoup d’électricité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-2-5",
+      "prompt": "Le chemin d’une page web\nTu tapes l’adresse d’un site.\nTa demande part vers le serveur du site.\nLe serveur renvoie la page.\nTon navigateur l’affiche.",
+      "question": "Qui envoie la page ?",
+      "spoken": "Le chemin d’une page web. Tu tapes l’adresse d’un site. Ta demande part vers le serveur du site. Le serveur renvoie la page. Ton navigateur l’affiche.",
+      "choices": [
+        "le serveur du site",
+        "ton navigateur",
+        "la box"
+      ],
+      "answer": "le serveur du site",
+      "hint": "Cherche la ligne où il est écrit « renvoie ».",
+      "explanation": "Le serveur du site renvoie la page ; ton navigateur ne fait que l’afficher.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Internet et les données",
+          "lines": [
+            "Internet : un réseau de réseaux, dans le monde entier.",
+            "Un protocole : des règles communes pour échanger, comme une langue partagée.",
+            "Les données voyagent en petits paquets, remis dans l’ordre à l’arrivée.",
+            "Stocker en ligne : les fichiers sont gardés sur des serveurs, dans des centres de données.",
+            "Ces centres consomment beaucoup d’électricité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-2-6",
+      "prompt": "Pour envoyer les données au bon endroit, le réseau lit l’… de l’appareil.",
+      "spoken": "Pour envoyer les données au bon endroit, le réseau lit l’ (mot manquant)  de l’appareil.",
+      "choices": [
+        "adresse",
+        "écran",
+        "étiquette"
+      ],
+      "answer": "adresse",
+      "hint": "Chaque appareil a un numéro sur le réseau.",
+      "explanation": "Le réseau lit l’adresse de l’appareil, l’adresse IP, pour lui envoyer ses données, comme le facteur lit l’adresse sur l’enveloppe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Internet et les données",
+          "lines": [
+            "Internet : un réseau de réseaux, dans le monde entier.",
+            "Un protocole : des règles communes pour échanger, comme une langue partagée.",
+            "Les données voyagent en petits paquets, remis dans l’ordre à l’arrivée.",
+            "Stocker en ligne : les fichiers sont gardés sur des serveurs, dans des centres de données.",
+            "Ces centres consomment beaucoup d’électricité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-2-7",
+      "prompt": "Deux façons de regarder un film\nLe télécharger une fois, puis le revoir sans internet.\nLe regarder en ligne à chaque fois.",
+      "question": "Pour le voir dix fois, quelle façon fait voyager le moins de données ?",
+      "spoken": "Deux façons de regarder un film. Le télécharger une fois, puis le revoir sans internet. Le regarder en ligne à chaque fois.",
+      "choices": [
+        "le regarder en ligne à chaque fois",
+        "le télécharger une fois",
+        "c’est pareil"
+      ],
+      "answer": "le télécharger une fois",
+      "hint": "Combien de fois le film passe-t-il par internet ?",
+      "explanation": "Téléchargé une fois, le film ne passe qu’une fois par internet. En ligne, il passe dix fois : dix fois plus de données, et plus d’électricité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Internet et les données",
+          "lines": [
+            "Internet : un réseau de réseaux, dans le monde entier.",
+            "Un protocole : des règles communes pour échanger, comme une langue partagée.",
+            "Les données voyagent en petits paquets, remis dans l’ordre à l’arrivée.",
+            "Stocker en ligne : les fichiers sont gardés sur des serveurs, dans des centres de données.",
+            "Ces centres consomment beaucoup d’électricité."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-3e-digital",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

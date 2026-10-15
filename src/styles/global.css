@@ -54,6 +54,8 @@
   --life-earth-sciences: #5fb8a0; /* vert d'eau : les sciences de la vie et de la Terre */
   --physics-chemistry: #8a9be8; /* lavande : la physique-chimie */
   --technology: #c98ad0; /* mauve : la technologie */
+  --civics: #e3b65a; /* blé doré : l'EMC (à valider par le directeur artistique) */
+  --lca: #b98a66; /* argile : le latin ou grec, la terre cuite de ses Gardiens (à valider par le directeur artistique) */
   --green: #6cb33f; /* herbe */
   /* Texte posé sur une couleur de remplissage (sable, matière). */
   --on-accent: #13283d;
@@ -67,6 +69,7 @@
   --radius: 12px; /* panneaux et cartes */
   --radius-control: 8px; /* boutons, champs, réponses */
   --radius-pill: 999px; /* étiquettes courtes */
+  --radius-piece: 50%; /* l'avancement d'un grand projet (GD-10) : des ronds dans Archipéo ; Blocland en fait des carrés plats */
   --radius-signe: 0; /* le signe de la créature qui se souvient (GD-4) : un hexagone dans Archipéo (masque, plus bas) ; Blocland en fait une plaque */
   /* Une seule ombre, douce, pour un panneau posé sur le monde. */
   --shadow-float: 0 2px 8px rgba(19, 40, 61, 0.18);
@@ -316,6 +319,12 @@ svg {
 .title-technology svg {
   color: var(--technology);
 }
+.title-civics svg {
+  color: var(--civics);
+}
+.title-lca svg {
+  color: var(--lca);
+}
 .back-link {
   /* Le bouton retour : toujours en haut à gauche, même forme partout (comme dans un jeu). */
   display: inline-flex;
@@ -421,6 +430,12 @@ button.app-card:active {
 .subject-technology {
   border-top-color: var(--technology);
 }
+.subject-civics {
+  border-top-color: var(--civics);
+}
+.subject-lca {
+  border-top-color: var(--lca);
+}
 .app-card.locked {
   border-top-width: var(--border-width);
   border-top-color: var(--ink);
@@ -453,6 +468,10 @@ button.app-card:active {
 .subject-physics-chemistry .app-icon,
 .subject-technology .subject-icon,
 .subject-technology .app-icon,
+.subject-civics .subject-icon,
+.subject-civics .app-icon,
+.subject-lca .subject-icon,
+.subject-lca .app-icon,
 .app-card[class*="biome-"] .app-icon {
   color: var(--on-accent);
 }
@@ -487,6 +506,14 @@ button.app-card:active {
 .subject-technology .subject-icon,
 .subject-technology .app-icon {
   background: var(--technology);
+}
+.subject-civics .subject-icon,
+.subject-civics .app-icon {
+  background: var(--civics);
+}
+.subject-lca .subject-icon,
+.subject-lca .app-icon {
+  background: var(--lca);
 }
 /* Cartes de mission d'une île : l'icône sur un aplat de sable, bleu nuit dessus. */
 .app-card[class*="biome-"] .app-icon {
@@ -1104,6 +1131,23 @@ button.app-card:active {
 }
 .choice:disabled {
   cursor: default;
+}
+/* Une réponse en langue étrangère d'une question mêlée et son haut-parleur : la réponse prend toute la case, le
+   haut-parleur reste à droite, centré, à la même place pour les trois réponses, assez écarté pour ne pas toucher l'autre. */
+.choice-listen {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.choice-listen > .choice {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.choice-listen > .speak-button {
+  flex: none;
+  min-width: 48px;
+  min-height: 48px;
 }
 .choice.wrong {
   border-color: var(--error);
@@ -2278,6 +2322,11 @@ figure.class-table {
   height: 1.6em;
   margin-right: 0.3em;
 }
+/* En thème Nuit, un bloc sombre (la Reliure, #2f6f74) tombait à 2,3:1 sur le fond des panneaux : un liseré clair d'un
+   pixel autour de l'icône la détache du fond (3:1 au moins, WCAG 1.4.11 ; référent dys, HG-3). Fixe, sans animation. */
+:root[data-theme="night"] .block-icon {
+  filter: drop-shadow(1px 0 0 var(--muted)) drop-shadow(-1px 0 0 var(--muted)) drop-shadow(0 1px 0 var(--muted)) drop-shadow(0 -1px 0 var(--muted));
+}
 .adventure-card {
   display: flex;
   flex-wrap: wrap;
@@ -2850,6 +2899,14 @@ figure.class-table {
 .voxel-canvas canvas {
   display: block;
 }
+/* Un appui long pour glisser (une île, un Gardien, la vue) n'est pas une sélection : sans cela, iPadOS montre sa loupe
+   de sélection et le glissé ne part pas. */
+.voxel-canvas,
+.voxel-canvas canvas {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
 .view-toggle {
   display: flex;
   flex-wrap: wrap;
@@ -2924,6 +2981,18 @@ figure.class-table {
   align-items: flex-start;
   font-weight: 700;
   max-width: none;
+}
+/* « Terminé ! » d'un seul tenant avec l'étoile, la phrase dessous sur toute la largeur (en grand texte au téléphone,
+   elle ne se serre pas dans une colonne). */
+.plan-done {
+  flex-wrap: wrap;
+  row-gap: 0.25rem;
+}
+.plan-done-word {
+  white-space: nowrap;
+}
+.plan-done-text {
+  flex-basis: 100%;
 }
 .plan-done svg {
   flex-shrink: 0;
@@ -3727,6 +3796,11 @@ figure.class-table {
   height: auto;
   padding: 4px 10px 6px;
 }
+/* L'enveloppe d'un bouton (WorldButton.tsx) prend la largeur plafonnée de son bouton, pas celle de son mot sur une
+   ligne : sinon un long nom d'île écarte la barre et la fait passer sur deux rangées. */
+:root[data-texte="grand"] .world-bar .world-button {
+  max-width: 200px;
+}
 :root[data-texte="grand"] .world-bar .world-bar-text {
   display: block;
   position: static;
@@ -3808,13 +3882,13 @@ figure.class-table {
   font-size: max(18px, 1rem);
 }
 /* ===== Le mode « Aménager » (GD-9), sur la Carte : la barre du mode à place fixe, en bas, à la place de la barre du
-   monde (↶, « Poser », puis « Annuler » et « Valider », qui ferment le mode ; décision du mainteneur, 6 octobre 2026) ;
-   les boutons gardent leur place, éteints quand ils ne font rien ; 48 px au moins (« Poser », « Annuler » et
-   « Valider » : 56 px). Un seul bouton mis en avant (`primary`) : « Poser » pendant un choix, ✓ Valider sinon ;
-   la place de « Réunir », entre « Poser » et « Annuler », réservée dès qu'un lieu est choisi (éteint quand il ne sert
-   pas) ; « Garder » prend la place d'« Annuler » quand il demande confirmation, l'« Annuler » qui confirme à celle de
-   « Réunir ». Les flèches et « Tourner » sont dessinées dans le monde,
-   leurs boutons transparents par-dessus (`.arrange-handles`) ; en vue simple, la croix reste dans la barre. ===== */
+   monde : « Annuler » et « Valider », qui ferment le mode (mainteneur, 7 octobre 2026 : « il y a trop de boutons ») ;
+   « Réunir » à leur gauche quand il sert, « Poser » pour un ouvrage à reposer ; 48 px au moins (« Poser »,
+   « Annuler » et « Valider » : 56 px). Un seul bouton mis en avant (`primary`) : « Poser » pendant le choix d'un
+   ouvrage à reposer, ✓ Valider sinon ; « Garder » prend la place d'« Annuler » quand il demande confirmation,
+   l'« Annuler » qui confirme se pose juste avant. « Tourner » (et les flèches d'un ouvrage à reposer) sont dessinés
+   dans le monde, leurs boutons transparents par-dessus (`.arrange-handles`) ; en vue simple, la croix des flèches,
+   ↶ et « Poser » restent dans la barre. ===== */
 .arrange-bar {
   position: absolute;
   left: 0.6rem;
@@ -3931,8 +4005,8 @@ figure.class-table {
   padding: 4px 12px;
   line-height: 1.2;
 }
-/* Au téléphone : ↶, « Poser » et la place de « Réunir » sur une rangée, « Annuler » et « Valider » dessous, sur toute la largeur ; en vue
-   simple, la croix à gauche des outils. La barre ne monte jamais plus haut que la moitié de l'écran. */
+/* Au téléphone : les outils (« Réunir », « Poser » ; en vue simple ↶ et la croix à gauche) sur une rangée,
+   « Annuler » et « Valider » dessous, sur toute la largeur. La barre ne monte jamais plus haut que la moitié de l'écran. */
 .arrange-bar.arrange-bar-telephone {
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
@@ -3957,6 +4031,13 @@ figure.class-table {
 .arrange-bar-telephone .arrange-bar-outils,
 .arrange-bar-telephone .arrange-bar-fin {
   flex-wrap: nowrap;
+}
+/* Sur la Carte, rien à gauche le plus souvent (ni « Réunir », ni « Poser ») : la rangée vide ne laisse pas d'écart. */
+.arrange-bar.arrange-bar-telephone:not(.arrange-bar-croix):has(> .arrange-bar-outils:empty) {
+  grid-template-areas: 'fin';
+}
+.arrange-bar.arrange-bar-telephone > .arrange-bar-outils:empty {
+  display: none;
 }
 /* Au téléphone, chaque rangée prend toute la largeur : « Annuler » et « Valider » s'y partagent leurs places fixes. */
 .arrange-bar.arrange-bar-telephone > .arrange-bar-outils,
@@ -4029,13 +4110,6 @@ figure.class-table {
   min-width: 48px;
   min-height: 48px;
   will-change: transform;
-}
-/* Le bouton d'un bout de liaison : un glissé parti de lui fait glisser la Carte (ArrangeHandles.tsx le relaie à la
-   scène) ; le navigateur ne le prend pas pour un défilement. Ses 48 px se partagent à mi-distance avec un bout voisin. */
-.arrange-handles-poses .arrange-handle[data-bout] {
-  touch-action: none;
-  min-width: 0;
-  min-height: 0;
 }
 /* L'icône de « Réunir » sur une place libre qui collerait le lieu choisi à un voisin (GD-9, choix 2a du mainteneur) :
    la même icône que le bouton de la barre, sombre sur un petit radeau clair bordé de sombre (le style des poignées),
@@ -4146,6 +4220,29 @@ figure.class-table {
 }
 .signe svg {
   flex: none;
+}
+/* Les trois pastilles des formes de la Nef (GD-15) : faite (pleine, avec une coche), en chantier (pleine), à venir
+   (un anneau) ; l'état se lit à la forme, pas à la couleur seule. */
+.nef-pastilles {
+  gap: 6px;
+}
+.nef-pastille {
+  display: inline-grid;
+  place-items: center;
+  width: 1.3em;
+  height: 1.3em;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+}
+.nef-pastille.en-cours,
+.nef-pastille.faite {
+  background: currentColor;
+}
+/* La coche prend le fond du panneau sur la pastille à la couleur du texte : le contraste du texte, dans chaque thème. */
+.nef-pastille.faite svg {
+  width: 0.95em;
+  height: 0.95em;
+  color: var(--surface, #fff);
 }
 /* Le nom d'un lieu dans la ligne du haut ne se coupe pas en fin de ligne : il passe entier à la ligne suivante (il ne
    se coupe que s'il ne tient pas seul sur une ligne). */
@@ -4703,6 +4800,34 @@ button.island-quest:active {
   font-size: 1rem;
   color: var(--text);
 }
+/* Le signe d'une quête (GD-10) : l'image de l'objet, puis une pastille par étape (jamais « 2/3 », qui se lirait comme
+   une fraction : référent dys) : pleine pour une étape faite, un anneau épais pour l'étape en cours, un anneau fin pour
+   la suite, tous à pleine opacité (contraste de 3:1 au moins, référent dys) ; la forme dit l'état, pas la couleur. La ligne de la quête : un bord en pointillés. */
+.quete-signe {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  vertical-align: middle;
+}
+.quete-etapes {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+.quete-etape {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  border: 2px solid var(--text);
+}
+.quete-etape.faite {
+  background: var(--text);
+}
+.quete-etape.en-cours {
+  border-width: 4px;
+}
+.commandes-list .quete-item {
+  border-style: dashed;
+}
 /* « Tu y es : joue une mission ici. », sous le titre « Missions » ; vide, la zone reste là pour le lecteur d'écran. */
 .commande-ici-missions {
   display: flex;
@@ -4727,8 +4852,17 @@ button.island-quest:active {
   gap: 0.5rem;
   margin: 0 0 0.6rem;
 }
-.menu-commandes {
+.world-requests {
   margin: 0.6rem 0;
+}
+/* Le panneau des commandes porte déjà leur titre : celui de la liste ne se dit qu'aux lecteurs d'écran. */
+.requests-sheet > h3.island-sheet-heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 .bridges-said {
   margin: 0.6rem 0 0;
@@ -5109,6 +5243,140 @@ button.island-quest:active {
 .bar-list .bar.mark {
   background: var(--yellow);
   border-style: dashed;
+}
+/* Figures de géométrie (GeometryAids/) : triangle et angles, angle, figure plane, solide, figure et son image, repère.
+   Traits épais de la couleur du texte, fond uni, cotes à la police de l'application (un halo de la couleur du panneau
+   les détache des traits) ; la valeur cherchée « ? » ressort en violet. Rien d'animé. */
+.geometry {
+  margin: 0;
+}
+.geometry svg {
+  width: 100%;
+  /* Bornée par la hauteur de l'écran, comme le graphique : sur une tablette à l'horizontale, aucune figure ne prend plus
+     de 45 % de la hauteur, et laisse place à la règle et aux réponses. Jamais sous 15rem pourtant : sur un téléphone à
+     l'horizontale, 45 % ferait tomber les lettres des figures hautes vers 10 px ; mieux vaut faire défiler. */
+  max-width: min(24rem, max(45vh, 15rem));
+  max-height: max(45vh, 15rem);
+  display: block;
+  margin: 0 auto;
+  color: var(--text);
+}
+.geometry .geo-shape {
+  fill: color-mix(in srgb, var(--cyan) 25%, var(--surface));
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.geometry .geo-image {
+  fill: color-mix(in srgb, var(--yellow) 40%, var(--surface));
+}
+.geometry .geo-outline {
+  fill: var(--surface);
+}
+.geometry .geo-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.geometry .geo-thin {
+  stroke-width: 2;
+}
+.geometry .geo-dash {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-dasharray: 7 6;
+}
+.geometry .geo-right {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.geometry .geo-tick {
+  stroke: currentColor;
+  stroke-width: 3;
+}
+.geometry .geo-arc {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+}
+.geometry .geo-arrowhead,
+.geometry .geo-point {
+  fill: currentColor;
+}
+.geometry .geo-grid {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.3;
+}
+/* L'axe d'une symétrie : un trait mixte, en couleur, qui ne se confond ni avec le quadrillage ni avec une figure. */
+.geometry .geo-axis {
+  stroke: var(--violet);
+  stroke-width: 3;
+  stroke-dasharray: 12 5 3 5;
+}
+.geometry .geo-plot-point {
+  fill: var(--violet);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.geometry .geo-face {
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.geometry .geo-front {
+  fill: color-mix(in srgb, var(--cyan) 30%, var(--surface));
+}
+.geometry .geo-top {
+  fill: color-mix(in srgb, var(--cyan) 12%, var(--surface));
+}
+.geometry .geo-side {
+  fill: color-mix(in srgb, var(--cyan) 55%, var(--surface));
+}
+.geometry .geo-cube-line {
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.geometry text {
+  fill: currentColor;
+  font-family: var(--font-family);
+  /* 21 dans le repère du dessin, comme le graphique : des dessins de 330 de large au plus gardent le texte à 18 px au
+     moins sur un téléphone. */
+  font-size: 21px;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+/* Les réglages d'espacement ne s'appliquent pas aux cotes : « −1 » et « 0 » espacés se liraient « −10 ». */
+.geometry .geo-text {
+  letter-spacing: 0;
+  word-spacing: 0;
+}
+.geometry .geo-name {
+  font-weight: 700;
+}
+/* Les signes « + » et « − » des demi-axes du repère vide : plus grands que les nombres. */
+.geometry .geo-sign {
+  font-size: 28px;
+}
+.geometry text.ask {
+  fill: var(--violet);
+  font-weight: 700;
+}
+.geometry .geo-arc.ask,
+.geometry .geo-line.ask {
+  stroke: var(--violet);
+}
+:root[data-theme="night"] .geometry text.ask,
+:root[data-theme="night"] .geometry .geo-plot-point {
+  fill: var(--yellow);
+}
+:root[data-theme="night"] .geometry :is(.geo-arc.ask, .geo-line.ask, .geo-axis) {
+  stroke: var(--yellow);
 }
 /* Graphique d'une fonction : quadrillage discret, axes fléchés, nombres à taille de l'interface (un halo de la couleur
    du panneau les détache du quadrillage et de la droite), une droite épaisse avec ses points aux intersections. Rien
@@ -5498,6 +5766,10 @@ details.island-fold-objectif {
 .settings-adresse {
   overflow-wrap: anywhere;
 }
+.settings-measure {
+  margin-top: 1rem;
+}
+
 .settings-links {
   display: flex;
   flex-wrap: wrap;
@@ -5522,7 +5794,7 @@ details.island-fold-objectif {
   }
 }
 
-/* ---------- Les archipels et le Bloc-Navire ---------- */
+/* ---------- Les archipels et la Nef ---------- */
 
 .biome-archipel {
   margin: -0.4rem 0 1rem;
@@ -5606,7 +5878,7 @@ details.island-fold-objectif {
   align-content: center;
 }
 
-/* ---------- Le voyage du Bloc-Navire ---------- */
+/* ---------- Le voyage de la Nef ---------- */
 
 .world-veil {
   position: absolute;
@@ -5695,7 +5967,7 @@ details.island-fold-objectif {
   display: block;
 }
 
-/* ===== Les plis du panneau d'île : plan, Bloc-Navire, ouvrages ===== */
+/* ===== Les plis du panneau d'île : plan, Nef, ouvrages ===== */
 /* Ouverts quand il y a quelque chose à faire, repliés sinon : une ligne d'état tient lieu de section. */
 .island-fold {
   margin-top: 0.8rem;
@@ -5808,6 +6080,81 @@ details.island-fold-objectif {
 }
 .monument-blocks {
   margin: 0 0 0.6rem;
+}
+/* Un grand projet (GD-10) : un rond par pièce, plein quand elle est posée, cerclé pour la prochaine. */
+.project-pieces {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.2rem 0 0;
+}
+.project-piece {
+  display: block;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-piece);
+  background: color-mix(in srgb, var(--ink) 15%, var(--surface));
+}
+.project-piece.built {
+  background: var(--accent);
+}
+.project-piece.next {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+/* Les deux recettes d'une pièce, côte à côte (l'une sous l'autre quand la place manque) : deux blocs et leur nombre ;
+   la carte choisie a son fond teinté et son cadre, une pastille cochée dans le coin quand le stock les a. */
+.project-recipes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.project-recipe {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 56px;
+  padding: 0.4rem 1.6rem;
+  border: var(--border-width) solid color-mix(in srgb, var(--ink) 35%, var(--surface));
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.project-recipe:has(:checked) {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+}
+.project-recipe:has(:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.project-recipe-ok {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 0.8em;
+}
+.project-ingredient {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 .inventory-missing li {
   display: flex;
@@ -6207,50 +6554,166 @@ button.app-card {
   margin: 1rem 0 0;
 }
 
-/* Le menu du village : un bouton Menu (trois traits) en haut à droite du monde, et son panneau. */
-.world-menu-button {
+/* Les accès directs du monde, depuis que le Menu n'existe plus (mot du mainteneur, 10 octobre 2026) : en haut à gauche,
+   en colonne, Reprendre, Révisions et Commandes ; Réglages en haut à droite, au-dessus du choix de l'archipel. Des boutons carrés de 56 px, icône de
+   30 px, comme la barre du bas ; jamais de mot dessous, même en grand texte (choix « 1a ») : le nom se lit au doigt posé
+   (`world-button-label`). Communs aux deux univers. */
+.world-button {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+.world-shortcuts {
   position: absolute;
   top: 0.6rem;
-  right: 0.6rem;
+  left: 0.6rem;
   z-index: 3;
-  width: 52px;
-  height: 52px;
-  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.world-shortcuts .button,
+.world-settings .button,
+.world-bar .button.icone-seule {
+  position: relative;
+  width: 56px;
+  min-width: 56px;
+  height: 56px;
+  min-height: 56px;
   padding: 0;
   justify-content: center;
 }
-.world-menu-button[aria-pressed="true"] {
+.world-shortcuts .button svg,
+.world-settings .button svg {
+  width: 30px;
+  height: 30px;
+}
+/* En grand texte aussi, les boutons sans mot gardent leur carré (choix « 1a ») : seuls île, Carte et Blocs ont le mot. */
+:root[data-texte="grand"] .world-bar .button.icone-seule {
+  flex-direction: row;
+  width: 56px;
+  min-width: 56px;
+  max-width: none;
+  height: 56px;
+  padding: 0;
+}
+/* Rien à faire ici pour l'instant : le bouton reste à sa place, délavé mais lisible (0,7, avis du référent dys) ; son
+   toucher dit pourquoi. */
+.world-button .button.vide {
+  opacity: 0.7;
+}
+.world-shortcuts .button[aria-pressed="true"] {
   background: var(--sand);
   border-color: var(--on-sand);
   color: var(--on-sand);
 }
-/* Le panneau du haut s'arrête avant la colonne de droite (Menu, choix de l'archipel), mesurée : en grand texte, le
-   bouton « 3e » est plus large que Menu, et aucun bouton ne se pose sur le texte du panneau (DA-31). */
-.world-page .world-overlay-top {
-  right: calc(0.6rem + max(52px, var(--colonne-w, 52px)) + 0.5rem);
+.world-settings {
+  position: absolute;
+  right: 0.6rem;
+  top: 0.6rem;
+  z-index: 3;
 }
-/* Sur téléphone en grand texte, la place manque : Menu et le choix de l'archipel passent en ligne en haut (Menu
-   reste dans le coin, l'archipel à sa gauche), et le panneau prend toute la largeur dessous (DA-31). */
+/* Le nom du bouton, au doigt posé ou au toucher d'un bouton vide : une étiquette sur fond uni, à côté du bouton (à
+   droite en haut à gauche, au-dessus dans la barre), sans animation ; elle ne prend aucun toucher. */
+.world-button-label {
+  position: absolute;
+  z-index: 4;
+  display: none;
+  padding: 0.25rem 0.6rem;
+  border: var(--border-width) solid var(--text);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.world-button-label.on {
+  display: block;
+}
+.world-shortcuts .world-button-label {
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+.world-bar .world-button-label {
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+.world-settings .world-button-label {
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+/* Le trait entre île, Carte, Blocs et les lieux du village. */
+.world-bar-trait {
+  align-self: stretch;
+  width: 2px;
+  margin: 6px 4px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.3;
+}
+/* « Carte de départ », sur la Carte : l'horloge du retour, la petite carte dans son coin. */
+.world-bar-depart .button .world-bar-depart-carte {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  width: 16px;
+  height: 16px;
+}
+/* Sa confirmation, au-dessus de la barre, sur un fond uni. */
+.world-confirm {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: calc(var(--barre-h, 72px) + 0.6rem);
+  transform: translateX(-50%);
+  width: min(24rem, calc(100% - 1.2rem));
+  padding: 0.8rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.world-confirm p {
+  margin: 0 0 0.6rem;
+}
+.world-confirm-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+/* Le panneau du haut part après la colonne de gauche et s'arrête avant celle de droite (Réglages et le choix de
+   l'archipel), mesurées : aucun bouton ne se pose sur son texte (DA-31). */
+.world-page .world-overlay-top {
+  left: calc(var(--gauche-droite, 0px) + 0.6rem);
+  right: calc(0.6rem + var(--colonne-w, 0px) + 0.5rem);
+}
+/* Dans un écran étroit en grand texte, la place manque : le choix de l'archipel passe en ligne en haut, dans le coin, et
+   le panneau prend toute la largeur dessous (DA-31). */
 @media (max-width: 640px) {
   :root[data-texte="grand"] .world-page .world-archipel {
     top: 0.6rem;
-    right: calc(0.6rem + 52px + 0.5rem);
+    right: calc(0.6rem + 56px + 0.5rem);
     flex-direction: row;
-    /* Quatre classes ne tiennent pas sur une ligne à 390 px : elles passent sur deux, sans sortir de l'écran. */
-    left: 0.6rem;
+    /* Quatre classes ne tiennent pas sur une ligne à 390 px : elles passent sur deux, sans sortir de l'écran ni couvrir
+       la colonne de gauche. */
+    left: calc(var(--gauche-droite, 0px) + 0.6rem);
     flex-wrap: wrap;
     justify-content: flex-end;
   }
   :root[data-texte="grand"] .world-page .world-overlay-top {
     /* Sous la rangée de classes, mesurée (`--colonne-bas`) : sur une ou deux lignes, elle ne couvre jamais le panneau. */
-    top: calc(var(--colonne-bas, calc(0.6rem + 52px)) + 0.5rem);
+    top: calc(var(--colonne-bas, calc(0.6rem + 56px)) + 0.5rem);
     right: 0.6rem;
     /* Le chemin d'ouvrages de la Carte défile au-delà ; des traits pointillés disent qu'il continue, en bas comme en
        haut (useMapPanel.ts). */
     max-height: 60%;
   }
-  /* Pendant « Aménager », la colonne de droite (Menu, puis le rond « Recentrer » dessous) reste réservée : le rond de
-     l'avatar ne se pose jamais sur le haut-parleur de la phrase. */
+  /* Pendant « Aménager », le coin de droite (le rond « Recentrer ») reste réservé : le rond de l'avatar ne se pose
+     jamais sur le haut-parleur de la phrase. */
   :root[data-texte="grand"] .world-page.en-amenagement .world-overlay-top {
     right: calc(0.6rem + 52px + 0.5rem);
   }
@@ -6285,32 +6748,6 @@ button.app-card {
     padding-right: 12px;
   }
 }
-/* Le menu du village, en plein écran par-dessus le monde (comme les autres panneaux) : des lignes serrées, des cibles
-   d'au moins 48 px ; les Réglages tout en bas de l'écran, à part, sous un trait (après les lignes quand elles
-   défilent). */
-.world-page > .menu-sheet {
-  display: flex;
-  flex-direction: column;
-}
-.world-page > .menu-sheet > * {
-  flex-shrink: 0;
-}
-.menu-end {
-  margin-top: auto;
-  padding-top: 1rem;
-  border-top: var(--border-width) solid var(--ink);
-}
-.menu-sheet .menu-list {
-  margin-bottom: 1rem;
-}
-.menu-sheet .island-quests {
-  gap: 0.35rem;
-}
-.menu-sheet .island-quest {
-  min-height: 48px;
-  padding-top: 0.2rem;
-  padding-bottom: 0.2rem;
-}
 button.island-quest {
   width: 100%;
   font: inherit;
@@ -6318,19 +6755,22 @@ button.island-quest {
   cursor: pointer;
 }
 
-/* « Recentrer », après un glissé du monde : sous la colonne de droite (Menu, l'archipel), mesurée (`--colonne-bas`).
+/* « Recentrer », après un glissé du monde : sous le choix de l'archipel s'il y en a un, mesuré (`--colonne-bas`).
    Il apparaît d'un coup, sans pousser personne ; la liste des archipels, ouverte, passe par-dessus. */
 .world-recentrer {
   position: absolute;
-  top: calc(var(--colonne-bas, calc(0.6rem + 52px)) + 0.5rem);
+  top: calc(var(--colonne-bas, calc(0.6rem + 56px)) + 0.5rem);
   right: 0.6rem;
   z-index: 2;
-  padding: 0.4rem 0.9rem;
-  gap: 0.4rem;
-  white-space: nowrap;
+}
+/* Son nom, au doigt posé : à sa gauche, il est au bord droit de l'écran. */
+.world-recentrer .world-button-label {
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
 }
 /* Recentrer, dans les deux univers : le rond « toi » de la Carte (clair, bord sombre épais, ombre nette ; jamais d'or),
-   avec le visage du joueur ; 52 px, comme le bouton Menu au-dessus. */
+   avec le visage du joueur ; 52 px. */
 .world-recentrer-tete {
   width: 52px;
   height: 52px;
@@ -6348,7 +6788,8 @@ button.island-quest {
    classe où l'on est se reconnaît à sa forme (bord épais, coche), pas seulement à sa couleur ; elle ne se touche pas. */
 .world-archipel {
   position: absolute;
-  top: calc(0.6rem + 52px + 0.5rem);
+  /* Sous Réglages, en haut à droite (mot du mainteneur, 10 octobre 2026). */
+  top: calc(0.6rem + 56px + 0.5rem);
   right: 0.6rem;
   z-index: 3;
   display: flex;
@@ -6410,7 +6851,7 @@ button.island-quest {
     max-height: 70%;
   }
   /* En grand texte, jusqu'en haut de la scène (sous la marge du haut) : le titre et le bouton principal restent entiers
-     (le Bloc-Navire, « Embarquer vers … » sur quatre lignes en OpenDyslexic 32 px). */
+     (la Nef, « Embarquer vers … » sur quatre lignes en OpenDyslexic 32 px). */
   :root[data-texte="grand"] .world-fiche-place {
     max-height: calc(100% - var(--barre-h, 4rem) - 1.8rem);
   }
@@ -6511,6 +6952,14 @@ button.island-quest {
 }
 .world-fiche-phrase {
   margin: 0.2rem 0;
+}
+/* La fiche d'un Gardien nomme son lieu (choix 4a du mainteneur, 7 octobre 2026) : son icône et son nom, en gras. */
+.world-fiche-lieu {
+  margin: 0.2rem 0;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 .world-fiche-texte .stars {
   display: inline-flex;
@@ -6872,8 +7321,18 @@ fieldset {
     display: flex;
     flex-wrap: wrap;
   }
-  :root[data-texte="grand"] .choices.short > .choice {
+  :root[data-texte="grand"] .choices.short > :is(.choice, .choice-listen) {
     flex: 1 1 auto;
+  }
+  /* Une réponse et son haut-parleur : la réponse garde toute la largeur pour qu'un mot ne s'y coupe pas, le haut-parleur
+     passe juste dessous, à droite, à la même place pour les trois réponses. */
+  :root[data-texte="grand"] .choice-listen {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+  }
+  :root[data-texte="grand"] .choice-listen > .speak-button {
+    align-self: flex-end;
   }
   :root[data-texte="grand"] .enclos-pens {
     flex-wrap: wrap;
@@ -7103,15 +7562,6 @@ fieldset {
   opacity: 0.5;
   cursor: not-allowed;
 }
-/* Le rôle et la jauge d'XP en tête du menu du village : la barre du haut de l'appli n'est pas sur l'écran du monde. */
-.menu-role {
-  margin: 0.1rem 0 0.2rem;
-}
-.menu-role .xp-title {
-  font-size: 1rem;
-  white-space: normal;
-}
-
 /* Archipéo : Recentrer, le rond « toi » aux couleurs de ses bulles (choix « 1a » du mainteneur, 4 octobre 2026) : Brume,
    bord Nuit océan épais, ombre nette ; jamais la lumière de la prochaine chose à faire. */
 :root[data-univers="archipeo"] .world-recentrer-tete {
@@ -7122,19 +7572,48 @@ fieldset {
 :root[data-univers="archipeo"] .world-recentrer-tete:active:not(:disabled) {
   box-shadow: 0 1px 0 #142b38;
 }
-/* « Carte de départ » au menu du village (GD-9) : la confirmation, sous la ligne, sur un fond uni. */
-.menu-confirmer {
-  margin: 0.4rem 0 0.6rem;
-  padding: 0.8rem;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius, 8px);
-  background: var(--surface, #fff);
-}
-.menu-confirmer p {
-  margin: 0 0 0.6rem;
-}
-.menu-confirmer-boutons {
+
+
+/* ===== « Tourne ton appareil » (components/RotateDevice.tsx) : l'appli se joue en paysage (10 octobre 2026) ===== */
+.rotate-device {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  padding: 1rem;
+  background: var(--bg);
+  color: var(--text);
+  text-align: center;
+}
+.rotate-device-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 1.4em;
+  font-weight: 700;
+}
+/* L'appareil dessiné se couche, comme on doit le tourner, trois fois puis reste couché (rien ne bouge sans fin près
+   d'une consigne, avis du référent dys) ; immobile si l'appareil demande moins d'animations. */
+.rotate-device-icon svg {
+  transform: rotate(-90deg);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rotate-device-icon svg {
+    animation: rotate-device 2.4s ease-in-out 3 both;
+  }
+}
+@keyframes rotate-device {
+  0%,
+  25% {
+    transform: rotate(0deg);
+  }
+  55%,
+  100% {
+    transform: rotate(-90deg);
+  }
 }

@@ -6,8 +6,9 @@ import type { FacettesDePersonnage, V3 } from './painted';
 import { toutConstruit } from '../budget';
 import { GRUE } from '../decor/4e';
 import { PHARES } from '../decor/lighthouse';
-import { bossIsletCenter, guardianPlacements } from '../terrain';
+import { guardianCenter, guardianPlacements, versLaCamera } from '../terrain';
 import { fusionDesGardiens, pointDePose } from './merges';
+import { guardianSquareRoom, GUARDIAN_WORLD_HEIGHTS } from '../guardianSquares';
 import {
   allumage,
   couleursAllumees,
@@ -75,11 +76,23 @@ function lueurs(f: FacettesDePersonnage): number {
 
 /** Les sentinelles sans visage : le Spectre voilé, la Locomotive, la Grande Antenne, le Soleil et le Papillon de cuivre. */
 const SANS_VISAGE: BiomeId[] = ['english-5e-grammar', 'english-4e-grammar', 'english-3e-comprehension', 'lv2-4e-daily-life', 'lv2-3e-travel'];
+/** Les sentinelles aux yeux sur les côtés de la tête (DA, relecture des planches HG-3) : la Colombe d'albâtre. */
+const YEUX_DE_COTE: BiomeId[] = ['history-3e-twentieth-century'];
 /**
  * Les sentinelles basses : leur haut, en blocs. La Diligence, plus longue que haute (retouche du directeur artistique) ;
- * le Soleil de cuivre, sans mât (DA, LV2-4), qui repose sur son rayon du bas.
+ * le Soleil de cuivre, sans mât (DA, LV2-4), qui repose sur son rayon du bas ; la Tortue d'ocre, couchée à plat sur son
+ * rocher, plus basse que les autres (DA, relecture des captures SC-3).
  */
-const BASSES: Partial<Record<BiomeId, [number, number]>> = { 'lv2-5e-introductions': [5, 5.5], 'lv2-4e-daily-life': [5.8, 6.3] };
+const BASSES: Partial<Record<BiomeId, [number, number]>> = {
+  'lv2-5e-introductions': [5, 5.5],
+  'lv2-4e-daily-life': [5.8, 6.3],
+  // (Plus basse encore depuis la relecture des captures sc-3b : la carapace bien plus large que haute, DA.)
+  'life-earth-sciences-5e-active-planet': [3.2, 3.6],
+  // La Cigale d'argile, couchée de profil sur sa souche, et le Centaure d'argile à la petite tête (DA, captures
+  // emc-4e-3e-1).
+  'lca-4e-cities': [4.7, 4.9],
+  'lca-3e-ideas': [6.6, 6.8],
+};
 /** Les sentinelles basses plus longues que hautes. */
 const LONGUES: BiomeId[] = ['lv2-5e-introductions'];
 
@@ -91,6 +104,14 @@ describe('L’allumage des sentinelles', () => {
     expect(allumage(SENTINELLE.pierre, 1)).toBe(0xdaa66a);
     expect(allumage(SENTINELLE.lichen, 1)).toBe(0xdaa66a);
     expect(allumage(LUEUR, 1)).toBe(0xffd866);
+    // Le rocher de la Tortue d'ocre reste gris, rallumé ou non (DA, SC-3).
+    expect(allumage(SENTINELLE.roche, 0)).toBe(SENTINELLE.roche);
+    expect(allumage(SENTINELLE.roche, 1)).toBe(SENTINELLE.roche);
+    // L'Hirondelle de nacre : pierre teintée éteinte, ses couleurs rallumée (DA, relecture des captures emc-2).
+    expect(allumage(SENTINELLE.nacre, 0)).toBe(SENTINELLE.nacre);
+    expect(allumage(SENTINELLE.nacre, 1)).toBe(0xcad5ee);
+    expect(allumage(SENTINELLE.ventre, 1)).toBe(0xfdfbf6);
+    expect(allumage(SENTINELLE.gorge, 1)).toBe(0xf3c6cc);
     expect(allumage(SENTINELLE.pierre, -1)).toBe(0x8e8c84);
     expect(allumage(SENTINELLE.pierre, 2)).toBe(0xdaa66a);
   });
@@ -149,11 +170,18 @@ describe('Les Gardiens en sentinelles', () => {
   });
 
   // 2 100 depuis les deux Gardiens d'histoire-géographie du 6e (HG-2, mainteneur, 6 octobre 2026 : 2 065 mesurés), 2 780
-  // depuis les trois Gardiens de sciences (SC-2, même mot : 2 756 mesurés).
-  it('tiennent dans leur budget : 2 780 triangles au plus par archipel, toutes ensemble', () => {
+  // depuis les trois Gardiens de sciences (SC-2, même mot : 2 756 mesurés) ; les six des 5e, 4e et 3e (HG-3, même mot)
+  // y tiennent (2 144 mesurés aux Îles Brumeuses). Aux Premiers Rivages, 2 950 depuis l'Hirondelle de nacre (EMC-2,
+  // mainteneur, 9 octobre 2026 : 2 931 mesurés ; 2 943 depuis qu'elle est redessinée en oiseau, relecture des captures
+  // emc-2). Aux Îles Brumeuses, 3 150 depuis l'Oie d'opale et le Phénix d'argile (EMC et latin-grec de 5e : 3 147
+  // mesurés, `enveloppeDe('gardiens', '5e')`, en attente de la décision du mainteneur sur le budget du 5e).
+  // Aux Anciens Ateliers, 3 050 depuis le Lynx d'agate et la Cigale d'argile (EMC et latin-grec de 4e : 3 029 mesurés,
+  // `enveloppeDe('gardiens', '4e')`). Aux Îles du Ciel, 3 250 depuis l'Étourneau d'étain et le Centaure d'argile (EMC et
+  // latin-grec de 3e : 3 222 mesurés, `enveloppeDe('gardiens', '3e')`).
+  it('tiennent dans leur budget : 2 950 triangles au plus aux Premiers Rivages, 3 150 aux Îles Brumeuses, 3 050 aux Anciens Ateliers, 3 250 aux Îles du Ciel', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const somme = BIOMES.filter((b) => b.classe === a).reduce((n, b) => n + nbTriangles(sentinellePeinte(b.id)), 0);
-      expect(somme, a).toBeLessThanOrEqual(2_780);
+      expect(somme, a).toBeLessThanOrEqual(a === '6e' ? 2_950 : a === '5e' ? 3_150 : a === '4e' ? 3_050 : 3_250);
     }
   });
 
@@ -216,7 +244,20 @@ describe('Les Gardiens en sentinelles', () => {
       });
 
       it('de la pierre, du lichen, des orbites et la lueur, rien d’autre', () => {
-        const permises = new Set<number>([SENTINELLE.pierre, SENTINELLE.lichen, SENTINELLE.orbite, LUEUR]);
+        // (Et le rameau de la Colombe d'albâtre, vert une fois rallumée, HG-3 ; le rocher gris de la Tortue d'ocre, SC-3 ;
+        // la nacre, le ventre et la gorge de l'Hirondelle de nacre, EMC-2.)
+        const permises = new Set<number>([
+          SENTINELLE.pierre,
+          SENTINELLE.lichen,
+          SENTINELLE.orbite,
+          LUEUR,
+          ...(b.id === 'history-3e-twentieth-century' ? [SENTINELLE.rameau] : []),
+          ...(b.id === 'life-earth-sciences-5e-active-planet' ? [SENTINELLE.roche] : []),
+          ...(b.id === 'civics-6e-democratic-society' ? [SENTINELLE.nacre, SENTINELLE.ventre, SENTINELLE.gorge] : []),
+          // Le clair des favoris du Lynx d'agate, des ailes de la Cigale d'argile, des pages du livre du Centaure (DA,
+          // captures emc-4e-3e-1).
+          ...(b.id === 'civics-4e-rights-freedoms' || b.id === 'lca-4e-cities' || b.id === 'lca-3e-ideas' ? [SENTINELLE.ventre] : []),
+        ]);
         for (const p of f.palette) expect(permises.has(p.couleur), p.couleur.toString(16)).toBe(true);
       });
 
@@ -228,7 +269,9 @@ describe('Les Gardiens en sentinelles', () => {
           expect(nom(t)).toBe('sculpture');
           // Vers −Z, tournées avec la statue quand elle se tourne pour se montrer de profil (`tour`).
           const tour = STATUES[b.id].tour?.monde ?? 0;
-          expect(-Math.sin(tour) * f.normals[t * 9] - Math.cos(tour) * f.normals[t * 9 + 2]).toBeGreaterThan(0.95);
+          // Les yeux d'un oiseau, sur les côtés de sa tête (la Colombe d'albâtre, HG-3) : vers ±X, tournés avec elle.
+          if (YEUX_DE_COTE.includes(b.id)) expect(Math.abs(Math.cos(tour) * f.normals[t * 9] - Math.sin(tour) * f.normals[t * 9 + 2])).toBeGreaterThan(0.95);
+          else expect(-Math.sin(tour) * f.normals[t * 9] - Math.cos(tour) * f.normals[t * 9 + 2]).toBeGreaterThan(0.95);
         }
       });
 
@@ -248,7 +291,17 @@ describe('Les Gardiens en sentinelles', () => {
 
 describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligence)', () => {
   const tournees = BIOMES.filter((b) => STATUES[b.id].tour);
-  it('la Diligence, et le Soleil et le Papillon de cuivre, qu’on ne doit pas voir par la tranche', () => expect(tournees.map((b) => b.id).sort()).toEqual(['lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions']));
+  it('la Diligence, et le Soleil, le Papillon de cuivre et le Grand-bi d’érable, qu’on ne doit pas voir par la tranche ; la Colombe d’albâtre, la Cigale et le Centaure d’argile, de profil ou de trois quarts', () =>
+    expect(tournees.map((b) => b.id).sort()).toEqual(['history-3e-twentieth-century', 'lca-3e-ideas', 'lca-4e-cities', 'lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions', 'technology-4e-modeling']));
+
+  it('le Grand-bi d’érable, dans le monde : la plaque de son guidon, ses yeux, face à la caméra du Bassin (DA, relecture des captures SC-3)', () => {
+    const f = sentinellePeinte('technology-4e-modeling');
+    const v = versLaCamera('technology-4e-modeling');
+    const [cx, cz] = [v[0], v[1]].map((x) => x / Math.hypot(v[0], v[1]));
+    const orbites = [...f.teintes.keys()].filter((t) => f.teintes[t] === SENTINELLE.orbite);
+    expect(orbites.length).toBeGreaterThanOrEqual(2);
+    for (const t of orbites) expect(cx * f.normals[t * 9] + cz * f.normals[t * 9 + 2]).toBeGreaterThan(0.95);
+  });
 
   it('le Soleil de cuivre, dans le monde : de face (à 33° au plus) pour la caméra du Jardin (72°), du Théâtre (20 à 42°) et du rallumage (85°) ; dans les cinq cases', () => {
     const f = sentinellePeinte('lv2-4e-daily-life');
@@ -301,11 +354,21 @@ describe('Les sentinelles dans le monde (revue d’ensemble du directeur artisti
         const pied = pointDePose(p)[1];
         let haut = -Infinity;
         for (let t = f.plages[i].debut; t < f.plages[i].fin; t++) for (let k = 0; k < 3; k++) haut = Math.max(haut, f.positions[t * 9 + k * 3 + 1]);
-        // Une sentinelle basse (la Diligence) rapetisse de même, à partir de son propre haut.
+        // Une sentinelle basse (la Diligence) rapetisse de même, à partir de son propre haut ; sur son carré (GD-16 au
+        // 6e, GD-18 aux autres classes), elle grandit jusqu'à ce que sa largeur ou sa profondeur touche sa place
+        // (`guardianSquareRoom`), sans dépasser la hauteur commune.
         const basse = BASSES[p.id];
-        if (!basse) return expect(haut - pied, p.id).toBeCloseTo(HAUTEUR_DANS_LE_MONDE, 2);
+        if (!basse) return expect(haut - pied, p.id).toBeCloseTo(GUARDIAN_WORLD_HEIGHTS[p.id] ?? HAUTEUR_DANS_LE_MONDE, 2);
         expect(haut - pied, p.id).toBeGreaterThanOrEqual(basse[0] * ECHELLE_DANS_LE_MONDE - 0.005);
-        expect(haut - pied, p.id).toBeLessThanOrEqual(basse[1] * ECHELLE_DANS_LE_MONDE + 0.005);
+        expect(haut - pied, p.id).toBeLessThanOrEqual(HAUTEUR_DANS_LE_MONDE + 0.005);
+        const [cx, , cz] = pointDePose(p);
+        let [large, profond] = [0, 0];
+        for (let t = f.plages[i].debut; t < f.plages[i].fin; t++)
+          for (let k = 0; k < 3; k++) {
+            large = Math.max(large, Math.abs(f.positions[t * 9 + k * 3] - cx));
+            profond = Math.max(profond, Math.abs(f.positions[t * 9 + k * 3 + 2] - cz));
+          }
+        if (haut - pied < HAUTEUR_DANS_LE_MONDE - 0.005) expect(Math.max(large, profond), p.id).toBeCloseTo(guardianSquareRoom(p.id).half, 2);
       });
     }
   });
@@ -320,12 +383,12 @@ describe('Les sentinelles dans le monde (revue d’ensemble du directeur artisti
     }
   });
 
-  it('la caméra du rallumage vise le milieu de la sentinelle, un bloc au-dessus du point de l’îlot', () => {
+  it('la caméra du rallumage vise le milieu de la sentinelle, un bloc au-dessus du milieu de son carré (GD-11)', () => {
     for (const b of BIOMES.filter((x) => x.classe === '6e')) {
       const g = guardianPlacements('6e', progress, village.links).find((p) => p.id === b.id);
       if (!g) continue;
       const pied = pointDePose(g)[1];
-      expect(bossIsletCenter(b.id).z + 1, b.id).toBeCloseTo(pied + HAUTEUR_DANS_LE_MONDE / 2, 1);
+      expect(guardianCenter(b.id).z + 1, b.id).toBeCloseTo(pied + (GUARDIAN_WORLD_HEIGHTS[b.id] ?? HAUTEUR_DANS_LE_MONDE) / 2, 1);
     }
   });
 });

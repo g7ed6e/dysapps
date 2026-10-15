@@ -11,11 +11,11 @@ import { cadreDeLaLiaison, ileDeLaVueGlissee, islandCenter, worldBounds } from '
 import { getBridge } from '../world/archipelago';
 import { cubeTags, type VoyageRun } from '../world/scene';
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
-import { centreDeLObjet, cleDeLaCreature, cleDeLObjet, signesDesObjets, sommetsDesBornes, type ObjetDeLaFiche, type ObjetTouche } from '../world/affordance';
+import { boitesDesCreatures, centreDeLObjet, cleDeLaCreature, cleDeLObjet, signesDesObjets, sommetsDesBornes, type ObjetDeLaFiche, type ObjetTouche } from '../world/affordance';
 import { useEnCasesDuMonde } from '../useInWorldCells';
 import { createMeter } from './meter';
 import { habillageDe } from '../skin';
-import { mesuresDemandees, renduDuMonde, styleDuMonde } from '../rendering';
+import { mesuresDemandees, meterShown, renduDuMonde, styleDuMonde } from '../rendering';
 import { useSettings } from '../../core/SettingsContext';
 import { surfaceDe } from './surface';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './scenePart';
@@ -30,6 +30,8 @@ import { creerSignes, type Signes } from './signs';
 import { creerCubes, type Cubes } from './cubes';
 import { creerNavire, type Amarre, type Navire } from './ship';
 import { creerCamera, type Camera } from './camera';
+import type { InterfaceDeLaVue } from './camera/framings';
+import { cleDesZones, zonesCouvertes } from '../coveredZones';
 import { creerRond } from './groundRing';
 import { ecouterLeClavier, ecouterLesGestes } from './gestures';
 import { lancerLaBoucle } from './loop';
@@ -65,6 +67,12 @@ interface Scene3D {
 /** Pas de créatures : une seule liste vide, pour que les signes des objets ne se recalculent pas à chaque rendu. */
 const SANS_CREATURES: NonNullable<WorldViewProps['creatures']> = [];
 
+/**
+ * À l'ouverture de sa fiche, le milieu d'un Gardien reste à tant (en part du petit côté de la vue) du bord de la place
+ * libre, sinon la caméra le recentre : un Gardien fait jusqu'à 9 cases de large, une centaine de pixels sur la tablette.
+ */
+const MARGE_D_UN_GARDIEN = 0.15;
+
 export default function WorldCanvas({
   archipelago,
   cubes,
@@ -96,6 +104,7 @@ export default function WorldCanvas({
   onVueDeplacee,
   recentrage = 0,
   fiche = null,
+  selectedIsland = null,
   situer,
   className,
   label,
@@ -159,8 +168,9 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [liaisonCadree, bridges.join(',')]);
   const modeDAmenager = amenager ? (amenager.vue ? 'choix' : 'mode') : 'non';
-  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd, amenager: modeDAmenager });
-  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd, amenager: modeDAmenager };
+  const glisserLeChoix = amenager?.glisser ?? null;
+  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd, amenager: modeDAmenager, glisserLeChoix });
+  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd, amenager: modeDAmenager, glisserLeChoix };
   // Le passage de la baleine : demandé par `whalePass`, joué une fois par `seq` (même si la scène est refaite).
   const passSeqRef = useRef<number | null>(null);
   // Les liaisons posées (GD-9), lues par la scène quand elle se construit et à chaque trajet : elle n'est pas refaite pour elles.
@@ -178,8 +188,8 @@ export default function WorldCanvas({
     renderer.domElement.style.width = '100%';
     renderer.domElement.style.height = '100%';
     renderer.domElement.style.touchAction = 'none';
-    // Le compteur de mesures (lot R0) : visible avec `?mesures`, lisible par les scripts en développement.
-    const meter = createMeter(el, rendu, mesuresDemandees(), import.meta.env.DEV || mesuresDemandees());
+    // Le compteur de mesures (lot R0) : visible avec `?mesures` ou son réglage, lisible par les scripts en développement.
+    const meter = createMeter(el, rendu, meterShown(), import.meta.env.DEV || mesuresDemandees());
 
     const scene = new THREE.Scene();
     const bounds = worldBounds(archipelago);
@@ -249,8 +259,26 @@ export default function WorldCanvas({
     const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant, lecteurDePlaceLibre(el), ileVisee);
     const affordance = creerAffordance(derniers, instant);
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
+    // La taille de la vue, tenue à jour par `resize`, et ce que l'interface y pose (les boutons du haut, la barre du bas),
+    // relu quand la vue change de taille ou quand la page remesure sa colonne et sa barre (`--colonne-bas`, `--barre-h`,
+    // ../useBubblePlacement.ts, écrits sur la scène) : la caméra y cadre les bornes au téléphone.
+    const vue: { w: number; h: number; ui: InterfaceDeLaVue | null } = { w: el.clientWidth, h: el.clientHeight, ui: null };
+    const scenePosee = el.closest<HTMLElement>('[data-scene]');
+    let cleDeLInterface = '';
+    const lireLInterface = () => {
+      const boutons = zonesCouvertes(el, 1, '[data-couvre="bouton"]');
+      const barre = Number.parseFloat(scenePosee?.style.getPropertyValue('--barre-h') ?? '') || 0;
+      const cle = `${cleDesZones(boutons)}|${barre}`;
+      if (cle === cleDeLInterface) return;
+      cleDeLInterface = cle;
+      vue.ui = { boutons, barre };
+    };
+    lireLInterface();
+    const remesure = typeof MutationObserver === 'undefined' ? null : new MutationObserver(lireLInterface);
+    if (scenePosee) remesure?.observe(scenePosee, { attributes: true, attributeFilter: ['style'] });
     const lecture = {
       place: lecteurDePlaceLibre(el),
+      vue,
       // L'île de la flèche, ou la case où elle se pose sur un ouvrage (GD-7) : le cadrage garde la flèche dans la vue.
       destination: () => {
         const { ouvrage, pointe, island } = bornes.donneesDeLaFleche();
@@ -260,15 +288,20 @@ export default function WorldCanvas({
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
     // Une poignée du mode sort de la place libre : la Carte glisse pour poser le milieu du choix au milieu de la place
     // libre (pas pendant un glissé de l'élève ; une fois le doigt levé).
-    const ramenerLesPoignees = (p: { cx: number; cy: number; z: number }) => {
+    // Avec `ecart` (GD-12, relecture UX UI du 9 octobre 2026) : la Carte glisse juste de quoi les ramener dans la place,
+    // le milieu du choix posé là où la caméra visée le montre, décalé d'autant ; le cadre de la région reste entier.
+    const ramenerLesPoignees = (p: { cx: number; cy: number; z: number }, ecart: { x: number; y: number } | null) => {
       if (cadrage.glissant) return false;
       const libre = lirePlaceReelle(el);
       const w = Math.max(1, el.clientWidth);
       const h = Math.max(1, el.clientHeight);
-      cadrage.recadrer(new THREE.Vector3(p.cx, p.z, p.cy), { x: (libre.x0 + libre.x1) / w - 1, y: 1 - (libre.y0 + libre.y1) / h });
+      const point = new THREE.Vector3(p.cx, p.z, p.cy);
+      const vu = ecart ? cadrage.auBut(point, w, h) : null;
+      const ou = vu && ecart ? { x: vu.x + ecart.x, y: vu.y + ecart.y } : { x: (libre.x0 + libre.x1) / 2, y: (libre.y0 + libre.y1) / 2 };
+      cadrage.recadrer(point, { x: (2 * ou.x) / w - 1, y: 1 - (2 * ou.y) / h });
       return true;
     };
-    const amenagement = creerAmenagement(monde, reduceMotion, camera, el, lumiere, () => ecranDuModeRef.current, ramenerLesPoignees);
+    const amenagement = creerAmenagement(monde, reduceMotion, camera, el, lumiere, () => ecranDuModeRef.current, ramenerLesPoignees, () => cadrage.cameraAuBut());
     world.current = {
       amenagement,
       garderEnVue: ({ rect: r, z }) => {
@@ -316,14 +349,17 @@ export default function WorldCanvas({
     if (ici?.route.length) personnages.marcher({ route: [ici.route[ici.route.length - 1]], seq: 0 });
     // Les captures (scripts/prise-de-vue.mjs) posent la caméra à son cadrage sans attendre son pas : lisible par les
     // scripts, comme le compteur de mesures.
-    // `ecran` : où un point du monde (en cases) se pose dans la page, pour viser une construction à la molette.
+    // `ecran` : où un point du monde (en cases) se pose dans la page, pour viser une construction à la molette ;
+    // `bonhomme` : où se pose son buste (un bloc au-dessus de ses pieds), pour le voir de près (famille `keo`).
+    const dansLaPage = (v: THREE.Vector3) => {
+      const e = cadrage.auBut(v, el.clientWidth, el.clientHeight);
+      const r = el.getBoundingClientRect();
+      return e ? { x: e.x + r.left, y: e.y + r.top } : null;
+    };
     const pourLesCaptures = {
       poser: () => cadrage.poser(),
-      ecran: (p: { x: number; y: number; z: number }) => {
-        const e = cadrage.auBut(new THREE.Vector3(p.x, p.z, p.y), el.clientWidth, el.clientHeight);
-        const r = el.getBoundingClientRect();
-        return e ? { x: e.x + r.left, y: e.y + r.top } : null;
-      },
+      ecran: (p: { x: number; y: number; z: number }) => dansLaPage(new THREE.Vector3(p.x, p.z, p.y)),
+      bonhomme: () => dansLaPage(personnages.avatar.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 1, 0))),
     };
     if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsCamera = pourLesCaptures;
     /** La vue déplacée, telle que la page la connaît : on ne la prévient que quand cela change. */
@@ -338,10 +374,28 @@ export default function WorldCanvas({
       cadrage.recentrer(aussiLeZoom);
       signaler();
     };
+    // Les personnages d'Archipéo importés de près sur l'île que la caméra regarde (le centre de la vue, au niveau de la
+    // mer), relu quatre fois par seconde : une île changée refait la fusion des personnages, et la construction de l'île
+    // quittée et de l'île approchée (leur bâtiment importé de près ou de loin). Rien sur la Carte.
+    const auNiveauDeLaMer = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    const regard = new THREE.Raycaster();
+    const centreDeLaVue = new THREE.Vector2(0, 0);
+    const pointRegarde = new THREE.Vector3();
+    let prochainRegard = 0;
+    const viseur: PartieDeLaScene = {
+      animer: (t) => {
+        if (t < prochainRegard || instant.carte || derniers.current.carte) return;
+        prochainRegard = t + 0.25;
+        regard.setFromCamera(centreDeLaVue, camera);
+        if (regard.ray.intersectPlane(auNiveauDeLaMer, pointRegarde)) personnages.viser(pointRegarde.x, pointRegarde.z);
+        cubesDuMonde.approcher(personnages.ileDePres());
+      },
+      dispose: () => {},
+    };
     /** Ce qui bouge dans le monde, avant la caméra : le bonhomme, puis le navire (qui le fait embarquer et débarquer). */
     const deplacements: PartieDeLaScene[] = [personnages, navire];
     /** Le reste de l'image, dans cet ordre : la caméra suit ce qui a bougé ; les étiquettes se placent pour elle, en dernier. */
-    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, affordance, brume, lumiere, large, navire, cubesDuMonde, rond, amenagement, signesDesCreatures, etiquettes];
+    const parties: PartieDeLaScene[] = [personnages, cadrage, viseur, bornes, affordance, brume, lumiere, large, navire, cubesDuMonde, rond, amenagement, signesDesCreatures, etiquettes];
 
     /** Un objet touché répond : la pile d'étoiles d'une borne réussie saute, sinon sa bulle rebondit, s'il en a une. */
     const sauterLeSigne = (objet: ObjetTouche) => {
@@ -371,10 +425,13 @@ export default function WorldCanvas({
       const vue = el.getBoundingClientRect();
       const ecran = cadrage.auBut(point, vue.width, vue.height);
       const f = feuille.getBoundingClientRect();
-      // Hors de la vue (« Relier », « Y aller »), il est aussi caché.
-      const horsDeLaVue = !ecran || ecran.x < 0 || ecran.y < 0 || ecran.x > vue.width || ecran.y > vue.height;
-      if (!horsDeLaVue && !sousLaFiche(ecran, { x0: f.left - vue.left, y0: f.top - vue.top, x1: f.right - vue.left, y1: f.bottom - vue.top })) return;
+      // Hors de la vue (« Relier », « Y aller »), il est aussi caché. Un Gardien, grand, se voit entier : son milieu à
+      // plus de `MARGE_D_UN_GARDIEN` du bord de la place libre (à l'Escale, au bord de la vue de l'île, il était coupé
+      // dans le coin, HG-3).
       const { libre } = lirePlaceLibre(el);
+      const m = objet.genre === 'gardien' ? MARGE_D_UN_GARDIEN * Math.min(vue.width, vue.height) : 0;
+      const horsDeLaVue = !ecran || (m ? ecran.x < libre.x0 + m || ecran.y < libre.y0 + m || ecran.x > libre.x1 - m || ecran.y > libre.y1 - m : ecran.x < 0 || ecran.y < 0 || ecran.x > vue.width || ecran.y > vue.height);
+      if (!horsDeLaVue && !sousLaFiche(ecran, { x0: f.left - vue.left, y0: f.top - vue.top, x1: f.right - vue.left, y1: f.bottom - vue.top })) return;
       const w = Math.max(1, el.clientWidth);
       const h = Math.max(1, el.clientHeight);
       cadrage.recadrer(point, { x: ((libre.x0 + libre.x1) / w) - 1, y: 1 - (libre.y0 + libre.y1) / h });
@@ -420,6 +477,9 @@ export default function WorldCanvas({
       const w = el.clientWidth;
       const h = el.clientHeight;
       if (!w || !h) return;
+      vue.w = w;
+      vue.h = h;
+      lireLInterface();
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
@@ -460,6 +520,7 @@ export default function WorldCanvas({
       arreterLaBoucle();
       arreterLeClavier();
       observer.disconnect();
+      remesure?.disconnect();
       arreterLesGestes();
       for (const p of parties) p.dispose();
       meter?.dispose();
@@ -492,6 +553,7 @@ export default function WorldCanvas({
     w.amenagement.poser(vueDuMode);
     // Le lieu choisi : son nom n'est écrit qu'une fois, sur son fantôme.
     w.etiquettes.cacher(vueDuMode?.lieu ?? null);
+    w.etiquettes.estomper(vueDuMode?.zoneDuGlisse ? { ...vueDuMode.zoneDuGlisse, z: vueDuMode.suivre.z } : null);
     // La vue garde à l'écran le fantôme et ses poignées sur l'eau autour de lui.
     if (vueDuMode) {
       const p = vueDuMode.poignees;
@@ -500,13 +562,6 @@ export default function WorldCanvas({
     // Reposé aussi quand la scène est refaite (un lieu posé, la préférence de mouvement).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vueDuMode, reduceMotion, archipelago]);
-  // ---- Sans choix, les poignées des bouts de liaison (choix 1a du mainteneur, 6 octobre 2026)
-  const boutsDuMode = amenager?.bouts ?? null;
-  useEffect(() => {
-    world.current?.amenagement.poserLesBouts(boutsDuMode);
-    // Reposé aussi quand la scène est refaite (un lieu posé, la préférence de mouvement).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boutsDuMode, reduceMotion, archipelago]);
   // ---- Le bouton d'une poignée touché : la poignée dessinée s'enfonce et remonte
   const touchersDuMode = amenager?.touchers;
   useEffect(() => touchersDuMode?.ecouter((cle) => world.current?.amenagement.toucher(cle)), [touchersDuMode]);
@@ -582,6 +637,16 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [creatures, reduceMotion, archipelago]);
 
+  // ---- L'île où l'on arrive : ses personnages d'Archipéo importés de près, ceux des autres îles de loin (aucune sur la
+  // Carte) ; ensuite, l'île que la caméra regarde (`viseur`).
+  const pres = map ? null : (home ?? null);
+  useEffect(() => {
+    world.current?.personnages.approcher(pres);
+    // Le bâtiment importé de la même île, de près (world/buildingModels.ts).
+    world.current?.cubes.approcher(world.current.personnages.ileDePres());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pres, reduceMotion, archipelago]);
+
   // ---- Les créatures qui font signe (GD-4, étape 1) : un geste à l'arrivée sur leur île, puis l'icône de la notion
   const signesKey = signes.map((x) => `${x.id}:${x.icone}:${x.bloc ?? ''}`).join('|');
   useEffect(() => {
@@ -597,7 +662,7 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rallumage?.id, rallumage?.seq]);
 
-  // ---- Le Bloc-Navire : la coque (tout ce qui est sous le mât) et le ballon, qui pivote au sommet du mât
+  // ---- La Nef : la coque (tout ce qui est sous le mât) et le ballon, qui pivote au sommet du mât
   useEffect(() => {
     world.current?.navire.poser(vehicle);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -670,9 +735,15 @@ export default function WorldCanvas({
   // ---- Les objets touchables (world/affordance.ts) : leurs zones de toucher, et une bulle au-dessus de ceux
   // qui sont à faire (trois au plus sur l'île où l'on est, la prochaine chose à faire mise en avant).
   const signesDuMonde = useMemo(
-    () => signesDesObjets({ cubes, quests, creatures, vehicle, etats: etatsDesObjets }),
-    [cubes, quests, creatures, vehicle, etatsDesObjets],
+    // Les Gardiens d'Archipéo sont des sentinelles : leur bulle et leur zone suivent la statue, pas les cubes du Gardien.
+    () => signesDesObjets({ cubes, quests, creatures, vehicle, etats: etatsDesObjets, gardiens: habillageDe(rendu).personnages === 'modeles' ? 'sentinelles' : 'cubes' }),
+    [cubes, quests, creatures, vehicle, etatsDesObjets, rendu],
   );
+  // Les créatures de Blocland, petites (GD-16), se touchent aussi tout autour ; celles en modèles d'Archipéo, à leur taille.
+  useEffect(() => {
+    world.current?.affordance.poserLesCreatures(habillageDe(rendu).personnages === 'modeles' ? [] : boitesDesCreatures(creatures));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [creatures, rendu, reduceMotion, archipelago]);
   useEffect(() => {
     world.current?.affordance.poser(signesDuMonde);
     world.current?.signes.poserLesObjets(signesDuMonde, prochaine);
@@ -698,6 +769,14 @@ export default function WorldCanvas({
     // Une fois par fiche ouverte.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fiche?.seq]);
+
+  // ---- L'île touchée garde son nom (référent dys, 9 octobre 2026) : sur la Carte, l'île fermée choisie ; ailleurs, celle
+  // dont la fiche est ouverte.
+  const ileTouchee = map ? selectedIsland : fiche?.objet.genre === 'ile' ? fiche.objet.id : null;
+  useEffect(() => {
+    world.current?.etiquettes.keepShown(ileTouchee);
+    // Reposée aussi quand la scène est refaite (un autre archipel, la préférence de mouvement).
+  }, [ileTouchee, reduceMotion, archipelago]);
 
   // ---- Caméra : l'île demandée (ou le bonhomme) est rejointe en douceur par la boucle ; au premier cadrage, d'un coup.
   useEffect(() => {

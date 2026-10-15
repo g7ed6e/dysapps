@@ -141,6 +141,16 @@ export function estPrete(state: Pick<GameState, 'stock'>, c: Commande): boolean 
   return (state.stock[c.block] ?? 0) >= c.count;
 }
 
+/**
+ * La commande à livrer chez la créature d'une île : la sienne, arrivée, pas livrée et prête. Elle se livre d'un toucher sur
+ * la créature même quand elle n'est pas la prochaine destination : une commande prête ne se refuse jamais (la plaque,
+ * elle, reste à la seule commande suggérée, `signeDeLaCreature`).
+ */
+export function commandeALivrerChez(state: Pick<GameState, 'stock' | 'world'>, ile: BiomeId): Commande | undefined {
+  const c = commandeDeLIle(ile);
+  return c && commandesArrivees(state.world).includes(c.id) && estPrete(state, c) ? c : undefined;
+}
+
 /** La seule commande mise en avant d'un archipel : la plus ancienne des prêtes (GD-7, point 5). */
 export function commandeMiseEnAvant(state: Pick<GameState, 'stock' | 'world'>, a: ArchipelagoId): Commande | undefined {
   return commandesOuvertes(state.world, a).find((c) => estPrete(state, c));

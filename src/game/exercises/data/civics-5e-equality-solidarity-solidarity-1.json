@@ -1,0 +1,240 @@
+{
+  "id": "civics-5e-equality-solidarity-solidarity-1",
+  "biome": "civics-5e-equality-solidarity",
+  "type": "solidarity",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-1-0",
+      "prompt": "La devise de la République est « Liberté, Égalité, … ».",
+      "spoken": "La devise de la République est : Liberté, Égalité, (mot manquant)",
+      "choices": [
+        "Solidarité",
+        "Fraternité",
+        "Laïcité"
+      ],
+      "answer": "Fraternité",
+      "hint": "Pense au fronton des mairies et des écoles.",
+      "explanation": "La devise est « Liberté, Égalité, Fraternité ». La solidarité est liée à la fraternité : s’entraider, comme dans une famille.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité",
+          "lines": [
+            "La solidarité : s’entraider, pour protéger chacun.",
+            "Les risques sociaux : la maladie, l’accident, la perte d’emploi, le grand âge.",
+            "La Sécurité sociale rembourse une partie des soins.",
+            "L’impôt finance les services publics, comme l’école.",
+            "La commune, le département et la région ont chacun leurs missions.",
+            "Les associations aident aussi, souvent avec des bénévoles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-1-1",
+      "prompt": "Quand on est malade, la Sécurité sociale rembourse une partie des …",
+      "spoken": "Quand on est malade, la Sécurité sociale rembourse une partie des  (mot manquant) ",
+      "choices": [
+        "loyers",
+        "courses",
+        "soins"
+      ],
+      "answer": "soins",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "La Sécurité sociale rembourse une partie des soins : chacun cotise, et chacun est aidé quand il est malade.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité",
+          "lines": [
+            "La solidarité : s’entraider, pour protéger chacun.",
+            "Les risques sociaux : la maladie, l’accident, la perte d’emploi, le grand âge.",
+            "La Sécurité sociale rembourse une partie des soins.",
+            "L’impôt finance les services publics, comme l’école.",
+            "La commune, le département et la région ont chacun leurs missions.",
+            "Les associations aident aussi, souvent avec des bénévoles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-1-2",
+      "prompt": "La maladie, l’accident ou la perte d’emploi sont des risques …",
+      "spoken": "La maladie, l’accident ou la perte d’emploi sont des risques  (mot manquant) ",
+      "choices": [
+        "sociaux",
+        "naturels",
+        "numériques"
+      ],
+      "answer": "sociaux",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Ce sont des risques sociaux : des événements qu’on ne pourrait pas affronter seul, avec son seul argent. La solidarité nationale aide.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité",
+          "lines": [
+            "La solidarité : s’entraider, pour protéger chacun.",
+            "Les risques sociaux : la maladie, l’accident, la perte d’emploi, le grand âge.",
+            "La Sécurité sociale rembourse une partie des soins.",
+            "L’impôt finance les services publics, comme l’école.",
+            "La commune, le département et la région ont chacun leurs missions.",
+            "Les associations aident aussi, souvent avec des bénévoles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-1-3",
+      "prompt": "La TVA, un impôt\nElle est comprise dans le prix de ce que l’on achète.\nUn collégien qui achète un livre la paie aussi.",
+      "question": "Qui paie cet impôt ?",
+      "spoken": "La T V A, un impôt. Elle est comprise dans le prix de ce que l’on achète. Un collégien qui achète un livre la paie aussi.",
+      "choices": [
+        "seulement les adultes qui travaillent",
+        "tous ceux qui achètent",
+        "seulement les entreprises"
+      ],
+      "answer": "tous ceux qui achètent",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Cet impôt, la taxe sur la valeur ajoutée, est compris dans le prix : tous ceux qui achètent la paient, même un collégien. Chacun participe ainsi aux dépenses communes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité",
+          "lines": [
+            "La solidarité : s’entraider, pour protéger chacun.",
+            "Les risques sociaux : la maladie, l’accident, la perte d’emploi, le grand âge.",
+            "La Sécurité sociale rembourse une partie des soins.",
+            "L’impôt finance les services publics, comme l’école.",
+            "La commune, le département et la région ont chacun leurs missions.",
+            "Les associations aident aussi, souvent avec des bénévoles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-1-4",
+      "prompt": "L’argent des impôts sert à payer les services …",
+      "spoken": "L’argent des impôts sert à payer les services  (mot manquant) ",
+      "choices": [
+        "bancaires",
+        "publics",
+        "commerciaux"
+      ],
+      "answer": "publics",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Les impôts financent les services publics : l’école, les hôpitaux, les routes, les pompiers. C’est la part de chacun à la solidarité nationale.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité",
+          "lines": [
+            "La solidarité : s’entraider, pour protéger chacun.",
+            "Les risques sociaux : la maladie, l’accident, la perte d’emploi, le grand âge.",
+            "La Sécurité sociale rembourse une partie des soins.",
+            "L’impôt finance les services publics, comme l’école.",
+            "La commune, le département et la région ont chacun leurs missions.",
+            "Les associations aident aussi, souvent avec des bénévoles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-1-5",
+      "prompt": "Qui fait quoi ?\nLa commune : la cantine de l’école.\nLe département : l’aide aux personnes âgées.\nLa région : les trains régionaux.",
+      "question": "Qui aide les personnes âgées ?",
+      "spoken": "Qui fait quoi ? La commune, la cantine de l’école. Le département, l’aide aux personnes âgées. La région, les trains régionaux.",
+      "choices": [
+        "la commune",
+        "la région",
+        "le département"
+      ],
+      "answer": "le département",
+      "hint": "Cherche la ligne qui parle des personnes âgées.",
+      "explanation": "Le département aide les personnes âgées et les personnes en difficulté. La commune s’occupe de l’école, la région des trains régionaux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité",
+          "lines": [
+            "La solidarité : s’entraider, pour protéger chacun.",
+            "Les risques sociaux : la maladie, l’accident, la perte d’emploi, le grand âge.",
+            "La Sécurité sociale rembourse une partie des soins.",
+            "L’impôt finance les services publics, comme l’école.",
+            "La commune, le département et la région ont chacun leurs missions.",
+            "Les associations aident aussi, souvent avec des bénévoles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-1-6",
+      "prompt": "Une association qui distribue des repas aux personnes dans le besoin agit par …",
+      "spoken": "Une association qui distribue des repas aux personnes dans le besoin agit par  (mot manquant) ",
+      "choices": [
+        "solidarité",
+        "obligation",
+        "intérêt personnel"
+      ],
+      "answer": "solidarité",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Les associations agissent par solidarité, souvent avec des bénévoles. Elles réduisent les inégalités, avec l’État et les collectivités.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité",
+          "lines": [
+            "La solidarité : s’entraider, pour protéger chacun.",
+            "Les risques sociaux : la maladie, l’accident, la perte d’emploi, le grand âge.",
+            "La Sécurité sociale rembourse une partie des soins.",
+            "L’impôt finance les services publics, comme l’école.",
+            "La commune, le département et la région ont chacun leurs missions.",
+            "Les associations aident aussi, souvent avec des bénévoles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-1-7",
+      "prompt": "Donner son sang, sans être payé, pour soigner des inconnus, est un geste de …",
+      "spoken": "Donner son sang, sans être payé, pour soigner des inconnus, est un geste de  (mot manquant) ",
+      "choices": [
+        "commerce",
+        "solidarité",
+        "compétition"
+      ],
+      "answer": "solidarité",
+      "hint": "On donne, sans rien recevoir en retour.",
+      "explanation": "Le don du sang est gratuit : on donne pour soigner des inconnus. C’est un geste de solidarité et de citoyenneté.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité",
+          "lines": [
+            "La solidarité : s’entraider, pour protéger chacun.",
+            "Les risques sociaux : la maladie, l’accident, la perte d’emploi, le grand âge.",
+            "La Sécurité sociale rembourse une partie des soins.",
+            "L’impôt finance les services publics, comme l’école.",
+            "La commune, le département et la région ont chacun leurs missions.",
+            "Les associations aident aussi, souvent avec des bénévoles."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-5e-equality-solidarity",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

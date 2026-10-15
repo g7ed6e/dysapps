@@ -1,0 +1,234 @@
+{
+  "id": "life-earth-sciences-5e-active-planet-human-impact-2",
+  "biome": "life-earth-sciences-5e-active-planet",
+  "type": "human-impact",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-2-0",
+      "prompt": "Une mare, avec son eau, ses plantes, ses grenouilles et ses insectes, forme un …",
+      "spoken": "Une mare, avec son eau, ses plantes, ses grenouilles et ses insectes, forme un  (mot manquant) ",
+      "choices": [
+        "climat",
+        "écosystème",
+        "continent"
+      ],
+      "answer": "écosystème",
+      "hint": "Relis la ligne « Écosystème » du rappel.",
+      "explanation": "Un milieu et tous les êtres vivants qui y vivent forment un écosystème. La mare en est un, comme la forêt ou la prairie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’humain et les écosystèmes",
+          "lines": [
+            "Écosystème : un milieu et tous les êtres vivants qui y vivent.",
+            "Les êtres vivants dépendent les uns des autres.",
+            "Une espèce venue d’ailleurs peut envahir un milieu : c’est une espèce invasive.",
+            "Un pesticide peut tuer bien plus que l’animal visé.",
+            "Pour protéger : trier, moins gaspiller, marcher, faire du vélo, créer des réserves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-2-1",
+      "prompt": "Dans un lac\nOn a lâché un poisson venu d’un autre continent.\nIl mange les œufs des poissons du lac.\nIci, aucun animal ne le mange.",
+      "question": "Que va-t-il arriver aux poissons du lac ?",
+      "spoken": "Dans un lac. On a lâché un poisson venu d’un autre continent. Il mange les œufs des poissons du lac. Ici, aucun animal ne le mange.",
+      "choices": [
+        "ils vont être plus nombreux",
+        "rien ne va changer",
+        "ils vont être moins nombreux"
+      ],
+      "answer": "ils vont être moins nombreux",
+      "hint": "Que deviennent les œufs des poissons du lac ?",
+      "explanation": "Le nouveau poisson mange leurs œufs, et personne ne le mange : les poissons du lac vont diminuer. C’est une espèce invasive.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’humain et les écosystèmes",
+          "lines": [
+            "Écosystème : un milieu et tous les êtres vivants qui y vivent.",
+            "Les êtres vivants dépendent les uns des autres.",
+            "Une espèce venue d’ailleurs peut envahir un milieu : c’est une espèce invasive.",
+            "Un pesticide peut tuer bien plus que l’animal visé.",
+            "Pour protéger : trier, moins gaspiller, marcher, faire du vélo, créer des réserves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-2-2",
+      "prompt": "Un champ, avant et après un pesticide contre les pucerons\nAvant : 50 pucerons, 20 coccinelles.\nAprès : 5 pucerons, 2 coccinelles.",
+      "question": "Qu’a fait le pesticide ?",
+      "spoken": "Un champ, avant et après un pesticide contre les pucerons. Avant, 50 pucerons, 20 coccinelles. Après, 5 pucerons, 2 coccinelles.",
+      "choices": [
+        "il a tué seulement les pucerons",
+        "il a tué aussi les coccinelles",
+        "il n’a rien fait"
+      ],
+      "answer": "il a tué aussi les coccinelles",
+      "hint": "Compare le nombre de coccinelles avant et après.",
+      "explanation": "Les coccinelles sont passées de 20 à 2 : le pesticide les a tuées aussi. Or les coccinelles mangent les pucerons : elles aidaient l’agriculteur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’humain et les écosystèmes",
+          "lines": [
+            "Écosystème : un milieu et tous les êtres vivants qui y vivent.",
+            "Les êtres vivants dépendent les uns des autres.",
+            "Une espèce venue d’ailleurs peut envahir un milieu : c’est une espèce invasive.",
+            "Un pesticide peut tuer bien plus que l’animal visé.",
+            "Pour protéger : trier, moins gaspiller, marcher, faire du vélo, créer des réserves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-2-3",
+      "prompt": "Une espèce venue d’ailleurs, qui prend la place des espèces d’un milieu, est une espèce …",
+      "spoken": "Une espèce venue d’ailleurs, qui prend la place des espèces d’un milieu, est une espèce  (mot manquant) ",
+      "choices": [
+        "protégée",
+        "disparue",
+        "invasive"
+      ],
+      "answer": "invasive",
+      "hint": "Relis la ligne « Une espèce venue d’ailleurs » du rappel.",
+      "explanation": "Une espèce qui envahit un milieu où elle n’était pas est une espèce invasive. Elle peut faire disparaître des espèces qui vivaient là.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’humain et les écosystèmes",
+          "lines": [
+            "Écosystème : un milieu et tous les êtres vivants qui y vivent.",
+            "Les êtres vivants dépendent les uns des autres.",
+            "Une espèce venue d’ailleurs peut envahir un milieu : c’est une espèce invasive.",
+            "Un pesticide peut tuer bien plus que l’animal visé.",
+            "Pour protéger : trier, moins gaspiller, marcher, faire du vélo, créer des réserves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-2-4",
+      "prompt": "La question de Malo : les abeilles sont-elles utiles aux pommiers ?\nArbre 1 : les abeilles vont sur les fleurs. 200 pommes.\nArbre 2 : un filet empêche les abeilles d’approcher. 20 pommes.",
+      "question": "Que montre cette expérience ?",
+      "spoken": "La question de Malo, les abeilles sont-elles utiles aux pommiers ? Arbre 1, les abeilles vont sur les fleurs. 200 pommes. Arbre 2, un filet empêche les abeilles d’approcher. 20 pommes.",
+      "choices": [
+        "les abeilles aident à faire les pommes",
+        "le filet fait pousser les pommes",
+        "les pommiers n’ont besoin de rien"
+      ],
+      "answer": "les abeilles aident à faire les pommes",
+      "hint": "Qu’est-ce qui change entre les deux arbres ?",
+      "explanation": "Seules les abeilles changent, et l’arbre sans abeilles donne bien moins de pommes. Les abeilles portent le pollen de fleur en fleur : sans elles, peu de fleurs deviennent des fruits.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’humain et les écosystèmes",
+          "lines": [
+            "Écosystème : un milieu et tous les êtres vivants qui y vivent.",
+            "Les êtres vivants dépendent les uns des autres.",
+            "Une espèce venue d’ailleurs peut envahir un milieu : c’est une espèce invasive.",
+            "Un pesticide peut tuer bien plus que l’animal visé.",
+            "Pour protéger : trier, moins gaspiller, marcher, faire du vélo, créer des réserves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-2-5",
+      "prompt": "Les abeilles portent le pollen de fleur en fleur : sans elles, il y aurait moins de …",
+      "spoken": "Les abeilles portent le pollen de fleur en fleur : sans elles, il y aurait moins de  (mot manquant) ",
+      "choices": [
+        "racines",
+        "fruits",
+        "feuilles"
+      ],
+      "answer": "fruits",
+      "hint": "Que devient une fleur qui a reçu du pollen ?",
+      "explanation": "Une fleur qui reçoit du pollen peut devenir un fruit. Sans abeilles, moins de fleurs deviennent des fruits : les êtres vivants dépendent les uns des autres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’humain et les écosystèmes",
+          "lines": [
+            "Écosystème : un milieu et tous les êtres vivants qui y vivent.",
+            "Les êtres vivants dépendent les uns des autres.",
+            "Une espèce venue d’ailleurs peut envahir un milieu : c’est une espèce invasive.",
+            "Un pesticide peut tuer bien plus que l’animal visé.",
+            "Pour protéger : trier, moins gaspiller, marcher, faire du vélo, créer des réserves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-2-6",
+      "prompt": "Trier ses déchets permet de les …",
+      "spoken": "Trier ses déchets permet de les  (mot manquant) ",
+      "choices": [
+        "recycler",
+        "cacher",
+        "garder"
+      ],
+      "answer": "recycler",
+      "hint": "Relis la ligne « Pour protéger » du rappel.",
+      "explanation": "Les déchets triés sont recyclés : on en refait du papier, du verre, du plastique. On prend ainsi moins de ressources dans la nature.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’humain et les écosystèmes",
+          "lines": [
+            "Écosystème : un milieu et tous les êtres vivants qui y vivent.",
+            "Les êtres vivants dépendent les uns des autres.",
+            "Une espèce venue d’ailleurs peut envahir un milieu : c’est une espèce invasive.",
+            "Un pesticide peut tuer bien plus que l’animal visé.",
+            "Pour protéger : trier, moins gaspiller, marcher, faire du vélo, créer des réserves."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-2-7",
+      "prompt": "Le trajet d’une bouteille jetée dans la rue\nLa pluie l’emporte dans la rivière.\nLa rivière l’emporte jusqu’à la mer.\nElle se casse en tout petits morceaux, que mangent les poissons.",
+      "question": "Quel geste évite ce trajet ?",
+      "spoken": "Le trajet d’une bouteille jetée dans la rue. La pluie l’emporte dans la rivière. La rivière l’emporte jusqu’à la mer. Elle se casse en tout petits morceaux, que mangent les poissons.",
+      "choices": [
+        "la laisser au soleil",
+        "la jeter dans la rivière",
+        "la mettre dans le bac de tri"
+      ],
+      "answer": "la mettre dans le bac de tri",
+      "hint": "Où la bouteille ne peut-elle plus partir avec la pluie ?",
+      "explanation": "Dans le bac de tri, la bouteille est ramassée et recyclée : elle n’arrive jamais à la mer. Le plastique ne disparaît pas : il se casse en morceaux qui restent dans l’eau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’humain et les écosystèmes",
+          "lines": [
+            "Écosystème : un milieu et tous les êtres vivants qui y vivent.",
+            "Les êtres vivants dépendent les uns des autres.",
+            "Une espèce venue d’ailleurs peut envahir un milieu : c’est une espèce invasive.",
+            "Un pesticide peut tuer bien plus que l’animal visé.",
+            "Pour protéger : trier, moins gaspiller, marcher, faire du vélo, créer des réserves."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien raisonné !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-5e-active-planet",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

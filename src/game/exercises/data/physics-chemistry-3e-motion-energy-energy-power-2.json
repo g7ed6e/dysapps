@@ -1,0 +1,242 @@
+{
+  "id": "physics-chemistry-3e-motion-energy-energy-power-2",
+  "biome": "physics-chemistry-3e-motion-energy",
+  "type": "energy-power",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-2-0",
+      "prompt": "La puissance d’un appareil se mesure en …",
+      "spoken": "La puissance d’un appareil se mesure en  (mot manquant) ",
+      "choices": [
+        "watts",
+        "volts",
+        "kilowattheures"
+      ],
+      "answer": "watts",
+      "hint": "Relis la ligne « La puissance se mesure » du rappel.",
+      "explanation": "La puissance se mesure en watts. Les kilowattheures mesurent une énergie, les volts une tension.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissance et énergie électriques",
+          "lines": [
+            "La puissance se mesure en watts (W). Un kilowatt (kW) : mille watts.",
+            "La puissance : on multiplie la tension par l’intensité (P = U × I).",
+            "L’énergie consommée : on multiplie la puissance par la durée.",
+            "Un kilowattheure (kWh) : un kilowatt pendant une heure.",
+            "Le compteur et la facture comptent l’énergie en kilowattheures.",
+            "Trop d’appareils sur une prise : l’intensité monte, les fils chauffent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-2-1",
+      "prompt": "Sur la facture d’électricité, l’énergie se compte en …",
+      "spoken": "Sur la facture d’électricité, l’énergie se compte en  (mot manquant) ",
+      "choices": [
+        "watts",
+        "kilowattheures",
+        "ampères"
+      ],
+      "answer": "kilowattheures",
+      "hint": "Relis la ligne « Le compteur » du rappel.",
+      "explanation": "La facture compte l’énergie consommée, en kilowattheures. Le watt mesure une puissance.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissance et énergie électriques",
+          "lines": [
+            "La puissance se mesure en watts (W). Un kilowatt (kW) : mille watts.",
+            "La puissance : on multiplie la tension par l’intensité (P = U × I).",
+            "L’énergie consommée : on multiplie la puissance par la durée.",
+            "Un kilowattheure (kWh) : un kilowatt pendant une heure.",
+            "Le compteur et la facture comptent l’énergie en kilowattheures.",
+            "Trop d’appareils sur une prise : l’intensité monte, les fils chauffent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-2-2",
+      "prompt": "La plaque sous le grille-pain\n230 V (volts)\n1 000 W (watts)",
+      "question": "Quelle est sa puissance ?",
+      "spoken": "La plaque sous le grille-pain. 230 volts. 1 000 watts.",
+      "choices": [
+        "230 watts",
+        "1 000 watts",
+        "1 230 watts"
+      ],
+      "answer": "1 000 watts",
+      "hint": "La puissance se dit en watts.",
+      "explanation": "La puissance est écrite en watts : 1 000 watts, un kilowatt. Le 230 est la tension de la prise, en volts.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissance et énergie électriques",
+          "lines": [
+            "La puissance se mesure en watts (W). Un kilowatt (kW) : mille watts.",
+            "La puissance : on multiplie la tension par l’intensité (P = U × I).",
+            "L’énergie consommée : on multiplie la puissance par la durée.",
+            "Un kilowattheure (kWh) : un kilowatt pendant une heure.",
+            "Le compteur et la facture comptent l’énergie en kilowattheures.",
+            "Trop d’appareils sur une prise : l’intensité monte, les fils chauffent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-2-3",
+      "prompt": "Une lampe de bureau\nTension : 12 V (volts).\nIntensité : 2 A (ampères).",
+      "question": "Quelle est sa puissance ?",
+      "spoken": "Une lampe de bureau. Tension, 12 volts. Intensité, 2 ampères.",
+      "choices": [
+        "6 watts",
+        "14 watts",
+        "24 watts"
+      ],
+      "answer": "24 watts",
+      "hint": "Relis la ligne « La puissance : on multiplie » du rappel.",
+      "explanation": "On multiplie la tension par l’intensité : 12 fois 2, 24 watts.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissance et énergie électriques",
+          "lines": [
+            "La puissance se mesure en watts (W). Un kilowatt (kW) : mille watts.",
+            "La puissance : on multiplie la tension par l’intensité (P = U × I).",
+            "L’énergie consommée : on multiplie la puissance par la durée.",
+            "Un kilowattheure (kWh) : un kilowatt pendant une heure.",
+            "Le compteur et la facture comptent l’énergie en kilowattheures.",
+            "Trop d’appareils sur une prise : l’intensité monte, les fils chauffent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-2-4",
+      "prompt": "Le radiateur\nPuissance : 2 kW (kilowatts).\nIl chauffe pendant 3 h (heures).",
+      "question": "Quelle énergie consomme-t-il ?",
+      "spoken": "Le radiateur. Puissance, 2 kilowatts. Il chauffe pendant 3 heures.",
+      "choices": [
+        "2 kilowattheures",
+        "5 kilowattheures",
+        "6 kilowattheures"
+      ],
+      "answer": "6 kilowattheures",
+      "hint": "Relis la ligne « L’énergie consommée » du rappel.",
+      "explanation": "On multiplie la puissance par la durée : 2 kilowatts fois 3 heures, 6 kilowattheures.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissance et énergie électriques",
+          "lines": [
+            "La puissance se mesure en watts (W). Un kilowatt (kW) : mille watts.",
+            "La puissance : on multiplie la tension par l’intensité (P = U × I).",
+            "L’énergie consommée : on multiplie la puissance par la durée.",
+            "Un kilowattheure (kWh) : un kilowatt pendant une heure.",
+            "Le compteur et la facture comptent l’énergie en kilowattheures.",
+            "Trop d’appareils sur une prise : l’intensité monte, les fils chauffent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-2-5",
+      "prompt": "À durée égale, plus un appareil est puissant, plus il consomme …",
+      "spoken": "À durée égale, plus un appareil est puissant, plus il consomme  (mot manquant) ",
+      "choices": [
+        "d’électrons",
+        "d’énergie",
+        "de tension"
+      ],
+      "answer": "d’énergie",
+      "hint": "Relis la ligne « L’énergie consommée » du rappel.",
+      "explanation": "À durée égale, plus la puissance est grande, plus l’énergie consommée est grande. Les électrons, eux, ne s’usent pas : ils circulent dans le circuit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissance et énergie électriques",
+          "lines": [
+            "La puissance se mesure en watts (W). Un kilowatt (kW) : mille watts.",
+            "La puissance : on multiplie la tension par l’intensité (P = U × I).",
+            "L’énergie consommée : on multiplie la puissance par la durée.",
+            "Un kilowattheure (kWh) : un kilowatt pendant une heure.",
+            "Le compteur et la facture comptent l’énergie en kilowattheures.",
+            "Trop d’appareils sur une prise : l’intensité monte, les fils chauffent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-2-6",
+      "prompt": "Trop d’appareils sur une seule prise : l’intensité devient trop grande et les fils …",
+      "spoken": "Trop d’appareils sur une seule prise : l’intensité devient trop grande et les fils  (mot manquant) ",
+      "choices": [
+        "chauffent",
+        "refroidissent",
+        "s’allongent"
+      ],
+      "answer": "chauffent",
+      "hint": "Relis la ligne « Trop d’appareils » du rappel.",
+      "explanation": "Une intensité trop grande fait chauffer les fils, ce qui peut provoquer un incendie. On ne branche pas tout sur une même prise.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissance et énergie électriques",
+          "lines": [
+            "La puissance se mesure en watts (W). Un kilowatt (kW) : mille watts.",
+            "La puissance : on multiplie la tension par l’intensité (P = U × I).",
+            "L’énergie consommée : on multiplie la puissance par la durée.",
+            "Un kilowattheure (kWh) : un kilowatt pendant une heure.",
+            "Le compteur et la facture comptent l’énergie en kilowattheures.",
+            "Trop d’appareils sur une prise : l’intensité monte, les fils chauffent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-2-7",
+      "prompt": "Deux lampes allumées 10 heures\nLampe A : 10 W (watts).\nLampe B : 60 W (watts).",
+      "question": "Laquelle consomme le moins d’énergie ?",
+      "spoken": "Deux lampes allumées 10 heures. Lampe A, 10 watts. Lampe B, 60 watts.",
+      "choices": [
+        "la lampe A",
+        "la lampe B",
+        "les deux autant"
+      ],
+      "answer": "la lampe A",
+      "hint": "Même durée : regarde la puissance.",
+      "explanation": "Pendant la même durée, la lampe la moins puissante consomme le moins : la lampe A, 10 watts.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissance et énergie électriques",
+          "lines": [
+            "La puissance se mesure en watts (W). Un kilowatt (kW) : mille watts.",
+            "La puissance : on multiplie la tension par l’intensité (P = U × I).",
+            "L’énergie consommée : on multiplie la puissance par la durée.",
+            "Un kilowattheure (kWh) : un kilowatt pendant une heure.",
+            "Le compteur et la facture comptent l’énergie en kilowattheures.",
+            "Trop d’appareils sur une prise : l’intensité monte, les fils chauffent."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-3e-motion-energy",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

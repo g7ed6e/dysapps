@@ -1,0 +1,352 @@
+{
+  "id": "maths-5e-proportionality-statistics-1",
+  "biome": "maths-5e-proportionality",
+  "type": "statistics",
+  "level": 1,
+  "instruction": "Lis la phrase, le tableau ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-5e-proportionality-statistics-1-0",
+      "prompt": "D’après le tableau, la boisson la plus choisie est …",
+      "spoken": "La boisson préférée au goûter. Jus d’orange, 7 élèves. Lait, 5 élèves. Chocolat, 9 élèves. Eau, 3 élèves. Quelle est la boisson la plus choisie ?",
+      "choices": [
+        "jus d’orange",
+        "chocolat",
+        "eau"
+      ],
+      "answer": "chocolat",
+      "hint": "Cherche le plus grand effectif, puis lis la boisson sur la même ligne.",
+      "explanation": "Le plus grand effectif est 9, sur la ligne du chocolat. Le jus d’orange est sur la première ligne, mais 7 est plus petit que 9. L’eau a le plus petit effectif : 3.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "boisson",
+            "effectif"
+          ],
+          "rows": [
+            [
+              "jus d’orange",
+              7
+            ],
+            [
+              "lait",
+              5
+            ],
+            [
+              "chocolat",
+              9
+            ],
+            [
+              "eau",
+              3
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Effectifs et moyenne",
+          "lines": [
+            "L’effectif : combien de fois une réponse est donnée.",
+            "L’effectif total : la somme de tous les effectifs.",
+            "La fréquence : l’effectif divisé par l’effectif total.",
+            "Elle s’écrit en fraction, en nombre décimal ou en pourcentage.",
+            "La moyenne : la somme des valeurs, divisée par le nombre de valeurs."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-1-1",
+      "prompt": "D’après le tableau, l’effectif total est …",
+      "spoken": "La boisson préférée au goûter. Jus d’orange, 7 élèves. Lait, 5 élèves. Chocolat, 9 élèves. Eau, 3 élèves. Quel est l’effectif total ?",
+      "choices": [
+        "9",
+        "21",
+        "24"
+      ],
+      "answer": "24",
+      "hint": "Additionne les effectifs de toutes les lignes.",
+      "explanation": "7 + 5 + 9 + 3 = 24 : 24 élèves ont répondu. 21, c’est oublier la dernière ligne, l’eau. 9, c’est le plus grand effectif, pas le total.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "boisson",
+            "effectif"
+          ],
+          "rows": [
+            [
+              "jus d’orange",
+              7
+            ],
+            [
+              "lait",
+              5
+            ],
+            [
+              "chocolat",
+              9
+            ],
+            [
+              "eau",
+              3
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Effectifs et moyenne",
+          "lines": [
+            "L’effectif : combien de fois une réponse est donnée.",
+            "L’effectif total : la somme de tous les effectifs.",
+            "La fréquence : l’effectif divisé par l’effectif total.",
+            "Elle s’écrit en fraction, en nombre décimal ou en pourcentage.",
+            "La moyenne : la somme des valeurs, divisée par le nombre de valeurs."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-1-2",
+      "prompt": "Sur 20 élèves, 5 viennent à vélo. La fréquence de « vélo » est …",
+      "spoken": "Sur 20 élèves, 5 viennent à vélo. Quelle est la fréquence de vélo ?",
+      "choices": [
+        "5/20",
+        "5/15",
+        "20/5"
+      ],
+      "answer": "5/20",
+      "hint": "L’effectif de « vélo » va en haut, l’effectif total en bas.",
+      "explanation": "La fréquence, c’est l’effectif sur l’effectif total : 5 élèves sur 20, donc 5/20, 5 vingtièmes. 20/5 met la fraction à l’envers. 5/15 compare aux 15 autres élèves, pas aux 20 élèves.",
+      "figure": {
+        "kind": "bar-list",
+        "props": {
+          "values": [
+            5,
+            20
+          ],
+          "labels": [
+            "vélo",
+            "tous les élèves"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Effectifs et moyenne",
+          "lines": [
+            "L’effectif : combien de fois une réponse est donnée.",
+            "L’effectif total : la somme de tous les effectifs.",
+            "La fréquence : l’effectif divisé par l’effectif total.",
+            "Elle s’écrit en fraction, en nombre décimal ou en pourcentage.",
+            "La moyenne : la somme des valeurs, divisée par le nombre de valeurs."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-1-3",
+      "prompt": "Sur 50 élèves, 25 ont un animal. En pourcentage, la fréquence est …",
+      "spoken": "Sur 50 élèves, 25 ont un animal. Quelle est la fréquence, en pourcentage ?",
+      "choices": [
+        "2 %",
+        "25 %",
+        "50 %"
+      ],
+      "answer": "50 %",
+      "hint": "25 sur 50 : quelle part des élèves est-ce ?",
+      "explanation": "25 sur 50, c’est la moitié des élèves : 50 %. 25 %, c’est l’effectif pris pour un pourcentage. 2 %, c’est 50 divisé par 25 : la division à l’envers.",
+      "figure": {
+        "kind": "bar-list",
+        "props": {
+          "values": [
+            25,
+            25
+          ],
+          "labels": [
+            "animal",
+            "pas d’animal"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Effectifs et moyenne",
+          "lines": [
+            "L’effectif : combien de fois une réponse est donnée.",
+            "L’effectif total : la somme de tous les effectifs.",
+            "La fréquence : l’effectif divisé par l’effectif total.",
+            "Elle s’écrit en fraction, en nombre décimal ou en pourcentage.",
+            "La moyenne : la somme des valeurs, divisée par le nombre de valeurs."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-1-4",
+      "prompt": "Sur 10 élèves, 4 portent des lunettes. En nombre décimal, la fréquence est …",
+      "spoken": "Sur 10 élèves, 4 portent des lunettes. Quelle est la fréquence, en nombre décimal ?",
+      "choices": [
+        "0,04",
+        "0,4",
+        "4"
+      ],
+      "answer": "0,4",
+      "hint": "Divise l’effectif par l’effectif total : 4 divisé par 10.",
+      "explanation": "4 ÷ 10 = 0,4. 4, c’est l’effectif : une fréquence n’est jamais plus grande que 1. 0,04, c’est diviser par 100 au lieu de 10.",
+      "figure": {
+        "kind": "bar-list",
+        "props": {
+          "values": [
+            4,
+            10
+          ],
+          "labels": [
+            "lunettes",
+            "tous les élèves"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Effectifs et moyenne",
+          "lines": [
+            "L’effectif : combien de fois une réponse est donnée.",
+            "L’effectif total : la somme de tous les effectifs.",
+            "La fréquence : l’effectif divisé par l’effectif total.",
+            "Elle s’écrit en fraction, en nombre décimal ou en pourcentage.",
+            "La moyenne : la somme des valeurs, divisée par le nombre de valeurs."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-1-5",
+      "prompt": "Les notes de Lina : 11, 15 et 10. Sa moyenne est …",
+      "spoken": "Les notes de Lina : 11, 15 et 10. Quelle est sa moyenne ?",
+      "choices": [
+        "12",
+        "15",
+        "36"
+      ],
+      "answer": "12",
+      "hint": "Additionne les notes, puis divise par le nombre de notes.",
+      "explanation": "11 + 15 + 10 = 36, et il y a 3 notes : 36 ÷ 3 = 12. 36, c’est la somme sans la division. 15, c’est la note écrite au milieu de la liste, pas la moyenne.",
+      "figure": {
+        "kind": "bar-list",
+        "props": {
+          "values": [
+            11,
+            15,
+            10
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Effectifs et moyenne",
+          "lines": [
+            "L’effectif : combien de fois une réponse est donnée.",
+            "L’effectif total : la somme de tous les effectifs.",
+            "La fréquence : l’effectif divisé par l’effectif total.",
+            "Elle s’écrit en fraction, en nombre décimal ou en pourcentage.",
+            "La moyenne : la somme des valeurs, divisée par le nombre de valeurs."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-1-6",
+      "prompt": "En 4 jours, Tom lit 10, 22, 14 et 14 pages. En moyenne, il lit … pages par jour.",
+      "spoken": "En 4 jours, Tom lit 10, 22, 14 et 14 pages. En moyenne, combien de pages lit-il par jour ?",
+      "choices": [
+        "15",
+        "20",
+        "60"
+      ],
+      "answer": "15",
+      "hint": "Il y a 4 valeurs : compte aussi le 14 deux fois.",
+      "explanation": "10 + 22 + 14 + 14 = 60, et il y a 4 jours : 60 ÷ 4 = 15. 20, c’est 60 ÷ 3 : il y a 4 jours, pas 3. 60, c’est la somme sans la division.",
+      "figure": {
+        "kind": "bar-list",
+        "props": {
+          "values": [
+            10,
+            22,
+            14,
+            14
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Effectifs et moyenne",
+          "lines": [
+            "L’effectif : combien de fois une réponse est donnée.",
+            "L’effectif total : la somme de tous les effectifs.",
+            "La fréquence : l’effectif divisé par l’effectif total.",
+            "Elle s’écrit en fraction, en nombre décimal ou en pourcentage.",
+            "La moyenne : la somme des valeurs, divisée par le nombre de valeurs."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-5e-proportionality-statistics-1-7",
+      "prompt": "Diagramme circulaire : comment les élèves viennent au collège\nÀ pied : la moitié du disque\nBus : un quart du disque\nVélo : un quart du disque",
+      "question": "Quelle est la fréquence de « bus » ?",
+      "spoken": "Diagramme circulaire : comment les élèves viennent au collège. À pied, la moitié du disque. Bus, un quart du disque. Vélo, un quart du disque. Quelle est la fréquence de bus ?",
+      "choices": [
+        "25 %",
+        "50 %",
+        "75 %"
+      ],
+      "answer": "25 %",
+      "hint": "Tout le disque, c’est 100 %. Combien fait un quart ?",
+      "explanation": "Le bus a un quart du disque : 100 ÷ 4 = 25, donc 25 %. 50 %, c’est la moitié : la part de « à pied ». 75 %, c’est tous les autres élèves.",
+      "figure": {
+        "kind": "fraction-bar",
+        "props": {
+          "n": 1,
+          "d": 4
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Effectifs et moyenne",
+          "lines": [
+            "L’effectif : combien de fois une réponse est donnée.",
+            "L’effectif total : la somme de tous les effectifs.",
+            "La fréquence : l’effectif divisé par l’effectif total.",
+            "Elle s’écrit en fraction, en nombre décimal ou en pourcentage.",
+            "La moyenne : la somme des valeurs, divisée par le nombre de valeurs."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-5e-proportionality",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,238 @@
+{
+  "id": "geography-3e-france-france-eu-1",
+  "biome": "geography-3e-france",
+  "type": "france-eu",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-3e-france-france-eu-1-0",
+      "prompt": "L’Union européenne compte … pays.",
+      "spoken": "L’Union européenne compte (mot manquant) pays.",
+      "choices": [
+        "12",
+        "27",
+        "50"
+      ],
+      "answer": "27",
+      "hint": "Regarde la première ligne du rappel.",
+      "explanation": "L’Union européenne compte 27 pays. Son drapeau a 12 étoiles, mais ce n’est pas le nombre de pays.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Union européenne",
+          "lines": [
+            "L’Union européenne : 27 pays.",
+            "Environ 450 millions d’habitants.",
+            "L’euro : la monnaie commune de nombreux pays de l’Union.",
+            "Espace Schengen : on circule librement d’un pays à l’autre.",
+            "Le Parlement européen siège à Strasbourg.",
+            "La Commission européenne siège à Bruxelles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-1-1",
+      "prompt": "La monnaie commune de nombreux pays de l’Union est … .",
+      "spoken": "La monnaie commune de nombreux pays de l’Union est (mot manquant) .",
+      "choices": [
+        "le franc",
+        "le dollar",
+        "l’euro"
+      ],
+      "answer": "l’euro",
+      "hint": "Cherche « monnaie commune » dans le rappel.",
+      "explanation": "L’euro est la monnaie commune de nombreux pays de l’Union, dont la France. Le franc était l’ancienne monnaie française ; le dollar est celle des États-Unis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Union européenne",
+          "lines": [
+            "L’Union européenne : 27 pays.",
+            "Environ 450 millions d’habitants.",
+            "L’euro : la monnaie commune de nombreux pays de l’Union.",
+            "Espace Schengen : on circule librement d’un pays à l’autre.",
+            "Le Parlement européen siège à Strasbourg.",
+            "La Commission européenne siège à Bruxelles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-1-2",
+      "prompt": "Le Parlement européen siège à … , en France.",
+      "spoken": "Le Parlement européen siège à (mot manquant) , en France.",
+      "choices": [
+        "Strasbourg",
+        "Bruxelles",
+        "Paris"
+      ],
+      "answer": "Strasbourg",
+      "hint": "Une ville d’Alsace, près de l’Allemagne.",
+      "explanation": "Le Parlement européen siège à Strasbourg, en Alsace. Bruxelles est en Belgique ; Paris est la capitale de la France, pas le siège du Parlement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Union européenne",
+          "lines": [
+            "L’Union européenne : 27 pays.",
+            "Environ 450 millions d’habitants.",
+            "L’euro : la monnaie commune de nombreux pays de l’Union.",
+            "Espace Schengen : on circule librement d’un pays à l’autre.",
+            "Le Parlement européen siège à Strasbourg.",
+            "La Commission européenne siège à Bruxelles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-1-3",
+      "prompt": "La Commission européenne siège à … , en Belgique.",
+      "spoken": "La Commission européenne siège à (mot manquant) , en Belgique.",
+      "choices": [
+        "Strasbourg",
+        "Bruxelles",
+        "Rome"
+      ],
+      "answer": "Bruxelles",
+      "hint": "C’est la capitale de la Belgique.",
+      "explanation": "La Commission européenne siège à Bruxelles, capitale de la Belgique. Strasbourg accueille le Parlement européen.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Union européenne",
+          "lines": [
+            "L’Union européenne : 27 pays.",
+            "Environ 450 millions d’habitants.",
+            "L’euro : la monnaie commune de nombreux pays de l’Union.",
+            "Espace Schengen : on circule librement d’un pays à l’autre.",
+            "Le Parlement européen siège à Strasbourg.",
+            "La Commission européenne siège à Bruxelles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-1-4",
+      "prompt": "Dans l’espace … , on circule librement d’un pays à l’autre.",
+      "spoken": "Dans l’espace (mot manquant) , on circule librement d’un pays à l’autre.",
+      "choices": [
+        "Erasmus",
+        "Schengen",
+        "euro"
+      ],
+      "answer": "Schengen",
+      "hint": "Cherche « librement » dans le rappel.",
+      "explanation": "L’espace Schengen permet de passer d’un pays à l’autre sans contrôle à chaque frontière. Erasmus est un programme pour étudier à l’étranger.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Union européenne",
+          "lines": [
+            "L’Union européenne : 27 pays.",
+            "Environ 450 millions d’habitants.",
+            "L’euro : la monnaie commune de nombreux pays de l’Union.",
+            "Espace Schengen : on circule librement d’un pays à l’autre.",
+            "Le Parlement européen siège à Strasbourg.",
+            "La Commission européenne siège à Bruxelles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-1-5",
+      "prompt": "Le programme … permet à des étudiants d’étudier dans un autre pays de l’Union.",
+      "spoken": "Le programme (mot manquant) permet à des étudiants d’étudier dans un autre pays de l’Union.",
+      "choices": [
+        "Erasmus",
+        "Schengen",
+        "Airbus"
+      ],
+      "answer": "Erasmus",
+      "hint": "Ce n’est ni une monnaie ni un espace : c’est un programme d’études.",
+      "explanation": "Avec Erasmus, des étudiants et des apprentis partent étudier dans un autre pays d’Europe. Airbus est une entreprise qui fabrique des avions.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Union européenne",
+          "lines": [
+            "L’Union européenne : 27 pays.",
+            "Environ 450 millions d’habitants.",
+            "L’euro : la monnaie commune de nombreux pays de l’Union.",
+            "Espace Schengen : on circule librement d’un pays à l’autre.",
+            "Le Parlement européen siège à Strasbourg.",
+            "La Commission européenne siège à Bruxelles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-1-6",
+      "prompt": "La France est l’un des cinq membres permanents du Conseil de … de l’ONU.",
+      "spoken": "La France est l’un des cinq membres permanents du Conseil de (mot manquant) de l’ONU.",
+      "choices": [
+        "défense",
+        "paix",
+        "sécurité"
+      ],
+      "answer": "sécurité",
+      "hint": "Le contraire du danger.",
+      "explanation": "Le Conseil de sécurité de l’ONU a cinq membres permanents, dont la France : elle compte dans les décisions du monde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Union européenne",
+          "lines": [
+            "L’Union européenne : 27 pays.",
+            "Environ 450 millions d’habitants.",
+            "L’euro : la monnaie commune de nombreux pays de l’Union.",
+            "Espace Schengen : on circule librement d’un pays à l’autre.",
+            "Le Parlement européen siège à Strasbourg.",
+            "La Commission européenne siège à Bruxelles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-france-eu-1-7",
+      "prompt": "Les pays et les personnes qui parlent français forment la … .",
+      "spoken": "Les pays et les personnes qui parlent français forment la (mot manquant) .",
+      "choices": [
+        "mondialisation",
+        "francophonie",
+        "Europe"
+      ],
+      "answer": "francophonie",
+      "hint": "« Phone » veut dire la voix, la langue.",
+      "explanation": "La francophonie réunit ceux qui parlent français, sur les cinq continents. C’est une force de la France dans le monde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’Union européenne",
+          "lines": [
+            "L’Union européenne : 27 pays.",
+            "Environ 450 millions d’habitants.",
+            "L’euro : la monnaie commune de nombreux pays de l’Union.",
+            "Espace Schengen : on circule librement d’un pays à l’autre.",
+            "Le Parlement européen siège à Strasbourg.",
+            "La Commission européenne siège à Bruxelles."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-3e-france",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -63,9 +63,18 @@ describe('le texte lu à voix haute', () => {
     // Le point de « J.-C. » qui finit la phrase reste, pour la pause.
     expect(pourLaVoix('Avant J.-C. Les Romains, après J.-C., l’Empire')).toBe('Avant Jésus-Christ. Les Romains, après Jésus-Christ, l’Empire');
     expect(pourLaVoix('Le siècle')).toBe('Le siècle');
+    expect(pourLaVoix('François Ier, Louis XIV et Napoléon III')).toBe('François premier, Louis quatorze et Napoléon trois');
+    // Un article devant un chiffre romain, ou une majuscule seule, ne fait pas un souverain.
+    expect(pourLaVoix('Le XVIIIe siècle, la Ve République, Le IV')).toBe('Le dix-huitième siècle, la cinquième République, Le IV');
+    expect(pourLaVoix('Élisabeth II')).toBe('Élisabeth deux');
+    // Un « I » seul n'est pas un roi, et l'anglais garde ses lettres.
+    expect(pourLaVoix('Because I missed the bus. Can I go?')).toBe('Because I missed the bus. Can I go?');
+    expect(pourLaVoix('Louis XIV', 'en')).toBe('Louis XIV');
+    // Une suite qui n'est pas un chiffre romain bien formé, ou une inconnue de maths, reste telle quelle.
+    expect(pourLaVoix('Louis VV, Soit X')).toBe('Louis VV, Soit X');
     expect(pourLaVoix('Ier siècle, IVe siècle, Ve siècle, IXe siècle')).toBe('premier siècle, quatrième siècle, cinquième siècle, neuvième siècle');
     expect(pourLaVoix('XIXe siècle, XXIe siècle')).toBe('dix-neuvième siècle, vingt-et-unième siècle');
     // Hors d'un siècle, rien ne change.
-    expect(pourLaVoix('Le IIe arrondissement, Louis XIV')).toBe('Le IIe arrondissement, Louis XIV');
+    expect(pourLaVoix('Le IIe arrondissement')).toBe('Le IIe arrondissement');
   });
 });

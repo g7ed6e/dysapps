@@ -1,20 +1,21 @@
 // Moteur Blocland : étoiles, récompenses, répétition espacée, streak et adaptation.
 // Logique pure (l'heure et le hasard sont passés en paramètres) pour être testée facilement.
-// Ce fichier garde les plans, l'assemblage, la fin d'exercice, l'école du village et le Bloc-Navire ; à côté, dans
+// Ce fichier garde les plans, l'assemblage, la fin d'exercice, l'école du village et la Nef ; à côté, dans
 // ./engine/ : l'état d'une partie (`state.ts`), les dates (`dates.ts`), la lecture d'une sauvegarde (`sanitize.ts`),
 // l'apprentissage (`learning.ts`). Il en réexporte les noms publics.
 import { type BiomeId, BIOMES, type BlockId, BLOCKS, getBiome } from './biomes';
 import { cellKey, planCells, type PlanDef } from './world/plans';
 import { assemblables, noterQuestion, recetteDe, type TirageAssemblage, tirageNeuf } from './world/assembly';
 import { missionsTerminees, type Partie, poserLesParties } from './world/parts';
+import { buildPiece, projectOf } from './world/projects';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { starsFor } from '../core/stars';
 import { archipelagoOf, buildBridge as buildBridgePure, type BuildBridgeResult, getArchipelago, isBiomeUnlocked, reachableIslands, voyageId } from './world/archipelago';
 import { beatenGuardians, kitReady, VEHICLE_STAGES, type VehicleStage } from './world/vehicle';
-import type { GameState, SpacedItem } from './engine/state';
+import type { DrawKey, GameState, SpacedItem } from './engine/state';
 import { todayISO } from './engine/dates';
 import { adapt, CHEST_BLOCKS, dueItems, recordSpaced, scoreOf, type StreakUpdate, updateStreak } from './engine/learning';
-export { EMPTY_STATE, type ExerciseProgress, type GameState, type LogEntry, type SpacedItem, type Streak, type TypeStats, type World } from './engine/state';
+export { EMPTY_STATE, type DrawKey, type ExerciseProgress, type GameState, type LogEntry, type SpacedItem, type Streak, type TypeStats, type World } from './engine/state';
 export { addDays, daysBetween, todayISO } from './engine/dates';
 export { sanitizeState } from './engine/sanitize';
 export { adapt, CHEST_BLOCKS, CHEST_EVERY, dueItems, GRADUATE_AT, INTERVALS, levelFor, PROMOTE_AT_ONCE, recordSpaced, scoreOf, starsFor, type StreakUpdate, updateStreak } from './engine/learning';
@@ -90,8 +91,8 @@ export function assembleBlock(state: GameState, bloc: BlockId): AssembleResult {
   return { state: { ...state, stock: inventory }, ok: true };
 }
 
-/** Le tirage des questions d'un bloc assemblé pour cet élève, ou un tirage neuf avec `graine`. */
-export function tirageDe(state: GameState, bloc: BlockId, graine: string): TirageAssemblage {
+/** Le tirage des questions d'un bloc assemblé (ou d'une banque de projets) pour cet élève, ou un tirage neuf avec `graine`. */
+export function tirageDe(state: GameState, bloc: DrawKey, graine: string): TirageAssemblage {
   return state.assemblyDraw?.[bloc] ?? tirageNeuf(graine);
 }
 
@@ -122,6 +123,26 @@ export function repondreAssemblage(state: GameState, bloc: BlockId, reponse: Rep
   return r.ok ? { state: r.state, assemble: true } : { state: note, assemble: false, reason: r.reason };
 }
 
+export type ReponseProjet =
+  | { state: GameState; built: true; completed: boolean }
+  | { state: GameState; built: false; reason: 'manquee' | 'pas-de-projet' | 'pas-la-suivante' | 'plus-de-blocs' };
+
+/**
+ * La réponse finale à la question d'une pièce de projet (GD-10) : juste (du premier coup ou au second essai), la pièce se
+ * pose en entier avec la recette choisie (`buildPiece`) ; manquée, rien n'est pris. La question est notée dans le tirage
+ * de sa banque, le même que celui du bloc assemblé dont elle reprend les questions (`compound-5e`).
+ */
+export function repondreProjet(state: GameState, monument: string, piece: number, recipe: number, reponse: ReponseDonnee): ReponseProjet {
+  const project = projectOf(monument);
+  const bank = project?.pieces[piece]?.recipes[recipe]?.bank;
+  if (!project || !bank) return { state, built: false, reason: 'pas-de-projet' };
+  const tirage = noterQuestion(reponse.cles, state.assemblyDraw?.[bank] ?? reponse.tirage, reponse.cle, reponse.juste);
+  const note: GameState = { ...state, assemblyDraw: { ...state.assemblyDraw, [bank]: tirage } };
+  if (!reponse.juste) return { state: note, built: false, reason: 'manquee' };
+  const r = buildPiece(note, project, piece, recipe);
+  return r.ok ? { state: r.state, built: true, completed: r.completed } : { state: note, built: false, reason: r.reason };
+}
+
 /**
  * Défait un bloc assemblé en poche (GD-2, choix du mainteneur après la relecture UX UI) : rend tous ses ingrédients.
  * Un bloc déjà posé dans un monument reste posé ; sans bloc en poche, l'inventaire ne bouge pas.
@@ -136,7 +157,7 @@ export function disassembleBlock(state: GameState, bloc: BlockId): AssembleResul
   return { state: { ...state, stock: inventory }, ok: true };
 }
 
-/** La prochaine cellule d'un plan que l'on peut poser avec l'inventaire actuel (le Bloc-Navire, bouton « Poser le bloc suivant »). */
+/** La prochaine cellule d'un plan que l'on peut poser avec l'inventaire actuel (la Nef, bouton « Poser le bloc suivant »). */
 export function nextFillable(state: GameState, plan: PlanDef): { x: number; y: number; z: number } | null {
   const done = new Set(state.world.parts[plan.id] ?? []);
   const cell = planCells(plan).find((c) => !done.has(c.key) && (state.stock[c.block] ?? 0) > 0);
@@ -249,14 +270,20 @@ export function completeExercise(state: GameState, def: ExerciseDef, results: It
 
   // Une révision (des questions de la mission étaient à revoir aujourd'hui) rapporte toujours autant, quel que soit le
   // score (GD-6, point 4) ; sinon, des blocs même avec des erreurs, jamais zéro si au moins une bonne réponse.
-  const revision = estUneRevision(state.spaced, def.id, today);
+  // Un item de la file dont la clé n'est plus dans l'exercice (retiré par une mise à jour du contenu) n'a plus d'écran
+  // pour être revu : il quitte la file, sans compter comme une révision. Pas pour un exercice généré, dont les items
+  // tirés à chaque partie ne sont pas dans son échantillon fixe (`items`).
+  const known = def.generate ? null : new Set(def.items.map((it) => it.key));
+  const prefix = `${def.id}:`;
+  const queue = known ? state.spaced.filter((s) => !s.itemId.startsWith(prefix) || known.has(s.itemId.slice(prefix.length))) : state.spaced;
+  const revision = estUneRevision(queue, def.id, today);
   const anyCorrect = results.some((r) => r.correct);
   const bonus = revision ? { stars: 0, first: 0 } : blocksBonus(stars, prev.attempts === 0, anyCorrect);
   const blocks = revision ? blocsDUneRevision(def) : anyCorrect ? Math.max(1, Math.round(def.reward.amount * score)) + bonus.stars + bonus.first : 0;
   // XP à chaque exercice terminé ; bonus si terminé sans aide.
   const xp = Math.round(def.reward.xp * (perfect ? 1.5 : 1));
 
-  let spaced = state.spaced;
+  let spaced = queue;
   for (const r of results) spaced = recordSpaced(spaced, `${def.id}:${r.key}`, r.correct && r.attempts <= 1, today);
 
   const { streak, inventory, chests, chestBlock } = playedToday(state, def.reward.block, blocks, today, rng);
@@ -352,9 +379,9 @@ export function moveAvatar(state: GameState, to: BiomeId): GameState {
   return { ...state, world: { ...state.world, place: to } };
 }
 
-// ---------- Le Bloc-Navire ----------
+// ---------- La Nef ----------
 
-/** L'étape du Bloc-Navire en cours : la première dont le voyage n'est pas fait ; `null` quand les trois voyages sont faits. */
+/** L'étape de la Nef en cours : la première dont le voyage n'est pas fait ; `null` quand les trois voyages sont faits. */
 export function currentStage(state: GameState): VehicleStage | null {
   return VEHICLE_STAGES.find((s) => !state.world.links.includes(voyageId(s.to))) ?? null;
 }

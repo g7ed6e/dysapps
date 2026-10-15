@@ -24,8 +24,9 @@
 //   une case, et le bonhomme reste posé sur la surface qu'on voit.
 //
 // Ce fichier garde le maillage ; à côté, dans ./landMesh/ : les réglages (`settings.ts`), le champ, le toucher et la
-// marche (`field.ts`), la couleur et l'éclairage (`lighting.ts`), la découpe des polygones (`polygons.ts`). Il en
-// réexporte les noms publics.
+// marche (`field.ts`), la couleur et l'éclairage (`lighting.ts`), la découpe des polygones (`polygons.ts`), les bandes
+// (`strips.ts` : les facettes coplanaires d'une même rangée, réunies sans rien changer à l'image). Il en réexporte les
+// noms publics.
 import { ALTITUDE } from './map';
 import { cielDe, type Couleur, couleurDeMatiere, couleurDuSol, laveQuiBrille, MATIERES } from './palette';
 import { AMBIENCE, mixColor } from './daylight';
@@ -37,6 +38,7 @@ import { aireAuSol, clip, coinDe, couper, DESSOUS_CACHE, penteVersLeBas, type RG
 import { type ChampDuSol, cle, type Colonne, colonneEn, COTES4, solNomme, trianglesDeLaCase } from './landMesh/field';
 import { COINS, CONTRASTE, DELAVE, FONDU, FRANGE, PAROI_HAUTE, RIVAGE, STRATES, STRATES_HAUTES } from './landMesh/settings';
 import { ecartDeCouleur, epaisseurDesStrates, lineaire, normaleOmbree, nuanceDuSol, rgb, strate } from './landMesh/lighting';
+import { bandesDe, type CaseDeBande, rectangle, trianglesDeLaBande } from './landMesh/strips';
 export { CONTRASTE, EBOULIS, FONDU, FRANGE, NIVEAU_EAU, NUANCE_SOL, PENTE_OMBRE, RIVAGE, SOCLE_MAX, STRATES, STRATES_HAUTES } from './landMesh/settings';
 export { champDuSol, type ChampDuSol, type Colonne, colonneEn, hauteurDuSol, pickCell, piedsSur, poseDuDecor, signatureDuChamp } from './landMesh/field';
 export { ecartDeCouleur, eclairement, epaisseurDesStrates, lineaire, normaleOmbree, nuanceDuSol, strate } from './landMesh/lighting';
@@ -54,7 +56,10 @@ export interface Facettes {
   normals: Float32Array;
   /** Couleurs par sommet, dans l'espace linéaire de Three.js. */
   colors: Float32Array;
-  /** Pour chaque triangle, l'indice de sa colonne dans le champ (les tests vérifient le toucher avec). */
+  /**
+   * Pour chaque triangle, l'indice de sa colonne dans le champ (les tests vérifient le toucher avec) ; pour une bande
+   * (des cases coplanaires d'une même rangée réunies, ./landMesh/strips.ts), celui de sa première case.
+   */
   colonnes: Int32Array;
 }
 
@@ -139,6 +144,10 @@ class Tampon {
     this.own[this.n] = colonne;
     this.n++;
   }
+  /** Parcourt les sommets déjà posés. */
+  sommets(visite: (x: number, y: number, z: number) => void): void {
+    for (let o = 0; o < this.n * 9; o += 3) visite(this.pos[o], this.pos[o + 1], this.pos[o + 2]);
+  }
   fin(): Facettes {
     return {
       positions: this.pos.slice(0, this.n * 9),
@@ -152,6 +161,11 @@ class Tampon {
 /** Les options du maillage : le style de surface (`a` : aplats, sans nuance ; `b` : la nuance retenue). */
 export interface OptionsDuSol {
   style?: 'a' | 'b';
+  /**
+   * Réunir les facettes coplanaires d'une même rangée en bandes (./landMesh/strips.ts), sans rien changer à l'image ;
+   * `false` : chaque case garde ses facettes (la référence des tests).
+   */
+  bandes?: boolean;
 }
 
 /**
@@ -161,6 +175,7 @@ export interface OptionsDuSol {
 export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): MaillageDuSol {
   const a = champ.archipel;
   const style = options.style ?? 'b';
+  const enBandes = options.bandes ?? true;
   const altitude = ALTITUDE[a];
   const froid = cielDe(a, 1).ambianceSol;
   const sable = couleurDeMatiere(a, 'sable').dessus;
@@ -241,6 +256,17 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
     const c = n ? (Math.round(r / n) << 16) | (Math.round(g / n) << 8) | Math.round(b / n) : dessusDe(col);
     coinVu.set(key, c);
     return c;
+  };
+
+  // Les bandes : les tranches de paroi rectangulaires et les rampes du dessous, réunies par rangée à la fin
+  // (./landMesh/strips.ts) ; leur couleur ne dépend que de la hauteur du sommet. `peintes` : de quoi peindre chaque clé.
+  const cases: CaseDeBande[] = [];
+  const peintes = new Map<string, { t: Tampon; cote: Couleur; f: number }>();
+  const candidate = (m: string, cote: Couleur, f: number, c: Omit<CaseDeBande, 'cle'>) => {
+    const t = tampon(m);
+    const cle = `${t === lumineux ? 'L' : 'S'}|${cote}|${f}`;
+    if (!peintes.has(cle)) peintes.set(cle, { t, cote, f });
+    cases.push({ ...c, cle });
   };
 
   const HAUT: V3 = [0, 1, 0];
@@ -365,6 +391,14 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
             const m = matiere(z);
             const cote = faces(m, col.muted).cote;
             const f = style === 'a' ? 1 : strate(z, ep, amplitude);
+            const r = enBandes ? rectangle(tranche) : null;
+            if (r) {
+              // Une tranche rectangulaire : réunie à ses voisines de rangée (une bande).
+              const plan = dx !== 0 ? e0[0] : e0[1];
+              candidate(m, cote, f, { axe: dx !== 0 ? 2 : 0, debut: dx !== 0 ? col.y : col.x, a: { autre: plan, y: r[0] }, b: { autre: plan, y: r[1] }, attendue: [dx, 0, dy], colonne: i });
+              z = z1 + 1;
+              continue;
+            }
             const pts = tranche.map(([s, y]): V3 => [e0[0] + (e1[0] - e0[0]) * s, y, e0[1] + (e1[1] - e0[1]) * s]);
             const cs = pts.map((q) => peint(cote, q, false, f));
             for (let j = 1; j + 1 < pts.length; j++) tampon(m).triangle(pts[0], pts[j], pts[j + 1], cs[0], cs[j], cs[j + 1], [dx, 0, dy], i);
@@ -380,12 +414,28 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
       const cote = faces(m, col.muted).cote;
       const f = style === 'a' ? 1 : strate(col.bas, ep);
       const q = [0, 1, 2, 3].map((k): V3 => [col.x + COINS[k][0], col.coinsBas[k], col.y + COINS[k][1]]);
-      const cq = q.map((pt) => peint(cote, pt, false, f));
-      for (const [i0, i1, i2] of trianglesDeLaCase(col.diagonaleBas)) {
-        // La caméra reste toujours au-dessus des îles, à 17° au moins : une facette tournée droit vers le bas ne se
-        // voit jamais, on ne la dessine pas. Celles qui penchent font la roche facettée sous l'île.
-        if (penteVersLeBas(q[i0], q[i1], q[i2]) > DESSOUS_CACHE) continue;
-        tampon(m).triangle(q[i0], q[i1], q[i2], cq[i0], cq[i1], cq[i2], BAS, i);
+      const h = col.coinsBas;
+      // Une rampe (deux hauteurs, une par bord) : ses deux triangles sont dans un même plan, vus ou cachés ensemble ;
+      // elle est réunie à ses voisines de rangée.
+      const rampe = !enBandes ? null : h[0] === h[1] && h[3] === h[2] && h[0] !== h[3] ? 0 : h[0] === h[3] && h[1] === h[2] && h[0] !== h[1] ? 2 : null;
+      if (rampe !== null) {
+        if (penteVersLeBas(q[0], q[1], q[2]) <= DESSOUS_CACHE)
+          candidate(m, cote, f, {
+            axe: rampe,
+            debut: rampe === 0 ? col.x : col.y,
+            a: rampe === 0 ? { autre: col.y, y: h[0] } : { autre: col.x, y: h[0] },
+            b: rampe === 0 ? { autre: col.y + 1, y: h[3] } : { autre: col.x + 1, y: h[1] },
+            attendue: BAS,
+            colonne: i,
+          });
+      } else {
+        const cq = q.map((pt) => peint(cote, pt, false, f));
+        for (const [i0, i1, i2] of trianglesDeLaCase(col.diagonaleBas)) {
+          // La caméra reste toujours au-dessus des îles, à 17° au moins : une facette tournée droit vers le bas ne se
+          // voit jamais, on ne la dessine pas. Celles qui penchent font la roche facettée sous l'île.
+          if (penteVersLeBas(q[i0], q[i1], q[i2]) > DESSOUS_CACHE) continue;
+          tampon(m).triangle(q[i0], q[i1], q[i2], cq[i0], cq[i1], cq[i2], BAS, i);
+        }
       }
     }
   });
@@ -402,6 +452,18 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
       const cs = pts.map((pt) => peintRGB(cote, pt, true, f));
       sol.triangle(pts[0], pts[1], pts[2], cs[0], cs[1], cs[2], HAUT, pied.colonne, ombree);
     }
+  }
+  // ---- Les bandes, une fois tous les autres sommets posés (ils restent des sommets de leurs bords).
+  for (const b of bandesDe(cases, (visite) => {
+    sol.sommets(visite);
+    lumineux.sommets(visite);
+  })) {
+    const { t, cote, f } = peintes.get(b.cle)!;
+    trianglesDeLaBande(
+      b,
+      (p) => peint(cote, p, false, f),
+      (p, q, r, cp, cq, cr) => t.triangle(p, q, r, cp, cq, cr, b.attendue, b.colonne),
+    );
   }
   return { sol: sol.fin(), lumineux: lumineux.fin() };
 }

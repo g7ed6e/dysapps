@@ -1,0 +1,232 @@
+{
+  "id": "life-earth-sciences-4e-cells-evolution-cells-nutrition-1",
+  "biome": "life-earth-sciences-4e-cells-evolution",
+  "type": "cells-nutrition",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-1-0",
+      "prompt": "Tous les êtres vivants sont faits de …",
+      "spoken": "Tous les êtres vivants sont faits de  (mot manquant) ",
+      "choices": [
+        "muscles",
+        "cellules",
+        "racines"
+      ],
+      "answer": "cellules",
+      "hint": "Relis la ligne « Tout être vivant » du rappel.",
+      "explanation": "Tout être vivant, plante, animal ou champignon, est fait de cellules. Les muscles et les racines sont des organes, faits eux-mêmes de cellules.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La cellule",
+          "lines": [
+            "Tout être vivant est fait d’une ou de plusieurs cellules.",
+            "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
+            "Les cellules forment des tissus, les tissus des organes.",
+            "Une cellule est trop petite pour l’œil : on l’observe au microscope."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-1-1",
+      "prompt": "L’enveloppe qui entoure une cellule s’appelle la …",
+      "spoken": "L’enveloppe qui entoure une cellule s’appelle la  (mot manquant) ",
+      "choices": [
+        "membrane",
+        "coquille",
+        "peau"
+      ],
+      "answer": "membrane",
+      "hint": "Relis la ligne « Une cellule a une membrane » du rappel.",
+      "explanation": "Chaque cellule est entourée d’une membrane. La peau, elle, est un organe fait de milliards de cellules.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La cellule",
+          "lines": [
+            "Tout être vivant est fait d’une ou de plusieurs cellules.",
+            "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
+            "Les cellules forment des tissus, les tissus des organes.",
+            "Une cellule est trop petite pour l’œil : on l’observe au microscope."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-1-2",
+      "prompt": "Dans beaucoup de cellules, une petite boule bien visible au microscope est le …",
+      "spoken": "Dans beaucoup de cellules, une petite boule bien visible au microscope est le  (mot manquant) ",
+      "choices": [
+        "chloroplaste",
+        "cytoplasme",
+        "noyau"
+      ],
+      "answer": "noyau",
+      "hint": "Relis la ligne « Une cellule a une membrane » du rappel.",
+      "explanation": "Le noyau est la petite boule de la cellule, souvent colorée pour mieux la voir. Le cytoplasme remplit le reste de la cellule.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La cellule",
+          "lines": [
+            "Tout être vivant est fait d’une ou de plusieurs cellules.",
+            "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
+            "Les cellules forment des tissus, les tissus des organes.",
+            "Une cellule est trop petite pour l’œil : on l’observe au microscope."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-1-3",
+      "prompt": "Seules les cellules des parties vertes des plantes ont des …",
+      "spoken": "Seules les cellules des parties vertes des plantes ont des  (mot manquant) ",
+      "choices": [
+        "noyaux",
+        "chloroplastes",
+        "membranes"
+      ],
+      "answer": "chloroplastes",
+      "hint": "Relis la ligne « La cellule de plante » du rappel.",
+      "explanation": "Les chloroplastes, verts, sont dans les cellules des parties vertes des plantes. Le noyau et la membrane sont dans les cellules animales aussi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La cellule",
+          "lines": [
+            "Tout être vivant est fait d’une ou de plusieurs cellules.",
+            "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
+            "Les cellules forment des tissus, les tissus des organes.",
+            "Une cellule est trop petite pour l’œil : on l’observe au microscope."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-1-4",
+      "prompt": "Deux cellules vues au microscope\nCellule A : une membrane, un noyau.\nCellule B : une paroi, une membrane, un noyau, des chloroplastes verts.",
+      "question": "Quelle cellule vient d’une feuille ?",
+      "spoken": "Deux cellules vues au microscope. Cellule A, une membrane, un noyau. Cellule B, une paroi, une membrane, un noyau, des chloroplastes verts.",
+      "choices": [
+        "la cellule A",
+        "la cellule B",
+        "les deux"
+      ],
+      "answer": "la cellule B",
+      "hint": "Cherche la cellule qui a ce que seules les plantes ont.",
+      "explanation": "La cellule B a une paroi et des chloroplastes : c’est une cellule de plante, prise dans une feuille. La cellule A n’en a pas : c’est une cellule animale.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La cellule",
+          "lines": [
+            "Tout être vivant est fait d’une ou de plusieurs cellules.",
+            "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
+            "Les cellules forment des tissus, les tissus des organes.",
+            "Une cellule est trop petite pour l’œil : on l’observe au microscope."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-1-5",
+      "prompt": "Une cellule est trop petite pour être vue à l’œil nu : on l’observe au …",
+      "spoken": "Une cellule est trop petite pour être vue à l’œil nu : on l’observe au  (mot manquant) ",
+      "choices": [
+        "microscope",
+        "télescope",
+        "périscope"
+      ],
+      "answer": "microscope",
+      "hint": "« Micro » veut dire petit.",
+      "explanation": "Le microscope grossit ce qui est tout petit, comme une cellule. Le télescope, lui, sert à voir ce qui est très loin, comme les étoiles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La cellule",
+          "lines": [
+            "Tout être vivant est fait d’une ou de plusieurs cellules.",
+            "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
+            "Les cellules forment des tissus, les tissus des organes.",
+            "Une cellule est trop petite pour l’œil : on l’observe au microscope."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-1-6",
+      "prompt": "Du plus petit au plus grand\nLes cellules forment des tissus.\nLes tissus forment des organes.\nLes organes forment l’organisme.",
+      "question": "Qu’est-ce qui est le plus petit ?",
+      "spoken": "Du plus petit au plus grand. Les cellules forment des tissus. Les tissus forment des organes. Les organes forment l’organisme.",
+      "choices": [
+        "l’organe",
+        "le tissu",
+        "la cellule"
+      ],
+      "answer": "la cellule",
+      "hint": "Le titre dit « du plus petit au plus grand » : lis la ligne juste dessous.",
+      "explanation": "La cellule est la plus petite : plusieurs cellules forment un tissu, plusieurs tissus un organe, et les organes tout l’organisme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La cellule",
+          "lines": [
+            "Tout être vivant est fait d’une ou de plusieurs cellules.",
+            "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
+            "Les cellules forment des tissus, les tissus des organes.",
+            "Une cellule est trop petite pour l’œil : on l’observe au microscope."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-1-7",
+      "prompt": "La levure n’a qu’une seule cellule : c’est un être vivant …",
+      "spoken": "La levure n’a qu’une seule cellule : c’est un être vivant  (mot manquant) ",
+      "choices": [
+        "unicellulaire",
+        "pluricellulaire",
+        "minéral"
+      ],
+      "answer": "unicellulaire",
+      "hint": "« Uni » veut dire un, comme dans « unique ».",
+      "explanation": "Un être vivant fait d’une seule cellule est unicellulaire, comme la levure ou une bactérie. L’humain, fait de milliards de cellules, est pluricellulaire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La cellule",
+          "lines": [
+            "Tout être vivant est fait d’une ou de plusieurs cellules.",
+            "Une cellule a une membrane, du cytoplasme et, le plus souvent, un noyau.",
+            "La cellule de plante a en plus une paroi ; celles des parties vertes ont des chloroplastes.",
+            "Les cellules forment des tissus, les tissus des organes.",
+            "Une cellule est trop petite pour l’œil : on l’observe au microscope."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-4e-cells-evolution",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

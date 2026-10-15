@@ -1,21 +1,22 @@
 // Les quatre archipels et ce qui relie les îles : les liaisons (pont, bac, sentier) à l'intérieur d'un archipel, et
-// les voyages du Bloc-Navire d'un archipel au suivant. Depuis GD-9, une liaison relie chaque paire de lieux d'une
+// les voyages de la Nef d'un archipel au suivant. Depuis GD-9, une liaison relie chaque paire de lieux d'une
 // région, au même prix, et ne demande rien d'autre que des blocs gagnés n'importe où ; sa nature suit son tracé.
 // Les natures d'avant (escalier taillé, tunnel, col) ne servent plus qu'à relire les anciennes sauvegardes
 // (`LEGACY_BRIDGES`). Une île s'ouvre quand un chemin de liaisons posées (et de voyages faits) y mène depuis une île
 // de départ. Un voyage fait reste fait : on revient toujours en arrière.
 // Générateur pur : partagé entre le monde 3D, les pages simples et le moteur.
 import { ofPlace } from './placeArticle';
-import { BLOC, BIOMES, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
-import { lv2Courante, type Lv2Choice } from '../../core/settings';
+import { BLOC, BIOMES, getBiome, sansSonOption, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
+import { lcaCourante, lv2Courante, type Lv2Choice } from '../../core/settings';
 import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
 import { premierePartiePosee } from './parts';
+import type { FormsWords } from './vehicle';
 
 /** La place de chaque île est dans `map.ts` (MAP). */
 
 export type { ArchipelagoId };
 
-/** Un archipel : une classe, un nom, une île-port (le Bloc-Navire s'y construit et y accoste) et ses îles de départ. */
+/** Un archipel : une classe, un nom, une île-port (la Nef s'y construit et y accoste) et ses îles de départ. */
 export interface ArchipelagoDef {
   classe: ArchipelagoId;
   /**
@@ -150,9 +151,10 @@ const e = (from: BiomeId, to: BiomeId, kind: BridgeKind, via?: readonly Point[])
  * jetée, et reste dans `worldBounds` (starPort.test.ts). Sans points de passage, la ligne droite.
  */
 const VIA: Record<string, readonly Point[]> = {
-  'maths-6e-calculation-french-6e-reading': [{ x: 61, y: 14 }, { x: 13, y: 14 }, { x: 13, y: 52 }],
-  'maths-6e-calculation-french-6e-word-spelling': [{ x: 91, y: 21 }, { x: 91, y: 14 }, { x: 131, y: 14 }, { x: 131, y: 52 }],
-  'french-6e-phonology-english-6e-vocabulary': [{ x: 61, y: 67 }, { x: 61, y: 84 }, { x: 56, y: 84 }, { x: 56, y: 104 }],
+  // Les trois du 6e, retracés avec les formes des îles (GD-12, 8 octobre 2026) : par les bras de mer de la carte de départ.
+  'maths-6e-calculation-french-6e-reading': [{ x: 52, y: 27 }, { x: 52, y: 21 }, { x: 13, y: 21 }, { x: 13, y: 75 }],
+  'maths-6e-calculation-french-6e-word-spelling': [{ x: 95, y: 27 }, { x: 95, y: 46 }, { x: 152, y: 46 }],
+  'french-6e-phonology-english-6e-vocabulary': [{ x: 55, y: 71 }, { x: 55, y: 92 }, { x: -4, y: 92 }],
   'maths-5e-proportionality-french-5e-homophones': [{ x: 70, y: 336 }, { x: 70, y: 342 }, { x: 54, y: 342 }],
   'maths-3e-functions-english-3e-comprehension': [{ x: 50, y: 911 }, { x: 8, y: 911 }],
   'maths-3e-functions-english-3e-grammar': [{ x: 82, y: 915 }, { x: 87, y: 910 }, { x: 114, y: 910 }],
@@ -329,7 +331,7 @@ export const LEGACY_BRIDGES: LegacyLink[] = [
   b('french-4e-agreement', 'french-3e-close-reading', 'escalier', 7),
 ];
 
-// ---------- Les voyages du Bloc-Navire ----------
+// ---------- Les voyages de la Nef ----------
 
 /** Un voyage : du port d'un archipel au port du suivant. Fait une fois, il reste fait dans les deux sens. */
 export interface VoyageDef {
@@ -375,7 +377,7 @@ export function reachedArchipelagos(bridges: string[]): ArchipelagoDef[] {
   return ARCHIPELAGOS.filter((a) => isArchipelagoReached(a.classe, bridges));
 }
 
-/** Combien de voyages sont faits (le niveau du Bloc-Navire : 0 coque en chantier, 1 voile, 2 ballon, 3 réacteur). */
+/** Combien de voyages sont faits (le niveau de la Nef : 0 coque en chantier, 1 voile, 2 ballon, 3 réacteur). */
 export function launchedCount(bridges: string[]): number {
   return VOYAGES.filter((v) => bridges.includes(v.id)).length;
 }
@@ -417,13 +419,42 @@ export const BRIDGE_BLOCKS: BlockId[] = [
   BLOC.bardeau,
   BLOC.mosaique,
   BLOC.chaume,
+  BLOC.enluminure,
+  BLOC.riziere,
+  BLOC.fonte,
+  BLOC.conteneur,
+  BLOC.reliure,
+  BLOC.gres,
   BLOC.fossile,
   BLOC.aimant,
   BLOC.carton,
+  BLOC.craie,
+  BLOC.strate,
+  BLOC.sel,
+  BLOC.bambou,
+  BLOC.farine,
+  BLOC.tuf,
+  BLOC.petale,
+  BLOC.bobine,
+  BLOC.liege,
+  BLOC.pave,
+  BLOC.fresque,
+  BLOC.acajou,
+  BLOC.laurier,
+  BLOC.savon,
+  BLOC.ressort,
+  BLOC.cire,
 ];
 
+/** Les ouvrages par identifiant (le premier de ce nom, comme `BRIDGES.find`) : le tracé des liaisons les lit très souvent. */
+let ouvragesParId: Map<string, BridgeDef> | undefined;
+
 export function getBridge(id: string): BridgeDef | undefined {
-  return BRIDGES.find((b) => b.id === id);
+  if (!ouvragesParId) {
+    ouvragesParId = new Map();
+    for (const b of BRIDGES) if (!ouvragesParId.has(b.id)) ouvragesParId.set(b.id, b);
+  }
+  return ouvragesParId.get(id);
 }
 
 /** Les ouvrages qui touchent une île. */
@@ -491,6 +522,8 @@ export function conditionMet(bridge: BridgeDef, bridges: string[], world: WorldP
  */
 export interface MotsDesGardiens {
   navireGardiensManquants: (n: number, archipel: string) => string;
+  /** Les formes de la Nef que l'univers nomme autrement (world/vehicle.ts, `stageWords`). */
+  formesDeLaNef?: FormsWords;
 }
 
 /** Ce qu'il reste à faire pour la condition d'un ouvrage, depuis une île ouverte (pour l'expliquer à l'élève). */
@@ -504,12 +537,20 @@ export function conditionText(bridge: BridgeDef, bridges: string[]): string | nu
 }
 
 /**
+ * Un ouvrage est-il construit (le pont du départ, ou dans `bridges`) ? Le seul état de `bridgeState` qui se lit sans
+ * les îles ouvertes ni le tracé des liaisons : la marche, qui ne demande que celui-là, l'appelle à chaque ouvrage.
+ */
+export function bridgeBuilt(bridge: BridgeDef, bridges: readonly string[]): boolean {
+  return bridge.cost === 0 || bridges.includes(bridge.id);
+}
+
+/**
  * Construit ; constructible (une de ses deux îles est ouverte, la condition est remplie) ; bloqué (île ouverte mais
  * condition à remplir) ; ou trop loin pour l'instant. Sans `world`, les conditions ne sont pas regardées. `open` : les
  * îles ouvertes, si l'appelant les a déjà.
  */
 export function bridgeState(bridge: BridgeDef, bridges: string[], world?: WorldProgress, open?: Set<BiomeId>): BridgeState {
-  if (bridge.cost === 0 || bridges.includes(bridge.id)) return 'built';
+  if (bridgeBuilt(bridge, bridges)) return 'built';
   const ouvertes = open ?? reachableIslands(bridges);
   if (!ouvertes.has(bridge.from) && !ouvertes.has(bridge.to)) return 'far';
   // Une liaison qui ne tiendrait pas (elle couperait un lieu ou une liaison posée, ou serait trop longue) : pas proposée.
@@ -553,8 +594,9 @@ export function nearestDeparture(island: BiomeId, bridges: string[], open = reac
  * Les liaisons proposées maintenant (constructibles ou bloquées par une condition), qui touchent une île donnée (ou
  * toutes), GD-9 : vers un lieu fermé, celle qui part du lieu relié le plus proche (sur le lieu fermé lui-même, tous ses
  * départs possibles, `linksToIsland`) ; entre deux lieux ouverts, un raccourci entre voisins (`SHORT_LINK` cases au
- * plus). Avec « Pas de LV2 », aucune ne mène à l'île de la LV2 : l'élève n'y dépense pas de blocs. `open` : les îles
- * ouvertes (`reachableIslands(bridges)`), si l'appelant les a déjà.
+ * plus). Avec « Pas de LV2 », aucune ne mène à l'île de la LV2, ni avec « Pas d'option » à celle du latin et du grec
+ * (GD-13) : l'élève n'y dépense pas de blocs. `open` : les îles
+ * ouvertes (`reachableIslands(bridges)`), si l'appelant les a déjà. Sur un lieu fermé, la plus courte d'abord.
  */
 export function buildableBridges(bridges: string[], island?: BiomeId, world?: WorldProgress, lv2: Lv2Choice = lv2Courante(), open = reachableIslands(bridges)): BridgeDef[] {
   const proposees = new Set<string>();
@@ -572,9 +614,12 @@ export function buildableBridges(bridges: string[], island?: BiomeId, world?: Wo
       if (b) proposees.add(b.id);
     }
   }
-  return (island ? bridgesOf(island) : BRIDGES).filter((b) => {
+  // Sur un lieu fermé, ses départs dans l'ordre de `linksToIsland`, du plus court au plus long : le premier est celui de
+  // « Relier » (`nearestDeparture`), que la carte du lieu montre aussi.
+  const liste = !island ? BRIDGES : open.has(island) ? bridgesOf(island) : linksToIsland(island, bridges, open);
+  return liste.filter((b) => {
     if (!proposees.has(b.id)) return false;
-    if (lv2 === 'none' && [b.from, b.to].some((id) => getBiome(id)?.subject === 'lv2')) return false;
+    if ([b.from, b.to].some((id) => sansSonOption(getBiome(id), { lv2, lca: lcaCourante() }))) return false;
     const state = bridgeState(b, bridges, world, open);
     return state === 'buildable' || state === 'blocked';
   });

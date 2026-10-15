@@ -1,0 +1,240 @@
+{
+  "id": "lca-5e-legends-gr-gods-1",
+  "biome": "lca-5e-legends",
+  "type": "gr-gods",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-5e-legends-gr-gods-1-0",
+      "prompt": "Les dieux grecs habitent sur le mont …",
+      "spoken": "Les dieux grecs habitent sur le mont  (mot manquant) ",
+      "choices": [
+        "Olympe",
+        "Etna",
+        "Vésuve"
+      ],
+      "answer": "Olympe",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Les dieux grecs vivent sur l’Olympe, la plus haute montagne de Grèce. Les jeux Olympiques, eux, tiennent leur nom d’Olympie, un sanctuaire de Zeus.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de l’Olympe",
+          "lines": [
+            "Les dieux grecs vivent sur l’Olympe, une montagne de Grèce.",
+            "Zeus, roi des dieux, maître de la foudre ; Héra, son épouse, protège le mariage.",
+            "Poséidon : dieu de la mer ; son trident est une fourche à trois dents.",
+            "Athéna : la déesse de la sagesse ; son oiseau est la chouette.",
+            "Hermès : le messager des dieux, aux sandales ailées.",
+            "Apollon : le dieu de la lumière, de la musique et de la poésie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-1-1",
+      "prompt": "Le roi des dieux grecs s’appelle …",
+      "spoken": "Le roi des dieux grecs s’appelle  (mot manquant) ",
+      "choices": [
+        "Hermès",
+        "Zeus",
+        "Apollon"
+      ],
+      "answer": "Zeus",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Zeus est le roi des dieux ; il lance la foudre. Les Romains l’appellent Jupiter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de l’Olympe",
+          "lines": [
+            "Les dieux grecs vivent sur l’Olympe, une montagne de Grèce.",
+            "Zeus, roi des dieux, maître de la foudre ; Héra, son épouse, protège le mariage.",
+            "Poséidon : dieu de la mer ; son trident est une fourche à trois dents.",
+            "Athéna : la déesse de la sagesse ; son oiseau est la chouette.",
+            "Hermès : le messager des dieux, aux sandales ailées.",
+            "Apollon : le dieu de la lumière, de la musique et de la poésie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-1-2",
+      "prompt": "L’oiseau d’Athéna, la déesse de la sagesse, est …",
+      "spoken": "L’oiseau d’Athéna, la déesse de la sagesse, est  (mot manquant) ",
+      "choices": [
+        "l’aigle",
+        "la colombe",
+        "la chouette"
+      ],
+      "answer": "la chouette",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "La chouette, qui voit la nuit, est l’oiseau d’Athéna ; l’aigle est celui de Zeus. Les pièces d’Athènes portent une chouette.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de l’Olympe",
+          "lines": [
+            "Les dieux grecs vivent sur l’Olympe, une montagne de Grèce.",
+            "Zeus, roi des dieux, maître de la foudre ; Héra, son épouse, protège le mariage.",
+            "Poséidon : dieu de la mer ; son trident est une fourche à trois dents.",
+            "Athéna : la déesse de la sagesse ; son oiseau est la chouette.",
+            "Hermès : le messager des dieux, aux sandales ailées.",
+            "Apollon : le dieu de la lumière, de la musique et de la poésie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-1-3",
+      "prompt": "Hermès\nIl porte des sandales ailées.\nIl porte les messages des dieux.\nIl protège les voyageurs et les marchands.",
+      "question": "Quel est le rôle principal d’Hermès ?",
+      "spoken": "Hermès. Il porte des sandales ailées. Il porte les messages des dieux. Il protège les voyageurs et les marchands.",
+      "choices": [
+        "dieu de la mer",
+        "messager des dieux",
+        "roi des dieux"
+      ],
+      "answer": "messager des dieux",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "Hermès porte les messages des dieux ; ses sandales ailées le rendent rapide. Les Romains l’appellent Mercure.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de l’Olympe",
+          "lines": [
+            "Les dieux grecs vivent sur l’Olympe, une montagne de Grèce.",
+            "Zeus, roi des dieux, maître de la foudre ; Héra, son épouse, protège le mariage.",
+            "Poséidon : dieu de la mer ; son trident est une fourche à trois dents.",
+            "Athéna : la déesse de la sagesse ; son oiseau est la chouette.",
+            "Hermès : le messager des dieux, aux sandales ailées.",
+            "Apollon : le dieu de la lumière, de la musique et de la poésie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-1-4",
+      "prompt": "Poséidon frappe le sol avec son …",
+      "spoken": "Poséidon frappe le sol avec son  (mot manquant) ",
+      "choices": [
+        "trident",
+        "bâton",
+        "marteau"
+      ],
+      "answer": "trident",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Le trident, une fourche à trois dents, est l’objet de Poséidon, dieu de la mer. Tri- veut dire trois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de l’Olympe",
+          "lines": [
+            "Les dieux grecs vivent sur l’Olympe, une montagne de Grèce.",
+            "Zeus, roi des dieux, maître de la foudre ; Héra, son épouse, protège le mariage.",
+            "Poséidon : dieu de la mer ; son trident est une fourche à trois dents.",
+            "Athéna : la déesse de la sagesse ; son oiseau est la chouette.",
+            "Hermès : le messager des dieux, aux sandales ailées.",
+            "Apollon : le dieu de la lumière, de la musique et de la poésie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-1-5",
+      "prompt": "Héra, l’épouse de Zeus, protège …",
+      "spoken": "Héra, l’épouse de Zeus, protège  (mot manquant) ",
+      "choices": [
+        "les marins",
+        "le mariage",
+        "la guerre"
+      ],
+      "answer": "le mariage",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Héra protège le mariage et les femmes mariées. Les Romains l’appellent Junon.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de l’Olympe",
+          "lines": [
+            "Les dieux grecs vivent sur l’Olympe, une montagne de Grèce.",
+            "Zeus, roi des dieux, maître de la foudre ; Héra, son épouse, protège le mariage.",
+            "Poséidon : dieu de la mer ; son trident est une fourche à trois dents.",
+            "Athéna : la déesse de la sagesse ; son oiseau est la chouette.",
+            "Hermès : le messager des dieux, aux sandales ailées.",
+            "Apollon : le dieu de la lumière, de la musique et de la poésie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-1-6",
+      "prompt": "Le dieu de la musique et de la poésie s’appelle …",
+      "spoken": "Le dieu de la musique et de la poésie s’appelle  (mot manquant) ",
+      "choices": [
+        "Poséidon",
+        "Hermès",
+        "Apollon"
+      ],
+      "answer": "Apollon",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Apollon est le dieu de la lumière, de la musique et de la poésie ; il joue de la lyre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de l’Olympe",
+          "lines": [
+            "Les dieux grecs vivent sur l’Olympe, une montagne de Grèce.",
+            "Zeus, roi des dieux, maître de la foudre ; Héra, son épouse, protège le mariage.",
+            "Poséidon : dieu de la mer ; son trident est une fourche à trois dents.",
+            "Athéna : la déesse de la sagesse ; son oiseau est la chouette.",
+            "Hermès : le messager des dieux, aux sandales ailées.",
+            "Apollon : le dieu de la lumière, de la musique et de la poésie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-1-7",
+      "prompt": "Les dieux de l’Olympe\nZeus et Héra règnent sur eux.\nChaque dieu a son domaine, comme la mer ou la guerre.\nLes Grecs les honorent dans des temples.",
+      "question": "Où les Grecs honorent-ils leurs dieux ?",
+      "spoken": "Les dieux de l’Olympe. Zeus et Héra règnent sur eux. Chaque dieu a son domaine, comme la mer ou la guerre. Les Grecs les honorent dans des temples.",
+      "choices": [
+        "dans des temples",
+        "sur l’Olympe",
+        "dans leurs écoles"
+      ],
+      "answer": "dans des temples",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Les Grecs honorent leurs dieux dans des temples, avec des prières et des offrandes. L’Olympe, lui, est la demeure des dieux dans les récits.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les dieux de l’Olympe",
+          "lines": [
+            "Les dieux grecs vivent sur l’Olympe, une montagne de Grèce.",
+            "Zeus, roi des dieux, maître de la foudre ; Héra, son épouse, protège le mariage.",
+            "Poséidon : dieu de la mer ; son trident est une fourche à trois dents.",
+            "Athéna : la déesse de la sagesse ; son oiseau est la chouette.",
+            "Hermès : le messager des dieux, aux sandales ailées.",
+            "Apollon : le dieu de la lumière, de la musique et de la poésie."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-5e-legends",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

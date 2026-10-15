@@ -22,7 +22,7 @@ it('le village passe par cinq états, déduits de la progression', () => {
   // Un monument terminé : développement.
   const [monument] = monumentsOf('6e');
   const withMonument = { ...plaine, [monument.id]: planCells(monument).map((c) => c.key) };
-  expect(villageStage({ parts: withMonument, links: ['maths-6e-calculation-maths-6e-fractions'] }, '6e')).toMatchObject({ rank: 4, next: 'Fais partir le Bloc-Navire vers les Îles Brumeuses.' });
+  expect(villageStage({ parts: withMonument, links: ['maths-6e-calculation-maths-6e-fractions'] }, '6e')).toMatchObject({ rank: 4, next: 'Fais partir la Nef vers les Îles Brumeuses.' });
   // Le voyage fait : port, quel que soit le reste.
   expect(villageStage({ parts: {}, links: ['passage-5e'] }, '6e')).toMatchObject({ rank: 5, name: 'Port', next: null });
 });

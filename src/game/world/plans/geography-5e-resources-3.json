@@ -1,0 +1,9 @@
+{
+  "id": "geography-5e-resources-3",
+  "biome": "geography-5e-resources",
+  "name": "La cour du moulin",
+  "reward": {
+    "xp": 60
+  },
+  "done": "La cour est prête. Mon moulin est complet : l’eau, les champs et le grain se partagent ici."
+}

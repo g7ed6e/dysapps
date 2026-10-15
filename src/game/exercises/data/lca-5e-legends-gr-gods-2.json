@@ -1,0 +1,241 @@
+{
+  "id": "lca-5e-legends-gr-gods-2",
+  "biome": "lca-5e-legends",
+  "type": "gr-gods",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-5e-legends-gr-gods-2-0",
+      "prompt": "Le fil d’Ariane\nThésée entre dans le labyrinthe pour tuer le Minotaure.\nAriane lui donne une pelote de fil.\nIl la déroule en avançant.",
+      "question": "À quoi sert le fil ?",
+      "spoken": "Le fil d’Ariane. Thésée entre dans le labyrinthe pour tuer le Minotaure. Ariane lui donne une pelote de fil. Il la déroule en avançant.",
+      "choices": [
+        "à attacher le Minotaure",
+        "à retrouver la sortie",
+        "à appeler Ariane à l’aide"
+      ],
+      "answer": "à retrouver la sortie",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "En suivant le fil déroulé, Thésée retrouve la sortie du labyrinthe. Aujourd’hui, « le fil d’Ariane » est ce qui guide dans une situation compliquée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros et mots venus des mythes",
+          "lines": [
+            "Héraclès accomplit douze travaux, des exploits très difficiles.",
+            "Ulysse, roi d’Ithaque, met dix ans à rentrer chez lui : c’est l’Odyssée.",
+            "Thésée tue le Minotaure dans le labyrinthe et en sort grâce au fil d’Ariane.",
+            "Achille n’a qu’un point faible : son talon.",
+            "Pandore ouvre une boîte d’où sortent tous les malheurs.",
+            "Le dieu Pan effraie les bergers par ses cris : « panique » vient de son nom."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-2-1",
+      "prompt": "Un « talon d’Achille », c’est …",
+      "spoken": "Un « talon d’Achille », c’est  (mot manquant) ",
+      "choices": [
+        "un point faible",
+        "une blessure au pied",
+        "une grande force"
+      ],
+      "answer": "un point faible",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Achille n’a qu’un point faible, son talon : un talon d’Achille est le point faible d’une personne ou d’un projet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros et mots venus des mythes",
+          "lines": [
+            "Héraclès accomplit douze travaux, des exploits très difficiles.",
+            "Ulysse, roi d’Ithaque, met dix ans à rentrer chez lui : c’est l’Odyssée.",
+            "Thésée tue le Minotaure dans le labyrinthe et en sort grâce au fil d’Ariane.",
+            "Achille n’a qu’un point faible : son talon.",
+            "Pandore ouvre une boîte d’où sortent tous les malheurs.",
+            "Le dieu Pan effraie les bergers par ses cris : « panique » vient de son nom."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-2-2",
+      "prompt": "Un long voyage plein d’aventures se dit une …",
+      "spoken": "Un long voyage plein d’aventures se dit une  (mot manquant) ",
+      "choices": [
+        "olympiade",
+        "odyssée",
+        "panique"
+      ],
+      "answer": "odyssée",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "L’Odyssée raconte les dix ans de voyage d’Ulysse : une odyssée est un long voyage plein d’aventures. Une olympiade est une période de quatre ans, entre deux jeux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros et mots venus des mythes",
+          "lines": [
+            "Héraclès accomplit douze travaux, des exploits très difficiles.",
+            "Ulysse, roi d’Ithaque, met dix ans à rentrer chez lui : c’est l’Odyssée.",
+            "Thésée tue le Minotaure dans le labyrinthe et en sort grâce au fil d’Ariane.",
+            "Achille n’a qu’un point faible : son talon.",
+            "Pandore ouvre une boîte d’où sortent tous les malheurs.",
+            "Le dieu Pan effraie les bergers par ses cris : « panique » vient de son nom."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-2-3",
+      "prompt": "Pandore\nLes dieux confient à Pandore une boîte fermée.\nPoussée par la curiosité, elle l’ouvre.\nTous les malheurs se répandent sur la Terre.",
+      "question": "« Ouvrir la boîte de Pandore », c’est …",
+      "spoken": "Pandore. Les dieux confient à Pandore une boîte fermée. Poussée par la curiosité, elle l’ouvre. Tous les malheurs se répandent sur la Terre.",
+      "choices": [
+        "faire une belle surprise",
+        "provoquer une suite de problèmes",
+        "garder un secret"
+      ],
+      "answer": "provoquer une suite de problèmes",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "En ouvrant la boîte, Pandore libère tous les malheurs : « ouvrir la boîte de Pandore », c’est déclencher une suite de problèmes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros et mots venus des mythes",
+          "lines": [
+            "Héraclès accomplit douze travaux, des exploits très difficiles.",
+            "Ulysse, roi d’Ithaque, met dix ans à rentrer chez lui : c’est l’Odyssée.",
+            "Thésée tue le Minotaure dans le labyrinthe et en sort grâce au fil d’Ariane.",
+            "Achille n’a qu’un point faible : son talon.",
+            "Pandore ouvre une boîte d’où sortent tous les malheurs.",
+            "Le dieu Pan effraie les bergers par ses cris : « panique » vient de son nom."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-2-4",
+      "prompt": "Une peur soudaine, qui gagne toute une foule, est une …",
+      "spoken": "Une peur soudaine, qui gagne toute une foule, est une  (mot manquant) ",
+      "choices": [
+        "panique",
+        "odyssée",
+        "colère"
+      ],
+      "answer": "panique",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Pan, dieu des bergers, effraie par ses cris : la panique, c’est une peur soudaine et très forte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros et mots venus des mythes",
+          "lines": [
+            "Héraclès accomplit douze travaux, des exploits très difficiles.",
+            "Ulysse, roi d’Ithaque, met dix ans à rentrer chez lui : c’est l’Odyssée.",
+            "Thésée tue le Minotaure dans le labyrinthe et en sort grâce au fil d’Ariane.",
+            "Achille n’a qu’un point faible : son talon.",
+            "Pandore ouvre une boîte d’où sortent tous les malheurs.",
+            "Le dieu Pan effraie les bergers par ses cris : « panique » vient de son nom."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-2-5",
+      "prompt": "Héraclès accomplit … travaux.",
+      "spoken": "Héraclès accomplit  (mot manquant)  travaux.",
+      "choices": [
+        "trois",
+        "sept",
+        "douze"
+      ],
+      "answer": "douze",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Héraclès, Hercule chez les Romains, accomplit douze travaux, comme vaincre le lion de Némée. « Un travail d’Hercule » : une tâche énorme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros et mots venus des mythes",
+          "lines": [
+            "Héraclès accomplit douze travaux, des exploits très difficiles.",
+            "Ulysse, roi d’Ithaque, met dix ans à rentrer chez lui : c’est l’Odyssée.",
+            "Thésée tue le Minotaure dans le labyrinthe et en sort grâce au fil d’Ariane.",
+            "Achille n’a qu’un point faible : son talon.",
+            "Pandore ouvre une boîte d’où sortent tous les malheurs.",
+            "Le dieu Pan effraie les bergers par ses cris : « panique » vient de son nom."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-2-6",
+      "prompt": "Ulysse et le Cyclope\nPolyphème, un géant à un seul œil, enferme Ulysse.\nUlysse lui dit que son nom est « Personne ».\nLe Cyclope crie : « Personne m’attaque ! » Ses voisins ne viennent pas.",
+      "question": "Pourquoi les voisins ne viennent-ils pas aider le Cyclope ?",
+      "spoken": "Ulysse et le Cyclope. Polyphème, un géant à un seul œil, enferme Ulysse. Ulysse lui dit que son nom est : Personne. Le Cyclope crie : Personne m’attaque ! Ses voisins ne viennent pas.",
+      "choices": [
+        "ils ont peur d’Ulysse",
+        "ils dorment tous",
+        "ils comprennent que personne ne l’attaque"
+      ],
+      "answer": "ils comprennent que personne ne l’attaque",
+      "hint": "Lis la dernière ligne : que comprennent les voisins ?",
+      "explanation": "Ulysse a dit que son nom était « Personne » : quand le Cyclope crie « Personne m’attaque », ses voisins comprennent que nul ne l’attaque. C’est une ruse d’Ulysse, le héros aux mille ruses.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros et mots venus des mythes",
+          "lines": [
+            "Héraclès accomplit douze travaux, des exploits très difficiles.",
+            "Ulysse, roi d’Ithaque, met dix ans à rentrer chez lui : c’est l’Odyssée.",
+            "Thésée tue le Minotaure dans le labyrinthe et en sort grâce au fil d’Ariane.",
+            "Achille n’a qu’un point faible : son talon.",
+            "Pandore ouvre une boîte d’où sortent tous les malheurs.",
+            "Le dieu Pan effraie les bergers par ses cris : « panique » vient de son nom."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-gods-2-7",
+      "prompt": "Le Minotaure tient son nom du roi Minos et du mot grec tauros, qui veut dire …",
+      "spoken": "Le Minotaure tient son nom du roi Minos et du mot grec taouross, qui veut dire (mot manquant)",
+      "choices": [
+        "taureau",
+        "lion",
+        "cheval"
+      ],
+      "answer": "taureau",
+      "hint": "Le Minotaure est mi-homme, mi-animal : quel animal ?",
+      "explanation": "Tauros, c’est le taureau : le Minotaure, « le taureau de Minos », a un corps d’homme et une tête de taureau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Héros et mots venus des mythes",
+          "lines": [
+            "Héraclès accomplit douze travaux, des exploits très difficiles.",
+            "Ulysse, roi d’Ithaque, met dix ans à rentrer chez lui : c’est l’Odyssée.",
+            "Thésée tue le Minotaure dans le labyrinthe et en sort grâce au fil d’Ariane.",
+            "Achille n’a qu’un point faible : son talon.",
+            "Pandore ouvre une boîte d’où sortent tous les malheurs.",
+            "Le dieu Pan effraie les bergers par ses cris : « panique » vient de son nom."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-5e-legends",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

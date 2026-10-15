@@ -1,12 +1,13 @@
-// À quoi servent les blocs que l'élève a en poche, et lesquels lui manquent : le chantier du Bloc-Navire, les monuments
+// À quoi servent les blocs que l'élève a en poche, et lesquels lui manquent : le chantier de la Nef, les monuments
 // de l'archipel, les ouvrages (et l'assemblage, à part). Le bâtiment d'une île n'en prend pas : il se pose tout seul, une
 // partie par mission réussie (GD-6). Code pur, partagé par l'inventaire (« Mes blocs ») et le bilan d'une mission. Un
 // bloc qui ne sert à rien maintenant est dit tel quel ; les blocs de finition, l'or et le cristal sont des trophées.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
 import { canLaunch, currentStage, planStatus, type GameState } from '../engine';
 import { archipelagoOf, buildableBridges, conditionMet, islandsOf, otherEnd, payableBlocks, reachableIslands, type BridgeDef } from './archipelago';
-import { monumentsOf } from './monuments';
-import { lieuDAssemblage } from './assembly';
+import { monumentsOf, type MonumentDef } from './monuments';
+import { nextPiece, projectNeeds, projectOf } from './projects';
+import { lieuDAssemblage, type UniversNomme } from './assembly';
 import { universCourant } from '../../core/settings';
 import type { VehicleStage } from './vehicle';
 
@@ -22,7 +23,7 @@ export function whereToEarn(block: BlockId): string {
 
 /**
  * Un bloc gardé comme trophée : ni bloc d'île, ni bloc assemblé (les blocs de finition, l'or, le cristal). Depuis GD-6,
- * aucun bâtiment d'île ne les demande ; ils restent dans la sauvegarde et le Bloc-Navire peut encore s'en servir.
+ * aucun bâtiment d'île ne les demande ; ils restent dans la sauvegarde et la Nef peut encore s'en servir.
  */
 export function blocTrophee(block: BlockId): boolean {
   return !earnIsland(block) && !BLOCKS[block].assemble;
@@ -45,6 +46,8 @@ export interface Use {
   enough: boolean;
   /** Où aller (un monument a sa propre adresse) ; sinon l'île. */
   to?: string;
+  /** Un grand projet (GD-10) : le nom, dans chaque univers, de la pièce à construire ; elle se pose en entier, il faut tous ses blocs. */
+  piece?: Record<UniversNomme, string>;
 }
 
 /** Les îles ouvertes de l'archipel où se tient le bonhomme, la sienne en premier. */
@@ -63,6 +66,15 @@ function shipyard(state: GameState): VehicleStage | null {
   if (!stage) return null;
   const launch = canLaunch(state, stage);
   return launch.ok || launch.reason !== 'loin' ? stage : null;
+}
+
+/**
+ * Les blocs qu'un monument demande encore : ceux de ses cases, ou, pour un grand projet (GD-10), ceux de la pièce à
+ * construire (`both` : des deux recettes).
+ */
+export function monumentMissing(state: GameState, m: MonumentDef, both = false): Partial<Record<BlockId, number>> {
+  const project = projectOf(m.id);
+  return project ? projectNeeds(state, project, both) : planStatus(state, m).missing;
 }
 
 /** Ce qu'un type de bloc peut construire maintenant ; vide s'il ne sert à rien pour l'instant. */
@@ -85,8 +97,11 @@ export function blockUses(state: GameState, block: BlockId): Use[] {
   // Rien à poser sur le navire : les monuments de l'archipel s'en servent peut-être (c'est leur rôle :
   // employer les blocs qui s'accumulent).
   for (const m of monumentsOf(archipelagoOf(state.world.place ?? 'french-6e-phonology').classe)) {
-    const need = planStatus(state, m).missing[block] ?? 0;
-    if (need > 0) uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/adventure/${m.id}` });
+    const need = monumentMissing(state, m, true)[block] ?? 0;
+    if (need === 0) continue;
+    const project = projectOf(m.id);
+    const piece = project ? nextPiece(state, project) : null;
+    uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/adventure/${m.id}`, ...(project && piece !== null && { piece: project.pieces[piece].names }) });
   }
   return uses;
 }
@@ -131,7 +146,7 @@ function rank(row: InventoryRow, at: BiomeId): number {
   return blocTrophee(row.block) ? 3 : 2;
 }
 
-/** Les blocs que réclame le chantier du Bloc-Navire à portée et que l'élève n'a pas, avec l'île où les gagner. */
+/** Les blocs que réclame le chantier de la Nef à portée et que l'élève n'a pas, avec l'île où les gagner. */
 export function missingNow(state: GameState): MissingBlock[] {
   const need: Partial<Record<BlockId, number>> = {};
   const stage = shipyard(state);

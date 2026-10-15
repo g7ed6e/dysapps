@@ -1,0 +1,230 @@
+{
+  "id": "history-6e-antiquity-viewpoints-1",
+  "biome": "history-6e-antiquity",
+  "type": "viewpoints",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-6e-antiquity-viewpoints-1-0",
+      "prompt": "Celui qui a écrit un document est son … .",
+      "spoken": "Celui qui a écrit un document est son (mot manquant) .",
+      "choices": [
+        "destinataire",
+        "auteur",
+        "témoin"
+      ],
+      "answer": "auteur",
+      "hint": "Qui a tenu la plume ?",
+      "explanation": "L’auteur écrit le document, ou le fait écrire. Le destinataire le reçoit. Un témoin a vu ce qu’il raconte, mais il n’écrit pas toujours.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui parle ?",
+          "lines": [
+            "L’auteur : celui qui a écrit le document, ou qui l’a fait faire.",
+            "Le destinataire : celui pour qui le document est fait.",
+            "Un témoin : celui qui a vu de ses yeux ce qu’il raconte.",
+            "Un point de vue : ce que pense l’auteur. Un éloge dit du bien, une critique dit du mal.",
+            "Devant un document, demande-toi : qui parle ? Pour qui ? Dans quel but ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-1-1",
+      "prompt": "Un gouverneur écrit une lettre à l’empereur : l’empereur est le … de la lettre.",
+      "spoken": "Un gouverneur écrit une lettre à l’empereur : l’empereur est le (mot manquant) de la lettre.",
+      "choices": [
+        "auteur",
+        "témoin",
+        "destinataire"
+      ],
+      "answer": "destinataire",
+      "hint": "Qui reçoit la lettre ?",
+      "explanation": "L’empereur reçoit la lettre : il en est le destinataire. L’auteur, c’est le gouverneur, qui l’écrit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui parle ?",
+          "lines": [
+            "L’auteur : celui qui a écrit le document, ou qui l’a fait faire.",
+            "Le destinataire : celui pour qui le document est fait.",
+            "Un témoin : celui qui a vu de ses yeux ce qu’il raconte.",
+            "Un point de vue : ce que pense l’auteur. Un éloge dit du bien, une critique dit du mal.",
+            "Devant un document, demande-toi : qui parle ? Pour qui ? Dans quel but ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-1-2",
+      "prompt": "Un auteur qui a vu lui-même ce qu’il raconte est un … .",
+      "spoken": "Un auteur qui a vu lui-même ce qu’il raconte est un (mot manquant) .",
+      "choices": [
+        "témoin",
+        "destinataire",
+        "héros"
+      ],
+      "answer": "témoin",
+      "hint": "Il était là quand c’est arrivé.",
+      "explanation": "Un témoin a vu les faits de ses yeux. Un historien qui écrit longtemps après n’est pas un témoin : il raconte ce que d’autres ont dit ou écrit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui parle ?",
+          "lines": [
+            "L’auteur : celui qui a écrit le document, ou qui l’a fait faire.",
+            "Le destinataire : celui pour qui le document est fait.",
+            "Un témoin : celui qui a vu de ses yeux ce qu’il raconte.",
+            "Un point de vue : ce que pense l’auteur. Un éloge dit du bien, une critique dit du mal.",
+            "Devant un document, demande-toi : qui parle ? Pour qui ? Dans quel but ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-1-3",
+      "prompt": "Ce que pense l’auteur d’un document, c’est son … .",
+      "spoken": "Ce que pense l’auteur d’un document, c’est son (mot manquant) .",
+      "choices": [
+        "titre",
+        "point de vue",
+        "résumé"
+      ],
+      "answer": "point de vue",
+      "hint": "C’est son avis.",
+      "explanation": "Le point de vue, c’est l’avis de l’auteur. Deux auteurs peuvent raconter le même fait avec deux points de vue différents. Le titre et le résumé ne disent pas ce qu’il pense.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui parle ?",
+          "lines": [
+            "L’auteur : celui qui a écrit le document, ou qui l’a fait faire.",
+            "Le destinataire : celui pour qui le document est fait.",
+            "Un témoin : celui qui a vu de ses yeux ce qu’il raconte.",
+            "Un point de vue : ce que pense l’auteur. Un éloge dit du bien, une critique dit du mal.",
+            "Devant un document, demande-toi : qui parle ? Pour qui ? Dans quel but ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-1-4",
+      "prompt": "Un discours qui dit seulement du bien de Rome est un … de Rome.",
+      "spoken": "Un discours qui dit seulement du bien de Rome est un (mot manquant) de Rome.",
+      "choices": [
+        "résumé",
+        "reproche",
+        "éloge"
+      ],
+      "answer": "éloge",
+      "hint": "Le discours dit-il du bien ou du mal ?",
+      "explanation": "Un éloge dit du bien. Un reproche dit du mal. Un résumé redit l’essentiel en peu de mots.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui parle ?",
+          "lines": [
+            "L’auteur : celui qui a écrit le document, ou qui l’a fait faire.",
+            "Le destinataire : celui pour qui le document est fait.",
+            "Un témoin : celui qui a vu de ses yeux ce qu’il raconte.",
+            "Un point de vue : ce que pense l’auteur. Un éloge dit du bien, une critique dit du mal.",
+            "Devant un document, demande-toi : qui parle ? Pour qui ? Dans quel but ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-1-5",
+      "prompt": "Les Romains racontent que Romulus est le fils du dieu Mars. Ils veulent montrer que Rome est … par les dieux.",
+      "spoken": "Les Romains racontent que Romulus est le fils du dieu Mars. Ils veulent montrer que Rome est (mot manquant) par les dieux.",
+      "choices": [
+        "protégée",
+        "oubliée",
+        "punie"
+      ],
+      "answer": "protégée",
+      "hint": "Un fondateur fils d’un dieu : est-ce une bonne ou une mauvaise chose pour Rome ?",
+      "explanation": "Avec un fondateur fils de Mars, Rome se dit protégée par les dieux, donc faite pour dominer. C’est une légende, racontée pour la gloire de Rome.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui parle ?",
+          "lines": [
+            "L’auteur : celui qui a écrit le document, ou qui l’a fait faire.",
+            "Le destinataire : celui pour qui le document est fait.",
+            "Un témoin : celui qui a vu de ses yeux ce qu’il raconte.",
+            "Un point de vue : ce que pense l’auteur. Un éloge dit du bien, une critique dit du mal.",
+            "Devant un document, demande-toi : qui parle ? Pour qui ? Dans quel but ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-1-6",
+      "prompt": "Rome montre la louve et les jumeaux sur ses pièces de monnaie : elle met en … sa légende.",
+      "spoken": "Rome montre la louve et les jumeaux sur ses pièces de monnaie : elle met en (mot manquant) sa légende.",
+      "choices": [
+        "doute",
+        "scène",
+        "ordre"
+      ],
+      "answer": "scène",
+      "hint": "Rome veut-elle cacher sa légende, ou la montrer à tous ?",
+      "explanation": "Mettre en scène, c’est montrer à tous, comme au théâtre : sur les pièces, chacun voit la légende de Rome. Mettre en doute, ce serait ne pas y croire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui parle ?",
+          "lines": [
+            "L’auteur : celui qui a écrit le document, ou qui l’a fait faire.",
+            "Le destinataire : celui pour qui le document est fait.",
+            "Un témoin : celui qui a vu de ses yeux ce qu’il raconte.",
+            "Un point de vue : ce que pense l’auteur. Un éloge dit du bien, une critique dit du mal.",
+            "Devant un document, demande-toi : qui parle ? Pour qui ? Dans quel but ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-viewpoints-1-7",
+      "prompt": "Sur un mur de Pompéi, on lit : « Votez pour Polybius, il apporte du bon pain ! » Ce texte veut … les habitants.",
+      "spoken": "Sur un mur de Pompéi, on lit : « Votez pour Polybius, il apporte du bon pain ! » Ce texte veut (mot manquant) les habitants.",
+      "choices": [
+        "informer",
+        "convaincre",
+        "remercier"
+      ],
+      "answer": "convaincre",
+      "hint": "« Votez pour » : que veut l’auteur ?",
+      "explanation": "« Votez pour » : l’auteur veut que les habitants votent pour Polybius, et il donne une raison, le bon pain. C’est une affiche pour une élection : elle dit le point de vue de ceux qui soutiennent Polybius.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui parle ?",
+          "lines": [
+            "L’auteur : celui qui a écrit le document, ou qui l’a fait faire.",
+            "Le destinataire : celui pour qui le document est fait.",
+            "Un témoin : celui qui a vu de ses yeux ce qu’il raconte.",
+            "Un point de vue : ce que pense l’auteur. Un éloge dit du bien, une critique dit du mal.",
+            "Devant un document, demande-toi : qui parle ? Pour qui ? Dans quel but ?"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-6e-antiquity",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

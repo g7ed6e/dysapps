@@ -5,7 +5,7 @@ import { planCells, type PlanDef } from './world/plans';
 export type { Burst } from './world/view';
 
 /**
- * Pose d'un coup toutes les cases d'un plan posé case par case (le Bloc-Navire, un monument) que l'inventaire permet,
+ * Pose d'un coup toutes les cases d'un plan posé case par case (la Nef, un monument) que l'inventaire permet,
  * dans l'ordre du plan. Le contexte suit l'inventaire à chaque pose : une case dont le bloc manque est sautée. Le
  * bâtiment d'une île ne passe plus par ici : ses parties se posent toutes seules, une par mission réussie (GD-6).
  */

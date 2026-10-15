@@ -1,9 +1,30 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { render } from '@testing-library/react';
+import { createElement } from 'react';
+import { Aid } from '../../src/game/exercises/Aid';
+import { AID_COMPONENTS } from '../../src/game/exercises/maths';
 import { clesDeplacees, clesRemplacees } from './chemins.mjs';
-import { ecrireIle, lireIle } from './format.mjs';
+import { ecrireFigure, ecrireIle, lireFigure, lireIle } from './format.mjs';
 
 const DATA = 'src/game/exercises/data';
+
+/** Des figures de géométrie bien écrites, une par variante (aller-retour, rendu). */
+const FIGURES_DE_GEOMETRIE = [
+  'angles 40 · 60 · ?', 'angles 80 · ? · ? / isocèle', 'angles 90 · 35 · ?', 'angles ? · ? · ? / équilatéral', 'angles 45 · 75 · ?',
+  'angle 120', 'angle 45', 'angle plat 130 · ?', 'angle croisé 70 · ?',
+  'plane rectangle 5 · 3 / aire ?', 'plane carré 6 / aire ?', 'plane parallélogramme 6 · 4 / aire ?', 'plane parallélogramme 5 · 3 · 4 / aire ?',
+  'plane triangle 8 · 5 / aire ?', 'plane disque 5 / aire ?', 'plane cercle 4 / diamètre ?', 'plane cercle 2,5', 'plane médiatrice 7 · ?',
+  'plane partagé 3 / x · 4 / ? · ?', 'plane partagé ? / a · b / 7a · 7b',
+  'solide cubes 4 · 2 · 3', 'solide cubes 3 · 2 · 2 / 2 · 2 · 3', 'solide cube 1', 'solide cylindre 3 · 2 / volume ?', 'solide cylindre',
+  'solide cône r · h', 'solide cône 3 · 4 / volume ?', 'solide prisme-pyramide h',
+  'image translation', 'image axiale', 'image centrale / arc ?', 'image rotation 90 / angle 50 · ?', 'image rotation −90', 'image axiale / aire 12 · ?',
+  'image homothétie 2 / angle 40 · ?', 'image centrale / aire 12 cm² · ? / arc ?',
+  'repère', 'repère A 4 · −2', 'repère C 2 · 3 / D −6 · 6',
+];
+
+/** Les autres figures bien écrites. */
+const AUTRES_FIGURES = ['tableau x · f(x) / 2 · 6 / 4 · ?', 'triangle 6 · 8 · ?', 'droite 0 · 20 / 5 · 10', 'graduée −1 · 0 / 5 / −0,4', 'graduée 0 · 1 / 10', 'fraction 3/5', 'fractions 3/5 · 3/10', 'diagramme lundi · mardi / 10 · 20', 'diagramme 4 · 0,5', 'graphique 2 · −1'];
 
 /** Les exercices du jeu, rangés par île. */
 function parIle() {
@@ -51,11 +72,122 @@ describe('le format Markdown du contenu', () => {
     items[3].choices = [];
     items[4].aid = { kind: 'rule-card', props: { title: 'Règle : x', lines: ['une ligne'] } };
     items[5].explanation = '';
+    items[6].figure = { kind: 'ratio-table', props: { cols: ['bouteilles', 'livres'], rows: [[2, 2], [6, '?']] } };
+    items[7].figure = { kind: 'right-triangle', props: { a: 3, b: 4, c: '?', labels: ['A', 'B', 'C'] } };
+    items[8].figure = { kind: 'number-line', props: { min: -5, max: 5, points: [-2, 1.5] } };
     const ex = { id: 'english-6e-vocabulary-x-1', biome: 'english-6e-vocabulary', type: 'x', level: 1, instruction: 'Consigne.', items };
     const md = ecrireIle({ id: 'english-6e-vocabulary' }, [ex]);
     expect(lireIle(md).exercices).toEqual([ex]);
     expect(lireIle(md.replace(/\n/g, '\r\n')).exercices).toEqual([ex]);
     expect(lireIle('\uFEFF' + md).exercices).toEqual([ex]);
+  });
+
+  it('lit les figures de maths sur une ligne, et refuse une figure mal écrite', () => {
+    expect(lireFigure('tableau x · f(x) / 2 · 6 / 4 · ?')).toEqual({ kind: 'ratio-table', props: { cols: ['x', 'f(x)'], rows: [[2, 6], [4, '?']] } });
+    expect(lireFigure('droite 0 · 20 / 5 · 10')).toEqual({ kind: 'number-line', props: { min: 0, max: 20, points: [5, 10] } });
+    expect(ecrireFigure(lireFigure('triangle 6 · 8 · ?'))).toBe('triangle 6 · 8 · ?');
+    expect(lireFigure('fraction 3/5')).toEqual({ kind: 'fraction-bar', props: { n: 3, d: 5 } });
+    expect(lireFigure('fractions 3/5 · 3/10')).toEqual({ kind: 'compare-bars', props: { a: [3, 5], b: [3, 10] } });
+    expect(lireFigure('diagramme lundi · mardi / 10 · 20')).toEqual({ kind: 'bar-list', props: { values: [10, 20], labels: ['lundi', 'mardi'] } });
+    expect(lireFigure('graphique 2 · −1')).toEqual({ kind: 'graph', props: { a: 2, b: -1 } });
+    expect(lireFigure('graduée 5 · 6 / 10 / 5,3')).toEqual({ kind: 'graduated-line', props: { start: 5, units: 1, perUnit: 10, point: 3 } });
+    expect(() => lireFigure('graduée 5 · 6 / 10 / 5,38')).toThrow(/sur une graduation/);
+    for (const f of ['graduée −1 · 0 / 5 / −0,4', 'graduée 0 · 1 / 10', 'fraction 3/5', 'fractions 3/5 · 3/10', 'diagramme lundi · mardi / 10 · 20', 'diagramme 4 · 0,5', 'graphique 2 · −1'])
+      expect(ecrireFigure(lireFigure(f))).toBe(f);
+    expect(() => lireFigure('fraction 7/5')).toThrow(/une unité/);
+    expect(() => lireFigure('fractions 3/5')).toThrow(/deux fractions/);
+    expect(() => lireFigure('diagramme a · b / 10')).toThrow(/autant de nombres/);
+    expect(() => lireFigure('graphique 2')).toThrow(/a puis b/);
+    expect(() => lireFigure('cercle 3')).toThrow(/tableau/);
+    expect(() => lireFigure('tableau x · y / 1')).toThrow(/même longueur/);
+    expect(() => lireFigure('triangle 3 · 4')).toThrow(/trois côtés/);
+    expect(() => lireFigure('droite 5 · 2')).toThrow(/plus grand/);
+  });
+
+  it('lit les figures de géométrie sur une ligne', () => {
+    expect(lireFigure('angles 40 · 60 · ?')).toEqual({ kind: 'triangle-angles', props: { angles: [40, 60, '?'] } });
+    expect(lireFigure('angles 80 · ? · ? / isocèle')).toEqual({ kind: 'triangle-angles', props: { angles: [80, '?', '?'], marks: 'isosceles' } });
+    expect(lireFigure('angles ? · ? · ? / équilatéral')).toEqual({ kind: 'triangle-angles', props: { angles: ['?', '?', '?'], marks: 'equilateral' } });
+    expect(lireFigure('angle 120')).toEqual({ kind: 'angle', props: { layout: 'single', values: [120] } });
+    expect(lireFigure('angle plat 130 · ?')).toEqual({ kind: 'angle', props: { layout: 'straight', values: [130, '?'] } });
+    expect(lireFigure('angle croisé 70 · ?')).toEqual({ kind: 'angle', props: { layout: 'crossed', values: [70, '?'] } });
+    expect(lireFigure('plane rectangle 5 · 3 / aire ?')).toEqual({ kind: 'plane-figure', props: { shape: 'rectangle', values: [5, 3], area: '?' } });
+    expect(lireFigure('plane parallélogramme 5 · 3 · 4 / aire ?')).toEqual({ kind: 'plane-figure', props: { shape: 'parallelogram', values: [5, 3, 4], area: '?' } });
+    expect(lireFigure('plane cercle 4 / diamètre ?')).toEqual({ kind: 'plane-figure', props: { shape: 'circle', values: [4], diameter: '?' } });
+    expect(lireFigure('plane médiatrice 7 · ?')).toEqual({ kind: 'plane-figure', props: { shape: 'bisector', values: [7, '?'] } });
+    expect(lireFigure('plane partagé ? / a · b / 7a · 7b')).toEqual({ kind: 'plane-figure', props: { shape: 'split', values: ['?'], widths: ['a', 'b'], areas: ['7a', '7b'] } });
+    expect(lireFigure('solide cubes 3 · 2 · 2 / 2 · 2 · 3')).toEqual({ kind: 'solid', props: { solid: 'cubes', boxes: [[3, 2, 2], [2, 2, 3]] } });
+    expect(lireFigure('solide cylindre')).toEqual({ kind: 'solid', props: { solid: 'cylinder' } });
+    expect(lireFigure('solide cylindre 3 · 2 / volume ?')).toEqual({ kind: 'solid', props: { solid: 'cylinder', values: [3, 2], volume: '?' } });
+    expect(lireFigure('solide cône r · h')).toEqual({ kind: 'solid', props: { solid: 'cone', values: ['r', 'h'] } });
+    expect(lireFigure('image translation')).toEqual({ kind: 'transformation', props: { transform: 'translation' } });
+    expect(lireFigure('image centrale / arc ?')).toEqual({ kind: 'transformation', props: { transform: 'point-reflection', arc: '?' } });
+    expect(lireFigure('image rotation 90 / angle 50 · ?')).toEqual({ kind: 'transformation', props: { transform: 'rotation', amount: 90, angles: [50, '?'] } });
+    expect(lireFigure('image axiale / aire 12 · ?')).toEqual({ kind: 'transformation', props: { transform: 'reflection', areas: [12, '?'] } });
+    expect(lireFigure('repère')).toEqual({ kind: 'coordinate-plane', props: { points: [] } });
+    expect(lireFigure('repère A 4 · −2 / B 0 · 5')).toEqual({ kind: 'coordinate-plane', props: { points: [{ name: 'A', x: 4, y: -2 }, { name: 'B', x: 0, y: 5 }] } });
+  });
+
+  it('réécrit chaque figure de géométrie telle qu’elle a été lue', () => {
+    for (const l of FIGURES_DE_GEOMETRIE) expect(ecrireFigure(lireFigure(l))).toBe(l);
+    // Dans une île : la figure passe par le Markdown et revient identique.
+    const items = FIGURES_DE_GEOMETRIE.map((l, n) => ({ key: `maths-6e-calculation-x-1-${n}`, prompt: `Question ${n}`, choices: ['a', 'b'], answer: 'a', figure: lireFigure(l) }));
+    const ex = { id: 'maths-6e-calculation-x-1', biome: 'maths-6e-calculation', type: 'x', level: 1, items };
+    expect(lireIle(ecrireIle({ id: 'maths-6e-calculation' }, [ex])).exercices).toEqual([ex]);
+  });
+
+  it('dessine chaque figure bien écrite, et chaque figure du jeu : aucune ne disparaît en silence', () => {
+    const duJeu = readdirSync(DATA).flatMap((f) => JSON.parse(readFileSync(join(DATA, f), 'utf8')).items.flatMap((it) => (it.figure ? [it.figure] : [])));
+    for (const figure of [...[...FIGURES_DE_GEOMETRIE, ...AUTRES_FIGURES].map(lireFigure), ...duJeu]) {
+      expect(AID_COMPONENTS[figure.kind], figure.kind).toBeDefined();
+      const { container, unmount } = render(createElement(Aid, { aid: figure }));
+      expect(container.querySelector('[role="img"], table'), JSON.stringify(figure)).not.toBeNull();
+      unmount();
+    }
+  });
+
+  it('refuse une figure de géométrie mal écrite, en disant comment l’écrire', () => {
+    const refus = {
+      'angles 40 · 60': /angles 40 · 60 · \?/,
+      'angles 100 · 90 · ?': /somme 180°/,
+      'angles 80 · ? · ?': /isocèle/,
+      'angles 80 · 60 · ? / rectangle': /équilatéral/,
+      'angles 50 · ? · ? / équilatéral': /équilatéral/,
+      'angle 200': /angle 120/,
+      'angle 10': /de 20 à 180/,
+      'angles 90 · 75 · ?': /20° au moins/,
+      'angles 150 · ? · ? / isocèle': /20° au moins/,
+      'angle plat 170 · ?': /de 20 à 180/,
+      'angle ?': /angle 120/,
+      'angle plat 130 · 60': /somme 180°/,
+      'angle croisé 70 · 80': /opposé par le sommet/,
+      'angle croisé ? · ?': /opposé par le sommet/,
+      'plane rectangle 5': /plane rectangle 5 · 3/,
+      'plane losange 5 · 3': /plane rectangle/,
+      'plane carré 6 / périmètre ?': /plane carré 6/,
+      'plane cercle 4 / aire ?': /diamètre/,
+      'plane médiatrice 7 · ? / aire ?': /médiatrice/,
+      'plane partagé 3 / x · 4': /partagé/,
+      'plane rectangle −5 · 3': /plane rectangle/,
+      'solide cubes 4 · 2': /solide cubes 4 · 2 · 3/,
+      'solide cubes 4 · 2 · 1,5': /entiers/,
+      'solide cylindre 3': /solide cylindre 3 · 2/,
+      'solide cube 1 / volume ?': /solide cube 1/,
+      'solide sphère 3': /solide cône/,
+      'image rotation': /multiple de 90/,
+      'image rotation 45': /multiple de 90/,
+      'image homothétie 0,5': /rapport 2 ou 3/,
+      'image translation 3': /image translation/,
+      'image axiale / arc ?': /arc \?/,
+      'image rotation 90 / angle 50': /angle 50 · \?/,
+      'image axiale / angle 50 · ? / aire 12 · ?': /angle 50 · \?/,
+      'image centrale / arc ? / aire 12 · ?': /arc \?/,
+      'repère A 7 · 0': /de −6 à 6/,
+      'repère A 1 · 2 / A 3 · 4': /repère A 4 · −2/,
+      'repère a 1 · 2': /majuscule/,
+    };
+    for (const [ligne, message] of Object.entries(refus)) expect(() => lireFigure(ligne), ligne).toThrow(message);
+    expect(() => lireFigure('cercle 3')).toThrow(/« repère »/);
   });
 
   it('refuse une valeur vide ou avec des espaces au bord écrite sans guillemets', () => {

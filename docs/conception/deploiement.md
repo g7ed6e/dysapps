@@ -72,7 +72,7 @@ La version est affichée dans les réglages de l’application et dans le pied d
 
 ## Revenir en arrière
 
-Une version qui change le format de la partie (`GAME_VERSION`, `src/core/migration.ts`) ne se défait pas une fois en ligne : la partie traduite par un appareil n'est plus lisible par la version d'avant, qui jetterait ce qu'elle ne connaît pas (identifiants neutres du format 3 : stock, constructions, liaisons). En cas d'incident après une telle version, on corrige en avant, sans revert de `main`.
+Une version qui change le format de la partie (`GAME_VERSION`, `src/core/migration.ts`) ne se défait pas une fois en ligne : la partie traduite par un appareil n'est plus lisible par la version d'avant, qui jetterait ce qu'elle ne connaît pas (identifiants neutres du format 3 : stock, constructions, liaisons). En cas d'incident après une telle version, on corrige en avant, sans revert de `main`. Limite connue du format 4 (programmes de 2025-2026) : un onglet resté ouvert sur le code d’avant relit la partie au format 4 sans la traduire ; il ouvre les lieux où des exercices déplacés sont arrivés (leurs étoiles y comptent) et perd `challengesKeptOpen` (les défis gardés ouverts), qu’il ne connaît pas. S’il enregistre (au format 3), les lieux ouverts le restent et la migration, qui repasse, ne retrouve plus ces défis ; les étoiles et la file de révision ne se perdent pas (commentaire de `GAME_VERSION`).
 
 ## Dépendances
 

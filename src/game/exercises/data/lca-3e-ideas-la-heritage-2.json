@@ -1,0 +1,239 @@
+{
+  "id": "lca-3e-ideas-la-heritage-2",
+  "biome": "lca-3e-ideas",
+  "type": "la-heritage",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-3e-ideas-la-heritage-2-0",
+      "prompt": "« Extraire », c’est tirer …",
+      "spoken": "« Extraire », c’est tirer  (mot manquant) ",
+      "choices": [
+        "dedans",
+        "hors de",
+        "à travers"
+      ],
+      "answer": "hors de",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Ex- veut dire hors de : extraire, c’est tirer hors de. Comme exporter ou expulser.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préverbes et familles de mots",
+          "lines": [
+            "Un préverbe se place devant un verbe et en change le sens.",
+            "ex- ou é- : hors de, comme dans expulser, pousser dehors.",
+            "in- ou im- : dans, comme dans inscrire, écrire dans une liste.",
+            "re- : de nouveau, ou en arrière, comme dans refaire.",
+            "trans- : à travers, au-delà, comme dans traverser.",
+            "Verbes latins : portare, porter ; ducere, conduire ; mittere, envoyer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-2-1",
+      "prompt": "« Inhaler », c’est faire entrer l’air …",
+      "spoken": "« Inhaler », c’est faire entrer l’air  (mot manquant) ",
+      "choices": [
+        "dans les poumons",
+        "hors des poumons",
+        "à travers la peau"
+      ],
+      "answer": "dans les poumons",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "In- veut dire dans : inhaler, c’est aspirer l’air dans les poumons. Son contraire, exhaler, c’est le faire sortir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préverbes et familles de mots",
+          "lines": [
+            "Un préverbe se place devant un verbe et en change le sens.",
+            "ex- ou é- : hors de, comme dans expulser, pousser dehors.",
+            "in- ou im- : dans, comme dans inscrire, écrire dans une liste.",
+            "re- : de nouveau, ou en arrière, comme dans refaire.",
+            "trans- : à travers, au-delà, comme dans traverser.",
+            "Verbes latins : portare, porter ; ducere, conduire ; mittere, envoyer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-2-2",
+      "prompt": "Le verbe latin ducere : conduire\nconduire, produire, réduire\nintroduire : conduire dans\nun aqueduc : il conduit l’eau",
+      "question": "Quel autre mot vient de la famille de ducere ?",
+      "spoken": "Le verbe latin doukéré : conduire. Conduire, produire, réduire. Introduire : conduire dans. Un aqueduc : il conduit l’eau.",
+      "choices": [
+        "durcir",
+        "dune",
+        "déduire"
+      ],
+      "answer": "déduire",
+      "hint": "Relis la deuxième ligne du document : quelle fin de mot revient ?",
+      "explanation": "Déduire vient de deducere, ducere avec le préverbe dé- : c’est la famille de conduire et de produire. Durcir vient de dur (durus en latin) ; dune vient d’un autre mot.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préverbes et familles de mots",
+          "lines": [
+            "Un préverbe se place devant un verbe et en change le sens.",
+            "ex- ou é- : hors de, comme dans expulser, pousser dehors.",
+            "in- ou im- : dans, comme dans inscrire, écrire dans une liste.",
+            "re- : de nouveau, ou en arrière, comme dans refaire.",
+            "trans- : à travers, au-delà, comme dans traverser.",
+            "Verbes latins : portare, porter ; ducere, conduire ; mittere, envoyer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-2-3",
+      "prompt": "« Transmettre », c’est envoyer …",
+      "spoken": "« Transmettre », c’est envoyer  (mot manquant) ",
+      "choices": [
+        "au-delà, à quelqu’un d’autre",
+        "de nouveau",
+        "dedans"
+      ],
+      "answer": "au-delà, à quelqu’un d’autre",
+      "hint": "Relis la cinquième et la dernière ligne du rappel.",
+      "explanation": "Trans- (au-delà) et mittere (envoyer) : transmettre, c’est faire passer à un autre. Comme transporter, traverser.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préverbes et familles de mots",
+          "lines": [
+            "Un préverbe se place devant un verbe et en change le sens.",
+            "ex- ou é- : hors de, comme dans expulser, pousser dehors.",
+            "in- ou im- : dans, comme dans inscrire, écrire dans une liste.",
+            "re- : de nouveau, ou en arrière, comme dans refaire.",
+            "trans- : à travers, au-delà, comme dans traverser.",
+            "Verbes latins : portare, porter ; ducere, conduire ; mittere, envoyer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-2-4",
+      "prompt": "« Renvoyer » une balle, c’est l’envoyer …",
+      "spoken": "« Renvoyer » une balle, c’est l’envoyer  (mot manquant) ",
+      "choices": [
+        "hors du terrain",
+        "pour la première fois",
+        "en arrière, vers celui qui l’a lancée"
+      ],
+      "answer": "en arrière, vers celui qui l’a lancée",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Re- veut dire de nouveau, ou en arrière : renvoyer, c’est envoyer en retour. Comme revenir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préverbes et familles de mots",
+          "lines": [
+            "Un préverbe se place devant un verbe et en change le sens.",
+            "ex- ou é- : hors de, comme dans expulser, pousser dehors.",
+            "in- ou im- : dans, comme dans inscrire, écrire dans une liste.",
+            "re- : de nouveau, ou en arrière, comme dans refaire.",
+            "trans- : à travers, au-delà, comme dans traverser.",
+            "Verbes latins : portare, porter ; ducere, conduire ; mittere, envoyer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-2-5",
+      "prompt": "Quel mot de la famille de mittere veut dire « envoyer hors de soi », comme un son ou un message ?",
+      "spoken": "Quel mot de la famille de mittéré veut dire envoyer hors de soi, comme un son ou un message ?",
+      "choices": [
+        "admettre",
+        "émettre",
+        "remettre"
+      ],
+      "answer": "émettre",
+      "hint": "Relis la deuxième ligne du rappel : quel préverbe veut dire « hors de » ?",
+      "explanation": "É- (ex-) veut dire hors de, et mittere, envoyer : émettre, c’est envoyer hors de soi. Une émission de radio envoie des sons.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préverbes et familles de mots",
+          "lines": [
+            "Un préverbe se place devant un verbe et en change le sens.",
+            "ex- ou é- : hors de, comme dans expulser, pousser dehors.",
+            "in- ou im- : dans, comme dans inscrire, écrire dans une liste.",
+            "re- : de nouveau, ou en arrière, comme dans refaire.",
+            "trans- : à travers, au-delà, comme dans traverser.",
+            "Verbes latins : portare, porter ; ducere, conduire ; mittere, envoyer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-2-6",
+      "prompt": "« Importer » des produits, c’est les porter …",
+      "spoken": "« Importer » des produits, c’est les porter  (mot manquant) ",
+      "choices": [
+        "hors du pays",
+        "dans le pays",
+        "de nouveau"
+      ],
+      "answer": "dans le pays",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Im- (in- devant un p) veut dire dans, et portare, porter : importer, c’est faire entrer dans le pays. Exporter, c’est l’inverse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préverbes et familles de mots",
+          "lines": [
+            "Un préverbe se place devant un verbe et en change le sens.",
+            "ex- ou é- : hors de, comme dans expulser, pousser dehors.",
+            "in- ou im- : dans, comme dans inscrire, écrire dans une liste.",
+            "re- : de nouveau, ou en arrière, comme dans refaire.",
+            "trans- : à travers, au-delà, comme dans traverser.",
+            "Verbes latins : portare, porter ; ducere, conduire ; mittere, envoyer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-la-heritage-2-7",
+      "prompt": "Dans le verbe « transporter », le préverbe est …",
+      "spoken": "Dans le verbe « transporter », le préverbe est  (mot manquant) ",
+      "choices": [
+        "trans-",
+        "port-",
+        "-er"
+      ],
+      "answer": "trans-",
+      "hint": "Le préverbe se place devant le verbe : relis la première ligne du rappel.",
+      "explanation": "Le préverbe est trans- (au-delà), porter est le verbe : transporter, c’est porter d’un lieu à un autre. -er est la terminaison de l’infinitif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Préverbes et familles de mots",
+          "lines": [
+            "Un préverbe se place devant un verbe et en change le sens.",
+            "ex- ou é- : hors de, comme dans expulser, pousser dehors.",
+            "in- ou im- : dans, comme dans inscrire, écrire dans une liste.",
+            "re- : de nouveau, ou en arrière, comme dans refaire.",
+            "trans- : à travers, au-delà, comme dans traverser.",
+            "Verbes latins : portare, porter ; ducere, conduire ; mittere, envoyer."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-3e-ideas",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

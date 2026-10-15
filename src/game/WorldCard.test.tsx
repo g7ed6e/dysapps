@@ -13,11 +13,12 @@ import { CATALOG, exercisesOf } from './exercises';
 import { WorldCard, type FicheOuverte } from './WorldCard';
 import { oublierLesRemises } from './reminders';
 import type { VehicleBuilder } from './useVehicleBuilder';
-import { getCommande, type Commande } from './world/requests';
+import { getCommande } from './world/requests';
 
 const FORET: BiomeId = 'french-6e-phonology';
 const PLAINE: BiomeId = 'maths-6e-calculation';
 const MOUSSO = 'french-6e-phonology-request-1';
+const COCO = 'maths-6e-calculation-request-1';
 
 const joue = (...iles: BiomeId[]) =>
   Object.fromEntries(iles.flatMap((ile) => missionsJouables(getBiome(ile)!).map((m) => [exercisesOf(ile, m.id)[0].id, { stars: 2, attempts: 1, best: 0.8 }])));
@@ -45,7 +46,7 @@ function chantier(partiel: Partial<VehicleBuilder>): VehicleBuilder {
   };
 }
 
-function ouvrir(fiche: FicheOuverte, extra: { ship?: VehicleBuilder; commande?: Commande; onLivree?: (c: Commande) => boolean; onBoard?: () => void } = {}) {
+function ouvrir(fiche: FicheOuverte, extra: { ship?: VehicleBuilder; onLivree?: (c: { id: string }) => boolean; onBoard?: () => void } = {}) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
@@ -57,7 +58,6 @@ function ouvrir(fiche: FicheOuverte, extra: { ship?: VehicleBuilder; commande?: 
               ship={extra.ship ?? chantier({})}
               onBoard={extra.onBoard ?? (() => {})}
               onBuilt={() => {}}
-              commande={extra.commande}
               onLivree={extra.onLivree}
               onVoirOuvrage={() => {}}
             />
@@ -73,7 +73,7 @@ beforeEach(() => oublierLesRemises());
 it('une créature qui a une commande prête : sa phrase et « Livrer », qui pose la petite construction et dit la phrase', async () => {
   sauver({ progress: joue(FORET, PLAINE), stock: { [BLOC.terre]: 4 }, world: { parts: {}, log: [], links: [], place: FORET, requests: [MOUSSO] } });
   const onLivree = vi.fn(() => true);
-  ouvrir({ objet: { genre: 'creature', id: FORET }, seq: 1, saut: false, phrase: 'Bonjour !' }, { commande: getCommande(MOUSSO), onLivree });
+  ouvrir({ objet: { genre: 'creature', id: FORET }, seq: 1, saut: false, phrase: 'Bonjour !' }, { onLivree });
   const f = screen.getByRole('dialog', { name: 'Mousso' });
   expect(f).toHaveTextContent('Tu as les blocs de terre ! Livre-les à Mousso.');
   expect(f).not.toHaveTextContent('Bonjour !');
@@ -82,6 +82,50 @@ it('une créature qui a une commande prête : sa phrase et « Livrer », qui pos
   expect(f).toHaveTextContent('Potager posé chez Mousso !');
   expect(within(f).queryByRole('button', { name: /Livrer/ })).not.toBeInTheDocument();
   expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.requests ?? []).not.toContain(MOUSSO);
+});
+
+it('une commande prête se livre même quand elle n’est pas la prochaine destination (une mission à jouer, une autre commande prête)', async () => {
+  // Une mission de la Forêt jamais jouée : la prochaine destination est cette mission, pas la commande de Mousso ; celle
+  // de Coco, prête aussi, est la plus récente. Les deux créatures proposent quand même « Livrer ».
+  const missions = missionsJouables(getBiome(FORET)!);
+  const derniere = exercisesOf(FORET, missions[missions.length - 1].id)[0].id;
+  const progress = Object.fromEntries(Object.entries(joue(FORET, PLAINE)).filter(([id]) => id !== derniere));
+  sauver({ progress, stock: { [BLOC.terre]: 3, [BLOC.bois]: 3 }, world: { parts: {}, log: [], links: [], place: FORET, requests: [MOUSSO, COCO] } });
+  const onLivree = vi.fn(() => true);
+  const { unmount } = ouvrir({ objet: { genre: 'creature', id: FORET }, seq: 1, saut: false, phrase: 'Bonjour !' }, { onLivree });
+  await userEvent.click(within(screen.getByRole('dialog', { name: 'Mousso' })).getByRole('button', { name: /Livrer/ }));
+  expect(onLivree).toHaveBeenCalledWith(getCommande(MOUSSO));
+  unmount();
+  ouvrir({ objet: { genre: 'creature', id: PLAINE }, seq: 2, saut: false, phrase: 'Bonjour !' }, { onLivree });
+  const coco = screen.getByRole('dialog', { name: 'Coco' });
+  await userEvent.click(within(coco).getByRole('button', { name: /Livrer/ }));
+  expect(onLivree).toHaveBeenCalledWith(getCommande(COCO));
+  expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.requests).toBeUndefined();
+});
+
+it('l’habitant de l’étape d’une quête (GD-10) : le signe de l’objet, ses étapes, la phrase et « Apporter », qui pose l’objet', async () => {
+  sauver({ progress: joue(FORET, PLAINE), world: { parts: {}, log: [], links: [], place: FORET, stories: [{ id: 'story-6e-1', step: 2 }] } });
+  const onLivree = vi.fn(() => true);
+  ouvrir({ objet: { genre: 'creature', id: FORET }, seq: 1, saut: false, phrase: 'Bonjour !' }, { onLivree });
+  const f = screen.getByRole('dialog', { name: 'Mousso' });
+  // Le signe : l'objet et une pastille par étape, jamais « 3/3 » (qui se lirait comme une fraction).
+  expect(within(f).getByRole('img', { name: 'Entraide : la lanterne. Étape 3 sur 3.' }).querySelectorAll('.quete-etape')).toHaveLength(3);
+  expect(f).toHaveTextContent('Apporte la lanterne à Mousso.');
+  expect(f).not.toHaveTextContent('Bonjour !');
+  await userEvent.click(within(f).getByRole('button', { name: /Apporter/ }));
+  expect(onLivree).toHaveBeenCalledWith(expect.objectContaining({ id: 'story-6e-1', biome: FORET }));
+  expect(f).toHaveTextContent('Lanterne posée chez Mousso !');
+  expect(within(f).queryByRole('button', { name: /Apporter/ })).not.toBeInTheDocument();
+  expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.stories).toBeUndefined();
+});
+
+it('une étape « donner » pas encore faisable : les révisions d’abord ; sans révisions, la phrase et ce que l’élève a déjà', () => {
+  sauver({ progress: joue(FORET, PLAINE), stock: { [BLOC.bois]: 1 }, world: { parts: {}, log: [], links: [], place: PLAINE, stories: [{ id: 'story-6e-1', step: 1 }] } });
+  ouvrir({ objet: { genre: 'creature', id: PLAINE }, seq: 1, saut: false, phrase: 'Bonjour !' });
+  const f = screen.getByRole('dialog', { name: 'Coco' });
+  expect(f).toHaveTextContent('Donne 2 blocs de bois à Coco.');
+  expect(f).toHaveTextContent('1 sur 2');
+  expect(within(f).queryByRole('button', { name: /Donner/ })).not.toBeInTheDocument();
 });
 
 it('une créature qui a des révisions dues : « Reprendre » et « Plus tard » ; après « Plus tard », sa phrase', async () => {
@@ -109,23 +153,24 @@ it('une créature sans rien à proposer : son nom et sa phrase, sans bouton prin
   expect(f.querySelector('.world-fiche-actions')).toBeNull();
 });
 
-it('le Bloc-Navire : « Poser le bloc suivant » et « Poser tout ce que j’ai » quand on peut poser ; « Embarquer » quand tout est prêt', async () => {
+it('la Nef : un seul bouton « Poser » quand on peut poser ; « Partir » quand elle est prête (GD-15)', async () => {
   sauver({});
   const { VEHICLE_STAGES } = await import('./world/vehicle');
-  const fillNext = vi.fn();
-  const pose = chantier({ stage: VEHICLE_STAGES[0], status: { done: 3, total: 45, complete: false, missing: {} } as unknown as VehicleBuilder['status'], canFill: true, fillNext });
+  const fillAll = vi.fn();
+  const pose = chantier({ stage: VEHICLE_STAGES[0], status: { done: 3, total: 27, complete: false, missing: {} } as unknown as VehicleBuilder['status'], canFill: true, fillAll });
   const { unmount } = ouvrir({ objet: { genre: 'navire', port: PLAINE }, seq: 1, saut: false }, { ship: pose });
-  const f = screen.getByRole('dialog', { name: /Le Bloc-Navire\s:\sétape 1 sur 3/ });
-  await userEvent.click(within(f).getByRole('button', { name: /Poser le bloc suivant/ }));
-  expect(fillNext).toHaveBeenCalled();
-  expect(within(f).getByRole('button', { name: /Poser tout ce que j’ai/ })).toBeInTheDocument();
+  const f = screen.getByRole('dialog', { name: 'La Nef' });
+  expect(f).toHaveTextContent('Forme 1 sur 3, le voilier.');
+  expect(within(f).getAllByRole('button').filter((b) => /Poser/.test(b.textContent ?? ''))).toHaveLength(1);
+  await userEvent.click(within(f).getByRole('button', { name: /^Poser$/ }));
+  expect(fillAll).toHaveBeenCalled();
   unmount();
   const onBoard = vi.fn();
-  const pret = chantier({ stage: VEHICLE_STAGES[0], status: { done: 45, total: 45, complete: true, missing: {} } as unknown as VehicleBuilder['status'], launch: { ok: true } as VehicleBuilder['launch'] });
+  const pret = chantier({ stage: VEHICLE_STAGES[0], status: { done: 27, total: 27, complete: true, missing: {} } as unknown as VehicleBuilder['status'], launch: { ok: true } as VehicleBuilder['launch'] });
   ouvrir({ objet: { genre: 'navire', port: PLAINE }, seq: 2, saut: false }, { ship: pret, onBoard });
-  const g = screen.getByRole('dialog', { name: /Le Bloc-Navire/ });
-  expect(g).toHaveTextContent('Prêt : embarque !');
-  await userEvent.click(within(g).getByRole('button', { name: /Embarquer vers les Collines du Large/ }));
+  const g = screen.getByRole('dialog', { name: 'La Nef' });
+  expect(g).toHaveTextContent('La Nef est prête : pars vers les Collines du Large quand tu veux.');
+  await userEvent.click(within(g).getByRole('button', { name: 'Partir vers les Collines du Large' }));
   expect(onBoard).toHaveBeenCalledWith('5e', false);
 });
 
@@ -138,12 +183,12 @@ it('le Gardien rallumé : « Rejouer », avec ses étoiles (GD-8)', () => {
   expect(within(f).getByRole('link', { name: 'Rejouer' })).toHaveAttribute('href', `/adventure/${FORET}/challenge`);
 });
 
-it('le Bloc-Navire dont le voyage de ce port est fait : le titre sans étape, la prochaine étape, « Y aller »', async () => {
+it('la Nef dont le voyage de ce port est fait : le titre sans étape, la prochaine forme, « Y aller »', async () => {
   sauver({ world: { parts: {}, log: [], links: ['passage-5e'], place: PLAINE } });
   const onBoard = vi.fn();
   ouvrir({ objet: { genre: 'navire', port: PLAINE }, seq: 1, saut: false }, { onBoard });
-  const f = screen.getByRole('dialog', { name: 'Le Bloc-Navire' });
-  expect(f).toHaveTextContent('La prochaine étape est au port des Collines du Large.');
+  const f = screen.getByRole('dialog', { name: 'La Nef' });
+  expect(f).toHaveTextContent('Sa prochaine forme se construit au port des Collines du Large.');
   expect(f).not.toHaveTextContent('étape 1');
   await userEvent.click(within(f).getByRole('button', { name: /Y aller/ }));
   expect(onBoard).toHaveBeenCalledWith('5e', true, 'maths-5e-proportionality');
@@ -222,4 +267,12 @@ describe('le portrait en médaillon (P2, PR 2, Blocland)', () => {
     expect(medaillon()!.querySelector('.voxel-scene, .creature-cubes')).toBeNull();
     expect(medaillon()).toHaveAttribute('aria-hidden', 'true');
   });
+});
+
+it('le Gardien : sa fiche nomme son lieu une seule fois, avec son icône (choix 4a)', () => {
+  sauver({ progress: { ...joue(FORET) } });
+  ouvrir({ objet: { genre: 'gardien', id: FORET }, seq: 1, saut: false });
+  const f = screen.getByRole('dialog', { name: 'Le Grand Chêne' });
+  expect(f.textContent!.split('Forêt des sons')).toHaveLength(2);
+  expect(f.querySelector('.world-fiche-lieu svg')).toHaveAttribute('aria-hidden', 'true');
 });

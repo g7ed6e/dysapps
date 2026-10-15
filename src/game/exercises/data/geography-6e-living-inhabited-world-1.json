@@ -177,7 +177,7 @@
         "littoral"
       ],
       "answer": "désert",
-      "hint": "Regarde la dernière ligne du rappel.",
+      "hint": "Cherche « presque personne » dans le rappel.",
       "explanation": "Un désert humain : presque personne n’y vit. Le contraire est un foyer de peuplement.",
       "aid": {
         "kind": "rule-card",

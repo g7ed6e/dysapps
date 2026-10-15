@@ -1,0 +1,241 @@
+{
+  "id": "life-earth-sciences-4e-cells-evolution-cells-nutrition-2",
+  "biome": "life-earth-sciences-4e-cells-evolution",
+  "type": "cells-nutrition",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-2-0",
+      "prompt": "La plante verte fabrique sa propre matière grâce à la lumière : c’est la …",
+      "spoken": "La plante verte fabrique sa propre matière grâce à la lumière : c’est la  (mot manquant) ",
+      "choices": [
+        "respiration",
+        "photosynthèse",
+        "digestion"
+      ],
+      "answer": "photosynthèse",
+      "hint": "Relis la ligne « La plante verte » du rappel. « Photo » veut dire lumière.",
+      "explanation": "Avec la lumière, la plante verte fabrique sa matière : c’est la photosynthèse. Elle respire aussi, jour et nuit, comme tous les êtres vivants.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se nourrir et respirer",
+          "lines": [
+            "La plante verte fabrique sa matière avec la lumière : c’est la photosynthèse.",
+            "Il lui faut de l’eau et des sels minéraux, du dioxyde de carbone et de la lumière.",
+            "Elle fabrique des sucres, comme l’amidon, et rejette de l’oxygène.",
+            "Un animal mange de la matière faite par d’autres êtres vivants.",
+            "Pour respirer, les cellules prennent de l’oxygène et rejettent du dioxyde de carbone.",
+            "Poumons ou branchies : les organes des échanges de gaz avec le milieu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-2-1",
+      "prompt": "Pendant la photosynthèse, la plante rejette de l’…",
+      "spoken": "Pendant la photosynthèse, la plante rejette de l’ (mot manquant) ",
+      "choices": [
+        "azote",
+        "dioxyde de carbone",
+        "oxygène"
+      ],
+      "answer": "oxygène",
+      "hint": "Relis la ligne « Elle fabrique des sucres » du rappel.",
+      "explanation": "Pendant la photosynthèse, la plante prend du dioxyde de carbone et rejette de l’oxygène. C’est l’inverse de la respiration.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se nourrir et respirer",
+          "lines": [
+            "La plante verte fabrique sa matière avec la lumière : c’est la photosynthèse.",
+            "Il lui faut de l’eau et des sels minéraux, du dioxyde de carbone et de la lumière.",
+            "Elle fabrique des sucres, comme l’amidon, et rejette de l’oxygène.",
+            "Un animal mange de la matière faite par d’autres êtres vivants.",
+            "Pour respirer, les cellules prennent de l’oxygène et rejettent du dioxyde de carbone.",
+            "Poumons ou branchies : les organes des échanges de gaz avec le milieu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-2-2",
+      "prompt": "Le test à l’eau iodée : bleu-noir veut dire qu’il y a de l’amidon.\nFeuille gardée à la lumière : bleu-noir.\nFeuille gardée deux jours dans le noir : pas de bleu-noir.",
+      "question": "Que montre cette expérience ?",
+      "spoken": "Le test à l’eau iodée, bleu-noir veut dire qu’il y a de l’amidon. Feuille gardée à la lumière, bleu-noir. Feuille gardée deux jours dans le noir, pas de bleu-noir.",
+      "choices": [
+        "la feuille fabrique de l’amidon à la lumière",
+        "la feuille fabrique de l’amidon dans le noir",
+        "l’eau iodée fabrique de l’amidon"
+      ],
+      "answer": "la feuille fabrique de l’amidon à la lumière",
+      "hint": "Quelle feuille devient bleu-noir ?",
+      "explanation": "Seule la feuille gardée à la lumière contient de l’amidon : la plante le fabrique à la lumière, par la photosynthèse. L’eau iodée ne fabrique rien : elle montre seulement l’amidon.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se nourrir et respirer",
+          "lines": [
+            "La plante verte fabrique sa matière avec la lumière : c’est la photosynthèse.",
+            "Il lui faut de l’eau et des sels minéraux, du dioxyde de carbone et de la lumière.",
+            "Elle fabrique des sucres, comme l’amidon, et rejette de l’oxygène.",
+            "Un animal mange de la matière faite par d’autres êtres vivants.",
+            "Pour respirer, les cellules prennent de l’oxygène et rejettent du dioxyde de carbone.",
+            "Poumons ou branchies : les organes des échanges de gaz avec le milieu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-2-3",
+      "prompt": "Chez les poissons, les échanges de gaz avec l’eau se font par les …",
+      "spoken": "Chez les poissons, les échanges de gaz avec l’eau se font par les  (mot manquant) ",
+      "choices": [
+        "branchies",
+        "poumons",
+        "nageoires"
+      ],
+      "answer": "branchies",
+      "hint": "Relis la ligne « Poumons ou branchies » du rappel : le poisson vit dans l’eau.",
+      "explanation": "Les branchies prennent l’oxygène dissous dans l’eau et y rejettent le dioxyde de carbone. Les poumons, eux, font ces échanges avec l’air.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se nourrir et respirer",
+          "lines": [
+            "La plante verte fabrique sa matière avec la lumière : c’est la photosynthèse.",
+            "Il lui faut de l’eau et des sels minéraux, du dioxyde de carbone et de la lumière.",
+            "Elle fabrique des sucres, comme l’amidon, et rejette de l’oxygène.",
+            "Un animal mange de la matière faite par d’autres êtres vivants.",
+            "Pour respirer, les cellules prennent de l’oxygène et rejettent du dioxyde de carbone.",
+            "Poumons ou branchies : les organes des échanges de gaz avec le milieu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-2-4",
+      "prompt": "Un bocal fermé, avec une plante verte, à la lumière\nAu début : peu d’oxygène dans le bocal.\nUne heure plus tard : beaucoup d’oxygène dans le bocal.",
+      "question": "D’où vient l’oxygène en plus ?",
+      "spoken": "Un bocal fermé, avec une plante verte, à la lumière. Au début, peu d’oxygène dans le bocal. Une heure plus tard, beaucoup d’oxygène dans le bocal.",
+      "choices": [
+        "de la lumière",
+        "de la plante",
+        "du couvercle"
+      ],
+      "answer": "de la plante",
+      "hint": "Qui rejette de l’oxygène, à la lumière ?",
+      "explanation": "À la lumière, la plante fait la photosynthèse et rejette de l’oxygène. La lumière lui donne l’énergie, mais ce n’est pas un gaz.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se nourrir et respirer",
+          "lines": [
+            "La plante verte fabrique sa matière avec la lumière : c’est la photosynthèse.",
+            "Il lui faut de l’eau et des sels minéraux, du dioxyde de carbone et de la lumière.",
+            "Elle fabrique des sucres, comme l’amidon, et rejette de l’oxygène.",
+            "Un animal mange de la matière faite par d’autres êtres vivants.",
+            "Pour respirer, les cellules prennent de l’oxygène et rejettent du dioxyde de carbone.",
+            "Poumons ou branchies : les organes des échanges de gaz avec le milieu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-2-5",
+      "prompt": "Le lapin mange de l’herbe : il se nourrit de matière fabriquée par …",
+      "spoken": "Le lapin mange de l’herbe : il se nourrit de matière fabriquée par  (mot manquant) ",
+      "choices": [
+        "le sol",
+        "le soleil",
+        "les plantes"
+      ],
+      "answer": "les plantes",
+      "hint": "Relis la ligne « Un animal » du rappel.",
+      "explanation": "L’herbe est une plante : elle a fabriqué sa matière par la photosynthèse. Le lapin mange cette matière. Le soleil donne la lumière, pas la matière.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se nourrir et respirer",
+          "lines": [
+            "La plante verte fabrique sa matière avec la lumière : c’est la photosynthèse.",
+            "Il lui faut de l’eau et des sels minéraux, du dioxyde de carbone et de la lumière.",
+            "Elle fabrique des sucres, comme l’amidon, et rejette de l’oxygène.",
+            "Un animal mange de la matière faite par d’autres êtres vivants.",
+            "Pour respirer, les cellules prennent de l’oxygène et rejettent du dioxyde de carbone.",
+            "Poumons ou branchies : les organes des échanges de gaz avec le milieu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-2-6",
+      "prompt": "Quand une cellule respire, elle prend de l’oxygène et rejette du …",
+      "spoken": "Quand une cellule respire, elle prend de l’oxygène et rejette du  (mot manquant) ",
+      "choices": [
+        "dioxyde de carbone",
+        "sucre",
+        "azote"
+      ],
+      "answer": "dioxyde de carbone",
+      "hint": "Relis la ligne « Pour respirer » du rappel.",
+      "explanation": "Toutes les cellules respirent : elles prennent de l’oxygène et rejettent du dioxyde de carbone. Les sucres, elles les utilisent pour avoir de l’énergie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se nourrir et respirer",
+          "lines": [
+            "La plante verte fabrique sa matière avec la lumière : c’est la photosynthèse.",
+            "Il lui faut de l’eau et des sels minéraux, du dioxyde de carbone et de la lumière.",
+            "Elle fabrique des sucres, comme l’amidon, et rejette de l’oxygène.",
+            "Un animal mange de la matière faite par d’autres êtres vivants.",
+            "Pour respirer, les cellules prennent de l’oxygène et rejettent du dioxyde de carbone.",
+            "Poumons ou branchies : les organes des échanges de gaz avec le milieu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-cells-nutrition-2-7",
+      "prompt": "Une chaîne alimentaire\nL’herbe est mangée par le criquet.\nLe criquet est mangé par le lézard.\nLe lézard est mangé par la buse.",
+      "question": "Qui fabrique la matière, au début de la chaîne ?",
+      "spoken": "Une chaîne alimentaire. L’herbe est mangée par le criquet. Le criquet est mangé par le lézard. Le lézard est mangé par la buse.",
+      "choices": [
+        "la buse",
+        "le criquet",
+        "l’herbe"
+      ],
+      "answer": "l’herbe",
+      "hint": "Qui fait la photosynthèse ?",
+      "explanation": "L’herbe, une plante verte, fabrique sa matière avec la lumière. Les animaux de la chaîne mangent cette matière, de l’un à l’autre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se nourrir et respirer",
+          "lines": [
+            "La plante verte fabrique sa matière avec la lumière : c’est la photosynthèse.",
+            "Il lui faut de l’eau et des sels minéraux, du dioxyde de carbone et de la lumière.",
+            "Elle fabrique des sucres, comme l’amidon, et rejette de l’oxygène.",
+            "Un animal mange de la matière faite par d’autres êtres vivants.",
+            "Pour respirer, les cellules prennent de l’oxygène et rejettent du dioxyde de carbone.",
+            "Poumons ou branchies : les organes des échanges de gaz avec le milieu."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-4e-cells-evolution",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

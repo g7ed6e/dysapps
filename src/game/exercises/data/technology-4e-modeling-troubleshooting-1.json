@@ -1,0 +1,242 @@
+{
+  "id": "technology-4e-modeling-troubleshooting-1",
+  "biome": "technology-4e-modeling",
+  "type": "troubleshooting",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-4e-modeling-troubleshooting-1-0",
+      "prompt": "La lampe torche ne s’allume plus : c’est le … de la panne.",
+      "spoken": "La lampe torche ne s’allume plus : c’est le  (mot manquant)  de la panne.",
+      "choices": [
+        "protocole",
+        "symptôme",
+        "remplacement"
+      ],
+      "answer": "symptôme",
+      "hint": "Relis la ligne « Le symptôme » du rappel.",
+      "explanation": "Ce que l’on voit qui ne va pas, ici la lampe qui reste éteinte, est le symptôme. Le protocole, ce sont les vérifications pour trouver la cause.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dépanner un objet",
+          "lines": [
+            "Une panne : l’objet ne fait plus sa fonction.",
+            "Le symptôme : ce que l’on voit ou entend qui ne va pas.",
+            "Une pièce défectueuse se voit souvent : fil coupé, dent cassée, pile qui a coulé.",
+            "Le protocole : les vérifications à faire, dans l’ordre.",
+            "On vérifie une seule chose à la fois, la plus simple d’abord.",
+            "On remplace la pièce défectueuse par une pièce pareille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-1-1",
+      "prompt": "La lampe torche de Yanis\nElle ne s’allume plus.\nL’ampoule n’a pas de trace.\nLa pile a coulé : une poudre blanche la recouvre.",
+      "question": "Quelle pièce est défectueuse ?",
+      "spoken": "La lampe torche de Yanis. Elle ne s’allume plus. L’ampoule n’a pas de trace. La pile a coulé : une poudre blanche la recouvre.",
+      "choices": [
+        "l’ampoule",
+        "l’interrupteur",
+        "la pile"
+      ],
+      "answer": "la pile",
+      "hint": "Cherche la pièce qui montre un défaut qui se voit.",
+      "explanation": "Une pile qui a coulé est abîmée : c’est la pièce défectueuse, à remplacer. L’ampoule ne montre aucune trace.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dépanner un objet",
+          "lines": [
+            "Une panne : l’objet ne fait plus sa fonction.",
+            "Le symptôme : ce que l’on voit ou entend qui ne va pas.",
+            "Une pièce défectueuse se voit souvent : fil coupé, dent cassée, pile qui a coulé.",
+            "Le protocole : les vérifications à faire, dans l’ordre.",
+            "On vérifie une seule chose à la fois, la plus simple d’abord.",
+            "On remplace la pièce défectueuse par une pièce pareille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-1-2",
+      "prompt": "Les vérifications à faire, dans l’ordre, pour trouver l’origine d’une panne forment le …",
+      "spoken": "Les vérifications à faire, dans l’ordre, pour trouver l’origine d’une panne forment le  (mot manquant) ",
+      "choices": [
+        "cahier des charges",
+        "protocole",
+        "symptôme"
+      ],
+      "answer": "protocole",
+      "hint": "Relis la ligne « Le protocole » du rappel.",
+      "explanation": "Le protocole de dépannage dit quoi vérifier, et dans quel ordre. Le cahier des charges dit ce que l’objet doit faire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dépanner un objet",
+          "lines": [
+            "Une panne : l’objet ne fait plus sa fonction.",
+            "Le symptôme : ce que l’on voit ou entend qui ne va pas.",
+            "Une pièce défectueuse se voit souvent : fil coupé, dent cassée, pile qui a coulé.",
+            "Le protocole : les vérifications à faire, dans l’ordre.",
+            "On vérifie une seule chose à la fois, la plus simple d’abord.",
+            "On remplace la pièce défectueuse par une pièce pareille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-1-3",
+      "prompt": "La petite voiture électrique\nLe moteur tourne : on l’entend.\nLes roues ne bougent pas.\nUne dent de l’engrenage est cassée.",
+      "question": "Quelle pièce faut-il remplacer ?",
+      "spoken": "La petite voiture électrique. Le moteur tourne : on l’entend. Les roues ne bougent pas. Une dent de l’engrenage est cassée.",
+      "choices": [
+        "le moteur",
+        "l’engrenage",
+        "la batterie"
+      ],
+      "answer": "l’engrenage",
+      "hint": "Le moteur tourne : il marche. Quelle pièce est abîmée ?",
+      "explanation": "L’engrenage à la dent cassée ne transmet plus le mouvement aux roues : c’est lui qu’on remplace. Le moteur marche, puisqu’on l’entend tourner.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dépanner un objet",
+          "lines": [
+            "Une panne : l’objet ne fait plus sa fonction.",
+            "Le symptôme : ce que l’on voit ou entend qui ne va pas.",
+            "Une pièce défectueuse se voit souvent : fil coupé, dent cassée, pile qui a coulé.",
+            "Le protocole : les vérifications à faire, dans l’ordre.",
+            "On vérifie une seule chose à la fois, la plus simple d’abord.",
+            "On remplace la pièce défectueuse par une pièce pareille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-1-4",
+      "prompt": "Pour trouver une panne, on commence par vérifier ce qui est le plus …",
+      "spoken": "Pour trouver une panne, on commence par vérifier ce qui est le plus  (mot manquant) ",
+      "choices": [
+        "cher",
+        "neuf",
+        "simple à vérifier"
+      ],
+      "answer": "simple à vérifier",
+      "hint": "Relis la ligne « On vérifie une seule chose » du rappel.",
+      "explanation": "On vérifie d’abord le plus simple, comme la pile ou la prise : souvent, la panne vient de là, et on évite de démonter pour rien.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dépanner un objet",
+          "lines": [
+            "Une panne : l’objet ne fait plus sa fonction.",
+            "Le symptôme : ce que l’on voit ou entend qui ne va pas.",
+            "Une pièce défectueuse se voit souvent : fil coupé, dent cassée, pile qui a coulé.",
+            "Le protocole : les vérifications à faire, dans l’ordre.",
+            "On vérifie une seule chose à la fois, la plus simple d’abord.",
+            "On remplace la pièce défectueuse par une pièce pareille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-1-5",
+      "prompt": "La lampe de chevet ne s’allume pas\nLa prise est bien branchée.\nUne ampoule neuve ne s’allume pas non plus.\nLe fil est coupé près du pied.",
+      "question": "Quelle pièce est défectueuse ?",
+      "spoken": "La lampe de chevet ne s’allume pas. La prise est bien branchée. Une ampoule neuve ne s’allume pas non plus. Le fil est coupé près du pied.",
+      "choices": [
+        "la prise",
+        "l’ampoule",
+        "le fil"
+      ],
+      "answer": "le fil",
+      "hint": "Une ampoule neuve ne s’allume pas : le défaut vient donc d’ailleurs.",
+      "explanation": "Le fil coupé ne laisse plus passer le courant : c’est la pièce défectueuse. L’ampoule n’y est pour rien, puisqu’une neuve ne s’allume pas non plus.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dépanner un objet",
+          "lines": [
+            "Une panne : l’objet ne fait plus sa fonction.",
+            "Le symptôme : ce que l’on voit ou entend qui ne va pas.",
+            "Une pièce défectueuse se voit souvent : fil coupé, dent cassée, pile qui a coulé.",
+            "Le protocole : les vérifications à faire, dans l’ordre.",
+            "On vérifie une seule chose à la fois, la plus simple d’abord.",
+            "On remplace la pièce défectueuse par une pièce pareille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-1-6",
+      "prompt": "Un objet qui ne fait plus sa fonction est en …",
+      "spoken": "Un objet qui ne fait plus sa fonction est en  (mot manquant) ",
+      "choices": [
+        "charge",
+        "marche",
+        "panne"
+      ],
+      "answer": "panne",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Un objet qui ne fait plus sa fonction est en panne. En marche, il la fait ; en charge, il reçoit de l’énergie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dépanner un objet",
+          "lines": [
+            "Une panne : l’objet ne fait plus sa fonction.",
+            "Le symptôme : ce que l’on voit ou entend qui ne va pas.",
+            "Une pièce défectueuse se voit souvent : fil coupé, dent cassée, pile qui a coulé.",
+            "Le protocole : les vérifications à faire, dans l’ordre.",
+            "On vérifie une seule chose à la fois, la plus simple d’abord.",
+            "On remplace la pièce défectueuse par une pièce pareille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-troubleshooting-1-7",
+      "prompt": "La sonnette sans fil\nOn appuie sur le bouton : rien ne sonne.\nLe voyant du bouton ne s’allume pas.\nLe carillon sonne avec un autre bouton.",
+      "question": "Quelle pièce vérifier d’abord ?",
+      "spoken": "La sonnette sans fil. On appuie sur le bouton : rien ne sonne. Le voyant du bouton ne s’allume pas. Le carillon sonne avec un autre bouton.",
+      "choices": [
+        "la pile du bouton",
+        "le carillon",
+        "le fil du carillon"
+      ],
+      "answer": "la pile du bouton",
+      "hint": "Le carillon marche avec un autre bouton : la panne est-elle de son côté ?",
+      "explanation": "Le carillon marche : la panne vient du bouton, dont le voyant reste éteint. Sa pile est la chose la plus simple à vérifier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Dépanner un objet",
+          "lines": [
+            "Une panne : l’objet ne fait plus sa fonction.",
+            "Le symptôme : ce que l’on voit ou entend qui ne va pas.",
+            "Une pièce défectueuse se voit souvent : fil coupé, dent cassée, pile qui a coulé.",
+            "Le protocole : les vérifications à faire, dans l’ordre.",
+            "On vérifie une seule chose à la fois, la plus simple d’abord.",
+            "On remplace la pièce défectueuse par une pièce pareille."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-4e-modeling",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

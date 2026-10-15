@@ -10,7 +10,6 @@
 // - Une grille lâche : chaque sommet a son opacité (nulle là où la brume n'a pas sa place, et au cœur des îles, où rien
 //   ne se verrait), modulée par un bruit lent qui fait les bancs ; seuls les carrés où un sommet au moins est visible
 //   sont tracés. Sans la brume de profondeur : de la couleur de l'horizon, elle s'y fondrait.
-import { BIOMES } from '../../biomes';
 import { getArchipelago } from '../archipelago';
 import { placedLinksOf } from '../linkGeometry';
 import { monumentIslet } from '../footprint';
@@ -20,7 +19,7 @@ import { landBox, landCells, mapOf, smoothNoise, type ArchipelagoId } from '../m
 import { MONUMENT_ISLET, monumentsOf } from '../monuments';
 import type { Couleur } from '../palette';
 import { rgb } from './brush';
-import { bossIsletOrigin, bridgePath, ISLET_W, ISLET_H, mistPatches, whaleSpots, worldBounds } from '../terrain';
+import { bridgePath, mistPatches, whaleSpots, worldBounds } from '../terrain';
 import { smooth } from '../../../core/math';
 import { layoutCache } from '../placement';
 
@@ -70,11 +69,7 @@ export function placeDeLaBrume(a: ArchipelagoId, links: readonly string[]): (x: 
   const cle = (x: number, y: number) => (x + 16384) * 32768 + (y + 16384);
   const interdit = new Set<number>();
   const terre = new Set<number>();
-  for (const def of mapOf(a)) {
-    for (const c of landCells(def)) terre.add(cle(c.x, c.y));
-    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
-    for (let x = -1; x <= ISLET_W; x++) for (let y = -1; y <= ISLET_H; y++) interdit.add(cle(o.x + x, o.y + y));
-  }
+  for (const def of mapOf(a)) for (const c of landCells(def)) terre.add(cle(c.x, c.y));
   for (const def of placedLinksOf(a, links))
     for (const c of bridgePath(def, links)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) interdit.add(cle(c.x + dx, c.y + dy));
   const quai = dockBox(getArchipelago(a).port);
@@ -215,10 +210,6 @@ export function bordDesNappes(a: ArchipelagoId, links: readonly string[]): (i: n
   const cle = (x: number, y: number) => (x + 16384) * 32768 + (y + 16384);
   const boites = ilesDesNappes(a);
   const interdit = new Set<number>();
-  for (const def of mapOf(a)) {
-    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
-    for (let x = -1; x <= ISLET_W; x++) for (let y = -1; y <= ISLET_H; y++) interdit.add(cle(o.x + x, o.y + y));
-  }
   for (const def of placedLinksOf(a, links))
     for (const c of bridgePath(def, links)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) interdit.add(cle(c.x + dx, c.y + dy));
   const dans = (b: { x0: number; y0: number; x1: number; y1: number }, x: number, y: number) => x >= b.x0 && x <= b.x1 && y >= b.y0 && y <= b.y1;

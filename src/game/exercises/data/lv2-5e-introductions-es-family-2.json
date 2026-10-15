@@ -6,7 +6,7 @@
   "lang": "es",
   "instruction": "Écoute le mot ou la phrase en espagnol, puis choisis ce qui manque. La règle est affichée.",
   "programme": [
-    "c4.es.ecrire.dictee-fiche"
+    "c4.es.5e.exprimer.dictee"
   ],
   "items": [
     {

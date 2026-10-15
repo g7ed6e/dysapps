@@ -1,0 +1,237 @@
+{
+  "id": "technology-4e-modeling-simulation-2",
+  "biome": "technology-4e-modeling",
+  "type": "simulation",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-4e-modeling-simulation-2-0",
+      "prompt": "Simulation de trois vélos-cargos\nIl faut porter au moins 100 kilogrammes.\nVélo A : 60 kilogrammes.\nVélo B : 90 kilogrammes.\nVélo C : 120 kilogrammes.",
+      "question": "Quel vélo convient ?",
+      "spoken": "Simulation de trois vélos-cargos. Il faut porter au moins 100 kilogrammes. Vélo A, 60 kilogrammes. Vélo B, 90 kilogrammes. Vélo C, 120 kilogrammes.",
+      "choices": [
+        "le vélo A",
+        "le vélo B",
+        "le vélo C"
+      ],
+      "answer": "le vélo C",
+      "hint": "Cherche le nombre plus grand que 100.",
+      "explanation": "Seul le vélo C porte plus de 100 kilogrammes. Le vélo B en est proche, mais 90, c’est moins que 100.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un résultat",
+          "lines": [
+            "Lis d’abord ce que demande le cahier des charges.",
+            "Puis cherche la ligne qui en parle.",
+            "Compare : plus grand, plus petit, ou égal ?",
+            "Une courbe qui monte : la valeur augmente. Qui descend : elle diminue.",
+            "Une courbe plate : la valeur ne change plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-2-1",
+      "prompt": "La courbe de température du four\nPendant 10 minutes, elle monte.\nEnsuite, elle reste plate.",
+      "question": "Que fait la température après 10 minutes ?",
+      "spoken": "La courbe de température du four. Pendant 10 minutes, elle monte. Ensuite, elle reste plate.",
+      "choices": [
+        "elle monte encore",
+        "elle ne change plus",
+        "elle descend"
+      ],
+      "answer": "elle ne change plus",
+      "hint": "Relis la ligne « Une courbe plate » du rappel.",
+      "explanation": "Une courbe plate veut dire que la valeur ne change plus : après 10 minutes, la température du four reste la même.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un résultat",
+          "lines": [
+            "Lis d’abord ce que demande le cahier des charges.",
+            "Puis cherche la ligne qui en parle.",
+            "Compare : plus grand, plus petit, ou égal ?",
+            "Une courbe qui monte : la valeur augmente. Qui descend : elle diminue.",
+            "Une courbe plate : la valeur ne change plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-2-2",
+      "prompt": "Simulation de la lampe de vélo\nElle doit éclairer au moins 3 heures.\nLampe A : 2 heures.\nLampe B : 4 heures.",
+      "question": "Quelle lampe respecte le cahier des charges ?",
+      "spoken": "Simulation de la lampe de vélo. Elle doit éclairer au moins 3 heures. Lampe A, 2 heures. Lampe B, 4 heures.",
+      "choices": [
+        "la lampe A",
+        "la lampe B",
+        "aucune des deux"
+      ],
+      "answer": "la lampe B",
+      "hint": "Laquelle éclaire 3 heures ou plus ?",
+      "explanation": "4 heures, c’est plus que 3 heures : la lampe B convient. La lampe A s’éteint trop tôt.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un résultat",
+          "lines": [
+            "Lis d’abord ce que demande le cahier des charges.",
+            "Puis cherche la ligne qui en parle.",
+            "Compare : plus grand, plus petit, ou égal ?",
+            "Une courbe qui monte : la valeur augmente. Qui descend : elle diminue.",
+            "Une courbe plate : la valeur ne change plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-2-3",
+      "prompt": "Simulation du bruit du ventilateur\nIl doit faire moins de 40 décibels.\nVitesse 1 : 30 décibels.\nVitesse 2 : 38 décibels.\nVitesse 3 : 45 décibels.",
+      "question": "Quelle vitesse est trop bruyante ?",
+      "spoken": "Simulation du bruit du ventilateur. Il doit faire moins de 40 décibels. Vitesse 1, 30 décibels. Vitesse 2, 38 décibels. Vitesse 3, 45 décibels.",
+      "choices": [
+        "la vitesse 1",
+        "la vitesse 2",
+        "la vitesse 3"
+      ],
+      "answer": "la vitesse 3",
+      "hint": "Cherche le nombre plus grand que 40.",
+      "explanation": "45 décibels, c’est plus que 40 : la vitesse 3 est trop bruyante. Les vitesses 1 et 2 restent sous la limite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un résultat",
+          "lines": [
+            "Lis d’abord ce que demande le cahier des charges.",
+            "Puis cherche la ligne qui en parle.",
+            "Compare : plus grand, plus petit, ou égal ?",
+            "Une courbe qui monte : la valeur augmente. Qui descend : elle diminue.",
+            "Une courbe plate : la valeur ne change plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-2-4",
+      "prompt": "La courbe de vitesse du chariot descend : sa vitesse …",
+      "spoken": "La courbe de vitesse du chariot descend : sa vitesse  (mot manquant) ",
+      "choices": [
+        "augmente",
+        "diminue",
+        "reste la même"
+      ],
+      "answer": "diminue",
+      "hint": "Relis la ligne « Une courbe qui monte » du rappel.",
+      "explanation": "Une courbe qui descend montre une valeur qui diminue : le chariot ralentit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un résultat",
+          "lines": [
+            "Lis d’abord ce que demande le cahier des charges.",
+            "Puis cherche la ligne qui en parle.",
+            "Compare : plus grand, plus petit, ou égal ?",
+            "Une courbe qui monte : la valeur augmente. Qui descend : elle diminue.",
+            "Une courbe plate : la valeur ne change plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-2-5",
+      "prompt": "La glacière\nSimulation : elle garde le froid 5 heures.\nEssai avec la vraie glacière : 4 heures.",
+      "question": "Pourquoi les deux résultats sont-ils différents ?",
+      "spoken": "La glacière. Simulation, elle garde le froid 5 heures. Essai avec la vraie glacière, 4 heures.",
+      "choices": [
+        "l’essai est forcément faux",
+        "le modèle est simplifié",
+        "la glacière a changé de forme"
+      ],
+      "answer": "le modèle est simplifié",
+      "hint": "Un modèle a-t-il tous les détails du vrai objet ?",
+      "explanation": "Le modèle est simplifié : il oublie des détails, comme le couvercle qui laisse passer un peu d’air. L’essai réel complète la simulation.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un résultat",
+          "lines": [
+            "Lis d’abord ce que demande le cahier des charges.",
+            "Puis cherche la ligne qui en parle.",
+            "Compare : plus grand, plus petit, ou égal ?",
+            "Une courbe qui monte : la valeur augmente. Qui descend : elle diminue.",
+            "Une courbe plate : la valeur ne change plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-2-6",
+      "prompt": "Simulation du drone de livraison\nIl doit voler au moins 20 minutes.\nAvec un colis léger : 25 minutes.\nAvec un colis lourd : 15 minutes.",
+      "question": "Que peut-on conclure ?",
+      "spoken": "Simulation du drone de livraison. Il doit voler au moins 20 minutes. Avec un colis léger, 25 minutes. Avec un colis lourd, 15 minutes.",
+      "choices": [
+        "il convient pour tous les colis",
+        "il convient seulement pour les colis légers",
+        "il ne convient jamais"
+      ],
+      "answer": "il convient seulement pour les colis légers",
+      "hint": "Compare chaque ligne à 20 minutes.",
+      "explanation": "Avec un colis léger, il vole 25 minutes : c’est assez. Avec un colis lourd, 15 minutes : ce n’est pas assez. Il convient seulement pour les colis légers.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un résultat",
+          "lines": [
+            "Lis d’abord ce que demande le cahier des charges.",
+            "Puis cherche la ligne qui en parle.",
+            "Compare : plus grand, plus petit, ou égal ?",
+            "Une courbe qui monte : la valeur augmente. Qui descend : elle diminue.",
+            "Une courbe plate : la valeur ne change plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-2-7",
+      "prompt": "La courbe de charge de la batterie\nDe 0 à 30 minutes : elle monte vite.\nDe 30 à 60 minutes : elle monte lentement.\nAprès 60 minutes : elle reste plate.",
+      "question": "Au bout de combien de temps la batterie est-elle pleine ?",
+      "spoken": "La courbe de charge de la batterie. De 0 à 30 minutes, elle monte vite. De 30 à 60 minutes, elle monte lentement. Après 60 minutes, elle reste plate.",
+      "choices": [
+        "30 minutes",
+        "60 minutes",
+        "90 minutes"
+      ],
+      "answer": "60 minutes",
+      "hint": "Quand la courbe devient-elle plate ?",
+      "explanation": "La courbe devient plate à 60 minutes : la charge ne monte plus, la batterie est pleine. À 30 minutes, elle monte encore.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un résultat",
+          "lines": [
+            "Lis d’abord ce que demande le cahier des charges.",
+            "Puis cherche la ligne qui en parle.",
+            "Compare : plus grand, plus petit, ou égal ?",
+            "Une courbe qui monte : la valeur augmente. Qui descend : elle diminue.",
+            "Une courbe plate : la valeur ne change plus."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-4e-modeling",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

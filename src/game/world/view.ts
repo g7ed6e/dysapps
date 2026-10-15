@@ -12,8 +12,13 @@ import type { EtatsDesObjets } from './model';
 import { grilleDe } from './grid';
 import type { Rectangle } from './placement';
 
-/** Ce qu'est une case du dessin du mode « Aménager » (GD-9 ; calculé par ./arrangeView.ts). */
-export type ArrangeCellKind = 'fantome' | 'place' | 'liaison' | 'barree' | 'croix';
+/**
+ * Ce qu'est une case du dessin du mode « Aménager » (GD-9 ; calculé par ./arrangeView.ts). Pendant le glissé (choix 1b du
+ * mainteneur, 7 octobre 2026) : `grille`, une place de la grille autour du fantôme ; `empreinte`, une place qu'il couvre,
+ * libre ; `conflit`, une place qu'il couvre, trop près d'un autre lieu, barrée de deux `barre` en biais. `lien` : la ligne
+ * en pointillés entre un Gardien détaché et son lieu (choix 4a).
+ */
+export type ArrangeCellKind = 'fantome' | 'place' | 'liaison' | 'barree' | 'croix' | 'grille' | 'empreinte' | 'conflit' | 'barre' | 'socle';
 
 /**
  * Une case du dessin du mode, en cases du monde : un carré plat posé sur le dessus de la case (z + 1), bordé d'un
@@ -24,15 +29,22 @@ export interface ArrangeCell {
   y: number;
   z: number;
   genre: ArrangeCellKind;
-  /** Le côté du carré, en cases (une place libre d'un lieu : 3 ; d'un îlot de Gardien : 2). */
+  /** Le côté du carré, en cases (une place libre d'un lieu : 3). */
   l?: number;
+  /** Une barre de croix : tournée de tant (radians) sur l'eau, mince ; sans elle, un carré droit. */
+  angle?: number;
 }
 
 /** Le dessin du mode pendant un choix (./arrangeView.ts). */
 export interface ArrangeView {
   cases: ArrangeCell[];
-  /** L'emprise du choix à sa place d'avant (le lieu, ou l'îlot du Gardien), soulevée tant qu'il est choisi ; ou rien. */
+  /** L'emprise du choix à sa place d'avant (le lieu), soulevée tant qu'il est choisi ; ou rien. */
   souleve: Rectangle | null;
+  /**
+   * Ce qui se soulève vraiment, dans `souleve` : les bandes de la terre du lieu et de sa réunion, une case de plus tout
+   * autour (GD-12, `liftPartsOf`), quand un lieu a une forme ; sans elles, tout `souleve`.
+   */
+  liftParts?: readonly Rectangle[];
   /** Le milieu du fantôme : la vue le suit s'il sort de l'écran. */
   suivre: { x: number; y: number; z: number };
   /** Les liaisons qui ne tiendraient plus après la pose (leur nombre se dit dans la barre). */
@@ -51,6 +63,29 @@ export interface ArrangeView {
    * monde, `z` le dessus de l'eau ; la page y pose l'icône de « Réunir ».
    */
   reunions?: { x: number; y: number; z: number }[];
+  /**
+   * Pendant le glissé (7 octobre 2026, choix 1b du mainteneur) : la zone de la grille, en cases du monde ; les étiquettes
+   * des autres lieux qui s'y trouvent s'estompent, jusqu'au lever du doigt.
+   */
+  zoneDuGlisse?: Rectangle;
+  /** Pendant le glissé : le milieu du bord nord de l'empreinte, où le nom du choix se pose, au-dessus d'elle à l'écran. */
+  nomAuNord?: { x: number; y: number; z: number };
+}
+
+/**
+ * Glisser le choix du mode « Aménager » au doigt (7 octobre 2026, choix 1b, 2a et 3a du mainteneur), en cases du monde.
+ * La vue demande d'abord, au départ d'un glissé, si le doigt est parti du choix (`prendre`) : de la terre du lieu choisi,
+ * du Gardien choisi, ou de son fantôme (`touche` : ce que le doigt a touché, s'il a touché un lieu ou un Gardien) ;
+ * sinon la vue glisse. Puis, à chaque mouvement, où est le doigt (`suivre`, sur le plan horizontal du point pris) ; au
+ * lever, `lacher(true)` (la page pose sur une place libre) ; un geste interrompu (un second doigt, l'appui annulé),
+ * `lacher(false)`.
+ */
+export interface GlisserLeChoix {
+  /** Le doigt parti de `point` part-il du choix ? Rien n'est pris : la vue en décide son seuil (`SEUIL_DU_CHOIX`). */
+  partDuChoix(point: { x: number; y: number }, touche: { lieu?: BiomeId; gardien?: BiomeId }): boolean;
+  prendre(point: { x: number; y: number }, touche: { lieu?: BiomeId; gardien?: BiomeId }): boolean;
+  suivre(point: { x: number; y: number }): void;
+  lacher(poser: boolean): void;
 }
 
 /** Un rectangle du monde (en cases, x et y) à garder entier à l'écran, à une hauteur ; `seq` change à chaque demande. */
@@ -76,37 +111,9 @@ interface PoigneeALEcran {
  */
 export interface ChoixALEcran {
   poignees: readonly PoigneeALEcran[];
-  /** Les poignées des bouts de liaison, à l'écran (sans choix en cours ; choix 1a du mainteneur). */
-  bouts?: readonly LinkEndOnScreen[];
   /** Les places qui colleraient le lieu choisi à un voisin, à l'écran (le milieu de leur jointure ; choix 2a du mainteneur). */
   reunions?: readonly { x: number; y: number }[];
   libre: Rectangle;
-}
-
-/** La poignée d'un bout de liaison à l'écran : son milieu et sa taille (pixels CSS, 48 px au moins pour le bouton). */
-export interface LinkEndOnScreen {
-  link: string;
-  end: 'from' | 'to';
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
-
-/**
- * La poignée d'un bout de liaison posée (6 octobre 2026, choix 1a du mainteneur) : dans le mode, sans choix en cours,
- * chaque bout porte un petit radeau, au bout de son ponton (en cases du monde, `z` le dessus de l'eau) ; la toucher
- * choisit cette arrivée (./arrangeHandles.ts la place).
- */
-export interface LinkEndHandle {
-  link: string;
-  end: 'from' | 'to';
-  x: number;
-  y: number;
-  z: number;
-  /** Le sens du ponton, de la côte vers le large (une case) : un bout trop près d'un autre recule à l'opposé. */
-  dx: number;
-  dy: number;
 }
 
 /**
@@ -116,8 +123,14 @@ export interface LinkEndHandle {
  */
 export interface ArrangeGesture {
   seq: number;
-  phase: 'demonte' | 'remonte';
+  /**
+   * `descend` (7 octobre 2026, choix 2a du mainteneur, Blocland) : le choix lâché sur une place libre redescend d'un cube,
+   * déjà à sa nouvelle place, puis la pose sonne ; sans démontage.
+   */
+  phase: 'demonte' | 'remonte' | 'descend';
   zone: Rectangle;
+  /** Ce qui se joue vraiment, dans `zone` (GD-12, `liftPartsOf`) : sans elles, toute la zone. */
+  zoneParts?: readonly Rectangle[];
   /**
    * L'autre place du geste (la nouvelle pendant le démontage, l'ancienne pendant le remontage) : le voile de brume
    * d'Archipéo glisse de l'une à l'autre.
@@ -268,7 +281,7 @@ export interface WorldViewProps {
   cubes: VoxelCube[];
   focus: WorldFocus;
   reduceMotion?: boolean;
-  /** Le Bloc-Navire amarré au port : ses cubes locaux (fantômes pour les cases à poser), animé à part. */
+  /** La Nef amarrée au port : ses cubes locaux (fantômes pour les cases à poser), animée à part. */
   vehicle?: VehiclePlacement | null;
   /**
    * Les gestes, traduits en intentions (world/layout.ts) : une île, une borne, un lieu, un ouvrage, une créature, le
@@ -328,7 +341,7 @@ export interface WorldViewProps {
   /** Les bornes de mission : leur case et leur état (à faire, étoiles gagnées, fermée), pour le repère au-dessus. */
   quests?: QuestMark[];
   /**
-   * L'état des autres objets qui portent un signe (Gardiens, Bloc-Navire, chantiers en fantôme ; world/model.ts,
+   * L'état des autres objets qui portent un signe (Gardiens, Nef, chantiers en fantôme ; world/model.ts,
    * `etatsDesObjets`) : le cube au-dessus d'eux, l'or ou la pierre (world/affordance.ts).
    */
   etatsDesObjets?: EtatsDesObjets;
@@ -361,19 +374,20 @@ export interface WorldViewProps {
   /**
    * Le mode « Aménager » (GD-9), sur la Carte : `vue`, le dessin du choix en cours (fantôme, places autour, liaisons
    * retracées et barrées, lieu soulevé ; ./arrangeView.ts), ou rien. Dans le mode, toucher la mer donne une intention
-   * `mer` ; avec un choix, glisser le doigt cale le fantôme sous lui (un raccourci) au lieu de faire glisser la vue ; et
-   * si le fantôme sort de l'écran, la vue le suit. Les poignées (les flèches et « Tourner ») sont dessinées sur l'eau autour
+   * `mer` ; avec un choix, un glissé parti du choix lui-même (son lieu, son Gardien, ou son fantôme) le glisse au doigt
+   * (`glisser` ; 7 octobre 2026, choix 1b, 2a et 3a du mainteneur), tout autre glissé fait glisser la vue ; et si le
+   * fantôme sort de l'écran, la vue le suit. Les poignées (les flèches et « Tourner ») sont dessinées sur l'eau autour
    * du choix ; `ecran` reçoit, à chaque image où elles bougent, où elles se tiennent à l'écran (rien sans choix, ni
    * pendant le geste) : la page y pose leurs boutons transparents. La vue simple l'ignore.
    */
   amenager?: {
     vue: ArrangeView | null;
-    /** Les poignées des bouts de liaison, dessinées quand rien n'est choisi (choix 1a du mainteneur), ou rien. */
-    bouts?: readonly LinkEndHandle[] | null;
     cadre?: CadreDuMode | null;
     ecran?: (b: ChoixALEcran | null) => void;
     /** Les touchers des boutons posés sur les poignées : la poignée touchée s'enfonce dans le monde. */
     touchers?: { ecouter(f: (cle: CleDePoignee) => void): () => void };
+    /** Le choix glissé au doigt (choix 1b, 2a et 3a du mainteneur). */
+    glisser?: GlisserLeChoix;
   } | null;
   /** Le geste de la pose en cours dans le mode « Aménager » (./arrangeGesture.ts), ou rien. */
   geste?: ArrangeGesture | null;
@@ -385,6 +399,11 @@ export interface WorldViewProps {
    * pas ouverte d'un toucher sur l'objet (`saut`), fait sauter son signe. Une fois par `seq`.
    */
   fiche?: { objet: ObjetDeLaFiche; seq: number; saut: boolean } | null;
+  /**
+   * Sur la Carte, l'île fermée touchée, dont le chemin d'ouvrages est montré : comme celui de l'île dont la fiche est
+   * ouverte, son nom ne se tait jamais (référent dys, 9 octobre 2026). La vue simple l'ignore.
+   */
+  selectedIsland?: BiomeId | null;
   /**
    * Où se tient un objet à l'écran, la caméra posée à son cadrage (en pixels de la fenêtre), ou `null` s'il est derrière
    * elle : la vue y range sa fonction tant que la scène existe (le vol des blocs part de la borne de la mission).
@@ -489,8 +508,6 @@ export interface PoigneesDuChoix {
    * de la demi-taille `bras` (en cases, à l'échelle 1) ; rien sinon.
    */
   prise?: { bras: number };
-  /** Une arrivée choisie (choix 1a) : le petit radeau de son bout se dessine au milieu du choix, sous les flèches. */
-  bout?: boolean;
   /** Ce que couvrent les radeaux à l'échelle 1, emprise du choix comprise : la vue le garde à l'écran. */
   emprise: Rectangle;
 }

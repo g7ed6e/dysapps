@@ -5,9 +5,10 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, debut, histoire-geo, sciences ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, entraide, projets, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college, familles-sixieme, familles-cinquieme, familles-quatrieme, familles-troisieme, gardiens, nef, grand-chene, emc-cinquieme, emc-quatre-trois, monuments, batiments, objets-college, keo, coco ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
-// `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
+// `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
+// à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
 // animations au même instant ; les images par seconde du tableau sont donc celles de l'horloge pilotée (8), pas une mesure.
 // Sur chaque capture de nuit en 3D, la part des pixels de la scène qui sont « de lueur » (fenêtres, lanternes, et plus
@@ -45,7 +46,7 @@ const QUERY = (() => {
 const ONLY = option('--archipel');
 /** Avec `--comparer <dossier>` : les captures de main (mêmes noms), à comparer à celles-ci (scripts/rendu/comparer.mjs). */
 const REFERENCES = option('--comparer');
-const WAIT = Number(option('--attente') ?? 10) * 1000;
+const WAIT = Number(option('--attente') ?? 30) * 1000;
 /** Les vues sans monde 3D (le défi, la bulle d'une créature) : rien à attendre avant la prise. */
 const VUES_SANS_MONDE = new Set(['défi', 'bulle', 'page']);
 /** Une heure de jour et une de nuit, pour que le ciel et la lumière soient les mêmes à chaque fois. */
@@ -202,6 +203,12 @@ const CAPTURES = [
     sansPonts: ['passage-4e', 'passage-3e'],
     ...format,
   })),
+  // La Nef (GD-15, famille `nef`, à retirer une fois le lot fusionné) : le voilier fini au port du 6e, sa fiche ouverte ;
+  // au Marché, le voilier avec les pièces du dirigeable en fantôme, puis le dirigeable fini ; la fusée de la Nef se voit avec `fusee`.
+  { nom: 'nef-voilier', vue: 'île', famille: 'nef', ile: 'maths-6e-calculation', sansIles: 'autres-classes', sansPonts: ['passage-5e', 'passage-4e', 'passage-3e'], fiche: { genre: 'navire', port: 'maths-6e-calculation' } },
+  { nom: 'nef-dirigeable-vide', vue: 'île', famille: 'nef', ile: 'maths-5e-proportionality', partie: 'ballon-vide', sansIles: { classe: ['4e', '3e'] }, sansPonts: ['passage-4e', 'passage-3e'], fiche: { genre: 'navire', port: 'maths-5e-proportionality' } },
+  { nom: 'nef-dirigeable', vue: 'île', famille: 'nef', ile: 'maths-5e-proportionality', sansIles: { classe: ['4e', '3e'] }, sansPonts: ['passage-4e', 'passage-3e'] },
+  { nom: 'nef-archipel', vue: 'archipel', famille: 'nef', ile: 'maths-5e-proportionality', sansIles: { classe: ['4e', '3e'] }, sansPonts: ['passage-4e', 'passage-3e'] },
   // Les réacteurs du Bloc-Navire sous la coque (famille `fusee`, à retirer une fois le lot fusionné) : le navire tout
   // construit à quai dans les Îles du Ciel, de jour et de nuit, puis aux Anciens Ateliers, où il plane au-dessus de l'eau
   // le temps de poser ses réacteurs (sans le voyage vers le 3e ni les îles du 3e : le navire y reste) ; sa fiche ouverte
@@ -484,7 +491,7 @@ const CAPTURES = [
     { nom: `menu-tete-missions${suffixe}`, vue: 'page', chemin: '/quetes', famille: 'menu-tete', ...autres },
     { nom: `menu-tete-matiere${suffixe}`, vue: 'page', chemin: '/matiere/french', famille: 'menu-tete', ...autres },
     { nom: `menu-tete-succes${suffixe}`, vue: 'page', chemin: '/succes', famille: 'menu-tete', ...autres },
-    { nom: `menu-tete-menu${suffixe}`, vue: 'page', chemin: '/adventure/menu', famille: 'menu-tete', ...autres },
+    { nom: `menu-tete-commandes${suffixe}`, vue: 'page', chemin: '/adventure/requests', famille: 'menu-tete', ...autres },
     { nom: `menu-tete-ile${suffixe}`, vue: 'île', famille: 'menu-tete', ile: 'french-6e-phonology', depart: true, ...autres },
     { nom: `menu-tete-carte-zoomee${suffixe}`, vue: 'carte', famille: 'menu-tete', zoomer: 2, ...autres },
   ]),
@@ -535,11 +542,11 @@ const CAPTURES = [
     ...autres,
   })),
   {
-    nom: 'commandes-menu',
+    nom: 'commandes-panneau',
     vue: 'île',
     famille: 'commandes',
     ile: 'french-6e-letter-confusion',
-    lieu: 'menu',
+    lieu: 'requests',
     commandes: ['french-6e-phonology-request-1', 'french-6e-letter-confusion-request-1', 'maths-6e-calculation-request-1'],
     inventaire: { 'maths-6e-calculation': 4, 'french-6e-grammar-spelling': 1 },
     voir: '.commandes-list',
@@ -565,6 +572,82 @@ const CAPTURES = [
     'french-4e-agreement', 'french-4e-vocabulary', 'english-4e-comprehension', 'english-4e-grammar', 'maths-3e-geometry', 'maths-3e-statistics',
     'maths-3e-functions', 'french-3e-close-reading', 'english-3e-comprehension', 'english-3e-grammar',
   ].map((ile) => ({ nom: `commandes-ile-${ile}`, vue: 'île', famille: 'commandes-iles', ile, posees: 'toutes' })),
+  // Les grands projets (GD-10, famille `projets`), à retirer une fois le lot fusionné : le phare du large fini, sa
+  // lanterne allumée, vu de l'archipel de jour et de nuit, de près de nuit, et sur la Carte de nuit ; son panneau fini en grand texte ; puis son panneau à deux pièces sur cinq (le socle et la
+  // tour posés, `etages`), avec les blocs d'une recette en poche, sur tablette et au téléphone en grand texte.
+  { nom: 'projets-phare', vue: 'archipel', famille: 'projets', ile: 'maths-5e-signed-numbers', finesse: 2 },
+  { nom: 'projets-phare-nuit', vue: 'archipel', famille: 'projets', ile: 'maths-5e-signed-numbers', nuit: true, finesse: 2 },
+  { nom: 'projets-phare-pres-nuit', vue: 'archipel', famille: 'projets', ile: 'maths-5e-signed-numbers', nuit: true, recadre: { x: 330, y: 150, width: 200, height: 150 }, finesse: 4 },
+  { nom: 'projets-fini-390x2400-od32', vue: 'île', famille: 'projets', ile: 'maths-5e-signed-numbers', lieu: 'landmark-5e-1', taille: { width: 390, height: 2400 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+  { nom: 'projets-carte-nuit', vue: 'carte', famille: 'projets', ile: 'maths-5e-signed-numbers', nuit: true },
+  ...[
+    { suffixe: '' },
+    { suffixe: '-390x844-od32', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+  ].map(({ suffixe, ...autres }) => ({
+    nom: `projets-panneau${suffixe}`,
+    vue: 'île',
+    famille: 'projets',
+    ile: 'maths-5e-signed-numbers',
+    lieu: 'landmark-5e-1',
+    etages: { 'landmark-5e-1': 7 },
+    inventaire: { 'french-5e-conjugation': 6, 'history-5e-middle-ages': 4, 'maths-5e-proportionality': 2 },
+    ...autres,
+  })),
+  // La question d'une pièce (le socle posé, la tour à construire), aux réglages les plus forts sur téléphone : celle du
+  // comptoir (maths et anglais) et celle de la chronique (français et histoire), pour le référent dys.
+  ...[
+    ['comptoir', 0, { 'maths-5e-proportionality': 6, 'english-5e-vocabulary': 4 }],
+    ['chronique', 1, { 'french-5e-conjugation': 6, 'history-5e-middle-ages': 4 }],
+  ].map(([banque, recette, inventaire]) => ({
+    nom: `projets-question-${banque}-390x844-od32`,
+    vue: 'île',
+    famille: 'projets',
+    ile: 'maths-5e-signed-numbers',
+    lieu: `project/landmark-5e-1/${recette}`,
+    etages: { 'landmark-5e-1': 1 },
+    inventaire,
+    taille: { width: 390, height: 844 },
+    reglages: { font: 'opendyslexic', fontSize: 32 },
+  })),
+  // La même question du comptoir, défilée jusqu'aux réponses (l'énoncé anglais, le rappel, les choix).
+  {
+    nom: 'projets-question-comptoir-bas-390x844-od32',
+    vue: 'île',
+    famille: 'projets',
+    ile: 'maths-5e-signed-numbers',
+    lieu: 'project/landmark-5e-1/0',
+    etages: { 'landmark-5e-1': 1 },
+    inventaire: { 'maths-5e-proportionality': 6, 'english-5e-vocabulary': 4 },
+    taille: { width: 390, height: 844 },
+    reglages: { font: 'opendyslexic', fontSize: 32 },
+    voir: '.assemblage-question button >> nth=-1',
+  },
+  // L'entraide de la 5e (GD-10, famille `entraide`), à retirer une fois le lot fusionné : chez Pudding, Vélin et Frimas,
+  // l'objet posé à côté de sa commande, de jour et de nuit (toutes les petites constructions posées) ; puis la balise
+  // apportée à Frimas (`cliquer`), la pose finie : la ligne finie et « Voir le phare » (tablette, téléphone au grand texte),
+  // les deux premières quêtes déjà finies.
+  ...['english-5e-vocabulary', 'history-5e-middle-ages', 'maths-5e-signed-numbers'].flatMap((ile) => [
+    { nom: `entraide-${ile}`, vue: 'île', famille: 'entraide', ile, posees: 'toutes', finesse: 2 },
+    { nom: `entraide-${ile}-nuit`, vue: 'île', famille: 'entraide', ile, posees: 'toutes', nuit: true, finesse: 2 },
+  ]),
+  ...[
+    { suffixe: '' },
+    { suffixe: '-390x844-od32', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+  ].map(({ suffixe, ...autres }) => ({
+    nom: `entraide-voir-le-phare${suffixe}`,
+    vue: 'île',
+    famille: 'entraide',
+    ile: 'maths-5e-signed-numbers',
+    quetes: [{ id: 'story-5e-3', step: 3 }],
+    // Les deux premières quêtes finies (sinon la tente arrive juste après), les succès déjà gagnés (sans leur annonce).
+    posees: ['english-5e-vocabulary-fixture-2', 'history-5e-middle-ages-fixture-2'],
+    succes: 'tous',
+    // Le phare à deux pièces sur cinq : fini, il n'y aurait plus rien à montrer.
+    etages: { 'landmark-5e-1': 7 },
+    cliquer: '.quete-item .button.primary',
+    pasEnPlus: 64,
+    ...autres,
+  })),
   // Les îles d'histoire-géographie de 6e (lot HG-2, famille `histoire-geo`), à retirer une fois le lot fusionné : la Fouille des
   // siècles et la Pointe des paysages de près, de jour et de nuit, avant leur restauration (l'île ouverte, rien d'y joué
   // ni posé, le Gardien en statue grise : `sansIles`) et tout construit (le Gardien rallumé) ; le défi de l'Amphore peinte
@@ -582,6 +665,39 @@ const CAPTURES = [
       { nom: `histoire-geo-${ile}-gardien-apres${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, fiche: { genre: 'gardien', id: ile }, ...autres },
     ]),
   ),
+  // Les personnages importés du 6e dans Archipéo (famille `personnages-importes`), à retirer une fois le lot fusionné ; à
+  // prendre avec `--rendu archipeo`. Le front de rallumage au défi de l'Amphore peinte (des questions à choix), à une, deux et trois épreuves
+  // réussies (`reussir`) ; le Grand Chêne, sa fiche ouverte, éteint (`sansIles`) et rallumé, de jour et de nuit ; la vue
+  // de l'archipel en recul, de jour et de nuit (les créatures de loin, les Gardiens rallumés).
+  ...[1, 2, 3].map((reussir) => ({ nom: `personnages-importes-defi-amphore-${reussir}`, vue: 'défi', famille: 'personnages-importes', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir })),
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    { nom: `personnages-importes-chene-eteint${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', sansIles: ['french-6e-phonology'], fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
+    { nom: `personnages-importes-chene-rallume${suffixe}`, vue: 'île', famille: 'personnages-importes', ile: 'french-6e-phonology', fiche: { genre: 'gardien', id: 'french-6e-phonology' }, ...autres },
+    { nom: `personnages-importes-archipel-recul${suffixe}`, vue: 'archipel', famille: 'personnages-importes', ile: 'maths-6e-calculation', zoomer: -10, ...autres },
+  ]),
+  // Coco de près et la nuit des personnages d'Archipéo (famille `coco`, à retirer une fois le lot fusionné ; à prendre
+  // avec `--rendu archipeo`) : son modèle de près refait, la tête, les antennes et la ceinture qui ne fondent plus dans
+  // le corps ; de nuit, la lune en aplat et l'ombre au sol à la place du liseré. Sa fiche ouverte, de jour et de nuit.
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => (
+    { nom: `coco-fiche${suffixe}`, vue: 'île', famille: 'coco', ile: 'maths-6e-calculation', fiche: { genre: 'creature', id: 'maths-6e-calculation' }, ...autres }
+  )),
+  // Kéo, le bonhomme d'Archipéo dans la tenue de chaque archipel (famille `keo`, mainteneur, 11 octobre 2026), à retirer
+  // une fois le lot fusionné ; à prendre avec `--rendu archipeo` : de près (`surLeBonhomme`, la molette sur son buste),
+  // sur l'île du port de chaque archipel, de jour et de nuit, puis l'île entière de jour, pour juger sa taille.
+  ...[
+    ['6e', 'french-6e-phonology'],
+    ['5e', 'maths-5e-proportionality'],
+    ['4e', 'maths-4e-algebra'],
+    ['3e', 'maths-3e-functions'],
+  ].flatMap(([classe, ile]) => [
+    { nom: `keo-${classe}-pres`, vue: 'île', famille: 'keo', ile, surLeBonhomme: 8, finesse: 2 },
+    { nom: `keo-${classe}-pres-nuit`, vue: 'île', famille: 'keo', ile, surLeBonhomme: 8, finesse: 2, nuit: true },
+    { nom: `keo-${classe}-ile`, vue: 'île', famille: 'keo', ile },
+  ]),
+  // Le Grand Chêne d'un bloc plus haut (famille `grand-chene`, mainteneur, 12 octobre 2026), à retirer une fois le lot
+  // fusionné ; à prendre dans les deux univers : la vue de la Forêt des sons, tout construit, puis celle du 6e.
+  { nom: 'grand-chene-ile', vue: 'île', famille: 'grand-chene', ile: 'french-6e-phonology' },
+  { nom: 'grand-chene-archipel', vue: 'archipel', famille: 'grand-chene', ile: 'french-6e-phonology' },
   { nom: 'histoire-geo-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },
   { nom: 'histoire-geo-mes-blocs', vue: 'île', famille: 'histoire-geo', ile: 'history-6e-antiquity', lieu: 'stock', inventaire: { 'history-6e-antiquity': 6, 'geography-6e-living': 5 } },
   ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
@@ -596,6 +712,513 @@ const CAPTURES = [
     },
     { nom: `histoire-geo-mosaique-brique-chaume-archipel${suffixe}`, vue: 'archipel', famille: 'histoire-geo', ile: 'history-6e-antiquity', ...autres },
   ]),
+  // Les monuments d'Archipéo en modèles importés (famille `monuments`, à retirer une fois le lot fusionné ; à prendre avec
+  // `--rendu archipeo`) : chacun des huit, fini, de jour, cadré sur son îlot à la distance de jeu (`lieu`, fiche masquée) ;
+  // le phare du large fini de nuit (son feu allumé) ; le grand moulin en chantier (`avancees` : la part des cases posées,
+  // de bas en haut) à l'étape 1 puis à l'étape 2, ses fantômes restants autour du modèle, pour juger le saut cubes →
+  // modèle et les fantômes qui traversent le modèle.
+  ...[
+    ['observatoire-baleines', 'french-6e-reading', 'landmark-6e-1'],
+    ['grand-moulin', 'french-6e-grammar-spelling', 'landmark-6e-2'],
+    ['phare-du-large', 'maths-5e-signed-numbers', 'landmark-5e-1'],
+    ['kiosque', 'english-5e-grammar', 'landmark-5e-2'],
+    ['viaduc', 'english-4e-grammar', 'landmark-4e-1'],
+    ['amphitheatre', 'english-4e-comprehension', 'landmark-4e-2'],
+    ['observatoire-etoiles', 'french-3e-close-reading', 'landmark-3e-1'],
+    ['temple', 'maths-3e-geometry', 'landmark-3e-2'],
+  ].map(([monument, ile, lieu]) => ({ nom: `monuments-${monument}`, vue: 'île', famille: 'monuments', ile, lieu, sansPanneau: true, finesse: 2 })),
+  { nom: 'monuments-phare-du-large-nuit', vue: 'île', famille: 'monuments', ile: 'maths-5e-signed-numbers', lieu: 'landmark-5e-1', sansPanneau: true, nuit: true, finesse: 2 },
+  ...[1, 2].map((etape) => ({
+    nom: `monuments-grand-moulin-etape-${etape}`,
+    vue: 'île',
+    famille: 'monuments',
+    ile: 'french-6e-grammar-spelling',
+    lieu: 'landmark-6e-2',
+    sansPanneau: true,
+    avancees: { 'landmark-6e-2': etape / 3 },
+    finesse: 2,
+  })),
+  // Les cases posées par le haut (le joueur les pose dans l'ordre qu'il veut) : les fantômes des cases basses restent
+  // dans le volume du modèle, pour voir s'ils sont cachés ou traversés.
+  ...[1, 2].map((etape) => ({
+    nom: `monuments-grand-moulin-etape-${etape}-haut`,
+    vue: 'île',
+    famille: 'monuments',
+    ile: 'french-6e-grammar-spelling',
+    lieu: 'landmark-6e-2',
+    sansPanneau: true,
+    avancees: { 'landmark-6e-2': -etape / 3 },
+    finesse: 2,
+  })),
+  // Les bâtiments des plans d'Archipéo en modèles importés (famille `batiments`, à retirer une fois le lot fusionné ; à
+  // prendre avec `--rendu archipeo`) : la forge de Tunel de près, finie, de jour et de nuit ; en chantier, le premier plan
+  // à moitié (les cubes et les fantômes, sans modèle) puis le deuxième à moitié (l'étape 1, coupée au ras de l'avant-toit,
+  // et les fantômes du toit) ; de loin (sa version en volumes), depuis la Tour du lecteur voisine, l'archipel et la Carte.
+  { nom: 'batiments-forge', vue: 'île', famille: 'batiments', ile: 'french-6e-letter-confusion', finesse: 2 },
+  { nom: 'batiments-forge-nuit', vue: 'île', famille: 'batiments', ile: 'french-6e-letter-confusion', nuit: true, finesse: 2 },
+  { nom: 'batiments-forge-murs-mi', vue: 'île', famille: 'batiments', ile: 'french-6e-letter-confusion', partie: 'murs-mi', finesse: 2 },
+  { nom: 'batiments-forge-etape-1', vue: 'île', famille: 'batiments', ile: 'french-6e-letter-confusion', partie: 'toit-mi', finesse: 2 },
+  { nom: 'batiments-forge-loin-ile', vue: 'île', famille: 'batiments', ile: 'french-6e-reading', finesse: 2 },
+  { nom: 'batiments-forge-loin-archipel', vue: 'archipel', famille: 'batiments', ile: 'french-6e-reading' },
+  { nom: 'batiments-forge-carte', vue: 'carte', famille: 'batiments', ile: 'french-6e-letter-confusion' },
+  // Les objets du 4e et du 3e de la piste 3 « hybride » (famille `objets-college`, à retirer une fois le lot fusionné ; à
+  // prendre avec `--rendu archipeo`), sur le modèle du 5e : chaque île de près, toutes ses petites constructions posées,
+  // sans les noms, de jour (sa cour, son cœur, ses petites constructions : les cours à regarder, la Porte, le Jardin, le
+  // Refuge et le Bosquet, y sont) ; la nuit, les vitres allumées des lanternes : le réverbère de Typo (l'Imprimerie), la
+  // veilleuse d'Olive (le Verger : une vitre pleine, sans flamme ni halo), le pupitre de Mémo (le Kiosque) et la boîte à
+  // livres de Jalon (le Plateau), les îles aux sols sombres (la Falaise, le Jardin, le Théâtre, la Gare) et le voyant mat du
+  // mât d'antenne du Studio (jamais allumé) ; de loin (l'île reculée), les formes nouvelles les plus grandes (la voie ferrée
+  // de la Gare, le triangle du Belvédère, la ruche) ; l'île-école de chaque archipel de
+  // près, ses trois lieux (au 4e le grès clair des chaînes et des chapiteaux, au 3e la Halle bardée et les toits
+  // enneigés), de jour et de nuit, et la Halle du 3e de loin (l'île reculée) ; le quai de trois quarts (la fiche du
+  // Bloc-Navire) ; le trophée d'un Gardien rallumé à côté de sa statue (sa fiche) ; l'archipel entier et une île en recul.
+  ...[
+    ['4e', 'forge', 'maths-4e-powers'],
+    ['4e', 'atelier', 'maths-4e-algebra'],
+    ['4e', 'falaise', 'french-4e-agreement'],
+    ['4e', 'cabinet', 'french-4e-vocabulary'],
+    ['4e', 'theatre', 'english-4e-comprehension'],
+    ['4e', 'gare', 'english-4e-grammar'],
+    ['4e', 'imprimerie', 'history-4e-revolutions'],
+    ['4e', 'escale', 'geography-4e-globalization'],
+    ['4e', 'source', 'life-earth-sciences-4e-cells-evolution'],
+    ['4e', 'vigie', 'physics-chemistry-4e-signals-circuits'],
+    ['4e', 'bassin', 'technology-4e-modeling'],
+    ['4e', 'porte', 'civics-4e-rights-freedoms'],
+    ['4e', 'jardin', 'lv2-4e-daily-life'],
+    ['4e', 'colonnade', 'lca-4e-cities'],
+    ['3e', 'belvedere', 'maths-3e-geometry'],
+    ['3e', 'donnees', 'maths-3e-statistics'],
+    ['3e', 'phare', 'maths-3e-functions'],
+    ['3e', 'textes', 'french-3e-close-reading'],
+    ['3e', 'studio', 'english-3e-comprehension'],
+    ['3e', 'chateau', 'english-3e-grammar'],
+    ['3e', 'kiosque', 'history-3e-twentieth-century'],
+    ['3e', 'plateau', 'geography-3e-france'],
+    ['3e', 'verger', 'life-earth-sciences-3e-human-body'],
+    ['3e', 'tremplin', 'physics-chemistry-3e-motion-energy'],
+    ['3e', 'ruche', 'technology-3e-digital'],
+    ['3e', 'forum', 'civics-3e-democratic-life'],
+    ['3e', 'refuge', 'lv2-3e-travel'],
+    ['3e', 'bosquet', 'lca-3e-ideas'],
+  ].flatMap(([classe, court, ile]) => [
+    { nom: `objets-${classe}-${court}`, vue: 'île', famille: 'objets-college', ile, posees: 'toutes', zoomer: 4, sansEtiquettes: true, finesse: 2 },
+    ...(['imprimerie', 'falaise', 'jardin', 'verger', 'kiosque', 'plateau', 'theatre', 'gare', 'studio'].includes(court)
+      ? [{ nom: `objets-${classe}-${court}-nuit`, vue: 'île', famille: 'objets-college', ile, posees: 'toutes', zoomer: 3, sansEtiquettes: true, nuit: true, finesse: 2 }]
+      : []),
+    ...(['gare', 'belvedere', 'ruche'].includes(court) ? [{ nom: `objets-${classe}-${court}-loin`, vue: 'île', famille: 'objets-college', ile, posees: 'toutes', zoomer: -6, finesse: 2 }] : []),
+  ]),
+  // La voie de la Gare de près, de jour et de nuit (le référent dys : l'acier des rails en silhouette sur son lit de
+  // ballast, d'un bout à l'autre) : la molette sur le milieu de la voie (`surLaCase`, ses cases du monde au 4e tout
+  // construit, de x 10 à 15 en y 679, son lit en z 8 ; heartDecor.test.ts les relit).
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `objets-4e-gare-voie${suffixe}`,
+    vue: 'île',
+    famille: 'objets-college',
+    ile: 'english-4e-grammar',
+    posees: 'toutes',
+    sansEtiquettes: true,
+    surLaCase: { x: 13, y: 679.5, z: 8.2, crans: 8 },
+    finesse: 3,
+    ...autres,
+  })),
+  ...[
+    ['4e', 'maths-4e-algebra', 'maths-4e-powers', 'french-4e-vocabulary'],
+    ['3e', 'maths-3e-functions', 'maths-3e-statistics', 'history-3e-twentieth-century'],
+  ].flatMap(([classe, ecole, archipel, gardien]) => [
+    ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+      { nom: `objets-${classe}-ecole${suffixe}`, vue: 'île', famille: 'objets-college', ile: ecole, succes: 'tous', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
+      { nom: `objets-${classe}-ecole-lieux${suffixe}`, vue: 'île', famille: 'objets-college', ile: ecole, succes: 'tous', posees: 'toutes', zoomer: 2, sansEtiquettes: true, finesse: 2, ...autres },
+    ]),
+    { nom: `objets-${classe}-ecole-loin`, vue: 'île', famille: 'objets-college', ile: ecole, succes: 'tous', posees: 'toutes', zoomer: -6, finesse: 2 },
+    { nom: `objets-${classe}-quai`, vue: 'île', famille: 'objets-college', ile: ecole, posees: 'toutes', fiche: { genre: 'navire', port: ecole }, sansEtiquettes: true, finesse: 2 },
+    { nom: `objets-${classe}-trophee`, vue: 'île', famille: 'objets-college', ile: gardien, posees: 'toutes', fiche: { genre: 'gardien', id: gardien }, zoomer: 2, sansEtiquettes: true, finesse: 2 },
+    { nom: `objets-${classe}-archipel`, vue: 'archipel', famille: 'objets-college', ile: archipel, posees: 'toutes', finesse: 2 },
+  ]),
+  // Les familles du 6e dans Archipéo (lot 7, la table « matière → famille », famille `familles-sixieme`), à retirer une fois
+  // le lot fusionné ; à prendre avec `--rendu archipeo`. De près (`zoomer`), toutes les petites constructions posées :
+  // le cadran de l'Horloge des verbes de près, de jour et de nuit, et de loin (l'île reculée, l'archipel) ; la cabine de
+  // la Baie des mots ; la cabane de bois de la Forêt (bardée) ; le grand moulin et l'observatoire (monuments du 6e) ; les
+  // bacs et les murets de mosaïque de la Pointe des paysages ; l'escalier de la Tour du lecteur, tout construit, puis
+  // avec deux cases de sa cour encore en fantôme à côté de lui (`partie` : « escalier-fantome »). Le lissage (un volume par
+  // matière, 8 octobre 2026) se juge sur les mêmes vues, et sur la Tour du lecteur entière avec son escalier et sur le
+  // portillon de Bloquette (une petite construction de quête).
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `familles-6e-cadran-pres${suffixe}`,
+    vue: 'île',
+    famille: 'familles-sixieme',
+    ile: 'english-6e-grammar',
+    posees: 'toutes',
+    zoomer: 3,
+    finesse: 2,
+    ...autres,
+  })),
+  { nom: 'familles-6e-cadran-loin', vue: 'île', famille: 'familles-sixieme', ile: 'english-6e-grammar', posees: 'toutes', zoomer: -10, finesse: 2 },
+  { nom: 'familles-6e-cadran-archipel', vue: 'archipel', famille: 'familles-sixieme', ile: 'english-6e-grammar', posees: 'toutes', finesse: 2 },
+  { nom: 'familles-6e-cabine-baie', vue: 'île', famille: 'familles-sixieme', ile: 'english-6e-vocabulary', posees: 'toutes', zoomer: 3, finesse: 2 },
+  { nom: 'familles-6e-cabane-foret', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', posees: 'toutes', zoomer: 3, finesse: 2 },
+  // Les monuments eux-mêmes, sans leur fiche (`sansPanneau` : la caméra posée sur l'îlot du monument, le panneau masqué) :
+  // les ailes du moulin de près et de loin, l'observatoire des baleines de près.
+  { nom: 'familles-6e-moulin', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', lieu: 'landmark-6e-2', sansPanneau: true, zoomer: 3, finesse: 2 },
+  { nom: 'familles-6e-moulin-loin', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', lieu: 'landmark-6e-2', sansPanneau: true, finesse: 2 },
+  { nom: 'familles-6e-observatoire', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-reading', lieu: 'landmark-6e-1', sansPanneau: true, zoomer: 3, finesse: 2 },
+  // Le quai de galets d'un seul tenant (la plateforme de l'observatoire, 7 × 7 cases, le seul du 6e) : un volume lissé,
+  // une seule teinte, de jour et de plus près, pour que le directeur artistique tranche s'il le garde ainsi.
+  { nom: 'familles-6e-quai-galets', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-reading', lieu: 'landmark-6e-1', sansPanneau: true, zoomer: 5, finesse: 2 },
+  { nom: 'familles-6e-pointe-paysages', vue: 'île', famille: 'familles-sixieme', ile: 'geography-6e-living', posees: 'toutes', zoomer: 3, finesse: 2 },
+  ...[
+    { suffixe: '', autres: {} },
+    { suffixe: '-fantome', autres: { partie: 'escalier-fantome' } },
+  ].map(({ suffixe, autres }) => ({
+    nom: `familles-6e-escalier-tour${suffixe}`,
+    vue: 'île',
+    famille: 'familles-sixieme',
+    ile: 'french-6e-reading',
+    posees: 'toutes',
+    zoomer: 3,
+    finesse: 2,
+    ...autres,
+  })),
+  { nom: 'familles-6e-tour-lecteur', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-reading', posees: 'toutes', zoomer: 1, finesse: 2 },
+  { nom: 'familles-6e-portillon', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', posees: 'toutes', zoomer: 3, finesse: 2 },
+  // Le métal, le précieux et le végétal (9 octobre 2026) : le laboratoire de Bulle de près, de jour, de nuit, et pendant
+  // le fondu de sa pose (la ruine à mi-chemin : `partie` « un-plan », `poseA` 0,5) ; l'établi de Pince ; l'escalier de
+  // Grimoire est `familles-6e-escalier-tour` ; la salle des trophées pleine (tous les succès) de face, puis l'île
+  // entière ; le clocheton de l'école ; le port, sa jetée et le long bac (ses poteaux),
+  // de jour et de nuit (les lanternes) ; le bout d'une liaison (le poteau et sa lanterne) à la Mine des lettres.
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    { nom: `familles-6e-labo${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'physics-chemistry-6e-matter-energy', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
+    { nom: `familles-6e-port-bac${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-calculation', zoomer: 2, finesse: 2, ...autres },
+  ]),
+  { nom: 'familles-6e-labo-fondu', vue: 'île', famille: 'familles-sixieme', ile: 'physics-chemistry-6e-matter-energy', partie: 'un-plan', pose: 1, poseA: 0.5, finesse: 2 },
+  { nom: 'familles-6e-etabli', vue: 'île', famille: 'familles-sixieme', ile: 'technology-6e-objects', posees: 'toutes', zoomer: 3, finesse: 2 },
+  // La salle pleine de face, cadrée sur le mur du fond (la tenture et ses plis #782640, le galon d'or, les lingots et
+  // les cristaux) : la caméra posée sur la salle (`lieu` « trophies », sa fiche masquée), de jour puis de nuit. Le
+  // recadrage fixe d'avant GD-12 (`familles-6e-salle-pleine`) ne tombait plus sur la salle agrandie : retiré.
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `familles-6e-salle-fond${suffixe}`,
+    vue: 'île',
+    famille: 'familles-sixieme',
+    ile: 'french-6e-phonology',
+    lieu: 'trophies',
+    sansPanneau: true,
+    succes: 'tous',
+    zoomer: 4,
+    finesse: 2,
+    ...autres,
+  })),
+  { nom: 'familles-6e-salle-pleine-ile', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', succes: 'tous', zoomer: 2, finesse: 2 },
+  { nom: 'familles-6e-clocheton', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', zoomer: 4, finesse: 2 },
+  { nom: 'familles-6e-liaison-bout', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', zoomer: 3, finesse: 2 },
+  // L'eau, le quai, les liaisons, le cœur et la barrière (9 octobre 2026) : la Mine des lettres (la galerie, le puits, son
+  // eau et ses pavillons), la mare des Fractions (son nénuphar, le petit arbre), le cône des Décimaux, le boulier du
+  // Calcul, le Gardien et son socle (aux Antiquités : la mosaïque et le tas de fouille à côté), de jour et de nuit ; la
+  // cabine et le réverbère de la Baie de nuit ; le bout d'une liaison de nuit et de loin (tablier, barrière, escalier,
+  // lanterne) ; la cour de la Halle et l'école de près, leurs panneaux masqués. La tour de l'Horloge et son rouage sont
+  // `familles-6e-cadran-*`, la jetée et le feu de port `familles-6e-port-bac*`, la salle pleine `familles-6e-salle-fond*`.
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    { nom: `familles-6e-mine${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
+    { nom: `familles-6e-mare${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-fractions', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2, ...autres },
+    { nom: `familles-6e-gardien${suffixe}`, vue: 'île', famille: 'familles-sixieme', ile: 'history-6e-antiquity', posees: 'toutes', zoomer: 3, finesse: 2, ...autres },
+  ]),
+  { nom: 'familles-6e-liaison-bout-nuit', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', zoomer: 3, finesse: 2, nuit: true },
+  { nom: 'familles-6e-cone', vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-decimals', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-6e-boulier', vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-calculation', posees: 'toutes', zoomer: 2, sansEtiquettes: true, finesse: 2 },
+  // Retouches du 9 octobre 2026 : le cône de recul ; le tas de fouille (history-6e-antiquity) et la dune en gradins avec
+  // son tas (french-6e-word-spelling) ; le champ de blé (french-6e-grammar-spelling), de près et de loin ; les étiquettes
+  // des îles cachées sur les objets du cœur (`sansEtiquettes`).
+  { nom: 'familles-6e-cone-loin', vue: 'île', famille: 'familles-sixieme', ile: 'maths-6e-decimals', posees: 'toutes', zoomer: -6, finesse: 2 },
+  { nom: 'familles-6e-fouille', vue: 'île', famille: 'familles-sixieme', ile: 'history-6e-antiquity', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-6e-dune', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-word-spelling', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-6e-ble', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-6e-ble-loin', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-grammar-spelling', posees: 'toutes', zoomer: -6, finesse: 2 },
+  { nom: 'familles-6e-cabine-baie-nuit', vue: 'île', famille: 'familles-sixieme', ile: 'english-6e-vocabulary', posees: 'toutes', zoomer: 3, finesse: 2, nuit: true },
+  { nom: 'familles-6e-liaison-loin', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-letter-confusion', zoomer: -6, finesse: 2 },
+  { nom: 'familles-6e-halle-cour', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', lieu: 'assembly', sansPanneau: true, zoomer: 4, finesse: 2 },
+  { nom: 'familles-6e-ecole', vue: 'île', famille: 'familles-sixieme', ile: 'french-6e-phonology', lieu: 'school', sansPanneau: true, zoomer: 4, finesse: 2 },
+  // Les familles du 5e dans Archipéo (le 5e au niveau du 6e, 9 octobre 2026, famille `familles-cinquieme`), à retirer une
+  // fois le lot fusionné ; à prendre avec `--rendu archipeo`. Les étiquettes des îles cachées sur le cœur
+  // (`sansEtiquettes`), les panneaux des lieux et des monuments masqués (`sansPanneau`). Le Glacier (le dôme, la balise,
+  // les congères) et la Saline (le sel), de près, les murs de leur premier plan à moitié posés (`partie` « murs-mi » : une
+  // case sur deux de glace ou de sel bâtie, l'autre en fantôme Brume, côte à côte), pour juger leur écart à Brume, tous
+  // les succès déjà gagnés (`succes`) pour que le bandeau « Succès débloqué » ne couvre pas la scène, aucune mission de
+  // l'île jouée (`missions` 0, le défi gagné gardé : `defiGagne`) pour que le jeu ne repose pas au chargement les parties
+  // dues, qui fermaient les fantômes et annonçaient « Niveau supérieur ! » ; le Glacier aussi de nuit, et une paire de
+  // près (`glace-fantome`). Le Marché (l'échoppe
+  // de toile et son auvent), le Comptoir (l'échoppe de tuile, la tente, la glacière), le Bourg (le logis d'enluminure,
+  // le four, l'écritoire), le Delta (le moulin, la rizière), le Marais (la hutte de tourbe, les mares, de jour et de
+  // nuit), le Manoir (la tour de lambris, la serre) ; le phare du large pièce par pièce (`etages` : le socle, la tour, la
+  // galerie, la lanterne), puis fini de nuit ; le kiosque de près et de loin ; l'école, la salle pleine de face (de jour
+  // et de nuit) et la cour de la Halle ; une liaison de loin ; l'archipel au plus reculé (le moiré des plis et des clins).
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `familles-5e-glacier${suffixe}`,
+    vue: 'île',
+    famille: 'familles-cinquieme',
+    ile: 'maths-5e-signed-numbers',
+    partie: 'murs-mi',
+    missions: 0,
+    defiGagne: true,
+    succes: 'tous',
+    posees: 'toutes',
+    zoomer: 3,
+    sansEtiquettes: true,
+    finesse: 2,
+    ...autres,
+  })),
+  // Une paire « glace bâtie / fantôme » du Glacier en gros plan, de jour et de nuit (le référent dys, troisième tour du
+  // 9 octobre 2026), recadrée sur les murs de l'igloo (`recadre`, relevé sur la capture locale du glacier).
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `familles-5e-glace-fantome${suffixe}`,
+    vue: 'île',
+    famille: 'familles-cinquieme',
+    ile: 'maths-5e-signed-numbers',
+    partie: 'murs-mi',
+    missions: 0,
+    defiGagne: true,
+    succes: 'tous',
+    posees: 'toutes',
+    zoomer: 3,
+    sansEtiquettes: true,
+    recadre: { x: 320, y: 180, width: 220, height: 160 },
+    finesse: 3,
+    ...autres,
+  })),
+  { nom: 'familles-5e-marche', vue: 'île', famille: 'familles-cinquieme', ile: 'maths-5e-proportionality', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-5e-comptoir', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-vocabulary', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  // La glacière de Pudding en gros plan (son couvercle de tuile en nappe, posé au bas de sa case sur la glace).
+  { nom: 'familles-5e-glaciere', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-vocabulary', posees: 'toutes', zoomer: 3, sansEtiquettes: true, recadre: { x: 440, y: 60, width: 190, height: 160 }, finesse: 3 },
+  { nom: 'familles-5e-logis', vue: 'île', famille: 'familles-cinquieme', ile: 'history-5e-middle-ages', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-5e-delta', vue: 'île', famille: 'familles-cinquieme', ile: 'geography-5e-resources', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `familles-5e-marais${suffixe}`,
+    vue: 'île',
+    famille: 'familles-cinquieme',
+    ile: 'french-5e-conjugation',
+    posees: 'toutes',
+    zoomer: 3,
+    sansEtiquettes: true,
+    finesse: 2,
+    ...autres,
+  })),
+  { nom: 'familles-5e-manoir', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-grammar', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  { nom: 'familles-5e-saline', vue: 'île', famille: 'familles-cinquieme', ile: 'physics-chemistry-5e-matter-universe', partie: 'murs-mi', missions: 0, defiGagne: true, succes: 'tous', posees: 'toutes', zoomer: 3, sansEtiquettes: true, finesse: 2 },
+  // Le phare du large (world/offshoreLighthouse.ts, LAYERS) posé jusqu'à un étage : le socle (1), la tour (7), la
+  // galerie (8), la lanterne (9) ; puis fini, de nuit (son feu).
+  ...[
+    ['socle', 1],
+    ['tour', 7],
+    ['galerie', 8],
+    ['lanterne', 9],
+  ].map(([piece, z]) => ({
+    nom: `familles-5e-phare-etapes-${piece}`,
+    vue: 'île',
+    famille: 'familles-cinquieme',
+    ile: 'maths-5e-signed-numbers',
+    lieu: 'landmark-5e-1',
+    sansPanneau: true,
+    etages: { 'landmark-5e-1': z },
+    zoomer: 3,
+    finesse: 2,
+  })),
+  { nom: 'familles-5e-phare-etapes-fini-nuit', vue: 'île', famille: 'familles-cinquieme', ile: 'maths-5e-signed-numbers', lieu: 'landmark-5e-1', sansPanneau: true, nuit: true, zoomer: 3, finesse: 2 },
+  { nom: 'familles-5e-kiosque', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-grammar', lieu: 'landmark-5e-2', sansPanneau: true, zoomer: 3, finesse: 2 },
+  { nom: 'familles-5e-kiosque-loin', vue: 'île', famille: 'familles-cinquieme', ile: 'english-5e-grammar', lieu: 'landmark-5e-2', sansPanneau: true, finesse: 2 },
+  // L'école : le lieu `school` se prenait sur l'échoppe du Marché ; la vue de la cour de la Halle (mêmes réglages, l'école
+  // au premier plan) recadrée sur l'école (`recadre`, relevé sur la capture du 9 octobre 2026).
+  { nom: 'familles-5e-ecole', vue: 'île', famille: 'familles-cinquieme', ile: 'maths-5e-proportionality', lieu: 'assembly', sansPanneau: true, zoomer: 4, recadre: { x: 270, y: 330, width: 250, height: 270 }, finesse: 3 },
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `familles-5e-salle-fond${suffixe}`,
+    vue: 'île',
+    famille: 'familles-cinquieme',
+    ile: 'maths-5e-proportionality',
+    lieu: 'trophies',
+    sansPanneau: true,
+    succes: 'tous',
+    zoomer: 4,
+    finesse: 2,
+    ...autres,
+  })),
+  { nom: 'familles-5e-halle-cour', vue: 'île', famille: 'familles-cinquieme', ile: 'maths-5e-proportionality', lieu: 'assembly', sansPanneau: true, zoomer: 4, finesse: 2 },
+  { nom: 'familles-5e-liaison-loin', vue: 'île', famille: 'familles-cinquieme', ile: 'french-5e-homophones', zoomer: -6, finesse: 2 },
+  { nom: 'familles-5e-archipel-recul', vue: 'archipel', famille: 'familles-cinquieme', ile: 'maths-5e-proportionality', posees: 'toutes', zoomer: -10, finesse: 2 },
+  // Les familles du 4e et du 3e dans Archipéo (le 4e et le 3e au niveau du 6e et du 5e, 10 octobre 2026, familles
+  // `familles-quatrieme` et `familles-troisieme`), à retirer une fois le lot fusionné ; à prendre avec `--rendu archipeo`.
+  // Comme au 5e : les étiquettes cachées, les murs du premier plan de l'île de la vue à moitié posés (`partie` « murs-mi »,
+  // aucune mission jouée, le défi gagné gardé, tous les succès), pour juger l'écart des matières claires à Brume ; une
+  // paire « bâti / fantôme » de plus près (`-fantome`) ; les lieux et les monuments panneaux masqués ; les grands projets
+  // pièce par pièce (`etages` : le nombre d'étages posés, le haut de la pièce plus un, ./src/game/world/projects.ts,
+  // LAYERS), puis finis de nuit (la lueur de fin) ; l'école, la cour de la Halle, la salle pleine de face, une liaison de
+  // loin, l'archipel au plus reculé.
+  ...[
+    ['4e', 'familles-quatrieme', 'maths-4e-algebra', [
+      ['forge', 'maths-4e-powers'],
+      ['atelier', 'maths-4e-algebra'],
+      ['falaise', 'french-4e-agreement'],
+      ['cabinet', 'french-4e-vocabulary'],
+      ['theatre', 'english-4e-comprehension', true],
+      ['gare', 'english-4e-grammar'],
+      ['jardin', 'lv2-4e-daily-life'],
+      ['imprimerie', 'history-4e-revolutions'],
+      ['escale', 'geography-4e-globalization'],
+      ['vigie', 'physics-chemistry-4e-signals-circuits'],
+      ['bassin', 'technology-4e-modeling'],
+      ['pepiniere', 'life-earth-sciences-4e-cells-evolution'],
+      ['porte', 'civics-4e-rights-freedoms'],
+      ['colonnade', 'lca-4e-cities'],
+    ], [
+      ['calque-fantome', 'maths-4e-algebra', true],
+      ['fresque-fantome', 'lca-4e-cities'],
+    ], [
+      ['amphitheatre', 'english-4e-comprehension', 'landmark-4e-2'],
+      ['viaduc', 'english-4e-grammar', 'landmark-4e-1'],
+    ], [
+      ['portique', 'geography-4e-globalization', 'landmark-4e-3', [['quay', 2], ['legs', 4], ['beam', 5], ['cab', 7]]],
+      ['tour', 'physics-chemistry-4e-signals-circuits', 'landmark-4e-4', [['foot', 1], ['lattice', 3], ['shaft', 6], ['head', 8]]],
+    ], 'french-4e-agreement'],
+    ['3e', 'familles-troisieme', 'maths-3e-functions', [
+      ['belvedere', 'maths-3e-geometry', true],
+      ['phare', 'maths-3e-functions'],
+      ['donnees', 'maths-3e-statistics'],
+      ['textes', 'french-3e-close-reading'],
+      ['studio', 'english-3e-comprehension'],
+      ['chateau', 'english-3e-grammar'],
+      ['refuge', 'lv2-3e-travel'],
+      ['temoins', 'history-3e-twentieth-century'],
+      ['plateau', 'geography-3e-france'],
+      ['tremplin', 'physics-chemistry-3e-motion-energy'],
+      ['ruche', 'technology-3e-digital'],
+      ['verger', 'life-earth-sciences-3e-human-body'],
+      ['forum', 'civics-3e-democratic-life'],
+      ['bosquet', 'lca-3e-ideas'],
+    ], [
+      ['marbre-fantome', 'maths-3e-geometry', true],
+      // Un toit d'ardoise sous la neige bâti, à côté de sa moitié encore en fantôme : le toit en croix de la lanterne de
+      // Fi, recadré sur le haut de la tour (relevé sur la capture du 10 octobre 2026 : la croix entre x 575 et 750, y 38
+      // et 160), la maison basse au premier plan, toute posée, hors du cadre.
+      ['toits-neige-fantome', 'maths-3e-functions', true, { partie: 'toit-fantome', zoomer: 4, recadre: { x: 480, y: 0, width: 360, height: 270 }, finesse: 4 }],
+      ['quartz-fantome', 'maths-3e-statistics'],
+    ], [
+      ['temple', 'maths-3e-geometry', 'landmark-3e-2'],
+      ['etoiles', 'french-3e-close-reading', 'landmark-3e-1', true],
+    ], [
+      // La colonne, haute de douze étages : de plus loin, pour la voir entière, ceinture du haut comprise.
+      ['colonne', 'maths-3e-geometry', 'landmark-3e-5', [['cube', 5], ['cylinder', 7], ['pyramid', 9], ['sphere', 12]], 1],
+      ['chateau-eau', 'geography-3e-france', 'landmark-3e-4', [['foot', 2], ['shaft', 5], ['tank', 7], ['crown', 10]]],
+      ['fusee', 'physics-chemistry-3e-motion-energy', 'landmark-3e-3', [['pad', 1], ['stage1', 4], ['stage2', 7], ['nose', 10]]],
+    ], 'english-3e-grammar'],
+  ].flatMap(([classe, famille, ecole, iles, fantomes, monuments, projets, liaison]) => {
+    const mi = { partie: 'murs-mi', missions: 0, defiGagne: true, succes: 'tous', posees: 'toutes', sansEtiquettes: true };
+    const nuits = (avecNuit) => (avecNuit ? [{ suffixe: '' }, { suffixe: '-nuit', nuit: true }] : [{ suffixe: '' }]);
+    return [
+      ...iles.flatMap(([nom, ile, avecNuit]) => nuits(avecNuit).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-${nom}${suffixe}`, vue: 'île', famille, ile, ...mi, zoomer: 3, finesse: 2, ...autres }))),
+      ...fantomes.flatMap(([nom, ile, avecNuit, vue]) => nuits(avecNuit).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-${nom}${suffixe}`, vue: 'île', famille, ile, ...mi, zoomer: 5, finesse: 3, ...vue, ...autres }))),
+      ...monuments.flatMap(([nom, ile, lieu, avecNuit]) => [
+        ...nuits(avecNuit).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-${nom}${suffixe}`, vue: 'île', famille, ile, lieu, sansPanneau: true, zoomer: 3, finesse: 2, ...autres })),
+        ...(avecNuit ? [] : [{ nom: `familles-${classe}-${nom}-loin`, vue: 'île', famille, ile, lieu, sansPanneau: true, finesse: 2 }]),
+      ]),
+      ...projets.flatMap(([nom, ile, lieu, pieces, zoomer = 3]) => [
+        ...pieces.map(([piece, z]) => ({ nom: `familles-${classe}-${nom}-etapes-${piece}`, vue: 'île', famille, ile, lieu, sansPanneau: true, etages: { [lieu]: z }, zoomer, finesse: 2 })),
+        { nom: `familles-${classe}-${nom}-etapes-fini-nuit`, vue: 'île', famille, ile, lieu, sansPanneau: true, nuit: true, zoomer, finesse: 2 },
+      ]),
+      { nom: `familles-${classe}-ecole`, vue: 'île', famille, ile: ecole, lieu: 'school', sansPanneau: true, zoomer: 4, finesse: 2 },
+      { nom: `familles-${classe}-halle-cour`, vue: 'île', famille, ile: ecole, lieu: 'assembly', sansPanneau: true, zoomer: 4, finesse: 2 },
+      ...nuits(true).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-salle-fond${suffixe}`, vue: 'île', famille, ile: ecole, lieu: 'trophies', sansPanneau: true, succes: 'tous', zoomer: 4, finesse: 2, ...autres })),
+      { nom: `familles-${classe}-liaison-loin`, vue: 'île', famille, ile: liaison, zoomer: -6, finesse: 2 },
+      ...nuits(true).map(({ suffixe, ...autres }) => ({ nom: `familles-${classe}-archipel-recul${suffixe}`, vue: 'archipel', famille, ile: ecole, posees: 'toutes', zoomer: -10, finesse: 2, ...autres })),
+    ];
+  }),
+  // Les six îles d'histoire-géographie des 5e, 4e et 3e (lot HG-3, famille `histoire-geo-college`), à retirer une fois le
+  // lot fusionné : chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`)
+  // et tout construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la
+  // petite construction posée) ; et la Carte de chaque archipel tout construit, pour les noms des îles.
+  ...['history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'geography-4e-globalization', 'history-3e-twentieth-century', 'geography-3e-france'].flatMap((ile) => [
+    ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+      { nom: `histoire-geo-college-${ile}-avant${suffixe}`, vue: 'île', famille: 'histoire-geo-college', ile, sansIles: [ile], ...autres },
+      { nom: `histoire-geo-college-${ile}-apres${suffixe}`, vue: 'île', famille: 'histoire-geo-college', ile, ...autres },
+    ]),
+    { nom: `histoire-geo-college-${ile}-gardien-avant`, vue: 'île', famille: 'histoire-geo-college', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile } },
+    { nom: `histoire-geo-college-${ile}-gardien-apres`, vue: 'île', famille: 'histoire-geo-college', ile, fiche: { genre: 'gardien', id: ile } },
+    { nom: `histoire-geo-college-${ile}-commande`, vue: 'île', famille: 'histoire-geo-college', ile, posees: 'toutes' },
+  ]),
+  ...[
+    ['5e', 'history-5e-middle-ages'],
+    ['4e', 'history-4e-revolutions'],
+    ['3e', 'history-3e-twentieth-century'],
+  ].map(([a, ile]) => ({ nom: `histoire-geo-college-carte-${a}`, vue: 'carte', famille: 'histoire-geo-college', ile })),
+  // Retouches HG-3 : la Carte du 5e et du 4e (le cadrage des îles et de leurs noms) en portrait 800 × 1280, au téléphone et
+  // en OpenDyslexic 32 px (UX UI) ; « Mes blocs » avec le Conteneur et la Reliure côte à côte, puis le Grès rose à côté
+  // de la Brique et de la Tuile, de jour et de nuit (référent dys) ; chaque Gardien de près, au défi, éteint puis à
+  // mi-parcours (consultant Archipéo).
+  // Deuxième tour (UX UI, référent dys) : le 3e aussi ; la Carte du 6e au téléphone et en OpenDyslexic 32 px (au 6e
+  // comme ailleurs, chaque nom sur son île et aucun tu, le placement simple d'abord : le DA lève sa règle du 6e, dont
+  // les îles ont bougé avec SC-2). Troisième tour (DA) : aucun nom sous un bouton, hors de l'écran ni sous le médaillon.
+  ...[
+    ['5e', 'history-5e-middle-ages'],
+    ['4e', 'history-4e-revolutions'],
+    ['3e', 'history-3e-twentieth-century'],
+  ].flatMap(([a, ile]) =>
+    [
+      { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
+      { suffixe: '-390x844', taille: { width: 390, height: 844 } },
+      { suffixe: '-od32', reglages: { font: 'opendyslexic', fontSize: 32 } },
+    ].map(({ suffixe, ...autres }) => ({ nom: `histoire-geo-college-carte-${a}${suffixe}`, vue: 'carte', famille: 'histoire-geo-college', ile, ...autres })),
+  ),
+  ...[
+    { suffixe: '-390x844', taille: { width: 390, height: 844 } },
+    { suffixe: '-od32', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  ].map(({ suffixe, ...autres }) => ({ nom: `histoire-geo-college-carte-6e${suffixe}`, vue: 'carte', famille: 'histoire-geo-college', ile: 'history-6e-antiquity', ...autres })),
+  // « Mes blocs » en thème Nuit de l'interface (le fond des panneaux #16304a : le liseré clair des icônes, référent dys),
+  // et de jour.
+  ...[{ suffixe: '' }, { suffixe: '-theme-nuit', reglages: { theme: 'night' } }].flatMap(({ suffixe, ...autres }) => [
+    {
+      nom: `histoire-geo-college-mes-blocs-conteneur-reliure${suffixe}`,
+      vue: 'île',
+      famille: 'histoire-geo-college',
+      ile: 'history-6e-antiquity',
+      lieu: 'stock',
+      inventaire: { 'geography-4e-globalization': 4, 'history-3e-twentieth-century': 3 },
+      ...autres,
+    },
+    {
+      nom: `histoire-geo-college-mes-blocs-gres-brique-tuile${suffixe}`,
+      vue: 'île',
+      famille: 'histoire-geo-college',
+      ile: 'history-6e-antiquity',
+      lieu: 'stock',
+      inventaire: { 'maths-6e-calculation': 4, 'english-5e-vocabulary': 3, 'geography-3e-france': 5 },
+      ...autres,
+    },
+  ]),
+  ...['history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'geography-4e-globalization', 'history-3e-twentieth-century', 'geography-3e-france'].flatMap((ile) => [
+    { nom: `histoire-geo-college-${ile}-defi`, vue: 'défi', famille: 'histoire-geo-college', ile, debout: ile },
+    { nom: `histoire-geo-college-${ile}-defi-mi`, vue: 'défi', famille: 'histoire-geo-college', ile, debout: ile, reussir: 3 },
+    // Le Gardien de près, dans le monde (consultant Archipéo) : sa fiche ouverte, la caméra rapprochée de deux crans,
+    // éteint puis rallumé.
+    { nom: `histoire-geo-college-${ile}-gardien-pres-avant`, vue: 'île', famille: 'histoire-geo-college', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile }, zoomer: 2 },
+    { nom: `histoire-geo-college-${ile}-gardien-pres-apres`, vue: 'île', famille: 'histoire-geo-college', ile, fiche: { genre: 'gardien', id: ile }, zoomer: 2 },
+  ]),
+  // Des petites constructions posées, chacune près de sa créature (sa fiche ouverte, la caméra rapprochée) : la boîte à
+  // livres de Jalon, de profil, son jalon à côté (consultant Blocland, DA) ; l'équerre de Théo, le haut-parleur d'Écho, la
+  // cabane de Frimas (DA).
+  // L'équerre de Théo, la fiche fermée : ouverte, sa bulle cachait la branche couchée (consultant Blocland, HG-3).
+  ...[
+    ['jalon-boite-a-livres', 'geography-3e-france'],
+    ['theo-equerre', 'maths-3e-geometry', { sansFiche: true }],
+    ['echo-haut-parleur', 'english-3e-comprehension'],
+    ['frimas-cabane', 'maths-5e-signed-numbers'],
+  ].map(([sujet, ile, { sansFiche } = {}]) => ({
+    nom: `histoire-geo-college-${sujet}`,
+    vue: 'île',
+    famille: 'histoire-geo-college',
+    ile,
+    posees: 'toutes',
+    ...(sansFiche ? {} : { fiche: { genre: 'creature', id: ile } }),
+    zoomer: 1,
+  })),
+  // La baleine du 5e vue du port, entière, de l'eau autour (DA) : à la vue de l'archipel, 77 pas de plus (9,6 s de plus
+  // de la scène, le hasard fixe) la posent en surface, son souffle ouvert, au large de la jetée. À la vue de l'île, aucune
+  // ne passe dans le cadre (la plus proche tourne juste sous son bord) : pas de capture de l'île.
+  { nom: 'histoire-geo-college-baleine-5e-port-archipel', vue: 'archipel', famille: 'histoire-geo-college', ile: 'maths-5e-proportionality', pasEnPlus: 77 },
   // Les îles de sciences de 6e (lot SC-2, famille `sciences`), à retirer une fois le lot fusionné : la Vallée du vivant,
   // le Laboratoire des éléments et le Hangar des inventions de près, de jour et de nuit, avant leur restauration
   // (`sansIles`) et tout construit, chacune avec la fiche de son Gardien ; le défi de l'Alambic de verre à mi-parcours ;
@@ -625,6 +1248,271 @@ const CAPTURES = [
     ile: 'life-earth-sciences-6e-living-world',
     ...autres,
   })),
+  // L'île d'EMC de 6e (lot EMC-2, famille `emc`), à retirer une fois le lot fusionné : le Préau des délégués de près, de
+  // jour et de nuit, avant sa restauration (l'Hirondelle de nacre en statue grise, `sansIles`) et tout construit, avec la
+  // fiche de son Gardien ; « Mes blocs » avec de la craie en poche (le dessus du bloc) ; la vue de l'archipel depuis le
+  // Préau, de jour.
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    { nom: `emc-preau-avant${suffixe}`, vue: 'île', famille: 'emc', ile: 'civics-6e-democratic-society', sansIles: ['civics-6e-democratic-society'], ...autres },
+    { nom: `emc-preau-apres${suffixe}`, vue: 'île', famille: 'emc', ile: 'civics-6e-democratic-society', ...autres },
+    { nom: `emc-preau-gardien-avant${suffixe}`, vue: 'île', famille: 'emc', ile: 'civics-6e-democratic-society', sansIles: ['civics-6e-democratic-society'], fiche: { genre: 'gardien', id: 'civics-6e-democratic-society' }, ...autres },
+    { nom: `emc-preau-gardien-apres${suffixe}`, vue: 'île', famille: 'emc', ile: 'civics-6e-democratic-society', fiche: { genre: 'gardien', id: 'civics-6e-democratic-society' }, ...autres },
+  ]),
+  { nom: 'emc-mes-blocs', vue: 'île', famille: 'emc', ile: 'civics-6e-democratic-society', lieu: 'stock', inventaire: { 'civics-6e-democratic-society': 6 } },
+  { nom: 'emc-archipel', vue: 'archipel', famille: 'emc', ile: 'civics-6e-democratic-society' },
+  // Le Fournil des partages et la Grotte des légendes du 5e (lot EMC-5e-2, famille `emc-cinquieme`), à retirer une fois le lot
+  // fusionné : chacun en plan rapproché (`zoomer`), de jour et de nuit, avant sa restauration (le Gardien en statue
+  // grise, `sansIles`) et tout construit ; la fiche de son Gardien ouverte (l'Oie d'opale près de Mie sur le sol de
+  // farine ; le Phénix dans son nid), éteint puis rallumé ; sa créature, sa fiche ouverte (Mie ; Lyre, sa lyre et ses
+  // pieds). La Grotte avec l'option latin (`lca: 'la'`) : sans option, l'île n'a pas de mission. Puis les deux défis
+  // neufs, le Gardien éteint, sur la tablette et au téléphone en portrait ; et « Mes blocs » avec le sel, le bambou, la
+  // farine et le tuf en poche, puis la farine avec le sel seul et le tuf avec le bambou seul.
+  ...[
+    ['fournil', 'civics-5e-equality-solidarity', {}],
+    ['grotte', 'lca-5e-legends', { reglages: { lca: 'la' } }],
+  ].flatMap(([lieu, ile, option]) => [
+    ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+      { nom: `emc5-${lieu}-avant${suffixe}`, vue: 'île', famille: 'emc-cinquieme', ile, sansIles: [ile], zoomer: 2, ...option, ...autres },
+      { nom: `emc5-${lieu}-apres${suffixe}`, vue: 'île', famille: 'emc-cinquieme', ile, zoomer: 2, ...option, ...autres },
+      { nom: `emc5-${lieu}-gardien-avant${suffixe}`, vue: 'île', famille: 'emc-cinquieme', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile }, zoomer: 2, ...option, ...autres },
+      { nom: `emc5-${lieu}-gardien-apres${suffixe}`, vue: 'île', famille: 'emc-cinquieme', ile, fiche: { genre: 'gardien', id: ile }, zoomer: 2, ...option, ...autres },
+      { nom: `emc5-${lieu}-creature${suffixe}`, vue: 'île', famille: 'emc-cinquieme', ile, fiche: { genre: 'creature', id: ile }, zoomer: 2, ...option, ...autres },
+    ]),
+    { nom: `emc5-${lieu}-defi`, vue: 'défi', famille: 'emc-cinquieme', ile, debout: ile, ...option },
+    { nom: `emc5-${lieu}-defi-390x844`, vue: 'défi', famille: 'emc-cinquieme', ile, debout: ile, taille: { width: 390, height: 844 }, ...option },
+  ]),
+  // « Mes blocs » suit l'ordre des blocs (sel, bambou, farine, tuf) : les quatre ensemble, puis chaque paire seule, pour que
+  // la farine soit juste à côté du sel et le tuf juste à côté du bambou.
+  ...[
+    ['', { 'physics-chemistry-5e-matter-universe': 5, 'technology-5e-design': 4, 'civics-5e-equality-solidarity': 6, 'lca-5e-legends': 3 }],
+    ['-farine-sel', { 'physics-chemistry-5e-matter-universe': 5, 'civics-5e-equality-solidarity': 6 }],
+    ['-tuf-bambou', { 'technology-5e-design': 4, 'lca-5e-legends': 3 }],
+  ].map(([suffixe, inventaire]) => ({ nom: `emc5-mes-blocs${suffixe}`, vue: 'île', famille: 'emc-cinquieme', ile: 'civics-5e-equality-solidarity', lieu: 'stock', inventaire })),
+  // La Porte des libertés et la Colonnade des cités (4e), le Forum des débats et le Bosquet des sages (3e) (lot EMC et LCA
+  // de 4e et de 3e, famille `emc-quatre-trois`), à retirer une fois le lot fusionné : chacun en plan rapproché, de jour
+  // et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`) et tout construit ; la fiche de son
+  // Gardien, éteint puis rallumé ; sa créature, sa fiche ouverte ; la commande livrée (le panneau d'affichage de Loquet,
+  // le pupitre de Brio). Les îles de latin-grec avec l'option latin (`lca: 'la'`) : sans option, elles n'ont pas de
+  // mission. Puis les quatre défis neufs, sur la tablette et au téléphone en portrait ; « Mes blocs » de chaque archipel
+  // avec ses deux blocs neufs en poche ; et la Carte de chaque archipel tout construit, l'option latin choisie, sur la
+  // tablette, en portrait 800 × 1280 et en OpenDyslexic 32 px, pour les noms des îles.
+  ...[
+    ['emc4', 'porte', 'civics-4e-rights-freedoms', {}],
+    ['emc4', 'colonnade', 'lca-4e-cities', { reglages: { lca: 'la' } }],
+    ['emc3', 'forum', 'civics-3e-democratic-life', {}],
+    ['emc3', 'bosquet', 'lca-3e-ideas', { reglages: { lca: 'la' } }],
+  ].flatMap(([lot, lieu, ile, option]) => [
+    ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+      { nom: `${lot}-${lieu}-avant${suffixe}`, vue: 'île', famille: 'emc-quatre-trois', ile, sansIles: [ile], zoomer: 2, ...option, ...autres },
+      { nom: `${lot}-${lieu}-apres${suffixe}`, vue: 'île', famille: 'emc-quatre-trois', ile, zoomer: 2, ...option, ...autres },
+      { nom: `${lot}-${lieu}-gardien-avant${suffixe}`, vue: 'île', famille: 'emc-quatre-trois', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile }, zoomer: 2, ...option, ...autres },
+      { nom: `${lot}-${lieu}-gardien-apres${suffixe}`, vue: 'île', famille: 'emc-quatre-trois', ile, fiche: { genre: 'gardien', id: ile }, zoomer: 2, ...option, ...autres },
+      { nom: `${lot}-${lieu}-creature${suffixe}`, vue: 'île', famille: 'emc-quatre-trois', ile, fiche: { genre: 'creature', id: ile }, zoomer: 2, ...option, ...autres },
+    ]),
+    { nom: `${lot}-${lieu}-defi`, vue: 'défi', famille: 'emc-quatre-trois', ile, debout: ile, ...option },
+    { nom: `${lot}-${lieu}-defi-390x844`, vue: 'défi', famille: 'emc-quatre-trois', ile, debout: ile, taille: { width: 390, height: 844 }, ...option },
+  ]),
+  ...[
+    ['emc4', 'porte', 'civics-4e-rights-freedoms'],
+    ['emc3', 'forum', 'civics-3e-democratic-life'],
+  ].map(([lot, lieu, ile]) => ({ nom: `${lot}-${lieu}-commande`, vue: 'île', famille: 'emc-quatre-trois', ile, posees: 'toutes' })),
+  ...[
+    ['emc4', { 'technology-4e-modeling': 4, 'civics-4e-rights-freedoms': 6, 'lca-4e-cities': 3 }],
+    ['emc3', { 'technology-3e-digital': 4, 'civics-3e-democratic-life': 6, 'lca-3e-ideas': 3 }],
+  ].map(([lot, inventaire]) => ({ nom: `${lot}-mes-blocs`, vue: 'île', famille: 'emc-quatre-trois', ile: Object.keys(inventaire)[1], lieu: 'stock', inventaire, reglages: { lca: 'la' } })),
+  ...[
+    ['emc4', 'civics-4e-rights-freedoms'],
+    ['emc3', 'civics-3e-democratic-life'],
+  ].flatMap(([lot, ile]) =>
+    [
+      { suffixe: '', reglages: { lca: 'la' } },
+      { suffixe: '-800x1280', taille: { width: 800, height: 1280 }, reglages: { lca: 'la' } },
+      { suffixe: '-od32', reglages: { font: 'opendyslexic', fontSize: 32, lca: 'la' } },
+    ].map(({ suffixe, ...autres }) => ({ nom: `${lot}-carte${suffixe}`, vue: 'carte', famille: 'emc-quatre-trois', ile, ...autres })),
+  ),
+  // Les neuf îles de sciences des 5e, 4e et 3e (lot SC-3, famille `sciences-college`), à retirer une fois le lot fusionné :
+  // chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`) et tout
+  // construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la petite
+  // construction posée) ; et la Carte de chaque archipel tout construit, sur la tablette, en portrait 800 × 1280 et en
+  // OpenDyslexic 32 px, pour les noms des îles.
+  ...[
+    'life-earth-sciences-5e-active-planet',
+    'physics-chemistry-5e-matter-universe',
+    'technology-5e-design',
+    'life-earth-sciences-4e-cells-evolution',
+    'physics-chemistry-4e-signals-circuits',
+    'technology-4e-modeling',
+    'life-earth-sciences-3e-human-body',
+    'physics-chemistry-3e-motion-energy',
+    'technology-3e-digital',
+  ].flatMap((ile) => [
+    ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+      { nom: `sciences-college-${ile}-avant${suffixe}`, vue: 'île', famille: 'sciences-college', ile, sansIles: [ile], ...autres },
+      { nom: `sciences-college-${ile}-apres${suffixe}`, vue: 'île', famille: 'sciences-college', ile, ...autres },
+    ]),
+    { nom: `sciences-college-${ile}-gardien-avant`, vue: 'île', famille: 'sciences-college', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile } },
+    { nom: `sciences-college-${ile}-gardien-apres`, vue: 'île', famille: 'sciences-college', ile, fiche: { genre: 'gardien', id: ile } },
+    { nom: `sciences-college-${ile}-commande`, vue: 'île', famille: 'sciences-college', ile, posees: 'toutes' },
+  ]),
+  ...[
+    ['5e', 'life-earth-sciences-5e-active-planet'],
+    ['4e', 'life-earth-sciences-4e-cells-evolution'],
+    ['3e', 'life-earth-sciences-3e-human-body'],
+  ].flatMap(([a, ile]) =>
+    [
+      { suffixe: '' },
+      { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
+      { suffixe: '-od32', reglages: { font: 'opendyslexic', fontSize: 32 } },
+    ].map(({ suffixe, ...autres }) => ({ nom: `sciences-college-carte-${a}${suffixe}`, vue: 'carte', famille: 'sciences-college', ile, ...autres })),
+  ),
+  // « Mes blocs » de chaque archipel avec ses trois blocs de sciences en poche (les blocs clairs voisins), le panneau
+  // d'une île avec sa commande ouverte au grand texte (OpenDyslexic 32 px), et le défi neuf du Grand-bi au grand texte.
+  ...[
+    ['5e', ['life-earth-sciences-5e-active-planet', 'physics-chemistry-5e-matter-universe', 'technology-5e-design']],
+    ['4e', ['life-earth-sciences-4e-cells-evolution', 'physics-chemistry-4e-signals-circuits', 'technology-4e-modeling']],
+    ['3e', ['life-earth-sciences-3e-human-body', 'physics-chemistry-3e-motion-energy', 'technology-3e-digital']],
+  ].map(([a, iles]) => ({ nom: `sciences-college-mes-blocs-${a}`, vue: 'île', famille: 'sciences-college', ile: iles[0], lieu: 'stock', inventaire: Object.fromEntries(iles.map((i, k) => [i, 6 - k])) })),
+  {
+    nom: 'sciences-college-panneau-commande-ouverte-od32',
+    vue: 'île',
+    famille: 'sciences-college',
+    ile: 'technology-4e-modeling',
+    commandes: ['technology-4e-modeling-request-1'],
+    inventaire: { 'physics-chemistry-4e-signals-circuits': 1 },
+    // Sur la tablette, les commandes sont dans un volet replié du panneau : il s'ouvre, puis la page défile jusqu'à elles.
+    cliquer: '.island-fold-commandes > summary',
+    voir: '.commandes-list',
+    reglages: { font: 'opendyslexic', fontSize: 32 },
+  },
+  // Pour les relecteurs (SC-3) : la Carte du 3e en OpenDyslexic, taille normale, le bonhomme sur la Ruche des réseaux ;
+  // la Vigie des signaux la nuit, la vue reculée (deux touches −) : la Cloche de cobalt rallumée et sa lampe, au premier
+  // plan (hors du cadre de la vue de nuit ordinaire).
+  { nom: 'sciences-college-carte-3e-od-ruche', vue: 'carte', famille: 'sciences-college', ile: 'technology-3e-digital', reglages: { font: 'opendyslexic' } },
+  { nom: 'sciences-college-physics-chemistry-4e-signals-circuits-apres-nuit-recul', vue: 'île', famille: 'sciences-college', ile: 'physics-chemistry-4e-signals-circuits', nuit: true, zoomer: -2 },
+  { nom: 'sciences-college-defi-grand-bi-od32', vue: 'défi', famille: 'sciences-college', ile: 'technology-4e-modeling', debout: 'technology-4e-modeling', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  // Les Gardiens sur leur île (GD-11, famille `gardiens`, à retirer une fois le lot fusionné) : la vue de l'île là où le
+  // Gardien ne se voit qu'en partie (l'Horloge des verbes, la Prairie des climats, le Bassin des maquettes ; le Phare des
+  // fonctions défi prêt, pour voir sa bulle entière) ; la machine d'Ixe à l'Atelier, posée ; panneau ouvert, le Marais
+  // des temps, l'Observatoire des textes et le Belvédère de Thalès (le Sphinx de marbre que Théo cachait) ; la Carte du
+  // 6e au téléphone, le bonhomme sur la Fouille des siècles.
+  ...[
+    ['horloge', 'english-6e-grammar'],
+    ['prairie', 'life-earth-sciences-5e-active-planet'],
+    ['bassin', 'technology-4e-modeling'],
+  ].map(([court, ile]) => ({ nom: `gd-11-${court}`, vue: 'île', famille: 'gardiens', ile })),
+  { nom: 'gd-11-phare-defi-pret', vue: 'île', famille: 'gardiens', ile: 'maths-3e-functions', debout: 'maths-3e-functions' },
+  // Depuis le seuil de 75 % (DA, 8 octobre 2026), le Hangar des inventions et le Verger de la santé ont leur Gardien
+  // sur un côté de devant : défi prêt, et le Hangar au téléphone.
+  { nom: 'gd-11-hangar-defi-pret', vue: 'île', famille: 'gardiens', ile: 'technology-6e-objects', debout: 'technology-6e-objects' },
+  { nom: 'gd-11-hangar-defi-pret-390x844', vue: 'île', famille: 'gardiens', ile: 'technology-6e-objects', debout: 'technology-6e-objects', taille: { width: 390, height: 844 } },
+  { nom: 'gd-11-verger-defi-pret', vue: 'île', famille: 'gardiens', ile: 'life-earth-sciences-3e-human-body', debout: 'life-earth-sciences-3e-human-body' },
+  { nom: 'gd-11-atelier-machine', vue: 'île', famille: 'gardiens', ile: 'maths-4e-algebra', posees: 'toutes' },
+  ...[
+    ['marais', 'french-5e-conjugation'],
+    ['observatoire-textes', 'french-3e-close-reading'],
+    ['belvedere', 'maths-3e-geometry'],
+  ].map(([court, ile]) => ({ nom: `gd-11-${court}-panneau`, vue: 'île', famille: 'gardiens', ile, voir: '.island-sheet' })),
+  { nom: 'gd-11-carte-6e-390x844', vue: 'carte', famille: 'gardiens', ile: 'history-6e-antiquity', taille: { width: 390, height: 844 } },
+  // Une forme par île (GD-12, famille `formes`, à retirer une fois le lot fusionné) : la Carte du 6e à l'ouverture, sur
+  // la tablette, la tablette debout et le téléphone, dans la police de lecture puis en OpenDyslexic 32 px ; la Forêt, la
+  // Plaine, la Rivière et la Pointe de près ; « Modifier le plan », la Tour du lecteur choisie (`amenager`). Puis
+  // les Collines du Large avec leurs formes, dont deux des quatre plus marquées (le fer et le moulinet).
+  ...[
+    { suffixe: '' },
+    { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
+    { suffixe: '-390x844', taille: { width: 390, height: 844 } },
+  ].flatMap(({ suffixe, ...autres }) => [
+    { nom: `formes-carte-6e${suffixe}`, vue: 'carte', famille: 'formes', ile: 'french-6e-phonology', ...autres },
+    { nom: `formes-carte-6e${suffixe}-od32`, vue: 'carte', famille: 'formes', ile: 'french-6e-phonology', reglages: { font: 'opendyslexic', fontSize: 32 }, ...autres },
+  ]),
+  ...[
+    ['foret', 'french-6e-phonology'],
+    ['plaine', 'maths-6e-calculation'],
+    ['riviere', 'maths-6e-fractions'],
+    ['pointe', 'geography-6e-living'],
+  ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
+  { nom: 'formes-modifier-le-plan', vue: 'carte', famille: 'formes', ile: 'french-6e-phonology', amenager: 'french-6e-reading' },
+  // Cinq missions par île (GD-14, famille `cinq-missions`, à retirer une fois le lot fusionné) : la Plaine des nombres
+  // (cinq bornes au pas de 3), son bâtiment à une, deux et trois parties (le bas, le milieu, le haut du premier plan) ;
+  // le Volcan des décimaux, dont le premier plan n'a que deux rangées, à deux et trois parties ; le Marché des
+  // proportions, île-école à cinq bornes, son quai décalé ; les trois Gardiens replacés ; la Carte du 6e au téléphone.
+  ...[1, 2, 3].map((n) => ({ nom: `cinq-missions-plaine-${n}`, vue: 'île', famille: 'cinq-missions', ile: 'maths-6e-calculation', partie: 'avant', missions: n })),
+  { nom: 'cinq-missions-plaine', vue: 'île', famille: 'cinq-missions', ile: 'maths-6e-calculation' },
+  ...[2, 3, 4].map((n) => ({ nom: `cinq-missions-volcan-${n}`, vue: 'île', famille: 'cinq-missions', ile: 'maths-6e-decimals', partie: 'avant', missions: n })),
+  { nom: 'cinq-missions-marche', vue: 'île', famille: 'cinq-missions', ile: 'maths-5e-proportionality' },
+  // Au téléphone (consultant UX UI) : les îles-écoles du 5e au 3e, dont la borne de la mission 1 frôle le bord droit, et
+  // les cinq bornes empilées du Relais des voyageurs, en portrait et en paysage.
+  ...[
+    ['marche', 'maths-5e-proportionality'],
+    ['atelier', 'maths-4e-algebra'],
+    ['fonctions', 'maths-3e-functions'],
+    ['relais', 'lv2-5e-introductions'],
+  ].map(([court, ile]) => ({ nom: `cinq-missions-${court}-390x844`, vue: 'île', famille: 'cinq-missions', ile, taille: { width: 390, height: 844 } })),
+  { nom: 'cinq-missions-relais-844x390', vue: 'île', famille: 'cinq-missions', ile: 'lv2-5e-introductions', taille: { width: 844, height: 390 } },
+  // Au téléphone en grand texte (référent dys, consultant UX UI) : les classes passent en rangée en haut, la barre du bas
+  // sur deux lignes ; les bornes se cadrent sous elles, le nom de l'île hors des bornes.
+  ...[
+    ['marche', 'maths-5e-proportionality'],
+    ['fonctions', 'maths-3e-functions'],
+  ].map(([court, ile]) => ({ nom: `cinq-missions-${court}-390x844-grand-texte`, vue: 'île', famille: 'cinq-missions', ile, taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } })),
+  // L'autre île-école à cinq missions (la borne près de la porte de l'école), et les étapes du Belvédère.
+  { nom: 'cinq-missions-fonctions', vue: 'île', famille: 'cinq-missions', ile: 'maths-3e-functions' },
+  ...[1, 2, 3].map((n) => ({ nom: `cinq-missions-belvedere-${n}`, vue: 'île', famille: 'cinq-missions', ile: 'maths-3e-geometry', partie: 'avant', missions: n })),
+  ...[
+    ['hangar', 'technology-6e-objects'],
+    ['manoir', 'english-5e-grammar'],
+    ['belvedere', 'maths-3e-geometry'],
+  ].map(([court, ile]) => ({ nom: `cinq-missions-${court}`, vue: 'île', famille: 'cinq-missions', ile })),
+  { nom: 'cinq-missions-carte-6e-390x844', vue: 'carte', famille: 'cinq-missions', ile: 'history-6e-antiquity', taille: { width: 390, height: 844 } },
+  // Aux Îles Brumeuses (5e, 9 octobre 2026) : la Carte sur la tablette, dans la police de lecture puis en OpenDyslexic
+  // 32 px, et debout ; le Comptoir (le fer), le Carrefour (le moulinet) et le Glacier de près ; « Modifier le plan », le
+  // Comptoir choisi.
+  { nom: 'formes-carte-5e', vue: 'carte', famille: 'formes', ile: 'maths-5e-proportionality' },
+  { nom: 'formes-carte-5e-od32', vue: 'carte', famille: 'formes', ile: 'maths-5e-proportionality', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  { nom: 'formes-carte-5e-800x1280', vue: 'carte', famille: 'formes', ile: 'maths-5e-proportionality', taille: { width: 800, height: 1280 } },
+  ...[
+    ['comptoir', 'english-5e-vocabulary'],
+    ['carrefour', 'french-5e-homophones'],
+    ['glacier', 'maths-5e-signed-numbers'],
+  ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
+  { nom: 'formes-modifier-le-plan-5e', vue: 'carte', famille: 'formes', ile: 'maths-5e-proportionality', amenager: 'english-5e-vocabulary' },
+  // Aux Monts de Feu (4e, 9 octobre 2026) : la Carte sur la tablette, en OpenDyslexic 32 px et debout, le bonhomme sur
+  // l'Imprimerie des révolutions (les noms tus du portrait) ; le Bassin (le lagon), l'Atelier (son quai), la Forge et la
+  // Falaise (leurs pics), la Gare (son quai qui file) de près ; « Modifier le plan », le Bassin choisi, puis la Vigie et
+  // la Source, aux deux autres coins de la région, le bonhomme sur elles.
+  { nom: 'formes-carte-4e', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions' },
+  { nom: 'formes-carte-4e-od32', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  { nom: 'formes-carte-4e-800x1280', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions', taille: { width: 800, height: 1280 } },
+  ...[
+    ['bassin', 'technology-4e-modeling'],
+    ['atelier', 'maths-4e-algebra'],
+    ['forge', 'maths-4e-powers'],
+    ['falaise', 'french-4e-agreement'],
+    ['gare', 'english-4e-grammar'],
+  ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
+  { nom: 'formes-modifier-le-plan-4e', vue: 'carte', famille: 'formes', ile: 'history-4e-revolutions', amenager: 'technology-4e-modeling' },
+  ...[
+    ['vigie', 'physics-chemistry-4e-signals-circuits'],
+    ['source', 'life-earth-sciences-4e-cells-evolution'],
+  ].map(([court, ile]) => ({ nom: `formes-modifier-le-plan-4e-${court}`, vue: 'carte', famille: 'formes', ile, amenager: ile })),
+  // Aux Îles du Ciel (3e, 9 octobre 2026) : la Carte sur la tablette, en OpenDyslexic 32 px et debout, le bonhomme sur le
+  // Kiosque des témoins (les noms tus du portrait) ; le Tremplin (le crochet), la Ruche (le moulinet), le Phare (son grand
+  // phare, avancé sur la côte est) et l'Observatoire des textes de près ; « Modifier le plan », le Tremplin choisi, puis
+  // le Studio des ondes, au coin de l'ouest, et la Ruche, au bord du fond (relecture du 9 octobre 2026), le bonhomme sur eux.
+  { nom: 'formes-carte-3e', vue: 'carte', famille: 'formes', ile: 'history-3e-twentieth-century' },
+  { nom: 'formes-carte-3e-od32', vue: 'carte', famille: 'formes', ile: 'history-3e-twentieth-century', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  { nom: 'formes-carte-3e-800x1280', vue: 'carte', famille: 'formes', ile: 'history-3e-twentieth-century', taille: { width: 800, height: 1280 } },
+  ...[
+    ['tremplin', 'physics-chemistry-3e-motion-energy'],
+    ['ruche', 'technology-3e-digital'],
+    ['phare', 'maths-3e-functions'],
+    ['textes', 'french-3e-close-reading'],
+  ].map(([court, ile]) => ({ nom: `formes-${court}`, vue: 'île', famille: 'formes', ile })),
+  { nom: 'formes-modifier-le-plan-3e', vue: 'carte', famille: 'formes', ile: 'history-3e-twentieth-century', amenager: 'physics-chemistry-3e-motion-energy' },
+  ...[
+    ['studio', 'english-3e-comprehension'],
+    ['ruche', 'technology-3e-digital'],
+  ].map(([court, ile]) => ({ nom: `formes-modifier-le-plan-3e-${court}`, vue: 'carte', famille: 'formes', ile, amenager: ile })),
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
@@ -680,6 +1568,29 @@ async function weights() {
  * Une partie sans les îles `iles` : ni leurs étoiles, ni leurs plans (clés « <île>-… »). Sans elles, le jeu ne rouvre pas
  * l'île au chargement (`sansPonts` peut alors retirer le pont qui y mène : une île où l'on a joué reste ouverte).
  */
+/** Un grand ouvrage posé jusqu'à un étage (`etages` : `{ <monument>: z }`, les cases sous z seulement) : un projet en cours. */
+function jusquAuxEtages(parCle, etages) {
+  if (!etages) return parCle;
+  const out = { ...parCle };
+  for (const [m, z] of Object.entries(etages)) out[m] = (out[m] ?? []).filter((k) => Number(k.split(',')[2]) < z);
+  return out;
+}
+
+/**
+ * Un monument en chantier (`avancees` : `{ <monument>: part }`, de 0 à 1) : la part de ses cases posées, les plus basses
+ * d'abord (les autres restent en fantômes), ou les plus hautes d'abord si la part est négative. Un tiers et deux tiers : l'étape 1 et l'étape 2 d'un modèle à deux étapes.
+ */
+function jusqueAvancees(parCle, avancees) {
+  if (!avancees) return parCle;
+  const out = { ...parCle };
+  for (const [m, part] of Object.entries(avancees)) {
+    // Une part négative pose les cases les plus hautes d'abord : les fantômes des cases basses restent dans le modèle.
+    const cases = [...(out[m] ?? [])].sort((p, q) => (Number(p.split(',')[2]) - Number(q.split(',')[2])) * (part < 0 ? -1 : 1));
+    out[m] = cases.slice(0, Math.ceil(cases.length * Math.abs(part) - 1e-9));
+  }
+  return out;
+}
+
 function sansLesIles(parCle, iles) {
   if (!iles?.length) return parCle;
   return Object.fromEntries(Object.entries(parCle).filter(([k]) => !iles.some((i) => k.startsWith(`${i}-`))));
@@ -730,6 +1641,64 @@ async function reussirLesEpreuves(page, n, reponses) {
 async function zoomerLaVue(page, zoomer) {
   await page.locator('.voxel-canvas').first().focus();
   for (let i = 0; i < Math.abs(zoomer); i++) await page.keyboard.press(zoomer > 0 ? '+' : '-');
+}
+
+/**
+ * Rapproche la vue d'un point du monde (`surLaCase` : x, y au sol, z en hauteur, et autant de crans de molette), le
+ * pointeur sur lui à chaque cran (`window.__dysappsCamera.ecran`) : la molette zoome autour du pointeur (three/gestures.ts).
+ */
+async function zoomerSurLaCase(page, { x, y, z, crans }) {
+  for (let i = 0; i < crans; i++) {
+    const p = await page.evaluate((c) => window.__dysappsCamera?.ecran(c) ?? null, { x, y, z });
+    if (!p) return;
+    await page.mouse.move(p.x, p.y);
+    await page.mouse.wheel(0, -240);
+    await page.clock.runFor(125);
+    await page.waitForTimeout(30);
+  }
+  await page.evaluate(() => document.querySelector('.voxel-canvas canvas')?.dispatchEvent(new PointerEvent('pointerleave')));
+}
+
+/**
+ * Rapproche la vue du bonhomme (`surLeBonhomme` : autant de crans de molette), le pointeur sur son buste à chaque cran
+ * (`window.__dysappsCamera.bonhomme`) : la molette zoome autour du pointeur (three/gestures.ts).
+ */
+async function zoomerSurLeBonhomme(page, crans) {
+  for (let i = 0; i < crans; i++) {
+    const p = await page.evaluate(() => window.__dysappsCamera?.bonhomme?.() ?? null);
+    if (!p) return;
+    await page.mouse.move(p.x, p.y);
+    await page.mouse.wheel(0, -240);
+    await page.clock.runFor(125);
+    await page.waitForTimeout(30);
+  }
+  // Le pointeur quitte la scène : pas de case survolée sur la capture.
+  await page.evaluate(() => document.querySelector('.voxel-canvas canvas')?.dispatchEvent(new PointerEvent('pointerleave')));
+}
+
+/**
+ * Cache les étiquettes des îles (`sansEtiquettes`) : une bulle passagère invisible sur toute la scène, sous laquelle
+ * elles se cachent sans bouger (src/game/coveredZones.ts), comme sous le mot de la baleine. Le monde reste tel quel.
+ */
+async function cacherLesEtiquettes(page) {
+  await page.evaluate(() => {
+    const scene = document.querySelector('[data-scene]');
+    if (!scene) return;
+    const bulles = document.createElement('div');
+    bulles.dataset.couvre = 'bulle';
+    bulles.style.cssText = 'position:fixed;inset:0;pointer-events:none;opacity:0';
+    bulles.appendChild(document.createElement('div')).style.cssText = 'position:absolute;inset:0';
+    scene.appendChild(bulles);
+  });
+}
+
+/** Masque le panneau en plein écran (`sansPanneau`) : le monde dessous se voit, et reprend le focus (il n'est plus inerte). */
+async function masquerLePanneau(page) {
+  await page.addStyleTag({ content: '.world-page > .island-sheet { display: none !important }' });
+  await page.evaluate(() => {
+    const stage = document.querySelector('.world-stage');
+    if (stage) stage.inert = false;
+  });
 }
 
 async function ouvrirLePanneauPour(page, selecteur) {
@@ -797,9 +1766,11 @@ async function scenes() {
    * encore à faire, `missions`) : ses autres exercices et son défi sont retirés, sans quoi l'ouverture poserait aussitôt
    * les parties suivantes.
    */
-  const premieresMissions = (parCle, ile, n) => {
+  const premieresMissions = (parCle, ile, n, defiGagne) => {
     if (!ile) return parCle;
     const types = BIOMES.find((b) => b.id === ile).exercises.slice(0, n).map((x) => `${ile}-${x.id}-`);
+    // Le défi gagné gardé (`defiGagne`) : le Gardien reste vaincu, l'île restaurée, même sans mission jouée.
+    if (defiGagne) types.push(`${ile}-challenge`);
     return Object.fromEntries(Object.entries(parCle).filter(([k]) => !k.startsWith(`${ile}-`) || types.some((t) => k.startsWith(t))));
   };
   /**
@@ -832,14 +1803,19 @@ async function scenes() {
       }
     // Le réacteur du Bloc-Navire (famille `fusee`) : rien de posé, ou sa première moitié.
     if (partie === 'reacteur-vide') delete plans['navire-reacteur'];
+    // Le dirigeable de la Nef (famille `nef`) : rien de posé.
+    if (partie === 'ballon-vide') delete plans['navire-ballon'];
     if (partie === 'reacteur-mi') plans['navire-reacteur'] = plans['navire-reacteur'].slice(0, Math.ceil(plans['navire-reacteur'].length / 2));
     // Sur chaque île : le premier plan posé, rien après.
     if (partie === 'un-plan')
       for (const b of BIOMES) plansFor(b.id).forEach((p, i) => i > 0 && delete plans[p.id]);
     // Sur chaque île : les plans d'avant posés, la moitié de celui-ci (0 : les murs, 1 : le toit, 2 : la cour), rien après.
+    // Les murs à moitié (`murs-mi`) : sur l'île de la vue seulement ; ailleurs, le jeu reposerait au chargement les parties
+    // dues aux missions jouées, et ses plans finis annonceraient un niveau par-dessus la vue.
     const moitie = { 'murs-mi': 0, 'toit-mi': 1, 'cour-mi': 2 }[partie];
     if (moitie !== undefined)
       for (const b of BIOMES) {
+        if (partie === 'murs-mi' && b.id !== ile) continue;
         const l = plansFor(b.id);
         if (l.length <= moitie) continue;
         l.forEach((p, i) => {
@@ -848,6 +1824,31 @@ async function scenes() {
         const cells = planCells(l[moitie]).map((c) => c.key);
         plans[l[moitie].id] = cells.filter((_, i) => i % 2 === 0);
       }
+    // La cour de la Tour du lecteur presque finie : l'escalier posé, deux cases encore en fantôme à côté de lui (la
+    // barrière devant, le bloc de la Tour à sa gauche ; famille `familles-6e`).
+    if (partie === 'escalier-fantome') {
+      const cour = plansFor('french-6e-reading')[2];
+      const cells = planCells(cour);
+      const restent = new Set(cells.filter((c) => (c.block === 'fence' && c.x === 10) || c.block === 'french-6e-reading').map((c) => c.key));
+      plans[cour.id] = cells.map((c) => c.key).filter((k) => !restent.has(k));
+    }
+    // Un toit à moitié fantôme, sur l'île de la vue seulement (famille `familles-troisieme`, `toits-neige-fantome`) : les
+    // murs posés, le toit posé sur sa moitié ouest, sa moitié est encore en fantôme à côté (le reste du plan posé). Au
+    // Phare (maths-3e-functions), le toit est une croix de cinq cases sur la tour : la colonne du milieu se partage (sa
+    // moitié sud posée), trois cases posées, deux en fantôme, chacune contre une case de neige ; couper au seul milieu
+    // laissait une case en fantôme sur cinq, qui ne se lisait pas.
+    if (partie === 'toit-fantome') {
+      const l = plansFor(ile);
+      const i = l.findIndex((p) => planCells(p).some((c) => c.block === 'roof'));
+      l.forEach((p, j) => {
+        if (j > i) delete plans[p.id];
+      });
+      const cells = planCells(l[i]);
+      const toit = cells.filter((c) => c.block === 'roof');
+      const mx = (Math.min(...toit.map((c) => c.x)) + Math.max(...toit.map((c) => c.x))) / 2;
+      const my = (Math.min(...toit.map((c) => c.y)) + Math.max(...toit.map((c) => c.y))) / 2;
+      plans[l[i].id] = cells.filter((c) => c.block !== 'roof' || c.x < mx || (c.x === mx && c.y <= my)).map((c) => c.key);
+    }
     if (partie === 'tour-avant' || partie === 'tour-debut' || partie === 'tour-mi') {
       const l = plansFor('french-6e-reading');
       // Avant : aucun plan posé ; au début : la moitié du premier (les murs) ; pendant : le premier posé, la moitié du
@@ -880,8 +1881,11 @@ async function scenes() {
     // Les mesures : les trois vues de jour en 3D. Avec `--captures`, toutes les captures déclarées (voir `CAPTURES`).
     const views = [
       ...['île', 'archipel', 'carte'].map((vue) => ({ vue, go: routes[vue], mesure: true, nom: CAPTURES.find((c) => c.vue === vue && c.famille === 'jour').nom })),
-      // L'île au plus reculé que permet le pincement du monde (×0,75 : deux fois la touche −) : le pire cas de la vue île.
-      { vue: 'île', libelle: 'île (recul)', go: routes['île'], mesure: true, nom: 'ile-recul', zoomer: -2 },
+      // L'île et l'archipel au plus reculé que permet le pincement du monde (ZOOM_DU_MONDE.loin, ×0,6) : leur pire cas,
+      // qui reste sous celui de la Carte (tout l'archipel dans la vue). Chaque touche − recule de ×0,8 (three/gestures.ts) :
+      // trois suffisent (×0,51), dix laissent de la marge si la borne descend ; le zoom s'arrête à sa borne.
+      { vue: 'île', libelle: 'île (recul)', go: routes['île'], mesure: true, nom: 'ile-recul', zoomer: -10 },
+      { vue: 'archipel', libelle: 'archipel (recul)', go: routes.archipel, mesure: true, nom: 'archipel-recul', zoomer: -10 },
       ...(SHOTS
         ? CAPTURES.filter((c) => c.famille !== 'jour' && (!FAMILLES || FAMILLES.includes(c.famille)) && (!c.ile || classe(c.ile) === a)).flatMap((c) =>
             (c.parIle ? iles : [null]).map((parIle) => ({
@@ -900,7 +1904,7 @@ async function scenes() {
                 c.sansIles === 'autres-classes'
                   ? BIOMES.filter((b) => b.classe !== classe(c.ile)).map((b) => b.id)
                   : c.sansIles?.classe
-                    ? BIOMES.filter((b) => b.classe === c.sansIles.classe).map((b) => b.id)
+                    ? BIOMES.filter((b) => [c.sansIles.classe].flat().includes(b.classe)).map((b) => b.id)
                     : c.sansIles,
               debout: c.debout,
               reglages: c.reglages,
@@ -911,6 +1915,7 @@ async function scenes() {
               finesse: c.finesse,
               pose: c.pose,
               missions: c.missions,
+              defiGagne: c.defiGagne,
               pasEnPlus: c.pasEnPlus,
               poseA: c.poseA,
               revisions: c.revisions,
@@ -921,17 +1926,25 @@ async function scenes() {
               liens: c.liens,
               xp: c.xp,
               commandes: c.commandes,
+              quetes: c.quetes,
+              etages: c.etages,
+              avancees: c.avancees,
               posees: c.posees,
               cliquer: c.cliquer,
+              amenager: c.amenager,
               fiche: c.fiche,
               zoomer: c.zoomer,
+              surLeBonhomme: c.surLeBonhomme,
+              surLaCase: c.surLaCase,
+              sansPanneau: c.sansPanneau,
+              sansEtiquettes: c.sansEtiquettes,
               reussir: c.reussir,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, posees, cliquer, fiche, zoomer, reussir } of views) {
+    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, quetes, etages, avancees, posees, cliquer, amenager, fiche, zoomer, surLeBonhomme, surLaCase, reussir, sansPanneau, sansEtiquettes, defiGagne } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -964,12 +1977,13 @@ async function scenes() {
             ? { parts: {}, log: [], links: liens ?? [], place: ile ?? at }
             : {
                 ...built,
-                parts: { ...sansLesIles(plans ?? built.parts, sansIles), ...petitesConstructions(posees) },
+                parts: { ...jusqueAvancees(jusquAuxEtages(sansLesIles(plans ?? built.parts, sansIles), etages), avancees), ...petitesConstructions(posees) },
                 ...(bridges ? { links: bridges } : {}),
                 ...(commandes ? { requests: commandes } : {}),
+                ...(quetes ? { stories: quetes } : {}),
                 place: depuis ?? ile ?? at,
               },
-          progress: jouees ? missionsJouees(jouees) : sansEtoiles || depart ? {} : premieresMissions(sansLeGardien(sansLesIles(progress, sansIles), debout), pose || missions !== undefined ? ile : null, pose ?? missions),
+          progress: jouees ? missionsJouees(jouees) : sansEtoiles || depart ? {} : premieresMissions(sansLeGardien(sansLesIles(progress, sansIles), debout), pose || missions !== undefined ? ile : null, pose ?? missions, defiGagne),
           pose: pose ? { biome: ile, rangs: Array.from({ length: pose }, (_, i) => i + 1) } : null,
           view,
           univers: UNIVERS_DES_TEXTES,
@@ -987,7 +2001,10 @@ async function scenes() {
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);
       if (!mesure) {
         // Les autres captures (nuit, personnages, chantier, ponts) : pas de mesure, seulement l'image.
-        await preparerLaScene(page, VUES_SANS_MONDE.has(vue) || view === 'list' ? 0 : WAIT);
+        const sansMonde = VUES_SANS_MONDE.has(vue) || view === 'list';
+        // Un monde 3D pas prêt à temps : la caméra n'a pas été posée à son cadrage, la capture la montrerait encore en
+        // route, les étiquettes déjà posées pour son but (des noms coupés au bord, SC-3). La capture est prise, signalée.
+        if (!(await preparerLaScene(page, sansMonde ? 0 : WAIT)) && !sansMonde) console.log(`::warning::${a}, ${nom} : monde 3D pas prêt en ${WAIT / 1000} s, la caméra peut être encore en route (--attente).`);
         // Une île touchée une fois la scène prête (`allerA`) : le bonhomme part, la caméra prend le trajet.
         if (allerA) await page.evaluate((id) => (location.hash = `#/adventure/${id}`), allerA);
         // Un bouton touché une fois la scène prête (`cliquer` : « Livrer », GD-7), qui lance une vague de pose ; dans le
@@ -996,20 +2013,41 @@ async function scenes() {
           await ouvrirLePanneauPour(page, cliquer);
           await page.locator(cliquer).first().click();
         }
+        // « Modifier le plan » sur la Carte, un lieu choisi (`amenager`, GD-12) : le bouton, puis le toucher du lieu, sans
+        // viser la scène (`window.__dysappsAmenager`) ; au téléphone en grand texte, on reste sur la Carte.
+        if (amenager) {
+          await page.getByRole('button', { name: /^Modifier le plan/ }).first().click();
+          await page.clock.runFor(125);
+          const rester = page.getByRole('button', { name: /Rester sur la Carte/ });
+          if (await rester.count()) await rester.first().click();
+          await page.evaluate((id) => window.__dysappsAmenager?.({ genre: 'ile', id }), amenager);
+        }
         // La fiche d'un objet ouverte une fois la scène prête (`fiche`, Toucher le monde, lot 2), comme d'un toucher :
         // le temps que la caméra glisse pour la laisser voir (16 pas, deux secondes de la scène).
         if (fiche) await page.evaluate((objet) => window.__dysappsFiche?.(objet), fiche);
+        // Le monde sans le panneau qui le couvre (`sansPanneau` : la fiche d'un monument, la caméra déjà posée sur lui) :
+        // le panneau masqué, le monde rendu au toucher et au clavier pour le zoom.
+        if (sansPanneau) await masquerLePanneau(page);
+        // Le monde sans les étiquettes des îles (`sansEtiquettes` : un objet du cœur, que le nom de l'île couvrait).
+        if (sansEtiquettes) await cacherLesEtiquettes(page);
         // La Carte zoomée (`zoomer`) : la touche +, le monde ayant le focus, autour du centre de la place libre.
         if (zoomer) await zoomerLaVue(page, zoomer);
+        // Le bonhomme de près (`surLeBonhomme` : autant de crans de molette sur son buste, famille `keo`).
+        if (surLeBonhomme) await zoomerSurLeBonhomme(page, surLeBonhomme);
+        // Un point du monde de près (`surLaCase` : la molette sur lui, la voie de la Gare).
+        if (surLaCase) await zoomerSurLaCase(page, surLaCase);
         // Plus loin dans le temps de la scène (la pose finie, par exemple), du même pas que la préparation.
-        for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer ? 16 : 0)); i++) {
+        // Le panneau masqué (`sansPanneau`) agrandit la place libre : la caméra repart vers un autre cadrage, qu'on laisse
+        // se poser comme après un zoom (sans ces pas, la vue de loin du grand moulin se prenait la caméra en route, à un
+        // point qui changeait d'une prise à l'autre).
+        for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer || surLeBonhomme || surLaCase || amenager || sansPanneau || sansEtiquettes ? 16 : 0)); i++) {
           await page.clock.runFor(125);
           await page.waitForTimeout(30);
         }
         // Après un trajet lancé (`allerA`) ou une fiche ouverte (`fiche`, la caméra recadrée hors d'elle) : la caméra posée
         // d'un coup à son cadrage, comme à la préparation (un pas de plus entre les deux, pour que les étiquettes suivent,
         // calculées pour ce cadrage : sans quoi une étiquette passe encore sous la fiche pendant le glissement).
-        if (allerA || fiche)
+        if (allerA || fiche || sansPanneau)
           for (let i = 0; i < 2; i++) {
             await page.evaluate(() => window.__dysappsCamera?.poser());
             await page.clock.runFor(125);

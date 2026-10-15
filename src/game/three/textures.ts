@@ -1,6 +1,7 @@
 // Matériaux Three.js des blocs, faits des textures pixel de world/pixels.ts.
 import * as THREE from 'three';
-import { canvasFor, faceCanvas, grain, type TextureFace, type TextureKind } from '../world/pixels';
+import { canvasFor, faceCanvas, facePixels, GRAIN_DES_TEINTES, pixelsFor, SIZE, type TextureFace, type TextureKind } from '../world/pixels';
+import { LAYER_COUNT, layerContent, type BlockPass } from '../world/blockMesh';
 
 export type { TextureKind };
 
@@ -40,7 +41,7 @@ export function blockMaterial(kind: TextureKind, muted = false): THREE.Material 
 function grainTexture(): THREE.Texture | null {
   let grainMap = cache.get('grainmap') as unknown as THREE.Texture | undefined;
   if (!grainMap) {
-    grainMap = textureOf(canvasFor(grain('#d8d8d8', '#ffffff'), 5)) ?? undefined;
+    grainMap = textureOf(canvasFor(GRAIN_DES_TEINTES.peintre, GRAIN_DES_TEINTES.graine)) ?? undefined;
     if (grainMap) cache.set('grainmap', grainMap as unknown as THREE.Material);
   }
   return grainMap ?? null;
@@ -65,5 +66,66 @@ export function vertexTintedMaterial(): THREE.Material {
   if (cached) return cached as THREE.Material;
   const material = new THREE.MeshLambertMaterial({ vertexColors: true, map: grainTexture() });
   cache.set('vertex-tint', material);
+  return material;
+}
+
+/**
+ * La texture des blocs (piste 2 du budget de rendu) : toutes les faces de toutes les sortes, normales et délavées, et le
+ * grain des couleurs unies, en couches d'un seul tableau de textures (world/blockMesh.ts `layerOf`). Peinte une fois.
+ * Elle se répète case par case sur une face fondue.
+ */
+function blockArrayTexture(): THREE.DataArrayTexture {
+  let t = cache.get('block-array') as unknown as THREE.DataArrayTexture | undefined;
+  if (t) return t;
+  const couche = SIZE * SIZE * 4;
+  const data = new Uint8Array(couche * LAYER_COUNT);
+  for (let l = 0; l < LAYER_COUNT; l++) {
+    const c = layerContent(l);
+    const px = c ? facePixels(c.kind, c.face, c.muted) : pixelsFor(GRAIN_DES_TEINTES.peintre, GRAIN_DES_TEINTES.graine);
+    // Retournée ligne à ligne, comme un canvas en texture (`flipY`, que le tableau de textures ne connaît pas) : v = 1 en haut.
+    for (let y = 0; y < SIZE; y++) data.set(px.subarray(y * SIZE * 4, (y + 1) * SIZE * 4), l * couche + (SIZE - 1 - y) * SIZE * 4);
+  }
+  t = new THREE.DataArrayTexture(data, SIZE, SIZE, LAYER_COUNT);
+  t.magFilter = THREE.NearestFilter;
+  t.minFilter = THREE.NearestFilter;
+  t.wrapS = THREE.RepeatWrapping;
+  t.wrapT = THREE.RepeatWrapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.needsUpdate = true;
+  cache.set('block-array', t as unknown as THREE.Material);
+  return t;
+}
+
+/**
+ * Lit la couche de chaque sommet dans la texture des blocs, à la place de `map`, et ajoute sa lueur (`aGlow`). Le même
+ * programme pour tous les matériaux d'une passe.
+ */
+function lireLaTextureDesBlocs(shader: THREE.WebGLProgramParametersWithUniforms): void {
+  shader.uniforms.uBlocs = { value: blockArrayTexture() };
+  shader.vertexShader = shader.vertexShader
+    .replace('#include <common>', '#include <common>\nattribute float aLayer;\nattribute vec3 aGlow;\nvarying vec3 vBloc;\nvarying vec3 vGlow;')
+    .replace('#include <begin_vertex>', '#include <begin_vertex>\nvBloc = vec3(uv, aLayer);\nvGlow = aGlow;');
+  shader.fragmentShader = shader.fragmentShader
+    .replace('#include <common>', '#include <common>\nuniform highp sampler2DArray uBlocs;\nvarying vec3 vBloc;\nvarying vec3 vGlow;')
+    .replace('#include <map_fragment>', '#include <map_fragment>\ndiffuseColor *= texture(uBlocs, vBloc);')
+    .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += vGlow;');
+}
+
+/**
+ * Le matériau d'une passe des blocs (world/blockMesh.ts) : opaque, le verre (translucide) ou les fantômes des plans
+ * (bleutés et translucides : on voit que c'est « à poser », et ce qu'il y a derrière). Les mêmes valeurs que les matériaux
+ * d'une texture (`blockMaterial`, `tintedMaterial`) ; la couleur et la lueur de chaque face sont dans ses sommets.
+ */
+export function blockPassMaterial(pass: BlockPass): THREE.Material {
+  const key = `block-pass:${pass}`;
+  const cached = cache.get(key);
+  if (cached) return cached as THREE.Material;
+  const material =
+    pass === 'ghost'
+      ? new THREE.MeshLambertMaterial({ color: 0xa8d8ff, emissive: 0x2a4a6a, transparent: true, opacity: 0.6, depthWrite: false })
+      : new THREE.MeshLambertMaterial({ vertexColors: true, transparent: pass === 'glass', opacity: pass === 'glass' ? 0.85 : 1 });
+  material.onBeforeCompile = lireLaTextureDesBlocs;
+  material.customProgramCacheKey = () => 'blocs';
+  cache.set(key, material);
   return material;
 }

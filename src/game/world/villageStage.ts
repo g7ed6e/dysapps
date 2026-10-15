@@ -30,7 +30,7 @@ export interface VillageStage extends VillageStageDef {
   next: string | null;
 }
 
-/** L'archipel suivant, celui où mène le voyage du Bloc-Navire depuis ce port (aucun pour le dernier). */
+/** L'archipel suivant, celui où mène le voyage de la Nef depuis ce port (aucun pour le dernier). */
 function nextArchipelago(a: ArchipelagoId): ArchipelagoId | null {
   const i = ARCHIPELAGOS.findIndex((x) => x.classe === a);
   return ARCHIPELAGOS[i + 1]?.classe ?? null;
@@ -53,7 +53,7 @@ export function villageStage(village: Pick<World, 'parts' | 'links'>, a: Archipe
   const portName = getArchipelagoPortName(a);
   const at = (rank: number, next: string | null): VillageStage => ({ ...VILLAGE_STAGES[rank - 1], next });
   if (sailed) return at(5, null);
-  if (portDone && linked && monument) return at(4, to ? `Fais partir le Bloc-Navire vers les ${noms[to]}.` : null);
+  if (portDone && linked && monument) return at(4, to ? `Fais partir la Nef vers les ${noms[to]}.` : null);
   if (portDone && linked) return at(3, 'Termine un monument de l’archipel.');
   if (anyPart) {
     const left = [!portDone && `réussis les missions ${ofPlace(portName)}`, !linked && `pose un ouvrage qui part ${ofPlace(portName)}`].filter(Boolean).join(' et ');

@@ -5,14 +5,19 @@
 //
 // Le jeu ne change pas : le monument (./monuments.ts, commun à Blocland), ses cases, ses blocs et le toucher restent
 // ceux du plan « Le phare du large ». Seul le dessin change, dans la construction taillée (./construction.ts), sur le
-// modèle des ponts (./bridges.ts) : une fois toutes ses cases posées, ses cubes laissent la place à ce modèle, qui tient
-// dans leurs cases (5 × 5 au pied, 3 × 3 pour la tour, 11 de haut) ; tant qu'il en manque, les cubes et les fantômes
-// restent, comme pour tout plan.
+// modèle du phare de Grimoire (./construction/lighthouse.ts) : chaque pièce du grand projet finie (GD-10, ./projects.ts,
+// `LAYERS`), et toutes celles d'en dessous, laisse la place à sa pièce du modèle (intention du directeur artistique,
+// 9 octobre 2026) : le socle au soubassement, la tour au fût, la galerie à la corniche (et au haut du fût), la lanterne
+// à la terrasse (le parapet), le toit à la corbeille de fer et au feu, qui ne s'allume que le phare fini. Le modèle tient
+// dans les cases du monument (5 × 5 au pied, 3 × 3 pour la tour, 11 de haut) ; une pièce ne monte jamais dans les cases
+// d'une pièce pas encore finie (le fût sous la galerie, la corniche sous la lanterne) ; les cases des pièces pas encore
+// finies restent des cubes et des fantômes, comme pour tout plan.
 import type { VoxelCube } from '../Voxel';
 import { mixColor } from './daylight';
 import { DELAVE, lueur, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './decor/brush';
 import type { Couleur, Faces } from './palette';
 import type { Cell } from './view';
+import { LAYERS } from './projects';
 
 /** Le monument dessiné ainsi, et le lieu que portent ses cubes (le toucher ouvre son panneau). */
 export const PHARE_DU_LARGE = 'landmark-5e-1';
@@ -39,7 +44,11 @@ export const COULEURS_DU_PHARE_DU_LARGE = {
  */
 export const MESURES_DU_PHARE_DU_LARGE = {
   pans: 12,
-  soubassement: { haut: 1, rayon: [2.3, 2.1] },
+  /**
+   * Le soubassement remplit les 5 × 5 cases du socle (retouches du 9 octobre 2026 : plus petit, il se perdait dans le
+   * sable de l'îlot) : un pan à plat à 2,45 case de l'axe (le rayon fois cos 15°), ses coins dans les cases du socle.
+   */
+  soubassement: { haut: 1, rayon: [2.53, 2.35] },
   tour: { bas: 1, haut: 8, rayon: [1.45, 1.15] },
   corniche: { haut: 8.35, rayon: 1.5 },
   parapet: { haut: 8.95, rayon: 1.5, epaisseur: 0.22 },
@@ -54,6 +63,15 @@ export const MESURES_DU_PHARE_DU_LARGE = {
     { dx: -0.3, dz: 0.2, haut: 9.6, rayon: 0.4, rot: 1.3 },
   ],
 } as const;
+
+/**
+ * Le haut du fût tant que la galerie n'est pas finie : le haut de la dernière case de la tour du grand projet (./projects.ts,
+ * `LAYERS`), au-dessus du pied du monument.
+ */
+const FUT_SANS_GALERIE = LAYERS[PHARE_DU_LARGE].tower[1] + 1;
+
+/** Le haut de la corniche tant que la lanterne n'est pas finie : le haut de la dernière case de la galerie. */
+const CORNICHE_SANS_LANTERNE = LAYERS[PHARE_DU_LARGE].gallery[1] + 1;
 
 /**
  * Les hublots du fût (GD-2, proposition du consultant Archipéo) : les vitraux du monument, ronds, à mi-hauteur, sur les
@@ -79,30 +97,58 @@ export function hublotsDuPhareDuLarge(o: PoseDuPhareDuLarge): { points: V3[]; no
   ];
 }
 
-/** Le phare du large tel que le monde le montre : son pied, le centre de sa tour, ses cases, fini ou non. */
+/** Les pièces du phare du large, de bas en haut (celles du grand projet, ./projects.ts). */
+type PieceDuPhareDuLarge = 'base' | 'tower' | 'gallery' | 'lantern' | 'roof';
+const PIECES: readonly PieceDuPhareDuLarge[] = ['base', 'tower', 'gallery', 'lantern', 'roof'];
+
+/** Le phare du large tel que le monde le montre : son pied, le centre de sa tour, les cases de ses pièces finies. */
 export interface PoseDuPhareDuLarge {
   /** Le centre de la tour (repère Three : x, et z pour y) et le bas de son socle. */
   cx: number;
   cz: number;
   pied: number;
-  /** Les cases du monument (pour le toucher). */
+  /** Les cases des pièces finies (pour le toucher). */
   cellules: Cell[];
   muted: boolean;
+  /**
+   * Les pièces finies, d'un tenant depuis le socle (une pièce finie au-dessus d'une qui ne l'est pas attend) ; absent :
+   * le phare entier.
+   */
+  pieces?: ReadonlySet<PieceDuPhareDuLarge>;
 }
+
+/** Le phare est-il fini (ses cinq pièces) ? Le feu ne s'allume qu'alors. */
+const fini = (o: PoseDuPhareDuLarge) => !o.pieces || o.pieces.size === PIECES.length;
+/** La pièce est-elle dessinée ? */
+const drawn = (o: PoseDuPhareDuLarge, p: PieceDuPhareDuLarge) => !o.pieces || o.pieces.has(p);
 
 const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
 
 /**
- * Le phare du large de ce monde, s'il est fini : toutes ses cases posées. `remplacees` : les cases que le modèle
- * remplace (vide tant qu'une case manque : les cubes et les fantômes restent).
+ * Le phare du large de ce monde : les pièces finies (toutes leurs cases posées), d'un tenant depuis le socle.
+ * `remplacees` : les cases que le modèle remplace, celles de ces pièces (vide tant que le socle n'est pas fini : les
+ * cubes et les fantômes restent) ; `pose` : `null` tant qu'aucune pièce n'est finie.
  */
 export function phareDuLarge(cubes: VoxelCube[]): { pose: PoseDuPhareDuLarge | null; remplacees: Set<string> } {
   const siens = cubes.filter((c) => c.place === LIEU && !c.sol);
   const remplacees = new Set<string>();
-  if (!siens.length || siens.some((c) => c.ghost)) return { pose: null, remplacees };
-  for (const c of siens) remplacees.add(cle(c.x, c.y, c.z));
+  if (!siens.length) return { pose: null, remplacees };
   // Le pied et le milieu de l'emprise : le socle (5 × 5) est la couche la plus basse, centrée sur l'îlot.
   const pied = Math.min(...siens.map((c) => c.z));
+  const couches = LAYERS[PHARE_DU_LARGE];
+  const pieceDe = (c: VoxelCube) => PIECES.find((p) => c.z - pied >= couches[p][0] && c.z - pied <= couches[p][1]);
+  const pieces = new Set<PieceDuPhareDuLarge>();
+  for (const p of PIECES) {
+    const cases = siens.filter((c) => pieceDe(c) === p);
+    if (!cases.length || cases.some((c) => c.ghost)) break;
+    pieces.add(p);
+  }
+  if (!pieces.size) return { pose: null, remplacees };
+  const finies = siens.filter((c) => {
+    const p = pieceDe(c);
+    return p !== undefined && pieces.has(p);
+  });
+  for (const c of finies) remplacees.add(cle(c.x, c.y, c.z));
   const bas = siens.filter((c) => c.z === pied);
   const xs = bas.map((c) => c.x);
   const ys = bas.map((c) => c.y);
@@ -111,8 +157,9 @@ export function phareDuLarge(cubes: VoxelCube[]): { pose: PoseDuPhareDuLarge | n
       cx: (Math.min(...xs) + Math.max(...xs) + 1) / 2,
       cz: (Math.min(...ys) + Math.max(...ys) + 1) / 2,
       pied,
-      cellules: siens.map((c) => ({ x: c.x, y: c.y, z: c.z })),
-      muted: siens.some((c) => c.muted),
+      cellules: finies.map((c) => ({ x: c.x, y: c.y, z: c.z })),
+      muted: finies.some((c) => c.muted),
+      pieces,
     },
     remplacees,
   };
@@ -159,13 +206,25 @@ export function dessinerPhareDuLarge(P: Pinceau, L: Pinceau, o: PoseDuPhareDuLar
   const peint = (c: Couleur): Peindre => peintre(delave(c, muted), pied, haut - pied);
   // Un pan à plat vers la caméra (au sud).
   const rot = Math.PI / n;
-  tronconique(P, cx, cz, at(0), at(M.soubassement.haut), M.soubassement.rayon[0], M.soubassement.rayon[1], n, rot, peint(C.soubassement));
-  tronconique(P, cx, cz, at(M.tour.bas), at(M.tour.haut), M.tour.rayon[0], M.tour.rayon[1], n, rot, peint(C.pierre), false);
-  // La corniche déborde de la tour et porte la plate-forme du feu ; le parapet en fait le tour.
-  tronconique(P, cx, cz, at(M.tour.haut), at(M.corniche.haut), M.tour.rayon[1], M.corniche.rayon, n, rot, peint(C.corniche));
-  anneauCreux(P, cx, cz, at(M.corniche.haut), at(M.parapet.haut), M.parapet.rayon, M.parapet.epaisseur, n, peint(C.corniche));
+  if (drawn(o, 'base')) tronconique(P, cx, cz, at(0), at(M.soubassement.haut), M.soubassement.rayon[0], M.soubassement.rayon[1], n, rot, peint(C.soubassement));
+  // La corniche déborde de la tour et porte la plate-forme du feu : tant que la lanterne n'est pas finie, elle s'arrête
+  // au haut des cases de la galerie (elle n'entre pas dans les fantômes de la lanterne), puis reprend sa hauteur.
+  const t = M.tour;
+  const corniche = drawn(o, 'lantern') ? { bas: t.haut, haut: M.corniche.haut } : { bas: CORNICHE_SANS_LANTERNE - (M.corniche.haut - t.haut), haut: CORNICHE_SANS_LANTERNE };
+  // Le fût : jusqu'au haut de la tour du plan tant que la galerie n'est pas finie (il ne monte pas dans ses fantômes),
+  // puis jusqu'au pied de la corniche.
+  const rayonDuFut = (h: number) => t.rayon[0] + ((t.rayon[1] - t.rayon[0]) * (h - t.bas)) / (t.haut - t.bas);
+  if (drawn(o, 'tower')) {
+    const top = drawn(o, 'gallery') ? corniche.bas : FUT_SANS_GALERIE;
+    tronconique(P, cx, cz, at(t.bas), at(top), t.rayon[0], rayonDuFut(top), n, rot, peint(C.pierre), false);
+  }
+  // Le parapet (la terrasse) fait le tour de la corniche.
+  if (drawn(o, 'gallery')) tronconique(P, cx, cz, at(corniche.bas), at(corniche.haut), rayonDuFut(corniche.bas), M.corniche.rayon, n, rot, peint(C.corniche));
+  if (drawn(o, 'lantern')) anneauCreux(P, cx, cz, at(M.corniche.haut), at(M.parapet.haut), M.parapet.rayon, M.parapet.epaisseur, n, peint(C.corniche));
+  if (!drawn(o, 'roof')) return;
   tronconique(P, cx, cz, at(M.corbeille.bas), at(M.corbeille.haut), M.corbeille.rayon[0], M.corbeille.rayon[1], 6, 0, peint(C.fer));
-  // Le feu : deux langues facettées, posées dans la corbeille.
+  // Le feu : deux langues facettées, posées dans la corbeille ; éteint tant que le phare n'est pas fini.
+  if (!fini(o)) return;
   const feu = muted ? P : L;
   const jour = muted ? peint(C.fer) : peintre({ dessus: C.feu, cote: C.feu }, at(M.corbeille.haut), M.flammes[0].haut - M.corbeille.haut);
   if (!muted) L.deNuit = lueur({ dessus: C.feuDeNuit, cote: C.feuDeNuit });

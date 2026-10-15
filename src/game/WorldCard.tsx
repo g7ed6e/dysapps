@@ -1,5 +1,5 @@
 // La fiche d'un objet du monde (lot 2 de « Toucher le monde », spécification du consultant UX UI arbitrée par le
-// directeur artistique) : toucher une borne, le Gardien, le Bloc-Navire, un ouvrage en fantôme, une île pâle ou une
+// directeur artistique) : toucher une borne, le Gardien, la Nef, un ouvrage en fantôme, une île pâle ou une
 // créature ouvre SA fiche, toujours à la même place (en bas, au-dessus de la barre ; en paysage, en bas à gauche), qui
 // ne couvre jamais toute l'île. Peu de texte : un titre, une phrase au plus, un bouton principal. Elle reprend les
 // actions qui existent déjà (Jouer, Défier, Poser le bloc suivant, Embarquer, Construire, Livrer, Reprendre, Plus tard)
@@ -8,6 +8,7 @@
 // Dans les deux univers (proposition P2, PR 2, pour Blocland ; « 4a », 4 octobre 2026, pour Archipéo), la fiche de la
 // créature et celle du Gardien portent leur portrait en médaillon, qui déborde au-dessus de la fiche ; les autres gardent
 // l'icône du titre. Blocland le dessine en cubes, Archipéo avec son modèle en SVG (l'icône en attendant, ou en repli).
+import type { PetiteConstructionAPoser } from './world/placedFixtures';
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { Link } from 'react-router-dom';
@@ -18,7 +19,7 @@ import { useASuivre } from '../components/useNextUp';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { useTextes } from '../universes';
-import { blockCount, estIleLv2, getBiome, guardianTitle, missionsJouables, type BiomeId, type BlockId } from './biomes';
+import { BLOCKS, blockCount, getBiome, guardianTitle, missionsJouables, sansSonOption, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { isBossBeaten, isBossOpen } from './boss';
 import { useConstruireUnOuvrage, withArticle } from './Bridges';
@@ -33,18 +34,20 @@ import { shipSummary } from './ShipSection';
 import { Stars } from './Stars';
 import { Creature } from './Creatures';
 import { habillageDuMonde } from './skin';
-import { VoxelScene } from './Voxel';
+import { BlockIcon, VoxelScene } from './Voxel';
 import { GUARDIAN_CUBES } from './world/characters/guardians';
 import { statueDe } from './world/terrain';
 import type { VehicleBuilder } from './useVehicleBuilder';
 import { borneDe } from './world/affordance';
 import type { ObjetDeLaFiche } from './world/layout';
-import { KIND_NAME, bridgeState, conditionText, getArchipelago, getBridge, isBiomeUnlocked, linkKind, linksToIsland, nearestDeparture, opensAnIsland, otherEnd, payableBlocks, reachableIslands, type ArchipelagoId } from './world/archipelago';
-import { estPrete, texteDeLaCommande, type Commande } from './world/requests';
+import { KIND_NAME, archipelagoOf, bridgeState, conditionText, getArchipelago, getBridge, isBiomeUnlocked, linkKind, linksToIsland, nearestDeparture, opensAnIsland, otherEnd, payableBlocks, reachableIslands, type ArchipelagoId } from './world/archipelago';
+import { commandeALivrerChez, texteDeLaCommande } from './world/requests';
+import { canTapStep, openStoryOf, type Story } from './world/stories';
+import { StepButton, StoryBadge, stepSentence, storyBadgeReading, tapTheStep } from './Stories';
 import { ileDeLOuvrage } from './world/model';
 import { ofPlace, thePlace, toPlace } from './world/placeArticle';
 import { earnIsland, whereToEarn } from './world/uses';
-import { VEHICLE_NAME, VEHICLE_STAGES } from './world/vehicle';
+import { VEHICLE_NAME, VEHICLE_STAGES, stageWords } from './world/vehicle';
 
 /** Une fiche ouverte : son objet, et, pour une créature, la phrase tirée à l'ouverture. `seq` change à chaque ouverture. */
 export interface FicheOuverte {
@@ -63,20 +66,20 @@ export interface FicheOuverte {
 interface Props {
   fiche: FicheOuverte;
   onClose: () => void;
-  /** Le chantier du Bloc-Navire du port de l'archipel. */
+  /** Le chantier de la Nef au port de l'archipel. */
   ship: VehicleBuilder;
   /** Embarquer (`back` : un voyage déjà fait, vers l’île `dest`). */
   onBoard: (to: ArchipelagoId, back: boolean, dest?: BiomeId) => void;
   /** Un ouvrage vient d'être construit : l'île d'en face s'ouvre. */
   onBuilt: (to: BiomeId) => void;
-  /** La commande prête et suggérée de la créature (sa plaque), s'il y en a une. */
-  commande?: Commande;
   /** Une commande livrée : la scène pose sa petite construction ; `true` si elle en prend le son. */
-  onLivree?: (c: Commande) => boolean;
+  onLivree?: (c: PetiteConstructionAPoser) => boolean;
   /** La commande dont la petite construction se pose : la phrase « posée » attend la fin. */
   commandeEnCoursDePose?: string | null;
   /** « Relier » d'une île pâle : la fiche de cet ouvrage ; `autreDepart` : depuis « Partir d'une autre île » (la caméra cadre sa liaison). */
   onVoirOuvrage: (id: string, autreDepart?: boolean) => void;
+  /** « Y aller » de la fiche d'un Gardien pas encore prêt : son lieu et ses missions, comme un toucher sur son lieu. */
+  onAllerAuLieu?: (id: BiomeId) => void;
 }
 
 /** La fiche de l'objet touché ; la page la remonte à chaque ouverture (`key`). */
@@ -205,7 +208,7 @@ function FicheDeLaBorne({ id, onClose }: Props & { id: string }) {
   const ile: BiomeId = borne?.ile ?? 'french-6e-phonology';
   const mission = borne?.mission ?? '';
   const biome = borne ? getBiome(ile) : undefined;
-  const exercise = biome ? missionsJouables(biome, settings.lv2).find((m) => m.id === mission) : undefined;
+  const exercise = biome ? missionsJouables(biome, settings.lv2, settings.lca).find((m) => m.id === mission) : undefined;
   const def = pickExercise(ile, mission, levelFor(state, mission), state.progress);
   const unlocked = isBiomeUnlocked(ile, state.world.links);
   const jouable = Boolean(def && unlocked && exercise);
@@ -234,14 +237,18 @@ function FicheDeLaBorne({ id, onClose }: Props & { id: string }) {
   );
 }
 
-/** Le Gardien : ce qu'il attend (une phrase), ou « Rallumer » quand il est prêt, déjà rallumé avec ses étoiles (GD-8). */
-function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
+/**
+ * Le Gardien : ce qu'il attend (une phrase), ou « Rallumer » quand il est prêt, déjà rallumé avec ses étoiles (GD-8).
+ * Il se tient sur son île (GD-11) : la fiche nomme son lieu (son icône et son nom) ; « Rallumer » ouvre le défi d'ici,
+ * sans trajet du bonhomme ; pas encore prêt, « Y aller » mène à son lieu.
+ */
+function FicheDuGardien({ ile, onClose, onAllerAuLieu }: Props & { ile: BiomeId }) {
   const { state } = useBlocland();
   const textes = useTextes();
   const biome = getBiome(ile);
   if (!biome) return null;
   const unlocked = isBiomeUnlocked(ile, state.world.links);
-  const pret = unlocked && isBossOpen(biome, state.progress);
+  const pret = unlocked && isBossOpen(biome, state.progress, state.world.challengesKeptOpen);
   const vaincu = isBossBeaten(ile, state.progress);
   const phrase = pret ? (vaincu ? textes.libelles.dejaFait : textes.libelles.defiPret) : explicationDuGardien(biome, state.progress, unlocked);
   const stars = state.progress[`${ile}-challenge`]?.stars ?? 0;
@@ -252,10 +259,17 @@ function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
       icone={pret ? 'flame' : 'lock'}
       // Éteint (en pierre, ou la sentinelle éteinte d'Archipéo) tant qu'il n'est pas rallumé, en couleurs ensuite (GD-8).
       portrait={portraitEnMedaillon('guardian', ile, 'flame', () => <VoxelScene cubes={vaincu ? GUARDIAN_CUBES[ile] : statueDe(GUARDIAN_CUBES[ile])} s={12} pad={2} className="creature guardian-svg" />, vaincu ? 1 : 0)}
-      lecture={`${titre}. ${phrase}`}
+      lecture={`${titre}. ${biome.name}. ${phrase}`}
       onClose={onClose}
       actions={
-        pret && (
+        !pret ? (
+          unlocked &&
+          onAllerAuLieu && (
+            <button type="button" className="button" onClick={() => onAllerAuLieu(ile)}>
+              <Icon name="play" /> Y aller
+            </button>
+          )
+        ) : (
           <Link to={`/adventure/${ile}/challenge`} className="button primary">
             {vaincu ? (
               <>
@@ -270,6 +284,10 @@ function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
         )
       }
     >
+      {/* Son lieu, en signes : son icône et son nom. */}
+      <p className="world-fiche-lieu">
+        <Icon name={biome.icon} /> {biome.name}
+      </p>
       {pret && vaincu && <Stars count={stars} label={textes.libelles.etoiles} />}
       <Phrase text={phrase} />
     </Fiche>
@@ -280,20 +298,34 @@ const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 /** Un point au bout d'une phrase qui n'a pas sa ponctuation finale. */
 const finDePhrase = (text: string) => (/[.!?…]$/.test(text) ? text : `${text}.`);
 
+/** Les trois pastilles des formes de la Nef : faites (coche), en chantier (pleine), à venir (vide), sans la couleur seule. */
+function PastillesDeLaNef({ stage }: { stage: number }) {
+  return (
+    <span className="signe nef-pastilles">
+      {VEHICLE_STAGES.map((s) => (
+        <span key={s.stage} className={`nef-pastille${s.stage < stage ? ' faite' : s.stage === stage ? ' en-cours' : ''}`}>
+          {s.stage < stage && <Icon name="check" />}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 /**
- * Le Bloc-Navire : l'étape en chantier sur ce port, ce qui manque et où le gagner (`EarnLink`) ; « Poser le bloc
- * suivant », ou « Embarquer vers… » quand tout est prêt ; « Poser tout ce que j'ai » en second. Le titre et la phrase
- * parlent du même chantier. Le voyage de ce port déjà fait : une phrase vers l'étape suivante, et « Y aller ».
+ * La Nef (GD-15, option A du consultant UX UI) : une ligne de titre, puis en signes les trois pastilles des formes, la
+ * jauge des blocs posés et, s'il en manque, l'icône des blocs suivie de leur nombre, avec où les gagner (`EarnLink`) ;
+ * un seul bouton, « Poser » (tout ce qu'on a), puis « Partir » quand elle est prête. La voix lit tout en mots. Le voyage
+ * de ce port déjà fait : une phrase vers la forme suivante, et « Y aller ».
  */
 function FicheDuNavire({ port, ship, onBoard, onClose }: Props & { port: BiomeId }) {
   const { state } = useBlocland();
   const textes = useTextes();
   const { stage, status, launch } = ship;
+  const titre = cap(VEHICLE_NAME);
   if (!stage || !status) {
-    // Le voyage de ce port est fait : la prochaine étape, sur le port d'un autre archipel (ou plus rien à construire).
+    // Le voyage de ce port est fait : la prochaine forme, sur le port d'un autre archipel (ou plus rien à construire).
     const suite = currentStage(state);
-    const titre = cap(VEHICLE_NAME);
-    const phrase = suite ? `La prochaine étape est au port des ${textes.archipels[suite.from]}.` : `${cap(VEHICLE_NAME)} a fait tous ses voyages.`;
+    const phrase = suite ? `Sa prochaine forme se construit au port des ${textes.archipels[suite.from]}.` : `${titre} a fait tous ses voyages.`;
     return (
       <Fiche
         titre={titre}
@@ -313,19 +345,25 @@ function FicheDuNavire({ port, ship, onBoard, onClose }: Props & { port: BiomeId
       </Fiche>
     );
   }
-  const titre = `${cap(VEHICLE_NAME)} : étape ${stage.stage} sur ${VEHICLE_STAGES.length}`;
   const ready = Boolean(launch?.ok);
   const attend = launch && !launch.ok && launch.reason === 'gardiens' ? launch : null;
   // Le premier bloc qui manque (dans l'inventaire aussi) : où le gagner.
   const manque = !ready && !attend ? ((Object.entries(status.missing) as [BlockId, number][]).find(([b, n]) => n > (state.stock[b] ?? 0)) ?? null) : null;
   const ou = manque ? (earnIsland(manque[0])?.name ?? whereToEarn(manque[0])) : '';
-  const phrase = manque
-    ? `${status.done} blocs posés sur ${status.total}. Il manque ${blockCount(manque[0], manque[1] - (state.stock[manque[0]] ?? 0))}, `
+  const manquants = manque ? manque[1] - (state.stock[manque[0]] ?? 0) : 0;
+  const nom = stageWords(stage, textes.libelles.formesDeLaNef).name;
+  const etape = `Forme ${stage.stage} sur ${VEHICLE_STAGES.length}, ${nom.charAt(0).toLowerCase()}${nom.slice(1)}`;
+  const phrase = ready
+    ? `${titre} est prête : pars vers les ${textes.archipels[stage.to]} quand tu veux.`
     : attend && status.complete
       ? textes.libelles.navireAttend(attend.missing)
-      : finDePhrase(shipSummary(ship, state.stock, textes));
-  const lecture = `${titre}. ${phrase}${manque ? `à gagner dans ${ou}.` : ''}`;
+      : manque
+        ? `${status.done} blocs posés sur ${status.total}. Il manque ${blockCount(manque[0], manquants)}, à gagner dans ${ou}.`
+        : finDePhrase(shipSummary(ship, state.stock, textes));
+  const lecture = `${titre}. ${etape}. ${phrase}`;
   const suivant = getArchipelago(stage.to);
+  // En signes tant qu'on construit ; une phrase quand elle attend ses Gardiens ou qu'elle est prête.
+  const enSignes = !ready && !(attend && status.complete);
   return (
     <Fiche
       titre={titre}
@@ -334,32 +372,44 @@ function FicheDuNavire({ port, ship, onBoard, onClose }: Props & { port: BiomeId
       onClose={onClose}
       actions={
         ready ? (
-          <button type="button" className="button primary" onClick={() => onBoard(stage.to, false)}>
-            <Icon name="ship" /> Embarquer vers les {textes.archipels[suivant.classe]}
+          <button type="button" className="button primary" aria-label={`Partir vers les ${textes.archipels[suivant.classe]}`} onClick={() => onBoard(stage.to, false)}>
+            <Icon name="ship" /> Partir
           </button>
         ) : (
           !status.complete &&
           ship.canFill && (
-            <>
-              <button type="button" className="button primary" onClick={ship.fillNext}>
-                <Icon name="hammer" /> Poser le bloc suivant
-              </button>
-              <button type="button" className="button" onClick={ship.fillAll}>
-                <Icon name="blocks" /> Poser tout ce que j’ai
-              </button>
-            </>
+            <button type="button" className="button primary" onClick={ship.fillAll}>
+              <Icon name="hammer" /> Poser
+            </button>
           )
         )
       }
     >
-      <p className="world-fiche-phrase">
-        <Syllabified text={frenchTypography(phrase)} />
-        {manque && (
-          <>
-            <EarnLink block={manque[0]} here={port} />.
-          </>
-        )}
-      </p>
+      {enSignes ? (
+        <>
+          <p className="visually-hidden">{frenchTypography(`${etape}. ${phrase}`)}</p>
+          <p className="world-fiche-phrase fiche-signes" aria-hidden="true">
+            <PastillesDeLaNef stage={stage.stage} />{' '}
+            <span className="signe">
+              <Icon name="cube" /> {status.done}/{status.total}
+            </span>{' '}
+            {manque && (
+              <span className="signe">
+                <BlockIcon top={BLOCKS[manque[0]].top} side={BLOCKS[manque[0]].side} size={28} /> {manquants}
+              </span>
+            )}
+          </p>
+          {manque && (
+            <p className="world-fiche-phrase">
+              {blockCount(manque[0], manquants)} <EarnLink block={manque[0]} here={port} />.
+            </p>
+          )}
+        </>
+      ) : (
+        <p className="world-fiche-phrase">
+          <PastillesDeLaNef stage={ready ? stage.stage + 1 : stage.stage} /> <Syllabified text={frenchTypography(phrase)} />
+        </p>
+      )}
       <p className="build-status" role="status" aria-live="polite">
         {ship.notice ? frenchTypography(ship.notice) : ''}
       </p>
@@ -388,7 +438,9 @@ function FicheDeLOuvrage({ id, onBuilt, onClose, onVoirOuvrage }: Props & { id: 
   const world = { progress: state.progress, plans: state.world.parts };
   const etat = bridgeState(def, links, world);
   const have = payableBlocks(state.stock);
-  const sansLv2 = settings.lv2 === 'none' && [def.from, def.to].some((i) => getBiome(i)?.subject === 'lv2');
+  // Une liaison vers un lieu d'option sans son option (« Pas de LV2 », « Pas d'option », GD-13) ne se construit pas.
+  const sansOption = [def.from, def.to].map((i) => sansSonOption(getBiome(i), settings)).find((x) => x !== null) ?? null;
+  const sansLv2 = sansOption !== null;
   const pret = etat === 'buildable' && have >= def.cost && !sansLv2;
   // Un ouvrage qui ouvre une île : ses départs possibles, du plus proche au plus loin.
   const open = reachableIslands(links);
@@ -402,8 +454,8 @@ function FicheDeLOuvrage({ id, onBuilt, onClose, onVoirOuvrage }: Props & { id: 
   const quoi = withArticle(kind);
   const depuis = ferme ? `${quoi.charAt(0).toUpperCase()}${quoi.slice(1)} part ${ofPlace(depart)}. ` : '';
   const numero = ferme && departs.length > 1 && rang >= 0 ? `Départ ${rang + 1} sur ${departs.length}. ` : '';
-  const phrase = sansLv2
-    ? 'Choisis d’abord une LV2 dans les Réglages.'
+  const phrase = sansOption
+    ? sansOption.liaison
     : etat === 'far'
       ? `Il faut d’abord un chemin jusqu’${toPlace(a)} ou ${toPlace(b)}.`
       : etat === 'blocked'
@@ -493,7 +545,7 @@ function FicheDeLIlePale({ ile, fiche, onVoirOuvrage, onClose }: Props & { ile: 
   const textes = useTextes();
   const biome = getBiome(ile);
   if (!biome) return null;
-  const indice = accueilDeLIle(state, ile, estIleLv2(biome) && settings.lv2 === 'none', textes);
+  const indice = accueilDeLIle(state, ile, sansSonOption(biome, settings), textes);
   const premier = nearestDeparture(ile, state.world.links);
   return (
     <Fiche
@@ -518,25 +570,46 @@ function FicheDeLIlePale({ ile, fiche, onVoirOuvrage, onClose }: Props & { ile: 
 }
 
 /**
- * Une créature : son nom, sa phrase ; sa plaque, avec la même priorité : une commande prête, « Livrer » ; des révisions,
- * « Reprendre » (le bouton principal) et « Plus tard », avec les boutons de la fiche.
+ * Une créature : son nom, sa phrase ; sa plaque, avec la même priorité : une commande prête, « Livrer » ; l'étape de la
+ * quête de sa région qui se fait chez elle (GD-10), son signe (l'objet, « 2/3 ») et « Donner » ou « Apporter » ; des
+ * révisions, « Reprendre » (le bouton principal) et « Plus tard », avec les boutons de la fiche.
  */
-function FicheDeLaCreature({ ile, fiche, commande, onLivree, commandeEnCoursDePose = null, onClose }: Props & { ile: BiomeId }) {
-  const { state, deliver } = useBlocland();
+function FicheDeLaCreature({ ile, fiche, onLivree, commandeEnCoursDePose = null, onClose }: Props & { ile: BiomeId }) {
+  const { state, deliver, tapStory } = useBlocland();
   const { settings } = useSettings();
   const textes = useTextes();
   const biome = getBiome(ile);
   const rappel = useResidentReminder(biome && isBiomeUnlocked(ile, state.world.links) ? biome : undefined);
-  const [livree, setLivree] = useState<{ id: string; text: string } | null>(null);
+  const [livree, setLivree] = useState<{ id: string; text: string; quete?: { story: Story; index: number } } | null>(null);
   const [remis, setRemis] = useState(false);
   if (!biome) return null;
   const lieu = textes.assemblage.a;
   const nom = biome.creature.name;
-  const prete = commande && commande.biome === ile && estPrete(state, commande) ? commande : null;
+  // Sa commande prête, qu'elle soit ou non la prochaine destination (celle que montre sa plaque) : « Livrer » dès que
+  // les blocs sont là, sinon elle ne pourrait plus se livrer tant qu'autre chose passe avant elle (une mission à jouer
+  // sur l'île, une autre commande prête).
+  const prete = (textes.commandes && commandeALivrerChez(state, ile)) || null;
+  const ouverte = textes.quetes && !prete ? openStoryOf(state.world, archipelagoOf(ile).classe) : null;
+  const quete = ouverte && ouverte.step.place === ile ? ouverte : null;
+  // L'étape se fait ici d'un toucher : elle passe avant les révisions ; sinon, les révisions d'abord (consultant UX UI).
+  const queteFaisable = quete && canTapStep(state, quete.step) ? quete : null;
+  const avecRappel = Boolean(rappel && !remis);
+  const queteMontree = queteFaisable ?? (quete && !avecRappel ? quete : null);
   const posee = livree && commandeEnCoursDePose !== livree.id ? livree.text : null;
-  const phrase = livree ? (posee ?? '') : prete ? texteDeLaCommande(prete, 'ready', lieu) : rappel && !remis ? rappel.texte : (fiche.phrase ?? '');
-  const enRappel = !prete && !livree && rappel && !remis ? rappel : null;
-  const lecture = `${nom}. ${livree ? (posee ?? '') : enRappel ? enRappel.lu : phrase}`.trim();
+  const phrase = livree
+    ? (posee ?? '')
+    : prete
+      ? texteDeLaCommande(prete, 'ready', lieu)
+      : queteMontree
+        ? stepSentence(state, queteMontree.step, textes.commandes?.tuEnAs)
+        : rappel && !remis
+          ? rappel.texte
+          : (fiche.phrase ?? '');
+  const enRappel = !prete && !queteMontree && !livree && rappel && !remis ? rappel : null;
+  // Le signe de la quête, gardé après une étape faite ici (celui de l'étape suivante, ou toutes faites à la fin).
+  const signe = livree?.quete ?? (queteMontree && !livree ? { story: queteMontree.story, index: queteMontree.index } : null);
+  const luDuSigne = signe && textes.quetes ? `${storyBadgeReading(textes.quetes, signe.story, signe.index)} ` : '';
+  const lecture = `${nom}. ${luDuSigne}${livree ? (posee ?? '') : enRappel ? enRappel.lu : phrase}`.trim();
   return (
     <Fiche
       titre={nom}
@@ -556,6 +629,15 @@ function FicheDeLaCreature({ ile, fiche, commande, onLivree, commandeEnCoursDePo
           >
             <Icon name="hammer" /> {textes.commandes?.livrer ?? 'Livrer'}
           </button>
+        ) : queteFaisable && !livree ? (
+          <StepButton
+            step={queteFaisable.step}
+            onClick={() => {
+              const { story, index } = queteFaisable;
+              const r = tapTheStep(story, { tapStory, onLivree, sons: settings.sounds });
+              if (r) setLivree({ id: story.id, text: r.text, quete: { story, index: r.finished ? story.steps.length : index + 1 } });
+            }}
+          />
         ) : (
           enRappel && <ReminderButtons biome={biome} rappel={enRappel} onRemis={() => setRemis(true)} />
         )
@@ -567,7 +649,11 @@ function FicheDeLaCreature({ ile, fiche, commande, onLivree, commandeEnCoursDePo
         </p>
       ) : livree ? (
         <p className="world-fiche-phrase commande-posee" role="status" aria-live="polite">
-          {posee ? <Syllabified text={frenchTypography(posee)} /> : null}
+          {signe && <StoryBadge story={signe.story} index={signe.index} />} {posee ? <Syllabified text={frenchTypography(posee)} /> : null}
+        </p>
+      ) : signe ? (
+        <p className="world-fiche-phrase">
+          <StoryBadge story={signe.story} index={signe.index} /> <Syllabified text={phrase} />
         </p>
       ) : (
         <Phrase text={phrase} />

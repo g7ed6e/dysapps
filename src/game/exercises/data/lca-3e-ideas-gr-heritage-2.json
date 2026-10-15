@@ -1,0 +1,239 @@
+{
+  "id": "lca-3e-ideas-gr-heritage-2",
+  "biome": "lca-3e-ideas",
+  "type": "gr-heritage",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-3e-ideas-gr-heritage-2-0",
+      "prompt": "Un « hydravion » se pose …",
+      "spoken": "Un « hydravion » se pose  (mot manquant) ",
+      "choices": [
+        "sur l’eau",
+        "sur la glace",
+        "sur une piste de sable"
+      ],
+      "answer": "sur l’eau",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Hudôr, l’eau : un hydravion décolle et se pose sur l’eau. Même racine : hydrater, déshydraté.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Racines grecques",
+          "lines": [
+            "anthrôpos : l’être humain ; philos : qui aime ; phobos : la peur.",
+            "hudôr : l’eau ; pur : le feu ; hippos : le cheval.",
+            "pous, podos : le pied ; odous, odontos : la dent ; kardia : le cœur.",
+            "monos : seul ; arkhê : le commandement ; kratos : le pouvoir.",
+            "anti- : contre ; sun-, en français syn- ou sym- : avec ; dia- : à travers.",
+            "Un mot savant assemble souvent deux racines : hippo- et -drome (la course), hippodrome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-2-1",
+      "prompt": "Un « pyromane » est attiré par …",
+      "spoken": "Un « pyromane » est attiré par  (mot manquant) ",
+      "choices": [
+        "les chevaux",
+        "le feu",
+        "l’eau"
+      ],
+      "answer": "le feu",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Pur, puros, le feu : un pyromane allume des incendies ; la pyrotechnie fabrique les feux d’artifice.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Racines grecques",
+          "lines": [
+            "anthrôpos : l’être humain ; philos : qui aime ; phobos : la peur.",
+            "hudôr : l’eau ; pur : le feu ; hippos : le cheval.",
+            "pous, podos : le pied ; odous, odontos : la dent ; kardia : le cœur.",
+            "monos : seul ; arkhê : le commandement ; kratos : le pouvoir.",
+            "anti- : contre ; sun-, en français syn- ou sym- : avec ; dia- : à travers.",
+            "Un mot savant assemble souvent deux racines : hippo- et -drome (la course), hippodrome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-2-2",
+      "prompt": "Le mot hippopotame\nhippos : le cheval\npotamos : le fleuve",
+      "question": "Que veut dire « hippopotame » ?",
+      "spoken": "Le mot hippopotame. Hipposs : le cheval. Potamoss : le fleuve.",
+      "choices": [
+        "le cheval du fleuve",
+        "le grand cheval",
+        "le fleuve des chevaux"
+      ],
+      "answer": "le cheval du fleuve",
+      "hint": "Est-ce un cheval, ou un fleuve ?",
+      "explanation": "Hippopotame veut dire « le cheval du fleuve » : les Grecs l’ont vu dans le Nil. C’est un animal, pas un fleuve.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Racines grecques",
+          "lines": [
+            "anthrôpos : l’être humain ; philos : qui aime ; phobos : la peur.",
+            "hudôr : l’eau ; pur : le feu ; hippos : le cheval.",
+            "pous, podos : le pied ; odous, odontos : la dent ; kardia : le cœur.",
+            "monos : seul ; arkhê : le commandement ; kratos : le pouvoir.",
+            "anti- : contre ; sun-, en français syn- ou sym- : avec ; dia- : à travers.",
+            "Un mot savant assemble souvent deux racines : hippo- et -drome (la course), hippodrome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-2-3",
+      "prompt": "Au théâtre, quand un personnage parle seul, c’est un …",
+      "spoken": "Au théâtre, quand un personnage parle seul, c’est un  (mot manquant) ",
+      "choices": [
+        "dialogue",
+        "monologue",
+        "prologue"
+      ],
+      "answer": "monologue",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Monos, seul, et logos, la parole : un monologue, c’est un personnage qui parle seul. Dans un dialogue (dia-, à travers, entre), on parle à deux ou plus.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Racines grecques",
+          "lines": [
+            "anthrôpos : l’être humain ; philos : qui aime ; phobos : la peur.",
+            "hudôr : l’eau ; pur : le feu ; hippos : le cheval.",
+            "pous, podos : le pied ; odous, odontos : la dent ; kardia : le cœur.",
+            "monos : seul ; arkhê : le commandement ; kratos : le pouvoir.",
+            "anti- : contre ; sun-, en français syn- ou sym- : avec ; dia- : à travers.",
+            "Un mot savant assemble souvent deux racines : hippo- et -drome (la course), hippodrome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-2-4",
+      "prompt": "Un « philanthrope » est une personne qui …",
+      "spoken": "Un « philanthrope » est une personne qui  (mot manquant) ",
+      "choices": [
+        "aime les êtres humains et les aide",
+        "a peur des autres",
+        "étudie les chevaux"
+      ],
+      "answer": "aime les êtres humains et les aide",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Philos (qui aime) et anthrôpos (l’être humain) : un philanthrope aime les êtres humains et les aide. Son contraire, le misanthrope, fuit les autres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Racines grecques",
+          "lines": [
+            "anthrôpos : l’être humain ; philos : qui aime ; phobos : la peur.",
+            "hudôr : l’eau ; pur : le feu ; hippos : le cheval.",
+            "pous, podos : le pied ; odous, odontos : la dent ; kardia : le cœur.",
+            "monos : seul ; arkhê : le commandement ; kratos : le pouvoir.",
+            "anti- : contre ; sun-, en français syn- ou sym- : avec ; dia- : à travers.",
+            "Un mot savant assemble souvent deux racines : hippo- et -drome (la course), hippodrome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-2-5",
+      "prompt": "Un « podologue » soigne …",
+      "spoken": "Un « podologue » soigne  (mot manquant) ",
+      "choices": [
+        "les dents",
+        "le cœur",
+        "les pieds"
+      ],
+      "answer": "les pieds",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Pous, podos, le pied : le podologue soigne les pieds. L’orthodontiste, lui, s’occupe des dents (odous, odontos) ; le cardiologue, du cœur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Racines grecques",
+          "lines": [
+            "anthrôpos : l’être humain ; philos : qui aime ; phobos : la peur.",
+            "hudôr : l’eau ; pur : le feu ; hippos : le cheval.",
+            "pous, podos : le pied ; odous, odontos : la dent ; kardia : le cœur.",
+            "monos : seul ; arkhê : le commandement ; kratos : le pouvoir.",
+            "anti- : contre ; sun-, en français syn- ou sym- : avec ; dia- : à travers.",
+            "Un mot savant assemble souvent deux racines : hippo- et -drome (la course), hippodrome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-2-6",
+      "prompt": "« Antipathie » : anti- et pathos, ce que l’on ressent. L’antipathie, c’est …",
+      "spoken": "Antipathie : anti, et patoss, ce que l’on ressent. L’antipathie, c’est (mot manquant)",
+      "choices": [
+        "un sentiment partagé avec quelqu’un",
+        "un sentiment contre quelqu’un",
+        "de la pitié"
+      ],
+      "answer": "un sentiment contre quelqu’un",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Anti- veut dire contre : l’antipathie, c’est ce que l’on ressent contre quelqu’un. Son contraire, la sympathie (sym-, avec), c’est ressentir avec l’autre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Racines grecques",
+          "lines": [
+            "anthrôpos : l’être humain ; philos : qui aime ; phobos : la peur.",
+            "hudôr : l’eau ; pur : le feu ; hippos : le cheval.",
+            "pous, podos : le pied ; odous, odontos : la dent ; kardia : le cœur.",
+            "monos : seul ; arkhê : le commandement ; kratos : le pouvoir.",
+            "anti- : contre ; sun-, en français syn- ou sym- : avec ; dia- : à travers.",
+            "Un mot savant assemble souvent deux racines : hippo- et -drome (la course), hippodrome."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-heritage-2-7",
+      "prompt": "Le mot « monarchie » veut dire …",
+      "spoken": "Le mot « monarchie » veut dire  (mot manquant) ",
+      "choices": [
+        "le pouvoir du peuple",
+        "le gouvernement des riches",
+        "le commandement d’un seul"
+      ],
+      "answer": "le commandement d’un seul",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Monos (seul) et arkhê (le commandement) : la monarchie, c’est un seul qui commande, comme un roi. La démocratie, c’est le pouvoir du peuple.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Racines grecques",
+          "lines": [
+            "anthrôpos : l’être humain ; philos : qui aime ; phobos : la peur.",
+            "hudôr : l’eau ; pur : le feu ; hippos : le cheval.",
+            "pous, podos : le pied ; odous, odontos : la dent ; kardia : le cœur.",
+            "monos : seul ; arkhê : le commandement ; kratos : le pouvoir.",
+            "anti- : contre ; sun-, en français syn- ou sym- : avec ; dia- : à travers.",
+            "Un mot savant assemble souvent deux racines : hippo- et -drome (la course), hippodrome."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-3e-ideas",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,255 @@
+{
+  "id": "lv2-3e-travel-es-media-2",
+  "biome": "lv2-3e-travel",
+  "type": "es-media",
+  "level": 2,
+  "lang": "es",
+  "instruction": "Lis la question, puis le document en espagnol : tu remplis une fiche. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "lv2-3e-travel-es-media-2-0",
+      "prompt": "Me llamo Lucía Martín Gil.\nTengo quince años.\nVivo en Bilbao.",
+      "question": "Que mets-tu à la ligne Nombre ?",
+      "spoken": "Me llamo Lucía Martín Gil. Tengo quince años. Vivo en Bilbao.",
+      "choices": [
+        "Lucía",
+        "Martín Gil",
+        "Lucía Martín"
+      ],
+      "choicesLang": "fr",
+      "answer": "Lucía",
+      "hint": "Attention : el nombre ne veut pas dire le nom. Relis la règle.",
+      "explanation": "el nombre = le prénom : Lucía. Martín Gil, ce sont ses apellidos, ses noms de famille.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rellenar una ficha",
+          "lines": [
+            "el nombre = le prénom ; los apellidos = les noms de famille",
+            "En Espagne, on a deux apellidos.",
+            "la fecha de nacimiento = la date de naissance ; nací = je suis né",
+            "la edad = l’âge ; la nacionalidad = la nationalité",
+            "la dirección = l’adresse ; la calle = la rue",
+            "las lenguas = les langues ; hablo = je parle"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-2-1",
+      "prompt": "Soy Diego Ruiz Torres.\nNací en Lima.\nVivo en Madrid con mi familia.",
+      "question": "Que mets-tu à la ligne Apellidos ?",
+      "spoken": "Soy Diego Ruiz Torres. Nací en Lima. Vivo en Madrid con mi familia.",
+      "choices": [
+        "Ruiz Torres",
+        "Ruiz",
+        "Diego Ruiz Torres"
+      ],
+      "choicesLang": "fr",
+      "answer": "Ruiz Torres",
+      "hint": "apellidos est au pluriel. Et Diego, qu’est-ce que c’est ?",
+      "explanation": "los apellidos = les noms de famille : Ruiz Torres, les deux. Diego est son nombre, son prénom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rellenar una ficha",
+          "lines": [
+            "el nombre = le prénom ; los apellidos = les noms de famille",
+            "En Espagne, on a deux apellidos.",
+            "la fecha de nacimiento = la date de naissance ; nací = je suis né",
+            "la edad = l’âge ; la nacionalidad = la nationalité",
+            "la dirección = l’adresse ; la calle = la rue",
+            "las lenguas = les langues ; hablo = je parle"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-2-2",
+      "prompt": "Me llamo Inés.\nNací el 5 de junio de 2011.",
+      "question": "Que mets-tu à la ligne Fecha de nacimiento ?",
+      "spoken": "Me llamo Inés. Nací el cinco de junio de dos mil once.",
+      "choices": [
+        "5 juin 2011",
+        "5 juillet 2011",
+        "15 juin 2011"
+      ],
+      "choicesLang": "fr",
+      "answer": "5 juin 2011",
+      "hint": "junio ou julio ? Et cinco, c’est combien ?",
+      "explanation": "el 5 de junio de 2011 = le 5 juin 2011. junio = juin, julio = juillet. cinco = 5 ; 15 se dirait quince.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rellenar una ficha",
+          "lines": [
+            "el nombre = le prénom ; los apellidos = les noms de famille",
+            "En Espagne, on a deux apellidos.",
+            "la fecha de nacimiento = la date de naissance ; nací = je suis né",
+            "la edad = l’âge ; la nacionalidad = la nationalité",
+            "la dirección = l’adresse ; la calle = la rue",
+            "las lenguas = les langues ; hablo = je parle"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-2-3",
+      "prompt": "Me llamo Mateo.\nVivo en Madrid, pero soy mexicano.\nMi madre es española.",
+      "question": "Que mets-tu à la ligne Nacionalidad ?",
+      "spoken": "Me llamo Mateo. Vivo en Madrid, pero soy mexicano. Mi madre es española.",
+      "choices": [
+        "Mexicain",
+        "Espagnol",
+        "Français"
+      ],
+      "choicesLang": "fr",
+      "answer": "Mexicain",
+      "hint": "Cherche soy (je suis), pas vivo (j’habite).",
+      "explanation": "Soy mexicano = je suis mexicain. Mateo vit à Madrid, mais il est mexicain ; c’est sa mère qui est espagnole.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rellenar una ficha",
+          "lines": [
+            "el nombre = le prénom ; los apellidos = les noms de famille",
+            "En Espagne, on a deux apellidos.",
+            "la fecha de nacimiento = la date de naissance ; nací = je suis né",
+            "la edad = l’âge ; la nacionalidad = la nationalité",
+            "la dirección = l’adresse ; la calle = la rue",
+            "las lenguas = les langues ; hablo = je parle"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-2-4",
+      "prompt": "Soy Carmen.\nVivo en la calle Mayor, número 8.\nMi ciudad es Bilbao.",
+      "question": "Que mets-tu à la ligne Dirección ?",
+      "spoken": "Soy Carmen. Vivo en la calle Mayor, número ocho. Mi ciudad es Bilbao.",
+      "choices": [
+        "Calle Mayor, 8",
+        "Bilbao",
+        "Calle Bilbao, 8"
+      ],
+      "choicesLang": "fr",
+      "answer": "Calle Mayor, 8",
+      "hint": "Attention : la dirección ne veut pas dire la direction. Relis la règle.",
+      "explanation": "la dirección = l’adresse : la rue et le numéro, calle Mayor, 8. Bilbao est sa ciudad, sa ville.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rellenar una ficha",
+          "lines": [
+            "el nombre = le prénom ; los apellidos = les noms de famille",
+            "En Espagne, on a deux apellidos.",
+            "la fecha de nacimiento = la date de naissance ; nací = je suis né",
+            "la edad = l’âge ; la nacionalidad = la nationalité",
+            "la dirección = l’adresse ; la calle = la rue",
+            "las lenguas = les langues ; hablo = je parle"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-2-5",
+      "prompt": "Me llamo Álex.\nTengo catorce años.\nMi hermano tiene doce.",
+      "question": "Que mets-tu à la ligne Edad ?",
+      "spoken": "Me llamo Álex. Tengo catorce años. Mi hermano tiene doce.",
+      "choices": [
+        "12",
+        "14",
+        "40"
+      ],
+      "choicesLang": "fr",
+      "answer": "14",
+      "hint": "la edad = l’âge. C’est l’âge d’Álex, pas celui de son frère.",
+      "explanation": "Tengo catorce años = j’ai 14 ans. catorce = 14 ; 40 se dirait cuarenta. doce (12), c’est l’âge de son frère.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rellenar una ficha",
+          "lines": [
+            "el nombre = le prénom ; los apellidos = les noms de famille",
+            "En Espagne, on a deux apellidos.",
+            "la fecha de nacimiento = la date de naissance ; nací = je suis né",
+            "la edad = l’âge ; la nacionalidad = la nationalité",
+            "la dirección = l’adresse ; la calle = la rue",
+            "las lenguas = les langues ; hablo = je parle"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-2-6",
+      "prompt": "Soy Jordi y vivo en Girona.\nHablo español y catalán.\nNo hablo inglés.",
+      "question": "Que mets-tu à la ligne Lenguas ?",
+      "spoken": "Soy Jordi y vivo en Girona. Hablo español y catalán. No hablo inglés.",
+      "choices": [
+        "Espagnol et catalan",
+        "Espagnol et anglais",
+        "Catalan seulement"
+      ],
+      "choicesLang": "fr",
+      "answer": "Espagnol et catalan",
+      "hint": "Cherche hablo (je parle). Et la ligne avec no ?",
+      "explanation": "Hablo español y catalán = je parle espagnol et catalan. No hablo inglés : il ne parle pas anglais. En Catalogne, on parle souvent les deux langues.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rellenar una ficha",
+          "lines": [
+            "el nombre = le prénom ; los apellidos = les noms de famille",
+            "En Espagne, on a deux apellidos.",
+            "la fecha de nacimiento = la date de naissance ; nací = je suis né",
+            "la edad = l’âge ; la nacionalidad = la nationalité",
+            "la dirección = l’adresse ; la calle = la rue",
+            "las lenguas = les langues ; hablo = je parle"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-2-7",
+      "prompt": "Ficha de inscripción\nNombre: Pablo\nApellidos: Sanz Ortega\nEdad: 15 años\nCiudad: Lima",
+      "question": "Lis la fiche. Quelle phrase est vraie ?",
+      "spoken": "Ficha de inscripción. Nombre: Pablo. Apellidos: Sanz Ortega. Edad: quince años. Ciudad: Lima.",
+      "choices": [
+        "Pablo vive en Lima.",
+        "Pablo tiene cinco años.",
+        "Su nombre es Sanz."
+      ],
+      "choicesLang": "es",
+      "answer": "Pablo vive en Lima.",
+      "hint": "Vérifie chaque phrase avec une ligne de la fiche.",
+      "explanation": "Ciudad: Lima, donc Pablo vive en Lima, il habite à Lima. Il a quince años, 15 ans, pas cinco. Sanz est un apellido, pas son nombre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Rellenar una ficha",
+          "lines": [
+            "el nombre = le prénom ; los apellidos = les noms de famille",
+            "En Espagne, on a deux apellidos.",
+            "la fecha de nacimiento = la date de naissance ; nací = je suis né",
+            "la edad = l’âge ; la nacionalidad = la nationalité",
+            "la dirección = l’adresse ; la calle = la rue",
+            "las lenguas = les langues ; hablo = je parle"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bien rempli !"
+  },
+  "reward": {
+    "block": "lv2-3e-travel",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

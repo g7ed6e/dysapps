@@ -5,9 +5,9 @@ import { Icon } from '../components/Icon';
 export function NotFoundPage() {
   return (
     <>
-      <Feedback shout="404" message="Zone introuvable. Retour au menu." tone="rate" autoSpeak={false} />
+      <Feedback shout="404" message="Zone introuvable. Retour à l’accueil." tone="rate" autoSpeak={false} />
       <Link to="/" className="button primary">
-        <Icon name="home" /> Menu
+        <Icon name="home" /> Accueil
       </Link>
     </>
   );

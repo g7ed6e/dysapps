@@ -1,0 +1,241 @@
+{
+  "id": "lca-3e-ideas-gr-myth-history-1",
+  "biome": "lca-3e-ideas",
+  "type": "gr-myth-history",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-3e-ideas-gr-myth-history-1-0",
+      "prompt": "La civilisation de Crète doit son nom au roi légendaire …",
+      "spoken": "La civilisation de Crète doit son nom au roi légendaire  (mot manquant) ",
+      "choices": [
+        "Minos",
+        "Persée",
+        "Agamemnon"
+      ],
+      "answer": "Minos",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Les Minoens tiennent leur nom de Minos, le roi légendaire de Crète. C’est un archéologue moderne, Arthur Evans, qui leur a donné ce nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Crète et Mycènes",
+          "lines": [
+            "Les Minoens : en Crète, de 2000 à 1450 avant J.-C., nommés d’après le roi Minos.",
+            "Cnossos : le grand palais de Crète, fouillé par Arthur Evans à partir de 1900.",
+            "Selon le mythe, le Minotaure est enfermé dans le labyrinthe du roi Minos.",
+            "Les Mycéniens : en Grèce continentale, de 1600 à 1100 avant J.-C. environ.",
+            "Mycènes : une citadelle aux murs énormes ; on y entre par la porte des Lionnes.",
+            "Le « masque d’Agamemnon », en or, est plus ancien que la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-1-1",
+      "prompt": "Le palais de Cnossos\nDes centaines de pièces, sur plusieurs étages.\nDes couloirs, des escaliers, des cours.\nOn s’y perd facilement.",
+      "question": "Quel mythe ce palais a-t-il pu inspirer ?",
+      "spoken": "Le palais de Cnossos. Des centaines de pièces, sur plusieurs étages. Des couloirs, des escaliers, des cours. On s’y perd facilement.",
+      "choices": [
+        "le cheval de Troie",
+        "le labyrinthe du Minotaure",
+        "la boîte de Pandore"
+      ],
+      "answer": "le labyrinthe du Minotaure",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Le palais de Cnossos, immense et compliqué, a peut-être inspiré le mythe du labyrinthe où le Minotaure est enfermé. C’est une hypothèse, pas une certitude.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Crète et Mycènes",
+          "lines": [
+            "Les Minoens : en Crète, de 2000 à 1450 avant J.-C., nommés d’après le roi Minos.",
+            "Cnossos : le grand palais de Crète, fouillé par Arthur Evans à partir de 1900.",
+            "Selon le mythe, le Minotaure est enfermé dans le labyrinthe du roi Minos.",
+            "Les Mycéniens : en Grèce continentale, de 1600 à 1100 avant J.-C. environ.",
+            "Mycènes : une citadelle aux murs énormes ; on y entre par la porte des Lionnes.",
+            "Le « masque d’Agamemnon », en or, est plus ancien que la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-1-2",
+      "prompt": "La porte des Lionnes ouvre la citadelle de …",
+      "spoken": "La porte des Lionnes ouvre la citadelle de  (mot manquant) ",
+      "choices": [
+        "Cnossos",
+        "Troie",
+        "Mycènes"
+      ],
+      "answer": "Mycènes",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "La porte des Lionnes, avec ses deux lionnes sculptées, ouvre la citadelle de Mycènes. Ses murs sont si énormes que les Grecs les disaient bâtis par des Cyclopes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Crète et Mycènes",
+          "lines": [
+            "Les Minoens : en Crète, de 2000 à 1450 avant J.-C., nommés d’après le roi Minos.",
+            "Cnossos : le grand palais de Crète, fouillé par Arthur Evans à partir de 1900.",
+            "Selon le mythe, le Minotaure est enfermé dans le labyrinthe du roi Minos.",
+            "Les Mycéniens : en Grèce continentale, de 1600 à 1100 avant J.-C. environ.",
+            "Mycènes : une citadelle aux murs énormes ; on y entre par la porte des Lionnes.",
+            "Le « masque d’Agamemnon », en or, est plus ancien que la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-1-3",
+      "prompt": "Le masque d’Agamemnon\nUn masque d’or trouvé dans une tombe de Mycènes, en 1876.\nSchliemann croit voir le visage du roi Agamemnon.\nLes archéologues le datent d’environ 1550 avant J.-C.",
+      "question": "Pourquoi ce masque ne peut-il pas être celui d’Agamemnon ?",
+      "spoken": "Le masque d’Agamemnon. Un masque d’or trouvé dans une tombe de Mycènes, en mille huit cent soixante-seize. Schliemann croit voir le visage du roi Agamemnon. Les archéologues le datent d’environ mille cinq cent cinquante avant Jésus-Christ.",
+      "choices": [
+        "il est plus ancien que la guerre de Troie",
+        "il est en argent",
+        "il vient de Troie"
+      ],
+      "answer": "il est plus ancien que la guerre de Troie",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Le masque date d’environ 1550 avant J.-C., bien avant la guerre de Troie, que l’on place vers 1200 avant J.-C. Schliemann s’est trompé de roi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Crète et Mycènes",
+          "lines": [
+            "Les Minoens : en Crète, de 2000 à 1450 avant J.-C., nommés d’après le roi Minos.",
+            "Cnossos : le grand palais de Crète, fouillé par Arthur Evans à partir de 1900.",
+            "Selon le mythe, le Minotaure est enfermé dans le labyrinthe du roi Minos.",
+            "Les Mycéniens : en Grèce continentale, de 1600 à 1100 avant J.-C. environ.",
+            "Mycènes : une citadelle aux murs énormes ; on y entre par la porte des Lionnes.",
+            "Le « masque d’Agamemnon », en or, est plus ancien que la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-1-4",
+      "prompt": "Les Mycéniens vivent …",
+      "spoken": "Les Mycéniens vivent  (mot manquant) ",
+      "choices": [
+        "en Crète",
+        "en Grèce continentale",
+        "en Égypte"
+      ],
+      "answer": "en Grèce continentale",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Les Mycéniens vivent en Grèce continentale, dans des cités fortifiées comme Mycènes. Ils écrivent déjà une forme ancienne de grec.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Crète et Mycènes",
+          "lines": [
+            "Les Minoens : en Crète, de 2000 à 1450 avant J.-C., nommés d’après le roi Minos.",
+            "Cnossos : le grand palais de Crète, fouillé par Arthur Evans à partir de 1900.",
+            "Selon le mythe, le Minotaure est enfermé dans le labyrinthe du roi Minos.",
+            "Les Mycéniens : en Grèce continentale, de 1600 à 1100 avant J.-C. environ.",
+            "Mycènes : une citadelle aux murs énormes ; on y entre par la porte des Lionnes.",
+            "Le « masque d’Agamemnon », en or, est plus ancien que la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-1-5",
+      "prompt": "L’archéologue qui fouille le palais de Cnossos à partir de 1900 s’appelle …",
+      "spoken": "L’archéologue qui fouille le palais de Cnossos à partir de mille neuf cents s’appelle (mot manquant)",
+      "choices": [
+        "Heinrich Schliemann",
+        "Arthur Evans",
+        "Homère"
+      ],
+      "answer": "Arthur Evans",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Arthur Evans, un archéologue anglais, fouille Cnossos à partir de 1900. Schliemann, lui, a fouillé Troie et Mycènes ; Homère est le poète de l’Iliade.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Crète et Mycènes",
+          "lines": [
+            "Les Minoens : en Crète, de 2000 à 1450 avant J.-C., nommés d’après le roi Minos.",
+            "Cnossos : le grand palais de Crète, fouillé par Arthur Evans à partir de 1900.",
+            "Selon le mythe, le Minotaure est enfermé dans le labyrinthe du roi Minos.",
+            "Les Mycéniens : en Grèce continentale, de 1600 à 1100 avant J.-C. environ.",
+            "Mycènes : une citadelle aux murs énormes ; on y entre par la porte des Lionnes.",
+            "Le « masque d’Agamemnon », en or, est plus ancien que la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-1-6",
+      "prompt": "Selon le mythe, le Minotaure est enfermé dans …",
+      "spoken": "Selon le mythe, le Minotaure est enfermé dans  (mot manquant) ",
+      "choices": [
+        "un palais d’or",
+        "une île déserte",
+        "le labyrinthe"
+      ],
+      "answer": "le labyrinthe",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Le Minotaure vit enfermé dans le labyrinthe, construit par Dédale pour le roi Minos. D’où « un dédale » : un endroit où l’on se perd.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Crète et Mycènes",
+          "lines": [
+            "Les Minoens : en Crète, de 2000 à 1450 avant J.-C., nommés d’après le roi Minos.",
+            "Cnossos : le grand palais de Crète, fouillé par Arthur Evans à partir de 1900.",
+            "Selon le mythe, le Minotaure est enfermé dans le labyrinthe du roi Minos.",
+            "Les Mycéniens : en Grèce continentale, de 1600 à 1100 avant J.-C. environ.",
+            "Mycènes : une citadelle aux murs énormes ; on y entre par la porte des Lionnes.",
+            "Le « masque d’Agamemnon », en or, est plus ancien que la guerre de Troie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-3e-ideas-gr-myth-history-1-7",
+      "prompt": "Deux civilisations\nMinoens : en Crète, de 2000 à 1450 avant J.-C. environ.\nMycéniens : en Grèce, de 1600 à 1100 avant J.-C. environ.",
+      "question": "Laquelle commence la première ?",
+      "spoken": "Deux civilisations. Minoens : en Crète, de deux mille à mille quatre cent cinquante avant Jésus-Christ environ. Mycéniens : en Grèce, de mille six cents à mille cent avant Jésus-Christ environ.",
+      "choices": [
+        "les Minoens",
+        "les Mycéniens",
+        "les deux en même temps"
+      ],
+      "answer": "les Minoens",
+      "hint": "Avant J.-C., on compte à rebours : le plus grand nombre est le plus ancien.",
+      "explanation": "2000 avant J.-C. est plus ancien que 1600 avant J.-C. : les Minoens viennent d’abord. Les Mycéniens s’installent ensuite en Crète, vers 1450 avant J.-C.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Crète et Mycènes",
+          "lines": [
+            "Les Minoens : en Crète, de 2000 à 1450 avant J.-C., nommés d’après le roi Minos.",
+            "Cnossos : le grand palais de Crète, fouillé par Arthur Evans à partir de 1900.",
+            "Selon le mythe, le Minotaure est enfermé dans le labyrinthe du roi Minos.",
+            "Les Mycéniens : en Grèce continentale, de 1600 à 1100 avant J.-C. environ.",
+            "Mycènes : une citadelle aux murs énormes ; on y entre par la porte des Lionnes.",
+            "Le « masque d’Agamemnon », en or, est plus ancien que la guerre de Troie."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-3e-ideas",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

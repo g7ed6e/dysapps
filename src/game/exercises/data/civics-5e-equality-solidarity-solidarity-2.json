@@ -1,0 +1,243 @@
+{
+  "id": "civics-5e-equality-solidarity-solidarity-2",
+  "biome": "civics-5e-equality-solidarity",
+  "type": "solidarity",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-2-0",
+      "prompt": "Après une inondation\nLes pompiers mettent les habitants à l’abri.\nL’État aide à reconstruire.\nUne association distribue des vêtements.",
+      "question": "Que montre ce document ?",
+      "spoken": "Après une inondation. Les pompiers mettent les habitants à l’abri. L’État aide à reconstruire. Une association distribue des vêtements.",
+      "choices": [
+        "seuls les pompiers aident",
+        "plusieurs acteurs s’unissent pour aider",
+        "les habitants doivent tout payer seuls"
+      ],
+      "answer": "plusieurs acteurs s’unissent pour aider",
+      "hint": "Compte qui agit, ligne par ligne.",
+      "explanation": "Les pompiers, l’État et une association agissent ensemble : la solidarité nationale unit leurs forces pour aider les habitants.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité, de la commune au monde",
+          "lines": [
+            "L’État, les collectivités et les associations unissent leurs forces.",
+            "Un impôt direct se paie selon ce que l’on gagne ; un impôt indirect, sur ce que l’on achète.",
+            "Les risques environnementaux : incendies, inondations, pollutions.",
+            "L’Union européenne aide ses régions et ses pays en difficulté.",
+            "Les associations humanitaires et les institutions internationales aident partout dans le monde.",
+            "Prévenir : agir avant, pour éviter le pire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-2-1",
+      "prompt": "La loi du 13 août 2004\nLa sécurité civile est l’affaire de tous.\nÀ l’école, chaque élève apprend les premiers gestes de secours.",
+      "question": "Que dit cette loi ?",
+      "spoken": "La loi du treize août deux mille quatre. La sécurité civile est l’affaire de tous. À l’école, chaque élève apprend les premiers gestes de secours.",
+      "choices": [
+        "seuls les pompiers s’occupent de la sécurité",
+        "tout le monde participe à la sécurité civile",
+        "la sécurité ne concerne pas les élèves"
+      ],
+      "answer": "tout le monde participe à la sécurité civile",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "La loi de 2004 dit que la sécurité civile est l’affaire de tous : chacun peut prévenir et porter secours. Les élèves apprennent les premiers gestes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité, de la commune au monde",
+          "lines": [
+            "L’État, les collectivités et les associations unissent leurs forces.",
+            "Un impôt direct se paie selon ce que l’on gagne ; un impôt indirect, sur ce que l’on achète.",
+            "Les risques environnementaux : incendies, inondations, pollutions.",
+            "L’Union européenne aide ses régions et ses pays en difficulté.",
+            "Les associations humanitaires et les institutions internationales aident partout dans le monde.",
+            "Prévenir : agir avant, pour éviter le pire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-2-2",
+      "prompt": "La TVA est payée sur ce que l’on achète : c’est un impôt …",
+      "spoken": "La T V A est payée sur ce que l’on achète : c’est un impôt (mot manquant)",
+      "choices": [
+        "direct",
+        "indirect",
+        "local"
+      ],
+      "answer": "indirect",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "La taxe sur la valeur ajoutée se paie sur ce que l’on achète : c’est un impôt indirect. L’impôt sur le revenu, lui, se paie selon ce que l’on gagne : c’est un impôt direct.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité, de la commune au monde",
+          "lines": [
+            "L’État, les collectivités et les associations unissent leurs forces.",
+            "Un impôt direct se paie selon ce que l’on gagne ; un impôt indirect, sur ce que l’on achète.",
+            "Les risques environnementaux : incendies, inondations, pollutions.",
+            "L’Union européenne aide ses régions et ses pays en difficulté.",
+            "Les associations humanitaires et les institutions internationales aident partout dans le monde.",
+            "Prévenir : agir avant, pour éviter le pire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-2-3",
+      "prompt": "Une région d’Europe touchée par un séisme\nL’Union européenne envoie de l’argent pour reconstruire.\nDes secouristes d’autres pays viennent aider.",
+      "question": "À quelle échelle se fait cette solidarité ?",
+      "spoken": "Une région d’Europe touchée par un séisme. L’Union européenne envoie de l’argent pour reconstruire. Des secouristes d’autres pays viennent aider.",
+      "choices": [
+        "à l’échelle de la commune",
+        "à l’échelle de la famille",
+        "à l’échelle européenne"
+      ],
+      "answer": "à l’échelle européenne",
+      "hint": "Qui envoie l’argent ?",
+      "explanation": "L’Union européenne et des secouristes d’autres pays aident : c’est une solidarité à l’échelle européenne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité, de la commune au monde",
+          "lines": [
+            "L’État, les collectivités et les associations unissent leurs forces.",
+            "Un impôt direct se paie selon ce que l’on gagne ; un impôt indirect, sur ce que l’on achète.",
+            "Les risques environnementaux : incendies, inondations, pollutions.",
+            "L’Union européenne aide ses régions et ses pays en difficulté.",
+            "Les associations humanitaires et les institutions internationales aident partout dans le monde.",
+            "Prévenir : agir avant, pour éviter le pire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-2-4",
+      "prompt": "L’accord de Paris sur le climat, en 2015\nLes pays développés aident les pays en développement.\nBut : faire face au changement climatique.",
+      "question": "Qui aide qui ?",
+      "spoken": "L’accord de Paris sur le climat, en deux mille quinze. Les pays développés aident les pays en développement. But : faire face au changement climatique.",
+      "choices": [
+        "les pays développés aident les pays en développement",
+        "les pays en développement aident les pays développés",
+        "chaque pays reste seul"
+      ],
+      "answer": "les pays développés aident les pays en développement",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "L’accord de Paris prévoit l’aide des pays développés aux pays en développement face au changement climatique : une solidarité mondiale.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité, de la commune au monde",
+          "lines": [
+            "L’État, les collectivités et les associations unissent leurs forces.",
+            "Un impôt direct se paie selon ce que l’on gagne ; un impôt indirect, sur ce que l’on achète.",
+            "Les risques environnementaux : incendies, inondations, pollutions.",
+            "L’Union européenne aide ses régions et ses pays en difficulté.",
+            "Les associations humanitaires et les institutions internationales aident partout dans le monde.",
+            "Prévenir : agir avant, pour éviter le pire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-2-5",
+      "prompt": "Des médecins d’une ONG soignent des blessés dans un autre pays : c’est une aide …",
+      "spoken": "Des médecins d’une O N G soignent des blessés dans un autre pays : c’est une aide (mot manquant)",
+      "choices": [
+        "militaire",
+        "humanitaire",
+        "commerciale"
+      ],
+      "answer": "humanitaire",
+      "hint": "Soigner des personnes en danger, sans rien vendre ni combattre.",
+      "explanation": "Soigner des blessés, nourrir, abriter : c’est une aide humanitaire. L’association qui les envoie est une organisation non gouvernementale.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité, de la commune au monde",
+          "lines": [
+            "L’État, les collectivités et les associations unissent leurs forces.",
+            "Un impôt direct se paie selon ce que l’on gagne ; un impôt indirect, sur ce que l’on achète.",
+            "Les risques environnementaux : incendies, inondations, pollutions.",
+            "L’Union européenne aide ses régions et ses pays en difficulté.",
+            "Les associations humanitaires et les institutions internationales aident partout dans le monde.",
+            "Prévenir : agir avant, pour éviter le pire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-2-6",
+      "prompt": "L’école publique\nElle est gratuite pour tous les élèves.\nL’État paie les professeurs.\nLes collectivités entretiennent les bâtiments.",
+      "question": "Pourquoi l’école publique est-elle une forme de solidarité ?",
+      "spoken": "L’école publique. Elle est gratuite pour tous les élèves. L’État paie les professeurs. Les collectivités entretiennent les bâtiments.",
+      "choices": [
+        "seuls ceux qui paient y vont",
+        "elle est payée par les élèves",
+        "chacun y a accès, quels que soient ses moyens"
+      ],
+      "answer": "chacun y a accès, quels que soient ses moyens",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "L’école publique est gratuite, payée par les impôts de tous : chacun a accès à la connaissance, quels que soient ses moyens. C’est une solidarité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité, de la commune au monde",
+          "lines": [
+            "L’État, les collectivités et les associations unissent leurs forces.",
+            "Un impôt direct se paie selon ce que l’on gagne ; un impôt indirect, sur ce que l’on achète.",
+            "Les risques environnementaux : incendies, inondations, pollutions.",
+            "L’Union européenne aide ses régions et ses pays en difficulté.",
+            "Les associations humanitaires et les institutions internationales aident partout dans le monde.",
+            "Prévenir : agir avant, pour éviter le pire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-solidarity-2-7",
+      "prompt": "Le vaccin contre la grippe, proposé gratuitement aux personnes âgées, est une politique de …",
+      "spoken": "Le vaccin contre la grippe, proposé gratuitement aux personnes âgées, est une politique de  (mot manquant) ",
+      "choices": [
+        "prévention",
+        "sanction",
+        "publicité"
+      ],
+      "answer": "prévention",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Vacciner avant l’hiver évite des maladies graves : c’est de la prévention. L’État protège la santé de tous, et chacun en est aussi responsable.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La solidarité, de la commune au monde",
+          "lines": [
+            "L’État, les collectivités et les associations unissent leurs forces.",
+            "Un impôt direct se paie selon ce que l’on gagne ; un impôt indirect, sur ce que l’on achète.",
+            "Les risques environnementaux : incendies, inondations, pollutions.",
+            "L’Union européenne aide ses régions et ses pays en difficulté.",
+            "Les associations humanitaires et les institutions internationales aident partout dans le monde.",
+            "Prévenir : agir avant, pour éviter le pire."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-5e-equality-solidarity",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

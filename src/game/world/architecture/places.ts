@@ -8,6 +8,8 @@ import type { PlaceId, VoxelCube, VillagePlaceId } from '../cube';
 import type { TextureKind } from '../pixels';
 import type { CaseDuLieu, Famille, Kit } from './kits';
 import { classeDe, type Classe, type IndexDuPlan } from './neighborhood';
+import type { ManiereDuMur } from './paint';
+import type { DessinDePiece } from './rooms';
 
 /** Le lieu d'un cube est-il un lieu du village (l'école, la salle des trophées, le lieu où l'on assemble), et non un monument ? */
 export const estUnLieuDuVillage = (place: PlaceId | undefined): place is VillagePlaceId => place === 'school' || place === 'trophies' || place === 'assembly';
@@ -17,6 +19,8 @@ interface BlocDuLieu {
   famille: Famille;
   classe: Classe;
   sansDecharge: boolean;
+  /** Son dessin, quand sa famille ne le dit pas seule (la cloche, la tenture). */
+  dessin?: DessinDePiece | ManiereDuMur;
 }
 
 export interface LieuxDuKit {
@@ -54,7 +58,7 @@ export function lieuxDuKit(kit: Kit, cubes: readonly VoxelCube[], caseDuLieu: (c
     if (!classe) continue;
     const k = cle(c.x, c.y, c.z);
     out.index.set(k, classe);
-    if (r?.famille) out.blocs.set(k, { famille: r.famille, classe, sansDecharge: Boolean(r.sansDecharge) });
+    if (r?.famille) out.blocs.set(k, { famille: r.famille, classe, sansDecharge: Boolean(r.sansDecharge), ...(r.dessin ? { dessin: r.dessin } : {}) });
     if (r?.couverture) out.couverts.add(k);
     if (r?.matiere) out.matieres.set(k, r.matiere);
   }

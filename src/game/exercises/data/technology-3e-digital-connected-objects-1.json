@@ -1,0 +1,234 @@
+{
+  "id": "technology-3e-digital-connected-objects-1",
+  "biome": "technology-3e-digital",
+  "type": "connected-objects",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-3e-digital-connected-objects-1-0",
+      "prompt": "La montre qui envoie les pas comptés au téléphone est un objet …",
+      "spoken": "La montre qui envoie les pas comptés au téléphone est un objet  (mot manquant) ",
+      "choices": [
+        "mécanique",
+        "connecté",
+        "naturel"
+      ],
+      "answer": "connecté",
+      "hint": "Relis la ligne « Un objet connecté » du rappel.",
+      "explanation": "La montre échange des données avec le téléphone : c’est un objet connecté.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets évoluent",
+          "lines": [
+            "Un objet évolue avec les besoins, les progrès techniques et la société.",
+            "Un objet connecté échange des données par un réseau.",
+            "On peut le commander à distance, avec un téléphone.",
+            "Les objets changent la vie des gens : travailler, payer, se déplacer.",
+            "Lire une frise : d’abord, ensuite, aujourd’hui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-1-1",
+      "prompt": "Les cartes pour se déplacer\nD’abord : la carte en papier.\nEnsuite : le boîtier de navigation dans la voiture.\nAujourd’hui : l’application de cartes sur le téléphone.",
+      "question": "Quel progrès technique a permis l’application ?",
+      "spoken": "Les cartes pour se déplacer. D’abord, la carte en papier. Ensuite, le boîtier de navigation dans la voiture. Aujourd’hui, l’application de cartes sur le téléphone.",
+      "choices": [
+        "un papier plus solide",
+        "le téléphone connecté, qui sait où il est",
+        "des voitures plus rapides"
+      ],
+      "answer": "le téléphone connecté, qui sait où il est",
+      "hint": "Sur quel objet est l’application ?",
+      "explanation": "Le téléphone connecté sait où il se trouve et reçoit les cartes par le réseau : c’est ce progrès qui a permis l’application.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets évoluent",
+          "lines": [
+            "Un objet évolue avec les besoins, les progrès techniques et la société.",
+            "Un objet connecté échange des données par un réseau.",
+            "On peut le commander à distance, avec un téléphone.",
+            "Les objets changent la vie des gens : travailler, payer, se déplacer.",
+            "Lire une frise : d’abord, ensuite, aujourd’hui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-1-2",
+      "prompt": "Lancer le chauffage de la maison depuis son téléphone, c’est le commander à …",
+      "spoken": "Lancer le chauffage de la maison depuis son téléphone, c’est le commander à  (mot manquant) ",
+      "choices": [
+        "distance",
+        "la main",
+        "l’heure"
+      ],
+      "answer": "distance",
+      "hint": "Relis la ligne « On peut le commander » du rappel.",
+      "explanation": "On n’est pas à côté du chauffage : on le commande à distance, par le réseau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets évoluent",
+          "lines": [
+            "Un objet évolue avec les besoins, les progrès techniques et la société.",
+            "Un objet connecté échange des données par un réseau.",
+            "On peut le commander à distance, avec un téléphone.",
+            "Les objets changent la vie des gens : travailler, payer, se déplacer.",
+            "Lire une frise : d’abord, ensuite, aujourd’hui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-1-3",
+      "prompt": "Payer au magasin\nD’abord : les pièces et les billets.\nEnsuite : la carte bancaire, avec un code.\nAujourd’hui : on approche la carte ou le téléphone, sans contact.",
+      "question": "Qu’est-ce qui a changé pour les gens ?",
+      "spoken": "Payer au magasin. D’abord, les pièces et les billets. Ensuite, la carte bancaire, avec un code. Aujourd’hui, on approche la carte ou le téléphone, sans contact.",
+      "choices": [
+        "on paie seulement en billets",
+        "on paie plus vite, sans sortir d’argent",
+        "on ne va plus au magasin"
+      ],
+      "answer": "on paie plus vite, sans sortir d’argent",
+      "hint": "Relis la dernière ligne du document.",
+      "explanation": "Aujourd’hui, on paie en approchant sa carte ou son téléphone : plus vite, sans pièces ni billets. L’objet a changé une habitude.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets évoluent",
+          "lines": [
+            "Un objet évolue avec les besoins, les progrès techniques et la société.",
+            "Un objet connecté échange des données par un réseau.",
+            "On peut le commander à distance, avec un téléphone.",
+            "Les objets changent la vie des gens : travailler, payer, se déplacer.",
+            "Lire une frise : d’abord, ensuite, aujourd’hui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-1-4",
+      "prompt": "L’enceinte connectée répond quand on lui parle : elle échange des données par un …",
+      "spoken": "L’enceinte connectée répond quand on lui parle : elle échange des données par un  (mot manquant) ",
+      "choices": [
+        "haut-parleur",
+        "réseau",
+        "câble électrique"
+      ],
+      "answer": "réseau",
+      "hint": "Relis la ligne « Un objet connecté » du rappel.",
+      "explanation": "L’enceinte envoie la question par le réseau, et reçoit la réponse. Son haut-parleur, lui, sert à la dire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets évoluent",
+          "lines": [
+            "Un objet évolue avec les besoins, les progrès techniques et la société.",
+            "Un objet connecté échange des données par un réseau.",
+            "On peut le commander à distance, avec un téléphone.",
+            "Les objets changent la vie des gens : travailler, payer, se déplacer.",
+            "Lire une frise : d’abord, ensuite, aujourd’hui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-1-5",
+      "prompt": "Travailler à la maison\nAvec internet, des parents travaillent depuis chez eux.\nIls font des réunions en vidéo.",
+      "question": "Quel changement ces objets ont-ils apporté ?",
+      "spoken": "Travailler à la maison. Avec internet, des parents travaillent depuis chez eux. Ils font des réunions en vidéo.",
+      "choices": [
+        "travailler sans aller au bureau",
+        "travailler sans ordinateur",
+        "travailler seulement la nuit"
+      ],
+      "answer": "travailler sans aller au bureau",
+      "hint": "Relis la deuxième ligne du document.",
+      "explanation": "Grâce à internet et à la vidéo, certains travaillent depuis chez eux : les objets connectés ont changé la façon de travailler.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets évoluent",
+          "lines": [
+            "Un objet évolue avec les besoins, les progrès techniques et la société.",
+            "Un objet connecté échange des données par un réseau.",
+            "On peut le commander à distance, avec un téléphone.",
+            "Les objets changent la vie des gens : travailler, payer, se déplacer.",
+            "Lire une frise : d’abord, ensuite, aujourd’hui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-1-6",
+      "prompt": "La sonnette connectée envoie une alerte au téléphone quand quelqu’un sonne : elle … une information.",
+      "spoken": "La sonnette connectée envoie une alerte au téléphone quand quelqu’un sonne : elle  (mot manquant)  une information.",
+      "choices": [
+        "fabrique",
+        "recycle",
+        "communique"
+      ],
+      "answer": "communique",
+      "hint": "Elle envoie l’alerte à un autre objet.",
+      "explanation": "Envoyer l’alerte au téléphone, c’est communiquer une information, par le réseau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets évoluent",
+          "lines": [
+            "Un objet évolue avec les besoins, les progrès techniques et la société.",
+            "Un objet connecté échange des données par un réseau.",
+            "On peut le commander à distance, avec un téléphone.",
+            "Les objets changent la vie des gens : travailler, payer, se déplacer.",
+            "Lire une frise : d’abord, ensuite, aujourd’hui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-1-7",
+      "prompt": "L’ampoule connectée\nOn l’allume avec une application.\nOn choisit sa couleur.\nOn règle l’heure où elle s’éteint.",
+      "question": "Qu’est-ce qui la rend connectée ?",
+      "spoken": "L’ampoule connectée. On l’allume avec une application. On choisit sa couleur. On règle l’heure où elle s’éteint.",
+      "choices": [
+        "elle éclaire en couleur",
+        "elle reçoit des ordres par le réseau",
+        "elle consomme peu"
+      ],
+      "answer": "elle reçoit des ordres par le réseau",
+      "hint": "Relis la ligne « Un objet connecté » du rappel.",
+      "explanation": "L’ampoule reçoit les ordres de l’application par le réseau : c’est ce qui la rend connectée. Éclairer en couleur ne demande pas de réseau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets évoluent",
+          "lines": [
+            "Un objet évolue avec les besoins, les progrès techniques et la société.",
+            "Un objet connecté échange des données par un réseau.",
+            "On peut le commander à distance, avec un téléphone.",
+            "Les objets changent la vie des gens : travailler, payer, se déplacer.",
+            "Lire une frise : d’abord, ensuite, aujourd’hui."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-3e-digital",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

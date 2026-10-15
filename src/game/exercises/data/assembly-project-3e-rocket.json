@@ -1,0 +1,309 @@
+{
+  "id": "assembly-project-3e-rocket",
+  "bloc": "project-3e-rocket",
+  "type": "assembly",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Lis l’énoncé en anglais, puis choisis la phrase juste. Le rappel est affiché.",
+  "programme": [
+    "c4.en.lire.informations",
+    "c4.en.langue.phrase-complexe",
+    "c4.pc.mouvement.decrire",
+    "c4.pc.mouvement.forces",
+    "c4.pc.energie.formes"
+  ],
+  "items": [
+    {
+      "key": "project-3e-rocket-0",
+      "prompt": "Launch day\nThe rocket goes faster and faster.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Launch day. The rocket goes faster and faster.",
+      "choices": [
+        "Its speed goes up, so its motion is accelerated.",
+        "Its speed goes up, but its motion is accelerated.",
+        "Its speed goes up, so its motion is uniform."
+      ],
+      "answer": "Its speed goes up, so its motion is accelerated.",
+      "hint": "D’abord : la vitesse augmente-t-elle ? Puis : est-ce une conséquence, ou une opposition ?",
+      "explanation": "faster and faster, de plus en plus vite : la vitesse augmente, le mouvement est accéléré (accelerated) ; uniforme (uniform), elle ne changerait pas. C’est une conséquence : so, donc ; but, mais, dirait une opposition.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "So, et le mouvement accéléré",
+          "lines": [
+            "so = donc (la conséquence) ; but = mais (l’opposition)",
+            "accelerated = accéléré, la vitesse augmente ; uniform = uniforme, elle ne change pas"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-rocket-1",
+      "prompt": "On the Moon, the astronaut’s mass is 80 kg (kilograms).\nHer weight is 6 times smaller than on Earth.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "On the Moon, the astronaut’s mass is eighty kilograms. Her weight is six times smaller than on Earth.",
+      "choices": [
+        "Her weight is smaller, but her mass is still 80 kilograms.",
+        "Her weight is smaller, because her mass is still 80 kilograms.",
+        "Her weight is smaller, so her mass is smaller too."
+      ],
+      "answer": "Her weight is smaller, but her mass is still 80 kilograms.",
+      "hint": "D’abord : sur la Lune, la masse change-t-elle ? Puis : le poids plus petit et la masse qui reste, est-ce une cause, ou une opposition ?",
+      "explanation": "La masse est la même partout : 80 kilogrammes, sur la Lune aussi. Seul le poids change. Les deux idées s’opposent : but, mais. because, parce que, ferait de la masse la cause du poids plus petit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "But, et la masse",
+          "lines": [
+            "but = mais (l’opposition) ; because = parce que (la cause)",
+            "mass = la masse, la même partout ; weight = le poids, plus petit sur la Lune"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-rocket-2",
+      "prompt": "The rocket waits on the launch pad.\nIt does not move compared to the ground.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "The rocket waits on the launch pad. It does not move compared to the ground.",
+      "choices": [
+        "Although it seems still, it moves with the Earth around the Sun.",
+        "Despite it seems still, it moves with the Earth around the Sun.",
+        "Although it seems still, it does not move compared to the Sun."
+      ],
+      "answer": "Although it seems still, it moves with the Earth around the Sun.",
+      "hint": "D’abord : la Terre tourne-t-elle autour du Soleil ? Puis : après despite, une phrase ou un nom ?",
+      "explanation": "La fusée est immobile par rapport au sol, mais la Terre tourne autour du Soleil : par rapport au Soleil, la fusée bouge avec elle. Devant une phrase (it seems still), on met although ; despite va devant un nom (despite the wind).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Although, et le point de vue",
+          "lines": [
+            "although = bien que (+ phrase) ; despite = malgré (+ nom)",
+            "Un mouvement se décrit par rapport à un objet : le sol, ou le Soleil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-rocket-3",
+      "prompt": "First, the rocket climbs 30 km (kilometres) in 2 minutes.\nThen, it turns towards the east.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "First, the rocket climbs thirty kilometres in two minutes. Then, it turns towards the east.",
+      "choices": [
+        "First, it climbs at 15 kilometres per minute; then, it turns.",
+        "First, it climbs at 60 kilometres per minute; then, it turns.",
+        "Finally, it climbs at 15 kilometres per minute; first, it turns."
+      ],
+      "answer": "First, it climbs at 15 kilometres per minute; then, it turns.",
+      "hint": "D’abord : partage 30 kilomètres en 2 minutes. Puis : qu’est-ce qui vient en premier ?",
+      "explanation": "La vitesse, c’est la distance divisée par la durée : 30 ÷ 2 = 15 kilomètres par minute. 60, c’est 30 × 2 : on a multiplié au lieu de diviser. Le document dit first, d’abord, la montée ; then, ensuite, le virage.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "First, then, et la vitesse",
+          "lines": [
+            "first = d’abord ; then = ensuite ; finally = enfin",
+            "Vitesse = distance ÷ durée."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-rocket-4",
+      "prompt": "The satellite turns around the Earth.\nThe Earth pulls it all the time.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "The satellite turns around the Earth. The Earth pulls it all the time.",
+      "choices": [
+        "It turns around the Earth because the Earth attracts it.",
+        "It turns around the Earth, so the Earth attracts it.",
+        "It turns around the Earth because the Earth pushes it away."
+      ],
+      "answer": "It turns around the Earth because the Earth attracts it.",
+      "hint": "D’abord : la Terre attire-t-elle, ou repousse-t-elle ? Puis : l’attraction est-elle la cause, ou la conséquence ?",
+      "explanation": "pulls, tire : la Terre attire le satellite, c’est la gravitation ; elle ne le repousse pas. C’est cette attraction qui le fait tourner : la cause, because. so, donc, ferait de l’attraction une conséquence.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Because, et la gravitation",
+          "lines": [
+            "because = parce que (la cause) ; so = donc (la conséquence)",
+            "pull = tirer, attirer ; la Terre attire tout ce qui a une masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-rocket-5",
+      "prompt": "Day 2 in orbit\nThe space station goes round and round the Earth.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Day two in orbit. The space station goes round and round the Earth.",
+      "choices": [
+        "When it goes round the Earth, its path is a circle.",
+        "Unless it goes round the Earth, its path is a circle.",
+        "When it goes round the Earth, its path is a straight line."
+      ],
+      "answer": "When it goes round the Earth, its path is a circle.",
+      "hint": "D’abord : faire le tour de la Terre, quelle trajectoire ? Puis : when, ou unless ?",
+      "explanation": "goes round and round, elle tourne autour : sa trajectoire est circulaire, un cercle ; une ligne droite, ce serait rectiligne. when, quand, dit le moment ; unless, à moins que, dirait le contraire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "When, et la trajectoire",
+          "lines": [
+            "when = quand ; unless = à moins que",
+            "path = la trajectoire ; a circle = un cercle ; a straight line = une ligne droite"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-rocket-6",
+      "prompt": "A box of tools on Earth\nMass: 5 kg (kilograms). Weight in newtons: about 10 times the mass.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "A box of tools on Earth. Mass: five kilograms. Weight in newtons: about ten times the mass.",
+      "choices": [
+        "Its mass is 5 kilograms, so its weight is about 50 newtons.",
+        "Its mass is 5 kilograms, unless its weight is about 50 newtons.",
+        "Its mass is 5 kilograms, so its weight is about 15 newtons."
+      ],
+      "answer": "Its mass is 5 kilograms, so its weight is about 50 newtons.",
+      "hint": "D’abord : 10 fois 5 ? Puis : le poids vient-il de la masse ?",
+      "explanation": "10 fois la masse : 10 × 5 = 50 newtons. 15, c’est 10 + 5 : on a ajouté au lieu de multiplier. Le poids vient de la masse : c’est une conséquence, so ; unless, à moins que, n’a pas de sens ici.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "So, et le poids",
+          "lines": [
+            "so = donc (la conséquence) ; unless = à moins que",
+            "Sur la Terre, le poids en newtons vaut environ 10 fois la masse en kilogrammes."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-rocket-7",
+      "prompt": "Back to Earth\nThe capsule slows down with its parachutes.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Back to Earth. The capsule slows down with its parachutes.",
+      "choices": [
+        "Because it slows down, its kinetic energy goes down.",
+        "Although it slows down, its kinetic energy goes down.",
+        "Because it slows down, its kinetic energy goes up."
+      ],
+      "answer": "Because it slows down, its kinetic energy goes down.",
+      "hint": "D’abord : moins de vitesse, plus ou moins d’énergie cinétique ? Puis : est-ce une cause, ou une opposition ?",
+      "explanation": "slows down, ralentit : moins de vitesse, donc moins d’énergie cinétique (kinetic energy), l’énergie du mouvement. Le ralentissement est la cause : because ; although, bien que, dirait une opposition qui n’existe pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Because, et l’énergie cinétique",
+          "lines": [
+            "because = parce que (la cause) ; although = bien que (l’opposition)",
+            "kinetic energy = l’énergie cinétique : plus on va vite, plus elle est grande."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-rocket-8",
+      "prompt": "The engines push the rocket up for 3 minutes.\nAfter that, they stop.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "The engines push the rocket up for three minutes. After that, they stop.",
+      "choices": [
+        "The rocket speeds up until the engines stop.",
+        "The rocket speeds up unless the engines stop.",
+        "The rocket slows down until the engines stop."
+      ],
+      "answer": "The rocket speeds up until the engines stop.",
+      "hint": "D’abord : une force qui pousse vers le haut, accélère-t-elle la fusée ? Puis : until, ou unless ?",
+      "explanation": "Les moteurs poussent dans le sens du mouvement : la fusée accélère, speeds up ; elle ne ralentit pas. Elle accélère jusqu’à ce que les moteurs s’arrêtent : until ; unless veut dire à moins que.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Until, et la poussée",
+          "lines": [
+            "until = jusqu’à ce que ; unless = à moins que",
+            "Une force qui pousse dans le sens du mouvement fait accélérer."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-rocket-9",
+      "prompt": "July 1969: Neil Armstrong walks on the Moon.\nHe jumps much higher than on Earth.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "July nineteen sixty-nine: Neil Armstrong walks on the Moon. He jumps much higher than on Earth.",
+      "choices": [
+        "He jumped high because his weight was smaller.",
+        "He jumped high although his weight was smaller.",
+        "He jumped high because his mass was smaller."
+      ],
+      "answer": "He jumped high because his weight was smaller.",
+      "hint": "D’abord : sur la Lune, qu’est-ce qui diminue, la masse ou le poids ? Puis : est-ce la cause du saut ?",
+      "explanation": "Sur la Lune, la masse reste la même ; c’est le poids qui est plus petit, et Armstrong saute plus haut. C’en est la cause : because ; although, bien que, dirait une opposition.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Because, et le poids sur la Lune",
+          "lines": [
+            "because = parce que (la cause) ; although = bien que (l’opposition)",
+            "weight = le poids, plus petit sur la Lune ; mass = la masse, la même partout"
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-rocket-10",
+      "prompt": "The rocket is very heavy: 500 tonnes.\nIts engines lift it all the same.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "The rocket is very heavy: five hundred tonnes. Its engines lift it all the same.",
+      "choices": [
+        "Despite its weight, the engines lift it: their push is stronger.",
+        "Although its weight, the engines lift it: their push is stronger.",
+        "Despite its weight, the engines lift it: their push is weaker."
+      ],
+      "answer": "Despite its weight, the engines lift it: their push is stronger.",
+      "hint": "D’abord : pour soulever la fusée, la poussée est-elle plus forte que le poids ? Puis : devant un nom, although ou despite ?",
+      "explanation": "La fusée monte : la poussée des moteurs est plus forte que son poids. Devant un nom (its weight), on met despite, malgré ; although va devant une phrase (although it is heavy).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Despite, et la poussée",
+          "lines": [
+            "despite = malgré (+ nom) ; although = bien que (+ phrase)",
+            "Pour monter, la poussée doit être plus forte que le poids."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-3e-rocket-11",
+      "prompt": "First, stage one burns all its fuel.\nThen, it falls back into the sea.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "First, stage one burns all its fuel. Then, it falls back into the sea.",
+      "choices": [
+        "It falls back because its weight pulls it down.",
+        "It falls back although its weight pulls it down.",
+        "It falls back because its weight pushes it up."
+      ],
+      "answer": "It falls back because its weight pulls it down.",
+      "hint": "D’abord : le poids est-il dirigé vers le haut, ou vers le bas ? Puis : est-ce la cause de la chute ?",
+      "explanation": "Le poids est la force d’attraction de la Terre, vers son centre : il tire l’étage vers le bas, et l’étage retombe. C’est la cause : because ; although, bien que, dirait une opposition.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Because, et le poids",
+          "lines": [
+            "because = parce que (la cause) ; although = bien que (l’opposition)",
+            "Le poids : l’attraction de la Terre, vers son centre, donc vers le bas."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien construit !",
+    "wrong": "{explanation}"
+  }
+}

@@ -12,7 +12,8 @@ import { type BiomeId, type BlockId, getBiome } from '../biomes';
 import type { ArchipelagoId } from './archipelagos';
 import { archipelagoOfIsland } from './archipelagos';
 import { joinId, pairOfJoinId } from './savedLayout';
-import { GAP_BETWEEN_PLACES, landRectangle } from './footprint';
+import { boxOf, GAP_BETWEEN_PLACES, landRectangle, landRectangles } from './footprint';
+import { silhouetteDe } from './silhouettes';
 import { type IslandDef, islandDef, isLandInWorld, reliefHeight, toPlace } from './map';
 import type { PlanCell, PlanDef } from './plans';
 import { chosenJoins, layoutCache, STEP, type Rectangle } from './placement';
@@ -89,13 +90,38 @@ function frameBetween(ra: Rectangle, rb: Rectangle): Frame | null {
 }
 
 /**
+ * Le repère d'une paire de lieux : entre les rectangles de leur terre ; ou, quand l'un a une forme (GD-12), entre les
+ * côtes qui se font face, chaque terre réduite aux bandes (`landRectangles`) qui regardent l'autre lieu. Deux formes
+ * s'emboîtent : leurs rectangles se chevauchent, leurs côtes restent à `GAP_BETWEEN_PLACES` cases d'eau.
+ */
+function frameOfPair(da: IslandDef, db: IslandDef): Frame | null {
+  const ra = landRectangle(da);
+  const rb = landRectangle(db);
+  const simple = frameBetween(ra, rb);
+  if (!silhouetteDe(da.id).forme && !silhouetteDe(db.id).forme) return simple;
+  const ba = landRectangles(da);
+  const bb = landRectangles(db);
+  // La terre d'un lieu qui fait face à l'autre, en travers de l'axe qui les sépare (`enX` : l'axe des x).
+  const face = (bandes: readonly Rectangle[], autre: Rectangle, enX: boolean): Rectangle | null => {
+    const tenues = bandes.filter((r) => (enX ? r.y0 < autre.y1 && r.y1 > autre.y0 : r.x0 < autre.x1 && r.x1 > autre.x0));
+    return tenues.length ? boxOf(tenues) : null;
+  };
+  for (const enX of [true, false]) {
+    const fa = face(ba, rb, enX);
+    const fb = face(bb, ra, enX);
+    if (!fa || !fb) continue;
+    const f = frameBetween(fa, fb);
+    if (f && (enX ? fb.x0 >= fa.x1 || fa.x0 >= fb.x1 : fb.y0 >= fa.y1 || fa.y0 >= fb.y1)) return f;
+  }
+  return simple;
+}
+
+/**
  * La forme de la construction qui réunirait deux lieux posés, ou pourquoi elle ne se pose pas : trop loin (ou pas côte à
  * côte), un côté commun trop étroit, trop de marches.
  */
 function joinShapeOrWhy(da: IslandDef, db: IslandDef): JoinShape | JoinRefusal {
-  const ra = landRectangle(da);
-  const rb = landRectangle(db);
-  const f = frameBetween(ra, rb);
+  const f = frameOfPair(da, db);
   // Au plus près que la grille le permet : l'écart de règle, et moins d'un pas de plus.
   if (!f || f.gap < GAP_BETWEEN_PLACES || f.gap >= GAP_BETWEEN_PLACES + STEP) return 'loin';
   // Chaque colonne en travers : de la dernière case de terre du premier lieu à la première du second.

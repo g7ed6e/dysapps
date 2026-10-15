@@ -28,7 +28,13 @@ export interface FacettesDuDecor {
 /** Une façon de peindre un sommet : sa position et la normale de sa facette. */
 export type Peindre = (p: V3, n: V3) => RGB;
 
-export class Pinceau {
+/** Ce dont une primitive a besoin pour tracer : des triangles et des quadrilatères (un pinceau, ou un pinceau qui déplace). */
+export interface Trace {
+  triangle(a: V3, b: V3, c: V3, dedans: V3, peindre: Peindre): void;
+  quad(a: V3, b: V3, c: V3, d: V3, dedans: V3, peindre: Peindre): void;
+}
+
+export class Pinceau implements Trace {
   private pos: number[] = [];
   private nor: number[] = [];
   private col: number[] = [];
@@ -161,7 +167,7 @@ export function eclaircir(c: Couleur, k: number): Couleur {
 // ---------- Les primitives ----------
 
 /** Un tronc de cône à `n` pans (un cône si `r1` vaut 0), de `y0` à `y1`, tourné de `rot` ; sans fond. */
-export function tronconique(P: Pinceau, cx: number, cz: number, y0: number, y1: number, r0: number, r1: number, n: number, rot: number, peindre: Peindre, chapeau = true): void {
+export function tronconique(P: Trace, cx: number, cz: number, y0: number, y1: number, r0: number, r1: number, n: number, rot: number, peindre: Peindre, chapeau = true): void {
   const bas: V3[] = [];
   const haut: V3[] = [];
   for (let i = 0; i < n; i++) {

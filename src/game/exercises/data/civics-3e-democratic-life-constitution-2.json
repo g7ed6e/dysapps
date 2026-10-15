@@ -1,0 +1,243 @@
+{
+  "id": "civics-3e-democratic-life-constitution-2",
+  "biome": "civics-3e-democratic-life",
+  "type": "constitution",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-3e-democratic-life-constitution-2-0",
+      "prompt": "Les questions au gouvernement\nUne députée pose une question à une ministre.\nLa ministre répond devant tous les députés.\nLa séance est filmée et publique.",
+      "question": "Que montre cette séance ?",
+      "spoken": "Les questions au gouvernement. Une députée pose une question à une ministre. La ministre répond devant tous les députés. La séance est filmée et publique.",
+      "choices": [
+        "le gouvernement contrôle le Parlement",
+        "le Parlement contrôle le gouvernement",
+        "les ministres votent seuls les lois"
+      ],
+      "answer": "le Parlement contrôle le gouvernement",
+      "hint": "Qui pose la question, et qui doit répondre ?",
+      "explanation": "Les députés posent des questions, le gouvernement doit répondre : le Parlement contrôle le gouvernement, devant tous les citoyens.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les institutions et l’Union européenne",
+          "lines": [
+            "Le Parlement contrôle le gouvernement : questions, commissions d’enquête, motion de censure.",
+            "Le Conseil constitutionnel vérifie que les lois respectent la Constitution.",
+            "La Constitution change par des révisions.",
+            "Le Parlement européen est élu par les citoyens européens.",
+            "Un citoyen européen vote aux élections municipales et européennes du pays de l’Union où il vit.",
+            "Les droits de la Constitution : la Déclaration de 1789, le préambule de 1946, la Charte de l’environnement."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-2-1",
+      "prompt": "Si l’Assemblée nationale vote une motion de censure, le gouvernement doit …",
+      "spoken": "Si l’Assemblée nationale vote une motion de censure, le gouvernement doit  (mot manquant) ",
+      "choices": [
+        "voter une loi",
+        "démissionner",
+        "fermer le Sénat"
+      ],
+      "answer": "démissionner",
+      "hint": "Une censure dit que l’Assemblée nationale ne fait plus confiance au gouvernement.",
+      "explanation": "Si la motion de censure est votée, le gouvernement doit démissionner : c’est le contrôle le plus fort du Parlement sur le gouvernement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les institutions et l’Union européenne",
+          "lines": [
+            "Le Parlement contrôle le gouvernement : questions, commissions d’enquête, motion de censure.",
+            "Le Conseil constitutionnel vérifie que les lois respectent la Constitution.",
+            "La Constitution change par des révisions.",
+            "Le Parlement européen est élu par les citoyens européens.",
+            "Un citoyen européen vote aux élections municipales et européennes du pays de l’Union où il vit.",
+            "Les droits de la Constitution : la Déclaration de 1789, le préambule de 1946, la Charte de l’environnement."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-2-2",
+      "prompt": "Le trajet d’une loi\nLe gouvernement dépose un projet de loi.\nL’Assemblée nationale et le Sénat en débattent et le votent.\nLe président de la République promulgue la loi.",
+      "question": "Qui débat et vote la loi ?",
+      "spoken": "Le trajet d’une loi. Le gouvernement dépose un projet de loi. L’Assemblée nationale et le Sénat en débattent et le votent. Le président de la République promulgue la loi.",
+      "choices": [
+        "le président de la République",
+        "le Conseil constitutionnel",
+        "le Parlement"
+      ],
+      "answer": "le Parlement",
+      "hint": "L’Assemblée nationale et le Sénat, ensemble, forment quoi ?",
+      "explanation": "L’Assemblée nationale et le Sénat forment le Parlement : il débat et vote la loi. Le président la promulgue pour qu’elle s’applique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les institutions et l’Union européenne",
+          "lines": [
+            "Le Parlement contrôle le gouvernement : questions, commissions d’enquête, motion de censure.",
+            "Le Conseil constitutionnel vérifie que les lois respectent la Constitution.",
+            "La Constitution change par des révisions.",
+            "Le Parlement européen est élu par les citoyens européens.",
+            "Un citoyen européen vote aux élections municipales et européennes du pays de l’Union où il vit.",
+            "Les droits de la Constitution : la Déclaration de 1789, le préambule de 1946, la Charte de l’environnement."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-2-3",
+      "prompt": "Une loi contraire à la Constitution peut être censurée par le Conseil …",
+      "spoken": "Une loi contraire à la Constitution peut être censurée par le Conseil  (mot manquant) ",
+      "choices": [
+        "constitutionnel",
+        "municipal",
+        "européen"
+      ],
+      "answer": "constitutionnel",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Le Conseil constitutionnel vérifie que les lois respectent la Constitution ; il peut censurer une loi, ou une partie de loi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les institutions et l’Union européenne",
+          "lines": [
+            "Le Parlement contrôle le gouvernement : questions, commissions d’enquête, motion de censure.",
+            "Le Conseil constitutionnel vérifie que les lois respectent la Constitution.",
+            "La Constitution change par des révisions.",
+            "Le Parlement européen est élu par les citoyens européens.",
+            "Un citoyen européen vote aux élections municipales et européennes du pays de l’Union où il vit.",
+            "Les droits de la Constitution : la Déclaration de 1789, le préambule de 1946, la Charte de l’environnement."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-2-4",
+      "prompt": "La question prioritaire de constitutionnalité\nCréée en 2008.\nPendant un procès, on demande si la loi respecte nos droits.\nLe Conseil constitutionnel répond.",
+      "question": "Que permet cette question ?",
+      "spoken": "La question prioritaire de constitutionnalité. Créée en deux mille huit. Pendant un procès, on demande si la loi respecte nos droits. Le Conseil constitutionnel répond.",
+      "choices": [
+        "changer de juge",
+        "voter une nouvelle loi",
+        "vérifier qu’une loi respecte les droits et libertés"
+      ],
+      "answer": "vérifier qu’une loi respecte les droits et libertés",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "Pendant un procès, chacun peut demander si la loi qu’on lui applique respecte les droits et libertés de la Constitution. Le Conseil constitutionnel répond.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les institutions et l’Union européenne",
+          "lines": [
+            "Le Parlement contrôle le gouvernement : questions, commissions d’enquête, motion de censure.",
+            "Le Conseil constitutionnel vérifie que les lois respectent la Constitution.",
+            "La Constitution change par des révisions.",
+            "Le Parlement européen est élu par les citoyens européens.",
+            "Un citoyen européen vote aux élections municipales et européennes du pays de l’Union où il vit.",
+            "Les droits de la Constitution : la Déclaration de 1789, le préambule de 1946, la Charte de l’environnement."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-2-5",
+      "prompt": "Les députés européens sont élus par les …",
+      "spoken": "Les députés européens sont élus par les  (mot manquant) ",
+      "choices": [
+        "citoyens européens",
+        "gouvernements",
+        "présidents des pays"
+      ],
+      "answer": "citoyens européens",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Les citoyens de l’Union européenne élisent eux-mêmes les députés du Parlement européen, tous les 5 ans.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les institutions et l’Union européenne",
+          "lines": [
+            "Le Parlement contrôle le gouvernement : questions, commissions d’enquête, motion de censure.",
+            "Le Conseil constitutionnel vérifie que les lois respectent la Constitution.",
+            "La Constitution change par des révisions.",
+            "Le Parlement européen est élu par les citoyens européens.",
+            "Un citoyen européen vote aux élections municipales et européennes du pays de l’Union où il vit.",
+            "Les droits de la Constitution : la Déclaration de 1789, le préambule de 1946, la Charte de l’environnement."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-2-6",
+      "prompt": "Marta est espagnole et vit à Lyon\nElle est citoyenne de l’Union européenne.\nAux élections municipales de Lyon, elle peut voter.",
+      "question": "Pourquoi Marta peut-elle voter à Lyon ?",
+      "spoken": "Marta est espagnole et vit à Lyon. Elle est citoyenne de l’Union européenne. Aux élections municipales de Lyon, elle peut voter.",
+      "choices": [
+        "parce qu’elle est citoyenne européenne et vit à Lyon",
+        "parce que tout le monde vote partout",
+        "parce qu’elle est française"
+      ],
+      "answer": "parce qu’elle est citoyenne européenne et vit à Lyon",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Un citoyen européen vote aux élections municipales et européennes du pays de l’Union où il vit. Marta est espagnole, pas française.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les institutions et l’Union européenne",
+          "lines": [
+            "Le Parlement contrôle le gouvernement : questions, commissions d’enquête, motion de censure.",
+            "Le Conseil constitutionnel vérifie que les lois respectent la Constitution.",
+            "La Constitution change par des révisions.",
+            "Le Parlement européen est élu par les citoyens européens.",
+            "Un citoyen européen vote aux élections municipales et européennes du pays de l’Union où il vit.",
+            "Les droits de la Constitution : la Déclaration de 1789, le préambule de 1946, la Charte de l’environnement."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-constitution-2-7",
+      "prompt": "La Charte de l’environnement\nAjoutée à la Constitution par une révision.\nArticle 1 : « Chacun a le droit de vivre dans un environnement équilibré et respectueux de la santé. »",
+      "question": "Quel droit cette révision ajoute-t-elle ?",
+      "spoken": "La Charte de l’environnement. Ajoutée à la Constitution par une révision. Article 1 : Chacun a le droit de vivre dans un environnement équilibré et respectueux de la santé.",
+      "choices": [
+        "le droit de vote à 16 ans",
+        "le droit à un environnement équilibré",
+        "le droit de ne pas payer d’impôts"
+      ],
+      "answer": "le droit à un environnement équilibré",
+      "hint": "Lis l’article 1 dans le document.",
+      "explanation": "La Charte de l’environnement donne à chacun le droit de vivre dans un environnement équilibré et respectueux de la santé. La Constitution évolue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les institutions et l’Union européenne",
+          "lines": [
+            "Le Parlement contrôle le gouvernement : questions, commissions d’enquête, motion de censure.",
+            "Le Conseil constitutionnel vérifie que les lois respectent la Constitution.",
+            "La Constitution change par des révisions.",
+            "Le Parlement européen est élu par les citoyens européens.",
+            "Un citoyen européen vote aux élections municipales et européennes du pays de l’Union où il vit.",
+            "Les droits de la Constitution : la Déclaration de 1789, le préambule de 1946, la Charte de l’environnement."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-3e-democratic-life",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

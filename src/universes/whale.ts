@@ -16,7 +16,7 @@ export function pagesBaleine(m: WhaleMoment, textes: TextesUnivers): string[] {
   const b = textes.baleine;
   switch (m.kind) {
     case 'arrivee':
-      return [b.arrivee[m.archipelago], ...pagesDArrivee(m.archipelago, textes.archipels)];
+      return [b.arrivee[m.archipelago], ...pagesDArrivee(m.archipelago, textes.archipels, textes.libelles.formesDeLaNef)];
     case 'gardiens':
       return [b.gardiens(textes.archipels[m.archipelago])];
     case 'port':

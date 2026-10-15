@@ -102,6 +102,24 @@ import fouilleCour from './plans/history-6e-antiquity-3.json';
 import pointeQuartier from './plans/geography-6e-living-1.json';
 import pointeChamps from './plans/geography-6e-living-2.json';
 import pointeQuai from './plans/geography-6e-living-3.json';
+import bourgLogis from './plans/history-5e-middle-ages-1.json';
+import bourgToit from './plans/history-5e-middle-ages-2.json';
+import bourgCour from './plans/history-5e-middle-ages-3.json';
+import deltaMoulin from './plans/geography-5e-resources-1.json';
+import deltaToit from './plans/geography-5e-resources-2.json';
+import deltaCour from './plans/geography-5e-resources-3.json';
+import imprimerieHalle from './plans/history-4e-revolutions-1.json';
+import imprimerieToit from './plans/history-4e-revolutions-2.json';
+import imprimerieCour from './plans/history-4e-revolutions-3.json';
+import escaleEntrepot from './plans/geography-4e-globalization-1.json';
+import escaleToit from './plans/geography-4e-globalization-2.json';
+import escaleCour from './plans/geography-4e-globalization-3.json';
+import kiosqueBibliotheque from './plans/history-3e-twentieth-century-1.json';
+import kiosqueToit from './plans/history-3e-twentieth-century-2.json';
+import kiosqueCour from './plans/history-3e-twentieth-century-3.json';
+import territoiresMairie from './plans/geography-3e-france-1.json';
+import territoiresToit from './plans/geography-3e-france-2.json';
+import territoiresPlace from './plans/geography-3e-france-3.json';
 import valleeSerre from './plans/life-earth-sciences-6e-living-world-1.json';
 import valleeToit from './plans/life-earth-sciences-6e-living-world-2.json';
 import valleeJardin from './plans/life-earth-sciences-6e-living-world-3.json';
@@ -111,6 +129,54 @@ import laboratoireCour from './plans/physics-chemistry-6e-matter-energy-3.json';
 import hangarAtelier from './plans/technology-6e-objects-1.json';
 import hangarToit from './plans/technology-6e-objects-2.json';
 import hangarCour from './plans/technology-6e-objects-3.json';
+import preauPreau from './plans/civics-6e-democratic-society-1.json';
+import preauToit from './plans/civics-6e-democratic-society-2.json';
+import preauCour from './plans/civics-6e-democratic-society-3.json';
+import fournilFournil from './plans/civics-5e-equality-solidarity-1.json';
+import fournilToit from './plans/civics-5e-equality-solidarity-2.json';
+import fournilCour from './plans/civics-5e-equality-solidarity-3.json';
+import grotteAbri from './plans/lca-5e-legends-1.json';
+import grottePorche from './plans/lca-5e-legends-2.json';
+import grotteCercle from './plans/lca-5e-legends-3.json';
+import porteLoge from './plans/civics-4e-rights-freedoms-1.json';
+import porteToit from './plans/civics-4e-rights-freedoms-2.json';
+import portePlace from './plans/civics-4e-rights-freedoms-3.json';
+import colonnadeMaison from './plans/lca-4e-cities-1.json';
+import colonnadeColonnade from './plans/lca-4e-cities-2.json';
+import colonnadeFontaine from './plans/lca-4e-cities-3.json';
+import forumTribune from './plans/civics-3e-democratic-life-1.json';
+import forumToit from './plans/civics-3e-democratic-life-2.json';
+import forumParvis from './plans/civics-3e-democratic-life-3.json';
+import bosquetBibliotheque from './plans/lca-3e-ideas-1.json';
+import bosquetGradins from './plans/lca-3e-ideas-2.json';
+import bosquetAllee from './plans/lca-3e-ideas-3.json';
+import prairiePlan1 from './plans/life-earth-sciences-5e-active-planet-1.json';
+import prairiePlan2 from './plans/life-earth-sciences-5e-active-planet-2.json';
+import prairiePlan3 from './plans/life-earth-sciences-5e-active-planet-3.json';
+import salinePlan1 from './plans/physics-chemistry-5e-matter-universe-1.json';
+import salinePlan2 from './plans/physics-chemistry-5e-matter-universe-2.json';
+import salinePlan3 from './plans/physics-chemistry-5e-matter-universe-3.json';
+import menuiseriePlan1 from './plans/technology-5e-design-1.json';
+import menuiseriePlan2 from './plans/technology-5e-design-2.json';
+import menuiseriePlan3 from './plans/technology-5e-design-3.json';
+import sourcePlan1 from './plans/life-earth-sciences-4e-cells-evolution-1.json';
+import sourcePlan2 from './plans/life-earth-sciences-4e-cells-evolution-2.json';
+import sourcePlan3 from './plans/life-earth-sciences-4e-cells-evolution-3.json';
+import vigiePlan1 from './plans/physics-chemistry-4e-signals-circuits-1.json';
+import vigiePlan2 from './plans/physics-chemistry-4e-signals-circuits-2.json';
+import vigiePlan3 from './plans/physics-chemistry-4e-signals-circuits-3.json';
+import bassinPlan1 from './plans/technology-4e-modeling-1.json';
+import bassinPlan2 from './plans/technology-4e-modeling-2.json';
+import bassinPlan3 from './plans/technology-4e-modeling-3.json';
+import vergerPlan1 from './plans/life-earth-sciences-3e-human-body-1.json';
+import vergerPlan2 from './plans/life-earth-sciences-3e-human-body-2.json';
+import vergerPlan3 from './plans/life-earth-sciences-3e-human-body-3.json';
+import tremplinPlan1 from './plans/physics-chemistry-3e-motion-energy-1.json';
+import tremplinPlan2 from './plans/physics-chemistry-3e-motion-energy-2.json';
+import tremplinPlan3 from './plans/physics-chemistry-3e-motion-energy-3.json';
+import ruchePlan1 from './plans/technology-3e-digital-1.json';
+import ruchePlan2 from './plans/technology-3e-digital-2.json';
+import ruchePlan3 from './plans/technology-3e-digital-3.json';
 
 export interface PlanCell {
   x: number;
@@ -134,13 +200,13 @@ export interface PlanDef {
   cells: PlanCell[];
   /**
    * Ce que le plan donne quand il est terminé : son XP, et un coffre de blocs. Le coffre des plans d'île est vide (GD-6) :
-   * seules les étapes du Bloc-Navire en ont un.
+   * seules les étapes de la Nef en ont un.
    */
   reward: { xp: number; chest: Partial<Record<BlockId, number>> };
   /** Ce que dit la créature quand le plan est terminé. */
   done: string;
   /**
-   * Où le plan se pose : dans la zone des plans de l'île (par défaut), sur le quai du port (le Bloc-Navire), ou sur l'îlot
+   * Où le plan se pose : dans la zone des plans de l'île (par défaut), sur le quai du port (la Nef), ou sur l'îlot
    * d'un monument (`origin` est alors le coin du monument dans le monde), ou entre deux lieux réunis (GD-9, ./join.ts :
    * ses clés sont dans le repère de la paire).
    */
@@ -294,6 +360,24 @@ const PLAN_FILES = [
   pointeQuartier,
   pointeChamps,
   pointeQuai,
+  bourgLogis,
+  bourgToit,
+  bourgCour,
+  deltaMoulin,
+  deltaToit,
+  deltaCour,
+  imprimerieHalle,
+  imprimerieToit,
+  imprimerieCour,
+  escaleEntrepot,
+  escaleToit,
+  escaleCour,
+  kiosqueBibliotheque,
+  kiosqueToit,
+  kiosqueCour,
+  territoiresMairie,
+  territoiresToit,
+  territoiresPlace,
   valleeSerre,
   valleeToit,
   valleeJardin,
@@ -303,6 +387,54 @@ const PLAN_FILES = [
   hangarAtelier,
   hangarToit,
   hangarCour,
+  preauPreau,
+  preauToit,
+  preauCour,
+  fournilFournil,
+  fournilToit,
+  fournilCour,
+  grotteAbri,
+  grottePorche,
+  grotteCercle,
+  porteLoge,
+  porteToit,
+  portePlace,
+  colonnadeMaison,
+  colonnadeColonnade,
+  colonnadeFontaine,
+  forumTribune,
+  forumToit,
+  forumParvis,
+  bosquetBibliotheque,
+  bosquetGradins,
+  bosquetAllee,
+  prairiePlan1,
+  prairiePlan2,
+  prairiePlan3,
+  salinePlan1,
+  salinePlan2,
+  salinePlan3,
+  menuiseriePlan1,
+  menuiseriePlan2,
+  menuiseriePlan3,
+  sourcePlan1,
+  sourcePlan2,
+  sourcePlan3,
+  vigiePlan1,
+  vigiePlan2,
+  vigiePlan3,
+  bassinPlan1,
+  bassinPlan2,
+  bassinPlan3,
+  vergerPlan1,
+  vergerPlan2,
+  vergerPlan3,
+  tremplinPlan1,
+  tremplinPlan2,
+  tremplinPlan3,
+  ruchePlan1,
+  ruchePlan2,
+  ruchePlan3,
 ] as (Omit<PlanDef, 'cells' | 'origin' | 'reward'> & { reward: { xp: number } })[];
 
 /**
@@ -335,7 +467,7 @@ export function getPlan(id: string): PlanDef | undefined {
 export const cellKey = (x: number, y: number, z: number) => `${x},${y},${z}`;
 
 /**
- * Cellules d'un plan en coordonnées relatives à l'île (z = 0 : premier bloc sur le sol). Un plan du port (le Bloc-Navire)
+ * Cellules d'un plan en coordonnées relatives à l'île (z = 0 : premier bloc sur le sol). Un plan du port (la Nef)
  * est relatif au coin du navire sur le quai, devant l'île, plus bas que le sol quand l'île est en altitude.
  */
 export function planCells(plan: PlanDef, cells: PlanCell[] = plan.cells): (PlanCell & { key: string })[] {
@@ -370,6 +502,12 @@ export const ORIGINE_DES_MONUMENTS: Record<string, { x: number; y: number; z: nu
   'landmark-4e-2': { x: -2, y: 24, z: 0 },
   'landmark-3e-1': { x: -14, y: 4, z: 0 },
   'landmark-3e-2': { x: -14, y: 6, z: 0 },
+  // Les grands projets neufs (8 octobre 2026), figés à leur première place.
+  'landmark-4e-3': { x: 25, y: 36, z: 0 },
+  'landmark-4e-4': { x: 24, y: 8, z: 0 },
+  'landmark-3e-3': { x: -22, y: 20, z: 0 },
+  'landmark-3e-4': { x: 28, y: -7, z: 0 },
+  'landmark-3e-5': { x: 1, y: -19, z: 0 },
 };
 
 /** Le coin d'un plan en coordonnées relatives à l'île (x, y, et z relatif au sol : 0 = premier bloc sur le sol). */

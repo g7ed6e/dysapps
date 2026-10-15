@@ -78,7 +78,7 @@ it('les blocs qui manquent renvoient à l’île où les gagner, par un lien', (
   // La coque du navire demande du bois : lien vers la Forêt (le bâtiment de l'île, lui, ne demande aucun bloc : GD-6).
   const navire = document.querySelector('.island-fold-navire')!;
   expect(navire).not.toHaveAttribute('open');
-  expect(navire.textContent).toContain('0 / 45 posés · il manque');
+  expect(navire.textContent).toContain('0 / 27 posés · il manque');
   const links = screen.getAllByRole('link', { name: 'Forêt des sons' });
   expect(links[0]).toHaveAttribute('href', '/adventure/french-6e-phonology');
   expect(document.body.textContent).not.toContain('briques · à gagner ici');
@@ -124,15 +124,15 @@ it('le bâtiment dit en mots ses parties posées, le nom de la prochaine et comm
   expect(document.querySelector('.plan-section')).toHaveTextContent('Termine une mission de l’île pour la poser.');
 });
 
-it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le bouton pour embarquer', async () => {
+it('le port montre le chantier de la Nef : ses blocs, ses Gardiens, puis le bouton pour embarquer', async () => {
   const [coque] = VEHICLE_STAGES;
   renderSheet('maths-6e-calculation');
-  expect(screen.getByText(/Le Bloc-Navire — Étape 1 \/ 3 : La coque et la voile/)).toBeInTheDocument();
-  expect(screen.getByRole('progressbar', { name: 'Avancement du Bloc-Navire' })).toHaveAttribute('aria-valuenow', '0');
+  expect(screen.getByText(/La Nef — Étape 1 \/ 3 : Le voilier/)).toBeInTheDocument();
+  expect(screen.getByRole('progressbar', { name: 'Avancement de la Nef' })).toHaveAttribute('aria-valuenow', '0');
   expect(document.body.textContent).toContain('Gardiens : encore 3 à rallumer dans les Basses Terres pour la voile.');
   expect(screen.queryByRole('button', { name: /Embarquer/ })).not.toBeInTheDocument();
   // Pas de section navire sur une île qui n'est pas un port.
-  expect(screen.queryByText(/Le Bloc-Navire —/, { selector: 'h3' })).toBeInTheDocument();
+  expect(screen.queryByText(/La Nef —/, { selector: 'h3' })).toBeInTheDocument();
   // Tout posé et trois Gardiens vaincus : on peut embarquer.
   const plans = { [coque.id]: planCells(coque).map((c) => c.key) };
   const progress = Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion'].map((id) => [`${id}-challenge`, { stars: 2, attempts: 1, best: 1 }]));
@@ -140,15 +140,15 @@ it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le
   cleanup();
   renderSheet('maths-6e-calculation');
   expect(document.body.textContent).toContain('Gardiens : c’est fait ! 3 sur 3, la voile est là.');
-  expect(document.body.textContent).toContain('Le Bloc-Navire est prêt : embarque vers les Collines du Large !');
+  expect(document.body.textContent).toContain('La Nef est prête : embarque vers les Collines du Large !');
   await userEvent.click(screen.getByRole('button', { name: /Embarquer vers l’archipel de 5e — Les Collines du Large/ }));
   expect(onBoard).toHaveBeenCalledWith('5e', false);
 });
 
-it('une île d’un autre archipel dit ce qu’il manque au Bloc-Navire, sans ouvrage à proposer', () => {
+it('une île d’un autre archipel dit ce qu’il manque à la Nef, sans ouvrage à proposer', () => {
   renderSheet('maths-5e-proportionality');
   expect(document.body.textContent).toContain('Pas si vite ! Mon île est dans les Collines du Large, de l’autre côté de la mer.');
-  expect(document.body.textContent).toContain('Finis le Bloc-Navire sur la Plaine des nombres');
+  expect(document.body.textContent).toContain('Finis la Nef sur la Plaine des nombres');
   expect(screen.queryByText('Ouvrages')).not.toBeInTheDocument();
 });
 

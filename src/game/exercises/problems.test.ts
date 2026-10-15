@@ -91,7 +91,7 @@ const kindsOf = (defs: ExerciseDef[]) => defs.map((def) => [...new Set(def.items
 it('les missions de problèmes situés : des niveaux de huit items, un schéma et un rappel de méthode sur chacun', () => {
   expect(PROBLEMES_EXERCISES.map((e) => e.id)).toEqual(['maths-6e-calculation-word-problems-1', 'maths-6e-calculation-word-problems-2', 'maths-6e-calculation-word-problems-3']);
   expect(PROBLEMES_COLLEGE_EXERCISES.map((e) => e.id)).toEqual([
-    'maths-5e-proportionality-proportion-tables-3',
+    'maths-3e-statistics-ratio-sharing-1',
     'maths-5e-proportionality-ratios-3',
     'maths-5e-proportionality-ratios-4',
     'maths-3e-geometry-pythagoras-3',

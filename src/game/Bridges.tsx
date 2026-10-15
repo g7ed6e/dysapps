@@ -21,7 +21,7 @@ interface Props {
   fold?: string;
   /**
    * L'ouvrage du prochain objectif de l'île (`nextGoalInfo`, `Goal.ouvrage`) : le seul dont « Poser » est le bouton
-   * principal ; `null` : l'objectif n'est pas un ouvrage (le Bloc-Navire), aucun ne l'est. Sans objectif (une île
+   * principal ; `null` : l'objectif n'est pas un ouvrage (la Nef), aucun ne l'est. Sans objectif (une île
    * fermée), le suggéré de ceux qu'on peut faire (`ouvragesParSuggestion`), comme le choisirait l'objectif.
    */
   objectif?: string | null;

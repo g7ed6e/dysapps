@@ -1,0 +1,242 @@
+{
+  "id": "civics-5e-equality-solidarity-gender-equality-2",
+  "biome": "civics-5e-equality-solidarity",
+  "type": "gender-equality",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-2-0",
+      "prompt": "Une liste pour les élections municipales\n1. Mme Martin\n2. M. Diallo\n3. Mme Petit\n4. M. Roux",
+      "question": "Quelle règle cette liste respecte-t-elle ?",
+      "spoken": "Une liste pour les élections municipales. Un, madame Martin. Deux, monsieur Diallo. Trois, madame Petit. Quatre, monsieur Roux.",
+      "choices": [
+        "l’ordre alphabétique",
+        "la parité",
+        "l’âge des candidats"
+      ],
+      "answer": "la parité",
+      "hint": "Regarde qui vient après qui : une femme, puis ?",
+      "explanation": "Une femme, puis un homme, chacun son tour : la liste respecte la parité. Les noms ne sont pas dans l’ordre alphabétique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir pour l’égalité",
+          "lines": [
+            "À travail égal, salaire égal : c’est la loi.",
+            "La parité : sur une liste, une femme et un homme, chacun son tour.",
+            "Un propos sexiste rabaisse une personne à cause de son sexe.",
+            "Les violences sexistes et sexuelles sont punies. On peut en parler : un adulte de confiance, le 119.",
+            "Tous les métiers sont ouverts aux filles comme aux garçons.",
+            "Des inégalités restent : salaires, métiers, tâches à la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-2-1",
+      "prompt": "Pour un même travail, la loi impose le même … aux femmes et aux hommes.",
+      "spoken": "Pour un même travail, la loi impose le même  (mot manquant)  aux femmes et aux hommes.",
+      "choices": [
+        "horaire",
+        "uniforme",
+        "salaire"
+      ],
+      "answer": "salaire",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "À travail égal, salaire égal : c’est la loi. Pourtant, en moyenne, les femmes gagnent encore moins que les hommes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir pour l’égalité",
+          "lines": [
+            "À travail égal, salaire égal : c’est la loi.",
+            "La parité : sur une liste, une femme et un homme, chacun son tour.",
+            "Un propos sexiste rabaisse une personne à cause de son sexe.",
+            "Les violences sexistes et sexuelles sont punies. On peut en parler : un adulte de confiance, le 119.",
+            "Tous les métiers sont ouverts aux filles comme aux garçons.",
+            "Des inégalités restent : salaires, métiers, tâches à la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-2-2",
+      "prompt": "Les tâches d’une famille\nCuisine : la mère.\nCourses : la mère.\nLinge : la mère.\nBricolage : le père.",
+      "question": "Que montre ce document ?",
+      "spoken": "Les tâches d’une famille. Cuisine, la mère. Courses, la mère. Linge, la mère. Bricolage, le père.",
+      "choices": [
+        "un partage inégal des tâches",
+        "un partage égal des tâches",
+        "une règle fixée par la loi"
+      ],
+      "answer": "un partage inégal des tâches",
+      "hint": "Compte les tâches de chacun.",
+      "explanation": "Trois tâches pour la mère, une pour le père : le partage est inégal. À la maison aussi, des inégalités restent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir pour l’égalité",
+          "lines": [
+            "À travail égal, salaire égal : c’est la loi.",
+            "La parité : sur une liste, une femme et un homme, chacun son tour.",
+            "Un propos sexiste rabaisse une personne à cause de son sexe.",
+            "Les violences sexistes et sexuelles sont punies. On peut en parler : un adulte de confiance, le 119.",
+            "Tous les métiers sont ouverts aux filles comme aux garçons.",
+            "Des inégalités restent : salaires, métiers, tâches à la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-2-3",
+      "prompt": "Rabaisser une personne parce que c’est une fille, ou parce que c’est un garçon, est un propos …",
+      "spoken": "Rabaisser une personne parce que c’est une fille, ou parce que c’est un garçon, est un propos  (mot manquant) ",
+      "choices": [
+        "raciste",
+        "sexiste",
+        "xénophobe"
+      ],
+      "answer": "sexiste",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Un propos sexiste rabaisse une personne à cause de son sexe. Il peut être puni par la loi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir pour l’égalité",
+          "lines": [
+            "À travail égal, salaire égal : c’est la loi.",
+            "La parité : sur une liste, une femme et un homme, chacun son tour.",
+            "Un propos sexiste rabaisse une personne à cause de son sexe.",
+            "Les violences sexistes et sexuelles sont punies. On peut en parler : un adulte de confiance, le 119.",
+            "Tous les métiers sont ouverts aux filles comme aux garçons.",
+            "Des inégalités restent : salaires, métiers, tâches à la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-2-4",
+      "prompt": "Les violences sexistes et sexuelles\nLa loi les punit.\nOn peut en parler à un adulte de confiance.\nLe 119 répond, jour et nuit.",
+      "question": "Que dit ce document ?",
+      "spoken": "Les violences sexistes et sexuelles. La loi les punit. On peut en parler à un adulte de confiance. Le cent dix-neuf répond, jour et nuit.",
+      "choices": [
+        "la loi ne les punit pas",
+        "seuls les adultes peuvent demander de l’aide",
+        "elles sont punies, et on peut demander de l’aide"
+      ],
+      "answer": "elles sont punies, et on peut demander de l’aide",
+      "hint": "Lis la deuxième et la troisième ligne du document.",
+      "explanation": "Les violences sexistes et sexuelles sont punies par la loi. Un enfant ou un adolescent peut en parler à un adulte de confiance, ou appeler le 119, gratuit, jour et nuit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir pour l’égalité",
+          "lines": [
+            "À travail égal, salaire égal : c’est la loi.",
+            "La parité : sur une liste, une femme et un homme, chacun son tour.",
+            "Un propos sexiste rabaisse une personne à cause de son sexe.",
+            "Les violences sexistes et sexuelles sont punies. On peut en parler : un adulte de confiance, le 119.",
+            "Tous les métiers sont ouverts aux filles comme aux garçons.",
+            "Des inégalités restent : salaires, métiers, tâches à la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-2-5",
+      "prompt": "Une fille qui veut devenir pilote d’avion le peut, comme un garçon : tous les métiers sont ouverts …",
+      "spoken": "Une fille qui veut devenir pilote d’avion le peut, comme un garçon : tous les métiers sont ouverts  (mot manquant) ",
+      "choices": [
+        "à tous",
+        "aux garçons seulement",
+        "aux meilleurs élèves seulement"
+      ],
+      "answer": "à tous",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Aucun métier n’est réservé aux garçons ou aux filles : tous sont ouverts à tous. Les stéréotypes, eux, freinent encore certains choix.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir pour l’égalité",
+          "lines": [
+            "À travail égal, salaire égal : c’est la loi.",
+            "La parité : sur une liste, une femme et un homme, chacun son tour.",
+            "Un propos sexiste rabaisse une personne à cause de son sexe.",
+            "Les violences sexistes et sexuelles sont punies. On peut en parler : un adulte de confiance, le 119.",
+            "Tous les métiers sont ouverts aux filles comme aux garçons.",
+            "Des inégalités restent : salaires, métiers, tâches à la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-2-6",
+      "prompt": "Dans une entreprise\nUne femme et un homme font le même travail.\nLa femme est payée moins.\nElle demande l’aide de l’inspection du travail.",
+      "question": "Que dit la loi ?",
+      "spoken": "Dans une entreprise. Une femme et un homme font le même travail. La femme est payée moins. Elle demande l’aide de l’inspection du travail.",
+      "choices": [
+        "l’entreprise choisit librement",
+        "le salaire doit être le même",
+        "les femmes doivent demander moins"
+      ],
+      "answer": "le salaire doit être le même",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Pour le même travail, le salaire doit être le même : l’entreprise ne respecte pas la loi. L’inspection du travail contrôle les entreprises.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir pour l’égalité",
+          "lines": [
+            "À travail égal, salaire égal : c’est la loi.",
+            "La parité : sur une liste, une femme et un homme, chacun son tour.",
+            "Un propos sexiste rabaisse une personne à cause de son sexe.",
+            "Les violences sexistes et sexuelles sont punies. On peut en parler : un adulte de confiance, le 119.",
+            "Tous les métiers sont ouverts aux filles comme aux garçons.",
+            "Des inégalités restent : salaires, métiers, tâches à la maison."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-5e-equality-solidarity-gender-equality-2-7",
+      "prompt": "La loi garantit l’égalité, mais des inégalités restent. Pour les réduire, l’État et toute la société doivent …",
+      "spoken": "La loi garantit l’égalité, mais des inégalités restent. Pour les réduire, l’État et toute la société doivent  (mot manquant) ",
+      "choices": [
+        "attendre que cela passe",
+        "laisser la loi faire seule",
+        "agir"
+      ],
+      "answer": "agir",
+      "hint": "Relis la dernière ligne du rappel : les inégalités disparaissent-elles toutes seules ?",
+      "explanation": "La loi ne suffit pas : l’État, les associations, les entreprises et chacun agissent pour l’égalité dans les faits. C’est le rôle de toute la société.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agir pour l’égalité",
+          "lines": [
+            "À travail égal, salaire égal : c’est la loi.",
+            "La parité : sur une liste, une femme et un homme, chacun son tour.",
+            "Un propos sexiste rabaisse une personne à cause de son sexe.",
+            "Les violences sexistes et sexuelles sont punies. On peut en parler : un adulte de confiance, le 119.",
+            "Tous les métiers sont ouverts aux filles comme aux garçons.",
+            "Des inégalités restent : salaires, métiers, tâches à la maison."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-5e-equality-solidarity",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

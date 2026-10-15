@@ -1,3 +1,4 @@
+import type { PetiteConstructionAPoser } from './world/placedFixtures';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
@@ -5,10 +6,9 @@ import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
+import { guardianTitle, missionsJouables, sansSonOption, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
 import { Requests, YouAreHere } from './Requests';
-import type { Commande } from './world/requests';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
 import { ShipSection } from './ShipSection';
@@ -54,16 +54,16 @@ interface Props {
   onBuilt?: (to: BiomeDef['id']) => void;
   /** L'ouvrage touché dans le monde : sa proposition est mise en avant. */
   highlight?: string | null;
-  /** Le chantier du Bloc-Navire (sur une île-port). */
+  /** Le chantier de la Nef (sur une île-port). */
   ship?: VehicleBuilder;
-  /** Embarquer sur le Bloc-Navire vers un archipel. */
+  /** Embarquer sur la Nef vers un archipel. */
   onBoard?: (to: ArchipelagoId, back: boolean) => void;
   /** Les parties qui viennent de se poser dans le monde (GD-6), dites en tête du bâtiment une fois la pose finie. */
   posees?: Partie[] | null;
   /** Les parties que la vague est en train de poser (GD-6) : le compte du bâtiment les attend. */
   enCoursDePose?: Partie[] | null;
   /** Une commande livrée dans ce panneau (GD-7, PR 3) : la scène pose sa petite construction ; `true` si elle en prend le son. */
-  onLivree?: (c: Commande) => boolean;
+  onLivree?: (c: PetiteConstructionAPoser) => boolean;
   /** La commande dont la petite construction se pose (la vague) : la phrase « posée » attend la fin (GD-7, PR 3). */
   commandeEnCoursDePose?: string | null;
 }
@@ -71,19 +71,21 @@ interface Props {
 /**
  * Le panneau d'une île, qui glisse depuis le bas du monde : la créature (une ligne, la suite dans un pli), ses missions,
  * le Gardien (l'école, la salle des trophées et le lieu où l'on assemble n'y sont plus : ce sont des lieux du monde, lot 2
- * de « Toucher le monde »), le prochain objectif, puis le bâtiment de l'île, le Bloc-Navire (sur un port) et les ouvrages, repliés quand
+ * de « Toucher le monde »), le prochain objectif, puis le bâtiment de l'île, la Nef (sur un port) et les ouvrages, repliés quand
  * il n'y a rien à y faire ; au pied, la matière, la classe et l'archipel. Tout est en HTML (police dys), on ne quitte
  * pas le monde.
  */
 export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard, posees = null, enCoursDePose = null, onLivree, commandeEnCoursDePose = null }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
-  const sansLv2 = estIleLv2(biome) && settings.lv2 === 'none';
+  // « Pas de LV2 » sur l'île de la LV2, « Pas d'option » sur celle du latin et du grec (GD-13).
+  const sansOption = sansSonOption(biome, settings);
+  const sansLv2 = sansOption !== null;
   const textes = useTextes();
   const unlocked = isBiomeUnlocked(biome.id, state.world.links);
   // « Pas de LV2 » : un seul message, lu à l'ouverture, à la place de l'accueil et du prochain objectif.
-  const greeting = accueilDeLIle(state, biome.id, sansLv2, textes);
-  const bossReady = unlocked && isBossOpen(biome, state.progress);
+  const greeting = accueilDeLIle(state, biome.id, sansOption, textes);
+  const bossReady = unlocked && isBossOpen(biome, state.progress, state.world.challengesKeptOpen);
   const bossBeaten = isBossBeaten(biome.id, state.progress);
   const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id, textes.archipels, textes.libelles) : null;
   const port = unlocked && archipelagoOf(biome.id).port === biome.id;
@@ -146,11 +148,11 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       {rappel && <ResidentReminder biome={biome} rappel={rappel} onRemis={remettre} />}
       <LaterSaid dit={remis} />
 
-      {sansLv2 ? (
-        // « Pas de LV2 » : rien à construire, rien à jouer ; le chemin vers le réglage (décision du directeur artistique).
+      {sansOption ? (
+        // « Pas de LV2 », « Pas d'option » : rien à construire, rien à jouer ; le chemin vers le réglage (décision du directeur artistique).
         <p>
           <Link to="/reglages" className="button">
-            <Icon name="settings" /> Choisir une LV2
+            <Icon name="settings" /> {sansOption.bouton}
           </Link>
         </p>
       ) : (
@@ -164,7 +166,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       )}
       {!sansLv2 && <YouAreHere dit={ici} />}
       <ul className="island-quests" aria-label="Missions de l’île">
-        {missionsJouables(biome, settings.lv2).map((exercise) => {
+        {missionsJouables(biome, settings.lv2, settings.lca).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
           const progress = def ? questProgress(biome.id, exercise.id, state.progress) : undefined;
           const playable = Boolean(def && unlocked);

@@ -1,12 +1,12 @@
 // La pose d'une partie en vague, et celle de la petite construction d'une commande livrée (sortie de WorldPage.tsx,
 // qualité du code, lot 6) : la vague à lancer, ses sons, sa fin (touchée, interrompue ou en silence), et ce que la vue
 // en dessine (`cubesVus`, `poseVue`).
+import type { PetiteConstructionAPoser } from './world/placedFixtures';
 import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react';
 import type { useSettings } from '../core/SettingsContext';
 import type { BiomeId, getBiome } from './biomes';
 import type { Habillage } from './skin';
 import type { VoxelCube } from './world/cube';
-import type { Commande } from './world/requests';
 import { playDone, sonDePose } from './sound';
 import type { Partie } from './world/parts';
 import { prendreLaPose } from './poseToShow';
@@ -113,7 +113,7 @@ export function usePoseEnVague({ island, chantier, reduceMotion, settings, habil
    * « Réduire les animations », ou la vague sautée : posée d'un coup, la phrase tout de suite, un « clac » puis le
    * carillon. Rend `true` : le son est pris ici, la section n'en joue pas.
    */
-  const poserLaCommande = (c: Commande): boolean => {
+  const poserLaCommande = (c: PetiteConstructionAPoser): boolean => {
     if (habillage.pose !== 'geste') return false;
     const cases = casesDeLaPetiteConstructionDansLeMonde(c.biome, c.fixture);
     if (reduceMotion || !cases.size) {

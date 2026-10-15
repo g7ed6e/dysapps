@@ -1,0 +1,9 @@
+{
+  "id": "civics-5e-equality-solidarity-3",
+  "biome": "civics-5e-equality-solidarity",
+  "name": "La cour du fournil",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Une cour pour partager le pain. Le fournil est fini, bâtisseur."
+}

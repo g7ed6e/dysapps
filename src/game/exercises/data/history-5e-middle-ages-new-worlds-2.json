@@ -1,0 +1,230 @@
+{
+  "id": "history-5e-middle-ages-new-worlds-2",
+  "biome": "history-5e-middle-ages",
+  "type": "new-worlds",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-5e-middle-ages-new-worlds-2-0",
+      "prompt": "D’après le journal de Christophe Colomb\nLe 12 octobre 1492\nNous arrivons sur une île.\nDes habitants viennent vers nous.",
+      "question": "En quel siècle Colomb arrive-t-il en Amérique ?",
+      "spoken": "D’après le journal de Christophe Colomb. Le douze octobre mille quatre cent quatre-vingt-douze. Nous arrivons sur une île. Des habitants viennent vers nous.",
+      "choices": [
+        "au XIVe siècle",
+        "au XVe siècle",
+        "au XVIe siècle"
+      ],
+      "answer": "au XVe siècle",
+      "hint": "Dans le rappel, 1492 est-il entre 1401 et 1500 ?",
+      "explanation": "L’an 1492 est entre l’an 1401 et l’an 1500 : c’est le XVe siècle. Le 14 du début ne donne pas le siècle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Le XVe siècle : de l’an 1401 à l’an 1500.",
+            "Le XVIe siècle : de l’an 1501 à l’an 1600.",
+            "Catholiques et protestants : deux façons d’être chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-2-1",
+      "prompt": "Ce qui traverse l’océan après 1492\nVers l’Europe : le maïs, la pomme de terre, le cacao\nVers l’Amérique : le cheval, le blé",
+      "question": "Que reçoit l’Europe de l’Amérique ?",
+      "spoken": "Ce qui traverse l’océan après mille quatre cent quatre-vingt-douze. Vers l’Europe : le maïs, la pomme de terre, le cacao. Vers l’Amérique : le cheval, le blé.",
+      "choices": [
+        "le cheval",
+        "le blé",
+        "le maïs"
+      ],
+      "answer": "le maïs",
+      "hint": "Lis la ligne qui commence par « Vers l’Europe ».",
+      "explanation": "Le maïs, la pomme de terre et le cacao viennent d’Amérique. Le cheval et le blé font le chemin inverse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Le XVe siècle : de l’an 1401 à l’an 1500.",
+            "Le XVIe siècle : de l’an 1501 à l’an 1600.",
+            "Catholiques et protestants : deux façons d’être chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-2-2",
+      "prompt": "Les Amérindiens après l’arrivée des Européens\nDes guerres et du travail forcé\nDes maladies venues d’Europe, comme la variole\nBeaucoup d’entre eux meurent.",
+      "question": "Qu’est-ce qui fait mourir beaucoup d’Amérindiens ?",
+      "spoken": "Les Amérindiens après l’arrivée des Européens. Des guerres et du travail forcé. Des maladies venues d’Europe, comme la variole. Beaucoup d’entre eux meurent.",
+      "choices": [
+        "des maladies venues d’Europe",
+        "le grand froid",
+        "une famine en Europe"
+      ],
+      "answer": "des maladies venues d’Europe",
+      "hint": "Lis la ligne qui commence par « Des maladies ».",
+      "explanation": "La guerre, le travail forcé et surtout les maladies venues d’Europe tuent beaucoup d’Amérindiens. Leur corps ne connaissait pas ces maladies.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Le XVe siècle : de l’an 1401 à l’an 1500.",
+            "Le XVIe siècle : de l’an 1501 à l’an 1600.",
+            "Catholiques et protestants : deux façons d’être chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-2-3",
+      "prompt": "Avant l’imprimerie\nUn moine copie un livre à la main, très lentement.\nAvec l’imprimerie\nOn fabrique beaucoup de livres, vite.",
+      "question": "Que change l’imprimerie ?",
+      "spoken": "Avant l’imprimerie. Un moine copie un livre à la main, très lentement. Avec l’imprimerie. On fabrique beaucoup de livres, vite.",
+      "choices": [
+        "seuls les moines lisent",
+        "les livres sont plus nombreux",
+        "les livres disparaissent"
+      ],
+      "answer": "les livres sont plus nombreux",
+      "hint": "Compare la ligne « Un moine copie » et la ligne « On fabrique ».",
+      "explanation": "Avec l’imprimerie, on fabrique beaucoup de livres, vite. Les idées des humanistes et de Luther se répandent dans toute l’Europe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Le XVe siècle : de l’an 1401 à l’an 1500.",
+            "Le XVIe siècle : de l’an 1501 à l’an 1600.",
+            "Catholiques et protestants : deux façons d’être chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-2-4",
+      "prompt": "D’après Rabelais, 1532\nUn père écrit à son fils :\n« Je veux que tu apprennes les langues,\nd’abord le grec, puis le latin. »",
+      "question": "Quelles langues le père veut-il que son fils apprenne ?",
+      "spoken": "D’après Rabelais, mille cinq cent trente-deux. Un père écrit à son fils : « Je veux que tu apprennes les langues, d’abord le grec, puis le latin. »",
+      "choices": [
+        "l’anglais et l’espagnol",
+        "le français seul",
+        "le grec et le latin"
+      ],
+      "answer": "le grec et le latin",
+      "hint": "Lis la ligne qui commence par « d’abord ».",
+      "explanation": "Le grec et le latin sont les langues de l’Antiquité. Apprendre les langues anciennes pour lire les vieux textes : c’est l’idée des humanistes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Le XVe siècle : de l’an 1401 à l’an 1500.",
+            "Le XVIe siècle : de l’an 1501 à l’an 1600.",
+            "Catholiques et protestants : deux façons d’être chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-2-5",
+      "prompt": "Ce que pense Luther\nOn ne gagne pas le paradis en payant l’Église.\nSeule la Bible dit ce qu’il faut croire.",
+      "question": "Que critique Luther ?",
+      "spoken": "Ce que pense Luther. On ne gagne pas le paradis en payant l’Église. Seule la Bible dit ce qu’il faut croire.",
+      "choices": [
+        "l’argent payé à l’Église pour le paradis",
+        "la Bible",
+        "l’imprimerie"
+      ],
+      "answer": "l’argent payé à l’Église pour le paradis",
+      "hint": "Lis la ligne qui commence par « On ne gagne ».",
+      "explanation": "Luther critique l’Église qui fait payer les fidèles pour gagner le paradis. Pour lui, seule la Bible compte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Le XVe siècle : de l’an 1401 à l’an 1500.",
+            "Le XVIe siècle : de l’an 1501 à l’an 1600.",
+            "Catholiques et protestants : deux façons d’être chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-2-6",
+      "prompt": "L’édit de Nantes, en 1598\nLe roi Henri IV veut la paix entre chrétiens.\nLes protestants peuvent pratiquer leur religion.",
+      "question": "Qui obtient le droit de pratiquer sa religion ?",
+      "spoken": "L’édit de Nantes, en mille cinq cent quatre-vingt-dix-huit. Le roi Henri quatre veut la paix entre chrétiens. Les protestants peuvent pratiquer leur religion.",
+      "choices": [
+        "les catholiques",
+        "les protestants",
+        "les musulmans"
+      ],
+      "answer": "les protestants",
+      "hint": "Lis la ligne qui contient « pratiquer ».",
+      "explanation": "Par l’édit de Nantes, Henri IV permet aux protestants de pratiquer leur religion. Il veut mettre fin aux guerres de religion.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Le XVe siècle : de l’an 1401 à l’an 1500.",
+            "Le XVIe siècle : de l’an 1501 à l’an 1600.",
+            "Catholiques et protestants : deux façons d’être chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-new-worlds-2-7",
+      "prompt": "Louis XIV, à partir de 1661\nIl gouverne seul, sans Premier ministre.\nIl fait bâtir le château de Versailles.\nLes nobles vivent à la cour, près de lui.",
+      "question": "Comment appelle-t-on ce pouvoir ?",
+      "spoken": "Louis quatorze, à partir de mille six cent soixante et un. Il gouverne seul, sans Premier ministre. Il fait bâtir le château de Versailles. Les nobles vivent à la cour, près de lui.",
+      "choices": [
+        "une république",
+        "une monarchie absolue",
+        "une seigneurie"
+      ],
+      "answer": "une monarchie absolue",
+      "hint": "Un roi qui gouverne seul : comment s’appelle-t-il ?",
+      "explanation": "Un roi qui gouverne seul et tient les nobles près de lui : c’est la monarchie absolue. Versailles montre sa puissance.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Le XVe siècle : de l’an 1401 à l’an 1500.",
+            "Le XVIe siècle : de l’an 1501 à l’an 1600.",
+            "Catholiques et protestants : deux façons d’être chrétien."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-5e-middle-ages",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

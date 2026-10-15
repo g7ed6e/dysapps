@@ -1,0 +1,230 @@
+{
+  "id": "history-3e-twentieth-century-total-wars-2",
+  "biome": "history-3e-twentieth-century",
+  "type": "total-wars",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-3e-twentieth-century-total-wars-2-0",
+      "prompt": "D’après des lettres de soldats, 1916\nNous sommes dans la boue jusqu’aux genoux.\nLes obus tombent jour et nuit.",
+      "question": "Que décrit ce document ?",
+      "spoken": "D’après des lettres de soldats, mille neuf cent seize. Nous sommes dans la boue jusqu’aux genoux. Les obus tombent jour et nuit.",
+      "choices": [
+        "la vie dans une usine",
+        "la fin de la guerre",
+        "la vie dans les tranchées"
+      ],
+      "answer": "la vie dans les tranchées",
+      "hint": "Où les soldats vivent-ils dans la boue ?",
+      "explanation": "La boue, les obus jour et nuit : c’est la vie des soldats dans les tranchées, en 1916.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "Collaborer : aider l’occupant allemand.",
+            "Résister : lutter contre l’occupant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-2-1",
+      "prompt": "Description d’une photo, 1917\nDes femmes fabriquent des obus dans une usine.\nLes hommes sont au front.",
+      "question": "Pourquoi les femmes travaillent-elles dans cette usine ?",
+      "spoken": "Description d’une photo, mille neuf cent dix-sept. Des femmes fabriquent des obus dans une usine. Les hommes sont au front.",
+      "choices": [
+        "les hommes sont au front",
+        "les usines sont fermées",
+        "la guerre est finie"
+      ],
+      "answer": "les hommes sont au front",
+      "hint": "Relis la ligne qui commence par « Les hommes ».",
+      "explanation": "Les hommes se battent au front : les femmes les remplacent à l’usine et fabriquent des armes. Les civils servent la guerre : c’est une guerre totale.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "Collaborer : aider l’occupant allemand.",
+            "Résister : lutter contre l’occupant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-2-2",
+      "prompt": "Ce que disent les historiens\nEn 1915, dans l’Empire ottoman,\nle gouvernement fait tuer plus d’un million d’Arméniens.\nC’est un génocide.",
+      "question": "En quelle année commence ce génocide ?",
+      "spoken": "Ce que disent les historiens. En mille neuf cent quinze, dans l’Empire ottoman, le gouvernement fait tuer plus d’un million d’Arméniens. C’est un génocide.",
+      "choices": [
+        "1915",
+        "1918",
+        "1939"
+      ],
+      "answer": "1915",
+      "hint": "Lis la ligne qui commence par « En ».",
+      "explanation": "Le génocide des Arméniens commence en 1915, pendant la Première Guerre mondiale, dans l’Empire ottoman.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "Collaborer : aider l’occupant allemand.",
+            "Résister : lutter contre l’occupant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-2-3",
+      "prompt": "Deux événements\nL’armistice de la Première Guerre mondiale : 1918\nHitler prend le pouvoir en Allemagne : 1933",
+      "question": "Lequel vient en premier ?",
+      "spoken": "Deux événements. L’armistice de la Première Guerre mondiale : mille neuf cent dix-huit. Hitler prend le pouvoir en Allemagne : mille neuf cent trente-trois.",
+      "choices": [
+        "l’armistice",
+        "l’arrivée d’Hitler au pouvoir",
+        "les deux la même année"
+      ],
+      "answer": "l’armistice",
+      "hint": "Compare les deux années : laquelle est la plus petite ?",
+      "explanation": "1918 vient avant 1933 : l’armistice vient en premier. Quand Hitler prend le pouvoir, la Première Guerre mondiale est finie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "Collaborer : aider l’occupant allemand.",
+            "Résister : lutter contre l’occupant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-2-4",
+      "prompt": "L’Allemagne, en 1933\nHitler devient chef du gouvernement.\nLes autres partis sont interdits.\nLes opposants sont envoyés en camp.",
+      "question": "Quel régime Hitler installe-t-il ?",
+      "spoken": "L’Allemagne, en mille neuf cent trente-trois. Hitler devient chef du gouvernement. Les autres partis sont interdits. Les opposants sont envoyés en camp.",
+      "choices": [
+        "une démocratie",
+        "un régime totalitaire",
+        "une monarchie"
+      ],
+      "answer": "un régime totalitaire",
+      "hint": "Un seul parti, plus d’opposants : est-ce encore une démocratie ?",
+      "explanation": "Un seul parti, les opposants enfermés : Hitler installe un régime totalitaire. Une démocratie laisse plusieurs partis exister.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "Collaborer : aider l’occupant allemand.",
+            "Résister : lutter contre l’occupant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-2-5",
+      "prompt": "Appel du général de Gaulle, 18 juin 1940\nÀ la radio de Londres :\n« La flamme de la résistance française\nne doit pas s’éteindre et ne s’éteindra pas. »",
+      "question": "Que demande de Gaulle aux Français ?",
+      "spoken": "Appel du général de Gaulle, le dix-huit juin mille neuf cent quarante. À la radio de Londres : « La flamme de la résistance française ne doit pas s’éteindre et ne s’éteindra pas. »",
+      "choices": [
+        "d’arrêter la guerre",
+        "de continuer le combat",
+        "d’aider l’occupant"
+      ],
+      "answer": "de continuer le combat",
+      "hint": "Que veut dire « la flamme ne doit pas s’éteindre » ?",
+      "explanation": "Depuis Londres, de Gaulle refuse la défaite : il appelle les Français à continuer le combat. C’est le début de la France libre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "Collaborer : aider l’occupant allemand.",
+            "Résister : lutter contre l’occupant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-2-6",
+      "prompt": "Discours du maréchal Pétain, octobre 1940\n« J’entre aujourd’hui\ndans la voie de la collaboration. »",
+      "question": "Que choisit Pétain ?",
+      "spoken": "Discours du maréchal Pétain, octobre mille neuf cent quarante. « J’entre aujourd’hui dans la voie de la collaboration. »",
+      "choices": [
+        "de rejoindre de Gaulle",
+        "de résister",
+        "de collaborer avec l’Allemagne"
+      ],
+      "answer": "de collaborer avec l’Allemagne",
+      "hint": "Regarde la ligne « Collaborer » du rappel.",
+      "explanation": "Pétain, chef du régime de Vichy, choisit la collaboration : il aide l’occupant allemand. De Gaulle et les résistants font le choix inverse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "Collaborer : aider l’occupant allemand.",
+            "Résister : lutter contre l’occupant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-2-7",
+      "prompt": "6 juin 1944, en Normandie\nDes soldats américains, britanniques et canadiens débarquent.\nIls viennent libérer la France.",
+      "question": "Comment appelle-t-on cet événement ?",
+      "spoken": "Le six juin mille neuf cent quarante-quatre, en Normandie. Des soldats américains, britanniques et canadiens débarquent. Ils viennent libérer la France.",
+      "choices": [
+        "l’armistice",
+        "le débarquement",
+        "la défaite de la France"
+      ],
+      "answer": "le débarquement",
+      "hint": "Relis le verbe de la ligne qui commence par « Des soldats ».",
+      "explanation": "Le 6 juin 1944, les Alliés débarquent en Normandie : c’est le débarquement. Paris est libéré en août 1944, et l’Allemagne capitule le 8 mai 1945.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "Collaborer : aider l’occupant allemand.",
+            "Résister : lutter contre l’occupant."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-3e-twentieth-century",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

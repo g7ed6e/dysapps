@@ -2,7 +2,7 @@
 // côte à une autre, au large des autres lieux, sans en croiser une autre, posées dans l'ordre où l'élève les a posées.
 // Sur des dispositions faites pour le test ; la carte de départ, calée sur le pas, a les siens (linkGeometry.test.ts).
 import { describe, expect, it } from 'vitest';
-import { isLand, isLandInWorld, startingIsland, type IslandDef } from './map';
+import { archipelagoOfIsland, isLand, isLandInWorld, mapOf, startingIsland, type IslandDef } from './map';
 import { footprintOf } from './footprint';
 import type { Rectangle } from './placement';
 
@@ -11,8 +11,9 @@ function distanceAuRectangle(x: number, y: number, r: Rectangle): number {
   return Math.max(r.x0 - x, x - (r.x1 - 1), r.y0 - y, y - (r.y1 - 1), 0);
 }
 import { type Anchor, anchorInWorld, possibleLandings, spotPossible, pathBetween, LONG_LENGTH, MAX_ISLANDS_PER_REGION, routeRegion, RegionRouter } from './routing';
-import { type BridgeDef, getBridge } from './archipelago';
-import { bornesDuCoeur } from './map';
+import { BRIDGES, type BridgeDef, getBridge } from './archipelago';
+import { CORE } from './map';
+import { stationBand } from './arrange';
 import { STEP, TOWARDS_SEA } from './placement';
 
 /** Les liaisons posées, dans l'ordre, toutes jusqu'à 96 cases. */
@@ -54,7 +55,9 @@ describe('les arrivées d’un lieu', () => {
   for (const id of ['maths-6e-calculation', 'french-6e-phonology', 'french-4e-agreement'] as const)
     it(`${id} : sur sa côte, au pas, jamais devant les bornes`, () => {
       const def = startingIsland(id);
-      const coeur = bornesDuCoeur(def);
+      // Les places des bornes (la bande de devant) : aucune arrivée devant elles, ni devant le cœur d'origine. Devant
+      // les marges d'un cœur agrandi (GD-11), une arrivée reste possible.
+      const bornes = new Set(stationBand(id).map((b) => b.x));
       const arrivees = possibleLandings(def);
       expect(arrivees.length).toBeGreaterThan(4);
       for (const a of arrivees) {
@@ -62,7 +65,10 @@ describe('les arrivées d’un lieu', () => {
         expect(isLand(def, def.core.x + a.x, def.core.y + a.y), `${a.cote}${a.pas}`).toBe(true);
         expect(isLand(def, def.core.x + a.x + dx, def.core.y + a.y + dy), `${a.cote}${a.pas}`).toBe(false);
         expect(Math.abs((dy !== 0 ? a.x : a.y) % STEP)).toBe(0);
-        if (a.cote === 'devant') expect(a.x < coeur.x0 || a.x >= coeur.x1).toBe(true);
+        if (a.cote === 'devant') {
+          expect(a.x < 0 || a.x >= CORE).toBe(true);
+          expect(bornes.has(a.x)).toBe(false);
+        }
       }
     });
 });
@@ -106,7 +112,8 @@ describe('le traceur d’une région', () => {
   it('ne coupe jamais un autre lieu : un lieu posé sur le chemin droit le fait passer au large, à deux cases au moins', () => {
     const g = pose(galet, 90 - (galet.core.x - plaine.core.x), 0);
     const obstacle = pose(startingIsland('english-6e-grammar'), 0, 0);
-    const milieu = { ...obstacle, core: { x: plaine.core.x + 45, y: plaine.core.y + 4 } };
+    // Sur la ligne de la liaison droite (GD-12 : les îles ont leur forme, la ligne a changé).
+    const milieu = { ...obstacle, core: { x: plaine.core.x + 45, y: plaine.core.y } };
     const t = tracer([plaine, g, milieu], VERS_LE_GALET).get(VERS_LE_GALET);
     expect(t).not.toBeUndefined();
     if (t) {
@@ -150,11 +157,13 @@ describe('une place possible (le geste « Aménager » le lira)', () => {
 
   it('impossible s’il coupe une liaison posée ; une liaison seulement proposée ne compte pas', () => {
     const volcan = startingIsland('maths-6e-decimals');
-    const v = { ...volcan, core: { x: plaine.core.x, y: plaine.core.y + 100 } };
-    const g = { ...galet, core: { x: plaine.core.x + 60, y: plaine.core.y + 50 } };
+    // Le Volcan à droite de la Plaine (GD-12 : leurs formes laissent passer une liaison en L autour d'un lieu posé
+    // derrière la Plaine ; à côté d'elle, non).
+    const v = { ...volcan, core: { x: plaine.core.x + 100, y: plaine.core.y - 8 } };
+    const g = { ...galet, core: { x: plaine.core.x + 50, y: plaine.core.y + 60 } };
     expect(tracer([plaine, g, v], VERS_LE_VOLCAN).get(VERS_LE_VOLCAN)).not.toBeNull();
     // Le Galet posé entre la Plaine et le Volcan : sa propre liaison se trace, mais plus celle du Volcan.
-    const entre = { ...galet, core: { x: plaine.core.x, y: plaine.core.y + 50 } };
+    const entre = { ...galet, core: { x: plaine.core.x + 48, y: plaine.core.y } };
     expect(tracer([plaine, entre, v], VERS_LE_GALET).get(VERS_LE_GALET)).not.toBeNull();
     expect(spotPossible('6e', [plaine, entre, v], galet.id, liaisons(VERS_LE_VOLCAN))).toBe(false);
     expect(spotPossible('6e', [plaine, entre, v], galet.id, [])).toBe(true);
@@ -181,6 +190,20 @@ describe('les liaisons posées l’une après l’autre', () => {
     expect(traces.get(VERS_LE_GALET)).not.toBeNull();
     expect(traces.get(VERS_LE_VOLCAN)).toBeNull();
   });
+});
+
+it('une copie du traceur pose comme lui, sans toucher l’original', () => {
+  const lieux = mapOf('6e');
+  const liaisons = BRIDGES.filter((b) => archipelagoOfIsland(b.from) === '6e');
+  const neuf = new RegionRouter('6e', { lieux });
+  const attendus = liaisons.map((b) => neuf.poser(b, LONG_LENGTH));
+  expect(attendus.filter(Boolean).length).toBeGreaterThan(2);
+  const original = new RegionRouter('6e', { lieux });
+  const premier = original.poser(liaisons[0], LONG_LENGTH);
+  const essais = liaisons.slice(1).map((b) => original.essayer(b, LONG_LENGTH));
+  const copie = original.copie();
+  expect([premier, ...liaisons.slice(1).map((b) => copie.poser(b, LONG_LENGTH))]).toEqual(attendus);
+  expect(liaisons.slice(1).map((b) => original.essayer(b, LONG_LENGTH))).toEqual(essais);
 });
 
 it('le traceur refuse une région de plus de 31 lieux : un bit par lieu dans un entier de 32 bits', () => {

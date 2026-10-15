@@ -1,0 +1,241 @@
+{
+  "id": "lca-4e-cities-gr-mediterranean-2",
+  "biome": "lca-4e-cities",
+  "type": "gr-mediterranean",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-4e-cities-gr-mediterranean-2-0",
+      "prompt": "Les Grecs ont repris leur alphabet des …",
+      "spoken": "Les Grecs ont repris leur alphabet des  (mot manquant) ",
+      "choices": [
+        "Égyptiens",
+        "Phéniciens",
+        "Romains"
+      ],
+      "answer": "Phéniciens",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Les Phéniciens écrivaient avec des signes pour les consonnes ; les Grecs ont repris leur alphabet et ajouté les voyelles. Les Romains ont ensuite adapté l’alphabet grec : c’est le nôtre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grecs, Phéniciens et Carthaginois",
+          "lines": [
+            "Les Phéniciens : un peuple de marins et de marchands, venu de l’actuel Liban.",
+            "Les Grecs ont repris l’alphabet des Phéniciens et y ont ajouté les voyelles.",
+            "Carthage, fondée par des Phéniciens, devient une puissance de la mer.",
+            "En Sicile, des cités grecques, comme Syracuse, et Carthage se disputent l’île.",
+            "Une puissance maritime domine par sa flotte ; une puissance terrestre, par son armée.",
+            "Rome, puissance terrestre, finit par vaincre Carthage et par dominer les cités grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-2-1",
+      "prompt": "La Sicile, une île disputée\nDes Grecs y fondent des colonies, comme Syracuse.\nCarthage y possède aussi des cités, à l’ouest.\nLes deux se font la guerre pendant des siècles.",
+      "question": "Pourquoi se font-ils la guerre ?",
+      "spoken": "La Sicile, une île disputée. Des Grecs y fondent des colonies, comme Syracuse. Carthage y possède aussi des cités, à l’ouest. Les deux se font la guerre pendant des siècles.",
+      "choices": [
+        "pour contrôler l’île et ses ports",
+        "pour une question de religion",
+        "pour une dispute entre deux rois"
+      ],
+      "answer": "pour contrôler l’île et ses ports",
+      "hint": "Lis le titre du document.",
+      "explanation": "Grecs et Carthaginois se disputent la Sicile, riche en blé et bien placée au milieu de la mer. Plus tard, Rome la prendra à son tour.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grecs, Phéniciens et Carthaginois",
+          "lines": [
+            "Les Phéniciens : un peuple de marins et de marchands, venu de l’actuel Liban.",
+            "Les Grecs ont repris l’alphabet des Phéniciens et y ont ajouté les voyelles.",
+            "Carthage, fondée par des Phéniciens, devient une puissance de la mer.",
+            "En Sicile, des cités grecques, comme Syracuse, et Carthage se disputent l’île.",
+            "Une puissance maritime domine par sa flotte ; une puissance terrestre, par son armée.",
+            "Rome, puissance terrestre, finit par vaincre Carthage et par dominer les cités grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-2-2",
+      "prompt": "Carthage domine la mer grâce à sa …",
+      "spoken": "Carthage domine la mer grâce à sa  (mot manquant) ",
+      "choices": [
+        "flotte",
+        "cavalerie",
+        "muraille"
+      ],
+      "answer": "flotte",
+      "hint": "Relis la troisième et la cinquième ligne du rappel.",
+      "explanation": "Carthage domine la mer grâce à sa flotte et à ses ports : c’est une puissance maritime, comme Athènes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grecs, Phéniciens et Carthaginois",
+          "lines": [
+            "Les Phéniciens : un peuple de marins et de marchands, venu de l’actuel Liban.",
+            "Les Grecs ont repris l’alphabet des Phéniciens et y ont ajouté les voyelles.",
+            "Carthage, fondée par des Phéniciens, devient une puissance de la mer.",
+            "En Sicile, des cités grecques, comme Syracuse, et Carthage se disputent l’île.",
+            "Une puissance maritime domine par sa flotte ; une puissance terrestre, par son armée.",
+            "Rome, puissance terrestre, finit par vaincre Carthage et par dominer les cités grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-2-3",
+      "prompt": "Un alphabet qui voyage\nLes Phéniciens : 22 signes, seulement des consonnes.\nLes Grecs : ils ajoutent les voyelles, comme alpha.\nLes Romains : ils reprennent les lettres, par les Étrusques.",
+      "question": "Qu’apportent les Grecs à l’alphabet ?",
+      "spoken": "Un alphabet qui voyage. Les Phéniciens : vingt-deux signes, seulement des consonnes. Les Grecs : ils ajoutent les voyelles, comme alpha. Les Romains : ils reprennent les lettres, par les Étrusques.",
+      "choices": [
+        "les consonnes",
+        "les voyelles",
+        "les chiffres"
+      ],
+      "answer": "les voyelles",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "Les Grecs ajoutent les voyelles : on peut alors écrire tous les sons d’un mot. Le mot « alphabet » vient des deux premières lettres grecques, alpha et bêta.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grecs, Phéniciens et Carthaginois",
+          "lines": [
+            "Les Phéniciens : un peuple de marins et de marchands, venu de l’actuel Liban.",
+            "Les Grecs ont repris l’alphabet des Phéniciens et y ont ajouté les voyelles.",
+            "Carthage, fondée par des Phéniciens, devient une puissance de la mer.",
+            "En Sicile, des cités grecques, comme Syracuse, et Carthage se disputent l’île.",
+            "Une puissance maritime domine par sa flotte ; une puissance terrestre, par son armée.",
+            "Rome, puissance terrestre, finit par vaincre Carthage et par dominer les cités grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-2-4",
+      "prompt": "À la fin, la puissance qui l’emporte sur Carthage et sur les cités grecques est …",
+      "spoken": "À la fin, la puissance qui l’emporte sur Carthage et sur les cités grecques est  (mot manquant) ",
+      "choices": [
+        "Sparte",
+        "Rome",
+        "la Perse"
+      ],
+      "answer": "Rome",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Rome bat Carthage et domine peu à peu les cités grecques. Mais les Romains, eux, adoptent la culture grecque.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grecs, Phéniciens et Carthaginois",
+          "lines": [
+            "Les Phéniciens : un peuple de marins et de marchands, venu de l’actuel Liban.",
+            "Les Grecs ont repris l’alphabet des Phéniciens et y ont ajouté les voyelles.",
+            "Carthage, fondée par des Phéniciens, devient une puissance de la mer.",
+            "En Sicile, des cités grecques, comme Syracuse, et Carthage se disputent l’île.",
+            "Une puissance maritime domine par sa flotte ; une puissance terrestre, par son armée.",
+            "Rome, puissance terrestre, finit par vaincre Carthage et par dominer les cités grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-2-5",
+      "prompt": "Les Phéniciens viennent des côtes de l’actuel …",
+      "spoken": "Les Phéniciens viennent des côtes de l’actuel  (mot manquant) ",
+      "choices": [
+        "Liban",
+        "Maroc",
+        "Portugal"
+      ],
+      "answer": "Liban",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Les Phéniciens viennent des côtes de l’actuel Liban, avec des villes comme Tyr et Sidon. Grands marins, ils commercent dans toute la Méditerranée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grecs, Phéniciens et Carthaginois",
+          "lines": [
+            "Les Phéniciens : un peuple de marins et de marchands, venu de l’actuel Liban.",
+            "Les Grecs ont repris l’alphabet des Phéniciens et y ont ajouté les voyelles.",
+            "Carthage, fondée par des Phéniciens, devient une puissance de la mer.",
+            "En Sicile, des cités grecques, comme Syracuse, et Carthage se disputent l’île.",
+            "Une puissance maritime domine par sa flotte ; une puissance terrestre, par son armée.",
+            "Rome, puissance terrestre, finit par vaincre Carthage et par dominer les cités grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-2-6",
+      "prompt": "Une cité qui domine la mer grâce à sa flotte est une puissance …",
+      "spoken": "Une cité qui domine la mer grâce à sa flotte est une puissance  (mot manquant) ",
+      "choices": [
+        "terrestre",
+        "religieuse",
+        "maritime"
+      ],
+      "answer": "maritime",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Une puissance maritime domine la mer par sa flotte et ses ports : Carthage, Athènes. Une puissance terrestre compte sur son armée : Sparte, ou Rome à ses débuts.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grecs, Phéniciens et Carthaginois",
+          "lines": [
+            "Les Phéniciens : un peuple de marins et de marchands, venu de l’actuel Liban.",
+            "Les Grecs ont repris l’alphabet des Phéniciens et y ont ajouté les voyelles.",
+            "Carthage, fondée par des Phéniciens, devient une puissance de la mer.",
+            "En Sicile, des cités grecques, comme Syracuse, et Carthage se disputent l’île.",
+            "Une puissance maritime domine par sa flotte ; une puissance terrestre, par son armée.",
+            "Rome, puissance terrestre, finit par vaincre Carthage et par dominer les cités grecques."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-mediterranean-2-7",
+      "prompt": "Syracuse\nUne colonie grecque fondée en Sicile par des Corinthiens.\nElle devient l’une des plus grandes cités grecques.\nEn 212 avant J.-C., Rome la prend.",
+      "question": "Qui fonde Syracuse ?",
+      "spoken": "Syracuse. Une colonie grecque fondée en Sicile par des Corinthiens. Elle devient l’une des plus grandes cités grecques. En deux cent douze avant Jésus-Christ, Rome la prend.",
+      "choices": [
+        "des Romains",
+        "des Carthaginois",
+        "des Grecs de Corinthe"
+      ],
+      "answer": "des Grecs de Corinthe",
+      "hint": "Lis la deuxième ligne du document.",
+      "explanation": "Syracuse est une colonie grecque, fondée par des Corinthiens. Le savant Archimède y vit ; il meurt quand Rome prend la ville, en 212 avant J.-C.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grecs, Phéniciens et Carthaginois",
+          "lines": [
+            "Les Phéniciens : un peuple de marins et de marchands, venu de l’actuel Liban.",
+            "Les Grecs ont repris l’alphabet des Phéniciens et y ont ajouté les voyelles.",
+            "Carthage, fondée par des Phéniciens, devient une puissance de la mer.",
+            "En Sicile, des cités grecques, comme Syracuse, et Carthage se disputent l’île.",
+            "Une puissance maritime domine par sa flotte ; une puissance terrestre, par son armée.",
+            "Rome, puissance terrestre, finit par vaincre Carthage et par dominer les cités grecques."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-4e-cities",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

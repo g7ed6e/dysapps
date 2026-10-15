@@ -57,6 +57,7 @@ Les captures d'un lot se font sur la CI, pas dans le conteneur du fil (décision
    - `familles` : celles du périmètre (`jour,nuit,lieux-salle`) ; les vues de jour se font toujours ;
    - `archipels` : l'archipel touché (`6e`), ou plusieurs (`6e,3e`) ;
    - `univers` : `blocland`, `archipeo` ou `les-deux`.
+   - `contre` : `main` (par défaut) ou `preview` pour un lot qui part de `preview` : l'avant se prend alors sur leur ancêtre commun avec `preview`, sinon les lots de `preview` pas encore sur main ressortent comme des changements.
    L'avant se prend sur le commit de main dont la branche part (merge-base), l'après sur la branche : rien à préparer, pas de `captures-main` à lire. Relancer sur la même branche annule le passage en cours.
 3. **Attendre la fin** (`actions_list`, `list_workflow_runs` sur `captures-lot.yml` et la branche) : deux à trois minutes pour un archipel (2 min 20 mesurées, le 6e de jour), à peine plus pour quatre : les machines travaillent en même temps. Une machine en erreur arrête tout le passage (ni comparaison, ni publication) : lire le journal du job **prendre** en échec, corriger, relancer.
 4. **Lire le résultat** : `git fetch origin captures`, puis `<lot>/<univers>/` : les planches avant/après des seules vues changées (au-delà de 0,3 % de pixels différents) et des vues nouvelles, et `comparaison.md` (les vues inchangées, avec leur écart). Le résumé du passage reprend `comparaison.md`.

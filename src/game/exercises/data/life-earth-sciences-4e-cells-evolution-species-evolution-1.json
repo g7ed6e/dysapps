@@ -1,0 +1,232 @@
+{
+  "id": "life-earth-sciences-4e-cells-evolution-species-evolution-1",
+  "biome": "life-earth-sciences-4e-cells-evolution",
+  "type": "species-evolution",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-1-0",
+      "prompt": "Le cheval et l’âne ont ensemble un petit, le mulet, qui ne peut pas avoir de petits. Le cheval et l’âne sont …",
+      "spoken": "Le cheval et l’âne ont ensemble un petit, le mulet, qui ne peut pas avoir de petits. Le cheval et l’âne sont  (mot manquant) ",
+      "choices": [
+        "de la même espèce",
+        "de deux espèces différentes",
+        "des clones"
+      ],
+      "answer": "de deux espèces différentes",
+      "hint": "Relis la ligne « Espèce » du rappel : le petit peut-il avoir des petits à son tour ?",
+      "explanation": "Le mulet ne peut pas avoir de petits : le cheval et l’âne sont donc deux espèces différentes, même s’ils se ressemblent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La biodiversité",
+          "lines": [
+            "Biodiversité : la diversité des écosystèmes, des espèces et des individus.",
+            "Espèce : des individus qui ont ensemble des petits, capables à leur tour d’avoir des petits.",
+            "Des espèces apparaissent, d’autres disparaissent : la biodiversité change.",
+            "Crise biologique : beaucoup d’espèces disparaissent en peu de temps.",
+            "Des attributs partagés montrent un ancêtre commun : un lien de parenté."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-1-1",
+      "prompt": "Les grands dinosaures ont disparu pendant une …",
+      "spoken": "Les grands dinosaures ont disparu pendant une  (mot manquant) ",
+      "choices": [
+        "crise biologique",
+        "migration",
+        "métamorphose"
+      ],
+      "answer": "crise biologique",
+      "hint": "Relis la ligne « Crise biologique » du rappel.",
+      "explanation": "Beaucoup d’espèces, dont les grands dinosaures, ont disparu en peu de temps : c’est une crise biologique. Les fossiles la montrent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La biodiversité",
+          "lines": [
+            "Biodiversité : la diversité des écosystèmes, des espèces et des individus.",
+            "Espèce : des individus qui ont ensemble des petits, capables à leur tour d’avoir des petits.",
+            "Des espèces apparaissent, d’autres disparaissent : la biodiversité change.",
+            "Crise biologique : beaucoup d’espèces disparaissent en peu de temps.",
+            "Des attributs partagés montrent un ancêtre commun : un lien de parenté."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-1-2",
+      "prompt": "Deux espèces qui partagent beaucoup d’attributs ont un … commun.",
+      "spoken": "Deux espèces qui partagent beaucoup d’attributs ont un  (mot manquant)  commun.",
+      "choices": [
+        "milieu",
+        "ancêtre",
+        "aliment"
+      ],
+      "answer": "ancêtre",
+      "hint": "Relis la ligne « Des attributs » du rappel.",
+      "explanation": "Des attributs partagés viennent d’un ancêtre commun : les deux espèces sont parentes. Vivre dans le même milieu ne suffit pas à être parents.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La biodiversité",
+          "lines": [
+            "Biodiversité : la diversité des écosystèmes, des espèces et des individus.",
+            "Espèce : des individus qui ont ensemble des petits, capables à leur tour d’avoir des petits.",
+            "Des espèces apparaissent, d’autres disparaissent : la biodiversité change.",
+            "Crise biologique : beaucoup d’espèces disparaissent en peu de temps.",
+            "Des attributs partagés montrent un ancêtre commun : un lien de parenté."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-1-3",
+      "prompt": "Les attributs de trois animaux\nChat : poils, mamelles, quatre membres.\nLézard : écailles, quatre membres.\nHumain : poils, mamelles, quatre membres.",
+      "question": "Qui est le plus proche parent de l’humain ?",
+      "spoken": "Les attributs de trois animaux. Chat, poils, mamelles, quatre membres. Lézard, écailles, quatre membres. Humain, poils, mamelles, quatre membres.",
+      "choices": [
+        "le lézard",
+        "le chat",
+        "les deux autant"
+      ],
+      "answer": "le chat",
+      "hint": "Qui partage le plus d’attributs avec l’humain ?",
+      "explanation": "L’humain partage avec le chat les poils et les mamelles : ce sont deux mammifères, aux liens de parenté proches. Avec le lézard, il ne partage que les quatre membres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La biodiversité",
+          "lines": [
+            "Biodiversité : la diversité des écosystèmes, des espèces et des individus.",
+            "Espèce : des individus qui ont ensemble des petits, capables à leur tour d’avoir des petits.",
+            "Des espèces apparaissent, d’autres disparaissent : la biodiversité change.",
+            "Crise biologique : beaucoup d’espèces disparaissent en peu de temps.",
+            "Des attributs partagés montrent un ancêtre commun : un lien de parenté."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-1-4",
+      "prompt": "Aujourd’hui, beaucoup d’espèces disparaissent surtout à cause des …",
+      "spoken": "Aujourd’hui, beaucoup d’espèces disparaissent surtout à cause des  (mot manquant) ",
+      "choices": [
+        "marées",
+        "saisons",
+        "activités humaines"
+      ],
+      "answer": "activités humaines",
+      "hint": "Pense à la déforestation, à la pollution, à la surpêche.",
+      "explanation": "La déforestation, la pollution, la surpêche et le réchauffement font disparaître beaucoup d’espèces : ce sont des activités humaines.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La biodiversité",
+          "lines": [
+            "Biodiversité : la diversité des écosystèmes, des espèces et des individus.",
+            "Espèce : des individus qui ont ensemble des petits, capables à leur tour d’avoir des petits.",
+            "Des espèces apparaissent, d’autres disparaissent : la biodiversité change.",
+            "Crise biologique : beaucoup d’espèces disparaissent en peu de temps.",
+            "Des attributs partagés montrent un ancêtre commun : un lien de parenté."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-1-5",
+      "prompt": "L’arbre de parenté de quatre animaux\nLe requin est sur une branche à part, tout en bas.\nPlus haut, une branche porte la grenouille.\nTout en haut, la souris et le chat partagent une même petite branche.",
+      "question": "Quels animaux sont les plus proches parents ?",
+      "spoken": "L’arbre de parenté de quatre animaux. Le requin est sur une branche à part, tout en bas. Plus haut, une branche porte la grenouille. Tout en haut, la souris et le chat partagent une même petite branche.",
+      "choices": [
+        "la souris et le chat",
+        "le requin et le chat",
+        "la grenouille et le requin"
+      ],
+      "answer": "la souris et le chat",
+      "hint": "Quels animaux sont sur la même petite branche ?",
+      "explanation": "La souris et le chat partagent une même petite branche : ils ont l’ancêtre commun le plus récent. Ce sont deux mammifères.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La biodiversité",
+          "lines": [
+            "Biodiversité : la diversité des écosystèmes, des espèces et des individus.",
+            "Espèce : des individus qui ont ensemble des petits, capables à leur tour d’avoir des petits.",
+            "Des espèces apparaissent, d’autres disparaissent : la biodiversité change.",
+            "Crise biologique : beaucoup d’espèces disparaissent en peu de temps.",
+            "Des attributs partagés montrent un ancêtre commun : un lien de parenté."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-1-6",
+      "prompt": "Dans une portée, les chatons n’ont pas tous le même pelage : c’est la … entre individus.",
+      "spoken": "Dans une portée, les chatons n’ont pas tous le même pelage : c’est la  (mot manquant)  entre individus.",
+      "choices": [
+        "migration",
+        "métamorphose",
+        "variation"
+      ],
+      "answer": "variation",
+      "hint": "Les chatons varient un peu les uns des autres.",
+      "explanation": "Les individus d’une même espèce sont tous un peu différents : c’est la variation. Elle vient en partie des gènes reçus des parents.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La biodiversité",
+          "lines": [
+            "Biodiversité : la diversité des écosystèmes, des espèces et des individus.",
+            "Espèce : des individus qui ont ensemble des petits, capables à leur tour d’avoir des petits.",
+            "Des espèces apparaissent, d’autres disparaissent : la biodiversité change.",
+            "Crise biologique : beaucoup d’espèces disparaissent en peu de temps.",
+            "Des attributs partagés montrent un ancêtre commun : un lien de parenté."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-4e-cells-evolution-species-evolution-1-7",
+      "prompt": "Les groupes s’emboîtent : un oiseau est aussi un …",
+      "spoken": "Les groupes s’emboîtent : un oiseau est aussi un  (mot manquant) ",
+      "choices": [
+        "mammifère",
+        "insecte",
+        "vertébré"
+      ],
+      "answer": "vertébré",
+      "hint": "L’oiseau a-t-il une colonne vertébrale ?",
+      "explanation": "L’oiseau a une colonne vertébrale : il est dans le groupe des vertébrés. Il n’a ni poils ni mamelles : ce n’est pas un mammifère.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La biodiversité",
+          "lines": [
+            "Biodiversité : la diversité des écosystèmes, des espèces et des individus.",
+            "Espèce : des individus qui ont ensemble des petits, capables à leur tour d’avoir des petits.",
+            "Des espèces apparaissent, d’autres disparaissent : la biodiversité change.",
+            "Crise biologique : beaucoup d’espèces disparaissent en peu de temps.",
+            "Des attributs partagés montrent un ancêtre commun : un lien de parenté."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien raisonné !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-4e-cells-evolution",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "id": "geography-3e-france-planning-1",
+  "biome": "geography-3e-france",
+  "type": "planning",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-3e-france-planning-1-0",
+      "prompt": "Construire une route, une ligne de train ou une école, c’est … le territoire.",
+      "spoken": "Construire une route, une ligne de train ou une école, c’est (mot manquant) le territoire.",
+      "choices": [
+        "coloniser",
+        "aménager",
+        "peupler"
+      ],
+      "answer": "aménager",
+      "hint": "Regarde la première ligne du rappel.",
+      "explanation": "Aménager, c’est transformer un territoire pour mieux y vivre : routes, écoles, hôpitaux, transports.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aménager le territoire",
+          "lines": [
+            "Aménager : transformer un territoire pour mieux y vivre.",
+            "Inégalités : des écarts entre les territoires, de richesse ou de services.",
+            "Enclavé : isolé, difficile à atteindre.",
+            "Désenclaver : relier un territoire isolé au reste du pays.",
+            "Ultramarin : qui est en outre-mer, loin de l’Europe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-1-1",
+      "prompt": "Une vallée isolée, reliée par une nouvelle route, est … .",
+      "spoken": "Une vallée isolée, reliée par une nouvelle route, est (mot manquant) .",
+      "choices": [
+        "enclavée",
+        "abandonnée",
+        "désenclavée"
+      ],
+      "answer": "désenclavée",
+      "hint": "« Dé » veut dire le contraire.",
+      "explanation": "La route la relie au reste du pays : la vallée est désenclavée. Avant, elle était enclavée, isolée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aménager le territoire",
+          "lines": [
+            "Aménager : transformer un territoire pour mieux y vivre.",
+            "Inégalités : des écarts entre les territoires, de richesse ou de services.",
+            "Enclavé : isolé, difficile à atteindre.",
+            "Désenclaver : relier un territoire isolé au reste du pays.",
+            "Ultramarin : qui est en outre-mer, loin de l’Europe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-1-2",
+      "prompt": "Les écarts de richesse entre les territoires sont des … .",
+      "spoken": "Les écarts de richesse entre les territoires sont des (mot manquant) .",
+      "choices": [
+        "inégalités",
+        "densités",
+        "frontières"
+      ],
+      "answer": "inégalités",
+      "hint": "Des territoires qui ne sont pas égaux.",
+      "explanation": "Inégalité : un écart entre des territoires, de richesse, d’emplois ou de services. Aménager sert aussi à les réduire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aménager le territoire",
+          "lines": [
+            "Aménager : transformer un territoire pour mieux y vivre.",
+            "Inégalités : des écarts entre les territoires, de richesse ou de services.",
+            "Enclavé : isolé, difficile à atteindre.",
+            "Désenclaver : relier un territoire isolé au reste du pays.",
+            "Ultramarin : qui est en outre-mer, loin de l’Europe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-1-3",
+      "prompt": "La région, le département et la … sont des collectivités qui aménagent le territoire.",
+      "spoken": "La région, le département et la (mot manquant) sont des collectivités qui aménagent le territoire.",
+      "choices": [
+        "préfecture",
+        "commune",
+        "capitale"
+      ],
+      "answer": "commune",
+      "hint": "Le maire la dirige.",
+      "explanation": "La commune, le département et la région aménagent le territoire, avec l’État. La préfecture, c’est l’État dans le département ; une capitale est une ville.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aménager le territoire",
+          "lines": [
+            "Aménager : transformer un territoire pour mieux y vivre.",
+            "Inégalités : des écarts entre les territoires, de richesse ou de services.",
+            "Enclavé : isolé, difficile à atteindre.",
+            "Désenclaver : relier un territoire isolé au reste du pays.",
+            "Ultramarin : qui est en outre-mer, loin de l’Europe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-1-4",
+      "prompt": "Pour que les habitants des campagnes trouvent un médecin, des communes ouvrent des maisons de … .",
+      "spoken": "Pour que les habitants des campagnes trouvent un médecin, des communes ouvrent des maisons de (mot manquant) .",
+      "choices": [
+        "retraite",
+        "quartier",
+        "santé"
+      ],
+      "answer": "santé",
+      "hint": "Un médecin soigne.",
+      "explanation": "Une maison de santé réunit des médecins et des infirmiers au même endroit. Elle aide les campagnes qui manquent de médecins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aménager le territoire",
+          "lines": [
+            "Aménager : transformer un territoire pour mieux y vivre.",
+            "Inégalités : des écarts entre les territoires, de richesse ou de services.",
+            "Enclavé : isolé, difficile à atteindre.",
+            "Désenclaver : relier un territoire isolé au reste du pays.",
+            "Ultramarin : qui est en outre-mer, loin de l’Europe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-1-5",
+      "prompt": "La Guadeloupe, la Martinique, la Guyane, La Réunion et Mayotte sont des territoires … .",
+      "spoken": "La Guadeloupe, la Martinique, la Guyane, La Réunion et Mayotte sont des territoires (mot manquant) .",
+      "choices": [
+        "ultramarins",
+        "métropolitains",
+        "étrangers"
+      ],
+      "answer": "ultramarins",
+      "hint": "Cherche « outre-mer » dans le rappel.",
+      "explanation": "Ces territoires sont en outre-mer : ils sont ultramarins. Ils sont français, pas étrangers ; la France métropolitaine, c’est la France d’Europe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aménager le territoire",
+          "lines": [
+            "Aménager : transformer un territoire pour mieux y vivre.",
+            "Inégalités : des écarts entre les territoires, de richesse ou de services.",
+            "Enclavé : isolé, difficile à atteindre.",
+            "Désenclaver : relier un territoire isolé au reste du pays.",
+            "Ultramarin : qui est en outre-mer, loin de l’Europe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-1-6",
+      "prompt": "La Guyane se trouve en … du Sud.",
+      "spoken": "La Guyane se trouve en (mot manquant) du Sud.",
+      "choices": [
+        "Afrique",
+        "Amérique",
+        "Asie"
+      ],
+      "answer": "Amérique",
+      "hint": "Elle a une frontière avec le Brésil.",
+      "explanation": "La Guyane est en Amérique du Sud, entre le Brésil et le Suriname. Sa forêt couvre presque tout le territoire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aménager le territoire",
+          "lines": [
+            "Aménager : transformer un territoire pour mieux y vivre.",
+            "Inégalités : des écarts entre les territoires, de richesse ou de services.",
+            "Enclavé : isolé, difficile à atteindre.",
+            "Désenclaver : relier un territoire isolé au reste du pays.",
+            "Ultramarin : qui est en outre-mer, loin de l’Europe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-1-7",
+      "prompt": "La Réunion est une île de l’océan … .",
+      "spoken": "La Réunion est une île de l’océan (mot manquant) .",
+      "choices": [
+        "Atlantique",
+        "Pacifique",
+        "Indien"
+      ],
+      "answer": "Indien",
+      "hint": "Elle est à l’est de l’Afrique, près de Madagascar.",
+      "explanation": "La Réunion est dans l’océan Indien, près de Madagascar. La Martinique et la Guadeloupe sont dans l’océan Atlantique, aux Antilles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Aménager le territoire",
+          "lines": [
+            "Aménager : transformer un territoire pour mieux y vivre.",
+            "Inégalités : des écarts entre les territoires, de richesse ou de services.",
+            "Enclavé : isolé, difficile à atteindre.",
+            "Désenclaver : relier un territoire isolé au reste du pays.",
+            "Ultramarin : qui est en outre-mer, loin de l’Europe."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-3e-france",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

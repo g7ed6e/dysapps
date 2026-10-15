@@ -1,0 +1,241 @@
+{
+  "id": "lca-4e-cities-gr-home-2",
+  "biome": "lca-4e-cities",
+  "type": "gr-home",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-4e-cities-gr-home-2-0",
+      "prompt": "Le chemin de l’école\nLe jeune Lysis part pour l’école.\nUn esclave porte ses tablettes et le surveille.\nIl l’attend, puis le ramène.",
+      "question": "Comment s’appelle cet esclave ?",
+      "spoken": "Le chemin de l’école. Le jeune Lysis part pour l’école. Un esclave porte ses tablettes et le surveille. Il l’attend, puis le ramène.",
+      "choices": [
+        "le pédagogue",
+        "le grammatiste",
+        "le pédotribe"
+      ],
+      "answer": "le pédagogue",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Le pédagogue, « celui qui conduit l’enfant », est un esclave qui accompagne l’enfant. Aujourd’hui, un pédagogue est celui qui sait enseigner.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir à Athènes",
+          "lines": [
+            "Le pédagogue : l’esclave qui accompagne l’enfant à l’école.",
+            "Le grammatiste apprend à l’enfant à lire, écrire et compter.",
+            "Le maître de musique enseigne la lyre et le chant ; le pédotribe, le sport.",
+            "Le gymnase : le lieu où les jeunes s’entraînent, nus (gumnos).",
+            "L’éphèbe : le jeune citoyen de dix-huit ans, qui suit deux ans de formation militaire.",
+            "L’esclave est un être humain, mais, pour la loi, il appartient à son maître."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-2-1",
+      "prompt": "Le mot « gymnastique » vient du grec gumnos, qui veut dire …",
+      "spoken": "Le mot gymnastique vient du grec gumnoss, qui veut dire (mot manquant)",
+      "choices": [
+        "fort",
+        "nu",
+        "rapide"
+      ],
+      "answer": "nu",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Gumnos veut dire nu : les jeunes Grecs s’entraînent nus au gymnase. Gymnastique et gymnase en viennent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir à Athènes",
+          "lines": [
+            "Le pédagogue : l’esclave qui accompagne l’enfant à l’école.",
+            "Le grammatiste apprend à l’enfant à lire, écrire et compter.",
+            "Le maître de musique enseigne la lyre et le chant ; le pédotribe, le sport.",
+            "Le gymnase : le lieu où les jeunes s’entraînent, nus (gumnos).",
+            "L’éphèbe : le jeune citoyen de dix-huit ans, qui suit deux ans de formation militaire.",
+            "L’esclave est un être humain, mais, pour la loi, il appartient à son maître."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-2-2",
+      "prompt": "Le maître qui apprend à lire et à écrire s’appelle le …",
+      "spoken": "Le maître qui apprend à lire et à écrire s’appelle le  (mot manquant) ",
+      "choices": [
+        "pédotribe",
+        "pédagogue",
+        "grammatiste"
+      ],
+      "answer": "grammatiste",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Le grammatiste enseigne les lettres (gramma, la lettre) : lire, écrire, compter. Le mot grammaire vient de la même racine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir à Athènes",
+          "lines": [
+            "Le pédagogue : l’esclave qui accompagne l’enfant à l’école.",
+            "Le grammatiste apprend à l’enfant à lire, écrire et compter.",
+            "Le maître de musique enseigne la lyre et le chant ; le pédotribe, le sport.",
+            "Le gymnase : le lieu où les jeunes s’entraînent, nus (gumnos).",
+            "L’éphèbe : le jeune citoyen de dix-huit ans, qui suit deux ans de formation militaire.",
+            "L’esclave est un être humain, mais, pour la loi, il appartient à son maître."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-2-3",
+      "prompt": "L’éphébie à Athènes\nÀ dix-huit ans, le jeune citoyen devient éphèbe.\nPendant deux ans, il apprend à combattre et garde les frontières.\nEnsuite, il entre dans la vie de citoyen.",
+      "question": "Que fait l’éphèbe pendant deux ans ?",
+      "spoken": "L’éphébie à Athènes. À dix-huit ans, le jeune citoyen devient éphèbe. Pendant deux ans, il apprend à combattre et garde les frontières. Ensuite, il entre dans la vie de citoyen.",
+      "choices": [
+        "il apprend un métier",
+        "il se forme comme soldat",
+        "il étudie la philosophie"
+      ],
+      "answer": "il se forme comme soldat",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "L’éphèbe se forme comme soldat pendant deux ans : il apprend à défendre la cité. Ensuite, il prend part à la vie des citoyens.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir à Athènes",
+          "lines": [
+            "Le pédagogue : l’esclave qui accompagne l’enfant à l’école.",
+            "Le grammatiste apprend à l’enfant à lire, écrire et compter.",
+            "Le maître de musique enseigne la lyre et le chant ; le pédotribe, le sport.",
+            "Le gymnase : le lieu où les jeunes s’entraînent, nus (gumnos).",
+            "L’éphèbe : le jeune citoyen de dix-huit ans, qui suit deux ans de formation militaire.",
+            "L’esclave est un être humain, mais, pour la loi, il appartient à son maître."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-2-4",
+      "prompt": "Le mot « pédagogue » contient le grec pais, paidos, qui veut dire …",
+      "spoken": "Le mot pédagogue contient le grec païss, païdoss, qui veut dire (mot manquant)",
+      "choices": [
+        "l’enfant",
+        "le pied",
+        "l’école"
+      ],
+      "answer": "l’enfant",
+      "hint": "Relis la première ligne du rappel : qui le pédagogue accompagne-t-il ?",
+      "explanation": "Pais, paidos, l’enfant, a donné pédagogue, pédiatre, le médecin des enfants. Attention : dans pédicure, « pédi- » vient du latin pes, pedis, le pied.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir à Athènes",
+          "lines": [
+            "Le pédagogue : l’esclave qui accompagne l’enfant à l’école.",
+            "Le grammatiste apprend à l’enfant à lire, écrire et compter.",
+            "Le maître de musique enseigne la lyre et le chant ; le pédotribe, le sport.",
+            "Le gymnase : le lieu où les jeunes s’entraînent, nus (gumnos).",
+            "L’éphèbe : le jeune citoyen de dix-huit ans, qui suit deux ans de formation militaire.",
+            "L’esclave est un être humain, mais, pour la loi, il appartient à son maître."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-2-5",
+      "prompt": "Pour la loi athénienne, l’esclave …",
+      "spoken": "Pour la loi athénienne, l’esclave (mot manquant)",
+      "choices": [
+        "est un citoyen",
+        "appartient à son maître",
+        "peut voter"
+      ],
+      "answer": "appartient à son maître",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "L’esclave est un être humain, mais la loi le traite comme un bien : il appartient à son maître, ne vote pas et n’est pas libre. Un maître peut l’affranchir, c’est-à-dire le rendre libre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir à Athènes",
+          "lines": [
+            "Le pédagogue : l’esclave qui accompagne l’enfant à l’école.",
+            "Le grammatiste apprend à l’enfant à lire, écrire et compter.",
+            "Le maître de musique enseigne la lyre et le chant ; le pédotribe, le sport.",
+            "Le gymnase : le lieu où les jeunes s’entraînent, nus (gumnos).",
+            "L’éphèbe : le jeune citoyen de dix-huit ans, qui suit deux ans de formation militaire.",
+            "L’esclave est un être humain, mais, pour la loi, il appartient à son maître."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-2-6",
+      "prompt": "Le maître de musique enseigne surtout …",
+      "spoken": "Le maître de musique enseigne surtout  (mot manquant) ",
+      "choices": [
+        "la lyre",
+        "la flûte de Pan",
+        "le tambour"
+      ],
+      "answer": "la lyre",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "L’enfant apprend la lyre et le chant, pour chanter des poèmes. Le mot « lyrique » vient de la lyre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir à Athènes",
+          "lines": [
+            "Le pédagogue : l’esclave qui accompagne l’enfant à l’école.",
+            "Le grammatiste apprend à l’enfant à lire, écrire et compter.",
+            "Le maître de musique enseigne la lyre et le chant ; le pédotribe, le sport.",
+            "Le gymnase : le lieu où les jeunes s’entraînent, nus (gumnos).",
+            "L’éphèbe : le jeune citoyen de dix-huit ans, qui suit deux ans de formation militaire.",
+            "L’esclave est un être humain, mais, pour la loi, il appartient à son maître."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-home-2-7",
+      "prompt": "Écrire à l’école\nL’enfant écrit sur une tablette de cire.\nIl trace les lettres avec un stylet pointu.\nL’autre bout du stylet, plat, lisse la cire.",
+      "question": "À quoi sert le bout plat du stylet ?",
+      "spoken": "Écrire à l’école. L’enfant écrit sur une tablette de cire. Il trace les lettres avec un stylet pointu. L’autre bout du stylet, plat, lisse la cire.",
+      "choices": [
+        "à tracer les lettres",
+        "à tailler la cire",
+        "à effacer"
+      ],
+      "answer": "à effacer",
+      "hint": "Lis la dernière ligne du document : que devient ce qui est écrit sur une cire lissée ?",
+      "explanation": "Le bout plat du stylet lisse la cire : ce qui était écrit s’efface, et l’on peut recommencer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir à Athènes",
+          "lines": [
+            "Le pédagogue : l’esclave qui accompagne l’enfant à l’école.",
+            "Le grammatiste apprend à l’enfant à lire, écrire et compter.",
+            "Le maître de musique enseigne la lyre et le chant ; le pédotribe, le sport.",
+            "Le gymnase : le lieu où les jeunes s’entraînent, nus (gumnos).",
+            "L’éphèbe : le jeune citoyen de dix-huit ans, qui suit deux ans de formation militaire.",
+            "L’esclave est un être humain, mais, pour la loi, il appartient à son maître."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-4e-cities",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

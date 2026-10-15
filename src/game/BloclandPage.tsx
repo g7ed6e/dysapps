@@ -23,7 +23,7 @@ import { InventoryLink } from './Inventory';
 import { SCHOOL_PATH, SCHOOL_TITLE } from './School';
 import { MONUMENTS_PATH, MONUMENTS_TITLE } from './Monuments';
 import { BlockIcon } from './Voxel';
-import { VEHICLE_NAME, stageAt, stageTo } from './world/vehicle';
+import { VEHICLE_NAME, stageAt, stageTo, stageWords, type FormsWords } from './world/vehicle';
 import { VillageStageLine } from './VillageStageLine';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 import { RenamingPanel, useRenaming } from './Renaming';
@@ -33,7 +33,7 @@ import { useSettings } from '../core/SettingsContext';
 import { useTextes } from '../universes';
 import { ArchipelagoMap } from './ArchipelagoMap';
 import { lienDeLaDestination, nextDestination } from './world/destination';
-import { sansCommandes } from './world/requests';
+import { gameAsShown } from './world/stories';
 import { islandState } from './world/islandState';
 import { SpeakButton } from '../components/SpeakButton';
 import { useUnivers } from '../core/SettingsContext';
@@ -43,14 +43,14 @@ import { questsToReview } from './review';
 import { Requests } from './Requests';
 import { ArrangeList } from './ArrangeList';
 
-/** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase. */
-function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe']): string {
+/** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase (`forms` : les formes de la Nef nommées par l'univers). */
+function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe'], forms?: FormsWords): string {
   const port = ARCHIPELAGOS.find((a) => a.classe === classe)!.port;
   const left = remainingVoyages(port, state.world.links);
   const first = stageTo(left[0].toClasse)!;
   const shipyard = getBiome(first.biome)?.name ?? first.biome;
-  if (left.length === 1) return `Archipel fermé. Pour y aller, il faut ${VEHICLE_NAME} avec ${first.short} : construis-le au port, sur ${shipyard}.`;
-  const steps = left.map((v) => stageTo(v.toClasse)!.short).join(', puis ');
+  if (left.length === 1) return `Archipel fermé. Pour y aller, il faut ${VEHICLE_NAME} avec ${stageWords(first, forms).short} : construis-la au port, sur ${shipyard}.`;
+  const steps = left.map((v) => stageWords(stageTo(v.toClasse)!, forms).short).join(', puis ');
   return `Archipel fermé. Il faut d’abord ${VEHICLE_NAME} avec ${steps}. Commence au port, sur ${shipyard}.`;
 }
 
@@ -62,7 +62,7 @@ export function BloclandPage() {
   const here = archipelagoOf(at).classe;
   const textes = useTextes();
   // Les commandes (GD-7) ne se suggèrent que dans un univers qui les montre (`commandes` dans ses textes).
-  const destination = nextDestination(textes.commandes ? state : sansCommandes(state), textes.archipels, textes.libelles);
+  const destination = nextDestination(gameAsShown(state, textes), textes.archipels, textes.libelles);
   // La vue simple n'a pas de monde : pas de moment du rallumage, mais son mot et sa cloche, une fois (lot 6).
   const { settings } = useSettings();
   const rallumage = useRekindling(state.progress, here, textes.sentinelles !== null);
@@ -79,14 +79,13 @@ export function BloclandPage() {
   const { remises } = usePlusTard();
   // Les révisions dues, calculées une fois pour toute la Carte (pas une fois par île).
   // Un seul signe par créature : sa commande prête et suggérée (GD-7, PR 3 : l'icône du bloc), sinon ses révisions.
-  const avecCommandes = Boolean(textes.commandes);
   const fontSigne = useMemo(() => {
     const dues = questsToReview(state.spaced, state.world.links);
-    const vu = avecCommandes ? state : sansCommandes(state);
+    const vu = gameAsShown(state, textes);
     return new Map(
-      ARCHIPELAGOS.flatMap((a) => signesDesCreatures(vu, a.classe, signesParmi(dues, a.classe, remises, settings.lv2), destination.commande)).map((x) => [x.id, x]),
+      ARCHIPELAGOS.flatMap((a) => signesDesCreatures(vu, a.classe, signesParmi(dues, a.classe, remises, settings.lv2), destination.commande, destination.story)).map((x) => [x.id, x]),
     );
-  }, [state, remises, settings.lv2, avecCommandes, destination.commande]);
+  }, [state, remises, settings.lv2, textes, destination.commande, destination.story]);
   return (
     <>
       <Link to={MENU_PATH} className="back-link">
@@ -96,7 +95,7 @@ export function BloclandPage() {
         <p className="hero-kicker">Aventure</p>
         <h1 className="hero-title">{UNIVERS[univers].nom}</h1>
         <p className="hero-text">
-          <Syllabified text="Le village est en ruine. Toi, tu es le bâtisseur. Chaque exercice réussi te donne des blocs pour le reconstruire, puis le Bloc-Navire t’emmène d’archipel en archipel." />
+          <Syllabified text="Le village est en ruine. Toi, tu es le bâtisseur. Chaque exercice réussi te donne des blocs pour le reconstruire, puis la Nef t’emmène d’archipel en archipel." />
         </p>
         <p className="hero-actions">
           <InventoryLink className="button" />
@@ -148,7 +147,7 @@ export function BloclandPage() {
             {reached && <VillageStageLine village={state.world} archipelago={a.classe} className="section-intro" />}
             {!reached && (
               <p className="section-intro">
-                <Syllabified text={lockedArchipelagoText(state, a.classe)} />
+                <Syllabified text={lockedArchipelagoText(state, a.classe, textes.libelles.formesDeLaNef)} />
               </p>
             )}
             <ol className="biome-map">
@@ -191,7 +190,7 @@ export function BloclandPage() {
                       </span>
                       {biome.id === a.port && (
                         <span className="tag">
-                          <Icon name="ship" /> Port{status && !status.complete ? ` · Bloc-Navire ${status.done} / ${status.total}` : ''}
+                          <Icon name="ship" /> Port{status && !status.complete ? ` · la Nef ${status.done} / ${status.total}` : ''}
                         </span>
                       )}
                       {!unlocked && (

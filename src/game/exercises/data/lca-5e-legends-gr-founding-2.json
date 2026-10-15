@@ -1,0 +1,242 @@
+{
+  "id": "lca-5e-legends-gr-founding-2",
+  "biome": "lca-5e-legends",
+  "type": "gr-founding",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-5e-legends-gr-founding-2-0",
+      "prompt": "Une légende de fondation\nC’est un récit très ancien.\nIl explique comment une cité est née.\nIl mêle des faits et des choses impossibles.",
+      "question": "Pourquoi ne peut-on pas tout croire dans une légende ?",
+      "spoken": "Une légende de fondation. C’est un récit très ancien. Il explique comment une cité est née. Il mêle des faits et des choses impossibles.",
+      "choices": [
+        "elle ne raconte que des faits prouvés",
+        "elle mêle des faits et des récits inventés",
+        "elle est entièrement inventée"
+      ],
+      "answer": "elle mêle des faits et des récits inventés",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Une légende mêle des faits et des récits inventés, comme une dispute entre des dieux : elle n’est ni tout à fait vraie, ni tout à fait inventée. L’historien et l’archéologue cherchent ce qui est vrai.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la légende à l’histoire",
+          "lines": [
+            "Un mythe (muthos en grec : le récit) : une histoire ancienne, en partie inventée.",
+            "De 1600 à 1100 avant J.-C. environ, Mycènes est une cité puissante.",
+            "Un archéologue étudie les restes du passé : murs, objets, tombes.",
+            "Heinrich Schliemann fouille Troie à partir de 1870, puis Mycènes en 1876.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée : Marseille, Nice, Antibes.",
+            "Une colonie : une cité nouvelle, fondée loin de sa cité d’origine."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-2-1",
+      "prompt": "Celui qui étudie les restes du passé, en fouillant le sol, s’appelle un …",
+      "spoken": "Celui qui étudie les restes du passé, en fouillant le sol, s’appelle un  (mot manquant) ",
+      "choices": [
+        "archéologue",
+        "historien",
+        "géographe"
+      ],
+      "answer": "archéologue",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "L’archéologue fouille le sol et étudie les murs, les objets, les tombes. Le mot vient du grec arkhaios, ancien, et logos, l’étude.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la légende à l’histoire",
+          "lines": [
+            "Un mythe (muthos en grec : le récit) : une histoire ancienne, en partie inventée.",
+            "De 1600 à 1100 avant J.-C. environ, Mycènes est une cité puissante.",
+            "Un archéologue étudie les restes du passé : murs, objets, tombes.",
+            "Heinrich Schliemann fouille Troie à partir de 1870, puis Mycènes en 1876.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée : Marseille, Nice, Antibes.",
+            "Une colonie : une cité nouvelle, fondée loin de sa cité d’origine."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-2-2",
+      "prompt": "Les fouilles de Schliemann\nVers 1870, Schliemann fouille une colline en Turquie.\nIl y trouve les ruines d’une ville très ancienne.\nIl pense avoir trouvé Troie.",
+      "question": "Que montre cette fouille ?",
+      "spoken": "Les fouilles de Schliemann. Vers mille huit cent soixante-dix, Schliemann fouille une colline en Turquie. Il y trouve les ruines d’une ville très ancienne. Il pense avoir trouvé Troie.",
+      "choices": [
+        "Troie a peut-être vraiment existé",
+        "la guerre de Troie est prouvée dans tous ses détails",
+        "Homère a vécu dans cette ville"
+      ],
+      "answer": "Troie a peut-être vraiment existé",
+      "hint": "Lis la dernière ligne du document : est-ce une certitude ?",
+      "explanation": "Les ruines montrent qu’une grande ville a existé là : la légende part peut-être d’un lieu réel. Mais les détails du récit restent légendaires.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la légende à l’histoire",
+          "lines": [
+            "Un mythe (muthos en grec : le récit) : une histoire ancienne, en partie inventée.",
+            "De 1600 à 1100 avant J.-C. environ, Mycènes est une cité puissante.",
+            "Un archéologue étudie les restes du passé : murs, objets, tombes.",
+            "Heinrich Schliemann fouille Troie à partir de 1870, puis Mycènes en 1876.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée : Marseille, Nice, Antibes.",
+            "Une colonie : une cité nouvelle, fondée loin de sa cité d’origine."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-2-3",
+      "prompt": "Une cité nouvelle, fondée par des Grecs loin de leur cité d’origine, est une …",
+      "spoken": "Une cité nouvelle, fondée par des Grecs loin de leur cité d’origine, est une  (mot manquant) ",
+      "choices": [
+        "capitale",
+        "province",
+        "colonie"
+      ],
+      "answer": "colonie",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Une colonie est une cité nouvelle, fondée loin de la cité d’origine. Marseille, Nice et Antibes sont d’anciennes colonies grecques.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la légende à l’histoire",
+          "lines": [
+            "Un mythe (muthos en grec : le récit) : une histoire ancienne, en partie inventée.",
+            "De 1600 à 1100 avant J.-C. environ, Mycènes est une cité puissante.",
+            "Un archéologue étudie les restes du passé : murs, objets, tombes.",
+            "Heinrich Schliemann fouille Troie à partir de 1870, puis Mycènes en 1876.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée : Marseille, Nice, Antibes.",
+            "Une colonie : une cité nouvelle, fondée loin de sa cité d’origine."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-2-4",
+      "prompt": "Des villes de France aux noms grecs\nNice : Nikaia, la victorieuse.\nAntibes : Antipolis, la ville d’en face.\nMarseille : Massalia.",
+      "question": "Que montrent ces noms ?",
+      "spoken": "Des villes de France aux noms grecs. Nice : Nikaïa, la victorieuse. Antibes : Antipolis, la ville d’en face. Marseille : Massalia.",
+      "choices": [
+        "ces villes sont en Grèce",
+        "des Grecs ont fondé ces villes",
+        "les Romains ont donné ces noms"
+      ],
+      "answer": "des Grecs ont fondé ces villes",
+      "hint": "Lis le titre du document, puis l’avant-dernière ligne du rappel.",
+      "explanation": "Ces villes portent des noms grecs, car des Grecs les ont fondées. Nikê veut dire la victoire, polis la cité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la légende à l’histoire",
+          "lines": [
+            "Un mythe (muthos en grec : le récit) : une histoire ancienne, en partie inventée.",
+            "De 1600 à 1100 avant J.-C. environ, Mycènes est une cité puissante.",
+            "Un archéologue étudie les restes du passé : murs, objets, tombes.",
+            "Heinrich Schliemann fouille Troie à partir de 1870, puis Mycènes en 1876.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée : Marseille, Nice, Antibes.",
+            "Une colonie : une cité nouvelle, fondée loin de sa cité d’origine."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-2-5",
+      "prompt": "Mycènes devient une cité puissante à partir de …",
+      "spoken": "Mycènes devient une cité puissante à partir de  (mot manquant) ",
+      "choices": [
+        "1600 avant J.-C.",
+        "600 avant J.-C.",
+        "100 après J.-C."
+      ],
+      "answer": "1600 avant J.-C.",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Mycènes est puissante de 1600 à 1100 avant J.-C. environ : bien avant la fondation de Marseille, vers 600 avant J.-C.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la légende à l’histoire",
+          "lines": [
+            "Un mythe (muthos en grec : le récit) : une histoire ancienne, en partie inventée.",
+            "De 1600 à 1100 avant J.-C. environ, Mycènes est une cité puissante.",
+            "Un archéologue étudie les restes du passé : murs, objets, tombes.",
+            "Heinrich Schliemann fouille Troie à partir de 1870, puis Mycènes en 1876.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée : Marseille, Nice, Antibes.",
+            "Une colonie : une cité nouvelle, fondée loin de sa cité d’origine."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-2-6",
+      "prompt": "Le mot « mythe » vient du grec muthos, qui veut dire …",
+      "spoken": "Le mot mythe vient du grec mutoss, qui veut dire (mot manquant)",
+      "choices": [
+        "dieu",
+        "récit",
+        "mensonge"
+      ],
+      "answer": "récit",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Muthos, c’est le récit, la parole. Un mythe est un récit ancien, souvent sur des dieux et des héros ; ce n’est pas un simple mensonge, il explique le monde à sa façon.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la légende à l’histoire",
+          "lines": [
+            "Un mythe (muthos en grec : le récit) : une histoire ancienne, en partie inventée.",
+            "De 1600 à 1100 avant J.-C. environ, Mycènes est une cité puissante.",
+            "Un archéologue étudie les restes du passé : murs, objets, tombes.",
+            "Heinrich Schliemann fouille Troie à partir de 1870, puis Mycènes en 1876.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée : Marseille, Nice, Antibes.",
+            "Une colonie : une cité nouvelle, fondée loin de sa cité d’origine."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-founding-2-7",
+      "prompt": "Trois dates\nVers 1600 avant J.-C. : Mycènes devient puissante.\nVers 600 avant J.-C. : des Grecs fondent Marseille.\n1876 : Schliemann fouille Mycènes.",
+      "question": "Quel événement est le plus ancien ?",
+      "spoken": "Trois dates. Vers mille six cents avant Jésus-Christ : Mycènes devient puissante. Vers six cents avant Jésus-Christ : des Grecs fondent Marseille. Mille huit cent soixante-seize : Schliemann fouille Mycènes.",
+      "choices": [
+        "la fondation de Marseille",
+        "les fouilles de Schliemann",
+        "la puissance de Mycènes"
+      ],
+      "answer": "la puissance de Mycènes",
+      "hint": "Avant J.-C., on compte à rebours : le plus grand nombre est le plus ancien.",
+      "explanation": "1600 avant J.-C. est plus ancien que 600 avant J.-C. : avant J.-C., on compte à rebours. Les fouilles, en 1876, viennent bien plus tard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "De la légende à l’histoire",
+          "lines": [
+            "Un mythe (muthos en grec : le récit) : une histoire ancienne, en partie inventée.",
+            "De 1600 à 1100 avant J.-C. environ, Mycènes est une cité puissante.",
+            "Un archéologue étudie les restes du passé : murs, objets, tombes.",
+            "Heinrich Schliemann fouille Troie à partir de 1870, puis Mycènes en 1876.",
+            "Les Grecs fondent des colonies tout autour de la Méditerranée : Marseille, Nice, Antibes.",
+            "Une colonie : une cité nouvelle, fondée loin de sa cité d’origine."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-5e-legends",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

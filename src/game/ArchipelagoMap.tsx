@@ -22,7 +22,7 @@ const ISLETS = [
 ];
 
 /**
- * La carte des quatre archipels, dessinée en code et en lecture seule : une route du Bloc-Navire de la 6e à la 3e, les
+ * La carte des quatre archipels, dessinée en code et en lecture seule : une route de la Nef de la 6e à la 3e, les
  * archipels atteints en îles pleines, les autres dans la brume. Chaque archipel porte sa classe ; les mots (nom, « Tu
  * es ici », « Dans la brume ») sont dans la liste qui l'accompagne, et la phrase de l'image les redit.
  */

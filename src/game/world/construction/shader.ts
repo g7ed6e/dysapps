@@ -3,7 +3,7 @@
 // la vue sans Three.js, et en GLSL, le même calcul.
 import { type Couleur, DETAILS_ASSEMBLES } from '../palette';
 import { rgb } from '../decor/brush';
-import { MOTIF } from '../architecture';
+import { MOTIF_FIN } from '../architecture';
 import { ALLUMAGE, DECALAGE_MAX, ECART_SOMBRE, ECLAT_DU_BISEAU, PLEINE_NUIT, SOMBRE, TEINTE } from './settings';
 
 const f32 = Math.fround;
@@ -123,10 +123,10 @@ vec3 biseauPeint(vec3 c, float k, float force) {
 
 /**
  * Le premier motif des blocs assemblés : le bit au-dessus de tous ceux d'un mur peint (./architecture/paint.ts,
- * `MOTIF`), si bien qu'aucun mur peint, quels que soient ses drapeaux, ne peut se lire comme un bloc assemblé, ni
- * l'inverse. Il suit `MOTIF` s'il gagne un drapeau.
+ * `MOTIF_FIN`, rangées comprises), si bien qu'aucun mur peint, quels que soient ses drapeaux, ne peut se lire comme un
+ * bloc assemblé, ni l'inverse. Il suit `MOTIF` s'il gagne un drapeau.
  */
-export const MOTIF_ASSEMBLE_DEBUT = 2 * Math.max(...Object.values(MOTIF));
+export const MOTIF_ASSEMBLE_DEBUT = MOTIF_FIN;
 
 /**
  * Le motif peint de chaque bloc assemblé, par sommet (l'attribut `motifs`, qu'il partage avec les murs peints du lot 7 :

@@ -23,7 +23,9 @@ import {
   primeDecomposition,
   primeFactors,
   productEquation,
+  PYTHAGORE_LOGIC_CHOICES,
   pythagoreHyp,
+  pythagoreLogic,
   pythagoreSide,
   RECIPROQUE_PYTHAGORE_CHOICES,
   SURVEYS,
@@ -85,10 +87,10 @@ it('les pourcentages : nouveau prix cohérent', () => {
   }
 });
 
-it('Glacier et Marché : neuf et six exercices, huit items avec aide et explication', () => {
+it('Glacier et Marché : six et six exercices, huit items avec aide et explication', () => {
   const glacier = COLLEGE_EXERCISES.filter((e) => e.biome === 'maths-5e-signed-numbers');
   const marche = COLLEGE_EXERCISES.filter((e) => e.biome === 'maths-5e-proportionality');
-  expect(glacier).toHaveLength(9);
+  expect(glacier).toHaveLength(6);
   expect(marche).toHaveLength(6);
   for (const def of [...glacier, ...marche]) {
     expect(def.items).toHaveLength(8);
@@ -121,8 +123,11 @@ it('Forge et Atelier : exposants lisibles, notation scientifique et équations c
   }
   const forge = COLLEGE_EXERCISES.filter((e) => e.biome === 'maths-4e-powers');
   const atelier = COLLEGE_EXERCISES.filter((e) => e.biome === 'maths-4e-algebra');
-  expect(forge).toHaveLength(7);
-  expect(atelier).toHaveLength(9);
+  // Sept exercices de puissances, puis les trois du Fourneau (relatifs et fractions, venus de la 5e).
+  expect(forge).toHaveLength(10);
+  expect(forge.filter((e) => e.type === 'subtracting').map((e) => e.level)).toEqual([1, 2, 3]);
+  // Neuf exercices de calcul littéral, puis les quatre niveaux de Pythagore.
+  expect(atelier).toHaveLength(13);
   for (const def of [...forge, ...atelier]) {
     expect(def.items).toHaveLength(8);
     for (const it of def.items) {
@@ -335,6 +340,37 @@ it('Belvédère, réciproques : la réponse se calcule depuis l’énoncé, les 
   }
 });
 
+it('4e : Pythagore, la logique du théorème, de la réciproque et de la contraposée', () => {
+  const rng = seededItems('logique');
+  const seen = new Set<string>();
+  for (let i = 0; i < 300; i++) {
+    const p = pythagoreLogic(rng);
+    const [, form, a, b, c] = p.key.split('-');
+    const right = Number(a) ** 2 + Number(b) ** 2 === Number(c) ** 2;
+    // La contraposée part d'une égalité fausse ; le théorème et la réciproque, d'un vrai triangle rectangle.
+    expect(right).toBe(form !== 'contrapositive');
+    expect(p.choices).toEqual(PYTHAGORE_LOGIC_CHOICES);
+    expect(p.answer).toBe({ theorem: 'le théorème', converse: 'la réciproque', contrapositive: 'la contraposée' }[form]);
+    expect(String(p.spoken)).not.toMatch(/[=²√÷×+−]|\bcm\b/);
+    // Ce qu'on sait, puis ce qu'on conclut, une ligne chacun ; la question est à part.
+    expect(String(p.prompt).split('\n').at(-1)).toMatch(/^Donc /);
+    expect(p.question).toBe('Quelle propriété a servi ?');
+    expect(String(p.hint)).not.toMatch(/[=²√÷×+−]/);
+    seen.add(String(p.answer));
+  }
+  expect([...seen].sort()).toEqual([...PYTHAGORE_LOGIC_CHOICES].sort());
+
+  // La mission de 4e reprend les niveaux du Belvédère, sans le mât, et finit par la logique ; celle de 3e reste.
+  const levels = (biome: string, type: string) => COLLEGE_EXERCISES.filter((e) => e.id.startsWith(`${biome}-${type}-`)).map((e) => e.id);
+  expect(levels('maths-4e-algebra', 'pythagorean-theorem')).toEqual([1, 2, 3, 4].map((n) => `maths-4e-algebra-pythagorean-theorem-${n}`));
+  expect(levels('maths-3e-geometry', 'pythagoras')).toEqual(['maths-3e-geometry-pythagoras-1', 'maths-3e-geometry-pythagoras-2', 'maths-3e-geometry-pythagoras-4']);
+  const logic = COLLEGE_EXERCISES.find((e) => e.id === 'maths-4e-algebra-pythagorean-theorem-4');
+  expect(logic).toBeDefined();
+  if (!logic) return;
+  expect(logic.items).toHaveLength(8);
+  for (const it of logic.items) expect((it.aid as { kind: string }).kind).toBe('rule-card');
+});
+
 it('Glacier et Forge : pendant la partie, une seule bonne réponse et les nombres de l’énoncé', () => {
   const byId = (id: string) => COLLEGE_EXERCISES.find((d) => d.id === id)!;
   const num = (c: string) => Number(c.replace('−', '-').replace(/\s/g, ''));
@@ -429,7 +465,8 @@ it('Icebergs des fractions : une seule bonne réponse, calculée depuis l’éno
   const seen = { sumTrap: 0, unsimplified: 0, wrongInverse: 0, cross: 0 };
   for (let s = 0; s < 200; s++) {
     for (const level of [1, 2, 3]) {
-      const def = byId(`maths-5e-signed-numbers-fractions-${level}`);
+      // Comparer, additionner et soustraire au Glacier (5e) ; multiplier et diviser au Fourneau de la Forge (4e).
+      const def = byId(level < 3 ? `maths-5e-signed-numbers-fractions-${level}` : 'maths-4e-powers-subtracting-3');
       expect(def.instruction).not.toMatch(/[/×÷]/);
       for (const item of def.generate!(`${def.id}#glace${s}`)) {
         const list = (item.choices as string[]).map(String);

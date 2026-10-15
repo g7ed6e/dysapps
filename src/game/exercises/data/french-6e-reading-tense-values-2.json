@@ -1,0 +1,238 @@
+{
+  "id": "french-6e-reading-tense-values-2",
+  "biome": "french-6e-reading",
+  "type": "tense-values",
+  "level": 2,
+  "instruction": "Lis la question, puis le petit récit. Trouve ce que dit le temps du verbe. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "french-6e-reading-tense-values-2-0",
+      "prompt": "Il faisait froid.\nLe vent soufflait.\nSoudain, la porte claqua.",
+      "question": "Quel verbe dit l’action qui fait avancer l’histoire ?",
+      "spoken": "Il faisait froid. Le vent soufflait. Soudain, la porte claqua.",
+      "choices": [
+        "claqua",
+        "faisait",
+        "soufflait"
+      ],
+      "answer": "claqua",
+      "hint": "Quelle action arrive d’un coup, après « Soudain » ?",
+      "explanation": "« claqua », au passé simple, dit une action soudaine : l’histoire avance. « faisait » et « soufflait », à l’imparfait, décrivent le décor.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps du récit",
+          "lines": [
+            "Un récit au passé utilise surtout le passé simple et l’imparfait.",
+            "Passé simple : les actions qui font avancer l’histoire, une à une. Elle sauta du mur.",
+            "Imparfait : le décor, ce qui dure, les habitudes. La mer était calme.",
+            "Dans les paroles des personnages : présent, passé composé, futur.",
+            "Le temps du verbe n’est pas toujours le moment de l’action : regarde la date ou les mots qui disent quand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-tense-values-2-1",
+      "prompt": "Chaque soir, la famille se réunissait autour du feu.\nLe grand-père racontait des histoires.",
+      "question": "Que dit l’imparfait dans ce texte ?",
+      "spoken": "Chaque soir, la famille se réunissait autour du feu. Le grand-père racontait des histoires.",
+      "choices": [
+        "une habitude",
+        "une action soudaine",
+        "une action à venir"
+      ],
+      "answer": "une habitude",
+      "hint": "Lis les deux premiers mots du texte.",
+      "explanation": "« se réunissait » et « racontait » sont à l’imparfait, et « Chaque soir » dit que ces actions se répétaient : c’est une habitude dans le passé. Une action soudaine serait au passé simple.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps du récit",
+          "lines": [
+            "Un récit au passé utilise surtout le passé simple et l’imparfait.",
+            "Passé simple : les actions qui font avancer l’histoire, une à une. Elle sauta du mur.",
+            "Imparfait : le décor, ce qui dure, les habitudes. La mer était calme.",
+            "Dans les paroles des personnages : présent, passé composé, futur.",
+            "Le temps du verbe n’est pas toujours le moment de l’action : regarde la date ou les mots qui disent quand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-tense-values-2-2",
+      "prompt": "La forêt était sombre.\nDes chouettes hululaient.\nLina s’arrêta net.",
+      "question": "À quel temps est le verbe « s’arrêta » ?",
+      "spoken": "La forêt était sombre. Des chouettes hululaient. Lina s’arrêta net.",
+      "choices": [
+        "passé simple",
+        "imparfait",
+        "présent"
+      ],
+      "answer": "passé simple",
+      "hint": "Compare sa fin avec celle de « était » et « hululaient ».",
+      "explanation": "« s’arrêta » est au passé simple : avec « elle », la fin « -a » est la marque du passé simple des verbes en -er. À l’imparfait, on écrirait « s’arrêtait », comme « était ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps du récit",
+          "lines": [
+            "Un récit au passé utilise surtout le passé simple et l’imparfait.",
+            "Passé simple : les actions qui font avancer l’histoire, une à une. Elle sauta du mur.",
+            "Imparfait : le décor, ce qui dure, les habitudes. La mer était calme.",
+            "Dans les paroles des personnages : présent, passé composé, futur.",
+            "Le temps du verbe n’est pas toujours le moment de l’action : regarde la date ou les mots qui disent quand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-tense-values-2-3",
+      "prompt": "Max entra dans la cuisine.\nIl ouvrit le frigo.\nIl prit une pomme.",
+      "question": "Que montrent ces verbes au passé simple ?",
+      "spoken": "Max entra dans la cuisine. Il ouvrit le frigo. Il prit une pomme.",
+      "choices": [
+        "des actions qui se suivent",
+        "une description",
+        "une habitude"
+      ],
+      "answer": "des actions qui se suivent",
+      "hint": "Les trois actions arrivent-elles en même temps, ou l’une après l’autre ?",
+      "explanation": "Max entre, puis ouvre le frigo, puis prend une pomme : le passé simple raconte des actions l’une après l’autre. Une description ou une habitude seraient à l’imparfait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps du récit",
+          "lines": [
+            "Un récit au passé utilise surtout le passé simple et l’imparfait.",
+            "Passé simple : les actions qui font avancer l’histoire, une à une. Elle sauta du mur.",
+            "Imparfait : le décor, ce qui dure, les habitudes. La mer était calme.",
+            "Dans les paroles des personnages : présent, passé composé, futur.",
+            "Le temps du verbe n’est pas toujours le moment de l’action : regarde la date ou les mots qui disent quand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-tense-values-2-4",
+      "prompt": "Le château se dressait sur une colline.\nSes murs étaient gris et couverts de lierre.",
+      "question": "À quoi sert l’imparfait dans ce texte ?",
+      "spoken": "Le château se dressait sur une colline. Ses murs étaient gris et couverts de lierre.",
+      "choices": [
+        "à décrire le lieu",
+        "à raconter des actions qui se suivent",
+        "à dire ce qui arrivera"
+      ],
+      "answer": "à décrire le lieu",
+      "hint": "Est-ce qu’il se passe quelque chose, ou est-ce qu’on regarde le lieu ?",
+      "explanation": "« se dressait » et « étaient » sont à l’imparfait : ils décrivent le château, le décor de l’histoire. Aucune action ne se passe encore.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps du récit",
+          "lines": [
+            "Un récit au passé utilise surtout le passé simple et l’imparfait.",
+            "Passé simple : les actions qui font avancer l’histoire, une à une. Elle sauta du mur.",
+            "Imparfait : le décor, ce qui dure, les habitudes. La mer était calme.",
+            "Dans les paroles des personnages : présent, passé composé, futur.",
+            "Le temps du verbe n’est pas toujours le moment de l’action : regarde la date ou les mots qui disent quand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-tense-values-2-5",
+      "prompt": "Nous lisions tranquillement.\nTout à coup, le téléphone sonna.",
+      "question": "Quelle action vient couper l’autre ?",
+      "spoken": "Nous lisions tranquillement. Tout à coup, le téléphone sonna.",
+      "choices": [
+        "le téléphone sonna",
+        "nous lisions",
+        "aucune des deux"
+      ],
+      "answer": "le téléphone sonna",
+      "hint": "Quelle action dure ? Laquelle arrive « tout à coup » ?",
+      "explanation": "« lisions », à l’imparfait, dit une action qui dure. « sonna », au passé simple, arrive d’un coup et coupe la lecture.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps du récit",
+          "lines": [
+            "Un récit au passé utilise surtout le passé simple et l’imparfait.",
+            "Passé simple : les actions qui font avancer l’histoire, une à une. Elle sauta du mur.",
+            "Imparfait : le décor, ce qui dure, les habitudes. La mer était calme.",
+            "Dans les paroles des personnages : présent, passé composé, futur.",
+            "Le temps du verbe n’est pas toujours le moment de l’action : regarde la date ou les mots qui disent quand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-tense-values-2-6",
+      "prompt": "Zoé regarda son frère et dit :\n« Je pars demain. »",
+      "question": "Quand Zoé part-elle ?",
+      "spoken": "Zoé regarda son frère et dit : Je pars demain.",
+      "choices": [
+        "après avoir parlé",
+        "pendant qu’elle parle",
+        "avant de parler"
+      ],
+      "answer": "après avoir parlé",
+      "hint": "Dans les paroles de Zoé, cherche le mot qui dit quand.",
+      "explanation": "Le récit est au passé simple : « regarda », « dit ». Dans les paroles de Zoé, le temps change : « pars », au présent, avec « demain », dit une action à venir. Zoé partira le lendemain du jour où elle parle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps du récit",
+          "lines": [
+            "Un récit au passé utilise surtout le passé simple et l’imparfait.",
+            "Passé simple : les actions qui font avancer l’histoire, une à une. Elle sauta du mur.",
+            "Imparfait : le décor, ce qui dure, les habitudes. La mer était calme.",
+            "Dans les paroles des personnages : présent, passé composé, futur.",
+            "Le temps du verbe n’est pas toujours le moment de l’action : regarde la date ou les mots qui disent quand."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-tense-values-2-7",
+      "prompt": "En 1969, un homme marche pour la première fois sur la Lune.",
+      "question": "Quand se passe cette action ?",
+      "spoken": "En mille neuf cent soixante-neuf, un homme marche pour la première fois sur la Lune.",
+      "choices": [
+        "dans le passé",
+        "dans le présent",
+        "dans le futur"
+      ],
+      "answer": "dans le passé",
+      "hint": "Regarde la date, pas seulement le verbe.",
+      "explanation": "L’année 1969 est passée. Le verbe « marche » est au présent, mais l’action est passée : ce présent rend le récit plus vivant. Le temps du verbe n’est pas le moment de l’action.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps du récit",
+          "lines": [
+            "Un récit au passé utilise surtout le passé simple et l’imparfait.",
+            "Passé simple : les actions qui font avancer l’histoire, une à une. Elle sauta du mur.",
+            "Imparfait : le décor, ce qui dure, les habitudes. La mer était calme.",
+            "Dans les paroles des personnages : présent, passé composé, futur.",
+            "Le temps du verbe n’est pas toujours le moment de l’action : regarde la date ou les mots qui disent quand."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-6e-reading",
+    "amount": 5,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

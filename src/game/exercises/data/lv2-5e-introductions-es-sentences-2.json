@@ -1,0 +1,255 @@
+{
+  "id": "lv2-5e-introductions-es-sentences-2",
+  "biome": "lv2-5e-introductions",
+  "type": "es-sentences",
+  "level": 2,
+  "lang": "es",
+  "instruction": "Lis la question, puis le document en espagnol, et choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "lv2-5e-introductions-es-sentences-2-0",
+      "prompt": "¡Hola! Soy Carmen.\nVivo en Puebla, en México.\nMi cumpleaños es el 9 de mayo.",
+      "question": "Quand est l’anniversaire de Carmen ?",
+      "spoken": "Hola! Soy Carmen. Vivo en Puebla, en México. Mi cumpleaños es el nueve de mayo.",
+      "choices": [
+        "Le 9 mai",
+        "Le 9 mars",
+        "Le 19 mai"
+      ],
+      "choicesLang": "fr",
+      "answer": "Le 9 mai",
+      "hint": "Lis la dernière ligne : el cumpleaños = l’anniversaire. mayo ou marzo ?",
+      "explanation": "el 9 de mayo = le 9 mai : mayo veut dire mai ; mars se dit marzo. nueve, c’est 9 ; 19 se dirait diecinueve.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer y comparar",
+          "lines": [
+            "más… que = plus… que ; menos… que = moins… que",
+            "y = et ; o = ou ; pero = mais",
+            "La date : el 3 de marzo = le 3 mars (le mois, sans majuscule)",
+            "marzo = mars ; enero = janvier ; diciembre = décembre",
+            "L’impératif donne un ordre : ¡Mira! = regarde ; ¡Lee! = lis",
+            "México = le Mexique ; Ciudad de México = Mexico, la capitale"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-2-1",
+      "prompt": "Día de Muertos en México\n1 y 2 de noviembre\nFlores, velas y pan de muerto",
+      "question": "Quand fête-t-on le Día de Muertos ?",
+      "spoken": "Día de Muertos en México. Uno y dos de noviembre. Flores, velas y pan de muerto.",
+      "choices": [
+        "Le 1er et le 2 novembre",
+        "Le 1er ou le 2 novembre",
+        "Le 31 octobre"
+      ],
+      "choicesLang": "fr",
+      "answer": "Le 1er et le 2 novembre",
+      "hint": "Lis la 2e ligne. y, est-ce et ou ou ?",
+      "explanation": "1 y 2 de noviembre = le 1er et le 2 novembre : y veut dire et, la fête dure les deux jours. Le 31 octobre, c’est Halloween. Au Mexique, on décore souvent la maison de fleurs et de bougies (velas).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer y comparar",
+          "lines": [
+            "más… que = plus… que ; menos… que = moins… que",
+            "y = et ; o = ou ; pero = mais",
+            "La date : el 3 de marzo = le 3 mars (le mois, sans majuscule)",
+            "marzo = mars ; enero = janvier ; diciembre = décembre",
+            "L’impératif donne un ordre : ¡Mira! = regarde ; ¡Lee! = lis",
+            "México = le Mexique ; Ciudad de México = Mexico, la capitale"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-2-2",
+      "prompt": "Ana es menos alta que su hermano Luis.",
+      "question": "Qui est le plus grand ?",
+      "spoken": "Ana es menos alta que su hermano Luis.",
+      "choices": [
+        "Luis",
+        "Ana",
+        "Ils sont pareils"
+      ],
+      "choicesLang": "fr",
+      "answer": "Luis",
+      "hint": "menos… que = moins… que.",
+      "explanation": "Ana es menos alta que Luis = Ana est moins grande que Luis : Luis est le plus grand, ils ne sont pas pareils.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer y comparar",
+          "lines": [
+            "más… que = plus… que ; menos… que = moins… que",
+            "y = et ; o = ou ; pero = mais",
+            "La date : el 3 de marzo = le 3 mars (le mois, sans majuscule)",
+            "marzo = mars ; enero = janvier ; diciembre = décembre",
+            "L’impératif donne un ordre : ¡Mira! = regarde ; ¡Lee! = lis",
+            "México = le Mexique ; Ciudad de México = Mexico, la capitale"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-2-3",
+      "prompt": "Las pirámides de Teotihuacán\nLa pirámide del Sol es más alta\nque la pirámide de la Luna.",
+      "question": "Quelle pyramide est la plus haute ?",
+      "spoken": "Las pirámides de Teotihuacán. La pirámide del Sol es más alta que la pirámide de la Luna.",
+      "choices": [
+        "Celle du Soleil",
+        "Celle de la Lune",
+        "Elles sont pareilles"
+      ],
+      "choicesLang": "fr",
+      "answer": "Celle du Soleil",
+      "hint": "más… que = plus… que. Quelle pyramide vient avant más ?",
+      "explanation": "La pirámide del Sol es más alta que la de la Luna = la pyramide du Soleil est plus haute. Ces deux pyramides sont à Teotihuacán, près de Mexico.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer y comparar",
+          "lines": [
+            "más… que = plus… que ; menos… que = moins… que",
+            "y = et ; o = ou ; pero = mais",
+            "La date : el 3 de marzo = le 3 mars (le mois, sans majuscule)",
+            "marzo = mars ; enero = janvier ; diciembre = décembre",
+            "L’impératif donne un ordre : ¡Mira! = regarde ; ¡Lee! = lis",
+            "México = le Mexique ; Ciudad de México = Mexico, la capitale"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-2-4",
+      "prompt": "Me llamo Diego y vivo en Monterrey.\nHablo español y un poco de inglés,\npero no hablo francés.",
+      "question": "Quelles langues Diego parle-t-il ?",
+      "spoken": "Me llamo Diego y vivo en Monterrey. Hablo español y un poco de inglés, pero no hablo francés.",
+      "choices": [
+        "Espagnol et anglais",
+        "Espagnol et français",
+        "Anglais et français"
+      ],
+      "choicesLang": "fr",
+      "answer": "Espagnol et anglais",
+      "hint": "pero = mais : lis bien ce qui vient après pero.",
+      "explanation": "Hablo español y un poco de inglés = je parle espagnol et un peu anglais. pero no hablo francés = mais je ne parle pas français.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer y comparar",
+          "lines": [
+            "más… que = plus… que ; menos… que = moins… que",
+            "y = et ; o = ou ; pero = mais",
+            "La date : el 3 de marzo = le 3 mars (le mois, sans majuscule)",
+            "marzo = mars ; enero = janvier ; diciembre = décembre",
+            "L’impératif donne un ordre : ¡Mira! = regarde ; ¡Lee! = lis",
+            "México = le Mexique ; Ciudad de México = Mexico, la capitale"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-2-5",
+      "prompt": "Taquería La Paloma\nMenú: tres tacos de pollo o de verduras\nBebida: agua de limón",
+      "question": "Que peux-tu choisir dans tes tacos ?",
+      "spoken": "Taquería La Paloma. Menú: tres tacos de pollo o de verduras. Bebida: agua de limón.",
+      "choices": [
+        "Du poulet ou des légumes",
+        "Du poulet et des légumes",
+        "Du poisson ou des légumes"
+      ],
+      "choicesLang": "fr",
+      "answer": "Du poulet ou des légumes",
+      "hint": "o, est-ce et ou ou ? Et el pollo, c’est un animal de la ferme.",
+      "explanation": "de pollo o de verduras = au poulet ou aux légumes : o veut dire ou, on choisit l’un des deux. Le poisson se dit el pescado. Au Mexique, les tacos se font souvent avec une galette de maïs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer y comparar",
+          "lines": [
+            "más… que = plus… que ; menos… que = moins… que",
+            "y = et ; o = ou ; pero = mais",
+            "La date : el 3 de marzo = le 3 mars (le mois, sans majuscule)",
+            "marzo = mars ; enero = janvier ; diciembre = décembre",
+            "L’impératif donne un ordre : ¡Mira! = regarde ; ¡Lee! = lis",
+            "México = le Mexique ; Ciudad de México = Mexico, la capitale"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-2-6",
+      "prompt": "La profesora:\n¡Escribe la fecha en la pizarra, por favor!",
+      "question": "Que demande la professeure ?",
+      "spoken": "La profesora: Escribe la fecha en la pizarra, por favor!",
+      "choices": [
+        "Écrire la date",
+        "Lire la date",
+        "Effacer la date"
+      ],
+      "choicesLang": "fr",
+      "answer": "Écrire la date",
+      "hint": "Le verbe est au début. Pense aux consignes de la classe : escribir, leer.",
+      "explanation": "¡Escribe! = écris : c’est l’impératif d’escribir, une consigne. Lire se dirait ¡Lee! ; la fecha = la date ; la pizarra = le tableau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer y comparar",
+          "lines": [
+            "más… que = plus… que ; menos… que = moins… que",
+            "y = et ; o = ou ; pero = mais",
+            "La date : el 3 de marzo = le 3 mars (le mois, sans majuscule)",
+            "marzo = mars ; enero = janvier ; diciembre = décembre",
+            "L’impératif donne un ordre : ¡Mira! = regarde ; ¡Lee! = lis",
+            "México = le Mexique ; Ciudad de México = Mexico, la capitale"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-sentences-2-7",
+      "prompt": "Hoy es el 16 de septiembre:\n¡es la fiesta nacional de México!",
+      "question": "Quel jour est la fête nationale du Mexique ?",
+      "spoken": "Hoy es el dieciséis de septiembre: es la fiesta nacional de México!",
+      "choices": [
+        "Le 6 septembre",
+        "Le 16 septembre",
+        "Le 26 septembre"
+      ],
+      "choicesLang": "fr",
+      "answer": "Le 16 septembre",
+      "hint": "Écoute bien le nombre : dieciséis, seis ou veintiséis ?",
+      "explanation": "dieciséis = 16 : le 16 septembre, le Mexique fête son indépendance. seis, c’est 6 ; veintiséis, 26. Le Mexique est le pays où vivent le plus d’hispanophones.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer y comparar",
+          "lines": [
+            "más… que = plus… que ; menos… que = moins… que",
+            "y = et ; o = ou ; pero = mais",
+            "La date : el 3 de marzo = le 3 mars (le mois, sans majuscule)",
+            "marzo = mars ; enero = janvier ; diciembre = décembre",
+            "L’impératif donne un ordre : ¡Mira! = regarde ; ¡Lee! = lis",
+            "México = le Mexique ; Ciudad de México = Mexico, la capitale"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bien lu !"
+  },
+  "reward": {
+    "block": "lv2-5e-introductions",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

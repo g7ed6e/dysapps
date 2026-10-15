@@ -12,6 +12,7 @@ import { useFocusMode } from '../components/FocusMode';
 import { useHoldCelebrations } from '../components/Celebrations';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
+import { useTextes } from '../universes';
 import { useHaptics } from '../core/haptics';
 import { BLOCKS, getBiome, ofBlock, type BiomeDef } from './biomes';
 import { planStatus } from './engine';
@@ -98,6 +99,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   }, [repris]);
   const sectionRef = useRef<HTMLElement>(null);
   const { settings, speak } = useSettings();
+  const textes = useTextes();
   const haptics = useHaptics();
 
   const type = SCREEN_TYPES[def.type];
@@ -231,7 +233,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
 
   if (done) {
     const block = BLOCKS[done.block];
-    // Avec les blocs gagnés, l'étape du Bloc-Navire de cet archipel a tout ce qu'il lui faut : on le dit.
+    // Avec les blocs gagnés, l'étape de la Nef de cet archipel a tout ce qu'il lui faut : on le dit.
     const port = archipelagoOf(biome.id).port;
     const stage = stageAt(port);
     const shipReady =
@@ -243,7 +245,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
           })()
         : null;
     // À quoi servent les blocs gagnés : le chantier qu'ils font avancer, et « Voir le chantier » qui y mène.
-    const site = worksiteFor(done.state, biome.id, done.block);
+    const site = worksiteFor(done.state, biome.id, done.block, textes.libelles.formesDeLaNef);
     const pose = done.pose;
     // « Reprendre » chez la créature : la révision suivante de l'île, ou le retour sur l'île.
     const revisionSuivante = revisionDeLIle ? revisionsDeLIle(done.state.spaced, done.state.world.links, biome.id, settings.lv2).find((q) => q.type !== def.type) : undefined;
@@ -309,7 +311,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
               <li className="reward-ship">
                 <Icon name="ship" size="1.6rem" />
                 <span>
-                  <strong>Le Bloc-Navire a tous ses blocs !</strong> Va les poser au port, sur {getBiome(shipReady.biome)?.name}.
+                  <strong>La Nef a tous ses blocs !</strong> Va les poser au port, sur {getBiome(shipReady.biome)?.name}.
                 </span>
               </li>
             )}

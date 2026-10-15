@@ -1,16 +1,23 @@
-// Le rattachement des missions au programme officiel : chaque mission cite des compétences qui existent et sont de son
-// cycle ; chaque compétence est travaillée par une mission, ou exclue avec un motif (jamais les deux).
+// Le rattachement des missions au programme officiel : chaque mission cite des compétences qui existent, au programme
+// de sa classe ou d'une classe d'avant ; chaque compétence est travaillée par une mission, ou exclue avec un motif
+// (jamais les deux).
 import { APPS } from '../apps/registry';
-import { CYCLE_OF, PROGRAMME, byId } from '../curriculum';
+import { PROGRAMME, byId, citable } from '../curriculum';
 import { EXCLUSIONS } from '../curriculum/exclusions';
 import { BIOMES } from './biomes';
 import { loadAllExercises } from './exercises';
 
-/** La discipline attendue d'une mission : celle de son île, ou pour l'île de la LV2 la langue de la mission. */
+/**
+ * La discipline attendue d'une mission : celle de son île, ou pour un lieu d'option (GD-13) celle de la mission : la
+ * langue de la LV2, le latin ou le grec.
+ */
 const LV2_DISCIPLINE = { de: 'german', es: 'spanish' } as const;
+const OPTION_DISCIPLINE = { la: 'latin', gr: 'greek' } as const;
 function disciplineDe(b: (typeof BIOMES)[number], mission: string): string {
-  const lv2 = b.exercises.find((x) => x.id === mission)?.lv2;
-  return lv2 ? LV2_DISCIPLINE[lv2] : b.subject;
+  const x = b.exercises.find((m) => m.id === mission);
+  if (x?.lv2) return LV2_DISCIPLINE[x.lv2];
+  if (x?.option) return OPTION_DISCIPLINE[x.option];
+  return b.subject;
 }
 
 const EXERCISES = await loadAllExercises();
@@ -25,9 +32,8 @@ function coverage(): Map<string, string[]> {
   return map;
 }
 
-it('chaque mission d’une île cite au moins une compétence, existante, sans doublon, de sa matière et de son cycle', () => {
+it('chaque mission d’une île cite au moins une compétence, existante, sans doublon, de sa matière et de sa classe', () => {
   for (const b of BIOMES) {
-    const cycle = CYCLE_OF[b.classe];
     for (const q of b.exercises) {
       const where = `${b.id}/${q.id}`;
       expect(q.programme.length, `${where} : aucune compétence du programme`).toBeGreaterThanOrEqual(1);
@@ -39,10 +45,10 @@ it('chaque mission d’une île cite au moins une compétence, existante, sans d
       });
       for (const e of entries) {
         expect(e.discipline, `${where} cite ${e.id}, d’une autre matière`).toBe(disciplineDe(b, q.id));
-        // Une île de 6e ne travaille pas le cycle 4 ; une île du cycle 4 peut consolider une compétence du cycle 3.
-        if (cycle === 3) expect(e.cycle, `${where} cite ${e.id}, du cycle 4`).toBe(3);
+        // Une compétence de sa classe, ou d'une classe d'avant (consolidation) ; jamais d'une classe d'après.
+        expect(citable(e, b.classe), `${where} (${b.classe}) cite ${e.id}, au programme de ${e.classes.join(', ')}`).toBeTruthy();
       }
-      expect(entries.some((e) => e.cycle === cycle), `${where} ne cite aucune compétence de son cycle (${cycle})`).toBe(true);
+      expect(entries.some((e) => citable(e, b.classe) === 'classe'), `${where} ne cite aucune compétence de sa classe (${b.classe})`).toBe(true);
     }
   }
 });
@@ -70,7 +76,7 @@ it('un exercice qui précise son programme cite des compétences existantes, de 
       const p = byId(id);
       expect(p, `${e.id} : compétence inconnue ${id}`).toBeTruthy();
       expect(p!.discipline, `${e.id} cite ${id}, d’une autre matière`).toBe(disciplineDe(b, e.type));
-      if (CYCLE_OF[b.classe] === 3) expect(p!.cycle, `${e.id} cite ${id}, du cycle 4`).toBe(3);
+      expect(citable(p!, b.classe), `${e.id} (${b.classe}) cite ${id}, au programme de ${p!.classes.join(', ')}`).toBeTruthy();
     }
   }
 });

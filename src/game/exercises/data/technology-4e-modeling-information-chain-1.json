@@ -1,0 +1,225 @@
+{
+  "id": "technology-4e-modeling-information-chain-1",
+  "biome": "technology-4e-modeling",
+  "type": "information-chain",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-4e-modeling-information-chain-1-0",
+      "prompt": "Le détecteur de mouvement de la lampe du couloir est un …",
+      "spoken": "Le détecteur de mouvement de la lampe du couloir est un  (mot manquant) ",
+      "choices": [
+        "capteur",
+        "actionneur",
+        "moteur"
+      ],
+      "answer": "capteur",
+      "hint": "Il repère quelqu’un qui passe.",
+      "explanation": "Le détecteur repère un mouvement : c’est un capteur. La lampe qui s’allume ensuite est l’actionneur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La chaîne d’information",
+          "lines": [
+            "Acquérir : le capteur repère ce qui se passe (lumière, mouvement, chaleur).",
+            "Traiter : la carte programmable décide, selon son programme.",
+            "Communiquer : l’objet donne un ordre ou une information (voyant, écran, son).",
+            "Le capteur reçoit l’information. L’actionneur agit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-1-1",
+      "prompt": "Le capteur du thermostat mesure la température de la pièce : il … l’information.",
+      "spoken": "Le capteur du thermostat mesure la température de la pièce : il  (mot manquant)  l’information.",
+      "choices": [
+        "traite",
+        "acquiert",
+        "communique"
+      ],
+      "answer": "acquiert",
+      "hint": "Relis la ligne « Acquérir » du rappel.",
+      "explanation": "Mesurer la température, c’est prendre l’information : le capteur l’acquiert.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La chaîne d’information",
+          "lines": [
+            "Acquérir : le capteur repère ce qui se passe (lumière, mouvement, chaleur).",
+            "Traiter : la carte programmable décide, selon son programme.",
+            "Communiquer : l’objet donne un ordre ou une information (voyant, écran, son).",
+            "Le capteur reçoit l’information. L’actionneur agit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-1-2",
+      "prompt": "La porte automatique du magasin\nUn capteur voit le client arriver.\nLa carte programmable reçoit le signal.\nElle donne l’ordre d’ouvrir.",
+      "question": "Quel élément traite l’information ?",
+      "spoken": "La porte automatique du magasin. Un capteur voit le client arriver. La carte programmable reçoit le signal. Elle donne l’ordre d’ouvrir.",
+      "choices": [
+        "le capteur",
+        "la porte",
+        "la carte programmable"
+      ],
+      "answer": "la carte programmable",
+      "hint": "Qui décide d’ouvrir ?",
+      "explanation": "La carte programmable décide d’ouvrir : elle traite l’information. Le capteur l’a seulement acquise.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La chaîne d’information",
+          "lines": [
+            "Acquérir : le capteur repère ce qui se passe (lumière, mouvement, chaleur).",
+            "Traiter : la carte programmable décide, selon son programme.",
+            "Communiquer : l’objet donne un ordre ou une information (voyant, écran, son).",
+            "Le capteur reçoit l’information. L’actionneur agit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-1-3",
+      "prompt": "L’écran de la montre affiche le nombre de pas : il … l’information.",
+      "spoken": "L’écran de la montre affiche le nombre de pas : il  (mot manquant)  l’information.",
+      "choices": [
+        "acquiert",
+        "traite",
+        "communique"
+      ],
+      "answer": "communique",
+      "hint": "L’écran montre l’information à la personne.",
+      "explanation": "Afficher, c’est donner l’information à la personne : l’écran la communique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La chaîne d’information",
+          "lines": [
+            "Acquérir : le capteur repère ce qui se passe (lumière, mouvement, chaleur).",
+            "Traiter : la carte programmable décide, selon son programme.",
+            "Communiquer : l’objet donne un ordre ou une information (voyant, écran, son).",
+            "Le capteur reçoit l’information. L’actionneur agit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-1-4",
+      "prompt": "Le robot aspirateur\nIl touche un mur.\nUn contact à l’avant le sent.\nLe robot tourne.",
+      "question": "Quel élément est le capteur ?",
+      "spoken": "Le robot aspirateur. Il touche un mur. Un contact à l’avant le sent. Le robot tourne.",
+      "choices": [
+        "le contact à l’avant",
+        "les roues",
+        "la brosse"
+      ],
+      "answer": "le contact à l’avant",
+      "hint": "Qui sent le mur ?",
+      "explanation": "Le contact à l’avant sent le mur : c’est le capteur. Les roues, qui font tourner le robot, sont mises en mouvement par les moteurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La chaîne d’information",
+          "lines": [
+            "Acquérir : le capteur repère ce qui se passe (lumière, mouvement, chaleur).",
+            "Traiter : la carte programmable décide, selon son programme.",
+            "Communiquer : l’objet donne un ordre ou une information (voyant, écran, son).",
+            "Le capteur reçoit l’information. L’actionneur agit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-1-5",
+      "prompt": "La carte programmable décide selon son …",
+      "spoken": "La carte programmable décide selon son  (mot manquant) ",
+      "choices": [
+        "capteur",
+        "programme",
+        "moteur"
+      ],
+      "answer": "programme",
+      "hint": "Relis la ligne « Traiter » du rappel.",
+      "explanation": "La carte suit son programme : c’est lui qui dit quoi faire selon l’information reçue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La chaîne d’information",
+          "lines": [
+            "Acquérir : le capteur repère ce qui se passe (lumière, mouvement, chaleur).",
+            "Traiter : la carte programmable décide, selon son programme.",
+            "Communiquer : l’objet donne un ordre ou une information (voyant, écran, son).",
+            "Le capteur reçoit l’information. L’actionneur agit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-1-6",
+      "prompt": "La sonnette sans fil\nOn appuie sur le bouton, dehors.\nLe signal part sans fil.\nLe carillon sonne, dedans.",
+      "question": "Quel élément acquiert l’information ?",
+      "spoken": "La sonnette sans fil. On appuie sur le bouton, dehors. Le signal part sans fil. Le carillon sonne, dedans.",
+      "choices": [
+        "le carillon",
+        "le bouton",
+        "le signal sans fil"
+      ],
+      "answer": "le bouton",
+      "hint": "Qu’est-ce qui repère que quelqu’un est là ?",
+      "explanation": "Le bouton repère l’appui : il acquiert l’information. Le carillon la communique, en sonnant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La chaîne d’information",
+          "lines": [
+            "Acquérir : le capteur repère ce qui se passe (lumière, mouvement, chaleur).",
+            "Traiter : la carte programmable décide, selon son programme.",
+            "Communiquer : l’objet donne un ordre ou une information (voyant, écran, son).",
+            "Le capteur reçoit l’information. L’actionneur agit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-information-chain-1-7",
+      "prompt": "Pour arroser le jardin au bon moment, le capteur d’humidité dit si la terre est …",
+      "spoken": "Pour arroser le jardin au bon moment, le capteur d’humidité dit si la terre est  (mot manquant) ",
+      "choices": [
+        "chaude",
+        "sèche",
+        "éclairée"
+      ],
+      "answer": "sèche",
+      "hint": "L’humidité, c’est l’eau dans la terre.",
+      "explanation": "Le capteur d’humidité dit si la terre est sèche ou mouillée : on arrose seulement si elle est sèche. Un capteur de chaleur dirait si elle est chaude.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La chaîne d’information",
+          "lines": [
+            "Acquérir : le capteur repère ce qui se passe (lumière, mouvement, chaleur).",
+            "Traiter : la carte programmable décide, selon son programme.",
+            "Communiquer : l’objet donne un ordre ou une information (voyant, écran, son).",
+            "Le capteur reçoit l’information. L’actionneur agit."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-4e-modeling",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -52,7 +52,11 @@ describe('les textes d’univers', () => {
     // L'empreinte des textes des Gardiens et des espèces de Blocland, réécrits par son consultant pour GD-8 (décision du
     // mainteneur, 4 octobre 2026 : « rallumer » plutôt que « vaincre ») : un mot changé la change. Les libellés sont écrits
     // en entier ci-dessous ; le mot des grandes étapes, les noms des archipels et des rôles, que GD-1 a changés, ont
-    // leurs propres cas plus bas.
+    // leurs propres cas plus bas. Le Hibou renvoie à l’aide sous la question (programmes 2025-2026 : Sens et Nuances
+    // affichent un rappel, pas une règle). Le Gardien et l'espèce du Préau des délégués (EMC-2) l'ont changée, puis ceux du
+    // Fournil des partages (EMC-2) et de la Grotte des légendes (LCA-2), puis le Phénix d’argile qui se dresse dans son nid
+    // et se rallume jusqu’à la huppe (consultant Blocland, 9 octobre 2026), puis ceux de la Porte des libertés et du Forum
+    // des débats (EMC-2), de la Colonnade des cités et du Bosquet des sages (LCA-2).
     const t = textesDe('blocland');
     const textes = Object.fromEntries(
       BIOMES.map((b) => {
@@ -60,7 +64,7 @@ describe('les textes d’univers', () => {
         return [b.id, { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
       }),
     );
-    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('e572da6f17dd28b1e24eb7e6543944dc8cab55604100a11cfaea9ac804160b10');
+    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('4bbf57dc3e463b24ecda9ab5350e788907031cdf76d983d8d1ef01ce344423e7');
     const l = t.libelles;
     expect([l.dejaFait, l.etoiles, l.etoilesSur3(2), l.resistance(2, 6), l.dejaFaitArene('Le Grand Chêne')]).toEqual([
       'Déjà rallumé. On rejoue ?',
@@ -72,8 +76,8 @@ describe('les textes d’univers', () => {
     expect([l.encoreAFaire(1), l.encoreAFaire(2), l.navireAttend(1), l.navireAttend(2)]).toEqual([
       'encore 1 Gardien à rallumer',
       'encore 2 Gardiens à rallumer',
-      'Le Bloc-Navire a tous ses blocs ! Il attend encore 1 Gardien rallumé.',
-      'Le Bloc-Navire a tous ses blocs ! Il attend encore 2 Gardiens rallumés.',
+      'La Nef a tous ses blocs ! Elle attend encore 1 Gardien rallumé.',
+      'La Nef a tous ses blocs ! Elle attend encore 2 Gardiens rallumés.',
     ]);
     expect([l.navireGardiens(1, 3, 'Basses Terres', 'la voile'), l.navireGardiens(3, 3, 'Basses Terres', 'la voile')]).toEqual([
       'Gardiens : encore 2 à rallumer dans les Basses Terres pour la voile.',
@@ -143,9 +147,10 @@ describe('les textes d’univers', () => {
     expect(d.regle).toBe('Une épreuve ratée lui laisse ses couleurs.');
     expect([d.compte(2, 7), d.seuil(5, false), d.seuil(5, true)]).toEqual(['2 sur 7', 'Il faut 5 épreuves réussies pour lui rendre ses couleurs.', 'C’est assez pour lui rendre ses couleurs.']);
     expect(d.rallume('Le Grand Chêne')).toBe('Le Grand Chêne se rallume en couleurs !');
+    // (Le Phénix d'argile, LCA-2, « renaît » d'abord : « Je renais, et je me rallume ».)
     for (const g of Object.values(t.gardiens)) {
       expect(g.guardianSays.miss).toMatch(/^Mes couleurs restent\. /);
-      expect(g.guardianSays.beaten).toMatch(/Je me rallume/);
+      expect(g.guardianSays.beaten).toMatch(/Je me rallume|, et je me rallume/);
     }
   });
 
@@ -170,13 +175,17 @@ describe('les textes communs (J8, U4)', () => {
   it('les répliques des créatures sont celles d’avant, plus les répliques ajoutées par les lots de contenu, dans les deux univers', () => {
     // L'empreinte des répliques telles qu'elles étaient dans biomes.ts avant U4 (île par île : greeting, lines, home),
     // avec la réplique d'Astra des Voix des textes (#203), celle de Kroa du Gué des temps (#230), celle de Cléa de l’Écho des pronominaux (#238), celle de Fi des Faisceaux (#247), celle de Bloquette du Troupeau (C-3), celle de Rouxel des Facettes (C-6),
-    // celle de Nénu de « Galets en colonnes » (C-1) et celle de Lavi de « Nombres géants » (C-2).
+    // celle de Nénu de « Galets en colonnes » (C-1) et celle de Lavi de « Nombres géants » (C-2) ; avec les programmes de 2025-2026,
+    // celles de Braise (la règle des signes) et de Plume (mais), et la réplique de Kroa au subjonctif remplacée.
     // Quand un univers aura ses propres répliques, l'empreinte ne vaudra plus que pour Blocland.
     for (const u of UNIVERS) {
       const t = textesDe(u);
       // Les îles venues après U4 (le Jardin des heures, LV2-4 ; le Refuge des carnets, LV2-5 ; la Fouille des siècles et la
-      // Pointe des paysages, HG-2 ; la Vallée du vivant, le Laboratoire des éléments et le Hangar des inventions, SC-2)
-      // n'ont pas de réplique « d'avant » : hors de l'empreinte.
+      // Pointe des paysages, HG-2 ; la Vallée du vivant, le Laboratoire des éléments et le Hangar des inventions, SC-2 ;
+      // les six îles d'histoire-géographie de 5e, 4e et 3e, HG-3 ; les neuf îles de sciences de 5e, 4e et 3e, SC-3 ; le
+      // Préau des délégués, EMC-2 ; le Fournil des partages, la Porte des libertés et le Forum des débats, EMC-2, la Grotte
+      // des légendes, la Colonnade des cités et le Bosquet des sages, LCA-2) n'ont pas de réplique « d'avant » : hors de
+      // l'empreinte.
       const APRES_U4: readonly string[] = [
         'lv2-4e-daily-life',
         'lv2-3e-travel',
@@ -185,9 +194,31 @@ describe('les textes communs (J8, U4)', () => {
         'life-earth-sciences-6e-living-world',
         'physics-chemistry-6e-matter-energy',
         'technology-6e-objects',
+        'civics-6e-democratic-society',
+        'civics-5e-equality-solidarity',
+        'lca-5e-legends',
+        'civics-4e-rights-freedoms',
+        'lca-4e-cities',
+        'civics-3e-democratic-life',
+        'lca-3e-ideas',
+        'history-5e-middle-ages',
+        'geography-5e-resources',
+        'history-4e-revolutions',
+        'geography-4e-globalization',
+        'history-3e-twentieth-century',
+        'geography-3e-france',
+        'life-earth-sciences-5e-active-planet',
+        'physics-chemistry-5e-matter-universe',
+        'technology-5e-design',
+        'life-earth-sciences-4e-cells-evolution',
+        'physics-chemistry-4e-signals-circuits',
+        'technology-4e-modeling',
+        'life-earth-sciences-3e-human-body',
+        'physics-chemistry-3e-motion-energy',
+        'technology-3e-digital',
       ];
       const r = Object.fromEntries(BIOMES.filter((b) => !APRES_U4.includes(b.id)).map((b) => [ANCIEN_LIEU[b.id], t.creatures[b.id]]));
-      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('ee5d7b2fcc1a7a49749e0a41c5077b279215383439d33d63e023e6b85b618ccf');
+      expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('0be60613941ce7a8b97423e62b53c3b1925d43a137b642c8793d011ab86dba84');
     }
   });
 
@@ -206,21 +237,25 @@ describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
     expect(t.baleine.parle).toBe('baleine');
     expect(t.baleine.arrivee).toEqual({
       '6e': 'Je suis la baleine. Je passe au large quand tu fais quelque chose de grand.',
-      '5e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles.',
-      '4e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche.',
-      '3e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
+      '5e': 'La Nef a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles.',
+      '4e': 'La Nef a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche.',
+      '3e': 'La Nef a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
     });
     expect([t.baleine.port('Plaine des nombres'), t.baleine.port('Marché des proportions'), t.baleine.ouvrage('Mine des lettres')]).toEqual([
       'La Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.',
       'Le Marché des proportions est bâti. Tu avances bien : chaque île bâtie rend l’archipel plus beau.',
       'Un chemin s’ouvre vers la Mine des lettres. L’archipel s’agrandit.',
     ]);
-    // Les noms des archipels et des rôles sont ceux des données ; aucun succès renommé, aucun écran de renommage.
+    // Les noms des archipels et des rôles sont ceux des données ; un seul succès redit (la Nef y devient aéronef, GD-15),
+    // aucun écran de renommage.
     expect(t.archipels).toEqual(NOMS_ARCHIPELS);
     expect(t.archipels).toEqual({ '6e': 'Premiers Rivages', '5e': 'Îles Brumeuses', '4e': 'Anciens Ateliers', '3e': 'Îles du Ciel' });
     expect(ROLES.map((r) => nomDuRole(t, r.id))).toEqual(['Explorateur', 'Cartographe', 'Bâtisseur', 'Navigateur', 'Architecte de l’archipel']);
     expect(ROLES.map((r) => nomDuRole(t, r.id))).toEqual(ROLES.map((r) => r.name));
-    for (const b of BADGES) expect(texteDuSucces(t, b)).toEqual({ title: b.title, description: b.description });
+    for (const b of BADGES.filter((x) => x.id !== 'pilote-du-ciel')) expect(texteDuSucces(t, b)).toEqual({ title: b.title, description: b.description });
+    expect(texteDuSucces(t, BADGES.find((b) => b.id === 'pilote-du-ciel')!).description).toBe('Faire de la Nef un aéronef et monter jusqu’aux Îles du Ciel.');
+    expect(t.libelles.formesDeLaNef?.[3]?.name).toBe('L’aéronef');
+    expect(pagesBaleine(arrivee(ARCHIPELAGOS[2]), t)[1]).toContain('Elle devient aéronef ici');
     expect(t.renommage).toBeNull();
     for (const a of ARCHIPELAGOS) {
       expect(quiParle(arrivee(a), t)).toBeNull();
@@ -253,7 +288,7 @@ describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
       { title: 'Ingénieur', description: 'Devenir Ingénieur : tu inventes des machines.' },
       { title: 'Architecte', description: 'Devenir Architecte : tu dessines les plans du village.' },
     ]);
-    expect(succes('aeronaute').description).toBe('Gonfler le ballon du Bloc-Navire et rejoindre les Monts de Feu.');
+    expect(succes('aeronaute').description).toBe('Mener la Nef au-dessus des nuages et rejoindre les Monts de Feu.');
     // Seuls des succès qui existent sont renommés, et leurs identifiants ne changent pas.
     for (const id of Object.keys(t.succes)) expect(BADGES.some((b) => b.id === id)).toBe(true);
   });

@@ -1,0 +1,235 @@
+{
+  "id": "english-5e-grammar-portraits-2",
+  "biome": "english-5e-grammar",
+  "type": "portraits",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Lis la question, puis le texte en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "english-5e-grammar-portraits-2-0",
+      "prompt": "Long John Silver is a pirate in Treasure Island, by Robert Louis Stevenson.\nHe has only one leg.\nHe wants the treasure for himself.",
+      "question": "Que veut Long John Silver ?",
+      "spoken": "Long John Silver is a pirate in Treasure Island, by Robert Louis Stevenson. He has only one leg. He wants the treasure for himself.",
+      "choices": [
+        "Le trésor pour lui seul",
+        "Rentrer chez lui",
+        "Un bateau neuf"
+      ],
+      "choicesLang": "fr",
+      "answer": "Le trésor pour lui seul",
+      "hint": "Lis la dernière ligne : treasure ressemble à un mot français.",
+      "explanation": "He wants the treasure for himself = il veut le trésor pour lui seul. Le titre le dit aussi : Treasure Island, l’île au trésor. Le texte ne parle ni de rentrer chez lui (go home) ni d’un bateau neuf (a new ship).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des personnages de livres",
+          "lines": [
+            "Lis d’abord la question, puis cherche la phrase qui répond.",
+            "author = l’auteur ; character = le personnage ; story = l’histoire",
+            "real = vrai, qui existe ; invented = inventé ; famous = célèbre",
+            "only = seulement ; grow up = grandir ; want = vouloir"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-2-1",
+      "prompt": "Sherlock Holmes is a famous detective.\nArthur Conan Doyle invented him in 1887.\nIn the stories, Holmes lives in Baker Street, a real street in London.",
+      "question": "Qu’est-ce qui est réel dans ce texte ?",
+      "spoken": "Sherlock Holmes is a famous detective. Arthur Conan Doyle invented him in eighteen eighty-seven. In the stories, Holmes lives in Baker Street, a real street in London.",
+      "choices": [
+        "La rue Baker Street",
+        "Le détective Holmes",
+        "Les enquêtes de Holmes"
+      ],
+      "choicesLang": "fr",
+      "answer": "La rue Baker Street",
+      "hint": "Cherche le mot real : de quoi parle la fin de sa phrase ?",
+      "explanation": "a real street in London = une vraie rue de Londres : Baker Street existe. Holmes et ses enquêtes, Conan Doyle les a inventés (invented) : ils sont imaginaires.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des personnages de livres",
+          "lines": [
+            "Lis d’abord la question, puis cherche la phrase qui répond.",
+            "author = l’auteur ; character = le personnage ; story = l’histoire",
+            "real = vrai, qui existe ; invented = inventé ; famous = célèbre",
+            "only = seulement ; grow up = grandir ; want = vouloir"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-2-2",
+      "prompt": "Dorothy lives on a farm in Kansas with her little dog, Toto.\nA big storm takes her to the Land of Oz.\nThere, she meets a Scarecrow. He wants a brain.",
+      "question": "Que veut l’épouvantail ?",
+      "spoken": "Dorothy lives on a farm in Kansas with her little dog, Toto. A big storm takes her to the Land of Oz. There, she meets a Scarecrow. He wants a brain.",
+      "choices": [
+        "Un cerveau",
+        "Un cœur",
+        "Du courage"
+      ],
+      "choicesLang": "fr",
+      "answer": "Un cerveau",
+      "hint": "Lis la dernière phrase. Un épouvantail a la tête remplie de paille : que lui manque-t-il ?",
+      "explanation": "He wants a brain = il veut un cerveau, pour réfléchir. Dans l’histoire, le cœur (a heart), c’est ce que veut l’homme en fer-blanc, et le courage, ce que veut le lion.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des personnages de livres",
+          "lines": [
+            "Lis d’abord la question, puis cherche la phrase qui répond.",
+            "author = l’auteur ; character = le personnage ; story = l’histoire",
+            "real = vrai, qui existe ; invented = inventé ; famous = célèbre",
+            "only = seulement ; grow up = grandir ; want = vouloir"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-2-3",
+      "prompt": "Mowgli is a boy in The Jungle Book, by Rudyard Kipling.\nHe grows up with a family of wolves.\nBaloo, a wise old bear, teaches him the Law of the Jungle.",
+      "question": "Avec qui Mowgli grandit-il ?",
+      "spoken": "Mowgli is a boy in The Jungle Book, by Rudyard Kipling. He grows up with a family of wolves. Baloo, a wise old bear, teaches him the Law of the Jungle.",
+      "choices": [
+        "Avec des loups",
+        "Avec des ours",
+        "Avec des singes"
+      ],
+      "choicesLang": "fr",
+      "answer": "Avec des loups",
+      "hint": "Lis la deuxième ligne jusqu’au bout : sa famille, ce sont quels animaux ?",
+      "explanation": "He grows up with a family of wolves = il grandit dans une famille de loups. Baloo est un ours (a bear), mais c’est son professeur, pas sa famille. Un singe se dit a monkey.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des personnages de livres",
+          "lines": [
+            "Lis d’abord la question, puis cherche la phrase qui répond.",
+            "author = l’auteur ; character = le personnage ; story = l’histoire",
+            "real = vrai, qui existe ; invented = inventé ; famous = célèbre",
+            "only = seulement ; grow up = grandir ; want = vouloir"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-2-4",
+      "prompt": "Ebenezer Scrooge is an old man in a story by Charles Dickens.\nHe is very rich, but he never gives money to anyone.\nHe hates Christmas.",
+      "question": "Que pense Scrooge de Noël ?",
+      "spoken": "Ebenezer Scrooge is an old man in a story by Charles Dickens. He is very rich, but he never gives money to anyone. He hates Christmas.",
+      "choices": [
+        "Il déteste Noël",
+        "Il adore Noël",
+        "Il fête Noël en famille"
+      ],
+      "choicesLang": "fr",
+      "answer": "Il déteste Noël",
+      "hint": "Lis la dernière ligne, puis la deuxième : un homme qui ne donne jamais rien aime-t-il les fêtes ?",
+      "explanation": "He hates Christmas = il déteste Noël. Adorer se dit love : c’est le contraire. Rien dans le texte ne dit qu’il fête Noël.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des personnages de livres",
+          "lines": [
+            "Lis d’abord la question, puis cherche la phrase qui répond.",
+            "author = l’auteur ; character = le personnage ; story = l’histoire",
+            "real = vrai, qui existe ; invented = inventé ; famous = célèbre",
+            "only = seulement ; grow up = grandir ; want = vouloir"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-2-5",
+      "prompt": "Hi Tom! It’s Amy.\nMy party is on Saturday at 3 pm.\nBring your swimsuit: we have a pool!",
+      "question": "Ce message est pour ton frère Tom, qui ne lit pas l’anglais. Que lui dis-tu ?",
+      "spoken": "Hi Tom! It’s Amy. My party is on Saturday at three p.m. Bring your swimsuit, we have a pool!",
+      "choices": [
+        "Samedi à 15 h, prends ton maillot.",
+        "Samedi à 3 h, prends ton maillot.",
+        "Dimanche à 15 h, prends ton maillot."
+      ],
+      "choicesLang": "fr",
+      "answer": "Samedi à 15 h, prends ton maillot.",
+      "hint": "Cherche le jour, puis l’heure : que veut dire pm ?",
+      "explanation": "Saturday = samedi, et 3 pm = 15 h (pm : on ajoute 12). Bring your swimsuit = prends ton maillot de bain. 3 h, ce serait la nuit ; dimanche se dit Sunday.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Transmettre, demander",
+          "lines": [
+            "Pour transmettre un message, garde l’essentiel : le jour, l’heure, ce qu’il faut faire.",
+            "pm = après midi : on ajoute 12 ; because of = à cause de ; next = prochain",
+            "speak up = parler plus fort ; slow down = ralentir"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-2-6",
+      "prompt": "Hello, it’s Mr Brown, the football coach.\nThere is no training today because of the rain.\nSee you next Wednesday!",
+      "question": "Ton ami ne comprend pas ce message. Que lui dis-tu en français ?",
+      "spoken": "Hello, it’s Mr Brown, the football coach. There is no training today because of the rain. See you next Wednesday!",
+      "choices": [
+        "Pas d’entraînement aujourd’hui.",
+        "Entraînement sous la pluie aujourd’hui.",
+        "Entraînement aujourd’hui et mercredi."
+      ],
+      "choicesLang": "fr",
+      "answer": "Pas d’entraînement aujourd’hui.",
+      "hint": "Cherche le petit mot no : il dit qu’une chose n’a pas lieu.",
+      "explanation": "There is no training today = il n’y a pas d’entraînement aujourd’hui, à cause de la pluie (because of the rain). Le prochain, c’est mercredi prochain (next Wednesday), pas aujourd’hui.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Transmettre, demander",
+          "lines": [
+            "Pour transmettre un message, garde l’essentiel : le jour, l’heure, ce qu’il faut faire.",
+            "pm = après midi : on ajoute 12 ; because of = à cause de ; next = prochain",
+            "speak up = parler plus fort ; slow down = ralentir"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-portraits-2-7",
+      "prompt": "Ben is presenting his project to the class.\nHe speaks very quietly.\nAt the back of the class, nobody can hear him.",
+      "question": "Que peux-tu dire à Ben ?",
+      "spoken": "Ben is presenting his project to the class. He speaks very quietly. At the back of the class, nobody can hear him.",
+      "choices": [
+        "Could you speak up, please?",
+        "Could you slow down, please?",
+        "Could you sit down, please?"
+      ],
+      "answer": "Could you speak up, please?",
+      "hint": "Quel est le problème : la vitesse de sa voix, ou sa force ?",
+      "explanation": "Could you speak up, please? = Peux-tu parler plus fort, s’il te plaît ? Au fond, on ne l’entend pas. Slow down veut dire ralentir : Ben ne parle pas trop vite, il parle trop bas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Transmettre, demander",
+          "lines": [
+            "Pour transmettre un message, garde l’essentiel : le jour, l’heure, ce qu’il faut faire.",
+            "pm = après midi : on ajoute 12 ; because of = à cause de ; next = prochain",
+            "speak up = parler plus fort ; slow down = ralentir"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-5e-grammar",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

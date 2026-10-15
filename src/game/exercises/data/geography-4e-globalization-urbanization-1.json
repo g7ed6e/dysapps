@@ -1,0 +1,238 @@
+{
+  "id": "geography-4e-globalization-urbanization-1",
+  "biome": "geography-4e-globalization",
+  "type": "urbanization",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-4e-globalization-urbanization-1-0",
+      "prompt": "Quand de plus en plus d’habitants vivent en ville, on parle d’… .",
+      "spoken": "Quand de plus en plus d’habitants vivent en ville, on parle d’(mot manquant) .",
+      "choices": [
+        "urbanisation",
+        "industrialisation",
+        "mondialisation"
+      ],
+      "answer": "urbanisation",
+      "hint": "Le mot vient de « urbain », qui veut dire « de la ville ».",
+      "explanation": "L’urbanisation : la part des habitants des villes augmente. L’industrialisation, c’est l’arrivée des usines.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de l’urbanisation",
+          "lines": [
+            "Urbanisation : de plus en plus d’habitants vivent en ville.",
+            "Mégapole : une ville de plus de 10 millions d’habitants.",
+            "Exode rural : quitter la campagne pour la ville.",
+            "Étalement urbain : la ville s’étend sur la campagne.",
+            "Ségrégation : riches et pauvres vivent dans des quartiers séparés.",
+            "Bidonville : un quartier de cabanes, souvent sans eau courante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-1-1",
+      "prompt": "Une ville de plus de 10 millions d’habitants s’appelle une … .",
+      "spoken": "Une ville de plus de dix millions d’habitants s’appelle une (mot manquant).",
+      "choices": [
+        "banlieue",
+        "mégapole",
+        "bidonville"
+      ],
+      "answer": "mégapole",
+      "hint": "« Méga » veut dire très grand.",
+      "explanation": "Une mégapole a plus de 10 millions d’habitants, comme Tokyo ou Lagos. Une banlieue et un bidonville sont des parties d’une ville.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de l’urbanisation",
+          "lines": [
+            "Urbanisation : de plus en plus d’habitants vivent en ville.",
+            "Mégapole : une ville de plus de 10 millions d’habitants.",
+            "Exode rural : quitter la campagne pour la ville.",
+            "Étalement urbain : la ville s’étend sur la campagne.",
+            "Ségrégation : riches et pauvres vivent dans des quartiers séparés.",
+            "Bidonville : un quartier de cabanes, souvent sans eau courante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-1-2",
+      "prompt": "Lagos, une des plus grandes villes d’Afrique, est au … .",
+      "spoken": "Lagos, une des plus grandes villes d’Afrique, est au (mot manquant) .",
+      "choices": [
+        "Kenya",
+        "Brésil",
+        "Nigeria"
+      ],
+      "answer": "Nigeria",
+      "hint": "C’est un pays d’Afrique de l’Ouest.",
+      "explanation": "Lagos est au Nigeria, en Afrique de l’Ouest. C’est une mégapole qui grandit très vite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de l’urbanisation",
+          "lines": [
+            "Urbanisation : de plus en plus d’habitants vivent en ville.",
+            "Mégapole : une ville de plus de 10 millions d’habitants.",
+            "Exode rural : quitter la campagne pour la ville.",
+            "Étalement urbain : la ville s’étend sur la campagne.",
+            "Ségrégation : riches et pauvres vivent dans des quartiers séparés.",
+            "Bidonville : un quartier de cabanes, souvent sans eau courante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-1-3",
+      "prompt": "Quitter la campagne pour aller vivre en ville, c’est l’exode … .",
+      "spoken": "Quitter la campagne pour aller vivre en ville, c’est l’exode (mot manquant) .",
+      "choices": [
+        "urbain",
+        "rural",
+        "touristique"
+      ],
+      "answer": "rural",
+      "hint": "Rural veut dire « de la campagne ».",
+      "explanation": "L’exode rural : on quitte la campagne pour la ville, souvent pour trouver du travail. Il fait grandir les villes d’Afrique et d’Asie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de l’urbanisation",
+          "lines": [
+            "Urbanisation : de plus en plus d’habitants vivent en ville.",
+            "Mégapole : une ville de plus de 10 millions d’habitants.",
+            "Exode rural : quitter la campagne pour la ville.",
+            "Étalement urbain : la ville s’étend sur la campagne.",
+            "Ségrégation : riches et pauvres vivent dans des quartiers séparés.",
+            "Bidonville : un quartier de cabanes, souvent sans eau courante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-1-4",
+      "prompt": "Quand la ville grignote les champs autour d’elle, c’est l’… urbain.",
+      "spoken": "Quand la ville grignote les champs autour d’elle, c’est l’(mot manquant) urbain.",
+      "choices": [
+        "exode",
+        "étalement",
+        "centre"
+      ],
+      "answer": "étalement",
+      "hint": "La ville s’étale, comme une tache.",
+      "explanation": "L’étalement urbain : la ville s’étend sur la campagne, avec des maisons, des routes et des centres commerciaux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de l’urbanisation",
+          "lines": [
+            "Urbanisation : de plus en plus d’habitants vivent en ville.",
+            "Mégapole : une ville de plus de 10 millions d’habitants.",
+            "Exode rural : quitter la campagne pour la ville.",
+            "Étalement urbain : la ville s’étend sur la campagne.",
+            "Ségrégation : riches et pauvres vivent dans des quartiers séparés.",
+            "Bidonville : un quartier de cabanes, souvent sans eau courante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-1-5",
+      "prompt": "Les riches et les pauvres vivent dans des quartiers séparés : c’est la … .",
+      "spoken": "Les riches et les pauvres vivent dans des quartiers séparés : c’est la (mot manquant) .",
+      "choices": [
+        "densité",
+        "ségrégation",
+        "mondialisation"
+      ],
+      "answer": "ségrégation",
+      "hint": "Cherche « riches et pauvres » dans le rappel.",
+      "explanation": "La ségrégation : les habitants sont séparés selon leur richesse. On la voit dans beaucoup de grandes villes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de l’urbanisation",
+          "lines": [
+            "Urbanisation : de plus en plus d’habitants vivent en ville.",
+            "Mégapole : une ville de plus de 10 millions d’habitants.",
+            "Exode rural : quitter la campagne pour la ville.",
+            "Étalement urbain : la ville s’étend sur la campagne.",
+            "Ségrégation : riches et pauvres vivent dans des quartiers séparés.",
+            "Bidonville : un quartier de cabanes, souvent sans eau courante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-1-6",
+      "prompt": "À Mumbai, Dharavi est un des plus grands … d’Asie.",
+      "spoken": "À Mumbai, Dharavi est un des plus grands (mot manquant) d’Asie.",
+      "choices": [
+        "ports",
+        "quartiers d’affaires",
+        "bidonvilles"
+      ],
+      "answer": "bidonvilles",
+      "hint": "Cherche « cabanes » dans le rappel.",
+      "explanation": "Dharavi est un immense bidonville de Mumbai, en Inde. Ses habitants y travaillent aussi : on y recycle, on y fabrique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de l’urbanisation",
+          "lines": [
+            "Urbanisation : de plus en plus d’habitants vivent en ville.",
+            "Mégapole : une ville de plus de 10 millions d’habitants.",
+            "Exode rural : quitter la campagne pour la ville.",
+            "Étalement urbain : la ville s’étend sur la campagne.",
+            "Ségrégation : riches et pauvres vivent dans des quartiers séparés.",
+            "Bidonville : un quartier de cabanes, souvent sans eau courante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-4e-globalization-urbanization-1-7",
+      "prompt": "En 2050, environ 2 humains sur 3 vivront en ville : la population des villes va … .",
+      "spoken": "En deux mille cinquante, environ deux humains sur trois vivront en ville : la population des villes va (mot manquant).",
+      "choices": [
+        "baisser",
+        "augmenter",
+        "rester la même"
+      ],
+      "answer": "augmenter",
+      "hint": "Aujourd’hui, c’est un peu plus d’un humain sur deux.",
+      "explanation": "Un peu plus d’un humain sur deux aujourd’hui, environ deux sur trois en 2050 : la population des villes augmente.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de l’urbanisation",
+          "lines": [
+            "Urbanisation : de plus en plus d’habitants vivent en ville.",
+            "Mégapole : une ville de plus de 10 millions d’habitants.",
+            "Exode rural : quitter la campagne pour la ville.",
+            "Étalement urbain : la ville s’étend sur la campagne.",
+            "Ségrégation : riches et pauvres vivent dans des quartiers séparés.",
+            "Bidonville : un quartier de cabanes, souvent sans eau courante."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-4e-globalization",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

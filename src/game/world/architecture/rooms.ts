@@ -14,9 +14,50 @@ export const TOUTES_LES_FACES = 0b111111;
 
 /**
  * Les rôles des couleurs d'un kit (./kits/types.ts) : une pièce peut en montrer plusieurs dans sa case (le colombage sur
- * son remplissage, les pilotis sous le plancher).
+ * son remplissage, les pilotis sous le plancher) ; la tôle et ses joints (le métal), le galon d'or (la tenture).
  */
-export type Role = 'poteau' | 'remplissage' | 'soubassement' | 'bardage' | 'pilotis' | 'chaperon';
+export type Role =
+  | 'poteau'
+  | 'remplissage'
+  | 'soubassement'
+  | 'bardage'
+  | 'pilotis'
+  | 'chaperon'
+  | 'tole'
+  | 'joint'
+  | 'galon'
+  /** La braise mate du sommet du cône des Décimaux, la couverture d'un pavillon à la Mine. */
+  | 'braise'
+  /** L'eau en nappe : son dessus, son liseré clair au bord, ses flancs sombres. */
+  | 'nappe'
+  | 'lisere'
+  | 'flanc'
+  /** Le vert du nénuphar posé sur la nappe. */
+  | 'feuille'
+  /** La paille du champ de blé. */
+  | 'paille'
+  /** La pierre des lieux du village au 5e (la pierre grise de l'école et de la salle des trophées). */
+  | 'masonry'
+  /**
+   * Le grès clair des lieux du village dessinés (au 4e : les chaînes d'angle, la corniche, les appuis et le clocheton de
+   * l'école, les bases et les chapiteaux de la salle des trophées), là où la pierre sombre du soubassement ne se lirait
+   * pas sur la brique ; absent, le soubassement.
+   */
+  | 'placeTrim'
+  /** La neige des congères du Glacier (au 5e), tenue loin du fantôme. */
+  | 'snow'
+  /**
+   * Les pièces communes de la cour (./yardPieces.ts, au 6e, au 5e, au 4e et au 3e) : le poteau et les lisses de la barrière, le pied de pierre
+   * du poteau de la lanterne et les côtés de la marche, la dalle du dessus de la marche, la cage de fer et le toit
+   * d'ardoise de la lanterne, ses vitres (dans les fenêtres).
+   */
+  | 'yardPost'
+  | 'yardRail'
+  | 'yardStone'
+  | 'yardSlab'
+  | 'lanternFrame'
+  | 'lanternRoof'
+  | 'lanternGlass';
 
 /** Une facette d'une pièce : un polygone convexe (3 ou 4 sommets) et sa normale. */
 export interface Facette {
@@ -26,8 +67,17 @@ export interface Facette {
   face: 'dessus' | 'cote';
   /** La couleur d'un rôle du kit, au lieu de la matière du bloc. */
   role?: Role;
+  /**
+   * Le motif du bloc lui-même (un bloc assemblé, GD-2 : la poutre suspendue de la Halle), que world/construction.ts lit
+   * sur sa matière, au lieu de `motif`.
+   */
+  ownMotif?: boolean;
   /** Le motif peint (0 ou absent : aucun). */
   motif?: number;
+  /** La couleur du bloc de dessous, au lieu de celle de son bloc (les flancs de pierre de la case de braise du cône). */
+  colourBelow?: boolean;
+  /** Sa couleur tenue à l'écart du fantôme Brume (le pain de craie, ./heartPieces.ts : `apartFromGhost`). */
+  ghostApart?: boolean;
 }
 
 /** Une pièce dessinée, dans l'orientation de référence de sa forme. */
@@ -40,6 +90,11 @@ export interface DessinDePiece {
    * tenant (./assembly.ts).
    */
   filant?: boolean;
+  /**
+   * La pièce est déjà tournée dans le monde (la marche de cour, tournée vers la porte : ./yardPieces.ts) : la pose ne la
+   * tourne pas d'après son voisinage.
+   */
+  dansLeMonde?: boolean;
 }
 
 /** Un point de la case tourné de `r` quarts de tour, dans le sens direct, autour de l'axe vertical du centre de la case. */

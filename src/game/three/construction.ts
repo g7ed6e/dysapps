@@ -39,13 +39,17 @@ import {
   type MaillageDeLaConstruction,
 } from '../world/construction';
 import { MOTIF_GLSL, ROLES_PEINTS } from '../world/architecture';
+import { OPACITE_DU_HALO_DU_FEU } from '../world/monumentModels';
 import type { Lumiere } from './light';
+import { mistTexture } from './meshes';
 
 /** Les trois matériaux de la construction, partagés par ses maillages (le monde, le navire). */
 export interface MateriauxDeConstruction {
   opaque: THREE.MeshLambertMaterial;
   fenetres: THREE.MeshLambertMaterial;
   fantomes: THREE.MeshBasicMaterial;
+  /** Le halo du feu d'un monument fini, la nuit : additif, sans brouillard, fixe (jamais de pulsation). */
+  halo: THREE.SpriteMaterial;
   dispose(): void;
 }
 
@@ -161,12 +165,16 @@ if (vArete > 0.5) {
   };
   fantomes.customProgramCacheKey = () => 'construction-fantomes';
 
+  const degrade = mistTexture();
+  const halo = new THREE.SpriteMaterial({ map: degrade, color: new THREE.Color(LUEUR), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, opacity: 0 });
+
   let jour = 1;
   const regler = () => {
     const o = opaciteDesFantomes(jour);
     remplissage.value = o.remplissage;
     arete.value = o.arete;
     nuit.value = 1 - jour;
+    halo.opacity = Math.min(1, Math.max(0, 1 - jour)) * OPACITE_DU_HALO_DU_FEU;
   };
   regler();
   lumiere?.suivre((j) => {
@@ -178,7 +186,10 @@ if (vArete > 0.5) {
     opaque,
     fenetres,
     fantomes,
+    halo,
     dispose: () => {
+      halo.dispose();
+      degrade?.dispose();
       opaque.dispose();
       fenetres.dispose();
       fantomes.dispose();
@@ -207,7 +218,8 @@ export function creerConstruction(materiaux: MateriauxDeConstruction): Construct
     opaque = null;
     for (const child of [...group.children]) {
       group.remove(child);
-      (child as THREE.Mesh).geometry.dispose();
+      // Un sprite partage la géométrie de Three.js : rien à libérer.
+      if (!(child instanceof THREE.Sprite)) (child as THREE.Mesh).geometry.dispose();
     }
     triangles = 0;
   };
@@ -237,6 +249,21 @@ export function creerConstruction(materiaux: MateriauxDeConstruction): Construct
       ajouter(m.fenetres, materiaux.fenetres, { decalage: [m.fenetres.decalages, 1] }, 'fenetres');
       const f = ajouter(m.fantomes, materiaux.fantomes, { caseUv: [m.fantomes.uvs, 2] }, 'fantomes');
       if (f) f.renderOrder = 1;
+      // Le halo du feu d'un monument fini : un sprite par feu, après les fantômes (transparents eux aussi).
+      for (const q of m.monuments ?? []) {
+        if (!q.halo) continue;
+        const sprite = new THREE.Sprite(materiaux.halo);
+        sprite.position.set(...q.halo.centre);
+        sprite.scale.set(q.halo.cote, q.halo.cote, 1);
+        sprite.updateMatrix();
+        sprite.matrixAutoUpdate = false;
+        sprite.renderOrder = 2;
+        sprite.userData = { construction: true, groupe: 'halo' };
+        // Une lueur ne se touche pas : le toucher va au monument dessous.
+        sprite.raycast = () => {};
+        triangles += 2;
+        group.add(sprite);
+      }
     },
     triangles: () => triangles,
     opaque: () => opaque,

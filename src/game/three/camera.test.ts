@@ -8,15 +8,24 @@ import { repereDeLaVue } from '../world/framing';
 import { GRAND_PHARE_3E } from '../world/decor/3e';
 import { PHARE, PHARES } from '../world/decor/lighthouse';
 import { islandDef, landBox, mapOf } from '../world/map';
+import { chooseIsland } from '../world/arrangeMode';
+import { arrangeView } from '../world/arrangeView';
+import { COTE_DU_RADEAU, ecartVersLaPlace, placerALEchelle, POIGNEE_MIN_PX } from '../world/arrangeHandles';
+import { toutConstruit } from '../world/budget';
 import { BRIDGES, linkWholeRegion, VOYAGES } from '../world/archipelago';
 import { ARCHIPELAGO_IDS } from '../world/archipelagos';
 import { neighboursOf } from '../world/linkGeometry';
 import { archipelagoOfIsland } from '../world/archipelagos';
 import { dispositionEnGrille } from '../world/grid';
 import { placeLibre, type Rect } from '../freeSpace';
-import { avatarRoute, bridgePath, cadreDeLaLiaison, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
+import { avatarRoute, bornesDansLeMonde, bridgePath, ETAGES_DE_LA_BORNE, cadreDeLaLiaison, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
 import { getBridge } from '../world/archipelago';
-import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera';
+import { AUTOUR_DE_LA_DESTINATION, BORNES_AU_TELEPHONE, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera';
+import { boitesDesBornes, cadrerLesBornes, type InterfaceDeLaVue, ZOOM_DE_LA_CARTE } from './camera/framings';
+import { RESERVE_DU_BAS } from '../freeSpace';
+import { placerEtiquettes, replierLesSignes } from '../world/labelLayout';
+import { HAUTEUR_DES_NOMS } from '../world/terrain';
+import { SIGNE } from '../world/affordance';
 import type { Derniers, Instant, Monde } from './scenePart';
 
 /** La scène de la tablette de référence (1024 × 768, moins la barre du haut) ; la vue d'une île, à gauche du panneau. */
@@ -61,8 +70,12 @@ function dansLeCadre(cam: THREE.Camera, t: { w: number; h: number }, marge: numb
 describe('Le cadrage des grands repères', () => {
   it('le grand phare est le repère de son île et de la vue de l’archipel depuis ses voisines, pas au-delà', () => {
     expect(repereDeLaVue('maths-3e-functions', null)).toBe(R);
-    for (const zone of ['maths-3e-functions', 'maths-3e-geometry', 'maths-3e-statistics', 'french-3e-close-reading'] as BiomeId[]) expect(repereDeLaVue(null, zone), zone).toBe(R);
-    for (const zone of ['english-3e-comprehension', 'english-3e-grammar', 'french-6e-phonology', 'maths-4e-algebra'] as BiomeId[]) expect(repereDeLaVue(null, zone), zone).toBeNull();
+    // Ses voisines depuis une forme par île (GD-12) : le Belvédère, les deux observatoires, le Château des hypothèses et
+    // le Verger de la santé ; pas le Refuge des carnets, le Kiosque des témoins ni le Studio des ondes, plus loin depuis
+    // que les îles du Ciel s'écartent de huit cases (relecture du 9 octobre 2026).
+    for (const zone of ['maths-3e-functions', 'maths-3e-geometry', 'maths-3e-statistics', 'french-3e-close-reading', 'english-3e-grammar', 'life-earth-sciences-3e-human-body'] as BiomeId[])
+      expect(repereDeLaVue(null, zone), zone).toBe(R);
+    for (const zone of ['lv2-3e-travel', 'history-3e-twentieth-century', 'english-3e-comprehension', 'french-6e-phonology', 'maths-4e-algebra'] as BiomeId[]) expect(repereDeLaVue(null, zone), zone).toBeNull();
     expect(repereDeLaVue('french-3e-close-reading', null)).toBeNull();
   });
 
@@ -136,6 +149,109 @@ describe('La Carte dans la place libre (DA-31)', () => {
     }
   });
 
+  it('à l’ouverture, la Carte cadre les lieux d’aujourd’hui, plus près que le cadre de la région ; « Modifier le plan » garde le cadre entier (GD-11, consultant UX UI)', () => {
+    const libre = { x0: 0, y0: 0, x1: T.w, y1: T.h - 64 };
+    for (const a of ARCHIPELAGO_IDS) {
+      const dest = mapOf(a)[1].id;
+      const lieux = cadrageDeLaCarte(a, dest, T.w, T.h, libre);
+      const region = cadrageDeLaCarte(a, dest, T.w, T.h, libre, { region: true });
+      expect(lieux.echelle, a).toBeGreaterThan(region.echelle);
+      // Le cadre de la région, ses quatre coins dans la place libre : les places libres s'y voient toutes.
+      const b = worldBounds(a);
+      const altitude = mapOf(a)[0].altitude;
+      for (const [x, y] of [[b.minX, b.minY], [b.maxX, b.minY], [b.minX, b.maxY], [b.maxX, b.maxY]]) {
+        const p = vu(region, T, x, altitude, y);
+        expect(p.x >= libre.x0 && p.x <= libre.x1 && p.y >= libre.y0 && p.y <= libre.y1, `${a} (${x}, ${y})`).toBe(true);
+      }
+    }
+  });
+
+  it('« Modifier le plan » garde le cadre entier, quelle que soit la destination, sous la phrase de la place (GD-12, relecture UX UI)', () => {
+    // La tablette, la phrase de la place en haut, Menu et bonhomme contournés à droite, Annuler et Valider en bas.
+    const V = { w: 1024, h: 768 };
+    const libre = { x0: 0, y0: 88, x1: 960, y1: 698 };
+    for (const a of ARCHIPELAGO_IDS)
+      for (const def of mapOf(a)) {
+        const c = cadrageDeLaCarte(a, def.id, V.w, V.h, libre, { region: true });
+        expect(c.auPlancher, `${a} ${def.id}`).toBe(false);
+        const b = worldBounds(a);
+        for (const [x, y] of [[b.minX, b.minY], [b.maxX, b.minY], [b.minX, b.maxY], [b.maxX, b.maxY]]) {
+          const p = vu(c, V, x, def.altitude, y);
+          expect(p.x >= libre.x0 && p.x <= libre.x1 && p.y >= libre.y0 && p.y <= libre.y1, `${a} ${def.id} (${x}, ${y})`).toBe(true);
+        }
+      }
+  });
+
+  it('« Modifier le plan » : un lieu choisi, son radeau « Tourner » tient dans la place, ou la Carte glisse de peu, le cadre de la région à l’écran (GD-12, relecture UX UI)', () => {
+    // La Carte se juge à sa place visée (three/arrange.ts) : choisi pendant son glissé vers le cadre de la région, le
+    // Bassin des maquettes (au coin du fond du 4e) se posait au milieu de la place, et la Source des espèces sortait au
+    // coin opposé. Le radeau à l'échelle que lui donne la vue (three/arrangeHandles.ts, `echelleVoulue`).
+    const V = { w: 1024, h: 768 };
+    const { world } = toutConstruit();
+    const ecart = { x: 0, y: 0 };
+    for (const libre of [{ x0: 0, y0: 88, x1: 960, y1: 698 }, { x0: 0, y0: 88, x1: 1024, y1: 700 }])
+      for (const a of ARCHIPELAGO_IDS) {
+        const c = cadrageDeLaCarte(a, null, V.w, V.h, libre, { region: true });
+        const cam = new THREE.PerspectiveCamera(40, V.w / V.h, 0.5, 1e5);
+        cam.position.copy(c.pos);
+        cam.lookAt(c.target);
+        cam.updateMatrixWorld();
+        const regard = cam.getWorldDirection(new THREE.Vector3());
+        for (const def of mapOf(a)) {
+          const choix = chooseIsland(world, def.id);
+          const p = choix && arrangeView(world, choix).poignees;
+          if (!p?.liste.length) continue;
+          const profondeur = new THREE.Vector3(p.cx, p.z, p.cy).sub(cam.position).dot(regard);
+          const parPixel = (2 * profondeur * Math.tan(THREE.MathUtils.degToRad(cam.fov) / 2)) / V.h;
+          const s = Math.max(1, (POIGNEE_MIN_PX * parPixel) / (COTE_DU_RADEAU * Math.max(0.5, Math.abs(regard.y))));
+          const centres = new Float32Array(2 * p.liste.length);
+          placerALEchelle(p, s, centres);
+          const d = (COTE_DU_RADEAU / 2) * s;
+          const ici = new Float32Array(5 * p.liste.length);
+          p.liste.forEach((_, k) => {
+            const coins = [-d, d].flatMap((dx) => [-d, d].map((dy) => vu(c, V, centres[2 * k] + dx, p.z, centres[2 * k + 1] + dy)));
+            const x0 = Math.min(...coins.map((q) => q.x));
+            const x1 = Math.max(...coins.map((q) => q.x));
+            const y0 = Math.min(...coins.map((q) => q.y));
+            const y1 = Math.max(...coins.map((q) => q.y));
+            ici.set([k, (x0 + x1) / 2, (y0 + y1) / 2, x1 - x0, y1 - y0], 5 * k);
+          });
+          ecartVersLaPlace(ici, p.liste.length, libre, 4, ecart);
+          expect(Math.hypot(ecart.x, ecart.y), `${a} ${def.id}`).toBeLessThanOrEqual(24);
+          // La Carte glissée d'autant : les quatre coins du cadre de la région restent à l'écran.
+          const b = worldBounds(a);
+          for (const [x, y] of [[b.minX, b.minY], [b.maxX, b.minY], [b.minX, b.maxY], [b.maxX, b.maxY]]) {
+            const q = vu(c, V, x, def.altitude, y);
+            expect(q.x + ecart.x >= 0 && q.x + ecart.x <= V.w && q.y + ecart.y >= 0 && q.y + ecart.y <= V.h, `${a} ${def.id} (${x}, ${y})`).toBe(true);
+          }
+        }
+      }
+  });
+
+  it('au plancher, l’île du bonhomme hors de la place y entre avec la destination quand les deux y tiennent ; sinon, la destination seule (GD-11, consultant UX UI)', () => {
+    // La tablette, panneau ouvert : au plancher dans chaque classe.
+    const libre = { x0: 0, y0: 250, x1: 1024, y1: 578 };
+    const A = AUTOUR_DE_LA_DESTINATION;
+    let cadrees = 0;
+    for (const a of ARCHIPELAGO_IDS)
+      for (const dest of mapOf(a).map((d) => d.id))
+        for (const bonhomme of mapOf(a).map((d) => d.id)) {
+          const seule = cadrageDeLaCarte(a, dest, T.w, T.h, libre);
+          expect(seule.auPlancher, a).toBe(true);
+          const avec = cadrageDeLaCarte(a, dest, T.w, T.h, libre, { bonhomme });
+          const ici = centre(bonhomme, seule, T);
+          const d = centre(dest, seule, T);
+          const horsDeLaPlace = ici.x < libre.x0 || ici.x > libre.x1 || ici.y < libre.y0 || ici.y > libre.y1;
+          const ensemble = Math.max(d.x, ici.x) - Math.min(d.x, ici.x) + 2 * A.cote <= libre.x1 - libre.x0 - 24 && Math.max(d.y, ici.y) - Math.min(d.y, ici.y) + A.haut + A.bas <= libre.y1 - libre.y0 - 24;
+          if (horsDeLaPlace && ensemble) {
+            cadrees++;
+            expect(dedans(centre(dest, avec, T), libre), `${dest}, bonhomme sur ${bonhomme}`).toBe(true);
+            expect(dedans(centre(bonhomme, avec, T), libre), `${bonhomme} avec ${dest}`).toBe(true);
+          } else if (!horsDeLaPlace) expect(avec.target.distanceTo(seule.target), `${dest}, bonhomme sur ${bonhomme}`).toBeLessThan(1e-6);
+        }
+    expect(cadrees).toBeGreaterThan(0);
+  });
+
   it('la flèche posée sur un ouvrage (GD-7) : sa pointe reste dans la place libre, au large comme serré', () => {
     // Les liaisons posées de la partie : depuis GD-9, une liaison qui ne tient pas n'a ni tracé ni flèche.
     const posees = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => linkWholeRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];
@@ -172,7 +288,10 @@ describe('La Carte dans la place libre (DA-31)', () => {
       const d0 = islandDef(dest);
       // Les voisines : celles qu'un pont relie (GD-9, `neighboursOf`), à moins de 45 cases. Elles restent à l'écran ; aux
       // Anciens Ateliers, dessinés en deux rangs (GD-9), une voisine du rang d'en face sort de la place libre.
-      for (const def of mapOf('4e').filter((d) => neighboursOf(dest).includes(d.id) && Math.hypot(d.core.x - d0.core.x, d.core.y - d0.core.y) < 45)) {
+      // Depuis HG-3, un troisième rang (l'Imprimerie et l'Escale, 16 cases au sud du deuxième) : l'Atelier et l'Escale, à 44
+      // cases l'un de l'autre du nord au sud, ne tiennent pas ensemble dans cette place de 180 px ; seules les voisines à
+      // moins de 40 cases du nord au sud (toutes celles d'avant, 28 au plus) s'y vérifient.
+      for (const def of mapOf('4e').filter((d) => neighboursOf(dest).includes(d.id) && Math.hypot(d.core.x - d0.core.x, d.core.y - d0.core.y) < 45 && Math.abs(d.core.y - d0.core.y) < 40)) {
         const q = centre(def.id, c, T);
         // Les Anciens Ateliers sont dessinés en deux rangs (GD-9) : une voisine du rang d'en face déborde la place
         // libre d'une demi-île (une trentaine de pixels au plancher), en haut comme en bas.
@@ -260,7 +379,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     }
   });
 
-  it('la Carte se zoome : de son cadrage d’ouverture jusqu’à une île en gros plan, le point visé reste sous le doigt ; la Carte refermée l’efface', () => {
+  it('la Carte se zoome : de son cadrage d’ouverture jusqu’à deux îles environ, le point visé reste sous le doigt ; la Carte refermée l’efface', () => {
     const b = worldBounds('6e');
     const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200, liaisons: () => [] };
     const camera = new THREE.PerspectiveCamera(40, T.w / T.h, 0.5, 2000);
@@ -293,11 +412,11 @@ describe('La Carte dans la place libre (DA-31)', () => {
     // L'image suivante garde le zoom.
     cam.animer!(0.1, 0.016, true);
     expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d0 / 2, 3);
-    // Au plus près, une île (22 cases) remplit les deux tiers du petit côté de la place libre, pas plus.
+    // Au plus près, une île (22 cases) remplit la moitié du petit côté de la place libre, pas plus : deux îles environ.
     cam.zoomer(1000, { x: 0, y: 0 });
     cam.animer!(0.2, 0.016, true);
     const echelle = T.h / (2 * camera.position.distanceTo(cam.cible) * Math.tan((40 * Math.PI) / 360));
-    expect(22 * echelle).toBeCloseTo((2 / 3) * (libre.y1 - libre.y0), 0);
+    expect(22 * echelle).toBeCloseTo(ZOOM_DE_LA_CARTE.ile * (libre.y1 - libre.y0), 0);
     // « Recentrer » revient au cadrage d'ouverture.
     cam.recentrer();
     cam.animer!(0.3, 0.016, true);
@@ -335,6 +454,8 @@ describe('La Carte dans la place libre (DA-31)', () => {
     cam.zoomer(1e-3, { x: 0, y: 0 });
     cam.animer!(0.2, 0.016, true);
     expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d0 / ZOOM_DU_MONDE.loin, 3);
+    // Vu de plus loin, la brume recule d'autant que la caméra.
+    expect(instant.recul).toBeCloseTo(d0 / ZOOM_DU_MONDE.loin - d0, 3);
     // Une autre île : le décalage s'efface, le zoom reste.
     cam.zoomer(2, { x: 0, y: 0 });
     derniers.current = { ...derniers.current, focus: { island: 'french-6e-grammar-spelling', seq: 2 } };
@@ -359,6 +480,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     cam.recentrer(true);
     cam.animer!(0.5, 0.016, true);
     expect(cam.decale()).toBe(false);
+    expect(instant.recul).toBe(0);
     expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d1 * (2 * ZOOM_DU_MONDE.loin), 3);
   });
 
@@ -464,9 +586,10 @@ describe('Une longue traversée (GD-7)', () => {
   });
 
   it('le cadre fixe se pose dans la place libre, hors du panneau d’île ouvert et des barres : paysage et portrait 800 × 1280', () => {
-    // De la Plaine à la Carrière par le long bac du port (109 cases), panneau de la Carrière ouvert.
-    const liens = ['maths-6e-calculation-french-6e-word-spelling'];
-    const route = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', liens)!;
+    // De la Plaine à la Fouille des siècles par le long bac du port (118 cases), panneau de la Fouille ouvert (la Carrière,
+    // à 67 cases depuis que les îles ont grandi, GD-11, était l'exemple jusque-là).
+    const liens = ['maths-6e-calculation-history-6e-antiquity'];
+    const route = avatarRoute('maths-6e-calculation', 'history-6e-antiquity', liens)!;
     const cadre = cadreDeTraversee('6e', liens, route)!;
     expect(cadre).not.toBeNull();
     const b = worldBounds('6e');
@@ -516,10 +639,12 @@ describe('Une longue traversée (GD-7)', () => {
     }
   });
 
-  it('le cadre fixe seulement à une taille lisible : gardé en 1024 × 768 et 800 × 1280 (et au Phare, 3e), la caméra suit le bonhomme en 390 × 844', () => {
-    const liens = ['maths-6e-calculation-french-6e-word-spelling', 'maths-3e-functions-english-3e-grammar'];
+  it('le cadre fixe seulement à une taille lisible : gardé en 1024 × 768 et 800 × 1280 (et aux Îles du Ciel, 3e), la caméra suit le bonhomme en 390 × 844', () => {
+    // Aux Îles du Ciel, depuis une forme par île (GD-12), plus aucune liaison du Phare ne fait une longue traversée : celle
+    // du Belvédère au Château des hypothèses longe le Phare, sur le rang de devant.
+    const liens = ['maths-6e-calculation-french-6e-word-spelling', 'maths-3e-geometry-english-3e-grammar'];
     const port = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', liens)!;
-    const phare = avatarRoute('maths-3e-functions', 'english-3e-grammar', liens)!;
+    const phare = avatarRoute('maths-3e-geometry', 'english-3e-grammar', liens)!;
     // La vue entière, panneau fermé (il attend l'arrivée), sous la barre du haut (80 px).
     const cas = [
       { nom: '6e, 1024 × 768', archipel: '6e' as const, route: port, w: 1024, h: 688, fixe: true },
@@ -578,4 +703,168 @@ it('le recadrage d’une fiche (lot 2 de « Toucher le monde ») : un glissement
   // Visé au-dessus de l'horizon (le ciel) : rien ne bouge.
   cam.lookAt(20, 40, 30);
   expect(decalagePourViser(cam, objet, { x: 0, y: 0.5 }, new THREE.Vector3()).length()).toBe(0);
+});
+
+// Les bornes au téléphone (GD-14, consultant UX UI) : sur les îles-écoles à cinq places (x = 0 à 16), la borne de la
+// mission 1 sortait par le bord droit de l'écran en portrait. La caméra glisse de côté, ou recule, juste ce qu'il faut ;
+// la tablette garde son cadrage. Sans WebGL : on projette les bornes avec la caméra calculée.
+describe('Les bornes au téléphone en portrait (GD-14)', () => {
+  /** Une vue de téléphone en portrait : sa taille, et ce que l'interface y pose (lu dans la page, WorldCanvas.tsx). */
+  type Telephone = { w: number; h: number; ui: InterfaceDeLaVue; nom: string };
+  /**
+   * La caméra de la vue de l'île (`island`) ou du bonhomme posé sur `home`, dans une vue `t` dont la caméra connaît la
+   * taille et l'interface.
+   */
+  function cadrer(habillage: Habillage, t: { w: number; h: number; ui?: InterfaceDeLaVue }, island: BiomeId | null, home: BiomeId): THREE.PerspectiveCamera {
+    const a = archipelagoOfIsland(home);
+    const b = worldBounds(a);
+    const monde: Monde = { scene: new THREE.Scene(), archipel: a, habillage, surface: null, etendue: b, centre: { x: (b.minX + b.maxX) / 2, y: (b.minY + b.maxY) / 2 }, largeur: Math.max(b.maxX - b.minX, b.maxY - b.minY), liaisons: () => [] };
+    const camera = new THREE.PerspectiveCamera(40, t.w / t.h, 0.5, 2000);
+    const focus = { island, seq: 0 } as unknown as Derniers['focus'];
+    const derniers = { current: { carte: false, focus, home, forceDay: true, sons: false } as unknown as Derniers };
+    const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+    const lecture = { place: () => ({ libre: { x0: 0, y0: 0, x1: t.w, y1: t.h }, w: t.w, h: t.h, saut: false }), destination: () => null, vue: t };
+    creerCamera(monde, camera, new THREE.Object3D(), derniers, instant, lecture).cadrer(focus, false, home);
+    camera.updateMatrixWorld();
+    return camera;
+  }
+  /**
+   * Le plus petit écart, en pixels CSS, entre une borne de `id` (sa bulle la plus grande, son pied) et ce qu'elle ne doit
+   * pas passer : la marge des bords, la barre du bas, les boutons du haut qu'elle croise. Négatif : elle déborde.
+   */
+  function jeu(cam: THREE.Camera, t: Telephone, id: BiomeId): number {
+    const B = BORNES_AU_TELEPHONE;
+    let min = Infinity;
+    for (const b of bornesDansLeMonde(id)) {
+      const pointe = ecran(cam, t, b.x, b.sommet + SIGNE.auDessus, b.y);
+      const pied = ecran(cam, t, b.x, b.sommet - ETAGES_DE_LA_BORNE.ardoise, b.y);
+      const haut = pointe.y - B.hautBulle;
+      // La bulle ne touche aucun bouton, à la marge près.
+      for (const o of t.ui.boutons) {
+        const cote = Math.max(o.x - o.w / 2 - (pointe.x + B.demiBulle), pointe.x - B.demiBulle - (o.x + o.w / 2));
+        const dessous = haut - (o.y + o.h / 2);
+        min = Math.min(min, Math.max(cote, dessous) - B.marge);
+      }
+      min = Math.min(min, pointe.x - B.demiBulle - B.marge, t.w - B.marge - (pointe.x + B.demiBulle), haut - B.marge, t.h - Math.max(RESERVE_DU_BAS, t.ui.barre) - B.marge - pied.y);
+    }
+    return min;
+  }
+  /**
+   * Les boutons du haut, relevés dans la page (global.css, `.world-menu-button`, `.world-archipel`) : en texte normal, Menu
+   * (52 px) dans le coin et la colonne des quatre classes dessous (jusqu'à 290 px, 82 px pour « ✓ 3e ») ; en grand texte au
+   * téléphone, la rangée des classes en haut, sur deux lignes (OpenDyslexic, plus large), à gauche de Menu, et la barre
+   * du bas sur deux lignes.
+   */
+  const colonne = (w: number): InterfaceDeLaVue => ({
+    boutons: [
+      { x: w - 12 - 26, y: 12 + 26, w: 52, h: 52 },
+      { x: w - 12 - 41, y: 74 + 108, w: 82, h: 216 },
+    ],
+    barre: 72,
+  });
+  const rangee = (w: number): InterfaceDeLaVue => ({
+    boutons: [
+      { x: w - 12 - 26, y: 12 + 26, w: 52, h: 52 },
+      { x: (12 + (w - 74)) / 2, y: 12 + 62, w: w - 86, h: 124 },
+    ],
+    barre: 140,
+  });
+  const ECOLES = ['maths-5e-proportionality', 'maths-4e-algebra', 'maths-3e-functions'] as BiomeId[];
+  const TELEPHONES: Telephone[] = [
+    { w: 390, h: 844, ui: colonne(390), nom: '390 × 844' },
+    { w: 360, h: 740, ui: colonne(360), nom: '360 × 740' },
+    { w: 390, h: 844, ui: rangee(390), nom: '390 × 844, grand texte' },
+  ];
+
+  it('le nom de l’île ne se pose sur aucune borne ni sur sa bulle : au Phare des fonctions, au téléphone, il en couvrait une (référent dys, consultant UX UI)', () => {
+    // L'étiquette telle que la pose three/labels.ts : au-dessus du milieu du cœur, à `HAUTEUR_DES_NOMS` ; sa taille, celle
+    // que mesure la recherche des Gardiens (18 px, 0,65 em par lettre, le bloc et le bord).
+    const id: BiomeId = 'maths-3e-functions';
+    const nom = 'Phare des fonctions';
+    let montres = 0;
+    for (const t of TELEPHONES)
+      for (const u of ['blocland', 'archipeo'] as const) {
+        const cam = cadrer(HABILLAGES[u], t, id, id);
+        const c = islandCenter(id);
+        const p = ecran(cam, t, c.x + 0.5, c.z + HAUTEUR_DES_NOMS, c.y + 0.5);
+        const ile = ecran(cam, t, c.x + 0.5, c.z, c.y + 0.5);
+        const box = { x: p.x, y: p.y, w: 18 * (nom.length * 0.65 + 2.4) + 4, h: 18 * 1.7 + 4 };
+        const zones = [...t.ui.boutons, { x: t.w / 2, y: t.h - t.ui.barre / 2, w: t.w, h: t.ui.barre }];
+        const bornes = boitesDesBornes(cam, t.w, t.h, [id]);
+        expect(bornes.length, `${u}, ${t.nom}`).toBe(5);
+        const vue = { zones, bulles: [], obstacles: bornes, bounds: { w: t.w, h: t.h }, gap: 6 };
+        // Comme three/labels.ts : sans place, le nom essaie sans son bloc, plus étroit.
+        const etroite = [box.w - 18 * 1.2];
+        const r = replierLesSignes([box], etroite, (b) => placerEtiquettes(b, [ile], vue, null, [0]));
+        // Le nom ne se tait pas pour les bornes : visible sans elles, il l'est avec.
+        const sans = replierLesSignes([box], etroite, (b) => placerEtiquettes(b, [ile], { ...vue, obstacles: [] }, null, [0]));
+        expect(r.visibles[0], `${u}, ${t.nom}, visible`).toBe(sans.visibles[0]);
+        if (!r.visibles[0]) continue;
+        montres++;
+        const pose = { ...box, w: r.sansSigne[0] ? etroite[0] : box.w, x: box.x + r.offsets[0].dx, y: box.y + r.offsets[0].dy };
+        const recouvre = bornes.filter((b) => Math.abs(b.x - pose.x) < (b.w + pose.w) / 2 && Math.abs(b.y - pose.y) < (b.h + pose.h) / 2);
+        expect(recouvre, `${u}, ${t.nom}`).toEqual([]);
+      }
+    expect(montres).toBeGreaterThan(0);
+  });
+
+  it('les îles-écoles du 5e au 3e : leurs bornes à 0, 4, 8, 12 et 16, comme sur les captures', () => {
+    for (const id of ECOLES) {
+      const xs = bornesDansLeMonde(id).map((b) => b.x - bornesDansLeMonde(id)[0].x);
+      expect(xs, id).toEqual([0, 4, 8, 12, 16]);
+    }
+  });
+
+  it.each(Object.keys(HABILLAGES) as (keyof typeof HABILLAGES)[])('%s : chaque borne et sa bulle tiennent dans la vue, à 24 px des bords, sous les boutons du haut lus dans la page et au-dessus de la barre du bas', (u) => {
+    for (const id of ECOLES)
+      for (const t of TELEPHONES)
+        for (const island of [id, null]) {
+          const vue = island ? 'vue de l’île' : 'bonhomme posé';
+          const marge = jeu(cadrer(HABILLAGES[u], t, island, id), t, id);
+          expect(marge, `${id}, ${vue}, ${t.nom}`).toBeGreaterThanOrEqual(-0.5);
+        }
+  });
+
+  it('juste ce qu’il faut : dans la vue de l’île du Marché, la borne la plus serrée est à la marge, pas plus loin', () => {
+    const t = TELEPHONES[0];
+    for (const u of ['blocland', 'archipeo'] as const) {
+      const marge = jeu(cadrer(HABILLAGES[u], t, 'maths-5e-proportionality', 'maths-5e-proportionality'), t, 'maths-5e-proportionality');
+      expect(marge, u).toBeGreaterThanOrEqual(-0.5);
+      expect(marge, u).toBeLessThan(1);
+    }
+  });
+
+  it('la tablette garde son cadrage : en paysage, panneau ouvert ou en portrait, rien ne glisse ni ne recule', () => {
+    const target = new THREE.Vector3(10, 4, 10);
+    const pos = new THREE.Vector3(30, 30, -10);
+    const bornes = bornesDansLeMonde('maths-5e-proportionality');
+    for (const [w, h] of [[1024, 688], [1024, 768], [1280, 800], [505, 688], [768, 1024], [844, 390]]) {
+      const r = cadrerLesBornes(target, pos, bornes, w, h, 40);
+      expect(r.glisse.length(), `${w} × ${h}`).toBe(0);
+      expect(r.recul, `${w} × ${h}`).toBe(1);
+    }
+    // Les bornes y tiennent déjà : à la tablette de référence, en paysage, la vue de l'île les montre entières.
+    for (const u of ['blocland', 'archipeo'] as const)
+      for (const id of ECOLES) {
+        const t = { w: 1024, h: 688 };
+        const cam = cadrer(HABILLAGES[u], t, id, id);
+        for (const b of bornesDansLeMonde(id)) {
+          const p = ecran(cam, t, b.x, b.sommet + SIGNE.auDessus, b.y);
+          expect(p.x > BORNES_AU_TELEPHONE.demiBulle && p.x < t.w - BORNES_AU_TELEPHONE.demiBulle && p.y < t.h - RESERVE_DU_BAS, `${u} ${id}`).toBe(true);
+        }
+      }
+  });
+
+  it('au téléphone, ni le nord ni la direction de vue ne changent : la caméra glisse à plat et recule seulement', () => {
+    const t = TELEPHONES[0];
+    const cam = cadrer(HABILLAGES.blocland, t, 'maths-5e-proportionality', 'maths-5e-proportionality');
+    const c = islandCenter('maths-5e-proportionality');
+    const r = cadrerLesBornes(new THREE.Vector3(c.x, c.z + 1, c.y), new THREE.Vector3(c.x + 30, c.z + 40, c.y - 30), bornesDansLeMonde('maths-5e-proportionality'), t.w, t.h, 40);
+    expect(r.glisse.y).toBeCloseTo(0, 9);
+    expect(r.recul).toBeGreaterThanOrEqual(1);
+    // La vue de l'île garde la direction de celle de la tablette, qui ne glisse pas.
+    const d = cam.getWorldDirection(new THREE.Vector3());
+    const tablette = cadrer(HABILLAGES.blocland, { w: 1024, h: 688 }, 'maths-5e-proportionality', 'maths-5e-proportionality').getWorldDirection(new THREE.Vector3());
+    expect(d.angleTo(tablette)).toBeLessThan(1e-6);
+  });
 });

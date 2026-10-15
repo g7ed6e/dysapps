@@ -1,0 +1,375 @@
+{
+  "id": "maths-3e-geometry-scaling-1",
+  "biome": "maths-3e-geometry",
+  "type": "scaling",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-3e-geometry-scaling-1-0",
+      "prompt": "Un triangle est agrandi de rapport 3. Un côté de 4 cm devient …",
+      "spoken": "Un triangle est agrandi de rapport 3. Un côté de 4 centimètres devient (mot manquant)",
+      "choices": [
+        "1 cm",
+        "7 cm",
+        "12 cm"
+      ],
+      "answer": "12 cm",
+      "hint": "Une longueur est multipliée par le rapport.",
+      "explanation": "Les longueurs sont multipliées par 3 : 4 × 3 = 12 cm. 7 cm, c’est 4 + 3 : on multiplie, on n’ajoute pas. 1 cm, c’est 4 − 3 : un agrandissement ne rapetisse pas.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "figure (cm)",
+            "image (cm)"
+          ],
+          "rows": [
+            [
+              1,
+              3
+            ],
+            [
+              4,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agrandir ou réduire de rapport k",
+          "lines": [
+            "k plus grand que 1 : agrandissement. k entre 0 et 1 : réduction.",
+            "Les longueurs sont multipliées par k.",
+            "Les angles ne changent pas.",
+            "Les aires sont multipliées par k × k.",
+            "Les volumes sont multipliés par k × k × k.",
+            "Carte à l’échelle 1 / n : 1 cm sur la carte, c’est n cm en vrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-scaling-1-1",
+      "prompt": "On agrandit une figure de rapport 2. Un angle de 40° devient …",
+      "spoken": "On agrandit une figure de rapport 2. Un angle de 40 degrés devient (mot manquant)",
+      "choices": [
+        "20°",
+        "40°",
+        "80°"
+      ],
+      "answer": "40°",
+      "hint": "La figure grandit, mais garde-t-elle la même forme ?",
+      "explanation": "Un agrandissement garde la forme : les angles ne changent pas, l’angle mesure toujours 40°. 80°, c’est multiplier par 2, ce qui vaut pour une longueur. 20°, c’est diviser par 2 : les angles ne changent ni dans un agrandissement, ni dans une réduction.",
+      "figure": {
+        "kind": "transformation",
+        "props": {
+          "transform": "dilation",
+          "amount": 2,
+          "angles": [
+            40,
+            "?"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agrandir ou réduire de rapport k",
+          "lines": [
+            "k plus grand que 1 : agrandissement. k entre 0 et 1 : réduction.",
+            "Les longueurs sont multipliées par k.",
+            "Les angles ne changent pas.",
+            "Les aires sont multipliées par k × k.",
+            "Les volumes sont multipliés par k × k × k.",
+            "Carte à l’échelle 1 / n : 1 cm sur la carte, c’est n cm en vrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-scaling-1-2",
+      "prompt": "Une figure de 5 cm² est agrandie de rapport 2. Son aire devient …",
+      "spoken": "Une figure de 5 centimètres carrés est agrandie de rapport 2. Son aire devient (mot manquant)",
+      "choices": [
+        "7 cm²",
+        "10 cm²",
+        "20 cm²"
+      ],
+      "answer": "20 cm²",
+      "hint": "Une aire est multipliée par le rapport, deux fois.",
+      "explanation": "L’aire est multipliée par 2 × 2 = 4 : 5 × 4 = 20 cm². 10 cm², c’est multiplier par 2 seulement, comme une longueur. 7 cm², c’est 5 + 2 : on multiplie, on n’ajoute pas.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "côté du carré (cm)",
+            "aire (cm²)"
+          ],
+          "rows": [
+            [
+              1,
+              "1 × 1"
+            ],
+            [
+              2,
+              "2 × 2"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agrandir ou réduire de rapport k",
+          "lines": [
+            "k plus grand que 1 : agrandissement. k entre 0 et 1 : réduction.",
+            "Les longueurs sont multipliées par k.",
+            "Les angles ne changent pas.",
+            "Les aires sont multipliées par k × k.",
+            "Les volumes sont multipliés par k × k × k.",
+            "Carte à l’échelle 1 / n : 1 cm sur la carte, c’est n cm en vrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-scaling-1-3",
+      "prompt": "Une boîte de 4 cm³ est agrandie de rapport 2. Son volume devient …",
+      "spoken": "Une boîte de 4 centimètres cubes est agrandie de rapport 2. Son volume devient (mot manquant)",
+      "choices": [
+        "8 cm³",
+        "16 cm³",
+        "32 cm³"
+      ],
+      "answer": "32 cm³",
+      "hint": "Un volume est multiplié par le rapport, trois fois.",
+      "explanation": "Le volume est multiplié par 2 × 2 × 2 = 8 : 4 × 8 = 32 cm³. 8 cm³, c’est multiplier par 2, comme une longueur ; 16 cm³, c’est multiplier par 4, comme une aire.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "arête du cube (cm)",
+            "volume (cm³)"
+          ],
+          "rows": [
+            [
+              1,
+              "1 × 1 × 1"
+            ],
+            [
+              2,
+              "2 × 2 × 2"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agrandir ou réduire de rapport k",
+          "lines": [
+            "k plus grand que 1 : agrandissement. k entre 0 et 1 : réduction.",
+            "Les longueurs sont multipliées par k.",
+            "Les angles ne changent pas.",
+            "Les aires sont multipliées par k × k.",
+            "Les volumes sont multipliés par k × k × k.",
+            "Carte à l’échelle 1 / n : 1 cm sur la carte, c’est n cm en vrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-scaling-1-4",
+      "prompt": "Une maquette de bateau est une réduction de rapport 1/10. Le vrai mât mesure 3 m. Sur la maquette, il mesure …",
+      "spoken": "Une maquette de bateau est une réduction de rapport un dixième. Le vrai mât mesure 3 mètres. Sur la maquette, il mesure (mot manquant)",
+      "choices": [
+        "3 cm",
+        "30 cm",
+        "300 cm"
+      ],
+      "answer": "30 cm",
+      "hint": "Écris 3 mètres en centimètres, puis divise par 10.",
+      "explanation": "3 m = 300 cm, et 300 ÷ 10 = 30 cm. 300 cm, c’est la vraie longueur, sans réduction. 3 cm, c’est diviser par 100 au lieu de 10.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "maquette (cm)",
+            "vrai bateau (cm)"
+          ],
+          "rows": [
+            [
+              1,
+              10
+            ],
+            [
+              "?",
+              300
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agrandir ou réduire de rapport k",
+          "lines": [
+            "k plus grand que 1 : agrandissement. k entre 0 et 1 : réduction.",
+            "Les longueurs sont multipliées par k.",
+            "Les angles ne changent pas.",
+            "Les aires sont multipliées par k × k.",
+            "Les volumes sont multipliés par k × k × k.",
+            "Carte à l’échelle 1 / n : 1 cm sur la carte, c’est n cm en vrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-scaling-1-5",
+      "prompt": "Carte de randonnée\nÉchelle : 1 / 25 000\nSur la carte, le sentier mesure 4 cm.",
+      "question": "Quelle est la vraie longueur du sentier ?",
+      "spoken": "Carte de randonnée. Échelle, 1 sur 25 000. Sur la carte, le sentier mesure 4 centimètres.",
+      "choices": [
+        "1 km",
+        "10 km",
+        "100 km"
+      ],
+      "answer": "1 km",
+      "hint": "Calcule d’abord en centimètres. 1 kilomètre, c’est 100 000 centimètres.",
+      "explanation": "4 × 25 000 = 100 000 cm, et 100 000 cm = 1 000 m = 1 km. 10 km et 100 km viennent d’une erreur de conversion : 100 000 cm, ce n’est ni 10 000 m ni 100 000 m, c’est 1 000 m.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "carte (cm)",
+            "terrain (cm)"
+          ],
+          "rows": [
+            [
+              1,
+              "25 000"
+            ],
+            [
+              4,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agrandir ou réduire de rapport k",
+          "lines": [
+            "k plus grand que 1 : agrandissement. k entre 0 et 1 : réduction.",
+            "Les longueurs sont multipliées par k.",
+            "Les angles ne changent pas.",
+            "Les aires sont multipliées par k × k.",
+            "Les volumes sont multipliés par k × k × k.",
+            "Carte à l’échelle 1 / n : 1 cm sur la carte, c’est n cm en vrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-scaling-1-6",
+      "prompt": "Un rectangle large de 3 cm devient large de 12 cm. Le rapport d’agrandissement est …",
+      "spoken": "Un rectangle large de 3 centimètres devient large de 12 centimètres. Le rapport d’agrandissement est (mot manquant)",
+      "choices": [
+        "4",
+        "9",
+        "36"
+      ],
+      "answer": "4",
+      "hint": "Par combien faut-il multiplier 3 pour obtenir 12 ?",
+      "explanation": "3 × 4 = 12 : le rapport est 4. 9, c’est 12 − 3 : le rapport multiplie, il ne s’ajoute pas. 36, c’est 3 × 12.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 0,
+          "max": 12,
+          "points": [
+            3,
+            12
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agrandir ou réduire de rapport k",
+          "lines": [
+            "k plus grand que 1 : agrandissement. k entre 0 et 1 : réduction.",
+            "Les longueurs sont multipliées par k.",
+            "Les angles ne changent pas.",
+            "Les aires sont multipliées par k × k.",
+            "Les volumes sont multipliés par k × k × k.",
+            "Carte à l’échelle 1 / n : 1 cm sur la carte, c’est n cm en vrai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-geometry-scaling-1-7",
+      "prompt": "Une figure de 60 cm² est réduite de rapport 0,5. Son aire devient …",
+      "spoken": "Une figure de 60 centimètres carrés est réduite de rapport 0,5. Son aire devient (mot manquant)",
+      "choices": [
+        "7,5 cm²",
+        "15 cm²",
+        "30 cm²"
+      ],
+      "answer": "15 cm²",
+      "hint": "Une aire est multipliée par le rapport, deux fois.",
+      "explanation": "L’aire est multipliée par 0,5 × 0,5 = 0,25 : elle est divisée par 4. 60 ÷ 4 = 15 cm². 30 cm², c’est multiplier par 0,5 une seule fois, comme une longueur. 7,5 cm², c’est diviser par 8, comme un volume.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "côté du carré (cm)",
+            "aire (cm²)"
+          ],
+          "rows": [
+            [
+              2,
+              "2 × 2"
+            ],
+            [
+              1,
+              "1 × 1"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Agrandir ou réduire de rapport k",
+          "lines": [
+            "k plus grand que 1 : agrandissement. k entre 0 et 1 : réduction.",
+            "Les longueurs sont multipliées par k.",
+            "Les angles ne changent pas.",
+            "Les aires sont multipliées par k × k.",
+            "Les volumes sont multipliés par k × k × k.",
+            "Carte à l’échelle 1 / n : 1 cm sur la carte, c’est n cm en vrai."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

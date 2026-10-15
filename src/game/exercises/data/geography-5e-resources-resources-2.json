@@ -1,0 +1,230 @@
+{
+  "id": "geography-5e-resources-resources-2",
+  "biome": "geography-5e-resources",
+  "type": "resources",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-5e-resources-resources-2-0",
+      "prompt": "L’électricité produite en France, en 2024\nNucléaire : environ 7 sur 10\nÉnergies renouvelables : environ 3 sur 10\nGaz et charbon : moins de 1 sur 10",
+      "question": "D’où vient la plus grande partie de l’électricité ?",
+      "spoken": "L’électricité produite en France, en deux mille vingt-quatre. Nucléaire : environ sept sur dix. Énergies renouvelables : environ trois sur dix. Gaz et charbon : moins d’un sur dix.",
+      "choices": [
+        "du gaz et du charbon",
+        "du nucléaire",
+        "des énergies renouvelables"
+      ],
+      "answer": "du nucléaire",
+      "hint": "Cherche le plus grand nombre.",
+      "explanation": "Environ 7 sur 10 : la plus grande partie de l’électricité française vient des centrales nucléaires.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Renouvelable : elle se reforme vite, comme le vent.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Compare des nombres de la même sorte."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-2-1",
+      "prompt": "Le pétrole\nIl s’est formé sous la terre, en des millions d’années.\nOn le pompe bien plus vite.",
+      "question": "Pourquoi le pétrole va-t-il manquer ?",
+      "spoken": "Le pétrole. Il s’est formé sous la terre, en des millions d’années. On le pompe bien plus vite.",
+      "choices": [
+        "on l’utilise plus vite qu’il ne se forme",
+        "il s’évapore",
+        "il est interdit"
+      ],
+      "answer": "on l’utilise plus vite qu’il ne se forme",
+      "hint": "Compare la ligne « Il s’est formé » et la ligne « On le pompe ».",
+      "explanation": "Le pétrole se forme très lentement, et on le pompe bien plus vite : il finira par manquer. C’est une ressource non renouvelable.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Renouvelable : elle se reforme vite, comme le vent.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Compare des nombres de la même sorte."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-2-2",
+      "prompt": "Description d’une photo, en Égypte\nLe Nil au milieu du désert\nDes champs verts le long du fleuve\nDes canaux qui partent du fleuve",
+      "question": "Avec quelle eau arrose-t-on ces champs ?",
+      "spoken": "Description d’une photo, en Égypte. Le Nil au milieu du désert. Des champs verts le long du fleuve. Des canaux qui partent du fleuve.",
+      "choices": [
+        "l’eau de pluie",
+        "l’eau de mer",
+        "l’eau du fleuve"
+      ],
+      "answer": "l’eau du fleuve",
+      "hint": "D’où partent les canaux ?",
+      "explanation": "Les canaux amènent l’eau du Nil jusqu’aux champs : c’est l’irrigation. Dans le désert, il ne pleut presque jamais.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Renouvelable : elle se reforme vite, comme le vent.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Compare des nombres de la même sorte."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-2-3",
+      "prompt": "L’eau potable dans le monde, en 2024\nPlus de 2 milliards de personnes\nn’ont pas d’eau potable sûre chez elles.",
+      "question": "Quel problème montre ce document ?",
+      "spoken": "L’eau potable dans le monde, en deux mille vingt-quatre. Plus de deux milliards de personnes n’ont pas d’eau potable sûre chez elles.",
+      "choices": [
+        "le manque de pétrole",
+        "l’accès à l’eau potable",
+        "la pollution de l’air"
+      ],
+      "answer": "l’accès à l’eau potable",
+      "hint": "Quel mot revient deux fois dans le document ?",
+      "explanation": "Des milliards de personnes n’ont pas d’eau potable sûre chez elles : l’accès à l’eau est inégal dans le monde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Renouvelable : elle se reforme vite, comme le vent.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Compare des nombres de la même sorte."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-2-4",
+      "prompt": "La faim dans le monde, en 2024\nEnviron 700 millions de personnes ont faim.\nLa plupart vivent en Asie et en Afrique.",
+      "question": "Où vivent la plupart des personnes qui ont faim ?",
+      "spoken": "La faim dans le monde, en deux mille vingt-quatre. Environ sept cents millions de personnes ont faim. La plupart vivent en Asie et en Afrique.",
+      "choices": [
+        "en Europe",
+        "en Amérique du Nord",
+        "en Asie et en Afrique"
+      ],
+      "answer": "en Asie et en Afrique",
+      "hint": "Relis la ligne qui commence par « La plupart ».",
+      "explanation": "La plupart des personnes qui ont faim vivent en Asie et en Afrique, souvent dans des pays pauvres ou en guerre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Renouvelable : elle se reforme vite, comme le vent.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Compare des nombres de la même sorte."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-2-5",
+      "prompt": "Description d’une photo, en mer du Nord\nDes dizaines d’éoliennes dans la mer\nElles tournent avec le vent.",
+      "question": "Quelle énergie produit-on ici ?",
+      "spoken": "Description d’une photo, en mer du Nord. Des dizaines d’éoliennes dans la mer. Elles tournent avec le vent.",
+      "choices": [
+        "une énergie renouvelable",
+        "une énergie fossile",
+        "de l’énergie nucléaire"
+      ],
+      "answer": "une énergie renouvelable",
+      "hint": "Le vent s’épuise-t-il ?",
+      "explanation": "Les éoliennes produisent de l’électricité avec le vent, qui ne s’épuise pas : c’est une énergie renouvelable.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Renouvelable : elle se reforme vite, comme le vent.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Compare des nombres de la même sorte."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-2-6",
+      "prompt": "Une ville qui économise l’eau\nElle répare les tuyaux qui fuient.\nElle arrose les parcs la nuit, quand l’eau s’évapore moins.",
+      "question": "Que cherche à faire cette ville ?",
+      "spoken": "Une ville qui économise l’eau. Elle répare les tuyaux qui fuient. Elle arrose les parcs la nuit, quand l’eau s’évapore moins.",
+      "choices": [
+        "avoir plus de parcs",
+        "gaspiller moins d’eau",
+        "vendre plus d’eau"
+      ],
+      "answer": "gaspiller moins d’eau",
+      "hint": "Relis la première ligne.",
+      "explanation": "Réparer les fuites, arroser la nuit : la ville gaspille moins d’eau. Elle gère une ressource limitée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Renouvelable : elle se reforme vite, comme le vent.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Compare des nombres de la même sorte."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-2-7",
+      "prompt": "L’eau qu’il faut pour produire 1 kilo\nDe blé : moins de 2 000 litres\nDe bœuf : plus de 15 000 litres",
+      "question": "Lequel demande le plus d’eau ?",
+      "spoken": "L’eau qu’il faut pour produire un kilo. De blé : moins de deux mille litres. De bœuf : plus de quinze mille litres.",
+      "choices": [
+        "autant dans les deux",
+        "le blé",
+        "le bœuf"
+      ],
+      "answer": "le bœuf",
+      "hint": "Cherche le plus grand nombre.",
+      "explanation": "Plus de 15 000 litres pour le bœuf, moins de 2 000 pour le blé : la viande demande bien plus d’eau. Il faut d’abord nourrir l’animal.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit de quoi parle le document.",
+            "Renouvelable : elle se reforme vite, comme le vent.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Compare des nombres de la même sorte."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-5e-resources",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

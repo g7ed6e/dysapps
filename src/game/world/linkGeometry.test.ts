@@ -3,7 +3,7 @@
 // dans la région ; un pont jusqu'à 36 cases, un bac au-delà. Une sauvegarde d'avant garde toutes ses liaisons.
 import { thePlace } from './placeArticle';
 import { describe, expect, it } from 'vitest';
-import { BIOMES, getBiome } from '../biomes';
+import { BIOMES, estLieuDOption, getBiome } from '../biomes';
 import { sanitizeState } from '../engine';
 import { lockedHint } from './goals';
 import { textesDe } from '../../universes';
@@ -147,6 +147,11 @@ describe('relier un lieu fermé', () => {
     // Sur le lieu fermé, tous ses départs possibles.
     const mine = 'french-6e-word-spelling';
     expect(buildableBridges([], mine).map((b) => b.id)).toEqual(linksToIsland(mine, []).map((b) => b.id));
+    // Le plus court d'abord, même quand l'ordre des liaisons du lieu dit autre chose : depuis le trait à sept cases
+    // (GD-12), la Rivière est à 41 cases de la Forêt (un bac), à 18 de la Plaine (un pont) ; sa carte montre le pont.
+    const riviere = 'maths-6e-fractions';
+    expect(buildableBridges([], riviere).map((b) => b.id)).toEqual(linksToIsland(riviere, []).map((b) => b.id));
+    expect(buildableBridges([], riviere)[0]?.id).toBe('maths-6e-calculation-maths-6e-fractions');
   });
 
   it('une liaison qui ne tiendrait pas n’est pas proposée, et ne se pose pas', () => {
@@ -193,7 +198,9 @@ describe('un seul départ pour « Relier », la phrase de l’île pâle et le f
           const depuis = getBiome(otherEnd(depart, ile.id))!.name;
           expect(lockedHint(state, ile.id, NOMS_ARCHIPELS, textesDe('blocland').libelles), ile.id).toContain(`depuis ${thePlace(depuis)} :`);
           expect(remainingPath(ile.id, links)[0]?.id, ile.id).toBe(depart.id);
-          if (getBiome(ile.id)!.subject !== 'lv2') expect(fantomes.has(depart.id), `${ile.id} : ${depart.id}`).toBe(true);
+          // (Pas de fantôme vers un lieu d'option sans son option, GD-13 : la LV2 et le latin-grec ; ni depuis lui :
+          // `linkWholeRegion` relie aussi la Grotte des légendes, qu'une partie sans option n'ouvre jamais.)
+          if (![depart.from, depart.to].some((id) => estLieuDOption(getBiome(id)!))) expect(fantomes.has(depart.id), `${ile.id} : ${depart.id}`).toBe(true);
           for (const autre of linksToIsland(ile.id, links, open).slice(1)) expect(fantomes.has(autre.id), autre.id).toBe(false);
         }
       }
@@ -205,9 +212,9 @@ describe('une sauvegarde d’avant les liaisons posées par l’élève', () => 
     const liaisons = LINKS_BEFORE_GD9.filter((b) => b.cost > 0).map((b) => b.id);
     const avant = [...liaisons, ...VOYAGES.map((v) => v.id)];
     const ouverts = reachableIslands(avant);
-    // Tous les lieux d'avant GD-9 ; les îles d'histoire-géographie et de sciences de 6e, venues après (HG-2, SC-2), restent
-    // à relier.
-    const VENUES_APRES: readonly string[] = ['history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology'];
+    // Tous les lieux d'avant GD-9 ; les îles d'histoire-géographie, de sciences, d'EMC et de latin-grec, venues après
+    // (HG-2, SC-2, EMC-2, LCA-2), restent à relier.
+    const VENUES_APRES: readonly string[] = ['history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'civics', 'lca'];
     for (const b of BIOMES) expect(ouverts.has(b.id), b.id).toBe(!VENUES_APRES.includes(b.subject));
     for (const id of liaisons) {
       const b = getBridge(id)!;

@@ -1,6 +1,6 @@
 # Réglages et accessibilité
 
-La page **Réglages** (dans le menu, bouton Menu à trois traits) s’applique à toute l’application, y compris aux panneaux du village, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Dans chaque liste de choix, l’option choisie a sa case colorée et, dans son rond, un point plein ; les autres ronds sont vides. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
+La page **Réglages** (la roue dentée, en haut à droite du village) s’applique à toute l’application, y compris aux panneaux du village, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Dans chaque liste de choix, l’option choisie a sa case colorée et, dans son rond, un point plein ; les autres ronds sont vides. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
 
 ![La page Réglages : l'aperçu en haut, le choix de la police d'écriture (Luciole, OpenDyslexic, Atkinson Hyperlegible, Arial), la lecture.](/captures/reglages.jpg)
 
@@ -54,9 +54,17 @@ Les mots et les phrases de la LV2 sont lus avec sa voix : espagnole d’Espagne 
 
 Au menu, la LV2 prend le nom de la langue choisie, à côté de l’anglais. Ses missions sont sur l’île de LV2 de chaque archipel, à partir de la 5e : le Relais des voyageurs en 5e, le Jardin des heures en 4e et le Refuge des carnets en 3e (voir [Le monde de Blocland](blocland.md)). La question, la phrase ou le document dans la langue s’écoutent avec le bouton Écouter ; les réponses écrites dans la langue, elles, ne sont pas lues à voix haute.
 
+## Option latin ou grec
+
+Certains collégiens suivent, de la 5e à la 3e, l’option **latin** ou l’option **grec** (langues et cultures de l’Antiquité). Le réglage **Option latin ou grec** propose **Latin**, **Grec** ou **Pas d’option**, le choix par défaut. Il ne dépend pas de la LV2 : un élève peut avoir l’espagnol et le latin, ou pas de LV2 et le grec. Le choix est gardé sur l’appareil et se change à tout moment : ce qui est construit reste, et chaque option garde ses étoiles.
+
+Avec **Pas d’option**, l’option n’apparaît nulle part, et rien dans le jeu n’en dépend. Avec une option, elle prend au menu le nom de l’option choisie (« Latin » ou « Grec »), et ses missions sont sur une île de chaque archipel, de la 5e à la 3e, en bout de chemin, comme la LV2. Ce sont la **Grotte des légendes** en 5e, la **Colonnade des cités** en 4e et le **Bosquet des sages** en 3e (voir [Le monde de Blocland](blocland.md)).
+
+Les mots latins et grecs ne sont jamais découpés en syllabes colorées : ils s’affichent tels quels, et la voix les dit avec une seule prononciation, toujours la même (voir [Principes dys](../pedagogie/principes.md)).
+
 ## Au démarrage
 
-Après l’écran titre, l’appli s’ouvre toujours sur le village, sur l’île où se tient le bonhomme ; le menu est dans le village (bouton Menu, trois traits). Ce n’est plus un réglage. Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le monde, l’appli s’ouvre sur le menu en page.
+Après l’écran titre, l’appli s’ouvre toujours sur le village, sur l’île où se tient le bonhomme ; le village n’a pas de menu : chaque endroit a son bouton sur le monde. Ce n’est plus un réglage. Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le monde, l’appli s’ouvre sur le menu en page.
 
 ## Animations et vue du monde
 
@@ -68,7 +76,7 @@ Après l’écran titre, l’appli s’ouvre toujours sur le village, sur l’î
   Si l’appareil ne sait pas dessiner le monde en 3D (pas de WebGL), l’appli montre la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles », et un ancien choix « Le monde en 2D » redevient « Le monde en 3D ».
 
   Dessous, **La lumière du monde** : deux choix. **L’heure réelle** (par défaut) : la nuit tombe le soir sur le village (crépuscule à 20 h, aube à 7 h, nuit toujours claire). **Toujours le jour** : le village reste en plein jour. Tant que le tutoriel du village n’a pas été vu, c’est le jour, quel que soit ce choix.
-- **Sons dans le village** : les sons d’action (poser, retirer un bloc, partie posée, plan terminé) et ceux du voyage en Bloc-Navire (corne de brume, voile, brûleur, réacteur, carillon d’arrivée).
+- **Sons dans le village** : les sons d’action (poser, retirer un bloc, partie posée, plan terminé) et ceux du voyage de la Nef (corne de brume, voile, brûleur, moteur, carillon d’arrivée).
 - **Ambiance sonore du village** : vent, oiseaux le jour, grillons la nuit ; désactivée par défaut.
 - **Vibrer à la bonne réponse et à la pose d’un bloc** : une vibration très courte, comme dans les jeux ; seulement sur les téléphones Android (Safari ne sait pas vibrer). Activé par défaut.
 - **Pastille sur l’icône de l’appli** : un simple point sur l’icône de l’appli installée quand des révisions attendent aujourd’hui ; pas de nombre, pas de notification. Affiché par Android, les ordinateurs et les iPhone et iPad récents, pour l’appli installée. Activé par défaut.
@@ -80,7 +88,7 @@ Après l’écran titre, l’appli s’ouvre toujours sur le village, sur l’î
 L’univers change le dessin du monde et l’histoire ; la progression reste la même. Deux univers se choisissent :
 
 - **Blocland** (par défaut) : un monde en cubes, où l’élève reconstruit le village bloc par bloc.
-- **Archipéo** : une aventure en mer, où son savoir reconstruit l’archipel.
+- **Archipéo** : une aventure en mer, où son savoir reconstruit l’archipel. Le personnage de l’élève y change de tenue d’un archipel à l’autre : explorateur aux Premiers Rivages, ciré aux Îles Brumeuses, combinaison de mécano aux Anciens Ateliers, gilet de cartographe aux Îles du Ciel.
 
 Chaque univers a une icône, son nom et une phrase, avec un bouton pour l’écouter. Changer d’univers demande une confirmation, qui dit ce qui change (le dessin du monde, le titre et l’histoire ; les îles gardent leur nom) et ce qui reste (les étoiles, les blocs, les plans et les missions). **Changer d’univers** confirme, **Annuler** garde l’univers d’avant. Le changement se voit au retour au village. L’univers choisit aussi le titre de l’écran titre et l’habillage de l’interface (ses couleurs, ses polices de titre, la forme de ses boutons) ; la place des boutons et des écrans est la même dans les deux.
 
@@ -93,6 +101,10 @@ L’ancienne section **Expérimental** (« Essayer le nouveau dessin du monde »
 La version installée est affichée, avec le bouton **Vérifier les mises à jour** (ou **Mettre à jour maintenant** quand une version est prête). Voir [Démarrer](demarrer.md#les-mises-a-jour).
 
 Deux liens s’ouvrent dans un nouvel onglet : **La documentation** (ce site, https://g7ed6e.github.io/dysapps/) et **Le code sur GitHub** (https://github.com/g7ed6e/dysapps).
+
+**Mesurer l’appareil** dit si l’appareil dessine le monde sans à-coups. L’appli se recharge, prend une partie déjà toute construite, fait seule le tour du monde du 6e (une île, l’archipel, la Carte, « Modifier le plan », la pose d’une partie) et affiche à la fin un tableau de chiffres, avec **Copier**. **Réglages**, à tout moment, recharge l’appli sur les Réglages. La vraie partie n’est pas touchée : rien de ce qui se passe pendant la mesure n’est enregistré.
+
+**Compteur de mesures**, une fois coché, affiche en bas à gauche du monde en 3D, pendant le jeu, ce que l’appareil dessine à chaque image : le nombre d’appels de dessin, de triangles, et d’images par seconde (i/s). Il apparaît à la prochaine ouverture du monde et reste coché sur l’appareil. **Affichage par défaut** le décoche. C’est un outil technique, pour vérifier l’appareil : l’élève n’en a pas besoin.
 
 ## Ma sauvegarde
 

@@ -1,0 +1,240 @@
+{
+  "id": "life-earth-sciences-5e-active-planet-human-impact-1",
+  "biome": "life-earth-sciences-5e-active-planet",
+  "type": "human-impact",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-1-0",
+      "prompt": "Le pétrole met des millions d’années à se former : c’est une ressource …",
+      "spoken": "Le pétrole met des millions d’années à se former : c’est une ressource  (mot manquant) ",
+      "choices": [
+        "renouvelable",
+        "non renouvelable",
+        "inépuisable"
+      ],
+      "answer": "non renouvelable",
+      "hint": "Relis la ligne « Non renouvelable » du rappel.",
+      "explanation": "Le pétrole met des millions d’années à se former : à l’échelle d’une vie, il ne se refait pas. C’est une ressource non renouvelable.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les ressources",
+          "lines": [
+            "Ressource : ce que les humains prennent dans la nature (eau, sol, bois, poisson).",
+            "Renouvelable : elle se refait vite, si on n’en prend pas trop.",
+            "Non renouvelable : elle met des millions d’années à se former.",
+            "Pétrole, charbon, gaz : des énergies fossiles, non renouvelables.",
+            "Prendre plus que ce qui se refait : la surpêche, la déforestation.",
+            "Eau potable : une eau qu’on peut boire sans danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-1-1",
+      "prompt": "Le charbon, le pétrole et le gaz naturel sont des énergies …",
+      "spoken": "Le charbon, le pétrole et le gaz naturel sont des énergies  (mot manquant) ",
+      "choices": [
+        "fossiles",
+        "renouvelables",
+        "solaires"
+      ],
+      "answer": "fossiles",
+      "hint": "Relis la ligne « Pétrole » du rappel.",
+      "explanation": "Le charbon, le pétrole et le gaz se sont formés à partir d’êtres vivants très anciens : ce sont des énergies fossiles, non renouvelables.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les ressources",
+          "lines": [
+            "Ressource : ce que les humains prennent dans la nature (eau, sol, bois, poisson).",
+            "Renouvelable : elle se refait vite, si on n’en prend pas trop.",
+            "Non renouvelable : elle met des millions d’années à se former.",
+            "Pétrole, charbon, gaz : des énergies fossiles, non renouvelables.",
+            "Prendre plus que ce qui se refait : la surpêche, la déforestation.",
+            "Eau potable : une eau qu’on peut boire sans danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-1-2",
+      "prompt": "Le vent et la lumière du Soleil ne s’épuisent pas : ce sont des énergies …",
+      "spoken": "Le vent et la lumière du Soleil ne s’épuisent pas : ce sont des énergies  (mot manquant) ",
+      "choices": [
+        "fossiles",
+        "renouvelables",
+        "polluantes"
+      ],
+      "answer": "renouvelables",
+      "hint": "Le vent souffle encore demain, le Soleil brille encore demain.",
+      "explanation": "Le vent et le Soleil reviennent sans cesse : ce sont des énergies renouvelables. Les énergies fossiles, elles, s’épuisent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les ressources",
+          "lines": [
+            "Ressource : ce que les humains prennent dans la nature (eau, sol, bois, poisson).",
+            "Renouvelable : elle se refait vite, si on n’en prend pas trop.",
+            "Non renouvelable : elle met des millions d’années à se former.",
+            "Pétrole, charbon, gaz : des énergies fossiles, non renouvelables.",
+            "Prendre plus que ce qui se refait : la surpêche, la déforestation.",
+            "Eau potable : une eau qu’on peut boire sans danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-1-3",
+      "prompt": "Une eau qu’on peut boire sans danger est une eau …",
+      "spoken": "Une eau qu’on peut boire sans danger est une eau  (mot manquant) ",
+      "choices": [
+        "salée",
+        "trouble",
+        "potable"
+      ],
+      "answer": "potable",
+      "hint": "Relis la ligne « Eau potable » du rappel.",
+      "explanation": "Une eau potable se boit sans danger. Elle est rare : l’eau de mer est salée, et l’eau des rivières doit être traitée avant d’être bue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les ressources",
+          "lines": [
+            "Ressource : ce que les humains prennent dans la nature (eau, sol, bois, poisson).",
+            "Renouvelable : elle se refait vite, si on n’en prend pas trop.",
+            "Non renouvelable : elle met des millions d’années à se former.",
+            "Pétrole, charbon, gaz : des énergies fossiles, non renouvelables.",
+            "Prendre plus que ce qui se refait : la surpêche, la déforestation.",
+            "Eau potable : une eau qu’on peut boire sans danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-1-4",
+      "prompt": "Les poissons pêchés dans une mer\nAvant : beaucoup de grands poissons.\nAujourd’hui : très peu, et de plus en plus petits.\nLes bateaux pêchent plus de poissons qu’il n’en naît.",
+      "question": "Comment s’appelle ce problème ?",
+      "spoken": "Les poissons pêchés dans une mer. Avant, beaucoup de grands poissons. Aujourd’hui, très peu, et de plus en plus petits. Les bateaux pêchent plus de poissons qu’il n’en naît.",
+      "choices": [
+        "la pollution",
+        "la surpêche",
+        "le réchauffement"
+      ],
+      "answer": "la surpêche",
+      "hint": "Relis la dernière ligne du document, puis la ligne « Prendre plus » du rappel.",
+      "explanation": "On pêche plus de poissons qu’il n’en naît : c’est la surpêche. Le poisson est une ressource renouvelable, mais seulement si on en laisse assez pour qu’il se reproduise.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les ressources",
+          "lines": [
+            "Ressource : ce que les humains prennent dans la nature (eau, sol, bois, poisson).",
+            "Renouvelable : elle se refait vite, si on n’en prend pas trop.",
+            "Non renouvelable : elle met des millions d’années à se former.",
+            "Pétrole, charbon, gaz : des énergies fossiles, non renouvelables.",
+            "Prendre plus que ce qui se refait : la surpêche, la déforestation.",
+            "Eau potable : une eau qu’on peut boire sans danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-1-5",
+      "prompt": "Couper une forêt plus vite qu’elle ne repousse, c’est la …",
+      "spoken": "Couper une forêt plus vite qu’elle ne repousse, c’est la  (mot manquant) ",
+      "choices": [
+        "déforestation",
+        "plantation",
+        "reproduction"
+      ],
+      "answer": "déforestation",
+      "hint": "Relis la ligne « Prendre plus » du rappel.",
+      "explanation": "Couper les arbres plus vite qu’ils ne repoussent, c’est la déforestation. Les animaux de la forêt perdent alors leur milieu de vie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les ressources",
+          "lines": [
+            "Ressource : ce que les humains prennent dans la nature (eau, sol, bois, poisson).",
+            "Renouvelable : elle se refait vite, si on n’en prend pas trop.",
+            "Non renouvelable : elle met des millions d’années à se former.",
+            "Pétrole, charbon, gaz : des énergies fossiles, non renouvelables.",
+            "Prendre plus que ce qui se refait : la surpêche, la déforestation.",
+            "Eau potable : une eau qu’on peut boire sans danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-1-6",
+      "prompt": "L’eau utilisée par une famille\nUne douche de 5 minutes : 60 litres.\nUn bain : 150 litres.",
+      "question": "Quel geste économise le plus d’eau ?",
+      "spoken": "L’eau utilisée par une famille. Une douche de 5 minutes, 60 litres. Un bain, 150 litres.",
+      "choices": [
+        "prendre un bain",
+        "laisser couler l’eau",
+        "prendre une douche courte"
+      ],
+      "answer": "prendre une douche courte",
+      "hint": "Compare les deux nombres de litres.",
+      "explanation": "La douche courte utilise 60 litres, le bain 150 : la douche économise beaucoup d’eau. L’eau potable est une ressource à ne pas gaspiller.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les ressources",
+          "lines": [
+            "Ressource : ce que les humains prennent dans la nature (eau, sol, bois, poisson).",
+            "Renouvelable : elle se refait vite, si on n’en prend pas trop.",
+            "Non renouvelable : elle met des millions d’années à se former.",
+            "Pétrole, charbon, gaz : des énergies fossiles, non renouvelables.",
+            "Prendre plus que ce qui se refait : la surpêche, la déforestation.",
+            "Eau potable : une eau qu’on peut boire sans danger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-human-impact-1-7",
+      "prompt": "Les haies autour des champs retiennent la terre contre l’…",
+      "spoken": "Les haies autour des champs retiennent la terre contre l’ (mot manquant) ",
+      "choices": [
+        "érosion",
+        "arrosage",
+        "engrais"
+      ],
+      "answer": "érosion",
+      "hint": "Le vent et la pluie emportent la terre. Comment s’appelle cette usure ?",
+      "explanation": "L’érosion, c’est l’usure du sol par le vent et la pluie, qui emportent la terre. Les racines des haies retiennent cette terre : elles protègent le sol. Le sol met très longtemps à se former.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les ressources",
+          "lines": [
+            "Ressource : ce que les humains prennent dans la nature (eau, sol, bois, poisson).",
+            "Renouvelable : elle se refait vite, si on n’en prend pas trop.",
+            "Non renouvelable : elle met des millions d’années à se former.",
+            "Pétrole, charbon, gaz : des énergies fossiles, non renouvelables.",
+            "Prendre plus que ce qui se refait : la surpêche, la déforestation.",
+            "Eau potable : une eau qu’on peut boire sans danger."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien raisonné !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-5e-active-planet",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

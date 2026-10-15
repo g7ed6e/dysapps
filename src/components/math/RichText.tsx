@@ -1,6 +1,7 @@
 import { fractionWords } from '../../core/fractions';
 import type { Lang } from '../../core/speech';
 import { frenchTypography } from '../../core/typography';
+import { Marked } from '../ForeignWords';
 
 /** Fraction « en colonne » : numérateur au-dessus, dénominateur en dessous. « … » = case à compléter. */
 function Frac({ n, d }: { n: string; d: string }) {
@@ -28,7 +29,13 @@ export function RichText({ text, lang = 'fr' }: { text: string; lang?: Lang }) {
   return (
     <>
       {parts.map((part, i) => {
-        if (i % 2 === 0) return part ? <span key={i}>{part}</span> : null;
+        // Sur l'île du latin et du grec, les mots marqués s'affichent dans leur langue (../ForeignWords.tsx).
+        if (i % 2 === 0)
+          return part ? (
+            <span key={i}>
+              <Marked text={part} />
+            </span>
+          ) : null;
         if (part === '…') {
           return (
             <span key={i} className="blank">

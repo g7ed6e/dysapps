@@ -9,6 +9,7 @@ import {
   COMMANDES,
   MAX_COMMANDES_OUVERTES,
   SEUIL_DE_LA_PREMIERE_COMMANDE,
+  commandeALivrerChez,
   commandeDeLIle,
   commandeMiseEnAvant,
   commandesOuvertes,
@@ -126,7 +127,7 @@ describe('l’arrivée', () => {
     const avecFerme = etat({ progress: progress6, world: { links: links6, requests: trois } });
     expect(peutCommander(avecFerme, commandeDeLIle(FERME)!)).toBe(true);
     expect(faireArriverUneCommande(avecFerme, '6e').arrivee).toBeNull();
-    // Le 5e : le Bloc-Navire fait, un ouvrage payé ; Bazar (le Marché) commande des panneaux du Carrefour.
+    // Le 5e : la Nef fait, un ouvrage payé ; Bazar (le Marché) commande des panneaux du Carrefour.
     const links5 = [...links6, 'passage-5e', 'maths-5e-proportionality-french-5e-homophones'];
     const au5e = etat({ progress: { ...progress6, ...joue('maths-5e-proportionality') }, world: { links: links5, place: 'maths-5e-proportionality', requests: trois } });
     const r = faireArriverUneCommande(au5e, '5e');
@@ -216,13 +217,33 @@ describe('la suggestion et le signe', () => {
     // Coco : sa commande n'est pas prête.
     expect(signeDeLaCreature(prete, PLAINE, { revisions: false, suggeree: MOUSSO })).toBeNull();
   });
+
+  it('une commande prête se livre chez sa créature même quand autre chose passe avant elle dans la suggestion', () => {
+    // Le bonhomme sur la Forêt, une mission encore jamais jouée : la suggestion est cette mission (étape 2), pas la
+    // commande de Mousso, pourtant prête. La fiche de Mousso doit quand même proposer « Livrer ».
+    const missions = missionsJouables(getBiome(FORET)!);
+    const progress = Object.fromEntries(
+      Object.entries(joue(FORET, PLAINE, FERME)).filter(([id]) => id !== exercisesOf(FORET, missions[missions.length - 1].id)[0].id),
+    );
+    const surLaForet = etat({ progress, stock: { [BLOC.terre]: 3, [BLOC.bois]: 3 }, world: { links: [PONT_FERME], place: FORET, requests: [MOUSSO, COCO] } });
+    expect(nextDestination(surLaForet).commande).toBeUndefined();
+    expect(commandeALivrerChez(surLaForet, FORET)?.id).toBe(MOUSSO);
+    // Deux commandes prêtes : la plus récente aussi se livre chez sa créature, pas seulement la plus ancienne.
+    expect(commandeALivrerChez(surLaForet, PLAINE)?.id).toBe(COCO);
+    // Pas prête, pas arrivée, ou déjà livrée : rien à livrer.
+    expect(commandeALivrerChez({ ...surLaForet, stock: {} }, FORET)).toBeUndefined();
+    expect(commandeALivrerChez(surLaForet, FERME)).toBeUndefined();
+    const livree = livrerLaCommande(surLaForet, MOUSSO);
+    expect(livree.ok && commandeALivrerChez(livree.state, FORET)).toBeUndefined();
+  });
 });
 
 describe('la sauvegarde', () => {
   it('une sauvegarde d’avant les commandes se lit sans rien perdre, sans champ nouveau', () => {
     const ancienne = { progress: joue(FORET, PLAINE), stock: { [BLOC.bois]: 4 }, world: { parts: {}, log: [], links: [PONT_FERME], place: PLAINE } };
     const lue = sanitizeState(structuredClone(ancienne));
-    expect(lue.world).toEqual({ parts: lue.world.parts, log: [], links: [PONT_FERME], place: PLAINE });
+    // Le défi de la Plaine, ouvert avant les missions du 9 octobre 2026, le reste (GD-14, format 5) : le seul champ ajouté.
+    expect(lue.world).toEqual({ parts: lue.world.parts, log: [], links: [PONT_FERME], place: PLAINE, challengesKeptOpen: [PLAINE] });
     expect('requests' in lue.world).toBe(false);
     expect(lue.stock).toEqual({ [BLOC.bois]: 4 });
     expect(Object.keys(lue.progress)).toEqual(Object.keys(ancienne.progress));

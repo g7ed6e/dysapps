@@ -112,13 +112,13 @@ Pour tous les items :
    - réponse : les coquillages
    - indice : Quelle couche s’est déposée en premier ?
    - explication : Les couches se déposent les unes sur les autres : celle du bas est la plus ancienne. Les coquillages sont donc les plus anciens. La couche du haut n’est pas la plus ancienne.
-4. énoncé : "Les attributs de trois animaux\nRequin : squelette interne, nageoires\nDauphin : squelette interne, nageoires, poils, mamelles\nVache : squelette interne, poils, mamelles"
+4. énoncé : "Les attributs de trois animaux\nRequin : squelette interne, nageoires\nDauphin : squelette interne, nageoires, mamelles\nVache : squelette interne, poils, mamelles"
    - question : Qui est le plus proche parent du dauphin ?
-   - lu : Les attributs de trois animaux. Requin, squelette interne, nageoires. Dauphin, squelette interne, nageoires, poils, mamelles. Vache, squelette interne, poils, mamelles.
+   - lu : Les attributs de trois animaux. Requin, squelette interne, nageoires. Dauphin, squelette interne, nageoires, mamelles. Vache, squelette interne, poils, mamelles.
    - choix : le requin · la vache · aucun des deux
    - réponse : la vache
-   - indice : Qui a, comme le dauphin, des poils et des mamelles ?
-   - explication : Le dauphin a des poils et des mamelles, comme la vache : ce sont deux mammifères. Le requin lui ressemble et vit dans la mer, mais ce n’est pas un mammifère.
+   - indice : Qui a, comme le dauphin, des mamelles ?
+   - explication : Le dauphin a des mamelles, comme la vache : ce sont deux mammifères. Le requin lui ressemble et vit dans la mer, mais ce n’est pas un mammifère.
 5. énoncé : Des espèces apparaissent, d’autres disparaissent : au cours du temps, la biodiversité …
    - choix : change · reste la même · s’arrête
    - réponse : change
@@ -147,7 +147,7 @@ Pour tous les items :
 ## Se nourrir et grandir · `food-growth`
 
 - description : Les groupes d’aliments et leur conservation, puis les étapes de la vie d’un animal et d’une plante.
-- compétences : c3.sv.vivant.alimentation · c3.sv.vivant.developpement · c3.sv.vivant.matiere-organique · c3.sv.demarches.observer · c3.sv.demarches.responsable
+- compétences : c3.sv.vivant.alimentation · c3.sv.vivant.developpement · c3.sv.terre.chaines-alimentaires · c3.sv.demarches.observer · c3.sv.demarches.responsable
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -167,7 +167,7 @@ Pour tous les items :
   - Les aliments donnent de l’énergie et font grandir le corps.
   - Féculents : pain, riz, pommes de terre.
   - Produits laitiers : lait, fromage.
-  - Micro-organismes : des êtres vivants trop petits pour être vus.
+  - Micro-organismes : des êtres vivants trop petits pour être vus à l’œil nu, un par un.
   - Certains abîment les aliments, d’autres servent à en fabriquer.
   - Le froid les ralentit ; la cuisson en tue beaucoup.
 
@@ -180,7 +180,7 @@ Pour tous les items :
    - choix : micro-organismes · vitamines · aliments
    - réponse : micro-organismes
    - indice : Qu’y a-t-il sur les mains, qu’on ne voit pas ?
-   - explication : Les mains portent des micro-organismes, trop petits pour être vus. Certains rendent malade : le savon et l’eau les enlèvent.
+   - explication : Les mains portent des micro-organismes, trop petits pour être vus à l’œil nu. Certains rendent malade : le savon et l’eau les enlèvent.
 3. énoncé : Pour garder la viande plus longtemps, on la range au …
    - choix : placard · soleil · réfrigérateur
    - réponse : réfrigérateur
@@ -192,7 +192,7 @@ Pour tous les items :
    - choix : le sac fait pousser la moisissure · le froid ralentit la moisissure · le pain moisit toujours
    - réponse : le froid ralentit la moisissure
    - indice : Les deux tranches sont dans un sac. Qu’est-ce qui change entre elles ?
-   - explication : Une seule chose change : le froid. La tranche au réfrigérateur n’a pas moisi : le froid ralentit les moisissures, qui sont des micro-organismes.
+   - explication : Une seule chose change : le froid. Le froid ralentit les moisissures. Ce sont des micro-organismes : très nombreux, ils forment des taches.
 5. énoncé : Le yaourt est fabriqué avec du lait, grâce à des …
    - choix : sucres · bactéries · vitamines
    - réponse : bactéries
@@ -201,7 +201,7 @@ Pour tous les items :
 6. énoncé : La pâte à pain gonfle grâce à des micro-organismes : les …
    - choix : levures · moisissures · vitamines
    - réponse : levures
-   - indice : Ce micro-organisme utile s’achète en sachet chez le boulanger.
+   - indice : Ce micro-organisme utile s’achète en sachet, au rayon pâtisserie.
    - explication : Les levures font gonfler la pâte à pain. Les moisissures, elles, abîment les aliments ; les vitamines ne sont pas vivantes.
 7. énoncé : "Étiquette d’un pot de compote\nÀ conserver au frais après ouverture.\nÀ consommer dans les 3 jours."
    - question : Tu as ouvert le pot. Où le ranges-tu ?
@@ -213,10 +213,10 @@ Pour tous les items :
 8. énoncé : "Le repas du soir de Nina\nEntrée : salade de tomates\nPlat : poisson et riz\nDessert : à choisir"
    - question : Quel dessert ajoute un produit laitier au repas ?
    - lu : Le repas du soir de Nina. Entrée, salade de tomates. Plat, poisson et riz. Dessert, à choisir.
-   - choix : une pomme · une part de gâteau · un yaourt
+   - choix : une pomme · une compote · un yaourt
    - réponse : un yaourt
    - indice : Les produits laitiers sont faits avec du lait.
-   - explication : Le yaourt est fait avec du lait : c’est un produit laitier. La pomme est un fruit, le gâteau un produit sucré.
+   - explication : Le yaourt est fait avec du lait : c’est un produit laitier. La pomme est un fruit ; la compote aussi est faite de fruits.
 
 ### Niveau 2 · `life-earth-sciences-6e-living-world-food-growth-2`
 
@@ -279,7 +279,7 @@ Pour tous les items :
 ## La Terre et ses milieux · `planet-earth`
 
 - description : La Terre dans le système solaire, les volcans, les séismes et le temps qu’il fait, puis les milieux de vie et ce que l’humain y change.
-- compétences : c3.sv.terre.systeme-solaire · c3.sv.terre.phenomenes · c3.sv.terre.peuplement · c3.sv.terre.environnement · c3.sv.vivant.matiere-organique · c3.sv.demarches.responsable
+- compétences : c3.sv.terre.systeme-solaire · c3.sv.terre.phenomenes · c3.sv.terre.peuplement · c3.sv.terre.environnement · c3.sv.terre.chaines-alimentaires · c3.sv.demarches.responsable
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien observé !
 - erreur : {explanation}
@@ -297,8 +297,8 @@ Pour tous les items :
 Pour tous les items :
 - aide « La Terre » :
   - Le Soleil est une étoile. La Terre est une planète qui tourne autour.
-  - La Terre tourne aussi sur elle-même : le jour, puis la nuit.
-  - Un tour du Soleil dure un an. L’axe penché fait les saisons.
+  - Sur Terre, la vie est possible grâce à l’eau liquide.
+  - L’atmosphère, la couche d’air autour de la Terre, garde une température douce.
   - Météo : le temps qu’il fait un jour.
   - Climat : le temps habituel d’une région, sur des années.
   - Volcan : il rejette de la lave. Séisme : le sol tremble.
@@ -308,23 +308,23 @@ Pour tous les items :
    - réponse : étoile
    - indice : Il brille de sa propre lumière.
    - explication : Le Soleil est une étoile : il produit sa propre lumière. La Terre est une planète qui tourne autour de lui.
-2. énoncé : La Terre tourne sur elle-même : cela fait le jour et la …
-   - choix : saison · nuit · pluie
-   - réponse : nuit
-   - indice : Le côté tourné vers le Soleil est éclairé. Et l’autre côté ?
-   - explication : En tournant sur elle-même, la Terre montre au Soleil un côté, puis l’autre : c’est le jour, puis la nuit.
-3. énoncé : "Deux idées pour expliquer l’été\nLéo : en été, la Terre est plus près du Soleil.\nSami : en été, les rayons arrivent plus droit et les journées sont plus longues."
-   - question : Quelle idée est juste ?
-   - lu : Deux idées pour expliquer l’été. Léo, en été, la Terre est plus près du Soleil. Sami, en été, les rayons arrivent plus droit et les journées sont plus longues.
-   - choix : celle de Léo · celle de Sami · aucune des deux
-   - réponse : celle de Sami
-   - indice : Relis la ligne « Un tour » du rappel : qu’est-ce qui fait les saisons ?
-   - explication : Les saisons viennent de l’axe penché de la Terre, pas de sa distance au Soleil. En été, les rayons arrivent plus droit et les jours sont plus longs.
-4. énoncé : La Terre fait le tour du Soleil en une …
-   - choix : journée · semaine · année
-   - réponse : année
-   - indice : Relis la ligne « Un tour » du rappel.
-   - explication : La Terre met un an à faire le tour du Soleil. En une journée, elle fait un tour sur elle-même.
+2. énoncé : Les êtres vivants ont besoin d’eau à l’état …
+   - choix : solide · liquide · gazeux
+   - réponse : liquide
+   - indice : Relis la ligne « Sur Terre » du rappel.
+   - explication : La vie a besoin d’eau liquide. Sur Terre, il y en a dans les océans, les lacs et les rivières. Sur Mars, l’eau est surtout gelée.
+3. énoncé : "Trois planètes du système solaire\nVénus : plus près du Soleil, plus de 400 °C.\nLa Terre : en moyenne 15 °C, de l’eau liquide.\nMars : plus loin du Soleil, environ 60 °C sous zéro."
+   - question : Sur quelle planète la température permet-elle la vie ?
+   - lu : Trois planètes du système solaire. Vénus, plus près du Soleil, plus de quatre cents degrés. La Terre, en moyenne quinze degrés, de l’eau liquide. Mars, plus loin du Soleil, environ soixante degrés sous zéro.
+   - choix : sur Vénus · sur la Terre · sur Mars
+   - réponse : sur la Terre
+   - indice : Compare les températures : laquelle est douce ?
+   - explication : Sur Vénus, il fait bien trop chaud ; sur Mars, bien trop froid. Sur la Terre, la température est douce : l’eau reste liquide et la vie est possible.
+4. énoncé : La couche d’air qui entoure la Terre s’appelle l’…
+   - choix : atmosphère · équateur · horizon
+   - réponse : atmosphère
+   - indice : Relis la ligne « L’atmosphère » du rappel.
+   - explication : L’atmosphère est la couche d’air autour de la Terre. Elle contient l’air que nous respirons. Elle garde aussi une partie de la chaleur du Soleil.
 5. énoncé : "Bulletin du jour\nCe matin : pluie et vent.\nCet après-midi : éclaircies.\nTempérature : 14 °C"
    - question : De quoi parle ce bulletin ?
    - lu : Bulletin du jour. Ce matin, pluie et vent. Cet après-midi, éclaircies. Température, 14 degrés.
@@ -410,6 +410,143 @@ Pour tous les items :
    - réponse : l’air
    - indice : Où vont les fumées quand elles sortent du pot d’échappement ?
    - explication : Les fumées des voitures partent dans l’air et le polluent. Marcher, faire du vélo ou prendre le bus pollue moins.
+
+## Enquêter sur le vivant · `life-enquiry`
+
+- description : La cellule, les tailles et les temps du vivant, puis le réchauffement climatique lu dans des données, et la différence entre une preuve et une croyance.
+- compétences : c3.sv.vivant.cellule · c3.sv.terre.climat · c3.sv.demarches.esprit-critique · c3.sv.demarches.situer
+- consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- bravo : Bien enquêté !
+- erreur : {explanation}
+- bloc gagné : life-earth-sciences-6e-living-world
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+Pour tous les items :
+- trou lu : " (mot manquant) "
+
+### Niveau 1 · `life-earth-sciences-6e-living-world-life-enquiry-1`
+
+Pour tous les items :
+- aide « Du plus petit au plus grand » :
+  - Tous les êtres vivants sont faits de cellules.
+  - La plupart des cellules ne se voient qu’au microscope.
+  - Unicellulaire : fait d’une seule cellule.
+  - Organe : le cœur, l’estomac, une feuille. Plusieurs organes forment un appareil.
+  - L’organisme : l’être vivant entier.
+  - L’histoire de la Terre se compte en millions et en milliards d’années.
+
+1. énoncé : Tous les êtres vivants, la plante comme l’animal, sont faits de …
+   - choix : organes · cellules · muscles
+   - réponse : cellules
+   - indice : Relis la première ligne du rappel.
+   - explication : Tous les êtres vivants sont faits de cellules : c’est ce qu’ils ont en commun. Une plante n’a pas de muscles, et certains êtres vivants n’ont aucun organe, mais tous ont des cellules.
+2. énoncé : "Au microscope\nPeau d’oignon : des cellules.\nIntérieur de la joue : des cellules.\nEau de mare : de petits êtres d’une seule cellule."
+   - question : Que montrent ces observations ?
+   - lu : Au microscope. Peau d’oignon, des cellules. Intérieur de la joue, des cellules. Eau de mare, de petits êtres d’une seule cellule.
+   - choix : seules les plantes ont des cellules · seuls les animaux ont des cellules · tous ces êtres vivants ont des cellules
+   - réponse : tous ces êtres vivants ont des cellules
+   - indice : Sur quelles lignes trouve-t-on le mot « cellule » ?
+   - explication : L’oignon est une plante, la joue est celle d’un humain, un animal, et les êtres de la mare sont faits d’une cellule : tous ont des cellules. La cellule est commune à tous les êtres vivants, pas seulement aux plantes ou aux animaux.
+3. énoncé : L’estomac et l’intestin travaillent ensemble pour digérer : ils forment un …
+   - choix : organe · appareil · organisme
+   - réponse : appareil
+   - indice : Relis la ligne « Organe » du rappel.
+   - explication : L’estomac et l’intestin sont deux organes. Ensemble, ils forment un appareil : l’appareil digestif. L’organisme, c’est l’être vivant entier.
+4. énoncé : "Une découverte, en 1665\nLe savant Robert Hooke observe une fine tranche de liège.\nIl utilise un des premiers microscopes.\nIl voit de petites cases, qu’il appelle des « cellules »."
+   - question : Qu’est-ce qui lui a permis de voir des cellules ?
+   - lu : Une découverte, en 1665. Le savant Robert Hooke observe une fine tranche de liège. Il utilise un des premiers microscopes. Il voit de petites cases, qu’il appelle des cellules.
+   - choix : ses yeux seuls · un nouvel instrument · une idée, sans rien observer
+   - réponse : un nouvel instrument
+   - indice : Relis la troisième ligne du document.
+   - explication : Le microscope était alors un instrument nouveau : grâce à lui, Hooke a vu des cellules. À l’œil nu, c’était impossible. Un savoir scientifique avance avec les instruments de son époque.
+5. énoncé : La paramécie, qui nage dans l’eau des mares, est faite d’une seule cellule : elle est …
+   - choix : pluricellulaire · unicellulaire · végétale
+   - réponse : unicellulaire
+   - indice : « Uni » veut dire un seul.
+   - explication : Faite d’une seule cellule, la paramécie est unicellulaire. Pluricellulaire veut dire fait de nombreuses cellules, comme un chat ou un chêne.
+6. énoncé : "Il y a combien de temps ?\nFin des grands dinosaures : 66 millions d’années.\nPremiers humains de notre espèce : 300 000 ans.\nPremiers êtres vivants : plus de 3 milliards d’années."
+   - question : Quel moment est le plus ancien ?
+   - lu : Il y a combien de temps ? Fin des grands dinosaures, soixante-six millions d’années. Premiers humains de notre espèce, trois cent mille ans. Premiers êtres vivants, plus de trois milliards d’années.
+   - choix : la fin des grands dinosaures · les premiers humains · les premiers êtres vivants
+   - réponse : les premiers êtres vivants
+   - indice : Cherche le mot « milliards » : c’est le plus grand.
+   - explication : Un milliard, c’est mille millions : plus de 3 milliards d’années, c’est bien plus ancien que 66 millions d’années. Les premiers êtres vivants viennent donc bien avant les dinosaures, et les humains sont les plus récents.
+7. énoncé : Une vie humaine dure environ 80 ans. La Terre, elle, a environ 4,5 …
+   - lu : Une vie humaine dure environ 80 ans. La Terre, elle, a environ quatre virgule cinq (mot manquant).
+   - choix : siècles · millions d’années · milliards d’années
+   - réponse : milliards d’années
+   - indice : C’est un temps immense : le plus grand des trois.
+   - explication : La Terre a environ 4,5 milliards d’années : c’est l’échelle des temps géologiques, le temps long. 4,5 millions d’années, ce serait mille fois moins ; 4,5 siècles, à peine cinq vies humaines.
+8. énoncé : "Trois choses à observer dans le jardin\nUne fourmi.\nUn grain de sable.\nUne cellule de feuille."
+   - question : Laquelle ne peut se voir qu’au microscope ?
+   - lu : Trois choses à observer dans le jardin. Une fourmi. Un grain de sable. Une cellule de feuille.
+   - choix : la fourmi · le grain de sable · la cellule de feuille
+   - réponse : la cellule de feuille
+   - indice : Relis la deuxième ligne du rappel.
+   - explication : La fourmi et le grain de sable se voient à l’œil nu, ou à la loupe. Une cellule de feuille est bien plus petite : il faut un microscope.
+
+### Niveau 2 · `life-earth-sciences-6e-living-world-life-enquiry-2`
+
+Pour tous les items :
+- aide « Le climat et les preuves » :
+  - Depuis plus de 100 ans, la température moyenne de la Terre monte.
+  - Les gaz à effet de serre retiennent la chaleur autour de la Terre.
+  - Brûler du pétrole, du charbon ou du gaz rejette du dioxyde de carbone.
+  - Atténuer : rejeter moins de ces gaz. S’adapter : vivre avec le climat qui change.
+  - Un savoir scientifique repose sur des preuves : des mesures, des expériences.
+  - Une croyance ou une opinion ne repose pas sur des preuves.
+
+1. énoncé : "Température moyenne de la Terre\nVers 1900 : la température de départ.\nVers 1960 : un peu plus chaud.\nVers 2020 : environ 1 degré de plus qu’en 1900."
+   - question : Que montrent ces relevés ?
+   - lu : Température moyenne de la Terre. Vers 1900, la température de départ. Vers 1960, un peu plus chaud. Vers 2020, environ un degré de plus qu’en 1900.
+   - choix : la Terre se refroidit · la Terre se réchauffe · la température ne change pas
+   - réponse : la Terre se réchauffe
+   - indice : Compare la première et la dernière ligne.
+   - explication : En 2020, la température moyenne est plus haute qu’en 1900 : la Terre se réchauffe. Un degré de plus en moyenne, sur toute la Terre, c’est beaucoup.
+2. énoncé : "Un glacier des Alpes\nPhoto de 1920 : la glace descend jusqu’au fond de la vallée.\nPhoto de 2020 : la glace s’arrête bien plus haut. On voit des rochers nus."
+   - question : Que montrent ces deux photos ?
+   - lu : Un glacier des Alpes. Photo de 1920, la glace descend jusqu’au fond de la vallée. Photo de 2020, la glace s’arrête bien plus haut. On voit des rochers nus.
+   - choix : le glacier grandit · le glacier fond et recule · le glacier ne change pas
+   - réponse : le glacier fond et recule
+   - indice : Où s’arrête la glace sur la photo la plus récente ?
+   - explication : En 2020, la glace s’arrête plus haut : le glacier a fondu et reculé. La fonte des glaciers est une des données qui montrent le réchauffement climatique.
+3. énoncé : Brûler du pétrole, du charbon ou du gaz rejette un gaz à effet de serre : …
+   - choix : l’oxygène · l’hydrogène · le dioxyde de carbone
+   - réponse : le dioxyde de carbone
+   - indice : Relis la ligne « Brûler » du rappel.
+   - explication : En brûlant, le pétrole, le charbon et le gaz rejettent du dioxyde de carbone, qui retient la chaleur. L’oxygène, lui, n’est pas rejeté : il est utilisé pour brûler. L’hydrogène n’est pas rejeté non plus.
+4. énoncé : Venir au collège à vélo plutôt qu’en voiture, pour rejeter moins de gaz : c’est une action d’…
+   - choix : adaptation · atténuation · observation
+   - réponse : atténuation
+   - indice : Relis la ligne « Atténuer » du rappel.
+   - explication : Rejeter moins de gaz à effet de serre, c’est atténuer le réchauffement. S’adapter, c’est changer sa façon de vivre parce que le climat a déjà changé.
+5. énoncé : Les étés sont plus secs : des agriculteurs cultivent des plantes qui ont besoin de moins d’eau. C’est une action d’…
+   - choix : atténuation · observation · adaptation
+   - réponse : adaptation
+   - indice : Le climat a déjà changé : que font les agriculteurs ?
+   - explication : Les agriculteurs changent leurs cultures pour vivre avec un climat plus sec : ils s’adaptent. Cela ne fait pas baisser les gaz à effet de serre : ce n’est pas une atténuation.
+6. énoncé : "Relevés dans une mer d’Europe\nL’eau se réchauffe depuis des années.\nDes poissons des eaux chaudes y arrivent.\nDes poissons des eaux froides partent vers le nord."
+   - question : Que change le réchauffement dans cette mer ?
+   - lu : Relevés dans une mer d’Europe. L’eau se réchauffe depuis des années. Des poissons des eaux chaudes y arrivent. Des poissons des eaux froides partent vers le nord.
+   - choix : les espèces qui y vivent · la couleur de l’eau · rien, les poissons restent
+   - réponse : les espèces qui y vivent
+   - indice : Relis les deux dernières lignes du document.
+   - explication : Des espèces arrivent, d’autres partent : le réchauffement change le peuplement de la mer. Chaque espèce vit là où la température lui convient.
+7. énoncé : "Deux affirmations\nA : « Ce matin, j’avais froid. Donc la Terre ne se réchauffe pas. »\nB : « Les mesures de milliers de stations, sur plus de 100 ans, montrent que la température moyenne monte. »"
+   - question : Laquelle repose sur une preuve ?
+   - lu : Deux affirmations. A, ce matin, j’avais froid, donc la Terre ne se réchauffe pas. B, les mesures de milliers de stations, sur plus de cent ans, montrent que la température moyenne monte.
+   - choix : l’affirmation A · l’affirmation B · aucune des deux
+   - réponse : l’affirmation B
+   - indice : Laquelle s’appuie sur des mesures ?
+   - explication : B s’appuie sur des mesures nombreuses, faites pendant longtemps : c’est une preuve. A parle du temps d’un seul matin, en un seul lieu : c’est la météo, pas le climat.
+8. énoncé : « Le fer à cheval porte bonheur. » Aucune mesure, aucune expérience ne le montre : c’est …
+   - choix : une croyance · un savoir scientifique · une mesure
+   - réponse : une croyance
+   - indice : Relis les deux dernières lignes du rappel.
+   - explication : Rien ne le prouve : c’est une croyance. Un savoir scientifique repose sur des preuves, comme des mesures ou des expériences.
 
 ## Les plans
 

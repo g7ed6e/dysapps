@@ -17,7 +17,7 @@ créature : Lina
 ## Hola · `es-greetings`
 
 - description : Se présenter : une question en espagnol, la bonne réponse (ser et tener).
-- compétences : c4.es.dialoguer.echanges-sociaux · c4.es.langue.temps-verbaux · c4.es.langue.lexique
+- compétences : c4.es.5e.interagir.echanges · c4.es.5e.langue.verbe · c4.es.5e.langue.lexique
 - lv2 : es
 - langue : es
 - bravo : Bien répondu !
@@ -93,7 +93,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-es-greetings-2`
 
 - consigne : Lis et écoute la phrase en espagnol, puis choisis la bonne réaction. La règle est affichée : lis-la avant de répondre.
-- programme : c4.es.dialoguer.reagir
+- programme : c4.es.5e.interagir.reagir
 
 Pour tous les items :
 - aide « Réagir » :
@@ -156,7 +156,7 @@ Pour tous les items :
 ## Números · `es-numbers`
 
 - description : Les nombres entendus : sesenta ou setenta, doce ou dos ?
-- compétences : c4.es.ecouter.intervention-breve · c4.es.langue.lexique
+- compétences : c4.es.5e.comprendre.oral-ecrit · c4.es.5e.langue.lexique
 - lv2 : es
 - langue : es
 - consigne : Écoute le nombre en espagnol et choisis le bon nombre. La règle est affichée.
@@ -294,7 +294,7 @@ Pour tous les items :
 ## Familia y colegio · `es-family`
 
 - description : La famille, les consignes de la classe, un panneau ; tu ou tú ?
-- compétences : c4.es.lire.consignes-panneaux · c4.es.langue.lexique
+- compétences : c4.es.5e.comprendre.oral-ecrit · c4.es.5e.langue.lexique
 - lv2 : es
 - langue : es
 - erreur : {explanation}
@@ -378,7 +378,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-es-family-2`
 
 - consigne : Écoute le mot ou la phrase en espagnol, puis choisis ce qui manque. La règle est affichée.
-- programme : c4.es.ecrire.dictee-fiche
+- programme : c4.es.5e.exprimer.dictee
 - bravo : Bien écrit !
 
 Pour tous les items :
@@ -444,7 +444,7 @@ Pour tous les items :
 ## El, la, los, las · `es-articles`
 
 - description : L’article du nom, au singulier et au pluriel (el día).
-- compétences : c4.es.langue.groupe-nominal
+- compétences : c4.es.5e.langue.groupe-nominal
 - lv2 : es
 - langue : es
 - erreur : {explanation}
@@ -574,10 +574,158 @@ Pour tous les items :
    - indice : Voyelle à la fin : -s. Et l’article ?
    - explication : la mochila (le sac à dos) → las mochilas : l’article aussi se met au pluriel, la devient las.
 
+## Frases · `es-sentences`
+
+- description : Poser une question, dire non ; puis lire une date, comparer, et, ou, mais, au Mexique.
+- compétences : c4.es.5e.langue.phrase · c4.es.5e.culture.axes
+- lv2 : es
+- langue : es
+- erreur : {explanation}
+- bloc gagné : lv2-5e-introductions
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `lv2-5e-introductions-es-sentences-1`
+
+- consigne : Lis et écoute la question en espagnol. Choisis la bonne réponse. La règle est affichée.
+- bravo : Bien répondu !
+
+Pour tous les items :
+- aide « Preguntar y decir no » :
+  - ¿Quién? = qui ; ¿Dónde? = où ; ¿Cuándo? = quand
+  - ¿Qué? = que, quoi ; ¿Cuántos? = combien ; ¿Por qué? = pourquoi
+  - porque = parce que : il répond à ¿Por qué?
+  - o = ou : on choisit l’un des deux. y = et ; pero = mais.
+  - no se met juste avant le verbe : no hablo alemán.
+  - Avec me ou te, no vient avant : no te escucho.
+
+1. énoncé : ¿Quién es tu profesora de inglés?
+   - lu : Quién es tu profesora de inglés?
+   - choix : Es la señora Gil. · Está en el colegio. · Es el lunes.
+   - réponse : Es la señora Gil.
+   - indice : Regarde le premier mot de la question, puis la règle.
+   - explication : ¿Quién? = qui : on répond par une personne, la señora Gil. Está en el colegio dit où elle est ; es el lunes dit quand.
+2. énoncé : ¿Dónde está la biblioteca?
+   - lu : Dónde está la biblioteca?
+   - choix : Está aquí. · Abre a las nueve. · Hay muchos libros.
+   - réponse : Está aquí.
+   - indice : Regarde le premier mot de la question, puis la règle.
+   - explication : ¿Dónde? = où : on répond par un lieu, está aquí (elle est ici). Abre a las nueve dit quand elle ouvre.
+3. énoncé : ¿Cuándo tienes inglés?
+   - lu : Cuándo tienes inglés?
+   - choix : El martes. · En el aula 4. · Con la señora Gil.
+   - réponse : El martes.
+   - indice : Regarde le premier mot de la question, puis la règle.
+   - explication : ¿Cuándo? = quand : on répond par un moment, el martes (le mardi). En el aula 4 dit où ; con la señora Gil dit avec qui.
+4. énoncé : ¿Por qué estudias español?
+   - lu : Por qué estudias español?
+   - choix : Porque me gusta. · Los lunes y los jueves. · En el colegio.
+   - réponse : Porque me gusta.
+   - indice : ¿Por qué? demande une raison. Quel mot répond à pourquoi ?
+   - explication : ¿Por qué? = pourquoi : on répond avec porque (parce que), en un seul mot et sans accent. Porque me gusta = parce que j’aime ça.
+5. énoncé : ¿Qué comes en el recreo?
+   - lu : Qué comes en el recreo?
+   - choix : Una manzana. · En el patio. · A las once.
+   - réponse : Una manzana.
+   - indice : ¿Qué? = que, quoi. Que manges-tu ?
+   - explication : ¿Qué comes? = Que manges-tu ? On répond par une chose : una manzana (une pomme). En el patio dit où ; a las once dit quand.
+6. énoncé : ¿Tienes un perro?
+   - lu : Tienes un perro?
+   - choix : No, no tengo perro. · No, tengo no perro. · No, tengo perro.
+   - réponse : No, no tengo perro.
+   - indice : Le premier no répond non. Où se place le no qui nie le verbe ?
+   - explication : Le premier no veut dire non ; le second se met juste avant le verbe : no tengo perro (je n’ai pas de chien). Sans lui, tengo perro voudrait dire « j’ai un chien ».
+7. énoncé : ¿Te gusta el pescado?
+   - lu : Te gusta el pescado?
+   - choix : No, no me gusta. · No, me no gusta. · No, me gusta no.
+   - réponse : No, no me gusta.
+   - indice : Relis la dernière ligne de la règle : où va no avec me ?
+   - explication : no se place avant me : no me gusta (je n’aime pas). En espagnol, pas de mot comme « pas » après le verbe.
+8. énoncé : ¿Quieres agua o zumo?
+   - lu : Quieres agua o zumo?
+   - choix : Agua, gracias. · Sí, gracias. · Bien, gracias.
+   - réponse : Agua, gracias.
+   - indice : o = ou : on te demande de choisir.
+   - explication : o = ou : on choisit l’un des deux, agua (de l’eau). Sí ne répond pas à une question avec o ; bien, gracias répond à ¿Qué tal?
+
+### Niveau 2 · `lv2-5e-introductions-es-sentences-2`
+
+- consigne : Lis la question, puis le document en espagnol, et choisis la bonne réponse. Le lexique est affiché.
+- bravo : Bien lu !
+
+Pour tous les items :
+- langue des choix : fr
+- aide « Leer y comparar » :
+  - más… que = plus… que ; menos… que = moins… que
+  - y = et ; o = ou ; pero = mais
+  - La date : el 3 de marzo = le 3 mars (le mois, sans majuscule)
+  - marzo = mars ; enero = janvier ; diciembre = décembre
+  - L’impératif donne un ordre : ¡Mira! = regarde ; ¡Lee! = lis
+  - México = le Mexique ; Ciudad de México = Mexico, la capitale
+
+1. énoncé : "¡Hola! Soy Carmen.\nVivo en Puebla, en México.\nMi cumpleaños es el 9 de mayo."
+   - question : Quand est l’anniversaire de Carmen ?
+   - lu : Hola! Soy Carmen. Vivo en Puebla, en México. Mi cumpleaños es el nueve de mayo.
+   - choix : Le 9 mai · Le 9 mars · Le 19 mai
+   - réponse : Le 9 mai
+   - indice : Lis la dernière ligne : el cumpleaños = l’anniversaire. mayo ou marzo ?
+   - explication : el 9 de mayo = le 9 mai : mayo veut dire mai ; mars se dit marzo. nueve, c’est 9 ; 19 se dirait diecinueve.
+2. énoncé : "Día de Muertos en México\n1 y 2 de noviembre\nFlores, velas y pan de muerto"
+   - question : Quand fête-t-on le Día de Muertos ?
+   - lu : Día de Muertos en México. Uno y dos de noviembre. Flores, velas y pan de muerto.
+   - choix : Le 1er et le 2 novembre · Le 1er ou le 2 novembre · Le 31 octobre
+   - réponse : Le 1er et le 2 novembre
+   - indice : Lis la 2e ligne. y, est-ce et ou ou ?
+   - explication : 1 y 2 de noviembre = le 1er et le 2 novembre : y veut dire et, la fête dure les deux jours. Le 31 octobre, c’est Halloween. Au Mexique, on décore souvent la maison de fleurs et de bougies (velas).
+3. énoncé : Ana es menos alta que su hermano Luis.
+   - question : Qui est le plus grand ?
+   - lu : Ana es menos alta que su hermano Luis.
+   - choix : Luis · Ana · Ils sont pareils
+   - réponse : Luis
+   - indice : menos… que = moins… que.
+   - explication : Ana es menos alta que Luis = Ana est moins grande que Luis : Luis est le plus grand, ils ne sont pas pareils.
+4. énoncé : "Las pirámides de Teotihuacán\nLa pirámide del Sol es más alta\nque la pirámide de la Luna."
+   - question : Quelle pyramide est la plus haute ?
+   - lu : Las pirámides de Teotihuacán. La pirámide del Sol es más alta que la pirámide de la Luna.
+   - choix : Celle du Soleil · Celle de la Lune · Elles sont pareilles
+   - réponse : Celle du Soleil
+   - indice : más… que = plus… que. Quelle pyramide vient avant más ?
+   - explication : La pirámide del Sol es más alta que la de la Luna = la pyramide du Soleil est plus haute. Ces deux pyramides sont à Teotihuacán, près de Mexico.
+5. énoncé : "Me llamo Diego y vivo en Monterrey.\nHablo español y un poco de inglés,\npero no hablo francés."
+   - question : Quelles langues Diego parle-t-il ?
+   - lu : Me llamo Diego y vivo en Monterrey. Hablo español y un poco de inglés, pero no hablo francés.
+   - choix : Espagnol et anglais · Espagnol et français · Anglais et français
+   - réponse : Espagnol et anglais
+   - indice : pero = mais : lis bien ce qui vient après pero.
+   - explication : Hablo español y un poco de inglés = je parle espagnol et un peu anglais. pero no hablo francés = mais je ne parle pas français.
+6. énoncé : "Taquería La Paloma\nMenú: tres tacos de pollo o de verduras\nBebida: agua de limón"
+   - question : Que peux-tu choisir dans tes tacos ?
+   - lu : Taquería La Paloma. Menú: tres tacos de pollo o de verduras. Bebida: agua de limón.
+   - choix : Du poulet ou des légumes · Du poulet et des légumes · Du poisson ou des légumes
+   - réponse : Du poulet ou des légumes
+   - indice : o, est-ce et ou ou ? Et el pollo, c’est un animal de la ferme.
+   - explication : de pollo o de verduras = au poulet ou aux légumes : o veut dire ou, on choisit l’un des deux. Le poisson se dit el pescado. Au Mexique, les tacos se font souvent avec une galette de maïs.
+7. énoncé : "La profesora:\n¡Escribe la fecha en la pizarra, por favor!"
+   - question : Que demande la professeure ?
+   - lu : La profesora: Escribe la fecha en la pizarra, por favor!
+   - choix : Écrire la date · Lire la date · Effacer la date
+   - réponse : Écrire la date
+   - indice : Le verbe est au début. Pense aux consignes de la classe : escribir, leer.
+   - explication : ¡Escribe! = écris : c’est l’impératif d’escribir, une consigne. Lire se dirait ¡Lee! ; la fecha = la date ; la pizarra = le tableau.
+8. énoncé : "Hoy es el 16 de septiembre:\n¡es la fiesta nacional de México!"
+   - question : Quel jour est la fête nationale du Mexique ?
+   - lu : Hoy es el dieciséis de septiembre: es la fiesta nacional de México!
+   - choix : Le 6 septembre · Le 16 septembre · Le 26 septembre
+   - réponse : Le 16 septembre
+   - indice : Écoute bien le nombre : dieciséis, seis ou veintiséis ?
+   - explication : dieciséis = 16 : le 16 septembre, le Mexique fête son indépendance. seis, c’est 6 ; veintiséis, 26. Le Mexique est le pays où vivent le plus d’hispanophones.
+
 ## Hallo · `de-greetings`
 
 - description : Se présenter : une question en allemand, la bonne réponse (sein et haben).
-- compétences : c4.de.dialoguer.echanges-sociaux · c4.de.langue.temps-verbaux · c4.de.langue.lexique
+- compétences : c4.de.5e.interagir.echanges · c4.de.5e.langue.verbe · c4.de.5e.langue.lexique
 - lv2 : de
 - langue : de
 - bravo : Bien répondu !
@@ -652,7 +800,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-de-greetings-2`
 
 - consigne : Lis et écoute la phrase en allemand, puis choisis la bonne réaction. La règle est affichée : lis-la avant de répondre.
-- programme : c4.de.dialoguer.reagir
+- programme : c4.de.5e.interagir.reagir
 
 Pour tous les items :
 - aide « Réagir » :
@@ -716,7 +864,7 @@ Pour tous les items :
 ## Zahlen · `de-numbers`
 
 - description : Les nombres entendus : -zehn ou -zig, 24 ou 42 ?
-- compétences : c4.de.ecouter.intervention-breve · c4.de.langue.lexique
+- compétences : c4.de.5e.comprendre.oral-ecrit · c4.de.5e.langue.lexique
 - lv2 : de
 - langue : de
 - consigne : Écoute le nombre en allemand et choisis le bon nombre. La règle est affichée.
@@ -855,7 +1003,7 @@ Pour tous les items :
 ## Familie und Schule · `de-family`
 
 - description : La famille, les consignes de la classe, un panneau ; schon ou schön ?
-- compétences : c4.de.lire.consignes-panneaux · c4.de.langue.lexique
+- compétences : c4.de.5e.comprendre.oral-ecrit · c4.de.5e.langue.lexique
 - lv2 : de
 - langue : de
 - erreur : {explanation}
@@ -939,7 +1087,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-de-family-2`
 
 - consigne : Écoute le mot en allemand, puis choisis les lettres qui manquent. La règle est affichée.
-- programme : c4.de.ecrire.dictee-fiche
+- programme : c4.de.5e.exprimer.dictee
 - bravo : Bien écrit !
 
 Pour tous les items :
@@ -1004,7 +1152,7 @@ Pour tous les items :
 ## Der, die, das · `de-articles`
 
 - description : L’article du nom, toujours avec sa majuscule (das Mädchen).
-- compétences : c4.de.langue.groupe-nominal
+- compétences : c4.de.5e.langue.groupe-nominal
 - lv2 : de
 - langue : de
 - bravo : Bon article !
@@ -1132,6 +1280,156 @@ Pour tous les items :
    - réponse : der Schulhof
    - indice : Schulhof = Schule + Hof : lequel décide ?
    - explication : der Schulhof (la cour de l’école) : le dernier nom décide, der Hof (la cour). die Schule ne compte pas.
+
+## Sätze · `de-sentences`
+
+- description : Les types de phrase et la place du verbe ; puis des messages sur les Länder, avec und, aber, oder, denn.
+- compétences : c4.de.5e.langue.phrase · c4.de.5e.culture.axes
+- lv2 : de
+- langue : de
+- erreur : {explanation}
+- bloc gagné : lv2-5e-introductions
+- blocs : 4
+- XP : 14
+- monte à : 0.85
+- descend à : 0.5
+
+### Niveau 1 · `lv2-5e-introductions-de-sentences-1`
+
+- consigne : Lis et écoute la phrase en allemand. Choisis la phrase qui va avec. La règle est affichée.
+- programme : c4.de.5e.langue.phrase
+- bravo : Bien construit !
+
+Pour tous les items :
+- aide « La phrase allemande » :
+  - Une phrase : le verbe en 2e place. Heute ist es kalt.
+  - Question avec wo, was, wie : le verbe juste après. Was machst du?
+  - Question sans mot en W : le verbe en 1re place. Kommst du?
+  - Un ordre : le verbe en 1re place. Komm bitte!
+  - Un préverbe (aus, ein, mit) va à la fin : Sie sieht glücklich aus.
+  - und, aber, oder, denn ne comptent pas : le verbe reste en 2e place.
+
+1. énoncé : Ja, ich habe eine Katze.
+   - lu : Ja, ich habe eine Katze.
+   - choix : Wo ist deine Katze? · Hast du eine Katze? · Wie heißt deine Katze?
+   - réponse : Hast du eine Katze?
+   - indice : La réponse commence par ja : quelle question attend ja ou nein ?
+   - explication : On répond ja ou nein à une question sans mot en W : le verbe hast vient en 1re place. Wo (où) et wie (comment) attendent un lieu ou un nom.
+2. énoncé : Ich wohne in Leipzig.
+   - lu : Ich wohne in Leipzig.
+   - choix : Wo wohnst du? · Wo du wohnst? · Wie wohnst du?
+   - réponse : Wo wohnst du?
+   - indice : La réponse dit un lieu. Après le mot en W, où va le verbe ?
+   - explication : Wo wohnst du? = Où habites-tu ? Après wo, le verbe vient tout de suite, puis du. Wo du wohnst? suit l’ordre du français ; wie veut dire comment.
+3. énoncé : Die Tür ist offen und es ist kalt.
+   - lu : Die Tür ist offen und es ist kalt.
+   - choix : Bitte die Tür schließ! · Die Tür bitte schließ! · Schließ bitte die Tür!
+   - réponse : Schließ bitte die Tür!
+   - indice : Pour donner un ordre, où va le verbe ?
+   - explication : Schließ bitte die Tür! = Ferme la porte, s’il te plaît ! Dans un ordre, le verbe schließ vient en 1re place, jamais à la fin.
+4. énoncé : Warum ist Paul nicht da?
+   - lu : Warum ist Paul nicht da?
+   - choix : Heute er ist krank. · Heute ist er krank. · Er heute ist krank.
+   - réponse : Heute ist er krank.
+   - indice : Heute est en 1re place. Où va le verbe ?
+   - explication : Heute ist er krank = aujourd’hui, il est malade. Le verbe ist reste en 2e place : la phrase commence par heute, alors er vient après le verbe.
+5. énoncé : Magst du Mathe?
+   - lu : Magst du Mathe?
+   - choix : Mathe finde ich super! · Mathe ich finde super! · Ich Mathe finde super!
+   - réponse : Mathe finde ich super!
+   - indice : Mathe est en 1re place. Où va le verbe ?
+   - explication : Mathe finde ich super = les maths, je trouve ça super. Le verbe finde reste en 2e place, juste après Mathe ; ich vient après.
+6. énoncé : Ist deine Mutter müde?
+   - lu : Ist deine Mutter müde?
+   - choix : Ja, sie aussieht müde. · Ja, sie sieht aus müde. · Ja, sie sieht müde aus.
+   - réponse : Ja, sie sieht müde aus.
+   - indice : aussehen : où va le préverbe aus ?
+   - explication : aussehen = avoir l’air : sie sieht müde aus (elle a l’air fatiguée). Le verbe sieht en 2e place, le préverbe aus tout à la fin.
+7. énoncé : Hast du bald Geburtstag?
+   - lu : Hast du bald Geburtstag?
+   - choix : Ja, ich lade dich ein! · Ja, ich einlade dich! · Ja, ich lade ein dich!
+   - réponse : Ja, ich lade dich ein!
+   - indice : einladen : où va le préverbe ein ?
+   - explication : einladen = inviter : ich lade dich ein (je t’invite). Le verbe lade en 2e place, le préverbe ein tout à la fin, après dich.
+8. énoncé : Kommt Lisa heute?
+   - lu : Kommt Lisa heute?
+   - choix : Nein, denn ist sie krank. · Nein, denn sie ist krank. · Nein, denn sie krank ist.
+   - réponse : Nein, denn sie ist krank.
+   - indice : denn ne compte pas : après lui, l’ordre est celui d’une phrase simple.
+   - explication : denn = car : nein, denn sie ist krank (non, car elle est malade). Après denn, on garde l’ordre d’une phrase simple : sie, puis le verbe ist.
+
+### Niveau 2 · `lv2-5e-introductions-de-sentences-2`
+
+- consigne : Lis la question, puis le message en allemand. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.
+- programme : c4.de.5e.culture.axes · c4.de.5e.langue.phrase
+- bravo : Bien lu !
+
+Pour tous les items :
+- langue des choix : fr
+- aide « 16 Länder » :
+  - Deutschland hat 16 Länder (die Bundesländer).
+  - die Hauptstadt = la capitale ; die Stadt = la ville
+  - der Norden, der Süden ; die Grenze = la frontière
+  - das Meer = la mer ; der Feiertag = le jour férié
+  - und = et ; aber = mais ; oder = ou ; denn = car
+  - München = Munich ; Köln = Cologne
+
+1. énoncé : "Ich heiße Jana und wohne in Kiel, an der Ostsee.\nIch schwimme gern, aber das Wasser ist kalt."
+   - question : Que dit Jana de l’eau ?
+   - lu : Ich heiße Jana und wohne in Kiel, an der Ostsee. Ich schwimme gern, aber das Wasser ist kalt.
+   - choix : Elle est chaude · Elle est sale · Elle est froide
+   - réponse : Elle est froide
+   - indice : Lis la fin de la 2e phrase, après aber (mais).
+   - explication : aber = mais : Jana aime nager, mais l’eau est kalt, froide. Chaud se dit warm. Kiel est au nord de l’Allemagne, au bord de la mer Baltique (die Ostsee).
+2. énoncé : "Ich bin Tom. Ich wohne in Hamburg.\nHamburg ist eine Stadt und ein Bundesland."
+   - question : Que dit Tom de sa ville ?
+   - lu : Ich bin Tom. Ich wohne in Hamburg. Hamburg ist eine Stadt und ein Bundesland.
+   - choix : C’est une ville et un Land · C’est un village au bord de la mer · C’est une ville, pas un Land
+   - réponse : C’est une ville et un Land
+   - indice : Lis la dernière phrase : und = et.
+   - explication : und = et : Hamburg est à la fois une ville et un Land. Berlin et Bremen sont aussi des villes-États.
+3. énoncé : "Ich heiße Lukas. Mein Bundesland ist Bayern.\nDie Hauptstadt ist München, aber ich wohne in Passau."
+   - question : Où habite Lukas ?
+   - lu : Ich heiße Lukas. Mein Bundesland ist Bayern. Die Hauptstadt ist München, aber ich wohne in Passau.
+   - choix : À Munich · À Passau · À Berlin
+   - réponse : À Passau
+   - indice : Lis après aber : c’est là qu’il habite.
+   - explication : aber = mais : la capitale est München (Munich), mais Lukas habite à Passau, une autre ville de Bavière (Bayern).
+4. énoncé : "Mia, wohnst du in Köln oder in Bonn?\nIn Bonn, aber meine Schule ist in Köln."
+   - question : Où habite Mia ?
+   - lu : Mia, wohnst du in Köln oder in Bonn? In Bonn, aber meine Schule ist in Köln.
+   - choix : À Bonn · À Cologne · À Berlin
+   - réponse : À Bonn
+   - indice : oder = ou : on demande à Mia de choisir. Lis sa réponse.
+   - explication : oder = ou : Köln ou Bonn ? Mia répond In Bonn : elle habite à Bonn. Köln (Cologne), c’est la ville de son école.
+5. énoncé : "Ich fahre gern nach Berlin, denn dort wohnt mein Opa.\nBerlin ist die Hauptstadt von Deutschland."
+   - question : Pourquoi aime-t-il aller à Berlin ?
+   - lu : Ich fahre gern nach Berlin, denn dort wohnt mein Opa. Berlin ist die Hauptstadt von Deutschland.
+   - choix : Il y va pour l’école · Son grand-père y vit · Il y a un grand musée
+   - réponse : Son grand-père y vit
+   - indice : Lis après denn (car) : c’est la raison.
+   - explication : denn = car : il aime aller à Berlin, car son grand-père (mein Opa) y habite. Berlin est aussi la capitale du pays, et un Land.
+6. énoncé : Die Flagge von Deutschland ist schwarz, rot und gold.
+   - question : De quelles couleurs est le drapeau allemand ?
+   - lu : Die Flagge von Deutschland ist schwarz, rot und gold.
+   - choix : Bleu, blanc et rouge · Noir, blanc et rouge · Noir, rouge et or
+   - réponse : Noir, rouge et or
+   - indice : schwarz = noir. Et gold : pense à doré.
+   - explication : schwarz, rot und gold = noir, rouge et or. Bleu, blanc et rouge, c’est le drapeau de la France.
+7. énoncé : "Am 3. Oktober ist ein Feiertag:\nder Tag der Deutschen Einheit."
+   - question : Que fête-t-on le 3 octobre ?
+   - lu : Am dritten Oktober ist ein Feiertag: der Tag der Deutschen Einheit.
+   - choix : L’unité du pays · La fête du travail · L’arrivée de l’été
+   - réponse : L’unité du pays
+   - indice : die Einheit vient de eins (un) : un seul pays.
+   - explication : die Einheit = l’unité : le 3 octobre, l’Allemagne fête son unité, retrouvée en 1990. La fête du travail, c’est le 1er mai.
+8. énoncé : "Ich bin Ben. Ich wohne im Süden von Deutschland.\nDie Schweiz und Österreich sind ganz nah."
+   - question : Quels pays sont tout près de chez Ben ?
+   - lu : Ich bin Ben. Ich wohne im Süden von Deutschland. Die Schweiz und Österreich sind ganz nah.
+   - choix : La France et la Suisse · L’Autriche et la Pologne · La Suisse et l’Autriche
+   - réponse : La Suisse et l’Autriche
+   - indice : Lis la 2e phrase : deux pays, reliés par und.
+   - explication : die Schweiz = la Suisse ; Österreich = l’Autriche. Avec l’Allemagne, ce sont les pays DACH : on y parle allemand (en Suisse, avec d’autres langues).
 
 ## Les plans
 

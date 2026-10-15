@@ -180,6 +180,23 @@ describe('completeExercise', () => {
     const last = completeExercise(state, DEF, [ok('a')], '2026-09-26', () => 0.9999);
     expect(['trophy-gold', 'trophy-crystal', 'roof', 'door', 'lantern', 'fence', 'stairs']).not.toContain(last.chestBlock);
   });
+
+  it('un item de la file retiré de l’exercice la quitte à la partie suivante, sans en faire une révision', () => {
+    const due = (itemId: string) => ({ itemId, due: '2026-09-24', stage: 0, streak: 0 });
+    const state = { ...EMPTY_STATE, spaced: [due(`${DEF.id}:retire`), due(`${DEF.id}:a`), due('autre-exercice:retire')] };
+    const c = completeExercise(state, DEF, [ok('a'), ok('b'), ok('c'), ko('d')], '2026-09-25');
+    // « a », encore dans l'exercice, reste dans la file ; un autre exercice n'est pas touché.
+    expect(c.state.spaced.map((s) => s.itemId).sort()).toEqual(['autre-exercice:retire', `${DEF.id}:a`, `${DEF.id}:d`]);
+    // Seul l'item retiré était dû : la partie n'est pas une révision.
+    const seul = completeExercise({ ...EMPTY_STATE, spaced: [due(`${DEF.id}:retire`)] }, DEF, [ok('a')], '2026-09-25');
+    expect(seul.revision).toBe(false);
+    expect(seul.state.spaced).toEqual([]);
+    // Un exercice généré tire d'autres items à chaque partie : sa file ne se lit pas sur son échantillon.
+    const genere = { ...DEF, generate: () => DEF.items };
+    const g = completeExercise({ ...EMPTY_STATE, spaced: [due(`${DEF.id}:mul-3-4`)] }, genere, [ok('a')], '2026-09-25');
+    expect(g.revision).toBe(true);
+    expect(g.state.spaced.map((s) => s.itemId)).toEqual([`${DEF.id}:mul-3-4`]);
+  });
 });
 
 it('sanitizeState répare des données corrompues', () => {

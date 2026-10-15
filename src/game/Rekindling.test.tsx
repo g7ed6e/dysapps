@@ -32,14 +32,17 @@ it('un toucher sur la scène saute le moment sans atteindre le canvas, « Passer
   expect(enSilence).not.toHaveBeenCalled();
 });
 
-it('Menu, l’archipel, Recentrer et la barre gardent leur effet : le moment finit en silence', () => {
+it('les accès directs, Réglages, l’archipel, Recentrer et la barre gardent leur effet : le moment finit en silence', () => {
   const sauter = vi.fn();
   const enSilence = vi.fn();
   const { container } = render(
     <div onPointerDownCapture={toucherQuiSaute(sauter, enSilence)}>
-      <button type="button" className="button world-menu-button">
-        Menu
-      </button>
+      <nav className="world-shortcuts">
+        <button type="button">Reprendre</button>
+      </nav>
+      <span className="world-settings">
+        <button type="button">Réglages</button>
+      </span>
       <div className="world-archipel">
         <button type="button">6e</button>
       </div>

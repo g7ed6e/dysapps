@@ -101,7 +101,7 @@ export function finishWalk(walk: Walk | null, now: number): boolean {
   return true;
 }
 
-// ---- Le voyage du Bloc-Navire
+// ---- Le voyage de la Nef
 
 /** Le voyage en cours : son temps (départ ou arrivée), son début, où l'on en est. */
 export interface VoyageRun {
@@ -294,6 +294,19 @@ export function groundTap(
   if (bridge && can.bridge) return { kind: 'bridge', id: bridge };
   if (can.build) return { kind: 'face', cell: hit.cell, next: hit.next };
   return { kind: 'island', id: grilleDe(a).ileEn({ ...hit.ground, z: 0 }), cell: hit.cell };
+}
+
+/**
+ * Sur la Carte (piste A du mainteneur, 7 octobre 2026), l'île d'un toucher sur le terrain : une borne ou un lieu comptent
+ * pour l'île où ils sont ; un ouvrage ne mène nulle part (rien).
+ */
+export function ileSurLaCarte(
+  a: ArchipelagoId,
+  hit: { cell: Cell; next: Cell; ground: { x: number; y: number } },
+  tags: { bridges: Map<string, string>; quests: Map<string, string>; places?: Map<string, PlaceId> },
+): BiomeId | null {
+  const tap = groundTap(a, hit, tags, { quest: false, bridge: true, build: false });
+  return tap.kind === 'island' ? tap.id : null;
 }
 
 /**

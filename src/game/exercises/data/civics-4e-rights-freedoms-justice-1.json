@@ -1,0 +1,246 @@
+{
+  "id": "civics-4e-rights-freedoms-justice-1",
+  "biome": "civics-4e-rights-freedoms",
+  "type": "justice",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-4e-rights-freedoms-justice-1-0",
+      "prompt": "Quand l’État lui-même doit respecter les lois, on parle d’État de …",
+      "spoken": "Quand l’État lui-même doit respecter les lois, on parle d’État de  (mot manquant) ",
+      "choices": [
+        "siège",
+        "droit",
+        "urgence"
+      ],
+      "answer": "droit",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Dans un État de droit, l’État lui-même obéit au droit. L’état d’urgence et l’état de siège sont des situations exceptionnelles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’État de droit",
+          "lines": [
+            "Tous obéissent au droit, même l’État et ses dirigeants.",
+            "En haut des règles : la Constitution, puis les lois, puis les règlements.",
+            "La justice est indépendante du gouvernement.",
+            "Faire appel : demander à d’autres juges de juger à nouveau. La Cour de cassation vérifie ensuite le droit.",
+            "Un litige avec l’administration : le tribunal administratif.",
+            "La cour d’assises juge les crimes les plus graves, avec des citoyens tirés au sort.",
+            "Les mineurs ont une justice à part, qui les protège aussi."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-justice-1-1",
+      "prompt": "En haut des règles de droit, en France, se trouve la …",
+      "spoken": "En haut des règles de droit, en France, se trouve la  (mot manquant) ",
+      "choices": [
+        "loi",
+        "Constitution",
+        "règlement intérieur"
+      ],
+      "answer": "Constitution",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "La Constitution est au-dessus des lois : une loi doit la respecter. Le règlement intérieur d’un collège est tout en bas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’État de droit",
+          "lines": [
+            "Tous obéissent au droit, même l’État et ses dirigeants.",
+            "En haut des règles : la Constitution, puis les lois, puis les règlements.",
+            "La justice est indépendante du gouvernement.",
+            "Faire appel : demander à d’autres juges de juger à nouveau. La Cour de cassation vérifie ensuite le droit.",
+            "Un litige avec l’administration : le tribunal administratif.",
+            "La cour d’assises juge les crimes les plus graves, avec des citoyens tirés au sort.",
+            "Les mineurs ont une justice à part, qui les protège aussi."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-justice-1-2",
+      "prompt": "La loi s’applique à tous, même aux dirigeants : personne n’est au-dessus des …",
+      "spoken": "La loi s’applique à tous, même aux dirigeants : personne n’est au-dessus des  (mot manquant) ",
+      "choices": [
+        "lois",
+        "juges",
+        "électeurs"
+      ],
+      "answer": "lois",
+      "hint": "Dans un État de droit, à quoi tout le monde obéit-il ?",
+      "explanation": "Personne n’est au-dessus des lois, ni un ministre, ni un président : c’est le principe de l’État de droit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’État de droit",
+          "lines": [
+            "Tous obéissent au droit, même l’État et ses dirigeants.",
+            "En haut des règles : la Constitution, puis les lois, puis les règlements.",
+            "La justice est indépendante du gouvernement.",
+            "Faire appel : demander à d’autres juges de juger à nouveau. La Cour de cassation vérifie ensuite le droit.",
+            "Un litige avec l’administration : le tribunal administratif.",
+            "La cour d’assises juge les crimes les plus graves, avec des citoyens tirés au sort.",
+            "Les mineurs ont une justice à part, qui les protège aussi."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-justice-1-3",
+      "prompt": "Un crime grave est jugé par la cour d’assises, avec des citoyens tirés au sort : les …",
+      "spoken": "Un crime grave est jugé par la cour d’assises, avec des citoyens tirés au sort : les  (mot manquant) ",
+      "choices": [
+        "avocats",
+        "témoins",
+        "jurés"
+      ],
+      "answer": "jurés",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "Les jurés sont des citoyens tirés au sort ; ils jugent avec les juges de la cour d’assises. Les avocats, eux, défendent ; le procureur accuse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’État de droit",
+          "lines": [
+            "Tous obéissent au droit, même l’État et ses dirigeants.",
+            "En haut des règles : la Constitution, puis les lois, puis les règlements.",
+            "La justice est indépendante du gouvernement.",
+            "Faire appel : demander à d’autres juges de juger à nouveau. La Cour de cassation vérifie ensuite le droit.",
+            "Un litige avec l’administration : le tribunal administratif.",
+            "La cour d’assises juge les crimes les plus graves, avec des citoyens tirés au sort.",
+            "Les mineurs ont une justice à part, qui les protège aussi."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-justice-1-4",
+      "prompt": "Les mineurs ont une justice à part, avec un juge spécialisé : le juge des …",
+      "spoken": "Les mineurs ont une justice à part, avec un juge spécialisé : le juge des  (mot manquant) ",
+      "choices": [
+        "enfants",
+        "tutelles",
+        "comptes"
+      ],
+      "answer": "enfants",
+      "hint": "Relis la dernière ligne du rappel : qui sont les mineurs ?",
+      "explanation": "Le juge des enfants juge les mineurs, et il protège aussi les enfants en danger. Les mineurs ont une justice à part.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’État de droit",
+          "lines": [
+            "Tous obéissent au droit, même l’État et ses dirigeants.",
+            "En haut des règles : la Constitution, puis les lois, puis les règlements.",
+            "La justice est indépendante du gouvernement.",
+            "Faire appel : demander à d’autres juges de juger à nouveau. La Cour de cassation vérifie ensuite le droit.",
+            "Un litige avec l’administration : le tribunal administratif.",
+            "La cour d’assises juge les crimes les plus graves, avec des citoyens tirés au sort.",
+            "Les mineurs ont une justice à part, qui les protège aussi."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-justice-1-5",
+      "prompt": "Contester un premier jugement devant d’autres juges, c’est faire …",
+      "spoken": "Contester un premier jugement devant d’autres juges, c’est faire  (mot manquant) ",
+      "choices": [
+        "grève",
+        "appel",
+        "campagne"
+      ],
+      "answer": "appel",
+      "hint": "Relis la quatrième ligne du rappel : d’autres juges examinent l’affaire.",
+      "explanation": "Faire appel, c’est demander à d’autres juges, ceux de la cour d’appel, de juger l’affaire une seconde fois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’État de droit",
+          "lines": [
+            "Tous obéissent au droit, même l’État et ses dirigeants.",
+            "En haut des règles : la Constitution, puis les lois, puis les règlements.",
+            "La justice est indépendante du gouvernement.",
+            "Faire appel : demander à d’autres juges de juger à nouveau. La Cour de cassation vérifie ensuite le droit.",
+            "Un litige avec l’administration : le tribunal administratif.",
+            "La cour d’assises juge les crimes les plus graves, avec des citoyens tirés au sort.",
+            "Les mineurs ont une justice à part, qui les protège aussi."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-justice-1-6",
+      "prompt": "La plus haute juridiction de la justice judiciaire, qui vérifie que le droit a été bien appliqué, est la …",
+      "spoken": "La plus haute juridiction de la justice judiciaire, qui vérifie que le droit a été bien appliqué, est la  (mot manquant) ",
+      "choices": [
+        "Cour des comptes",
+        "cour d’appel",
+        "Cour de cassation"
+      ],
+      "answer": "Cour de cassation",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "La Cour de cassation vérifie que le droit a été bien appliqué ; elle peut casser un jugement. La Cour des comptes contrôle l’argent public.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’État de droit",
+          "lines": [
+            "Tous obéissent au droit, même l’État et ses dirigeants.",
+            "En haut des règles : la Constitution, puis les lois, puis les règlements.",
+            "La justice est indépendante du gouvernement.",
+            "Faire appel : demander à d’autres juges de juger à nouveau. La Cour de cassation vérifie ensuite le droit.",
+            "Un litige avec l’administration : le tribunal administratif.",
+            "La cour d’assises juge les crimes les plus graves, avec des citoyens tirés au sort.",
+            "Les mineurs ont une justice à part, qui les protège aussi."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-4e-rights-freedoms-justice-1-7",
+      "prompt": "Une famille conteste une décision du maire : elle va devant le tribunal …",
+      "spoken": "Une famille conteste une décision du maire : elle va devant le tribunal  (mot manquant) ",
+      "choices": [
+        "correctionnel",
+        "administratif",
+        "pour enfants"
+      ],
+      "answer": "administratif",
+      "hint": "Relis la cinquième ligne du rappel : une mairie est une administration.",
+      "explanation": "Un litige avec une administration, comme une mairie, se juge au tribunal administratif. Le tribunal correctionnel juge les délits.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’État de droit",
+          "lines": [
+            "Tous obéissent au droit, même l’État et ses dirigeants.",
+            "En haut des règles : la Constitution, puis les lois, puis les règlements.",
+            "La justice est indépendante du gouvernement.",
+            "Faire appel : demander à d’autres juges de juger à nouveau. La Cour de cassation vérifie ensuite le droit.",
+            "Un litige avec l’administration : le tribunal administratif.",
+            "La cour d’assises juge les crimes les plus graves, avec des citoyens tirés au sort.",
+            "Les mineurs ont une justice à part, qui les protège aussi."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-4e-rights-freedoms",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

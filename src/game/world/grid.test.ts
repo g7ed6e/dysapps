@@ -87,6 +87,7 @@ describe('La disposition en grille', () => {
     }
   });
 
+  // Chaque paire d'îles de chaque archipel, deux fois (42 îles depuis HG-3 et SC-2) : plus long que les 5 s par défaut.
   it('les trajets d’île en île : le chemin et la durée d’avant, sur le sol', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const { g, ground } = grilleDe(a);
@@ -108,6 +109,7 @@ describe('La disposition en grille', () => {
     const a = '6e';
     const { g } = grilleDe(a);
     let essais = 0;
+    let traverses = 0;
     for (const from of islandsOf(a))
       for (const to of islandsOf(a)) {
         if (from.id === to.id) continue;
@@ -118,12 +120,14 @@ describe('La disposition en grille', () => {
         if (g.ileEn(p) !== from.id) continue;
         const retour = g.trajet({ genre: 'ile', id: g.ileEn(p) }, { genre: 'ile', id: from.id }, { depart: p });
         expect(retour!.etapes.every((e) => e.ile !== to.id), `${from.id} → ${to.id}`).toBe(true);
-        // Parti de l'île visée (ce que faisait la page) : il finissait de traverser jusqu'à elle avant de revenir.
+        // Parti de l'île visée (ce que faisait la page) : il finissait de traverser jusqu'à elle avant de revenir, sur la
+        // plupart des trajets (depuis les formes des îles, GD-12, pas sur tous : de la Forêt au Laboratoire, non).
         const avant = g.trajet({ genre: 'ile', id: to.id }, { genre: 'ile', id: from.id }, { depart: p });
-        expect(avant!.etapes.some((e) => e.ile === to.id)).toBe(true);
+        if (avant!.etapes.some((e) => e.ile === to.id)) traverses++;
         essais++;
       }
     expect(essais).toBeGreaterThan(0);
+    expect(traverses).toBeGreaterThan(essais / 2);
   }, 30_000);
 
   it('le trajet jusqu’à la porte d’un lieu du village : celui d’avant', () => {
@@ -142,7 +146,7 @@ describe('La disposition en grille', () => {
           if (door) expect(g.versMonde(g.placeDe({ genre: 'lieu', id: place, ile: school })!)).toEqual(door);
         }
     }
-  });
+  }, 30_000);
 
   it('la durée d’une marche : six cases par seconde, quelle que soit sa longueur', () => {
     const court = [{ x: 0, y: 0, z: 0 }, { x: 3, y: 4, z: 0 }];

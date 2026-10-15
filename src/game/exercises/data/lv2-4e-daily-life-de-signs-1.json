@@ -1,0 +1,266 @@
+{
+  "id": "lv2-4e-daily-life-de-signs-1",
+  "biome": "lv2-4e-daily-life",
+  "type": "de-signs",
+  "level": 1,
+  "lang": "de",
+  "instruction": "Lis la question, puis le panneau ou le message en allemand. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.",
+  "programme": [
+    "c4.de.lire.consignes-panneaux"
+  ],
+  "items": [
+    {
+      "key": "lv2-4e-daily-life-de-signs-1-0",
+      "prompt": "Bitte ziehen",
+      "question": "Que faut-il faire pour ouvrir cette porte ?",
+      "spoken": "Bitte ziehen.",
+      "choices": [
+        "Pousser la porte",
+        "Tirer la porte",
+        "Sonner à la porte"
+      ],
+      "choicesLang": "fr",
+      "answer": "Tirer la porte",
+      "hint": "Ce n’est pas drücken (pousser) : c’est l’autre geste.",
+      "explanation": "ziehen = tirer : Bitte ziehen = tirez, s’il vous plaît. Pousser se dit drücken.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Schilder und Nachrichten",
+          "lines": [
+            "drücken = pousser ; geöffnet = ouvert ; geschlossen = fermé",
+            "verboten = interdit ; Achtung = attention",
+            "der Aufzug = l’ascenseur ; außer Betrieb = en panne",
+            "der Rasen = la pelouse ; betreten = marcher sur",
+            "die Hausaufgaben = les devoirs ; die Seite = la page",
+            "Liebe Mama, lieber Papa = chère maman, cher papa",
+            "bis später = à plus tard"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-1-1",
+      "prompt": "Rasen betreten verboten!",
+      "question": "Où ne faut-il pas marcher ?",
+      "spoken": "Rasen betreten verboten!",
+      "choices": [
+        "Sur l’herbe",
+        "Sur le trottoir",
+        "Dans la cour"
+      ],
+      "choicesLang": "fr",
+      "answer": "Sur l’herbe",
+      "hint": "Regarde le lexique : der Rasen, puis verboten.",
+      "explanation": "der Rasen = la pelouse ; verboten = interdit : on ne marche pas sur l’herbe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Schilder und Nachrichten",
+          "lines": [
+            "drücken = pousser ; geöffnet = ouvert ; geschlossen = fermé",
+            "verboten = interdit ; Achtung = attention",
+            "der Aufzug = l’ascenseur ; außer Betrieb = en panne",
+            "der Rasen = la pelouse ; betreten = marcher sur",
+            "die Hausaufgaben = les devoirs ; die Seite = la page",
+            "Liebe Mama, lieber Papa = chère maman, cher papa",
+            "bis später = à plus tard"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-1-2",
+      "prompt": "Aufzug außer Betrieb\nBitte die Treppe benutzen",
+      "question": "Que dois-tu prendre pour monter ?",
+      "spoken": "Aufzug außer Betrieb. Bitte die Treppe benutzen.",
+      "choices": [
+        "L’ascenseur",
+        "La sortie",
+        "L’escalier"
+      ],
+      "choicesLang": "fr",
+      "answer": "L’escalier",
+      "hint": "L’ascenseur (der Aufzug) est en panne. Que reste-t-il pour monter ?",
+      "explanation": "der Aufzug = l’ascenseur, außer Betrieb = en panne. die Treppe = l’escalier : bitte die Treppe benutzen = prenez l’escalier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Schilder und Nachrichten",
+          "lines": [
+            "drücken = pousser ; geöffnet = ouvert ; geschlossen = fermé",
+            "verboten = interdit ; Achtung = attention",
+            "der Aufzug = l’ascenseur ; außer Betrieb = en panne",
+            "der Rasen = la pelouse ; betreten = marcher sur",
+            "die Hausaufgaben = les devoirs ; die Seite = la page",
+            "Liebe Mama, lieber Papa = chère maman, cher papa",
+            "bis später = à plus tard"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-1-3",
+      "prompt": "Arbeitet zu zweit!\nLest den Text auf Seite 20.",
+      "question": "Comment faut-il travailler ?",
+      "spoken": "Arbeitet zu zweit! Lest den Text auf Seite zwanzig.",
+      "choices": [
+        "En groupe de quatre",
+        "À deux",
+        "Seul"
+      ],
+      "choicesLang": "fr",
+      "answer": "À deux",
+      "hint": "zweit ressemble à un nombre que tu connais.",
+      "explanation": "zu zweit = à deux (zwei = 2) : arbeitet zu zweit = travaillez à deux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Schilder und Nachrichten",
+          "lines": [
+            "drücken = pousser ; geöffnet = ouvert ; geschlossen = fermé",
+            "verboten = interdit ; Achtung = attention",
+            "der Aufzug = l’ascenseur ; außer Betrieb = en panne",
+            "der Rasen = la pelouse ; betreten = marcher sur",
+            "die Hausaufgaben = les devoirs ; die Seite = la page",
+            "Liebe Mama, lieber Papa = chère maman, cher papa",
+            "bis später = à plus tard"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-1-4",
+      "prompt": "Hausaufgaben für Montag:\nÜbung 3 auf Seite 45",
+      "question": "Pour quel jour sont les devoirs ?",
+      "spoken": "Hausaufgaben für Montag. Übung drei auf Seite fünfundvierzig.",
+      "choices": [
+        "Pour lundi",
+        "Pour mardi",
+        "Pour jeudi"
+      ],
+      "choicesLang": "fr",
+      "answer": "Pour lundi",
+      "hint": "Lis la 1re ligne : für, puis un jour.",
+      "explanation": "für Montag = pour lundi. Mardi se dit Dienstag ; jeudi, Donnerstag.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Schilder und Nachrichten",
+          "lines": [
+            "drücken = pousser ; geöffnet = ouvert ; geschlossen = fermé",
+            "verboten = interdit ; Achtung = attention",
+            "der Aufzug = l’ascenseur ; außer Betrieb = en panne",
+            "der Rasen = la pelouse ; betreten = marcher sur",
+            "die Hausaufgaben = les devoirs ; die Seite = la page",
+            "Liebe Mama, lieber Papa = chère maman, cher papa",
+            "bis später = à plus tard"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-1-5",
+      "prompt": "Hunde müssen draußen bleiben.",
+      "question": "Que demande ce panneau ?",
+      "spoken": "Hunde müssen draußen bleiben.",
+      "choices": [
+        "Tenir les chiens en laisse",
+        "Donner à boire aux chiens",
+        "Laisser les chiens dehors"
+      ],
+      "choicesLang": "fr",
+      "answer": "Laisser les chiens dehors",
+      "hint": "bleiben = rester. Et draußen : dedans ou dehors ?",
+      "explanation": "Hunde müssen draußen bleiben = les chiens doivent rester dehors. Ce panneau est souvent sur la porte des magasins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Schilder und Nachrichten",
+          "lines": [
+            "drücken = pousser ; geöffnet = ouvert ; geschlossen = fermé",
+            "verboten = interdit ; Achtung = attention",
+            "der Aufzug = l’ascenseur ; außer Betrieb = en panne",
+            "der Rasen = la pelouse ; betreten = marcher sur",
+            "die Hausaufgaben = les devoirs ; die Seite = la page",
+            "Liebe Mama, lieber Papa = chère maman, cher papa",
+            "bis später = à plus tard"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-1-6",
+      "prompt": "Liebe Mama,\nich bin bei Lukas.\nIch komme um 18 Uhr nach Hause.\nBis später! Tim",
+      "question": "Où est Tim ?",
+      "spoken": "Liebe Mama, ich bin bei Lukas. Ich komme um achtzehn Uhr nach Hause. Bis später! Tim.",
+      "choices": [
+        "À la maison",
+        "Chez Lukas",
+        "À l’école"
+      ],
+      "choicesLang": "fr",
+      "answer": "Chez Lukas",
+      "hint": "bei, puis un prénom : chez quelqu’un.",
+      "explanation": "ich bin bei Lukas = je suis chez Lukas. nach Hause = à la maison : Tim y rentre à 18 h.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Schilder und Nachrichten",
+          "lines": [
+            "drücken = pousser ; geöffnet = ouvert ; geschlossen = fermé",
+            "verboten = interdit ; Achtung = attention",
+            "der Aufzug = l’ascenseur ; außer Betrieb = en panne",
+            "der Rasen = la pelouse ; betreten = marcher sur",
+            "die Hausaufgaben = les devoirs ; die Seite = la page",
+            "Liebe Mama, lieber Papa = chère maman, cher papa",
+            "bis später = à plus tard"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-1-7",
+      "prompt": "Liebe Oma,\nvielen Dank für das Buch!\nEs ist super spannend.\nKüsse, Lea",
+      "question": "Pourquoi Lea écrit-elle à sa grand-mère ?",
+      "spoken": "Liebe Oma, vielen Dank für das Buch! Es ist super spannend. Küsse, Lea.",
+      "choices": [
+        "Pour lui dire bonjour",
+        "Pour l’inviter",
+        "Pour la remercier"
+      ],
+      "choicesLang": "fr",
+      "answer": "Pour la remercier",
+      "hint": "Lis la 2e ligne : Dank ressemble à danke.",
+      "explanation": "vielen Dank = merci beaucoup : Lea remercie sa grand-mère pour le livre. Küsse = bisous.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Schilder und Nachrichten",
+          "lines": [
+            "drücken = pousser ; geöffnet = ouvert ; geschlossen = fermé",
+            "verboten = interdit ; Achtung = attention",
+            "der Aufzug = l’ascenseur ; außer Betrieb = en panne",
+            "der Rasen = la pelouse ; betreten = marcher sur",
+            "die Hausaufgaben = les devoirs ; die Seite = la page",
+            "Liebe Mama, lieber Papa = chère maman, cher papa",
+            "bis später = à plus tard"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bien lu !"
+  },
+  "reward": {
+    "block": "lv2-4e-daily-life",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

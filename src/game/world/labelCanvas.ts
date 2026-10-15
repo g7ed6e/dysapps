@@ -6,7 +6,7 @@
 // qu'une phrase.
 import type { IslandStateId } from './islandState';
 import { BLOCKS, type BlockId } from '../biomes';
-import { project, shade } from '../Voxel';
+import { BATONS_DU_DESSUS, ombreDuBaton, project, shade } from '../Voxel';
 import { COTE_DU_VISAGE, type Visage } from './characters/face';
 import type { Habillage } from './skin/types';
 
@@ -39,7 +39,7 @@ const ENCRE_DU_BLOC = '#2b2118';
 
 /**
  * Un bloc vu de trois quarts, centré sur (`cx`, `cy`), de demi-hauteur `demi` : le cube de `BlockIcon` (Voxel.tsx : le
- * dessus, la face gauche, la face droite plus sombre, mêmes couleurs, même projection), puis son contour et ses deux
+ * dessus, la face gauche, la face droite plus sombre, mêmes couleurs, même projection, ses bâtons), puis son contour et ses deux
  * arêtes intérieures au trait `encre`. Sert aux bulles des commandes (three/signs.ts) et aux étiquettes des îles.
  * `traits` : l'épaisseur du contour et des arêtes, en pixels du canvas (par défaut, à l'échelle du bloc). `delave` :
  * les faces à demi transparentes sur le fond (une île fermée), le contour net.
@@ -71,6 +71,11 @@ export function drawBlock(
   face([p(0, 0, 1), p(1, 0, 1), p(1, 1, 1), p(0, 1, 1)], b.top ?? shade(b.side, 0.16));
   face([p(0, 1, 1), p(1, 1, 1), p(1, 1, 0), p(0, 1, 0)], b.side);
   face([p(1, 0, 1), p(1, 1, 1), p(1, 1, 0), p(1, 0, 0)], shade(b.side, -0.18));
+  // Les bâtons pâles couchés sur le dessus (la craie : unie, l'ardoise se lisait charbon), comme dans `BlockIcon`.
+  (b.batons ?? []).forEach((couleur, i) => {
+    face(BATONS_DU_DESSUS[i].ombre.map(([x, y]) => p(x, y, 1)), ombreDuBaton(b.top));
+    face(BATONS_DU_DESSUS[i].baton.map(([x, y]) => p(x, y, 1)), couleur);
+  });
   ctx.globalAlpha = 1;
   ctx.lineJoin = 'round';
   ctx.strokeStyle = encre;

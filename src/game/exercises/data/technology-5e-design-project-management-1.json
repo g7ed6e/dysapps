@@ -1,0 +1,234 @@
+{
+  "id": "technology-5e-design-project-management-1",
+  "biome": "technology-5e-design",
+  "type": "project-management",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-5e-design-project-management-1-0",
+      "prompt": "Dans un projet, on écrit le cahier des charges, puis on cherche des …",
+      "spoken": "Dans un projet, on écrit le cahier des charges, puis on cherche des  (mot manquant) ",
+      "choices": [
+        "besoins",
+        "solutions",
+        "normes"
+      ],
+      "answer": "solutions",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Le cahier des charges dit ce que l’objet doit faire : ensuite, on cherche des solutions. Le besoin, lui, vient avant le cahier des charges.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mener un projet",
+          "lines": [
+            "Les étapes : le besoin, le cahier des charges, les solutions.",
+            "Puis on fabrique le prototype, et on le teste.",
+            "Une tâche : un travail à faire, avec une durée.",
+            "Une tâche peut devoir attendre la fin d’une autre.",
+            "La revue de projet : l’équipe compare ce qui est fait et ce qui était prévu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-project-management-1-1",
+      "prompt": "Les étapes du projet de la boîte à goûter\nÉtape 1 : dire le besoin.\nÉtape 2 : écrire le cahier des charges.\nÉtape 3 : chercher des solutions.\nÉtape 4 : fabriquer, puis tester.",
+      "question": "Que fait l’équipe juste après le cahier des charges ?",
+      "spoken": "Les étapes du projet de la boîte à goûter. Étape 1, dire le besoin. Étape 2, écrire le cahier des charges. Étape 3, chercher des solutions. Étape 4, fabriquer, puis tester.",
+      "choices": [
+        "elle dit le besoin",
+        "elle cherche des solutions",
+        "elle fabrique"
+      ],
+      "answer": "elle cherche des solutions",
+      "hint": "Cherche la ligne juste sous « Étape 2 ».",
+      "explanation": "Après le cahier des charges, à l’étape 3, l’équipe cherche des solutions. Le besoin vient avant, la fabrication après.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mener un projet",
+          "lines": [
+            "Les étapes : le besoin, le cahier des charges, les solutions.",
+            "Puis on fabrique le prototype, et on le teste.",
+            "Une tâche : un travail à faire, avec une durée.",
+            "Une tâche peut devoir attendre la fin d’une autre.",
+            "La revue de projet : l’équipe compare ce qui est fait et ce qui était prévu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-project-management-1-2",
+      "prompt": "Un travail à faire dans le projet, avec une durée, s’appelle une …",
+      "spoken": "Un travail à faire dans le projet, avec une durée, s’appelle une  (mot manquant) ",
+      "choices": [
+        "fonction",
+        "revue",
+        "tâche"
+      ],
+      "answer": "tâche",
+      "hint": "Relis la ligne « Une tâche » du rappel.",
+      "explanation": "Un travail à faire, avec sa durée, est une tâche : découper, peindre, assembler. Une fonction, c’est ce que fait l’objet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mener un projet",
+          "lines": [
+            "Les étapes : le besoin, le cahier des charges, les solutions.",
+            "Puis on fabrique le prototype, et on le teste.",
+            "Une tâche : un travail à faire, avec une durée.",
+            "Une tâche peut devoir attendre la fin d’une autre.",
+            "La revue de projet : l’équipe compare ce qui est fait et ce qui était prévu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-project-management-1-3",
+      "prompt": "Le planning de l’équipe\nTâche A : dessiner le croquis, 1 semaine.\nTâche B : découper les pièces, 2 semaines.\nTâche C : peindre, 1 semaine.",
+      "question": "Quelle tâche dure le plus longtemps ?",
+      "spoken": "Le planning de l’équipe. Tâche A, dessiner le croquis, 1 semaine. Tâche B, découper les pièces, 2 semaines. Tâche C, peindre, 1 semaine.",
+      "choices": [
+        "la tâche A",
+        "la tâche B",
+        "la tâche C"
+      ],
+      "answer": "la tâche B",
+      "hint": "Cherche la plus grande durée.",
+      "explanation": "Découper les pièces dure 2 semaines : c’est la tâche B. Les tâches A et C durent 1 semaine chacune.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mener un projet",
+          "lines": [
+            "Les étapes : le besoin, le cahier des charges, les solutions.",
+            "Puis on fabrique le prototype, et on le teste.",
+            "Une tâche : un travail à faire, avec une durée.",
+            "Une tâche peut devoir attendre la fin d’une autre.",
+            "La revue de projet : l’équipe compare ce qui est fait et ce qui était prévu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-project-management-1-4",
+      "prompt": "Quand l’équipe se réunit pour comparer ce qui est fait et ce qui était prévu, c’est une … de projet.",
+      "spoken": "Quand l’équipe se réunit pour comparer ce qui est fait et ce qui était prévu, c’est une  (mot manquant)  de projet.",
+      "choices": [
+        "tâche",
+        "revue",
+        "fiche"
+      ],
+      "answer": "revue",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "La revue de projet sert à faire le point : ce qui est fait, ce qui était prévu, et la suite. Une tâche, c’est un travail à faire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mener un projet",
+          "lines": [
+            "Les étapes : le besoin, le cahier des charges, les solutions.",
+            "Puis on fabrique le prototype, et on le teste.",
+            "Une tâche : un travail à faire, avec une durée.",
+            "Une tâche peut devoir attendre la fin d’une autre.",
+            "La revue de projet : l’équipe compare ce qui est fait et ce qui était prévu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-project-management-1-5",
+      "prompt": "La revue de projet du porte-clés\nLe planning prévoyait : les pièces découpées.\nFait : le croquis seulement.\nLes pièces ne sont pas découpées.",
+      "question": "Que montre la revue de projet ?",
+      "spoken": "La revue de projet du porte-clés. Le planning prévoyait, les pièces découpées. Fait, le croquis seulement. Les pièces ne sont pas découpées.",
+      "choices": [
+        "le projet est en avance",
+        "le projet est fini",
+        "le projet est en retard"
+      ],
+      "answer": "le projet est en retard",
+      "hint": "Compare ce qui était prévu et ce qui est fait.",
+      "explanation": "Les pièces devaient être découpées, et elles ne le sont pas : le projet est en retard. La revue sert à le voir, pour réorganiser la suite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mener un projet",
+          "lines": [
+            "Les étapes : le besoin, le cahier des charges, les solutions.",
+            "Puis on fabrique le prototype, et on le teste.",
+            "Une tâche : un travail à faire, avec une durée.",
+            "Une tâche peut devoir attendre la fin d’une autre.",
+            "La revue de projet : l’équipe compare ce qui est fait et ce qui était prévu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-project-management-1-6",
+      "prompt": "Avant de tester le prototype, il faut d’abord le …",
+      "spoken": "Avant de tester le prototype, il faut d’abord le  (mot manquant) ",
+      "choices": [
+        "recycler",
+        "fabriquer",
+        "réparer"
+      ],
+      "answer": "fabriquer",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "On fabrique le prototype, puis on le teste. On ne peut ni le réparer ni le recycler avant qu’il existe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mener un projet",
+          "lines": [
+            "Les étapes : le besoin, le cahier des charges, les solutions.",
+            "Puis on fabrique le prototype, et on le teste.",
+            "Une tâche : un travail à faire, avec une durée.",
+            "Une tâche peut devoir attendre la fin d’une autre.",
+            "La revue de projet : l’équipe compare ce qui est fait et ce qui était prévu."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-project-management-1-7",
+      "prompt": "Le planning du support de téléphone\nTâche 1 : tracer les pièces.\nTâche 2 : découper les pièces, après la tâche 1.\nTâche 3 : assembler, après la tâche 2.",
+      "question": "Quelle tâche attend la fin du découpage ?",
+      "spoken": "Le planning du support de téléphone. Tâche 1, tracer les pièces. Tâche 2, découper les pièces, après la tâche 1. Tâche 3, assembler, après la tâche 2.",
+      "choices": [
+        "la tâche 1",
+        "la tâche 2",
+        "la tâche 3"
+      ],
+      "answer": "la tâche 3",
+      "hint": "Le découpage, c’est la tâche 2. Quelle ligne dit « après la tâche 2 » ?",
+      "explanation": "On assemble après avoir découpé : la tâche 3 attend la fin de la tâche 2. La tâche 2, elle, attend la fin de la tâche 1.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mener un projet",
+          "lines": [
+            "Les étapes : le besoin, le cahier des charges, les solutions.",
+            "Puis on fabrique le prototype, et on le teste.",
+            "Une tâche : un travail à faire, avec une durée.",
+            "Une tâche peut devoir attendre la fin d’une autre.",
+            "La revue de projet : l’équipe compare ce qui est fait et ce qui était prévu."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-5e-design",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

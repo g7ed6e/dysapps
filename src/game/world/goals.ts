@@ -1,10 +1,10 @@
 // Le prochain objectif d'une île, un seul, avec sa jauge : ce qu'il manque pour l'ouvrage suggéré (celui qui ouvre une
-// île de la matière la moins jouée, GD-7), ou pour le Bloc-Navire (le bâtiment de l'île se pose tout seul, une partie par
+// île de la matière la moins jouée, GD-7), ou pour la Nef (le bâtiment de l'île se pose tout seul, une partie par
 // mission réussie : GD-6). Code pur, partagé par le panneau d'île et la prochaine destination. Les noms des archipels
 // viennent de l'appelant (`noms` : ceux de l'univers affiché, GD-1).
 import { thePlace } from './placeArticle';
-import { BIOMES, blockCount, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
-import { LV2_LABELS, lv2Courante, type Lv2Choice } from '../../core/settings';
+import { BIOMES, blockCount, estLieuDOption, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
+import { LCA_LABELS, LV2_LABELS, lcaCourante, lv2Courante, type Lv2Choice } from '../../core/settings';
 import type { GameState } from '../engine';
 import { canLaunch, planStatus } from '../engine';
 import {
@@ -29,31 +29,34 @@ import {
   type NomsArchipels,
 } from './archipelago';
 import { missionsTerminees } from './parts';
-import { VEHICLE_NAME, beatenGuardians, stageAt, stageTo } from './vehicle';
+import { VEHICLE_NAME, beatenGuardians, stageAt, stageTo, stageWords } from './vehicle';
 
 type Matiere = BiomeDef['subject'];
 
 /**
  * L'ordre des matières à égalité : celui de docs/contenu/archipel.md (français, maths, anglais, histoire-géographie, SVT,
- * physique-chimie, technologie, puis la LV2).
+ * physique-chimie, technologie, EMC, puis la LV2 et le latin ou grec).
  */
-const ORDRE_DES_MATIERES: Matiere[] = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'lv2'];
+const ORDRE_DES_MATIERES: Matiere[] = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'civics', 'lv2', 'lca'];
 
-/** Les matières dont on mesure la part jouée (toutes sauf la LV2, à part : on peut ne pas l'avoir). */
-const MATIERES_COMPTEES = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology'] as const;
+/** Les matières dont on mesure la part jouée (toutes sauf les lieux d'option, la LV2 et le latin ou grec, à part : on peut ne pas les avoir ; GD-13). */
+const MATIERES_COMPTEES = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'civics'] as const;
+
+/** Les matières des lieux d'option (GD-13), hors de la part jouée. */
+type MatiereDOption = 'lv2' | 'lca';
 
 /**
  * Combien chaque matière est jouée dans une classe (GD-7, mesure choisie par le mainteneur le 3 octobre 2026) : les
  * missions réussies au moins une fois sur ses îles (`missionsTerminees` : ni le défi du Gardien, ni le portail, ni le
  * mode bâtisseur), divisées par le nombre de ses îles dans la classe, pour qu'une matière n'ait pas l'air moins jouée
- * parce qu'elle a moins d'îles. La LV2 n'est pas comptée : ses îles passent après les autres. Jamais la réussite (les
- * étoiles) : une matière moins réussie n'est pas montrée du doigt.
+ * parce qu'elle a moins d'îles. Les lieux d'option (la LV2, le latin ou grec) ne sont pas comptés : leurs îles passent
+ * après les autres (GD-13). Jamais la réussite (les étoiles) : une matière moins réussie n'est pas montrée du doigt.
  */
-export function partJouee(progress: Record<string, { attempts: number }>, classe: ArchipelagoId): Record<Exclude<Matiere, 'lv2'>, number> {
-  const part = { french: 0, maths: 0, english: 0, 'history-geography': 0, 'life-earth-sciences': 0, 'physics-chemistry': 0, technology: 0 };
+export function partJouee(progress: Record<string, { attempts: number }>, classe: ArchipelagoId): Record<Exclude<Matiere, MatiereDOption>, number> {
+  const part = { french: 0, maths: 0, english: 0, 'history-geography': 0, 'life-earth-sciences': 0, 'physics-chemistry': 0, technology: 0, civics: 0 };
   // Un seul passage sur la progression (une sauvegarde pleine compte des centaines d'exercices) : chaque île de la
   // classe ne relit que les siens (`missionsTerminees` départage ensuite les lieux dont le nom en prolonge un autre).
-  const iles = BIOMES.filter((b) => b.classe === classe && b.subject !== 'lv2');
+  const iles = BIOMES.filter((b) => b.classe === classe && !estLieuDOption(b));
   const parIle = new Map<BiomeId, Record<string, { attempts: number }>>(iles.map((b) => [b.id, {}]));
   const marque = `-${classe}-`;
   for (const ex in progress) {
@@ -106,8 +109,8 @@ function arriveeDe(b: BridgeDef, open: Set<BiomeId>, depuis?: BiomeId): BiomeId 
 
 /**
  * Les ouvrages proposés, le suggéré d'abord (GD-7, point 3) ; le même tri pour la prochaine destination et pour le seul
- * « Construire » principal du panneau d'une île. D'abord ceux qui ouvrent une île ; les îles de LV2 après les autres
- * (elles restent en bout de chemin) ; puis ceux qu'on peut payer ; puis l'île de la matière la moins jouée (`partJouee`) ;
+ * « Construire » principal du panneau d'une île. D'abord ceux qui ouvrent une île ; les lieux d'option (LV2, latin ou
+ * grec) après les autres (ils restent en bout de chemin, GD-13) ; puis ceux qu'on peut payer ; puis l'île de la matière la moins jouée (`partJouee`) ;
  * à égalité, l'ordre des matières, puis la plus courte (GD-9 : toutes coûtent le même prix), puis l'ordre de `BRIDGES`. Déduit de la sauvegarde seule, sans
  * hasard ni horloge : la suggestion ne change pas tant que l'élève n'a rien fait.
  */
@@ -116,10 +119,11 @@ export function ouvragesParSuggestion(state: GameState, ouvrages: BridgeDef[], d
   const cle = (b: BridgeDef) => {
     const arrivee = getBiome(arriveeDe(b, open, depuis));
     const matiere = arrivee?.subject ?? 'lv2';
-    const part = matiere === 'lv2' ? 0 : partsDe(state.progress, archipelagoOf(b.from).classe)[matiere];
+    const option = matiere === 'lv2' || matiere === 'lca';
+    const part = option ? 0 : partsDe(state.progress, archipelagoOf(b.from).classe)[matiere];
     return [
       arrivee && !open.has(arrivee.id) ? 0 : 1,
-      matiere === 'lv2' ? 1 : 0,
+      option ? 1 : 0,
       have >= b.cost ? 0 : 1,
       part,
       ORDRE_DES_MATIERES.indexOf(matiere),
@@ -139,11 +143,22 @@ export function ouvragesParSuggestion(state: GameState, ouvrages: BridgeDef[], d
 
 /**
  * « de français », « de maths », « d'anglais », « d'histoire-géo », « de SVT », « de physique-chimie », « de technologie »,
- * « d'espagnol » : la matière d'une île, dans « une île de… ».
+ * « d'EMC », « d'espagnol », « de latin » : la matière d'une île, dans « une île de… ».
  */
 function deLaMatiere(matiere: Matiere, lv2: Lv2Choice): string {
-  const mot = { french: 'français', maths: 'maths', english: 'anglais', 'history-geography': 'histoire-géo', 'life-earth-sciences': 'SVT', 'physics-chemistry': 'physique-chimie', technology: 'technologie', lv2: LV2_LABELS[lv2].toLowerCase() }[matiere];
-  return /^[aeiouyh]/.test(mot) ? `d’${mot}` : `de ${mot}`;
+  const mot = {
+    french: 'français',
+    maths: 'maths',
+    english: 'anglais',
+    'history-geography': 'histoire-géo',
+    'life-earth-sciences': 'SVT',
+    'physics-chemistry': 'physique-chimie',
+    technology: 'technologie',
+    civics: 'EMC',
+    lv2: LV2_LABELS[lv2].toLowerCase(),
+    lca: lcaCourante() === 'none' ? 'latin ou grec' : LCA_LABELS[lcaCourante()].toLowerCase(),
+  }[matiere];
+  return /^[aeiouyhé]/i.test(mot) ? `d’${mot}` : `de ${mot}`;
 }
 
 /**
@@ -221,7 +236,7 @@ export interface Goal {
   ouvrage?: string;
 }
 
-/** Ce qu'il manque au Bloc-Navire, en blocs : « 16 blocs de bois », « 10 briques et 3 blocs de verre ». */
+/** Ce qu'il manque à la Nef, en blocs : « 16 blocs de bois », « 10 briques et 3 blocs de verre ». */
 function missingBlocks(state: GameState, missing: [BlockId, number][]) {
   const left = missing.map(([b, n]) => [b, Math.max(0, n - (state.stock[b] ?? 0))] as const).filter(([, n]) => n > 0);
   const need = missing.reduce((sum, [, n]) => sum + n, 0);
@@ -235,7 +250,7 @@ function missingBlocks(state: GameState, missing: [BlockId, number][]) {
 
 /**
  * Le prochain objectif d'une île, **un seul** : deux objectifs à la fois (des blocs pour un pont, d'autres pour le
- * navire) mélangeaient deux comptes. Ordre : le Bloc-Navire prêt à partir ; ce qu'on peut faire tout de suite
+ * navire) mélangeaient deux comptes. Ordre : la Nef prêt à partir ; ce qu'on peut faire tout de suite
  * (construire un ouvrage, poser les blocs du navire) ; sur l'île d'où part l'ouvrage suggéré de l'archipel
  * (`ouvrageSuggere`), cet ouvrage, même si le navire demande moins de blocs : la prochaine destination et le panneau de
  * l'île disent la même chose (GD-7, une seule source) ; sinon l'objectif le plus proche (le moins de blocs à gagner),
@@ -245,7 +260,7 @@ function missingBlocks(state: GameState, missing: [BlockId, number][]) {
 export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens, lv2: Lv2Choice = lv2Courante()): Goal | null {
   const stage = stageAt(island);
   const launch = stage ? canLaunch(state, stage) : null;
-  if (stage && launch?.ok) return { text: `${cap(VEHICLE_NAME)} est prêt : embarque vers les ${noms[stage.to]} !`, have: 1, need: 1, ready: true };
+  if (stage && launch?.ok) return { text: `${cap(VEHICLE_NAME)} est prête : embarque vers les ${noms[stage.to]} !`, have: 1, need: 1, ready: true };
   type Candidate = Goal & { ready: boolean };
   const candidates: Candidate[] = [];
   const world = { progress: state.progress, plans: state.world.parts };
@@ -256,12 +271,12 @@ export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchip
   const dIci = suggere?.ile === island ? suggere.b : null;
   const ouvrage = bridges.length ? objectifDOuvrage(state, dIci ?? ouvragesParSuggestion(state, bridges, island, open)[0], island, lv2, open) : null;
   if (ouvrage) candidates.push(ouvrage);
-  // Le chantier du Bloc-Navire (sur un port, tant que son voyage n'est pas fait).
+  // Le chantier de la Nef (sur un port, tant que son voyage n'est pas fait).
   if (stage && launch && !launch.ok && launch.reason !== 'construit' && launch.reason !== 'loin') {
     if (launch.reason === 'gardiens') {
       const left = launch.missing;
       candidates.push({
-        text: `${cap(mots.navireGardiensManquants(left, noms[stage.from]))} pour ${stage.short}`,
+        text: `${cap(mots.navireGardiensManquants(left, noms[stage.from]))} pour ${stageWords(stage, mots.formesDeLaNef).short}`,
         have: Math.max(0, stage.guardians - left),
         need: stage.guardians,
         ready: false,
@@ -297,7 +312,7 @@ export function nextGoal(state: GameState, island: BiomeId, noms: NomsArchipels,
 export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): string {
   const bridges = state.world.links;
   const world = { progress: state.progress, plans: state.world.parts };
-  // Une île d'un autre archipel : il faut le Bloc-Navire.
+  // Une île d'un autre archipel : il faut la Nef.
   const archipelago = archipelagoOf(island);
   if (!isArchipelagoReached(archipelago.classe, bridges)) {
     const left = remainingVoyages(island, bridges);
@@ -307,7 +322,7 @@ export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipel
     if (left.length > 1) return `${head}. Va d’abord jusqu’aux ${noms[previousArchipelago(archipelago.classe)!.classe]} avec ${VEHICLE_NAME}.`;
     const travel = archipelago.travel === 'mer' ? 'de la mer' : archipelago.travel === 'airs' ? 'des airs' : 'du ciel';
     const launch = canLaunch(state, stage);
-    if (launch.ok) return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} est prêt sur ${port} : embarque !`;
+    if (launch.ok) return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} est prête sur ${port} : embarque !`;
     if (launch.reason === 'gardiens') {
       const k = stage.guardians - beatenGuardians(stage.from, state.progress);
       return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} attend sur ${port} : ${mots.navireGardiensManquants(k, noms[stage.from])}, puis embarque.`;

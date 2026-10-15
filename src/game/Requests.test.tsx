@@ -10,9 +10,12 @@ import { BLOC, getBiome, missionsJouables, type BiomeId } from './biomes';
 import { BloclandProvider, useBlocland } from './BloclandContext';
 import { exercisesOf } from './exercises';
 import { IslandSheet } from './IslandSheet';
-import { MenuSheet } from './MenuSheet';
-import { getCommande, type Commande } from './world/requests';
+import { RequestsSheet } from './WorldShortcuts';
+import { getCommande } from './world/requests';
 import { casesDeLaPetiteConstruction } from './world/fixtures';
+import { StoryLine } from './Stories';
+import { getStory } from './world/stories';
+import { pieceCells, projectOf } from './world/projects';
 
 const FORET = 'french-6e-phonology';
 const PLAINE = 'maths-6e-calculation';
@@ -50,7 +53,7 @@ function ouvrir(ile?: BiomeId, highlight?: string) {
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            {ile ? <IslandSheet biome={getBiome(ile)!} onClose={() => {}} highlight={highlight} /> : <MenuSheet onClose={() => {}} />}
+            {ile ? <IslandSheet biome={getBiome(ile)!} onClose={() => {}} highlight={highlight} /> : <RequestsSheet onClose={() => {}} onAller={() => {}} />}
             <Etat />
           </MemoryRouter>
         </BloclandProvider>
@@ -79,7 +82,8 @@ it('dans le panneau de l’île de la créature : « Livrer » pose la petite co
   // La phrase prend la place de la ligne livrée, et le focus.
   const livree = document.querySelector(`[data-commande="${MOUSSO}"]`) as HTMLElement;
   expect(livree.textContent).toContain('Potager posé chez Mousso\u00a0!');
-  expect(within(liste).getAllByRole('listitem').map((l) => l.getAttribute('data-commande'))).toEqual([MOUSSO, COCO]);
+  // La livraison est un moment où la quête de la région peut arriver (GD-10) : sa ligne, en tête.
+  expect(within(liste).getAllByRole('listitem').map((l) => l.getAttribute('data-commande'))).toEqual(['story-6e-1', MOUSSO, COCO]);
   expect(livree.querySelector('.commande-posee')).toHaveFocus();
   expect(within(livree).queryByRole('button', { name: /Livrer/ })).toBeNull();
   const cases = casesDeLaPetiteConstruction(getCommande(MOUSSO)!.fixture)!.length;
@@ -146,7 +150,7 @@ it('en 3D, la phrase « posée » attend la fin de la vague de pose', async () =
           biome={getBiome(FORET)!}
           onClose={() => {}}
           in3d
-          onLivree={(c: Commande) => {
+          onLivree={(c: { id: string }) => {
             setEnCours(c.id);
             return true;
           }}
@@ -196,25 +200,16 @@ it('ailleurs, une commande prête mène chez sa créature, sur sa ligne ; jamais
   expect(screen.queryByRole('button', { name: /Livrer/ })).toBeNull();
 });
 
-it('le menu montre la même section, avec « Y aller » seulement, dépliée quand une commande est prête', () => {
-  sauver(pret);
+it('le panneau des commandes (le bouton du haut à gauche) montre la même liste, avec « Y aller » seulement', () => {
+  sauver({ ...pret, world: { ...pret.world, requests: [MOUSSO, COCO] }, stock: { [BLOC.terre]: 4 } });
   ouvrir();
-  const menu = screen.getByRole('dialog', { name: 'Menu' });
-  expect(menu.querySelector('#commandes-menu')?.textContent).toBe(' Commandes · 1 prête');
-  expect(menu.querySelector('details.island-fold-commandes')).toHaveAttribute('open');
-  expect(within(menu).queryByRole('button', { name: /Livrer/ })).toBeNull();
-  expect(within(menu).getAllByRole('link', { name: /Y aller/ })).toHaveLength(2);
+  const panneau = screen.getByRole('dialog', { name: 'Commandes' });
+  expect(panneau.querySelector('#commandes-menu')?.textContent).toMatch(/Commandes · \d/);
+  expect(within(panneau).queryByRole('button', { name: /Livrer/ })).toBeNull();
+  expect(within(panneau).getAllByRole('link', { name: /Y aller/ })).toHaveLength(2);
 });
 
-it('au menu, sans commande prête, la section est repliée, le titre et le compte visibles', () => {
-  sauver({ ...pret, stock: {} });
-  ouvrir();
-  const menu = screen.getByRole('dialog', { name: 'Menu' });
-  expect(menu.querySelector('#commandes-menu')?.textContent).toBe(' Commandes · 2 en attente');
-  expect(menu.querySelector('details.island-fold-commandes')).not.toHaveAttribute('open');
-});
-
-it('au menu du monde 3D, « Y aller » ouvre le panneau de l’île visée, comme un toucher sur l’île', async () => {
+it('au panneau des commandes, « Y aller » ouvre le panneau de l’île visée, comme un toucher sur l’île', async () => {
   sauver(pret);
   const aller = vi.fn();
   render(
@@ -222,7 +217,7 @@ it('au menu du monde 3D, « Y aller » ouvre le panneau de l’île visée, comm
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <MenuSheet onClose={() => {}} onAller={aller} />
+            <RequestsSheet onClose={() => {}} onAller={aller} />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -254,4 +249,61 @@ it('Archipéo (décision du 4 octobre 2026) : les commandes arrivent et s’affi
   await userEvent.click(screen.getByRole('button', { name: 'Construire le pont' }));
   // Un ouvrage construit fait arriver la commande de Mousso, comme dans Blocland.
   expect(screen.getByTestId('etat').textContent).toContain(`commandes ${COCO},${MOUSSO} ·`);
+});
+
+it('Archipéo : chaque commande montre l’habitant d’Archipéo, en facettes, jamais celui de Blocland en cubes', async () => {
+  sauver({ progress: joue(FORET, PLAINE), stock: {}, world: { parts: {}, log: [], links: [], place: FORET, requests: [COCO] } }, 'archipeo');
+  ouvrir();
+  const liste = screen.getByRole('list', { name: 'Les commandes des habitants' });
+  await vi.waitFor(() => expect(liste.querySelector('.personnage-svg')).not.toBeNull(), { timeout: 5000 });
+  expect(liste.querySelector('svg.creature:not(.personnage-svg)')).toBeNull();
+});
+
+describe('l’entraide (GD-10) en tête de la liste', () => {
+  const DUNES = 'maths-6e-calculation-french-6e-word-spelling';
+  it('la dernière étape faite ici : sa phrase de fin reste, au-dessus de la quête suivante arrivée avec elle', async () => {
+    sauver({ progress: joue(FORET, PLAINE), world: { parts: {}, log: [], links: [PONT_FERME, DUNES], place: FORET, stories: [{ id: 'story-6e-1', step: 2 }] } });
+    ouvrir(FORET);
+    const liste = screen.getByRole('list', { name: 'Les commandes des créatures' });
+    await userEvent.click(within(liste).getByRole('button', { name: /Apporter/ }));
+    expect(within(liste).getByRole('status')).toHaveTextContent(/Lanterne posée chez Mousso/);
+    expect(within(liste).getByRole('status')).toHaveFocus();
+    expect(within(liste).getAllByRole('listitem').map((l) => l.getAttribute('data-commande'))[0]).toBe('story-6e-1');
+    expect(within(liste).getAllByRole('listitem').some((l) => l.getAttribute('data-commande') === 'story-6e-2')).toBe(true);
+  });
+  it('une étape « mission » sur l’île même : « Y aller » mène aux missions de l’île et le dit', async () => {
+    sauver({ progress: joue(FORET, PLAINE), world: { parts: {}, log: [], links: [PONT_FERME], place: PLAINE, stories: [{ id: 'story-6e-1', step: 0 }] } });
+    ouvrir(PLAINE);
+    const ligne = document.querySelector('[data-commande="story-6e-1"]') as HTMLElement;
+    await userEvent.click(within(ligne).getByRole('button', { name: /Y aller/ }));
+    expect(ligne).toHaveTextContent('Tu y es');
+  });
+  describe('la balise de Frimas (5e), finie, montre le phare du large tant qu’il n’est pas fini', () => {
+    const balise = getStory('story-5e-3')!;
+    const ligne = (parts: Record<string, string[]>, said = 'Balise posée chez Frimas !') => {
+      sauver({});
+      render(
+        <SettingsProvider>
+          <MemoryRouter>
+            <ul>
+              <StoryLine story={balise} index={3} state={{ stock: {}, world: { parts, log: [], links: [] } }} said={said} onTap={() => {}} />
+            </ul>
+          </MemoryRouter>
+        </SettingsProvider>,
+      );
+    };
+    it('« Voir le phare » mène au phare', () => {
+      ligne({});
+      expect(screen.getByRole('link', { name: /Voir le phare/ })).toHaveAttribute('href', '/adventure/landmark-5e-1');
+    });
+    it('pendant la pose de la balise (la phrase de fin encore vide) : rien encore', () => {
+      ligne({}, '');
+      expect(screen.queryByRole('link', { name: /Voir le phare/ })).toBeNull();
+    });
+    it('le phare fini : plus rien à montrer', () => {
+      const phare = projectOf('landmark-5e-1')!;
+      ligne({ 'landmark-5e-1': phare.pieces.flatMap((_, i) => pieceCells(phare, i).map((c) => c.key)) });
+      expect(screen.queryByRole('link', { name: /Voir le phare/ })).toBeNull();
+    });
+  });
 });

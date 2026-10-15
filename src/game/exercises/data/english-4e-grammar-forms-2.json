@@ -1,0 +1,231 @@
+{
+  "id": "english-4e-grammar-forms-2",
+  "biome": "english-4e-grammar",
+  "type": "forms",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Choisis ce qui complète la fiche ou le message en anglais. La règle est affichée.",
+  "items": [
+    {
+      "key": "english-4e-grammar-forms-2-0",
+      "prompt": "… Sam, thank you for your letter!",
+      "spoken": "blank Sam, thank you for your letter!",
+      "choices": [
+        "Dear",
+        "Love",
+        "Best wishes"
+      ],
+      "answer": "Dear",
+      "hint": "Le début ou la fin du message ? Relis la règle.",
+      "explanation": "Dear Sam = cher Sam : on commence une lettre par Dear. Love et Best wishes servent à finir, juste avant son prénom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire un message",
+          "lines": [
+            "Pour commencer : dear = cher, chère ; hi = salut",
+            "Pour finir : love = je t’embrasse ; best wishes = amitiés",
+            "thank you for = merci pour ; I’m writing to = je t’écris pour",
+            "on Monday = lundi ; at six = à six heures ; in May = en mai",
+            "will = le futur (I will call) ; yesterday = hier (it was fun)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-2-1",
+      "prompt": "See you soon! …, Lina",
+      "spoken": "See you soon! blank, Lina",
+      "choices": [
+        "Love",
+        "Dear",
+        "Hi"
+      ],
+      "answer": "Love",
+      "hint": "Le début ou la fin du message ? Relis la règle.",
+      "explanation": "Love, Lina : on finit un message à un ami par Love, juste avant son prénom. Dear et Hi servent à commencer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire un message",
+          "lines": [
+            "Pour commencer : dear = cher, chère ; hi = salut",
+            "Pour finir : love = je t’embrasse ; best wishes = amitiés",
+            "thank you for = merci pour ; I’m writing to = je t’écris pour",
+            "on Monday = lundi ; at six = à six heures ; in May = en mai",
+            "will = le futur (I will call) ; yesterday = hier (it was fun)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-2-2",
+      "prompt": "Dear Mrs Green, I’m writing … ask about the summer camp.",
+      "spoken": "Dear Mrs Green, I’m writing blank ask about the summer camp.",
+      "choices": [
+        "to",
+        "for",
+        "at"
+      ],
+      "answer": "to",
+      "hint": "Après le trou vient un verbe, ask. Relis la règle.",
+      "explanation": "I’m writing to ask = je vous écris pour demander : to + verbe dit pourquoi on écrit. for se met devant un nom (for the camp), pas devant un verbe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire un message",
+          "lines": [
+            "Pour commencer : dear = cher, chère ; hi = salut",
+            "Pour finir : love = je t’embrasse ; best wishes = amitiés",
+            "thank you for = merci pour ; I’m writing to = je t’écris pour",
+            "on Monday = lundi ; at six = à six heures ; in May = en mai",
+            "will = le futur (I will call) ; yesterday = hier (it was fun)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-2-3",
+      "prompt": "Thank you … your email, Tom!",
+      "spoken": "Thank you blank your email, Tom!",
+      "choices": [
+        "for",
+        "to",
+        "of"
+      ],
+      "answer": "for",
+      "hint": "Merci pour : relis la règle.",
+      "explanation": "thank you for = merci pour : on dit thank you for, jamais thank you to ni thank you of.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire un message",
+          "lines": [
+            "Pour commencer : dear = cher, chère ; hi = salut",
+            "Pour finir : love = je t’embrasse ; best wishes = amitiés",
+            "thank you for = merci pour ; I’m writing to = je t’écris pour",
+            "on Monday = lundi ; at six = à six heures ; in May = en mai",
+            "will = le futur (I will call) ; yesterday = hier (it was fun)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-2-4",
+      "prompt": "I’m sorry, I … come to your party on Saturday.",
+      "spoken": "I’m sorry, I blank come to your party on Saturday.",
+      "choices": [
+        "can’t",
+        "am not",
+        "doesn’t"
+      ],
+      "answer": "can’t",
+      "hint": "Je ne peux pas venir : après le trou, le verbe come est à la base.",
+      "explanation": "I can’t come = je ne peux pas venir : après can’t, le verbe reste à la base. I am not come ne se dit pas, et doesn’t va avec he ou she.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire un message",
+          "lines": [
+            "Pour commencer : dear = cher, chère ; hi = salut",
+            "Pour finir : love = je t’embrasse ; best wishes = amitiés",
+            "thank you for = merci pour ; I’m writing to = je t’écris pour",
+            "on Monday = lundi ; at six = à six heures ; in May = en mai",
+            "will = le futur (I will call) ; yesterday = hier (it was fun)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-2-5",
+      "prompt": "Would you like to come to my party … Saturday?",
+      "spoken": "Would you like to come to my party blank Saturday?",
+      "choices": [
+        "on",
+        "in",
+        "at"
+      ],
+      "answer": "on",
+      "hint": "Saturday est un jour : relis la règle.",
+      "explanation": "on + un jour : on Saturday, samedi. in va avec un mois (in May), at avec une heure (at six).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire un message",
+          "lines": [
+            "Pour commencer : dear = cher, chère ; hi = salut",
+            "Pour finir : love = je t’embrasse ; best wishes = amitiés",
+            "thank you for = merci pour ; I’m writing to = je t’écris pour",
+            "on Monday = lundi ; at six = à six heures ; in May = en mai",
+            "will = le futur (I will call) ; yesterday = hier (it was fun)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-2-6",
+      "prompt": "Hi Mum, I’m at the library. I … be home at six.",
+      "spoken": "Hi Mum, I’m at the library. I blank be home at six.",
+      "choices": [
+        "will",
+        "am",
+        "was"
+      ],
+      "answer": "will",
+      "hint": "À six heures, c’est plus tard : passé, présent ou futur ?",
+      "explanation": "I will be home = je serai à la maison : will + base pour ce qui va arriver. I am be et I was be ne se disent pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire un message",
+          "lines": [
+            "Pour commencer : dear = cher, chère ; hi = salut",
+            "Pour finir : love = je t’embrasse ; best wishes = amitiés",
+            "thank you for = merci pour ; I’m writing to = je t’écris pour",
+            "on Monday = lundi ; at six = à six heures ; in May = en mai",
+            "will = le futur (I will call) ; yesterday = hier (it was fun)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-2-7",
+      "prompt": "Thanks for the party! It … great to see you yesterday.",
+      "spoken": "Thanks for the party! It blank great to see you yesterday.",
+      "choices": [
+        "was",
+        "is",
+        "will"
+      ],
+      "answer": "was",
+      "hint": "yesterday = hier : passé, présent ou futur ?",
+      "explanation": "yesterday = hier : c’est passé, donc it was great. It is parle de maintenant ; après will, il faudrait be (it will be).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire un message",
+          "lines": [
+            "Pour commencer : dear = cher, chère ; hi = salut",
+            "Pour finir : love = je t’embrasse ; best wishes = amitiés",
+            "thank you for = merci pour ; I’m writing to = je t’écris pour",
+            "on Monday = lundi ; at six = à six heures ; in May = en mai",
+            "will = le futur (I will call) ; yesterday = hier (it was fun)"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien écrit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-4e-grammar",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

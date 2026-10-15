@@ -1,26 +1,27 @@
 // Les poignées du mode « Modifier le plan » (GD-9), dessinées dans le monde (mot du mainteneur, 6 octobre 2026 : « Il
-// faut intégrer les boutons dans le dessin », « Pour rotation et translation ») : les quatre flèches et « Tourner », sur
-// des radeaux posés sur l'eau autour du choix (intention du directeur artistique du 6 octobre 2026). Dans Blocland, un
+// faut intégrer les boutons dans le dessin », « Pour rotation et translation ») : « Tourner » près d'un lieu ou d'un
+// Gardien choisi, et les quatre flèches autour d'un ouvrage à reposer seulement (mainteneur, 7 octobre 2026 : « il y a
+// trop de boutons »), sur des radeaux posés sur l'eau (intention du directeur artistique du 6 octobre 2026). Dans Blocland, un
 // radeau carré en damier crème jointif (3 × 3 carrés de deux crèmes proches, sans joint sombre, sur un bord sombre),
 // une flèche en cubes dessus (une tige longue, la pointe large en triangle à marches, sans biais) ; « Tourner » : un arc
 // ouvert, sa pointe en marches (↷). Dans Archipéo (rattrapage), un radeau de trois planches, une flèche peinte à plat ;
 // « Tourner » : une flèche en arc fin peinte sur une bouée ronde à huit pans, sa pointe marquée, dans le même sens (↷).
-// Quand une terre occupe la place d'une poignée, la flèche se pose quand même là, par-dessus, toujours visible.
+// Quand une terre occupe la place d'une poignée, la flèche se pose quand même là, par-dessus, toujours visible ; sauf
+// « Tourner » d'un lieu, qui passe à un autre coin plutôt que sur la terre d'un autre lieu (GD-12, 9 octobre 2026).
 // Indisponible (au bord de la carte) : le radeau gris pierre, la pointe disparaît (la tige seule) ; une arrivée ou une
 // borne, qui ne vont que le long de leur côte ou de leur rangée, ne montrent pas leurs flèches indisponibles. Le choix sur une
 // place prise (choix 3 du mainteneur, 6 octobre 2026) : une croix grise, bordée de sombre, au milieu de son emprise.
-// Sans choix, chaque bout de liaison posée porte un petit radeau (choix 1a) : le toucher choisit cette arrivée. Rien à
-// lire dans le monde : les boutons HTML transparents posés par-dessus (ArrangeHandles.tsx) portent les noms.
+// Rien à lire dans le monde : les boutons HTML transparents posés par-dessus (ArrangeHandles.tsx) portent les noms.
 // Ici : où se tient chaque poignée (à une place du bord de l'emprise du choix, jamais plus loin, par-dessus la terre si
 // l'eau n'est pas là), sa forme (sommets et couleurs, en cases, dans le repère de Three : x, hauteur, y) et ce
 // qu'elle coûte. Code pur, sans Three.js ; la 3D les dessine en un seul maillage (three/arrangeHandles.ts).
+import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
-import { getBridge } from './archipelago';
-import { currentLandings, DIRECTION_STEP, placeIn, routesIn } from './arrange';
-import { type ArrangeChoice, canTurn, choiceFits, landingInWorld, landingTip, stepChoice } from './arrangeMode';
-import type { ArchipelagoId } from './map';
+import { DIRECTION_STEP, joinedWith, othersFootprintsOf } from './arrange';
+import { archipelagoOfIsland } from './archipelagos';
+import { type ArrangeChoice, canTurn, choiceFits, stepChoice } from './arrangeMode';
 import type { Rectangle } from './placement';
-import type { CleDePoignee, LinkEndHandle, PoigneeDuMonde, PoigneesDuChoix } from './view';
+import type { CleDePoignee, PoigneeDuMonde, PoigneesDuChoix } from './view';
 
 /** Le côté d'un radeau, en cases (à l'échelle 1). */
 export const COTE_DU_RADEAU = 3;
@@ -67,31 +68,38 @@ function brasDeLaCroix(rx: number, ry: number): number {
 
 /**
  * Les poignées d'un choix autour de son emprise `r` (en cases du monde), l'eau à la hauteur `z` (le dessus) : chaque
- * flèche de son côté, « Tourner » au coin nord-est, chacune à une place (`ECART`) du bord de l'emprise, et à
+ * flèche de son côté, « Tourner » à un coin (`coinDeTourner`, le nord-est d'ordinaire ; `garde`, le coin qu'il occupait), chacune à une place (`ECART`) du bord de l'emprise, et à
  * `ELOIGNEMENT` demi-côtés au moins du milieu. Jamais plus loin (mainteneur, 6 octobre 2026) : une poignée qui tombe
  * sur une terre y reste, par-dessus (la 3D la dessine devant le décor) ; « toujours visible » prime sur l'eau libre.
  * Calculé à chaque échelle de `ECHELLES`. « Tourner » seulement pour ce qui tourne (`canTurn`) ; pour une arrivée ou une
  * borne, seulement les flèches qui mènent quelque part.
  */
-export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z: number): PoigneesDuChoix {
+export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z: number, garde: CoinDuChoix | null = null): PoigneesDuChoix {
   const cx = (r.x0 + r.x1) / 2;
   const cy = (r.y0 + r.y1) / 2;
   const rx = (r.x1 - r.x0) / 2;
   const ry = (r.y1 - r.y0) / 2;
   const liste: PoigneeDuMonde[] = [];
   for (const cle of CLES_DES_POIGNEES) {
+    // Peu de boutons (mainteneur, 7 octobre 2026 : « il y a trop de boutons », inspiré des jeux de base mobiles) : on
+    // déplace en glissant ou en touchant la place voulue ; seul « Tourner » reste près du choix. Les flèches ne restent
+    // que pour un ouvrage à reposer, qui ne se glisse pas (et au clavier, sans bouton).
+    if (cle !== 'tourner' && c.genre !== 'liaison') continue;
     if (cle === 'tourner' && !canTurn(c)) continue;
     const dispo = sert(world, c, cle);
     // Une arrivée ou une borne ne va que le long de sa côte ou de sa rangée : une flèche qui ne mène nulle part n'y est
     // pas montrée (deux radeaux gris à tige courte, côte à côte, s'y lisaient comme des dalles).
     if (!dispo && (c.genre === 'arrivee' || c.genre === 'borne')) continue;
-    const sens = SENS[cle];
-    const places: number[] = [];
-    for (const e of ECHELLES) {
-      const demi = (COTE_DU_RADEAU / 2) * e;
-      const loin = (rayon: number) => Math.max(rayon + ECART + demi, ELOIGNEMENT * e);
-      places.push(sens.dx * loin(rx), sens.dy * loin(ry));
-    }
+    const placesVers = (sens: CoinDuChoix) => {
+      const places: number[] = [];
+      for (const e of ECHELLES) {
+        const demi = (COTE_DU_RADEAU / 2) * e;
+        const loin = (rayon: number) => Math.max(rayon + ECART + demi, ELOIGNEMENT * e);
+        places.push(sens.dx * loin(rx), sens.dy * loin(ry));
+      }
+      return places;
+    };
+    const places = cle === 'tourner' && c.genre === 'lieu' ? coinDeTourner(world, c.id, r, placesVers, garde) : placesVers(SENS[cle]);
     liste.push({ cle, ox: places[0], oy: places[1], places, dispo });
   }
   const demi = COTE_DU_RADEAU / 2;
@@ -109,84 +117,80 @@ export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z:
     z,
     liste,
     emprise,
-    ...(c.genre === 'arrivee' ? { bout: true } : {}),
     ...(choiceFits(world, c) ? {} : { prise: { bras: brasDeLaCroix(rx, ry) } }),
   };
 }
 
-// ---------- Les bouts des liaisons (6 octobre 2026, choix 1a du mainteneur) ----------
-
 /**
- * Les poignées des bouts des liaisons posées d'une région : chaque bout au bout de son ponton, sur l'eau, à la hauteur
- * de l'eau de son lieu. Montrées dans le mode quand rien n'est choisi ; toucher l'une choisit cette arrivée.
+ * L'échelle des radeaux sur la Carte de la tablette, la région entière cadrée (3,4 à 4 pixels par case : un radeau de
+ * `POIGNEE_MIN_PX` y fait 12 à 14 cases, l'échelle 4 à 5) ; au-delà (un téléphone, la Carte de loin), un radeau de vingt
+ * cases touche toujours une terre, et « Tourner » garde son coin.
  */
-export function linkEndHandles(world: World, a: ArchipelagoId): LinkEndHandle[] {
-  const out: LinkEndHandle[] = [];
-  for (const [link, t] of routesIn(world, a)) {
-    const b = getBridge(link);
-    const l = t && b ? currentLandings(world, link) : null;
-    if (!l || !b) continue;
-    for (const end of ['from', 'to'] as const) {
-      const id = end === 'from' ? b.from : b.to;
-      const p = landingTip(world, id, l[end]);
-      const c = landingInWorld(world, id, l[end]);
-      out.push({ link, end, x: p.x + 0.5, y: p.y + 0.5, z: placeIn(world, id).altitude, dx: p.x - c.x, dy: p.y - c.y });
-    }
-  }
-  return out;
+const ECHELLE_DE_LA_CARTE = 5;
+
+/** Un coin de l'emprise d'un choix : le côté de « Tourner » (−1 ou 1 sur x et sur y, dans le sens de `SENS`). */
+export interface CoinDuChoix {
+  dx: number;
+  dy: number;
 }
 
-/** Le plus long recul d'un bout le long de son ponton, vers sa côte, en côtés de son petit radeau. */
-export const RECUL_MAX_DU_BOUT = 1.5;
-/** Le pas du recul, en côtés de son petit radeau. */
-const PAS_DU_RECUL = 0.25;
+/** Le coin où se tient « Tourner » d'un choix (le signe de sa place), ou `null` s'il n'en a pas. */
+export function coinDeTournerDe(p: PoigneesDuChoix | undefined): CoinDuChoix | null {
+  const q = p?.liste.find((k) => k.cle === 'tourner');
+  return q ? { dx: Math.sign(q.ox), dy: Math.sign(q.oy) } : null;
+}
+
+/** La distance (en cases) d'un point à un rectangle, nulle dedans. */
+function distanceAuRectangle(x: number, y: number, r: Rectangle): number {
+  return Math.hypot(Math.max(r.x0 - x, 0, x - r.x1), Math.max(r.y0 - y, 0, y - r.y1));
+}
 
 /**
- * Les bouts trop proches à l'écran (deux bouts d'une liaison courte, de part et d'autre d'un bras d'eau étroit ; deux
- * bouts au coin d'un même lieu) : à chaque pas, celui des deux (ou les deux) qui les écarte le plus recule le long de
- * son ponton, vers sa côte, tant qu'ils sont à moins de `min` pixels et que reculer les écarte vraiment ; jamais plus
- * de `RECUL_MAX_DU_BOUT` côtés de radeau (`cote`, en cases, le côté du radeau à l'échelle de la vue). Deux bouts côte à
- * côte sur la même côte ne s'écartent pas en reculant : ils restent, et leurs boutons se partagent la place à
- * mi-distance (ArrangeHandles.tsx). `ecran(i, recul)` : où se tient le bout `i` reculé de `recul` cases, en pixels (ou
- * rien, hors de la vue). Rend le recul de chaque bout, en cases. Pur.
+ * Le coin de « Tourner » pour un lieu choisi (GD-12, relectures du 9 octobre 2026). Un coin gêne quand, à une échelle
+ * de `ECHELLES` jusqu'à celle de la Carte (`ECHELLE_DE_LA_CARTE`), son radeau se pose sur la terre d'un autre lieu (ou
+ * l'îlot d'une de ses grandes constructions, son quai, une réunion : au 3e, le Tremplin des forces choisi, son radeau
+ * se posait sur la Ruche des réseaux). Dans l'ordre :
+ * - le coin qu'il occupait (`garde`), tant qu'il ne gêne pas : « toujours au même endroit », il ne bouge ni à chaque
+ *   quart de tour ni à chaque pas ;
+ * - sinon le coin nord-est, s'il ne gêne pas ;
+ * - sinon le coin libre le plus proche du lieu choisi au regard des autres (`attache` : à toutes les échelles, de
+ *   combien le radeau est plus près du lieu choisi que du plus proche des autres), pour qu'il se lise comme le sien ;
+ * - sinon, aucun coin n'étant libre, celui qui gêne au moins d'échelles, puis le plus proche du lieu choisi.
+ * À égalité, l'ordre des coins : nord-est, nord-ouest, sud-est, sud-ouest.
  */
-export function reculsDesBouts(n: number, ecran: (i: number, recul: number) => { x: number; y: number } | null, min: number, cote = 1): number[] {
-  const reculs = new Array<number>(n).fill(0);
-  const max = RECUL_MAX_DU_BOUT * cote;
-  const pas = PAS_DU_RECUL * cote;
-  const distance = (i: number, ri: number, j: number, rj: number) => {
-    const a = ecran(i, ri);
-    const b = ecran(j, rj);
-    return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : Infinity;
-  };
-  for (let tour = 0; tour < Math.ceil(2 * RECUL_MAX_DU_BOUT / PAS_DU_RECUL); tour++) {
-    let bouge = false;
-    for (let i = 0; i < n; i++)
-      for (let j = i + 1; j < n; j++) {
-        const d = distance(i, reculs[i], j, reculs[j]);
-        if (d >= min) continue;
-        const ri = Math.min(max, reculs[i] + pas);
-        const rj = Math.min(max, reculs[j] + pas);
-        // Les deux, l'un, ou l'autre : ce qui les écarte le plus.
-        const essais: [number, number][] = [
-          [ri, rj],
-          [ri, reculs[j]],
-          [reculs[i], rj],
-        ];
-        let mieux: [number, number] | null = null;
-        let dMieux = d + 0.1;
-        for (const [a, b] of essais) {
-          if (a === reculs[i] && b === reculs[j]) continue;
-          const e = distance(i, a, j, b);
-          if (e > dMieux) [mieux, dMieux] = [[a, b], e];
-        }
-        if (!mieux) continue;
-        [reculs[i], reculs[j]] = mieux;
-        bouge = true;
+function coinDeTourner(world: World, id: BiomeId, r: Rectangle, placesVers: (sens: CoinDuChoix) => number[], garde: CoinDuChoix | null): number[] {
+  const p = joinedWith(world, id);
+  const autres = othersFootprintsOf(world, archipelagoOfIsland(id), p ? [id, p] : [id]);
+  const cx = (r.x0 + r.x1) / 2;
+  const cy = (r.y0 + r.y1) / 2;
+  const { dx, dy } = SENS.tourner;
+  const coins: CoinDuChoix[] = [{ dx, dy }, { dx: -dx, dy }, { dx, dy: -dy }, { dx: -dx, dy: -dy }];
+  const mesures = coins.map((sens) => {
+    const places = placesVers(sens);
+    let gene = 0;
+    let attache = Infinity;
+    ECHELLES.forEach((e, i) => {
+      if (e > ECHELLE_DE_LA_CARTE) return;
+      const demi = (COTE_DU_RADEAU / 2) * e;
+      const x = cx + places[2 * i];
+      const y = cy + places[2 * i + 1];
+      let plusPres = Infinity;
+      let surLaTerre = false;
+      for (const o of autres) {
+        if (x + demi > o.x0 && x - demi < o.x1 && y + demi > o.y0 && y - demi < o.y1) surLaTerre = true;
+        plusPres = Math.min(plusPres, distanceAuRectangle(x, y, o));
       }
-    if (!bouge) break;
-  }
-  return reculs;
+      const ecart = plusPres - distanceAuRectangle(x, y, r);
+      if (surLaTerre) gene++;
+      attache = Math.min(attache, ecart);
+    });
+    return { sens, places, gene, attache };
+  });
+  const gardee = garde && mesures.find((m) => m.sens.dx === garde.dx && m.sens.dy === garde.dy);
+  if (gardee && gardee.gene === 0) return gardee.places;
+  if (mesures[0].gene === 0) return mesures[0].places;
+  // Le tri est stable : à égalité, l'ordre des coins (nord-est, nord-ouest, sud-est, sud-ouest).
+  return [...mesures].sort((m1, m2) => m1.gene - m2.gene || m2.attache - m1.attache)[0].places;
 }
 
 /**
@@ -219,6 +223,32 @@ export function sortDeLaPlace(ici: ArrayLike<number>, n: number, libre: Rectangl
     if (x - w < libre.x0 || x + w > libre.x1 || y - h < libre.y0 || y + h > libre.y1) return true;
   }
   return false;
+}
+
+/**
+ * De combien glisser l'écran (pixels de la vue, `out.x` et `out.y`) pour que les poignées (`ici`, `n` boîtes, comme
+ * `sortDeLaPlace`) tiennent dans la place libre `libre`, à `marge` pixels de ses bords : le moins possible, zéro si elles
+ * y tiennent (GD-12, relecture UX UI du 9 octobre 2026 : poser le choix au milieu de la place faisait sortir le coin
+ * opposé de la région). Trop grandes pour la place, elles s'alignent sur son haut et sur son bord gauche. Pur, sans
+ * allocation.
+ */
+export function ecartVersLaPlace(ici: ArrayLike<number>, n: number, libre: Rectangle, marge: number, out: { x: number; y: number }): { x: number; y: number } {
+  let x0 = Infinity;
+  let y0 = Infinity;
+  let x1 = -Infinity;
+  let y1 = -Infinity;
+  for (let k = 0; k < n; k++) {
+    const w = ici[5 * k + 3] / 2;
+    const h = ici[5 * k + 4] / 2;
+    x0 = Math.min(x0, ici[5 * k + 1] - w);
+    x1 = Math.max(x1, ici[5 * k + 1] + w);
+    y0 = Math.min(y0, ici[5 * k + 2] - h);
+    y1 = Math.max(y1, ici[5 * k + 2] + h);
+  }
+  const pousser = (a0: number, a1: number, b0: number, b1: number) => (a0 < b0 ? b0 - a0 : a1 > b1 ? Math.max(b1 - a1, b0 - a0) : 0);
+  out.x = n ? pousser(x0, x1, libre.x0 + marge, libre.x1 - marge) : 0;
+  out.y = n ? pousser(y0, y1, libre.y0 + marge, libre.y1 - marge) : 0;
+  return out;
 }
 
 // ---------- La forme ----------
@@ -481,15 +511,13 @@ function croixGrise(t: Traceur, bras: number, style: StyleDesPoignees): void {
 }
 
 /**
- * La forme de toutes les poignées d'un choix, dans un seul maillage (un appel de dessin) ; puis, au milieu du choix, le
- * petit radeau d'un bout de liaison choisi (`bout`), et la croix grise d'une place prise (`prise`), par-dessus : une
- * pièce de plus chacun dans `debuts`, dans cet ordre.
+ * La forme de toutes les poignées d'un choix, dans un seul maillage (un appel de dessin) ; puis, au milieu du choix, la
+ * croix grise d'une place prise (`prise`), par-dessus : une pièce de plus dans `debuts`.
  */
 export function formeDesPoignees(
   liste: readonly Pick<PoigneeDuMonde, 'cle' | 'dispo'>[],
   style: StyleDesPoignees,
   prise?: PoigneesDuChoix['prise'],
-  bout = false,
 ): FormeDesPoignees {
   const t = new Traceur();
   const debuts: number[] = [];
@@ -497,10 +525,6 @@ export function formeDesPoignees(
     debuts.push(t.pos.length / 3);
     if (style === 'blocs') poigneeEnCubes(t, p);
     else poigneePeinte(t, p);
-  }
-  if (bout) {
-    debuts.push(t.pos.length / 3);
-    petitRadeau(t, style);
   }
   if (prise) {
     debuts.push(t.pos.length / 3);
@@ -516,48 +540,5 @@ export const BUDGET_DES_POIGNEES = { triangles: 400, drawCalls: 1 } as const;
 /** Ce que coûtent les poignées d'un choix (et la croix d'une place prise) : un appel de dessin pour toutes, seulement pendant un choix. */
 export function coutDesPoignees(p: PoigneesDuChoix | null | undefined, style: StyleDesPoignees): { triangles: number; drawCalls: number } {
   if (!p?.liste.length) return { triangles: 0, drawCalls: 0 };
-  return { triangles: formeDesPoignees(p.liste, style, p.prise, p.bout).index.length / 3, drawCalls: 1 };
-}
-
-/** Le côté du petit radeau d'un bout de liaison, en cases (à l'échelle 1), et sa poignée sombre au milieu. */
-export const COTE_DU_BOUT = 2;
-const PRISE_DU_BOUT = 0.7;
-
-/**
- * La forme des poignées des bouts de liaison (choix 1a du mainteneur), du même style que les radeaux des flèches : un
- * petit radeau clair à bord sombre (Blocland : crème ; Archipéo : Brume bordé de Nuit océan), une prise sombre au
- * milieu, à plat. 6 triangles par bout, tous dans un seul maillage (un appel), seulement quand rien n'est choisi.
- */
-export function formeDesBouts(n: number, style: StyleDesPoignees): FormeDesPoignees {
-  const t = new Traceur();
-  const debuts: number[] = [];
-  for (let i = 0; i < n; i++) {
-    debuts.push(t.pos.length / 3);
-    petitRadeau(t, style);
-  }
-  debuts.push(t.pos.length / 3);
-  return { positions: Float32Array.from(t.pos), couleurs: Float32Array.from(t.col), index: Uint16Array.from(t.idx), debuts };
-}
-
-/** Le petit radeau d'un bout de liaison : son bord sombre, son dessus clair, sa prise sombre au milieu (6 triangles). */
-function petitRadeau(t: Traceur, style: StyleDesPoignees): void {
-  const k = COULEURS_DES_POIGNEES[style];
-  const d = COTE_DU_BOUT / 2;
-  const c = d - BORD_DU_RADEAU * 1.5;
-  const m = PRISE_DU_BOUT / 2;
-  t.dessus(-d, -d, d, d, RADEAU_HAUT - 0.02, k.bord);
-  t.dessus(-c, -c, c, c, RADEAU_HAUT, k.clair);
-  t.dessus(-m, -m, m, m, RADEAU_HAUT + 0.02, k.fleche);
-}
-
-/**
- * Le plafond des bouts de liaison, dans leur maillage à eux : 480 triangles, un appel de dessin. Au pire, autant de
- * liaisons qu'un graphe planaire en a : 3 n − 6 entre n lieux, deux bouts chacune, 6 triangles par bout ; au 6e, quinze
- * lieux depuis les îles de sciences (SC-2) : 468 triangles, au-dessus des 400 des poignées d'un choix.
- */
-export const BUDGET_DES_BOUTS = { triangles: 480, drawCalls: 1 } as const;
-
-/** Ce que coûtent les poignées des bouts de liaison : un appel pour toutes, sans choix en cours seulement. */
-export function coutDesBouts(n: number): { triangles: number; drawCalls: number } {
-  return n ? { triangles: formeDesBouts(n, 'blocs').index.length / 3, drawCalls: 1 } : { triangles: 0, drawCalls: 0 };
+  return { triangles: formeDesPoignees(p.liste, style, p.prise).index.length / 3, drawCalls: 1 };
 }

@@ -1,0 +1,9 @@
+{
+  "id": "geography-3e-france-3",
+  "biome": "geography-3e-france",
+  "name": "La place de la mairie",
+  "reward": {
+    "xp": 60
+  },
+  "done": "La place est prête. Ma mairie est complète : la ville, les champs et les routes s’y retrouvent."
+}

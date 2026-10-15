@@ -115,16 +115,16 @@
     },
     {
       "key": "history-6e-antiquity-roman-empire-1-4",
-      "prompt": "Jésus a vécu en Judée, dans l’Empire … .",
-      "spoken": "Jésus a vécu en Judée, dans l’Empire (mot manquant) .",
+      "prompt": "Jésus a vécu en Galilée et en Judée, sous la domination de … .",
+      "spoken": "Jésus a vécu en Galilée et en Judée, sous la domination de (mot manquant) .",
       "choices": [
-        "romain",
-        "grec",
-        "chinois"
+        "Rome",
+        "la Grèce",
+        "la Chine"
       ],
-      "answer": "romain",
+      "answer": "Rome",
       "hint": "À cette époque, Rome domine tout le tour de la Méditerranée.",
-      "explanation": "La Judée est une province de l’Empire romain. Jésus y vit au Ier siècle après J.-C.",
+      "explanation": "Jésus vit au début du Ier siècle après J.-C., en Galilée et en Judée. Ces régions sont alors sous la domination de Rome.",
       "aid": {
         "kind": "rule-card",
         "props": {

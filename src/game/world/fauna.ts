@@ -8,7 +8,6 @@
 // le long de X ; le nuage s'allonge le long de X, le dessous plat à Y = 0.
 import { AMBIENCE, mixColor } from './daylight';
 import { ALTITUDE, landBox, mapOf, type ArchipelagoId } from './map';
-import { ISLET_H, ISLET_W, origineDeLIlot } from './terrain';
 import { passPhase, type WhaleRoute } from './whalePass';
 import { BRUME, type Couleur } from './palette';
 import { cellHash } from '../../core/random';
@@ -49,34 +48,27 @@ export const HAUT_DES_NUAGES = { ciel: 16, ailleurs: 12 } as const;
 /**
  * Où sont les nuages d'un archipel au départ (et à jamais avec « Réduire les animations ») : leur place relative à
  * l'étendue (`nuagesDe`). Aux Îles du Ciel, un nuage haut qui commencerait au-dessus d'une île (à trois cases près) est
- * poussé de côté, hors de l'île, vers le bord le plus proche : de loin, des cubes blancs juste au-dessus d'un toit se
+ * poussé de côté, hors des îles, au bord libre le plus proche : de loin, des cubes blancs juste au-dessus d'un toit se
  * liraient comme une fumée de cheminée (référent dys, LV2-5).
  */
 export function placeDesNuages(a: ArchipelagoId, bounds: { minX: number; minY: number; maxY: number }, largeur: number): NuagePose[] {
   const spots = nuagesDe(a);
   const ciel = Boolean(AMBIENCE[a].sky);
-  // Les îlots des Gardiens (devant leur île, voir `bossIsletOrigin`) : aucun nuage, haut ou bas, n'y mord.
-  const ilots = ciel
-    ? mapOf(a).map((d) => {
-        const o = origineDeLIlot(d);
-        return { x0: o.x, x1: o.x + ISLET_W - 1, y0: o.y, y1: o.y + ISLET_H - 1 };
-      })
-    : [];
   const iles = ciel ? mapOf(a).map((d) => landBox(d)) : [];
   const MARGE = 3;
   return spots.map(([fx, fy, len], i) => {
     const bas = ciel && i >= NUAGES.length;
     const n: NuagePose = { x: bounds.minX + fx * largeur, y: bas ? 4 + (i % 3) : ciel ? HAUT_DES_NUAGES.ciel : HAUT_DES_NUAGES.ailleurs, z: bounds.minY + fy * (bounds.maxY - bounds.minY), len };
-    // Un nuage haut évite les îles et les îlots ; un nuage bas, la mer de nuages sous les îles, seulement les îlots.
-    const aEviter = bas ? ilots : [...iles, ...ilots];
-    const dessus = (b: (typeof iles)[number]) => n.x + n.len > b.x0 - MARGE && n.x < b.x1 + MARGE && n.z + 1.2 > b.y0 - MARGE && n.z < b.y1 + MARGE;
-    for (let essai = 0; essai < aEviter.length; essai++) {
-      const b = aEviter.find(dessus);
-      if (!b) break;
-      const ouest = b.x0 - MARGE - n.len;
-      const est = b.x1 + MARGE;
-      n.x = n.x - ouest < est - n.x ? ouest : est;
-    }
+    // Un nuage haut évite les îles ; un nuage bas passe sous elles, dans la mer de nuages.
+    const aEviter = bas ? [] : iles;
+    const libre = (x: number) => !aEviter.some((b) => x + n.len > b.x0 - MARGE && x < b.x1 + MARGE && n.z + 1.2 > b.y0 - MARGE && n.z < b.y1 + MARGE);
+    if (libre(n.x)) return n;
+    // Le bord d'île libre le plus proche, à l'ouest ou à l'est de l'une d'elles (depuis une forme par île, GD-12, les
+    // îles sont plus serrées : sortir d'une île posait parfois le nuage sur sa voisine).
+    let x = n.x;
+    for (const b of aEviter)
+      for (const bord of [b.x0 - MARGE - n.len, b.x1 + MARGE]) if (libre(bord) && (x === n.x || Math.abs(bord - n.x) < Math.abs(x - n.x))) x = bord;
+    n.x = x;
     return n;
   });
 }

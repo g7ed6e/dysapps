@@ -2,9 +2,9 @@
 // artistique : la statue et ce qui s'allume. Sept îles (le Jardin des heures, LV2, en plus) pour 1 800 triangles,
 // socles compris.
 import type { BiomeId } from '../../../biomes';
-import { pointe } from '../template';
-import { devant, facette, fuseau, pave, pose, type Anneau, type Trace, type V3 } from '../painted';
-import { bandeauDuSocle, dalle, orbites, plaque, tube, veineSur, type Statue } from '../sentinel';
+import { anneau, pointe } from '../template';
+import { devant, facette, fuseau, parFace, pave, pose, repere, type Anneau, type Trace, type V3 } from '../painted';
+import { bandeauDuSocle, dalle, orbites, plaque, tube, veine, veineSur, type Statue } from '../sentinel';
 
 /**
  * Le Soleil de cuivre (DA, LV2-4, retouches du consultant Archipéo adoptées par le DA le 28/09) : un disque de cuivre
@@ -104,6 +104,151 @@ const CHEMINEE: Anneau[] = [
   [7.4, 0.3],
   [8, 0.45],
 ];
+
+/** Le Paon de faïence : le corps, puis la petite tête au bout du cou. */
+const CORPS_DU_PAON: Anneau[] = [
+  [1, 0.7, 0.8],
+  [2.6, 0.85, 0.95],
+  [3.6, 0.55, 0.6],
+];
+const TETE_DU_PAON: Anneau[] = [
+  [6.4, 0.32, 0.3, -0.3],
+  [7.2, 0.32, 0.3, -0.3],
+  [7.5, 0.12, 0.12, -0.3],
+];
+/** La roue du paon, derrière lui : son pied et son rayon, et le plan de son devant. */
+const ROUE = { y: 3.0, r: 2.4, z: 0.9 } as const;
+/** Les yeux de la roue, sur son devant. */
+const YEUX_DE_LA_ROUE: [number, number][] = [
+  [-1.3, 4.4],
+  [0, 4.9],
+  [1.3, 4.4],
+];
+
+/** Le Poulpe de corail : la tête dressée, du pied des bras au sommet. */
+const TETE_DU_POULPE: Anneau[] = [
+  [1, 0.9, 0.85],
+  [2.0, 1.0, 0.95],
+  [3.6, 1.3, 1.2],
+  [5.6, 1.15, 1.05],
+  [7.3, 0.6, 0.55],
+  [8, 0.2, 0.2],
+];
+
+// Les Gardiens de sciences (SC-3) : Archipéo est en pause (2 octobre 2026), ces sentinelles n'ont que le strict
+// nécessaire (budget de l'archipel).
+
+/** La Girafe d'ambre, de face : quatre jambes, le corps court, le long cou penché vers l'élève, la tête et ses ossicônes. */
+const CORPS_DE_LA_GIRAFE: Anneau[] = [
+  [3.2, 0.75, 1.15, 0.1],
+  [3.9, 0.8, 1.2, 0.1],
+  [4.4, 0.55, 0.9, 0],
+];
+const COU_DE_LA_GIRAFE: Anneau[] = [
+  [4.0, 0.42, 0.42, -0.3],
+  [6.7, 0.28, 0.28, -0.75],
+];
+const TETE_DE_LA_GIRAFE: Anneau[] = [
+  [6.5, 0.3, 0.4, -0.95],
+  [7.3, 0.3, 0.45, -1.1],
+  [7.6, 0.2, 0.3, -1.05],
+];
+
+/**
+ * La Cloche de cobalt sous son portique (deux poteaux, une poutre), et sa petite lampe sur poteau, à droite ; le fil de
+ * cuivre va du portique à la lampe (aucun éclair).
+ */
+const CLOCHE: Anneau[] = [
+  [3.4, 1.05],
+  [3.65, 1.0],
+  [4.4, 0.75],
+  [5.9, 0.62],
+  [6.5, 0.32],
+];
+const POTEAUX_DU_PORTIQUE = 1.35;
+const BAS_DE_LA_POUTRE = 6.95;
+const LAMPE = { x: 2.12, z: -0.3, bas: 7.12, haut: 7.6 } as const;
+
+/**
+ * Le tour du Grand-bi (DA, relecture des captures SC-3) : dessiné de profil face à −Z, il se voyait par la tranche depuis
+ * l'est, d'où le regardent la caméra du Bassin (0,72 ; −0,16, `viewYaw` −32°) et celle qui glisse vers lui au rallumage ;
+ * tourné vers elles comme la Diligence, sa grande roue et ses rayons de face. Au défi, sa caméra de trois quarts
+ * (Guardians.tsx, `cameraDirection` [−0,55 ; −0,85]) le voit déjà de face : il y reste droit.
+ */
+const TOURS_DU_GRAND_BI = { monde: deFacePour(0.72, -0.16), defi: 0 };
+/** Le Grand-bi d'érable, de profil face à l'élève : la grande roue (centre, rayon), la petite roue derrière. */
+const GRANDE_ROUE = { x: -0.05, y: 3.45, r: 2.3, epaisseur: 0.1 } as const;
+const PETITE_ROUE = { x: 1.9, y: 1.55, r: 0.45 } as const;
+/** La plaque du guidon, où sont les yeux : un hexagone pointe en haut, son sommet en haut de la sentinelle. */
+const PLAQUE_DU_GUIDON = { x: -0.15, y: 7.45, r: 0.55 } as const;
+
+/** Le Lynx d'agate, assis : le corps, des hanches aux épaules ; la tête, au-dessus, un peu en avant. */
+const CORPS_DU_LYNX: Anneau[] = [
+  [1, 0.8, 0.95],
+  [2.3, 0.9, 0.95],
+  [3.8, 0.65, 0.65],
+  [5.0, 0.45, 0.45],
+];
+const Z_DE_LA_TETE_DU_LYNX = -0.3;
+const TETE_DU_LYNX: Anneau[] = [
+  [5.0, 0.35, 0.35],
+  [5.6, 0.58, 0.52],
+  [6.5, 0.52, 0.47],
+  [7.1, 0.25, 0.25],
+];
+
+/**
+ * La Cigale d'argile, de profil, couchée le long de X, la tête vers +X, à même une souche large, plus de poteau (DA,
+ * captures emc-4e-3e-1 puis emc-4e-3e-2) : le corps trapu, de la pointe de l'abdomen au thorax (le long, la
+ * demi-hauteur, la demi-largeur), puis la tête. `souche` : le dessus de la souche, que le ventre touche ; la hauteur
+ * reste celle de la revue d'ensemble (DA-5, environ cinq blocs socle compris).
+ */
+const CIGALE = { y: 3.95, queue: -1.1, souche: 3.4, faite: 4.75 } as const;
+const CORPS_DE_LA_CIGALE: Anneau[] = [
+  [0, 0, 0],
+  [0.4, 0.5, 0.52],
+  [1.6, 0.58, 0.62],
+  [2.2, 0.5, 0.55],
+];
+const TETE_DE_LA_CIGALE: Anneau[] = [
+  [0, 0.48, 0.55],
+  [0.45, 0.42, 0.5],
+  [0.62, 0.18, 0.2],
+];
+/**
+ * Un gros œil de la Cigale, qui ressort de la tête (DA, captures emc-4e-3e-2) : un tronc de cône court, de la tête vers
+ * le dehors (+Y de son repère), au bout plat ; sur l'œil qui regarde l'élève, ce bout est l'orbite sombre.
+ */
+const OEIL_DE_LA_CIGALE: Anneau[] = [
+  [0, 0.27],
+  [0.38, 0.19],
+];
+/**
+ * Une aile de la Cigale, dans son repère : du faîte du toit (y = 0) vers le bas et le dehors (|y| croissant), plus
+ * longue que le corps, qu'elle dépasse derrière (x, y ; `c` : 1 d'un côté, −1 de l'autre).
+ */
+const aileDeLaCigale = (c: 1 | -1): [number, number][] => [
+  [1.0, 0],
+  [-1.8, 0],
+  [-1.6, c * 1.0],
+  [0.7, c * 1.0],
+];
+/** La nervure de lueur d'une aile, le long de son milieu (x, y, repère de l'aile). */
+const nervureDeLaCigale = (c: 1 | -1): [number, number][] => [
+  [0.5, c * 0.5],
+  [-0.5, c * 0.55],
+  [-1.5, c * 0.6],
+];
+/**
+ * Le repère d'une aile : posé au faîte, tourné autour de X pour que son dessus (le −Z du repère, où courent les veines)
+ * regarde en haut et au dehors, et que son y descende vers le dehors en toit.
+ */
+const repereDeLAile = (c: 1 | -1) => repere([0, CIGALE.faite, 0], c === 1 ? Math.PI - 0.65 : 0.65);
+/**
+ * Le tour de la Cigale (DA, captures emc-4e-3e-1) : de profil, son flanc (−Z) vers la caméra de la Colonnade, qui la
+ * regarde de l'est (0,71 ; −0,20, `versLaCameraDuDessin`) ; au défi, la caméra de trois quarts voit déjà son flanc.
+ */
+const TOURS_DE_LA_CIGALE = { monde: deFacePour(0.71, -0.2), defi: 0 };
 
 export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
   'maths-4e-powers': {
@@ -421,6 +566,299 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
     veines: (T, a) => {
       plaque(T, 0, 4.9, 0.3, 0.3, 8, a.lueur, () => -1.4);
       for (const s of [-1, 1]) plaque(T, s * 0.65, 3.98, 0.1, 0.1, 4, a.lueur, () => -1.6);
+    },
+  },
+  // Les Gardiens d'histoire-géographie (HG-3) : Archipéo est en pause (2 octobre 2026), ces sentinelles n'ont que le
+  // strict nécessaire (budget de l'archipel). Le Paon de faïence ne porte aucun symbole national (DA, HG-3).
+  'history-4e-revolutions': {
+    nom: 'le Paon de faïence',
+    allume: 'les yeux de sa roue',
+    sculpture: (T, a) => {
+      // La roue déployée derrière lui, en éventail.
+      const bord: [number, number][] = [];
+      for (let i = 0; i <= 6; i++) {
+        const t = Math.PI * (0.08 + (0.84 * i) / 6);
+        bord.push([Math.cos(t) * ROUE.r, ROUE.y + Math.sin(t) * ROUE.r]);
+      }
+      dalle(T, [[0, ROUE.y - 0.6], ...bord], ROUE.z, ROUE.z + 0.15, a.pierre);
+      fuseau(T, CORPS_DU_PAON, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      tube(
+        T,
+        [
+          [0, 3.4, -0.1],
+          [0, 5.0, -0.3],
+          [0, 6.5, -0.3],
+        ],
+        0.22,
+        4,
+        a.pierre,
+      );
+      fuseau(T, TETE_DU_PAON, 5, a.pierre, { bas: false });
+      pointe(T, [0, 6.8, devant(TETE_DU_PAON, 5, 6.8).z + 0.05], 0.08, 0.3, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      pointe(T, [0, 7.45, -0.3], 0.08, 0.55, a.pierre, [0, 0, 0], 3);
+      orbites(T, a, 0, 7.0, devant(TETE_DU_PAON, 5, 7.0).z, 0.14, 0.07);
+    },
+    veines: (T, a) => {
+      for (const [x, y] of YEUX_DE_LA_ROUE) plaque(T, x, y, 0.24 * a.veines, 0.3 * a.veines, 6, a.lueur, () => ROUE.z);
+    },
+  },
+  'geography-4e-globalization': {
+    nom: 'le Poulpe de corail',
+    allume: 'ses ventouses',
+    sculpture: (T, a) => {
+      fuseau(T, TETE_DU_POULPE, 6, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
+      // Les huit bras, étalés tout autour sur le socle, le bout relevé.
+      for (let k = 0; k < 8; k++) {
+        const t = (k * Math.PI) / 4 + Math.PI / 8;
+        const [c, s] = [Math.cos(t), Math.sin(t)];
+        tube(
+          T,
+          [
+            [c * 0.8, 1.5, s * 0.8],
+            [c * 1.6, 1.1, s * 1.6],
+            [c * 2.1, 1.4, s * 2.1],
+          ],
+          [0.3, 0.2, 0],
+          3,
+          a.pierre,
+        );
+      }
+      orbites(T, a, 0, 3.6, devant(TETE_DU_POULPE, 6, 3.6).z, 0.42, 0.16);
+    },
+    veines: (T, a) => {
+      // Trois ventouses sur le devant, sous les yeux.
+      for (const x of [-0.5, 0, 0.5]) plaque(T, x, 2.3, 0.14 * a.veines, 0.14 * a.veines, 6, a.lueur, (y) => devant(TETE_DU_POULPE, 6, y).z);
+    },
+  },
+  // Les Gardiens de sciences (SC-3), au strict nécessaire comme ceux d'histoire-géographie.
+  'life-earth-sciences-4e-cells-evolution': {
+    nom: 'la Girafe d’ambre',
+    allume: 'les taches de son cou',
+    sculpture: (T, a) => {
+      for (const [x, z] of [
+        [-0.5, -0.75],
+        [0.5, -0.75],
+        [-0.5, 0.9],
+        [0.5, 0.9],
+      ])
+        tube(
+          T,
+          [
+            [x, 1, z],
+            [x * 0.9, 3.4, z * 0.8],
+          ],
+          0.14,
+          4,
+          a.pierre,
+        );
+      fuseau(T, CORPS_DE_LA_GIRAFE, 6, a.moussue((k, j) => k === 0 && j % 2 === 0));
+      fuseau(T, COU_DE_LA_GIRAFE, 6, a.pierre, { bas: false });
+      fuseau(T, TETE_DE_LA_GIRAFE, 5, a.pierre, { bas: false });
+      // Les deux ossicônes, leur bout en haut de la sentinelle ; deux oreilles sur les côtés.
+      for (const s of [-1, 1]) {
+        pointe(T, [s * 0.14, 7.5, -0.95], 0.08, 0.5, a.pierre, [0, 0, 0], 3);
+        pointe(T, [s * 0.26, 7.35, -0.95], 0.08, 0.32, a.pierre, [0, 0, -s * 1.2], 3);
+      }
+      orbites(T, a, 0, 7.12, devant(TETE_DE_LA_GIRAFE, 5, 7.12).z, 0.18, 0.1);
+    },
+    // Deux taches sur le devant du cou.
+    veines: (T, a) => {
+      for (const y of [4.8, 5.85]) plaque(T, 0, y, 0.13 * a.veines, 0.2, 6, a.lueur, (yy) => devant(COU_DE_LA_GIRAFE, 6, yy).z);
+    },
+  },
+  'physics-chemistry-4e-signals-circuits': {
+    nom: 'la Cloche de cobalt',
+    allume: 'son fil de cuivre, jusqu’à la lampe',
+    sculpture: (T, a) => {
+      for (const s of [-1, 1]) fuseau(T, [[1, 0.17], [BAS_DE_LA_POUTRE, 0.14]], 4, s < 0 ? a.moussue((_, j) => j === 1) : a.pierre, { x: s * POTEAUX_DU_PORTIQUE, bas: false, haut: false });
+      pave(T, -POTEAUX_DU_PORTIQUE - 0.25, BAS_DE_LA_POUTRE, -0.18, POTEAUX_DU_PORTIQUE + 0.25, 7.3, 0.18, a.pierre);
+      // L'anneau qui tient la cloche sous la poutre, puis la cloche.
+      pave(T, -0.12, 6.4, -0.12, 0.12, BAS_DE_LA_POUTRE, 0.12, a.pierre);
+      fuseau(T, CLOCHE, 6, a.moussue((k, j) => k === 0 && j % 2 === 0));
+      // La lampe sur son poteau : le poteau, la cage (le verre, dans les veines), le chapeau dont la pointe est en haut.
+      fuseau(T, [[1, 0.1], [LAMPE.bas, 0.08]], 4, a.pierre, { x: LAMPE.x, z: LAMPE.z, bas: false });
+      pointe(T, [LAMPE.x, LAMPE.haut, LAMPE.z], 0.27, 8 - LAMPE.haut, a.pierre, [0, 0, 0], 4);
+      orbites(T, a, 0, 4.85, devant(CLOCHE, 6, 4.85).z, 0.3, 0.16);
+    },
+    // Le fil de cuivre, de la poutre jusqu'à la lampe, et le verre de la lampe : une seule lueur.
+    veines: (T, a) => {
+      tube(
+        T,
+        [
+          [POTEAUX_DU_PORTIQUE + 0.2, 7.3, 0],
+          [1.8, 7.7, -0.15],
+          [LAMPE.x, LAMPE.haut - 0.05, LAMPE.z],
+        ],
+        0.06 * a.veines,
+        4,
+        a.lueur,
+      );
+      fuseau(T, [[LAMPE.bas, 0.17], [LAMPE.haut, 0.21]], 6, a.lueur, { x: LAMPE.x, z: LAMPE.z });
+    },
+  },
+  'technology-4e-modeling': {
+    nom: 'le Grand-bi d’érable',
+    allume: 'les rayons de sa roue',
+    tour: TOURS_DU_GRAND_BI,
+    sculpture: (T, a) => {
+      anneau(T, [GRANDE_ROUE.x, GRANDE_ROUE.y, 0], GRANDE_ROUE.r, GRANDE_ROUE.epaisseur, a.pierre, [0, 0, 0], 10, 3);
+      anneau(T, [PETITE_ROUE.x, PETITE_ROUE.y, 0], PETITE_ROUE.r, GRANDE_ROUE.epaisseur, a.pierre, [0, 0, 0], 6, 3);
+      // La fourche, du moyeu au guidon ; le cadre courbe, du guidon à la petite roue ; la selle ; le guidon.
+      tube(
+        T,
+        [
+          [GRANDE_ROUE.x, GRANDE_ROUE.y, -0.2],
+          [GRANDE_ROUE.x - 0.05, 6.3, -0.1],
+        ],
+        0.1,
+        4,
+        a.pierre,
+      );
+      tube(
+        T,
+        [
+          [GRANDE_ROUE.x, 6.2, 0],
+          [1.0, 5.6, 0],
+          [1.7, 3.6, 0],
+          [PETITE_ROUE.x, PETITE_ROUE.y, 0],
+        ],
+        0.1,
+        4,
+        a.pierre,
+      );
+      pave(T, 0.15, 6.15, -0.2, 0.75, 6.35, 0.2, a.pierre);
+      tube(
+        T,
+        [
+          [GRANDE_ROUE.x - 0.05, 6.25, 0],
+          [PLAQUE_DU_GUIDON.x, PLAQUE_DU_GUIDON.y - PLAQUE_DU_GUIDON.r, 0],
+        ],
+        0.09,
+        4,
+        a.pierre,
+      );
+      tube(
+        T,
+        [
+          [PLAQUE_DU_GUIDON.x, 6.75, -0.7],
+          [PLAQUE_DU_GUIDON.x, 6.75, 0.7],
+        ],
+        0.08,
+        4,
+        a.pierre,
+      );
+      const hexagone = Array.from({ length: 6 }, (_, i): [number, number] => {
+        const t = Math.PI / 2 + (i * Math.PI) / 3;
+        return [PLAQUE_DU_GUIDON.x + Math.cos(t) * PLAQUE_DU_GUIDON.r, PLAQUE_DU_GUIDON.y + Math.sin(t) * PLAQUE_DU_GUIDON.r];
+      });
+      dalle(T, hexagone, -0.08, 0.08, a.pierre);
+      orbites(T, a, PLAQUE_DU_GUIDON.x, PLAQUE_DU_GUIDON.y, -0.08, 0.2, 0.14);
+    },
+    // Trois rayons de la grande roue, qui se croisent au moyeu : une seule lueur.
+    veines: (T, a) => {
+      for (const t of [0, Math.PI / 3, (2 * Math.PI) / 3]) {
+        const [dx, dy] = [Math.cos(t) * (GRANDE_ROUE.r - 0.05), Math.sin(t) * (GRANDE_ROUE.r - 0.05)];
+        tube(
+          T,
+          [
+            [GRANDE_ROUE.x - dx, GRANDE_ROUE.y - dy, 0],
+            [GRANDE_ROUE.x + dx, GRANDE_ROUE.y + dy, 0],
+          ],
+          0.05 * a.veines,
+          3,
+          a.lueur,
+        );
+      }
+    },
+  },
+  // EMC 4e (EMC-2) : le strict nécessaire, Archipéo étant en pause. Le Lynx d'agate, sans flamme ni symbole, vigilant,
+  // jamais menaçant : assis, les pattes de devant droites, la tête haute, de larges favoris clairs sur les joues, les
+  // oreilles aux pinceaux noirs, la queue courte et carrée (DA, captures emc-4e-3e-1) ; les taches de son pelage
+  // s'allument.
+  'civics-4e-rights-freedoms': {
+    nom: 'le Lynx d’agate',
+    allume: 'les taches de son pelage',
+    sansFlamme: true,
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DU_LYNX, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      // Les pattes de devant, droites, du sol à la poitrine.
+      for (const x of [-0.3, 0.3])
+        tube(
+          T,
+          [
+            [x, 1, -0.75],
+            [x * 0.9, 3.8, -0.5],
+          ],
+          0.14,
+          4,
+          a.pierre,
+        );
+      // La queue courte et carrée, posée derrière.
+      pave(T, -0.17, 1.0, 0.75, 0.17, 1.34, 1.2, a.pierre);
+      fuseau(T, TETE_DU_LYNX, 5, a.pierre, { z: Z_DE_LA_TETE_DU_LYNX, bas: false });
+      // Le museau, court, vers l'avant.
+      pointe(T, [0, 5.85, devant(TETE_DU_LYNX, 5, 5.85, Z_DE_LA_TETE_DU_LYNX).z + 0.05], 0.16, 0.25, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      for (const s of [-1, 1]) {
+        // Les favoris, clairs, larges, de chaque côté des joues, vers le bas.
+        pointe(T, [s * 0.48, 5.8, Z_DE_LA_TETE_DU_LYNX - 0.1], 0.2, 0.42, a.ventre, [0, 0, s * (Math.PI / 2 + 0.6)], 3);
+        // Les oreilles, puis leurs pinceaux, fins, droits, leur bout en haut de la sentinelle (de pierre : seules les
+        // orbites sont sombres sur une sentinelle).
+        pointe(T, [s * 0.24, 7.0, Z_DE_LA_TETE_DU_LYNX], 0.13, 0.55, a.pierre, [0, 0, 0], 3);
+        pointe(T, [s * 0.24, 7.45, Z_DE_LA_TETE_DU_LYNX], 0.06, 0.55, a.pierre, [0, 0, 0], 3);
+      }
+      orbites(T, a, 0, 6.25, devant(TETE_DU_LYNX, 5, 6.25, Z_DE_LA_TETE_DU_LYNX).z, 0.2, 0.1);
+    },
+    // Trois taches sur le devant du corps, sous la tête.
+    veines: (T, a) => {
+      for (const [x, y] of [
+        [-0.3, 2.4],
+        [0.3, 3.0],
+        [-0.15, 3.7],
+      ])
+        plaque(T, x, y, 0.13 * a.veines, 0.15, 6, a.lueur, (yy) => devant(CORPS_DU_LYNX, 6, yy).z);
+    },
+  },
+  // Latin-grec 4e (LCA-2) : le strict nécessaire, Archipéo étant en pause. La Cigale d'argile, sans flamme : de profil,
+  // couchée à même une souche large, comme une cigale de terre cuite ; le corps trapu, deux gros yeux qui saillent de chaque côté
+  // de la tête, les ailes repliées en toit sur le dos, plus longues que le corps et plus claires ; leurs nervures
+  // s'allument (DA, captures emc-4e-3e-1).
+  'lca-4e-cities': {
+    nom: 'la Cigale d’argile',
+    allume: 'les nervures de ses ailes',
+    sansFlamme: true,
+    tour: TOURS_DE_LA_CIGALE,
+    sculpture: (T, a) => {
+      // La souche, du socle au ventre : large, la Cigale couchée à même son dessus (plus de poteau).
+      fuseau(
+        T,
+        [
+          [1, 1.0],
+          [CIGALE.souche, 0.88],
+        ],
+        5,
+        a.moussue((k, j) => k === 0 && j % 2 === 0),
+        { bas: false },
+      );
+      // Le corps, couché le long de X, la tête au bout.
+      fuseau(pose(T, repere([CIGALE.queue, CIGALE.y, 0], 0, 0, -Math.PI / 2)), CORPS_DE_LA_CIGALE, 6, a.pierre);
+      const xTete = CIGALE.queue + CORPS_DE_LA_CIGALE[CORPS_DE_LA_CIGALE.length - 1][0];
+      fuseau(pose(T, repere([xTete, CIGALE.y, 0], 0, 0, -Math.PI / 2)), TETE_DE_LA_CIGALE, 6, a.pierre);
+      // Les gros yeux, qui ressortent de chaque côté de la tête (DA, captures emc-4e-3e-2).
+      // Le bout de l'œil côté élève (−Z) est l'orbite ; celui de l'autre, jamais vu, n'est pas fermé (le budget du poste).
+      for (const s of [-1, 1])
+        fuseau(
+          pose(T, repere([xTete + 0.25, CIGALE.y + 0.22, s * 0.38], s * (Math.PI / 2), 0, 0)),
+          OEIL_DE_LA_CIGALE,
+          5,
+          parFace((_, j) => (j === -2 ? a.orbite : a.pierre)),
+          { bas: false, haut: s === -1 },
+        );
+      // Les ailes, en toit sur le dos, d'une terre plus claire.
+      for (const c of [-1, 1] as const) dalle(pose(T, repereDeLAile(c)), aileDeLaCigale(c), 0, 0.08, a.ventre);
+    },
+    // Une nervure de lueur sur chaque aile, le long de son milieu.
+    veines: (T, a) => {
+      for (const c of [-1, 1] as const) veine(pose(T, repereDeLAile(c)), nervureDeLaCigale(c), 0.09 * a.veines, a.lueur, () => 0);
     },
   },
 };

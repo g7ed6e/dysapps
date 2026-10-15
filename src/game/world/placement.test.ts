@@ -1,5 +1,5 @@
 // Le dessin lié au lieu et sa rotation (GD-9, L1) : un lieu déplacé garde exactement son dessin, et un lieu tourné
-// d'un quart de tour tourne d'un bloc, bornes, bâtiments, îlot du Gardien, Gardien, créature et vue compris, dans les
+// d'un quart de tour tourne d'un bloc, bornes, bâtiments, Gardien, créature et vue compris, dans les
 // quatre orientations.
 import { afterEach, describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
@@ -19,7 +19,7 @@ import {
   turnRectangle,
 } from './placement';
 import { grilleDe } from './grid';
-import { avatarHome, bossIsletCenter, creaturePlacements, cubesDeLIle, guardianPlacements, placeDoor, questStations, versLaCamera, viewYaw, worldCubes } from './terrain';
+import { avatarHome, creaturePlacements, guardianCenter, cubesDeLIle, guardianPlacements, placeDoor, questStations, versLaCamera, viewYaw, worldCubes } from './terrain';
 import type { VoxelCube } from './cube';
 
 afterEach(() => placeIslands(null));
@@ -132,7 +132,7 @@ describe('un lieu tourné (GD-9, L1), dans les quatre orientations', () => {
         const cubes0 = cubesDu(id);
         const box0 = landBox(def0);
         const home0 = avatarHome(id);
-        const ilot0 = bossIsletCenter(id);
+        const carre0 = guardianCenter(id);
         const portes0 = (['school', 'trophies', 'assembly'] as const).map((p) => placeDoor(p, id));
         const gardien0 = guardianPlacements(a, progress, world.links).find((g) => g.id === id)!;
         const creature0 = creaturePlacements(a, world.links).find((c) => c.id === id)!;
@@ -145,7 +145,7 @@ describe('un lieu tourné (GD-9, L1), dans les quatre orientations', () => {
           return { x: def0.core.x + t.x, y: def0.core.y + t.y };
         };
 
-        // Les cubes attendus : les mêmes, tournés d'un bloc autour du milieu du cœur (bornes, bâtiments, îlot du Gardien
+        // Les cubes attendus : les mêmes, tournés d'un bloc autour du milieu du cœur (bornes, bâtiments, Gardien
         // compris), leur nom de décor dans le repère du lieu.
         const attendus = cubes0.map((c) => JSON.stringify({ ...sansNomBrut(c), ...turnCell(c.x, c.y, q) })).sort();
 
@@ -159,14 +159,14 @@ describe('un lieu tourné (GD-9, L1), dans les quatre orientations', () => {
         expect([box.x1 - box.x0, box.y1 - box.y0]).toEqual(q % 2 ? [box0.y1 - box0.y0, box0.x1 - box0.x0] : [box0.x1 - box0.x0, box0.y1 - box0.y0]);
         // La terre se lit tournée dans le monde.
         expect(isLandInWorld(def, tourne(def0.core.x + 8, def0.core.y - 1).x, tourne(def0.core.x + 8, def0.core.y - 1).y)).toBe(isLand(def0, def0.core.x + 8, def0.core.y - 1));
-        // La place du bonhomme, les portes, l'îlot, le Gardien, la créature.
+        // La place du bonhomme, les portes, le carré du Gardien, le Gardien, la créature.
         expect(avatarHome(id)).toEqual({ ...tourne(home0.x, home0.y), z: home0.z });
         (['school', 'trophies', 'assembly'] as const).forEach((p, i) => {
           const avant = portes0[i];
           expect(placeDoor(p, id)).toEqual(avant && { ...tourne(avant.x, avant.y), z: avant.z });
         });
-        const ilot = bossIsletCenter(id);
-        expect({ x: ilot.x, y: ilot.y }).toEqual(tourne(ilot0.x, ilot0.y));
+        const carre = guardianCenter(id);
+        expect({ x: carre.x, y: carre.y }).toEqual(tourne(carre0.x, carre0.y));
         const gardien = guardianPlacements(a, progress, world.links).find((g) => g.id === id)!;
         expect(cellsOf(gardien)).toEqual(cellsOf(gardien0).map((k) => {
           const [x, y, z] = k.split(',').map(Number);

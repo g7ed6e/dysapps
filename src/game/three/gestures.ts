@@ -4,10 +4,10 @@
 import * as THREE from 'three';
 import { estUnBiome, type BiomeId } from '../biomes';
 import type { ArchipelagoId } from '../world/archipelago';
-import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, islandInDirection, recentrerApres, toucheRetenue, walkPose, type GroundTap, type Touche, type VoyageRun } from '../world/scene';
+import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, ileSurLaCarte, islandInDirection, recentrerApres, toucheRetenue, walkPose, type GroundTap, type Touche, type VoyageRun } from '../world/scene';
 import { lirePlaceLibre } from '../freeSpace';
 import type { RappelsDeLaVue } from '../world/view';
-import { borneDe, cleDeLaCreature, SIGNE, zoneDuToucher, type ObjetTouche, type ToucherDirect } from '../world/affordance';
+import { borneDe, cleDeLaCreature, SIGNE, zoneDuToucher, type CibleDeLaBulle, type ObjetTouche, type ToucherDirect } from '../world/affordance';
 import type { Derniers, Monde } from './scenePart';
 import type { Bornes } from './markers';
 import type { Affordance } from './affordance';
@@ -17,7 +17,7 @@ import type { Signes } from './signs';
 import type { Cubes } from './cubes';
 import type { Amarre, Navire } from './ship';
 import type { Camera } from './camera';
-import { glisseCommence, pointDuPlan, RELAYE_DEPUIS_UN_BOUTON, SEUIL_DU_GLISSE } from './drag';
+import { glisseCommence, pointDuPlan, quiGlisse, SEUIL_DU_CHOIX, SEUIL_DU_GLISSE } from './drag';
 
 /** Le doigt posé sur le monde : son pointeur, où, et le point du sol saisi une fois le seuil passé (sinon `null`). */
 interface Appui {
@@ -31,10 +31,21 @@ interface Appui {
   /** Un second doigt s'est posé (la vue se pince) : lever les doigts n'ouvre rien. */
   pince?: boolean;
   /**
-   * Un glissé parti d'un bouton posé sur la scène (la poignée d'un bout de liaison, GD-9), relayé ici une fois le doigt
-   * parti (`RELAYE_DEPUIS_UN_BOUTON`) : c'est un glissé, lever le doigt n'ouvre rien.
+   * Le mode « Aménager », un choix en cours : au départ du glissé, le doigt est-il parti du choix (choix 3a du
+   * mainteneur) ? `undefined` : pas encore décidé ; `null` : non, la vue glisse ; sinon la hauteur du plan où il le glisse.
    */
-  relaye?: boolean;
+  tient?: { hauteur: number } | null;
+  /** La case sous le doigt qui tient le choix : le choix ne suit que quand elle change. */
+  place?: string;
+  /** Parti du choix, ce que le doigt touchait, gardé jusqu'à `SEUIL_DU_CHOIX` (d'ici là, ni le choix ni la vue ne bougent). */
+  depuis?: CibleDuChoix;
+}
+
+/** Ce que touchait le doigt au départ d'un glissé : le point (en cases du monde), sa hauteur, le lieu ou le Gardien. */
+interface CibleDuChoix {
+  point: { x: number; y: number };
+  hauteur: number;
+  touche: { lieu?: BiomeId; gardien?: BiomeId };
 }
 
 /** Ce que les gestes lisent de la scène : ses parties, les rappels de la vue, et ce que la vue permet. */
@@ -114,7 +125,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     pointer.set(((x - rect.left) / rect.width) * 2 - 1, -((y - rect.top) / rect.height) * 2 + 1);
     ray.setFromCamera(pointer, camera);
   };
-  const aim = (e: PointerEvent) => {
+  const aim = (e: { clientX: number; clientY: number }) => {
     viser(e.clientX, e.clientY);
     const creature = ray.intersectObjects([...personnages.creatures.children, ...bornes.missions.children, navire.groupe], true)[0];
     const grounds = ray.intersectObjects(cubesDuMonde.cibles(), false);
@@ -161,7 +172,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (down && !pince && e.pointerType === 'touch' && e.pointerId !== down.id && zoomPermis()) return pincer(e, down);
     // Un seul doigt : le second, posé pendant que le premier touche ou glisse, ne fait rien.
     if (down || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    down = { id: e.pointerId, x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY, ancre: null, ...(RELAYE_DEPUIS_UN_BOUTON in e ? { relaye: true } : {}) };
+    down = { id: e.pointerId, x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY, ancre: null };
     // Le glissé continue même si le doigt sort du canvas (sur un bouton, un panneau).
     try {
       canvas.setPointerCapture(e.pointerId);
@@ -180,6 +191,8 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
    */
   let pince: { a: { id: number; x: number; y: number }; b: { id: number; x: number; y: number }; ecart: number; mx: number; my: number } | null = null;
   const pincer = (e: PointerEvent, premier: Appui) => {
+    // Un second doigt pendant que le premier glisse le choix : le choix reste là où il est, la vue se pince.
+    lacherLeChoix(premier, false);
     const a = { id: premier.id, x: premier.cx, y: premier.cy };
     const b = { id: e.pointerId, x: e.clientX, y: e.clientY };
     pince = { a, b, ecart: Math.max(1, Math.hypot(b.x - a.x, b.y - a.y)), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 };
@@ -234,27 +247,62 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     const plan = pointDuPlan(ray.ray.origin, ray.ray.direction, cadrage.cible.y, loinMax);
     return plan ? new THREE.Vector3(plan.x, cadrage.cible.y, plan.z) : null;
   };
-  /** Le dernier pas de la grille où le doigt qui glisse a calé le fantôme (mode « Aménager ») : un calage par pas. */
-  let dernierCalage = '';
   /** Le point de la mer sous le doigt (au niveau de l'eau), en cases du monde, ou rien (l'horizon). */
   const merSous = (x: number, y: number) => {
     const p = solSous(x, y, 0);
     return p ? { x: p.x, y: p.z } : null;
   };
-  /** Le doigt posé bouge : passé le seuil (et si c'est permis), la vue glisse avec lui. */
+  /**
+   * Le mode « Aménager » : le doigt parti en (x, y) est-il parti du choix, ou d'un lieu ou d'un Gardien à prendre ?
+   * Ce qu'il touchait (le Gardien, la terre d'un lieu, ou la mer) est demandé à la page, sans rien prendre encore.
+   */
+  const cibleDuChoix = (x: number, y: number): CibleDuChoix | null => {
+    const g = derniers.current.glisserLeChoix;
+    if (derniers.current.amenager === 'non' || !g) return null;
+    const { creature, hit } = aim({ clientX: x, clientY: y });
+    const found = creature ? creatureIdOf(creature.object) : null;
+    let cible: CibleDuChoix | null = null;
+    if (creature && found) cible = { point: { x: creature.point.x, y: creature.point.z }, hauteur: creature.point.y, touche: found.kind === 'guardian' ? { gardien: found.id } : { lieu: found.id } };
+    else if (hit) {
+      const tap = tapSur(hit);
+      const lieu = tap.kind === 'island' ? tap.id : tap.kind === 'place' ? tap.island : undefined;
+      cible = { point: { x: hit.point.x, y: hit.point.z }, hauteur: hit.point.y, touche: lieu ? { lieu } : {} };
+    } else {
+      const p = merSous(x, y);
+      if (p) cible = { point: p, hauteur: 0, touche: {} };
+    }
+    return cible && g.partDuChoix(cible.point, cible.touche) ? cible : null;
+  };
+  /** Le doigt posé bouge : passé le seuil (et si c'est permis), la vue glisse avec lui ; ou le choix, s'il est parti de lui. */
   const glisser = (e: PointerEvent, appui: Appui) => {
     appui.cx = e.clientX;
     appui.cy = e.clientY;
-    // Le mode « Aménager », un choix en cours (GD-9) : glisser est un raccourci, le fantôme se cale sous le doigt.
-    if (derniers.current.amenager === 'choix' && rappels.current.onPickSea) {
-      if (!appui.ancre && !glisseCommence(e.clientX - appui.x, e.clientY - appui.y)) return;
-      appui.ancre ??= new THREE.Vector3();
-      const p = merSous(e.clientX, e.clientY);
-      const cle = p ? `${Math.floor(p.x / 4)},${Math.floor(p.y / 4)}` : '';
-      if (p && cle !== dernierCalage) {
-        dernierCalage = cle;
-        rappels.current.onPickSea(p);
+    // Le mode « Aménager » (GD-9) : un glissé parti du choix, ou d'un autre lieu ou Gardien qu'il choisit alors, le glisse
+    // au doigt (7 octobre 2026, choix 1b du mainteneur, puis « prendre directement ») ; parti de la mer, la vue glisse.
+    if (appui.tient === undefined && derniers.current.amenager !== 'non') {
+      if (!glisseCommence(e.clientX - appui.x, e.clientY - appui.y)) return;
+      // Parti d'ailleurs que du choix : la Carte glisse dès `SEUIL_DU_GLISSE`. Parti du choix : il ne part qu'au-delà
+      // d'un seuil plus grand (`SEUIL_DU_CHOIX`), et d'ici là la Carte non plus (`quiGlisse`).
+      appui.depuis ??= cibleDuChoix(appui.x, appui.y) ?? undefined;
+      const depuis = appui.depuis;
+      if (quiGlisse(e.clientX - appui.x, e.clientY - appui.y, Boolean(depuis)) === 'attendre') return;
+      appui.tient = depuis && derniers.current.glisserLeChoix?.prendre(depuis.point, depuis.touche) ? { hauteur: depuis.hauteur } : null;
+      if (appui.tient) {
+        appui.ancre = new THREE.Vector3();
+        cubesDuMonde.viser(null);
+        canvas.style.cursor = 'grabbing';
       }
+    }
+    if (appui.tient) {
+      const p = solSous(e.clientX, e.clientY, appui.tient.hauteur);
+      if (!p) return;
+      // Une fois par case franchie, pas à chaque mouvement : la même case sous le doigt ne change rien. Pas par place de
+      // la grille (4 cases) : le choix se cale sur la place la plus proche du doigt décalé de la prise, dont les bords
+      // ne tombent pas sur ceux des places sous le doigt ; le choix y retarderait d'une place.
+      const place = `${Math.floor(p.x)},${Math.floor(p.z)}`;
+      if (place === appui.place) return;
+      appui.place = place;
+      derniers.current.glisserLeChoix?.suivre({ x: p.x, y: p.z });
       return;
     }
     let ancre = appui.ancre;
@@ -271,8 +319,15 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (p) cadrage.glisser(ancre.x - p.x, ancre.z - p.z);
     signaler();
   };
+  /** Le choix glissé est lâché : posé au lever du doigt (`poser`), laissé là si le geste est interrompu. */
+  const lacherLeChoix = (appui: Appui, poser: boolean) => {
+    if (!appui.tient) return;
+    appui.tient = null;
+    derniers.current.glisserLeChoix?.lacher(poser);
+  };
   const lacher = (e: PointerEvent) => {
     if (canvas.hasPointerCapture?.(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+    if (down) lacherLeChoix(down, false);
     down = null;
     pince = null;
     cadrage.glissant = false;
@@ -309,12 +364,12 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
   const centre = new THREE.Vector3();
   const versLeCentre = new THREE.Vector3();
   /**
-   * Le doigt hors de tout objet : l'objet dont la zone de toucher (48 pixels au moins autour d'une borne ou d'un
-   * Gardien petits à l'écran, three/affordance.ts) le prend,
+   * Le doigt hors de tout objet : l'objet dont la zone de toucher (48 pixels au moins autour d'une borne, d'un Gardien
+   * ou d'une créature petits à l'écran, three/affordance.ts) le prend,
    * selon ce qu'il a touché directement (`direct` ; world/affordance.ts, `zoneDuToucher` : jamais une face en chantier,
    * le sol seulement tout près de l'objet). Dans le ciel, un objet dont le centre est caché par le relief est écarté.
    */
-  const objetDansLaZone = (x: number, y: number, direct: ToucherDirect): ObjetTouche | null => {
+  const objetDansLaZone = (x: number, y: number, direct: ToucherDirect): CibleDeLaBulle | null => {
     if (direct?.genre === 'objet' || direct?.genre === 'face') return null;
     const rect = canvas.getBoundingClientRect();
     const zones = affordance.zones(camera, rect.width, rect.height);
@@ -345,30 +400,37 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     recentrer();
     ouvrirLObjet(objet, rappels.current);
   };
+  /** Une bulle ou une zone de toucher retenue : une créature s'ouvre (et sa bulle rebondit), un objet est touché. */
+  const toucherLaCible = (cible: CibleDeLaBulle) => {
+    if (cible.genre !== 'creature') return toucherLObjet(cible);
+    if (!reduceMotion) signesDesCreatures.rebondir(cleDeLaCreature(cible.id));
+    recentrer();
+    return rappels.current.onPickCreature?.(cible.id, 'creature');
+  };
   const onUp = (e: PointerEvent) => {
     if (pinceAvec(e.pointerId)) return finDuPincement(e);
     if (!down || e.pointerId !== down.id) return;
     const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
-    const glisse = down.ancre !== null || Boolean(down.pince) || Boolean(down.relaye);
+    const glisse = down.ancre !== null || Boolean(down.pince);
+    // Parti d'un lieu ou d'un Gardien du mode « Aménager », un doigt qui a un peu bougé sans le prendre (sous
+    // `SEUIL_DU_CHOIX`) : ni la Carte ni le choix n'ont bougé, c'est un toucher (un doigt peu précis le choisit quand même).
+    const toucherQuiTremble = !glisse && down.depuis !== undefined && moved < SEUIL_DU_CHOIX;
+    // Le choix glissé, lâché : posé tout de suite sur une place libre (choix 2a du mainteneur).
+    lacherLeChoix(down, true);
     lacher(e);
     // Après un glissé (ou un doigt qui a bougé pendant une marche ou un voyage), lever le doigt n'ouvre rien.
-    if (glisse || moved >= SEUIL_DU_GLISSE) return;
+    if (glisse || (moved >= SEUIL_DU_GLISSE && !toucherQuiTremble)) return;
     // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
     if (voyageRef.current) return rappels.current.onVoyageSkip?.();
+    // Pendant la mue de la Nef, un toucher la termine (GD-15), et rien d'autre.
+    if (navire.finirLaMue()) return;
     if (derniers.current.amenager !== 'non') return toucherEnAmenageant(e);
+    if (derniers.current.carte) return toucherSurLaCarte(e);
     // Une bulle sous le doigt (sa plaque, pas les marges de sa case) passe d'abord : elle est dessinée par-dessus tout
     // (Blocland, world/affordance.ts).
     const vue = canvas.getBoundingClientRect();
-    // Sur la Carte glissée ou zoomée, la bulle d'or tenue au bord ramène la vue d'ensemble, où sa cible se voit ; dans
-    // la vue d'ensemble, le toucher va à ce qui est dessous.
-    if (derniers.current.carte && cadrage.decale() && etiquettes.bulleAuBordSous(e.clientX - vue.left, e.clientY - vue.top)) return recentrer();
     const bulle = signesDesCreatures.sous(e.clientX - vue.left, e.clientY - vue.top, vue.width, vue.height);
-    if (bulle?.genre === 'creature') {
-      if (!reduceMotion) signesDesCreatures.rebondir(cleDeLaCreature(bulle.id));
-      recentrer();
-      return rappels.current.onPickCreature?.(bulle.id, 'creature');
-    }
-    if (bulle) return toucherLObjet(bulle);
+    if (bulle) return toucherLaCible(bulle);
     const { creature, hit } = aim(e);
     // Un toucher direct sur un objet passe d'abord, une face en chantier aussi (le bloc s'y pose) ; sinon, dans le vide
     // ou sur le sol tout près d'une borne ou d'un Gardien petits, leur zone les retient (world/affordance.ts,
@@ -383,7 +445,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
             ? { genre: 'sol', case: cubesDuMonde.casesTouchees(hit).cell, distance: hit.distance }
             : null;
     const objet = objetDansLaZone(e.clientX, e.clientY, direct);
-    if (objet) return toucherLObjet(objet);
+    if (objet) return toucherLaCible(objet);
     // Pendant un trajet, un tap dans le vide le fait arriver tout de suite ; sur le sol, il change son but (la page
     // décide, depuis là où il en est : `enRoute`) ; une cible garde sa priorité.
     const now = performance.now();
@@ -405,8 +467,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     // `recentrerApres`) : en chantier on pose bloc après bloc là où l'on regarde, et le bonhomme qui y va ne déplace
     // pas la vue.
     const tap = !creature && hit ? tapSur(hit) : null;
-    // Sur la Carte, tout toucher qui fait quelque chose ramène la vue d'ensemble (le chemin d'une île pâle y est entier).
-    if (recentrerApres(tap, Boolean(creature)) || (derniers.current.carte && (tap || creature))) recentrer();
+    if (recentrerApres(tap, Boolean(creature))) recentrer();
     if (creature) {
       const quest = questIdOf(creature.object);
       if (quest) sauterLeSigne({ genre: 'borne', id: `${quest.biome}:${quest.typeId}` });
@@ -428,6 +489,31 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (tap.kind === 'face') rappels.current.build?.onPickFace(tap.cell, tap.next, { terrain: { enRoute: enRouteIci } });
     // Le sol d'une île : la colonne touchée (celle où pousse un élément du décor touché), le bonhomme y va.
     else if (tap.kind === 'island') rappels.current.onPickIsland?.(tap.id, tap.cell, enRouteIci);
+  };
+  /**
+   * Un toucher sur la Carte (piste A du mainteneur, 7 octobre 2026) : la Carte sert à s'orienter, on n'y touche que des
+   * îles. Une borne, une créature, un Gardien, le navire ou un lieu comptent pour leur île : ni fiche, ni signe qui
+   * saute, ni zone de toucher, et on va sur l'île, pas jusqu'à la case touchée. Un ouvrage, la mer : rien. Le toucher
+   * ramène la vue d'ensemble (le chemin d'une île pâle y est entier) ; sur la Carte glissée ou zoomée, la bulle d'or
+   * tenue au bord la ramène aussi.
+   */
+  const toucherSurLaCarte = (e: PointerEvent) => {
+    const vue = canvas.getBoundingClientRect();
+    if (cadrage.decale() && etiquettes.bulleAuBordSous(e.clientX - vue.left, e.clientY - vue.top)) return recentrer();
+    const ile = ileSousLeDoigt(e);
+    if (!ile) return;
+    recentrer();
+    rappels.current.onPickIsland?.(ile);
+  };
+  /** L'île de ce qui est sous le doigt : celle d'une borne, d'une créature, d'un Gardien, du navire, ou son sol. */
+  const ileSousLeDoigt = (e: PointerEvent): BiomeId | null => {
+    const { creature, hit } = aim(e);
+    if (creature) {
+      if (vehicleRef.current && isInside(creature.object, navire.groupe)) return vehicleRef.current.port;
+      return questIdOf(creature.object)?.biome ?? creatureIdOf(creature.object)?.id ?? null;
+    }
+    if (!hit) return null;
+    return ileSurLaCarte(archRef.current, { ...cubesDuMonde.casesTouchees(hit), ground: { x: hit.point.x, y: hit.point.z } }, tags.current);
   };
   /**
    * Un toucher dans le mode « Aménager » (GD-9) : un Gardien, une borne, une liaison posée (son arrivée la plus proche),
@@ -470,7 +556,13 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     cubesDuMonde.viser(hit && rappels.current.build ? cubesDuMonde.casesTouchees(hit).next : null);
   };
   const onLeave = () => cubesDuMonde.viser(null);
+  // Un appui long sur le monde, au doigt, est le début d'un glissé, jamais une sélection : iPadOS y montrerait sa loupe
+  // et ne laisserait pas partir le glissé. Les gestes passent par les événements de pointeur, qui restent.
+  const onTouchStart = (e: TouchEvent) => {
+    if (e.cancelable) e.preventDefault();
+  };
 
+  canvas.addEventListener('touchstart', onTouchStart, { passive: false });
   canvas.addEventListener('pointerdown', onDown);
   canvas.addEventListener('pointerup', onUp);
   canvas.addEventListener('pointermove', onHover);
@@ -478,6 +570,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
   canvas.addEventListener('pointercancel', onCancel);
   canvas.addEventListener('wheel', onWheel, { passive: false });
   return () => {
+    canvas.removeEventListener('touchstart', onTouchStart);
     canvas.removeEventListener('pointerdown', onDown);
     canvas.removeEventListener('pointerup', onUp);
     canvas.removeEventListener('pointermove', onHover);

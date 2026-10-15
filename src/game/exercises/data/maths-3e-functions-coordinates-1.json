@@ -1,0 +1,312 @@
+{
+  "id": "maths-3e-functions-coordinates-1",
+  "biome": "maths-3e-functions",
+  "type": "coordinates",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-3e-functions-coordinates-1-0",
+      "prompt": "Sur la droite graduée, le point marqué a pour abscisse …",
+      "spoken": "Sur la droite graduée, le point marqué a pour abscisse (mot manquant)",
+      "choices": [
+        "3",
+        "12",
+        "13"
+      ],
+      "answer": "13",
+      "hint": "Pars de la graduation 10. Chaque petit pas vaut 1.",
+      "explanation": "Le point est 3 petits pas après 10 : 10 + 3 = 13. 3, c’est l’écart depuis 10, pas l’abscisse. 12 vient d’un pas oublié : la graduation 10 est le départ, elle ne compte pas comme un pas.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": 0,
+          "max": 20,
+          "points": [
+            13
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Droite graduée et repère du plan",
+          "lines": [
+            "Sur une droite graduée, chaque point a un nombre : son abscisse.",
+            "Avant de lire, compte combien vaut un petit pas entre deux graduations.",
+            "Dans un repère du plan, un point a deux coordonnées : (abscisse ; ordonnée).",
+            "L’abscisse se lit sur l’axe horizontal, l’ordonnée sur l’axe vertical.",
+            "À gauche de l’origine, l’abscisse est négative. En dessous, l’ordonnée est négative.",
+            "Sur l’axe des abscisses, l’ordonnée vaut 0. Sur l’axe des ordonnées, l’abscisse vaut 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-1-1",
+      "prompt": "Sur la droite graduée, le point marqué a pour abscisse …",
+      "spoken": "Sur la droite graduée, le point marqué a pour abscisse (mot manquant)",
+      "choices": [
+        "−7",
+        "−3",
+        "7"
+      ],
+      "answer": "−7",
+      "hint": "Le point est-il à gauche ou à droite de zéro ? Puis pars de la graduation la plus proche.",
+      "explanation": "Le point est à gauche de zéro, 2 petits pas à gauche de −5 : son abscisse est −7. −3 est 2 pas à droite de −5 : à gauche de zéro, les nombres descendent. 7 est l’opposé, à droite de zéro.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": -10,
+          "max": 10,
+          "points": [
+            -7
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Droite graduée et repère du plan",
+          "lines": [
+            "Sur une droite graduée, chaque point a un nombre : son abscisse.",
+            "Avant de lire, compte combien vaut un petit pas entre deux graduations.",
+            "Dans un repère du plan, un point a deux coordonnées : (abscisse ; ordonnée).",
+            "L’abscisse se lit sur l’axe horizontal, l’ordonnée sur l’axe vertical.",
+            "À gauche de l’origine, l’abscisse est négative. En dessous, l’ordonnée est négative.",
+            "Sur l’axe des abscisses, l’ordonnée vaut 0. Sur l’axe des ordonnées, l’abscisse vaut 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-1-2",
+      "prompt": "Le point A a pour coordonnées (4 ; −2). Son ordonnée est …",
+      "spoken": "Le point A a pour coordonnées 4 point-virgule moins 2. Son ordonnée est (mot manquant)",
+      "choices": [
+        "−2",
+        "2",
+        "4"
+      ],
+      "answer": "−2",
+      "hint": "On écrit d’abord l’abscisse, puis l’ordonnée.",
+      "explanation": "Dans (4 ; −2), l’abscisse vient d’abord : 4. L’ordonnée vient ensuite : −2. 4 est l’abscisse. 2 oublie le signe moins : le point est en dessous de l’axe des abscisses.",
+      "figure": {
+        "kind": "coordinate-plane",
+        "props": {
+          "points": [
+            {
+              "name": "A",
+              "x": 4,
+              "y": -2
+            }
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Droite graduée et repère du plan",
+          "lines": [
+            "Sur une droite graduée, chaque point a un nombre : son abscisse.",
+            "Avant de lire, compte combien vaut un petit pas entre deux graduations.",
+            "Dans un repère du plan, un point a deux coordonnées : (abscisse ; ordonnée).",
+            "L’abscisse se lit sur l’axe horizontal, l’ordonnée sur l’axe vertical.",
+            "À gauche de l’origine, l’abscisse est négative. En dessous, l’ordonnée est négative.",
+            "Sur l’axe des abscisses, l’ordonnée vaut 0. Sur l’axe des ordonnées, l’abscisse vaut 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-1-3",
+      "prompt": "Dans un repère du plan,\nle point M a une abscisse négative\net une ordonnée positive.",
+      "question": "Où est le point M par rapport à l’origine ?",
+      "spoken": "Dans un repère du plan, le point M a une abscisse négative et une ordonnée positive.",
+      "choices": [
+        "en haut à gauche",
+        "en haut à droite",
+        "en bas à gauche"
+      ],
+      "answer": "en haut à gauche",
+      "hint": "L’abscisse dit gauche ou droite. L’ordonnée dit haut ou bas.",
+      "explanation": "Abscisse négative : le point est à gauche de l’origine. Ordonnée positive : il est en haut. M est donc en haut à gauche. En haut à droite, l’abscisse serait positive ; en bas à gauche, l’ordonnée serait négative.",
+      "figure": {
+        "kind": "coordinate-plane",
+        "props": {
+          "points": []
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Droite graduée et repère du plan",
+          "lines": [
+            "Sur une droite graduée, chaque point a un nombre : son abscisse.",
+            "Avant de lire, compte combien vaut un petit pas entre deux graduations.",
+            "Dans un repère du plan, un point a deux coordonnées : (abscisse ; ordonnée).",
+            "L’abscisse se lit sur l’axe horizontal, l’ordonnée sur l’axe vertical.",
+            "À gauche de l’origine, l’abscisse est négative. En dessous, l’ordonnée est négative.",
+            "Sur l’axe des abscisses, l’ordonnée vaut 0. Sur l’axe des ordonnées, l’abscisse vaut 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-1-4",
+      "prompt": "Le point B a pour coordonnées (0 ; 5). Il est sur …",
+      "spoken": "Le point B a pour coordonnées 0 point-virgule 5. Il est sur (mot manquant)",
+      "choices": [
+        "l’axe des abscisses",
+        "l’axe des ordonnées",
+        "aucun des deux axes"
+      ],
+      "answer": "l’axe des ordonnées",
+      "hint": "Son abscisse vaut 0. Il n’est ni à gauche ni à droite de l’origine : où est-il ?",
+      "explanation": "L’abscisse de B vaut 0 : il n’est ni à gauche ni à droite de l’origine. Il est donc sur l’axe vertical, l’axe des ordonnées, 5 unités au-dessus de l’origine. Sur l’axe des abscisses, c’est l’ordonnée qui vaudrait 0.",
+      "figure": {
+        "kind": "coordinate-plane",
+        "props": {
+          "points": []
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Droite graduée et repère du plan",
+          "lines": [
+            "Sur une droite graduée, chaque point a un nombre : son abscisse.",
+            "Avant de lire, compte combien vaut un petit pas entre deux graduations.",
+            "Dans un repère du plan, un point a deux coordonnées : (abscisse ; ordonnée).",
+            "L’abscisse se lit sur l’axe horizontal, l’ordonnée sur l’axe vertical.",
+            "À gauche de l’origine, l’abscisse est négative. En dessous, l’ordonnée est négative.",
+            "Sur l’axe des abscisses, l’ordonnée vaut 0. Sur l’axe des ordonnées, l’abscisse vaut 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-1-5",
+      "prompt": "Le point C a pour coordonnées (2 ; 3). On le déplace de 4 unités vers la droite. Le nouveau point a pour coordonnées …",
+      "spoken": "Le point C a pour coordonnées 2 point-virgule 3. On le déplace de 4 unités vers la droite. Le nouveau point a pour coordonnées (mot manquant)",
+      "choices": [
+        "(6 ; 3)",
+        "(2 ; 7)",
+        "(6 ; 7)"
+      ],
+      "answer": "(6 ; 3)",
+      "hint": "Aller vers la droite change l’abscisse. Est-ce que la hauteur change ?",
+      "explanation": "Vers la droite, l’abscisse augmente : 2 + 4 = 6. Le point ne monte pas et ne descend pas : l’ordonnée reste 3. (2 ; 7), c’est monter de 4 au lieu d’aller à droite. (6 ; 7), c’est ajouter 4 aux deux coordonnées.",
+      "figure": {
+        "kind": "coordinate-plane",
+        "props": {
+          "points": [
+            {
+              "name": "C",
+              "x": 2,
+              "y": 3
+            }
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Droite graduée et repère du plan",
+          "lines": [
+            "Sur une droite graduée, chaque point a un nombre : son abscisse.",
+            "Avant de lire, compte combien vaut un petit pas entre deux graduations.",
+            "Dans un repère du plan, un point a deux coordonnées : (abscisse ; ordonnée).",
+            "L’abscisse se lit sur l’axe horizontal, l’ordonnée sur l’axe vertical.",
+            "À gauche de l’origine, l’abscisse est négative. En dessous, l’ordonnée est négative.",
+            "Sur l’axe des abscisses, l’ordonnée vaut 0. Sur l’axe des ordonnées, l’abscisse vaut 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-1-6",
+      "prompt": "Sur une droite graduée, A a pour abscisse −3 et B a pour abscisse 5. La distance AB est …",
+      "spoken": "Sur une droite graduée, A a pour abscisse moins 3 et B a pour abscisse 5. La distance A B est (mot manquant)",
+      "choices": [
+        "−8",
+        "2",
+        "8"
+      ],
+      "answer": "8",
+      "hint": "Compte les pas de A jusqu’à zéro, puis de zéro jusqu’à B.",
+      "explanation": "De −3 à 0, il y a 3 unités ; de 0 à 5, il y en a 5 : 3 + 5 = 8. 2, c’est 5 − 3 : on a oublié que A est de l’autre côté de zéro. −8 n’est pas possible : une distance n’est jamais négative.",
+      "figure": {
+        "kind": "number-line",
+        "props": {
+          "min": -5,
+          "max": 6,
+          "points": [
+            -3,
+            5
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Droite graduée et repère du plan",
+          "lines": [
+            "Sur une droite graduée, chaque point a un nombre : son abscisse.",
+            "Avant de lire, compte combien vaut un petit pas entre deux graduations.",
+            "Dans un repère du plan, un point a deux coordonnées : (abscisse ; ordonnée).",
+            "L’abscisse se lit sur l’axe horizontal, l’ordonnée sur l’axe vertical.",
+            "À gauche de l’origine, l’abscisse est négative. En dessous, l’ordonnée est négative.",
+            "Sur l’axe des abscisses, l’ordonnée vaut 0. Sur l’axe des ordonnées, l’abscisse vaut 0."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-functions-coordinates-1-7",
+      "prompt": "Le point F est sur l’axe des abscisses, 3 unités à gauche de l’origine. Ses coordonnées sont …",
+      "spoken": "Le point F est sur l’axe des abscisses, 3 unités à gauche de l’origine. Ses coordonnées sont (mot manquant)",
+      "choices": [
+        "(−3 ; 0)",
+        "(0 ; −3)",
+        "(3 ; 0)"
+      ],
+      "answer": "(−3 ; 0)",
+      "hint": "À gauche de l’origine, l’abscisse est négative. Sur l’axe des abscisses, que vaut l’ordonnée ?",
+      "explanation": "À gauche de l’origine, l’abscisse est négative : −3. Sur l’axe des abscisses, le point n’est ni en haut ni en bas : l’ordonnée vaut 0. On écrit (−3 ; 0). (0 ; −3) inverse l’ordre : ce point serait sur l’axe des ordonnées. (3 ; 0) est à droite de l’origine.",
+      "figure": {
+        "kind": "coordinate-plane",
+        "props": {
+          "points": []
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Droite graduée et repère du plan",
+          "lines": [
+            "Sur une droite graduée, chaque point a un nombre : son abscisse.",
+            "Avant de lire, compte combien vaut un petit pas entre deux graduations.",
+            "Dans un repère du plan, un point a deux coordonnées : (abscisse ; ordonnée).",
+            "L’abscisse se lit sur l’axe horizontal, l’ordonnée sur l’axe vertical.",
+            "À gauche de l’origine, l’abscisse est négative. En dessous, l’ordonnée est négative.",
+            "Sur l’axe des abscisses, l’ordonnée vaut 0. Sur l’axe des ordonnées, l’abscisse vaut 0."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien repéré !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-functions",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

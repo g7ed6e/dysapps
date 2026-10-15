@@ -6,7 +6,7 @@
   "lang": "de",
   "instruction": "Lis et écoute la phrase en allemand, puis choisis la bonne réaction. La règle est affichée : lis-la avant de répondre.",
   "programme": [
-    "c4.de.dialoguer.reagir"
+    "c4.de.5e.interagir.reagir"
   ],
   "items": [
     {

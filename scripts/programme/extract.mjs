@@ -1,7 +1,7 @@
 // Extrait le texte d'un programme officiel (PDF publié sur data.gouv.fr) pour écrire ou vérifier le référentiel
 // src/curriculum/. Outil de contribution : rien de ce script n'entre dans l'application.
 //
-// Usage : npm run programme:extract -- c3        (une source de src/curriculum/sources.ts : c3, c4)
+// Usage : npm run programme:extract -- c3        (une source de src/curriculum/sources.ts : c3, c4, c3-2023, c4-te-2024)
 //         npm run programme:extract -- <url.pdf>  (un autre PDF, par exemple une future matière ou un autre cycle)
 //
 // Écrit .programme/<id>.txt (le texte, une marque « ===== PAGE n ===== » par page) et .programme/<id>.toc.txt
@@ -72,7 +72,7 @@ async function extract(id, url) {
 
 const arg = process.argv[2];
 if (!arg) {
-  console.error('Usage : npm run programme:extract -- <c3|c4|url.pdf>');
+  console.error('Usage : npm run programme:extract -- <source de sources.ts|url.pdf>');
   process.exit(1);
 }
 if (/^https?:\/\//.test(arg)) {

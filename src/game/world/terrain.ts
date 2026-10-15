@@ -4,27 +4,29 @@
 // ce fichier réexporte : on importe le terrain d'ici. Le décor (arbres, repères, cascades, habillage de la mer) est
 // dessiné par ./decor.ts, et posé ici.
 
-import { type BiomeId, BIOMES, BLOC, BLOCKS } from '../biomes';
+import { type BiomeId, BIOMES, BLOC, BLOCKS, SCIENCE_SUBJECTS } from '../biomes';
 import type { World } from '../engine';
 import type { VoxelCube } from './cube';
-import { type ArchipelagoId, archipelagoOfIsland, inCoeurDOrigine, inCore, islandDef, type IslandDef, landCells, landscape, margesDuCoeur, noise, tirage, turnInWorld } from './map';
+import { type ArchipelagoId, archipelagoOfIsland, type Decor, inCoeurDOrigine, inCore, islandDef, type IslandDef, landCells, landscape, margesDuCoeur, noise, coreCornerGround, tirage, turnInWorld } from './map';
 import { turnCell } from './placement';
 import { type BridgeDef, buildableBridges, bridgeState, getBridge, isBiomeUnlocked, linkKind, opensAnIsland, reachableIslands } from './archipelago';
 import { placedLinksOf } from './linkGeometry';
 import { cascades, DECOR, decorate, GRASS, landmark, pontonEtBarque, type Put, WATER } from './decor';
 import { LOW } from './paths';
 import { guardianStatus } from '../boss';
-import { commandeDeLIle } from './requests';
+import { fixturesOfPlace } from './placedFixtures';
 import { casesDeLaPetiteConstruction, eauDeLaPetiteConstruction, estPosee } from './fixtures';
 import { decalageDesPlans, isPlanDone, planCells, type PlanDef, plansFor } from './plans';
 import { lv2Courante } from '../../core/settings';
 import { type Atelier, atelierModel, casesDuVillage, PLACE_IDS, placeCells, placeCube, placeSpot, schoolModel, trophyModel, VILLAGE_PLACES } from './terrain/village';
 import { cleDeCube, DEPTH, fade, GROUND_COLOR, groundHeight, islandOrigin, LAYOUT_PAD, origineDe, taperLayers, TEXTURES, underground } from './terrain/base';
-import { cacheUneBorne, presDUneBorne, questStations, rangeeDevantLesBornes } from './terrain/markers';
+import { cacheUneBorne, ETAGES_DE_LA_BORNE, presDUneBorne, questStations, rangeeDevantLesBornes } from './terrain/markers';
 import { versLaCameraDuDessin } from './terrain/view';
+import { caseDuParvis, ILES_A_PARVIS } from './terrain/parvis';
 import { abordsDansLesMarges, bridge, bridgePath, nearSentier, piedsDesOuvrages } from './terrain/links';
-import { bossIslet } from './terrain/guardians';
-import { creatureDuMonde, creatureSpot } from './terrain/creatures';
+import { guardianTrophy } from './terrain/guardians';
+import { creatureDuMonde, creatureSpot, decorSousLeGardien, guardianSpot, presDuCarreDuGardien, surLeCarreDuGardien } from './terrain/creatures';
+import { LYING_GUARDIANS, SHORT_STATUE_HEIGHTS, TREE_CLEARANCE_OF_A_LYING_GUARDIAN, TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN } from './guardianSquares';
 import { placeDeLaPetiteConstruction } from './terrain/fixture';
 import { harbor } from './terrain/port';
 import { monumentIslets } from './terrain/monuments';
@@ -32,13 +34,12 @@ import { joinsBetween } from './terrain/joins';
 import { seaDecorShown } from './terrain/sea';
 
 export { avatarHome, DEPTH, fade, FIN_DU_PLATEAU_DES_ECOLES, groundHeight, ISLAND, islandCenter, islandOrigin, LAYOUT_PAD, origineDe } from './terrain/base';
-export { type CadreDeCases, cadreDeLaLiaison, cadreDeTraversee, cameraDeLIle, DISTANCE_DE_LA_VUE_DE_L_ILE, HORS_DE_LA_COLONNE, ileDeLaVueGlissee, islandAt, overviewBounds, projectionDeLaVueDeLIle, versLaCamera, VIEW_YAW_MAX, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, VUE_DE_L_ILE_PANNEAU_OUVERT, worldBounds } from './terrain/view';
-export { type BorneVue, cacheUneBorne, PLACES_DES_BORNES_DES_ECOLES, placesDesBornes, PORTEE_DEVANT_LA_BORNE, questStations, rangeeDevantLesBornes } from './terrain/markers';
+export { bornesDesLieux, type CadreDeCases, cadreDeLaLiaison, cadreDeTraversee, cameraDeLIle, DISTANCE_DE_LA_VUE_DE_L_ILE, HAUTEUR_DES_NOMS, HORS_DE_LA_COLONNE, ileDeLaVueGlissee, islandAt, overviewBounds, projectionDeLaVueDeLIle, terresDe, versLaCamera, VIEW_YAW_MAX, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, islandViewPullBack, islandViewTarget, VUE_DE_L_ILE, VUE_DE_L_ILE_PANNEAU_OUVERT, VUE_DE_LA_CARTE, worldBounds } from './terrain/view';
+export { bornesDansLeMonde, type BorneVue, cacheUneBorne, ETAGES_DE_LA_BORNE, PLACES_DES_BORNES_DES_ECOLES, placesDesBornes, PORTEE_DEVANT_LA_BORNE, questStations, rangeeDevantLesBornes } from './terrain/markers';
 export { avatarRoute, BAC_LONG, boardingRoute, bridgePath, casesDeLOuvrage, placesDeLaFleche, portsDAttache, premierCoude, routeAt, routeLengths, tablier } from './terrain/links';
 export { ASSEMBLAGE_SIZE, type Atelier, atelierModel, cacheUnLieu, casesDesLieux, HALLE, lieuxVus, placeDoor, placeSpot, schoolModel, TROPHY_AT, TROPHY_SIZE, TROPHY_SLOTS, trophyModel, VILLAGE_PLACES } from './terrain/village';
-export { CREATURE_STEPS, creatureDuMonde, creaturePlacements, creatureSpot, gardienDuMonde, QUARTS_DE_TOUR, QUARTS_DE_TOUR_DE_LA_CREATURE } from './terrain/creatures';
-export { bossIsletCenter, bossIsletOrigin, ILOT_DE_COTE, ISLET_GAP, ISLET_H, ISLET_W, origineDeLIlot } from './terrain/islets';
-export { bossIsletCells, bossIsletSteps, gardienEnPartieRallume, guardianPlacements, statueDe } from './terrain/guardians';
+export { CREATURE_STEPS, creatureDuMonde, creaturePlacements, creatureSpot, gardienDuMonde, GUARDIAN_SQUARE, guardianSpot, partDuGardienVue, QUARTS_DE_TOUR, QUARTS_DE_TOUR_DE_LA_CREATURE, SEUIL_DU_GARDIEN_VU } from './terrain/creatures';
+export { gardienEnPartieRallume, gardienTourne, guardianCells, guardianCenter, guardianPlacements, statueDe, trophySpot } from './terrain/guardians';
 export { casesDeLaPetiteConstructionDansLeMonde, placeDeLaPetiteConstruction } from './terrain/fixture';
 export { BALEINES_REPLACEES, mistPatches, seaDecor, whaleSpots } from './terrain/sea';
 export { vehiclePlacement, type VehiclePlacement } from './terrain/port';
@@ -46,8 +47,8 @@ export { ancreDuQuai, decalageDuQuai, monumentAnchor, monumentBlocked, monumentC
 
 /**
  * Les cubes d'une île dans son repère (étape J5). Pour l'instant, l'île est calculée en cases du monde (map.ts place
- * son cœur dans le monde) puis ramenée à son origine ; R4b et la suite écrivent en repère d'île. Le sol, le paysage, le décor, les bornes, les lieux, l'îlot du
- * Gardien, la créature et les plans, en cases depuis le coin du cœur, z depuis l'altitude de l'île. Une case de plan
+ * son cœur dans le monde) puis ramenée à son origine ; R4b et la suite écrivent en repère d'île. Le sol, le paysage, le décor, les bornes, les lieux, le bloc d'or
+ * du Gardien rallumé, la créature et les plans, en cases depuis le coin du cœur, z depuis l'altitude de l'île. Une case de plan
  * (c.x, c.y, c.z) y est le cube (c.x, c.y, c.z + 1). `voisins` : ce que les îles déjà posées occupent, en clés `cleDeCube` du monde
  * (une cascade ne tombe jamais sur la terre de l'île voisine) ; l'île y ajoute ses cubes.
  */
@@ -59,7 +60,7 @@ export function cubesDeLIle(
   /** Les succès gagnés, un bloc par succès : les trophées de la salle des trophées. */
   trophies: (keyof typeof BLOCKS)[] = [],
   voisins: Set<number> = new Set(),
-  /** Archipéo (lot 6) : l'îlot et la sentinelle, avant que le défi soit prêt. */
+  /** Les sentinelles (lot 6, les deux univers) : le Gardien est là avant que son défi soit prêt. */
   sentinelles = false,
   /** La silhouette du lieu où l'on assemble (GD-2), selon l'univers (l'habillage). */
   atelier: Atelier = 'fabrique',
@@ -79,8 +80,8 @@ export function cubesDeLIle(
 
 /**
  * Les cubes d'un lieu dans son repère (relatifs à l'origine de son cœur), tournés avec lui (GD-9, `IslandDef.quarts`) :
- * le lieu se dessine sans être tourné, puis tourne d'un bloc autour du milieu de son cœur, bornes, bâtiments et îlot du
- * Gardien compris. Le nom d'un élément du décor du paysage porte sa case du monde (« arbre@x,y ») : elle tourne aussi.
+ * le lieu se dessine sans être tourné, puis tourne d'un bloc autour du milieu de son cœur, bornes, bâtiments et bloc d'or
+ * du Gardien compris. Le nom d'un élément du décor du paysage porte sa case du monde (« arbre@x,y ») : elle tourne aussi.
  */
 function tournerLesCubes(def: IslandDef, cubes: VoxelCube[]): void {
   if (!def.quarts) return;
@@ -103,6 +104,29 @@ function nomTourne(def: IslandDef, nom: string): string {
 }
 
 /**
+ * Un arbre plus haut que `plafond` blocs, à `TREE_CLEARANCE_OF_A_LYING_GUARDIAN` cases ou moins du carré d'un Gardien
+ * couché (`LYING_GUARDIANS`, `TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN`) ou d'une statue d'Archipéo restée basse
+ * (`SHORT_STATUE_HEIGHTS`), devient un buisson : le Gardien reste plus haut que ce qui pousse autour de lui (GD-16). Le
+ * décor étant commun, les deux univers le dessinent. Les autres éléments du décor restent ce qu'ils sont.
+ */
+function decorPresDuGardien(id: BiomeId, def: IslandDef, genre: Decor, x: number, y: number, r: number, plafond: number): Decor {
+  if (LOW.has(genre)) return genre;
+  const cases: { x: number; y: number }[] = [];
+  let haut = 0;
+  decorate(
+    (px, py, pz) => {
+      cases.push({ x: px - def.core.x, y: py - def.core.y });
+      haut = Math.max(haut, pz);
+    },
+    genre,
+    x,
+    y,
+    r,
+  );
+  return haut > plafond && presDuCarreDuGardien(id, cases, TREE_CLEARANCE_OF_A_LYING_GUARDIAN) ? 'buisson' : genre;
+}
+
+/**
  * Tous les cubes d'un archipel, en cases du monde : chaque île née dans son repère (`cubesDeLIle`) et posée à sa place
  * par la grille, puis ce qui est entre les îles (le port, les îlots des monuments, la mer habillée, les ouvrages).
  */
@@ -113,7 +137,7 @@ export function worldCubes(
   withCreatures = true,
   /** Les succès gagnés, un bloc par succès : les trophées de la salle des trophées. */
   trophies: (keyof typeof BLOCKS)[] = [],
-  /** Archipéo (lot 6) : l'îlot et la sentinelle de chaque île ouverte, avant que son défi soit prêt. */
+  /** Les sentinelles (lot 6, les deux univers) : le Gardien de chaque île ouverte, avant que son défi soit prêt. */
   sentinelles = false,
   /** La silhouette du lieu où l'on assemble (GD-2), selon l'univers (l'habillage) : la Fabrique ou la Halle. */
   atelier: Atelier = 'fabrique',
@@ -156,8 +180,11 @@ function poserLIle(
   // Les cœurs en herbe ; le Jardin des heures aussi (DA, LV2-4) : l'osier, son bloc, reste aux bordures, aux paniers et
   // à la serre ; et le Refuge des carnets (DA, LV2-5) : le bardeau reste aux murs ; la Fouille des siècles et la Pointe
   // des paysages (HG-2) : la mosaïque et le chaume restent aux plans, au décor et aux commandes, l'archipel le plus chargé
-  // garde un sol calme ; de même la Vallée du vivant, le Laboratoire des éléments et le Hangar des inventions (SC-2).
+  // garde un sol calme ; de même les six îles d'histoire-géographie de 5e à 3e (HG-3), toutes les îles de la matière, et
+  // toutes les îles de sciences (SC-2 en 6e, SC-3 de la 5e à la 3e) ; et les îles d'EMC et de latin-grec du 4e et du 3e,
+  // où le bloc de l'île ne reste au sol qu'en parvis (./terrain/parvis.ts).
   const grassy =
+    ILES_A_PARVIS.has(biome.id) ||
     biome.id === 'french-6e-phonology' ||
     biome.id === 'french-6e-grammar-spelling' ||
     biome.id === 'maths-6e-calculation' ||
@@ -166,19 +193,18 @@ function poserLIle(
     biome.id === 'french-5e-homophones' ||
     biome.id === 'lv2-4e-daily-life' ||
     biome.id === 'lv2-3e-travel' ||
-    biome.id === 'history-6e-antiquity' ||
-    biome.id === 'geography-6e-living' ||
-    biome.id === 'life-earth-sciences-6e-living-world' ||
-    biome.id === 'physics-chemistry-6e-matter-energy' ||
-    biome.id === 'technology-6e-objects';
+    biome.subject === 'history-geography' ||
+    SCIENCE_SUBJECTS.includes(biome.subject);
   const h = (x: number, y: number) => groundHeight(index, x, y);
+  // Le sol du lieu : celui de son cœur, et de sa côte là où il suit la forme de l'île vers son trait (GD-12).
+  const sol = grassy ? GRASS : block.side;
   // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
   // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.
   const taken = new Set<number>();
   const putWorld = (x: number, y: number, z: number, color: string, decor?: string, sol?: true) => {
     taken.add(cleDeCube(x, y, z));
     placed.add(cleDeCube(x, y, oz + z));
-    cubes.push({
+    const cube: VoxelCube = {
       x,
       y,
       z: oz + z,
@@ -187,8 +213,10 @@ function poserLIle(
       tag: biome.id,
       muted: unlocked ? undefined : true,
       decor: decor ? `${biome.id}/${decor}` : undefined,
-      ...(sol ? { sol } : {}),
-    });
+    };
+    // En dernier, comme avant (l'ordre des clés fait les empreintes), sans objet de plus à chaque cube.
+    if (sol) cube.sol = sol;
+    cubes.push(cube);
   };
   // Le sol et la roche de l'île : le rendu Archipéo les dessine en facettes (world/landMesh.ts).
   const putSol = (x: number, y: number, z: number, color: string) => putWorld(x, y, z, color, undefined, true);
@@ -197,8 +225,12 @@ function poserLIle(
   // Le décor du cœur est dessiné sur la grille 12 × 12, décalée de la marge.
   // … sauf sur les cases des lieux du village (un feuillage voisin ne traverse pas leur toit).
   const placesAt = placeCells(biome.id);
+  // … ni sur le carré du Gardien, quand l'île n'a pour lui que sa place de repli (GD-11, `guardianSpot`).
+  const repli = guardianSpot(biome.id).repli === true;
   const putDecor: Put = (x, y, z, color, decor) =>
-    !placesAt.has(`${LAYOUT_PAD.x + x},${LAYOUT_PAD.y + y}`) && put(LAYOUT_PAD.x + x, LAYOUT_PAD.y + y, z, color, decor);
+    !placesAt.has(`${LAYOUT_PAD.x + x},${LAYOUT_PAD.y + y}`) &&
+    !(repli && surLeCarreDuGardien(biome.id, LAYOUT_PAD.x + x, LAYOUT_PAD.y + y)) &&
+    put(LAYOUT_PAD.x + x, LAYOUT_PAD.y + y, z, color, decor);
   const land = landCells(def);
   for (const c of land) {
     if (!inCore(def, c.x, c.y)) continue;
@@ -207,14 +239,17 @@ function poserLIle(
     for (let d = 1; d <= DEPTH; d++) putSol(c.x, c.y, -d, BLOCKS[BLOC.terre].side);
     const top = h(x, y);
     if (top > 0) putSol(c.x, c.y, 0, BLOCKS[BLOC.terre].side);
-    putSol(c.x, c.y, top, grassy ? GRASS : block.side);
+    // Dans un coin arrondi du cœur d'une île qui a une forme (GD-12), le sable de la plage ou le sol de la côte.
+    const coin = coreCornerGround(def, c.x, c.y);
+    const parvis = coin ? null : caseDuParvis(biome.id, x, y);
+    putSol(c.x, c.y, top, coin ? GROUND_COLOR[coin] : parvis === 'allee' ? block.side : parvis === 'bordure' || parvis === 'seuil' ? BLOCKS[BLOC.pierre].side : sol);
   }
   // Le paysage autour du cœur : collines, pics, lacs, cratère, sable des plages, neige des sommets, puis le décor.
   const scenery = landscape(def);
   for (const c of scenery) {
     for (let d = 1; d <= DEPTH; d++) putSol(c.x, c.y, Math.min(0, c.h) - d, underground(def, c, c.h + d));
     for (let z = 0; z < c.h; z++) putSol(c.x, c.y, z, underground(def, c, c.h - z));
-    putSol(c.x, c.y, c.h, GROUND_COLOR[c.ground]);
+    putSol(c.x, c.y, c.h, c.placeGround ? sol : GROUND_COLOR[c.ground]);
   }
   DECOR[biome.id](putDecor, (x, y) => h(x + LAYOUT_PAD.x, y + LAYOUT_PAD.y));
   // Les bornes de mission : un socle du bloc de l'île, une ardoise étoilée dessus. Délavées avec l'île quand elle est fermée.
@@ -226,7 +261,7 @@ function poserLIle(
     cubes.push({
       x: ox + st.x,
       y: oy + st.y,
-      z: oz + base + 1,
+      z: oz + base + ETAGES_DE_LA_BORNE.socle,
       color: tone(block.side),
       top: block.top,
       texture: block.texture,
@@ -237,7 +272,7 @@ function poserLIle(
     cubes.push({
       x: ox + st.x,
       y: oy + st.y,
-      z: oz + base + 2,
+      z: oz + base + ETAGES_DE_LA_BORNE.ardoise,
       color: tone('#3a4a6a'),
       top: '#2f3d5c',
       texture: 'borne',
@@ -245,8 +280,8 @@ function poserLIle(
       quest,
       muted,
     });
-    taken.add(cleDeCube(ox + st.x, oy + st.y, base + 1));
-    taken.add(cleDeCube(ox + st.x, oy + st.y, base + 2));
+    taken.add(cleDeCube(ox + st.x, oy + st.y, base + ETAGES_DE_LA_BORNE.socle));
+    taken.add(cleDeCube(ox + st.x, oy + st.y, base + ETAGES_DE_LA_BORNE.ardoise));
   }
   // L'école, la salle des trophées et le lieu où l'on assemble (sur l'île de l'école de l'archipel) : on les touche pour
   // entrer, comme une borne.
@@ -297,35 +332,51 @@ function poserLIle(
     for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) if (lieuxDuMonde.has(cleDeCube(x + dx, y + dy))) return true;
     return false;
   };
+  const effaceSousLeGardien = guardianSpot(biome.id).palier === 3;
+  const plafondDesArbres = LYING_GUARDIANS.has(biome.id) ? TREE_HEIGHT_BESIDE_A_LYING_GUARDIAN : SHORT_STATUE_HEIGHTS[biome.id];
+  // Sur une île à parvis, un élément de la côte ou des marges qui toucherait l'allée ou sa bordure n'est pas posé.
+  const aParvis = ILES_A_PARVIS.has(biome.id);
+  const surLeParvis = (cases: readonly { x: number; y: number }[]) => cases.some((p) => caseDuParvis(biome.id, p.x - ox, p.y - oy) !== null);
   for (let k = 0; k < scenery.length + marges.length; k++) {
     const c = k < scenery.length ? scenery[k] : marges[k - scenery.length];
     if (!c.decor || nearSentier(def, c.x, c.y)) continue;
     if (k >= scenery.length && abords.has(`${c.x},${c.y}`)) continue;
     const t = tirage(def, c.x, c.y);
     const r = noise(def.seed + 5, t.x, t.y);
+    // Près du carré d'un Gardien couché ou d'une statue restée basse, un arbre plus haut que lui devient un buisson (GD-16).
+    const genre = plafondDesArbres === undefined ? c.decor : decorPresDuGardien(biome.id, def, c.decor, c.x, c.y, r, plafondDesArbres);
     // Le décor ne remplace jamais un cube déjà posé (sol voisin plus haut, feuillage d'un autre arbre).
     // … ni ne déborde au-dessus du cœur d'origine (la zone des plans, les lieux et les bornes doivent rester libres).
     const poser: Put = (x, y, z, color, decor) => !inCoeurDOrigine(def, x, y) && !taken.has(cleDeCube(x, y, c.h + z)) && putWorld(x, y, c.h + z, color, decor);
     // Loin des bornes, rien ne peut en cacher une : posé directement. Près d'elles (une case de plus pour le feuillage),
     // un élément qui cacherait le pied d'une borne n'est pas posé (voir `cacheUneBorne`), ni un élément qui toucherait
     // la rangée de côte devant les bornes d'une île-école.
-    const piedProche = pieds.size > 0 && !LOW.has(c.decor) && presDUnPied(c.x, c.y);
+    const piedProche = pieds.size > 0 && !LOW.has(genre) && presDUnPied(c.x, c.y);
+    // Un élément qui toucherait le carré du Gardien, quand le décor s'y efface (palier 3 de `guardianSpot`), n'est pas posé.
+    if (effaceSousLeGardien) {
+      const cases: { x: number; y: number }[] = [];
+      decorate((x, y) => cases.push({ x: x - def.core.x, y: y - def.core.y }), genre, c.x, c.y, r);
+      if (decorSousLeGardien(biome.id, cases)) continue;
+    }
+    if (aParvis) {
+      const cases: { x: number; y: number }[] = [];
+      decorate((x, y) => cases.push({ x, y }), genre, c.x, c.y, r);
+      if (surLeParvis(cases)) continue;
+    }
     if (!presDUneBorne(bornes, c.x, c.y, 1) && !presDUnLieu(c.x, c.y) && !piedProche) {
-      decorate(poser, c.decor, c.x, c.y, r);
+      decorate(poser, genre, c.x, c.y, r);
       continue;
     }
     const poses: [number, number, number, string, string | undefined][] = [];
-    decorate((x, y, z, color, decor) => poses.push([x, y, z, color, decor]), c.decor, c.x, c.y, r);
+    decorate((x, y, z, color, nom) => poses.push([x, y, z, color, nom]), genre, c.x, c.y, r);
     if (poses.some(([x, y, z]) => devant.has(`${x},${y}`) || lieuxDuMonde.has(cleDeCube(x, y)) || (piedProche && pieds.has(cleDeCube(x, y))) || cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
     for (const [x, y, z, color, decor] of poses) poser(x, y, z, color, decor);
   }
   // Une île en altitude flotte : sa roche s'amincit dessous.
   if (def.altitude > 0)
     for (const t of taperLayers(land)) if (!taken.has(cleDeCube(t.x, t.y, -DEPTH - t.d))) putSol(t.x, t.y, -DEPTH - t.d, BLOCKS[BLOC.pierre].side);
-  // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une petite île, son arène et ses pas japonais. Une
-  // sentinelle (lot 6) est là dès l'ouverture de l'île, sans les pas japonais tant qu'elle attend.
-  const guardian = guardianStatus(biome, progress, village.links, sentinelles);
-  if (guardian !== 'hidden') bossIslet(biome, guardian === 'beaten', cubes, guardian !== 'waiting');
+  // Le Gardien se tient sur son île (GD-11, ./terrain/guardians.ts) ; rallumé, son bloc d'or est devant lui.
+  if (guardianStatus(biome, progress, village.links, sentinelles, village.challengesKeptOpen) === 'beaten') guardianTrophy(biome, cubes);
   if (unlocked && withCreatures) {
     const spot = creatureSpot(biome.id);
     for (const c of creatureDuMonde(biome.id))
@@ -337,9 +388,10 @@ function poserLIle(
         tag: biome.id,
       });
   }
-  // La petite construction d'une commande livrée (GD-7, PR 3), à côté de la créature, en cubes posés.
-  const commande = unlocked ? commandeDeLIle(biome.id) : undefined;
-  if (commande && estPosee(village.parts, commande.fixture)) {
+  // Les petites constructions posées chez la créature, en cubes posés : celle de sa commande livrée (GD-7, PR 3) et les
+  // objets des quêtes finies chez elle (GD-10).
+  for (const commande of unlocked ? fixturesOfPlace(biome.id) : []) {
+    if (!estPosee(village.parts, commande.fixture)) continue;
     const place = placeDeLaPetiteConstruction(biome.id, commande.fixture);
     if (place)
       for (const c of casesDeLaPetiteConstruction(commande.fixture) ?? []) {
@@ -398,7 +450,7 @@ export function casesDesPlansDansLeMonde(cases: readonly { plan: PlanDef; keys: 
 
 /** Ce qui est entre les îles, en cases du monde, ajouté à `cubes` : le port, les îlots des monuments, la mer, les ouvrages. */
 function entreLesIles(a: ArchipelagoId, village: World, cubes: VoxelCube[], choisie: string | null, atelier: Atelier): VoxelCube[] {
-  // Le port : la jetée (le Bloc-Navire est un objet à part, voir vehiclePlacement).
+  // Le port : la jetée (la Nef est un objet à part, voir vehiclePlacement).
   harbor(a, village, cubes);
   // Les monuments, chacun sur son îlot au large : bâtis, ou en fantômes à construire.
   monumentIslets(a, village, cubes);

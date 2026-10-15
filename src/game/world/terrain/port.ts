@@ -5,13 +5,13 @@ import type { VoxelCube } from '../cube';
 import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, inCore, isLand, islandDef, landscape, margesDuCoeur } from '../map';
 import { DOCK_DX, dockCells, dockOrigin, dockPosts, shoreY, vehicleAfloat, vehicleRestZ } from '../harbor';
 import { planCells, zoneDesPlans } from '../plans';
-import { commandeDeLIle } from '../requests';
+import { fixturesOfPlace } from '../placedFixtures';
 import { casesDeLaPetiteConstruction } from '../fixtures';
 import { getArchipelago } from '../archipelago';
 import { placedLinksOfPlace } from '../linkGeometry';
 import type { World } from '../../engine';
 import { villageStage } from '../villageStage';
-import { kitReady, launchedStages, stageBuildingAt } from '../vehicle';
+import { kitReady, launchedStages, shownPieces, stageBuildingAt, vehicleForm } from '../vehicle';
 import { cacheUneBorne, questStations, rangeeDevantLesBornes } from './markers';
 import { AVATAR_HOME, fade, groundHeight, isSchoolIsland } from './base';
 import { versLaCameraDuDessin } from './view';
@@ -19,7 +19,6 @@ import { casesDuVillage, PLACE_IDS, VILLAGE_PLACES } from './village';
 import { placeDeLaPetiteConstruction } from './fixture';
 import { creatureDuMonde, creatureSpot } from './creatures';
 import { boardingRoute, bridgePath } from './links';
-import { bossIsletCells, bossIsletSteps } from './guardians';
 
 /** Les cubes d'un objet haut du quai au-dessus de son sol (le mât et la toile d'un fanion, la fumée d'un foyer). */
 const HAUTEURS_D_UN_OBJET_HAUT = [0, 1, 2, 3] as const;
@@ -93,14 +92,13 @@ function quaySpots(port: BiomeId, links: readonly string[], cubes: VoxelCube[]):
       for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(at.x + door + dx, at.y - 1 + dy);
     }
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(AVATAR_HOME.x + dx, AVATAR_HOME.y + dy);
-  // La petite construction de la commande de l'île (GD-7, PR 3), à sa place écrite, qu'elle soit posée ou non : les
+  // Les petites constructions de l'île (la commande, GD-7, PR 3 ; les quêtes, GD-10), à leur place écrite, qu'elle soit posée ou non : les
   // objets du quai ne bougent jamais quand elle se pose. Sans case de marge : avec elle, la barque de la grève de la
   // Plaine, dont la boutique de Coco prend la place, n'en trouvait plus.
-  const commande = commandeDeLIle(port);
-  const place = commande ? placeDeLaPetiteConstruction(port, commande.fixture) : null;
-  if (commande && place)
-    for (const c of casesDeLaPetiteConstruction(commande.fixture) ?? [])
-      core(place.x + c.x, place.y + c.y);
+  for (const commande of fixturesOfPlace(port)) {
+    const place = placeDeLaPetiteConstruction(port, commande.fixture);
+    if (place) for (const c of casesDeLaPetiteConstruction(commande.fixture) ?? []) core(place.x + c.x, place.y + c.y);
+  }
   // Les marges d'un cœur agrandi (le Marché, 01/10/2026) : le passage devant les bornes, où l'on marche et construit ; les
   // objets du quai restent sur la grève, devant elles, comme avant.
   for (const m of margesDuCoeur(def)) ban(m.x, m.y);
@@ -175,7 +173,7 @@ function quaySpots(port: BiomeId, links: readonly string[], cubes: VoxelCube[]):
  * éteintes et une barque grise retournée sur la grève ; 2, lanternes allumées, la barque redressée ; 3, la barque amarrée
  * contre la jetée, un foyer qui fume ; 4, une seconde barque sur la grève, des caisses, deux fanions ; 5, une lanterne
  * sur chaque poteau et un feu de port au bout de la jetée. Rien sur la jetée ni à la place du navire ; pas de barque
- * dans les Îles du Ciel. Le Bloc-Navire amarré à côté n'est pas dans le terrain : il tangue, c'est un objet à part
+ * dans les Îles du Ciel. La Nef amarrée à côté n'est pas dans le terrain : elle tangue, c'est un objet à part
  * (`vehiclePlacement`).
  */
 export function harbor(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cubes: VoxelCube[]): void {
@@ -217,11 +215,10 @@ export function harbor(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>
   };
   // La barque de la grève : grise et retournée (1), redressée (2) ; elle part à l'eau (3) ; une seconde la remplace (4).
   if (spots.boat && rank !== 3) boatAt(spots.boat.x, spots.boat.y, spots.boat.z, 'x', prop('barque', spots.boat), rank === 1, rank === 1);
-  // Amarrée à l'ouest de la jetée, entre les poteaux et l'îlot du Gardien (une case d'eau autour), au plus près de la côte.
+  // Amarrée à l'ouest de la jetée, au plus près de la côte.
   if (a !== '3e' && rank >= 3) {
     const bx = X - 3;
-    const islet = new Set([...bossIsletCells(port), ...bossIsletSteps(port)].flatMap((c) => [-1, 0, 1].flatMap((ex) => [-1, 0, 1].map((ey) => `${c.x + ex},${c.y + ey}`))));
-    const clear = (by: number) => [0, 1].every((dx) => Array.from({ length: BOAT_LENGTH }, (_, dy) => [bx + dx, by + dy]).every(([x, y]) => !isLand(def, x, y) && !islet.has(`${x},${y}`)));
+    const clear = (by: number) => [0, 1].every((dx) => Array.from({ length: BOAT_LENGTH }, (_, dy) => [bx + dx, by + dy]).every(([x, y]) => !isLand(def, x, y)));
     for (let by = S - BOAT_LENGTH; by > cells[cells.length - 1].y; by--)
       if (clear(by)) {
         boatAt(bx, by, 0, 'y', `${port}/barque@${bx},${by}`);
@@ -268,14 +265,18 @@ export interface VehiclePlacement {
   afloat: boolean;
   /** L'étape en chantier sur ce port, s'il y en a une. */
   building: string | null;
+  /** La forme montrée (0 : le voilier pas encore construit ; 1 à 3 : voilier, dirigeable, fusée ou aéronef) : quand elle change sur le même port, la Nef mue. */
+  form: number;
 }
 
 /**
- * Le Bloc-Navire au quai du port de l'archipel. Les étapes déjà parties sont dessinées entières (le navire les porte
- * partout où il accoste) ; celle qui se construit ici montre ses cases posées en dur et les autres en fantôme ; son kit
- * (voile, ballon, feux) arrive avec les Gardiens.
+ * La Nef au quai du port de l'archipel (GD-15). Hors chantier, elle a la forme de la dernière étape partie. Sur le port
+ * où une étape se construit, elle garde la forme d'avant, et les pièces neuves se montrent à leur place finale : posées
+ * en dur, les autres en fantôme, le kit (voile, haut de l'enveloppe, ailerons) en fantôme tant que les Gardiens ne sont pas
+ * rallumés. Tout posé et le kit arrivé, elle a mué : elle a sa nouvelle forme (`muee`), avant même de partir. `painted` :
+ * le monde d'Archipéo, où l'aéronef a ses pièces à d'autres places (../vehicle.ts, `shownPieces`).
  */
-export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { stars: number }>, village: World): VehiclePlacement {
+export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { stars: number }>, village: World, painted = false): VehiclePlacement {
   const port = getArchipelago(a).port;
   const origin = dockOrigin(port);
   const cubes: VoxelCube[] = [];
@@ -284,15 +285,23 @@ export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { st
     cubes.push({ x: c.x, y: c.y, z: c.z, color: bd.side, top: bd.top, texture: bd.texture, tag: port, ghost: ghost || undefined });
   };
   const bridges = village.links;
-  for (const stage of launchedStages(bridges)) for (const c of [...stage.cells, ...stage.kit]) put(c, false);
-  // Le chantier de ce port : l'étape qui s'y construit, si l'étape d'avant est partie.
   const building = stageBuildingAt(port, bridges);
-  if (building) {
-    const done = new Set(village.parts[building.id] ?? []);
-    const placed = planCells(building);
-    building.cells.forEach((c, i) => put(c, !done.has(placed[i].key)));
-    const kit = kitReady(building, progress);
-    for (const c of building.kit) put(c, !kit);
+  const launched = launchedStages(bridges).length;
+  if (!building) {
+    for (const c of vehicleForm(Math.max(1, launched), painted)) put(c, false);
+    return { port, origin, cubes, afloat: vehicleAfloat(a), building: null, form: Math.max(1, launched) };
   }
-  return { port, origin, cubes, afloat: vehicleAfloat(a), building: building?.id ?? null };
+  const done = new Set(village.parts[building.id] ?? []);
+  const placed = planCells(building);
+  const kit = kitReady(building, progress);
+  if (kit && placed.every((c) => done.has(c.key))) {
+    for (const c of vehicleForm(building.stage, painted)) put(c, false);
+    return { port, origin, cubes, afloat: vehicleAfloat(a), building: building.id, form: building.stage };
+  }
+  if (building.stage > 1) for (const c of vehicleForm(building.stage - 1, painted)) put(c, false);
+  // Les pièces à leur place dans l'univers montré (l'aéronef d'Archipéo, ../vehicle.ts) ; posées d'après leurs clés.
+  const shown = shownPieces(building, painted);
+  shown.cells.forEach((c, i) => put(c, !done.has(placed[i].key)));
+  for (const c of shown.kit) put(c, !kit);
+  return { port, origin, cubes, afloat: vehicleAfloat(a), building: building.id, form: building.stage - 1 };
 }

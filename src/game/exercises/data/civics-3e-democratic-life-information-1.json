@@ -1,0 +1,240 @@
+{
+  "id": "civics-3e-democratic-life-information-1",
+  "biome": "civics-3e-democratic-life",
+  "type": "information",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-3e-democratic-life-information-1-0",
+      "prompt": "« L’eau bout à 100 degrés au niveau de la mer. » Cette phrase exprime …",
+      "spoken": "« L’eau bout à 100 degrés au niveau de la mer. » Cette phrase exprime  (mot manquant) ",
+      "choices": [
+        "une opinion",
+        "un savoir",
+        "une croyance"
+      ],
+      "answer": "un savoir",
+      "hint": "Peut-on le vérifier par une expérience ?",
+      "explanation": "C’est un savoir : on peut le vérifier et le démontrer. Une opinion se discute, une croyance ne se prouve pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Savoir, opinion, croyance",
+          "lines": [
+            "Un savoir : vérifié, prouvé, que l’on peut démontrer.",
+            "Une opinion : un avis personnel, qui se discute.",
+            "Une croyance : une conviction que l’on ne peut pas prouver.",
+            "Les médias : la presse, la radio, la télévision, les sites et les réseaux.",
+            "Un sondage interroge un groupe pour connaître l’avis de beaucoup de personnes.",
+            "Une information se vérifie : qui, quand, d’où vient-elle ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-1-1",
+      "prompt": "« Le meilleur sport, c’est le basket. » Cette phrase exprime …",
+      "spoken": "« Le meilleur sport, c’est le basket. » Cette phrase exprime  (mot manquant) ",
+      "choices": [
+        "une opinion",
+        "un savoir",
+        "une croyance"
+      ],
+      "answer": "une opinion",
+      "hint": "Tout le monde est-il obligé d’être d’accord ?",
+      "explanation": "C’est une opinion : un avis personnel, qui se discute. D’autres préfèrent le foot ou la danse, et aucun n’a tort.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Savoir, opinion, croyance",
+          "lines": [
+            "Un savoir : vérifié, prouvé, que l’on peut démontrer.",
+            "Une opinion : un avis personnel, qui se discute.",
+            "Une croyance : une conviction que l’on ne peut pas prouver.",
+            "Les médias : la presse, la radio, la télévision, les sites et les réseaux.",
+            "Un sondage interroge un groupe pour connaître l’avis de beaucoup de personnes.",
+            "Une information se vérifie : qui, quand, d’où vient-elle ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-1-2",
+      "prompt": "« Ce porte-clés me porte bonheur. » Cette phrase exprime …",
+      "spoken": "« Ce porte-clés me porte bonheur. » Cette phrase exprime  (mot manquant) ",
+      "choices": [
+        "un savoir",
+        "une opinion",
+        "une croyance"
+      ],
+      "answer": "une croyance",
+      "hint": "Peut-on prouver qu’un objet porte bonheur ?",
+      "explanation": "C’est une croyance : une conviction qu’on ne peut pas prouver. On peut y tenir, mais ce n’est pas un savoir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Savoir, opinion, croyance",
+          "lines": [
+            "Un savoir : vérifié, prouvé, que l’on peut démontrer.",
+            "Une opinion : un avis personnel, qui se discute.",
+            "Une croyance : une conviction que l’on ne peut pas prouver.",
+            "Les médias : la presse, la radio, la télévision, les sites et les réseaux.",
+            "Un sondage interroge un groupe pour connaître l’avis de beaucoup de personnes.",
+            "Une information se vérifie : qui, quand, d’où vient-elle ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-1-3",
+      "prompt": "Sondage du journal du collège\n200 élèves interrogés.\nQuestion : aimez-vous le menu du jeudi ?\nOui : 120. Non : 80.",
+      "question": "Que donne ce sondage ?",
+      "spoken": "Sondage du journal du collège. 200 élèves interrogés. Question : aimez-vous le menu du jeudi ? Oui, 120. Non, 80.",
+      "choices": [
+        "une vérité pour toujours",
+        "l’avis des élèves interrogés, à un moment",
+        "la décision de la cantine"
+      ],
+      "answer": "l’avis des élèves interrogés, à un moment",
+      "hint": "Un sondage décide-t-il, ou mesure-t-il un avis ?",
+      "explanation": "Un sondage donne l’avis des personnes interrogées, à un moment. Il ne décide rien, et l’avis peut changer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Savoir, opinion, croyance",
+          "lines": [
+            "Un savoir : vérifié, prouvé, que l’on peut démontrer.",
+            "Une opinion : un avis personnel, qui se discute.",
+            "Une croyance : une conviction que l’on ne peut pas prouver.",
+            "Les médias : la presse, la radio, la télévision, les sites et les réseaux.",
+            "Un sondage interroge un groupe pour connaître l’avis de beaucoup de personnes.",
+            "Une information se vérifie : qui, quand, d’où vient-elle ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-1-4",
+      "prompt": "Les journaux, la radio, la télévision et les sites d’information sont des …",
+      "spoken": "Les journaux, la radio, la télévision et les sites d’information sont des  (mot manquant) ",
+      "choices": [
+        "sondages",
+        "médias",
+        "partis"
+      ],
+      "answer": "médias",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Ce sont des médias : ils transmettent l’information au public. L’opinion publique s’exprime aussi à travers eux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Savoir, opinion, croyance",
+          "lines": [
+            "Un savoir : vérifié, prouvé, que l’on peut démontrer.",
+            "Une opinion : un avis personnel, qui se discute.",
+            "Une croyance : une conviction que l’on ne peut pas prouver.",
+            "Les médias : la presse, la radio, la télévision, les sites et les réseaux.",
+            "Un sondage interroge un groupe pour connaître l’avis de beaucoup de personnes.",
+            "Une information se vérifie : qui, quand, d’où vient-elle ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-1-5",
+      "prompt": "Une information fausse, diffusée exprès pour tromper, est de la …",
+      "spoken": "Une information fausse, diffusée exprès pour tromper, est de la  (mot manquant) ",
+      "choices": [
+        "publicité",
+        "erreur",
+        "désinformation"
+      ],
+      "answer": "désinformation",
+      "hint": "Une erreur n’est pas faite exprès. Et une fausse information faite exprès ?",
+      "explanation": "La désinformation trompe exprès. Une erreur, elle, n’est pas volontaire, et un média sérieux la corrige.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Savoir, opinion, croyance",
+          "lines": [
+            "Un savoir : vérifié, prouvé, que l’on peut démontrer.",
+            "Une opinion : un avis personnel, qui se discute.",
+            "Une croyance : une conviction que l’on ne peut pas prouver.",
+            "Les médias : la presse, la radio, la télévision, les sites et les réseaux.",
+            "Un sondage interroge un groupe pour connaître l’avis de beaucoup de personnes.",
+            "Une information se vérifie : qui, quand, d’où vient-elle ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-1-6",
+      "prompt": "Chercher une information dans plusieurs sources sérieuses, c’est …",
+      "spoken": "Chercher une information dans plusieurs sources sérieuses, c’est  (mot manquant) ",
+      "choices": [
+        "recouper",
+        "copier",
+        "partager"
+      ],
+      "answer": "recouper",
+      "hint": "On compare plusieurs sources : se rejoignent-elles ?",
+      "explanation": "Recouper une information, c’est la chercher dans plusieurs sources sérieuses : si elles disent la même chose, elle est plus sûre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Savoir, opinion, croyance",
+          "lines": [
+            "Un savoir : vérifié, prouvé, que l’on peut démontrer.",
+            "Une opinion : un avis personnel, qui se discute.",
+            "Une croyance : une conviction que l’on ne peut pas prouver.",
+            "Les médias : la presse, la radio, la télévision, les sites et les réseaux.",
+            "Un sondage interroge un groupe pour connaître l’avis de beaucoup de personnes.",
+            "Une information se vérifie : qui, quand, d’où vient-elle ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-3e-democratic-life-information-1-7",
+      "prompt": "Ce que l’on cherche dans un article\nLe nom de l’auteur.\nLa date.\nLes sources.",
+      "question": "Pourquoi la date est-elle utile ?",
+      "spoken": "Ce que l’on cherche dans un article. Le nom de l’auteur. La date. Les sources.",
+      "choices": [
+        "pour connaître l’avis du journaliste",
+        "pour savoir si l’information est récente",
+        "pour savoir si l’article est payant"
+      ],
+      "answer": "pour savoir si l’information est récente",
+      "hint": "Une vieille information est-elle encore vraie aujourd’hui ?",
+      "explanation": "La date dit si l’information est récente : une vieille nouvelle, partagée comme neuve, peut tromper.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Savoir, opinion, croyance",
+          "lines": [
+            "Un savoir : vérifié, prouvé, que l’on peut démontrer.",
+            "Une opinion : un avis personnel, qui se discute.",
+            "Une croyance : une conviction que l’on ne peut pas prouver.",
+            "Les médias : la presse, la radio, la télévision, les sites et les réseaux.",
+            "Un sondage interroge un groupe pour connaître l’avis de beaucoup de personnes.",
+            "Une information se vérifie : qui, quand, d’où vient-elle ?"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-3e-democratic-life",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

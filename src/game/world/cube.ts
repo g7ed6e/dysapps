@@ -29,6 +29,11 @@ export interface VoxelCube {
   ghost?: boolean;
   /** Texture pixel en 3D ; sans texture, une couleur unie légèrement grainée. */
   texture?: string;
+  /**
+   * Bloc allumé : il brille de la lueur des lanternes, de jour comme de nuit, sans clignoter (GD-10 : la lanterne du phare
+   * du large, une fois toutes ses cases posées, `MonumentDef.litWhenDone`). Ne compte pas sur un fantôme ni un bloc délavé.
+   */
+  lit?: true;
   /** Île verrouillée : couleurs délavées (la texture est gardée, effacée vers le gris). */
   muted?: boolean;
   /** Élément de décor dont le cube fait partie (« foret/arbre@12,4 ») : le décor en fait un seul dessin. */

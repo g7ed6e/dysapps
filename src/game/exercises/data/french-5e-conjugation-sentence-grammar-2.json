@@ -1,0 +1,222 @@
+{
+  "id": "french-5e-conjugation-sentence-grammar-2",
+  "biome": "french-5e-conjugation",
+  "type": "sentence-grammar",
+  "level": 2,
+  "instruction": "Lis la phrase, puis trouve la fonction du groupe demandé. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-5e-conjugation-sentence-grammar-2-0",
+      "prompt": "« Chaque soir, mon oncle arrose ses tomates. » Quelle est la fonction de « ses tomates » ?",
+      "spoken": "Chaque soir, mon oncle arrose ses tomates. Quelle est la fonction de « ses tomates » ?",
+      "choices": [
+        "COD",
+        "COI",
+        "complément circonstanciel de temps"
+      ],
+      "answer": "COD",
+      "hint": "Mon oncle arrose quoi ? Y a-t-il « à » ou « de » devant ?",
+      "explanation": "Mon oncle arrose quoi ? Ses tomates, sans « à » ni « de » : c’est le COD. « Chaque soir » est le complément circonstanciel de temps.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fonctions dans la phrase",
+          "lines": [
+            "Sujet : il répond à « qui est-ce qui ? » ou « qu’est-ce qui ? » devant le verbe.",
+            "COD : le verbe, puis « qui ? » ou « quoi ? », sans à ni de. COI : le verbe, puis « à qui ? », « à quoi ? » ou « de quoi ? ».",
+            "Attribut du sujet : après être, sembler, devenir, rester ; il dit comment est le sujet.",
+            "Complément circonstanciel : où ? quand ? pourquoi ? comment ? On peut le déplacer ou l’enlever."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-2-1",
+      "prompt": "« Dans la cour, les enfants jouent au ballon. » Quelle est la fonction de « dans la cour » ?",
+      "spoken": "Dans la cour, les enfants jouent au ballon. Quelle est la fonction de « dans la cour » ?",
+      "choices": [
+        "sujet",
+        "complément circonstanciel de lieu",
+        "COD"
+      ],
+      "answer": "complément circonstanciel de lieu",
+      "hint": "Ce groupe dit-il qui joue, ou où l’on joue ?",
+      "explanation": "Où les enfants jouent-ils ? Dans la cour : complément circonstanciel de lieu. Il est en tête de phrase, mais le sujet est « les enfants » : ce sont eux qui jouent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fonctions dans la phrase",
+          "lines": [
+            "Sujet : il répond à « qui est-ce qui ? » ou « qu’est-ce qui ? » devant le verbe.",
+            "COD : le verbe, puis « qui ? » ou « quoi ? », sans à ni de. COI : le verbe, puis « à qui ? », « à quoi ? » ou « de quoi ? ».",
+            "Attribut du sujet : après être, sembler, devenir, rester ; il dit comment est le sujet.",
+            "Complément circonstanciel : où ? quand ? pourquoi ? comment ? On peut le déplacer ou l’enlever."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-2-2",
+      "prompt": "« Ma sœur semble fatiguée. » Quelle est la fonction de « fatiguée » ?",
+      "spoken": "Ma sœur semble fatiguée. Quelle est la fonction de « fatiguée » ?",
+      "choices": [
+        "COD",
+        "complément circonstanciel de manière",
+        "attribut du sujet"
+      ],
+      "answer": "attribut du sujet",
+      "hint": "Quel est le verbe ? Le mot dit-il comment est ma sœur ?",
+      "explanation": "Après « sembler », comme après « être », « fatiguée » dit comment est ma sœur, et s’accorde avec elle : attribut du sujet. Un COD désignerait autre chose que le sujet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fonctions dans la phrase",
+          "lines": [
+            "Sujet : il répond à « qui est-ce qui ? » ou « qu’est-ce qui ? » devant le verbe.",
+            "COD : le verbe, puis « qui ? » ou « quoi ? », sans à ni de. COI : le verbe, puis « à qui ? », « à quoi ? » ou « de quoi ? ».",
+            "Attribut du sujet : après être, sembler, devenir, rester ; il dit comment est le sujet.",
+            "Complément circonstanciel : où ? quand ? pourquoi ? comment ? On peut le déplacer ou l’enlever."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-2-3",
+      "prompt": "« Ce chien ressemble à un loup. » Quelle est la fonction de « à un loup » ?",
+      "spoken": "Ce chien ressemble à un loup. Quelle est la fonction de « à un loup » ?",
+      "choices": [
+        "COI",
+        "COD",
+        "attribut du sujet"
+      ],
+      "answer": "COI",
+      "hint": "Ce chien ressemble à quoi ? Regarde le petit mot devant le groupe.",
+      "explanation": "Ce chien ressemble à quoi ? À un loup : le groupe suit le verbe avec « à », et on ne peut pas l’enlever. C’est un COI. Un COD n’a pas de « à » ; un attribut suit être, sembler ou devenir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fonctions dans la phrase",
+          "lines": [
+            "Sujet : il répond à « qui est-ce qui ? » ou « qu’est-ce qui ? » devant le verbe.",
+            "COD : le verbe, puis « qui ? » ou « quoi ? », sans à ni de. COI : le verbe, puis « à qui ? », « à quoi ? » ou « de quoi ? ».",
+            "Attribut du sujet : après être, sembler, devenir, rester ; il dit comment est le sujet.",
+            "Complément circonstanciel : où ? quand ? pourquoi ? comment ? On peut le déplacer ou l’enlever."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-2-4",
+      "prompt": "« Après les cours, nous jouons au parc. » Quelle est la fonction de « après les cours » ?",
+      "spoken": "Après les cours, nous jouons au parc. Quelle est la fonction de « après les cours » ?",
+      "choices": [
+        "complément circonstanciel de lieu",
+        "complément circonstanciel de temps",
+        "sujet"
+      ],
+      "answer": "complément circonstanciel de temps",
+      "hint": "Ce groupe répond-il à « où ? » ou à « quand ? » ?",
+      "explanation": "Quand jouons-nous ? Après les cours : complément circonstanciel de temps. On peut le déplacer : « Nous jouons au parc après les cours. » C’est « au parc » qui dit où.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fonctions dans la phrase",
+          "lines": [
+            "Sujet : il répond à « qui est-ce qui ? » ou « qu’est-ce qui ? » devant le verbe.",
+            "COD : le verbe, puis « qui ? » ou « quoi ? », sans à ni de. COI : le verbe, puis « à qui ? », « à quoi ? » ou « de quoi ? ».",
+            "Attribut du sujet : après être, sembler, devenir, rester ; il dit comment est le sujet.",
+            "Complément circonstanciel : où ? quand ? pourquoi ? comment ? On peut le déplacer ou l’enlever."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-2-5",
+      "prompt": "« Léo referme doucement la porte. » Quelle est la fonction de « doucement » ?",
+      "spoken": "Léo referme doucement la porte. Quelle est la fonction de « doucement » ?",
+      "choices": [
+        "complément circonstanciel de manière",
+        "COD",
+        "complément circonstanciel de temps"
+      ],
+      "answer": "complément circonstanciel de manière",
+      "hint": "Comment Léo referme-t-il la porte ?",
+      "explanation": "Comment Léo referme-t-il la porte ? Doucement : complément circonstanciel de manière. On peut l’enlever. Le COD, c’est « la porte ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fonctions dans la phrase",
+          "lines": [
+            "Sujet : il répond à « qui est-ce qui ? » ou « qu’est-ce qui ? » devant le verbe.",
+            "COD : le verbe, puis « qui ? » ou « quoi ? », sans à ni de. COI : le verbe, puis « à qui ? », « à quoi ? » ou « de quoi ? ».",
+            "Attribut du sujet : après être, sembler, devenir, rester ; il dit comment est le sujet.",
+            "Complément circonstanciel : où ? quand ? pourquoi ? comment ? On peut le déplacer ou l’enlever."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-2-6",
+      "prompt": "« Les élèves restent en classe à cause de la pluie. » Quelle est la fonction de « à cause de la pluie » ?",
+      "spoken": "Les élèves restent en classe à cause de la pluie. Quelle est la fonction de « à cause de la pluie » ?",
+      "choices": [
+        "COI",
+        "complément circonstanciel de manière",
+        "complément circonstanciel de cause"
+      ],
+      "answer": "complément circonstanciel de cause",
+      "hint": "Pourquoi les élèves restent-ils en classe ? Peut-on enlever ce groupe ?",
+      "explanation": "Pourquoi restent-ils en classe ? À cause de la pluie : complément circonstanciel de cause. Il commence par « à », mais on peut l’enlever ou le déplacer : ce n’est pas un COI.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fonctions dans la phrase",
+          "lines": [
+            "Sujet : il répond à « qui est-ce qui ? » ou « qu’est-ce qui ? » devant le verbe.",
+            "COD : le verbe, puis « qui ? » ou « quoi ? », sans à ni de. COI : le verbe, puis « à qui ? », « à quoi ? » ou « de quoi ? ».",
+            "Attribut du sujet : après être, sembler, devenir, rester ; il dit comment est le sujet.",
+            "Complément circonstanciel : où ? quand ? pourquoi ? comment ? On peut le déplacer ou l’enlever."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-5e-conjugation-sentence-grammar-2-7",
+      "prompt": "« Au bout du chemin apparaît la maison de mes grands-parents. » Quel est le sujet de « apparaît » ?",
+      "spoken": "Au bout du chemin apparaît la maison de mes grands-parents. Quel est le sujet de « apparaît » ?",
+      "choices": [
+        "au bout du chemin",
+        "mes grands-parents",
+        "la maison de mes grands-parents"
+      ],
+      "answer": "la maison de mes grands-parents",
+      "hint": "Qu’est-ce qui apparaît ? Le sujet peut être placé après le verbe.",
+      "explanation": "Qu’est-ce qui apparaît ? La maison de mes grands-parents : c’est le sujet, placé après le verbe. « Au bout du chemin » dit où ; « mes grands-parents » n’est qu’une partie du groupe sujet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les fonctions dans la phrase",
+          "lines": [
+            "Sujet : il répond à « qui est-ce qui ? » ou « qu’est-ce qui ? » devant le verbe.",
+            "COD : le verbe, puis « qui ? » ou « quoi ? », sans à ni de. COI : le verbe, puis « à qui ? », « à quoi ? » ou « de quoi ? ».",
+            "Attribut du sujet : après être, sembler, devenir, rester ; il dit comment est le sujet.",
+            "Complément circonstanciel : où ? quand ? pourquoi ? comment ? On peut le déplacer ou l’enlever."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne route !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-5e-conjugation",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,250 @@
+{
+  "id": "lv2-4e-daily-life-de-signs-2",
+  "biome": "lv2-4e-daily-life",
+  "type": "de-signs",
+  "level": 2,
+  "lang": "de",
+  "instruction": "Lis et écoute la phrase en allemand. Choisis la bonne réaction. La règle est affichée.",
+  "programme": [
+    "c4.de.dialoguer.reagir"
+  ],
+  "items": [
+    {
+      "key": "lv2-4e-daily-life-de-signs-2-0",
+      "prompt": "Gehen wir am Samstag ins Schwimmbad?",
+      "spoken": "Gehen wir am Samstag ins Schwimmbad?",
+      "choices": [
+        "Gute Idee!",
+        "Gute Besserung!",
+        "Keine Angst!"
+      ],
+      "answer": "Gute Idee!",
+      "hint": "On te propose une sortie : tu acceptes.",
+      "explanation": "Gehen wir ins Schwimmbad? = On va à la piscine ? Gute Idee! = bonne idée ! Gute Besserung! se dit à un malade ; Keine Angst!, à quelqu’un qui a peur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reagieren",
+          "lines": [
+            "Gute Idee! = bonne idée ! ; Toll! = super !",
+            "Schade! = dommage ! ; Keine Lust! = pas envie !",
+            "Das tut mir leid. = je suis désolé.",
+            "Keine Angst! = n’aie pas peur ! ; So ein Pech! = pas de chance !",
+            "froh = content ; traurig = triste ; sauer = fâché",
+            "Dire comment on se sent : avec sein (ich bin müde).",
+            "leider = malheureusement : Leider habe ich keine Zeit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-2-1",
+      "prompt": "Ich habe eine Eins in Mathe!",
+      "spoken": "Ich habe eine Eins in Mathe!",
+      "choices": [
+        "Schade!",
+        "Toll!",
+        "Keine Lust!"
+      ],
+      "answer": "Toll!",
+      "hint": "die Eins, c’est la meilleure note : une bonne nouvelle.",
+      "explanation": "Toll! = super ! On partage sa joie. Schade! veut dire dommage ; Keine Lust!, pas envie. En Allemagne, la meilleure note est souvent 1, die Eins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reagieren",
+          "lines": [
+            "Gute Idee! = bonne idée ! ; Toll! = super !",
+            "Schade! = dommage ! ; Keine Lust! = pas envie !",
+            "Das tut mir leid. = je suis désolé.",
+            "Keine Angst! = n’aie pas peur ! ; So ein Pech! = pas de chance !",
+            "froh = content ; traurig = triste ; sauer = fâché",
+            "Dire comment on se sent : avec sein (ich bin müde).",
+            "leider = malheureusement : Leider habe ich keine Zeit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-2-2",
+      "prompt": "Ich bin traurig. Mein Hund ist krank.",
+      "spoken": "Ich bin traurig. Mein Hund ist krank.",
+      "choices": [
+        "Das ist super!",
+        "Ich freue mich so!",
+        "Das tut mir leid."
+      ],
+      "answer": "Das tut mir leid.",
+      "hint": "Ton ami est triste : tu lui montres que ça te fait de la peine.",
+      "explanation": "Das tut mir leid = je suis désolé. Das ist super! et Ich freue mich! disent qu’on est content : pas quand un ami est triste.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reagieren",
+          "lines": [
+            "Gute Idee! = bonne idée ! ; Toll! = super !",
+            "Schade! = dommage ! ; Keine Lust! = pas envie !",
+            "Das tut mir leid. = je suis désolé.",
+            "Keine Angst! = n’aie pas peur ! ; So ein Pech! = pas de chance !",
+            "froh = content ; traurig = triste ; sauer = fâché",
+            "Dire comment on se sent : avec sein (ich bin müde).",
+            "leider = malheureusement : Leider habe ich keine Zeit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-2-3",
+      "prompt": "Spielst du heute mit uns Fußball?",
+      "spoken": "Spielst du heute mit uns Fußball?",
+      "choices": [
+        "Leider ich kann nicht.",
+        "Leider kann ich nicht.",
+        "Leider kann nicht ich."
+      ],
+      "answer": "Leider kann ich nicht.",
+      "hint": "leider est en 1re place. Où va le verbe ?",
+      "explanation": "Leider kann ich nicht = malheureusement, je ne peux pas. leider est en 1re place, le verbe kann en 2e, puis ich.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reagieren",
+          "lines": [
+            "Gute Idee! = bonne idée ! ; Toll! = super !",
+            "Schade! = dommage ! ; Keine Lust! = pas envie !",
+            "Das tut mir leid. = je suis désolé.",
+            "Keine Angst! = n’aie pas peur ! ; So ein Pech! = pas de chance !",
+            "froh = content ; traurig = triste ; sauer = fâché",
+            "Dire comment on se sent : avec sein (ich bin müde).",
+            "leider = malheureusement : Leider habe ich keine Zeit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-2-4",
+      "prompt": "Ich habe Angst vor dem Test morgen.",
+      "spoken": "Ich habe Angst vor dem Test morgen.",
+      "choices": [
+        "Keine Angst!",
+        "Keine Lust!",
+        "Guten Appetit!"
+      ],
+      "answer": "Keine Angst!",
+      "hint": "die Angst = la peur. Tu rassures ton ami.",
+      "explanation": "Keine Angst! = n’aie pas peur ! Keine Lust! veut dire pas envie ; Guten Appetit!, bon appétit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reagieren",
+          "lines": [
+            "Gute Idee! = bonne idée ! ; Toll! = super !",
+            "Schade! = dommage ! ; Keine Lust! = pas envie !",
+            "Das tut mir leid. = je suis désolé.",
+            "Keine Angst! = n’aie pas peur ! ; So ein Pech! = pas de chance !",
+            "froh = content ; traurig = triste ; sauer = fâché",
+            "Dire comment on se sent : avec sein (ich bin müde).",
+            "leider = malheureusement : Leider habe ich keine Zeit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-2-5",
+      "prompt": "Warum lachst du?",
+      "spoken": "Warum lachst du?",
+      "choices": [
+        "Ich habe so froh!",
+        "Ich bin so sauer!",
+        "Ich bin so froh!"
+      ],
+      "answer": "Ich bin so froh!",
+      "hint": "lachen = rire. Et pour dire comment on se sent, sein ou haben ?",
+      "explanation": "Ich bin so froh! = je suis si content ! On dit comment on se sent avec sein, jamais avec haben. sauer = fâché : on ne rit pas quand on est fâché.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reagieren",
+          "lines": [
+            "Gute Idee! = bonne idée ! ; Toll! = super !",
+            "Schade! = dommage ! ; Keine Lust! = pas envie !",
+            "Das tut mir leid. = je suis désolé.",
+            "Keine Angst! = n’aie pas peur ! ; So ein Pech! = pas de chance !",
+            "froh = content ; traurig = triste ; sauer = fâché",
+            "Dire comment on se sent : avec sein (ich bin müde).",
+            "leider = malheureusement : Leider habe ich keine Zeit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-2-6",
+      "prompt": "Ich habe Hunger!",
+      "spoken": "Ich habe Hunger!",
+      "choices": [
+        "Möchtest du ein Bett?",
+        "Möchtest du ein Brot?",
+        "Möchtest du ein Buch?"
+      ],
+      "answer": "Möchtest du ein Brot?",
+      "hint": "Hunger haben = avoir faim. Que lui proposes-tu ?",
+      "explanation": "Möchtest du ein Brot? = tu veux une tartine ? Il a faim : on lui propose à manger. das Bett = le lit ; das Buch = le livre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reagieren",
+          "lines": [
+            "Gute Idee! = bonne idée ! ; Toll! = super !",
+            "Schade! = dommage ! ; Keine Lust! = pas envie !",
+            "Das tut mir leid. = je suis désolé.",
+            "Keine Angst! = n’aie pas peur ! ; So ein Pech! = pas de chance !",
+            "froh = content ; traurig = triste ; sauer = fâché",
+            "Dire comment on se sent : avec sein (ich bin müde).",
+            "leider = malheureusement : Leider habe ich keine Zeit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-signs-2-7",
+      "prompt": "Mein Handy ist kaputt!",
+      "spoken": "Mein Handy ist kaputt!",
+      "choices": [
+        "Super, ich freue mich!",
+        "Toll, gute Idee!",
+        "Oh nein, so ein Pech!"
+      ],
+      "answer": "Oh nein, so ein Pech!",
+      "hint": "kaputt = cassé : c’est une mauvaise nouvelle.",
+      "explanation": "So ein Pech! = pas de chance ! On réagit à une mauvaise nouvelle. Ich freue mich et gute Idee disent qu’on est content.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reagieren",
+          "lines": [
+            "Gute Idee! = bonne idée ! ; Toll! = super !",
+            "Schade! = dommage ! ; Keine Lust! = pas envie !",
+            "Das tut mir leid. = je suis désolé.",
+            "Keine Angst! = n’aie pas peur ! ; So ein Pech! = pas de chance !",
+            "froh = content ; traurig = triste ; sauer = fâché",
+            "Dire comment on se sent : avec sein (ich bin müde).",
+            "leider = malheureusement : Leider habe ich keine Zeit."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bien réagi !"
+  },
+  "reward": {
+    "block": "lv2-4e-daily-life",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

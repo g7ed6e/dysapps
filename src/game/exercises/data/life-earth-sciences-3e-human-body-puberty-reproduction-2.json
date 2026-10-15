@@ -1,0 +1,241 @@
+{
+  "id": "life-earth-sciences-3e-human-body-puberty-reproduction-2",
+  "biome": "life-earth-sciences-3e-human-body",
+  "type": "puberty-reproduction",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-2-0",
+      "prompt": "L’union d’un spermatozoïde et d’un ovule s’appelle la …",
+      "spoken": "L’union d’un spermatozoïde et d’un ovule s’appelle la  (mot manquant) ",
+      "choices": [
+        "nidation",
+        "fécondation",
+        "puberté"
+      ],
+      "answer": "fécondation",
+      "hint": "Relis la ligne « Fécondation » du rappel.",
+      "explanation": "L’union des deux gamètes est la fécondation. Elle donne une cellule-œuf, avec 46 chromosomes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La reproduction humaine",
+          "lines": [
+            "Fécondation : un spermatozoïde et un ovule s’unissent, dans une trompe.",
+            "La cellule-œuf devient un embryon. Il s’installe dans l’utérus : la nidation.",
+            "L’embryon grandit dans l’utérus : la grossesse dure environ 9 mois.",
+            "Le placenta fait les échanges entre la mère et l’embryon.",
+            "La contraception permet de choisir le moment d’avoir un enfant.",
+            "Le préservatif protège aussi des infections sexuellement transmissibles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-2-1",
+      "prompt": "L’embryon de quelques jours s’installe dans la paroi de l’utérus : c’est la …",
+      "spoken": "L’embryon de quelques jours s’installe dans la paroi de l’utérus : c’est la  (mot manquant) ",
+      "choices": [
+        "fécondation",
+        "digestion",
+        "nidation"
+      ],
+      "answer": "nidation",
+      "hint": "Relis la ligne « La cellule-œuf » du rappel. Le mot vient de « nid ».",
+      "explanation": "La cellule-œuf s’est divisée : elle est devenue un embryon de quelques jours. Il s’installe dans la paroi de l’utérus comme dans un nid : c’est la nidation. La grossesse commence.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La reproduction humaine",
+          "lines": [
+            "Fécondation : un spermatozoïde et un ovule s’unissent, dans une trompe.",
+            "La cellule-œuf devient un embryon. Il s’installe dans l’utérus : la nidation.",
+            "L’embryon grandit dans l’utérus : la grossesse dure environ 9 mois.",
+            "Le placenta fait les échanges entre la mère et l’embryon.",
+            "La contraception permet de choisir le moment d’avoir un enfant.",
+            "Le préservatif protège aussi des infections sexuellement transmissibles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-2-2",
+      "prompt": "L’organe où grandit l’embryon pendant la grossesse est l’…",
+      "spoken": "L’organe où grandit l’embryon pendant la grossesse est l’ (mot manquant) ",
+      "choices": [
+        "utérus",
+        "ovaire",
+        "estomac"
+      ],
+      "answer": "utérus",
+      "hint": "Relis la ligne « L’embryon grandit dans l’utérus » du rappel.",
+      "explanation": "L’embryon grandit dans l’utérus. L’ovaire produit les ovules ; l’estomac fait partie de l’appareil digestif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La reproduction humaine",
+          "lines": [
+            "Fécondation : un spermatozoïde et un ovule s’unissent, dans une trompe.",
+            "La cellule-œuf devient un embryon. Il s’installe dans l’utérus : la nidation.",
+            "L’embryon grandit dans l’utérus : la grossesse dure environ 9 mois.",
+            "Le placenta fait les échanges entre la mère et l’embryon.",
+            "La contraception permet de choisir le moment d’avoir un enfant.",
+            "Le préservatif protège aussi des infections sexuellement transmissibles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-2-3",
+      "prompt": "Une grossesse dure environ …",
+      "spoken": "Une grossesse dure environ  (mot manquant) ",
+      "choices": [
+        "3 mois",
+        "9 mois",
+        "12 mois"
+      ],
+      "answer": "9 mois",
+      "hint": "Relis la ligne « L’embryon grandit dans l’utérus » du rappel.",
+      "explanation": "Une grossesse dure environ 9 mois, de la nidation à la naissance.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La reproduction humaine",
+          "lines": [
+            "Fécondation : un spermatozoïde et un ovule s’unissent, dans une trompe.",
+            "La cellule-œuf devient un embryon. Il s’installe dans l’utérus : la nidation.",
+            "L’embryon grandit dans l’utérus : la grossesse dure environ 9 mois.",
+            "Le placenta fait les échanges entre la mère et l’embryon.",
+            "La contraception permet de choisir le moment d’avoir un enfant.",
+            "Le préservatif protège aussi des infections sexuellement transmissibles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-2-4",
+      "prompt": "Ce qui traverse le placenta\nDe la mère vers l’embryon : oxygène, nutriments.\nDe l’embryon vers la mère : dioxyde de carbone, déchets.\nL’alcool et la nicotine passent aussi vers l’embryon.",
+      "question": "Pourquoi une femme enceinte évite-t-elle l’alcool ?",
+      "spoken": "Ce qui traverse le placenta. De la mère vers l’embryon, oxygène, nutriments. De l’embryon vers la mère, dioxyde de carbone, déchets. L’alcool et la nicotine passent aussi vers l’embryon.",
+      "choices": [
+        "il reste dans l’estomac de la mère",
+        "il nourrit l’embryon",
+        "il passe jusqu’à l’embryon"
+      ],
+      "answer": "il passe jusqu’à l’embryon",
+      "hint": "Relis la dernière ligne du document.",
+      "explanation": "L’alcool traverse le placenta et arrive jusqu’à l’embryon. Il peut abîmer son développement. C’est pour cela qu’on conseille zéro alcool pendant la grossesse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La reproduction humaine",
+          "lines": [
+            "Fécondation : un spermatozoïde et un ovule s’unissent, dans une trompe.",
+            "La cellule-œuf devient un embryon. Il s’installe dans l’utérus : la nidation.",
+            "L’embryon grandit dans l’utérus : la grossesse dure environ 9 mois.",
+            "Le placenta fait les échanges entre la mère et l’embryon.",
+            "La contraception permet de choisir le moment d’avoir un enfant.",
+            "Le préservatif protège aussi des infections sexuellement transmissibles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-2-5",
+      "prompt": "Le moyen de contraception qui protège aussi des infections sexuellement transmissibles est le …",
+      "spoken": "Le moyen de contraception qui protège aussi des infections sexuellement transmissibles est le  (mot manquant) ",
+      "choices": [
+        "préservatif",
+        "stérilet",
+        "pilule"
+      ],
+      "answer": "préservatif",
+      "hint": "Relis la ligne « Le préservatif » du rappel.",
+      "explanation": "Le préservatif est le seul moyen de contraception qui protège aussi des infections sexuellement transmissibles. La pilule et le stérilet n’en protègent pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La reproduction humaine",
+          "lines": [
+            "Fécondation : un spermatozoïde et un ovule s’unissent, dans une trompe.",
+            "La cellule-œuf devient un embryon. Il s’installe dans l’utérus : la nidation.",
+            "L’embryon grandit dans l’utérus : la grossesse dure environ 9 mois.",
+            "Le placenta fait les échanges entre la mère et l’embryon.",
+            "La contraception permet de choisir le moment d’avoir un enfant.",
+            "Le préservatif protège aussi des infections sexuellement transmissibles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-2-6",
+      "prompt": "Une affiche du centre de santé\nLa contraception permet de choisir le moment d’avoir un enfant.\nLe préservatif protège aussi des infections.\nL’infirmière et le médecin répondent aux questions et gardent le secret.",
+      "question": "Que permet la contraception ?",
+      "spoken": "Une affiche du centre de santé. La contraception permet de choisir le moment d’avoir un enfant. Le préservatif protège aussi des infections. L’infirmière et le médecin répondent aux questions et gardent le secret.",
+      "choices": [
+        "guérir une infection",
+        "choisir le moment d’avoir un enfant",
+        "déclencher la puberté"
+      ],
+      "answer": "choisir le moment d’avoir un enfant",
+      "hint": "Relis la deuxième ligne de l’affiche.",
+      "explanation": "La contraception permet de choisir le moment d’avoir un enfant. Elle ne soigne pas une infection : c’est le rôle des médicaments, sur avis du médecin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La reproduction humaine",
+          "lines": [
+            "Fécondation : un spermatozoïde et un ovule s’unissent, dans une trompe.",
+            "La cellule-œuf devient un embryon. Il s’installe dans l’utérus : la nidation.",
+            "L’embryon grandit dans l’utérus : la grossesse dure environ 9 mois.",
+            "Le placenta fait les échanges entre la mère et l’embryon.",
+            "La contraception permet de choisir le moment d’avoir un enfant.",
+            "Le préservatif protège aussi des infections sexuellement transmissibles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-3e-human-body-puberty-reproduction-2-7",
+      "prompt": "Les étapes, dans le désordre\nla nidation\nla naissance\nla fécondation\nla grossesse",
+      "question": "Quelle étape vient en premier ?",
+      "spoken": "Les étapes, dans le désordre. La nidation. La naissance. La fécondation. La grossesse.",
+      "choices": [
+        "la fécondation",
+        "la nidation",
+        "la grossesse"
+      ],
+      "answer": "la fécondation",
+      "hint": "Quelle étape donne la cellule-œuf ?",
+      "explanation": "D’abord la fécondation, qui donne la cellule-œuf ; puis la nidation dans l’utérus ; puis la grossesse ; enfin la naissance. La liste est dans le désordre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La reproduction humaine",
+          "lines": [
+            "Fécondation : un spermatozoïde et un ovule s’unissent, dans une trompe.",
+            "La cellule-œuf devient un embryon. Il s’installe dans l’utérus : la nidation.",
+            "L’embryon grandit dans l’utérus : la grossesse dure environ 9 mois.",
+            "Le placenta fait les échanges entre la mère et l’embryon.",
+            "La contraception permet de choisir le moment d’avoir un enfant.",
+            "Le préservatif protège aussi des infections sexuellement transmissibles."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-3e-human-body",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "id": "geography-5e-resources-1",
+  "biome": "geography-5e-resources",
+  "name": "Le moulin de Sillon",
+  "reward": {
+    "xp": 40
+  },
+  "done": "Mon moulin ! L’eau du delta va moudre le grain. Merci, bâtisseur."
+}

@@ -8,14 +8,20 @@ import { ESPECES_4E } from './species/4e';
 import { ESPECES_3E } from './species/3e';
 import { creatureEnFacettes, type Espece } from './template';
 import type { FacettesDePersonnage } from './painted';
+import { modeleImporte, type Niveau } from './imported/models';
 
 /** Une espèce par île : le type l'exige (une île sans créature ne compile pas), le test de painted.test.ts le vérifie. */
 export const ESPECES: Record<BiomeId, Espece> = { ...ESPECES_6E, ...ESPECES_5E, ...ESPECES_4E, ...ESPECES_3E };
 
 const cache = new Map<BiomeId, FacettesDePersonnage>();
 
-/** La créature d'une île en facettes (calculée une fois ; ne pas modifier les tableaux rendus). */
-export function creaturePeinte(id: BiomeId): FacettesDePersonnage {
+/**
+ * La créature d'une île en facettes (calculée une fois ; ne pas modifier les tableaux rendus) : son modèle importé à ce
+ * niveau s'il est chargé (./imported/models.ts), sinon celle dessinée en code.
+ */
+export function creaturePeinte(id: BiomeId, niveau: Niveau = 'pres'): FacettesDePersonnage {
+  const importe = modeleImporte('creature', id, niveau);
+  if (importe) return importe;
   let f = cache.get(id);
   if (!f) {
     f = creatureEnFacettes(ESPECES[id]);

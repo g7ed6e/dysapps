@@ -1,0 +1,240 @@
+{
+  "id": "civics-6e-democratic-society-private-life-1",
+  "biome": "civics-6e-democratic-society",
+  "type": "private-life",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-6e-democratic-society-private-life-1-0",
+      "prompt": "La vie privée est un droit des adultes, et aussi des …",
+      "spoken": "La vie privée est un droit des adultes, et aussi des  (mot manquant) ",
+      "choices": [
+        "personnes célèbres seulement",
+        "enfants",
+        "parents seulement"
+      ],
+      "answer": "enfants",
+      "hint": "Relis la première ligne du rappel : « chacun », c’est qui ?",
+      "explanation": "La Convention internationale des droits de l’enfant (article 16) protège aussi la vie privée des enfants. L’enfant comme l’adulte y a droit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie privée",
+          "lines": [
+            "Chacun a droit au respect de sa vie privée.",
+            "La vie privée : la famille, la santé, la maison, les amitiés.",
+            "L’intimité : ce qu’une personne garde pour elle, ou ne partage qu’avec qui elle choisit.",
+            "Le droit à l’image : chacun décide si sa photo peut être montrée.",
+            "Les données personnelles : ce qui permet de reconnaître quelqu’un.",
+            "Les traces numériques : ce que l’on laisse en ligne, qui peut rester longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-1-1",
+      "prompt": "Avant de publier la photo d’un ami, il faut lui demander son …",
+      "spoken": "Avant de publier la photo d’un ami, il faut lui demander son  (mot manquant) ",
+      "choices": [
+        "mot de passe",
+        "adresse",
+        "accord"
+      ],
+      "answer": "accord",
+      "hint": "Qui décide si sa photo peut être montrée ?",
+      "explanation": "Chacun a un droit sur son image : avant de publier la photo de quelqu’un, on lui demande son accord. Pour un enfant, il faut aussi celui de ses parents.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie privée",
+          "lines": [
+            "Chacun a droit au respect de sa vie privée.",
+            "La vie privée : la famille, la santé, la maison, les amitiés.",
+            "L’intimité : ce qu’une personne garde pour elle, ou ne partage qu’avec qui elle choisit.",
+            "Le droit à l’image : chacun décide si sa photo peut être montrée.",
+            "Les données personnelles : ce qui permet de reconnaître quelqu’un.",
+            "Les traces numériques : ce que l’on laisse en ligne, qui peut rester longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-1-2",
+      "prompt": "Son adresse, son numéro de téléphone et sa photo sont des données …",
+      "spoken": "Son adresse, son numéro de téléphone et sa photo sont des données  (mot manquant) ",
+      "choices": [
+        "personnelles",
+        "publiques",
+        "inutiles"
+      ],
+      "answer": "personnelles",
+      "hint": "Ces informations permettent-elles de reconnaître quelqu’un ?",
+      "explanation": "Ce qui permet de reconnaître une personne est une donnée personnelle. On la protège : on ne la donne pas à n’importe qui en ligne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie privée",
+          "lines": [
+            "Chacun a droit au respect de sa vie privée.",
+            "La vie privée : la famille, la santé, la maison, les amitiés.",
+            "L’intimité : ce qu’une personne garde pour elle, ou ne partage qu’avec qui elle choisit.",
+            "Le droit à l’image : chacun décide si sa photo peut être montrée.",
+            "Les données personnelles : ce qui permet de reconnaître quelqu’un.",
+            "Les traces numériques : ce que l’on laisse en ligne, qui peut rester longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-1-3",
+      "prompt": "Sur un réseau social\nUn message publié peut être copié.\nUne capture d’écran peut le garder.\nIl peut circuler longtemps.",
+      "question": "Que montre ce document ?",
+      "spoken": "Sur un réseau social. Un message publié peut être copié. Une capture d’écran peut le garder. Il peut circuler longtemps.",
+      "choices": [
+        "un message en ligne s’efface tout seul",
+        "un message en ligne peut rester longtemps",
+        "un message en ligne reste toujours secret"
+      ],
+      "answer": "un message en ligne peut rester longtemps",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Ce que l’on publie laisse des traces : on peut le copier, le garder et le partager. Mieux vaut réfléchir avant de publier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie privée",
+          "lines": [
+            "Chacun a droit au respect de sa vie privée.",
+            "La vie privée : la famille, la santé, la maison, les amitiés.",
+            "L’intimité : ce qu’une personne garde pour elle, ou ne partage qu’avec qui elle choisit.",
+            "Le droit à l’image : chacun décide si sa photo peut être montrée.",
+            "Les données personnelles : ce qui permet de reconnaître quelqu’un.",
+            "Les traces numériques : ce que l’on laisse en ligne, qui peut rester longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-1-4",
+      "prompt": "Les messages et les photos que l’on laisse sur Internet forment des traces …",
+      "spoken": "Les messages et les photos que l’on laisse sur Internet forment des traces  (mot manquant) ",
+      "choices": [
+        "secrètes",
+        "effaçables",
+        "numériques"
+      ],
+      "answer": "numériques",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Ce que l’on laisse en ligne forme des traces numériques. Elles ne sont pas secrètes, et elles s’effacent mal.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie privée",
+          "lines": [
+            "Chacun a droit au respect de sa vie privée.",
+            "La vie privée : la famille, la santé, la maison, les amitiés.",
+            "L’intimité : ce qu’une personne garde pour elle, ou ne partage qu’avec qui elle choisit.",
+            "Le droit à l’image : chacun décide si sa photo peut être montrée.",
+            "Les données personnelles : ce qui permet de reconnaître quelqu’un.",
+            "Les traces numériques : ce que l’on laisse en ligne, qui peut rester longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-1-5",
+      "prompt": "La vie affective et amoureuse d’une personne fait partie de son …",
+      "spoken": "La vie affective et amoureuse d’une personne fait partie de son  (mot manquant) ",
+      "choices": [
+        "intimité",
+        "dossier scolaire",
+        "profil public"
+      ],
+      "answer": "intimité",
+      "hint": "Est-ce une chose que tout le monde doit savoir ?",
+      "explanation": "La vie affective et amoureuse fait partie de l’intimité : la personne la garde pour elle, ou la partage avec qui elle choisit. Personne ne la dévoile sans son accord.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie privée",
+          "lines": [
+            "Chacun a droit au respect de sa vie privée.",
+            "La vie privée : la famille, la santé, la maison, les amitiés.",
+            "L’intimité : ce qu’une personne garde pour elle, ou ne partage qu’avec qui elle choisit.",
+            "Le droit à l’image : chacun décide si sa photo peut être montrée.",
+            "Les données personnelles : ce qui permet de reconnaître quelqu’un.",
+            "Les traces numériques : ce que l’on laisse en ligne, qui peut rester longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-1-6",
+      "prompt": "Un mot de passe protège un compte : on le garde …",
+      "spoken": "Un mot de passe protège un compte : on le garde  (mot manquant) ",
+      "choices": [
+        "sur son profil",
+        "secret",
+        "dans un message aux amis"
+      ],
+      "answer": "secret",
+      "hint": "Un mot de passe que tout le monde connaît protège-t-il encore ?",
+      "explanation": "Un mot de passe protège les données du compte : on le garde secret, sans le partager, même avec ses amis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie privée",
+          "lines": [
+            "Chacun a droit au respect de sa vie privée.",
+            "La vie privée : la famille, la santé, la maison, les amitiés.",
+            "L’intimité : ce qu’une personne garde pour elle, ou ne partage qu’avec qui elle choisit.",
+            "Le droit à l’image : chacun décide si sa photo peut être montrée.",
+            "Les données personnelles : ce qui permet de reconnaître quelqu’un.",
+            "Les traces numériques : ce que l’on laisse en ligne, qui peut rester longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-private-life-1-7",
+      "prompt": "Le droit au respect de la vie privée\nIl protège ce que chacun garde pour lui.\nIl vaut aussi en ligne, sur les réseaux sociaux.",
+      "question": "Ce droit s’applique-t-il en ligne ?",
+      "spoken": "Le droit au respect de la vie privée. Il protège ce que chacun garde pour lui. Il vaut aussi en ligne, sur les réseaux sociaux.",
+      "choices": [
+        "non, Internet n’a pas de règles",
+        "seulement pour les adultes",
+        "oui, aussi en ligne"
+      ],
+      "answer": "oui, aussi en ligne",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Internet n’est pas un espace sans règles : la vie privée de chacun y est protégée comme ailleurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La vie privée",
+          "lines": [
+            "Chacun a droit au respect de sa vie privée.",
+            "La vie privée : la famille, la santé, la maison, les amitiés.",
+            "L’intimité : ce qu’une personne garde pour elle, ou ne partage qu’avec qui elle choisit.",
+            "Le droit à l’image : chacun décide si sa photo peut être montrée.",
+            "Les données personnelles : ce qui permet de reconnaître quelqu’un.",
+            "Les traces numériques : ce que l’on laisse en ligne, qui peut rester longtemps."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-6e-democratic-society",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

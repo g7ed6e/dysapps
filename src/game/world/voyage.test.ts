@@ -12,7 +12,7 @@ it('un voyage dure huit secondes en deux temps, un retour cinq ; le voile est co
   }
 });
 
-it('la trajectoire : la voile glisse vers le large, le ballon s’élève, le réacteur monte presque à la verticale', () => {
+it('la trajectoire : la voile glisse vers le large, le ballon s’élève, la fusée monte droit', () => {
   for (const stage of [1, 2, 3] as const) {
     const start = vehiclePath(stage, 0);
     for (const v of Object.values(start)) expect(Math.abs(v)).toBeLessThan(1e-9);
@@ -30,6 +30,8 @@ it('la trajectoire : la voile glisse vers le large, le ballon s’élève, le r�
   expect(vehiclePath(2, 1).dz).toBeGreaterThanOrEqual(25);
   expect(vehiclePath(3, 1).dz).toBeGreaterThanOrEqual(50);
   expect(Math.abs(vehiclePath(3, 1).dy)).toBeLessThan(Math.abs(vehiclePath(1, 1).dy));
+  // La fusée reste debout : elle ne pique pas du nez.
+  expect(vehiclePath(3, 1).pitch).toBe(0);
   // Hors de [0, 1] : borné.
   expect(vehiclePath(2, 2)).toEqual(vehiclePath(2, 1));
   expect(vehiclePath(2, -1)).toEqual(vehiclePath(2, 0));

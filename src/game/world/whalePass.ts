@@ -1,7 +1,7 @@
 // Le passage de la baleine (Archipéo, lot 5) : quand le mot de la baleine s'ouvre, une baleine quitte sa ronde et
 // passe au large de l'île concernée. Code pur (sans Three.js) : le trajet sur l'eau, loin de toute terre, et son
 // déroulé dans le temps (plonger, refaire surface, souffler, replonger, revenir). La 3D ne fait que le dessiner.
-import { BIOMES, type BiomeId } from "../biomes";
+import type { BiomeId } from "../biomes";
 import { getArchipelago } from "./archipelago";
 import { placedLinksOf } from "./linkGeometry";
 import { monumentIslet } from "./footprint";
@@ -15,9 +15,6 @@ import {
 } from "./map";
 import { MONUMENT_ISLET, monumentsOf } from "./monuments";
 import {
-  ISLET_H,
-  ISLET_W,
-  bossIsletOrigin,
   bridgePath,
   islandCenter,
   seaDecor,
@@ -54,7 +51,7 @@ interface Grid {
 
 const gridCache = layoutCache<string, Grid>();
 
-/** Ce que la baleine évite, case par case : terres, îlots des Gardiens et des monuments, ouvrages, port, rochers. */
+/** Ce que la baleine évite, case par case : terres, îlots des monuments, ouvrages, port, rochers. */
 function obstacles(a: ArchipelagoId, links: readonly string[]): Grid {
   const cle = `${a}|${placedLinksOf(a, links).map((d) => d.id).join(',')}`;
   const known = gridCache.get(cle);
@@ -71,12 +68,7 @@ function obstacles(a: ArchipelagoId, links: readonly string[]): Grid {
     const j = y - y0;
     if (i >= 0 && j >= 0 && i < w && j < h) cells[j * w + i] = 1;
   };
-  for (const def of mapOf(a)) {
-    for (const c of landCells(def)) mark(c.x, c.y);
-    const o = bossIsletOrigin(BIOMES.findIndex((bi) => bi.id === def.id));
-    for (let x = 0; x < ISLET_W; x++)
-      for (let y = 0; y < ISLET_H; y++) mark(o.x + x, o.y + y);
-  }
+  for (const def of mapOf(a)) for (const c of landCells(def)) mark(c.x, c.y);
   for (const def of placedLinksOf(a, links)) for (const c of bridgePath(def, links)) mark(c.x, c.y);
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++)

@@ -20,8 +20,17 @@ const LIEUX_DU_VILLAGE = new Map([
   ['assembly', 'assemblage'],
 ]);
 
+/** Les textes déjà remis dans leur mot d'avant : `texteDAvant` est pure, et les mêmes textes reviennent par milliers. */
+const dejaVus = new Map<string, string>();
+
 /** Un texte : un lieu, une partie, une ressource, une mission, `monument:<partie>`, `<lieu>:<mission>`, `<lieu>/<nom>`, `<lieu>-<lieu>`. */
 export function texteDAvant(s: string): string {
+  let avant = dejaVus.get(s);
+  if (avant === undefined) dejaVus.set(s, (avant = calculeTexteDAvant(s)));
+  return avant;
+}
+
+function calculeTexteDAvant(s: string): string {
   const exact = LIEUX.get(s) ?? PARTIES.get(s) ?? RESSOURCES.get(s) ?? TOUTES_LES_MISSIONS.get(s) ?? LIEUX_DU_VILLAGE.get(s);
   if (exact !== undefined) return exact;
   if (s.startsWith('monument:')) return `monument:${texteDAvant(s.slice('monument:'.length))}`;
@@ -43,11 +52,28 @@ export function texteDAvant(s: string): string {
   return s;
 }
 
-/** Une valeur (JSON) dont chaque texte, clé comprise, est remis dans son mot d'avant (`texteDAvant`). */
+/**
+ * Une valeur (JSON) dont chaque texte, clé comprise, est remis dans son mot d'avant (`texteDAvant`). Sa copie JSON est
+ * parcourue des feuilles vers la racine, comme le ferait un `reviver` de `JSON.parse`, mais sans en payer l'appel à
+ * chaque valeur : un objet n'est recopié que si une de ses clés change.
+ */
 export function versLesIdsDAvant<T>(v: T): T {
-  return JSON.parse(JSON.stringify(v), function (this: unknown, _k, x: unknown) {
-    if (typeof x === 'string') return texteDAvant(x);
-    if (x && typeof x === 'object' && !Array.isArray(x)) return Object.fromEntries(Object.entries(x).map(([k, y]) => [texteDAvant(k), y]));
+  const json = JSON.stringify(v);
+  return (json === undefined ? undefined : remets(JSON.parse(json))) as T;
+}
+
+function remets(x: unknown): unknown {
+  if (typeof x === 'string') return texteDAvant(x);
+  if (x === null || typeof x !== 'object') return x;
+  if (Array.isArray(x)) {
+    for (let i = 0; i < x.length; i++) x[i] = remets(x[i]);
     return x;
-  }) as T;
+  }
+  const o = x as Record<string, unknown>;
+  let renomme = false;
+  for (const k of Object.keys(o)) {
+    o[k] = remets(o[k]);
+    if (!renomme && texteDAvant(k) !== k) renomme = true;
+  }
+  return renomme ? Object.fromEntries(Object.entries(o).map(([k, y]) => [texteDAvant(k), y])) : o;
 }

@@ -1,0 +1,9 @@
+{
+  "id": "technology-5e-design-3",
+  "biome": "technology-5e-design",
+  "name": "La cour de la scierie",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Une cour pour sécher le bois. La menuiserie est complète, bâtisseur."
+}

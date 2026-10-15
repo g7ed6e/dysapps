@@ -1,9 +1,12 @@
 // Un personnage d'Archipéo en SVG (lot R6), dans l’univers Archipéo (voir rendering.ts) : le repli sans WebGL de la bulle d'une
 // créature et du défi d'un Gardien, ou hors de la vue 3D. Ses facettes vues, en polygones plats
 // (world/characters/portrait.ts), sans animation. Chargé à la demande : les modèles ne pèsent pas sur le monde en blocs.
-import { useMemo } from 'react';
+import { use, useMemo } from 'react';
 import type { BiomeId } from './biomes';
+import { chargerLesModeles } from './importedCharacters';
+import { archipelagoOfIsland } from './world/archipelagos';
 import { modeleDuPortrait, portraitDe } from './world/characters/portrait';
+import { guardianPortraitView } from './world/characters/portraitView';
 import type { Allumage } from './world/characters/sentinel';
 
 export interface CharacterSvgProps {
@@ -20,9 +23,12 @@ export interface CharacterSvgProps {
 const MARGE = 0.15;
 
 export default function CharacterSvg({ kind, id, allumage, label, className }: CharacterSvgProps) {
+  // Les modèles importés de son archipel, chargés une fois (sinon, celui dessiné en code).
+  use(chargerLesModeles(archipelagoOfIsland(id)));
   // Le degré se lit en nombres : un nouvel objet de même valeur ne refait pas le portrait.
   const [pierre, lueurs] = typeof allumage === 'object' ? [allumage.pierre, allumage.lueurs] : [allumage ?? 0, allumage ?? 0];
-  const portrait = useMemo(() => portraitDe(modeleDuPortrait(kind, id), kind === 'guardian' ? { allumage: { pierre, lueurs } } : {}), [kind, id, pierre, lueurs]);
+  // Un Gardien peut avoir sa vue (la Libellule de jade, de trois quarts par au-dessus : `guardianPortraitView`).
+  const portrait = useMemo(() => portraitDe(modeleDuPortrait(kind, id), kind === 'guardian' ? { allumage: { pierre, lueurs }, ...(guardianPortraitView(id) ?? {}) } : {}), [kind, id, pierre, lueurs]);
   const { x, y, largeur, hauteur } = portrait.cadre;
   const box = [x - MARGE, y - MARGE, largeur + 2 * MARGE, hauteur + 2 * MARGE].map((v) => v.toFixed(3)).join(' ');
   return (

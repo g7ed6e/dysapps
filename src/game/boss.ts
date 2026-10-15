@@ -36,19 +36,24 @@ export function typesWithContent(biome: BiomeDef): string[] {
   return missionsJouables(biome).filter((x) => exercisesOf(biome.id, x.id).length > 0).map((x) => x.id);
 }
 
-/** Le Gardien accepte le défi quand chaque mission du biome a au moins deux étoiles. */
-export function isBossUnlocked(biome: BiomeDef, progress: Record<string, { stars: number }>): boolean {
+/**
+ * Le Gardien accepte le défi quand chaque mission du biome a au moins deux étoiles, ou quand son défi était ouvert
+ * avant les programmes de 2025-2026 (`keptOpen`, le champ `world.challengesKeptOpen` : une mission arrivée ou partie
+ * ne le referme pas, jusqu'à ce qu'il soit réussi). Une partie neuve n'a pas ce champ : la règle est entière.
+ */
+export function isBossUnlocked(biome: BiomeDef, progress: Record<string, { stars: number }>, keptOpen: readonly string[] = []): boolean {
   const types = typesWithContent(biome);
   // Sans mission à jouer (l'île de la LV2 avec « Pas de LV2 »), pas de défi.
-  return types.length > 0 && types.every((type) => exercisesOf(biome.id, type).some((def) => (progress[def.id]?.stars ?? 0) >= STARS_TO_UNLOCK));
+  if (!types.length) return false;
+  return keptOpen.includes(biome.id) || types.every((type) => exercisesOf(biome.id, type).some((def) => (progress[def.id]?.stars ?? 0) >= STARS_TO_UNLOCK));
 }
 
 /**
  * Le défi se joue : débloqué (deux étoiles dans chaque mission), ou déjà gagné (on le rejoue), même si une mission
  * est arrivée depuis sur l'île sans étoile. Sans mission à jouer (l'île de la LV2 avec « Pas de LV2 »), pas de défi.
  */
-export function isBossOpen(biome: BiomeDef, progress: Record<string, { stars: number }>): boolean {
-  return typesWithContent(biome).length > 0 && (isBossBeaten(biome.id, progress) || isBossUnlocked(biome, progress));
+export function isBossOpen(biome: BiomeDef, progress: Record<string, { stars: number }>, keptOpen: readonly string[] = []): boolean {
+  return typesWithContent(biome).length > 0 && (isBossBeaten(biome.id, progress) || isBossUnlocked(biome, progress, keptOpen));
 }
 
 /**
@@ -62,10 +67,16 @@ export type GuardianStatus = 'hidden' | 'waiting' | 'ready' | 'beaten';
  * depuis GD-8), il est là dès l'ouverture de l'île, éteint, en attente. Un Gardien rallumé le reste : une
  * mission ajoutée plus tard à son île, encore sans étoile, ne le cache ni ne l'éteint.
  */
-export function guardianStatus(biome: BiomeDef, progress: Record<string, { stars: number }>, bridges: string[], sentinelles = false): GuardianStatus {
+export function guardianStatus(
+  biome: BiomeDef,
+  progress: Record<string, { stars: number }>,
+  bridges: string[],
+  sentinelles = false,
+  keptOpen: readonly string[] = [],
+): GuardianStatus {
   if (!isBiomeUnlocked(biome.id, bridges)) return 'hidden';
   if (isBossBeaten(biome.id, progress)) return 'beaten';
-  if (!isBossUnlocked(biome, progress)) return sentinelles ? 'waiting' : 'hidden';
+  if (!isBossUnlocked(biome, progress, keptOpen)) return sentinelles ? 'waiting' : 'hidden';
   return 'ready';
 }
 

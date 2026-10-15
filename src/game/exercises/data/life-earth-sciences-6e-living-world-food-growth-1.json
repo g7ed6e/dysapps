@@ -25,7 +25,7 @@
             "Les aliments donnent de l’énergie et font grandir le corps.",
             "Féculents : pain, riz, pommes de terre.",
             "Produits laitiers : lait, fromage.",
-            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus à l’œil nu, un par un.",
             "Certains abîment les aliments, d’autres servent à en fabriquer.",
             "Le froid les ralentit ; la cuisson en tue beaucoup."
           ]
@@ -43,7 +43,7 @@
       ],
       "answer": "micro-organismes",
       "hint": "Qu’y a-t-il sur les mains, qu’on ne voit pas ?",
-      "explanation": "Les mains portent des micro-organismes, trop petits pour être vus. Certains rendent malade : le savon et l’eau les enlèvent.",
+      "explanation": "Les mains portent des micro-organismes, trop petits pour être vus à l’œil nu. Certains rendent malade : le savon et l’eau les enlèvent.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -52,7 +52,7 @@
             "Les aliments donnent de l’énergie et font grandir le corps.",
             "Féculents : pain, riz, pommes de terre.",
             "Produits laitiers : lait, fromage.",
-            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus à l’œil nu, un par un.",
             "Certains abîment les aliments, d’autres servent à en fabriquer.",
             "Le froid les ralentit ; la cuisson en tue beaucoup."
           ]
@@ -79,7 +79,7 @@
             "Les aliments donnent de l’énergie et font grandir le corps.",
             "Féculents : pain, riz, pommes de terre.",
             "Produits laitiers : lait, fromage.",
-            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus à l’œil nu, un par un.",
             "Certains abîment les aliments, d’autres servent à en fabriquer.",
             "Le froid les ralentit ; la cuisson en tue beaucoup."
           ]
@@ -98,7 +98,7 @@
       ],
       "answer": "le froid ralentit la moisissure",
       "hint": "Les deux tranches sont dans un sac. Qu’est-ce qui change entre elles ?",
-      "explanation": "Une seule chose change : le froid. La tranche au réfrigérateur n’a pas moisi : le froid ralentit les moisissures, qui sont des micro-organismes.",
+      "explanation": "Une seule chose change : le froid. Le froid ralentit les moisissures. Ce sont des micro-organismes : très nombreux, ils forment des taches.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -107,7 +107,7 @@
             "Les aliments donnent de l’énergie et font grandir le corps.",
             "Féculents : pain, riz, pommes de terre.",
             "Produits laitiers : lait, fromage.",
-            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus à l’œil nu, un par un.",
             "Certains abîment les aliments, d’autres servent à en fabriquer.",
             "Le froid les ralentit ; la cuisson en tue beaucoup."
           ]
@@ -134,7 +134,7 @@
             "Les aliments donnent de l’énergie et font grandir le corps.",
             "Féculents : pain, riz, pommes de terre.",
             "Produits laitiers : lait, fromage.",
-            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus à l’œil nu, un par un.",
             "Certains abîment les aliments, d’autres servent à en fabriquer.",
             "Le froid les ralentit ; la cuisson en tue beaucoup."
           ]
@@ -151,7 +151,7 @@
         "vitamines"
       ],
       "answer": "levures",
-      "hint": "Ce micro-organisme utile s’achète en sachet chez le boulanger.",
+      "hint": "Ce micro-organisme utile s’achète en sachet, au rayon pâtisserie.",
       "explanation": "Les levures font gonfler la pâte à pain. Les moisissures, elles, abîment les aliments ; les vitamines ne sont pas vivantes.",
       "aid": {
         "kind": "rule-card",
@@ -161,7 +161,7 @@
             "Les aliments donnent de l’énergie et font grandir le corps.",
             "Féculents : pain, riz, pommes de terre.",
             "Produits laitiers : lait, fromage.",
-            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus à l’œil nu, un par un.",
             "Certains abîment les aliments, d’autres servent à en fabriquer.",
             "Le froid les ralentit ; la cuisson en tue beaucoup."
           ]
@@ -189,7 +189,7 @@
             "Les aliments donnent de l’énergie et font grandir le corps.",
             "Féculents : pain, riz, pommes de terre.",
             "Produits laitiers : lait, fromage.",
-            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus à l’œil nu, un par un.",
             "Certains abîment les aliments, d’autres servent à en fabriquer.",
             "Le froid les ralentit ; la cuisson en tue beaucoup."
           ]
@@ -203,12 +203,12 @@
       "spoken": "Le repas du soir de Nina. Entrée, salade de tomates. Plat, poisson et riz. Dessert, à choisir.",
       "choices": [
         "une pomme",
-        "une part de gâteau",
+        "une compote",
         "un yaourt"
       ],
       "answer": "un yaourt",
       "hint": "Les produits laitiers sont faits avec du lait.",
-      "explanation": "Le yaourt est fait avec du lait : c’est un produit laitier. La pomme est un fruit, le gâteau un produit sucré.",
+      "explanation": "Le yaourt est fait avec du lait : c’est un produit laitier. La pomme est un fruit ; la compote aussi est faite de fruits.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -217,7 +217,7 @@
             "Les aliments donnent de l’énergie et font grandir le corps.",
             "Féculents : pain, riz, pommes de terre.",
             "Produits laitiers : lait, fromage.",
-            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus à l’œil nu, un par un.",
             "Certains abîment les aliments, d’autres servent à en fabriquer.",
             "Le froid les ralentit ; la cuisson en tue beaucoup."
           ]

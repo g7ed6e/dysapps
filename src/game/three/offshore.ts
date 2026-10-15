@@ -19,7 +19,7 @@ import type { Derniers, Monde, PartieDeLaScene } from './scenePart';
 import { blockMaterial } from './textures';
 
 /** Hauteur de l'eau : les deux couches de terre affleurent, le sol reste bien au-dessus. */
-const WATER_LEVEL = -0.45;
+export const WATER_LEVEL = -0.45;
 /** La couleur moyenne de la texture de l'eau (world/pixels.ts) : Archipéo teinte la mer pour qu'elle ait, en moyenne, la couleur de la palette. */
 const EAU_MOYENNE = 0x54a2e4;
 

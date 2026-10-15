@@ -1,0 +1,248 @@
+{
+  "id": "civics-6e-democratic-society-representatives-1",
+  "biome": "civics-6e-democratic-society",
+  "type": "representatives",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "civics-6e-democratic-society-representatives-1-0",
+      "prompt": "Les élèves de la classe votent pour choisir leurs délégués. Les délégués sont donc …",
+      "spoken": "Les élèves de la classe votent pour choisir leurs délégués. Les délégués sont donc  (mot manquant) ",
+      "choices": [
+        "nommés",
+        "élus",
+        "tirés au sort"
+      ],
+      "answer": "élus",
+      "hint": "Comment les délégués sont-ils choisis : par un vote, par un adulte, ou par le hasard ?",
+      "explanation": "Les délégués sont choisis par un vote : ils sont élus. Nommés, ils seraient choisis par un adulte ; tirés au sort, par le hasard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Représenter les autres",
+          "lines": [
+            "Un représentant est choisi par un vote.",
+            "Il porte la parole des autres, et décide avec d’autres élus.",
+            "Au collège : les délégués de classe, les éco-délégués, le conseil de la vie collégienne.",
+            "La commune : le conseil municipal et le maire.",
+            "Le pays : les députés, à l’Assemblée nationale ; les sénateurs, au Sénat.",
+            "L’Union européenne : les députés européens.",
+            "L’intérêt général : ce qui est bon pour tous, aujourd’hui et plus tard."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-1-1",
+      "prompt": "Au conseil de classe, le délégué parle au nom des élèves : il … la classe.",
+      "spoken": "Au conseil de classe, le délégué parle au nom des élèves : il  (mot manquant)  la classe.",
+      "choices": [
+        "dirige",
+        "note",
+        "représente"
+      ],
+      "answer": "représente",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Le délégué porte la parole des élèves : il représente la classe. Il ne la dirige pas, et il ne note personne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Représenter les autres",
+          "lines": [
+            "Un représentant est choisi par un vote.",
+            "Il porte la parole des autres, et décide avec d’autres élus.",
+            "Au collège : les délégués de classe, les éco-délégués, le conseil de la vie collégienne.",
+            "La commune : le conseil municipal et le maire.",
+            "Le pays : les députés, à l’Assemblée nationale ; les sénateurs, au Sénat.",
+            "L’Union européenne : les députés européens.",
+            "L’intérêt général : ce qui est bon pour tous, aujourd’hui et plus tard."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-1-2",
+      "prompt": "Les élus d’une commune\nLes habitants élisent le conseil municipal.\nLe conseil municipal élit le maire.\nLe maire dirige la commune avec le conseil.",
+      "question": "Qui élit le maire ?",
+      "spoken": "Les élus d’une commune. Les habitants élisent le conseil municipal. Le conseil municipal élit le maire. Le maire dirige la commune avec le conseil.",
+      "choices": [
+        "le conseil municipal",
+        "les habitants",
+        "le président de la République"
+      ],
+      "answer": "le conseil municipal",
+      "hint": "Cherche la ligne où le mot « maire » vient après « élit ».",
+      "explanation": "Les habitants élisent le conseil municipal, puis le conseil municipal élit le maire. Les habitants n’élisent pas le maire directement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Représenter les autres",
+          "lines": [
+            "Un représentant est choisi par un vote.",
+            "Il porte la parole des autres, et décide avec d’autres élus.",
+            "Au collège : les délégués de classe, les éco-délégués, le conseil de la vie collégienne.",
+            "La commune : le conseil municipal et le maire.",
+            "Le pays : les députés, à l’Assemblée nationale ; les sénateurs, au Sénat.",
+            "L’Union européenne : les députés européens.",
+            "L’intérêt général : ce qui est bon pour tous, aujourd’hui et plus tard."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-1-3",
+      "prompt": "Les citoyens de l’Union européenne élisent des députés qui siègent au …",
+      "spoken": "Les citoyens de l’Union européenne élisent des députés qui siègent au  (mot manquant) ",
+      "choices": [
+        "Sénat",
+        "conseil municipal",
+        "Parlement européen"
+      ],
+      "answer": "Parlement européen",
+      "hint": "Relis la ligne « L’Union européenne » du rappel : où siègent ses députés ?",
+      "explanation": "Les députés européens siègent au Parlement européen. Le Sénat est une assemblée française, le conseil municipal celle d’une commune.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Représenter les autres",
+          "lines": [
+            "Un représentant est choisi par un vote.",
+            "Il porte la parole des autres, et décide avec d’autres élus.",
+            "Au collège : les délégués de classe, les éco-délégués, le conseil de la vie collégienne.",
+            "La commune : le conseil municipal et le maire.",
+            "Le pays : les députés, à l’Assemblée nationale ; les sénateurs, au Sénat.",
+            "L’Union européenne : les députés européens.",
+            "L’intérêt général : ce qui est bon pour tous, aujourd’hui et plus tard."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-1-4",
+      "prompt": "Les députés, élus par les citoyens, votent les lois à l’Assemblée …",
+      "spoken": "Les députés, élus par les citoyens, votent les lois à l’Assemblée  (mot manquant) ",
+      "choices": [
+        "régionale",
+        "nationale",
+        "générale"
+      ],
+      "answer": "nationale",
+      "hint": "Relis la ligne « Le pays » du rappel.",
+      "explanation": "Les députés siègent à l’Assemblée nationale, où ils votent les lois pour tout le pays. La région a un conseil régional.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Représenter les autres",
+          "lines": [
+            "Un représentant est choisi par un vote.",
+            "Il porte la parole des autres, et décide avec d’autres élus.",
+            "Au collège : les délégués de classe, les éco-délégués, le conseil de la vie collégienne.",
+            "La commune : le conseil municipal et le maire.",
+            "Le pays : les députés, à l’Assemblée nationale ; les sénateurs, au Sénat.",
+            "L’Union européenne : les députés européens.",
+            "L’intérêt général : ce qui est bon pour tous, aujourd’hui et plus tard."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-1-5",
+      "prompt": "Ce qui est bon pour tous les habitants, et pas seulement pour quelques-uns, c’est l’intérêt …",
+      "spoken": "Ce qui est bon pour tous les habitants, et pas seulement pour quelques-uns, c’est l’intérêt  (mot manquant) ",
+      "choices": [
+        "personnel",
+        "privé",
+        "général"
+      ],
+      "answer": "général",
+      "hint": "Pour tous, ou pour une seule personne ?",
+      "explanation": "L’intérêt général est l’intérêt commun de tous les membres de la société. L’intérêt personnel, ou privé, ne concerne qu’une personne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Représenter les autres",
+          "lines": [
+            "Un représentant est choisi par un vote.",
+            "Il porte la parole des autres, et décide avec d’autres élus.",
+            "Au collège : les délégués de classe, les éco-délégués, le conseil de la vie collégienne.",
+            "La commune : le conseil municipal et le maire.",
+            "Le pays : les députés, à l’Assemblée nationale ; les sénateurs, au Sénat.",
+            "L’Union européenne : les députés européens.",
+            "L’intérêt général : ce qui est bon pour tous, aujourd’hui et plus tard."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-1-6",
+      "prompt": "Un projet du conseil de la vie collégienne\nInstaller des bancs dans la cour.\nTous les élèves pourront s’y asseoir.",
+      "question": "À qui servira ce projet ?",
+      "spoken": "Un projet du conseil de la vie collégienne. Installer des bancs dans la cour. Tous les élèves pourront s’y asseoir.",
+      "choices": [
+        "à tous les élèves",
+        "aux élèves élus seulement",
+        "aux professeurs seulement"
+      ],
+      "answer": "à tous les élèves",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Les bancs serviront à tous les élèves : les élus du conseil travaillent pour l’intérêt de tous, pas seulement pour eux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Représenter les autres",
+          "lines": [
+            "Un représentant est choisi par un vote.",
+            "Il porte la parole des autres, et décide avec d’autres élus.",
+            "Au collège : les délégués de classe, les éco-délégués, le conseil de la vie collégienne.",
+            "La commune : le conseil municipal et le maire.",
+            "Le pays : les députés, à l’Assemblée nationale ; les sénateurs, au Sénat.",
+            "L’Union européenne : les députés européens.",
+            "L’intérêt général : ce qui est bon pour tous, aujourd’hui et plus tard."
+          ]
+        }
+      }
+    },
+    {
+      "key": "civics-6e-democratic-society-representatives-1-7",
+      "prompt": "Penser aussi aux enfants qui naîtront plus tard, c’est penser aux générations …",
+      "spoken": "Penser aussi aux enfants qui naîtront plus tard, c’est penser aux générations  (mot manquant) ",
+      "choices": [
+        "passées",
+        "futures",
+        "voisines"
+      ],
+      "answer": "futures",
+      "hint": "Plus tard : avant nous, ou après nous ?",
+      "explanation": "Les générations futures, ce sont celles qui vivront après nous. L’intérêt général pense aussi à elles : par exemple, protéger la nature.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Représenter les autres",
+          "lines": [
+            "Un représentant est choisi par un vote.",
+            "Il porte la parole des autres, et décide avec d’autres élus.",
+            "Au collège : les délégués de classe, les éco-délégués, le conseil de la vie collégienne.",
+            "La commune : le conseil municipal et le maire.",
+            "Le pays : les députés, à l’Assemblée nationale ; les sénateurs, au Sénat.",
+            "L’Union européenne : les députés européens.",
+            "L’intérêt général : ce qui est bon pour tous, aujourd’hui et plus tard."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "civics-6e-democratic-society",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

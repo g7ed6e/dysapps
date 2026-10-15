@@ -43,6 +43,8 @@
   --radius-pill: 4px;
   /* Le signe de la créature qui se souvient (GD-4) : une plaque carrée, comme dans le monde. */
   --radius-signe: 4px;
+  /* L'avancement d'un grand projet (GD-10) : des carrés plats, sans l'ombre d'un cube (on les prendrait pour des blocs). */
+  --radius-piece: 2px;
   /* La face de côté de ce qui se touche, et l'appui qui l'enfonce (sans transition : instantané). */
   --face: 4px;
   --face-pressed: 1px;

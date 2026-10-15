@@ -1,0 +1,241 @@
+{
+  "id": "lca-4e-cities-gr-agora-2",
+  "biome": "lca-4e-cities",
+  "type": "gr-agora",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "lca-4e-cities-gr-agora-2-0",
+      "prompt": "Le théâtre d’Épidaure\nDes gradins en demi-cercle, creusés dans une colline.\nPlus de dix mille spectateurs.\nAu centre, l’orchestra, où danse le chœur.",
+      "question": "Où se place le chœur ?",
+      "spoken": "Le théâtre d’Épidaure. Des gradins en demi-cercle, creusés dans une colline. Plus de dix mille spectateurs. Au centre, l’orchestra, où danse le chœur.",
+      "choices": [
+        "sur les gradins",
+        "dans l’orchestra",
+        "sur la scène, avec les acteurs"
+      ],
+      "answer": "dans l’orchestra",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "Le chœur chante et danse dans l’orchestra, l’espace rond au centre ; les acteurs, eux, jouent sur la scène, derrière l’orchestra. Le mot « orchestre » en vient.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Théâtre, jeux et fêtes",
+          "lines": [
+            "Le théâtre : des tragédies et des comédies, jouées pendant les fêtes de Dionysos.",
+            "Les acteurs, tous des hommes, portent des masques.",
+            "Le chœur : un groupe qui chante, danse et commente l’action.",
+            "Les jeux Olympiques ont lieu tous les quatre ans à Olympie, en l’honneur de Zeus.",
+            "Une trêve sacrée protège les athlètes et les spectateurs qui se rendent aux jeux.",
+            "Les vainqueurs reçoivent une couronne d’olivier."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-2-1",
+      "prompt": "Les pièces de théâtre sont jouées pendant les fêtes en l’honneur de …",
+      "spoken": "Les pièces de théâtre sont jouées pendant les fêtes en l’honneur de  (mot manquant) ",
+      "choices": [
+        "Zeus",
+        "Athéna",
+        "Dionysos"
+      ],
+      "answer": "Dionysos",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Les concours de théâtre ont lieu pendant les Dionysies, les fêtes de Dionysos, le dieu du vin et du théâtre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Théâtre, jeux et fêtes",
+          "lines": [
+            "Le théâtre : des tragédies et des comédies, jouées pendant les fêtes de Dionysos.",
+            "Les acteurs, tous des hommes, portent des masques.",
+            "Le chœur : un groupe qui chante, danse et commente l’action.",
+            "Les jeux Olympiques ont lieu tous les quatre ans à Olympie, en l’honneur de Zeus.",
+            "Une trêve sacrée protège les athlètes et les spectateurs qui se rendent aux jeux.",
+            "Les vainqueurs reçoivent une couronne d’olivier."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-2-2",
+      "prompt": "Les jeux Olympiques antiques ont lieu tous les …",
+      "spoken": "Les jeux Olympiques antiques ont lieu tous les  (mot manquant) ",
+      "choices": [
+        "ans",
+        "quatre ans",
+        "dix ans"
+      ],
+      "answer": "quatre ans",
+      "hint": "Relis la quatrième ligne du rappel.",
+      "explanation": "Tous les quatre ans, à Olympie, en l’honneur de Zeus. La période de quatre ans entre deux jeux s’appelle une olympiade.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Théâtre, jeux et fêtes",
+          "lines": [
+            "Le théâtre : des tragédies et des comédies, jouées pendant les fêtes de Dionysos.",
+            "Les acteurs, tous des hommes, portent des masques.",
+            "Le chœur : un groupe qui chante, danse et commente l’action.",
+            "Les jeux Olympiques ont lieu tous les quatre ans à Olympie, en l’honneur de Zeus.",
+            "Une trêve sacrée protège les athlètes et les spectateurs qui se rendent aux jeux.",
+            "Les vainqueurs reçoivent une couronne d’olivier."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-2-3",
+      "prompt": "Les vainqueurs d’Olympie\nIls ne reçoivent ni or ni argent sur place.\nIls reçoivent une couronne d’olivier.\nDans leur cité, on les accueille en héros.",
+      "question": "Que reçoit un vainqueur à Olympie ?",
+      "spoken": "Les vainqueurs d’Olympie. Ils ne reçoivent ni or ni argent sur place. Ils reçoivent une couronne d’olivier. Dans leur cité, on les accueille en héros.",
+      "choices": [
+        "une couronne d’olivier",
+        "une médaille d’or",
+        "une coupe d’argent"
+      ],
+      "answer": "une couronne d’olivier",
+      "hint": "Lis la troisième ligne du document.",
+      "explanation": "Le vainqueur reçoit une couronne d’olivier. Sa cité, elle, l’honore : statues, repas offerts, places d’honneur. Les médailles sont une invention des jeux modernes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Théâtre, jeux et fêtes",
+          "lines": [
+            "Le théâtre : des tragédies et des comédies, jouées pendant les fêtes de Dionysos.",
+            "Les acteurs, tous des hommes, portent des masques.",
+            "Le chœur : un groupe qui chante, danse et commente l’action.",
+            "Les jeux Olympiques ont lieu tous les quatre ans à Olympie, en l’honneur de Zeus.",
+            "Une trêve sacrée protège les athlètes et les spectateurs qui se rendent aux jeux.",
+            "Les vainqueurs reçoivent une couronne d’olivier."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-2-4",
+      "prompt": "Au théâtre grec, les rôles de femmes sont joués par …",
+      "spoken": "Au théâtre grec, les rôles de femmes sont joués par  (mot manquant) ",
+      "choices": [
+        "des hommes masqués",
+        "des femmes",
+        "des enfants"
+      ],
+      "answer": "des hommes masqués",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Tous les acteurs sont des hommes ; avec un masque, un même acteur joue plusieurs rôles, d’hommes ou de femmes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Théâtre, jeux et fêtes",
+          "lines": [
+            "Le théâtre : des tragédies et des comédies, jouées pendant les fêtes de Dionysos.",
+            "Les acteurs, tous des hommes, portent des masques.",
+            "Le chœur : un groupe qui chante, danse et commente l’action.",
+            "Les jeux Olympiques ont lieu tous les quatre ans à Olympie, en l’honneur de Zeus.",
+            "Une trêve sacrée protège les athlètes et les spectateurs qui se rendent aux jeux.",
+            "Les vainqueurs reçoivent une couronne d’olivier."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-2-5",
+      "prompt": "Le groupe qui chante et danse au théâtre s’appelle le …",
+      "spoken": "Le groupe qui chante et danse au théâtre s’appelle le  (mot manquant) ",
+      "choices": [
+        "chœur",
+        "public",
+        "héros"
+      ],
+      "answer": "chœur",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Le chœur, khoros en grec, chante, danse et commente l’action. Le mot a donné « chœur » et « chorale ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Théâtre, jeux et fêtes",
+          "lines": [
+            "Le théâtre : des tragédies et des comédies, jouées pendant les fêtes de Dionysos.",
+            "Les acteurs, tous des hommes, portent des masques.",
+            "Le chœur : un groupe qui chante, danse et commente l’action.",
+            "Les jeux Olympiques ont lieu tous les quatre ans à Olympie, en l’honneur de Zeus.",
+            "Une trêve sacrée protège les athlètes et les spectateurs qui se rendent aux jeux.",
+            "Les vainqueurs reçoivent une couronne d’olivier."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-2-6",
+      "prompt": "Pendant les jeux Olympiques, une trêve sacrée …",
+      "spoken": "Pendant les jeux Olympiques, une trêve sacrée (mot manquant)",
+      "choices": [
+        "arrête toutes les guerres de Grèce",
+        "oblige chaque cité à envoyer des athlètes",
+        "protège ceux qui vont aux jeux"
+      ],
+      "answer": "protège ceux qui vont aux jeux",
+      "hint": "Relis l’avant-dernière ligne du rappel.",
+      "explanation": "La trêve sacrée protège les athlètes et les spectateurs en route vers Olympie : on ne les attaque pas. Elle n’arrête pas toutes les guerres, et chaque cité reste libre d’envoyer ou non des athlètes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Théâtre, jeux et fêtes",
+          "lines": [
+            "Le théâtre : des tragédies et des comédies, jouées pendant les fêtes de Dionysos.",
+            "Les acteurs, tous des hommes, portent des masques.",
+            "Le chœur : un groupe qui chante, danse et commente l’action.",
+            "Les jeux Olympiques ont lieu tous les quatre ans à Olympie, en l’honneur de Zeus.",
+            "Une trêve sacrée protège les athlètes et les spectateurs qui se rendent aux jeux.",
+            "Les vainqueurs reçoivent une couronne d’olivier."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-4e-cities-gr-agora-2-7",
+      "prompt": "Deux genres de théâtre\nLa tragédie : des héros malheureux, frappés par le destin.\nLa comédie : on rit des défauts des gens et des chefs de la cité.",
+      "question": "Une pièce qui se moque des chefs d’Athènes est …",
+      "spoken": "Deux genres de théâtre. La tragédie : des héros malheureux, frappés par le destin. La comédie : on rit des défauts des gens et des chefs de la cité.",
+      "choices": [
+        "une tragédie",
+        "une comédie",
+        "un hymne"
+      ],
+      "answer": "une comédie",
+      "hint": "Lis la dernière ligne du document.",
+      "explanation": "La comédie fait rire, et se moque même des chefs de la cité : le poète Aristophane le fait souvent. La tragédie montre des héros malheureux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Théâtre, jeux et fêtes",
+          "lines": [
+            "Le théâtre : des tragédies et des comédies, jouées pendant les fêtes de Dionysos.",
+            "Les acteurs, tous des hommes, portent des masques.",
+            "Le chœur : un groupe qui chante, danse et commente l’action.",
+            "Les jeux Olympiques ont lieu tous les quatre ans à Olympie, en l’honneur de Zeus.",
+            "Une trêve sacrée protège les athlètes et les spectateurs qui se rendent aux jeux.",
+            "Les vainqueurs reçoivent une couronne d’olivier."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-4e-cities",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

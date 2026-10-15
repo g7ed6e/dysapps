@@ -1,0 +1,241 @@
+{
+  "id": "technology-3e-digital-computer-networks-1",
+  "biome": "technology-3e-digital",
+  "type": "computer-networks",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-3e-digital-computer-networks-1-0",
+      "prompt": "Pour se connecter à la box sans câble, la tablette utilise le …",
+      "spoken": "Pour se connecter à la box sans câble, la tablette utilise le  (mot manquant) ",
+      "choices": [
+        "wifi",
+        "câble",
+        "chargeur"
+      ],
+      "answer": "wifi",
+      "hint": "Relis la ligne « Ils sont reliés » du rappel.",
+      "explanation": "Sans câble, la tablette se relie à la box par le wifi, une liaison sans fil.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les éléments d’un réseau",
+          "lines": [
+            "Un réseau : des appareils reliés qui échangent des données.",
+            "Ils sont reliés par un câble, ou sans fil, par le wifi.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
+            "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
+            "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-1-1",
+      "prompt": "L’appareil qui relie le réseau de la maison à internet est la …",
+      "spoken": "L’appareil qui relie le réseau de la maison à internet est la  (mot manquant) ",
+      "choices": [
+        "tablette",
+        "box",
+        "imprimante"
+      ],
+      "answer": "box",
+      "hint": "Relis la ligne « La box » du rappel.",
+      "explanation": "La box relie tous les appareils de la maison à internet. La tablette et l’imprimante sont des appareils du réseau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les éléments d’un réseau",
+          "lines": [
+            "Un réseau : des appareils reliés qui échangent des données.",
+            "Ils sont reliés par un câble, ou sans fil, par le wifi.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
+            "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
+            "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-1-2",
+      "prompt": "Le réseau de la maison de Jade\nL’ordinateur est relié à la box par un câble.\nLe téléphone et la console passent par le wifi.",
+      "question": "Comment le téléphone est-il relié à la box ?",
+      "spoken": "Le réseau de la maison de Jade. L’ordinateur est relié à la box par un câble. Le téléphone et la console passent par le wifi.",
+      "choices": [
+        "par un câble",
+        "sans fil, par le wifi",
+        "il n’est pas relié"
+      ],
+      "answer": "sans fil, par le wifi",
+      "hint": "Cherche la ligne où il est écrit « téléphone ».",
+      "explanation": "Le téléphone passe par le wifi : il est relié sans fil. C’est l’ordinateur qui a un câble.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les éléments d’un réseau",
+          "lines": [
+            "Un réseau : des appareils reliés qui échangent des données.",
+            "Ils sont reliés par un câble, ou sans fil, par le wifi.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
+            "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
+            "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-1-3",
+      "prompt": "L’ordinateur qui garde les vidéos d’un site et les envoie à ceux qui les demandent est un …",
+      "spoken": "L’ordinateur qui garde les vidéos d’un site et les envoie à ceux qui les demandent est un  (mot manquant) ",
+      "choices": [
+        "navigateur",
+        "clavier",
+        "serveur"
+      ],
+      "answer": "serveur",
+      "hint": "Relis la ligne « Le serveur » du rappel.",
+      "explanation": "Le serveur garde les vidéos et répond aux demandes. Le navigateur est le logiciel qui, sur ton appareil, affiche la vidéo.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les éléments d’un réseau",
+          "lines": [
+            "Un réseau : des appareils reliés qui échangent des données.",
+            "Ils sont reliés par un câble, ou sans fil, par le wifi.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
+            "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
+            "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-1-4",
+      "prompt": "Pour que les données arrivent au bon appareil, chaque appareil du réseau a une …",
+      "spoken": "Pour que les données arrivent au bon appareil, chaque appareil du réseau a une  (mot manquant) ",
+      "choices": [
+        "antenne",
+        "adresse",
+        "prise"
+      ],
+      "answer": "adresse",
+      "hint": "Relis la ligne « Chaque appareil » du rappel.",
+      "explanation": "Chaque appareil a son adresse sur le réseau : les données savent ainsi où aller, comme une lettre avec l’adresse de la maison.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les éléments d’un réseau",
+          "lines": [
+            "Un réseau : des appareils reliés qui échangent des données.",
+            "Ils sont reliés par un câble, ou sans fil, par le wifi.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
+            "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
+            "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-1-5",
+      "prompt": "Le réseau du collège\nLes ordinateurs de la salle sont reliés à un même commutateur.\nCe commutateur est relié au routeur du collège.\nUn serveur garde les dossiers des élèves.",
+      "question": "Où sont gardés les dossiers des élèves ?",
+      "spoken": "Le réseau du collège. Les ordinateurs de la salle sont reliés à un même commutateur. Ce commutateur est relié au routeur du collège. Un serveur garde les dossiers des élèves.",
+      "choices": [
+        "dans le routeur",
+        "sur le serveur",
+        "dans le commutateur"
+      ],
+      "answer": "sur le serveur",
+      "hint": "Cherche la ligne où il est écrit « dossiers ».",
+      "explanation": "Le serveur garde les dossiers : un élève les retrouve depuis n’importe quel ordinateur de la salle. Le commutateur et le routeur relient les appareils : ils ne gardent pas les dossiers.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les éléments d’un réseau",
+          "lines": [
+            "Un réseau : des appareils reliés qui échangent des données.",
+            "Ils sont reliés par un câble, ou sans fil, par le wifi.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
+            "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
+            "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-1-6",
+      "prompt": "Le numéro qui donne l’adresse d’un appareil sur le réseau s’appelle l’adresse …",
+      "spoken": "Le numéro qui donne l’adresse d’un appareil sur le réseau s’appelle l’adresse  (mot manquant) ",
+      "choices": [
+        "mail",
+        "postale",
+        "IP"
+      ],
+      "answer": "IP",
+      "hint": "Relis la ligne « Chaque appareil » du rappel.",
+      "explanation": "L’adresse IP est le numéro d’un appareil sur le réseau. L’adresse mail sert à recevoir des messages : c’est l’adresse d’une personne, pas d’un appareil.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les éléments d’un réseau",
+          "lines": [
+            "Un réseau : des appareils reliés qui échangent des données.",
+            "Ils sont reliés par un câble, ou sans fil, par le wifi.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
+            "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
+            "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-computer-networks-1-7",
+      "prompt": "La photo de Noé\nNoé envoie une photo à Lou.\nLa photo part du téléphone de Noé.\nElle passe par des serveurs d’internet.\nElle arrive sur le téléphone de Lou.",
+      "question": "Par où passe la photo ?",
+      "spoken": "La photo de Noé. Noé envoie une photo à Lou. La photo part du téléphone de Noé. Elle passe par des serveurs d’internet. Elle arrive sur le téléphone de Lou.",
+      "choices": [
+        "directement d’un téléphone à l’autre",
+        "par des serveurs d’internet",
+        "par le chargeur"
+      ],
+      "answer": "par des serveurs d’internet",
+      "hint": "Cherche la ligne où il est écrit « serveurs ».",
+      "explanation": "Ici, la photo ne va pas directement d’un téléphone à l’autre : elle passe par des serveurs d’internet, puis arrive chez Lou.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les éléments d’un réseau",
+          "lines": [
+            "Un réseau : des appareils reliés qui échangent des données.",
+            "Ils sont reliés par un câble, ou sans fil, par le wifi.",
+            "Le commutateur relie les appareils d’un même réseau.",
+            "La box relie le réseau de la maison à internet : c’est un routeur.",
+            "Le serveur : un ordinateur qui garde des données et répond aux demandes.",
+            "Chaque appareil a son adresse sur le réseau, un numéro : l’adresse IP."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-3e-digital",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

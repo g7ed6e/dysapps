@@ -1,0 +1,241 @@
+{
+  "id": "lca-5e-legends-gr-alphabet-2",
+  "biome": "lca-5e-legends",
+  "type": "gr-alphabet",
+  "level": 2,
+  "instruction": "Regarde la lettre ou le mot grec, puis choisis la bonne réponse. L’alphabet est affiché.",
+  "items": [
+    {
+      "key": "lca-5e-legends-gr-alphabet-2-0",
+      "prompt": "Comment s’écrit θεατρον avec nos lettres ?",
+      "spoken": "Comment s’écrit ce mot grec avec nos lettres ?",
+      "choices": [
+        "theatron",
+        "theatpon",
+        "theatrov"
+      ],
+      "answer": "theatron",
+      "hint": "Vérifie chaque lettre dans le rappel, surtout les trois dernières.",
+      "explanation": "Rhô se lit r et nu se lit n : theatron, le théâtre, « le lieu d’où l’on regarde ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un mot grec, lettre par lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-2-1",
+      "prompt": "Comment s’écrit χρονος avec nos lettres ?",
+      "spoken": "Comment s’écrit ce mot grec avec nos lettres ?",
+      "choices": [
+        "xronos",
+        "khronos",
+        "khrovos"
+      ],
+      "answer": "khronos",
+      "hint": "Vérifie la première lettre et l’avant-dernière dans le rappel.",
+      "explanation": "Khi se lit kh et nu se lit n : khronos, le temps.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un mot grec, lettre par lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-2-2",
+      "prompt": "Un mot grec\nχρονος\nkhronos : le temps",
+      "question": "Quel mot français vient de khronos ?",
+      "spoken": "Un mot grec. Khronos : le temps.",
+      "choices": [
+        "couronne",
+        "croissance",
+        "chronomètre"
+      ],
+      "answer": "chronomètre",
+      "hint": "Cherche le mot qui parle de temps.",
+      "explanation": "Un chronomètre mesure le temps : khronos, le temps, et metron, la mesure. Dans nos mots, khi devient ch. Croissance et couronne viennent d’autres mots.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un mot grec, lettre par lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-2-3",
+      "prompt": "Comment s’écrit φωνη avec nos lettres ?",
+      "spoken": "Comment s’écrit ce mot grec avec nos lettres ?",
+      "choices": [
+        "phwnê",
+        "phôvê",
+        "phônê"
+      ],
+      "answer": "phônê",
+      "hint": "Vérifie la deuxième et la troisième lettre dans le rappel.",
+      "explanation": "Oméga se lit ô et nu se lit n : phônê, la voix, le son. On la retrouve dans téléphone et microphone.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un mot grec, lettre par lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-2-4",
+      "prompt": "Comment s’écrit δημος avec nos lettres ?",
+      "spoken": "Comment s’écrit ce mot grec avec nos lettres ?",
+      "choices": [
+        "dêmos",
+        "dnmos",
+        "dêuos"
+      ],
+      "answer": "dêmos",
+      "hint": "Vérifie la deuxième et la troisième lettre dans le rappel.",
+      "explanation": "Êta se lit ê et mu se lit m : dêmos, le peuple. On le retrouve dans démocratie, le pouvoir du peuple.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un mot grec, lettre par lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-2-5",
+      "prompt": "Un mot grec\nγραφω\ngraphô : j’écris",
+      "question": "Quel mot français vient de graphô ?",
+      "spoken": "Un mot grec. Graphô : j’écris.",
+      "choices": [
+        "girafe",
+        "orthographe",
+        "gravier"
+      ],
+      "answer": "orthographe",
+      "hint": "Cherche le mot qui parle d’écrire.",
+      "explanation": "L’orthographe, c’est écrire (graphein) de façon droite, correcte (orthos). Girafe et gravier n’ont pas de lien avec graphô.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un mot grec, lettre par lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-2-6",
+      "prompt": "Comment s’écrit κοσμος avec nos lettres ?",
+      "spoken": "Comment s’écrit ce mot grec avec nos lettres ?",
+      "choices": [
+        "koomos",
+        "kosuos",
+        "kosmos"
+      ],
+      "answer": "kosmos",
+      "hint": "Vérifie la troisième et la quatrième lettre dans le rappel.",
+      "explanation": "Sigma se lit s et mu se lit m : kosmos, l’ordre, le monde. Le cosmos est l’univers ; un cosmonaute y voyage.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un mot grec, lettre par lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lca-5e-legends-gr-alphabet-2-7",
+      "prompt": "Un mot grec\nψυχη\npsukhê : le souffle, l’esprit",
+      "question": "Quel mot français vient de psukhê ?",
+      "spoken": "Un mot grec. Psukê : le souffle, l’esprit.",
+      "choices": [
+        "psychologue",
+        "pistache",
+        "pyjama"
+      ],
+      "answer": "psychologue",
+      "hint": "Cherche le mot qui parle de l’esprit, de ce que l’on ressent.",
+      "explanation": "Psi se transcrit ps, et upsilon devient y dans nos mots : psukhê a donné psychologue, celui qui étudie l’esprit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un mot grec, lettre par lettre",
+          "lines": [
+            "α alpha : a · β bêta : b · γ gamma : g · δ delta : d",
+            "ε epsilon : e · ζ zêta : z · η êta : ê · θ thêta : th",
+            "ι iota : i · κ kappa : k · λ lambda : l · μ mu : m",
+            "ν nu : n · ξ xi : x · ο omicron : o · π pi : p",
+            "ρ rhô : r · σ sigma : s (autre forme en fin de mot) · τ tau : t · υ upsilon : u",
+            "φ phi : ph · χ khi : kh · ψ psi : ps · ω oméga : ô"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lca-5e-legends",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

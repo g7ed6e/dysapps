@@ -23,6 +23,8 @@ import {
 import { nextDestination, type Destination } from './destination';
 import { islandState, type IslandStateDef } from './islandState';
 import { monumentsOf } from './monuments';
+import { projectReady, suggestedProject } from './projectChoice';
+import { projectOf } from './projects';
 import { stageBuildingAt, stageTo } from './vehicle';
 import type { VoyageLeg } from './voyage';
 
@@ -93,7 +95,7 @@ export function modeleDuMonde(state: GameState, a: ArchipelagoId, noms: NomsArch
 export interface EtatsDesObjets {
   /** Les Gardiens dont le défi est prêt (le losange d'or) ; un Gardien pas encore vaincu, hors de cette liste : la pierre. */
   gardiensPrets: BiomeId[];
-  /** Le Bloc-Navire attend l'élève : un bloc qu'il a en poche à poser sur l'étape en chantier, ou le départ possible. */
+  /** La Nef attend l'élève : un bloc qu'il a en poche à poser sur l'étape en chantier, ou le départ possible. */
   navirePret: boolean;
   /**
    * Les chantiers en fantôme dont l'élève a les blocs : les ouvrages qu'il peut construire tout de suite, et les
@@ -110,12 +112,18 @@ export function etatsDesObjets(state: GameState, a: ArchipelagoId): EtatsDesObje
   const etape = stageBuildingAt(getArchipelago(a).port, links);
   const monde = { progress: state.progress, plans: state.world.parts };
   return {
-    gardiensPrets: iles.filter((b) => guardianStatus(b, state.progress, links) === 'ready').map((b) => b.id),
+    gardiensPrets: iles.filter((b) => guardianStatus(b, state.progress, links, false, state.world.challengesKeptOpen) === 'ready').map((b) => b.id),
     navirePret: Boolean(etape && (nextFillable(state, etape) || canLaunch(state, etape).ok)),
     chantiersPrets: [
       ...BRIDGES.filter((b) => ici.has(b.from) && buildBridge(b.id, links, state.stock, monde).ok).map((b) => b.id),
+      // Un monument posé case par case : un bloc à poser. Un grand projet (GD-10) : une pièce à poser, et un seul projet de
+      // l'archipel à la fois, celui que le jeu met en avant (le choix se fait dans le monde, en 4e et en 3e).
       ...monumentsOf(a)
-        .filter((m) => nextFillable(state, m))
+        .filter((m) => {
+          const project = projectOf(m.id);
+          if (!project) return nextFillable(state, m);
+          return projectReady(state, project) && suggestedProject(state, a) === project;
+        })
         .map((m) => m.id),
     ],
   };
@@ -141,7 +149,7 @@ export function capVers(ile: BiomeId, a: ArchipelagoId, bridges: string[]): 'por
   return isBiomeUnlocked(ile, bridges) ? 'voyage' : 'port';
 }
 
-// ---- Le voyage du Bloc-Navire
+// ---- Le voyage de la Nef
 
 /**
  * Le voyage en cours : vers quel archipel, depuis lequel, retour ou premier voyage, écran fixe (`panel`, avec « Réduire

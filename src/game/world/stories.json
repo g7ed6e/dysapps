@@ -1,0 +1,176 @@
+[
+  {
+    "id": "story-6e-1",
+    "region": "6e",
+    "name": "la lanterne",
+    "item": "lantern",
+    "fixture": "french-6e-phonology-fixture-2",
+    "steps": [
+      {
+        "kind": "mission",
+        "place": "maths-6e-calculation",
+        "text": "Joue une mission chez Coco."
+      },
+      {
+        "kind": "give",
+        "place": "maths-6e-calculation",
+        "text": "Donne {objet} à Coco.",
+        "block": "french-6e-phonology",
+        "count": 2
+      },
+      {
+        "kind": "bring",
+        "place": "french-6e-phonology",
+        "text": "Apporte la lanterne à Mousso."
+      }
+    ],
+    "done": "Lanterne posée chez Mousso !"
+  },
+  {
+    "id": "story-6e-2",
+    "region": "6e",
+    "name": "le portillon",
+    "item": "door",
+    "fixture": "french-6e-grammar-spelling-fixture-2",
+    "steps": [
+      {
+        "kind": "mission",
+        "place": "french-6e-word-spelling",
+        "text": "Joue une mission chez Rouxel."
+      },
+      {
+        "kind": "give",
+        "place": "french-6e-word-spelling",
+        "text": "Donne {objet} à Rouxel.",
+        "block": "maths-6e-fractions",
+        "count": 3
+      },
+      {
+        "kind": "bring",
+        "place": "french-6e-grammar-spelling",
+        "text": "Apporte le portillon à Bloquette."
+      }
+    ],
+    "done": "Portillon posé chez Bloquette !"
+  },
+  {
+    "id": "story-6e-3",
+    "region": "6e",
+    "name": "l’escalier",
+    "item": "stairs",
+    "fixture": "french-6e-reading-fixture-2",
+    "steps": [
+      {
+        "kind": "mission",
+        "place": "technology-6e-objects",
+        "text": "Joue une mission chez Pince."
+      },
+      {
+        "kind": "give",
+        "place": "technology-6e-objects",
+        "text": "Donne {objet} à Pince.",
+        "block": "physics-chemistry-6e-matter-energy",
+        "count": 3
+      },
+      {
+        "kind": "mission",
+        "place": "french-6e-reading",
+        "text": "Joue une mission chez Grimoire."
+      },
+      {
+        "kind": "bring",
+        "place": "french-6e-reading",
+        "text": "Apporte l’escalier à Grimoire."
+      }
+    ],
+    "done": "Escalier posé chez Grimoire !"
+  },
+  {
+    "id": "story-5e-1",
+    "region": "5e",
+    "name": "la tente",
+    "item": "maths-5e-proportionality",
+    "fixture": "english-5e-vocabulary-fixture-2",
+    "steps": [
+      {
+        "kind": "mission",
+        "place": "maths-5e-proportionality",
+        "text": "Joue une mission chez Bazar."
+      },
+      {
+        "kind": "give",
+        "place": "maths-5e-proportionality",
+        "text": "Donne {objet} à Bazar.",
+        "block": "maths-5e-proportionality",
+        "count": 4
+      },
+      {
+        "kind": "bring",
+        "place": "english-5e-vocabulary",
+        "text": "Apporte la tente à Pudding."
+      }
+    ],
+    "done": "Tente posée chez Pudding !"
+  },
+  {
+    "id": "story-5e-2",
+    "region": "5e",
+    "name": "le four",
+    "item": "english-5e-vocabulary",
+    "fixture": "history-5e-middle-ages-fixture-2",
+    "steps": [
+      {
+        "kind": "mission",
+        "place": "english-5e-vocabulary",
+        "text": "Joue une mission chez Pudding."
+      },
+      {
+        "kind": "give",
+        "place": "english-5e-grammar",
+        "text": "Donne {objet} à Moustache.",
+        "block": "english-5e-vocabulary",
+        "count": 4
+      },
+      {
+        "kind": "bring",
+        "place": "history-5e-middle-ages",
+        "text": "Apporte le four à Vélin."
+      }
+    ],
+    "done": "Four posé chez Vélin !"
+  },
+  {
+    "id": "story-5e-3",
+    "region": "5e",
+    "name": "la balise",
+    "item": "french-5e-homophones",
+    "fixture": "maths-5e-signed-numbers-fixture-2",
+    "steps": [
+      {
+        "kind": "mission",
+        "place": "maths-5e-signed-numbers",
+        "text": "Joue une mission chez Frimas."
+      },
+      {
+        "kind": "mission",
+        "place": "french-5e-homophones",
+        "text": "Joue une mission chez Sema."
+      },
+      {
+        "kind": "give",
+        "place": "french-5e-homophones",
+        "text": "Donne {objet} à Sema.",
+        "block": "french-5e-homophones",
+        "count": 4
+      },
+      {
+        "kind": "bring",
+        "place": "maths-5e-signed-numbers",
+        "text": "Apporte la balise à Frimas."
+      }
+    ],
+    "done": "Balise posée chez Frimas !",
+    "project": "landmark-5e-1",
+    "see": "Voir le phare"
+  }
+]

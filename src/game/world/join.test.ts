@@ -28,10 +28,10 @@ function apres(r: ReturnType<typeof moveIsland>): World {
   return r.world;
 }
 
-/** Le Volcan posé à la première place libre où il a un voisin ouvert à réunir, et ce voisin. */
+/** Le Volcan déplacé à la première place libre où il a un voisin ouvert à réunir, et ce voisin. */
 function voisins(): { w: World; autre: BiomeId } {
   const w = toutConstruit().world;
-  for (const s of freeSpots(w, VOLCAN)) {
+  for (const s of ailleurs(w)) {
     const r = moveIsland(w, VOLCAN, s);
     if (!r.ok) continue;
     const c = joinCandidates(r.world, VOLCAN).filter((id) => !isFixedPlace(id));
@@ -39,6 +39,9 @@ function voisins(): { w: World; autre: BiomeId } {
   }
   throw new Error('aucune place voisine');
 }
+
+/** Les places libres du Volcan, hors de sa place de départ. */
+const ailleurs = (w: World) => freeSpots(w, VOLCAN).filter((s) => s.x !== startingSpot(VOLCAN).x || s.y !== startingSpot(VOLCAN).y);
 
 const cles = (w: World, a: BiomeId) => {
   const j = joinsIn(w, '6e').find((x) => x.pair.includes(a))!;
@@ -50,10 +53,12 @@ afterEach(() => {
 });
 
 describe('Réunir deux lieux', () => {
-  it('sur la carte de départ, la Tour et la Ferme (leur isthme d’avant) peuvent déjà se réunir ; le Volcan, loin de tous, non', () => {
+  it('sur la carte de départ, les voisines au plus près peuvent déjà se réunir (GD-12) : la Tour et la Baie, la Rivière et le Laboratoire, le Volcan et le Hangar ; la Ferme et le Volcan (depuis que la Ferme tourne son trèfle vers le fond, quatre cases d’eau devant elle) ; le Préau (EMC-2) et la Tour, et la Ferme', () => {
     const w = toutConstruit().world;
-    expect(joinCandidates(w, 'french-6e-reading')).toEqual(['french-6e-grammar-spelling']);
-    expect(joinCandidates(w, VOLCAN)).toEqual([]);
+    expect(joinCandidates(w, 'french-6e-reading')).toEqual(['english-6e-vocabulary', 'civics-6e-democratic-society']);
+    expect(joinCandidates(w, 'maths-6e-fractions')).toEqual(['physics-chemistry-6e-matter-energy']);
+    expect(joinCandidates(w, 'french-6e-grammar-spelling')).toEqual([VOLCAN, 'civics-6e-democratic-society']);
+    expect(joinCandidates(w, VOLCAN)).toEqual(['french-6e-grammar-spelling', 'technology-6e-objects']);
   });
 
   it('deux voisins au plus près : 4 cases de long au moins, sur l’eau, des deux côtes à l’autre', () => {
@@ -91,21 +96,25 @@ describe('Réunir deux lieux', () => {
   });
 
   it('la paire bouge et tourne d’un bloc, et le repère des cases de la construction ne change pas', () => {
-    const { w, autre } = voisins();
-    const w2 = apres(joinIslands(w, VOLCAN, autre));
-    const avant = planCells(cles(w2, VOLCAN)).map((c) => c.key).sort();
+    // La Rivière et le Laboratoire, voisins sur la carte de départ : depuis le Préau (EMC-2), le Volcan réuni n'a plus de
+    // place où aller.
+    const RIVIERE: BiomeId = 'maths-6e-fractions';
+    const w = toutConstruit().world;
+    const autre = joinCandidates(w, RIVIERE)[0];
+    const w2 = apres(joinIslands(w, RIVIERE, autre));
+    const avant = planCells(cles(w2, RIVIERE)).map((c) => c.key).sort();
     // Tourner : les deux tournent ensemble, toujours réunis, la même construction.
-    const t = turnIsland(w2, VOLCAN);
+    const t = turnIsland(w2, RIVIERE);
     if (t.ok) {
       expect(spotOf(t.world, autre).turn).toBe((spotOf(w2, autre).turn + 1) % 4);
-      expect(planCells(cles(t.world, VOLCAN)).map((c) => c.key).sort()).toEqual(avant);
+      expect(planCells(cles(t.world, RIVIERE)).map((c) => c.key).sort()).toEqual(avant);
     }
     // Déplacer : le second suit le premier, du même pas.
-    const ailleurs = freeSpots(w2, VOLCAN).find((s) => s.x !== spotOf(w2, VOLCAN).x || s.y !== spotOf(w2, VOLCAN).y)!;
-    const w3 = apres(moveIsland(w2, VOLCAN, ailleurs));
-    expect(spotOf(w3, autre).x - spotOf(w3, VOLCAN).x).toBe(spotOf(w2, autre).x - spotOf(w2, VOLCAN).x);
-    expect(spotOf(w3, autre).y - spotOf(w3, VOLCAN).y).toBe(spotOf(w2, autre).y - spotOf(w2, VOLCAN).y);
-    expect(planCells(cles(w3, VOLCAN)).map((c) => c.key).sort()).toEqual(avant);
+    const ailleurs = freeSpots(w2, RIVIERE).find((s) => s.x !== spotOf(w2, RIVIERE).x || s.y !== spotOf(w2, RIVIERE).y)!;
+    const w3 = apres(moveIsland(w2, RIVIERE, ailleurs));
+    expect(spotOf(w3, autre).x - spotOf(w3, RIVIERE).x).toBe(spotOf(w2, autre).x - spotOf(w2, RIVIERE).x);
+    expect(spotOf(w3, autre).y - spotOf(w3, RIVIERE).y).toBe(spotOf(w2, autre).y - spotOf(w2, RIVIERE).y);
+    expect(planCells(cles(w3, RIVIERE)).map((c) => c.key).sort()).toEqual(avant);
   });
 
   it('la carte de départ garde les lieux réunis où ils sont (ils ne se séparent plus)', () => {
@@ -172,9 +181,9 @@ describe('Réunir deux lieux', () => {
     const w = toutConstruit().world;
     expect(startingMapState(w, '6e')).toBe('pareille');
     // Un lieu remis à sa place de départ, écrite dans la disposition : rien ne changerait.
-    const remis = apres(moveIsland(apres(moveIsland(w, VOLCAN, freeSpots(w, VOLCAN)[0])), VOLCAN, startingSpot(VOLCAN)));
+    const remis = apres(moveIsland(apres(moveIsland(w, VOLCAN, ailleurs(w)[0])), VOLCAN, startingSpot(VOLCAN)));
     expect(startingMapState(remis, '6e')).toBe('pareille');
-    expect(startingMapState(apres(moveIsland(w, VOLCAN, freeSpots(w, VOLCAN)[0])), '6e')).toBe('possible');
+    expect(startingMapState(apres(moveIsland(w, VOLCAN, ailleurs(w)[0])), '6e')).toBe('possible');
   });
 
   it('l’identifiant de la construction dit ses deux lieux, d’une même région', () => {

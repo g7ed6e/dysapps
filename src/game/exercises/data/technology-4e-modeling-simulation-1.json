@@ -1,0 +1,234 @@
+{
+  "id": "technology-4e-modeling-simulation-1",
+  "biome": "technology-4e-modeling",
+  "type": "simulation",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-4e-modeling-simulation-1-0",
+      "prompt": "Faire marcher un modèle de pont sur ordinateur, pour voir s’il tient, c’est faire une …",
+      "spoken": "Faire marcher un modèle de pont sur ordinateur, pour voir s’il tient, c’est faire une  (mot manquant) ",
+      "choices": [
+        "réparation",
+        "simulation",
+        "notice"
+      ],
+      "answer": "simulation",
+      "hint": "Relis la ligne « Une simulation » du rappel.",
+      "explanation": "Faire marcher le modèle sur ordinateur, c’est une simulation : on voit si le pont tient avant de le construire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Modèle et simulation",
+          "lines": [
+            "Un modèle : une représentation simplifiée d’un objet.",
+            "Une simulation : on fait marcher le modèle sur ordinateur.",
+            "Elle évite de fabriquer des objets pour rien.",
+            "On compare le résultat au cahier des charges.",
+            "Le résultat se lit dans un tableau ou sur une courbe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-1-1",
+      "prompt": "Un modèle est une représentation … d’un objet.",
+      "spoken": "Un modèle est une représentation  (mot manquant)  d’un objet.",
+      "choices": [
+        "simplifiée",
+        "complète",
+        "vivante"
+      ],
+      "answer": "simplifiée",
+      "hint": "Relis la ligne « Un modèle » du rappel.",
+      "explanation": "Un modèle garde seulement ce qui compte pour l’essai : c’est une représentation simplifiée. Il n’a pas tous les détails du vrai objet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Modèle et simulation",
+          "lines": [
+            "Un modèle : une représentation simplifiée d’un objet.",
+            "Une simulation : on fait marcher le modèle sur ordinateur.",
+            "Elle évite de fabriquer des objets pour rien.",
+            "On compare le résultat au cahier des charges.",
+            "Le résultat se lit dans un tableau ou sur une courbe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-1-2",
+      "prompt": "Simulation du toboggan\nCahier des charges : moins de 15 kilomètres par heure en bas.\nRésultat : 12 kilomètres par heure.",
+      "question": "Le toboggan respecte-t-il le cahier des charges ?",
+      "spoken": "Simulation du toboggan. Cahier des charges, moins de 15 kilomètres par heure en bas. Résultat, 12 kilomètres par heure.",
+      "choices": [
+        "oui",
+        "non",
+        "on ne peut pas savoir"
+      ],
+      "answer": "oui",
+      "hint": "12, est-ce moins que 15 ?",
+      "explanation": "12 est plus petit que 15 : la vitesse reste sous la limite. Le toboggan respecte le cahier des charges.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Modèle et simulation",
+          "lines": [
+            "Un modèle : une représentation simplifiée d’un objet.",
+            "Une simulation : on fait marcher le modèle sur ordinateur.",
+            "Elle évite de fabriquer des objets pour rien.",
+            "On compare le résultat au cahier des charges.",
+            "Le résultat se lit dans un tableau ou sur une courbe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-1-3",
+      "prompt": "Simuler avant de fabriquer évite de … des objets pour rien.",
+      "spoken": "Simuler avant de fabriquer évite de  (mot manquant)  des objets pour rien.",
+      "choices": [
+        "dessiner",
+        "vendre",
+        "fabriquer"
+      ],
+      "answer": "fabriquer",
+      "hint": "Relis la ligne « Elle évite de fabriquer » du rappel.",
+      "explanation": "La simulation dit si une solution marche avant de la fabriquer : on ne fabrique pas d’objets qui ne marcheraient pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Modèle et simulation",
+          "lines": [
+            "Un modèle : une représentation simplifiée d’un objet.",
+            "Une simulation : on fait marcher le modèle sur ordinateur.",
+            "Elle évite de fabriquer des objets pour rien.",
+            "On compare le résultat au cahier des charges.",
+            "Le résultat se lit dans un tableau ou sur une courbe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-1-4",
+      "prompt": "Simulation de la batterie du robot\nCahier des charges : au moins 30 minutes.\nRésultat : 25 minutes.",
+      "question": "Que dit la simulation ?",
+      "spoken": "Simulation de la batterie du robot. Cahier des charges, au moins 30 minutes. Résultat, 25 minutes.",
+      "choices": [
+        "la batterie dure assez",
+        "la batterie ne dure pas assez",
+        "on ne peut pas savoir"
+      ],
+      "answer": "la batterie ne dure pas assez",
+      "hint": "25, est-ce au moins 30 ?",
+      "explanation": "25 minutes, c’est moins que 30 minutes : la batterie ne dure pas assez. Il faut une autre solution.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Modèle et simulation",
+          "lines": [
+            "Un modèle : une représentation simplifiée d’un objet.",
+            "Une simulation : on fait marcher le modèle sur ordinateur.",
+            "Elle évite de fabriquer des objets pour rien.",
+            "On compare le résultat au cahier des charges.",
+            "Le résultat se lit dans un tableau ou sur une courbe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-1-5",
+      "prompt": "Le résultat d’une simulation se lit dans un tableau ou sur une …",
+      "spoken": "Le résultat d’une simulation se lit dans un tableau ou sur une  (mot manquant) ",
+      "choices": [
+        "notice",
+        "courbe",
+        "étiquette"
+      ],
+      "answer": "courbe",
+      "hint": "Relis la ligne « Le résultat » du rappel.",
+      "explanation": "Le résultat d’une simulation se lit dans un tableau de valeurs ou sur une courbe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Modèle et simulation",
+          "lines": [
+            "Un modèle : une représentation simplifiée d’un objet.",
+            "Une simulation : on fait marcher le modèle sur ordinateur.",
+            "Elle évite de fabriquer des objets pour rien.",
+            "On compare le résultat au cahier des charges.",
+            "Le résultat se lit dans un tableau ou sur une courbe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-1-6",
+      "prompt": "Simulation de l’étagère\nCahier des charges : tenir 20 kilogrammes.\nRésultat : elle plie à partir de 35 kilogrammes.",
+      "question": "L’étagère convient-elle ?",
+      "spoken": "Simulation de l’étagère. Cahier des charges, tenir 20 kilogrammes. Résultat, elle plie à partir de 35 kilogrammes.",
+      "choices": [
+        "oui, elle tient plus que demandé",
+        "non, elle plie trop tôt",
+        "non, elle est trop petite"
+      ],
+      "answer": "oui, elle tient plus que demandé",
+      "hint": "Elle plie à 35 kilogrammes. On lui demande d’en tenir 20.",
+      "explanation": "L’étagère tient jusqu’à 35 kilogrammes, et on lui en demande 20 : elle convient.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Modèle et simulation",
+          "lines": [
+            "Un modèle : une représentation simplifiée d’un objet.",
+            "Une simulation : on fait marcher le modèle sur ordinateur.",
+            "Elle évite de fabriquer des objets pour rien.",
+            "On compare le résultat au cahier des charges.",
+            "Le résultat se lit dans un tableau ou sur une courbe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-simulation-1-7",
+      "prompt": "Deux simulations du même pont\nCahier des charges : le pont tient.\nModèle A : le pont plie un peu, puis tient.\nModèle B : le pont casse.",
+      "question": "Quel modèle garder ?",
+      "spoken": "Deux simulations du même pont. Cahier des charges, le pont tient. Modèle A, le pont plie un peu, puis tient. Modèle B, le pont casse.",
+      "choices": [
+        "le modèle A",
+        "le modèle B",
+        "aucun des deux"
+      ],
+      "answer": "le modèle A",
+      "hint": "Lequel respecte le cahier des charges ?",
+      "explanation": "Le modèle A plie un peu, mais il tient : il respecte le cahier des charges. Le modèle B casse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Modèle et simulation",
+          "lines": [
+            "Un modèle : une représentation simplifiée d’un objet.",
+            "Une simulation : on fait marcher le modèle sur ordinateur.",
+            "Elle évite de fabriquer des objets pour rien.",
+            "On compare le résultat au cahier des charges.",
+            "Le résultat se lit dans un tableau ou sur une courbe."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-4e-modeling",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,255 @@
+{
+  "id": "lv2-3e-travel-es-media-1",
+  "biome": "lv2-3e-travel",
+  "type": "es-media",
+  "level": 1,
+  "lang": "es",
+  "instruction": "Lis la question, puis le document en espagnol, et choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "lv2-3e-travel-es-media-1-0",
+      "prompt": "Canal 5, sábado\n20:00 Noticias\n20:30 Fútbol: Unión Norte - Atlético Sur\n22:30 Serie: La casa del faro",
+      "question": "À quelle heure commence le match de football ?",
+      "spoken": "Canal cinco, sábado. A las veinte, noticias. A las veinte y treinta, fútbol: Unión Norte contra Atlético Sur. A las veintidós y treinta, serie: La casa del faro.",
+      "choices": [
+        "20 h 00",
+        "20 h 30",
+        "22 h 30"
+      ],
+      "choicesLang": "fr",
+      "answer": "20 h 30",
+      "hint": "Trouve la ligne Fútbol, puis lis son heure.",
+      "explanation": "20:30 Fútbol = le match commence à 20 h 30. À 20 h, ce sont las noticias, les informations ; à 22 h 30, la série.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer los medios",
+          "lines": [
+            "el programa = l’émission ; la película = le film ; la serie = la série",
+            "las noticias = les informations ; el concurso = le jeu",
+            "el concierto = le concert ; la entrada = le billet ; gratis = gratuit",
+            "antes de = avant ; después de = après",
+            "publicar = publier ; me encanta = j’adore",
+            "21:30 = 21 h 30"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-1-1",
+      "prompt": "Canal 2, domingo\n15:00 Película: El perro astronauta\n17:00 Dibujos animados\n19:00 Concurso: ¿Quién sabe más?",
+      "question": "Quelle sorte d’émission passe à 17 h ?",
+      "spoken": "Canal dos, domingo. A las quince, película: El perro astronauta. A las diecisiete, dibujos animados. A las diecinueve, concurso: Quién sabe más?",
+      "choices": [
+        "Un dessin animé",
+        "Un film",
+        "Un jeu télévisé"
+      ],
+      "choicesLang": "fr",
+      "answer": "Un dessin animé",
+      "hint": "Trouve la ligne de 17:00. el dibujo = le dessin.",
+      "explanation": "17:00 Dibujos animados = des dessins animés. La película (le film) passe à 15 h ; el concurso (le jeu), à 19 h.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer los medios",
+          "lines": [
+            "el programa = l’émission ; la película = le film ; la serie = la série",
+            "las noticias = les informations ; el concurso = le jeu",
+            "el concierto = le concert ; la entrada = le billet ; gratis = gratuit",
+            "antes de = avant ; después de = après",
+            "publicar = publier ; me encanta = j’adore",
+            "21:30 = 21 h 30"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-1-2",
+      "prompt": "Concierto: Los Girasoles\nSábado 14 de junio, 21:00\nPlaza Mayor\nEntrada gratis",
+      "question": "Où a lieu le concert ?",
+      "spoken": "Concierto: Los Girasoles. Sábado catorce de junio, a las veintiuna. Plaza Mayor. Entrada gratis.",
+      "choices": [
+        "Sur une place",
+        "Dans un stade",
+        "Dans une salle de sport"
+      ],
+      "choicesLang": "fr",
+      "answer": "Sur une place",
+      "hint": "Lis la 3e ligne : la plaza ressemble à un mot français.",
+      "explanation": "Plaza Mayor = la grand-place : le concert a lieu dehors, sur une place. En Espagne, l’été, il y a souvent des concerts gratuits sur la place de la ville.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer los medios",
+          "lines": [
+            "el programa = l’émission ; la película = le film ; la serie = la série",
+            "las noticias = les informations ; el concurso = le jeu",
+            "el concierto = le concert ; la entrada = le billet ; gratis = gratuit",
+            "antes de = avant ; después de = après",
+            "publicar = publier ; me encanta = j’adore",
+            "21:30 = 21 h 30"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-1-3",
+      "prompt": "Gran concierto de verano\nGrupo: Luna Roja\nViernes 4 de julio, 22:00\nEntradas: 12 euros",
+      "question": "Quel jour de la semaine a lieu le concert ?",
+      "spoken": "Gran concierto de verano. Grupo: Luna Roja. Viernes cuatro de julio, a las veintidós. Entradas: doce euros.",
+      "choices": [
+        "Le mercredi",
+        "Le jeudi",
+        "Le vendredi"
+      ],
+      "choicesLang": "fr",
+      "answer": "Le vendredi",
+      "hint": "Lis la 3e ligne. jueves ou viernes ?",
+      "explanation": "Viernes = vendredi : le concert a lieu le vendredi 4 juillet. Le jeudi se dit jueves ; le mercredi, miércoles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer los medios",
+          "lines": [
+            "el programa = l’émission ; la película = le film ; la serie = la série",
+            "las noticias = les informations ; el concurso = le jeu",
+            "el concierto = le concert ; la entrada = le billet ; gratis = gratuit",
+            "antes de = avant ; después de = après",
+            "publicar = publier ; me encanta = j’adore",
+            "21:30 = 21 h 30"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-1-4",
+      "prompt": "Marta @marta_viaja\nHoy, excursión al museo con mi clase.\n¡Me encanta el arte!\n45 me gusta · 3 comentarios",
+      "question": "Où est Marta aujourd’hui ?",
+      "spoken": "Marta publica: Hoy, excursión al museo con mi clase. Me encanta el arte! Cuarenta y cinco me gusta, tres comentarios.",
+      "choices": [
+        "Au musée",
+        "À la plage",
+        "Au collège"
+      ],
+      "choicesLang": "fr",
+      "answer": "Au musée",
+      "hint": "Lis la 2e ligne : hoy = aujourd’hui.",
+      "explanation": "Hoy, excursión al museo = aujourd’hui, sortie au musée avec sa classe. Me encanta el arte = j’adore l’art.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer los medios",
+          "lines": [
+            "el programa = l’émission ; la película = le film ; la serie = la série",
+            "las noticias = les informations ; el concurso = le jeu",
+            "el concierto = le concert ; la entrada = le billet ; gratis = gratuit",
+            "antes de = avant ; después de = après",
+            "publicar = publier ; me encanta = j’adore",
+            "21:30 = 21 h 30"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-1-5",
+      "prompt": "Pablo @pablo_cocina\n¡Mañana salgo en la tele!\nCanal 4, programa Jóvenes cocineros, 18:00",
+      "question": "Que fait Pablo demain ?",
+      "spoken": "Pablo publica: Mañana salgo en la tele! Canal cuatro, programa Jóvenes cocineros, a las dieciocho.",
+      "choices": [
+        "Il passe à la télé",
+        "Il regarde la télé",
+        "Il achète une télé"
+      ],
+      "choicesLang": "fr",
+      "answer": "Il passe à la télé",
+      "hint": "Regarder se dit ver. Est-ce le verbe de la 2e ligne ?",
+      "explanation": "salir en la tele = passer à la télé : ¡Mañana salgo en la tele! = demain, je passe à la télé. Pablo est dans l’émission Jóvenes cocineros (jeunes cuisiniers). Regarder la télé se dirait ver la tele.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer los medios",
+          "lines": [
+            "el programa = l’émission ; la película = le film ; la serie = la série",
+            "las noticias = les informations ; el concurso = le jeu",
+            "el concierto = le concert ; la entrada = le billet ; gratis = gratuit",
+            "antes de = avant ; después de = après",
+            "publicar = publier ; me encanta = j’adore",
+            "21:30 = 21 h 30"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-1-6",
+      "prompt": "Canal 3\n18:00 Dibujos animados\n19:00 Noticias\n20:00 Documental: Los Andes",
+      "question": "Regarde le programme. Quelle phrase est vraie ?",
+      "spoken": "Canal tres. A las dieciocho, dibujos animados. A las diecinueve, noticias. A las veinte, documental: Los Andes.",
+      "choices": [
+        "Las noticias son antes del documental.",
+        "Las noticias son después del documental.",
+        "Los dibujos son después de las noticias."
+      ],
+      "choicesLang": "es",
+      "answer": "Las noticias son antes del documental.",
+      "hint": "Compare les heures : 19:00 ou 20:00, qui vient en premier ?",
+      "explanation": "Las noticias (19 h) son antes del documental (20 h) : les informations passent avant le documentaire. Los dibujos (18 h) passent avant, pas después.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer los medios",
+          "lines": [
+            "el programa = l’émission ; la película = le film ; la serie = la série",
+            "las noticias = les informations ; el concurso = le jeu",
+            "el concierto = le concert ; la entrada = le billet ; gratis = gratuit",
+            "antes de = avant ; después de = après",
+            "publicar = publier ; me encanta = j’adore",
+            "21:30 = 21 h 30"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-media-1-7",
+      "prompt": "Comentarios\nAna: ¡Me encanta esta canción!\nLeo: A mí no me gusta mucho.",
+      "question": "Qui n’aime pas beaucoup la chanson ?",
+      "spoken": "Comentarios. Ana: Me encanta esta canción! Leo: A mí no me gusta mucho.",
+      "choices": [
+        "Leo",
+        "Ana",
+        "Ana et Leo"
+      ],
+      "choicesLang": "fr",
+      "answer": "Leo",
+      "hint": "Cherche la phrase avec no.",
+      "explanation": "Leo écrit : A mí no me gusta mucho = moi, je n’aime pas beaucoup. Ana écrit : me encanta, j’adore.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer los medios",
+          "lines": [
+            "el programa = l’émission ; la película = le film ; la serie = la série",
+            "las noticias = les informations ; el concurso = le jeu",
+            "el concierto = le concert ; la entrada = le billet ; gratis = gratuit",
+            "antes de = avant ; después de = après",
+            "publicar = publier ; me encanta = j’adore",
+            "21:30 = 21 h 30"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bien lu !"
+  },
+  "reward": {
+    "block": "lv2-3e-travel",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

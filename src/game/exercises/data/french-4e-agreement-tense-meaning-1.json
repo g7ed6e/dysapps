@@ -1,0 +1,219 @@
+{
+  "id": "french-4e-agreement-tense-meaning-1",
+  "biome": "french-4e-agreement",
+  "type": "tense-meaning",
+  "level": 1,
+  "instruction": "Lis la phrase : que dit le temps ou le mode du verbe ? La règle est affichée.",
+  "items": [
+    {
+      "key": "french-4e-agreement-tense-meaning-1-0",
+      "prompt": "« Quand il a fini ses devoirs, Tom joue aux cartes. » Ses devoirs sont-ils finis quand il joue ?",
+      "spoken": "Quand il a fini ses devoirs, Tom joue aux cartes. Ses devoirs sont-ils finis quand il joue ?",
+      "choices": [
+        "oui, ils sont finis",
+        "non, il les fait encore"
+      ],
+      "answer": "oui, ils sont finis",
+      "hint": "« A fini » : temps simple ou temps composé ? Relis la règle.",
+      "explanation": "« A fini » est un temps composé : l’action est finie avant que Tom joue. Avec un temps simple, « quand il finit ses devoirs », il serait encore en train de les faire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que disent les temps et les modes",
+          "lines": [
+            "Temps simple : l’action se fait (je range). Temps composé : elle est finie (j’ai rangé).",
+            "Imparfait : l’action dure, c’est le décor. Passé simple : l’action vue en entier, qui fait avancer le récit.",
+            "Indicatif : un fait réel. Subjonctif : ce qu’on veut ou ce qu’il faut (je veux que tu viennes).",
+            "Conditionnel : un fait imaginé, ou une demande polie. Impératif : un ordre, un conseil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-1-1",
+      "prompt": "« Elle lisait une page quand le téléphone sonna. » Au moment où le téléphone sonne, que fait-elle ?",
+      "spoken": "Elle lisait une page quand le téléphone sonna. Au moment où le téléphone sonne, que fait-elle ?",
+      "choices": [
+        "elle a fini sa page",
+        "elle est en train de lire"
+      ],
+      "answer": "elle est en train de lire",
+      "hint": "« Lisait » est à l’imparfait : l’action est-elle vue en entier, ou en train de durer ?",
+      "explanation": "L’imparfait montre l’action en train de durer : elle lisait encore quand le téléphone sonna. Rien ne dit qu’elle avait fini sa page.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que disent les temps et les modes",
+          "lines": [
+            "Temps simple : l’action se fait (je range). Temps composé : elle est finie (j’ai rangé).",
+            "Imparfait : l’action dure, c’est le décor. Passé simple : l’action vue en entier, qui fait avancer le récit.",
+            "Indicatif : un fait réel. Subjonctif : ce qu’on veut ou ce qu’il faut (je veux que tu viennes).",
+            "Conditionnel : un fait imaginé, ou une demande polie. Impératif : un ordre, un conseil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-1-2",
+      "prompt": "« Ce soir-là, elle lut une page, puis elle éteignit. » A-t-elle lu la page en entier ?",
+      "spoken": "Ce soir-là, elle lut une page, puis elle éteignit. A-t-elle lu la page en entier ?",
+      "choices": [
+        "oui, en entier",
+        "non, elle s’est arrêtée au milieu"
+      ],
+      "answer": "oui, en entier",
+      "hint": "« Lut » est au passé simple : l’action est-elle vue en entier ?",
+      "explanation": "Le passé simple montre l’action en entier, du début à la fin : elle lut la page, puis elle éteignit. Les deux actions se suivent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que disent les temps et les modes",
+          "lines": [
+            "Temps simple : l’action se fait (je range). Temps composé : elle est finie (j’ai rangé).",
+            "Imparfait : l’action dure, c’est le décor. Passé simple : l’action vue en entier, qui fait avancer le récit.",
+            "Indicatif : un fait réel. Subjonctif : ce qu’on veut ou ce qu’il faut (je veux que tu viennes).",
+            "Conditionnel : un fait imaginé, ou une demande polie. Impératif : un ordre, un conseil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-1-3",
+      "prompt": "« Le soleil se couchait, les oiseaux se taisaient ; alors Hugo ferma les volets. » Quel verbe fait avancer le récit ?",
+      "spoken": "Le soleil se couchait, les oiseaux se taisaient ; alors Hugo ferma les volets. Quel verbe fait avancer le récit ?",
+      "choices": [
+        "se couchait",
+        "ferma",
+        "se taisaient"
+      ],
+      "answer": "ferma",
+      "hint": "Lequel des trois verbes est au passé simple ?",
+      "explanation": "« Ferma » est au passé simple : c’est l’action du récit, au premier plan. « Se couchait » et « se taisaient », à l’imparfait, posent le décor, à l’arrière-plan.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que disent les temps et les modes",
+          "lines": [
+            "Temps simple : l’action se fait (je range). Temps composé : elle est finie (j’ai rangé).",
+            "Imparfait : l’action dure, c’est le décor. Passé simple : l’action vue en entier, qui fait avancer le récit.",
+            "Indicatif : un fait réel. Subjonctif : ce qu’on veut ou ce qu’il faut (je veux que tu viennes).",
+            "Conditionnel : un fait imaginé, ou une demande polie. Impératif : un ordre, un conseil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-1-4",
+      "prompt": "« Je sais que tu viens. » Que dit le mode du verbe « viens » ?",
+      "spoken": "Je sais que tu viens. Que dit le mode du verbe « viens » ?",
+      "choices": [
+        "une volonté",
+        "un fait réel",
+        "un fait imaginé"
+      ],
+      "answer": "un fait réel",
+      "hint": "Après « je sais que », le fait est-il sûr ?",
+      "explanation": "Après « je sais que », le verbe est à l’indicatif : il présente un fait réel, que l’on sait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que disent les temps et les modes",
+          "lines": [
+            "Temps simple : l’action se fait (je range). Temps composé : elle est finie (j’ai rangé).",
+            "Imparfait : l’action dure, c’est le décor. Passé simple : l’action vue en entier, qui fait avancer le récit.",
+            "Indicatif : un fait réel. Subjonctif : ce qu’on veut ou ce qu’il faut (je veux que tu viennes).",
+            "Conditionnel : un fait imaginé, ou une demande polie. Impératif : un ordre, un conseil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-1-5",
+      "prompt": "« Je veux que tu viennes. » Que dit le mode du verbe « viennes » ?",
+      "spoken": "Je veux que tu viennes. Que dit le mode du verbe « viennes » ?",
+      "choices": [
+        "un fait réel",
+        "un fait imaginé",
+        "une volonté"
+      ],
+      "answer": "une volonté",
+      "hint": "Après « je veux que », dit-on ce qui est, ou ce qu’on souhaite ?",
+      "explanation": "Après « je veux que », le verbe est au subjonctif : « viennes » dit ce que je veux, pas un fait réel. Tu n’es peut-être pas encore venu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que disent les temps et les modes",
+          "lines": [
+            "Temps simple : l’action se fait (je range). Temps composé : elle est finie (j’ai rangé).",
+            "Imparfait : l’action dure, c’est le décor. Passé simple : l’action vue en entier, qui fait avancer le récit.",
+            "Indicatif : un fait réel. Subjonctif : ce qu’on veut ou ce qu’il faut (je veux que tu viennes).",
+            "Conditionnel : un fait imaginé, ou une demande polie. Impératif : un ordre, un conseil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-1-6",
+      "prompt": "« Avec un chien, nous ferions de longues promenades. » Que dit le conditionnel « ferions » ?",
+      "spoken": "Avec un chien, nous ferions de longues promenades. Que dit le conditionnel « ferions » ?",
+      "choices": [
+        "un fait imaginé",
+        "un fait réel",
+        "un ordre"
+      ],
+      "answer": "un fait imaginé",
+      "hint": "Les promenades ont-elles lieu, ou dépendent-elles d’une condition ?",
+      "explanation": "Le conditionnel dit ce qui arriverait avec un chien : c’est un fait imaginé, qui dépend d’une condition. Un fait réel serait à l’indicatif : nous faisons de longues promenades.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que disent les temps et les modes",
+          "lines": [
+            "Temps simple : l’action se fait (je range). Temps composé : elle est finie (j’ai rangé).",
+            "Imparfait : l’action dure, c’est le décor. Passé simple : l’action vue en entier, qui fait avancer le récit.",
+            "Indicatif : un fait réel. Subjonctif : ce qu’on veut ou ce qu’il faut (je veux que tu viennes).",
+            "Conditionnel : un fait imaginé, ou une demande polie. Impératif : un ordre, un conseil."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-agreement-tense-meaning-1-7",
+      "prompt": "« Pourrais-tu m’aider à porter ce sac ? » Pourquoi le conditionnel ?",
+      "spoken": "Pourrais-tu m’aider à porter ce sac ? Pourquoi le conditionnel ?",
+      "choices": [
+        "pour parler de demain",
+        "pour demander poliment",
+        "pour donner un ordre"
+      ],
+      "answer": "pour demander poliment",
+      "hint": "Compare avec « Peux-tu m’aider ? » : laquelle est la plus douce ?",
+      "explanation": "Le conditionnel adoucit la demande : « Pourrais-tu » est plus poli que « Peux-tu ». Ce n’est pas un futur : au futur, on dirait « pourras-tu », sans i.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que disent les temps et les modes",
+          "lines": [
+            "Temps simple : l’action se fait (je range). Temps composé : elle est finie (j’ai rangé).",
+            "Imparfait : l’action dure, c’est le décor. Passé simple : l’action vue en entier, qui fait avancer le récit.",
+            "Indicatif : un fait réel. Subjonctif : ce qu’on veut ou ce qu’il faut (je veux que tu viennes).",
+            "Conditionnel : un fait imaginé, ou une demande polie. Impératif : un ordre, un conseil."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-agreement",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

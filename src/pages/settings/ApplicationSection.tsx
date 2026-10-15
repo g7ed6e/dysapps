@@ -1,13 +1,19 @@
 // La section Application des réglages : la version, la mise à jour, les liens (sortie de SettingsPage.tsx, qualité du
 // code, lot 8).
 import { Icon } from '../../components/Icon';
+import { useSettings } from '../../core/SettingsContext';
 import { APP_VERSION, applyUpdate, checkForUpdate, useAppUpdate } from '../../core/appUpdate';
+import { adresseDeLaMesure } from '../../game/rendering';
 
 const DOCS_URL = 'https://g7ed6e.github.io/dysapps/';
 const REPO_URL = 'https://github.com/g7ed6e/dysapps';
 
+/** La page rechargée sur `?mesures=auto` (game/AutoMeasure.tsx) : une partie toute construite, en mémoire. */
+const lancerLaMesure = () => window.location.assign(adresseDeLaMesure(window.location.href));
+
 export function ApplicationSection() {
   const appUpdate = useAppUpdate();
+  const { settings, update } = useSettings();
   return (
     <fieldset className="panel">
       <legend>Application</legend>
@@ -39,6 +45,17 @@ export function ApplicationSection() {
           <Icon name="globe" /> Le code sur GitHub
         </a>
       </div>
+      {/* Le compteur de `?mesures` (game/three/meter.ts), sans adresse : il se voit à la prochaine ouverture du monde. */}
+      <label className="toggle">
+        <input type="checkbox" checked={settings.renderMeter} onChange={(e) => update({ renderMeter: e.target.checked })} />
+        Compteur de mesures
+      </label>
+      {/* La mesure automatique (game/AutoMeasure.tsx), pour le mainteneur sur la tablette : la page se recharge avec
+          `?mesures=auto`, qui joue une partie toute construite en mémoire ; la vraie partie n'est pas touchée. */}
+      <button type="button" className="button settings-measure" onClick={lancerLaMesure}>
+        <Icon name="gauge" /> Mesurer l’appareil
+      </button>
+      <p className="settings-note">Ta partie ne change pas.</p>
     </fieldset>
   );
 }

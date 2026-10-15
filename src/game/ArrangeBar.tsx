@@ -8,6 +8,7 @@
 // communs aux deux univers. L'état du mode vient de `useAmenagement` (Arranging.tsx).
 import { useEffect, useState } from 'react';
 import { Icon, IconButton } from '../components/Icon';
+import { WorldButton } from './WorldButton';
 import { SpeakButton } from '../components/SpeakButton';
 import { type Amenagement, FLECHES, type LigneDuMode, PLACE_PRISE } from './Arranging';
 import { getBridge } from './world/archipelago';
@@ -44,20 +45,21 @@ export function ArrangeButton({ amenagement, proposer }: { amenagement: Amenagem
   const n = amenagement.aReposer.length;
   const ouvrir = () => (n ? amenagement.ouvrirLaListe() : amenagement.ouvrir());
   return (
-    <button
-      type="button"
-      className="button world-bar-amenager"
-      aria-label={n ? `${MODIFIER_LE_PLAN} (${n} ${n > 1 ? amenagement.mot.pluriel : amenagement.mot.nom} à reposer)` : MODIFIER_LE_PLAN}
+    // Une icône seule, même en grand texte (choix « 1a » du lot « Sans Menu ») : son nom se lit au doigt posé.
+    <WorldButton
+      icon="amenager"
+      name={MODIFIER_LE_PLAN}
+      buttonClassName="world-bar-amenager"
+      ariaLabel={n ? `${MODIFIER_LE_PLAN} (${n} ${n > 1 ? amenagement.mot.pluriel : amenagement.mot.nom} à reposer)` : MODIFIER_LE_PLAN}
       onClick={() => (proposer ? proposer() : ouvrir())}
     >
-      <Icon name="amenager" /> <span className="world-bar-text">{MODIFIER_LE_PLAN}</span>
       {n > 0 && (
         <span className="world-bar-count arrange-count" aria-hidden="true">
           <Icon name="aReposer" size={14} />
           {n}
         </span>
       )}
-    </button>
+    </WorldButton>
   );
 }
 
@@ -162,15 +164,6 @@ function Signes({ ligne }: { ligne: LigneDuMode }) {
             </>
           )}{' '}
           <SignePrise prise={ligne.prise} />
-        </>
-      );
-    case 'gardien':
-      return (
-        <>
-          <span className="signe">
-            <Icon name="shield" />
-          </span>{' '}
-          <PlaceSignsLine signes={ligne.signes} sansEcart={ligne.prise} /> <SignePrise prise={ligne.prise} />
         </>
       );
     case 'place':
@@ -295,12 +288,12 @@ export function ArrangeJoinQuestion({ amenagement, nom, className }: { amenageme
 }
 
 /**
- * La barre du mode, à place fixe, en bas (décision du mainteneur, 6 octobre 2026) : ↶ « Défaire » en icône et
- * « Poser », la place de « Réunir » dès qu'un lieu est choisi (sur la Carte ; éteint quand il ne sert pas), puis les deux boutons qui ferment le mode, ✕ « Annuler » et ✓ « Valider », qui gardent leur mot partout
- * (en grand texte, il passe sous l'icône). Un seul bouton mis en avant : « Poser » pendant un choix, « Valider » quand
- * rien n'est en cours. Les boutons sans effet restent à leur place, éteints. Sur la Carte, les flèches et « Tourner » sont
- * dessinées autour du choix (ArrangeHandles.tsx) ; en vue simple (`croix`), sans scène, la croix des flèches et « Tourner »
- * restent dans la barre.
+ * La barre du mode, à place fixe, en bas. Sur la Carte, peu de boutons (mainteneur, 7 octobre 2026 : « il y a trop de
+ * boutons », inspiré des jeux de base mobiles) : ✕ « Annuler » et ✓ « Valider », qui ferment le mode et gardent leur
+ * mot partout (en grand texte, il passe sous l'icône) ; « Réunir » seulement quand le lieu choisi touche un voisin à
+ * réunir ; « Poser » seulement pour un ouvrage à reposer. On déplace en glissant (la mer touchée relâche le choix), et
+ * « Tourner » est dessiné près du choix (ArrangeHandles.tsx). En vue simple (`croix`), sans scène, la croix des flèches,
+ * « Tourner », ↶ « Défaire » et « Poser » restent dans la barre (décision du 6 octobre 2026).
  */
 export function ArrangeBar({ amenagement, className, croix = false }: { amenagement: Amenagement; className?: string; croix?: boolean }) {
   const { choix, geste, question } = amenagement;
@@ -324,32 +317,36 @@ export function ArrangeBar({ amenagement, className, croix = false }: { amenagem
       )}
       <div className="arrange-bar-outils">
         {croix && <IconButton icone="tourner" nom="Tourner" disabled={!canTurn(choix) || occupe} onClick={amenagement.tourner} />}
-        <IconButton icone="defaire" nom="Défaire la dernière pose" mot="Défaire" disabled={!amenagement.peutDefaire || occupe} onClick={amenagement.defaire} />
-        {/* Sur une place prise (choix 3 du mainteneur), « Poser » s'éteint : la croix grise du fantôme le montre. */}
-        <button
-          type="button"
-          className={`button arrange-pose${choix && !enQuestion && !amenagement.aConfirmer && !amenagement.placePrise ? ' primary' : ''}`}
-          disabled={!choix || occupe || enQuestion || amenagement.aConfirmer || amenagement.placePrise}
-          onClick={amenagement.poserIci}
-        >
-          <Icon name="poser" /> <span>Poser</span>
-        </button>
-        {/* La place de « Réunir », entre « Poser » et « Annuler », réservée dès qu'un lieu est choisi (sur la Carte ; la
-            vue simple l'a dans sa liste) : le bouton y est éteint quand il ne sert pas. Quand « Annuler » demande
-            confirmation, l'« Annuler » qui confirme se pose à cette place, à côté de « Garder ». */}
+        {croix && <IconButton icone="defaire" nom="Défaire la dernière pose" mot="Défaire" disabled={!amenagement.peutDefaire || occupe} onClick={amenagement.defaire} />}
+        {/* Sur la Carte, un lieu se pose au lever du doigt, une borne ou une arrivée en touchant sa place : « Poser » n'y sert qu'à un ouvrage
+            à reposer, qui ne se glisse pas. Sur une place prise (choix 3 du mainteneur), il s'éteint. */}
+        {(croix || choix?.genre === 'liaison') && (
+          <button
+            type="button"
+            className={`button arrange-pose${choix && !enQuestion && !amenagement.aConfirmer && !amenagement.placePrise ? ' primary' : ''}`}
+            disabled={!choix || occupe || enQuestion || amenagement.aConfirmer || amenagement.placePrise}
+            onClick={amenagement.poserIci}
+          >
+            <Icon name="poser" /> <span>Poser</span>
+          </button>
+        )}
+        {/* « Réunir », à gauche d'« Annuler », seulement quand le lieu choisi peut se réunir à un voisin (sur la Carte ;
+            la vue simple l'a dans sa liste). Quand « Annuler » demande confirmation, l'« Annuler » qui confirme se pose
+            à cette place, à côté de « Garder ». */}
         {amenagement.aConfirmer ? (
           <button type="button" className="button arrange-confirmer" onClick={amenagement.confirmerLAnnulation}>
             <Icon name="close" /> <span>Annuler</span>
           </button>
         ) : (
           !croix &&
-          choix?.genre === 'lieu' && (
+          choix?.genre === 'lieu' &&
+          amenagement.reunirAvec && (
             <IconButton
               icone="reunir"
               nom="Réunir"
               className="arrange-reunir"
               aria-pressed={enQuestion}
-              disabled={!amenagement.reunirAvec || occupe}
+              disabled={occupe}
               onClick={() => amenagement.demanderReunion()}
             />
           )
@@ -368,7 +365,7 @@ export function ArrangeBar({ amenagement, className, croix = false }: { amenagem
             <Icon name="close" /> <span>Annuler</span>
           </button>
         )}
-        <button type="button" className={`button bouton-cta arrange-valider${choix || amenagement.aConfirmer ? '' : ' primary'}`} onClick={amenagement.valider}>
+        <button type="button" className={`button bouton-cta arrange-valider${((croix || choix?.genre === 'liaison') && choix) || enQuestion || amenagement.aConfirmer ? '' : ' primary'}`} onClick={amenagement.valider}>
           <Icon name="check" /> <span>Valider</span>
         </button>
       </div>

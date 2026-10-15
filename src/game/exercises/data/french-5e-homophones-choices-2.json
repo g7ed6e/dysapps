@@ -4,203 +4,208 @@
   "type": "choices",
   "level": 2,
   "instruction": "Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.",
+  "programme": [
+    "c4.fr.5e.vocabulaire.orthographe",
+    "c4.fr.5e.grammaire.classes-de-mots",
+    "c3.fr.langue.orthographe-grammaticale"
+  ],
   "items": [
     {
-      "key": "french-5e-homophones-choices-2-0",
-      "prompt": "Il … a pas de pain.",
-      "spoken": "Il  (mot manquant)  a pas de pain.",
+      "key": "leur-pretes",
+      "prompt": "Je … ai prêté mes feutres.",
+      "spoken": "Je  (mot manquant)  ai prêté mes feutres.",
       "choices": [
-        "ni",
-        "n’y",
-        "nid"
+        "leur",
+        "leurs",
+        "l’heure"
       ],
-      "answer": "n’y",
-      "hint": "« n’y » = ne + y : il n’y a pas.",
-      "explanation": "Il n’y a pas de pain : ne + y.",
+      "answer": "leur",
+      "hint": "Devant un verbe, « leur » veut dire « à eux ».",
+      "explanation": "« Je leur ai prêté » = j’ai prêté à eux : « leur » est devant le verbe, il ne prend jamais de s.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Homophones",
           "lines": [
-            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
-            "si = condition ou oui. s’y = se + y (il s’y met).",
-            "plus tôt = contraire de plus tard. plutôt = de préférence.",
-            "près = pas loin. prêt = préparé."
+            "leur devant un verbe = à eux : jamais de s (je leur parle).",
+            "leur devant un nom au singulier, leurs devant un nom au pluriel (leur chien, leurs chiens).",
+            "mon, ton : devant un nom (mon cahier, ton bureau).",
+            "m’ont, t’ont = me + ont, te + ont : on peut dire « m’avaient », « t’avaient »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-2-1",
-      "prompt": "Je n’aime … le froid … la pluie.",
-      "spoken": "Je n’aime  (mot manquant)  le froid  (mot manquant)  la pluie.",
+      "key": "leurs-chiens",
+      "prompt": "Les voisins promènent … chiens.",
+      "spoken": "Les voisins promènent  (mot manquant)  chiens.",
       "choices": [
-        "ni",
-        "n’y",
-        "nie"
+        "leur",
+        "leurs",
+        "l’heure"
       ],
-      "answer": "ni",
-      "hint": "« ni » = et pas.",
-      "explanation": "Ni le froid ni la pluie : et pas l’un, et pas l’autre.",
+      "answer": "leurs",
+      "hint": "Devant un nom : un chien, ou plusieurs ?",
+      "explanation": "« chiens » est au pluriel : on écrit « leurs », avec un s.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Homophones",
           "lines": [
-            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
-            "si = condition ou oui. s’y = se + y (il s’y met).",
-            "plus tôt = contraire de plus tard. plutôt = de préférence.",
-            "près = pas loin. prêt = préparé."
+            "leur devant un verbe = à eux : jamais de s (je leur parle).",
+            "leur devant un nom au singulier, leurs devant un nom au pluriel (leur chien, leurs chiens).",
+            "mon, ton : devant un nom (mon cahier, ton bureau).",
+            "m’ont, t’ont = me + ont, te + ont : on peut dire « m’avaient », « t’avaient »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-2-2",
-      "prompt": "Elle … met dès ce soir.",
-      "spoken": "Elle  (mot manquant)  met dès ce soir.",
+      "key": "leur-maison",
+      "prompt": "Mes cousins ont vendu … maison.",
+      "spoken": "Mes cousins ont vendu  (mot manquant)  maison.",
       "choices": [
-        "si",
-        "s’y",
-        "ci"
+        "leur",
+        "leurs",
+        "l’heure"
       ],
-      "answer": "s’y",
-      "hint": "« s’y mettre » : on peut dire « je m’y mets ».",
-      "explanation": "Elle s’y met : se + y.",
+      "answer": "leur",
+      "hint": "Devant un nom : une maison, ou plusieurs ?",
+      "explanation": "Ils ont une seule maison : « leur maison », au singulier, sans s. Les cousins sont plusieurs, mais c’est le nom qui commande.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Homophones",
           "lines": [
-            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
-            "si = condition ou oui. s’y = se + y (il s’y met).",
-            "plus tôt = contraire de plus tard. plutôt = de préférence.",
-            "près = pas loin. prêt = préparé."
+            "leur devant un verbe = à eux : jamais de s (je leur parle).",
+            "leur devant un nom au singulier, leurs devant un nom au pluriel (leur chien, leurs chiens).",
+            "mon, ton : devant un nom (mon cahier, ton bureau).",
+            "m’ont, t’ont = me + ont, te + ont : on peut dire « m’avaient », « t’avaient »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-2-3",
-      "prompt": "Viens … tu veux.",
-      "spoken": "Viens  (mot manquant)  tu veux.",
+      "key": "leur-dis",
+      "prompt": "Dis-… de venir.",
+      "spoken": "Dis- (mot manquant)  de venir.",
       "choices": [
-        "si",
-        "s’y",
-        "ci"
+        "leur",
+        "leurs",
+        "l’heure"
       ],
-      "answer": "si",
-      "hint": "« si » = à condition que.",
-      "explanation": "Viens si tu veux : condition.",
+      "answer": "leur",
+      "hint": "Dis à qui ? « leur » veut dire « à eux ».",
+      "explanation": "« Dis-leur » = dis à eux : « leur » va avec le verbe, il ne prend jamais de s.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Homophones",
           "lines": [
-            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
-            "si = condition ou oui. s’y = se + y (il s’y met).",
-            "plus tôt = contraire de plus tard. plutôt = de préférence.",
-            "près = pas loin. prêt = préparé."
+            "leur devant un verbe = à eux : jamais de s (je leur parle).",
+            "leur devant un nom au singulier, leurs devant un nom au pluriel (leur chien, leurs chiens).",
+            "mon, ton : devant un nom (mon cahier, ton bureau).",
+            "m’ont, t’ont = me + ont, te + ont : on peut dire « m’avaient », « t’avaient »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-2-4",
-      "prompt": "Il est arrivé … que prévu.",
-      "spoken": "Il est arrivé  (mot manquant)  que prévu.",
+      "key": "mont-amis",
+      "prompt": "Mes amis … aidé à porter le sac.",
+      "spoken": "Mes amis  (mot manquant)  aidé à porter le sac.",
       "choices": [
-        "plus tôt",
-        "plutôt",
-        "plus tot"
+        "mon",
+        "m’ont",
+        "mont"
       ],
-      "answer": "plus tôt",
-      "hint": "Contraire de « plus tard » ? Alors c’est « plus tôt » en deux mots.",
-      "explanation": "Plus tôt que prévu = avant l’heure prévue : contraire de plus tard.",
+      "answer": "m’ont",
+      "hint": "Remplace par « m’avaient » : si ça marche, c’est « m’ont ».",
+      "explanation": "« Mes amis m’avaient aidé » fonctionne : c’est « m’ont », me + ont, le verbe avoir.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Homophones",
           "lines": [
-            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
-            "si = condition ou oui. s’y = se + y (il s’y met).",
-            "plus tôt = contraire de plus tard. plutôt = de préférence.",
-            "près = pas loin. prêt = préparé."
+            "leur devant un verbe = à eux : jamais de s (je leur parle).",
+            "leur devant un nom au singulier, leurs devant un nom au pluriel (leur chien, leurs chiens).",
+            "mon, ton : devant un nom (mon cahier, ton bureau).",
+            "m’ont, t’ont = me + ont, te + ont : on peut dire « m’avaient », « t’avaient »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-2-5",
-      "prompt": "Prends une pomme … qu’un gâteau.",
-      "spoken": "Prends une pomme  (mot manquant)  qu’un gâteau.",
+      "key": "mon-cahier",
+      "prompt": "J’ai oublié … cahier.",
+      "spoken": "J’ai oublié  (mot manquant)  cahier.",
       "choices": [
-        "plus tôt",
-        "plutôt",
-        "plus tot"
+        "mon",
+        "m’ont",
+        "mont"
       ],
-      "answer": "plutôt",
-      "hint": "« plutôt » = de préférence.",
-      "explanation": "Prends une pomme plutôt qu’un gâteau : de préférence.",
+      "answer": "mon",
+      "hint": "Remplace par « m’avaient » : si ça ne marche pas, c’est « mon ».",
+      "explanation": "« J’ai oublié m’avaient cahier » ne veut rien dire : c’est « mon », devant le nom cahier. Un mont, c’est une montagne.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Homophones",
           "lines": [
-            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
-            "si = condition ou oui. s’y = se + y (il s’y met).",
-            "plus tôt = contraire de plus tard. plutôt = de préférence.",
-            "près = pas loin. prêt = préparé."
+            "leur devant un verbe = à eux : jamais de s (je leur parle).",
+            "leur devant un nom au singulier, leurs devant un nom au pluriel (leur chien, leurs chiens).",
+            "mon, ton : devant un nom (mon cahier, ton bureau).",
+            "m’ont, t’ont = me + ont, te + ont : on peut dire « m’avaient », « t’avaient »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-2-6",
-      "prompt": "Le bus est … de l’école.",
-      "spoken": "Le bus est  (mot manquant)  de l’école.",
+      "key": "tont-parents",
+      "prompt": "Tes parents … appelé ?",
+      "spoken": "Tes parents  (mot manquant)  appelé ?",
       "choices": [
-        "près",
-        "prêt",
-        "pré"
+        "ton",
+        "t’ont",
+        "thon"
       ],
-      "answer": "près",
-      "hint": "« près » = pas loin.",
-      "explanation": "Le bus est près de l’école : pas loin.",
+      "answer": "t’ont",
+      "hint": "Remplace par « t’avaient » : si ça marche, c’est « t’ont ».",
+      "explanation": "« Tes parents t’avaient appelé » fonctionne : c’est « t’ont », te + ont, le verbe avoir.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Homophones",
           "lines": [
-            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
-            "si = condition ou oui. s’y = se + y (il s’y met).",
-            "plus tôt = contraire de plus tard. plutôt = de préférence.",
-            "près = pas loin. prêt = préparé."
+            "leur devant un verbe = à eux : jamais de s (je leur parle).",
+            "leur devant un nom au singulier, leurs devant un nom au pluriel (leur chien, leurs chiens).",
+            "mon, ton : devant un nom (mon cahier, ton bureau).",
+            "m’ont, t’ont = me + ont, te + ont : on peut dire « m’avaient », « t’avaient »."
           ]
         }
       }
     },
     {
-      "key": "french-5e-homophones-choices-2-7",
-      "prompt": "Il est … à partir.",
-      "spoken": "Il est  (mot manquant)  à partir.",
+      "key": "ton-bureau",
+      "prompt": "Range … bureau, s’il te plaît.",
+      "spoken": "Range  (mot manquant)  bureau, s’il te plaît.",
       "choices": [
-        "près",
-        "prêt",
-        "pré"
+        "ton",
+        "t’ont",
+        "thon"
       ],
-      "answer": "prêt",
-      "hint": "« prêt » = préparé (au féminin : prête).",
-      "explanation": "Il est prêt à partir : préparé.",
+      "answer": "ton",
+      "hint": "Remplace par « t’avaient » : si ça ne marche pas, c’est « ton ».",
+      "explanation": "« Range t’avaient bureau » ne veut rien dire : c’est « ton », devant le nom bureau. Le thon, c’est un poisson.",
       "aid": {
         "kind": "rule-card",
         "props": {
           "title": "Homophones",
           "lines": [
-            "ni = et pas (ni l’un ni l’autre). n’y = ne + y (il n’y va pas).",
-            "si = condition ou oui. s’y = se + y (il s’y met).",
-            "plus tôt = contraire de plus tard. plutôt = de préférence.",
-            "près = pas loin. prêt = préparé."
+            "leur devant un verbe = à eux : jamais de s (je leur parle).",
+            "leur devant un nom au singulier, leurs devant un nom au pluriel (leur chien, leurs chiens).",
+            "mon, ton : devant un nom (mon cahier, ton bureau).",
+            "m’ont, t’ont = me + ont, te + ont : on peut dire « m’avaient », « t’avaient »."
           ]
         }
       }

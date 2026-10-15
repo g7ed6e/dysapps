@@ -1,0 +1,217 @@
+# Les modèles 3D des personnages d’Archipéo
+
+Chaque personnage passe d’une image de concept (ce dossier, `<nom>.webp`) à un modèle 3D brut, puis à un modèle réduit et peint au budget du jeu. Le dépôt garde le modèle retravaillé ; le brut est gardé dans la Bibliothèque du projet (`archipeo/personnages-3d/bruts/<nom>.glb`, décision du mainteneur, 9 octobre 2026), pour ne jamais avoir à refaire un passage : le brut coûte un passage sur TRELLIS.2, pris sur le quota du compte du mainteneur.
+
+Les modèles du 6e, de la 5e, de la 4e et de la 3e sont dans le jeu, dans l’univers Archipéo : de près dans le défi, les fiches et sur l’île où l’on est, de loin ailleurs dans l’archipel (lus par `src/game/world/characters/imported/`, voir [Les fichiers](../../../architecture/fichiers.md)). Le jeu les tourne face à l’élève (un quart de tour par modèle, relevé dans `models.ts`) : le passage dans Blender n’a pas à les tourner. Un dossier sans ses deux fichiers garde le personnage dessiné en code.
+
+## Où sont les fichiers
+
+Un dossier par personnage, `modeles/<nom>/`, du même nom que son image de concept :
+
+| Fichier | Ce que c’est |
+| --- | --- |
+| `final-1500.glb` | Le modèle retravaillé à environ 1 500 triangles : la version vue de près. Un Gardien est sans socle, chaque facette peinte en pierre `#8E8C84` ; une créature garde ses couleurs, ramenées à quatre. |
+| `final-200.glb` | Le même à environ 200 triangles : la version vue de loin. |
+| `controle.png` | Le rendu de contrôle : le brut aligné, la version 1 500 et la version 200, côte à côte. |
+
+[`modeles/reglages.csv`](modeles/reglages.csv) donne, pour chaque personnage, la hauteur où couper le socle et le quart de tour éventuel.
+
+Les Gardiens (coupe du socle en part de la hauteur, triangles des deux versions) :
+
+| Gardien | Coupe | 1 500 | 200 |
+| --- | --- | --- | --- |
+| Lion de pierre (Baie, 6e) | 0,12 | 1 397 | 193 |
+| Taureau de terre (Ferme, 6e) | 0,16 | 1 219 | 164 |
+| Hanneton de bronze (Plaine, 6e) | 0,12 | 1 304 | 267 |
+| Dune vivante (Carrière, 6e) | 0,12 | 1 229 | 159 |
+| Grand chêne (Forêt, 6e) | 0,12 | 1 334 | 197 |
+| Amphore peinte (Fouille, 6e) | 0,07 | 1 349 | 195 |
+| Automate de laiton (Hangar, 6e) | 0,12 | 1 325 | 173 |
+| Coucou de bronze (Horloge, 6e) | 0,12 | 1 365 | 164 |
+| Alambic de verre (Laboratoire, 6e) | 0,12 | 1 278 | 160 |
+| Golem de roche (Mine, 6e) | 0,12 | 1 312 | 174 |
+| Castor de glaise (Pointe, 6e) | 0,12 | 1 187 | 165 |
+| Brochet d’argent (Rivière, 6e) | 0,12 | 1 131 | 149 |
+| Chouette de verre (Tour, 6e) | 0,12 | 1 316 | 168 |
+| Cerf des sous-bois (Vallée, 6e) | 0,12 | 1 305 | 164 |
+| Dragon de cendre (Volcan, 6e) | 0,12 | 1 226 | 144 |
+| Griffon d'émail (Bourg, 5e) | 0,12 | 1 415 | 206 |
+| Sphinx des routes (Carrefour, 5e) | 0,12 | 1 465 | 212 |
+| Reine du marché (Comptoir, 5e) | 0,12 | 1 284 | 174 |
+| Libellule de jade (Delta, 5e) | 0,12 | 1 426 | 200 |
+| Mammouth de givre (Glacier, 5e) | 0,12 | 1 340 | 189 |
+| Spectre du manoir (Manoir, 5e) | 0,12 | 1 271 | 185 |
+| Hydre des marais (Marais, 5e) | 0,12 | 1 347 | 190 |
+| Colporteur (Marché, 5e) | 0,12 | 1 419 | 186 |
+| Cheval à bascule (Menuiserie, 5e) | 0 (garde ses patins) | 1 512 | 214 |
+| Tortue d'ocre (Prairie, 5e) | 0,12 | 1 401 | 199 |
+| Diligence de cuivre (Relais, 5e) | 0,12 | 1 475 | 214 |
+| Flamant de sel (Saline, 5e) | 0,12 | 1 307 | 172 |
+| Hirondelle de nacre (Préau, 6e) | 0,12 | 1 336 | 182 |
+| Oie d’opale (Fournil, 5e) | 0,17 | 846 | 128 |
+| Phénix d’argile (Grotte, 5e) | 0,11 | 1 335 | 156 |
+| Titan d’acier (Forge, 4e) | 0,12 | 1 298 | 176 |
+| Golem des équations (Atelier, 4e) | 0,12 | 1 335 | 180 |
+| Bélier de granit (Falaise, 4e) | 0,18 | 1 118 | 154 |
+| Hibou lexicographe (Cabinet, 4e) | 0,12 | 1 335 | 176 |
+| Masque (Théâtre, 4e) | 0,12 | 1 372 | 198 |
+| Locomotive de fer (Gare, 4e) | 0,12 | 1 332 | 224 |
+| Soleil de cuivre (Jardin, 4e) | 0,12 | 1 268 | 191 |
+| Paon de faïence (Imprimerie, 4e) | 0,12 | 1 353 | 175 |
+| Poulpe de corail (Escale, 4e) | 0,12 | 1 430 | 192 |
+| Girafe d’ambre (Source, 4e) | 0,12 | 1 241 | 166 |
+| Cloche de cobalt (Vigie, 4e) | 0,12 | 1 328 | 178 |
+| Grand-bi d’érable (Bassin, 4e) | 0,12 | 1 335 | 172 |
+| Lynx d’agate (Porte, 4e) | 0,12 | 1 212 | 158 |
+| Cigale d’argile (Colonnade, 4e) | 0,47 | 994 | 135 |
+| Sphinx de marbre (Belvédère, 3e) | 0,12 | 1 262 | 167 |
+| Comptable des étoiles (Données, 3e) | 0,12 | 1 247 | 156 |
+| Dragon de lumière (Phare, 3e) | 0,12 | 1 449 | 178 |
+| Grand Lecteur (Textes, 3e) | 0,12 | 1 304 | 169 |
+| Grande Antenne (Studio, 3e) | 0,12 | 1 330 | 163 |
+| Dragon gallois (Château, 3e) | 0,12 | 1 309 | 196 |
+| Papillon de cuivre (Refuge, 3e) | 0,12 | 1 293 | 149 |
+| Colombe d’albâtre (Kiosque, 3e) | 0,12 | 1 204 | 168 |
+| Cerf de lauze (Plateau, 3e) | 0,12 | 1 342 | 171 |
+| Dauphin de turquoise (Verger, 3e) | 0,12 | 1 150 | 142 |
+| Kangourou de rubis (Tremplin, 3e) | 0,12 | 1 121 | 154 |
+| Abeille de topaze (Ruche, 3e) | 0,12 | 1 379 | 171 |
+| Étourneau d’étain (Forum, 3e) | 0,12 | 1 247 | 152 |
+| Centaure d’argile (Bosquet, 3e) | 0,12 | 1 355 | 168 |
+
+Les créatures (sans socle, rien à couper). Leurs fichiers sont peints en aplats clairs par `aplats.py` (voir plus bas), d’après les couleurs choisies par le directeur artistique le 10 octobre 2026 dans la colonne « aplats » de `reglages.csv`. Écart connu : Robin n’a pas la gorge orange de son concept (aucune de ses quatre couleurs ne la porte) ; elle attend un lot qui touche la géométrie. Les créatures de la 5e sont peintes de même, d’après les couleurs choisies par le directeur artistique le 10 octobre 2026. Écarts connus : chez Sillon, le chapeau de paille est pris dans la zone sombre de la tête ; chez Rabot, la huppe et le tablier partagent un rouille, et le bec est dans le vert du dos ; chez Humus, le bâton est pris dans la peau ; chez Perle, le manche du râteau est pris dans l’orange du bec ; le laiton de la balance de Bazar passe dans le lin. Rabot, Kroa et Sema, au corps vert, ont été jugés sur l’herbe le 10 octobre 2026 par le directeur artistique : lisibles, aplats gardés.
+
+Coco est refait le 11 octobre 2026 : à la taille de remaillage par défaut (0,006), ses élytres, fines et ondulées, prenaient presque tous les triangles, et la réduction fondait sa tête, ses antennes, ses yeux et sa ceinture dans une masse rouge en forme de poire. Remaillé plus gros (`voxel=0.01` après les quarts, colonne 3 de `reglages.csv`, lu par `lot.py`), son modèle de près garde la tête, les yeux, les antennes, la ceinture, les pattes et le bâton, dans le même nombre de triangles ; sa version de loin, refaite par la même passe, reste une silhouette en poire avec le bâton et la ceinture, comme avant (contrôle) ; squelette et aplats refaits (nouvelles couleurs sources, mêmes cibles). Écarts connus, comme avant : ses taches restent fondues dans le rouge, ses élytres ne se détachent plus du corps, et son bâton est en lin (le concept le veut en bois cerclé de lin ; quatre couleurs seulement).
+
+Les créatures de la 5e ont leur squelette (10 octobre 2026, réglages dans `reglages.csv`). `squelette.py` ne trouve pas de jambes à Vélin, Frimas, Rabot et Kroa (courtes, sous le vêtement ou la queue) : comme Humus, qui n’en a pas, ils respirent et tournent la tête sans marcher. Sillon non plus (`jambes=non`) : le manche de sa faucille suivrait sa patte. Pudding, Bazar et les oiseaux aux longues plumes (Sillon, Lina, Perle) sont pesés par surface (`aire=oui`), pour que la veste de Pudding ne s’étire pas à la marche ; la queue de Bazar suit son corps (`queue=non`).
+
+Les personnages du Préau des délégués (6e), du Fournil des partages et de la Grotte des légendes (5e), îles d’EMC et de latin-grec, suivent la même chaîne (10 octobre 2026). Mie, au corps rond, ne marche pas (`jambes=non`) ; la queue de Lyre traîne au sol (`queue=sol`) ; Voix tient son livre à deux mains, ses bras ne balancent pas (`bras=non`) et `squelette.py` ne lui trouve pas de jambes. Écart connu : la tête de Lyre, jaune taché de brun dans le concept, est prise dans le lin de la tunique (aucune de ses quatre couleurs ne la sépare). L’Oie d’opale tourne de 2,25 quarts, de trois quarts vers l’élève comme dans son concept (2,5 la ferait déborder de ses cinq cases). La version de loin du Phénix d’argile est refaite par `loin.py` à 160 triangles, pour que les Gardiens de la 5e tiennent leur enveloppe.
+
+Les Gardiens et les créatures de la 4e suivent la même chaîne (10 octobre 2026). Le socle haut de la Cigale d’argile est coupé à 0,47 (un disque fin reste sous ses pattes), celui du Bélier de granit à 0,18. Squelettes : Manivelle tient sa barque à deux mains et Nectar son livre, leurs bras ne balancent pas (`bras=non`) ; la queue de Typo et celle de Radar traînent au sol (`queue=sol`) ; Fret, crabe sans jambes lisibles, et Loquet, au corps rond, ne marchent pas ; Plume n’a pas de jambes trouvées. Braise, Fret et Loquet sont pesés par surface (`aire=oui`). Aplats choisis par le directeur artistique ; le pantalon de Puck et le corps de Vapeur, trop sombres pour se détacher de l’herbe, sont éclaircis d’un ton (76827c, 7a7c84). Reprises après la première relecture du directeur artistique : la Locomotive de fer, froissée par la réduction, est refaite depuis le brut coupé par `loin.py` (remaillage en voxels de 0,01 avant la réduction pour la version de près, de 0,025 pour celle de loin) ; les versions de loin du Grand-bi, du Poulpe, du Bélier et de la Cigale sont refaites par `loin.py` (sans remaillage : un voxel plus gros les éparpille) ; Manivelle est tournée d’un demi-quart (0,5, `squelette.py` accepte les demi-quarts) pour montrer son visage et sa barque, et le petit sac qui flottait à côté d’elle est retiré. Écarts connus : Loquet a perdu le ventre crème de son concept ; la gorge rose de Nectar n’est dans aucune de ses quatre couleurs.
+
+Les Gardiens et les créatures de la 3e suivent la même chaîne (10 octobre 2026) ; le brut du Centaure d’argile est celui fait par le fil des concepts EMC et latin-grec. Tous les socles sont coupés à 0,12. Le Dragon gallois prend sa version de loin de `loin.py` (ses ailes se lisent mieux). Virage, que la réduction réduisait à une boule, est réduit avec un remaillage en voxels de 0,012 au lieu de 0,006. Pour tenir dans leurs cinq cases, la Colombe d’albâtre se tourne de face, le Cerf de lauze et l’Étourneau d’étain aussi ; le Centaure d’argile ne tourne que d’un huitième de demi-tour (0,25 quart), assez pour que sa fiche montre la croupe et les jambes du cheval derrière le buste (un demi-quart le ferait sortir de ses cinq cases) ; sur l’île, vu par la caméra, le cheval reste en grande partie caché par le buste. Squelettes : Stat ne balance pas les bras (`bras=non`), Jalon ne balance que celui du bâton (`bras=R`), Virage et Olive ne balancent pas les bras ; `squelette.py` ne trouve pas de jambes à Stylet, Knight, Stat, Mémo, Timbre et Navette (sous la robe ou le corps), qui ne marchent pas. Aplats choisis par le directeur artistique. Écarts connus : la veste prune de Brio est dans le bleu ardoise de sa tête (même couleur source) ; le bas du ventre de Stat prend le laiton de sa longue-vue ; les mains de Fi prennent le jaune de ses vitres ; le bâton de Jalon est dans le rouge du corps ; le ballon et la ceinture de Virage sont dans sa carapace ; le livre ou la lettre de Stylet, Mémo et Timbre sont pris dans le corps ; le dos de la robe d’Astra est gris. Navette, au corps vert, a été jugée sur l’herbe le 10 octobre 2026 par le directeur artistique : lisible, aplats gardés.
+
+| Créature | 1 500 | 200 |
+| --- | --- | --- |
+| Robin (Baie, 6e) | 1 500 | 200 |
+| Rouxel (Carrière, 6e) | 1 500 | 200 |
+| Bloquette (Ferme, 6e) | 1 500 | 200 |
+| Mousso (Forêt, 6e) | 1 500 | 198 |
+| Silex (Fouille, 6e) | 1 500 | 200 |
+| Pince (Hangar, 6e) | 1 500 | 230 |
+| Tick (Horloge, 6e) | 1 500 | 200 |
+| Bulle (Laboratoire, 6e) | 1 498 | 200 |
+| Tunel (Mine, 6e) | 1 500 | 200 |
+| Coco (Plaine, 6e) | 1 500 | 200 |
+| Boussole (Pointe, 6e) | 1 500 | 200 |
+| Nénu (Rivière, 6e) | 1 500 | 200 |
+| Grimoire (Tour, 6e) | 1 500 | 200 |
+| Fougère (Vallée, 6e) | 1 500 | 200 |
+| Lavi (Volcan, 6e) | 1 500 | 200 |
+| Vélin (Bourg, 5e) | 1 500 | 200 |
+| Sema (Carrefour, 5e) | 1 500 | 200 |
+| Pudding (Comptoir, 5e) | 1 500 | 200 |
+| Sillon (Delta, 5e) | 1 500 | 200 |
+| Frimas (Glacier, 5e) | 1 500 | 200 |
+| Moustache (Manoir, 5e) | 1 500 | 200 |
+| Kroa (Marais, 5e) | 1 500 | 200 |
+| Bazar (Marché, 5e) | 1 500 | 198 |
+| Rabot (Menuiserie, 5e) | 1 500 | 200 |
+| Humus (Prairie, 5e) | 1 500 | 200 |
+| Lina (Relais, 5e) | 1 500 | 200 |
+| Perle (Saline, 5e) | 1 500 | 200 |
+| Voix (Préau, 6e) | 1 500 | 200 |
+| Mie (Fournil, 5e) | 1 500 | 200 |
+| Lyre (Grotte, 5e) | 1 500 | 200 |
+| Braise (Forge, 4e) | 1 500 | 198 |
+| Ixe (Atelier, 4e) | 1 500 | 200 |
+| Cléa (Falaise, 4e) | 1 500 | 200 |
+| Plume (Cabinet, 4e) | 1 500 | 200 |
+| Puck (Théâtre, 4e) | 1 500 | 200 |
+| Vapeur (Gare, 4e) | 1 500 | 200 |
+| Muscade (Jardin, 4e) | 1 500 | 200 |
+| Typo (Imprimerie, 4e) | 1 500 | 200 |
+| Fret (Escale, 4e) | 1 500 | 200 |
+| Nectar (Source, 4e) | 1 500 | 200 |
+| Radar (Vigie, 4e) | 1 500 | 200 |
+| Manivelle (Bassin, 4e) | 1 222 | 146 |
+| Loquet (Porte, 4e) | 1 500 | 198 |
+| Figue (Colonnade, 4e) | 1 500 | 200 |
+| Théo (Belvédère, 3e) | 1 500 | 200 |
+| Stat (Données, 3e) | 1 500 | 200 |
+| Fi (Phare, 3e) | 1 500 | 200 |
+| Astra (Textes, 3e) | 1 500 | 200 |
+| Écho (Studio, 3e) | 1 500 | 200 |
+| Knight (Château, 3e) | 1 500 | 200 |
+| Timbre (Refuge, 3e) | 1 500 | 200 |
+| Mémo (Kiosque, 3e) | 1 500 | 200 |
+| Jalon (Plateau, 3e) | 1 500 | 200 |
+| Olive (Verger, 3e) | 1 500 | 200 |
+| Virage (Tremplin, 3e) | 1 500 | 200 |
+| Navette (Ruche, 3e) | 1 500 | 200 |
+| Brio (Forum, 3e) | 1 500 | 200 |
+| Stylet (Bosquet, 3e) | 1 500 | 200 |
+
+Les versions de loin de la Tortue d’ocre, de l’Hydre des marais, du Colporteur et de la Diligence de cuivre sont tirées de leur version de près (réduite à 200 triangles environ ; pour l’Hydre et la Diligence, remaillée en voxels d’abord), pour garder ce qui les fait reconnaître : la carapace sans éclats, les têtes, le chapeau et la hotte, la caisse et les roues. Le Spectre du manoir se tourne de trois quarts et demi de tour, pour montrer sa lanterne de face. Le Cheval à bascule garde ses patins : ils font partie du personnage, on ne coupe rien.
+
+## Kéo, le bonhomme
+
+Le bonhomme d’Archipéo, l’avatar de l’élève, s’appelle Kéo et porte une tenue par archipel (décision du mainteneur, 11 octobre 2026) : explorateur aux Premiers Rivages (6e), ciré aux Îles Brumeuses (5e), mécano aux Anciens Ateliers (4e), cartographe aux Îles du Ciel (3e). Chaque tenue suit la chaîne des créatures (concept `<classe>-keo-creature-<tenue>.webp`, graine 42, brut TRELLIS.2, `lot.py`, `squelette.py`, `aplats.py`, `yeux.py`) ; le nom garde `-creature-` pour que `lion_lowpoly.py` garde ses couleurs. La réduction les peint en six couleurs au lieu de quatre (`lion_lowpoly.py -- 1-aligne.glb final-1500.glb 1500 6`) : une tenue a plus de zones qu’une créature (peau, cheveux, veste, pantalon, bottines, sac).
+
+Une seule version, `final-1500.glb` : Kéo est le même de près et de loin, et un seul est à l’écran (budget : 1 500 triangles par tenue, décision du mainteneur). Le jeu ne charge que la tenue de l’archipel affiché ; tant qu’elle n’est pas chargée, ou hors ligne, le bonhomme dessiné en code reste.
+
+| Tenue | 1 500 | Cibles des aplats |
+| --- | --- | --- |
+| Explorateur (6e) | 1 500 | veste `3D6994`, jean `8CADCE`, sac `8A5A32`, rabat `DAA66A`, tee-shirt `D8E2E6`, peau `D6A27C`, cheveux `3A2618`, bottines `5A3A26` |
+| Ciré (5e) | 1 500 | ciré `D9A23A`, pantalon `2B3D5A`, sac `8A8E8C`, tee-shirt `E8E2D0`, peau `D6A27C`, cheveux `3A2618`, bottines `5A3A26` |
+| Mécano (4e) | 1 500 | combinaison `83924A`, ceinture `6B4A2E`, lunettes et longue-vue de laiton `B08D3C`, peau `D6A27C`, cheveux `3A2618`, bottines `5A3A26` |
+| Cartographe (3e) | 1 500 | gilet `DAA66A`, sweat `1F5A66`, pantalon `2B3D5A`, porte-cartes et bandoulière `7A4A2A`, bonnet `B85A3A`, peau `D6A27C`, cheveux et bottines `5A3A26` |
+
+- **Squelette** : `squelette.py … 1 cou=0.78 queue=non entrejambe=0.42 bras=0.115`. Un jean serré ne laisse voir le creux entre les jambes qu’au bas des cuisses : `entrejambe=0.42` pose les hanches à la hauteur de celles du bonhomme (0,437 de sa taille). Les bras collés à la veste n’ont pas de creux qui les sépare du tronc : `bras=0.115` pose la limite à cette distance du milieu ; la main qui pend le long de la cuisse va au bras, le sac à dos reste au corps. Ses neuf os suffisent à une marche naturelle (demande du mainteneur, 11 octobre 2026) : le jeu lui donne le cycle des créatures (`poseDeMarche`) à l’allure d’un enfant (`MARCHE_DE_KEO`, `src/game/three/paintedCharacters.ts`, recopiée dans `marche.py`, `ALLURE_DE_KEO`) : genoux qui plient (les tibias), bassin qui tourne, bascule et rebondit (les hanches montent de 0,05 case quand les jambes se croisent), épaules à l’inverse, bras opposés aux jambes, buste un peu penché, tête stable (elle compense le bassin, le buste et le souffle). Il avance toujours à six cases par seconde : ses pieds ne suivent pas le sol (il y faudrait près de huit pas par seconde), il garde une cadence calme, un peu moins de trois pas par seconde, et entre dans la marche ou en sort en 0,3 s, sans à-coup. Au repos, il respire : le buste, de 0,03 radian, sur 4,5 s. Avec « Réduire les animations », il reste dans sa pose de repos. Aucun os de plus : les tenues gardent leur squelette et leurs 1 500 triangles.
+- **Aplats** : une même couleur de la texture couvre parfois deux matières (la veste et le jean de l’explorateur, du même bleu dans la texture ; le sac gris et le pantalon du ciré). `aplats.py` accepte une bande de hauteur, `source@bas-haut>cible` (en part de la hauteur depuis les pieds), qui l’emporte sur `source>cible` : le jean sous 0,43, le tee-shirt entre 0,5 et 0,77 (0,74 sous le ciré). Une bande suivie de `:devant` ne prend que les faces tournées vers l’élève (normale du repère du jeu vers −Z, après les quarts de la colonne « squelette ») : l’ombre de barbe que la texture peignait sur le bas du visage du ciré et du mécano passe en peau (`3b2d29@0.74-0.84:devant>d6a27c` ; chez le mécano, aussi les deux couleurs de laiton qui y tombaient, pour un visage plus doux), sans toucher aux cheveux de la nuque, à la même hauteur. Chez le cartographe, le cuir du porte-cartes (`180c07>7a4a2a`) ne vaut plus pour le visage : au-dessus de 0,78, sur le devant, il devient cheveux (`5A3A26`), et les sourcils lourds de la texture, entre 0,74 et 0,87, deviennent peau. Les bandes « devant » passent après les autres, les plus étroites en dernier. Choisies d’après les concepts et les couleurs du bonhomme dessiné en code (peau, cheveux, sac, rabat, jean) ; la veste de l’explorateur et la combinaison du mécano sont éclaircies (`142B38` → `3D6994`, `6B7A3A` → `83924A`, gardées par le directeur artistique) pour que le corps se détache du sol de son archipel, clarté au-dessus de 0,4, la règle des corps : l’herbe des Premiers Rivages pour l’explorateur, le sable des Anciens Ateliers pour la mécanicienne.
+- **Yeux** : le visage de TRELLIS.2 n’a pas d’yeux qu’on puisse repeindre (ses facettes, de 0,03 à 0,05 de la taille, sont plus grandes qu’un œil). `yeux.py`, dernière étape après `aplats.py`, pose deux petits prismes `2B2420` sur le visage, d’après le mot `yeux=hauteur:écart:largeur:haut>couleur` de la colonne « aplats » (`yeux=0.82:0.04:0.018:0.03>2b2420` : centre à 0,82 de la taille, à 0,04 du milieu du visage, 0,018 de large, 0,03 de haut ; 0,835 pour l’explorateur, 0,825 pour le cartographe, sous la frange ou le bonnet). Chaque œil fait six triangles (sa face avant, 0,3 % devant la peau, et ses deux côtés, enfoncés de 3 % dans la tête), suit l’os de la tête, et les douze triangles du dessous des semelles, que la caméra ne voit jamais, partent : chaque tenue reste à 1 500. Contraste des yeux sur la peau : 6,8:1. Relancé, `yeux.py` ne change rien.
+- **Contrastes mesurés** (rapport WCAG, 11 octobre 2026), contre les sols de jour de l’archipel (`palette.ts`, avant le voile) : le ciré `D9A23A` contre la roche claire des Îles Brumeuses `B3C1C7` 1,24:1, leur roche `8C9894` 1,31:1, leur herbe `5A7E50` 2,02:1 ; le gilet `DAA66A` contre la neige des Îles du Ciel `E6ECEF` 1,83:1, leur roche `A3A7AD` 1,11:1, leur herbe `74A064` 1,39:1. Ces aplats chauds tranchent sur des sols froids par la teinte, non par la clarté ; la silhouette se lit par le pantalon `2B3D5A` (5,9:1 sur la roche claire des Îles Brumeuses) et le sweat `1F5A66` (6,5:1 sur la neige des Îles du Ciel), plus sombres, et la nuit par la lune en aplat et l’ombre au sol des vivants (12 octobre 2026, à la place du liseré froid). Aucune couleur n’est changée : un ciré à 3:1 contre la roche claire (luminance relative 0,14 au plus) n’aurait plus que 1,2:1 contre l’herbe de son archipel, où l’élève marche le plus.
+- **Écarts connus** : chez le cartographe, l’arrière de la tête sous le bonnet garde le cuir `7A4A2A` (le porte-cartes monte au-dessus des épaules, jusqu’à la hauteur du bonnet : peindre en cheveux tout ce qui est au-dessus de 0,78 le couperait en deux tons) ; le médaillon « toi » et le bouton Recentrer montrent encore le visage du bonhomme dessiné en code.
+
+## Passer du concept au modèle brut
+
+Le Space [microsoft/TRELLIS.2](https://huggingface.co/spaces/microsoft/TRELLIS.2) (licence MIT) tourne sous le compte Hugging Face du mainteneur, avec les réglages du Lion (résolution 512, texture 1024). Il se lance à la main sur le Space, ou par `scripts/rendu/modeles/trellis.py -- <dossier> <concept.webp>…` (avec `gradio_client` : `/start_session`, `/preprocess_image`, `/image_to_3d`, puis `/extract_glb`), le jeton du mainteneur étant posé par l’environnement. Un passage prend environ 40 secondes de calcul sur le quota du compte. Le `.glb` est rangé tel quel dans la Bibliothèque du projet, sous `archipeo/personnages-3d/bruts/<nom>.glb`.
+
+## Passer du brut au modèle retravaillé
+
+Les scripts sont dans [`scripts/rendu/modeles/`](../../../../scripts/rendu/modeles/). `lot.py` enchaîne les quatre autres sur tout un dossier :
+
+1. `aligner.py` pose le socle à plat, le centre et met son grand côté sur l’axe nord-sud (plus un quart de tour si le réglage le demande) ;
+2. `lion_lowpoly.py` referme le maillage, retire les débris détachés, le réduit à 1 500 puis à 200 triangles et peint chaque facette : en pierre `#8E8C84` pour un Gardien (le lichen de l’image ne passe pas : c’est le code qui le pose sur le Gardien éteint, décision du mainteneur du 8 octobre 2026), de la plus proche des quatre couleurs principales de sa texture pour une créature (nom en `-creature-`) ;
+3. `couper.py` coupe le socle d’un Gardien à la hauteur réglée, puisque le socle octogonal commun vient du code (une créature n’a pas de socle) ;
+4. `rendre_controle.py` fait le rendu de contrôle.
+
+On réduit avant de couper : la réduction cale sur un modèle déjà coupé.
+
+La réduction se joue en plusieurs essais. Le premier remaille finement puis réduit ; s’il s’écarte trop du brut, les suivants épaississent d’abord les parois fines (sans quoi la réduction cale ou les troue : Bulle, Grimoire, l’Amphore de loin) et remaillent plus gros. Le script garde l’essai dont la surface reste la plus proche de celle du brut ; c’est ce qui a sauvé le corps du Cheval à bascule, replié en tente au premier essai.
+
+Pour refaire un personnage, copier son brut de la Bibliothèque (`<nom>.glb`) dans un dossier de travail, avec `reglages.csv`, puis :
+
+```sh
+blender -b -P scripts/rendu/modeles/lot.py -- <dossier de travail>
+```
+
+Sans Blender, le module Python `bpy` suffit (Python 3.11, `pip install bpy numpy`) : `python scripts/rendu/modeles/lot.py -- <dossier de travail>`. Sous Linux, il faut aussi la bibliothèque `libegl1` pour le rendu de contrôle. Le résultat sort dans `<dossier de travail>/prets/<nom>/` avec un `recapitulatif.csv` : y prendre `final-1500.glb`, `final-200.glb` et `controle.png`.
+
+Si le socle n’est pas entièrement parti, ou si les pattes sont coupées, changer la hauteur dans `reglages.csv` et relancer (le Taureau, au socle plus haut, coupe à 0,16).
+
+Une créature passe ensuite par deux étapes, sur son dossier de `modeles/` (numpy seulement, sans Blender) :
+
+5. `squelette.py` pose son squelette dans le modèle de près (réglages dans la colonne « squelette » de `reglages.csv`), relu sur la planche de `apercu_squelette.py` (qui dessine bien la face depuis le 11 octobre 2026 : ses facettes se peignaient de la plus proche à la plus lointaine, et la planche montrait le dos) ;
+6. `aplats.py` peint ses deux modèles en aplats : chacune de ses quatre couleurs (sombres et bigarrées, puisque l’ombre est peinte dans la texture de TRELLIS) prend la couleur cible de la colonne « aplats » de `reglages.csv` (`source>cible` en hexadécimal ; `source@bas-haut>cible` pour une bande de hauteur, voir Kéo), deux couleurs de la même matière se fondent en une zone, le modèle de loin prend la cible de la source la plus proche, et un triangle isolé prend la couleur de ses voisins. Seules les couleurs du fichier changent. Relancé sur un modèle déjà en aplats, il ne change rien ; un modèle refait par `lot.py` a d’autres couleurs sources : refaire sa ligne.
+
+```sh
+python3 scripts/rendu/modeles/squelette.py -- docs/univers/archipeo/personnages/modeles/<nom>
+python3 scripts/rendu/modeles/aplats.py -- docs/univers/archipeo/personnages/modeles/<nom>
+```
+
+Puis refaire `controle.png` avec `rendre_controle.py` (brut, 1 500, 200). Le test `src/game/world/characters/imported/models.test.ts` vérifie que chaque créature de la table est bien peinte avec ses cibles. La chaîne entière, du concept au jeu, est décrite pas à pas dans le skill [`modeles-3d`](../../../../.claude/skills/modeles-3d/SKILL.md).
+
+## À reprendre au modèle 3D
+
+Les retouches propres à chaque personnage (barbe des Sphinx, fils épaissis, yeux repeints…) sont dans la [fiche des concepts](README.md#à-reprendre-au-modèle-3d). Chaque modèle retravaillé passe ensuite par le directeur artistique et le référent dys, sur captures, avant d’entrer dans le jeu.

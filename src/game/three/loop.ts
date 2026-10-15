@@ -1,7 +1,8 @@
 // La boucle d'image du monde en 3D (sortie de WorldCanvas.tsx, qualité du code, lot 7) : chaque image, ce qui bouge
 // dans le monde, puis le reste des parties, puis le rendu. Économie de batterie : on ne dessine que si le canvas est
-// visible et l'onglet actif ; et si l'appareil peine (images trop longues), on baisse la finesse du rendu.
+// visible, l'onglet actif et l'appareil en paysage (en portrait, « Tourne ton appareil » cache le monde) ; et si l'appareil peine (images trop longues), on baisse la finesse du rendu.
 import * as THREE from 'three';
+import { PORTRAIT_TACTILE } from '../../components/RotateDevice';
 import type { Meter } from './meter';
 import type { Derniers, Instant, PartieDeLaScene } from './scenePart';
 
@@ -36,15 +37,17 @@ export function lancerLaBoucle({ el, renderer, scene, camera, meter, deplacement
   });
   seen.observe(el);
   const onVisibility = () => {
-    if (!document.hidden && !running) start();
+    if (!document.hidden && !portrait?.matches && !running) start();
   };
   document.addEventListener('visibilitychange', onVisibility);
+  const portrait = typeof window.matchMedia === 'function' ? window.matchMedia(PORTRAIT_TACTILE) : null;
+  portrait?.addEventListener?.('change', onVisibility);
 
   let frame = 0;
   const clock = new THREE.Clock();
   let lastFrame = performance.now();
   const loop = () => {
-    if (!visible || document.hidden) {
+    if (!visible || document.hidden || portrait?.matches) {
       running = false;
       return;
     }
@@ -77,5 +80,6 @@ export function lancerLaBoucle({ el, renderer, scene, camera, meter, deplacement
     cancelAnimationFrame(frame);
     seen.disconnect();
     document.removeEventListener('visibilitychange', onVisibility);
+    portrait?.removeEventListener?.('change', onVisibility);
   };
 }

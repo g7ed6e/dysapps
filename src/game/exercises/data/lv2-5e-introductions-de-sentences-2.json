@@ -1,0 +1,259 @@
+{
+  "id": "lv2-5e-introductions-de-sentences-2",
+  "biome": "lv2-5e-introductions",
+  "type": "de-sentences",
+  "level": 2,
+  "lang": "de",
+  "instruction": "Lis la question, puis le message en allemand. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.",
+  "programme": [
+    "c4.de.5e.culture.axes",
+    "c4.de.5e.langue.phrase"
+  ],
+  "items": [
+    {
+      "key": "lv2-5e-introductions-de-sentences-2-0",
+      "prompt": "Ich heiße Jana und wohne in Kiel, an der Ostsee.\nIch schwimme gern, aber das Wasser ist kalt.",
+      "question": "Que dit Jana de l’eau ?",
+      "spoken": "Ich heiße Jana und wohne in Kiel, an der Ostsee. Ich schwimme gern, aber das Wasser ist kalt.",
+      "choices": [
+        "Elle est chaude",
+        "Elle est sale",
+        "Elle est froide"
+      ],
+      "choicesLang": "fr",
+      "answer": "Elle est froide",
+      "hint": "Lis la fin de la 2e phrase, après aber (mais).",
+      "explanation": "aber = mais : Jana aime nager, mais l’eau est kalt, froide. Chaud se dit warm. Kiel est au nord de l’Allemagne, au bord de la mer Baltique (die Ostsee).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "16 Länder",
+          "lines": [
+            "Deutschland hat 16 Länder (die Bundesländer).",
+            "die Hauptstadt = la capitale ; die Stadt = la ville",
+            "der Norden, der Süden ; die Grenze = la frontière",
+            "das Meer = la mer ; der Feiertag = le jour férié",
+            "und = et ; aber = mais ; oder = ou ; denn = car",
+            "München = Munich ; Köln = Cologne"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-2-1",
+      "prompt": "Ich bin Tom. Ich wohne in Hamburg.\nHamburg ist eine Stadt und ein Bundesland.",
+      "question": "Que dit Tom de sa ville ?",
+      "spoken": "Ich bin Tom. Ich wohne in Hamburg. Hamburg ist eine Stadt und ein Bundesland.",
+      "choices": [
+        "C’est une ville et un Land",
+        "C’est un village au bord de la mer",
+        "C’est une ville, pas un Land"
+      ],
+      "choicesLang": "fr",
+      "answer": "C’est une ville et un Land",
+      "hint": "Lis la dernière phrase : und = et.",
+      "explanation": "und = et : Hamburg est à la fois une ville et un Land. Berlin et Bremen sont aussi des villes-États.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "16 Länder",
+          "lines": [
+            "Deutschland hat 16 Länder (die Bundesländer).",
+            "die Hauptstadt = la capitale ; die Stadt = la ville",
+            "der Norden, der Süden ; die Grenze = la frontière",
+            "das Meer = la mer ; der Feiertag = le jour férié",
+            "und = et ; aber = mais ; oder = ou ; denn = car",
+            "München = Munich ; Köln = Cologne"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-2-2",
+      "prompt": "Ich heiße Lukas. Mein Bundesland ist Bayern.\nDie Hauptstadt ist München, aber ich wohne in Passau.",
+      "question": "Où habite Lukas ?",
+      "spoken": "Ich heiße Lukas. Mein Bundesland ist Bayern. Die Hauptstadt ist München, aber ich wohne in Passau.",
+      "choices": [
+        "À Munich",
+        "À Passau",
+        "À Berlin"
+      ],
+      "choicesLang": "fr",
+      "answer": "À Passau",
+      "hint": "Lis après aber : c’est là qu’il habite.",
+      "explanation": "aber = mais : la capitale est München (Munich), mais Lukas habite à Passau, une autre ville de Bavière (Bayern).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "16 Länder",
+          "lines": [
+            "Deutschland hat 16 Länder (die Bundesländer).",
+            "die Hauptstadt = la capitale ; die Stadt = la ville",
+            "der Norden, der Süden ; die Grenze = la frontière",
+            "das Meer = la mer ; der Feiertag = le jour férié",
+            "und = et ; aber = mais ; oder = ou ; denn = car",
+            "München = Munich ; Köln = Cologne"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-2-3",
+      "prompt": "Mia, wohnst du in Köln oder in Bonn?\nIn Bonn, aber meine Schule ist in Köln.",
+      "question": "Où habite Mia ?",
+      "spoken": "Mia, wohnst du in Köln oder in Bonn? In Bonn, aber meine Schule ist in Köln.",
+      "choices": [
+        "À Bonn",
+        "À Cologne",
+        "À Berlin"
+      ],
+      "choicesLang": "fr",
+      "answer": "À Bonn",
+      "hint": "oder = ou : on demande à Mia de choisir. Lis sa réponse.",
+      "explanation": "oder = ou : Köln ou Bonn ? Mia répond In Bonn : elle habite à Bonn. Köln (Cologne), c’est la ville de son école.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "16 Länder",
+          "lines": [
+            "Deutschland hat 16 Länder (die Bundesländer).",
+            "die Hauptstadt = la capitale ; die Stadt = la ville",
+            "der Norden, der Süden ; die Grenze = la frontière",
+            "das Meer = la mer ; der Feiertag = le jour férié",
+            "und = et ; aber = mais ; oder = ou ; denn = car",
+            "München = Munich ; Köln = Cologne"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-2-4",
+      "prompt": "Ich fahre gern nach Berlin, denn dort wohnt mein Opa.\nBerlin ist die Hauptstadt von Deutschland.",
+      "question": "Pourquoi aime-t-il aller à Berlin ?",
+      "spoken": "Ich fahre gern nach Berlin, denn dort wohnt mein Opa. Berlin ist die Hauptstadt von Deutschland.",
+      "choices": [
+        "Il y va pour l’école",
+        "Son grand-père y vit",
+        "Il y a un grand musée"
+      ],
+      "choicesLang": "fr",
+      "answer": "Son grand-père y vit",
+      "hint": "Lis après denn (car) : c’est la raison.",
+      "explanation": "denn = car : il aime aller à Berlin, car son grand-père (mein Opa) y habite. Berlin est aussi la capitale du pays, et un Land.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "16 Länder",
+          "lines": [
+            "Deutschland hat 16 Länder (die Bundesländer).",
+            "die Hauptstadt = la capitale ; die Stadt = la ville",
+            "der Norden, der Süden ; die Grenze = la frontière",
+            "das Meer = la mer ; der Feiertag = le jour férié",
+            "und = et ; aber = mais ; oder = ou ; denn = car",
+            "München = Munich ; Köln = Cologne"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-2-5",
+      "prompt": "Die Flagge von Deutschland ist schwarz, rot und gold.",
+      "question": "De quelles couleurs est le drapeau allemand ?",
+      "spoken": "Die Flagge von Deutschland ist schwarz, rot und gold.",
+      "choices": [
+        "Bleu, blanc et rouge",
+        "Noir, blanc et rouge",
+        "Noir, rouge et or"
+      ],
+      "choicesLang": "fr",
+      "answer": "Noir, rouge et or",
+      "hint": "schwarz = noir. Et gold : pense à doré.",
+      "explanation": "schwarz, rot und gold = noir, rouge et or. Bleu, blanc et rouge, c’est le drapeau de la France.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "16 Länder",
+          "lines": [
+            "Deutschland hat 16 Länder (die Bundesländer).",
+            "die Hauptstadt = la capitale ; die Stadt = la ville",
+            "der Norden, der Süden ; die Grenze = la frontière",
+            "das Meer = la mer ; der Feiertag = le jour férié",
+            "und = et ; aber = mais ; oder = ou ; denn = car",
+            "München = Munich ; Köln = Cologne"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-2-6",
+      "prompt": "Am 3. Oktober ist ein Feiertag:\nder Tag der Deutschen Einheit.",
+      "question": "Que fête-t-on le 3 octobre ?",
+      "spoken": "Am dritten Oktober ist ein Feiertag: der Tag der Deutschen Einheit.",
+      "choices": [
+        "L’unité du pays",
+        "La fête du travail",
+        "L’arrivée de l’été"
+      ],
+      "choicesLang": "fr",
+      "answer": "L’unité du pays",
+      "hint": "die Einheit vient de eins (un) : un seul pays.",
+      "explanation": "die Einheit = l’unité : le 3 octobre, l’Allemagne fête son unité, retrouvée en 1990. La fête du travail, c’est le 1er mai.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "16 Länder",
+          "lines": [
+            "Deutschland hat 16 Länder (die Bundesländer).",
+            "die Hauptstadt = la capitale ; die Stadt = la ville",
+            "der Norden, der Süden ; die Grenze = la frontière",
+            "das Meer = la mer ; der Feiertag = le jour férié",
+            "und = et ; aber = mais ; oder = ou ; denn = car",
+            "München = Munich ; Köln = Cologne"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-sentences-2-7",
+      "prompt": "Ich bin Ben. Ich wohne im Süden von Deutschland.\nDie Schweiz und Österreich sind ganz nah.",
+      "question": "Quels pays sont tout près de chez Ben ?",
+      "spoken": "Ich bin Ben. Ich wohne im Süden von Deutschland. Die Schweiz und Österreich sind ganz nah.",
+      "choices": [
+        "La France et la Suisse",
+        "L’Autriche et la Pologne",
+        "La Suisse et l’Autriche"
+      ],
+      "choicesLang": "fr",
+      "answer": "La Suisse et l’Autriche",
+      "hint": "Lis la 2e phrase : deux pays, reliés par und.",
+      "explanation": "die Schweiz = la Suisse ; Österreich = l’Autriche. Avec l’Allemagne, ce sont les pays DACH : on y parle allemand (en Suisse, avec d’autres langues).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "16 Länder",
+          "lines": [
+            "Deutschland hat 16 Länder (die Bundesländer).",
+            "die Hauptstadt = la capitale ; die Stadt = la ville",
+            "der Norden, der Süden ; die Grenze = la frontière",
+            "das Meer = la mer ; der Feiertag = le jour férié",
+            "und = et ; aber = mais ; oder = ou ; denn = car",
+            "München = Munich ; Köln = Cologne"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bien lu !"
+  },
+  "reward": {
+    "block": "lv2-5e-introductions",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

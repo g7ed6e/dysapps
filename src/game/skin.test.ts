@@ -8,7 +8,7 @@ describe('L’habillage du monde', () => {
     expect(habillageDe('archipeo')).toBe(HABILLAGES.archipeo);
   });
 
-  it('Blocland garde son dessin : le monde en blocs, les figures en cubes, l’arène', () => {
+  it('Blocland garde son dessin : le monde en blocs, les figures en cubes, les Gardiens à moitié de leur taille', () => {
     expect(HABILLAGES.blocland).toEqual({
       univers: 'blocland',
       ciel: 'palette',
@@ -23,6 +23,7 @@ describe('L’habillage du monde', () => {
       pose: 'geste',
       formeDesSignes: 'plaque',
       blocDesIles: 'avant-le-nom',
+      echelleDesGardiens: 0.5,
     });
   });
 
@@ -41,6 +42,7 @@ describe('L’habillage du monde', () => {
       pose: 'fondu',
       formeDesSignes: 'hexagone',
       blocDesIles: 'avant-le-nom',
+      echelleDesGardiens: 1,
     });
   });
 });

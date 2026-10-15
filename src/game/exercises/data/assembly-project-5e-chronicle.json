@@ -1,0 +1,311 @@
+{
+  "id": "assembly-project-5e-chronicle",
+  "bloc": "project-5e-chronicle",
+  "type": "assembly",
+  "level": 1,
+  "instruction": "Lis le document, puis choisis la phrase juste et bien écrite. Le rappel est affiché.",
+  "programme": [
+    "c4.fr.5e.grammaire.temps-modes",
+    "c4.fr.5e.grammaire.formes-verbales",
+    "c3.fr.langue.temps-a-memoriser",
+    "c4.hg.histoire.occident-feodal",
+    "c4.hg.demarches.document",
+    "c4.hg.demarches.lexique",
+    "c4.hg.temps.ordonner",
+    "c4.hg.temps.reperes"
+  ],
+  "items": [
+    {
+      "key": "project-5e-chronicle-0",
+      "prompt": "Chronique de l’an 1100\nLe seigneur fait bâtir un château fort.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Chronique de l’an mille cent. Le seigneur fait bâtir un château fort.",
+      "choices": [
+        "Le seigneur fit bâtir un château fort.",
+        "Le seigneur faisa bâtir un château fort.",
+        "Le roi fit bâtir un château fort."
+      ],
+      "answer": "Le seigneur fit bâtir un château fort.",
+      "hint": "D’abord : qui fait bâtir, dans le document ? Puis : faire n’est pas un verbe en -er.",
+      "explanation": "Le document dit que c’est le seigneur : il bâtit un château fort pour protéger ses terres. Faire n’est pas un verbe en -er : au passé simple, il fit, comme il dit. Le roi n’est pas dans le document.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui agit, et le passé simple",
+          "lines": [
+            "Dans le document, cherche qui fait l’action : c’est le sujet du verbe.",
+            "Verbes en -er : il chanta. Les autres, souvent -it : il dit, il prit."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-chronicle-1",
+      "prompt": "La corvée\nDes jours de travail gratuit pour le seigneur.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "La corvée : des jours de travail gratuit pour le seigneur.",
+      "choices": [
+        "Les paysans travaillèrent gratuitement pour le seigneur.",
+        "Les paysans travaillirent gratuitement pour le seigneur.",
+        "Les paysans travaillèrent pour le seigneur contre de l’argent."
+      ],
+      "answer": "Les paysans travaillèrent gratuitement pour le seigneur.",
+      "hint": "D’abord : la corvée est-elle payée, dans le document ? Puis : travailler est un verbe en -er.",
+      "explanation": "Le document dit « gratuit » : la corvée n’est pas payée. Contre de l’argent, c’est le contraire. Travailler est un verbe en -er : ils travaillèrent. -irent va avec les autres verbes (ils finirent).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un mot du Moyen Âge, et -èrent",
+          "lines": [
+            "Un mot nouveau ? Le document l’explique juste en dessous, comme un dictionnaire.",
+            "Verbes en -er, avec ils : -èrent (ils marchèrent). Les autres : -irent (ils finirent)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-chronicle-2",
+      "prompt": "La dîme\nUne part des récoltes, donnée à l’Église.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "La dîme : une part des récoltes, donnée à l’Église.",
+      "choices": [
+        "Les paysans donnèrent la dîme à l’Église.",
+        "Les paysans donnirent la dîme à l’Église.",
+        "Les paysans donnèrent la dîme au seigneur."
+      ],
+      "answer": "Les paysans donnèrent la dîme à l’Église.",
+      "hint": "D’abord : à qui va la dîme, dans le document ? Puis : donner est un verbe en -er.",
+      "explanation": "Le document dit que la dîme est donnée à l’Église ; au seigneur, les paysans doivent la corvée. Donner est un verbe en -er : ils donnèrent. -irent va avec les autres verbes (ils finirent).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "À qui ? et -èrent",
+          "lines": [
+            "Pour savoir à qui va une chose, cherche le nom après « à » dans le document.",
+            "Verbes en -er, avec ils : -èrent (ils chantèrent). Les autres : -irent (ils finirent)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-chronicle-3",
+      "prompt": "1163\nOn commence à bâtir Notre-Dame de Paris.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "En mille cent soixante-trois, on commence à bâtir Notre-Dame de Paris.",
+      "choices": [
+        "Le chantier commença au douzième siècle.",
+        "Le chantier commenca au douzième siècle.",
+        "Le chantier commença au onzième siècle."
+      ],
+      "answer": "Le chantier commença au douzième siècle.",
+      "hint": "D’abord : range l’année avec le rappel. Puis : devant a, le c garde-t-il le son « s » ?",
+      "explanation": "1163 est entre 1101 et 1200 : c’est le XIIe siècle, le douzième. Le XIe siècle, le onzième, va de 1001 à 1100 : le siècle ne se lit pas dans les deux premiers chiffres. Devant a, le c prend une cédille pour garder le son « s » : il commença.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le siècle, et la cédille",
+          "lines": [
+            "XIe siècle (le onzième) : de l’an 1001 à l’an 1100. XIIe siècle (le douzième) : de l’an 1101 à l’an 1200.",
+            "Devant a, o, u, le c prend une cédille pour faire « s » : il lança, nous plaçons."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-chronicle-4",
+      "prompt": "D’abord : les habitants bâtissent un grand mur autour de la ville.\nEnsuite : ils construisent un marché couvert.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "D’abord, les habitants bâtissent un grand mur autour de la ville. Ensuite, ils construisent un marché couvert.",
+      "choices": [
+        "Après le mur, les habitants construisirent un marché.",
+        "Après le mur, les habitants construisèrent un marché.",
+        "Avant le mur, les habitants construisirent un marché."
+      ],
+      "answer": "Après le mur, les habitants construisirent un marché.",
+      "hint": "D’abord : quel fait vient en premier ? Puis : construire n’est pas un verbe en -er.",
+      "explanation": "Le document dit « d’abord » le mur, « ensuite » le marché : le marché vient après. Construire n’est pas un verbe en -er : ils construisirent, comme ils écrivirent. -èrent va avec les verbes en -er.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Avant, après, et -irent",
+          "lines": [
+            "D’abord, ensuite, enfin : ces mots donnent l’ordre des faits.",
+            "Construire, écrire, conduire, avec ils : -irent (ils écrivirent)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-chronicle-5",
+      "prompt": "Le dimanche, au village\nOn ne travaille pas : on va à la messe.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le dimanche, au village : on ne travaille pas, on va à la messe.",
+      "choices": [
+        "Le dimanche, les paysans ne travaillaient pas.",
+        "Le dimanche, les paysans ne travaillait pas.",
+        "Le dimanche, les paysans travaillaient aux champs."
+      ],
+      "answer": "Le dimanche, les paysans ne travaillaient pas.",
+      "hint": "D’abord : que fait-on le dimanche, dans le document ? Puis : qui est le sujet du verbe ?",
+      "explanation": "Le document dit qu’on ne travaille pas le dimanche : on va à la messe. C’est une habitude, à l’imparfait ; le sujet, les paysans, est au pluriel : ils travaillaient, avec -aient.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le même moment, et -aient",
+          "lines": [
+            "Relis la phrase du document qui parle du même moment : le dimanche.",
+            "Imparfait : il -ait (il jouait) ; ils -aient (ils jouaient)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-chronicle-6",
+      "prompt": "Le serf\nUn paysan qui ne peut pas quitter la terre de son seigneur.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le serf : un paysan qui ne peut pas quitter la terre de son seigneur.",
+      "choices": [
+        "Le serf resta toute sa vie sur cette terre.",
+        "Le serf restai toute sa vie sur cette terre.",
+        "Le serf quitta cette terre pour la ville."
+      ],
+      "answer": "Le serf resta toute sa vie sur cette terre.",
+      "hint": "D’abord : le serf peut-il partir, dans le document ? Puis : avec il, quelle terminaison ?",
+      "explanation": "Le document dit que le serf ne peut pas quitter la terre de son seigneur : il y reste. Verbes en -er au passé simple, avec il : -a, il resta. -ai va avec je (je restai).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ne… pas, et -a",
+          "lines": [
+            "Une phrase avec « ne… pas » dit ce qu’on ne peut pas faire : lis-la jusqu’au bout.",
+            "Verbes en -er au passé simple : je chantai, il chanta."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-chronicle-7",
+      "prompt": "Le vassal\nIl reçoit un fief, une terre, de son seigneur.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le vassal : il reçoit un fief, une terre, de son seigneur.",
+      "choices": [
+        "Le vassal reçut un fief de son seigneur.",
+        "Le vassal recevit un fief de son seigneur.",
+        "Le seigneur reçut un fief de son vassal."
+      ],
+      "answer": "Le vassal reçut un fief de son seigneur.",
+      "hint": "D’abord : qui reçoit le fief, dans le document ? Puis : recevoir fait son passé simple en -ut.",
+      "explanation": "Le document dit que le vassal reçoit le fief, une terre, et que le seigneur le donne. Recevoir fait son passé simple en -ut : il reçut, comme il voulut. recevit n’existe pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui reçoit ? et -ut",
+          "lines": [
+            "Qui donne, qui reçoit : cherche le sujet du verbe recevoir.",
+            "Recevoir, vouloir, courir au passé simple, avec il : -ut (il voulut, il courut)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-chronicle-8",
+      "prompt": "987\nHugues Capet devient roi des Francs.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "En neuf cent quatre-vingt-sept, Hugues Capet devient roi des Francs.",
+      "choices": [
+        "Hugues Capet devint roi au dixième siècle.",
+        "Hugues Capet devenit roi au dixième siècle.",
+        "Hugues Capet devint roi au neuvième siècle."
+      ],
+      "answer": "Hugues Capet devint roi au dixième siècle.",
+      "hint": "D’abord : range l’année avec le rappel. Puis : devenir se conjugue comme venir.",
+      "explanation": "987 est entre 901 et 1000 : c’est le Xe siècle, le dixième. Le IXe siècle, le neuvième, va de 801 à 900. Devenir se conjugue comme venir : il vint, il devint.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le siècle, et venir",
+          "lines": [
+            "IXe siècle (le neuvième) : de l’an 801 à l’an 900. Xe siècle (le dixième) : de l’an 901 à l’an 1000.",
+            "Venir et ses frères au passé simple : il vint, il revint, il se souvint."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-chronicle-9",
+      "prompt": "Église romane : murs épais, petites fenêtres.\nCathédrale gothique : grands vitraux.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Église romane : murs épais, petites fenêtres. Cathédrale gothique : grands vitraux.",
+      "choices": [
+        "La cathédrale gothique avait de grands vitraux.",
+        "La cathédrale gothique avaient de grands vitraux.",
+        "L’église romane avait de grands vitraux."
+      ],
+      "answer": "La cathédrale gothique avait de grands vitraux.",
+      "hint": "D’abord : quel bâtiment a les grands vitraux ? Puis : qui est le sujet du verbe ?",
+      "explanation": "Le document le dit : les grands vitraux sont à la cathédrale gothique ; l’église romane a de petites fenêtres. Le sujet, la cathédrale, est au singulier : elle avait. Vitraux n’est pas le sujet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Deux lignes, et -ait",
+          "lines": [
+            "Chaque ligne parle d’un bâtiment : lis le nom au début de la ligne.",
+            "Le verbe s’accorde avec son sujet : elle avait, elles avaient."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-chronicle-10",
+      "prompt": "D’abord : au printemps, le paysan sème le blé.\nEnsuite : en été, il fait la récolte.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "D’abord, au printemps, le paysan sème le blé. Ensuite, en été, il fait la récolte.",
+      "choices": [
+        "En été, il récolta le blé qu’il avait semé.",
+        "En été, il récolta le blé qu’il avais semé.",
+        "Au printemps, il récolta le blé qu’il avait semé."
+      ],
+      "answer": "En été, il récolta le blé qu’il avait semé.",
+      "hint": "D’abord : en quelle saison fait-on la récolte ? Puis : avec il, quelle lettre à la fin de avait ?",
+      "explanation": "Le document dit : on sème au printemps, puis on récolte en été. Le plus-que-parfait dit ce qui s’est passé avant : il avait semé. Avec il, avoir à l’imparfait finit par t : il avait ; avais va avec je ou tu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "D’abord, ensuite, et avait",
+          "lines": [
+            "Ensuite dit ce qui vient après : lis les deux lignes dans l’ordre.",
+            "Avoir à l’imparfait : j’avais, tu avais, il avait."
+          ]
+        }
+      }
+    },
+    {
+      "key": "project-5e-chronicle-11",
+      "prompt": "1214, à Bouvines\nLe roi Philippe Auguste bat ses ennemis.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "En mille deux cent quatorze, à Bouvines : le roi Philippe Auguste bat ses ennemis.",
+      "choices": [
+        "Philippe Auguste battit ses ennemis à Bouvines.",
+        "Philippe Auguste batta ses ennemis à Bouvines.",
+        "Ses ennemis battirent Philippe Auguste à Bouvines."
+      ],
+      "answer": "Philippe Auguste battit ses ennemis à Bouvines.",
+      "hint": "D’abord : qui gagne, dans le document ? Puis : battre n’est pas un verbe en -er.",
+      "explanation": "Le document dit que le roi bat ses ennemis : il gagne la bataille, et son pouvoir grandit. Battre n’est pas un verbe en -er : il battit, comme il prit. -a va avec les verbes en -er.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui gagne ? et -it",
+          "lines": [
+            "Le sujet du verbe fait l’action : celui qui bat, c’est celui qui gagne.",
+            "Verbes en -re au passé simple : il prit, il dit, il vendit."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien construit !",
+    "wrong": "{explanation}"
+  }
+}

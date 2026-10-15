@@ -1,9 +1,12 @@
 // Les petites constructions des commandes (GD-7, PR 3) : chaque forme tient les limites du directeur artistique, et se
 // pose sur son île à côté de la créature sans rien chevaucher.
+import { silhouetteDe } from './silhouettes';
+import { STORIES } from './stories';
 import { DEFAULT_SETTINGS, retenirReglages, type Lv2Choice } from '../../core/settings';
-import { BIOMES, BLOCKS, type BlockId } from '../biomes';
+import { BIOMES, BLOC, BLOCKS, type BlockId } from '../biomes';
 import { BRIDGES, VOYAGES } from './archipelago';
 import { COMMANDES } from './requests';
+import { PLACED_FIXTURES } from './placedFixtures';
 import { PETITES_CONSTRUCTIONS, casesDeLaPetiteConstruction, eauDeLaPetiteConstruction, estPosee } from './fixtures';
 import { toutConstruit, toutConstruitAvecLesCommandes } from './budget';
 import { rangerLeDecor } from './decorMesh';
@@ -18,6 +21,8 @@ import {
   creatureDuMonde,
   creatureSpot,
   cubesDeLIle,
+  GUARDIAN_SQUARE,
+  guardianSpot,
   lieuxVus,
   origineDe,
   placeDeLaPetiteConstruction,
@@ -34,11 +39,14 @@ import { getArchipelago } from './archipelago';
 
 const FINITION: ReadonlySet<BlockId> = new Set<BlockId>(['roof', 'door', 'lantern', 'fence', 'stairs']);
 
-it('une forme par commande, et rien d’autre', () => {
-  expect([...PETITES_CONSTRUCTIONS].sort()).toEqual(COMMANDES.map((c) => c.fixture).sort());
+it('une forme par commande et par quête (GD-10), et rien d’autre', () => {
+  expect([...PETITES_CONSTRUCTIONS].sort()).toEqual(PLACED_FIXTURES.map((c) => c.fixture).sort());
 });
 
-describe.each(COMMANDES.map((c) => [c.fixture, c] as const))('%s', (_id, c) => {
+// La commande de chaque petite construction, s'il y en a une (l'objet d'une quête n'en a pas).
+const commandeDe = (fixture: string) => COMMANDES.find((c) => c.fixture === fixture);
+
+describe.each(PLACED_FIXTURES.map((c) => [c.fixture, c] as const))('%s', (_id, c) => {
   const cases = casesDeLaPetiteConstruction(c.fixture)!;
 
   it('de 4 à 12 cubes, 9 cases au plus (3 × 3), 3 de haut au plus, sans doublon', () => {
@@ -52,16 +60,21 @@ describe.each(COMMANDES.map((c) => [c.fixture, c] as const))('%s', (_id, c) => {
       expect(k.y).toBeGreaterThanOrEqual(0);
       expect(k.z).toBeGreaterThanOrEqual(0);
       expect(k.y).toBeLessThanOrEqual(2);
-      expect(k.z).toBeLessThanOrEqual(2);
+      // Trois de haut au plus, sauf la salière de Rabot : trois sels en colonne et son toit (DA, relecture des captures SC-3).
+      expect(k.z).toBeLessThanOrEqual(c.fixture === 'technology-5e-design-fixture-1' ? 3 : 2);
     }
     // 3 × 3 au plus, sauf le bac à eau de Bloquette, une ligne de 4 cases (forme validée par le directeur artistique).
     expect(Math.max(...cases.map((k) => k.x))).toBeLessThanOrEqual(c.fixture === 'french-6e-grammar-spelling-fixture-1' ? 3 : 2);
   });
 
   it('un cube du bloc livré par bloc demandé ; les autres de l’île de la créature ou de finition', () => {
-    expect(cases.filter((k) => k.block === c.block).length).toBeGreaterThanOrEqual(c.count);
+    const commande = commandeDe(c.fixture);
+    // L'objet d'une quête (GD-10) : un cube de chaque bloc donné en chemin, comme une commande (consultant de Blocland).
+    const donnes = STORIES.find((s) => s.fixture === c.fixture)?.steps.flatMap((e) => (e.kind === 'give' ? [e] : [])) ?? [];
+    const demandes = [...(commande ? [{ block: commande.block, count: commande.count }] : []), ...donnes];
+    for (const d of demandes) expect(cases.filter((k) => k.block === d.block).length).toBeGreaterThanOrEqual(d.count);
     const ile = BIOMES.find((b) => b.id === c.biome)!.block;
-    for (const k of cases) expect([c.block, ile].includes(k.block) || FINITION.has(k.block)).toBe(true);
+    for (const k of cases) expect(demandes.some((d) => d.block === k.block) || k.block === ile || FINITION.has(k.block)).toBe(true);
     for (const k of cases) expect(BLOCKS[k.block]).toBeDefined();
   });
 
@@ -133,14 +146,17 @@ describe('La place de chaque petite construction : une donnée fixe, que le calc
       retenirReglages(null);
     }
   };
+  // Une île qui a pris sa forme (GD-12) garde la place écrite de ses petites constructions, à la même case : le calcul,
+  // sur sa nouvelle côte, en trouverait parfois une autre. Ses places restent vérifiées une à une (plus bas).
+  const calculees = PLACED_FIXTURES.filter((c) => !silhouetteDe(c.biome).forme);
   it.each(['es', 'de', 'none'] as const)('LV2 %s', (lv2) => {
-    const trouvees = avecLv2(lv2, () => Object.fromEntries(COMMANDES.map((c) => [c.fixture, calculerLaPlaceDeLaPetiteConstruction(c.biome, c.fixture)])));
-    const ecrites = Object.fromEntries(COMMANDES.map((c) => [c.fixture, placeDeLaPetiteConstruction(c.biome, c.fixture)]));
+    const trouvees = avecLv2(lv2, () => Object.fromEntries(calculees.map((c) => [c.fixture, calculerLaPlaceDeLaPetiteConstruction(c.biome, c.fixture)])));
+    const ecrites = Object.fromEntries(calculees.map((c) => [c.fixture, placeDeLaPetiteConstruction(c.biome, c.fixture)]));
     expect(trouvees).toEqual(ecrites);
   }, 30_000);
 });
 
-describe.each(COMMANDES.map((c) => [c.fixture, c] as const))('%s, sa place dans la vue de l’île', (_id, c) => {
+describe.each(PLACED_FIXTURES.map((c) => [c.fixture, c] as const))('%s, sa place dans la vue de l’île', (_id, c) => {
   const cases = casesDeLaPetiteConstruction(c.fixture)!;
   const place = placeDeLaPetiteConstruction(c.biome, c.fixture)!;
   const def = islandDef(c.biome);
@@ -175,8 +191,25 @@ describe.each(COMMANDES.map((c) => [c.fixture, c] as const))('%s, sa place dans 
     expect(examen).not.toBeNull();
     expect(examen!.cubes.filter((k) => k.commeLeSol).map((k) => `${k.x},${k.y},${k.z} ${k.block}`)).toEqual([]);
     // Devant l'île tout construite, la créature et le bonhomme : un de ses neuf points au moins (milieu et coins).
-    const caches = examen!.cubes.filter((k) => k.block === c.block && !k.vus).map((k) => `${k.x},${k.y},${k.z}`);
+    const livre = commandeDe(c.fixture)?.block;
+    const caches = examen!.cubes.filter((k) => k.block === livre && !k.vus).map((k) => `${k.x},${k.y},${k.z}`);
     expect(caches).toEqual([]);
+  });
+
+  // GD-11 : le Gardien se tient sur son île, sur un carré à lui seul ; la commande comme l'objet d'une quête (GD-10),
+  // son eau comprise, n'y entrent jamais, à aucune LV2.
+  it('jamais sur le carré du Gardien, ni elle ni son eau', () => {
+    for (const lv2 of ['es', 'de', 'none'] as const) {
+      try {
+        retenirReglages({ ...DEFAULT_SETTINGS, lv2 });
+        const g = guardianSpot(c.biome);
+        const dessus = (x: number, y: number) => x >= g.x && y >= g.y && x < g.x + GUARDIAN_SQUARE && y < g.y + GUARDIAN_SQUARE;
+        for (const k of cases) expect(dessus(place.x + k.x, place.y + k.y), `${lv2} ${k.x},${k.y}`).toBe(false);
+        for (const [x, y] of eauDeLaPetiteConstruction(c.fixture)) expect(dessus(place.x + x, place.y + y), `${lv2} eau`).toBe(false);
+      } finally {
+        retenirReglages(null);
+      }
+    }
   });
 
   it('jamais sur la rangée nue devant les bornes, ni sur le chemin du bonhomme vers le navire', () => {
@@ -224,7 +257,7 @@ it('sur chaque île-port, les objets du quai trouvent tous leur place à côté 
 describe.each(ARCHIPELAGO_IDS.map((a) => [a]))('%s, toutes les petites constructions posées', (a) => {
   it('rien d’autre ne bouge (les objets du quai compris), et la vague de la livraison trouve chacune de ses cases', () => {
     const { progress, world } = toutConstruit();
-    const ici = COMMANDES.filter((c) => BIOMES.find((b) => b.id === c.biome)!.classe === a);
+    const ici = PLACED_FIXTURES.filter((c) => BIOMES.find((b) => b.id === c.biome)!.classe === a);
     const parts = { ...world.parts, ...Object.fromEntries(ici.map((c) => [c.fixture, casesDeLaPetiteConstruction(c.fixture)!.map((k) => k.key)])) };
     const avant = worldCubes(a, progress, world, false);
     const apres = worldCubes(a, progress, { ...world, parts }, false);
@@ -257,8 +290,9 @@ describe.each(ARCHIPELAGO_IDS.map((a) => [a]))('%s, Archipéo : les petites cons
     const champ = champDuSol(a, modelerLeSol(a, cubes.filter((c) => c.sol), reste), reste);
     const solEnBlocs = new Map<string, number>();
     for (const c of cubes) if (c.sol) solEnBlocs.set(`${c.x},${c.y}`, Math.max(solEnBlocs.get(`${c.x},${c.y}`) ?? -Infinity, c.z));
-    for (const c of COMMANDES.filter((k) => BIOMES.find((b) => b.id === k.biome)!.classe === a)) {
-      const forme = reste.filter((k) => k.petiteConstruction && k.tag === c.biome);
+    for (const c of PLACED_FIXTURES.filter((k) => BIOMES.find((b) => b.id === k.biome)!.classe === a)) {
+      const siennes = casesDeLaPetiteConstructionDansLeMonde(c.biome, c.fixture);
+      const forme = reste.filter((k) => k.petiteConstruction && k.tag === c.biome && siennes.has(`${k.x},${k.y},${k.z}`));
       expect(forme.length, c.fixture).toBeGreaterThan(0);
       const niveaux = new Set<number>();
       for (const k of forme) {
@@ -272,4 +306,17 @@ describe.each(ARCHIPELAGO_IDS.map((a) => [a]))('%s, Archipéo : les petites cons
       expect(niveaux.size, c.fixture).toBe(1);
     }
   });
+});
+
+it('au 4e, la fonte et l’ardoise, deux gris sombres, ne se touchent jamais, commandes posées (HG-3, DA)', () => {
+  const partie = toutConstruitAvecLesCommandes();
+  const cubes = worldCubes('4e', partie.progress, partie.world);
+  const de = (b: BlockId) => new Set([BLOCKS[b].side, BLOCKS[b].texture].filter(Boolean));
+  const [fonte, ardoise] = [de(BLOC.fonte), de(BLOC.ardoise)];
+  const fontes = cubes.filter((c) => fonte.has(c.texture ?? c.color));
+  const contacts = cubes
+    .filter((c) => ardoise.has(c.texture ?? c.color))
+    .filter((a) => fontes.some((f) => Math.abs(a.x - f.x) <= 1 && Math.abs(a.y - f.y) <= 1 && Math.abs(a.z - f.z) <= 1));
+  expect(fontes.length).toBeGreaterThan(0);
+  expect(contacts.map((c) => `${c.x},${c.y},${c.z}`)).toEqual([]);
 });

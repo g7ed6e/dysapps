@@ -1,0 +1,235 @@
+{
+  "id": "technology-4e-modeling-energy-chain-2",
+  "biome": "technology-4e-modeling",
+  "type": "energy-chain",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-4e-modeling-energy-chain-2-0",
+      "prompt": "Le schéma du store électrique\nCase 1 : la prise.\nCase 2 : l’interrupteur.\nCase 3 : le moteur.\nCase 4 : l’engrenage.",
+      "question": "Quelle fonction fait la case 3 ?",
+      "spoken": "Le schéma du store électrique. Case 1, la prise. Case 2, l’interrupteur. Case 3, le moteur. Case 4, l’engrenage.",
+      "choices": [
+        "distribuer",
+        "convertir",
+        "transmettre"
+      ],
+      "answer": "convertir",
+      "hint": "Relis la ligne des quatre fonctions, dans le rappel : le moteur change l’électricité en mouvement.",
+      "explanation": "Le moteur change l’électricité en mouvement : il convertit. La case 2 distribue, la case 4 transmet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le schéma de la chaîne d’énergie",
+          "lines": [
+            "Des cases reliées par des flèches, dans l’ordre.",
+            "Alimenter, distribuer, convertir, transmettre.",
+            "Chaque flèche porte l’énergie d’une case à la suivante.",
+            "Énergie électrique : dans les fils. Énergie mécanique : un mouvement.",
+            "Une partie de l’énergie se perd en chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-energy-chain-2-1",
+      "prompt": "Entre la batterie et le moteur, l’énergie passe dans les fils : elle est …",
+      "spoken": "Entre la batterie et le moteur, l’énergie passe dans les fils : elle est  (mot manquant) ",
+      "choices": [
+        "électrique",
+        "mécanique",
+        "lumineuse"
+      ],
+      "answer": "électrique",
+      "hint": "Relis la ligne « Énergie électrique » du rappel.",
+      "explanation": "Dans les fils, l’énergie est électrique. Elle devient mécanique, un mouvement, après le moteur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le schéma de la chaîne d’énergie",
+          "lines": [
+            "Des cases reliées par des flèches, dans l’ordre.",
+            "Alimenter, distribuer, convertir, transmettre.",
+            "Chaque flèche porte l’énergie d’une case à la suivante.",
+            "Énergie électrique : dans les fils. Énergie mécanique : un mouvement.",
+            "Une partie de l’énergie se perd en chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-energy-chain-2-2",
+      "prompt": "Le schéma de la trottinette électrique\nCase 1 : la batterie.\nCase 2 : la poignée d’accélérateur.\nCase 3 : le moteur.\nCase 4 : la roue.",
+      "question": "Quelle énergie va du moteur à la roue ?",
+      "spoken": "Le schéma de la trottinette électrique. Case 1, la batterie. Case 2, la poignée d’accélérateur. Case 3, le moteur. Case 4, la roue.",
+      "choices": [
+        "électrique",
+        "thermique",
+        "mécanique"
+      ],
+      "answer": "mécanique",
+      "hint": "Après le moteur, l’énergie est un mouvement.",
+      "explanation": "Le moteur a converti l’électricité en mouvement : vers la roue, l’énergie est mécanique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le schéma de la chaîne d’énergie",
+          "lines": [
+            "Des cases reliées par des flèches, dans l’ordre.",
+            "Alimenter, distribuer, convertir, transmettre.",
+            "Chaque flèche porte l’énergie d’une case à la suivante.",
+            "Énergie électrique : dans les fils. Énergie mécanique : un mouvement.",
+            "Une partie de l’énergie se perd en chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-energy-chain-2-3",
+      "prompt": "Le moteur chauffe un peu quand il tourne : une partie de l’énergie se perd en …",
+      "spoken": "Le moteur chauffe un peu quand il tourne : une partie de l’énergie se perd en  (mot manquant) ",
+      "choices": [
+        "lumière",
+        "chaleur",
+        "mouvement"
+      ],
+      "answer": "chaleur",
+      "hint": "Relis la ligne « Une partie de l’énergie » du rappel.",
+      "explanation": "Un moteur ne convertit pas toute l’énergie en mouvement : une partie se perd en chaleur. C’est pour cela qu’il chauffe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le schéma de la chaîne d’énergie",
+          "lines": [
+            "Des cases reliées par des flèches, dans l’ordre.",
+            "Alimenter, distribuer, convertir, transmettre.",
+            "Chaque flèche porte l’énergie d’une case à la suivante.",
+            "Énergie électrique : dans les fils. Énergie mécanique : un mouvement.",
+            "Une partie de l’énergie se perd en chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-energy-chain-2-4",
+      "prompt": "Le grille-pain\nLa prise donne l’énergie.\nLe levier met en marche.\nLes fils chauffants grillent le pain.",
+      "question": "En quoi les fils chauffants convertissent-ils l’énergie électrique ?",
+      "spoken": "Le grille-pain. La prise donne l’énergie. Le levier met en marche. Les fils chauffants grillent le pain.",
+      "choices": [
+        "en chaleur",
+        "en mouvement",
+        "en son"
+      ],
+      "answer": "en chaleur",
+      "hint": "Que faut-il pour griller le pain ?",
+      "explanation": "Les fils chauffants convertissent l’énergie électrique en chaleur, qui grille le pain. Le levier, lui, distribue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le schéma de la chaîne d’énergie",
+          "lines": [
+            "Des cases reliées par des flèches, dans l’ordre.",
+            "Alimenter, distribuer, convertir, transmettre.",
+            "Chaque flèche porte l’énergie d’une case à la suivante.",
+            "Énergie électrique : dans les fils. Énergie mécanique : un mouvement.",
+            "Une partie de l’énergie se perd en chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-energy-chain-2-5",
+      "prompt": "Dans le schéma, chaque flèche entre deux cases montre le chemin de …",
+      "spoken": "Dans le schéma, chaque flèche entre deux cases montre le chemin de  (mot manquant) ",
+      "choices": [
+        "l’information",
+        "l’énergie",
+        "la matière"
+      ],
+      "answer": "l’énergie",
+      "hint": "Relis la ligne « Chaque flèche » du rappel.",
+      "explanation": "Dans le schéma de la chaîne d’énergie, chaque flèche porte l’énergie d’une case à la suivante. L’information a sa propre chaîne ; la matière, c’est ce que l’objet transforme, comme le pain du grille-pain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le schéma de la chaîne d’énergie",
+          "lines": [
+            "Des cases reliées par des flèches, dans l’ordre.",
+            "Alimenter, distribuer, convertir, transmettre.",
+            "Chaque flèche porte l’énergie d’une case à la suivante.",
+            "Énergie électrique : dans les fils. Énergie mécanique : un mouvement.",
+            "Une partie de l’énergie se perd en chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-energy-chain-2-6",
+      "prompt": "Deux trottinettes\nTrottinette A : batterie, moteur, roue.\nTrottinette B : le pied pousse, la roue tourne.",
+      "question": "Quelle trottinette a une chaîne d’énergie électrique ?",
+      "spoken": "Deux trottinettes. Trottinette A, batterie, moteur, roue. Trottinette B, le pied pousse, la roue tourne.",
+      "choices": [
+        "la trottinette A",
+        "la trottinette B",
+        "les deux"
+      ],
+      "answer": "la trottinette A",
+      "hint": "Laquelle a une batterie ?",
+      "explanation": "La trottinette A est alimentée par une batterie : sa chaîne d’énergie est électrique. La B avance grâce aux muscles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le schéma de la chaîne d’énergie",
+          "lines": [
+            "Des cases reliées par des flèches, dans l’ordre.",
+            "Alimenter, distribuer, convertir, transmettre.",
+            "Chaque flèche porte l’énergie d’une case à la suivante.",
+            "Énergie électrique : dans les fils. Énergie mécanique : un mouvement.",
+            "Une partie de l’énergie se perd en chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-4e-modeling-energy-chain-2-7",
+      "prompt": "L’éolienne\nLe vent fait tourner les pales.\nUn engrenage fait tourner l’axe plus vite.\nLa génératrice produit l’électricité.",
+      "question": "Quel élément transmet le mouvement ?",
+      "spoken": "L’éolienne. Le vent fait tourner les pales. Un engrenage fait tourner l’axe plus vite. La génératrice produit l’électricité.",
+      "choices": [
+        "les pales",
+        "la génératrice",
+        "l’engrenage"
+      ],
+      "answer": "l’engrenage",
+      "hint": "Transmettre, c’est faire passer le mouvement. Qui le fait passer des pales à l’axe ?",
+      "explanation": "L’engrenage fait passer le mouvement des pales à l’axe : il transmet. La génératrice convertit le mouvement en électricité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le schéma de la chaîne d’énergie",
+          "lines": [
+            "Des cases reliées par des flèches, dans l’ordre.",
+            "Alimenter, distribuer, convertir, transmettre.",
+            "Chaque flèche porte l’énergie d’une case à la suivante.",
+            "Énergie électrique : dans les fils. Énergie mécanique : un mouvement.",
+            "Une partie de l’énergie se perd en chaleur."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-4e-modeling",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

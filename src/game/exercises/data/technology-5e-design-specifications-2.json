@@ -1,0 +1,235 @@
+{
+  "id": "technology-5e-design-specifications-2",
+  "biome": "technology-5e-design",
+  "type": "specifications",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-5e-design-specifications-2-0",
+      "prompt": "La carte mentale du porte-crayons\nAu centre : le porte-crayons.\nTrait 1 : ranger les crayons.\nTrait 2 : garder les gommes.\nTrait 3 : coûter moins de 5 euros.",
+      "question": "Quel trait donne une contrainte ?",
+      "spoken": "La carte mentale du porte-crayons. Au centre, le porte-crayons. Trait 1, ranger les crayons. Trait 2, garder les gommes. Trait 3, coûter moins de 5 euros.",
+      "choices": [
+        "le trait 1",
+        "le trait 2",
+        "le trait 3"
+      ],
+      "answer": "le trait 3",
+      "hint": "Quel trait fixe une limite ?",
+      "explanation": "Coûter moins de 5 euros, c’est une limite de prix : une contrainte. Ranger et garder sont des fonctions : ce que fait l’objet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un cahier des charges",
+          "lines": [
+            "D’abord les fonctions, puis les contraintes.",
+            "Une fonction commence par un verbe : ranger, éclairer, protéger.",
+            "Une contrainte fixe une limite : prix, taille, poids, matériau.",
+            "Le problème technique se dit comme une question, qui commence souvent par « Comment ».",
+            "Une carte mentale : l’objet au centre, ses idées autour, reliées par des traits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-2-1",
+      "prompt": "« Garder l’eau fraîche » commence par un verbe : pour la gourde, c’est une …",
+      "spoken": "« Garder l’eau fraîche » commence par un verbe : pour la gourde, c’est une  (mot manquant) ",
+      "choices": [
+        "fonction",
+        "contrainte",
+        "norme"
+      ],
+      "answer": "fonction",
+      "hint": "Relis la ligne « Une fonction » du rappel.",
+      "explanation": "« Garder » est un verbe : il dit ce que fait la gourde. C’est une fonction.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un cahier des charges",
+          "lines": [
+            "D’abord les fonctions, puis les contraintes.",
+            "Une fonction commence par un verbe : ranger, éclairer, protéger.",
+            "Une contrainte fixe une limite : prix, taille, poids, matériau.",
+            "Le problème technique se dit comme une question, qui commence souvent par « Comment ».",
+            "Une carte mentale : l’objet au centre, ses idées autour, reliées par des traits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-2-2",
+      "prompt": "Cahier des charges de la boîte à goûter\nFonction : garder le goûter à l’abri.\nContrainte : passer au lave-vaisselle.\nContrainte : tenir dans le cartable.",
+      "question": "Quel matériau convient ?",
+      "spoken": "Cahier des charges de la boîte à goûter. Fonction, garder le goûter à l’abri. Contrainte, passer au lave-vaisselle. Contrainte, tenir dans le cartable.",
+      "choices": [
+        "le carton",
+        "le plastique solide",
+        "le papier"
+      ],
+      "answer": "le plastique solide",
+      "hint": "Lequel ne s’abîme pas dans l’eau du lave-vaisselle ?",
+      "explanation": "Le carton et le papier s’abîment dans l’eau : ils ne respectent pas la contrainte du lave-vaisselle. Le plastique solide, lui, la respecte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un cahier des charges",
+          "lines": [
+            "D’abord les fonctions, puis les contraintes.",
+            "Une fonction commence par un verbe : ranger, éclairer, protéger.",
+            "Une contrainte fixe une limite : prix, taille, poids, matériau.",
+            "Le problème technique se dit comme une question, qui commence souvent par « Comment ».",
+            "Une carte mentale : l’objet au centre, ses idées autour, reliées par des traits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-2-3",
+      "prompt": "Le casque de vélo protège la tête. Pour être vendu, il respecte une …",
+      "spoken": "Le casque de vélo protège la tête. Pour être vendu, il respecte une  (mot manquant) ",
+      "choices": [
+        "notice",
+        "couleur",
+        "norme"
+      ],
+      "answer": "norme",
+      "hint": "Une règle commune, pour la sécurité.",
+      "explanation": "Tous les casques de vélo vendus respectent une norme de sécurité : une règle commune aux fabricants. La notice explique comment le régler.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un cahier des charges",
+          "lines": [
+            "D’abord les fonctions, puis les contraintes.",
+            "Une fonction commence par un verbe : ranger, éclairer, protéger.",
+            "Une contrainte fixe une limite : prix, taille, poids, matériau.",
+            "Le problème technique se dit comme une question, qui commence souvent par « Comment ».",
+            "Une carte mentale : l’objet au centre, ses idées autour, reliées par des traits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-2-4",
+      "prompt": "Le problème de Malik\nMalik rentre à vélo le soir.\nLes voitures le voient mal.",
+      "question": "Quelle phrase énonce le problème technique ?",
+      "spoken": "Le problème de Malik. Malik rentre à vélo le soir. Les voitures le voient mal.",
+      "choices": [
+        "Comment être bien vu à vélo le soir ?",
+        "Comment rouler plus vite ?",
+        "Comment réparer un pneu ?"
+      ],
+      "answer": "Comment être bien vu à vélo le soir ?",
+      "hint": "Relis la dernière ligne du document : qu’est-ce qui manque à Malik ?",
+      "explanation": "Le besoin de Malik est d’être vu : le problème technique est « Comment être bien vu à vélo le soir ? ». Rouler plus vite ne règle pas ce besoin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un cahier des charges",
+          "lines": [
+            "D’abord les fonctions, puis les contraintes.",
+            "Une fonction commence par un verbe : ranger, éclairer, protéger.",
+            "Une contrainte fixe une limite : prix, taille, poids, matériau.",
+            "Le problème technique se dit comme une question, qui commence souvent par « Comment ».",
+            "Une carte mentale : l’objet au centre, ses idées autour, reliées par des traits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-2-5",
+      "prompt": "Le robot aspirateur doit passer sous le canapé, à 10 centimètres du sol. C’est une contrainte de …",
+      "spoken": "Le robot aspirateur doit passer sous le canapé, à 10 centimètres du sol. C’est une contrainte de  (mot manquant) ",
+      "choices": [
+        "prix",
+        "taille",
+        "couleur"
+      ],
+      "answer": "taille",
+      "hint": "10 centimètres, c’est un prix, ou une mesure ?",
+      "explanation": "Passer sous le canapé fixe une hauteur à ne pas dépasser : c’est une contrainte de taille.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un cahier des charges",
+          "lines": [
+            "D’abord les fonctions, puis les contraintes.",
+            "Une fonction commence par un verbe : ranger, éclairer, protéger.",
+            "Une contrainte fixe une limite : prix, taille, poids, matériau.",
+            "Le problème technique se dit comme une question, qui commence souvent par « Comment ».",
+            "Une carte mentale : l’objet au centre, ses idées autour, reliées par des traits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-2-6",
+      "prompt": "Cahier des charges du support de téléphone\nLigne A : tenir le téléphone debout.\nLigne B : montrer l’écran face à l’élève.\nLigne C : être fait en bois de la région.",
+      "question": "Quelle ligne est une contrainte ?",
+      "spoken": "Cahier des charges du support de téléphone. Ligne A, tenir le téléphone debout. Ligne B, montrer l’écran face à l’élève. Ligne C, être fait en bois de la région.",
+      "choices": [
+        "la ligne A",
+        "la ligne B",
+        "la ligne C"
+      ],
+      "answer": "la ligne C",
+      "hint": "Relis la ligne « Une contrainte » du rappel : le matériau en fait partie.",
+      "explanation": "Le bois de la région impose un matériau : c’est une contrainte. Tenir le téléphone et montrer l’écran sont des fonctions : ce que fait le support.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un cahier des charges",
+          "lines": [
+            "D’abord les fonctions, puis les contraintes.",
+            "Une fonction commence par un verbe : ranger, éclairer, protéger.",
+            "Une contrainte fixe une limite : prix, taille, poids, matériau.",
+            "Le problème technique se dit comme une question, qui commence souvent par « Comment ».",
+            "Une carte mentale : l’objet au centre, ses idées autour, reliées par des traits."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-2-7",
+      "prompt": "Le diagramme de la trottinette\nLa trottinette mène l’élève jusqu’au collège.\nElle tient dans le casier.\nElle respecte le code de la route.",
+      "question": "Que dit la première ligne ?",
+      "spoken": "Le diagramme de la trottinette. La trottinette mène l’élève jusqu’au collège. Elle tient dans le casier. Elle respecte le code de la route.",
+      "choices": [
+        "une contrainte",
+        "la fonction",
+        "une norme"
+      ],
+      "answer": "la fonction",
+      "hint": "La première ligne dit ce que fait la trottinette pour l’élève.",
+      "explanation": "Mener l’élève au collège, c’est ce que fait la trottinette : sa fonction. Tenir dans le casier est une contrainte de taille.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un cahier des charges",
+          "lines": [
+            "D’abord les fonctions, puis les contraintes.",
+            "Une fonction commence par un verbe : ranger, éclairer, protéger.",
+            "Une contrainte fixe une limite : prix, taille, poids, matériau.",
+            "Le problème technique se dit comme une question, qui commence souvent par « Comment ».",
+            "Une carte mentale : l’objet au centre, ses idées autour, reliées par des traits."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-5e-design",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

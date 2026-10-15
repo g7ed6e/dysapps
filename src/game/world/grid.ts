@@ -14,7 +14,7 @@ import { isLandInWorld, islandDef, mapOf } from './map';
 import { unturnCell, turnCell } from './placement';
 import { getMonument } from './monuments';
 import { walkGround, walkPath, type Cell, type CreaturePlacement, type WalkGround } from './paths';
-import { avatarHome, avatarRoute, bossIsletCenter, bridgePath, casesDeLOuvrage, casesDesLieux, islandAt, islandCenter, monumentCenter, origineDe, placeDoor, placesDeLaFleche, questStations, routeLengths, viewZone, worldBounds } from './terrain';
+import { avatarHome, avatarRoute, guardianCenter, bridgePath, casesDeLOuvrage, casesDesLieux, islandAt, islandCenter, monumentCenter, origineDe, placeDoor, placesDeLaFleche, questStations, routeLengths, viewZone, worldBounds } from './terrain';
 import { layoutCache } from './placement';
 
 /**
@@ -88,11 +88,13 @@ export function grilleDe(a: ArchipelagoId): DispositionEnGrille {
 /**
  * La disposition en grille de l'archipel `a`. Avec les ouvrages construits (`bridges`), elle trace les trajets ; avec les
  * cubes du monde et les créatures (`sol`), le bonhomme suit le sol et contourne le décor (sinon il va en ligne droite).
+ * `echelleDesGardiens` : l'échelle du dessin des Gardiens (l'habillage, GD-11), pour viser leur milieu.
  */
 export function dispositionEnGrille(
   a: ArchipelagoId,
   bridges: string[] = [],
   sol?: { cubes: VoxelCube[]; creatures: CreaturePlacement[] },
+  echelleDesGardiens = 1,
 ): DispositionEnGrille {
   let ground: WalkGround | undefined;
   const marche = () => (sol ? (ground ??= walkGround(sol.cubes, sol.creatures, casesDesLieux(a))) : undefined);
@@ -131,7 +133,7 @@ export function dispositionEnGrille(
         return path.length ? ancre(def.from, path[Math.floor(path.length / 2)]) : null;
       }
       case 'gardien':
-        return ancre(e.id, bossIsletCenter(e.id));
+        return ancre(e.id, guardianCenter(e.id, echelleDesGardiens));
       case 'plan': {
         const m = getMonument(e.id);
         return m && m.archipelago === a ? ancre(m.biome, monumentCenter(m)) : null;

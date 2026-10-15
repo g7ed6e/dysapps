@@ -1,5 +1,5 @@
 // Les textes de Blocland. Depuis GD-8 (décision du mainteneur, 4 octobre 2026), les Gardiens ne sont plus vaincus :
-// chacun se tient sur son îlot dès l'ouverture de son île, statue de cubes grise et éteinte, et son défi réussi le
+// chacun se tient sur son île dès qu'elle s'ouvre, statue de cubes grise et éteinte, et son défi réussi le
 // rallume en couleurs (chaque épreuve réussie rend les siennes à une partie de lui, en partant du bas). « Rallumer »
 // remplace « vaincre » : chaque épreuve réussie nomme une partie du Gardien qui reprend sa couleur, chaque épreuve
 // ratée commence par « Mes couleurs restent. », la réplique finale dit « Je me rallume ». GD-1 (« le chantier du
@@ -103,7 +103,7 @@ export const BLOCLAND = {
       },
     },
     'french-5e-conjugation': {
-      challenge: 'L’Hydre des marais sort de la vase : « Mes trois cous sont tout gris. Parle-moi du passé, du futur et du doute. »',
+      challenge: 'L’Hydre des marais sort de la vase : « Mes trois cous sont tout gris. Parle-moi du passé, du présent et du futur. »',
       guardianSays: {
         hit: 'Sss… Juste. Un bloc de mes cous redevient vert.',
         miss: 'Mes couleurs restent. Cherche l’indice de temps dans la phrase, et reprends.',
@@ -114,7 +114,7 @@ export const BLOCLAND = {
       challenge: 'Le Titan d’acier pose son marteau : « Mon cœur de forge est gris. Tu as chauffé toute ma forge : prends le temps de tes calculs. »',
       guardianSays: {
         hit: 'Clang ! Juste. Une plaque de mon armure reprend sa couleur.',
-        miss: 'Mes couleurs restent. Relis la règle, compte les zéros, et reprends.',
+        miss: 'Mes couleurs restent. Relis la règle affichée, et reprends.',
         beaten: 'Clang ! Je me rallume, jusqu’à mon cœur de forge. La forge est à toi, et à Braise.',
       },
     },
@@ -138,7 +138,7 @@ export const BLOCLAND = {
       challenge: 'Le Hibou lexicographe ferme son dictionnaire : « Mes plumes sont toutes grises. Tu as ouvert tous mes tiroirs : démontons les mots. »',
       guardianSays: {
         hit: 'Hou… Juste. Un bloc de mes plumes redevient brun.',
-        miss: 'Mes couleurs restent. Découpe le mot, cherche le petit morceau connu, et reprends.',
+        miss: 'Mes couleurs restent. Relis l’aide sous la question, et reprends.',
         beaten: 'Hou ! Je me rallume, des lunettes au livre rouge. Le cabinet est à toi, et à Plume.',
       },
     },
@@ -215,7 +215,7 @@ export const BLOCLAND = {
       },
     },
     'history-6e-antiquity': {
-      challenge: 'L’Amphore peinte attend sur son îlot : « Mes bandes peintes sont toutes grises. Tu as fouillé toute l’île : remets chaque époque à sa place. »',
+      challenge: 'L’Amphore peinte t’attend : « Mes bandes peintes sont toutes grises. Tu as fouillé toute l’île : remets chaque époque à sa place. »',
       guardianSays: {
         hit: 'Juste. Une bande de ma frise reprend sa couleur.',
         miss: 'Mes couleurs restent. Regarde la frise, du plus ancien au plus récent, et reprends.',
@@ -228,6 +228,54 @@ export const BLOCLAND = {
         hit: 'Juste. Un bloc de mon pelage redevient ocre.',
         miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
         beaten: 'Je me rallume, de la queue jusqu’aux oreilles. La Pointe est à toi, et à Boussole.',
+      },
+    },
+    'history-5e-middle-ages': {
+      challenge: 'Le Griffon d’émail déploie ses ailes : « Mes émaux sont tout gris. Tu as lu toutes les chroniques du bourg : dis-moi en quel siècle vient chaque chose. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc d’émail reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde la frise, relis le document, et reprends.',
+        beaten: 'Je me rallume, du bec jusqu’à la queue. Le Bourg est à toi, et à Vélin.',
+      },
+    },
+    'geography-5e-resources': {
+      challenge: 'La Libellule de jade se pose sur un roseau : « Mes ailes sont toutes grises. Tu as suivi l’eau de tout le delta : dis-moi comment on partage les ressources. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mes ailes redevient vert.',
+        miss: 'Mes couleurs restent. Relis le document, compare les nombres, et reprends.',
+        beaten: 'Je me rallume, des ailes jusqu’au bout de la queue. Le Delta est à toi, et à Sillon.',
+      },
+    },
+    'history-4e-revolutions': {
+      challenge: 'Le Paon de faïence ouvre sa roue : « Ma roue est toute grise. Tu as lu toutes les pages de l’imprimerie : dis-moi ce que chaque révolution a changé. »',
+      guardianSays: {
+        hit: 'Juste. Une plume de ma roue reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde la frise, relis le document, et reprends.',
+        beaten: 'Je me rallume, de la crête jusqu’au bout de ma roue. L’Imprimerie est à toi, et à Typo.',
+      },
+    },
+    'geography-4e-globalization': {
+      challenge: 'Le Poulpe de corail étale ses bras sur son socle : « Mes bras sont tout gris. Tu as vu passer tous les bateaux de l’escale : dis-moi comment le monde échange. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mes bras redevient corail.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, de la tête au bout des huit bras. L’Escale est à toi, et à Fret.',
+      },
+    },
+    'history-3e-twentieth-century': {
+      challenge: 'La Colombe d’albâtre attend, un rameau au bec : « Mes plumes sont toutes grises. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. »',
+      guardianSays: {
+        hit: 'Juste. Une plume reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde la frise, relis qui parle, et reprends.',
+        beaten: 'Je me rallume, jusqu’au rameau vert. Le Kiosque est à toi, et à Mémo. Merci de te souvenir avec moi.',
+      },
+    },
+    'geography-3e-france': {
+      challenge: 'Le Cerf de lauze lève la tête : « Mon pelage est tout gris. Une lauze, c’est une pierre plate : mes bois en sont faits. Tu as parcouru tout le plateau. Dis-moi comment vit le territoire. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mon pelage reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, du museau jusqu’aux oreilles, sous mes bois de lauze. Le plateau est à toi, et à Jalon.',
       },
     },
     'life-earth-sciences-6e-living-world': {
@@ -254,12 +302,140 @@ export const BLOCLAND = {
         beaten: 'Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Pince.',
       },
     },
+    'civics-6e-democratic-society': {
+      challenge: 'L’Hirondelle de nacre ouvre une aile : « Me voilà toute grise. Tu as fait le tour de mon préau : dis-moi comment on vit ensemble. »',
+      guardianSays: {
+        hit: 'Juste. Une plume de mon aile reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le rappel, cherche le mot de la règle, et reprends.',
+        beaten: 'Je me rallume, de la queue jusqu’au bec. Le préau est à toi, et à Voix.',
+      },
+    },
+    'life-earth-sciences-5e-active-planet': {
+      challenge: 'La Tortue d’ocre lève lentement la tête : « Me voilà toute grise. Tu as parcouru toute ma prairie : dis-moi comment change la Terre. »',
+      guardianSays: {
+        hit: 'Juste. Une écaille de ma carapace reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, des pattes jusqu’à la carapace. La Prairie est à toi, et à Humus.',
+      },
+    },
+    'physics-chemistry-5e-matter-universe': {
+      challenge: 'Le Flamant de sel lève une patte : « Mes plumes sont toutes grises. Tu as fait tous les mélanges de la saline : dis-moi ce qu’il y a dedans. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mon aile redevient rose.',
+        miss: 'Mes couleurs restent. Regarde la mesure, vérifie l’unité, et reprends.',
+        beaten: 'Je me rallume, des pattes jusqu’au bout du bec. La Saline est à toi, et à Perle.',
+      },
+    },
+    'technology-5e-design': {
+      challenge: 'Le Cheval à bascule se balance doucement : « Me voilà tout gris. Tu as vu tous les objets de la menuiserie : dis-moi pourquoi ils sont faits comme ça. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de ma robe reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le cahier des charges, regarde le critère, et reprends.',
+        beaten: 'Je me rallume, des patins jusqu’à la crinière. La Menuiserie est à toi, et à Rabot.',
+      },
+    },
+    'civics-5e-equality-solidarity': {
+      challenge: 'L’Oie d’opale lève le cou : « Me voilà toute grise. Tu as fait le tour du fournil : dis-moi ce qu’est l’égalité. »',
+      guardianSays: {
+        hit: 'Juste. Une plume de mon aile reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, des pattes jusqu’au bec. Le fournil est à toi, et à Mie.',
+      },
+    },
+    'life-earth-sciences-4e-cells-evolution': {
+      challenge: 'La Girafe d’ambre baisse son long cou : « Mes taches sont toutes grises. Tu as fait le tour de ma source : dis-moi comment le vivant se transmet et change. »',
+      guardianSays: {
+        hit: 'Juste. Une tache de mon cou reprend sa couleur.',
+        miss: 'Mes couleurs restent. Compare les deux cas du document, regarde ce qui change, et reprends.',
+        beaten: 'Je me rallume, des sabots jusqu’au bout du cou. La Source est à toi, et à Nectar.',
+      },
+    },
+    'physics-chemistry-4e-signals-circuits': {
+      challenge: 'La Cloche de cobalt tinte tout bas : « Me voilà toute grise. Tu as suivi tous les signaux de la vigie : dis-moi comment ils voyagent. »',
+      guardianSays: {
+        hit: 'Ding ! Juste. Un bloc de ma cloche reprend sa couleur.',
+        miss: 'Mes couleurs restent. Suis le circuit d’une borne à l’autre, et reprends.',
+        beaten: 'Ding, dong ! Je me rallume, et ma lampe aussi. La Vigie est à toi, et à Radar.',
+      },
+    },
+    'technology-4e-modeling': {
+      challenge: 'Le Grand-bi d’érable fait tourner doucement sa grande roue : « Me voilà tout gris. Tu as vu toutes les maquettes du bassin : dis-moi comment l’énergie et l’information circulent. »',
+      guardianSays: {
+        hit: 'Juste. Un rayon de ma roue reprend sa couleur.',
+        miss: 'Mes couleurs restent. Suis les cases du schéma, dans l’ordre, et reprends.',
+        beaten: 'Je me rallume, des roues jusqu’à la selle. Le Bassin est à toi, et à Manivelle.',
+      },
+    },
+    'civics-4e-rights-freedoms': {
+      challenge: 'Le Lynx d’agate ouvre un œil : « Me voilà tout gris. Tu as passé la porte : dis-moi ce que protègent les libertés. »',
+      guardianSays: {
+        hit: 'Juste. Une tache de mon pelage reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le rappel, cherche le droit dont on parle, et reprends.',
+        beaten: 'Je me rallume, des pattes jusqu’au bout des oreilles. La porte est à toi, et à Loquet.',
+      },
+    },
+    'civics-3e-democratic-life': {
+      challenge: 'L’Étourneau d’étain penche la tête : « Me voilà tout gris. Tu as écouté tout le forum : dis-moi comment vit la démocratie. »',
+      guardianSays: {
+        hit: 'Juste. Une plume de mon dos reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, cherche qui décide, et reprends.',
+        beaten: 'Je me rallume, de la queue jusqu’au bec. Le forum est à toi, et à Brio.',
+      },
+    },
+    'life-earth-sciences-3e-human-body': {
+      challenge: 'Le Dauphin de turquoise souffle doucement : « Me voilà tout gris. Tu as fait le tour du verger : dis-moi comment ton corps fonctionne. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mon dos reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, de la queue jusqu’au museau. Le Verger est à toi, et à Olive.',
+      },
+    },
+    'physics-chemistry-3e-motion-energy': {
+      challenge: 'Le Kangourou de rubis fait un petit bond : « Me voilà tout gris. Tu as essayé tout mon tremplin : dis-moi ce qui fait bouger les choses. »',
+      guardianSays: {
+        hit: 'Hop ! Juste. Un bloc de ma queue reprend sa couleur.',
+        miss: 'Mes couleurs restent. Repère la force, regarde son sens, et reprends.',
+        beaten: 'Hop ! Je me rallume, de la queue jusqu’aux oreilles. Le Tremplin est à toi, et à Virage.',
+      },
+    },
+    'technology-3e-digital': {
+      challenge: 'L’Abeille de topaze bat doucement des ailes : « Me voilà toute grise. Tu as suivi tous les chemins de la ruche : dis-moi comment voyagent les données. »',
+      guardianSays: {
+        hit: 'Juste. Une case de mes ailes reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document ligne par ligne, et reprends.',
+        beaten: 'Bzzz ! Je me rallume, des antennes jusqu’aux rayures. La Ruche est à toi, et à Navette.',
+      },
+    },
     'lv2-3e-travel': {
       challenge: 'Le Papillon de cuivre attend devant le refuge : « Mes ailes sont toutes grises. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. »',
       guardianSays: {
         hit: 'Juste. Un bloc de mes ailes redevient cuivre.',
         miss: 'Mes couleurs restent. Lis bien la question, relis la règle, et reprends.',
         beaten: 'Je me rallume, jusqu’au bout des antennes. Le refuge est à toi, et à Timbre.',
+      },
+    },
+    'lca-5e-legends': {
+      challenge: 'Le Phénix d’argile se dresse dans son nid : « Me voilà tout gris. Tu as écouté les légendes de la grotte : raconte-les-moi. »',
+      guardianSays: {
+        hit: 'Juste. Une plume de mon aile reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis la traduction, cherche le mot du rappel, et reprends.',
+        beaten: 'Je renais, et je me rallume, de la queue jusqu’à la huppe. La grotte est à toi, et à Lyre.',
+      },
+    },
+    'lca-4e-cities': {
+      challenge: 'La Cigale d’argile chante tout bas : « Me voilà toute grise. Tu as visité la cité : dis-moi comment on y vivait. »',
+      guardianSays: {
+        hit: 'Juste. Un bout de mon aile reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, des pattes jusqu’aux antennes. La colonnade est à toi, et à Figue.',
+      },
+    },
+    'lca-3e-ideas': {
+      challenge: 'Le Centaure d’argile pose son livre : « Me voilà tout gris. Tu as parcouru le bosquet : dis-moi ce que les Anciens nous ont laissé. »',
+      guardianSays: {
+        hit: 'Juste. Un sabot reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le rappel, cherche la racine du mot, et reprends.',
+        beaten: 'Je me rallume, des sabots jusqu’à la tête. Le bosquet est à toi, et à Stylet.',
       },
     },
     'english-5e-grammar': {
@@ -334,11 +510,33 @@ export const BLOCLAND = {
     'lv2-5e-introductions': 'cigogne voyageuse',
     'lv2-4e-daily-life': 'écureuil cuisinier',
     'lv2-3e-travel': 'loutre factrice',
+    'lca-5e-legends': 'gecko conteur',
+    'lca-4e-cities': 'âne porteur d’eau',
+    'lca-3e-ideas': 'huppe scribe',
     'history-6e-antiquity': 'ourson fouilleur',
     'geography-6e-living': 'tortue géographe',
+    'history-5e-middle-ages': 'lapin enlumineur',
+    'geography-5e-resources': 'ibis cultivateur',
+    'history-4e-revolutions': 'souris imprimeuse',
+    'geography-4e-globalization': 'crabe grutier',
+    'history-3e-twentieth-century': 'marmotte bibliothécaire',
+    'geography-3e-france': 'fourmi arpenteuse',
     'life-earth-sciences-6e-living-world': 'escargot jardinier',
     'physics-chemistry-6e-matter-energy': 'goutte chimiste',
     'technology-6e-objects': 'fourmi bricoleuse',
+    'civics-6e-democratic-society': 'panda roux délégué',
+    'life-earth-sciences-5e-active-planet': 'ver de terre laboureur',
+    'physics-chemistry-5e-matter-universe': 'canard saunier',
+    'technology-5e-design': 'pic-vert menuisier',
+    'civics-5e-equality-solidarity': 'capybara boulanger',
+    'life-earth-sciences-4e-cells-evolution': 'colibri butineur',
+    'physics-chemistry-4e-signals-circuits': 'suricate guetteur',
+    'technology-4e-modeling': 'lémurien maquettiste',
+    'civics-4e-rights-freedoms': 'pangolin portier',
+    'civics-3e-democratic-life': 'macareux orateur',
+    'life-earth-sciences-3e-human-body': 'koala soigneur',
+    'physics-chemistry-3e-motion-energy': 'tatou rouleur',
+    'technology-3e-digital': 'chenille tisseuse',
     'english-5e-grammar': 'chat du manoir',
     'english-4e-comprehension': 'lutin souffleur',
     'english-4e-grammar': 'blaireau chef de gare',
@@ -352,7 +550,7 @@ export const BLOCLAND = {
     resistance: (reste, total) => `Encore ${reste} épreuve${s(reste)} sur ${total} pour lui rendre ses couleurs`,
     dejaFaitArene: (gardien) => `${gardien} a déjà ses couleurs. Tu peux rejouer son défi quand tu veux.`,
     encoreAFaire: (n) => `encore ${n} Gardien${s(n)} à rallumer`,
-    navireAttend: (n, piece) => `Le Bloc-Navire a tous ses blocs ! Il attend encore ${n} Gardien${s(n)} rallumé${s(n)}${piece ? ` pour ${piece}` : ''}.`,
+    navireAttend: (n, piece) => `La Nef a tous ses blocs ! Elle attend encore ${n} Gardien${s(n)} rallumé${s(n)}${piece ? ` pour ${piece}` : ''}.`,
     navireGardiens: (faits, total, archipel, piece) =>
       faits >= total ? `Gardiens : c’est fait ! ${faits} sur ${total}, ${piece} est là.` : `Gardiens : encore ${total - faits} à rallumer dans les ${archipel} pour ${piece}.`,
     faitsSur: (n, total) => `${n} Gardien${s(n)} rallumé${s(n)} sur ${total}`,
@@ -363,7 +561,7 @@ export const BLOCLAND = {
     decouverteOuvrages:
       'Les îles pâles sont fermées. Pour y venir, pose un ouvrage. Il part de l’île de ton choix. Chaque ouvrage coûte le même nombre de blocs.',
     navireGardiensManquants: (n, archipel) => `rallume encore ${n} Gardien${s(n)} des ${archipel}`,
-    decouverteNavire: 'Ici, au port, le Bloc-Navire attend ses blocs. Quand il est prêt, embarque : un autre archipel t’attend, et tu peux toujours revenir.',
+    decouverteNavire: 'Ici, au port, la Nef attend ses blocs. Quand elle est prête, embarque : un autre archipel t’attend, et tu peux toujours revenir.',
   },
   // Les couleurs ne disent que les réussites : « lui rendre ses couleurs », sans accord selon le Gardien (GD-8).
   sentinelles: {
@@ -394,6 +592,13 @@ export const BLOCLAND = {
     tuEnAs: (have, count) => `Tu en as ${have} sur ${count}.`,
     tuYEs: 'Tu y es : joue une mission ici.',
   },
+  quetes: {
+    titre: 'Entraide',
+    donner: 'Donner',
+    apporter: 'Apporter',
+    etape: (n, total) => `Étape ${n} sur ${total}`,
+  },
+
   blocs: nomsAssembles('blocland'),
   // Une liaison s'appelle « ouvrage » à l'écran, partout (GD-9 : le mode « Aménager » et le menu aussi).
   liaisons: { nom: 'ouvrage', pluriel: 'ouvrages', feminin: false },
@@ -408,9 +613,9 @@ export const BLOCLAND = {
     parle: 'ecole',
     arrivee: {
       '6e': 'Salut, bâtisseur ! Moi, c’est Mousso, un golem de mousse. Ici, tout se bâtit bloc par bloc, et je t’aide.',
-      '5e': 'Le Bloc-Navire a fait sa traversée ! Moi, c’est Bazar, le raton laveur du marché. Bienvenue dans les Collines du Large : ici, on compte ses blocs avant de bâtir.',
-      '4e': 'Bip. Le Bloc-Navire a fait sa traversée. Moi, c’est Ixe, le robot dessinateur. Bienvenue dans les Monts de Feu : ici, le feu du volcan fait tourner les machines. À toi d’en bâtir !',
-      '3e': 'Le Bloc-Navire a fait sa traversée. Moi, c’est Fi, la lampe du phare. Bienvenue dans les Îles du Ciel : je t’éclaire, bâtisseur, on bâtit tout en haut.',
+      '5e': 'La Nef a fait sa traversée ! Moi, c’est Bazar, le raton laveur du marché. Bienvenue dans les Collines du Large : ici, on compte ses blocs avant de bâtir.',
+      '4e': 'Bip. La Nef a fait sa traversée. Moi, c’est Ixe, le robot dessinateur. Bienvenue dans les Monts de Feu : ici, le feu du volcan fait tourner les machines. À toi d’en bâtir !',
+      '3e': 'La Nef a fait sa traversée. Moi, c’est Fi, la lampe du phare. Bienvenue dans les Îles du Ciel : je t’éclaire, bâtisseur, on bâtit tout en haut.',
     },
     gardiens: (archipel) => `Tous les Gardiens des ${archipel} ont retrouvé leurs couleurs ! Ils veillent sur ton chantier.`,
     port: (ile) => `Chantier fini : ${ile} ! Bloc après bloc, ton archipel grandit.`,
@@ -426,7 +631,7 @@ export const BLOCLAND = {
     'rang-or': { title: 'Mécanicien', description: 'Devenir Mécanicien : tu fais tourner les machines.' },
     'rang-diamant': { title: 'Ingénieur', description: 'Devenir Ingénieur : tu inventes des machines.' },
     'rang-legende': { title: 'Architecte', description: 'Devenir Architecte : tu dessines les plans du village.' },
-    aeronaute: { title: 'Aéronaute', description: 'Gonfler le ballon du Bloc-Navire et rejoindre les Monts de Feu.' },
+    aeronaute: { title: 'Aéronaute', description: 'Mener la Nef au-dessus des nuages et rejoindre les Monts de Feu.' },
   },
   // Dit une fois par appareil, à un élève qui jouait déjà avant les nouveaux noms (src/game/Renaming.tsx).
   renommage: {

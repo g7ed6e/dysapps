@@ -1,0 +1,240 @@
+{
+  "id": "physics-chemistry-4e-signals-circuits-chemical-reactions-1",
+  "biome": "physics-chemistry-4e-signals-circuits",
+  "type": "chemical-reactions",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-1-0",
+      "prompt": "Le bois brûle et donne de la cendre et des fumées : c’est …",
+      "spoken": "Le bois brûle et donne de la cendre et des fumées : c’est  (mot manquant) ",
+      "choices": [
+        "un changement d’état",
+        "un mélange",
+        "une transformation chimique"
+      ],
+      "answer": "une transformation chimique",
+      "hint": "La cendre, c’était là avant ?",
+      "explanation": "La cendre et les fumées sont de nouvelles espèces chimiques : le bois a subi une transformation chimique, une combustion.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître une transformation chimique",
+          "lines": [
+            "Transformation chimique : de nouvelles espèces chimiques apparaissent.",
+            "Les réactifs disparaissent ; les produits apparaissent.",
+            "Fondre, c’est un changement d’état ; dissoudre, c’est un mélange.",
+            "Une combustion a besoin d’un combustible et de dioxygène.",
+            "Le dioxygène, c’est l’oxygène de l’air.",
+            "L’eau de chaux se trouble : il y a du dioxyde de carbone."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-1-1",
+      "prompt": "Le chocolat fond au soleil : c’est …",
+      "spoken": "Le chocolat fond au soleil : c’est  (mot manquant) ",
+      "choices": [
+        "un changement d’état",
+        "une transformation chimique",
+        "un mélange"
+      ],
+      "answer": "un changement d’état",
+      "hint": "Relis la ligne « Fondre » du rappel.",
+      "explanation": "Le chocolat passe de solide à liquide : c’est toujours du chocolat. C’est un changement d’état, la fusion.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître une transformation chimique",
+          "lines": [
+            "Transformation chimique : de nouvelles espèces chimiques apparaissent.",
+            "Les réactifs disparaissent ; les produits apparaissent.",
+            "Fondre, c’est un changement d’état ; dissoudre, c’est un mélange.",
+            "Une combustion a besoin d’un combustible et de dioxygène.",
+            "Le dioxygène, c’est l’oxygène de l’air.",
+            "L’eau de chaux se trouble : il y a du dioxyde de carbone."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-1-2",
+      "prompt": "Le sucre se dissout dans le lait : c’est …",
+      "spoken": "Le sucre se dissout dans le lait : c’est  (mot manquant) ",
+      "choices": [
+        "une transformation chimique",
+        "un mélange",
+        "un changement d’état"
+      ],
+      "answer": "un mélange",
+      "hint": "Relis la ligne « Fondre » du rappel.",
+      "explanation": "Le sucre est toujours là, le lait est sucré : rien de nouveau n’apparaît. C’est un mélange.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître une transformation chimique",
+          "lines": [
+            "Transformation chimique : de nouvelles espèces chimiques apparaissent.",
+            "Les réactifs disparaissent ; les produits apparaissent.",
+            "Fondre, c’est un changement d’état ; dissoudre, c’est un mélange.",
+            "Une combustion a besoin d’un combustible et de dioxygène.",
+            "Le dioxygène, c’est l’oxygène de l’air.",
+            "L’eau de chaux se trouble : il y a du dioxyde de carbone."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-1-3",
+      "prompt": "Dans une combustion, le combustible brûle grâce au …",
+      "spoken": "Dans une combustion, le combustible brûle grâce au  (mot manquant) ",
+      "choices": [
+        "dioxygène",
+        "dioxyde de carbone",
+        "diazote"
+      ],
+      "answer": "dioxygène",
+      "hint": "Relis la ligne « Une combustion » du rappel.",
+      "explanation": "Pour brûler, le combustible a besoin de dioxygène, un gaz de l’air. Le dioxyde de carbone, lui, est produit par la combustion.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître une transformation chimique",
+          "lines": [
+            "Transformation chimique : de nouvelles espèces chimiques apparaissent.",
+            "Les réactifs disparaissent ; les produits apparaissent.",
+            "Fondre, c’est un changement d’état ; dissoudre, c’est un mélange.",
+            "Une combustion a besoin d’un combustible et de dioxygène.",
+            "Le dioxygène, c’est l’oxygène de l’air.",
+            "L’eau de chaux se trouble : il y a du dioxyde de carbone."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-1-4",
+      "prompt": "La bougie sous le verre\nOn pose un verre retourné sur une bougie allumée.\nLa flamme baisse, puis s’éteint.",
+      "question": "Pourquoi la bougie s’éteint-elle ?",
+      "spoken": "La bougie sous le verre. On pose un verre retourné sur une bougie allumée. La flamme baisse, puis s’éteint.",
+      "choices": [
+        "le verre est trop chaud",
+        "il n’y a plus assez de dioxygène",
+        "la cire est finie"
+      ],
+      "answer": "il n’y a plus assez de dioxygène",
+      "hint": "Relis la ligne « Une combustion » du rappel.",
+      "explanation": "Sous le verre, l’air ne se renouvelle pas : la bougie utilise le dioxygène, puis il n’y en a plus assez, et la flamme s’éteint.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître une transformation chimique",
+          "lines": [
+            "Transformation chimique : de nouvelles espèces chimiques apparaissent.",
+            "Les réactifs disparaissent ; les produits apparaissent.",
+            "Fondre, c’est un changement d’état ; dissoudre, c’est un mélange.",
+            "Une combustion a besoin d’un combustible et de dioxygène.",
+            "Le dioxygène, c’est l’oxygène de l’air.",
+            "L’eau de chaux se trouble : il y a du dioxyde de carbone."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-1-5",
+      "prompt": "Après la combustion du charbon\nOn verse de l’eau de chaux dans le flacon.\nOn agite : l’eau de chaux se trouble.",
+      "question": "Quel gaz s’est formé ?",
+      "spoken": "Après la combustion du charbon. On verse de l’eau de chaux dans le flacon. On agite, l’eau de chaux se trouble.",
+      "choices": [
+        "du dioxygène",
+        "de la vapeur d’eau",
+        "du dioxyde de carbone"
+      ],
+      "answer": "du dioxyde de carbone",
+      "hint": "Relis la ligne « L’eau de chaux » du rappel.",
+      "explanation": "L’eau de chaux se trouble avec le dioxyde de carbone : la combustion du charbon en a produit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître une transformation chimique",
+          "lines": [
+            "Transformation chimique : de nouvelles espèces chimiques apparaissent.",
+            "Les réactifs disparaissent ; les produits apparaissent.",
+            "Fondre, c’est un changement d’état ; dissoudre, c’est un mélange.",
+            "Une combustion a besoin d’un combustible et de dioxygène.",
+            "Le dioxygène, c’est l’oxygène de l’air.",
+            "L’eau de chaux se trouble : il y a du dioxyde de carbone."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-1-6",
+      "prompt": "Dans la combustion du charbon, le charbon et le dioxygène sont les …",
+      "spoken": "Dans la combustion du charbon, le charbon et le dioxygène sont les  (mot manquant) ",
+      "choices": [
+        "produits",
+        "réactifs",
+        "solvants"
+      ],
+      "answer": "réactifs",
+      "hint": "Ils disparaissent pendant la combustion.",
+      "explanation": "Le charbon et le dioxygène disparaissent : ce sont les réactifs. Le dioxyde de carbone, qui apparaît, est le produit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître une transformation chimique",
+          "lines": [
+            "Transformation chimique : de nouvelles espèces chimiques apparaissent.",
+            "Les réactifs disparaissent ; les produits apparaissent.",
+            "Fondre, c’est un changement d’état ; dissoudre, c’est un mélange.",
+            "Une combustion a besoin d’un combustible et de dioxygène.",
+            "Le dioxygène, c’est l’oxygène de l’air.",
+            "L’eau de chaux se trouble : il y a du dioxyde de carbone."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-1-7",
+      "prompt": "Le dioxyde de carbone qui apparaît pendant la combustion est un …",
+      "spoken": "Le dioxyde de carbone qui apparaît pendant la combustion est un  (mot manquant) ",
+      "choices": [
+        "réactif",
+        "combustible",
+        "produit"
+      ],
+      "answer": "produit",
+      "hint": "Relis la ligne « Les réactifs disparaissent » du rappel.",
+      "explanation": "Ce qui apparaît pendant une transformation chimique est un produit : ici, le dioxyde de carbone.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Reconnaître une transformation chimique",
+          "lines": [
+            "Transformation chimique : de nouvelles espèces chimiques apparaissent.",
+            "Les réactifs disparaissent ; les produits apparaissent.",
+            "Fondre, c’est un changement d’état ; dissoudre, c’est un mélange.",
+            "Une combustion a besoin d’un combustible et de dioxygène.",
+            "Le dioxygène, c’est l’oxygène de l’air.",
+            "L’eau de chaux se trouble : il y a du dioxyde de carbone."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-4e-signals-circuits",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

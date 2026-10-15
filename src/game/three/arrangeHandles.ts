@@ -5,24 +5,18 @@
 // le zoom (elles grandissent et s'écartent du choix quand la vue s'éloigne), en réécrivant les sommets seulement quand
 // elle change, sans rien allouer. Touchée, une poignée s'enfonce d'un demi-cube et s'assombrit en 120 ms, puis remonte ;
 // avec « Réduire les animations », la couleur seule. Pas de flottement au repos. Sur une place prise, la croix grise au
-// milieu du choix, dans le même maillage (choix 3 du mainteneur). Sans choix, les petits radeaux des bouts de liaison
-// (choix 1a), dans un maillage à eux, jamais en même temps que celui des flèches. La forme et la place :
-// ../world/arrangeHandles.ts.
+// milieu du choix, dans le même maillage (choix 3 du mainteneur). La forme et la place : ../world/arrangeHandles.ts.
 import * as THREE from 'three';
 import {
-  COTE_DU_BOUT,
   COTE_DU_RADEAU,
   type CleDePoignee,
-  formeDesBouts,
   formeDesPoignees,
   placerALEchelle,
   POIGNEE_MIN_PX,
-  reculsDesBouts,
   type PoigneesDuChoix,
   type StyleDesPoignees,
 } from '../world/arrangeHandles';
 import type { LabelBox } from '../world/labelLayout';
-import type { LinkEndHandle } from '../world/view';
 
 /** Le temps de l'enfoncement, puis celui de la remontée (ms). */
 const ENFONCE_MS = 120;
@@ -108,8 +102,7 @@ export function creerPoignees(scene: THREE.Scene, camera: THREE.PerspectiveCamer
         out[3 * v + 2] = cy + base[3 * v + 2] * s;
       }
     }
-    // Au milieu du choix : le petit radeau du bout choisi (jamais sous 28 px), puis la croix grise d'une place prise
-    // (jamais plus petite qu'un radeau à l'écran).
+    // Au milieu du choix : la croix grise d'une place prise (jamais plus petite qu'un radeau à l'écran).
     let piece = choix.liste.length;
     const auMilieu = (f: number) => {
       for (let v = debuts[piece]; v < debuts[piece + 1]; v++) {
@@ -119,8 +112,6 @@ export function creerPoignees(scene: THREE.Scene, camera: THREE.PerspectiveCamer
       }
       piece++;
     };
-    // Le radeau du bout (côté `COTE_DU_BOUT`) à `BOUT_MIN_PX` quand celui d'une flèche (côté `COTE_DU_RADEAU`) est à `POIGNEE_MIN_PX`.
-    if (choix.bout) auMilieu(Math.max(1, (s * BOUT_MIN_PX * COTE_DU_RADEAU) / (POIGNEE_MIN_PX * COTE_DU_BOUT)));
     if (choix.prise) auMilieu(Math.max(1, (s * COTE_DU_RADEAU) / (2 * choix.prise.bras)));
     pos.needsUpdate = true;
   };
@@ -199,7 +190,7 @@ export function creerPoignees(scene: THREE.Scene, camera: THREE.PerspectiveCamer
       echelle = 0;
       version++;
       if (!choix) return;
-      const forme = formeDesPoignees(choix.liste, style, choix.prise, choix.bout);
+      const forme = formeDesPoignees(choix.liste, style, choix.prise);
       base = forme.positions;
       debuts = forme.debuts;
       centres = new Float32Array(2 * choix.liste.length);
@@ -288,197 +279,6 @@ export function creerPoignees(scene: THREE.Scene, camera: THREE.PerspectiveCamer
       vider();
       matiere.dispose();
       choix = null;
-    },
-  };
-}
-
-/** Jamais sous cette taille à l'écran, en pixels CSS, le petit radeau d'un bout de liaison (son bouton fait 48 px). */
-const BOUT_MIN_PX = 28;
-/** Le bouton d'un bout de liaison, en pixels CSS : la plus petite cible du toucher. */
-const BOUT_BOUTON_PX = 48;
-
-export interface BoutsDesLiaisons {
-  /** Les bouts des liaisons posées (ou rien : un choix en cours, pendant le geste, hors du mode). */
-  poser(bouts: readonly LinkEndHandle[] | null): void;
-  /** À chaque image : la taille selon le zoom. */
-  animer(hauteurDeLaVue: number): void;
-  /**
-   * Chaque bout devant la caméra, vu par `cam` (pixels CSS de la vue de `w` × `h`), écrit dans `out` (cinq nombres par
-   * bout : son rang, son milieu x et y, la largeur et la hauteur de son bouton, 48 px au moins) ; rend combien.
-   */
-  aLEcran(cam: THREE.Camera, w: number, h: number, out: Float32Array): number;
-  /** Le bout de rang `i`. */
-  bout(i: number): LinkEndHandle | null;
-  /** Combien de bouts sont posés. */
-  readonly nombre: number;
-  /** Les petits radeaux en boîtes pour les étiquettes (des obstacles durs), vus par `cam`. */
-  boites(cam: THREE.Camera, w: number, h: number): LabelBox[];
-  /** Change quand les bouts changent ou changent de taille : l'écart des étiquettes se refait. */
-  readonly version: number;
-  dispose(): void;
-}
-
-/**
- * Les petits radeaux des bouts de liaison (6 octobre 2026, choix 1a du mainteneur) : un seul maillage à couleurs par
- * sommet (6 triangles par bout, un appel), sans lumière ni brume, toujours visible (sans test de profondeur, après le
- * décor) ; jamais sous `BOUT_MIN_PX` à l'écran. Rien à lire : les boutons transparents posés par-dessus portent les noms.
- * Deux bouts à moins d'un bouton l'un de l'autre à l'écran reculent chacun le long de son ponton, vers sa côte
- * (`reculsDesBouts`), à chaque changement de zoom : aucun bouton n'en couvre un autre.
- */
-export function creerBoutsDesLiaisons(scene: THREE.Scene, camera: THREE.PerspectiveCamera, style: StyleDesPoignees): BoutsDesLiaisons {
-  const matiere = new THREE.MeshBasicMaterial({ vertexColors: true, fog: false, side: THREE.DoubleSide, transparent: true, depthTest: false, depthWrite: false });
-  matiere.forceSinglePass = true;
-  let maillage: THREE.Mesh | null = null;
-  let liste: readonly LinkEndHandle[] = [];
-  /** Le recul de chaque bout le long de son ponton, en cases. */
-  let reculs: number[] = [];
-  let base: Float32Array = new Float32Array(0);
-  let debuts: number[] = [];
-  let echelle = 0;
-  /** Le zoom de la dernière mise à l'échelle (l'échelle voulue, sans plancher) : les reculs se refont quand il change. */
-  let zoom = 0;
-  let version = 0;
-  const couleur = new THREE.Color();
-  const point = new THREE.Vector3();
-  const regard = new THREE.Vector3();
-  const centre = { x: 0, y: 0, z: 0 };
-
-  const vider = () => {
-    if (!maillage) return;
-    scene.remove(maillage);
-    maillage.geometry.dispose();
-    maillage = null;
-  };
-  const ecrire = (s: number) => {
-    if (!maillage) return;
-    const pos = maillage.geometry.getAttribute('position') as THREE.BufferAttribute;
-    const out = pos.array as Float32Array;
-    liste.forEach((b, i) => {
-      const r = reculs[i] ?? 0;
-      for (let v = debuts[i]; v < debuts[i + 1]; v++) {
-        out[3 * v] = b.x - b.dx * r + base[3 * v] * s;
-        out[3 * v + 1] = b.z + base[3 * v + 1];
-        out[3 * v + 2] = b.y - b.dy * r + base[3 * v + 2] * s;
-      }
-    });
-    pos.needsUpdate = true;
-  };
-  /** L'échelle qui garderait chaque radeau à `BOUT_MIN_PX` à l'écran, au milieu des bouts (elle suit le zoom ; 1 au moins à l'usage). */
-  const echelleVoulue = (hauteur: number): number => {
-    point.set(centre.x, centre.z, centre.y);
-    camera.getWorldDirection(regard);
-    const profondeur = Math.max(0.1, point.sub(camera.position).dot(regard));
-    const parPixel = (2 * profondeur * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2)) / Math.max(1, hauteur);
-    const biais = Math.max(0.5, Math.abs(regard.y));
-    return (BOUT_MIN_PX * parPixel) / (COTE_DU_BOUT * biais);
-  };
-  let px = 0;
-  let py = 0;
-  const projeter = (cam: THREE.Camera, x: number, y: number, z: number, w: number, h: number): boolean => {
-    point.set(x, z, y).project(cam);
-    if (point.z > 1) return false;
-    px = ((point.x + 1) / 2) * w;
-    py = ((1 - point.y) / 2) * h;
-    return true;
-  };
-  /** Le bout `i`, reculé de `r` cases le long de son ponton (son recul du moment par défaut), à l'écran. */
-  const projeterLeBout = (cam: THREE.Camera, i: number, w: number, h: number, d = 0, r = reculs[i] ?? 0): boolean => {
-    const b = liste[i];
-    return projeter(cam, b.x - b.dx * r + d, b.y - b.dy * r + d, b.z, w, h);
-  };
-
-  return {
-    poser(bouts) {
-      vider();
-      liste = bouts ?? [];
-      reculs = liste.map(() => 0);
-      echelle = 0;
-      zoom = 0;
-      version++;
-      if (!liste.length) return;
-      centre.x = liste.reduce((t, b) => t + b.x, 0) / liste.length;
-      centre.y = liste.reduce((t, b) => t + b.y, 0) / liste.length;
-      centre.z = liste[0].z;
-      const forme = formeDesBouts(liste.length, style);
-      base = forme.positions;
-      debuts = forme.debuts;
-      const teintes = new Float32Array(forme.couleurs.length);
-      for (let i = 0; i < forme.couleurs.length; i += 3) {
-        couleur.setRGB(forme.couleurs[i], forme.couleurs[i + 1], forme.couleurs[i + 2], THREE.SRGBColorSpace);
-        teintes[i] = couleur.r;
-        teintes[i + 1] = couleur.g;
-        teintes[i + 2] = couleur.b;
-      }
-      const g = new THREE.BufferGeometry();
-      g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(base.length), 3));
-      g.setAttribute('color', new THREE.BufferAttribute(teintes, 3));
-      g.setIndex(new THREE.BufferAttribute(forme.index, 1));
-      maillage = new THREE.Mesh(g, matiere);
-      // Ils ne se touchent pas dans la scène : leurs boutons, par-dessus, reçoivent le toucher.
-      maillage.raycast = () => {};
-      maillage.renderOrder = 9;
-      maillage.frustumCulled = false;
-      scene.add(maillage);
-      ecrire(1);
-    },
-    animer(hauteur) {
-      if (!maillage) return;
-      const z = echelleVoulue(hauteur);
-      if (Math.abs(z - zoom) <= 0.01 * zoom) return;
-      zoom = z;
-      const s = Math.max(1, z);
-      echelle = s;
-      version++;
-      // Les bouts trop proches pour leurs boutons de 48 px reculent le long de leur ponton.
-      const w = hauteur * camera.aspect;
-      reculs = reculsDesBouts(liste.length, (i, r) => (projeterLeBout(camera, i, w, hauteur, 0, r) ? { x: px, y: py } : null), BOUT_BOUTON_PX, COTE_DU_BOUT * s);
-      ecrire(s);
-    },
-    aLEcran(cam, w, h, out) {
-      const n = Math.min(liste.length, out.length / 5);
-      const demi = (COTE_DU_BOUT / 2) * Math.max(1, echelle);
-      let k = 0;
-      for (let i = 0; i < n; i++) {
-        if (!projeterLeBout(cam, i, w, h)) continue;
-        const x = px;
-        const y = py;
-        if (!projeterLeBout(cam, i, w, h, demi)) continue;
-        out[5 * k] = i;
-        out[5 * k + 1] = x;
-        out[5 * k + 2] = y;
-        out[5 * k + 3] = Math.max(BOUT_BOUTON_PX, 2 * Math.abs(px - x));
-        out[5 * k + 4] = Math.max(BOUT_BOUTON_PX, 2 * Math.abs(py - y));
-        k++;
-      }
-      return k;
-    },
-    bout(i) {
-      return liste[i] ?? null;
-    },
-    get nombre() {
-      return liste.length;
-    },
-    boites(cam, w, h) {
-      // Le petit radeau dessiné (pas son bouton de 48 px) : les étiquettes s'en écartent sans s'éloigner pour rien.
-      const out: LabelBox[] = [];
-      const demi = (COTE_DU_BOUT / 2) * Math.max(1, echelle);
-      for (let i = 0; i < liste.length; i++) {
-        if (!projeterLeBout(cam, i, w, h)) continue;
-        const x = px;
-        const y = py;
-        if (!projeterLeBout(cam, i, w, h, demi)) continue;
-        out.push({ x, y, w: 2 * Math.abs(px - x), h: 2 * Math.abs(py - y) });
-      }
-      return out;
-    },
-    get version() {
-      return version;
-    },
-    dispose() {
-      vider();
-      matiere.dispose();
-      liste = [];
-      reculs = [];
     },
   };
 }

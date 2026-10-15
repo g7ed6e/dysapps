@@ -1,0 +1,243 @@
+{
+  "id": "physics-chemistry-3e-motion-energy-acids-bases-2",
+  "biome": "physics-chemistry-3e-motion-energy",
+  "type": "acids-bases",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-2-0",
+      "prompt": "Pour diluer un acide, on verse …",
+      "spoken": "Pour diluer un acide, on verse  (mot manquant) ",
+      "choices": [
+        "l’eau dans l’acide",
+        "l’acide dans l’eau",
+        "les deux en même temps"
+      ],
+      "answer": "l’acide dans l’eau",
+      "hint": "Relis la ligne « Pour diluer un acide » du rappel.",
+      "explanation": "On verse toujours l’acide dans l’eau, doucement. Verser l’eau dans l’acide peut le faire chauffer et projeter des gouttes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Précautions et réactions",
+          "lines": [
+            "Concentrés, les acides et les bases brûlent : blouse, lunettes et gants.",
+            "Le pictogramme « corrosif » montre un liquide qui ronge une main.",
+            "Pour diluer un acide : verser l’acide dans l’eau, jamais l’inverse.",
+            "Jamais d’eau de Javel avec un acide : un gaz toxique se forme.",
+            "Un acide réagit avec le fer : du dihydrogène se forme.",
+            "Le dihydrogène fait une petite détonation près d’une flamme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-2-1",
+      "prompt": "L’étiquette du flacon\nUn liquide coule sur une main et sur une plaque.\nLa main et la plaque sont rongées.",
+      "question": "Que dit ce pictogramme ?",
+      "spoken": "L’étiquette du flacon. Un liquide coule sur une main et sur une plaque. La main et la plaque sont rongées.",
+      "choices": [
+        "le produit est corrosif",
+        "le produit est sans danger",
+        "le produit est inflammable"
+      ],
+      "answer": "le produit est corrosif",
+      "hint": "Relis la ligne « Le pictogramme » du rappel.",
+      "explanation": "C’est le pictogramme « corrosif » : le produit ronge la peau et les objets. On met blouse, lunettes et gants.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Précautions et réactions",
+          "lines": [
+            "Concentrés, les acides et les bases brûlent : blouse, lunettes et gants.",
+            "Le pictogramme « corrosif » montre un liquide qui ronge une main.",
+            "Pour diluer un acide : verser l’acide dans l’eau, jamais l’inverse.",
+            "Jamais d’eau de Javel avec un acide : un gaz toxique se forme.",
+            "Un acide réagit avec le fer : du dihydrogène se forme.",
+            "Le dihydrogène fait une petite détonation près d’une flamme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-2-2",
+      "prompt": "L’acide chlorhydrique et le fer\nOn verse l’acide sur de la poudre de fer.\nDes bulles de gaz se forment.\nLe fer disparaît peu à peu.",
+      "question": "Est-ce une transformation chimique ?",
+      "spoken": "L’acide chlorhydrique et le fer. On verse l’acide sur de la poudre de fer. Des bulles de gaz se forment. Le fer disparaît peu à peu.",
+      "choices": [
+        "non, le fer se dissout",
+        "oui, un gaz nouveau se forme",
+        "non, le fer fond"
+      ],
+      "answer": "oui, un gaz nouveau se forme",
+      "hint": "Le gaz était-il là avant ?",
+      "explanation": "Un gaz nouveau apparaît, et le fer disparaît : c’est une transformation chimique. Le fer ne se dissout pas comme le sucre, il réagit avec l’acide.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Précautions et réactions",
+          "lines": [
+            "Concentrés, les acides et les bases brûlent : blouse, lunettes et gants.",
+            "Le pictogramme « corrosif » montre un liquide qui ronge une main.",
+            "Pour diluer un acide : verser l’acide dans l’eau, jamais l’inverse.",
+            "Jamais d’eau de Javel avec un acide : un gaz toxique se forme.",
+            "Un acide réagit avec le fer : du dihydrogène se forme.",
+            "Le dihydrogène fait une petite détonation près d’une flamme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-2-3",
+      "prompt": "Le test du gaz\nOn approche une allumette du tube.\nOn entend une petite détonation.",
+      "question": "Quel gaz s’est formé ?",
+      "spoken": "Le test du gaz. On approche une allumette du tube. On entend une petite détonation.",
+      "choices": [
+        "du dioxygène",
+        "du dihydrogène",
+        "du dioxyde de carbone"
+      ],
+      "answer": "du dihydrogène",
+      "hint": "Relis la ligne « Le dihydrogène » du rappel.",
+      "explanation": "La petite détonation signale le dihydrogène. Le dioxyde de carbone, lui, trouble l’eau de chaux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Précautions et réactions",
+          "lines": [
+            "Concentrés, les acides et les bases brûlent : blouse, lunettes et gants.",
+            "Le pictogramme « corrosif » montre un liquide qui ronge une main.",
+            "Pour diluer un acide : verser l’acide dans l’eau, jamais l’inverse.",
+            "Jamais d’eau de Javel avec un acide : un gaz toxique se forme.",
+            "Un acide réagit avec le fer : du dihydrogène se forme.",
+            "Le dihydrogène fait une petite détonation près d’une flamme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-2-4",
+      "prompt": "Dans cette réaction, l’acide et le fer disparaissent : ce sont les …",
+      "spoken": "Dans cette réaction, l’acide et le fer disparaissent : ce sont les  (mot manquant) ",
+      "choices": [
+        "produits",
+        "réactifs",
+        "gaz"
+      ],
+      "answer": "réactifs",
+      "hint": "Ce qui disparaît, ou ce qui apparaît ?",
+      "explanation": "L’acide et le fer disparaissent : ce sont les réactifs. Le dihydrogène, qui apparaît, est un produit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Précautions et réactions",
+          "lines": [
+            "Concentrés, les acides et les bases brûlent : blouse, lunettes et gants.",
+            "Le pictogramme « corrosif » montre un liquide qui ronge une main.",
+            "Pour diluer un acide : verser l’acide dans l’eau, jamais l’inverse.",
+            "Jamais d’eau de Javel avec un acide : un gaz toxique se forme.",
+            "Un acide réagit avec le fer : du dihydrogène se forme.",
+            "Le dihydrogène fait une petite détonation près d’une flamme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-2-5",
+      "prompt": "Le pH pendant la réaction\nAu début : pH 1.\nÀ la fin : pH 3.",
+      "question": "Que deviennent les ions hydrogène de l’acide ?",
+      "spoken": "Le pé-ache pendant la réaction. Au début, pé-ache 1. À la fin, pé-ache 3.",
+      "choices": [
+        "il y en a plus",
+        "il y en a autant",
+        "il y en a moins"
+      ],
+      "answer": "il y en a moins",
+      "hint": "Le nombre monte, de 1 à 3 : la solution est-elle plus ou moins acide ?",
+      "explanation": "Le pH monte : la solution est moins acide, elle a moins d’ions hydrogène. Ils ont réagi avec le fer pour former le dihydrogène.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Précautions et réactions",
+          "lines": [
+            "Concentrés, les acides et les bases brûlent : blouse, lunettes et gants.",
+            "Le pictogramme « corrosif » montre un liquide qui ronge une main.",
+            "Pour diluer un acide : verser l’acide dans l’eau, jamais l’inverse.",
+            "Jamais d’eau de Javel avec un acide : un gaz toxique se forme.",
+            "Un acide réagit avec le fer : du dihydrogène se forme.",
+            "Le dihydrogène fait une petite détonation près d’une flamme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-2-6",
+      "prompt": "La question d’Amir : le vinaigre attaque-t-il la coquille d’œuf ?\nVerre A : un morceau de coquille dans du vinaigre. Des bulles.\nVerre B : un morceau de coquille dans de l’eau. Rien.",
+      "question": "Que peut conclure Amir ?",
+      "spoken": "La question d’Amir, le vinaigre attaque-t-il la coquille d’œuf ? Verre A, un morceau de coquille dans du vinaigre. Des bulles. Verre B, un morceau de coquille dans de l’eau. Rien.",
+      "choices": [
+        "l’eau attaque la coquille",
+        "la coquille fait des bulles toute seule",
+        "le vinaigre attaque la coquille"
+      ],
+      "answer": "le vinaigre attaque la coquille",
+      "hint": "À quoi sert le verre B, sans vinaigre ?",
+      "explanation": "Seul le liquide change d’un verre à l’autre, et il n’y a de bulles qu’avec le vinaigre : l’acide attaque la coquille. Le verre B sert à comparer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Précautions et réactions",
+          "lines": [
+            "Concentrés, les acides et les bases brûlent : blouse, lunettes et gants.",
+            "Le pictogramme « corrosif » montre un liquide qui ronge une main.",
+            "Pour diluer un acide : verser l’acide dans l’eau, jamais l’inverse.",
+            "Jamais d’eau de Javel avec un acide : un gaz toxique se forme.",
+            "Un acide réagit avec le fer : du dihydrogène se forme.",
+            "Le dihydrogène fait une petite détonation près d’une flamme."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-2-7",
+      "prompt": "On ne mélange jamais l’eau de Javel et un détartrant acide : ils libèrent un gaz …",
+      "spoken": "On ne mélange jamais l’eau de Javel et un détartrant acide : ils libèrent un gaz  (mot manquant) ",
+      "choices": [
+        "toxique",
+        "parfumé",
+        "sans danger"
+      ],
+      "answer": "toxique",
+      "hint": "Relis la ligne « Jamais d’eau de Javel » du rappel.",
+      "explanation": "L’eau de Javel et un acide forment un gaz toxique, qui irrite les poumons. On n’utilise jamais deux produits ménagers ensemble.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Précautions et réactions",
+          "lines": [
+            "Concentrés, les acides et les bases brûlent : blouse, lunettes et gants.",
+            "Le pictogramme « corrosif » montre un liquide qui ronge une main.",
+            "Pour diluer un acide : verser l’acide dans l’eau, jamais l’inverse.",
+            "Jamais d’eau de Javel avec un acide : un gaz toxique se forme.",
+            "Un acide réagit avec le fer : du dihydrogène se forme.",
+            "Le dihydrogène fait une petite détonation près d’une flamme."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-3e-motion-energy",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

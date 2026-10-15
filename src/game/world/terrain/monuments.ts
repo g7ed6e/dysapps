@@ -1,22 +1,21 @@
 // Les monuments, sur leur îlot au large.
 import { type ArchipelagoId, DANS_LE_CIEL, landCells, mapOf } from '../map';
-import { BIOMES, BLOC, BLOCKS } from '../../biomes';
+import { BLOC, BLOCKS } from '../../biomes';
 import { getArchipelago } from '../archipelago';
 import { placedLinksOf } from '../linkGeometry';
 import { dockBox, dockOrigin } from '../harbor';
 import { MONUMENT_ISLET, type MonumentDef, monumentsOf } from '../monuments';
 import { monumentIslet } from '../footprint';
-import { ORIGINE_DES_MONUMENTS, planCells, type PlanDef, planOrigin } from '../plans';
+import { isPlanDone, ORIGINE_DES_MONUMENTS, planCells, type PlanDef, planOrigin } from '../plans';
 import type { World } from '../../engine';
 import type { PlaceId, VoxelCube } from '../cube';
 import { SNOW } from '../decor';
-import { bossIsletOrigin, ISLET_H, ISLET_W } from './islets';
 import { bridgePath } from './links';
 import { whaleSpots } from './sea';
 import { DEPTH, origineDe, taperLayers, TEXTURES } from './base';
 
 /**
- * Où un îlot de monument ne va pas : la terre des îles et leur abord (trois cases), les îlots des Gardiens, le port et sa
+ * Où un îlot de monument ne va pas : la terre des îles et leur abord (trois cases), le port et sa
  * jetée, les ouvrages et leur abord, la place des baleines. Sert à placer les monuments (une fois) et à le vérifier.
  */
 export function monumentBlocked(a: ArchipelagoId, links: readonly string[]): (x: number, y: number) => boolean {
@@ -24,11 +23,7 @@ export function monumentBlocked(a: ArchipelagoId, links: readonly string[]): (x:
   const near = (x: number, y: number, r: number) => {
     for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) solid.add(`${x + dx},${y + dy}`);
   };
-  for (const def of mapOf(a)) {
-    for (const c of landCells(def)) near(c.x, c.y, 3);
-    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
-    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) near(o.x + x, o.y + y, 2);
-  }
+  for (const def of mapOf(a)) for (const c of landCells(def)) near(c.x, c.y, 3);
   for (const def of placedLinksOf(a, links)) for (const c of bridgePath(def, links)) near(c.x, c.y, 3);
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) near(x, y, 3);
@@ -45,7 +40,7 @@ export function monumentIsletFree(a: ArchipelagoId, links: readonly string[], x0
 /**
  * Le point du monde où tombe la clé (0, 0, 0) d'un monument : une case de son plan (`planCells`, clé relative au cœur
  * de son île, figée par `ORIGINE_DES_MONUMENTS`) est dessinée en `monumentAnchor + case`. Le rendu suit l'îlot
- * (`monumentIslet`, la case (0, 0, 0) du plan au-dessus de son coin intérieur ; il suit son lieu, GD-9) ; les clés des
+ * (`monumentIslet`, la case (0, 0, 0) du plan au-dessus de son coin intérieur ; il suit son lieu, GD-9, sauf un îlot détaché) ; les clés des
  * sauvegardes, elles, ne bougent pas
  * si l'îlot ou le cœur bougent.
  */
@@ -57,7 +52,7 @@ export function monumentAnchor(m: MonumentDef): { x: number; y: number; z: numbe
 }
 
 /**
- * Le point du monde où tombe la clé (0, 0, 0) d'une étape du Bloc-Navire (plan du port) : une case de son plan est
+ * Le point du monde où tombe la clé (0, 0, 0) d'une étape de la Nef (plan du port) : une case de son plan est
  * dessinée en `ancreDuQuai + case`, comme le navire au quai (`dockOrigin`, ses cases locales). Le rendu suit le quai ;
  * les clés des sauvegardes restent celles de `ORIGINE_DU_QUAI`.
  */
@@ -68,7 +63,7 @@ export function ancreDuQuai(plan: PlanDef): { x: number; y: number; z: number } 
 }
 
 /**
- * Ce qui sépare la clé d'une case du Bloc-Navire de la case du plan de son île-port où elle est dessinée (le repère de
+ * Ce qui sépare la clé d'une case de la Nef de la case du plan de son île-port où elle est dessinée (le repère de
  * l'île, un cran plus bas : `rappelsDeLaVue`) : (0, 0, 0) tant que le quai est là où ses clés ont été figées.
  */
 export function decalageDuQuai(plan: PlanDef): { x: number; y: number; z: number } {
@@ -96,7 +91,7 @@ export function monumentIslets(a: ArchipelagoId, village: World, cubes: VoxelCub
     const place: PlaceId = `monument:${m.id}`;
     const n = MONUMENT_ISLET;
     const land: { x: number; y: number }[] = [];
-    // L'îlot suit le lieu au large duquel il se tient (GD-9, `monumentIslet`) ; le monument garde son orientation.
+    // L'îlot suit le lieu au large duquel il se tient (GD-9, `monumentIslet`), sauf un îlot détaché (`MonumentDef.detache`), qui reste à sa place ; le monument garde son orientation.
     const ilot = monumentIslet(m);
     for (let dx = 0; dx < n; dx++)
       for (let dy = 0; dy < n; dy++) {
@@ -115,9 +110,13 @@ export function monumentIslets(a: ArchipelagoId, village: World, cubes: VoxelCub
       for (const t of taperLayers(land)) cubes.push({ x: t.x, y: t.y, z: alt - DEPTH - t.d, color: BLOCKS[BLOC.pierre].side, texture: 'pierre', tag: m.biome, place, sol: true });
     const done = new Set(village.parts[m.id] ?? []);
     const o = monumentAnchor(m);
+    // Fini (toutes ses cases posées) : ses blocs `litWhenDone` s'allument (GD-10, la lanterne du phare du large).
+    const fini = m.litWhenDone !== undefined && isPlanDone(m, village.parts);
     for (const c of planCells(m)) {
       const bd = BLOCKS[c.block];
-      cubes.push({ x: o.x + c.x, y: o.y + c.y, z: o.z + c.z, color: bd.side, top: bd.top, texture: bd.texture, tag: m.biome, ghost: !done.has(c.key), place });
+      const cube: VoxelCube = { x: o.x + c.x, y: o.y + c.y, z: o.z + c.z, color: bd.side, top: bd.top, texture: bd.texture, tag: m.biome, ghost: !done.has(c.key), place };
+      if (fini && c.block === m.litWhenDone) cube.lit = true;
+      cubes.push(cube);
     }
   }
 }

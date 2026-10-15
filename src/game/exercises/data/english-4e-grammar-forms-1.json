@@ -1,0 +1,231 @@
+{
+  "id": "english-4e-grammar-forms-1",
+  "biome": "english-4e-grammar",
+  "type": "forms",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Choisis ce qui complète la fiche ou le message en anglais. La règle est affichée.",
+  "items": [
+    {
+      "key": "english-4e-grammar-forms-1-0",
+      "prompt": "My name is Lucas Martin. First name: …",
+      "spoken": "My name is Lucas Martin. First name: blank",
+      "choices": [
+        "Lucas",
+        "Martin",
+        "Lucas Martin"
+      ],
+      "answer": "Lucas",
+      "hint": "Le prénom ou le nom de famille ? Relis la règle.",
+      "explanation": "first name = le prénom : Lucas. Martin est le nom de famille, surname ; la case ne demande que le prénom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remplir une fiche",
+          "lines": [
+            "first name = le prénom ; surname = le nom de famille",
+            "date of birth = la date de naissance ; age = l’âge",
+            "address = l’adresse ; town = la ville ; country = le pays",
+            "nationality = la nationalité (un adjectif : Italian, Irish)",
+            "languages = les langues ; hobbies = les loisirs ; pets = les animaux"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-1-1",
+      "prompt": "My name is Emma Brown. Surname: …",
+      "spoken": "My name is Emma Brown. Surname: blank",
+      "choices": [
+        "Brown",
+        "Emma",
+        "Emma Brown"
+      ],
+      "answer": "Brown",
+      "hint": "Le prénom ou le nom de famille ? Relis la règle.",
+      "explanation": "surname = le nom de famille : Brown. Emma est le prénom, first name ; la case ne demande que le nom de famille.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remplir une fiche",
+          "lines": [
+            "first name = le prénom ; surname = le nom de famille",
+            "date of birth = la date de naissance ; age = l’âge",
+            "address = l’adresse ; town = la ville ; country = le pays",
+            "nationality = la nationalité (un adjectif : Italian, Irish)",
+            "languages = les langues ; hobbies = les loisirs ; pets = les animaux"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-1-2",
+      "prompt": "I’m from Spain. Nationality: …",
+      "spoken": "I’m from Spain. Nationality: blank",
+      "choices": [
+        "Spanish",
+        "Spain",
+        "Madrid"
+      ],
+      "answer": "Spanish",
+      "hint": "La nationalité est un adjectif : relis la règle.",
+      "explanation": "La nationalité est un adjectif : Spanish, espagnol. Spain, c’est le pays ; Madrid, la capitale.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remplir une fiche",
+          "lines": [
+            "first name = le prénom ; surname = le nom de famille",
+            "date of birth = la date de naissance ; age = l’âge",
+            "address = l’adresse ; town = la ville ; country = le pays",
+            "nationality = la nationalité (un adjectif : Italian, Irish)",
+            "languages = les langues ; hobbies = les loisirs ; pets = les animaux"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-1-3",
+      "prompt": "…: 14 Church Street, Bristol",
+      "spoken": "blank: fourteen Church Street, Bristol.",
+      "choices": [
+        "Address",
+        "Date of birth",
+        "Phone number"
+      ],
+      "answer": "Address",
+      "hint": "Un numéro, une rue, une ville : où habite-t-on ?",
+      "explanation": "14 Church Street, Bristol : un numéro, une rue et une ville. C’est l’adresse, address, avec deux d et deux s en anglais. Phone number = le numéro de téléphone.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remplir une fiche",
+          "lines": [
+            "first name = le prénom ; surname = le nom de famille",
+            "date of birth = la date de naissance ; age = l’âge",
+            "address = l’adresse ; town = la ville ; country = le pays",
+            "nationality = la nationalité (un adjectif : Italian, Irish)",
+            "languages = les langues ; hobbies = les loisirs ; pets = les animaux"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-1-4",
+      "prompt": "…: 3 May 2012",
+      "spoken": "blank: the third of May, twenty twelve.",
+      "choices": [
+        "Date of birth",
+        "Age",
+        "Address"
+      ],
+      "answer": "Date of birth",
+      "hint": "C’est une date, avec un jour, un mois et une année.",
+      "explanation": "3 May 2012 est une date : le jour où l’on est né, date of birth. Age demande un nombre d’années, pas une date.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remplir une fiche",
+          "lines": [
+            "first name = le prénom ; surname = le nom de famille",
+            "date of birth = la date de naissance ; age = l’âge",
+            "address = l’adresse ; town = la ville ; country = le pays",
+            "nationality = la nationalité (un adjectif : Italian, Irish)",
+            "languages = les langues ; hobbies = les loisirs ; pets = les animaux"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-1-5",
+      "prompt": "…: football, drawing",
+      "spoken": "blank: football, drawing",
+      "choices": [
+        "Hobbies",
+        "Languages",
+        "Pets"
+      ],
+      "answer": "Hobbies",
+      "hint": "Le football et le dessin : qu’est-ce qu’on en fait, après l’école ?",
+      "explanation": "Le football et le dessin sont des loisirs : hobbies. Languages = les langues ; pets = les animaux de compagnie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remplir une fiche",
+          "lines": [
+            "first name = le prénom ; surname = le nom de famille",
+            "date of birth = la date de naissance ; age = l’âge",
+            "address = l’adresse ; town = la ville ; country = le pays",
+            "nationality = la nationalité (un adjectif : Italian, Irish)",
+            "languages = les langues ; hobbies = les loisirs ; pets = les animaux"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-1-6",
+      "prompt": "I speak French and English. …: French, English",
+      "spoken": "I speak French and English. blank: French, English",
+      "choices": [
+        "Languages",
+        "Nationality",
+        "Hobbies"
+      ],
+      "answer": "Languages",
+      "hint": "I speak = je parle. Que parle-t-on ?",
+      "explanation": "On parle le français et l’anglais : ce sont des langues, languages. Nationality demande d’où l’on est, pas les langues qu’on parle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remplir une fiche",
+          "lines": [
+            "first name = le prénom ; surname = le nom de famille",
+            "date of birth = la date de naissance ; age = l’âge",
+            "address = l’adresse ; town = la ville ; country = le pays",
+            "nationality = la nationalité (un adjectif : Italian, Irish)",
+            "languages = les langues ; hobbies = les loisirs ; pets = les animaux"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-forms-1-7",
+      "prompt": "I live in Leeds, in England. Country: …",
+      "spoken": "I live in Leeds, in England. Country: blank",
+      "choices": [
+        "England",
+        "Leeds",
+        "English"
+      ],
+      "answer": "England",
+      "hint": "Le pays, la ville ou la langue ? Relis la règle.",
+      "explanation": "country = le pays : England, l’Angleterre. Leeds est la ville, town ; English est la langue ou la nationalité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remplir une fiche",
+          "lines": [
+            "first name = le prénom ; surname = le nom de famille",
+            "date of birth = la date de naissance ; age = l’âge",
+            "address = l’adresse ; town = la ville ; country = le pays",
+            "nationality = la nationalité (un adjectif : Italian, Irish)",
+            "languages = les langues ; hobbies = les loisirs ; pets = les animaux"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien écrit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-4e-grammar",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

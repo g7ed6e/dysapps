@@ -1,0 +1,247 @@
+{
+  "id": "english-6e-vocabulary-famous-people-1",
+  "biome": "english-6e-vocabulary",
+  "type": "famous-people",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Lis la question, puis la fiche en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "english-6e-vocabulary-famous-people-1-0",
+      "prompt": "Name: William Shakespeare\nJob: writer\nNationality: English\nFamous play: Romeo and Juliet",
+      "question": "Quel était le métier de William Shakespeare ?",
+      "spoken": "Name, William Shakespeare. Job, writer. Nationality, English. Famous play, Romeo and Juliet.",
+      "choices": [
+        "Écrivain",
+        "Peintre",
+        "Chanteur"
+      ],
+      "choicesLang": "fr",
+      "answer": "Écrivain",
+      "hint": "Trouve la ligne Job. Le mot ressemble au verbe write, écrire.",
+      "explanation": "writer = écrivain : le mot vient de write, écrire. Shakespeare a écrit des pièces de théâtre, comme Roméo et Juliette. Un peintre se dit painter, un chanteur singer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une fiche",
+          "lines": [
+            "Lis d’abord la question, puis cherche la ligne qui répond.",
+            "name = le nom ; job = le métier ; nickname = le surnom",
+            "famous = célèbre ; nationality = la nationalité",
+            "he can = il sait ; lives in = habite à ; follows = suit",
+            "wears = porte (un vêtement) ; was = était (le passé de is)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-1-1",
+      "prompt": "Name: Neil Armstrong\nJob: astronaut\nNationality: American\nFamous for: the first man on the Moon, in 1969",
+      "question": "Où Neil Armstrong est-il allé en 1969 ?",
+      "spoken": "Name, Neil Armstrong. Job, astronaut. Nationality, American. Famous for, the first man on the Moon, in nineteen sixty-nine.",
+      "choices": [
+        "Sur la Lune",
+        "Sur Mars",
+        "En haut d’une montagne"
+      ],
+      "choicesLang": "fr",
+      "answer": "Sur la Lune",
+      "hint": "Lis la dernière ligne jusqu’au bout. Moon et mountain commencent tous les deux par mo.",
+      "explanation": "the Moon = la Lune : en 1969, Neil Armstrong est le premier homme à marcher sur la Lune. Personne n’est encore allé sur Mars, et une montagne se dit mountain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une fiche",
+          "lines": [
+            "Lis d’abord la question, puis cherche la ligne qui répond.",
+            "name = le nom ; job = le métier ; nickname = le surnom",
+            "famous = célèbre ; nationality = la nationalité",
+            "he can = il sait ; lives in = habite à ; follows = suit",
+            "wears = porte (un vêtement) ; was = était (le passé de is)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-1-2",
+      "prompt": "Name: Florence Nightingale\nJob: nurse\nNationality: British\nNickname: the Lady with the Lamp",
+      "question": "Quel objet est dans le surnom de Florence Nightingale ?",
+      "spoken": "Name, Florence Nightingale. Job, nurse. Nationality, British. Nickname, the Lady with the Lamp.",
+      "choices": [
+        "Une lampe",
+        "Une lettre",
+        "Un livre"
+      ],
+      "choicesLang": "fr",
+      "answer": "Une lampe",
+      "hint": "Trouve la ligne Nickname, puis lis le dernier mot : il ressemble à un mot français.",
+      "explanation": "the Lady with the Lamp = la dame à la lampe. Cette infirmière (nurse) passait voir les soldats blessés la nuit, une lampe à la main. Une lettre se dit letter, un livre book.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une fiche",
+          "lines": [
+            "Lis d’abord la question, puis cherche la ligne qui répond.",
+            "name = le nom ; job = le métier ; nickname = le surnom",
+            "famous = célèbre ; nationality = la nationalité",
+            "he can = il sait ; lives in = habite à ; follows = suit",
+            "wears = porte (un vêtement) ; was = était (le passé de is)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-1-3",
+      "prompt": "Sherlock Holmes\nHe lives in London, in Baker Street.\nHe is a detective.\nHis friend is Doctor Watson.",
+      "question": "Quel est le métier de Sherlock Holmes ?",
+      "spoken": "Sherlock Holmes. He lives in London, in Baker Street. He is a detective. His friend is Doctor Watson.",
+      "choices": [
+        "Détective",
+        "Médecin",
+        "Policier"
+      ],
+      "choicesLang": "fr",
+      "answer": "Détective",
+      "hint": "Lis la ligne He is a. La dernière ligne parle de son ami, pas de lui.",
+      "explanation": "He is a detective = il est détective : il mène des enquêtes. Le docteur, c’est son ami Watson. Un policier se dit a police officer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une fiche",
+          "lines": [
+            "Lis d’abord la question, puis cherche la ligne qui répond.",
+            "name = le nom ; job = le métier ; nickname = le surnom",
+            "famous = célèbre ; nationality = la nationalité",
+            "he can = il sait ; lives in = habite à ; follows = suit",
+            "wears = porte (un vêtement) ; was = était (le passé de is)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-1-4",
+      "prompt": "Alice in Wonderland\nAlice is a little girl.\nShe sees a white rabbit with a watch.\nShe follows it down a hole.",
+      "question": "Quel animal Alice suit-elle ?",
+      "spoken": "Alice in Wonderland. Alice is a little girl. She sees a white rabbit with a watch. She follows it down a hole.",
+      "choices": [
+        "Un lapin blanc",
+        "Un chat blanc",
+        "Une souris blanche"
+      ],
+      "choicesLang": "fr",
+      "answer": "Un lapin blanc",
+      "hint": "Cherche le mot juste après white : c’est l’animal.",
+      "explanation": "a white rabbit = un lapin blanc : Alice le suit dans un trou. Un chat se dit cat, une souris mouse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une fiche",
+          "lines": [
+            "Lis d’abord la question, puis cherche la ligne qui répond.",
+            "name = le nom ; job = le métier ; nickname = le surnom",
+            "famous = célèbre ; nationality = la nationalité",
+            "he can = il sait ; lives in = habite à ; follows = suit",
+            "wears = porte (un vêtement) ; was = était (le passé de is)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-1-5",
+      "prompt": "Peter Pan\nPeter is a boy. He lives in Neverland.\nHe never grows up.\nHe can fly!",
+      "question": "Que sait faire Peter Pan ?",
+      "spoken": "Peter Pan. Peter is a boy. He lives in Neverland. He never grows up. He can fly!",
+      "choices": [
+        "Voler",
+        "Nager",
+        "Grandir"
+      ],
+      "choicesLang": "fr",
+      "answer": "Voler",
+      "hint": "Cherche le petit mot can : il dit ce qu’on sait faire.",
+      "explanation": "He can fly = il sait voler. He never grows up = il ne grandit jamais : Peter reste un enfant. Nager se dit swim.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une fiche",
+          "lines": [
+            "Lis d’abord la question, puis cherche la ligne qui répond.",
+            "name = le nom ; job = le métier ; nickname = le surnom",
+            "famous = célèbre ; nationality = la nationalité",
+            "he can = il sait ; lives in = habite à ; follows = suit",
+            "wears = porte (un vêtement) ; was = était (le passé de is)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-1-6",
+      "prompt": "Peter Rabbit\nPeter is a little rabbit.\nHe wears a blue jacket.\nHe likes the vegetables in Mr McGregor’s garden.",
+      "question": "De quelle couleur est la veste de Peter ?",
+      "spoken": "Peter Rabbit. Peter is a little rabbit. He wears a blue jacket. He likes the vegetables in Mister McGregor’s garden.",
+      "choices": [
+        "Bleue",
+        "Noire",
+        "Marron"
+      ],
+      "choicesLang": "fr",
+      "answer": "Bleue",
+      "hint": "blue et black commencent tous les deux par bl : lis le mot jusqu’au bout.",
+      "explanation": "a blue jacket = une veste bleue (jacket = veste). Noir se dit black, marron brown.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une fiche",
+          "lines": [
+            "Lis d’abord la question, puis cherche la ligne qui répond.",
+            "name = le nom ; job = le métier ; nickname = le surnom",
+            "famous = célèbre ; nationality = la nationalité",
+            "he can = il sait ; lives in = habite à ; follows = suit",
+            "wears = porte (un vêtement) ; was = était (le passé de is)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-famous-people-1-7",
+      "prompt": "Queen Elizabeth II\nShe was the Queen of the United Kingdom\nfor seventy years.",
+      "question": "Pendant combien d’années Élisabeth a-t-elle été reine ?",
+      "spoken": "Queen Elizabeth the Second. She was the Queen of the United Kingdom for seventy years.",
+      "choices": [
+        "7 ans",
+        "17 ans",
+        "70 ans"
+      ],
+      "choicesLang": "fr",
+      "answer": "70 ans",
+      "hint": "Écoute la fin du nombre : -teen (de 13 à 19) ou -ty (20, 30, 40…) ?",
+      "explanation": "seventy = 70 : -ty, ce sont les dizaines. Elle a été reine de 1952 à 2022. 17 se dit seventeen (-teen), et 7 seven.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire une fiche",
+          "lines": [
+            "Lis d’abord la question, puis cherche la ligne qui répond.",
+            "name = le nom ; job = le métier ; nickname = le surnom",
+            "famous = célèbre ; nationality = la nationalité",
+            "he can = il sait ; lives in = habite à ; follows = suit",
+            "wears = porte (un vêtement) ; was = était (le passé de is)"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-6e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

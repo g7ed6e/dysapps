@@ -6,7 +6,7 @@
   "lang": "es",
   "instruction": "Lis et écoute la phrase en espagnol, puis choisis la bonne réaction. La règle est affichée : lis-la avant de répondre.",
   "programme": [
-    "c4.es.dialoguer.reagir"
+    "c4.es.5e.interagir.reagir"
   ],
   "items": [
     {

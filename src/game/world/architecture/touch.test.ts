@@ -5,8 +5,9 @@ import type { VoxelCube } from '../cube';
 import { toutConstruit } from '../budget';
 import { batimentsDe, caseDeLaConstruction, caseDeLaPiece, maillageDeLaConstruction, type GroupeDeConstruction, type MaillageDeLaConstruction } from '../construction';
 import { worldCubes } from '../terrain';
-import { architectureDe, FORMES, indexDuPlan, pieceDe, voisinageDe, type Forme } from '.';
+import { architectureDe, FORMES, indexDuPlan, MOTIF, pieceDe, voisinageDe, type Forme } from '.';
 import { KIT_6E } from './kits/6e';
+import { barriereDe } from './lowPieces';
 
 type P = { x: number; y: number; z: number };
 const cube = (x: number, y: number, z: number, texture = 'planches', autre: Partial<VoxelCube> = {}): VoxelCube => ({ x, y, z, color: '#888888', texture, tag: 't', ...autre });
@@ -27,15 +28,20 @@ function points(pts: P[]): P[] {
 /** Le point (repère Three) est-il dans la case (grille), bords compris ? */
 const dans = (p: P, c: P) => p.x >= c.x - 1e-6 && p.x <= c.x + 1 + 1e-6 && p.z >= c.y - 1e-6 && p.z <= c.y + 1 + 1e-6 && p.y >= c.z - 1e-6 && p.y <= c.z + 1 + 1e-6;
 
-/** Touche chaque triangle de l'opaque en plusieurs points : la case rendue contient le point, et c'est une case du plan. */
+/**
+ * Touche chaque triangle de l'opaque en plusieurs points : la case rendue contient le point, et c'est une case du plan.
+ * Un objet dessiné comme un modèle (le trophée d'un Gardien rallumé, world/objects/) rend la plus proche de ses cases,
+ * qui peut ne pas contenir le point (le lingot posé à cheval sur la pierre et l'or) : seulement une de ses cases.
+ */
 function toucherPartout(m: MaillageDeLaConstruction, cases: Set<string>): { pieces: number; blocs: number } {
   let pieces = 0;
   let blocs = 0;
   for (let t = 0; t < m.opaque.indices.length / 3; t++) {
     const { pts, n } = triangle(m.opaque, t);
+    const modele = (m.monuments ?? []).some((q) => t >= q.opaque[0] && t < q.opaque[1]);
     for (const p of points(pts)) {
       const r = caseDeLaPiece(m, 'opaque', t, p, n) ?? caseDeLaConstruction(p, n);
-      expect(dans(p, r.cell), `${t} ${JSON.stringify(p)} → ${JSON.stringify(r.cell)}`).toBe(true);
+      if (!modele) expect(dans(p, r.cell), `${t} ${JSON.stringify(p)} → ${JSON.stringify(r.cell)}`).toBe(true);
       expect(cases.has(`${r.cell.x},${r.cell.y},${r.cell.z}`), `${t} → ${JSON.stringify(r.cell)}`).toBe(true);
       expect(Math.abs(r.next.x - r.cell.x) + Math.abs(r.next.y - r.cell.y) + Math.abs(r.next.z - r.cell.z)).toBe(1);
     }
@@ -87,7 +93,7 @@ describe('Le toucher des pièces du lot 7b : toute la case, pour chaque forme', 
       const cubes = tous.filter((c) => c.tag === ile);
       const m = maillageDeLaConstruction('6e', cubes);
       const archi = architectureDe('6e', cubes, { batiments });
-      for (const p of archi.pieces) vues.add(p.piece.split('.')[1]);
+      for (const p of archi.pieces) if (p.famille === 'toit') vues.add(p.piece.split('.')[1]);
       const { pieces } = toucherPartout(m, new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`)));
       expect(pieces, ile).toBeGreaterThan(0);
     }
@@ -106,6 +112,41 @@ describe('Le toucher des pièces du lot 7b : toute la case, pour chaque forme', 
     const archi = architectureDe('6e', cubes, { kit: KIT_6E, surLeVide: () => true });
     expect(archi.pieces.map((p) => p.piece.split('.')[2])).toEqual(['pilotis', 'pilotis']);
     expect(toucherPartout(m, new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`))).pieces).toBeGreaterThan(0);
+  });
+});
+
+describe('Le toucher de la table commune (8 octobre 2026) : toute la case, pour chaque forme', () => {
+  const sol = (cubes: VoxelCube[]) => cubes.filter((c) => c.z === 1).map((c) => cube(c.x, c.y, 0, 'herbe', { sol: true }));
+  const casesDe = (cubes: VoxelCube[]) => new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`));
+
+  it('le bac de pierre (une pierre seule et basse) : la case du bac, partout sur ses faces', () => {
+    const cubes = [cube(0, 0, 1, 'galet')];
+    const archi = architectureDe('6e', cubes, { kit: KIT_6E });
+    expect(archi.pieces.map((p) => p.piece)).toEqual(['mur.seul.pied.chaperon']);
+    const m = maillageDeLaConstruction('6e', cubes, sol(cubes), { kit: KIT_6E });
+    expect(toucherPartout(m, casesDe(cubes)).pieces).toBeGreaterThan(0);
+  });
+
+  it('la marche devant une porte peinte, entre deux murs de bardage : la case de chacune', () => {
+    const cubes = [cube(0, 1, 1, 'cabine'), cube(1, 1, 1, 'porte'), cube(2, 1, 1, 'cabine'), cube(0, 1, 2, 'cabine'), cube(1, 1, 2, 'cabine'), cube(2, 1, 2, 'cabine'), cube(1, 0, 1, 'escalier')];
+    const archi = architectureDe('6e', cubes, { kit: KIT_6E });
+    expect(archi.peints.get('1,1,1')!.peinture.motifs[0]).toBe(MOTIF.vantail);
+    expect(archi.peints.get('0,1,2')!.peinture.fond).toBe('matiere');
+    expect(archi.pieces.map((p) => p.cube.texture)).toEqual(['escalier']);
+    const m = maillageDeLaConstruction('6e', cubes, sol(cubes), { kit: KIT_6E });
+    const { pieces, blocs } = toucherPartout(m, casesDe(cubes));
+    expect(pieces).toBeGreaterThan(0);
+    expect(blocs).toBeGreaterThan(0);
+  });
+
+  it('la barrière (prête, pas branchée) de chaque forme : la case de la barrière, poteaux et lisses compris', () => {
+    const kit = { ...KIT_6E, finitions: { ...KIT_6E.finitions, barriere: barriereDe } };
+    const { cubes: murs } = mursDeChaqueForme();
+    const cubes = murs.filter((c) => c.z === 1).map((c) => ({ ...c, texture: 'barriere' }));
+    const archi = architectureDe('6e', cubes, { kit });
+    expect(new Set(archi.pieces.map((p) => p.piece.split('.')[1])).size).toBe(FORMES.length);
+    const m = maillageDeLaConstruction('6e', cubes, sol(cubes), { kit });
+    expect(toucherPartout(m, casesDe(cubes)).pieces).toBeGreaterThan(0);
   });
 });
 
