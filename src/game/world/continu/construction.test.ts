@@ -47,7 +47,7 @@ describe('Le lieu se rebâtit lui-même', () => {
       }
   });
 
-  it('le Phare monte rang par rang ; sa lanterne coiffe le fût, allumée une fois son haut posé et sa scénette réussie', () => {
+  it('le Phare monte rang par rang ; sa lanterne coiffe le fût, allumée dès que son haut est posé', () => {
     const low = boundsOf(constructionFacets('phare', [slice(0, 0, 1 / 3)], ground));
     const high = boundsOf(constructionFacets('phare', [slice(0, 2 / 3, 1)], ground));
     expect(high.max[1]).toBeGreaterThan(low.max[1] + 2);
@@ -69,10 +69,10 @@ describe('Le lieu se rebâtit lui-même', () => {
     const glass = boundsOf(constructionFacets('phare', [slice(1, 1 / 3, 2 / 3)], ground));
     const lit = boundsOf(placeFacets(light, { x: placeById('phare').center.x, y: 0, z: placeById('phare').center.z }));
     expect(lit.max[0] - lit.min[0]).toBeGreaterThan(glass.max[0] - glass.min[0]);
-    // Allumée : le haut posé et la scénette réussie, l'un sans l'autre jamais.
-    expect(lanternLit([slice(0, 0, 1), slice(1, 0, 1)], true)).toBe(true);
-    expect(lanternLit([slice(0, 0, 1), slice(1, 0, 1)], false)).toBe(false);
-    expect(lanternLit([slice(0, 0, 1), slice(1, 0, 0.5)], true)).toBe(false);
+    // Allumée dès que son haut est posé, sa scénette jouée ou non ; pas avant.
+    expect(lanternLit([slice(0, 0, 1), slice(1, 0, 1)])).toBe(true);
+    expect(lanternLit([slice(0, 0, 1), slice(1, 0, 0.5)])).toBe(false);
+    expect(lanternLit([slice(0, 0, 1)])).toBe(false);
   });
 
   it('la cloche du Phare, tombée au pied de la tour, y reste jusqu’à ce que la galerie la raccroche ; les perches des Filets jusqu’au séchoir', () => {
@@ -255,13 +255,25 @@ describe('La pose d’une partie', () => {
     expect(count()).toBe(1);
     expect(log.at(-2)).toBe('land');
     expect(run.active).toBe(false);
-    // Une autre pose pendant la première : la première finit d'abord.
+    // Deux poses d'affilée (deux réussites rapprochées) : la première passe la main, posée, sans dire sa fin ; seule la
+    // seconde la dit, à son terme (« Succès débloqué » ne sort pas au milieu de la seconde).
     log.length = 0;
     run.start(0, false);
-    run.start(0.2, false);
+    run.step(POSE_SECONDS.rise + 0.1);
+    run.handOver();
+    expect(count()).toBe(0);
+    expect(log.at(-1)).toBe('land');
+    run.start(1, false);
+    t = 1;
+    while (run.active && t < 20) {
+      run.step((t += 0.05));
+      if (run.active) expect(count()).toBe(0);
+    }
     expect(count()).toBe(1);
-    run.finish();
-    expect(count()).toBe(2);
+    // Sans pose en cours, passer la main ne fait rien.
+    log.length = 0;
+    run.handOver();
+    expect(log).toEqual([]);
     // Avec « Réduire les animations » : posée tout de suite, finie après un temps.
     log.length = 0;
     run.start(0, true);

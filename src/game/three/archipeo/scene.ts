@@ -333,6 +333,8 @@ function unshadedLamp(m: THREE.MeshLambertMaterial): THREE.MeshLambertMaterial {
   const [r, g, b] = linearRgb(LAMP_COLOR);
   m.onBeforeCompile = (shader) => {
     shader.uniforms.lampColor = { value: new THREE.Vector3(r, g, b) };
+    // Garde : si Three.js renomme ses morceaux de shader, la lampe redevient ombrée ; on le dit en développement.
+    if (import.meta.env.DEV && !shader.fragmentShader.includes('#include <opaque_fragment>')) console.warn('unshadedLamp : #include <opaque_fragment> introuvable, la lampe reste ombrée');
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', '#include <common>\nuniform vec3 lampColor;')
       .replace(
@@ -460,7 +462,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const landmarkMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landmarkMaterial));
   const poseMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: false, emissive: POSE_GLOW });
   const poseMesh = new THREE.Mesh(new THREE.BufferGeometry(), poseMaterial);
-  // La lumière de la lanterne du Phare, allumée (son haut posé, sa scénette réussie) : réunie aux lieux, de la couleur
+  // La lumière de la lanterne du Phare, allumée (son haut posé) : réunie aux lieux, de la couleur
   // de la lampe, que leurs matériaux dessinent sans ombre (`unshadedLamp`) ; aucun appel de plus.
   const lampFacets = placeFacets(lanternLight(), feet.get('phare') ?? new THREE.Vector3());
   let lampShown = false;
@@ -645,7 +647,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     placesKey = k;
     const rest: Facets[] = [];
     const mark: Facets[] = [];
-    lampShown = lanternLit(posedOf('phare'), placesState?.traces.phare ?? false);
+    lampShown = lanternLit(posedOf('phare'));
     for (const p of PLACES) {
       const ruin = ruins.get(p.id);
       const ruinTop = ruinTops.get(p.id);
@@ -1328,7 +1330,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     reactionMesh.visible = false;
     reaction = null;
     // La lampe s'allume si la lanterne est posée et encore éteinte (allumée, la lumière du monde la montre déjà).
-    const lantern = lanternLit(posedOf('phare'), true) && !lampShown;
+    const lantern = lanternLit(posedOf('phare')) && !lampShown;
     const light = lit && !lampLit ? scenetteSuccess(scenette, lantern) : null;
     if (!light) return;
     lampLit = true;
@@ -1420,7 +1422,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   });
   /** Les parties qui arrivent dans un lieu : la pose commence. */
   const startPose = (place: PlaceId, parts: readonly PartShape[]) => {
-    finishPose();
+    // Une pose en cours (deux réussites rapprochées) passe la main sans dire sa fin : seule la dernière la dit.
+    poseRun.handOver();
     holding = { place, parts };
     placeVisibility();
     setGeometry(poseMesh, constructionFacets(place, parts, ground));

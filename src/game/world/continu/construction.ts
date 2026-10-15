@@ -96,11 +96,8 @@ export const traceStagePosed = (place: PlaceId, parts: readonly PartShape[]): bo
 /** La trace d'un lieu se montre-t-elle ? Sa scénette réussie (`done`), et l'étape qui la porte posée. */
 export const traceShown = (place: PlaceId, parts: readonly PartShape[], done: boolean): boolean => done && traceStagePosed(place, parts);
 
-/**
- * La lanterne du Phare est-elle allumée ? Son haut posé (elle existe) et sa scénette réussie (la lampe s'allume à la
- * réussite de la scénette, lot 2 de la piste 1).
- */
-export const lanternLit = (parts: readonly PartShape[], done: boolean): boolean => done && stageComplete(parts, 1);
+/** La lanterne du Phare est-elle allumée ? Dès que son haut est posé (directeur artistique, 15 octobre 2026). */
+export const lanternLit = (parts: readonly PartShape[]): boolean => stageComplete(parts, 1);
 
 /** La hauteur du point regardé par la pose, en part de la hauteur du lieu : un peu sous le milieu (son pied, plus près de la caméra, descend plus bas à l'écran que son haut ne monte). */
 const FOCUS_HEIGHT = 0.45;
@@ -226,9 +223,11 @@ export interface PoseHooks {
 }
 
 /**
- * Le déroulé d'une pose, sans Three.js (la vue en fait le rendu) : `start` la commence (une pose en cours finit
- * d'abord), `step` la fait avancer à l'instant `t` (en secondes), `finish` la finit tout de suite (un toucher, « Y aller
- * », la Carte, une question) : la partie est posée et `done` est appelé, une fois, quel que soit le chemin.
+ * Le déroulé d'une pose, sans Three.js (la vue en fait le rendu) : `start` la commence, `step` la fait avancer à
+ * l'instant `t` (en secondes), `finish` la finit tout de suite (un toucher, « Y aller », la Carte, une question) : la
+ * partie est posée et `done` est appelé, une fois, quel que soit le chemin. `handOver` passe la main à une pose qui
+ * suit (deux réussites rapprochées) : la partie en cours est posée, sans `done`, que seule la dernière pose dira (les
+ * célébrations ne sortent pas au milieu d'une pose).
  */
 export function createPoseRun(hooks: PoseHooks) {
   let run: { phase: PosePhase; start: number } | null = null;
@@ -241,6 +240,11 @@ export function createPoseRun(hooks: PoseHooks) {
   return {
     get active(): boolean {
       return run !== null;
+    },
+    handOver(): void {
+      if (!run) return;
+      run = null;
+      hooks.land();
     },
     start(t: number, still: boolean): void {
       finish();

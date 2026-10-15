@@ -109,7 +109,7 @@ const FALLEN_BELL = { x: 2.05, z: 0.1 } as const;
 /**
  * La lumière de la lanterne du Phare, dans son repère : un peu plus large que sa vitre, qu'elle recouvre, de la couleur
  * de la lampe (#FFD36B, `LAMP_COLOR`). La vue dessine cette couleur sans ombre (sa face au soleil comme sa face à
- * l'ombre) : elle se lit comme une lumière, de près comme depuis la Carte (directeur artistique).
+ * l'ombre) : elle se lit comme une lumière, de près, et sur la Carte une fois rapprochée (directeur artistique).
  */
 export function lanternLight(): Facets {
   const b = new FacetBuilder();
