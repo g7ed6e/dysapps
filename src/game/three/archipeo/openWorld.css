@@ -137,7 +137,9 @@
   width: var(--question-width);
   max-height: var(--question-max-height);
   margin: var(--question-top) 0 0 var(--question-left);
-  padding: 0.6rem 0.8rem;
+  /* La marge du bas, que le repère de défilement et la bande de « Valider » recouvrent. */
+  --panneau-bas: 0.6rem;
+  padding: 0.6rem 0.8rem var(--panneau-bas);
   overflow-y: auto;
   border: var(--border-width, 2px) solid var(--text);
   border-radius: var(--radius, 16px);
@@ -1026,27 +1028,45 @@
 .world-question .quiz.in-world.simple[data-suite="deux"] .world-simple-validate {
   box-shadow: 0 -14px 12px -10px rgb(0 0 0 / 0.4);
 }
-/* Sans « Valider » (les paniers, les leviers, les caisses), le même repère au bas du panneau : un trait pointillé collé
-   au bord, sur une bande du fond, tant que des réponses restent plus bas (data-repere), comme le chemin de la Carte. */
-.world-question .quiz.in-world.simple[data-repere]::after {
-  content: '';
+/* Sans « Valider » (les paniers, les leviers, les caisses), le même repère au bas du panneau : un chevron vers le bas,
+   centré sur une bande du fond bordée d'un trait pointillé épais collé au bord, tant que des réponses restent plus bas
+   (data-repere), comme le chemin de la Carte. La bande tient toujours sa place sans en prendre (marge négative de sa
+   hauteur) : elle se montre ou se cache sans rien faire bouger. Ses marges se calculent depuis la marge du bas du
+   panneau (--panneau-bas) et sa hauteur (--repere-haut), jamais écrites à part. */
+.world-question .in-world .world-repere {
+  display: none;
+}
+.world-question .quiz.in-world.simple > .world-repere {
+  --repere-haut: 34px;
   position: sticky;
-  bottom: -0.6rem;
+  bottom: calc(-1 * var(--panneau-bas));
   z-index: 1;
   order: 99;
+  display: flex;
   flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   width: 100%;
-  height: calc(10px + 0.6rem);
-  margin: calc(-10px - 0.6rem) 0 -0.6rem;
+  height: var(--repere-haut);
+  margin: calc(-1 * var(--repere-haut)) 0 calc(-1 * var(--panneau-bas));
   background: var(--surface);
-  border-bottom: 3px dashed currentColor;
+  border-bottom: 5px dashed currentColor;
+  overflow: hidden;
   pointer-events: none;
+  visibility: hidden;
 }
-/* Sur un écran bas, le panneau n'a que 4 px de marge en haut et en bas : le trait s'y colle. */
-.world-question .quiz.in-world.simple.simple-bas[data-repere]::after {
-  bottom: -4px;
-  height: 14px;
-  margin: -14px 0 -4px;
+.world-question .quiz.in-world.simple[data-repere] > .world-repere {
+  visibility: visible;
+}
+/* Le chevron ne remplit que le milieu de son carré : un carré plus grand que la bande, pour un chevron de 22 px. */
+.world-question .quiz.in-world.simple > .world-repere svg {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  /* Rien ne dépasse de la bande (le panneau ne s'allonge pas pour lui). */
+  margin-block: calc((var(--repere-haut) - 5px - 44px) / 2);
+  stroke-width: 3;
 }
 /* L'ombre du haut, nette (référent dys) : un trait sombre sous le bord, puis une ombre courte. */
 .world-question .quiz.in-world.simple[data-suite="haut"],
@@ -1080,7 +1100,8 @@
   align-content: flex-start;
   column-gap: 0.5rem;
   row-gap: 6px;
-  padding: 4px 0.6rem;
+  --panneau-bas: 4px;
+  padding: 4px 0.6rem var(--panneau-bas);
   scroll-padding-bottom: 62px;
 }
 .world-question .quiz.in-world.simple-bas > *,

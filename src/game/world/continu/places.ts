@@ -109,12 +109,32 @@ function ecluses(b: FacetBuilder): void {
   b.box({ x: 0, y: 0, z: 1.5 }, [3.6, 1.2, 0.3], C.darkWood);
   for (const side of [-1, 1]) {
     b.box({ x: side * 1.95, y: 0.9, z: 1.5 }, [0.4, 0.45, 0.4], C.darkStone, C.stone);
-    b.beam({ x: side * 1.5, y: 1.05, z: 1.5 }, { x: side * 2, y: 1.02, z: 0.1 }, 0.18, C.darkWood);
+    // Couchés sur le mur du sas (son haut à 0,9), pas au-dessus.
+    b.beam({ x: side * 1.5, y: 0.99, z: 1.5 }, { x: side * 2, y: 0.99, z: 0.1 }, 0.18, C.darkWood);
   }
-  // La roue, debout sur le côté est, et son axe.
-  b.prism({ x: 2.7, y: 1.5, z: -0.4, yaw: Math.PI / 2, pitch: Math.PI / 2 }, 1.4, 1.4, 0.4, 10, C.wood, C.darkWood);
-  b.box({ x: 2.5, y: SINK, z: -0.4 }, [0.3, 2.3 - SINK, 0.3], C.darkWood);
+  // La Roue, arrêtée, à l'est du sas : un tambour fermé (ses deux faces, leurs rayons), au-dessus de son socle de
+  // pierre (où passeront ses pales), son axe porté par deux piles. Elle se lit comme une roue posée, jamais comme un arc
+  // en l'air ; la Roue qui tourne (questionScene.ts, `placePieces`) l'enveloppe au même axe.
+  const wheel = { x: WHEEL.x, y: WHEEL.y, z: WHEEL.z };
+  b.box({ x: wheel.x, y: SINK, z: wheel.z }, [1.5, wheel.y - WHEEL.r - 0.2 - SINK, 1.8], C.darkStone, C.stone);
+  for (const dx of [-0.55, 0.55]) b.box({ x: wheel.x + dx, y: SINK, z: wheel.z }, [0.3, wheel.y + 0.3 - SINK, 0.45], C.darkStone, C.stone);
+  b.beam({ x: wheel.x - 0.8, y: wheel.y, z: wheel.z }, { x: wheel.x + 0.8, y: wheel.y, z: wheel.z }, 0.22, C.darkWood);
+  const w = WHEEL.width / 2;
+  b.drum({ x: wheel.x - w, y: wheel.y, z: wheel.z, yaw: Math.PI / 2, pitch: Math.PI / 2 }, WHEEL.r, WHEEL.width, 10, C.wood, C.darkWood);
+  // Les rayons, sur ses deux faces.
+  for (const fx of [-w - 0.012, w + 0.012])
+    for (let k = 0; k < 3; k++) {
+      const a = (k * Math.PI) / 3;
+      const half = WHEEL.r - 0.15;
+      b.box({ x: wheel.x + fx, y: wheel.y - half * Math.cos(a), z: wheel.z - half * Math.sin(a), pitch: a }, [0.024, 2 * half, 0.16], C.wood);
+    }
 }
+
+/**
+ * La Roue des Écluses, dans le repère du lieu : son axe (est-ouest), son rayon et sa largeur, arrêtée. La Roue qui
+ * tourne, plus grande d'un rien, l'enveloppe au même axe (aucune face confondue, rien de l'arrêtée ne dépasse).
+ */
+export const WHEEL = { x: 3.05, y: 1.5, z: -0.4, r: 1.5, width: 0.44 } as const;
 
 const DRAWN: Record<PlaceId, (b: FacetBuilder) => void> = { phare, quais, filets, ecluses };
 

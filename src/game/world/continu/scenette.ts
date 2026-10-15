@@ -643,6 +643,7 @@ function lockQuay(b: FacetBuilder, open: boolean): void {
     if (open) {
       b.box({ x: gx + LOCK.leaf / 2 + 0.1, y: bottom, z: hinge }, [LOCK.leaf, top - bottom, 0.14], C.newWood, C.lightWood);
       b.beam({ x: gx + 0.1, y: top - 0.08, z: hinge }, { x: gx - LOCK.beam, y: top - 0.08, z: hinge }, 0.14, C.lever);
+      beamRest(b, gx - LOCK.beam + 0.1, hinge, bottom, top);
     } else {
       // Fermés, les deux vantaux se rejoignent en pointe vers l'amont (une porte busquée) : de biais, la caméra voit
       // leur face, pas seulement leur tranche.
@@ -653,8 +654,18 @@ function lockQuay(b: FacetBuilder, open: boolean): void {
       b.box({ x: gx + dx / 2, y: bottom, z: hinge + dz / 2, yaw }, [0.2, top - bottom, length], C.lever, C.lightWood);
       const back = LOCK.beam / length;
       b.beam({ x: gx, y: top - 0.08, z: hinge }, { x: gx - dx * back, y: top - 0.08, z: hinge - dz * back }, 0.14, C.lever);
+      // Sur le quai (le vantail d'amont) ou sur la berge (celui d'aval) : les deux au niveau du quai.
+      beamRest(b, gx - dx * (back - 0.1 / length), hinge - dz * (back - 0.1 / length), o.y, top);
     }
   }
+}
+
+/**
+ * Le chevalet sous le bout d'un balancier de la porte du canal : un poteau de bois du sol (`from`) jusque sous le
+ * balancier (son haut à `top`), pour que le bout ne flotte jamais (consultant Archipéo, directeur artistique).
+ */
+function beamRest(b: FacetBuilder, x: number, z: number, from: number, top: number): void {
+  b.box({ x, y: from, z }, [0.12, top - 0.15 - from, 0.12], C.lever);
 }
 
 /**

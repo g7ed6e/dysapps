@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { seeded } from '../../../core/random';
 import { boundsOf } from './facets';
+import { modelOfPlace, WHEEL } from './places';
 import PLACE_ITEMS from './placeItems.json';
 import { ANSWER_LAYOUT, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placePieces, questionLayout, sceneSpot, veilleurPiece, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
 import {
@@ -234,6 +235,26 @@ describe('Les pièces durables', () => {
     }
     expect(placePieces('ecluses', 2).wheel).not.toBeNull();
     expect(placePieces('ecluses', 1).wheel).toBeNull();
+  });
+
+  it('la Roue qui tourne est centrée sur son axe et enveloppe la Roue arrêtée, fermée des deux côtés', () => {
+    const wheel = placePieces('ecluses', 2).wheel!;
+    const { min, max } = boundsOf(wheel.facets);
+    // Centrée sur son axe (la vue la fait tourner autour) : symétrique en y et en z.
+    for (const k of [1, 2]) expect(min[k] + max[k]).toBeCloseTo(0, 5);
+    // Le tambour arrêté (rayon, largeur) tient dedans : rien de lui ne dépasse quand elle tourne.
+    expect(max[0] - min[0]).toBeGreaterThan(WHEEL.width);
+    // Fermé des deux côtés : des facettes regardent l'ouest comme l'est (plus d'arc vu par le côté ouvert).
+    const facing = (sign: number) => {
+      const n = wheel.facets.normals;
+      for (let i = 0; i < n.length; i += 3) if (n[i] * sign > 0.99) return true;
+      return false;
+    };
+    expect(facing(1) && facing(-1)).toBe(true);
+    const still = modelOfPlace('ecluses').facets;
+    let west = 0;
+    for (let i = 0; i < still.normals.length; i += 3) if (still.normals[i] < -0.99 && still.positions[i] > WHEEL.x - WHEEL.width) west++;
+    expect(west).toBeGreaterThanOrEqual(10);
   });
 });
 

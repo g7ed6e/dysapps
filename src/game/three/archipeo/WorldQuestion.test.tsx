@@ -105,6 +105,16 @@ describe('La scénette des Quais', () => {
     expect(document.querySelector('.quiz.in-world.simple')).not.toBeNull();
     expect(answers().map((b) => b.textContent)).toEqual(labels);
     if (wrong) expect(answers()[0].disabled).toBe(true);
+    // Sans « Valider », le repère « Suite plus bas » se montre tant que des caisses restent plus bas, puis part en bas.
+    const panel = document.querySelector<HTMLElement>('.quiz.in-world.simple')!;
+    expect(within(panel).getByRole('img', { name: 'Suite plus bas' })).toBeInTheDocument();
+    Object.defineProperty(panel, 'scrollHeight', { configurable: true, value: 600 });
+    Object.defineProperty(panel, 'clientHeight', { configurable: true, value: 300 });
+    panel.dispatchEvent(new Event('scroll'));
+    await vi.waitFor(() => expect('repere' in panel.dataset).toBe(true));
+    panel.scrollTop = 300;
+    panel.dispatchEvent(new Event('scroll'));
+    await vi.waitFor(() => expect('repere' in panel.dataset).toBe(false));
     await user.click(screen.getByRole('button', { name: /Scène/ }));
     expect(document.querySelector('.quiz.in-world.simple')).toBeNull();
     expect(answers().map((b) => b.textContent)).toEqual(labels);

@@ -90,6 +90,18 @@ export class FacetBuilder {
     }
   }
 
+  /**
+   * Un tambour : un prisme fermé des deux côtés (une roue debout, dont les deux faces se voient), de rayon `r`, de
+   * largeur `h` ; `face` : la couleur des deux faces.
+   */
+  drum(at: Placement, r: number, h: number, sides: number, rim: number, face = rim): void {
+    this.prism(at, r, r, h, sides, rim, face);
+    const t = transform(at);
+    const c = t([0, 0, 0]);
+    const lo = Array.from({ length: sides }, (_, k) => t([r * Math.cos((2 * Math.PI * k) / sides), 0, r * Math.sin((2 * Math.PI * k) / sides)]));
+    for (let k = 0; k < sides; k++) this.triangle(c, lo[k], lo[(k + 1) % sides], face);
+  }
+
   /** Un pavé tendu entre deux points (un bras, une corde, une potence), de section carrée `t`. */
   beam(a: { x: number; y: number; z: number }, c: { x: number; y: number; z: number }, t: number, color: number): void {
     const dx = c.x - a.x, dy = c.y - a.y, dz = c.z - a.z;

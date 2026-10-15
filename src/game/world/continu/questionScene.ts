@@ -5,6 +5,7 @@
 // l'échelle sont des panneaux de la page, accrochés aux points que donne ce fichier. Code pur : la vue dessine.
 import { boundsOf, FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
+import { WHEEL } from './places';
 import { placeById, type PlaceId } from './plan6e';
 import type { ItemScene } from './questions';
 import { heightAt, standingHeight } from './terrain';
@@ -1093,8 +1094,9 @@ function lockGate(b: FacetBuilder, x: number, y: number, z: number, open: boolea
   for (const side of [-1, 1]) b.box({ x: x + side * 1.95, y: y + 1.6, z: hinge }, [0.4, 0.45, 0.4], C.stoneDark, C.stone);
   if (!open) {
     b.box({ x, y: y + 0.7, z: hinge }, [3.6, 1.2, 0.3], C.lever);
+    // Les balanciers couchés sur le mur du bassin du haut (son haut à 1,6), pas au-dessus.
     for (const side of [-1, 1])
-      b.beam({ x: x + side * 1.5, y: y + 1.8, z: hinge }, { x: x + side * 2, y: y + 1.75, z: hinge - 1.6 }, 0.2, C.lever);
+      b.beam({ x: x + side * 1.5, y: y + 1.7, z: hinge }, { x: x + side * 2, y: y + 1.7, z: hinge - 1.6 }, 0.2, C.lever);
     return;
   }
   for (const side of [-1, 1]) b.box({ x: x + side * 1.95, y: y + 0.9, z }, [0.5, 0.7, 3], C.stoneDark, C.stone);
@@ -1146,12 +1148,16 @@ export function placePieces(place: PlaceId, count: number): PlacePieces {
     }
   } else if (place === 'ecluses') {
     if (count >= 2) {
+      // Centrée sur son axe (elle tourne autour) : le tambour fermé, et cinq pales qui le traversent.
       const w = new FacetBuilder();
-      w.prism({ x: 0, y: -0.25, z: 0, yaw: Math.PI / 2, pitch: Math.PI / 2 }, 1.55, 1.55, 0.5, 10, C.newWood, C.paint);
-      for (let k = 0; k < 5; k++) w.box({ x: 0, y: 0, z: 0, pitch: (k * Math.PI) / 5 }, [0.6, 3.3, 0.16], C.paint);
+      w.drum({ x: -0.25, y: 0, z: 0, yaw: Math.PI / 2, pitch: Math.PI / 2 }, WHEEL.r + 0.05, 0.5, 10, C.newWood, C.paint);
+      for (let k = 0; k < 5; k++) {
+        const a = (k * Math.PI) / 5;
+        w.box({ x: 0, y: -1.65 * Math.cos(a), z: -1.65 * Math.sin(a), pitch: a }, [0.6, 3.3, 0.16], C.paint);
+      }
       wheel = {
         facets: w.build(),
-        at: { x: x + 3.05, y: y0 + 1.5, z: z - 0.4 },
+        at: { x: x + WHEEL.x, y: y0 + WHEEL.y, z: z + WHEEL.z },
       };
     }
   } else {

@@ -214,8 +214,9 @@ export function WorldQuestion({ place, mission, world, onClose }: Props) {
   }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, simple, bare, grandTexte, openSimple]);
   // Le panneau de « Vue simple » défile : il s'ouvre en haut (le rôle, la consigne), et `data-suite` dit qu'il reste
   // de quoi lire plus bas (une ombre au-dessus de « Valider ») ou plus haut. Sans « Valider » (les paniers, les leviers,
-  // les caisses), `data-repere` pose au bas du panneau un trait pointillé tant que des réponses restent plus bas (au
-  // plus grand texte sur un téléphone couché, la consigne dépliée les pousse sous le pli).
+  // les caisses), `data-repere` montre au bas du panneau un chevron sur un trait pointillé (« Suite plus bas ») tant que
+  // des réponses restent plus bas (au plus grand texte sur un téléphone couché, la consigne dépliée les pousse sous le
+  // pli) ; il part une fois en bas du panneau.
   useEffect(() => {
     if (!simple || finished) return;
     const panel = box.current?.querySelector<HTMLElement>('.quiz.in-world');
@@ -295,6 +296,13 @@ export function WorldQuestion({ place, mission, world, onClose }: Props) {
             <Icon name="book" />
             <span className="world-consigne-more-word">{consigneOpen ? 'Replier' : 'Lire la suite'}</span>
           </button>
+        )}
+        {simple && (
+          // Le repère de défilement (data-repere, plus haut) : un chevron vers le bas sur un trait pointillé, au bas du
+          // panneau, tant que des réponses restent plus bas ; sa place est toujours tenue (rien ne bouge quand il part).
+          <div className="world-repere" role="img" aria-label="Suite plus bas">
+            <Icon name="chevronDown" />
+          </div>
         )}
         {offer && (
           // Le texte choisi ne tient pas ici : le repli franc, sans réduire le texte ; la voix reste (« Lire la phrase »).
