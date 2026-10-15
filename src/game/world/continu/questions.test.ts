@@ -251,7 +251,7 @@ describe('Les traces des scénettes', () => {
     }
   });
 
-  it('aux Quais, les cinq traces sont posées au sol, sur le terre-plein, sans se toucher ; la barque du passeur sur l’eau', () => {
+  it('aux Quais, les cinq traces sont posées au sol, sur le terre-plein, sans se toucher ; la barque du passeur sur l’eau, la palette de dix sur le ponton', () => {
     const c = placeById('quais').center;
     const boxes = (['times-tables', 'make-ten', 'doubles-halves', 'word-problems', 'measures'] as const).map((m) => [m, boundsOf(placeTrace('quais', [m]))] as const);
     for (const [m, b] of boxes) {
@@ -260,7 +260,13 @@ describe('Les traces des scénettes', () => {
       // Autour de son point, à quelques unités au plus.
       expect(Math.abs((b.min[0] + b.max[0]) / 2 - (c.x + spot.x))).toBeLessThan(2);
       if (m === 'word-problems') expect(b.min[1]).toBeLessThan(0.1);
-      else expect(heightAt({ x: c.x + spot.x, z: c.z + spot.z })).toBeGreaterThan(0);
+      else if (m === 'make-ten') {
+        // Sur le bout nord du ponton (places.ts : x de −7,1 à −3,7, z de −0,9 à 4,3), l'amarre jusqu'au crochet de la grue.
+        expect(spot.x).toBeGreaterThan(-7.1 + 1.2);
+        expect(spot.x).toBeLessThan(-3.7 - 1.2);
+        expect(spot.z).toBeGreaterThan(-0.9 + 0.4);
+        expect(b.min[2]).toBeLessThan(c.z - 3.4);
+      } else expect(heightAt({ x: c.x + spot.x, z: c.z + spot.z })).toBeGreaterThan(0);
     }
     const lone = boxes.filter(([m]) => m !== 'doubles-halves').map(([, b]) => b);
     for (let i = 0; i < lone.length; i++)

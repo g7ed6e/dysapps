@@ -48,6 +48,8 @@ import { filledGap, overflows, wordsCut } from './fit';
 
 /** Ce que l'écran d'un lieu demande à la scène : l'item à montrer, combien de réponses il a, s'il a une règle. */
 interface ItemShown {
+  /** La clé de l'item (la consigne repliée se replie quand elle change). */
+  key: string;
   scene: ItemScene;
   answered: boolean;
   right: number[];
@@ -157,22 +159,21 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   const [simple, setSimple] = useState(false);
   // Sur un écran bas, en « Vue simple », la consigne se replie en une ligne (le rôle, son début, sa voix) pour que les
   // cloches se voient dès l'ouverture ; un toucher sur la ligne ou « Lire la suite » la déplie.
-  // Au plus grand texte, elle s'ouvre dépliée au premier item (comme la consigne lue avant « Commencer » sur un écran
-  // bas), puis se replie dès l'item suivant (référent dys).
+  // Elle s'ouvre repliée, même au plus grand texte (le rôle et le début de la consigne, lue à voix haute, « Lire la
+  // suite » la déplie) : la rangée et « Valider » restent visibles dès l'ouverture (référent dys, GD-20, point 8) ; dépliée,
+  // elle se replie à l'item suivant (la clé de l'item, pas sa scène : aux Quais, tous les items ont la même).
   const [consigneOpen, setConsigneOpen] = useState(false);
-  const sceneKey = item ? JSON.stringify(item.scene) : '';
-  const firstScene = useRef('');
-  const lastScene = useRef('');
+  const itemKey = item ? item.key || JSON.stringify(item.scene) : '';
+  const lastItem = useRef('');
   useEffect(() => {
-    if (!sceneKey) return;
-    if (!firstScene.current) firstScene.current = sceneKey;
-    if (lastScene.current && lastScene.current !== sceneKey) setConsigneOpen(false);
-    lastScene.current = sceneKey;
-  }, [sceneKey]);
+    if (!itemKey) return;
+    if (lastItem.current && lastItem.current !== itemKey) setConsigneOpen(false);
+    lastItem.current = itemKey;
+  }, [itemKey]);
   const openSimple = useCallback(() => {
-    setConsigneOpen(grandTexte && layout.low && sceneKey === firstScene.current);
+    setConsigneOpen(false);
     setSimple(true);
-  }, [grandTexte, layout.low, sceneKey]);
+  }, []);
   const offer = !simple && ((layout.low && widen >= WIDEN_OFFER) || (!layout.low && answersOut));
   // Sur un écran bas, la consigne s'affiche en entier une fois, au premier item, puis devient une icône.
   const [introDone, setIntroDone] = useState(false);
@@ -303,6 +304,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
             className="button world-consigne-more"
             aria-expanded={consigneOpen}
             aria-controls="consigne-ligne"
+            // Au plus grand texte, le bouton n'est qu'une icône : son nom est toujours dit (référent dys).
+            aria-label={consigneOpen ? 'Replier la consigne' : 'Lire la suite de la consigne'}
+            title={consigneOpen ? 'Replier la consigne' : 'Lire la suite de la consigne'}
             onClick={() => setConsigneOpen((open) => !open)}
           >
             <Icon name="book" />
@@ -426,7 +430,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     return () => {
       alive = false;
     };
-  }, [stage, consigneOpen, size.w, settings]);
+    // Refaite aussi quand « Vue simple » s'ouvre d'office (le rôle passe alors sur sa ligne) : sinon la consigne entière.
+  }, [stage, consigneOpen, size.w, settings, simple, layout.low]);
 
   const style = {
     '--question-left': `${layout.panel.left}px`,
@@ -467,8 +472,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
                 setSheetWide(false);
                 setAnswersOut(false);
                 setBare(false);
-                firstScene.current = '';
-                lastScene.current = '';
+                lastItem.current = '';
                 setItem(null);
                 setRun((r) => r + 1);
               }}
@@ -502,6 +506,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
 
 // L'écran refait ses items à chaque rendu : la scène se compare par valeur, pour ne pas la refaire pour rien.
 const sameItem = (a: ItemShown, b: ItemShown) =>
+  a.key === b.key &&
   JSON.stringify(a.scene) === JSON.stringify(b.scene) &&
   a.answered === b.answered &&
   a.count === b.count &&
@@ -622,11 +627,12 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   // Les réponses tentées et fausses (barrées) : leur objet le montre aussi dans la scène (une caisse penchée).
   const tried = choices.flatMap((c, i) => (c !== answer && (ruledOut?.includes(c) || (answered && chosen === c)) ? [i] : []));
   const triedKey = tried.join(',');
+  const itemKeyOf = String(item?.key ?? '');
   useEffect(() => {
     if (!scene) return;
     const picked = triedKey ? triedKey.split(',').map(Number) : [];
-    show({ scene, answered: Boolean(answered), right: answered && rightIndex >= 0 ? [rightIndex] : [], picked, count: choices.length, aid: Boolean(aid) });
-  }, [show, scene, answered, rightIndex, choices.length, aid, triedKey]);
+    show({ key: itemKeyOf, scene, answered: Boolean(answered), right: answered && rightIndex >= 0 ? [rightIndex] : [], picked, count: choices.length, aid: Boolean(aid) });
+  }, [show, itemKeyOf, scene, answered, rightIndex, choices.length, aid, triedKey]);
   if (!item || !scene) return null;
   // Après « Bravo », le mot juste entre dans le trou : la phrase se lit entière.
   const gap = question ? null : filledGap(prompt, answer, answered?.results);
@@ -652,11 +658,6 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
               )}
             </p>
             <SpeakButton text={filled ? whole : spoken} label="Lire la phrase" shown={whole} compact />
-          </div>
-        )}
-        {figure && (
-          <div className="calcul-figure world-question-figure">
-            <Aid aid={figure} />
           </div>
         )}
         {referenceLine && !layout.low && (
@@ -699,6 +700,12 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
             </span>
             <SpeakButton text={hint} compact />
           </p>
+        )}
+        {/* La figure après la phrase et l'indice : la prochaine action reste dans le panneau sans défiler (tablette). */}
+        {figure && (
+          <div className="calcul-figure world-question-figure">
+            <Aid aid={figure} />
+          </div>
         )}
         {aid && <PlaceAid aid={aid} layout={layout} simple={simple} />}
       </div>
@@ -743,10 +750,11 @@ function BellScreen({ items, answered, onAnswer, target }: ScreenProps) {
   const scene = placeSceneOf(items[0]);
   const right = useMemo(() => (answered ? items.flatMap((it, i) => (it.correct ? [i] : [])) : []), [items, answered]);
   const chosen = useMemo(() => items.flatMap((it, i) => (picked.has(it.key) ? [i] : [])), [items, picked]);
+  const itemsKey = items.map((it) => it.key).join('|');
   useEffect(() => {
     if (!scene) return;
-    show({ scene, answered: Boolean(answered), right, picked: chosen, count: items.length, aid: false });
-  }, [show, scene, answered, right, chosen, items.length]);
+    show({ key: itemsKey, scene, answered: Boolean(answered), right, picked: chosen, count: items.length, aid: false });
+  }, [show, itemsKey, scene, answered, right, chosen, items.length]);
   if (!scene) return null;
 
   const toggle = (it: ExerciseItem) => {

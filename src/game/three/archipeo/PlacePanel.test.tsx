@@ -58,6 +58,17 @@ it('un lieu en transition : le signe sur la seule mission qui s’y joue, le foc
   expect(rows.find((r) => r.querySelector('.app-title')?.textContent === 'Récolte -é / -er / -ez')).toHaveFocus();
 });
 
+it('au retour d’une autre mission, la suggestion reste mise en avant, le focus sur la ligne jouée ; la voix lit titre, « Scène », étoiles', () => {
+  const { sheet } = renderPanel('quais', marks('maths-6e-calculation', (i) => (i === 2 ? 1 : 'new')), 'times-tables', 'doubles-halves');
+  const rows = within(sheet).getAllByRole('button').filter((b) => b.classList.contains('app-card'));
+  expect(rows[2]).toHaveFocus();
+  expect(rows[0]).toHaveAttribute('aria-current', 'step');
+  expect(rows[0]).toHaveClass('suggested');
+  expect(rows[2]).not.toHaveClass('suggested');
+  // L'icône de lecture est muette : le nom de la ligne suit l'ordre de lecture.
+  expect(rows[2]).toHaveAccessibleName('Doubles et moitiés Scène 1 étoile sur 3');
+});
+
 it('Échap ferme le panneau, comme la croix', async () => {
   const { onClose } = renderPanel('phare', marks('french-6e-phonology'), 'syllables');
   await userEvent.setup().keyboard('{Escape}');

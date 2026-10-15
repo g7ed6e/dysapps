@@ -103,3 +103,26 @@ it('« Ma dernière mission » depuis le monde continu : une mission d’une îl
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
   expect(screen.getByTestId('recherche')).toHaveTextContent('?lieu=phare&mission=syllables');
 });
+
+it('« Ma dernière mission » sans `resumeAt` (le monde en grille, Blocland) : la mission se reprend à son adresse, comme avant', async () => {
+  rememberPlace({ path: '/adventure/french-6e-phonology/syllables', label: 'Abattage syllabique · Forêt des sons' });
+  function Search() {
+    return <span data-testid="recherche">{useLocation().search}</span>;
+  }
+  render(
+    <SettingsProvider>
+      <ProgressProvider>
+        <BloclandProvider>
+          <MemoryRouter initialEntries={['/adventure']}>
+            <WorldShortcuts a="6e" requestsOpen={false} requestsLater />
+            <Where />
+            <Search />
+          </MemoryRouter>
+        </BloclandProvider>
+      </ProgressProvider>
+    </SettingsProvider>,
+  );
+  await userEvent.setup().click(screen.getByRole('button', { name: /^Ma dernière mission : Abattage syllabique/ }));
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology/syllables');
+  expect(screen.getByTestId('recherche')).toHaveTextContent(/^$/);
+});

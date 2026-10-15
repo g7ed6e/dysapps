@@ -1,7 +1,7 @@
 // Le panneau d'un lieu du monde continu (GD-20, point 8, choix du mainteneur du 15 octobre 2026 : chaque lieu porte toutes
 // les missions de son île) : le même panneau qu'une porte de l'école (`MissionSheet`, ./PortPanels.tsx), une ligne par
 // mission. Toucher le lieu l'ouvre ; une seule ligne est mise en avant, la prochaine mission ; une ligne qui se joue dans
-// le lieu porte un signe (le même partout, dit « Dans le lieu »), les autres se jouent sur l'écran habituel, le temps de
+// le lieu porte un signe (le même partout, dit « Scène », comme le bouton qui ramène à la scène depuis « Vue simple » : une icône, un mot), les autres se jouent sur l'écran habituel, le temps de
 // la transition. Au retour d'une mission, la liste se rouvre, le focus sur la ligne jouée (`?lieu=`).
 import { Icon } from '../../../components/Icon';
 import { MissionRows, type MissionRow } from '../../../components/MissionRows';
@@ -12,7 +12,7 @@ import { PLACES, placeOfIsland, type OpenPlace, type PlaceId } from '../../world
 import { MissionSheet, useOpenPanel } from './PortPanels';
 
 /** Ce que dit le signe d'une ligne qui se joue dans le lieu (il ne porte jamais seul le sens : il est dit). */
-export const IN_PLACE_LABEL = 'Dans le lieu';
+export const IN_PLACE_LABEL = 'Scène';
 
 /**
  * L'adresse qui ramène à un lieu, sa liste ouverte, le focus sur une mission : `/adventure?lieu=quais&mission=make-ten`

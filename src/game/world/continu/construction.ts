@@ -202,6 +202,12 @@ export function keoSpots(place: PlaceId, ground: (x: number, z: number) => numbe
  * revient (`still`).
  */
 export const POSE_SECONDS = { rise: 0.9, drop: 0.7, look: 1.1, back: 0.9, still: 1.6 } as const;
+/**
+ * Le garde-fou d'une pose, en secondes : une pose dont la fin n'est jamais dite (la scène arrêtée, l'onglet caché) est
+ * tenue pour finie après la plus longue (rise, drop, look, back) et une marge ; la liste du lieu se rouvre et les
+ * célébrations reviennent. Une pose ordinaire finit bien avant : rien n'attend plus longtemps qu'aujourd'hui.
+ */
+export const POSE_GUARD_SECONDS = POSE_SECONDS.rise + POSE_SECONDS.drop + POSE_SECONDS.look + POSE_SECONDS.back + 3;
 /** D'où descend la partie qui se pose, en unités au-dessus de sa place. */
 export const POSE_DROP = 3.5;
 

@@ -68,6 +68,8 @@ const C = {
   newRope: 0xc9a36a,
   newWood: 0xc28a52,
   paint: 0xd9a441,
+  /** L'anneau des élingues, en fer sombre (la moufle de la grue est en ardoise). */
+  iron: 0x4a555c,
 } as const;
 
 /** La hauteur où l'on se tient en un point (le sol, ou le dessus de la digue sur l'eau). */
@@ -1173,25 +1175,37 @@ const quaiGround = (x: number, z: number): Vec3 => ({ x, y: groundAt({ x, z }), 
 
 /**
  * Où se pose la trace de chaque mission des Quais, depuis le centre du lieu (sur le terre-plein entre le hangar et le
- * bassin, au sud, dans le champ du retour d'une scénette ; l'eau du bassin pour la barque du passeur).
+ * bassin, au sud, dans le champ du retour d'une scénette ; l'eau du bassin pour la barque du passeur ; le bout nord du
+ * ponton, au plus près du crochet de la grue, pour la palette de dix).
  */
 export const QUAIS_TRACE_SPOTS = {
   'times-tables': { x: 5.6, z: 8.4 },
-  'make-ten': { x: -6.6, z: 9.4 },
+  'make-ten': { x: -5.4, z: -0.45 },
   'word-problems': { x: 6.6, z: 13.6 },
   measures: { x: 8.9, z: 9.6 },
 } as const;
 
+/** Le crochet de la grue des Quais (places.ts) : sa place depuis le centre du lieu et le bas de sa moufle, au-dessus du pied du lieu. */
+const QUAIS_HOOK = { x: -5.6, z: -3.5, y: 3 } as const;
+/** Le dessus du ponton des Quais (places.ts), au-dessus du pied du lieu. */
+const QUAIS_DECK_TOP = 0.6;
+
+/** Une caisse simple, posée en `at` (son pied), de côté `s` : le bois des caisses, son dessus plus clair. */
+const plainCrate = (b: FacetBuilder, at: Vec3, s: number) => b.box(at, [s, s * 0.85, s * 0.85], C.crate, C.crateTop);
+
 /**
- * Les traces des Quais (GD-20, point 8, lot L1 : une par mission, au même quai, dans les mêmes volumes ; proposition de
- * l'artiste technique, à valider par le directeur artistique et le consultant Archipéo) :
+ * Les traces des Quais (GD-20, point 8, lot L1 : une par mission, au même quai, dans les mêmes volumes ; revues sur les
+ * avis du directeur artistique et du consultant Archipéo) :
  * - Doubles et moitiés : la grue remontée (sa cabine, sa contre-flèche et son contrepoids) et la barque chargée,
  *   amarrée au bord de quai, sa lanterne de proue allumée ;
- * - Champ des tables : les caisses rangées, deux de front et une dessus, sur leur palette ;
- * - Pont de dix : la palette de dix, deux rangées de cinq caisses, prête au bord du quai ;
- * - Carnet du passeur : la barque du passeur amarrée dans le bassin, sa passerelle posée sur le bord de quai ;
- * - Mesures et figures : la bascule du quai, son plateau et son fléau, ses deux plateaux de pesée.
- * Rien à lire n'est peint ; les caisses ne se comptent pas (aucune ne dit la réponse d'une mission).
+ * - Champ des tables : un rayonnage de bois à trois niveaux, ses caisses alignées en rangées ;
+ * - Pont de dix : la palette de dix au bout du ponton, au plus près du crochet de la grue, élinguée (quatre brins
+ *   réunis à un anneau, l'amarre tendue vers le crochet), prête à lever ;
+ * - Carnet du passeur : la petite barque du passeur, vide, amarrée dans le bassin, sa passerelle à garde-corps posée sur
+ *   le bord de quai (le passeur est un rôle, sans personnage) ;
+ * - Mesures et figures : la balance du quai, son socle de bois sombre, son fléau et ses deux plateaux, à égalité.
+ * Rien à lire n'est peint ; les caisses ne se comptent pas (aucune ne dit la réponse d'une mission). Les bois sombres
+ * des montants, des socles et des palettes détachent chaque trace du terre-plein clair.
  */
 const QUAIS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => void> = {
   'doubles-halves': (b, x, z) => {
@@ -1216,36 +1230,55 @@ const QUAIS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => 
   'times-tables': (b, x, z) => {
     const o = QUAIS_TRACE_SPOTS['times-tables'];
     const g = quaiGround(x + o.x, z + o.z);
-    b.box({ x: g.x, y: g.y, z: g.z }, [1.9, 0.12, 1.1], C.pallet);
-    for (const dx of [-0.45, 0.45]) answerCrate(b, { x: g.x + dx, y: g.y + 0.12, z: g.z }, 1);
-    answerCrate(b, { x: g.x, y: g.y + 0.12 + 0.7, z: g.z }, 1);
+    const w = 2.3, d = 0.8, levels = [0.12, 0.86, 1.6];
+    // Les quatre montants, puis les trois planches, chacune portant sa rangée de trois caisses.
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.box({ x: g.x + sx * (w / 2 - 0.06), y: g.y, z: g.z + sz * (d / 2 - 0.06) }, [0.12, 2.25, 0.12], C.post);
+    for (const ly of levels) {
+      b.box({ x: g.x, y: g.y + ly - 0.08, z: g.z }, [w, 0.08, d], C.post, C.newWood);
+      for (const dx of [-0.7, 0, 0.7]) plainCrate(b, { x: g.x + dx, y: g.y + ly, z: g.z }, 0.52);
+    }
   },
   'make-ten': (b, x, z) => {
+    const y0 = groundAt({ x, z });
     const o = QUAIS_TRACE_SPOTS['make-ten'];
-    const g = quaiGround(x + o.x, z + o.z);
-    crates(b, 10, g.x - 2 * CRATE_PITCH, g.y, g.z - CRATE_PITCH / 2);
+    const deck = y0 + QUAIS_DECK_TOP;
+    // La palette de dix, deux rangées de cinq, sur le bout du ponton.
+    crates(b, 10, x + o.x - 2 * CRATE_PITCH, deck, z + o.z - CRATE_PITCH / 2);
+    // Les élingues : quatre brins des coins du chargement à l'anneau, au-dessus de son milieu ; l'amarre de l'anneau au
+    // crochet de la grue, tendue : la palette est prête à lever.
+    const top = deck + 0.06 + CRATE;
+    const ring = { x: x + o.x, y: top + 0.9, z: z + o.z };
+    const hw = 2.5 * CRATE_PITCH, hd = CRATE_PITCH;
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.beam({ x: x + o.x + sx * hw, y: top, z: z + o.z + sz * hd }, ring, 0.05, C.rope);
+    b.box({ x: ring.x, y: ring.y - 0.06, z: ring.z }, [0.22, 0.12, 0.22], C.iron);
+    b.beam(ring, { x: x + QUAIS_HOOK.x, y: y0 + QUAIS_HOOK.y, z: z + QUAIS_HOOK.z }, 0.06, C.rope);
   },
   'word-problems': (b, x, z) => {
     const o = QUAIS_TRACE_SPOTS['word-problems'];
     const at = { x: x + o.x, y: 0, z: z + o.z };
-    barque(b, at, 3.4, 1.4);
-    // La passerelle : une planche du bord de quai au plat-bord de la barque, et ses deux taquets.
+    // Plus petite que la barque chargée, vide : sa silhouette la distingue, pas sa couleur.
+    barque(b, at, 2.4, 1.0);
+    // La passerelle : une planche large du bord de quai au plat-bord, et ses deux garde-corps ; les deux taquets.
     const edge = DOCK_EDGE.from.z;
     const deck = groundAt({ x: at.x, z: edge - 0.6 });
-    b.beam({ x: at.x - 0.4, y: deck + 0.05, z: edge - 0.5 }, { x: at.x - 0.4, y: 0.2, z: at.z - 0.3 }, 0.5, C.newWood);
-    for (const dx of [-1.2, 0.6]) b.box({ x: at.x + dx, y: deck, z: edge - 0.35 }, [0.2, 0.25, 0.2], C.stoneDark);
+    const from = { x: at.x - 0.2, y: deck + 0.05, z: edge - 0.5 };
+    const to = { x: at.x - 0.2, y: 0.2, z: at.z - 0.2 };
+    b.beam(from, to, 0.7, C.newWood);
+    for (const side of [-1, 1]) b.beam({ x: from.x + side * 0.33, y: from.y + 0.55, z: from.z }, { x: to.x + side * 0.33, y: to.y + 0.55, z: to.z }, 0.06, C.post);
+    for (const dx of [-1.0, 0.6]) b.box({ x: at.x + dx, y: deck, z: edge - 0.35 }, [0.2, 0.25, 0.2], C.post);
   },
   measures: (b, x, z) => {
     const o = QUAIS_TRACE_SPOTS.measures;
     const g = quaiGround(x + o.x, z + o.z);
-    // Le plateau de la bascule, son pied, son fléau en travers, et ses deux plateaux de pesée pendus, à égalité.
-    b.box({ x: g.x, y: g.y, z: g.z }, [1.4, 0.18, 1.1], C.stoneDark, C.stone);
-    b.box({ x: g.x, y: g.y + 0.18, z: g.z - 0.35 }, [0.16, 1.5, 0.16], C.newWood);
-    b.box({ x: g.x, y: g.y + 1.68, z: g.z - 0.35 }, [1.5, 0.1, 0.12], C.paint);
+    // La balance du quai : son socle de bois sombre, son pied, son fléau en travers, et ses deux plateaux pendus, à
+    // égalité ; une caisse à côté, attendant sa pesée.
+    b.box({ x: g.x, y: g.y, z: g.z }, [1.4, 0.2, 1.1], C.post, C.lever);
+    b.box({ x: g.x, y: g.y + 0.2, z: g.z - 0.35 }, [0.16, 1.5, 0.16], C.post);
+    b.box({ x: g.x, y: g.y + 1.7, z: g.z - 0.35 }, [1.5, 0.1, 0.12], C.paint);
     for (const side of [-1, 1]) {
-      b.box({ x: g.x + side * 0.7, y: g.y + 1.1, z: g.z - 0.35 }, [0.03, 0.58, 0.03], C.rope);
-      b.prism({ x: g.x + side * 0.7, y: g.y + 1.04, z: g.z - 0.35 }, 0.26, 0.2, 0.06, 8, C.paint);
+      b.box({ x: g.x + side * 0.7, y: g.y + 1.12, z: g.z - 0.35 }, [0.03, 0.58, 0.03], C.rope);
+      b.prism({ x: g.x + side * 0.7, y: g.y + 1.06, z: g.z - 0.35 }, 0.26, 0.2, 0.06, 8, C.bucket);
     }
-    answerCrate(b, { x: g.x + 0.25, y: g.y + 0.18, z: g.z + 0.15 }, 0.6);
+    answerCrate(b, { x: g.x + 0.25, y: g.y + 0.2, z: g.z + 0.15 }, 0.6);
   },
 };

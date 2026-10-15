@@ -59,10 +59,10 @@ describe('La scénette du Phare', () => {
         .every((b) => b.getAttribute('aria-pressed') === 'false'),
     ).toBe(true);
     // Sur un écran bas (jsdom n'a pas de taille), la consigne repliée en une ligne se déplie avec « Lire la suite ».
-    const more = screen.getByRole('button', { name: 'Lire la suite' });
+    const more = screen.getByRole('button', { name: 'Lire la suite de la consigne' });
     expect(more).toHaveAttribute('aria-expanded', 'false');
     await user.click(more);
-    expect(screen.getByRole('button', { name: 'Replier' })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('button', { name: 'Replier la consigne' })).toHaveAttribute('aria-expanded', 'true');
     expect(document.querySelector('.quiz.in-world.simple-bas.consigne-ouverte')).not.toBeNull();
     const list = screen.getByRole('list', { name: 'Cloches à trier' });
     const validate = screen.getByRole('button', { name: /Valider/ });
@@ -76,7 +76,7 @@ describe('La scénette du Phare', () => {
     expect(bells()[0]).toHaveAttribute('aria-pressed', 'true');
   });
 
-  it('au plus grand texte, la consigne s’ouvre dépliée au premier item', async () => {
+  it('au plus grand texte, la consigne s’ouvre repliée : la rangée reste visible ; « Lire la suite » la déplie', async () => {
     localStorage.setItem('dysapps:settings', JSON.stringify({ fontSize: 32, univers: 'archipeo' }));
     const user = userEvent.setup();
     renderPhare();
@@ -84,7 +84,10 @@ describe('La scénette du Phare', () => {
     const start = screen.queryByRole('button', { name: /Commencer/ });
     if (start) await user.click(start);
     await user.click(screen.getByRole('button', { name: /Vue simple/ }));
-    expect(screen.getByRole('button', { name: 'Replier' })).toHaveAttribute('aria-expanded', 'true');
+    const more = screen.getByRole('button', { name: 'Lire la suite de la consigne' });
+    expect(more).toHaveAttribute('aria-expanded', 'false');
+    await user.click(more);
+    expect(screen.getByRole('button', { name: 'Replier la consigne' })).toHaveAttribute('aria-expanded', 'true');
   });
 });
 

@@ -33,6 +33,10 @@ import {
   scenetteDeck,
   scenetteDecor,
   scenetteExit,
+  placeKeep,
+  PLACE_VIEW,
+  TRACE_VIEW,
+  type ExitView,
   scenetteFinale,
   scenetteHidesPieces,
   scenetteHidesPlace,
@@ -622,13 +626,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let look = nearLantern() ? 1 : 0;
   // Le retour d'une scénette (aux Quais) : Kéo reste sur le bord du quai, la caméra garde la barque chargée dans le
   // champ (`back`, de 0 à 1) tant qu'il ne repart pas ; elle rejoint alors la caméra qui suit.
-  let exit: ReturnType<typeof scenetteExit> = null;
+  let exit: (NonNullable<ReturnType<typeof scenetteExit>> & { view?: ExitView }) | null = null;
   let back = 0;
   const atExit = () => !walk && exit !== null && distance(here, exit.at) < 0.05;
   const follow = () => {
     followPose(focus, lift, pose);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
-    if (exit) exitView(pose, exit.keep, keoFeet, back);
+    if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     applyPose(pose);
   };
   follow();
@@ -649,7 +653,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!frameRect || !framed || asked || mapView) return;
     followPose(focus, lift, pose);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
-    if (exit) exitView(pose, exit.keep, keoFeet, back);
+    if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     const p = screenOf(pose, subjectOf(framed), viewW, viewH);
     setShift({ x: Math.round(p.x - (frameRect.left + frameRect.width / 2)), y: Math.round(p.y - (frameRect.top + frameRect.height / 2)) });
     follow();
@@ -1309,14 +1313,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // retour de question).
     const ex = scenetteExit(left, posed, scenetteMission ?? undefined);
     scenetteMission = null;
-    // La liste du lieu se rouvre au retour : la caméra y garde le lieu, ou la trace qu'on vient de laisser.
+    // La liste du lieu se rouvre au retour : la caméra recule et garde, au-dessus d'elle, la trace qu'on vient de laisser,
+    // ou, sans trace à garder, le lieu lui-même (Kéo reste où il est).
     framed = left;
     if (ex) {
       here = { ...ex.at };
       heading = FACING_CAMERA;
-      exit = ex;
-      back = 1;
     }
+    exit = ex ? { ...ex, view: TRACE_VIEW } : { at: { ...here }, keep: placeKeep(left), view: PLACE_VIEW };
+    back = 1;
     keo.rotation.y = heading;
     placeKeo(here);
   };
@@ -1570,7 +1575,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       copyPose(current, poseFrom);
       followPose(focus, lift, poseTo);
       lookUp(poseTo, lanternTop, keoFeet, look, viewH);
-      if (exit) exitView(poseTo, exit.keep, keoFeet, back);
+      if (exit) exitView(poseTo, exit.keep, keoFeet, back, exit.view);
     },
     back: (e) => tween(poseFrom, poseTo, e),
     done: () => {

@@ -368,8 +368,8 @@ export function scenetteHabitant(place: PlaceId, posed = true): Vec3 {
  * chargée, qu'on voit au premier plan avec la grue et le hangar derrière lui ; la caméra garde la trace de la mission
  * jouée (`mission`, GD-20, point 8). Aux Filets (lot 4), devant le séchoir,
  * le panier plein et le filet tendu à sa gauche. Aux Écluses, sur la rive ouest, à côté du sas rempli et de sa porte
- * ouverte. Au Phare, rien : Kéo revient sur le chemin, la caméra le suit (la lanterne est déjà dans le champ). Rien non
- * plus quand l'étape qui porte la trace n'est pas posée (`posed`) : la trace attend, il n'y a rien à garder.
+ * ouverte. Au Phare, rien : Kéo revient sur le chemin. Rien non plus quand l'étape qui porte la trace n'est pas posée
+ * (`posed`) : la trace attend. Dans ces deux cas, la caméra garde le lieu (`placeKeep`).
  */
 export function scenetteExit(place: PlaceId, posed = true, mission?: string): { at: Vec2; keep: Vec3 } | null {
   if (!posed) return null;
@@ -380,7 +380,8 @@ export function scenetteExit(place: PlaceId, posed = true, mission?: string): { 
     // ordre sur le quai par une autre mission.
     const spot = mission && mission in QUAIS_TRACE_SPOTS ? QUAIS_TRACE_SPOTS[mission as keyof typeof QUAIS_TRACE_SPOTS] : null;
     const c = placeById(place).center;
-    const keep = spot ? { x: c.x + spot.x, y: standingHeight(heightAt({ x: c.x + spot.x, z: c.z + spot.z })), z: c.z + spot.z } : { x: boat.at.x, y: boat.at.y, z: boat.at.z };
+    // Le milieu de la trace, à un pas au-dessus du sol (le rayonnage, la balance, la palette et ses élingues).
+    const keep = spot ? { x: c.x + spot.x, y: standingHeight(heightAt({ x: c.x + spot.x, z: c.z + spot.z })) + TRACE_LIFT, z: c.z + spot.z } : { x: boat.at.x, y: boat.at.y, z: boat.at.z };
     return { at: { x: boat.at.x + boat.length / 2 + 0.9, z: f.z }, keep };
   }
   const c = placeById(place).center;
@@ -392,6 +393,21 @@ export function scenetteExit(place: PlaceId, posed = true, mission?: string): { 
   return null;
 }
 
+/**
+ * Ce que la caméra garde au retour quand rien n'est à garder (le Phare, ou l'étape qui porte la trace pas encore posée ;
+ * relecture du directeur artistique, GD-20, point 8) : le lieu lui-même, son centre à hauteur d'homme, pour qu'il se
+ * reconnaisse avec la partie qu'on vient de poser au-dessus de la liste, plutôt que Kéo de près.
+ */
+export function placeKeep(place: PlaceId): Vec3 {
+  const c = placeById(place).center;
+  return { x: c.x, y: standingHeight(heightAt(c)) + PLACE_KEEP_HEIGHT, z: c.z };
+}
+/** La hauteur du point gardé au-dessus du pied du lieu. */
+const PLACE_KEEP_HEIGHT = 1.5;
+
+/** La hauteur du point gardé au-dessus du pied d'une trace des Quais. */
+const TRACE_LIFT = 1;
+
 /** Où Kéo se tient au retour des Filets et des Écluses, depuis le centre du lieu. */
 const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 } } as const;
 
@@ -402,12 +418,24 @@ const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 } } 
  * Le passage vers la caméra qui suit dure `down` secondes quand Kéo repart (d'un bloc avec « Réduire les animations »).
  */
 export const EXIT_VIEW = { back: 11, height: 9, aim: 1.6, down: 0.5 } as const;
+/** Le recul de la caméra du retour : `back` unités au sud de ce qu'elle garde, `height` au-dessus des pieds de Kéo. */
+export type ExitView = { readonly back: number; readonly height: number; readonly aim: number };
+/**
+ * Le recul quand la caméra garde le lieu entier (`placeKeep`) : plus loin et plus haut que pour une trace, pour que le lieu
+ * se reconnaisse, avec la partie qu'on vient de poser, dans la bande que laisse la liste.
+ */
+export const PLACE_VIEW: ExitView = { back: 20, height: 15, aim: 1.6 };
+/**
+ * Le recul quand la caméra garde une trace au retour d'une scénette : la liste du lieu se rouvre alors (GD-20, point 8)
+ * et ne laisse qu'une bande au-dessus d'elle ; la caméra recule assez pour que la trace y tienne entière avec ses abords.
+ */
+export const TRACE_VIEW: ExitView = { back: 15, height: 11, aim: 1.6 };
 
 /**
  * Pose `pose` (la caméra qui suit, remplie sur place) vers la caméra du retour d'une scénette, de la part `amount` (0 :
  * la caméra qui suit, 1 : le retour) : Kéo, aux pieds `feet`, et `keep` (la barque) ensemble dans le champ.
  */
-export function exitView(pose: CameraPose, keep: Vec3, feet: Vec3, amount: number): void {
+export function exitView(pose: CameraPose, keep: Vec3, feet: Vec3, amount: number, view: ExitView = EXIT_VIEW): void {
   if (amount <= 0) return;
   const u = Math.min(1, amount);
   const k = u * u * (3 - 2 * u);
@@ -415,11 +443,13 @@ export function exitView(pose: CameraPose, keep: Vec3, feet: Vec3, amount: numbe
   const p = pose.position;
   const t = pose.target;
   p.x += (mx - p.x) * k;
-  p.y += (feet.y + EXIT_VIEW.height - p.y) * k;
-  p.z += (keep.z + EXIT_VIEW.back - p.z) * k;
+  p.y += (feet.y + view.height - p.y) * k;
+  // Au sud du plus au sud des deux (Kéo, ce qu'elle garde), tournée vers le plus au nord : une trace au nord de Kéo (la
+  // palette de dix, au bout du ponton) reste devant elle, Kéo au premier plan, jamais vue d'aplomb.
+  p.z += (Math.max(keep.z, feet.z) + view.back - p.z) * k;
   t.x += (mx - t.x) * k;
-  t.y += (feet.y + EXIT_VIEW.aim - t.y) * k;
-  t.z += (feet.z - t.z) * k;
+  t.y += (feet.y + view.aim - t.y) * k;
+  t.z += (Math.min(keep.z, feet.z) - t.z) * k;
 }
 
 /**

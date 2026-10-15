@@ -27,6 +27,8 @@ import {
   EXIT_VIEW,
   exitView,
   scenetteExit,
+  placeKeep,
+  TRACE_VIEW,
   scenetteFinale,
   scenetteHidesPieces,
   scenettePose,
@@ -631,5 +633,39 @@ describe('Une scénette se joue sur le lieu tel qu’il est bâti (GD-20, lot 1)
     expect(boundsOf(bare.decor).max[1]).toBeLessThan(sceneSpot('filets').y + 1.5);
     expect(scenetteDecor('ecluses', false, false).triangles).toBeLessThan(scenetteDecor('ecluses', false, true).triangles);
     expect(scenetteDecor('ecluses', true, false).triangles).toBeLessThan(scenetteDecor('ecluses', true, true).triangles);
+  });
+});
+
+describe('le retour sans trace à garder', () => {
+  it('la caméra garde le lieu, son centre au-dessus de son pied (le Phare, ou l’étape de la trace pas encore posée)', () => {
+    expect(scenetteExit('quais', false)).toBeNull();
+    for (const id of ['phare', 'quais', 'filets', 'ecluses'] as const) {
+      const c = placeById(id).center;
+      const k = placeKeep(id);
+      expect(k.x).toBe(c.x);
+      expect(k.z).toBe(c.z);
+      expect(k.y).toBeGreaterThan(1);
+    }
+  });
+});
+
+describe('le retour d’une mission des Quais (GD-20, point 8)', () => {
+  it('Kéo et la trace de la mission jouée dans le champ, la caméra au sud des deux, jamais d’aplomb', () => {
+    for (const mission of ['times-tables', 'make-ten', 'doubles-halves', 'word-problems', 'measures']) {
+      const exit = scenetteExit('quais', true, mission)!;
+      const feet = { x: exit.at.x, y: standingHeight(heightAt(exit.at)), z: exit.at.z };
+      for (const [w, h] of screens) {
+        const pose = followPose(feet);
+        exitView(pose, exit.keep, feet, 1, TRACE_VIEW);
+        expect(pose.position.z - Math.max(feet.z, exit.keep.z)).toBeCloseTo(TRACE_VIEW.back, 6);
+        for (const p of [feet, exit.keep]) {
+          const s = screenOf(pose, p, w, h);
+          expect(s.x, `${mission} ${w}×${h}`).toBeGreaterThanOrEqual(0);
+          expect(s.x, `${mission} ${w}×${h}`).toBeLessThanOrEqual(w);
+          expect(s.y, `${mission} ${w}×${h}`).toBeGreaterThanOrEqual(0);
+          expect(s.y, `${mission} ${w}×${h}`).toBeLessThanOrEqual(h);
+        }
+      }
+    }
   });
 });

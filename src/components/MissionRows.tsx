@@ -19,7 +19,7 @@ export interface MissionRow {
   to?: { pathname: string; state?: unknown };
   /** Une ligne qui fait un geste (une mission d'un lieu, jouée sur place). */
   onSelect?: () => void;
-  /** Ce qui passe entre le titre et l'étiquette (le signe « Dans le lieu »). */
+  /** Ce qui passe entre le titre et l'étiquette (le signe « Scène »). */
   sign?: ReactNode;
   /** La ligne mise en avant : la prochaine mission (une seule par liste). */
   suggested?: boolean;
@@ -43,7 +43,9 @@ export function MissionRows({ rows, focus, label }: { rows: readonly MissionRow[
               <Icon name={row.icon} size="1.8rem" />
             </span>
             <span className="app-title">{row.title}</span>
+            {/* Des espaces entre les morceaux : la voix lit « titre, Scène, étoiles » sans les coller (invisibles dans la ligne). */}{' '}
             {row.sign}
+            {row.sign ? ' ' : null}
             {row.tag}
           </>
         );

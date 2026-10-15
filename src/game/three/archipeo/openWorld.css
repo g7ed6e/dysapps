@@ -993,9 +993,22 @@
 }
 .world-question .world-question-figure svg {
   max-width: 100%;
-  max-height: 24vh;
+  max-height: 16vh;
   width: auto;
   height: auto;
+}
+/* Le document d'une question (Mesures et figures) dans la colonne : le texte sur toute la largeur, à la taille de la
+   phrase, sa voix dessous à droite ; la colonne garde la place de l'indice et de la figure. */
+.world-question .world-place .notice {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.3rem;
+  margin: 0.3rem 0;
+  padding: 0.4rem 0.6rem;
+}
+.world-question .world-place .notice-text {
+  flex: 1 1 100%;
+  font-size: max(18px, 1.15rem);
 }
 /* « Vue simple » dans une scénette : la même question, sur un panneau uni qui couvre la scène (sous la pause), les
    cloches en liste qui passe à la ligne, dans le même ordre, « Valider » dessous ; les cloches déjà choisies le restent. */
@@ -1142,7 +1155,7 @@
 }
 /* « Vue simple » sur un écran bas : le panneau prend toute la hauteur sous « Scène » et la pause ; la consigne repliée
    en une ligne (le rôle, son début, sa voix, « Lire la suite »), la ligne du son serrée, les étapes en trait fin, les
-   cloches visibles dès l'ouverture, en texte normal comme au plus grand texte ; la bande de « Valider » mince (un
+   cloches visibles dès l'ouverture en texte normal (au plus grand texte, la rangée suit la phrase, plus bas) ; la bande de « Valider » mince (un
    bouton de 48 px, moins d'un cinquième du panneau). La tablette ne change pas. */
 .world-question .quiz.in-world.scenette.simple.simple-bas {
   flex-direction: row;
@@ -1220,6 +1233,36 @@
   height: 1px;
   overflow: hidden;
   clip-path: inset(50%);
+}
+/* Au plus grand texte sur un écran bas, la rangée vient tout de suite après la phrase de l'item : la consigne repliée,
+   les étapes, la phrase, les réponses et « Valider » ; l'indice, la figure et le rappel passent dessous (référent dys,
+   relecture de GD-20, point 8). Une phrase de plus de deux lignes pousse encore la rangée sous le pli. */
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > * {
+  order: 5;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .consigne,
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-line,
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-more,
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .quiz-steps {
+  order: 0;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt {
+  display: contents;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > * {
+  flex: 0 0 100%;
+  order: 4;
+  margin: 0;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head {
+  order: 1;
+  line-height: 1.3;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answers {
+  order: 2;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-simple-validate {
+  order: 3;
 }
 /* Dépliée : la consigne entière, sous le rôle, à la ligne. */
 .world-question .in-world.simple-bas.consigne-ouverte .world-consigne-fold {
@@ -1406,36 +1449,69 @@
   width: 1.4rem;
   height: 1.4rem;
 }
-/* L'étiquette (étoiles, « Nouveau ») au milieu de la ligne, alignée sur le signe. */
-.place-sheet .apps-compact .app-card > .tag {
+/* L'étiquette (étoiles, « Nouveau ») au milieu de la ligne, avec ou sans signe. */
+.place-sheet .apps-compact .app-card > .tag,
+.place-sheet .apps-compact .app-card > .stars {
   align-self: center;
-  margin-top: 0;
+  margin-block: 0;
 }
+/* La suggestion, seul état fort de la liste : une bordure épaisse et un anneau de la couleur de l'action, et un fond
+   teinté ; il reste quand le focus tombe sur une autre ligne (la ligne jouée), dont l'anneau du focus ne se voit qu'à la
+   navigation au clavier (:focus-visible, plus fin, de la couleur du focus). */
 .place-sheet .app-card.suggested {
   border-color: var(--primary-bg);
-  box-shadow: 0 0 0 3px var(--primary-bg);
+  box-shadow:
+    inset 0 0 0 2px var(--primary-bg),
+    0 0 0 4px var(--primary-bg);
+  background: color-mix(in srgb, var(--primary-bg) 8%, var(--surface));
 }
-/* Au plus grand texte, dans la colonne d'un écran bas : le titre à la taille du texte, sur deux lignes au plus, puis le
-   signe et l'étiquette côte à côte dessous ; deux missions se lisent sans défiler. */
-:root[data-texte="grand"] .place-sheet .apps-compact .app-card {
-  grid-template-columns: auto auto minmax(0, 1fr);
+.place-sheet .app-card:focus:not(:focus-visible) {
+  outline: none;
 }
-:root[data-texte="grand"] .place-sheet .apps-compact .app-title {
-  grid-column: 2 / span 2;
+/* Au plus grand texte, dans la colonne d'un écran bas : sans l'icône de lecture, la même sur chaque ligne, le titre à la
+   taille du texte sur toute la largeur, puis le signe et l'étiquette côte à côte dessous ; deux missions tiennent sous
+   le titre du panneau. */
+:root[data-texte="grand"] .place-sheet .island-sheet-title {
   font-size: 1rem;
 }
+:root[data-texte="grand"] .place-sheet .apps-compact .app-card {
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 56px;
+  padding: 0.2rem 0.5rem;
+  row-gap: 0;
+}
+:root[data-texte="grand"] .place-sheet .apps-compact .app-icon {
+  display: none;
+}
+:root[data-texte="grand"] .place-sheet .apps-compact .app-title {
+  grid-column: 1 / span 2;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+:root[data-texte="grand"] .place-sheet .mission-sign {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+:root[data-texte="grand"] .place-sheet .mission-sign svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+:root[data-texte="grand"] .place-sheet .apps-compact {
+  gap: 0.3rem;
+  margin-top: 0.3rem;
+}
 :root[data-texte="grand"] .place-sheet .apps-compact .app-card > .mission-sign {
-  grid-column: 2;
+  grid-column: 1;
   grid-row: 2;
   justify-self: start;
 }
 :root[data-texte="grand"] .place-sheet .apps-compact .app-card > .mission-sign + * {
-  grid-column: 3;
+  grid-column: 2;
   grid-row: 2;
   justify-self: start;
 }
 :root[data-texte="grand"] .place-sheet .apps-compact .app-card > .app-title + :not(.mission-sign) {
-  grid-column: 2 / span 2;
+  grid-column: 1 / span 2;
 }
 /* La fiche du Port : cinq lignes, l'icône et le nom à gauche, « Y aller » à droite, à la même place sur chaque ligne ;
    dans une colonne trop étroite (au plus grand texte), « Y aller » passe sous le nom plutôt que de sortir du panneau. */

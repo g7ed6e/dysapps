@@ -37,6 +37,7 @@ import { PlacePanel, placeFromParam, placeResume } from './PlacePanel';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
 import { portState } from './portState';
 import { createOpenWorld, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
+import { usePlaceAddress, usePoseGuard } from './usePlaceReturn';
 import { WorldQuestion } from './WorldQuestion';
 import './openWorld.css';
 
@@ -221,19 +222,15 @@ export default function OpenWorldPage() {
     world.current?.setPort(port);
   }, [port, ready]);
   // L'adresse d'un lieu (`?lieu=quais&mission=make-ten`, « Ma dernière mission ») : Kéo y est déposé, sa liste s'ouvre, le
-  // focus sur la mission de l'adresse si elle est du lieu ; relue quand l'adresse change sans quitter le monde.
-  const lieuHandled = useRef('');
-  useEffect(() => {
+  // focus sur la mission de l'adresse si elle est du lieu ; à chaque navigation, même vers la même adresse.
+  const jumpTo = useCallback((place: PlaceId) => {
     const w = world.current;
-    const key = lieuParam ? `${lieuParam}|${missionParam ?? ''}` : '';
-    if (!w || !lieuParam || key === lieuHandled.current) return;
-    lieuHandled.current = key;
-    const own = missionsOfPlace(placeById(lieuParam), modele.bornes).some((b) => b.mission === missionParam);
-    w.goTo(lieuParam, true);
-    setLieu({ place: lieuParam, focus: own ? missionParam : null });
-    // Les bornes ne relancent pas l'arrivée : seule l'adresse le fait.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lieuParam, missionParam, ready]);
+    if (!w) return false;
+    w.goTo(place, true);
+    return true;
+  }, []);
+  const openLieu = useCallback((place: PlaceId, focus: string | null) => setLieu({ place, focus }), []);
+  usePlaceAddress({ place: lieuParam, mission: missionParam, navigation: location.key, ready, goTo: jumpTo, open: openLieu });
   // Au retour d'une mission de l'école, le panneau de sa porte se rouvre ; au retour d'une question d'assemblage
   // réussie, la scénette se joue d'abord (le bloc posé sur le râtelier), puis le panneau du lieu s'ouvre.
   const arrived = useRef(false);
@@ -403,6 +400,9 @@ export default function OpenWorldPage() {
   }, [asking]);
   // Le retour d'une mission : après le bilan et la pose de la partie gagnée, la liste du lieu se rouvre, le focus sur la
   // ligne jouée (consultant UX UI).
+  // Une pose qui ne dirait jamais sa fin (la scène arrêtée) ne retient ni la liste ni les célébrations.
+  const poseOver = useCallback(() => setPosePending(false), []);
+  usePoseGuard(posePending && !asking, poseOver);
   useEffect(() => {
     if (!backTo || asking || posePending) return;
     setLieu({ place: backTo.place, focus: backTo.mission });
