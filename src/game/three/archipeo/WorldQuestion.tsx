@@ -204,8 +204,9 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
     if (offer || (!layout.low && !grandScene)) return;
     const column = root.querySelector<HTMLElement>('.quiz.in-world');
     if (!column || !overflows(column)) return;
-    // Au plus grand texte, une scénette dont le panneau déborderait s'ouvre en « Vue simple », une fois : la consigne
-    // y tient entière, sans défiler (sur un écran bas, après l'avoir essayée en pleine largeur). Revenu à la scène,
+    // Au plus grand texte, une scénette dont le panneau déborderait s'ouvre en « Vue simple », une fois (sur un écran
+    // bas, après l'avoir essayée en pleine largeur) : la consigne y est entière, et c'est le panneau qui défile (sur un
+    // téléphone, la question n'y tient pas sans défiler ; « Valider » reste dans sa bande, en bas). Revenu à la scène,
     // l'élève garde les crans d'avant.
     if (grandScene && !autoSimple.current && !column.classList.contains('has-sheet') && (!layout.low || !intro || widen >= WIDEN_FULL)) {
       autoSimple.current = true;
@@ -390,8 +391,10 @@ export function WorldQuestion({ place, mission, world, onClose, onSimpleView }: 
       if (!ellipsis) return;
       ellipsis.hidden = true;
       if (consigneOpen) return;
-      const role = line.querySelector<HTMLElement>('.world-scenette-role') ?? line;
-      const first = role.getBoundingClientRect();
+      // La première ligne de la consigne : celle du rôle, ou la suivante quand le rôle a sa ligne (au plus grand texte).
+      const role = line.querySelector<HTMLElement>('.world-scenette-role');
+      const ownLine = role && getComputedStyle(role).display === 'block';
+      const first = (ownLine ? (words[0] ?? line) : (role ?? line)).getBoundingClientRect();
       const onFirstLine = (el: HTMLElement) => el.getBoundingClientRect().top < first.top + first.height / 2;
       let cut = words.findIndex((w) => !onFirstLine(w));
       if (cut < 0) return;

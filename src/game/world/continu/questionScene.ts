@@ -928,6 +928,12 @@ export function quaySuccess(scene: Extract<ItemScene, { kind: 'quai' }>, scale: 
 const LOADED_BOAT: Extract<ItemScene, { kind: 'quai' }> = { kind: 'quai', op: 'moitie', before: 20, after: 10 };
 const LOADED_BOAT_CRATE = 0.8;
 
+/** La barque chargée laissée aux Quais : sa place, sa longueur et sa largeur (la vue cadre le retour de la scénette sur elle). */
+export function loadedBoat(): { at: Vec3; length: number; width: number } {
+  const { at, length, width } = quayBoat(LOADED_BOAT);
+  return { at, length, width };
+}
+
 /** La grue du quai : la hauteur de sa flèche au-dessus du quai, et l'écart du crochet au bout est du quai. */
 const CRANE = { height: 4.2, reach: 5.2, hookDrop: 2 } as const;
 

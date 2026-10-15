@@ -19,7 +19,7 @@ import { PLACES, TERRAIN, placeById, type PlaceId } from '../../world/continu/pl
 import { modelOfPlace } from '../../world/continu/places';
 import { answerObjects, answerScale, itemScene, placePieces, questionPose, quaySuccess, sceneSpot, veilleurPiece, type QuestionLayout, type Reaction } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, veilleurAwake, type ItemScene } from '../../world/continu/questions';
-import { LANTERN, SCENETTE_CAMERA, SCENETTE_DECK, answersHang, bellPlane, scenetteHidesPlace, habitantHand, scenetteDecor, scenetteKeo, scenetteOf, scenettePose, scenetteSuccess } from '../../world/continu/scenette';
+import { EXIT_VIEW, LANTERN, SCENETTE_CAMERA, SCENETTE_DECK, answersHang, exitView, scenetteExit, bellPlane, scenetteHidesPlace, habitantHand, scenetteDecor, scenetteKeo, scenetteOf, scenettePose, scenetteSuccess } from '../../world/continu/scenette';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
 import { buildHeightField, heightOnMesh, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
@@ -471,9 +471,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const lanternTop: Vec3 = { x: phare.center.x, y: standingHeight(ground(phare.center.x, phare.center.z)) + modelOfPlace('phare').top, z: phare.center.z };
   const nearLantern = () => !walk && distance(here, phare.center) < LOOK_UP.within;
   let look = nearLantern() ? 1 : 0;
+  // Le retour d'une scénette (aux Quais) : Kéo reste sur le bord du quai, la caméra garde la barque chargée dans le
+  // champ (`back`, de 0 à 1) tant qu'il ne repart pas ; elle rejoint alors la caméra qui suit.
+  let exit: ReturnType<typeof scenetteExit> = null;
+  let back = 0;
+  const atExit = () => !walk && exit !== null && distance(here, exit.at) < 0.05;
   const follow = () => {
     followPose(focus, lift, pose);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
+    if (exit) exitView(pose, exit.keep, keoFeet, back);
     applyPose(pose);
   };
   follow();
@@ -612,6 +618,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const startWalkTo = (to: ReturnType<typeof snapToNetwork>, place: PlaceId | null) => {
     const from = snapToNetwork(here);
     const route = findRoute(from, to);
+    // Kéo hors du chemin (sur le bord du quai, au retour d'une scénette) : il le rejoint d'abord.
+    if (distance(here, from.at) > 0.05) route.unshift(here);
     walkTarget = place;
     if (route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05) return arrive(place);
     walk = startWalk(route, performance.now());
@@ -621,6 +629,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const jumpTo = (place: PlaceId) => {
     here = pathNode(placeById(place).door).at;
     heading = FACING_CAMERA;
+    exit = null;
+    back = 0;
     keo.rotation.y = FACING_CAMERA;
     placeKeo(here);
     followStep(focus, keoFeet, 0, true);
@@ -963,6 +973,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   /** Quitte la scénette : son décor et sa lampe libérés, Kéo de retour sur le chemin, à sa taille. */
   const leaveScenette = () => {
     if (!scenette) return;
+    const left = scenette;
     scenette = null;
     descent.active = false;
     placeVisibility();
@@ -974,6 +985,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     decorMesh.geometry = new THREE.BufferGeometry();
     decorMesh.visible = false;
     keo.scale.setScalar(KEO_SCALE);
+    // Aux Quais, Kéo reste sur le bord du quai, face à la caméra, qui garde la barque chargée (d'un coup, comme tout
+    // retour de question).
+    const ex = scenetteExit(left);
+    if (ex) {
+      here = { ...ex.at };
+      heading = FACING_CAMERA;
+      exit = ex;
+      back = 1;
+    }
     keo.rotation.y = heading;
     placeKeo(here);
   };
@@ -1273,6 +1293,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     followStep(focus, keoFeet, dt, reduceMotion);
     lift = liftStep(lift, occlusionLift(focus, ground), dt, reduceMotion);
     look = lookUpStep(look, nearLantern() ? 1 : 0, dt, reduceMotion);
+    if (back > 0 && !atExit()) back = reduceMotion ? 0 : Math.max(0, back - dt / EXIT_VIEW.down);
+    if (back === 0) exit = null;
     follow();
     updateRings();
     // Une tuile de près au plus par image : la suivante de la file, puis l'anneau de près refait avec elle.

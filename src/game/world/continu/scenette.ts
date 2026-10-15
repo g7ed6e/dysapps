@@ -8,9 +8,9 @@
 // libéré au départ par la vue. Code pur : la vue dessine.
 import { CAMERA_FOV, type CameraPose } from './camera';
 import { FacetBuilder, type Facets } from './facets';
-import type { Vec3 } from './geometry';
+import type { Vec2, Vec3 } from './geometry';
 import { DECK_HEIGHT, placeById, type PlaceId } from './plan6e';
-import { ANSWER_LAYOUT, QUAY, liftingHook, sceneSpot, type AnswerSlot, type QuestionLayout, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, QUAY, liftingHook, loadedBoat, sceneSpot, type AnswerSlot, type QuestionLayout, type ScreenBox } from './questionScene';
 import { heightAt, standingHeight } from './terrain';
 
 /**
@@ -239,6 +239,45 @@ export function scenetteHabitant(place: PlaceId): Vec3 {
   const f = floorOf(place);
   const h = siteOf(place).habitant;
   return { x: f.x + h.dx, y: f.y, z: f.z + h.dz };
+}
+
+/**
+ * Où Kéo reste en quittant la scénette d'un lieu, et ce que la caméra garde alors dans le champ (retour du directeur
+ * artistique, lot 3) : aux Quais, sur le bord du quai, juste à l'est de la proue de la barque chargée, qu'on voit au
+ * premier plan avec la grue et le hangar derrière lui. Ailleurs, rien : Kéo revient sur le chemin, la caméra le suit.
+ */
+export function scenetteExit(place: PlaceId): { at: Vec2; keep: Vec3 } | null {
+  if (place !== 'quais') return null;
+  const boat = loadedBoat();
+  const f = quayFloor();
+  return { at: { x: boat.at.x + boat.length / 2 + 0.9, z: f.z }, keep: { x: boat.at.x, y: boat.at.y, z: boat.at.z } };
+}
+
+/**
+ * La caméra du retour d'une scénette : toujours tournée vers le nord, reculée au-dessus du bassin (`back` unités au sud
+ * de ce qu'elle garde, `height` au-dessus des pieds de Kéo), entre Kéo et la barque en largeur, elle regarde un point
+ * `aim` unités au-dessus des pieds de Kéo : la barque au premier plan, au-dessus de « Y aller », la grue derrière lui.
+ * Le passage vers la caméra qui suit dure `down` secondes quand Kéo repart (d'un bloc avec « Réduire les animations »).
+ */
+export const EXIT_VIEW = { back: 11, height: 9, aim: 1.6, down: 0.5 } as const;
+
+/**
+ * Pose `pose` (la caméra qui suit, remplie sur place) vers la caméra du retour d'une scénette, de la part `amount` (0 :
+ * la caméra qui suit, 1 : le retour) : Kéo, aux pieds `feet`, et `keep` (la barque) ensemble dans le champ.
+ */
+export function exitView(pose: CameraPose, keep: Vec3, feet: Vec3, amount: number): void {
+  if (amount <= 0) return;
+  const u = Math.min(1, amount);
+  const k = u * u * (3 - 2 * u);
+  const mx = (feet.x + keep.x) / 2;
+  const p = pose.position;
+  const t = pose.target;
+  p.x += (mx - p.x) * k;
+  p.y += (feet.y + EXIT_VIEW.height - p.y) * k;
+  p.z += (keep.z + EXIT_VIEW.back - p.z) * k;
+  t.x += (mx - t.x) * k;
+  t.y += (feet.y + EXIT_VIEW.aim - t.y) * k;
+  t.z += (feet.z - t.z) * k;
 }
 
 /**

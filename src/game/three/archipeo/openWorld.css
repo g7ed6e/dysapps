@@ -862,24 +862,36 @@
   color: var(--text);
   font-weight: 700;
 }
-/* « Fermé pour l'instant », au toucher d'un lieu fermé : en haut au milieu, sur fond uni, à une place fixe. */
+/* « Fermé pour l'instant », au toucher d'un lieu fermé : juste au-dessus de « Retour », dans la barre du bas, sur fond
+   uni, à une place fixe ; jamais sur la Carte, où il cachait un cadenas ou un nom (relectures dys et UX UI). */
+.open-world-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  /* La barre ne prend aux doigts que son bouton : la Carte se touche à côté. */
+  pointer-events: none;
+}
+.open-world-bar > .button {
+  pointer-events: auto;
+}
+/* Étroit (il passe à la ligne au plus grand texte plutôt que de s'étaler sur la Carte) et transparent aux doigts : un
+   cadenas ou Kéo qu'il couvrirait un instant se touche encore au travers. */
 .open-world-map-status {
-  position: absolute;
-  top: calc(0.8rem + env(safe-area-inset-top, 0px));
-  left: 50%;
-  transform: translateX(-50%);
   margin: 0;
-  max-width: min(80vw, 24rem);
+  max-width: min(45vw, 16rem);
+  pointer-events: none;
   padding: 0.3rem 0.9rem;
   border: var(--border-width, 2px) solid var(--text);
   border-radius: var(--radius-control, 12px);
   background: var(--surface);
   color: var(--text);
   font-weight: 700;
-  text-align: center;
 }
 .open-world-map-status:empty {
-  display: none;
+  /* Vide, il reste dans la page (la voix dit le mot quand il s'écrit) sans rien montrer ni prendre de place. */
+  padding: 0;
+  border: 0;
 }
 /* La scénette (lot 2) : le rôle de l'habitant en tête du panneau, en gras ; la place de sa phrase d'accueil dessous. */
 .world-scenette-head {
@@ -1095,6 +1107,14 @@
   min-height: 48px;
   padding-block: 0;
   white-space: nowrap;
+}
+/* Au plus grand texte, le rôle a sa ligne et la consigne repliée passe dessous (relecture dys et UX UI : « Le docker »
+   collé à « Trouve le double… » se lisait d'un trait). */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold .world-scenette-role {
+  display: block;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas:not(.consigne-ouverte) .world-consigne-fold {
+  max-height: 2.6em;
 }
 /* Au plus grand texte, « Lire la suite » se réduit à son icône (son nom reste dit) : la ligne garde le rôle. */
 :root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-more {

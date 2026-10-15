@@ -1,16 +1,13 @@
 // Les étiquettes de la Carte des lieux ouverts (piste 1, lot 3) : Kéo (une pastille unie à sa silhouette et « Toi »), le
 // nom de chaque lieu ouvert (un bouton qui y mène), le cadenas de chaque lieu fermé et son nom atténué dessous (un
-// toucher dit « Fermé pour l'instant »). Rien n'est écrit dans la 3D : la scène donne les points à l'écran, posés ici
+// toucher : la page dit « Fermé pour l'instant », au-dessus de « Retour »). Rien n'est écrit dans la 3D : la scène donne les points à l'écran, posés ici
 // sans passer par React ; aucune étiquette n'en recouvre une autre (`layoutMapLabels`, world/continu/map.ts). Les
 // tailles sont relues seulement quand une étiquette change de taille (police, grand texte), jamais à chaque image.
-import { useCallback, useEffect, useRef, useState, type MutableRefObject } from 'react';
+import { useCallback, useEffect, useRef, type MutableRefObject } from 'react';
 import { Icon } from '../../../components/Icon';
 import { layoutMapLabels, type MapLabel, type Rect } from '../../world/continu/map';
 import { PLACES, type PlaceId } from '../../world/continu/plan6e';
 import type { MapSpotOnScreen } from './scene';
-
-/** Le temps où « Fermé pour l'instant » reste écrit, en millisecondes. */
-const CLOSED_MESSAGE_MS = 4000;
 
 interface Props {
   /** Les lieux qu'on peut toucher ; les autres portent leur cadenas. */
@@ -18,18 +15,17 @@ interface Props {
   onPick(place: PlaceId): void;
   /** La page y range la fonction qui pose les étiquettes (le rappel `onMapPlaces` de la scène l'appelle). */
   placer: MutableRefObject<((spots: readonly MapSpotOnScreen[]) => void) | null>;
-  /** Un lieu fermé touché dans la 3D : la page le transmet ici. */
-  closedRef: MutableRefObject<((place: PlaceId) => void) | null>;
+  /** Un lieu fermé touché : la page dit « Fermé pour l'instant ». */
+  onClosed(place: PlaceId): void;
 }
 
-export function MapLabels({ openPlaces, onPick, placer, closedRef }: Props) {
+export function MapLabels({ openPlaces, onPick, placer, onClosed }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
   // Les boutons de la page que les étiquettes évitent, relus au changement de taille seulement.
   const obstacles = useRef<Rect[]>([]);
   const screen = useRef({ width: Infinity, height: Infinity });
-  const [closed, setClosed] = useState<PlaceId | null>(null);
 
   const place = useCallback((spots: readonly MapSpotOnScreen[]) => {
     last.current = spots;
@@ -90,17 +86,6 @@ export function MapLabels({ openPlaces, onPick, placer, closedRef }: Props) {
     return () => observer.disconnect();
   }, [openPlaces, place]);
 
-  useEffect(() => {
-    if (!closed) return;
-    const t = window.setTimeout(() => setClosed(null), CLOSED_MESSAGE_MS);
-    return () => window.clearTimeout(t);
-  }, [closed]);
-  useEffect(() => {
-    closedRef.current = setClosed;
-    return () => {
-      closedRef.current = null;
-    };
-  }, [closedRef]);
 
   return (
     <div ref={root} className="open-world-map-places">
@@ -125,7 +110,7 @@ export function MapLabels({ openPlaces, onPick, placer, closedRef }: Props) {
             data-lieu={p.id}
             hidden
             aria-label={`${p.name} : sous la brume, fermé pour l’instant`}
-            onClick={() => setClosed(p.id)}
+            onClick={() => onClosed(p.id)}
           >
             <span className="open-world-lock" aria-hidden="true">
               <Icon name="lock" />
@@ -136,10 +121,6 @@ export function MapLabels({ openPlaces, onPick, placer, closedRef }: Props) {
           </button>
         ),
       )}
-      {/* Dit au toucher d'un lieu fermé, à une place fixe, en haut au milieu, sur fond uni. */}
-      <p className="open-world-map-status" role="status">
-        {closed ? 'Fermé pour l’instant' : ''}
-      </p>
     </div>
   );
 }

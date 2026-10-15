@@ -77,7 +77,9 @@ export default function OpenWorldPage() {
   const [mapOpen, setMapOpen] = useState(false);
   // Ce que les rappels de la scène appellent sur la Carte : poser les étiquettes, choisir un lieu touché dans la 3D.
   const mapPlacer = useRef<((spots: readonly MapSpotOnScreen[]) => void) | null>(null);
-  const mapClosed = useRef<((place: PlaceId) => void) | null>(null);
+  // « Fermé pour l'instant », au toucher d'un lieu fermé sur la Carte : quelques secondes, au-dessus de « Retour ».
+  const [closedNote, setClosedNote] = useState(0);
+  const showClosed = useCallback(() => setClosedNote((n) => n + 1), []);
   const mapPick = useRef<(place: PlaceId) => void>(() => {});
   const mapButton = useRef<HTMLButtonElement>(null);
   // La distance au prochain lieu, pour la voix (avis du référent dys) : relue à chaque image, mais l'état ne change
@@ -173,19 +175,28 @@ export default function OpenWorldPage() {
    */
   const pickPlace = useCallback((placeId: PlaceId) => {
     setMapOpen(false);
+    setClosedNote(0);
     world.current?.map(null);
     world.current?.goTo(placeId, true);
     mapButton.current?.focus();
   }, []);
   // Un lieu touché dans la 3D : ouvert, on y va ; fermé, la Carte le dit.
   useEffect(() => {
-    mapPick.current = (placeId) => (openPlaces.includes(placeId) ? pickPlace(placeId) : mapClosed.current?.(placeId));
-  }, [openPlaces, pickPlace]);
+    mapPick.current = (placeId) => (openPlaces.includes(placeId) ? pickPlace(placeId) : showClosed());
+  }, [openPlaces, pickPlace, showClosed]);
+  // Le mot s'efface après quelques secondes (un nouveau toucher le garde), ou avec la Carte.
+  useEffect(() => {
+    if (!closedNote) return;
+    const t = window.setTimeout(() => setClosedNote(0), CLOSED_NOTE_MS);
+    return () => window.clearTimeout(t);
+  }, [closedNote]);
   // Échap ferme la Carte, comme un panneau.
   useEffect(() => {
     if (!mapOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMapOpen(false);
+      if (e.key !== 'Escape') return;
+      setMapOpen(false);
+      setClosedNote(0);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -252,7 +263,7 @@ export default function OpenWorldPage() {
           ))}
         </div>
         {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
-        {mapOpen && !asking && <MapLabels openPlaces={openPlaces} onPick={pickPlace} placer={mapPlacer} closedRef={mapClosed} />}
+        {mapOpen && !asking && <MapLabels openPlaces={openPlaces} onPick={pickPlace} placer={mapPlacer} onClosed={showClosed} />}
         {!asking && <SettingsButton />}
         {asking && world.current && (
           <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} world={world.current} onClose={closeQuestion} onSimpleView={simpleView} />
@@ -260,13 +271,23 @@ export default function OpenWorldPage() {
         {/* La Carte : le même bouton que dans le reste du jeu, dans la barre du bas, à gauche (« Y aller » tient le milieu). */}
         {!asking && (
           <nav className="open-world-bar" aria-label="Monde">
+            {/* Au toucher d'un lieu fermé, à une place fixe et libre, juste au-dessus de « Retour », sur fond uni : jamais
+                sur la Carte, où il cachait un cadenas ou un nom (relectures dys et UX UI). */}
+            {mapOpen && (
+              <p className="open-world-map-status" role="status">
+                {closedNote ? 'Fermé pour l’instant' : ''}
+              </p>
+            )}
             {/* Un seul mot, toujours écrit sous l'icône, dans le bouton ; la Carte ouverte, il dit comment en sortir. */}
             <button
               type="button"
               ref={mapButton}
               className="button open-world-map-button"
               data-tuto="carte"
-              onClick={() => setMapOpen(!mapOpen)}
+              onClick={() => {
+                setMapOpen(!mapOpen);
+                setClosedNote(0);
+              }}
             >
               <Icon name={mapOpen ? 'back' : 'map'} />
               <span className="open-world-map-word">{mapOpen ? 'Retour' : 'Carte'}</span>
@@ -311,6 +332,9 @@ function placeLocks(root: HTMLElement | null, locks: readonly LockOnScreen[]): v
     el.style.transform = transform;
   }
 }
+
+/** Le temps où « Fermé pour l'instant » reste écrit, en millisecondes. */
+const CLOSED_NOTE_MS = 4000;
 
 /** La dernière place posée de chaque cadenas. */
 const lockTransforms = new WeakMap<HTMLElement, string>();

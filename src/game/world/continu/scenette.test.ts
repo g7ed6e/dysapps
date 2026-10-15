@@ -2,13 +2,13 @@
 // A et B), la caméra de la galerie, le décor de près, les cloches pendues, la lampe de la réussite, le regard levé.
 // Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { FOLLOW, LOOK_UP, followPose, lookUp, lookUpStep, screenOf } from './camera';
+import { FOLLOW, KEO_HEIGHT, LOOK_UP, followPose, lookUp, lookUpStep, screenOf } from './camera';
 import { boundsOf } from './facets';
 import { distance } from './geometry';
 import { startOf } from './paths';
 import { placeById } from './plan6e';
 import { modelOfPlace } from './places';
-import { ANSWER_LAYOUT, answerObjects, itemScene, questionLayout, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, answerObjects, itemScene, loadedBoat, questionLayout, type ScreenBox } from './questionScene';
 import {
   GALLERY,
   LANTERN,
@@ -23,6 +23,9 @@ import {
   scenetteKeo,
   scenetteLayout,
   scenetteOf,
+  EXIT_VIEW,
+  exitView,
+  scenetteExit,
   scenettePose,
   scenetteSuccess,
 } from './scenette';
@@ -317,5 +320,57 @@ describe('Le quai du docker', () => {
         expect(p.y, at).toBeLessThanOrEqual(stage.bottom + 1);
       }
     }
+  });
+});
+
+describe('Le retour de la scénette des Quais', () => {
+  const exit = scenetteExit('quais')!;
+  const feet = { x: exit.at.x, y: standingHeight(heightAt(exit.at)), z: exit.at.z };
+  const boat = loadedBoat();
+  const place = placeById('quais');
+
+  it('Kéo reste sur le bord du quai, à côté de la proue de la barque ; ailleurs, il revient sur le chemin', () => {
+    expect(scenetteExit('phare')).toBeNull();
+    expect(exit.at.x).toBeGreaterThan(boat.at.x + boat.length / 2);
+    expect(exit.at.z).toBeLessThan(boat.at.z - boat.width / 2);
+    // Au sud du lieu, sur le quai : la barque est entre lui et la caméra.
+    expect(exit.at.z).toBeGreaterThan(place.center.z + 8);
+  });
+
+  it('la caméra, tournée vers le nord, garde Kéo, la barque chargée et la grue dans le champ, au-dessus de « Y aller »', () => {
+    for (const [w, h] of screens) {
+      const pose = followPose(feet);
+      exitView(pose, exit.keep, feet, 1);
+      expect(pose.position.z, 'vers le nord').toBeGreaterThan(pose.target.z);
+      expect(pose.position.x).toBeCloseTo(pose.target.x, 6);
+      // Reculée au-dessus du bassin, au sud de la barque.
+      expect(pose.position.z).toBeCloseTo(exit.keep.z + EXIT_VIEW.back, 6);
+      const at = `${w}×${h}`;
+      const pts = {
+        pieds: feet,
+        tete: { ...feet, y: feet.y + KEO_HEIGHT * 0.8 },
+        proue: { x: boat.at.x + boat.length / 2, y: boat.at.y + 0.4, z: boat.at.z + boat.width / 2 },
+        poupe: { x: boat.at.x - boat.length / 2 + 0.6, y: boat.at.y + 0.4, z: boat.at.z + boat.width / 2 },
+        grue: { x: place.center.x - 2.6, y: feet.y + 6.3, z: place.center.z - 1.6 },
+      };
+      for (const [name, p] of Object.entries(pts)) {
+        const s = screenOf(pose, p, w, h);
+        expect(s.x, `${at} ${name}`).toBeGreaterThanOrEqual(0);
+        expect(s.x, `${at} ${name}`).toBeLessThanOrEqual(w);
+        expect(s.y, `${at} ${name}`).toBeGreaterThanOrEqual(0.08 * h);
+        expect(s.y, `${at} ${name}`).toBeLessThanOrEqual(h - LOOK_UP.footRoom);
+      }
+    }
+  });
+
+  it('sans retour (Kéo reparti), la caméra qui suit reste telle quelle ; à mi-passage, elle est entre les deux', () => {
+    const a = followPose(feet);
+    const b = followPose(feet);
+    exitView(b, exit.keep, feet, 0);
+    expect(b).toEqual(a);
+    const c = followPose(feet);
+    exitView(c, exit.keep, feet, 0.5);
+    expect(c.position.z).toBeGreaterThan(a.position.z);
+    expect(c.position.z).toBeLessThan(exit.keep.z + EXIT_VIEW.back);
   });
 });
