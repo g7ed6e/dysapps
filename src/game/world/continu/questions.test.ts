@@ -4,10 +4,14 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { seeded } from '../../../core/random';
+import { MATHS_EXERCISES } from '../../exercises/maths';
+import { PROBLEMES_EXERCISES } from '../../exercises/problems';
 import { boundsOf } from './facets';
 import { modelOfPlace } from './places';
+import { heightAt } from './terrain';
 import PLACE_ITEMS from './placeItems.json';
-import { ANSWER_LAYOUT, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placeTrace, questionLayout, sceneSpot, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
+import { PLACES, placeById } from './plan6e';
+import { ANSWER_LAYOUT, QUAIS_TRACE_SPOTS, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placeTrace, questionLayout, sceneSpot, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
 import {
   BELLS_PER_ROUND,
   EXERCISES_WITH_TWINS,
@@ -16,6 +20,7 @@ import {
   isItemScene,
   placeInstruction,
   placeItems,
+  QUAI_NU,
   quaiScene,
   sasExplanation,
   traceDone,
@@ -172,6 +177,19 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
   it('le double : une idée par phrase', () => {
     expect(quaiScene('dbl-23')?.prompt).toMatch(/Combien y en a-t-il sur le quai maintenant \?$/);
   });
+
+  it('les autres missions des Quais gardent leurs items de référence tels quels, sur le quai vide (GD-20, point 8)', () => {
+    const generated = [...MATHS_EXERCISES, ...PROBLEMES_EXERCISES].filter((e) => e.biome === 'maths-6e-calculation' && e.type !== 'doubles-halves');
+    const written = ['maths-6e-calculation-measures-1', 'maths-6e-calculation-measures-2'].map((id) => ({ id, items: reference(id).items }));
+    const all = [...generated.map((e) => ({ id: e.id, items: e.generate?.('graine') ?? e.items })), ...written];
+    expect(new Set(all.map((e) => e.id.replace(/-\d$/, ''))).size).toBe(4);
+    for (const { id, items } of all) {
+      const placed = placeItems('quais', id, items as QuestionItem[]);
+      expect(placed.map(({ placeScene, ...rest }) => [placeScene, rest])).toEqual(items.map((it) => [QUAI_NU, it]));
+    }
+    // Une clé de Doubles et moitiés hors de sa mission ne change rien non plus.
+    expect(placeItems('quais', 'maths-6e-calculation-make-ten-1', [{ key: 'half-34', prompt: 'p' }])[0]).toEqual({ key: 'half-34', prompt: 'p', placeScene: QUAI_NU });
+  });
 });
 
 describe('Les cloches du Phare', () => {
@@ -209,6 +227,7 @@ describe('Les traces des scénettes', () => {
   it('une scène d’item se vérifie champ par champ', () => {
     expect(isItemScene({ kind: 'filets', catch: 'bocaux', count: 2 })).toBe(true);
     expect(isItemScene({ kind: 'quai', op: 'double', before: 23, after: 46 })).toBe(true);
+    expect(isItemScene(QUAI_NU)).toBe(true);
     expect(isItemScene({ kind: 'sas', n: 3, d: 4 })).toBe(true);
     expect(isItemScene({ kind: 'filets', catch: 'baleine', count: 1 })).toBe(false);
     expect(isItemScene({ kind: 'sas', n: 3, d: 0 })).toBe(false);
@@ -217,12 +236,40 @@ describe('Les traces des scénettes', () => {
     expect(isItemScene('cloches')).toBe(false);
   });
 
-  it('chaque lieu a sa trace ; aux Écluses, la porte d’amont fermée est là avant la réussite', () => {
-    for (const id of ['phare', 'filets', 'ecluses', 'quais'] as const) {
-      if (id === 'ecluses') expect(placeTrace(id, false).triangles).toBeGreaterThan(0);
-      else expect(placeTrace(id, false).triangles).toBe(0);
-      expect(placeTrace(id, true).triangles).toBeGreaterThan(placeTrace(id, false).triangles);
+  it('chaque mission jouée en scénette a sa trace ; aux Écluses, la porte d’amont fermée est là avant la réussite', () => {
+    for (const p of PLACES) {
+      if (p.id === 'ecluses') expect(placeTrace(p.id, []).triangles).toBeGreaterThan(0);
+      else expect(placeTrace(p.id, []).triangles).toBe(0);
+      // Chaque mission ajoute la sienne, et rien d'autre : une mission qui se joue hors de la scénette n'en laisse pas.
+      let before = placeTrace(p.id, []).triangles;
+      for (let k = 1; k <= p.scenes.length; k++) {
+        const now = placeTrace(p.id, p.scenes.slice(0, k)).triangles;
+        expect(now).toBeGreaterThan(before);
+        before = now;
+      }
+      expect(placeTrace(p.id, ['abattage-imaginaire']).triangles).toBe(placeTrace(p.id, []).triangles);
     }
+  });
+
+  it('aux Quais, les cinq traces sont posées au sol, sur le terre-plein, sans se toucher ; la barque du passeur sur l’eau', () => {
+    const c = placeById('quais').center;
+    const boxes = (['times-tables', 'make-ten', 'doubles-halves', 'word-problems', 'measures'] as const).map((m) => [m, boundsOf(placeTrace('quais', [m]))] as const);
+    for (const [m, b] of boxes) {
+      if (m === 'doubles-halves') continue;
+      const spot = QUAIS_TRACE_SPOTS[m];
+      // Autour de son point, à quelques unités au plus.
+      expect(Math.abs((b.min[0] + b.max[0]) / 2 - (c.x + spot.x))).toBeLessThan(2);
+      if (m === 'word-problems') expect(b.min[1]).toBeLessThan(0.1);
+      else expect(heightAt({ x: c.x + spot.x, z: c.z + spot.z })).toBeGreaterThan(0);
+    }
+    const lone = boxes.filter(([m]) => m !== 'doubles-halves').map(([, b]) => b);
+    for (let i = 0; i < lone.length; i++)
+      for (let k = i + 1; k < lone.length; k++) {
+        const a = lone[i],
+          b = lone[k];
+        const apart = a.max[0] < b.min[0] || b.max[0] < a.min[0] || a.max[2] < b.min[2] || b.max[2] < a.min[2];
+        expect(apart).toBe(true);
+      }
   });
 
   it('la Roue arrêtée des Écluses est fermée de son côté ouest', () => {
@@ -397,7 +444,7 @@ describe('La scène d’un item', () => {
       expect(glass.max[0]).toBeLessThan(sceneSpot('quais').x + 4);
     }
     // La barque chargée et sa lanterne restent aux Quais dès la première réussite : un peu plus de triangles qu'avant.
-    expect(placeTrace('quais', true).triangles).toBeGreaterThan(placeTrace('quais', false).triangles + 100);
+    expect(placeTrace('quais', ['doubles-halves']).triangles).toBeGreaterThan(placeTrace('quais', []).triangles + 100);
   });
 
   it('aux Quais, une caisse tentée penche, la caisse partie au crochet s’efface de la rangée', () => {

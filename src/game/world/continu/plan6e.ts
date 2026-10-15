@@ -110,13 +110,18 @@ export interface OpenPlace {
    * mot d'état de la Carte (« restauré », « restaurées »).
    */
   agree: 'ms' | 'mp' | 'fs' | 'fp';
-  /** L'île d'aujourd'hui dont il reprend la mission (ses repères stables : identifiant, matière, icône). */
+  /**
+   * L'île d'aujourd'hui dont il reprend les missions (ses repères stables : identifiant, matière, icône). Le lieu porte
+   * toutes les missions de son île (GD-20, point 8, choix du mainteneur du 15 octobre 2026) : sa liste est celle des
+   * bornes de l'île (le modèle du monde, ./mission.ts, `missionsOfPlace`), jamais écrite ici.
+   */
   island: string;
   /**
-   * La mission de cette île qui se joue dans le lieu (lot 4, questions-du-monde.md) : la Chasse au son au Phare, le
-   * Troupeau aux Filets, les Nénuphars aux Écluses, Doubles et moitiés aux Quais.
+   * Les missions de l'île qui se jouent déjà en scénette dans le lieu (les autres se jouent sur l'écran habituel, depuis
+   * le panneau du lieu, le temps de la transition) : la Chasse au son au Phare, le Troupeau aux Filets, les Nénuphars
+   * aux Écluses ; aux Quais, toutes (GD-20, point 8, lot L1).
    */
-  mission: string;
+  scenes: readonly string[];
   /** Le centre du modèle au sol, et son quart de tour (en radians autour de la verticale). */
   center: Vec2;
   yaw: number;
@@ -138,10 +143,21 @@ interface PlaceSpec extends Omit<OpenPlace, 'center' | 'door'> {
 }
 
 const PLACE_SPECS: readonly PlaceSpec[] = [
-  { id: 'phare', name: 'Le Phare', at: 'au Phare', agree: 'ms', island: 'french-6e-phonology', mission: 'sound-hunt', plan: [880, 590], door: { x: 0, z: 6.14 }, yaw: 0, touchRadius: 5.5 },
-  { id: 'quais', name: 'Les Quais', at: 'aux Quais', agree: 'mp', island: 'maths-6e-calculation', mission: 'doubles-halves', plan: [1085, 783], door: { x: -1.71, z: -2 }, yaw: 0, touchRadius: 5.5 },
-  { id: 'filets', name: 'Les Filets', at: 'aux Filets', agree: 'mp', island: 'french-6e-grammar-spelling', mission: 'plurals', plan: [1061, 222], door: { x: -0.86, z: 3.29 }, yaw: 0.35, touchRadius: 5.5 },
-  { id: 'ecluses', name: 'Les Écluses', at: 'aux Écluses', agree: 'fp', island: 'maths-6e-fractions', mission: 'number-line', plan: [1226, 404], door: { x: -3.14, z: -0.71 }, yaw: 0, touchRadius: 5.5 },
+  { id: 'phare', name: 'Le Phare', at: 'au Phare', agree: 'ms', island: 'french-6e-phonology', scenes: ['sound-hunt'], plan: [880, 590], door: { x: 0, z: 6.14 }, yaw: 0, touchRadius: 5.5 },
+  {
+    id: 'quais',
+    name: 'Les Quais',
+    at: 'aux Quais',
+    agree: 'mp',
+    island: 'maths-6e-calculation',
+    scenes: ['times-tables', 'make-ten', 'doubles-halves', 'word-problems', 'measures'],
+    plan: [1085, 783],
+    door: { x: -1.71, z: -2 },
+    yaw: 0,
+    touchRadius: 5.5,
+  },
+  { id: 'filets', name: 'Les Filets', at: 'aux Filets', agree: 'mp', island: 'french-6e-grammar-spelling', scenes: ['plurals'], plan: [1061, 222], door: { x: -0.86, z: 3.29 }, yaw: 0.35, touchRadius: 5.5 },
+  { id: 'ecluses', name: 'Les Écluses', at: 'aux Écluses', agree: 'fp', island: 'maths-6e-fractions', scenes: ['number-line'], plan: [1226, 404], door: { x: -3.14, z: -0.71 }, yaw: 0, touchRadius: 5.5 },
 ];
 
 export const PLACES: readonly OpenPlace[] = PLACE_SPECS.map((s) => ({
@@ -150,7 +166,7 @@ export const PLACES: readonly OpenPlace[] = PLACE_SPECS.map((s) => ({
   at: s.at,
   agree: s.agree,
   island: s.island,
-  mission: s.mission,
+  scenes: s.scenes,
   center: fromPlan(s.plan),
   yaw: s.yaw,
   door: s.id,
@@ -160,7 +176,7 @@ export const PLACES: readonly OpenPlace[] = PLACE_SPECS.map((s) => ({
 /** Un lieu par son identifiant. */
 export const placeById = (id: PlaceId): OpenPlace => PLACES.find((p) => p.id === id)!;
 
-/** Le lieu qui reprend la mission d'une île, s'il y en a un. */
+/** Le lieu qui reprend les missions d'une île, s'il y en a un. */
 export const placeOfIsland = (island: string): OpenPlace | undefined => PLACES.find((p) => p.island === island);
 
 /** Un nœud du réseau des chemins. */

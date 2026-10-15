@@ -40,6 +40,7 @@ export function WorldShortcuts({
   requestsOpen,
   requestsLater = false,
   resumeFrom,
+  resumeAt,
 }: {
   a: ArchipelagoId;
   requestsOpen: boolean;
@@ -49,6 +50,11 @@ export function WorldShortcuts({
    * son retour habituel.
    */
   resumeFrom?: (path: string) => string | undefined;
+  /**
+   * Où la dernière mission se reprend, à la place de son adresse (le monde continu, GD-20, point 8 : une mission d'une
+   * île qui a son lieu se reprend dans la liste de ce lieu) ; rien : son adresse.
+   */
+  resumeAt?: (path: string) => string | undefined;
 }) {
   const navigate = useNavigate();
   const { state } = useBlocland();
@@ -64,6 +70,8 @@ export function WorldShortcuts({
         empty={resume ? undefined : 'pas encore de mission'}
         onClick={() => {
           if (!resume) return;
+          const at = resumeAt?.(resume.path);
+          if (at) return navigate(at);
           const from = resumeFrom?.(resume.path);
           navigate(resume.path, from ? { state: { from } } : undefined);
         }}

@@ -19,6 +19,7 @@ import { COLORS_6E, DECK_HEIGHT, placeById, type PlaceId } from './plan6e';
 import {
   ANSWER_LAYOUT,
   LOCK,
+  QUAIS_TRACE_SPOTS,
   QUAY,
   filetsBasketAt,
   fullBasket,
@@ -364,17 +365,23 @@ export function scenetteHabitant(place: PlaceId, posed = true): Vec3 {
 /**
  * Où Kéo reste en quittant la scénette d'un lieu, et ce que la caméra garde alors dans le champ (retour du directeur
  * artistique, lot 3) : la trace de la réussite. Aux Quais, sur le bord du quai, juste à l'est de la proue de la barque
- * chargée, qu'on voit au premier plan avec la grue et le hangar derrière lui. Aux Filets (lot 4), devant le séchoir,
+ * chargée, qu'on voit au premier plan avec la grue et le hangar derrière lui ; la caméra garde la trace de la mission
+ * jouée (`mission`, GD-20, point 8). Aux Filets (lot 4), devant le séchoir,
  * le panier plein et le filet tendu à sa gauche. Aux Écluses, sur la rive ouest, à côté du sas rempli et de sa porte
  * ouverte. Au Phare, rien : Kéo revient sur le chemin, la caméra le suit (la lanterne est déjà dans le champ). Rien non
  * plus quand l'étape qui porte la trace n'est pas posée (`posed`) : la trace attend, il n'y a rien à garder.
  */
-export function scenetteExit(place: PlaceId, posed = true): { at: Vec2; keep: Vec3 } | null {
+export function scenetteExit(place: PlaceId, posed = true, mission?: string): { at: Vec2; keep: Vec3 } | null {
   if (!posed) return null;
   if (place === 'quais') {
     const boat = loadedBoat();
     const f = quayFloor();
-    return { at: { x: boat.at.x + boat.length / 2 + 0.9, z: f.z }, keep: { x: boat.at.x, y: boat.at.y, z: boat.at.z } };
+    // La trace de la mission jouée (GD-20, point 8) : la barque chargée de Doubles et moitiés, ou la chose remise en
+    // ordre sur le quai par une autre mission.
+    const spot = mission && mission in QUAIS_TRACE_SPOTS ? QUAIS_TRACE_SPOTS[mission as keyof typeof QUAIS_TRACE_SPOTS] : null;
+    const c = placeById(place).center;
+    const keep = spot ? { x: c.x + spot.x, y: standingHeight(heightAt({ x: c.x + spot.x, z: c.z + spot.z })), z: c.z + spot.z } : { x: boat.at.x, y: boat.at.y, z: boat.at.z };
+    return { at: { x: boat.at.x + boat.length / 2 + 0.9, z: f.z }, keep };
   }
   const c = placeById(place).center;
   if (place === 'filets') return { at: { x: c.x + EXIT_SPOTS.filets.x, z: c.z + EXIT_SPOTS.filets.z }, keep: filetsBasketAt() };

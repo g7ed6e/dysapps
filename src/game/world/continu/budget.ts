@@ -94,14 +94,15 @@ const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
 
 /**
  * Les lieux (GD-20, lot 1) : les quatre lieux entiers (leur ruine et leurs trois étapes : chaque lieu se rebâtit
- * lui-même ; ce qui était tombé, relevé) et les traces de leurs scénettes, réunis en un maillage, refait à chaque pose
- * (jamais par image), avec la lumière de la lanterne du Phare allumée (sa couleur dessinée sans ombre, dans le même
- * matériau) ; le lieu suivi, seul hors de la brume, dans un second (son matériau sans brouillard). Deux appels, quel que
- * soit le nombre de lieux. L'Escale y entre (GD-20, lot 2), au plus chargé : toutes les places de sa galerie prises,
- * ses portes pavoisées, ses barques, sa pile pleine (`PORT_WORST`) ; aucun appel de plus.
+ * lui-même ; ce qui était tombé, relevé) et les traces de toutes leurs scénettes (aux Quais, une par mission, GD-20,
+ * point 8), réunis en un maillage, refait à chaque pose (jamais par image), avec la lumière de la lanterne du Phare
+ * allumée (sa couleur dessinée sans ombre, dans le même matériau) ; le lieu suivi, seul hors de la brume, dans un
+ * second (son matériau sans brouillard). Deux appels, quel que soit le nombre de lieux. L'Escale y entre (GD-20, lot 2),
+ * au plus chargé : toutes les places de sa galerie prises, ses portes pavoisées, ses barques, sa pile pleine
+ * (`PORT_WORST`) ; aucun appel de plus.
  */
 function placesCost(): { triangles: number; calls: number } {
-  const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + placeTrace(p.id, true).triangles, 0);
+  const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + placeTrace(p.id, p.scenes).triangles, 0);
   return { triangles: triangles + lanternLight().triangles + portFacets(PORT_WORST).triangles, calls: 2 };
 }
 

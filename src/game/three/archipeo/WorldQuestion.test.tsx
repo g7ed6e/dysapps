@@ -20,13 +20,13 @@ beforeEach(() => {
   );
 });
 
-function renderPlace(place: 'phare' | 'quais', mission: string) {
+function renderPlace(place: 'phare' | 'quais' | 'filets', mission: string, plain = false) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <WorldQuestion place={place} mission={mission} world={world} onClose={() => {}} />
+            <WorldQuestion place={place} mission={mission} plain={plain} world={world} onClose={() => {}} />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -119,5 +119,47 @@ describe('La scénette des Quais', () => {
     expect(document.querySelector('.quiz.in-world.simple')).toBeNull();
     expect(answers().map((b) => b.textContent)).toEqual(labels);
     if (wrong) expect(answers()[0].disabled).toBe(true);
+  });
+});
+
+describe('Toutes les missions des Quais en scénette (GD-20, point 8)', () => {
+  const answers = () => [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')];
+  // Une tablette : la page a sa taille, la scène est demandée.
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
+  });
+  afterEach(() => vi.restoreAllMocks());
+
+  it.each(['times-tables', 'make-ten', 'word-problems', 'measures'])('%s : le docker, les caisses, l’item de référence ; jamais « Valider »', async (mission) => {
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    renderPlace('quais', mission);
+    expect(await screen.findByText('Le docker')).toBeInTheDocument();
+    const start = screen.queryByRole('button', { name: /Commencer/ });
+    if (start) await user.click(start);
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(3));
+    // Trois choix au moins, six au plus : une caisse chacun, sur le quai vide (le gabarit du lieu n'est pas écrit).
+    expect(answers().length).toBeLessThanOrEqual(6);
+    expect(screen.queryByRole('button', { name: /Valider/ })).toBeNull();
+    // La scène est demandée avec la mission (sa trace au retour) et le quai vide.
+    await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
+    const request = vi.mocked(world.question).mock.calls.at(-1)?.[0];
+    expect(request).toMatchObject({ place: 'quais', mission, item: { scene: { kind: 'quai', op: 'calcul' } } });
+    // La figure ou l'aide de l'item restent dans le panneau, comme sur l'écran classique.
+    const panel = document.querySelector('.quiz.in-world')!;
+    expect(panel.querySelector('.world-question-figure, .world-question-aid')).not.toBeNull();
+  });
+
+  it('une mission dont la scénette n’est pas faite se joue sur l’écran habituel : ni rôle, ni « Vue simple », ni scène', async () => {
+    vi.mocked(world.question).mockClear();
+    renderPlace('filets', 'e-er-ez', true);
+    await vi.waitFor(() => expect(document.querySelector('.quiz.in-world.ecran-habituel')).not.toBeNull());
+    expect(screen.queryByText('La pêcheuse')).toBeNull();
+    expect(screen.queryByRole('button', { name: /Vue simple/ })).toBeNull();
+    // L'écran de la grille, avec sa consigne écrite en tête.
+    expect(document.querySelector('.quiz.in-world.ecran-habituel > .consigne')).not.toBeNull();
+    expect(document.querySelector('.world-place')).toBeNull();
+    expect(world.question).not.toHaveBeenCalled();
   });
 });

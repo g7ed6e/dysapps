@@ -17,51 +17,46 @@ export interface NextMission {
   mission: string;
 }
 
-/** La borne de la mission jouée dans un lieu, s'il y en a une. */
-const borneOf = (place: OpenPlace, bornes: readonly MissionMark[]): MissionMark | undefined =>
-  bornes.find((b) => b.ile === place.island && b.mission === place.mission);
-
 /**
- * La mission qu'ouvre un lieu : la sienne (`OpenPlace.mission`), dès qu'elle existe, même encore fermée dans la grille
- * (lot 4, décision du mainteneur du 14 octobre 2026 : les quatre lieux sont ouverts) ; `null` si elle manque (une autre
- * LV2, une donnée absente) : le lieu n'ouvre alors rien.
+ * Les bornes des missions d'un lieu : toutes celles de son île (GD-20, point 8, choix du mainteneur du 15 octobre
+ * 2026), dans l'ordre de l'île ; vide pour un lieu dont l'île n'a rien à jouer (une autre LV2, une donnée absente).
  */
-export function missionOfPlace(place: OpenPlace, bornes: readonly MissionMark[]): string | null {
-  return borneOf(place, bornes)?.mission ?? null;
-}
+export const missionsOfPlace = (place: OpenPlace, bornes: readonly MissionMark[]): MissionMark[] => bornes.filter((b) => b.ile === place.island);
+
+/** Une mission se joue-t-elle déjà en scénette dans son lieu (sinon, sur l'écran habituel, le temps de la transition) ? */
+export const playsInPlace = (place: OpenPlace, mission: string): boolean => place.scenes.includes(mission);
 
 /** Une mission encore à jouer : jamais jouée, ou encore fermée dans la grille (elle s'ouvre ici). */
 const toPlay = (b: MissionMark) => b.etat === 'new' || b.etat === 'locked';
 
 /**
- * La prochaine mission du prototype : celle de la prochaine destination du jeu si c'est la mission d'un des quatre
- * lieux, sinon la première encore à jouer, lieu par lieu dans l'ordre du plan (le Phare, puis les Quais : « au retour du
- * Phare, le prochain pas est évident »), sinon la première à reprendre (moins de trois étoiles). `null` quand tout est
+ * La prochaine mission du prototype : celle de la prochaine destination du jeu si elle se joue dans un lieu, sinon la
+ * première encore à jouer, lieu par lieu dans l'ordre du plan (le Phare, puis les Quais : « au retour du Phare, le
+ * prochain pas est évident ») et mission par mission dans l'ordre de l'île, sinon la première à reprendre (moins de trois
+ * étoiles). Elle parcourt toutes les missions de chaque lieu, qu'elles se jouent en scénette ou non. `null` quand tout est
  * fait.
  */
 export function nextMission(bornes: readonly MissionMark[], destination?: { island: string; mission?: string }): NextMission | null {
-  const fromGame = destination && PLACES.find((p) => p.island === destination.island && p.mission === destination.mission);
-  if (fromGame && borneOf(fromGame, bornes)) return { place: fromGame, mission: fromGame.mission };
-  for (const place of PLACES) {
-    const b = borneOf(place, bornes);
-    if (b && toPlay(b)) return { place, mission: place.mission };
-  }
-  for (const place of PLACES) {
-    const b = borneOf(place, bornes);
-    if (b && typeof b.etat === 'number' && b.etat < 3) return { place, mission: place.mission };
-  }
+  const fromGame = destination && PLACES.find((p) => p.island === destination.island);
+  if (fromGame && destination.mission && bornes.some((b) => b.ile === fromGame.island && b.mission === destination.mission))
+    return { place: fromGame, mission: destination.mission };
+  for (const test of [toPlay, (b: MissionMark) => typeof b.etat === 'number' && b.etat < 3])
+    for (const place of PLACES) {
+      const b = missionsOfPlace(place, bornes).find(test);
+      if (b) return { place, mission: b.mission };
+    }
   return null;
 }
 
 /**
- * Les lieux sous la brume (piste 1, lot 1) : ceux dont la mission n'a pas encore été jouée (elle reste ouverte : on peut y
- * aller, la brume se lève à l'approche de Kéo, ../../three/archipeo/scene.ts), sauf le lieu de la prochaine mission. Un
+ * Les lieux sous la brume (piste 1, lot 1) : ceux dont aucune mission n'a encore été jouée (ils restent ouverts : on peut
+ * y aller, la brume se lève à l'approche de Kéo, ../../three/archipeo/scene.ts), sauf le lieu de la prochaine mission. Un
  * lieu sans mission (une autre LV2) n'a pas de brume : rien n'y attend.
  */
 export function veiledPlaces(bornes: readonly MissionMark[], next: NextMission | null): PlaceId[] {
   return PLACES.filter((p) => {
-    const b = borneOf(p, bornes);
-    return b !== undefined && toPlay(b) && p.id !== next?.place.id;
+    const own = missionsOfPlace(p, bornes);
+    return own.length > 0 && own.every(toPlay) && p.id !== next?.place.id;
   }).map((p) => p.id);
 }
 

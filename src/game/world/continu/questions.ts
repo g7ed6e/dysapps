@@ -24,8 +24,13 @@ export type ItemScene =
   | { kind: 'sas'; n: number; d: number }
   /** L'échelle de hauteur (niveau 2), de 0 à 2 : `d` crans par unité, l'eau au cran `n`. */
   | { kind: 'echelle'; n: number; d: number }
-  /** Le quai : `before` caisses, puis `after` (la grue en prend la moitié, ou le bateau en apporte autant). */
-  | { kind: 'quai'; op: 'moitie' | 'double'; before: number; after: number };
+  /**
+   * Le quai : `before` caisses, puis `after` (la grue en prend la moitié, ou le bateau en apporte autant) ; `calcul` :
+   * le quai vide, la scène ne montre rien de l'item (les missions des Quais jouées avec leurs items de référence, tant
+   * que leur gabarit n'est pas écrit, et celles où des caisses feraient compter des objets : la grille, les figures
+   * restent dans le panneau).
+   */
+  | { kind: 'quai'; op: 'moitie' | 'double' | 'calcul'; before: number; after: number };
 
 const CATCHES: readonly Catch[] = ['sardines', 'filets', 'mouette', 'bocaux', 'crabes', 'pêche', 'seaux', 'crabe'];
 const isCount = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0;
@@ -42,7 +47,7 @@ export function isItemScene(v: unknown): v is ItemScene {
     case 'echelle':
       return 'n' in v && isCount(v.n) && 'd' in v && isCount(v.d) && v.d > 0;
     case 'quai':
-      return 'op' in v && (v.op === 'moitie' || v.op === 'double') && 'before' in v && isCount(v.before) && 'after' in v && isCount(v.after);
+      return 'op' in v && (v.op === 'moitie' || v.op === 'double' || v.op === 'calcul') && 'before' in v && isCount(v.before) && 'after' in v && isCount(v.after);
     default:
       return false;
   }
@@ -132,10 +137,14 @@ export function quaiScene(key: string): { scene: Extract<ItemScene, { kind: 'qua
   return null;
 }
 
+/** Le quai vide : la scène des missions des Quais qui gardent leur item de référence. */
+export const QUAI_NU: ItemScene = { kind: 'quai', op: 'calcul', before: 0, after: 0 };
+
 /**
  * Les items d'une partie, posés dans un lieu. `items` : ceux que le jeu commun a tirés (même graine, mêmes clés). Le
  * Phare les garde ; les Filets prennent l'item du lieu de même clé quand il existe (sinon l'item de référence, le filet
- * vide) ; les Écluses et les Quais gardent l'item et ne changent que sa phrase.
+ * vide) ; les Écluses gardent l'item et ne changent que sa phrase ; aux Quais, Doubles et moitiés change sa phrase, les
+ * autres missions gardent l'item de référence tel quel, sur le quai vide.
  */
 export function placeItems(place: PlaceId, exerciseId: string, items: readonly QuestionItem[]): PlacedItem[] {
   if (place === 'phare') return items.map((it) => ({ ...it, placeScene: { kind: 'cloches' } }));
@@ -177,13 +186,12 @@ export function placeItems(place: PlaceId, exerciseId: string, items: readonly Q
       };
     });
   }
+  // Les Quais : toutes leurs missions au même quai, avec la même caisse ; seule Doubles et moitiés a son gabarit (la
+  // phrase du lieu et les caisses du tirage) ; les autres gardent leur item de référence, le quai vide (GD-20, point 8 :
+  // un gabarit manquant, on joue la référence).
   return items.map((it) => {
-    const q = quaiScene(it.key);
-    if (!q)
-      return {
-        ...it,
-        placeScene: { kind: 'quai', op: 'moitie', before: 0, after: 0 },
-      };
+    const q = exerciseId.includes('-doubles-halves-') ? quaiScene(it.key) : null;
+    if (!q) return { ...it, placeScene: QUAI_NU };
     return {
       ...it,
       prompt: q.prompt,

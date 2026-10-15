@@ -5,7 +5,7 @@
 // l'échelle sont des panneaux de la page, accrochés aux points que donne ce fichier. Code pur : la vue dessine.
 import { boundsOf, FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import { placeById, type PlaceId } from './plan6e';
+import { DOCK_EDGE, placeById, type PlaceId } from './plan6e';
 import type { ItemScene } from './questions';
 import { FILETS_RACK, filetsRack } from './places';
 import { heightAt, standingHeight } from './terrain';
@@ -951,14 +951,16 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
  * grue au bout est, sa flèche au-dessus du quai, son crochet. Avant la réponse, la moitié : toutes les caisses sur le
  * quai, la barque vide ; le double : les caisses du quai au fond, les nouvelles dans la barque. Après : les caisses ont
  * changé de place (la moitié dans la barque, les nouvelles sur le quai), et la bonne caisse de réponse monte au crochet
- * (la réaction, `answerAt` : sa place dans la rangée) et y reste.
+ * (la réaction, `answerAt` : sa place dans la rangée) et y reste. Le quai vide (`calcul`, les autres missions des
+ * Quais) : rien sur le quai ni dans la barque, la bonne caisse monte au crochet de même.
  */
 function quai(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'quai' }>, answered: boolean, o: Vec3, answerAt: Vec3 | undefined, scale: number, posed: boolean): Reaction | null {
   const moved = Math.abs(scene.after - scene.before);
   const kept = scene.op === 'moitie' ? scene.after : scene.before;
-  // Les caisses du devant du bloc (toutes, pour la moitié ; les nouvelles, pour le double) et celles du fond.
+  // Les caisses du devant du bloc (toutes, pour la moitié ; les nouvelles, pour le double) et celles du fond ; aucune
+  // sur le quai vide (`calcul`).
   const front = crateBlock(scene.op === 'moitie' ? scene.before : moved);
-  const back = scene.op === 'moitie' ? { w: 0, d: 0 } : crateBlock(scene.before);
+  const back = scene.op === 'double' ? crateBlock(scene.before) : { w: 0, d: 0 };
   const gap = back.d ? 0.4 : 0;
   const edge = o.z + QUAY.depth / 2;
   const qd = Math.max(QUAY.depth, front.d + gap + back.d + 0.5 + QUAY.strip);
@@ -986,7 +988,7 @@ function quai(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'quai' }>, answ
   if (scene.op === 'moitie') {
     crates(b, answered ? kept : scene.before, x0, o.y, zFront);
     if (answered) crates(b, moved, onBoat.x, onBoat.y, onBoat.z);
-  } else {
+  } else if (scene.op === 'double') {
     crates(b, kept, x0, o.y, zBack);
     if (answered) crates(b, moved, x0, o.y, zFront);
     else crates(b, moved, onBoat.x, onBoat.y, onBoat.z);
@@ -1137,29 +1139,63 @@ function lockGate(b: FacetBuilder, x: number, y: number, z: number, open: boolea
 
 /**
  * La trace que la réussite d'une scénette laisse dans son lieu (GD-20, lot 1 : les pièces durables du prototype sont
- * devenues les parties de la construction du lieu, ./construction.ts ; les traces restent) : au Phare, les lampes de la
- * galerie, face au sud ; aux Filets, le pan de filet raccommodé tendu sur le séchoir et le panier plein à côté ; aux
- * Écluses, la porte d'amont ouverte et le sas rempli (fermée avant : elle est de la trace, pas du modèle, pour
- * s'ouvrir) ; aux Quais, la grue remontée et la barque chargée, sa lanterne de proue allumée. Rien avant la première
- * réussite de la mission du lieu (`done`), sauf la porte fermée des Écluses.
+ * devenues les parties de la construction du lieu, ./construction.ts ; les traces restent). Une trace par mission jouée en
+ * scénette (GD-20, point 8 : d'une mission à l'autre, seule la trace de la réussite change), tirée de `done`, les missions
+ * du lieu déjà réussies : au Phare (la Chasse au son), les lampes de la galerie, face au sud ; aux Filets (le Troupeau),
+ * le pan de filet raccommodé tendu sur le séchoir et le panier plein à côté ; aux Écluses (les Nénuphars), la porte
+ * d'amont ouverte et le sas rempli (fermée avant : elle est de la trace, pas du modèle, pour s'ouvrir) ; aux Quais, une
+ * chose remise en ordre sur le quai par mission (`QUAIS_TRACES`). Rien avant la première réussite, sauf la porte fermée
+ * des Écluses.
  */
-export function placeTrace(place: PlaceId, done: boolean): Facets {
+export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
   const b = new FacetBuilder();
   const p = placeById(place);
   const y0 = groundAt(p.center);
   const { x, z } = p.center;
-  if (place === 'ecluses') lockGate(b, x, y0, z, done);
-  if (!done) return b.build();
-  if (place === 'phare') {
+  if (place === 'ecluses') lockGate(b, x, y0, z, done.includes('number-line'));
+  if (place === 'phare' && done.includes('sound-hunt')) {
     for (let k = 0; k < 4; k++) {
       // Face au sud (vers la caméra).
       const a = Math.PI / 2 + ((k - 1.5) * Math.PI) / 4;
       b.box({ x: x + 2.05 * Math.cos(a), y: y0 + 11.55, z: z + 2.05 * Math.sin(a) }, [0.3, 0.3, 0.3], C.lamp);
     }
-  } else if (place === 'filets') {
+  } else if (place === 'filets' && done.includes('plurals')) {
     mendedNet(b);
     fullBasket(b, filetsBasketAt());
   } else if (place === 'quais') {
+    for (const mission of done) QUAIS_TRACES[mission]?.(b, x, z);
+  }
+  return b.build();
+}
+
+/** Un point du quai, depuis le centre des Quais (`x`, `z`), au sol. */
+const quaiGround = (x: number, z: number): Vec3 => ({ x, y: groundAt({ x, z }), z });
+
+/**
+ * Où se pose la trace de chaque mission des Quais, depuis le centre du lieu (sur le terre-plein entre le hangar et le
+ * bassin, au sud, dans le champ du retour d'une scénette ; l'eau du bassin pour la barque du passeur).
+ */
+export const QUAIS_TRACE_SPOTS = {
+  'times-tables': { x: 5.6, z: 8.4 },
+  'make-ten': { x: -6.6, z: 9.4 },
+  'word-problems': { x: 6.6, z: 13.6 },
+  measures: { x: 8.9, z: 9.6 },
+} as const;
+
+/**
+ * Les traces des Quais (GD-20, point 8, lot L1 : une par mission, au même quai, dans les mêmes volumes ; proposition de
+ * l'artiste technique, à valider par le directeur artistique et le consultant Archipéo) :
+ * - Doubles et moitiés : la grue remontée (sa cabine, sa contre-flèche et son contrepoids) et la barque chargée,
+ *   amarrée au bord de quai, sa lanterne de proue allumée ;
+ * - Champ des tables : les caisses rangées, deux de front et une dessus, sur leur palette ;
+ * - Pont de dix : la palette de dix, deux rangées de cinq caisses, prête au bord du quai ;
+ * - Carnet du passeur : la barque du passeur amarrée dans le bassin, sa passerelle posée sur le bord de quai ;
+ * - Mesures et figures : la bascule du quai, son plateau et son fléau, ses deux plateaux de pesée.
+ * Rien à lire n'est peint ; les caisses ne se comptent pas (aucune ne dit la réponse d'une mission).
+ */
+const QUAIS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => void> = {
+  'doubles-halves': (b, x, z) => {
+    const y0 = groundAt({ x, z });
     // La grue remontée : sa cabine autour du mât, et sa contre-flèche (le prolongement de la flèche derrière le mât),
     // son contrepoids pendu dessous, contre elle : rien ne flotte (directeur artistique).
     const mast = { x: x - 2.6, z: z - 1.6 };
@@ -1176,7 +1212,40 @@ export function placeTrace(place: PlaceId, done: boolean): Facets {
     crates(b, 10, boat.cargo.x, boat.cargo.y, boat.cargo.z);
     answerCrate(b, boat.hold, LOADED_BOAT_CRATE);
     b.append(quaySuccess(LOADED_BOAT, LOADED_BOAT_CRATE).glass);
-  }
-  return b.build();
-}
-
+  },
+  'times-tables': (b, x, z) => {
+    const o = QUAIS_TRACE_SPOTS['times-tables'];
+    const g = quaiGround(x + o.x, z + o.z);
+    b.box({ x: g.x, y: g.y, z: g.z }, [1.9, 0.12, 1.1], C.pallet);
+    for (const dx of [-0.45, 0.45]) answerCrate(b, { x: g.x + dx, y: g.y + 0.12, z: g.z }, 1);
+    answerCrate(b, { x: g.x, y: g.y + 0.12 + 0.7, z: g.z }, 1);
+  },
+  'make-ten': (b, x, z) => {
+    const o = QUAIS_TRACE_SPOTS['make-ten'];
+    const g = quaiGround(x + o.x, z + o.z);
+    crates(b, 10, g.x - 2 * CRATE_PITCH, g.y, g.z - CRATE_PITCH / 2);
+  },
+  'word-problems': (b, x, z) => {
+    const o = QUAIS_TRACE_SPOTS['word-problems'];
+    const at = { x: x + o.x, y: 0, z: z + o.z };
+    barque(b, at, 3.4, 1.4);
+    // La passerelle : une planche du bord de quai au plat-bord de la barque, et ses deux taquets.
+    const edge = DOCK_EDGE.from.z;
+    const deck = groundAt({ x: at.x, z: edge - 0.6 });
+    b.beam({ x: at.x - 0.4, y: deck + 0.05, z: edge - 0.5 }, { x: at.x - 0.4, y: 0.2, z: at.z - 0.3 }, 0.5, C.newWood);
+    for (const dx of [-1.2, 0.6]) b.box({ x: at.x + dx, y: deck, z: edge - 0.35 }, [0.2, 0.25, 0.2], C.stoneDark);
+  },
+  measures: (b, x, z) => {
+    const o = QUAIS_TRACE_SPOTS.measures;
+    const g = quaiGround(x + o.x, z + o.z);
+    // Le plateau de la bascule, son pied, son fléau en travers, et ses deux plateaux de pesée pendus, à égalité.
+    b.box({ x: g.x, y: g.y, z: g.z }, [1.4, 0.18, 1.1], C.stoneDark, C.stone);
+    b.box({ x: g.x, y: g.y + 0.18, z: g.z - 0.35 }, [0.16, 1.5, 0.16], C.newWood);
+    b.box({ x: g.x, y: g.y + 1.68, z: g.z - 0.35 }, [1.5, 0.1, 0.12], C.paint);
+    for (const side of [-1, 1]) {
+      b.box({ x: g.x + side * 0.7, y: g.y + 1.1, z: g.z - 0.35 }, [0.03, 0.58, 0.03], C.rope);
+      b.prism({ x: g.x + side * 0.7, y: g.y + 1.04, z: g.z - 0.35 }, 0.26, 0.2, 0.06, 8, C.paint);
+    }
+    answerCrate(b, { x: g.x + 0.25, y: g.y + 0.18, z: g.z + 0.15 }, 0.6);
+  },
+};

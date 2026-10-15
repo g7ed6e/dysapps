@@ -461,6 +461,13 @@ button.app-card:active {
   height: auto;
   padding-block: 0.4rem;
 }
+/* Une ligne qui fait un geste (une mission d'un lieu du monde continu, jouée sur place) : la même que le lien. */
+.apps-compact button.app-card {
+  width: 100%;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
 .apps-compact .app-icon {
   flex: none;
   width: 2.8rem;

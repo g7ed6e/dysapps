@@ -3,7 +3,7 @@
 // fiche du Port : cinq lignes (les trois matières, les succès, l'assemblage), chacune avec « Y aller », à la même place.
 // Un panneau à la fois, en bas sur tablette (le Port reste visible au-dessus), en colonne à gauche sur un écran bas (la
 // porte reste visible à droite) ; la croix, Échap, et rien n'est perdu. Aucun lien n'y sort du monde.
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { SUBJECTS, getApp } from '../../../apps/registry';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon, type AnyIconName } from '../../../components/Icon';
@@ -49,11 +49,12 @@ interface Props {
   onClose(): void;
 }
 
-/** Le panneau ouvert de l'Escale. */
-export function PortPanels({ panel, names, onGo, onClose }: Props) {
-  // Un panneau ouvert retient les célébrations : un bandeau ne tombe pas sur la liste qu'on lit ; rendues à la fermeture.
+/**
+ * Ce que fait tout panneau ouvert du monde continu (l'Escale, un lieu) : il retient les célébrations (un bandeau ne tombe
+ * pas sur la liste qu'on lit ; rendues à la fermeture), et Échap le ferme, comme la croix.
+ */
+export function useOpenPanel(onClose: () => void): void {
   useHoldCelebrations(true);
-  // Échap ferme le panneau, comme la croix.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -61,6 +62,11 @@ export function PortPanels({ panel, names, onGo, onClose }: Props) {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
+}
+
+/** Le panneau ouvert de l'Escale. */
+export function PortPanels({ panel, names, onGo, onClose }: Props) {
+  useOpenPanel(onClose);
   if (panel === 'fiche') return <PortSheet names={names} onGo={onGo} onClose={onClose} />;
   if (panel === 'succes') return <TrophySheet title={names.succes} stayInWorld onClose={onClose} />;
   if (panel === 'chantier')
@@ -74,15 +80,26 @@ export function PortPanels({ panel, names, onGo, onClose }: Props) {
 }
 
 /**
- * Une porte de l'école : la matière, puis ses missions en lignes (icône, titre, Nouveau ou record), sans sous-titre (la
- * façade se voit à côté), sans les trois cartes de porte (la porte est déjà choisie par le toucher), ni l'accueil, ni
- * « Les îles de… » (il sortirait du monde).
+ * Un panneau de missions en lignes (icône, titre, étiquette ; `MissionRows`), sans sous-titre (le lieu se voit à côté) :
+ * celui d'une porte de l'école (GD-20, lot 2), généralisé au panneau d'un lieu (point 8, ./PlacePanel.tsx).
+ */
+export function MissionSheet({ id, className, icon, title, onClose, children }: { id: string; className: string; icon: AnyIconName; title: string; onClose(): void; children: ReactNode }) {
+  return (
+    <Sheet id={id} className={`school-sheet port-door-sheet ${className}`} titleId={`${id}-titre`} icon={icon} title={title} onClose={onClose}>
+      {children}
+    </Sheet>
+  );
+}
+
+/**
+ * Une porte de l'école : la matière, puis ses missions en lignes (icône, titre, Nouveau ou record), sans les trois cartes
+ * de porte (la porte est déjà choisie par le toucher), ni l'accueil, ni « Les îles de… » (il sortirait du monde).
  */
 function DoorSheet({ subject, onClose }: { subject: PortSubject; onClose(): void }) {
   return (
-    <Sheet id="panneau-porte" className={`school-sheet port-door-sheet subject-${subject}`} titleId="porte-titre" icon={SUBJECTS[subject].icon} title={SUBJECTS[subject].title} onClose={onClose}>
+    <MissionSheet id="panneau-porte" className={`subject-${subject}`} icon={SUBJECTS[subject].icon} title={SUBJECTS[subject].title} onClose={onClose}>
       <SubjectApps subject={subject} from={portReturn(subject)} compact />
-    </Sheet>
+    </MissionSheet>
   );
 }
 

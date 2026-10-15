@@ -143,15 +143,22 @@ export interface OpenWorld {
   dispose(): void;
 }
 
-/** Ce que les lieux montrent : les parties posées de leur construction, et si la trace de leur scénette se voit. */
+/**
+ * Ce que les lieux montrent : les parties posées de leur construction, et les missions jouées en scénette déjà réussies
+ * (chacune laisse sa trace, GD-20, point 8).
+ */
 interface PlacesState {
   built: Readonly<Record<PlaceId, readonly PartShape[]>>;
-  traces: Readonly<Record<PlaceId, boolean>>;
+  traces: Readonly<Record<PlaceId, readonly string[]>>;
 }
 
-/** Une question à montrer : le lieu, la place à l'écran, l'item (sa scène, s'il a sa réponse, les rangs des bonnes réponses). */
+/**
+ * Une question à montrer : le lieu et la mission (sa trace, au retour), la place à l'écran, l'item (sa scène, s'il a
+ * sa réponse, les rangs des bonnes réponses).
+ */
 interface QuestionRequest {
   place: PlaceId;
+  mission: string;
   layout: ScenetteLayout;
   item: { scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[] };
 }
@@ -222,6 +229,8 @@ const LOCK_MARGIN = 24;
 const LOCK_LEFT = 72 + LOCK_MARGIN;
 /** Le cadenas se pose de tant d'unités au-dessus du banc de brume. */
 const LOCK_LIFT = 1;
+/** Sous un panneau ouvert, la caméra garde dans la part libre le lieu à cette hauteur au-dessus de son pied. */
+const FRAMED_PLACE_HEIGHT = 2;
 /** Le bout de la caméra qui suit Kéo, et celui de la Carte (l'île entière, de haut), en unités. */
 const FOLLOW_FAR = 500;
 const MAP_FAR = 2000;
@@ -623,15 +632,25 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     applyPose(pose);
   };
   follow();
-  // Un panneau de l'Escale ouvert (GD-20, lot 2) : la part de l'écran qu'il laisse, et l'endroit dont la caméra y garde
-  // le sujet (la porte, la galerie, l'établi), par un décalage de l'image, calculé à l'ouverture (Kéo ne bouge pas tant
-  // que le panneau est ouvert), jamais à chaque image.
-  let framed: PortSpot | null = startSpot;
+  // Un panneau ouvert (l'Escale, GD-20, lot 2 ; un lieu et sa liste de missions, point 8) : la part de l'écran qu'il
+  // laisse, et l'endroit dont la caméra y garde le sujet (la porte, la galerie, l'établi ; le lieu, ou la trace que la
+  // scénette vient de laisser), par un décalage de l'image, calculé à l'ouverture (Kéo ne bouge pas tant que le panneau
+  // est ouvert), jamais à chaque image.
+  let framed: PortSpot | PlaceId | null = startPlace?.id ?? startSpot;
   let frameRect: { left: number; top: number; width: number; height: number } | null = null;
+  const subjectOf = (spot: PortSpot | PlaceId): Vec3 => {
+    const place = PLACES.find((p) => p.id === spot);
+    if (!place) return portSubject(spot as PortSpot, port?.trophies.length ?? 0);
+    if (exit && atExit()) return exit.keep;
+    const foot = feet.get(place.id);
+    return { x: place.center.x, y: (foot?.y ?? 0) + FRAMED_PLACE_HEIGHT, z: place.center.z };
+  };
   const reframe = () => {
     if (!frameRect || !framed || asked || mapView) return;
     followPose(focus, lift, pose);
-    const p = screenOf(pose, portSubject(framed, port?.trophies.length ?? 0), viewW, viewH);
+    lookUp(pose, lanternTop, keoFeet, look, viewH);
+    if (exit) exitView(pose, exit.keep, keoFeet, back);
+    const p = screenOf(pose, subjectOf(framed), viewW, viewH);
     setShift({ x: Math.round(p.x - (frameRect.left + frameRect.width / 2)), y: Math.round(p.y - (frameRect.top + frameRect.height / 2)) });
     follow();
   };
@@ -652,6 +671,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // La scénette où se tient Kéo (plus bas, « La scénette d'un lieu »), et si l'étape qui porte sa trace est posée.
   let scenette: PlaceId | null = null;
   let posed = true;
+  // La mission jouée dans la scénette : le retour garde sa trace dans le champ (GD-20, point 8).
+  let scenetteMission: string | null = null;
   // La Carte ne se redessine que si sa vue, la taille, la brume ou ce qu'elle montre change (expert frontend).
   let mapDirty = false;
   // Ce que montrent les lieux (la page le donne), et les parties retenues le temps d'une pose (elles descendent à part).
@@ -694,8 +715,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     builds.set(id, { parts, facets });
     return facets;
   };
-  const traceOf = (id: PlaceId, done: boolean): Facets => {
-    const k = `${id}|${done}`;
+  const traceOf = (id: PlaceId, done: readonly string[]): Facets => {
+    const k = `${id}|${done.join(',')}`;
     let f = traceFacets.get(k);
     if (!f) traceFacets.set(k, (f = placeTrace(id, done)));
     return f;
@@ -711,7 +732,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id] ? 't' : ''}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}`;
+    const k = `${landmark}|${scenette}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -730,7 +751,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (scenette !== p.id) setBuiltTop(p.id, Math.max(ruinTop, topOf(build)) - foot.y);
       // La trace attend que l'étape qui la porte soit posée, pendant la scénette comme dehors : avant, rien, pas même
       // la porte d'amont fermée des Écluses (elle est de leur haut).
-      if (p.id !== hiddenTrace && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, placesState?.traces[p.id] ?? false));
+      if (p.id !== hiddenTrace && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, placesState?.traces[p.id] ?? []));
       if (p.id === 'phare' && lampShown) list.push(lampFacets);
     }
     setGeometry(placesMesh, mergeFacets(rest));
@@ -871,6 +892,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   const arrive = (place: PlaceId | null) => {
     walk = null;
+    if (place) framed = place;
     startPrebuild();
     approach();
     options.onArrive(place);
@@ -1285,7 +1307,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     keo.scale.setScalar(KEO_SCALE);
     // Aux Quais, Kéo reste sur le bord du quai, face à la caméra, qui garde la barque chargée (d'un coup, comme tout
     // retour de question).
-    const ex = scenetteExit(left, posed);
+    const ex = scenetteExit(left, posed, scenetteMission ?? undefined);
+    scenetteMission = null;
+    // La liste du lieu se rouvre au retour : la caméra y garde le lieu, ou la trace qu'on vient de laisser.
+    framed = left;
     if (ex) {
       here = { ...ex.at };
       heading = FACING_CAMERA;
@@ -1327,6 +1352,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     finishAssembly();
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
     const { place, layout, item } = q;
+    scenetteMission = q.mission;
     walk = null;
     // Une nouvelle question (« Rejouer ») : la lampe rend le maillage de la réaction, le décor de près reprend son état
     // d'avant la réussite.

@@ -11,6 +11,7 @@ import { EMPTY_STATE } from './engine/state';
 import { COMMANDES } from './world/requests';
 import { WorldShortcuts } from './WorldShortcuts';
 import { rememberPlace } from '../core/lastPlace';
+import { placeResume } from './three/archipeo/PlacePanel';
 import { portResume } from './three/archipeo/PortPanels';
 
 function Where() {
@@ -78,4 +79,27 @@ it('« Ma dernière mission » depuis le monde continu : une mission de l’éco
   await userEvent.setup().click(screen.getByRole('button', { name: 'Ma dernière mission : Tables' }));
   expect(screen.getByTestId('adresse')).toHaveTextContent('/app/tables');
   expect(screen.getByTestId('retour')).toHaveTextContent('/adventure?porte=maths');
+});
+
+it('« Ma dernière mission » depuis le monde continu : une mission d’une île qui a son lieu se reprend dans la liste du lieu (GD-20, point 8)', async () => {
+  rememberPlace({ path: '/adventure/french-6e-phonology/syllables', label: 'Abattage syllabique · Forêt des sons' });
+  function Search() {
+    return <span data-testid="recherche">{useLocation().search}</span>;
+  }
+  render(
+    <SettingsProvider>
+      <ProgressProvider>
+        <BloclandProvider>
+          <MemoryRouter initialEntries={['/adventure']}>
+            <WorldShortcuts a="6e" requestsOpen={false} requestsLater resumeFrom={portResume} resumeAt={placeResume} />
+            <Where />
+            <Search />
+          </MemoryRouter>
+        </BloclandProvider>
+      </ProgressProvider>
+    </SettingsProvider>,
+  );
+  await userEvent.setup().click(screen.getByRole('button', { name: /^Ma dernière mission : Abattage syllabique/ }));
+  expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
+  expect(screen.getByTestId('recherche')).toHaveTextContent('?lieu=phare&mission=syllables');
 });

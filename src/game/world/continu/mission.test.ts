@@ -1,26 +1,56 @@
 // La prochaine mission du monde continu et sa marque à l'écran.
 import { describe, expect, it } from 'vitest';
-import { DISTANCE_SIGN_STEPS, distanceSign, keepClear, markOnScreen, missionOfPlace, nextMission, veiledPlaces, type MissionMark } from './mission';
-import { KEO_STEP, placeById } from './plan6e';
+import { getBiome } from '../../biomes';
+import { DISTANCE_SIGN_STEPS, distanceSign, keepClear, markOnScreen, missionsOfPlace, nextMission, playsInPlace, veiledPlaces, type MissionMark } from './mission';
+import { KEO_STEP, PLACES, placeById } from './plan6e';
 
 const bornes: MissionMark[] = [
-  { ile: 'french-6e-phonology', mission: 'syllables', etat: 'new' },
+  { ile: 'french-6e-phonology', mission: 'syllables', etat: 3 },
   { ile: 'french-6e-phonology', mission: 'sound-hunt', etat: 3 },
+  { ile: 'maths-6e-calculation', mission: 'times-tables', etat: 'locked' },
   { ile: 'maths-6e-calculation', mission: 'doubles-halves', etat: 'locked' },
+  { ile: 'french-6e-grammar-spelling', mission: 'word-classes', etat: 'new' },
   { ile: 'french-6e-grammar-spelling', mission: 'plurals', etat: 'new' },
   { ile: 'maths-6e-fractions', mission: 'number-line', etat: 2 },
+  { ile: 'maths-6e-fractions', mission: 'equivalence', etat: 'new' },
   { ile: 'history-6e-antiquity', mission: 'dates', etat: 'new' },
 ];
 
+describe('Un lieu porte toutes les missions de son île (GD-20, point 8)', () => {
+  it('la liste d’un lieu : les bornes de son île, dans leur ordre, quel que soit leur état', () => {
+    expect(missionsOfPlace(placeById('quais'), bornes).map((b) => b.mission)).toEqual(['times-tables', 'doubles-halves']);
+    expect(missionsOfPlace(placeById('filets'), bornes).map((b) => b.mission)).toEqual(['word-classes', 'plurals']);
+    expect(missionsOfPlace(placeById('filets'), bornes.filter((b) => b.ile !== 'french-6e-grammar-spelling'))).toEqual([]);
+  });
+
+  it('les Quais jouent toutes leurs missions en scénette ; ailleurs, seule la mission déjà faite, le temps de la transition', () => {
+    expect(placeById('quais').scenes).toEqual(['times-tables', 'make-ten', 'doubles-halves', 'word-problems', 'measures']);
+    expect(playsInPlace(placeById('quais'), 'measures')).toBe(true);
+    expect(playsInPlace(placeById('phare'), 'sound-hunt')).toBe(true);
+    expect(playsInPlace(placeById('phare'), 'syllables')).toBe(false);
+    expect(playsInPlace(placeById('filets'), 'plurals')).toBe(true);
+    expect(playsInPlace(placeById('ecluses'), 'equivalence')).toBe(false);
+  });
+
+  it('les missions en scénette des Quais sont toutes celles de leur île, et chaque scénette est une mission de son île', () => {
+    for (const p of PLACES) {
+      const island = getBiome(p.island);
+      expect(island).toBeDefined();
+      for (const m of p.scenes) expect(island!.exercises.map((e) => e.id)).toContain(m);
+    }
+    expect(getBiome('maths-6e-calculation')!.exercises.map((e) => e.id)).toEqual([...placeById('quais').scenes]);
+  });
+});
+
 describe('La brume et la distance', () => {
-  it('la brume couvre les lieux dont la mission n’a pas été jouée, sauf le prochain', () => {
+  it('la brume couvre les lieux dont aucune mission n’a été jouée, sauf le prochain', () => {
     const next = nextMission(bornes);
     expect(next?.place.id).toBe('quais');
-    // Le Phare (trois étoiles) et les Écluses (deux) ont été joués ; les Quais sont le prochain lieu.
+    // Le Phare et les Écluses ont été joués (une mission au moins) ; les Quais sont le prochain lieu.
     expect(veiledPlaces(bornes, next)).toEqual(['filets']);
     expect(veiledPlaces(bornes, null)).toEqual(['quais', 'filets']);
     // Sans mission (une autre LV2), pas de brume.
-    expect(veiledPlaces(bornes.filter((b) => b.mission !== 'plurals'), next)).toEqual([]);
+    expect(veiledPlaces(bornes.filter((b) => b.ile !== 'french-6e-grammar-spelling'), next)).toEqual([]);
   });
 
   it('la distance en un, deux ou trois points, jamais en texte', () => {
@@ -33,28 +63,21 @@ describe('La brume et la distance', () => {
 });
 
 describe('La prochaine mission', () => {
-  it('celle de la prochaine destination du jeu, quand c’est la mission d’un des lieux', () => {
+  it('celle de la prochaine destination du jeu, quand elle est d’un lieu, quelle que soit la mission de l’île', () => {
     expect(nextMission(bornes, { island: 'french-6e-grammar-spelling', mission: 'plurals' })).toMatchObject({ place: { id: 'filets' }, mission: 'plurals' });
-    // Une autre mission de l'île ne se joue pas dans le lieu : on prend la suivante du plan.
-    expect(nextMission(bornes, { island: 'french-6e-phonology', mission: 'syllables' })).toMatchObject({ place: { id: 'quais' }, mission: 'doubles-halves' });
+    // Une mission de l'île qui ne se joue pas encore en scénette : elle se joue depuis le panneau du lieu.
+    expect(nextMission(bornes, { island: 'french-6e-phonology', mission: 'syllables' })).toMatchObject({ place: { id: 'phare' }, mission: 'syllables' });
+    // Une île sans lieu, ou une mission inconnue de l'île : la suivante du plan.
+    expect(nextMission(bornes, { island: 'history-6e-antiquity', mission: 'dates' })).toMatchObject({ place: { id: 'quais' } });
+    expect(nextMission(bornes, { island: 'french-6e-phonology', mission: 'inconnue' })).toMatchObject({ place: { id: 'quais' } });
   });
 
-  it('sinon la première encore à jouer (fermée dans la grille comprise), lieu par lieu dans l’ordre du plan ; hors des quatre lieux, rien', () => {
-    expect(nextMission(bornes)).toMatchObject({ place: { id: 'quais' }, mission: 'doubles-halves' });
+  it('sinon la première encore à jouer (fermée dans la grille comprise), lieu par lieu, mission par mission ; hors des lieux, rien', () => {
+    expect(nextMission(bornes)).toMatchObject({ place: { id: 'quais' }, mission: 'times-tables' });
     const sansNouvelle = bornes.map((b) => (b.etat === 'new' || b.etat === 'locked' ? { ...b, etat: 3 } : b));
     expect(nextMission(sansNouvelle)).toMatchObject({ place: { id: 'ecluses' }, mission: 'number-line' });
     expect(nextMission(bornes.filter((b) => b.ile === 'history-6e-antiquity'))).toBeNull();
-  });
-
-  it('la mission d’un lieu est la sienne, quel que soit son état', () => {
-    expect(missionOfPlace(placeById('phare'), bornes)).toBe('sound-hunt');
-    expect(missionOfPlace(placeById('quais'), bornes)).toBe('doubles-halves');
-    expect(missionOfPlace(placeById('filets'), bornes.filter((b) => b.mission !== 'plurals'))).toBeNull();
-  });
-
-  it('les quatre lieux sont ouverts, même quand leur mission est encore fermée dans la grille', () => {
-    const fermees = bornes.map((b) => ({ ...b, etat: 'locked' as const }));
-    for (const id of ['phare', 'quais', 'filets', 'ecluses'] as const) expect(missionOfPlace(placeById(id), fermees)).toBe(placeById(id).mission);
+    expect(nextMission(bornes.map((b) => ({ ...b, etat: 3 })))).toBeNull();
   });
 });
 

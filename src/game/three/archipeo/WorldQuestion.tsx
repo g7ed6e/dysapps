@@ -10,7 +10,9 @@
 // droite sur tablette ; à la réussite, la lampe du Phare s'allume. Les Quais (lot 3), les Filets et les Écluses (lot 4)
 // ont la leur, la colonne à gauche (le docker, la pêcheuse, l'éclusier). Dans une scénette, « Vue simple » montre la même
 // question en liste sur fond uni, sans quitter la manche (les cloches choisies le restent), « Valider » sous la liste ;
-// « Scène », à la même place, y ramène.
+// « Scène », à la même place, y ramène. Une mission dont la scénette n'est pas encore faite (GD-20, point 8, le temps de la
+// transition) se joue ici aussi, sur l'écran habituel (`plain` : l'écran de la grille, sur un panneau uni), avec le même
+// bilan et le même retour au lieu.
 import { Fragment, createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
@@ -22,6 +24,7 @@ import { Syllabified } from '../../../components/Syllabified';
 import { seeded } from '../../../core/random';
 import { useSettings } from '../../../core/SettingsContext';
 import { texteGrand } from '../../../core/settings';
+import { useRememberPlace } from '../../../core/lastPlace';
 import { useLoaded } from '../../../core/useLoaded';
 import { useBlocland } from '../../BloclandContext';
 import { getBiome } from '../../biomes';
@@ -29,6 +32,7 @@ import { levelFor } from '../../engine';
 import { ExerciseRunner, type RunnerStage } from '../../ExerciseRunner';
 import { loadExercise, pickExercise } from '../../exercises';
 import { Aid } from '../../exercises/Aid';
+import { NoticeQuestion } from '../../exercises/CalculationScreen';
 import type { AidData } from '../../exercises/maths';
 import type { ScreenProps } from '../../exercises/registry';
 import { CARD_CLASS, cardState, sortSummary } from '../../exercises/sortCards';
@@ -70,12 +74,14 @@ const DEFAULT_COUNT = 3;
 interface Props {
   place: PlaceId;
   mission: string;
+  /** L'écran habituel, sans scène : une mission dont la scénette n'est pas encore faite (GD-20, point 8). */
+  plain?: boolean;
   world: OpenWorld;
   /** Fin de la question (« Revenir au Phare », Quitter) : la page rend la main au monde. */
   onClose(): void;
 }
 
-export function WorldQuestion({ place, mission, world, onClose }: Props) {
+export function WorldQuestion({ place, mission, plain = false, world, onClose }: Props) {
   const { state } = useBlocland();
   const { settings } = useSettings();
   const grandTexte = texteGrand(settings);
@@ -84,6 +90,9 @@ export function WorldQuestion({ place, mission, world, onClose }: Props) {
   useHoldCelebrations(true);
   const lieu = placeById(place);
   const biome = getBiome(lieu.island);
+  // « Ma dernière mission » (accès direct) y ramène, comme à une mission de la grille : la liste de son lieu s'ouvre.
+  const missionTitle = biome?.exercises.find((e) => e.id === mission)?.title;
+  useRememberPlace(biome && missionTitle ? { path: `/adventure/${biome.id}/${mission}`, label: `${missionTitle} · ${biome.name}` } : null);
   const [run, setRun] = useState(0);
   // L'exercice est choisi comme sur l'écran classique (ExercisePage) : au lancement et à chaque « Rejouer ».
   const picked = useMemo(
@@ -180,8 +189,8 @@ export function WorldQuestion({ place, mission, world, onClose }: Props) {
   // le cran suivant ; une consigne qui ne tient pas en pleine largeur mène droit à « Vue simple » ; un mot coupé aussi.
   // Sur tablette, seule une scénette se mesure : ses mots de réponse (le panneau prend la hauteur de son texte).
   useLayoutEffect(() => {
-    // Rien ne se mesure avant que la page ait sa taille (la place des réponses en dépend).
-    if (!size.w || simple || finished || answersOut) return;
+    // Rien ne se mesure avant que la page ait sa taille (la place des réponses en dépend), ni sur l'écran habituel.
+    if (!size.w || plain || simple || finished || answersOut) return;
     const root = box.current;
     if (!root) return;
     if (wordsCut(root.querySelectorAll<HTMLElement>('.world-answer-label'))) {
@@ -211,7 +220,7 @@ export function WorldQuestion({ place, mission, world, onClose }: Props) {
     if (intro) setWiden(widen < WIDEN_FULL ? WIDEN_FULL : WIDEN_OFFER);
     else if (column.classList.contains('has-sheet')) setSheetWide(true);
     else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
-  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, simple, bare, grandTexte, openSimple]);
+  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, plain, simple, bare, grandTexte, openSimple]);
   // Le panneau de « Vue simple » défile : il s'ouvre en haut (le rôle, la consigne), et `data-suite` dit qu'il reste
   // de quoi lire plus bas (une ombre au-dessus de « Valider ») ou plus haut. Sans « Valider » (les paniers, les leviers,
   // les caisses), `data-repere` montre au bas du panneau un chevron sur un trait pointillé (« Suite plus bas ») tant que
@@ -254,16 +263,16 @@ export function WorldQuestion({ place, mission, world, onClose }: Props) {
     };
   }, [simple, finished, loaded]);
   useEffect(() => {
-    if (!size.w || !size.h || !item || finished) return;
-    setLabels(world.question({ place, layout, item }));
-  }, [world, place, layout, item, size, finished]);
+    if (plain || !size.w || !size.h || !item || finished) return;
+    setLabels(world.question({ place, mission, layout, item }));
+  }, [world, place, mission, plain, layout, item, size, finished]);
   // La fin de la mission : la caméra revient au lieu, où la pièce remise en marche se voit derrière le bilan ; dans une
   // scénette, elle reste, et la lampe s'allume à la réussite.
   useEffect(() => {
-    if (!finished) return;
+    if (plain || !finished) return;
     world.scenetteEnd(success);
     setLabels([]);
-  }, [world, finished, success]);
+  }, [world, plain, finished, success]);
   // En partant (« Revenir », Quitter, « Vue simple »), la scène reprend son cadrage.
   useEffect(() => () => void world.question(null), [world]);
 
@@ -278,6 +287,9 @@ export function WorldQuestion({ place, mission, world, onClose }: Props) {
   const exerciseId = ready?.def.id;
   const stage = useMemo<RunnerStage | null>(() => {
     if (!exerciseId) return null;
+    // L'écran habituel (le temps de la transition) : l'écran de la grille, ses items, sa consigne, sur un panneau uni ;
+    // le bilan et le retour du lieu. Ni rôle, ni scène, ni « Vue simple » : la même forme dans tous les lieux.
+    if (plain) return { instruction, back: { label: `Revenir ${lieu.at}`, onClick: onClose }, Done: WorldDone, className: `in-world ecran-habituel${finished ? ' finished' : ''}` };
     const extra: ReactNode = (
       <>
         {intro && (
@@ -363,6 +375,7 @@ export function WorldQuestion({ place, mission, world, onClose }: Props) {
     };
   }, [
     exerciseId,
+    plain,
     instruction,
     place,
     lieu.at,
@@ -424,7 +437,7 @@ export function WorldQuestion({ place, mission, world, onClose }: Props) {
 
   return (
     <div
-      className="world-question scenette"
+      className={`world-question${plain ? ' ecran-habituel' : ' scenette'}`}
       ref={box}
       style={style}
       onClick={(e) => {
@@ -465,13 +478,13 @@ export function WorldQuestion({ place, mission, world, onClose }: Props) {
       )}
       {/* « Vue simple » : hors de la colonne, au-dessus de tout, à côté de la pause ; rien ne le recouvre. */}
       {/* Un seul « Vue simple » : celui du panneau quand le repli est proposé. */}
-      {ready && stage && !finished && !offer && !simple && (
+      {ready && stage && !plain && !finished && !offer && !simple && (
         <button type="button" className="button world-question-simple" onClick={openSimple}>
           <Icon name="liste" /> Vue simple
         </button>
       )}
       {/* En « Vue simple » d'une scénette, à la même place : le retour à la scène, les cloches choisies gardées. */}
-      {ready && stage && !finished && simple && (
+      {ready && stage && !plain && !finished && simple && (
         <button type="button" className="button world-question-simple" onClick={() => setSimple(false)}>
           <Icon name="mountain" /> Scène
         </button>
@@ -512,12 +525,17 @@ function placeSceneOf(item: ExerciseItem | undefined): ItemScene | null {
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 
-/** La règle d'un item (la carte de règle, une aide de calcul), comme sur l'écran classique. */
-function aidOf(item: ExerciseItem | undefined): AidData | null {
-  const aid = item?.aid;
+/** Une aide décrite en données (une carte de règle, une grille de points, une figure), ou `null`. */
+function aidData(aid: unknown): AidData | null {
   if (!isRecord(aid) || typeof aid.kind !== 'string' || !isRecord(aid.props)) return null;
   return { kind: aid.kind, props: aid.props };
 }
+
+/** La règle d'un item (la carte de règle, une aide de calcul), comme sur l'écran classique. */
+const aidOf = (item: ExerciseItem | undefined): AidData | null => aidData(item?.aid);
+
+/** La figure d'un item (la figure exacte, le schéma coté), comme sur l'écran classique. */
+const figureOf = (item: ExerciseItem | undefined): AidData | null => aidData(item?.figure);
 
 /** La cible de toucher d'une réponse (l'étiquette et l'objet), et la place de l'étiquette dedans. */
 function slotStyles(slot: AnswerSlot): { hit: CSSProperties; label: CSSProperties } {
@@ -578,9 +596,10 @@ function useStopOnLeave(): void {
 }
 
 /**
- * Les Filets, les Écluses, les Quais : la phrase du lieu (et la ligne de calcul de référence aux Quais), la règle de
- * l'item, l'indice sur demande, une réponse par objet du lieu. La correction est celle de l'écran classique
- * (CalculationScreen).
+ * Les Filets, les Écluses, les Quais : la phrase du lieu (et la ligne de calcul de référence aux Quais), ou la question
+ * et son document (Mesures et figures), la figure de l'item quand la scène ne la remplace pas (la grille, le schéma
+ * coté, la figure exacte restent dans le panneau, GD-20, point 8), la règle de l'item, l'indice sur demande, une réponse
+ * par objet du lieu. La correction est celle de l'écran classique (CalculationScreen).
  */
 function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: ScreenProps) {
   const { layout, show, simple } = useQuestion();
@@ -593,6 +612,9 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   const answer = String(item?.answer ?? '');
   const hint = String(item?.hint ?? '');
   const referenceLine = typeof item?.referenceLine === 'string' ? item.referenceLine : '';
+  const question = typeof item?.question === 'string' ? item.question : '';
+  // Aux Écluses, la scène dessine la figure (le sas, l'échelle) : elle reste pour « Vue simple » de la grille.
+  const figure = scene && scene.kind !== 'sas' && scene.kind !== 'echelle' ? figureOf(item) : null;
   const aid = aidOf(item);
   const chosen = answered?.detail?.chosen;
   const [hintShown, setHintShown] = useState(false);
@@ -607,27 +629,36 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   }, [show, scene, answered, rightIndex, choices.length, aid, triedKey]);
   if (!item || !scene) return null;
   // Après « Bravo », le mot juste entre dans le trou : la phrase se lit entière.
-  const gap = filledGap(prompt, answer, answered?.results);
+  const gap = question ? null : filledGap(prompt, answer, answered?.results);
   const filled = gap !== null && rightIndex >= 0;
   const whole = gap ? `${gap.before}${answer}${gap.after}` : prompt;
 
   return (
     <div className="question world-place">
       <div className={`world-question-prompt${filled ? ' filled' : ''}`}>
-        <div className="question-head">
-          <p className="question-prompt">
-            {filled ? (
-              <>
-                <RichText text={gap?.before ?? ''} />
-                <strong className="world-filled">{answer}</strong>
-                <RichText text={gap?.after ?? ''} />
-              </>
-            ) : (
-              <RichText text={prompt} />
-            )}
-          </p>
-          <SpeakButton text={filled ? whole : spoken} label="Lire la phrase" shown={whole} compact />
-        </div>
+        {question ? (
+          <NoticeQuestion question={question} prompt={prompt} spoken={spoken} image="" lang="fr" />
+        ) : (
+          <div className="question-head">
+            <p className="question-prompt">
+              {filled ? (
+                <>
+                  <RichText text={gap?.before ?? ''} />
+                  <strong className="world-filled">{answer}</strong>
+                  <RichText text={gap?.after ?? ''} />
+                </>
+              ) : (
+                <RichText text={prompt} />
+              )}
+            </p>
+            <SpeakButton text={filled ? whole : spoken} label="Lire la phrase" shown={whole} compact />
+          </div>
+        )}
+        {figure && (
+          <div className="calcul-figure world-question-figure">
+            <Aid aid={figure} />
+          </div>
+        )}
         {referenceLine && !layout.low && (
           <p className="world-question-reference">
             <RichText text={referenceLine} />

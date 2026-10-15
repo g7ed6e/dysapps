@@ -481,7 +481,7 @@ describe('Les Filets et les Écluses (lot 4)', () => {
     expect(Math.abs(scenetteHabitant('filets').x - f.to.x)).toBeLessThan(1.5);
     // Le panier plein reste dans le monde, posé au sol, sur la terre.
     expect(heightAt(basket)).toBeGreaterThan(0);
-    expect(placeTrace('filets', true).triangles).toBeGreaterThan(f.moving.triangles);
+    expect(placeTrace('filets', ['plurals']).triangles).toBeGreaterThan(f.moving.triangles);
   });
 
   it('aux Écluses, la barque attend devant la porte fermée ; à la réussite, le sas se remplit, la porte s’ouvre et la barque passe', () => {
@@ -510,7 +510,7 @@ describe('Les Filets et les Écluses (lot 4)', () => {
     // pour 6 parts, plus le trait du niveau).
     expect(lockFull({ kind: 'sas', n: 6, d: 6 }).triangles).toBe((6 + 5 + 1) * 10);
     // Dans le monde, la porte d'amont fermée tant que la mission n'est pas réussie, puis ouverte, le sas rempli.
-    expect(placeTrace('ecluses', true).triangles).toBeGreaterThan(placeTrace('ecluses', false).triangles);
+    expect(placeTrace('ecluses', ['number-line']).triangles).toBeGreaterThan(placeTrace('ecluses', []).triangles);
   });
 
   it('aux Écluses, la porte monte à l’épaule de l’éclusier, à côté de lui ; la barque passée reste dans la scène', () => {
