@@ -16,6 +16,7 @@
 import { CAMERA_FOV, type CameraPose } from './camera';
 import { FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
+import { placeArt } from './northShore';
 import { COLORS_6E, DECK_HEIGHT, placeById, type PlaceId } from './plan6e';
 import {
   ANSWER_LAYOUT,
@@ -75,6 +76,10 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   engine: { role: 'La machiniste', greeting: null, placement: 'rangee' },
   // Lot L6b : « le charpentier » (directeur artistique).
   shipyard: { role: 'Le charpentier', greeting: null, placement: 'rangee' },
+  // Le rivage nord (lot L7, directeur artistique, consultant Archipéo) : le rôle de chaque fichier de lieu (placeArt.ts).
+  lookout: { role: placeArt('lookout')!.role, greeting: null, placement: 'rangee' },
+  archives: { role: placeArt('archives')!.role, greeting: null, placement: 'rangee' },
+  printworks: { role: placeArt('printworks')!.role, greeting: null, placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -346,6 +351,18 @@ function quayFloor(): Vec3 {
   return { x: o.x, y: o.y, z: o.z + QUAY.depth / 2 - QUAY.strip / 2 };
 }
 
+/** La scénette d'un lieu du rivage nord (lot L7) : celle de son fichier (placeArt.ts), son sol au-dessus de la scène. */
+function northSite(place: PlaceId): ScenetteSite {
+  const { rise, ...site } = placeArt(place)!.site;
+  return {
+    floor: () => {
+      const s = sceneSpot(place);
+      return { ...s, y: s.y + rise };
+    },
+    ...site,
+  };
+}
+
 const SITES: Record<PlaceId, ScenetteSite> = {
   phare: {
     floor: galleryFloor,
@@ -415,6 +432,9 @@ const SITES: Record<PlaceId, ScenetteSite> = {
     subject: { halfWidth: 3.8, bottom: -0.4, top: 3.3, depth: 0.2 },
     pitch: (18 * Math.PI) / 180,
   },
+  lookout: northSite('lookout'),
+  archives: northSite('archives'),
+  printworks: northSite('printworks'),
 };
 
 /**
@@ -528,6 +548,15 @@ export function scenetteExit(place: PlaceId, posed = true, mission?: string): { 
     const o = SHIPYARD_TRACE_SPOTS[key];
     const g = { x: c.x + o.x, z: c.z + o.z };
     return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + SHIPYARD_TRACE_LIFT[key], z: g.z } };
+  }
+  const art = placeArt(place);
+  if (art) {
+    // Le rivage nord (lot L7) : la trace de la mission jouée, la caméra en garde le milieu ; Kéo à sa place de retour.
+    const at = { x: c.x + art.exit.x, z: c.z + art.exit.z };
+    const trace = mission && Object.hasOwn(art.traces, mission) ? art.traces[mission] : null;
+    if (!trace) return { at, keep: placeKeep(place) };
+    const g = { x: c.x + trace.at.x, z: c.z + trace.at.z };
+    return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + trace.lift, z: g.z } };
   }
   if (place === 'ecluses') {
     // La trace de la mission jouée (GD-20, point 8, lot L2) : la porte d'amont ouverte des Nénuphars (le milieu du lieu),
@@ -1127,6 +1156,12 @@ export function scenetteDecor(place: PlaceId, open = false, posed = true): Facet
   if (place === 'shipyard') {
     shipyardFloor(b);
     charpentier(b, place);
+    return b.build();
+  }
+  const art = placeArt(place);
+  if (art) {
+    // Le rivage nord (lot L7) : le sol de la scène et l'habitant, dessinés dans le fichier du lieu.
+    art.decor(b, floorOf(place), scenetteHabitant(place), sphere);
     return b.build();
   }
   if (!posed) {

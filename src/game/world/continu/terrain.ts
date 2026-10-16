@@ -5,7 +5,7 @@
 // la brume cache ce qui est plus loin. Code pur : la vue (three/archipeo/) ne fait que donner ces tableaux à Three.js.
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { CLIFF, COAST, COLORS_6E, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, PASS, RIVER, SALT_FLAT, SHIPYARD_FLAT, TERRAIN, UPLAND } from './plan6e';
+import { CLIFF, COAST, COLORS_6E, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, PASS, RIVER, SALT_FLAT, SHIPYARD_FLAT, TERRAIN, UPLAND } from './plan6e';
 
 /** La distance signée à la terre ferme : positive sur la terre, négative dans l'eau (mer, lagon, passe, bassin, rivière). */
 export function landDistance(p: Vec2): number {
@@ -34,6 +34,34 @@ const outsideCoastBox = (p: Vec2) => Math.max(COAST_BOX.minX - p.x, p.x - COAST_
  * la marche, la falaise nord, le haut pays de l'est.
  */
 export function heightAt(p: Vec2): number {
+  const h = groundHeight(p);
+  // La rampe de la Vigie (lot L7) : son dessus monte en ligne droite du sol de son pied à celui du plateau ; ses flancs
+  // descendent ensuite jusqu'au sol (elle ne creuse jamais : le plus haut des deux).
+  const ramp = rampHeight(p);
+  return ramp === null ? h : Math.max(h, ramp);
+}
+
+/** Le dessus de la rampe de la Vigie à son pied et à son haut (le sol sans elle), calculés une fois. */
+let rampEnds: [number, number] | null = null;
+
+/** La hauteur de la rampe de la Vigie au-dessus d'un point, ou rien hors de sa portée (lot L7). */
+function rampHeight(p: Vec2): number | null {
+  const { from, to, halfWidth, side } = LOOKOUT_RAMP;
+  const dx = to.x - from.x,
+    dz = to.z - from.z;
+  const length = Math.hypot(dx, dz);
+  const t = ((p.x - from.x) * dx + (p.z - from.z) * dz) / (length * length);
+  if (t < -0.05 || t > 1.05) return null;
+  const lateral = Math.abs((p.x - from.x) * dz - (p.z - from.z) * dx) / length;
+  // Le haut : le plateau, quelques pas après le rebord (le sol du rebord est encore la pente de la falaise).
+  rampEnds ??= [groundHeight(from), Math.max(...[0, 2, 4, 6].map((k) => groundHeight({ x: to.x + (dx * k) / length, z: to.z + (dz * k) / length })))];
+  const top = rampEnds[0] + (rampEnds[1] - rampEnds[0]) * Math.min(1, Math.max(0, t));
+  const h = top - Math.max(0, lateral - halfWidth) / side;
+  return lateral > halfWidth + top / side ? null : h;
+}
+
+/** La hauteur du sol sans la rampe de la Vigie. */
+function groundHeight(p: Vec2): number {
   // Loin de la côte, le large : la distance à la terre y dépasse celle à la boîte de la côte.
   if (outsideCoastBox(p) > 4) return DEEP;
   const d = landDistance(p);
@@ -53,6 +81,11 @@ export function heightAt(p: Vec2): number {
   // Le replat de la Turbine (lot L6a) : aplani, puis le sol d'avant, en pente douce (loin de la rivière).
   const replat = smoothstep(ENGINE_FLAT.radius + ENGINE_FLAT.fade, ENGINE_FLAT.radius, distance(p, ENGINE_FLAT.center));
   if (replat > 0) h += (ENGINE_FLAT.height - h) * replat;
+  // La cour de l'Imprimerie et le parvis des Archives (lot L7) : aplanis, puis le sol d'avant, en pente douce.
+  for (const f of NORTH_FLATS) {
+    const k = smoothstep(f.radius + f.fade, f.radius, distance(p, f.center)) * smoothstep(0, 2, d);
+    if (k > 0) h += (f.height - h) * k;
+  }
   // Les grèves des Marais salants (lot L5) et du Chantier naval (lot L6b) : aplanies, puis le sol d'avant, en pente
   // douce ; au bord de l'eau, elles descendent encore comme la plage. Elles ne se touchent pas.
   for (const g of GREVES) {

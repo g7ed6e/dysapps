@@ -18,6 +18,7 @@ import { networkSamples, pathNode } from './paths';
 import { buildHeightField, heightAt, heightOnMesh, landDistance, standingHeight, tileFacets } from './terrain';
 import PLACE_ITEMS from './placeItems.json';
 import { PLACES, TERRAIN, placeById } from './plan6e';
+import { PAPER_COLOR } from './printworks';
 import {
   ANSWER_LAYOUT,
   ECLUSES_TRACE_SPOTS,
@@ -82,6 +83,7 @@ import {
   rangeGesture,
   rangeRounds,
   QUAI_NU,
+  REST,
   quaiScene,
   sasExplanation,
   traceDone,
@@ -756,8 +758,8 @@ describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
 });
 
 describe('Les couleurs que la vue reconnaît (scene.ts, `unshadedLamp`)', () => {
-  it('aucune autre couleur du monde à moins de 0,004 de la lampe, des ailes de la pompe, du rotor ou de la vapeur', () => {
-    const markers = [LAMP_COLOR, SALT_PUMP.vane, ...ENGINE_ROTOR_COLORS, ...STEAM_COLORS];
+  it('aucune autre couleur du monde à moins de 0,004 de la lampe, des ailes de la pompe, du rotor, de la vapeur ou du papier', () => {
+    const markers = [LAMP_COLOR, SALT_PUMP.vane, ...ENGINE_ROTOR_COLORS, ...STEAM_COLORS, PAPER_COLOR];
     const near = (a: readonly number[], b: readonly number[]) => [0, 1, 2].every((k) => Math.abs(a[k] - b[k]) < 0.004);
     const same = (a: readonly number[], b: readonly number[]) => [0, 1, 2].every((k) => Math.abs(a[k] - b[k]) < 1e-6);
     // Les marqueurs, assez loin l'un de l'autre.
@@ -778,6 +780,10 @@ describe('Les couleurs que la vue reconnaît (scene.ts, `unshadedLamp`)', () => 
       take(modelOfPlace(p.id).facets);
       take(ruinOf(p.id));
       take(placeTrace(p.id, p.scenes));
+      // Les objets des réponses, dessinés dans le maillage de la question (même matériau), choisis ou non.
+      const pts = [0, 1, 2, 3].map((k) => ({ x: k * 1.5, y: 0, z: 0 }));
+      take(answerObjects(p.id, pts, 1));
+      take(answerObjects(p.id, pts, 1, { picked: [1] }));
     }
     const engineScene = itemScene('engine', { kind: 'column' }, true, []);
     take(engineScene.still);
@@ -1233,5 +1239,61 @@ describe('La scène d’un item', () => {
     expect(s * 0.45).toBeLessThanOrEqual(0.45 * 2 + 1e-9);
     expect(answerObjects('phare', points, s).triangles).toBeGreaterThan(0);
     expect(answerObjects('quais', [], 1).triangles).toBe(0);
+  });
+});
+
+describe('Le rivage nord (GD-20, point 8, lot L7)', () => {
+  const north = { lookout: 'french-6e-reading', archives: 'french-6e-word-spelling', printworks: 'french-6e-letter-confusion' } as const;
+  const COLUMN_MISSIONS = ['comprehension', 'tense-values', 'word-forms'];
+
+  it('Étages du sens, Les temps du récit et Facettes en C ; les autres missions de la scène en R, le lieu au repos', () => {
+    for (const [place, island] of Object.entries(north) as [keyof typeof north, string][]) {
+      for (const d of CATALOG.filter((e) => e.biome === island)) {
+        const mission = placeById(place).scenes.find((m) => missionIs(d.id, m));
+        if (!mission) continue;
+        const items = reference(d.id).items;
+        const placed = placeItems(place, d.id, items);
+        expect(placed.map((it) => it.key), d.id).toEqual(items.map((it) => it.key));
+        for (const it of placed) {
+          expect(it.placeScene, it.key).toEqual(COLUMN_MISSIONS.includes(mission) ? COLUMN : REST);
+          // Les champs de l'item restent : le retour de l'exercice les cite (`fillTemplate`).
+          const ref = items.find((r) => r.key === it.key)!;
+          expect([it.answer, it.choices], it.key).toEqual([ref.answer, ref.choices]);
+          for (const k of Object.keys(ref)) if (k !== 'prompt' && k !== 'spoken') expect(it[k], `${it.key}.${k}`).toEqual(ref[k]);
+        }
+      }
+    }
+    expect(isItemScene(REST)).toBe(true);
+    expect(answersInColumn(REST)).toBe(false);
+  });
+
+  it('aucun item redit sans son mot : chaque écran de référence a sa phrase affichée et sa voix', () => {
+    for (const [place, island] of [['archives', 'french-6e-word-spelling'], ['printworks', 'french-6e-letter-confusion']] as const) {
+      for (const d of CATALOG.filter((e) => e.biome === island)) {
+        if (!['missing-letters', 'word-families', 'sight-words', 'sound-discrimination'].some((m) => missionIs(d.id, m))) continue;
+        for (const it of placeItems(place, d.id, reference(d.id).items)) {
+          expect(String(it.prompt).replace(/…/g, '').trim(), it.key).not.toBe('');
+          expect(String(it.spoken ?? '').trim(), it.key).not.toBe('');
+          if (it.gapWord !== undefined) expect(it.gapWord.replace('…', ''), it.key).not.toBe('');
+        }
+      }
+    }
+  });
+
+  it('les écrans de référence redits : le mot troué, la racine et ses affixes, la phrase à écouter', () => {
+    const first = (id: string) => placeItems(id.startsWith('french-6e-letter') ? 'printworks' : 'archives', id, reference(id).items)[0];
+    const troue = first('french-6e-word-spelling-missing-letters-1');
+    expect(troue.prompt).toContain('…');
+    expect(troue.listen).toBe('mot');
+    expect(troue.spoken).toBe(String(reference('french-6e-word-spelling-missing-letters-1').items[0].word));
+    const family = CATALOG.find((d) => d.biome === 'french-6e-word-spelling' && missionIs(d.id, 'word-families'))!.id;
+    const fam = first(family);
+    expect(fam.gapWord).toMatch(/^…|…$/);
+    expect(fam.choiceLabels).toHaveLength((fam.choices as unknown[]).length);
+    for (const l of fam.choiceLabels!) expect(l).toMatch(/^-|-$/);
+    const listen = first('french-6e-letter-confusion-sound-discrimination-1');
+    expect(listen.listen).toBe('reecouter');
+    expect(listen.speakOnOpen).toBe(true);
+    expect(listen.spoken).toBeTruthy();
   });
 });

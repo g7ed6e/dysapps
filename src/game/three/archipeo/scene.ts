@@ -16,8 +16,9 @@ import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/g
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
 import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork, startOf } from '../../world/continu/paths';
-import { PLACES, TERRAIN, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
+import { PLACES, TERRAIN, hidesTraces, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
+import { PAPER_COLOR } from '../../world/continu/printworks';
 import { PORT_MAP_POINT, PORT_ROOFLINES, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
 import { HELD_LIFT, SALT_PUMP, answerObjects, answerScale, inBasket, itemScene, placeTrace, rankInBasket, saltPumpHub, sceneSpot, sortPrise, sortScales, type Reaction, type SortLook } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
@@ -393,7 +394,8 @@ const ROTOR = { turn: 0.35 } as const;
  * lanterne de proue de la barque des Quais) se dessinent sans ombre, de leur couleur même, au soleil comme à l'ombre :
  * elles se lisent comme des lumières (directeur artistique), sans maillage ni appel de plus. Les autres faces gardent
  * leur lumière ; la couleur de la lampe n'est prise par rien d'autre dans le monde. La vapeur de la Turbine aussi
- * (`STEAM_COLORS`, lot L6a : des aplats clairs, jamais gris foncé à l'ombre). Les ailes de la pompe à vent y
+ * (`STEAM_COLORS`, lot L6a : des aplats clairs, jamais gris foncé à l'ombre), et le papier des feuilles de l'Imprimerie
+ * (`PAPER_COLOR`, lot L7 : il se lit comme du papier, jamais comme une dalle de la cour). Les ailes de la pompe à vent y
  * tournent (`VANE`), et le rotor de la Turbine (`ROTOR`) : `vaneAngle` et `rotorAngle` sont partagés par les matériaux du
  * monde.
  */
@@ -407,6 +409,7 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
     shader.uniforms.lampColor = { value: new THREE.Vector3(r, g, b) };
     shader.uniforms.steamColor = { value: new THREE.Vector3(...linearRgb(STEAM_COLORS[0])) };
     shader.uniforms.steamShade = { value: new THREE.Vector3(...linearRgb(STEAM_COLORS[1])) };
+    shader.uniforms.paperColor = { value: new THREE.Vector3(...linearRgb(PAPER_COLOR)) };
     shader.uniforms.vaneColor = { value: new THREE.Vector3(vr, vg, vb) };
     shader.uniforms.vanePivot = { value: new THREE.Vector2(hub.x, hub.y) };
     shader.uniforms.vaneAngle = vaneAngle;
@@ -426,10 +429,10 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
         '#include <begin_vertex>\n#ifdef USE_COLOR\nif ( all( lessThan( abs( color.rgb - vaneColor ), vec3( 0.004 ) ) ) ) {\n\tvec2 vaneD = transformed.xy - vanePivot;\n\tfloat vaneC = cos( vaneAngle ), vaneS = sin( vaneAngle );\n\ttransformed.xy = vanePivot + vec2( vaneC * vaneD.x - vaneS * vaneD.y, vaneS * vaneD.x + vaneC * vaneD.y );\n} else if ( all( lessThan( abs( color.rgb - rotorColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( color.rgb - rotorRim ), vec3( 0.004 ) ) ) ) {\n\tvec2 rotorD = transformed.xy - rotorPivot;\n\tfloat rotorC = cos( rotorAngle ), rotorS = sin( rotorAngle );\n\ttransformed.xy = rotorPivot + vec2( rotorC * rotorD.x - rotorS * rotorD.y, rotorS * rotorD.x + rotorC * rotorD.y );\n}\n#endif',
       );
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform vec3 lampColor;\nuniform vec3 steamColor;\nuniform vec3 steamShade;')
+      .replace('#include <common>', '#include <common>\nuniform vec3 lampColor;\nuniform vec3 steamColor;\nuniform vec3 steamShade;\nuniform vec3 paperColor;')
       .replace(
         '#include <opaque_fragment>',
-        'if ( all( lessThan( abs( vColor.rgb - lampColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamShade ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n#include <opaque_fragment>',
+        'if ( all( lessThan( abs( vColor.rgb - lampColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamShade ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - paperColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n#include <opaque_fragment>',
       );
   };
   return m;
@@ -537,12 +540,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const o = markOffset(id);
     marks.set(id, new THREE.Vector3(foot.x + o.x, foot.y + o.y, foot.z + o.z));
   }
-  const phare = placeById('phare');
-  const lanternTop: Vec3 = { x: phare.center.x, y: feet.get('phare')!.y + modelOfPlace('phare').top, z: phare.center.z };
+  // Les lieux hauts dont le regard se lève pour cadrer le haut à l'arrivée : la lanterne du Phare ; le toit et le mât de
+  // la Vigie (lot L7). `lanternTop` : le haut du plus proche, que `lookUp` cadre.
+  const TALL: readonly PlaceId[] = ['phare', 'lookout'];
+  const tallTops = new Map<PlaceId, Vec3>(TALL.map((id) => [id, { x: placeById(id).center.x, y: feet.get(id)!.y + modelOfPlace(id).top, z: placeById(id).center.z }]));
+  const lanternTop: Vec3 = { ...tallTops.get('phare')! };
   /** La hauteur bâtie de chaque lieu, au-dessus de son pied (le lieu entier tant que la page n'a rien dit). */
   const builtTop = new Map<PlaceId, number>();
   const whole = (id: PlaceId) => (builtTop.get(id) ?? modelOfPlace(id).top) >= modelOfPlace(id).top - 0.5;
-  /** Reporte la hauteur bâtie d'un lieu sur sa marque (et, au Phare, sur le haut que le regard levé cadre). */
+  /** Reporte la hauteur bâtie d'un lieu sur sa marque (et, au Phare et à la Vigie, sur le haut que le regard levé cadre). */
   const setBuiltTop = (id: PlaceId, top: number) => {
     if (builtTop.get(id) === top) return;
     builtTop.set(id, top);
@@ -551,7 +557,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const mark = marks.get(id)!;
     if (whole(id)) mark.set(foot.x + o.x, foot.y + o.y, foot.z + o.z);
     else mark.set(foot.x, foot.y + top + MARK_LIFT, foot.z);
-    if (id === 'phare') lanternTop.y = foot.y + top;
+    const tallTop = tallTops.get(id);
+    if (tallTop) tallTop.y = foot.y + top;
   };
   const placesMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
   const landmarkMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landmarkMaterial));
@@ -674,7 +681,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     else camera.setViewOffset(viewW, viewH, x, y, viewW, viewH);
   };
   // Le regard levé près du Phare (`lookUp`) : sa part, de 0 à 1 ; le haut de la lanterne.
-  const nearLantern = () => !walk && distance(here, phare.center) < LOOK_UP.within;
+  const nearLantern = () => {
+    if (walk) return false;
+    const near = TALL.find((id) => distance(here, placeById(id).center) < LOOK_UP.within);
+    if (near) Object.assign(lanternTop, tallTops.get(near)!);
+    return near !== undefined;
+  };
   let look = nearLantern() ? 1 : 0;
   // Le retour d'une scénette (aux Quais) : Kéo reste sur le bord du quai, la caméra garde la barque chargée dans le
   // champ (`back`, de 0 à 1) tant qu'il ne repart pas ; elle rejoint alors la caméra qui suit.
@@ -809,7 +821,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // la porte d'amont fermée des Écluses (elle est de leur haut).
       // Pendant une scénette, une trace d'une autre mission dans le cadre se cache (les lanternes de la galerie du Phare).
       const done = placesState?.traces[p.id] ?? [];
-      if (p.id !== hiddenTrace && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, scenette === p.id ? scenetteTraces(p.id, done, scenetteMission, posed) : done));
+      // Au rivage nord (lot L7), les trois lieux sont dans le même cadre : les traces des trois se cachent pendant toute
+      // question de l'un (directeur artistique).
+      const hidden = hidesTraces(hiddenTrace, p.id);
+      if (!hidden && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, scenette === p.id ? scenetteTraces(p.id, done, scenetteMission, posed) : done));
       if (p.id === 'phare' && lampShown) list.push(lampFacets);
     }
     setGeometry(placesMesh, mergeFacets(rest));

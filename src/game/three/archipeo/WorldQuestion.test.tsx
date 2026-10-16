@@ -41,7 +41,7 @@ beforeAll(async () => {
   );
 });
 
-function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard', mission: string, plain = false) {
+function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard' | 'lookout' | 'archives' | 'printworks', mission: string, plain = false) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
@@ -776,5 +776,68 @@ describe('La Turbine en texte normal sur un téléphone couché (deuxième passe
     await user.click(screen.getByRole('button', { name: /Scène/ }));
     await new Promise((r) => setTimeout(r, 50));
     expect(panel().classList.contains('simple')).toBe(false);
+  });
+});
+
+describe('Le rivage nord, les écrans de référence redits (GD-20, point 8, lot L7)', () => {
+  const answers = () => [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')];
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
+  });
+  afterEach(() => {
+    localStorage.clear();
+    vi.unstubAllGlobals();
+  });
+  // La voix du navigateur, simulée : chaque phrase dite garde son texte.
+  class FakeUtterance {
+    lang = '';
+    rate = 1;
+    voice = null;
+    onend: (() => void) | null = null;
+    onerror: (() => void) | null = null;
+    constructor(public text: string) {}
+  }
+  const start = async () => {
+    const user = userEvent.setup();
+    const go = screen.queryByRole('button', { name: /Commencer/ });
+    if (go) await user.click(go);
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+  };
+
+  it('Familles-craft aux Archives : le sens, la racine trouée, les affixes écrits avec leur trait d’union', async () => {
+    renderPlace('archives', 'word-families');
+    expect(await screen.findByText('La copiste')).toBeInTheDocument();
+    await start();
+    expect(document.querySelector('.world-gap-word')?.textContent).toMatch(/^…|…$/);
+    for (const a of answers()) expect(a.textContent?.trim()).toMatch(/^-|-$/);
+  });
+
+  it('Oreille du mineur à l’Imprimerie : la phrase dite une fois à l’ouverture, si la lecture automatique est choisie ; « Réécouter »', async () => {
+    const speak = vi.fn();
+    vi.stubGlobal('speechSynthesis', { speak, cancel: vi.fn(), getVoices: () => [], speaking: false });
+    vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance);
+    localStorage.setItem('dysapps:settings', JSON.stringify({ autoRead: true }));
+    renderPlace('printworks', 'sound-discrimination');
+    expect(await screen.findByText('L’imprimeur')).toBeInTheDocument();
+    await start();
+    expect(screen.getByRole('button', { name: /Réécouter/ })).toBeInTheDocument();
+    await vi.waitFor(() => expect(speak).toHaveBeenCalled());
+    const spoken = speak.mock.calls.map((c) => (c[0] as { text?: string }).text ?? '');
+    // La phrase n'est jamais écrite dans le panneau.
+    const panel = document.querySelector('.quiz.in-world')!.textContent ?? '';
+    for (const t of spoken.filter((x) => x.split(' ').length > 3)) expect(panel).not.toContain(t);
+  });
+
+  it('sans lecture automatique, rien n’est dit à l’ouverture, et le bouton s’appelle « Écouter »', async () => {
+    const speak = vi.fn();
+    vi.stubGlobal('speechSynthesis', { speak, cancel: vi.fn(), getVoices: () => [], speaking: false });
+    vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance);
+    localStorage.setItem('dysapps:settings', JSON.stringify({ autoRead: false }));
+    renderPlace('printworks', 'sound-discrimination');
+    await start();
+    expect(screen.queryByRole('button', { name: /Réécouter/ })).toBeNull();
+    expect(screen.getAllByRole('button', { name: /^Écouter :/ }).length).toBeGreaterThan(0);
+    expect(speak).not.toHaveBeenCalled();
   });
 });

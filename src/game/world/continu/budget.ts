@@ -45,6 +45,11 @@ const HEAVIEST: readonly { place: PlaceId; scene: ItemScene }[] = [
   { place: 'engine', scene: { kind: 'column' } },
   // Le Chantier naval (lot L6b) : le C neutre, les tréteaux et la planche de bordé plaquée contre la coque.
   { place: 'shipyard', scene: { kind: 'column' } },
+  // Le rivage nord (lot L7) : le C de la Vigie et son volet ouvert, puis chaque lieu au repos (ses objets de réponse).
+  { place: 'lookout', scene: { kind: 'column' } },
+  { place: 'lookout', scene: { kind: 'rest' } },
+  { place: 'archives', scene: { kind: 'rest' } },
+  { place: 'printworks', scene: { kind: 'rest' } },
 ];
 
 /**
@@ -118,7 +123,7 @@ const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
  * (`PORT_WORST`) ; aucun appel de plus.
  */
 function placesCost(): { triangles: number; calls: number } {
-  const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + placeTrace(p.id, p.scenes).triangles, 0);
+  const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + placeTrace(p.id, [...p.scenes, ...(p.panels ?? [])]).triangles, 0);
   return { triangles: triangles + lanternLight().triangles + portFacets(PORT_WORST).triangles, calls: 2 };
 }
 

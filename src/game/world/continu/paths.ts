@@ -4,6 +4,7 @@
 import { FacetBuilder, type Facets } from './facets';
 import { closestOnSegment, distance, type Vec2 } from './geometry';
 import { COLORS_6E, DOCK_EDGE, PATH_EDGES, PATH_NODES, portFloor, type PathNode } from './plan6e';
+import { lookoutRampWall } from './lookout';
 import { standingHeight } from './terrain';
 
 /** Un point du réseau : sur la liaison `edge` (son rang dans `PATH_EDGES`), à la part `t` de son premier nœud au second. */
@@ -219,6 +220,8 @@ export function pathRibbons(ground: (x: number, z: number) => number): Facets {
     for (const span of spans) plankBridge(b, span.from, span.to, span.y);
   }
   dockEdge(b);
+  // Le muret de la rampe de la Vigie (lot L7).
+  lookoutRampWall(b);
   // Un octogone sur chaque nœud : les coudes n'ont pas de trou.
   for (const node of PATH_NODES) {
     if (portFloor(node.at.x, node.at.z) !== null) continue;
