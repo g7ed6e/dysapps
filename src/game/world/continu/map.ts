@@ -251,6 +251,11 @@ const NEAR = { step: 16, reach: 80 } as const;
 
 /** L'écart entre le nom d'un lieu fermé posé au-dessus de son cadenas et ce cadenas, en pixels. */
 const RISE_GAP = 4;
+/**
+ * L'écart, en pixels, qu'un nom posé au-dessus de son cadenas garde au moins avec tout autre cadenas (troisième passe de
+ * L9, directeur artistique : un cadenas et un écart ; plus près, le nom pourrait être celui de l'autre cadenas).
+ */
+const RISE_CLEAR = 40;
 
 /**
  * Les pas dont le nom d'un lieu fermé peut descendre sous son cadenas, en pixels : d'un écart à la fois, jusqu'à
@@ -258,6 +263,9 @@ const RISE_GAP = 4;
  * 80 px » ; au-dessus de son cadenas en dernier recours seulement, relecture de L9).
  */
 const NAME_DROPS = Array.from({ length: NEAR.reach / MAP_LABEL_GAP + 1 }, (_, i) => i * MAP_LABEL_GAP);
+
+/** L'écart entre deux rectangles, en pixels (0 s'ils se touchent). */
+const rectGap = (a: Rect, b: Rect) => Math.hypot(Math.max(a.left - b.right, 0, b.left - a.right), Math.max(a.top - b.bottom, 0, b.top - a.bottom));
 
 /** L'écart entre un point et un rectangle, en pixels (0 dedans). */
 const gapTo = (p: { x: number; y: number }, r: Rect) => Math.hypot(Math.max(r.left - p.x, 0, p.x - r.right), Math.max(r.top - p.y, 0, p.y - r.bottom));
@@ -399,7 +407,8 @@ function attemptLayout(
   const free = (r: Rect, self?: string) => !placed.some((p) => (p.id === null || p.id !== self) && clash(p.r, r));
   // Les cadenas, à leur place : Kéo s'en écarte d'au moins `MAP_LABEL_GAP` (relecture de L6a, consultant UX UI : sur
   // téléphone, « Toi » touchait le cadenas des Marais salants).
-  const locks = labels.filter((l) => l.kind === 'closed').map((l) => rect(l.x - MAP_LOCK / 2, l.y - MAP_LOCK, MAP_LOCK, MAP_LOCK));
+  const lockOf = new Map(labels.filter((l) => l.kind === 'closed').map((l) => [l.id, rect(l.x - MAP_LOCK / 2, l.y - MAP_LOCK, MAP_LOCK, MAP_LOCK)]));
+  const locks = [...lockOf.values()];
   for (const l of labels) {
     if (l.kind === 'keo') {
       const disc = rect(l.x - MAP_KEO_DISC / 2, l.y - l.h, MAP_KEO_DISC, l.h);
@@ -488,9 +497,11 @@ function attemptLayout(
    * plutôt que de passer sur deux lignes) ; chaque fois sous son cadenas, glissé pour rester entier dans l'écran, à un
    * écart du bord ; puis, s'il gêne, de côté, d'un pas à la fois, tant que son cadenas reste au-dessus de lui (sur la
    * tablette, le nom de la Turbine se taisait contre une étiquette voisine : relecture de L6b, directeur artistique), et
-   * plus bas, d'un écart à la fois, jusqu'à `NEAR.reach`. En dernier, avant de se taire, juste au-dessus de son cadenas,
-   * collé à lui (relecture de L9, directeur artistique : « Les Balises » fermées se taisaient, « Toi » et la Gare sous
-   * leur cadenas, alors que la mer intérieure, au-dessus, était libre).
+   * plus bas, d'un écart à la fois, jusqu'à `NEAR.reach`. En dernier recours, le nom d'un lieu fermé passe juste au-dessus
+   * de son cadenas, seulement si aucun autre cadenas n'est à moins de 40 px du nom (`RISE_CLEAR`) ; sinon il se tait
+   * (relecture de L9, directeur artistique : « Les Balises » fermées se taisaient, « Toi » et la Gare sous leur cadenas,
+   * alors que la mer intérieure, au-dessus, était libre ; troisième passe : au-dessus d'un groupe de cadenas, on ne sait
+   * plus lequel est le sien).
    */
   const closedPlaces = (l: MapLabel) => {
     const forms = [{ w: l.w, h: l.h }, ...(l.narrow ? [l.narrow] : [])];
@@ -517,8 +528,12 @@ function attemptLayout(
   // étiquettes, et rien entre son cadenas et lui (un nom descendu ne se lit comme le sien que si rien ne passe entre eux).
   const fits = (l: MapLabel, { drop, r }: ClosedPlace, among: readonly { id: string | null; r: Rect }[]) => {
     if (!onScreen(r) || among.some((p) => (p.id === null || p.id !== l.id) && clash(p.r, r))) return false;
-    // Au-dessus de son cadenas, collé à lui : rien ne peut passer entre eux.
-    if (drop <= 0) return true;
+    // Au-dessus de son cadenas, collé à lui : rien ne peut passer entre eux ; aucun autre cadenas à moins de `RISE_CLEAR`.
+    if (drop < 0) {
+      for (const [id, k] of lockOf) if (id !== l.id && rectGap(k, r) < RISE_CLEAR) return false;
+      return true;
+    }
+    if (drop === 0) return true;
     const strip = rect(l.x - MAP_LOCK / 2, l.y, MAP_LOCK, drop);
     return !among.some((p) => p.id !== l.id && cross(p.r, strip));
   };

@@ -454,6 +454,27 @@ describe('Les étiquettes de la Carte', () => {
     const over = { left: 300, top: 100, right: 700, bottom: 158 };
     expect(layoutMapLabels([l], [...buttons, under, over], screen)[0].name).toBe(false);
   });
+
+  it('au-dessus de son cadenas, seulement si aucun autre cadenas n’est à moins de 40 px du nom (troisième passe de L9)', () => {
+    // Le même nom, sans place dessous : il monte au-dessus de son cadenas (de 350 à 650, de 112 à 156).
+    const screen = { width: 1024, height: 768 };
+    const buttons = [
+      { left: 100, top: 190, right: 240, bottom: 250 },
+      { left: 560, top: 190, right: 700, bottom: 250 },
+      { left: 470, top: 212, right: 530, bottom: 240 },
+    ];
+    const l: MapLabel = { id: 'filets', kind: 'closed', x: 500, y: 200, w: 300, h: 84 };
+    // Deux autres cadenas, à gauche et à droite du nom, chacun à `gap` px de lui : glissé de côté, il s'approche de l'un.
+    const others = (gap: number): MapLabel[] => [
+      { id: 'ecluses', kind: 'closed', x: 350 - gap - MAP_LOCK / 2, y: 150, w: 60, h: 84 },
+      { id: 'turbine', kind: 'closed', x: 650 + gap + MAP_LOCK / 2, y: 150, w: 60, h: 84 },
+    ];
+    const far = layoutMapLabels([l, ...others(44)], buttons, screen)[0];
+    expect(far.name).toBe(true);
+    expect(far.drop).toBeLessThan(0);
+    expect(far.shift ?? 0).toBe(0);
+    expect(layoutMapLabels([l, ...others(36)], buttons, screen)[0].name).toBe(false);
+  });
 });
 
 describe('La Carte avec le rivage nord (lot L7)', () => {
