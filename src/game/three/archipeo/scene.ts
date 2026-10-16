@@ -72,8 +72,12 @@ export interface OpenWorldOptions {
    * refaite quand la brume change). Aucun pendant une question.
    */
   onLocks(locks: readonly LockOnScreen[]): void;
-  /** La Carte ouverte : la place à l'écran de chaque lieu, à chaque image (la même liste, remplie sur place). */
-  onMapPlaces(spots: readonly MapSpotOnScreen[]): void;
+  /**
+   * La Carte ouverte : la place à l'écran de chaque lieu, à chaque image (la même liste, remplie sur place) ; `moving`
+   * tant qu'un doigt la fait glisser ou la pince, ou que la molette tourne ; à l'arrêt (le dernier doigt levé, la molette
+   * au repos), une pose de plus, `moving` faux.
+   */
+  onMapPlaces(spots: readonly MapSpotOnScreen[], moving: boolean): void;
   /** Sur la Carte, un lieu touché dans la 3D (ouvert, la page ferme la Carte et y dépose Kéo ; fermé, elle le dit). */
   onMapPick(place: PlaceId | 'port'): void;
   /**
@@ -267,6 +271,8 @@ const MAP_LABEL_TOP = 64;
  * dessiner (une ou deux d'habitude : le temps de mesurer les étiquettes) ; au-delà, elle se dessine telle quelle.
  */
 const MAP_SETTLE_FRAMES = 10;
+/** La molette au repos depuis tant de millisecondes : la Carte est à l'arrêt (ses étiquettes se posent avec la reprise). */
+const MAP_WHEEL_REST = 150;
 
 /** Le plus haut point d'un maillage (−∞ s'il est vide). */
 function topOf(f: Facets): number {
@@ -1030,7 +1036,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const onCancel = (e: PointerEvent) => {
     down = null;
-    fingers.delete(e.pointerId);
+    if (!fingers.delete(e.pointerId)) return;
+    if (fingers.size < 2) pinch = null;
+    mapAtRest();
   };
   /** Le point du monde sous un toucher (au sol, ou sur un lieu), ou rien. */
   const hitAt = (clientX: number, clientY: number): Vec2 | null => {
@@ -1104,7 +1112,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       l.y = ((1 - projected.y) / 2) * viewH;
       l.shown = projected.z < 1 && mapShown(l.x, l.y);
     }
-    options.onMapPlaces(mapSpots);
+    mapMoving = fingers.size > 0 || wheelRest !== 0;
+    options.onMapPlaces(mapSpots, mapMoving);
+  };
+  // La molette n'a pas de fin de geste : la Carte est à l'arrêt `MAP_WHEEL_REST` ms après son dernier cran.
+  let wheelRest = 0;
+  // La dernière pose faite pendant un geste : l'arrêt en demande une de plus (un toucher sans glisser, non).
+  let mapMoving = false;
+  /** La Carte à l'arrêt (le dernier doigt levé, la molette au repos) : ses étiquettes se posent une fois de plus. */
+  const mapAtRest = () => {
+    if (mapView && mapMoving && !fingers.size && !wheelRest) reportMapPlaces();
   };
   // La distance la plus lointaine de la Carte, reculée au plus grand texte (0 : l'île entière), et sa vue de départ,
   // tant que l'élève ne l'a ni glissée ni pincée ; remises à l'ouverture et quand l'écran change de taille (les
@@ -1191,7 +1208,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     fingers.clear();
     pinch = null;
     for (const l of mapSpots) l.shown = false;
-    options.onMapPlaces(mapSpots);
+    options.onMapPlaces(mapSpots, false);
     fog.near = WORLD_FOG.near;
     fog.far = WORLD_FOG.far;
     camera.far = FOLLOW_FAR;
@@ -1271,6 +1288,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const mapUp = (e: PointerEvent, d: { x: number; y: number; t: number } | null) => {
     fingers.delete(e.pointerId);
     if (fingers.size < 2) pinch = null;
+    mapAtRest();
     if (!d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > TAP.pixels || performance.now() - d.t > TAP.ms) return;
     // Le lieu le plus proche du toucher, à l'écran (la page ouvre un lieu ouvert, dit qu'un lieu fermé l'est) (le doigt n'a pas à viser le modèle, petit de si haut).
     const r = renderer.domElement.getBoundingClientRect();
@@ -1296,6 +1314,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const factor = Math.exp(-e.deltaY * pixels * (e.ctrlKey ? 0.01 : 0.002));
     const at = mapGround(e.clientX, e.clientY);
     freezeMap();
+    window.clearTimeout(wheelRest);
+    wheelRest = window.setTimeout(() => {
+      wheelRest = 0;
+      mapAtRest();
+    }, MAP_WHEEL_REST);
     if (!at) return;
     mapView = zoomMap(mapView, factor, at, aspect(), mapFar);
     showMap();
@@ -1995,6 +2018,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     dispose: () => {
       disposed = true;
       cancelAnimationFrame(frame);
+      window.clearTimeout(wheelRest);
       if (idleHandle) cancelIdle(idleHandle);
       observer.disconnect();
       renderer.domElement.removeEventListener('pointerdown', onDown);

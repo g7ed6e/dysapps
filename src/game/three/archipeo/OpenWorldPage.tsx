@@ -113,7 +113,7 @@ export default function OpenWorldPage() {
   // monde en grille) ; ses lieux posés à chaque image par la scène, comme les cadenas.
   const [mapOpen, setMapOpen] = useState(false);
   // Ce que les rappels de la scène appellent sur la Carte : poser les étiquettes, choisir un lieu touché dans la 3D.
-  const mapPlacer = useRef<((spots: readonly MapSpotOnScreen[]) => void) | null>(null);
+  const mapPlacer = useRef<((spots: readonly MapSpotOnScreen[], moving?: boolean) => void) | null>(null);
   // « [Nom] : fermé pour l'instant », au toucher d'un lieu fermé sur la Carte : quelques secondes, près de son cadenas
   // (GD-20, « La Carte au plus grand texte ») ; un nouveau toucher le garde (`n`).
   const [closedNote, setClosedNote] = useState<{ place: PlaceId; n: number } | null>(null);
@@ -199,7 +199,7 @@ export default function OpenWorldPage() {
         setLieu({ place: placeId, focus: null });
       },
       onLocks: (locks) => placeLocks(locksRef.current, locks),
-      onMapPlaces: (spots) => mapPlacer.current?.(spots),
+      onMapPlaces: (spots, moving) => mapPlacer.current?.(spots, moving),
       onMapPick: (placeId) => mapPick.current(placeId),
       onPosed: () => setPosePending(false),
       onMark: (m) => {
@@ -348,11 +348,12 @@ export default function OpenWorldPage() {
   }, []);
   const list = usePlacesList(mapOpen, closeMap);
   const openList = list.open;
-  const toggleList = list.toggle;
-  // La liste ouverte efface « [Nom] : fermé pour l'instant » : rien ne reste écrit sur la Carte voilée.
-  useEffect(() => {
-    if (openList) setClosedNote(null);
-  }, [openList]);
+  const listToggle = list.toggle;
+  // « Lieux » touché efface « [Nom] : fermé pour l'instant » : rien ne reste écrit sur la Carte voilée.
+  const toggleList = useCallback(() => {
+    setClosedNote(null);
+    listToggle();
+  }, [listToggle]);
   // Une ligne touchée : comme une pastille de la Carte ; la voix dit le nom du lieu, celui du panneau qui s'ouvre à
   // l'arrivée (référent dys).
   const pickFromList = useCallback(

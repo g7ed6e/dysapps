@@ -148,7 +148,7 @@ export function PlacesSheet({ rows, onPick, onClose }: Props) {
   }, []);
   const alone = rows.length === 1 && rows[0].id === 'port';
   return (
-    <Sheet id={PLACES_SHEET_ID} className="lieux-sheet" titleId={`${PLACES_SHEET_ID}-titre`} icon="liste" title={PLACES_TITLE} closeLabel={`Fermer : ${PLACES_TITLE}`} onClose={onClose}>
+    <Sheet id={PLACES_SHEET_ID} className="lieux-sheet" titleId={`${PLACES_SHEET_ID}-titre`} icon="liste" title={PLACES_TITLE} closeLabel={`Fermer : ${PLACES_TITLE}`} modal={false} onClose={onClose}>
       <ul ref={list} className="lieux-rows" aria-label={PLACES_TITLE}>
         {rows.map((row, i) => (
           <li key={row.id}>
@@ -160,8 +160,8 @@ export function PlacesSheet({ rows, onPick, onClose }: Props) {
               aria-current={row.next ? 'step' : undefined}
               onClick={() => onPick(row.id)}
             >
-              {/* L'icône et le nom : deux cases de la ligne, ou, au plus grand texte, l'icône en tête du nom, dans le
-                  texte, pour laisser au nom toute la largeur (openWorld.css). */}
+              {/* L'icône et le nom : deux cases de la ligne, ou, au plus grand texte, du texte qui coule : l'icône en tête
+                  du nom, l'état à la suite s'il tient sur sa ligne, entier, « Prochaine mission » dessous (openWorld.css). */}
               <span className="lieux-row-name">
                 <span className="app-icon lieux-row-icon" aria-hidden="true">
                   <Icon name={row.icon} />
@@ -177,6 +177,7 @@ export function PlacesSheet({ rows, onPick, onClose }: Props) {
                   ))}
                 </span>
               </span>
+              {/* L'espace où l'état passe à la ligne, au plus grand texte (sans effet dans la grille du texte normal). */}{' '}
               {row.state && (
                 <span className="lieux-row-state" aria-hidden="true">
                   <Icon name={row.state.icon} />
@@ -198,7 +199,8 @@ export function PlacesSheet({ rows, onPick, onClose }: Props) {
           <Icon name="lock" /> Rien d’autre d’ouvert
         </p>
       )}
-      <div className="lieux-repere" role="img" aria-label="Suite plus bas">
+      {/* Un repère pour l'œil : au clavier et au lecteur d'écran, la liste défile et se lit d'elle-même (expert frontend). */}
+      <div className="lieux-repere" aria-hidden="true">
         <Icon name="chevronDown" />
       </div>
     </Sheet>

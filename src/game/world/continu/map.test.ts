@@ -539,18 +539,50 @@ describe('« [Nom] : fermé pour l’instant » (GD-20, « La Carte au plus gran
     expect(cross(lastBox, retour)).toBe(false);
     expect(cross(lastBox, toi)).toBe(false);
   });
-  it('trop large pour une place libre : il prend sa forme étroite, sur plus de lignes, jamais sur « Retour » ni « Toi »', () => {
-    // Le téléphone couché au plus grand texte : « Retour » en bas à gauche, « Toi » au milieu ; la forme large ne passe
-    // ni au-dessus de « Toi » ni entre lui et « Retour ».
+  it('trop large pour une place près du cadenas : il passe sur une bande, en bas ou en haut, sur deux ou trois lignes, jamais sur « Retour », « Toi » ni un nom ouvert', () => {
+    // Le téléphone couché au plus grand texte : « Retour » en bas à gauche, « Toi » au milieu, un nom ouvert en haut à
+    // gauche ; la forme large ne passe ni au-dessus de « Toi » ni entre lui et « Retour ».
     const retour = { left: 20, top: 285, right: 200, bottom: 365 };
     const toi = { left: 290, top: 100, right: 340, bottom: 144 };
+    const phare = { left: 90, top: 20, right: 260, bottom: 120 };
     const wide = { w: 534, h: 132 };
-    const narrow = { w: 260, h: 230 };
-    const spot = placeClosedNote({ x: 330, y: 200 }, [wide, narrow], [], [retour, toi], screen);
+    const band = { w: 440, h: 132, band: true };
+    const tall = { w: 300, h: 190, band: true };
+    const spot = placeClosedNote({ x: 330, y: 200 }, [wide, band, tall], [], [retour, toi], screen, [phare]);
     expect(spot.form).toBe(1);
-    const box = { left: spot.left, top: spot.top, right: spot.left + narrow.w, bottom: spot.top + narrow.h };
+    const box = { left: spot.left, top: spot.top, right: spot.left + band.w, bottom: spot.top + band.h };
+    // Le long du bas de l'écran, à droite de « Retour ».
+    expect(box.bottom).toBe(375 - MAP_LABEL_GAP);
+    for (const r of [retour, toi, phare]) expect(cross(box, r)).toBe(false);
+  });
+  it('une bande se pose en bas ou en haut de l’écran ; au milieu en dernier recours seulement, jamais sur « Retour » ni « Toi »', () => {
+    const band = { w: 440, h: 100, band: true };
+    // Le cadenas au milieu, tout près de lui occupé : la bande en bas.
+    const around = { left: 200, top: 120, right: 470, bottom: 250 };
+    const low = placeClosedNote({ x: 330, y: 200 }, [{ w: 600, h: 60 }, band], [around], [], screen);
+    expect(low.form).toBe(1);
+    expect(low.top).toBe(375 - MAP_LABEL_GAP - band.h);
+    // Le haut et le bas pris par « Toi » et « Retour » : au milieu, hors d'eux.
+    const wall = { left: 0, top: 0, right: 667, bottom: 120 };
+    const floor = { left: 0, top: 250, right: 667, bottom: 375 };
+    const mid = placeClosedNote({ x: 330, y: 200 }, [band], [], [wall, floor], screen);
+    const box = { left: mid.left, top: mid.top, right: mid.left + band.w, bottom: mid.top + band.h };
+    expect(cross(box, wall)).toBe(false);
+    expect(cross(box, floor)).toBe(false);
+  });
+  it('sans place libre : jamais sur « Retour » ni « Toi », et le moins possible sur un nom ouvert', () => {
+    const retour = { left: 20, top: 285, right: 200, bottom: 365 };
+    const toi = { left: 290, top: 60, right: 340, bottom: 104 };
+    const escale = { left: 215, top: 280, right: 345, bottom: 355 };
+    const phare = { left: 113, top: 90, right: 282, bottom: 255 };
+    const band = { w: 420, h: 132, band: true };
+    const spot = placeClosedNote({ x: 380, y: 100 }, [{ w: 534, h: 132 }, band], [], [retour, toi], screen, [escale, phare]);
+    const size = spot.form ? band : { w: 534, h: 132 };
+    const box = { left: spot.left, top: spot.top, right: spot.left + size.w, bottom: spot.top + size.h };
     expect(cross(box, retour)).toBe(false);
     expect(cross(box, toi)).toBe(false);
-    expect(box.bottom).toBeLessThanOrEqual(375);
+    // L'Escale, la pastille la plus proche du bas, n'est couverte qu'en partie au plus.
+    const covered = (r: typeof box) => Math.max(0, Math.min(box.right, r.right) - Math.max(box.left, r.left)) * Math.max(0, Math.min(box.bottom, r.bottom) - Math.max(box.top, r.top));
+    expect(covered(escale) + covered(phare)).toBeLessThan((escale.right - escale.left) * (escale.bottom - escale.top));
   });
 });

@@ -64,6 +64,13 @@ it('une ligne par lieu : le nom, l’état écrit et dit, « Prochaine mission �
   expect(onPick).toHaveBeenCalledWith('quais');
 });
 
+it('un dialogue non modal (« Retour » et « Lieux » restent actifs à côté), le repère « Suite plus bas » caché aux lecteurs d’écran', () => {
+  const { sheet } = renderSheet(placesRows(['quais', 'phare'], STATES, WORDS, 'quais', 'L’Escale'));
+  expect(sheet).toHaveAttribute('aria-modal', 'false');
+  expect(sheet.querySelector('.lieux-repere')).toHaveAttribute('aria-hidden', 'true');
+  expect(within(sheet).queryByRole('img', { name: 'Suite plus bas' })).toBeNull();
+});
+
 it('l’Escale seule : une ligne, et « Rien d’autre d’ouvert » écrit, jamais un panneau vide', () => {
   const { rows, sheet } = renderSheet(placesRows([], NO_STATE, WORDS, null, 'L’Escale'));
   expect(rows).toHaveLength(1);

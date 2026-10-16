@@ -929,7 +929,8 @@
   pointer-events: auto;
 }
 /* « [Nom] : fermé pour l'instant », au toucher d'un cadenas (GD-20, « La Carte au plus grand texte ») : posé près du
-   cadenas, ou en bas de l'écran, par la page (placeClosedNote), jamais sur « Retour » ni sur « Toi » ; sur fond uni, au
+   cadenas, ou sur une bande en bas ou en haut de l'écran, par la page (placeClosedNote), jamais sur « Retour » ni sur
+   « Toi », ni, s'il a une autre place, sur le nom d'un lieu ouvert ; sur fond uni, au
    dessus des étiquettes, transparent aux doigts (un cadenas ou un nom qu'il couvre se touche encore au travers). Il
    passe à la ligne au plus grand texte plutôt que de s'étaler sur la Carte. */
 .open-world-map-note {
@@ -949,9 +950,10 @@
   color: var(--text);
   font-weight: 700;
 }
-/* Plus étroite, sur plus de lignes, quand la forme large ne trouve pas de place (au plus grand texte, sur un téléphone). */
-.open-world-map-note[data-forme='etroite'] {
-  max-width: min(40vw, 15rem);
+/* En bande, en bas ou en haut de l'écran, quand la forme large ne trouve pas de place près du cadenas (au plus grand
+   texte, sur un téléphone) : plus large, sur deux ou trois lignes (sa largeur posée par la page, `--note-largeur`). */
+.open-world-map-note[data-forme='bande'] {
+  max-width: var(--note-largeur, min(80vw, 30rem));
 }
 .open-world-map-note:empty {
   /* Vide, il reste dans la page (la voix dit le mot quand il s'écrit) sans rien montrer ni prendre de place. */
@@ -2010,6 +2012,8 @@
 .lieux-row-state {
   grid-area: etat;
   justify-self: end;
+  /* Le mot de l'état ne se coupe jamais entre ses mots (« En chantier », comme `.mot-lie`) : il passe entier à la ligne. */
+  white-space: nowrap;
 }
 .lieux-row-next {
   grid-area: suite;
@@ -2027,8 +2031,8 @@
   margin: 0.8rem 0 0;
   color: var(--muted);
 }
-/* Dans la colonne d'un écran bas, et au plus grand texte : l'état passe sous l'icône et le nom, sur toute la largeur, puis
-   « Prochaine mission » ; chacun passe à la ligne entre deux mots plutôt que de sortir de la ligne. */
+/* Dans la colonne d'un écran bas, en texte normal : l'état passe sous l'icône et le nom, entier, puis « Prochaine
+   mission », qui passe à la ligne entre deux mots plutôt que de sortir de la ligne. */
 @media (max-height: 500px) {
   .lieux-sheet .lieux-row {
     grid-template-columns: auto minmax(0, 1fr);
@@ -2041,40 +2045,38 @@
     justify-self: start;
   }
 }
-/* Au plus grand texte, le nom prend toute la largeur de la ligne (« L’Imprimerie » d'un seul mot fait 293 px), l'icône
-   du lieu en tête, dans le texte ; les icônes gardent leur taille (en pixels), les marges se resserrent (en pixels
-   aussi), la ligne grandit, le texte n'est jamais réduit. */
-:root[data-texte="grand"] .lieux-sheet .lieux-row {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-areas:
-    "nom"
-    "etat"
-    "suite";
-  column-gap: 10px;
-  row-gap: 2px;
-  padding: 4px 8px;
-}
 :root[data-texte="grand"] .open-world-panel-lieux-ouverts > .island-sheet {
   padding-inline: max(10px, env(safe-area-inset-left, 0px)) max(10px, env(safe-area-inset-right, 0px));
+}
+/* Au plus grand texte, la ligne est du texte qui coule : l'icône du lieu en tête du nom, puis l'icône et le mot de l'état
+   à la suite, sur la ligne du nom s'ils y tiennent, sinon entiers sur la ligne d'après (jamais « En / chantier ») ;
+   « Prochaine mission » seul sur sa ligne (consultant UX UI, référent dys : un lieu sur une à deux lignes, pas trois à
+   quatre). Les icônes gardent leur taille (en pixels), les marges se resserrent (en pixels aussi), la ligne grandit, le
+   texte n'est jamais réduit. */
+:root[data-texte="grand"] .lieux-sheet .lieux-row {
+  display: block;
+  padding: 4px 8px;
 }
 :root[data-texte="grand"] .lieux-rows {
   gap: 6px;
 }
 :root[data-texte="grand"] .lieux-row-name {
-  display: block;
-  grid-area: nom;
-  min-width: 0;
-  font-weight: 700;
+  display: inline;
+}
+:root[data-texte="grand"] .lieux-row-text {
+  display: inline;
 }
 :root[data-texte="grand"] .lieux-row-icon {
   display: inline-grid;
   vertical-align: middle;
   margin-inline-end: 8px;
 }
-:root[data-texte="grand"] .lieux-row-state,
+:root[data-texte="grand"] .lieux-row-state {
+  display: inline-block;
+  max-width: 100%;
+}
 :root[data-texte="grand"] .lieux-row-next {
   display: block;
-  justify-self: stretch;
 }
 :root[data-texte="grand"] .lieux-row-state svg,
 :root[data-texte="grand"] .lieux-row-next svg {

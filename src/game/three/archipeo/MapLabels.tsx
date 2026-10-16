@@ -10,7 +10,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, type MutableRefObject 
 import { Icon } from '../../../components/Icon';
 import { getBiome } from '../../biomes';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
-import { MAP_KEO_DISC, layoutMapLabels, nameLines, placeClosedNote, type MapLabel, type MapLabelSpot, type Rect } from '../../world/continu/map';
+import { MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, layoutMapLabels, nameLines, placeClosedNote, type MapLabel, type MapLabelSpot, type NoteSize, type Rect } from '../../world/continu/map';
 import { stateWord } from './constructionParts';
 import { PLACES, type PlaceId } from '../../world/continu/plan6e';
 import type { MapSpotOnScreen } from './scene';
@@ -25,8 +25,11 @@ interface Props {
    * pas d'Escale.
    */
   portName?: string;
-  /** La page y range la fonction qui pose les étiquettes (le rappel `onMapPlaces` de la scène l'appelle). */
-  placer: MutableRefObject<((spots: readonly MapSpotOnScreen[]) => void) | null>;
+  /**
+   * La page y range la fonction qui pose les étiquettes (le rappel `onMapPlaces` de la scène l'appelle) ; `moving` tant
+   * que la Carte glisse (sans la reprise des noms fermés, posée à l'arrêt).
+   */
+  placer: MutableRefObject<((spots: readonly MapSpotOnScreen[], moving?: boolean) => void) | null>;
   /** Un lieu fermé touché : la page le garde quelques secondes (`closedNote`). */
   onClosed(place: PlaceId): void;
   /**
@@ -57,8 +60,48 @@ const MISSING = { unnamed: 100, offscreen: 1 } as const;
 const LOW_SCREEN = 500;
 const missingOf = (items: readonly MapLabel[], spots: readonly MapLabelSpot[]) => spots.reduce((n, s, i) => n + (items[i].kind === 'open' && !s.name ? MISSING.unnamed : 0), 0);
 
-/** Les formes de « [Nom] : fermé pour l'instant » : large, puis étroite, sur plus de lignes (openWorld.css). */
-const NOTE_FORMS = ['large', 'etroite'] as const;
+/**
+ * Les bandes essayées pour « [Nom] : fermé pour l'instant », en part de la largeur de l'écran (moins ses bords) : la plus
+ * large d'abord ; une bande de plus de `NOTE_LINES` lignes n'est pas gardée (consultant UX UI : au plus grand texte sur
+ * un téléphone, une colonne étroite de cinq lignes couvrait 40 % de la Carte).
+ */
+const NOTE_BANDS = [1, 0.8, 0.65, 0.5] as const;
+const NOTE_LINES = 3;
+
+/**
+ * Les formes de « [Nom] : fermé pour l'instant », mesurées : la large (`null`, sa largeur dans openWorld.css), posée près
+ * du cadenas, puis les bandes (leur largeur en pixels), posées en bas ou en haut de l'écran.
+ */
+function measureNote(el: HTMLElement, screenWidth: number): { sizes: NoteSize[]; widths: (number | null)[] } {
+  const sizes: NoteSize[] = [];
+  const widths: (number | null)[] = [];
+  const style = getComputedStyle(el);
+  const line = parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2;
+  const frame = el.offsetHeight - el.clientHeight + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+  setNoteForm(el, null);
+  sizes.push({ w: el.offsetWidth, h: el.offsetHeight });
+  widths.push(null);
+  for (const part of NOTE_BANDS) {
+    const width = Math.floor((screenWidth - 2 * MAP_LABEL_GAP) * part);
+    setNoteForm(el, width);
+    const size = { w: el.offsetWidth, h: el.offsetHeight, band: true };
+    if (Math.round((size.h - frame) / line) > NOTE_LINES || sizes.some((s) => s.band && s.w === size.w && s.h === size.h)) continue;
+    sizes.push(size);
+    widths.push(width);
+  }
+  return { sizes, widths };
+}
+
+/** Une forme du mot : la large (`null`), ou une bande de tant de pixels au plus. */
+function setNoteForm(el: HTMLElement, width: number | null) {
+  const form = width === null ? 'large' : 'bande';
+  if (el.dataset.forme !== form) el.dataset.forme = form;
+  const value = width === null ? '' : `${width}px`;
+  if (el.style.getPropertyValue('--note-largeur') !== value) {
+    if (value) el.style.setProperty('--note-largeur', value);
+    else el.style.removeProperty('--note-largeur');
+  }
+}
 
 /** Un nom de lieu ouvert plus long que tant de lettres passe sur deux lignes, même dans sa pastille entière. */
 const ONE_LINE = 12;
@@ -88,13 +131,19 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
   const note = useRef<HTMLParagraphElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number; narrow?: { w: number; h: number } }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
+  // La Carte glisse-t-elle (la dernière pose demandée par la scène) : une étiquette qui se montre ou se cache pendant un
+  // glisser ne relance pas la reprise.
+  const moved = useRef(false);
   // La pastille de Kéo posée (« [Nom] : fermé pour l'instant » ne la cache jamais), et le lieu du mot écrit.
   const keoBox = useRef<Rect | null>(null);
   const noteFor = useRef<PlaceId | null>(closedNote);
-  noteFor.current = closedNote;
+  // Les formes du mot mesurées, pour un lieu, une largeur d'écran et des tailles d'étiquettes (pas à chaque image).
+  const noteSizes = useRef<{ key: string; sizes: NoteSize[]; widths: (number | null)[] } | null>(null);
+  // Les pastilles des lieux ouverts posées, que le mot ne cache pas tant qu'il a une autre place.
+  const openBoxes = useRef<Rect[]>([]);
   // Les boutons de la page que les étiquettes évitent, relus au changement de taille seulement.
   const obstacles = useRef<Rect[]>([]);
-  // Le bouton « Retour » (celui de la barre du bas), que « [Nom] : fermé pour l'instant » ne cache jamais.
+  // La barre du bas (« Retour », et « Lieux » sur la Carte), que « [Nom] : fermé pour l'instant » ne cache jamais.
   const retour = useRef<Rect[]>([]);
   const screen = useRef({ width: Infinity, height: Infinity });
   // Les tailles relues (à chaque mesure qui change une taille, un numéro de plus), la mesure pour laquelle la vue de
@@ -104,7 +153,11 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
   const asked = useRef(-1);
   const answered = useRef(false);
   const crowdedRef = useRef(onCrowded);
-  crowdedRef.current = onCrowded;
+  // Les props relues par les poses (appelées par la scène, hors du rendu de React), rangées après chaque rendu.
+  useLayoutEffect(() => {
+    noteFor.current = closedNote;
+    crowdedRef.current = onCrowded;
+  }, [closedNote, onCrowded]);
 
   // Les étiquettes à poser pour des points donnés, avec leurs tailles mesurées (les points cachés ou pas encore mesurés
   // n'en ont pas).
@@ -138,21 +191,25 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
     const id = noteFor.current;
     if (!el || !id) return;
     const at = last.current.find((s) => s.id === id);
-    // « Retour » et « Toi » jamais couverts ; les autres boutons, autant que possible.
+    // « Retour » et « Toi » jamais couverts ; les noms ouverts et les autres boutons, autant que possible.
     const keep = [...(keoBox.current ? [keoBox.current] : []), ...retour.current];
-    // Ses deux formes mesurées, large puis étroite (sur plus de lignes), la forme choisie remise aussitôt.
-    const sizes = NOTE_FORMS.map((form) => {
-      el.dataset.forme = form;
-      return { w: el.offsetWidth, h: el.offsetHeight };
-    });
-    const spot = placeClosedNote(at?.shown ? at : { x: screen.current.width / 2, y: Infinity }, sizes, obstacles.current, keep, screen.current);
-    el.dataset.forme = NOTE_FORMS[spot.form];
+    // Ses formes mesurées (large, puis en bandes), une fois par lieu, largeur d'écran et taille du texte ; la forme
+    // choisie remise aussitôt, avant que la page se dessine.
+    const key = `${id} ${screen.current.width} ${measured.current}`;
+    let forms = noteSizes.current;
+    if (forms?.key !== key) {
+      forms = { key, ...measureNote(el, screen.current.width) };
+      noteSizes.current = forms;
+    }
+    const spot = placeClosedNote(at?.shown ? at : { x: screen.current.width / 2, y: Infinity }, forms.sizes, obstacles.current, keep, screen.current, openBoxes.current);
+    setNoteForm(el, forms.widths[spot.form]);
     const transform = `translate(${Math.round(spot.left)}px, ${Math.round(spot.top)}px)`;
     if (el.style.transform !== transform) el.style.transform = transform;
   }, []);
 
-  const place = useCallback((spots: readonly MapSpotOnScreen[]) => {
+  const place = useCallback((spots: readonly MapSpotOnScreen[], moving = false) => {
     last.current = spots;
+    moved.current = moving;
     const el = root.current;
     if (!el) return;
     for (const s of spots) {
@@ -161,9 +218,10 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
     }
     const items = itemsOf(spots);
     // Kéo d'abord, puis l'Escale (elle garde son nom), les autres lieux ouverts, puis les fermés : l'ordre de
-    // `layoutMapLabels` ; sur tablette, la reprise des noms fermés tus (sur téléphone, un lieu fermé peut rester à son
-    // cadenas, et la pose coûterait plus quand la Carte glisse).
-    const laid = layoutMapLabels(items, obstacles.current, screen.current, screen.current.height > LOW_SCREEN);
+    // `layoutMapLabels` ; sur tablette, la Carte à l'arrêt (le geste fini, une taille changée), la reprise des noms
+    // fermés tus (sur téléphone, un lieu fermé peut rester à son cadenas ; pendant un glisser, elle coûterait à chaque
+    // image : expert frontend).
+    const laid = layoutMapLabels(items, obstacles.current, screen.current, !moving && screen.current.height > LOW_SCREEN);
     // La vue de départ se choisit à chaque mesure qui change une taille (police, grand texte, taille de l'écran), une
     // fois : la plus proche de l'île entière où chaque lieu ouvert a son nom près de lui (GD-20, « La Carte au plus grand
     // texte »). Une Carte que l'élève a touchée ne bouge plus (la scène en juge). Les étiquettes restent cachées jusqu'à la
@@ -192,6 +250,15 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
     const keo = laid.find((s) => s.id === 'keo');
     const keoItem = items.find((i) => i.id === 'keo');
     keoBox.current = keo && keoItem ? { left: keo.left, top: keo.top, right: keo.left + (keo.name ? keoItem.w : MAP_KEO_DISC), bottom: keo.top + keoItem.h } : null;
+    // Les pastilles ouvertes, dans leur forme posée (entière, serrée, ou réduite à l'icône).
+    const boxes: Rect[] = [];
+    laid.forEach((spot, i) => {
+      const item = items[i];
+      if (item.kind !== 'open') return;
+      const size = !spot.name ? { w: MAP_COMPACT, h: MAP_COMPACT } : spot.narrow && item.narrow ? item.narrow : item;
+      boxes.push({ left: spot.left, top: spot.top, right: spot.left + size.w, bottom: spot.top + size.h });
+    });
+    openBoxes.current = boxes;
     placeNote();
   }, [itemsOf, crowded, placeNote]);
 
@@ -254,7 +321,8 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
       // première fois, ou se cache, ne la change pas (la Carte ne « respire » pas).
       if (changed) measured.current++;
       measureObstacles();
-      place(last.current);
+      // Une taille changée : la pose entière, avec la reprise ; une étiquette montrée ou cachée seulement : comme la Carte.
+      place(last.current, !changed && moved.current);
     });
     observer.observe(el);
     for (const node of el.querySelectorAll<HTMLElement>('[data-lieu]')) observer.observe(node);
