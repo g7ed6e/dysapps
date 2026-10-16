@@ -1,16 +1,16 @@
 // Les étiquettes de la Carte des lieux ouverts (piste 1, lot 3) : Kéo (une pastille unie à sa silhouette et « Toi »), le
 // nom de chaque lieu ouvert et l'icône de l'état de sa construction (un bouton qui y mène, GD-20, lot 1 ; le mot de
 // l'état, accordé au nom, est dit par le bouton), le cadenas de chaque lieu fermé et son nom atténué dessous (un
-// toucher : la page dit « Fermé pour l'instant », au-dessus de « Retour »). Rien n'est écrit dans la 3D : la scène
+// toucher : « [Nom] : fermé pour l'instant », écrit près du cadenas touché). Rien n'est écrit dans la 3D : la scène
 // donne les points à l'écran, posés ici sans passer par React ; aucune étiquette n'en recouvre une autre ni ne passe
 // sur la colonne des accès directs ou un bouton (`layoutMapLabels`, world/continu/map.ts) ; trop serrée, une pastille
-// se serre, son nom sur deux lignes, puis cherche plus loin ; sans aucune place, elle se réduit à son icône. Les tailles
-// sont relues seulement quand une étiquette change de taille (police, grand texte), jamais à chaque image.
-import { useCallback, useEffect, useRef, type MutableRefObject } from 'react';
+// se serre, son nom sur deux lignes ; sans aucune place près de son lieu, elle se réduit à son icône. Les tailles sont
+// relues seulement quand une étiquette change de taille (police, grand texte), jamais à chaque image.
+import { useCallback, useEffect, useLayoutEffect, useRef, type MutableRefObject } from 'react';
 import { Icon } from '../../../components/Icon';
 import { getBiome } from '../../biomes';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
-import { layoutMapLabels, nameLines, type MapLabel, type MapLabelSpot, type Rect } from '../../world/continu/map';
+import { MAP_KEO_DISC, layoutMapLabels, nameLines, placeClosedNote, type MapLabel, type MapLabelSpot, type Rect } from '../../world/continu/map';
 import { stateWord } from './constructionParts';
 import { PLACES, type PlaceId } from '../../world/continu/plan6e';
 import type { MapSpotOnScreen } from './scene';
@@ -27,8 +27,13 @@ interface Props {
   portName?: string;
   /** La page y range la fonction qui pose les étiquettes (le rappel `onMapPlaces` de la scène l'appelle). */
   placer: MutableRefObject<((spots: readonly MapSpotOnScreen[]) => void) | null>;
-  /** Un lieu fermé touché : la page dit « Fermé pour l'instant ». */
+  /** Un lieu fermé touché : la page le garde quelques secondes (`closedNote`). */
   onClosed(place: PlaceId): void;
+  /**
+   * Le lieu fermé touché, tant que « [Nom] : fermé pour l'instant » reste écrit (près de son cadenas, GD-20, « La Carte
+   * au plus grand texte ») ; rien sinon.
+   */
+  closedNote?: PlaceId | null;
   /** L'état de chaque lieu ouvert (GD-20, lot 1) : en chantier, achevé, ou rien encore (aucune partie posée). */
   states: Readonly<Record<PlaceId, 'en-chantier' | 'restauree' | null>>;
   /** Les mots des états, ceux de l'univers (« En chantier »). */
@@ -43,19 +48,17 @@ interface Props {
 
 /**
  * Ce qui manque à une vue de la Carte, pesé (GD-20, « La Carte au plus grand texte ») : un lieu ouvert sans nom (réduit à
- * son icône, ou hors de l'écran) pèse le plus ; puis un nom de lieu ouvert posé loin de son lieu (permis en dernier
- * recours, relecture de L6b) ; puis, sur tablette seulement, un lieu fermé hors de l'écran, puis le nom tu d'un lieu
- * fermé (sur téléphone, un lieu fermé peut rester à son cadenas).
+ * son icône, ou hors de l'écran) pèse le plus ; puis, sur tablette seulement, un lieu fermé hors de l'écran. Le nom tu
+ * d'un lieu fermé ne compte pas : le nom d'un lieu ouvert, près de son lieu, passe avant lui (directeur artistique), et
+ * le cadenas reste.
  */
-const MISSING = { unnamed: 100, far: 10, offscreen: 2, closed: 1 } as const;
+const MISSING = { unnamed: 100, offscreen: 1 } as const;
 /** Un écran plus bas que tant de pixels est un téléphone couché (la même borne que openWorld.css). */
 const LOW_SCREEN = 500;
-const missingOf = (items: readonly MapLabel[], spots: readonly MapLabelSpot[], tablet: boolean) =>
-  spots.reduce((n, s, i) => {
-    const kind = items[i].kind;
-    if (kind === 'open') return n + (!s.name ? MISSING.unnamed : s.far ? MISSING.far : 0);
-    return n + (kind === 'closed' && tablet && !s.name ? MISSING.closed : 0);
-  }, 0);
+const missingOf = (items: readonly MapLabel[], spots: readonly MapLabelSpot[]) => spots.reduce((n, s, i) => n + (items[i].kind === 'open' && !s.name ? MISSING.unnamed : 0), 0);
+
+/** Les formes de « [Nom] : fermé pour l'instant » : large, puis étroite, sur plus de lignes (openWorld.css). */
+const NOTE_FORMS = ['large', 'etroite'] as const;
 
 /** Un nom de lieu ouvert plus long que tant de lettres passe sur deux lignes, même dans sa pastille entière. */
 const ONE_LINE = 12;
@@ -80,19 +83,26 @@ function Name({ text, wrap = false }: { text: string; wrap?: boolean }) {
   );
 }
 
-/** La bande de gauche réservée à la colonne des accès directs, en pixels : aucune étiquette n'y entre. */
-const COLUMN_ZONE = 72;
-
-export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words, portName, onCrowded }: Props) {
+export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words, portName, onCrowded, closedNote = null }: Props) {
   const root = useRef<HTMLDivElement>(null);
+  const note = useRef<HTMLParagraphElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number; narrow?: { w: number; h: number } }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
+  // La pastille de Kéo posée (« [Nom] : fermé pour l'instant » ne la cache jamais), et le lieu du mot écrit.
+  const keoBox = useRef<Rect | null>(null);
+  const noteFor = useRef<PlaceId | null>(closedNote);
+  noteFor.current = closedNote;
   // Les boutons de la page que les étiquettes évitent, relus au changement de taille seulement.
   const obstacles = useRef<Rect[]>([]);
+  // Le bouton « Retour » (celui de la barre du bas), que « [Nom] : fermé pour l'instant » ne cache jamais.
+  const retour = useRef<Rect[]>([]);
   const screen = useRef({ width: Infinity, height: Infinity });
-  // Les tailles relues (à chaque mesure, un numéro de plus), et la mesure pour laquelle le recul a déjà été demandé.
+  // Les tailles relues (à chaque mesure qui change une taille, un numéro de plus), la mesure pour laquelle la vue de
+  // départ a déjà été demandée, et si la scène y a répondu (les étiquettes se montrent alors : la Carte ne se pose pas
+  // une première fois pour changer aussitôt de vue).
   const measured = useRef(0);
   const asked = useRef(-1);
+  const answered = useRef(false);
   const crowdedRef = useRef(onCrowded);
   crowdedRef.current = onCrowded;
 
@@ -118,8 +128,28 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
       if (s.id === 'port' ? sizes.current.has('port') : openPlaces.includes(s.id)) gone += MISSING.unnamed;
       else if (s.id !== 'port' && tablet) gone += MISSING.offscreen;
     }
-    return gone + missingOf(items, layoutMapLabels(items, obstacles.current, screen.current), tablet);
+    // Sans la reprise des noms fermés : seuls les lieux ouverts comptent ici.
+    return gone + missingOf(items, layoutMapLabels(items, obstacles.current, screen.current, false));
   }, [itemsOf, openPlaces]);
+
+  // « [Nom] : fermé pour l'instant », près du cadenas touché, hors des boutons et de « Toi » (placeClosedNote).
+  const placeNote = useCallback(() => {
+    const el = note.current;
+    const id = noteFor.current;
+    if (!el || !id) return;
+    const at = last.current.find((s) => s.id === id);
+    // « Retour » et « Toi » jamais couverts ; les autres boutons, autant que possible.
+    const keep = [...(keoBox.current ? [keoBox.current] : []), ...retour.current];
+    // Ses deux formes mesurées, large puis étroite (sur plus de lignes), la forme choisie remise aussitôt.
+    const sizes = NOTE_FORMS.map((form) => {
+      el.dataset.forme = form;
+      return { w: el.offsetWidth, h: el.offsetHeight };
+    });
+    const spot = placeClosedNote(at?.shown ? at : { x: screen.current.width / 2, y: Infinity }, sizes, obstacles.current, keep, screen.current);
+    el.dataset.forme = NOTE_FORMS[spot.form];
+    const transform = `translate(${Math.round(spot.left)}px, ${Math.round(spot.top)}px)`;
+    if (el.style.transform !== transform) el.style.transform = transform;
+  }, []);
 
   const place = useCallback((spots: readonly MapSpotOnScreen[]) => {
     last.current = spots;
@@ -131,15 +161,20 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
     }
     const items = itemsOf(spots);
     // Kéo d'abord, puis l'Escale (elle garde son nom), les autres lieux ouverts, puis les fermés : l'ordre de
-    // `layoutMapLabels`.
-    const laid = layoutMapLabels(items, obstacles.current, screen.current);
-    // La vue de départ se choisit de nouveau à chaque mesure (police, grand texte, taille de l'écran), une fois : la plus
-    // proche de l'île entière où chaque lieu ouvert a son nom près de lui (GD-20, « La Carte au plus grand texte »). Une
-    // Carte que l'élève a glissée ou pincée ne bouge pas sous ses doigts (la scène en juge).
+    // `layoutMapLabels` ; sur tablette, la reprise des noms fermés tus (sur téléphone, un lieu fermé peut rester à son
+    // cadenas, et la pose coûterait plus quand la Carte glisse).
+    const laid = layoutMapLabels(items, obstacles.current, screen.current, screen.current.height > LOW_SCREEN);
+    // La vue de départ se choisit à chaque mesure qui change une taille (police, grand texte, taille de l'écran), une
+    // fois : la plus proche de l'île entière où chaque lieu ouvert a son nom près de lui (GD-20, « La Carte au plus grand
+    // texte »). Une Carte que l'élève a touchée ne bouge plus (la scène en juge). Les étiquettes restent cachées jusqu'à la
+    // réponse de la scène : la pose suivante est celle de la vue choisie (consultant UX UI : la Carte ne « respire » pas à
+    // l'ouverture).
     if (asked.current !== measured.current && laid.length) {
       asked.current = measured.current;
-      crowdedRef.current?.(crowded);
-    }
+      if (crowdedRef.current) crowdedRef.current(crowded);
+      else answered.current = true;
+    } else if (asked.current === measured.current) answered.current = true;
+    if (answered.current && el.dataset.pret !== 'oui') el.dataset.pret = 'oui';
     for (const spot of laid) {
       const node = el.querySelector<HTMLElement>(`[data-lieu="${spot.id}"]`);
       if (!node) continue;
@@ -154,7 +189,14 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
       const drop = `${Math.round(spot.drop ?? 0)}px`;
       if (node.style.getPropertyValue('--nom-baisse') !== drop) node.style.setProperty('--nom-baisse', drop);
     }
-  }, [itemsOf, crowded]);
+    const keo = laid.find((s) => s.id === 'keo');
+    const keoItem = items.find((i) => i.id === 'keo');
+    keoBox.current = keo && keoItem ? { left: keo.left, top: keo.top, right: keo.left + (keo.name ? keoItem.w : MAP_KEO_DISC), bottom: keo.top + keoItem.h } : null;
+    placeNote();
+  }, [itemsOf, crowded, placeNote]);
+
+  // Le mot écrit ou effacé : il se pose aussitôt, avant que la page se dessine.
+  useLayoutEffect(placeNote, [closedNote, placeNote]);
 
   useEffect(() => {
     placer.current = place;
@@ -172,17 +214,20 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
       if (!stage) return;
       const s = el.getBoundingClientRect();
       screen.current = { width: s.width, height: s.height };
-      const buttons = [...stage.querySelectorAll<HTMLElement>('.open-world-bar, .world-settings, .world-shortcuts')].map((o) => {
+      const box = (o: HTMLElement) => {
         const r = o.getBoundingClientRect();
         return { left: r.left - s.left, top: r.top - s.top, right: r.right - s.left, bottom: r.bottom - s.top };
-      });
-      // La bande de gauche, de haut en bas, réservée à la colonne des accès directs et à « Retour » (consultant UX UI).
-      const column = buttons.reduce((m, b) => (b.left < COLUMN_ZONE ? Math.max(m, b.right) : m), 0);
-      obstacles.current = [{ left: 0, top: 0, right: Math.max(COLUMN_ZONE, column), bottom: s.height }, ...buttons];
+      };
+      const buttons = [...stage.querySelectorAll<HTMLElement>('.open-world-bar, .world-settings, .world-shortcuts')].map(box);
+      retour.current = [...stage.querySelectorAll<HTMLElement>('.open-world-bar')].map(box);
+      // La colonne des accès directs et « Retour » seulement, sans bande de haut en bas (GD-20, « La Carte au plus grand
+      // texte », directeur artistique : « Fermé pour l'instant » n'y réserve plus de place, il s'écrit près du cadenas
+      // touché) : une étiquette peut passer entre eux.
+      obstacles.current = buttons;
     };
     // Une pastille de lieu ouvert, ou un lieu fermé, se mesure entière et serrée, quelle que soit sa forme du moment (sa
     // forme est remise aussitôt, avant que la page se dessine).
-    const measure = (node: HTMLElement) => {
+    const measure = (node: HTMLElement): { w: number; h: number; narrow?: { w: number; h: number } } => {
       if (!node.classList.contains('open-world-map-place') && !node.classList.contains('open-world-map-closed')) return { w: node.offsetWidth, h: node.offsetHeight };
       const was = node.dataset.nom;
       node.dataset.nom = 'oui';
@@ -194,11 +239,20 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
       return { ...whole, narrow };
     };
     const observer = new ResizeObserver((entries) => {
+      let changed = false;
       for (const e of entries) {
         const node = e.target as HTMLElement;
-        if (node.dataset.lieu) sizes.current.set(node.dataset.lieu, measure(node));
+        if (!node.dataset.lieu) continue;
+        const size = measure(node);
+        // Une étiquette cachée n'a pas de taille : elle garde la dernière.
+        if (!size.w && !size.h) continue;
+        const was = sizes.current.get(node.dataset.lieu);
+        if (was && (was.w !== size.w || was.h !== size.h || was.narrow?.w !== size.narrow?.w || was.narrow?.h !== size.narrow?.h)) changed = true;
+        sizes.current.set(node.dataset.lieu, size);
       }
-      measured.current++;
+      // Seule une taille qui change (police, grand texte) redemande la vue de départ : une étiquette qui se montre pour la
+      // première fois, ou se cache, ne la change pas (la Carte ne « respire » pas).
+      if (changed) measured.current++;
       measureObstacles();
       place(last.current);
     });
@@ -274,6 +328,11 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
           </button>
         ),
       )}
+      {/* Au toucher d'un cadenas, son nom et son état, près de lui, sur fond uni, transparent aux doigts ; vide, il ne
+          montre rien et ne prend aucune place (la voix dit le mot quand il s'écrit). */}
+      <p ref={note} className="open-world-map-note" role="status" data-forme="large">
+        {closedNote ? `${PLACES.find((p) => p.id === closedNote)?.name ?? ''} : fermé pour l’instant` : ''}
+      </p>
     </div>
   );
 }

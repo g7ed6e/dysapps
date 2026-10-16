@@ -789,6 +789,11 @@
   z-index: 2;
   pointer-events: none;
 }
+/* Jusqu'à ce que la vue de départ soit choisie (GD-20, « La Carte au plus grand texte ») : les étiquettes ne se posent
+   pas une première fois pour changer aussitôt de place (consultant UX UI). */
+.open-world-map-places:not([data-pret='oui']) {
+  visibility: hidden;
+}
 .open-world-map-place,
 .open-world-map-closed,
 .open-world-map-keo {
@@ -923,11 +928,19 @@
 .open-world-bar > .button {
   pointer-events: auto;
 }
-/* Étroit (il passe à la ligne au plus grand texte plutôt que de s'étaler sur la Carte) et transparent aux doigts : un
-   cadenas ou Kéo qu'il couvrirait un instant se touche encore au travers. */
-.open-world-map-status {
+/* « [Nom] : fermé pour l'instant », au toucher d'un cadenas (GD-20, « La Carte au plus grand texte ») : posé près du
+   cadenas, ou en bas de l'écran, par la page (placeClosedNote), jamais sur « Retour » ni sur « Toi » ; sur fond uni, au
+   dessus des étiquettes, transparent aux doigts (un cadenas ou un nom qu'il couvre se touche encore au travers). Il
+   passe à la ligne au plus grand texte plutôt que de s'étaler sur la Carte. */
+.open-world-map-note {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
   margin: 0;
-  max-width: min(45vw, 16rem);
+  max-width: min(80vw, 30rem);
+  width: max-content;
+  overflow-wrap: break-word;
   pointer-events: none;
   padding: 0.3rem 0.9rem;
   border: var(--border-width, 2px) solid var(--text);
@@ -936,7 +949,11 @@
   color: var(--text);
   font-weight: 700;
 }
-.open-world-map-status:empty {
+/* Plus étroite, sur plus de lignes, quand la forme large ne trouve pas de place (au plus grand texte, sur un téléphone). */
+.open-world-map-note[data-forme='etroite'] {
+  max-width: min(40vw, 15rem);
+}
+.open-world-map-note:empty {
   /* Vide, il reste dans la page (la voix dit le mot quand il s'écrit) sans rien montrer ni prendre de place. */
   padding: 0;
   border: 0;

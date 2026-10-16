@@ -113,9 +113,10 @@ export default function OpenWorldPage() {
   const [mapOpen, setMapOpen] = useState(false);
   // Ce que les rappels de la scène appellent sur la Carte : poser les étiquettes, choisir un lieu touché dans la 3D.
   const mapPlacer = useRef<((spots: readonly MapSpotOnScreen[]) => void) | null>(null);
-  // « Fermé pour l'instant », au toucher d'un lieu fermé sur la Carte : quelques secondes, au-dessus de « Retour ».
-  const [closedNote, setClosedNote] = useState(0);
-  const showClosed = useCallback(() => setClosedNote((n) => n + 1), []);
+  // « [Nom] : fermé pour l'instant », au toucher d'un lieu fermé sur la Carte : quelques secondes, près de son cadenas
+  // (GD-20, « La Carte au plus grand texte ») ; un nouveau toucher le garde (`n`).
+  const [closedNote, setClosedNote] = useState<{ place: PlaceId; n: number } | null>(null);
+  const showClosed = useCallback((place: PlaceId) => setClosedNote((was) => ({ place, n: (was?.n ?? 0) + 1 })), []);
   // Au plus grand texte, un lieu ouvert sans la place de son nom : la vue de départ de la Carte change (GD-20, « La Carte
   // au plus grand texte »).
   const reframeMap = useCallback((crowded: (spots: readonly MapSpotOnScreen[]) => number) => world.current?.reframeMap(crowded), []);
@@ -315,7 +316,7 @@ export default function OpenWorldPage() {
    */
   const pickPlace = useCallback((placeId: PlaceId) => {
     setMapOpen(false);
-    setClosedNote(0);
+    setClosedNote(null);
     world.current?.map(null);
     world.current?.goTo(placeId, true);
     mapButton.current?.focus();
@@ -323,19 +324,19 @@ export default function OpenWorldPage() {
   /** L'Escale choisie sur la Carte : la Carte se ferme, Kéo est déposé au quai, la fiche du Port s'ouvre. */
   const pickPort = useCallback(() => {
     setMapOpen(false);
-    setClosedNote(0);
+    setClosedNote(null);
     world.current?.map(null);
     world.current?.goToPort('quai');
   }, []);
   const pickOnMap = useCallback((id: PlaceId | 'port') => (id === 'port' ? pickPort() : pickPlace(id)), [pickPlace, pickPort]);
   // Un lieu touché dans la 3D : ouvert (l'Escale l'est toujours), on y va ; fermé, la Carte le dit.
   useEffect(() => {
-    mapPick.current = (placeId) => (placeId === 'port' || openPlaces.includes(placeId) ? pickOnMap(placeId) : showClosed());
+    mapPick.current = (placeId) => (placeId === 'port' || openPlaces.includes(placeId) ? pickOnMap(placeId) : showClosed(placeId));
   }, [openPlaces, pickOnMap, showClosed]);
   // Le mot s'efface après quelques secondes (un nouveau toucher le garde), ou avec la Carte.
   useEffect(() => {
     if (!closedNote) return;
-    const t = window.setTimeout(() => setClosedNote(0), CLOSED_NOTE_MS);
+    const t = window.setTimeout(() => setClosedNote(null), CLOSED_NOTE_MS);
     return () => window.clearTimeout(t);
   }, [closedNote]);
   // Échap ferme la Carte, comme un panneau.
@@ -344,7 +345,7 @@ export default function OpenWorldPage() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
       setMapOpen(false);
-      setClosedNote(0);
+      setClosedNote(null);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -497,7 +498,7 @@ export default function OpenWorldPage() {
         </div>
         {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
         {mapOpen && !asking && (
-          <MapLabels openPlaces={openPlaces} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={showClosed} portName={textes.depart?.nom} onCrowded={reframeMap} />
+          <MapLabels openPlaces={openPlaces} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={showClosed} closedNote={closedNote?.place ?? null} portName={textes.depart?.nom} onCrowded={reframeMap} />
         )}
         {/* Les accès directs (décision « Sans Menu », GD-20, lot 1) : la colonne du monde en grille, telle quelle ; les
             commandes délavées tant qu'elles ne se livrent pas dans le monde continu. Masquée pendant une question. */}
@@ -530,13 +531,6 @@ export default function OpenWorldPage() {
         {/* La Carte : le même bouton que dans le reste du jeu, dans la barre du bas, à gauche (« Y aller » tient le milieu). */}
         {!asking && !sheetOpen && (
           <nav className="open-world-bar" aria-label="Monde">
-            {/* Au toucher d'un lieu fermé, à une place fixe et libre, juste au-dessus de « Retour », sur fond uni : jamais
-                sur la Carte, où il cachait un cadenas ou un nom (relectures dys et UX UI). */}
-            {mapOpen && (
-              <p className="open-world-map-status" role="status">
-                {closedNote ? 'Fermé pour l’instant' : ''}
-              </p>
-            )}
             {/* Un seul mot, toujours écrit sous l'icône, dans le bouton ; la Carte ouverte, il dit comment en sortir. */}
             <button
               type="button"
@@ -545,7 +539,7 @@ export default function OpenWorldPage() {
               data-tuto="carte"
               onClick={() => {
                 setMapOpen(!mapOpen);
-                setClosedNote(0);
+                setClosedNote(null);
               }}
             >
               <Icon name={mapOpen ? 'back' : 'map'} />
@@ -593,7 +587,7 @@ function placeLocks(root: HTMLElement | null, locks: readonly LockOnScreen[]): v
 }
 
 
-/** Le temps où « Fermé pour l'instant » reste écrit, en millisecondes. */
+/** Le temps où « [Nom] : fermé pour l'instant » reste écrit, en millisecondes. */
 const CLOSED_NOTE_MS = 4000;
 
 /** La dernière place posée de chaque cadenas. */

@@ -145,7 +145,8 @@ export interface OpenWorld {
    * La vue de départ de la Carte change (GD-20, « La Carte au plus grand texte ») : la plus proche de l'île entière où
    * `crowded` (les lieux ouverts sans leur nom près d'eux ou hors de l'écran, pour des points à l'écran) s'annule
    * (`reframeMap`) ; plus loin que l'île entière, elle devient aussi la distance la plus lointaine. Seulement si la Carte
-   * est encore à sa vue de départ : glissée ou pincée par l'élève, elle ne bouge pas sous ses doigts.
+   * n'a pas été touchée : son premier toucher la fige. À l'ouverture (ou quand l'écran change de taille), elle ne se
+   * dessine qu'une fois sa vue choisie, sans animation (consultant UX UI).
    */
   reframeMap(crowded: (spots: readonly MapSpotOnScreen[]) => number): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
@@ -261,6 +262,11 @@ const ASSEMBLY = { join: 0.6, carry: 1.3, arc: 0.7 } as const;
 /** Sur la Carte, un lieu ne se montre qu'à tant de pixels des bords gauche et droit, et du haut (son nom au-dessus). */
 const MAP_LABEL_SIDE = 100;
 const MAP_LABEL_TOP = 64;
+/**
+ * Les images, au plus, où la Carte qui s'ouvre attend que ses étiquettes choisissent sa vue de départ avant de se
+ * dessiner (une ou deux d'habitude : le temps de mesurer les étiquettes) ; au-delà, elle se dessine telle quelle.
+ */
+const MAP_SETTLE_FRAMES = 10;
 
 /** Le plus haut point d'un maillage (−∞ s'il est vide). */
 function topOf(f: Facets): number {
@@ -1105,11 +1111,23 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // étiquettes redemandent alors la vue qu'il leur faut).
   let mapFar = 0;
   let mapFirst: MapView | null = null;
+  // La Carte qui s'ouvre, tant que ses étiquettes n'ont pas choisi sa vue de départ (`reframeStart`) : elle ne se dessine
+  // pas encore (la dernière image reste à l'écran), pour ne pas se montrer une première fois puis changer aussitôt de vue
+  // (consultant UX UI : la Carte ne « respire » pas à l'ouverture) ; au plus `MAP_SETTLE_FRAMES` images.
+  let mapSettling = 0;
   let mapOpen: readonly PlaceId[] = [];
   const probePose: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
   const probeSpots: MapSpotOnScreen[] = mapSpots.map((l) => ({ ...l }));
   const reframeStart = (crowded: (spots: readonly MapSpotOnScreen[]) => number) => {
-    if (!mapView || mapView !== mapFirst) return;
+    if (!mapView) return;
+    if (mapView !== mapFirst) {
+      // Touchée par l'élève : elle ne bouge plus ; si elle attendait, elle se dessine telle quelle.
+      if (mapSettling) {
+        mapSettling = 0;
+        showMap();
+      }
+      return;
+    }
     const a = aspect();
     const open = [...mapOpen.map((id) => marks.get(id)), portPoint].filter((m): m is THREE.Vector3 => Boolean(m));
     // Les points des lieux pour une vue essayée, sans toucher la caméra (`screenOf`, la même projection).
@@ -1128,7 +1146,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     });
     mapFar = view.distance;
     mapView = mapFirst = clampMap(view, a, mapFar);
+    mapSettling = 0;
     showMap();
+  };
+  /** Le premier toucher de la Carte (doigt, pointeur, molette) la fige : sa vue de départ ne change plus. */
+  const freezeMap = () => {
+    mapFirst = null;
+    if (mapSettling) {
+      mapSettling = 0;
+      showMap();
+    }
   };
   const setMap = (open: readonly PlaceId[] | null) => {
     if (open && asked) return;
@@ -1142,6 +1169,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (!mapView) {
         mapView = mapFirst = mapStart(aspect());
         mapFar = 0;
+        mapSettling = MAP_SETTLE_FRAMES;
       }
       fog.near = MAP_FOG;
       fog.far = MAP_FOG + 1;
@@ -1159,6 +1187,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     if (!mapView) return;
     mapView = null;
+    mapSettling = 0;
     fingers.clear();
     pinch = null;
     for (const l of mapSpots) l.shown = false;
@@ -1193,6 +1222,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     idleHandle = requestIdle(prebuildFar);
   };
   const mapDown = (e: PointerEvent) => {
+    freezeMap();
     fingers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     try {
       renderer.domElement.setPointerCapture(e.pointerId);
@@ -1265,6 +1295,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Un pavé tactile qui pince envoie la molette avec Ctrl, par petits pas : plus sensible (comme ../gestures.ts).
     const factor = Math.exp(-e.deltaY * pixels * (e.ctrlKey ? 0.01 : 0.002));
     const at = mapGround(e.clientX, e.clientY);
+    freezeMap();
     if (!at) return;
     mapView = zoomMap(mapView, factor, at, aspect(), mapFar);
     showMap();
@@ -1794,6 +1825,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       mapFar = 0;
       mapView = first ? mapStart(aspect()) : clampMap(mapView, aspect());
       mapFirst = first ? mapView : null;
+      // L'écran a changé de taille avant tout toucher : la vue de départ se choisit de nouveau, avant de se dessiner.
+      if (first) mapSettling = MAP_SETTLE_FRAMES;
       showMap();
     } else applyPose(asked ? asked.pose : pose);
   };
@@ -1837,7 +1870,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     fadeVeil(t);
     if (mapView) {
       // La Carte : rien ne bouge que ce que les doigts font glisser ; les lieux à l'écran, pour leurs étiquettes.
-      if (mapDirty) {
+      if (mapSettling) {
+        // Les points à l'écran de la vue de départ, pour les étiquettes, sans la dessiner (`mapSettling`).
+        mapSettling--;
+        camera.updateMatrixWorld();
+        reportMapPlaces();
+        if (!mapSettling) mapDirty = true;
+      } else if (mapDirty) {
         mapDirty = false;
         // Après le rendu : la caméra y a refait ses matrices, les points à l'écran sont ceux de l'image.
         renderer.render(scene, camera);

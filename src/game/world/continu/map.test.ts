@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { markOffset, screenOf } from './camera';
 import type { Vec3 } from './geometry';
-import { ISLAND_BOX, MAP_CAMERA, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
+import { ISLAND_BOX, MAP_CAMERA, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, placeClosedNote, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
 import { PLACES, placeById } from './plan6e';
 import { PORT_MAP_POINT } from './port';
 import { heightAt, standingHeight } from './terrain';
@@ -387,20 +387,62 @@ describe('Les étiquettes de la Carte', () => {
     const [spot] = spots;
     expect(spot.name).toBe(true);
     expect(spot.narrow).toBe(true);
-    expect(spot.far).toBeUndefined();
     const box = boxOf(phare, spot);
     const gap = Math.hypot(Math.max(box.left - at.x, 0, at.x - box.right), Math.max(box.top - at.y, 0, at.y - box.bottom));
     expect(gap).toBeLessThanOrEqual(80);
   });
 
-  it('nulle part près de son lieu : un lieu ouvert va à la place libre la plus proche de l’écran, marqué loin (la vue de départ change alors)', () => {
+  it('nulle part près de son lieu : un lieu ouvert se réduit à son icône plutôt que son nom aille à plus de 80 px (GD-20, portée refusée)', () => {
     const screen = { width: 700, height: 400 };
-    // Une barre de boutons sur tout le milieu de l'écran, le lieu dessous.
+    // Une barre de boutons sur tout le milieu de l'écran, le lieu dessous : de la place loin de lui, en haut et en bas.
     const bar = { left: 0, top: 100, right: 700, bottom: 300 };
     const label: MapLabel = { id: 'phare', kind: 'open', x: 350, y: 200, w: 200, h: 60, narrow: { w: 120, h: 90 } };
     const [spot] = layoutMapLabels([label], [bar], screen);
+    expect(spot.name).toBe(false);
+  });
+
+  it('le nom d’un lieu ouvert, près de son lieu, passe avant celui d’un lieu fermé (GD-20, directeur artistique)', () => {
+    // Une seule place près du Phare ouvert : celle du nom des Quais fermés, sous leur cadenas, au-dessus du Phare.
+    const screen = { width: 1024, height: 768 };
+    const box = { left: 180, top: 50, right: 420, bottom: 168 };
+    const walls = [
+      { left: 0, top: 0, right: box.left - 8, bottom: 768 },
+      { left: box.right + 8, top: 0, right: 1024, bottom: 768 },
+      { left: 0, top: 0, right: 1024, bottom: box.top - 8 },
+      { left: 0, top: box.bottom + 8, right: 1024, bottom: 768 },
+    ];
+    const labels: MapLabel[] = [
+      { id: 'quais', kind: 'closed', x: 300, y: 100, w: 200, h: 84 },
+      { id: 'phare', kind: 'open', x: 300, y: 150, w: 200, h: 40 },
+    ];
+    const [quais, phare] = layoutMapLabels(labels, walls, screen);
+    expect(phare.name).toBe(true);
+    expect(quais.name).toBe(false);
+    // Le cadenas reste.
+    expect(quais.top).toBe(100 - MAP_LOCK);
+  });
+
+  it('le nom d’un lieu fermé descend de plus d’un pas sous son cadenas, à 80 px au plus, rien entre eux', () => {
+    // Deux boutons de part et d'autre du cadenas, à sa hauteur : son nom, large, passe dessous.
+    const screen = { width: 1024, height: 768 };
+    const buttons = [
+      { left: 100, top: 190, right: 240, bottom: 250 },
+      { left: 560, top: 190, right: 700, bottom: 250 },
+    ];
+    const l: MapLabel = { id: 'filets', kind: 'closed', x: 500, y: 200, w: 300, h: 84 };
+    const [spot] = layoutMapLabels([l], buttons, screen);
     expect(spot.name).toBe(true);
-    expect(spot.far).toBe(true);
+    expect(spot.drop).toBeGreaterThan(2 * MAP_LABEL_GAP);
+    expect(spot.drop).toBeLessThanOrEqual(80);
+    const left = 500 - 150 + (spot.shift ?? 0);
+    const name = { left, top: 200 + spot.drop!, right: left + 300, bottom: 200 + spot.drop! + 84 - MAP_LOCK };
+    for (const b of buttons) expect(apart(name, b)).toBe(true);
+    // Le cadenas reste au-dessus de son nom.
+    expect(left).toBeLessThanOrEqual(500 - MAP_LOCK / 2);
+    expect(left + 300).toBeGreaterThanOrEqual(500 + MAP_LOCK / 2);
+    // Un bouton juste sous le cadenas : le nom ne descend pas au-delà, il se tait.
+    const under = { left: 470, top: 212, right: 530, bottom: 240 };
+    expect(layoutMapLabels([l], [...buttons, under], screen)[0].name).toBe(false);
   });
 });
 
@@ -465,4 +507,50 @@ describe('La Carte avec le rivage nord (lot L7)', () => {
       if (w === 1024) for (let i = 1; i < labels.length; i++) expect(spots[i].name, labels[i].id).toBe(true);
     });
   }
+});
+
+describe('« [Nom] : fermé pour l’instant » (GD-20, « La Carte au plus grand texte »)', () => {
+  const screen = { width: 667, height: 375 };
+  const size = { w: 220, h: 60 };
+  const cross = (a: { left: number; top: number; right: number; bottom: number }, b: typeof a) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+  it('s’écrit sous le cadenas touché, entier dans l’écran', () => {
+    const at = { x: 640, y: 150 };
+    const spot = placeClosedNote(at, [size], [], [], screen);
+    expect(spot.top).toBe(150 + MAP_LABEL_GAP);
+    expect(spot.left + size.w).toBeLessThanOrEqual(667 - MAP_LABEL_GAP);
+  });
+  it('jamais sur « Retour » ni sur « Toi » : au-dessus du cadenas, ou en bas de l’écran', () => {
+    const retour = { left: 10, top: 290, right: 130, bottom: 365 };
+    const toi = { left: 260, top: 200, right: 380, bottom: 250 };
+    const above = placeClosedNote({ x: 320, y: 190 }, [size], [], [retour, toi], screen);
+    expect(cross({ left: above.left, top: above.top, right: above.left + size.w, bottom: above.top + size.h }, toi)).toBe(false);
+    expect(above.top + size.h).toBeLessThanOrEqual(190 - MAP_LOCK);
+    // Ni dessous, ni dessus, ni à côté : le long du bas de l'écran, hors de « Retour ».
+    const wall = { left: 0, top: 0, right: 667, bottom: 290 };
+    const low = placeClosedNote({ x: 320, y: 190 }, [size], [wall], [retour], screen);
+    const box = { left: low.left, top: low.top, right: low.left + size.w, bottom: low.top + size.h };
+    expect(box.bottom).toBeLessThanOrEqual(375);
+    expect(cross(box, retour)).toBe(false);
+    expect(cross(box, wall)).toBe(false);
+    // Aucune place hors des autres boutons : il peut en couvrir un, jamais « Retour » ni « Toi ».
+    const full = { left: 0, top: 0, right: 667, bottom: 375 };
+    const last = placeClosedNote({ x: 320, y: 190 }, [size], [full], [retour, toi], screen);
+    const lastBox = { left: last.left, top: last.top, right: last.left + size.w, bottom: last.top + size.h };
+    expect(cross(lastBox, retour)).toBe(false);
+    expect(cross(lastBox, toi)).toBe(false);
+  });
+  it('trop large pour une place libre : il prend sa forme étroite, sur plus de lignes, jamais sur « Retour » ni « Toi »', () => {
+    // Le téléphone couché au plus grand texte : « Retour » en bas à gauche, « Toi » au milieu ; la forme large ne passe
+    // ni au-dessus de « Toi » ni entre lui et « Retour ».
+    const retour = { left: 20, top: 285, right: 200, bottom: 365 };
+    const toi = { left: 290, top: 100, right: 340, bottom: 144 };
+    const wide = { w: 534, h: 132 };
+    const narrow = { w: 260, h: 230 };
+    const spot = placeClosedNote({ x: 330, y: 200 }, [wide, narrow], [], [retour, toi], screen);
+    expect(spot.form).toBe(1);
+    const box = { left: spot.left, top: spot.top, right: spot.left + narrow.w, bottom: spot.top + narrow.h };
+    expect(cross(box, retour)).toBe(false);
+    expect(cross(box, toi)).toBe(false);
+    expect(box.bottom).toBeLessThanOrEqual(375);
+  });
 });
