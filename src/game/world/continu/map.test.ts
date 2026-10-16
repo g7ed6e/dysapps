@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { markOffset, screenOf } from './camera';
 import type { Vec3 } from './geometry';
-import { ISLAND_BOX, MAP_CAMERA, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, closedNoteText, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, placeClosedNote, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
+import { ISLAND_BOX, MAP_BAR_ROOM, MAP_CAMERA, grown, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, closedNoteText, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, placeClosedNote, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
 import { PLACES, placeById } from './plan6e';
 import { PORT_MAP_POINT } from './port';
 import { heightAt, standingHeight } from './terrain';
@@ -617,5 +617,22 @@ describe('le mot d’un lieu fermé (GD-20, téléphone au plus grand texte)', (
   });
   it('la ligne ne commence jamais par les deux-points', () => {
     for (const short of [false, true]) expect(closedNoteText('Les Quais', short).shown).toMatch(/^Les Quais\u00a0:/u);
+  });
+});
+
+describe('« Retour » et « Lieux » (relecture de L9)', () => {
+  it('aucun nom à moins de 16 px de la barre du bas, Kéo devant son lieu', () => {
+    const screen = { width: 1024, height: 768 };
+    const bar = { left: 10, top: 686, right: 420, bottom: 752 };
+    const labels: MapLabel[] = [
+      { id: 'keo', kind: 'keo', x: 236, y: 620, w: 108, h: 44 },
+      { id: 'ferry', kind: 'open', x: 232, y: 620, w: 250, h: 48, narrow: { w: 172, h: 84 } },
+    ];
+    const [, spot] = layoutMapLabels(labels, [grown(bar, MAP_BAR_ROOM)], screen);
+    expect(spot.name).toBe(true);
+    const bottom = spot.top + (spot.narrow ? 84 : 48);
+    const right = spot.left + (spot.narrow ? 172 : 250);
+    const gap = Math.max(bar.top - bottom, spot.left - bar.right, bar.left - right);
+    expect(gap).toBeGreaterThanOrEqual(16);
   });
 });

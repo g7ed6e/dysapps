@@ -226,6 +226,13 @@ export function nameLines(name: string): readonly string[] {
 /** Le cadenas d'un lieu fermé, en pixels, et l'écart gardé entre deux étiquettes (référent dys, consultant UX UI). */
 export const MAP_LOCK = 40;
 export const MAP_LABEL_GAP = 8;
+/**
+ * L'écart de plus gardé autour de « Retour » et « Lieux » : aucune étiquette à moins de 16 px d'eux en tout (relecture
+ * de L9, consultant UX UI : « La Gare maritime » touchait presque « Retour »).
+ */
+export const MAP_BAR_ROOM = 8;
+/** Un rectangle agrandi de `room` pixels de chaque côté. */
+export const grown = (r: Rect, room: number): Rect => ({ left: r.left - room, top: r.top - room, right: r.right + room, bottom: r.bottom + room });
 /** La pastille de Kéo seule, en pixels (sans « Toi »). */
 export const MAP_KEO_DISC = 44;
 /** Un lieu ouvert sans son nom, en dernier recours : sa pastille réduite à son icône, une cible carrée de 48 px. */
@@ -352,9 +359,14 @@ export function layoutMapLabels(
   let best = run(new Map());
   if (!repair) return best.spots;
   let tries = REPAIR_TRIES;
+  // Chaque nom tu a sa part des essais : les premiers (en haut de l'écran) ne les prennent pas tous (relecture de L9 : la
+  // Vigie et l'Imprimerie, tues au nord, épuisaient les essais avant la Mangrove, qui avait une place).
+  const share = Math.max(1, Math.floor(REPAIR_TRIES / Math.max(1, best.mute.length)));
   for (const id of best.mute) {
+    let mine = share;
     for (const place of best.room(id)) {
       if (tries-- <= 0) return best.spots;
+      if (mine-- <= 0) break;
       const next = run(new Map(best.reserved).set(id, place));
       // Aucun nom de lieu ouvert perdu (chacun, pas seulement leur nombre : un nom ouvert ne s'échange pas contre un
       // autre), un nom de lieu fermé de plus.

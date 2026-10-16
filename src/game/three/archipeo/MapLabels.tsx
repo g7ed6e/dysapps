@@ -12,7 +12,7 @@ import { getBiome } from '../../biomes';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
 import { useSettings } from '../../../core/SettingsContext';
 import { texteGrand } from '../../../core/settings';
-import { MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, closedNoteText, layoutMapLabels, nameLines, placeClosedNote, type MapLabel, type MapLabelSpot, type NoteSize, type Rect } from '../../world/continu/map';
+import { MAP_BAR_ROOM, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, closedNoteText, grown, layoutMapLabels, nameLines, placeClosedNote, type MapLabel, type MapLabelSpot, type NoteSize, type Rect } from '../../world/continu/map';
 import { mapStateWord } from './constructionParts';
 import { PLACES, type PlaceId } from '../../world/continu/plan6e';
 import type { MapSpotOnScreen } from './scene';
@@ -315,8 +315,10 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
         const r = o.getBoundingClientRect();
         return { left: r.left - s.left, top: r.top - s.top, right: r.right - s.left, bottom: r.bottom - s.top };
       };
-      const buttons = [...stage.querySelectorAll<HTMLElement>('.open-world-bar, .world-settings, .world-shortcuts')].map(box);
-      retour.current = [...stage.querySelectorAll<HTMLElement>('.open-world-bar')].map(box);
+      // « Retour » et « Lieux » gardent un écart de plus (`MAP_BAR_ROOM`, relecture de L9) : 16 px au moins jusqu'à un nom.
+      const bar = [...stage.querySelectorAll<HTMLElement>('.open-world-bar')].map(box);
+      const buttons = [...bar.map((r) => grown(r, MAP_BAR_ROOM)), ...[...stage.querySelectorAll<HTMLElement>('.world-settings, .world-shortcuts')].map(box)];
+      retour.current = bar;
       // La colonne des accès directs et « Retour » seulement, sans bande de haut en bas (GD-20, « La Carte au plus grand
       // texte », directeur artistique : « Fermé pour l'instant » n'y réserve plus de place, il s'écrit près du cadenas
       // touché) : une étiquette peut passer entre eux.
