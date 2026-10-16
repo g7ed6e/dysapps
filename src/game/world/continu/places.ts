@@ -1140,9 +1140,9 @@ function shipCradle(b: FacetBuilder, color: number, shores: boolean, only = fals
 }
 
 /** Les accores de la coque : au nord-ouest, à deux couples ; au sud-est, près de l'étrave et après la planche de bordé. */
-const SHORES: readonly (readonly [number, readonly number[]])[] = [
+export const SHORES: readonly (readonly [number, readonly number[]])[] = [
   [-1, [0.36, 0.7]],
-  [1, [0.2, 0.72]],
+  [1, [0.2, 0.84]],
 ];
 
 /** Les membrures nues de la ruine : à chaque couple, de la quille au bouchain puis au plat-bord, des deux côtés. */

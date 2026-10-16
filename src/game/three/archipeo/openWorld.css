@@ -845,8 +845,9 @@
   background: var(--secondary-bg);
   color: var(--muted);
   white-space: nowrap;
-  /* Glissé sous son cadenas pour rester entier dans l'écran (`--nom-decale`, MapLabels.tsx). */
-  transform: translateX(var(--nom-decale, 0px));
+  /* Glissé sous son cadenas pour rester entier dans l'écran ou laisser la place à un voisin, et descendu d'un pas s'il
+     touche le nom du dessus (`--nom-decale`, `--nom-baisse`, MapLabels.tsx). */
+  transform: translate(var(--nom-decale, 0px), var(--nom-baisse, 0px));
 }
 .open-world-map-closed[data-nom='non'] .open-world-map-closed-name {
   visibility: hidden;
@@ -1603,8 +1604,8 @@
   height: 1.15em;
   flex: none;
 }
-/* Trop serrée près d'une autre : la pastille réduite à son icône, une cible de 48 px ; le nom et l'état restent dits
-   par le bouton (MapLabels.tsx, `layoutMapLabels`). */
+/* Nulle part dans l'écran sans toucher une autre étiquette (au plus grand texte, sur un téléphone) : la pastille réduite
+   à son icône, une cible de 48 px ; le nom et l'état restent dits par le bouton (MapLabels.tsx, `layoutMapLabels`). */
 .open-world-map-place[data-nom='non'] {
   justify-content: center;
   box-sizing: border-box;
@@ -1622,6 +1623,16 @@
 .open-world-map-place[data-nom='non'] .open-world-map-state svg {
   width: 26px;
   height: 26px;
+}
+/* Trop serrée près d'une autre : la pastille serrée, son nom sur deux lignes, plus étroit, l'icône de l'état dessous ;
+   un lieu ouvert ne perd jamais son nom (relecture de L6b, directeur artistique ; MapLabels.tsx, `layoutMapLabels`). */
+.open-world-map-place[data-nom='serre'] {
+  flex-direction: column;
+  gap: 0.1em;
+  padding: 0.2rem 0.5rem;
+}
+.open-world-map-place[data-nom='serre'] .open-world-map-place-name {
+  max-width: 11ch;
 }
 /* Un accès direct sans rien à faire (les commandes, qui ne se livrent pas encore dans le monde continu) : délavé comme
    « Y aller » sans mission (fond secondaire, trait en tirets, icône adoucie), mais opaque sur le monde : son icône

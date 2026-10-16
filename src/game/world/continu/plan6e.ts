@@ -111,7 +111,7 @@ export const SALT_FLAT = { center: fromPlan([1430, 652]), radius: 9, fade: 5, he
 export const ENGINE_FLAT = { center: fromPlan([1302, 590]), radius: 8.5, fade: 5, height: 1 } as const;
 
 /**
- * La grève du Chantier naval (GD-20, point 8, lot L6b), sur la côte sud, à l'est du Port : aplanie comme celle des
+ * La grève du Chantier naval (GD-20, point 8, lot L6b), sur la côte sud, à l'est de l'Escale : aplanie comme celle des
  * Marais salants (à cette hauteur dans ce rayon, puis le sol d'avant sur `fade` unités ; au bord de l'eau, elle descend
  * encore comme la plage), pour que la cale descende droit jusqu'à la mer.
  */

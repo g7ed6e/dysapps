@@ -126,10 +126,16 @@ export interface MapLabel {
   w: number;
   h: number;
   /**
-   * Posé avant les autres lieux ouverts (l'Escale, le lieu de départ, GD-20, lot 2 : elle garde son nom, les autres se
-   * réduisent d'abord à leur icône).
+   * Posé avant les autres lieux ouverts (l'Escale, le lieu de départ, GD-20, lot 2 : elle garde sa pastille entière, les
+   * autres se serrent d'abord).
    */
   first?: boolean;
+  /**
+   * Un lieu ouvert : la taille de sa pastille serrée (son nom sur deux lignes, plus étroit, l'icône de l'état dessous),
+   * prise quand la pastille entière ne trouve pas de place (relecture de L6b, directeur artistique : un lieu ouvert ne
+   * perd jamais son nom).
+   */
+  narrow?: { w: number; h: number };
 }
 
 /** Sa place : le coin haut gauche, et si son nom se montre (un lieu fermé peut n'en garder que le cadenas). */
@@ -144,6 +150,13 @@ export interface MapLabelSpot {
    * « Les Marais salants » touchait le bord droit).
    */
   shift?: number;
+  /**
+   * Le nom d'un lieu fermé descendu sous son cadenas, en pixels, quand il toucherait sinon le nom d'un lieu fermé posé
+   * juste au-dessus (relecture de L6b : sur la tablette, le nom de la Turbine se taisait contre celui des Marais salants).
+   */
+  drop?: number;
+  /** Un lieu ouvert dans sa pastille serrée (son nom sur deux lignes, plus étroit). */
+  narrow?: true;
 }
 
 /** Le cadenas d'un lieu fermé, en pixels, et l'écart gardé entre deux étiquettes (référent dys, consultant UX UI). */
@@ -151,10 +164,13 @@ export const MAP_LOCK = 40;
 export const MAP_LABEL_GAP = 8;
 /** La pastille de Kéo seule, en pixels (sans « Toi »). */
 export const MAP_KEO_DISC = 44;
-/** Un lieu ouvert sans son nom (trop serré) : sa pastille réduite à son icône, une cible carrée de 48 px. */
+/** Un lieu ouvert sans son nom, en dernier recours : sa pastille réduite à son icône, une cible carrée de 48 px. */
 export const MAP_COMPACT = 48;
 /** Les décalages verticaux essayés pour un nom qui en touche un autre, en demi-hauteurs d'étiquette. */
 const SHIFTS = 3;
+
+/** Les pas dont le nom d'un lieu fermé peut descendre sous son cadenas, en pixels. */
+const NAME_DROPS = [0, MAP_LABEL_GAP, 2 * MAP_LABEL_GAP] as const;
 
 /** Le pas et la portée de la recherche d'une place libre pour un nom, en pixels. */
 const SPIRAL = { step: 16, reach: 240, directions: 16 } as const;
@@ -171,6 +187,23 @@ function spiral(r: Rect, ok: (c: Rect) => boolean): Rect | undefined {
   return undefined;
 }
 
+/**
+ * La place la plus proche du point de `l`, sur une grille de l'écran entier `screen` (au pas de la spirale), où `ok`
+ * accepte une étiquette de taille `size`. Rien sur un écran sans taille.
+ */
+function anywhere(screen: { width: number; height: number }, l: { x: number; y: number }, size: { w: number; h: number }, ok: (c: Rect) => boolean): Rect | undefined {
+  if (!Number.isFinite(screen.width) || !Number.isFinite(screen.height)) return undefined;
+  let best: { r: Rect; d: number } | undefined;
+  for (let top = 0; top + size.h <= screen.height; top += SPIRAL.step)
+    for (let left = 0; left + size.w <= screen.width; left += SPIRAL.step) {
+      const r = rect(left, top, size.w, size.h);
+      if (!ok(r)) continue;
+      const d = Math.hypot(left + size.w / 2 - l.x, top + size.h / 2 - l.y);
+      if (!best || d < best.d) best = { r, d };
+    }
+  return best?.r;
+}
+
 /** Un rectangle de l'écran, en pixels. */
 export interface Rect {
   left: number;
@@ -185,12 +218,16 @@ const clash = (a: Rect, b: Rect) =>
 /**
  * Pose les étiquettes de la Carte sans qu'aucune en recouvre une autre (au moins `MAP_LABEL_GAP` entre elles), ni les
  * boutons de la page (`obstacles`) : d'abord Kéo et les cadenas, à leur place ; puis le nom de chaque lieu ouvert (celui
- * qui passe en premier, `first`, d'abord),
- * au-dessus de son point, sinon dessous, sinon décalé vers le haut ou vers le bas (une demi-hauteur, puis une autre),
- * sinon à droite ou à gauche, sinon à la place libre la plus proche, dans l'écran, chaque fois d'abord hors de la place
- * du nom d'un lieu fermé, sous son cadenas (un cadenas ne coiffe jamais le nom d'un lieu ouvert) ; s'il ne trouve toujours pas de
- * place, sa pastille se réduit à son icône (`name: false`, le nom et l'état restent dits par le bouton) ; enfin le nom
- * de chaque lieu fermé, sous son cadenas, s'efface s'il gêne (le toucher du lieu dit alors « Fermé pour l'instant »).
+ * qui passe en premier, `first`, d'abord), au-dessus de son point, sinon dessous, sinon décalé vers le haut ou vers le
+ * bas (une demi-hauteur, puis une autre), sinon à droite ou à gauche, sinon à la place libre la plus proche, dans
+ * l'écran, chaque fois d'abord hors de la place du nom d'un lieu fermé, sous son cadenas (un cadenas ne coiffe jamais le
+ * nom d'un lieu ouvert) ; s'il ne trouve toujours pas de place, dans sa pastille serrée (`narrow` : son nom sur deux
+ * lignes, plus étroit), de la même façon ; puis, Kéo réduit à sa pastille, à la place libre la plus proche dans tout
+ * l'écran : un lieu ouvert garde son nom (relecture de L6b, directeur artistique). Seulement si aucune place de l'écran
+ * ne le laisse sans toucher une autre étiquette (au plus grand texte, sur un téléphone), sa pastille se réduit à son
+ * icône (`name: false`, le nom et l'état restent dits par le bouton) : jamais un nom posé sur un autre.
+ * Enfin le nom de chaque lieu fermé, sous son cadenas, glissé de côté au besoin (le cadenas toujours au-dessus de lui),
+ * se tait s'il gêne encore (le cadenas reste ; son toucher dit « Fermé pour l'instant »).
  */
 export function layoutMapLabels(labels: readonly MapLabel[], obstacles: readonly Rect[] = [], screen = { width: Infinity, height: Infinity }): MapLabelSpot[] {
   const first = attemptLayout(labels, obstacles, screen, false);
@@ -252,38 +289,72 @@ function attemptLayout(
       return list;
     };
     const full = places(l.w, l.h);
+    const tight = l.narrow ? places(l.narrow.w, l.narrow.h) : [];
     // Sinon, la place libre la plus proche autour du lieu, de plus en plus loin (une spirale de pas de 16 px) ; d'abord
     // hors de la place du nom d'un lieu fermé, même un peu plus loin de son point (sur la tablette, toutes les places
     // simples de la Turbine touchaient celle des Écluses, et le nom revenait sous leur cadenas).
-    let r = full.find(apart) ?? spiral(full[0], apart) ?? full.find(clear) ?? spiral(full[0], clear);
+    const find = (list: Rect[], ok: (c: Rect) => boolean) => (list.length ? (list.find(ok) ?? spiral(list[0], ok)) : undefined);
+    let r = find(full, apart) ?? find(full, clear);
+    let narrow = false;
+    if (!r) {
+      // La pastille serrée : son nom sur deux lignes, plus étroit, aux mêmes places.
+      r = find(tight, apart) ?? find(tight, clear);
+      narrow = Boolean(r);
+    }
+    const size = l.narrow ?? { w: l.w, h: l.h };
+    // Trop serré près de son lieu : la deuxième passe (Kéo d'abord réduit à sa pastille) cherche plus loin.
+    if (!r) crowded = true;
+    if (!r && compactKeo) {
+      // Puis la place libre la plus proche n'importe où dans l'écran, plutôt que de toucher une autre étiquette.
+      r = anywhere(screen, l, size, clear);
+      narrow = Boolean(r && l.narrow);
+    }
     let name = true;
     if (!r) {
-      // Toujours trop serré : l'icône seule, à la première place libre.
+      // Nulle part dans l'écran sans toucher une autre étiquette (au plus grand texte, sur un téléphone, trois lieux
+      // ouverts) : sa pastille réduite à son icône, plutôt qu'un nom posé sur un autre ; le nom et l'état restent dits
+      // par le bouton. Un écart laissé au directeur artistique (relecture de L6b).
+      narrow = false;
+      name = false;
       const small = places(MAP_COMPACT, MAP_COMPACT);
       r = small.find(clear) ?? spiral(small[0], clear);
-      name = false;
       if (!r) {
-        crowded = true;
         // Au pire, il peut toucher une autre étiquette, jamais un bouton de la page.
         const off = (c: Rect) => onScreen(c) && !obstacles.some((o) => clash(o, c));
         r = small.find(off) ?? spiral(small[0], off) ?? small[0];
       }
     }
     placed.push({ id: l.id, r });
-    out.set(l.id, { id: l.id, left: r.left, top: r.top, name });
+    out.set(l.id, { id: l.id, left: r.left, top: r.top, name, ...(narrow ? { narrow: true as const } : {}) });
   }
-  for (const l of labels) {
-    if (l.kind !== 'closed') continue;
+  // Les noms des lieux fermés, du haut de l'écran vers le bas : un nom qui toucherait celui du dessus descend d'un pas.
+  const closed = labels.filter((l) => l.kind === 'closed').sort((a, b) => a.y - b.y);
+  for (const l of closed) {
     const left = l.x - l.w / 2;
-    // Le nom glisse le long de son cadenas pour rester entier dans l'écran, à un écart du bord.
+    // Le nom glisse le long de son cadenas pour rester entier dans l'écran, à un écart du bord ; puis, s'il gêne, de côté,
+    // d'un pas à la fois, tant que son cadenas reste au-dessus de lui, ou un peu plus bas (sur la tablette, le nom de la
+    // Turbine se taisait contre une étiquette voisine : relecture de L6b, directeur artistique).
     const over = left + l.w - (screen.width - MAP_LABEL_GAP);
     const under = MAP_LABEL_GAP - left;
-    const shift = under > 0 ? under : over > 0 ? -over : 0;
-    const name = rect(left + shift, l.y, l.w, Math.max(0, l.h - MAP_LOCK));
-    if (!onScreen(name) || !free(name, l.id)) continue;
-    placed.push({ id: l.id, r: name });
-    out.get(l.id)!.name = true;
-    if (shift) out.get(l.id)!.shift = shift;
+    const edge = under > 0 ? under : over > 0 ? -over : 0;
+    const shifts = [edge];
+    for (let d = SPIRAL.step; d <= l.w; d += SPIRAL.step) shifts.push(edge - d, edge + d);
+    const covers = (k: number) => k === edge || (left + k <= l.x - MAP_LOCK / 2 && left + k + l.w >= l.x + MAP_LOCK / 2);
+    const at = (k: number, drop: number) => rect(left + k, l.y + drop, l.w, Math.max(0, l.h - MAP_LOCK));
+    let spot: { k: number; drop: number } | undefined;
+    for (const drop of NAME_DROPS) {
+      const k = shifts.find((c) => covers(c) && onScreen(at(c, drop)) && free(at(c, drop), l.id));
+      if (k !== undefined) {
+        spot = { k, drop };
+        break;
+      }
+    }
+    if (!spot) continue;
+    placed.push({ id: l.id, r: at(spot.k, spot.drop) });
+    const o = out.get(l.id)!;
+    o.name = true;
+    if (spot.k) o.shift = spot.k;
+    if (spot.drop) o.drop = spot.drop;
   }
   return { spots: labels.map((l) => out.get(l.id)!), crowded };
 }

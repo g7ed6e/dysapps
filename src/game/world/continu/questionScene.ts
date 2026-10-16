@@ -1262,9 +1262,10 @@ export const SHIPYARD_FLOOR_RISE = 0.12;
  * La planche de bordé du Chantier naval, l'objet témoin de ses missions (lot L6b) : sa longueur, sa largeur, son
  * épaisseur ; ses tréteaux (leur hauteur, leur écart le long de la planche) ; sa place sur le plancher, depuis le milieu
  * de la scène ; la part de la longueur de la coque où elle se plaque (sur la partie droite du flanc, entre deux couples
- * de même largeur) ; le lever de son arc.
+ * de même largeur, hors des accores) ; la bande du bordé où elle se plaque (de la couture au liston, presque debout,
+ * face à la caméra, au-dessus de la tête des accores : relecture de L6b, directeur artistique) ; le lever de son arc.
  */
-export const PLANK = { length: 1.8, width: 0.32, thick: 0.07, trestle: 0.72, spread: 0.62, at: { dx: 0, dz: -0.5 }, hull: 0.55, arc: 0.45 } as const;
+export const PLANK = { length: 1.8, width: 0.32, thick: 0.07, trestle: 0.72, spread: 0.62, at: { dx: 0, dz: -0.5 }, hull: 0.53, band: 2, arc: 0.45 } as const;
 
 /**
  * Où la planche de bordé se plaque sur la coque, dans le monde : son milieu, à peine hors du flanc au sud-est, entre le
@@ -1273,7 +1274,7 @@ export const PLANK = { length: 1.8, width: 0.32, thick: 0.07, trestle: 0.72, spr
 export function plankOnHull(): { at: Vec3; roll: number } {
   const c = placeById('shipyard').center;
   const h0 = groundAt(c);
-  const [lo, hi] = [hullEdge(PLANK.hull, 1, 1), hullEdge(PLANK.hull, 2, 1)];
+  const [lo, hi] = [hullEdge(PLANK.hull, PLANK.band, 1), hullEdge(PLANK.hull, PLANK.band + 1, 1)];
   const [mx, my, mz] = [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2];
   // La pente du flanc, dans le plan (vers le sud-est, vers le haut) ; la planche s'écarte du flanc de sa demi-épaisseur.
   const across = (hi[0] - lo[0]) * SLIP_N.x + (hi[2] - lo[2]) * SLIP_N.z;
@@ -2284,14 +2285,33 @@ const ENGINE_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) =>
 /**
  * Où se pose la trace de chaque mission du Chantier naval, depuis le centre du lieu (lot L6b), hors des chemins (celui du
  * réseau arrive à l'est, le long de l'eau ; celui des abords monte de la porte à l'atelier) et du plancher de la
- * scénette : le gouvernail sur ses tréteaux au nord-ouest de l'atelier ; le parc à bois au nord-ouest de la coque ; le
+ * scénette : le gouvernail sur ses tréteaux devant l'étrave, entre la coque et le chemin de l'atelier, en vue depuis la
+ * porte (relecture de L6b : derrière l'étrave, il se cachait) ; le parc à bois au nord-ouest de la coque ; le
  * capteur de marée au bout du ponton, dans l'eau ; le treuil à la tête de la cale.
  */
 export const SHIPYARD_TRACE_SPOTS = {
-  'object-function': { x: 1.6, z: -5.4 },
+  'object-function': { x: 2.6, z: 0.9 },
   materials: { x: -5.4, z: -3.3 },
   'information-networks': { x: SHIPYARD.pontoon.x, z: SHIPYARD.pontoon.z1 + 0.72 },
   'solve-program': slipPoint(-1.4),
+} as const;
+
+/**
+ * Le gouvernail neuf du Chantier naval (trace d'« À quoi ça sert ») : la pale, un trapèze vu de dessus (x d'ouest en
+ * est, z du nord au sud), étroite à la tête, à l'ouest, large au talon, son bord droit au nord ; son épaisseur ; sa
+ * bascule, le bord nord relevé ; le bout ouest de la mèche ; la longueur de la barre.
+ */
+const RUDDER = {
+  blade: [
+    [-1.05, -0.45],
+    [1.1, -0.45],
+    [1.1, 0.7],
+    [-1.05, 0.15],
+  ] as readonly (readonly [number, number])[],
+  thick: 0.1,
+  tilt: 0.4,
+  stockEnd: -1.6,
+  tiller: 0.95,
 } as const;
 
 /** Le puits du capteur de marée : ses rayons, intérieur et extérieur ; son haut au-dessus de l'eau ; le flotteur. */
@@ -2312,16 +2332,25 @@ const SHIPYARD_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) 
   'object-function': (b, x, z) => {
     const o = SHIPYARD_TRACE_SPOTS['object-function'];
     const g = quaiGround(x + o.x, z + o.z);
-    // Les deux tréteaux, en travers de la longueur du gouvernail (d'ouest en est) ; le safran couché dessus, sa mèche le long
-    // de son bord nord, qui dépasse vers l'ouest, et sa barre.
+    // Les deux tréteaux, en travers de la longueur du gouvernail (d'ouest en est) ; le safran posé dessus, une pale large
+    // en trapèze, plus longue que l'écart des tréteaux et plus large qu'eux, terre cuite comme les œuvres vives de la
+    // coque, son bord droit relevé vers le nord (sa face vers la porte, d'où on la voit) ; sa mèche le long de ce bord,
+    // qui dépasse vers l'ouest ; la barre en travers, au bout de la mèche (relecture de L6b, directeur artistique : couché à
+    // plat, couleur du sable, le gouvernail se lisait comme un banc).
     for (const dx of [-0.55, 0.55]) {
       b.box({ x: g.x + dx, y: g.y + 0.62, z: g.z }, [0.14, 0.1, 0.9], C.post, C.lever);
       for (const side of [-1, 1]) b.beam({ x: g.x + dx, y: g.y - 0.05, z: g.z + side * 0.42 }, { x: g.x + dx, y: g.y + 0.62, z: g.z + side * 0.18 }, 0.08, C.post);
     }
-    const y = g.y + 0.72;
-    b.box({ x: g.x + 0.15, y, z: g.z + 0.08 }, [1.7, 0.1, 0.7], C.newWood, C.planking);
-    b.beam({ x: g.x - 1.3, y: y + 0.08, z: g.z - 0.32 }, { x: g.x + 1, y: y + 0.08, z: g.z - 0.32 }, 0.12, C.keel);
-    b.beam({ x: g.x - 1.3, y: y + 0.08, z: g.z - 0.32 }, { x: g.x - 1.3, y: y + 0.08, z: g.z - 1.1 }, 0.09, C.keel);
+    const R = RUDDER;
+    const [lift, run] = [Math.sin(R.tilt), Math.cos(R.tilt)];
+    // Le dessus de la pale : son bord sud (le plus bas) posé sur les tréteaux.
+    const south = Math.max(...R.blade.map((q) => q[1]));
+    const y = g.y + 0.72 + south * lift + R.thick * run;
+    const on = (px: number, pz: number) => ({ x: g.x + px, y: y - pz * lift, z: g.z + pz * run });
+    b.extrude({ x: g.x, y, z: g.z, pitch: Math.PI / 2 + R.tilt }, R.blade, R.thick, C.keel, C.bottom);
+    const stock = R.blade[0][1];
+    b.beam(on(R.stockEnd, stock), on(R.blade[1][0], stock), 0.12, C.keel);
+    b.beam(on(R.stockEnd, stock - 0.06), on(R.stockEnd, stock + R.tiller), 0.09, C.keel);
   },
   materials: (b, x, z) => {
     const o = SHIPYARD_TRACE_SPOTS.materials;

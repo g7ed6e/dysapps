@@ -8,7 +8,7 @@ import { FacetBuilder, boundsOf, placeFacets } from './facets';
 import { distance, linearRgb } from './geometry';
 import { startOf } from './paths';
 import { placeById } from './plan6e';
-import { SHIPYARD, SLIP_N, STEAM_GAP, hullEdge, modelOfPlace } from './places';
+import { SHIPYARD, SHORES, SLIP_N, STEAM_GAP, hullEdge, modelOfPlace } from './places';
 import { ANSWER_LAYOUT, ENGINE_PAVING_RISE, JAUGE, LOCK, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
 import {
   GALLERY,
@@ -957,13 +957,14 @@ describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
     const rest = boundsOf(before.still);
     expect(r.from.y).toBeLessThanOrEqual(rest.max[1] + 1e-6);
     expect(r.from.y).toBeGreaterThan(o.y + SHIPYARD_FLOOR_RISE + PLANK.trestle - 0.01);
-    // À l'arrivée : sur le flanc sud-est, entre le bouchain et la couture du bordé, à peine hors de lui, son roulis celui
-    // du flanc (debout aux trois quarts), son cap celui de la coque.
+    // À l'arrivée : sur le flanc sud-est, entre la couture du bordé et le liston, à peine hors de lui, son roulis celui
+    // du flanc (presque debout, face à la caméra), son cap celui de la coque ; hors des accores.
     const hull = plankOnHull();
     expect(r.to).toEqual(hull.at);
     expect(r.turn!.roll).toBeGreaterThan(1);
     expect(r.turn!.roll).toBeLessThan(Math.PI / 2);
-    const [lo, hi] = [hullEdge(PLANK.hull, 1, 1), hullEdge(PLANK.hull, 2, 1)];
+    expect(PLANK.band).toBe(2);
+    const [lo, hi] = [hullEdge(PLANK.hull, 2, 1), hullEdge(PLANK.hull, 3, 1)];
     expect(r.to.y - h0).toBeGreaterThan(lo[1]);
     expect(r.to.y - h0).toBeLessThan(hi[1]);
     const out = (r.to.x - c.x - (lo[0] + hi[0]) / 2) * SLIP_N.x + (r.to.z - c.z - (lo[2] + hi[2]) / 2) * SLIP_N.z;
@@ -974,6 +975,8 @@ describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
     const half = PLANK.length / 2 / SHIPYARD.hull.length;
     expect(PLANK.hull - half).toBeGreaterThanOrEqual(0.4);
     expect(PLANK.hull + half).toBeLessThanOrEqual(0.7);
+    // Hors des accores du flanc sud-est : aucun ne touche la coque à moins d'une demi-unité des bouts de la planche.
+    for (const [side, ts] of SHORES) if (side > 0) for (const t of ts) expect(Math.abs(t - PLANK.hull) * SHIPYARD.hull.length, String(t)).toBeGreaterThan(PLANK.length / 2 + 0.5);
     // Sa face du dessous, plaquée contre le flanc, a sa couleur claire (on la voit).
     const down = r.facets.normals.findIndex((v, i) => i % 3 === 1 && v < -0.99);
     expect(down).toBeGreaterThan(0);

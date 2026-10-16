@@ -1,7 +1,8 @@
 // Le budget de dessin du monde continu (prototype du 6e), compté sans Three.js comme world/budget.ts le fait pour le
 // monde en grille : les triangles et les appels de chaque poste. Estimé au cadrage : environ 45 000 triangles et 12 à
-// 18 appels avec quatre lieux (prototype-6e.md, § 3) ; l'enveloppe n'est pas relevée avec l'île agrandie (piste 1,
-// lot 1 : seul le mainteneur peut la relever). Les images par seconde se mesurent sur la tablette (`?mesures`).
+// 18 appels avec quatre lieux (prototype-6e.md, § 3) ; relevée par le mainteneur à 75 000 triangles le 16 octobre 2026
+// (GD-20, L6b : « Un iPad 9e génération doit pouvoir faire tourner le jeu, donc on est large en triangles pour
+// l'instant »), les appels inchangés. Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
 import { WORLD_FOG } from './camera';
 import { networkSamples, pathRibbons } from './paths';
 import { PLACES, type PlaceId } from './plan6e';
@@ -17,8 +18,8 @@ import { veilFacets } from './veil';
 /** Kéo : le modèle importé de près (1 500 triangles environ) et son anneau clair au sol, comme le poste « bonhomme » du monde en grille. */
 const KEO = { triangles: 1620, calls: 2 };
 
-/** L'enveloppe du prototype : ce que le cadrage a estimé. */
-export const OPEN_WORLD_BUDGET = { triangles: 45_000, calls: 18 } as const;
+/** L'enveloppe du monde ouvert : 75 000 triangles (relevée par le mainteneur, 16 octobre 2026), 18 appels. */
+export const OPEN_WORLD_BUDGET = { triangles: 75_000, calls: 18 } as const;
 
 export interface OpenWorldCost {
   poste: 'sol' | 'mer' | 'chemins' | 'lieux' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';

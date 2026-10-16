@@ -207,7 +207,7 @@ describe('Les chemins aimantés', () => {
   it('les rubans des chemins ont leur dessus vers le ciel', () => {
     const f = pathRibbons(ground);
     expect(f.triangles).toBeGreaterThan(100);
-    // Sept lieux reliés (le chemin de la Turbine, lot L6a ; celui du Chantier naval, lot L6b : 4 850 en tout).
+    // Sept lieux reliés (le chemin de la Turbine, lot L6a ; celui du Chantier naval, lot L6b : 4 880 en tout).
     expect(f.triangles).toBeLessThan(5000);
   });
 });
@@ -428,8 +428,8 @@ describe('Le budget du monde continu', () => {
     expect(g.triangles).toBe(g.near + g.far);
   });
 
-  it('tient dans l’enveloppe estimée au cadrage, sans la relever', () => {
-    expect(OPEN_WORLD_BUDGET).toEqual({ triangles: 45_000, calls: 18 });
+  it('tient dans l’enveloppe relevée par le mainteneur (75 000 triangles, 16 octobre 2026), les appels inchangés', () => {
+    expect(OPEN_WORLD_BUDGET).toEqual({ triangles: 75_000, calls: 18 });
     const cost = openWorldCost();
     const triangles = cost.reduce((s, c) => s + c.triangles, 0);
     const calls = cost.reduce((s, c) => s + c.calls, 0);

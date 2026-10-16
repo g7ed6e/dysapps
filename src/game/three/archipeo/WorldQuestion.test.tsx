@@ -703,6 +703,22 @@ describe('Le Chantier naval, ses quatre missions en C (GD-20, point 8, lot L6b)'
     expect(follows(panel().querySelector('.question-head')!, panel().querySelector('.world-answers')!)).toBe(true);
   });
 
+  it('l’ordre des réponses d’un item ne bouge pas dans la partie : ni en passant à « Vue simple », ni après un essai faux (relecture dys de L6b)', async () => {
+    const user = userEvent.setup();
+    renderPlace('shipyard', 'materials');
+    const go = await screen.findByRole('button', { name: /Commencer/ }).catch(() => null);
+    if (go) await user.click(go);
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(3));
+    const labels = () => answers().map((a) => a.textContent?.trim());
+    const first = labels();
+    await user.click(screen.getByRole('button', { name: /Vue simple/ }));
+    expect(labels()).toEqual(first);
+    await user.click(answers()[0]);
+    if (!document.querySelector('.next-button')) expect(labels()).toEqual(first);
+    await user.click(screen.getByRole('button', { name: /Scène/ }));
+    expect(labels()).toEqual(first);
+  });
+
   it('en texte normal sur un téléphone couché, une phrase sous le pli ouvre « Vue simple » d’office', async () => {
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(844);
     vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(390);

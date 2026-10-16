@@ -12,9 +12,9 @@ import { PROBLEMES_EXERCISES } from '../../exercises/problems';
 import { POSEES_EXERCISES } from '../../exercises/writtenOperations';
 import { boundsOf } from './facets';
 import { linearRgb } from './geometry';
-import { ENGINE, ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRill, engineRotorHub, hullEdge, hullPoint, modelOfPlace, ruinOf, slipRails } from './places';
+import { ENGINE, ENGINE_ROTOR_COLORS, LAMP_COLOR, SHIPYARD, STEAM_COLORS, engineRill, engineRotorHub, hullEdge, hullPoint, modelOfPlace, ruinOf, slipRails } from './places';
 import { PLANK_BRIDGES, pathRibbons } from './paths';
-import { networkSamples } from './paths';
+import { networkSamples, pathNode } from './paths';
 import { buildHeightField, heightAt, heightOnMesh, landDistance, standingHeight, tileFacets } from './terrain';
 import PLACE_ITEMS from './placeItems.json';
 import { PLACES, TERRAIN, placeById } from './plan6e';
@@ -714,6 +714,24 @@ describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
         expect(b.max[0] < d.min[0] || d.max[0] < b.min[0] || b.max[2] < d.min[2] || d.max[2] < b.min[2], `${m} / ${traces[j][0]}`).toBe(true);
       }
     }
+  });
+
+  it('aucune trace sur le chemin de sable de la porte à l’atelier ; le gouvernail devant l’étrave, en vue depuis la porte (relecture de L6b)', () => {
+    const at = pathNode(placeById('shipyard').door).at;
+    const door = { x: at.x - c.x, z: at.z - c.z };
+    const foot = { x: SHIPYARD.shop.x, z: SHIPYARD.shop.z + SHIPYARD.shop.d / 2 + 0.5 };
+    expect(Number.isFinite(door.x) && Number.isFinite(door.z)).toBe(true);
+    for (const m of placeById('shipyard').scenes) {
+      const b = boundsOf(placeTrace('shipyard', [m]));
+      for (let k = 0; k <= 40; k++) {
+        const p = { x: c.x + door.x + ((foot.x - door.x) * k) / 40, z: c.z + door.z + ((foot.z - door.z) * k) / 40 };
+        expect(p.x > b.min[0] - 0.6 && p.x < b.max[0] + 0.6 && p.z > b.min[2] - 0.6 && p.z < b.max[2] + 0.6, m).toBe(false);
+      }
+    }
+    // Le gouvernail au sud de l'étrave (entre elle et la porte), plus long que l'écart de ses tréteaux.
+    const rudder = boundsOf(placeTrace('shipyard', ['object-function']));
+    expect(rudder.min[2]).toBeGreaterThan(c.z + hullPoint(0, 0, 0)[2]);
+    expect(rudder.max[0] - rudder.min[0]).toBeGreaterThan(2.4);
   });
 
   it('le capteur de marée se tient dans l’eau, au bout du ponton ; le câble du treuil va jusqu’à l’étrave', () => {

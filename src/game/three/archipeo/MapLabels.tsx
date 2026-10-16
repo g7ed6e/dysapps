@@ -4,8 +4,8 @@
 // toucher : la page dit « Fermé pour l'instant », au-dessus de « Retour »). Rien n'est écrit dans la 3D : la scène
 // donne les points à l'écran, posés ici sans passer par React ; aucune étiquette n'en recouvre une autre ni ne passe
 // sur la colonne des accès directs ou un bouton (`layoutMapLabels`, world/continu/map.ts) ; trop serrée, une pastille
-// se réduit à son icône. Les tailles sont relues seulement quand une étiquette change de taille (police, grand texte),
-// jamais à chaque image.
+// se serre, son nom sur deux lignes, puis cherche plus loin ; sans aucune place, elle se réduit à son icône. Les tailles
+// sont relues seulement quand une étiquette change de taille (police, grand texte), jamais à chaque image.
 import { useCallback, useEffect, useRef, type MutableRefObject } from 'react';
 import { Icon } from '../../../components/Icon';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
@@ -39,7 +39,7 @@ const COLUMN_ZONE = 72;
 
 export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words, portName }: Props) {
   const root = useRef<HTMLDivElement>(null);
-  const sizes = useRef(new Map<string, { w: number; h: number }>());
+  const sizes = useRef(new Map<string, { w: number; h: number; narrow?: { w: number; h: number } }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
   // Les boutons de la page que les étiquettes évitent, relus au changement de taille seulement.
   const obstacles = useRef<Rect[]>([]);
@@ -57,7 +57,7 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
       const size = sizes.current.get(s.id);
       if (!s.shown || !size) continue;
       const kind = s.id === 'keo' ? 'keo' : s.id === 'port' || openPlaces.includes(s.id) ? 'open' : 'closed';
-      items.push({ id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port' });
+      items.push({ id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port', ...(size.narrow ? { narrow: size.narrow } : {}) });
     }
     // Kéo d'abord, puis l'Escale (elle garde son nom), les autres lieux ouverts, puis les fermés : l'ordre de
     // `layoutMapLabels`.
@@ -66,11 +66,14 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
       if (!node) continue;
       const transform = `translate(${Math.round(spot.left)}px, ${Math.round(spot.top)}px)`;
       if (node.style.transform !== transform) node.style.transform = transform;
-      const name = spot.name ? 'oui' : 'non';
+      const name = spot.narrow ? 'serre' : spot.name ? 'oui' : 'non';
       if (node.dataset.nom !== name) node.dataset.nom = name;
-      // Le nom d'un lieu fermé glisse sous son cadenas pour rester entier dans l'écran (`shift`, layoutMapLabels).
+      // Le nom d'un lieu fermé glisse sous son cadenas pour rester entier dans l'écran ou laisser la place à un voisin, et
+      // descend d'un pas s'il touche le nom du dessus (`shift`, `drop`, layoutMapLabels).
       const shift = `${Math.round(spot.shift ?? 0)}px`;
       if (node.style.getPropertyValue('--nom-decale') !== shift) node.style.setProperty('--nom-decale', shift);
+      const drop = `${Math.round(spot.drop ?? 0)}px`;
+      if (node.style.getPropertyValue('--nom-baisse') !== drop) node.style.setProperty('--nom-baisse', drop);
     }
   }, [openPlaces]);
 
@@ -98,11 +101,23 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
       const column = buttons.reduce((m, b) => (b.left < COLUMN_ZONE ? Math.max(m, b.right) : m), 0);
       obstacles.current = [{ left: 0, top: 0, right: Math.max(COLUMN_ZONE, column), bottom: s.height }, ...buttons];
     };
+    // Une pastille de lieu ouvert se mesure entière et serrée, quelle que soit sa forme du moment (sa forme est remise
+    // aussitôt, avant que la page se dessine).
+    const measure = (node: HTMLElement) => {
+      if (!node.classList.contains('open-world-map-place')) return { w: node.offsetWidth, h: node.offsetHeight };
+      const was = node.dataset.nom;
+      node.dataset.nom = 'oui';
+      const whole = { w: node.offsetWidth, h: node.offsetHeight };
+      node.dataset.nom = 'serre';
+      const narrow = { w: node.offsetWidth, h: node.offsetHeight };
+      if (was === undefined) delete node.dataset.nom;
+      else node.dataset.nom = was;
+      return { ...whole, narrow };
+    };
     const observer = new ResizeObserver((entries) => {
       for (const e of entries) {
         const node = e.target as HTMLElement;
-        // Une pastille réduite à son icône garde la taille de sa pastille entière : c'est elle qu'on cherche à placer.
-        if (node.dataset.lieu && !(node.classList.contains('open-world-map-place') && node.dataset.nom === 'non')) sizes.current.set(node.dataset.lieu, { w: node.offsetWidth, h: node.offsetHeight });
+        if (node.dataset.lieu) sizes.current.set(node.dataset.lieu, measure(node));
       }
       measureObstacles();
       place(last.current);
@@ -144,8 +159,9 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
             onClick={() => onPick(p.id)}
           >
             <span className="open-world-map-place-name">{p.name}</span>
-            {/* L'état de sa construction, à côté de son nom : une icône, jamais la couleur seule ; son mot, accordé, est
-                dit par le bouton. Sans état, l'icône « à explorer » ne se montre que dans la pastille réduite. */}
+            {/* L'état de sa construction, à côté de son nom (dessous dans la pastille serrée) : une icône, jamais la couleur
+                seule ; son mot, accordé, est dit par le bouton. Sans état, l'icône « à explorer » ne se montre que dans la pastille
+                réduite. */}
             <span className="open-world-map-state" data-etat={states[p.id] ?? 'a-explorer'} aria-hidden="true">
               <Icon name={islandStateIcon(states[p.id] ?? 'a-explorer')} />
             </span>
