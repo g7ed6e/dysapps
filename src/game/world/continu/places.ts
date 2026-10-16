@@ -1,4 +1,4 @@
-// Les lieux du prototype (le Phare, les Quais, les Filets, les Écluses, les Marais salants) : des volumes simples dessinés par le code, en
+// Les lieux du prototype (le Phare, les Quais, les Filets, les Écluses, les Marais salants, la Turbine) : des volumes simples dessinés par le code, en
 // aplats francs (le low poly d'Archipéo), dans le repère du lieu (le centre au sol en 0, le nord vers −z). Chaque lieu
 // est sa propre construction (GD-20, lot 1, « le lieu se rebâtit lui-même ») : une ruine, toujours là, puis ses
 // volumes rangés par étape (le corps, le haut, les abords) et par rangée, que les parties de la grille posent
@@ -78,6 +78,21 @@ const C = {
   clay: 0xb59a72,
   clayTop: 0xc7ad83,
   sandFill: 0xd8bd88,
+  // La Turbine (lot L6a, directeur artistique) : la brique et son ombre, le fer du carter, le cuivre des conduites, le
+  // bois clair, l'eau laiteuse de la source chaude (distincte du lagon et des bassins) et ses cercles ; la vapeur, en
+  // deux valeurs claires de la Brume, jamais de gris foncé. La ruine : brique et fer délavés, jamais sombres.
+  brick: 0xb5653f,
+  brickShade: 0x8e4a2e,
+  iron: 0x2f3e48,
+  copper: 0xc07a3e,
+  lightWood: 0xdaa66a,
+  spring: 0x8fcfc3,
+  springRing: 0xbfe6dd,
+  // La vapeur : la Brume du pack et son ombre, à un cran près, que rien d'autre ne prend dans le monde (`STEAM_COLORS`).
+  steam: 0xe6ece4,
+  steamShade: 0xc8d2cf,
+  wornBrick: 0xb89a86,
+  wornIron: 0x8c969b,
 } as const;
 
 /** Les volumes d'un lieu en construction : `add(stage, row, draw)`, et `until` pour un volume tombé de la ruine. */
@@ -596,6 +611,250 @@ function saltworks(add: Add): void {
   });
 }
 
+/**
+ * La Turbine (lot L6a), dans son repère (le lieu n'est pas tourné : sa face au sud, vers la caméra) : la source chaude à
+ * l'ouest (son milieu, le rayon de sa margelle) ; la chaudière couchée sur son massif de briques (son bout ouest, sa
+ * longueur, son rayon, son axe à `axis` au-dessus du sol, son milieu en z) ; le rotor dans son carter, à l'est (son
+ * moyeu, le rayon du disque, la longueur des aubes, leur nombre, l'épaisseur du disque, le rayon et l'épaisseur du
+ * carter, `sweep` : l'avance de la pointe d'une aube sur son pied, en radians) ; l'évent de briques et son panache ;
+ * l'arbre qui sort du carter vers l'est, jusqu'à son palier.
+ */
+export const ENGINE = {
+  spring: { x: -4.6, z: 0.6, r: 1.3 },
+  boiler: { x0: -2.3, length: 3.1, r: 0.72, axis: 1.45, z: -0.6, massif: 0.75 },
+  rotor: { x: 3.4, y: 2.55, z: -1, r: 1.8, blade: 0.42, blades: 24, sweep: 0.2, depth: 0.3, casing: 2.45, casingDepth: 1.2 },
+  vent: { x: -1.75, z: -0.6, top: 3.35 },
+  shaft: { y: 1.15, to: 7 },
+} as const;
+
+/**
+ * La couleur du rotor de la Turbine (un acier bleuté, plus clair que le fer du carter), que lui seul porte dans le monde :
+ * la vue fait tourner ses sommets autour de son moyeu, face au sud, dans le matériau des lieux, sans appel de plus
+ * (scene.ts, `unshadedLamp`) ; à l'arrêt pendant toute question et avec « Réduire les animations ».
+ */
+export const ENGINE_ROTOR_COLOR = 0x6f8a98;
+
+/** Le moyeu du rotor de la Turbine, dans le monde : il tourne autour de lui, dans le plan face au sud (x, y). */
+export function engineRotorHub(): { x: number; y: number; z: number } {
+  const c = placeById('engine').center;
+  const R = ENGINE.rotor;
+  return { x: c.x + R.x, y: standingHeight(heightAt(c)) + R.y, z: c.z + R.z };
+}
+
+/** Un point d'un cercle du plan x, y, autour de (`cx`, `cy`), à l'angle `a`. */
+const onCircle = (cx: number, cy: number, r: number, a: number): [number, number] => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+
+/**
+ * Le rotor de la Turbine, debout, sa face au sud, son moyeu en (`at.x`, `at.y`), de `at.z` à `at.z + depth` : le disque
+ * plein, ses aubes courtes et nombreuses penchées dans le sens de la marche (des godets, pas des dents), le moyeu bombé.
+ * `missing` : les aubes qui manquent (la ruine) ; `place` : le repère (debout, ou couché à plat dans l'herbe, `pitch`).
+ */
+function engineRotor(b: FacetBuilder, at: { x: number; y: number; z: number; pitch?: number }, color: number, missing: readonly number[] = []): void {
+  const R = ENGINE.rotor;
+  const base = { x: at.x, y: at.y, z: at.z, pitch: at.pitch ?? 0 };
+  const disc: [number, number][] = Array.from({ length: 16 }, (_, k) => onCircle(0, 0, R.r, (2 * Math.PI * k) / 16));
+  b.extrude(base, disc, R.depth, color);
+  // Le moyeu, en saillie des deux côtés.
+  const hub: [number, number][] = Array.from({ length: 8 }, (_, k) => onCircle(0, 0, 0.38, (2 * Math.PI * k) / 8));
+  b.extrude({ ...base, z: at.z - 0.12 }, hub, R.depth + 0.24, color);
+  for (let k = 0; k < R.blades; k++) {
+    if (missing.includes(k)) continue;
+    const a = (2 * Math.PI * k) / R.blades;
+    // Une aube fine, couchée dans le sens de la marche : son pied sur le disque, sa pointe plus loin (une hélice de
+    // turbine, jamais une dent d'engrenage). Un triangle épaissi : huit facettes.
+    const foot = 0.08 / R.r;
+    const outline: [number, number][] = [onCircle(0, 0, R.r - 0.1, a - foot), onCircle(0, 0, R.r + R.blade, a + R.sweep), onCircle(0, 0, R.r - 0.1, a + foot)];
+    b.extrude({ ...base, z: at.z - 0.04 }, outline, R.depth + 0.08, color);
+  }
+}
+
+/**
+ * Le carter de la Turbine : un demi-tambour de fer qui couvre la moitié basse du rotor, devant comme derrière, sa
+ * tranche plate à la hauteur du moyeu (le rotor en sort par le haut), de `at.z` à `at.z + depth`.
+ */
+function engineCasing(b: FacetBuilder, at: { x: number; y: number; z: number; pitch?: number; yaw?: number }, color: number, face: number): void {
+  const R = ENGINE.rotor;
+  const half: [number, number][] = Array.from({ length: 11 }, (_, k) => onCircle(0, 0, R.casing, Math.PI + (Math.PI * k) / 10));
+  b.extrude(at, half, R.casingDepth, color, face);
+}
+
+/** La chaudière : un cylindre couché le long de x, de `x0` sur `length`, son axe à `y`, son dôme de cuivre. */
+function engineBoiler(b: FacetBuilder, x0: number, y: number, z: number, color: number, hoop: number, yaw = Math.PI / 2): void {
+  const B = ENGINE.boiler;
+  b.drum({ x: x0, y, z, yaw, pitch: Math.PI / 2 }, B.r, B.length, 12, color, color);
+  // Deux cerclages de cuivre : le cylindre se lit comme une chaudière, pas comme un bloc.
+  const ax = Math.sin(yaw),
+    az = Math.cos(yaw);
+  for (const u of [0.45, B.length - 0.6]) b.band({ x: x0 + ax * u, y, z: z + az * u, yaw, pitch: Math.PI / 2 }, B.r + 0.05, 0.16, 12, hoop);
+}
+
+/**
+ * La Turbine (lot L6a). Avant : la source bouchée de galets, sa margelle usée ; le massif de briques ébréché ; la
+ * chaudière couchée dans l'herbe ; le rotor couché à plat, deux aubes manquantes, et son carter ouvert à côté. Le corps :
+ * la source dégagée (son eau laiteuse, ses cercles), le massif et la chaudière redressée, puis les conduites de cuivre.
+ * Le haut : le rotor dans son carter et l'arbre vers l'est, l'évent de briques, puis son panache (l'étape qui porte les
+ * traces). Les abords : le chemin de la porte, un muret de pierres sèches, la rigole vers la rivière. Ce qui gît dans la
+ * ruine s'en va quand ce qui le relève se pose, jamais en double. Sur le replat de la rive est (terrain.ts).
+ */
+function engine(add: Add): void {
+  const S = ENGINE.spring;
+  const B = ENGINE.boiler;
+  const R = ENGINE.rotor;
+  const V = ENGINE.vent;
+  const g = siteGround('engine');
+  // La source bouchée : sa margelle usée, ébréchée, et un tas de galets dessus ; elle s'en va quand la source est dégagée.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      b.prism({ x: S.x, y: SINK, z: S.z }, S.r, S.r * 0.96, 0.22 - SINK, 10, C.worn, C.wornTop);
+      for (const [dx, dz, r, h] of [
+        [-0.3, -0.2, 0.55, 0.42],
+        [0.45, 0.2, 0.42, 0.34],
+        [-0.15, 0.55, 0.36, 0.28],
+      ] as const)
+        b.prism({ x: S.x + dx, y: 0.2, z: S.z + dz, yaw: dx }, r, r * 0.55, h, 6, C.darkStone, C.stone);
+    },
+    { stage: 0, row: 0 },
+  );
+  // Le massif ébréché : deux bouts de briques délavées, à des hauteurs inégales ; il s'en va quand le massif se relève.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      b.box({ x: B.x0 + 0.9, y: SINK, z: B.z }, [1.7, 0.5 - SINK, 1.5], C.wornBrick, C.wornTop);
+      b.box({ x: B.x0 + 2.5, y: SINK, z: B.z + 0.1, yaw: 0.15 }, [1, 0.3 - SINK, 1.3], C.wornBrick, C.wornTop);
+    },
+    { stage: 0, row: 0.5 },
+  );
+  // La chaudière couchée dans l'herbe, au nord du massif, de travers ; relevée avec lui.
+  add('ruine', 0, (b) => engineBoiler(b, B.x0 - 0.2, B.r - 0.05, B.z - 2.2, C.wornIron, C.wornIron, Math.PI / 2 - 0.35), { stage: 0, row: 0.5 });
+  // Le rotor couché à plat dans l'herbe, deux aubes manquantes, et son carter ouvert à côté, sur le flanc ; le haut les
+  // relève.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      engineRotor(b, { x: R.x - 0.6, y: 0.05, z: 2.1, pitch: -Math.PI / 2 }, C.wornIron, [4, 5]);
+      engineCasing(b, { x: R.x + 2.4, y: 0, z: -2.3, pitch: -Math.PI / 2, yaw: 0.5 }, C.wornIron, C.wornIron);
+    },
+    { stage: 1, row: 0 },
+  );
+  // Le corps : la source dégagée, sa margelle de pierre, son eau laiteuse et ses trois cercles aplatis, immobiles (le
+  // bouillonnement ; elle ne fume pas).
+  add(0, 0, (b) => {
+    b.prism({ x: S.x, y: SINK, z: S.z }, S.r, S.r, 0.32 - SINK, 10, C.darkStone, C.stone);
+    b.prism({ x: S.x, y: 0.3, z: S.z }, S.r - 0.22, S.r - 0.22, 0.03, 10, C.spring);
+    for (const [r, color] of [
+      [0.78, C.springRing],
+      [0.54, C.spring],
+      [0.3, C.springRing],
+    ] as const)
+      b.prism({ x: S.x, y: 0.33, z: S.z }, r, r, 0.012, 10, color);
+  });
+  // Le massif de briques, la chaudière redressée dessus, son dôme de cuivre.
+  add(0, 0.5, (b) => {
+    b.box({ x: B.x0 + B.length / 2, y: SINK, z: B.z }, [B.length + 0.3, B.massif - SINK, 1.5], C.brickShade, C.brick);
+    engineBoiler(b, B.x0, B.axis, B.z, C.iron, C.copper);
+    b.prism({ x: B.x0 + B.length / 2 + 0.3, y: B.axis + B.r - 0.08, z: B.z }, 0.32, 0.26, 0.42, 8, C.copper);
+  });
+  // Les conduites de cuivre : de la source au pied de la chaudière ; du dôme jusqu'au carter, sur un pilier de briques
+  // (la conduite ne reste jamais en l'air avant le haut).
+  add(0, 0.67, (b) => {
+    const dome = { x: B.x0 + B.length / 2 + 0.3, y: B.axis + B.r + 0.3, z: B.z };
+    const over = { x: R.x - R.casing + 0.35, y: dome.y + 0.35, z: R.z + R.casingDepth / 2 - 0.1 };
+    b.beam({ x: S.x + S.r - 0.2, y: 0.28, z: S.z }, { x: B.x0 + 0.15, y: 0.55, z: B.z + 0.35 }, 0.14, C.copper);
+    b.beam(dome, { x: dome.x, y: over.y, z: dome.z }, 0.16, C.copper);
+    b.beam({ x: dome.x, y: over.y, z: dome.z }, over, 0.16, C.copper);
+    b.beam(over, { x: over.x, y: R.y - 0.05, z: over.z }, 0.16, C.copper);
+    b.box({ x: over.x, y: SINK, z: over.z }, [0.42, R.y - 0.1 - SINK, 0.42], C.brickShade, C.brick);
+  });
+  // Le haut : le rotor dans son carter, sur son socle de pierre, l'arbre qui sort du carter vers l'est jusqu'à son palier.
+  add(1, 0, (b) => {
+    const front = R.z - R.casingDepth / 2;
+    b.box({ x: R.x, y: SINK, z: R.z }, [2 * R.casing + 0.3, 0.12 - SINK, R.casingDepth + 0.4], C.darkStone, C.stone);
+    engineRotor(b, { x: R.x, y: R.y, z: R.z - R.depth / 2 }, ENGINE_ROTOR_COLOR);
+    engineCasing(b, { x: R.x, y: R.y, z: front }, C.iron, C.iron);
+    const shaft = ENGINE.shaft;
+    b.beam({ x: R.x + R.casing - 0.2, y: shaft.y, z: R.z }, { x: shaft.to, y: shaft.y, z: R.z }, 0.16, C.iron);
+    b.box({ x: shaft.to - 0.15, y: SINK, z: R.z }, [0.36, shaft.y + 0.1 - SINK, 0.5], C.brickShade, C.brick);
+  });
+  // L'évent de briques, à l'ouest de la chaudière, sur son massif.
+  add(1, 0.5, (b) => {
+    b.box({ x: V.x, y: B.axis, z: V.z }, [0.62, V.top - B.axis, 0.62], C.brickShade, C.brick);
+    b.box({ x: V.x, y: V.top, z: V.z }, [0.78, 0.14, 0.78], C.brick, C.brickShade);
+  });
+  // Le panache : des aplats de vapeur immobiles, en deux valeurs claires, au-dessus d'un écart d'air clair (jamais collés à
+  // l'évent), qui s'étirent vers l'est.
+  add(1, 0.67, (b) => engineSteam(b, { x: V.x, y: V.top + 0.14 + STEAM_GAP, z: V.z }, 1.2));
+  // Les abords : le chemin de sable tassé, de la porte du lieu (où arrive le chemin du réseau, plan6e.ts) jusque devant la
+  // chaudière.
+  add(2, 0, (b) => {
+    const c = placeById('engine').center;
+    const at = PATH_NODES.find((n) => n.id === 'engine')!.at;
+    const door = { x: at.x - c.x, z: at.z - c.z };
+    const foot = { x: B.x0 + B.length / 2, z: B.z + 1.25 };
+    const [dx, dz] = [foot.x - door.x, foot.z - door.z];
+    b.box({ x: (door.x + foot.x) / 2, y: 0, z: (door.z + foot.z) / 2, yaw: Math.atan2(dx, dz) }, [1.1, 0.03, Math.hypot(dx, dz) + 0.5], C.mud, COLORS_6E.path);
+  });
+  // Le muret de pierres sèches, bas, à l'ouest et au nord, derrière la source et la chaudière : des pierres de hauteurs
+  // inégales.
+  add(2, 0.5, (b) => {
+    for (const [x, z, w, d, h] of ENGINE_WALL) b.box({ x, y: SINK, z, yaw: 0.04 * x }, [w, h - SINK, d], C.darkStone, C.stone);
+  });
+  // La rigole : l'eau de la source qui descend vers la rivière, à l'ouest, posée sur la pente, bordée de pierre.
+  add(2, 0.67, (b) => {
+    const xs = [S.x - S.r + 0.1, -8.5, -11, -13.5, -15.6];
+    for (let k = 0; k + 1 < xs.length; k++) {
+      const x0 = xs[k],
+        x1 = xs[k + 1];
+      const y = Math.min(g.at(x0, S.z), g.at(x1, S.z));
+      b.box({ x: (x0 + x1) / 2, y: y - 0.4, z: S.z, yaw: 0 }, [x0 - x1 + 0.05, 0.4 + 0.02, 0.8], C.darkStone, C.stone);
+      b.box({ x: (x0 + x1) / 2, y: y - 0.4, z: S.z }, [x0 - x1 + 0.06, 0.4 + 0.035, 0.42], C.darkStone, C.spring);
+    }
+  });
+}
+
+/**
+ * Les deux teintes de la vapeur de la Turbine (la Brume du pack, #E5EBE3, et son ombre, #C9D3D0, à un cran près, que
+ * rien d'autre ne prend dans le monde) : la vue les dessine sans ombre, de leur couleur même (scene.ts, `unshadedLamp`),
+ * pour que le panache et la bouffée se lisent en aplats clairs, jamais en gris foncé.
+ */
+export const STEAM_COLORS = [C.steam, C.steamShade] as const;
+
+/** L'écart d'air clair entre l'évent (ou la soupape) et le premier aplat de vapeur. */
+export const STEAM_GAP = 0.45;
+
+/**
+ * Un nuage de vapeur, à l'échelle `k`, son bas en `at` : des coussins arrondis (deux troncs à huit pans, l'un évasé,
+ * l'autre qui se referme), le plus grand au milieu, en deux valeurs claires de la Brume, qui montent en s'étirant vers
+ * l'est. Immobile, sans transparence.
+ */
+export function engineSteam(b: FacetBuilder, at: { x: number; y: number; z: number }, k: number): void {
+  for (const [dx, dy, r, h, color] of STEAM_PUFFS) {
+    const p = { x: at.x + dx * k, y: at.y + dy * k, z: at.z, yaw: 0.2 + dx };
+    b.prism(p, r * k * 0.7, r * k, h * k * 0.45, 8, color, color);
+    b.prism({ ...p, y: p.y + h * k * 0.45 }, r * k, r * k * 0.55, h * k * 0.55, 8, color, C.steam);
+  }
+}
+
+/** Les coussins d'un nuage de vapeur : leur décalage (vers l'est, vers le haut), leur rayon, leur hauteur, leur teinte. */
+const STEAM_PUFFS: readonly (readonly [number, number, number, number, number])[] = [
+  [0, 0, 0.5, 0.55, C.steamShade],
+  [0.55, 0.35, 0.68, 0.7, C.steam],
+  [1.25, 0.62, 0.55, 0.6, C.steam],
+  [1.85, 0.95, 0.4, 0.45, C.steamShade],
+];
+
+/** Les pierres du muret de la Turbine : leur milieu, leur largeur, leur profondeur, leur haut. */
+const ENGINE_WALL: readonly (readonly [number, number, number, number, number])[] = [
+  [-6.6, -1.1, 0.45, 1.5, 0.5],
+  [-6.6, -2.7, 0.45, 1.6, 0.4],
+  [-5.3, -3.9, 2.2, 0.45, 0.48],
+  [-3.2, -3.95, 2.0, 0.45, 0.38],
+  [-1.2, -3.9, 2.0, 0.45, 0.46],
+];
+
 /** Les cônes de sel des Marais salants, à l'est de la grille (depuis son bord est) : écart, z, rayon. */
 const SALT_CONES: readonly (readonly [number, number, number])[] = [
   [1.1, -0.3, 0.55],
@@ -603,7 +862,7 @@ const SALT_CONES: readonly (readonly [number, number, number])[] = [
   [1.0, 2.6, 0.52],
 ];
 
-const DRAWN: Record<PlaceId, (add: Add) => void> = { phare, quais, filets, ecluses, saltworks };
+const DRAWN: Record<PlaceId, (add: Add) => void> = { phare, quais, filets, ecluses, saltworks, engine };
 
 const pieces = new Map<PlaceId, PlacePiece[]>();
 

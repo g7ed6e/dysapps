@@ -40,6 +40,8 @@ const HEAVIEST: readonly { place: PlaceId; scene: ItemScene }[] = [
   // Les Marais salants (lot L5) : la jauge du bassin (dix graduations), et le bassin au repos des autres missions.
   { place: 'saltworks', scene: { kind: 'jauge', start: 9, d: 10, n: 9 } },
   { place: 'saltworks', scene: { kind: 'saline' } },
+  // La Turbine (lot L6a) : le C neutre, la soupape levée et sa bouffée (aucun objet de réponse).
+  { place: 'engine', scene: { kind: 'column' } },
 ];
 
 /**
@@ -61,9 +63,10 @@ function questionCost(): { triangles: number; calls: number } {
 }
 
 /**
- * Une scénette (lot 2, le Phare ; lot 3, les Quais ; lot 4, les Filets et les Écluses ; lot L5, les Marais salants), la
- * plus chargée : le décor de près (la galerie, sa rambarde, la gardienne ; le docker ; le plancher de séchage et la
- * pêcheuse ; le quai du sas, son canal, sa porte et l'éclusier ; le bord du bassin et la saunière), un maillage fait à
+ * Une scénette (lot 2, le Phare ; lot 3, les Quais ; lot 4, les Filets et les Écluses ; lot L5, les Marais salants ; lot
+ * L6a, la Turbine), la plus chargée : le décor de près (la galerie, sa rambarde, la gardienne ; le docker ; le plancher
+ * de séchage et la pêcheuse ; le quai du sas, son canal, sa porte et l'éclusier ; le bord du bassin et la saunière ; le
+ * dallage et la machiniste), un maillage fait à
  * l'arrivée et libéré au départ, du matériau du terrain, au plus fort de la réussite. L'objet de la réussite et sa
  * lumière passent par le maillage de la réaction (la réaction de l'item cède sa place à l'objet qui va se poser, puis à
  * la lumière ; au Phare, rien : les cloches s'effacent) : leurs triangles comptent ici, pas leur appel. Kéo y reste,
@@ -98,12 +101,12 @@ function successTriangles(place: PlaceId): number {
 
 /**
  * Les lieux qui ont leur scénette : tous, le Phare (lot 2), les Quais (lot 3), les Filets et les Écluses (lot 4), les
- * Marais salants (lot L5).
+ * Marais salants (lot L5), la Turbine (lot L6a).
  */
 const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
 
 /**
- * Les lieux (GD-20, lot 1) : les cinq lieux entiers (leur ruine et leurs trois étapes : chaque lieu se rebâtit
+ * Les lieux (GD-20, lot 1) : les six lieux entiers (leur ruine et leurs trois étapes : chaque lieu se rebâtit
  * lui-même ; ce qui était tombé, relevé) et les traces de toutes leurs scénettes (aux Quais, une par mission, GD-20,
  * point 8), réunis en un maillage, refait à chaque pose (jamais par image), avec la lumière de la lanterne du Phare
  * allumée (sa couleur dessinée sans ombre, dans le même matériau) ; le lieu suivi, seul hors de la brume, dans un
@@ -151,7 +154,7 @@ export function groundCost(): { triangles: number; calls: number; near: number; 
 }
 
 /**
- * Ce que coûte le monde continu, environ : le sol autour de Kéo, tout le reste visible à la fois ; la brume des cinq
+ * Ce que coûte le monde continu, environ : le sol autour de Kéo, tout le reste visible à la fois ; la brume des six
  * lieux, et le second maillage du banc qui se lève (moins d'une seconde).
  */
 export function openWorldCost(): OpenWorldCost[] {
@@ -175,7 +178,7 @@ export function openWorldCost(): OpenWorldCost[] {
 /**
  * La Carte des lieux ouverts (lot 3), le pire : toute l'île de loin dans l'anneau de loin (celui de près vidé), la mer,
  * les chemins, les lieux (sur la Carte, aucun n'est hors de la brume : un seul maillage, mais compté à deux appels, le
- * pire), la brume des lieux fermés (les cinq, et le banc qui se lève), Kéo. Ni question, ni scénette, ni pose n'y
+ * pire), la brume des lieux fermés (les six, et le banc qui se lève), Kéo. Ni question, ni scénette, ni pose n'y
  * sont ouvertes : elle ne s'ouvre pas pendant une question, et l'ouvrir finit la pose.
  */
 export function mapCost(): { triangles: number; calls: number } {

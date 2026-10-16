@@ -85,7 +85,7 @@ export const WHOLE: PartShape = [
  * d'amont des Écluses, le hangar à sel des Marais salants (le haut). Tant que cette étape n'est pas posée, la trace
  * attend : rien ne flotte dans le vide.
  */
-const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = { phare: 2, quais: 1, filets: 2, ecluses: 1, saltworks: 1 };
+const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = { phare: 2, quais: 1, filets: 2, ecluses: 1, saltworks: 1, engine: 1 };
 
 /**
  * L'étape qui porte la trace d'un lieu est-elle posée ? Sa scénette se joue alors sur elle (la galerie du Phare, le

@@ -29,7 +29,9 @@ describe('Un lieu porte toutes les missions de son île (GD-20, point 8)', () =>
     expect(missionsOfPlace(placeById('filets'), bornes.filter((b) => b.ile !== 'french-6e-grammar-spelling'))).toEqual([]);
   });
 
-  it('les cinq lieux du 6e jouent toutes leurs missions en scénette (les Filets complets au lot L4, les Marais salants au lot L5)', () => {
+  it('les six lieux du 6e jouent toutes leurs missions en scénette (les Filets complets au lot L4, les Marais salants au lot L5, la Turbine au lot L6a)', () => {
+    expect(placeById('engine').scenes).toEqual(['states-of-matter', 'motion-signals', 'energy-circuits', 'materials-light']);
+    expect(playsInPlace(placeById('engine'), 'energy-circuits')).toBe(true);
     expect(placeById('saltworks').scenes).toEqual(['ordering', 'operations', 'scale', 'large-numbers', 'rounding-products']);
     expect(playsInPlace(placeById('saltworks'), 'scale')).toBe(true);
     expect(placeById('quais').scenes).toEqual(['times-tables', 'make-ten', 'doubles-halves', 'word-problems', 'measures']);

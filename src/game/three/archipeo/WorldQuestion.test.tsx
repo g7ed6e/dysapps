@@ -7,6 +7,8 @@ import { BloclandProvider } from '../../BloclandContext';
 import type { OpenWorld } from './scene';
 import { JAUGE_INSTRUCTION, JAUGE_PROMPT } from '../../world/continu/questions';
 import { WorldQuestion } from './WorldQuestion';
+import { PlaceDocument } from './placeScreen';
+import { loadExercise } from '../../exercises';
 import enclos from '../../exercises/data/french-6e-grammar-spelling-word-classes-1.json';
 
 // La scène 3D n'est pas là sous jsdom : la question ne lui demande que de poser les objets et d'allumer la lampe.
@@ -24,7 +26,7 @@ beforeEach(() => {
 // Les tailles et les rectangles simulés ne passent jamais d'un test à l'autre (relecture du lot L5, expert frontend).
 afterEach(() => vi.restoreAllMocks());
 
-function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks', mission: string, plain = false) {
+function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine', mission: string, plain = false) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
@@ -500,5 +502,90 @@ describe('Les Marais salants (GD-20, point 8, lot L5)', () => {
     // « Scène » : la jauge et ses textes reviennent.
     await user.click(screen.getByRole('button', { name: /Scène/ }));
     expect(prompt()).toBe(JAUGE_PROMPT);
+  });
+});
+
+describe('La Turbine, ses quatre missions en C (GD-20, point 8, lot L6a)', () => {
+  const answers = () => [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')];
+  const panel = () => document.querySelector<HTMLElement>('.quiz.in-world')!;
+  const follows = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+  // Le même ordre dans la scène et dans « Vue simple » : la phrase, les réponses, le document, puis le reste.
+  const inOrder = () => {
+    const head = panel().querySelector('.question-head')!;
+    const list = panel().querySelector('.world-answers')!;
+    expect(follows(head, list)).toBe(true);
+    const doc = panel().querySelector('.world-document');
+    if (doc) {
+      expect(follows(list, doc)).toBe(true);
+      for (const after of panel().querySelectorAll('.world-question-actions, .world-question-aid')) expect(follows(doc, after)).toBe(true);
+    }
+  };
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
+  });
+
+  const start = async (mission: string) => {
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    renderPlace('engine', mission);
+    expect(await screen.findByText('La machiniste')).toBeInTheDocument();
+    const go = screen.queryByRole('button', { name: /Commencer/ });
+    if (go) await user.click(go);
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+    await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
+    return user;
+  };
+  const last = () => vi.mocked(world.question).mock.calls.at(-1)![0]!;
+  // Les exercices de l'île, chargés à la demande, une fois avant les tests (le premier ne paie pas leur chargement).
+  beforeAll(async () => {
+    await Promise.all(['states-of-matter', 'motion-signals', 'energy-circuits', 'materials-light'].map((m) => loadExercise(`physics-chemistry-6e-matter-energy-${m}-1`)));
+  });
+
+  it.each(['states-of-matter', 'motion-signals', 'energy-circuits', 'materials-light'])(
+    '%s : la scène neutre, les réponses dans la colonne, dans le même ordre qu’en « Vue simple »',
+    async (mission) => {
+      const user = await start(mission);
+      expect(last()).toMatchObject({ place: 'engine', mission, item: { scene: { kind: 'column' }, answered: false } });
+      expect(last().layout.slots).toEqual([]);
+      expect(panel().classList.contains('reponses-colonne')).toBe(true);
+      expect(panel().classList.contains('mode-c')).toBe(true);
+      for (const a of answers()) expect(a.style.left).toBe('');
+      inOrder();
+      await user.click(screen.getByRole('button', { name: /Vue simple/ }));
+      expect(panel().classList.contains('simple')).toBe(true);
+      expect(panel().classList.contains('mode-c')).toBe(true);
+      inOrder();
+    },
+  );
+
+  it('l’objet témoin ne réagit qu’à une bonne réponse : un essai faux ou une correction laissent la soupape au repos', async () => {
+    const user = await start('energy-circuits');
+    for (let i = 0; i < answers().length && !document.querySelector('.next-button'); i++) {
+      if (answers()[i].disabled) continue;
+      await user.click(answers()[i]);
+      if (!document.querySelector('.next-button')) expect(last().item.answered).toBe(false);
+    }
+    expect(document.querySelector('.next-button')).not.toBeNull();
+    // « Bravo » (au premier ou au deuxième essai) : la soupape se lève ; une correction : rien ne bouge.
+    const bravo = /Bravo/.test(panel().textContent ?? '');
+    await vi.waitFor(() => expect(last().item.answered).toBe(bravo));
+  });
+});
+
+describe('Le document d’un C (lot L6a)', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('toujours ouvert : « Écouter le document » en tête, une ligne par information', () => {
+    vi.stubGlobal('speechSynthesis', { speak: vi.fn(), cancel: vi.fn(), getVoices: () => [] });
+    vi.stubGlobal('SpeechSynthesisUtterance', class {});
+    render(
+      <SettingsProvider>
+        <PlaceDocument text={'Les sources d’énergie\nÉoliennes : le vent\nBarrage : l’eau'} spoken="Les sources d’énergie." />
+      </SettingsProvider>,
+    );
+    expect(screen.getByRole('button', { name: /^Écouter le document : Les sources d’énergie/ })).toBeInTheDocument();
+    expect(document.querySelectorAll('.world-document .notice-line')).toHaveLength(3);
+    expect(document.querySelector('details, [aria-expanded]')).toBeNull();
   });
 });

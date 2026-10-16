@@ -20,12 +20,14 @@ import { COLORS_6E, DECK_HEIGHT, placeById, type PlaceId } from './plan6e';
 import {
   ANSWER_LAYOUT,
   ECLUSES_TRACE_SPOTS,
+  ENGINE_TRACE_SPOTS,
   LOCK,
   PHARE_GALLERY,
   PHARE_TRACE_SPOTS,
   FILETS_TRACE_SPOTS,
   QUAIS_TRACE_SPOTS,
   QUAY,
+  ENGINE_PAVING_RISE,
   SALTWORKS_TRACE_SPOTS,
   filetsBasketAt,
   fullBasket,
@@ -67,6 +69,8 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   ecluses: { role: 'L’éclusier', greeting: null, placement: 'rangee' },
   // Lot L5 : « la saunière » (directeur artistique, consultant Archipéo).
   saltworks: { role: 'La saunière', greeting: null, placement: 'rangee' },
+  // Lot L6a : « la machiniste » (directeur artistique : « la mécanicienne » ferait doublon avec Zia).
+  engine: { role: 'La machiniste', greeting: null, placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -383,6 +387,18 @@ const SITES: Record<PlaceId, ScenetteSite> = {
     subject: { halfWidth: 4.1, bottom: -0.5, top: 3.6, depth: 0.4 },
     pitch: (20 * Math.PI) / 180,
   },
+  // La Turbine (lot L6a) : Kéo et la machiniste sur le dallage devant la chaudière, de part et d'autre de la soupape
+  // (l'objet témoin) ; la chaudière et son évent derrière eux, le rotor dans son carter derrière la machiniste, vus du sud.
+  engine: {
+    floor: () => {
+      const s = sceneSpot('engine');
+      return { ...s, y: s.y + ENGINE_PAVING_RISE };
+    },
+    keo: { dx: -2.6, dz: 0.25, scale: 0.6, yaw: Math.PI - 0.4 },
+    habitant: { dx: 2.6, dz: 0.25 },
+    subject: { halfWidth: 3.7, bottom: -0.4, top: 3.2, depth: 0.3 },
+    pitch: (18 * Math.PI) / 180,
+  },
 };
 
 /**
@@ -477,6 +493,16 @@ export function scenetteExit(place: PlaceId, posed = true, mission?: string): { 
     const g = { x: c.x + o.x, z: c.z + o.z };
     return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + SALTWORKS_TRACE_LIFT[key], z: g.z } };
   }
+  if (place === 'engine') {
+    // La trace de la mission jouée (GD-20, point 8, lot L6a) : la caméra garde le milieu de sa hauteur ; Kéo se tient au
+    // sud-ouest de la porte, sur le chemin.
+    const at = { x: c.x + EXIT_SPOTS.engine.x, z: c.z + EXIT_SPOTS.engine.z };
+    if (!mission || !Object.hasOwn(ENGINE_TRACE_SPOTS, mission)) return { at, keep: placeKeep(place) };
+    const key = mission as keyof typeof ENGINE_TRACE_SPOTS;
+    const o = ENGINE_TRACE_SPOTS[key];
+    const g = { x: c.x + o.x, z: c.z + o.z };
+    return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + ENGINE_TRACE_LIFT[key], z: g.z } };
+  }
   if (place === 'ecluses') {
     // La trace de la mission jouée (GD-20, point 8, lot L2) : la porte d'amont ouverte des Nénuphars (le milieu du lieu),
     // ou ce qu'une autre mission a laissé (la barque, la table, l'escalier, la lanterne du sas), à un pas au-dessus du pied du lieu.
@@ -509,10 +535,13 @@ const TRACE_LIFT = 1;
 const FILETS_TRACE_LIFT = { 'word-classes': 0.3, sorting: 0.8, 'e-er-ez': 1.8 } as const;
 
 /** Où Kéo se tient au retour des Filets et des Écluses, depuis le centre du lieu. */
-const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 }, saltworks: { x: -6.2, z: -1.8 } } as const;
+const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 }, saltworks: { x: -6.2, z: -1.8 }, engine: { x: -2.2, z: 6.4 } } as const;
 
 /** La hauteur gardée par la caméra au retour d'une trace des Marais salants, au-dessus du sol : le milieu de la trace. */
 const SALTWORKS_TRACE_LIFT = { ordering: 0.5, operations: 0.8, scale: 2.6, 'large-numbers': 0.6, 'rounding-products': 0.4 } as const;
+
+/** La hauteur gardée par la caméra au retour d'une trace de la Turbine, au-dessus du sol : le milieu de la trace. */
+const ENGINE_TRACE_LIFT = { 'states-of-matter': 1.6, 'motion-signals': 0.5, 'energy-circuits': 1.3, 'materials-light': 0.6 } as const;
 
 /**
  * Au Phare (GD-20, point 8, lot L3), où Kéo se tient au retour de chaque mission, depuis le centre du lieu, et la trace
@@ -702,6 +731,14 @@ const C = {
   clay: 0xb59a72,
   clayTop: 0xc7ad83,
   pan: 0x5fb3e0,
+  // La machiniste (lot L6a, directeur artistique) : veste bleu lagon, foulard ocre (pas la terre cuite de la brique),
+  // lunettes relevées sur le front, burette d'huile de cuivre ; le dallage de pierre des Écluses devant la chaudière.
+  lagoonCoat: 0x178078,
+  lagoonCoatShade: 0x12695f,
+  ochre: 0xc8923a,
+  goggles: 0x6f8089,
+  copper: 0xc07a3e,
+  trousers: 0x4d6a82,
   // Le filet raccommodé (le même que sur le séchoir, questionScene.ts, `mendedNet`) et ses mailles.
   newRope: 0xc9a36a,
   netLine: 0x6f5e42,
@@ -837,6 +874,41 @@ function sauniere(b: FacetBuilder, place: PlaceId): void {
 }
 
 /**
+ * La machiniste, immobile, en quatre volumes (directeur artistique, consultant Archipéo) : sa veste bleu lagon, son
+ * foulard ocre au cou, la tête, ses lunettes relevées sur le front ; un bras plié devant elle, sa burette d'huile de
+ * cuivre à la main, le bec tendu vers la soupape. Elle ne dit rien.
+ */
+function machiniste(b: FacetBuilder, place: PlaceId): void {
+  const at = scenetteHabitant(place);
+  b.prism(at, 0.4, 0.28, 0.92, 10, C.lagoonCoat, C.lagoonCoatShade);
+  b.prism({ x: at.x, y: at.y + 0.86, z: at.z }, 0.27, 0.22, 0.12, 10, C.ochre);
+  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 10, 7, C.head);
+  // Les lunettes relevées : leur bandeau, et deux verres ronds sur le front.
+  b.prism({ x: at.x, y: at.y + 1.2, z: at.z }, 0.235, 0.235, 0.06, 10, C.trousers);
+  for (const dx of [-0.09, 0.09]) b.drum({ x: at.x + dx, y: at.y + 1.25, z: at.z + 0.2, pitch: Math.PI / 2 }, 0.065, 0.06, 6, C.goggles);
+  // Le bras vers l'ouest (vers la soupape), la burette dans la main : son corps, son bec fin.
+  const hand = { x: at.x - 0.45, y: at.y + 0.62, z: at.z + 0.3 };
+  b.beam({ x: at.x - 0.24, y: at.y + 0.82, z: at.z + 0.06 }, hand, 0.15, C.lagoonCoat);
+  b.prism({ x: hand.x, y: hand.y - 0.2, z: hand.z }, 0.11, 0.06, 0.2, 6, C.copper);
+  b.beam({ x: hand.x - 0.04, y: hand.y - 0.04, z: hand.z }, { x: hand.x - 0.32, y: hand.y + 0.06, z: hand.z }, 0.03, C.copper);
+}
+
+/**
+ * Le dallage de la Turbine (lot L6a) : des dalles de pierre devant la chaudière, sur toute la largeur de la scène, où se
+ * tiennent Kéo et la machiniste ; la soupape (l'objet témoin) au milieu.
+ */
+function enginePaving(b: FacetBuilder): void {
+  const o = floorOf('engine');
+  const depth = sceneDepth('engine');
+  b.box({ x: o.x, y: o.y - depth, z: o.z }, [2 * ENGINE_PAVING.half, depth, ENGINE_PAVING.depth], C.stoneSide, C.stone);
+  // Les joints : deux traits plus sombres en travers, posés sur la pierre.
+  for (const dx of [-ENGINE_PAVING.half / 2, ENGINE_PAVING.half / 2]) b.box({ x: o.x + dx, y: o.y, z: o.z }, [0.05, 0.01, ENGINE_PAVING.depth], C.stoneSide);
+}
+
+/** Le dallage de la Turbine : sa demi-largeur et sa profondeur. */
+const ENGINE_PAVING = { half: 5.2, depth: 2.8 } as const;
+
+/**
  * Le bord du bassin des Marais salants (lot L5) : le muret d'argile où se tiennent Kéo et la saunière, sur toute la
  * largeur de la scène, et derrière lui l'eau du bassin, où se dressent la jauge ou la vanne de l'item.
  */
@@ -956,6 +1028,11 @@ export function scenetteDecor(place: PlaceId, open = false, posed = true): Facet
   if (place === 'saltworks') {
     saltPan(b);
     sauniere(b, place);
+    return b.build();
+  }
+  if (place === 'engine') {
+    enginePaving(b);
+    machiniste(b, place);
     return b.build();
   }
   if (!posed) {

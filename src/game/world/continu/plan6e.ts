@@ -104,10 +104,18 @@ export const RIVER = { line: poly([[1222, 418], [1258, 550], [1242, 730], [1292,
 export const SALT_FLAT = { center: fromPlan([1430, 652]), radius: 9, fade: 5, height: 0.55 } as const;
 
 /**
- * Les lieux du prototype. `saltworks` : les Marais salants (lot L5), le premier lieu neuf, qui reprend l'île des
- * nombres décimaux ; son identifiant reste neutre tant que son nom n'est pas décidé (carte posée au mainteneur).
+ * Le replat de la Turbine (GD-20, point 8, lot L6a), sur la rive est de la rivière, au pied du haut pays : le sol y est
+ * aplani à cette hauteur dans ce rayon (en unités), puis rejoint le sien sur `fade` unités ; la rivière et ses berges ne
+ * bougent pas (seulement sur la terre, loin de l'eau).
  */
-export type PlaceId = 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks';
+export const ENGINE_FLAT = { center: fromPlan([1302, 590]), radius: 8.5, fade: 5, height: 1 } as const;
+
+/**
+ * Les lieux du prototype. `saltworks` : les Marais salants (lot L5), le premier lieu neuf, qui reprend l'île des
+ * nombres décimaux ; son identifiant reste neutre (son nom, choix du mainteneur, 16 octobre 2026).
+ * `engine` : la Turbine (lot L6a), qui reprend l'île de la matière et de l'énergie (physique-chimie).
+ */
+export type PlaceId = 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine';
 
 export interface OpenPlace {
   id: PlaceId;
@@ -130,7 +138,7 @@ export interface OpenPlace {
    * Les missions de l'île qui se jouent déjà en scénette dans le lieu (les autres se jouent sur l'écran habituel, depuis
    * le panneau du lieu, le temps de la transition) : le Troupeau aux Filets ; aux Quais, toutes (GD-20, point 8, lot
    * L1) ; aux Écluses, toutes (lot L2) ; au Phare, toutes (lot L3) ; aux Filets, toutes (lot L4) ; aux Marais salants,
-   * toutes (lot L5).
+   * toutes (lot L5) ; à la Turbine, toutes (lot L6a).
    */
   scenes: readonly string[];
   /** Le centre du modèle au sol, et son quart de tour (en radians autour de la verticale). */
@@ -180,6 +188,20 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
     scenes: ['ordering', 'operations', 'scale', 'large-numbers', 'rounding-products'],
     plan: [1430, 652],
     door: { x: -1, z: 7.4 },
+    yaw: 0,
+    touchRadius: 6.5,
+  },
+  // La Turbine (lot L6a) : sur le replat de la rive est, face au sud ; ses quatre missions se jouent en C, les réponses
+  // dans la colonne (le nom de la fiche validée, gardé par le directeur artistique).
+  {
+    id: 'engine',
+    name: 'La Turbine',
+    at: 'à la Turbine',
+    agree: 'fs',
+    island: 'physics-chemistry-6e-matter-energy',
+    scenes: ['states-of-matter', 'motion-signals', 'energy-circuits', 'materials-light'],
+    plan: [1300, 585],
+    door: { x: -1, z: 7.6 },
     yaw: 0,
     touchRadius: 6.5,
   },
@@ -331,6 +353,11 @@ export const PATH_NODES: readonly PathNode[] = [
   node('sel-5', [1392, 528]),
   node('sel-6', [1418, 592]),
   node('sel-7', [1402, 676]),
+  // Vers la Turbine (lot L6a) : de l'est, une passerelle de planches sur la rivière, puis le chemin contourne le lieu par
+  // le sud et monte à sa porte, au sud, face au lieu (on le voit entier à l'arrivée).
+  node('tur-1', [1236, 614]),
+  node('tur-2', [1268, 610]),
+  node('tur-3', [1290, 632]),
   ...PORT_NODES.map(({ id, at }) => ({ id, at: PORT.toWorld(at[0], at[1]) })),
 ];
 
@@ -357,6 +384,10 @@ export const PATH_EDGES: readonly (readonly [string, string])[] = [
   ['sel-5', 'sel-6'],
   ['sel-6', 'sel-7'],
   ['sel-7', 'saltworks'],
+  ['est-2', 'tur-1'],
+  ['tur-1', 'tur-2'],
+  ['tur-2', 'tur-3'],
+  ['tur-3', 'engine'],
   // L'Escale : la digue du Phare jusqu'au quai, puis la place, le long des façades.
   ['phare', portNode('quai')],
   [portNode('quai'), 'port-place'],

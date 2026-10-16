@@ -24,8 +24,8 @@ describe('Le plan du 6e', () => {
     for (const p of ISLET) expect(insidePolygon(p, LAGOON)).toBe(true);
   });
 
-  it('les cinq lieux reprennent chacun une île du 6e d’aujourd’hui, et leur porte est un nœud du réseau', () => {
-    expect(PLACES.map((p) => p.island).sort()).toEqual(['french-6e-grammar-spelling', 'french-6e-phonology', 'maths-6e-calculation', 'maths-6e-decimals', 'maths-6e-fractions']);
+  it('les six lieux reprennent chacun une île du 6e d’aujourd’hui, et leur porte est un nœud du réseau', () => {
+    expect(PLACES.map((p) => p.island).sort()).toEqual(['french-6e-grammar-spelling', 'french-6e-phonology', 'maths-6e-calculation', 'maths-6e-decimals', 'maths-6e-fractions', 'physics-chemistry-6e-matter-energy']);
     for (const p of PLACES) {
       expect(placeOfIsland(p.island)).toBe(p);
       expect(pathNode(p.door)).toBeDefined();
@@ -199,7 +199,8 @@ describe('Les chemins aimantés', () => {
   it('les rubans des chemins ont leur dessus vers le ciel', () => {
     const f = pathRibbons(ground);
     expect(f.triangles).toBeGreaterThan(100);
-    expect(f.triangles).toBeLessThan(4000);
+    // Six lieux reliés (le chemin de la Turbine, lot L6a, sur 4 172).
+    expect(f.triangles).toBeLessThan(4500);
   });
 });
 
@@ -401,7 +402,9 @@ describe('Les maquettes des lieux', () => {
       const m = modelOfPlace(p.id);
       expect(m.source).toBe('dessine');
       expect(m.facets.triangles).toBeGreaterThan(20);
-      expect(m.facets.triangles).toBeLessThan(800);
+      // La Turbine (lot L6a), une machine entière : 1 042, dans l'estimation du directeur artistique (environ 2 030 avec
+      // ses traces et sa brume).
+      expect(m.facets.triangles).toBeLessThan(p.id === 'engine' ? 1100 : 800);
       expect(m.top).toBeGreaterThan(2);
     }
     expect(modelOfPlace('phare').top).toBeGreaterThan(12);
@@ -426,7 +429,7 @@ describe('Le budget du monde continu', () => {
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
   });
 
-  it('les cinq lieux, leurs constructions et leurs traces en deux appels, la pose d’une partie en un (GD-20, lot 1)', () => {
+  it('les six lieux, leurs constructions et leurs traces en deux appels, la pose d’une partie en un (GD-20, lot 1)', () => {
     const cost = openWorldCost();
     expect(cost.find((c) => c.poste === 'lieux')?.calls).toBe(2);
     expect(cost.find((c) => c.poste === 'pose')?.calls).toBe(1);

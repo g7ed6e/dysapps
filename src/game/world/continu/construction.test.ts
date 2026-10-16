@@ -118,6 +118,27 @@ describe('Le lieu se rebâtit lui-même', () => {
     for (const p of placePieces('saltworks')) expect(p.stage === 'ruine' || p.until === undefined).toBe(true);
   });
 
+  it('à la Turbine, ce qui tombe s’en va quand ce qui le relève arrive : la source, la chaudière, puis le rotor (lot L6a)', () => {
+    const fallen = (shape: PartShape[]) => fallenFacets('engine', shape, ground).triangles;
+    const all = fallen([]);
+    expect(all).toBeGreaterThan(0);
+    // La source dégagée chasse ses galets ; la chaudière redressée, le massif ébréché et la chaudière couchée ; le rotor
+    // sur ses paliers, le rotor couché dans l'herbe : jamais deux fois la même pièce.
+    expect(fallen([slice(0, 0, 0.5)])).toBeLessThan(all);
+    expect(fallen([slice(0, 0, 1)])).toBeLessThan(fallen([slice(0, 0, 0.5)]));
+    expect(fallen([slice(0, 0, 1)])).toBeGreaterThan(0);
+    expect(fallen([slice(0, 0, 1), slice(1, 0, 0.5)])).toBe(0);
+    // Avant, tout est bas (rien ne se dresse) ; le haut dresse le rotor au-dessus de la chaudière.
+    const c = placeById('engine').center;
+    const y0 = standingHeight(ground(c.x, c.z));
+    expect(boundsOf(ruinOf('engine')).max[1]).toBeLessThan(1.6);
+    const body = boundsOf(constructionFacets('engine', [slice(0, 0, 1)], ground));
+    const top = boundsOf(constructionFacets('engine', [slice(1, 0, 0.5)], ground));
+    expect(top.max[1]).toBeGreaterThan(body.max[1] + 1);
+    expect(top.max[1] - y0).toBeGreaterThan(4);
+    for (const p of placePieces('engine')) expect(p.stage === 'ruine' || p.until === undefined).toBe(true);
+  });
+
   it('ses volumes restent hors des chemins (Kéo n’y passe jamais au travers), sauf le lieu lui-même autour de sa porte', () => {
     const paths = networkSamples(0.5);
     for (const p of PLACES) {

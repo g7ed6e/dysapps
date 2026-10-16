@@ -5,6 +5,7 @@
 import { createContext, useContext, useEffect, type CSSProperties } from 'react';
 import { frenchTypography } from '../../../components/math/RichText';
 import { SpeakButton } from '../../../components/SpeakButton';
+import { Syllabified } from '../../../components/Syllabified';
 import { useSettings } from '../../../core/SettingsContext';
 import type { ExerciseItem } from '../../exercises/types';
 import { Aid } from '../../exercises/Aid';
@@ -135,6 +136,26 @@ export function PlaceAid({ aid, layout, simple }: { aid: AidData; layout: Questi
   return (
     <div className={`aid world-question-aid${box ? ' beside' : ''}`} style={style}>
       <Aid aid={aid} />
+    </div>
+  );
+}
+
+/**
+ * Le document d'un item en C (GD-20, point 8, lot L6a, règle du C) : après les réponses, toujours ouvert (on ne répond
+ * pas sans le lire), jamais dans une boîte qui défile à part ; « Écouter le document » en tête (48 px, l'icône, son nom
+ * dit), puis une ligne par information, en syllabes comme une consigne.
+ */
+export function PlaceDocument({ text, spoken }: { text: string; spoken: string }) {
+  return (
+    <div className="notice world-document">
+      <SpeakButton text={spoken} label="Écouter le document" shown={text} compact />
+      <ul className="notice-text" role="list">
+        {text.split('\n').map((line, i) => (
+          <li key={i} className="notice-line">
+            <Syllabified text={frenchTypography(line)} />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

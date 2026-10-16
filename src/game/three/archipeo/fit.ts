@@ -14,6 +14,25 @@ export function overflows(box: Measured): boolean {
   return box.scrollHeight > box.clientHeight + 1 || box.scrollWidth > box.clientWidth + 1;
 }
 
+/** Ce qu'une boîte qui défile montre de haut en bas : ses bords à l'écran et ses bordures (`clientTop`). */
+interface Scroller {
+  clientTop: number;
+  clientHeight: number;
+  getBoundingClientRect(): Pick<DOMRect, 'top'>;
+}
+
+/**
+ * De combien de pixels la plus basse de ces cibles passe sous le bord d'une boîte qui défile (0 : toutes visibles), à
+ * sa position du moment, `reserve` pixels gardés au bas (le repère « Suite plus bas ») : en C (GD-20, point 8, lot L6a),
+ * les réponses ne passent jamais sous le pli de la colonne.
+ */
+export function belowFold(box: Scroller, targets: ArrayLike<{ getBoundingClientRect(): Pick<DOMRect, 'bottom'> }>, reserve = 0): number {
+  const bottom = box.getBoundingClientRect().top + box.clientTop + box.clientHeight - reserve;
+  let worst = 0;
+  for (const t of Array.from(targets)) worst = Math.max(worst, t.getBoundingClientRect().bottom - bottom);
+  return worst > 1 ? worst : 0;
+}
+
 /** Un mot est coupé quand une étiquette de réponse affichée est plus étroite que son texte. */
 export function wordsCut(labels: ArrayLike<Pick<Measured, 'clientWidth' | 'scrollWidth'>>): boolean {
   return Array.from(labels).some((l) => l.clientWidth > 0 && l.scrollWidth > l.clientWidth + 1);

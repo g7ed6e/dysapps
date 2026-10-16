@@ -102,6 +102,38 @@ export class FacetBuilder {
     for (let k = 0; k < sides; k++) this.triangle(c, lo[k], lo[(k + 1) % sides], face);
   }
 
+  /** Un cerclage : le tour d'un prisme de rayon `r` et de hauteur `h`, sans dessus ni dessous (posé sur un cylindre). */
+  band(at: Placement, r: number, h: number, sides: number, color: number): void {
+    const t = transform(at);
+    const ring = (y: number) => Array.from({ length: sides }, (_, k) => t([r * Math.cos((2 * Math.PI * k) / sides), y, r * Math.sin((2 * Math.PI * k) / sides)]));
+    const lo = ring(0);
+    const hi = ring(h);
+    for (let k = 0; k < sides; k++) {
+      const n = (k + 1) % sides;
+      this.quad(lo[n], lo[k], hi[k], hi[n], color);
+    }
+  }
+
+  /**
+   * Un profil plat épaissi (une aube, un carter) : `outline`, ses sommets dans le plan x, y du repère, dans le sens
+   * inverse des aiguilles d'une montre vu du sud (+z), convexe ; épaissi de z = 0 à z = `h`. Ses deux faces sont de la
+   * couleur `face`, ses côtés de `color`.
+   */
+  extrude(at: Placement, outline: readonly (readonly [number, number])[], h: number, color: number, face = color): void {
+    const t = transform(at);
+    const back = outline.map(([x, y]) => t([x, y, 0]));
+    const front = outline.map(([x, y]) => t([x, y, h]));
+    const n = outline.length;
+    for (let k = 1; k < n - 1; k++) {
+      this.triangle(front[0], front[k], front[k + 1], face);
+      this.triangle(back[0], back[k + 1], back[k], face);
+    }
+    for (let k = 0; k < n; k++) {
+      const m = (k + 1) % n;
+      this.quad(back[k], back[m], front[m], front[k], color);
+    }
+  }
+
   /** Un pavé tendu entre deux points (un bras, une corde, une potence), de section carrée `t`. */
   beam(a: { x: number; y: number; z: number }, c: { x: number; y: number; z: number }, t: number, color: number): void {
     const dx = c.x - a.x, dy = c.y - a.y, dz = c.z - a.z;

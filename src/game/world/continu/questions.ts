@@ -58,7 +58,14 @@ export type ItemScene =
    * La jauge du bassin des Marais salants (la Pente graduée, niveau 1) : verticale, de `start` à `start + 1`, l'unité
    * coupée en `d` graduations ; l'eau arrive pile sur la graduation `n`.
    */
-  | { kind: 'jauge'; start: number; d: number; n: number };
+  | { kind: 'jauge'; start: number; d: number; n: number }
+  /**
+   * Le C, scène de décor neutre (GD-20, point 8, lot L6a) : la scène ne montre rien de l'item, les réponses restent dans
+   * la colonne (la phrase, les réponses, le document, le rappel), aucun objet ne les porte ; le décor du lieu et son
+   * objet témoin, qui réagit après une bonne réponse (questionScene.ts, `COLUMN_DECOR`). Pour la Turbine, et les lieux
+   * qui suivent.
+   */
+  | { kind: 'column' };
 
 const CATCHES: readonly Catch[] = ['sardines', 'filets', 'mouette', 'bocaux', 'crabes', 'pêche', 'seaux', 'crabe'];
 const isCount = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0;
@@ -72,6 +79,7 @@ export function isItemScene(v: unknown): v is ItemScene {
     case 'cloches':
     case 'enclos':
     case 'saline':
+    case 'column':
       return true;
     case 'jauge':
       return 'start' in v && isCount(v.start) && 'd' in v && isCount(v.d) && v.d > 0 && 'n' in v && isCount(v.n) && v.n <= v.d;
@@ -311,8 +319,14 @@ export const LOCK_IDLE: ItemScene = { kind: 'lockIdle', column: false };
 /** Le sas au repos, les réponses dans la colonne (Calculer avec des fractions). */
 export const LOCK_COLUMN: ItemScene = { kind: 'lockIdle', column: true };
 
-/** Les réponses d'une scène restent-elles dans la colonne (aucun objet ne les porte dans la scène) ? */
-export const answersInColumn = (scene: ItemScene): boolean => scene.kind === 'lockIdle' && scene.column;
+/** Le C neutre : la scène fait le décor, les réponses restent dans la colonne (la Turbine, lot L6a). */
+export const COLUMN: ItemScene = { kind: 'column' };
+
+/**
+ * Les réponses d'une scène restent-elles dans la colonne (aucun objet ne les porte dans la scène) ? Le C neutre, et le
+ * sas au repos de Calculer avec des fractions aux Écluses.
+ */
+export const answersInColumn = (scene: ItemScene): boolean => scene.kind === 'column' || (scene.kind === 'lockIdle' && scene.column);
 
 /** La phrase des Quais pour un item de Doubles et moitiés (clé `half-34` ou `dbl-23`) : une idée par phrase, un verbe. */
 export function quaiScene(key: string): { scene: Extract<ItemScene, { kind: 'quai' }>; prompt: string } | null {
@@ -362,7 +376,8 @@ function inInstructionOrder(exerciseId: string, it: QuestionItem): { choices?: s
  * sas), les autres missions gardent leur item de référence, le sas au repos ; aux Quais, Doubles et moitiés change sa phrase, les
  * autres missions gardent l'item de référence tel quel, sur le quai vide. `say` : les fractions dites en mots (la phrase
  * lue de Deux rives). Aux Marais salants, la Pente graduée au niveau 1 a sa jauge ; tout le reste se joue en items de
- * référence, sur le bassin au repos. `reference` : les items de « Vue simple ».
+ * référence, sur le bassin au repos. À la Turbine, tout se joue en C, en items de référence. `reference` : les items de
+ * « Vue simple ».
  */
 export function placeItems(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction = written, reference = false): PlacedItem[] {
   const placed = placedInScene(place, exerciseId, items, say);
@@ -382,6 +397,9 @@ export const sceneDrawsFigure = (scene: ItemScene): boolean => scene.kind === 's
 /** Les items posés dans la scène d'un lieu (`placeItems`), avec ses textes. */
 function placedInScene(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction): PlacedItem[] {
   if (place === 'phare') return items.map((it) => ({ ...it, placeScene: { kind: 'cloches' } }));
+  // La Turbine (GD-20, point 8, lot L6a) : ses quatre missions en C, aux deux niveaux, avec leurs items de référence
+  // (consigne, phrase, document, rappel) ; la scène fait le décor, les réponses restent dans la colonne.
+  if (place === 'engine') return items.map((it) => ({ ...it, placeScene: COLUMN }));
   if (place === 'saltworks') {
     // Les Marais salants (GD-20, point 8, lot L5) : toutes les missions au même bassin, avec les mêmes sacs de sel. Seule
     // la Pente graduée, au niveau 1, a son gabarit (la jauge) ; les autres gardent leur item de référence, le bassin au

@@ -4,12 +4,12 @@
 // Three.js.
 import { describe, expect, it } from 'vitest';
 import { FOLLOW, KEO_HEIGHT, LOOK_UP, followPose, lookUp, lookUpStep, screenOf } from './camera';
-import { FacetBuilder, boundsOf } from './facets';
+import { FacetBuilder, boundsOf, placeFacets } from './facets';
 import { distance, linearRgb } from './geometry';
 import { startOf } from './paths';
 import { placeById } from './plan6e';
 import { modelOfPlace } from './places';
-import { ANSWER_LAYOUT, JAUGE, LOCK, answerObjects, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, ENGINE_PAVING_RISE, JAUGE, LOCK, VALVE, answerObjects, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
 import {
   GALLERY,
   LANTERN,
@@ -38,6 +38,7 @@ import {
   LAND_DECK,
   PHARE_SOCLE,
 } from './scenette';
+import { COLUMN } from './questions';
 import { heightAt, standingHeight } from './terrain';
 
 const layoutOf = (count: number, w: number, h: number, widen = 0) =>
@@ -52,12 +53,13 @@ const screens = [
 ] as const;
 
 describe('La place de la scénette à l’écran', () => {
-  it('les cinq lieux ont leur scénette, chaque habitant nommé par son rôle seul, sans phrase d’accueil', () => {
+  it('les six lieux ont leur scénette, chaque habitant nommé par son rôle seul, sans phrase d’accueil', () => {
     expect(scenetteOf('phare')).toEqual({ role: 'La gardienne du phare', greeting: null, placement: 'rangee' });
     expect(scenetteOf('quais')).toEqual({ role: 'Le docker', greeting: null, placement: 'rangee' });
     expect(scenetteOf('filets')).toEqual({ role: 'La pêcheuse', greeting: null, placement: 'rangee' });
     expect(scenetteOf('ecluses')).toEqual({ role: 'L’éclusier', greeting: null, placement: 'rangee' });
     expect(scenetteOf('saltworks')).toEqual({ role: 'La saunière', greeting: null, placement: 'rangee' });
+    expect(scenetteOf('engine')).toEqual({ role: 'La machiniste', greeting: null, placement: 'rangee' });
   });
 
   it('sur un écran bas, la règle des Filets à droite au-dessus de la scène, la rangée sous la colonne', () => {
@@ -434,8 +436,8 @@ describe('Le retour de la scénette des Quais', () => {
   });
 });
 
-describe('Les Filets et les Écluses (lot 4), les Marais salants (lot L5)', () => {
-  const places = ['filets', 'ecluses', 'saltworks'] as const;
+describe('Les Filets et les Écluses (lot 4), les Marais salants (lot L5), la Turbine (lot L6a)', () => {
+  const places = ['filets', 'ecluses', 'saltworks', 'engine'] as const;
 
   it('la caméra cadre Kéo à gauche et l’habitant à droite, dans la scène, sur tous les écrans', () => {
     for (const place of places)
@@ -483,7 +485,8 @@ describe('Les Filets et les Écluses (lot 4), les Marais salants (lot L5)', () =
 
   it('les pièces du lieu s’effacent le temps de la scénette partout sauf au Phare (ses lampes sont sur la galerie)', () => {
     expect(scenetteHidesPieces('phare')).toBe(false);
-    for (const place of ['quais', 'filets', 'ecluses', 'saltworks'] as const) expect(scenetteHidesPieces(place), place).toBe(true);
+    // À la Turbine, toutes ses traces se cachent pendant une question en C (directeur artistique, lot L6a).
+    for (const place of ['quais', 'filets', 'ecluses', 'saltworks', 'engine'] as const) expect(scenetteHidesPieces(place), place).toBe(true);
     // Une trace d'une autre mission dans le cadre se cache le temps de la scénette : les lanternes de la galerie
     // pendant l'Abattage syllabique et les Rimes-échelle ; elles restent pendant la Chasse au son, et au pied de la tour.
     const done = ['sound-hunt', 'syllables', 'rhymes'];
@@ -696,6 +699,7 @@ describe('le retour d’une mission des Quais, des Écluses, des Filets et des M
       ...['number-line', 'equivalence', 'sharing', 'place-value', 'fraction-sums'].map((m) => ['ecluses', m] as const),
       ...['word-classes', 'sorting', 'e-er-ez', 'plurals'].map((m) => ['filets', m] as const),
       ...['ordering', 'operations', 'scale', 'large-numbers', 'rounding-products'].map((m) => ['saltworks', m] as const),
+      ...['states-of-matter', 'motion-signals', 'energy-circuits', 'materials-light'].map((m) => ['engine', m] as const),
     ];
     // Aux Filets, chaque mission garde sa trace (lot L4), le Troupeau son panier plein.
     const kept = new Set(['word-classes', 'sorting', 'e-er-ez', 'plurals'].map((m) => JSON.stringify(scenetteExit('filets', true, m)!.keep)));
@@ -827,5 +831,51 @@ describe('Les Marais salants (GD-20, point 8, lot L5)', () => {
     expect(Array.from(tried.positions)).not.toEqual(Array.from(three.positions));
     const b = boundsOf(three);
     expect(b.min[1]).toBeCloseTo(o.y - 0.1, 6);
+  });
+});
+
+describe('La Turbine (GD-20, point 8, lot L6a)', () => {
+  const o = sceneSpot('engine');
+
+  it('la machiniste, en peu de triangles, sur le dallage devant la chaudière, levé au-dessus du replat', () => {
+    const decor = scenetteDecor('engine');
+    expect(decor.triangles).toBeLessThan(400);
+    const keo = scenetteKeo('engine').at;
+    const habitant = scenetteHabitant('engine');
+    expect(keo.x).toBeLessThan(o.x);
+    expect(habitant.x).toBeGreaterThan(o.x);
+    // Le dallage monte au-dessus du replat (sans quoi il s'y confond) : Kéo et la machiniste dessus.
+    expect(keo.y).toBeCloseTo(o.y + ENGINE_PAVING_RISE, 9);
+    expect(boundsOf(decor).max[1]).toBeGreaterThan(o.y + ENGINE_PAVING_RISE - 1e-6);
+    expect(scenetteFinale('engine', COLUMN, 1)).toBeNull();
+    expect(answerLeaves('engine')).toBe(false);
+    expect(answersHang('engine')).toBe(false);
+  });
+
+  it('aucun objet-réponse en scène : le C se joue dans la colonne', () => {
+    const points = [-1.5, 0, 1.5].map((dx) => ({ x: o.x + dx, y: o.y + LAND_DECK, z: o.z + 2 }));
+    expect(answerObjects('engine', points, 0.8, { ground: o.y }).triangles).toBe(0);
+  });
+
+  it('la soupape, l’objet témoin : au repos sans réaction ; après une bonne réponse, le levier levé et une bouffée qui reste, au-dessus d’un écart d’air clair', () => {
+    const before = itemScene('engine', COLUMN, false, []);
+    expect(before.reaction).toBeNull();
+    expect(before.labels).toEqual([]);
+    const after = itemScene('engine', COLUMN, true, []);
+    // Le levier se lève : mêmes facettes, autre place.
+    expect(after.still.triangles).toBe(before.still.triangles);
+    expect(boundsOf(after.still).max[1]).toBeGreaterThan(boundsOf(before.still).max[1] + 0.2);
+    expect(after.reaction).toMatchObject({ arc: 0, stay: true });
+    expect(after.reaction!.to.y).toBeGreaterThan(after.reaction!.from.y);
+    // Entre le haut de la soupape et le bas de la bouffée, de l'air clair (jamais collée au chapeau).
+    const puff = boundsOf(placeFacets(after.reaction!.facets, after.reaction!.to));
+    let under = -Infinity;
+    const p = after.still.positions;
+    for (let i = 0; i < p.length; i += 3) if (p[i] >= puff.min[0] && p[i] <= puff.max[0]) under = Math.max(under, p[i + 1]);
+    expect(puff.min[1] - under).toBeGreaterThan(0.3);
+    // La soupape au milieu, derrière Kéo et la machiniste.
+    const cap = o.y + ENGINE_PAVING_RISE + VALVE.riser + VALVE.body;
+    expect(under).toBeGreaterThanOrEqual(cap);
+    expect(Math.abs(after.reaction!.to.x - o.x)).toBeLessThan(0.5);
   });
 });

@@ -1188,7 +1188,7 @@
 .world-question .in-world .world-repere {
   display: none;
 }
-.world-question .quiz.in-world.simple > .world-repere {
+.world-question .quiz.in-world:is(.simple, .mode-c) > .world-repere {
   --repere-haut: 34px;
   position: sticky;
   bottom: calc(-1 * var(--panneau-bas));
@@ -1208,11 +1208,11 @@
   pointer-events: none;
   visibility: hidden;
 }
-.world-question .quiz.in-world.simple[data-repere] > .world-repere {
+.world-question .quiz.in-world:is(.simple, .mode-c)[data-repere] > .world-repere {
   visibility: visible;
 }
 /* Le chevron ne remplit que le milieu de son carré : un carré plus grand que la bande, pour un chevron de 22 px. */
-.world-question .quiz.in-world.simple > .world-repere svg {
+.world-question .quiz.in-world:is(.simple, .mode-c) > .world-repere svg {
   flex: none;
   width: 44px;
   height: 44px;
@@ -1892,4 +1892,138 @@
 }
 .world-question-label[data-place="cache"] {
   visibility: hidden;
+}
+
+/* Le C (GD-20, point 8, lot L6a, règle du C, au plus grand texte sur téléphone comme ailleurs), dans la scène et dans
+   « Vue simple », dans le même ordre : la ligne de la consigne repliée (ou la consigne), la phrase, les réponses, le
+   document, le rappel. Le panneau seul défile (le document n'a jamais sa boîte à lui) ; la ligne de la consigne et la
+   phrase restent épinglées en haut quand il défile, sur le fond uni (la phrase sous la ligne, à sa hauteur mesurée,
+   --pin-ligne) ; une ombre nette sous la phrase dit qu'on est descendu, le chevron « Suite plus bas » qu'il reste à
+   lire. Seuls le document, le rappel, l'indice et la correction passent sous le pli. */
+.world-question .quiz.in-world.mode-c {
+  --pin-haut: 0.6rem;
+  overflow-y: auto;
+  padding-top: 0;
+}
+/* La marge du haut, épinglée elle aussi, sur toute la largeur : ce qui défile ne passe jamais au-dessus de la ligne de
+   la consigne ; dès que le panneau a défilé, la bande descend derrière toute la ligne (sur un écran bas, la ligne, « Lire
+   la suite » et les étapes ne la couvrent pas d'un bord à l'autre). Sa ligne à elle ne prend que la marge (sa marge du
+   bas rend le reste) : rien ne bouge quand elle descend. */
+.world-question .quiz.in-world.mode-c::before {
+  --pin-bande: 0px;
+  content: '';
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  order: -1;
+  flex: none;
+  width: 100%;
+  height: calc(var(--pin-haut) + var(--pin-bande));
+  margin-bottom: calc(-1 * var(--pin-bande));
+  background: var(--surface);
+  /* Jusqu'au bord du panneau, par-dessus sa marge intérieure du haut (quelle qu'elle soit d'une mise en page à l'autre). */
+  box-shadow: 0 -16px 0 var(--surface);
+  pointer-events: none;
+}
+.world-question .quiz.in-world.mode-c:is([data-suite="haut"], [data-suite="deux"])::before {
+  --pin-bande: var(--pin-ligne, 0px);
+}
+.world-question .in-world.mode-c .world-place,
+.world-question .in-world.mode-c .world-question-prompt {
+  display: contents;
+}
+.world-question .quiz.in-world.mode-c > *,
+.world-question .in-world.mode-c .world-question-prompt > * {
+  flex: 0 0 auto;
+}
+.world-question .quiz.in-world.mode-c:not(.simple-bas) > .consigne,
+.world-question .quiz.in-world.mode-c.simple-bas:not(.consigne-ouverte) > .world-consigne-line,
+.world-question .quiz.in-world.mode-c.simple-bas:not(.consigne-ouverte) > .world-consigne-more {
+  position: sticky;
+  top: var(--pin-haut);
+  z-index: 2;
+  background: var(--surface);
+}
+/* (`:root` en tête : la règle passe devant celle du plus grand texte sur un écran bas, qui pose la phrase en relatif.) */
+:root .world-question .quiz.in-world.mode-c:not([data-epingle="ligne"]) .world-question-prompt > .question-head {
+  position: sticky;
+  top: calc(var(--pin-haut) + var(--pin-ligne, 0px));
+  z-index: 2;
+  margin: 0;
+  padding-block: 0.2rem;
+  background: var(--surface);
+}
+.world-question .quiz.in-world.mode-c:not([data-epingle="ligne"])[data-suite="haut"] .question-head,
+.world-question .quiz.in-world.mode-c:not([data-epingle="ligne"])[data-suite="deux"] .question-head {
+  box-shadow:
+    0 3px 0 rgb(0 0 0 / 0.45),
+    0 16px 10px -8px rgb(0 0 0 / 0.55);
+}
+.world-question .quiz.in-world.mode-c[data-suite="haut"],
+.world-question .quiz.in-world.mode-c[data-suite="deux"] {
+  box-shadow: none;
+}
+/* La phrase trop haute pour être épinglée (plus de la moitié du panneau) défile : l'ombre passe sous la ligne de la
+   consigne, seule épinglée. */
+.world-question .quiz.in-world.mode-c[data-epingle="ligne"]:is([data-suite="haut"], [data-suite="deux"]) > :is(.consigne, .world-consigne-line, .world-consigne-more) {
+  box-shadow:
+    0 3px 0 rgb(0 0 0 / 0.45),
+    0 16px 10px -8px rgb(0 0 0 / 0.55);
+}
+/* Les réponses d'un C : une par ligne, sur toute la largeur, à gauche ; chacune passe à la ligne dans son étiquette,
+   jamais au milieu d'un mot ; toutes à la même hauteur, 48 px au moins (la plus haute donne la mesure). */
+.world-question .in-world.mode-c .world-answers {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 8px;
+  width: 100%;
+  margin: 0.4rem 0;
+}
+.world-question .in-world.mode-c .world-answers .world-answer {
+  position: static;
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
+}
+/* (`:root` en tête : passe devant les réglages du plus grand texte sur un écran bas, qui serrent l'interligne d'une
+   rangée.) Le contenu donne la hauteur : l'interligne d'OpenDyslexic n'y déborde jamais. */
+:root .world-question .quiz.in-world.mode-c .world-answers .world-answer {
+  height: auto;
+}
+:root .world-question .quiz.in-world.mode-c .world-answers .world-answer-label {
+  box-sizing: border-box;
+  height: auto;
+  padding-block: 4px;
+  line-height: 1.35;
+}
+.world-question .in-world.mode-c .world-answer-label {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  min-height: 48px;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+/* Le document d'un C : toujours ouvert, sur le fond uni, après les réponses ; « Écouter le document » en tête, à droite
+   de la première ligne (48 px, l'icône seule, son nom dit). */
+.world-question .world-place .notice.world-document {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0.4rem 0;
+}
+.world-question .world-document > .speak-button {
+  float: right;
+  min-width: 48px;
+  min-height: 48px;
+  margin: 0 0 0.2rem 0.4rem;
+}
+.world-question .world-document .notice-text {
+  font-size: max(18px, 1.15rem);
 }

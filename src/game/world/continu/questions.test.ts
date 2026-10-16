@@ -12,7 +12,7 @@ import { PROBLEMES_EXERCISES } from '../../exercises/problems';
 import { POSEES_EXERCISES } from '../../exercises/writtenOperations';
 import { boundsOf } from './facets';
 import { linearRgb } from './geometry';
-import { modelOfPlace } from './places';
+import { ENGINE, ENGINE_ROTOR_COLOR, STEAM_COLORS, engineRotorHub, modelOfPlace } from './places';
 import { networkSamples } from './paths';
 import { heightAt, standingHeight } from './terrain';
 import PLACE_ITEMS from './placeItems.json';
@@ -20,6 +20,7 @@ import { PLACES, placeById } from './plan6e';
 import {
   ANSWER_LAYOUT,
   ECLUSES_TRACE_SPOTS,
+  ENGINE_TRACE_SPOTS,
   FILETS_CARRELET,
   FILETS_TRACE_SPOTS,
   FILETS_VIVIER,
@@ -47,6 +48,7 @@ import {
 import {
   BELLS_PER_ROUND,
   BELLS_PER_SMALL_ROUND,
+  COLUMN,
   ENCLOS,
   ENCLOS_BINS,
   ENCLOS_INSTRUCTION,
@@ -496,6 +498,82 @@ describe('Les Marais salants (GD-20, point 8, lot L5)', () => {
     for (const p of PLACES) {
       expect(vaneVertices(modelOfPlace(p.id).facets), p.id).toEqual([]);
       if (p.id !== 'saltworks') expect(vaneVertices(placeTrace(p.id, p.scenes)), p.id).toEqual([]);
+    }
+  });
+});
+
+describe('La Turbine (GD-20, point 8, lot L6a)', () => {
+  const ids = CATALOG.filter((d) => d.biome === 'physics-chemistry-6e-matter-energy').map((d) => d.id);
+  const colorVertices = (f: { colors: Float32Array }, color: number) => {
+    const rgb = linearRgb(color);
+    const out: number[] = [];
+    for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - rgb[k]) < 0.004)) out.push(i);
+    return out;
+  };
+
+  it('ses quatre missions, aux deux niveaux, en C : les items de référence tels quels, les réponses dans la colonne', () => {
+    expect(ids.length).toBe(8);
+    expect(isItemScene(COLUMN)).toBe(true);
+    expect(answersInColumn(COLUMN)).toBe(true);
+    for (const id of ids) {
+      const items = reference(id).items;
+      const placed = placeItems('engine', id, items);
+      expect(placed.map((it) => it.key), id).toEqual(items.map((it) => it.key));
+      for (const it of placed) {
+        expect(it.placeScene, it.key).toEqual(COLUMN);
+        const ref = items.find((r) => r.key === it.key)!;
+        expect([it.prompt, it.answer, it.choices], it.key).toEqual([ref.prompt, ref.answer, ref.choices]);
+      }
+      // La consigne de référence.
+      expect(placeInstruction('engine', id, 1, 'Référence.', COLUMN), id).toBe('Référence.');
+    }
+  });
+
+  it('chaque trace est la sienne, sur le replat, hors des chemins et l’une hors de l’autre ; aucune plus haute que le rotor', () => {
+    const c = placeById('engine').center;
+    const missions = Object.keys(ENGINE_TRACE_SPOTS) as (keyof typeof ENGINE_TRACE_SPOTS)[];
+    expect([...missions].sort()).toEqual([...placeById('engine').scenes].sort());
+    const traces = missions.map((m) => [m, placeTrace('engine', [m])] as const);
+    expect(new Set(traces.map(([, f]) => f.triangles)).size).toBe(4);
+    const boxes = traces.map(([, f]) => boundsOf(f));
+    const near = networkSamples(0.25).filter((p) => Math.hypot(p.x - c.x, p.z - c.z) < 20);
+    const rotorTop = engineRotorHub().y + ENGINE.rotor.r + ENGINE.rotor.blade;
+    for (const [k, [m]] of traces.entries()) {
+      const b = boxes[k];
+      expect(b.min[1], m).toBeGreaterThan(standingHeight(heightAt(c)) - 0.5);
+      expect(b.max[1], m).toBeLessThan(rotorTop);
+      for (const p of near) expect(p.x > b.min[0] - 0.6 && p.x < b.max[0] + 0.6 && p.z > b.min[2] - 0.6 && p.z < b.max[2] + 0.6, m).toBe(false);
+      for (let j = k + 1; j < boxes.length; j++) {
+        const d = boxes[j];
+        expect(b.max[0] < d.min[0] || d.max[0] < b.min[0] || b.max[2] < d.min[2] || d.max[2] < b.min[2], `${m} / ${traces[j][0]}`).toBe(true);
+      }
+    }
+    // La citerne d'États et mélanges, la plus haute des quatre.
+    const tops = traces.map(([m, f]) => [m, boundsOf(f).max[1]] as const);
+    const tank = tops.find(([m]) => m === 'states-of-matter')![1];
+    for (const [m, top] of tops) if (m !== 'states-of-matter') expect(top, m).toBeLessThan(tank);
+  });
+
+  it('le rotor et la vapeur portent des couleurs que rien d’autre ne prend : la vue fait tourner l’un, éclaire l’autre sans ombre', () => {
+    const model = modelOfPlace('engine').facets;
+    const rotor = colorVertices(model, ENGINE_ROTOR_COLOR);
+    expect(rotor.length).toBeGreaterThan(0);
+    // La maquette est dans le repère du lieu ; le moyeu, dans le monde (`engineRotorHub`) : le même, à la hauteur du sol près.
+    const hub = engineRotorHub();
+    const c = placeById('engine').center;
+    expect(hub.x - c.x).toBeCloseTo(ENGINE.rotor.x, 9);
+    expect(hub.z - c.z).toBeCloseTo(ENGINE.rotor.z, 9);
+    for (const i of rotor) {
+      expect(Math.hypot(model.positions[i] - ENGINE.rotor.x, model.positions[i + 1] - ENGINE.rotor.y)).toBeLessThanOrEqual(ENGINE.rotor.r + ENGINE.rotor.blade + 0.01);
+      expect(Math.abs(model.positions[i + 2] - ENGINE.rotor.z)).toBeLessThan(0.5);
+    }
+    for (const color of STEAM_COLORS) expect(colorVertices(model, color).length).toBeGreaterThan(0);
+    for (const p of PLACES) {
+      const traces = placeTrace(p.id, p.scenes);
+      for (const color of [ENGINE_ROTOR_COLOR, ...STEAM_COLORS]) {
+        expect(colorVertices(traces, color), `${p.id} ${color.toString(16)}`).toEqual([]);
+        if (p.id !== 'engine') expect(colorVertices(modelOfPlace(p.id).facets, color), `${p.id} ${color.toString(16)}`).toEqual([]);
+      }
     }
   });
 });

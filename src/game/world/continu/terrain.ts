@@ -5,7 +5,7 @@
 // la brume cache ce qui est plus loin. Code pur : la vue (three/archipeo/) ne fait que donner ces tableaux à Three.js.
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { CLIFF, COAST, COLORS_6E, DECK_HEIGHT, DOCK, ISLET, LAGOON, PASS, RIVER, SALT_FLAT, TERRAIN, UPLAND } from './plan6e';
+import { CLIFF, COAST, COLORS_6E, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, PASS, RIVER, SALT_FLAT, TERRAIN, UPLAND } from './plan6e';
 
 /** La distance signée à la terre ferme : positive sur la terre, négative dans l'eau (mer, lagon, passe, bassin, rivière). */
 export function landDistance(p: Vec2): number {
@@ -52,6 +52,9 @@ export function heightAt(p: Vec2): number {
   h += UPLAND.height * smoothstep(1, 0.25, u) * smoothstep(0, 6, d);
   // La grève des Marais salants (lot L5) : aplanie, puis le sol d'avant, en pente douce ; au bord de l'eau, elle
   // descend encore comme la plage.
+  // Le replat de la Turbine (lot L6a) : aplani, puis le sol d'avant, en pente douce (loin de la rivière).
+  const replat = smoothstep(ENGINE_FLAT.radius + ENGINE_FLAT.fade, ENGINE_FLAT.radius, distance(p, ENGINE_FLAT.center));
+  if (replat > 0) h += (ENGINE_FLAT.height - h) * replat;
   const flat = smoothstep(SALT_FLAT.radius + SALT_FLAT.fade, SALT_FLAT.radius, distance(p, SALT_FLAT.center));
   if (flat <= 0) return h;
   const level = Math.min(SALT_FLAT.height, 0.2 + (SALT_FLAT.height - 0.2) * smoothstep(0, BEACH, d));

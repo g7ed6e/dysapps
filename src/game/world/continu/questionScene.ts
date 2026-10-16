@@ -7,7 +7,7 @@ import { boundsOf, FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { DOCK_EDGE, placeById, type PlaceId } from './plan6e';
 import type { ItemScene } from './questions';
-import { FILETS_RACK, filetsRack } from './places';
+import { ENGINE, FILETS_RACK, STEAM_GAP, engineSteam, filetsRack } from './places';
 import { heightAt, standingHeight } from './terrain';
 
 const C = {
@@ -89,6 +89,14 @@ const C = {
   clayTop: 0xc7ad83,
   /** La natte des mulons : de la paille tressée. */
   mat: 0xc9a058,
+  // La Turbine (lot L6a, directeur artistique) : le fer (#2F3E48) et son dessus, le cuivre, la brique, le bois clair ;
+  // le fer sombre des rails ; la pierre des Écluses.
+  ironTop: 0x45586a,
+  copper: 0xc07a3e,
+  brick: 0xb5653f,
+  brickShade: 0x8e4a2e,
+  lightWood: 0xdaa66a,
+  engineIron: 0x2f3e48,
 } as const;
 
 /** La hauteur où l'on se tient en un point (le sol, ou le dessus de la digue sur l'eau). */
@@ -113,6 +121,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   ecluses: { dx: -0.5, dz: 5, half: [5.5, 1.2], fine: true },
   // Les Marais salants (lot L5) : le bord d'un bassin, au sud de la grille, sur la grève plate.
   saltworks: { dx: 0, dz: 6.4, half: [6, 1.6], fine: true },
+  // La Turbine (lot L6a) : le dallage devant la chaudière, le rotor derrière, à l'est.
+  engine: { dx: 0, dz: 4.4, half: [5, 1.4], fine: true },
   quais: { dx: QUAY.dx, dz: QUAY.front - QUAY.depth / 2, half: [QUAY.width / 2, QUAY.depth / 2] },
 };
 
@@ -328,17 +338,21 @@ export function questionLayout(needs: QuestionNeeds, width: number, height: numb
 
 // ---------- Les objets des réponses ----------
 
-/** L'objet qui porte une réponse dans chaque lieu. */
-const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' | 'sac'> = {
+/**
+ * L'objet qui porte une réponse dans chaque lieu ; aucun à la Turbine (lot L6a), où toutes les missions se jouent en C,
+ * les réponses dans la colonne.
+ */
+const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' | 'sac' | null> = {
   phare: 'cloche',
   filets: 'panier',
   ecluses: 'levier',
   quais: 'caisse',
   saltworks: 'sac',
+  engine: null,
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
-const OBJECT_SIZE: Record<(typeof ANSWER_OBJECT)[PlaceId], { height: number; half: number }> = {
+const OBJECT_SIZE: Record<NonNullable<(typeof ANSWER_OBJECT)[PlaceId]>, { height: number; half: number }> = {
   cloche: { height: 1, half: 0.45 },
   panier: { height: 0.9, half: 0.5 },
   levier: { height: 1.8, half: 0.32 },
@@ -354,7 +368,9 @@ const stepOf = (points: readonly Vec3[]): number => (points.length > 1 ? Math.hy
  * qu'un objet déborde sur la place de son voisin.
  */
 export function answerScale(place: PlaceId, points: readonly Vec3[], height: number): number {
-  const size = OBJECT_SIZE[ANSWER_OBJECT[place]];
+  const kind = ANSWER_OBJECT[place];
+  if (!kind) return 1;
+  const size = OBJECT_SIZE[kind];
   return Math.max(0.05, Math.min(height / size.height, (0.45 * stepOf(points)) / size.half));
 }
 
@@ -559,18 +575,18 @@ function sortObjects(b: FacetBuilder, points: readonly Vec3[], y: number, s: num
  */
 export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number, look: AnswerLook = {}): Facets {
   const b = new FacetBuilder();
-  if (points.length === 0) return b.build();
+  const kind = ANSWER_OBJECT[place];
+  if (points.length === 0 || !kind) return b.build();
   const picked = look.picked ?? [];
   const gone = look.gone ?? [];
   const xs = points.map((p) => p.x);
   const y = points[0].y;
   const z = points.reduce((t, p) => t + p.z, 0) / points.length;
-  if (ANSWER_OBJECT[place] === 'cloche') {
+  if (kind === 'cloche') {
     if (!look.hanging && look.ground !== undefined) groundBells(b, points, s, look.ground);
     else hangBells(b, points, s, picked, look.hanging);
     return b.build();
   }
-  const kind = ANSWER_OBJECT[place];
   // Le ponton sous la rangée : jamais un objet posé sur l'eau ; à terre, il descend jusqu'au sol. Sous les leviers des
   // Écluses, une margelle juste assez profonde pour eux : de pierre ocre, ses joints entre les leviers, la pierre du
   // quai en bordure (directeur artistique).
@@ -1199,6 +1215,10 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     if (answered) reaction = lockReaction();
   } else if (scene.kind === 'quai') {
     reaction = quai(b, scene, answered, o, answerAt, scale, posed);
+  } else if (scene.kind === 'column') {
+    // Le C neutre (lot L6a) : le décor du lieu et son objet témoin ; après une bonne réponse (la vue ne passe `answered`
+    // qu'à elle), il réagit et reste jusqu'à l'item suivant ; jamais seul à dire la réussite (le retour habituel la dit).
+    reaction = COLUMN_DECOR[place]?.(b, o, answered) ?? null;
   } else if (scene.kind === 'saline' || scene.kind === 'jauge') {
     if (scene.kind === 'jauge') jauge(b, labels, scene, o);
     else idleSluice(b, o);
@@ -1206,6 +1226,50 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     if (answered && answerAt) reaction = { facets: sackTie(scale), from: answerAt, to: answerAt, arc: 0, stay: true };
   }
   return { still: b.build(), labels, reaction };
+}
+
+/**
+ * Le décor du C neutre de chaque lieu qui en a un (lot L6a), posé sur la scène en `o`, et son objet témoin : `done`, une
+ * bonne réponse vient d'être donnée ; rend la réaction (ce qui bouge, puis reste), ou rien.
+ */
+const COLUMN_DECOR: Partial<Record<PlaceId, (b: FacetBuilder, o: Vec3, done: boolean) => Reaction | null>> = {
+  engine: steamValve,
+};
+
+/**
+ * La soupape de la Turbine, l'objet témoin de ses missions (lot L6a) : sur sa colonne de cuivre, au milieu du dallage,
+ * entre Kéo et la machiniste, son corps de fer, son chapeau de cuivre, et son levier à contrepoids, couché au repos.
+ * Après une bonne réponse, le levier se lève et une bouffée de vapeur monte au-dessus d'un écart d'air clair (jamais
+ * collée à la soupape), en un geste court, puis reste jusqu'à l'item suivant ; d'un coup avec « Réduire les
+ * animations ». Sans éclat ni lumière.
+ */
+export const VALVE = { z: -0.75, riser: 0.95, body: 0.32, lever: 1.05, lift: 0.4 } as const;
+
+/** Le dallage de la scène de la Turbine monte de tant au-dessus du replat (sans quoi il s'y confond, à la même hauteur). */
+export const ENGINE_PAVING_RISE = 0.15;
+
+function steamValve(b: FacetBuilder, spot: Vec3, done: boolean): Reaction | null {
+  const o = { ...spot, y: spot.y + ENGINE_PAVING_RISE };
+  const z = o.z + VALVE.z;
+  b.prism({ x: o.x, y: o.y - 0.05, z }, 0.26, 0.24, 0.12, 8, C.stoneDark, C.stone);
+  b.prism({ x: o.x, y: o.y, z }, 0.11, 0.11, VALVE.riser, 8, C.copper);
+  const top = o.y + VALVE.riser;
+  b.box({ x: o.x, y: top, z }, [VALVE.body, VALVE.body, VALVE.body], C.engineIron, C.ironTop);
+  const cap = top + VALVE.body;
+  b.prism({ x: o.x + 0.04, y: cap, z }, 0.1, 0.08, 0.16, 8, C.copper);
+  // Le levier, de sa charnière (à l'est du chapeau) vers l'ouest, son contrepoids au bout ; levé après une bonne réponse
+  // (la bouffée s'étire vers l'est : rien ne se touche).
+  const angle = done ? VALVE.lift : 0;
+  const pivot = { x: o.x + 0.24, y: cap + 0.2, z: z + 0.02 };
+  b.box({ x: pivot.x, y: cap, z: pivot.z }, [0.08, 0.24, 0.08], C.engineIron);
+  const end = { x: pivot.x - VALVE.lever * Math.cos(angle), y: pivot.y + VALVE.lever * Math.sin(angle), z: pivot.z };
+  b.beam(pivot, end, 0.07, C.engineIron);
+  b.prism({ x: end.x, y: end.y - 0.13, z: end.z }, 0.14, 0.14, 0.24, 8, C.engineIron, C.ironTop);
+  if (!done) return null;
+  const r = new FacetBuilder();
+  engineSteam(r, { x: 0, y: 0, z: 0 }, 0.55);
+  const to = { x: o.x - 0.05, y: cap + 0.16 + STEAM_GAP, z };
+  return { facets: r.build(), from: { ...to, y: to.y - 0.3 }, to, arc: 0, stay: true };
 }
 
 /**
@@ -1457,7 +1521,8 @@ function lockGate(b: FacetBuilder, x: number, y: number, z: number, open: boolea
  * panier plein à côté, et une chose par autre mission (`FILETS_TRACES`, lot L4) ; aux Écluses, pour les Nénuphars, la porte
  * d'amont ouverte et le sas rempli (fermée avant : elle est de la trace, pas du modèle, pour s'ouvrir), et une chose par
  * autre mission (`ECLUSES_TRACES`, lot L2) ; aux Quais, une chose remise en ordre sur le quai par mission
- * (`QUAIS_TRACES`) ; aux Marais salants, une chose par mission autour du hangar à sel (`SALTWORKS_TRACES`, lot L5).
+ * (`QUAIS_TRACES`) ; aux Marais salants, une chose par mission autour du hangar à sel (`SALTWORKS_TRACES`, lot L5) ;
+ * à la Turbine, une chose par mission autour de la machine (`ENGINE_TRACES`, lot L6a).
  * Rien avant la première réussite, sauf la porte fermée des Écluses.
  */
 export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
@@ -1482,6 +1547,8 @@ export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
     for (const mission of done) QUAIS_TRACES[mission]?.(b, x, z);
   } else if (place === 'saltworks') {
     for (const mission of done) if (Object.hasOwn(SALTWORKS_TRACES, mission)) SALTWORKS_TRACES[mission](b, x, z);
+  } else if (place === 'engine') {
+    for (const mission of done) if (Object.hasOwn(ENGINE_TRACES, mission)) ENGINE_TRACES[mission](b, x, z);
   }
   return b.build();
 }
@@ -2034,5 +2101,80 @@ const SALTWORKS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number)
       b.prism({ ...p, y: p.y + 0.12, yaw: 0.4 }, r * 0.95, r * 0.6, r * 0.45, 8, C.salt, C.saltShade);
       b.prism({ ...p, y: p.y + 0.12 + r * 0.45, yaw: 0.4 }, r * 0.6, 0, r * 0.25, 8, C.saltShade);
     }
+  },
+};
+
+/**
+ * Où se pose la trace de chaque mission de la Turbine, depuis le centre du lieu (lot L6a), autour de la machine, sur le
+ * replat, hors des chemins (celui du réseau arrive au sud, celui des abords monte de la porte à la chaudière) et du
+ * dallage de la scénette : la citerne au nord-ouest, derrière la source ; le wagonnet au sud-est ; le marteau-pilon au
+ * bout de l'arbre, à l'est du carter ; le cadran solaire au sud-ouest.
+ */
+export const ENGINE_TRACE_SPOTS = {
+  'states-of-matter': { x: -3.6, z: -2.55 },
+  'motion-signals': { x: 6.1, z: 2.7 },
+  'energy-circuits': { x: ENGINE.shaft.to + 0.55, z: ENGINE.rotor.z },
+  'materials-light': { x: -5.6, z: 3.6 },
+} as const;
+
+/**
+ * Les traces de la Turbine (GD-20, point 8, lot L6a : une par mission, aux couleurs du lieu, bois clair, fer, cuivre,
+ * brique, pierre ; sans texte, sans graduation, rien qui se compte ou se lise comme une réponse ; aucun objet interdit
+ * par le contenu, ni lampe, ni fil, ni cadran à aiguille ; posées avec le haut ; aucune plus haute que le rotor) :
+ * - États et mélanges : une citerne de bois cerclée de fer sur son chevalet, la plus haute ;
+ * - Mouvements et signaux : un wagonnet immobile sur deux rails courts et droits, de fer sombre, sur leurs traverses de
+ *   bois, et son butoir ;
+ * - Énergie et circuits : le marteau-pilon au bout de l'arbre, son portique, son marteau levé, son enclume ;
+ * - Matériaux, transformations et saisons : un cadran solaire de pierre, son style, sans ombre peinte ni graduation.
+ */
+const ENGINE_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => void> = {
+  'states-of-matter': (b, x, z) => {
+    const o = ENGINE_TRACE_SPOTS['states-of-matter'];
+    const g = quaiGround(x + o.x, z + o.z);
+    // Le chevalet : quatre pieds et deux traverses ; la citerne de douves claires, ses deux cercles de fer, son couvercle.
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.box({ x: g.x + sx * 0.55, y: g.y - 0.2, z: g.z + sz * 0.45 }, [0.14, 1.45, 0.14], C.post);
+    for (const sz of [-1, 1]) b.box({ x: g.x, y: g.y + 1.1, z: g.z + sz * 0.45 }, [1.3, 0.14, 0.14], C.post);
+    const y = g.y + 1.24;
+    b.prism({ x: g.x, y, z: g.z }, 0.72, 0.68, 1.5, 10, C.lightWood, C.newWood);
+    for (const h of [0.22, 1.12]) b.prism({ x: g.x, y: y + h, z: g.z }, 0.74, 0.735, 0.12, 10, C.engineIron);
+    b.prism({ x: g.x, y: y + 1.5, z: g.z }, 0.66, 0.5, 0.14, 10, C.newWood);
+  },
+  'motion-signals': (b, x, z) => {
+    const o = ENGINE_TRACE_SPOTS['motion-signals'];
+    const g = quaiGround(x + o.x, z + o.z);
+    const length = 3.2;
+    // Les traverses de bois, puis les deux rails droits de fer sombre, d'ouest en est ; le butoir au bout est.
+    for (let k = 0; k < 4; k++) b.box({ x: g.x - length / 2 + 0.3 + (k * (length - 0.6)) / 3, y: g.y - 0.05, z: g.z }, [0.26, 0.12, 1.15], C.lever);
+    for (const side of [-1, 1]) b.box({ x: g.x, y: g.y + 0.07, z: g.z + side * 0.36 }, [length, 0.08, 0.09], C.engineIron);
+    b.box({ x: g.x + length / 2 + 0.05, y: g.y - 0.1, z: g.z }, [0.3, 0.68, 1.0], C.post, C.lever);
+    // Le wagonnet, à l'arrêt à l'ouest du butoir : sa caisse de bois, ses quatre roues de fer sur les rails.
+    const w = { x: g.x + 0.2, y: g.y + 0.15 };
+    for (const sx of [-1, 1])
+      for (const side of [-1, 1]) b.drum({ x: w.x + sx * 0.38, y: w.y + 0.17, z: g.z + side * 0.36 - 0.06, pitch: Math.PI / 2 }, 0.17, 0.12, 8, C.engineIron);
+    b.box({ x: w.x, y: w.y + 0.2, z: g.z }, [1.25, 0.6, 0.86], C.lever, C.post);
+  },
+  'energy-circuits': (b, x, z) => {
+    const o = ENGINE_TRACE_SPOTS['energy-circuits'];
+    const g = quaiGround(x + o.x, z + o.z);
+    // Le socle de pierre, l'enclume de fer sur son billot ; le portique de bois, sa traverse ; le marteau levé, sur sa
+    // tige, à mi-hauteur ; la came au bout de l'arbre.
+    b.box({ x: g.x, y: g.y - 0.15, z: g.z }, [1.5, 0.3, 1.5], C.stoneDark, C.stone);
+    b.box({ x: g.x, y: g.y + 0.15, z: g.z }, [0.62, 0.38, 0.62], C.lever, C.post);
+    b.box({ x: g.x, y: g.y + 0.53, z: g.z }, [0.78, 0.26, 0.44], C.engineIron, C.ironTop);
+    for (const sz of [-1, 1]) b.box({ x: g.x, y: g.y + 0.15, z: g.z + sz * 0.62 }, [0.2, 2.3, 0.2], C.lever);
+    b.box({ x: g.x, y: g.y + 2.45, z: g.z }, [0.3, 0.24, 1.6], C.lever, C.post);
+    b.box({ x: g.x, y: g.y + 1.35, z: g.z }, [0.56, 0.48, 0.5], C.engineIron, C.ironTop);
+    b.box({ x: g.x, y: g.y + 1.83, z: g.z }, [0.1, 0.62, 0.1], C.engineIron);
+    b.box({ x: g.x - 0.55, y: g.y + ENGINE.shaft.y - 0.3, z: g.z }, [0.3, 0.6, 0.42], C.engineIron, C.ironTop);
+  },
+  'materials-light': (b, x, z) => {
+    const o = ENGINE_TRACE_SPOTS['materials-light'];
+    const g = quaiGround(x + o.x, z + o.z);
+    // Le fût de pierre, la table ronde, nue (ni ombre peinte, ni graduation, ni chiffre), et le style de fer, une plaque
+    // en triangle debout, tournée de biais pour se lire du sud.
+    b.prism({ x: g.x, y: g.y - 0.2, z: g.z }, 0.42, 0.34, 0.25, 8, C.stoneDark, C.stone);
+    b.prism({ x: g.x, y: g.y + 0.05, z: g.z }, 0.24, 0.22, 0.8, 8, C.stone);
+    b.prism({ x: g.x, y: g.y + 0.85, z: g.z }, 0.6, 0.6, 0.1, 12, C.stoneDark, C.stone);
+    b.extrude({ x: g.x, y: g.y + 0.95, z: g.z, yaw: 0.7 }, [[-0.45, 0], [0.42, 0], [-0.45, 0.42]], 0.07, C.engineIron);
   },
 };

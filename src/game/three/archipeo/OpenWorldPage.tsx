@@ -353,7 +353,7 @@ export default function OpenWorldPage() {
       const biome = getBiome(placeById(id).island);
       return biome ? placeConstruction(biome.id, state.world.parts) : { shapes: [], posed: [] };
     };
-    return { phare: of('phare'), quais: of('quais'), filets: of('filets'), ecluses: of('ecluses'), saltworks: of('saltworks') } satisfies Record<PlaceId, ReturnType<typeof of>>;
+    return { phare: of('phare'), quais: of('quais'), filets: of('filets'), ecluses: of('ecluses'), saltworks: of('saltworks'), engine: of('engine') } satisfies Record<PlaceId, ReturnType<typeof of>>;
   }, [state.world.parts]);
   // Les traces des scénettes de chaque lieu : une par mission jouée en scénette, dès sa première réussite (les étoiles
   // gardées ; GD-20, point 8).
@@ -363,7 +363,7 @@ export default function OpenWorldPage() {
       const biome = getBiome(p.island);
       return biome ? p.scenes.filter((m) => traceDone(exercisesOf(biome.id, m).map((e) => state.progress[e.id]?.stars ?? 0))) : [];
     };
-    return { phare: of('phare'), quais: of('quais'), filets: of('filets'), ecluses: of('ecluses'), saltworks: of('saltworks') } satisfies Record<PlaceId, string[]>;
+    return { phare: of('phare'), quais: of('quais'), filets: of('filets'), ecluses: of('ecluses'), saltworks: of('saltworks'), engine: of('engine') } satisfies Record<PlaceId, string[]>;
   }, [state.progress]);
   // Ce que la scène montre déjà, et le lieu de la dernière question : une partie arrivée pendant une question s'y pose
   // après le bilan, sous les yeux de l'élève ; les autres changements (une partie posée dans la grille) sont là, sans
@@ -384,6 +384,7 @@ export default function OpenWorldPage() {
       filets: posedShapes(constructions.filets),
       ecluses: posedShapes(constructions.ecluses),
       saltworks: posedShapes(constructions.saltworks),
+      engine: posedShapes(constructions.engine),
     };
     const before = shownBuilt.current;
     const place = askedPlace.current;
@@ -400,6 +401,7 @@ export default function OpenWorldPage() {
       filets: constructionState(constructions.filets),
       ecluses: constructionState(constructions.ecluses),
       saltworks: constructionState(constructions.saltworks),
+      engine: constructionState(constructions.engine),
     }),
     [constructions],
   );

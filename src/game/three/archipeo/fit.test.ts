@@ -1,4 +1,4 @@
-import { filledGap, inVisibleScene, labelBesideBar, overflows, wordsCut } from './fit';
+import { belowFold, filledGap, inVisibleScene, labelBesideBar, overflows, wordsCut } from './fit';
 
 const box = (clientWidth: number, scrollWidth: number, clientHeight = 50, scrollHeight = 50) => ({ clientWidth, scrollWidth, clientHeight, scrollHeight });
 
@@ -56,5 +56,20 @@ describe('Un repère de la scène face aux boutons du haut (relecture du lot L5,
   it('sous son point quand il passerait sous un bouton, caché s’il le touche encore', () => {
     expect(labelBesideBar(box(60), box(76), bar)).toBe('dessous');
     expect(labelBesideBar(box(20), box(36), bar)).toBe('cache');
+  });
+});
+
+describe('Le pli d’un C (lot L6a)', () => {
+  // Une colonne de 300 px de haut, à 100 px du haut de l'écran, bordée de 2 px ; 34 px gardés pour « Suite plus bas ».
+  const box = { clientTop: 2, clientHeight: 300, getBoundingClientRect: () => ({ top: 100 }) };
+  const at = (bottom: number) => ({ getBoundingClientRect: () => ({ bottom }) });
+
+  it('dit de combien la plus basse des réponses passe sous le pli, repère compté ; 0 quand toutes se voient', () => {
+    expect(belowFold(box, [at(200), at(368)], 34)).toBe(0);
+    expect(belowFold(box, [at(200), at(369)], 34)).toBe(0);
+    expect(belowFold(box, [at(300), at(390)], 34)).toBe(22);
+    expect(belowFold(box, [at(402)])).toBe(0);
+    expect(belowFold(box, [at(410)])).toBe(8);
+    expect(belowFold(box, [])).toBe(0);
   });
 });
