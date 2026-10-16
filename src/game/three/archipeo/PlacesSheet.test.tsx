@@ -30,6 +30,11 @@ it('les lignes suivent l’ordre de jeu : l’Escale, puis les lieux ouverts dan
   expect(placesRows(open, STATES, WORDS, null)[0].id).toBe('phare');
 });
 
+it('les Ruines relevées, jamais « restaurées » : le mot du geste du lieu, comme sur la Carte (lot L8b)', () => {
+  const rows = placesRows(['ruins', 'mangrove'], { ...NO_STATE, ruins: 'restauree', mangrove: 'restauree' }, WORDS, null);
+  expect(Object.fromEntries(rows.map((r) => [r.id, r.state!.word]))).toEqual({ mangrove: 'Restaurée', ruins: 'Relevées' });
+});
+
 function renderSheet(rows: PlacesRow[]) {
   const onPick = vi.fn();
   const onClose = vi.fn();

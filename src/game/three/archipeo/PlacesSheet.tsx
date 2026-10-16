@@ -12,7 +12,7 @@ import { getBiome } from '../../biomes';
 import { Sheet } from '../../Sheet';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
 import { PLACES, type OpenPlace, type PlaceId } from '../../world/continu/plan6e';
-import { stateWord } from './constructionParts';
+import { mapStateWord } from './constructionParts';
 
 /** Le nom du panneau, dit aussi par la croix. */
 export const PLACES_TITLE = 'Lieux ouverts';
@@ -36,11 +36,11 @@ export interface PlacesRow {
 }
 
 /**
- * Le mot de l'état d'un lieu ouvert, accordé : celui de la pastille de la Carte (`stateWord`), et « À explorer » quand
- * aucune partie n'est posée (l'icône de la pastille réduite).
+ * Le mot de l'état d'un lieu ouvert, accordé : celui du bouton de la Carte (`mapStateWord` : « Relevées » aux Ruines,
+ * jamais « restaurées », lot L8b), et « À explorer » quand aucune partie n'est posée (l'icône de la pastille réduite).
  */
-function placeStateWord(state: BuildState, words: Readonly<Record<IslandStateId, string>>, agree: OpenPlace['agree']): string {
-  return state ? stateWord(state, words, agree) : words['a-explorer'];
+function placeStateWord(place: OpenPlace, state: BuildState, words: Readonly<Record<IslandStateId, string>>): string {
+  return mapStateWord(place, state, words) ?? words['a-explorer'];
 }
 
 /** Les lignes, dans l'ordre de jeu : l'Escale (s'il y en a une), puis les lieux ouverts dans l'ordre de `PLACES`. */
@@ -58,7 +58,7 @@ export function placesRows(
       id: p.id,
       name: p.name,
       icon: getBiome(p.island)?.icon ?? 'map',
-      state: { icon: islandStateIcon(states[p.id] ?? 'a-explorer'), word: placeStateWord(states[p.id], words, p.agree) },
+      state: { icon: islandStateIcon(states[p.id] ?? 'a-explorer'), word: placeStateWord(p, states[p.id], words) },
       next: p.id === next,
     })),
   ];
