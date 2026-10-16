@@ -915,7 +915,7 @@ export function swingTo(facets: Facets, swing: Swing, e: number, positions: Floa
 }
 
 /** La course des volets de l'Observatoire, en secondes (directeur artistique, relecture de L8c-d, Q1). */
-export const SHUTTER_SECONDS = 0.5;
+const SHUTTER_SECONDS = 0.5;
 
 /** La scène d'un item : ce qui reste en place, les panneaux, et la réaction (`null` : rien ne bouge). */
 export interface ItemSceneFacets {
