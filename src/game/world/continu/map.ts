@@ -353,8 +353,9 @@ export function layoutMapLabels(
     for (const place of best.room(id)) {
       if (tries-- <= 0) return best.spots;
       const next = run(new Map(best.reserved).set(id, place));
-      // Aucun nom de lieu ouvert perdu, un nom de lieu fermé de plus.
-      if (next.openNamed >= best.openNamed && next.closedNamed > best.closedNamed) {
+      // Aucun nom de lieu ouvert perdu (chacun, pas seulement leur nombre : un nom ouvert ne s'échange pas contre un
+      // autre), un nom de lieu fermé de plus.
+      if ([...best.namedOpen].every((id) => next.namedOpen.has(id)) && next.closedNamed > best.closedNamed) {
         best = next;
         break;
       }
@@ -413,7 +414,7 @@ function attemptLayout(
   const open = labels
     .filter((l) => l.kind === 'open' && l.first)
     .concat(labels.filter((l) => l.kind === 'open' && !l.first).sort((a, b) => (reserved.size ? pressed(a) - pressed(b) : 0)));
-  let openNamed = 0;
+  const namedOpen = new Set<string>();
   for (const l of open) {
     const places = (w: number, h: number) => {
       const above = rect(l.x - w / 2, l.y - h, w, h);
@@ -459,7 +460,7 @@ function attemptLayout(
         const off = (c: Rect) => onScreen(c) && !obstacles.some((o) => clash(o, c));
         r = small.find(off) ?? near(l, MAP_COMPACT, MAP_COMPACT, off) ?? small[0];
       }
-    } else openNamed++;
+    } else namedOpen.add(l.id);
     placed.push({ id: l.id, r });
     out.set(l.id, { id: l.id, left: r.left, top: r.top, name, ...(narrow ? { narrow: true as const } : {}) });
   }
@@ -534,7 +535,7 @@ function attemptLayout(
       return true;
     });
   };
-  return { spots: labels.map((l) => out.get(l.id)!), crowded, mute, openNamed, closedNamed, reserved, room };
+  return { spots: labels.map((l) => out.get(l.id)!), crowded, mute, namedOpen, closedNamed, reserved, room };
 }
 
 /**
