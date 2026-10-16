@@ -1229,15 +1229,11 @@ function botaniste(b: FacetBuilder, place: PlaceId): void {
   b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.31, 0.26, 0.92 - TROUSER_TOP, 10, C.coral, C.coralShade);
   sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
   habitantHair(b, at, C.hair);
-  // La tresse : trois brins qui descendent dans le dos, du bas de la nuque au milieu du dos ; chacun une pointe à quatre
-  // pans tournée vers le bas, posée dans celle du dessus (son dessus ouvert ne se voit pas, de dos, sous la nuque), pour
-  // tenir dans les triangles de la scénette avec les cheveux communs.
-  for (const [dy, r] of [
-    [1.13, 0.085],
-    [0.99, 0.077],
-    [0.85, 0.068],
-  ] as const)
-    b.prism({ x: at.x, y: at.y + dy, z: at.z - 0.27, pitch: Math.PI }, r, 0, 0.16, 4, C.hair);
+  // La tresse : une seule mèche continue dans le dos, du bas de la nuque au milieu du dos, qui s'amincit vers le bas, sans
+  // vide ni dents, de profil comme de dos (directeur artistique, clôture de L8) : un tronc de pyramide à quatre pans, large
+  // en haut, et sa pointe en bas, qui le ferme ; un peu détachée du dos, pour ne jamais rentrer dans la chemise.
+  b.prism({ x: at.x, y: at.y + 0.72, z: at.z - 0.3 }, 0.03, 0.085, 0.41, 4, C.hair);
+  b.prism({ x: at.x, y: at.y + 0.72, z: at.z - 0.3, pitch: Math.PI }, 0.03, 0, 0.06, 4, C.hair);
   // Le bras droit tombe le long du corps ; le gauche, plié, tient le carnet contre la poitrine.
   b.beam({ x: at.x + 0.27, y: at.y + 0.86, z: at.z }, { x: at.x + 0.36, y: at.y + 0.46, z: at.z + 0.05 }, 0.13, C.coral);
   const hand = { x: at.x - 0.05, y: at.y + 0.7, z: at.z + 0.32 };
