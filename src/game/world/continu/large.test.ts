@@ -12,8 +12,10 @@ import { modelOfPlace, placePieces, ruinOf } from './places';
 import { BEACON_MASTS, COLORS_6E, FERRY_ISLET, LARGE, NEF_CHANNEL, PATH_NODES, hidesTraces, placeById, toPlan, type PlaceId } from './plan6e';
 import { networkSamples } from './paths';
 import { answerObjects, itemScene, placeTrace } from './questionScene';
-import { COLUMN, EARS_PROMPT, REST_MARK, placeItems, type QuestionItem } from './questions';
-import { scenetteDecor, scenetteHidesPlace } from './scenette';
+import { COLUMN, REST_MARK, placeItems, type QuestionItem } from './questions';
+import { scenetteDecor, scenetteHidesPlace, scenetteLayout, scenettePose } from './scenette';
+import { screenOf } from './camera';
+import { questionLayout } from './questionScene';
 import { shallowness } from './sea';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 
@@ -138,14 +140,18 @@ describe('Les scènes du large', () => {
     for (const id of ['english-6e-vocabulary-hello-1', 'english-6e-vocabulary-numbers-1']) expect(placeItems('beacons', id, items(id))[0].placeScene, id).toEqual(REST_MARK);
   });
 
-  it('Ears : la phrase en français, la voix dit le mot anglais à l’ouverture et le redit', () => {
+  it('Ears : aucune phrase écrite (la consigne la dit), la voix dit le mot anglais à l’ouverture et le redit', () => {
     const source = items('english-6e-vocabulary-first-listening-1');
     const [ears] = placeItems('beacons', 'english-6e-vocabulary-first-listening-1', source);
-    expect(ears.prompt).toBe(EARS_PROMPT);
-    expect(ears.promptLang).toBe('fr');
+    expect(ears.prompt).toBeUndefined();
+    expect(ears.listenOnly).toBe(true);
     expect(ears.spoken).toBe(source[0].word);
     expect(ears.speakOnOpen).toBe(true);
-    expect(ears.listen).toBe('reecouter');
+  });
+
+  it('Story time : l’histoire s’écoute d’abord (`listenFirst`), les autres C non', () => {
+    expect(placeItems('ferry', 'english-6e-grammar-story-1', items('english-6e-grammar-story-1'))[0].listenFirst).toBe(true);
+    expect(placeItems('beacons', 'english-6e-vocabulary-signs-1', items('english-6e-vocabulary-signs-1'))[0].listenFirst).toBeUndefined();
   });
 
   it('en R, l’objet de la bonne réponse réagit après une bonne réponse seulement, et reste ; en C, le témoin aussi', () => {
@@ -176,5 +182,54 @@ describe('Les scènes du large', () => {
     const marked = answerObjects('ferry', points, 1, { gone: [1] });
     expect(marked.triangles).toBeLessThan(open.triangles);
     expect(marked.triangles).toBeGreaterThan(0);
+  });
+});
+
+describe('Les mâts des Balises dans le cadre des scénettes (relecture de L9)', () => {
+  const screens = [
+    [1024, 768],
+    [1180, 820],
+    [768, 1024],
+    [844, 390],
+    [667, 375],
+  ] as const;
+  /** Les sommets de chaque mât, relevé ou en ruine (sa perche, son voyant, sa souche), dans le monde. */
+  const mastPoints = (parts: Parameters<typeof constructionFacets>[1]) => {
+    const f = [constructionFacets('beacons', parts, ground), fallenFacets('beacons', parts, ground)];
+    const colors = [0x5a4632, 0xc8923a, 0x9a8b78].map(linearRgb);
+    return BEACON_MASTS.map((m) => {
+      const out: { x: number; y: number; z: number }[] = [];
+      for (const g of f)
+        for (let k = 0; k < g.positions.length; k += 3) {
+          const x = g.positions[k], z = g.positions[k + 2];
+          if (Math.hypot(x - m.x, z - m.z) > 0.8) continue;
+          if (!colors.some(([r, gg, b]) => Math.abs(g.colors[k] - r) < 1e-6 && Math.abs(g.colors[k + 1] - gg) < 1e-6 && Math.abs(g.colors[k + 2] - b) < 1e-6)) continue;
+          out.push({ x, y: g.positions[k + 1], z });
+        }
+      return out;
+    });
+  };
+
+  it('deux mâts au plus dans le cadre, aux Balises comme à la Gare maritime, relevés ou non, sur tous les écrans', () => {
+    for (const parts of [[WHOLE], []]) {
+      const masts = mastPoints(parts);
+      expect(masts.every((m) => m.length > 0)).toBe(true);
+      for (const place of LARGE)
+        for (const [w, h] of screens) {
+          const base = questionLayout({ count: 3 }, w, h);
+          const stage = scenetteLayout({ count: 3, column: true }, w, h, base).scenette!.stage;
+          const { pose, shift } = scenettePose(place, stage, w, h);
+          const seen = masts.filter((m) =>
+            m.some((p) => {
+              const fx = pose.target.x - pose.position.x, fz = pose.target.z - pose.position.z;
+              if ((p.x - pose.position.x) * fx + (p.z - pose.position.z) * fz <= 0) return false;
+              const s = screenOf(pose, p, w, h);
+              const x = s.x - shift.x, y = s.y - shift.y;
+              return x >= 0 && x <= w && y >= 0 && y <= h;
+            }),
+          ).length;
+          expect(seen, `${place} ${w}×${h} ${parts.length ? 'relevés' : 'ruine'}`).toBeLessThanOrEqual(2);
+        }
+    }
   });
 });

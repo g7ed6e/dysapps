@@ -41,11 +41,13 @@ const C = {
   worn: 0xbdb3a0,
   wornTop: 0xaea591,
   wornPole: 0x9a8b78,
-  // Les bouées (#DAA66A, bande Nuit océan #142B38), l'eau claire où elles flottent (le lagon).
+  // Les bouées (#DAA66A, bande Nuit océan #142B38).
   buoy: 0xdaa66a,
   buoyShade: 0xc4925a,
   night: 0x142b38,
-  water: COLORS_6E.lagoon,
+  // La grève du parc à bouées : le sable mouillé du rivage, et son flanc.
+  shingle: COLORS_6E.wetSand,
+  shingleShade: 0xb39a69,
   // Le pilote (directeur artistique) : ciré jaune (#E3B23C), pantalon Nuit océan, bonnet Bleu lagon (#178078), filin
   // de chanvre lové sur l'épaule.
   oilskin: 0xe3b23c,
@@ -227,12 +229,21 @@ function model(add: AddPiece, ground: SiteGround, door: Vec2): void {
         b.box({ x, y: g.low - 0.2, z }, [0.34, g.top - g.low + h + 0.2, len], C.stoneShade, C.stone);
       }
   });
-  // Le chemin de sable, de la porte de la station à la porte du lieu, où arrive le chemin (plan6e.ts).
+  // Le chemin de sable, de la porte de la station à la porte du lieu, où arrive le chemin (plan6e.ts) : en dalles qui
+  // suivent le sol (la porte est au sud-ouest, plus bas que le replat de la station).
   add(2, 0.67, (b) => {
     const z0 = H.z + H.d / 2 + 0.1;
-    const len = door.z - z0;
-    if (len <= 0) return;
-    b.box({ x: door.x / 2, y: SINK, z: z0 + len / 2, yaw: Math.atan2(door.x, len) }, [1.2, 0.05 - SINK, len + 0.2], C.stoneShade, C.path);
+    const len = Math.hypot(door.x, door.z - z0);
+    if (door.z <= z0) return;
+    const yaw = Math.atan2(door.x, door.z - z0);
+    const n = Math.max(1, Math.ceil(len / 1.6));
+    for (let k = 0; k < n; k++) {
+      const t = (k + 0.5) / n;
+      const x = door.x * t,
+        z = z0 + (door.z - z0) * t;
+      const g = ground.foot(x, z, 0.6);
+      b.box({ x, y: g.low - 0.3, z, yaw }, [1.2, g.top - g.low + 0.35, len / n + 0.06], C.stoneShade, C.path);
+    }
   });
 }
 
@@ -277,11 +288,35 @@ function buoyBall(s: number): Facets {
 /** La course du voyant qui monte sur la tige, en part de la tige. */
 const BALL_RISE = 0.6;
 
-/** L'eau claire où flottent les bouées : une bande d'eau, bordée de pierre, posée sur le sol (`ground`), son dessus en `y`. */
-function waterStrip(b: FacetBuilder, mid: number, y: number, z: number, span: number, depth: number, ground: number): void {
-  const low = Math.min(ground, y) - 0.2;
-  b.box({ x: mid, y: low, z }, [span + 0.36, y - 0.04 - low, depth + 0.36], C.stoneShade, C.stone);
-  b.box({ x: mid, y: y - 0.04, z }, [span, 0.03, depth], C.water);
+/** Le chevalet d'une bouée (relecture de L9) : un tréteau bas, son plateau, ses deux paires de pieds écartés. */
+const TRESTLE = { h: 0.34, w: 0.82, d: 0.46, top: 0.06, foot: 0.24, leg: 0.06 } as const;
+
+/**
+ * Un chevalet, à l'échelle `s`, ses pieds en `at` (le sol de la rangée) : le parc à bouées du baliseur, les bouées sorties
+ * de l'eau à remettre en mer. Un tréteau (jamais un berceau : le ber du canot est la trace de Hello) ; son plateau en
+ * haut, où la bouée se pose. Rend le dessus du plateau.
+ */
+function trestle(b: FacetBuilder, at: Vec3, s: number): Vec3 {
+  const T = TRESTLE;
+  const top = at.y + T.h * s;
+  b.box({ x: at.x, y: top - T.top * s, z: at.z }, [T.w * s, T.top * s, T.d * s], C.darkWood, C.wood);
+  for (const side of [-1, 1]) {
+    const x = at.x + side * (T.w / 2 - 0.08) * s;
+    for (const dz of [-1, 1]) b.beam({ x, y: top - T.top * s, z: at.z + dz * 0.06 * s }, { x, y: at.y - 0.04, z: at.z + dz * T.foot * s }, T.leg * s, C.darkWood);
+  }
+  return { x: at.x, y: top, z: at.z };
+}
+
+/** Une bouée debout sur son chevalet, le chevalet posé en `at`. */
+function buoyOnTrestle(b: FacetBuilder, at: Vec3, s: number, tilt = 0): void {
+  const top = trestle(b, at, s);
+  buoy(b, { x: top.x, y: top.y + BUOY.sunk * s, z: top.z }, s, tilt);
+}
+
+/** La grève sous les chevalets : une bande de sable, du sol jusqu'au pied des tréteaux (`top`). */
+function shingle(b: FacetBuilder, mid: number, top: number, z: number, span: number, depth: number, ground: number): void {
+  const low = Math.min(ground, top) - 0.2;
+  b.box({ x: mid, y: low, z }, [span + 0.2, top - low, depth], C.shingleShade, C.shingle);
 }
 
 /** Le pilote du chenal, immobile, le visage nu (rien n'y est dessiné : ni sourire, ni moue) ; il ne dit rien. */
@@ -401,30 +436,30 @@ export const BEACONS: PlaceArt = {
     pilote(b, at, sphere);
   },
   answer: {
-    size: { height: BUOY_TOP + 0.3, half: BUOY.r0 + 0.04 },
-    // L'eau claire au pied de la cale, bordée de pierre, où les bouées flottent (immobiles : pas de houle).
+    size: { height: TRESTLE.h + BUOY_TOP + BUOY.sunk + 0.3, half: TRESTLE.w / 2 + 0.04 },
+    // Le parc à bouées, devant la cale (relecture de L9 : jamais d'eau posée sur l'herbe) : une bande de grève, et sur
+    // elle, sous chaque bouée, son chevalet (dessiné avec la bouée).
     base(b, mid, y, z, span, s, ground) {
-      waterStrip(b, mid, y, z, span, 1.0 * s, ground);
+      shingle(b, mid, y, z, span, 1.0 * s, ground);
     },
     object(b, at, s, _i, _count, picked) {
-      buoy(b, at, s, picked ? BUOY.tipped : 0);
+      buoyOnTrestle(b, at, s, picked ? BUOY.tipped : 0);
     },
     // Après une bonne réponse, la bouée touchée reçoit son voyant : la boule monte sur sa tige, en un geste court (d'un coup
     // avec « Réduire les animations », la vue la pose), et reste jusqu'à l'item suivant.
     mark(at, s) {
-      const top = { x: at.x, y: at.y + (BUOY_TOP + 0.15) * s, z: at.z };
+      const top = { x: at.x, y: at.y + (TRESTLE.h + BUOY_TOP + BUOY.sunk + 0.15) * s, z: at.z };
       return { facets: buoyBall(s), from: { ...top, y: top.y - BALL_RISE * BUOY.rod * s }, to: top, arc: 0, stay: true };
     },
   },
   // Les missions en R : la cale seule, rien de l'item ; les bouées portent les réponses.
   rest() {},
-  // Les missions en C : une seule bouée, au milieu, à la place de celle du milieu en R ; après une bonne réponse
-  // seulement, elle reçoit son voyant (le même geste qu'en R), qui reste jusqu'à l'item suivant. Rien ne la borde : ce
-  // n'est pas une réponse à toucher.
+  // Les missions en C : une seule bouée sur son chevalet, au milieu du plan des personnages (comme le témoin de la
+  // Turbine) ; après une bonne réponse seulement, elle reçoit son voyant (le même geste qu'en R), qui reste jusqu'à
+  // l'item suivant. Rien ne la borde : ce n'est pas une réponse à toucher.
   column(b, o, done) {
-    const at = { x: o.x, y: o.y + SCENE_RISE + 0.08, z: o.z + WITNESS_FRONT };
-    waterStrip(b, at.x, at.y, at.z, 1.1, 1.0, o.y + SCENE_RISE);
-    buoy(b, at, 1);
+    const at = { x: o.x, y: o.y + SCENE_RISE, z: o.z + WITNESS_FRONT };
+    buoyOnTrestle(b, at, 1);
     if (!done) return null;
     return BEACONS.answer!.mark!(at, 1);
   },

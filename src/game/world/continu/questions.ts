@@ -127,10 +127,16 @@ export interface PlacedItem extends QuestionItem {
   /** Ce qu'écrit chaque réponse, quand ce n'est pas la réponse elle-même (les morceaux « re- », « -et », lot L7). */
   choiceLabels?: string[];
   /**
-   * La phrase écrite en français, quand l'exercice est dans une autre langue et que seule la voix dit le mot étranger
-   * (Ears aux Balises, lot L9a) : la phrase en syllabes, la voix dans la langue de l'exercice.
+   * Ears aux Balises (lot L9a, relecture du contenu) : pas de phrase écrite, la consigne la dit déjà ; le seul bouton de la
+   * voix, son nom écrit (« Écouter le mot », « Réécouter »), qui dit le mot dans la langue de l'exercice ; le mot n'est
+   * écrit qu'après la réponse, ou dès l'ouverture sans synthèse vocale.
    */
-  promptLang?: 'fr';
+  listenOnly?: true;
+  /**
+   * Story time à la Gare maritime (lot L9b, relecture du contenu, comme `StoryScreen`) : l'histoire ne s'écrit qu'après
+   * la réponse, ou dès l'ouverture sans synthèse vocale ; avant, « Écoute l'histoire » et le bouton « Écouter ».
+   */
+  listenFirst?: true;
 }
 
 /**
@@ -427,12 +433,6 @@ export const REST: ItemScene = { kind: 'rest' };
 /** Le lieu au repos, l'objet de la bonne réponse marqué après une bonne réponse (lot L9). */
 export const REST_MARK: ItemScene = { kind: 'restMark' };
 
-/**
- * La phrase d'Ears aux Balises (lot L9a) : la consigne de l'exercice, écrite en français ; la voix dit le mot anglais
- * à l'ouverture de l'item, comme son écran de référence (la dictée), et le redit à la demande.
- */
-export const EARS_PROMPT = 'Écoute le mot anglais, puis choisis ce qu’il veut dire.';
-
 /** Les missions du large jouées en C (lot L9) : les documents à lire et l'histoire à écouter. */
 const LARGE_COLUMN = ['signs', 'famous-people', 'story'] as const;
 
@@ -496,11 +496,12 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
   // Le large (lot L9) : les items de référence tels quels. En C, les documents (Signs, Famous people) et l'histoire
   // (Story time) ; en R, les phrases à trou, les nombres et l'écoute, portés par les bouées des Balises et les malles de la
   // Gare maritime (deux malles pour Have ou has, au niveau 1 : l'item a deux choix). Ears garde son écoute : le mot dit à
-  // l'ouverture, la phrase écrite en français (`promptLang`).
+  // l'ouverture, sans phrase écrite (`listenOnly`) ; Story time, l'histoire écrite après la réponse (`listenFirst`).
   if (place === 'beacons' || place === 'ferry') {
+    if (missionIs(exerciseId, 'story')) return items.map((it) => ({ ...it, listenFirst: true as const, placeScene: COLUMN }));
     if (LARGE_COLUMN.some((m) => missionIs(exerciseId, m))) return items.map((it) => ({ ...it, placeScene: COLUMN }));
     if (missionIs(exerciseId, 'first-listening'))
-      return items.map((it) => ({ ...it, prompt: EARS_PROMPT, promptLang: 'fr', spoken: String(it.word ?? ''), listen: 'reecouter', speakOnOpen: true, placeScene: REST_MARK }));
+      return items.map((it) => ({ ...it, listenOnly: true as const, spoken: String(it.word ?? ''), speakOnOpen: true, placeScene: REST_MARK }));
     return items.map((it) => ({ ...it, placeScene: REST_MARK }));
   }
   if (place === 'saltworks') {

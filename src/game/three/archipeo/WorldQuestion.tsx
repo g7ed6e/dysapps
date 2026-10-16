@@ -22,7 +22,7 @@ import { Loading } from '../../../components/Loading';
 import { ForeignWordsProvider, Marked } from '../../../components/ForeignWords';
 import { RichText, frenchTypography } from '../../../components/math/RichText';
 import { gluedEnds } from '../../../core/typography';
-import { langAttr, type Lang } from '../../../core/speech';
+import { isSpeechAvailable, langAttr, type Lang } from '../../../core/speech';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { Syllabified } from '../../../components/Syllabified';
 import { fractionWords } from '../../../core/fractions';
@@ -959,10 +959,14 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
   const labels = Array.isArray(item?.choiceLabels) && item.choiceLabels.length === choices.length ? item.choiceLabels.map(String) : choices;
   const speakOnOpen = item?.speakOnOpen === true;
   // Une langue vivante (le large, lot L9) : la phrase, le document et la voix dans la langue de l'exercice, sans syllabes
-  // en couleurs ; la phrase d'Ears reste en français (`promptLang`), la voix y dit le mot anglais ; chaque réponse dans
-  // sa langue (`choicesLang`, comme l'écran habituel). L'indice reste en français.
-  const promptLang: Lang = item?.promptLang === 'fr' ? 'fr' : lang;
+  // en couleurs ; chaque réponse dans sa langue (`choicesLang`, comme l'écran habituel). L'indice reste en français.
+  const promptLang: Lang = lang;
   const choicesLang: Lang = item?.choicesLang === 'fr' ? 'fr' : lang;
+  // Ears (`listenOnly`) et Story time (`listenFirst`), relecture du contenu de L9 : le mot ou l'histoire s'écrivent après
+  // la réponse, ou dès l'ouverture sans synthèse vocale (on ne demande jamais d'écouter ce qu'on ne peut pas entendre).
+  const listenOnly = item?.listenOnly === true;
+  const listenFirst = item?.listenFirst === true;
+  const written = Boolean(answered) || !isSpeechAvailable();
   // Aux Écluses, la scène dessine la figure (le sas, l'échelle) et les barres de Deux rives (les deux sas) ; aux Marais
   // salants, la droite graduée (la jauge du bassin) : elles reviennent dans « Vue simple », qui couvre la scène.
   const drawn = scene !== null && sceneDrawsFigure(scene);
@@ -1069,6 +1073,16 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
           </div>
         ) : question ? (
           <NoticeQuestion question={question} prompt={prompt} spoken={spoken} image="" lang="fr" />
+        ) : listenOnly ? (
+          // Ears : pas de phrase (la consigne la dit) ; le bouton de la voix, son nom écrit ; le mot écrit après la réponse.
+          <div className="question-head world-listen">
+            <SpeakButton text={spoken} lang={lang} label={settings.autoRead ? 'Réécouter' : 'Écouter le mot'} />
+            {written && (
+              <p className="question-prompt item-word" lang={langAttr(lang)}>
+                <RichText text={spoken} lang={lang} />
+              </p>
+            )}
+          </div>
         ) : (
           <div className="question-head">
             <p className={`question-prompt${word ? ' item-word' : ''}`} lang={langAttr(promptLang)}>
@@ -1110,7 +1124,16 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
         {inColumn && answersBlock}
         {/* Le document d'un C, toujours ouvert, juste après les réponses : avec l'indice, la correction et le rappel, seul à
             pouvoir passer sous le pli. */}
-        {question && inColumn && <PlaceDocument text={prompt} spoken={spoken} lang={lang} />}
+        {question && inColumn && (!listenFirst || written) && <PlaceDocument text={prompt} spoken={spoken} lang={lang} label={listenFirst ? 'Écouter' : undefined} />}
+        {question && inColumn && listenFirst && !written && (
+          // Story time avant la réponse : l'histoire s'écoute, elle ne s'écrit pas encore (StoryScreen).
+          <div className="notice world-document recit">
+            <p className="recit-listen">
+              <Icon name="speaker" /> {lang === 'en' ? 'Écoute l’histoire en anglais.' : 'Écoute l’histoire.'}
+            </p>
+            <SpeakButton text={spoken} label="Écouter" lang={lang} />
+          </div>
+        )}
         <div className="world-question-actions">
           {/* Sur un écran bas, la ligne de calcul et les icônes sur une seule ligne. */}
           {referenceLine && layout.low && (

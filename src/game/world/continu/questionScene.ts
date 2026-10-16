@@ -901,13 +901,16 @@ export function swingTo(facets: Facets, swing: Swing, e: number, positions: Floa
   normals.set(facets.normals);
   for (const leaf of swing.leaves) {
     const a = leaf.angle * e;
-    const [c, sn] = [Math.cos(a), Math.sin(a)];
+    const c = Math.cos(a),
+      sn = Math.sin(a);
     for (let v = leaf.first; v < leaf.first + leaf.count; v++) {
       const i = 3 * v;
-      const [x, z] = [facets.positions[i] - leaf.pivot.x, facets.positions[i + 2] - leaf.pivot.z];
+      const x = facets.positions[i] - leaf.pivot.x,
+        z = facets.positions[i + 2] - leaf.pivot.z;
       positions[i] = leaf.pivot.x + x * c + z * sn;
       positions[i + 2] = leaf.pivot.z - x * sn + z * c;
-      const [nx, nz] = [facets.normals[i], facets.normals[i + 2]];
+      const nx = facets.normals[i],
+        nz = facets.normals[i + 2];
       normals[i] = nx * c + nz * sn;
       normals[i + 2] = -nx * sn + nz * c;
     }

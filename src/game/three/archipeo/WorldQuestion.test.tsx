@@ -1211,7 +1211,10 @@ describe('Le large (GD-20, point 8, lot L9)', () => {
     await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
   };
 
-  it('Ears aux Balises : la phrase en français, le mot anglais dit en anglais à l’ouverture, les réponses en français', async () => {
+  /** Le texte de la page, sans les noms des boutons (le mot dit n'y est pas écrit). */
+  const pageText = () => document.body.textContent ?? '';
+
+  it('Ears aux Balises : la phrase de l’item ne répète pas la consigne ; le mot dit en anglais à l’ouverture, jamais écrit avant la réponse', async () => {
     const speak = vi.fn();
     vi.stubGlobal('speechSynthesis', { speak, cancel: vi.fn(), getVoices: () => [], speaking: false });
     vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance);
@@ -1220,20 +1223,48 @@ describe('Le large (GD-20, point 8, lot L9)', () => {
     renderPlace('beacons', 'first-listening');
     expect(await screen.findByText('Le pilote du chenal')).toBeInTheDocument();
     await start();
-    expect(screen.getByRole('button', { name: /Réécouter/ })).toBeInTheDocument();
+    // Le bouton, son nom écrit à côté du haut-parleur.
+    expect(screen.getByRole('button', { name: /^Réécouter :/ }).textContent).toContain('Réécouter');
     await vi.waitFor(() => expect(speak).toHaveBeenCalled());
-    const said = speak.mock.calls.map((c) => c[0] as FakeUtterance);
-    expect(said.some((u) => u.lang.startsWith('en') && u.text.split(' ').length <= 3)).toBe(true);
-    // Le français est la langue de la page : ni la phrase ni les réponses ne portent l'anglais.
-    for (const a of answers()) expect(a.querySelector('[lang]')?.getAttribute('lang') ?? a.closest('[lang]')?.getAttribute('lang') ?? 'fr').toMatch(/^fr/);
-    expect(document.querySelector('.question-prompt')?.closest('[lang="en"]')).toBeNull();
-    expect(document.querySelector('.question-prompt')?.textContent).toMatch(/anglais/);
+    const said = speak.mock.calls.map((c) => c[0] as FakeUtterance).filter((u) => u.lang.startsWith('en'));
+    expect(said.length).toBeGreaterThan(0);
+    const word = said[0].text;
+    expect(new RegExp(`\\b${word}\\b`).test(pageText())).toBe(false);
+    // La consigne, écrite une fois.
+    expect(pageText().split('puis choisis ce qu’il veut dire').length - 1).toBeLessThanOrEqual(1);
+    // Les réponses en français, la langue de la page : aucune ne porte de langue.
+    expect(answers().length).toBeGreaterThanOrEqual(2);
+    expect(document.querySelectorAll('.world-answer-label[lang]')).toHaveLength(0);
     await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
     expect(vi.mocked(world.question).mock.calls.at(-1)![0]).toMatchObject({ place: 'beacons', item: { scene: { kind: 'restMark' }, answered: false } });
   });
 
-  it('Story time à la Gare maritime : le C, la malle témoin, les réponses dans la colonne', async () => {
+  it('Ears, lecture automatique coupée : rien n’est dit à l’ouverture ; « Écouter le mot » dit le mot en anglais', async () => {
+    const user = userEvent.setup();
+    const speak = vi.fn();
+    vi.stubGlobal('speechSynthesis', { speak, cancel: vi.fn(), getVoices: () => [], speaking: false });
+    vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance);
+    localStorage.setItem('dysapps:settings', JSON.stringify({ autoRead: false }));
+    renderPlace('beacons', 'first-listening');
+    await start();
+    expect(speak).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: /^Écouter le mot :/ }));
+    expect(speak).toHaveBeenCalledTimes(1);
+    expect((speak.mock.calls[0][0] as FakeUtterance).lang).toMatch(/^en/);
+  });
+
+  it('Ears sans synthèse vocale : le mot anglais est écrit, en anglais, dès l’ouverture', async () => {
+    renderPlace('beacons', 'first-listening');
+    await start();
+    const written = document.querySelector('.world-listen .item-word');
+    expect(written?.getAttribute('lang')).toBe('en');
+    expect(written?.textContent?.trim().length).toBeGreaterThan(0);
+  });
+
+  it('Story time à la Gare maritime : l’histoire n’est pas écrite avant la réponse ; « Écouter », visible ; le C et sa malle', async () => {
+    const user = userEvent.setup();
     vi.stubGlobal('speechSynthesis', { speak: vi.fn(), cancel: vi.fn(), getVoices: () => [], speaking: false });
+    vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance);
     vi.mocked(world.question).mockClear();
     renderPlace('ferry', 'story');
     expect(await screen.findByText('Le chef de gare')).toBeInTheDocument();
@@ -1241,5 +1272,24 @@ describe('Le large (GD-20, point 8, lot L9)', () => {
     await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
     expect(vi.mocked(world.question).mock.calls.at(-1)![0]).toMatchObject({ place: 'ferry', mission: 'story', item: { scene: { kind: 'column' }, answered: false } });
     expect(document.querySelector('.quiz.in-world')!.classList.contains('mode-c')).toBe(true);
+    // Avant la réponse : aucune ligne de l'histoire, l'invitation à écouter et son bouton nommé.
+    expect(document.querySelector('.world-document .notice-line')).toBeNull();
+    expect(pageText()).toContain('Écoute l’histoire en anglais.');
+    expect(within(document.querySelector<HTMLElement>('.world-document.recit')!).getByRole('button', { name: /^Écouter :/ }).textContent).toContain('Écouter');
+    // Après la réponse (juste, ou la seconde fausse), l'histoire s'écrit, pour se corriger en la relisant ; un premier essai
+    // faux la laisse à écouter.
+    for (let k = 0; k < 3 && !document.querySelector('.world-document .notice-line'); k++) {
+      const a = answers().find((b) => !b.disabled);
+      if (a) await user.click(a);
+      await vi.waitFor(() => expect(answers().some((b) => !b.disabled) || document.querySelector('.world-document .notice-line')).toBeTruthy());
+    }
+    await vi.waitFor(() => expect(document.querySelector('.world-document .notice-line')).not.toBeNull());
+    expect(document.querySelector('.world-document ul')?.getAttribute('lang')).toBe('en');
+  });
+
+  it('Story time sans synthèse vocale : l’histoire est écrite dès l’ouverture', async () => {
+    renderPlace('ferry', 'story');
+    await start();
+    expect(document.querySelector('.world-document .notice-line')).not.toBeNull();
   });
 });

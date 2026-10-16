@@ -167,6 +167,12 @@ const RIBBON_LIFT = 0.06;
 const RIBBON_SIDE = 0.7;
 
 /**
+ * L'îlot de la Gare maritime (lot L9b) : le sol y est le large (hors du terrain), le quai est modelé dans le lieu ; les
+ * chemins n'y dessinent rien, ni ruban de bois ni octogone.
+ */
+const onFerryIslet = (p: Vec2): boolean => distance(p, FERRY_ISLET.center) < FERRY_ISLET.radius;
+
+/**
  * Le dessin des chemins : un ruban par liaison, posé sur le sol (`ground`, la hauteur du sol dessiné), avec ses flancs ;
  * en bois là où le sol est sous l'eau (digue, pontons), couleur de sentier ailleurs. Un octogone couvre chaque nœud.
  * Rien sur la pierre du Port (GD-20, lot 2) : son pavage tient lieu de chemin.
@@ -233,12 +239,6 @@ export function pathRibbons(ground: (x: number, z: number) => number): Facets {
   }
   return b.build();
 }
-
-/**
- * L'îlot de la Gare maritime (lot L9b) : le sol y est le large (hors du terrain), le quai est modelé dans le lieu ; les
- * chemins n'y dessinent rien, ni ruban de bois ni octogone.
- */
-const onFerryIslet = (p: Vec2): boolean => distance(p, FERRY_ISLET.center) < FERRY_ISLET.radius;
 
 /**
  * Les liaisons qui passent l'eau sur une passerelle de planches plutôt que sur le ruban de bois : de la rive est à la

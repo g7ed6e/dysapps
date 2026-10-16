@@ -188,15 +188,17 @@ export const toPlan = (p: Vec2): [number, number] => [p.x * PLAN_SCALE + PLAN_OR
 
 /**
  * Les mâts des Balises (lot L9a), chacun sur une roche qui affleure, en ligne vers l'ouest le long du bord sud du chenal,
- * hors de lui (y 672 à 680, la roche comprise au-dessus de 668) : environ 6 unités entre deux perches (la fiche en
- * disait 11 : serrées, elles tiennent dans la pose du lieu avec Kéo à sa porte).
+ * hors de lui (y 672 à 674, la roche comprise au-dessus de 668) : environ 6 unités entre deux perches (la fiche en
+ * disait 11 : serrées, elles tiennent dans la pose du lieu avec Kéo à sa porte). Presque droites, au plus loin de la
+ * caméra : de la porte, à l'ouest de la station, trois mâts et leurs voyants entrent dans l'image de l'arrivée
+ * (consultant Archipéo, relecture de L9).
  */
 export const BEACON_MASTS: readonly Vec2[] = poly([
   [392, 672],
-  [375, 674],
-  [358, 676],
-  [342, 678],
-  [325, 680],
+  [375, 672.5],
+  [358, 673],
+  [342, 673.5],
+  [325, 674],
 ]);
 
 /**
@@ -490,9 +492,12 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
     island: 'english-6e-vocabulary',
     scenes: ['hello', 'numbers', 'first-listening', 'signs', 'famous-people'],
     plan: [428, 692],
-    door: { x: 0, z: 7.4 },
+    // La porte au sud-ouest de la station, près de la grève : la caméra, tournée vers le nord, y prend la station à
+    // droite et trois mâts à gauche (relecture de L9).
+    door: { x: -8, z: 9.5 },
     yaw: 0,
-    touchRadius: 7,
+    // La porte à 12,4 du centre : le toucher du lieu va jusqu'à elle, sur la grève où sont les mâts.
+    touchRadius: 10.5,
   },
   // La Gare maritime (lot L9b) : sur l'îlot au large de la côte ouest (écart au plan du 6e, choisi par le mainteneur le
   // 16 octobre 2026), reliée à la côte par une jetée ; l'auvent sur le quai nord, le pavillon à son bout est. To be, Have

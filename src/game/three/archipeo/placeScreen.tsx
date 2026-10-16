@@ -151,10 +151,11 @@ export function PlaceAid({ aid, layout, simple, lang }: { aid: AidData; layout: 
  * pas sans le lire), jamais dans une boîte qui défile à part ; « Écouter le document » en tête (48 px, l'icône, son nom
  * dit), puis une ligne par information, en syllabes comme une consigne.
  */
-export function PlaceDocument({ text, spoken, lang = 'fr' }: { text: string; spoken: string; lang?: Lang }) {
+export function PlaceDocument({ text, spoken, lang = 'fr', label }: { text: string; spoken: string; lang?: Lang; label?: string }) {
   return (
     <div className="notice world-document">
-      <SpeakButton text={spoken} label="Écouter le document" shown={text} compact lang={lang} />
+      {/* Un nom donné (« Écouter », l'histoire de Story time) s'écrit à côté du haut-parleur ; sinon, l'icône seule. */}
+      <SpeakButton text={spoken} label={label ?? 'Écouter le document'} shown={text} compact={!label} lang={lang} />
       <ul className="notice-text" role="list" lang={langAttr(lang)}>
         {text.split('\n').map((line, i) => (
           <li key={i} className="notice-line">

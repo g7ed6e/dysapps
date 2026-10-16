@@ -49,6 +49,8 @@ const C = {
   trunkTop: 0x9c6a42,
   hoop: 0x2f3e48,
   strap: 0x7a4e2e,
+  // Le dedans d'une malle ouverte : un brun très sombre, jamais noir.
+  inside: 0x3f2c1e,
   // Le chef de gare : veste Sable clair (#E3C9A0), pantalon Nuit océan (#142B38), casquette à bandeau Bleu lagon
   // (#178078), porte-voix de cuivre.
   jacket: 0xe3c9a0,
@@ -302,6 +304,9 @@ function trunk(b: FacetBuilder, at: Vec3, s: number, tilt = 0, lid = true): void
   const box = (dy: number, size: [number, number, number], color: number, top = color, dz = 0) =>
     b.box({ x: at.x, y: at.y + dy * Math.cos(tilt) * s, z: at.z - dy * Math.sin(tilt) * s + dz * s, pitch: tilt }, [size[0] * s, size[1] * s, size[2] * s], color, top);
   box(0, [T.w, T.h, T.d], C.trunk, C.trunkTop);
+  // Le dedans, sombre, sous le couvercle entrouvert (relecture de L9 : le couvercle ne flotte plus) ; le couvercle fermé
+  // le recouvre.
+  box(T.h, [T.w - 0.08, 0.012, T.d - 0.08], C.inside);
   for (const dx of [-T.w / 2 + 0.2, T.w / 2 - 0.2]) b.box({ x: at.x + dx * s, y: at.y - 0.005, z: at.z, pitch: tilt }, [0.06 * s, (T.h + 0.01) * s, (T.d + 0.02) * s], C.hoop);
   // La sangle défaite pend devant la caisse.
   box(T.h * 0.2, [0.1, T.h * 0.6, 0.02], C.strap, C.strap, T.d / 2 + 0.01);
@@ -401,7 +406,9 @@ export const FERRY: PlaceArt = {
     keo: { dx: -2.6, dz: 0.25, scale: 0.6, yaw: Math.PI - 0.4 },
     habitant: { dx: 2.6, dz: 0.25 },
     subject: { halfWidth: 3.7, bottom: -0.4, top: 3.0, depth: 0.3 },
-    pitch: (18 * Math.PI) / 180,
+    // Plongée de 27° (18° ailleurs au large) : l'horizon passe au-dessus du cadre, et avec lui la rangée des mâts des
+    // Balises ; deux au plus restent dans l'image, sur tous les écrans (relecture de L9, un test).
+    pitch: (27 * Math.PI) / 180,
   },
   // Le sol de la scène : les dalles du quai, sur toute sa largeur, jusque sous l'eau ; le chef de gare.
   decor(b, floor, at, sphere) {
