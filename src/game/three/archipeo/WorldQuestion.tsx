@@ -106,7 +106,7 @@ export const PIN_MAX = 0.5;
  * Revenu à « Scène » en C sur un écran bas, ce qui doit se voir du haut de la première réponse avec la phrase, en pixels :
  * son cadre, qui dit qu'elle commence là (bonnes-pratiques.md, « Les écrans qui défilent »).
  */
-export const SCENE_FIRST_ANSWER = 12;
+const SCENE_FIRST_ANSWER = 12;
 
 /** Le nombre de réponses tant que l'écran ne l'a pas dit. */
 const DEFAULT_COUNT = 3;
