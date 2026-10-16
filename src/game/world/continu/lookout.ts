@@ -41,9 +41,9 @@ const C = {
   wornTop: 0xa39a85,
   wornWood: 0x9f9279,
   wornSlate: 0x8f9ca6,
-  // Le guetteur (directeur artistique) : caban Nuit océan, écharpe Sable, pantalon brun, longue-vue de cuivre.
+  // Le guetteur (directeur artistique) : caban Nuit océan, écharpe ocre (Sable, elle se perdait sur le caban), pantalon brun, longue-vue de cuivre.
   coat: 0x142b38,
-  scarf: 0xdaa66a,
+  scarf: 0xc8923a,
   trousers: 0x5a4632,
   hair: 0x6b4a32,
   head: 0xe3c08a,
@@ -330,7 +330,7 @@ const SCENE_FLOOR = { half: 5, depth: 2.8 } as const;
 
 /**
  * Le sol de la scène et le guetteur, immobile : son pantalon brun sous le caban Nuit océan (le bas du corps sombre),
- * l'écharpe Sable au cou et son pan sur la poitrine, la tête et les cheveux ; le bras droit baissé, sa longue-vue de
+ * l'écharpe ocre au cou et son pan sur la poitrine, la tête et les cheveux ; le bras droit baissé, sa longue-vue de
  * cuivre repliée à la main. Il ne dit rien.
  */
 function decor(b: FacetBuilder, floor: Vec3, at: Vec3, sphere: Sphere): void {

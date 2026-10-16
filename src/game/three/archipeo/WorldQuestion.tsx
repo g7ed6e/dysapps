@@ -14,7 +14,7 @@
 // « Scène », à la même place, y ramène. Une mission dont la scénette n'est pas encore faite (GD-20, point 8, le temps de la
 // transition) se joue ici aussi, sur l'écran habituel (`plain` : l'écran de la grille, sur un panneau uni), avec le même
 // bilan et le même retour au lieu.
-import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
@@ -230,8 +230,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
         return;
       }
       // En C sur un écran bas, la scène ne porte rien de la réponse : « Vue simple » d'office, une fois par visite
-      // (directeur artistique, deuxième passe de L6a), plutôt que des réponses sorties de la colonne.
-      if (inColumn && !autoSimple.current) {
+      // (directeur artistique, deuxième passe de L6a), plutôt que des réponses sorties de la colonne. Au plus grand texte
+      // aussi, sur tablette : la phrase et les réponses à l'ouverture plutôt que l'offre de « Vue simple » (lot L7,
+      // deuxième passe : les Vitraux des phrases, le Coffre à mots, les Marais salants).
+      if ((inColumn || (grandTexte && !layout.low)) && !autoSimple.current) {
         autoSimple.current = true;
         openSimple();
         return;
@@ -842,12 +844,10 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   // Les dictées (le Coffre à mots, l'Oreille du mineur) : le mot ou sa phrase dits à l'ouverture de l'item, comme sur
   // leur écran de référence, si la lecture automatique est choisie.
   // Une lecture par item : la voix, la phrase et le réglage du moment, lus sans relancer la lecture quand ils changent.
-  const openVoice = useRef({ speak, spoken, autoRead: settings.autoRead });
-  openVoice.current = { speak, spoken, autoRead: settings.autoRead };
-  useEffect(() => {
-    const v = openVoice.current;
-    if (speakOnOpen && v.autoRead) v.speak(v.spoken);
-  }, [itemKeyOf, speakOnOpen]);
+  const readOnOpen = useEffectEvent(() => {
+    if (speakOnOpen && settings.autoRead) speak(spoken);
+  });
+  useEffect(() => readOnOpen(), [itemKeyOf, speakOnOpen]);
   if (!item || !scene) return null;
   // Après « Bravo », le mot juste entre dans le trou : la phrase se lit entière (ou le mot sous elle, `gapWord`).
   const gap = question || gapWord ? null : filledGap(prompt, answer, answered?.results);
