@@ -370,8 +370,12 @@ describe('Les étiquettes de la Carte', () => {
     const name = { left, top: 449 + (salt.drop ?? 0), right: left + 234, bottom: 449 + (salt.drop ?? 0) + 161 - MAP_LOCK };
     expect(apart(name, boxOf(labels[0], phare))).toBe(true);
     expect(apart(name, button)).toBe(true);
-    // Sans forme serrée mesurée, il se tait, comme avant.
-    expect(layoutMapLabels([labels[0], { ...labels[1], narrow: undefined }], [button], screen)[1].name).toBe(false);
+    // Sans forme serrée mesurée, il passe au-dessus de son cadenas, collé à lui (relecture de L9) ; là aussi pris, il se tait.
+    const risen = layoutMapLabels([labels[0], { ...labels[1], narrow: undefined }], [button], screen)[1];
+    expect(risen.name).toBe(true);
+    expect(449 + risen.drop! + 107 - MAP_LOCK).toBeLessThanOrEqual(449 - MAP_LOCK);
+    const roof = { left: 0, top: 0, right: 1024, bottom: 400 };
+    expect(layoutMapLabels([labels[0], { ...labels[1], narrow: undefined }], [button, roof], screen)[1].name).toBe(false);
   });
 
   it('un nom ne s’éloigne pas de plus de 80 px de son lieu ; plus loin, un lieu ouvert se serre d’abord (relecture du rivage sud)', () => {
@@ -440,9 +444,15 @@ describe('Les étiquettes de la Carte', () => {
     // Le cadenas reste au-dessus de son nom.
     expect(left).toBeLessThanOrEqual(500 - MAP_LOCK / 2);
     expect(left + 300).toBeGreaterThanOrEqual(500 + MAP_LOCK / 2);
-    // Un bouton juste sous le cadenas : le nom ne descend pas au-delà, il se tait.
+    // Un bouton juste sous le cadenas : le nom ne descend pas au-delà ; il passe au-dessus du cadenas, collé à lui, rien
+    // entre eux (relecture de L9), et se tait si le dessus est pris aussi.
     const under = { left: 470, top: 212, right: 530, bottom: 240 };
-    expect(layoutMapLabels([l], [...buttons, under], screen)[0].name).toBe(false);
+    const up = layoutMapLabels([l], [...buttons, under], screen)[0];
+    expect(up.name).toBe(true);
+    expect(200 + up.drop! + 84 - MAP_LOCK).toBeLessThanOrEqual(200 - MAP_LOCK);
+    expect(200 + up.drop! + 84 - MAP_LOCK).toBeGreaterThanOrEqual(200 - MAP_LOCK - MAP_LABEL_GAP);
+    const over = { left: 300, top: 100, right: 700, bottom: 158 };
+    expect(layoutMapLabels([l], [...buttons, under, over], screen)[0].name).toBe(false);
   });
 });
 
@@ -634,5 +644,56 @@ describe('« Retour » et « Lieux » (relecture de L9)', () => {
     const right = spot.left + (spot.narrow ? 172 : 250);
     const gap = Math.max(bar.top - bottom, spot.left - bar.right, bar.left - right);
     expect(gap).toBeGreaterThanOrEqual(16);
+  });
+});
+
+describe('La reprise des noms fermés tus (relecture de L9)', () => {
+  const screen = { width: 1024, height: 768 };
+  // Un lieu fermé tu sous un autre lieu fermé dont le nom, haut et étroit, couvre toutes ses places (quatorze : sept
+  // pour chacune de ses deux formes) : garder l'une d'elles fait taire le nom du dessus, la reprise la refuse.
+  const pair = (id: string, x: number): MapLabel[] => [
+    { id: `${id}-haut`, kind: 'closed', x: x + 58, y: 50, w: 60, h: 264 },
+    { id, kind: 'closed', x, y: 150, w: 100, h: 84, narrow: { w: 80, h: 84 } },
+  ];
+  // Le dernier lieu fermé tu, en bas : un bouton sous son cadenas, son nom n'a qu'une place, au-dessus de lui, que le
+  // nom d'un lieu ouvert prend d'abord et peut laisser.
+  const last: MapLabel[] = [
+    { id: 'dernier', kind: 'closed', x: 500, y: 600, w: 100, h: 84 },
+    { id: 'ouvert', kind: 'open', x: 500, y: 530, w: 160, h: 40 },
+  ];
+  const under = { left: 470, top: 612, right: 530, bottom: 640 };
+  const named = (spots: MapLabelSpot[], id: string) => spots.find((s) => s.id === id)!.name;
+
+  it('chaque nom tu a sa part des essais : le dernier retrouve son nom, même quand les premiers ont plus de douze places refusées', () => {
+    const labels = [...pair('a', 200), ...pair('b', 450), ...pair('c', 700), ...last];
+    // Sans reprise, les quatre se taisent.
+    const plain = layoutMapLabels(labels, [under], screen, false);
+    for (const id of ['a', 'b', 'c', 'dernier']) expect(named(plain, id), id).toBe(false);
+    const spots = layoutMapLabels(labels, [under], screen);
+    for (const id of ['a', 'b', 'c']) expect(named(spots, id), id).toBe(false);
+    for (const id of ['a-haut', 'b-haut', 'c-haut', 'ouvert', 'dernier']) expect(named(spots, id), id).toBe(true);
+    // Au-dessus de son cadenas.
+    expect(spots.find((s) => s.id === 'dernier')!.drop).toBeLessThan(0);
+  });
+
+  it('un nom ouvert ne s’échange pas contre un nom fermé', () => {
+    // Le nom du lieu ouvert n'a de place que sur celle du nom fermé, au-dessus du cadenas : il la garde. À gauche, une
+    // place pour sa pastille réduite à son icône, trop étroite pour son nom.
+    const box = { left: 300, top: 482, right: 588, bottom: 566 };
+    const lock = { left: 480, right: 520, bottom: 600 };
+    // Une boîte autour, ouverte en bas sous le cadenas seulement, fermée sous lui (le nom ne descend pas).
+    const walls = [
+      { left: 0, top: 0, right: box.left - 8, bottom: 768 },
+      { left: box.right + 8, top: 0, right: 1024, bottom: 768 },
+      { left: 0, top: 0, right: 1024, bottom: box.top - 8 },
+      { left: 0, top: box.bottom + 8, right: lock.left - 8, bottom: 768 },
+      { left: lock.right + 8, top: box.bottom + 8, right: 1024, bottom: 768 },
+      { left: 0, top: lock.bottom + 8, right: 1024, bottom: 768 },
+    ];
+    // Seul, le lieu fermé a sa place au-dessus de son cadenas.
+    expect(layoutMapLabels([last[0]], walls, screen)[0].name).toBe(true);
+    const spots = layoutMapLabels(last, walls, screen);
+    expect(named(spots, 'ouvert')).toBe(true);
+    expect(named(spots, 'dernier')).toBe(false);
   });
 });

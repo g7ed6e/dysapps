@@ -249,10 +249,13 @@ const SHIFTS = 3;
  */
 const NEAR = { step: 16, reach: 80 } as const;
 
+/** L'écart entre le nom d'un lieu fermé posé au-dessus de son cadenas et ce cadenas, en pixels. */
+const RISE_GAP = 4;
+
 /**
  * Les pas dont le nom d'un lieu fermé peut descendre sous son cadenas, en pixels : d'un écart à la fois, jusqu'à
  * `NEAR.reach` (GD-20, « La Carte au plus grand texte », directeur artistique : « descendre de plus d'un pas, dans les
- * 80 px » ; jamais au-dessus de son cadenas, qu'il cacherait).
+ * 80 px » ; au-dessus de son cadenas en dernier recours seulement, relecture de L9).
  */
 const NAME_DROPS = Array.from({ length: NEAR.reach / MAP_LABEL_GAP + 1 }, (_, i) => i * MAP_LABEL_GAP);
 
@@ -365,8 +368,8 @@ export function layoutMapLabels(
   for (const id of best.mute) {
     let mine = share;
     for (const place of best.room(id)) {
-      if (tries-- <= 0) return best.spots;
       if (mine-- <= 0) break;
+      if (tries-- <= 0) return best.spots;
       const next = run(new Map(best.reserved).set(id, place));
       // Aucun nom de lieu ouvert perdu (chacun, pas seulement leur nombre : un nom ouvert ne s'échange pas contre un
       // autre), un nom de lieu fermé de plus.
@@ -485,11 +488,14 @@ function attemptLayout(
    * plutôt que de passer sur deux lignes) ; chaque fois sous son cadenas, glissé pour rester entier dans l'écran, à un
    * écart du bord ; puis, s'il gêne, de côté, d'un pas à la fois, tant que son cadenas reste au-dessus de lui (sur la
    * tablette, le nom de la Turbine se taisait contre une étiquette voisine : relecture de L6b, directeur artistique), et
-   * plus bas, d'un écart à la fois, jusqu'à `NEAR.reach`.
+   * plus bas, d'un écart à la fois, jusqu'à `NEAR.reach`. En dernier, avant de se taire, juste au-dessus de son cadenas,
+   * collé à lui (relecture de L9, directeur artistique : « Les Balises » fermées se taisaient, « Toi » et la Gare sous
+   * leur cadenas, alors que la mer intérieure, au-dessus, était libre).
    */
   const closedPlaces = (l: MapLabel) => {
     const forms = [{ w: l.w, h: l.h }, ...(l.narrow ? [l.narrow] : [])];
     const list: ClosedPlace[] = [];
+    const rises: ClosedPlace[] = [];
     forms.forEach(({ w, h }, form) => {
       const left = l.x - w / 2;
       const over = left + w - (screen.width - MAP_LABEL_GAP);
@@ -498,15 +504,21 @@ function attemptLayout(
       const shifts = [edge];
       for (let d = NEAR.step; d <= w; d += NEAR.step) shifts.push(edge - d, edge + d);
       const covers = (k: number) => k === edge || (left + k <= l.x - MAP_LOCK / 2 && left + k + w >= l.x + MAP_LOCK / 2);
-      for (const drop of NAME_DROPS) for (const k of shifts) if (covers(k)) list.push({ k, drop, form, r: rect(left + k, l.y + drop, w, Math.max(0, h - MAP_LOCK)) });
+      const nameH = Math.max(0, h - MAP_LOCK);
+      // Au-dessus : le nom remonte de sa place sous le cadenas jusqu'au-dessus de lui, à un petit écart (`RISE_GAP`).
+      const rise = -(MAP_LOCK + nameH + RISE_GAP);
+      for (const drop of NAME_DROPS) for (const k of shifts) if (covers(k)) list.push({ k, drop, form, r: rect(left + k, l.y + drop, w, nameH) });
+      rises.push(...shifts.filter(covers).map((k) => ({ k, drop: rise, form, r: rect(left + k, l.y + rise, w, nameH) })));
     });
-    return list;
+    // Au-dessus de son cadenas en dernier, avant de se taire : dessous, sa place reste la première (GD-20).
+    return [...list, ...rises];
   };
   // Une place libre pour le nom d'un lieu fermé, parmi les étiquettes de `among` : dans l'écran, à un écart des autres
   // étiquettes, et rien entre son cadenas et lui (un nom descendu ne se lit comme le sien que si rien ne passe entre eux).
   const fits = (l: MapLabel, { drop, r }: ClosedPlace, among: readonly { id: string | null; r: Rect }[]) => {
     if (!onScreen(r) || among.some((p) => (p.id === null || p.id !== l.id) && clash(p.r, r))) return false;
-    if (!drop) return true;
+    // Au-dessus de son cadenas, collé à lui : rien ne peut passer entre eux.
+    if (drop <= 0) return true;
     const strip = rect(l.x - MAP_LOCK / 2, l.y, MAP_LOCK, drop);
     return !among.some((p) => p.id !== l.id && cross(p.r, strip));
   };
@@ -543,7 +555,7 @@ function attemptLayout(
     const seen = new Set<string>();
     return closedPlaces(l).filter((c) => {
       // Une descente sur deux (de `NEAR.step`) : la pose refaite ajuste le reste.
-      if (c.drop % NEAR.step) return false;
+      if (c.drop > 0 && c.drop % NEAR.step) return false;
       const key = `${c.form} ${c.drop}`;
       if (seen.has(key) || !fits(l, c, others)) return false;
       seen.add(key);
