@@ -148,12 +148,12 @@ function southFaces(f: Facets, from: number, to: number): Facets {
 /**
  * La presse à bras, dans son repère (son pied en 0, face au sud) : un seul montant, à l'ouest, et sa potence qui passe
  * au-dessus du plateau ; la vis qui descend de la potence sur la platine ; le bras, tendu vers le sud-est, sa poignée de
- * bois. Rien de symétrique. Le socle et la vis de `iron` ; le dessus et les faces au sud du reste (plateau, montant,
- * potence, platine, bras) de `top`. `screw` faux : sans sa vis (tombée à côté, dans la ruine).
+ * bois. Rien de symétrique. Les côtés est et ouest et la vis de `iron` ; le dessus et les faces au sud de tout le reste
+ * (socle, plateau, montant, potence, platine, bras) de `top` (deuxième passe du directeur artistique, lot L7). `screw` faux : sans sa vis (tombée à côté, dans la ruine).
  */
 function press(b: FacetBuilder, iron: number, top: number, wood: number, screw = true): void {
-  b.box({ x: 0, y: SINK, z: 0 }, [1.15, 0.55 - SINK, 0.8], iron, top);
   const body = new FacetBuilder();
+  body.box({ x: 0, y: SINK, z: 0 }, [1.15, 0.55 - SINK, 0.8], iron, top);
   body.box({ x: 0.05, y: 0.55, z: 0.02 }, [0.95, 0.1, 0.66], iron, top);
   body.box({ x: -0.44, y: 0.65, z: -0.12 }, [0.24, 1.15, 0.36], iron);
   body.box({ x: -0.12, y: 1.8, z: -0.12 }, [0.88, 0.24, 0.36], iron, top);

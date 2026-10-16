@@ -1,9 +1,12 @@
 // La Carte des lieux ouverts du monde continu (piste 1, lot 3) : l'île entière à l'ouverture, glisser et pincer dans
 // leurs limites, la pose de la caméra (nord en haut). Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { screenOf } from './camera';
+import { markOffset, screenOf } from './camera';
+import type { Vec3 } from './geometry';
 import { ISLAND_BOX, MAP_CAMERA, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, panMap, zoomMap, type MapLabel, type MapLabelSpot } from './map';
-import { PLACES } from './plan6e';
+import { PLACES, placeById } from './plan6e';
+import { PORT_MAP_POINT } from './port';
+import { heightAt, standingHeight } from './terrain';
 
 const screens = [
   [1024, 768],
@@ -288,4 +291,67 @@ describe('Les étiquettes de la Carte', () => {
     expect(ecluses.name).toBe(true);
     expect(engine.name).toBe(true);
   });
+});
+
+describe('La Carte avec le rivage nord (lot L7)', () => {
+  // Les étiquettes posées aux vraies places des dix lieux, de l'Escale et de Kéo (devant les Archives), à l'ouverture de
+  // la Carte, en texte normal ; les tailles mesurées sur la capture de la tablette (gd20-l7-reprise/carte-1024).
+  const open = new Set(['phare', 'shipyard', 'lookout', 'archives', 'printworks']);
+  const sizes: Record<string, [number, number]> = {
+    phare: [140, 48], quais: [130, 84], filets: [128, 84], ecluses: [148, 84], saltworks: [225, 84], engine: [137, 84],
+    shipyard: [252, 84], lookout: [164, 48], archives: [214, 48], printworks: [216, 48],
+  };
+  const narrow = { w: 150, h: 84 };
+  const labelsOn = (w: number, h: number): MapLabel[] => {
+    const pose = mapPose(mapStart(w / h));
+    const at = (p: Vec3) => screenOf(pose, p, w, h);
+    const archives = placeById('archives').center;
+    const keo = at({ x: archives.x - 4, y: standingHeight(heightAt(archives)), z: archives.z + 6 });
+    const port = at(PORT_MAP_POINT);
+    return [
+      { id: 'keo', kind: 'keo', x: keo.x, y: keo.y, w: 108, h: 44 },
+      { id: 'port', kind: 'open', x: port.x, y: port.y, w: 156, h: 48, first: true },
+      ...PLACES.map((p): MapLabel => {
+        const foot = { x: p.center.x, y: standingHeight(heightAt(p.center)), z: p.center.z };
+        const o = markOffset(p.id);
+        const s = at({ x: foot.x + o.x, y: foot.y + o.y, z: foot.z + o.z });
+        const [lw, lh] = sizes[p.id];
+        return { id: p.id, kind: open.has(p.id) ? 'open' : 'closed', x: s.x, y: s.y, w: lw, h: lh, ...(open.has(p.id) ? { narrow } : {}) };
+      }),
+    ];
+  };
+  const boxOf = (l: MapLabel, s: MapLabelSpot) => {
+    if (l.kind === 'closed') {
+      const name = s.left + (s.shift ?? 0);
+      return s.name
+        ? { left: Math.min(name, l.x - MAP_LOCK / 2), top: s.top + (s.drop ?? 0), right: Math.max(name + l.w, l.x + MAP_LOCK / 2), bottom: s.top + (s.drop ?? 0) + l.h }
+        : { left: l.x - MAP_LOCK / 2, top: s.top, right: l.x + MAP_LOCK / 2, bottom: s.top + MAP_LOCK };
+    }
+    if (l.kind === 'keo') return { left: s.left, top: s.top, right: s.left + (s.name ? l.w : MAP_KEO_DISC), bottom: s.top + l.h };
+    if (!s.name) return { left: s.left, top: s.top, right: s.left + MAP_COMPACT, bottom: s.top + MAP_COMPACT };
+    const [bw, bh] = s.narrow ? [l.narrow!.w, l.narrow!.h] : [l.w, l.h];
+    return { left: s.left, top: s.top, right: s.left + bw, bottom: s.top + bh };
+  };
+  const overlap = (a: ReturnType<typeof boxOf>, b: ReturnType<typeof boxOf>) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+
+  for (const [w, h] of [[1024, 768], [844, 390]] as const) {
+    it(`${w} × ${h} : chaque lieu ouvert du rivage nord garde son nom, jamais sur un cadenas, sur « Toi » ni sur un autre nom`, () => {
+      const labels = labelsOn(w, h);
+      for (const l of labels) {
+        expect(l.x, l.id).toBeGreaterThan(0);
+        expect(l.x, l.id).toBeLessThan(w);
+        expect(l.y, l.id).toBeGreaterThan(0);
+        expect(l.y, l.id).toBeLessThan(h);
+      }
+      const spots = layoutMapLabels(labels, [], { width: w, height: h });
+      const boxes = labels.map((l, i) => boxOf(l, spots[i]));
+      for (const id of ['lookout', 'archives', 'printworks']) {
+        const i = labels.findIndex((l) => l.id === id);
+        expect(spots[i].name, id).toBe(true);
+        for (let j = 0; j < labels.length; j++) if (j !== i) expect(overlap(boxes[i], boxes[j]), `${id} ${labels[j].id}`).toBe(false);
+      }
+      // Sur la tablette, tout lieu montre son nom, ouvert ou fermé (relecture de L6b).
+      if (w === 1024) for (let i = 1; i < labels.length; i++) expect(spots[i].name, labels[i].id).toBe(true);
+    });
+  }
 });
