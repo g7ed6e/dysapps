@@ -9,8 +9,8 @@ export const ASSEMBLAGE = {
       "presentation": "Ici, tu assembles tes blocs pour en faire des pièces que les monuments attendent."
     },
     "archipeo": {
-      "titre": "La Halle aux matériaux",
-      "a": "à la Halle aux matériaux",
+      "titre": "L’Entrepôt des matériaux",
+      "a": "à l’Entrepôt des matériaux",
       "presentation": "Les anciens savaient assembler ce qu’aucune île ne donne seule. Ici, tu retrouves leur savoir-faire pour les monuments."
     }
   },

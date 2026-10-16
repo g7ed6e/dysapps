@@ -9,7 +9,7 @@
 //   rangées seulement ; le chaperon, mince, dans une teinte plus sombre de sa matière (retouches du 8 octobre 2026).
 // - Les toits : les pentes de ./roofs.ts, dans la couverture de leur île (world/roofs.ts : ardoise, ou terre cuite à la
 //   Ferme et à la Mine).
-// - L'école, la salle des trophées et la Halle aux matériaux (décision du directeur artistique, 30 septembre 2026 : des
+// - L'école, la salle des trophées et l’Entrepôt des matériaux (décision du directeur artistique, 30 septembre 2026 : des
 //   lieux du village, au milieu des maisons) : leurs murs en colombage, leurs toits en pentes (`villagePlaces`, ./shared.ts).
 // - La table commune « matière → famille » (../families.ts, décision du mainteneur du 8 octobre 2026) : le colombage
 //   (planches, terre, poutre, chaume), le bardage (cabine, carton : des clins dans la teinte de la matière, chaperon de

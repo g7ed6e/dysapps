@@ -1,4 +1,4 @@
-// Le lieu où l'on assemble les blocs (GD-2) : la Fabrique dans Blocland, la Halle aux matériaux dans Archipéo, sur
+// Le lieu où l'on assemble les blocs (GD-2) : la Fabrique dans Blocland, l’Entrepôt des matériaux dans Archipéo, sur
 // l'île de l'école de chaque archipel. Une recette par archipel atteint, toujours affichée (vignettes, nombres, noms,
 // lue à voix haute) ; un toucher sur « Assembler » ouvre une question sur les deux matières de la recette, et la bonne
 // réponse assemble le bloc (AssemblyQuestion.tsx). Pas de grille, rien à deviner, rien ne se perd (référent dys). Un

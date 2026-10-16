@@ -113,8 +113,8 @@ it('nomme les blocs assemblés et leur lieu selon l’univers, depuis docs/conte
   expect(nomDuBloc(BLOC.poutre)).toBe('Madrier');
   expect(blockCount(BLOC.vitrail, 3)).toBe('3 hublots');
   expect(blockCount(BLOC.bois, 3)).toBe('3 blocs de bois');
-  expect(textesDe('archipeo').assemblage.titre).toBe('La Halle aux matériaux');
-  expect(allerChercher(BLOC.poutre)).toBe('va à la Halle aux matériaux pour l’assembler');
+  expect(textesDe('archipeo').assemblage.titre).toBe('L’Entrepôt des matériaux');
+  expect(allerChercher(BLOC.poutre)).toBe('va à l’Entrepôt des matériaux pour l’assembler');
 });
 
 describe('le tirage des questions d’un bloc assemblé', () => {

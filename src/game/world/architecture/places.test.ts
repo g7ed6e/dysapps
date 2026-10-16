@@ -1,4 +1,4 @@
-// L'école, la salle des trophées et la Halle aux matériaux des Premiers Rivages au kit du 6e (lot 7b, décision du
+// L'école, la salle des trophées et l’Entrepôt des matériaux des Premiers Rivages au kit du 6e (lot 7b, décision du
 // directeur artistique du 30 septembre 2026) : leurs murs en colombage, leurs toits en pentes ; la cloche en tronc de
 // pyramide d'or et le fond de velours en tenture peinte (9 octobre 2026) ; la porte en vantail, le fût du clocheton en
 // pilier lissé, les socles de marbre à chaperon, la cour de la Halle en poteau, traverse et caisses (le reste, 9 octobre
@@ -134,7 +134,7 @@ describe('Les lieux du village au kit du 6e', () => {
     expect(socles).toBeGreaterThan(0);
   });
 
-  it('la Halle aux matériaux : ses murs de bois sur leur rang de pierre en colombage sur soubassement, son toit à deux pentes en versants et faîte ; la porte reste ouverte, la cour en caisses et potence', () => {
+  it('l’Entrepôt des matériaux : ses murs de bois sur leur rang de pierre en colombage sur soubassement, son toit à deux pentes en versants et faîte ; la porte reste ouverte, la cour en caisses et potence', () => {
     const { cubes } = lieux('6e');
     const archi = archiDe('6e', cubes);
     // Les blocs de la Halle et leur case dans son modèle, filtrés une fois (le soubassement qui rattrape le sol n'en a pas).

@@ -9,7 +9,7 @@
 | univers | nom | à | présentation |
 | --- | --- | --- | --- |
 | `blocland` | La Fabrique | à la Fabrique | Ici, tu assembles tes blocs pour en faire des pièces que les monuments attendent. |
-| `archipeo` | La Halle aux matériaux | à la Halle aux matériaux | Les anciens savaient assembler ce qu’aucune île ne donne seule. Ici, tu retrouves leur savoir-faire pour les monuments. |
+| `archipeo` | L’Entrepôt des matériaux | à l’Entrepôt des matériaux | Les anciens savaient assembler ce qu’aucune île ne donne seule. Ici, tu retrouves leur savoir-faire pour les monuments. |
 
 ## Les blocs assemblés
 

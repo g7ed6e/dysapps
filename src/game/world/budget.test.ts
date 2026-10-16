@@ -130,7 +130,7 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   });
 
   // Ailleurs, 52 300 jusqu'au cœur agrandi de l'Atelier (01/10/2026) : son sol en demande 660 de plus (world/budget.ts),
-  // enveloppe validée par le mainteneur le 01/10/2026 ; 53 040 avec la Halle aux matériaux (GD-2, validé par le mainteneur le 01/10/2026, world/budget.ts), 53 060 avec la salle des trophées (GD-3, même jour).
+  // enveloppe validée par le mainteneur le 01/10/2026 ; 53 040 avec l’Entrepôt des matériaux (GD-2, validé par le mainteneur le 01/10/2026, world/budget.ts), 53 060 avec la salle des trophées (GD-3, même jour).
   // HG-2 (mainteneur, 6 octobre 2026) : les Premiers Rivages passent de 59 500 à 63 370 avec les deux îles d'histoire-géographie,
   // puis à 72 770 avec les trois îles de sciences (SC-2, même mot : « Budget on augmente pour l'instant »).
   // HG-3 (même mot) : les autres archipels passent de 55 790 à 62 875 avec leurs six îles d'histoire-géographie, puis à

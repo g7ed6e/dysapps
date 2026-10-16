@@ -214,10 +214,10 @@ it('la question tapée à la main, sans assez de blocs, ramène au lieu', async 
   expect(await screen.findByRole('heading', { level: 1, name: /La Fabrique/ })).toBeInTheDocument();
 });
 
-it('dans Archipéo, la Halle aux matériaux et le madrier', () => {
+it('dans Archipéo, l’Entrepôt des matériaux et le madrier', () => {
   localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo' }));
   renderIn(<AssemblyPage />);
-  expect(screen.getByRole('heading', { level: 1, name: /La Halle aux matériaux/ })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { level: 1, name: /L’Entrepôt des matériaux/ })).toBeInTheDocument();
   expect(screen.getByRole('heading', { level: 3, name: /Madrier/ })).toBeInTheDocument();
   expect(screen.getByRole('list', { name: 'Pour 1 madrier, il faut' })).toBeInTheDocument();
 });
