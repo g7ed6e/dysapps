@@ -13,7 +13,7 @@ import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, lift
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
-import { clampMap, mapPose, mapStart, panMap, zoomMap, type MapView } from '../../world/continu/map';
+import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
 import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork, startOf } from '../../world/continu/paths';
 import { PLACES, TERRAIN, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
@@ -140,6 +140,13 @@ export interface OpenWorld {
    * de haut, sans brume au loin ; on la fait glisser et on la pince. Kéo s'arrête où il est. Jamais pendant une question.
    */
   map(open: readonly PlaceId[] | null): void;
+  /**
+   * La vue de départ de la Carte change (GD-20, « La Carte au plus grand texte ») : la plus proche de l'île entière où
+   * `crowded` (les lieux ouverts sans leur nom près d'eux ou hors de l'écran, pour des points à l'écran) s'annule
+   * (`reframeMap`) ; plus loin que l'île entière, elle devient aussi la distance la plus lointaine. Seulement si la Carte
+   * est encore à sa vue de départ : glissée ou pincée par l'élève, elle ne bouge pas sous ses doigts.
+   */
+  reframeMap(crowded: (spots: readonly MapSpotOnScreen[]) => number): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
   info(): { calls: number; triangles: number; mapMs: number };
   /** Ce qu'un toucher en ce point de la fenêtre ouvrirait au Port, sans rien faire (la mesure des cibles). */
@@ -1064,17 +1071,49 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const r = renderer.domElement.getBoundingClientRect();
     return groundUnder(cx - r.left, cy - r.top, 0);
   };
+  const mapMark = (id: MapSpotOnScreen['id']) => (id === 'keo' ? keoPoint.set(keoFeet.x, keoFeet.y, keoFeet.z) : id === 'port' ? portPoint : marks.get(id));
+  // Le nom d'un lieu, centré au-dessus de lui, reste entier à l'écran : assez loin des bords gauche et droit.
+  const mapShown = (x: number, y: number) => x > MAP_LABEL_SIDE && x < viewW - MAP_LABEL_SIDE && y > MAP_LABEL_TOP && y < viewH - LOCK_MARGIN;
   const reportMapPlaces = () => {
     for (const l of mapSpots) {
-      const mark = l.id === 'keo' ? keoPoint.set(keoFeet.x, keoFeet.y, keoFeet.z) : l.id === 'port' ? portPoint : marks.get(l.id);
+      const mark = mapMark(l.id);
       if (!mark) continue;
       projected.copy(mark).project(camera);
       l.x = ((projected.x + 1) / 2) * viewW;
       l.y = ((1 - projected.y) / 2) * viewH;
-      // Le nom d'un lieu, centré au-dessus de lui, reste entier à l'écran : assez loin des bords gauche et droit.
-      l.shown = projected.z < 1 && l.x > MAP_LABEL_SIDE && l.x < viewW - MAP_LABEL_SIDE && l.y > MAP_LABEL_TOP && l.y < viewH - LOCK_MARGIN;
+      l.shown = projected.z < 1 && mapShown(l.x, l.y);
     }
     options.onMapPlaces(mapSpots);
+  };
+  // La distance la plus lointaine de la Carte, reculée au plus grand texte (0 : l'île entière), et sa vue de départ,
+  // tant que l'élève ne l'a ni glissée ni pincée ; remises à l'ouverture et quand l'écran change de taille (les
+  // étiquettes redemandent alors la vue qu'il leur faut).
+  let mapFar = 0;
+  let mapFirst: MapView | null = null;
+  let mapOpen: readonly PlaceId[] = [];
+  const probePose: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
+  const probeSpots: MapSpotOnScreen[] = mapSpots.map((l) => ({ ...l }));
+  const reframeStart = (crowded: (spots: readonly MapSpotOnScreen[]) => number) => {
+    if (!mapView || mapView !== mapFirst) return;
+    const a = aspect();
+    const open = [...mapOpen.map((id) => marks.get(id)), portPoint].filter((m): m is THREE.Vector3 => Boolean(m));
+    // Les points des lieux pour une vue essayée, sans toucher la caméra (`screenOf`, la même projection).
+    const view = reframeMap(a, open, (v) => {
+      const pose = mapPose(v, probePose);
+      for (const l of probeSpots) {
+        const mark = mapMark(l.id);
+        l.shown = false;
+        if (!mark) continue;
+        const s = screenOf(pose, mark, viewW, viewH);
+        l.x = s.x;
+        l.y = s.y;
+        l.shown = mapShown(s.x, s.y);
+      }
+      return crowded(probeSpots);
+    });
+    mapFar = view.distance;
+    mapView = mapFirst = clampMap(view, a, mapFar);
+    showMap();
   };
   const setMap = (open: readonly PlaceId[] | null) => {
     if (open && asked) return;
@@ -1084,7 +1123,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       finishAssembly();
       // Kéo s'arrête où il est : la Carte n'est pas un trajet.
       if (walk) arrive(null);
-      if (!mapView) mapView = mapStart(aspect());
+      mapOpen = open;
+      if (!mapView) {
+        mapView = mapFirst = mapStart(aspect());
+        mapFar = 0;
+      }
       fog.near = MAP_FOG;
       fog.far = MAP_FOG + 1;
       camera.far = MAP_FAR;
@@ -1161,7 +1204,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const mx = (a.x + b.x) / 2;
       const my = (a.y + b.y) / 2;
       const at = mapGround(mx, my);
-      if (at) mapView = zoomMap(mapView, gap / pinch.gap, at, aspect());
+      if (at) mapView = zoomMap(mapView, gap / pinch.gap, at, aspect(), mapFar);
       showMap();
       dragMap(pinch.mx, pinch.my, mx, my);
       pinch.gap = gap;
@@ -1177,7 +1220,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const a = mapGround(x0, y0);
     const b = mapGround(x1, y1);
     if (!a || !b) return;
-    mapView = panMap(mapView, a.x - b.x, a.z - b.z, aspect());
+    mapView = panMap(mapView, a.x - b.x, a.z - b.z, aspect(), mapFar);
     showMap();
   };
   const mapUp = (e: PointerEvent, d: { x: number; y: number; t: number } | null) => {
@@ -1208,7 +1251,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const factor = Math.exp(-e.deltaY * pixels * (e.ctrlKey ? 0.01 : 0.002));
     const at = mapGround(e.clientX, e.clientY);
     if (!at) return;
-    mapView = zoomMap(mapView, factor, at, aspect());
+    mapView = zoomMap(mapView, factor, at, aspect(), mapFar);
     showMap();
   };
   renderer.domElement.addEventListener('pointermove', onMove);
@@ -1732,7 +1775,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // La taille a changé : le décalage se repose sur la nouvelle taille (la page redonne la place d'une question).
     appliedShift.x = Number.NaN;
     if (mapView) {
-      mapView = clampMap(mapView, aspect());
+      const first = mapView === mapFirst;
+      mapFar = 0;
+      mapView = first ? mapStart(aspect()) : clampMap(mapView, aspect());
+      mapFirst = first ? mapView : null;
       showMap();
     } else applyPose(asked ? asked.pose : pose);
   };
@@ -1884,6 +1930,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     },
     question: askQuestion,
     map: setMap,
+    reframeMap: reframeStart,
     scenetteEnd,
     setPlaces,
     info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, mapMs }),

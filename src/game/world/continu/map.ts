@@ -69,14 +69,53 @@ export function fitDistance(aspect: number): number {
 }
 const fits = new Map<number, number>();
 
+/**
+ * La Carte au plus grand texte (GD-20, « La Carte au plus grand texte », directeur artistique) : si un lieu ouvert n'a
+ * pas la place de son nom près de lui à l'ouverture, la vue de départ change, par pas de `step` (une part de la distance
+ * de l'île entière), jusqu'à `most` fois plus loin ou plus près au plus : plus loin, l'île entière au milieu, puis les
+ * lieux ouverts au milieu (l'île entière ramassée laisse autour d'eux la place de leurs noms) ; plus près, centrée sur
+ * les lieux ouverts, qui s'écartent alors les uns des autres à l'écran (les étiquettes gardent leur taille).
+ */
+export const MAP_REFRAME = { step: 1.1, most: 2 } as const;
+
+/**
+ * La vue de départ de la Carte où `crowded` (ce qui manque à cette vue, pesé : les lieux ouverts sans leur nom près
+ * d'eux ou hors de l'écran, puis, sur tablette, les noms tus des lieux fermés) s'annule : l'île entière d'abord, puis de
+ * plus en plus loin de l'île entière, en reculant puis en s'approchant des lieux ouverts (`open`, leurs points au sol) ;
+ * sinon celle qui le réduit le plus, la plus proche de l'île entière. Le texte normal, où chaque nom a déjà sa place,
+ * garde l'île entière.
+ */
+export function reframeMap(aspect: number, open: readonly Vec2[], crowded: (v: MapView) => number): MapView {
+  const start = mapStart(aspect);
+  let best = { view: start, count: crowded(start) };
+  if (!best.count) return start;
+  const xs = open.map((p) => p.x);
+  const zs = open.map((p) => p.z);
+  const toward = open.length ? { x: (Math.min(...xs) + Math.max(...xs)) / 2, z: (Math.min(...zs) + Math.max(...zs)) / 2 } : start;
+  for (let k = MAP_REFRAME.step; k <= MAP_REFRAME.most * 1.0001; k *= MAP_REFRAME.step) {
+    const farther = { x: start.x, z: start.z, distance: start.distance * k };
+    const fartherOnOpen = { x: toward.x, z: toward.z, distance: start.distance * k };
+    const closer = clampMap({ x: toward.x, z: toward.z, distance: start.distance / k }, aspect);
+    for (const view of [farther, fartherOnOpen, closer]) {
+      const count = crowded(view);
+      if (count < best.count) best = { view, count };
+      if (!count) return view;
+    }
+  }
+  return best.view;
+}
+
 /** La Carte à l'ouverture : l'île entière, au milieu de l'écran. */
 export function mapStart(aspect: number): MapView {
   return { x: (ISLAND_BOX.minX + ISLAND_BOX.maxX) / 2, z: (ISLAND_BOX.minZ + ISLAND_BOX.maxZ) / 2, distance: fitDistance(aspect) };
 }
 
-/** La pose garde l'île sous les yeux : la distance entre la plus proche et l'île entière, le point regardé dans l'île. */
-export function clampMap(v: MapView, aspect: number): MapView {
-  const distance = Math.min(fitDistance(aspect), Math.max(MAP_CAMERA.closest, v.distance));
+/**
+ * La pose garde l'île sous les yeux : la distance entre la plus proche et l'île entière (ou `farthest`, la Carte
+ * reculée au plus grand texte, `reframeMap`), le point regardé dans l'île.
+ */
+export function clampMap(v: MapView, aspect: number, farthest = fitDistance(aspect)): MapView {
+  const distance = Math.min(Math.max(fitDistance(aspect), farthest), Math.max(MAP_CAMERA.closest, v.distance));
   return {
     x: Math.min(ISLAND_BOX.maxX, Math.max(ISLAND_BOX.minX, v.x)),
     z: Math.min(ISLAND_BOX.maxZ, Math.max(ISLAND_BOX.minZ, v.z)),
@@ -85,18 +124,18 @@ export function clampMap(v: MapView, aspect: number): MapView {
 }
 
 /** La Carte glissée : le point regardé déplacé de (`dx`, `dz`), dans ses limites. */
-export function panMap(v: MapView, dx: number, dz: number, aspect: number): MapView {
-  return clampMap({ x: v.x + dx, z: v.z + dz, distance: v.distance }, aspect);
+export function panMap(v: MapView, dx: number, dz: number, aspect: number, farthest?: number): MapView {
+  return clampMap({ x: v.x + dx, z: v.z + dz, distance: v.distance }, aspect, farthest);
 }
 
 /**
  * La Carte zoomée d'un facteur (`factor` > 1 rapproche), autour du point du sol `toward` (sous les doigts ou le
  * pointeur) : ce point reste où il est à l'écran, sauf aux limites.
  */
-export function zoomMap(v: MapView, factor: number, toward: Vec2, aspect: number): MapView {
-  const want = clampMap({ ...v, distance: v.distance / Math.max(0.01, factor) }, aspect).distance;
+export function zoomMap(v: MapView, factor: number, toward: Vec2, aspect: number, farthest?: number): MapView {
+  const want = clampMap({ ...v, distance: v.distance / Math.max(0.01, factor) }, aspect, farthest).distance;
   const k = want / v.distance;
-  return clampMap({ x: toward.x + (v.x - toward.x) * k, z: toward.z + (v.z - toward.z) * k, distance: want }, aspect);
+  return clampMap({ x: toward.x + (v.x - toward.x) * k, z: toward.z + (v.z - toward.z) * k, distance: want }, aspect, farthest);
 }
 
 /** La pose de la caméra pour une pose de la Carte, remplie dans `out` s'il est donné. */
@@ -131,9 +170,11 @@ export interface MapLabel {
    */
   first?: boolean;
   /**
-   * Un lieu ouvert : la taille de sa pastille serrée (son nom sur deux lignes, plus étroit, l'icône de l'état dessous),
-   * prise quand la pastille entière ne trouve pas de place (relecture de L6b, directeur artistique : un lieu ouvert ne
-   * perd jamais son nom).
+   * La taille de sa forme serrée, son nom sur deux lignes (entre deux mots), plus étroit, prise quand la forme entière ne
+   * trouve pas de place : pour un lieu ouvert, sa pastille, l'icône de l'état dessous (relecture de L6b, directeur
+   * artistique : un lieu ouvert ne perd jamais son nom) ; pour un lieu fermé, son cadenas et son nom sur deux lignes
+   * (GD-20, « La Carte au plus grand texte » : sur tablette, le nom d'un lieu fermé passe sur deux lignes plutôt que de
+   * se taire).
    */
   narrow?: { w: number; h: number };
 }
@@ -155,8 +196,32 @@ export interface MapLabelSpot {
    * juste au-dessus (relecture de L6b : sur la tablette, le nom de la Turbine se taisait contre celui des Marais salants).
    */
   drop?: number;
-  /** Un lieu ouvert dans sa pastille serrée (son nom sur deux lignes, plus étroit). */
+  /** Dans sa forme serrée, son nom sur deux lignes, plus étroit (un lieu ouvert ou fermé). */
   narrow?: true;
+  /**
+   * Un lieu ouvert posé loin de son point (à plus de `NEAR.reach`), à la place libre la plus proche dans l'écran, faute
+   * de place près de lui : la vue de départ change alors au plus grand texte (`reframeMap`).
+   */
+  far?: true;
+}
+
+/**
+ * Un nom sur deux lignes, coupé entre deux mots (ou après un article élidé : « L’ » / « Observatoire »), jamais au
+ * milieu d'un mot, à la coupure qui équilibre le mieux les deux lignes (en lettres) ; un seul mot reste sur une ligne.
+ * La forme serrée d'une étiquette de la Carte (GD-20 : un lieu n'a qu'un nom, il passe sur deux lignes).
+ */
+export function nameLines(name: string): readonly string[] {
+  let best: { lines: [string, string]; longest: number } | undefined;
+  for (let i = 1; i < name.length; i++) {
+    const space = name[i] === ' ';
+    const elided = name[i - 1] === '’' || name[i - 1] === "'";
+    if (!space && !elided) continue;
+    const lines: [string, string] = [name.slice(0, i).trimEnd(), name.slice(space ? i + 1 : i).trimStart()];
+    if (!lines[0] || !lines[1]) continue;
+    const longest = Math.max(lines[0].length, lines[1].length);
+    if (!best || longest < best.longest) best = { lines, longest };
+  }
+  return best ? best.lines : [name];
 }
 
 /** Le cadenas d'un lieu fermé, en pixels, et l'écart gardé entre deux étiquettes (référent dys, consultant UX UI). */
@@ -172,30 +237,45 @@ const SHIFTS = 3;
 /** Les pas dont le nom d'un lieu fermé peut descendre sous son cadenas, en pixels. */
 const NAME_DROPS = [0, MAP_LABEL_GAP, 2 * MAP_LABEL_GAP] as const;
 
-/** Le pas et la portée de la recherche d'une place libre pour un nom, en pixels. */
-const SPIRAL = { step: 16, reach: 240, directions: 16 } as const;
+/**
+ * Le pas et la portée de la recherche d'une place libre pour un nom autour de son lieu, en pixels : au-delà de 80 px
+ * entre le lieu et le bord de son étiquette, le nom ne se lit plus comme celui du lieu (relecture du rivage sud,
+ * consultant UX UI et référent dys : avec une spirale de 240 px, en texte normal à 667 × 375, des noms erraient loin de
+ * leur lieu) ; il prend sa forme serrée, ou se tait pour un lieu fermé.
+ */
+const NEAR = { step: 16, reach: 80 } as const;
 
-/** La première place libre (`ok`) autour de `r`, de plus en plus loin, ou rien. */
-function spiral(r: Rect, ok: (c: Rect) => boolean): Rect | undefined {
-  for (let d = SPIRAL.step; d <= SPIRAL.reach; d += SPIRAL.step)
-    for (let k = 0; k < SPIRAL.directions; k++) {
-      const a = (k * 2 * Math.PI) / SPIRAL.directions;
-      const dx = d * Math.cos(a), dy = d * Math.sin(a);
-      const c = { left: r.left + dx, top: r.top + dy, right: r.right + dx, bottom: r.bottom + dy };
-      if (ok(c)) return c;
+/** L'écart entre un point et un rectangle, en pixels (0 dedans). */
+const gapTo = (p: { x: number; y: number }, r: Rect) => Math.hypot(Math.max(r.left - p.x, 0, p.x - r.right), Math.max(r.top - p.y, 0, p.y - r.bottom));
+
+/**
+ * La place libre (`ok`) d'une étiquette de taille `w` × `h` la plus proche du point `p`, à `NEAR.reach` au plus de lui
+ * (une grille au pas de 16 px), ou rien.
+ */
+function near(p: { x: number; y: number }, w: number, h: number, ok: (c: Rect) => boolean): Rect | undefined {
+  let best: { r: Rect; d: number; c: number } | undefined;
+  for (let top = p.y - NEAR.reach - h; top <= p.y + NEAR.reach; top += NEAR.step)
+    for (let left = p.x - NEAR.reach - w; left <= p.x + NEAR.reach; left += NEAR.step) {
+      const r = rect(left, top, w, h);
+      const d = gapTo(p, r);
+      if (d > NEAR.reach) continue;
+      // À écart égal, la plus centrée sur son lieu.
+      const c = Math.hypot(left + w / 2 - p.x, top + h / 2 - p.y);
+      if (best && (d > best.d || (d === best.d && c >= best.c))) continue;
+      if (ok(r)) best = { r, d, c };
     }
-  return undefined;
+  return best?.r;
 }
 
 /**
- * La place la plus proche du point de `l`, sur une grille de l'écran entier `screen` (au pas de la spirale), où `ok`
+ * La place la plus proche du point de `l`, sur une grille de l'écran entier `screen` (au pas de `NEAR`), où `ok`
  * accepte une étiquette de taille `size`. Rien sur un écran sans taille.
  */
 function anywhere(screen: { width: number; height: number }, l: { x: number; y: number }, size: { w: number; h: number }, ok: (c: Rect) => boolean): Rect | undefined {
   if (!Number.isFinite(screen.width) || !Number.isFinite(screen.height)) return undefined;
   let best: { r: Rect; d: number } | undefined;
-  for (let top = 0; top + size.h <= screen.height; top += SPIRAL.step)
-    for (let left = 0; left + size.w <= screen.width; left += SPIRAL.step) {
+  for (let top = 0; top + size.h <= screen.height; top += NEAR.step)
+    for (let left = 0; left + size.w <= screen.width; left += NEAR.step) {
       const r = rect(left, top, size.w, size.h);
       if (!ok(r)) continue;
       const d = Math.hypot(left + size.w / 2 - l.x, top + size.h / 2 - l.y);
@@ -227,7 +307,8 @@ const clash = (a: Rect, b: Rect) =>
  * ne le laisse sans toucher une autre étiquette (au plus grand texte, sur un téléphone), sa pastille se réduit à son
  * icône (`name: false`, le nom et l'état restent dits par le bouton) : jamais un nom posé sur un autre.
  * Enfin le nom de chaque lieu fermé, sous son cadenas, glissé de côté au besoin (le cadenas toujours au-dessus de lui),
- * se tait s'il gêne encore (le cadenas reste ; son toucher dit « Fermé pour l'instant »).
+ * puis sur deux lignes (`narrow`), se tait s'il gêne encore (le cadenas reste ; son toucher dit « Fermé pour
+ * l'instant »). Une place cherchée autour d'un lieu ne s'en éloigne pas de plus de `NEAR.reach`.
  */
 export function layoutMapLabels(labels: readonly MapLabel[], obstacles: readonly Rect[] = [], screen = { width: Infinity, height: Infinity }): MapLabelSpot[] {
   const first = attemptLayout(labels, obstacles, screen, false);
@@ -290,10 +371,12 @@ function attemptLayout(
     };
     const full = places(l.w, l.h);
     const tight = l.narrow ? places(l.narrow.w, l.narrow.h) : [];
-    // Sinon, la place libre la plus proche autour du lieu, de plus en plus loin (une spirale de pas de 16 px) ; d'abord
-    // hors de la place du nom d'un lieu fermé, même un peu plus loin de son point (sur la tablette, toutes les places
-    // simples de la Turbine touchaient celle des Écluses, et le nom revenait sous leur cadenas).
-    const find = (list: Rect[], ok: (c: Rect) => boolean) => (list.length ? (list.find(ok) ?? spiral(list[0], ok)) : undefined);
+    // Sinon, la place libre la plus proche du lieu, à `NEAR.reach` au plus ; d'abord hors de la place du nom d'un lieu
+    // fermé, même un peu plus loin de son point (sur la tablette, toutes les places simples de la Turbine touchaient
+    // celle des Écluses, et le nom revenait sous leur cadenas). Une place simple trop loin de son lieu (un décalage d'une
+    // grande étiquette) ne compte pas.
+    const find = (list: Rect[], ok: (c: Rect) => boolean) =>
+      list.length ? (list.find((c) => gapTo(l, c) <= NEAR.reach && ok(c)) ?? near(l, list[0].right - list[0].left, list[0].bottom - list[0].top, ok)) : undefined;
     let r = find(full, apart) ?? find(full, clear);
     let narrow = false;
     if (!r) {
@@ -304,10 +387,13 @@ function attemptLayout(
     const size = l.narrow ?? { w: l.w, h: l.h };
     // Trop serré près de son lieu : la deuxième passe (Kéo d'abord réduit à sa pastille) cherche plus loin.
     if (!r) crowded = true;
+    let far = false;
     if (!r && compactKeo) {
-      // Puis la place libre la plus proche n'importe où dans l'écran, plutôt que de toucher une autre étiquette.
+      // Puis la place libre la plus proche n'importe où dans l'écran, plutôt que de toucher une autre étiquette ; la vue
+      // de départ change alors au plus grand texte, pour la ramener près de son lieu (`far`, `reframeMap`).
       r = anywhere(screen, l, size, clear);
       narrow = Boolean(r && l.narrow);
+      far = Boolean(r && gapTo(l, r) > NEAR.reach);
     }
     let name = true;
     if (!r) {
@@ -317,44 +403,55 @@ function attemptLayout(
       narrow = false;
       name = false;
       const small = places(MAP_COMPACT, MAP_COMPACT);
-      r = small.find(clear) ?? spiral(small[0], clear);
+      r = small.find(clear) ?? near(l, MAP_COMPACT, MAP_COMPACT, clear) ?? anywhere(screen, l, { w: MAP_COMPACT, h: MAP_COMPACT }, clear);
       if (!r) {
         // Au pire, il peut toucher une autre étiquette, jamais un bouton de la page.
         const off = (c: Rect) => onScreen(c) && !obstacles.some((o) => clash(o, c));
-        r = small.find(off) ?? spiral(small[0], off) ?? small[0];
+        r = small.find(off) ?? near(l, MAP_COMPACT, MAP_COMPACT, off) ?? small[0];
       }
     }
     placed.push({ id: l.id, r });
-    out.set(l.id, { id: l.id, left: r.left, top: r.top, name, ...(narrow ? { narrow: true as const } : {}) });
+    out.set(l.id, { id: l.id, left: r.left, top: r.top, name, ...(narrow ? { narrow: true as const } : {}), ...(far ? { far: true as const } : {}) });
   }
   // Les noms des lieux fermés, du haut de l'écran vers le bas : un nom qui toucherait celui du dessus descend d'un pas.
   const closed = labels.filter((l) => l.kind === 'closed').sort((a, b) => a.y - b.y);
   for (const l of closed) {
-    const left = l.x - l.w / 2;
-    // Le nom glisse le long de son cadenas pour rester entier dans l'écran, à un écart du bord ; puis, s'il gêne, de côté,
-    // d'un pas à la fois, tant que son cadenas reste au-dessus de lui, ou un peu plus bas (sur la tablette, le nom de la
-    // Turbine se taisait contre une étiquette voisine : relecture de L6b, directeur artistique).
-    const over = left + l.w - (screen.width - MAP_LABEL_GAP);
-    const under = MAP_LABEL_GAP - left;
-    const edge = under > 0 ? under : over > 0 ? -over : 0;
-    const shifts = [edge];
-    for (let d = SPIRAL.step; d <= l.w; d += SPIRAL.step) shifts.push(edge - d, edge + d);
-    const covers = (k: number) => k === edge || (left + k <= l.x - MAP_LOCK / 2 && left + k + l.w >= l.x + MAP_LOCK / 2);
-    const at = (k: number, drop: number) => rect(left + k, l.y + drop, l.w, Math.max(0, l.h - MAP_LOCK));
-    let spot: { k: number; drop: number } | undefined;
-    for (const drop of NAME_DROPS) {
-      const k = shifts.find((c) => covers(c) && onScreen(at(c, drop)) && free(at(c, drop), l.id));
-      if (k !== undefined) {
-        spot = { k, drop };
-        break;
+    // Sa forme entière, son nom sur une ligne, puis sa forme serrée, son nom sur deux lignes (GD-20, « La Carte au plus
+    // grand texte » : sur tablette, « Les Marais salants » fermés se taisaient plutôt que de passer sur deux lignes).
+    const forms = [{ w: l.w, h: l.h }, ...(l.narrow ? [l.narrow] : [])];
+    let spot: { k: number; drop: number; form: number } | undefined;
+    for (let f = 0; f < forms.length && !spot; f++) {
+      const { w, h } = forms[f];
+      const left = l.x - w / 2;
+      // Le nom glisse le long de son cadenas pour rester entier dans l'écran, à un écart du bord ; puis, s'il gêne, de
+      // côté, d'un pas à la fois, tant que son cadenas reste au-dessus de lui, ou un peu plus bas (sur la tablette, le nom
+      // de la Turbine se taisait contre une étiquette voisine : relecture de L6b, directeur artistique).
+      const over = left + w - (screen.width - MAP_LABEL_GAP);
+      const under = MAP_LABEL_GAP - left;
+      const edge = under > 0 ? under : over > 0 ? -over : 0;
+      const shifts = [edge];
+      for (let d = NEAR.step; d <= w; d += NEAR.step) shifts.push(edge - d, edge + d);
+      const covers = (k: number) => k === edge || (left + k <= l.x - MAP_LOCK / 2 && left + k + w >= l.x + MAP_LOCK / 2);
+      const at = (k: number, drop: number) => rect(left + k, l.y + drop, w, Math.max(0, h - MAP_LOCK));
+      for (const drop of NAME_DROPS) {
+        const k = shifts.find((c) => covers(c) && onScreen(at(c, drop)) && free(at(c, drop), l.id));
+        if (k !== undefined) {
+          spot = { k, drop, form: f };
+          placed.push({ id: l.id, r: at(k, drop) });
+          break;
+        }
       }
     }
+    // Ni entier ni sur deux lignes : il se tait (le cadenas reste ; son toucher dit « Fermé pour l'instant »).
     if (!spot) continue;
-    placed.push({ id: l.id, r: at(spot.k, spot.drop) });
     const o = out.get(l.id)!;
     o.name = true;
     if (spot.k) o.shift = spot.k;
     if (spot.drop) o.drop = spot.drop;
+    if (spot.form) {
+      o.narrow = true;
+      o.left = l.x - Math.max(MAP_LOCK, forms[1].w) / 2;
+    }
   }
   return { spots: labels.map((l) => out.get(l.id)!), crowded };
 }

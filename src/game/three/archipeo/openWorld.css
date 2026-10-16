@@ -857,8 +857,22 @@
   pointer-events: none;
 }
 .open-world-map-closed .open-world-lock,
-.open-world-map-closed[data-nom='oui'] .open-world-map-closed-name {
+.open-world-map-closed[data-nom='oui'] .open-world-map-closed-name,
+.open-world-map-closed[data-nom='serre'] .open-world-map-closed-name {
   pointer-events: auto;
+}
+/* Sa forme serrée : son nom sur deux lignes, entre deux mots, jamais au milieu d'un mot, à la même taille de texte
+   (GD-20, « La Carte au plus grand texte » : sur tablette, le nom d'un lieu fermé passe sur deux lignes plutôt que de se
+   taire ; MapLabels.tsx, `layoutMapLabels`). */
+.open-world-map-closed[data-nom='serre'] .open-world-map-closed-name {
+  text-align: center;
+}
+/* Les deux lignes d'un nom (MapLabels.tsx, `nameLines`) : à la suite dans la forme entière, l'une sous l'autre dans la
+   forme serrée, chacune entière. */
+.open-world-map-closed[data-nom='serre'] .open-world-map-line,
+.open-world-map-place[data-nom='serre'] .open-world-map-line {
+  display: block;
+  white-space: nowrap;
 }
 /* Kéo : une pastille ronde unie à sa silhouette, et « Toi » à côté, sur un panneau : la forme et le mot le distinguent
    du nom d'un lieu (un rectangle seul), jamais la couleur seule. */
@@ -1585,11 +1599,15 @@
   align-items: center;
   gap: 0.4em;
 }
-/* Une pastille : le nom, puis l'icône de l'état (le mot est dit par le bouton). Un nom long se replie entre ses mots
-   (jamais au milieu d'un mot) au-delà de 12 caractères : « Le Phare » tient toujours sur une ligne. */
+/* Une pastille : le nom, puis l'icône de l'état (le mot est dit par le bouton). Un nom de plus de 12 lettres passe sur
+   deux lignes, entre deux mots (jamais au milieu d'un mot), les autres tiennent sur une ligne : « Le Phare » toujours
+   (MapLabels.tsx, `Name`, `nameLines`). */
 .open-world-map-place-name {
   display: block;
-  max-width: 12ch;
+  white-space: nowrap;
+}
+.open-world-map-lines[data-lignes='2'] .open-world-map-line {
+  display: block;
 }
 .open-world-map-state {
   display: inline-flex;
@@ -1617,6 +1635,35 @@
 .open-world-map-place[data-nom='non'] .open-world-map-place-name {
   display: none;
 }
+/* L'icône propre du lieu, celle de son île, dans la pastille réduite seulement : deux lieux réduits ne se confondent
+   pas ; l'état passe en petit insigne dans le coin bas droit, sur un disque uni (relecture du rivage sud, consultant UX
+   UI et référent dys). L'Escale garde son ancre seule. */
+.open-world-map-icon {
+  display: none;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-icon {
+  display: inline-flex;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-icon svg {
+  width: 26px;
+  height: 26px;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-icon ~ .open-world-map-state {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  justify-content: center;
+  border: 2px solid var(--text);
+  border-radius: 50%;
+  background: var(--surface);
+}
+.open-world-map-place[data-nom='non'] .open-world-map-icon ~ .open-world-map-state svg {
+  width: 14px;
+  height: 14px;
+}
 .open-world-map-place[data-nom='non'] .open-world-map-state {
   display: inline-flex;
 }
@@ -1632,7 +1679,7 @@
   padding: 0.2rem 0.5rem;
 }
 .open-world-map-place[data-nom='serre'] .open-world-map-place-name {
-  max-width: 11ch;
+  max-width: none;
 }
 /* Un accès direct sans rien à faire (les commandes, qui ne se livrent pas encore dans le monde continu) : délavé comme
    « Y aller » sans mission (fond secondaire, trait en tirets, icône adoucie), mais opaque sur le monde : son icône

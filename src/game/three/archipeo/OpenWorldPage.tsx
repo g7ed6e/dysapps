@@ -116,6 +116,9 @@ export default function OpenWorldPage() {
   // « Fermé pour l'instant », au toucher d'un lieu fermé sur la Carte : quelques secondes, au-dessus de « Retour ».
   const [closedNote, setClosedNote] = useState(0);
   const showClosed = useCallback(() => setClosedNote((n) => n + 1), []);
+  // Au plus grand texte, un lieu ouvert sans la place de son nom : la vue de départ de la Carte change (GD-20, « La Carte
+  // au plus grand texte »).
+  const reframeMap = useCallback((crowded: (spots: readonly MapSpotOnScreen[]) => number) => world.current?.reframeMap(crowded), []);
   const mapPick = useRef<(place: PlaceId | 'port') => void>(() => {});
   const mapButton = useRef<HTMLButtonElement>(null);
   // La distance au prochain lieu, pour la voix (avis du référent dys) : relue à chaque image, mais l'état ne change
@@ -465,7 +468,7 @@ export default function OpenWorldPage() {
         </div>
         {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
         {mapOpen && !asking && (
-          <MapLabels openPlaces={openPlaces} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={showClosed} portName={textes.depart?.nom} />
+          <MapLabels openPlaces={openPlaces} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={showClosed} portName={textes.depart?.nom} onCrowded={reframeMap} />
         )}
         {/* Les accès directs (décision « Sans Menu », GD-20, lot 1) : la colonne du monde en grille, telle quelle ; les
             commandes délavées tant qu'elles ne se livrent pas dans le monde continu. Masquée pendant une question. */}

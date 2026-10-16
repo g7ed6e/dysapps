@@ -2,7 +2,7 @@
 // leurs limites, la pose de la caméra (nord en haut). Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { screenOf } from './camera';
-import { ISLAND_BOX, MAP_CAMERA, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, panMap, zoomMap, type MapLabel, type MapLabelSpot } from './map';
+import { ISLAND_BOX, MAP_CAMERA, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
 import { PLACES } from './plan6e';
 
 const screens = [
@@ -64,6 +64,59 @@ describe('La Carte des lieux ouverts', () => {
     expect(far.z).toBe(ISLAND_BOX.minZ);
     expect(clampMap(far, aspect)).toEqual(far);
   });
+
+  it('au plus grand texte, la vue de départ change jusqu’à ce que chaque lieu ouvert ait son nom (GD-20, « La Carte au plus grand texte »)', () => {
+    const aspect = 667 / 375;
+    const start = mapStart(aspect);
+    const open = [PLACES[0].center, PLACES[1].center];
+    // Rien ne manque : l'île entière, sans rien essayer d'autre (le texte normal ne change pas).
+    let tried = 0;
+    expect(reframeMap(aspect, open, () => (tried++, 0))).toEqual(start);
+    expect(tried).toBe(1);
+    // Il manque un nom à l'île entière, plus rien un peu plus loin : la vue la plus proche de l'île entière qui suffit.
+    const farther = reframeMap(aspect, open, (v) => (v.distance > start.distance * 1.15 ? 0 : 100));
+    expect(farther.distance).toBeGreaterThan(start.distance * 1.15);
+    expect(farther.distance).toBeLessThan(start.distance * 1.15 * MAP_REFRAME.step + 1e-6);
+    // Plus près, centrée sur les lieux ouverts.
+    const closer = reframeMap(aspect, open, (v) => (v.distance < start.distance / 1.3 ? 0 : 100));
+    expect(closer.distance).toBeLessThan(start.distance / 1.3);
+    expect(closer.distance).toBeGreaterThanOrEqual(start.distance / MAP_REFRAME.most - 1e-6);
+    expect(closer.x).toBeCloseTo((Math.min(open[0].x, open[1].x) + Math.max(open[0].x, open[1].x)) / 2, 6);
+    // Rien ne suffit : celle à qui il manque le moins, la plus proche de l'île entière ; jamais au-delà de la portée.
+    const seen: MapView[] = [];
+    const best = reframeMap(aspect, open, (v) => (seen.push(v), v.distance > start.distance * 1.5 ? 10 : 100));
+    expect(best.distance).toBeGreaterThan(start.distance * 1.5);
+    expect(best.distance).toBeLessThan(start.distance * 1.5 * MAP_REFRAME.step + 1e-6);
+    for (const v of seen) {
+      expect(v.distance).toBeLessThanOrEqual(start.distance * MAP_REFRAME.most + 1e-6);
+      expect(v.distance).toBeGreaterThanOrEqual(start.distance / MAP_REFRAME.most - 1e-6);
+    }
+  });
+
+  it('reculée, la Carte garde sa distance la plus lointaine au glisser et au pincer', () => {
+    const aspect = 844 / 390;
+    const fit = fitDistance(aspect);
+    const back = { ...mapStart(aspect), distance: fit * 1.4 };
+    expect(clampMap(back, aspect).distance).toBeCloseTo(fit, 6);
+    expect(clampMap(back, aspect, fit * 1.4).distance).toBeCloseTo(fit * 1.4, 6);
+    expect(panMap(back, 5, 0, aspect, fit * 1.4).distance).toBeCloseTo(fit * 1.4, 6);
+    expect(zoomMap(back, 0.5, back, aspect, fit * 1.4).distance).toBeCloseTo(fit * 1.4, 6);
+    // Une distance la plus lointaine plus proche que l'île entière ne l'empêche pas de se voir entière.
+    expect(clampMap(back, aspect, fit / 2).distance).toBeCloseTo(fit, 6);
+  });
+});
+
+describe('Les noms sur deux lignes', () => {
+  it('se coupent entre deux mots, ou après un article élidé, à la coupure la plus équilibrée ; un seul mot reste entier', () => {
+    expect(nameLines('Le Chantier naval')).toEqual(['Le Chantier', 'naval']);
+    expect(nameLines('Les Marais salants')).toEqual(['Les Marais', 'salants']);
+    expect(nameLines('La Turbine')).toEqual(['La', 'Turbine']);
+    expect(nameLines('L’Observatoire')).toEqual(['L’', 'Observatoire']);
+    expect(nameLines('La Gare maritime')).toEqual(['La Gare', 'maritime']);
+    expect(nameLines('Phare')).toEqual(['Phare']);
+    // Les lignes redonnent le nom, lettre pour lettre.
+    for (const p of PLACES) expect(nameLines(p.name).join(' ').replace('’ ', '’')).toBe(p.name);
+  });
 });
 
 describe('Les étiquettes de la Carte', () => {
@@ -72,6 +125,10 @@ describe('Les étiquettes de la Carte', () => {
     if (l.kind === 'keo' && !s.name) return { left: s.left, top: s.top, right: s.left + MAP_KEO_DISC, bottom: s.top + l.h };
     if (l.kind === 'open' && !s.name) return { left: s.left, top: s.top, right: s.left + MAP_COMPACT, bottom: s.top + MAP_COMPACT };
     if (l.kind === 'open' && s.narrow) return { left: s.left, top: s.top, right: s.left + l.narrow!.w, bottom: s.top + l.narrow!.h };
+    if (l.kind === 'closed' && s.narrow) {
+      const name = l.x - l.narrow!.w / 2 + (s.shift ?? 0);
+      return { left: Math.min(name, l.x - MAP_LOCK / 2), top: s.top, right: Math.max(name + l.narrow!.w, l.x + MAP_LOCK / 2), bottom: s.top + l.narrow!.h + (s.drop ?? 0) };
+    }
     if (l.kind === 'closed') {
       // Le cadenas, et son nom dessous, glissé de `shift`.
       const name = s.left + (s.shift ?? 0);
@@ -287,5 +344,59 @@ describe('Les étiquettes de la Carte', () => {
     // Le nom des Écluses se montre sous son cadenas : le cadenas se lit comme le sien.
     expect(ecluses.name).toBe(true);
     expect(engine.name).toBe(true);
+  });
+
+  it('sur la tablette, le nom d’un lieu fermé passe sur deux lignes plutôt que de se taire (GD-20, « La Carte au plus grand texte »)', () => {
+    // Au plus grand texte : « Les Marais salants » sur une ligne (496 px) ne tient pas entre un bouton à gauche et le
+    // bord droit de l'écran.
+    const labels: MapLabel[] = [
+      { id: 'phare', kind: 'open', x: 900, y: 300, w: 200, h: 78 },
+      { id: 'saltworks', kind: 'closed', x: 700, y: 449, w: 496, h: 107, narrow: { w: 234, h: 161 } },
+    ];
+    const button = { left: 0, top: 440, right: 600, bottom: 560 };
+    const screen = { width: 1024, height: 768 };
+    const [phare, salt] = layoutMapLabels(labels, [button], screen);
+    expect(phare.name).toBe(true);
+    expect(salt.name).toBe(true);
+    expect(salt.narrow).toBe(true);
+    // L'élément, centré sur son cadenas, a la largeur de sa forme serrée ; le cadenas reste au-dessus de son nom.
+    expect(salt.left).toBe(700 - 234 / 2);
+    const left = 700 - 234 / 2 + (salt.shift ?? 0);
+    expect(left).toBeLessThanOrEqual(700 - MAP_LOCK / 2);
+    expect(left + 234).toBeGreaterThanOrEqual(700 + MAP_LOCK / 2);
+    const name = { left, top: 449 + (salt.drop ?? 0), right: left + 234, bottom: 449 + (salt.drop ?? 0) + 161 - MAP_LOCK };
+    expect(apart(name, boxOf(labels[0], phare))).toBe(true);
+    expect(apart(name, button)).toBe(true);
+    // Sans forme serrée mesurée, il se tait, comme avant.
+    expect(layoutMapLabels([labels[0], { ...labels[1], narrow: undefined }], [button], screen)[1].name).toBe(false);
+  });
+
+  it('un nom ne s’éloigne pas de plus de 80 px de son lieu ; plus loin, un lieu ouvert se serre d’abord (relecture du rivage sud)', () => {
+    // Le Phare ouvert, entre deux boutons : sa pastille entière (260 px) ne passe pas entre eux, sa pastille serrée si.
+    const screen = { width: 667, height: 375 };
+    const at = { x: 330, y: 190 };
+    const buttons = [
+      { left: 0, top: 0, right: 200, bottom: 375 },
+      { left: 460, top: 0, right: 667, bottom: 375 },
+    ];
+    const phare: MapLabel = { id: 'phare', kind: 'open', ...at, w: 260, h: 60, narrow: { w: 110, h: 90 } };
+    const spots = layoutMapLabels([phare], buttons, screen);
+    const [spot] = spots;
+    expect(spot.name).toBe(true);
+    expect(spot.narrow).toBe(true);
+    expect(spot.far).toBeUndefined();
+    const box = boxOf(phare, spot);
+    const gap = Math.hypot(Math.max(box.left - at.x, 0, at.x - box.right), Math.max(box.top - at.y, 0, at.y - box.bottom));
+    expect(gap).toBeLessThanOrEqual(80);
+  });
+
+  it('nulle part près de son lieu : un lieu ouvert va à la place libre la plus proche de l’écran, marqué loin (la vue de départ change alors)', () => {
+    const screen = { width: 700, height: 400 };
+    // Une barre de boutons sur tout le milieu de l'écran, le lieu dessous.
+    const bar = { left: 0, top: 100, right: 700, bottom: 300 };
+    const label: MapLabel = { id: 'phare', kind: 'open', x: 350, y: 200, w: 200, h: 60, narrow: { w: 120, h: 90 } };
+    const [spot] = layoutMapLabels([label], [bar], screen);
+    expect(spot.name).toBe(true);
+    expect(spot.far).toBe(true);
   });
 });
