@@ -878,7 +878,44 @@ export interface Reaction {
    * (lot L6b). Sans : ni cap ni roulis.
    */
   turn?: { yaw: number; roll: number };
+  /**
+   * Des battants qui tournent sur leurs gonds (les volets de l'Observatoire, clôture de L8), au lieu du geste de `from` à
+   * `to` : chacun, une plage de sommets de `facets` (posés dans le monde, fermés), tourne autour d'un axe vertical en
+   * `pivot`, de 0 à `angle`, en `seconds`. Avec « Réduire les animations », ils sont ouverts d'un coup.
+   */
+  swing?: Swing;
 }
+
+/** Les battants d'une réaction : leur durée, et pour chacun son gond, son angle d'ouverture et ses sommets. */
+export interface Swing {
+  seconds: number;
+  leaves: readonly { pivot: { x: number; z: number }; angle: number; first: number; count: number }[];
+}
+
+/**
+ * Les battants d'une réaction à la fraction `e` de leur course (0 fermés, 1 ouverts), écrits dans `positions` et
+ * `normals` (de la taille de ceux de `facets`, jamais les mêmes tableaux) ; sans allocation, appelé à chaque image.
+ */
+export function swingTo(facets: Facets, swing: Swing, e: number, positions: Float32Array, normals: Float32Array): void {
+  positions.set(facets.positions);
+  normals.set(facets.normals);
+  for (const leaf of swing.leaves) {
+    const a = leaf.angle * e;
+    const [c, sn] = [Math.cos(a), Math.sin(a)];
+    for (let v = leaf.first; v < leaf.first + leaf.count; v++) {
+      const i = 3 * v;
+      const [x, z] = [facets.positions[i] - leaf.pivot.x, facets.positions[i + 2] - leaf.pivot.z];
+      positions[i] = leaf.pivot.x + x * c + z * sn;
+      positions[i + 2] = leaf.pivot.z - x * sn + z * c;
+      const [nx, nz] = [facets.normals[i], facets.normals[i + 2]];
+      normals[i] = nx * c + nz * sn;
+      normals[i + 2] = -nx * sn + nz * c;
+    }
+  }
+}
+
+/** La course des volets de l'Observatoire, en secondes (directeur artistique, relecture de L8c-d, Q1). */
+export const SHUTTER_SECONDS = 0.5;
 
 /** La scène d'un item : ce qui reste en place, les panneaux, et la réaction (`null` : rien ne bouge). */
 export interface ItemSceneFacets {
@@ -2837,15 +2874,29 @@ function observatoryBay(b: FacetBuilder, spot: Vec3, done: boolean): Reaction | 
   // L'appui et le linteau, d'enduit plus sombre.
   b.box({ x: o.x, y: y0 - 0.12, z: front + 0.05 }, [W.width + 0.36, 0.12, 0.14], C.plasterShade);
   b.box({ x: o.x, y: y0 + W.height, z: front + 0.04 }, [W.width + 0.36, 0.16, 0.12], C.plasterShade);
-  for (const side of [-1, 1]) {
-    if (!done) {
-      b.box({ x: o.x + side * (W.width / 4 + 0.005), y: y0, z: front + 0.03 + W.shutter / 2 }, [W.width / 2 - 0.01, W.height, W.shutter], C.shutter);
-      continue;
-    }
-    // Ouvert : le battant tourne sur son gond, au bord de la baie, et se tient droit, perpendiculaire au mur.
-    b.box({ x: o.x + side * (W.width / 2 + W.shutter / 2 + 0.01), y: y0, z: front + 0.03 + W.width / 4, yaw: Math.PI / 2 }, [W.width / 2 - 0.01, W.height, W.shutter], C.shutter);
+  // Les deux battants, fermés : dans la scène au repos ; après une bonne réponse, dans la réaction, où chacun tourne d'un
+  // quart de tour sur son gond, au bord de la baie, vers la caméra, et se tient droit, perpendiculaire au mur (clôture de
+  // L8 : environ une demi-seconde, sans rebond ; ouverts d'un coup avec « Réduire les animations »).
+  const leaf = (into: FacetBuilder, side: number) =>
+    into.box({ x: o.x + side * (W.width / 4 + 0.005), y: y0, z: front + 0.03 + W.shutter / 2 }, [W.width / 2 - 0.01, W.height, W.shutter], C.shutter);
+  if (!done) {
+    for (const side of [-1, 1]) leaf(b, side);
+    return null;
   }
-  return null;
+  const r = new FacetBuilder();
+  const leaves: Swing['leaves'][number][] = [];
+  let first = 0;
+  for (const side of [-1, 1]) {
+    const one = new FacetBuilder();
+    leaf(one, side);
+    const f = one.build();
+    r.append(f);
+    const count = f.positions.length / 3;
+    leaves.push({ pivot: { x: o.x + side * (W.width / 2), z: front + 0.03 }, angle: (side * Math.PI) / 2, first, count });
+    first += count;
+  }
+  const zero = { x: 0, y: 0, z: 0 };
+  return { facets: r.build(), from: zero, to: zero, arc: 0, stay: true, swing: { seconds: SHUTTER_SECONDS, leaves } };
 }
 
 /**

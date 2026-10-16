@@ -928,6 +928,8 @@ const C = {
   // lunettes relevées sur le front, burette d'huile de cuivre ; le dallage de pierre des Écluses devant la chaudière.
   lagoonCoat: 0x178078,
   lagoonCoatShade: 0x12695f,
+  /** Le pantalon de la machiniste (clôture de L8) : le bleu lagon de sa veste, plus sombre que son ombre. */
+  lagoonTrousers: 0x0f5650,
   ochre: 0xc8923a,
   goggles: 0x6f8089,
   copper: 0xc07a3e,
@@ -1135,29 +1137,32 @@ function sauniere(b: FacetBuilder, place: PlaceId): void {
 }
 
 /**
- * La machiniste, immobile (directeur artistique, consultant Archipéo) : sa veste bleu lagon, son foulard ocre au cou, la
- * tête, ses cheveux sombres noués en chignon, ses lunettes relevées sur le front, sur les cheveux ; un bras plié devant
- * elle, sa burette d'huile à la main, un corps conique de cuivre et son long bec fin tendu vers la soupape (relecture de
- * L6a : jamais une torche, le feu est exclu du lieu). Elle ne dit rien.
+ * La machiniste, immobile (directeur artistique, consultant Archipéo) : les jambes et les cheveux communs des habitants
+ * (directeur artistique, clôture de L8), son pantalon du bleu lagon de sa veste, plus sombre ; sa veste bleu lagon, son foulard ocre au
+ * cou, la tête, son chignon, ses lunettes relevées sur le front, sur les cheveux ; un bras plié devant elle, sa burette
+ * d'huile à la main, un corps conique de cuivre et son long bec fin tendu vers la soupape (relecture de L6a : jamais une
+ * torche, le feu est exclu du lieu). Elle ne dit rien. Pour tenir sous les 400 triangles de la scénette : le bandeau des
+ * lunettes sans dessus, les verres sans leur face cachée contre le front, la burette en cône pointu.
  */
 function machiniste(b: FacetBuilder, place: PlaceId): void {
   const at = scenetteHabitant(place);
-  b.prism(at, 0.4, 0.28, 0.92, 10, C.lagoonCoat, C.lagoonCoatShade);
+  trouserLegs(b, at, C.lagoonTrousers);
+  b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.33, 0.28, 0.92 - TROUSER_TOP, 10, C.lagoonCoat, C.lagoonCoatShade);
   b.prism({ x: at.x, y: at.y + 0.86, z: at.z }, 0.27, 0.22, 0.12, 10, C.ochre);
   sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
-  // Les cheveux : une calotte un peu plus grande, reculée et montée (le visage reste nu devant), et le chignon derrière.
-  sphere(b, { x: at.x, y: at.y + 1.16, z: at.z - 0.035 }, 0.245, 8, 4, C.hair);
+  habitantHair(b, at, C.hair);
+  // Le chignon, derrière.
   sphere(b, { x: at.x, y: at.y + 1.36, z: at.z - 0.17 }, 0.11, 6, 3, C.hair);
-  // Les lunettes relevées : leur bandeau, et deux verres ronds sur le front.
-  b.prism({ x: at.x, y: at.y + 1.2, z: at.z }, 0.26, 0.26, 0.06, 10, C.trousers);
-  for (const dx of [-0.09, 0.09]) b.drum({ x: at.x + dx, y: at.y + 1.25, z: at.z + 0.21, pitch: Math.PI / 2 }, 0.065, 0.06, 6, C.goggles);
+  // Les lunettes relevées : leur bandeau, et deux verres ronds sur le front, tournés vers la caméra.
+  b.band({ x: at.x, y: at.y + 1.2, z: at.z }, 0.26, 0.06, 10, C.trousers);
+  for (const dx of [-0.09, 0.09]) b.prism({ x: at.x + dx, y: at.y + 1.25, z: at.z + 0.21, pitch: Math.PI / 2 }, 0.065, 0.065, 0.06, 6, C.goggles);
   // Le bras vers l'ouest (vers la soupape), la main à côté de la burette : son corps conique posé sur sa base, large en
   // bas ; son bec, long et fin, qui part du haut vers la soupape.
   const hand = { x: at.x - 0.45, y: at.y + 0.62, z: at.z + 0.3 };
   b.beam({ x: at.x - 0.24, y: at.y + 0.82, z: at.z + 0.06 }, hand, 0.15, C.lagoonCoat);
   const can = { x: hand.x - 0.1, y: hand.y - 0.2, z: hand.z };
-  b.prism(can, 0.15, 0.035, 0.26, 8, C.copper);
-  b.beam({ x: can.x, y: can.y + 0.24, z: can.z }, { x: can.x - 0.5, y: can.y + 0.4, z: can.z }, 0.025, C.copper);
+  b.prism(can, 0.15, 0, 0.26, 8, C.copper);
+  b.beam({ x: can.x, y: can.y + 0.22, z: can.z }, { x: can.x - 0.5, y: can.y + 0.4, z: can.z }, 0.025, C.copper);
 }
 
 /**
@@ -1168,25 +1173,30 @@ function enginePaving(b: FacetBuilder): void {
   const o = floorOf('engine');
   const depth = sceneDepth('engine');
   b.box({ x: o.x, y: o.y - depth, z: o.z }, [2 * ENGINE_PAVING.half, depth, ENGINE_PAVING.depth], C.stoneSide, C.stone);
-  // Les joints : deux traits plus sombres en travers, posés sur la pierre.
-  for (const dx of [-ENGINE_PAVING.half / 2, ENGINE_PAVING.half / 2]) b.box({ x: o.x + dx, y: o.y, z: o.z }, [0.05, 0.01, ENGINE_PAVING.depth], C.stoneSide);
+  // Les joints : deux traits plus sombres en travers, à plat sur la pierre (leurs flancs, d'un centième, ne se voyaient
+  // pas : la machiniste et ses cheveux communs tiennent ainsi sous les 400 triangles de la scénette).
+  const [z0, z1, y] = [o.z - ENGINE_PAVING.depth / 2, o.z + ENGINE_PAVING.depth / 2, o.y + 0.01];
+  for (const dx of [-ENGINE_PAVING.half / 2, ENGINE_PAVING.half / 2]) {
+    const [x0, x1] = [o.x + dx - 0.025, o.x + dx + 0.025];
+    b.quad([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0], C.stoneSide);
+  }
 }
 
 /**
- * Le charpentier, immobile (directeur artistique, consultant Archipéo) : sa chemise Brume en haut, le bas sombre, son
- * tablier ardoise par-devant, la tête, sa casquette de cuir et sa visière ; un bras le long du corps, son maillet de
+ * Le charpentier, immobile (directeur artistique, consultant Archipéo) : les jambes et les cheveux communs des habitants
+ * (directeur artistique, clôture de L8), son pantalon Nuit océan ; sa chemise Brume en haut, son tablier ardoise
+ * par-devant, de la taille aux genoux (les jambes et les chaussures se voient dessous), la tête, sa casquette de cuir,
+ * qui couvre le haut des cheveux, et sa visière ; un bras le long du corps, son maillet de
  * calfat à la main, la tête du maillet longue et ronde, de bois dur, au bout d'un manche court. Il ne dit rien.
  */
 function charpentier(b: FacetBuilder, place: PlaceId): void {
   const at = scenetteHabitant(place);
-  // Le bas sombre jusqu'à la taille, la chemise Brume au-dessus seulement : le même tronc de cône, coupé en deux.
-  const [r0, r1, waist, top] = [0.4, 0.28, 0.5, 0.92];
-  const rw = r0 + ((r1 - r0) * waist) / top;
-  b.prism(at, r0, rw, waist, 10, C.workTrousers);
-  b.prism({ ...at, y: at.y + waist }, rw, r1, top - waist, 10, C.shirt, C.shirtShade);
-  b.box({ x: at.x, y: at.y + 0.06, z: at.z + 0.3, pitch: 0.12 }, [0.46, 0.76, 0.06], C.slateApron);
+  trouserLegs(b, at, C.workTrousers);
+  b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.33, 0.28, 0.92 - TROUSER_TOP, 10, C.shirt, C.shirtShade);
+  b.box({ x: at.x, y: at.y + 0.3, z: at.z + 0.3, pitch: 0.12 }, [0.46, 0.52, 0.06], C.slateApron);
   sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
-  b.prism({ x: at.x, y: at.y + 1.24, z: at.z - 0.02 }, 0.25, 0.22, 0.12, 10, C.leather);
+  habitantHair(b, at, C.hair);
+  b.prism({ x: at.x, y: at.y + 1.24, z: at.z - 0.02 }, 0.27, 0.24, 0.17, 10, C.leather);
   b.box({ x: at.x, y: at.y + 1.25, z: at.z + 0.27 }, [0.3, 0.04, 0.16], C.leather);
   // Le bras vers l'ouest (vers la planche), plié devant lui ; le maillet tenu par son manche court, la tête en l'air, en
   // travers, longue et ronde.
@@ -1403,8 +1413,9 @@ function couvreur(b: FacetBuilder, place: PlaceId): void {
   // Le bras de l'ouest, le long du corps.
   b.beam({ x: at.x - 0.27, y: at.y + 0.84, z: at.z + 0.02 }, { x: at.x - 0.33, y: at.y + 0.42, z: at.z + 0.08 }, 0.14, C.rooferShirt);
   // La tuile canal couchée le long du flanc de l'est (directeur artistique, L8) : son haut sous l'aisselle, contre le
-  // torse, son bas vers l'extérieur, à 55° de l'horizontale, face à la caméra ; une demi-voûte dont la face bombée, Vert
-  // île, est tournée vers la caméra, le creux contre lui. Le bras passe dehors, par-dessus, et la serre contre le torse.
+  // torse, son bas vers l'extérieur, à 55° de l'horizontale ; une demi-voûte dont la face bombée, Vert île, est tournée
+  // vers la caméra, le creux contre lui. Elle passe devant le bras (clôture de L8 : de face, on la voit sur toute sa
+  // longueur) ; le bras, derrière elle, la tient par son bas, la main sur son bord, dehors.
   const T = COUVREUR_TILE;
   const top = { x: at.x + T.dx, y: at.y + T.height, z: at.z + T.dz };
   const tile = canalTile(b, top, T);
@@ -1414,14 +1425,14 @@ function couvreur(b: FacetBuilder, place: PlaceId): void {
 /**
  * La tuile canal du couvreur, depuis ses pieds : le haut de sa ligne de faîte (son écart vers l'est, sa hauteur, son
  * avancée vers la caméra) ; sa pente sous l'horizontale, dans le plan de la caméra ; sa longueur, le rayon de sa voûte,
- * son épaisseur, ses pans ; où le bras la serre, le long d'elle (de son haut à son bas).
+ * son épaisseur, ses pans ; où la main la tient, le long d'elle (de son haut à son bas).
  */
-const COUVREUR_TILE = { dx: 0.31, height: 0.78, dz: 0.06, slope: (55 * Math.PI) / 180, length: 0.46, r: 0.085, thick: 0.03, segments: 4, grip: 0.7 } as const;
+const COUVREUR_TILE = { dx: 0.33, height: 0.78, dz: 0.12, slope: (55 * Math.PI) / 180, length: 0.5, r: 0.085, thick: 0.03, segments: 4, grip: 0.8 } as const;
 
 /**
  * Une tuile canal : une demi-voûte le long de sa ligne de faîte, qui part de `top` et descend vers l'est selon sa pente ;
  * sa face bombée (dehors) vers +z, la caméra, son creux derrière ; ses deux bords longs et ses deux bouts fermés. Rend où
- * le bras la serre : contre son bord de l'est (dehors), un peu devant elle.
+ * la main la tient : sur son bord de l'est, le haut, un peu derrière lui (le bras passe derrière elle).
  */
 function canalTile(b: FacetBuilder, top: Vec3, T: typeof COUVREUR_TILE): { grip: Vec3 } {
   const u: [number, number, number] = [Math.cos(T.slope), -Math.sin(T.slope), 0];
@@ -1456,8 +1467,8 @@ function canalTile(b: FacetBuilder, top: Vec3, T: typeof COUVREUR_TILE): { grip:
     [thetas[T.segments], 1],
   ] as const)
     face(point(s0, theta, ri), point(s1, theta, ri), point(s1, theta, T.r), point(s0, theta, T.r), [side * n[0], side * n[1], side * n[2]], C.tileShade);
-  const g = point(T.grip * T.length, Math.PI / 3, T.r + 0.06);
-  return { grip: { x: g[0], y: g[1], z: g[2] + 0.02 } };
+  const g = point(T.grip * T.length, Math.PI / 2, T.r + 0.03);
+  return { grip: { x: g[0], y: g[1], z: g[2] - 0.02 } };
 }
 
 /**
