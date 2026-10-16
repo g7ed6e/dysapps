@@ -9,7 +9,7 @@ import { distance, linearRgb } from './geometry';
 import { startOf } from './paths';
 import { placeById } from './plan6e';
 import { COMMONS, OBSERVATORY, SHIPYARD, SHORES, SLIP_N, STEAM_GAP, commonsPillars, drumFace, hullEdge, modelOfPlace } from './places';
-import { ANSWER_LAYOUT, COMMONS_PAVING_RISE, ENGINE_PAVING_RISE, FOUNTAIN, JAUGE, LOCK, OBSERVATORY_BAY, OBSERVATORY_PAVING_RISE, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, COMMONS_PAVING_RISE, ENGINE_PAVING_RISE, FOUNTAIN, JAUGE, LOCK, OBSERVATORY_BAY, OBSERVATORY_PAVING_RISE, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, swingTo, type ScreenBox } from './questionScene';
 import {
   GALLERY,
   LANTERN,
@@ -860,6 +860,10 @@ describe('La Turbine (GD-20, point 8, lot L6a)', () => {
     };
     const hair = of(0x3b2a22);
     expect(Math.max(...hair.map((v) => v[1]))).toBeGreaterThan(habitantAt.y + 1.13 + 0.23);
+    // Les jambes et les cheveux communs des habitants (directeur artistique, clôture de L8), le pantalon bleu lagon sombre ;
+    // son chignon en plus, derrière, au-dessus de la coque.
+    expectLegsAndHair(decor, habitantAt, 0x0f5650, 0x3b2a22);
+    expect(hair.some((v) => v[2] < habitantAt.z - 0.2 && v[1] > habitantAt.y + 1.4)).toBe(true);
     const copper = of(0xc07a3e);
     const low = Math.min(...copper.map((v) => v[1]));
     const width = (y: number) => {
@@ -939,6 +943,13 @@ describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
     expect(of(decor, 0xe5ebe3).length).toBeGreaterThan(0);
     const mallet = of(decor, 0x8a5a36);
     expect(Math.min(...mallet.map((v) => v[1]))).toBeGreaterThan(habitant.y + 0.9);
+    // Les jambes et les cheveux communs des habitants (directeur artistique, clôture de L8), le pantalon Nuit océan ; le
+    // tablier s'arrête aux genoux, les chaussures se voient dessous ; la casquette couvre le haut des cheveux.
+    expectLegsAndHair(decor, habitant, 0x142b38, 0x3b2a22);
+    expect(Math.min(...apron.map((v) => v[1]))).toBeGreaterThan(habitant.y + 0.25);
+    const cap = of(decor, 0x7a4e2e);
+    const hairTop = Math.max(...of(decor, 0x3b2a22).filter((v) => Math.hypot(v[0] - habitant.x, v[2] - habitant.z) < 0.5).map((v) => v[1]));
+    expect(Math.max(...cap.map((v) => v[1]))).toBeGreaterThan(hairTop);
     expect(answerLeaves('shipyard')).toBe(false);
     expect(answersHang('shipyard')).toBe(false);
     expect(scenetteFinale('shipyard', COLUMN, 1)).toBeNull();
@@ -1154,18 +1165,40 @@ describe('L’Observatoire (GD-20, point 8, lot L8c)', () => {
     for (const v of colored(decor, 0xb9b2a3)) if (Math.abs(v[1] - floor) < 1e-6) expect(v[2]).toBeGreaterThanOrEqual(face);
   });
 
-  it('la baie, l’objet témoin : au milieu, contre le tambour ; fermée au repos, ses volets ouverts d’un quart de tour après une bonne réponse, sur une vitre pâle et unie', () => {
+  it('la baie, l’objet témoin : au milieu, contre le tambour ; fermée au repos, ses volets qui tournent d’un quart de tour sur leurs gonds après une bonne réponse, sur une vitre pâle et unie', () => {
     const before = itemScene('observatory', COLUMN, false, []);
     const after = itemScene('observatory', COLUMN, true, []);
     expect(before.labels).toEqual([]);
-    // D'un coup, rien ne glisse : ni avant, ni après.
+    // Au repos, rien ne bouge ; après une bonne réponse, les volets passent dans la réaction, où ils tournent sur leurs
+    // gonds en une demi-seconde (clôture de L8, relecture de L8c-d, Q1), et restent ouverts ; rien ne glisse.
     expect(before.reaction).toBeNull();
-    expect(after.reaction).toBeNull();
-    expect(after.still.triangles).toBe(before.still.triangles);
+    const swing = after.reaction!.swing!;
+    expect(swing.seconds).toBe(0.5);
+    expect(after.reaction!.stay).toBe(true);
+    expect(after.reaction!.from).toEqual(after.reaction!.to);
+    expect(after.still.triangles + after.reaction!.facets.triangles).toBe(before.still.triangles);
+    expect(colored(after.still, 0x178078)).toHaveLength(0);
+    const at = (e: number) => {
+      const f = after.reaction!.facets;
+      const out = { ...f, positions: new Float32Array(f.positions.length), normals: new Float32Array(f.normals.length) };
+      swingTo(f, swing, e, out.positions, out.normals);
+      return out;
+    };
+    // Fermés, au départ de leur course, les mêmes que ceux du repos.
+    expect([...at(0).positions]).toEqual(colored(before.still, 0x178078).flat().map((v) => Math.fround(v)));
     const face = placeById('observatory').center.z + drumFace(OBSERVATORY.drum.r);
     const glass = colored(before.still, 0xd9e6e8);
     const shutBefore = colored(before.still, 0x178078);
-    const shutAfter = colored(after.still, 0x178078);
+    const shutAfter = colored(at(1), 0x178078);
+    // À mi-course, chaque battant en biais, à 45°, toujours attaché à son gond (au bord de la baie).
+    const half0 = OBSERVATORY_BAY.width / 2;
+    for (const leaf of swing.leaves) {
+      const mid = at(0.5);
+      const xs: number[] = [];
+      for (let v = leaf.first; v < leaf.first + leaf.count; v++) xs.push(mid.positions[3 * v]);
+      expect(Math.min(...xs.map((x) => Math.abs(x - o.x)))).toBeGreaterThan(half0 - 0.4);
+      expect(Math.max(...xs.map((x) => Math.abs(x - o.x)))).toBeLessThan(half0 + 0.06);
+    }
     // La baie au milieu, entre Kéo et la photographe, contre le pan sud du tambour, à hauteur de Kéo.
     const mid = (vs: [number, number, number][]) => (Math.min(...vs.map((v) => v[0])) + Math.max(...vs.map((v) => v[0]))) / 2;
     expect(Math.abs(mid(glass) - o.x)).toBeLessThan(0.05);
@@ -1231,11 +1264,17 @@ describe('La Halle (GD-20, point 8, lot L8d)', () => {
     const ridge = Math.min(...tile.filter((v) => Math.abs(across(v)) < 0.02).map((v) => v[2]));
     const edges = Math.max(...tile.filter((v) => Math.abs(across(v)) > width / 2 - 0.02).map((v) => v[2]));
     expect(ridge).toBeGreaterThan(edges + 0.05);
-    // À côté du torse, sous l'épaule ; le bras passe dehors, plus à l'est qu'elle.
+    // À côté du torse, sous l'épaule ; son bas dépasse le bas de la veste.
     expect(mx).toBeGreaterThan(at.x + 0.3);
     expect(Math.min(...tile.map((v) => v[0]))).toBeLessThan(at.x + 0.3);
     for (const v of tile) expect(v[1]).toBeLessThan(at.y + 0.84);
-    expect(shirt.some((v) => v[0] > mx + 0.05 && v[1] > at.y + 0.5 && v[1] < at.y + 0.8)).toBe(true);
+    expect(Math.min(...tile.map((v) => v[1]))).toBeLessThan(at.y + 0.47);
+    // Devant le bras (clôture de L8 : de face, on la voit sur toute sa longueur) : le bras de l'est passe derrière sa
+    // face bombée, et sa main la tient par son bas, sur son bord, dehors.
+    const arm = shirt.filter((v) => v[0] > at.x + 0.36);
+    expect(arm.length).toBeGreaterThan(0);
+    for (const v of arm) expect(v[2]).toBeLessThan(ridge);
+    expect(arm.some((v) => v[0] > mx && v[1] < my)).toBe(true);
     // Kéo à gauche, le couvreur à droite, sur la dalle posée sur le dallage.
     const keo = scenetteKeo('commons').at;
     expect(keo.x).toBeLessThan(o.x);

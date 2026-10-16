@@ -20,7 +20,7 @@ import { PLACES, TERRAIN, hidesTraces, placeById, portFloor, portNode, type Plac
 import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PAPER_COLOR } from '../../world/continu/printworks';
 import { PORT_MAP_POINT, PORT_ROOFLINES, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
-import { HELD_LIFT, SALT_PUMP, answerObjects, answerScale, inBasket, itemScene, placeTrace, rankInBasket, saltPumpHub, sceneSpot, sortPrise, sortScales, type Reaction, type SortLook } from '../../world/continu/questionScene';
+import { HELD_LIFT, SALT_PUMP, answerObjects, answerScale, inBasket, itemScene, placeTrace, rankInBasket, saltPumpHub, sceneSpot, sortPrise, sortScales, swingTo, type Reaction, type SortLook } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
 import {
   EXIT_VIEW,
@@ -1361,8 +1361,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const placeReaction = (t: number) => {
     if (!reaction) return;
     const { r, start } = reaction;
-    const u = reduceMotion ? 1 : Math.min(1, (t - start) / REACTION_SECONDS);
+    const u = reduceMotion ? 1 : Math.min(1, (t - start) / (r.swing?.seconds ?? REACTION_SECONDS));
     const e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+    if (r.swing) {
+      // Les battants sur leurs gonds (les volets de l'Observatoire) : leurs sommets tournés en place, dans les tableaux de
+      // la géométrie (des copies, faites une fois à la réponse), sans allocation.
+      const g = reactionMesh.geometry;
+      const pos = g.getAttribute('position') as THREE.BufferAttribute;
+      const nor = g.getAttribute('normal') as THREE.BufferAttribute;
+      swingTo(r.facets, r.swing, e, pos.array as Float32Array, nor.array as Float32Array);
+      pos.needsUpdate = true;
+      nor.needsUpdate = true;
+    }
     reactionMesh.position.set(r.from.x + (r.to.x - r.from.x) * e, r.from.y + (r.to.y - r.from.y) * e + r.arc * Math.sin(Math.PI * e), r.from.z + (r.to.z - r.from.z) * e);
     // Son cap, et son roulis qui monte avec elle (la planche de bordé du Chantier naval, lot L6b) ; sans `turn`, aucun.
     reactionMesh.rotation.set(0, r.turn?.yaw ?? 0, (r.turn?.roll ?? 0) * e, 'YXZ');
@@ -1626,7 +1636,23 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       reaction = null;
       reactionMesh.visible = false;
     } else if (!before?.answered || before.objectsKey !== objectsKey) {
-      setGeometry(reactionMesh, facets.reaction.facets);
+      const f = facets.reaction.facets;
+      const swing = facets.reaction.swing;
+      // Des battants : leurs sommets tournent en place, dans des copies (jamais les tableaux de la scène de l'item) ; la
+      // boîte englobante couvre leur course entière, fermés et ouverts, pour que l'élimination hors champ reste juste.
+      setGeometry(reactionMesh, swing ? { ...f, positions: f.positions.slice(), normals: f.normals.slice() } : f);
+      if (swing) {
+        const g = reactionMesh.geometry;
+        const pos = g.getAttribute('position') as THREE.BufferAttribute;
+        const nor = g.getAttribute('normal') as THREE.BufferAttribute;
+        swingTo(f, swing, 1, pos.array as Float32Array, nor.array as Float32Array);
+        g.computeBoundingBox();
+        const box = g.boundingBox!.clone();
+        swingTo(f, swing, 0, pos.array as Float32Array, nor.array as Float32Array);
+        g.computeBoundingBox();
+        g.boundingBox!.union(box);
+        g.boundingSphere = g.boundingBox!.getBoundingSphere(new THREE.Sphere());
+      }
       // La réaction joue au moment de la réponse ; un changement de taille la pose tout de suite à sa fin.
       reaction = { r: facets.reaction, start: before?.answered ? -Infinity : performance.now() / 1000 };
       placeReaction(performance.now() / 1000);
