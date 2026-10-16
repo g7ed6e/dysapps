@@ -6,7 +6,7 @@ import { groundCost, mapCost, openWorldCost, OPEN_WORLD_BUDGET } from './budget'
 import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, markBeside, markOffset, occlusionLift, screenOf } from './camera';
 import { distance, insidePolygon, type Vec3 } from './geometry';
 import { START_DISTANCE, atNode, findRoute, networkSamples, pathNode, pathRibbons, routeLength, snapToNetwork, startOf } from './paths';
-import { COAST, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, placeById, placeOfIsland } from './plan6e';
+import { COAST, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, NORTH_SHORE, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, hidesTraces, placeById, placeOfIsland } from './plan6e';
 import { modelOfPlace } from './places';
 import { sceneSpot } from './questionScene';
 import { SEA_TEXTURE, seaPixels, shallowness } from './sea';
@@ -24,10 +24,13 @@ describe('Le plan du 6e', () => {
     for (const p of ISLET) expect(insidePolygon(p, LAGOON)).toBe(true);
   });
 
-  it('les sept lieux reprennent chacun une île du 6e d’aujourd’hui, et leur porte est un nœud du réseau', () => {
+  it('les dix lieux reprennent chacun une île du 6e d’aujourd’hui, et leur porte est un nœud du réseau', () => {
     expect(PLACES.map((p) => p.island).sort()).toEqual([
       'french-6e-grammar-spelling',
+      'french-6e-letter-confusion',
       'french-6e-phonology',
+      'french-6e-reading',
+      'french-6e-word-spelling',
       'maths-6e-calculation',
       'maths-6e-decimals',
       'maths-6e-fractions',
@@ -207,8 +210,9 @@ describe('Les chemins aimantés', () => {
   it('les rubans des chemins ont leur dessus vers le ciel', () => {
     const f = pathRibbons(ground);
     expect(f.triangles).toBeGreaterThan(100);
-    // Sept lieux reliés (le chemin de la Turbine, lot L6a ; celui du Chantier naval, lot L6b : 4 880 en tout).
-    expect(f.triangles).toBeLessThan(5000);
+    // Dix lieux reliés (le chemin de la Turbine, lot L6a ; celui du Chantier naval, lot L6b : 4 880 ; le rivage nord, lot
+    // L7, sa rampe et son muret : 6 120).
+    expect(f.triangles).toBeLessThan(6500);
   });
 });
 
@@ -471,5 +475,60 @@ describe('Les facettes', () => {
       // Alignée sur un axe.
       expect(n.filter((v) => Math.abs(v) > 1e-6)).toHaveLength(1);
     }
+  });
+});
+
+describe('Le rivage nord (GD-20, point 8, lot L7)', () => {
+  it('la rampe de la Vigie monte sans marche du pied au plateau, en pente douce, et rien ne change loin d’elle', () => {
+    const { from, to } = LOOKOUT_RAMP;
+    const L = distance(from, to);
+    const at = (t: number) => heightAt({ x: from.x + (to.x - from.x) * t, z: from.z + (to.z - from.z) * t });
+    let prev = at(0);
+    for (let k = 1; k <= 40; k++) {
+      const h = at(k / 40);
+      // Jamais de marche : d'un pas au suivant, la pente reste sous 1 pour 3 ; jamais de descente.
+      expect(h - prev, `t=${k / 40}`).toBeLessThan(L / 40 / 3);
+      expect(h, `t=${k / 40}`).toBeGreaterThan(prev - 0.05);
+      prev = h;
+    }
+    // Le haut rejoint le plateau de la tour.
+    expect(Math.abs(at(1) - heightAt(placeById('lookout').center))).toBeLessThan(1);
+    // Loin de la rampe (au large de son flanc), le sol est celui d'avant : la rampe n'y ajoute rien.
+    const mid = { x: (from.x + to.x) / 2, z: (from.z + to.z) / 2 };
+    const n = { x: -(to.z - from.z) / L, z: (to.x - from.x) / L };
+    const far = { x: mid.x + n.x * 30, z: mid.z + n.z * 30 };
+    expect(heightAt(far)).toBeLessThan(at(0.5) + 6);
+  });
+
+  it('Kéo tient la pente de chaque chemin du rivage nord (la rampe comprise)', () => {
+    const nodes = new Set(['imp-1', 'arc-1', 'vig-1', 'vig-2', 'vig-3', 'vig-4', 'lookout', 'archives', 'printworks']);
+    for (const [a, b] of PATH_EDGES.filter(([u, v]) => nodes.has(u) && nodes.has(v))) {
+      const p = pathNode(a).at;
+      const q = pathNode(b).at;
+      const steps = Math.max(2, Math.ceil(distance(p, q) / 1.5));
+      for (let k = 0; k < steps; k++) {
+        const u = { x: p.x + ((q.x - p.x) * k) / steps, z: p.z + ((q.z - p.z) * k) / steps };
+        const v = { x: p.x + ((q.x - p.x) * (k + 1)) / steps, z: p.z + ((q.z - p.z) * (k + 1)) / steps };
+        // La rampe et ses abords sous 0,45 ; les chemins du bas sous 0,6 (ailleurs dans l'île, jusqu'à 0,96 aux Écluses).
+        const ramp = a.startsWith('vig-') || b.startsWith('vig-');
+        expect(Math.abs(heightAt(v) - heightAt(u)) / distance(u, v), `${a}–${b}`).toBeLessThan(ramp ? 0.45 : 0.6);
+      }
+    }
+  });
+
+  it('les replats des Archives et de l’Imprimerie : à plat sous le lieu, au-dessus de l’eau', () => {
+    for (const f of NORTH_FLATS) {
+      const h = heightAt(f.center);
+      expect(h).toBeGreaterThan(0.3);
+      for (const [dx, dz] of [[1, 0], [0, 1], [-1, 0], [0, -1]]) expect(Math.abs(heightAt({ x: f.center.x + dx * f.radius * 0.6, z: f.center.z + dz * f.radius * 0.6 }) - h)).toBeLessThan(0.3);
+    }
+  });
+
+  it('pendant une question d’un des trois lieux, les traces des trois se cachent ; ailleurs, seules celles du lieu', () => {
+    for (const asked of NORTH_SHORE) for (const p of NORTH_SHORE) expect(hidesTraces(asked, p)).toBe(true);
+    expect(hidesTraces('lookout', 'filets')).toBe(false);
+    expect(hidesTraces('filets', 'lookout')).toBe(false);
+    expect(hidesTraces('filets', 'filets')).toBe(true);
+    expect(hidesTraces(null, 'lookout')).toBe(false);
   });
 });

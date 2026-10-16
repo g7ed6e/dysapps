@@ -7,6 +7,7 @@
 import { FOLLOW, KEO_HEIGHT, screenOf, type CameraPose } from './camera';
 import { boundsOf, placeFacets, type Facets } from './facets';
 import type { Vec3 } from './geometry';
+import { placeArt } from './northShore';
 import { pathNode } from './paths';
 import { placeById, type PlaceId } from './plan6e';
 import { drawPieces, modelOfPlace, ruinOf, type PlacePiece } from './places';
@@ -86,7 +87,19 @@ export const WHOLE: PartShape = [
  * abords : sa trace d'Information est au bout du ponton). Tant que cette étape n'est pas posée, la trace attend : rien ne
  * flotte dans le vide.
  */
-const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = { phare: 2, quais: 1, filets: 2, ecluses: 1, saltworks: 1, engine: 1, shipyard: 2 };
+const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = {
+  phare: 2,
+  quais: 1,
+  filets: 2,
+  ecluses: 1,
+  saltworks: 1,
+  engine: 1,
+  shipyard: 2,
+  // Le rivage nord (lot L7) : l'étape de chaque lieu, dans son fichier (placeArt.ts).
+  lookout: placeArt('lookout')!.traceStage,
+  archives: placeArt('archives')!.traceStage,
+  printworks: placeArt('printworks')!.traceStage,
+};
 
 /**
  * L'étape qui porte la trace d'un lieu est-elle posée ? Sa scénette se joue alors sur elle (la galerie du Phare, le

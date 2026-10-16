@@ -10,6 +10,7 @@
 import type { Stage } from './construction';
 import { FacetBuilder, boundsOf, placeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
+import { placeArt } from './northShore';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId } from './plan6e';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 
@@ -1334,7 +1335,30 @@ const SALT_CONES: readonly (readonly [number, number, number])[] = [
   [1.0, 2.6, 0.52],
 ];
 
-const DRAWN: Record<PlaceId, (add: Add) => void> = { phare, quais, filets, ecluses, saltworks, engine, shipyard };
+/**
+ * Un lieu du rivage nord (lot L7) : dessiné dans son fichier (placeArt.ts), son sol et sa porte lus ici, dans son repère.
+ */
+function northPlace(id: PlaceId): (add: Add) => void {
+  return (add) => {
+    const art = placeArt(id)!;
+    const c = placeById(id).center;
+    const at = PATH_NODES.find((n) => n.id === id)!.at;
+    art.model(add, siteGround(id), { x: at.x - c.x, z: at.z - c.z });
+  };
+}
+
+const DRAWN: Record<PlaceId, (add: Add) => void> = {
+  phare,
+  quais,
+  filets,
+  ecluses,
+  saltworks,
+  engine,
+  shipyard,
+  lookout: northPlace('lookout'),
+  archives: northPlace('archives'),
+  printworks: northPlace('printworks'),
+};
 
 const pieces = new Map<PlaceId, PlacePiece[]>();
 

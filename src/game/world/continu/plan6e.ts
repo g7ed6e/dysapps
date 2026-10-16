@@ -68,7 +68,13 @@ export const PASS = poly([[380, 572], [612, 578], [612, 646], [380, 652]]);
 export const ISLET = poly([[800, 560], [840, 532], [930, 538], [968, 596], [944, 650], [880, 670], [820, 646], [794, 602]]);
 
 /** La falaise du nord : la Vigie en haut, les Archives dessous (hors du prototype, mais le relief est là). */
-export const CLIFF = poly([[640, 240], [760, 190], [830, 196], [866, 262], [846, 350], [800, 366], [690, 372], [650, 328]]);
+export const CLIFF = poly([
+  [640, 240], [760, 190], [830, 196], [866, 262],
+  // L'éperon du rivage nord (GD-20, point 8, lot L7, directeur artistique) : la falaise avance vers l'est, au-dessus du
+  // lagon, pour que les Archives y creusent leur façade, tournée au sud.
+  [872, 318], [905, 325], [900, 348],
+  [846, 350], [800, 366], [690, 372], [650, 328],
+]);
 
 /**
  * Le bassin des Quais, au sud du quai : l'eau devant laquelle la barque s'amarre pendant une question (le quai regardait
@@ -118,12 +124,47 @@ export const ENGINE_FLAT = { center: fromPlan([1302, 590]), radius: 8.5, fade: 5
 export const SHIPYARD_FLAT = { center: fromPlan([1112, 938]), radius: 9.5, fade: 5, height: 0.6 } as const;
 
 /**
+ * La rampe de la Vigie (GD-20, point 8, lot L7, directeur artistique) : sans étage ni escalier, une rampe de terre et de
+ * pierre en écharpe monte de la grève au plateau de la falaise, de `from` à `to` (en pixels du plan), environ 1 pour 5 ;
+ * son dessus fait `halfWidth` unités de chaque côté de sa ligne, ses flancs descendent ensuite de `side` par unité
+ * (terrain.ts). Kéo y marche comme sur un sentier.
+ */
+export const LOOKOUT_RAMP = { from: fromPlan([950, 330]), to: fromPlan([842, 232]), halfWidth: 1.7, side: 0.9 } as const;
+
+/**
+ * Les replats du rivage nord (lot L7) : la cour de l'Imprimerie, au bord du lagon, et le parvis des Archives, au pied de
+ * l'éperon ; le sol y est aplani à cette hauteur dans ce rayon (en unités), puis rejoint le sien sur `fade` unités
+ * (seulement sur la terre, loin de l'eau et de la falaise).
+ */
+export const NORTH_FLATS = [
+  { center: fromPlan([975, 300]), radius: 7, fade: 5, height: 1 },
+  { center: fromPlan([872, 364]), radius: 5.5, fade: 3.5, height: 0.6 },
+] as const;
+
+/**
  * Les lieux du prototype. `saltworks` : les Marais salants (lot L5), le premier lieu neuf, qui reprend l'île des
  * nombres décimaux ; son identifiant reste neutre (son nom, choix du mainteneur, 16 octobre 2026).
  * `engine` : la Turbine (lot L6a), qui reprend l'île de la matière et de l'énergie (physique-chimie). `shipyard` : le
- * Chantier naval (lot L6b), qui reprend l'île des objets techniques (technologie).
+ * Chantier naval (lot L6b), qui reprend l'île des objets techniques (technologie). Le rivage nord (lot L7) : `lookout`,
+ * la Vigie (l'île de la lecture), `archives`, les Archives (l'orthographe lexicale), `printworks`, l'Imprimerie (les
+ * confusions de lettres).
  */
-export type PlaceId = 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard';
+export type PlaceId = 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard' | 'lookout' | 'archives' | 'printworks';
+
+/**
+ * Les lieux du rivage nord (lot L7), vus ensemble depuis le sud : pendant toute question de l'un, les traces des trois
+ * se cachent (directeur artistique : la boule horaire de la Vigie ne se voit jamais pendant Oreille du mineur).
+ */
+export const NORTH_SHORE: readonly PlaceId[] = ['lookout', 'archives', 'printworks'];
+
+/**
+ * Pendant une question d'un lieu (`asked`), les traces que la vue cache : les siennes ; au rivage nord, où les trois
+ * lieux sont voisins, celles des trois (lot L7, directeur artistique).
+ */
+export function hidesTraces(asked: PlaceId | null, place: PlaceId): boolean {
+  if (asked === null) return false;
+  return asked === place || (NORTH_SHORE.includes(asked) && NORTH_SHORE.includes(place));
+}
 
 export interface OpenPlace {
   id: PlaceId;
@@ -149,6 +190,11 @@ export interface OpenPlace {
    * toutes (lot L5) ; à la Turbine, toutes (lot L6a) ; au Chantier naval, toutes (lot L6b).
    */
   scenes: readonly string[];
+  /**
+   * Les missions qui restent sur l'écran habituel, comme état final (lot L7, directeur artistique : Ascension à la Vigie,
+   * le Filon à l'Imprimerie, aucune scène promise) : elles laissent leur trace au lieu comme les autres.
+   */
+  panels?: readonly string[];
   /** Le centre du modèle au sol, et son quart de tour (en radians autour de la verticale). */
   center: Vec2;
   yaw: number;
@@ -233,6 +279,49 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
     yaw: 0,
     touchRadius: 7,
   },
+  // Le rivage nord (lot L7, directeur artistique) : les trois lieux groupés sur le flanc est de la falaise, près des Filets
+  // (écart au plan du 6e, soumis au mainteneur) ; vus du sud, la Vigie en haut, les Archives dessous, l'Imprimerie au
+  // pied. Les noms de la fiche validée. La Vigie : une mission en R (les vitraux), deux en C, Ascension sur l'écran
+  // habituel ; les Archives : trois en R (les tiroirs à fiches), Facettes en C ; l'Imprimerie : Oreille du mineur en R
+  // (les feuilles), le Filon sur l'écran habituel.
+  {
+    id: 'lookout',
+    name: 'La Vigie',
+    at: 'à la Vigie',
+    agree: 'fs',
+    island: 'french-6e-reading',
+    scenes: ['comprehension', 'sentence-order', 'tense-values'],
+    panels: ['fluency'],
+    plan: [815, 270],
+    door: { x: 0, z: 7.6 },
+    yaw: 0,
+    touchRadius: 6,
+  },
+  {
+    id: 'archives',
+    name: 'Les Archives',
+    at: 'aux Archives',
+    agree: 'fp',
+    island: 'french-6e-word-spelling',
+    scenes: ['missing-letters', 'word-families', 'sight-words', 'word-forms'],
+    plan: [872, 356],
+    door: { x: 0, z: 6.4 },
+    yaw: 0,
+    touchRadius: 6,
+  },
+  {
+    id: 'printworks',
+    name: 'L’Imprimerie',
+    at: 'à l’Imprimerie',
+    agree: 'fs',
+    island: 'french-6e-letter-confusion',
+    scenes: ['sound-discrimination'],
+    panels: ['letter-pairs'],
+    plan: [975, 300],
+    door: { x: 0, z: 7.6 },
+    yaw: 0,
+    touchRadius: 6,
+  },
 ];
 
 export const PLACES: readonly OpenPlace[] = PLACE_SPECS.map((s) => ({
@@ -242,6 +331,7 @@ export const PLACES: readonly OpenPlace[] = PLACE_SPECS.map((s) => ({
   agree: s.agree,
   island: s.island,
   scenes: s.scenes,
+  ...(s.panels ? { panels: s.panels } : {}),
   center: fromPlan(s.plan),
   yaw: s.yaw,
   door: s.id,
@@ -392,6 +482,14 @@ export const PATH_NODES: readonly PathNode[] = [
   node('car-2', [1152, 872]),
   node('car-3', [1176, 922]),
   node('car-4', [1150, 944]),
+  // Le rivage nord (lot L7) : de `nord-2`, la grève jusqu'à la cour de l'Imprimerie ; de là, le long du lagon, le parvis
+  // des Archives ; et la rampe de la Vigie, du pied de la falaise à son plateau, puis la porte de la tour, au sud.
+  node('imp-1', [1000, 352]),
+  node('arc-1', [920, 384]),
+  node('vig-1', [950, 330]),
+  node('vig-2', [896, 281]),
+  node('vig-3', [842, 232]),
+  node('vig-4', [826, 318]),
   ...PORT_NODES.map(({ id, at }) => ({ id, at: PORT.toWorld(at[0], at[1]) })),
 ];
 
@@ -427,6 +525,15 @@ export const PATH_EDGES: readonly (readonly [string, string])[] = [
   ['car-2', 'car-3'],
   ['car-3', 'car-4'],
   ['car-4', 'shipyard'],
+  ['nord-2', 'imp-1'],
+  ['imp-1', 'printworks'],
+  ['imp-1', 'arc-1'],
+  ['arc-1', 'archives'],
+  ['imp-1', 'vig-1'],
+  ['vig-1', 'vig-2'],
+  ['vig-2', 'vig-3'],
+  ['vig-3', 'vig-4'],
+  ['vig-4', 'lookout'],
   // L'Escale : la digue du Phare jusqu'au quai, puis la place, le long des façades.
   ['phare', portNode('quai')],
   [portNode('quai'), 'port-place'],

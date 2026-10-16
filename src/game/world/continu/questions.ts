@@ -65,7 +65,13 @@ export type ItemScene =
    * objet témoin, qui réagit après une bonne réponse (questionScene.ts, `COLUMN_DECOR`). Pour la Turbine, le Chantier
    * naval, et les lieux qui suivent.
    */
-  | { kind: 'column' };
+  | { kind: 'column' }
+  /**
+   * Le lieu au repos (GD-20, point 8, lot L7) : la scène ne montre rien de l'item, les réponses sont portées par l'objet
+   * du lieu (les vitraux de la Vigie, les tiroirs à fiches des Archives, les feuilles de l'Imprimerie), leurs étiquettes
+   * dans la page.
+   */
+  | { kind: 'rest' };
 
 const CATCHES: readonly Catch[] = ['sardines', 'filets', 'mouette', 'bocaux', 'crabes', 'pêche', 'seaux', 'crabe'];
 const isCount = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0;
@@ -80,6 +86,7 @@ export function isItemScene(v: unknown): v is ItemScene {
     case 'enclos':
     case 'saline':
     case 'column':
+    case 'rest':
       return true;
     case 'jauge':
       return 'start' in v && isCount(v.start) && 'd' in v && isCount(v.d) && v.d > 0 && 'n' in v && isCount(v.n) && v.n <= v.d;
@@ -104,6 +111,14 @@ export interface PlacedItem extends QuestionItem {
   placeScene: ItemScene;
   /** La ligne de référence, écrite sous la phrase du lieu (« Moitié de 34 = … »). */
   referenceLine?: string;
+  /** Le mot à compléter, sous la phrase (les Familles-craft, lot L7 : « …faire ») ; son trou se remplit à la réussite. */
+  gapWord?: string;
+  /** Ce que dit la voix de la phrase (lot L7) : « Écouter le mot » (le Mot troué), « Réécouter » (les dictées). */
+  listen?: 'mot' | 'reecouter';
+  /** La voix dit la phrase à l'ouverture de l'item, comme l'écran de la dictée (lot L7). */
+  speakOnOpen?: boolean;
+  /** Ce qu'écrit chaque réponse, quand ce n'est pas la réponse elle-même (les morceaux « re- », « -et », lot L7). */
+  choiceLabels?: string[];
 }
 
 /**
@@ -394,6 +409,43 @@ export function placeItems(place: PlaceId, exerciseId: string, items: readonly Q
  */
 export const sceneDrawsFigure = (scene: ItemScene): boolean => scene.kind === 'sas' || scene.kind === 'echelle' || scene.kind === 'lockPair' || scene.kind === 'jauge';
 
+/** Le lieu au repos (lot L7) : les réponses portées par l'objet du lieu, rien de l'item dans la scène. */
+export const REST: ItemScene = { kind: 'rest' };
+
+/**
+ * Ce qu'un item du rivage nord sans phrase affiche et dit dans la scène, pris sur son écran de référence (directeur du
+ * contenu pédagogique, avis d'avant L7) : le Mot troué, le mot et son trou (« p…talon »), le mot entier dit ; les
+ * Familles-craft, le sens, puis la racine et son trou (`gapWord`), dits avec la racine, et les morceaux écrits « re- »,
+ * « -et » ; le Coffre à mots et l'Oreille du mineur, la ligne de la dictée, le mot ou sa phrase dits à l'ouverture,
+ * jamais écrits. Les autres items gardent leur phrase.
+ */
+function northItem(exerciseId: string, it: QuestionItem): Partial<PlacedItem> {
+  const word = String(it.word ?? '');
+  if (missionIs(exerciseId, 'missing-letters')) return { prompt: `${String(it.before ?? '')}…${String(it.after ?? '')}`, spoken: word, listen: 'mot' };
+  if (missionIs(exerciseId, 'word-families')) {
+    const root = String(it.root ?? '');
+    const prefix = it.slot !== 'suffix';
+    const choices = Array.isArray(it.choices) ? it.choices.map(String) : [];
+    const meaning = String(it.meaning ?? '');
+    return {
+      prompt: meaning,
+      spoken: `${meaning} La racine est ${String(it.spokenRoot ?? root)}.`,
+      gapWord: prefix ? `…${root}` : `${root}…`,
+      choiceLabels: choices.map((c) => (prefix ? `${c}-` : `-${c}`)),
+    };
+  }
+  if (missionIs(exerciseId, 'sight-words') || missionIs(exerciseId, 'sound-discrimination')) {
+    const sentence = typeof it.sentence === 'string' ? it.sentence : null;
+    return {
+      prompt: sentence ? 'Écoute la phrase, puis choisis l’écriture du mot.' : 'Écoute, puis choisis la bonne écriture.',
+      spoken: sentence ?? word,
+      listen: 'reecouter',
+      speakOnOpen: true,
+    };
+  }
+  return {};
+}
+
 /** Les items posés dans la scène d'un lieu (`placeItems`), avec ses textes. */
 function placedInScene(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction): PlacedItem[] {
   if (place === 'phare') return items.map((it) => ({ ...it, placeScene: { kind: 'cloches' } }));
@@ -401,6 +453,14 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
   // avec leurs items de référence (consigne, phrase, document, rappel) ; la scène fait le décor, les réponses restent dans
   // la colonne.
   if (place === 'engine' || place === 'shipyard') return items.map((it) => ({ ...it, placeScene: COLUMN }));
+  // Le rivage nord (GD-20, point 8, lot L7) : les items de référence tels quels. En C (les réponses dans la colonne) : à
+  // la Vigie, Étages du sens et Les temps du récit ; aux Archives, Facettes (une mission, un geste : C entier, contenu et
+  // référent dys). En R, les réponses portées par l'objet du lieu, le lieu au repos : les Vitraux des phrases, et la phrase
+  // affichée et dite de l'écran de référence pour les autres (`northItem`).
+  if (place === 'lookout' || place === 'archives' || place === 'printworks') {
+    const column = missionIs(exerciseId, 'comprehension') || missionIs(exerciseId, 'tense-values') || missionIs(exerciseId, 'word-forms');
+    return items.map((it) => (column ? { ...it, placeScene: COLUMN } : { ...it, ...northItem(exerciseId, it), placeScene: REST }));
+  }
   if (place === 'saltworks') {
     // Les Marais salants (GD-20, point 8, lot L5) : toutes les missions au même bassin, avec les mêmes sacs de sel. Seule
     // la Pente graduée, au niveau 1, a son gabarit (la jauge) ; les autres gardent leur item de référence, le bassin au

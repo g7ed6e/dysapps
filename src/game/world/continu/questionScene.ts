@@ -5,6 +5,7 @@
 // l'échelle sont des panneaux de la page, accrochés aux points que donne ce fichier. Code pur : la vue dessine.
 import { boundsOf, FacetBuilder, placeFacets, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
+import { placeArt } from './northShore';
 import { DOCK_EDGE, placeById, type PlaceId } from './plan6e';
 import type { ItemScene } from './questions';
 import { ENGINE, FILETS_RACK, SHIPYARD, SLIP_N, SLIP_U, SLIP_YAW, STEAM_GAP, VALVE_PUFFS, engineSteam, filetsRack, hullEdge, hullPoint, slipPoint } from './places';
@@ -135,6 +136,10 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   // Le Chantier naval (lot L6b) : le plancher au sud-est de la coque, le long de son flanc, sur la grève aplanie.
   shipyard: { dx: -0.03, dz: 5.31, half: [3.2, 1], fine: true },
   quais: { dx: QUAY.dx, dz: QUAY.front - QUAY.depth / 2, half: [QUAY.width / 2, QUAY.depth / 2] },
+  // Le rivage nord (lot L7) : la scène de chaque lieu, dans son fichier (placeArt.ts).
+  lookout: placeArt('lookout')!.sceneSpot,
+  archives: placeArt('archives')!.sceneSpot,
+  printworks: placeArt('printworks')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -351,9 +356,11 @@ export function questionLayout(needs: QuestionNeeds, width: number, height: numb
 
 /**
  * L'objet qui porte une réponse dans chaque lieu ; aucun à la Turbine (lot L6a) ni au Chantier naval (lot L6b), où
- * toutes les missions se jouent en C, les réponses dans la colonne.
+ * toutes les missions se jouent en C, les réponses dans la colonne. Au rivage nord (lot L7), celui du
+ * fichier du lieu (`lieu` : placeArt.ts, `answer`) : les vitraux de la Vigie, les tiroirs à fiches des Archives, les
+ * feuilles de l'Imprimerie.
  */
-const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' | 'sac' | null> = {
+const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' | 'sac' | 'lieu' | null> = {
   phare: 'cloche',
   filets: 'panier',
   ecluses: 'levier',
@@ -361,10 +368,13 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   saltworks: 'sac',
   engine: null,
   shipyard: null,
+  lookout: 'lieu',
+  archives: 'lieu',
+  printworks: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
-const OBJECT_SIZE: Record<NonNullable<(typeof ANSWER_OBJECT)[PlaceId]>, { height: number; half: number }> = {
+const OBJECT_SIZE: Record<Exclude<(typeof ANSWER_OBJECT)[PlaceId], 'lieu' | null>, { height: number; half: number }> = {
   cloche: { height: 1, half: 0.45 },
   panier: { height: 0.9, half: 0.5 },
   levier: { height: 1.8, half: 0.32 },
@@ -382,7 +392,8 @@ const stepOf = (points: readonly Vec3[]): number => (points.length > 1 ? Math.hy
 export function answerScale(place: PlaceId, points: readonly Vec3[], height: number): number {
   const kind = ANSWER_OBJECT[place];
   if (!kind) return 1;
-  const size = OBJECT_SIZE[kind];
+  const size = kind === 'lieu' ? placeArt(place)?.answer?.size : OBJECT_SIZE[kind];
+  if (!size) return 1;
   return Math.max(0.05, Math.min(height / size.height, (0.45 * stepOf(points)) / size.half));
 }
 
@@ -599,6 +610,16 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
     else hangBells(b, points, s, picked, look.hanging);
     return b.build();
   }
+  // Le rivage nord (lot L7) : ce qui est sous la rangée et les objets, dessinés dans le fichier du lieu.
+  const art = kind === 'lieu' ? placeArt(place)?.answer : null;
+  if (art) {
+    const xs0 = points.map((p) => p.x);
+    const z0 = points.reduce((t, p) => t + p.z, 0) / points.length;
+    art.base(b, (Math.min(...xs0) + Math.max(...xs0)) / 2, points[0].y, z0, Math.max(...xs0) - Math.min(...xs0) + 1.4 * s, s, look.ground ?? points[0].y);
+    for (const [i, p] of points.entries()) if (!gone.includes(i)) art.object(b, p, s, i, points.length, picked.includes(i));
+    return b.build();
+  }
+  if (kind === 'lieu') return b.build();
   // Le ponton sous la rangée : jamais un objet posé sur l'eau ; à terre, il descend jusqu'au sol. Sous les leviers des
   // Écluses, une margelle juste assez profonde pour eux : de pierre ocre, ses joints entre les leviers, la pierre du
   // quai en bordure (directeur artistique).
@@ -1237,6 +1258,10 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     // Le C neutre (lot L6a) : le décor du lieu et son objet témoin ; après une bonne réponse (la vue ne passe `answered`
     // qu'à elle), il réagit et reste jusqu'à l'item suivant ; jamais seul à dire la réussite (le retour habituel la dit).
     reaction = COLUMN_DECOR[place]?.(b, o, answered) ?? null;
+  } else if (scene.kind === 'rest') {
+    // Le lieu au repos (lot L7) : son décor seul ; la réponse juste se dit dans le panneau, rien ne bouge (directeur
+    // artistique : aucun témoin en R au rivage nord).
+    placeArt(place)?.rest?.(b, o);
   } else if (scene.kind === 'saline' || scene.kind === 'jauge') {
     if (scene.kind === 'jauge') jauge(b, labels, scene, o);
     else idleSluice(b, o);
@@ -1253,6 +1278,9 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
 const COLUMN_DECOR: Partial<Record<PlaceId, (b: FacetBuilder, o: Vec3, done: boolean) => Reaction | null>> = {
   engine: steamValve,
   shipyard: hullPlank,
+  // Le rivage nord (lot L7) : le décor et le témoin du fichier du lieu (le volet de la Vigie ; les Archives n'en ont pas).
+  lookout: (b, o, done) => placeArt('lookout')!.column?.(b, o, done) ?? null,
+  archives: (b, o, done) => placeArt('archives')!.column?.(b, o, done) ?? null,
 };
 
 /** Le plancher de la scène du Chantier naval monte de tant au-dessus de la grève (il s'en détache). */
@@ -1644,6 +1672,10 @@ export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
     for (const mission of done) if (Object.hasOwn(ENGINE_TRACES, mission)) ENGINE_TRACES[mission](b, x, z);
   } else if (place === 'shipyard') {
     for (const mission of done) if (Object.hasOwn(SHIPYARD_TRACES, mission)) SHIPYARD_TRACES[mission](b, x, z);
+  } else {
+    // Le rivage nord (lot L7) : une chose par mission, dessinée dans le fichier du lieu.
+    const traces = placeArt(place)?.traces ?? {};
+    for (const mission of done) if (Object.hasOwn(traces, mission)) traces[mission].draw(b, { x, y: y0, z });
   }
   return b.build();
 }

@@ -200,9 +200,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   const [introDone, setIntroDone] = useState(false);
   const intro = layout.low && !introDone && !finished && !offer && !simple;
   // La « Vue simple » serrée des écrans bas (la consigne repliée en une ligne, « Scène » et la pause dans la ligne
-  // d'en-tête) : sur un écran bas, et en C au plus grand texte aussi sur tablette, où la consigne entière, épinglée,
-  // poussait la phrase sous le pli (mesure de 1024 × 768 au plus grand texte, deuxième passe de L6a).
-  const foldedSimple = layout.low || (inColumn && grandTexte);
+  // d'en-tête) : sur un écran bas, et au plus grand texte aussi sur tablette, où la consigne entière poussait la phrase
+  // sous le pli (en C, mesure de 1024 × 768 au plus grand texte, deuxième passe de L6a ; en R, les réponses, lot L7).
+  const foldedSimple = layout.low || grandTexte;
   const simpleLow = simple && foldedSimple && !finished;
   // « Vue simple » ouverte d'elle-même (au plus grand texte, ou en C sur un écran bas) : une seule fois par visite, tant
   // que la question reste montée ; revenu à « Scène », l'élève garde son choix.
@@ -240,7 +240,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       setWiden(WIDEN_OFFER);
       return;
     }
-    if (offer || (!layout.low && !grandTexte)) return;
+    // Sur tablette en texte normal, seule une question en R se mesure : une phrase coupée par le bas du panneau (la rangée
+    // des objets le borne) mène à « Vue simple » (lot L7, les Vitraux des phrases).
+    if (offer || (!layout.low && !grandTexte && inColumn)) return;
     const column = root.querySelector<HTMLElement>('.quiz.in-world');
     // En C (lot L6a), la colonne défile : seules la phrase et les réponses doivent s'y voir sans défiler (0 px sous le
     // pli) ; le document, le rappel, l'indice et la correction peuvent passer dessous, signalés.
@@ -250,7 +252,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     // téléphone, la question n'y tient pas sans défiler ; « Valider » reste dans sa bande, en bas). En C sur un écran
     // bas, de même à toute taille de texte, dès que la phrase ou une réponse passe sous le pli (directeur artistique,
     // deuxième passe de L6a). Revenu à la scène, l'élève garde son choix et les crans d'avant jusqu'à la fin de la visite.
-    const opensSimple = grandTexte || (inColumn && layout.low);
+    const opensSimple = grandTexte || (inColumn && layout.low) || (!layout.low && !inColumn);
     const triedFullWidth = !layout.low || !intro || widen >= WIDEN_FULL;
     if (opensSimple && !autoSimple.current && !column.classList.contains('has-sheet') && triedFullWidth) {
       autoSimple.current = true;
@@ -788,6 +790,7 @@ function PlaceText({ text }: { text: string }) {
 function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: ScreenProps) {
   const { layout, show, simple, phraseVoice } = useQuestion();
   useStopOnLeave();
+  const { settings, speak } = useSettings();
   const item = items[0];
   const scene = placeSceneOf(item);
   const prompt = String(item?.prompt ?? '');
@@ -797,6 +800,11 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   const hint = String(item?.hint ?? '');
   const referenceLine = typeof item?.referenceLine === 'string' ? item.referenceLine : '';
   const question = typeof item?.question === 'string' ? item.question : '';
+  // Au rivage nord (lot L7) : le mot à compléter sous la phrase, ce que dit la voix, ce qu'écrit chaque réponse.
+  const gapWord = typeof item?.gapWord === 'string' ? item.gapWord : '';
+  const listen = item?.listen === 'mot' || item?.listen === 'reecouter' ? item.listen : null;
+  const labels = Array.isArray(item?.choiceLabels) && item.choiceLabels.length === choices.length ? item.choiceLabels.map(String) : choices;
+  const speakOnOpen = item?.speakOnOpen === true;
   // Aux Écluses, la scène dessine la figure (le sas, l'échelle) et les barres de Deux rives (les deux sas) ; aux Marais
   // salants, la droite graduée (la jauge du bassin) : elles reviennent dans « Vue simple », qui couvre la scène.
   const drawn = scene !== null && sceneDrawsFigure(scene);
@@ -831,9 +839,19 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
       aid: Boolean(aid) && !drawn,
     });
   }, [show, itemKeyOf, scene, answered, shownAnswered, rightIndex, choices.length, aid, triedKey, inColumn, drawn]);
+  // Les dictées (le Coffre à mots, l'Oreille du mineur) : le mot ou sa phrase dits à l'ouverture de l'item, comme sur
+  // leur écran de référence, si la lecture automatique est choisie.
+  // Une lecture par item : la voix, la phrase et le réglage du moment, lus sans relancer la lecture quand ils changent.
+  const openVoice = useRef({ speak, spoken, autoRead: settings.autoRead });
+  openVoice.current = { speak, spoken, autoRead: settings.autoRead };
+  useEffect(() => {
+    const v = openVoice.current;
+    if (speakOnOpen && v.autoRead) v.speak(v.spoken);
+  }, [itemKeyOf, speakOnOpen]);
   if (!item || !scene) return null;
-  // Après « Bravo », le mot juste entre dans le trou : la phrase se lit entière.
-  const gap = question ? null : filledGap(prompt, answer, answered?.results);
+  // Après « Bravo », le mot juste entre dans le trou : la phrase se lit entière (ou le mot sous elle, `gapWord`).
+  const gap = question || gapWord ? null : filledGap(prompt, answer, answered?.results);
+  const wordGap = gapWord ? filledGap(gapWord, answer, answered?.results) : null;
   const filled = gap !== null && rightIndex >= 0;
   const whole = gap ? `${gap.before}${answer}${gap.after}` : prompt;
 
@@ -863,7 +881,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
             onClick={() => onAnswer({ results: [{ key: item.key, correct: choice === answer }], detail: { chosen: choice } })}
           >
             <span className="world-answer-label" style={styles.label}>
-              <RichText text={choice} />
+              <RichText text={labels[i]} />
             </span>
           </button>
         );
@@ -902,8 +920,26 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
                 <PlaceText text={prompt} />
               )}
             </p>
-            <SpeakButton text={filled ? whole : spoken} label={word ? 'Écouter le mot' : 'Lire la phrase'} shown={whole} compact />
+            <SpeakButton
+              text={filled ? whole : spoken}
+              label={word || listen === 'mot' ? 'Écouter le mot' : listen === 'reecouter' ? (settings.autoRead ? 'Réécouter' : 'Écouter') : 'Lire la phrase'}
+              shown={whole}
+              compact
+            />
           </div>
+        )}
+        {gapWord && (
+          <p className={`question-prompt gap-word world-gap-word${wordGap ? ' filled' : ''}`}>
+            {wordGap ? (
+              <>
+                {wordGap.before}
+                <strong className="world-filled">{answer}</strong>
+                {wordGap.after}
+              </>
+            ) : (
+              <RichText text={gapWord} />
+            )}
+          </p>
         )}
         {referenceLine && !layout.low && (
           <p className="world-question-reference">

@@ -14,7 +14,7 @@ const ground = (x: number, z: number) => heightOnMesh(field, x, z);
 
 describe('Les parties d’un lieu du monde continu', () => {
   it('autant que dans la grille, dans le même ordre ; chaque étape couverte une fois, en tranches qui se suivent', () => {
-    // Le 6e a des lieux à trois, quatre et cinq missions : toutes les coupes de GD-14 y sont.
+    // Le 6e a des lieux à deux (l’Imprimerie, lot L7), trois, quatre et cinq missions : toutes les coupes de GD-14 y sont.
     const counts = new Set<number>();
     for (const p of PLACES) {
       const island = p.island as BiomeId;
@@ -30,7 +30,7 @@ describe('Les parties d’un lieu du monde continu', () => {
       // Toutes les parties posées dessinent la construction entière, ni plus ni moins.
       expect(constructionFacets(p.id, shapes, ground).triangles).toBe(constructionFacets(p.id, [WHOLE], ground).triangles);
     }
-    expect([...counts].sort()).toEqual([3, 4, 5]);
+    expect([...counts].sort()).toEqual([2, 3, 4, 5]);
   });
 
   it('une partie posée dans la grille l’est dans le monde continu, et l’état du lieu suit', () => {
