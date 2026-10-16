@@ -491,7 +491,7 @@ describe('Les Filets et les Écluses (lot 4)', () => {
   });
 
   it('aux Filets, la réussite tend le filet raccommodé et pose un panier plein aux pieds de la pêcheuse, où il reste', () => {
-    const f = scenetteFinale('filets', { kind: 'filets', catch: 'sardines', count: 3 }, 0.8)!;
+    const f = scenetteFinale('filets', { kind: 'filets', catch: 'sardines', count: 3 }, 0.8, true, 'plurals')!;
     expect(f.clearsItem).toBe(true);
     expect(f.glow).toBeNull();
     expect(f.arc).toBeGreaterThan(0);
@@ -656,8 +656,15 @@ describe('Une scénette se joue sur le lieu tel qu’il est bâti (GD-20, lot 1)
 
   it('aux Filets sans séchoir, le filet raccommodé reste étendu sur le plancher ; aux Écluses sans leur haut, pas de porte', () => {
     const scene = { kind: 'filets', catch: 'sardines', count: 3 } as const;
-    const built = scenetteFinale('filets', scene, 0.8, true)!;
-    const bare = scenetteFinale('filets', scene, 0.8, false)!;
+    const built = scenetteFinale('filets', scene, 0.8, true, 'plurals')!;
+    const bare = scenetteFinale('filets', scene, 0.8, false, 'plurals')!;
+    // Sans les abords, le panier plein ne vient pas (il ne resterait pas au retour) ; aux autres missions, rien ne change.
+    expect(bare.moving.triangles).toBe(0);
+    expect(bare.landed.triangles).toBe(0);
+    for (const m of ['word-classes', 'sorting', 'e-er-ez']) {
+      expect(scenetteFinale('filets', scene, 0.8, true, m), m).toBeNull();
+      expect(scenetteFinale('filets', { kind: 'enclos' }, 0.8, false, m), m).toBeNull();
+    }
     expect(boundsOf(bare.decor).max[1]).toBeLessThan(boundsOf(built.decor).max[1]);
     expect(boundsOf(bare.decor).max[1]).toBeLessThan(sceneSpot('filets').y + 1.5);
     expect(scenetteDecor('ecluses', false, false).triangles).toBeLessThan(scenetteDecor('ecluses', false, true).triangles);

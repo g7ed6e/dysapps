@@ -6,6 +6,7 @@ import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
 import type { OpenWorld } from './scene';
 import { WorldQuestion } from './WorldQuestion';
+import enclos from '../../exercises/data/french-6e-grammar-spelling-word-classes-1.json';
 
 // La scène 3D n'est pas là sous jsdom : la question ne lui demande que de poser les objets et d'allumer la lampe.
 const world = { question: vi.fn(() => []), scenetteEnd: vi.fn() } as unknown as OpenWorld;
@@ -301,7 +302,7 @@ describe('Les Filets complets (GD-20, point 8, lot L4)', () => {
     await vi.waitFor(() => expect(subjects()).toHaveLength(4));
     expect(bins().map((b) => b.textContent)).toEqual(['Singulier', 'Pluriel']);
     // La consigne dit le geste ; « Valider » attend que tout soit rangé.
-    expect(document.querySelector('.quiz.in-world')!.textContent).toContain('Touche un sujet, puis son panier');
+    expect(document.querySelector('.quiz.in-world')!.textContent).toMatch(/Pour chaque sujet, son verbe est-il au singulier ou au pluriel\s?\? Touche le sujet, puis son panier\./);
     const validate = screen.getByRole('button', { name: /Valider/ });
     expect(validate).toBeDisabled();
     const status = screen.getByRole('status');
@@ -325,7 +326,8 @@ describe('Les Filets complets (GD-20, point 8, lot L4)', () => {
     await user.keyboard('{Escape}');
     expect(closes).not.toHaveBeenCalled();
     expect(subjects()[0]).toHaveAttribute('aria-pressed', 'false');
-    expect(status).toHaveTextContent('Reposé');
+    // L'annonce nomme le sujet reposé : deux reposés de suite se disent chacun (relecture de L4, code).
+    expect(status).toHaveTextContent(`Reposé : ${first}.`);
     await user.keyboard('{Escape}');
     expect(closes).toHaveBeenCalledTimes(1);
     window.removeEventListener('keydown', closes);
@@ -350,6 +352,43 @@ describe('Les Filets complets (GD-20, point 8, lot L4)', () => {
     // La manche est corrigée : la suivante s'ouvre, rien de tenu, rien de rangé.
     await vi.waitFor(() => expect(subjects().map((b) => b.textContent)).not.toEqual(round));
     expect(subjects().every((b) => b.getAttribute('aria-pressed') === 'false')).toBe(true);
+  });
+
+  it('l’Enclos, après « Valider » : chaque sujet montre son verbe accordé, et la voix le dit ; les paniers ont leur icône', async () => {
+    const said: string[] = [];
+    vi.stubGlobal(
+      'SpeechSynthesisUtterance',
+      class {
+        lang = '';
+        rate = 1;
+        voice: unknown = null;
+        onend: unknown = null;
+        constructor(public text: string) {}
+      },
+    );
+    vi.stubGlobal('speechSynthesis', { cancel: () => {}, getVoices: () => [], speak: (u: { text: string }) => said.push(u.text) });
+    renderPlace('filets', 'word-classes');
+    const user = await begin();
+    const subjects = () => within(screen.getByRole('list', { name: 'Sujets à ranger' })).getAllByRole('button');
+    const bins = () => within(screen.getByRole('list', { name: 'Paniers' })).getAllByRole('button');
+    await vi.waitFor(() => expect(subjects()).toHaveLength(4));
+    expect(bins().every((b) => b.querySelector('svg'))).toBe(true);
+    // Les sujets en texte simple : aucune syllabe colorée (elle marquerait le -s final).
+    expect(document.querySelector('.world-sort-prise .syllable, .world-sort-prise [class*="syll"]')).toBeNull();
+    const items = new Map(enclos.items.map((it) => [it.subject, it]));
+    const shown = subjects().map((b) => items.get(b.querySelector('.word-text')!.textContent!)!);
+    for (const [i, it] of shown.entries()) {
+      await user.click(subjects()[i]);
+      await user.click(bins()[it.answer === 'pluriel' ? 1 : 0]);
+    }
+    await user.click(screen.getByRole('button', { name: /Valider/ }));
+    for (const [i, it] of shown.entries()) expect(subjects()[i].querySelector('.world-sort-verbe')).toHaveTextContent(it.answer === 'pluriel' ? it.plural : it.singular);
+    await user.click(screen.getByRole('button', { name: /Écouter les sujets/ }));
+    const first = shown[0];
+    expect(said.at(-1)).toContain(`${first.subject} ${first.answer === 'pluriel' ? first.plural : first.singular}`);
+    // Sur tablette, la carte de règle entière est à côté : pas de ligne de règle en plus.
+    expect(document.querySelector('.world-sort-regle')).toBeNull();
+    vi.unstubAllGlobals();
   });
 
   it.each([

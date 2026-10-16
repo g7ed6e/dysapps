@@ -101,11 +101,28 @@ export const PAIR_INSTRUCTION = 'Touche la plus grande fraction : c’est le sas
 export const PHARE_SYLLABLES = 'Écoute le mot, puis touche la cloche du nombre de syllabes que tu entends.';
 
 /**
- * La consigne de l'Enclos aux Filets (GD-20, point 8, lot L4) : elle dit le geste « ranger » (toucher un sujet, puis
- * son panier) à la place du choix du verbe de l'écran de la grille ; le niveau 2 garde son début (« Attention aux
- * pièges »). À relire par le directeur du contenu.
+ * La consigne de l'Enclos aux Filets (GD-20, point 8, lot L4, textes du directeur du contenu après la relecture) :
+ * elle garde la question de la référence (le verbe au singulier ou au pluriel), puis dit le geste « ranger » (toucher
+ * le sujet, puis son panier). Le niveau 2 garde son début (« Attention aux pièges »).
  */
-export const ENCLOS_INSTRUCTION = ['Touche un sujet, puis son panier : Singulier pour un seul, Pluriel pour plusieurs. Puis valide.', 'Attention aux pièges : cherche qui fait l’action. Touche un sujet, puis son panier, puis valide.'] as const;
+export const ENCLOS_INSTRUCTION = [
+  'Pour chaque sujet, son verbe est-il au singulier ou au pluriel ? Touche le sujet, puis son panier. Puis valide.',
+  'Attention aux pièges : cherche qui fait l’action. Son verbe est-il au singulier ou au pluriel ? Touche le sujet, puis son panier, puis valide.',
+] as const;
+
+/**
+ * La ligne de règle de l'Enclos, toujours affichée sous la consigne sur un téléphone, où la carte de règle ne tient
+ * pas (relecture de L4 : contenu et référent dys) ; un texte par niveau.
+ */
+export const ENCLOS_RULE_LINE = [
+  'Plusieurs : pluriel, le verbe finit par -nt (ils parlent).',
+  'Deux sujets reliés par « et » : pluriel, le verbe finit par -nt.',
+] as const;
+
+/** La ligne de règle d'une mission qui en a une (l'Enclos), au niveau donné ; `null` sinon. */
+export function placeRuleLine(place: PlaceId, exerciseId: string, level: number): string | null {
+  return rangeGesture(place, exerciseId) ? ENCLOS_RULE_LINE[level >= 2 ? 1 : 0] : null;
+}
 
 /**
  * La consigne d'un lieu, quand elle change, mission par mission : aux Filets, celle de l'Enclos dit le geste
@@ -261,6 +278,22 @@ export function quaiScene(key: string): { scene: Extract<ItemScene, { kind: 'qua
 /** Le quai vide : la scène des missions des Quais qui gardent leur item de référence. */
 export const QUAI_NU: ItemScene = { kind: 'quai', op: 'calcul', before: 0, after: 0 };
 
+/** L'ordre des paniers de la Récolte aux Filets : celui de la consigne (« é, er ou ez »). */
+export const RECOLTE_ORDER = ['é', 'er', 'ez'] as const;
+
+/**
+ * Les choix de la Récolte dans l'ordre de la consigne, quel que soit le tirage de la partie (relecture de L4, référent
+ * dys : les paniers ne changent pas de place d'un item à l'autre) ; rien pour une autre mission.
+ */
+function inInstructionOrder(exerciseId: string, it: QuestionItem): { choices?: string[] } {
+  if (!missionIs(exerciseId, 'e-er-ez') || !Array.isArray(it.choices)) return {};
+  const rank = (c: unknown) => {
+    const i = (RECOLTE_ORDER as readonly unknown[]).indexOf(c);
+    return i < 0 ? RECOLTE_ORDER.length : i;
+  };
+  return { choices: [...(it.choices as string[])].sort((a, b) => rank(a) - rank(b)) };
+}
+
 /**
  * Les items d'une partie, posés dans un lieu. `items` : ceux que le jeu commun a tirés (même graine, mêmes clés). Le
  * Phare garde les items de référence de ses trois missions, portés par ses cloches (le mot est l'objet appris : il ne
@@ -278,11 +311,7 @@ export function placeItems(place: PlaceId, exerciseId: string, items: readonly Q
     const twins = twinsOf(exerciseId);
     return items.map((it) => {
       const twin = twins.get(it.key);
-      if (!twin)
-        return {
-          ...it,
-          placeScene: { kind: 'filets', catch: 'pêche', count: 1 },
-        };
+      if (!twin) return { ...it, ...inInstructionOrder(exerciseId, it), placeScene: { kind: 'filets', catch: 'pêche', count: 1 } };
       const scene = twin.scene as { catch: Catch; count: number };
       const { scene: _scene, point: _point, traps: _traps, rule, ...fields } = twin;
       return {
@@ -377,6 +406,23 @@ export const ENCLOS_BINS: readonly RangeBin[] = [
   { id: 'pluriel', label: 'Pluriel' },
 ];
 
+/**
+ * La phrase d'un sujet de l'Enclos avec son verbe accordé (« Les chiens mangent ») : les formes `singular` et `plural`
+ * de l'item, celle de sa réponse. Montrée et dite après « Valider » (relecture de L4, contenu) ; le sujet seul sans
+ * verbe.
+ */
+export function agreedSentence(item: QuestionItem): string {
+  const subject = String(item.subject ?? item.key);
+  const verb = agreedVerb(item);
+  return verb ? `${subject} ${verb}` : subject;
+}
+
+/** Le verbe accordé d'un sujet de l'Enclos (« mangent »), ou une chaîne vide. */
+export function agreedVerb(item: QuestionItem): string {
+  const verb = item.answer === 'pluriel' ? item.plural : item.singular;
+  return typeof verb === 'string' ? verb : '';
+}
+
 /** Le nombre d'objets à ranger par manche : quatre sujets, comme l'Enclos de la grille. */
 export const RANGE_PER_ROUND = 4;
 
@@ -385,6 +431,12 @@ export const RANGE_PER_ROUND = 4;
  * garde la largeur de celles d'une tablette (lot L4 : « Des oiseaux » tient sans « Vue simple » à 844 px).
  */
 export const RANGE_PER_SMALL_ROUND = 3;
+
+/**
+ * Au plus grand texte sur un écran bas, deux sujets par manche (relecture de L4, interface) : la manche tient entière
+ * au-dessus de « Valider », comme les quatre cloches du Phare.
+ */
+export const RANGE_PER_GRAND_ROUND = 2;
 
 /**
  * Le geste d'une mission quand c'est « ranger » (GD-20, point 8, lot L4 : toucher l'objet, puis le panier ; glisser

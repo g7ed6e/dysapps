@@ -945,9 +945,12 @@ function moved(f: Facets, at: Vec3): Facets {
 /**
  * La réussite d'une scénette posée, pour la scène du dernier item et l'échelle de ses objets ; `null` au Phare. `posed` :
  * l'étape qui porte la trace est posée (sinon le filet raccommodé reste étendu sur le plancher, la porte du canal
- * attend son haut).
+ * attend son haut). `mission` : la mission jouée ; aux Filets, seul le Troupeau (`plurals`) a sa réussite, le filet
+ * raccommodé et le panier plein, sa trace (relecture de L4, directeur artistique) : à l'Enclos, les paniers restent
+ * remplis jusqu'au bilan ; au Tri des graines et à la Récolte, la prise reste dans le panier choisi (`null`, rien ne
+ * change). Sans les abords, le panier plein ne vient pas : rien ne se montre avant son étape pour disparaître au retour.
  */
-export function scenetteFinale(place: PlaceId, scene: ItemScene, scale: number, posed = true): ScenetteFinale | null {
+export function scenetteFinale(place: PlaceId, scene: ItemScene, scale: number, posed = true, mission = ''): ScenetteFinale | null {
   if (place === 'quais') {
     if (scene.kind !== 'quai') return null;
     const s = quaySuccess(scene, scale);
@@ -956,11 +959,17 @@ export function scenetteFinale(place: PlaceId, scene: ItemScene, scale: number, 
     return { decor: scenetteDecor(place), clearsItem: false, moving: moving.build(), from: s.hold, to: s.hold, arc: 0, landed: s.crate, glow: s.glass };
   }
   if (place === 'filets') {
+    if (mission !== 'plurals') return null;
     const decor = new FacetBuilder();
     decor.append(scenetteDecor(place));
     dryingDeck(decor, true);
-    if (posed) mendedNet(decor);
-    else laidNet(decor);
+    if (!posed) {
+      laidNet(decor);
+      const none = new FacetBuilder().build();
+      const o = floorOf(place);
+      return { decor: decor.build(), clearsItem: true, moving: none, from: o, to: o, arc: 0, landed: none, glow: null };
+    }
+    mendedNet(decor);
     const basket = new FacetBuilder();
     fullBasket(basket, { x: 0, y: 0, z: 0 });
     const moving = basket.build();

@@ -87,7 +87,8 @@ const FINALE_SCENES: Partial<Record<PlaceId, ItemScene>> = {
  */
 function successTriangles(place: PlaceId): number {
   const scene = FINALE_SCENES[place];
-  const f = scene ? scenetteFinale(place, scene, 1) : null;
+  // Aux Filets, la réussite du Troupeau, la seule qui change le décor (le filet raccommodé et le panier plein).
+  const f = scene ? scenetteFinale(place, scene, 1, true, 'plurals') : null;
   if (!f) return scenetteDecor(place).triangles;
   return f.decor.triangles + f.landed.triangles + Math.max(f.moving.triangles, f.glow?.triangles ?? 0);
 }

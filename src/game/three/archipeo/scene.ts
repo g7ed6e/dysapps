@@ -19,7 +19,7 @@ import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork, startOf } from
 import { PLACES, TERRAIN, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { LAMP_COLOR, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PORT_MAP_POINT, PORT_ROOFLINES, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
-import { HELD_LIFT, SORT_IN_BASKET, answerObjects, answerScale, inBasket, itemScene, placeTrace, rankInBasket, sceneSpot, sortBinScale, sortPrise, type Reaction, type SortLook } from '../../world/continu/questionScene';
+import { HELD_LIFT, answerObjects, answerScale, inBasket, itemScene, placeTrace, rankInBasket, sceneSpot, sortPrise, sortScales, type Reaction, type SortLook } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
 import {
   EXIT_VIEW,
@@ -1455,11 +1455,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const bin = moving !== null && sort ? sort.placed[moving] : null;
     if (sort && moving !== null && bin !== null && points[moving] && points[bin]) {
       const f = new FacetBuilder();
-      sortPrise(f, { x: 0, y: 0, z: 0 }, SORT_IN_BASKET * scale);
+      const scales = sortScales(points, scale);
+      sortPrise(f, { x: 0, y: 0, z: 0 }, scales.inBasket);
       const flying = f.build();
       setGeometry(reactionMesh, flying);
       const from = { x: points[moving].x, y: points[moving].y + HELD_LIFT, z: points[moving].z };
-      const to = inBasket(points[bin], sortBinScale(points, scale), rankInBasket(sort.placed, moving));
+      const to = inBasket(points[bin], scales.bin, rankInBasket(sort.placed, moving));
       reaction = { r: { facets: flying, from, to, arc: 1.2, stay: true }, start: performance.now() / 1000 };
       placeReaction(performance.now() / 1000);
     } else if (!item.answered || !facets.reaction) {
@@ -1490,7 +1491,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // animations »).
     if (!answersHang(scenette, posed)) {
       if (!lit || finaleShown) return;
-      const f = scenetteFinale(scenette, asked.scene, asked.scale, posed);
+      const f = scenetteFinale(scenette, asked.scene, asked.scale, posed, scenetteMission ?? '');
       if (!f) return;
       finaleShown = true;
       setGeometry(decorMesh, f.decor);
@@ -1498,6 +1499,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
         itemShown = false;
         itemMesh.visible = false;
       }
+      // Rien ne va à sa place (aux Filets sans les abords) : la réaction reste où elle est.
+      if (!f.moving.triangles) return;
       const from = reactionMesh.visible ? reactionMesh.position.clone() : new THREE.Vector3(f.from.x, f.from.y, f.from.z);
       reaction = null;
       setGeometry(reactionMesh, f.moving);

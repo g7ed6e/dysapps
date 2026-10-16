@@ -22,6 +22,11 @@ import {
   ENCLOS,
   ENCLOS_BINS,
   ENCLOS_INSTRUCTION,
+  ENCLOS_RULE_LINE,
+  RANGE_PER_GRAND_ROUND,
+  RECOLTE_ORDER,
+  agreedSentence,
+  placeRuleLine,
   EXERCISES_WITH_TWINS,
   LOCK_COLUMN,
   LOCK_IDLE,
@@ -328,6 +333,29 @@ describe('Le geste « ranger » aux Filets (GD-20, point 8, lot L4)', () => {
     for (const id of ['french-6e-grammar-spelling-e-er-ez-1', 'french-6e-grammar-spelling-e-er-ez-2']) {
       const scenes = placeItems('filets', id, reference(id).items).map((it) => JSON.stringify(it.placeScene));
       expect(new Set(scenes), id).toEqual(new Set([JSON.stringify({ kind: 'filets', catch: 'pêche', count: 1 })]));
+      // Les paniers de la Récolte dans l'ordre de la consigne, quel que soit le tirage (relecture de L4, référent dys).
+      const shuffled = reference(id).items.map((it, i) => ({ ...it, choices: i % 2 ? ['ez', 'é', 'er'] : ['er', 'ez', 'é'] }));
+      for (const it of placeItems('filets', id, shuffled)) expect(it.choices, id).toEqual([...RECOLTE_ORDER]);
+    }
+    // Le Tri des graines garde ses choix.
+    const tri = [{ key: 'a', choices: ['verbe', 'nom'] }];
+    expect(placeItems('filets', 'french-6e-grammar-spelling-sorting-1', tri)[0].choices).toEqual(['verbe', 'nom']);
+    // Au plus grand texte sur un écran bas, des manches de deux.
+    expect(rangeRounds(placed, RANGE_PER_GRAND_ROUND).every((r) => r.length <= 2)).toBe(true);
+  });
+
+  it('l’Enclos : le verbe accordé de chaque sujet, et la ligne de règle du niveau (relecture de L4, contenu)', () => {
+    expect(agreedSentence({ key: 'k', subject: 'Les chiens', singular: 'mange', plural: 'mangent', answer: 'pluriel' })).toBe('Les chiens mangent');
+    expect(agreedSentence({ key: 'k', subject: 'Le chien', singular: 'mange', plural: 'mangent', answer: 'singulier' })).toBe('Le chien mange');
+    expect(agreedSentence({ key: 'k', subject: 'Le chien' })).toBe('Le chien');
+    const id = (n: number) => `french-6e-grammar-spelling-word-classes-${n}`;
+    expect(placeRuleLine('filets', id(1), 1)).toBe(ENCLOS_RULE_LINE[0]);
+    expect(placeRuleLine('filets', id(2), 2)).toBe(ENCLOS_RULE_LINE[1]);
+    expect(placeRuleLine('filets', 'french-6e-grammar-spelling-sorting-1', 1)).toBeNull();
+    // Chaque ligne est une ligne de la carte de règle de son niveau : la carte et la ligne disent la même chose.
+    for (const n of [1, 2]) {
+      const lines = (reference(id(n)).items[0].aid as { props: { lines: string[] } }).props.lines;
+      expect(lines).toContain(ENCLOS_RULE_LINE[n - 1]);
     }
   });
 });

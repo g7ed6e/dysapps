@@ -66,6 +66,9 @@ const C = {
   /** La vitre éteinte de la lanterne de proue (le gris-bleu de la lanterne du Phare). */
   glassOff: 0xbfd0d3,
   newRope: 0xc9a36a,
+  /** La toile claire des ballots de l'Enclos, et son ombre (relecture de L4 : ils se détachent du ponton). */
+  canvas: 0xeadfc6,
+  canvasShade: 0xd3c3a2,
   newWood: 0xc28a52,
   paint: 0xd9a441,
   /** L'anneau des élingues, en fer sombre (la moufle de la grue est en ardoise). */
@@ -429,31 +432,48 @@ export const HELD_LIFT = 0.3;
 const HELD_TILT = 0.25;
 
 /**
- * Un objet à ranger de l'Enclos : un ballot de filet de pêche roulé et lié d'une corde, avec son flotteur de liège. Tous
- * les mêmes : rien ne dit un ou plusieurs (la réponse) ; seule l'étiquette les distingue. `tilt` : penché (tenu).
+ * Un objet à ranger de l'Enclos : un ballot de toile claire ficelé de deux tours de corde (relecture de L4, directeur
+ * artistique : il se détache du ponton). Tous les mêmes : rien ne dit un ou plusieurs (la réponse) ; seule l'étiquette
+ * les distingue. `tilt` : penché (tenu).
  */
 export function sortPrise(b: FacetBuilder, at: Vec3, s: number, tilt = 0): void {
-  b.box({ x: at.x, y: at.y, z: at.z, yaw: tilt }, [0.62 * s, 0.32 * s, 0.42 * s], C.net, C.netLine);
-  b.box({ x: at.x, y: at.y - 0.01, z: at.z, yaw: tilt }, [0.08 * s, 0.35 * s, 0.45 * s], C.rope);
-  b.box({ x: at.x + 0.2 * s * Math.cos(tilt), y: at.y + 0.32 * s, z: at.z - 0.2 * s * Math.sin(tilt), yaw: tilt }, [0.16 * s, 0.1 * s, 0.12 * s], C.newWood);
+  const c = Math.cos(tilt),
+    sn = Math.sin(tilt);
+  b.box({ x: at.x, y: at.y, z: at.z, yaw: tilt }, [0.6 * s, 0.34 * s, 0.42 * s], C.canvasShade, C.canvas);
+  for (const k of [-1, 1]) b.box({ x: at.x + k * 0.15 * s * c, y: at.y - 0.01, z: at.z - k * 0.15 * s * sn, yaw: tilt }, [0.06 * s, 0.37 * s, 0.45 * s], C.rope);
 }
-
-/** La taille d'un objet rangé dans son panier : plus petit, pour que quatre y tiennent. */
-export const SORT_IN_BASKET = 0.62;
 
 /**
- * L'échelle des paniers du geste « ranger » : une fois et demie celle des objets, sans jamais déborder de sa place dans
- * la rangée (l'écart entre deux places voisines) ; leur étiquette reste sous eux.
+ * La part de l'écart entre deux places de la rangée que prend un panier, au plus : 0,42 (relecture de L4 : le panier du
+ * bout de la rangée reste entier, à 24 px du bord au moins, à 1024 comme à 844 px de large).
  */
-export function sortBinScale(points: readonly Vec3[], s: number): number {
+const SORT_BIN_GAP = 0.42;
+/** Un objet à ranger, au plus : le panier divisé par 1,2 (le ballot reste nettement plus petit que le panier). */
+const SORT_PRISE_UNDER = 1.2;
+
+/** La taille d'un objet rangé dans son panier : plus petit, pour que quatre y tiennent. */
+const SORT_IN_BASKET = 0.62;
+
+/**
+ * Les échelles du geste « ranger » pour la rangée posée en `points`, à l'échelle des objets `s` : `bin`, celle des
+ * paniers, une fois et demie celle des objets, sans jamais prendre plus que `SORT_BIN_GAP` de l'écart entre deux places
+ * voisines (leur étiquette reste sous eux) ; `prise`, celle des objets, qui suit les paniers quand ils rapetissent (le
+ * panier reste plus grand que ce qu'il reçoit : `SORT_PRISE_UNDER`) ; `inBasket`, celle d'un objet rangé.
+ */
+export function sortScales(points: readonly Vec3[], s: number): { bin: number; prise: number; inBasket: number } {
   let gap = Infinity;
   for (let i = 1; i < points.length; i++) gap = Math.min(gap, Math.abs(points[i].x - points[i - 1].x));
-  return Math.min(SORT_BIN_SCALE * s, 0.52 * gap);
+  const bin = Math.min(SORT_BIN_SCALE * s, SORT_BIN_GAP * gap);
+  const prise = Math.min(s, bin / SORT_PRISE_UNDER);
+  return { bin, prise, inBasket: SORT_IN_BASKET * prise };
 }
 
-/** Où se pose le `k`-ième objet rangé dans le panier posé en `at` (de l'échelle `B`, `sortBinScale`), en deux rangs de deux. */
+/**
+ * Où se pose le `k`-ième objet rangé dans le panier posé en `at` (de l'échelle `B`, `sortScales`), en deux rangs de
+ * deux : enfoncé dans le panier, son dessus au-dessus du bord (il se voit dedans, le panier reste entier).
+ */
 export function inBasket(at: Vec3, B: number, k: number): Vec3 {
-  return { x: at.x + ((k % 2) - 0.5) * 0.4 * B, y: at.y + 0.22 * B + 0.12 * B * Math.floor(k / 4), z: at.z + ((Math.floor(k / 2) % 2) - 0.5) * 0.3 * B };
+  return { x: at.x + ((k % 2) - 0.5) * 0.36 * B, y: at.y + 0.42 * B + 0.12 * B * Math.floor(k / 4), z: at.z + ((Math.floor(k / 2) % 2) - 0.5) * 0.3 * B };
 }
 
 /** Le rang de l'objet de la place `i` dans son panier : combien d'objets rangés dans le même panier le précèdent. */
@@ -464,34 +484,44 @@ export function rankInBasket(placed: readonly (number | null)[], i: number): num
   return k;
 }
 
-/** Un panier de paille du geste « ranger » : ouvert (son couvercle relevé derrière lui) quand un objet est tenu. */
+/** Le panier d'osier du geste « ranger », à l'échelle 1 : rayon du fond, du bord, hauteur. */
+const BASKET = { bottom: 0.3, rim: 0.45, height: 0.5 } as const;
+
+/**
+ * Un panier d'osier du geste « ranger » (relecture de L4, directeur artistique) : un corps évasé et opaque, un bandeau de
+ * paille tressée plus claire sous le bord, le creux sombre, et une anse ; rien ne le couvre. L'anse se relève quand un
+ * objet est tenu (le panier est prêt à le recevoir : la forme le dit) ; sinon, elle est rabattue en arrière sur le bord.
+ */
 function sortBin(b: FacetBuilder, p: Vec3, B: number, open: boolean): void {
-  const w = 0.9 * B,
-    d = 0.7 * B,
-    h = 0.5 * B,
-    t = 0.08 * B;
-  b.box({ x: p.x, y: p.y, z: p.z }, [w, 0.06 * B, d], C.strawDark);
-  b.box({ x: p.x, y: p.y, z: p.z + d / 2 }, [w, h, t], C.straw, C.strawDark);
-  b.box({ x: p.x, y: p.y, z: p.z - d / 2 }, [w, h, t], C.straw, C.strawDark);
-  b.box({ x: p.x - w / 2, y: p.y, z: p.z }, [t, h, d], C.straw, C.strawDark);
-  b.box({ x: p.x + w / 2, y: p.y, z: p.z }, [t, h, d], C.straw, C.strawDark);
-  // Le couvercle, toujours derrière le panier (les objets rangés se voient dedans) : couché à plat sur le sable, ou
-  // relevé debout contre le bord arrière quand un objet est tenu (le panier s'ouvre : on peut y ranger).
-  if (open) b.box({ x: p.x, y: p.y + h, z: p.z - d / 2 - t }, [w + 0.04 * B, 0.75 * d, t], C.strawDark, C.straw);
-  else b.box({ x: p.x, y: p.y, z: p.z - d - 0.1 * B }, [w + 0.04 * B, t, 0.75 * d], C.strawDark, C.straw);
+  const r0 = BASKET.bottom * B,
+    r1 = BASKET.rim * B,
+    h = BASKET.height * B;
+  b.prism({ x: p.x, y: p.y, z: p.z }, r0, r1, h, 8, C.strawDark, C.rope);
+  // Le bandeau : un anneau à peine plus large que le corps, aux deux tiers de sa hauteur.
+  const at = (y: number) => r0 + ((r1 - r0) * y) / h;
+  b.prism({ x: p.x, y: p.y + 0.62 * h, z: p.z }, at(0.62 * h) + 0.025 * B, at(0.84 * h) + 0.025 * B, 0.22 * h, 8, C.straw);
+  // L'anse, d'un bord à l'autre en trois brins : haute au-dessus du panier, ou couchée en arrière (vers -z).
+  const lift = open ? 0.42 * B : 0.06 * B,
+    back = open ? 0 : -0.32 * B,
+    t = 0.05 * B;
+  const ends = [-1, 1].map((k) => ({ x: p.x + k * (r1 - t), y: p.y + h, z: p.z }));
+  const mid = [-1, 1].map((k) => ({ x: p.x + k * 0.22 * B, y: p.y + h + lift, z: p.z + back }));
+  b.beam(ends[0], mid[0], t, C.straw);
+  b.beam(mid[0], mid[1], t, C.straw);
+  b.beam(mid[1], ends[1], t, C.straw);
 }
 
 /** Les paniers et les objets du geste « ranger », sur le ponton des réponses (hauteur `y`). */
 function sortObjects(b: FacetBuilder, points: readonly Vec3[], y: number, s: number, look: SortLook): void {
   const open = look.held !== null;
-  const B = sortBinScale(points, s);
+  const { bin: B, prise, inBasket: k } = sortScales(points, s);
   for (const i of look.bins) if (points[i]) sortBin(b, { x: points[i].x, y, z: points[i].z }, B, open);
   for (const [i, p] of points.entries()) {
     if (look.bins.includes(i) || look.moving === i) continue;
     const bin = look.placed[i];
-    if (bin !== null && bin !== undefined && points[bin]) sortPrise(b, inBasket({ x: points[bin].x, y, z: points[bin].z }, B, rankInBasket(look.placed, i)), SORT_IN_BASKET * s);
-    else if (look.held === i) sortPrise(b, { x: p.x, y: y + HELD_LIFT, z: p.z }, s, HELD_TILT);
-    else sortPrise(b, { x: p.x, y, z: p.z }, s);
+    if (bin !== null && bin !== undefined && points[bin]) sortPrise(b, inBasket({ x: points[bin].x, y, z: points[bin].z }, B, rankInBasket(look.placed, i)), k);
+    else if (look.held === i) sortPrise(b, { x: p.x, y: y + HELD_LIFT, z: p.z }, prise, HELD_TILT);
+    else sortPrise(b, { x: p.x, y, z: p.z }, prise);
   }
 }
 
@@ -1424,12 +1454,12 @@ const PHARE_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => 
 
 /**
  * Où se pose la trace de chaque mission des Filets (hors du Troupeau, le filet raccommodé et le panier plein), depuis le
- * centre du lieu, dans le champ du retour d'une scénette (Kéo devant le séchoir, au sud) : le vivier dans l'eau du bord,
- * au sud-est du séchoir ; la pyramide de nasses contre le pan sud du séchoir, côté sable (le pan nord porte le filet
+ * centre du lieu, dans le champ du retour d'une scénette (Kéo devant le séchoir, au sud) : le vivier dans l'eau, à un
+ * pas du bord (ses pieds immergés, l'eau dedans ; relecture de L4), au sud-est du séchoir ; la pyramide de nasses contre le pan sud du séchoir, côté sable (le pan nord porte le filet
  * raccommodé) ; le carrelet sur le replat de l'eau, à l'est du séchoir, son bras vers le large.
  */
 export const FILETS_TRACE_SPOTS = {
-  'word-classes': { x: 5.6, z: 3.1 },
+  'word-classes': { x: 6.6, z: 2.6 },
   sorting: { x: 2.04, z: 2.71 },
   'e-er-ez': { x: 4.0, z: 0.9 },
 } as const;
@@ -1466,10 +1496,16 @@ const FILETS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) =>
       const q = at(k + 1);
       const bed = bedAt(p.x, p.z);
       b.box({ x: p.x, y: bed, z: p.z }, [0.13, top - bed, 0.13], C.deckSide, C.deck);
-      // Le filet, de pieu en pieu, de sous l'eau à mi-hauteur des pieux.
-      const dx = q.x - p.x,
-        dz = q.z - p.z;
-      b.box({ x: (p.x + q.x) / 2, y: -0.15, z: (p.z + q.z) / 2, yaw: Math.atan2(-dz, dx) }, [Math.hypot(dx, dz) - 0.13, 0.5, 0.03], C.netLine);
+      // Le filet, de pieu en pieu, de sous l'eau à mi-hauteur des pieux : une nappe sans épaisseur, vue des deux côtés
+      // (quatre triangles au lieu des dix d'un pavé : ce qu'ils gagnent paie les anneaux des nasses).
+      const lo = -0.15,
+        hi = 0.35;
+      const a0 = [p.x, lo, p.z] as const,
+        a1 = [q.x, lo, q.z] as const,
+        b1 = [q.x, hi, q.z] as const,
+        b0 = [p.x, hi, p.z] as const;
+      b.quad(a0, a1, b1, b0, C.netLine);
+      b.quad(a1, a0, b0, b1, C.netLine);
     }
   },
   sorting: (b, x, z) => {
@@ -1498,9 +1534,11 @@ const FILETS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) =>
       for (let i = 0; i < count; i++) {
         const along = (i - (count - 1) / 2) * 2 * r;
         const mouth = { x: g.x + u.x * along + axis.x * (len / 2), y: g.y + r + row * 1.7 * r, z: g.z + u.z * along + axis.z * (len / 2) };
-        // Le cône, de la bouche vers le séchoir ; la bouche fermée d'un disque d'osier sombre (le dedans de la nasse).
+        // Le cône, de la bouche vers le séchoir ; à la bouche, un anneau d'osier clair (relecture de L4 : la nasse ne se
+        // lit plus comme un tronc), et le dedans sombre, un cône bas posé sur lui.
         b.prism({ ...mouth, yaw: yaw + Math.PI, pitch: Math.PI / 2 }, r, 0.06, len, 8, C.newRope, C.deck);
-        b.prism({ ...mouth, yaw, pitch: Math.PI / 2 }, r, 0, 0.02, 8, C.deckSide);
+        b.prism({ ...mouth, yaw, pitch: Math.PI / 2 }, r + 0.03, r + 0.03, 0.04, 8, C.canvas);
+        b.prism({ x: mouth.x + axis.x * 0.04, y: mouth.y, z: mouth.z + axis.z * 0.04, yaw, pitch: Math.PI / 2 }, r - 0.07, 0, 0.03, 8, C.deckSide);
       }
   },
   'e-er-ez': (b, x, z) => {

@@ -7,13 +7,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Icon } from '../../../components/Icon';
 import { frenchTypography } from '../../../components/math/RichText';
 import { SpeakButton } from '../../../components/SpeakButton';
-import { Syllabified } from '../../../components/Syllabified';
 import { useSettings } from '../../../core/SettingsContext';
 import { texteGrand } from '../../../core/settings';
 import type { ScreenProps } from '../../exercises/registry';
 import type { ExerciseItem } from '../../exercises/types';
 import { EMPTY_RANGEMENT, binOf, cancel, complete, drop, rangementResults, sortSlots, take, type Rangement } from '../../world/continu/rangement';
-import { rangeGesture, type RangeBin } from '../../world/continu/questions';
+import { agreedSentence, agreedVerb, placeRuleLine, rangeGesture, type RangeBin } from '../../world/continu/questions';
 import { ConsigneIcon, IconLabel, PlaceAid, aidOf, placeSceneOf, slotStyles, useQuestion, useStopOnLeave } from './placeScreen';
 
 /** Le sujet d'un objet à ranger (« Le chien »). */
@@ -35,7 +34,7 @@ export function sortAnswer(items: readonly ExerciseItem[], s: Rangement) {
  * toucher de nouveau, ou Échap, le repose ; toucher un panier y range l'objet tenu. Un objet rangé se reprend jusqu'à
  * « Valider », qui attend que tout soit rangé.
  */
-export function SortScreen({ items, answered, onAnswer, exerciseId }: ScreenProps) {
+export function SortScreen({ items, answered, onAnswer, exerciseId, level }: ScreenProps) {
   const { layout, show, simple, place } = useQuestion();
   const { speak, settings } = useSettings();
   // Au plus grand texte sur un écran bas, en « Vue simple » : « Écouter les sujets » passe dans la bande de « Valider »,
@@ -46,10 +45,16 @@ export function SortScreen({ items, answered, onAnswer, exerciseId }: ScreenProp
   const [state, setState] = useState<Rangement>(EMPTY_RANGEMENT);
   // Ce que dit la région d'état (lue par les lecteurs d'écran, jamais affichée) : « Tu tiens : … », « … rangé dans … ».
   const [status, setStatus] = useState('');
+  // Au plus grand texte sur un téléphone : la ligne de règle montrée (l'icône de la bande de « Valider »).
+  const [ruleOpen, setRuleOpen] = useState(false);
   const scene = placeSceneOf(items[0]);
   // La règle du niveau (la même pour tous les sujets) : à droite sur tablette ; sur un écran bas, la rangée des six
   // étiquettes prend toute la largeur, et la règle reste dans « Vue simple » (comme les barres de Deux rives).
   const aid = simple || !layout.low ? aidOf(items[0]) : null;
+  // Sur un écran bas, la ligne de la règle qui décide (« Plusieurs : pluriel, le verbe finit par -nt ») reste affichée
+  // dans la scène, en haut à droite (relecture de L4 : contenu et référent dys) ; au plus grand texte, en « Vue simple »,
+  // où la carte entière passe sous la liste, une icône de la bande de « Valider » la montre sous la consigne.
+  const ruleLine = layout.low && (!simple || compact) ? placeRuleLine(place, exerciseId, level) : null;
   const keys = useMemo(() => items.map((it) => it.key), [items]);
   const itemsKey = keys.join('|');
   const slots = useMemo(() => sortSlots(items.length, bins.length), [items.length, bins.length]);
@@ -85,6 +90,8 @@ export function SortScreen({ items, answered, onAnswer, exerciseId }: ScreenProp
   // Échap repose l'objet tenu, sans fermer le panneau (useOpenPanel écoute aussi Échap, sur `window`) : entendu en
   // premier, à la capture, il s'arrête là quand un objet est tenu.
   const holding = state.held !== null;
+  // Le sujet tenu, pour « Reposé : … » quand Échap le repose.
+  const heldSubject = state.held === null ? '' : subjectOf(items.find((it) => it.key === state.held) ?? { key: state.held });
   useEffect(() => {
     if (!holding || answered) return;
     const onKey = (e: KeyboardEvent) => {
@@ -92,11 +99,11 @@ export function SortScreen({ items, answered, onAnswer, exerciseId }: ScreenProp
       e.preventDefault();
       e.stopImmediatePropagation();
       setState((s) => cancel(s));
-      setStatus('Reposé.');
+      setStatus(`Reposé : ${heldSubject}.`);
     };
     window.addEventListener('keydown', onKey, true);
     return () => window.removeEventListener('keydown', onKey, true);
-  }, [holding, answered]);
+  }, [holding, answered, heldSubject]);
 
   if (!scene) return null;
   const binLabel = (id: string | null) => bins.find((b) => b.id === id)?.label ?? '';
@@ -109,7 +116,7 @@ export function SortScreen({ items, answered, onAnswer, exerciseId }: ScreenProp
     if (next.held === it.key) {
       speak(subjectOf(it));
       setStatus(`Tu tiens : ${subjectOf(it)}.`);
-    } else setStatus('Reposé.');
+    } else setStatus(`Reposé : ${subjectOf(it)}.`);
   };
   const touchBin = (bin: RangeBin) => {
     if (answered) return;
@@ -125,11 +132,19 @@ export function SortScreen({ items, answered, onAnswer, exerciseId }: ScreenProp
     if (!done || answered) return;
     onAnswer(sortAnswer(items, state));
   };
-  const heard = frenchTypography(items.map(subjectOf).join(', '));
+  // Après « Valider », la voix dit chaque sujet avec son verbe accordé (« Les chiens mangent »).
+  const heard = frenchTypography(items.map(answered ? agreedSentence : subjectOf).join(', '));
   // Sa place vient de scenetteLayout (en bas à droite) ; la feuille de style la reprend.
   const validateBox = simple ? null : layout.scenette.validate;
   const at = (slot: number) => (simple ? { hit: undefined, label: undefined } : slotStyles(layout.slots[slot] ?? layout.slots[0]));
 
+  // Dans la scène, la règle se pose à droite de la colonne, en haut (comme « Presque ! ») : la colonne garde sa hauteur,
+  // la rangée et ses objets restent dégagés.
+  const rule = ruleLine && (
+    <p id="enclos-regle" className={`world-sort-regle${simple ? '' : ' a-cote'}`}>
+      {frenchTypography(ruleLine)}
+    </p>
+  );
   const subjectList = (
     <ul className="world-answers" aria-label="Sujets à ranger">
       {items.map((it, i) => {
@@ -148,9 +163,10 @@ export function SortScreen({ items, answered, onAnswer, exerciseId }: ScreenProp
               onClick={() => touchPrise(it)}
             >
               <span className="world-answer-label" style={styles.label}>
-                <span className="word-text">
-                  <Syllabified text={subjectOf(it)} />
-                </span>
+                {/* Le sujet en texte simple, sans syllabes colorées : leur couleur marquerait le -s final (relecture de
+                    L4, référent dys). Après « Valider », son verbe accordé dessous (« Les chiens / mangent »). */}
+                <span className="word-text">{subjectOf(it)}</span>
+                {answered && agreedVerb(it) && <span className="world-sort-verbe">{agreedVerb(it)}</span>}
                 {/* La main et « tenu » au-dessus de l'étiquette : le mot garde toute sa largeur. */}
                 {isHeld && (
                   <span className="word-note world-sort-tenu">
@@ -188,6 +204,10 @@ export function SortScreen({ items, answered, onAnswer, exerciseId }: ScreenProp
             >
               <span className="world-answer-label" style={styles.label}>
                 <span className="word-text">{b.label}</span>
+                {/* L'icône de panier au-dessus de l'étiquette, comme « tenu » : le mot garde toute sa largeur. */}
+                <span className="word-note world-sort-tenu" aria-hidden="true">
+                  <Icon name="panier" className="world-sort-panier" />
+                </span>
               </span>
             </button>
           </li>
@@ -216,9 +236,12 @@ export function SortScreen({ items, answered, onAnswer, exerciseId }: ScreenProp
               </button>
             )}
           </div>
+          {simple && rule}
           {aid && <PlaceAid aid={aid} layout={layout} simple={simple} />}
         </div>
       )}
+      {!simple && rule}
+      {compact && ruleOpen && rule}
       {!answered && validateBox && (
         <button type="button" className="button primary validate-button world-validate" disabled={!done} onClick={validate}>
           <Icon name="check" /> Valider
@@ -245,6 +268,21 @@ export function SortScreen({ items, answered, onAnswer, exerciseId }: ScreenProp
         <div className="world-simple-validate">
           {/* L'icône seule, 48 px, son nom toujours dit : la bande garde la hauteur d'un bouton. */}
           {compact && <SpeakButton text={heard} label="Écouter les sujets" compact />}
+          {compact && rule && (
+            // Au plus grand texte sur un téléphone, la ligne de règle ne tient pas avec la manche au-dessus de « Valider » :
+            // une icône la montre ou la cache, toujours à la même place (relecture de L4, référent dys).
+            <button
+              type="button"
+              className="button world-sort-regle-bouton"
+              aria-expanded={ruleOpen}
+              aria-controls="enclos-regle"
+              aria-label={ruleOpen ? 'Cacher la règle' : 'Voir la règle'}
+              title={ruleOpen ? 'Cacher la règle' : 'Voir la règle'}
+              onClick={() => setRuleOpen((open) => !open)}
+            >
+              <Icon name="lightbulb" />
+            </button>
+          )}
           {!answered && (
             <button type="button" className="button primary validate-button" disabled={!done} onClick={validate}>
               <Icon name="check" /> Valider

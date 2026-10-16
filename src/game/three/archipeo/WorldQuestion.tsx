@@ -40,7 +40,7 @@ import { exercisesToReview } from '../../review';
 import { placeById, type PlaceId } from '../../world/continu/plan6e';
 import { WIDEN_FULL, WIDEN_OFFER, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf } from '../../world/continu/scenette';
-import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
+import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { BellScreen, BellTarget } from './BellScreen';
 import { SortScreen } from './SortScreen';
@@ -309,15 +309,16 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     },
     [run, smallBells],
   );
-  // Le geste « ranger » : quatre sujets par manche, trois sur un écran bas ; fixé de même au premier découpage.
+  // Le geste « ranger » : quatre sujets par manche, trois sur un écran bas, deux au plus grand texte sur un écran bas
+  // (relecture de L4 : la manche tient au-dessus de « Valider ») ; fixé de même au premier découpage.
   const sortCut = useRef<{ key: string; perRound: number } | null>(null);
   const sortsPerRound = useCallback(
     (seed: string): number => {
       const key = `${run}:${seed}`;
-      if (sortCut.current?.key !== key) sortCut.current = { key, perRound: layout.low ? RANGE_PER_SMALL_ROUND : RANGE_PER_ROUND };
+      if (sortCut.current?.key !== key) sortCut.current = { key, perRound: layout.low ? (grandTexte ? RANGE_PER_GRAND_ROUND : RANGE_PER_SMALL_ROUND) : RANGE_PER_ROUND };
       return sortCut.current.perRound;
     },
-    [run, layout.low],
+    [run, layout.low, grandTexte],
   );
   const stage = useMemo<RunnerStage | null>(() => {
     if (!exerciseId) return null;
