@@ -538,6 +538,18 @@ function attemptLayout(
 }
 
 /**
+ * Les mots de « [Nom] : fermé pour l'instant », au toucher du cadenas d'un lieu fermé : écrits (`shown`) et dits par la
+ * voix (`said`, rien : le mot écrit). Sur téléphone au plus grand texte (`short`), le mot court « [Nom] : fermé », sur
+ * deux lignes au plus, posé sur les lieux fermés ; la voix garde la phrase entière du bouton, « [Nom] : sous la brume,
+ * fermé pour l'instant » (GD-20, décision du directeur artistique du 16 octobre 2026 : le mot long cachait « Le Phare »
+ * et « L'Escale » à 667 × 375, le Chantier naval à 844 × 390). Ailleurs, rien ne change.
+ */
+export function closedNoteText(name: string, short: boolean): { shown: string; said?: string } {
+  if (!short) return { shown: `${name} : fermé pour l’instant` };
+  return { shown: `${name} : fermé`, said: `${name} : sous la brume, fermé pour l’instant` };
+}
+
+/**
  * Une forme mesurée de « [Nom] : fermé pour l'instant » : la large, qui se pose près du cadenas, ou une bande (`band`),
  * plus large et plus basse (deux ou trois lignes), le long du bas ou du haut de l'écran seulement.
  */

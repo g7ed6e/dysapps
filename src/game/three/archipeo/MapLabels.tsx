@@ -10,7 +10,9 @@ import { useCallback, useEffect, useLayoutEffect, useRef, type MutableRefObject 
 import { Icon } from '../../../components/Icon';
 import { getBiome } from '../../biomes';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
-import { MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, layoutMapLabels, nameLines, placeClosedNote, type MapLabel, type MapLabelSpot, type NoteSize, type Rect } from '../../world/continu/map';
+import { useSettings } from '../../../core/SettingsContext';
+import { texteGrand } from '../../../core/settings';
+import { MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, closedNoteText, layoutMapLabels, nameLines, placeClosedNote, type MapLabel, type MapLabelSpot, type NoteSize, type Rect } from '../../world/continu/map';
 import { stateWord } from './constructionParts';
 import { PLACES, type PlaceId } from '../../world/continu/plan6e';
 import type { MapSpotOnScreen } from './scene';
@@ -67,12 +69,14 @@ const missingOf = (items: readonly MapLabel[], spots: readonly MapLabelSpot[]) =
  */
 const NOTE_BANDS = [1, 0.8, 0.65, 0.5] as const;
 const NOTE_LINES = 3;
+/** Le mot court (« [Nom] : fermé », téléphone au plus grand texte) : deux lignes au plus (directeur artistique). */
+const SHORT_NOTE_LINES = 2;
 
 /**
  * Les formes de « [Nom] : fermé pour l'instant », mesurées : la large (`null`, sa largeur dans openWorld.css), posée près
  * du cadenas, puis les bandes (leur largeur en pixels), posées en bas ou en haut de l'écran.
  */
-function measureNote(el: HTMLElement, screenWidth: number): { sizes: NoteSize[]; widths: (number | null)[] } {
+function measureNote(el: HTMLElement, screenWidth: number, lines: number): { sizes: NoteSize[]; widths: (number | null)[] } {
   const sizes: NoteSize[] = [];
   const widths: (number | null)[] = [];
   const style = getComputedStyle(el);
@@ -85,7 +89,7 @@ function measureNote(el: HTMLElement, screenWidth: number): { sizes: NoteSize[];
     const width = Math.floor((screenWidth - 2 * MAP_LABEL_GAP) * part);
     setNoteForm(el, width);
     const size = { w: el.offsetWidth, h: el.offsetHeight, band: true };
-    if (Math.round((size.h - frame) / line) > NOTE_LINES || sizes.some((s) => s.band && s.w === size.w && s.h === size.h)) continue;
+    if (Math.round((size.h - frame) / line) > lines || sizes.some((s) => s.band && s.w === size.w && s.h === size.h)) continue;
     sizes.push(size);
     widths.push(width);
   }
@@ -126,6 +130,24 @@ function Name({ text, wrap = false }: { text: string; wrap?: boolean }) {
   );
 }
 
+/**
+ * Les deux formes du mot, l'une montrée selon `data-court` (openWorld.css) : la longue, écrite et dite ; la courte,
+ * écrite seulement, la voix disant la phrase entière du bouton (cachée à la vue).
+ */
+function NoteWords({ name }: { name: string }) {
+  const long = closedNoteText(name, false);
+  const short = closedNoteText(name, true);
+  return (
+    <>
+      <span className="open-world-map-note-long">{long.shown}</span>
+      <span className="open-world-map-note-short" aria-hidden="true">
+        {short.shown}
+      </span>
+      <span className="open-world-map-note-said visually-hidden">{short.said}</span>
+    </>
+  );
+}
+
 export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words, portName, onCrowded, closedNote = null }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const note = useRef<HTMLParagraphElement>(null);
@@ -153,11 +175,15 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
   const asked = useRef(-1);
   const answered = useRef(false);
   const crowdedRef = useRef(onCrowded);
+  // Le plus grand texte (avec un téléphone couché : le mot court, `closedNoteText`).
+  const grand = texteGrand(useSettings().settings);
+  const grandRef = useRef(grand);
   // Les props relues par les poses (appelées par la scène, hors du rendu de React), rangées après chaque rendu.
   useLayoutEffect(() => {
     noteFor.current = closedNote;
     crowdedRef.current = onCrowded;
-  }, [closedNote, onCrowded]);
+    grandRef.current = grand;
+  }, [closedNote, onCrowded, grand]);
 
   // Les étiquettes à poser pour des points donnés, avec leurs tailles mesurées (les points cachés ou pas encore mesurés
   // n'en ont pas).
@@ -195,10 +221,14 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
     const keep = [...(keoBox.current ? [keoBox.current] : []), ...retour.current];
     // Ses formes mesurées (large, puis en bandes), une fois par lieu, largeur d'écran et taille du texte ; la forme
     // choisie remise aussitôt, avant que la page se dessine.
-    const key = `${id} ${screen.current.width} ${measured.current}`;
+    // Sur téléphone au plus grand texte, le mot court, sur deux lignes au plus (`closedNoteText`) ; ailleurs, le long.
+    const short = grandRef.current && screen.current.height <= LOW_SCREEN;
+    const court = short ? 'oui' : 'non';
+    if (el.dataset.court !== court) el.dataset.court = court;
+    const key = `${id} ${screen.current.width} ${measured.current} ${court}`;
     let forms = noteSizes.current;
     if (forms?.key !== key) {
-      forms = { key, ...measureNote(el, screen.current.width) };
+      forms = { key, ...measureNote(el, screen.current.width, short ? SHORT_NOTE_LINES : NOTE_LINES) };
       noteSizes.current = forms;
     }
     const spot = placeClosedNote(at?.shown ? at : { x: screen.current.width / 2, y: Infinity }, forms.sizes, obstacles.current, keep, screen.current, openBoxes.current);
@@ -396,10 +426,11 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
           </button>
         ),
       )}
-      {/* Au toucher d'un cadenas, son nom et son état, près de lui, sur fond uni, transparent aux doigts ; vide, il ne
+      {/* Au toucher d'un cadenas (le mot long, ou le court sur téléphone au plus grand texte, `data-court`, posé par
+          `placeNote`), son nom et son état, près de lui, sur fond uni, transparent aux doigts ; vide, il ne
           montre rien et ne prend aucune place (la voix dit le mot quand il s'écrit). */}
       <p ref={note} className="open-world-map-note" role="status" data-forme="large">
-        {closedNote ? `${PLACES.find((p) => p.id === closedNote)?.name ?? ''} : fermé pour l’instant` : ''}
+        {closedNote && <NoteWords name={PLACES.find((p) => p.id === closedNote)?.name ?? ''} />}
       </p>
     </div>
   );

@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { markOffset, screenOf } from './camera';
 import type { Vec3 } from './geometry';
-import { ISLAND_BOX, MAP_CAMERA, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, placeClosedNote, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
+import { ISLAND_BOX, MAP_CAMERA, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, closedNoteText, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, placeClosedNote, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
 import { PLACES, placeById } from './plan6e';
 import { PORT_MAP_POINT } from './port';
 import { heightAt, standingHeight } from './terrain';
@@ -584,5 +584,17 @@ describe('« [Nom] : fermé pour l’instant » (GD-20, « La Carte au plus gran
     // L'Escale, la pastille la plus proche du bas, n'est couverte qu'en partie au plus.
     const covered = (r: typeof box) => Math.max(0, Math.min(box.right, r.right) - Math.max(box.left, r.left)) * Math.max(0, Math.min(box.bottom, r.bottom) - Math.max(box.top, r.top));
     expect(covered(escale) + covered(phare)).toBeLessThan((escale.right - escale.left) * (escale.bottom - escale.top));
+  });
+});
+
+describe('le mot d’un lieu fermé (GD-20, téléphone au plus grand texte)', () => {
+  it('ailleurs, le mot long, écrit et dit', () => {
+    expect(closedNoteText('Les Marais salants', false)).toEqual({ shown: 'Les Marais salants : fermé pour l’instant' });
+  });
+  it('sur téléphone au plus grand texte, le mot court écrit ; la voix garde la phrase entière du bouton', () => {
+    expect(closedNoteText('Les Marais salants', true)).toEqual({
+      shown: 'Les Marais salants : fermé',
+      said: 'Les Marais salants : sous la brume, fermé pour l’instant',
+    });
   });
 });

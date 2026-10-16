@@ -955,6 +955,13 @@
 .open-world-map-note[data-forme='bande'] {
   max-width: var(--note-largeur, min(80vw, 30rem));
 }
+/* Le mot court (« [Nom] : fermé ») sur téléphone au plus grand texte, la voix disant la phrase entière ; le long ailleurs
+   (MapLabels, `data-court`). */
+.open-world-map-note:not([data-court='oui']) .open-world-map-note-short,
+.open-world-map-note:not([data-court='oui']) .open-world-map-note-said,
+.open-world-map-note[data-court='oui'] .open-world-map-note-long {
+  display: none;
+}
 .open-world-map-note:empty {
   /* Vide, il reste dans la page (la voix dit le mot quand il s'écrit) sans rien montrer ni prendre de place. */
   padding: 0;
