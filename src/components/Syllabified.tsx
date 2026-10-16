@@ -13,7 +13,9 @@ interface Props {
 
 /**
  * Les syllabes d'un texte français, en couleurs alternées : la découpe est purement visuelle. Un mot composé ou une
- * inversion verbe-pronom (« taille-crayon », « est-il ») ne se coupe pas à son trait d'union (`keepTogether`).
+ * inversion verbe-pronom (« taille-crayon », « est-il ») ne se coupe pas à son trait d'union (`keepTogether`). Les
+ * couleurs repartent à chaque mot (`syllabify`) et un morceau gardé ne coupe jamais un mot : l'alternance est celle du
+ * texte d'un seul tenant, sans décalage d'un morceau à l'autre (Syllabified.test.tsx).
  */
 function Syllables({ text, label }: { text: string; label: string }) {
   const runs = useMemo(() => keepTogether(text).map((run) => ({ ...run, pieces: syllabify(run.text) })), [text]);

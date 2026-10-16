@@ -18,9 +18,19 @@ describe('keepTogether', () => {
     expect(kept('Quel élément du taille-crayon garde les copeaux ?')).toEqual(['taille-crayon']);
     expect(kept('Pourquoi le cadre est-il en aluminium ?')).toEqual(['est-il']);
     expect(kept('Que soulève-t-il ?')).toEqual(['soulève-t-il']);
-    expect(kept('Que fait-on ? Que dit-on, a-t-on vu ?')).toEqual(['fait-on', 'dit-on', 'a-t-on']);
-    expect(kept('Les États-Unis, en 52 av. J.-C.')).toEqual(['États-Unis', 'J.-C.']);
+    expect(kept('Que fait-on ? Que dit-on, a-t-on vu ?')).toEqual(['fait-on', 'dit-on,', 'a-t-on']);
+    expect(kept('Les États-Unis, en 52 av. J.-C.')).toEqual(['États-Unis,', 'J.-C.']);
     expect(kept('un tiret - seul, 3-4 ou -il')).toEqual([]);
+  });
+
+  it('prend avec lui la ponctuation et ce qu’une espace insécable lui colle : rien ne passe seul à la ligne à son bord', () => {
+    expect(kept(frenchTypography('Pourquoi « est-il » là ? Que voit-on ?'))).toEqual(['«\u00a0est-il\u00a0»', 'voit-on\u00a0?']);
+    expect(kept('(av. J.-C.). Fin')).toEqual(['J.-C.).']);
+    expect(keepTogether('Le taille-crayon garde les copeaux.')).toEqual([
+      { text: 'Le ', keep: false },
+      { text: 'taille-crayon', keep: true },
+      { text: ' garde les copeaux.', keep: false },
+    ]);
   });
 
   it('ne change pas le texte : les morceaux, mis bout à bout, le redonnent tel quel (la voix lit le même)', () => {
@@ -36,5 +46,6 @@ describe('gluedEnds', () => {
   it('ce qui reste collé à une réponse posée dans la phrase', () => {
     expect(gluedEnds('ce métal conduit bien l’', ' et la chaleur.')).toEqual({ head: 'ce métal conduit bien ', tail: 'l’', lead: '', rest: ' et la chaleur.' });
     expect(gluedEnds('Il mange des ', 's.')).toEqual({ head: 'Il mange des ', tail: '', lead: 's.', rest: '' });
+    expect(gluedEnds('le bois isole de l’', '\u00a0? Oui.')).toEqual({ head: 'le bois isole de ', tail: 'l’', lead: '\u00a0?', rest: ' Oui.' });
   });
 });

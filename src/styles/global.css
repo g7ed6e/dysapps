@@ -7678,7 +7678,11 @@ fieldset {
 }
 
 /* Un mot composé, une inversion verbe-pronom ou la case à compléter avec le mot qui lui est collé ne se coupent pas à
-   l'affichage (`keepTogether`, core/typography.ts) ; le texte lu ne change pas. */
+   l'affichage (`keepTogether`, core/typography.ts) ; le texte lu ne change pas. Une boîte en ligne, à la largeur de son
+   texte : elle passe entière à la ligne suivante ; seul un mot plus long que toute la ligne s'y coupe encore, en dernier
+   recours (`overflow-wrap: anywhere` ; avec `white-space: nowrap`, il ne jouerait pas et le mot sortirait du cadre). */
 .mot-lie {
-  white-space: nowrap;
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }

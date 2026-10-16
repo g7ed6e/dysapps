@@ -777,8 +777,8 @@ const C = {
   slateApron: 0x4d6a82,
   leather: 0x7a4e2e,
   // Le bas du charpentier, sombre, sous la chemise (relecture de L6b, directeur artistique : le prisme entier en Brume se
-  // lisait comme une robe) : le cuir par défaut ; l'autre ton montré au directeur artistique, Nuit océan (#142B38).
-  workTrousers: 0x7a4e2e,
+  // lisait comme une robe) : Nuit océan (#142B38), choisi par le directeur artistique entre lui et le cuir.
+  workTrousers: 0x142b38,
   mallet: 0x8a5a36,
   plank: 0xc98e55,
   plankSide: 0x9b6a3f,

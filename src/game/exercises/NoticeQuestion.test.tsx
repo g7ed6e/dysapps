@@ -12,6 +12,6 @@ describe('NoticeQuestion, les mots composés', () => {
       </SettingsProvider>,
     );
     const kept = [...container.querySelectorAll('.mot-lie')].map((e) => e.textContent);
-    expect(kept).toEqual(['est-il', 'États-Unis', 'a-t-on', 'J.-C.']);
+    expect(kept).toEqual(['est-il', 'États-Unis.', 'l’a-t-on', 'J.-C.\u00a0?']);
   });
 });

@@ -8,7 +8,9 @@ import type { OpenWorld } from './scene';
 import { JAUGE_INSTRUCTION, JAUGE_PROMPT } from '../../world/continu/questions';
 import { PIN_MAX, WorldQuestion, afterAnswer, foldReserve } from './WorldQuestion';
 import { PlaceDocument } from './placeScreen';
-import { loadExercise } from '../../exercises';
+import { exercisesOf, loadExercise } from '../../exercises';
+import { getBiome } from '../../biomes';
+import { placeById, type PlaceId } from '../../world/continu/plan6e';
 import enclos from '../../exercises/data/french-6e-grammar-spelling-word-classes-1.json';
 
 // La scène 3D n'est pas là sous jsdom : la question ne lui demande que de poser les objets et d'allumer la lampe.
@@ -25,6 +27,19 @@ beforeEach(() => {
 });
 // Les tailles et les rectangles simulés ne passent jamais d'un test à l'autre (relecture du lot L5, expert frontend).
 afterEach(() => vi.restoreAllMocks());
+// Les exercices écrits en JSON se chargent à la demande (`loadExercise`) : le panneau montre « Chargement… » jusqu'à
+// leur arrivée. Sous la charge de la suite complète, un premier import dépassait l'attente d'un `findByText` du rôle
+// (« L'éclusier », « Le docker » introuvables). Ceux de tous les lieux du fichier sont chargés une fois, avant les tests :
+// la cause est retirée, aucune attente n'est allongée.
+beforeAll(async () => {
+  const places: PlaceId[] = ['phare', 'quais', 'filets', 'ecluses', 'saltworks', 'engine', 'shipyard'];
+  await Promise.all(
+    places.flatMap((place) => {
+      const biome = getBiome(placeById(place).island)!;
+      return biome.exercises.flatMap((mission) => exercisesOf(biome.id, mission.id).map((e) => loadExercise(e.id)));
+    }),
+  );
+});
 
 function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard', mission: string, plain = false) {
   return render(
@@ -537,10 +552,6 @@ describe('La Turbine, ses quatre missions en C (GD-20, point 8, lot L6a)', () =>
     return user;
   };
   const last = () => vi.mocked(world.question).mock.calls.at(-1)![0]!;
-  // Les exercices de l'île, chargés à la demande, une fois avant les tests (le premier ne paie pas leur chargement).
-  beforeAll(async () => {
-    await Promise.all(['states-of-matter', 'motion-signals', 'energy-circuits', 'materials-light'].map((m) => loadExercise(`physics-chemistry-6e-matter-energy-${m}-1`)));
-  });
 
   it.each(['states-of-matter', 'motion-signals', 'energy-circuits', 'materials-light'])(
     '%s : la scène neutre, les réponses dans la colonne, dans le même ordre qu’en « Vue simple »',
@@ -680,9 +691,6 @@ describe('Le Chantier naval, ses quatre missions en C (GD-20, point 8, lot L6b)'
   beforeEach(() => {
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
     vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
-  });
-  beforeAll(async () => {
-    await Promise.all(missions.map((m) => loadExercise(`technology-6e-objects-${m}-1`)));
   });
 
   it.each(missions)('%s : le charpentier, la scène neutre, les réponses dans la colonne, sous la phrase, en scène comme en « Vue simple »', async (mission) => {
