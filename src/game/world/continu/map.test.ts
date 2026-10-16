@@ -447,7 +447,7 @@ describe('Les étiquettes de la Carte', () => {
 });
 
 describe('La Carte avec le rivage nord (lot L7)', () => {
-  // Les étiquettes posées aux vraies places des dix lieux, de l'Escale et de Kéo (devant les Archives), à l'ouverture de
+  // Les étiquettes posées aux vraies places des quatorze lieux, de l'Escale et de Kéo (devant les Archives), dans la vue de départ de
   // la Carte, en texte normal ; les tailles mesurées sur la capture de la tablette (gd20-l7-reprise/carte-1024).
   const open = new Set(['phare', 'shipyard', 'lookout', 'archives', 'printworks']);
   const sizes: Record<string, [number, number]> = {
@@ -457,8 +457,8 @@ describe('La Carte avec le rivage nord (lot L7)', () => {
     mangrove: [160, 84], ruins: [145, 84], observatory: [200, 84], commons: [120, 84],
   };
   const narrow = { w: 150, h: 84 };
-  const labelsOn = (w: number, h: number): MapLabel[] => {
-    const pose = mapPose(mapStart(w / h));
+  const labelsOn = (w: number, h: number, view = mapStart(w / h)): MapLabel[] => {
+    const pose = mapPose(view);
     const at = (p: Vec3) => screenOf(pose, p, w, h);
     const archives = placeById('archives').center;
     const keo = at({ x: archives.x - 4, y: standingHeight(heightAt(archives)), z: archives.z + 6 });
@@ -491,7 +491,18 @@ describe('La Carte avec le rivage nord (lot L7)', () => {
 
   for (const [w, h] of [[1024, 768], [844, 390]] as const) {
     it(`${w} × ${h} : chaque lieu ouvert du rivage nord garde son nom, jamais sur un cadenas, sur « Toi » ni sur un autre nom`, () => {
-      const labels = labelsOn(w, h);
+      // La vue de départ que choisit la Carte (`reframeMap`, comme la scène) : les lieux hors de l'écran n'ont pas
+      // d'étiquette ; une vue où un lieu ouvert perd son nom, ou sort de l'écran, est écartée.
+      const inside = (l: MapLabel) => l.x > 0 && l.x < w && l.y > 0 && l.y < h;
+      const ground = PLACES.filter((p) => open.has(p.id)).map((p) => p.center);
+      const view = reframeMap(w / h, [...ground, PORT_MAP_POINT], (v) => {
+        const all = labelsOn(w, h, v);
+        const shown = all.filter(inside);
+        const gone = all.filter((l) => l.kind === 'open' && !inside(l)).length;
+        const spots = layoutMapLabels(shown, [], { width: w, height: h }, false);
+        return gone + spots.filter((s, i) => shown[i].kind === 'open' && !s.name).length;
+      });
+      const labels = labelsOn(w, h, view).filter((l) => l.kind !== 'closed' || inside(l));
       for (const l of labels) {
         expect(l.x, l.id).toBeGreaterThan(0);
         expect(l.x, l.id).toBeLessThan(w);
