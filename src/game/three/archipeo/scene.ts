@@ -1455,7 +1455,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const bin = moving !== null && sort ? sort.placed[moving] : null;
     if (sort && moving !== null && bin !== null && points[moving] && points[bin]) {
       const f = new FacetBuilder();
-      const scales = sortScales(points, scale);
+      const scales = sortScales(points, scale, sort.low ?? true);
       sortPrise(f, { x: 0, y: 0, z: 0 }, scales.inBasket);
       const flying = f.build();
       setGeometry(reactionMesh, flying);

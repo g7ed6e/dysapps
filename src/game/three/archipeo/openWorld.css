@@ -1041,23 +1041,16 @@
   position: absolute;
   top: calc(8px + env(safe-area-inset-top) + 56px + 8px);
   left: calc(var(--question-left) + var(--question-width) + 12px);
-  right: calc(0.6rem + env(safe-area-inset-right));
+  /* Elle s'arrête avant l'habitante, à droite de la scène (relecture de L4 : sa tête reste visible) ; deux lignes. */
+  right: calc(14% + env(safe-area-inset-right));
   box-sizing: border-box;
   margin: 0;
-  padding: 0.3rem 0.6rem;
+  padding: 0.2rem 0.5rem;
+  line-height: 1.25;
   border: var(--border-width, 2px) solid var(--text);
   border-left-width: 6px;
   border-radius: var(--radius-control, 12px);
   font-size: max(18px, 1rem);
-}
-/* L'icône de la règle, au plus grand texte sur un téléphone : 48 px, dans la bande de « Valider ». */
-.world-question .world-sort-regle-bouton {
-  min-width: 48px;
-  min-height: 48px;
-  padding: 0;
-}
-.world-question .world-sort-regle-bouton[aria-expanded="true"] {
-  border-width: 3px;
 }
 .world-question .in-world.offer .world-sort-regle.a-cote,
 .world-question .in-world.intro .world-sort-regle.a-cote {
@@ -1470,6 +1463,14 @@
 :root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold:has(.world-consigne-cible) .world-scenette-role {
   display: block;
   width: fit-content;
+}
+/* À l'Enclos, la ligne de règle sur la ligne de la consigne repliée, avant elle (dérogation du quatrième lot) :
+   toujours affichée, jamais coupée. */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold:has(.world-consigne-regle) {
+  max-height: none;
+}
+.world-question .in-world.simple-bas .world-consigne-regle {
+  font-weight: 400;
 }
 .world-question .in-world.simple-bas .world-consigne-cible {
   display: inline-block;

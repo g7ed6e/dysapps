@@ -40,7 +40,7 @@ import { exercisesToReview } from '../../review';
 import { placeById, type PlaceId } from '../../world/continu/plan6e';
 import { WIDEN_FULL, WIDEN_OFFER, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf } from '../../world/continu/scenette';
-import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
+import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { BellScreen, BellTarget } from './BellScreen';
 import { SortScreen } from './SortScreen';
@@ -296,6 +296,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   const context = useMemo(() => ({ place, layout, show, instruction, simple }), [place, layout, show, instruction, simple]);
 
   const exerciseId = ready?.def.id;
+  const readyLevel = ready?.level ?? 1;
   const bellTarget = String(ready?.def.target ?? '');
   // Au plus grand texte sur un écran bas, des manches de quatre cloches (relecture de L3 : la manche tient au-dessus de
   // « Valider ») ; le nombre se fixe au premier découpage d'une partie : une rotation ne refait pas les manches en cours.
@@ -377,11 +378,20 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     // toujours affichée, avant les mots, sans ligne de plus (relecture de L3) ; la consigne reste dite, et dépliée, la
     // cible après elle.
     const target = marks && grandTexte ? bellTarget : '';
+    // À l'Enclos, au plus grand texte sur un écran bas, la ligne de règle prend la ligne de la consigne repliée, avant
+    // elle (dérogation du quatrième lot du point 8, 16 octobre 2026 : sous la consigne, elle poussait la manche sous
+    // « Valider ») ; la consigne reste dite, et dépliée, après la règle.
+    const rule = ranges && grandTexte && simpleLow ? placeRuleLine(place, exerciseId, readyLevel) : null;
     const head: ReactNode = simpleLow ? (
         <div className="world-scenette-head world-consigne-line">
           <p className="world-consigne-fold" id="consigne-ligne">
             <strong className="world-scenette-role">{scenette.role}</strong>{' '}
-            <span aria-hidden="true" hidden={Boolean(target) && !consigneOpen}>
+            {rule && (
+              <>
+                <span className="world-consigne-regle">{frenchTypography(rule)}</span>{' '}
+              </>
+            )}
+            <span aria-hidden="true" hidden={(Boolean(target) || Boolean(rule)) && !consigneOpen}>
               {frenchTypography(instruction)
                 .split(' ')
                 .map((word, i) => (
@@ -457,6 +467,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     consigneOpen,
     rowBeside,
     inColumn,
+    readyLevel,
   ]);
 
   // La ligne repliée se coupe après un mot entier, jamais au milieu : les mots qui passeraient à la ligne sont cachés,
@@ -472,7 +483,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       if (!ellipsis) return;
       ellipsis.hidden = true;
       // La cible des cloches tient la ligne à la place de la consigne : rien à couper.
-      if (consigneOpen || line.querySelector('.world-consigne-cible')) return;
+      if (consigneOpen || line.querySelector('.world-consigne-cible, .world-consigne-regle')) return;
       const role = line.querySelector<HTMLElement>('.world-scenette-role');
       const ownLine = () => role !== null && getComputedStyle(role).display === 'block';
       // Coupe la consigne sur sa première ligne : celle du rôle, ou la suivante quand le rôle a sa ligne (au plus grand

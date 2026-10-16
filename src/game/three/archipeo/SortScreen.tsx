@@ -45,16 +45,15 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
   const [state, setState] = useState<Rangement>(EMPTY_RANGEMENT);
   // Ce que dit la région d'état (lue par les lecteurs d'écran, jamais affichée) : « Tu tiens : … », « … rangé dans … ».
   const [status, setStatus] = useState('');
-  // Au plus grand texte sur un téléphone : la ligne de règle montrée (l'icône de la bande de « Valider »).
-  const [ruleOpen, setRuleOpen] = useState(false);
   const scene = placeSceneOf(items[0]);
   // La règle du niveau (la même pour tous les sujets) : à droite sur tablette ; sur un écran bas, la rangée des six
   // étiquettes prend toute la largeur, et la règle reste dans « Vue simple » (comme les barres de Deux rives).
   const aid = simple || !layout.low ? aidOf(items[0]) : null;
   // Sur un écran bas, la ligne de la règle qui décide (« Plusieurs : pluriel, le verbe finit par -nt ») reste affichée
   // dans la scène, en haut à droite (relecture de L4 : contenu et référent dys) ; au plus grand texte, en « Vue simple »,
-  // où la carte entière passe sous la liste, une icône de la bande de « Valider » la montre sous la consigne.
-  const ruleLine = layout.low && (!simple || compact) ? placeRuleLine(place, exerciseId, level) : null;
+  // où la carte entière passe sous la liste, sur la ligne de la consigne repliée, avec un sujet par manche.
+  // Au plus grand texte (`compact`), elle est sur la ligne de la consigne repliée (WorldQuestion).
+  const ruleLine = layout.low && !simple ? placeRuleLine(place, exerciseId, level) : null;
   const keys = useMemo(() => items.map((it) => it.key), [items]);
   const itemsKey = keys.join('|');
   const slots = useMemo(() => sortSlots(items.length, bins.length), [items.length, bins.length]);
@@ -68,8 +67,8 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
       const j = bins.findIndex((b) => b.id === bin);
       if (j >= 0) placed[slots.objects[i]] = slots.bins[j];
     });
-    return { bins: slots.bins, held: heldSlot, placed };
-  }, [slots, bins, heldSlot, placedKey]);
+    return { bins: slots.bins, held: heldSlot, placed, low: layout.low };
+  }, [slots, bins, heldSlot, placedKey, layout.low]);
   useEffect(() => {
     if (!scene) return;
     show({ key: itemsKey, scene, answered: Boolean(answered), right: [], picked: [], count: slots.count, aid: Boolean(aid), sort });
@@ -141,7 +140,7 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
   // Dans la scène, la règle se pose à droite de la colonne, en haut (comme « Presque ! ») : la colonne garde sa hauteur,
   // la rangée et ses objets restent dégagés.
   const rule = ruleLine && (
-    <p id="enclos-regle" className={`world-sort-regle${simple ? '' : ' a-cote'}`}>
+    <p className={`world-sort-regle${simple ? '' : ' a-cote'}`}>
       {frenchTypography(ruleLine)}
     </p>
   );
@@ -241,7 +240,6 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
         </div>
       )}
       {!simple && rule}
-      {compact && ruleOpen && rule}
       {!answered && validateBox && (
         <button type="button" className="button primary validate-button world-validate" disabled={!done} onClick={validate}>
           <Icon name="check" /> Valider
@@ -268,21 +266,6 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
         <div className="world-simple-validate">
           {/* L'icône seule, 48 px, son nom toujours dit : la bande garde la hauteur d'un bouton. */}
           {compact && <SpeakButton text={heard} label="Écouter les sujets" compact />}
-          {compact && rule && (
-            // Au plus grand texte sur un téléphone, la ligne de règle ne tient pas avec la manche au-dessus de « Valider » :
-            // une icône la montre ou la cache, toujours à la même place (relecture de L4, référent dys).
-            <button
-              type="button"
-              className="button world-sort-regle-bouton"
-              aria-expanded={ruleOpen}
-              aria-controls="enclos-regle"
-              aria-label={ruleOpen ? 'Cacher la règle' : 'Voir la règle'}
-              title={ruleOpen ? 'Cacher la règle' : 'Voir la règle'}
-              onClick={() => setRuleOpen((open) => !open)}
-            >
-              <Icon name="lightbulb" />
-            </button>
-          )}
           {!answered && (
             <button type="button" className="button primary validate-button" disabled={!done} onClick={validate}>
               <Icon name="check" /> Valider

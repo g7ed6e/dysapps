@@ -21,12 +21,12 @@ import { useSettings } from '../../../core/SettingsContext';
 import { useMoinsDAnimations } from '../../../core/motion';
 import { useTextes } from '../../../universes';
 import { useBlocland } from '../../BloclandContext';
-import { getBiome } from '../../biomes';
-import { exercisesOf } from '../../exercises';
+import { getBiome, type BiomeId } from '../../biomes';
+import { exercisesOf, questProgress } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
 import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
 import type { PartShape } from '../../world/continu/construction';
-import { keepClear, missionsOfPlace, nextMission, playsInPlace, veiledPlaces, type MarkOnScreen, type Obstacle } from '../../world/continu/mission';
+import { bornesDuMondeOuvert, keepClear, missionsOfPlace, nextMission, playsInPlace, veiledPlaces, type MarkOnScreen, type Obstacle } from '../../world/continu/mission';
 import { PLACES, placeById, placeOfIsland, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
@@ -64,7 +64,10 @@ export default function OpenWorldPage() {
   // `settings.lv2` n'est pas lu dans le calcul, il le refait (voir plus haut) : la règle le croit inutile.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const modele = useMemo(() => modeleDuMonde(vu, '6e', textes.archipels, textes.libelles), [vu, textes, settings.lv2]);
-  const next = useMemo(() => nextMission(modele.bornes, modele.destination), [modele]);
+  // Les bornes du monde ouvert : une mission réussie ici garde ses étoiles même si son île n'est pas encore reliée par
+  // les ponts de la grille (sinon « Nouveau » au retour, la mission reproposée, la brume restée, jusqu'au rechargement).
+  const bornes = useMemo(() => bornesDuMondeOuvert(modele.bornes, (ile, m) => questProgress(ile as BiomeId, m, vu.progress)?.stars ?? null), [modele, vu.progress]);
+  const next = useMemo(() => nextMission(bornes, modele.destination), [bornes, modele.destination]);
   const nextPlace = next?.place ?? null;
 
   // Kéo part de l'endroit de l'Escale de l'adresse (le retour d'une mission de l'école, `?porte=maths`, ou d'une question
@@ -293,7 +296,7 @@ export default function OpenWorldPage() {
   }, []);
 
   // La brume sur les lieux dont la mission n'a pas encore été jouée, sauf le prochain (la scène la lève à l'approche).
-  const veiled = useMemo(() => veiledPlaces(modele.bornes, next), [modele, next]);
+  const veiled = useMemo(() => veiledPlaces(bornes, next), [bornes, next]);
   useEffect(() => {
     world.current?.setVeiled(veiled);
   }, [veiled, ready]);
@@ -470,7 +473,7 @@ export default function OpenWorldPage() {
           <div ref={panelRef} className="open-world-panel open-world-panel-lieu">
             <PlacePanel
               place={placeById(lieu.place)}
-              missions={missionsOfPlace(placeById(lieu.place), modele.bornes)}
+              missions={missionsOfPlace(placeById(lieu.place), bornes)}
               suggested={next?.place.id === lieu.place ? next.mission : null}
               focus={lieu.focus}
               onPlay={play}

@@ -1,7 +1,13 @@
 // La prochaine mission du monde continu et sa marque à l'écran.
 import { describe, expect, it } from 'vitest';
 import { getBiome } from '../../biomes';
-import { DISTANCE_SIGN_STEPS, distanceSign, keepClear, markOnScreen, missionsOfPlace, nextMission, playsInPlace, veiledPlaces, type MissionMark } from './mission';
+import { textesDe } from '../../../universes';
+import type { BiomeId } from '../../biomes';
+import { EMPTY_STATE, type GameState } from '../../engine';
+import { questProgress } from '../../exercises';
+import { NOMS_ARCHIPELS } from '../archipelago';
+import { modeleDuMonde } from '../model';
+import { DISTANCE_SIGN_STEPS, bornesDuMondeOuvert, distanceSign, keepClear, markOnScreen, missionsOfPlace, nextMission, playsInPlace, veiledPlaces, type MissionMark } from './mission';
 import { KEO_STEP, PLACES, placeById } from './plan6e';
 
 const bornes: MissionMark[] = [
@@ -149,4 +155,23 @@ describe('La marque évite les boutons', () => {
     const box = { left: 8, top: 260, width: 64, height: 70 };
     expect(keepClear(box, [colonne], 1024, 768, 8, 8)).toEqual(box);
   });
+});
+
+describe('Les bornes du monde ouvert (correctif du quatrième lot du point 8)', () => {
+  it('sans pont dans la grille, une mission réussie aux Filets montre ses étoiles, et la prochaine mission passe à la suivante', () => {
+    const state: GameState = { ...EMPTY_STATE, progress: { 'french-6e-grammar-spelling-word-classes-1': { stars: 3, attempts: 1, best: 1 } } };
+    const modele = modeleDuMonde(state, '6e', NOMS_ARCHIPELS, textesDe('archipeo').libelles);
+    // Le modèle de la grille garde l'île fermée (aucun pont) : c'est lui qui affichait « Nouveau ».
+    expect(modele.bornes.find((b) => b.mission === 'word-classes')?.etat).toBe('locked');
+    const vues = bornesDuMondeOuvert(modele.bornes, (ile, m) => questProgress(ile as BiomeId, m, state.progress)?.stars ?? null);
+    const filets = missionsOfPlace(placeById('filets'), vues);
+    expect(filets.find((b) => b.mission === 'word-classes')?.etat).toBe(3);
+    // Les autres restent fermées (elles s'ouvrent ici) ; rien d'autre ne change.
+    expect(filets.filter((b) => b.mission !== 'word-classes').every((b) => b.etat === 'locked')).toBe(true);
+    expect(vues.filter((b) => b.ile !== 'french-6e-grammar-spelling')).toEqual(modele.bornes.filter((b) => b.ile !== 'french-6e-grammar-spelling'));
+    const onlyFilets = vues.filter((b) => b.ile === 'french-6e-grammar-spelling');
+    expect(nextMission(onlyFilets)).toMatchObject({ place: { id: 'filets' }, mission: 'sorting' });
+    expect(nextMission(modele.bornes.filter((b) => b.ile === 'french-6e-grammar-spelling'))?.mission).toBe('word-classes');
+  });
+
 });

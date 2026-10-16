@@ -433,10 +433,10 @@ export const RANGE_PER_ROUND = 4;
 export const RANGE_PER_SMALL_ROUND = 3;
 
 /**
- * Au plus grand texte sur un écran bas, deux sujets par manche (relecture de L4, interface) : la manche tient entière
- * au-dessus de « Valider », comme les quatre cloches du Phare.
+ * Au plus grand texte sur un écran bas, un sujet par manche (relecture de L4, contenu) : la ligne de règle reste affichée
+ * sous la consigne, et la manche tient au-dessus de « Valider ».
  */
-export const RANGE_PER_GRAND_ROUND = 2;
+export const RANGE_PER_GRAND_ROUND = 1;
 
 /**
  * Le geste d'une mission quand c'est « ranger » (GD-20, point 8, lot L4 : toucher l'objet, puis le panier ; glisser

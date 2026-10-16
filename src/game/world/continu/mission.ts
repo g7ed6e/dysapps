@@ -23,6 +23,21 @@ export interface NextMission {
  */
 export const missionsOfPlace = (place: OpenPlace, bornes: readonly MissionMark[]): MissionMark[] => bornes.filter((b) => b.ile === place.island);
 
+/**
+ * Les bornes telles que le monde ouvert les montre : une borne fermée dans la grille (`'locked'` : son île n'est pas
+ * encore reliée par les ponts de la grille) qui a déjà des étoiles les prend (`starsOf` : la vue y passe `questProgress`, tous niveaux ; le monde continu ne lit pas le catalogue) ; sinon
+ * elle reste fermée (elle s'ouvre ici, `toPlay`). Le modèle du monde, commun à la grille, n'est pas touché : dans le
+ * monde ouvert, une mission réussie dans son lieu se voit réussie aussitôt, sans attendre la relecture de la partie
+ * (correctif du quatrième lot du point 8 de GD-20 : « Nouveau » au retour de l'Enclos, la brume restée).
+ */
+export function bornesDuMondeOuvert<B extends MissionMark>(bornes: readonly B[], starsOf: (ile: string, mission: string) => number | null): B[] {
+  return bornes.map((b) => {
+    if (b.etat !== 'locked') return b;
+    const stars = starsOf(b.ile, b.mission);
+    return stars === null ? b : { ...b, etat: stars };
+  });
+}
+
 /** Une mission se joue-t-elle déjà en scénette dans son lieu (sinon, sur l'écran habituel, le temps de la transition) ? */
 export const playsInPlace = (place: OpenPlace, mission: string): boolean => place.scenes.includes(mission);
 

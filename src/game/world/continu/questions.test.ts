@@ -340,8 +340,8 @@ describe('Le geste « ranger » aux Filets (GD-20, point 8, lot L4)', () => {
     // Le Tri des graines garde ses choix.
     const tri = [{ key: 'a', choices: ['verbe', 'nom'] }];
     expect(placeItems('filets', 'french-6e-grammar-spelling-sorting-1', tri)[0].choices).toEqual(['verbe', 'nom']);
-    // Au plus grand texte sur un écran bas, des manches de deux.
-    expect(rangeRounds(placed, RANGE_PER_GRAND_ROUND).every((r) => r.length <= 2)).toBe(true);
+    // Au plus grand texte sur un écran bas, un sujet par manche (la ligne de règle reste affichée, contenu).
+    expect(rangeRounds(placed, RANGE_PER_GRAND_ROUND).every((r) => r.length === 1)).toBe(true);
   });
 
   it('l’Enclos : le verbe accordé de chaque sujet, et la ligne de règle du niveau (relecture de L4, contenu)', () => {
