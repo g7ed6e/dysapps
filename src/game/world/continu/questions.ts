@@ -48,7 +48,17 @@ export type ItemScene =
    * où l'opération posée, l'aide et le schéma restent exacts dans le panneau). `column` : les réponses restent dans la
    * colonne, la scène fait le décor (Calculer avec des fractions, toute la mission, GD-20, point 8, lot L2).
    */
-  | { kind: 'lockIdle'; column: boolean };
+  | { kind: 'lockIdle'; column: boolean }
+  /**
+   * Le bassin des Marais salants au repos (GD-20, point 8, lot L5) : la scène ne montre rien de l'item (les missions
+   * jouées avec leurs items de référence ; la figure, le tableau et la règle restent dans le panneau).
+   */
+  | { kind: 'saline' }
+  /**
+   * La jauge du bassin des Marais salants (la Pente graduée, niveau 1) : verticale, de `start` à `start + 1`, l'unité
+   * coupée en `d` graduations ; l'eau arrive pile sur la graduation `n`.
+   */
+  | { kind: 'jauge'; start: number; d: number; n: number };
 
 const CATCHES: readonly Catch[] = ['sardines', 'filets', 'mouette', 'bocaux', 'crabes', 'pêche', 'seaux', 'crabe'];
 const isCount = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0;
@@ -61,7 +71,10 @@ export function isItemScene(v: unknown): v is ItemScene {
   switch (v.kind) {
     case 'cloches':
     case 'enclos':
+    case 'saline':
       return true;
+    case 'jauge':
+      return 'start' in v && isCount(v.start) && 'd' in v && isCount(v.d) && v.d > 0 && 'n' in v && isCount(v.n) && v.n <= v.d;
     case 'filets':
       return 'catch' in v && CATCHES.some((c) => c === v.catch) && 'count' in v && isCount(v.count);
     case 'sas':
@@ -128,8 +141,8 @@ export function placeRuleLine(place: PlaceId, exerciseId: string, level: number)
  * La consigne d'un lieu, quand elle change, mission par mission : aux Filets, celle de l'Enclos dit le geste
  * « ranger » ; au Phare, celle de l'Abattage syllabique dit la
  * cloche à toucher ; aux Écluses, celle des Nénuphars parle du sas (niveau
- * 1) ou de l'échelle (niveau 2), celle de Deux rives des deux sas ; les autres missions gardent leur consigne de
- * référence. `scene` : la scène de l'item montré, quand il y en a un ; un item de Deux rives sans ses deux sas
+ * 1) ou de l'échelle (niveau 2), celle de Deux rives des deux sas ; aux Marais salants, celle de la Pente graduée
+ * parle de la jauge (niveau 1) ; les autres missions gardent leur consigne de référence. `scene` : la scène de l'item montré, quand il y en a un ; un item de Deux rives sans ses deux sas
  * (`pairScene` rend `null`, il se joue sur le sas au repos) garde la consigne de référence (contenu, relecture de L2).
  */
 export function placeInstruction(place: PlaceId, exerciseId: string, level: number, reference: string, scene?: ItemScene): string {
@@ -137,6 +150,9 @@ export function placeInstruction(place: PlaceId, exerciseId: string, level: numb
   // par syllabe » (relecture de L3, contenu). Sa première phrase change ; la fin des niveaux 2 et 3 reste.
   if (place === 'phare' && missionIs(exerciseId, 'syllables')) return PHARE_SYLLABLES + reference.slice(reference.indexOf('.') + 1);
   if (rangeGesture(place, exerciseId)) return ENCLOS_INSTRUCTION[level >= 2 ? 1 : 0];
+  // Aux Marais salants, la Pente graduée au niveau 1 parle de la jauge (avant le premier item aussi) ; un item sans sa
+  // jauge garde la consigne de référence.
+  if (place === 'saltworks') return missionIs(exerciseId, 'scale') && level === 1 && (!scene || scene.kind === 'jauge') ? JAUGE_INSTRUCTION : reference;
   if (place !== 'ecluses') return reference;
   if (missionIs(exerciseId, 'equivalence')) return !scene || scene.kind === 'lockPair' ? PAIR_INSTRUCTION : reference;
   if (!missionIs(exerciseId, 'number-line')) return reference;
@@ -246,6 +262,46 @@ export function pairScene(item: QuestionItem, say: SayFraction = written): PairI
   return { scene: { kind: 'lockPair', a, b }, prompt, spoken, hint, explanation };
 }
 
+/**
+ * La consigne de la Pente graduée aux Marais salants, au niveau 1 (la jauge du bassin ; textes du directeur du contenu,
+ * 16 octobre 2026). Le niveau 3 se joue en items de référence : sur un téléphone couché, ses graduations seraient trop
+ * serrées sur la jauge (moins de 8 px, questionScene.ts, `JAUGE`).
+ */
+export const JAUGE_INSTRUCTION = 'Sur la jauge, l’unité est coupée en dix : chaque graduation vaut un dixième. Lis le nombre où arrive l’eau.';
+
+/** La phrase de la Pente graduée aux Marais salants, au niveau 1 (écrite et lue). */
+export const JAUGE_PROMPT = 'L’eau du bassin arrive à quel nombre sur la jauge ?';
+
+/** L'indice de la jauge des Marais salants. */
+export const JAUGE_HINT = 'Sur la jauge, l’unité est partagée en 10 parts égales : chaque graduation vaut un dixième (0,1).';
+
+/** Un dixième écrit à la française : 3 → « 0,3 ». */
+const tenths = (k: number): string => `0,${k}`;
+
+/** La correction de la jauge : « L’eau arrive 3 graduations au-dessus de 5 : 5 + 0,3 = 5,3. » (accordée). */
+export function jaugeExplanation(start: number, k: number, answer: string): string {
+  return `L’eau arrive ${k} graduation${k > 1 ? 's' : ''} au-dessus de ${start} : ${start} + ${tenths(k)} = ${answer}.`;
+}
+
+/**
+ * La jauge d'un item de la Pente graduée, niveau 1 (le gabarit `decimalOnLine`) : sa droite de `start` à `start + 1`,
+ * en dixièmes, et le point repéré. `null` : l'item n'a pas cette droite (un autre niveau).
+ */
+function jaugeOf(item: QuestionItem): Extract<ItemScene, { kind: 'jauge' }> | null {
+  const figure = item.figure as { kind?: string; props?: Record<string, unknown> } | undefined;
+  const props = figure?.props ?? {};
+  if (figure?.kind !== 'graduated-line') return null;
+  const start = numberOf(props.start),
+    units = numberOf(props.units),
+    d = numberOf(props.perUnit),
+    n = numberOf(props.point);
+  if (start === null || units !== 1 || d !== 10 || n === null || !Number.isInteger(start) || start < 0 || !Number.isInteger(n) || n < 1 || n >= d) return null;
+  return { kind: 'jauge', start, d, n };
+}
+
+/** Le bassin au repos : la scène des missions des Marais salants qui gardent leur item de référence. */
+export const SALINE: ItemScene = { kind: 'saline' };
+
 /** Le sas au repos : la scène des missions des Écluses qui gardent leur item de référence. */
 export const LOCK_IDLE: ItemScene = { kind: 'lockIdle', column: false };
 /** Le sas au repos, les réponses dans la colonne (Calculer avec des fractions). */
@@ -301,10 +357,30 @@ function inInstructionOrder(exerciseId: string, it: QuestionItem): { choices?: s
  * vide) ; aux Écluses, les Nénuphars gardent l'item et ne changent que sa phrase, Deux rives a son gabarit (les deux
  * sas), les autres missions gardent leur item de référence, le sas au repos ; aux Quais, Doubles et moitiés change sa phrase, les
  * autres missions gardent l'item de référence tel quel, sur le quai vide. `say` : les fractions dites en mots (la phrase
- * lue de Deux rives).
+ * lue de Deux rives). Aux Marais salants, la Pente graduée au niveau 1 a sa jauge ; tout le reste se joue en items de
+ * référence, sur le bassin au repos.
  */
 export function placeItems(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction = written): PlacedItem[] {
   if (place === 'phare') return items.map((it) => ({ ...it, placeScene: { kind: 'cloches' } }));
+  if (place === 'saltworks') {
+    // Les Marais salants (GD-20, point 8, lot L5) : toutes les missions au même bassin, avec les mêmes sacs de sel. Seule
+    // la Pente graduée, au niveau 1, a son gabarit (la jauge) ; les autres gardent leur item de référence, le bassin au
+    // repos, leur figure dans le panneau.
+    if (!missionIs(exerciseId, 'scale')) return items.map((it) => ({ ...it, placeScene: SALINE }));
+    return items.map((it) => {
+      const jauge = jaugeOf(it);
+      if (!jauge) return { ...it, placeScene: SALINE };
+      // La droite de référence reste dans l'item : « Vue simple » la montre ; la jauge la remplace ici.
+      return {
+        ...it,
+        prompt: JAUGE_PROMPT,
+        spoken: JAUGE_PROMPT,
+        hint: JAUGE_HINT,
+        explanation: jaugeExplanation(jauge.start, jauge.n, String(it.answer ?? '')),
+        placeScene: jauge,
+      };
+    });
+  }
   if (place === 'filets') {
     // L'Enclos (lot L4) : les items de référence, rangés par quatre ; le filet au repos.
     if (rangeGesture(place, exerciseId)) return items.map((it) => ({ ...it, placeScene: ENCLOS }));

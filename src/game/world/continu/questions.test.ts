@@ -5,17 +5,44 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { fractionWords } from '../../../core/fractions';
 import { seeded } from '../../../core/random';
-import { CATALOG } from '../../exercises';
+import { CATALOG, loadExercise } from '../../exercises';
 import { MATHS_EXERCISES } from '../../exercises/maths';
 import { PROBLEMES_EXERCISES } from '../../exercises/problems';
 import { POSEES_EXERCISES } from '../../exercises/writtenOperations';
 import { boundsOf } from './facets';
+import { linearRgb } from './geometry';
 import { modelOfPlace } from './places';
 import { networkSamples } from './paths';
 import { heightAt, standingHeight } from './terrain';
 import PLACE_ITEMS from './placeItems.json';
 import { PLACES, placeById } from './plan6e';
-import { ANSWER_LAYOUT, ECLUSES_TRACE_SPOTS, FILETS_CARRELET, FILETS_TRACE_SPOTS, FILETS_VIVIER, GALLERY_LANTERN, PHARE_GALLERY, PHARE_TRACE_SPOTS, QUAIS_TRACE_SPOTS, answerObjects, answerScale, craneHook, crateLayout, quayBoat, quaySuccess, itemScene, placeTrace, questionLayout, sceneSpot, WIDEN_FULL, WIDEN_OFFER, type ScreenBox } from './questionScene';
+import {
+  ANSWER_LAYOUT,
+  ECLUSES_TRACE_SPOTS,
+  FILETS_CARRELET,
+  FILETS_TRACE_SPOTS,
+  FILETS_VIVIER,
+  GALLERY_LANTERN,
+  PHARE_GALLERY,
+  PHARE_TRACE_SPOTS,
+  QUAIS_TRACE_SPOTS,
+  SALTWORKS_TRACE_SPOTS,
+  SALT_PUMP,
+  answerObjects,
+  answerScale,
+  craneHook,
+  crateLayout,
+  quayBoat,
+  quaySuccess,
+  itemScene,
+  placeTrace,
+  questionLayout,
+  saltPumpHub,
+  sceneSpot,
+  WIDEN_FULL,
+  WIDEN_OFFER,
+  type ScreenBox,
+} from './questionScene';
 import {
   BELLS_PER_ROUND,
   BELLS_PER_SMALL_ROUND,
@@ -23,7 +50,12 @@ import {
   ENCLOS_BINS,
   ENCLOS_INSTRUCTION,
   ENCLOS_RULE_LINE,
+  JAUGE_HINT,
+  JAUGE_INSTRUCTION,
+  JAUGE_PROMPT,
   RANGE_PER_GRAND_ROUND,
+  SALINE,
+  jaugeExplanation,
   RECOLTE_ORDER,
   agreedSentence,
   placeRuleLine,
@@ -312,6 +344,121 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
     }
     // Une clé de Doubles et moitiés hors de sa mission ne change rien non plus.
     expect(placeItems('quais', 'maths-6e-calculation-make-ten-1', [{ key: 'half-34', prompt: 'p' }])[0]).toEqual({ key: 'half-34', prompt: 'p', placeScene: QUAI_NU });
+  });
+});
+
+describe('Les Marais salants (GD-20, point 8, lot L5)', () => {
+  const decimals = (m: string, level: number) => `maths-6e-decimals-${m}-${level}`;
+  type Drawn = QuestionItem & { prompt: string; choices: string[]; answer: string; figure?: unknown };
+  const generated = async (id: string): Promise<Drawn[]> => {
+    const def = (await loadExercise(id))!;
+    return (def.generate ? def.generate(`marais:${id}`) : def.items) as unknown as Drawn[];
+  };
+
+  it('la Pente graduée, au niveau 1, a sa jauge : la phrase, l’indice et la correction du contenu ; clé, choix et réponse gardés', async () => {
+    const items = await generated(decimals('scale', 1));
+    const placed = placeItems('saltworks', decimals('scale', 1), items);
+    expect(placed).toHaveLength(items.length);
+    for (const [i, p] of placed.entries()) {
+      const ref = items[i];
+      const props = (ref.figure as { props: { start: number; point: number } }).props;
+      expect(p.placeScene).toEqual({ kind: 'jauge', start: props.start, d: 10, n: props.point });
+      expect([p.key, p.choices, p.answer]).toEqual([ref.key, ref.choices, ref.answer]);
+      expect(p.prompt).toBe(JAUGE_PROMPT);
+      expect(p.spoken).toBe(JAUGE_PROMPT);
+      expect(p.hint).toBe(JAUGE_HINT);
+      expect(p.explanation).toBe(jaugeExplanation(props.start, props.point, ref.answer));
+      // La droite de référence reste dans l'item : « Vue simple » la montre.
+      expect(p.figure).toEqual(ref.figure);
+    }
+    expect(jaugeExplanation(5, 3, '5,3')).toBe('L’eau arrive 3 graduations au-dessus de 5 : 5 + 0,3 = 5,3.');
+    expect(jaugeExplanation(7, 1, '7,1')).toBe('L’eau arrive 1 graduation au-dessus de 7 : 7 + 0,1 = 7,1.');
+  });
+
+  it('toutes les autres missions, et la Pente graduée aux niveaux 2 et 3, gardent leurs items de référence, le bassin au repos', async () => {
+    const ids = CATALOG.filter((d) => d.biome === 'maths-6e-decimals' && placeById('saltworks').scenes.some((m) => missionIs(d.id, m))).map((d) => d.id);
+    expect(ids.length).toBeGreaterThanOrEqual(14);
+    for (const id of ids.filter((x) => x !== decimals('scale', 1))) {
+      const items = await generated(id);
+      const placed = placeItems('saltworks', id, items);
+      for (const [i, p] of placed.entries()) {
+        expect(p.placeScene, id).toEqual(SALINE);
+        const { placeScene: _scene, ...rest } = p;
+        expect(rest, id).toEqual(items[i]);
+      }
+    }
+  });
+
+  it('une consigne de lieu pour la Pente graduée au niveau 1 seulement (contenu) ; les autres gardent la leur', () => {
+    const jauge = { kind: 'jauge', start: 5, d: 10, n: 3 } as const;
+    expect(placeInstruction('saltworks', decimals('scale', 1), 1, 'Référence.', jauge)).toBe(JAUGE_INSTRUCTION);
+    // Avant le premier item aussi.
+    expect(placeInstruction('saltworks', decimals('scale', 1), 1, 'Référence.')).toBe(JAUGE_INSTRUCTION);
+    expect(placeInstruction('saltworks', decimals('scale', 1), 1, 'Référence.', SALINE)).toBe('Référence.');
+    for (const [m, level] of [
+      ['scale', 2],
+      ['scale', 3],
+      ['ordering', 1],
+      ['operations', 2],
+      ['large-numbers', 3],
+      ['rounding-products', 2],
+    ] as const)
+      expect(placeInstruction('saltworks', decimals(m, level), level, 'Référence.', SALINE), `${m} ${level}`).toBe('Référence.');
+    expect(JAUGE_INSTRUCTION).toBe('Sur la jauge, l’unité est coupée en dix : chaque graduation vaut un dixième. Lis le nombre où arrive l’eau.');
+  });
+
+  it('une scène de jauge se vérifie champ par champ', () => {
+    expect(isItemScene(SALINE)).toBe(true);
+    expect(isItemScene({ kind: 'jauge', start: 5, d: 10, n: 3 })).toBe(true);
+    expect(isItemScene({ kind: 'jauge', start: 5, d: 10, n: 11 })).toBe(false);
+    expect(isItemScene({ kind: 'jauge', start: 5, d: 0, n: 0 })).toBe(false);
+  });
+
+  it('chaque trace est la sienne, sur la grève plate, hors des chemins et du lieu ; la pompe à vent, la plus haute, seule à porter la couleur de ses ailes', () => {
+    const c = placeById('saltworks').center;
+    const y0 = standingHeight(heightAt(c));
+    const missions = Object.keys(SALTWORKS_TRACE_SPOTS) as (keyof typeof SALTWORKS_TRACE_SPOTS)[];
+    expect(missions.sort()).toEqual([...placeById('saltworks').scenes].sort());
+    const traces = missions.map((m) => [m, placeTrace('saltworks', [m])] as const);
+    expect(new Set(traces.map(([, f]) => f.triangles)).size).toBe(5);
+    const boxes = traces.map(([, f]) => boundsOf(f));
+    const near = networkSamples(0.25).filter((p) => Math.hypot(p.x - c.x, p.z - c.z) < 20);
+    const model = boundsOf(modelOfPlace('saltworks').facets);
+    for (const [k, [m]] of traces.entries()) {
+      const b = boxes[k];
+      const o = SALTWORKS_TRACE_SPOTS[m];
+      // Sur la grève plate, au pied du lieu ; rien sous le sol ni dans l'eau.
+      expect(standingHeight(heightAt({ x: c.x + o.x, z: c.z + o.z })), m).toBeCloseTo(y0, 3);
+      expect(b.min[1], m).toBeGreaterThan(y0 - 0.5);
+      for (const p of near) expect(p.x > b.min[0] - 0.8 && p.x < b.max[0] + 0.8 && p.z > b.min[2] - 0.8 && p.z < b.max[2] + 0.8, m).toBe(false);
+      for (let j = k + 1; j < boxes.length; j++) {
+        const d = boxes[j];
+        expect(b.max[0] < d.min[0] || d.max[0] < b.min[0] || b.max[2] < d.min[2] || d.max[2] < b.min[2], `${m} / ${traces[j][0]}`).toBe(true);
+      }
+      // Autour de la grille des bassins et du hangar, jamais dessus.
+      expect(Math.abs(o.x) > 2.9 || Math.abs(o.z) > 3.5, m).toBe(true);
+    }
+    const tops = traces.map(([m, f]) => [m, boundsOf(f).max[1]] as const);
+    const pump = tops.find(([m]) => m === 'scale')![1];
+    for (const [m, top] of tops) if (m !== 'scale') expect(top, m).toBeLessThan(pump - 2);
+    expect(pump).toBeGreaterThan(model.max[1]);
+    // Les ailes : la seule couleur que la vue fait tourner (scene.ts, `unshadedLamp`), autour du moyeu.
+    const vane = linearRgb(SALT_PUMP.vane);
+    const vaneVertices = (f: ReturnType<typeof placeTrace>) => {
+      const out: number[] = [];
+      for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - vane[k]) < 0.004)) out.push(i);
+      return out;
+    };
+    const hub = saltPumpHub();
+    const blades = traces.find(([m]) => m === 'scale')![1];
+    const on = vaneVertices(blades);
+    expect(on.length).toBe(4 * 4 * 3);
+    for (const i of on) expect(Math.hypot(blades.positions[i] - hub.x, blades.positions[i + 1] - hub.y)).toBeLessThanOrEqual(SALT_PUMP.blade + 0.35);
+    for (const [m, f] of traces) if (m !== 'scale') expect(vaneVertices(f), m).toEqual([]);
+    for (const p of PLACES) {
+      expect(vaneVertices(modelOfPlace(p.id).facets), p.id).toEqual([]);
+      if (p.id !== 'saltworks') expect(vaneVertices(placeTrace(p.id, p.scenes)), p.id).toEqual([]);
+    }
   });
 });
 

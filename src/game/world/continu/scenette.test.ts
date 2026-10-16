@@ -5,11 +5,11 @@
 import { describe, expect, it } from 'vitest';
 import { FOLLOW, KEO_HEIGHT, LOOK_UP, followPose, lookUp, lookUpStep, screenOf } from './camera';
 import { FacetBuilder, boundsOf } from './facets';
-import { distance } from './geometry';
+import { distance, linearRgb } from './geometry';
 import { startOf } from './paths';
 import { placeById } from './plan6e';
 import { modelOfPlace } from './places';
-import { ANSWER_LAYOUT, LOCK, answerObjects, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, JAUGE, LOCK, answerObjects, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
 import {
   GALLERY,
   LANTERN,
@@ -52,11 +52,12 @@ const screens = [
 ] as const;
 
 describe('La place de la scénette à l’écran', () => {
-  it('les quatre lieux ont leur scénette, chaque habitant nommé par son rôle seul, sans phrase d’accueil', () => {
+  it('les cinq lieux ont leur scénette, chaque habitant nommé par son rôle seul, sans phrase d’accueil', () => {
     expect(scenetteOf('phare')).toEqual({ role: 'La gardienne du phare', greeting: null, placement: 'rangee' });
     expect(scenetteOf('quais')).toEqual({ role: 'Le docker', greeting: null, placement: 'rangee' });
     expect(scenetteOf('filets')).toEqual({ role: 'La pêcheuse', greeting: null, placement: 'rangee' });
     expect(scenetteOf('ecluses')).toEqual({ role: 'L’éclusier', greeting: null, placement: 'rangee' });
+    expect(scenetteOf('saltworks')).toEqual({ role: 'La saunière', greeting: null, placement: 'rangee' });
   });
 
   it('sur un écran bas, la règle des Filets à droite au-dessus de la scène, la rangée sous la colonne', () => {
@@ -433,8 +434,8 @@ describe('Le retour de la scénette des Quais', () => {
   });
 });
 
-describe('Les Filets et les Écluses (lot 4)', () => {
-  const places = ['filets', 'ecluses'] as const;
+describe('Les Filets et les Écluses (lot 4), les Marais salants (lot L5)', () => {
+  const places = ['filets', 'ecluses', 'saltworks'] as const;
 
   it('la caméra cadre Kéo à gauche et l’habitant à droite, dans la scène, sur tous les écrans', () => {
     for (const place of places)
@@ -461,7 +462,10 @@ describe('Les Filets et les Écluses (lot 4)', () => {
 
   it('le plancher de la scène ne s’enfonce jamais : Kéo et l’habitant au-dessus du sol, l’habitant en peu de triangles', () => {
     for (const place of places) {
-      const floor = sceneSpot(place).y;
+      // Le plancher au point de la scène ; aux Marais salants, le dessus du muret, un peu au-dessus de la grève.
+      const floor = scenetteKeo(place).at.y;
+      expect(floor - sceneSpot(place).y).toBeGreaterThanOrEqual(0);
+      expect(floor - sceneSpot(place).y).toBeLessThan(0.5);
       for (const p of [scenetteKeo(place).at, scenetteHabitant(place)]) {
         expect(p.y).toBe(floor);
         expect(standingHeight(heightAt(p))).toBeLessThanOrEqual(floor + 1e-9);
@@ -479,7 +483,7 @@ describe('Les Filets et les Écluses (lot 4)', () => {
 
   it('les pièces du lieu s’effacent le temps de la scénette partout sauf au Phare (ses lampes sont sur la galerie)', () => {
     expect(scenetteHidesPieces('phare')).toBe(false);
-    for (const place of ['quais', 'filets', 'ecluses'] as const) expect(scenetteHidesPieces(place), place).toBe(true);
+    for (const place of ['quais', 'filets', 'ecluses', 'saltworks'] as const) expect(scenetteHidesPieces(place), place).toBe(true);
     // Une trace d'une autre mission dans le cadre se cache le temps de la scénette : les lanternes de la galerie
     // pendant l'Abattage syllabique et les Rimes-échelle ; elles restent pendant la Chasse au son, et au pied de la tour.
     const done = ['sound-hunt', 'syllables', 'rhymes'];
@@ -685,12 +689,13 @@ describe('le retour sans trace à garder', () => {
   });
 });
 
-describe('le retour d’une mission des Quais, des Écluses et des Filets (GD-20, point 8)', () => {
+describe('le retour d’une mission des Quais, des Écluses, des Filets et des Marais salants (GD-20, point 8)', () => {
   it('Kéo et la trace de la mission jouée dans le champ, la caméra au sud des deux, jamais d’aplomb', () => {
     const played = [
       ...['times-tables', 'make-ten', 'doubles-halves', 'word-problems', 'measures'].map((m) => ['quais', m] as const),
       ...['number-line', 'equivalence', 'sharing', 'place-value', 'fraction-sums'].map((m) => ['ecluses', m] as const),
       ...['word-classes', 'sorting', 'e-er-ez', 'plurals'].map((m) => ['filets', m] as const),
+      ...['ordering', 'operations', 'scale', 'large-numbers', 'rounding-products'].map((m) => ['saltworks', m] as const),
     ];
     // Aux Filets, chaque mission garde sa trace (lot L4), le Troupeau son panier plein.
     const kept = new Set(['word-classes', 'sorting', 'e-er-ez', 'plurals'].map((m) => JSON.stringify(scenetteExit('filets', true, m)!.keep)));
@@ -748,3 +753,79 @@ describe('le retour d’une mission du Phare (GD-20, point 8, lot L3)', () => {
   });
 });
 
+
+describe('Les Marais salants (GD-20, point 8, lot L5)', () => {
+  const o = sceneSpot('saltworks');
+  const jauge = { kind: 'jauge', start: 5, d: 10, n: 3 } as const;
+
+  it('la saunière, en peu de triangles, sur le muret au bord du bassin ; le décor de près en un maillage léger', () => {
+    const decor = scenetteDecor('saltworks');
+    expect(decor.triangles).toBeLessThan(400);
+    const habitant = scenetteHabitant('saltworks');
+    const keo = scenetteKeo('saltworks').at;
+    expect(keo.x).toBeLessThan(o.x);
+    expect(habitant.x).toBeGreaterThan(o.x);
+    // Ni réussite qui change le décor, ni objet qui part : le sac se ferme et reste.
+    expect(scenetteFinale('saltworks', jauge, 1)).toBeNull();
+    expect(answerLeaves('saltworks')).toBe(false);
+    expect(answersHang('saltworks')).toBe(false);
+  });
+
+  it('la jauge : deux entiers en panneaux de la page, rien de peint, l’eau pile sur sa graduation ; rien ne change après la réponse', () => {
+    const before = itemScene('saltworks', jauge, false, [], 1);
+    expect(before.labels.map((l) => l.text)).toEqual(['5', '6']);
+    expect(before.reaction).toBeNull();
+    const [low, high] = before.labels.map((l) => l.at.y);
+    // L'eau : la face du dessus de la couleur des bassins, à 3 dixièmes de l'unité au-dessus de 5.
+    const pan = linearRgb(0x5fb3e0);
+    let water = -Infinity;
+    for (let i = 0; i < before.still.colors.length; i += 3)
+      if ([0, 1, 2].every((k) => Math.abs(before.still.colors[i + k] - pan[k]) < 1e-4)) water = Math.max(water, before.still.positions[i + 1]);
+    expect(water).toBeCloseTo(low + 0.3 * (high - low), 6);
+    const point = { x: o.x - 1, y: o.y, z: o.z + 2 };
+    const after = itemScene('saltworks', jauge, true, [point], 0.8);
+    expect(Array.from(after.still.positions)).toEqual(Array.from(before.still.positions));
+    expect(after.labels).toEqual(before.labels);
+    // Le sac de la bonne réponse se ferme d'un lien, à sa place, et le reste.
+    expect(after.reaction).toMatchObject({ from: point, to: point, arc: 0, stay: true });
+    expect(after.reaction!.facets.triangles).toBeGreaterThan(0);
+    // Le bassin au repos : rien de l'item, aucun nombre.
+    const idle = itemScene('saltworks', { kind: 'saline' }, true, [point], 0.8);
+    expect(idle.labels).toEqual([]);
+    expect(idle.reaction?.stay).toBe(true);
+  });
+
+  it('les graduations de la jauge restent à 8 px l’une de l’autre au moins, sur tous les écrans, au plus grand texte aussi ; au niveau 3, elles n’y tiendraient pas', () => {
+    let worst = Infinity;
+    let worstFrame = Infinity;
+    for (const [w, h] of screens)
+      for (const grand of [false, true])
+        for (const widen of [0, 1, 2]) {
+          const base = questionLayout({ count: 4, widen }, w, h);
+          const stage = scenetteLayout({ count: 4, widen, column: !grand, grand }, w, h, base).scenette!.stage;
+          const { pose } = scenettePose('saltworks', stage, w, h);
+          const x = o.x + JAUGE.post,
+            z = o.z + JAUGE.z + 0.2;
+          const unit = Math.abs(screenOf(pose, { x, y: o.y + JAUGE.base, z }, w, h).y - screenOf(pose, { x, y: o.y + JAUGE.base + JAUGE.height, z }, w, h).y);
+          worst = Math.min(worst, unit / 10);
+          // Le niveau 3 (`frameFraction`) : la droite de 0 à 5, au pire en sixièmes, sur la même hauteur.
+          if (w === 667) worstFrame = Math.min(worstFrame, unit / 30);
+        }
+    expect(worst).toBeGreaterThanOrEqual(8);
+    expect(worstFrame).toBeLessThan(8);
+  });
+
+  it('les sacs de sel, tous les mêmes, debout sur leur claie ; un sac tenté penche, sans changer de place', () => {
+    const points = [-1.5, 0, 1.5].map((dx) => ({ x: o.x + dx, y: o.y + LAND_DECK, z: o.z + 2 }));
+    const one = answerObjects('saltworks', points.slice(0, 1), 0.8, { ground: o.y });
+    const three = answerObjects('saltworks', points, 0.8, { ground: o.y });
+    const sacks = (f: typeof one) => f.triangles;
+    // La claie s'allonge, chaque sac a ses triangles : trois sacs pour trois réponses.
+    expect(sacks(three)).toBeGreaterThan(sacks(one));
+    const tried = answerObjects('saltworks', points, 0.8, { ground: o.y, picked: [1] });
+    expect(tried.triangles).toBe(three.triangles);
+    expect(Array.from(tried.positions)).not.toEqual(Array.from(three.positions));
+    const b = boundsOf(three);
+    expect(b.min[1]).toBeCloseTo(o.y - 0.1, 6);
+  });
+});

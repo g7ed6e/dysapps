@@ -91,6 +91,27 @@ describe('Le lieu se rebâtit lui-même', () => {
     for (const id of ['quais', 'ecluses'] as const) expect(fallenFacets(id, [], ground).triangles).toBe(0);
   });
 
+  it('aux Marais salants, le sable s’en va quand l’eau entre, rang par rang ; le hangar à sel, sans toit avant, le reçoit avec son haut (lot L5)', () => {
+    const c = placeById('saltworks').center;
+    // Sur la grève plate : le lieu entier, ruine comprise, à moins d'une unité du sol de son centre.
+    const y0 = standingHeight(ground(c.x, c.z));
+    expect(boundsOf(ruinOf('saltworks')).max[1]).toBeLessThan(1.3);
+    expect(fallenFacets('saltworks', [], ground).triangles).toBeGreaterThan(0);
+    const sand = fallenFacets('saltworks', [], ground).triangles;
+    // Le premier rang d'eau chasse son sable, le second le reste.
+    expect(fallenFacets('saltworks', [slice(0, 0, 0.5)], ground).triangles).toBeLessThan(sand);
+    expect(fallenFacets('saltworks', [slice(0, 0, 0.5)], ground).triangles).toBeGreaterThan(0);
+    expect(fallenFacets('saltworks', [slice(0, 0, 1)], ground).triangles).toBe(0);
+    // Le haut : les murs, puis le toit, au-dessus de la ruine.
+    const walls = boundsOf(constructionFacets('saltworks', [slice(1, 0, 0.5)], ground));
+    const roof = boundsOf(constructionFacets('saltworks', [slice(1, 0.5, 1)], ground));
+    expect(roof.max[1]).toBeGreaterThan(walls.max[1] + 1);
+    expect(walls.max[1] - y0).toBeGreaterThan(boundsOf(ruinOf('saltworks')).max[1]);
+    // Le hangar se rebâtit sur ses murs ébréchés, au nord de la grille des bassins.
+    expect(roof.max[2]).toBeLessThan(c.z - 1);
+    for (const p of placePieces('saltworks')) expect(p.stage === 'ruine' || p.until === undefined).toBe(true);
+  });
+
   it('ses volumes restent hors des chemins (Kéo n’y passe jamais au travers), sauf le lieu lui-même autour de sa porte', () => {
     const paths = networkSamples(0.5);
     for (const p of PLACES) {

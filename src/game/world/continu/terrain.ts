@@ -5,7 +5,7 @@
 // la brume cache ce qui est plus loin. Code pur : la vue (three/archipeo/) ne fait que donner ces tableaux à Three.js.
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { CLIFF, COAST, COLORS_6E, DECK_HEIGHT, DOCK, ISLET, LAGOON, PASS, RIVER, TERRAIN, UPLAND } from './plan6e';
+import { CLIFF, COAST, COLORS_6E, DECK_HEIGHT, DOCK, ISLET, LAGOON, PASS, RIVER, SALT_FLAT, TERRAIN, UPLAND } from './plan6e';
 
 /** La distance signée à la terre ferme : positive sur la terre, négative dans l'eau (mer, lagon, passe, bassin, rivière). */
 export function landDistance(p: Vec2): number {
@@ -50,7 +50,12 @@ export function heightAt(p: Vec2): number {
   // Le haut pays de l'est : une colline ronde, que la rivière entaille.
   const u = distance(p, UPLAND.center) / UPLAND.radius;
   h += UPLAND.height * smoothstep(1, 0.25, u) * smoothstep(0, 6, d);
-  return h;
+  // La grève des Marais salants (lot L5) : aplanie, puis le sol d'avant, en pente douce ; au bord de l'eau, elle
+  // descend encore comme la plage.
+  const flat = smoothstep(SALT_FLAT.radius + SALT_FLAT.fade, SALT_FLAT.radius, distance(p, SALT_FLAT.center));
+  if (flat <= 0) return h;
+  const level = Math.min(SALT_FLAT.height, 0.2 + (SALT_FLAT.height - 0.2) * smoothstep(0, BEACH, d));
+  return h + (level - h) * flat;
 }
 
 /** La carte de hauteurs : une grille régulière sur l'étendue du terrain. */

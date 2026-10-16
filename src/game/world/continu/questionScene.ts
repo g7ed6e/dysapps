@@ -77,6 +77,18 @@ const C = {
   iron: 0x4a555c,
   /** Le gris d'ardoise de la toiture du Phare : la cage des lanternes de sa galerie. */
   slate: 0x6f8089,
+  // Les Marais salants (lot L5, consultant Archipéo) : le sac de sel, d'un beige chaud, sa bande d'ardoise ; le sel (la
+  // Brume du pack), son ombre gris-bleu et sa base ocre ; l'eau des bassins, plus claire que la mer ; l'argile des murets.
+  sack: 0xdcb27c,
+  sackShade: 0xc39a64,
+  salt: 0xe5ebe3,
+  saltShade: 0xb9c4c8,
+  saltBase: 0xc9a46c,
+  pan: 0x5fb3e0,
+  clay: 0xb59a72,
+  clayTop: 0xc7ad83,
+  /** La natte des mulons : de la paille tressée. */
+  mat: 0xc9a058,
 } as const;
 
 /** La hauteur où l'on se tient en un point (le sol, ou le dessus de la digue sur l'eau). */
@@ -99,6 +111,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   phare: { dx: 0, dz: 0.5, half: [0, 0] },
   filets: { dx: 2.5, dz: 5, half: [5.8, 1.6], fine: true },
   ecluses: { dx: -0.5, dz: 5, half: [5.5, 1.2], fine: true },
+  // Les Marais salants (lot L5) : le bord d'un bassin, au sud de la grille, sur la grève plate.
+  saltworks: { dx: 0, dz: 6.4, half: [6, 1.6], fine: true },
   quais: { dx: QUAY.dx, dz: QUAY.front - QUAY.depth / 2, half: [QUAY.width / 2, QUAY.depth / 2] },
 };
 
@@ -315,11 +329,12 @@ export function questionLayout(needs: QuestionNeeds, width: number, height: numb
 // ---------- Les objets des réponses ----------
 
 /** L'objet qui porte une réponse dans chaque lieu. */
-const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse'> = {
+const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' | 'sac'> = {
   phare: 'cloche',
   filets: 'panier',
   ecluses: 'levier',
   quais: 'caisse',
+  saltworks: 'sac',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
@@ -328,6 +343,7 @@ const OBJECT_SIZE: Record<(typeof ANSWER_OBJECT)[PlaceId], { height: number; hal
   panier: { height: 0.9, half: 0.5 },
   levier: { height: 1.8, half: 0.32 },
   caisse: { height: 1.4, half: 0.42 },
+  sac: { height: 1.15, half: 0.36 },
 };
 
 /** L'écart entre deux objets voisins, au sol (deux unités s'il n'y en a qu'un). */
@@ -569,7 +585,8 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
     for (const side of [-1, 1]) b.box({ x: mid + (side * (span - rim)) / 2, y: y - 0.02, z }, [rim, 0.04, depth - 2 * rim], C.stone);
     for (let i = 1; i < points.length; i++)
       b.box({ x: (points[i - 1].x + points[i].x) / 2, y: y - 0.02, z }, [0.05 * s, 0.035, depth - 2 * rim], C.ochreJoint);
-  } else b.box({ x: mid, y: y - skirt, z }, [span, skirt, 0.8 * s], C.deckSide, C.deck);
+  } else if (kind === 'sac') saltRack(b, mid, y, z, span, s, look.ground ?? y);
+  else b.box({ x: mid, y: y - skirt, z }, [span, skirt, 0.8 * s], C.deckSide, C.deck);
   if (look.sort) {
     sortObjects(b, points, y, s, look.sort);
     return b.build();
@@ -580,6 +597,9 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
       // Le même panier d'osier que celui de l'Enclos, aux quatre missions des Filets (un seul objet-réponse, relecture de
       // L4, directeur artistique) : seule sa taille change.
       sortBin(b, { x: p.x, y, z: p.z }, s, false);
+    } else if (kind === 'sac') {
+      // Un sac choisi (une réponse tentée) penche en arrière sur la claie : sa forme le dit.
+      saltSack(b, { x: p.x, y, z: p.z }, s, picked.includes(i) ? SACK_TIPPED : 0);
     } else if (kind === 'levier') {
       b.box({ x: p.x, y, z: p.z }, [0.6 * s, 0.35 * s, 0.5 * s], C.stoneDark, C.stone);
       // Un grand levier de vanne, penché vers le nord, et sa poignée ; un levier choisi (une réponse tentée) est tiré
@@ -592,6 +612,58 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
       answerCrate(b, { x: p.x, y, z: p.z }, s, picked.includes(i) ? CRATE_TIPPED : 0);
     }
   }
+  return b.build();
+}
+
+/**
+ * La claie des Marais salants, sous la rangée des sacs : un plateau de lattes sur quatre pieds, posé sur le sol
+ * (`ground`), son dessus en `y`.
+ */
+function saltRack(b: FacetBuilder, mid: number, y: number, z: number, span: number, s: number, ground: number): void {
+  const t = 0.07 * s,
+    d = 0.75 * s;
+  b.box({ x: mid, y: y - t, z }, [span, t, d], C.deckSide, C.newWood);
+  // Les lattes en travers, plus sombres : le plateau se lit comme une claie, pas comme une planche.
+  for (const side of [-1, 1]) b.box({ x: mid, y: y - 0.01, z: z + side * 0.24 * s }, [span, 0.02, 0.08 * s], C.deckSide);
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.box({ x: mid + sx * (span / 2 - 0.08 * s), y: ground - 0.1, z: z + sz * (d / 2 - 0.06 * s) }, [0.1 * s, y - t - ground + 0.1, 0.1 * s], C.post);
+}
+
+/**
+ * Le sac de sel, à l'échelle 1 : son corps, plus large en bas, son épaule qui se resserre jusqu'au col, sa bouche
+ * froncée qui s'évase au-dessus (le sel s'y voit), et sa bande d'ardoise.
+ */
+const SACK = { bottom: 0.36, top: 0.31, body: 0.82, neck: 0.15, shoulder: 0.14, mouth: 0.25, frill: 0.12, band: 0.26 } as const;
+
+/**
+ * Un sac de sel de réponse, debout sur la claie, à l'échelle `s` (relecture avant L5, consultant Archipéo : plus haut que
+ * les ballots des Filets, à bouche froncée, d'un beige chaud, une bande d'ardoise) : tous les mêmes ; rien ne dit la
+ * réponse, seule l'étiquette les distingue. `tilt` : penché en arrière (vers le nord) autour de son pied.
+ */
+function saltSack(b: FacetBuilder, at: Vec3, s: number, tilt = 0): void {
+  // Un point de l'axe du sac, à la hauteur `h` au-dessus de son pied.
+  const up = (h: number) => ({ x: at.x, y: at.y + h * Math.cos(tilt), z: at.z + h * Math.sin(tilt), pitch: tilt });
+  b.prism(up(0), SACK.bottom * s, SACK.top * s, SACK.body * s, 8, C.sack, C.sackShade);
+  b.prism(up(SACK.band * s), (SACK.bottom - 0.01) * s, (SACK.bottom - 0.02) * s, 0.1 * s, 8, C.slate);
+  // L'épaule, qui se resserre jusqu'au col ; la bouche froncée, qui s'évase, et le sel dedans (son dessus).
+  b.prism(up(SACK.body * s), SACK.top * s, SACK.neck * s, SACK.shoulder * s, 8, C.sackShade);
+  b.prism(up((SACK.body + SACK.shoulder) * s), SACK.neck * s, SACK.mouth * s, SACK.frill * s, 8, C.sack, C.salt);
+}
+
+/** La bascule d'un sac choisi, en radians (en arrière). */
+const SACK_TIPPED = -0.35;
+
+/**
+ * Le lien qui ferme le sac de la bonne réponse (le geste de la réaction, à l'échelle `s`, depuis le pied du sac) : la
+ * toile resserrée sur la bouche, qu'elle couvre, le lien d'ardoise, et la toile qui dépasse au-dessus.
+ */
+function sackTie(s: number): Facets {
+  const b = new FacetBuilder();
+  const neck = (SACK.body + SACK.shoulder) * s;
+  // La toile froncée remonte et se referme en pointe sur la bouche, qu'elle couvre ; le lien serré au col, d'ardoise ;
+  // au-dessus, la toile qui dépasse en houppe.
+  b.prism({ x: 0, y: neck - 0.02 * s, z: 0 }, (SACK.mouth + 0.03) * s, 0.07 * s, 0.24 * s, 8, C.sack, C.sackShade);
+  b.prism({ x: 0, y: neck - 0.03 * s, z: 0 }, (SACK.neck + 0.05) * s, (SACK.neck + 0.05) * s, 0.08 * s, 8, C.slate);
+  b.prism({ x: 0, y: neck + 0.2 * s, z: 0, yaw: 0.4 }, 0.06 * s, 0.14 * s, 0.1 * s, 6, C.sack, C.sackShade);
   return b.build();
 }
 
@@ -1127,8 +1199,60 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     if (answered) reaction = lockReaction();
   } else if (scene.kind === 'quai') {
     reaction = quai(b, scene, answered, o, answerAt, scale, posed);
+  } else if (scene.kind === 'saline' || scene.kind === 'jauge') {
+    if (scene.kind === 'jauge') jauge(b, labels, scene, o);
+    else idleSluice(b, o);
+    // Le sac de la bonne réponse se ferme d'un lien, et le reste : rien d'autre ne change (la jauge non plus).
+    if (answered && answerAt) reaction = { facets: sackTie(scale), from: answerAt, to: answerAt, arc: 0, stay: true };
   }
   return { still: b.build(), labels, reaction };
+}
+
+/**
+ * La jauge du bassin des Marais salants (lot L5), au milieu de la scène, dans l'eau du bassin, derrière Kéo et la
+ * saunière : la cuve de réserve vue de face, son eau jusqu'à la graduation `n`, et le poteau gradué à sa droite, de
+ * `base` à `base + height` au-dessus du sol de la scène, un cran par graduation, un grand cran à chaque entier (ses
+ * nombres sont des panneaux de la page, rien n'est peint). L'eau s'arrête pile sur une graduation, son trait clair
+ * passe sur le poteau ; rien ne bouge.
+ */
+export const JAUGE = { height: 3, base: 0.2, z: -0.55, tank: 1.9, post: 0.85 } as const;
+
+function jauge(b: FacetBuilder, labels: SceneLabel[], scene: Extract<ItemScene, { kind: 'jauge' }>, o: Vec3): void {
+  const J = JAUGE;
+  const d = Math.max(1, scene.d),
+    n = Math.max(0, Math.min(d, scene.n));
+  const z = o.z + J.z;
+  const zf = z + 0.2;
+  const y0 = o.y + J.base;
+  const px = o.x + J.post;
+  const level = y0 + (n / d) * J.height;
+  // La cuve : son fond d'argile, ses deux montants de bois ; le vide clair au-dessus de l'eau.
+  b.box({ x: o.x - 0.25, y: o.y - 0.2, z }, [J.tank + 0.5, J.height + 0.6, 0.35], C.clay, C.clayTop);
+  b.box({ x: o.x - 0.25, y: y0, z: zf - 0.02 }, [J.tank, J.height, 0.04], C.empty);
+  b.box({ x: o.x - 0.25, y: y0, z: zf }, [J.tank, level - y0, 0.05], C.pan);
+  // Le poteau gradué, blanc, de l'entier du bas à celui du haut.
+  b.box({ x: px, y: y0 - 0.15, z: zf }, [0.22, J.height + 0.3, 0.12], C.white);
+  for (let k = 0; k <= d; k++) {
+    const big = k === 0 || k === d;
+    const y = y0 + (k / d) * J.height;
+    b.box({ x: px - (big ? 0.3 : 0.2), y: y - 0.025, z: zf + 0.07 }, [big ? 0.6 : 0.4, 0.05, 0.04], C.stoneDark);
+    if (big) labels.push({ text: String(scene.start + k / d), at: { x: px + 0.5, y, z: zf } });
+  }
+  b.box({ x: o.x - 0.05, y: level - 0.05, z: zf + 0.09 }, [J.tank + 1, 0.1, 0.05], C.level);
+}
+
+/**
+ * Le bassin au repos (lot L5) : la vanne de bois qui laisse entrer l'eau, fermée, sur le muret, et un petit cône de sel
+ * raclé au bord ; rien de l'item.
+ */
+function idleSluice(b: FacetBuilder, o: Vec3): void {
+  const z = o.z + JAUGE.z;
+  for (const side of [-1, 1]) b.box({ x: o.x + side * 0.7, y: o.y - 0.2, z }, [0.2, 1.5, 0.2], C.post);
+  b.box({ x: o.x, y: o.y - 0.1, z: z + 0.05 }, [1.3, 1.05, 0.1], C.newWood, C.deck);
+  b.box({ x: o.x, y: o.y + 1.3, z }, [1.7, 0.16, 0.24], C.post);
+  b.prism({ x: o.x + 1.7, y: o.y, z: z + 0.2 }, 0.62, 0.66, 0.16, 8, C.saltBase, C.saltShade);
+  b.prism({ x: o.x + 1.7, y: o.y + 0.16, z: z + 0.2, yaw: 0.3 }, 0.6, 0.2, 0.62, 8, C.salt, C.saltShade);
+  b.prism({ x: o.x + 1.7, y: o.y + 0.78, z: z + 0.2, yaw: 0.3 }, 0.2, 0, 0.18, 8, C.saltShade);
 }
 
 
@@ -1333,8 +1457,8 @@ function lockGate(b: FacetBuilder, x: number, y: number, z: number, open: boolea
  * panier plein à côté, et une chose par autre mission (`FILETS_TRACES`, lot L4) ; aux Écluses, pour les Nénuphars, la porte
  * d'amont ouverte et le sas rempli (fermée avant : elle est de la trace, pas du modèle, pour s'ouvrir), et une chose par
  * autre mission (`ECLUSES_TRACES`, lot L2) ; aux Quais, une chose remise en ordre sur le quai par mission
- * (`QUAIS_TRACES`). Rien avant la première réussite, sauf la porte fermée
- * des Écluses.
+ * (`QUAIS_TRACES`) ; aux Marais salants, une chose par mission autour du hangar à sel (`SALTWORKS_TRACES`, lot L5).
+ * Rien avant la première réussite, sauf la porte fermée des Écluses.
  */
 export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
   const b = new FacetBuilder();
@@ -1356,6 +1480,8 @@ export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
     for (const mission of done) if (Object.hasOwn(FILETS_TRACES, mission)) FILETS_TRACES[mission](b, x, z);
   } else if (place === 'quais') {
     for (const mission of done) QUAIS_TRACES[mission]?.(b, x, z);
+  } else if (place === 'saltworks') {
+    for (const mission of done) if (Object.hasOwn(SALTWORKS_TRACES, mission)) SALTWORKS_TRACES[mission](b, x, z);
   }
   return b.build();
 }
@@ -1769,5 +1895,126 @@ const ECLUSES_TRACES: Record<string, (b: FacetBuilder, cx: number, y0: number, c
     b.box({ x: lamp.x, y: lamp.y - 0.06, z: lamp.z }, [0.4, 0.07, 0.4], C.stoneDark);
     b.box({ x: lamp.x, y: lamp.y, z: lamp.z }, [0.32, 0.4, 0.32], C.lamp);
     b.box({ x: lamp.x, y: lamp.y + 0.4, z: lamp.z }, [0.46, 0.1, 0.46], C.stoneDark);
+  },
+};
+
+/**
+ * Où se pose la trace de chaque mission des Marais salants, depuis le centre du lieu (lot L5), autour de la grille des
+ * bassins et du hangar à sel, sur la grève plate, hors du chemin (qui arrive à l'ouest des bassins) et de la
+ * passerelle : la brouette au sud-est des bassins, les râteaux contre le pignon est du hangar, la pompe à vent au bord
+ * du large, au nord-est des bassins, le stock de sacs et les mulons au sud-ouest.
+ */
+export const SALTWORKS_TRACE_SPOTS = {
+  ordering: { x: 3.1, z: 5.0 },
+  operations: { x: 3.45, z: -4.1 },
+  scale: { x: 5.9, z: -2.4 },
+  'large-numbers': { x: -6.3, z: 2.6 },
+  'rounding-products': { x: -5.8, z: 5.4 },
+} as const;
+
+/**
+ * La pompe à vent de la Pente graduée, la trace la plus haute du lieu : la hauteur de son moyeu au-dessus du sol, la
+ * longueur de ses ailes, et leur couleur, que seules elles portent dans le monde (la vue les fait tourner autour du
+ * moyeu, dans le matériau des lieux, sans appel de plus ; à l'arrêt avec « Réduire les animations »).
+ */
+export const SALT_PUMP = { hub: 4.9, blade: 1.25, vane: 0xd4a670 } as const;
+
+/** Le moyeu de la pompe à vent des Marais salants, dans le monde : ses ailes tournent autour de lui, face au sud. */
+export function saltPumpHub(): Vec3 {
+  const c = placeById('saltworks').center;
+  const o = SALTWORKS_TRACE_SPOTS.scale;
+  const g = { x: c.x + o.x, z: c.z + o.z };
+  return { x: g.x, y: groundAt(g) + SALT_PUMP.hub, z: g.z + 0.42 };
+}
+
+/**
+ * Les traces des Marais salants (GD-20, point 8, lot L5 : une par mission, aux couleurs du lieu, bois, toile, sel en deux
+ * ou trois valeurs ; sans texte, rien qui se compte ou se lise comme une réponse ; posées avec le hangar à sel) :
+ * - Cratère des rangs : une brouette à sel, un seul tas dedans ;
+ * - Coulée de lave : les râteaux à sel sur leur râtelier, contre le pignon du hangar ;
+ * - Pente graduée : la pompe à vent de bois rustique, la plus haute du lieu, ses ailes face au sud ;
+ * - Nombres géants : un stock de sacs sous une toile ;
+ * - Arrondis et produits : deux mulons arrondis sur une natte.
+ */
+const SALTWORKS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => void> = {
+  ordering: (b, x, z) => {
+    const o = SALTWORKS_TRACE_SPOTS.ordering;
+    const g = quaiGround(x + o.x, z + o.z);
+    // La caisse de bois, sa roue à l'avant (vers l'est), ses deux bras et ses pieds à l'arrière ; le tas de sel dedans.
+    b.box({ x: g.x, y: g.y + 0.35, z: g.z }, [1.1, 0.32, 0.75], C.post, C.lever);
+    b.drum({ x: g.x + 0.62, y: g.y + 0.25, z: g.z - 0.05, yaw: 0, pitch: Math.PI / 2 }, 0.25, 0.1, 8, C.post, C.lever);
+    for (const side of [-1, 1]) {
+      b.beam({ x: g.x + 0.55, y: g.y + 0.4, z: g.z + side * 0.3 }, { x: g.x - 1.05, y: g.y + 0.62, z: g.z + side * 0.3 }, 0.07, C.lever);
+      b.box({ x: g.x - 0.4, y: g.y, z: g.z + side * 0.3 }, [0.08, 0.36, 0.08], C.lever);
+    }
+    b.prism({ x: g.x, y: g.y + 0.62, z: g.z, yaw: 0.2 }, 0.45, 0.16, 0.36, 8, C.salt, C.saltShade);
+  },
+  operations: (b, x, z) => {
+    const o = SALTWORKS_TRACE_SPOTS.operations;
+    const g = quaiGround(x + o.x, z + o.z);
+    // Le râtelier, le long du pignon (du nord au sud) : deux poteaux et sa barre ; trois râteaux à sel, leur long manche
+    // appuyé sur la barre, leur tête de bois en bas, côté est.
+    for (const dz of [-0.9, 0.9]) b.box({ x: g.x, y: g.y - 0.2, z: g.z + dz }, [0.12, 1.5, 0.12], C.post);
+    b.box({ x: g.x, y: g.y + 1.2, z: g.z }, [0.1, 0.1, 2.0], C.post);
+    for (const dz of [-0.55, 0, 0.55]) {
+      const foot = { x: g.x + 0.75, y: g.y + 0.1, z: g.z + dz };
+      b.beam(foot, { x: g.x - 0.1, y: g.y + 1.55, z: g.z + dz }, 0.06, C.newWood);
+      b.box({ x: foot.x, y: g.y, z: foot.z }, [0.12, 0.12, 0.5], C.lever);
+    }
+  },
+  scale: (b, x, z) => {
+    const o = SALTWORKS_TRACE_SPOTS.scale;
+    const g = quaiGround(x + o.x, z + o.z);
+    const hub = SALT_PUMP.hub;
+    // Le chevalet : quatre jambes de bois qui se resserrent vers le haut, deux traverses ; la caisse du mécanisme, la
+    // queue qui la tient face au vent (au nord) ; le tuyau qui descend vers les bassins.
+    for (const sx of [-1, 1])
+      for (const sz of [-1, 1]) b.beam({ x: g.x + sx * 0.75, y: g.y - 0.2, z: g.z + sz * 0.75 }, { x: g.x + sx * 0.18, y: g.y + hub - 0.3, z: g.z + sz * 0.18 }, 0.12, C.post);
+    for (const y of [1.3, 2.9]) {
+      const k = 0.75 - (0.57 * (y + 0.2)) / (hub + 0.1);
+      b.box({ x: g.x, y: g.y + y, z: g.z + k }, [2 * k + 0.1, 0.08, 0.08], C.post);
+      b.box({ x: g.x, y: g.y + y, z: g.z - k }, [2 * k + 0.1, 0.08, 0.08], C.post);
+    }
+    b.box({ x: g.x, y: g.y + hub - 0.35, z: g.z }, [0.46, 0.5, 0.6], C.lever, C.post);
+    b.beam({ x: g.x, y: g.y + hub - 0.1, z: g.z - 0.3 }, { x: g.x, y: g.y + hub - 0.1, z: g.z - 1.4 }, 0.07, C.post);
+    b.box({ x: g.x, y: g.y + hub - 0.55, z: g.z - 1.45 }, [0.05, 0.8, 0.7], C.newWood);
+    b.box({ x: g.x - 0.2, y: g.y - 0.1, z: g.z + 0.2 }, [0.14, hub - 0.4, 0.14], C.iron);
+    // Le moyeu, puis les quatre ailes de planches, à plat face au sud, des deux côtés (la vue les fait tourner).
+    const h = saltPumpHub();
+    b.box({ x: h.x, y: h.y - 0.12, z: h.z - 0.08 }, [0.24, 0.24, 0.2], C.iron);
+    for (let k = 0; k < 4; k++) {
+      const a = (k * Math.PI) / 2 + 0.35;
+      const u = { x: Math.cos(a), y: Math.sin(a) };
+      const v = { x: -u.y, y: u.x };
+      const at = (r: number, w: number) => [h.x + u.x * r + v.x * w, h.y + u.y * r + v.y * w, h.z + 0.04] as const;
+      const [p0, p1, p2, p3] = [at(0.12, -0.05), at(SALT_PUMP.blade, -0.05), at(SALT_PUMP.blade, 0.32), at(0.3, 0.14)];
+      b.quad(p0, p1, p2, p3, SALT_PUMP.vane);
+      b.quad(p3, p2, p1, p0, SALT_PUMP.vane);
+    }
+  },
+  'large-numbers': (b, x, z) => {
+    const o = SALTWORKS_TRACE_SPOTS['large-numbers'];
+    const g = quaiGround(x + o.x, z + o.z);
+    // Les sacs sur une palette, rangés sous une toile claire tendue sur eux ; le bas des sacs du devant dépasse.
+    b.box({ x: g.x, y: g.y - 0.1, z: g.z }, [1.9, 0.22, 1.3], C.post, C.lever);
+    for (const dx of [-0.55, 0, 0.55]) b.prism({ x: g.x + dx, y: g.y + 0.12, z: g.z + 0.4, yaw: 0.3 }, 0.26, 0.27, 0.45, 6, C.sack, C.sackShade);
+    b.box({ x: g.x, y: g.y + 0.12, z: g.z - 0.2 }, [1.7, 0.7, 0.75], C.sackShade, C.sack);
+    b.gableRoof({ x: g.x, y: g.y + 0.5, z: g.z }, 2.05, 1.5, 0.55, C.canvas, C.canvasShade);
+  },
+  'rounding-products': (b, x, z) => {
+    const o = SALTWORKS_TRACE_SPOTS['rounding-products'];
+    const g = quaiGround(x + o.x, z + o.z);
+    // La natte de paille, et deux tas de sel arrondis, de tailles différentes, l'un un peu derrière l'autre (pas en
+    // rangée) : leur base ocre, leur corps clair, leur dôme à l'ombre gris-bleu.
+    b.box({ x: g.x, y: g.y - 0.05, z: g.z, yaw: 0.15 }, [2.4, 0.08, 1.6], C.mat);
+    for (const [dx, dz, r] of [
+      [-0.45, 0.2, 0.62],
+      [0.6, -0.25, 0.48],
+    ] as const) {
+      const p = { x: g.x + dx, y: g.y + 0.03, z: g.z + dz };
+      b.prism(p, r, r * 0.95, 0.12, 8, C.saltBase, C.salt);
+      b.prism({ ...p, y: p.y + 0.12, yaw: 0.4 }, r * 0.95, r * 0.6, r * 0.45, 8, C.salt, C.saltShade);
+      b.prism({ ...p, y: p.y + 0.12 + r * 0.45, yaw: 0.4 }, r * 0.6, 0, r * 0.25, 8, C.saltShade);
+    }
   },
 };

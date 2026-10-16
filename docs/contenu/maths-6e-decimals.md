@@ -157,10 +157,10 @@ Pour tous les items :
 4. énoncé : "Le calcul de Léo\nLéo pose 4,9 × 6,1.\nIl trouve 298,9."
    - question : Que dit l’ordre de grandeur ?
    - lu : Le calcul de Léo. Léo pose 4 virgule 9 fois 6 virgule 1. Il trouve 298 virgule 9.
-   - choix : Environ 30 : la virgule est mal placée. · Environ 300 : le résultat est juste. · Environ 30 : le résultat est juste.
-   - réponse : Environ 30 : la virgule est mal placée.
+   - choix : Faux : environ 30 · Juste : environ 300 · Juste : environ 30
+   - réponse : Faux : environ 30
    - indice : Arrondis 4,9 et 6,1 à l’unité, puis multiplie.
-   - explication : 4,9 est proche de 5, 6,1 proche de 6 : 5 × 6 = 30. Le résultat doit être proche de 30, pas de 300 : la virgule est mal placée. Le bon résultat est 29,89. « Environ 300 » reprend le résultat de Léo au lieu de le contrôler ; et 298,9, loin de 30, ne peut pas être juste.
+   - explication : 4,9 est proche de 5, 6,1 proche de 6 : 5 × 6 = 30. Le résultat doit être proche de 30, pas de 300 : celui de Léo est faux, la virgule est mal placée. Le bon résultat est 29,89. « Juste : environ 300 » reprend le résultat de Léo au lieu de le contrôler ; « Juste : environ 30 » trouve le bon ordre de grandeur, mais 298,9, loin de 30, ne peut pas être juste.
    - figure : tableau nombre · arrondi / 4,9 · 5 / 6,1 · 6 / produit · ?
 5. énoncé : "Au marché\nLe tissu coûte 3 € le mètre.\nNina en achète 2,5 m."
    - question : Combien paie-t-elle ?

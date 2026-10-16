@@ -1,4 +1,4 @@
-// Les lieux du prototype (le Phare, les Quais, les Filets, les Écluses) : des volumes simples dessinés par le code, en
+// Les lieux du prototype (le Phare, les Quais, les Filets, les Écluses, les Marais salants) : des volumes simples dessinés par le code, en
 // aplats francs (le low poly d'Archipéo), dans le repère du lieu (le centre au sol en 0, le nord vers −z). Chaque lieu
 // est sa propre construction (GD-20, lot 1, « le lieu se rebâtit lui-même ») : une ruine, toujours là, puis ses
 // volumes rangés par étape (le corps, le haut, les abords) et par rangée, que les parties de la grille posent
@@ -10,7 +10,7 @@
 import type { Stage } from './construction';
 import { FacetBuilder, boundsOf, placeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
-import { placeById, type PlaceId } from './plan6e';
+import { COLORS_6E, placeById, type PlaceId } from './plan6e';
 import { heightAt, standingHeight } from './terrain';
 
 /** Le modèle d'un lieu : ses facettes dans son repère, d'où il vient, et la hauteur de son sommet (la marque s'y pose). */
@@ -69,6 +69,15 @@ const C = {
   wornWood: 0x9f9279,
   wornWall: 0xb9ae98,
   mud: 0xa39a85,
+  // Les Marais salants (lot L5) : le sel blanc cassé (la Brume du pack, jamais un blanc pur), son ombre gris-bleu et sa
+  // base ocre ; l'eau des bassins, plus claire et plus bleue que la mer ; l'argile des murets ; le sable qui les comble.
+  salt: 0xe5ebe3,
+  saltShade: 0xb9c4c8,
+  saltBase: 0xc9a46c,
+  pan: 0x5fb3e0,
+  clay: 0xb59a72,
+  clayTop: 0xc7ad83,
+  sandFill: 0xd8bd88,
 } as const;
 
 /** Les volumes d'un lieu en construction : `add(stage, row, draw)`, et `until` pour un volume tombé de la ruine. */
@@ -446,7 +455,138 @@ const ECLUSIER = { x: 6.2, z: 5.4 } as const;
 /** La Roue des Écluses (le treuil), dans le repère du lieu : son axe (est-ouest), son rayon et sa largeur, fixe. */
 const WHEEL = { x: 3.05, y: 1.5, z: -0.4, r: 1.5, width: 0.44 } as const;
 
-const DRAWN: Record<PlaceId, (add: Add) => void> = { phare, quais, filets, ecluses };
+/**
+ * Les Marais salants, dans le repère du lieu (le nord vers −z, le large à l'est) : la grille des bassins, trois de front
+ * sur deux rangs (`cols`, `rows` : leurs milieux ; `w`, `d` : leur taille), leurs murets d'argile (`levee`, leur largeur
+ * et leur haut), et le hangar à sel au nord (son milieu, sa longueur le long du faîtage, sa profondeur, le haut de ses
+ * murs, sa porte au sud).
+ */
+const SALTWORKS = {
+  cols: [-3.4, -0.6, 2.2],
+  rows: [0, 2.3],
+  w: 2.8,
+  d: 2.3,
+  levee: { width: 0.32, top: 0.3 },
+  water: 0.12,
+  hangar: { x: -0.6, z: -4.1, length: 7.2, depth: 2.8, wall: 1.7, roof: 1.3 },
+} as const;
+
+/** Les deux bouts de la grille des bassins, en x et en z (le bord extérieur de ses murets). */
+function saltGrid(): { x0: number; x1: number; z0: number; z1: number } {
+  const S = SALTWORKS;
+  return { x0: S.cols[0] - S.w / 2, x1: S.cols[2] + S.w / 2, z0: S.rows[0] - S.d / 2, z1: S.rows[1] + S.d / 2 };
+}
+
+/**
+ * Un cône de sel (un mulon du décor) posé en (`x`, `z`) sur le sol `y` : trois valeurs, sa base ocre, son corps blanc
+ * cassé, sa pointe à l'ombre gris-bleu (le blanc ne se lit jamais en aplat).
+ */
+function saltCone(b: FacetBuilder, x: number, y: number, z: number, r: number): void {
+  b.prism({ x, y: y - 0.1, z }, r * 1.08, r * 1.02, 0.2, 8, C.saltBase, C.saltShade);
+  b.prism({ x, y: y + 0.1, z, yaw: 0.3 }, r, r * 0.35, r * 0.95, 8, C.salt, C.saltShade);
+  b.prism({ x, y: y + 0.1 + r * 0.95, z, yaw: 0.3 }, r * 0.35, 0, r * 0.3, 8, C.saltShade);
+}
+
+/**
+ * Les Marais salants (lot L5). Avant : des bassins comblés de sable, leurs murets écroulés, et le hangar à sel sans toit,
+ * ses murs ébréchés. Le corps : les murets se relèvent et l'eau entre, rang par rang (le rang du sud, puis celui du nord
+ * et les cônes de sel à l'est) ; le sable s'en va. Le haut : le hangar à sel, ses murs, puis son long toit d'ardoise
+ * (l'étape qui porte les traces). Les abords : la passerelle de planches sur les bassins, et le chemin jusqu'au hangar.
+ * Sur la grève plate de la côte est (terrain.ts), sans étage.
+ */
+function saltworks(add: Add): void {
+  const S = SALTWORKS;
+  const G = saltGrid();
+  const L = S.levee;
+  const H = S.hangar;
+  const width = G.x1 - G.x0;
+  const xs = [G.x0, (S.cols[0] + S.cols[1]) / 2, (S.cols[1] + S.cols[2]) / 2, G.x1];
+  const rowEdge = [G.z0, (S.rows[0] + S.rows[1]) / 2, G.z1];
+  add('ruine', 0, (b) => {
+    // Les murets écroulés : des bouts d'argile usée, bas et inégaux, sur le pourtour et entre les bassins.
+    b.box({ x: G.x0 + 1.2, y: SINK, z: G.z1 }, [2.2, 0.15 - SINK, L.width], C.worn, C.wornTop);
+    b.box({ x: G.x1 - 1.6, y: SINK, z: G.z1 }, [2.6, 0.1 - SINK, L.width], C.worn, C.wornTop);
+    b.box({ x: G.x0, y: SINK, z: rowEdge[1] - 0.6 }, [L.width, 0.18 - SINK, 2.4], C.worn, C.wornTop);
+    b.box({ x: G.x1, y: SINK, z: rowEdge[1] + 0.5 }, [L.width, 0.12 - SINK, 2.8], C.worn, C.wornTop);
+    b.box({ x: xs[1], y: SINK, z: S.rows[0] + 0.3 }, [L.width, 0.08 - SINK, 1.4], C.worn, C.wornTop);
+    b.box({ x: G.x0 + 3.6, y: SINK, z: G.z0 }, [3.2, 0.14 - SINK, L.width], C.worn, C.wornTop);
+    // Le hangar sans toit : ses murs ébréchés, à des hauteurs inégales, la porte ouverte au sud.
+    const wz = H.z + H.depth / 2 - 0.15;
+    b.box({ x: H.x, y: SINK, z: H.z - H.depth / 2 + 0.15 }, [H.length, 1.1 - SINK, 0.3], C.wornWall, C.wornTop);
+    b.box({ x: H.x - H.length / 2 + 0.15, y: SINK, z: H.z }, [0.3, 0.8 - SINK, H.depth], C.wornWall, C.wornTop);
+    b.box({ x: H.x + H.length / 2 - 0.15, y: SINK, z: H.z }, [0.3, 1.25 - SINK, H.depth], C.wornWall, C.wornTop);
+    b.box({ x: H.x - H.length / 4 - 0.4, y: SINK, z: wz }, [H.length / 2 - 0.8, 0.6 - SINK, 0.3], C.wornWall, C.wornTop);
+    b.box({ x: H.x + H.length / 4 + 0.4, y: SINK, z: wz }, [H.length / 2 - 0.8, 0.95 - SINK, 0.3], C.wornWall, C.wornTop);
+  });
+  // Le sable qui comble chaque rang de bassins : il s'en va quand l'eau y entre.
+  for (const k of [0, 1])
+    add(
+      'ruine',
+      0,
+      (b) => b.box({ x: (G.x0 + G.x1) / 2, y: SINK, z: (rowEdge[k] + rowEdge[k + 1]) / 2 }, [width, 0.06 - SINK, rowEdge[k + 1] - rowEdge[k]], C.sandFill),
+      { stage: 0, row: k ? 0 : 0.5 },
+    );
+  // Le corps : chaque rang, son eau (une nappe sous les murets, qui la partagent en bassins) et ses murets relevés ; le
+  // rang du sud d'abord, puis celui du nord, puis les cônes de sel, à l'est, entre les bassins et le large.
+  for (const k of [1, 0])
+    add(0, k ? 0 : 0.5, (b) => {
+      const z0 = rowEdge[k],
+        z1 = rowEdge[k + 1];
+      b.box({ x: (G.x0 + G.x1) / 2, y: SINK, z: (z0 + z1) / 2 }, [width, S.water - SINK, z1 - z0], C.clay, C.pan);
+      // Le muret du bord extérieur de ce rang (au sud pour le premier, au nord pour le second), puis le muret du milieu
+      // avec le premier rang, et les murets en travers.
+      b.box({ x: (G.x0 + G.x1) / 2, y: SINK, z: k ? z1 : z0 }, [width + L.width, L.top - SINK, L.width], C.clay, C.clayTop);
+      if (k) b.box({ x: (G.x0 + G.x1) / 2, y: SINK, z: z0 }, [width, L.top - SINK, L.width], C.clay, C.clayTop);
+      for (const x of xs) b.box({ x, y: SINK, z: (z0 + z1) / 2 }, [L.width, L.top - SINK, z1 - z0], C.clay, C.clayTop);
+    });
+  add(0, 0.67, (b) => {
+    for (const [dx, dz, r] of SALT_CONES) saltCone(b, G.x1 + dx, L.top - 0.25, dz, r);
+  });
+  // Le haut : les murs du hangar (la porte au milieu de son long côté sud), puis son long toit d'ardoise.
+  add(1, 0, (b) => {
+    const wz = H.z + H.depth / 2 - 0.15;
+    // La porte, face à la passerelle (sur le muret entre le premier et le deuxième bassin de chaque rang).
+    const door = { x: xs[2], w: 1.3 };
+    const west = H.x - H.length / 2,
+      east = H.x + H.length / 2;
+    b.box({ x: H.x, y: SINK, z: H.z - H.depth / 2 + 0.15 }, [H.length, H.wall - SINK, 0.3], C.wall);
+    for (const side of [-1, 1]) b.box({ x: H.x + side * (H.length / 2 - 0.15), y: SINK, z: H.z }, [0.3, H.wall - SINK, H.depth - 0.6], C.wall);
+    for (const [a, c] of [
+      [west, door.x - door.w / 2],
+      [door.x + door.w / 2, east],
+    ] as const)
+      b.box({ x: (a + c) / 2, y: SINK, z: wz }, [c - a, H.wall - SINK, 0.3], C.wall);
+    b.box({ x: door.x, y: 1.35, z: wz }, [door.w, H.wall - 1.35, 0.3], C.wall);
+    b.box({ x: door.x, y: SINK, z: wz - 0.1 }, [door.w - 0.1, 1.35 - SINK, 0.08], C.door);
+  });
+  add(1, 0.5, (b) => b.gableRoof({ x: H.x, y: H.wall - 0.05, z: H.z }, H.length + 0.7, H.depth + 0.9, H.roof, C.slate, C.wall));
+  // Les abords : la passerelle de planches sur le muret entre les bassins, du sud jusqu'à la porte du hangar, sur ses
+  // poteaux ; le chemin de sable tassé, le long des bassins au sud, jusqu'au pied de la passerelle.
+  add(2, 0, (b) => {
+    const x = xs[2];
+    const z0 = G.z1 + 0.6,
+      z1 = H.z + H.depth / 2 + 0.2;
+    b.box({ x, y: L.top + 0.18, z: (z0 + z1) / 2 }, [0.9, 0.1, z0 - z1], C.newWood, C.deck);
+    for (const z of [z0 - 0.3, G.z1, (G.z0 + G.z1) / 2, G.z0, z1 + 0.3]) b.box({ x, y: SINK, z }, [0.16, L.top + 0.18 - SINK, 0.16], C.darkWood);
+  });
+  add(2, 0.5, (b) => {
+    const x = xs[2];
+    const z0 = G.z1 + 0.6;
+    b.box({ x: (x + PATH_START) / 2, y: 0, z: z0 }, [x - PATH_START + 0.5, 0.03, 1.1], C.mud, COLORS_6E.path);
+  });
+}
+
+/** Les cônes de sel des Marais salants, à l'est de la grille (depuis son bord est) : écart, z, rayon. */
+const SALT_CONES: readonly (readonly [number, number, number])[] = [
+  [1.1, -0.3, 0.55],
+  [1.3, 1.1, 0.48],
+  [1.0, 2.6, 0.52],
+];
+
+/** Le bout ouest du chemin des abords des Marais salants, le long des bassins, au sud (hors du réseau des chemins). */
+const PATH_START = -4.2;
+
+const DRAWN: Record<PlaceId, (add: Add) => void> = { phare, quais, filets, ecluses, saltworks };
 
 const pieces = new Map<PlaceId, PlacePiece[]>();
 

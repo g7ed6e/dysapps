@@ -24,8 +24,8 @@ describe('Le plan du 6e', () => {
     for (const p of ISLET) expect(insidePolygon(p, LAGOON)).toBe(true);
   });
 
-  it('les quatre lieux reprennent chacun une île du 6e d’aujourd’hui, et leur porte est un nœud du réseau', () => {
-    expect(PLACES.map((p) => p.island).sort()).toEqual(['french-6e-grammar-spelling', 'french-6e-phonology', 'maths-6e-calculation', 'maths-6e-fractions']);
+  it('les cinq lieux reprennent chacun une île du 6e d’aujourd’hui, et leur porte est un nœud du réseau', () => {
+    expect(PLACES.map((p) => p.island).sort()).toEqual(['french-6e-grammar-spelling', 'french-6e-phonology', 'maths-6e-calculation', 'maths-6e-decimals', 'maths-6e-fractions']);
     for (const p of PLACES) {
       expect(placeOfIsland(p.island)).toBe(p);
       expect(pathNode(p.door)).toBeDefined();
@@ -426,7 +426,7 @@ describe('Le budget du monde continu', () => {
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
   });
 
-  it('les quatre lieux, leurs constructions et leurs traces en deux appels, la pose d’une partie en un (GD-20, lot 1)', () => {
+  it('les cinq lieux, leurs constructions et leurs traces en deux appels, la pose d’une partie en un (GD-20, lot 1)', () => {
     const cost = openWorldCost();
     expect(cost.find((c) => c.poste === 'lieux')?.calls).toBe(2);
     expect(cost.find((c) => c.poste === 'pose')?.calls).toBe(1);

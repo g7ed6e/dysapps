@@ -260,7 +260,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     const resize = new ResizeObserver(schedule);
     resize.observe(panel);
     const mutation = new MutationObserver(schedule);
-    mutation.observe(panel, { childList: true, subtree: true });
+    // Déplier la consigne ne change que des attributs (la classe du panneau, `hidden` de la suite) : sans eux, le repère
+    // restait éteint quand la consigne dépliée pousse les réponses sous le bord (sonde des plis du lot L5).
+    mutation.observe(panel, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'hidden'] });
     panel.addEventListener('scroll', schedule, { passive: true });
     update();
     return () => {
@@ -280,7 +282,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     const origin = box.current?.getBoundingClientRect();
     const panel = r && origin ? { left: r.left - origin.left, top: r.top - origin.top, right: r.right - origin.left, bottom: r.bottom - origin.top } : null;
     setLabels(shown.filter((l) => inVisibleScene(l, size.w, size.h, panel)));
-  }, [world, place, mission, plain, layout, item, size, finished]);
+    // `intro` : sur un téléphone couché, le panneau de « Commencer » couvre la scène ; il se réduit à la colonne au
+    // premier item, et les repères se recalculent (sans lui, les deux entiers de la jauge des Marais salants restaient
+    // cachés jusqu'à la première réponse, lot L5).
+  }, [world, place, mission, plain, layout, item, size, finished, intro]);
   // La fin de la mission : la caméra revient au lieu, où la pièce remise en marche se voit derrière le bilan ; dans une
   // scénette, elle reste (au Phare, les cloches s'effacent ; ailleurs, la réussite se pose).
   useEffect(() => {
@@ -627,10 +632,10 @@ function PlaceText({ text }: { text: string }) {
 }
 
 /**
- * Les Filets, les Écluses, les Quais : la phrase du lieu (et la ligne de calcul de référence aux Quais), ou la question
- * et son document (Mesures et figures), la figure de l'item quand la scène ne la remplace pas (la grille, le schéma
- * coté, la figure exacte restent dans le panneau, GD-20, point 8), la règle de l'item, l'indice sur demande, une réponse
- * par objet du lieu. La correction est celle de l'écran classique (CalculationScreen).
+ * Les Filets, les Écluses, les Quais, les Marais salants : la phrase du lieu (et la ligne de calcul de référence aux
+ * Quais), ou la question et son document (Mesures et figures), la figure de l'item quand la scène ne la remplace pas (la
+ * grille, le schéma coté, la figure exacte restent dans le panneau, GD-20, point 8), la règle de l'item, l'indice sur
+ * demande, une réponse par objet du lieu. La correction est celle de l'écran classique (CalculationScreen).
  */
 function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: ScreenProps) {
   const { layout, show, simple } = useQuestion();
@@ -644,10 +649,10 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   const hint = String(item?.hint ?? '');
   const referenceLine = typeof item?.referenceLine === 'string' ? item.referenceLine : '';
   const question = typeof item?.question === 'string' ? item.question : '';
-  // Aux Écluses, la scène dessine la figure (le sas, l'échelle) et les barres de Deux rives (les deux sas) : elles
-  // reviennent dans « Vue simple », qui couvre la scène.
-  const drawn = scene !== null && (scene.kind === 'sas' || scene.kind === 'echelle' || scene.kind === 'lockPair');
-  const figure = scene && (simple || (scene.kind !== 'sas' && scene.kind !== 'echelle')) ? figureOf(item) : null;
+  // Aux Écluses, la scène dessine la figure (le sas, l'échelle) et les barres de Deux rives (les deux sas) ; aux Marais
+  // salants, la droite graduée (la jauge du bassin) : elles reviennent dans « Vue simple », qui couvre la scène.
+  const drawn = scene !== null && (scene.kind === 'sas' || scene.kind === 'echelle' || scene.kind === 'lockPair' || scene.kind === 'jauge');
+  const figure = scene && (simple || (scene.kind !== 'sas' && scene.kind !== 'echelle' && scene.kind !== 'jauge')) ? figureOf(item) : null;
   const aid = scene?.kind === 'lockPair' && !simple ? null : aidOf(item);
   // Calculer avec des fractions : les réponses dans la colonne, en liste, aucun objet ne les porte dans la scène.
   const inColumn = scene !== null && answersInColumn(scene);

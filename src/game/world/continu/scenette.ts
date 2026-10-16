@@ -26,6 +26,7 @@ import {
   FILETS_TRACE_SPOTS,
   QUAIS_TRACE_SPOTS,
   QUAY,
+  SALTWORKS_TRACE_SPOTS,
   filetsBasketAt,
   fullBasket,
   liftingHook,
@@ -64,6 +65,8 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // Lot 4 : « la pêcheuse » (le mot du consultant Archipéo, plus court à lire que « la ramendeuse »), « l'éclusier ».
   filets: { role: 'La pêcheuse', greeting: null, placement: 'rangee' },
   ecluses: { role: 'L’éclusier', greeting: null, placement: 'rangee' },
+  // Lot L5 : « la saunière » (directeur artistique, consultant Archipéo).
+  saltworks: { role: 'La saunière', greeting: null, placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -323,6 +326,12 @@ function socleFloor(): Vec3 {
   return { x: p.center.x, y: standingHeight(heightAt(p.center)) + PHARE_SOCLE, z: p.center.z };
 }
 
+/** Le dessus du muret des Marais salants, au-dessus de la grève : l'eau du bassin, derrière lui, reste au-dessus du sol. */
+function saltLevee(): Vec3 {
+  const o = sceneSpot('saltworks');
+  return { x: o.x, y: o.y + SALT_PAN.rise, z: o.z };
+}
+
 /** Le sol des Quais : le milieu de la bande de devant du quai, contre le bord du bassin. */
 function quayFloor(): Vec3 {
   const o = sceneSpot('quais');
@@ -363,6 +372,16 @@ const SITES: Record<PlaceId, ScenetteSite> = {
     habitant: { dx: 3.7, dz: 0.1 },
     subject: { halfWidth: 5.3, bottom: -0.6, top: 3.5, depth: 0.6 },
     pitch: (22 * Math.PI) / 180,
+  },
+  // Les Marais salants (lot L5) : Kéo et la saunière sur le muret d'argile au bord d'un bassin, au premier plan ; la
+  // jauge ou la vanne du bassin entre eux, dans l'eau ; la grille des bassins et le hangar à sel derrière. Assez serrés
+  // pour que les graduations de la jauge restent à 8 px l'une de l'autre au moins sur un téléphone couché (contenu).
+  saltworks: {
+    floor: saltLevee,
+    keo: { dx: -3, dz: 0.35, scale: 0.6, yaw: Math.PI - 0.4 },
+    habitant: { dx: 3, dz: 0.35 },
+    subject: { halfWidth: 4.1, bottom: -0.5, top: 3.6, depth: 0.4 },
+    pitch: (20 * Math.PI) / 180,
   },
 };
 
@@ -448,6 +467,16 @@ export function scenetteExit(place: PlaceId, posed = true, mission?: string): { 
     const o = FILETS_TRACE_SPOTS[mission as keyof typeof FILETS_TRACE_SPOTS];
     return { at, keep: { x: c.x + o.x, y: FILETS_TRACE_LIFT[mission as keyof typeof FILETS_TRACE_LIFT], z: c.z + o.z } };
   }
+  if (place === 'saltworks') {
+    // La trace de la mission jouée (GD-20, point 8, lot L5) : la caméra garde le milieu de sa hauteur ; Kéo se tient à
+    // côté de la porte, à l'ouest des bassins.
+    const at = { x: c.x + EXIT_SPOTS.saltworks.x, z: c.z + EXIT_SPOTS.saltworks.z };
+    if (!mission || !Object.hasOwn(SALTWORKS_TRACE_SPOTS, mission)) return { at, keep: placeKeep(place) };
+    const key = mission as keyof typeof SALTWORKS_TRACE_SPOTS;
+    const o = SALTWORKS_TRACE_SPOTS[key];
+    const g = { x: c.x + o.x, z: c.z + o.z };
+    return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + SALTWORKS_TRACE_LIFT[key], z: g.z } };
+  }
   if (place === 'ecluses') {
     // La trace de la mission jouée (GD-20, point 8, lot L2) : la porte d'amont ouverte des Nénuphars (le milieu du lieu),
     // ou ce qu'une autre mission a laissé (la barque, la table, l'escalier, la lanterne du sas), à un pas au-dessus du pied du lieu.
@@ -480,7 +509,10 @@ const TRACE_LIFT = 1;
 const FILETS_TRACE_LIFT = { 'word-classes': 0.3, sorting: 0.8, 'e-er-ez': 1.8 } as const;
 
 /** Où Kéo se tient au retour des Filets et des Écluses, depuis le centre du lieu. */
-const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 } } as const;
+const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 }, saltworks: { x: -6.2, z: -1.8 } } as const;
+
+/** La hauteur gardée par la caméra au retour d'une trace des Marais salants, au-dessus du sol : le milieu de la trace. */
+const SALTWORKS_TRACE_LIFT = { ordering: 0.5, operations: 0.8, scale: 2.6, 'large-numbers': 0.6, 'rounding-products': 0.4 } as const;
 
 /**
  * Au Phare (GD-20, point 8, lot L3), où Kéo se tient au retour de chaque mission, depuis le centre du lieu, et la trace
@@ -662,6 +694,14 @@ const C = {
   steel: 0x6f8089,
   crate: 0xb5793f,
   crateTop: 0xc98d50,
+  // La saunière (lot L5, consultant Archipéo) : toile claire, tablier terre cuite, chapeau de paille à large bord, pelle
+  // à sel de bois ; le muret d'argile et l'eau du bassin (plus claire que la mer).
+  linen: 0xd8ccae,
+  linenShade: 0xc2b593,
+  terracotta: 0xc0643c,
+  clay: 0xb59a72,
+  clayTop: 0xc7ad83,
+  pan: 0x5fb3e0,
   // Le filet raccommodé (le même que sur le séchoir, questionScene.ts, `mendedNet`) et ses mailles.
   newRope: 0xc9a36a,
   netLine: 0x6f5e42,
@@ -778,6 +818,42 @@ function eclusier(b: FacetBuilder, place: PlaceId): void {
 }
 
 /**
+ * La saunière, immobile, en quatre volumes (consultant Archipéo, directeur artistique) : sa robe de toile claire et son
+ * tablier terre cuite par-devant (il la détache du sel et du muret), la tête, le chapeau de paille à large bord, un bras
+ * tendu sur le manche de sa pelle à sel, plantée debout à côté d'elle, sa lame de bois au sol.
+ */
+function sauniere(b: FacetBuilder, place: PlaceId): void {
+  const at = scenetteHabitant(place);
+  b.prism(at, 0.4, 0.27, 0.92, 12, C.linen, C.linenShade);
+  b.box({ x: at.x, y: at.y + 0.08, z: at.z + 0.3, pitch: 0.12 }, [0.44, 0.74, 0.06], C.terracotta);
+  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 12, 8, C.head);
+  b.prism({ x: at.x, y: at.y + 1.22, z: at.z }, 0.5, 0.5, 0.04, 12, C.straw, C.strawShade);
+  b.prism({ x: at.x, y: at.y + 1.26, z: at.z }, 0.22, 0.18, 0.15, 10, C.straw);
+  // La pelle, à sa droite (vers l'est) : le manche debout, la lame plate posée sur le muret.
+  const foot = { x: at.x + 0.62, y: at.y, z: at.z + 0.2 };
+  b.box({ x: foot.x, y: foot.y, z: foot.z }, [0.42, 0.06, 0.32], C.shuttle);
+  b.beam({ x: foot.x, y: foot.y + 0.06, z: foot.z }, { x: foot.x - 0.04, y: foot.y + 1.3, z: foot.z - 0.02 }, 0.06, C.lever);
+  b.beam({ x: at.x + 0.24, y: at.y + 0.84, z: at.z + 0.06 }, { x: foot.x - 0.03, y: foot.y + 0.92, z: foot.z }, 0.15, C.linen);
+}
+
+/**
+ * Le bord du bassin des Marais salants (lot L5) : le muret d'argile où se tiennent Kéo et la saunière, sur toute la
+ * largeur de la scène, et derrière lui l'eau du bassin, où se dressent la jauge ou la vanne de l'item.
+ */
+function saltPan(b: FacetBuilder): void {
+  const o = floorOf('saltworks');
+  const depth = sceneDepth('saltworks') + SALT_PAN.rise;
+  b.box({ x: o.x, y: o.y - depth, z: o.z + SALT_PAN.front / 2 }, [2 * SALT_PAN.half, depth, SALT_PAN.front], C.clay, C.clayTop);
+  b.box({ x: o.x, y: o.y - depth, z: o.z - SALT_PAN.water / 2 }, [2 * SALT_PAN.half, depth - SALT_PAN.low, SALT_PAN.water], C.clay, C.pan);
+}
+
+/**
+ * Le bord du bassin : sa demi-largeur, la profondeur du muret (au sud du point de la scène), de l'eau (au nord), le
+ * creux de l'eau sous le dessus du muret, et la hauteur du muret au-dessus de la grève (l'eau reste au-dessus du sol).
+ */
+const SALT_PAN = { half: 6.2, front: 1.4, water: 1.8, low: 0.15, rise: 0.35 } as const;
+
+/**
  * Le plancher de séchage des Filets, de part et d'autre de la plate-forme du filet (la scène de l'item), à sa hauteur :
  * Kéo à l'ouest, la pêcheuse à l'est. `center` : la plate-forme aussi (la réussite, quand le filet a quitté le
  * plancher).
@@ -857,7 +933,7 @@ function beamRest(b: FacetBuilder, x: number, z: number, from: number, top: numb
  * Le décor de près d'une scénette, fait à l'arrivée : au Phare, la galerie élargie (son plancher sur un encorbellement)
  * et sa rambarde (poteaux, main courante, lisse), et la gardienne ; aux Quais, le docker (le quai, la grue et la barque
  * sont la scène de l'item) ; aux Filets, le plancher de séchage et la pêcheuse ; aux Écluses, le quai du sas, le canal
- * et sa porte (`open` : ouverte, à la réussite), et l'éclusier. Un seul maillage, du matériau du terrain. Tant que
+ * et sa porte (`open` : ouverte, à la réussite), et l'éclusier ; aux Marais salants, le bord du bassin et la saunière. Un seul maillage, du matériau du terrain. Tant que
  * l'étape qui porte la trace n'est pas posée (`posed` faux), rien d'elle : au Phare, ni galerie ni rambarde, la gardienne
  * au pied de la tour, son maillet à la main ; aux Écluses, le canal sans sa porte.
  */
@@ -875,6 +951,11 @@ export function scenetteDecor(place: PlaceId, open = false, posed = true): Facet
   if (place === 'ecluses') {
     lockQuay(b, open, posed);
     eclusier(b, place);
+    return b.build();
+  }
+  if (place === 'saltworks') {
+    saltPan(b);
+    sauniere(b, place);
     return b.build();
   }
   if (!posed) {

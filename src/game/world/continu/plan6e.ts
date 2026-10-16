@@ -96,8 +96,18 @@ export const UPLAND = { center: fromPlan([1215, 330]), radius: 130 / PLAN_SCALE,
 /** La rivière, des Écluses à l'estuaire, et sa demi-largeur (en unités : un ruisseau de quelques pas, pas un fleuve). */
 export const RIVER = { line: poly([[1222, 418], [1258, 550], [1242, 730], [1292, 842], [1400, 912], [1490, 960]]), halfWidth: 2.4 };
 
-/** Les lieux du prototype. */
-export type PlaceId = 'phare' | 'quais' | 'filets' | 'ecluses';
+/**
+ * La grève plate des Marais salants (GD-20, point 8, lot L5), sur la côte est, face au large : le sol y est aplani à
+ * cette hauteur dans ce rayon (en unités), puis rejoint le sien sur `fade` unités ; seulement sur la terre (la côte ne
+ * bouge pas).
+ */
+export const SALT_FLAT = { center: fromPlan([1430, 652]), radius: 9, fade: 5, height: 0.55 } as const;
+
+/**
+ * Les lieux du prototype. `saltworks` : les Marais salants (lot L5), le premier lieu neuf, qui reprend l'île des
+ * nombres décimaux ; son identifiant reste neutre tant que son nom n'est pas décidé (carte posée au mainteneur).
+ */
+export type PlaceId = 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks';
 
 export interface OpenPlace {
   id: PlaceId;
@@ -119,7 +129,8 @@ export interface OpenPlace {
   /**
    * Les missions de l'île qui se jouent déjà en scénette dans le lieu (les autres se jouent sur l'écran habituel, depuis
    * le panneau du lieu, le temps de la transition) : le Troupeau aux Filets ; aux Quais, toutes (GD-20, point 8, lot
-   * L1) ; aux Écluses, toutes (lot L2) ; au Phare, toutes (lot L3).
+   * L1) ; aux Écluses, toutes (lot L2) ; au Phare, toutes (lot L3) ; aux Filets, toutes (lot L4) ; aux Marais salants,
+   * toutes (lot L5).
    */
   scenes: readonly string[];
   /** Le centre du modèle au sol, et son quart de tour (en radians autour de la verticale). */
@@ -158,6 +169,20 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
   },
   { id: 'filets', name: 'Les Filets', at: 'aux Filets', agree: 'mp', island: 'french-6e-grammar-spelling', scenes: ['word-classes', 'sorting', 'e-er-ez', 'plurals'], plan: [1061, 222], door: { x: -0.86, z: 3.29 }, yaw: 0.35, touchRadius: 5.5 },
   { id: 'ecluses', name: 'Les Écluses', at: 'aux Écluses', agree: 'fp', island: 'maths-6e-fractions', scenes: ['number-line', 'equivalence', 'sharing', 'place-value', 'fraction-sums'], plan: [1226, 404], door: { x: -3.14, z: -0.71 }, yaw: 0, touchRadius: 5.5 },
+  // Les Marais salants (lot L5) : sur la grève plate de la côte est, face au large ; le nom affiché est un nom de
+  // travail (le mainteneur peut choisir « Les Salins » ou « La Saline »), écrit ici seulement.
+  {
+    id: 'saltworks',
+    name: 'Les Marais salants',
+    at: 'aux Marais salants',
+    agree: 'mp',
+    island: 'maths-6e-decimals',
+    scenes: ['ordering', 'operations', 'scale', 'large-numbers', 'rounding-products'],
+    plan: [1430, 652],
+    door: { x: -7.2, z: -0.8 },
+    yaw: 0,
+    touchRadius: 6.5,
+  },
 ];
 
 export const PLACES: readonly OpenPlace[] = PLACE_SPECS.map((s) => ({
@@ -295,6 +320,15 @@ export const PATH_NODES: readonly PathNode[] = [
   node('nord-1', [1092, 402]),
   node('nord-2', [1062, 330]),
   node('crete', [1128, 300]),
+  // Vers les Marais salants (lot L5) : des Écluses, une passerelle sur la rivière juste sous le bassin d'aval, puis la
+  // terre de l'est, le long de la côte, jusqu'à la grève, où le chemin arrive par l'ouest, à côté des bassins (le tracé
+  // des liaisons viendra plus tard).
+  node('sel-1', [1213, 428]),
+  node('sel-2', [1246, 434]),
+  node('sel-3', [1300, 448]),
+  node('sel-4', [1350, 480]),
+  node('sel-5', [1392, 528]),
+  node('sel-6', [1418, 592]),
   ...PORT_NODES.map(({ id, at }) => ({ id, at: PORT.toWorld(at[0], at[1]) })),
 ];
 
@@ -313,6 +347,13 @@ export const PATH_EDGES: readonly (readonly [string, string])[] = [
   ['nord-2', 'filets'],
   ['filets', 'crete'],
   ['crete', 'ecluses'],
+  ['ecluses', 'sel-1'],
+  ['sel-1', 'sel-2'],
+  ['sel-2', 'sel-3'],
+  ['sel-3', 'sel-4'],
+  ['sel-4', 'sel-5'],
+  ['sel-5', 'sel-6'],
+  ['sel-6', 'saltworks'],
   // L'Escale : la digue du Phare jusqu'au quai, puis la place, le long des façades.
   ['phare', portNode('quai')],
   [portNode('quai'), 'port-place'],

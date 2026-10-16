@@ -13,7 +13,7 @@ const screens = [
 ] as const;
 
 describe('La Carte des lieux ouverts', () => {
-  it('s’ouvre sur l’île entière : les quatre lieux et les bords de l’île à l’écran, nord en haut', () => {
+  it('s’ouvre sur l’île entière : les cinq lieux et les bords de l’île à l’écran, nord en haut', () => {
     for (const [w, h] of screens) {
       const pose = mapPose(mapStart(w / h));
       const at = `${w}×${h}`;
@@ -100,7 +100,7 @@ describe('Les étiquettes de la Carte', () => {
     expect(spots[2].top).toBe(278 - MAP_LOCK);
   });
 
-  it('téléphone couché au plus grand texte : quatre lieux serrés, décalés ou réduits à leur icône, jamais sur la colonne ni l’un sur l’autre', () => {
+  it('téléphone couché au plus grand texte : cinq lieux serrés, décalés ou réduits à leur icône, jamais sur la colonne ni l’un sur l’autre', () => {
     const screen = { width: 667, height: 375 };
     // La bande de gauche réservée (72 px), « Retour » en bas à gauche, Réglages en haut à droite.
     const zones = [
@@ -114,6 +114,7 @@ describe('Les étiquettes de la Carte', () => {
       { id: 'quais', kind: 'open', x: 330, y: 230, w: 210, h: 56 },
       { id: 'filets', kind: 'open', x: 300, y: 120, w: 220, h: 56 },
       { id: 'ecluses', kind: 'open', x: 420, y: 110, w: 250, h: 56 },
+      { id: 'saltworks', kind: 'open', x: 560, y: 190, w: 290, h: 56 },
     ];
     const spots = layoutMapLabels(labels, zones, screen);
     const boxes = labels.map((l, i) => boxOf(l, spots[i]));

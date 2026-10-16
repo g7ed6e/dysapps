@@ -21,7 +21,7 @@ beforeEach(() => {
   );
 });
 
-function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses', mission: string, plain = false) {
+function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks', mission: string, plain = false) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
@@ -308,6 +308,11 @@ describe('L’Enclos au plus grand texte sur un téléphone couché (dérogation
     panel.dispatchEvent(new Event('scroll'));
     await vi.waitFor(() => expect('repere' in panel.dataset).toBe(true));
     expect(within(panel).getByRole('img', { name: 'Suite plus bas' })).toBeInTheDocument();
+    // Replier la consigne ne change que des attributs (la classe du panneau, `hidden`) : le repère se recalcule sans
+    // défilement (sonde des plis du lot L5 : il restait éteint quand la consigne dépliée poussait les réponses).
+    vi.spyOn(panel.querySelector('.world-sort-prise')!, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 0, y: 100, width: 120, height: 48 }));
+    await user.click(screen.getByRole('button', { name: 'Replier la consigne' }));
+    await vi.waitFor(() => expect('repere' in panel.dataset).toBe(false));
     vi.restoreAllMocks();
     localStorage.removeItem('dysapps:settings');
   });
@@ -439,5 +444,25 @@ describe('Les Filets complets (GD-20, point 8, lot L4)', () => {
     // La pêche du jour sur le filet, la même pour tous les items : la scène ne dit pas la réponse.
     expect(lastRequest()).toMatchObject({ place: 'filets', mission, item: { scene: { kind: 'filets', catch: 'pêche', count: 1 }, count: n } });
     expect(document.querySelector('.question-prompt')!.textContent).not.toBe('');
+  });
+});
+
+describe('Les Marais salants (GD-20, point 8, lot L5)', () => {
+  it('sur un téléphone couché, les deux entiers de la jauge se montrent dès le premier item, pas seulement après la première réponse', async () => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(667);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(375);
+    // Le panneau de « Commencer » couvre la scène ; au premier item, il se réduit à la colonne de gauche.
+    const rect = Element.prototype.getBoundingClientRect;
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+      if (!this.classList.contains('quiz')) return rect.call(this);
+      return this.classList.contains('intro') ? DOMRect.fromRect({ x: 8, y: 92, width: 651, height: 253 }) : DOMRect.fromRect({ x: 8, y: 28, width: 253, height: 324 });
+    });
+    vi.mocked(world.question).mockImplementation(() => [{ text: '8', x: 520, y: 100 }]);
+    const user = userEvent.setup();
+    renderPlace('saltworks', 'scale');
+    await user.click(await screen.findByRole('button', { name: /Commencer/ }));
+    await vi.waitFor(() => expect(document.querySelector('.world-question-label')?.textContent).toBe('8'));
+    vi.mocked(world.question).mockImplementation(() => []);
+    vi.restoreAllMocks();
   });
 });

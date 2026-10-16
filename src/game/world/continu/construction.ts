@@ -82,9 +82,10 @@ export const WHOLE: PartShape = [
 /**
  * L'étape sur laquelle repose la trace de la scénette d'un lieu (questionScene.ts, `placeTrace`) : les lampes de la
  * galerie du Phare, le filet raccommodé sur le séchoir des Filets (les abords) ; la grue remontée des Quais, la porte
- * d'amont des Écluses (le haut). Tant que cette étape n'est pas posée, la trace attend : rien ne flotte dans le vide.
+ * d'amont des Écluses, le hangar à sel des Marais salants (le haut). Tant que cette étape n'est pas posée, la trace
+ * attend : rien ne flotte dans le vide.
  */
-const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = { phare: 2, quais: 1, filets: 2, ecluses: 1 };
+const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = { phare: 2, quais: 1, filets: 2, ecluses: 1, saltworks: 1 };
 
 /**
  * L'étape qui porte la trace d'un lieu est-elle posée ? Sa scénette se joue alors sur elle (la galerie du Phare, le
