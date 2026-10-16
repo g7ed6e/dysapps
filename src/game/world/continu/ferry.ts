@@ -23,6 +23,7 @@ const C = {
   rock: COLORS_6E.rock,
   rockTop: 0xab9576,
   rockDark: 0x8a7458,
+  grass: COLORS_6E.grass,
   // Le quai : la pierre du pavillon (#CFC6B2), son ombre, ses joints.
   stone: 0xcfc6b2,
   stoneShade: 0xb3aa95,
@@ -109,7 +110,13 @@ function isletRock(b: FacetBuilder, water: number): void {
     b.quad([top[i].x, 0, top[i].z], [top[j].x, 0, top[j].z], [mid[j].x, yMid, mid[j].z], [mid[i].x, yMid, mid[i].z], C.rockDark);
     b.quad([mid[i].x, yMid, mid[i].z], [mid[j].x, yMid, mid[j].z], [low[j].x, SEABED, low[j].z], [low[i].x, SEABED, low[i].z], C.rock);
   }
-  for (let i = 1; i < n - 1; i++) b.triangle([top[0].x, 0, top[0].z], [top[i + 1].x, 0, top[i + 1].z], [top[i].x, 0, top[i].z], C.rockTop);
+  // Le dos : un liseré de roche claire au bord, l'herbe rase dedans (au même niveau : Kéo y marche à plat).
+  const grass = Array.from({ length: n }, (_, i) => isletPoint(i, 0.82));
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    b.quad([grass[i].x, 0, grass[i].z], [grass[j].x, 0, grass[j].z], [top[j].x, 0, top[j].z], [top[i].x, 0, top[i].z], C.rockTop);
+  }
+  for (let i = 1; i < n - 1; i++) b.triangle([grass[0].x, 0, grass[0].z], [grass[i + 1].x, 0, grass[i + 1].z], [grass[i].x, 0, grass[i].z], C.grass);
 }
 
 /** Un pan de quai : sa dalle, d'un bord à l'autre, son dessus à `top`, ses flancs jusque sous l'eau. */

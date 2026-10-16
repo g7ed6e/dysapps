@@ -6,9 +6,10 @@ import { describe, expect, it } from 'vitest';
 import { BEACON_SLIP, BEACONS, BEACONS_TRACE_SPOTS, MAST } from './beacons';
 import { constructionFacets, fallenFacets, ruinFacets, WHOLE } from './construction';
 import { boundsOf, type Facets } from './facets';
+import { linearRgb } from './geometry';
 import { CANOPY, FERRY, FERRY_TRACE_SPOTS, ISLET_REACH } from './ferry';
 import { modelOfPlace, placePieces, ruinOf } from './places';
-import { BEACON_MASTS, FERRY_ISLET, LARGE, NEF_CHANNEL, PATH_NODES, hidesTraces, placeById, toPlan, type PlaceId } from './plan6e';
+import { BEACON_MASTS, COLORS_6E, FERRY_ISLET, LARGE, NEF_CHANNEL, PATH_NODES, hidesTraces, placeById, toPlan, type PlaceId } from './plan6e';
 import { networkSamples } from './paths';
 import { answerObjects, itemScene, placeTrace } from './questionScene';
 import { COLUMN, EARS_PROMPT, REST_MARK, placeItems, type QuestionItem } from './questions';
@@ -90,6 +91,17 @@ describe('Le large (lot L9)', () => {
     expect(near).toBeGreaterThan(0.9);
     expect(near).toBeGreaterThan(far);
     for (const m of BEACON_MASTS) expect(shallowness(m)).toBeGreaterThan(0.9);
+  });
+
+  it('le dos de l’îlot, son liseré de roche et son herbe, regarde le ciel', () => {
+    const f = modelOfPlace('ferry').facets;
+    for (const col of [0xab9576, COLORS_6E.grass]) {
+      const [r, g, b] = linearRgb(col);
+      const up: number[] = [];
+      for (let k = 0; k < f.colors.length; k += 3) if (Math.abs(f.colors[k] - r) < 1e-6 && Math.abs(f.colors[k + 1] - g) < 1e-6 && Math.abs(f.colors[k + 2] - b) < 1e-6) up.push(f.normals[k + 1]);
+      expect(up.length, col.toString(16)).toBeGreaterThan(0);
+      expect(Math.min(...up), col.toString(16)).toBeGreaterThan(0.99);
+    }
   });
 
   it('les traces restent sur leur lieu : sous la tête des mâts aux Balises, sous l’auvent à la Gare', () => {
