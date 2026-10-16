@@ -86,8 +86,8 @@ export const KIT_4E: Kit = {
   // L'aimant garde le zinc ; le velours selon sa place ; le pétale seul au sol en plate-bande.
   byMaterial: { aimant: () => 'tole', velours: veloursOf('4e'), petale: bedWhenAlone },
   ghostApart: ['marbre', 'calque', 'verre', 'quartz', 'lentille', 'taille', 'fresque', 'toile', 'acier', 'parchemin'],
-  // Les lieux du village (./shared.ts) : l'école et les piliers de la salle des trophées en mur plein de pierre ; la Halle
-  // en colombage.
+  // Les lieux du village (./shared.ts) : l'école et les piliers de la salle des trophées en mur plein de pierre ; l’Entrepôt
+  // des matériaux en colombage.
   lieux: villagePlaces({ school: { famille: 'pierre', dessin: 'masonry' }, pillars: { famille: 'pierre', dessin: 'masonry' } }),
   lissage: true,
   // Les poteaux de bois des liaisons et de la jetée du port des Anciens Ateliers.
