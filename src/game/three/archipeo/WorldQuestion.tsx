@@ -40,13 +40,13 @@ import { exercisesToReview } from '../../review';
 import { placeById, type PlaceId } from '../../world/continu/plan6e';
 import { WIDEN_FULL, WIDEN_OFFER, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf } from '../../world/continu/scenette';
-import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
+import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { BellScreen, BellTarget } from './BellScreen';
 import { SortScreen } from './SortScreen';
 import { ConsigneIcon, IconLabel, PlaceAid, QuestionContext, aidOf, figureOf, placeSceneOf, sameItem, slotStyles, useQuestion, useStopOnLeave, type ItemShown } from './placeScreen';
 import { WorldDone } from './WorldDone';
-import { filledGap, inVisibleScene, overflows, wordsCut } from './fit';
+import { filledGap, inVisibleScene, labelBesideBar, overflows, wordsCut } from './fit';
 
 /** Le nombre de réponses tant que l'écran ne l'a pas dit. */
 const DEFAULT_COUNT = 3;
@@ -222,10 +222,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   }, [simple, itemKey]);
   // Le panneau de « Vue simple » défile : il s'ouvre en haut (le rôle, la consigne), et `data-suite` dit qu'il reste
   // de quoi lire plus bas (une ombre au-dessus de « Valider ») ou plus haut. `data-repere` montre un chevron sur un trait
-  // pointillé (« Suite plus bas ») tant que des réponses restent plus bas : sous le bord du panneau sans « Valider » (les
-  // paniers, les leviers, les caisses), au bas du panneau ; sous la bande de « Valider », à droite dans la bande
-  // (au plus grand texte sur un téléphone couché, la consigne dépliée ou la règle les poussent sous le pli) ; il part
-  // une fois en bas du panneau.
+  // pointillé (« Suite plus bas ») tant qu'il reste quoi que ce soit sous le bord, une réponse, une figure ou l'indice
+  // (relecture du lot L5, consultant UX UI : l'indice coupé net ne se signalait pas) : sans « Valider » (les paniers,
+  // les leviers, les caisses, les sacs), au bas du panneau ; avec lui, à droite dans sa bande. Il part une fois en bas
+  // du panneau, et se rallume quand une consigne se déplie ou qu'une figure s'ajoute.
   useEffect(() => {
     if (!simple || finished) return;
     const panel = box.current?.querySelector<HTMLElement>('.quiz.in-world');
@@ -238,19 +238,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       const above = panel.scrollTop > 1;
       const next = below && above ? 'deux' : below ? 'bas' : above ? 'haut' : '';
       if (panel.dataset.suite !== next) panel.dataset.suite = next;
-      // Le repère ne dit que des réponses : une fois la rangée entière visible, l'indice ou la figure plus bas ne le
-      // rallument pas (GD-20, point 8, lot L2 : au plus grand texte sur téléphone, il ne couvre plus la rangée). La
-      // mesure des réponses ne se fait qu'ici, une fois par image au plus (`schedule`), et seulement s'il reste à défiler.
-      // Avec « Valider », le bord est le haut de sa bande : une réponse cachée dessous (au plus grand texte sur un
-      // téléphone couché, le sujet et les paniers de l'Enclos) allume aussi le chevron, à droite dans la bande.
-      const answerBelow = () => {
-        const band = panel.querySelector('.world-simple-validate');
-        const end = band ? band.getBoundingClientRect().top : panel.getBoundingClientRect().top + panel.clientTop + panel.clientHeight;
-        return [...panel.querySelectorAll('.world-answer')].some((a) => a.getBoundingClientRect().bottom > end + 1);
-      };
-      const cue = below && answerBelow();
-      if (cue !== 'repere' in panel.dataset) {
-        if (cue) panel.dataset.repere = '';
+      if (below !== 'repere' in panel.dataset) {
+        if (below) panel.dataset.repere = '';
         else delete panel.dataset.repere;
       }
     };
@@ -286,6 +275,25 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     // premier item, et les repères se recalculent (sans lui, les deux entiers de la jauge des Marais salants restaient
     // cachés jusqu'à la première réponse, lot L5).
   }, [world, place, mission, plain, layout, item, size, finished, intro]);
+  // Un repère de la scène ne passe jamais sous les boutons du haut (« Vue simple », la pause, à droite d'elle) : sur un
+  // téléphone couché, l'entier du haut de la jauge les touchait (relecture du lot L5, consultant UX UI). Il descend alors
+  // sous son point, ou se cache ; mesuré une fois par pose des repères, jamais à chaque image.
+  useLayoutEffect(() => {
+    const host = box.current;
+    const button = host?.querySelector(':scope > .world-question-simple')?.getBoundingClientRect();
+    if (!host || !labels.length) return;
+    for (const el of host.querySelectorAll<HTMLElement>(':scope > .world-question-label')) {
+      delete el.dataset.place;
+      if (!button?.height) continue;
+      const r = el.getBoundingClientRect();
+      // La pause est à droite de « Vue simple », jusqu'au bord : la barre va de lui au bord de l'écran.
+      const bar = { left: button.left, top: button.top, right: window.innerWidth, bottom: button.bottom };
+      const lift = parseFloat(getComputedStyle(el).marginTop) || 0;
+      const at = { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+      const place = labelBesideBar(at, { ...at, top: at.top - lift, bottom: at.bottom - lift }, bar);
+      if (place !== 'place') el.dataset.place = place;
+    }
+  }, [labels]);
   // La fin de la mission : la caméra revient au lieu, où la pièce remise en marche se voit derrière le bilan ; dans une
   // scénette, elle reste (au Phare, les cloches s'effacent ; ailleurs, la réussite se pose).
   useEffect(() => {
@@ -301,7 +309,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   }, []);
 
   const ready = loaded && picked ? { def: loaded, level: picked.level } : null;
-  const instruction = ready ? placeInstruction(place, ready.def.id, ready.level, ready.def.instruction, item?.scene) : '';
+  // En « Vue simple », un item dont la scène remplace la figure se joue tel que la référence l'écrit, consigne comprise
+  // (directeur du contenu pédagogique, 16 octobre 2026) ; la scène garde la consigne du lieu.
+  const referenceView = simple && item !== null && sceneDrawsFigure(item.scene);
+  const instruction = ready ? (referenceView ? ready.def.instruction : placeInstruction(place, ready.def.id, ready.level, ready.def.instruction, item?.scene)) : '';
   const context = useMemo(() => ({ place, layout, show, instruction, simple }), [place, layout, show, instruction, simple]);
 
   const exerciseId = ready?.def.id;
@@ -438,7 +449,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
         ? (items, seed) => bellRounds(placeItems(place, exerciseId, items), seeded(`${seed}:cloches`), bellsPerRound(seed))
         : ranges
           ? (items, seed) => rangeRounds(placeItems(place, exerciseId, items), sortsPerRound(seed))
-          : (items) => placeItems(place, exerciseId, items, fractionWords).map((it) => [it]),
+          : (items) => placeItems(place, exerciseId, items, fractionWords, simple).map((it) => [it]),
       Screen: marks ? BellScreen : ranges ? SortScreen : PlaceChoiceScreen,
       instruction,
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },
@@ -651,7 +662,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   const question = typeof item?.question === 'string' ? item.question : '';
   // Aux Écluses, la scène dessine la figure (le sas, l'échelle) et les barres de Deux rives (les deux sas) ; aux Marais
   // salants, la droite graduée (la jauge du bassin) : elles reviennent dans « Vue simple », qui couvre la scène.
-  const drawn = scene !== null && (scene.kind === 'sas' || scene.kind === 'echelle' || scene.kind === 'lockPair' || scene.kind === 'jauge');
+  const drawn = scene !== null && sceneDrawsFigure(scene);
   const figure = scene && (simple || (scene.kind !== 'sas' && scene.kind !== 'echelle' && scene.kind !== 'jauge')) ? figureOf(item) : null;
   const aid = scene?.kind === 'lockPair' && !simple ? null : aidOf(item);
   // Calculer avec des fractions : les réponses dans la colonne, en liste, aucun objet ne les porte dans la scène.

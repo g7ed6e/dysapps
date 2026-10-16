@@ -22,7 +22,9 @@ describe('Le lieu se rebâtit lui-même', () => {
   it('avant toute partie, une ruine basse ; posé en entier, le lieu entier, ni plus ni moins', () => {
     for (const p of PLACES) {
       const ruin = ruinFacets(p.id, ground);
-      expect(ruin.triangles).toBeGreaterThan(20);
+      // Avant toute partie, la ruine et ce qui est tombé (aux Marais salants, presque tout : les murets écroulés et les
+      // murs ébréchés du hangar s'en vont quand leur rangée se pose, relecture du lot L5, directeur artistique).
+      expect(ruin.triangles + fallenFacets(p.id, [], ground).triangles).toBeGreaterThan(20);
       expect(constructionFacets(p.id, [], ground).triangles).toBe(0);
       const whole = constructionFacets(p.id, [WHOLE], ground);
       expect(ruin.triangles + whole.triangles).toBe(modelOfPlace(p.id).facets.triangles);
@@ -98,10 +100,14 @@ describe('Le lieu se rebâtit lui-même', () => {
     expect(boundsOf(ruinOf('saltworks')).max[1]).toBeLessThan(1.3);
     expect(fallenFacets('saltworks', [], ground).triangles).toBeGreaterThan(0);
     const sand = fallenFacets('saltworks', [], ground).triangles;
-    // Le premier rang d'eau chasse son sable, le second le reste.
+    // Le premier rang d'eau chasse son sable et ses murets écroulés, le second le reste ; les murs ébréchés du hangar s'en
+    // vont avec ses murs entiers (le haut, premier rang) : jamais deux murs l'un dans l'autre (relecture du lot L5).
     expect(fallenFacets('saltworks', [slice(0, 0, 0.5)], ground).triangles).toBeLessThan(sand);
     expect(fallenFacets('saltworks', [slice(0, 0, 0.5)], ground).triangles).toBeGreaterThan(0);
-    expect(fallenFacets('saltworks', [slice(0, 0, 1)], ground).triangles).toBe(0);
+    const hangarRuin = fallenFacets('saltworks', [slice(0, 0, 1)], ground);
+    expect(hangarRuin.triangles).toBeGreaterThan(0);
+    expect(boundsOf(hangarRuin).max[2]).toBeLessThan(c.z - 2);
+    expect(fallenFacets('saltworks', [slice(0, 0, 1), slice(1, 0, 0.5)], ground).triangles).toBe(0);
     // Le haut : les murs, puis le toit, au-dessus de la ruine.
     const walls = boundsOf(constructionFacets('saltworks', [slice(1, 0, 0.5)], ground));
     const roof = boundsOf(constructionFacets('saltworks', [slice(1, 0.5, 1)], ground));
@@ -118,7 +124,8 @@ describe('Le lieu se rebâtit lui-même', () => {
       const door = pathNode(p.door).at;
       // Les volumes posés loin du centre (jardin, tonneaux, barque, maison de l'éclusier) : à plus d'une unité d'un chemin.
       for (const q of footprint(constructionFacets(p.id, [slice(2, 0, 1)], ground))) {
-        if (distance(q, p.center) < 4.5) continue;
+        // Le chemin des abords des Marais salants rejoint celui du réseau à la porte (relecture du lot L5).
+        if (distance(q, p.center) < 4.5 || distance(q, door) < 1.5) continue;
         const near = Math.min(...paths.map((s) => distance(s, q)));
         expect(near, `${p.id} ${q.x.toFixed(1)},${q.z.toFixed(1)}`).toBeGreaterThan(1);
       }

@@ -125,11 +125,20 @@ const HIDDEN_BELOW = -0.12;
 
 type P3 = [number, number, number];
 
+/**
+ * La grève des Marais salants (relecture du lot L5, directeur artistique) : de la vase claire sous les bassins et autour,
+ * jusqu'à `inner` unités du centre de la grève plate, puis fondue vers l'herbe sur `fade` unités, case par case (une
+ * herbe rase sur le sable entre les deux, tirée par le hasard fixe de chaque case : aucun dégradé, des aplats).
+ */
+const GREVE = { inner: 8, fade: 4, mud: 0xc8c2aa, sparse: 0xa9b979 } as const;
+
 /** La couleur d'un sol presque plat en (x, z), à la hauteur `h` : le sable près de l'eau, l'herbe ailleurs. */
 function flatColor(x: number, z: number, h: number, vary: number): number {
   if (h < 0.12) return COLORS_6E.wetSand;
   const d = landDistance({ x, z });
   if (d < 1.3) return COLORS_6E.sand;
+  const u = (distance({ x, z }, SALT_FLAT.center) - GREVE.inner) / GREVE.fade + (vary - 0.5) * 0.5;
+  if (u < 1) return u < 0.33 ? GREVE.mud : u < 0.66 ? GREVE.sparse : COLORS_6E.grass;
   if (signedDistance({ x, z }, CLIFF) > 0.6) return COLORS_6E.cliffTop;
   return vary < 0.5 ? COLORS_6E.grass : 0x66b84a;
 }

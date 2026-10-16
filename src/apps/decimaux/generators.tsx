@@ -86,8 +86,9 @@ export const compare: Generator = (rng) => {
   return {
     key: [a, b].sort().join('|'),
     id: `cmp-${a}-${b}`,
-    // Les deux nombres peuvent être égaux : la question le dit, pour ne pas piéger.
-    prompt: `Quel est le plus grand : ${fa} ou ${fb} ? Ou sont-ils égaux ?`,
+    // Les deux nombres peuvent être égaux : la question le dit, pour ne pas piéger ; courte, elle tient en deux lignes au
+    // plus grand texte sur un téléphone couché (directeur du contenu pédagogique, 16 octobre 2026).
+    prompt: `Le plus grand : ${fa} ou ${fb} ? Ou égaux ?`,
     choices: [fa, fb, EQUAL],
     answer,
     hint: 'Complète avec des 0 pour avoir autant de chiffres après la virgule, puis compare chiffre par chiffre depuis la gauche.',

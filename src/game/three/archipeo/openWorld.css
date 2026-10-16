@@ -1181,8 +1181,8 @@
   box-shadow: 0 -14px 12px -10px rgb(0 0 0 / 0.4);
 }
 /* Sans « Valider » (les paniers, les leviers, les caisses), le même repère au bas du panneau : un chevron vers le bas,
-   centré sur une bande du fond bordée d'un trait pointillé épais collé au bord, tant que des réponses restent plus bas
-   (data-repere), comme le chemin de la Carte. La bande tient toujours sa place sans en prendre (marge négative de sa
+   centré sur une bande du fond bordée d'un trait pointillé épais collé au bord, tant qu'il reste quoi que ce soit plus
+   bas, réponse, figure ou indice (data-repere), comme le chemin de la Carte. La bande tient toujours sa place sans en prendre (marge négative de sa
    hauteur) : elle se montre ou se cache sans rien faire bouger. Ses marges se calculent depuis la marge du bas du
    panneau (--panneau-bas) et sa hauteur (--repere-haut), jamais écrites à part. */
 .world-question .in-world .world-repere {
@@ -1220,7 +1220,7 @@
   margin-block: calc((var(--repere-haut) - 5px - 44px) / 2);
   stroke-width: 3;
 }
-/* Avec « Valider », des réponses cachées sous sa bande (au plus grand texte sur un téléphone couché, le sujet et les
+/* Avec « Valider », de quoi lire caché sous sa bande (au plus grand texte sur un téléphone couché, le sujet et les
    paniers de l'Enclos, dérogation du 16 octobre 2026) : le chevron se pose à droite dans la bande, qui garde « Valider »
    et la voix à gauche, et l'ombre au-dessus de la bande se fait nette, comme celle du haut (référent dys). */
 .world-question .quiz.in-world.simple:has(.world-simple-validate) > .world-repere {
@@ -1884,4 +1884,12 @@
 }
 :root[data-texte="grand"] .world-question .in-world .question-prompt.item-word {
   font-size: max(1rem, min(1.6rem, 8.5vw));
+}
+/* Un repère qui passerait sous « Vue simple » ou la pause descend sous son point, le haut sur lui ; s'il les touche encore,
+   il se cache (relecture du lot L5, consultant UX UI). */
+.world-question-label[data-place="dessous"] {
+  margin-top: 0;
+}
+.world-question-label[data-place="cache"] {
+  visibility: hidden;
 }

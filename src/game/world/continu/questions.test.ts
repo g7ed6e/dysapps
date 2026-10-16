@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { fractionWords } from '../../../core/fractions';
+import { pourLaVoix } from '../../../core/speech';
 import { seeded } from '../../../core/random';
 import { CATALOG, loadExercise } from '../../exercises';
 import { MATHS_EXERCISES } from '../../exercises/maths';
@@ -67,6 +68,7 @@ import {
   SAS_HINT,
   answersInColumn,
   pairScene,
+  sceneDrawsFigure,
   bellRounds,
   phareGesture,
   isItemScene,
@@ -371,8 +373,39 @@ describe('Les Marais salants (GD-20, point 8, lot L5)', () => {
       // La droite de référence reste dans l'item : « Vue simple » la montre.
       expect(p.figure).toEqual(ref.figure);
     }
-    expect(jaugeExplanation(5, 3, '5,3')).toBe('L’eau arrive 3 graduations au-dessus de 5 : 5 + 0,3 = 5,3.');
-    expect(jaugeExplanation(7, 1, '7,1')).toBe('L’eau arrive 1 graduation au-dessus de 7 : 7 + 0,1 = 7,1.');
+    // Le calcul ne se coupe pas (espaces insécables autour de + et de =), ni « au-dessus » à son trait d'union (référent
+    // dys, relecture du lot L5) ; la voix lit les mêmes signes, « plus » et « égale », sans rien recoller.
+    expect(jaugeExplanation(5, 3, '5,3')).toBe('L’eau arrive 3 graduations au-\u2060dessus de 5 : 5\u00a0+\u00a00,3\u00a0=\u00a05,3.');
+    expect(jaugeExplanation(7, 1, '7,1')).toBe('L’eau arrive 1 graduation au-\u2060dessus de 7 : 7\u00a0+\u00a00,1\u00a0=\u00a07,1.');
+    expect(pourLaVoix(jaugeExplanation(9, 4, '9,4')).replace(/[\u00a0\u2060]/g, (c) => (c === '\u00a0' ? ' ' : ''))).toBe('L’eau arrive 4 graduations au-dessus de 9 : 9 + 0,4 = 9,4.');
+  });
+
+  it('« Vue simple » joue l’item de référence en entier quand la scène remplace sa figure : aux Marais salants et aux Écluses', async () => {
+    // La Pente graduée, niveau 1 : la phrase, la voix, l'indice, la correction et la figure de la référence ; la jauge reste.
+    const items = await generated(decimals('scale', 1));
+    const simple = placeItems('saltworks', decimals('scale', 1), items, undefined, true);
+    for (const [i, p] of simple.entries()) {
+      const { placeScene, ...rest } = p;
+      expect(rest).toEqual(items[i]);
+      expect(placeScene.kind).toBe('jauge');
+    }
+    // Les Nénuphars (le sas, l'échelle) et Deux rives (les deux sas, leurs barres d'origine) : de même.
+    for (const id of ['maths-6e-fractions-number-line-1', 'maths-6e-fractions-number-line-2', 'maths-6e-fractions-equivalence-1']) {
+      const def = (await loadExercise(id))!;
+      const ref = (def.generate ? def.generate(`simple:${id}`) : def.items) as unknown as QuestionItem[];
+      const scene = placeItems('ecluses', id, ref, fractionWords);
+      const plain = placeItems('ecluses', id, ref, fractionWords, true);
+      expect(plain.map((p) => p.placeScene)).toEqual(scene.map((p) => p.placeScene));
+      for (const [i, p] of plain.entries()) {
+        const { placeScene, ...rest } = p;
+        if (sceneDrawsFigure(placeScene)) expect(rest, id).toEqual(ref[i]);
+        else expect(p, id).toEqual(scene[i]);
+      }
+      expect(scene.some((p) => sceneDrawsFigure(p.placeScene)), id).toBe(true);
+    }
+    // Les autres missions ne changent pas : la scène ne remplace aucune figure.
+    const other = await generated(decimals('operations', 1));
+    expect(placeItems('saltworks', decimals('operations', 1), other, undefined, true)).toEqual(placeItems('saltworks', decimals('operations', 1), other));
   });
 
   it('toutes les autres missions, et la Pente graduée aux niveaux 2 et 3, gardent leurs items de référence, le bassin au repos', async () => {
@@ -435,8 +468,13 @@ describe('Les Marais salants (GD-20, point 8, lot L5)', () => {
         const d = boxes[j];
         expect(b.max[0] < d.min[0] || d.max[0] < b.min[0] || b.max[2] < d.min[2] || d.max[2] < b.min[2], `${m} / ${traces[j][0]}`).toBe(true);
       }
-      // Autour de la grille des bassins et du hangar, jamais dessus.
-      expect(Math.abs(o.x) > 2.9 || Math.abs(o.z) > 3.5, m).toBe(true);
+      // Autour de la grille des bassins et du hangar, jamais dessus (leurs emprises, murets compris, dans le repère du lieu).
+      const local = { x0: b.min[0] - c.x, x1: b.max[0] - c.x, z0: b.min[2] - c.z, z1: b.max[2] - c.z };
+      for (const [name, r] of [
+        ['grille', { x0: -4.96, x1: 3.76, z0: -1.31, z1: 3.61 }],
+        ['hangar', { x0: -4.2, x1: 3.0, z0: -5.5, z1: -2.7 }],
+      ] as const)
+        expect(local.x1 < r.x0 || local.x0 > r.x1 || local.z1 < r.z0 || local.z0 > r.z1, `${m} / ${name}`).toBe(true);
     }
     const tops = traces.map(([m, f]) => [m, boundsOf(f).max[1]] as const);
     const pump = tops.find(([m]) => m === 'scale')![1];

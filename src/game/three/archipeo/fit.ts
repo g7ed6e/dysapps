@@ -48,3 +48,15 @@ export function inVisibleScene(point: { x: number; y: number }, width: number, h
   if (x < margin || x > width - margin || y < 0 || y > height - margin) return false;
   return !panel || x < panel.left || x > panel.right || y < panel.top || y > panel.bottom;
 }
+
+/**
+ * Où se pose un repère de la scène (un entier de la jauge des Marais salants) face aux boutons du haut (« Vue simple »
+ * et la pause, `bar`, avec `gap` pixels d'air) : à sa place (`place`) ; s'il passerait sous eux, juste sous son point
+ * (`dessous` : `lowered`, l'étiquette posée là, le haut sur son point, mesurée ainsi) ; sinon caché (`cache`). Relecture du
+ * lot L5, consultant UX UI : un nombre de la jauge ne passe jamais sous un bouton.
+ */
+export function labelBesideBar(label: ScreenRect, lowered: ScreenRect, bar: ScreenRect, gap = 4): 'place' | 'dessous' | 'cache' {
+  const under = (r: ScreenRect) => r.left < bar.right + gap && r.right > bar.left - gap && r.top < bar.bottom + gap && r.bottom > bar.top - gap;
+  if (!under(label)) return 'place';
+  return under(lowered) ? 'cache' : 'dessous';
+}

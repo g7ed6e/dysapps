@@ -161,13 +161,13 @@
       "question": "Que dit l’ordre de grandeur ?",
       "spoken": "Le calcul de Léo. Léo pose 4 virgule 9 fois 6 virgule 1. Il trouve 298 virgule 9.",
       "choices": [
-        "Faux : environ 30",
-        "Juste : environ 300",
-        "Juste : environ 30"
+        "Léo se trompe : environ 30",
+        "Léo a raison : environ 300",
+        "Léo a raison : environ 30"
       ],
-      "answer": "Faux : environ 30",
+      "answer": "Léo se trompe : environ 30",
       "hint": "Arrondis 4,9 et 6,1 à l’unité, puis multiplie.",
-      "explanation": "4,9 est proche de 5, 6,1 proche de 6 : 5 × 6 = 30. Le résultat doit être proche de 30, pas de 300 : celui de Léo est faux, la virgule est mal placée. Le bon résultat est 29,89. « Juste : environ 300 » reprend le résultat de Léo au lieu de le contrôler ; « Juste : environ 30 » trouve le bon ordre de grandeur, mais 298,9, loin de 30, ne peut pas être juste.",
+      "explanation": "4,9 est proche de 5 et 6,1 proche de 6 : 5 × 6 = 30. Léo trouve 298,9, proche de 300 et loin de 30 : il se trompe, sa virgule est mal placée. Le bon résultat est 29,89.",
       "figure": {
         "kind": "ratio-table",
         "props": {

@@ -63,11 +63,11 @@ function questionCost(): { triangles: number; calls: number } {
 /**
  * Une scénette (lot 2, le Phare ; lot 3, les Quais ; lot 4, les Filets et les Écluses ; lot L5, les Marais salants), la
  * plus chargée : le décor de près (la galerie, sa rambarde, la gardienne ; le docker ; le plancher de séchage et la
- * pêcheuse ; le quai du sas, son canal, sa porte et l'éclusier ; le bord du bassin et la saunière), un maillage fait à l'arrivée et libéré au départ, du matériau du terrain, au plus fort
- * de la réussite. L'objet de la réussite et sa lumière passent par le maillage de la réaction (la réaction de l'item cède
- * sa place à l'objet qui va se poser, puis à la lumière ; au Phare, rien : les cloches s'effacent) : leurs triangles
- * comptent ici, pas leur appel. Kéo y reste, sans son anneau (son appel est compté quand
- * même : le pire cas).
+ * pêcheuse ; le quai du sas, son canal, sa porte et l'éclusier ; le bord du bassin et la saunière), un maillage fait à
+ * l'arrivée et libéré au départ, du matériau du terrain, au plus fort de la réussite. L'objet de la réussite et sa
+ * lumière passent par le maillage de la réaction (la réaction de l'item cède sa place à l'objet qui va se poser, puis à
+ * la lumière ; au Phare, rien : les cloches s'effacent) : leurs triangles comptent ici, pas leur appel. Kéo y reste,
+ * sans son anneau (son appel est compté quand même : le pire cas).
  */
 function scenetteCost(): { triangles: number; calls: number } {
   // La scénette d'assemblage de l'Escale (GD-20, lot 2) passe par le maillage de la réaction : les pièces, puis le bloc.
@@ -96,7 +96,10 @@ function successTriangles(place: PlaceId): number {
   return f.decor.triangles + f.landed.triangles + Math.max(f.moving.triangles, f.glow?.triangles ?? 0);
 }
 
-/** Les lieux qui ont leur scénette : tous, le Phare (lot 2), les Quais (lot 3), les Filets et les Écluses (lot 4), les Marais salants (lot L5). */
+/**
+ * Les lieux qui ont leur scénette : tous, le Phare (lot 2), les Quais (lot 3), les Filets et les Écluses (lot 4), les
+ * Marais salants (lot L5).
+ */
 const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
 
 /**

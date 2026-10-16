@@ -10,7 +10,7 @@
 import type { Stage } from './construction';
 import { FacetBuilder, boundsOf, placeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
-import { COLORS_6E, placeById, type PlaceId } from './plan6e';
+import { COLORS_6E, PATH_NODES, placeById, type PlaceId } from './plan6e';
 import { heightAt, standingHeight } from './terrain';
 
 /** Le modèle d'un lieu : ses facettes dans son repère, d'où il vient, et la hauteur de son sommet (la marque s'y pose). */
@@ -479,12 +479,13 @@ function saltGrid(): { x0: number; x1: number; z0: number; z1: number } {
 
 /**
  * Un cône de sel (un mulon du décor) posé en (`x`, `z`) sur le sol `y` : trois valeurs, sa base ocre, son corps blanc
- * cassé, sa pointe à l'ombre gris-bleu (le blanc ne se lit jamais en aplat).
+ * cassé, son sommet émoussé à l'ombre gris-bleu (le blanc ne se lit jamais en aplat) : un tronc plus court, fermé d'un
+ * dessus plat, plutôt qu'une pointe (relecture du lot L5, consultant Archipéo ; 16 triangles de plus par cône).
  */
 function saltCone(b: FacetBuilder, x: number, y: number, z: number, r: number): void {
   b.prism({ x, y: y - 0.1, z }, r * 1.08, r * 1.02, 0.2, 8, C.saltBase, C.saltShade);
-  b.prism({ x, y: y + 0.1, z, yaw: 0.3 }, r, r * 0.35, r * 0.95, 8, C.salt, C.saltShade);
-  b.prism({ x, y: y + 0.1 + r * 0.95, z, yaw: 0.3 }, r * 0.35, 0, r * 0.3, 8, C.saltShade);
+  b.prism({ x, y: y + 0.1, z, yaw: 0.3 }, r, r * 0.42, r * 0.95, 8, C.salt, C.saltShade);
+  b.prism({ x, y: y + 0.1 + r * 0.95, z, yaw: 0.3 }, r * 0.42, r * 0.2, r * 0.16, 8, C.saltShade);
 }
 
 /**
@@ -502,22 +503,35 @@ function saltworks(add: Add): void {
   const width = G.x1 - G.x0;
   const xs = [G.x0, (S.cols[0] + S.cols[1]) / 2, (S.cols[1] + S.cols[2]) / 2, G.x1];
   const rowEdge = [G.z0, (S.rows[0] + S.rows[1]) / 2, G.z1];
-  add('ruine', 0, (b) => {
-    // Les murets écroulés : des bouts d'argile usée, bas et inégaux, sur le pourtour et entre les bassins.
-    b.box({ x: G.x0 + 1.2, y: SINK, z: G.z1 }, [2.2, 0.15 - SINK, L.width], C.worn, C.wornTop);
-    b.box({ x: G.x1 - 1.6, y: SINK, z: G.z1 }, [2.6, 0.1 - SINK, L.width], C.worn, C.wornTop);
-    b.box({ x: G.x0, y: SINK, z: rowEdge[1] - 0.6 }, [L.width, 0.18 - SINK, 2.4], C.worn, C.wornTop);
-    b.box({ x: G.x1, y: SINK, z: rowEdge[1] + 0.5 }, [L.width, 0.12 - SINK, 2.8], C.worn, C.wornTop);
-    b.box({ x: xs[1], y: SINK, z: S.rows[0] + 0.3 }, [L.width, 0.08 - SINK, 1.4], C.worn, C.wornTop);
-    b.box({ x: G.x0 + 3.6, y: SINK, z: G.z0 }, [3.2, 0.14 - SINK, L.width], C.worn, C.wornTop);
-    // Le hangar sans toit : ses murs ébréchés, à des hauteurs inégales, la porte ouverte au sud.
-    const wz = H.z + H.depth / 2 - 0.15;
-    b.box({ x: H.x, y: SINK, z: H.z - H.depth / 2 + 0.15 }, [H.length, 1.1 - SINK, 0.3], C.wornWall, C.wornTop);
-    b.box({ x: H.x - H.length / 2 + 0.15, y: SINK, z: H.z }, [0.3, 0.8 - SINK, H.depth], C.wornWall, C.wornTop);
-    b.box({ x: H.x + H.length / 2 - 0.15, y: SINK, z: H.z }, [0.3, 1.25 - SINK, H.depth], C.wornWall, C.wornTop);
-    b.box({ x: H.x - H.length / 4 - 0.4, y: SINK, z: wz }, [H.length / 2 - 0.8, 0.6 - SINK, 0.3], C.wornWall, C.wornTop);
-    b.box({ x: H.x + H.length / 4 + 0.4, y: SINK, z: wz }, [H.length / 2 - 0.8, 0.95 - SINK, 0.3], C.wornWall, C.wornTop);
-  });
+  // Les murets écroulés : des bouts d'argile usée, bas et inégaux, sur le pourtour et entre les bassins ; chacun s'en va
+  // quand le rang qui le relève se pose (le sud au premier rang du corps, le nord au second), jamais en double avec lui.
+  const south = { stage: 0, row: 0 } as const,
+    north = { stage: 0, row: 0.5 } as const;
+  const muret = (at: { x: number; z: number }, size: [number, number, number], until: PlacePiece['until']) =>
+    add('ruine', 0, (b) => b.box({ x: at.x, y: SINK, z: at.z }, [size[0], size[1] - SINK, size[2]], C.worn, C.wornTop), until);
+  muret({ x: G.x0 + 1.2, z: G.z1 }, [2.2, 0.15, L.width], south);
+  muret({ x: G.x1 - 1.6, z: G.z1 }, [2.6, 0.1, L.width], south);
+  muret({ x: G.x0, z: rowEdge[1] - 0.6 }, [L.width, 0.18, 2.4], north);
+  muret({ x: G.x1, z: rowEdge[1] + 0.5 }, [L.width, 0.12, 2.8], south);
+  muret({ x: xs[1], z: S.rows[0] + 0.3 }, [L.width, 0.08, 1.4], north);
+  muret({ x: G.x0 + 3.6, z: G.z0 }, [3.2, 0.14, L.width], north);
+  // Le soubassement du hangar, qui reste : ses murs s'y relèveront.
+  add('ruine', 0, (b) => b.box({ x: H.x, y: SINK, z: H.z }, [H.length + 0.2, 0.12 - SINK, H.depth + 0.2], C.wornWall, C.wornTop));
+  // Le hangar sans toit : ses murs ébréchés, à des hauteurs inégales, la porte ouverte au sud ; ils s'en vont quand ses
+  // murs entiers se posent (le haut, premier rang).
+  add(
+    'ruine',
+    0,
+    (b) => {
+      const wz = H.z + H.depth / 2 - 0.15;
+      b.box({ x: H.x, y: SINK, z: H.z - H.depth / 2 + 0.15 }, [H.length, 1.1 - SINK, 0.3], C.wornWall, C.wornTop);
+      b.box({ x: H.x - H.length / 2 + 0.15, y: SINK, z: H.z }, [0.3, 0.8 - SINK, H.depth], C.wornWall, C.wornTop);
+      b.box({ x: H.x + H.length / 2 - 0.15, y: SINK, z: H.z }, [0.3, 1.25 - SINK, H.depth], C.wornWall, C.wornTop);
+      b.box({ x: H.x - H.length / 4 - 0.4, y: SINK, z: wz }, [H.length / 2 - 0.8, 0.6 - SINK, 0.3], C.wornWall, C.wornTop);
+      b.box({ x: H.x + H.length / 4 + 0.4, y: SINK, z: wz }, [H.length / 2 - 0.8, 0.95 - SINK, 0.3], C.wornWall, C.wornTop);
+    },
+    { stage: 1, row: 0 },
+  );
   // Le sable qui comble chaque rang de bassins : il s'en va quand l'eau y entre.
   for (const k of [0, 1])
     add(
@@ -561,7 +575,8 @@ function saltworks(add: Add): void {
   });
   add(1, 0.5, (b) => b.gableRoof({ x: H.x, y: H.wall - 0.05, z: H.z }, H.length + 0.7, H.depth + 0.9, H.roof, C.slate, C.wall));
   // Les abords : la passerelle de planches sur le muret entre les bassins, du sud jusqu'à la porte du hangar, sur ses
-  // poteaux ; le chemin de sable tassé, le long des bassins au sud, jusqu'au pied de la passerelle.
+  // poteaux ; le chemin de sable tassé, de la porte du lieu (où arrive le chemin du réseau, plan6e.ts) au pied de la
+  // passerelle.
   add(2, 0, (b) => {
     const x = xs[2];
     const z0 = G.z1 + 0.6,
@@ -570,9 +585,14 @@ function saltworks(add: Add): void {
     for (const z of [z0 - 0.3, G.z1, (G.z0 + G.z1) / 2, G.z0, z1 + 0.3]) b.box({ x, y: SINK, z }, [0.16, L.top + 0.18 - SINK, 0.16], C.darkWood);
   });
   add(2, 0.5, (b) => {
-    const x = xs[2];
-    const z0 = G.z1 + 0.6;
-    b.box({ x: (x + PATH_START) / 2, y: 0, z: z0 }, [x - PATH_START + 0.5, 0.03, 1.1], C.mud, COLORS_6E.path);
+    // La porte du lieu, dans son repère (le lieu n'est pas tourné) : là où arrive le chemin du réseau.
+    const c = placeById('saltworks').center;
+    const at = PATH_NODES.find((n) => n.id === 'saltworks')!.at;
+    const door = { x: at.x - c.x, z: at.z - c.z };
+    const foot = { x: xs[2], z: G.z1 + 0.6 };
+    const [dx, dz] = [foot.x - door.x, foot.z - door.z];
+    const length = Math.hypot(dx, dz);
+    b.box({ x: (door.x + foot.x) / 2, y: 0, z: (door.z + foot.z) / 2, yaw: Math.atan2(dx, dz) }, [1.1, 0.03, length + 0.5], C.mud, COLORS_6E.path);
   });
 }
 
@@ -582,9 +602,6 @@ const SALT_CONES: readonly (readonly [number, number, number])[] = [
   [1.3, 1.1, 0.48],
   [1.0, 2.6, 0.52],
 ];
-
-/** Le bout ouest du chemin des abords des Marais salants, le long des bassins, au sud (hors du réseau des chemins). */
-const PATH_START = -4.2;
 
 const DRAWN: Record<PlaceId, (add: Add) => void> = { phare, quais, filets, ecluses, saltworks };
 

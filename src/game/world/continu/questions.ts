@@ -278,9 +278,13 @@ export const JAUGE_HINT = 'Sur la jauge, l’unité est partagée en 10 parts é
 /** Un dixième écrit à la française : 3 → « 0,3 ». */
 const tenths = (k: number): string => `0,${k}`;
 
-/** La correction de la jauge : « L’eau arrive 3 graduations au-dessus de 5 : 5 + 0,3 = 5,3. » (accordée). */
+/**
+ * La correction de la jauge : « L’eau arrive 3 graduations au-dessus de 5 : 5 + 0,3 = 5,3. » (accordée). Le calcul ne se
+ * coupe jamais (des espaces insécables autour de + et de =), ni « au-dessus » à son trait d'union (un gluon sans chasse
+ * après lui) : relecture du référent dys, lot L5. La voix lit les mêmes signes.
+ */
 export function jaugeExplanation(start: number, k: number, answer: string): string {
-  return `L’eau arrive ${k} graduation${k > 1 ? 's' : ''} au-dessus de ${start} : ${start} + ${tenths(k)} = ${answer}.`;
+  return `L’eau arrive ${k} graduation${k > 1 ? 's' : ''} au-\u2060dessus de ${start} : ${start}\u00a0+\u00a0${tenths(k)}\u00a0=\u00a0${answer}.`;
 }
 
 /**
@@ -358,9 +362,25 @@ function inInstructionOrder(exerciseId: string, it: QuestionItem): { choices?: s
  * sas), les autres missions gardent leur item de référence, le sas au repos ; aux Quais, Doubles et moitiés change sa phrase, les
  * autres missions gardent l'item de référence tel quel, sur le quai vide. `say` : les fractions dites en mots (la phrase
  * lue de Deux rives). Aux Marais salants, la Pente graduée au niveau 1 a sa jauge ; tout le reste se joue en items de
- * référence, sur le bassin au repos.
+ * référence, sur le bassin au repos. `reference` : les items de « Vue simple ».
  */
-export function placeItems(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction = written): PlacedItem[] {
+export function placeItems(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction = written, reference = false): PlacedItem[] {
+  const placed = placedInScene(place, exerciseId, items, say);
+  // « Vue simple » (`reference`) joue l'item de référence en entier quand la scène remplace sa figure : sa consigne, sa
+  // phrase, son indice, sa correction et sa figure d'origine (directeur du contenu pédagogique, 16 octobre 2026) ; la
+  // scène garde ses textes. Chaque lieu pose ses items un à un, dans l'ordre : le rang suffit.
+  if (!reference) return placed;
+  return placed.map((p, i) => (sceneDrawsFigure(p.placeScene) ? { ...items[i], placeScene: p.placeScene } : p));
+}
+
+/**
+ * La scène dessine-t-elle la figure de l'item, qu'elle remplace (le sas et l'échelle des Nénuphars, les deux sas de Deux
+ * rives, la jauge des Marais salants) ? Elle a alors ses propres textes ; « Vue simple » revient à ceux de la référence.
+ */
+export const sceneDrawsFigure = (scene: ItemScene): boolean => scene.kind === 'sas' || scene.kind === 'echelle' || scene.kind === 'lockPair' || scene.kind === 'jauge';
+
+/** Les items posés dans la scène d'un lieu (`placeItems`), avec ses textes. */
+function placedInScene(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction): PlacedItem[] {
   if (place === 'phare') return items.map((it) => ({ ...it, placeScene: { kind: 'cloches' } }));
   if (place === 'saltworks') {
     // Les Marais salants (GD-20, point 8, lot L5) : toutes les missions au même bassin, avec les mêmes sacs de sel. Seule

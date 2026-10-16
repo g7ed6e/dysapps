@@ -5,6 +5,7 @@ import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
 import type { OpenWorld } from './scene';
+import { JAUGE_INSTRUCTION, JAUGE_PROMPT } from '../../world/continu/questions';
 import { WorldQuestion } from './WorldQuestion';
 import enclos from '../../exercises/data/french-6e-grammar-spelling-word-classes-1.json';
 
@@ -20,6 +21,8 @@ beforeEach(() => {
     },
   );
 });
+// Les tailles et les rectangles simulés ne passent jamais d'un test à l'autre (relecture du lot L5, expert frontend).
+afterEach(() => vi.restoreAllMocks());
 
 function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks', mission: string, plain = false) {
   return render(
@@ -157,22 +160,29 @@ describe('La scénette des Quais', () => {
     expect(document.querySelector('.quiz.in-world.simple')).not.toBeNull();
     expect(answers().map((b) => b.textContent)).toEqual(labels);
     if (wrong) expect(answers()[0].disabled).toBe(true);
-    // Sans « Valider », le repère « Suite plus bas » se montre tant que des caisses restent sous le bord, puis part en bas.
+    // Sans « Valider », le repère « Suite plus bas » se montre tant qu'il reste quoi que ce soit sous le bord, une caisse
+    // ou seulement l'indice (relecture du lot L5, consultant UX UI), puis part en bas, la dernière caisse atteinte.
     const panel = document.querySelector<HTMLElement>('.quiz.in-world.simple')!;
     expect(within(panel).getByRole('img', { name: 'Suite plus bas' })).toBeInTheDocument();
     Object.defineProperty(panel, 'scrollHeight', { configurable: true, value: 600 });
     Object.defineProperty(panel, 'clientHeight', { configurable: true, value: 300 });
-    // Toutes les caisses au-dessus du bord : l'indice plus bas ne rallume pas le repère.
-    panel.dispatchEvent(new Event('scroll'));
-    await new Promise((r) => requestAnimationFrame(r));
-    expect('repere' in panel.dataset).toBe(false);
-    // Une caisse sous le bord du panneau : le repère se montre.
-    vi.spyOn(answers().at(-1)!, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 0, y: 450, width: 80, height: 50 }));
+    vi.spyOn(panel, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 0, y: 0, width: 400, height: 300 }));
+    // La dernière caisse suit le défilement : 450 px sous le haut du contenu.
+    const last = answers().at(-1)!;
+    vi.spyOn(last, 'getBoundingClientRect').mockImplementation(() => DOMRect.fromRect({ x: 0, y: 450 - panel.scrollTop, width: 80, height: 50 }));
     panel.dispatchEvent(new Event('scroll'));
     await vi.waitFor(() => expect('repere' in panel.dataset).toBe(true));
+    expect(last.getBoundingClientRect().bottom).toBeGreaterThan(panel.getBoundingClientRect().bottom);
+    // Défilé jusqu'en bas : la dernière caisse est dans le panneau, le repère part.
     panel.scrollTop = 300;
     panel.dispatchEvent(new Event('scroll'));
     await vi.waitFor(() => expect('repere' in panel.dataset).toBe(false));
+    expect(last.getBoundingClientRect().bottom).toBeLessThanOrEqual(panel.getBoundingClientRect().bottom);
+    // Rien d'autre que l'indice plus bas, toutes les caisses visibles : le repère se montre encore.
+    panel.scrollTop = 0;
+    vi.spyOn(last, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 0, y: 200, width: 80, height: 50 }));
+    panel.dispatchEvent(new Event('scroll'));
+    await vi.waitFor(() => expect('repere' in panel.dataset).toBe(true));
     await user.click(screen.getByRole('button', { name: /Scène/ }));
     expect(document.querySelector('.quiz.in-world.simple')).toBeNull();
     expect(answers().map((b) => b.textContent)).toEqual(labels);
@@ -187,7 +197,6 @@ describe('Toutes les missions des Quais en scénette (GD-20, point 8)', () => {
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
     vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
   });
-  afterEach(() => vi.restoreAllMocks());
 
   it.each(['times-tables', 'make-ten', 'word-problems', 'measures'])('%s : le docker, les caisses, l’item de référence ; jamais « Valider »', async (mission) => {
     const user = userEvent.setup();
@@ -228,7 +237,6 @@ describe('Toutes les missions des Écluses en scénette (GD-20, point 8, lot L2)
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
     vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
   });
-  afterEach(() => vi.restoreAllMocks());
 
   const start = async () => {
     const user = userEvent.setup();
@@ -249,11 +257,15 @@ describe('Toutes les missions des Écluses en scénette (GD-20, point 8, lot L2)
     expect(document.querySelector('.quiz.in-world')!.textContent).toContain('Touche la plus grande fraction');
     expect(document.querySelector('.quiz.in-world .world-question-aid')).toBeNull();
     // La phrase courte du contenu ; les deux fractions comparées et leur point sur une seule ligne.
-    expect(document.querySelector('.question-prompt')!.textContent).toMatch(/^Compare /);
+    const scenePrompt = document.querySelector('.question-prompt')!.textContent;
+    expect(scenePrompt).toMatch(/^Compare /);
     const together = [...document.querySelectorAll('.question-prompt .world-nobreak')];
     expect(together.some((n) => n.querySelectorAll('.frac').length === 2 && (n.textContent ?? '').endsWith('.'))).toBe(true);
     await user.click(screen.getByRole('button', { name: /Vue simple/ }));
     expect(document.querySelector('.quiz.in-world.simple .world-question-aid')).not.toBeNull();
+    // En « Vue simple », l'item de référence en entier : sa phrase et sa consigne, plus celles des deux sas.
+    expect(document.querySelector('.question-prompt')!.textContent).not.toBe(scenePrompt);
+    expect(document.querySelector('.quiz.in-world')!.textContent).not.toContain('Touche la plus grande fraction');
     // En « Vue simple », ses trois réponses sur une rangée.
     expect(document.querySelector('.quiz.in-world.simple .world-answers.une-rangee')).not.toBeNull();
   });
@@ -296,24 +308,22 @@ describe('L’Enclos au plus grand texte sur un téléphone couché (dérogation
     expect(words.hidden).toBe(false);
     expect(words.textContent).toMatch(/Touche le sujet, puis son panier/);
     expect(fold.querySelector('.world-consigne-regle')).not.toBeNull();
-    // Le panneau défile : tant qu'un sujet est caché sous la bande de « Valider », le chevron « Suite plus bas ».
+    // Le panneau défile : tant que quelque chose est caché sous la bande de « Valider », le chevron « Suite plus bas ».
     const panel = document.querySelector<HTMLElement>('.quiz.in-world.simple')!;
     Object.defineProperty(panel, 'scrollHeight', { configurable: true, value: 600 });
     Object.defineProperty(panel, 'clientHeight', { configurable: true, value: 300 });
-    vi.spyOn(panel.querySelector('.world-simple-validate')!, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 0, y: 250, width: 600, height: 54 }));
-    panel.dispatchEvent(new Event('scroll'));
-    await new Promise((r) => requestAnimationFrame(r));
-    expect('repere' in panel.dataset).toBe(false);
-    vi.spyOn(panel.querySelector('.world-sort-prise')!, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 0, y: 260, width: 120, height: 48 }));
     panel.dispatchEvent(new Event('scroll'));
     await vi.waitFor(() => expect('repere' in panel.dataset).toBe(true));
     expect(within(panel).getByRole('img', { name: 'Suite plus bas' })).toBeInTheDocument();
     // Replier la consigne ne change que des attributs (la classe du panneau, `hidden`) : le repère se recalcule sans
     // défilement (sonde des plis du lot L5 : il restait éteint quand la consigne dépliée poussait les réponses).
-    vi.spyOn(panel.querySelector('.world-sort-prise')!, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 0, y: 100, width: 120, height: 48 }));
+    Object.defineProperty(panel, 'scrollHeight', { configurable: true, value: 300 });
     await user.click(screen.getByRole('button', { name: 'Replier la consigne' }));
     await vi.waitFor(() => expect('repere' in panel.dataset).toBe(false));
-    vi.restoreAllMocks();
+    // La déplier pousse de nouveau la suite sous le bord : le chevron se rallume.
+    Object.defineProperty(panel, 'scrollHeight', { configurable: true, value: 600 });
+    await user.click(screen.getByRole('button', { name: 'Lire la suite de la consigne' }));
+    await vi.waitFor(() => expect('repere' in panel.dataset).toBe(true));
     localStorage.removeItem('dysapps:settings');
   });
 });
@@ -323,7 +333,6 @@ describe('Les Filets complets (GD-20, point 8, lot L4)', () => {
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
     vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
   });
-  afterEach(() => vi.restoreAllMocks());
 
   const begin = async () => {
     const user = userEvent.setup();
@@ -463,6 +472,33 @@ describe('Les Marais salants (GD-20, point 8, lot L5)', () => {
     await user.click(await screen.findByRole('button', { name: /Commencer/ }));
     await vi.waitFor(() => expect(document.querySelector('.world-question-label')?.textContent).toBe('8'));
     vi.mocked(world.question).mockImplementation(() => []);
-    vi.restoreAllMocks();
+  });
+
+  it('la Pente graduée, niveau 1 : la jauge et ses textes dans la scène ; « Vue simple » joue l’item de référence en entier', async () => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    renderPlace('saltworks', 'scale');
+    expect(await screen.findByText('La saunière')).toBeInTheDocument();
+    const go = screen.queryByRole('button', { name: /Commencer/ });
+    if (go) await user.click(go);
+    await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
+    expect(vi.mocked(world.question).mock.calls.at(-1)![0]).toMatchObject({ place: 'saltworks', item: { scene: { kind: 'jauge' } } });
+    // Les espaces insécables de la typographie française comptent comme des espaces.
+    const text = (el: Element | null) => (el?.textContent ?? '').replace(/\s/gu, ' ');
+    const panel = () => document.querySelector('.quiz.in-world')!;
+    const prompt = () => text(document.querySelector('.question-prompt'));
+    expect(prompt()).toBe(JAUGE_PROMPT);
+    expect(text(panel())).toContain(JAUGE_INSTRUCTION);
+    expect(panel().querySelector('.world-question-figure')).toBeNull();
+    await user.click(screen.getByRole('button', { name: /Vue simple/ }));
+    // La phrase, la consigne et la droite graduée de la référence.
+    await vi.waitFor(() => expect(prompt()).not.toBe(JAUGE_PROMPT));
+    expect(text(panel())).not.toContain(JAUGE_INSTRUCTION);
+    expect(panel().querySelector('.world-question-figure')).not.toBeNull();
+    // « Scène » : la jauge et ses textes reviennent.
+    await user.click(screen.getByRole('button', { name: /Scène/ }));
+    expect(prompt()).toBe(JAUGE_PROMPT);
   });
 });

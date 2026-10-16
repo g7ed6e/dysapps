@@ -1900,13 +1900,14 @@ const ECLUSES_TRACES: Record<string, (b: FacetBuilder, cx: number, y0: number, c
 
 /**
  * Où se pose la trace de chaque mission des Marais salants, depuis le centre du lieu (lot L5), autour de la grille des
- * bassins et du hangar à sel, sur la grève plate, hors du chemin (qui arrive à l'ouest des bassins) et de la
- * passerelle : la brouette au sud-est des bassins, les râteaux contre le pignon est du hangar, la pompe à vent au bord
- * du large, au nord-est des bassins, le stock de sacs et les mulons au sud-ouest.
+ * bassins et du hangar à sel, sur la grève plate, hors des chemins (celui du réseau contourne les bassins par l'ouest
+ * et arrive au sud ; celui des abords monte de la porte à la passerelle) : la brouette au sud-est des bassins, les
+ * râteaux contre la façade sud du hangar, à l'est de sa porte (vus du sud, relecture du directeur artistique), la pompe
+ * à vent au bord du large, au nord-est des bassins, le stock de sacs et les mulons au sud-ouest.
  */
 export const SALTWORKS_TRACE_SPOTS = {
   ordering: { x: 3.1, z: 5.0 },
-  operations: { x: 3.45, z: -4.1 },
+  operations: { x: 2.25, z: -2.45 },
   scale: { x: 5.9, z: -2.4 },
   'large-numbers': { x: -6.3, z: 2.6 },
   'rounding-products': { x: -5.8, z: 5.4 },
@@ -1952,14 +1953,15 @@ const SALTWORKS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number)
   operations: (b, x, z) => {
     const o = SALTWORKS_TRACE_SPOTS.operations;
     const g = quaiGround(x + o.x, z + o.z);
-    // Le râtelier, le long du pignon (du nord au sud) : deux poteaux et sa barre ; trois râteaux à sel, leur long manche
-    // appuyé sur la barre, leur tête de bois en bas, côté est.
-    for (const dz of [-0.9, 0.9]) b.box({ x: g.x, y: g.y - 0.2, z: g.z + dz }, [0.12, 1.5, 0.12], C.post);
-    b.box({ x: g.x, y: g.y + 1.2, z: g.z }, [0.1, 0.1, 2.0], C.post);
-    for (const dz of [-0.55, 0, 0.55]) {
-      const foot = { x: g.x + 0.75, y: g.y + 0.1, z: g.z + dz };
-      b.beam(foot, { x: g.x - 0.1, y: g.y + 1.55, z: g.z + dz }, 0.06, C.newWood);
-      b.box({ x: foot.x, y: g.y, z: foot.z }, [0.12, 0.12, 0.5], C.lever);
+    // Le râtelier, contre la façade sud du hangar, à l'est de sa porte (d'est en ouest) : deux poteaux et sa barre ;
+    // trois râteaux à sel, leur long manche appuyé sur la barre, leur large tête de bois debout au sol, face au sud
+    // (relecture du lot L5, directeur artistique : plus gros, lisibles du sud).
+    for (const dx of [-0.8, 0.8]) b.box({ x: g.x + dx, y: g.y - 0.2, z: g.z }, [0.14, 1.6, 0.14], C.post);
+    b.box({ x: g.x, y: g.y + 1.25, z: g.z }, [1.85, 0.12, 0.12], C.post);
+    for (const dx of [-0.52, 0, 0.52]) {
+      const foot = { x: g.x + dx, y: g.y + 0.2, z: g.z + 0.85 };
+      b.beam(foot, { x: g.x + dx, y: g.y + 1.65, z: g.z - 0.08 }, 0.1, C.newWood);
+      b.box({ x: foot.x, y: g.y - 0.05, z: foot.z + 0.04 }, [0.46, 0.26, 0.09], C.lever, C.post);
     }
   },
   scale: (b, x, z) => {
@@ -1995,11 +1997,27 @@ const SALTWORKS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number)
   'large-numbers': (b, x, z) => {
     const o = SALTWORKS_TRACE_SPOTS['large-numbers'];
     const g = quaiGround(x + o.x, z + o.z);
-    // Les sacs sur une palette, rangés sous une toile claire tendue sur eux ; le bas des sacs du devant dépasse.
+    // Les sacs sur une palette : au premier rang, trois sacs de sel debout, entiers, leur bouche froncée au-dessus ;
+    // derrière, la pile couverte d'une toile claire jetée en deux pans, l'un sur le dessus, l'autre qui retombe derrière
+    // (relecture du lot L5, directeur artistique : on y voit des sacs, pas une caisse).
     b.box({ x: g.x, y: g.y - 0.1, z: g.z }, [1.9, 0.22, 1.3], C.post, C.lever);
-    for (const dx of [-0.55, 0, 0.55]) b.prism({ x: g.x + dx, y: g.y + 0.12, z: g.z + 0.4, yaw: 0.3 }, 0.26, 0.27, 0.45, 6, C.sack, C.sackShade);
-    b.box({ x: g.x, y: g.y + 0.12, z: g.z - 0.2 }, [1.7, 0.7, 0.75], C.sackShade, C.sack);
-    b.gableRoof({ x: g.x, y: g.y + 0.5, z: g.z }, 2.05, 1.5, 0.55, C.canvas, C.canvasShade);
+    for (const dx of [-0.55, 0, 0.55]) saltSack(b, { x: g.x + dx, y: g.y + 0.12, z: g.z + 0.32 }, 0.6);
+    b.box({ x: g.x, y: g.y + 0.12, z: g.z - 0.3 }, [1.7, 0.62, 0.6], C.sackShade, C.sack);
+    const ridge = { y: g.y + 0.86, z: g.z + 0.02 },
+      fold = { y: g.y + 0.78, z: g.z - 0.72 },
+      hem = { y: g.y + 0.05, z: g.z - 0.78 };
+    const pan = (a: { y: number; z: number }, c: { y: number; z: number }, color: number) => {
+      const p: [number, number, number][] = [
+        [g.x - 0.95, a.y, a.z],
+        [g.x + 0.95, a.y, a.z],
+        [g.x + 0.95, c.y, c.z],
+        [g.x - 0.95, c.y, c.z],
+      ];
+      b.quad(p[0], p[1], p[2], p[3], color);
+      b.quad(p[3], p[2], p[1], p[0], color);
+    };
+    pan(ridge, fold, C.canvas);
+    pan(fold, hem, C.canvasShade);
   },
   'rounding-products': (b, x, z) => {
     const o = SALTWORKS_TRACE_SPOTS['rounding-products'];

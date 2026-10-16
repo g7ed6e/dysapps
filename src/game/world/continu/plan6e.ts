@@ -179,7 +179,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
     island: 'maths-6e-decimals',
     scenes: ['ordering', 'operations', 'scale', 'large-numbers', 'rounding-products'],
     plan: [1430, 652],
-    door: { x: -7.2, z: -0.8 },
+    door: { x: -1, z: 7.4 },
     yaw: 0,
     touchRadius: 6.5,
   },
@@ -321,14 +321,16 @@ export const PATH_NODES: readonly PathNode[] = [
   node('nord-2', [1062, 330]),
   node('crete', [1128, 300]),
   // Vers les Marais salants (lot L5) : des Écluses, une passerelle sur la rivière juste sous le bassin d'aval, puis la
-  // terre de l'est, le long de la côte, jusqu'à la grève, où le chemin arrive par l'ouest, à côté des bassins (le tracé
-  // des liaisons viendra plus tard).
+  // terre de l'est, le long de la côte, jusqu'à la grève ; le chemin contourne les bassins par l'ouest et arrive au sud,
+  // face au lieu, où le chemin des abords le rejoint (relecture du directeur artistique : le lieu entier à l'arrivée ;
+  // le tracé des liaisons viendra plus tard).
   node('sel-1', [1213, 428]),
   node('sel-2', [1246, 434]),
   node('sel-3', [1300, 448]),
   node('sel-4', [1350, 480]),
   node('sel-5', [1392, 528]),
   node('sel-6', [1418, 592]),
+  node('sel-7', [1402, 676]),
   ...PORT_NODES.map(({ id, at }) => ({ id, at: PORT.toWorld(at[0], at[1]) })),
 ];
 
@@ -353,7 +355,8 @@ export const PATH_EDGES: readonly (readonly [string, string])[] = [
   ['sel-3', 'sel-4'],
   ['sel-4', 'sel-5'],
   ['sel-5', 'sel-6'],
-  ['sel-6', 'saltworks'],
+  ['sel-6', 'sel-7'],
+  ['sel-7', 'saltworks'],
   // L'Escale : la digue du Phare jusqu'au quai, puis la place, le long des façades.
   ['phare', portNode('quai')],
   [portNode('quai'), 'port-place'],

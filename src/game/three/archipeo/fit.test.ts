@@ -1,4 +1,4 @@
-import { filledGap, inVisibleScene, overflows, wordsCut } from './fit';
+import { filledGap, inVisibleScene, labelBesideBar, overflows, wordsCut } from './fit';
 
 const box = (clientWidth: number, scrollWidth: number, clientHeight = 50, scrollHeight = 50) => ({ clientWidth, scrollWidth, clientHeight, scrollHeight });
 
@@ -40,5 +40,21 @@ describe('Le mot juste dans le trou', () => {
     expect(inVisibleScene({ x: 400, y: 380 }, 844, 390, null)).toBe(false);
     // Sans panneau mesuré, l'écran seul.
     expect(inVisibleScene({ x: 820, y: 200 }, 844, 390, null)).toBe(true);
+  });
+});
+
+describe('Un repère de la scène face aux boutons du haut (relecture du lot L5, consultant UX UI)', () => {
+  // « Vue simple » et la pause sur un téléphone couché (667 × 375) : de 372 px au bord, de 8 à 64 px.
+  const bar = { left: 372, top: 8, right: 667, bottom: 64 };
+  const box = (top: number, left = 515) => ({ left, top, right: left + 36, bottom: top + 34 });
+
+  it('à sa place quand il ne touche aucun bouton, ou qu’il est à gauche d’eux', () => {
+    expect(labelBesideBar(box(80), box(96), bar)).toBe('place');
+    expect(labelBesideBar(box(40, 300), box(56, 300), bar)).toBe('place');
+  });
+
+  it('sous son point quand il passerait sous un bouton, caché s’il le touche encore', () => {
+    expect(labelBesideBar(box(60), box(76), bar)).toBe('dessous');
+    expect(labelBesideBar(box(20), box(36), bar)).toBe('cache');
   });
 });
