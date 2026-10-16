@@ -181,6 +181,10 @@ export function pathRibbons(ground: (x: number, z: number) => number): Facets {
     const n = Math.max(1, Math.ceil(len / RIBBON_STEP));
     const dx = (c.x - a.x) / len;
     const dz = (c.z - a.z) / len;
+    // Une passerelle de planches (`PLANK_BRIDGES`) : ses planches et ses pieux de bout en bout de l'eau, à la place du
+    // ruban de bois.
+    const planks = PLANK_BRIDGES.some(([u, v]) => (u === ia && v === ib) || (u === ib && v === ia));
+    const spans: { from: Vec2; to: Vec2; y: number }[] = [];
     for (let k = 0; k < n; k++) {
       const p = { x: a.x + (dx * len * k) / n, z: a.z + (dz * len * k) / n };
       const q = { x: a.x + (dx * len * (k + 1)) / n, z: a.z + (dz * len * (k + 1)) / n };
@@ -188,6 +192,15 @@ export function pathRibbons(ground: (x: number, z: number) => number): Facets {
       // Sur la pierre du Port (son quai, sa place), pas de ruban : on y marche sur le pavage.
       if (portFloor(mid.x, mid.z) !== null) continue;
       const deck = deckAt(mid);
+      if (planks && deck) {
+        const y = Math.max(standingHeight(ground(p.x, p.z)), standingHeight(ground(q.x, q.z))) + RIBBON_LIFT;
+        const span = spans[0];
+        if (span) {
+          span.to = q;
+          span.y = Math.max(span.y, y);
+        } else spans.push({ from: p, to: q, y });
+        continue;
+      }
       const w = deck ? HALF_WIDTH.deck : HALF_WIDTH.path;
       const color = deck ? COLORS_6E.wood : COLORS_6E.path;
       const yp = standingHeight(ground(p.x, p.z)) + RIBBON_LIFT;
@@ -203,6 +216,7 @@ export function pathRibbons(ground: (x: number, z: number) => number): Facets {
       b.quad(down(pr), down(qr), qr, pr, color);
       b.quad(down(ql), down(pl), pl, ql, color);
     }
+    for (const span of spans) plankBridge(b, span.from, span.to, span.y);
   }
   dockEdge(b);
   // Un octogone sur chaque nœud : les coudes n'ont pas de trou.
@@ -214,6 +228,48 @@ export function pathRibbons(ground: (x: number, z: number) => number): Facets {
     b.prism({ x: node.at.x, y: y - RIBBON_SIDE, z: node.at.z }, w, w, RIBBON_SIDE, 8, deck ? COLORS_6E.wood : COLORS_6E.path);
   }
   return b.build();
+}
+
+/**
+ * Les liaisons qui passent l'eau sur une passerelle de planches plutôt que sur le ruban de bois : de la rive est à la
+ * Turbine (lot L6a, directeur artistique : des planches qu'on lit, sur des pieux, comme aux Marais salants).
+ */
+export const PLANK_BRIDGES: readonly (readonly [string, string])[] = [['tur-1', 'tur-2']];
+
+/**
+ * La passerelle : ses planches, son pas de pieux, leur section, le pied des pieux sous l'eau, leur tête au-dessus des
+ * planches, ses deux bois (les planches en alternance, plus clair et plus sombre ; les pieux et les traverses).
+ */
+const PLANKS = { count: 3, width: 0.66, gap: 0.1, thick: 0.12, reach: 0.6, step: 1.9, post: 0.2, foot: -1.4, head: 0.3, woods: [COLORS_6E.wood, 0xb98c5c], dark: 0x7a5636 } as const;
+
+/**
+ * Une passerelle de planches de `from` à `to` (le bois des planches à `y`) : trois planches posées dans le sens de la
+ * marche, des jours entre elles, qui débordent d'un pas sur chaque berge ; une paire de pieux à chaque bout et de place en
+ * place, une traverse sous les planches à chaque paire, les têtes des pieux au-dessus des planches.
+ */
+function plankBridge(b: FacetBuilder, from: Vec2, to: Vec2, y: number): void {
+  const P = PLANKS;
+  const len = distance(from, to) || 1e-6;
+  const [dx, dz] = [(to.x - from.x) / len, (to.z - from.z) / len];
+  const yaw = Math.atan2(dx, dz);
+  const mid = { x: (from.x + to.x) / 2, z: (from.z + to.z) / 2 };
+  const across = (o: number, u: number) => ({ x: mid.x + dx * u + dz * o, z: mid.z + dz * u - dx * o });
+  const half = (P.count * P.width + (P.count - 1) * P.gap) / 2;
+  for (let k = 0; k < P.count; k++) {
+    const o = -half + P.width / 2 + k * (P.width + P.gap);
+    const at = across(o, 0);
+    b.box({ x: at.x, y: y - P.thick, z: at.z, yaw }, [P.width, P.thick, len + 2 * P.reach], P.woods[k % 2]);
+  }
+  const pairs = Math.max(2, Math.round(len / P.step) + 1);
+  for (let k = 0; k < pairs; k++) {
+    const u = -len / 2 + (len * k) / (pairs - 1);
+    const beam = across(0, u);
+    b.box({ x: beam.x, y: y - P.thick - 0.16, z: beam.z, yaw }, [2 * half + 0.5, 0.16, 0.18], P.dark);
+    for (const side of [-1, 1]) {
+      const at = across(side * (half + 0.18), u);
+      b.box({ x: at.x, y: P.foot, z: at.z, yaw }, [P.post, y + P.head - P.foot, P.post], P.dark);
+    }
+  }
 }
 
 /** Le bord de quai : un mur de pierre, son chaperon plus clair, et trois bittes d'amarrage. */

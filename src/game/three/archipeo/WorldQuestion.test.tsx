@@ -6,7 +6,7 @@ import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
 import type { OpenWorld } from './scene';
 import { JAUGE_INSTRUCTION, JAUGE_PROMPT } from '../../world/continu/questions';
-import { WorldQuestion } from './WorldQuestion';
+import { PIN_MAX, WorldQuestion, afterAnswer, foldReserve } from './WorldQuestion';
 import { PlaceDocument } from './placeScreen';
 import { loadExercise } from '../../exercises';
 import enclos from '../../exercises/data/french-6e-grammar-spelling-word-classes-1.json';
@@ -559,17 +559,61 @@ describe('La Turbine, ses quatre missions en C (GD-20, point 8, lot L6a)', () =>
     },
   );
 
-  it('l’objet témoin ne réagit qu’à une bonne réponse : un essai faux ou une correction laissent la soupape au repos', async () => {
+  // Le témoin lit la bonne réponse dans l'exercice lui-même (jamais dans ce qu'affiche le panneau : relecture du code de
+  // L6a), retrouvée par les réponses montrées.
+  const rightAnswer = async () => {
+    const shown = answers().map((a) => a.querySelector('.world-answer-label')?.textContent?.trim() ?? a.textContent?.trim() ?? '');
+    const exercise = await loadExercise('physics-chemistry-6e-matter-energy-energy-circuits-1');
+    const items = (exercise as unknown as { items: { prompt?: string; question?: string; choices?: string[]; answer?: string }[] }).items;
+    // Les mêmes réponses servent à plusieurs items (« en chaleur », « en mouvement »…) : la phrase les départage.
+    const letters = (t: string) => t.normalize('NFD').replace(/[^a-z]/giu, '').toLowerCase();
+    const head = letters(panel().querySelector('.question-head')?.textContent ?? '');
+    const item = items.find(
+      (it) => it.choices && it.choices.length === shown.length && it.choices.every((c) => shown.includes(c)) && head.includes(letters(it.question ?? it.prompt ?? '').slice(0, 16)),
+    );
+    expect(item?.answer).toBeTruthy();
+    return { shown, answer: item!.answer! };
+  };
+
+  it('le témoin se lève après un essai faux puis la bonne réponse', async () => {
     const user = await start('energy-circuits');
-    for (let i = 0; i < answers().length && !document.querySelector('.next-button'); i++) {
-      if (answers()[i].disabled) continue;
+    const { shown, answer } = await rightAnswer();
+    await user.click(answers()[shown.findIndex((s) => s !== answer)]);
+    expect(document.querySelector('.next-button')).toBeNull();
+    expect(last().item.answered).toBe(false);
+    await user.click(answers()[shown.indexOf(answer)]);
+    await vi.waitFor(() => expect(last().item.answered).toBe(true));
+  });
+
+  it('le témoin reste au repos après deux essais faux (la correction)', async () => {
+    const user = await start('energy-circuits');
+    const { shown, answer } = await rightAnswer();
+    const wrong = shown.map((s, i) => (s === answer ? -1 : i)).filter((i) => i >= 0);
+    for (const i of wrong) {
+      if (document.querySelector('.next-button')) break;
       await user.click(answers()[i]);
-      if (!document.querySelector('.next-button')) expect(last().item.answered).toBe(false);
     }
-    expect(document.querySelector('.next-button')).not.toBeNull();
-    // « Bravo » (au premier ou au deuxième essai) : la soupape se lève ; une correction : rien ne bouge.
-    const bravo = /Bravo/.test(panel().textContent ?? '');
-    await vi.waitFor(() => expect(last().item.answered).toBe(bravo));
+    await vi.waitFor(() => expect(document.querySelector('.next-button')).not.toBeNull());
+    expect(last().item.answered).toBe(false);
+  });
+
+  it('la voix de la phrase a sa place dans la ligne épinglée ; une phrase trop haute pour l’épinglé n’y tient pas', async () => {
+    // Une phrase plus haute que la moitié du panneau (la règle du directeur artistique, relecture de L6a) : seule la
+    // ligne reste épinglée, la voix de la phrase y passe.
+    expect(PIN_MAX).toBe(0.5);
+    vi.stubGlobal('speechSynthesis', { speak: vi.fn(), cancel: vi.fn(), getVoices: () => [] });
+    vi.stubGlobal('SpeechSynthesisUtterance', class {});
+    vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(500);
+    await start('energy-circuits');
+    await vi.waitFor(() => expect(panel().dataset.epingle).toBe('ligne'));
+    expect(within(panel().querySelector<HTMLElement>(':scope > .world-phrase-voice')!).getByRole('button', { name: /^Phrase : / })).toBeInTheDocument();
+    vi.unstubAllGlobals();
+  });
+
+  it('une phrase qui tient dans la moitié du panneau reste épinglée', async () => {
+    vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(100);
+    await start('energy-circuits');
+    await vi.waitFor(() => expect(panel().dataset.epingle).toBe('phrase'));
   });
 });
 
@@ -587,5 +631,58 @@ describe('Le document d’un C (lot L6a)', () => {
     expect(screen.getByRole('button', { name: /^Écouter le document : Les sources d’énergie/ })).toBeInTheDocument();
     expect(document.querySelectorAll('.world-document .notice-line')).toHaveLength(3);
     expect(document.querySelector('details, [aria-expanded]')).toBeNull();
+  });
+});
+
+describe('Le défilement d’un C après une réponse (relecture de L6a)', () => {
+  const rect = (el: Element, top: number, height: number) =>
+    vi.spyOn(el, 'getBoundingClientRect').mockReturnValue({ top, bottom: top + height, height, left: 0, right: 300, width: 300, x: 0, y: top, toJSON: () => ({}) });
+  const build = (repere: boolean) => {
+    const panel = document.createElement('div');
+    panel.innerHTML = `<div class="world-consigne-line" style="position: sticky"></div><div class="question-head" style="position: sticky"></div><div class="world-answers"></div><button class="next-button"></button>${repere ? '<div class="world-repere" style="--repere-haut: 34px"></div>' : ''}`;
+    document.body.append(panel);
+    Object.defineProperty(panel, 'clientHeight', { configurable: true, value: 300 });
+    Object.defineProperty(panel, 'clientTop', { configurable: true, value: 0 });
+    rect(panel, 100, 300);
+    rect(panel.querySelector('.world-consigne-line')!, 100, 40);
+    rect(panel.querySelector('.question-head')!, 140, 60);
+    return panel;
+  };
+  afterEach(() => document.body.replaceChildren());
+
+  it('la réserve du pli est la hauteur du repère « Suite plus bas », lue dans son style, 0 sans repère', () => {
+    expect(foldReserve(build(true))).toBe(34);
+    document.body.replaceChildren();
+    expect(foldReserve(build(false))).toBe(0);
+  });
+
+  it('assez bas pour voir « Suivant », jamais au point de cacher les réponses sous l’épinglé', () => {
+    const panel = build(false);
+    rect(panel.querySelector('.world-answers')!, 210, 200);
+    // « Suivant » loin dessous : on s'arrête aux réponses, juste sous la phrase épinglée (210 − 100 − 100 − 4).
+    rect(panel.querySelector('.next-button')!, 800, 56);
+    expect(afterAnswer(panel, panel.querySelector('.world-answers')!, panel.querySelector('.next-button')!)).toBe(6);
+    // « Suivant » presque visible : on descend juste ce qu'il faut pour voir son bas (402 − 100 − 300).
+    rect(panel.querySelector('.next-button')!, 350, 52);
+    expect(afterAnswer(panel, panel.querySelector('.world-answers')!, panel.querySelector('.next-button')!)).toBe(2);
+    // Déjà visible : rien ne bouge.
+    rect(panel.querySelector('.next-button')!, 300, 56);
+    expect(afterAnswer(panel, panel.querySelector('.world-answers')!, panel.querySelector('.next-button')!)).toBe(0);
+  });
+});
+
+describe('La Turbine au plus grand texte, en « Vue simple » sur un écran bas (relecture de L6a)', () => {
+  it('le rôle de l’habitant quitte la ligne repliée de la consigne : la place va à la phrase et aux réponses', async () => {
+    localStorage.setItem('dysapps:settings', JSON.stringify({ fontSize: 32, univers: 'archipeo' }));
+    const user = userEvent.setup();
+    renderPlace('engine', 'energy-circuits');
+    const go = await screen.findByRole('button', { name: /Commencer/ }).catch(() => null);
+    if (go) await user.click(go);
+    const simple = screen.queryByRole('button', { name: /Vue simple/ });
+    if (simple) await user.click(simple);
+    await vi.waitFor(() => expect(document.querySelector('.world-consigne-fold')).not.toBeNull());
+    expect(document.querySelector('.world-consigne-fold')!.textContent).not.toMatch(/machiniste/);
+    expect(document.querySelector('.world-consigne-fold .world-scenette-role')).toBeNull();
+    localStorage.removeItem('dysapps:settings');
   });
 });

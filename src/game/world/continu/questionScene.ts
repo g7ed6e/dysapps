@@ -7,7 +7,7 @@ import { boundsOf, FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { DOCK_EDGE, placeById, type PlaceId } from './plan6e';
 import type { ItemScene } from './questions';
-import { ENGINE, FILETS_RACK, STEAM_GAP, engineSteam, filetsRack } from './places';
+import { ENGINE, FILETS_RACK, STEAM_GAP, VALVE_PUFFS, engineSteam, filetsRack } from './places';
 import { heightAt, standingHeight } from './terrain';
 
 const C = {
@@ -1243,7 +1243,7 @@ const COLUMN_DECOR: Partial<Record<PlaceId, (b: FacetBuilder, o: Vec3, done: boo
  * collée à la soupape), en un geste court, puis reste jusqu'à l'item suivant ; d'un coup avec « Réduire les
  * animations ». Sans éclat ni lumière.
  */
-export const VALVE = { z: -0.75, riser: 0.95, body: 0.32, lever: 1.05, lift: 0.4 } as const;
+export const VALVE = { z: -0.75, riser: 0.95, body: 0.32, lever: 1.05, lift: 0.4, capX: 0.04, capHeight: 0.16, rise: 0.3 } as const;
 
 /** Le dallage de la scène de la Turbine monte de tant au-dessus du replat (sans quoi il s'y confond, à la même hauteur). */
 export const ENGINE_PAVING_RISE = 0.15;
@@ -1256,9 +1256,9 @@ function steamValve(b: FacetBuilder, spot: Vec3, done: boolean): Reaction | null
   const top = o.y + VALVE.riser;
   b.box({ x: o.x, y: top, z }, [VALVE.body, VALVE.body, VALVE.body], C.engineIron, C.ironTop);
   const cap = top + VALVE.body;
-  b.prism({ x: o.x + 0.04, y: cap, z }, 0.1, 0.08, 0.16, 8, C.copper);
+  b.prism({ x: o.x + VALVE.capX, y: cap, z }, 0.1, 0.08, VALVE.capHeight, 8, C.copper);
   // Le levier, de sa charnière (à l'est du chapeau) vers l'ouest, son contrepoids au bout ; levé après une bonne réponse
-  // (la bouffée s'étire vers l'est : rien ne se touche).
+  // (la bouffée monte au-dessus de lui : rien ne se touche).
   const angle = done ? VALVE.lift : 0;
   const pivot = { x: o.x + 0.24, y: cap + 0.2, z: z + 0.02 };
   b.box({ x: pivot.x, y: cap, z: pivot.z }, [0.08, 0.24, 0.08], C.engineIron);
@@ -1266,10 +1266,18 @@ function steamValve(b: FacetBuilder, spot: Vec3, done: boolean): Reaction | null
   b.beam(pivot, end, 0.07, C.engineIron);
   b.prism({ x: end.x, y: end.y - 0.13, z: end.z }, 0.14, 0.14, 0.24, 8, C.engineIron, C.ironTop);
   if (!done) return null;
+  // La bouffée, centrée au-dessus du chapeau (directeur artistique, relecture de L6a), monte de `VALVE.rise` ; l'écart
+  // d'air clair (`STEAM_GAP`) est tenu dès son départ (directeur du contenu pédagogique) au-dessus de tout ce qui est sous
+  // elle : le chapeau, et le levier levé (son bras, son contrepoids au bout).
   const r = new FacetBuilder();
-  engineSteam(r, { x: 0, y: 0, z: 0 }, 0.55);
-  const to = { x: o.x - 0.05, y: cap + 0.16 + STEAM_GAP, z };
-  return { facets: r.build(), from: { ...to, y: to.y - 0.3 }, to, arc: 0, stay: true };
+  engineSteam(r, { x: 0, y: 0, z: 0 }, 0.55, VALVE_PUFFS);
+  const puff = r.build();
+  const x = o.x + VALVE.capX;
+  const west = x + boundsOf(puff).min[0];
+  const weight = end.x + 0.14;
+  const lever = west <= weight ? end.y + 0.11 : pivot.y + ((pivot.x - west) / (pivot.x - end.x)) * (end.y - pivot.y) + 0.05;
+  const from = { x, y: Math.max(cap + VALVE.capHeight, lever) + STEAM_GAP, z };
+  return { facets: puff, from, to: { ...from, y: from.y + VALVE.rise }, arc: 0, stay: true };
 }
 
 /**
@@ -2125,8 +2133,12 @@ export const ENGINE_TRACE_SPOTS = {
  * - Mouvements et signaux : un wagonnet immobile sur deux rails courts et droits, de fer sombre, sur leurs traverses de
  *   bois, et son butoir ;
  * - Énergie et circuits : le marteau-pilon au bout de l'arbre, son portique, son marteau levé, son enclume ;
- * - Matériaux, transformations et saisons : un cadran solaire de pierre, son style, sans ombre peinte ni graduation.
+ * - Matériaux, transformations et saisons : un cadran solaire de pierre, son style de cuivre fin, sans ombre peinte ni
+ *   graduation.
  */
+/** Le style du cadran solaire de la Turbine : sa direction, son pied et son bout le long d'elle, la hauteur de son bout, la section de la tige. */
+const GNOMON = { yaw: 0.7, foot: 0.4, head: 0.3, height: 0.4, rod: 0.05 } as const;
+
 const ENGINE_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => void> = {
   'states-of-matter': (b, x, z) => {
     const o = ENGINE_TRACE_SPOTS['states-of-matter'];
@@ -2170,11 +2182,15 @@ const ENGINE_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) =>
   'materials-light': (b, x, z) => {
     const o = ENGINE_TRACE_SPOTS['materials-light'];
     const g = quaiGround(x + o.x, z + o.z);
-    // Le fût de pierre, la table ronde, nue (ni ombre peinte, ni graduation, ni chiffre), et le style de fer, une plaque
-    // en triangle debout, tournée de biais pour se lire du sud.
+    // Le fût de pierre, la table ronde, nue (ni ombre peinte, ni graduation, ni chiffre), et le style de cuivre : une tige
+    // fine, penchée, et son étai, tournés de biais pour se lire du sud (directeur artistique, relecture de L6a : jamais
+    // une plaque pleine, qui se lirait comme le bouton « lecture »).
     b.prism({ x: g.x, y: g.y - 0.2, z: g.z }, 0.42, 0.34, 0.25, 8, C.stoneDark, C.stone);
     b.prism({ x: g.x, y: g.y + 0.05, z: g.z }, 0.24, 0.22, 0.8, 8, C.stone);
     b.prism({ x: g.x, y: g.y + 0.85, z: g.z }, 0.6, 0.6, 0.1, 12, C.stoneDark, C.stone);
-    b.extrude({ x: g.x, y: g.y + 0.95, z: g.z, yaw: 0.7 }, [[-0.45, 0], [0.42, 0], [-0.45, 0.42]], 0.07, C.engineIron);
+    const [ux, uz] = [Math.cos(GNOMON.yaw), -Math.sin(GNOMON.yaw)];
+    const at = (u: number, y: number) => ({ x: g.x + u * ux, y: g.y + 0.95 + y, z: g.z + u * uz });
+    b.beam(at(-GNOMON.foot, 0), at(GNOMON.head, GNOMON.height), GNOMON.rod, C.copper);
+    b.beam(at(GNOMON.head, 0), at(GNOMON.head, GNOMON.height), GNOMON.rod * 0.8, C.copper);
   },
 };

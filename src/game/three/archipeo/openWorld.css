@@ -2027,3 +2027,112 @@
 .world-question .world-document .notice-text {
   font-size: max(18px, 1.15rem);
 }
+/* L'ordre d'un C, quelle que soit la taille du texte (relecture de L6a) : ce qui reste épinglé (la ligne de la consigne, la
+   voix de la phrase quand elle défile, les étapes), la phrase (et la ligne de calcul), les réponses, puis, après une
+   réponse, la correction (et « Presque ! ») juste dessous, avant le document : la réponse touchée et la bonne réponse
+   restent visibles avec elle (www/pedagogie/principes.md) ; enfin le document, l'indice, la figure et le rappel. Rien ne
+   s'intercale entre la phrase et les réponses. */
+:root .world-question .quiz.in-world.mode-c > :is(.consigne, .world-consigne-line, .world-consigne-more, .world-phrase-voice, .quiz-steps) {
+  order: 0;
+}
+:root .world-question .quiz.in-world.mode-c .world-question-prompt > :is(.question-head, .world-question-reference) {
+  order: 1;
+}
+:root .world-question .quiz.in-world.mode-c .world-question-prompt > .world-answers {
+  order: 2;
+}
+:root .world-question .quiz.in-world.mode-c > :is(.result-sheet, .feedback) {
+  order: 3;
+}
+:root .world-question .quiz.in-world.mode-c .world-question-prompt > :not(.question-head, .world-question-reference, .world-answers) {
+  order: 4;
+}
+/* La correction d'un C, serrée : « Pas tout à fait » (ou « Bravo ! ») et sa voix sur une seule ligne (le message vide
+   du résultat ne la pousse plus à la ligne) : les réponses et « Suivant » tiennent ensemble sur tablette. */
+.world-question .in-world.mode-c .result-sheet .feedback-compact {
+  flex-wrap: nowrap;
+}
+.world-question .in-world.mode-c .result-sheet .feedback-body {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+.world-question .in-world.mode-c .result-sheet .feedback-body > p:empty {
+  display: none;
+}
+/* La voix de la phrase dans ce qui reste épinglé, seulement quand la phrase, trop haute (plus de la moitié du panneau
+   avec la ligne), défile avec le reste : la question reste à un geste (directeur artistique). Son mot, « Phrase », la
+   distingue de la voix de la consigne ; celle de la phrase s'efface (sa place gardée : rien ne bouge). Sur tablette, elle
+   tient sa bande sous la consigne, à droite ; sur un écran bas, elle prend la place des étapes, dans la ligne. */
+.world-question .world-phrase-voice {
+  display: none;
+}
+.world-question .quiz.in-world.mode-c[data-epingle="ligne"] > .world-phrase-voice {
+  position: sticky;
+  top: calc(var(--pin-haut) + var(--pin-ligne, 0px));
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  background: var(--surface);
+}
+.world-question .quiz.in-world.mode-c[data-epingle="ligne"] .question-head > .speak-button {
+  visibility: hidden;
+}
+.world-question .world-phrase-voice .speak-button {
+  min-height: 48px;
+  margin: 0;
+}
+.world-question .quiz.in-world.mode-c[data-epingle="ligne"]:is([data-suite="haut"], [data-suite="deux"]) > .world-phrase-voice {
+  box-shadow:
+    0 3px 0 rgb(0 0 0 / 0.45),
+    0 16px 10px -8px rgb(0 0 0 / 0.55);
+}
+/* En « Vue simple » d'un C sur un écran bas (relecture de L6a, consultant UX UI, piste 1 : rendre la place) : le panneau
+   monte jusqu'en haut de l'écran ; « Scène » (son icône seule, son nom dit) et la pause se tiennent au bout de la ligne
+   d'en-tête du panneau, que les étapes (ou la voix de la phrase) leur gardent ; le rôle de l'habitant quitte la ligne
+   (WorldQuestion) ; la marge épinglée du haut se fait mince. La ligne se tient à la hauteur de la pause : le monde
+   commence sous la marge du haut de la page (1rem, global.css, `.app-shell.focus .content`), la pause à 0.6rem du haut
+   de l'écran ; le panneau monte de la différence, moins son bord et sa marge épinglée. */
+.world-question .quiz.in-world.scenette.simple.simple-bas.mode-c {
+  --pin-haut: 4px;
+  --barre-haut: calc(56px + 12px + 56px - 8px - var(--border-width, 2px) + 8px + env(safe-area-inset-right, 0px));
+  top: calc(0.6rem - 1rem - var(--border-width, 2px) - var(--pin-haut));
+}
+.world-question:has(.quiz.in-world.mode-c.simple-bas) > .world-question-simple {
+  top: calc(0.6rem - 1rem);
+}
+:root .world-question .quiz.in-world.simple-bas.mode-c > .quiz-steps {
+  flex: 0 0 120px;
+  align-self: center;
+  margin: 0 var(--barre-haut) 0 0;
+}
+:root .world-question .quiz.in-world.simple-bas.mode-c > .world-phrase-voice {
+  top: var(--pin-haut);
+  flex: 0 0 auto;
+  align-self: center;
+  margin: 0 var(--barre-haut) 0 0;
+}
+.world-question .quiz.in-world.simple-bas.mode-c[data-epingle="ligne"] > .quiz-steps {
+  display: none;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c > .world-phrase-voice .speak-button {
+  padding-inline: 10px;
+  font-size: 18px;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c > .world-phrase-voice .speak-button svg {
+  width: 32px;
+  height: 32px;
+}
+.world-question:has(.quiz.in-world.mode-c.simple-bas) > .world-question-simple {
+  width: 56px;
+  min-width: 56px;
+  padding: 0;
+  justify-content: center;
+}
+.world-question:has(.quiz.in-world.mode-c.simple-bas) > .world-question-simple .world-question-simple-word {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

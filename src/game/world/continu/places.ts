@@ -11,7 +11,7 @@ import type { Stage } from './construction';
 import { FacetBuilder, boundsOf, placeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId } from './plan6e';
-import { heightAt, standingHeight } from './terrain';
+import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 
 /** Le modèle d'un lieu : ses facettes dans son repère, d'où il vient, et la hauteur de son sommet (la marque s'y pose). */
 export interface PlaceModel {
@@ -93,6 +93,7 @@ const C = {
   steamShade: 0xc8d2cf,
   wornBrick: 0xb89a86,
   wornIron: 0x8c969b,
+  wornSteel: 0xb3babd,
 } as const;
 
 /** Les volumes d'un lieu en construction : `add(stage, row, draw)`, et `until` pour un volume tombé de la ruine. */
@@ -613,26 +614,46 @@ function saltworks(add: Add): void {
 
 /**
  * La Turbine (lot L6a), dans son repère (le lieu n'est pas tourné : sa face au sud, vers la caméra) : la source chaude à
- * l'ouest (son milieu, le rayon de sa margelle) ; la chaudière couchée sur son massif de briques (son bout ouest, sa
- * longueur, son rayon, son axe à `axis` au-dessus du sol, son milieu en z) ; le rotor dans son carter, à l'est (son
- * moyeu, le rayon du disque, la longueur des aubes, leur nombre, l'épaisseur du disque, le rayon et l'épaisseur du
- * carter, `sweep` : l'avance de la pointe d'une aube sur son pied, en radians) ; l'évent de briques et son panache ;
- * l'arbre qui sort du carter vers l'est, jusqu'à son palier.
+ * l'ouest (son milieu, le rayon de sa margelle, ses trois cercles à fleur d'eau : leur rayon du milieu et leur largeur) ;
+ * la chaudière couchée sur son massif de briques (son bout ouest, sa longueur, son rayon, son axe à `axis` au-dessus du
+ * sol, son milieu en z) ; le rotor dans son carter, à l'est (son moyeu ; le disque plein, son rayon et son épaisseur ; la
+ * couronne pleine qui ferme le cercle, son rayon et son épaisseur ; les aubes en relief sur la face, leur nombre, leur
+ * pied, leur largeur, `sweep` : l'avance de leur bout sur leur pied, en radians, `relief` ; le rayon et l'épaisseur du
+ * carter, `rim` : la largeur de son liseré de cuivre) ; l'évent de briques et son panache ; l'arbre qui sort du carter vers
+ * l'est, jusqu'à son palier.
  */
 export const ENGINE = {
-  spring: { x: -4.6, z: 0.6, r: 1.3 },
+  spring: { x: -4.6, z: 0.6, r: 1.3, rings: [0.32, 0.6, 0.88], ring: 0.07 },
   boiler: { x0: -2.3, length: 3.1, r: 0.72, axis: 1.45, z: -0.6, massif: 0.75 },
-  rotor: { x: 3.4, y: 2.55, z: -1, r: 1.8, blade: 0.42, blades: 24, sweep: 0.2, depth: 0.3, casing: 2.45, casingDepth: 1.2 },
+  rotor: {
+    x: 3.4,
+    y: 2.55,
+    z: -1,
+    r: 1.8,
+    depth: 0.3,
+    crown: 2.15,
+    crownDepth: 0.5,
+    blades: 16,
+    bladeFoot: 1.2,
+    bladeWidth: 0.3,
+    sweep: 0.14,
+    relief: 0.03,
+    hub: 0.5,
+    casing: 2.45,
+    casingDepth: 1.2,
+    rim: 0.14,
+  },
   vent: { x: -1.75, z: -0.6, top: 3.35 },
   shaft: { y: 1.15, to: 7 },
 } as const;
 
 /**
- * La couleur du rotor de la Turbine (un acier bleuté, plus clair que le fer du carter), que lui seul porte dans le monde :
- * la vue fait tourner ses sommets autour de son moyeu, face au sud, dans le matériau des lieux, sans appel de plus
- * (scene.ts, `unshadedLamp`) ; à l'arrêt pendant toute question et avec « Réduire les animations ».
+ * Les deux teintes du rotor de la Turbine, un acier bleuté bien plus clair que le fer du carter (le disque ; puis sa
+ * couronne, son moyeu et ses aubes, plus clairs encore), que lui seul porte dans le monde : la vue fait tourner leurs
+ * sommets autour de son moyeu, face au sud, dans le matériau des lieux, sans appel de plus (scene.ts, `unshadedLamp`) ; à
+ * l'arrêt pendant toute question et avec « Réduire les animations ».
  */
-export const ENGINE_ROTOR_COLOR = 0x6f8a98;
+export const ENGINE_ROTOR_COLORS = [0x7d97a4, 0xa9bcc6] as const;
 
 /** Le moyeu du rotor de la Turbine, dans le monde : il tourne autour de lui, dans le plan face au sud (x, y). */
 export function engineRotorHub(): { x: number; y: number; z: number } {
@@ -644,38 +665,69 @@ export function engineRotorHub(): { x: number; y: number; z: number } {
 /** Un point d'un cercle du plan x, y, autour de (`cx`, `cy`), à l'angle `a`. */
 const onCircle = (cx: number, cy: number, r: number, a: number): [number, number] => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
 
+/** Un contour du plan x, y dans le sens inverse des aiguilles d'une montre vu du sud (+z), comme `extrude` l'attend. */
+function counterClockwise(outline: [number, number][]): [number, number][] {
+  let area = 0;
+  for (let k = 0; k < outline.length; k++) {
+    const [x0, y0] = outline[k];
+    const [x1, y1] = outline[(k + 1) % outline.length];
+    area += x0 * y1 - x1 * y0;
+  }
+  return area < 0 ? outline.reverse() : outline;
+}
+
 /**
- * Le rotor de la Turbine, debout, sa face au sud, son moyeu en (`at.x`, `at.y`), de `at.z` à `at.z + depth` : le disque
- * plein, ses aubes courtes et nombreuses penchées dans le sens de la marche (des godets, pas des dents), le moyeu bombé.
- * `missing` : les aubes qui manquent (la ruine) ; `place` : le repère (debout, ou couché à plat dans l'herbe, `pitch`).
+ * Le rotor de la Turbine, debout, sa face au sud, son moyeu en (`at.x`, `at.y`), son disque de `at.z` à `at.z + depth`
+ * (directeur artistique, relecture de L6a : jamais une lame de scie) : le disque plein ; la couronne pleine qui ferme le
+ * cercle, plus épaisse que lui des deux côtés ; les aubes, courtes, en relief sur la face, penchées dans le sens de la
+ * marche, toutes sous la couronne (rien ne dépasse de son bord ni de son épaisseur) ; le moyeu. `colors` : le disque, puis
+ * la couronne, le moyeu et les aubes ; `missing` : les aubes qui manquent (la ruine, la couronne restée entière) ;
+ * `pitch` : couché à plat dans l'herbe, sa face vers le ciel.
  */
-function engineRotor(b: FacetBuilder, at: { x: number; y: number; z: number; pitch?: number }, color: number, missing: readonly number[] = []): void {
+function engineRotor(b: FacetBuilder, at: { x: number; y: number; z: number; pitch?: number }, colors: readonly [number, number], missing: readonly number[] = []): void {
   const R = ENGINE.rotor;
-  const base = { x: at.x, y: at.y, z: at.z, pitch: at.pitch ?? 0 };
-  const disc: [number, number][] = Array.from({ length: 16 }, (_, k) => onCircle(0, 0, R.r, (2 * Math.PI * k) / 16));
-  b.extrude(base, disc, R.depth, color);
-  // Le moyeu, en saillie des deux côtés.
-  const hub: [number, number][] = Array.from({ length: 8 }, (_, k) => onCircle(0, 0, 0.38, (2 * Math.PI * k) / 8));
-  b.extrude({ ...base, z: at.z - 0.12 }, hub, R.depth + 0.24, color);
+  const [disc, rim] = colors;
+  const pitch = at.pitch ?? 0;
+  // Le repère du disque, avancé de `d` le long de son axe (vers sa face, au sud debout, vers le ciel couché).
+  const along = (d: number) => ({ x: at.x, y: at.y - d * Math.sin(pitch), z: at.z + d * Math.cos(pitch), pitch });
+  b.extrude(along(0), Array.from({ length: 16 }, (_, k) => onCircle(0, 0, R.r, (2 * Math.PI * k) / 16)), R.depth, disc);
+  // La couronne : l'anneau pose sa face sur le plan x, z de son repère ; un quart de tour de plus la tourne vers le sud.
+  const lip = (R.crownDepth - R.depth) / 2;
+  b.annulus({ ...along(-lip), pitch: pitch + Math.PI / 2 }, R.r - 0.04, R.crown, R.crownDepth, 16, rim);
+  // Le moyeu, en saillie des deux côtés, jamais plus que la couronne.
+  b.extrude(along(-lip), Array.from({ length: 8 }, (_, k) => onCircle(0, 0, R.hub, (2 * Math.PI * k) / 8)), R.crownDepth, rim);
   for (let k = 0; k < R.blades; k++) {
     if (missing.includes(k)) continue;
     const a = (2 * Math.PI * k) / R.blades;
-    // Une aube fine, couchée dans le sens de la marche : son pied sur le disque, sa pointe plus loin (une hélice de
-    // turbine, jamais une dent d'engrenage). Un triangle épaissi : huit facettes.
-    const foot = 0.08 / R.r;
-    const outline: [number, number][] = [onCircle(0, 0, R.r - 0.1, a - foot), onCircle(0, 0, R.r + R.blade, a + R.sweep), onCircle(0, 0, R.r - 0.1, a + foot)];
-    b.extrude({ ...base, z: at.z - 0.04 }, outline, R.depth + 0.08, color);
+    // Une aube trapue, de son pied jusque sous la couronne, son bout en avance sur son pied : un godet vu de face.
+    const foot = R.bladeWidth / 2 / R.bladeFoot;
+    const tip = R.bladeWidth / 2 / R.r;
+    const outline = counterClockwise([onCircle(0, 0, R.bladeFoot, a - foot), onCircle(0, 0, R.bladeFoot, a + foot), onCircle(0, 0, R.r - 0.04, a + R.sweep + tip), onCircle(0, 0, R.r - 0.04, a + R.sweep - tip)]);
+    // Un aplat à peine devant la face (deux triangles par aube, au lieu de douze en volume : la maquette tient sous son
+    // plafond d'environ 1 000 triangles).
+    b.plate(along(R.depth + R.relief), outline, rim);
   }
 }
 
 /**
  * Le carter de la Turbine : un demi-tambour de fer qui couvre la moitié basse du rotor, devant comme derrière, sa
- * tranche plate à la hauteur du moyeu (le rotor en sort par le haut), de `at.z` à `at.z + depth`.
+ * tranche plate à la hauteur du moyeu (le rotor en sort par le haut), de `at.z` à `at.z + depth`. `rim` : le liseré de
+ * cuivre sur le bord de sa face au sud, l'arc et la tranche (directeur artistique : sa demi-lune se détache du rotor).
  */
-function engineCasing(b: FacetBuilder, at: { x: number; y: number; z: number; pitch?: number; yaw?: number }, color: number, face: number): void {
+function engineCasing(b: FacetBuilder, at: { x: number; y: number; z: number; pitch?: number; yaw?: number }, color: number, face: number, rim?: number): void {
   const R = ENGINE.rotor;
   const half: [number, number][] = Array.from({ length: 11 }, (_, k) => onCircle(0, 0, R.casing, Math.PI + (Math.PI * k) / 10));
   b.extrude(at, half, R.casingDepth, color, face);
+  if (rim === undefined) return;
+  // Un aplat à peine devant la face (sans épaisseur : on ne le voit que du sud) : dix pans le long de l'arc, et la tranche.
+  const z = at.z + R.casingDepth + 0.03;
+  const p = (x: number, y: number) => [at.x + x, at.y + y, z] as const;
+  for (let k = 0; k < 10; k++) {
+    const [a0, a1] = [Math.PI + (Math.PI * k) / 10, Math.PI + (Math.PI * (k + 1)) / 10];
+    const [i0, o0, o1, i1] = [onCircle(0, 0, R.casing - R.rim, a0), onCircle(0, 0, R.casing, a0), onCircle(0, 0, R.casing, a1), onCircle(0, 0, R.casing - R.rim, a1)];
+    b.quad(p(...i0), p(...o0), p(...o1), p(...i1), rim);
+  }
+  b.quad(p(-R.casing, -R.rim), p(R.casing, -R.rim), p(R.casing, 0), p(-R.casing, 0), rim);
 }
 
 /** La chaudière : un cylindre couché le long de x, de `x0` sur `length`, son axe à `y`, son dôme de cuivre. */
@@ -701,7 +753,6 @@ function engine(add: Add): void {
   const B = ENGINE.boiler;
   const R = ENGINE.rotor;
   const V = ENGINE.vent;
-  const g = siteGround('engine');
   // La source bouchée : sa margelle usée, ébréchée, et un tas de galets dessus ; elle s'en va quand la source est dégagée.
   add(
     'ruine',
@@ -735,22 +786,18 @@ function engine(add: Add): void {
     'ruine',
     0,
     (b) => {
-      engineRotor(b, { x: R.x - 0.6, y: 0.05, z: 2.1, pitch: -Math.PI / 2 }, C.wornIron, [4, 5]);
+      engineRotor(b, { x: R.x - 0.6, y: 0.12, z: 2.1, pitch: -Math.PI / 2 }, [C.wornIron, C.wornSteel], [4, 5]);
       engineCasing(b, { x: R.x + 2.4, y: 0, z: -2.3, pitch: -Math.PI / 2, yaw: 0.5 }, C.wornIron, C.wornIron);
     },
     { stage: 1, row: 0 },
   );
-  // Le corps : la source dégagée, sa margelle de pierre, son eau laiteuse et ses trois cercles aplatis, immobiles (le
-  // bouillonnement ; elle ne fume pas).
+  // Le corps : la source dégagée, sa margelle de pierre, son eau laiteuse et ses trois cercles à fleur d'eau, fins,
+  // concentriques et pleins sur tout leur tour, immobiles (le bouillonnement ; elle ne fume pas). Rien au milieu que
+  // l'eau claire (directeur artistique, relecture de L6a : ni secteurs ni centre sombre).
   add(0, 0, (b) => {
     b.prism({ x: S.x, y: SINK, z: S.z }, S.r, S.r, 0.32 - SINK, 10, C.darkStone, C.stone);
     b.prism({ x: S.x, y: 0.3, z: S.z }, S.r - 0.22, S.r - 0.22, 0.03, 10, C.spring);
-    for (const [r, color] of [
-      [0.78, C.springRing],
-      [0.54, C.spring],
-      [0.3, C.springRing],
-    ] as const)
-      b.prism({ x: S.x, y: 0.33, z: S.z }, r, r, 0.012, 10, color);
+    for (const r of S.rings) b.annulus({ x: S.x, y: 0.335, z: S.z }, r - S.ring / 2, r + S.ring / 2, 0.01, 16, C.springRing, C.springRing, false);
   });
   // Le massif de briques, la chaudière redressée dessus, son dôme de cuivre.
   add(0, 0.5, (b) => {
@@ -773,8 +820,8 @@ function engine(add: Add): void {
   add(1, 0, (b) => {
     const front = R.z - R.casingDepth / 2;
     b.box({ x: R.x, y: SINK, z: R.z }, [2 * R.casing + 0.3, 0.12 - SINK, R.casingDepth + 0.4], C.darkStone, C.stone);
-    engineRotor(b, { x: R.x, y: R.y, z: R.z - R.depth / 2 }, ENGINE_ROTOR_COLOR);
-    engineCasing(b, { x: R.x, y: R.y, z: front }, C.iron, C.iron);
+    engineRotor(b, { x: R.x, y: R.y, z: R.z - R.depth / 2 }, ENGINE_ROTOR_COLORS);
+    engineCasing(b, { x: R.x, y: R.y, z: front }, C.iron, C.iron, C.copper);
     const shaft = ENGINE.shaft;
     b.beam({ x: R.x + R.casing - 0.2, y: shaft.y, z: R.z }, { x: shaft.to, y: shaft.y, z: R.z }, 0.16, C.iron);
     b.box({ x: shaft.to - 0.15, y: SINK, z: R.z }, [0.36, shaft.y + 0.1 - SINK, 0.5], C.brickShade, C.brick);
@@ -802,17 +849,79 @@ function engine(add: Add): void {
   add(2, 0.5, (b) => {
     for (const [x, z, w, d, h] of ENGINE_WALL) b.box({ x, y: SINK, z, yaw: 0.04 * x }, [w, h - SINK, d], C.darkStone, C.stone);
   });
-  // La rigole : l'eau de la source qui descend vers la rivière, à l'ouest, posée sur la pente, bordée de pierre.
-  add(2, 0.67, (b) => {
-    const xs = [S.x - S.r + 0.1, -8.5, -11, -13.5, -15.6];
-    for (let k = 0; k + 1 < xs.length; k++) {
-      const x0 = xs[k],
-        x1 = xs[k + 1];
-      const y = Math.min(g.at(x0, S.z), g.at(x1, S.z));
-      b.box({ x: (x0 + x1) / 2, y: y - 0.4, z: S.z, yaw: 0 }, [x0 - x1 + 0.05, 0.4 + 0.02, 0.8], C.darkStone, C.stone);
-      b.box({ x: (x0 + x1) / 2, y: y - 0.4, z: S.z }, [x0 - x1 + 0.06, 0.4 + 0.035, 0.42], C.darkStone, C.spring);
-    }
+  // La rigole : l'eau de la source qui descend la pente vers la rivière, à l'ouest, bordée de pierre, jusqu'à la berge, où
+  // elle se déverse dans la rivière (directeur artistique, relecture de L6a : jamais en l'air au-dessus de l'eau).
+  add(2, 0.67, (b) => drawEngineRill(b));
+}
+
+/**
+ * Le tracé de la rigole de la Turbine, dans le repère du lieu, d'est en ouest le long de la source (z = `ENGINE.spring.z`) :
+ * ses points (x, et le haut de son eau, posé sur le sol dessiné, celui des tuiles, sous toute sa largeur), jusqu'à la
+ * berge ; puis la chute, de la berge jusqu'à l'eau de la rivière (`water`), et la nappe qui s'y étale (`spill`).
+ */
+export function engineRill(): { points: { x: number; y: number }[]; water: number; spill: { x: number; r: number } } {
+  const S = ENGINE.spring;
+  const c = placeById('engine').center;
+  const h0 = standingHeight(heightAt(c));
+  const field = buildHeightField();
+  // Le lieu n'est pas tourné : son repère est celui du monde, déplacé.
+  const ground = (x: number) => Math.max(...[-RILL.half, 0, RILL.half].map((dz) => heightOnMesh(field, c.x + x, c.z + S.z + dz))) - h0;
+  const water = -h0;
+  const start = S.x - S.r + 0.15;
+  // La berge : là où le sol dessiné descend à fleur d'eau.
+  let shore = start;
+  while (ground(shore - RILL.probe) > water + RILL.bank) shore -= RILL.probe;
+  const n = Math.max(1, Math.ceil((start - shore) / RILL.step));
+  const points = Array.from({ length: n + 1 }, (_, k) => {
+    const x = start + ((shore - start) * k) / n;
+    return { x, y: ground(x) + RILL.lift };
   });
+  // La chute : de la berge, en pente, jusqu'à l'eau.
+  points.push({ x: shore - RILL.fall, y: water + RILL.wet });
+  return { points, water, spill: { x: shore - RILL.fall - RILL.spill * 0.6, r: RILL.spill } };
+}
+
+/**
+ * La rigole : sa demi-largeur (pierre comprise), celle de son eau, le pas de son tracé, le pas où l'on cherche la berge,
+ * le sol à la berge au-dessus de l'eau, le haut de son eau au-dessus du sol, la profondeur de ses bords sous lui, la
+ * longueur de la chute, le haut de l'eau de la chute au-dessus de la rivière, le rayon de la nappe.
+ */
+const RILL = { half: 0.4, water: 0.21, step: 0.8, probe: 0.1, bank: 0.08, lift: 0.04, wall: 0.45, fall: 0.6, wet: 0.02, spill: 0.75 } as const;
+
+/** Un quadrilatère tourné vers `out` (son ordre retourné s'il le faut) : la rigole suit une pente quelconque. */
+function quadToward(b: FacetBuilder, q: readonly (readonly [number, number, number])[], out: readonly [number, number, number], color: number): void {
+  const [a, c, d] = q;
+  const u = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+  const v = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
+  const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+  const facing = n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0;
+  const [p0, p1, p2, p3] = facing ? q : [...q].reverse();
+  b.quad(p0, p1, p2, p3, color);
+}
+
+/**
+ * La rigole de la Turbine (`engineRill`) : son eau laiteuse entre deux bords de pierre, de la source à la berge, puis la
+ * chute et la nappe dans la rivière, à fleur d'eau.
+ */
+function drawEngineRill(b: FacetBuilder): void {
+  const z = ENGINE.spring.z;
+  const { points, water, spill } = engineRill();
+  const R = RILL;
+  for (let k = 0; k + 1 < points.length; k++) {
+    const [p, q] = [points[k], points[k + 1]];
+    const up = [0, 1, 0] as const;
+    // L'eau, puis les deux bords de pierre, un peu plus hauts ; leur flanc descend sous le sol (la marche de 0,03 entre
+    // l'eau et la pierre ne se voit pas : pas de face pour elle).
+    quadToward(b, [[p.x, p.y, z - R.water], [q.x, q.y, z - R.water], [q.x, q.y, z + R.water], [p.x, p.y, z + R.water]], up, C.spring);
+    for (const side of [-1, 1]) {
+      const [i, o] = [z + side * R.water, z + side * R.half];
+      const [py, qy] = [p.y + 0.03, q.y + 0.03];
+      quadToward(b, [[p.x, py, i], [q.x, qy, i], [q.x, qy, o], [p.x, py, o]], up, C.stone);
+      quadToward(b, [[p.x, py, o], [q.x, qy, o], [q.x, q.y - R.wall, o], [p.x, p.y - R.wall, o]], [0, 0, side], C.darkStone);
+    }
+  }
+  // La nappe : l'eau de la source qui s'étale dans la rivière, à fleur d'eau.
+  b.prism({ x: spill.x, y: water, z }, spill.r, spill.r, R.wet, 8, C.spring);
 }
 
 /**
@@ -828,10 +937,10 @@ export const STEAM_GAP = 0.45;
 /**
  * Un nuage de vapeur, à l'échelle `k`, son bas en `at` : des coussins arrondis (deux troncs à huit pans, l'un évasé,
  * l'autre qui se referme), le plus grand au milieu, en deux valeurs claires de la Brume, qui montent en s'étirant vers
- * l'est. Immobile, sans transparence.
+ * l'est (le panache), ou `puffs`, d'autres coussins (la bouffée de la soupape). Immobile, sans transparence.
  */
-export function engineSteam(b: FacetBuilder, at: { x: number; y: number; z: number }, k: number): void {
-  for (const [dx, dy, r, h, color] of STEAM_PUFFS) {
+export function engineSteam(b: FacetBuilder, at: { x: number; y: number; z: number }, k: number, puffs: readonly (readonly [number, number, number, number, number])[] = STEAM_PUFFS): void {
+  for (const [dx, dy, r, h, color] of puffs) {
     const p = { x: at.x + dx * k, y: at.y + dy * k, z: at.z, yaw: 0.2 + dx };
     b.prism(p, r * k * 0.7, r * k, h * k * 0.45, 8, color, color);
     b.prism({ ...p, y: p.y + h * k * 0.45 }, r * k, r * k * 0.55, h * k * 0.55, 8, color, C.steam);
@@ -844,6 +953,16 @@ const STEAM_PUFFS: readonly (readonly [number, number, number, number, number])[
   [0.55, 0.35, 0.68, 0.7, C.steam],
   [1.25, 0.62, 0.55, 0.6, C.steam],
   [1.85, 0.95, 0.4, 0.45, C.steamShade],
+];
+
+/**
+ * La bouffée de la soupape (lot L6a) : trois coussins centrés sur `at` (le plus grand au milieu, un de chaque côté, un
+ * peu plus haut), qui montent droit au-dessus du chapeau, jamais de biais sur le flanc de la chaudière.
+ */
+export const VALVE_PUFFS: readonly (readonly [number, number, number, number, number])[] = [
+  [0, 0, 0.62, 0.7, C.steam],
+  [-0.5, 0.22, 0.4, 0.5, C.steamShade],
+  [0.5, 0.26, 0.4, 0.5, C.steamShade],
 ];
 
 /** Les pierres du muret de la Turbine : leur milieu, leur largeur, leur profondeur, leur haut. */

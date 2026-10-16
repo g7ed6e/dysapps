@@ -39,6 +39,11 @@ export interface QuestionContextValue {
   /** La consigne du lieu : l'icône qui la lit, sur un écran bas. */
   instruction: string;
   show(item: ItemShown | null): void;
+  /**
+   * En C (lot L6a), la place de la voix de la phrase dans ce qui reste épinglé en haut du panneau, quand la phrase,
+   * trop haute, défile avec le reste (`data-epingle="ligne"`) : la question reste à un geste (directeur artistique).
+   */
+  phraseVoice?: HTMLElement | null;
 }
 
 export const QuestionContext = createContext<QuestionContextValue | null>(null);

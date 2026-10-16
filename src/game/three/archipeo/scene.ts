@@ -17,7 +17,7 @@ import { clampMap, mapPose, mapStart, panMap, zoomMap, type MapView } from '../.
 import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork, startOf } from '../../world/continu/paths';
 import { PLACES, TERRAIN, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
-import { ENGINE_ROTOR_COLOR, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
+import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PORT_MAP_POINT, PORT_ROOFLINES, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
 import { HELD_LIFT, SALT_PUMP, answerObjects, answerScale, inBasket, itemScene, placeTrace, rankInBasket, saltPumpHub, sceneSpot, sortPrise, sortScales, type Reaction, type SortLook } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
@@ -374,9 +374,10 @@ function veilMaterialOf(): THREE.MeshBasicMaterial {
 const VANE = { turn: 0.5 } as const;
 
 /**
- * Le rotor de la Turbine (lot L6a) tourne de même autour de son moyeu, face au sud (`ENGINE_ROTOR_COLOR`, que rien
- * d'autre ne prend dans le monde), lentement : à l'arrêt pendant toute question (scène ou « Vue simple »), avec
- * « Réduire les animations », et sur la Carte ; il reprend où il s'était arrêté.
+ * Le rotor de la Turbine (lot L6a) tourne de même autour de son moyeu, face au sud (ses deux teintes,
+ * `ENGINE_ROTOR_COLORS`, que rien d'autre ne prend dans le monde), lentement : son angle n'avance pas pendant une
+ * question (scène ou « Vue simple »), avec « Réduire les animations », ni sur la Carte (redessinée à la demande, il y
+ * sauterait d'un cran à chaque glissé) ; il reprend où il s'était arrêté.
  */
 const ROTOR = { turn: 0.35 } as const;
 
@@ -392,7 +393,7 @@ const ROTOR = { turn: 0.35 } as const;
 function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }, rotorAngle: { value: number }): THREE.MeshLambertMaterial {
   const [r, g, b] = linearRgb(LAMP_COLOR);
   const [vr, vg, vb] = linearRgb(SALT_PUMP.vane);
-  const [rr, rg, rb] = linearRgb(ENGINE_ROTOR_COLOR);
+  const [rotorDisc, rotorRim] = ENGINE_ROTOR_COLORS.map((c) => new THREE.Vector3(...linearRgb(c)));
   const hub = saltPumpHub();
   const rotorHub = engineRotorHub();
   m.onBeforeCompile = (shader) => {
@@ -402,7 +403,8 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
     shader.uniforms.vaneColor = { value: new THREE.Vector3(vr, vg, vb) };
     shader.uniforms.vanePivot = { value: new THREE.Vector2(hub.x, hub.y) };
     shader.uniforms.vaneAngle = vaneAngle;
-    shader.uniforms.rotorColor = { value: new THREE.Vector3(rr, rg, rb) };
+    shader.uniforms.rotorColor = { value: rotorDisc };
+    shader.uniforms.rotorRim = { value: rotorRim };
     shader.uniforms.rotorPivot = { value: new THREE.Vector2(rotorHub.x, rotorHub.y) };
     shader.uniforms.rotorAngle = rotorAngle;
     // Garde : si Three.js renomme ses morceaux de shader, la lampe redevient ombrée ; on le dit en développement.
@@ -411,10 +413,10 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
     // Les sommets des ailes tournent autour du moyeu, dans le plan face au sud (x, y du monde : les lieux y sont posés
     // tels quels, sans déplacement de leur maillage).
     shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nuniform vec3 vaneColor;\nuniform vec2 vanePivot;\nuniform float vaneAngle;\nuniform vec3 rotorColor;\nuniform vec2 rotorPivot;\nuniform float rotorAngle;')
+      .replace('#include <common>', '#include <common>\nuniform vec3 vaneColor;\nuniform vec2 vanePivot;\nuniform float vaneAngle;\nuniform vec3 rotorColor;\nuniform vec3 rotorRim;\nuniform vec2 rotorPivot;\nuniform float rotorAngle;')
       .replace(
         '#include <begin_vertex>',
-        '#include <begin_vertex>\n#ifdef USE_COLOR\nif ( all( lessThan( abs( color.rgb - vaneColor ), vec3( 0.004 ) ) ) ) {\n\tvec2 vaneD = transformed.xy - vanePivot;\n\tfloat vaneC = cos( vaneAngle ), vaneS = sin( vaneAngle );\n\ttransformed.xy = vanePivot + vec2( vaneC * vaneD.x - vaneS * vaneD.y, vaneS * vaneD.x + vaneC * vaneD.y );\n} else if ( all( lessThan( abs( color.rgb - rotorColor ), vec3( 0.004 ) ) ) ) {\n\tvec2 rotorD = transformed.xy - rotorPivot;\n\tfloat rotorC = cos( rotorAngle ), rotorS = sin( rotorAngle );\n\ttransformed.xy = rotorPivot + vec2( rotorC * rotorD.x - rotorS * rotorD.y, rotorS * rotorD.x + rotorC * rotorD.y );\n}\n#endif',
+        '#include <begin_vertex>\n#ifdef USE_COLOR\nif ( all( lessThan( abs( color.rgb - vaneColor ), vec3( 0.004 ) ) ) ) {\n\tvec2 vaneD = transformed.xy - vanePivot;\n\tfloat vaneC = cos( vaneAngle ), vaneS = sin( vaneAngle );\n\ttransformed.xy = vanePivot + vec2( vaneC * vaneD.x - vaneS * vaneD.y, vaneS * vaneD.x + vaneC * vaneD.y );\n} else if ( all( lessThan( abs( color.rgb - rotorColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( color.rgb - rotorRim ), vec3( 0.004 ) ) ) ) {\n\tvec2 rotorD = transformed.xy - rotorPivot;\n\tfloat rotorC = cos( rotorAngle ), rotorS = sin( rotorAngle );\n\ttransformed.xy = rotorPivot + vec2( rotorC * rotorD.x - rotorS * rotorD.y, rotorS * rotorD.x + rotorC * rotorD.y );\n}\n#endif',
       );
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', '#include <common>\nuniform vec3 lampColor;\nuniform vec3 steamColor;\nuniform vec3 steamShade;')
@@ -1754,8 +1756,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const t = now / 1000;
     // Les ailes de la pompe à vent tournent lentement ; à l'arrêt avec « Réduire les animations ».
     if (!reduceMotion) vaneAngle.value = (t * VANE.turn) % (2 * Math.PI);
-    // Le rotor de la Turbine tourne lentement, à l'arrêt pendant toute question (il reprend où il s'était arrêté).
-    if (!reduceMotion && !scenette) rotorAngle.value = (rotorAngle.value + dt * ROTOR.turn) % (2 * Math.PI);
+    // Le rotor de la Turbine tourne lentement, à l'arrêt pendant toute question et sur la Carte (il reprend où il s'était
+    // arrêté).
+    if (!reduceMotion && !asked && !scenette && !mapView) rotorAngle.value = (rotorAngle.value + dt * ROTOR.turn) % (2 * Math.PI);
     let moving = false;
     if (walk) {
       const state = walkAt(walk, now, reduceMotion);

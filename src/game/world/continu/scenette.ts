@@ -738,6 +738,8 @@ const C = {
   ochre: 0xc8923a,
   goggles: 0x6f8089,
   copper: 0xc07a3e,
+  /** Les cheveux de la machiniste, sombres. */
+  hair: 0x3b2a22,
   trousers: 0x4d6a82,
   // Le filet raccommodé (le même que sur le séchoir, questionScene.ts, `mendedNet`) et ses mailles.
   newRope: 0xc9a36a,
@@ -874,23 +876,29 @@ function sauniere(b: FacetBuilder, place: PlaceId): void {
 }
 
 /**
- * La machiniste, immobile, en quatre volumes (directeur artistique, consultant Archipéo) : sa veste bleu lagon, son
- * foulard ocre au cou, la tête, ses lunettes relevées sur le front ; un bras plié devant elle, sa burette d'huile de
- * cuivre à la main, le bec tendu vers la soupape. Elle ne dit rien.
+ * La machiniste, immobile (directeur artistique, consultant Archipéo) : sa veste bleu lagon, son foulard ocre au cou, la
+ * tête, ses cheveux sombres noués en chignon, ses lunettes relevées sur le front, sur les cheveux ; un bras plié devant
+ * elle, sa burette d'huile à la main, un corps conique de cuivre et son long bec fin tendu vers la soupape (relecture de
+ * L6a : jamais une torche, le feu est exclu du lieu). Elle ne dit rien.
  */
 function machiniste(b: FacetBuilder, place: PlaceId): void {
   const at = scenetteHabitant(place);
   b.prism(at, 0.4, 0.28, 0.92, 10, C.lagoonCoat, C.lagoonCoatShade);
   b.prism({ x: at.x, y: at.y + 0.86, z: at.z }, 0.27, 0.22, 0.12, 10, C.ochre);
-  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 10, 7, C.head);
+  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
+  // Les cheveux : une calotte un peu plus grande, reculée et montée (le visage reste nu devant), et le chignon derrière.
+  sphere(b, { x: at.x, y: at.y + 1.16, z: at.z - 0.035 }, 0.245, 8, 4, C.hair);
+  sphere(b, { x: at.x, y: at.y + 1.36, z: at.z - 0.17 }, 0.11, 6, 3, C.hair);
   // Les lunettes relevées : leur bandeau, et deux verres ronds sur le front.
-  b.prism({ x: at.x, y: at.y + 1.2, z: at.z }, 0.235, 0.235, 0.06, 10, C.trousers);
-  for (const dx of [-0.09, 0.09]) b.drum({ x: at.x + dx, y: at.y + 1.25, z: at.z + 0.2, pitch: Math.PI / 2 }, 0.065, 0.06, 6, C.goggles);
-  // Le bras vers l'ouest (vers la soupape), la burette dans la main : son corps, son bec fin.
+  b.prism({ x: at.x, y: at.y + 1.2, z: at.z }, 0.26, 0.26, 0.06, 10, C.trousers);
+  for (const dx of [-0.09, 0.09]) b.drum({ x: at.x + dx, y: at.y + 1.25, z: at.z + 0.21, pitch: Math.PI / 2 }, 0.065, 0.06, 6, C.goggles);
+  // Le bras vers l'ouest (vers la soupape), la main à côté de la burette : son corps conique posé sur sa base, large en
+  // bas ; son bec, long et fin, qui part du haut vers la soupape.
   const hand = { x: at.x - 0.45, y: at.y + 0.62, z: at.z + 0.3 };
   b.beam({ x: at.x - 0.24, y: at.y + 0.82, z: at.z + 0.06 }, hand, 0.15, C.lagoonCoat);
-  b.prism({ x: hand.x, y: hand.y - 0.2, z: hand.z }, 0.11, 0.06, 0.2, 6, C.copper);
-  b.beam({ x: hand.x - 0.04, y: hand.y - 0.04, z: hand.z }, { x: hand.x - 0.32, y: hand.y + 0.06, z: hand.z }, 0.03, C.copper);
+  const can = { x: hand.x - 0.1, y: hand.y - 0.2, z: hand.z };
+  b.prism(can, 0.15, 0.035, 0.26, 8, C.copper);
+  b.beam({ x: can.x, y: can.y + 0.24, z: can.z }, { x: can.x - 0.5, y: can.y + 0.4, z: can.z }, 0.025, C.copper);
 }
 
 /**

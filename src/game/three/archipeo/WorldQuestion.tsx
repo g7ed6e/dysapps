@@ -15,6 +15,7 @@
 // transition) se joue ici aussi, sur l'écran habituel (`plain` : l'écran de la grille, sur un panneau uni), avec le même
 // bilan et le même retour au lieu.
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
@@ -48,10 +49,35 @@ import { ConsigneIcon, IconLabel, PlaceAid, PlaceDocument, QuestionContext, aidO
 import { WorldDone } from './WorldDone';
 import { belowFold, filledGap, inVisibleScene, labelBesideBar, overflows, wordsCut } from './fit';
 
-/** Ce que le repère « Suite plus bas » garde au bas d'un panneau qui défile, en pixels (openWorld.css, `--repere-haut`). */
-const FOLD_RESERVE = 34;
-/** En C, la ligne de la consigne et la phrase épinglées ne prennent jamais plus que cette part du panneau. */
-const PIN_MAX = 0.5;
+/**
+ * Ce que le repère « Suite plus bas » garde au bas d'un panneau qui défile, en pixels : sa hauteur, lue dans la feuille
+ * de style (openWorld.css, `--repere-haut`, la seule source), 0 sans repère.
+ */
+export function foldReserve(panel: Element): number {
+  const repere = panel.querySelector(':scope > .world-repere');
+  return repere ? parseFloat(getComputedStyle(repere).getPropertyValue('--repere-haut')) || 0 : 0;
+}
+/**
+ * En C, après une réponse, où poser le défilement du panneau (`scrollTop`) : assez bas pour voir « Suivant » (le bas de
+ * la correction), jamais au point de cacher le haut des réponses sous ce qui est épinglé (la ligne de la consigne, et la
+ * phrase quand elle l'est). Le panneau, ses réponses et « Suivant » lus à l'écran.
+ */
+export function afterAnswer(panel: HTMLElement, answers: Element, next: Element): number {
+  const top = panel.getBoundingClientRect().top + panel.clientTop;
+  const inside = (y: number) => y - top + panel.scrollTop;
+  // Le bas de ce qui reste épinglé en haut, collé au bord : la ligne de la consigne, et la phrase quand elle l'est.
+  let pinned = 0;
+  for (const el of panel.querySelectorAll(':scope > .world-consigne-line, :scope > .consigne, .question-head'))
+    if (getComputedStyle(el).position === 'sticky') pinned = Math.max(pinned, el.getBoundingClientRect().bottom - top);
+  const keepAnswers = inside(answers.getBoundingClientRect().top) - pinned - 4;
+  const showNext = inside(next.getBoundingClientRect().bottom) - (panel.clientHeight - foldReserve(panel));
+  return Math.max(0, Math.min(keepAnswers, showNext));
+}
+/**
+ * En C, la ligne de la consigne et la phrase épinglées ne prennent jamais plus que cette part du panneau : au-delà, seule
+ * la ligne reste épinglée, la voix de la phrase y passe (règle du directeur artistique, relecture de L6a).
+ */
+export const PIN_MAX = 0.5;
 
 /** Le nombre de réponses tant que l'écran ne l'a pas dit. */
 const DEFAULT_COUNT = 3;
@@ -155,6 +181,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   // suite » la déplie) : la rangée et « Valider » restent visibles dès l'ouverture (référent dys, GD-20, point 8) ; dépliée,
   // elle se replie à l'item suivant (la clé de l'item, pas sa scène : aux Quais, tous les items ont la même).
   const [consigneOpen, setConsigneOpen] = useState(false);
+  // En C, la place de la voix de la phrase dans ce qui reste épinglé (`PlaceChoiceScreen` y pose son bouton).
+  const [phraseVoice, setPhraseVoice] = useState<HTMLElement | null>(null);
   const itemKey = item ? item.key || JSON.stringify(item.scene) : '';
   const lastItem = useRef('');
   useEffect(() => {
@@ -203,7 +231,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     const column = root.querySelector<HTMLElement>('.quiz.in-world');
     // En C (lot L6a), la colonne défile : seules la phrase et les réponses doivent s'y voir sans défiler (0 px sous le
     // pli) ; le document, le rappel, l'indice et la correction peuvent passer dessous, signalés.
-    if (!column || !(inColumn ? belowFold(column, column.querySelectorAll('.world-answers .world-answer'), FOLD_RESERVE) > 0 : overflows(column))) return;
+    if (!column || !(inColumn ? belowFold(column, column.querySelectorAll('.world-answers .world-answer'), foldReserve(column)) > 0 : overflows(column))) return;
     // Au plus grand texte, une scénette dont le panneau déborderait s'ouvre en « Vue simple », une fois (sur un écran
     // bas, après l'avoir essayée en pleine largeur) : la consigne y est entière, et c'est le panneau qui défile (sur un
     // téléphone, la question n'y tient pas sans défiler ; « Valider » reste dans sa bande, en bas). Revenu à la scène,
@@ -283,13 +311,18 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     const update = () => {
       frame = 0;
       const line = panel.querySelector<HTMLElement>(':scope > .world-consigne-line') ?? panel.querySelector<HTMLElement>(':scope > .consigne');
-      const pinned = line && !panel.classList.contains('consigne-ouverte') && getComputedStyle(line).position === 'sticky';
-      const lineHeight = pinned ? line.offsetHeight : 0;
-      panel.style.setProperty('--pin-ligne', `${lineHeight}px`);
-      // Une phrase épinglée qui prendrait plus de la moitié du panneau ne laisserait rien voir défiler dessous (au plus
-      // grand texte sur un téléphone couché, jusqu'à plus que le panneau) : elle défile alors avec le reste.
       const head = panel.querySelector<HTMLElement>('.question-head');
-      panel.dataset.epingle = head && lineHeight + head.offsetHeight > panel.clientHeight * PIN_MAX ? 'ligne' : 'phrase';
+      const lineOf = () => (line && !panel.classList.contains('consigne-ouverte') && getComputedStyle(line).position === 'sticky' ? line.offsetHeight : 0);
+      // Une phrase épinglée qui prendrait plus de la moitié du panneau ne laisserait rien voir défiler dessous (au plus
+      // grand texte sur un téléphone couché, jusqu'à plus que le panneau) : elle défile alors avec le reste. La ligne n'a
+      // pas la même hauteur dans les deux cas (les étapes y passent quand la phrase est épinglée, la voix de la phrase
+      // sinon) : la part se mesure dans la forme « phrase » elle-même, sans quoi l'épinglage oscillait d'une forme à
+      // l'autre autour de 0,5 et restait sur la dernière (mesure des plis de L6a, 844 × 390 au plus grand texte).
+      panel.dataset.epingle = 'phrase';
+      const phraseLine = lineOf();
+      const tooTall = head && phraseLine + head.offsetHeight > panel.clientHeight * PIN_MAX;
+      if (tooTall) panel.dataset.epingle = 'ligne';
+      panel.style.setProperty('--pin-ligne', `${tooTall ? lineOf() : phraseLine}px`);
     };
     const observer = new ResizeObserver(() => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -297,9 +330,25 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     observer.observe(panel);
     for (const el of panel.querySelectorAll(':scope > .world-consigne-line, :scope > .consigne, .question-head')) observer.observe(el);
     update();
+    // Après une réponse, la correction s'insère juste sous les réponses (openWorld.css) et « Suivant » prend le focus,
+    // qui fait défiler le panneau jusqu'à lui : le panneau se repose pour que la réponse touchée et la bonne réponse
+    // restent visibles (www/pedagogie/principes.md, relecture de L6a), la correction dessous, aussi loin qu'elle tient.
+    let settle = 0;
+    const onFocus = (e: FocusEvent) => {
+      if (!(e.target instanceof HTMLElement) || !e.target.matches('.next-button')) return;
+      const button = e.target;
+      cancelAnimationFrame(settle);
+      settle = requestAnimationFrame(() => {
+        const answers = panel.querySelector('.world-answers');
+        if (answers) panel.scrollTop = afterAnswer(panel, answers, button);
+      });
+    };
+    panel.addEventListener('focusin', onFocus);
     return () => {
       observer.disconnect();
+      panel.removeEventListener('focusin', onFocus);
       if (frame) cancelAnimationFrame(frame);
+      cancelAnimationFrame(settle);
       panel.style.removeProperty('--pin-ligne');
       delete panel.dataset.epingle;
     };
@@ -354,7 +403,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   // (directeur du contenu pédagogique, 16 octobre 2026) ; la scène garde la consigne du lieu.
   const referenceView = simple && item !== null && sceneDrawsFigure(item.scene);
   const instruction = ready ? (referenceView ? ready.def.instruction : placeInstruction(place, ready.def.id, ready.level, ready.def.instruction, item?.scene)) : '';
-  const context = useMemo(() => ({ place, layout, show, instruction, simple }), [place, layout, show, instruction, simple]);
+  const context = useMemo(() => ({ place, layout, show, instruction, simple, phraseVoice }), [place, layout, show, instruction, simple, phraseVoice]);
 
   const exerciseId = ready?.def.id;
   const readyLevel = ready?.level ?? 1;
@@ -409,6 +458,11 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
             <span className="world-consigne-more-word">{consigneOpen ? 'Replier' : 'Lire la suite'}</span>
           </button>
         )}
+        {inColumn && (
+          // En C, la place de la voix de la phrase, épinglée avec la ligne de la consigne : elle ne se montre que quand la
+          // phrase, trop haute, défile avec le reste (`data-epingle="ligne"`, openWorld.css).
+          <span className="world-phrase-voice" ref={setPhraseVoice} />
+        )}
         {(simple || inColumn) && (
           // Le repère de défilement (data-repere, plus haut) : un chevron vers le bas sur un trait pointillé, au bas du
           // panneau, tant que des réponses restent plus bas ; sa place est toujours tenue (rien ne bouge quand il part).
@@ -446,7 +500,13 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     const head: ReactNode = simpleLow ? (
         <div className="world-scenette-head world-consigne-line">
           <p className="world-consigne-fold" id="consigne-ligne">
-            <strong className="world-scenette-role">{scenette.role}</strong>{' '}
+            {/* En C, le rôle de l'habitant quitte la ligne : la place va à la phrase et aux réponses (relecture de L6a,
+                consultant UX UI, piste 1). */}
+            {!inColumn && (
+              <>
+                <strong className="world-scenette-role">{scenette.role}</strong>{' '}
+              </>
+            )}
             {rule && (
               <>
                 <span className="world-consigne-regle">{frenchTypography(rule)}</span>{' '}
@@ -635,7 +695,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       {/* En « Vue simple » d'une scénette, à la même place : le retour à la scène, les cloches choisies gardées. */}
       {ready && stage && !plain && !finished && simple && (
         <button type="button" className="button world-question-simple" onClick={() => setSimple(false)}>
-          <Icon name="mountain" /> Scène
+          <Icon name="mountain" /> <span className="world-question-simple-word">Scène</span>
         </button>
       )}
       {!finished &&
@@ -690,7 +750,7 @@ function PlaceText({ text }: { text: string }) {
  * demande, une réponse par objet du lieu. La correction est celle de l'écran classique (CalculationScreen).
  */
 function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: ScreenProps) {
-  const { layout, show, simple } = useQuestion();
+  const { layout, show, simple, phraseVoice } = useQuestion();
   useStopOnLeave();
   const item = items[0];
   const scene = placeSceneOf(item);
@@ -775,8 +835,16 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
     </div>
   );
 
+  // En C, la voix de la phrase posée aussi dans ce qui reste épinglé : elle ne s'y montre que quand la phrase, trop haute
+  // pour l'être, défile avec le reste (openWorld.css) ; son mot, « Phrase », la distingue de la voix de la consigne.
+  const pinnedVoice =
+    inColumn && phraseVoice
+      ? createPortal(question ? <SpeakButton text={frenchTypography(question)} label="Phrase" /> : <SpeakButton text={filled ? whole : spoken} label="Phrase" shown={whole} />, phraseVoice)
+      : null;
+
   return (
     <div className="question world-place">
+      {pinnedVoice}
       <div className={`world-question-prompt${filled ? ' filled' : ''}`}>
         {question && inColumn ? (
           // En C, la question seule en tête (épinglée en haut du panneau quand il défile) ; son document après les

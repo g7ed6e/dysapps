@@ -159,4 +159,23 @@ describe('Les étiquettes de la Carte', () => {
     expect(quais.name).toBe(true);
     expect(quais.top).toBe(500 - MAP_LOCK);
   });
+
+  it('un cadenas ne coiffe jamais le nom d’un lieu ouvert : la place du nom d’un lieu fermé, sous son cadenas, reste libre (relecture de L6a)', () => {
+    // La tablette, la Carte entière : les Écluses fermées juste au-dessus et à gauche de la Turbine ouverte (tab-carte).
+    const labels: MapLabel[] = [
+      { id: 'ecluses', kind: 'closed', x: 733, y: 275, w: 160, h: 84 },
+      { id: 'engine', kind: 'open', x: 807, y: 280, w: 192, h: 48 },
+    ];
+    const [ecluses, engine] = layoutMapLabels(labels, [], { width: 1024, height: 768 });
+    const lock = { left: 733 - MAP_LOCK / 2, right: 733 + MAP_LOCK / 2, bottom: 275 };
+    const name = { left: 733 - 80, right: 733 + 80, top: 275, bottom: 275 + 84 - MAP_LOCK };
+    const label = { left: engine.left, right: engine.left + 192, top: engine.top, bottom: engine.top + 48 };
+    // Ni sous le cadenas (dans la place de son nom), ni collé dessous.
+    const overlaps = (a: typeof label, b: typeof name) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+    expect(overlaps(label, name)).toBe(false);
+    expect(label.left < lock.right && lock.left < label.right && label.top >= lock.bottom && label.top < lock.bottom + MAP_LABEL_GAP + 1).toBe(false);
+    // Le nom des Écluses se montre sous son cadenas : le cadenas se lit comme le sien.
+    expect(ecluses.name).toBe(true);
+    expect(engine.name).toBe(true);
+  });
 });

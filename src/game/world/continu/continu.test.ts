@@ -402,7 +402,7 @@ describe('Les maquettes des lieux', () => {
       const m = modelOfPlace(p.id);
       expect(m.source).toBe('dessine');
       expect(m.facets.triangles).toBeGreaterThan(20);
-      // La Turbine (lot L6a), une machine entière : 1 042, dans l'estimation du directeur artistique (environ 2 030 avec
+      // La Turbine (lot L6a), une machine entière : 1 082 (après la relecture), dans l'estimation du directeur artistique (environ 2 030 avec
       // ses traces et sa brume).
       expect(m.facets.triangles).toBeLessThan(p.id === 'engine' ? 1100 : 800);
       expect(m.top).toBeGreaterThan(2);

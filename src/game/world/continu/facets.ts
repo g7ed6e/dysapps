@@ -115,6 +115,28 @@ export class FacetBuilder {
   }
 
   /**
+   * Un anneau plat (la couronne d'un rotor, un cercle à la surface de l'eau) : entre les rayons `r0` et `r1`, de `y` = 0
+   * à `h`, son dessus et son dessous de la couleur `face`, ses bords de `color`. `closed` faux : le dessus seul, ni
+   * dessous ni bords, qu'on ne voit jamais (un cercle à fleur d'eau).
+   */
+  annulus(at: Placement, r0: number, r1: number, h: number, sides: number, color: number, face = color, closed = true): void {
+    const t = transform(at);
+    const ring = (r: number, y: number) => Array.from({ length: sides }, (_, k) => t([r * Math.cos((2 * Math.PI * k) / sides), y, r * Math.sin((2 * Math.PI * k) / sides)]));
+    const inLo = ring(r0, 0);
+    const inHi = ring(r0, h);
+    const outLo = ring(r1, 0);
+    const outHi = ring(r1, h);
+    for (let k = 0; k < sides; k++) {
+      const n = (k + 1) % sides;
+      this.quad(inHi[n], outHi[n], outHi[k], inHi[k], face);
+      if (!closed) continue;
+      this.quad(outLo[n], outLo[k], outHi[k], outHi[n], color);
+      this.quad(inLo[k], outLo[k], outLo[n], inLo[n], face);
+      this.quad(inLo[k], inLo[n], inHi[n], inHi[k], color);
+    }
+  }
+
+  /**
    * Un profil plat épaissi (une aube, un carter) : `outline`, ses sommets dans le plan x, y du repère, dans le sens
    * inverse des aiguilles d'une montre vu du sud (+z), convexe ; épaissi de z = 0 à z = `h`. Ses deux faces sont de la
    * couleur `face`, ses côtés de `color`.
@@ -132,6 +154,16 @@ export class FacetBuilder {
       const m = (k + 1) % n;
       this.quad(back[k], back[m], front[m], front[k], color);
     }
+  }
+
+  /**
+   * Un aplat sans épaisseur : le profil `outline` (plan x, y du repère, dans le sens inverse des aiguilles d'une montre vu
+   * de +z) posé à `at`, sa face vers +z ; de dos, rien (les aubes peintes sur la face du rotor de la Turbine).
+   */
+  plate(at: Placement, outline: readonly (readonly [number, number])[], color: number): void {
+    const t = transform(at);
+    const face = outline.map(([x, y]) => t([x, y, 0]));
+    for (let k = 1; k < face.length - 1; k++) this.triangle(face[0], face[k], face[k + 1], color);
   }
 
   /** Un pavé tendu entre deux points (un bras, une corde, une potence), de section carrée `t`. */

@@ -12,11 +12,12 @@ import { PROBLEMES_EXERCISES } from '../../exercises/problems';
 import { POSEES_EXERCISES } from '../../exercises/writtenOperations';
 import { boundsOf } from './facets';
 import { linearRgb } from './geometry';
-import { ENGINE, ENGINE_ROTOR_COLOR, STEAM_COLORS, engineRotorHub, modelOfPlace } from './places';
+import { ENGINE, ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRill, engineRotorHub, modelOfPlace, ruinOf } from './places';
+import { PLANK_BRIDGES, pathRibbons } from './paths';
 import { networkSamples } from './paths';
-import { heightAt, standingHeight } from './terrain';
+import { buildHeightField, heightAt, heightOnMesh, landDistance, standingHeight, tileFacets } from './terrain';
 import PLACE_ITEMS from './placeItems.json';
-import { PLACES, placeById } from './plan6e';
+import { PLACES, TERRAIN, placeById } from './plan6e';
 import {
   ANSWER_LAYOUT,
   ECLUSES_TRACE_SPOTS,
@@ -537,7 +538,7 @@ describe('La Turbine (GD-20, point 8, lot L6a)', () => {
     expect(new Set(traces.map(([, f]) => f.triangles)).size).toBe(4);
     const boxes = traces.map(([, f]) => boundsOf(f));
     const near = networkSamples(0.25).filter((p) => Math.hypot(p.x - c.x, p.z - c.z) < 20);
-    const rotorTop = engineRotorHub().y + ENGINE.rotor.r + ENGINE.rotor.blade;
+    const rotorTop = engineRotorHub().y + ENGINE.rotor.crown;
     for (const [k, [m]] of traces.entries()) {
       const b = boxes[k];
       expect(b.min[1], m).toBeGreaterThan(standingHeight(heightAt(c)) - 0.5);
@@ -556,25 +557,150 @@ describe('La Turbine (GD-20, point 8, lot L6a)', () => {
 
   it('le rotor et la vapeur portent des couleurs que rien d’autre ne prend : la vue fait tourner l’un, éclaire l’autre sans ombre', () => {
     const model = modelOfPlace('engine').facets;
-    const rotor = colorVertices(model, ENGINE_ROTOR_COLOR);
-    expect(rotor.length).toBeGreaterThan(0);
+    const rotor = ENGINE_ROTOR_COLORS.flatMap((color) => colorVertices(model, color));
+    for (const color of ENGINE_ROTOR_COLORS) expect(colorVertices(model, color).length, color.toString(16)).toBeGreaterThan(0);
     // La maquette est dans le repère du lieu ; le moyeu, dans le monde (`engineRotorHub`) : le même, à la hauteur du sol près.
     const hub = engineRotorHub();
     const c = placeById('engine').center;
     expect(hub.x - c.x).toBeCloseTo(ENGINE.rotor.x, 9);
     expect(hub.z - c.z).toBeCloseTo(ENGINE.rotor.z, 9);
-    for (const i of rotor) {
-      expect(Math.hypot(model.positions[i] - ENGINE.rotor.x, model.positions[i + 1] - ENGINE.rotor.y)).toBeLessThanOrEqual(ENGINE.rotor.r + ENGINE.rotor.blade + 0.01);
-      expect(Math.abs(model.positions[i + 2] - ENGINE.rotor.z)).toBeLessThan(0.5);
-    }
+    for (const i of rotor) expect(Math.hypot(model.positions[i] - ENGINE.rotor.x, model.positions[i + 1] - ENGINE.rotor.y)).toBeLessThanOrEqual(ENGINE.rotor.crown + 1e-6);
     for (const color of STEAM_COLORS) expect(colorVertices(model, color).length).toBeGreaterThan(0);
     for (const p of PLACES) {
       const traces = placeTrace(p.id, p.scenes);
-      for (const color of [ENGINE_ROTOR_COLOR, ...STEAM_COLORS]) {
+      for (const color of [...ENGINE_ROTOR_COLORS, ...STEAM_COLORS]) {
         expect(colorVertices(traces, color), `${p.id} ${color.toString(16)}`).toEqual([]);
         if (p.id !== 'engine') expect(colorVertices(modelOfPlace(p.id).facets, color), `${p.id} ${color.toString(16)}`).toEqual([]);
       }
     }
+    // La ruine ne tourne pas : son rotor couché n'a pas les teintes du rotor.
+    for (const color of ENGINE_ROTOR_COLORS) expect(colorVertices(ruinOf('engine'), color)).toEqual([]);
+  });
+
+  it('le rotor, jamais une lame de scie : une couronne pleine ferme le cercle, rien ne dépasse de son bord ni de son épaisseur, les aubes en relief sur la face (relecture de L6a)', () => {
+    const R = ENGINE.rotor;
+    const model = modelOfPlace('engine').facets;
+    const [disc, rim] = ENGINE_ROTOR_COLORS.map((color) => colorVertices(model, color));
+    const at = (i: number) => ({ r: Math.hypot(model.positions[i] - R.x, model.positions[i + 1] - R.y), a: Math.atan2(model.positions[i + 1] - R.y, model.positions[i] - R.x), z: model.positions[i + 2] - R.z });
+    // Rien ne dépasse : ni du bord de la couronne, ni de son épaisseur, devant comme derrière.
+    for (const i of [...disc, ...rim]) {
+      const v = at(i);
+      expect(v.r).toBeLessThanOrEqual(R.crown + 1e-6);
+      expect(Math.abs(v.z)).toBeLessThanOrEqual(R.crownDepth / 2 + 1e-6);
+    }
+    // La couronne fait tout le tour : son bord, sur seize angles réguliers.
+    const edge = new Set(rim.map(at).filter((v) => Math.abs(v.r - R.crown) < 1e-4).map((v) => Math.round(((v.a + 2 * Math.PI) % (2 * Math.PI)) / ((2 * Math.PI) / 16)) % 16));
+    expect(edge.size).toBe(16);
+    // Les aubes : sur la face au sud, devant le disque, sous la couronne (jamais au-delà de son rayon intérieur).
+    const front = rim.map(at).filter((v) => v.z > R.depth / 2 + 1e-6 && v.z < R.crownDepth / 2 - 1e-6 && v.r > R.hub + 0.01);
+    expect(front.length).toBeGreaterThan(0);
+    for (const v of front) {
+      expect(v.r).toBeGreaterThanOrEqual(R.bladeFoot - 1e-6);
+      expect(v.z).toBeLessThanOrEqual(R.depth / 2 + R.relief + 1e-6);
+    }
+    // Seize aubes, chacune son pied (deux coins) à `bladeFoot` du moyeu.
+    expect(new Set(front.filter((v) => Math.abs(v.r - R.bladeFoot) < 1e-4).map((v) => v.a.toFixed(3))).size).toBe(2 * R.blades);
+  });
+
+  it('la source : trois cercles fins, concentriques et pleins, sur une eau claire, sans secteurs ni centre sombre (relecture de L6a)', () => {
+    const S = ENGINE.spring;
+    const model = modelOfPlace('engine').facets;
+    const water = linearRgb(0x8fcfc3);
+    const ring = linearRgb(0xbfe6dd);
+    const sames = (k: number, rgb: number[]) => [0, 1, 2].every((j) => Math.abs(model.colors[k + j] - rgb[j]) < 1e-6);
+    const rings: { r: number; a: number }[] = [];
+    for (let k = 0; k < model.positions.length; k += 3) {
+      const r = Math.hypot(model.positions[k] - S.x, model.positions[k + 2] - S.z);
+      // Dans la margelle, au-dessus de la pierre : rien que l'eau et ses cercles, jamais une teinte sombre.
+      if (r < S.r - 0.25 && model.positions[k + 1] > 0.325) expect(sames(k, water) || sames(k, ring), `${r.toFixed(2)}`).toBe(true);
+      if (sames(k, ring)) rings.push({ r, a: Math.atan2(model.positions[k + 2] - S.z, model.positions[k] - S.x) });
+    }
+    for (const r0 of S.rings) {
+      const on = rings.filter((v) => Math.abs(v.r - r0) <= S.ring / 2 + 1e-6);
+      // Plein sur tout son tour : seize angles.
+      expect(new Set(on.map((v) => Math.round(((v.a + 2 * Math.PI) % (2 * Math.PI)) / (Math.PI / 8)) % 16)).size, `${r0}`).toBe(16);
+    }
+    // Ni cercle au milieu ni secteur : chaque sommet d'un cercle est sur l'un des trois.
+    for (const v of rings) expect(S.rings.some((r0) => Math.abs(v.r - r0) <= S.ring / 2 + 1e-6)).toBe(true);
+  });
+
+  it('la rigole descend sur le sol dessiné jusqu’à la berge, puis se déverse dans la rivière : jamais en l’air au-dessus de l’eau (relecture de L6a)', () => {
+    const { points, water, spill } = engineRill();
+    const c = placeById('engine').center;
+    const h0 = standingHeight(heightAt(c));
+    const field = buildHeightField();
+    const z = c.z + ENGINE.spring.z;
+    // D'est en ouest, de la source à la berge, posée sur le sol (au-dessus, à moins d'un pouce), sur la terre ferme.
+    for (const [k, p] of points.slice(0, -1).entries()) {
+      for (const dz of [-0.4, 0, 0.4]) expect(p.y + h0, `${k}`).toBeGreaterThanOrEqual(heightOnMesh(field, c.x + p.x, z + dz) - 1e-6);
+      expect(p.y + h0 - heightOnMesh(field, c.x + p.x, z), `${k}`).toBeLessThan(0.3);
+      expect(heightOnMesh(field, c.x + p.x, z), `${k}`).toBeGreaterThan(water + h0);
+      if (k > 0) expect(p.x).toBeLessThan(points[k - 1].x);
+    }
+    expect(points[0].x).toBeGreaterThan(ENGINE.spring.x - ENGINE.spring.r);
+    // La chute finit à fleur d'eau ; la nappe est sur la rivière.
+    const end = points.at(-1)!;
+    expect(end.y - water).toBeGreaterThan(0);
+    expect(end.y - water).toBeLessThan(0.05);
+    expect(landDistance({ x: c.x + spill.x, z })).toBeLessThan(0);
+    expect(heightOnMesh(field, c.x + spill.x, z)).toBeLessThan(0);
+  });
+
+  it('la passerelle vers la Turbine : des planches qu’on lit sur des pieux, au-dessus de la rivière (relecture de L6a)', () => {
+    const field = buildHeightField();
+    const f = pathRibbons((x, z) => heightOnMesh(field, x, z));
+    expect(PLANK_BRIDGES).toEqual([['tur-1', 'tur-2']]);
+    const woods = [0xa9784a, 0xb98c5c, 0x7a5636].map(linearRgb);
+    const of = (rgb: number[]) => {
+      const out: number[] = [];
+      for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - rgb[k]) < 1e-6)) out.push(i);
+      return out;
+    };
+    // Les pieux plantés dans la rivière, leur tête au-dessus des planches.
+    const posts = of(woods[2]).map((i) => [f.positions[i], f.positions[i + 1], f.positions[i + 2]] as const);
+    expect(posts.length).toBeGreaterThan(0);
+    expect(Math.min(...posts.map((p) => p[1]))).toBeLessThan(-1);
+    const top = Math.max(...posts.map((p) => p[1]));
+    expect(top).toBeGreaterThan(0.6);
+    // Deux bois de planches, en alternance.
+    expect(of(woods[1]).length).toBeGreaterThan(0);
+  });
+
+  it('le cadran solaire : un style de cuivre fin, jamais une plaque de fer pleine (relecture de L6a)', () => {
+    const f = placeTrace('engine', ['materials-light']);
+    expect(colorVertices(f, 0x2f3e48)).toEqual([]);
+    expect(colorVertices(f, 0xc07a3e).length).toBeGreaterThan(0);
+  });
+});
+
+describe('Les couleurs que la vue reconnaît (scene.ts, `unshadedLamp`)', () => {
+  it('aucune autre couleur du monde à moins de 0,004 de la lampe, des ailes de la pompe, du rotor ou de la vapeur', () => {
+    const markers = [LAMP_COLOR, SALT_PUMP.vane, ...ENGINE_ROTOR_COLORS, ...STEAM_COLORS];
+    const near = (a: readonly number[], b: readonly number[]) => [0, 1, 2].every((k) => Math.abs(a[k] - b[k]) < 0.004);
+    const same = (a: readonly number[], b: readonly number[]) => [0, 1, 2].every((k) => Math.abs(a[k] - b[k]) < 1e-6);
+    // Les marqueurs, assez loin l'un de l'autre.
+    for (const [i, a] of markers.entries()) for (const b of markers.slice(i + 1)) expect(near(linearRgb(a), linearRgb(b)), `${a.toString(16)} ${b.toString(16)}`).toBe(false);
+    // Toutes les couleurs dessinées dans le matériau des lieux : le sol (toutes les tuiles), les chemins, les lieux et leurs
+    // ruines, leurs traces, leurs scénettes et la soupape levée.
+    const seen = new Map<string, number[]>();
+    const take = (f: { colors: Float32Array }) => {
+      for (let i = 0; i < f.colors.length; i += 3) {
+        const rgb = [f.colors[i], f.colors[i + 1], f.colors[i + 2]];
+        seen.set(rgb.map((v) => v.toFixed(6)).join(','), rgb);
+      }
+    };
+    const field = buildHeightField();
+    for (let tz = 0; tz < TERRAIN.tilesZ; tz++) for (let tx = 0; tx < TERRAIN.tilesX; tx++) take(tileFacets(field, tx, tz, 'far'));
+    take(pathRibbons((x, z) => heightOnMesh(field, x, z)));
+    for (const p of PLACES) {
+      take(modelOfPlace(p.id).facets);
+      take(ruinOf(p.id));
+      take(placeTrace(p.id, p.scenes));
+    }
+    const engineScene = itemScene('engine', { kind: 'column' }, true, []);
+    take(engineScene.still);
+    take(engineScene.reaction!.facets);
+    for (const rgb of seen.values()) for (const m of markers) if (near(rgb, linearRgb(m))) expect(same(rgb, linearRgb(m)), `${rgb.join(',')} près de ${m.toString(16)}`).toBe(true);
   });
 });
 

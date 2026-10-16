@@ -8,7 +8,7 @@ import { FacetBuilder, boundsOf, placeFacets } from './facets';
 import { distance, linearRgb } from './geometry';
 import { startOf } from './paths';
 import { placeById } from './plan6e';
-import { modelOfPlace } from './places';
+import { STEAM_GAP, modelOfPlace } from './places';
 import { ANSWER_LAYOUT, ENGINE_PAVING_RISE, JAUGE, LOCK, VALVE, answerObjects, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
 import {
   GALLERY,
@@ -840,6 +840,26 @@ describe('La Turbine (GD-20, point 8, lot L6a)', () => {
   it('la machiniste, en peu de triangles, sur le dallage devant la chaudière, levé au-dessus du replat', () => {
     const decor = scenetteDecor('engine');
     expect(decor.triangles).toBeLessThan(400);
+    // Des cheveux sombres et leur chignon, au-dessus de la tête (les lunettes relevées s'y lisent) ; la burette, un cône de
+    // cuivre plus large en bas qu'en haut, et son bec fin (relecture de L6a : ni tête chauve, ni torche).
+    const habitantAt = scenetteHabitant('engine');
+    const of = (hex: number) => {
+      const rgb = linearRgb(hex);
+      const out: [number, number, number][] = [];
+      for (let i = 0; i < decor.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(decor.colors[i + k] - rgb[k]) < 1e-6)) out.push([decor.positions[i], decor.positions[i + 1], decor.positions[i + 2]]);
+      return out;
+    };
+    const hair = of(0x3b2a22);
+    expect(Math.max(...hair.map((v) => v[1]))).toBeGreaterThan(habitantAt.y + 1.13 + 0.23);
+    const copper = of(0xc07a3e);
+    const low = Math.min(...copper.map((v) => v[1]));
+    const width = (y: number) => {
+      const xs = copper.filter((v) => Math.abs(v[1] - y) < 1e-6).map((v) => v[0]);
+      return Math.max(...xs) - Math.min(...xs);
+    };
+    expect(width(low)).toBeGreaterThan(3 * width(low + 0.26));
+    // Le bec : du cuivre loin du corps de la burette, vers la soupape (à l'ouest).
+    expect(Math.min(...copper.map((v) => v[0]))).toBeLessThan(habitantAt.x - 0.9);
     const keo = scenetteKeo('engine').at;
     const habitant = scenetteHabitant('engine');
     expect(keo.x).toBeLessThan(o.x);
@@ -867,15 +887,18 @@ describe('La Turbine (GD-20, point 8, lot L6a)', () => {
     expect(boundsOf(after.still).max[1]).toBeGreaterThan(boundsOf(before.still).max[1] + 0.2);
     expect(after.reaction).toMatchObject({ arc: 0, stay: true });
     expect(after.reaction!.to.y).toBeGreaterThan(after.reaction!.from.y);
-    // Entre le haut de la soupape et le bas de la bouffée, de l'air clair (jamais collée au chapeau).
-    const puff = boundsOf(placeFacets(after.reaction!.facets, after.reaction!.to));
+    // Entre le haut de la soupape (le chapeau, le levier levé) et le bas de la bouffée, l'écart d'air clair, dès son départ
+    // (jamais collée, directeur du contenu pédagogique).
+    const puff = boundsOf(placeFacets(after.reaction!.facets, after.reaction!.from));
     let under = -Infinity;
     const p = after.still.positions;
     for (let i = 0; i < p.length; i += 3) if (p[i] >= puff.min[0] && p[i] <= puff.max[0]) under = Math.max(under, p[i + 1]);
-    expect(puff.min[1] - under).toBeGreaterThan(0.3);
-    // La soupape au milieu, derrière Kéo et la machiniste.
+    expect(puff.min[1] - under).toBeGreaterThanOrEqual(STEAM_GAP - 1e-6);
+    // La soupape au milieu, derrière Kéo et la machiniste ; la bouffée centrée au-dessus de son chapeau (directeur
+    // artistique : jamais sur le flanc de la chaudière, au-dessus du contrepoids).
     const cap = o.y + ENGINE_PAVING_RISE + VALVE.riser + VALVE.body;
     expect(under).toBeGreaterThanOrEqual(cap);
+    expect(Math.abs((puff.min[0] + puff.max[0]) / 2 - (o.x + VALVE.capX))).toBeLessThan(0.05);
     expect(Math.abs(after.reaction!.to.x - o.x)).toBeLessThan(0.5);
   });
 });

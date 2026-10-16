@@ -181,7 +181,8 @@ const clash = (a: Rect, b: Rect) =>
  * boutons de la page (`obstacles`) : d'abord Kéo et les cadenas, à leur place ; puis le nom de chaque lieu ouvert (celui
  * qui passe en premier, `first`, d'abord),
  * au-dessus de son point, sinon dessous, sinon décalé vers le haut ou vers le bas (une demi-hauteur, puis une autre),
- * sinon à droite ou à gauche, sinon à la place libre la plus proche, dans l'écran ; s'il ne trouve toujours pas de
+ * sinon à droite ou à gauche, sinon à la place libre la plus proche, dans l'écran, chaque fois d'abord hors de la place
+ * du nom d'un lieu fermé, sous son cadenas (un cadenas ne coiffe jamais le nom d'un lieu ouvert) ; s'il ne trouve toujours pas de
  * place, sa pastille se réduit à son icône (`name: false`, le nom et l'état restent dits par le bouton) ; enfin le nom
  * de chaque lieu fermé, sous son cadenas, s'efface s'il gêne (le toucher du lieu dit alors « Fermé pour l'instant »).
  */
@@ -218,6 +219,11 @@ function attemptLayout(
     }
   }
   const clear = (c: Rect) => onScreen(c) && free(c);
+  // La place du nom de chaque lieu fermé, sous son cadenas : un nom de lieu ouvert n'y va qu'en dernier recours, sans
+  // quoi le cadenas se lirait comme le sien (relecture de L6a, directeur artistique : le cadenas des Écluses posé sur
+  // « La Turbine ✓ »).
+  const closedNames = labels.filter((l) => l.kind === 'closed').map((l) => rect(l.x - Math.max(MAP_LOCK, l.w) / 2, l.y, Math.max(MAP_LOCK, l.w), Math.max(MAP_LOCK, l.h - MAP_LOCK)));
+  const apart = (c: Rect) => clear(c) && !closedNames.some((n) => clash(n, c));
   const open = labels.filter((l) => l.kind === 'open' && l.first).concat(labels.filter((l) => l.kind === 'open' && !l.first));
   for (const l of open) {
     const places = (w: number, h: number) => {
@@ -233,8 +239,10 @@ function attemptLayout(
       return list;
     };
     const full = places(l.w, l.h);
-    // Sinon, la place libre la plus proche autour du lieu, de plus en plus loin (une spirale de pas de 16 px).
-    let r = full.find(clear) ?? spiral(full[0], clear);
+    // Sinon, la place libre la plus proche autour du lieu, de plus en plus loin (une spirale de pas de 16 px) ; d'abord
+    // hors de la place du nom d'un lieu fermé, même un peu plus loin de son point (sur la tablette, toutes les places
+    // simples de la Turbine touchaient celle des Écluses, et le nom revenait sous leur cadenas).
+    let r = full.find(apart) ?? spiral(full[0], apart) ?? full.find(clear) ?? spiral(full[0], clear);
     let name = true;
     if (!r) {
       // Toujours trop serré : l'icône seule, à la première place libre.
