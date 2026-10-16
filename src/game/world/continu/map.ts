@@ -138,6 +138,12 @@ export interface MapLabelSpot {
   left: number;
   top: number;
   name: boolean;
+  /**
+   * Le décalage du nom d'un lieu fermé sous son cadenas, en pixels (vers la droite si positif) : il glisse pour rester
+   * entier dans l'écran, à `MAP_LABEL_GAP` du bord, le cadenas restant sur son lieu (relecture de L6a, consultant UX UI :
+   * « Les Marais salants » touchait le bord droit).
+   */
+  shift?: number;
 }
 
 /** Le cadenas d'un lieu fermé, en pixels, et l'écart gardé entre deux étiquettes (référent dys, consultant UX UI). */
@@ -261,10 +267,16 @@ function attemptLayout(
   }
   for (const l of labels) {
     if (l.kind !== 'closed') continue;
-    const name = rect(l.x - l.w / 2, l.y, l.w, Math.max(0, l.h - MAP_LOCK));
-    if (!free(name, l.id)) continue;
+    const left = l.x - l.w / 2;
+    // Le nom glisse le long de son cadenas pour rester entier dans l'écran, à un écart du bord.
+    const over = left + l.w - (screen.width - MAP_LABEL_GAP);
+    const under = MAP_LABEL_GAP - left;
+    const shift = under > 0 ? under : over > 0 ? -over : 0;
+    const name = rect(left + shift, l.y, l.w, Math.max(0, l.h - MAP_LOCK));
+    if (!onScreen(name) || !free(name, l.id)) continue;
     placed.push({ id: l.id, r: name });
     out.get(l.id)!.name = true;
+    if (shift) out.get(l.id)!.shift = shift;
   }
   return { spots: labels.map((l) => out.get(l.id)!), crowded };
 }

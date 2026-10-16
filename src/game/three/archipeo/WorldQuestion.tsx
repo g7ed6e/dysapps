@@ -198,7 +198,11 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   // Sur un écran bas, la consigne s'affiche en entier une fois, au premier item, puis devient une icône.
   const [introDone, setIntroDone] = useState(false);
   const intro = layout.low && !introDone && !finished && !offer && !simple;
-  const simpleLow = simple && layout.low && !finished;
+  // La « Vue simple » serrée des écrans bas (la consigne repliée en une ligne, « Scène » et la pause dans la ligne
+  // d'en-tête) : sur un écran bas, et en C au plus grand texte aussi sur tablette, où la consigne entière, épinglée,
+  // poussait la phrase sous le pli (mesure de 1024 × 768 au plus grand texte, deuxième passe de L6a).
+  const foldedSimple = layout.low || (inColumn && grandTexte);
+  const simpleLow = simple && foldedSimple && !finished;
   // « Vue simple » ouverte d'elle-même au plus grand texte : une seule fois par question.
   const autoSimple = useRef(false);
   const startItems = useCallback(() => {
@@ -223,6 +227,13 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
         setBare(true);
         return;
       }
+      // En C sur un écran bas, la scène ne porte rien de la réponse : « Vue simple » d'office, une fois par visite
+      // (directeur artistique, deuxième passe de L6a), plutôt que des réponses sorties de la colonne.
+      if (inColumn && !autoSimple.current) {
+        autoSimple.current = true;
+        openSimple();
+        return;
+      }
       setAnswersOut(true);
       setWiden(WIDEN_OFFER);
       return;
@@ -231,12 +242,13 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     const column = root.querySelector<HTMLElement>('.quiz.in-world');
     // En C (lot L6a), la colonne défile : seules la phrase et les réponses doivent s'y voir sans défiler (0 px sous le
     // pli) ; le document, le rappel, l'indice et la correction peuvent passer dessous, signalés.
-    if (!column || !(inColumn ? belowFold(column, column.querySelectorAll('.world-answers .world-answer'), foldReserve(column)) > 0 : overflows(column))) return;
+    if (!column || !(inColumn ? belowFold(column, column.querySelectorAll('.question-head, .world-answers .world-answer'), foldReserve(column)) > 0 : overflows(column))) return;
     // Au plus grand texte, une scénette dont le panneau déborderait s'ouvre en « Vue simple », une fois (sur un écran
     // bas, après l'avoir essayée en pleine largeur) : la consigne y est entière, et c'est le panneau qui défile (sur un
-    // téléphone, la question n'y tient pas sans défiler ; « Valider » reste dans sa bande, en bas). Revenu à la scène,
-    // l'élève garde les crans d'avant.
-    if (grandTexte && !autoSimple.current && !column.classList.contains('has-sheet') && (!layout.low || !intro || widen >= WIDEN_FULL)) {
+    // téléphone, la question n'y tient pas sans défiler ; « Valider » reste dans sa bande, en bas). En C sur un écran
+    // bas, de même à toute taille de texte, dès que la phrase ou une réponse passe sous le pli (directeur artistique,
+    // deuxième passe de L6a). Revenu à la scène, l'élève garde son choix et les crans d'avant jusqu'à la fin de la visite.
+    if ((grandTexte || (inColumn && layout.low)) && !autoSimple.current && !column.classList.contains('has-sheet') && (!layout.low || !intro || widen >= WIDEN_FULL)) {
       autoSimple.current = true;
       openSimple();
       return;
@@ -558,7 +570,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       Done: WorldDone,
       className:
         simple && !finished
-          ? `in-world scenette simple${layout.low ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}${inColumn ? ' mode-c' : ''}`
+          ? `in-world scenette simple${foldedSimple ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}${inColumn ? ' mode-c' : ''}`
           : `in-world scenette${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut || (layout.low && offer) ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}${inColumn ? ' reponses-colonne mode-c' : ''}`,
     };
   }, [
@@ -585,6 +597,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     simple,
     bare,
     simpleLow,
+    foldedSimple,
     consigneOpen,
     rowBeside,
     inColumn,
@@ -635,7 +648,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       alive = false;
     };
     // Refaite aussi quand « Vue simple » s'ouvre d'office (le rôle passe alors sur sa ligne) : sinon la consigne entière.
-  }, [stage, consigneOpen, size.w, settings, simple, layout.low]);
+  }, [stage, consigneOpen, size.w, settings, simple, layout.low, foldedSimple]);
 
   const style = {
     '--question-left': `${layout.panel.left}px`,

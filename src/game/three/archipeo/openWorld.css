@@ -845,6 +845,8 @@
   background: var(--secondary-bg);
   color: var(--muted);
   white-space: nowrap;
+  /* Glissé sous son cadenas pour rester entier dans l'écran (`--nom-decale`, MapLabels.tsx). */
+  transform: translateX(var(--nom-decale, 0px));
 }
 .open-world-map-closed[data-nom='non'] .open-world-map-closed-name {
   visibility: hidden;
@@ -1994,6 +1996,8 @@
 :root .world-question .quiz.in-world.mode-c .world-answers .world-answer-label {
   box-sizing: border-box;
   height: auto;
+  /* Le cadre visible prend toute la rangée : une réponse d'une ligne à côté d'une de deux a le même cadre. */
+  min-height: 100%;
   padding-block: 4px;
   line-height: 1.35;
 }

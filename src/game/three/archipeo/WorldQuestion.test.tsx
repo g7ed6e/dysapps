@@ -686,3 +686,24 @@ describe('La Turbine au plus grand texte, en « Vue simple » sur un écran bas 
     localStorage.removeItem('dysapps:settings');
   });
 });
+
+describe('La Turbine en texte normal sur un téléphone couché (deuxième passe de L6a)', () => {
+  it('en C, une phrase sous le pli ouvre « Vue simple » d’office ; revenu à « Scène », l’élève garde son choix', async () => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(844);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(390);
+    // La phrase passe sous le bord du panneau (le reste tient dans l'écran).
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+      const bottom = this.matches('.question-head') ? 900 : 390;
+      return { top: 0, bottom, height: bottom, left: 0, right: 844, width: 844, x: 0, y: 0, toJSON: () => ({}) };
+    });
+    const user = userEvent.setup();
+    renderPlace('engine', 'energy-circuits');
+    const go = await screen.findByRole('button', { name: /Commencer/ }).catch(() => null);
+    if (go) await user.click(go);
+    const panel = () => document.querySelector<HTMLElement>('.quiz.in-world')!;
+    await vi.waitFor(() => expect(panel().classList.contains('simple')).toBe(true));
+    await user.click(screen.getByRole('button', { name: /Scène/ }));
+    await new Promise((r) => setTimeout(r, 50));
+    expect(panel().classList.contains('simple')).toBe(false);
+  });
+});

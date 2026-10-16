@@ -68,6 +68,9 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
       if (node.style.transform !== transform) node.style.transform = transform;
       const name = spot.name ? 'oui' : 'non';
       if (node.dataset.nom !== name) node.dataset.nom = name;
+      // Le nom d'un lieu fermé glisse sous son cadenas pour rester entier dans l'écran (`shift`, layoutMapLabels).
+      const shift = `${Math.round(spot.shift ?? 0)}px`;
+      if (node.style.getPropertyValue('--nom-decale') !== shift) node.style.setProperty('--nom-decale', shift);
     }
   }, [openPlaces]);
 

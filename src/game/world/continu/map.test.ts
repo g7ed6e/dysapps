@@ -160,6 +160,21 @@ describe('Les étiquettes de la Carte', () => {
     expect(quais.top).toBe(500 - MAP_LOCK);
   });
 
+  it('le nom d’un lieu fermé près du bord glisse sous son cadenas et reste entier dans l’écran, le cadenas sur son lieu (relecture de L6a)', () => {
+    // Les Marais salants au bord droit de la tablette (tab-carte) : la boîte du nom touchait le bord.
+    const labels: MapLabel[] = [{ id: 'saltworks', kind: 'closed', x: 917, y: 450, w: 220, h: 84 }];
+    for (const width of [1024, 844, 667]) {
+      const [spot] = layoutMapLabels(labels.map((l) => ({ ...l, x: width - 107 })), [], { width, height: 768 });
+      expect(spot.left).toBe(width - 107 - 110);
+      expect(spot.name).toBe(true);
+      const left = width - 107 - 110 + (spot.shift ?? 0);
+      expect(left + 220).toBeLessThanOrEqual(width - MAP_LABEL_GAP);
+      expect(left).toBeGreaterThanOrEqual(MAP_LABEL_GAP);
+    }
+    // Loin du bord, rien ne glisse.
+    expect(layoutMapLabels(labels, [], { width: 2000, height: 768 })[0].shift).toBeUndefined();
+  });
+
   it('un cadenas ne coiffe jamais le nom d’un lieu ouvert : la place du nom d’un lieu fermé, sous son cadenas, reste libre (relecture de L6a)', () => {
     // La tablette, la Carte entière : les Écluses fermées juste au-dessus et à gauche de la Turbine ouverte (tab-carte).
     const labels: MapLabel[] = [
