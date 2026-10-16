@@ -213,11 +213,18 @@ function attemptLayout(
   const placed: { id: string | null; r: Rect }[] = obstacles.map((r) => ({ id: null, r }));
   const out = new Map<string, MapLabelSpot>();
   const free = (r: Rect, self?: string) => !placed.some((p) => (p.id === null || p.id !== self) && clash(p.r, r));
+  // Les cadenas, à leur place : Kéo s'en écarte d'au moins `MAP_LABEL_GAP` (relecture de L6a, consultant UX UI : sur
+  // téléphone, « Toi » touchait le cadenas des Marais salants).
+  const locks = labels.filter((l) => l.kind === 'closed').map((l) => rect(l.x - MAP_LOCK / 2, l.y - MAP_LOCK, MAP_LOCK, MAP_LOCK));
   for (const l of labels) {
     if (l.kind === 'keo') {
-      const r = compactKeo ? rect(l.x - MAP_KEO_DISC / 2, l.y - l.h, MAP_KEO_DISC, l.h) : rect(l.x - l.w / 2, l.y - l.h, l.w, l.h);
+      const disc = rect(l.x - MAP_KEO_DISC / 2, l.y - l.h, MAP_KEO_DISC, l.h);
+      const whole = rect(l.x - l.w / 2, l.y - l.h, l.w, l.h);
+      // Sa pastille seule, sans « Toi », si le mot passerait contre un cadenas.
+      const compact = compactKeo || locks.some((k) => clash(k, whole));
+      const r = compact ? disc : whole;
       placed.push({ id: l.id, r });
-      out.set(l.id, { id: l.id, left: r.left, top: r.top, name: !compactKeo });
+      out.set(l.id, { id: l.id, left: r.left, top: r.top, name: !compact });
     } else if (l.kind === 'closed') {
       // Le cadenas au-dessus du point ; l'élément est centré sur lui, aussi large que son nom.
       placed.push({ id: l.id, r: rect(l.x - MAP_LOCK / 2, l.y - MAP_LOCK, MAP_LOCK, MAP_LOCK) });

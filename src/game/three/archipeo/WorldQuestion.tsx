@@ -203,7 +203,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   // poussait la phrase sous le pli (mesure de 1024 × 768 au plus grand texte, deuxième passe de L6a).
   const foldedSimple = layout.low || (inColumn && grandTexte);
   const simpleLow = simple && foldedSimple && !finished;
-  // « Vue simple » ouverte d'elle-même au plus grand texte : une seule fois par question.
+  // « Vue simple » ouverte d'elle-même (au plus grand texte, ou en C sur un écran bas) : une seule fois par visite, tant
+  // que la question reste montée ; revenu à « Scène », l'élève garde son choix.
   const autoSimple = useRef(false);
   const startItems = useCallback(() => {
     setIntroDone(true);
@@ -248,7 +249,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     // téléphone, la question n'y tient pas sans défiler ; « Valider » reste dans sa bande, en bas). En C sur un écran
     // bas, de même à toute taille de texte, dès que la phrase ou une réponse passe sous le pli (directeur artistique,
     // deuxième passe de L6a). Revenu à la scène, l'élève garde son choix et les crans d'avant jusqu'à la fin de la visite.
-    if ((grandTexte || (inColumn && layout.low)) && !autoSimple.current && !column.classList.contains('has-sheet') && (!layout.low || !intro || widen >= WIDEN_FULL)) {
+    const opensSimple = grandTexte || (inColumn && layout.low);
+    const triedFullWidth = !layout.low || !intro || widen >= WIDEN_FULL;
+    if (opensSimple && !autoSimple.current && !column.classList.contains('has-sheet') && triedFullWidth) {
       autoSimple.current = true;
       openSimple();
       return;

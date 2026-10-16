@@ -160,6 +160,20 @@ describe('Les étiquettes de la Carte', () => {
     expect(quais.top).toBe(500 - MAP_LOCK);
   });
 
+  it('« Toi » ne touche jamais un cadenas : Kéo garde alors sa pastille seule, à un écart du cadenas (relecture de L6a)', () => {
+    // Le téléphone couché (tel844-carte) : Kéo devant la Turbine, le cadenas des Marais salants juste à droite.
+    const labels: MapLabel[] = [
+      { id: 'keo', kind: 'keo', x: 570, y: 212, w: 108, h: 44 },
+      { id: 'saltworks', kind: 'closed', x: 627, y: 227, w: 200, h: 84 },
+    ];
+    const [keo] = layoutMapLabels(labels, [], { width: 844, height: 390 });
+    expect(keo.name).toBe(false);
+    const right = keo.left + MAP_KEO_DISC;
+    expect(right + MAP_LABEL_GAP).toBeLessThanOrEqual(627 - MAP_LOCK / 2);
+    // Loin de tout cadenas, « Toi » reste.
+    expect(layoutMapLabels([labels[0]], [], { width: 844, height: 390 })[0].name).toBe(true);
+  });
+
   it('le nom d’un lieu fermé près du bord glisse sous son cadenas et reste entier dans l’écran, le cadenas sur son lieu (relecture de L6a)', () => {
     // Les Marais salants au bord droit de la tablette (tab-carte) : la boîte du nom touchait le bord.
     const labels: MapLabel[] = [{ id: 'saltworks', kind: 'closed', x: 917, y: 450, w: 220, h: 84 }];
