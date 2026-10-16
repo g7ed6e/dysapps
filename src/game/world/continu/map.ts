@@ -355,7 +355,7 @@ export function layoutMapLabels(
       const next = run(new Map(best.reserved).set(id, place));
       // Aucun nom de lieu ouvert perdu (chacun, pas seulement leur nombre : un nom ouvert ne s'échange pas contre un
       // autre), un nom de lieu fermé de plus.
-      if ([...best.namedOpen].every((id) => next.namedOpen.has(id)) && next.closedNamed > best.closedNamed) {
+      if ([...best.namedOpen].every((named) => next.namedOpen.has(named)) && next.closedNamed > best.closedNamed) {
         best = next;
         break;
       }

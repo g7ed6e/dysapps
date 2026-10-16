@@ -491,17 +491,20 @@ describe('La Carte avec le rivage nord (lot L7)', () => {
 
   for (const [w, h] of [[1024, 768], [844, 390]] as const) {
     it(`${w} × ${h} : chaque lieu ouvert du rivage nord garde son nom, jamais sur un cadenas, sur « Toi » ni sur un autre nom`, () => {
-      // La vue de départ que choisit la Carte (`reframeMap`, comme la scène) : les lieux hors de l'écran n'ont pas
-      // d'étiquette ; une vue où un lieu ouvert perd son nom, ou sort de l'écran, est écartée.
-      const inside = (l: MapLabel) => l.x > 0 && l.x < w && l.y > 0 && l.y < h;
+      // La vue de départ que choisit la Carte (`reframeMap`, comme la scène) : les lieux hors de la zone des étiquettes
+      // n'en ont pas (`mapShown`, scene.ts : 100 px des côtés, 64 px du haut, 24 px du bas) ; ce qui manque est pesé
+      // comme `crowded` (MapLabels.tsx, `MISSING`) : 100 par lieu ouvert sans nom ou hors de la zone, 1 par lieu fermé
+      // hors de la zone sur tablette (plus de 500 px de haut).
+      const inside = (l: MapLabel) => l.x > 100 && l.x < w - 100 && l.y > 64 && l.y < h - 24;
       const ground = PLACES.filter((p) => open.has(p.id)).map((p) => p.center);
-      const view = reframeMap(w / h, [...ground, PORT_MAP_POINT], (v) => {
+      const chosen = reframeMap(w / h, [...ground, PORT_MAP_POINT], (v) => {
         const all = labelsOn(w, h, v);
         const shown = all.filter(inside);
-        const gone = all.filter((l) => l.kind === 'open' && !inside(l)).length;
+        const gone = all.filter((l) => l.kind !== 'keo' && !inside(l)).reduce((n, l) => n + (l.kind === 'open' ? 100 : h > 500 ? 1 : 0), 0);
         const spots = layoutMapLabels(shown, [], { width: w, height: h }, false);
-        return gone + spots.filter((s, i) => shown[i].kind === 'open' && !s.name).length;
+        return gone + 100 * spots.filter((s, i) => shown[i].kind === 'open' && !s.name).length;
       });
+      const view = clampMap(chosen, w / h, chosen.distance);
       const labels = labelsOn(w, h, view).filter((l) => l.kind !== 'closed' || inside(l));
       for (const l of labels) {
         expect(l.x, l.id).toBeGreaterThan(0);
