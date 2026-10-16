@@ -915,13 +915,13 @@
   color: var(--text);
   font-weight: 700;
 }
-/* « Fermé pour l'instant », au toucher d'un lieu fermé : juste au-dessus de « Retour », dans la barre du bas, sur fond
-   uni, à une place fixe ; jamais sur la Carte, où il cachait un cadenas ou un nom (relectures dys et UX UI). */
+/* La barre du bas : « Carte », puis, la Carte ouverte, « Retour » et « Lieux » côte à côte sur la même ligne, à la même
+   taille, 16 px au moins entre eux (consultant UX UI : pas d'ouverture involontaire). */
 .open-world-bar {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 16px;
   /* La barre ne prend aux doigts que son bouton : la Carte se touche à côté. */
   pointer-events: none;
 }
@@ -1816,14 +1816,16 @@
 /* La suggestion, seul état fort de la liste : une bordure épaisse et un anneau de la couleur de l'action, et un fond
    teinté ; il reste quand le focus tombe sur une autre ligne (la ligne jouée), dont l'anneau du focus ne se voit qu'à la
    navigation au clavier (:focus-visible, plus fin, de la couleur du focus). */
-.place-sheet .app-card.suggested {
+.place-sheet .app-card.suggested,
+.lieux-sheet .app-card.suggested {
   border-color: var(--primary-bg);
   box-shadow:
     inset 0 0 0 2px var(--primary-bg),
     0 0 0 4px var(--primary-bg);
   background: color-mix(in srgb, var(--primary-bg) 8%, var(--surface));
 }
-.place-sheet .app-card:focus:not(:focus-visible) {
+.place-sheet .app-card:focus:not(:focus-visible),
+.lieux-sheet .app-card:focus:not(:focus-visible) {
   outline: none;
 }
 /* Au plus grand texte, dans la colonne d'un écran bas : sans l'icône de lecture, la même sur chaque ligne, le titre à la
@@ -1870,6 +1872,217 @@
 }
 :root[data-texte="grand"] .place-sheet .apps-compact .app-card > .app-title + :not(.mission-sign) {
   grid-column: 1 / span 2;
+}
+/* La liste des lieux ouverts, sur la Carte (bouton « Lieux », PlacesSheet.tsx) : le panneau d'un lieu, sur un voile
+   léger qui met la Carte en pause (un toucher dessus ferme la liste sans rien choisir). Sur tablette, en bas, au plus
+   60 % de la hauteur (la Carte reste visible au-dessus) ; sur un écran bas, une colonne à gauche, toute la hauteur, de
+   320 px à la moitié de l'écran. La liste défile en hauteur, jamais de côté ; la tête et la croix restent fixes. */
+.open-world-voile {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: rgb(0 0 0 / 0.28);
+}
+.open-world-panel-lieux-ouverts {
+  max-height: 60%;
+}
+.open-world-panel-lieux-ouverts > .island-sheet {
+  --panneau-bas: max(1.2rem, env(safe-area-inset-bottom, 0px));
+  padding-bottom: var(--panneau-bas);
+  /* Le panneau se tient dans ses 60 % : la liste rétrécit et défile (sans cela, au plus grand texte, elle sortait par le
+     haut de l'écran). */
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: none;
+}
+/* « Suite plus bas » : la bande et le chevron des questions (.world-repere), collés au bas du panneau sans y prendre de
+   place, tant qu'une ligne est sous le bord (`data-repere`, PlacesSheet.tsx) : une ligne qui finit juste au bord ne dit
+   pas, seule, qu'il y a une suite. */
+.lieux-repere {
+  --repere-haut: 34px;
+  position: sticky;
+  bottom: calc(-1 * var(--panneau-bas));
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: var(--repere-haut);
+  /* Il ne retire rien à la hauteur du panneau (sa marge du haut rend la sienne) : le panneau garde la place de sa
+     dernière ligne. */
+  margin: calc(-1 * var(--repere-haut)) 0 0;
+  background: var(--surface);
+  border-bottom: 5px dashed currentColor;
+  box-shadow: 0 -14px 12px -10px rgb(0 0 0 / 0.4);
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+}
+.island-sheet[data-repere='oui'] > .lieux-repere {
+  visibility: visible;
+}
+.lieux-repere svg {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin-block: calc((var(--repere-haut) - 5px - 44px) / 2);
+  stroke-width: 3;
+}
+@media (max-height: 500px) {
+  .open-world-panel-lieux-ouverts {
+    width: clamp(320px, 45%, 50%);
+    max-height: none;
+  }
+  .open-world-panel-lieux-ouverts > .island-sheet {
+    --panneau-bas: max(0.8rem, env(safe-area-inset-bottom, 0px));
+  }
+  /* Au plus grand texte, la moitié de l'écran (la règle des panneaux de l'Escale, 64 %, ne vaut pas ici). */
+  :root[data-texte="grand"] .open-world-panel-lieux-ouverts {
+    width: max(320px, 50%);
+  }
+}
+/* La liste ouverte : « Retour » et « Lieux » à côté d'elle, jamais dessous ni dessus (au-dessus du panneau du bas, à
+   droite de la colonne ; `--lieux-bas`, `--lieux-gauche`, posés par la page), au-dessus du voile. */
+.open-world-bar.avec-liste {
+  z-index: 7;
+  /* Trop large pour la place à droite de la colonne (au plus grand texte, sur un téléphone) : « Lieux » passe au-dessus
+     de « Retour », 16 px entre eux, plutôt que de sortir de l'écran. */
+  flex-wrap: wrap-reverse;
+  max-width: calc(100% - var(--lieux-gauche, 0px) - 1.2rem - env(safe-area-inset-right, 0px));
+  left: max(calc(0.6rem + env(safe-area-inset-left, 0px)), calc(var(--lieux-gauche, 0px) + 0.6rem));
+  bottom: max(calc(0.8rem + env(safe-area-inset-bottom, 0px)), calc(var(--lieux-bas, 0px) + 0.8rem));
+}
+.lieux-rows {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+/* Une ligne : l'icône du lieu (celle de sa pastille réduite), le nom entier, puis l'icône et le mot de l'état ; sur la
+   ligne de la prochaine mission, « Prochaine mission » écrit dessous. Toute la ligne est la cible, 56 px au moins ; le
+   nom passe à la ligne entre deux mots, jamais dans un mot ni tronqué. */
+.lieux-sheet .lieux-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "icone nom etat"
+    "icone suite suite";
+  align-items: center;
+  column-gap: 0.7rem;
+  row-gap: 0.1rem;
+  width: 100%;
+  min-height: 56px;
+  height: auto;
+  padding: 0.35rem 0.7rem;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.lieux-row-icon {
+  grid-area: icone;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+}
+.lieux-row-icon svg {
+  width: 24px;
+  height: 24px;
+}
+.lieux-row-name {
+  display: contents;
+}
+.lieux-row-text {
+  grid-area: nom;
+  min-width: 0;
+  font-weight: 700;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+.lieux-row-state,
+.lieux-row-next,
+.lieux-alone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.lieux-row-state {
+  grid-area: etat;
+  justify-self: end;
+}
+.lieux-row-next {
+  grid-area: suite;
+  font-weight: 700;
+  color: var(--text);
+}
+.lieux-row-state svg,
+.lieux-row-next svg,
+.lieux-alone svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+}
+.lieux-alone {
+  margin: 0.8rem 0 0;
+  color: var(--muted);
+}
+/* Dans la colonne d'un écran bas, et au plus grand texte : l'état passe sous l'icône et le nom, sur toute la largeur, puis
+   « Prochaine mission » ; chacun passe à la ligne entre deux mots plutôt que de sortir de la ligne. */
+@media (max-height: 500px) {
+  .lieux-sheet .lieux-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "icone nom"
+      "etat etat"
+      "suite suite";
+  }
+  .lieux-row-state {
+    justify-self: start;
+  }
+}
+/* Au plus grand texte, le nom prend toute la largeur de la ligne (« L’Imprimerie » d'un seul mot fait 293 px), l'icône
+   du lieu en tête, dans le texte ; les icônes gardent leur taille (en pixels), les marges se resserrent (en pixels
+   aussi), la ligne grandit, le texte n'est jamais réduit. */
+:root[data-texte="grand"] .lieux-sheet .lieux-row {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "nom"
+    "etat"
+    "suite";
+  column-gap: 10px;
+  row-gap: 2px;
+  padding: 4px 8px;
+}
+:root[data-texte="grand"] .open-world-panel-lieux-ouverts > .island-sheet {
+  padding-inline: max(10px, env(safe-area-inset-left, 0px)) max(10px, env(safe-area-inset-right, 0px));
+}
+:root[data-texte="grand"] .lieux-rows {
+  gap: 6px;
+}
+:root[data-texte="grand"] .lieux-row-name {
+  display: block;
+  grid-area: nom;
+  min-width: 0;
+  font-weight: 700;
+}
+:root[data-texte="grand"] .lieux-row-icon {
+  display: inline-grid;
+  vertical-align: middle;
+  margin-inline-end: 8px;
+}
+:root[data-texte="grand"] .lieux-row-state,
+:root[data-texte="grand"] .lieux-row-next {
+  display: block;
+  justify-self: stretch;
+}
+:root[data-texte="grand"] .lieux-row-state svg,
+:root[data-texte="grand"] .lieux-row-next svg {
+  vertical-align: -3px;
+  margin-inline-end: 6px;
+}
+:root[data-texte="grand"] .lieux-sheet .island-sheet-title {
+  font-size: 1rem;
 }
 /* La fiche du Port : cinq lignes, l'icône et le nom à gauche, « Y aller » à droite, à la même place sur chaque ligne ;
    dans une colonne trop étroite (au plus grand texte), « Y aller » passe sous le nom plutôt que de sortir du panneau. */

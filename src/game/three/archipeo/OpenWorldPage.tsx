@@ -10,7 +10,7 @@
 // durables des lieux se tirent des étoiles gardées : rien de neuf dans la sauvegarde. La Carte des lieux ouverts (piste 1,
 // lot 3) s'ouvre du bouton « Carte », comme ailleurs dans le jeu : l'île vue de haut, un lieu ouvert touché y dépose
 // Kéo. Chargé à la demande.
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
@@ -34,6 +34,7 @@ import { gameAsShown } from '../../world/stories';
 import { constructionState, placeConstruction, posedShapes } from './constructionParts';
 import { MapLabels } from './MapLabels';
 import { PlacePanel, placeFromParam, placeResume } from './PlacePanel';
+import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
 import { portState } from './portState';
 import { createOpenWorld, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
@@ -339,17 +340,53 @@ export default function OpenWorldPage() {
     const t = window.setTimeout(() => setClosedNote(null), CLOSED_NOTE_MS);
     return () => window.clearTimeout(t);
   }, [closedNote]);
-  // Échap ferme la Carte, comme un panneau.
+  // La liste des lieux ouverts, sur la Carte (bouton « Lieux ») ; Échap ferme la liste d'abord, puis la Carte, comme un
+  // panneau.
+  const closeMap = useCallback(() => {
+    setMapOpen(false);
+    setClosedNote(null);
+  }, []);
+  const list = usePlacesList(mapOpen, closeMap);
+  const openList = list.open;
+  const toggleList = list.toggle;
+  // La liste ouverte efface « [Nom] : fermé pour l'instant » : rien ne reste écrit sur la Carte voilée.
   useEffect(() => {
-    if (!mapOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      setMapOpen(false);
-      setClosedNote(null);
+    if (openList) setClosedNote(null);
+  }, [openList]);
+  // Une ligne touchée : comme une pastille de la Carte ; la voix dit le nom du lieu, celui du panneau qui s'ouvre à
+  // l'arrivée (référent dys).
+  const pickFromList = useCallback(
+    (id: PlaceId | 'port') => {
+      const name = id === 'port' ? textes.depart?.nom : placeById(id).name;
+      if (settings.autoRead && name) speak(frenchTypography(name));
+      pickOnMap(id);
+    },
+    [pickOnMap, settings.autoRead, speak, textes.depart],
+  );
+  const listRef = useRef<HTMLDivElement>(null);
+  // La liste ouverte : « Retour » et « Lieux » se tiennent à côté d'elle, jamais dessous (au-dessus du panneau du bas sur
+  // tablette, à droite de la colonne sur un écran bas), relus quand elle change de taille, avant que la page se dessine.
+  useLayoutEffect(() => {
+    const stage = stageRef.current;
+    const el = listRef.current;
+    if (!stage || !el || !openList) return;
+    const measure = () => {
+      const s = stage.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      const column = r.top - s.top < 8 && r.width < s.width * 0.8;
+      stage.style.setProperty('--lieux-gauche', column ? `${Math.round(r.right - s.left)}px` : '0px');
+      stage.style.setProperty('--lieux-bas', column ? '0px' : `${Math.round(s.bottom - r.top)}px`);
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [mapOpen]);
+    const observer = new ResizeObserver(measure);
+    observer.observe(stage);
+    observer.observe(el);
+    measure();
+    return () => {
+      observer.disconnect();
+      stage.style.removeProperty('--lieux-gauche');
+      stage.style.removeProperty('--lieux-bas');
+    };
+  }, [openList]);
 
   // La construction de chaque lieu (GD-20, lot 1) : les parties de la grille, mêmes identifiants, même sauvegarde.
   const constructions = useMemo(() => {
@@ -500,6 +537,17 @@ export default function OpenWorldPage() {
         {mapOpen && !asking && (
           <MapLabels openPlaces={openPlaces} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={showClosed} closedNote={closedNote?.place ?? null} portName={textes.depart?.nom} onCrowded={reframeMap} />
         )}
+        {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
+            le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à
+            gauche sur un écran bas. */}
+        {openList && !asking && (
+          <>
+            <div className="open-world-voile" aria-hidden="true" onClick={list.close} />
+            <div ref={listRef} className="open-world-panel open-world-panel-lieux-ouverts">
+              <PlacesSheet rows={placesRows(openPlaces, states, textes.etatsDIle, nextPlace?.id ?? null, textes.depart?.nom)} onPick={pickFromList} onClose={list.close} />
+            </div>
+          </>
+        )}
         {/* Les accès directs (décision « Sans Menu », GD-20, lot 1) : la colonne du monde en grille, telle quelle ; les
             commandes délavées tant qu'elles ne se livrent pas dans le monde continu. Masquée pendant une question. */}
         {!asking && !sheetOpen && <WorldShortcuts a="6e" requestsOpen={false} requestsLater resumeFrom={portResume} resumeAt={placeResume} />}
@@ -530,7 +578,7 @@ export default function OpenWorldPage() {
         )}
         {/* La Carte : le même bouton que dans le reste du jeu, dans la barre du bas, à gauche (« Y aller » tient le milieu). */}
         {!asking && !sheetOpen && (
-          <nav className="open-world-bar" aria-label="Monde">
+          <nav className={`open-world-bar${openList ? ' avec-liste' : ''}`} aria-label="Monde">
             {/* Un seul mot, toujours écrit sous l'icône, dans le bouton ; la Carte ouverte, il dit comment en sortir. */}
             <button
               type="button"
@@ -545,6 +593,22 @@ export default function OpenWorldPage() {
               <Icon name={mapOpen ? 'back' : 'map'} />
               <span className="open-world-map-word">{mapOpen ? 'Retour' : 'Carte'}</span>
             </button>
+            {/* « Lieux », sur la Carte seulement, à droite de « Retour », un écart net entre eux : le mot toujours écrit sous
+                l'icône ; il ouvre et ferme la liste des lieux ouverts. */}
+            {mapOpen && (
+              <button
+                type="button"
+                ref={list.button}
+                className="button open-world-map-button open-world-lieux-button"
+                aria-label={PLACES_BUTTON_LABEL}
+                aria-expanded={openList}
+                aria-controls={PLACES_SHEET_ID}
+                onClick={toggleList}
+              >
+                <Icon name="liste" />
+                <span className="open-world-map-word">Lieux</span>
+              </button>
+            )}
           </nav>
         )}
         {!asking && !mapOpen && !sheetOpen && (
