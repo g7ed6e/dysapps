@@ -10,9 +10,10 @@ import { modeleDuMonde } from '../model';
 import { DISTANCE_SIGN_STEPS, bornesDuMondeOuvert, distanceSign, keepClear, markOnScreen, missionsOfPlace, nextMission, playsInPlace, veiledPlaces, type MissionMark } from './mission';
 import { KEO_STEP, PLACES, placeById, placeOfIsland } from './plan6e';
 
-// Une île du 6e sans lieu dans le prototype : la première du registre, tirée de `PLACES` (relecture du code de L8 :
-// jamais un nom en dur, qu'un lieu nouveau rendrait faux), et sa première mission.
-const sansLieu = BIOMES.find((b) => b.classe === '6e' && !placeOfIsland(b.id))!;
+// Une île sans lieu dans le prototype : la première du registre, tirée de `PLACES` (relecture du code de L8 : jamais un
+// nom en dur, qu'un lieu nouveau rendrait faux), et sa première mission. Depuis le large (lot L9), toutes les îles du 6e
+// ont leur lieu : c'est une île d'une autre classe.
+const sansLieu = BIOMES.find((b) => !placeOfIsland(b.id))!;
 const missionSansLieu = sansLieu.exercises[0].id;
 
 const bornes: MissionMark[] = [

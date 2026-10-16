@@ -9,6 +9,7 @@
 import { boundsOf } from './facets';
 import { linearRgb, type Vec2 } from './geometry';
 import { placeById, type PlaceId } from './plan6e';
+import { placeArt } from './northShore';
 import { modelOfPlace } from './places';
 import { heightAt, standingHeight } from './terrain';
 
@@ -97,7 +98,8 @@ function dome(pos: number[], nor: number[], col: number[], c: Vec2, radius: numb
 function veilOf(pos: number[], nor: number[], col: number[], id: PlaceId): void {
   const place = placeById(id);
   const { min, max } = boundsOf(modelOfPlace(id).facets);
-  const reach = Math.max(Math.abs(min[0]), Math.abs(max[0]), Math.abs(min[2]), Math.abs(max[2]));
+  // Les Balises (lot L9a) : le banc couvre la station et sa cale, pas le chapelet de mâts dans la mer.
+  const reach = placeArt(id)?.veilReach ?? Math.max(Math.abs(min[0]), Math.abs(max[0]), Math.abs(min[2]), Math.abs(max[2]));
   const radius = reach * 1.3 + 2;
   const { x, z } = place.center;
   const floor = standingHeight(heightAt(place.center));

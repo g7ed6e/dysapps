@@ -455,6 +455,8 @@ describe('La Carte avec le rivage nord (lot L7)', () => {
     shipyard: [252, 84], lookout: [164, 48], archives: [214, 48], printworks: [216, 48],
     // Le rivage sud (lot L8), fermé : sur deux lignes, la largeur estimée sur celle des noms du même nombre de lettres.
     mangrove: [160, 84], ruins: [145, 84], observatory: [200, 84], commons: [120, 84],
+    // Le large (lot L9), fermé : « Les Balises » sur deux lignes ; « La Gare maritime » aussi, la largeur de « maritime ».
+    beacons: [140, 84], ferry: [150, 84],
   };
   const narrow = { w: 150, h: 84 };
   const labelsOn = (w: number, h: number, view = mapStart(w / h)): MapLabel[] => {

@@ -185,6 +185,9 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   lookout: placeArt('lookout')!.sceneSpot,
   archives: placeArt('archives')!.sceneSpot,
   printworks: placeArt('printworks')!.sceneSpot,
+  // Le large (lot L9) : la cale des Balises, le quai sous l'auvent de la Gare maritime.
+  beacons: placeArt('beacons')!.sceneSpot,
+  ferry: placeArt('ferry')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -425,6 +428,9 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   ruins: null,
   observatory: null,
   commons: null,
+  // Le large (lot L9) : les bouées des Balises, les malles de la Gare maritime.
+  beacons: 'lieu',
+  ferry: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
@@ -670,7 +676,8 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
     const xs0 = points.map((p) => p.x);
     const z0 = points.reduce((t, p) => t + p.z, 0) / points.length;
     art.base(b, (Math.min(...xs0) + Math.max(...xs0)) / 2, points[0].y, z0, Math.max(...xs0) - Math.min(...xs0) + 1.4 * s, s, look.ground ?? points[0].y);
-    for (const [i, p] of points.entries()) if (!gone.includes(i)) art.object(b, p, s, i, points.length, picked.includes(i));
+    // La malle marquée de la Gare maritime reste, sans son couvercle : la réaction le rabat sur elle (lot L9b).
+    for (const [i, p] of points.entries()) if (!gone.includes(i) || art.replaces) art.object(b, p, s, i, points.length, picked.includes(i), gone.includes(i));
     return b.build();
   }
   if (kind === 'lieu') return b.build();
@@ -1316,6 +1323,13 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     // Le lieu au repos (lot L7) : son décor seul ; la réponse juste se dit dans le panneau, rien ne bouge (directeur
     // artistique : aucun témoin en R au rivage nord).
     placeArt(place)?.rest?.(b, o);
+  } else if (scene.kind === 'restMark') {
+    // Le lieu au repos (lot L9) : son décor seul ; après une bonne réponse seulement (la vue ne passe `answered` qu'à
+    // elle), l'objet de la bonne réponse réagit et reste jusqu'à l'item suivant (la bouée reçoit son voyant, la malle se
+    // ferme) ; jamais seul à dire la réussite (le retour habituel la dit).
+    const art = placeArt(place);
+    art?.rest?.(b, o);
+    if (answered && answerAt && art?.answer?.mark) reaction = art.answer.mark(answerAt, scale);
   } else if (scene.kind === 'saline' || scene.kind === 'jauge') {
     if (scene.kind === 'jauge') jauge(b, labels, scene, o);
     else idleSluice(b, o);
@@ -1339,6 +1353,9 @@ const COLUMN_DECOR: Partial<Record<PlaceId, (b: FacetBuilder, o: Vec3, done: boo
   ruins: digWinch,
   observatory: observatoryBay,
   commons: commonsFountain,
+  // Le large (lot L9) : la bouée témoin des Balises, la malle témoin de la Gare maritime.
+  beacons: (b, o, done) => placeArt('beacons')!.column?.(b, o, done) ?? null,
+  ferry: (b, o, done) => placeArt('ferry')!.column?.(b, o, done) ?? null,
 };
 
 /** Le plancher de la scène du Chantier naval monte de tant au-dessus de la grève (il s'en détache). */

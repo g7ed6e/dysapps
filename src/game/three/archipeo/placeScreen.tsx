@@ -3,10 +3,11 @@
 // réponse posée sur la scène, la règle et la figure d'un item, les icônes d'action d'un écran bas et la voix coupée
 // entre deux items.
 import { createContext, useContext, useEffect, type CSSProperties } from 'react';
-import { frenchTypography } from '../../../components/math/RichText';
+import { RichText, frenchTypography } from '../../../components/math/RichText';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { Syllabified } from '../../../components/Syllabified';
 import { useSettings } from '../../../core/SettingsContext';
+import { langAttr, type Lang } from '../../../core/speech';
 import type { ExerciseItem } from '../../exercises/types';
 import { Aid } from '../../exercises/Aid';
 import type { AidData } from '../../exercises/maths';
@@ -128,7 +129,7 @@ export const figureOf = (item: ExerciseItem | undefined): AidData | null => aidD
  * La règle : sous la question dans la colonne, ou à droite sur un écran bas (en « Vue simple », toujours dans la liste,
  * jamais posée sur elle).
  */
-export function PlaceAid({ aid, layout, simple }: { aid: AidData; layout: QuestionLayout; simple: boolean }) {
+export function PlaceAid({ aid, layout, simple, lang }: { aid: AidData; layout: QuestionLayout; simple: boolean; lang?: Lang }) {
   const box = simple ? null : layout.aid;
   const style: CSSProperties | undefined = box
     ? {
@@ -140,7 +141,7 @@ export function PlaceAid({ aid, layout, simple }: { aid: AidData; layout: Questi
     : undefined;
   return (
     <div className={`aid world-question-aid${box ? ' beside' : ''}`} style={style}>
-      <Aid aid={aid} />
+      <Aid aid={aid} lang={lang} />
     </div>
   );
 }
@@ -150,14 +151,15 @@ export function PlaceAid({ aid, layout, simple }: { aid: AidData; layout: Questi
  * pas sans le lire), jamais dans une boîte qui défile à part ; « Écouter le document » en tête (48 px, l'icône, son nom
  * dit), puis une ligne par information, en syllabes comme une consigne.
  */
-export function PlaceDocument({ text, spoken }: { text: string; spoken: string }) {
+export function PlaceDocument({ text, spoken, lang = 'fr' }: { text: string; spoken: string; lang?: Lang }) {
   return (
     <div className="notice world-document">
-      <SpeakButton text={spoken} label="Écouter le document" shown={text} compact />
-      <ul className="notice-text" role="list">
+      <SpeakButton text={spoken} label="Écouter le document" shown={text} compact lang={lang} />
+      <ul className="notice-text" role="list" lang={langAttr(lang)}>
         {text.split('\n').map((line, i) => (
           <li key={i} className="notice-line">
-            <Syllabified text={frenchTypography(line)} />
+            {/* Un document en langue vivante (le large, lot L9) : jamais de syllabes en couleurs, sa voix dans sa langue. */}
+            {lang === 'fr' ? <Syllabified text={frenchTypography(line)} /> : <RichText text={line} lang={lang} />}
           </li>
         ))}
       </ul>

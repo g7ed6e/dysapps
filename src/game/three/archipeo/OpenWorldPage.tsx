@@ -410,6 +410,8 @@ export default function OpenWorldPage() {
       ruins: of('ruins'),
       observatory: of('observatory'),
       commons: of('commons'),
+      beacons: of('beacons'),
+      ferry: of('ferry'),
     } satisfies Record<PlaceId, ReturnType<typeof of>>;
   }, [state.world.parts]);
   // Les traces des scénettes de chaque lieu : une par mission jouée en scénette, dès sa première réussite (les étoiles
@@ -436,6 +438,8 @@ export default function OpenWorldPage() {
       ruins: of('ruins'),
       observatory: of('observatory'),
       commons: of('commons'),
+      beacons: of('beacons'),
+      ferry: of('ferry'),
     } satisfies Record<PlaceId, string[]>;
   }, [state.progress]);
   // Ce que la scène montre déjà, et le lieu de la dernière question : une partie arrivée pendant une question s'y pose
@@ -466,6 +470,8 @@ export default function OpenWorldPage() {
       ruins: posedShapes(constructions.ruins),
       observatory: posedShapes(constructions.observatory),
       commons: posedShapes(constructions.commons),
+      beacons: posedShapes(constructions.beacons),
+      ferry: posedShapes(constructions.ferry),
     };
     const before = shownBuilt.current;
     const place = askedPlace.current;
@@ -491,6 +497,8 @@ export default function OpenWorldPage() {
       ruins: constructionState(constructions.ruins),
       observatory: constructionState(constructions.observatory),
       commons: constructionState(constructions.commons),
+      beacons: constructionState(constructions.beacons),
+      ferry: constructionState(constructions.ferry),
     }),
     [constructions],
   );

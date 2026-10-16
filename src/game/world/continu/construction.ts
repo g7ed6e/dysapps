@@ -105,6 +105,9 @@ const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = {
   ruins: 2,
   observatory: 2,
   commons: 1,
+  // Le large (lot L9) : les abords, dans le fichier de chaque lieu.
+  beacons: placeArt('beacons')!.traceStage,
+  ferry: placeArt('ferry')!.traceStage,
 };
 
 /**

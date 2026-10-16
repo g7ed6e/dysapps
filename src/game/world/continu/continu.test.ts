@@ -24,9 +24,11 @@ describe('Le plan du 6e', () => {
     for (const p of ISLET) expect(insidePolygon(p, LAGOON)).toBe(true);
   });
 
-  it('les quatorze lieux reprennent chacun une île du 6e d’aujourd’hui, et leur porte est un nœud du réseau', () => {
+  it('les seize lieux reprennent chacun une île du 6e d’aujourd’hui, et leur porte est un nœud du réseau', () => {
     expect(PLACES.map((p) => p.island).sort()).toEqual([
       'civics-6e-democratic-society',
+      'english-6e-grammar',
+      'english-6e-vocabulary',
       'french-6e-grammar-spelling',
       'french-6e-letter-confusion',
       'french-6e-phonology',
@@ -145,7 +147,9 @@ describe('Le terrain', () => {
         const r = tileRect(i % TERRAIN.tilesX, Math.floor(i / TERRAIN.tilesX));
         expect(r.minZ).toBeLessThanOrEqual(p.z + RING.behind);
       }
-      // La tuile sous Kéo est toujours de près.
+      // La tuile sous Kéo est toujours de près, quand il y en a une : sur la jetée et l'îlot de la Gare maritime (lot L9b),
+      // à l'ouest du terrain, Kéo marche sur le large.
+      if (p.x < TERRAIN.minX) continue;
       const under = Math.floor((p.z - TERRAIN.minZ) / TILE_SIZE) * TERRAIN.tilesX + Math.floor((p.x - TERRAIN.minX) / TILE_SIZE);
       expect(rings.near).toContain(under);
     }
@@ -216,7 +220,8 @@ describe('Les chemins aimantés', () => {
     expect(f.triangles).toBeGreaterThan(100);
     // Quatorze lieux reliés (le chemin de la Turbine, lot L6a ; celui du Chantier naval, lot L6b : 4 880 ; le rivage nord, lot
     // L7, sa rampe et son muret : 6 120 ; le rivage sud et ses quatre chemins, lot L8 : 7 338, mesuré sur le monde réuni).
-    expect(f.triangles).toBeLessThan(7500);
+    // Seize lieux (le large, lot L9 : le chemin de la côte ouest et la jetée de la Gare maritime, 8 592).
+    expect(f.triangles).toBeLessThan(8800);
   });
 });
 

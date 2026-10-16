@@ -663,7 +663,10 @@ describe('La Turbine (GD-20, point 8, lot L6a)', () => {
   it('la passerelle vers la Turbine : des planches qu’on lit sur des pieux, au-dessus de la rivière (relecture de L6a)', () => {
     const field = buildHeightField();
     const f = pathRibbons((x, z) => heightOnMesh(field, x, z));
-    expect(PLANK_BRIDGES).toEqual([['tur-1', 'tur-2']]);
+    expect(PLANK_BRIDGES).toEqual([
+      ['tur-1', 'tur-2'],
+      ['lar-4', 'lar-5'],
+    ]);
     const woods = [0xa9784a, 0xb98c5c, 0x7a5636].map(linearRgb);
     const of = (rgb: number[]) => {
       const out: number[] = [];

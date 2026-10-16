@@ -1,7 +1,8 @@
-// Ce qu'un lieu du rivage nord apporte au monde continu (GD-20, point 8, lot L7) : son modèle (la ruine et ses trois
-// étapes), sa scénette (le sol, l'habitant, le cadre), l'objet qui porte ses réponses, son décor de C et son témoin, ses
-// traces. Chaque lieu le tient dans son fichier (lookout.ts, archives.ts, printworks.ts) ; places.ts, scenette.ts et
-// questionScene.ts le lisent ici, au lieu d'en ajouter le dessin chez eux. Types seulement.
+// Ce qu'un lieu du rivage nord (GD-20, point 8, lot L7) ou du large (lot L9) apporte au monde continu : son modèle (la
+// ruine et ses trois étapes), sa scénette (le sol, l'habitant, le cadre), l'objet qui porte ses réponses, son décor de C
+// et son témoin, ses traces. Chaque lieu le tient dans son fichier (lookout.ts, archives.ts, printworks.ts, beacons.ts,
+// ferry.ts) ; places.ts, scenette.ts et questionScene.ts le lisent ici, au lieu d'en ajouter le dessin chez eux. Types
+// seulement.
 import type { Stage } from './construction';
 import type { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
@@ -28,9 +29,17 @@ interface AnswerArt {
   base(b: FacetBuilder, mid: number, y: number, z: number, span: number, s: number, ground: number): void;
   /**
    * L'objet de la réponse `i` sur `count`, au sol en `at`, à l'échelle `s` ; `picked` : une réponse tentée (sa forme le
-   * dit, jamais sa couleur seule).
+   * dit, jamais sa couleur seule) ; `marked` : l'objet marqué que la réaction complète (`replaces`), sans ce qu'elle
+   * apporte (la malle sans son couvercle, qui se rabat).
    */
-  object(b: FacetBuilder, at: Vec3, s: number, i: number, count: number, picked: boolean): void;
+  object(b: FacetBuilder, at: Vec3, s: number, i: number, count: number, picked: boolean, marked?: boolean): void;
+  /**
+   * En R, après une bonne réponse seulement (la scène `restMark`, lot L9) : ce que reçoit l'objet de la bonne réponse,
+   * posé en `at`, à l'échelle `s` (le voyant qui monte sur la bouée), et qui reste jusqu'à l'item suivant.
+   */
+  mark?(at: Vec3, s: number): Reaction;
+  /** L'objet marqué perd ce que la réaction lui apporte (`marked`) : le couvercle de la malle, qui se rabat. */
+  replaces?: true;
 }
 
 /** Une trace : sa place depuis le centre du lieu, la hauteur que la caméra garde au retour, son dessin. */
@@ -73,4 +82,11 @@ export interface PlaceArt {
   traces: Readonly<Record<string, TraceArt>>;
   /** Où Kéo se tient au retour, depuis le centre du lieu. */
   exit: Vec2;
+  /**
+   * La portée de la brume du lieu, depuis son centre, quand le lieu s'étend loin de son corps (les mâts des Balises, en
+   * mer, lot L9a) : le banc couvre le corps, pas tout le large.
+   */
+  veilReach?: number;
+  /** Le lieu s'efface le temps de sa scénette (la station des Balises serait entre la caméra et la cale, lot L9a). */
+  hideInScenette?: true;
 }

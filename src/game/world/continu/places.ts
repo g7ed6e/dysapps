@@ -2471,6 +2471,9 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   ruins: passeurRuins,
   observatory,
   commons,
+  // Le large (lot L9) : dessinés dans leur fichier, comme le rivage nord.
+  beacons: northPlace('beacons'),
+  ferry: northPlace('ferry'),
 };
 
 const pieces = new Map<PlaceId, PlacePiece[]>();

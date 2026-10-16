@@ -58,6 +58,12 @@ const HEAVIEST: readonly { place: PlaceId; scene: ItemScene }[] = [
   { place: 'observatory', scene: { kind: 'column' } },
   // La Halle (lot L8d) : le C neutre, la borne-fontaine, son filet et l'eau de son auge.
   { place: 'commons', scene: { kind: 'column' } },
+  // Le large (lot L9) : la bouée témoin et son voyant, les bouées et le voyant marqué ; la malle témoin qui se ferme, les
+  // malles et le couvercle rabattu.
+  { place: 'beacons', scene: { kind: 'column' } },
+  { place: 'beacons', scene: { kind: 'restMark' } },
+  { place: 'ferry', scene: { kind: 'column' } },
+  { place: 'ferry', scene: { kind: 'restMark' } },
 ];
 
 /**

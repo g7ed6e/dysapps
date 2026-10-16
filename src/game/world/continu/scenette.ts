@@ -97,6 +97,10 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   observatory: { role: 'La photographe', greeting: null, placement: 'rangee' },
   // Lot L8d : « le couvreur » (directeur artistique), un métier, jamais un élu.
   commons: { role: 'Le couvreur', greeting: null, placement: 'rangee' },
+  // Le large (lot L9, directeur artistique, consultant Archipéo) : « le pilote du chenal » (jamais celui d'un avion),
+  // « le chef de gare » ; le rôle de chaque fichier de lieu (placeArt.ts).
+  beacons: { role: placeArt('beacons')!.role, greeting: null, placement: 'rangee' },
+  ferry: { role: placeArt('ferry')!.role, greeting: null, placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -452,6 +456,8 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   lookout: northSite('lookout'),
   archives: northSite('archives'),
   printworks: northSite('printworks'),
+  beacons: northSite('beacons'),
+  ferry: northSite('ferry'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -819,7 +825,7 @@ export function scenettePose(place: PlaceId, stage: ScreenBox, width: number, he
  * voit pas deux. Au Phare, non : la tour porte la galerie ; aux Filets et aux Écluses non plus : leurs cabanes, leur
  * séchoir et leurs bassins font le fond de la scène.
  */
-export const scenetteHidesPlace = (place: PlaceId): boolean => place === 'quais';
+export const scenetteHidesPlace = (place: PlaceId): boolean => place === 'quais' || placeArt(place)?.hideInScenette === true;
 
 /**
  * Les pièces du lieu s'effacent-elles le temps de la scénette ? Partout sauf au Phare (ses lampes sont sur la galerie) :
@@ -845,8 +851,11 @@ export function scenetteTraces(place: PlaceId, done: readonly string[], mission:
  */
 export const answersHang = (place: PlaceId, posed = true): boolean => place === 'phare' && posed;
 
-/** La bonne réponse quitte-t-elle la rangée (la caisse des Quais monte au crochet) ? Ailleurs, elle reste. */
-export const answerLeaves = (place: PlaceId): boolean => place === 'quais';
+/**
+ * La bonne réponse quitte-t-elle la rangée (la caisse des Quais monte au crochet) ? Ailleurs, elle reste ; à la Gare
+ * maritime (lot L9b), la malle reste, et son couvercle la quitte : la réaction le rabat sur elle.
+ */
+export const answerLeaves = (place: PlaceId): boolean => place === 'quais' || placeArt(place)?.answer?.replaces === true;
 
 /**
  * La hauteur du ponton des réponses d'une scénette, quand elles sont posées : celle des pontons du monde, sur l'eau du

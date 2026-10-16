@@ -44,7 +44,7 @@ beforeAll(async () => {
   );
 });
 
-function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard' | 'lookout' | 'archives' | 'printworks' | 'mangrove' | 'ruins' | 'observatory' | 'commons', mission: string, plain = false) {
+function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard' | 'lookout' | 'archives' | 'printworks' | 'mangrove' | 'ruins' | 'observatory' | 'commons' | 'beacons' | 'ferry', mission: string, plain = false) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
@@ -1180,5 +1180,66 @@ describe('Le rivage nord, les écrans de référence redits (GD-20, point 8, lot
     expect(screen.queryByRole('button', { name: /Réécouter/ })).toBeNull();
     expect(screen.getAllByRole('button', { name: /^Écouter :/ }).length).toBeGreaterThan(0);
     expect(speak).not.toHaveBeenCalled();
+  });
+});
+
+describe('Le large (GD-20, point 8, lot L9)', () => {
+  const answers = () => [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')];
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
+  });
+  afterEach(() => {
+    localStorage.clear();
+    vi.unstubAllGlobals();
+  });
+  beforeAll(async () => {
+    await Promise.all(['english-6e-vocabulary-first-listening-1', 'english-6e-grammar-story-1', 'english-6e-grammar-have-got-1'].map((id) => loadExercise(id)));
+  });
+  class FakeUtterance {
+    lang = '';
+    rate = 1;
+    voice = null;
+    onend: (() => void) | null = null;
+    onerror: (() => void) | null = null;
+    constructor(public text: string) {}
+  }
+  const start = async () => {
+    const user = userEvent.setup();
+    const go = screen.queryByRole('button', { name: /Commencer/ });
+    if (go) await user.click(go);
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+  };
+
+  it('Ears aux Balises : la phrase en français, le mot anglais dit en anglais à l’ouverture, les réponses en français', async () => {
+    const speak = vi.fn();
+    vi.stubGlobal('speechSynthesis', { speak, cancel: vi.fn(), getVoices: () => [], speaking: false });
+    vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance);
+    localStorage.setItem('dysapps:settings', JSON.stringify({ autoRead: true }));
+    vi.mocked(world.question).mockClear();
+    renderPlace('beacons', 'first-listening');
+    expect(await screen.findByText('Le pilote du chenal')).toBeInTheDocument();
+    await start();
+    expect(screen.getByRole('button', { name: /Réécouter/ })).toBeInTheDocument();
+    await vi.waitFor(() => expect(speak).toHaveBeenCalled());
+    const said = speak.mock.calls.map((c) => c[0] as FakeUtterance);
+    expect(said.some((u) => u.lang.startsWith('en') && u.text.split(' ').length <= 3)).toBe(true);
+    // Le français est la langue de la page : ni la phrase ni les réponses ne portent l'anglais.
+    for (const a of answers()) expect(a.querySelector('[lang]')?.getAttribute('lang') ?? a.closest('[lang]')?.getAttribute('lang') ?? 'fr').toMatch(/^fr/);
+    expect(document.querySelector('.question-prompt')?.closest('[lang="en"]')).toBeNull();
+    expect(document.querySelector('.question-prompt')?.textContent).toMatch(/anglais/);
+    await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
+    expect(vi.mocked(world.question).mock.calls.at(-1)![0]).toMatchObject({ place: 'beacons', item: { scene: { kind: 'restMark' }, answered: false } });
+  });
+
+  it('Story time à la Gare maritime : le C, la malle témoin, les réponses dans la colonne', async () => {
+    vi.stubGlobal('speechSynthesis', { speak: vi.fn(), cancel: vi.fn(), getVoices: () => [], speaking: false });
+    vi.mocked(world.question).mockClear();
+    renderPlace('ferry', 'story');
+    expect(await screen.findByText('Le chef de gare')).toBeInTheDocument();
+    await start();
+    await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
+    expect(vi.mocked(world.question).mock.calls.at(-1)![0]).toMatchObject({ place: 'ferry', mission: 'story', item: { scene: { kind: 'column' }, answered: false } });
+    expect(document.querySelector('.quiz.in-world')!.classList.contains('mode-c')).toBe(true);
   });
 });

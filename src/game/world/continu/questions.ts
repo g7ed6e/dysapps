@@ -71,7 +71,13 @@ export type ItemScene =
    * du lieu (les vitraux de la Vigie, les tiroirs à fiches des Archives, les feuilles de l'Imprimerie), leurs étiquettes
    * dans la page.
    */
-  | { kind: 'rest' };
+  | { kind: 'rest' }
+  /**
+   * Le lieu au repos, et l'objet de la bonne réponse qui réagit après une bonne réponse seulement, jamais après une
+   * correction (GD-20, point 8, lot L9 : la bouée reçoit son voyant, la malle se ferme), puis reste jusqu'à l'item
+   * suivant ; les réponses portées par l'objet du lieu, leurs étiquettes dans la page.
+   */
+  | { kind: 'restMark' };
 
 const CATCHES: readonly Catch[] = ['sardines', 'filets', 'mouette', 'bocaux', 'crabes', 'pêche', 'seaux', 'crabe'];
 const isCount = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0;
@@ -87,6 +93,7 @@ export function isItemScene(v: unknown): v is ItemScene {
     case 'saline':
     case 'column':
     case 'rest':
+    case 'restMark':
       return true;
     case 'jauge':
       return 'start' in v && isCount(v.start) && 'd' in v && isCount(v.d) && v.d > 0 && 'n' in v && isCount(v.n) && v.n <= v.d;
@@ -119,6 +126,11 @@ export interface PlacedItem extends QuestionItem {
   speakOnOpen?: boolean;
   /** Ce qu'écrit chaque réponse, quand ce n'est pas la réponse elle-même (les morceaux « re- », « -et », lot L7). */
   choiceLabels?: string[];
+  /**
+   * La phrase écrite en français, quand l'exercice est dans une autre langue et que seule la voix dit le mot étranger
+   * (Ears aux Balises, lot L9a) : la phrase en syllabes, la voix dans la langue de l'exercice.
+   */
+  promptLang?: 'fr';
 }
 
 /**
@@ -412,6 +424,18 @@ export const sceneDrawsFigure = (scene: ItemScene): boolean => scene.kind === 's
 /** Le lieu au repos (lot L7) : les réponses portées par l'objet du lieu, rien de l'item dans la scène. */
 export const REST: ItemScene = { kind: 'rest' };
 
+/** Le lieu au repos, l'objet de la bonne réponse marqué après une bonne réponse (lot L9). */
+export const REST_MARK: ItemScene = { kind: 'restMark' };
+
+/**
+ * La phrase d'Ears aux Balises (lot L9a) : la consigne de l'exercice, écrite en français ; la voix dit le mot anglais
+ * à l'ouverture de l'item, comme son écran de référence (la dictée), et le redit à la demande.
+ */
+export const EARS_PROMPT = 'Écoute le mot anglais, puis choisis ce qu’il veut dire.';
+
+/** Les missions du large jouées en C (lot L9) : les documents à lire et l'histoire à écouter. */
+const LARGE_COLUMN = ['signs', 'famous-people', 'story'] as const;
+
 /**
  * Ce qu'un item du rivage nord sans phrase affiche et dit dans la scène, pris sur son écran de référence (directeur du
  * contenu pédagogique, avis d'avant L7) : le Mot troué, le mot et son trou (« p…talon »), le mot entier dit ; les
@@ -469,6 +493,16 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
   if (place === 'observatory') return items.map((it) => ({ ...it, placeScene: COLUMN }));
   // La Halle (lot L8d) : ses trois missions en C, aux deux niveaux, avec leurs items de référence.
   if (place === 'commons') return items.map((it) => ({ ...it, placeScene: COLUMN }));
+  // Le large (lot L9) : les items de référence tels quels. En C, les documents (Signs, Famous people) et l'histoire
+  // (Story time) ; en R, les phrases à trou, les nombres et l'écoute, portés par les bouées des Balises et les malles de la
+  // Gare maritime (deux malles pour Have ou has, au niveau 1 : l'item a deux choix). Ears garde son écoute : le mot dit à
+  // l'ouverture, la phrase écrite en français (`promptLang`).
+  if (place === 'beacons' || place === 'ferry') {
+    if (LARGE_COLUMN.some((m) => missionIs(exerciseId, m))) return items.map((it) => ({ ...it, placeScene: COLUMN }));
+    if (missionIs(exerciseId, 'first-listening'))
+      return items.map((it) => ({ ...it, prompt: EARS_PROMPT, promptLang: 'fr', spoken: String(it.word ?? ''), listen: 'reecouter', speakOnOpen: true, placeScene: REST_MARK }));
+    return items.map((it) => ({ ...it, placeScene: REST_MARK }));
+  }
   if (place === 'saltworks') {
     // Les Marais salants (GD-20, point 8, lot L5) : toutes les missions au même bassin, avec les mêmes sacs de sel. Seule
     // la Pente graduée, au niveau 1, a son gabarit (la jauge) ; les autres gardent leur item de référence, le bassin au

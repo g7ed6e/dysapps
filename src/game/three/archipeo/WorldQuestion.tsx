@@ -22,6 +22,7 @@ import { Loading } from '../../../components/Loading';
 import { ForeignWordsProvider, Marked } from '../../../components/ForeignWords';
 import { RichText, frenchTypography } from '../../../components/math/RichText';
 import { gluedEnds } from '../../../core/typography';
+import { langAttr, type Lang } from '../../../core/speech';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { Syllabified } from '../../../components/Syllabified';
 import { fractionWords } from '../../../core/fractions';
@@ -898,17 +899,17 @@ const FRACTION_STUCK = /(\d+\/\d+ (?:ou|et) \d+\/\d+(?:[ \u00a0\u202f]?[.,;:!?])
  * La phrase complétée par la réponse : la réponse reste avec le mot qui lui est collé avant ou après (« l'» + « air »),
  * à l'affichage seulement (`gluedEnds`).
  */
-function FilledText({ before, answer, after }: { before: string; answer: string; after: string }) {
+function FilledText({ before, answer, after, lang = 'fr' }: { before: string; answer: string; after: string; lang?: Lang }) {
   const { head, tail, lead, rest } = gluedEnds(before, after);
   return (
     <>
-      {head && <RichText text={head} />}
+      {head && <RichText text={head} lang={lang} />}
       <span className="mot-lie">
-        {tail && <RichText text={tail} />}
+        {tail && <RichText text={tail} lang={lang} />}
         <strong className="world-filled">{answer}</strong>
-        {lead && <RichText text={lead} />}
+        {lead && <RichText text={lead} lang={lang} />}
       </span>
-      {rest && <RichText text={rest} />}
+      {rest && <RichText text={rest} lang={lang} />}
     </>
   );
 }
@@ -939,7 +940,7 @@ function PlaceText({ text }: { text: string }) {
  * grille, le schéma coté, la figure exacte restent dans le panneau, GD-20, point 8), la règle de l'item, l'indice sur
  * demande, une réponse par objet du lieu. La correction est celle de l'écran classique (CalculationScreen).
  */
-function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: ScreenProps) {
+function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'fr' }: ScreenProps) {
   const { layout, show, simple, phraseVoice } = useQuestion();
   useStopOnLeave();
   const { settings, speak } = useSettings();
@@ -957,6 +958,11 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   const listen = item?.listen === 'mot' || item?.listen === 'reecouter' ? item.listen : null;
   const labels = Array.isArray(item?.choiceLabels) && item.choiceLabels.length === choices.length ? item.choiceLabels.map(String) : choices;
   const speakOnOpen = item?.speakOnOpen === true;
+  // Une langue vivante (le large, lot L9) : la phrase, le document et la voix dans la langue de l'exercice, sans syllabes
+  // en couleurs ; la phrase d'Ears reste en français (`promptLang`), la voix y dit le mot anglais ; chaque réponse dans
+  // sa langue (`choicesLang`, comme l'écran habituel). L'indice reste en français.
+  const promptLang: Lang = item?.promptLang === 'fr' ? 'fr' : lang;
+  const choicesLang: Lang = item?.choicesLang === 'fr' ? 'fr' : lang;
   // Aux Écluses, la scène dessine la figure (le sas, l'échelle) et les barres de Deux rives (les deux sas) ; aux Marais
   // salants, la droite graduée (la jauge du bassin) : elles reviennent dans « Vue simple », qui couvre la scène.
   const drawn = scene !== null && sceneDrawsFigure(scene);
@@ -977,7 +983,8 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   // Le C neutre (lot L6a) : l'objet témoin ne réagit qu'après une bonne réponse (jamais à une correction) ; la scène ne
   // l'apprend qu'alors.
   const right = Boolean(answered?.results.length) && Boolean(answered?.results.every((r) => r.correct));
-  const shownAnswered = scene?.kind === 'column' ? right : Boolean(answered);
+  // De même pour l'objet de la bonne réponse marqué en R (lot L9 : la bouée reçoit son voyant, la malle se ferme).
+  const shownAnswered = scene?.kind === 'column' || scene?.kind === 'restMark' ? right : Boolean(answered);
   useEffect(() => {
     if (!scene) return;
     const picked = triedKey ? triedKey.split(',').map(Number) : [];
@@ -995,7 +1002,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   // leur écran de référence, si la lecture automatique est choisie.
   // Une lecture par item : la voix, la phrase et le réglage du moment, lus sans relancer la lecture quand ils changent.
   const readOnOpen = useEffectEvent(() => {
-    if (speakOnOpen && settings.autoRead) speak(spoken);
+    if (speakOnOpen && settings.autoRead) speak(spoken, undefined, lang);
   });
   useEffect(() => readOnOpen(), [itemKeyOf, speakOnOpen]);
   if (!item || !scene) return null;
@@ -1031,8 +1038,8 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
             disabled={Boolean(answered) || Boolean(ruledOut?.includes(choice))}
             onClick={() => onAnswer({ results: [{ key: item.key, correct: choice === answer }], detail: { chosen: choice } })}
           >
-            <span className="world-answer-label" style={styles.label}>
-              <RichText text={labels[i]} />
+            <span className="world-answer-label" style={styles.label} lang={langAttr(choicesLang)}>
+              <RichText text={labels[i]} lang={choicesLang} />
             </span>
           </button>
         );
@@ -1044,7 +1051,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
   // pour l'être, défile avec le reste (openWorld.css) ; son mot, « Phrase », la distingue de la voix de la consigne.
   const pinnedVoice =
     inColumn && phraseVoice
-      ? createPortal(question ? <SpeakButton text={frenchTypography(question)} label="Phrase" /> : <SpeakButton text={filled ? whole : spoken} label="Phrase" shown={whole} />, phraseVoice)
+      ? createPortal(question ? <SpeakButton text={frenchTypography(question)} label="Phrase" /> : <SpeakButton text={filled ? whole : spoken} label="Phrase" shown={whole} lang={lang} />, phraseVoice)
       : null;
 
   return (
@@ -1064,15 +1071,18 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
           <NoticeQuestion question={question} prompt={prompt} spoken={spoken} image="" lang="fr" />
         ) : (
           <div className="question-head">
-            <p className={`question-prompt${word ? ' item-word' : ''}`}>
+            <p className={`question-prompt${word ? ' item-word' : ''}`} lang={langAttr(promptLang)}>
               {filled ? (
-                <FilledText before={gap?.before ?? ''} answer={answer} after={gap?.after ?? ''} />
-              ) : (
+                <FilledText before={gap?.before ?? ''} answer={answer} after={gap?.after ?? ''} lang={promptLang} />
+              ) : promptLang === 'fr' ? (
                 <PlaceText text={prompt} />
+              ) : (
+                <RichText text={prompt} lang={promptLang} />
               )}
             </p>
             <SpeakButton
               text={filled ? whole : spoken}
+              lang={lang}
               label={word || listen === 'mot' ? 'Écouter le mot' : listen === 'reecouter' ? (settings.autoRead ? 'Réécouter' : 'Écouter') : 'Lire la phrase'}
               shown={whole}
               compact
@@ -1100,7 +1110,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
         {inColumn && answersBlock}
         {/* Le document d'un C, toujours ouvert, juste après les réponses : avec l'indice, la correction et le rappel, seul à
             pouvoir passer sous le pli. */}
-        {question && inColumn && <PlaceDocument text={prompt} spoken={spoken} />}
+        {question && inColumn && <PlaceDocument text={prompt} spoken={spoken} lang={lang} />}
         <div className="world-question-actions">
           {/* Sur un écran bas, la ligne de calcul et les icônes sur une seule ligne. */}
           {referenceLine && layout.low && (
@@ -1143,7 +1153,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
             <Aid aid={figure} />
           </div>
         )}
-        {aid && <PlaceAid aid={aid} layout={layout} simple={simple} />}
+        {aid && <PlaceAid aid={aid} layout={layout} simple={simple} lang={lang} />}
       </div>
       {!inColumn && answersBlock}
     </div>

@@ -5,7 +5,7 @@
 // page. Ici, la pose de la caméra et ses limites, sans Three.js ; la vue fait le reste (../../three/archipeo/scene.ts).
 import { screenOf, type CameraPose } from './camera';
 import type { Vec2 } from './geometry';
-import { COAST } from './plan6e';
+import { COAST, OFFSHORE } from './plan6e';
 
 /**
  * La caméra de la Carte : son angle sous l'horizon (presque à plomb, un peu de biais pour garder le relief), son champ
@@ -21,10 +21,13 @@ export interface MapView {
   distance: number;
 }
 
-/** La boîte de l'île (le bord de son anneau de sable), en unités. */
+/**
+ * La boîte de l'île (le bord de son anneau de sable, et le large qui en dépasse : les mâts des Balises et l'îlot de la
+ * Gare maritime, lot L9), en unités.
+ */
 export const ISLAND_BOX = (() => {
-  const xs = COAST.map((p) => p.x);
-  const zs = COAST.map((p) => p.z);
+  const xs = [...COAST, ...OFFSHORE].map((p) => p.x);
+  const zs = [...COAST, ...OFFSHORE].map((p) => p.z);
   return { minX: Math.min(...xs), maxX: Math.max(...xs), minZ: Math.min(...zs), maxZ: Math.max(...zs) };
 })();
 

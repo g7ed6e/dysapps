@@ -5,7 +5,7 @@
 // la brume cache ce qui est plus loin. Code pur : la vue (three/archipeo/) ne fait que donner ces tableaux à Three.js.
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { CLIFF, COAST, COLORS_6E, COMMONS_FLAT, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, LOOKOUT_RAMP, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PASS, RIVER, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, TERRAIN, UPLAND } from './plan6e';
+import { BEACONS_FLAT, CLIFF, COAST, COLORS_6E, COMMONS_FLAT, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, LOOKOUT_RAMP, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PASS, RIVER, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, TERRAIN, UPLAND } from './plan6e';
 
 /** La distance signée à la terre ferme : positive sur la terre, négative dans l'eau (mer, lagon, passe, bassin, rivière). */
 export function landDistance(p: Vec2): number {
@@ -92,6 +92,10 @@ function groundHeight(p: Vec2): number {
   // Le replat de la Halle (lot L8d) : aplani, puis le sol d'avant, du village à la grève.
   const halle = smoothstep(COMMONS_FLAT.radius + COMMONS_FLAT.fade, COMMONS_FLAT.radius, distance(p, COMMONS_FLAT.center));
   if (halle > 0) h += (COMMONS_FLAT.height - h) * halle;
+  // Le replat des Balises (lot L9a) : aplani, puis le sol d'avant, seulement loin de l'eau (la grève de la passe et de la
+  // côte ouest descend comme la plage).
+  const balises = smoothstep(BEACONS_FLAT.radius + BEACONS_FLAT.fade, BEACONS_FLAT.radius, distance(p, BEACONS_FLAT.center)) * smoothstep(0, 2, d);
+  if (balises > 0) h += (BEACONS_FLAT.height - h) * balises;
   // La cour de l'Imprimerie et le parvis des Archives (lot L7) : aplanis, puis le sol d'avant, en pente douce.
   for (const f of NORTH_FLATS) {
     const k = smoothstep(f.radius + f.fade, f.radius, distance(p, f.center)) * smoothstep(0, 2, d);

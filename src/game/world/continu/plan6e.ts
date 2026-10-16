@@ -170,6 +170,51 @@ export const OBSERVATORY_FLAT = { center: fromPlan([640, 948]), radius: 8, fade:
 export const COMMONS_FLAT = { center: fromPlan([935, 915]), radius: 9, fade: 5, height: 1.2 } as const;
 
 /**
+ * Le replat des Balises (GD-20, point 8, lot L9a), sur la lèvre sud de la passe, à l'ouest : le sol y est aplani à cette
+ * hauteur dans ce rayon (en unités), puis rejoint le sien sur `fade` unités, seulement sur la terre, loin de l'eau (la
+ * côte et la passe ne bougent pas).
+ */
+export const BEACONS_FLAT = { center: fromPlan([428, 690]), radius: 5.5, fade: 4, height: 1 } as const;
+
+/**
+ * Le chenal de la Nef (GD-20, lot 5) : de la passe jusqu'au bord de l'image de la mer, la bande où l'on ne pose ni mât,
+ * ni bouée, ni jetée (lot L9, directeur artistique et artiste technique 3D), en pixels du plan : de x 0 à la passe
+ * (612), de y 565 à 660.
+ */
+export const NEF_CHANNEL = { x0: 0, x1: 612, y0: 565, y1: 660 } as const;
+
+/** Un point du monde en pixels du plan (l'inverse de `fromPlan`). */
+export const toPlan = (p: Vec2): [number, number] => [p.x * PLAN_SCALE + PLAN_ORIGIN.x, p.z * PLAN_SCALE + PLAN_ORIGIN.y];
+
+/**
+ * Les mâts des Balises (lot L9a), chacun sur une roche qui affleure, en ligne vers l'ouest le long du bord sud du chenal,
+ * hors de lui (y 672 à 680, la roche comprise au-dessus de 668) : environ 6 unités entre deux perches (la fiche en
+ * disait 11 : serrées, elles tiennent dans la pose du lieu avec Kéo à sa porte).
+ */
+export const BEACON_MASTS: readonly Vec2[] = poly([
+  [392, 672],
+  [375, 674],
+  [358, 676],
+  [342, 678],
+  [325, 680],
+]);
+
+/**
+ * L'îlot de la Gare maritime (lot L9b) : un rocher bas au large de la côte ouest, modelé dans le maillage du lieu (le
+ * terrain s'arrête à x 362 du plan) ; son centre, son rayon (en unités). Kéo y marche au niveau des pontons
+ * (`DECK_HEIGHT`) : le dessus du quai est à cette hauteur.
+ */
+export const FERRY_ISLET = { center: fromPlan([338, 800]), radius: 7.5 } as const;
+
+/** Les points du large hors de l'anneau (les mâts des Balises, l'îlot de la Gare), pour la boîte de la Carte (map.ts). */
+export const OFFSHORE: readonly Vec2[] = [
+  ...BEACON_MASTS,
+  { x: FERRY_ISLET.center.x - FERRY_ISLET.radius, z: FERRY_ISLET.center.z },
+  { x: FERRY_ISLET.center.x, z: FERRY_ISLET.center.z - FERRY_ISLET.radius },
+  { x: FERRY_ISLET.center.x, z: FERRY_ISLET.center.z + FERRY_ISLET.radius },
+];
+
+/**
  * Les lieux du prototype. `saltworks` : les Marais salants (lot L5), le premier lieu neuf, qui reprend l'île des
  * nombres décimaux ; son identifiant reste neutre (son nom, choix du mainteneur, 16 octobre 2026).
  * `engine` : la Turbine (lot L6a), qui reprend l'île de la matière et de l'énergie (physique-chimie). `shipyard` : le
@@ -179,8 +224,26 @@ export const COMMONS_FLAT = { center: fromPlan([935, 915]), radius: 9, fade: 5, 
  * `observatory` : l'Observatoire (lot L8c), qui reprend l'île de la géographie (habiter le monde).
  * `commons` : la Halle (lot L8d), qui reprend l'île de l'enseignement moral et civique (vivre dans une société
  * démocratique) ; pas `hall`, qui est déjà le lieu d'assemblage de l'Escale (port.ts).
+ * Le large (lot L9) : `beacons`, les Balises (le vocabulaire et l'écoute de l'anglais), `ferry`, la Gare maritime (la
+ * grammaire de l'anglais).
  */
-export type PlaceId = 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard' | 'lookout' | 'archives' | 'printworks' | 'mangrove' | 'ruins' | 'observatory' | 'commons';
+export type PlaceId =
+  | 'phare'
+  | 'quais'
+  | 'filets'
+  | 'ecluses'
+  | 'saltworks'
+  | 'engine'
+  | 'shipyard'
+  | 'lookout'
+  | 'archives'
+  | 'printworks'
+  | 'mangrove'
+  | 'ruins'
+  | 'observatory'
+  | 'commons'
+  | 'beacons'
+  | 'ferry';
 
 /**
  * Les lieux du rivage nord (lot L7), vus ensemble depuis le sud : pendant toute question de l'un, les traces des trois
@@ -189,12 +252,19 @@ export type PlaceId = 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | '
 export const NORTH_SHORE: readonly PlaceId[] = ['lookout', 'archives', 'printworks'];
 
 /**
+ * Les lieux du large (lot L9), sur le même bras de l'ouest : pendant toute question de l'un, les traces des deux se
+ * cachent (le canot des Balises et le bac de la Gare sont des bateaux, une réponse d'Ears).
+ */
+export const LARGE: readonly PlaceId[] = ['beacons', 'ferry'];
+
+/**
  * Pendant une question d'un lieu (`asked`), les traces que la vue cache : les siennes ; au rivage nord, où les trois
- * lieux sont voisins, celles des trois (lot L7, directeur artistique).
+ * lieux sont voisins, celles des trois (lot L7, directeur artistique) ; au large, celles des deux (lot L9).
  */
 export function hidesTraces(asked: PlaceId | null, place: PlaceId): boolean {
   if (asked === null) return false;
-  return asked === place || (NORTH_SHORE.includes(asked) && NORTH_SHORE.includes(place));
+  const together = (group: readonly PlaceId[]) => group.includes(asked) && group.includes(place);
+  return asked === place || together(NORTH_SHORE) || together(LARGE);
 }
 
 export interface OpenPlace {
@@ -409,6 +479,36 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
     yaw: 0,
     touchRadius: 7.5,
   },
+  // Les Balises (lot L9a) : à terre, sur la lèvre sud de la passe, la porte au sud ; la station basse, sa cale vers la
+  // passe, ses cinq mâts en chapelet dans la mer, vers l'ouest. Hello, Numbers et Ears en R (les bouées), Signs et
+  // Famous people en C (le nom de la fiche).
+  {
+    id: 'beacons',
+    name: 'Les Balises',
+    at: 'aux Balises',
+    agree: 'fp',
+    island: 'english-6e-vocabulary',
+    scenes: ['hello', 'numbers', 'first-listening', 'signs', 'famous-people'],
+    plan: [428, 692],
+    door: { x: 0, z: 7.4 },
+    yaw: 0,
+    touchRadius: 7,
+  },
+  // La Gare maritime (lot L9b) : sur l'îlot au large de la côte ouest (écart au plan du 6e, choisi par le mainteneur le
+  // 16 octobre 2026), reliée à la côte par une jetée ; l'auvent sur le quai nord, le pavillon à son bout est. To be, Have
+  // ou has et Présent simple en R (les malles), Story time en C.
+  {
+    id: 'ferry',
+    name: 'La Gare maritime',
+    at: 'à la Gare maritime',
+    agree: 'fs',
+    island: 'english-6e-grammar',
+    scenes: ['to-be', 'have-got', 'present-simple', 'story'],
+    plan: [338, 800],
+    door: { x: 1.2, z: 3.4 },
+    yaw: 0,
+    touchRadius: 6.5,
+  },
 ];
 
 export const PLACES: readonly OpenPlace[] = PLACE_SPECS.map((s) => ({
@@ -590,6 +690,14 @@ export const PATH_NODES: readonly PathNode[] = [
   // Vers la Halle (lot L8d) : du rivage sud, le chemin descend vers la grève à l'ouest de la Halle, qu'il contourne, puis
   // arrive à sa porte, au sud, face à la toiture.
   node('hal-1', [885, 942]),
+  // Le large (lot L9) : du bout ouest du rivage sud, le chemin longe la côte vers l'ouest ; à `lar-2`, il se sépare : au
+  // nord, les Balises, sur la lèvre sud de la passe (la porte au sud, le lieu entier à l'arrivée) ; à l'ouest, la côte,
+  // puis la jetée de planches jusqu'à l'îlot de la Gare maritime, où elle accoste au sud-est (`lar-5`).
+  node('lar-1', [610, 880]),
+  node('lar-2', [500, 835]),
+  node('lar-3', [445, 760]),
+  node('lar-4', [402, 808]),
+  node('lar-5', [352.6, 812.9]),
   ...PORT_NODES.map(({ id, at }) => ({ id, at: PORT.toWorld(at[0], at[1]) })),
 ];
 
@@ -649,6 +757,14 @@ export const PATH_EDGES: readonly (readonly [string, string])[] = [
   // La Halle (lot L8d), juste au sud de l'Escale.
   ['sud-1', 'hal-1'],
   ['hal-1', 'commons'],
+  // Le large (lot L9) : deux impasses depuis `lar-2`, les Balises au nord, la Gare maritime à l'ouest, par sa jetée.
+  ['sud-3', 'lar-1'],
+  ['lar-1', 'lar-2'],
+  ['lar-2', 'lar-3'],
+  ['lar-3', 'beacons'],
+  ['lar-2', 'lar-4'],
+  ['lar-4', 'lar-5'],
+  ['lar-5', 'ferry'],
   // L'Escale : la digue du Phare jusqu'au quai, puis la place, le long des façades.
   ['phare', portNode('quai')],
   [portNode('quai'), 'port-place'],
