@@ -1008,10 +1008,9 @@ describe('La Mangrove (GD-20, point 8, lot L8a)', () => {
     const high = of(0xf2a285);
     expect(Math.min(...low.map((v) => v[1]))).toBeCloseTo(at.y, 6);
     expect(Math.max(...low.map((v) => v[1]))).toBeLessThanOrEqual(Math.min(...high.filter((v) => Math.abs(v[0] - at.x) < 0.2).map((v) => v[1])) + 1e-6);
-    // Les cheveux sur la tête et la tresse dans le dos, au nord.
-    const hair = of(0x3b2a22);
-    expect(Math.max(...hair.map((v) => v[1]))).toBeGreaterThan(at.y + 1.13 + 0.23);
-    expect(Math.min(...hair.map((v) => v[2]))).toBeLessThan(at.z - 0.3);
+    // Les jambes et les cheveux communs aux quatre habitants du rivage sud, et la tresse dans le dos, au nord.
+    expectLegsAndHair(decor, at, 0x2e4a5c, 0x3b2a22);
+    expect(Math.min(...of(0x3b2a22).map((v) => v[2]))).toBeLessThan(at.z - 0.3);
     // Le carnet, petit, devant elle (vers la caméra), et sa sangle de cuir.
     const book = of(0x178078);
     const size = (vs: [number, number, number][], k: number) => Math.max(...vs.map((v) => v[k])) - Math.min(...vs.map((v) => v[k]));
@@ -1019,9 +1018,6 @@ describe('La Mangrove (GD-20, point 8, lot L8a)', () => {
     expect(size(book, 1)).toBeLessThan(0.3);
     expect(Math.min(...book.map((v) => v[2]))).toBeGreaterThan(at.z + 0.2);
     expect(of(0x7a4e2e).length).toBeGreaterThan(0);
-    // Un pantalon droit (relecture DA de L8) : deux jambes séparées, rien au milieu sous les hanches, et deux chaussures.
-    expect(low.filter((v) => v[1] < at.y + 0.3 && Math.abs(v[0] - at.x) < 0.03)).toHaveLength(0);
-    expect(new Set(of(0x2f2826).map((v) => Math.sign(v[0] - at.x))).size).toBe(2);
   });
 
   it('Kéo et la botaniste sur le platelage, juste au-dessus de celui du lieu ; la pirogue entre eux, derrière, sur l’eau ; aucun objet-réponse', () => {
@@ -1062,17 +1058,10 @@ describe('Les Ruines (GD-20, point 8, lot L8b)', () => {
     const high = of(0xa9c8de);
     expect(Math.min(...low.map((v) => v[1]))).toBeCloseTo(at.y, 6);
     expect(Math.max(...low.map((v) => v[1]))).toBeLessThanOrEqual(Math.min(...high.filter((v) => Math.abs(v[0] - at.x) < 0.2).map((v) => v[1])) + 1e-6);
-    // Un pantalon droit (relecture DA de L8 : jamais une robe) : deux jambes séparées, rien au milieu sous les hanches,
-    // et deux chaussures.
-    expect(low.filter((v) => v[1] < at.y + 0.3 && Math.abs(v[0] - at.x) < 0.03)).toHaveLength(0);
-    expect(new Set(of(0x2f2826).map((v) => Math.sign(v[0] - at.x))).size).toBe(2);
-    // Les cheveux courts, gris froid : jusqu'à la nuque derrière (jamais une calotte), le front dégagé devant, rien sous
-    // la nuque (ni tresse, ni chignon, ni barbe).
-    const hair = of(0xa9a6a3);
-    expect(Math.min(...hair.map((v) => v[1]))).toBeGreaterThan(at.y + 0.92);
-    expect(Math.min(...hair.filter((v) => v[2] < at.z - 0.1).map((v) => v[1]))).toBeLessThan(at.y + 1.0);
-    expect(Math.min(...hair.filter((v) => v[2] > at.z && Math.abs(v[0] - at.x) < 0.02).map((v) => v[1]))).toBeGreaterThan(at.y + 1.2);
-    expect(Math.max(...hair.map((v) => v[1]))).toBeGreaterThan(at.y + 1.13 + 0.23);
+    // Les jambes et les cheveux communs aux quatre habitants du rivage sud, gris froid chez lui ; rien sous la nuque (ni
+    // tresse, ni chignon, ni barbe).
+    expectLegsAndHair(decor, at, 0x5a4636, 0xa9a6a3);
+    expect(Math.min(...of(0xa9a6a3).map((v) => v[1]))).toBeGreaterThan(at.y + 0.92);
     // La brosse : son manche de bois, sa monture plate plus large que lui, et la frange de ses soies, à sa main, plus
     // bas que la taille (jamais un maillet, ni un râteau).
     const wood = of(0xc8955a);
@@ -1117,7 +1106,7 @@ describe('L’Observatoire (GD-20, point 8, lot L8c)', () => {
     // deux jambes, des chaussures, des cheveux jusqu'à la nuque (relecture de L8c-d).
     const jacket = colored(decor, 0xb7a6d6);
     expect(Math.min(...jacket.map((v) => v[1]))).toBeGreaterThan(at.y + 0.4);
-    expectLegsAndHair(decor, at, 0x4a4448);
+    expectLegsAndHair(decor, at, 0x4a4448, 0x3b2a22);
     // La chambre à l'est d'elle (vers le bord du cadre, jamais sur la baie).
     const wood = colored(decor, 0xa9784a);
     expect(Math.min(...wood.map((v) => v[0]))).toBeGreaterThan(at.x + 0.4);
@@ -1211,30 +1200,42 @@ describe('La Halle (GD-20, point 8, lot L8d)', () => {
     const at = scenetteHabitant('commons');
     const shirt = colored(decor, 0xbfdccb);
     expect(Math.min(...shirt.map((v) => v[1]))).toBeGreaterThan(at.y + 0.4);
-    expectLegsAndHair(decor, at, 0x6a4a34);
+    expectLegsAndHair(decor, at, 0x6a4a34, 0x3b2a22);
     // Tête nue : rien au-dessus de ses cheveux (ni chapeau ni casque).
     const top = Math.max(...colored(decor, 0x3b2a22).map((v) => v[1]));
     for (let i = 1; i < decor.positions.length; i += 3) if (Math.hypot(decor.positions[i - 1] - at.x, decor.positions[i + 1] - at.z) < 0.6) expect(decor.positions[i]).toBeLessThanOrEqual(top + 1e-6);
-    // La tuile canal sous le bras de l'est (relecture de L8c-d : jamais un pavé plat, qui se lisait comme un livre) : sa
-    // face Vert île dehors, plus longue que large, cintrée (sa crête, au milieu de sa largeur, plus haute que ses bords), à
-    // côté de lui, sous le coude.
+    // La tuile canal (directeur artistique, L8 ; relecture de L8c-d : jamais un pavé plat, qui se lisait comme un livre) :
+    // couchée le long du flanc de l'est, à 50-60° de l'horizontale, son haut contre le torse sous l'épaule, son bas vers
+    // l'extérieur ; sa face bombée, Vert île, tournée vers la caméra ; serrée entre le bras, qui passe dehors, et le torse.
     const tile = colored(decor, 0x438b82);
     expect(tile.length).toBeGreaterThan(0);
-    const [cx, cz] = [0, 2].map((k) => (Math.min(...tile.map((v) => v[k])) + Math.max(...tile.map((v) => v[k]))) / 2);
-    // Sa largeur : la direction, au sol, où elle est la plus étroite (au degré près) ; sa longueur, en travers d'elle.
-    const extent = (f: (v: number[]) => number) => Math.max(...tile.map(f)) - Math.min(...tile.map(f));
-    const toward = (deg: number) => (v: number[]) => (v[0] - cx) * Math.cos((deg * Math.PI) / 180) + (v[2] - cz) * Math.sin((deg * Math.PI) / 180);
-    const narrow = Array.from({ length: 180 }, (_, d) => d).reduce((m, d) => (extent(toward(d)) < extent(toward(m)) ? d : m), 0);
-    const across = toward(narrow);
-    const along = toward(narrow + 90);
+    const mean = (k: number) => tile.reduce((m, v) => m + v[k], 0) / tile.length;
+    const [mx, my] = [mean(0), mean(1)];
+    // Son grand axe dans le plan de la caméra (x, y), par ses moments.
+    const cxx = tile.reduce((m, v) => m + (v[0] - mx) ** 2, 0);
+    const cyy = tile.reduce((m, v) => m + (v[1] - my) ** 2, 0);
+    const cxy = tile.reduce((m, v) => m + (v[0] - mx) * (v[1] - my), 0);
+    const axis = 0.5 * Math.atan2(2 * cxy, cxx - cyy);
+    const slope = (Math.abs(axis) * 180) / Math.PI;
+    expect(slope).toBeGreaterThan(50);
+    expect(slope).toBeLessThan(60);
+    // Elle descend vers l'est : son haut contre le torse, son bas dehors.
+    expect(axis).toBeLessThan(0);
+    const [ux, uy] = [Math.cos(axis), Math.sin(axis)];
+    const along = (v: number[]) => (v[0] - mx) * ux + (v[1] - my) * uy;
+    const across = (v: number[]) => -(v[0] - mx) * uy + (v[1] - my) * ux;
     const length = Math.max(...tile.map(along)) - Math.min(...tile.map(along));
     const width = Math.max(...tile.map(across)) - Math.min(...tile.map(across));
-    expect(length).toBeGreaterThan(1.5 * width);
-    const ridge = Math.max(...tile.filter((v) => Math.abs(across(v)) < 0.03).map((v) => v[1]));
-    const edges = Math.max(...tile.filter((v) => Math.abs(across(v)) > width / 2 - 0.03).map((v) => v[1]));
-    expect(ridge).toBeGreaterThan(edges + 0.02);
-    expect(cx).toBeGreaterThan(at.x + 0.3);
+    expect(length).toBeGreaterThan(2 * width);
+    // Bombée vers la caméra : le milieu de sa face plus avancé (z) que ses bords.
+    const ridge = Math.min(...tile.filter((v) => Math.abs(across(v)) < 0.02).map((v) => v[2]));
+    const edges = Math.max(...tile.filter((v) => Math.abs(across(v)) > width / 2 - 0.02).map((v) => v[2]));
+    expect(ridge).toBeGreaterThan(edges + 0.05);
+    // À côté du torse, sous l'épaule ; le bras passe dehors, plus à l'est qu'elle.
+    expect(mx).toBeGreaterThan(at.x + 0.3);
+    expect(Math.min(...tile.map((v) => v[0]))).toBeLessThan(at.x + 0.3);
     for (const v of tile) expect(v[1]).toBeLessThan(at.y + 0.84);
+    expect(shirt.some((v) => v[0] > mx + 0.05 && v[1] > at.y + 0.5 && v[1] < at.y + 0.8)).toBe(true);
     // Kéo à gauche, le couvreur à droite, sur la dalle posée sur le dallage.
     const keo = scenetteKeo('commons').at;
     expect(keo.x).toBeLessThan(o.x);
@@ -1300,7 +1301,7 @@ describe('La Halle (GD-20, point 8, lot L8d)', () => {
     expect(FOUNTAIN.lip).toBeLessThan(FOUNTAIN.water - 0.05);
     expect(r.from.y).toBeLessThan(floor + FOUNTAIN.lip);
     // Le dessus de la paroi sud, à la hauteur de la lèvre, sous l'eau à son repos.
-    const south = colored(before.still, 0xcfc6b2).filter((v) => v[2] > o.z + 0.05 && Math.abs(v[0] - o.x) < 0.4);
+    const south = colored(before.still, 0xdcd0b5).filter((v) => v[2] > o.z + 0.05 && Math.abs(v[0] - o.x) < 0.4);
     expect(south.some((v) => Math.abs(v[1] - (floor + FOUNTAIN.lip)) < 1e-6)).toBe(true);
     const jetWidth = Math.max(...jet.map((v) => v[0])) - Math.min(...jet.map((v) => v[0]));
     expect(jetWidth).toBeGreaterThan(0.1);
@@ -1311,11 +1312,12 @@ describe('La Halle (GD-20, point 8, lot L8d)', () => {
 });
 
 /**
- * La photographe et le couvreur (relecture de L8c-d : jamais une robe de bure ni une calotte) : deux jambes séparées de
- * la couleur du pantalon, du haut des chaussures aux hanches, et des chaussures sombres au sol ; des cheveux qui
- * descendent sur la nuque, au-dessus de la tête, et s'arrêtent au-dessus du front.
+ * Les jambes et les cheveux des quatre habitants du rivage sud (relecture DA de L8 : une seule construction, seules
+ * changent leurs couleurs ; relecture de L8c-d : jamais une robe de bure ni une calotte) : un pantalon droit, de ses pieds
+ * à ses hanches, deux jambes séparées, rien au milieu sous les hanches, et deux chaussures sombres au sol ; des cheveux
+ * qui descendent sur la nuque, au-dessus de la tête, aux oreilles sur les côtés, et s'arrêtent au-dessus du front.
  */
-function expectLegsAndHair(decor: { colors: Float32Array; positions: Float32Array }, at: { x: number; y: number; z: number }, trousers: number): void {
+function expectLegsAndHair(decor: { colors: Float32Array; positions: Float32Array }, at: { x: number; y: number; z: number }, trousers: number, hairColor: number): void {
   const colored = (hex: number) => {
     const rgb = linearRgb(hex);
     const out: [number, number, number][] = [];
@@ -1324,14 +1326,15 @@ function expectLegsAndHair(decor: { colors: Float32Array; positions: Float32Arra
   };
   const legs = colored(trousers);
   expect(Math.max(...legs.map((v) => v[1]))).toBeLessThan(at.y + 0.5);
-  expect(Math.min(...legs.map((v) => v[1]))).toBeGreaterThan(at.y + 0.03);
-  // Deux jambes : rien du pantalon sur la ligne du milieu.
-  expect(legs.some((v) => v[0] < at.x - 0.05)).toBe(true);
-  expect(legs.some((v) => v[0] > at.x + 0.05)).toBe(true);
-  for (const v of legs) expect(Math.abs(v[0] - at.x)).toBeGreaterThan(0.01);
+  expect(Math.min(...legs.map((v) => v[1]))).toBeCloseTo(at.y, 6);
+  // Deux jambes : rien du pantalon sur la ligne du milieu, sous les hanches.
+  expect(legs.some((v) => v[0] < at.x - 0.05 && v[1] < at.y + 0.3)).toBe(true);
+  expect(legs.some((v) => v[0] > at.x + 0.05 && v[1] < at.y + 0.3)).toBe(true);
+  expect(legs.filter((v) => v[1] < at.y + 0.3 && Math.abs(v[0] - at.x) < 0.03)).toHaveLength(0);
   const shoes = colored(0x2f2826);
   expect(Math.min(...shoes.map((v) => v[1]))).toBeCloseTo(at.y, 6);
-  const hair = colored(0x3b2a22);
+  expect(new Set(shoes.map((v) => Math.sign(v[0] - at.x))).size).toBe(2);
+  const hair = colored(hairColor);
   expect(Math.max(...hair.map((v) => v[1]))).toBeGreaterThan(at.y + 1.13 + 0.2);
   // La nuque : derrière la tête, les cheveux descendent sous son milieu ; devant, ils s'arrêtent au-dessus du front.
   expect(Math.min(...hair.filter((v) => v[2] < at.z - 0.1).map((v) => v[1]))).toBeLessThan(at.y + 1.05);

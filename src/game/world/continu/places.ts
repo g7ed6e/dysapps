@@ -121,7 +121,8 @@ const C = {
   palm: 0xa88f48,
   palmShade: 0x8f793b,
   // Les Ruines (lot L8b, directeur artistique) : la pierre des Passeurs, un calcaire clair, et son ombre (plus claires que
-  // les tons délavés de la ruine, pour que la pierre relevée se lise) ; le bronze des clés (plus sombre et plus brun que
+  // les tons délavés de la ruine, pour que la pierre relevée se lise ; une seule valeur de base pour les Ruines, la table
+  // d'orientation de l'Observatoire et la Halle, directeur artistique, L8) ; le bronze des clés (plus sombre et plus brun que
   // le cuivre de la Turbine) ; les dalles noyées, la pierre vue à travers l'eau claire du lagon (un aplat juste au-dessus
   // de l'eau, aucun appel de plus) ; le bois des planches de la fouille.
   passeurStone: 0xdcd0b5,
@@ -130,16 +131,14 @@ const C = {
   drownedStone: 0xa8d4c0,
   digSand: 0xcdb58a,
   // L'Observatoire (lot L8c, directeur artistique) : l'enduit rose pâle du tambour et son ombre (ni le sable chaud ni la
-  // terre cuite), le zinc clair de la coupole et ses côtes, les volets Bleu lagon ; la pierre des Passeurs (une seule
-  // valeur de base pour les Ruines, la table d'orientation et la Halle, consultant Archipéo) et leur bronze. La ruine :
+  // terre cuite), le zinc clair de la coupole et ses côtes, les volets Bleu lagon ; sa table d'orientation, de la pierre
+  // des Passeurs (`passeurStone`, plus haut). La ruine :
   // l'enduit, le zinc et les volets délavés, d'un ton moyen, jamais sombres ; la corde coupée.
   plaster: 0xe3b9a3,
   plasterShade: 0xc99a84,
   zinc: 0xb7c3c8,
   rib: 0x8e9da4,
   shutter: 0x178078,
-  passeurs: 0xcfc6b2,
-  passeursShade: 0xada48f,
   wornPlaster: 0xbfaa9c,
   wornPlasterTop: 0xb09d90,
   wornZinc: 0xa9b1b3,
@@ -1618,7 +1617,7 @@ function observatory(add: Add): void {
       b.box({ x: at.x, y: T.top - 0.05, z: at.z, yaw: facing(deg) }, [2 * T.r * Math.sin(half) - 0.15, 0.55, 0.3], C.darkStone, C.stone);
     }
     const table = OBSERVATORY_TABLE;
-    b.prism({ x: table.x, y: T.top - 0.05, z: table.z }, 0.3, 0.22, 0.8, 6, C.passeursShade, C.passeurs);
+    b.prism({ x: table.x, y: T.top - 0.05, z: table.z }, 0.3, 0.22, 0.8, 6, C.passeurShade, C.passeurStone);
     b.drum({ x: table.x, y: T.top + 0.75, z: table.z }, 0.55, 0.1, 10, C.bronze, C.bronze);
     const S = OBSERVATORY.stair;
     for (let k = 0; k < S.steps; k++) {
@@ -1794,9 +1793,9 @@ function commons(add: Add): void {
     const [sw, sh] = P.socle,
       [cw, ch] = P.capital;
     for (const p of pillars) {
-      b.box({ x: p.x, y: SINK, z: p.z }, [sw, sh - SINK, sw], C.passeursShade, C.passeurs);
-      b.box({ x: p.x, y: sh, z: p.z }, [P.side, P.top - ch - sh, P.side], C.passeurs);
-      b.box({ x: p.x, y: P.top - ch, z: p.z }, [cw, ch, cw], C.passeursShade, C.passeurs);
+      b.box({ x: p.x, y: SINK, z: p.z }, [sw, sh - SINK, sw], C.passeurShade, C.passeurStone);
+      b.box({ x: p.x, y: sh, z: p.z }, [P.side, P.top - ch - sh, P.side], C.passeurStone);
+      b.box({ x: p.x, y: P.top - ch, z: p.z }, [cw, ch, cw], C.passeurShade, C.passeurStone);
     }
   });
   // … puis les sablières, de chêne, d'un pilier d'angle à l'autre…
@@ -1843,7 +1842,7 @@ function commons(add: Add): void {
   // Les abords : le dallage de la pierre claire des Passeurs, et le chemin de sable tassé de la porte (où arrive le
   // chemin du réseau, plan6e.ts) jusqu'à lui.
   add(2, 0, (b) => {
-    b.box({ x: 0, y: SINK, z: 0 }, [2 * D.halfX, D.top - SINK, 2 * D.halfZ], C.passeursShade, C.paving);
+    b.box({ x: 0, y: SINK, z: 0 }, [2 * D.halfX, D.top - SINK, 2 * D.halfZ], C.passeurShade, C.paving);
     const c = placeById('commons').center;
     const door = PATH_NODES.find((n) => n.id === 'commons')!.at;
     const d = { x: door.x - c.x, z: door.z - c.z };
@@ -1853,7 +1852,7 @@ function commons(add: Add): void {
   // Le muret bas du nord, de la même pierre, d'un bout à l'autre du dallage, contre le village.
   add(2, 0.5, (b) => {
     const W = COMMONS.wall;
-    b.box({ x: 0, y: SINK, z: W.z }, [2 * D.halfX - 0.4, W.h - SINK, W.t], C.passeursShade, C.passeurs);
+    b.box({ x: 0, y: SINK, z: W.z }, [2 * D.halfX - 0.4, W.h - SINK, W.t], C.passeurShade, C.passeurStone);
   });
 }
 

@@ -914,14 +914,18 @@ describe('La Turbine en texte normal sur un téléphone couché (deuxième passe
     await vi.waitFor(() => expect(panel().classList.contains('simple')).toBe(true));
   };
   // Une réponse fausse se retente (la règle du C) : jusqu'au résultat.
+  // Rend le texte de la dernière réponse touchée.
   const answer = async (user: ReturnType<typeof userEvent.setup>) => {
+    let last: string | null = null;
     for (let k = 0; k < 4 && !panel().classList.contains('has-sheet'); k++) {
       const free = [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')].find((b) => !b.disabled);
       if (!free) break;
+      last = free.textContent;
       await user.click(free);
       await vi.waitFor(() => expect(panel().classList.contains('has-sheet') || !free.isConnected || free.disabled).toBe(true));
     }
     await vi.waitFor(() => expect(panel().classList.contains('has-sheet')).toBe(true));
+    return last;
   };
   afterEach(() => localStorage.removeItem('dysapps:settings'));
 
@@ -953,6 +957,35 @@ describe('La Turbine en texte normal sur un téléphone couché (deuxième passe
     expect(panel().classList.contains('sheet-wide')).toBe(false);
     expect(panel().classList.contains('full')).toBe(false);
     expect(panel().classList.contains('scene-gardee')).toBe(true);
+  });
+
+  it('après une erreur, le résultat montre d’abord la réponse choisie, barrée, jamais la bonne à sa place (directeur artistique, L8)', async () => {
+    phone(() => true);
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    await open(user);
+    await user.click(toScene()!);
+    await vi.waitFor(() => expect(panel().classList.contains('scene-gardee')).toBe(true));
+    // L'élève se trompe à chaque essai : la bonne réponse, lue dans l'exercice par la clé de l'item que reçoit la scène,
+    // jamais touchée.
+    const key = String((vi.mocked(world.question).mock.calls.at(-1)![0]!.item as { key?: string } | undefined)?.key);
+    const exercise = await loadExercise('physics-chemistry-6e-matter-energy-energy-circuits-1');
+    const items = (exercise as unknown as { items: { key: string; answer?: string }[] }).items;
+    const right = items.find((it) => key === it.key || key.startsWith(`${it.key}#`))?.answer;
+    expect(right, key).toBeTruthy();
+    let last: string | null = null;
+    for (let k = 0; k < 4 && !panel().classList.contains('has-sheet'); k++) {
+      const free = [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')].find((b) => !b.disabled && b.textContent !== right);
+      if (!free) break;
+      last = free.textContent;
+      await user.click(free);
+      await vi.waitFor(() => expect(panel().classList.contains('has-sheet') || !free.isConnected || free.disabled).toBe(true));
+    }
+    await vi.waitFor(() => expect(panel().classList.contains('has-sheet')).toBe(true));
+    const picked = [...panel().querySelectorAll('.world-answers .world-answer[data-choisie]')];
+    expect(picked.map((el) => el.textContent)).toEqual([last]);
+    expect(picked[0].classList.contains('wrong')).toBe(true);
+    expect(panel().querySelector('.world-answers .world-answer.right')?.textContent).toBe(right);
   });
 
   it('le pli se mesure une fois par item, avant la réponse : le résultat ne ramène jamais l’item en « Vue simple » (avis code de L8)', async () => {

@@ -44,6 +44,11 @@ const CASES: [string, string][] = [
   // Les rôles des habitants du rivage sud (GD-20, lot L8, relecture dys).
   ['botaniste', 'bo-ta-nis-te'],
   ['archéologue', 'ar-ché-o-lo-gue'],
+  // La photographe, le couvreur et l'Observatoire (GD-20, lot L8, directeur artistique) : « ph », « ou », « eu » et
+  // « oi » restent entiers, jamais coupés entre deux syllabes (aucun des trois mots n'a de « ch »).
+  ['photographe', 'pho-to-gra-phe'],
+  ['couvreur', 'cou-vreur'],
+  ['Observatoire', 'Ob-ser-va-toi-re'],
 ];
 
 it.each(CASES)('%s → %s', (word, expected) => {

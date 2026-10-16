@@ -489,7 +489,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
         // L8).
         const sheetFirst = panel.classList.contains('scene-gardee') || (panel.classList.contains('simple-bas') && document.documentElement.dataset.texte === 'grand');
         const answers = panel.querySelector('.world-answers');
-        if (sheetFirst && sheet) panel.scrollTop = onResult(panel, panel.querySelector('.world-answers .world-answer.right') ?? panel.querySelector('.world-answers .world-answer.wrong'), sheet, button);
+        // La réponse que l'élève a choisie, juste ou fausse (directeur artistique, L8 : après une erreur, la sienne, barrée,
+        // jamais la bonne à sa place).
+        if (sheetFirst && sheet) panel.scrollTop = onResult(panel, panel.querySelector('.world-answers .world-answer[data-choisie]'), sheet, button);
         else if (answers) panel.scrollTop = afterAnswer(panel, answers, button);
       });
     };
@@ -1025,6 +1027,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
             type="button"
             style={styles.hit}
             className={`choice world-answer${isAnswer ? ' right' : ''}${isWrong ? ' wrong' : ''}`}
+            data-choisie={answered && chosen === choice ? '' : undefined}
             disabled={Boolean(answered) || Boolean(ruledOut?.includes(choice))}
             onClick={() => onAnswer({ results: [{ key: item.key, correct: choice === answer }], detail: { chosen: choice } })}
           >

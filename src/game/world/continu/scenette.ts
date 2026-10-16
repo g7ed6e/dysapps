@@ -974,7 +974,6 @@ const C = {
   // Les chaussures des quatre habitants du rivage sud (relectures de L8) : sombres, sous leurs deux jambes.
   shoe: 0x2f2826,
   paving: 0xd6cebc,
-  pavingSide: 0xada48f,
   // Le filet raccommodé (le même que sur le séchoir, questionScene.ts, `mendedNet`) et ses mailles.
   newRope: 0xc9a36a,
   netLine: 0x6f5e42,
@@ -1003,40 +1002,21 @@ function sphere(b: FacetBuilder, c: Vec3, r: number, sides: number, rings: numbe
 }
 
 /**
- * Des cheveux courts (relecture DA de L8) : une coque posée sur la tête, plus basse derrière que devant ; le front
- * reste dégagé, la nuque est couverte, et rien ne déborde du crâne comme un couvre-chef. `front` et `back` : jusqu'où
- * elle descend (l'angle depuis le sommet), devant et derrière.
- */
-function shortHair(b: FacetBuilder, c: Vec3, r: number, sides: number, rings: number, front: number, back: number, color: number): void {
-  const at = (i: number, k: number) => {
-    const theta = (2 * Math.PI * k) / sides;
-    // 0 devant (vers la caméra, +z), 1 derrière ; la racine carrée descend les côtés jusqu'aux oreilles.
-    const s = Math.sqrt((1 - Math.sin(theta)) / 2);
-    const phi = ((front + (back - front) * s) * i) / rings;
-    return [c.x + r * Math.sin(phi) * Math.cos(theta), c.y + r * Math.cos(phi), c.z + r * Math.sin(phi) * Math.sin(theta)] as const;
-  };
-  for (let i = 0; i < rings; i++)
-    for (let k = 0; k < sides; k++) {
-      const a = at(i, k),
-        bb = at(i, k + 1),
-        cc = at(i + 1, k + 1),
-        d = at(i + 1, k);
-      if (i === 0) b.triangle(a, cc, d, color);
-      else b.quad(a, bb, cc, d, color);
-    }
-}
-
-/**
- * Le bas du corps de la botaniste et de l'archéologue (relecture DA de L8) : un pantalon droit, sans évasement (jamais
- * une robe), deux jambes séparées sous les hanches, sur deux chaussures sombres tournées vers la caméra.
+ * Le bas du corps des quatre habitants du rivage sud, la botaniste, l'archéologue, la photographe et le couvreur
+ * (relecture DA de L8 : une seule construction, seule change la couleur du pantalon) : un pantalon droit, sans évasement
+ * (jamais une robe), deux jambes séparées sous les hanches, sur deux chaussures sombres tournées vers la caméra.
  */
 function trouserLegs(b: FacetBuilder, at: Vec3, color: number): void {
+  // Sans dessus : celui des jambes se cache dans les hanches, celui des hanches sous la veste.
   for (const dx of [-0.13, 0.13]) {
     b.box({ x: at.x + dx, y: at.y, z: at.z + 0.05 }, [0.17, 0.08, 0.28], C.shoe);
-    b.prism({ x: at.x + dx, y: at.y, z: at.z, yaw: Math.PI / 6 }, 0.11, 0.11, 0.35, 6, color);
+    b.band({ x: at.x + dx, y: at.y, z: at.z, yaw: Math.PI / 6 }, 0.11, 0.35, 6, color);
   }
-  b.prism({ x: at.x, y: at.y + 0.32, z: at.z, yaw: Math.PI / 8 }, 0.29, 0.29, 0.15, 8, color);
+  b.band({ x: at.x, y: at.y + 0.32, z: at.z, yaw: Math.PI / 8 }, 0.29, TROUSER_TOP - 0.32, 8, color);
 }
+
+/** Le haut du pantalon des habitants du rivage sud, au-dessus de leurs pieds : le bas de leur veste. */
+const TROUSER_TOP = 0.47;
 
 /** La main de l'habitant, au bout de son bras tendu vers la rambarde : la corde de sonnerie y part. */
 export function habitantHand(place: PlaceId, posed = true): Vec3 {
@@ -1236,16 +1216,18 @@ const ENGINE_PAVING = { half: 5.2, depth: 2.8 } as const;
 function botaniste(b: FacetBuilder, place: PlaceId): void {
   const at = scenetteHabitant(place);
   trouserLegs(b, at, C.nightBlue);
-  b.prism({ x: at.x, y: at.y + 0.47, z: at.z }, 0.31, 0.26, 0.45, 10, C.coral, C.coralShade);
+  b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.31, 0.26, 0.92 - TROUSER_TOP, 10, C.coral, C.coralShade);
   sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
-  sphere(b, { x: at.x, y: at.y + 1.16, z: at.z - 0.035 }, 0.245, 8, 4, C.hair);
-  // La tresse : trois brins qui descendent dans le dos, du bas de la nuque au milieu du dos.
+  habitantHair(b, at, C.hair);
+  // La tresse : trois brins qui descendent dans le dos, du bas de la nuque au milieu du dos ; chacun une pointe à quatre
+  // pans tournée vers le bas, posée dans celle du dessus (son dessus ouvert ne se voit pas, de dos, sous la nuque), pour
+  // tenir dans les triangles de la scénette avec les cheveux communs.
   for (const [dy, r] of [
-    [0.98, 0.075],
-    [0.84, 0.068],
-    [0.7, 0.06],
+    [1.13, 0.085],
+    [0.99, 0.077],
+    [0.85, 0.068],
   ] as const)
-    b.box({ x: at.x, y: at.y + dy, z: at.z - 0.27, yaw: 0.785 }, [r * 1.6, 0.13, r * 1.6], C.hair);
+    b.prism({ x: at.x, y: at.y + dy, z: at.z - 0.27, pitch: Math.PI }, r, 0, 0.16, 4, C.hair);
   // Le bras droit tombe le long du corps ; le gauche, plié, tient le carnet contre la poitrine.
   b.beam({ x: at.x + 0.27, y: at.y + 0.86, z: at.z }, { x: at.x + 0.36, y: at.y + 0.46, z: at.z + 0.05 }, 0.13, C.coral);
   const hand = { x: at.x - 0.05, y: at.y + 0.7, z: at.z + 0.32 };
@@ -1286,10 +1268,10 @@ function mangroveDeck(b: FacetBuilder): void {
 function archeologue(b: FacetBuilder, place: PlaceId): void {
   const at = scenetteHabitant(place);
   trouserLegs(b, at, C.brownTrousers);
-  b.prism({ x: at.x, y: at.y + 0.47, z: at.z }, 0.31, 0.29, 0.45, 10, C.skyShirt, C.skyShirtShade);
+  b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.31, 0.29, 0.92 - TROUSER_TOP, 10, C.skyShirt, C.skyShirtShade);
   sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
   // Les cheveux courts : jusqu'au haut du front devant, jusqu'aux oreilles sur les côtés, jusqu'à la nuque derrière.
-  shortHair(b, { x: at.x, y: at.y + 1.14, z: at.z - 0.01 }, 0.245, 8, 4, 0.3 * Math.PI, 0.74 * Math.PI, C.greyHair);
+  habitantHair(b, at, C.greyHair);
   // Le bras gauche le long du corps ; le droit un peu en avant, la main sur le manche de la brosse.
   b.beam({ x: at.x - 0.29, y: at.y + 0.86, z: at.z }, { x: at.x - 0.37, y: at.y + 0.46, z: at.z + 0.04 }, 0.13, C.skyShirt);
   const hand = { x: at.x + 0.36, y: at.y + 0.5, z: at.z + 0.18 };
@@ -1328,10 +1310,10 @@ const RUINS_PAVING = { half: 4.8, depth: 3.0 } as const;
  */
 function photographe(b: FacetBuilder, place: PlaceId): void {
   const at = scenetteHabitant(place);
-  habitantLegs(b, at, C.warmGrey);
-  b.prism({ x: at.x, y: at.y + HABITANT_HIP, z: at.z }, 0.33, 0.27, 0.92 - HABITANT_HIP, 10, C.lavender, C.lavenderShade);
+  trouserLegs(b, at, C.warmGrey);
+  b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.33, 0.27, 0.92 - TROUSER_TOP, 10, C.lavender, C.lavenderShade);
   sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
-  habitantHair(b, at);
+  habitantHair(b, at, C.hair);
   // Le bras de l'ouest, le long du corps ; celui de l'est, posé sur la chambre.
   b.beam({ x: at.x - 0.27, y: at.y + 0.84, z: at.z + 0.02 }, { x: at.x - 0.33, y: at.y + 0.42, z: at.z + 0.08 }, 0.14, C.lavender);
   const cam = PHOTO_CAMERA;
@@ -1346,30 +1328,16 @@ function photographe(b: FacetBuilder, place: PlaceId): void {
   b.drum({ x: top.x + cam.body[0] / 2 + 0.22, y: top.y + cam.body[1] / 2, z: top.z, pitch: Math.PI / 2, yaw: Math.PI / 2 }, 0.08, 0.1, 6, C.bellows);
 }
 
-/** La hauteur des hanches de la photographe et du couvreur, au-dessus de leurs pieds : le haut de leurs jambes. */
-const HABITANT_HIP = 0.46;
-
 /**
- * Les jambes de la photographe et du couvreur (relecture de L8c-d : jamais un bas évasé jusqu'au sol, qui fait une robe) :
- * deux jambes droites, séparées, de la couleur du pantalon, et deux chaussures sombres, un peu en avant.
- */
-function habitantLegs(b: FacetBuilder, at: Vec3, trousers: number): void {
-  for (const side of [-1, 1]) {
-    const x = at.x + side * 0.1;
-    b.box({ x, y: at.y + 0.06, z: at.z }, [0.15, HABITANT_HIP - 0.04, 0.17], trousers);
-    b.box({ x, y: at.y, z: at.z + 0.04 }, [0.17, 0.07, 0.27], C.shoe);
-  }
-}
-
-/**
- * Les cheveux courts de la photographe et du couvreur (relecture de L8c-d : jamais une calotte sur le haut du crâne) :
+ * Les cheveux courts des quatre habitants du rivage sud (relecture de L8c-d : jamais une calotte sur le haut du crâne ;
+ * une seule construction, seule change leur couleur, la tresse de la botaniste en plus) :
  * une coque un peu plus grande que la tête, dont le bord descend du front (devant, le visage reste nu) aux oreilles sur
  * les côtés, puis sur la nuque derrière. Ses mesures : son rayon, ses bandes, ses pans ; jusqu'où descend son bord
  * devant, sur les côtés et derrière (en angle depuis le sommet).
  */
 const HAIR = { r: 0.25, rings: 4, sides: 10, front: 80, side: 105, back: 130 } as const;
 
-function habitantHair(b: FacetBuilder, at: Vec3): void {
+function habitantHair(b: FacetBuilder, at: Vec3, color: number): void {
   const c = { x: at.x, y: at.y + 1.15, z: at.z };
   const H = HAIR;
   const at2 = (i: number, k: number): [number, number, number] => {
@@ -1386,8 +1354,8 @@ function habitantHair(b: FacetBuilder, at: Vec3): void {
         bb = at2(i, k + 1),
         cc = at2(i + 1, k + 1),
         d = at2(i + 1, k);
-      if (i === 0) b.triangle(a, cc, d, C.hair);
-      else b.quad(a, bb, cc, d, C.hair);
+      if (i === 0) b.triangle(a, cc, d, color);
+      else b.quad(a, bb, cc, d, color);
     }
 }
 
@@ -1415,33 +1383,73 @@ const OBSERVATORY_PAVING = { half: 4.6, depth: 2.35, dz: 0.32 } as const;
  * Le couvreur, immobile, l'artisan qui refait la toiture de la Halle (un métier, jamais un élu) : le haut clair, sa
  * chemise vert d'eau ; le bas du corps sombre, son pantalon brun cuir (jamais un seul prisme clair jusqu'au sol) ; la
  * tête nue, ses cheveux sombres et courts (ni chapeau, ni casque, ni écharpe, ni pendentif) ; sous son bras de l'est,
- * une tuile verte de la toiture, posée à plat contre lui. Ni marteau, ni outil qui frappe. Il ne dit rien.
+ * une tuile verte de la toiture, couchée le long de son flanc. Ni marteau, ni outil qui frappe. Il ne dit rien.
  */
 function couvreur(b: FacetBuilder, place: PlaceId): void {
   const at = scenetteHabitant(place);
-  habitantLegs(b, at, C.rooferLeather);
-  b.prism({ x: at.x, y: at.y + HABITANT_HIP, z: at.z }, 0.33, 0.27, 0.92 - HABITANT_HIP, 10, C.rooferShirt, C.rooferShirtShade);
+  trouserLegs(b, at, C.rooferLeather);
+  b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.33, 0.27, 0.92 - TROUSER_TOP, 10, C.rooferShirt, C.rooferShirtShade);
   sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
-  habitantHair(b, at);
+  habitantHair(b, at, C.hair);
   // Le bras de l'ouest, le long du corps.
   b.beam({ x: at.x - 0.27, y: at.y + 0.84, z: at.z + 0.02 }, { x: at.x - 0.33, y: at.y + 0.42, z: at.z + 0.08 }, 0.14, C.rooferShirt);
-  // La tuile canal sous le bras de l'est, couchée le long du flanc, sa longueur en biais vers la caméra (de face, on lit à
-  // la fois sa longueur et son profil cintré) : deux pans en voûte, leur face Vert île dehors. Le bras passe par-dessus et
-  // la serre contre lui.
+  // La tuile canal couchée le long du flanc de l'est (directeur artistique, L8) : son haut sous l'aisselle, contre le
+  // torse, son bas vers l'extérieur, à 55° de l'horizontale, face à la caméra ; une demi-voûte dont la face bombée, Vert
+  // île, est tournée vers la caméra, le creux contre lui. Le bras passe dehors, par-dessus, et la serre contre le torse.
   const T = COUVREUR_TILE;
-  const tile = { x: at.x + T.dx, y: at.y + T.height, z: at.z + 0.04 };
-  const yaw = Math.PI / 2 - T.turn;
-  for (const side of [-1, 1])
-    b.box({ x: tile.x + side * T.half * Math.sin(yaw), y: tile.y, z: tile.z + side * T.half * Math.cos(yaw), yaw, pitch: side * T.bend }, [T.length, T.thick, T.width], C.tileShade, C.tile);
-  b.beam({ x: at.x + 0.27, y: at.y + 0.84, z: at.z + 0.02 }, { x: tile.x + 0.08, y: tile.y + 0.12, z: at.z + 0.2 }, 0.14, C.rooferShirt);
+  const top = { x: at.x + T.dx, y: at.y + T.height, z: at.z + T.dz };
+  const tile = canalTile(b, top, T);
+  b.beam({ x: at.x + 0.27, y: at.y + 0.84, z: at.z + 0.02 }, tile.grip, 0.14, C.rooferShirt);
 }
 
 /**
- * La tuile canal du couvreur, depuis ses pieds : son écart vers l'est, la hauteur de son dessous, son biais (depuis l'axe
- * de la caméra) ; ses deux pans (le demi-écart de leurs milieux, leur pente, leur longueur, plus longue que large, leur
- * épaisseur, leur largeur).
+ * La tuile canal du couvreur, depuis ses pieds : le haut de sa ligne de faîte (son écart vers l'est, sa hauteur, son
+ * avancée vers la caméra) ; sa pente sous l'horizontale, dans le plan de la caméra ; sa longueur, le rayon de sa voûte,
+ * son épaisseur, ses pans ; où le bras la serre, le long d'elle (de son haut à son bas).
  */
-const COUVREUR_TILE = { dx: 0.44, height: 0.6, turn: 0.75, half: 0.06, bend: 0.4, length: 0.55, thick: 0.035, width: 0.13 } as const;
+const COUVREUR_TILE = { dx: 0.31, height: 0.78, dz: 0.06, slope: (55 * Math.PI) / 180, length: 0.46, r: 0.085, thick: 0.03, segments: 4, grip: 0.7 } as const;
+
+/**
+ * Une tuile canal : une demi-voûte le long de sa ligne de faîte, qui part de `top` et descend vers l'est selon sa pente ;
+ * sa face bombée (dehors) vers +z, la caméra, son creux derrière ; ses deux bords longs et ses deux bouts fermés. Rend où
+ * le bras la serre : contre son bord de l'est (dehors), un peu devant elle.
+ */
+function canalTile(b: FacetBuilder, top: Vec3, T: typeof COUVREUR_TILE): { grip: Vec3 } {
+  const u: [number, number, number] = [Math.cos(T.slope), -Math.sin(T.slope), 0];
+  const n: [number, number, number] = [Math.sin(T.slope), Math.cos(T.slope), 0];
+  const point = (s: number, theta: number, r: number): [number, number, number] => [
+    top.x + s * u[0] + r * (Math.sin(theta) * n[0]),
+    top.y + s * u[1] + r * (Math.sin(theta) * n[1]),
+    top.z + r * Math.cos(theta),
+  ];
+  // Chaque face, tournée vers où elle regarde (la voûte n'a qu'une face par côté).
+  const face = (a: [number, number, number], bb: [number, number, number], c: [number, number, number], d: [number, number, number], out: [number, number, number], color: number) => {
+    const nx = (bb[1] - a[1]) * (c[2] - a[2]) - (bb[2] - a[2]) * (c[1] - a[1]);
+    const ny = (bb[2] - a[2]) * (c[0] - a[0]) - (bb[0] - a[0]) * (c[2] - a[2]);
+    const nz = (bb[0] - a[0]) * (c[1] - a[1]) - (bb[1] - a[1]) * (c[0] - a[0]);
+    if (nx * out[0] + ny * out[1] + nz * out[2] >= 0) b.quad(a, bb, c, d, color);
+    else b.quad(d, c, bb, a, color);
+  };
+  const thetas = Array.from({ length: T.segments + 1 }, (_, j) => -Math.PI / 2 + (Math.PI * j) / T.segments);
+  const [s0, s1] = [0, T.length];
+  const ri = T.r - T.thick;
+  for (let j = 0; j < T.segments; j++) {
+    const [t0, t1] = [thetas[j], thetas[j + 1]];
+    const mid = (t0 + t1) / 2;
+    const out: [number, number, number] = [Math.sin(mid) * n[0], Math.sin(mid) * n[1], Math.cos(mid)];
+    face(point(s0, t0, T.r), point(s0, t1, T.r), point(s1, t1, T.r), point(s1, t0, T.r), out, C.tile);
+    face(point(s0, t0, ri), point(s1, t0, ri), point(s1, t1, ri), point(s0, t1, ri), [-out[0], -out[1], -out[2]], C.tileShade);
+    face(point(s0, t0, ri), point(s0, t1, ri), point(s0, t1, T.r), point(s0, t0, T.r), [-u[0], -u[1], -u[2]], C.tileShade);
+    face(point(s1, t0, ri), point(s1, t0, T.r), point(s1, t1, T.r), point(s1, t1, ri), u, C.tileShade);
+  }
+  for (const [theta, side] of [
+    [thetas[0], -1],
+    [thetas[T.segments], 1],
+  ] as const)
+    face(point(s0, theta, ri), point(s1, theta, ri), point(s1, theta, T.r), point(s0, theta, T.r), [side * n[0], side * n[1], side * n[2]], C.tileShade);
+  const g = point(T.grip * T.length, Math.PI / 3, T.r + 0.06);
+  return { grip: { x: g[0], y: g[1], z: g[2] + 0.02 } };
+}
 
 /**
  * La dalle de la Halle (lot L8d) : des dalles de la pierre des Passeurs sous le bord de la toiture, au sud du rang des
@@ -1452,7 +1460,7 @@ function commonsPaving(b: FacetBuilder): void {
   const depth = sceneDepth('commons');
   const P = COMMONS_PAVING;
   // Sans joints, comme à l'Observatoire (relecture de L8c-d).
-  b.box({ x: o.x, y: o.y - depth, z: o.z + P.dz }, [2 * P.half, depth, P.depth], C.pavingSide, C.paving);
+  b.box({ x: o.x, y: o.y - depth, z: o.z + P.dz }, [2 * P.half, depth, P.depth], C.passeurShade, C.paving);
 }
 
 /** La dalle de la Halle : sa demi-largeur, sa profondeur, son milieu un peu au nord du point de la scène (la borne). */

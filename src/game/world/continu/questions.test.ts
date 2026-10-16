@@ -1092,7 +1092,7 @@ describe('La Halle (GD-20, point 8, lot L8d)', () => {
   });
 
   it('rien qui se lise comme un symbole : aucune couleur hors du lieu dans les traces (ni rouge, ni bleu, ni blanc), la haie sans cadenas', () => {
-    const allowed = new Set([0x8e6a48, 0xa98258, 0x4f8a3c, 0x5f9c48, 0xcfc6b2, 0xada48f].map((h) => linearRgb(h).map((v) => v.toFixed(5)).join(',')));
+    const allowed = new Set([0x8e6a48, 0xa98258, 0x4f8a3c, 0x5f9c48, 0xdcd0b5, 0xb9a988].map((h) => linearRgb(h).map((v) => v.toFixed(5)).join(',')));
     const f = placeTrace('commons', placeById('commons').scenes);
     for (let i = 0; i < f.colors.length; i += 3) expect(allowed.has([f.colors[i], f.colors[i + 1], f.colors[i + 2]].map((v) => v.toFixed(5)).join(','))).toBe(true);
   });

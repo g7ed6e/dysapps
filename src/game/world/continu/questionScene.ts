@@ -130,13 +130,11 @@ const C = {
   tentCanvas: 0xe8e0cc,
   cord: 0xe0d3b0,
   // L'Observatoire (lot L8c, directeur artistique) : l'enduit rose pâle du tambour et son ombre, la vitre pâle et unie,
-  // les volets Bleu lagon ; la pierre des Passeurs (la même valeur de base que places.ts).
+  // les volets Bleu lagon ; la pierre des Passeurs, `passeurStone` (plus haut, la même valeur de base que places.ts).
   plaster: 0xe3b9a3,
   plasterShade: 0xc99a84,
   bayGlass: 0xd9e6e8,
   shutter: 0x178078,
-  passeurs: 0xcfc6b2,
-  passeursShade: 0xada48f,
   // La Halle (lot L8d, directeur artistique) : le bronze des Passeurs (le bec de la borne), l'eau du filet et de l'auge,
   // un aplat clair ; le chêne des bancs et des pupitres et son dessus ; la haie taillée et son dessus.
   passeursBronze: 0x9c7a3c,
@@ -2864,8 +2862,8 @@ const OBSERVATORY_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: numbe
     const y = groundAt({ x, z }) + OBSERVATORY.terrace.top;
     const yaw = OBSERVATORY_TRACE_YAW.metropolises;
     const t = { x: Math.cos(yaw), z: -Math.sin(yaw) };
-    for (const side of [-1, 1]) b.box({ x: x + o.x + t.x * side * 0.62, y: y - 0.03, z: z + o.z + t.z * side * 0.62, yaw }, [0.22, 0.42, 0.42], C.passeursShade, C.passeurs);
-    b.box({ x: x + o.x, y: y + 0.39, z: z + o.z, yaw }, [1.8, 0.13, 0.52], C.passeursShade, C.passeurs);
+    for (const side of [-1, 1]) b.box({ x: x + o.x + t.x * side * 0.62, y: y - 0.03, z: z + o.z + t.z * side * 0.62, yaw }, [0.22, 0.42, 0.42], C.passeurShade, C.passeurStone);
+    b.box({ x: x + o.x, y: y + 0.39, z: z + o.z, yaw }, [1.8, 0.13, 0.52], C.passeurShade, C.passeurStone);
   },
   'low-density': (b, x, z) => {
     const o = OBSERVATORY_TRACE_SPOTS['low-density'];
@@ -2940,8 +2938,8 @@ function commonsFountain(b: FacetBuilder, spot: Vec3, done: boolean): Reaction |
   const o = { ...spot, y: spot.y + COMMONS_PAVING_RISE };
   const z = o.z + F.z;
   // La borne et son chaperon, un peu plus large.
-  b.box({ x: o.x, y: o.y - 0.05, z }, [F.width, F.height + 0.05, F.depth], C.passeursShade, C.passeurs);
-  b.box({ x: o.x, y: o.y + F.height, z }, [F.width + 0.1, 0.1, F.depth + 0.1], C.passeursShade, C.passeurs);
+  b.box({ x: o.x, y: o.y - 0.05, z }, [F.width, F.height + 0.05, F.depth], C.passeurShade, C.passeurStone);
+  b.box({ x: o.x, y: o.y + F.height, z }, [F.width + 0.1, 0.1, F.depth + 0.1], C.passeurShade, C.passeurStone);
   // Le bec de bronze, de la face sud de la borne, vers le sud et un peu vers le bas.
   const front = z + F.depth / 2;
   const tip = { x: o.x, y: o.y + F.spout - 0.04, z: front + F.reach };
@@ -2950,12 +2948,12 @@ function commonsFountain(b: FacetBuilder, spot: Vec3, done: boolean): Reaction |
   const [tw, th, td] = F.trough;
   const tz = front + F.reach;
   const t = F.wall;
-  b.box({ x: o.x, y: o.y - 0.05, z: tz }, [tw, 0.05 + 0.08, td], C.passeursShade, C.stoneDark);
+  b.box({ x: o.x, y: o.y - 0.05, z: tz }, [tw, 0.05 + 0.08, td], C.passeurShade, C.stoneDark);
   for (const side of [-1, 1]) {
-    b.box({ x: o.x + side * (tw / 2 - t / 2), y: o.y - 0.05, z: tz }, [t, th + 0.05, td], C.passeursShade, C.passeurs);
+    b.box({ x: o.x + side * (tw / 2 - t / 2), y: o.y - 0.05, z: tz }, [t, th + 0.05, td], C.passeurShade, C.passeurStone);
     // La paroi sud (vers la caméra) plus basse : l'eau se voit monter au-dessus d'elle.
     const h = side > 0 ? F.lip : th;
-    b.box({ x: o.x, y: o.y - 0.05, z: tz + side * (td / 2 - t / 2) }, [tw - 2 * t, h + 0.05, t], C.passeursShade, C.passeurs);
+    b.box({ x: o.x, y: o.y - 0.05, z: tz + side * (td / 2 - t / 2) }, [tw - 2 * t, h + 0.05, t], C.passeurShade, C.passeurStone);
   }
   if (!done) return null;
   // Le filet, immobile et droit, du bec jusqu'à l'eau de l'auge.
@@ -3006,7 +3004,7 @@ const COMMONS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) =
     const y = groundAt({ x: x + o.x, z: z + o.z }) + COMMONS.paving.worn;
     for (const dx of [-1.2, 1.2]) {
       const cx = x + o.x + dx;
-      for (const side of [-1, 1]) b.box({ x: cx + side * 0.72, y: y - 0.03, z: z + o.z }, [0.2, 0.43, 0.36], C.passeursShade, C.passeurs);
+      for (const side of [-1, 1]) b.box({ x: cx + side * 0.72, y: y - 0.03, z: z + o.z }, [0.2, 0.43, 0.36], C.passeurShade, C.passeurStone);
       b.box({ x: cx, y: y + 0.4, z: z + o.z }, [1.95, 0.1, 0.44], C.oak, C.oakTop);
     }
   },
