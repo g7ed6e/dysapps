@@ -589,12 +589,15 @@ describe('« [Nom] : fermé pour l’instant » (GD-20, « La Carte au plus gran
 
 describe('le mot d’un lieu fermé (GD-20, téléphone au plus grand texte)', () => {
   it('ailleurs, le mot long, écrit et dit', () => {
-    expect(closedNoteText('Les Marais salants', false)).toEqual({ shown: 'Les Marais salants : fermé pour l’instant' });
+    expect(closedNoteText('Les Marais salants', false)).toEqual({ shown: 'Les Marais salants\u00a0: fermé pour l’instant' });
   });
   it('sur téléphone au plus grand texte, le mot court écrit ; la voix garde la phrase entière du bouton', () => {
     expect(closedNoteText('Les Marais salants', true)).toEqual({
-      shown: 'Les Marais salants : fermé',
+      shown: 'Les Marais salants\u00a0: fermé',
       said: 'Les Marais salants : sous la brume, fermé pour l’instant',
     });
+  });
+  it('la ligne ne commence jamais par les deux-points', () => {
+    for (const short of [false, true]) expect(closedNoteText('Les Quais', short).shown).toMatch(/^Les Quais\u00a0:/u);
   });
 });

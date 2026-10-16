@@ -545,8 +545,9 @@ function attemptLayout(
  * et « L'Escale » à 667 × 375, le Chantier naval à 844 × 390). Ailleurs, rien ne change.
  */
 export function closedNoteText(name: string, short: boolean): { shown: string; said?: string } {
-  if (!short) return { shown: `${name} : fermé pour l’instant` };
-  return { shown: `${name} : fermé`, said: `${name} : sous la brume, fermé pour l’instant` };
+  // Espace insécable avant les deux-points : la ligne ne commence jamais par « : ».
+  if (!short) return { shown: `${name}\u00a0: fermé pour l’instant` };
+  return { shown: `${name}\u00a0: fermé`, said: `${name} : sous la brume, fermé pour l’instant` };
 }
 
 /**
