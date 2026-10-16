@@ -21,7 +21,7 @@ import { useSettings } from '../../../core/SettingsContext';
 import { useMoinsDAnimations } from '../../../core/motion';
 import { useTextes } from '../../../universes';
 import { useBlocland } from '../../BloclandContext';
-import { getBiome, type BiomeId } from '../../biomes';
+import { getBiome } from '../../biomes';
 import { exercisesOf, questProgress } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
 import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
@@ -66,7 +66,7 @@ export default function OpenWorldPage() {
   const modele = useMemo(() => modeleDuMonde(vu, '6e', textes.archipels, textes.libelles), [vu, textes, settings.lv2]);
   // Les bornes du monde ouvert : une mission réussie ici garde ses étoiles même si son île n'est pas encore reliée par
   // les ponts de la grille (sinon « Nouveau » au retour, la mission reproposée, la brume restée, jusqu'au rechargement).
-  const bornes = useMemo(() => bornesDuMondeOuvert(modele.bornes, (ile, m) => questProgress(ile as BiomeId, m, vu.progress)?.stars ?? null), [modele, vu.progress]);
+  const bornes = useMemo(() => bornesDuMondeOuvert(modele.bornes, (ile, m) => questProgress(ile, m, vu.progress)?.stars ?? null), [modele, vu.progress]);
   const next = useMemo(() => nextMission(bornes, modele.destination), [bornes, modele.destination]);
   const nextPlace = next?.place ?? null;
 

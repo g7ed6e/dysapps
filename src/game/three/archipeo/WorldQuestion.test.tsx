@@ -277,6 +277,42 @@ describe('Toutes les missions des Écluses en scénette (GD-20, point 8, lot L2)
   });
 });
 
+describe('L’Enclos au plus grand texte sur un téléphone couché (dérogation du 16 octobre 2026)', () => {
+  it('la règle sur la ligne de la consigne repliée, la consigne dépliable ; un sujet sous la bande de « Valider » allume le chevron', async () => {
+    localStorage.setItem('dysapps:settings', JSON.stringify({ fontSize: 32, univers: 'archipeo' }));
+    const user = userEvent.setup();
+    renderPlace('filets', 'word-classes');
+    expect(await screen.findByText('La pêcheuse')).toBeInTheDocument();
+    const go = screen.queryByRole('button', { name: /Commencer/ });
+    if (go) await user.click(go);
+    const simple = screen.queryByRole('button', { name: /Vue simple/ });
+    if (simple) await user.click(simple);
+    await vi.waitFor(() => expect(document.querySelector('.world-consigne-fold .world-consigne-regle')).not.toBeNull());
+    // Repliée, la règle tient la ligne ; « Lire la suite » (l'icône du livre) montre la consigne, la règle reste.
+    const fold = document.querySelector('.world-consigne-fold')!;
+    const words = fold.querySelector<HTMLElement>(':scope > [aria-hidden="true"]')!;
+    expect(words.hidden).toBe(true);
+    await user.click(screen.getByRole('button', { name: 'Lire la suite de la consigne' }));
+    expect(words.hidden).toBe(false);
+    expect(words.textContent).toMatch(/Touche le sujet, puis son panier/);
+    expect(fold.querySelector('.world-consigne-regle')).not.toBeNull();
+    // Le panneau défile : tant qu'un sujet est caché sous la bande de « Valider », le chevron « Suite plus bas ».
+    const panel = document.querySelector<HTMLElement>('.quiz.in-world.simple')!;
+    Object.defineProperty(panel, 'scrollHeight', { configurable: true, value: 600 });
+    Object.defineProperty(panel, 'clientHeight', { configurable: true, value: 300 });
+    vi.spyOn(panel.querySelector('.world-simple-validate')!, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 0, y: 250, width: 600, height: 54 }));
+    panel.dispatchEvent(new Event('scroll'));
+    await new Promise((r) => requestAnimationFrame(r));
+    expect('repere' in panel.dataset).toBe(false);
+    vi.spyOn(panel.querySelector('.world-sort-prise')!, 'getBoundingClientRect').mockReturnValue(DOMRect.fromRect({ x: 0, y: 260, width: 120, height: 48 }));
+    panel.dispatchEvent(new Event('scroll'));
+    await vi.waitFor(() => expect('repere' in panel.dataset).toBe(true));
+    expect(within(panel).getByRole('img', { name: 'Suite plus bas' })).toBeInTheDocument();
+    vi.restoreAllMocks();
+    localStorage.removeItem('dysapps:settings');
+  });
+});
+
 describe('Les Filets complets (GD-20, point 8, lot L4)', () => {
   beforeEach(() => {
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);

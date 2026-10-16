@@ -221,10 +221,11 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     if (panel) panel.scrollTop = 0;
   }, [simple, itemKey]);
   // Le panneau de « Vue simple » défile : il s'ouvre en haut (le rôle, la consigne), et `data-suite` dit qu'il reste
-  // de quoi lire plus bas (une ombre au-dessus de « Valider ») ou plus haut. Sans « Valider » (les paniers, les leviers,
-  // les caisses), `data-repere` montre au bas du panneau un chevron sur un trait pointillé (« Suite plus bas ») tant que
-  // des réponses restent plus bas, sous le bord du panneau (au plus grand texte sur un téléphone couché, la consigne dépliée les pousse sous le
-  // pli) ; il part une fois en bas du panneau.
+  // de quoi lire plus bas (une ombre au-dessus de « Valider ») ou plus haut. `data-repere` montre un chevron sur un trait
+  // pointillé (« Suite plus bas ») tant que des réponses restent plus bas : sous le bord du panneau sans « Valider » (les
+  // paniers, les leviers, les caisses), au bas du panneau ; sous la bande de « Valider », à droite dans la bande
+  // (au plus grand texte sur un téléphone couché, la consigne dépliée ou la règle les poussent sous le pli) ; il part
+  // une fois en bas du panneau.
   useEffect(() => {
     if (!simple || finished) return;
     const panel = box.current?.querySelector<HTMLElement>('.quiz.in-world');
@@ -240,11 +241,14 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       // Le repère ne dit que des réponses : une fois la rangée entière visible, l'indice ou la figure plus bas ne le
       // rallument pas (GD-20, point 8, lot L2 : au plus grand texte sur téléphone, il ne couvre plus la rangée). La
       // mesure des réponses ne se fait qu'ici, une fois par image au plus (`schedule`), et seulement s'il reste à défiler.
+      // Avec « Valider », le bord est le haut de sa bande : une réponse cachée dessous (au plus grand texte sur un
+      // téléphone couché, le sujet et les paniers de l'Enclos) allume aussi le chevron, à droite dans la bande.
       const answerBelow = () => {
-        const end = panel.getBoundingClientRect().top + panel.clientTop + panel.clientHeight;
+        const band = panel.querySelector('.world-simple-validate');
+        const end = band ? band.getBoundingClientRect().top : panel.getBoundingClientRect().top + panel.clientTop + panel.clientHeight;
         return [...panel.querySelectorAll('.world-answer')].some((a) => a.getBoundingClientRect().bottom > end + 1);
       };
-      const cue = below && !panel.querySelector('.world-simple-validate') && answerBelow();
+      const cue = below && answerBelow();
       if (cue !== 'repere' in panel.dataset) {
         if (cue) panel.dataset.repere = '';
         else delete panel.dataset.repere;
@@ -379,8 +383,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     // cible après elle.
     const target = marks && grandTexte ? bellTarget : '';
     // À l'Enclos, au plus grand texte sur un écran bas, la ligne de règle prend la ligne de la consigne repliée, avant
-    // elle (dérogation du quatrième lot du point 8, 16 octobre 2026 : sous la consigne, elle poussait la manche sous
-    // « Valider ») ; la consigne reste dite, et dépliée, après la règle.
+    // elle ; la consigne reste dite, et dépliée, après la règle. La manche passe alors sous « Valider » et le panneau
+    // défile (dérogation du 16 octobre 2026, choix du mainteneur : ce seul réglage, l'Enclos seulement).
     const rule = ranges && grandTexte && simpleLow ? placeRuleLine(place, exerciseId, readyLevel) : null;
     const head: ReactNode = simpleLow ? (
         <div className="world-scenette-head world-consigne-line">

@@ -154,11 +154,15 @@ function placed(f: Facets, k: number, at: Vec3 = { x: 0, y: 0, z: 0 }): Facets {
   return { ...f, positions };
 }
 
-/** L'agrandissement qui fait tenir la pêche dans un panier de l'échelle `scale` (sans dépasser sa taille dans le filet). */
-function basketFit(f: Facets, scale: number): number {
+/**
+ * La pêche agrandie pour tenir dans le creux d'un panier d'osier de l'échelle `scale` (sans dépasser sa taille dans le
+ * filet), centrée sur lui : rien ne dépasse du rebord (le bord fait 0,9 de large ; relecture de L4, bilan de la Récolte).
+ */
+function basketFit(f: Facets, scale: number): Facets {
   const { min, max } = boundsOf(f);
   const width = Math.max(max[0] - min[0], max[2] - min[2], 1e-3);
-  return Math.min(CATCH_SCALE, (1.1 * scale) / width);
+  const k = Math.min(CATCH_SCALE, (BASKET_HOLLOW * scale) / width);
+  return placed(f, k, { x: (-k * (min[0] + max[0])) / 2, y: 0, z: (-k * (min[2] + max[2])) / 2 });
 }
 
 /** La taille de la pêche : à la mesure du filet, lisible de loin. */
@@ -491,6 +495,8 @@ export function rankInBasket(placed: readonly (number | null)[], i: number): num
 
 /** Le panier d'osier du geste « ranger », à l'échelle 1 : rayon du fond, du bord, hauteur. */
 const BASKET = { bottom: 0.3, rim: 0.45, height: 0.5 } as const;
+/** La largeur du creux d'un panier d'osier à l'échelle 1, sous son bord (0,9 de large) : ce qui s'y pose y tient. */
+const BASKET_HOLLOW = 0.8;
 
 /**
  * Un panier d'osier des Filets (relecture de L4, directeur artistique) : un corps évasé et opaque, un bandeau de
@@ -1031,7 +1037,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
       catchObjects(p, scene, 0, 0, 0, true);
       const pile = p.build();
       reaction = {
-        facets: placed(pile, basketFit(pile, scale)),
+        facets: basketFit(pile, scale),
         from,
         // Sur le creux du panier d'osier (son bord à 0,5), enfoncée d'un rien : elle se voit dedans.
         to: { x: answerAt.x, y: answerAt.y + 0.4 * scale, z: answerAt.z },

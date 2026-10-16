@@ -433,8 +433,9 @@ export const RANGE_PER_ROUND = 4;
 export const RANGE_PER_SMALL_ROUND = 3;
 
 /**
- * Au plus grand texte sur un écran bas, un sujet par manche (relecture de L4, contenu) : la ligne de règle reste affichée
- * sous la consigne, et la manche tient au-dessus de « Valider ».
+ * Au plus grand texte sur un écran bas, un sujet par manche (relecture de L4, contenu). La ligne de règle prend la ligne
+ * de la consigne repliée ; sur un téléphone couché, le sujet et les paniers passent alors sous « Valider » et le panneau
+ * défile, signalé par l'ombre et le chevron « Suite plus bas » (dérogation du 16 octobre 2026, à ce seul réglage).
  */
 export const RANGE_PER_GRAND_ROUND = 1;
 

@@ -1220,6 +1220,20 @@
   margin-block: calc((var(--repere-haut) - 5px - 44px) / 2);
   stroke-width: 3;
 }
+/* Avec « Valider », des réponses cachées sous sa bande (au plus grand texte sur un téléphone couché, le sujet et les
+   paniers de l'Enclos, dérogation du 16 octobre 2026) : le chevron se pose à droite dans la bande, qui garde « Valider »
+   et la voix à gauche, et l'ombre au-dessus de la bande se fait nette, comme celle du haut (référent dys). */
+.world-question .quiz.in-world.simple:has(.world-simple-validate) > .world-repere {
+  --repere-haut: 48px;
+  z-index: 2;
+  width: 64px;
+  margin: calc(-1 * var(--repere-haut)) 0 calc(-1 * var(--panneau-bas)) auto;
+}
+.world-question .quiz.in-world.simple[data-repere] .world-simple-validate {
+  box-shadow:
+    0 -3px 0 rgb(0 0 0 / 0.45),
+    0 -16px 10px -8px rgb(0 0 0 / 0.55);
+}
 /* L'ombre du haut, nette (référent dys) : un trait sombre sous le bord, puis une ombre courte. */
 .world-question .quiz.in-world.simple[data-suite="haut"],
 .world-question .quiz.in-world.simple[data-suite="deux"] {
@@ -1472,6 +1486,45 @@
 .world-question .in-world.simple-bas .world-consigne-regle {
   font-weight: 400;
 }
+/* À l'Enclos, au plus grand texte sur un téléphone couché, la place gagnée sans réduire le texte (troisième passe dys de
+   L4) : la règle en interligne de 1,2, le panneau à 2 px du haut, les rangées resserrées, la voix des sujets à 48 px
+   dans la bande comme celles de la ligne de la consigne, la bande sans marge au-dessus de « Valider ». */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold:has(.world-consigne-regle) {
+  line-height: 1.2;
+}
+/* La voix et « Lire la suite » en haut de la ligne, à côté du rôle : dépliée, la consigne s'allonge dessous sans les
+   pousser sous la bande de « Valider ». */
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-line:has(.world-consigne-regle) {
+  align-items: flex-start;
+  align-self: flex-start;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas:has(.world-consigne-regle) > .world-consigne-more {
+  align-self: flex-start;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas:has(.world-sort) {
+  padding-top: 2px;
+}
+/* Les étapes ne prennent déjà aucune hauteur : les paniers, la première rangée en « Vue simple », remontent jusque
+   sous leur trait, et le sujet à 4 px sous les paniers. */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-sort > .world-sort-bins {
+  margin-top: -2px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-sort > .world-sort-bins + .world-answers {
+  margin-top: -2px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-sort .world-simple-validate {
+  padding-top: 0;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-sort .world-simple-validate .speak-button {
+  min-height: 48px;
+  height: 48px;
+  padding-block: 0;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-sort .world-simple-validate .speak-button svg {
+  width: 32px;
+  height: 32px;
+}
+
 .world-question .in-world.simple-bas .world-consigne-cible {
   display: inline-block;
   white-space: nowrap;
