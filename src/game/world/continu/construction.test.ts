@@ -139,6 +139,25 @@ describe('Le lieu se rebâtit lui-même', () => {
     for (const p of placePieces('engine')) expect(p.stage === 'ruine' || p.until === undefined).toBe(true);
   });
 
+  it('au Chantier naval, ce qui tombe s’en va rangée par rangée : la cale ensablée, la vieille quille, les planches, puis l’atelier sans toit (lot L6b)', () => {
+    const fallen = (shape: PartShape[]) => fallenFacets('shipyard', shape, ground).triangles;
+    const all = fallen([]);
+    expect(all).toBeGreaterThan(0);
+    // Chaque rangée du corps chasse sa ruine, puis les murs de l'atelier, la sienne : jamais deux fois la même pièce.
+    expect(fallen([slice(0, 0, 0.34)])).toBeLessThan(all);
+    expect(fallen([slice(0, 0, 0.67)])).toBeLessThan(fallen([slice(0, 0, 0.34)]));
+    expect(fallen([slice(0, 0, 1)])).toBeLessThan(fallen([slice(0, 0, 0.67)]));
+    expect(fallen([slice(0, 0, 1)])).toBeGreaterThan(0);
+    expect(fallen([slice(0, 0, 1), slice(1, 0, 0.34)])).toBe(0);
+    // Avant, tout est bas ; le corps pose une coque plus haute qu'un élève.
+    const c = placeById('shipyard').center;
+    const y0 = standingHeight(ground(c.x, c.z));
+    expect(boundsOf(ruinOf('shipyard')).max[1]).toBeLessThan(1.6);
+    const body = boundsOf(constructionFacets('shipyard', [slice(0, 0, 1)], ground));
+    expect(body.max[1] - y0).toBeGreaterThan(2.5);
+    for (const p of placePieces('shipyard')) expect(p.stage === 'ruine' || p.until === undefined).toBe(true);
+  });
+
   it('ses volumes restent hors des chemins (Kéo n’y passe jamais au travers), sauf le lieu lui-même autour de sa porte', () => {
     const paths = networkSamples(0.5);
     for (const p of PLACES) {

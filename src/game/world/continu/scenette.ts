@@ -29,6 +29,8 @@ import {
   QUAY,
   ENGINE_PAVING_RISE,
   SALTWORKS_TRACE_SPOTS,
+  SHIPYARD_FLOOR_RISE,
+  SHIPYARD_TRACE_SPOTS,
   filetsBasketAt,
   fullBasket,
   liftingHook,
@@ -71,6 +73,8 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   saltworks: { role: 'La saunière', greeting: null, placement: 'rangee' },
   // Lot L6a : « la machiniste » (directeur artistique : « la mécanicienne » ferait doublon avec Zia).
   engine: { role: 'La machiniste', greeting: null, placement: 'rangee' },
+  // Lot L6b : « le charpentier » (directeur artistique).
+  shipyard: { role: 'Le charpentier', greeting: null, placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -399,6 +403,18 @@ const SITES: Record<PlaceId, ScenetteSite> = {
     subject: { halfWidth: 3.7, bottom: -0.4, top: 3.2, depth: 0.3 },
     pitch: (18 * Math.PI) / 180,
   },
+  // Le Chantier naval (lot L6b) : Kéo et le charpentier sur le plancher, au sud-est de la coque, de part et d'autre de la
+  // planche de bordé sur ses tréteaux (l'objet témoin) ; la coque derrière eux, en oblique, son flanc vers la caméra.
+  shipyard: {
+    floor: () => {
+      const s = sceneSpot('shipyard');
+      return { ...s, y: s.y + SHIPYARD_FLOOR_RISE };
+    },
+    keo: { dx: -2.4, dz: 0.55, scale: 0.6, yaw: Math.PI - 0.4 },
+    habitant: { dx: 2.6, dz: 0.3 },
+    subject: { halfWidth: 3.8, bottom: -0.4, top: 3.3, depth: 0.2 },
+    pitch: (18 * Math.PI) / 180,
+  },
 };
 
 /**
@@ -503,6 +519,16 @@ export function scenetteExit(place: PlaceId, posed = true, mission?: string): { 
     const g = { x: c.x + o.x, z: c.z + o.z };
     return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + ENGINE_TRACE_LIFT[key], z: g.z } };
   }
+  if (place === 'shipyard') {
+    // La trace de la mission jouée (GD-20, point 8, lot L6b) : la caméra garde le milieu de sa hauteur ; Kéo se tient à la
+    // porte, sur le chemin.
+    const at = { x: c.x + EXIT_SPOTS.shipyard.x, z: c.z + EXIT_SPOTS.shipyard.z };
+    if (!mission || !Object.hasOwn(SHIPYARD_TRACE_SPOTS, mission)) return { at, keep: placeKeep(place) };
+    const key = mission as keyof typeof SHIPYARD_TRACE_SPOTS;
+    const o = SHIPYARD_TRACE_SPOTS[key];
+    const g = { x: c.x + o.x, z: c.z + o.z };
+    return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + SHIPYARD_TRACE_LIFT[key], z: g.z } };
+  }
   if (place === 'ecluses') {
     // La trace de la mission jouée (GD-20, point 8, lot L2) : la porte d'amont ouverte des Nénuphars (le milieu du lieu),
     // ou ce qu'une autre mission a laissé (la barque, la table, l'escalier, la lanterne du sas), à un pas au-dessus du pied du lieu.
@@ -535,13 +561,16 @@ const TRACE_LIFT = 1;
 const FILETS_TRACE_LIFT = { 'word-classes': 0.3, sorting: 0.8, 'e-er-ez': 1.8 } as const;
 
 /** Où Kéo se tient au retour des Filets et des Écluses, depuis le centre du lieu. */
-const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 }, saltworks: { x: -6.2, z: -1.8 }, engine: { x: -2.2, z: 6.4 } } as const;
+const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 }, saltworks: { x: -6.2, z: -1.8 }, engine: { x: -2.2, z: 6.4 }, shipyard: { x: 3.4, z: 5.7 } } as const;
 
 /** La hauteur gardée par la caméra au retour d'une trace des Marais salants, au-dessus du sol : le milieu de la trace. */
 const SALTWORKS_TRACE_LIFT = { ordering: 0.5, operations: 0.8, scale: 2.6, 'large-numbers': 0.6, 'rounding-products': 0.4 } as const;
 
 /** La hauteur gardée par la caméra au retour d'une trace de la Turbine, au-dessus du sol : le milieu de la trace. */
 const ENGINE_TRACE_LIFT = { 'states-of-matter': 1.6, 'motion-signals': 0.5, 'energy-circuits': 1.3, 'materials-light': 0.6 } as const;
+
+/** La hauteur gardée par la caméra au retour d'une trace du Chantier naval, au-dessus du sol : le milieu de la trace. */
+const SHIPYARD_TRACE_LIFT = { 'object-function': 0.6, materials: 0.6, 'information-networks': 0.3, 'solve-program': 0.6 } as const;
 
 /**
  * Au Phare (GD-20, point 8, lot L3), où Kéo se tient au retour de chaque mission, depuis le centre du lieu, et la trace
@@ -741,6 +770,15 @@ const C = {
   /** Les cheveux de la machiniste, sombres. */
   hair: 0x3b2a22,
   trousers: 0x4d6a82,
+  // Le charpentier (lot L6b, directeur artistique, consultant Archipéo) : chemise Brume, tablier ardoise (le cuir se
+  // confondrait avec la quille), casquette de cuir ; son maillet de calfat, la tête de bois dur ; le plancher de planches.
+  shirt: 0xe5ebe3,
+  shirtShade: 0xd3dbd4,
+  slateApron: 0x4d6a82,
+  leather: 0x7a4e2e,
+  mallet: 0x8a5a36,
+  plank: 0xc98e55,
+  plankSide: 0x9b6a3f,
   // Le filet raccommodé (le même que sur le séchoir, questionScene.ts, `mendedNet`) et ses mailles.
   newRope: 0xc9a36a,
   netLine: 0x6f5e42,
@@ -913,6 +951,42 @@ function enginePaving(b: FacetBuilder): void {
   for (const dx of [-ENGINE_PAVING.half / 2, ENGINE_PAVING.half / 2]) b.box({ x: o.x + dx, y: o.y, z: o.z }, [0.05, 0.01, ENGINE_PAVING.depth], C.stoneSide);
 }
 
+/**
+ * Le charpentier, immobile (directeur artistique, consultant Archipéo) : sa chemise Brume, son tablier ardoise par-devant,
+ * la tête, sa casquette de cuir et sa visière ; un bras le long du corps, son maillet de calfat à la main, la tête du
+ * maillet longue et ronde, de bois dur, au bout d'un manche court. Il ne dit rien.
+ */
+function charpentier(b: FacetBuilder, place: PlaceId): void {
+  const at = scenetteHabitant(place);
+  b.prism(at, 0.4, 0.28, 0.92, 10, C.shirt, C.shirtShade);
+  b.box({ x: at.x, y: at.y + 0.06, z: at.z + 0.3, pitch: 0.12 }, [0.46, 0.76, 0.06], C.slateApron);
+  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
+  b.prism({ x: at.x, y: at.y + 1.24, z: at.z - 0.02 }, 0.25, 0.22, 0.12, 10, C.leather);
+  b.box({ x: at.x, y: at.y + 1.25, z: at.z + 0.27 }, [0.3, 0.04, 0.16], C.leather);
+  // Le bras vers l'ouest (vers la planche), plié devant lui ; le maillet tenu par son manche court, la tête en l'air, en
+  // travers, longue et ronde.
+  const hand = { x: at.x - 0.36, y: at.y + 0.66, z: at.z + 0.26 };
+  b.beam({ x: at.x - 0.26, y: at.y + 0.84, z: at.z + 0.04 }, hand, 0.15, C.shirt);
+  const head = { x: hand.x - 0.04, y: hand.y + 0.36, z: hand.z + 0.02 };
+  b.beam({ x: hand.x, y: hand.y - 0.1, z: hand.z }, head, 0.06, C.lever);
+  b.drum({ x: head.x - 0.21, y: head.y, z: head.z, yaw: Math.PI / 2, pitch: Math.PI / 2 }, 0.1, 0.42, 8, C.mallet);
+}
+
+/**
+ * Le plancher du Chantier naval (lot L6b) : des planches sur la grève, au sud-est de la coque, sur toute la largeur de
+ * la scène, où se tiennent Kéo et le charpentier ; la planche de bordé sur ses tréteaux (l'objet témoin) au milieu.
+ */
+function shipyardFloor(b: FacetBuilder): void {
+  const o = floorOf('shipyard');
+  const depth = sceneDepth('shipyard') + SHIPYARD_FLOOR_RISE;
+  b.box({ x: o.x, y: o.y - depth, z: o.z }, [2 * SHIPYARD_DECK.half, depth, SHIPYARD_DECK.depth], C.plankSide, C.plank);
+  // Les joints des planches, d'est en ouest, posés sur le bois.
+  for (const dz of [-SHIPYARD_DECK.depth / 4, SHIPYARD_DECK.depth / 4]) b.box({ x: o.x, y: o.y, z: o.z + dz }, [2 * SHIPYARD_DECK.half, 0.01, 0.05], C.plankSide);
+}
+
+/** Le plancher du Chantier naval : sa demi-largeur et sa profondeur. */
+const SHIPYARD_DECK = { half: 3.5, depth: 2.4 } as const;
+
 /** Le dallage de la Turbine : sa demi-largeur et sa profondeur. */
 const ENGINE_PAVING = { half: 5.2, depth: 2.8 } as const;
 
@@ -1041,6 +1115,11 @@ export function scenetteDecor(place: PlaceId, open = false, posed = true): Facet
   if (place === 'engine') {
     enginePaving(b);
     machiniste(b, place);
+    return b.build();
+  }
+  if (place === 'shipyard') {
+    shipyardFloor(b);
+    charpentier(b, place);
     return b.build();
   }
   if (!posed) {

@@ -24,8 +24,16 @@ describe('Le plan du 6e', () => {
     for (const p of ISLET) expect(insidePolygon(p, LAGOON)).toBe(true);
   });
 
-  it('les six lieux reprennent chacun une île du 6e d’aujourd’hui, et leur porte est un nœud du réseau', () => {
-    expect(PLACES.map((p) => p.island).sort()).toEqual(['french-6e-grammar-spelling', 'french-6e-phonology', 'maths-6e-calculation', 'maths-6e-decimals', 'maths-6e-fractions', 'physics-chemistry-6e-matter-energy']);
+  it('les sept lieux reprennent chacun une île du 6e d’aujourd’hui, et leur porte est un nœud du réseau', () => {
+    expect(PLACES.map((p) => p.island).sort()).toEqual([
+      'french-6e-grammar-spelling',
+      'french-6e-phonology',
+      'maths-6e-calculation',
+      'maths-6e-decimals',
+      'maths-6e-fractions',
+      'physics-chemistry-6e-matter-energy',
+      'technology-6e-objects',
+    ]);
     for (const p of PLACES) {
       expect(placeOfIsland(p.island)).toBe(p);
       expect(pathNode(p.door)).toBeDefined();
@@ -199,8 +207,8 @@ describe('Les chemins aimantés', () => {
   it('les rubans des chemins ont leur dessus vers le ciel', () => {
     const f = pathRibbons(ground);
     expect(f.triangles).toBeGreaterThan(100);
-    // Six lieux reliés (le chemin de la Turbine, lot L6a, sur 4 172).
-    expect(f.triangles).toBeLessThan(4500);
+    // Sept lieux reliés (le chemin de la Turbine, lot L6a ; celui du Chantier naval, lot L6b : 4 850 en tout).
+    expect(f.triangles).toBeLessThan(5000);
   });
 });
 
@@ -429,7 +437,7 @@ describe('Le budget du monde continu', () => {
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
   });
 
-  it('les six lieux, leurs constructions et leurs traces en deux appels, la pose d’une partie en un (GD-20, lot 1)', () => {
+  it('les sept lieux, leurs constructions et leurs traces en deux appels, la pose d’une partie en un (GD-20, lot 1)', () => {
     const cost = openWorldCost();
     expect(cost.find((c) => c.poste === 'lieux')?.calls).toBe(2);
     expect(cost.find((c) => c.poste === 'pose')?.calls).toBe(1);

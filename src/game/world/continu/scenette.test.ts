@@ -8,8 +8,8 @@ import { FacetBuilder, boundsOf, placeFacets } from './facets';
 import { distance, linearRgb } from './geometry';
 import { startOf } from './paths';
 import { placeById } from './plan6e';
-import { STEAM_GAP, modelOfPlace } from './places';
-import { ANSWER_LAYOUT, ENGINE_PAVING_RISE, JAUGE, LOCK, VALVE, answerObjects, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
+import { SHIPYARD, SLIP_N, STEAM_GAP, hullEdge, modelOfPlace } from './places';
+import { ANSWER_LAYOUT, ENGINE_PAVING_RISE, JAUGE, LOCK, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
 import {
   GALLERY,
   LANTERN,
@@ -53,13 +53,14 @@ const screens = [
 ] as const;
 
 describe('La place de la scénette à l’écran', () => {
-  it('les six lieux ont leur scénette, chaque habitant nommé par son rôle seul, sans phrase d’accueil', () => {
+  it('les sept lieux ont leur scénette, chaque habitant nommé par son rôle seul, sans phrase d’accueil', () => {
     expect(scenetteOf('phare')).toEqual({ role: 'La gardienne du phare', greeting: null, placement: 'rangee' });
     expect(scenetteOf('quais')).toEqual({ role: 'Le docker', greeting: null, placement: 'rangee' });
     expect(scenetteOf('filets')).toEqual({ role: 'La pêcheuse', greeting: null, placement: 'rangee' });
     expect(scenetteOf('ecluses')).toEqual({ role: 'L’éclusier', greeting: null, placement: 'rangee' });
     expect(scenetteOf('saltworks')).toEqual({ role: 'La saunière', greeting: null, placement: 'rangee' });
     expect(scenetteOf('engine')).toEqual({ role: 'La machiniste', greeting: null, placement: 'rangee' });
+    expect(scenetteOf('shipyard')).toEqual({ role: 'Le charpentier', greeting: null, placement: 'rangee' });
   });
 
   it('sur un écran bas, la règle des Filets à droite au-dessus de la scène, la rangée sous la colonne', () => {
@@ -436,8 +437,8 @@ describe('Le retour de la scénette des Quais', () => {
   });
 });
 
-describe('Les Filets et les Écluses (lot 4), les Marais salants (lot L5), la Turbine (lot L6a)', () => {
-  const places = ['filets', 'ecluses', 'saltworks', 'engine'] as const;
+describe('Les Filets et les Écluses (lot 4), les Marais salants (lot L5), la Turbine (lot L6a), le Chantier naval (lot L6b)', () => {
+  const places = ['filets', 'ecluses', 'saltworks', 'engine', 'shipyard'] as const;
 
   it('la caméra cadre Kéo à gauche et l’habitant à droite, dans la scène, sur tous les écrans', () => {
     for (const place of places)
@@ -485,8 +486,9 @@ describe('Les Filets et les Écluses (lot 4), les Marais salants (lot L5), la Tu
 
   it('les pièces du lieu s’effacent le temps de la scénette partout sauf au Phare (ses lampes sont sur la galerie)', () => {
     expect(scenetteHidesPieces('phare')).toBe(false);
-    // À la Turbine, toutes ses traces se cachent pendant une question en C (directeur artistique, lot L6a).
-    for (const place of ['quais', 'filets', 'ecluses', 'saltworks', 'engine'] as const) expect(scenetteHidesPieces(place), place).toBe(true);
+    // À la Turbine et au Chantier naval, toutes leurs traces se cachent pendant une question en C (directeur artistique,
+    // lot L6a).
+    for (const place of ['quais', 'filets', 'ecluses', 'saltworks', 'engine', 'shipyard'] as const) expect(scenetteHidesPieces(place), place).toBe(true);
     // Une trace d'une autre mission dans le cadre se cache le temps de la scénette : les lanternes de la galerie
     // pendant l'Abattage syllabique et les Rimes-échelle ; elles restent pendant la Chasse au son, et au pied de la tour.
     const done = ['sound-hunt', 'syllables', 'rhymes'];
@@ -700,6 +702,7 @@ describe('le retour d’une mission des Quais, des Écluses, des Filets et des M
       ...['word-classes', 'sorting', 'e-er-ez', 'plurals'].map((m) => ['filets', m] as const),
       ...['ordering', 'operations', 'scale', 'large-numbers', 'rounding-products'].map((m) => ['saltworks', m] as const),
       ...['states-of-matter', 'motion-signals', 'energy-circuits', 'materials-light'].map((m) => ['engine', m] as const),
+      ...['object-function', 'materials', 'information-networks', 'solve-program'].map((m) => ['shipyard', m] as const),
     ];
     // Aux Filets, chaque mission garde sa trace (lot L4), le Troupeau son panier plein.
     const kept = new Set(['word-classes', 'sorting', 'e-er-ez', 'plurals'].map((m) => JSON.stringify(scenetteExit('filets', true, m)!.keep)));
@@ -900,5 +903,79 @@ describe('La Turbine (GD-20, point 8, lot L6a)', () => {
     expect(under).toBeGreaterThanOrEqual(cap);
     expect(Math.abs((puff.min[0] + puff.max[0]) / 2 - (o.x + VALVE.capX))).toBeLessThan(0.05);
     expect(Math.abs(after.reaction!.to.x - o.x)).toBeLessThan(0.5);
+  });
+});
+
+describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
+  const o = sceneSpot('shipyard');
+  const c = placeById('shipyard').center;
+  const h0 = standingHeight(heightAt(c));
+  /** Les sommets d'une couleur dans des facettes. */
+  const of = (f: { colors: Float32Array; positions: Float32Array }, hex: number) => {
+    const rgb = linearRgb(hex);
+    const out: [number, number, number][] = [];
+    for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - rgb[k]) < 1e-6)) out.push([f.positions[i], f.positions[i + 1], f.positions[i + 2]]);
+    return out;
+  };
+
+  it('le charpentier, en peu de triangles, sur le plancher levé au-dessus de la grève : tablier ardoise, maillet en main', () => {
+    const decor = scenetteDecor('shipyard');
+    expect(decor.triangles).toBeLessThan(400);
+    const habitant = scenetteHabitant('shipyard');
+    const keo = scenetteKeo('shipyard').at;
+    expect(keo.x).toBeLessThan(o.x);
+    expect(habitant.x).toBeGreaterThan(o.x);
+    expect(keo.y).toBeCloseTo(o.y + SHIPYARD_FLOOR_RISE, 9);
+    // Le tablier ardoise (#4D6A82) par-devant, la chemise Brume ; la tête du maillet, de bois dur, au-dessus de sa main.
+    const apron = of(decor, 0x4d6a82);
+    expect(apron.length).toBeGreaterThan(0);
+    expect(Math.min(...apron.map((v) => v[2]))).toBeGreaterThan(habitant.z);
+    expect(of(decor, 0xe5ebe3).length).toBeGreaterThan(0);
+    const mallet = of(decor, 0x8a5a36);
+    expect(Math.min(...mallet.map((v) => v[1]))).toBeGreaterThan(habitant.y + 0.9);
+    expect(answerLeaves('shipyard')).toBe(false);
+    expect(answersHang('shipyard')).toBe(false);
+    expect(scenetteFinale('shipyard', COLUMN, 1)).toBeNull();
+  });
+
+  it('aucun objet-réponse en scène : le C se joue dans la colonne', () => {
+    const points = [-1.5, 0, 1.5].map((dx) => ({ x: o.x + dx, y: o.y + LAND_DECK, z: o.z + 2 }));
+    expect(answerObjects('shipyard', points, 0.8, { ground: o.y }).triangles).toBe(0);
+  });
+
+  it('la planche de bordé, l’objet témoin : sur ses tréteaux au repos ; après une bonne réponse, elle se lève et se plaque contre le flanc de la coque, où elle reste', () => {
+    const before = itemScene('shipyard', COLUMN, false, []);
+    expect(before.reaction).toBeNull();
+    expect(before.labels).toEqual([]);
+    const after = itemScene('shipyard', COLUMN, true, []);
+    // Les tréteaux restent ; la planche les quitte.
+    expect(after.still.triangles).toBeLessThan(before.still.triangles);
+    const r = after.reaction!;
+    expect(r).toMatchObject({ stay: true });
+    expect(r.arc).toBeGreaterThan(0);
+    // Au départ, couchée sur ses tréteaux (là où elle était dans la scène d'avant), à plat.
+    const rest = boundsOf(before.still);
+    expect(r.from.y).toBeLessThanOrEqual(rest.max[1] + 1e-6);
+    expect(r.from.y).toBeGreaterThan(o.y + SHIPYARD_FLOOR_RISE + PLANK.trestle - 0.01);
+    // À l'arrivée : sur le flanc sud-est, entre le bouchain et la couture du bordé, à peine hors de lui, son roulis celui
+    // du flanc (debout aux trois quarts), son cap celui de la coque.
+    const hull = plankOnHull();
+    expect(r.to).toEqual(hull.at);
+    expect(r.turn!.roll).toBeGreaterThan(1);
+    expect(r.turn!.roll).toBeLessThan(Math.PI / 2);
+    const [lo, hi] = [hullEdge(PLANK.hull, 1, 1), hullEdge(PLANK.hull, 2, 1)];
+    expect(r.to.y - h0).toBeGreaterThan(lo[1]);
+    expect(r.to.y - h0).toBeLessThan(hi[1]);
+    const out = (r.to.x - c.x - (lo[0] + hi[0]) / 2) * SLIP_N.x + (r.to.z - c.z - (lo[2] + hi[2]) / 2) * SLIP_N.z;
+    expect(out).toBeGreaterThan(0);
+    expect(out).toBeLessThan(0.1);
+    // Un geste court : de ses tréteaux au flanc, moins de trois unités ; la planche sur la partie droite du flanc.
+    expect(Math.hypot(r.to.x - r.from.x, r.to.z - r.from.z)).toBeLessThan(3);
+    const half = PLANK.length / 2 / SHIPYARD.hull.length;
+    expect(PLANK.hull - half).toBeGreaterThanOrEqual(0.4);
+    expect(PLANK.hull + half).toBeLessThanOrEqual(0.7);
+    // Sa face du dessous, plaquée contre le flanc, a sa couleur claire (on la voit).
+    const down = r.facets.normals.findIndex((v, i) => i % 3 === 1 && v < -0.99);
+    expect(down).toBeGreaterThan(0);
   });
 });

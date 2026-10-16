@@ -3,11 +3,11 @@
 // paniers, leviers, caisses à plaque) sur un ponton, le geste de la réaction, et la trace que la réussite laisse dans le
 // lieu. Tout en volumes simples, en aplats ; rien à lire n'est peint : les mots, les nombres et les repères de
 // l'échelle sont des panneaux de la page, accrochés aux points que donne ce fichier. Code pur : la vue dessine.
-import { boundsOf, FacetBuilder, type Facets } from './facets';
+import { boundsOf, FacetBuilder, placeFacets, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { DOCK_EDGE, placeById, type PlaceId } from './plan6e';
 import type { ItemScene } from './questions';
-import { ENGINE, FILETS_RACK, STEAM_GAP, VALVE_PUFFS, engineSteam, filetsRack } from './places';
+import { ENGINE, FILETS_RACK, SHIPYARD, SLIP_N, SLIP_U, SLIP_YAW, STEAM_GAP, VALVE_PUFFS, engineSteam, filetsRack, hullEdge, hullPoint, slipPoint } from './places';
 import { heightAt, standingHeight } from './terrain';
 
 const C = {
@@ -97,6 +97,15 @@ const C = {
   brickShade: 0x8e4a2e,
   lightWood: 0xdaa66a,
   engineIron: 0x2f3e48,
+  // Le Chantier naval (lot L6b, directeur artistique) : le bordé et son second ton, la quille, les œuvres vives ; le
+  // cordage du treuil ; le flotteur clair du capteur de marée (sans drapeau ni graduation) ; le bois neuf du gouvernail.
+  planking: 0xc98e55,
+  plankingShade: 0xb98049,
+  keel: 0x8a5a36,
+  bottom: 0xa4553a,
+  cable: 0xc9a36a,
+  float: 0xf2eee4,
+  plankFace: 0xd9ad72,
 } as const;
 
 /** La hauteur où l'on se tient en un point (le sol, ou le dessus de la digue sur l'eau). */
@@ -123,6 +132,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   saltworks: { dx: 0, dz: 6.4, half: [6, 1.6], fine: true },
   // La Turbine (lot L6a) : le dallage devant la chaudière, le rotor derrière, à l'est.
   engine: { dx: 0, dz: 4.4, half: [5, 1.4], fine: true },
+  // Le Chantier naval (lot L6b) : le plancher au sud-est de la coque, le long de son flanc, sur la grève aplanie.
+  shipyard: { dx: -0.03, dz: 5.31, half: [3.2, 1], fine: true },
   quais: { dx: QUAY.dx, dz: QUAY.front - QUAY.depth / 2, half: [QUAY.width / 2, QUAY.depth / 2] },
 };
 
@@ -339,8 +350,8 @@ export function questionLayout(needs: QuestionNeeds, width: number, height: numb
 // ---------- Les objets des réponses ----------
 
 /**
- * L'objet qui porte une réponse dans chaque lieu ; aucun à la Turbine (lot L6a), où toutes les missions se jouent en C,
- * les réponses dans la colonne.
+ * L'objet qui porte une réponse dans chaque lieu ; aucun à la Turbine (lot L6a) ni au Chantier naval (lot L6b), où
+ * toutes les missions se jouent en C, les réponses dans la colonne.
  */
 const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' | 'sac' | null> = {
   phare: 'cloche',
@@ -349,6 +360,7 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   quais: 'caisse',
   saltworks: 'sac',
   engine: null,
+  shipyard: null,
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
@@ -778,6 +790,12 @@ export interface Reaction {
   to: Vec3;
   arc: number;
   stay: boolean;
+  /**
+   * Le cap du maillage (autour de la verticale) et son roulis à la fin (autour de son z local, de 0 au départ à `roll` à
+   * l'arrivée) : la planche de bordé du Chantier naval, couchée sur ses tréteaux, se lève contre le flanc de la coque
+   * (lot L6b). Sans : ni cap ni roulis.
+   */
+  turn?: { yaw: number; roll: number };
 }
 
 /** La scène d'un item : ce qui reste en place, les panneaux, et la réaction (`null` : rien ne bouge). */
@@ -1234,7 +1252,72 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
  */
 const COLUMN_DECOR: Partial<Record<PlaceId, (b: FacetBuilder, o: Vec3, done: boolean) => Reaction | null>> = {
   engine: steamValve,
+  shipyard: hullPlank,
 };
+
+/** Le plancher de la scène du Chantier naval monte de tant au-dessus de la grève (il s'en détache). */
+export const SHIPYARD_FLOOR_RISE = 0.12;
+
+/**
+ * La planche de bordé du Chantier naval, l'objet témoin de ses missions (lot L6b) : sa longueur, sa largeur, son
+ * épaisseur ; ses tréteaux (leur hauteur, leur écart le long de la planche) ; sa place sur le plancher, depuis le milieu
+ * de la scène ; la part de la longueur de la coque où elle se plaque (sur la partie droite du flanc, entre deux couples
+ * de même largeur) ; le lever de son arc.
+ */
+export const PLANK = { length: 1.8, width: 0.32, thick: 0.07, trestle: 0.72, spread: 0.62, at: { dx: 0, dz: -0.5 }, hull: 0.55, arc: 0.45 } as const;
+
+/**
+ * Où la planche de bordé se plaque sur la coque, dans le monde : son milieu, à peine hors du flanc au sud-est, entre le
+ * bouchain et la couture du bordé, à la part `PLANK.hull` de la longueur ; son roulis (la pente du flanc à cet endroit).
+ */
+export function plankOnHull(): { at: Vec3; roll: number } {
+  const c = placeById('shipyard').center;
+  const h0 = groundAt(c);
+  const [lo, hi] = [hullEdge(PLANK.hull, 1, 1), hullEdge(PLANK.hull, 2, 1)];
+  const [mx, my, mz] = [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2];
+  // La pente du flanc, dans le plan (vers le sud-est, vers le haut) ; la planche s'écarte du flanc de sa demi-épaisseur.
+  const across = (hi[0] - lo[0]) * SLIP_N.x + (hi[2] - lo[2]) * SLIP_N.z;
+  const up = hi[1] - lo[1];
+  const roll = Math.atan2(up, across);
+  const off = PLANK.thick / 2 + 0.03;
+  const [ox, oy] = [Math.sin(roll) * off, -Math.cos(roll) * off];
+  return { at: { x: c.x + mx + ox * SLIP_N.x, y: h0 + my + oy, z: c.z + mz + ox * SLIP_N.z }, roll };
+}
+
+/** Un tréteau, posé le long de la cale (son z local) : sa traverse, et deux pieds écartés en travers. */
+function trestle(b: FacetBuilder, at: Vec3, height: number, color: number, top = color): void {
+  b.box({ x: at.x, y: at.y + height - 0.1, z: at.z, yaw: SLIP_YAW }, [0.62, 0.1, 0.14], color, top);
+  for (const side of [-1, 1]) {
+    const foot = { x: at.x + side * 0.34 * SLIP_N.x, y: at.y - 0.05, z: at.z + side * 0.34 * SLIP_N.z };
+    const head = { x: at.x + side * 0.16 * SLIP_N.x, y: at.y + height - 0.1, z: at.z + side * 0.16 * SLIP_N.z };
+    b.beam(foot, head, 0.08, color);
+  }
+}
+
+/**
+ * La planche de bordé du Chantier naval, l'objet témoin de ses missions (lot L6b) : couchée sur ses deux tréteaux, au
+ * milieu du plancher, entre Kéo et le charpentier, le long de la coque. Après une bonne réponse, elle se lève et va se
+ * plaquer contre le flanc de la coque, à sa place dans le bordé, en un geste court (son arc, son roulis), puis reste
+ * jusqu'à l'item suivant, où elle revient sur ses tréteaux ; d'un coup avec « Réduire les animations ». Sans éclat.
+ */
+function hullPlank(b: FacetBuilder, spot: Vec3, done: boolean): Reaction | null {
+  const o = { ...spot, y: spot.y + SHIPYARD_FLOOR_RISE };
+  const at = { x: o.x + PLANK.at.dx, y: o.y, z: o.z + PLANK.at.dz };
+  for (const u of [-PLANK.spread, PLANK.spread]) trestle(b, { x: at.x + u * SLIP_U.x, y: at.y, z: at.z + u * SLIP_U.z }, PLANK.trestle, C.post, C.lever);
+  const rest = { x: at.x, y: at.y + PLANK.trestle + PLANK.thick / 2, z: at.z };
+  const plank = new FacetBuilder();
+  plank.box({ x: 0, y: -PLANK.thick / 2, z: 0 }, [PLANK.width, PLANK.thick, PLANK.length], C.planking, C.plankFace);
+  // Sa face du dessous, claire elle aussi : plaquée contre le flanc, c'est elle qu'on voit.
+  const [w, t, l] = [PLANK.width / 2, PLANK.thick / 2, PLANK.length / 2];
+  plank.quad([-w, -t, -l], [w, -t, -l], [w, -t, l], [-w, -t, l], C.plankFace);
+  const facets = plank.build();
+  if (!done) {
+    b.append(placeFacets(facets, { ...rest, yaw: SLIP_YAW }));
+    return null;
+  }
+  const hull = plankOnHull();
+  return { facets, from: rest, to: hull.at, arc: PLANK.arc, stay: true, turn: { yaw: SLIP_YAW, roll: hull.roll } };
+}
 
 /**
  * La soupape de la Turbine, l'objet témoin de ses missions (lot L6a) : sur sa colonne de cuivre, au milieu du dallage,
@@ -1530,7 +1613,8 @@ function lockGate(b: FacetBuilder, x: number, y: number, z: number, open: boolea
  * d'amont ouverte et le sas rempli (fermée avant : elle est de la trace, pas du modèle, pour s'ouvrir), et une chose par
  * autre mission (`ECLUSES_TRACES`, lot L2) ; aux Quais, une chose remise en ordre sur le quai par mission
  * (`QUAIS_TRACES`) ; aux Marais salants, une chose par mission autour du hangar à sel (`SALTWORKS_TRACES`, lot L5) ;
- * à la Turbine, une chose par mission autour de la machine (`ENGINE_TRACES`, lot L6a).
+ * à la Turbine, une chose par mission autour de la machine (`ENGINE_TRACES`, lot L6a) ; au Chantier naval, une chose
+ * par mission autour de la cale (`SHIPYARD_TRACES`, lot L6b).
  * Rien avant la première réussite, sauf la porte fermée des Écluses.
  */
 export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
@@ -1557,6 +1641,8 @@ export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
     for (const mission of done) if (Object.hasOwn(SALTWORKS_TRACES, mission)) SALTWORKS_TRACES[mission](b, x, z);
   } else if (place === 'engine') {
     for (const mission of done) if (Object.hasOwn(ENGINE_TRACES, mission)) ENGINE_TRACES[mission](b, x, z);
+  } else if (place === 'shipyard') {
+    for (const mission of done) if (Object.hasOwn(SHIPYARD_TRACES, mission)) SHIPYARD_TRACES[mission](b, x, z);
   }
   return b.build();
 }
@@ -2192,5 +2278,93 @@ const ENGINE_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) =>
     const at = (u: number, y: number) => ({ x: g.x + u * ux, y: g.y + 0.95 + y, z: g.z + u * uz });
     b.beam(at(-GNOMON.foot, 0), at(GNOMON.head, GNOMON.height), GNOMON.rod, C.copper);
     b.beam(at(GNOMON.head, 0), at(GNOMON.head, GNOMON.height), GNOMON.rod * 0.8, C.copper);
+  },
+};
+
+/**
+ * Où se pose la trace de chaque mission du Chantier naval, depuis le centre du lieu (lot L6b), hors des chemins (celui du
+ * réseau arrive à l'est, le long de l'eau ; celui des abords monte de la porte à l'atelier) et du plancher de la
+ * scénette : le gouvernail sur ses tréteaux au nord-ouest de l'atelier ; le parc à bois au nord-ouest de la coque ; le
+ * capteur de marée au bout du ponton, dans l'eau ; le treuil à la tête de la cale.
+ */
+export const SHIPYARD_TRACE_SPOTS = {
+  'object-function': { x: 1.6, z: -5.4 },
+  materials: { x: -5.4, z: -3.3 },
+  'information-networks': { x: SHIPYARD.pontoon.x, z: SHIPYARD.pontoon.z1 + 0.72 },
+  'solve-program': slipPoint(-1.4),
+} as const;
+
+/** Le puits du capteur de marée : ses rayons, intérieur et extérieur ; son haut au-dessus de l'eau ; le flotteur. */
+const TIDE_WELL = { r0: 0.4, r1: 0.62, top: 0.7, float: 0.3, rod: 1.05 } as const;
+
+/**
+ * Les traces du Chantier naval (GD-20, point 8, lot L6b : une par mission, aux couleurs du lieu, bois, bordé, pierre ;
+ * sans texte, sans graduation, rien qui se compte ou se lise comme une réponse ; aucun objet interdit par le contenu, ni
+ * lanterne, ni roue dentée, ni chaîne ; posées avec les abords ; toutes basses, sous le plat-bord de la coque) :
+ * - À quoi ça sert : un gouvernail neuf, couché sur ses deux tréteaux ;
+ * - Les matériaux : le parc à bois, une pile de planches et des grumes sur leurs cales, sans écriteau ni jeune arbre ;
+ * - L'information et les objets : le capteur de marée au bout du ponton, un flotteur dans un puits de pierre, sa tige
+ *   dans son guide, immobile, sans lumière, ni graduation, ni drapeau ;
+ * - Résoudre et programmer : le treuil à la tête de la cale, son tambour et sa manivelle, son câble jusqu'à l'étrave ;
+ *   immobile, sans roue dentée, sans panneau ni case au sol.
+ */
+const SHIPYARD_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => void> = {
+  'object-function': (b, x, z) => {
+    const o = SHIPYARD_TRACE_SPOTS['object-function'];
+    const g = quaiGround(x + o.x, z + o.z);
+    // Les deux tréteaux, en travers de la longueur du gouvernail (d'ouest en est) ; le safran couché dessus, sa mèche le long
+    // de son bord nord, qui dépasse vers l'ouest, et sa barre.
+    for (const dx of [-0.55, 0.55]) {
+      b.box({ x: g.x + dx, y: g.y + 0.62, z: g.z }, [0.14, 0.1, 0.9], C.post, C.lever);
+      for (const side of [-1, 1]) b.beam({ x: g.x + dx, y: g.y - 0.05, z: g.z + side * 0.42 }, { x: g.x + dx, y: g.y + 0.62, z: g.z + side * 0.18 }, 0.08, C.post);
+    }
+    const y = g.y + 0.72;
+    b.box({ x: g.x + 0.15, y, z: g.z + 0.08 }, [1.7, 0.1, 0.7], C.newWood, C.planking);
+    b.beam({ x: g.x - 1.3, y: y + 0.08, z: g.z - 0.32 }, { x: g.x + 1, y: y + 0.08, z: g.z - 0.32 }, 0.12, C.keel);
+    b.beam({ x: g.x - 1.3, y: y + 0.08, z: g.z - 0.32 }, { x: g.x - 1.3, y: y + 0.08, z: g.z - 1.1 }, 0.09, C.keel);
+  },
+  materials: (b, x, z) => {
+    const o = SHIPYARD_TRACE_SPOTS.materials;
+    const g = quaiGround(x + o.x, z + o.z);
+    // La pile de planches, au sud : quatre lits sur leurs lattes, en deux tons ; au nord, trois grumes sur deux cales.
+    for (const sx of [-0.8, 0.8]) b.box({ x: g.x + sx, y: g.y - 0.1, z: g.z + 0.55 }, [0.16, 0.22, 1], C.keel);
+    for (let k = 0; k < 4; k++) b.box({ x: g.x + (k % 2 ? 0.06 : 0), y: g.y + 0.12 + k * 0.2, z: g.z + 0.55 }, [2.3, 0.16, 0.9], k % 2 ? C.plankingShade : C.planking, C.planking);
+    for (const sx of [-0.7, 0.7]) b.box({ x: g.x + sx, y: g.y - 0.1, z: g.z - 0.75 }, [0.2, 0.2, 1.2], C.keel);
+    for (const [dz, dy] of [
+      [-0.4, 0.3],
+      [-1.06, 0.3],
+      [-0.73, 0.82],
+    ] as const)
+      b.drum({ x: g.x - 1.25, y: g.y + dy - 0.05, z: g.z + dz, yaw: Math.PI / 2, pitch: Math.PI / 2 }, 0.27, 2.5, 7, C.post, C.plankFace);
+  },
+  'information-networks': (b, x, z) => {
+    const o = SHIPYARD_TRACE_SPOTS['information-networks'];
+    const W = TIDE_WELL;
+    const at = { x: x + o.x, z: z + o.z };
+    // Le puits, dans l'eau, du fond jusqu'au-dessus du ponton ; le flotteur à fleur d'eau, dedans ; sa tige monte dans le
+    // guide, une traverse de bois posée sur le bord du puits.
+    b.annulus({ x: at.x, y: -1.4, z: at.z }, W.r0, W.r1, W.top + 1.4, 10, C.stoneDark, C.stone);
+    b.drum({ x: at.x, y: -0.06, z: at.z }, W.float, 0.16, 8, C.float);
+    b.box({ x: at.x, y: 0.1, z: at.z }, [0.07, W.rod, 0.07], C.post);
+    b.box({ x: at.x, y: W.top, z: at.z }, [2 * W.r1 + 0.1, 0.12, 0.16], C.post, C.lever);
+  },
+  'solve-program': (b, x, z) => {
+    const o = SHIPYARD_TRACE_SPOTS['solve-program'];
+    const g = quaiGround(x + o.x, z + o.z);
+    const axis = { x: g.x, y: g.y + 0.62, z: g.z };
+    // Le bâti le long de la cale : sa semelle, ses deux joues en travers ; le tambour entre elles, l'axe en travers de la
+    // cale, son câble enroulé ; la manivelle de la joue sud-est ; le câble qui va jusqu'au pied de l'étrave.
+    b.box({ x: g.x, y: g.y - 0.1, z: g.z, yaw: SLIP_YAW }, [1.5, 0.22, 1.0], C.keel, C.post);
+    for (const side of [-1, 1]) b.box({ x: g.x + side * 0.55 * SLIP_N.x, y: g.y + 0.1, z: g.z + side * 0.55 * SLIP_N.z, yaw: SLIP_YAW }, [0.12, 0.82, 0.7], C.post, C.lever);
+    const along = (d: number) => ({ x: axis.x + d * SLIP_N.x, y: axis.y, z: axis.z + d * SLIP_N.z });
+    b.drum({ ...along(-0.48), yaw: Math.PI / 2 + SLIP_YAW, pitch: Math.PI / 2 }, 0.24, 0.96, 8, C.lever, C.post);
+    b.band({ ...along(-0.3), yaw: Math.PI / 2 + SLIP_YAW, pitch: Math.PI / 2 }, 0.27, 0.6, 8, C.cable);
+    const crank = along(0.66);
+    b.beam(crank, { ...crank, y: crank.y + 0.36 }, 0.07, C.keel);
+    b.beam({ ...crank, y: crank.y + 0.36 }, { x: crank.x + 0.24 * SLIP_N.x, y: crank.y + 0.36, z: crank.z + 0.24 * SLIP_N.z }, 0.07, C.keel);
+    const c = placeById('shipyard').center;
+    const [sx, , sz] = hullPoint(0.02, 0, 0);
+    const stem = { x: c.x + sx, y: groundAt(c) + SHIPYARD.hull.keel + 0.9, z: c.z + sz };
+    b.beam({ x: axis.x, y: axis.y + 0.27, z: axis.z }, stem, 0.05, C.cable);
   },
 };

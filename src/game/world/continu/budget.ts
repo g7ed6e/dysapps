@@ -42,6 +42,8 @@ const HEAVIEST: readonly { place: PlaceId; scene: ItemScene }[] = [
   { place: 'saltworks', scene: { kind: 'saline' } },
   // La Turbine (lot L6a) : le C neutre, la soupape levée et sa bouffée (aucun objet de réponse).
   { place: 'engine', scene: { kind: 'column' } },
+  // Le Chantier naval (lot L6b) : le C neutre, les tréteaux et la planche de bordé plaquée contre la coque.
+  { place: 'shipyard', scene: { kind: 'column' } },
 ];
 
 /**

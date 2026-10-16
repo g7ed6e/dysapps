@@ -29,7 +29,9 @@ describe('Un lieu porte toutes les missions de son île (GD-20, point 8)', () =>
     expect(missionsOfPlace(placeById('filets'), bornes.filter((b) => b.ile !== 'french-6e-grammar-spelling'))).toEqual([]);
   });
 
-  it('les six lieux du 6e jouent toutes leurs missions en scénette (les Filets complets au lot L4, les Marais salants au lot L5, la Turbine au lot L6a)', () => {
+  it('les sept lieux du 6e jouent toutes leurs missions en scénette (les Filets complets au lot L4, les Marais salants au lot L5, la Turbine au lot L6a, le Chantier naval au lot L6b)', () => {
+    expect(placeById('shipyard').scenes).toEqual(['object-function', 'materials', 'information-networks', 'solve-program']);
+    expect(playsInPlace(placeById('shipyard'), 'solve-program')).toBe(true);
     expect(placeById('engine').scenes).toEqual(['states-of-matter', 'motion-signals', 'energy-circuits', 'materials-light']);
     expect(playsInPlace(placeById('engine'), 'energy-circuits')).toBe(true);
     expect(placeById('saltworks').scenes).toEqual(['ordering', 'operations', 'scale', 'large-numbers', 'rounding-products']);
@@ -56,6 +58,7 @@ describe('Un lieu porte toutes les missions de son île (GD-20, point 8)', () =>
     expect(getBiome('maths-6e-fractions')!.exercises.map((e) => e.id)).toEqual([...placeById('ecluses').scenes]);
     expect(getBiome('french-6e-phonology')!.exercises.map((e) => e.id)).toEqual([...placeById('phare').scenes]);
     expect(getBiome('french-6e-grammar-spelling')!.exercises.map((e) => e.id)).toEqual([...placeById('filets').scenes]);
+    expect(getBiome('technology-6e-objects')!.exercises.map((e) => e.id)).toEqual([...placeById('shipyard').scenes]);
   });
 });
 

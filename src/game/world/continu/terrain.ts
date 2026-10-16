@@ -5,7 +5,7 @@
 // la brume cache ce qui est plus loin. Code pur : la vue (three/archipeo/) ne fait que donner ces tableaux à Three.js.
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { CLIFF, COAST, COLORS_6E, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, PASS, RIVER, SALT_FLAT, TERRAIN, UPLAND } from './plan6e';
+import { CLIFF, COAST, COLORS_6E, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, PASS, RIVER, SALT_FLAT, SHIPYARD_FLAT, TERRAIN, UPLAND } from './plan6e';
 
 /** La distance signée à la terre ferme : positive sur la terre, négative dans l'eau (mer, lagon, passe, bassin, rivière). */
 export function landDistance(p: Vec2): number {
@@ -50,16 +50,22 @@ export function heightAt(p: Vec2): number {
   // Le haut pays de l'est : une colline ronde, que la rivière entaille.
   const u = distance(p, UPLAND.center) / UPLAND.radius;
   h += UPLAND.height * smoothstep(1, 0.25, u) * smoothstep(0, 6, d);
-  // La grève des Marais salants (lot L5) : aplanie, puis le sol d'avant, en pente douce ; au bord de l'eau, elle
-  // descend encore comme la plage.
   // Le replat de la Turbine (lot L6a) : aplani, puis le sol d'avant, en pente douce (loin de la rivière).
   const replat = smoothstep(ENGINE_FLAT.radius + ENGINE_FLAT.fade, ENGINE_FLAT.radius, distance(p, ENGINE_FLAT.center));
   if (replat > 0) h += (ENGINE_FLAT.height - h) * replat;
-  const flat = smoothstep(SALT_FLAT.radius + SALT_FLAT.fade, SALT_FLAT.radius, distance(p, SALT_FLAT.center));
-  if (flat <= 0) return h;
-  const level = Math.min(SALT_FLAT.height, 0.2 + (SALT_FLAT.height - 0.2) * smoothstep(0, BEACH, d));
-  return h + (level - h) * flat;
+  // Les grèves des Marais salants (lot L5) et du Chantier naval (lot L6b) : aplanies, puis le sol d'avant, en pente
+  // douce ; au bord de l'eau, elles descendent encore comme la plage. Elles ne se touchent pas.
+  for (const g of GREVES) {
+    const flat = smoothstep(g.radius + g.fade, g.radius, distance(p, g.center));
+    if (flat <= 0) continue;
+    const level = Math.min(g.height, 0.2 + (g.height - 0.2) * smoothstep(0, BEACH, d));
+    h += (level - h) * flat;
+  }
+  return h;
 }
+
+/** Les grèves aplanies au bord de l'eau (`heightAt`). */
+const GREVES = [SALT_FLAT, SHIPYARD_FLAT] as const;
 
 /** La carte de hauteurs : une grille régulière sur l'étendue du terrain. */
 export interface HeightField {
@@ -135,13 +141,27 @@ type P3 = [number, number, number];
  */
 const GREVE = { inner: 8, fade: 4, mud: 0xc8c2aa, sparse: 0xa9b979 } as const;
 
+/**
+ * La grève du Chantier naval (lot L6b, directeur artistique) : le sable tassé du chantier (#DAA66A, plus brun que le sable
+ * chaud des plages), sous la cale, la coque et l'atelier, puis fondu vers l'herbe de même, case par case.
+ */
+const SHIPYARD_GREVE = { inner: 6.5, fade: 3.5, mud: 0xdaa66a, sparse: 0xb3ad68 } as const;
+
+/** Les grèves colorées : leur centre, et leurs couleurs. */
+const GREVE_COLORS = [
+  { center: SALT_FLAT.center, ...GREVE },
+  { center: SHIPYARD_FLAT.center, ...SHIPYARD_GREVE },
+] as const;
+
 /** La couleur d'un sol presque plat en (x, z), à la hauteur `h` : le sable près de l'eau, l'herbe ailleurs. */
 function flatColor(x: number, z: number, h: number, vary: number): number {
   if (h < 0.12) return COLORS_6E.wetSand;
   const d = landDistance({ x, z });
   if (d < 1.3) return COLORS_6E.sand;
-  const u = (distance({ x, z }, SALT_FLAT.center) - GREVE.inner) / GREVE.fade + (vary - 0.5) * 0.5;
-  if (u < 1) return u < 0.33 ? GREVE.mud : u < 0.66 ? GREVE.sparse : COLORS_6E.grass;
+  for (const g of GREVE_COLORS) {
+    const u = (distance({ x, z }, g.center) - g.inner) / g.fade + (vary - 0.5) * 0.5;
+    if (u < 1) return u < 0.33 ? g.mud : u < 0.66 ? g.sparse : COLORS_6E.grass;
+  }
   if (signedDistance({ x, z }, CLIFF) > 0.6) return COLORS_6E.cliffTop;
   return vary < 0.5 ? COLORS_6E.grass : 0x66b84a;
 }

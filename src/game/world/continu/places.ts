@@ -1,4 +1,4 @@
-// Les lieux du prototype (le Phare, les Quais, les Filets, les Écluses, les Marais salants, la Turbine) : des volumes simples dessinés par le code, en
+// Les lieux du prototype (le Phare, les Quais, les Filets, les Écluses, les Marais salants, la Turbine, le Chantier naval) : des volumes simples dessinés par le code, en
 // aplats francs (le low poly d'Archipéo), dans le repère du lieu (le centre au sol en 0, le nord vers −z). Chaque lieu
 // est sa propre construction (GD-20, lot 1, « le lieu se rebâtit lui-même ») : une ruine, toujours là, puis ses
 // volumes rangés par étape (le corps, le haut, les abords) et par rangée, que les parties de la grille posent
@@ -94,6 +94,17 @@ const C = {
   wornBrick: 0xb89a86,
   wornIron: 0x8c969b,
   wornSteel: 0xb3babd,
+  // Le Chantier naval (lot L6b, directeur artistique) : le bordé et son second ton, la quille et les rails, les œuvres
+  // vives terre cuite, l'ardoise du toit de l'atelier (le sable tassé du chantier est celui du sol, terrain.ts ; la cale
+  // ensablée, du sable chaud des plages) ; la ruine : la quille, les rails et
+  // les planches délavés, jamais sombres. Le liston est le Bleu lagon du pack (`COLORS_6E.deepSea`).
+  planking: 0xc98e55,
+  plankingShade: 0xb98049,
+  keel: 0x8a5a36,
+  bottom: 0xa4553a,
+  shipSlate: 0x4d6a82,
+  wornKeel: 0x9a8a78,
+  wornPlank: 0xb3a68f,
 } as const;
 
 /** Les volumes d'un lieu en construction : `add(stage, row, draw)`, et `until` pour un volume tombé de la ruine. */
@@ -974,6 +985,348 @@ const ENGINE_WALL: readonly (readonly [number, number, number, number, number])[
   [-1.2, -3.9, 2.0, 0.45, 0.46],
 ];
 
+// ---------- Le Chantier naval (lot L6b) ----------
+
+/**
+ * Le Chantier naval (lot L6b), dans son repère (le lieu n'est pas tourné : sa face au sud, vers la caméra) : la cale en
+ * oblique (`angle` : son cap, de sa tête vers son pied, tourné de 40° du sud vers l'ouest ; sa tête ; sa longueur, de la
+ * tête jusque sous l'eau ; l'écart de ses rails, leur section, leur lever au-dessus du sol, le nombre de ses traverses) ;
+ * la coque sur sa cale, l'étrave vers la tête (où se pose son étrave le long de la cale, sa longueur, le dessous de sa
+ * quille au-dessus du sol) ; l'atelier bas, au nord-est (son milieu, sa largeur d'ouest en est, sa profondeur, ses murs,
+ * son toit d'ardoise, sa grande porte au sud) ; le ponton, au sud-est, sur la grève puis dans l'eau, hors du champ de la
+ * scénette (son milieu en x, d'où à où il va, sa demi-largeur).
+ */
+export const SHIPYARD = {
+  angle: (40 * Math.PI) / 180,
+  slip: { x: 1.1, z: -1.1, length: 15.5, gauge: 0.92, rail: 0.16, lift: 0.1, sleepers: 6 },
+  hull: { at: 1.3, length: 7.2, keel: 0.8 },
+  shop: { x: 6.3, z: -3.9, w: 5.2, d: 3.4, wall: 2.5, roof: 1, door: 1.9 },
+  pontoon: { x: 6.6, z0: 6, z1: 11.6, half: 0.75 },
+} as const;
+
+/** Le cap de la cale (de sa tête vers son pied), et sa normale vers le sud-est (vers la caméra), dans le plan x, z. */
+export const SLIP_U = { x: -Math.sin(SHIPYARD.angle), z: Math.cos(SHIPYARD.angle) } as const;
+export const SLIP_N = { x: Math.cos(SHIPYARD.angle), z: Math.sin(SHIPYARD.angle) } as const;
+
+/** Le quart de tour d'un volume posé le long de la cale : son z local suit la cale, son x local va vers le sud-est. */
+export const SLIP_YAW = -SHIPYARD.angle;
+
+/** Un point du plan de la cale : à `s` de sa tête le long d'elle, à `b` de son axe vers le sud-est. */
+export function slipPoint(s: number, b = 0): Vec2 {
+  const S = SHIPYARD.slip;
+  return { x: S.x + s * SLIP_U.x + b * SLIP_N.x, z: S.z + s * SLIP_U.z + b * SLIP_N.z };
+}
+
+/**
+ * Les couples de la coque, de l'étrave (0) au tableau (1) : leur place le long de la coque, leur demi-largeur, la hauteur
+ * du plat-bord et celle du dessous de la coque au-dessus de la quille (le pied de l'étrave se relève).
+ */
+const HULL_STATIONS: readonly (readonly [number, number, number, number])[] = [
+  [0, 0, 2.2, 1],
+  [0.16, 0.78, 1.95, 0.28],
+  [0.4, 1.15, 1.78, 0],
+  [0.7, 1.12, 1.78, 0],
+  [1, 0.84, 1.95, 0.1],
+];
+
+/** Le couple de la coque à la part `t` de sa longueur (entre deux couples, en ligne droite). */
+function hullSection(t: number): { w: number; sheer: number; rise: number } {
+  const k = Math.max(0, HULL_STATIONS.findIndex((st) => st[0] >= t) - 1);
+  const [t0, w0, h0, r0] = HULL_STATIONS[k];
+  const [t1, w1, h1, r1] = HULL_STATIONS[Math.min(k + 1, HULL_STATIONS.length - 1)];
+  const u = t1 > t0 ? Math.min(1, Math.max(0, (t - t0) / (t1 - t0))) : 0;
+  return { w: w0 + (w1 - w0) * u, sheer: h0 + (h1 - h0) * u, rise: r0 + (r1 - r0) * u };
+}
+
+/**
+ * Le profil d'un flanc de la coque, de la quille au plat-bord : la part de la demi-largeur et la part de la hauteur de
+ * chaque arête (la quille, le bouchain, la couture du bordé, le bas du liston, le plat-bord), et la couleur de chaque
+ * bande, de bas en haut (les œuvres vives, le bordé en deux tons, le liston).
+ */
+const HULL_PROFILE: readonly (readonly [number, number])[] = [
+  [0, 0],
+  [0.8, 0.3],
+  [0.97, 0.62],
+  [1, 0.86],
+  [0.97, 1],
+];
+
+/** Un point de la coque, dans le repère du lieu : à la part `t` de sa longueur, à `b` de son axe, à `y` du sol. */
+export function hullPoint(t: number, b: number, y: number): [number, number, number] {
+  const p = slipPoint(SHIPYARD.hull.at + t * SHIPYARD.hull.length, b);
+  return [p.x, y, p.z];
+}
+
+/** L'arête `k` du profil du flanc `side` (+1 au sud-est, −1 au nord-ouest), au couple `t`. */
+export function hullEdge(t: number, k: number, side: number): [number, number, number] {
+  const s = hullSection(t);
+  const [fb, fy] = HULL_PROFILE[k];
+  return hullPoint(t, side * fb * s.w, SHIPYARD.hull.keel + s.rise + fy * (s.sheer - s.rise));
+}
+
+/** Un polygone convexe tourné vers `out` (son ordre retourné s'il le faut), en éventail depuis son premier sommet. */
+function polyToward(b: FacetBuilder, pts: readonly (readonly [number, number, number])[], out: readonly [number, number, number], color: number): void {
+  for (let k = 1; k + 1 < pts.length; k++) {
+    const [a, c, d] = [pts[0], pts[k], pts[k + 1]];
+    const u = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+    const v = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
+    const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+    if (Math.hypot(n[0], n[1], n[2]) < 1e-9) continue;
+    if (n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0) b.triangle(a, c, d, color);
+    else b.triangle(a, d, c, color);
+  }
+}
+
+/**
+ * La coque bordée, sur sa cale (la quille horizontale), de bas en haut. `bottom` : les fonds, la bande des œuvres vives
+ * (terre cuite), vue des deux côtés (tant que les flancs ne sont pas posés, on voit dedans d'en haut). `sides` : les
+ * flancs (le bordé en deux tons, le liston Bleu lagon sous le plat-bord), le pont et le tableau.
+ */
+function shipHull(b: FacetBuilder, part: 'bottom' | 'sides'): void {
+  const bands = part === 'bottom' ? [0] : [1, 2, 3];
+  const colors = [C.bottom, C.planking, C.plankingShade, COLORS_6E.deepSea];
+  const ts = HULL_STATIONS.map((st) => st[0]);
+  for (const side of [-1, 1]) {
+    const out = [side * SLIP_N.x, 0, side * SLIP_N.z] as const;
+    const inside = [-out[0], 0, -out[2]] as const;
+    for (let i = 0; i + 1 < ts.length; i++)
+      for (const k of bands) {
+        const quad = [hullEdge(ts[i], k, side), hullEdge(ts[i + 1], k, side), hullEdge(ts[i + 1], k + 1, side), hullEdge(ts[i], k + 1, side)];
+        polyToward(b, quad, out, colors[k]);
+        if (part === 'bottom') polyToward(b, quad, inside, C.plankingShade);
+      }
+  }
+  if (part === 'bottom') return;
+  const top = HULL_PROFILE.length - 1;
+  for (let i = 0; i + 1 < ts.length; i++) polyToward(b, [hullEdge(ts[i], top, -1), hullEdge(ts[i], top, 1), hullEdge(ts[i + 1], top, 1), hullEdge(ts[i + 1], top, -1)], [0, 1, 0], C.deck);
+  // Le tableau, à l'arrière, tourné vers le pied de la cale.
+  const stern = [...HULL_PROFILE.map((_, k) => hullEdge(1, top - k, -1)), ...HULL_PROFILE.slice(1).map((_, k) => hullEdge(1, k + 1, 1))];
+  polyToward(b, stern, [SLIP_U.x, 0, SLIP_U.z], C.plankingShade);
+}
+
+/** La quille, le pied de l'étrave, l'étrave et l'étambot : l'échine de la coque, bordée ou nue. */
+function shipSpine(b: FacetBuilder, color: number): void {
+  const K = SHIPYARD.hull.keel;
+  const p = (t: number, y: number) => {
+    const [x, , z] = hullPoint(t, 0, 0);
+    return { x, y, z };
+  };
+  b.beam(p(0.16, K + 0.06), p(1, K + 0.06), 0.2, color);
+  b.beam(p(0.16, K + 0.06), p(0.005, K + 1), 0.18, color);
+  b.beam(p(0.005, K + 1), p(-0.012, K + 2.55), 0.18, color);
+  b.beam(p(1, K + 0.06), p(1.01, K + 2.05), 0.14, color);
+}
+
+/**
+ * Le ber : les tins sous la quille (de `SINK` au dessous de la quille) ; `shores` : les accores, deux de chaque côté,
+ * seules (les tins sont déjà là). Au sud-est, elles laissent libre le flanc où se plaque la planche de bordé de la
+ * scénette, et la place de Kéo.
+ */
+function shipCradle(b: FacetBuilder, color: number, shores: boolean, only = false): void {
+  const K = SHIPYARD.hull.keel;
+  if (!only)
+    for (const t of [0.3, 0.55, 0.82]) {
+      const [x, , z] = hullPoint(t, 0, 0);
+      b.box({ x, y: SINK, z, yaw: SLIP_YAW }, [0.62, K - 0.04 - SINK, 0.5], color);
+    }
+  if (!shores) return;
+  for (const [side, ts] of SHORES)
+    for (const t of ts) {
+      const s = hullSection(t);
+      const [fx, , fz] = hullPoint(t, side * (s.w + 0.8), 0);
+      const [hx, hy, hz] = hullEdge(t, 2, side);
+      b.beam({ x: fx, y: -0.05, z: fz }, { x: hx + side * SLIP_N.x * 0.06, y: hy - 0.15, z: hz + side * SLIP_N.z * 0.06 }, 0.13, color);
+    }
+}
+
+/** Les accores de la coque : au nord-ouest, à deux couples ; au sud-est, près de l'étrave et après la planche de bordé. */
+const SHORES: readonly (readonly [number, readonly number[]])[] = [
+  [-1, [0.36, 0.7]],
+  [1, [0.2, 0.72]],
+];
+
+/** Les membrures nues de la ruine : à chaque couple, de la quille au bouchain puis au plat-bord, des deux côtés. */
+function shipRibs(b: FacetBuilder, color: number): void {
+  for (const t of [0.24, 0.44, 0.64, 0.84])
+    for (const side of [-1, 1]) {
+      const [k, bilge, sheer] = [0, 1, 4].map((e) => {
+        const [x, y, z] = hullEdge(t, e, side);
+        return { x, y, z };
+      });
+      b.beam(k, bilge, 0.13, color);
+      b.beam(bilge, sheer, 0.13, color);
+    }
+}
+
+/** Le sol dessiné sous un point du Chantier naval (dans son repère, celui du monde déplacé), depuis le sol de son centre. */
+function shipyardGround(): (lx: number, lz: number) => number {
+  const c = placeById('shipyard').center;
+  const h0 = standingHeight(heightAt(c));
+  const field = buildHeightField();
+  return (lx, lz) => heightOnMesh(field, c.x + lx, c.z + lz) - h0;
+}
+
+/**
+ * Les rails de la cale, de sa tête jusque sous l'eau : à chaque traverse, la hauteur du dessus du rail (le sol dessiné
+ * sous la traverse, au plus haut de sa largeur, plus le lever ; sous l'eau, le fond).
+ */
+export function slipRails(): { s: number; y: number }[] {
+  const S = SHIPYARD.slip;
+  const ground = shipyardGround();
+  return Array.from({ length: S.sleepers }, (_, k) => {
+    const s = (S.length * k) / (S.sleepers - 1);
+    const y = Math.max(...[-S.gauge, 0, S.gauge].map((b) => ground(slipPoint(s, b).x, slipPoint(s, b).z)));
+    return { s, y: y + S.lift };
+  });
+}
+
+/**
+ * La cale : ses traverses, puis ses deux rails, d'une traverse à la suivante. Dans la ruine, `sleepers` et `rails` disent
+ * ce qui reste (les traverses, les bouts de rail de la traverse `k` à la suivante), `sink` l'enfonce dans le sable.
+ */
+function slipway(b: FacetBuilder, rail: number, sleeper: number, ruin?: { sleepers: (k: number) => boolean; rails: (k: number) => boolean; sink: number }): void {
+  const sink = ruin?.sink ?? 0;
+  const S = SHIPYARD.slip;
+  const pts = slipRails();
+  for (const [k, p] of pts.entries()) {
+    if (ruin && !ruin.sleepers(k)) continue;
+    const at = slipPoint(p.s);
+    b.box({ x: at.x, y: p.y - S.rail - 0.3 - sink, z: at.z, yaw: SLIP_YAW }, [S.gauge + 0.9, 0.3, 0.32], sleeper);
+  }
+  for (let k = 0; k + 1 < pts.length; k++) {
+    if (ruin && !ruin.rails(k)) continue;
+    for (const side of [-1, 1]) {
+      const [p, q] = [pts[k], pts[k + 1]];
+      const [a, c] = [slipPoint(p.s, (side * S.gauge) / 2), slipPoint(q.s, (side * S.gauge) / 2)];
+      b.beam({ x: a.x, y: p.y - S.rail / 2 - sink, z: a.z }, { x: c.x, y: q.y - S.rail / 2 - sink, z: c.z }, S.rail, rail);
+    }
+  }
+}
+
+/**
+ * Le Chantier naval (lot L6b). Avant : la cale ensablée, ses rails rompus ; la quille et les membrures nues sur leur ber ;
+ * l'atelier sans toit, ses murs tombés à mi-hauteur ; des planches éparses sur la grève. Le corps : la cale refaite (ses
+ * traverses, ses rails jusque sous l'eau), puis la coque bordée sur son ber, ses accores. Le haut : l'atelier bas, son
+ * toit d'ardoise, sa grande porte. Les abords : le ponton sur la grève et dans l'eau, ses deux bittes, puis le chemin de
+ * la porte (l'étape qui porte les traces). Ce qui gît dans la ruine s'en va quand ce qui le relève se pose, jamais en
+ * double ; les planches éparses sont prises par le bordé. Sur la grève aplanie de la côte sud (terrain.ts).
+ */
+function shipyard(add: Add): void {
+  const H = SHIPYARD.shop;
+  const P = SHIPYARD.pontoon;
+  const g = siteGround('shipyard');
+  // La cale ensablée : des bouts de rail, de travers, à demi enfouis, et le sable qui les couvre ailleurs.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      slipway(b, C.wornKeel, C.wornWood, { sleepers: (k) => k !== 2 && k !== 4, rails: (k) => k === 0 || k === 3, sink: 0.12 });
+      for (const [s, r] of [
+        [5.5, 1.1],
+        [9.4, 1.25],
+        [1.6, 0.8],
+      ] as const) {
+        const at = slipPoint(s, 0.2);
+        b.prism({ x: at.x, y: g.at(at.x, at.z) - 0.2, z: at.z, yaw: s }, r, r * 0.45, 0.42, 7, COLORS_6E.sand);
+      }
+    },
+    { stage: 0, row: 0 },
+  );
+  // La quille et les membrures nues, sur leur ber : la quille neuve et les fonds les prennent.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      shipSpine(b, C.wornKeel);
+      shipRibs(b, C.wornWood);
+      shipCradle(b, C.wornKeel, false);
+    },
+    { stage: 0, row: 0.34 },
+  );
+  // Les planches éparses sur la grève, entre la coque et l'atelier ; le bordé des flancs les prend.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      for (const [x, z, yaw] of SCATTERED_PLANKS) b.box({ x, y: g.at(x, z) - 0.02, z, yaw }, [0.32, 0.08, 2.3], C.wornPlank);
+    },
+    { stage: 0, row: 0.67 },
+  );
+  // L'atelier sans toit : ses murs tombés à mi-hauteur, inégaux, la porte béante ; l'atelier les relève.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      const [x0, x1, z0, z1] = [H.x - H.w / 2, H.x + H.w / 2, H.z - H.d / 2, H.z + H.d / 2];
+      b.box({ x: H.x, y: SINK, z: z0 + 0.1 }, [H.w, 1.5 - SINK, 0.2], C.wornWood, C.wornTop);
+      b.box({ x: x0 + 0.1, y: SINK, z: H.z }, [0.2, 1.2 - SINK, H.d], C.wornWood, C.wornTop);
+      b.box({ x: x1 - 0.1, y: SINK, z: H.z - 0.6 }, [0.2, 1.7 - SINK, H.d - 1.2], C.wornWood, C.wornTop);
+      b.box({ x: x0 + 0.85, y: SINK, z: z1 - 0.1 }, [1.7, 0.9 - SINK, 0.2], C.wornWood, C.wornTop);
+      b.box({ x: x1 - 0.7, y: SINK, z: z1 - 0.1 }, [1.4, 1.3 - SINK, 0.2], C.wornWood, C.wornTop);
+    },
+    { stage: 1, row: 0 },
+  );
+  // Le corps : la cale refaite, ses traverses et ses rails, de la tête jusque sous l'eau.
+  add(0, 0, (b) => slipway(b, C.keel, C.darkWood));
+  // La quille neuve sur son ber, l'étrave, l'étambot, et les fonds de la coque ; puis ses flancs bordés, son pont, son
+  // tableau, et les accores qui la tiennent debout.
+  add(0, 0.34, (b) => {
+    shipSpine(b, C.keel);
+    shipCradle(b, C.keel, false);
+    shipHull(b, 'bottom');
+  });
+  add(0, 0.67, (b) => {
+    shipHull(b, 'sides');
+    shipCradle(b, C.keel, true, true);
+  });
+  // Le haut : l'atelier bas, ses planches et ses poteaux d'angle ; puis son toit d'ardoise ; puis sa grande porte.
+  add(1, 0, (b) => {
+    b.box({ x: H.x, y: SINK, z: H.z }, [H.w, H.wall - SINK, H.d], C.wood);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.box({ x: H.x + sx * (H.w / 2 - 0.08), y: SINK, z: H.z + sz * (H.d / 2 - 0.08) }, [0.26, H.wall + 0.05 - SINK, 0.26], C.darkWood);
+  });
+  add(1, 0.34, (b) => b.gableRoof({ x: H.x, y: H.wall - 0.02, z: H.z }, H.w + 0.6, H.d + 0.7, H.roof, C.shipSlate, C.wood));
+  add(1, 0.67, (b) => {
+    const z = H.z + H.d / 2 + 0.04;
+    for (const dx of [-0.48, 0.48]) b.box({ x: H.x + dx, y: -0.02, z }, [0.9, H.door, 0.08], C.door);
+    b.box({ x: H.x, y: H.door - 0.02, z: z + 0.02 }, [2.2, 0.18, 0.14], C.darkWood);
+  });
+  // Les abords : le ponton, de la grève jusque dans l'eau, ses planches sur leurs pieux.
+  add(2, 0, (b) => {
+    const top = g.water + 0.62;
+    const len = P.z1 - P.z0;
+    for (let k = 0; k < 3; k++) b.box({ x: P.x - P.half + P.half / 3 + (k * 2 * P.half) / 3, y: top - 0.16, z: (P.z0 + P.z1) / 2 }, [(2 * P.half) / 3 - 0.06, 0.16, len], k % 2 ? C.deck : C.newWood);
+    for (const z of PONTOON_POSTS) for (const side of [-1, 1]) b.box({ x: P.x + side * (P.half + 0.08), y: g.water - 1.3, z }, [0.2, top + 0.22 - (g.water - 1.3), 0.2], C.darkWood);
+  });
+  // Ses deux bittes d'amarrage, de bois sombre, sur le ponton.
+  add(2, 0.34, (b) => {
+    const top = g.water + 0.62;
+    for (const z of [P.z0 + 2.8, P.z1 - 1.2]) {
+      b.prism({ x: P.x + P.half - 0.3, y: top, z }, 0.15, 0.15, 0.4, 6, C.keel);
+      b.prism({ x: P.x + P.half - 0.3, y: top + 0.4, z }, 0.22, 0.2, 0.08, 6, C.keel, C.darkWood);
+    }
+  });
+  // Le chemin de sable tassé, de la porte du lieu jusqu'à la grande porte de l'atelier.
+  add(2, 0.67, (b) => {
+    const c = placeById('shipyard').center;
+    const at = PATH_NODES.find((n) => n.id === 'shipyard')!.at;
+    const door = { x: at.x - c.x, z: at.z - c.z };
+    const foot = { x: H.x, z: H.z + H.d / 2 + 0.5 };
+    const [dx, dz] = [foot.x - door.x, foot.z - door.z];
+    b.box({ x: (door.x + foot.x) / 2, y: 0, z: (door.z + foot.z) / 2, yaw: Math.atan2(dx, dz) }, [1.1, 0.03, Math.hypot(dx, dz) + 0.5], C.mud, COLORS_6E.path);
+  });
+}
+
+/** Les planches éparses de la ruine du Chantier naval : leur milieu, leur quart de tour. */
+const SCATTERED_PLANKS: readonly (readonly [number, number, number])[] = [
+  [2.6, 1.4, 0.4],
+  [3.4, 0.6, 1.2],
+  [1.9, 2.6, -0.5],
+  [-3.6, -1.2, 0.9],
+];
+
+/** Les paires de pieux du ponton du Chantier naval, le long de lui (dans l'eau et au bord). */
+const PONTOON_POSTS = [8, 9.9, 11.4] as const;
+
 /** Les cônes de sel des Marais salants, à l'est de la grille (depuis son bord est) : écart, z, rayon. */
 const SALT_CONES: readonly (readonly [number, number, number])[] = [
   [1.1, -0.3, 0.55],
@@ -981,7 +1334,7 @@ const SALT_CONES: readonly (readonly [number, number, number])[] = [
   [1.0, 2.6, 0.52],
 ];
 
-const DRAWN: Record<PlaceId, (add: Add) => void> = { phare, quais, filets, ecluses, saltworks, engine };
+const DRAWN: Record<PlaceId, (add: Add) => void> = { phare, quais, filets, ecluses, saltworks, engine, shipyard };
 
 const pieces = new Map<PlaceId, PlacePiece[]>();
 

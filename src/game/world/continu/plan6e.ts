@@ -111,11 +111,19 @@ export const SALT_FLAT = { center: fromPlan([1430, 652]), radius: 9, fade: 5, he
 export const ENGINE_FLAT = { center: fromPlan([1302, 590]), radius: 8.5, fade: 5, height: 1 } as const;
 
 /**
+ * La grève du Chantier naval (GD-20, point 8, lot L6b), sur la côte sud, à l'est du Port : aplanie comme celle des
+ * Marais salants (à cette hauteur dans ce rayon, puis le sol d'avant sur `fade` unités ; au bord de l'eau, elle descend
+ * encore comme la plage), pour que la cale descende droit jusqu'à la mer.
+ */
+export const SHIPYARD_FLAT = { center: fromPlan([1112, 938]), radius: 9.5, fade: 5, height: 0.6 } as const;
+
+/**
  * Les lieux du prototype. `saltworks` : les Marais salants (lot L5), le premier lieu neuf, qui reprend l'île des
  * nombres décimaux ; son identifiant reste neutre (son nom, choix du mainteneur, 16 octobre 2026).
- * `engine` : la Turbine (lot L6a), qui reprend l'île de la matière et de l'énergie (physique-chimie).
+ * `engine` : la Turbine (lot L6a), qui reprend l'île de la matière et de l'énergie (physique-chimie). `shipyard` : le
+ * Chantier naval (lot L6b), qui reprend l'île des objets techniques (technologie).
  */
-export type PlaceId = 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine';
+export type PlaceId = 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard';
 
 export interface OpenPlace {
   id: PlaceId;
@@ -138,7 +146,7 @@ export interface OpenPlace {
    * Les missions de l'île qui se jouent déjà en scénette dans le lieu (les autres se jouent sur l'écran habituel, depuis
    * le panneau du lieu, le temps de la transition) : le Troupeau aux Filets ; aux Quais, toutes (GD-20, point 8, lot
    * L1) ; aux Écluses, toutes (lot L2) ; au Phare, toutes (lot L3) ; aux Filets, toutes (lot L4) ; aux Marais salants,
-   * toutes (lot L5) ; à la Turbine, toutes (lot L6a).
+   * toutes (lot L5) ; à la Turbine, toutes (lot L6a) ; au Chantier naval, toutes (lot L6b).
    */
   scenes: readonly string[];
   /** Le centre du modèle au sol, et son quart de tour (en radians autour de la verticale). */
@@ -160,6 +168,14 @@ interface PlaceSpec extends Omit<OpenPlace, 'center' | 'door'> {
   /** La porte, depuis le centre, en unités. */
   door: Vec2;
 }
+
+/**
+ * Le nom du Chantier naval (lot L6b), écrit ici seulement : « Le Chantier naval », choisi par le mainteneur le
+ * 16 octobre 2026 (le directeur artistique recommandait « Le Carénage ») ; le lieu d’assemblage, « Le Chantier de
+ * l’Escale », garde son nom. Le nom, la phrase « au … » et l'accord du mot d'état de la Carte changent ensemble, sur
+ * cette ligne.
+ */
+const SHIPYARD_NAME = { name: 'Le Chantier naval', at: 'au Chantier naval', agree: 'ms' } as const satisfies Pick<OpenPlace, 'name' | 'at' | 'agree'>;
 
 const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'phare', name: 'Le Phare', at: 'au Phare', agree: 'ms', island: 'french-6e-phonology', scenes: ['syllables', 'sound-hunt', 'rhymes'], plan: [880, 590], door: { x: 0, z: 6.14 }, yaw: 0, touchRadius: 5.5 },
@@ -204,6 +220,18 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
     door: { x: -1, z: 7.6 },
     yaw: 0,
     touchRadius: 6.5,
+  },
+  // Le Chantier naval (lot L6b) : sur la grève de la côte sud, à l'est du Port, face au sud ; sa cale descend en oblique
+  // vers le sud-ouest jusqu'à la mer ; la porte au sud-est de l'atelier. Ses quatre missions se jouent en C.
+  {
+    id: 'shipyard',
+    ...SHIPYARD_NAME,
+    island: 'technology-6e-objects',
+    scenes: ['object-function', 'materials', 'information-networks', 'solve-program'],
+    plan: [1112, 938],
+    door: { x: 2.6, z: 6 },
+    yaw: 0,
+    touchRadius: 7,
   },
 ];
 
@@ -358,6 +386,12 @@ export const PATH_NODES: readonly PathNode[] = [
   node('tur-1', [1236, 614]),
   node('tur-2', [1268, 610]),
   node('tur-3', [1290, 632]),
+  // Vers le Chantier naval (lot L6b) : de `est-1`, vers le sud, à l'est du bassin des Quais, jusqu'à la grève ; puis
+  // vers l'ouest, le long de l'eau, jusqu'à la porte, au sud-est de l'atelier (le lieu entier se voit à l'arrivée).
+  node('car-1', [1146, 800]),
+  node('car-2', [1152, 872]),
+  node('car-3', [1176, 922]),
+  node('car-4', [1150, 944]),
   ...PORT_NODES.map(({ id, at }) => ({ id, at: PORT.toWorld(at[0], at[1]) })),
 ];
 
@@ -388,6 +422,11 @@ export const PATH_EDGES: readonly (readonly [string, string])[] = [
   ['tur-1', 'tur-2'],
   ['tur-2', 'tur-3'],
   ['tur-3', 'engine'],
+  ['est-1', 'car-1'],
+  ['car-1', 'car-2'],
+  ['car-2', 'car-3'],
+  ['car-3', 'car-4'],
+  ['car-4', 'shipyard'],
   // L'Escale : la digue du Phare jusqu'au quai, puis la place, le long des façades.
   ['phare', portNode('quai')],
   [portNode('quai'), 'port-place'],

@@ -1252,6 +1252,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const u = reduceMotion ? 1 : Math.min(1, (t - start) / REACTION_SECONDS);
     const e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
     reactionMesh.position.set(r.from.x + (r.to.x - r.from.x) * e, r.from.y + (r.to.y - r.from.y) * e + r.arc * Math.sin(Math.PI * e), r.from.z + (r.to.z - r.from.z) * e);
+    // Son cap, et son roulis qui monte avec elle (la planche de bordé du Chantier naval, lot L6b) ; sans `turn`, aucun.
+    reactionMesh.rotation.set(0, r.turn?.yaw ?? 0, (r.turn?.roll ?? 0) * e, 'YXZ');
     if (u >= 1) {
       // Avec « Réduire les animations », la réaction est un état fixe : elle reste à sa fin.
       reactionMesh.visible = r.stay || reduceMotion;
@@ -1548,6 +1550,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (!f.moving.triangles) return;
       const from = reactionMesh.visible ? reactionMesh.position.clone() : new THREE.Vector3(f.from.x, f.from.y, f.from.z);
       reaction = null;
+      reactionMesh.rotation.set(0, 0, 0);
       setGeometry(reactionMesh, f.moving);
       finale = { from, start: performance.now() / 1000, f };
       stepFinale(finale.start);

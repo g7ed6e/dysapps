@@ -12,7 +12,7 @@ import { PROBLEMES_EXERCISES } from '../../exercises/problems';
 import { POSEES_EXERCISES } from '../../exercises/writtenOperations';
 import { boundsOf } from './facets';
 import { linearRgb } from './geometry';
-import { ENGINE, ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRill, engineRotorHub, modelOfPlace, ruinOf } from './places';
+import { ENGINE, ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRill, engineRotorHub, hullEdge, hullPoint, modelOfPlace, ruinOf, slipRails } from './places';
 import { PLANK_BRIDGES, pathRibbons } from './paths';
 import { networkSamples } from './paths';
 import { buildHeightField, heightAt, heightOnMesh, landDistance, standingHeight, tileFacets } from './terrain';
@@ -31,6 +31,7 @@ import {
   QUAIS_TRACE_SPOTS,
   SALTWORKS_TRACE_SPOTS,
   SALT_PUMP,
+  SHIPYARD_TRACE_SPOTS,
   answerObjects,
   answerScale,
   craneHook,
@@ -673,6 +674,69 @@ describe('La Turbine (GD-20, point 8, lot L6a)', () => {
   });
 });
 
+describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
+  const ids = CATALOG.filter((d) => d.biome === 'technology-6e-objects').map((d) => d.id);
+  const c = placeById('shipyard').center;
+  const y0 = standingHeight(heightAt(c));
+
+  it('ses quatre missions, aux deux niveaux, en C : les items de référence tels quels, les réponses dans la colonne', () => {
+    expect(ids.length).toBe(8);
+    for (const id of ids) {
+      const items = reference(id).items;
+      const placed = placeItems('shipyard', id, items);
+      expect(placed.map((it) => it.key), id).toEqual(items.map((it) => it.key));
+      for (const it of placed) {
+        expect(it.placeScene, it.key).toEqual(COLUMN);
+        const ref = items.find((r) => r.key === it.key)!;
+        expect([it.prompt, it.answer, it.choices], it.key).toEqual([ref.prompt, ref.answer, ref.choices]);
+      }
+      expect(placeInstruction('shipyard', id, 1, 'Référence.', COLUMN), id).toBe('Référence.');
+    }
+  });
+
+  it('chaque trace est la sienne, hors des chemins et l’une hors de l’autre ; toutes sous le plat-bord de la coque', () => {
+    const missions = Object.keys(SHIPYARD_TRACE_SPOTS) as (keyof typeof SHIPYARD_TRACE_SPOTS)[];
+    expect([...missions].sort()).toEqual([...placeById('shipyard').scenes].sort());
+    const traces = missions.map((m) => [m, placeTrace('shipyard', [m])] as const);
+    expect(new Set(traces.map(([, f]) => f.triangles)).size).toBe(4);
+    const boxes = traces.map(([, f]) => boundsOf(f));
+    const near = networkSamples(0.25).filter((p) => Math.hypot(p.x - c.x, p.z - c.z) < 20);
+    // Le plat-bord au plus bas, sur la partie droite de la coque.
+    const sheer = y0 + Math.min(...[0.16, 0.4, 0.7, 1].map((t) => hullEdge(t, 4, 1)[1]));
+    for (const [k, [m]] of traces.entries()) {
+      const b = boxes[k];
+      expect(b.max[1], m).toBeLessThan(sheer);
+      // Au sol, sauf le capteur de marée, dans l'eau.
+      if (m !== 'information-networks') expect(b.min[1], m).toBeGreaterThan(y0 - 0.5);
+      for (const p of near) expect(p.x > b.min[0] - 0.6 && p.x < b.max[0] + 0.6 && p.z > b.min[2] - 0.6 && p.z < b.max[2] + 0.6, m).toBe(false);
+      for (let j = k + 1; j < boxes.length; j++) {
+        const d = boxes[j];
+        expect(b.max[0] < d.min[0] || d.max[0] < b.min[0] || b.max[2] < d.min[2] || d.max[2] < b.min[2], `${m} / ${traces[j][0]}`).toBe(true);
+      }
+    }
+  });
+
+  it('le capteur de marée se tient dans l’eau, au bout du ponton ; le câble du treuil va jusqu’à l’étrave', () => {
+    const o = SHIPYARD_TRACE_SPOTS['information-networks'];
+    expect(heightAt({ x: c.x + o.x, z: c.z + o.z })).toBeLessThan(0);
+    const well = boundsOf(placeTrace('shipyard', ['information-networks']));
+    expect(well.min[1]).toBeLessThan(0);
+    expect(well.max[1]).toBeGreaterThan(0);
+    const winch = boundsOf(placeTrace('shipyard', ['solve-program']));
+    const [sx, , sz] = hullPoint(0.02, 0, 0);
+    const stem = { x: c.x + sx, z: c.z + sz };
+    expect(stem.x >= winch.min[0] - 1e-3 && stem.x <= winch.max[0] + 1e-3 && stem.z >= winch.min[2] - 1e-3 && stem.z <= winch.max[2] + 1e-3).toBe(true);
+  });
+
+  it('la cale descend de son replat jusque sous l’eau', () => {
+    const rails = slipRails();
+    expect(rails.length).toBeGreaterThan(2);
+    for (let k = 1; k < rails.length; k++) expect(rails[k].y).toBeLessThanOrEqual(rails[k - 1].y + 1e-6);
+    expect(y0 + rails[0].y).toBeGreaterThan(0);
+    expect(y0 + rails[rails.length - 1].y).toBeLessThan(0);
+  });
+});
+
 describe('Les couleurs que la vue reconnaît (scene.ts, `unshadedLamp`)', () => {
   it('aucune autre couleur du monde à moins de 0,004 de la lampe, des ailes de la pompe, du rotor ou de la vapeur', () => {
     const markers = [LAMP_COLOR, SALT_PUMP.vane, ...ENGINE_ROTOR_COLORS, ...STEAM_COLORS];
@@ -700,6 +764,9 @@ describe('Les couleurs que la vue reconnaît (scene.ts, `unshadedLamp`)', () => 
     const engineScene = itemScene('engine', { kind: 'column' }, true, []);
     take(engineScene.still);
     take(engineScene.reaction!.facets);
+    const shipyardScene = itemScene('shipyard', { kind: 'column' }, true, []);
+    take(shipyardScene.still);
+    take(shipyardScene.reaction!.facets);
     for (const rgb of seen.values()) for (const m of markers) if (near(rgb, linearRgb(m))) expect(same(rgb, linearRgb(m)), `${rgb.join(',')} près de ${m.toString(16)}`).toBe(true);
   });
 });

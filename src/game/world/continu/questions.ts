@@ -62,8 +62,8 @@ export type ItemScene =
   /**
    * Le C, scène de décor neutre (GD-20, point 8, lot L6a) : la scène ne montre rien de l'item, les réponses restent dans
    * la colonne (la phrase, les réponses, le document, le rappel), aucun objet ne les porte ; le décor du lieu et son
-   * objet témoin, qui réagit après une bonne réponse (questionScene.ts, `COLUMN_DECOR`). Pour la Turbine, et les lieux
-   * qui suivent.
+   * objet témoin, qui réagit après une bonne réponse (questionScene.ts, `COLUMN_DECOR`). Pour la Turbine, le Chantier
+   * naval, et les lieux qui suivent.
    */
   | { kind: 'column' };
 
@@ -376,8 +376,8 @@ function inInstructionOrder(exerciseId: string, it: QuestionItem): { choices?: s
  * sas), les autres missions gardent leur item de référence, le sas au repos ; aux Quais, Doubles et moitiés change sa phrase, les
  * autres missions gardent l'item de référence tel quel, sur le quai vide. `say` : les fractions dites en mots (la phrase
  * lue de Deux rives). Aux Marais salants, la Pente graduée au niveau 1 a sa jauge ; tout le reste se joue en items de
- * référence, sur le bassin au repos. À la Turbine, tout se joue en C, en items de référence. `reference` : les items de
- * « Vue simple ».
+ * référence, sur le bassin au repos. À la Turbine et au Chantier naval, tout se joue en C, en items de référence.
+ * `reference` : les items de « Vue simple ».
  */
 export function placeItems(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction = written, reference = false): PlacedItem[] {
   const placed = placedInScene(place, exerciseId, items, say);
@@ -397,9 +397,10 @@ export const sceneDrawsFigure = (scene: ItemScene): boolean => scene.kind === 's
 /** Les items posés dans la scène d'un lieu (`placeItems`), avec ses textes. */
 function placedInScene(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction): PlacedItem[] {
   if (place === 'phare') return items.map((it) => ({ ...it, placeScene: { kind: 'cloches' } }));
-  // La Turbine (GD-20, point 8, lot L6a) : ses quatre missions en C, aux deux niveaux, avec leurs items de référence
-  // (consigne, phrase, document, rappel) ; la scène fait le décor, les réponses restent dans la colonne.
-  if (place === 'engine') return items.map((it) => ({ ...it, placeScene: COLUMN }));
+  // La Turbine (GD-20, point 8, lot L6a) et le Chantier naval (lot L6b) : leurs quatre missions en C, aux deux niveaux,
+  // avec leurs items de référence (consigne, phrase, document, rappel) ; la scène fait le décor, les réponses restent dans
+  // la colonne.
+  if (place === 'engine' || place === 'shipyard') return items.map((it) => ({ ...it, placeScene: COLUMN }));
   if (place === 'saltworks') {
     // Les Marais salants (GD-20, point 8, lot L5) : toutes les missions au même bassin, avec les mêmes sacs de sel. Seule
     // la Pente graduée, au niveau 1, a son gabarit (la jauge) ; les autres gardent leur item de référence, le bassin au

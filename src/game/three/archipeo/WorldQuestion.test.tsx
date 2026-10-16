@@ -26,7 +26,7 @@ beforeEach(() => {
 // Les tailles et les rectangles simulés ne passent jamais d'un test à l'autre (relecture du lot L5, expert frontend).
 afterEach(() => vi.restoreAllMocks());
 
-function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine', mission: string, plain = false) {
+function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard', mission: string, plain = false) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
@@ -668,6 +668,53 @@ describe('Le défilement d’un C après une réponse (relecture de L6a)', () =>
     // Déjà visible : rien ne bouge.
     rect(panel.querySelector('.next-button')!, 300, 56);
     expect(afterAnswer(panel, panel.querySelector('.world-answers')!, panel.querySelector('.next-button')!)).toBe(0);
+  });
+});
+
+describe('Le Chantier naval, ses quatre missions en C (GD-20, point 8, lot L6b)', () => {
+  const missions = ['object-function', 'materials', 'information-networks', 'solve-program'];
+  const answers = () => [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')];
+  const panel = () => document.querySelector<HTMLElement>('.quiz.in-world')!;
+  const follows = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+  const last = () => vi.mocked(world.question).mock.calls.at(-1)![0]!;
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
+  });
+  beforeAll(async () => {
+    await Promise.all(missions.map((m) => loadExercise(`technology-6e-objects-${m}-1`)));
+  });
+
+  it.each(missions)('%s : le charpentier, la scène neutre, les réponses dans la colonne, sous la phrase, en scène comme en « Vue simple »', async (mission) => {
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    renderPlace('shipyard', mission);
+    expect(await screen.findByText('Le charpentier')).toBeInTheDocument();
+    const go = screen.queryByRole('button', { name: /Commencer/ });
+    if (go) await user.click(go);
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+    await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
+    expect(last()).toMatchObject({ place: 'shipyard', mission, item: { scene: { kind: 'column' }, answered: false } });
+    expect(last().layout.slots).toEqual([]);
+    expect(panel().classList.contains('mode-c')).toBe(true);
+    expect(follows(panel().querySelector('.question-head')!, panel().querySelector('.world-answers')!)).toBe(true);
+    await user.click(screen.getByRole('button', { name: /Vue simple/ }));
+    expect(panel().classList.contains('simple')).toBe(true);
+    expect(follows(panel().querySelector('.question-head')!, panel().querySelector('.world-answers')!)).toBe(true);
+  });
+
+  it('en texte normal sur un téléphone couché, une phrase sous le pli ouvre « Vue simple » d’office', async () => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(844);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(390);
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+      const bottom = this.matches('.question-head') ? 900 : 390;
+      return { top: 0, bottom, height: bottom, left: 0, right: 844, width: 844, x: 0, y: 0, toJSON: () => ({}) };
+    });
+    const user = userEvent.setup();
+    renderPlace('shipyard', 'information-networks');
+    const go = await screen.findByRole('button', { name: /Commencer/ }).catch(() => null);
+    if (go) await user.click(go);
+    await vi.waitFor(() => expect(panel().classList.contains('simple')).toBe(true));
   });
 });
 
