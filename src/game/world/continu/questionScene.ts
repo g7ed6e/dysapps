@@ -8,7 +8,9 @@ import type { Vec2, Vec3 } from './geometry';
 import { placeArt } from './northShore';
 import { DOCK_EDGE, placeById, type PlaceId } from './plan6e';
 import type { ItemScene } from './questions';
-import { ENGINE, FILETS_RACK, SHIPYARD, SLIP_N, SLIP_U, SLIP_YAW, STEAM_GAP, VALVE_PUFFS, engineSteam, filetsRack, hullEdge, hullPoint, slipPoint } from './places';
+import { COMMONS, ENGINE, FILETS_RACK, OBSERVATORY, SHIPYARD, SLIP_N, SLIP_U, SLIP_YAW, STEAM_GAP, VALVE_PUFFS, drumFace, engineSteam, filetsRack, hullEdge, hullPoint, slipPoint } from './places';
+import { MANGROVE, mangroveDeckTop } from './places';
+import { RUINS } from './places';
 import { heightAt, standingHeight } from './terrain';
 
 const C = {
@@ -107,6 +109,42 @@ const C = {
   cable: 0xc9a36a,
   float: 0xf2eee4,
   plankFace: 0xd9ad72,
+  // La Mangrove (lot L8a, directeur artistique) : la pirogue (sa coque et son intérieur, plus clair) ; les bois des
+  // passerelles ; le carnet Bleu lagon, en accent ; la claie et ses godets, le vert des jeunes plants ; les roseaux.
+  pirogue: 0x8c4f32,
+  pirogueInside: 0xc9925f,
+  walkway: 0xb98654,
+  walkwayDark: 0x8a6440,
+  notebook: 0x178078,
+  pot: 0xb07a52,
+  sapling: 0x4f8f4a,
+  reed: 0xc2ad6a,
+  reedShade: 0xa8945a,
+  // Les Ruines (lot L8b, directeur artistique) : la pierre des Passeurs et son ombre, le bronze des clés, le sable des
+  // fouilles (et le fond de la fosse, d'une seule couleur, jamais des couches), la toile écrue de la tente, la corde.
+  passeurStone: 0xdcd0b5,
+  passeurShade: 0xb9a988,
+  passeurBronze: 0x9c7a3c,
+  digSand: 0xcdb58a,
+  pitFloor: 0xa48b62,
+  tentCanvas: 0xe8e0cc,
+  cord: 0xe0d3b0,
+  // L'Observatoire (lot L8c, directeur artistique) : l'enduit rose pâle du tambour et son ombre, la vitre pâle et unie,
+  // les volets Bleu lagon ; la pierre des Passeurs (la même valeur de base que places.ts).
+  plaster: 0xe3b9a3,
+  plasterShade: 0xc99a84,
+  bayGlass: 0xd9e6e8,
+  shutter: 0x178078,
+  passeurs: 0xcfc6b2,
+  passeursShade: 0xada48f,
+  // La Halle (lot L8d, directeur artistique) : le bronze des Passeurs (le bec de la borne), l'eau du filet et de l'auge,
+  // un aplat clair ; le chêne des bancs et des pupitres et son dessus ; la haie taillée et son dessus.
+  passeursBronze: 0x9c7a3c,
+  fountainWater: 0xa9dceb,
+  oak: 0x8e6a48,
+  oakTop: 0xa98258,
+  hedge: 0x4f8a3c,
+  hedgeTop: 0x5f9c48,
 } as const;
 
 /** La hauteur où l'on se tient en un point (le sol, ou le dessus de la digue sur l'eau). */
@@ -135,6 +173,15 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   engine: { dx: 0, dz: 4.4, half: [5, 1.4], fine: true },
   // Le Chantier naval (lot L6b) : le plancher au sud-est de la coque, le long de son flanc, sur la grève aplanie.
   shipyard: { dx: -0.03, dz: 5.31, half: [3.2, 1], fine: true },
+  // La Mangrove (lot L8a) : le platelage de rive, au bord de l'eau, le lagon derrière lui.
+  mangrove: { dx: MANGROVE.deck.x, dz: MANGROVE.deck.z, half: [4.6, 1.5], fine: true },
+  // Les Ruines (lot L8b) : le dallage devant l'arcade, face à sa deuxième pile ; deux arcs entiers derrière.
+  ruins: { dx: RUINS.arcade.piles[1], dz: -1.2, half: [4.4, 1.3], fine: true },
+  // L'Observatoire (lot L8c) : la terrasse au sud du tambour, contre lui, loin du parapet (il reste sous les pieds de Kéo
+  // et de la photographe, relecture de L8c-d).
+  observatory: { dx: 0, dz: 4.0, half: [4.4, 1.2], fine: true },
+  // La Halle (lot L8d) : sous le bord sud de la toiture, entre les deux piliers du milieu.
+  commons: { dx: 0, dz: 4.4, half: [4.4, 1.2], fine: true },
   quais: { dx: QUAY.dx, dz: QUAY.front - QUAY.depth / 2, half: [QUAY.width / 2, QUAY.depth / 2] },
   // Le rivage nord (lot L7) : la scène de chaque lieu, dans son fichier (placeArt.ts).
   lookout: placeArt('lookout')!.sceneSpot,
@@ -294,6 +341,11 @@ const PANEL_LOW_SHARES = [0.38, 0.46, 0.54] as const;
  */
 export const WIDEN_FULL = PANEL_LOW_SHARES.length;
 export const WIDEN_OFFER = WIDEN_FULL + 1;
+/**
+ * Le cran le plus large où la scène garde sa place à droite de la colonne (54 %) : en C sur un écran bas, revenu de
+ * « Vue simple » à « Scène », la colonne n'en passe plus (GD-20, point 8, L8).
+ */
+export const WIDEN_SCENE = WIDEN_FULL - 1;
 
 /**
  * La place d'une question sur un écran de `width` × `height` pixels.
@@ -371,6 +423,10 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   lookout: 'lieu',
   archives: 'lieu',
   printworks: 'lieu',
+  mangrove: null,
+  ruins: null,
+  observatory: null,
+  commons: null,
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
@@ -1281,6 +1337,10 @@ const COLUMN_DECOR: Partial<Record<PlaceId, (b: FacetBuilder, o: Vec3, done: boo
   // Le rivage nord (lot L7) : le décor et le témoin du fichier du lieu (le volet de la Vigie ; les Archives n'en ont pas).
   lookout: (b, o, done) => placeArt('lookout')!.column?.(b, o, done) ?? null,
   archives: (b, o, done) => placeArt('archives')!.column?.(b, o, done) ?? null,
+  mangrove: pirogueWitness,
+  ruins: digWinch,
+  observatory: observatoryBay,
+  commons: commonsFountain,
 };
 
 /** Le plancher de la scène du Chantier naval monte de tant au-dessus de la grève (il s'en détache). */
@@ -1346,6 +1406,141 @@ function hullPlank(b: FacetBuilder, spot: Vec3, done: boolean): Reaction | null 
   }
   const hull = plankOnHull();
   return { facets, from: rest, to: hull.at, arc: PLANK.arc, stay: true, turn: { yaw: SLIP_YAW, roll: hull.roll } };
+}
+
+/**
+ * Le treuil de fouille des Ruines, l'objet témoin de ses missions (lot L8b ; « treuil de fouille », jamais un nom
+ * d'animal) : au milieu du dallage de la scène, entre Kéo et l'archéologue, un trépied de trois perches, une poulie fixe
+ * en haut (elle ne tourne pas, sans roue dentée), sa corde, et un seau de bois au fond d'une petite fosse bordée de
+ * planches, son bord seul visible. Après une bonne réponse seulement, le seau remonte (d'environ 0,8 au plus haut) et se
+ * pose sur une planche au bord de la fosse, plein de sable seulement ; il reste jusqu'à l'item suivant, où il est de
+ * nouveau au fond, d'un coup ; d'un coup aussi avec « Réduire les animations ». La corde va au seau posé.
+ */
+export const DIG_WINCH = { back: 0.9, legs: 0.7, height: 1.75, pit: 0.36, board: 0.6, bucket: 0.3, sunk: 0.27, arc: 0.65 } as const;
+
+/** Le dallage de la scène des Ruines, levé au-dessus du dallage du lieu (scenette.ts le dessine). */
+export const RUINS_PAVING_RISE = 0.12;
+
+/** Le seau du treuil de fouille, à l'origine (son fond en 0) : un tonnelet de bois cerclé, son dessus de sable. */
+function digBucket(b: FacetBuilder): void {
+  b.prism({ x: 0, y: 0, z: 0 }, 0.14, 0.17, DIG_WINCH.bucket, 8, C.walkwayDark, C.digSand);
+  b.prism({ x: 0, y: DIG_WINCH.bucket - 0.08, z: 0 }, 0.175, 0.175, 0.04, 8, C.passeurBronze, C.walkwayDark);
+}
+
+/** Où le seau se tient au fond de la fosse et sur la planche, dans le monde (son fond). */
+export function digBucketSpots(): { pit: Vec3; board: Vec3 } {
+  const s = sceneSpot('ruins');
+  const W = DIG_WINCH;
+  const floor = s.y + RUINS_PAVING_RISE;
+  const z = s.z - W.back;
+  return { pit: { x: s.x, y: floor + 0.03 - W.bucket, z }, board: { x: s.x + W.pit + 0.1 + W.board / 2, y: floor + 0.05, z } };
+}
+
+function digWinch(b: FacetBuilder, spot: Vec3, done: boolean): Reaction | null {
+  const W = DIG_WINCH;
+  const floor = spot.y + RUINS_PAVING_RISE;
+  const p = { x: spot.x, z: spot.z - W.back };
+  const up = [0, 1, 0] as const;
+  // La fosse : son fond sombre, d'une seule couleur, et sa bordure de planches ; la planche où le seau se pose, à l'est.
+  facing(
+    b,
+    [
+      [p.x - W.pit, floor + 0.006, p.z - W.pit],
+      [p.x + W.pit, floor + 0.006, p.z - W.pit],
+      [p.x + W.pit, floor + 0.006, p.z + W.pit],
+      [p.x - W.pit, floor + 0.006, p.z + W.pit],
+    ],
+    up,
+    C.pitFloor,
+  );
+  for (const side of [-1, 1]) {
+    b.box({ x: p.x, y: floor, z: p.z + side * (W.pit + 0.05) }, [2 * W.pit + 0.2, 0.06, 0.1], C.walkwayDark, C.walkway);
+    b.box({ x: p.x + side * (W.pit + 0.05), y: floor, z: p.z }, [0.1, 0.06, 2 * W.pit], C.walkwayDark, C.walkway);
+  }
+  const { pit, board } = digBucketSpots();
+  b.box({ x: board.x, y: floor, z: board.z }, [W.board, 0.05, 0.42], C.walkwayDark, C.walkway);
+  // Le trépied : trois perches de la fosse jusqu'en haut, deux devant (de part et d'autre de la fosse), une derrière.
+  const apex = { x: p.x, y: floor + W.height, z: p.z };
+  for (const t of [Math.PI * 0.75, Math.PI * 0.25, -Math.PI / 2]) b.beam({ x: p.x + W.legs * Math.cos(t), y: floor, z: p.z + W.legs * Math.sin(t) }, apex, 0.07, C.walkwayDark);
+  // La poulie, fixe, sur son axe, face au sud.
+  b.drum({ x: apex.x, y: apex.y - 0.16, z: apex.z - 0.03, pitch: Math.PI / 2 }, 0.11, 0.06, 8, C.passeurBronze);
+  const r = new FacetBuilder();
+  digBucket(r);
+  const bucket = r.build();
+  const at = done ? board : pit;
+  b.beam({ x: apex.x, y: apex.y - 0.27, z: apex.z }, { x: at.x, y: at.y + W.bucket, z: at.z }, 0.025, C.cord);
+  if (!done) {
+    b.append(placed(bucket, 1, pit));
+    return null;
+  }
+  return { facets: bucket, from: pit, to: board, arc: W.arc, stay: true };
+}
+
+/**
+ * La pirogue de la Mangrove, l'objet témoin de ses missions (lot L8a) : vide, sans pagayeur, au repos sur l'eau à
+ * `rest` du bord du platelage, au milieu, entre Kéo et la botaniste, sa longueur le long du bord. Après une bonne réponse
+ * seulement, elle glisse droit de `glide` vers le platelage (une translation courte, sans roulis) et s'arrête à un peu
+ * plus d'une unité de son bord : plus près, le platelage, plus haut que son plat-bord, la cacherait sous la caméra de la
+ * scénette (relevé sur capture) ; elle reste jusqu'à l'item suivant, où elle est de nouveau à sa place, d'un coup ; d'un
+ * coup aussi avec « Réduire les animations ».
+ */
+export const PIROGUE = { rest: 2.4, glide: 1.2, length: 1.7, bow: 0.55, width: 0.62, keel: -0.12, rim: 0.2 } as const;
+
+/** Le bord nord du platelage de la scénette de la Mangrove (scenette.ts le dessine un peu plus grand que celui du lieu). */
+export const MANGROVE_SCENE_DECK = { grow: 0.1, rise: 0.03 } as const;
+
+/** Où la pirogue se tient, au repos, dans le monde (sa coque à fleur d'eau). */
+export function pirogueRest(): Vec3 {
+  const o = sceneSpot('mangrove');
+  const front = o.z - MANGROVE.deck.d / 2 - MANGROVE_SCENE_DECK.grow;
+  return { x: o.x, y: 0, z: front - PIROGUE.rest - PIROGUE.width / 2 };
+}
+
+/** Un quadrilatère tourné vers `out` (son ordre retourné s'il le faut). */
+function facing(b: FacetBuilder, q: readonly (readonly [number, number, number])[], out: readonly [number, number, number], color: number): void {
+  const [a, c, d] = q;
+  const u = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+  const v = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
+  const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+  const [p0, p1, p2, p3] = n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0 ? q : [...q].reverse();
+  b.quad(p0, p1, p2, p3, color);
+}
+
+/**
+ * La pirogue, à l'origine, sa longueur le long de x : la coque taillée d'une pièce (ses flancs de bois sombre, son
+ * intérieur plus clair vu d'en haut), ses deux pointes un peu relevées.
+ */
+function pirogue(b: FacetBuilder): void {
+  const P = PIROGUE;
+  const w = P.width / 2;
+  // La coque et son plat-bord sombres, l'intérieur clair, en creux, plus étroit qu'elle, et un banc au milieu : vue
+  // d'en haut, une coque creuse, jamais une planche (relevé sur capture).
+  b.box({ x: 0, y: P.keel, z: 0 }, [P.length, P.rim - P.keel, P.width], C.pirogue);
+  const [li, wi] = [P.length / 2 + P.bow * 0.45, w - 0.08];
+  b.quad([-li, P.rim + 0.004, wi], [li, P.rim + 0.004, wi], [li, P.rim + 0.004, -wi], [-li, P.rim + 0.004, -wi], C.pirogueInside);
+  b.box({ x: 0, y: P.rim, z: 0 }, [0.1, 0.02, 2 * wi], C.pirogue);
+  for (const dir of [-1, 1]) {
+    const x0 = (dir * P.length) / 2;
+    const tip = x0 + dir * P.bow;
+    const top: [number, number, number] = [tip, P.rim + 0.06, 0];
+    const low: [number, number, number] = [tip, P.keel + 0.1, 0];
+    // Le dessus de la pointe, vers le ciel : l'ordre de ses sommets suit le sens de la pointe.
+    if (dir > 0) b.triangle([x0, P.rim, w], top, [x0, P.rim, -w], C.pirogue);
+    else b.triangle([x0, P.rim, -w], top, [x0, P.rim, w], C.pirogue);
+    for (const side of [-1, 1]) facing(b, [[x0, P.keel, side * w], low, top, [x0, P.rim, side * w]], [dir * 0.4, 0, side], C.pirogue);
+  }
+}
+
+function pirogueWitness(b: FacetBuilder, _spot: Vec3, done: boolean): Reaction | null {
+  const r = new FacetBuilder();
+  pirogue(r);
+  const boat = r.build();
+  const from = pirogueRest();
+  if (!done) {
+    b.append(placed(boat, 1, from));
+    return null;
+  }
+  return { facets: boat, from, to: { ...from, z: from.z + PIROGUE.glide }, arc: 0, stay: true };
 }
 
 /**
@@ -1672,6 +1867,14 @@ export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
     for (const mission of done) if (Object.hasOwn(ENGINE_TRACES, mission)) ENGINE_TRACES[mission](b, x, z);
   } else if (place === 'shipyard') {
     for (const mission of done) if (Object.hasOwn(SHIPYARD_TRACES, mission)) SHIPYARD_TRACES[mission](b, x, z);
+  } else if (place === 'mangrove') {
+    for (const mission of done) if (Object.hasOwn(MANGROVE_TRACES, mission)) MANGROVE_TRACES[mission](b, x, z);
+  } else if (place === 'ruins') {
+    for (const mission of done) if (Object.hasOwn(RUINS_TRACES, mission)) RUINS_TRACES[mission](b, x, z);
+  } else if (place === 'observatory') {
+    for (const mission of done) if (Object.hasOwn(OBSERVATORY_TRACES, mission)) OBSERVATORY_TRACES[mission](b, x, z);
+  } else if (place === 'commons') {
+    for (const mission of done) if (Object.hasOwn(COMMONS_TRACES, mission)) COMMONS_TRACES[mission](b, x, z);
   } else {
     // Le rivage nord (lot L7) : une chose par mission, dessinée dans le fichier du lieu.
     const traces = placeArt(place)?.traces ?? {};
@@ -2427,5 +2630,424 @@ const SHIPYARD_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) 
     const [sx, , sz] = hullPoint(0.02, 0, 0);
     const stem = { x: c.x + sx, y: groundAt(c) + SHIPYARD.hull.keel + 0.9, z: c.z + sz };
     b.beam({ x: axis.x, y: axis.y + 0.27, z: axis.z }, stem, 0.05, C.cable);
+  },
+};
+
+/**
+ * Où se pose la trace de chaque mission de la Mangrove, depuis le centre du lieu (lot L8a), hors des chemins (celui du
+ * réseau arrive au sud-est, la passerelle des abords monte de la porte au platelage) et du platelage de la scénette : le
+ * pupitre de relevé au coude de la passerelle, sur son palier ; la pépinière sur la vase, à l'ouest du platelage ; la
+ * plateforme haute au bord de l'eau, au nord-ouest ; l'affût de roseaux au bord de l'eau, à l'est.
+ */
+export const MANGROVE_TRACE_SPOTS = {
+  'living-groups': { x: MANGROVE.walk.knee.x + 1.25, z: MANGROVE.walk.knee.z - 0.1 },
+  'food-growth': { x: -2.7, z: -1.6 },
+  'planet-earth': { x: -4.6, z: -6.2 },
+  'life-enquiry': { x: 9.6, z: 2.3 },
+} as const;
+
+/** Le dessus du platelage et de la passerelle de la Mangrove, dans le monde. */
+const mangroveDeckWorld = (): number => groundAt(placeById('mangrove').center) + mangroveDeckTop();
+
+/**
+ * Les traces de la Mangrove (GD-20, point 8, lot L8a : une par mission, aux couleurs du lieu, bois des passerelles,
+ * roseaux, vert des plants ; posées avec le corps ; sans texte, sans graduation, rien qui se compte ou se lise comme une
+ * réponse ; aucun animal, ni fleur ni fruit ; aucune plus haute que le carbet) :
+ * - Classer le vivant : un pupitre de relevé incliné, sur un palier au coude de la passerelle, un carnet fermé dessus ;
+ * - Se nourrir et grandir : une petite pépinière, quatre jeunes palétuviers en godets sur une claie, tous de la même
+ *   taille et du même vert (jamais trois : « trois pots » est un document du contenu) ;
+ * - La Terre et ses milieux : une plateforme haute sur pilotis et son échelle de bois, d'où l'on voit plus loin ;
+ * - Mener une enquête : un affût de roseaux au bord de l'eau, vide.
+ */
+const MANGROVE_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => void> = {
+  'living-groups': (b, x, z) => {
+    const o = MANGROVE_TRACE_SPOTS['living-groups'];
+    const g = { x: x + o.x, z: z + o.z };
+    const top = mangroveDeckWorld();
+    // Le palier, accolé au coude, sur ses deux pieux dans l'eau ; le pupitre, son pied, son plateau penché vers le sud.
+    b.box({ x: g.x, y: top - 0.14, z: g.z }, [1.1, 0.14, 1.1], C.walkwayDark, C.walkway);
+    for (const dz of [-0.4, 0.4]) b.box({ x: g.x + 0.45, y: -1.2, z: g.z + dz }, [0.14, top - 0.14 + 1.2, 0.14], C.walkwayDark);
+    b.box({ x: g.x, y: top, z: g.z }, [0.12, 0.9, 0.12], C.walkwayDark);
+    b.box({ x: g.x, y: top + 0.88, z: g.z, pitch: 0.35 }, [0.62, 0.05, 0.46], C.walkwayDark, C.walkway);
+    b.box({ x: g.x, y: top + 0.93, z: g.z + 0.02, pitch: 0.35 }, [0.26, 0.04, 0.32], C.notebook);
+  },
+  'food-growth': (b, x, z) => {
+    const o = MANGROVE_TRACE_SPOTS['food-growth'];
+    const g = quaiGround(x + o.x, z + o.z);
+    // La claie sur ses deux tréteaux ; quatre godets en rang, chacun son jeune plant, tous pareils.
+    for (const dx of [-0.6, 0.6]) b.box({ x: g.x + dx, y: g.y - 0.2, z: g.z }, [0.1, 0.72, 0.6], C.walkwayDark);
+    const y = g.y + 0.52;
+    b.box({ x: g.x, y, z: g.z }, [1.6, 0.06, 0.62], C.walkwayDark, C.walkway);
+    for (let k = 0; k < 4; k++) {
+      const px = g.x - 0.54 + k * 0.36;
+      b.prism({ x: px, y: y + 0.06, z: g.z }, 0.12, 0.14, 0.16, 6, C.pot);
+      b.prism({ x: px, y: y + 0.22, z: g.z, yaw: 0.3 }, 0.15, 0, 0.36, 5, C.sapling);
+    }
+  },
+  'planet-earth': (b, x, z) => {
+    const o = MANGROVE_TRACE_SPOTS['planet-earth'];
+    const g = quaiGround(x + o.x, z + o.z);
+    const floor = g.y + 1.9;
+    // Quatre pieux, le plancher ; l'échelle de bois au sud, ses deux montants penchés et trois barreaux.
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.box({ x: g.x + sx * 0.55, y: g.y - 0.3, z: g.z + sz * 0.55 }, [0.14, floor - g.y + 0.3, 0.14], C.walkwayDark);
+    b.box({ x: g.x, y: floor, z: g.z }, [1.35, 0.12, 1.35], C.walkwayDark, C.walkway);
+    const foot = g.z + 1.45;
+    for (const dx of [-0.25, 0.25]) b.beam({ x: g.x + dx, y: g.y - 0.05, z: foot }, { x: g.x + dx, y: floor + 0.1, z: g.z + 0.68 }, 0.08, C.walkwayDark);
+    for (const k of [0.3, 0.55, 0.8]) b.box({ x: g.x, y: g.y + (floor - g.y) * k, z: foot + (g.z + 0.68 - foot) * k }, [0.5, 0.06, 0.06], C.walkway);
+  },
+  'life-enquiry': (b, x, z) => {
+    const o = MANGROVE_TRACE_SPOTS['life-enquiry'];
+    const g = quaiGround(x + o.x, z + o.z);
+    // L'affût : trois parois de roseaux, ouvert au sud, son toit plat de roseaux un peu penché, des tiges qui dépassent.
+    b.box({ x: g.x, y: g.y - 0.2, z: g.z - 0.5 }, [1.3, 1.15, 0.12], C.reedShade, C.reed);
+    for (const dx of [-0.6, 0.6]) b.box({ x: g.x + dx, y: g.y - 0.2, z: g.z }, [0.12, 1.05, 1.0], C.reedShade, C.reed);
+    b.box({ x: g.x, y: g.y + 0.92, z: g.z - 0.02, pitch: -0.12 }, [1.45, 0.08, 1.15], C.reed, C.reed);
+    for (const dx of [-0.45, -0.1, 0.25, 0.5]) b.prism({ x: g.x + dx, y: g.y + 0.95, z: g.z - 0.5 }, 0.05, 0, 0.32, 3, C.reed);
+  },
+};
+
+/** Les places des traces des Ruines (lot L8b), depuis le centre du lieu. */
+export const RUINS_TRACE_SPOTS = {
+  'early-humans': { x: RUINS.dig.x, z: RUINS.dig.z },
+  'ancient-peoples': { x: 5.2, z: 2.2 },
+  'roman-empire': { x: (RUINS.arcade.piles[0] + RUINS.arcade.piles[1]) / 2, z: RUINS.arcade.z },
+  viewpoints: { x: -2.9, z: 3.1 },
+} as const;
+
+/**
+ * La vague de bronze de la stèle des Ruines, la même écriture que sur la clé ornée de l'arcade (relecture DA de L8) :
+ * une incrustation sur toute la largeur de la face sud (de `x - half` à `x + half`), le bord du bas droit à `y0`, le
+ * bord du haut une seule onde (un creux et une crête, jamais un chevron) autour de `y1` ; jamais un trait fin isolé, qui
+ * se lirait comme une lettre.
+ */
+function bronzeWave(b: FacetBuilder, x: number, y0: number, y1: number, z: number, half: number): void {
+  const at = (i: number) => x - half + (2 * half * i) / 6;
+  const crest = (i: number) => y1 + 0.06 * Math.sin((2 * Math.PI * i) / 6);
+  for (let i = 0; i < 6; i++)
+    facing(
+      b,
+      [
+        [at(i), y0, z],
+        [at(i + 1), y0, z],
+        [at(i + 1), crest(i + 1), z],
+        [at(i), crest(i), z],
+      ],
+      [0, 0, 1],
+      C.passeurBronze,
+    );
+}
+
+/**
+ * Les traces des Ruines (GD-20, point 8, lot L8b : une par mission, en pierre des Passeurs, bois et toile ; posées avec
+ * les abords ; aucune plus haute que la corniche ; aucun objet historique réel, aucune inscription, aucune date, ni
+ * couches de terre dans la fosse) :
+ * - Premiers humains, premiers États : une tente de fouille, une toile écrue tendue à plat sur quatre perches, ouverte,
+ *   au-dessus de la fouille ;
+ * - Grecs, Romains et Hébreux : un tamis sur son chevalet, un petit tas de déblais ;
+ * - L'Empire romain : un cintre de bois sous l'arc le plus à l'ouest, celui qui a servi à le remonter ;
+ * - Points de vue : une stèle lisse relevée sur son socle, debout, plus haute que large, le seul motif de vagues dessus.
+ */
+const RUINS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => void> = {
+  'early-humans': (b, x, z) => {
+    const o = RUINS_TRACE_SPOTS['early-humans'];
+    const g = quaiGround(x + o.x, z + o.z);
+    const h = 1.6;
+    const r = RUINS.dig.half + 0.2;
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.box({ x: g.x + sx * r, y: g.y - 0.3, z: g.z + sz * r }, [0.08, h + 0.3, 0.08], C.walkwayDark);
+    b.box({ x: g.x, y: g.y + h, z: g.z }, [2 * r + 0.3, 0.04, 2 * r + 0.3], C.tentCanvas);
+  },
+  'ancient-peoples': (b, x, z) => {
+    const o = RUINS_TRACE_SPOTS['ancient-peoples'];
+    const g = quaiGround(x + o.x, z + o.z);
+    // Le chevalet : deux pieds en A, de part et d'autre ; le tamis, un cercle de bois et son fond de sable, à peine penché.
+    for (const dx of [-0.45, 0.45]) for (const dz of [-0.3, 0.3]) b.beam({ x: g.x + dx, y: g.y - 0.1, z: g.z + dz }, { x: g.x + dx, y: g.y + 0.72, z: g.z }, 0.06, C.walkwayDark);
+    b.box({ x: g.x, y: g.y + 0.68, z: g.z }, [0.98, 0.05, 0.06], C.walkwayDark);
+    b.drum({ x: g.x, y: g.y + 0.74, z: g.z, pitch: 0.12 }, 0.4, 0.1, 10, C.walkway, C.digSand);
+    b.prism({ x: g.x + 1.0, y: g.y - 0.05, z: g.z + 0.15 }, 0.42, 0.06, 0.34, 6, C.digSand);
+  },
+  'roman-empire': (b, x, z) => {
+    const o = RUINS_TRACE_SPOTS['roman-empire'];
+    const A = RUINS.arcade;
+    const g = quaiGround(x + o.x, z + o.z);
+    const half = (A.piles[1] - A.piles[0]) / 2 - A.pile / 2 - 0.08;
+    const rise = A.rise - 0.06;
+    const base = groundAt(placeById('ruins').center);
+    const impost = base + A.impost;
+    // Deux poteaux contre les piles, une entretoise à l'imposte, puis le cintre qui suit la douelle de l'arc.
+    for (const side of [-1, 1]) b.beam({ x: g.x + side * half, y: g.y - 0.1, z: g.z }, { x: g.x + side * half, y: impost, z: g.z }, 0.1, C.lightWood);
+    b.beam({ x: g.x - half, y: impost - 0.06, z: g.z }, { x: g.x + half, y: impost - 0.06, z: g.z }, 0.1, C.lightWood);
+    const n = 6;
+    for (let k = 0; k < n; k++) {
+      const [ta, tb] = [Math.PI - (k * Math.PI) / n, Math.PI - ((k + 1) * Math.PI) / n];
+      b.beam({ x: g.x + half * Math.cos(ta), y: impost + rise * Math.sin(ta), z: g.z }, { x: g.x + half * Math.cos(tb), y: impost + rise * Math.sin(tb), z: g.z }, 0.1, C.lightWood);
+    }
+    b.beam({ x: g.x, y: impost - 0.06, z: g.z }, { x: g.x, y: impost + rise, z: g.z }, 0.08, C.lightWood);
+  },
+  viewpoints: (b, x, z) => {
+    const o = RUINS_TRACE_SPOTS.viewpoints;
+    const g = quaiGround(x + o.x, z + o.z);
+    b.box({ x: g.x, y: g.y - 0.2, z: g.z }, [0.72, 0.4, 0.5], C.passeurShade, C.passeurStone);
+    b.box({ x: g.x, y: g.y + 0.2, z: g.z }, [0.44, 1.25, 0.16], C.passeurStone);
+    bronzeWave(b, g.x, g.y + 0.92, g.y + 1.1, g.z + 0.085, 0.22);
+  },
+};
+
+/**
+ * La dalle de la scénette de l'Observatoire (lot L8c) monte de tant au-dessus du tertre : un peu au-dessus de la terrasse
+ * dallée (places.ts, ses abords), sur laquelle elle se pose quand elle est là.
+ */
+export const OBSERVATORY_PAVING_RISE = OBSERVATORY.terrace.top + 0.03;
+
+/**
+ * La baie de l'Observatoire, l'objet témoin de ses missions (lot L8c) : au milieu du cadre, entre Kéo et la photographe,
+ * sur le pan sud du tambour, un pan d'enduit et son encadrement, la vitre pâle et unie (ni paysage, ni ville, ni reflet)
+ * et ses deux volets de bois Bleu lagon. Fermés au repos ; après une bonne réponse, ouverts d'un quart de tour sur leurs
+ * gonds (perpendiculaires au mur, hors de la vitre), d'un coup en attendant la charnière (la réaction de la vue ne fait
+ * que glisser un maillage ; la rotation sur les gonds viendra dans un commit commun, décision du directeur artistique sur
+ * L8c-d), et ils restent ouverts jusqu'à l'item suivant, où ils sont refermés d'un coup.
+ * Sans éclat ni lumière : la vitre est éclairée comme le mur.
+ */
+export const OBSERVATORY_BAY = { width: 1.1, height: 1.5, bottom: 0.6, panel: [1.9, 2.7, 0.2], shutter: 0.07 } as const;
+
+function observatoryBay(b: FacetBuilder, spot: Vec3, done: boolean): Reaction | null {
+  const W = OBSERVATORY_BAY;
+  const o = { ...spot, y: spot.y + OBSERVATORY_PAVING_RISE };
+  // Le pan sud du tambour, dans le monde ; le pan d'enduit dépasse un peu devant lui.
+  const face = placeById('observatory').center.z + drumFace(OBSERVATORY.drum.r);
+  const [pw, ph, pd] = W.panel;
+  b.box({ x: o.x, y: o.y - 0.05, z: face + pd / 2 - 0.02 }, [pw, ph + 0.05, pd], C.plaster, C.plasterShade);
+  const front = face + pd - 0.02;
+  const y0 = o.y + W.bottom;
+  b.box({ x: o.x, y: y0, z: front + 0.01 }, [W.width, W.height, 0.04], C.bayGlass);
+  // L'appui et le linteau, d'enduit plus sombre.
+  b.box({ x: o.x, y: y0 - 0.12, z: front + 0.05 }, [W.width + 0.36, 0.12, 0.14], C.plasterShade);
+  b.box({ x: o.x, y: y0 + W.height, z: front + 0.04 }, [W.width + 0.36, 0.16, 0.12], C.plasterShade);
+  for (const side of [-1, 1]) {
+    if (!done) {
+      b.box({ x: o.x + side * (W.width / 4 + 0.005), y: y0, z: front + 0.03 + W.shutter / 2 }, [W.width / 2 - 0.01, W.height, W.shutter], C.shutter);
+      continue;
+    }
+    // Ouvert : le battant tourne sur son gond, au bord de la baie, et se tient droit, perpendiculaire au mur.
+    b.box({ x: o.x + side * (W.width / 2 + W.shutter / 2 + 0.01), y: y0, z: front + 0.03 + W.width / 4, yaw: Math.PI / 2 }, [W.width / 2 - 0.01, W.height, W.shutter], C.shutter);
+  }
+  return null;
+}
+
+/**
+ * Où se pose la trace de chaque mission de l'Observatoire, depuis le centre du lieu (lot L8c), sur la terrasse ou au pied
+ * de son escalier, hors des chemins (celui du réseau arrive de l'est, au sud de la terrasse) et du cadre de la scénette
+ * (au sud du tambour) : le banc au nord-est, contre le parapet ; le cairn à l'ouest-nord-ouest, au bord de la terrasse ;
+ * le palier au pied de l'escalier, à l'ouest-sud-ouest.
+ */
+export const OBSERVATORY_TRACE_SPOTS = {
+  metropolises: { x: 5.0, z: -1.62 },
+  'low-density': { x: -5.25, z: -1.71 },
+  'inhabited-world': { x: -7.89, z: 2.57 },
+} as const;
+
+/** Le cap de chaque trace de l'Observatoire : le banc le long du parapet, le palier dans l'axe de l'escalier. */
+const OBSERVATORY_TRACE_YAW = { metropolises: Math.atan2(Math.cos(-0.314), Math.sin(-0.314)), 'inhabited-world': Math.atan2(Math.cos(2.827), Math.sin(2.827)) } as const;
+
+/**
+ * Les traces de l'Observatoire (GD-20, point 8, lot L8c : une par mission, de pierre et de bois ; sans texte, sans
+ * graduation, sans drapeau ni fanion ; rien qui montre une donnée, ni carte, ni panneau, ni flèche ; posées avec les
+ * abords ; aucune plus haute que le tambour) :
+ * - Les métropoles : un banc de pierre des Passeurs, sur la terrasse, contre le parapet, ses deux pieds bien visibles ;
+ * - Les espaces de faible densité : un cairn, un petit tas de pierres sèches, au bord de la terrasse (rondes et de
+ *   biais, jamais en gradins) ;
+ * - Littoraux et monde habité : l'escalier de la grève prolongé d'un palier de bois au pied, court, sur ses pieux (ni
+ *   bitte, ni bateau : rien d'un port).
+ */
+const OBSERVATORY_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => void> = {
+  metropolises: (b, x, z) => {
+    const o = OBSERVATORY_TRACE_SPOTS.metropolises;
+    const y = groundAt({ x, z }) + OBSERVATORY.terrace.top;
+    const yaw = OBSERVATORY_TRACE_YAW.metropolises;
+    const t = { x: Math.cos(yaw), z: -Math.sin(yaw) };
+    for (const side of [-1, 1]) b.box({ x: x + o.x + t.x * side * 0.62, y: y - 0.03, z: z + o.z + t.z * side * 0.62, yaw }, [0.22, 0.42, 0.42], C.passeursShade, C.passeurs);
+    b.box({ x: x + o.x, y: y + 0.39, z: z + o.z, yaw }, [1.8, 0.13, 0.52], C.passeursShade, C.passeurs);
+  },
+  'low-density': (b, x, z) => {
+    const o = OBSERVATORY_TRACE_SPOTS['low-density'];
+    let y = groundAt({ x, z }) + OBSERVATORY.terrace.top - 0.03;
+    // Quatre pierres sèches, de la plus grosse à la plus petite, posées de biais l'une sur l'autre.
+    for (const [dx, dz, r, h, yaw, color] of [
+      [0, 0, 0.46, 0.3, 0.2, C.stoneDark],
+      [0.05, -0.04, 0.36, 0.28, 0.9, C.stone],
+      [-0.04, 0.03, 0.28, 0.24, 0.4, C.stoneDark],
+      [0.02, 0, 0.17, 0.2, 1.3, C.stone],
+    ] as const) {
+      b.prism({ x: x + o.x + dx, y, z: z + o.z + dz, yaw }, r, r * 0.72, h, 6, color, C.stone);
+      y += h * 0.92;
+    }
+  },
+  'inhabited-world': (b, x, z) => {
+    const o = OBSERVATORY_TRACE_SPOTS['inhabited-world'];
+    const yaw = OBSERVATORY_TRACE_YAW['inhabited-world'];
+    const at = { x: x + o.x, z: z + o.z };
+    const top = groundAt(at) + 0.12;
+    // Le plancher du palier, ses deux planches de rive, et quatre pieux jusqu'au sol (le tertre descend vers la grève).
+    const [ux, uz] = [Math.sin(yaw), Math.cos(yaw)];
+    const [vx, vz] = [Math.cos(yaw), -Math.sin(yaw)];
+    b.box({ x: at.x, y: top - 0.1, z: at.z, yaw }, [1.6, 0.1, 1.3], C.deckSide, C.newWood);
+    for (const side of [-1, 1]) b.box({ x: at.x + vx * side * 0.74, y: top - 0.02, z: at.z + vz * side * 0.74, yaw }, [0.12, 0.08, 1.3], C.deckSide);
+    for (const su of [-1, 1])
+      for (const sv of [-1, 1]) {
+        const p = { x: at.x + ux * su * 0.55 + vx * sv * 0.7, z: at.z + uz * su * 0.55 + vz * sv * 0.7 };
+        const foot = groundAt(p) - 0.3;
+        b.box({ x: p.x, y: foot, z: p.z }, [0.14, top - foot + 0.05, 0.14], C.post);
+      }
+  },
+};
+
+/**
+ * La dalle de la scénette de la Halle (lot L8d) monte de tant au-dessus du replat : un peu au-dessus du dallage (places.ts,
+ * ses abords), sur lequel elle se pose quand il est là.
+ */
+export const COMMONS_PAVING_RISE = COMMONS.paving.top + 0.03;
+
+/**
+ * La borne-fontaine de la Halle, l'objet témoin de ses missions (lot L8d) : au milieu du cadre, entre Kéo et le couvreur,
+ * sous le bord de la toiture, entre les deux piliers du milieu, une borne de la pierre des Passeurs, son bec de bronze,
+ * et à son pied une auge de pierre, sèche au repos (son fond sombre, à vue). Sans statue, sans croix, sans inscription.
+ * Après une bonne réponse seulement : un filet d'eau en aplat clair (#A9DCEB), droit et assez large pour se lire, tombe
+ * du bec dans l'auge, immobile, et l'eau de l'auge monte d'un geste court puis reste (d'un coup avec « Réduire les
+ * animations ») ; jusqu'à l'item suivant, où l'auge est de nouveau sèche. La paroi sud de l'auge, vers la caméra, est
+ * plus basse que l'eau à son repos : une bande claire d'eau se voit monter au-dessus d'elle, une lèvre, jamais un débord
+ * (relecture de L8c-d). Ni ruissellement qui continue, ni éclaboussure, ni reflet. Ses mesures : le recul de la borne
+ * vers les piliers, sa largeur, sa hauteur, sa profondeur ; la hauteur du bec, sa longueur ; l'auge (sa largeur, sa
+ * hauteur, sa profondeur, ses parois, le haut de sa paroi sud) ; le haut de l'eau, sous le bord des trois autres
+ * parois, d'où elle monte et l'épaisseur de son aplat ; la largeur du filet.
+ */
+export const FOUNTAIN = {
+  z: -0.6,
+  width: 0.46,
+  height: 1.05,
+  depth: 0.4,
+  spout: 0.78,
+  reach: 0.26,
+  trough: [0.95, 0.38, 0.56],
+  wall: 0.08,
+  lip: 0.2,
+  water: 0.3,
+  from: 0.12,
+  sheet: 0.2,
+  jet: 0.12,
+} as const;
+
+function commonsFountain(b: FacetBuilder, spot: Vec3, done: boolean): Reaction | null {
+  const F = FOUNTAIN;
+  const o = { ...spot, y: spot.y + COMMONS_PAVING_RISE };
+  const z = o.z + F.z;
+  // La borne et son chaperon, un peu plus large.
+  b.box({ x: o.x, y: o.y - 0.05, z }, [F.width, F.height + 0.05, F.depth], C.passeursShade, C.passeurs);
+  b.box({ x: o.x, y: o.y + F.height, z }, [F.width + 0.1, 0.1, F.depth + 0.1], C.passeursShade, C.passeurs);
+  // Le bec de bronze, de la face sud de la borne, vers le sud et un peu vers le bas.
+  const front = z + F.depth / 2;
+  const tip = { x: o.x, y: o.y + F.spout - 0.04, z: front + F.reach };
+  b.beam({ x: o.x, y: o.y + F.spout, z: front - 0.02 }, tip, 0.08, C.passeursBronze);
+  // L'auge : son fond (sombre tant qu'elle est sèche, sous l'eau sinon) et ses quatre parois, sous le bec.
+  const [tw, th, td] = F.trough;
+  const tz = front + F.reach;
+  const t = F.wall;
+  b.box({ x: o.x, y: o.y - 0.05, z: tz }, [tw, 0.05 + 0.08, td], C.passeursShade, C.stoneDark);
+  for (const side of [-1, 1]) {
+    b.box({ x: o.x + side * (tw / 2 - t / 2), y: o.y - 0.05, z: tz }, [t, th + 0.05, td], C.passeursShade, C.passeurs);
+    // La paroi sud (vers la caméra) plus basse : l'eau se voit monter au-dessus d'elle.
+    const h = side > 0 ? F.lip : th;
+    b.box({ x: o.x, y: o.y - 0.05, z: tz + side * (td / 2 - t / 2) }, [tw - 2 * t, h + 0.05, t], C.passeursShade, C.passeurs);
+  }
+  if (!done) return null;
+  // Le filet, immobile et droit, du bec jusqu'à l'eau de l'auge.
+  const surface = o.y + F.water;
+  b.box({ x: tip.x, y: surface, z: tip.z }, [F.jet, tip.y - surface, F.jet * 0.75], C.fountainWater);
+  // L'eau de l'auge, un aplat clair entre ses parois, qui monte de sous la paroi sud jusqu'au-dessus d'elle (sous le bord
+  // des trois autres), puis reste ; son côté sud se lit en bande au-dessus de la paroi basse.
+  const r = new FacetBuilder();
+  r.box({ x: 0, y: -F.sheet, z: 0 }, [tw - 2 * t - 0.02, F.sheet, td - 2 * t - 0.02], C.fountainWater);
+  const from = { x: o.x, y: o.y + F.from, z: tz };
+  return { facets: r.build(), from, to: { ...from, y: surface }, arc: 0, stay: true };
+}
+
+/**
+ * Où se pose la trace de chaque mission de la Halle, depuis le centre du lieu (lot L8d) : les bancs et les pupitres sous
+ * le bord sud de la toiture, de part et d'autre du milieu (où se tient la scénette), au sud du rang des piliers (sous la
+ * toiture, mais vus du sud au retour : plus loin sous elle, l'égout les cache) ; la haie au coin sud-est, hors du
+ * dallage et du chemin (qui arrive de l'ouest).
+ */
+export const COMMONS_TRACE_SPOTS = {
+  representatives: { x: -4.4, z: 4.25 },
+  'school-secularism': { x: 4.1, z: 4.15 },
+  'private-life': { x: 7.9, z: 5.9 },
+} as const;
+
+/**
+ * Les traces de la Halle (GD-20, point 8, lot L8d : une par mission, de pierre, de chêne et de haie ; sans texte ni
+ * écriteau, sans drapeau, sans tableau ni affiche, rien d'une tribune, d'une urne ou d'un cadenas ; posées avec la
+ * toiture ; cachées pendant toute question, aussi en « Vue simple ») :
+ * - Représenter les autres : deux longs bancs de chêne sur pieds de pierre, l'un après l'autre, le long du rang des
+ *   piliers du sud (jamais en cercle ni face à une tribune) ;
+ * - L'école laïque : trois petits pupitres d'écolier en rang, chacun son plateau de chêne incliné et son siège attaché,
+ *   plus bas, tous tournés vers le nord (rien devant eux : ni tableau, ni affiche, ni tribune) ;
+ * - Ma vie privée : une haie basse taillée, en équerre, au coin sud-est, et son portillon de bois (sans cadenas ni
+ *   serrure).
+ */
+/**
+ * Un pupitre d'écolier de la Halle, depuis son milieu (lot L8d, relecture de L8c-d) : le demi-écart de ses joues, leur
+ * profondeur, la hauteur de son plateau, son inclinaison (vers le sud, l'écolier), sa largeur et sa profondeur ; le
+ * demi-écart des pieds du siège, sa hauteur, son recul vers le sud.
+ */
+const COMMONS_DESK = { foot: 0.26, cheek: 0.3, height: 0.68, tilt: 0.35, top: [0.78, 0.5] as const, seatFoot: 0.24, seat: 0.38, seatZ: 0.56 } as const;
+
+const COMMONS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => void> = {
+  representatives: (b, x, z) => {
+    const o = COMMONS_TRACE_SPOTS.representatives;
+    // Sur le dallage usé de la ruine, toujours là (le neuf, plus haut, vient avec les abords : les pieds y entrent).
+    const y = groundAt({ x: x + o.x, z: z + o.z }) + COMMONS.paving.worn;
+    for (const dx of [-1.2, 1.2]) {
+      const cx = x + o.x + dx;
+      for (const side of [-1, 1]) b.box({ x: cx + side * 0.72, y: y - 0.03, z: z + o.z }, [0.2, 0.43, 0.36], C.passeursShade, C.passeurs);
+      b.box({ x: cx, y: y + 0.4, z: z + o.z }, [1.95, 0.1, 0.44], C.oak, C.oakTop);
+    }
+  },
+  'school-secularism': (b, x, z) => {
+    const o = COMMONS_TRACE_SPOTS['school-secularism'];
+    // Sur le dallage usé de la ruine, toujours là (le neuf, plus haut, vient avec les abords : les pieds y entrent).
+    const y = groundAt({ x: x + o.x, z: z + o.z }) + COMMONS.paving.worn;
+    const D = COMMONS_DESK;
+    for (const dx of [-1.35, 0, 1.35]) {
+      const cx = x + o.x + dx;
+      const cz = z + o.z;
+      // Le pupitre, tourné vers le nord : son plateau incliné d'environ 20° (haut au nord, bas vers l'écolier), plus large
+      // que ses deux joues ; son siège attaché derrière lui, au sud, plus bas, sur ses deux pieds ; deux patins au sol
+      // les relient (relecture de L8c-d : le siège plus bas fait lire un pupitre d'écolier, jamais un lutrin).
+      for (const side of [-1, 1]) {
+        b.box({ x: cx + side * D.foot, y: y - 0.02, z: cz }, [0.06, D.height - 0.06, D.cheek], C.oak);
+        b.box({ x: cx + side * D.seatFoot, y: y - 0.02, z: cz + D.seatZ }, [0.05, D.seat, 0.06], C.oak);
+        b.box({ x: cx + side * D.foot, y: y - 0.02, z: cz + (D.seatZ - D.cheek / 2) / 2 }, [0.06, 0.08, D.seatZ + D.cheek / 2 + 0.03], C.oak);
+      }
+      b.box({ x: cx, y: y + D.height - 0.06, z: cz, pitch: D.tilt }, [D.top[0], 0.05, D.top[1]], C.oak, C.oakTop);
+      b.box({ x: cx, y: y + D.seat - 0.02, z: cz + D.seatZ }, [0.6, 0.05, 0.28], C.oak, C.oakTop);
+    }
+  },
+  'private-life': (b, x, z) => {
+    const o = COMMONS_TRACE_SPOTS['private-life'];
+    const cx = x + o.x,
+      cz = z + o.z;
+    // La haie en équerre : au sud, deux tronçons de part et d'autre du portillon ; à l'est, un tronçon vers le nord.
+    for (const [hx, hz, sx, sz] of [
+      [-1.25, 0.7, 1.3, 0.45],
+      [0.75, 0.7, 1.1, 0.45],
+      [1.1, -0.45, 0.45, 1.9],
+    ] as const) {
+      const at = { x: cx + hx, z: cz + hz };
+      b.box({ x: at.x, y: groundAt(at) - 0.3, z: at.z }, [sx, 0.9, sz], C.hedge, C.hedgeTop);
+    }
+    // Le portillon : deux poteaux et le vantail fermé, de deux traverses et de trois lattes.
+    const g = { x: cx - 0.2, z: cz + 0.7 };
+    const y = groundAt(g);
+    for (const side of [-1, 1]) b.box({ x: g.x + side * 0.38, y: y - 0.3, z: g.z }, [0.1, 0.95, 0.1], C.oak);
+    for (const h of [0.15, 0.45]) b.box({ x: g.x, y: y + h, z: g.z }, [0.66, 0.07, 0.05], C.oak);
+    for (const dx of [-0.2, 0, 0.2]) b.box({ x: g.x + dx, y: y + 0.08, z: g.z }, [0.07, 0.5, 0.04], C.oakTop);
   },
 };

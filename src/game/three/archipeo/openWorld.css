@@ -572,6 +572,12 @@
   padding: 0 0.2rem;
   gap: 0.2rem;
 }
+/* En C sur un écran bas, revenu de « Vue simple » à « Scène » (GD-20, point 8, L8), le résultat de la colonne reste à sa
+   largeur (il défile avec elle) : élargi, il couvrait Kéo, au bord gauche de la scène. La forme de la colonne : à la fin
+   de la feuille. */
+.world-question .quiz.in-world.low.has-sheet.scene-gardee {
+  width: var(--question-width);
+}
 /* Le premier item d'un écran bas : la consigne en entier, puis « Commencer », sur toute la largeur sous la barre du
    haut ; la question et ses réponses attendent derrière. */
 .world-question .quiz.in-world.low.intro {
@@ -2436,4 +2442,110 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+/* En C sur un écran bas, revenu de « Vue simple » à « Scène » (GD-20, point 8, L8 ; relecture UX UI, piste A) : la colonne,
+   à gauche, prend la forme serrée de « Vue simple » (`simple-bas`, WorldQuestion) : la consigne repliée en une ligne, son
+   « Lire la suite », puis les étapes ou la voix de la phrase, sur une rangée ; la phrase et les réponses dessous. La barre
+   du haut (« Vue simple », son icône seule, et la pause) se tient à droite de la colonne : rien ne la pousse vers le bas. */
+.world-question .quiz.in-world.scenette.scene-gardee.simple-bas {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: flex-start;
+  column-gap: 0.5rem;
+  row-gap: 6px;
+  --pin-haut: 4px;
+  padding: 4px 0.6rem 4px;
+}
+:root .world-question .quiz.in-world.scene-gardee.simple-bas.mode-c > :is(.quiz-steps, .world-phrase-voice) {
+  margin: 0;
+}
+:root .world-question .quiz.in-world.scene-gardee.simple-bas.mode-c > .quiz-steps {
+  flex: 1 0 100%;
+}
+/* « Lire la suite », son icône seule à toute taille de texte (son nom dit, WorldQuestion), en C sur un écran bas, dans
+   « Vue simple » comme dans la colonne revenue à « Scène » : sinon le mot prenait la place de la consigne repliée,
+   réduite à « … » à 667 × 375 (directeur artistique, L8). */
+.world-question .quiz.in-world.simple-bas.mode-c > .world-consigne-more {
+  padding-inline: 10px;
+}
+.world-question .in-world.simple-bas.mode-c .world-consigne-more-word {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+/* Le résultat tient dans la colonne, bord compris (« Suivant » sortait à droite). */
+.world-question .quiz.in-world.scene-gardee.simple-bas > .result-sheet {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+/* En C sur un écran bas, en « Vue simple » comme dans la colonne revenue à « Scène », la phrase, ses réponses et ce qui
+   les suit prennent chacun la largeur du panneau, à toute taille de texte : sans quoi la phrase restait sur une ligne,
+   coupée à droite, au texte normal (« …la vapeur d'eau re », relecture UX UI de L8). */
+.world-question .in-world.simple-bas.mode-c .world-question-prompt > * {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+/* Chaque voix touche le texte qu'elle lit (directeur artistique, L8 ; relecture UX UI, quatrième passe) : en C sur un
+   écran bas, en « Vue simple » comme dans la colonne revenue à « Scène », la voix de la phrase reste à droite de la
+   phrase, sur sa rangée, même quand la phrase n'est pas épinglée (elle défile alors avec elle) ; elle ne passe jamais
+   dans la ligne de la consigne, ni sur une rangée à elle. Les étapes gardent leur place. */
+:root .world-question .quiz.in-world.simple-bas.mode-c > .world-phrase-voice {
+  display: none;
+}
+.world-question .quiz.in-world.simple-bas.mode-c[data-epingle="ligne"] .question-head > .speak-button {
+  visibility: visible;
+}
+:root .world-question .quiz.in-world.simple-bas.mode-c[data-epingle="ligne"] > .quiz-steps {
+  display: flex;
+}
+/* Au plus grand texte, en « Vue simple » d'un C sur un écran bas, les étapes ne sont plus qu'une rangée de points sans
+   signe de lecture entre « Lire la suite » et « Scène » : elles quittent la ligne (relecture UX UI, quatrième passe) ;
+   elles reviennent dans la colonne revenue à « Scène », sous la ligne. */
+:root[data-texte="grand"] .world-question .quiz.in-world.scenette.simple.simple-bas.mode-c > .quiz-steps {
+  display: none;
+}
+/* La ligne repliée garde au moins son premier mot (WorldQuestion, `premier-mot`) : elle prend sa largeur, ses boutons
+   passent après elle. */
+.world-question .in-world.simple-bas .world-consigne-fold.premier-mot {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.world-question .quiz.in-world.simple-bas > .world-consigne-line:has(.premier-mot) {
+  min-width: auto;
+}
+/* En « Vue simple », la place de « Scène » et de la pause reste au bout de la première rangée quand la ligne garde son
+   premier mot, et au plus grand texte, où ni les étapes ni la voix de la phrase ne la tiennent plus : « Lire la suite »
+   ne passe jamais dessous. */
+.world-question .quiz.in-world.scenette.simple.simple-bas.mode-c:has(.premier-mot) > .world-consigne-more,
+:root[data-texte="grand"] .world-question .quiz.in-world.scenette.simple.simple-bas.mode-c > .world-consigne-more {
+  margin-right: var(--barre-haut);
+}
+/* Au plus grand texte, le résultat d'un C sur un écran bas (« Vue simple » et colonne revenue à « Scène ») se serre pour
+   que « Bravo ! » et « Suivant » se voient entiers ensemble (référent dys, L8) : « Bravo ! » sur une ligne, à la taille du
+   texte choisie, l'explication et « Suivant » sans marge de plus ; rien n'est réduit sous la taille choisie. */
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c .result-sheet {
+  padding: 4px 0.4rem;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c .result-sheet .feedback-shout {
+  padding: 0 0.4rem;
+  font-size: max(18px, 1rem);
+  white-space: nowrap;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c .result-sheet .explanation {
+  margin: 0 0 4px;
+  padding: 2px 0.5rem;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c .result-sheet .next-button {
+  min-height: 48px;
+  padding-block: 0;
+}
+/* « Lire la suite » passé sous la ligne qui garde son premier mot (WorldQuestion, `data-livre`) défile avec le panneau :
+   épinglé en haut, il se posait sur le premier mot (directeur artistique, L8). */
+:root .world-question .quiz.in-world.mode-c.simple-bas[data-livre="dessous"] > .world-consigne-more {
+  position: static;
 }

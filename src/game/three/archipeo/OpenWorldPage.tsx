@@ -406,6 +406,10 @@ export default function OpenWorldPage() {
       lookout: of('lookout'),
       archives: of('archives'),
       printworks: of('printworks'),
+      mangrove: of('mangrove'),
+      ruins: of('ruins'),
+      observatory: of('observatory'),
+      commons: of('commons'),
     } satisfies Record<PlaceId, ReturnType<typeof of>>;
   }, [state.world.parts]);
   // Les traces des scénettes de chaque lieu : une par mission jouée en scénette, dès sa première réussite (les étoiles
@@ -428,6 +432,10 @@ export default function OpenWorldPage() {
       lookout: of('lookout'),
       archives: of('archives'),
       printworks: of('printworks'),
+      mangrove: of('mangrove'),
+      ruins: of('ruins'),
+      observatory: of('observatory'),
+      commons: of('commons'),
     } satisfies Record<PlaceId, string[]>;
   }, [state.progress]);
   // Ce que la scène montre déjà, et le lieu de la dernière question : une partie arrivée pendant une question s'y pose
@@ -454,6 +462,10 @@ export default function OpenWorldPage() {
       lookout: posedShapes(constructions.lookout),
       archives: posedShapes(constructions.archives),
       printworks: posedShapes(constructions.printworks),
+      mangrove: posedShapes(constructions.mangrove),
+      ruins: posedShapes(constructions.ruins),
+      observatory: posedShapes(constructions.observatory),
+      commons: posedShapes(constructions.commons),
     };
     const before = shownBuilt.current;
     const place = askedPlace.current;
@@ -475,6 +487,10 @@ export default function OpenWorldPage() {
       lookout: constructionState(constructions.lookout),
       archives: constructionState(constructions.archives),
       printworks: constructionState(constructions.printworks),
+      mangrove: constructionState(constructions.mangrove),
+      ruins: constructionState(constructions.ruins),
+      observatory: constructionState(constructions.observatory),
+      commons: constructionState(constructions.commons),
     }),
     [constructions],
   );

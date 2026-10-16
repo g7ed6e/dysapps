@@ -5,7 +5,7 @@
 // la brume cache ce qui est plus loin. Code pur : la vue (three/archipeo/) ne fait que donner ces tableaux à Three.js.
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { CLIFF, COAST, COLORS_6E, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, PASS, RIVER, SALT_FLAT, SHIPYARD_FLAT, TERRAIN, UPLAND } from './plan6e';
+import { CLIFF, COAST, COLORS_6E, COMMONS_FLAT, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, LOOKOUT_RAMP, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PASS, RIVER, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, TERRAIN, UPLAND } from './plan6e';
 
 /** La distance signée à la terre ferme : positive sur la terre, négative dans l'eau (mer, lagon, passe, bassin, rivière). */
 export function landDistance(p: Vec2): number {
@@ -81,6 +81,17 @@ function groundHeight(p: Vec2): number {
   // Le replat de la Turbine (lot L6a) : aplani, puis le sol d'avant, en pente douce (loin de la rivière).
   const replat = smoothstep(ENGINE_FLAT.radius + ENGINE_FLAT.fade, ENGINE_FLAT.radius, distance(p, ENGINE_FLAT.center));
   if (replat > 0) h += (ENGINE_FLAT.height - h) * replat;
+  // La vasière de la Mangrove (lot L8a) : aplanie bas, puis le sol d'avant ; au bord de l'eau, elle descend encore comme
+  // la plage.
+  h = lowShore(h, d, p, MANGROVE_FLAT);
+  // La rive basse des Ruines (lot L8b), de même.
+  h = lowShore(h, d, p, RUINS_FLAT);
+  // Le tertre de l'Observatoire (lot L8c) : aplani, puis le sol d'avant, qui descend vers la grève.
+  const tertre = smoothstep(OBSERVATORY_FLAT.radius + OBSERVATORY_FLAT.fade, OBSERVATORY_FLAT.radius, distance(p, OBSERVATORY_FLAT.center));
+  if (tertre > 0) h += (OBSERVATORY_FLAT.height - h) * tertre;
+  // Le replat de la Halle (lot L8d) : aplani, puis le sol d'avant, du village à la grève.
+  const halle = smoothstep(COMMONS_FLAT.radius + COMMONS_FLAT.fade, COMMONS_FLAT.radius, distance(p, COMMONS_FLAT.center));
+  if (halle > 0) h += (COMMONS_FLAT.height - h) * halle;
   // La cour de l'Imprimerie et le parvis des Archives (lot L7) : aplanis, puis le sol d'avant, en pente douce.
   for (const f of NORTH_FLATS) {
     const k = smoothstep(f.radius + f.fade, f.radius, distance(p, f.center)) * smoothstep(0, 2, d);
@@ -99,6 +110,20 @@ function groundHeight(p: Vec2): number {
 
 /** Les grèves aplanies au bord de l'eau (`heightAt`). */
 const GREVES = [SALT_FLAT, SHIPYARD_FLAT] as const;
+
+/**
+ * Un rivage aplani bas (la vasière de la Mangrove, lot L8a ; la rive basse des Ruines, lot L8b) : la hauteur `h` ramenée
+ * à `flat.height` dans son rayon, puis à elle-même sur `fade` unités ; à `d` unités du bord de l'eau, jamais plus haut
+ * que la plage (elle descend encore vers l'eau). Le poids ne dépend que de la distance au centre, jamais de `d` : la
+ * fonction ne sait pas où est l'eau. C'est `heightAt` qui ne l'appelle que sur la terre (il rend le fond de l'eau
+ * avant) ; et la rive ne bouge pas, puisque `landDistance` vient du tracé de la côte, jamais des hauteurs.
+ */
+function lowShore(h: number, d: number, p: Vec2, flat: { center: Vec2; radius: number; fade: number; height: number }): number {
+  const w = smoothstep(flat.radius + flat.fade, flat.radius, distance(p, flat.center));
+  if (w <= 0) return h;
+  const level = Math.min(flat.height, 0.2 + (flat.height - 0.2) * smoothstep(0, BEACH, d));
+  return h + (level - h) * w;
+}
 
 /** La carte de hauteurs : une grille régulière sur l'étendue du terrain. */
 export interface HeightField {

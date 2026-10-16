@@ -11,8 +11,11 @@ import { MATHS_EXERCISES } from '../../exercises/maths';
 import { PROBLEMES_EXERCISES } from '../../exercises/problems';
 import { POSEES_EXERCISES } from '../../exercises/writtenOperations';
 import { boundsOf } from './facets';
+import { placeFacets } from './facets';
 import { linearRgb } from './geometry';
-import { ENGINE, ENGINE_ROTOR_COLORS, LAMP_COLOR, SHIPYARD, STEAM_COLORS, engineRill, engineRotorHub, hullEdge, hullPoint, modelOfPlace, ruinOf, slipRails } from './places';
+import { COMMONS, ENGINE, ENGINE_ROTOR_COLORS, LAMP_COLOR, OBSERVATORY, OBSERVATORY_TABLE, SHIPYARD, STEAM_COLORS, engineRill, engineRotorHub, hullEdge, hullPoint, modelOfPlace, ruinOf, slipRails } from './places';
+import { MANGROVE, mangroveCarbetFloor, mangroveDeckTop } from './places';
+import { RUINS, RUINS_ORNATE_ARCH, ruinsTop } from './places';
 import { PLANK_BRIDGES, pathRibbons } from './paths';
 import { networkSamples, pathNode } from './paths';
 import { buildHeightField, heightAt, heightOnMesh, landDistance, standingHeight, tileFacets } from './terrain';
@@ -23,10 +26,18 @@ import {
   ANSWER_LAYOUT,
   ECLUSES_TRACE_SPOTS,
   ENGINE_TRACE_SPOTS,
+  MANGROVE_TRACE_SPOTS,
+  PIROGUE,
+  pirogueRest,
+  DIG_WINCH,
+  RUINS_TRACE_SPOTS,
+  digBucketSpots,
   FILETS_CARRELET,
   FILETS_TRACE_SPOTS,
   FILETS_VIVIER,
   GALLERY_LANTERN,
+  OBSERVATORY_TRACE_SPOTS,
+  COMMONS_TRACE_SPOTS,
   PHARE_GALLERY,
   PHARE_TRACE_SPOTS,
   QUAIS_TRACE_SPOTS,
@@ -757,6 +768,336 @@ describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
   });
 });
 
+describe('La Mangrove (GD-20, point 8, lot L8a)', () => {
+  const ids = CATALOG.filter((d) => d.biome === 'life-earth-sciences-6e-living-world').map((d) => d.id);
+  const colorVertices = (f: { colors: Float32Array }, color: number) => {
+    const rgb = linearRgb(color);
+    const out: number[] = [];
+    for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - rgb[k]) < 1e-6)) out.push(i);
+    return out;
+  };
+
+  it('ses quatre missions, aux deux niveaux, en C : les items de référence tels quels, les réponses dans la colonne', () => {
+    expect(ids.length).toBe(8);
+    for (const id of ids) {
+      const items = reference(id).items;
+      const placed = placeItems('mangrove', id, items);
+      expect(placed.map((it) => it.key), id).toEqual(items.map((it) => it.key));
+      for (const it of placed) {
+        expect(it.placeScene, it.key).toEqual(COLUMN);
+        const ref = items.find((r) => r.key === it.key)!;
+        expect([it.prompt, it.answer, it.choices], it.key).toEqual([ref.prompt, ref.answer, ref.choices]);
+      }
+      expect(placeInstruction('mangrove', id, 1, 'Référence.', COLUMN), id).toBe('Référence.');
+    }
+  });
+
+  it('chaque trace est la sienne, hors des chemins et l’une hors de l’autre ; aucune plus haute que le carbet, aucune dans l’eau sans pieux', () => {
+    const c = placeById('mangrove').center;
+    const missions = Object.keys(MANGROVE_TRACE_SPOTS) as (keyof typeof MANGROVE_TRACE_SPOTS)[];
+    expect([...missions].sort()).toEqual([...placeById('mangrove').scenes].sort());
+    const traces = missions.map((m) => [m, placeTrace('mangrove', [m])] as const);
+    expect(new Set(traces.map(([, f]) => f.triangles)).size).toBe(4);
+    const boxes = traces.map(([, f]) => boundsOf(f));
+    const near = networkSamples(0.25).filter((p) => Math.hypot(p.x - c.x, p.z - c.z) < 20);
+    const h0 = standingHeight(heightAt(c));
+    const roof = h0 + mangroveCarbetFloor() + MANGROVE.carbet.posts + MANGROVE.carbet.roof;
+    for (const [k, [m]] of traces.entries()) {
+      const b = boxes[k];
+      expect(b.max[1], m).toBeLessThan(roof);
+      for (const p of near) expect(p.x > b.min[0] - 0.6 && p.x < b.max[0] + 0.6 && p.z > b.min[2] - 0.6 && p.z < b.max[2] + 0.6, m).toBe(false);
+      for (let j = k + 1; j < boxes.length; j++) {
+        const d = boxes[j];
+        expect(b.max[0] < d.min[0] || d.max[0] < b.min[0] || b.max[2] < d.min[2] || d.max[2] < b.min[2], `${m} / ${traces[j][0]}`).toBe(true);
+      }
+    }
+    // La pépinière : quatre godets, tous pareils (jamais trois : le contenu en fait un document).
+    const pots = colorVertices(placeTrace('mangrove', ['food-growth']), 0xb07a52);
+    expect(pots.length).toBe(4 * 18 * 3);
+  });
+
+  it('la pirogue, l’objet témoin : au repos sur l’eau derrière le platelage ; après une bonne réponse, elle glisse droit vers lui, s’arrête encore visible, et reste', () => {
+    const before = itemScene('mangrove', COLUMN, false, []);
+    expect(before.reaction).toBeNull();
+    expect(before.labels).toEqual([]);
+    expect(before.still.triangles).toBeGreaterThan(10);
+    const after = itemScene('mangrove', COLUMN, true, []);
+    // Elle n'est plus dans ce qui reste en place : c'est elle qui bouge, sans arc ni roulis, et elle reste.
+    expect(after.still.triangles).toBe(0);
+    expect(after.reaction).toMatchObject({ arc: 0, stay: true });
+    const { from, to } = after.reaction!;
+    expect(from).toEqual(pirogueRest());
+    expect([to.x, to.y]).toEqual([from.x, from.y]);
+    expect(to.z - from.z).toBeCloseTo(PIROGUE.glide, 9);
+    // Au repos, sa coque au même endroit que celle qui glisse, sur l'eau du lagon, au milieu de la scène.
+    expect(boundsOf(before.still)).toEqual(boundsOf(placeFacets(after.reaction!.facets, from)));
+    const o = sceneSpot('mangrove');
+    expect(Math.abs(from.x - o.x)).toBeLessThan(1e-9);
+    const hull = boundsOf(placeFacets(after.reaction!.facets, to));
+    for (const x of [hull.min[0], hull.max[0]]) for (const z of [hull.min[2], hull.max[2]]) expect(landDistance({ x, z }), `${x}, ${z}`).toBeLessThan(0);
+    // Elle s'arrête à un peu plus d'une unité du bord du platelage de la scène : sous la caméra de la scénette (28°),
+    // son plat-bord passe encore au-dessus du bord du platelage, plus haut qu'elle.
+    const edge = o.z - MANGROVE.deck.d / 2 - 0.1;
+    expect(edge - hull.max[2]).toBeCloseTo(PIROGUE.rest - PIROGUE.glide, 4);
+    const drop = mangroveDeckTop() + standingHeight(heightAt(placeById('mangrove').center)) - PIROGUE.rim;
+    expect((edge - hull.max[2]) * Math.tan((28 * Math.PI) / 180)).toBeGreaterThan(drop);
+    // Ni animal ni pagayeur : rien que la coque et son intérieur.
+    expect(new Set(Array.from({ length: after.reaction!.facets.colors.length / 3 }, (_, i) => after.reaction!.facets.colors.slice(3 * i, 3 * i + 3).join(','))).size).toBe(2);
+  });
+
+  it('les palétuviers dans l’eau ou au bord, sous le toit du carbet ; la passerelle en coude sur l’eau', () => {
+    const c = placeById('mangrove').center;
+    const model = modelOfPlace('mangrove');
+    expect(model.top).toBeCloseTo(mangroveCarbetFloor() + MANGROVE.carbet.posts + MANGROVE.carbet.roof, 6);
+    for (const [x, z] of MANGROVE.trees) expect(landDistance({ x: c.x + x, z: c.z + z }), `${x}, ${z}`).toBeLessThan(1);
+    for (const p of [MANGROVE.walk.knee, MANGROVE.walk.end, MANGROVE.carbet]) expect(landDistance({ x: c.x + p.x, z: c.z + p.z })).toBeLessThan(0);
+    // Le feuillage, plus haut que tout sauf le carbet.
+    const leaves = colorVertices(model.facets, 0x2e6e4e).map((i) => model.facets.positions[i + 1]);
+    expect(Math.max(...leaves)).toBeLessThan(model.top - 0.3);
+  });
+});
+
+describe('Les Ruines (GD-20, point 8, lot L8b)', () => {
+  const ids = CATALOG.filter((d) => d.biome === 'history-6e-antiquity').map((d) => d.id);
+  const colorVertices = (f: { colors: Float32Array; positions: Float32Array }, color: number) => {
+    const rgb = linearRgb(color);
+    const out: [number, number, number][] = [];
+    for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - rgb[k]) < 1e-6)) out.push([f.positions[i], f.positions[i + 1], f.positions[i + 2]]);
+    return out;
+  };
+
+  it('ses quatre missions, aux deux niveaux, en C : les items de référence tels quels, les réponses dans la colonne', () => {
+    expect(ids.length).toBe(8);
+    for (const id of ids) {
+      const items = reference(id).items;
+      const placed = placeItems('ruins', id, items);
+      expect(placed.map((it) => it.key), id).toEqual(items.map((it) => it.key));
+      for (const it of placed) {
+        expect(it.placeScene, it.key).toEqual(COLUMN);
+        const ref = items.find((r) => r.key === it.key)!;
+        expect([it.prompt, it.answer, it.choices], it.key).toEqual([ref.prompt, ref.answer, ref.choices]);
+      }
+      expect(placeInstruction('ruins', id, 1, 'Référence.', COLUMN), id).toBe('Référence.');
+    }
+  });
+
+  it('l’arcade : quatre arcs surbaissés (plus larges que hauts), de face au sud, ses piles ouest sur la terre, ses piles est dans l’eau ; la corniche, le plus haut point', () => {
+    const c = placeById('ruins').center;
+    const A = RUINS.arcade;
+    const half = (A.piles[1] - A.piles[0]) / 2 - A.pile / 2;
+    // Une anse de panier : la montée de l'arc bien plus petite que sa demi-ouverture (un plein cintre les égalerait).
+    expect(A.rise).toBeLessThan(0.6 * half);
+    expect(A.piles.length).toBe(5);
+    expect(landDistance({ x: c.x + A.piles[0], z: c.z + A.z })).toBeGreaterThan(0);
+    expect(landDistance({ x: c.x + A.piles[1], z: c.z + A.z })).toBeGreaterThan(0);
+    expect(landDistance({ x: c.x + A.piles[3], z: c.z + A.z })).toBeLessThan(0);
+    expect(landDistance({ x: c.x + A.piles[4], z: c.z + A.z })).toBeLessThan(0);
+    const model = modelOfPlace('ruins');
+    expect(model.top).toBeCloseTo(ruinsTop(), 6);
+    // Une seule clé ornée (relecture DA de L8 : jamais une rangée de signes), celle de l'arc le plus près de l'axe de la
+    // scénette (la pile 1) : sa vague de bronze, une incrustation en six pans sur la face sud, sur toute la largeur de
+    // la clé.
+    const bronze = colorVertices(model.facets, 0x9c7a3c);
+    expect(bronze.length).toBe(6 * 6);
+    for (const v of bronze) expect(v[2]).toBeGreaterThan(A.z + A.depth / 2);
+    const centers = A.piles.slice(0, -1).map((p, k) => (p + A.piles[k + 1]) / 2);
+    const axis = sceneSpot('ruins').x - c.x;
+    const nearest = Math.min(...centers.map((x) => Math.abs(x - axis)));
+    expect(Math.abs(centers[RUINS_ORNATE_ARCH] - axis)).toBeCloseTo(nearest, 6);
+    const xs = bronze.map((v) => v[0]);
+    expect(Math.min(...xs)).toBeLessThan(centers[RUINS_ORNATE_ARCH] - 0.25);
+    expect(Math.max(...xs)).toBeGreaterThan(centers[RUINS_ORNATE_ARCH] + 0.25);
+    // Les dalles noyées : un aplat juste au-dessus de l'eau, dans l'eau, devant l'arcade ; cinq (relecture DA de L8 :
+    // les trois premières ne se voyaient pas), une face chacune, jamais une tranche.
+    const drowned = colorVertices(ruinOf('ruins'), 0xa8d4c0);
+    expect(drowned.length).toBe(5 * 6);
+    const water = -standingHeight(heightAt(c));
+    for (const v of drowned) {
+      expect(v[1]).toBeCloseTo(water + 0.06, 4);
+      expect(v[2]).toBeGreaterThan(A.z);
+      expect(landDistance({ x: c.x + v[0], z: c.z + v[2] })).toBeLessThan(0);
+    }
+  });
+
+  it('chaque trace est la sienne, hors des chemins et l’une hors de l’autre ; aucune plus haute que la corniche', () => {
+    const c = placeById('ruins').center;
+    const missions = Object.keys(RUINS_TRACE_SPOTS) as (keyof typeof RUINS_TRACE_SPOTS)[];
+    expect([...missions].sort()).toEqual([...placeById('ruins').scenes].sort());
+    const traces = missions.map((m) => [m, placeTrace('ruins', [m])] as const);
+    expect(new Set(traces.map(([, f]) => f.triangles)).size).toBe(4);
+    const boxes = traces.map(([, f]) => boundsOf(f));
+    const near = networkSamples(0.25).filter((p) => Math.hypot(p.x - c.x, p.z - c.z) < 20);
+    const roof = standingHeight(heightAt(c)) + ruinsTop();
+    for (const [k, [m]] of traces.entries()) {
+      const b = boxes[k];
+      expect(b.max[1], m).toBeLessThan(roof);
+      for (const p of near) expect(p.x > b.min[0] - 0.6 && p.x < b.max[0] + 0.6 && p.z > b.min[2] - 0.6 && p.z < b.max[2] + 0.6, m).toBe(false);
+      for (let j = k + 1; j < boxes.length; j++) {
+        const d = boxes[j];
+        expect(b.max[0] < d.min[0] || d.max[0] < b.min[0] || b.max[2] < d.min[2] || d.max[2] < b.min[2], `${m} / ${traces[j][0]}`).toBe(true);
+      }
+    }
+    // La stèle : debout, plus haute que large, et la seule vague de bronze des traces, la même incrustation que sur la
+    // clé ornée, sur toute la largeur de sa face.
+    const stele = boxes[missions.indexOf('viewpoints')];
+    expect(stele.max[1] - stele.min[1]).toBeGreaterThan(2 * (stele.max[0] - stele.min[0]));
+    const inlay = colorVertices(placeTrace('ruins', ['viewpoints']), 0x9c7a3c).map((v) => v[0]);
+    expect(Math.max(...inlay) - Math.min(...inlay)).toBeCloseTo(0.44, 4);
+    for (const m of missions) expect(colorVertices(placeTrace('ruins', [m]), 0x9c7a3c).length > 0, m).toBe(m === 'viewpoints');
+  });
+
+  it('le treuil de fouille, l’objet témoin : le seau au fond de la fosse, son bord seul visible ; après une bonne réponse, il remonte et se pose sur la planche, et reste', () => {
+    const before = itemScene('ruins', COLUMN, false, []);
+    expect(before.reaction).toBeNull();
+    expect(before.labels).toEqual([]);
+    const after = itemScene('ruins', COLUMN, true, []);
+    expect(after.reaction).toMatchObject({ arc: DIG_WINCH.arc, stay: true });
+    const { pit, board } = digBucketSpots();
+    expect(after.reaction!.from).toEqual(pit);
+    expect(after.reaction!.to).toEqual(board);
+    // Au fond, seul son haut dépasse du dallage ; posé, il est sur la planche, au bord de la fosse.
+    const floor = sceneSpot('ruins').y + 0.12;
+    expect(pit.y + DIG_WINCH.bucket).toBeCloseTo(floor + 0.03, 6);
+    expect(board.y).toBeCloseTo(floor + 0.05, 6);
+    expect(board.x - pit.x).toBeGreaterThan(DIG_WINCH.pit);
+    // Au plus haut de son geste, il est remonté d'environ 0,8.
+    const peak = (pit.y + board.y) / 2 + DIG_WINCH.arc - pit.y;
+    expect(peak).toBeGreaterThan(0.7);
+    expect(peak).toBeLessThan(0.95);
+    // Le seau quitte ce qui reste en place : le trépied et la fosse y restent, sans lui.
+    expect(after.still.triangles).toBe(before.still.triangles - after.reaction!.facets.triangles);
+    // Son dessus : du sable, rien d'autre (ni objet ni os).
+    expect(new Set(Array.from({ length: after.reaction!.facets.colors.length / 3 }, (_, i) => after.reaction!.facets.colors.slice(3 * i, 3 * i + 3).join(','))).size).toBe(3);
+  });
+});
+
+describe('L’Observatoire (GD-20, point 8, lot L8c)', () => {
+  const ids = CATALOG.filter((d) => d.biome === 'geography-6e-living').map((d) => d.id);
+
+  it('ses trois missions, aux deux niveaux, en C : les items de référence tels quels, les réponses dans la colonne', () => {
+    expect(ids.length).toBe(placeById('observatory').scenes.length * 2);
+    for (const id of ids) {
+      const items = reference(id).items;
+      const placed = placeItems('observatory', id, items);
+      expect(placed.map((it) => it.key), id).toEqual(items.map((it) => it.key));
+      for (const it of placed) {
+        expect(it.placeScene, it.key).toEqual(COLUMN);
+        const ref = items.find((r) => r.key === it.key)!;
+        expect([it.prompt, it.answer, it.choices], it.key).toEqual([ref.prompt, ref.answer, ref.choices]);
+      }
+      expect(placeInstruction('observatory', id, 1, 'Référence.', COLUMN), id).toBe('Référence.');
+    }
+  });
+
+  it('chaque trace est la sienne, sur la terrasse ou au pied de son escalier, hors des chemins et l’une hors de l’autre ; aucune plus haute que le tambour', () => {
+    const c = placeById('observatory').center;
+    const y0 = standingHeight(heightAt(c));
+    const missions = Object.keys(OBSERVATORY_TRACE_SPOTS) as (keyof typeof OBSERVATORY_TRACE_SPOTS)[];
+    expect([...missions].sort()).toEqual([...placeById('observatory').scenes].sort());
+    const traces = missions.map((m) => [m, placeTrace('observatory', [m])] as const);
+    expect(new Set(traces.map(([, f]) => f.triangles)).size).toBe(3);
+    const boxes = traces.map(([, f]) => boundsOf(f));
+    const near = networkSamples(0.25).filter((p) => Math.hypot(p.x - c.x, p.z - c.z) < 20);
+    // Le cadre de la scénette, au sud du tambour (les traces s'y cachent de toute façon pendant une question).
+    const scene = sceneSpot('observatory');
+    for (const [k, [m]] of traces.entries()) {
+      const b = boxes[k];
+      expect(b.min[1], m).toBeGreaterThan(y0 - 0.8);
+      expect(b.max[1], m).toBeLessThan(y0 + OBSERVATORY.drum.top);
+      for (const p of near) expect(p.x > b.min[0] - 0.6 && p.x < b.max[0] + 0.6 && p.z > b.min[2] - 0.6 && p.z < b.max[2] + 0.6, m).toBe(false);
+      expect(b.max[0] < scene.x - 3.7 || b.min[0] > scene.x + 3.7 || b.max[2] < scene.z - 1.6, m).toBe(true);
+      for (let j = k + 1; j < boxes.length; j++) {
+        const d = boxes[j];
+        expect(b.max[0] < d.min[0] || d.max[0] < b.min[0] || b.max[2] < d.min[2] || d.max[2] < b.min[2], `${m} / ${traces[j][0]}`).toBe(true);
+      }
+      // Hors du tambour et de la table d'orientation.
+      expect(Math.hypot((b.min[0] + b.max[0]) / 2 - c.x, (b.min[2] + b.max[2]) / 2 - c.z), m).toBeGreaterThan(OBSERVATORY.drum.r + 1);
+      expect(b.max[0] < c.x + OBSERVATORY_TABLE.x - 0.7 || b.min[0] > c.x + OBSERVATORY_TABLE.x + 0.7 || b.max[2] < c.z + OBSERVATORY_TABLE.z - 0.7 || b.min[2] > c.z + OBSERVATORY_TABLE.z + 0.7, m).toBe(true);
+    }
+    // Le cairn, petit : moins haut que le parapet n'est loin du tambour, et plus haut que le parapet (il se lit au-dessus).
+    const cairn = boxes[missions.indexOf('low-density')];
+    expect(cairn.max[1] - y0).toBeGreaterThan(OBSERVATORY.terrace.top + 0.6);
+    expect(cairn.max[1] - y0).toBeLessThan(OBSERVATORY.terrace.top + 1.3);
+  });
+
+  it('la table d’orientation, un disque de bronze lisse sur un pied de pierre : rien d’autre de bronze, ni lettre ni flèche', () => {
+    const model = modelOfPlace('observatory').facets;
+    const bronze = linearRgb(0x9c7a3c);
+    const pts: number[][] = [];
+    for (let i = 0; i < model.colors.length; i += 3)
+      if ([0, 1, 2].every((k) => Math.abs(model.colors[i + k] - bronze[k]) < 1e-6)) pts.push([model.positions[i], model.positions[i + 1], model.positions[i + 2]]);
+    expect(pts.length).toBeGreaterThan(0);
+    for (const [x, , z] of pts) expect(Math.hypot(x - OBSERVATORY_TABLE.x, z - OBSERVATORY_TABLE.z)).toBeLessThanOrEqual(0.55 + 1e-6);
+    // Un disque plat : deux hauteurs seulement (son dessous et son dessus).
+    expect(new Set(pts.map((p) => p[1].toFixed(4))).size).toBe(2);
+  });
+});
+
+describe('La Halle (GD-20, point 8, lot L8d)', () => {
+  const ids = CATALOG.filter((d) => d.biome === 'civics-6e-democratic-society').map((d) => d.id);
+
+  it('ses trois missions, aux deux niveaux, en C : les items de référence tels quels, les réponses dans la colonne', () => {
+    expect(ids.length).toBe(placeById('commons').scenes.length * 2);
+    for (const id of ids) {
+      const items = reference(id).items;
+      const placed = placeItems('commons', id, items);
+      expect(placed.map((it) => it.key), id).toEqual(items.map((it) => it.key));
+      for (const it of placed) {
+        expect(it.placeScene, it.key).toEqual(COLUMN);
+        const ref = items.find((r) => r.key === it.key)!;
+        expect([it.prompt, it.answer, it.choices], it.key).toEqual([ref.prompt, ref.answer, ref.choices]);
+      }
+      expect(placeInstruction('commons', id, 1, 'Référence.', COLUMN), id).toBe('Référence.');
+    }
+  });
+
+  it('chaque trace est la sienne, hors des chemins, hors du cadre de la scénette et l’une hors de l’autre ; les bancs et les pupitres sous le bord de la toiture, vus du sud, la haie au coin sud-est', () => {
+    const c = placeById('commons').center;
+    const y0 = standingHeight(heightAt(c));
+    const missions = Object.keys(COMMONS_TRACE_SPOTS) as (keyof typeof COMMONS_TRACE_SPOTS)[];
+    expect([...missions].sort()).toEqual([...placeById('commons').scenes].sort());
+    const traces = missions.map((m) => [m, placeTrace('commons', [m])] as const);
+    expect(new Set(traces.map(([, f]) => f.triangles)).size).toBe(3);
+    const boxes = traces.map(([, f]) => boundsOf(f));
+    const near = networkSamples(0.25).filter((p) => Math.hypot(p.x - c.x, p.z - c.z) < 20);
+    const scene = sceneSpot('commons');
+    const R = COMMONS.roof;
+    for (const [k, [m]] of traces.entries()) {
+      const b = boxes[k];
+      expect(b.min[1], m).toBeGreaterThan(y0 - 1);
+      // Sous l'égout : aucune n'en touche le bord.
+      expect(b.max[1], m).toBeLessThan(y0 + R.eave - 0.5);
+      for (const p of near) expect(p.x > b.min[0] - 0.6 && p.x < b.max[0] + 0.6 && p.z > b.min[2] - 0.6 && p.z < b.max[2] + 0.6, m).toBe(false);
+      expect(b.max[0] < scene.x - 1.8 || b.min[0] > scene.x + 1.8, m).toBe(true);
+      for (let j = k + 1; j < boxes.length; j++) {
+        const d = boxes[j];
+        expect(b.max[0] < d.min[0] || d.max[0] < b.min[0] || b.max[2] < d.min[2] || d.max[2] < b.min[2], `${m} / ${traces[j][0]}`).toBe(true);
+      }
+      // Hors des piliers.
+      for (const p of COMMONS.pillar.xs.flatMap((x) => [{ x, z: COMMONS.pillar.z }]))
+        expect(b.max[0] < c.x + p.x - 0.4 || b.min[0] > c.x + p.x + 0.4 || b.max[2] < c.z + p.z - 0.4 || b.min[2] > c.z + p.z + 0.4, m).toBe(true);
+    }
+    // Les bancs et les pupitres sous la toiture, au sud du rang des piliers, assez près de l'égout pour se voir du sud
+    // (plus loin sous elle, l'égout les cache à la caméra qui suit Kéo).
+    for (const m of ['representatives', 'school-secularism'] as const) {
+      const b = boxes[missions.indexOf(m)];
+      expect(b.min[2] - c.z, m).toBeGreaterThan(COMMONS.pillar.z + 0.35);
+      expect(b.max[2] - c.z, m).toBeLessThan(R.ez);
+      expect(Math.max(Math.abs(b.min[0] - c.x), Math.abs(b.max[0] - c.x)), m).toBeLessThan(R.ex);
+    }
+    // La haie au coin sud-est, hors du dallage.
+    const hedge = boxes[missions.indexOf('private-life')];
+    expect(hedge.min[0] - c.x).toBeGreaterThan(COMMONS.paving.halfX - 1);
+    expect(hedge.max[2] - c.z).toBeGreaterThan(COMMONS.paving.halfZ);
+  });
+
+  it('rien qui se lise comme un symbole : aucune couleur hors du lieu dans les traces (ni rouge, ni bleu, ni blanc), la haie sans cadenas', () => {
+    const allowed = new Set([0x8e6a48, 0xa98258, 0x4f8a3c, 0x5f9c48, 0xcfc6b2, 0xada48f].map((h) => linearRgb(h).map((v) => v.toFixed(5)).join(',')));
+    const f = placeTrace('commons', placeById('commons').scenes);
+    for (let i = 0; i < f.colors.length; i += 3) expect(allowed.has([f.colors[i], f.colors[i + 1], f.colors[i + 2]].map((v) => v.toFixed(5)).join(','))).toBe(true);
+  });
+});
+
 describe('Les couleurs que la vue reconnaît (scene.ts, `unshadedLamp`)', () => {
   it('aucune autre couleur du monde à moins de 0,004 de la lampe, des ailes de la pompe, du rotor, de la vapeur ou du papier', () => {
     const markers = [LAMP_COLOR, SALT_PUMP.vane, ...ENGINE_ROTOR_COLORS, ...STEAM_COLORS, PAPER_COLOR];
@@ -791,6 +1132,19 @@ describe('Les couleurs que la vue reconnaît (scene.ts, `unshadedLamp`)', () => 
     const shipyardScene = itemScene('shipyard', { kind: 'column' }, true, []);
     take(shipyardScene.still);
     take(shipyardScene.reaction!.facets);
+    // La pirogue de la Mangrove (lot L8a), au repos et après une bonne réponse.
+    take(itemScene('mangrove', { kind: 'column' }, false, []).still);
+    take(itemScene('mangrove', { kind: 'column' }, true, []).reaction!.facets);
+    // Le treuil de fouille des Ruines (lot L8b), au repos et après une bonne réponse.
+    take(itemScene('ruins', { kind: 'column' }, false, []).still);
+    take(itemScene('ruins', { kind: 'column' }, true, []).still);
+    take(itemScene('ruins', { kind: 'column' }, true, []).reaction!.facets);
+    // L'Observatoire (lot L8c) : la baie aux volets ouverts.
+    take(itemScene('observatory', { kind: 'column' }, true, []).still);
+    // La Halle (lot L8d) : la borne-fontaine, son filet et l'eau de son auge.
+    const commonsScene = itemScene('commons', { kind: 'column' }, true, []);
+    take(commonsScene.still);
+    take(commonsScene.reaction!.facets);
     for (const rgb of seen.values()) for (const m of markers) if (near(rgb, linearRgb(m))) expect(same(rgb, linearRgb(m)), `${rgb.join(',')} près de ${m.toString(16)}`).toBe(true);
   });
 });

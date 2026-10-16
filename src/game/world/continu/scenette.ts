@@ -32,6 +32,14 @@ import {
   SALTWORKS_TRACE_SPOTS,
   SHIPYARD_FLOOR_RISE,
   SHIPYARD_TRACE_SPOTS,
+  MANGROVE_SCENE_DECK,
+  MANGROVE_TRACE_SPOTS,
+  RUINS_PAVING_RISE,
+  RUINS_TRACE_SPOTS,
+  OBSERVATORY_PAVING_RISE,
+  OBSERVATORY_TRACE_SPOTS,
+  COMMONS_PAVING_RISE,
+  COMMONS_TRACE_SPOTS,
   filetsBasketAt,
   fullBasket,
   liftingHook,
@@ -48,6 +56,7 @@ import {
 } from './questionScene';
 import type { ItemScene } from './questions';
 import { heightAt, standingHeight } from './terrain';
+import { MANGROVE, mangroveDeckTop } from './places';
 
 /**
  * Ce que l'élève lit de l'habitant : son rôle en tête du panneau, sans prénom tant que le mainteneur n'a pas tranché
@@ -80,6 +89,14 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   lookout: { role: placeArt('lookout')!.role, greeting: null, placement: 'rangee' },
   archives: { role: placeArt('archives')!.role, greeting: null, placement: 'rangee' },
   printworks: { role: placeArt('printworks')!.role, greeting: null, placement: 'rangee' },
+  // Lot L8a : « la botaniste » (directeur artistique), le même mot partout.
+  mangrove: { role: 'La botaniste', greeting: null, placement: 'rangee' },
+  // Lot L8b : « l'archéologue » (directeur artistique ; un homme, consultant Archipéo), le même mot partout.
+  ruins: { role: 'L’archéologue', greeting: null, placement: 'rangee' },
+  // Lot L8c : « la photographe » (directeur artistique), une visiteuse du lieu (consultant Archipéo).
+  observatory: { role: 'La photographe', greeting: null, placement: 'rangee' },
+  // Lot L8d : « le couvreur » (directeur artistique), un métier, jamais un élu.
+  commons: { role: 'Le couvreur', greeting: null, placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -435,7 +452,64 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   lookout: northSite('lookout'),
   archives: northSite('archives'),
   printworks: northSite('printworks'),
+  // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
+  // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
+  mangrove: {
+    floor: mangroveFloor,
+    keo: { dx: -2.6, dz: 0.35, scale: 0.6, yaw: Math.PI - 0.4 },
+    habitant: { dx: 2.6, dz: 0.35 },
+    subject: { halfWidth: 3.7, bottom: -0.8, top: 3.2, depth: 0 },
+    // Plus plongeante que les autres : la pirogue, sur l'eau derrière le platelage, reste vue entière.
+    pitch: (28 * Math.PI) / 180,
+  },
+  // Les Ruines (lot L8b) : Kéo et l'archéologue sur le dallage dégagé, devant l'arcade, vus du sud ; deux arcs entiers
+  // remplissent le fond ; le treuil de fouille (l'objet témoin) au milieu, entre eux.
+  ruins: {
+    floor: () => {
+      const s = sceneSpot('ruins');
+      return { ...s, y: s.y + RUINS_PAVING_RISE };
+    },
+    keo: { dx: -2.6, dz: 0.3, scale: 0.6, yaw: Math.PI - 0.4 },
+    habitant: { dx: 2.6, dz: 0.3 },
+    subject: { halfWidth: 3.7, bottom: -0.4, top: 3.9, depth: 0.3 },
+    pitch: (16 * Math.PI) / 180,
+  },
+  // L'Observatoire (lot L8c) : Kéo et la photographe sur la terrasse, contre le tambour, de part et d'autre de la baie
+  // (l'objet témoin) ; le mur de la rotonde fait le fond, la coupole en haut du cadre ; la caméra plonge assez pour que
+  // l'horizon reste hors du cadre (ni le Port, ni la digue, ni le Phare, ni la plage). Assez loin du parapet (le point de
+  // la scène, questionScene.ts, `SCENE_SPOT`) pour qu'il reste sous leurs pieds (relecture de L8c-d).
+  observatory: {
+    floor: () => {
+      const s = sceneSpot('observatory');
+      return { ...s, y: s.y + OBSERVATORY_PAVING_RISE };
+    },
+    keo: { dx: -2.4, dz: 0.6, scale: 0.6, yaw: Math.PI - 0.4 },
+    habitant: { dx: 2.4, dz: 0.6 },
+    subject: { halfWidth: 3.7, bottom: -0.3, top: 3.3, depth: 0.3 },
+    pitch: (26 * Math.PI) / 180,
+  },
+  // La Halle (lot L8d) : Kéo et le couvreur sous le bord sud de la toiture, de part et d'autre de la borne-fontaine
+  // (l'objet témoin), entre les deux piliers du milieu ; le bord du toit en haut du cadre, les piliers et la charpente
+  // derrière ; la caméra plonge à peine : elle reste sous l'égout, et la toiture cache le village derrière (l'école et
+  // ses enseignes, sur la place de l'Escale, juste au nord).
+  commons: {
+    floor: () => {
+      const s = sceneSpot('commons');
+      return { ...s, y: s.y + COMMONS_PAVING_RISE };
+    },
+    keo: { dx: -2.6, dz: 0.6, scale: 0.6, yaw: Math.PI - 0.4 },
+    habitant: { dx: 2.6, dz: 0.6 },
+    subject: { halfWidth: 3.7, bottom: -0.3, top: 3.0, depth: 0.3 },
+    pitch: (4 * Math.PI) / 180,
+  },
 };
+
+/** Le plancher de la scénette de la Mangrove : juste au-dessus du platelage de rive du lieu (places.ts). */
+function mangroveFloor(): Vec3 {
+  const o = sceneSpot('mangrove');
+  const c = placeById('mangrove').center;
+  return { x: o.x, y: standingHeight(heightAt(c)) + mangroveDeckTop() + MANGROVE_SCENE_DECK.rise, z: o.z };
+}
 
 /**
  * La scénette du Phare tant que sa galerie n'est pas posée (directeur artistique, GD-20 lot 1) : au pied de la tour,
@@ -558,6 +632,46 @@ export function scenetteExit(place: PlaceId, posed = true, mission?: string): { 
     const g = { x: c.x + trace.at.x, z: c.z + trace.at.z };
     return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + trace.lift, z: g.z } };
   }
+  if (place === 'mangrove') {
+    // La trace de la mission jouée (GD-20, point 8, lot L8a) : la caméra garde le milieu de sa hauteur ; Kéo se tient à
+    // côté de la passerelle des abords, devant la porte.
+    const at = { x: c.x + EXIT_SPOTS.mangrove.x, z: c.z + EXIT_SPOTS.mangrove.z };
+    if (!mission || !Object.hasOwn(MANGROVE_TRACE_SPOTS, mission)) return { at, keep: placeKeep(place) };
+    const key = mission as keyof typeof MANGROVE_TRACE_SPOTS;
+    const o = MANGROVE_TRACE_SPOTS[key];
+    const g = { x: c.x + o.x, z: c.z + o.z };
+    return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + MANGROVE_TRACE_LIFT[key], z: g.z } };
+  }
+  if (place === 'ruins') {
+    // La trace de la mission jouée (GD-20, point 8, lot L8b) : la caméra garde le milieu de sa hauteur ; Kéo se tient sur
+    // l'herbe, entre le dallage et la porte.
+    const at = { x: c.x + EXIT_SPOTS.ruins.x, z: c.z + EXIT_SPOTS.ruins.z };
+    if (!mission || !Object.hasOwn(RUINS_TRACE_SPOTS, mission)) return { at, keep: placeKeep(place) };
+    const key = mission as keyof typeof RUINS_TRACE_SPOTS;
+    const o = RUINS_TRACE_SPOTS[key];
+    const g = { x: c.x + o.x, z: c.z + o.z };
+    return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + RUINS_TRACE_LIFT[key], z: g.z } };
+  }
+  if (place === 'observatory') {
+    // La trace de la mission jouée (GD-20, point 8, lot L8c) : la caméra garde le milieu de sa hauteur ; Kéo se tient à
+    // l'est de la porte, sur le chemin.
+    const at = { x: c.x + EXIT_SPOTS.observatory.x, z: c.z + EXIT_SPOTS.observatory.z };
+    if (!mission || !Object.hasOwn(OBSERVATORY_TRACE_SPOTS, mission)) return { at, keep: placeKeep(place) };
+    const key = mission as keyof typeof OBSERVATORY_TRACE_SPOTS;
+    const o = OBSERVATORY_TRACE_SPOTS[key];
+    const g = { x: c.x + o.x, z: c.z + o.z };
+    return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + OBSERVATORY_TRACE_LIFT[key], z: g.z } };
+  }
+  if (place === 'commons') {
+    // La trace de la mission jouée (GD-20, point 8, lot L8d) : la caméra garde le milieu de sa hauteur ; Kéo se tient à
+    // l'est de la porte, sur le chemin, au sud de la toiture.
+    const at = { x: c.x + EXIT_SPOTS.commons.x, z: c.z + EXIT_SPOTS.commons.z };
+    if (!mission || !Object.hasOwn(COMMONS_TRACE_SPOTS, mission)) return { at, keep: placeKeep(place) };
+    const key = mission as keyof typeof COMMONS_TRACE_SPOTS;
+    const o = COMMONS_TRACE_SPOTS[key];
+    const g = { x: c.x + o.x, z: c.z + o.z };
+    return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + COMMONS_TRACE_LIFT[key], z: g.z } };
+  }
   if (place === 'ecluses') {
     // La trace de la mission jouée (GD-20, point 8, lot L2) : la porte d'amont ouverte des Nénuphars (le milieu du lieu),
     // ou ce qu'une autre mission a laissé (la barque, la table, l'escalier, la lanterne du sas), à un pas au-dessus du pied du lieu.
@@ -590,7 +704,7 @@ const TRACE_LIFT = 1;
 const FILETS_TRACE_LIFT = { 'word-classes': 0.3, sorting: 0.8, 'e-er-ez': 1.8 } as const;
 
 /** Où Kéo se tient au retour des Filets et des Écluses, depuis le centre du lieu. */
-const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 }, saltworks: { x: -6.2, z: -1.8 }, engine: { x: -2.2, z: 6.4 }, shipyard: { x: 3.4, z: 5.7 } } as const;
+const EXIT_SPOTS = { filets: { x: 3.2, z: 5.4 }, ecluses: { x: -3.6, z: 1.4 }, saltworks: { x: -6.2, z: -1.8 }, engine: { x: -2.2, z: 6.4 }, shipyard: { x: 3.4, z: 5.7 }, mangrove: { x: 1.6, z: 5.8 }, ruins: { x: -0.4, z: 5.4 }, observatory: { x: 1.3, z: 6.8 }, commons: { x: 1.6, z: 6.7 } } as const;
 
 /** La hauteur gardée par la caméra au retour d'une trace des Marais salants, au-dessus du sol : le milieu de la trace. */
 const SALTWORKS_TRACE_LIFT = { ordering: 0.5, operations: 0.8, scale: 2.6, 'large-numbers': 0.6, 'rounding-products': 0.4 } as const;
@@ -600,6 +714,18 @@ const ENGINE_TRACE_LIFT = { 'states-of-matter': 1.6, 'motion-signals': 0.5, 'ene
 
 /** La hauteur gardée par la caméra au retour d'une trace du Chantier naval, au-dessus du sol : le milieu de la trace. */
 const SHIPYARD_TRACE_LIFT = { 'object-function': 0.6, materials: 0.6, 'information-networks': 0.3, 'solve-program': 0.6 } as const;
+
+/** La hauteur gardée par la caméra au retour d'une trace de la Mangrove, au-dessus du sol ou de l'eau : le milieu de la trace. */
+const MANGROVE_TRACE_LIFT = { 'living-groups': 1.0, 'food-growth': 0.5, 'planet-earth': 1.1, 'life-enquiry': 0.5 } as const;
+
+/** La hauteur gardée par la caméra au retour d'une trace des Ruines, au-dessus du sol : le milieu de la trace. */
+const RUINS_TRACE_LIFT = { 'early-humans': 0.9, 'ancient-peoples': 0.5, 'roman-empire': 1.5, viewpoints: 0.7 } as const;
+
+/** La hauteur gardée par la caméra au retour d'une trace de l'Observatoire, au-dessus du sol : le milieu de la trace. */
+const OBSERVATORY_TRACE_LIFT = { metropolises: 0.8, 'low-density': 1.0, 'inhabited-world': 0.3 } as const;
+
+/** La hauteur gardée par la caméra au retour d'une trace de la Halle, au-dessus du sol : le milieu de la trace. */
+const COMMONS_TRACE_LIFT = { representatives: 0.4, 'school-secularism': 0.5, 'private-life': 0.4 } as const;
 
 /**
  * Au Phare (GD-20, point 8, lot L3), où Kéo se tient au retour de chaque mission, depuis le centre du lieu, et la trace
@@ -798,6 +924,26 @@ const C = {
   copper: 0xc07a3e,
   /** Les cheveux de la machiniste, sombres. */
   hair: 0x3b2a22,
+  // La botaniste (lot L8a, directeur artistique) : chemise corail clair, le bas du corps sombre (pantalon bleu nuit),
+  // cheveux sombres en tresse (ceux de la machiniste), un petit carnet fermé, Bleu lagon en accent, et sa sangle de cuir.
+  coral: 0xf2a285,
+  coralShade: 0xd98a6e,
+  nightBlue: 0x2e4a5c,
+  notebook: 0x178078,
+  strap: 0x7a4e2e,
+  walkway: 0xb98654,
+  walkwayLight: 0xc9965f,
+  walkwayDark: 0x8a6440,
+  // L'archéologue (lot L8b, directeur artistique, consultant Archipéo) : chemise bleu ciel, le bas du corps sombre
+  // (pantalon brun), cheveux gris courts ; sa brosse de fouille, manche de bois et soies ; la pierre du dallage.
+  skyShirt: 0xa9c8de,
+  skyShirtShade: 0x93b0c6,
+  brownTrousers: 0x5a4636,
+  greyHair: 0xa9a6a3,
+  brushHandle: 0xc8955a,
+  bristle: 0x6f5a44,
+  passeurStone: 0xdcd0b5,
+  passeurShade: 0xb9a988,
   trousers: 0x4d6a82,
   // Le charpentier (lot L6b, directeur artistique, consultant Archipéo) : chemise Brume, tablier ardoise (le cuir se
   // confondrait avec la quille), casquette de cuir ; son maillet de calfat, la tête de bois dur ; le plancher de planches.
@@ -811,6 +957,24 @@ const C = {
   mallet: 0x8a5a36,
   plank: 0xc98e55,
   plankSide: 0x9b6a3f,
+  // La photographe (lot L8c, directeur artistique) : veste lavande et son ombre, pantalon gris chaud ; sa chambre de bois
+  // et son soufflet.
+  lavender: 0xb7a6d6,
+  lavenderShade: 0xa594c6,
+  warmGrey: 0x4a4448,
+  cameraWood: 0xa9784a,
+  bellows: 0x5a4a40,
+  // Le couvreur (lot L8d, directeur artistique) : chemise vert d'eau clair et son ombre, pantalon brun cuir ; la tuile
+  // verte qu'il porte (celle de la toiture) ; le dallage de la Halle, la pierre des Passeurs.
+  rooferShirt: 0xbfdccb,
+  rooferShirtShade: 0xa9c8b6,
+  rooferLeather: 0x6a4a34,
+  tile: 0x438b82,
+  tileShade: 0x356f68,
+  // Les chaussures des quatre habitants du rivage sud (relectures de L8) : sombres, sous leurs deux jambes.
+  shoe: 0x2f2826,
+  paving: 0xd6cebc,
+  pavingSide: 0xada48f,
   // Le filet raccommodé (le même que sur le séchoir, questionScene.ts, `mendedNet`) et ses mailles.
   newRope: 0xc9a36a,
   netLine: 0x6f5e42,
@@ -836,6 +1000,42 @@ function sphere(b: FacetBuilder, c: Vec3, r: number, sides: number, rings: numbe
       else if (i === rings - 1) b.triangle(a, bb, d, color);
       else b.quad(a, bb, cc, d, color);
     }
+}
+
+/**
+ * Des cheveux courts (relecture DA de L8) : une coque posée sur la tête, plus basse derrière que devant ; le front
+ * reste dégagé, la nuque est couverte, et rien ne déborde du crâne comme un couvre-chef. `front` et `back` : jusqu'où
+ * elle descend (l'angle depuis le sommet), devant et derrière.
+ */
+function shortHair(b: FacetBuilder, c: Vec3, r: number, sides: number, rings: number, front: number, back: number, color: number): void {
+  const at = (i: number, k: number) => {
+    const theta = (2 * Math.PI * k) / sides;
+    // 0 devant (vers la caméra, +z), 1 derrière ; la racine carrée descend les côtés jusqu'aux oreilles.
+    const s = Math.sqrt((1 - Math.sin(theta)) / 2);
+    const phi = ((front + (back - front) * s) * i) / rings;
+    return [c.x + r * Math.sin(phi) * Math.cos(theta), c.y + r * Math.cos(phi), c.z + r * Math.sin(phi) * Math.sin(theta)] as const;
+  };
+  for (let i = 0; i < rings; i++)
+    for (let k = 0; k < sides; k++) {
+      const a = at(i, k),
+        bb = at(i, k + 1),
+        cc = at(i + 1, k + 1),
+        d = at(i + 1, k);
+      if (i === 0) b.triangle(a, cc, d, color);
+      else b.quad(a, bb, cc, d, color);
+    }
+}
+
+/**
+ * Le bas du corps de la botaniste et de l'archéologue (relecture DA de L8) : un pantalon droit, sans évasement (jamais
+ * une robe), deux jambes séparées sous les hanches, sur deux chaussures sombres tournées vers la caméra.
+ */
+function trouserLegs(b: FacetBuilder, at: Vec3, color: number): void {
+  for (const dx of [-0.13, 0.13]) {
+    b.box({ x: at.x + dx, y: at.y, z: at.z + 0.05 }, [0.17, 0.08, 0.28], C.shoe);
+    b.prism({ x: at.x + dx, y: at.y, z: at.z, yaw: Math.PI / 6 }, 0.11, 0.11, 0.35, 6, color);
+  }
+  b.prism({ x: at.x, y: at.y + 0.32, z: at.z, yaw: Math.PI / 8 }, 0.29, 0.29, 0.15, 8, color);
 }
 
 /** La main de l'habitant, au bout de son bras tendu vers la rambarde : la corde de sonnerie y part. */
@@ -1027,6 +1227,238 @@ const SHIPYARD_DECK = { half: 3.5, depth: 2.4 } as const;
 const ENGINE_PAVING = { half: 5.2, depth: 2.8 } as const;
 
 /**
+ * La botaniste, immobile (directeur artistique, consultant Archipéo) : le bas du corps sombre (son pantalon bleu nuit,
+ * droit, deux jambes et leurs chaussures, relecture DA de L8),
+ * le haut clair (sa chemise corail), la tête, ses cheveux sombres et leur tresse dans le dos ; un bras plié, qui tient
+ * contre elle un petit carnet fermé (plus petit que celui de Kéo), sa couverture Bleu lagon et sa sangle de cuir. Ni
+ * loupe, ni chapeau ; elle ne dit rien.
+ */
+function botaniste(b: FacetBuilder, place: PlaceId): void {
+  const at = scenetteHabitant(place);
+  trouserLegs(b, at, C.nightBlue);
+  b.prism({ x: at.x, y: at.y + 0.47, z: at.z }, 0.31, 0.26, 0.45, 10, C.coral, C.coralShade);
+  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
+  sphere(b, { x: at.x, y: at.y + 1.16, z: at.z - 0.035 }, 0.245, 8, 4, C.hair);
+  // La tresse : trois brins qui descendent dans le dos, du bas de la nuque au milieu du dos.
+  for (const [dy, r] of [
+    [0.98, 0.075],
+    [0.84, 0.068],
+    [0.7, 0.06],
+  ] as const)
+    b.box({ x: at.x, y: at.y + dy, z: at.z - 0.27, yaw: 0.785 }, [r * 1.6, 0.13, r * 1.6], C.hair);
+  // Le bras droit tombe le long du corps ; le gauche, plié, tient le carnet contre la poitrine.
+  b.beam({ x: at.x + 0.27, y: at.y + 0.86, z: at.z }, { x: at.x + 0.36, y: at.y + 0.46, z: at.z + 0.05 }, 0.13, C.coral);
+  const hand = { x: at.x - 0.05, y: at.y + 0.7, z: at.z + 0.32 };
+  b.beam({ x: at.x - 0.27, y: at.y + 0.86, z: at.z + 0.02 }, hand, 0.13, C.coral);
+  b.box({ x: hand.x + 0.04, y: hand.y - 0.05, z: hand.z + 0.02 }, [0.2, 0.26, 0.05], C.notebook);
+  b.box({ x: hand.x + 0.04, y: hand.y + 0.03, z: hand.z + 0.02 }, [0.22, 0.035, 0.065], C.strap);
+}
+
+/**
+ * Le platelage de la scénette de la Mangrove (lot L8a) : celui du lieu, un peu plus grand et un peu plus haut (il le
+ * couvre, sans se confondre avec lui), ses planches en deux bois, et ses pieux dans l'eau, côté lagon (la scénette se
+ * joue aussi avant que le platelage du lieu soit posé).
+ */
+function mangroveDeck(b: FacetBuilder): void {
+  const f = floorOf('mangrove');
+  const D = MANGROVE.deck;
+  const grow = MANGROVE_SCENE_DECK.grow;
+  const [w, d] = [D.w + 2 * grow, D.d + 2 * grow];
+  b.box({ x: f.x, y: f.y - 0.16, z: f.z }, [w, 0.16, d], C.walkwayDark);
+  const n = Math.round(w / 0.5);
+  const step = w / n;
+  for (let k = 0; k < n; k++) {
+    const [x0, x1] = [f.x - w / 2 + k * step + 0.03, f.x - w / 2 + (k + 1) * step - 0.03];
+    const [z0, z1] = [f.z - d / 2 + 0.03, f.z + d / 2 - 0.03];
+    const y = f.y + 0.004;
+    b.quad([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0], k % 2 ? C.walkwayLight : C.walkway);
+  }
+  for (const dx of [-w / 2 + 0.3, -w / 6, w / 6, w / 2 - 0.3]) b.box({ x: f.x + dx, y: -1.2, z: f.z - d / 2 + 0.12 }, [0.18, f.y - 0.16 + 1.2, 0.18], C.walkwayDark);
+}
+
+/**
+ * L'archéologue, immobile (directeur artistique ; un homme, consultant Archipéo) : le bas du corps sombre (son pantalon
+ * brun, droit, deux jambes et leurs chaussures), le haut clair (sa chemise bleu ciel), la tête, ses cheveux gris
+ * courts jusqu'à la nuque, le front dégagé ; un bras qui tombe, la main sur le manche de sa brosse de fouille, sa tête
+ * plate plus large que le manche et la frange de ses soies en bas (relecture DA de L8 : jamais un maillet, jamais une calotte ni
+ * une robe). Ni chapeau à bord, ni barbe, ni lunettes, ni gilet, ni truelle ; il ne dit rien.
+ */
+function archeologue(b: FacetBuilder, place: PlaceId): void {
+  const at = scenetteHabitant(place);
+  trouserLegs(b, at, C.brownTrousers);
+  b.prism({ x: at.x, y: at.y + 0.47, z: at.z }, 0.31, 0.29, 0.45, 10, C.skyShirt, C.skyShirtShade);
+  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
+  // Les cheveux courts : jusqu'au haut du front devant, jusqu'aux oreilles sur les côtés, jusqu'à la nuque derrière.
+  shortHair(b, { x: at.x, y: at.y + 1.14, z: at.z - 0.01 }, 0.245, 8, 4, 0.3 * Math.PI, 0.74 * Math.PI, C.greyHair);
+  // Le bras gauche le long du corps ; le droit un peu en avant, la main sur le manche de la brosse.
+  b.beam({ x: at.x - 0.29, y: at.y + 0.86, z: at.z }, { x: at.x - 0.37, y: at.y + 0.46, z: at.z + 0.04 }, 0.13, C.skyShirt);
+  const hand = { x: at.x + 0.36, y: at.y + 0.5, z: at.z + 0.18 };
+  b.beam({ x: at.x + 0.29, y: at.y + 0.86, z: at.z + 0.02 }, hand, 0.13, C.skyShirt);
+  // La brosse, tenue court, tête en bas : un bout de manche dans la main, la monture plate, six fois plus large que lui
+  // et mince, et ses soies, une frange sombre d'un seul tenant, plus haute que la monture et à peine moins large (jamais
+  // un pavé au bout d'un long manche, qui se lirait comme un maillet, ni des dents séparées, comme un râteau).
+  const neck = { x: hand.x + 0.02, y: hand.y - 0.12, z: hand.z + 0.03 };
+  b.beam({ x: hand.x, y: hand.y + 0.04, z: hand.z }, neck, 0.04, C.brushHandle);
+  b.box({ x: neck.x, y: neck.y - 0.04, z: neck.z }, [0.24, 0.04, 0.06], C.brushHandle);
+  b.box({ x: neck.x, y: neck.y - 0.16, z: neck.z }, [0.22, 0.12, 0.045], C.bristle);
+}
+
+/**
+ * Le dallage de la scène des Ruines (lot L8b) : des dalles de pierre des Passeurs devant l'arcade, sur toute la largeur
+ * de la scène, levées au-dessus de celles du lieu (la scénette se joue aussi avant qu'elles soient dégagées) ; leurs
+ * joints, en travers et en long.
+ */
+function ruinsPaving(b: FacetBuilder): void {
+  const o = floorOf('ruins');
+  const depth = sceneDepth('ruins');
+  b.box({ x: o.x, y: o.y - depth, z: o.z }, [2 * RUINS_PAVING.half, depth, RUINS_PAVING.depth], C.passeurShade, C.passeurStone);
+  for (const dx of [-RUINS_PAVING.half / 2, 0, RUINS_PAVING.half / 2]) b.box({ x: o.x + dx, y: o.y, z: o.z }, [0.05, 0.01, RUINS_PAVING.depth], C.passeurShade);
+  b.box({ x: o.x, y: o.y, z: o.z - 0.2 }, [2 * RUINS_PAVING.half, 0.01, 0.05], C.passeurShade);
+}
+
+/** Le dallage de la scène des Ruines : sa demi-largeur et sa profondeur. */
+const RUINS_PAVING = { half: 4.8, depth: 3.0 } as const;
+
+/**
+ * La photographe, immobile, une visiteuse de l'Observatoire (jamais son occupante, consultant Archipéo) : le haut clair,
+ * sa veste lavande, une teinte que le monde n'a pas encore ; le bas du corps sombre, son pantalon gris chaud (relecture de
+ * L6b : jamais un seul prisme clair jusqu'au sol) ; la tête, ses cheveux sombres et courts ; à côté d'elle, à l'est, une
+ * chambre photographique de bois sur son trépied, une main posée dessus, l'objectif tourné vers le large, à l'est (ni
+ * éclair, ni reflet, ni image montrée). Elle ne dit rien.
+ */
+function photographe(b: FacetBuilder, place: PlaceId): void {
+  const at = scenetteHabitant(place);
+  habitantLegs(b, at, C.warmGrey);
+  b.prism({ x: at.x, y: at.y + HABITANT_HIP, z: at.z }, 0.33, 0.27, 0.92 - HABITANT_HIP, 10, C.lavender, C.lavenderShade);
+  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
+  habitantHair(b, at);
+  // Le bras de l'ouest, le long du corps ; celui de l'est, posé sur la chambre.
+  b.beam({ x: at.x - 0.27, y: at.y + 0.84, z: at.z + 0.02 }, { x: at.x - 0.33, y: at.y + 0.42, z: at.z + 0.08 }, 0.14, C.lavender);
+  const cam = PHOTO_CAMERA;
+  const top = { x: at.x + cam.dx, y: at.y + cam.height, z: at.z + cam.dz };
+  b.beam({ x: at.x + 0.27, y: at.y + 0.84, z: at.z + 0.02 }, { x: top.x - 0.1, y: top.y + cam.body[1] + 0.02, z: top.z }, 0.14, C.lavender);
+  // Le trépied : trois pieds de bois, du dessous de la chambre jusqu'au sol, écartés.
+  for (const a of [0.3, 2.4, 4.5]) b.beam({ x: top.x, y: top.y, z: top.z }, { x: top.x + 0.32 * Math.cos(a), y: at.y, z: top.z + 0.32 * Math.sin(a) }, 0.05, C.woodSide);
+  // La chambre : son corps de bois clair, son soufflet sombre, sa planchette avant et son objectif, vers l'est.
+  b.box({ x: top.x, y: top.y, z: top.z }, cam.body, C.cameraWood, C.newWood);
+  b.box({ x: top.x + cam.body[0] / 2 + 0.08, y: top.y + 0.04, z: top.z }, [0.16, cam.body[1] - 0.08, cam.body[2] - 0.08], C.bellows);
+  b.box({ x: top.x + cam.body[0] / 2 + 0.19, y: top.y + 0.01, z: top.z }, [0.06, cam.body[1] - 0.02, cam.body[2] - 0.02], C.cameraWood);
+  b.drum({ x: top.x + cam.body[0] / 2 + 0.22, y: top.y + cam.body[1] / 2, z: top.z, pitch: Math.PI / 2, yaw: Math.PI / 2 }, 0.08, 0.1, 6, C.bellows);
+}
+
+/** La hauteur des hanches de la photographe et du couvreur, au-dessus de leurs pieds : le haut de leurs jambes. */
+const HABITANT_HIP = 0.46;
+
+/**
+ * Les jambes de la photographe et du couvreur (relecture de L8c-d : jamais un bas évasé jusqu'au sol, qui fait une robe) :
+ * deux jambes droites, séparées, de la couleur du pantalon, et deux chaussures sombres, un peu en avant.
+ */
+function habitantLegs(b: FacetBuilder, at: Vec3, trousers: number): void {
+  for (const side of [-1, 1]) {
+    const x = at.x + side * 0.1;
+    b.box({ x, y: at.y + 0.06, z: at.z }, [0.15, HABITANT_HIP - 0.04, 0.17], trousers);
+    b.box({ x, y: at.y, z: at.z + 0.04 }, [0.17, 0.07, 0.27], C.shoe);
+  }
+}
+
+/**
+ * Les cheveux courts de la photographe et du couvreur (relecture de L8c-d : jamais une calotte sur le haut du crâne) :
+ * une coque un peu plus grande que la tête, dont le bord descend du front (devant, le visage reste nu) aux oreilles sur
+ * les côtés, puis sur la nuque derrière. Ses mesures : son rayon, ses bandes, ses pans ; jusqu'où descend son bord
+ * devant, sur les côtés et derrière (en angle depuis le sommet).
+ */
+const HAIR = { r: 0.25, rings: 4, sides: 10, front: 80, side: 105, back: 130 } as const;
+
+function habitantHair(b: FacetBuilder, at: Vec3): void {
+  const c = { x: at.x, y: at.y + 1.15, z: at.z };
+  const H = HAIR;
+  const at2 = (i: number, k: number): [number, number, number] => {
+    const theta = (2 * Math.PI * k) / H.sides;
+    // Le bord : devant (sin θ = 1, vers +z), sur les côtés (sin θ = 0), derrière (sin θ = −1).
+    const s = Math.sin(theta);
+    const reach = s >= 0 ? H.side + (H.front - H.side) * s : H.side + (H.side - H.back) * s;
+    const phi = (((reach * Math.PI) / 180) * i) / H.rings;
+    return [c.x + H.r * Math.sin(phi) * Math.cos(theta), c.y + H.r * Math.cos(phi), c.z + H.r * Math.sin(phi) * s];
+  };
+  for (let i = 0; i < H.rings; i++)
+    for (let k = 0; k < H.sides; k++) {
+      const a = at2(i, k),
+        bb = at2(i, k + 1),
+        cc = at2(i + 1, k + 1),
+        d = at2(i + 1, k);
+      if (i === 0) b.triangle(a, cc, d, C.hair);
+      else b.quad(a, bb, cc, d, C.hair);
+    }
+}
+
+/** La chambre de la photographe, depuis ses pieds : à l'est, un peu devant elle ; la hauteur de son dessous ; son corps. */
+const PHOTO_CAMERA = { dx: 0.72, dz: 0.12, height: 0.88, body: [0.34, 0.3, 0.32] as [number, number, number] } as const;
+
+/**
+ * La dalle de l'Observatoire (lot L8c) : des dalles de la pierre des Écluses au sud du tambour, sur la terrasse (un peu
+ * au-dessus d'elle), où se tiennent Kéo et la photographe ; la baie (l'objet témoin) au milieu, contre le tambour.
+ */
+function observatoryPaving(b: FacetBuilder): void {
+  const o = floorOf('observatory');
+  const depth = sceneDepth('observatory');
+  // Sans joints (relecture de L8c-d : de chaque côté des personnages, un trait en oblique se lisait comme un bâton).
+  b.box({ x: o.x, y: o.y - depth, z: o.z + OBSERVATORY_PAVING.dz }, [2 * OBSERVATORY_PAVING.half, depth, OBSERVATORY_PAVING.depth], C.stoneSide, C.stone);
+}
+
+/**
+ * La dalle de l'Observatoire : sa demi-largeur, sa profondeur, son milieu un peu au sud du point de la scène (son bord
+ * nord contre le tambour, jamais dedans).
+ */
+const OBSERVATORY_PAVING = { half: 4.6, depth: 2.35, dz: 0.32 } as const;
+
+/**
+ * Le couvreur, immobile, l'artisan qui refait la toiture de la Halle (un métier, jamais un élu) : le haut clair, sa
+ * chemise vert d'eau ; le bas du corps sombre, son pantalon brun cuir (jamais un seul prisme clair jusqu'au sol) ; la
+ * tête nue, ses cheveux sombres et courts (ni chapeau, ni casque, ni écharpe, ni pendentif) ; sous son bras de l'est,
+ * une tuile verte de la toiture, posée à plat contre lui. Ni marteau, ni outil qui frappe. Il ne dit rien.
+ */
+function couvreur(b: FacetBuilder, place: PlaceId): void {
+  const at = scenetteHabitant(place);
+  habitantLegs(b, at, C.rooferLeather);
+  b.prism({ x: at.x, y: at.y + HABITANT_HIP, z: at.z }, 0.33, 0.27, 0.92 - HABITANT_HIP, 10, C.rooferShirt, C.rooferShirtShade);
+  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
+  habitantHair(b, at);
+  // Le bras de l'ouest, le long du corps.
+  b.beam({ x: at.x - 0.27, y: at.y + 0.84, z: at.z + 0.02 }, { x: at.x - 0.33, y: at.y + 0.42, z: at.z + 0.08 }, 0.14, C.rooferShirt);
+  // La tuile canal sous le bras de l'est, couchée le long du flanc, sa longueur en biais vers la caméra (de face, on lit à
+  // la fois sa longueur et son profil cintré) : deux pans en voûte, leur face Vert île dehors. Le bras passe par-dessus et
+  // la serre contre lui.
+  const T = COUVREUR_TILE;
+  const tile = { x: at.x + T.dx, y: at.y + T.height, z: at.z + 0.04 };
+  const yaw = Math.PI / 2 - T.turn;
+  for (const side of [-1, 1])
+    b.box({ x: tile.x + side * T.half * Math.sin(yaw), y: tile.y, z: tile.z + side * T.half * Math.cos(yaw), yaw, pitch: side * T.bend }, [T.length, T.thick, T.width], C.tileShade, C.tile);
+  b.beam({ x: at.x + 0.27, y: at.y + 0.84, z: at.z + 0.02 }, { x: tile.x + 0.08, y: tile.y + 0.12, z: at.z + 0.2 }, 0.14, C.rooferShirt);
+}
+
+/**
+ * La tuile canal du couvreur, depuis ses pieds : son écart vers l'est, la hauteur de son dessous, son biais (depuis l'axe
+ * de la caméra) ; ses deux pans (le demi-écart de leurs milieux, leur pente, leur longueur, plus longue que large, leur
+ * épaisseur, leur largeur).
+ */
+const COUVREUR_TILE = { dx: 0.44, height: 0.6, turn: 0.75, half: 0.06, bend: 0.4, length: 0.55, thick: 0.035, width: 0.13 } as const;
+
+/**
+ * La dalle de la Halle (lot L8d) : des dalles de la pierre des Passeurs sous le bord de la toiture, au sud du rang des
+ * piliers, où se tiennent Kéo et le couvreur ; la borne-fontaine (l'objet témoin) au milieu.
+ */
+function commonsPaving(b: FacetBuilder): void {
+  const o = floorOf('commons');
+  const depth = sceneDepth('commons');
+  const P = COMMONS_PAVING;
+  // Sans joints, comme à l'Observatoire (relecture de L8c-d).
+  b.box({ x: o.x, y: o.y - depth, z: o.z + P.dz }, [2 * P.half, depth, P.depth], C.pavingSide, C.paving);
+}
+
+/** La dalle de la Halle : sa demi-largeur, sa profondeur, son milieu un peu au nord du point de la scène (la borne). */
+const COMMONS_PAVING = { half: 4.6, depth: 2.6, dz: -0.1 } as const;
+
+/**
  * Le bord du bassin des Marais salants (lot L5) : le muret d'argile où se tiennent Kéo et la saunière, sur toute la
  * largeur de la scène, et derrière lui l'eau du bassin, où se dressent la jauge ou la vanne de l'item.
  */
@@ -1162,6 +1594,26 @@ export function scenetteDecor(place: PlaceId, open = false, posed = true): Facet
   if (art) {
     // Le rivage nord (lot L7) : le sol de la scène et l'habitant, dessinés dans le fichier du lieu.
     art.decor(b, floorOf(place), scenetteHabitant(place), sphere);
+    return b.build();
+  }
+  if (place === 'mangrove') {
+    mangroveDeck(b);
+    botaniste(b, place);
+    return b.build();
+  }
+  if (place === 'ruins') {
+    ruinsPaving(b);
+    archeologue(b, place);
+    return b.build();
+  }
+  if (place === 'observatory') {
+    observatoryPaving(b);
+    photographe(b, place);
+    return b.build();
+  }
+  if (place === 'commons') {
+    commonsPaving(b);
+    couvreur(b, place);
     return b.build();
   }
   if (!posed) {

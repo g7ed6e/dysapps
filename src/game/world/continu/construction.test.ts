@@ -8,7 +8,7 @@ import { boundsOf, placeFacets, type Facets } from './facets';
 import { distance, linearRgb } from './geometry';
 import { networkSamples, pathNode } from './paths';
 import { PLACES, placeById } from './plan6e';
-import { filetsRack, FILETS_RACK, LAMP_COLOR, lanternLight, modelOfPlace, placePieces, ruinOf } from './places';
+import { filetsRack, FILETS_RACK, LAMP_COLOR, lanternLight, modelOfPlace, OBSERVATORY, placePieces, ruinOf } from './places';
 import { buildHeightField, heightAt, heightOnMesh, landDistance, standingHeight } from './terrain';
 
 const field = buildHeightField();
@@ -156,6 +156,97 @@ describe('Le lieu se rebâtit lui-même', () => {
     const body = boundsOf(constructionFacets('shipyard', [slice(0, 0, 1)], ground));
     expect(body.max[1] - y0).toBeGreaterThan(2.5);
     for (const p of placePieces('shipyard')) expect(p.stage === 'ruine' || p.until === undefined).toBe(true);
+  });
+
+  it('à la Mangrove, les pilotis cassés s’en vont avec le platelage, le carbet ruiné avec le carbet, les touffes avec les arbres (lot L8a)', () => {
+    const fallen = (shape: PartShape[]) => fallenFacets('mangrove', shape, ground).triangles;
+    const all = fallen([]);
+    expect(all).toBeGreaterThan(0);
+    expect(fallen([slice(0, 0, 0.34)])).toBeLessThan(all);
+    expect(fallen([slice(1, 0, 0.34)])).toBeLessThan(all);
+    expect(fallen([slice(0, 0, 0.34), slice(1, 0, 1)])).toBe(0);
+    // Avant, rien ne se dresse (sous un mètre au-dessus de l'eau) ; le haut dresse le carbet, le plus haut point.
+    const c = placeById('mangrove').center;
+    const y0 = standingHeight(ground(c.x, c.z));
+    expect(boundsOf(ruinOf('mangrove')).max[1] - y0).toBeLessThan(0.3);
+    expect(boundsOf(fallenFacets('mangrove', [], ground)).max[1] - y0).toBeLessThan(1);
+    const body = boundsOf(constructionFacets('mangrove', [slice(0, 0, 1)], ground));
+    const top = boundsOf(constructionFacets('mangrove', [slice(1, 0, 1)], ground));
+    expect(top.max[1]).toBeGreaterThan(body.max[1] + 2);
+    expect(top.max[1] - y0).toBeGreaterThan(3);
+    for (const p of placePieces('mangrove')) expect(p.stage === 'ruine' || p.until === undefined).toBe(true);
+  });
+
+  it('aux Ruines, la pile couchée et le sable s’en vont avec les piles, la pile tronquée de l’eau avec celles de l’eau, les voussoirs épars avec les arcs (lot L8b)', () => {
+    const fallen = (shape: PartShape[]) => fallenFacets('ruins', shape, ground).triangles;
+    const all = fallen([]);
+    expect(all).toBeGreaterThan(0);
+    expect(fallen([slice(0, 0, 0.5)])).toBeLessThan(all);
+    expect(fallen([slice(0, 0, 1)])).toBeLessThan(fallen([slice(0, 0, 0.5)]));
+    expect(fallen([slice(0, 0, 1), slice(1, 0, 0.34)])).toBe(0);
+    // Avant, rien ne se dresse plus haut que la pile tronquée ; le haut dresse l'arcade, le plus haut point.
+    const c = placeById('ruins').center;
+    const y0 = standingHeight(ground(c.x, c.z));
+    expect(boundsOf(ruinOf('ruins')).max[1] - y0).toBeLessThan(0.3);
+    expect(boundsOf(fallenFacets('ruins', [], ground)).max[1] - y0).toBeLessThan(1.2);
+    const body = boundsOf(constructionFacets('ruins', [slice(0, 0, 1)], ground));
+    const top = boundsOf(constructionFacets('ruins', [slice(1, 0, 1)], ground));
+    expect(top.max[1]).toBeGreaterThan(body.max[1] + 1);
+    for (const p of placePieces('ruins')) expect(p.stage === 'ruine' || p.until === undefined).toBe(true);
+  });
+
+  it('à l’Observatoire, démonté, ce qui gît s’en va avec ce qui le relève : les volets, puis les côtes et le zinc (lot L8c)', () => {
+    const fallen = (shape: PartShape[]) => fallenFacets('observatory', shape, ground).triangles;
+    const all = fallen([]);
+    expect(all).toBeGreaterThan(0);
+    // Le mur arasé part avec la première rangée du tambour (relecture de L8c-d) ; les volets couchés avec les volets
+    // fermés (la dernière rangée du corps) ; les côtes en tas et la corde coupée avec les côtes ; le zinc empilé avec le
+    // zinc : jamais deux fois la même pièce.
+    expect(fallen([slice(0, 0, 1 / 3)])).toBeLessThan(all);
+    expect(fallen([slice(0, 0, 2 / 3)])).toBe(fallen([slice(0, 0, 1 / 3)]));
+    expect(fallen([slice(0, 0, 1)])).toBeLessThan(fallen([slice(0, 0, 2 / 3)]));
+    expect(fallen([slice(0, 0, 1), slice(1, 0, 0.5)])).toBeLessThan(fallen([slice(0, 0, 1)]));
+    expect(fallen([slice(0, 0, 1), slice(1, 0, 0.5)])).toBeGreaterThan(0);
+    expect(fallen([slice(0, 0, 1), slice(1, 0, 1)])).toBe(0);
+    // Le tambour arasé à mi-hauteur, sous la première rangée du corps ; posé, la rotonde plus large que haute, la
+    // coupole au-dessus du tambour.
+    const ruin = boundsOf(fallenFacets('observatory', [], ground));
+    const c = placeById('observatory').center;
+    const y0 = standingHeight(ground(c.x, c.z));
+    const body = boundsOf(constructionFacets('observatory', [slice(0, 0, 1)], ground));
+    const top = boundsOf(constructionFacets('observatory', [slice(1, 0, 1)], ground));
+    expect(ruin.max[1] - y0).toBeLessThan((body.max[1] - y0) * 0.6);
+    expect(ruin.max[1] - y0).toBeLessThanOrEqual(OBSERVATORY.drum.mid);
+    expect(top.max[1]).toBeGreaterThan(body.max[1] + 2.5);
+    const whole = boundsOf(modelOfPlace('observatory').facets);
+    expect(whole.max[0] - whole.min[0]).toBeGreaterThan(whole.max[1]);
+    for (const p of placePieces('observatory')) expect(p.stage === 'ruine' || p.until === undefined).toBe(true);
+  });
+
+  it('à la Halle, éteinte, ce qui gît s’en va avec ce qui le relève ; posée, la toiture fait presque tout le volume (lot L8d)', () => {
+    const fallen = (shape: PartShape[]) => fallenFacets('commons', shape, ground).triangles;
+    const all = fallen([]);
+    expect(all).toBeGreaterThan(0);
+    // Les piliers usés partent avec les piliers neufs, la charpente effondrée avec les sablières, les tuiles éparses avec
+    // la toiture, l'herbe du dallage avec le dallage neuf : jamais deux fois la même pièce.
+    expect(fallen([slice(0, 0, 1 / 3)])).toBeLessThan(all);
+    expect(fallen([slice(0, 0, 1)])).toBeLessThan(fallen([slice(0, 0, 1 / 3)]));
+    expect(fallen([slice(0, 0, 1), slice(1, 0, 1)])).toBeLessThan(fallen([slice(0, 0, 1)]));
+    expect(fallen([slice(0, 0, 1), slice(1, 0, 1), slice(2, 0, 1)])).toBe(0);
+    // Plus large que haute (au moins deux fois), la toiture au-dessus des piliers, et rien qui monte au-dessus d'elle (ni
+    // girouette, ni clocheton).
+    const c = placeById('commons').center;
+    const y0 = standingHeight(ground(c.x, c.z));
+    const body = boundsOf(constructionFacets('commons', [slice(0, 0, 1)], ground));
+    const roof = boundsOf(constructionFacets('commons', [slice(1, 0, 1)], ground));
+    const whole = boundsOf(modelOfPlace('commons').facets);
+    expect(whole.max[0] - whole.min[0]).toBeGreaterThan(2 * whole.max[1]);
+    expect(roof.min[1]).toBeGreaterThan(y0 + 2.5);
+    expect(roof.max[1]).toBeGreaterThan(body.max[1]);
+    expect(whole.max[1]).toBeCloseTo(roof.max[1] - y0, 5);
+    // La toiture déborde des piliers de tous côtés.
+    expect(roof.max[0] - roof.min[0]).toBeGreaterThan(body.max[0] - body.min[0] + 2);
+    expect(roof.max[2] - roof.min[2]).toBeGreaterThan(body.max[2] - body.min[2] + 2);
   });
 
   it('ses volumes restent hors des chemins (Kéo n’y passe jamais au travers), sauf le lieu lui-même autour de sa porte', () => {

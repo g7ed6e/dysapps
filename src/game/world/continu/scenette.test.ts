@@ -8,8 +8,8 @@ import { FacetBuilder, boundsOf, placeFacets } from './facets';
 import { distance, linearRgb } from './geometry';
 import { startOf } from './paths';
 import { placeById } from './plan6e';
-import { SHIPYARD, SHORES, SLIP_N, STEAM_GAP, hullEdge, modelOfPlace } from './places';
-import { ANSWER_LAYOUT, ENGINE_PAVING_RISE, JAUGE, LOCK, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
+import { COMMONS, OBSERVATORY, SHIPYARD, SHORES, SLIP_N, STEAM_GAP, commonsPillars, drumFace, hullEdge, modelOfPlace } from './places';
+import { ANSWER_LAYOUT, COMMONS_PAVING_RISE, ENGINE_PAVING_RISE, FOUNTAIN, JAUGE, LOCK, OBSERVATORY_BAY, OBSERVATORY_PAVING_RISE, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, type ScreenBox } from './questionScene';
 import {
   GALLERY,
   LANTERN,
@@ -53,7 +53,7 @@ const screens = [
 ] as const;
 
 describe('La place de la scénette à l’écran', () => {
-  it('les sept lieux ont leur scénette, chaque habitant nommé par son rôle seul, sans phrase d’accueil', () => {
+  it('chaque lieu a sa scénette, chaque habitant nommé par son rôle seul, sans phrase d’accueil', () => {
     expect(scenetteOf('phare')).toEqual({ role: 'La gardienne du phare', greeting: null, placement: 'rangee' });
     expect(scenetteOf('quais')).toEqual({ role: 'Le docker', greeting: null, placement: 'rangee' });
     expect(scenetteOf('filets')).toEqual({ role: 'La pêcheuse', greeting: null, placement: 'rangee' });
@@ -61,6 +61,8 @@ describe('La place de la scénette à l’écran', () => {
     expect(scenetteOf('saltworks')).toEqual({ role: 'La saunière', greeting: null, placement: 'rangee' });
     expect(scenetteOf('engine')).toEqual({ role: 'La machiniste', greeting: null, placement: 'rangee' });
     expect(scenetteOf('shipyard')).toEqual({ role: 'Le charpentier', greeting: null, placement: 'rangee' });
+    expect(scenetteOf('observatory')).toEqual({ role: 'La photographe', greeting: null, placement: 'rangee' });
+    expect(scenetteOf('commons')).toEqual({ role: 'Le couvreur', greeting: null, placement: 'rangee' });
   });
 
   it('sur un écran bas, la règle des Filets à droite au-dessus de la scène, la rangée sous la colonne', () => {
@@ -438,7 +440,7 @@ describe('Le retour de la scénette des Quais', () => {
 });
 
 describe('Les Filets et les Écluses (lot 4), les Marais salants (lot L5), la Turbine (lot L6a), le Chantier naval (lot L6b)', () => {
-  const places = ['filets', 'ecluses', 'saltworks', 'engine', 'shipyard'] as const;
+  const places = ['filets', 'ecluses', 'saltworks', 'engine', 'shipyard', 'mangrove', 'ruins', 'observatory', 'commons'] as const;
 
   it('la caméra cadre Kéo à gauche et l’habitant à droite, dans la scène, sur tous les écrans', () => {
     for (const place of places)
@@ -488,7 +490,7 @@ describe('Les Filets et les Écluses (lot 4), les Marais salants (lot L5), la Tu
     expect(scenetteHidesPieces('phare')).toBe(false);
     // À la Turbine et au Chantier naval, toutes leurs traces se cachent pendant une question en C (directeur artistique,
     // lot L6a).
-    for (const place of ['quais', 'filets', 'ecluses', 'saltworks', 'engine', 'shipyard'] as const) expect(scenetteHidesPieces(place), place).toBe(true);
+    for (const place of ['quais', 'filets', 'ecluses', 'saltworks', 'engine', 'shipyard', 'mangrove', 'ruins', 'observatory', 'commons'] as const) expect(scenetteHidesPieces(place), place).toBe(true);
     // Une trace d'une autre mission dans le cadre se cache le temps de la scénette : les lanternes de la galerie
     // pendant l'Abattage syllabique et les Rimes-échelle ; elles restent pendant la Chasse au son, et au pied de la tour.
     const done = ['sound-hunt', 'syllables', 'rhymes'];
@@ -703,6 +705,10 @@ describe('le retour d’une mission des Quais, des Écluses, des Filets et des M
       ...['ordering', 'operations', 'scale', 'large-numbers', 'rounding-products'].map((m) => ['saltworks', m] as const),
       ...['states-of-matter', 'motion-signals', 'energy-circuits', 'materials-light'].map((m) => ['engine', m] as const),
       ...['object-function', 'materials', 'information-networks', 'solve-program'].map((m) => ['shipyard', m] as const),
+      ...['living-groups', 'food-growth', 'planet-earth', 'life-enquiry'].map((m) => ['mangrove', m] as const),
+      ...['early-humans', 'ancient-peoples', 'roman-empire', 'viewpoints'].map((m) => ['ruins', m] as const),
+      ...['metropolises', 'low-density', 'inhabited-world'].map((m) => ['observatory', m] as const),
+      ...['representatives', 'school-secularism', 'private-life'].map((m) => ['commons', m] as const),
     ];
     // Aux Filets, chaque mission garde sa trace (lot L4), le Troupeau son panier plein.
     const kept = new Set(['word-classes', 'sorting', 'e-er-ez', 'plurals'].map((m) => JSON.stringify(scenetteExit('filets', true, m)!.keep)));
@@ -982,3 +988,354 @@ describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
     expect(down).toBeGreaterThan(0);
   });
 });
+
+describe('La Mangrove (GD-20, point 8, lot L8a)', () => {
+  const o = sceneSpot('mangrove');
+  const decor = scenetteDecor('mangrove');
+  const of = (hex: number) => {
+    const rgb = linearRgb(hex);
+    const out: [number, number, number][] = [];
+    for (let i = 0; i < decor.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(decor.colors[i + k] - rgb[k]) < 1e-6)) out.push([decor.positions[i], decor.positions[i + 1], decor.positions[i + 2]]);
+    return out;
+  };
+
+  it('la botaniste, en peu de triangles : le bas du corps sombre, le haut clair, ses cheveux sombres et sa tresse, un petit carnet contre elle', () => {
+    expect(decor.triangles).toBeLessThan(400);
+    expect(scenetteOf('mangrove').role).toBe('La botaniste');
+    const at = scenetteHabitant('mangrove');
+    // Le bas sombre jusqu'au sol (jamais un seul prisme clair, relecture de L6b), le haut corail au-dessus.
+    const low = of(0x2e4a5c);
+    const high = of(0xf2a285);
+    expect(Math.min(...low.map((v) => v[1]))).toBeCloseTo(at.y, 6);
+    expect(Math.max(...low.map((v) => v[1]))).toBeLessThanOrEqual(Math.min(...high.filter((v) => Math.abs(v[0] - at.x) < 0.2).map((v) => v[1])) + 1e-6);
+    // Les cheveux sur la tête et la tresse dans le dos, au nord.
+    const hair = of(0x3b2a22);
+    expect(Math.max(...hair.map((v) => v[1]))).toBeGreaterThan(at.y + 1.13 + 0.23);
+    expect(Math.min(...hair.map((v) => v[2]))).toBeLessThan(at.z - 0.3);
+    // Le carnet, petit, devant elle (vers la caméra), et sa sangle de cuir.
+    const book = of(0x178078);
+    const size = (vs: [number, number, number][], k: number) => Math.max(...vs.map((v) => v[k])) - Math.min(...vs.map((v) => v[k]));
+    expect(size(book, 0)).toBeLessThan(0.25);
+    expect(size(book, 1)).toBeLessThan(0.3);
+    expect(Math.min(...book.map((v) => v[2]))).toBeGreaterThan(at.z + 0.2);
+    expect(of(0x7a4e2e).length).toBeGreaterThan(0);
+    // Un pantalon droit (relecture DA de L8) : deux jambes séparées, rien au milieu sous les hanches, et deux chaussures.
+    expect(low.filter((v) => v[1] < at.y + 0.3 && Math.abs(v[0] - at.x) < 0.03)).toHaveLength(0);
+    expect(new Set(of(0x2f2826).map((v) => Math.sign(v[0] - at.x))).size).toBe(2);
+  });
+
+  it('Kéo et la botaniste sur le platelage, juste au-dessus de celui du lieu ; la pirogue entre eux, derrière, sur l’eau ; aucun objet-réponse', () => {
+    const keo = scenetteKeo('mangrove').at;
+    const habitant = scenetteHabitant('mangrove');
+    expect(keo.x).toBeLessThan(o.x);
+    expect(habitant.x).toBeGreaterThan(o.x);
+    const c = placeById('mangrove').center;
+    expect(keo.y).toBeGreaterThan(standingHeight(heightAt(c)));
+    expect(keo.y - standingHeight(heightAt(c))).toBeLessThan(modelOfPlace('mangrove').top);
+    const boat = boundsOf(itemScene('mangrove', COLUMN, false, []).still);
+    expect(boat.min[0]).toBeGreaterThan(keo.x);
+    expect(boat.max[0]).toBeLessThan(habitant.x);
+    expect(boat.max[2]).toBeLessThan(Math.min(keo.z, habitant.z));
+    expect(boat.max[1]).toBeLessThan(keo.y);
+    expect(scenetteFinale('mangrove', COLUMN, 1)).toBeNull();
+    const points = [-1.5, 0, 1.5].map((dx) => ({ x: o.x + dx, y: o.y + LAND_DECK, z: o.z + 2 }));
+    expect(answerObjects('mangrove', points, 0.8, { ground: o.y }).triangles).toBe(0);
+  });
+});
+
+describe('Les Ruines (GD-20, point 8, lot L8b)', () => {
+  const o = sceneSpot('ruins');
+  const decor = scenetteDecor('ruins');
+  const of = (hex: number) => {
+    const rgb = linearRgb(hex);
+    const out: [number, number, number][] = [];
+    for (let i = 0; i < decor.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(decor.colors[i + k] - rgb[k]) < 1e-6)) out.push([decor.positions[i], decor.positions[i + 1], decor.positions[i + 2]]);
+    return out;
+  };
+
+  it('l’archéologue, en peu de triangles : le bas du corps sombre, le haut clair, ses cheveux gris courts, sa brosse de fouille', () => {
+    expect(decor.triangles).toBeLessThan(400);
+    expect(scenetteOf('ruins').role).toBe('L’archéologue');
+    const at = scenetteHabitant('ruins');
+    // Le bas sombre jusqu'au sol (jamais un seul prisme clair, relecture de L6b), le haut bleu ciel au-dessus.
+    const low = of(0x5a4636);
+    const high = of(0xa9c8de);
+    expect(Math.min(...low.map((v) => v[1]))).toBeCloseTo(at.y, 6);
+    expect(Math.max(...low.map((v) => v[1]))).toBeLessThanOrEqual(Math.min(...high.filter((v) => Math.abs(v[0] - at.x) < 0.2).map((v) => v[1])) + 1e-6);
+    // Un pantalon droit (relecture DA de L8 : jamais une robe) : deux jambes séparées, rien au milieu sous les hanches,
+    // et deux chaussures.
+    expect(low.filter((v) => v[1] < at.y + 0.3 && Math.abs(v[0] - at.x) < 0.03)).toHaveLength(0);
+    expect(new Set(of(0x2f2826).map((v) => Math.sign(v[0] - at.x))).size).toBe(2);
+    // Les cheveux courts, gris froid : jusqu'à la nuque derrière (jamais une calotte), le front dégagé devant, rien sous
+    // la nuque (ni tresse, ni chignon, ni barbe).
+    const hair = of(0xa9a6a3);
+    expect(Math.min(...hair.map((v) => v[1]))).toBeGreaterThan(at.y + 0.92);
+    expect(Math.min(...hair.filter((v) => v[2] < at.z - 0.1).map((v) => v[1]))).toBeLessThan(at.y + 1.0);
+    expect(Math.min(...hair.filter((v) => v[2] > at.z && Math.abs(v[0] - at.x) < 0.02).map((v) => v[1]))).toBeGreaterThan(at.y + 1.2);
+    expect(Math.max(...hair.map((v) => v[1]))).toBeGreaterThan(at.y + 1.13 + 0.23);
+    // La brosse : son manche de bois, sa monture plate plus large que lui, et la frange de ses soies, à sa main, plus
+    // bas que la taille (jamais un maillet, ni un râteau).
+    const wood = of(0xc8955a);
+    const bristle = of(0x6f5a44);
+    expect(Math.max(...wood.map((v) => v[0])) - Math.min(...wood.map((v) => v[0]))).toBeGreaterThan(0.2);
+    expect(Math.max(...bristle.map((v) => v[1]))).toBeLessThan(at.y + 0.5);
+    expect(Math.max(...bristle.map((v) => v[1]))).toBeLessThan(Math.min(...wood.map((v) => v[1])) + 1e-6);
+  });
+
+  it('Kéo et l’archéologue sur le dallage, juste au-dessus du sol ; le treuil de fouille entre eux, derrière, sous l’imposte ; aucun objet-réponse', () => {
+    const keo = scenetteKeo('ruins').at;
+    const habitant = scenetteHabitant('ruins');
+    expect(keo.x).toBeLessThan(o.x);
+    expect(habitant.x).toBeGreaterThan(o.x);
+    expect(keo.y - o.y).toBeCloseTo(0.12, 6);
+    const winch = boundsOf(itemScene('ruins', COLUMN, false, []).still);
+    expect(winch.min[0]).toBeGreaterThan(keo.x + 0.3);
+    expect(winch.max[0]).toBeLessThan(habitant.x - 0.3);
+    expect(winch.max[2]).toBeLessThan(Math.min(keo.z, habitant.z));
+    const c = placeById('ruins').center;
+    expect(winch.max[1]).toBeLessThan(standingHeight(heightAt(c)) + 2.2);
+    expect(scenetteFinale('ruins', COLUMN, 1)).toBeNull();
+    const points = [-1.5, 0, 1.5].map((dx) => ({ x: o.x + dx, y: o.y + LAND_DECK, z: o.z + 2 }));
+    expect(answerObjects('ruins', points, 0.8, { ground: o.y }).triangles).toBe(0);
+  });
+});
+
+describe('L’Observatoire (GD-20, point 8, lot L8c)', () => {
+  const o = sceneSpot('observatory');
+  const colored = (f: { colors: Float32Array; positions: Float32Array }, hex: number) => {
+    const rgb = linearRgb(hex);
+    const out: [number, number, number][] = [];
+    for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - rgb[k]) < 1e-6)) out.push([f.positions[i], f.positions[i + 1], f.positions[i + 2]]);
+    return out;
+  };
+
+  it('la photographe, en peu de triangles : le haut clair, le bas du corps sombre, sa chambre de bois sur trépied à côté d’elle', () => {
+    const decor = scenetteDecor('observatory');
+    expect(decor.triangles).toBeLessThan(400);
+    const at = scenetteHabitant('observatory');
+    // La veste lavande en haut, le pantalon gris chaud en bas (relecture de L6b : jamais un prisme clair jusqu'au sol) ;
+    // deux jambes, des chaussures, des cheveux jusqu'à la nuque (relecture de L8c-d).
+    const jacket = colored(decor, 0xb7a6d6);
+    expect(Math.min(...jacket.map((v) => v[1]))).toBeGreaterThan(at.y + 0.4);
+    expectLegsAndHair(decor, at, 0x4a4448);
+    // La chambre à l'est d'elle (vers le bord du cadre, jamais sur la baie).
+    const wood = colored(decor, 0xa9784a);
+    expect(Math.min(...wood.map((v) => v[0]))).toBeGreaterThan(at.x + 0.4);
+    // Kéo à gauche, la photographe à droite, sur la dalle posée sur la terrasse.
+    const keo = scenetteKeo('observatory').at;
+    expect(keo.x).toBeLessThan(o.x);
+    expect(at.x).toBeGreaterThan(o.x);
+    expect(keo.y).toBeCloseTo(o.y + OBSERVATORY_PAVING_RISE, 9);
+    expect(OBSERVATORY_PAVING_RISE).toBeGreaterThan(OBSERVATORY.terrace.top);
+    expect(scenetteFinale('observatory', COLUMN, 1)).toBeNull();
+    expect(answersHang('observatory')).toBe(false);
+  });
+
+  it('aucun objet-réponse en scène : le C se joue dans la colonne', () => {
+    const points = [-1.5, 0, 1.5].map((dx) => ({ x: o.x + dx, y: o.y + LAND_DECK, z: o.z + 2 }));
+    expect(answerObjects('observatory', points, 0.8, { ground: o.y }).triangles).toBe(0);
+  });
+
+  it('le parapet reste sous les pieds de Kéo et de la photographe, sur tous les écrans (relecture de L8c-d) ; la dalle sans joints, hors du tambour', () => {
+    const c = placeById('observatory').center;
+    const T = OBSERVATORY.terrace;
+    // Le bord intérieur du haut du parapet (le plus haut à l'écran), sur ses deux pans du sud, de part et d'autre de la
+    // porte (places.ts : un pan tous les 36°, à 18° de l'est).
+    const inner = T.r * Math.cos(Math.PI / T.sides) - 0.17 - 0.15;
+    const top = o.y + T.top - 0.05 + 0.55;
+    for (const [w, h] of screens) {
+      const base = questionLayout({ count: 4 }, w, h);
+      const stage = scenetteLayout({ count: 0, column: true }, w, h, base).scenette!.stage;
+      const { pose } = scenettePose('observatory', stage, w, h);
+      for (const feet of [scenetteKeo('observatory').at, scenetteHabitant('observatory')]) {
+        const x = feet.x - c.x;
+        const deg = x < 0 ? 126 : 54;
+        const [ct, st] = [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)];
+        const edge = { x: feet.x, y: top, z: c.z + (inner - x * ct) / st };
+        expect(edge.z, `${w}×${h}`).toBeGreaterThan(feet.z);
+        // À l'écran, le haut du parapet passe sous les pieds (y vers le bas).
+        expect(screenOf(pose, edge, w, h).y, `${w}×${h}`).toBeGreaterThan(screenOf(pose, { ...feet, y: feet.y + 0.05 }, w, h).y);
+      }
+    }
+    // La dalle : rien de plus sombre posé dessus (les joints se lisaient comme des bâtons), et son bord nord hors du tambour.
+    const decor = scenetteDecor('observatory');
+    const face = c.z + drumFace(OBSERVATORY.drum.r);
+    const floor = o.y + OBSERVATORY_PAVING_RISE;
+    for (const v of colored(decor, 0x8f897d)) expect(v[1]).toBeLessThanOrEqual(floor + 1e-6);
+    for (const v of colored(decor, 0xb9b2a3)) if (Math.abs(v[1] - floor) < 1e-6) expect(v[2]).toBeGreaterThanOrEqual(face);
+  });
+
+  it('la baie, l’objet témoin : au milieu, contre le tambour ; fermée au repos, ses volets ouverts d’un quart de tour après une bonne réponse, sur une vitre pâle et unie', () => {
+    const before = itemScene('observatory', COLUMN, false, []);
+    const after = itemScene('observatory', COLUMN, true, []);
+    expect(before.labels).toEqual([]);
+    // D'un coup, rien ne glisse : ni avant, ni après.
+    expect(before.reaction).toBeNull();
+    expect(after.reaction).toBeNull();
+    expect(after.still.triangles).toBe(before.still.triangles);
+    const face = placeById('observatory').center.z + drumFace(OBSERVATORY.drum.r);
+    const glass = colored(before.still, 0xd9e6e8);
+    const shutBefore = colored(before.still, 0x178078);
+    const shutAfter = colored(after.still, 0x178078);
+    // La baie au milieu, entre Kéo et la photographe, contre le pan sud du tambour, à hauteur de Kéo.
+    const mid = (vs: [number, number, number][]) => (Math.min(...vs.map((v) => v[0])) + Math.max(...vs.map((v) => v[0]))) / 2;
+    expect(Math.abs(mid(glass) - o.x)).toBeLessThan(0.05);
+    expect(Math.min(...glass.map((v) => v[2]))).toBeGreaterThan(face);
+    expect(Math.min(...glass.map((v) => v[1]))).toBeGreaterThan(o.y + OBSERVATORY_PAVING_RISE);
+    // Fermés : les volets couvrent la vitre, devant elle. Ouverts : ils se tiennent hors de la vitre, de part et d'autre,
+    // perpendiculaires au mur (plus profonds que larges), et la vitre se voit.
+    const glassFront = Math.max(...glass.map((v) => v[2]));
+    const half = OBSERVATORY_BAY.width / 2;
+    expect(Math.min(...shutBefore.map((v) => v[2]))).toBeGreaterThanOrEqual(glassFront - 1e-6);
+    expect(Math.max(...shutBefore.map((v) => Math.abs(v[0] - o.x)))).toBeLessThanOrEqual(half + 1e-4);
+    for (const v of shutAfter) expect(Math.abs(v[0] - o.x)).toBeGreaterThanOrEqual(half - 1e-4);
+    const east = shutAfter.filter((v) => v[0] > o.x);
+    const depth = Math.max(...east.map((v) => v[2])) - Math.min(...east.map((v) => v[2]));
+    const width = Math.max(...east.map((v) => v[0])) - Math.min(...east.map((v) => v[0]));
+    expect(depth).toBeGreaterThan(4 * width);
+  });
+});
+
+describe('La Halle (GD-20, point 8, lot L8d)', () => {
+  const o = sceneSpot('commons');
+  const colored = (f: { colors: Float32Array; positions: Float32Array }, hex: number) => {
+    const rgb = linearRgb(hex);
+    const out: [number, number, number][] = [];
+    for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - rgb[k]) < 1e-6)) out.push([f.positions[i], f.positions[i + 1], f.positions[i + 2]]);
+    return out;
+  };
+
+  it('le couvreur, en peu de triangles : le haut clair, le bas du corps sombre, deux jambes, tête nue, une tuile canal sous le bras', () => {
+    const decor = scenetteDecor('commons');
+    expect(decor.triangles).toBeLessThan(400);
+    const at = scenetteHabitant('commons');
+    const shirt = colored(decor, 0xbfdccb);
+    expect(Math.min(...shirt.map((v) => v[1]))).toBeGreaterThan(at.y + 0.4);
+    expectLegsAndHair(decor, at, 0x6a4a34);
+    // Tête nue : rien au-dessus de ses cheveux (ni chapeau ni casque).
+    const top = Math.max(...colored(decor, 0x3b2a22).map((v) => v[1]));
+    for (let i = 1; i < decor.positions.length; i += 3) if (Math.hypot(decor.positions[i - 1] - at.x, decor.positions[i + 1] - at.z) < 0.6) expect(decor.positions[i]).toBeLessThanOrEqual(top + 1e-6);
+    // La tuile canal sous le bras de l'est (relecture de L8c-d : jamais un pavé plat, qui se lisait comme un livre) : sa
+    // face Vert île dehors, plus longue que large, cintrée (sa crête, au milieu de sa largeur, plus haute que ses bords), à
+    // côté de lui, sous le coude.
+    const tile = colored(decor, 0x438b82);
+    expect(tile.length).toBeGreaterThan(0);
+    const [cx, cz] = [0, 2].map((k) => (Math.min(...tile.map((v) => v[k])) + Math.max(...tile.map((v) => v[k]))) / 2);
+    // Sa largeur : la direction, au sol, où elle est la plus étroite (au degré près) ; sa longueur, en travers d'elle.
+    const extent = (f: (v: number[]) => number) => Math.max(...tile.map(f)) - Math.min(...tile.map(f));
+    const toward = (deg: number) => (v: number[]) => (v[0] - cx) * Math.cos((deg * Math.PI) / 180) + (v[2] - cz) * Math.sin((deg * Math.PI) / 180);
+    const narrow = Array.from({ length: 180 }, (_, d) => d).reduce((m, d) => (extent(toward(d)) < extent(toward(m)) ? d : m), 0);
+    const across = toward(narrow);
+    const along = toward(narrow + 90);
+    const length = Math.max(...tile.map(along)) - Math.min(...tile.map(along));
+    const width = Math.max(...tile.map(across)) - Math.min(...tile.map(across));
+    expect(length).toBeGreaterThan(1.5 * width);
+    const ridge = Math.max(...tile.filter((v) => Math.abs(across(v)) < 0.03).map((v) => v[1]));
+    const edges = Math.max(...tile.filter((v) => Math.abs(across(v)) > width / 2 - 0.03).map((v) => v[1]));
+    expect(ridge).toBeGreaterThan(edges + 0.02);
+    expect(cx).toBeGreaterThan(at.x + 0.3);
+    for (const v of tile) expect(v[1]).toBeLessThan(at.y + 0.84);
+    // Kéo à gauche, le couvreur à droite, sur la dalle posée sur le dallage.
+    const keo = scenetteKeo('commons').at;
+    expect(keo.x).toBeLessThan(o.x);
+    expect(at.x).toBeGreaterThan(o.x);
+    expect(keo.y).toBeCloseTo(o.y + COMMONS_PAVING_RISE, 9);
+    expect(COMMONS_PAVING_RISE).toBeGreaterThan(COMMONS.paving.top);
+    expect(scenetteFinale('commons', COLUMN, 1)).toBeNull();
+    expect(answersHang('commons')).toBe(false);
+  });
+
+  it('aucun objet-réponse en scène : le C se joue dans la colonne', () => {
+    const points = [-1.5, 0, 1.5].map((dx) => ({ x: o.x + dx, y: o.y + LAND_DECK, z: o.z + 2 }));
+    expect(answerObjects('commons', points, 0.8, { ground: o.y }).triangles).toBe(0);
+  });
+
+  it('les trois pupitres de L’école laïque restent cachés pendant toute question de la mission (directeur du contenu pédagogique), et toutes les traces pendant toute question au lieu', () => {
+    // Le temps de la scénette, la vue retire les traces du lieu (scene.ts, `hiddenTrace`), dans la scène comme sous
+    // « Vue simple » ; la scénette ne les redessine pas : ni son décor, ni la scène d'un item, avant ou après une réponse.
+    expect(scenetteHidesPieces('commons')).toBe(true);
+    const oak = 0x8e6a48;
+    expect(colored(scenetteDecor('commons'), oak)).toHaveLength(0);
+    for (const answered of [false, true]) expect(colored(itemScene('commons', COLUMN, answered, []).still, oak)).toHaveLength(0);
+    // Ils reviennent au retour, avec les autres traces.
+    expect(colored(placeTrace('commons', ['school-secularism']), oak).length).toBeGreaterThan(0);
+  });
+
+  it('la scénette se tient sous le bord sud de la toiture, entre les deux piliers du milieu', () => {
+    const c = placeById('commons').center;
+    const P = COMMONS.pillar;
+    expect(o.z - c.z).toBeGreaterThan(P.z);
+    expect(o.z - c.z).toBeLessThan(COMMONS.roof.ez);
+    const [west, east] = [P.xs[1], P.xs[2]];
+    expect(o.x - c.x).toBeGreaterThan(west);
+    expect(o.x - c.x).toBeLessThan(east);
+    expect(commonsPillars()).toHaveLength(10);
+  });
+
+  it('la borne-fontaine, l’objet témoin : au milieu, sèche au repos ; après une bonne réponse, un filet immobile et l’eau qui monte dans l’auge, puis reste', () => {
+    const before = itemScene('commons', COLUMN, false, []);
+    const after = itemScene('commons', COLUMN, true, []);
+    expect(before.labels).toEqual([]);
+    expect(before.reaction).toBeNull();
+    // Rien d'eau au repos : l'auge sèche.
+    expect(colored(before.still, 0xa9dceb)).toHaveLength(0);
+    // Le filet, immobile, entre le bec et l'auge ; l'eau, la réaction, monte d'un geste court (sans arc), puis reste.
+    const jet = colored(after.still, 0xa9dceb);
+    expect(jet.length).toBeGreaterThan(0);
+    const r = after.reaction!;
+    expect(r.stay).toBe(true);
+    expect(r.arc).toBe(0);
+    expect([r.to.x, r.to.z]).toEqual([r.from.x, r.from.z]);
+    expect(r.to.y - r.from.y).toBeGreaterThan(0);
+    expect(r.to.y - r.from.y).toBeLessThan(0.3);
+    expect(Math.min(...jet.map((v) => v[1]))).toBeCloseTo(r.to.y, 6);
+    const floor = o.y + COMMONS_PAVING_RISE;
+    expect(Math.max(...jet.map((v) => v[1]))).toBeLessThan(floor + FOUNTAIN.spout);
+    // Au milieu, entre Kéo et le couvreur.
+    const mid = (vs: [number, number, number][]) => (Math.min(...vs.map((v) => v[0])) + Math.max(...vs.map((v) => v[0]))) / 2;
+    expect(Math.abs(mid(jet) - o.x)).toBeLessThan(0.05);
+    // L'eau reste sous le bord de l'auge, au-dessus de sa paroi sud, plus basse (une lèvre : sa bande claire se voit
+    // monter, relecture de L8c-d) ; le filet, assez large pour se lire, droit.
+    expect(r.to.y).toBeLessThan(floor + FOUNTAIN.trough[1]);
+    expect(FOUNTAIN.lip).toBeLessThan(FOUNTAIN.water - 0.05);
+    expect(r.from.y).toBeLessThan(floor + FOUNTAIN.lip);
+    // Le dessus de la paroi sud, à la hauteur de la lèvre, sous l'eau à son repos.
+    const south = colored(before.still, 0xcfc6b2).filter((v) => v[2] > o.z + 0.05 && Math.abs(v[0] - o.x) < 0.4);
+    expect(south.some((v) => Math.abs(v[1] - (floor + FOUNTAIN.lip)) < 1e-6)).toBe(true);
+    const jetWidth = Math.max(...jet.map((v) => v[0])) - Math.min(...jet.map((v) => v[0]));
+    expect(jetWidth).toBeGreaterThan(0.1);
+    expect(jetWidth).toBeLessThan(0.15);
+    // Le bronze du bec, seulement sur la borne.
+    expect(colored(before.still, 0x9c7a3c).length).toBeGreaterThan(0);
+  });
+});
+
+/**
+ * La photographe et le couvreur (relecture de L8c-d : jamais une robe de bure ni une calotte) : deux jambes séparées de
+ * la couleur du pantalon, du haut des chaussures aux hanches, et des chaussures sombres au sol ; des cheveux qui
+ * descendent sur la nuque, au-dessus de la tête, et s'arrêtent au-dessus du front.
+ */
+function expectLegsAndHair(decor: { colors: Float32Array; positions: Float32Array }, at: { x: number; y: number; z: number }, trousers: number): void {
+  const colored = (hex: number) => {
+    const rgb = linearRgb(hex);
+    const out: [number, number, number][] = [];
+    for (let i = 0; i < decor.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(decor.colors[i + k] - rgb[k]) < 1e-6)) out.push([decor.positions[i], decor.positions[i + 1], decor.positions[i + 2]]);
+    return out.filter((v) => Math.hypot(v[0] - at.x, v[2] - at.z) < 0.5);
+  };
+  const legs = colored(trousers);
+  expect(Math.max(...legs.map((v) => v[1]))).toBeLessThan(at.y + 0.5);
+  expect(Math.min(...legs.map((v) => v[1]))).toBeGreaterThan(at.y + 0.03);
+  // Deux jambes : rien du pantalon sur la ligne du milieu.
+  expect(legs.some((v) => v[0] < at.x - 0.05)).toBe(true);
+  expect(legs.some((v) => v[0] > at.x + 0.05)).toBe(true);
+  for (const v of legs) expect(Math.abs(v[0] - at.x)).toBeGreaterThan(0.01);
+  const shoes = colored(0x2f2826);
+  expect(Math.min(...shoes.map((v) => v[1]))).toBeCloseTo(at.y, 6);
+  const hair = colored(0x3b2a22);
+  expect(Math.max(...hair.map((v) => v[1]))).toBeGreaterThan(at.y + 1.13 + 0.2);
+  // La nuque : derrière la tête, les cheveux descendent sous son milieu ; devant, ils s'arrêtent au-dessus du front.
+  expect(Math.min(...hair.filter((v) => v[2] < at.z - 0.1).map((v) => v[1]))).toBeLessThan(at.y + 1.05);
+  for (const v of hair.filter((p) => p[2] > at.z + 0.15)) expect(v[1]).toBeGreaterThan(at.y + 1.17);
+  // Sur les côtés, ils descendent aux oreilles, sous le milieu de la tête.
+  expect(Math.min(...hair.filter((v) => Math.abs(v[0] - at.x) > 0.2).map((v) => v[1]))).toBeLessThan(at.y + 1.13);
+}

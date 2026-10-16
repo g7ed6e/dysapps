@@ -461,6 +461,14 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
     const column = missionIs(exerciseId, 'comprehension') || missionIs(exerciseId, 'tense-values') || missionIs(exerciseId, 'word-forms');
     return items.map((it) => (column ? { ...it, placeScene: COLUMN } : { ...it, ...northItem(exerciseId, it), placeScene: REST }));
   }
+  // La Mangrove (lot L8a) : de même, ses quatre missions en C, avec leurs items de référence.
+  if (place === 'mangrove') return items.map((it) => ({ ...it, placeScene: COLUMN }));
+  // Les Ruines (lot L8b) : de même.
+  if (place === 'ruins') return items.map((it) => ({ ...it, placeScene: COLUMN }));
+  // L'Observatoire (lot L8c) : ses trois missions en C, aux deux niveaux, avec leurs items de référence.
+  if (place === 'observatory') return items.map((it) => ({ ...it, placeScene: COLUMN }));
+  // La Halle (lot L8d) : ses trois missions en C, aux deux niveaux, avec leurs items de référence.
+  if (place === 'commons') return items.map((it) => ({ ...it, placeScene: COLUMN }));
   if (place === 'saltworks') {
     // Les Marais salants (GD-20, point 8, lot L5) : toutes les missions au même bassin, avec les mêmes sacs de sel. Seule
     // la Pente graduée, au niveau 1, a son gabarit (la jauge) ; les autres gardent leur item de référence, le bassin au

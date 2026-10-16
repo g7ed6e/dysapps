@@ -24,13 +24,17 @@ describe('Le plan du 6e', () => {
     for (const p of ISLET) expect(insidePolygon(p, LAGOON)).toBe(true);
   });
 
-  it('les dix lieux reprennent chacun une île du 6e d’aujourd’hui, et leur porte est un nœud du réseau', () => {
+  it('les quatorze lieux reprennent chacun une île du 6e d’aujourd’hui, et leur porte est un nœud du réseau', () => {
     expect(PLACES.map((p) => p.island).sort()).toEqual([
+      'civics-6e-democratic-society',
       'french-6e-grammar-spelling',
       'french-6e-letter-confusion',
       'french-6e-phonology',
       'french-6e-reading',
       'french-6e-word-spelling',
+      'geography-6e-living',
+      'history-6e-antiquity',
+      'life-earth-sciences-6e-living-world',
       'maths-6e-calculation',
       'maths-6e-decimals',
       'maths-6e-fractions',
@@ -210,9 +214,9 @@ describe('Les chemins aimantés', () => {
   it('les rubans des chemins ont leur dessus vers le ciel', () => {
     const f = pathRibbons(ground);
     expect(f.triangles).toBeGreaterThan(100);
-    // Dix lieux reliés (le chemin de la Turbine, lot L6a ; celui du Chantier naval, lot L6b : 4 880 ; le rivage nord, lot
-    // L7, sa rampe et son muret : 6 120).
-    expect(f.triangles).toBeLessThan(6500);
+    // Quatorze lieux reliés (le chemin de la Turbine, lot L6a ; celui du Chantier naval, lot L6b : 4 880 ; le rivage nord, lot
+    // L7, sa rampe et son muret : 6 120 ; le rivage sud et ses quatre chemins, lot L8 : 7 338, mesuré sur le monde réuni).
+    expect(f.triangles).toBeLessThan(7500);
   });
 });
 
@@ -441,7 +445,7 @@ describe('Le budget du monde continu', () => {
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
   });
 
-  it('les sept lieux, leurs constructions et leurs traces en deux appels, la pose d’une partie en un (GD-20, lot 1)', () => {
+  it('les lieux, leurs constructions et leurs traces en deux appels, la pose d’une partie en un (GD-20, lot 1)', () => {
     const cost = openWorldCost();
     expect(cost.find((c) => c.poste === 'lieux')?.calls).toBe(2);
     expect(cost.find((c) => c.poste === 'pose')?.calls).toBe(1);

@@ -123,10 +123,10 @@ Pour tous les items :
    - indice : Compare le nombre de « pour » et le nombre de « contre ».
    - explication : 20 conseillers pour, 9 contre : la majorité a voté pour, le projet est adopté. Une décision n’a pas besoin de l’accord de tous.
 5. énoncé : "Un parc à la place d’un parking\nDes habitants perdent des places pour garer leur voiture.\nTout le quartier gagne un lieu pour jouer, à l’ombre."
-   - question : Que montre cet exemple ?
+   - question : Que montre cet exemple sur l’intérêt général ?
    - lu : Un parc à la place d’un parking. Des habitants perdent des places pour garer leur voiture. Tout le quartier gagne un lieu pour jouer, à l’ombre.
-   - choix : l’intérêt général peut gêner certains · l’intérêt général est toujours l’intérêt de chacun · l’intérêt général ne concerne que les élus
-   - réponse : l’intérêt général peut gêner certains
+   - choix : il peut gêner certains · il est toujours l’intérêt de chacun · il ne concerne que les élus
+   - réponse : il peut gêner certains
    - indice : Relis la dernière ligne du rappel.
    - explication : Le parc sert tout le quartier, mais il gêne ceux qui perdent une place : l’intérêt général n’est pas toujours l’intérêt de chacun.
 6. énoncé : Un élu parle au nom des électeurs et suit les règles de son conseil : il est …
@@ -406,7 +406,7 @@ Pour tous les items :
    - réponse : parce qu’effacer partout est difficile
    - indice : Lis la dernière ligne du document.
    - explication : On peut demander l’effacement d’une donnée, mais une copie peut déjà circuler ailleurs. Mieux vaut réfléchir avant de publier.
-7. énoncé : La santé d’un camarade fait partie de sa vie privée. La raconter dans un groupe sans son accord, c’est …
+7. énoncé : Dire à tout un groupe qu’un camarade est malade, sans son accord, c’est …
    - choix : exercer sa liberté d’expression · ne pas respecter sa vie privée · protéger ses données
    - réponse : ne pas respecter sa vie privée
    - indice : La santé est-elle une chose que chacun peut raconter à la place de l’autre ?
@@ -414,8 +414,8 @@ Pour tous les items :
 8. énoncé : "Les conseils de la CNIL\nUn mot de passe long.\nAvec des lettres, des chiffres et des signes.\nUn mot de passe différent pour chaque compte."
    - question : Pourquoi un mot de passe différent pour chaque compte ?
    - lu : Les conseils de la Commission nationale de l’informatique et des libertés. Un mot de passe long. Avec des lettres, des chiffres et des signes. Un mot de passe différent pour chaque compte.
-   - choix : pour s’en souvenir plus facilement · parce que chaque site le choisit · si l’un est découvert, les autres restent protégés
-   - réponse : si l’un est découvert, les autres restent protégés
+   - choix : pour s’en souvenir plus facilement · parce que chaque site le choisit · pour protéger les autres comptes
+   - réponse : pour protéger les autres comptes
    - indice : Que se passe-t-il si le même mot de passe ouvre tous tes comptes ?
    - explication : Avec un mot de passe par compte, si l’un est découvert, les autres restent protégés. Cette commission veille à la protection des données personnelles.
 

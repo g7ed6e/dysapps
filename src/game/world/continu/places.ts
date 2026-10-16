@@ -13,6 +13,7 @@ import type { Vec2 } from './geometry';
 import { placeArt } from './northShore';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId } from './plan6e';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
+import { landDistance } from './terrain';
 
 /** Le modèle d'un lieu : ses facettes dans son repère, d'où il vient, et la hauteur de son sommet (la marque s'y pose). */
 export interface PlaceModel {
@@ -106,6 +107,56 @@ const C = {
   shipSlate: 0x4d6a82,
   wornKeel: 0x9a8a78,
   wornPlank: 0xb3a68f,
+  // La Mangrove (lot L8a, directeur artistique) : le feuillage des palétuviers et son ombre (ni l'herbe ni le haut de
+  // falaise), leurs troncs et leurs racines, la vase (plus sombre que la boue de ruine, jamais presque noire), les
+  // passerelles en deux bois et leurs pieux, les cordes des rambardes, les palmes du carbet.
+  leafMangrove: 0x2e6e4e,
+  leafMangroveShade: 0x24583f,
+  mangroveWood: 0x7a6a58,
+  vase: 0x7d735b,
+  walkway: 0xb98654,
+  walkwayLight: 0xc9965f,
+  walkwayDark: 0x8a6440,
+  cord: 0xe0d3b0,
+  palm: 0xa88f48,
+  palmShade: 0x8f793b,
+  // Les Ruines (lot L8b, directeur artistique) : la pierre des Passeurs, un calcaire clair, et son ombre (plus claires que
+  // les tons délavés de la ruine, pour que la pierre relevée se lise) ; le bronze des clés (plus sombre et plus brun que
+  // le cuivre de la Turbine) ; les dalles noyées, la pierre vue à travers l'eau claire du lagon (un aplat juste au-dessus
+  // de l'eau, aucun appel de plus) ; le bois des planches de la fouille.
+  passeurStone: 0xdcd0b5,
+  passeurShade: 0xb9a988,
+  bronze: 0x9c7a3c,
+  drownedStone: 0xa8d4c0,
+  digSand: 0xcdb58a,
+  // L'Observatoire (lot L8c, directeur artistique) : l'enduit rose pâle du tambour et son ombre (ni le sable chaud ni la
+  // terre cuite), le zinc clair de la coupole et ses côtes, les volets Bleu lagon ; la pierre des Passeurs (une seule
+  // valeur de base pour les Ruines, la table d'orientation et la Halle, consultant Archipéo) et leur bronze. La ruine :
+  // l'enduit, le zinc et les volets délavés, d'un ton moyen, jamais sombres ; la corde coupée.
+  plaster: 0xe3b9a3,
+  plasterShade: 0xc99a84,
+  zinc: 0xb7c3c8,
+  rib: 0x8e9da4,
+  shutter: 0x178078,
+  passeurs: 0xcfc6b2,
+  passeursShade: 0xada48f,
+  wornPlaster: 0xbfaa9c,
+  wornPlasterTop: 0xb09d90,
+  wornZinc: 0xa9b1b3,
+  wornRib: 0x9aa3a6,
+  wornShutter: 0x6f9e98,
+  cutRope: 0xc9b38a,
+  // La Halle (lot L8d, directeur artistique) : les tuiles vernissées Vert île et leur ombre (ni l'ardoise de l'école, ni
+  // le bardeau de l'assemblage), la charpente de chêne, le dallage de la pierre des Passeurs (le même que les Ruines). La
+  // ruine : la pierre, le dallage et les tuiles délavés, d'un ton moyen, jamais sombres.
+  tile: 0x438b82,
+  tileShade: 0x356f68,
+  oak: 0x8e6a48,
+  paving: 0xd6cebc,
+  wornTile: 0x8aaba5,
+  wornPasseurs: 0xb8b09f,
+  wornPasseursTop: 0xaaa290,
+  wornPaving: 0xbdb6a6,
 } as const;
 
 /** Les volumes d'un lieu en construction : `add(stage, row, draw)`, et `until` pour un volume tombé de la ruine. */
@@ -1328,6 +1379,484 @@ const SCATTERED_PLANKS: readonly (readonly [number, number, number])[] = [
 /** Les paires de pieux du ponton du Chantier naval, le long de lui (dans l'eau et au bord). */
 const PONTOON_POSTS = [8, 9.9, 11.4] as const;
 
+/**
+ * L'Observatoire (lot L8c), dans son repère (le lieu n'est pas tourné : sa face au sud, vers la caméra) : la terrasse
+ * (son rayon, le haut de sa dalle, ses dix pans) ; le tambour (son rayon, la hauteur de sa première rangée, son haut, ses
+ * douze pans, un pan plein au sud) et sa corniche ; les baies (leur bas et leur haut au-dessus du sol, leur largeur, les
+ * pans qui en ont une : est, sud, ouest, nord) ; la porte (son pan, au sud-est) ; la coupole (son rayon, ses côtes) et
+ * son épi ; la ruine, arasée à mi-hauteur (son plus haut, l'épaisseur de son mur, le faîte de chacun de ses douze pans,
+ * de l'est vers le sud) ; l'escalier vers la grève (son pan de terrasse, à l'ouest-sud-ouest).
+ */
+export const OBSERVATORY = {
+  terrace: { r: 6.6, top: 0.45, sides: 10 },
+  drum: { r: 3.2, mid: 1.7, top: 3.3, sides: 12 },
+  cornice: { r: 3.42, h: 0.3 },
+  bay: { bottom: 1.05, top: 2.55, width: 1.1, angles: [0, 90, 180, 270] },
+  door: { angle: 60, width: 0.95, height: 2.5 },
+  dome: { r: 3.1, ribs: 6, spire: 0.75 },
+  ruin: { top: 1.6, wall: 0.35, crest: [1.45, 1.15, 1.35, 1.6, 1.0, 1.35, 1.25, 0.9, 1.5, 1.3, 1.1, 1.55] },
+  stair: { angle: 162, steps: 3, depth: 0.45, width: 1.5 },
+} as const;
+
+/** La table d'orientation de l'Observatoire, sur la terrasse, au nord-est, hors du cadre de la scénette. */
+export const OBSERVATORY_TABLE = { x: 2.8, z: -4.6 } as const;
+
+/** Les côtes tombées de l'Observatoire, en tas au nord du tambour : le centre de l'arc de chacune et son rayon. */
+const RUIN_RIBS: readonly (readonly [number, number, number])[] = [
+  [-2.2, -3.0, 1.6],
+  [-2.05, -3.15, 1.5],
+  [-2.35, -2.9, 1.75],
+  [-2.15, -3.1, 1.65],
+];
+
+/** Le quart de tour des pans du tambour : un pan plein au sud (les sommets de son prisme à 15° de part et d'autre). */
+const DRUM_YAW = Math.PI / 12;
+
+/** La distance du centre au milieu d'un pan du tambour de rayon `r` (douze pans). */
+export const drumFace = (r: number): number => r * Math.cos(Math.PI / 12);
+
+/** Un point à l'angle `deg` (en degrés, de l'est vers le sud) et au rayon `r`, au sol du repère. */
+const polar = (deg: number, r: number) => ({ x: r * Math.cos((deg * Math.PI) / 180), z: r * Math.sin((deg * Math.PI) / 180) });
+
+/** Le quart de tour qui tourne la face +z d'un volume vers l'angle `deg` (le dehors d'un pan). */
+const facing = (deg: number) => Math.atan2(Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180));
+
+/**
+ * Les côtes de la coupole : des lattes à plat sur ses méridiens, un peu en saillie sur le zinc, des deux faces (avant le
+ * zinc, on les voit de partout : une cage de côtes), de la corniche jusqu'au pied de l'épi. Elles suivent le profil à
+ * facettes du zinc (`domeShell`), au milieu de ses pans, et non la demi-sphère qu'il approche : collées au zinc jusqu'en
+ * haut, jamais détachées en traits fins près de l'épi (relecture de L8c-d).
+ */
+function domeRibs(b: FacetBuilder, base: number): void {
+  const D = OBSERVATORY.dome;
+  const lift = 0.03;
+  // Le profil du zinc au milieu d'un pan (douze pans) : les cercles de ses troncs, puis le pied de l'épi, sur le cône du
+  // haut ; chaque point un peu soulevé, selon la normale du zinc.
+  const apothem = Math.cos(Math.PI / 12);
+  const profile: (readonly [number, number])[] = [0, 30, 60].map((d) => [D.r * Math.cos((d * Math.PI) / 180) * apothem, D.r * Math.sin((d * Math.PI) / 180)] as const);
+  const [lr, ly] = profile[2];
+  const foot = 0.13;
+  profile.push([foot, ly + (D.r - ly) * (1 - foot / lr)]);
+  const lifted = profile.map(([pr, py], j) => {
+    const prev = profile[Math.max(0, j - 1)];
+    const next = profile[Math.min(profile.length - 1, j + 1)];
+    const [tr, ty] = [next[0] - prev[0], next[1] - prev[1]];
+    const n = Math.hypot(tr, ty);
+    return [pr + (lift * ty) / n, py - (lift * tr) / n] as const;
+  });
+  for (let k = 0; k < D.ribs; k++) {
+    const a = (2 * Math.PI * k) / D.ribs + Math.PI / 6;
+    const [ca, sa] = [Math.cos(a), Math.sin(a)];
+    const at = (j: number, side: number): [number, number, number] => [ca * lifted[j][0] - sa * 0.07 * side, base + lifted[j][1], sa * lifted[j][0] + ca * 0.07 * side];
+    for (let j = 0; j + 1 < lifted.length; j++) {
+      const quad = [at(j, -1), at(j, 1), at(j + 1, 1), at(j + 1, -1)] as const;
+      const [dr, dy] = [lifted[j + 1][0] - lifted[j][0], lifted[j + 1][1] - lifted[j][1]];
+      const out = [ca * dy, -dr, sa * dy] as const;
+      quadToward(b, quad, out, C.rib);
+      quadToward(b, quad, [-out[0], -out[1], -out[2]], C.rib);
+    }
+  }
+}
+
+/** La coupole de zinc : une demi-sphère en trois troncs à douze pans, sur la corniche, de `base` à son sommet. */
+function domeShell(b: FacetBuilder, base: number): void {
+  const r = OBSERVATORY.dome.r;
+  const rings = [0, 30, 60, 90].map((d) => (d * Math.PI) / 180);
+  for (let j = 0; j + 1 < rings.length; j++) {
+    const [p, q] = [rings[j], rings[j + 1]];
+    const top = j + 2 === rings.length ? 0 : r * Math.cos(q);
+    b.prism({ x: 0, y: base + r * Math.sin(p), z: 0, yaw: DRUM_YAW }, r * Math.cos(p), top, r * (Math.sin(q) - Math.sin(p)), 12, C.zinc);
+  }
+}
+
+/** Les deux volets d'une baie du tambour, fermés, sur le pan à l'angle `deg` (le milieu du pan à `r`). */
+function closedShutters(b: FacetBuilder, deg: number, r: number): void {
+  const B = OBSERVATORY.bay;
+  const yaw = facing(deg);
+  const c = polar(deg, r + 0.07);
+  // Le long du pan (l'axe x du volume tourné).
+  const t = { x: Math.cos(yaw), z: -Math.sin(yaw) };
+  for (const side of [-1, 1]) {
+    const dx = side * (B.width / 4 + 0.01);
+    b.box({ x: c.x + t.x * dx, y: B.bottom, z: c.z + t.z * dx, yaw }, [B.width / 2 - 0.02, B.top - B.bottom, 0.06], C.shutter);
+  }
+}
+
+/**
+ * L'Observatoire (lot L8c), un belvédère couvert sur le tertre de la pointe sud, plus large que haut : une rotonde basse
+ * (le tambour d'enduit rose pâle, ses grandes baies aux volets Bleu lagon, sa corniche) sous une coupole de zinc en
+ * demi-sphère, ses côtes et un épi court, sans lanterneau ; ni fente, ni lunette, ni étoile. Avant (démonté, aucun
+ * Ferrailleur) : le tambour arasé à mi-hauteur, ses baies vides ; les côtes de la coupole en tas et le zinc empilé sur le
+ * tertre, au nord, une corde coupée près d'eux ; des volets couchés à l'ouest. Le corps : le tambour en deux rangées, ses
+ * baies, puis ses volets fermés, sa corniche et sa porte. Le haut : les côtes, puis le zinc et l'épi. Les abords (l'étape
+ * qui porte les traces) : la terrasse dallée et le chemin de la porte, puis son parapet, la table d'orientation (un
+ * disque de bronze lisse sur un pied de pierre : ni lettre, ni flèche, ni rayon) et l'escalier vers la grève. Ce qui
+ * est tombé dans la ruine s'en va quand ce qui le relève se pose, jamais en double. Rien ne tourne : la coupole est fixe.
+ */
+function observatory(add: Add): void {
+  const T = OBSERVATORY.terrace;
+  const D = OBSERVATORY.drum;
+  const B = OBSERVATORY.bay;
+  const domeBase = D.top + OBSERVATORY.cornice.h;
+  // Le tambour arasé, ouvert en haut (relecture de L8c-d : jamais une boîte au couvercle plat) : un mur d'enduit usé avec
+  // son épaisseur, pan par pan, au faîte irrégulier (des pans plus bas que d'autres, tous sous la première rangée du
+  // corps, qui le couvre) ; ses baies vides, un appui et deux tableaux, rien de peint ; la porte, un vide entre deux
+  // tableaux. D'un ton moyen, jamais sombre. La première rangée du corps le remplace (il ne reste pas caché dedans).
+  add(
+    'ruine',
+    0,
+    (b) => {
+      const R = OBSERVATORY.ruin;
+      const out = drumFace(D.r - 0.03);
+      const pan = 2 * (D.r - 0.03) * Math.sin(Math.PI / 12);
+      for (const [k, h] of R.crest.entries()) {
+        const deg = 30 * k;
+        const yaw = facing(deg);
+        const c = polar(deg, out - R.wall / 2);
+        // Le long du pan (l'axe x du volume tourné).
+        const t = { x: Math.cos(yaw), z: -Math.sin(yaw) };
+        const bay = (B.angles as readonly number[]).includes(deg);
+        const opening = bay ? B.width : deg === OBSERVATORY.door.angle ? OBSERVATORY.door.width : 0;
+        if (!opening) {
+          b.box({ x: c.x, y: SINK, z: c.z, yaw }, [pan, h - SINK, R.wall], C.wornPlaster, C.wornPlasterTop);
+          continue;
+        }
+        // Les deux tableaux de l'ouverture, l'un plus haut que l'autre ; l'appui d'une baie (une porte n'en a pas).
+        const jamb = (pan - opening) / 2;
+        for (const side of [-1, 1]) {
+          const dx = side * (opening / 2 + jamb / 2);
+          b.box({ x: c.x + t.x * dx, y: SINK, z: c.z + t.z * dx, yaw }, [jamb, h - (side > 0 ? 0.25 : 0) - SINK, R.wall], C.wornPlaster, C.wornPlasterTop);
+        }
+        if (bay) b.box({ x: c.x, y: SINK, z: c.z, yaw }, [opening, B.bottom - SINK, R.wall], C.wornPlaster, C.wornPlasterTop);
+      }
+    },
+    { stage: 0, row: 0 },
+  );
+  // Les volets couchés à plat à l'ouest, parallèles, côte à côte contre le mur (jamais en étoile : rien qui se lise comme
+  // un signe) : les volets fermés du corps les relèvent.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      for (const [x, z] of [
+        [-3.75, 0.05],
+        [-4.4, -0.1],
+        [-5.05, 0.1],
+      ] as const)
+        b.box({ x, y: 0.02, z }, [0.55, 0.07, 1.5], C.wornShutter);
+    },
+    { stage: 0, row: 0.67 },
+  );
+  // Les côtes de la coupole en tas sur le tertre, au nord : courbes, couchées l'une sur l'autre (chacune trois lattes en
+  // arc), et une corde coupée à côté (un indice de passage, loin de la scénette) : les côtes du haut les relèvent.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      for (const [k, [cx, cz, r]] of RUIN_RIBS.entries()) {
+        const y = 0.06 + 0.07 * k;
+        const arc = [30, 70, 110, 150].map((deg) => ({ x: cx + r * Math.cos((deg * Math.PI) / 180), y, z: cz - r * Math.sin((deg * Math.PI) / 180) }));
+        for (let j = 0; j + 1 < arc.length; j++) b.beam(arc[j], arc[j + 1], 0.14, C.wornRib);
+      }
+      b.beam({ x: -0.6, y: 0.05, z: -4.4 }, { x: 0.3, y: 0.05, z: -3.9 }, 0.06, C.cutRope);
+      b.beam({ x: 0.3, y: 0.05, z: -3.9 }, { x: 0.55, y: 0.05, z: -4.5 }, 0.06, C.cutRope);
+    },
+    { stage: 1, row: 0 },
+  );
+  // Les plaques de zinc en pile, au nord-est, alignées l'une sur l'autre : le zinc du haut les relève.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      for (const k of [0, 1, 2, 3]) b.box({ x: 2.2 + 0.04 * (k % 2), y: 0.09 * k, z: -5.1 - 0.03 * k, yaw: 0.1 }, [1.6, 0.09, 1.1], C.wornRib, C.wornZinc);
+    },
+    { stage: 1, row: 0.5 },
+  );
+  // Le corps : la première rangée du tambour (elle couvre la ruine)…
+  add(0, 0, (b) => b.prism({ x: 0, y: SINK, z: 0, yaw: DRUM_YAW }, D.r, D.r, D.mid - SINK, D.sides, C.plaster, C.plasterShade));
+  // … puis la seconde, jusqu'à la corniche, et l'encadrement des baies, d'enduit plus sombre.
+  add(0, 0.34, (b) => {
+    b.prism({ x: 0, y: D.mid, z: 0, yaw: DRUM_YAW }, D.r, D.r, D.top - D.mid, D.sides, C.plaster, C.plasterShade);
+    for (const deg of B.angles) {
+      const at = polar(deg, drumFace(D.r) + 0.02);
+      b.box({ x: at.x, y: B.bottom - 0.12, z: at.z, yaw: facing(deg) }, [B.width + 0.3, B.top - B.bottom + 0.24, 0.05], C.plasterShade);
+    }
+  });
+  // Les volets fermés, la corniche, et la porte au sud-est (vers le chemin).
+  add(0, 0.67, (b) => {
+    for (const deg of B.angles) closedShutters(b, deg, drumFace(D.r));
+    b.prism({ x: 0, y: D.top, z: 0, yaw: DRUM_YAW }, OBSERVATORY.cornice.r, OBSERVATORY.cornice.r, OBSERVATORY.cornice.h, D.sides, C.plasterShade);
+    const Dd = OBSERVATORY.door;
+    const at = polar(Dd.angle, drumFace(D.r) + 0.03);
+    b.box({ x: at.x, y: 0, z: at.z, yaw: facing(Dd.angle) }, [Dd.width, Dd.height, 0.08], C.door);
+  });
+  // Le haut : les côtes de la coupole, puis son zinc et son épi.
+  add(1, 0, (b) => domeRibs(b, domeBase));
+  add(1, 0.5, (b) => {
+    domeShell(b, domeBase);
+    b.prism({ x: 0, y: domeBase + OBSERVATORY.dome.r - 0.03, z: 0 }, 0.13, 0, OBSERVATORY.dome.spire, 6, C.rib);
+  });
+  // Les abords : la terrasse dallée, de la pierre des Écluses, et le chemin de sable tassé de la porte (où arrive le
+  // chemin du réseau, plan6e.ts) jusqu'à elle.
+  const apothem = T.r * Math.cos(Math.PI / T.sides);
+  add(2, 0, (b) => {
+    b.prism({ x: 0, y: SINK, z: 0 }, T.r, T.r, T.top - SINK, T.sides, C.darkStone, C.stone);
+    const c = placeById('observatory').center;
+    const door = PATH_NODES.find((n) => n.id === 'observatory')!.at;
+    const d = { x: door.x - c.x, z: door.z - c.z };
+    const from = apothem - 0.2;
+    b.box({ x: d.x, y: SINK, z: (d.z + from) / 2 + 0.1 }, [1.1, 0.03 - SINK, d.z - from + 0.3], C.mud, COLORS_6E.path);
+  });
+  // Le parapet, ouvert au sud (la porte) et à l'ouest-sud-ouest (l'escalier) ; la table d'orientation au nord-est ;
+  // l'escalier qui descend vers la grève.
+  add(2, 0.5, (b) => {
+    const half = Math.PI / T.sides;
+    for (let k = 0; k < T.sides; k++) {
+      const deg = 18 + 36 * k;
+      if (deg === 90 || deg === OBSERVATORY.stair.angle) continue;
+      const at = polar(deg, apothem - 0.17);
+      b.box({ x: at.x, y: T.top - 0.05, z: at.z, yaw: facing(deg) }, [2 * T.r * Math.sin(half) - 0.15, 0.55, 0.3], C.darkStone, C.stone);
+    }
+    const table = OBSERVATORY_TABLE;
+    b.prism({ x: table.x, y: T.top - 0.05, z: table.z }, 0.3, 0.22, 0.8, 6, C.passeursShade, C.passeurs);
+    b.drum({ x: table.x, y: T.top + 0.75, z: table.z }, 0.55, 0.1, 10, C.bronze, C.bronze);
+    const S = OBSERVATORY.stair;
+    for (let k = 0; k < S.steps; k++) {
+      const at = polar(S.angle, apothem + S.depth * (k + 0.5));
+      b.box({ x: at.x, y: SINK, z: at.z, yaw: facing(S.angle) }, [S.width, (T.top * (S.steps - k)) / (S.steps + 1) - SINK, S.depth], C.darkStone, C.stone);
+    }
+  });
+}
+
+/**
+ * La Halle (lot L8d), dans son repère (le lieu n'est pas tourné : sa face au sud, vers la caméra) : le dallage (ses
+ * demi-côtés, son dessus, celui du dallage usé de la ruine, toujours là) ; les piliers (le x de chaque file, le z des rangs du sud et du nord, leur côté, leur socle,
+ * leur chapiteau, le haut de leur chapiteau) ; les sablières et les entraits (leur hauteur, leur section) ; la toiture à
+ * quatre pans (le haut de son égout, ses demi-côtés à l'égout, la demi-longueur de son faîtage, sa hauteur, ses rangs
+ * de tuiles) ; le muret du nord (son z, sa hauteur, son épaisseur).
+ */
+export const COMMONS = {
+  paving: { halfX: 6.9, halfZ: 5.4, top: 0.12, worn: 0.08 },
+  pillar: { xs: [-4.8, -1.6, 1.6, 4.8], z: 3.4, side: 0.55, socle: [0.8, 0.3], capital: [0.75, 0.2], top: 3.25 },
+  beam: { h: 0.3, w: 0.32 },
+  roof: { eave: 2.85, ex: 6.6, ez: 5.0, ridge: 1.6, height: 2.5, courses: 6 },
+  wall: { z: -5.15, h: 0.5, t: 0.35 },
+} as const;
+
+/** Les piliers de la Halle : quatre files de deux (les rangs du sud et du nord), et un au milieu de chaque pignon. */
+export function commonsPillars(): readonly { x: number; z: number }[] {
+  const P = COMMONS.pillar;
+  return [...P.xs.flatMap((x) => [{ x, z: P.z }, { x, z: -P.z }]), { x: P.xs[0], z: 0 }, { x: P.xs[3], z: 0 }];
+}
+
+/** Un point de la toiture, au rang `t` de l'égout (0) au faîtage (1) : ses demi-côtés et sa hauteur. */
+function roofAt(t: number): { hx: number; hz: number; y: number } {
+  const R = COMMONS.roof;
+  return { hx: R.ex - (R.ex - R.ridge) * t, hz: R.ez * (1 - t), y: R.eave + R.height * t };
+}
+
+/**
+ * La bande de la toiture entre les rangs `t0` et `t1` sur ses quatre pans (le sud, l'est, le nord, l'ouest), de la
+ * couleur `color`, vue du dessus ; ou son dessous (`under`). Les pans de l'est et de l'ouest finissent en pointe au
+ * faîtage (un triangle).
+ */
+function roofBand(b: FacetBuilder, t0: number, t1: number, color: number, under = false): void {
+  const a = roofAt(t0),
+    c = roofAt(t1);
+  const s = under ? -1 : 1;
+  const pans: [readonly [number, number, number][], readonly [number, number, number]][] = [
+    [[[-a.hx, a.y, a.hz], [a.hx, a.y, a.hz], [c.hx, c.y, c.hz], [-c.hx, c.y, c.hz]], [0, s, 0.5 * s]],
+    [[[a.hx, a.y, a.hz], [a.hx, a.y, -a.hz], [c.hx, c.y, -c.hz], [c.hx, c.y, c.hz]], [0.5 * s, s, 0]],
+    [[[a.hx, a.y, -a.hz], [-a.hx, a.y, -a.hz], [-c.hx, c.y, -c.hz], [c.hx, c.y, -c.hz]], [0, s, -0.5 * s]],
+    [[[-a.hx, a.y, -a.hz], [-a.hx, a.y, a.hz], [-c.hx, c.y, c.hz], [-c.hx, c.y, -c.hz]], [-0.5 * s, s, 0]],
+  ];
+  for (const [k, [q, out]] of pans.entries()) {
+    // Au faîtage, les pans de l'est et de l'ouest se referment en pointe : un triangle, sans facette vide.
+    if (k % 2 === 1 && c.hz < 1e-6) {
+      const n = triangleNormal(q);
+      if (n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0) b.triangle(q[0], q[1], q[2], color);
+      else b.triangle(q[2], q[1], q[0], color);
+    } else quadToward(b, q, out, color);
+  }
+}
+
+/** La normale (non normée) d'un triangle, dans l'ordre de ses sommets. */
+function triangleNormal(t: readonly (readonly [number, number, number])[]): [number, number, number] {
+  const [a, c, d] = t;
+  const u = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+  const v = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
+  return [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+}
+
+/**
+ * Les rangs de tuiles de la toiture, de `from` à `to` (en rangs, de l'égout) : chaque rang de tuile Vert île, sa lèvre
+ * d'ombre en bas (le rang qui recouvre celui du dessous), et le dessous de la toiture, sombre, vu d'entre les piliers.
+ */
+function roofCourses(b: FacetBuilder, from: number, to: number): void {
+  const n = COMMONS.roof.courses;
+  for (let k = from; k < to; k++) {
+    const [t0, t1] = [k / n, (k + 1) / n];
+    const lip = t0 + 0.2 * (t1 - t0);
+    roofBand(b, t0, lip, C.tileShade);
+    roofBand(b, lip, t1, C.tile);
+  }
+  roofBand(b, from / n, to / n, C.tileShade, true);
+}
+
+/**
+ * La Halle (lot L8d), une halle de village au sud de l'Escale : une grande toiture à quatre pans, basse et débordante,
+ * de tuiles vernissées Vert île, sur dix piliers de la pierre des Passeurs, ouverte sur ses quatre côtés ; la toiture
+ * fait presque tout le volume (plus large, plus basse que le lieu d'assemblage de l'Escale, une halle de bois à deux
+ * pentes). Ni girouette, ni clocheton, ni horloge ; aucun symbole. Avant (éteinte, aucun Ferrailleur) : les piliers
+ * usés, deux écimés, la charpente effondrée en travers, des tuiles éparses, de l'herbe dans le dallage usé. Le corps :
+ * les piliers, puis les sablières, puis les entraits. Le haut (l'étape qui porte les traces) : les poinçons et le
+ * faîtage de la charpente avec les rangs de tuiles du bas, puis ceux du haut, les arêtiers et l'épi du faîtage. Les abords : le dallage et le
+ * chemin de la porte, puis le muret du nord. Ce qui est tombé dans la ruine s'en va quand ce qui le relève se pose.
+ */
+function commons(add: Add): void {
+  const P = COMMONS.pillar;
+  const Bm = COMMONS.beam;
+  const R = COMMONS.roof;
+  const D = COMMONS.paving;
+  const pillars = commonsPillars();
+  // Le dallage usé, sous le neuf (qui le couvre, un peu plus large et plus haut).
+  add('ruine', 0, (b) => b.box({ x: 0, y: SINK, z: 0 }, [2 * D.halfX - 0.3, D.worn - SINK, 2 * D.halfZ - 0.3], C.worn, C.wornPaving));
+  // Les piliers usés, debout, deux écimés (au nord-ouest et au milieu du pignon de l'est, loin de la scénette) : les
+  // piliers neufs les remplacent.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      for (const p of pillars) {
+        const cut = p.x === P.xs[1] && p.z < 0 ? 1.5 : p.x === P.xs[3] && p.z === 0 ? 1.9 : P.top - 0.25;
+        b.box({ x: p.x, y: SINK, z: p.z }, [P.side - 0.06, cut - SINK, P.side - 0.06], C.wornPasseurs, C.wornPasseursTop);
+      }
+      // Les blocs tombés des deux piliers écimés, à leur pied.
+      b.box({ x: P.xs[1] + 0.7, y: 0.05, z: -P.z - 0.5, yaw: 0.5 }, [0.5, 0.42, 0.5], C.wornPasseurs, C.wornPasseursTop);
+      b.box({ x: P.xs[3] + 0.8, y: 0.05, z: 0.6, yaw: -0.3 }, [0.5, 0.42, 0.5], C.wornPasseurs, C.wornPasseursTop);
+    },
+    { stage: 0, row: 0 },
+  );
+  // La charpente effondrée en travers du dallage, au nord, une poutre appuyée contre un pilier de l'ouest : les
+  // sablières la relèvent.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      for (const [x0, y0, z0, x1, y1, z1] of [
+        [-4.2, 0.25, -2.6, 2.4, 0.25, -1.4],
+        [-1.0, 0.45, -3.0, 3.8, 0.25, -0.2],
+        [0.6, 0.2, -2.4, 4.4, 0.2, -3.4],
+        [-4.8, 2.1, -0.25, -3.0, 0.2, 1.2],
+      ] as const)
+        b.beam({ x: x0, y: y0, z: z0 }, { x: x1, y: y1, z: z1 }, 0.26, C.wornWood);
+    },
+    { stage: 0, row: 0.34 },
+  );
+  // Les tuiles éparses sur le dallage (hors du milieu du sud, où se tient la scénette) : la toiture les relève.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      for (const [x, z, yaw] of [
+        [-5.6, 1.2, 0.4],
+        [-3.4, -1.1, 1.1],
+        [-2.6, 1.6, -0.3],
+        [2.9, 1.9, 0.8],
+        [3.6, -2.0, -0.6],
+        [5.7, 2.6, 0.2],
+        [-0.4, -4.3, 1.4],
+        [1.8, -0.4, -1.0],
+      ] as const)
+        b.box({ x, y: D.worn, z, yaw }, [0.42, 0.05, 0.3], C.wornTile);
+    },
+    { stage: 1, row: 0 },
+  );
+  // L'herbe dans les joints du dallage usé : le dallage neuf la recouvre.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      for (const [x, z, r] of [
+        [-5.9, -3.9, 0.3],
+        [-2.2, -0.2, 0.25],
+        [0.9, -2.9, 0.3],
+        [4.0, 0.9, 0.28],
+        [6.0, -4.2, 0.32],
+        [-4.0, 4.6, 0.26],
+      ] as const)
+        b.prism({ x, y: 0.02, z }, r, r * 0.4, 0.24, 5, C.green, C.leaf);
+    },
+    { stage: 2, row: 0 },
+  );
+  // Le corps : les piliers, chacun sur son socle, sous son chapiteau…
+  add(0, 0, (b) => {
+    const [sw, sh] = P.socle,
+      [cw, ch] = P.capital;
+    for (const p of pillars) {
+      b.box({ x: p.x, y: SINK, z: p.z }, [sw, sh - SINK, sw], C.passeursShade, C.passeurs);
+      b.box({ x: p.x, y: sh, z: p.z }, [P.side, P.top - ch - sh, P.side], C.passeurs);
+      b.box({ x: p.x, y: P.top - ch, z: p.z }, [cw, ch, cw], C.passeursShade, C.passeurs);
+    }
+  });
+  // … puis les sablières, de chêne, d'un pilier d'angle à l'autre…
+  add(0, 0.34, (b) => {
+    const [x0, x1] = [P.xs[0], P.xs[3]];
+    for (const z of [P.z, -P.z]) b.box({ x: 0, y: P.top, z }, [x1 - x0 + Bm.w, Bm.h, Bm.w], C.oak);
+    for (const x of [x0, x1]) b.box({ x, y: P.top, z: 0 }, [Bm.w, Bm.h, 2 * P.z - Bm.w], C.oak);
+  });
+  // … puis les entraits des deux files du milieu.
+  add(0, 0.67, (b) => {
+    for (const x of [P.xs[1], P.xs[2]]) b.box({ x, y: P.top, z: 0 }, [Bm.w - 0.04, Bm.h, 2 * P.z - Bm.w], C.oak);
+  });
+  // Le haut : les poinçons et le faîtage de la charpente, avec les rangs de tuiles du bas (l'égout débordant ; relecture
+  // de L8c-d : sans toiture, ils se lisaient comme un portique), puis les rangs du haut, les arêtiers et le faîtage.
+  const half = R.courses / 2;
+  add(1, 0, (b) => {
+    const ridgeY = R.eave + R.height;
+    for (const x of [P.xs[1], P.xs[2]]) b.box({ x, y: P.top + Bm.h, z: 0 }, [0.24, ridgeY - 0.3 - P.top - Bm.h, 0.24], C.oak);
+    b.beam({ x: P.xs[1], y: ridgeY - 0.2, z: 0 }, { x: P.xs[2], y: ridgeY - 0.2, z: 0 }, 0.2, C.oak);
+    roofCourses(b, 0, half);
+    // La rive de l'égout, une bande d'ombre sous le bord : la toiture a une épaisseur.
+    const a = roofAt(0);
+    const rim = 0.12;
+    const corners: [number, number][] = [
+      [-a.hx, a.hz],
+      [a.hx, a.hz],
+      [a.hx, -a.hz],
+      [-a.hx, -a.hz],
+    ];
+    for (let k = 0; k < 4; k++) {
+      const [p, q] = [corners[k], corners[(k + 1) % 4]];
+      const mid = [(p[0] + q[0]) / 2, 0, (p[1] + q[1]) / 2] as const;
+      quadToward(b, [[p[0], a.y - rim, p[1]], [q[0], a.y - rim, q[1]], [q[0], a.y, q[1]], [p[0], a.y, p[1]]], mid, C.tileShade);
+    }
+  });
+  add(1, 0.5, (b) => {
+    roofCourses(b, half, R.courses);
+    const top = roofAt(1);
+    const a = roofAt(0);
+    for (const sx of [-1, 1])
+      for (const sz of [-1, 1]) b.beam({ x: sx * a.hx, y: a.y + 0.06, z: sz * a.hz }, { x: sx * top.hx, y: top.y + 0.06, z: 0 }, 0.16, C.tileShade);
+    b.beam({ x: -top.hx - 0.05, y: top.y + 0.06, z: 0 }, { x: top.hx + 0.05, y: top.y + 0.06, z: 0 }, 0.2, C.tileShade);
+  });
+  // Les abords : le dallage de la pierre claire des Passeurs, et le chemin de sable tassé de la porte (où arrive le
+  // chemin du réseau, plan6e.ts) jusqu'à lui.
+  add(2, 0, (b) => {
+    b.box({ x: 0, y: SINK, z: 0 }, [2 * D.halfX, D.top - SINK, 2 * D.halfZ], C.passeursShade, C.paving);
+    const c = placeById('commons').center;
+    const door = PATH_NODES.find((n) => n.id === 'commons')!.at;
+    const d = { x: door.x - c.x, z: door.z - c.z };
+    const from = D.halfZ - 0.2;
+    b.box({ x: d.x, y: SINK, z: (d.z + from) / 2 + 0.1 }, [1.1, 0.03 - SINK, d.z - from + 0.3], C.mud, COLORS_6E.path);
+  });
+  // Le muret bas du nord, de la même pierre, d'un bout à l'autre du dallage, contre le village.
+  add(2, 0.5, (b) => {
+    const W = COMMONS.wall;
+    b.box({ x: 0, y: SINK, z: W.z }, [2 * D.halfX - 0.4, W.h - SINK, W.t], C.passeursShade, C.passeurs);
+  });
+}
+
 /** Les cônes de sel des Marais salants, à l'est de la grille (depuis son bord est) : écart, z, rayon. */
 const SALT_CONES: readonly (readonly [number, number, number])[] = [
   [1.1, -0.3, 0.55],
@@ -1347,6 +1876,587 @@ function northPlace(id: PlaceId): (add: Add) => void {
   };
 }
 
+/**
+ * La Mangrove (lot L8a), dans son repère (le lieu n'est pas tourné ; le lagon au nord-est, la rive en biais, du
+ * nord-ouest au sud-est) : le platelage de rive (son milieu, sa largeur le long de x, sa profondeur, son dessus au-dessus
+ * du sol le plus haut sous lui) et ses pieux ; la passerelle en coude, de l'angle nord-est du platelage (`start`) au coude
+ * (`knee`), puis au carbet (`end`), sa largeur, la hauteur de ses rambardes ; le carbet sur pilotis (son milieu, sa
+ * largeur, sa profondeur, son plancher, ses poteaux, son toit de palmes) ; les trois palétuviers (dans l'eau, au bord) ;
+ * la vasière ; la passerelle qui rejoint le chemin, du platelage à la porte ; le ponton d'accostage du carbet.
+ */
+export const MANGROVE = {
+  deck: {
+    x: 5.5,
+    z: -2,
+    w: 9,
+    d: 2.8,
+    lift: 0.3,
+    piles: [
+      [1.7, -3.3],
+      [4.9, -3.3],
+      [7.7, -3.3],
+      [9.9, -3.3],
+      [9.9, -0.7],
+      [7.7, -0.7],
+    ],
+  },
+  walk: { start: { x: 9.1, z: -3.3 }, knee: { x: 9.1, z: -6.6 }, end: { x: 6.4, z: -8.75 }, width: 1, rail: 0.75 },
+  carbet: { x: 5.5, z: -10, w: 2.6, d: 2.2, floor: 0.42, posts: 1.8, roof: 1.3 },
+  trees: [
+    [1.5, -7],
+    [12, -4],
+    [12.1, -0.9],
+  ],
+  mud: { x: 0, z: -1.5, rx: 4.6, rz: 4 },
+  path: { from: { x: 3.7, z: -0.5 }, width: 1 },
+  pontoon: { x: 3.5, z: -10.2, w: 1.4, d: 1 },
+} as const;
+
+/** Le sol d'un lieu sous un point de son repère, depuis le sol de son centre, sans le plancher de l'eau (la vase). */
+function rawGround(id: PlaceId): (lx: number, lz: number) => number {
+  const p = placeById(id);
+  const h0 = standingHeight(heightAt(p.center));
+  return (lx, lz) => heightAt({ x: p.center.x + lx, z: p.center.z + lz }) - h0;
+}
+
+/**
+ * Le dessus du platelage de rive de la Mangrove, au-dessus du sol de son centre : `lift` au-dessus du plus haut du sol
+ * sous lui (rien ne s'y enfonce). La scénette pose son plancher juste au-dessus (scenette.ts).
+ */
+export function mangroveDeckTop(): number {
+  const D = MANGROVE.deck;
+  const g = siteGround('mangrove');
+  let top = 0;
+  for (let i = 0; i <= 6; i++) for (let k = 0; k <= 2; k++) top = Math.max(top, g.at(D.x - D.w / 2 + (i * D.w) / 6, D.z - D.d / 2 + (k * D.d) / 2));
+  return top + D.lift;
+}
+
+/** Un pieu carré, de section `t`, de son pied (le sol, ou le fond de l'eau, `bottom`) jusqu'à `top`. */
+function pile(b: FacetBuilder, x: number, z: number, bottom: number, top: number, color: number, t = 0.18): void {
+  b.box({ x, y: bottom, z }, [t, top - bottom, t], color);
+}
+
+/**
+ * Une passerelle de planches de `from` à `to` (le dessus des planches de `y0` à `y1`), de largeur `width` : un corps de
+ * bois sombre, et ses planches en travers, en deux bois, avec un jour entre elles (on les lit une à une).
+ */
+function plankWalk(b: FacetBuilder, from: Vec2, to: Vec2, y0: number, y1: number, width: number, dark: number, woods: readonly [number, number]): void {
+  const len = Math.hypot(to.x - from.x, to.z - from.z) || 1e-6;
+  const [dx, dz] = [(to.x - from.x) / len, (to.z - from.z) / len];
+  const yaw = Math.atan2(dx, dz);
+  const mid = { x: (from.x + to.x) / 2, z: (from.z + to.z) / 2 };
+  const thick = 0.14;
+  b.box({ x: mid.x, y: (y0 + y1) / 2 - thick, z: mid.z, yaw, pitch: -Math.asin((y1 - y0) / len) }, [width, thick, len], dark);
+  const n = Math.max(1, Math.round(len / PLANK_PITCH));
+  const step = len / n;
+  const up = [0, 1, 0] as const;
+  const [ox, oz] = [dz * (width / 2 - 0.04), -dx * (width / 2 - 0.04)];
+  for (let k = 0; k < n; k++) {
+    const at = (u: number) => ({ x: from.x + dx * u, y: y0 + ((y1 - y0) * u) / len + 0.006, z: from.z + dz * u });
+    const [p, q] = [at(k * step + 0.04), at((k + 1) * step - 0.04)];
+    quadToward(
+      b,
+      [
+        [p.x + ox, p.y, p.z + oz],
+        [q.x + ox, q.y, q.z + oz],
+        [q.x - ox, q.y, q.z - oz],
+        [p.x - ox, p.y, p.z - oz],
+      ],
+      up,
+      woods[k % 2],
+    );
+  }
+}
+
+/** Le pas des planches d'une passerelle (une planche et son jour). */
+const PLANK_PITCH = 0.5;
+
+/** Une racine-échasse : un pied effilé à trois pans, de `a` (en bas) à `c`, sans dessus ni dessous. */
+function stilt(b: FacetBuilder, a: { x: number; y: number; z: number }, c: { x: number; y: number; z: number }, r0: number, r1: number, color: number): void {
+  const d = [c.x - a.x, c.y - a.y, c.z - a.z];
+  const l = Math.hypot(d[0], d[1], d[2]) || 1e-6;
+  const n = d.map((v) => v / l);
+  const ref = Math.abs(n[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0];
+  const u0 = [n[1] * ref[2] - n[2] * ref[1], n[2] * ref[0] - n[0] * ref[2], n[0] * ref[1] - n[1] * ref[0]];
+  const ul = Math.hypot(u0[0], u0[1], u0[2]);
+  const u = u0.map((v) => v / ul);
+  const v = [n[1] * u[2] - n[2] * u[1], n[2] * u[0] - n[0] * u[2], n[0] * u[1] - n[1] * u[0]];
+  const ring = (p: { x: number; y: number; z: number }, r: number) =>
+    [0, 1, 2].map((k) => {
+      const t = (2 * Math.PI * k) / 3;
+      const [cu, sv] = [Math.cos(t) * r, Math.sin(t) * r];
+      return [p.x + cu * u[0] + sv * v[0], p.y + cu * u[1] + sv * v[1], p.z + cu * u[2] + sv * v[2]] as const;
+    });
+  const lo = ring(a, r0);
+  const hi = ring(c, r1);
+  for (let k = 0; k < 3; k++) {
+    const m = (k + 1) % 3;
+    b.quad(lo[k], lo[m], hi[m], hi[k], color);
+  }
+}
+
+/**
+ * Un palétuvier jeune, son pied en (`x`, `z`), dans l'eau ou au bord, au niveau `foot` (relectures DA de L8 : jamais un
+ * parasol sur trépied, jamais un tripode qui marche) : le houppier en dôme, bas, large, sombre et rond, plus lourd que
+ * les racines, en deux masses (la grande, l'ombre dessous et les flancs qui se referment, et une plus petite posée
+ * dessus, un peu de côté, qui monte le milieu du dôme) ; un bout de tronc nu sous lui ; et cinq racines-échasses
+ * inégales, attachées bas, à des angles décalés (jamais la symétrie d'un trépied), chacune en deux segments qui
+ * s'évasent en arc : le premier descend vers 40°, le second plonge vers 65°, jamais une cuisse à plat sur un tibia
+ * droit. 96 triangles (le tronc à trois pans, comme les racines ; aucune face cachée sous le houppier) ; ni fleur, ni
+ * fruit.
+ */
+function mangroveTree(b: FacetBuilder, x: number, z: number, foot: number, turn: number): void {
+  const T = MANGROVE_TREE;
+  const at = (a: number, r: number, y: number) => ({ x: x + r * Math.cos(a), y, z: z + r * Math.sin(a) });
+  const bottom = foot - 0.4;
+  T.roots.forEach(([offset, scale], k) => {
+    const a = turn + (2 * Math.PI * k) / T.roots.length + offset;
+    const [run, drop] = [T.first * scale, T.first * scale * Math.tan(T.slopes[0])];
+    const elbow = at(a, 0.1 + run, T.root - drop);
+    const reach = 0.1 + run + (elbow.y - bottom) / Math.tan(T.slopes[1]);
+    stilt(b, at(a, reach, bottom), elbow, 0.09, 0.08, C.mangroveWood);
+    stilt(b, elbow, at(a, 0.1, T.root), 0.08, 0.08, C.mangroveWood);
+  });
+  stilt(b, { x, y: T.root - 0.1, z }, { x, y: T.crown + 0.1, z }, 0.17, 0.14, C.mangroveWood);
+  crownBand(b, x, T.crown, z, 0.75, 1.15, 0.32, turn, C.leafMangroveShade);
+  b.prism({ x, y: T.crown + 0.32, z, yaw: turn }, 1.15, 0.6, 0.5, 5, C.leafMangrove, C.leafMangrove);
+  const [dx, dz] = [0.22 * Math.cos(turn + 1), 0.22 * Math.sin(turn + 1)];
+  b.prism({ x: x + dx, y: T.crown + 0.74, z: z + dz, yaw: turn + 0.6 }, 0.7, 0, 0.36, 5, C.leafMangrove);
+}
+
+/**
+ * Le bas du houppier d'un palétuvier : un tour de tronc de cône à cinq pans, de `r0` en bas à `r1` en haut, sans dessus
+ * ni dessous (le haut du houppier le ferme ; on ne le voit pas d'en bas).
+ */
+function crownBand(b: FacetBuilder, x: number, y: number, z: number, r0: number, r1: number, h: number, turn: number, color: number): void {
+  const ring = (r: number, yy: number) => Array.from({ length: 5 }, (_, k) => [x + r * Math.cos((2 * Math.PI * k) / 5 - turn), yy, z + r * Math.sin((2 * Math.PI * k) / 5 - turn)] as const);
+  const [lo, hi] = [ring(r0, y), ring(r1, y + h)];
+  for (let k = 0; k < 5; k++) {
+    const n = (k + 1) % 5;
+    b.quad(lo[n], lo[k], hi[k], hi[n], color);
+  }
+}
+
+/**
+ * Le palétuvier : l'attache des racines au tronc (`root`), le bas du houppier (`crown`) ; le tronc nu se voit entre les
+ * deux. Ses racines : la longueur à plat du premier segment (`first`), les pentes des deux segments (`slopes`, en
+ * radians depuis l'horizontale), et pour chacune son décalage d'angle et sa longueur relative (`roots`).
+ */
+const MANGROVE_TREE = {
+  root: 0.7,
+  crown: 1.25,
+  first: 0.42,
+  slopes: [0.72, 1.13],
+  roots: [
+    [0, 1],
+    [0.3, 0.8],
+    [-0.2, 1.15],
+    [0.15, 0.9],
+    [-0.1, 1.05],
+  ],
+} as const;
+
+/**
+ * La Mangrove (lot L8a). Avant (éteinte, aucun Ferrailleur) : la vasière ; des pilotis cassés et penchés dans l'eau, des
+ * planches échouées dans la vase ; le carbet sans toit, son plancher troué ; trois touffes basses de jeunes palétuviers.
+ * Le corps (l'étape qui porte les traces) : le platelage de rive sur ses pieux, puis la passerelle en coude qui avance sur
+ * l'eau. Le haut : le carbet sur pilotis et son toit de palmes à deux pentes (le plus haut point, le repère), puis les
+ * trois palétuviers sur leurs racines. Les abords : la passerelle qui rejoint le chemin, les rambardes de corde, le petit
+ * ponton d'accostage. Aucun animal, ni fleur ni fruit ; rien ne bouge. Ce qui gît dans la ruine s'en va quand ce qui le
+ * relève se pose, jamais en double. Sur la vasière de la rive sud-ouest (terrain.ts).
+ */
+function mangrove(add: Add): void {
+  const M = MANGROVE;
+  const D = M.deck;
+  const W = M.walk;
+  const K = M.carbet;
+  const g = siteGround('mangrove');
+  const raw = rawGround('mangrove');
+  const water = g.water;
+  const top = mangroveDeckTop();
+  const bed = water - 0.7;
+  const c = placeById('mangrove').center;
+  // La vasière : un aplat de vase posé sur le sol, sur la terre seulement (son bord recule devant l'eau, le sable du
+  // rivage reste), au contour arrondi et irrégulier (un rayon tiré d'un hasard fixe à chaque rayon) : jamais un carré.
+  add('ruine', 0, (b) => {
+    const V = M.mud;
+    const up = [0, 1, 0] as const;
+    const n = 12;
+    const rim = Array.from({ length: n }, (_, k) => {
+      const t = (2 * Math.PI * k) / n;
+      const wobble = 0.8 + 0.2 * (((k * 7) % 5) / 4);
+      let r = wobble;
+      const at = (s: number) => ({ x: V.x + Math.cos(t) * V.rx * s, z: V.z + Math.sin(t) * V.rz * s });
+      while (r > 0.2 && landDistance({ x: c.x + at(r).x, z: c.z + at(r).z }) < 0.4) r -= 0.1;
+      return [at(r), at(r / 2)] as const;
+    });
+    const lift = (p: Vec2) => [p.x, raw(p.x, p.z) + 0.05, p.z] as const;
+    const mid = lift({ x: V.x, z: V.z });
+    for (let k = 0; k < n; k++) {
+      const [outA, inA] = rim[k];
+      const [outB, inB] = rim[(k + 1) % n];
+      b.triangle(mid, lift(inB), lift(inA), C.vase);
+      quadToward(b, [lift(inA), lift(inB), lift(outB), lift(outA)], up, C.vase);
+    }
+  });
+  // Les pilotis cassés et penchés, dans l'eau là où le platelage et la passerelle se relèveront, et les planches
+  // échouées dans la vase : ils s'en vont quand le platelage se pose.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      for (const [x, z, h, lean] of MANGROVE_BROKEN_PILES) b.box({ x, y: bed, z, pitch: lean, yaw: x }, [0.18, water + h - bed, 0.18], C.wornWood);
+      for (const [x, z, yaw] of MANGROVE_STRANDED) b.box({ x, y: raw(x, z) + 0.02, z, yaw }, [0.42, 0.08, 1.7], C.wornWood);
+    },
+    { stage: 0, row: 0 },
+  );
+  // Le carbet ruiné : trois pieux tronqués, son plancher troué (deux bouts de planches de travers), sans toit ; il s'en
+  // va quand le carbet se relève.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      for (const [dx, dz, h] of [
+        [-1.2, -1, 0.9],
+        [1.2, -1, 0.5],
+        [1.2, 1, 0.7],
+      ] as const)
+        pile(b, K.x + dx, K.z + dz, bed, water + h, C.wornWood);
+      b.box({ x: K.x + 0.4, y: water + 0.5, z: K.z - 0.3, yaw: 0.1, pitch: 0.12 }, [1.6, 0.1, 0.9], C.wornWood);
+      b.box({ x: K.x + 0.9, y: water + 0.45, z: K.z + 0.7, yaw: -0.3 }, [0.9, 0.1, 0.5], C.wornWood);
+    },
+    { stage: 1, row: 0 },
+  );
+  // Trois touffes basses de jeunes palétuviers, au pied de trois des arbres (rien de mort) : elles s'en vont quand les
+  // arbres poussent.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      for (const [x, z] of M.trees.slice(0, 3)) b.prism({ x, y: Math.min(water, raw(x, z)) - 0.05, z, yaw: x }, 0.6, 0.25, 0.6, 6, C.leafMangroveShade, C.leafMangrove);
+    },
+    { stage: 1, row: 0.67 },
+  );
+  // Le corps : le platelage de rive sur ses pieux.
+  add(0, 0, (b) => {
+    for (const [x, z] of D.piles) pile(b, x, z, Math.min(bed, raw(x, z) - 0.3), top - 0.14, C.walkwayDark);
+    plankWalk(b, { x: D.x - D.w / 2, z: D.z }, { x: D.x + D.w / 2, z: D.z }, top, top, D.d, C.walkwayDark, [C.walkway, C.walkwayLight]);
+  });
+  // La passerelle en coude, qui avance sur l'eau : son premier bras vers le nord et ses pieux (leur tête porte la
+  // rambarde), puis son second bras, vers le carbet.
+  const postTop = top + W.rail;
+  add(0, 0.34, (b) => {
+    plankWalk(b, W.start, W.knee, top, top, W.width, C.walkwayDark, [C.walkway, C.walkwayLight]);
+    for (const at of [W.start, W.knee]) for (const p of walkSides(W.start, W.knee, at)) pile(b, p.x, p.z, bed, postTop, C.walkwayDark, 0.14);
+  });
+  add(0, 0.67, (b) => {
+    plankWalk(b, W.knee, W.end, top, top, W.width, C.walkwayDark, [C.walkwayLight, C.walkway]);
+    for (const p of walkSides(W.knee, W.end, W.end)) pile(b, p.x, p.z, bed, postTop, C.walkwayDark, 0.14);
+  });
+  // Le haut : le carbet sur pilotis, ses quatre poteaux du fond de l'eau au toit, son plancher, son mur du fond ; puis son
+  // toit de palmes à deux pentes, le plus haut point du lieu ; puis les trois palétuviers.
+  const floor = mangroveCarbetFloor();
+  add(1, 0, (b) => {
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) pile(b, K.x + sx * (K.w / 2 - 0.1), K.z + sz * (K.d / 2 - 0.1), bed, floor + K.posts, C.mangroveWood, 0.16);
+    b.box({ x: K.x, y: floor - 0.14, z: K.z }, [K.w, 0.14, K.d], C.walkwayDark, C.walkway);
+    b.box({ x: K.x, y: floor, z: K.z - K.d / 2 + 0.08 }, [K.w - 0.3, 1.05, 0.1], C.palmShade, C.palm);
+  });
+  add(1, 0.34, (b) => b.gableRoof({ x: K.x, y: floor + K.posts, z: K.z }, K.w + 0.7, K.d + 0.8, K.roof, C.palm, C.palmShade));
+  add(1, 0.67, (b) => M.trees.forEach(([x, z], k) => mangroveTree(b, x, z, Math.min(water, raw(x, z)), 0.4 + k)));
+  // Les abords : la passerelle qui rejoint le chemin, du platelage jusque devant la porte, posée sur la vase, et ses pieux
+  // courts aux deux bouts.
+  add(2, 0, (b) => {
+    const door = PATH_NODES.find((n) => n.id === 'mangrove')!.at;
+    const to = { x: door.x - c.x, z: door.z - c.z - 0.65 };
+    const from = M.path.from;
+    const y1 = Math.max(top - 0.05, g.at(to.x, to.z) + 0.16);
+    plankWalk(b, from, to, top, y1, M.path.width, C.walkwayDark, [C.walkway, C.walkwayLight]);
+    for (const [at, y] of [
+      [from, top],
+      [to, y1],
+    ] as const)
+      for (const side of [-1, 1]) pile(b, at.x + side * 0.6, at.z, raw(at.x, at.z) - 0.4, y + 0.12, C.walkwayDark, 0.14);
+  });
+  // Les rambardes de corde, d'une tête de pieu à l'autre, des deux côtés de la passerelle en coude.
+  add(2, 0.34, (b) => {
+    for (const [from, to] of [
+      [W.start, W.knee],
+      [W.knee, W.end],
+    ] as const) {
+      const [a, e] = [walkSides(from, to, from), walkSides(from, to, to)];
+      for (const k of [0, 1]) b.beam({ x: a[k].x, y: postTop - 0.05, z: a[k].z }, { x: e[k].x, y: postTop - 0.05, z: e[k].z }, 0.06, C.cord);
+    }
+  });
+  // Le petit ponton d'accostage, à l'ouest du carbet, un peu plus bas que son plancher, sur deux pieux.
+  add(2, 0.67, (b) => {
+    const P = M.pontoon;
+    plankWalk(b, { x: P.x + P.w / 2, z: P.z }, { x: P.x - P.w / 2, z: P.z }, floor - 0.12, floor - 0.12, P.d, C.walkwayDark, [C.walkway, C.walkwayLight]);
+    for (const sz of [-1, 1]) pile(b, P.x - P.w / 2 + 0.1, P.z + sz * (P.d / 2 - 0.08), bed, floor + 0.05, C.walkwayDark, 0.14);
+  });
+}
+
+/** Le plancher du carbet de la Mangrove, au-dessus du sol du centre du lieu : un peu plus haut que le platelage. */
+export const mangroveCarbetFloor = (): number => mangroveDeckTop() + MANGROVE.carbet.floor - 0.3;
+
+/** Les deux pieux, de part et d'autre d'une passerelle de `from` à `to`, en son point `at` (à côté des planches). */
+function walkSides(from: Vec2, to: Vec2, at: Vec2): [Vec2, Vec2] {
+  const l = Math.hypot(to.x - from.x, to.z - from.z) || 1e-6;
+  const [nx, nz] = [(to.z - from.z) / l, -(to.x - from.x) / l];
+  const o = MANGROVE.walk.width / 2 + 0.1;
+  return [
+    { x: at.x + nx * o, z: at.z + nz * o },
+    { x: at.x - nx * o, z: at.z - nz * o },
+  ];
+}
+
+/** Les pilotis cassés de la ruine de la Mangrove, dans l'eau : leur pied, le haut de leur bout cassé, leur pente. */
+const MANGROVE_BROKEN_PILES: readonly (readonly [number, number, number, number])[] = [
+  [7.7, -3.3, 0.9, 0.35],
+  [9.9, -1.2, 0.6, -0.4],
+  [8.9, -5.2, 1.1, 0.25],
+  [8.1, -6.9, 0.7, -0.3],
+];
+
+/** Les planches échouées dans la vase : leur milieu et leur quart de tour. */
+const MANGROVE_STRANDED: readonly (readonly [number, number, number])[] = [
+  [2.2, -1.8, 0.4],
+  [-1.6, 0.6, -0.7],
+  [2.6, 1.4, 1.2],
+];
+
+/**
+ * Les Ruines (lot L8b), dans leur repère : l'arcade de quatre arcs d'est en ouest, face au sud (vue de face à
+ * l'arrivée), ses piles ouest sur la terre, ses piles est dans l'eau ; le dallage devant elle, ses dalles noyées dans
+ * l'eau ; l'escalier qui descend à l'eau ; la fouille ; les têtes de piles qui affleurent.
+ */
+export const RUINS = {
+  arcade: { z: -4, piles: [-7.6, -4.2, -0.8, 2.6, 6.0], pile: 0.7, depth: 0.8, impost: 2.2, rise: 0.75, ring: 0.35, voussoirs: 7, spandrel: 0.25, cornice: 0.22 },
+  paving: { x0: -8.75, x1: 8.75, z0: -3.5, z1: 1.5, cell: 1.25, drownedBeyond: 2 },
+  stair: { x: 4.4, z: -2.3, steps: 3, w: 1.3, run: 0.5 },
+  dig: { x: 2.2, z: 3.2, half: 0.8 },
+  stubs: [
+    [5.4, -2.6],
+    [7.4, -2.9],
+    [8.6, -1.6],
+  ],
+} as const;
+
+/** Le dessus de la corniche des Ruines, au-dessus du sol du centre : le plus haut point du lieu. */
+export const ruinsTop = (): number => {
+  const A = RUINS.arcade;
+  return A.impost + A.rise + A.ring + A.spandrel + A.cornice;
+};
+
+/**
+ * Un arc surbaissé des Ruines (en anse de panier : une demi-ellipse, plus large que haute), de centre `cx` : ses
+ * voussoirs (leur face avant, leur face arrière et leur douelle), en deux pierres alternées, la clé au milieu, et les
+ * tympans au-dessus jusqu'au haut du mur. Aucune face cachée (le dos des voussoirs, contre le tympan). `ornate` : la
+ * seule clé ornée de l'arcade (`RUINS_ORNATE_ARCH`).
+ */
+function passeurArch(b: FacetBuilder, cx: number, half: number, ornate: boolean): void {
+  const A = RUINS.arcade;
+  const [zf, zb] = [A.z + A.depth / 2, A.z - A.depth / 2];
+  const top = A.impost + A.rise + A.ring + A.spandrel;
+  const inner = (t: number) => [cx + half * Math.cos(t), A.impost + A.rise * Math.sin(t)] as const;
+  const outer = (t: number) => [cx + (half + A.ring) * Math.cos(t), A.impost + (A.rise + A.ring) * Math.sin(t)] as const;
+  const n = A.voussoirs;
+  for (let k = 0; k < n; k++) {
+    const [ta, tb] = [Math.PI - (k * Math.PI) / n, Math.PI - ((k + 1) * Math.PI) / n];
+    const [ia, ib, oa, ob] = [inner(ta), inner(tb), outer(ta), outer(tb)];
+    const color = k % 2 ? C.passeurStone : C.passeurShade;
+    quadToward(b, [[ia[0], ia[1], zf], [ib[0], ib[1], zf], [ob[0], ob[1], zf], [oa[0], oa[1], zf]], [0, 0, 1], color);
+    quadToward(b, [[ia[0], ia[1], zb], [ib[0], ib[1], zb], [ob[0], ob[1], zb], [oa[0], oa[1], zb]], [0, 0, -1], color);
+    const mid = (ta + tb) / 2;
+    quadToward(b, [[ia[0], ia[1], zf], [ib[0], ib[1], zf], [ib[0], ib[1], zb], [ia[0], ia[1], zb]], [-Math.cos(mid), -Math.sin(mid), 0], C.passeurShade);
+    // Le tympan au-dessus du voussoir, jusqu'au haut du mur, devant et derrière.
+    for (const [z, out] of [
+      [zf, 1],
+      [zb, -1],
+    ] as const)
+      quadToward(b, [[oa[0], oa[1], z], [ob[0], ob[1], z], [ob[0], top, z], [oa[0], top, z]], [0, 0, out], C.passeurStone);
+  }
+  // Le dessus du mur, entre les deux piles (la corniche le couvre ensuite).
+  quadToward(b, [[cx - half - A.ring, top, zf], [cx + half + A.ring, top, zf], [cx + half + A.ring, top, zb], [cx - half - A.ring, top, zb]], [0, 1, 0], C.passeurStone);
+  if (!ornate) return;
+  // La clé ornée et sa vague de bronze (relecture DA de L8 : une seule clé, jamais une rangée de petits signes) : une
+  // incrustation sur toute la largeur de la face avant de la clé, son bas sur la douelle, son haut une seule onde, un
+  // creux et une crête (jamais un chevron), à mi-hauteur de la clé ; elle suit les joints de la clé.
+  const key = (n - 1) / 2;
+  const [ta, tb] = [Math.PI - (key * Math.PI) / n, Math.PI - ((key + 1) * Math.PI) / n];
+  const [ia, ib, oa, ob] = [inner(ta), inner(tb), outer(ta), outer(tb)];
+  const on = (u: number, v: number) => {
+    const lo = [ia[0] + (ib[0] - ia[0]) * u, ia[1] + (ib[1] - ia[1]) * u];
+    const hi = [oa[0] + (ob[0] - oa[0]) * u, oa[1] + (ob[1] - oa[1]) * u];
+    return [lo[0] + (hi[0] - lo[0]) * v, lo[1] + (hi[1] - lo[1]) * v, zf + 0.012] as const;
+  };
+  const crest = (i: number) => 0.5 + 0.2 * Math.sin((2 * Math.PI * i) / 6);
+  for (let i = 0; i < 6; i++) quadToward(b, [on(i / 6, 0), on((i + 1) / 6, 0), on((i + 1) / 6, crest(i + 1)), on(i / 6, crest(i))], [0, 0, 1], C.bronze);
+}
+
+/**
+ * La seule clé ornée de l'arcade des Ruines (relecture DA de L8) : celle de l'arc 1, entre les piles 1 et 2. Les arcs 0
+ * et 1 sont à égale distance de l'axe de la scénette (la pile 1) ; l'arc 1 est le plus près du centre du lieu (on le
+ * voit à l'arrivée) et, dans la scénette, il tombe dans la moitié du cadre que le panneau ne couvre pas.
+ */
+export const RUINS_ORNATE_ARCH = 1;
+
+/**
+ * Les Ruines (lot L8b). Avant (éteintes par le temps et la mer, aucun Ferrailleur) : le dallage ensablé et ses dalles
+ * noyées sous l'eau claire, deux piles tronquées debout, une pile couchée, des voussoirs épars dans le sable et l'eau peu
+ * profonde. Le corps : les cinq piles relevées (d'abord celles de la terre, puis celles de l'eau) ; le sable et la pile
+ * couchée s'en vont. Le haut : les quatre arcs surbaissés, leurs voussoirs, leurs clés au motif de vagues des Passeurs, puis
+ * la corniche basse (les voussoirs épars s'en vont). Les abords (l'étape des traces) : l'escalier qui descend à l'eau, la
+ * fouille (une fosse carrée bordée de planches), les têtes de piles qui affleurent. Aucune animation, aucun texte. Sur la
+ * rive basse du sud du lagon (terrain.ts).
+ */
+function passeurRuins(add: Add): void {
+  const A = RUINS.arcade;
+  const P = RUINS.paving;
+  const g = siteGround('ruins');
+  const raw = rawGround('ruins');
+  const c = placeById('ruins').center;
+  const water = g.water;
+  const bed = water - 0.8;
+  const up = [0, 1, 0] as const;
+  const onLand = (x: number, z: number) => landDistance({ x: c.x + x, z: c.z + z }) >= 0.4;
+  // Le dallage : des dalles et leurs joints (l'herbe ou le sable entre elles) ; sur la terre, posées sur le sol ; dans
+  // l'eau, les dalles noyées, un aplat pâle juste au-dessus de l'eau, à 0,06 (à 0,012, il ne se voyait plus : relevé sur
+  // capture), ni inscription ni mosaïque ; jamais plus haut que 0,08, jamais une tranche (elles se liraient comme un gué,
+  // relecture DA de L8). Le dallage continue sous l'eau à l'est, sur sa première rangée seulement (`drownedBeyond`
+  // dalles de plus, plus loin dans l'eau, dans l'alignement des autres : jamais en pas japonais).
+  add('ruine', 0, (b) => {
+    const nx = Math.round((P.x1 - P.x0) / P.cell);
+    const nz = Math.round((P.z1 - P.z0) / P.cell);
+    for (let i = 0; i < nx + P.drownedBeyond; i++)
+      for (let k = 0; k < (i < nx ? nz : 1); k++) {
+        const [x0, x1] = [P.x0 + i * P.cell + 0.05, P.x0 + (i + 1) * P.cell - 0.05];
+        const [z0, z1] = [P.z0 + k * P.cell + 0.05, P.z0 + (k + 1) * P.cell - 0.05];
+        const corners = [
+          [x0, z0],
+          [x1, z0],
+          [x1, z1],
+          [x0, z1],
+        ] as const;
+        const land = corners.filter(([x, z]) => onLand(x, z)).length;
+        if (land === 4) quadToward(b, corners.map(([x, z]) => [x, raw(x, z) + 0.05, z] as const), up, C.passeurShade);
+        else if (land === 0 && corners.every(([x, z]) => landDistance({ x: c.x + x, z: c.z + z }) < -0.3)) quadToward(b, corners.map(([x, z]) => [x, water + 0.06, z] as const), up, C.drownedStone);
+      }
+  });
+  // Le sable sur le dallage : un aplat arrondi et irrégulier, sur la terre seulement ; il s'en va quand les piles se relèvent.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      const n = 12;
+      const [cx, cz, rx, rz] = [-2.5, -1, 6.2, 2.4];
+      const rim = Array.from({ length: n }, (_, k) => {
+        const t = (2 * Math.PI * k) / n;
+        let r = 0.8 + 0.2 * (((k * 7) % 5) / 4);
+        const at = (s: number) => ({ x: cx + Math.cos(t) * rx * s, z: cz + Math.sin(t) * rz * s });
+        while (r > 0.2 && !onLand(at(r).x, at(r).z)) r -= 0.1;
+        return [at(r), at(r / 2)] as const;
+      });
+      const lift = (p: Vec2) => [p.x, raw(p.x, p.z) + 0.09, p.z] as const;
+      const mid = lift({ x: cx, z: cz });
+      for (let k = 0; k < n; k++) {
+        const [outA, inA] = rim[k];
+        const [outB, inB] = rim[(k + 1) % n];
+        b.triangle(mid, lift(inB), lift(inA), C.sandFill);
+        quadToward(b, [lift(inA), lift(inB), lift(outB), lift(outA)], up, C.sandFill);
+      }
+      // La pile couchée, à demi dans le sable, devant l'arcade, et la première pile tronquée, debout.
+      b.box({ x: -6.2, y: raw(-6.2, -1.6) - 0.15, z: -1.6, yaw: 0.35 }, [2.0, 0.6, 0.62], C.worn, C.wornTop);
+      b.box({ x: A.piles[1], y: bed, z: A.z }, [A.pile - 0.04, 1.1 - bed, A.depth - 0.04], C.worn, C.wornTop);
+    },
+    { stage: 0, row: 0 },
+  );
+  // La seconde pile tronquée, dans l'eau : elle s'en va quand les piles de l'eau se relèvent.
+  add('ruine', 0, (b) => b.box({ x: A.piles[3], y: bed, z: A.z }, [A.pile - 0.04, water + 0.55 - bed, A.depth - 0.04], C.worn, C.wornTop), { stage: 0, row: 0.67 });
+  // Les voussoirs épars, dans le sable et l'eau peu profonde : ils s'en vont quand les arcs se posent.
+  add(
+    'ruine',
+    0,
+    (b) => {
+      for (const [x, z, yaw] of RUINS_FALLEN_VOUSSOIRS) {
+        const y = onLand(x, z) ? raw(x, z) - 0.08 : water - 0.14;
+        b.box({ x, y, z, yaw, pitch: 0.12 }, [0.5, 0.34, 0.42], C.worn, C.wornTop);
+      }
+    },
+    { stage: 1, row: 0 },
+  );
+  // Le corps : les piles, de la terre, du bord, puis de l'eau, leur pied sous le sol ou au fond, leur imposte un peu
+  // plus large.
+  for (const [row, ks] of [
+    [0, [0, 1]],
+    [0.34, [2]],
+    [0.67, [3, 4]],
+  ] as const)
+    add(0, row, (b) => {
+      for (const k of ks) {
+        const x = A.piles[k];
+        b.box({ x, y: bed, z: A.z }, [A.pile, A.impost - 0.16 - bed, A.depth], C.passeurStone);
+        b.box({ x, y: A.impost - 0.16, z: A.z }, [A.pile + 0.14, 0.16, A.depth + 0.1], C.passeurShade);
+      }
+    });
+  // Le haut : les arcs, deux par deux, d'ouest en est ; aux deux bouts, le mur monte au-dessus des piles ; puis la corniche.
+  const half = (A.piles[1] - A.piles[0]) / 2 - A.pile / 2;
+  const wallTop = A.impost + A.rise + A.ring + A.spandrel;
+  for (const [row, ks] of [
+    [0, [0, 1]],
+    [0.34, [2, 3]],
+  ] as const)
+    add(1, row, (b) => {
+      for (const k of ks) passeurArch(b, (A.piles[k] + A.piles[k + 1]) / 2, half, k === RUINS_ORNATE_ARCH);
+      const end = ks[0] === 0 ? A.piles[0] - A.pile / 4 : A.piles[4] + A.pile / 4;
+      b.box({ x: end, y: A.impost, z: A.z }, [A.pile / 2, wallTop - A.impost, A.depth], C.passeurStone);
+    });
+  add(1, 0.67, (b) => {
+    const [x0, x1] = [A.piles[0] - A.pile / 2 - 0.12, A.piles[4] + A.pile / 2 + 0.12];
+    b.box({ x: (x0 + x1) / 2, y: wallTop, z: A.z }, [x1 - x0, A.cornice, A.depth + 0.24], C.passeurShade, C.passeurStone);
+  });
+  // Les abords : l'escalier qui descend du dallage à l'eau, vers l'est ; la fouille, une fosse carrée bordée de planches,
+  // son fond de sable d'une seule couleur (jamais des couches) ; les têtes de piles qui affleurent devant l'arcade.
+  add(2, 0, (b) => {
+    const S = RUINS.stair;
+    const y0 = raw(S.x - S.run, S.z) + 0.05;
+    for (let k = 0; k < S.steps; k++) {
+      const y = y0 - ((k + 1) * (y0 - water - 0.05)) / S.steps;
+      b.box({ x: S.x + k * S.run, y: bed, z: S.z }, [S.run, y - bed, S.w], C.passeurShade, C.passeurStone);
+    }
+  });
+  add(2, 0.34, (b) => {
+    const D = RUINS.dig;
+    const y = raw(D.x, D.z);
+    quadToward(
+      b,
+      [
+        [D.x - D.half, y + 0.03, D.z - D.half],
+        [D.x + D.half, y + 0.03, D.z - D.half],
+        [D.x + D.half, y + 0.03, D.z + D.half],
+        [D.x - D.half, y + 0.03, D.z + D.half],
+      ],
+      up,
+      C.digSand,
+    );
+    for (const side of [-1, 1]) {
+      b.box({ x: D.x, y: y - 0.1, z: D.z + side * D.half }, [2 * D.half + 0.16, 0.24, 0.12], C.darkWood, C.wood);
+      b.box({ x: D.x + side * D.half, y: y - 0.1, z: D.z }, [0.12, 0.24, 2 * D.half - 0.08], C.darkWood, C.wood);
+    }
+  });
+  add(2, 0.67, (b) => {
+    for (const [x, z] of RUINS.stubs) b.box({ x, y: bed, z }, [0.62, water + 0.12 - bed, 0.62], C.passeurShade, C.passeurStone);
+  });
+}
+
+/** Les voussoirs épars de la ruine des Ruines (lot L8b), dans leur repère : dans le sable devant l'arcade et dans l'eau peu profonde. */
+const RUINS_FALLEN_VOUSSOIRS = [
+  [-3.1, -2.6, 0.5],
+  [-0.4, -2.9, -0.4],
+  [1.6, -2.2, 1.1],
+  [3.6, -3.3, 0.2],
+  [4.8, -4.9, -0.7],
+] as const;
+
 const DRAWN: Record<PlaceId, (add: Add) => void> = {
   phare,
   quais,
@@ -1358,6 +2468,10 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   lookout: northPlace('lookout'),
   archives: northPlace('archives'),
   printworks: northPlace('printworks'),
+  mangrove,
+  ruins: passeurRuins,
+  observatory,
+  commons,
 };
 
 const pieces = new Map<PlaceId, PlacePiece[]>();

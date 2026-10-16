@@ -1,6 +1,6 @@
 // La prochaine mission du monde continu et sa marque à l'écran.
 import { describe, expect, it } from 'vitest';
-import { getBiome } from '../../biomes';
+import { BIOMES, getBiome } from '../../biomes';
 import { textesDe } from '../../../universes';
 import type { BiomeId } from '../../biomes';
 import { EMPTY_STATE, type GameState } from '../../engine';
@@ -8,7 +8,12 @@ import { questProgress } from '../../exercises';
 import { NOMS_ARCHIPELS } from '../archipelago';
 import { modeleDuMonde } from '../model';
 import { DISTANCE_SIGN_STEPS, bornesDuMondeOuvert, distanceSign, keepClear, markOnScreen, missionsOfPlace, nextMission, playsInPlace, veiledPlaces, type MissionMark } from './mission';
-import { KEO_STEP, PLACES, placeById } from './plan6e';
+import { KEO_STEP, PLACES, placeById, placeOfIsland } from './plan6e';
+
+// Une île du 6e sans lieu dans le prototype : la première du registre, tirée de `PLACES` (relecture du code de L8 :
+// jamais un nom en dur, qu'un lieu nouveau rendrait faux), et sa première mission.
+const sansLieu = BIOMES.find((b) => b.classe === '6e' && !placeOfIsland(b.id))!;
+const missionSansLieu = sansLieu.exercises[0].id;
 
 const bornes: MissionMark[] = [
   { ile: 'french-6e-phonology', mission: 'syllables', etat: 3 },
@@ -19,7 +24,7 @@ const bornes: MissionMark[] = [
   { ile: 'french-6e-grammar-spelling', mission: 'plurals', etat: 'new' },
   { ile: 'maths-6e-fractions', mission: 'number-line', etat: 2 },
   { ile: 'maths-6e-fractions', mission: 'equivalence', etat: 'new' },
-  { ile: 'history-6e-antiquity', mission: 'dates', etat: 'new' },
+  { ile: sansLieu.id, mission: missionSansLieu, etat: 'new' },
 ];
 
 describe('Un lieu porte toutes les missions de son île (GD-20, point 8)', () => {
@@ -29,11 +34,21 @@ describe('Un lieu porte toutes les missions de son île (GD-20, point 8)', () =>
     expect(missionsOfPlace(placeById('filets'), bornes.filter((b) => b.ile !== 'french-6e-grammar-spelling'))).toEqual([]);
   });
 
-  it('les sept lieux du 6e jouent toutes leurs missions en scénette (les Filets complets au lot L4, les Marais salants au lot L5, la Turbine au lot L6a, le Chantier naval au lot L6b)', () => {
+  it('les lieux du 6e jouent toutes leurs missions en scénette (les Filets complets au lot L4, les Marais salants au lot L5, la Turbine au lot L6a, le Chantier naval au lot L6b, le rivage sud au lot L8)', () => {
+    expect(placeById('mangrove').scenes).toEqual(['living-groups', 'food-growth', 'planet-earth', 'life-enquiry']);
+    expect(playsInPlace(placeById('mangrove'), 'food-growth')).toBe(true);
+    expect(placeById('ruins').scenes).toEqual(['early-humans', 'ancient-peoples', 'roman-empire', 'viewpoints']);
+    expect(playsInPlace(placeById('ruins'), 'viewpoints')).toBe(true);
     expect(placeById('shipyard').scenes).toEqual(['object-function', 'materials', 'information-networks', 'solve-program']);
     expect(playsInPlace(placeById('shipyard'), 'solve-program')).toBe(true);
     expect(placeById('engine').scenes).toEqual(['states-of-matter', 'motion-signals', 'energy-circuits', 'materials-light']);
     expect(playsInPlace(placeById('engine'), 'energy-circuits')).toBe(true);
+    // L'Observatoire (lot L8c) : ses trois missions.
+    expect(placeById('observatory').scenes).toEqual(['metropolises', 'low-density', 'inhabited-world']);
+    expect(playsInPlace(placeById('observatory'), 'low-density')).toBe(true);
+    // La Halle (lot L8d) : ses trois missions.
+    expect(placeById('commons').scenes).toEqual(['representatives', 'school-secularism', 'private-life']);
+    expect(playsInPlace(placeById('commons'), 'school-secularism')).toBe(true);
     expect(placeById('saltworks').scenes).toEqual(['ordering', 'operations', 'scale', 'large-numbers', 'rounding-products']);
     expect(playsInPlace(placeById('saltworks'), 'scale')).toBe(true);
     expect(placeById('quais').scenes).toEqual(['times-tables', 'make-ten', 'doubles-halves', 'word-problems', 'measures']);
@@ -59,6 +74,8 @@ describe('Un lieu porte toutes les missions de son île (GD-20, point 8)', () =>
     expect(getBiome('french-6e-phonology')!.exercises.map((e) => e.id)).toEqual([...placeById('phare').scenes]);
     expect(getBiome('french-6e-grammar-spelling')!.exercises.map((e) => e.id)).toEqual([...placeById('filets').scenes]);
     expect(getBiome('technology-6e-objects')!.exercises.map((e) => e.id)).toEqual([...placeById('shipyard').scenes]);
+    expect(getBiome('life-earth-sciences-6e-living-world')!.exercises.map((e) => e.id)).toEqual([...placeById('mangrove').scenes]);
+    expect(getBiome('history-6e-antiquity')!.exercises.map((e) => e.id)).toEqual([...placeById('ruins').scenes]);
   });
 });
 
@@ -88,7 +105,7 @@ describe('La prochaine mission', () => {
     // Une mission de l'île qui ne se joue pas encore en scénette : elle se joue depuis le panneau du lieu.
     expect(nextMission(bornes, { island: 'french-6e-phonology', mission: 'syllables' })).toMatchObject({ place: { id: 'phare' }, mission: 'syllables' });
     // Une île sans lieu, ou une mission inconnue de l'île : la suivante du plan.
-    expect(nextMission(bornes, { island: 'history-6e-antiquity', mission: 'dates' })).toMatchObject({ place: { id: 'quais' } });
+    expect(nextMission(bornes, { island: sansLieu.id, mission: missionSansLieu })).toMatchObject({ place: { id: 'quais' } });
     expect(nextMission(bornes, { island: 'french-6e-phonology', mission: 'inconnue' })).toMatchObject({ place: { id: 'quais' } });
   });
 
@@ -96,7 +113,7 @@ describe('La prochaine mission', () => {
     expect(nextMission(bornes)).toMatchObject({ place: { id: 'quais' }, mission: 'times-tables' });
     const sansNouvelle = bornes.map((b) => (b.etat === 'new' || b.etat === 'locked' ? { ...b, etat: 3 } : b));
     expect(nextMission(sansNouvelle)).toMatchObject({ place: { id: 'ecluses' }, mission: 'number-line' });
-    expect(nextMission(bornes.filter((b) => b.ile === 'history-6e-antiquity'))).toBeNull();
+    expect(nextMission(bornes.filter((b) => b.ile === sansLieu.id))).toBeNull();
     expect(nextMission(bornes.map((b) => ({ ...b, etat: 3 })))).toBeNull();
   });
 });

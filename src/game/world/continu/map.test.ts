@@ -453,6 +453,8 @@ describe('La Carte avec le rivage nord (lot L7)', () => {
   const sizes: Record<string, [number, number]> = {
     phare: [140, 48], quais: [130, 84], filets: [128, 84], ecluses: [148, 84], saltworks: [225, 84], engine: [137, 84],
     shipyard: [252, 84], lookout: [164, 48], archives: [214, 48], printworks: [216, 48],
+    // Le rivage sud (lot L8), fermé : sur deux lignes, la largeur estimée sur celle des noms du même nombre de lettres.
+    mangrove: [160, 84], ruins: [145, 84], observatory: [200, 84], commons: [120, 84],
   };
   const narrow = { w: 150, h: 84 };
   const labelsOn = (w: number, h: number): MapLabel[] => {

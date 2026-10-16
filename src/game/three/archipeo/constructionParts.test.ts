@@ -7,7 +7,7 @@ import { PLACES } from '../../world/continu/plan6e';
 import { buildHeightField, heightOnMesh } from '../../world/continu/terrain';
 import { partiesDe, poserLesParties } from '../../world/parts';
 import { textesDe } from '../../../universes';
-import { constructionState, partShapes, placeConstruction, posedShapes, stateWord } from './constructionParts';
+import { constructionState, mapStateWord, partShapes, placeConstruction, posedShapes, stateWord } from './constructionParts';
 
 const field = buildHeightField();
 const ground = (x: number, z: number) => heightOnMesh(field, x, z);
@@ -60,6 +60,14 @@ describe('Le mot d’état d’un lieu sur la Carte', () => {
     expect(word('ecluses')).toBe('Restaurées');
     // « En chantier » ne s'accorde pas.
     expect(stateWord('en-chantier', archipeo, 'fp')).toBe('En chantier');
+  });
+
+  it('les Ruines, un nom de site, ne prennent jamais le mot d’achèvement sur la Carte, mais leur geste, accordé ; « En chantier » reste dit (lot L8b)', () => {
+    const ruins = PLACES.find((p) => p.id === 'ruins')!;
+    expect(mapStateWord(ruins, 'restauree', archipeo)).toBe('Relevées');
+    expect(mapStateWord(ruins, 'en-chantier', archipeo)).toBe('En chantier');
+    expect(mapStateWord(ruins, null, archipeo)).toBeNull();
+    expect(mapStateWord(PLACES.find((p) => p.id === 'ecluses')!, 'restauree', archipeo)).toBe('Restaurées');
   });
 
   it('les mots d’état des deux univers s’accordent : l’accord repose sur leur « e » final (Restaurée, Bâtie)', () => {

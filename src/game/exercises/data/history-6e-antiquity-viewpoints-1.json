@@ -33,14 +33,14 @@
     },
     {
       "key": "history-6e-antiquity-viewpoints-1-1",
-      "prompt": "Un gouverneur écrit une lettre à l’empereur : l’empereur est le … de la lettre.",
-      "spoken": "Un gouverneur écrit une lettre à l’empereur : l’empereur est le (mot manquant) de la lettre.",
+      "prompt": "Un gouverneur écrit une lettre à l’empereur. Pour cette lettre, l’empereur est … .",
+      "spoken": "Un gouverneur écrit une lettre à l’empereur. Pour cette lettre, l’empereur est (mot manquant) .",
       "choices": [
-        "auteur",
-        "témoin",
-        "destinataire"
+        "l’auteur",
+        "le témoin",
+        "le destinataire"
       ],
-      "answer": "destinataire",
+      "answer": "le destinataire",
       "hint": "Qui reçoit la lettre ?",
       "explanation": "L’empereur reçoit la lettre : il en est le destinataire. L’auteur, c’est le gouverneur, qui l’écrit.",
       "aid": {
@@ -137,8 +137,8 @@
     },
     {
       "key": "history-6e-antiquity-viewpoints-1-5",
-      "prompt": "Les Romains racontent que Romulus est le fils du dieu Mars. Ils veulent montrer que Rome est … par les dieux.",
-      "spoken": "Les Romains racontent que Romulus est le fils du dieu Mars. Ils veulent montrer que Rome est (mot manquant) par les dieux.",
+      "prompt": "Pour les Romains, Romulus est le fils du dieu Mars : Rome est donc … par les dieux.",
+      "spoken": "Pour les Romains, Romulus est le fils du dieu Mars : Rome est donc (mot manquant) par les dieux.",
       "choices": [
         "protégée",
         "oubliée",
@@ -189,8 +189,8 @@
     },
     {
       "key": "history-6e-antiquity-viewpoints-1-7",
-      "prompt": "Sur un mur de Pompéi, on lit : « Votez pour Polybius, il apporte du bon pain ! » Ce texte veut … les habitants.",
-      "spoken": "Sur un mur de Pompéi, on lit : « Votez pour Polybius, il apporte du bon pain ! » Ce texte veut (mot manquant) les habitants.",
+      "prompt": "Sur un mur de Pompéi : « Votez pour Polybius, il apporte du bon pain ! » Ce texte veut … les habitants.",
+      "spoken": "Sur un mur de Pompéi : « Votez pour Polybius, il apporte du bon pain ! » Ce texte veut (mot manquant) les habitants.",
       "choices": [
         "informer",
         "convaincre",

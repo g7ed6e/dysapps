@@ -41,6 +41,9 @@ const CASES: [string, string][] = [
   ['Maître', 'Maî-tre'],
   ['œuf', 'œuf'],
   ['a', 'a'],
+  // Les rôles des habitants du rivage sud (GD-20, lot L8, relecture dys).
+  ['botaniste', 'bo-ta-nis-te'],
+  ['archéologue', 'ar-ché-o-lo-gue'],
 ];
 
 it.each(CASES)('%s → %s', (word, expected) => {

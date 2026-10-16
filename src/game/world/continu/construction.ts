@@ -84,8 +84,9 @@ export const WHOLE: PartShape = [
  * L'étape sur laquelle repose la trace de la scénette d'un lieu (questionScene.ts, `placeTrace`) : les lampes de la
  * galerie du Phare, le filet raccommodé sur le séchoir des Filets (les abords) ; la grue remontée des Quais, la porte
  * d'amont des Écluses, le hangar à sel des Marais salants, la turbine (le haut) ; le ponton du Chantier naval (les
- * abords : sa trace d'Information est au bout du ponton). Tant que cette étape n'est pas posée, la trace attend : rien ne
- * flotte dans le vide.
+ * abords : sa trace d'Information est au bout du ponton) ; le platelage de la Mangrove (le corps, lot L8a), les abords
+ * des Ruines (lot L8b), la terrasse de l'Observatoire (les abords, lot L8c), la toiture de la Halle (le haut, lot L8d).
+ * Tant que cette étape n'est pas posée, la trace attend : rien ne flotte dans le vide.
  */
 const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = {
   phare: 2,
@@ -99,6 +100,11 @@ const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = {
   lookout: placeArt('lookout')!.traceStage,
   archives: placeArt('archives')!.traceStage,
   printworks: placeArt('printworks')!.traceStage,
+  // Le rivage sud (lot L8).
+  mangrove: 0,
+  ruins: 2,
+  observatory: 2,
+  commons: 1,
 };
 
 /**

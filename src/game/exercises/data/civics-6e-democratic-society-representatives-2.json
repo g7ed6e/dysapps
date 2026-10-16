@@ -116,14 +116,14 @@
     {
       "key": "civics-6e-democratic-society-representatives-2-4",
       "prompt": "Un parc à la place d’un parking\nDes habitants perdent des places pour garer leur voiture.\nTout le quartier gagne un lieu pour jouer, à l’ombre.",
-      "question": "Que montre cet exemple ?",
+      "question": "Que montre cet exemple sur l’intérêt général ?",
       "spoken": "Un parc à la place d’un parking. Des habitants perdent des places pour garer leur voiture. Tout le quartier gagne un lieu pour jouer, à l’ombre.",
       "choices": [
-        "l’intérêt général peut gêner certains",
-        "l’intérêt général est toujours l’intérêt de chacun",
-        "l’intérêt général ne concerne que les élus"
+        "il peut gêner certains",
+        "il est toujours l’intérêt de chacun",
+        "il ne concerne que les élus"
       ],
-      "answer": "l’intérêt général peut gêner certains",
+      "answer": "il peut gêner certains",
       "hint": "Relis la dernière ligne du rappel.",
       "explanation": "Le parc sert tout le quartier, mais il gêne ceux qui perdent une place : l’intérêt général n’est pas toujours l’intérêt de chacun.",
       "aid": {

@@ -117,8 +117,8 @@
     },
     {
       "key": "life-earth-sciences-6e-living-world-life-enquiry-2-4",
-      "prompt": "Les étés sont plus secs : des agriculteurs cultivent des plantes qui ont besoin de moins d’eau. C’est une action d’…",
-      "spoken": "Les étés sont plus secs : des agriculteurs cultivent des plantes qui ont besoin de moins d’eau. C’est une action d’ (mot manquant) ",
+      "prompt": "Les étés sont plus secs : des agriculteurs sèment des plantes qui demandent peu d’eau. C’est une action d’…",
+      "spoken": "Les étés sont plus secs : des agriculteurs sèment des plantes qui demandent peu d’eau. C’est une action d’ (mot manquant) ",
       "choices": [
         "atténuation",
         "observation",

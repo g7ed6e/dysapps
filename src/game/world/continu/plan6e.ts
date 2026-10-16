@@ -142,14 +142,45 @@ export const NORTH_FLATS = [
 ] as const;
 
 /**
+ * La vasière de la Mangrove (GD-20, point 8, lot L8a), sur la rive sud-ouest du lagon : le sol y est aplani bas, à
+ * cette hauteur dans ce rayon (en unités), puis rejoint le sien sur `fade` unités (`lowShore`, terrain.ts, comme la rive
+ * basse des Ruines, `RUINS_FLAT`) ; au bord de l'eau, il descend encore comme la plage. Le disque déborde sur le lagon,
+ * mais le fond de l'eau ne change pas (`heightAt` le rend avant), ni la rive (`landDistance` vient du tracé de la côte).
+ */
+export const MANGROVE_FLAT = { center: fromPlan([672, 805]), radius: 7, fade: 4, height: 0.46 } as const;
+
+/**
+ * La rive basse des Ruines (GD-20, point 8, lot L8b), sur la rive sud du lagon, à l'écart de l'Escale : le sol y est
+ * aplani bas, à cette hauteur dans ce rayon, puis rejoint le sien sur `fade` unités ; au bord de l'eau, il descend encore
+ * comme la plage. Comme pour la Mangrove (`MANGROVE_FLAT`), ni le fond de l'eau ni la rive ne bougent.
+ */
+export const RUINS_FLAT = { center: fromPlan([765, 858]), radius: 8, fade: 4, height: 0.5 } as const;
+
+/**
+ * Le tertre de l'Observatoire (GD-20, point 8, lot L8c), sur la pointe sud, loin de l'eau (à 19,9 de la rive) : le sol
+ * y est aplani un peu au-dessus du sien (2,26 au centre) dans ce rayon (en unités), puis redescend vers la grève sur
+ * `fade` unités (le rayon et le fondu n'atteignent pas l'eau : la côte ne bouge pas).
+ */
+export const OBSERVATORY_FLAT = { center: fromPlan([640, 948]), radius: 8, fade: 5, height: 2.4 } as const;
+
+/**
+ * Le replat de la Halle (GD-20, point 8, lot L8d), au village, juste au sud de l'Escale, derrière sa place : le sol y est
+ * aplani (un peu sous le sien au centre, 1,51) dans ce rayon (en unités), puis rejoint le sol d'avant sur `fade` unités.
+ */
+export const COMMONS_FLAT = { center: fromPlan([935, 915]), radius: 9, fade: 5, height: 1.2 } as const;
+
+/**
  * Les lieux du prototype. `saltworks` : les Marais salants (lot L5), le premier lieu neuf, qui reprend l'île des
  * nombres décimaux ; son identifiant reste neutre (son nom, choix du mainteneur, 16 octobre 2026).
  * `engine` : la Turbine (lot L6a), qui reprend l'île de la matière et de l'énergie (physique-chimie). `shipyard` : le
  * Chantier naval (lot L6b), qui reprend l'île des objets techniques (technologie). Le rivage nord (lot L7) : `lookout`,
  * la Vigie (l'île de la lecture), `archives`, les Archives (l'orthographe lexicale), `printworks`, l'Imprimerie (les
  * confusions de lettres).
+ * `observatory` : l'Observatoire (lot L8c), qui reprend l'île de la géographie (habiter le monde).
+ * `commons` : la Halle (lot L8d), qui reprend l'île de l'enseignement moral et civique (vivre dans une société
+ * démocratique) ; pas `hall`, qui est déjà le lieu d'assemblage de l'Escale (port.ts).
  */
-export type PlaceId = 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard' | 'lookout' | 'archives' | 'printworks';
+export type PlaceId = 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard' | 'lookout' | 'archives' | 'printworks' | 'mangrove' | 'ruins' | 'observatory' | 'commons';
 
 /**
  * Les lieux du rivage nord (lot L7), vus ensemble depuis le sud : pendant toute question de l'un, les traces des trois
@@ -322,6 +353,62 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
     yaw: 0,
     touchRadius: 6,
   },
+  // La Mangrove (lot L8a) : sur la rive sud-ouest du lagon, à cheval sur le bord de l'eau, face au nord ; ses quatre
+  // missions se jouent en C (le nom de la fiche, gardé par le directeur artistique et le consultant d'Archipéo).
+  {
+    id: 'mangrove',
+    name: 'La Mangrove',
+    at: 'à la Mangrove',
+    agree: 'fs',
+    island: 'life-earth-sciences-6e-living-world',
+    scenes: ['living-groups', 'food-growth', 'planet-earth', 'life-enquiry'],
+    plan: [672, 805],
+    door: { x: 0, z: 7.5 },
+    yaw: 0,
+    touchRadius: 6.5,
+  },
+  // Les Ruines (lot L8b) : sur la rive sud du lagon, l'arcade face au sud, à demi dans l'eau ; ses quatre missions se
+  // jouent en C (le nom de la fiche : un site, jamais un état).
+  {
+    id: 'ruins',
+    name: 'Les Ruines',
+    at: 'aux Ruines',
+    agree: 'fp',
+    island: 'history-6e-antiquity',
+    scenes: ['early-humans', 'ancient-peoples', 'roman-empire', 'viewpoints'],
+    plan: [765, 858],
+    door: { x: 0, z: 7.9 },
+    yaw: 0,
+    touchRadius: 7.5,
+  },
+  // L'Observatoire (lot L8c) : sur le tertre de la pointe sud, face au sud ; un belvédère couvert, sans astronomie ; ses
+  // trois missions se jouent en C, les réponses dans la colonne (le nom de la fiche, gardé par le consultant Archipéo).
+  {
+    id: 'observatory',
+    name: 'L’Observatoire',
+    at: 'à l’Observatoire',
+    agree: 'ms',
+    island: 'geography-6e-living',
+    scenes: ['metropolises', 'low-density', 'inhabited-world'],
+    plan: [640, 948],
+    door: { x: 0, z: 7.6 },
+    yaw: 0,
+    touchRadius: 7,
+  },
+  // La Halle (lot L8d) : au village, au sud de la place de l'Escale, face au sud ; une grande toiture à quatre pans sur
+  // des piliers de pierre ; ses trois missions se jouent en C, les réponses dans la colonne (le nom de la fiche).
+  {
+    id: 'commons',
+    name: 'La Halle',
+    at: 'à la Halle',
+    agree: 'fs',
+    island: 'civics-6e-democratic-society',
+    scenes: ['representatives', 'school-secularism', 'private-life'],
+    plan: [935, 915],
+    door: { x: 0, z: 7.5 },
+    yaw: 0,
+    touchRadius: 7.5,
+  },
 ];
 
 export const PLACES: readonly OpenPlace[] = PLACE_SPECS.map((s) => ({
@@ -490,6 +577,19 @@ export const PATH_NODES: readonly PathNode[] = [
   node('vig-2', [896, 281]),
   node('vig-3', [842, 232]),
   node('vig-4', [826, 318]),
+  // Le rivage sud (lot L8) : de la place de l'Escale vers l'ouest, le long du lagon.
+  node('sud-1', [858, 900]),
+  node('sud-2', [805, 905]),
+  node('sud-3', [725, 905]),
+  // Vers la Mangrove (lot L8a) : du rivage sud, le chemin remonte vers la rive et arrive au sud-est du lieu.
+  node('man-1', [700, 860]),
+  // Vers l'Observatoire (lot L8c) : du rivage sud, le chemin descend vers la pointe, puis arrive de l'est, côté grève, à
+  // la porte, au sud, face à la rotonde.
+  node('obs-1', [700, 945]),
+  node('obs-2', [680, 970]),
+  // Vers la Halle (lot L8d) : du rivage sud, le chemin descend vers la grève à l'ouest de la Halle, qu'il contourne, puis
+  // arrive à sa porte, au sud, face à la toiture.
+  node('hal-1', [885, 942]),
   ...PORT_NODES.map(({ id, at }) => ({ id, at: PORT.toWorld(at[0], at[1]) })),
 ];
 
@@ -534,6 +634,21 @@ export const PATH_EDGES: readonly (readonly [string, string])[] = [
   ['vig-2', 'vig-3'],
   ['vig-3', 'vig-4'],
   ['vig-4', 'lookout'],
+  ['port-place', 'sud-1'],
+  ['sud-1', 'sud-2'],
+  ['sud-2', 'sud-3'],
+  // La Mangrove (lot L8a), au bout du rivage sud.
+  ['sud-3', 'man-1'],
+  ['man-1', 'mangrove'],
+  // Les Ruines (lot L8b), une impasse depuis le rivage sud.
+  ['sud-2', 'ruins'],
+  // L'Observatoire (lot L8c), au bout du rivage sud, sur la pointe.
+  ['sud-3', 'obs-1'],
+  ['obs-1', 'obs-2'],
+  ['obs-2', 'observatory'],
+  // La Halle (lot L8d), juste au sud de l'Escale.
+  ['sud-1', 'hal-1'],
+  ['hal-1', 'commons'],
   // L'Escale : la digue du Phare jusqu'au quai, puis la place, le long des façades.
   ['phare', portNode('quai')],
   [portNode('quai'), 'port-place'],

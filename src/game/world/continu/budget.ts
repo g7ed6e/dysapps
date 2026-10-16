@@ -50,6 +50,14 @@ const HEAVIEST: readonly { place: PlaceId; scene: ItemScene }[] = [
   { place: 'lookout', scene: { kind: 'rest' } },
   { place: 'archives', scene: { kind: 'rest' } },
   { place: 'printworks', scene: { kind: 'rest' } },
+  // La Mangrove (lot L8a) : le C neutre, la pirogue qui glisse jusqu'au platelage.
+  { place: 'mangrove', scene: { kind: 'column' } },
+  // Les Ruines (lot L8b) : le C neutre, le seau du treuil de fouille qui remonte.
+  { place: 'ruins', scene: { kind: 'column' } },
+  // L'Observatoire (lot L8c) : le C neutre, la baie aux volets ouverts sur sa vitre.
+  { place: 'observatory', scene: { kind: 'column' } },
+  // La Halle (lot L8d) : le C neutre, la borne-fontaine, son filet et l'eau de son auge.
+  { place: 'commons', scene: { kind: 'column' } },
 ];
 
 /**
@@ -114,7 +122,7 @@ function successTriangles(place: PlaceId): number {
 const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
 
 /**
- * Les lieux (GD-20, lot 1) : les six lieux entiers (leur ruine et leurs trois étapes : chaque lieu se rebâtit
+ * Les lieux (GD-20, lot 1) : tous les lieux entiers (leur ruine et leurs trois étapes : chaque lieu se rebâtit
  * lui-même ; ce qui était tombé, relevé) et les traces de toutes leurs scénettes (aux Quais, une par mission, GD-20,
  * point 8), réunis en un maillage, refait à chaque pose (jamais par image), avec la lumière de la lanterne du Phare
  * allumée (sa couleur dessinée sans ombre, dans le même matériau) ; le lieu suivi, seul hors de la brume, dans un

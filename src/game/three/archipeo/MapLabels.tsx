@@ -13,7 +13,7 @@ import { islandStateIcon, type IslandStateId } from '../../world/islandState';
 import { useSettings } from '../../../core/SettingsContext';
 import { texteGrand } from '../../../core/settings';
 import { MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, closedNoteText, layoutMapLabels, nameLines, placeClosedNote, type MapLabel, type MapLabelSpot, type NoteSize, type Rect } from '../../world/continu/map';
-import { stateWord } from './constructionParts';
+import { mapStateWord } from './constructionParts';
 import { PLACES, type PlaceId } from '../../world/continu/plan6e';
 import type { MapSpotOnScreen } from './scene';
 
@@ -381,15 +381,16 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
           </span>
         </button>
       )}
-      {PLACES.map((p) =>
-        openPlaces.includes(p.id) ? (
+      {PLACES.map((p) => {
+        const word = mapStateWord(p, states[p.id], words);
+        return openPlaces.includes(p.id) ? (
           <button
             key={p.id}
             type="button"
             className="open-world-map-place"
             data-lieu={p.id}
             hidden
-            aria-label={`Y aller : ${p.name}${states[p.id] ? `, ${stateWord(states[p.id]!, words, p.agree).toLowerCase()}` : ''}`}
+            aria-label={`Y aller : ${p.name}${word ? `, ${word.toLowerCase()}` : ''}`}
             onClick={() => onPick(p.id)}
           >
             <span className="open-world-map-place-name">
@@ -424,8 +425,8 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
               <Name text={p.name} />
             </span>
           </button>
-        ),
-      )}
+        );
+      })}
       {/* Au toucher d'un cadenas (le mot long, ou le court sur téléphone au plus grand texte, `data-court`, posé par
           `placeNote`), son nom et son état, près de lui, sur fond uni, transparent aux doigts ; vide, il ne
           montre rien et ne prend aucune place (la voix dit le mot quand il s'écrit). */}

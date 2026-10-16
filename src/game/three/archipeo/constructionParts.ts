@@ -69,3 +69,18 @@ export function stateWord(state: 'en-chantier' | 'restauree', words: Readonly<Re
   const masculine = word.slice(0, -1);
   return { ms: masculine, mp: `${masculine}s`, fs: word, fp: `${word}s` }[agree];
 }
+
+/**
+ * Les lieux dont le nom est celui d'un site, jamais suivi du mot d'achèvement de l'univers sur la Carte (consultant
+ * Archipéo, lot L8b : « Les Ruines », jamais « restaurées ») : leur bouton dit à la place le geste du lieu, accordé
+ * (relecture dys de L8 : « Les Ruines, relevées » ; « relever » est le geste, consultant Archipéo). Dans le nom que
+ * dit le bouton seulement : rien ne change à l'écran, où le ✓ reste. « En chantier » reste dit.
+ */
+const SITE_DONE_WORDS: Partial<Record<OpenPlace['id'], string>> = { ruins: 'Relevée' };
+
+/** Le mot d'état d'un lieu que dit son bouton sur la Carte, ou rien (sans état). */
+export function mapStateWord(place: OpenPlace, state: 'en-chantier' | 'restauree' | null, words: Readonly<Record<IslandStateId, string>>): string | null {
+  if (!state) return null;
+  const site = state === 'restauree' ? SITE_DONE_WORDS[place.id] : undefined;
+  return stateWord(state, site ? { ...words, restauree: site } : words, place.agree);
+}

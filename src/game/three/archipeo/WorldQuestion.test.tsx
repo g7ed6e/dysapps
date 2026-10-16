@@ -1,12 +1,15 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { MemoryRouter } from 'react-router-dom';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
 import type { OpenWorld } from './scene';
 import { JAUGE_INSTRUCTION, JAUGE_PROMPT } from '../../world/continu/questions';
-import { PIN_MAX, WorldQuestion, afterAnswer, foldReserve } from './WorldQuestion';
+import { PIN_MAX, WorldQuestion, afterAnswer, foldReserve, onResult } from './WorldQuestion';
+import { belowFold } from './fit';
 import { PlaceDocument } from './placeScreen';
 import { exercisesOf, loadExercise } from '../../exercises';
 import { getBiome } from '../../biomes';
@@ -41,7 +44,7 @@ beforeAll(async () => {
   );
 });
 
-function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard' | 'lookout' | 'archives' | 'printworks', mission: string, plain = false) {
+function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltworks' | 'engine' | 'shipyard' | 'lookout' | 'archives' | 'printworks' | 'mangrove' | 'ruins' | 'observatory' | 'commons', mission: string, plain = false) {
   return render(
     <SettingsProvider>
       <ProgressProvider>
@@ -626,6 +629,27 @@ describe('La Turbine, ses quatre missions en C (GD-20, point 8, lot L6a)', () =>
     await start('energy-circuits');
     await vi.waitFor(() => expect(panel().dataset.epingle).toBe('phrase'));
   });
+
+  // À la réponse, une fois par item : la phrase épinglée cède la place au résultat qui ne tiendrait pas sous elle
+  // (« Suivant » entier au-dessus du pli), et la garde quand il tient (directeur artistique, L8).
+  it.each([
+    [700, 'ligne'],
+    [100, 'phrase'],
+  ])('après la réponse, un résultat de %i px laisse la phrase en « %s »', async (sheet, epingle) => {
+    vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function (this: HTMLElement) {
+      return this.matches('.result-sheet') ? sheet : 100;
+    });
+    const user = await start('energy-circuits');
+    await vi.waitFor(() => expect(panel().dataset.epingle).toBe('phrase'));
+    const { shown, answer } = await rightAnswer();
+    await user.click(answers()[shown.indexOf(answer)]);
+    const next = await screen.findByRole('button', { name: /Suivant/ });
+    next.focus();
+    await vi.waitFor(() => expect(panel().dataset.epingle).toBe(epingle));
+    // La décision tient pour l'item : la mesure suivante de l'épinglage ne la défait pas.
+    await new Promise<void>((r) => requestAnimationFrame(() => r()));
+    expect(panel().dataset.epingle).toBe(epingle);
+  });
 });
 
 describe('Le document d’un C (lot L6a)', () => {
@@ -679,6 +703,84 @@ describe('Le défilement d’un C après une réponse (relecture de L6a)', () =>
     // Déjà visible : rien ne bouge.
     rect(panel.querySelector('.next-button')!, 300, 56);
     expect(afterAnswer(panel, panel.querySelector('.world-answers')!, panel.querySelector('.next-button')!)).toBe(0);
+  });
+
+  it('le résultat d’abord : la réponse choisie juste sous l’épinglé quand « Suivant » reste entier, sinon le résultat (L8)', () => {
+    const panel = build(false);
+    const chosen = document.createElement('button');
+    const sheet = document.createElement('div');
+    panel.append(chosen, sheet);
+    rect(chosen, 210, 56);
+    rect(sheet, 270, 150);
+    const next = panel.querySelector('.next-button')!;
+    // Tout tient : la réponse choisie commence juste sous la phrase épinglée (210 − 100 − 100 − 4).
+    rect(next, 350, 50);
+    expect(onResult(panel, chosen, sheet, next)).toBe(6);
+    // « Suivant » ne tiendrait plus avec la réponse : le résultat commence juste sous l'épinglé (270 − 100 − 100 − 4), et
+    // « Suivant » est entier (il faut descendre de 40).
+    rect(next, 390, 50);
+    expect(onResult(panel, chosen, sheet, next)).toBe(66);
+    // Le résultat plus haut que la place : son haut (« Bravo ! ») d'abord.
+    rect(next, 500, 50);
+    expect(onResult(panel, chosen, sheet, next)).toBe(66);
+  });
+});
+
+describe('La Mangrove, ses quatre missions en C (GD-20, point 8, lot L8a)', () => {
+  const answers = () => [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')];
+  const panel = () => document.querySelector<HTMLElement>('.quiz.in-world')!;
+  const follows = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
+  });
+  beforeAll(async () => {
+    await Promise.all(['living-groups', 'food-growth', 'planet-earth', 'life-enquiry'].map((m) => loadExercise(`life-earth-sciences-6e-living-world-${m}-1`)));
+  });
+
+  it.each(['living-groups', 'food-growth', 'planet-earth', 'life-enquiry'])('%s : la botaniste, la scène neutre, les réponses dans la colonne, sous la phrase', async (mission) => {
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    renderPlace('mangrove', mission);
+    expect(await screen.findByText('La botaniste')).toBeInTheDocument();
+    const go = screen.queryByRole('button', { name: /Commencer/ });
+    if (go) await user.click(go);
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+    await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
+    const last = vi.mocked(world.question).mock.calls.at(-1)![0]!;
+    expect(last).toMatchObject({ place: 'mangrove', mission, item: { scene: { kind: 'column' }, answered: false } });
+    expect(last.layout.slots).toEqual([]);
+    expect(panel().classList.contains('mode-c')).toBe(true);
+    expect(follows(panel().querySelector('.question-head')!, panel().querySelector('.world-answers')!)).toBe(true);
+  });
+});
+
+describe('Les Ruines, leurs quatre missions en C (GD-20, point 8, lot L8b)', () => {
+  const answers = () => [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')];
+  const panel = () => document.querySelector<HTMLElement>('.quiz.in-world')!;
+  const follows = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
+  });
+  beforeAll(async () => {
+    await Promise.all(['early-humans', 'ancient-peoples', 'roman-empire', 'viewpoints'].map((m) => loadExercise(`history-6e-antiquity-${m}-1`)));
+  });
+
+  it.each(['early-humans', 'ancient-peoples', 'roman-empire', 'viewpoints'])('%s : l’archéologue, la scène neutre, les réponses dans la colonne, sous la phrase', async (mission) => {
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    renderPlace('ruins', mission);
+    expect(await screen.findByText('L’archéologue')).toBeInTheDocument();
+    const go = screen.queryByRole('button', { name: /Commencer/ });
+    if (go) await user.click(go);
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+    await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
+    const last = vi.mocked(world.question).mock.calls.at(-1)![0]!;
+    expect(last).toMatchObject({ place: 'ruins', mission, item: { scene: { kind: 'column' }, answered: false } });
+    expect(last.layout.slots).toEqual([]);
+    expect(panel().classList.contains('mode-c')).toBe(true);
+    expect(follows(panel().querySelector('.question-head')!, panel().querySelector('.world-answers')!)).toBe(true);
   });
 });
 
@@ -762,9 +864,11 @@ describe('La Turbine en texte normal sur un téléphone couché (deuxième passe
   it('en C, une phrase sous le pli ouvre « Vue simple » d’office ; revenu à « Scène », l’élève garde son choix', async () => {
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(844);
     vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(390);
-    // La phrase passe sous le bord du panneau (le reste tient dans l'écran).
+    // La phrase passe sous le bord du panneau (le reste tient dans l'écran) ; dans la colonne serrée revenue à « Scène »,
+    // elle tient (sinon l'item resterait en « Vue simple », L8).
     vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
-      const bottom = this.matches('.question-head') ? 900 : 390;
+      const tight = this.closest('.quiz.in-world')?.classList.contains('scene-gardee') ?? false;
+      const bottom = this.matches('.question-head') && !tight ? 900 : 390;
       return { top: 0, bottom, height: bottom, left: 0, right: 844, width: 844, x: 0, y: 0, toJSON: () => ({}) };
     });
     const user = userEvent.setup();
@@ -774,8 +878,212 @@ describe('La Turbine en texte normal sur un téléphone couché (deuxième passe
     const panel = () => document.querySelector<HTMLElement>('.quiz.in-world')!;
     await vi.waitFor(() => expect(panel().classList.contains('simple')).toBe(true));
     await user.click(screen.getByRole('button', { name: /Scène/ }));
-    await new Promise((r) => setTimeout(r, 50));
+    await vi.waitFor(() => expect(panel().classList.contains('simple')).toBe(false));
+  });
+
+  // Un téléphone couché de 667 × 375 au plus grand texte (GD-20, point 8, L8) : la phrase passe sous le bord tant que la
+  // colonne n'a pas sa forme serrée (`scene-gardee`) ; serrée, elle tient (`fits`), ou non. Les réponses, elles, passent
+  // toujours sous le bord (la colonne défile) : la colonne d'avant s'élargissait alors jusqu'à la pleine largeur.
+  // `wordsWrap` : chaque mot de la consigne repliée passe à la ligne (pas un ne tient à côté des boutons).
+  const phone = (fits: () => boolean, wordsWrap = false) => {
+    localStorage.setItem('dysapps:settings', JSON.stringify({ fontSize: 32, univers: 'archipeo' }));
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(667);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(375);
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+      const tight = this.closest('.quiz.in-world')?.classList.contains('scene-gardee') ?? false;
+      const [top, bottom] = this.matches('.question-head')
+        ? [60, tight && fits() ? 300 : 900]
+        : this.matches('.world-answer')
+          ? [310, 900]
+          : wordsWrap && this.matches('.world-consigne-word, .world-consigne-ellipsis')
+            ? [300, 330]
+            : wordsWrap && this.matches('.world-consigne-line')
+              ? [0, 48]
+              : wordsWrap && this.matches('.world-consigne-more')
+                ? [54, 102]
+                : [0, 375];
+      return { top, bottom, height: bottom - top, left: 0, right: 667, width: 667, x: 0, y: top, toJSON: () => ({}) };
+    });
+  };
+  const panel = () => document.querySelector<HTMLElement>('.quiz.in-world')!;
+  const toScene = () => screen.queryByRole('button', { name: /^Scène$/ });
+  const open = async (user: ReturnType<typeof userEvent.setup>) => {
+    renderPlace('engine', 'energy-circuits');
+    const go = await screen.findByRole('button', { name: /Commencer/ }).catch(() => null);
+    if (go) await user.click(go);
+    await vi.waitFor(() => expect(panel().classList.contains('simple')).toBe(true));
+  };
+  // Une réponse fausse se retente (la règle du C) : jusqu'au résultat.
+  const answer = async (user: ReturnType<typeof userEvent.setup>) => {
+    for (let k = 0; k < 4 && !panel().classList.contains('has-sheet'); k++) {
+      const free = [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')].find((b) => !b.disabled);
+      if (!free) break;
+      await user.click(free);
+      await vi.waitFor(() => expect(panel().classList.contains('has-sheet') || !free.isConnected || free.disabled).toBe(true));
+    }
+    await vi.waitFor(() => expect(panel().classList.contains('has-sheet')).toBe(true));
+  };
+  afterEach(() => localStorage.removeItem('dysapps:settings'));
+
+  it('revenu à « Scène », la colonne serrée garde la phrase au-dessus du pli et la scène à droite : jamais une bande au bord (GD-20, point 8, L8)', async () => {
+    phone(() => true);
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    await open(user);
+    await user.click(toScene()!);
+    // La forme serrée de « Vue simple » : la consigne repliée en une ligne, sans le rôle ; ni pleine largeur, ni « Vue
+    // simple » proposé dans la colonne.
+    await vi.waitFor(() => expect(panel().classList.contains('scene-gardee')).toBe(true));
+    expect(panel().classList.contains('simple-bas')).toBe(true);
     expect(panel().classList.contains('simple')).toBe(false);
+    expect(panel().classList.contains('full')).toBe(false);
+    expect(panel().classList.contains('offer')).toBe(false);
+    expect(document.querySelector('.world-consigne-fold')).not.toBeNull();
+    expect(document.querySelector('.world-consigne-fold .world-scenette-role')).toBeNull();
+    // Le pli mesuré : la phrase entière à 0 px sous le bord du panneau, le repère compté.
+    expect(belowFold(panel(), [panel().querySelector('.question-head')!], foldReserve(panel()))).toBe(0);
+    // La scène à droite de la colonne, qui garde au plus sa dernière part.
+    const { layout } = vi.mocked(world.question).mock.calls.at(-1)![0]!;
+    const stage = layout.scenette!.stage;
+    expect(layout.panel.left + layout.panel.width).toBeLessThan(0.6 * 667);
+    expect(stage.left).toBeGreaterThanOrEqual(layout.panel.left + layout.panel.width);
+    expect(stage.right - stage.left).toBeGreaterThan(0.35 * 667);
+    // Le choix tient : les réponses sous le bord ne font plus élargir la colonne, ni son résultat.
+    await answer(user);
+    expect(panel().classList.contains('sheet-wide')).toBe(false);
+    expect(panel().classList.contains('full')).toBe(false);
+    expect(panel().classList.contains('scene-gardee')).toBe(true);
+  });
+
+  it('le pli se mesure une fois par item, avant la réponse : le résultat ne ramène jamais l’item en « Vue simple » (avis code de L8)', async () => {
+    let fits = true;
+    phone(() => fits);
+    const user = userEvent.setup();
+    await open(user);
+    await user.click(toScene()!);
+    await vi.waitFor(() => expect(panel().classList.contains('scene-gardee')).toBe(true));
+    // Après la réponse, la phrase complétée passerait sous le pli : l'item reste sur la scène, le résultat dans la colonne.
+    fits = false;
+    await answer(user);
+    expect(panel().classList.contains('scene-gardee')).toBe(true);
+    expect(panel().classList.contains('simple')).toBe(false);
+  });
+
+  it('chaque voix touche son texte, et garde son nom quand son mot est masqué ; la ligne repliée garde son premier mot (L8)', async () => {
+    vi.stubGlobal('speechSynthesis', { speak: vi.fn(), cancel: vi.fn(), getVoices: () => [] });
+    vi.stubGlobal('SpeechSynthesisUtterance', class {});
+    phone(() => true, true);
+    const user = userEvent.setup();
+    await open(user);
+    await user.click(toScene()!);
+    await vi.waitFor(() => expect(panel().classList.contains('scene-gardee')).toBe(true));
+    // La voix de la phrase dans la phrase (`.question-head`), son nom dit ; « Lire la suite », icône seule, nommée.
+    expect(within(panel().querySelector<HTMLElement>('.question-head')!).getByRole('button', { name: /^(Lire la phrase|Question) : / })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Lire la suite de la consigne' })).toBeInTheDocument();
+    // Pas un mot ne tient sur la ligne : le premier reste, jamais « … » seul.
+    const fold = panel().querySelector<HTMLElement>('.world-consigne-fold')!;
+    await vi.waitFor(() => expect(fold.classList.contains('premier-mot')).toBe(true));
+    const words = [...fold.querySelectorAll<HTMLElement>('.world-consigne-word')];
+    expect(words[0].hidden).toBe(false);
+    expect(words.slice(1).every((w) => w.hidden)).toBe(true);
+    // « Lire la suite », passé à la rangée d'après, ne s'épingle pas : il ne couvre jamais le premier mot.
+    expect(panel().dataset.livre).toBe('dessous');
+    vi.unstubAllGlobals();
+  });
+
+  it('une phrase qui passe encore sous le pli dans la colonne serrée garde l’item en « Vue simple », sans « Scène » ; l’item suivant revient à la scène', async () => {
+    let fits = false;
+    phone(() => fits);
+    const user = userEvent.setup();
+    await open(user);
+    await user.click(toScene()!);
+    await vi.waitFor(() => expect(panel().classList.contains('simple')).toBe(true));
+    expect(toScene()).toBeNull();
+    // « Scène » parti de la barre, le focus passe à « Lire la suite », jamais au corps de la page.
+    await vi.waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Lire la suite de la consigne' })));
+    // L'item suivant, dont la phrase tient : la scène revient d'elle-même, le choix de l'élève gardé.
+    fits = true;
+    await answer(user);
+    await user.click(screen.getByRole('button', { name: /Suivant/ }));
+    await vi.waitFor(() => expect(panel().classList.contains('scene-gardee')).toBe(true));
+    expect(panel().classList.contains('simple')).toBe(false);
+  });
+});
+
+describe('L’Observatoire, ses trois missions en C (GD-20, point 8, lot L8c)', () => {
+  const answers = () => [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')];
+  const panel = () => document.querySelector<HTMLElement>('.quiz.in-world')!;
+  const follows = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
+  });
+  beforeAll(async () => {
+    await Promise.all(['metropolises', 'low-density', 'inhabited-world'].map((m) => loadExercise(`geography-6e-living-${m}-1`)));
+  });
+
+  it.each(['metropolises', 'low-density', 'inhabited-world'])('%s : la scène neutre, les réponses dans la colonne, le rappel dessous', async (mission) => {
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    renderPlace('observatory', mission);
+    expect(await screen.findByText('La photographe')).toBeInTheDocument();
+    const go = screen.queryByRole('button', { name: /Commencer/ });
+    if (go) await user.click(go);
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+    await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
+    expect(vi.mocked(world.question).mock.calls.at(-1)![0]).toMatchObject({ place: 'observatory', mission, item: { scene: { kind: 'column' }, answered: false } });
+    expect(panel().classList.contains('mode-c')).toBe(true);
+    const head = panel().querySelector('.question-head')!;
+    const list = panel().querySelector('.world-answers')!;
+    expect(follows(head, list)).toBe(true);
+    // Le rappel de l'item, dans la colonne, après les réponses.
+    const aid = panel().querySelector('.world-question-aid');
+    expect(aid).not.toBeNull();
+    expect(follows(list, aid!)).toBe(true);
+  });
+});
+
+describe('La Halle, ses trois missions en C (GD-20, point 8, lot L8d)', () => {
+  const answers = () => [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')];
+  const panel = () => document.querySelector<HTMLElement>('.quiz.in-world')!;
+  const follows = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
+  });
+  beforeAll(async () => {
+    await Promise.all(['representatives', 'school-secularism', 'private-life'].map((m) => loadExercise(`civics-6e-democratic-society-${m}-1`)));
+  });
+
+  it.each(['representatives', 'school-secularism', 'private-life'])('%s : la scène neutre, les réponses dans la colonne, le rappel dessous', async (mission) => {
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    renderPlace('commons', mission);
+    expect(await screen.findByText('Le couvreur')).toBeInTheDocument();
+    const go = screen.queryByRole('button', { name: /Commencer/ });
+    if (go) await user.click(go);
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+    await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
+    expect(vi.mocked(world.question).mock.calls.at(-1)![0]).toMatchObject({ place: 'commons', mission, item: { scene: { kind: 'column' }, answered: false } });
+    expect(panel().classList.contains('mode-c')).toBe(true);
+    const head = panel().querySelector('.question-head')!;
+    const list = panel().querySelector('.world-answers')!;
+    expect(follows(head, list)).toBe(true);
+    const aid = panel().querySelector('.world-question-aid');
+    expect(aid).not.toBeNull();
+    expect(follows(list, aid!)).toBe(true);
+  });
+});
+
+describe('La phrase d’un C sur un écran bas, en « Vue simple » (relecture UX UI de L8)', () => {
+
+  it('prend la largeur du panneau à toute taille de texte : jamais une ligne coupée à droite', () => {
+    // jsdom ne met rien en page : la règle se lit dans la feuille de style (la phrase, en `display: contents`, prenait
+    // sinon sa largeur naturelle dans la rangée).
+    const css = readFileSync(join(process.cwd(), 'src/game/three/archipeo/openWorld.css'), 'utf8');
+    const rule = /(^|\n)\.world-question \.in-world\.simple-bas\.mode-c \.world-question-prompt > \* \{([^}]*)\}/.exec(css);
+    expect(rule?.[2]).toMatch(/flex: 0 0 100%;/);
+    expect(rule?.[2]).toMatch(/min-width: 0;/);
   });
 });
 
