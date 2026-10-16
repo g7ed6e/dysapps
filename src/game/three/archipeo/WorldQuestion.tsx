@@ -21,6 +21,7 @@ import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
 import { ForeignWordsProvider, Marked } from '../../../components/ForeignWords';
 import { RichText, frenchTypography } from '../../../components/math/RichText';
+import { gluedEnds } from '../../../core/typography';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { Syllabified } from '../../../components/Syllabified';
 import { fractionWords } from '../../../core/fractions';
@@ -734,10 +735,29 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
  * Une fraction suivie d'un signe de ponctuation (« 2/8. », « 3/4 ? », l'espace avant « ? » devenue insécable) : ils ne
  * se séparent pas en fin de ligne. Deux fractions comparées (« 3/5 et 3/10. », Deux rives) restent sur une seule ligne,
  * leur signe avec elles : les deux fractions en colonne ne prennent qu'une ligne haute (GD-20, point 8, lot L3 : une
- * ligne de la phrase de moins au plus grand texte sur téléphone). Un mot composé (« sont-elles ») ne se coupe pas à son
- * trait d'union.
+ * ligne de la phrase de moins au plus grand texte sur téléphone). Un mot composé (« sont-elles », « a-t-on ») ne se
+ * coupe pas à son trait d'union : RichText le garde entier (`keepTogether`).
  */
-const FRACTION_STUCK = /(\d+\/\d+ (?:ou|et) \d+\/\d+(?:[ \u00a0\u202f]?[.,;:!?])?|\d+\/\d+[ \u00a0\u202f]?[.,;:!?]|\p{L}+-\p{L}+)/u;
+const FRACTION_STUCK = /(\d+\/\d+ (?:ou|et) \d+\/\d+(?:[ \u00a0\u202f]?[.,;:!?])?|\d+\/\d+[ \u00a0\u202f]?[.,;:!?])/u;
+
+/**
+ * La phrase complétée par la réponse : la réponse reste avec le mot qui lui est collé avant ou après (« l'» + « air »),
+ * à l'affichage seulement (`gluedEnds`).
+ */
+function FilledText({ before, answer, after }: { before: string; answer: string; after: string }) {
+  const { head, tail, lead, rest } = gluedEnds(before, after);
+  return (
+    <>
+      {head && <RichText text={head} />}
+      <span className="mot-lie">
+        {tail && <RichText text={tail} />}
+        <strong className="world-filled">{answer}</strong>
+        {lead && <RichText text={lead} />}
+      </span>
+      {rest && <RichText text={rest} />}
+    </>
+  );
+}
 
 /**
  * La phrase d'un lieu (Deux rives : « Compare 3/5 et 3/10. ») : le texte enrichi, sans que le point passe seul à la ligne
@@ -877,11 +897,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp }: Scre
           <div className="question-head">
             <p className={`question-prompt${word ? ' item-word' : ''}`}>
               {filled ? (
-                <>
-                  <RichText text={gap?.before ?? ''} />
-                  <strong className="world-filled">{answer}</strong>
-                  <RichText text={gap?.after ?? ''} />
-                </>
+                <FilledText before={gap?.before ?? ''} answer={answer} after={gap?.after ?? ''} />
               ) : (
                 <PlaceText text={prompt} />
               )}

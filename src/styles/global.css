@@ -7676,3 +7676,9 @@ fieldset {
     transform: rotate(-90deg);
   }
 }
+
+/* Un mot composé, une inversion verbe-pronom ou la case à compléter avec le mot qui lui est collé ne se coupent pas à
+   l'affichage (`keepTogether`, core/typography.ts) ; le texte lu ne change pas. */
+.mot-lie {
+  white-space: nowrap;
+}

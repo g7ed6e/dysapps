@@ -11,6 +11,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme d’Archipéo. E
 - **Lecture vocale** : toute consigne est lue dès qu’elle apparaît (désactivable) et relançable ; les symboles sont dits en mots (« 7 fois 8 », « 3 quarts ») ; les fractions sont écrites en colonne. En lecture, la ligne lue est surlignée.
 - **Rien à lire dans la 3D** : tout texte est dans un panneau HTML, en police dys, lu à voix haute.
 - **Énoncés courts** ; en 4e et 3e ils peuvent être plus longs mais restent découpés (syllabes, lignes courtes).
+- **Un mot ne se coupe jamais en fin de ligne** : un mot composé (« taille-crayon »), une question inversée (« est-il ») et la case à compléter avec son article (« l’… ») restent sur la même ligne.
 
 ## Une chose à la fois
 

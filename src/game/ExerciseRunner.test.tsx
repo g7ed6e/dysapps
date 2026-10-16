@@ -62,7 +62,8 @@ async function play(user: ReturnType<typeof userEvent.setup>, wrongAt: number[] 
       await user.click(screen.getByRole('button', { name: second }));
     } else await user.click(screen.getByRole('button', { name: item.answer as string }));
     const sheet = screen.getByRole('region', { name: 'Résultat' });
-    if (wrongAt.includes(i)) expect(within(sheet).getByText(new RegExp(`On entend ${item.heard} : ${item.answer}, c’est le nombre de syllabes`))).toBeInTheDocument();
+    // Le découpage « pa-pil-lon » reste entier à l'affichage (un conteneur insécable) : la phrase se lit dans la correction entière.
+    if (wrongAt.includes(i)) expect(sheet.querySelector('.explanation')?.textContent).toMatch(new RegExp(`On entend ${item.heard}\\s:\\s${item.answer}, c’est le nombre de syllabes`));
     else expect(within(sheet).getByText('Bien entendu !')).toBeInTheDocument();
     await user.click(within(sheet).getByRole('button', { name: i < items.length - 1 ? /Suivant/ : /Voir mes blocs/ }));
   }
