@@ -190,7 +190,7 @@ export function groundCost(): { triangles: number; calls: number; near: number; 
  * lieux fermés, au pire (au départ, les quatorze), en un maillage : depuis le lot 1 « Relier » (GD-20, point 3), elle
  * part d'un coup quand on relie, sans second maillage qui se lève (le fondu reviendra avec la pose animée, au lot 2).
  */
-export function openWorldCost(amenagements = 0): OpenWorldCost[] {
+export function openWorldCost(amenagements: number): OpenWorldCost[] {
   const field = buildHeightField();
   const height = (x: number, z: number) => heightOnMesh(field, x, z);
   const paths = openPathRibbons(height);
@@ -217,7 +217,7 @@ export function openWorldCost(amenagements = 0): OpenWorldCost[] {
  * pire ; les embranchements des lieux fermés y sont en tirets, comptés pleins), la brume des lieux fermés, Kéo. Ni question, ni scénette, ni pose n'y
  * sont ouvertes : elle ne s'ouvre pas pendant une question, et l'ouvrir finit la pose.
  */
-export function mapCost(amenagements = 0): { triangles: number; calls: number } {
+export function mapCost(amenagements: number): { triangles: number; calls: number } {
   const field = buildHeightField();
   const height = (x: number, z: number) => heightOnMesh(field, x, z);
   const far = tileTriangleCounts(field, 'far').reduce((s, n) => s + n, 0);

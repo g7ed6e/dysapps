@@ -16,7 +16,8 @@
 // - Les places sur un plancher (`floor`) : là où le sol libre manque dans le rayon, l'objet se pose sur la surface du
 //   lieu, à sa hauteur, comme l'habitant (la placette sur la terrasse de l'Observatoire, le nichoir de la Mangrove sur
 //   le platelage de la scénette, sur son poteau, à l'est de la botaniste, près du bord avant, hors de l'escalier et de
-//   la passerelle du carbet), et la vitrine sur le quai de la Gare maritime.
+//   la passerelle du carbet, tourné d'un quart de tour : son pignon, son entrée et son toit à deux pentes vers la
+//   caméra), et la vitrine sur le quai de la Gare maritime.
 // - L'assise de pierre (`assise`) : sur une pente, l'objet ne s'enfonce jamais ; son dessus reste à plat, au plus haut
 //   du sol sous lui, et une marche basse de pierre rattrape la pente jusqu'au sol (le potager du Phare, au niveau du
 //   seuil du muret). Sur la dalle de la scène (`scene`, que seule la scénette pose : la cale des Balises, le quai de
@@ -26,7 +27,7 @@
 //   de lui (la boutique des Quais, à droite du docker ; le lavoir des Écluses, entre l'éclusière et sa maison, hors de
 //   l'axe de la porte ; le nichoir de la Mangrove, à l'est de la botaniste) : leur toucher se tranche au lot L1.
 // - La potence de façade (`facade`) : la grue des Archives s'appuie sur le bâtiment, contre le pilier d'angle gauche
-//   de la colonnade, du côté opposé aux Quais ; elle se mesure à la façade (le haut de sa flèche juste sous
+//   de la colonnade, du côté opposé aux Quais ; elle se mesure à la façade (le haut de son mât juste sous
 //   l'architrave), jamais à l'habitant : la seule exception à l'échelle et à la règle de hauteur, écrite dans le test.
 // Le potager du Phare prolonge le jardin clos par l'ouverture de son muret. Les lanternes (celle d'entraide du Phare,
 // le poteau-lanterne de la Vigie) restent éteintes : leurs vitres en verre mat (la vue les peint, `MATTE_GLASS`). Code
@@ -106,7 +107,7 @@ export interface Amenagement {
   scene?: true;
   /**
    * Adossé à une façade (la grue des Archives, en potence) : la seule exception à la règle de hauteur, écrite dans le
-   * test ; son échelle (`scale`) la mesure à la façade, le haut de sa flèche juste sous l'architrave.
+   * test ; son échelle (`scale`) la mesure à la façade, le haut de son mât juste sous l'architrave.
    */
   facade?: true;
   /** Son échelle, si ce n'est pas l'échelle commune : la potence de façade seule. */
@@ -130,7 +131,7 @@ export const AMENAGEMENTS: readonly Amenagement[] = [
   { id: 'french-6e-phonology-fixture-1', name: 'le potager', place: 'phare', kind: 'commande', elements: [[0], [1], [2]], at: { x: -3.65, z: 0.5 }, yaw: 0, assise: true, frame: 1.4 },
   { id: 'french-6e-phonology-fixture-2', name: 'la lanterne', place: 'phare', kind: 'quete', elements: [[0, 1]], at: { x: 3.0, z: 3.4 }, yaw: 0 },
   { id: 'french-6e-letter-confusion-fixture-1', name: 'le puits', place: 'printworks', kind: 'commande', elements: [[0], [1], [2], [3]], at: { x: 4.9, z: 1.8 }, yaw: 0 },
-  { id: 'french-6e-word-spelling-fixture-1', name: 'la grue', place: 'archives', kind: 'commande', elements: [[0], [1]], at: { x: -3.583, z: -2.4 }, yaw: 0, floor: 0.32, facade: true, scale: 1.08 },
+  { id: 'french-6e-word-spelling-fixture-1', name: 'la grue', place: 'archives', kind: 'commande', elements: [[0], [1]], at: { x: -3.644, z: -2.187 }, yaw: 0, floor: 0.32, facade: true, scale: 1.08 },
   { id: 'french-6e-grammar-spelling-fixture-1', name: 'le bac à eau', place: 'filets', kind: 'commande', elements: [[1], [0, 2]], at: { x: 2.3, z: 4.4 }, yaw: 0 },
   { id: 'french-6e-grammar-spelling-fixture-2', name: 'le portillon', place: 'filets', kind: 'quete', elements: [[0]], at: { x: -3.2, z: 2.8 }, yaw: 0 },
   { id: 'french-6e-reading-fixture-1', name: 'le poteau-lanterne', place: 'lookout', kind: 'commande', elements: [[0], [1], [2]], at: { x: 4.4, z: 2.5 }, yaw: 0 },
@@ -142,7 +143,7 @@ export const AMENAGEMENTS: readonly Amenagement[] = [
   { id: 'english-6e-grammar-fixture-1', name: 'la vitrine', place: 'ferry', kind: 'commande', elements: [[0], [1], [2]], at: { x: -5.3, z: 0.8 }, yaw: Math.PI / 3, floor: 0.04 },
   { id: 'history-6e-antiquity-fixture-1', name: 'le tamis', place: 'ruins', kind: 'commande', elements: [[0], [1], [2]], at: { x: 1.4, z: -0.3 }, yaw: 0 },
   { id: 'geography-6e-living-fixture-1', name: 'la placette', place: 'observatory', kind: 'commande', elements: [[0], [1], [2], [3]], at: { x: 4.6, z: 2.2 }, yaw: 0, floor: 0.45 },
-  { id: 'life-earth-sciences-6e-living-world-fixture-1', name: 'le nichoir', place: 'mangrove', kind: 'commande', elements: [[0], [1], [2]], at: { x: 9.3, z: -1.3 }, yaw: 0, floor: 0.3 },
+  { id: 'life-earth-sciences-6e-living-world-fixture-1', name: 'le nichoir', place: 'mangrove', kind: 'commande', elements: [[0], [1, 3], [2]], at: { x: 9.3, z: -1.3 }, yaw: -Math.PI / 2, floor: 0.3 },
   { id: 'physics-chemistry-6e-matter-energy-fixture-1', name: 'l’étagère à flacons', place: 'engine', kind: 'commande', elements: [[0], [1], [2]], at: { x: 4.3, z: 2.7 }, yaw: 0 },
   { id: 'technology-6e-objects-fixture-1', name: 'l’établi', place: 'shipyard', kind: 'commande', elements: [[1, 2], [0], [3]], at: { x: 5.0, z: 3.2 }, yaw: 0 },
   { id: 'civics-6e-democratic-society-fixture-1', name: 'l’urne', place: 'commons', kind: 'commande', elements: [[1], [0], [2]], at: { x: 3.6, z: 5.85 }, yaw: 0 },
@@ -237,7 +238,10 @@ export function placeAmenagement(a: Amenagement, d: DrawnObject, ground: (x: num
   for (const [e, element] of a.elements.entries()) {
     const from = e === 0 ? 0 : t;
     for (const i of element) {
-      for (let tri = pieces[i].from; tri < pieces[i].to; tri++, t++)
+      const piece = pieces[i];
+      // Une marque manquante (`at.part()` oublié dans le dessin) : le dit, plutôt que de planter plus loin.
+      if (!piece) throw new Error(`Aménagement ${a.id} : l’élément ${e} demande le morceau ${i}, mais le dessin n’en a que ${pieces.length} (une marque manque)`);
+      for (let tri = piece.from; tri < piece.to; tri++, t++)
         for (let v = 0; v < 3; v++) {
           const k = (tri * 3 + v) * 3;
           const o = (t * 3 + v) * 3;

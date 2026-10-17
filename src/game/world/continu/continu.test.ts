@@ -443,7 +443,8 @@ describe('Le budget du monde continu', () => {
 
   it('tient dans l’enveloppe relevée par le mainteneur (75 000 triangles, 16 octobre 2026), les appels inchangés', () => {
     expect(OPEN_WORLD_BUDGET).toEqual({ triangles: 75_000, calls: 18 });
-    const cost = openWorldCost();
+    // Sans les aménagements, dont la vue trace les dessins : le tout se compte dans three/archipeo/amenagements.test.ts.
+    const cost = openWorldCost(0);
     const triangles = cost.reduce((s, c) => s + c.triangles, 0);
     const calls = cost.reduce((s, c) => s + c.calls, 0);
     expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
@@ -451,7 +452,7 @@ describe('Le budget du monde continu', () => {
   });
 
   it('les lieux, leurs constructions et leurs traces en deux appels, la pose d’une partie en un (GD-20, lot 1)', () => {
-    const cost = openWorldCost();
+    const cost = openWorldCost(0);
     expect(cost.find((c) => c.poste === 'lieux')?.calls).toBe(2);
     expect(cost.find((c) => c.poste === 'pose')?.calls).toBe(1);
     // Il reste de la place pour les lots suivants (lieu de départ, obstacles, Nef, repère) : 4 appels au moins.
@@ -459,7 +460,7 @@ describe('Le budget du monde continu', () => {
   });
 
   it('la Carte des lieux ouverts, toute l’île de loin, tient aussi dans l’enveloppe', () => {
-    const map = mapCost();
+    const map = mapCost(0);
     expect(map.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
     expect(map.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
     expect(map.triangles).toBeGreaterThan(groundCost().far);

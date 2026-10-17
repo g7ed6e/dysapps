@@ -100,7 +100,9 @@ try {
   // Le monde ouvert d'Archipéo (prototype du 6e, derrière le drapeau `?monde=ouvert`) : ses postes (`openWorldCost`) et
   // la Carte de ses lieux (`mapCost`), sous leur enveloppe (`OPEN_WORLD_BUDGET`), que seul le mainteneur relève ; les
   // aménagements posés (GD-20, point 4), dont la vue trace les dessins, y entrent par leurs triangles.
-  const mondeOuvert = !demandes || demandes.includes('6e') ? { postes: ouvert.openWorldCost(amenagementsCost().triangles), carte: ouvert.mapCost(amenagementsCost().triangles), enveloppe: ouvert.OPEN_WORLD_BUDGET } : null;
+  const sixieme = !demandes || demandes.includes('6e');
+  const amenagements = sixieme ? amenagementsCost().triangles : 0;
+  const mondeOuvert = sixieme ? { postes: ouvert.openWorldCost(amenagements), carte: ouvert.mapCost(amenagements), enveloppe: ouvert.OPEN_WORLD_BUDGET } : null;
 
   if (JSON_SEUL) console.log(JSON.stringify(resultats, null, 2));
   else {

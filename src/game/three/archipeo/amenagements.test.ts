@@ -213,7 +213,9 @@ describe('La place de chaque aménagement', () => {
     const out: string[] = [];
     for (const { a, p } of placed) {
       const base = p.base;
-      const under = footprint(objectOnly(p));
+      // La potence de façade ne pose au sol que son mât : sa flèche est en l'air (vérifiée avec elle, plus bas).
+      const standing = a.facade ? { ...p.facets, positions: p.facets.positions.slice(0, p.elements[0].to * 9) } : objectOnly(p);
+      const under = footprint(standing);
       if (a.scene) {
         // Sur la dalle de la scène de la remise (les Balises) : juste au-dessus d'elle, partout sous sa forme.
         const deck = within(scenetteDecor(a.place, false, remisePosed(a.place)), boundsOf(p.facets));
@@ -295,7 +297,7 @@ describe('La place de chaque aménagement', () => {
     }
   });
 
-  it('la potence de façade : le pied du mât contre le pilier d’angle gauche, le haut de sa flèche juste sous l’architrave, sa flèche courte', () => {
+  it('la potence de façade : le pied du mât contre le pilier d’angle gauche, le haut du mât juste sous l’architrave, sa flèche vers l’avant et l’ouest, entre un quart et un tiers du mât, le panier sous son bout', () => {
     const { a, p } = byId('french-6e-word-spelling-fixture-1');
     const c = placeById('archives').center;
     const model = constructionFacets('archives', [WHOLE], ground);
@@ -324,9 +326,38 @@ describe('La place de chaque aménagement', () => {
     expect((east ?? -Infinity) - p.base).toBeGreaterThan(0.12);
     // Contre le pilier d'angle gauche, à l'ouest de la colonnade (du côté opposé aux Quais), jamais devant une colonne.
     expect(foot.x).toBeLessThan(c.x - 2.7);
-    // La flèche courte : au plus un tiers du mât, de l'axe du mât à son bout.
+    // La flèche (deuxième passe du directeur artistique, point A) : de l'axe du mât à son bout, entre un quart et un tiers
+    // du mât, vers l'avant (vers la caméra, +z) et l'ouest (−x), à 45 degrés environ ; son dessus sous le haut du mât (du
+    // jour sous l'architrave).
+    const mastHeight = b.max[1] - p.base;
+    expect(POTENCE.jib).toBeGreaterThanOrEqual(POTENCE.mast / 4);
     expect(POTENCE.jib).toBeLessThanOrEqual(POTENCE.mast / 3);
-    expect(foot.x - b.min[0]).toBeLessThanOrEqual((b.max[1] - p.base) / 3);
+    const P = p.facets.positions;
+    let [reach, tip, jibTop] = [0, { x: foot.x, z: foot.z }, -Infinity];
+    for (let k = p.elements[1].from * 9; k < P.length; k += 3) {
+      const r = Math.hypot(P[k] - foot.x, P[k + 2] - foot.z);
+      if (r > reach) [reach, tip] = [r, { x: P[k], z: P[k + 2] }];
+      jibTop = Math.max(jibTop, P[k + 1]);
+    }
+    expect(reach).toBeGreaterThanOrEqual(mastHeight / 4);
+    expect(reach).toBeLessThanOrEqual(mastHeight / 3);
+    const angle = (Math.atan2(tip.z - foot.z, foot.x - tip.x) * 180) / Math.PI;
+    expect(angle).toBeGreaterThan(30);
+    expect(angle).toBeLessThan(60);
+    expect(jibTop).toBeLessThan(b.max[1] - 0.05);
+    // Le panier sous le bout de la flèche : le bas de l'objet, hors du mât, est sous les deux derniers tiers de la flèche.
+    let [low, lowAt] = [Infinity, { x: 0, z: 0 }];
+    for (let k = p.elements[1].from * 9; k < P.length; k += 3) if (P[k + 1] < low) [low, lowAt] = [P[k + 1], { x: P[k], z: P[k + 2] }];
+    expect(Math.hypot(lowAt.x - foot.x, lowAt.z - foot.z)).toBeGreaterThan(reach * 0.6);
+    // Au-dessus du socle ou de sa marche, partout sous la flèche et ce qu'elle porte : jamais au-dessus du parvis, où passe
+    // Kéo vers les marches.
+    const jib = { ...p.facets, positions: P.slice(p.elements[1].from * 9) };
+    const under = within(model, boundsOf(jib));
+    for (const q of footprint(jib)) {
+      const top = topAt(under, q, p.base + 0.2);
+      expect(top, `${q.x.toFixed(2)},${q.z.toFixed(2)}`).not.toBeNull();
+      expect(p.base - (top ?? -Infinity), `${q.x.toFixed(2)},${q.z.toFixed(2)}`).toBeLessThan(0.2);
+    }
     // La coupe : deux éléments, le mât puis la flèche et ce qu'elle porte.
     expect(a.elements).toHaveLength(2);
   });
@@ -474,7 +505,7 @@ describe('Ce qu’ils coûtent', () => {
     expect(world.reduce((s, c) => s + c.triangles, 0)).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
     expect(world.reduce((s, c) => s + c.calls, 0)).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
     const map = mapCost(cost.triangles);
-    expect(map.triangles).toBe(mapCost().triangles + cost.triangles);
+    expect(map.triangles).toBe(mapCost(0).triangles + cost.triangles);
     expect(map.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
   });
 });

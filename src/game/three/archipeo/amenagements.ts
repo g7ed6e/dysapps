@@ -10,51 +10,92 @@ import type { PlaceId } from '../../world/continu/plan6e';
 import { Pinceau, type V3 } from '../../world/decor/brush';
 import { estPosee } from '../../world/fixtures';
 import { ASSEMBLIES } from '../../world/objects/assemblies';
-import { paintFor } from '../../world/objects/pieces';
+import { OBJECT_COLORS, paintFor } from '../../world/objects/pieces';
 import { SILHOUETTES, type ObjectDrawing } from '../../world/objects/silhouettes';
 import { Workshop, type Tint } from '../../world/objects/workshop';
-import { OBJECT_COLORS } from '../../world/objects/pieces';
 import { BIOMES, BLOC } from '../../biomes';
 
 /** L'osier du panier de la potence. */
 const WICKER = 0xb8894f;
 
 /**
- * La grue des Archives dans le monde ouvert : une potence de façade (directeur artistique, avis sur le lot L0, 17 octobre
- * 2026, point 7), et non la grue de chantier de la grille, qui rappellerait celle des Quais. Le mât de bois sur son pied
- * de pierre, cerclé de fer ; puis la flèche courte (le madrier livré, la matière du bloc assemblé du 6e, comme dans la
- * grille), sa jambe de force, la poulie, la corde et le panier d'osier qui pend à mi-hauteur. Ni treillis, ni
- * contrepoids, ni caisse. La flèche part le long de x (vers l'ouest une fois posée), longue d'au plus un tiers du mât.
- * Deux éléments : le mât, puis la flèche et ce qu'elle porte. Dans le repère de grille (x, y au sol, z vers le haut).
+ * Le mât de la potence : un bois goudronné, sombre (relecture du lot L0, 17 octobre 2026 : le brun moyen du bois de la
+ * grille se confondait avec la roche de l'éperon). Sa valeur tranche sur la façade de calcaire et sur la roche éclairée
+ * (au moins 3:1 mesuré à l'écran), sans aller au noir ; ses deux cerclages, de fer brut gris (`MAST_IRON`), se lisent sur
+ * lui et le disent mât, et non colonne. Un mât clair, essayé d'abord, se perdait dans les colonnes (1:1).
  */
-export const POTENCE = { mast: 3.0, jib: 0.5 } as const;
+const MAST_WOOD = { dessus: 0x5a4030, cote: 0x4a3526 } as const;
+const MAST_IRON = 0x8e8c84;
+
+/**
+ * La grue des Archives dans le monde ouvert : une potence de façade (directeur artistique, avis sur le lot L0, 17 octobre
+ * 2026, point 7, puis deuxième passe, point A), et non la grue de chantier de la grille, qui rappellerait celle des Quais.
+ * Le mât de bois sur son pied de pierre, fin, cerclé de fer deux fois ; puis la flèche (le madrier livré, la matière du
+ * bloc assemblé du 6e, comme dans la grille), qui part un peu sous le haut du mât (du jour sous l'architrave) vers
+ * l'avant et l'ouest, à 45 degrés, au-dessus du socle, loin de l'éperon de roche ; sa jambe de force ; sous son bout, la
+ * poulie, la corde et le panier d'osier qui pend à mi-hauteur. Ni treillis, ni contrepoids, ni caisse. La flèche, de
+ * l'axe du mât à son bout, entre un quart et un tiers du mât (`jib`), dans la direction `toward` (x vers l'ouest une fois
+ * posée, −y vers la caméra). Deux éléments : le mât, puis la flèche et ce qu'elle porte. Dans le repère de grille (x, y
+ * au sol, z vers le haut).
+ */
+export const POTENCE = { mast: 3.0, jib: 0.8, side: 0.24, toward: [Math.SQRT1_2, -Math.SQRT1_2] } as const;
 
 const potence: ObjectDrawing = (at, pe) => {
   const C = OBJECT_COLORS;
   const wood = pe.color(C.wood);
   const iron = pe.color(C.iron);
   const stone = { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') };
-  const [mx, my, top] = [0.5, 0.5, POTENCE.mast];
+  const mastWood = { dessus: pe.color(MAST_WOOD.dessus), cote: pe.color(MAST_WOOD.cote) };
+  const [mx, my, top, side] = [0.5, 0.5, POTENCE.mast, POTENCE.side];
+  const [ux, uy] = POTENCE.toward;
+  /** Un point de la flèche, à `d` de l'axe du mât, à la hauteur `z`. */
+  const along = (d: number, z: number): V3 => [mx + ux * d, my + uy * d, z];
   // Le pied de pierre, le mât, ses deux cercles de fer.
   at.block(mx, my, 0.5, 0.5, 0, 0.2, stone);
-  at.block(mx, my, 0.3, 0.3, 0.2, top, wood, { bottom: true });
-  for (const z of [0.95, 1.95]) at.block(mx, my, 0.36, 0.36, z, z + 0.1, iron, { bottom: true });
+  at.block(mx, my, side, side, 0.2, top, mastWood, { bottom: true });
+  for (const z of [0.95, 1.95]) at.block(mx, my, side + 0.06, side + 0.06, z, z + 0.1, pe.color(MAST_IRON), { bottom: true });
   at.part();
-  // La flèche, de l'arrière du mât à son bout ; sa jambe de force ; la poulie, la corde, le panier.
-  const end = mx + POTENCE.jib;
-  at.box(mx - 0.15, end, my - 0.11, my + 0.11, top - 0.22, top, pe.block(BLOC.poutre), {});
-  at.beam([mx + 0.15, my, top - 0.75], [mx + 0.42, my, top - 0.22], 0.08, wood);
-  const hang = end - 0.1;
-  at.roller('y', my - 0.08, my + 0.08, hang, top - 0.3, 0.08, 6, iron);
-  at.beam([hang, my, top - 0.38], [hang, my, 1.72], 0.035, pe.color(C.lightWood));
-  at.prism(hang, my, 0.11, 0.15, 1.4, 1.72, 6, pe.color(WICKER));
+  // La flèche, de l'arrière du mât à son bout, son dessus une demi-épaisseur sous le haut du mât ; sa jambe de force ; sous
+  // son bout, la poulie, la corde, le panier.
+  const [jibTop, jibSide] = [top - 0.12, 0.22];
+  const jibAxis = jibTop - jibSide / 2;
+  at.beam(along(-0.1, jibAxis), along(POTENCE.jib, jibAxis), jibSide, pe.block(BLOC.poutre), true);
+  at.beam(along(side / 2, jibAxis - 0.8), along(0.5, jibAxis - jibSide / 2), 0.08, wood);
+  const hang = POTENCE.jib - 0.1;
+  const pulley = jibAxis - jibSide / 2 - 0.08;
+  const [wx, wy] = [-uy * 0.08, ux * 0.08];
+  const h = along(hang, pulley);
+  at.tube([h[0] - wx, h[1] - wy, pulley], [h[0] + wx, h[1] + wy, pulley], 0.08, 0.08, 6, iron, { a: iron, b: iron });
+  at.beam(along(hang, pulley - 0.08), along(hang, 1.72), 0.035, pe.color(C.lightWood));
+  at.prism(h[0], h[1], 0.11, 0.15, 1.4, 1.72, 6, pe.color(WICKER));
+};
+
+/** Le nichoir de la grille. */
+const birdhouse = SILHOUETTES['life-earth-sciences-6e-living-world-fixture-1'];
+
+/**
+ * Le nichoir de la Mangrove dans le monde ouvert (deuxième passe du directeur artistique, point B) : celui de la grille,
+ * tourné d'un quart de tour sur le platelage, son pignon et son toit à deux pentes vers la caméra ; ses trois trous, sur
+ * le long côté, se cachent alors sous le toit. Sur la maison, côté pignon (−x de la grille), une entrée ronde, sombre, en
+ * aplat, et son perchoir : un nouveau morceau, posé avec la maison (`elements` de la table). Même taille.
+ */
+const nichoir: ObjectDrawing = (at, pe, far) => {
+  birdhouse(at, pe, far);
+  at.part();
+  at.standingDisc([0.17, 0.5, 1.34], 'nx', 0.14, 8, pe.color(OBJECT_COLORS.shadow));
+  at.beam([0.18, 0.5, 1.12], [0.02, 0.5, 1.12], 0.06, pe.color(OBJECT_COLORS.wood), true);
 };
 
 /**
  * Les dessins du 6e, par identifiant de petite construction : ceux de la grille ; la grue des Archives, sa potence de
- * façade.
+ * façade ; le nichoir de la Mangrove, son entrée au pignon.
  */
-const DRAWINGS: Readonly<Record<string, ObjectDrawing>> = { ...SILHOUETTES, ...ASSEMBLIES, 'french-6e-word-spelling-fixture-1': potence };
+const DRAWINGS: Readonly<Record<string, ObjectDrawing>> = {
+  ...SILHOUETTES,
+  ...ASSEMBLIES,
+  'french-6e-word-spelling-fixture-1': potence,
+  'life-earth-sciences-6e-living-world-fixture-1': nichoir,
+};
 
 /** Un atelier dont les vitres (le feu de la grille) restent dans l'opaque, en verre mat : une lanterne éteinte. */
 class MatteWorkshop extends Workshop {

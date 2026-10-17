@@ -174,6 +174,35 @@ describe('La remise', () => {
     }
   });
 
+  it('au format téléphone, un aménagement devant l’habitant (plus près de la caméra) : la caméra recule dans son axe jusqu’à ce qu’il tienne, avec sa marge', () => {
+    // Le format où le défaut du cadrage a été trouvé (lot L0) : la scène y est basse, la perspective grossit ce qui est
+    // devant le plan de l'habitant, et le cadre calculé dans ce plan ne suffit plus ; la boucle de recul le rattrape.
+    const [w, h] = [844, 390];
+    const stage = remiseStage(w, h);
+    for (const place of ['quais', 'mangrove', 'phare'] as const) {
+      const posed = remisePosed(place);
+      const hab = scenetteHabitant(place, posed);
+      const box = (dz: number) => ({ min: [hab.x + 1, hab.y, hab.z + dz], max: [hab.x + 2.5, hab.y + 1.4, hab.z + dz + 1.2] });
+      // La même boîte dans le plan de l'habitant, puis avancée de 2,5 vers la caméra.
+      const [behind, front] = [box(-0.6), box(2.5)];
+      const far = remisePose(place, front, stage, w, h, posed);
+      const near = remisePose(place, behind, stage, w, h, posed);
+      const dist = (p: typeof far.pose) => Math.hypot(p.position.x - p.target.x, p.position.y - p.target.y, p.position.z - p.target.z);
+      expect(dist(far.pose), place).toBeGreaterThan(dist(near.pose));
+      // Le même regard : la caméra a reculé dans son axe, sans tourner.
+      const dir = (p: typeof far.pose) => [p.target.x - p.position.x, p.target.y - p.position.y, p.target.z - p.position.z].map((v) => v / dist(p));
+      dir(far.pose).forEach((v, i) => expect(v, place).toBeCloseTo(dir(scenettePose(place, stage, w, h, posed).pose)[i], 5));
+      // Tous les coins de la boîte avancée dans la scène, à 12 pixels au moins de ses bords.
+      for (const x of [front.min[0], front.max[0]])
+        for (const y of [front.min[1], front.max[1]])
+          for (const z of [front.min[2], front.max[2]]) {
+            const o = screenOf(far.pose, { x, y, z }, w, h);
+            const [sx, sy] = [o.x - far.shift.x, o.y - far.shift.y];
+            expect(Math.min(sx - stage.left, stage.right - sx, sy - stage.top, stage.bottom - sy), `${place} ${x},${y},${z}`).toBeGreaterThanOrEqual(12);
+          }
+    }
+  });
+
   it('la table : dix-neuf aménagements, chacun à son lieu', () => {
     expect(AMENAGEMENTS).toHaveLength(19);
   });
