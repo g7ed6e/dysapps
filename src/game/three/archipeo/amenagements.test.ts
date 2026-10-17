@@ -2,8 +2,10 @@
 // dessins de la grille posés chacun à son lieu. La table (une place par lieu, au sol, dans le rayon de toucher, hors de
 // tout ce que le lieu, ses traces, l'Escale, les passerelles et la scénette posent ; jamais sur la porte, un chemin, le
 // chenal de la Nef), la coupe de chaque dessin en éléments, une par ressource que la commande demande, la règle de
-// hauteur et son exception (la grue des Archives, adossée à la façade), le verre mat des lanternes éteintes, le
-// cadrage de la remise, ce qu'ils coûtent. Sans Three.js.
+// hauteur et son exception (la grue des Archives, potence de façade, mesurée à l'architrave), l'assise de pierre sur
+// la pente, les places revues sur l'avis du directeur artistique (lot L0, 17 octobre 2026), le verre mat des lanternes
+// éteintes, le cadrage de la remise (entier dans la scène, avec une marge, aux trois formats), ce qu'ils coûtent. Sans
+// Three.js.
 import { describe, expect, it } from 'vitest';
 import { OPEN_WORLD_BUDGET, mapCost, openWorldCost } from '../../world/continu/budget';
 import { screenOf } from '../../world/continu/camera';
@@ -17,11 +19,12 @@ import { PHARE_GARDEN } from '../../world/continu/places';
 import { PORT_WORST, portFacets } from '../../world/continu/port';
 import { placeTrace } from '../../world/continu/questionScene';
 import { remisePose, scenetteDecor, scenetteHabitant, scenetteKeo } from '../../world/continu/scenette';
+import type { PlacedAmenagement } from '../../world/continu/amenagements';
 import { buildHeightField, heightOnMesh, standingHeight } from '../../world/continu/terrain';
-import { AMENAGEMENTS, AMENAGEMENT_SCALE, HABITANT_HEIGHT, MATTE_GLASS, amenagementsOf, piecesOf, remisePosed, remiseStage } from '../../world/continu/amenagements';
+import { AMENAGEMENTS, AMENAGEMENT_SCALE, ASSISE_STONE, ASSISE_TRIANGLES, HABITANT_HEIGHT, MATTE_GLASS, amenagementsOf, piecesOf, remiseInclude, remisePosed, remiseStage } from '../../world/continu/amenagements';
 import { casesDeLaPetiteConstruction } from '../../world/fixtures';
 import { COMMANDES } from '../../world/requests';
-import { amenagementsCost, drawnObject, placedAmenagement, posedAmenagements } from './amenagements';
+import { POTENCE, amenagementsCost, drawnObject, placedAmenagement, posedAmenagements } from './amenagements';
 
 const field = buildHeightField();
 const ground = (x: number, z: number) => portFloor(x, z) ?? heightOnMesh(field, x, z);
@@ -49,8 +52,11 @@ function within(f: Facets, b: { min: readonly number[]; max: readonly number[] }
   return { positions, normals: positions, colors: positions, triangles: keep.length / 9 };
 }
 
-/** Le plus haut d'un maillage au-dessus d'un point (ses triangles qui le couvrent, vus d'en haut), ou rien. */
-function topAt(f: Facets, q: Vec2): number | null {
+/**
+ * Le plus haut d'un maillage au-dessus d'un point (ses triangles qui le couvrent, vus d'en haut), ou rien ; sous `ceiling`
+ * seulement, s'il est donné (ce qui passe au-dessus d'un objet, l'architrave sur la potence, ne le touche pas).
+ */
+function topAt(f: Facets, q: Vec2, ceiling = Infinity): number | null {
   let top: number | null = null;
   for (let k = 0; k < f.positions.length; k += 9) {
     const [ax, ay, az] = [f.positions[k], f.positions[k + 1], f.positions[k + 2]];
@@ -64,12 +70,33 @@ function topAt(f: Facets, q: Vec2): number | null {
     const l3 = 1 - l1 - l2;
     if (l1 < 0 || l2 < 0 || l3 < 0) continue;
     const y = l1 * ay + l2 * by + l3 * cy;
+    if (y > ceiling) continue;
     top = top === null ? y : Math.max(top, y);
   }
   return top;
 }
 
+/** L'objet seul, sans son assise de pierre. */
+function objectOnly(p: PlacedAmenagement): Facets {
+  const from = (p.assise?.to ?? 0) * 9;
+  const positions = p.facets.positions.slice(from);
+  return { positions, normals: p.facets.normals.slice(from), colors: p.facets.colors.slice(from), triangles: positions.length / 9 };
+}
+
 const placed = AMENAGEMENTS.map((a) => ({ a, p: placedAmenagement(a.id, ground) }));
+const byId = (id: string) => {
+  const o = placed.find((x) => x.a.id === id);
+  if (!o) throw new Error(id);
+  return o;
+};
+
+/**
+ * Hors du rayon de toucher de leur lieu, par la place que le directeur artistique leur donne près de l'habitant (avis sur
+ * le lot L0, points 3 à 5), là où l'habitant lui-même est hors du rayon : la boutique des Quais, à droite du docker ; le
+ * lavoir des Écluses, sur le quai de pierre de l'éclusière ; le nichoir de la Mangrove, sur le platelage, à l'est de la
+ * botaniste. Ils restent près de l'habitant ; leur toucher se tranche avec le geste du lot L1.
+ */
+const BEYOND_TOUCH = ['maths-6e-calculation-fixture-1', 'maths-6e-fractions-fixture-1', 'life-earth-sciences-6e-living-world-fixture-1'];
 
 describe('La table des aménagements', () => {
   it('dix-neuf : les seize commandes du 6e et les trois objets d’entraide, chacun une petite construction de la grille', () => {
@@ -104,7 +131,8 @@ describe('La table des aménagements', () => {
       expect(p.elements[0].from).toBe(0);
       for (let i = 1; i < p.elements.length; i++) expect(p.elements[i].from).toBe(p.elements[i - 1].to);
       expect(p.elements.at(-1)?.to).toBe(p.facets.triangles);
-      expect(p.facets.triangles).toBe(drawnObject(a.id).positions.length / 9);
+      expect(p.facets.triangles).toBe(drawnObject(a.id).positions.length / 9 + (p.assise ? ASSISE_TRIANGLES : 0));
+      expect(p.assise?.to ?? 0).toBe(p.assise ? ASSISE_TRIANGLES : 0);
     }
   });
 });
@@ -128,7 +156,10 @@ describe('La place de chaque aménagement', () => {
         const [px, py] = toPlan(q);
         nef ||= px >= NEF_CHANNEL.x0 && px <= NEF_CHANNEL.x1 && py >= NEF_CHANNEL.y0 && py <= NEF_CHANNEL.y1;
       }
-      if (r > place.touchRadius) out.push(`${a.id} : à ${r.toFixed(2)} du centre (rayon ${place.touchRadius})`);
+      if (BEYOND_TOUCH.includes(a.id)) {
+        const h = scenetteHabitant(a.place, remisePosed(a.place));
+        if (r > Math.hypot(h.x - place.center.x, h.z - place.center.z) + 2) out.push(`${a.id} : à ${r.toFixed(2)} du centre, loin de l’habitant`);
+      } else if (r > place.touchRadius) out.push(`${a.id} : à ${r.toFixed(2)} du centre (rayon ${place.touchRadius})`);
       if (d <= 1.2) out.push(`${a.id} : à ${d.toFixed(2)} de la porte`);
       if (path <= 0.9) out.push(`${a.id} : à ${path.toFixed(2)} d’un chemin`);
       if (nef) out.push(`${a.id} : dans le chenal de la Nef`);
@@ -141,7 +172,8 @@ describe('La place de chaque aménagement', () => {
     const out: string[] = [];
     for (const { a, p } of placed) {
       const place = placeById(a.place);
-      const base = boundsOf(p.facets).min[1];
+      const base = p.base;
+      const ceiling = boundsOf(p.facets).max[1];
       const others = [
         constructionFacets(a.place, [WHOLE], ground),
         constructionFacets(a.place, [], ground),
@@ -155,7 +187,7 @@ describe('La place de chaque aménagement', () => {
       others.forEach((f, i) => {
         let [worst, at] = [0, ''];
         for (const q of footprint(p.facets)) {
-          const top = topAt(f, q);
+          const top = topAt(f, q, ceiling);
           if (top !== null && top - base > worst) [worst, at] = [top - base, `${(q.x - place.center.x).toFixed(2)},${(q.z - place.center.z).toFixed(2)}`];
         }
         if (worst >= 0.12) out.push(`${a.id} : ${NAMES[i] ?? (i < NAMES.length + obstacles.length ? 'une passerelle' : 'un autre aménagement')} monte de ${worst.toFixed(2)} en ${at}`);
@@ -169,7 +201,7 @@ describe('La place de chaque aménagement', () => {
       for (const posed of [true, remisePosed(a.place)]) {
         const h = scenetteHabitant(a.place, posed);
         const k = scenetteKeo(a.place, posed).at;
-        for (const q of footprint(p.facets)) {
+        for (const q of footprint(objectOnly(p))) {
           expect(Math.hypot(q.x - h.x, q.z - h.z), a.id).toBeGreaterThan(0.5);
           expect(Math.hypot(q.x - k.x, q.z - k.z), a.id).toBeGreaterThan(0.5);
         }
@@ -177,23 +209,36 @@ describe('La place de chaque aménagement', () => {
     }
   });
 
-  it('au sol, à sec et presque à plat ; sur la surface de son lieu quand il y est posé (la terrasse de l’Observatoire, le quai de la Gare maritime)', () => {
+  it('au sol, à sec et presque à plat ; sur une pente, à plat sur son assise, sans jamais s’enfoncer ; sur la surface de son lieu ou la dalle de la scène quand il y est posé', () => {
     const out: string[] = [];
     for (const { a, p } of placed) {
-      const base = boundsOf(p.facets).min[1];
-      const under = footprint(p.facets);
-      if (a.floor === undefined) {
+      const base = p.base;
+      const under = footprint(objectOnly(p));
+      if (a.scene) {
+        // Sur la dalle de la scène de la remise (les Balises) : juste au-dessus d'elle, partout sous sa forme.
+        const deck = within(scenetteDecor(a.place, false, remisePosed(a.place)), boundsOf(p.facets));
+        for (const q of under) {
+          const top = topAt(deck, q);
+          if (top === null || base - top < 0 || base - top > 0.05) out.push(`${a.id} : hors de la dalle de la scène en ${q.x.toFixed(2)},${q.z.toFixed(2)} (${top?.toFixed(2)})`);
+        }
+      } else if (a.floor === undefined) {
         const heights = under.map((q) => ground(q.x, q.z));
         const [low, high] = [Math.min(...heights), Math.max(...heights)];
         if (low <= 0.05) out.push(`${a.id} : dans l’eau (${low.toFixed(2)})`);
-        if (high - low >= 0.3) out.push(`${a.id} : pente de ${(high - low).toFixed(2)}`);
-        if (Math.abs(base - low) > 0.05) out.push(`${a.id} : posé à ${base.toFixed(2)}, le sol à ${low.toFixed(2)}`);
+        if (a.assise) {
+          // Aucun enfoncement visible : au plus 0,03 sous le sol, partout sous sa forme ; la pente, rattrapée par l'assise.
+          if (high - base > 0.03) out.push(`${a.id} : s’enfonce de ${(high - base).toFixed(2)}`);
+          if (high - low >= 0.6) out.push(`${a.id} : pente de ${(high - low).toFixed(2)}`);
+        } else {
+          if (high - low >= 0.3) out.push(`${a.id} : pente de ${(high - low).toFixed(2)}`);
+          if (Math.abs(base - low) > 0.05) out.push(`${a.id} : posé à ${base.toFixed(2)}, le sol à ${low.toFixed(2)}`);
+        }
       } else {
         const c = placeById(a.place).center;
         expect(base, a.id).toBeCloseTo(standingHeight(ground(c.x, c.z)) + a.floor, 5);
         const model = within(constructionFacets(a.place, [WHOLE], ground), boundsOf(p.facets));
         for (const q of under) {
-          const top = topAt(model, q);
+          const top = topAt(model, q, base + 0.2);
           if (top === null || Math.abs(top - base) > 0.05) out.push(`${a.id} : hors de la surface en ${q.x.toFixed(2)},${q.z.toFixed(2)} (${top?.toFixed(2)})`);
         }
       }
@@ -201,11 +246,30 @@ describe('La place de chaque aménagement', () => {
     expect([...new Set(out)].slice(0, 20)).toEqual([]);
   });
 
-  it('le potager du Phare prolonge le jardin clos par l’ouverture de son muret est, sur le même sol', () => {
-    const potager = placed.find((o) => o.a.id === 'french-6e-phonology-fixture-1');
-    if (!potager) throw new Error('le potager');
+  it('l’assise de pierre : sous les seuls objets posés sur une pente ou sur la dalle de la scène, de leur pied jusque sous le sol, dans la pierre du muret', () => {
+    for (const { a, p } of placed) {
+      expect(Boolean(p.assise), a.id).toBe(Boolean(a.assise || a.scene));
+      if (!p.assise) continue;
+      const stone = { ...p.facets, positions: p.facets.positions.slice(0, p.assise.to * 9) };
+      const b = boundsOf(stone as Facets);
+      expect(b.max[1], a.id).toBeCloseTo(p.base, 5);
+      // Son pied sous le sol, partout : elle ne flotte jamais.
+      for (const q of footprint(stone as Facets)) expect(ground(q.x, q.z), a.id).toBeGreaterThan(b.min[1]);
+      // Dans la pierre du muret, et rien d'autre ; elle se pose avec le premier élément.
+      const [top, side] = [linearRgb(ASSISE_STONE.dessus), linearRgb(ASSISE_STONE.cote)];
+      for (let k = 0; k < p.assise.to * 9; k += 3) {
+        const c = [p.facets.colors[k], p.facets.colors[k + 1], p.facets.colors[k + 2]];
+        expect([top, side].some((rgb) => rgb.every((v, i) => Math.abs(v - c[i]) < 1e-3)), a.id).toBe(true);
+      }
+      expect(p.elements[0].from).toBe(0);
+    }
+    expect(AMENAGEMENTS.filter((a) => a.assise || a.scene).map((a) => a.place).sort()).toEqual(['beacons', 'ecluses', 'phare']);
+  });
+
+  it('le potager du Phare prolonge le jardin clos par l’ouverture de son muret est, à plat au niveau du seuil, son assise côté tour', () => {
+    const potager = byId('french-6e-phonology-fixture-1');
     const c = placeById('phare').center;
-    const b = boundsOf(potager.p.facets);
+    const b = boundsOf(objectOnly(potager.p));
     const g = PHARE_GARDEN;
     // Son bord ouest dans l'épaisseur du muret est (0,3), là où il est ouvert ; tout entier dans la largeur de l'ouverture.
     const wall = c.x + g.x + g.w / 2;
@@ -214,22 +278,57 @@ describe('La place de chaque aménagement', () => {
     const half = g.d / 2 - g.eastWall;
     expect(b.min[2]).toBeGreaterThanOrEqual(c.z + g.z - half);
     expect(b.max[2]).toBeLessThanOrEqual(c.z + g.z + half);
-    // Le même sol que le jardin, sans marche ni socle : son pied à moins de 0,2 du sol du seuil, dans l'ouverture du muret
-    // (le sol y descend vers la tour : le potager, posé au plus bas, entre de 0,16 dans la pente à son bord ouest).
-    expect(Math.abs(b.min[1] - ground(wall, c.z + g.z))).toBeLessThan(0.2);
+    // Son dessus à plat, au niveau du seuil du muret (pas surélevé comme les carrés du jardin : sa bordure basse, au sol) ;
+    // aucun coin ne s'enfonce de plus de 0,03 ; côté tour, où le sol descend, l'assise rattrape la pente.
+    expect(Math.abs(potager.p.base - ground(wall, c.z + g.z))).toBeLessThan(0.03);
+    for (const x of [b.min[0], b.max[0]]) for (const z of [b.min[2], b.max[2]]) expect(ground(x, z) - potager.p.base).toBeLessThanOrEqual(0.03);
+    expect(ground(b.max[0], c.z + g.z)).toBeLessThan(potager.p.base - 0.05);
   });
 
-  it('plus bas que l’habitant d’une scénette, à l’échelle commune ; la grue des Archives, adossée à la façade, la seule exception', () => {
+  it('plus bas que l’habitant d’une scénette, à l’échelle commune ; la grue des Archives, potence de façade, la seule exception', () => {
     expect(AMENAGEMENT_SCALE).toBe(0.45);
     expect(AMENAGEMENTS.filter((a) => a.facade).map((a) => a.id)).toEqual(['french-6e-word-spelling-fixture-1']);
+    expect(AMENAGEMENTS.filter((a) => a.scale !== undefined).map((a) => a.id)).toEqual(['french-6e-word-spelling-fixture-1']);
     for (const { a, p } of placed) {
-      const b = boundsOf(p.facets);
-      const height = b.max[1] - b.min[1];
-      if (a.facade) {
-        expect(height, a.id).toBeGreaterThan(HABITANT_HEIGHT);
-        expect(height, a.id).toBeLessThan(HABITANT_HEIGHT * 1.1);
-      } else expect(height, a.id).toBeLessThanOrEqual(HABITANT_HEIGHT);
+      if (a.facade) continue;
+      expect(boundsOf(objectOnly(p)).max[1] - p.base, a.id).toBeLessThanOrEqual(HABITANT_HEIGHT);
     }
+  });
+
+  it('la potence de façade : le pied du mât contre le pilier d’angle gauche, le haut de sa flèche juste sous l’architrave, sa flèche courte', () => {
+    const { a, p } = byId('french-6e-word-spelling-fixture-1');
+    const c = placeById('archives').center;
+    const model = constructionFacets('archives', [WHOLE], ground);
+    const b = boundsOf(p.facets);
+    // Le mât, le premier élément : son pied, son axe.
+    const mast = boundsOf({ ...p.facets, positions: p.facets.positions.slice(0, p.elements[0].to * 9) });
+    const foot = { x: (mast.min[0] + mast.max[0]) / 2, z: (mast.min[2] + mast.max[2]) / 2 };
+    // L'architrave au-dessus du mât : le bas de ce qui passe au-dessus de lui (plus haut que l'habitant), au droit du mât
+    // (son pavé n'a pas de dessous : le bas de sa face avant, qui court au-dessus de lui).
+    let architrave = Infinity;
+    for (let k = 0; k < model.positions.length; k += 9) {
+      const xs = [model.positions[k], model.positions[k + 3], model.positions[k + 6]];
+      const ys = [model.positions[k + 1], model.positions[k + 4], model.positions[k + 7]];
+      const zs = [model.positions[k + 2], model.positions[k + 5], model.positions[k + 8]];
+      if (Math.min(...ys) < p.base + HABITANT_HEIGHT || Math.min(...xs) > foot.x || Math.max(...xs) < foot.x || Math.abs(Math.min(...zs) - foot.z) > 1.5) continue;
+      architrave = Math.min(architrave, Math.min(...ys));
+    }
+    expect(architrave).toBeLessThan(Infinity);
+    // Le haut de la flèche juste sous l'architrave, jamais au-dessus ; plus haut que l'habitant : elle se mesure à la façade.
+    expect(b.max[1]).toBeLessThanOrEqual(architrave);
+    expect(b.max[1]).toBeGreaterThan(architrave - 0.25);
+    expect(b.max[1] - p.base).toBeGreaterThan(HABITANT_HEIGHT);
+    // Le pied du mât à moins de 0,1 de la façade : juste à l'est de lui (vers la colonnade), la base du pilier monte.
+    const q = { x: mast.max[0] + 0.1, z: foot.z };
+    const east = topAt(within(model, { min: [q.x - 0.05, 0, q.z - 0.05], max: [q.x + 0.05, 0, q.z + 0.05] }), q, p.base + 1);
+    expect((east ?? -Infinity) - p.base).toBeGreaterThan(0.12);
+    // Contre le pilier d'angle gauche, à l'ouest de la colonnade (du côté opposé aux Quais), jamais devant une colonne.
+    expect(foot.x).toBeLessThan(c.x - 2.7);
+    // La flèche courte : au plus un tiers du mât, de l'axe du mât à son bout.
+    expect(POTENCE.jib).toBeLessThanOrEqual(POTENCE.mast / 3);
+    expect(foot.x - b.min[0]).toBeLessThanOrEqual((b.max[1] - p.base) / 3);
+    // La coupe : deux éléments, le mât puis la flèche et ce qu'elle porte.
+    expect(a.elements).toHaveLength(2);
   });
 });
 
@@ -270,38 +369,65 @@ describe('Le cadrage de la remise', () => {
   const screens = [
     [1024, 768],
     [844, 390],
+    [800, 1280],
   ] as const;
+  /** La marge, en pixels, entre un aménagement et le bord de la scène de la remise. */
+  const MARGIN = 12;
 
-  it('l’aménagement tient dans la scène de la remise, avec l’habitant et Kéo, sur la tablette et le téléphone', () => {
-    for (const p of PLACES) {
-      const list = placed.filter((o) => o.a.place === p.id);
-      const b = list.map((o) => boundsOf(o.p.facets));
-      const include = { min: [0, 1, 2].map((i) => Math.min(...b.map((x) => x.min[i]))), max: [0, 1, 2].map((i) => Math.max(...b.map((x) => x.max[i]))) };
+  /** Le cadrage de la remise d'un lieu, sur un écran : sa pose, et le point d'un coin du monde dans la scène. */
+  function remiseOf(place: PlaceId, w: number, h: number) {
+    const list = placed.filter((o) => o.a.place === place);
+    const include = remiseInclude(list.map((o) => ({ a: o.a, box: o.p.box })));
+    const { pose, shift } = remisePose(place, include, remiseStage(w, h), w, h, remisePosed(place));
+    const onScreen = (box: { min: readonly number[]; max: readonly number[] }) => {
+      const s: { x: number; y: number }[] = [];
+      for (const x of [box.min[0], box.max[0]]) for (const y of [box.min[1], box.max[1]]) for (const z of [box.min[2], box.max[2]]) s.push(screenOf(pose, { x, y, z }, w, h));
+      return { l: Math.min(...s.map((q) => q.x)) - shift.x, r: Math.max(...s.map((q) => q.x)) - shift.x, t: Math.min(...s.map((q) => q.y)) - shift.y, b: Math.max(...s.map((q) => q.y)) - shift.y };
+    };
+    return { list, onScreen };
+  }
+
+  it('chaque aménagement tient entier dans la scène de la remise, avec une marge, avec l’habitant et Kéo, aux trois formats', () => {
+    const out: string[] = [];
+    for (const p of PLACES)
       for (const [w, h] of screens) {
         const stage = remiseStage(w, h);
-        const { pose, shift } = remisePose(p.id, include, stage, w, h, remisePosed(p.id));
-        for (const x of [include.min[0], include.max[0]])
-          for (const y of [include.min[1], include.max[1]])
-            for (const z of [include.min[2], include.max[2]]) {
-              // La scène est décalée de `shift` : le milieu de l'écran vient au milieu de la scène.
-              const o = screenOf(pose, { x, y, z }, w, h);
-              const s = { x: o.x - shift.x, y: o.y - shift.y };
-              const tag = `${p.id} ${w}×${h}`;
-              expect(s.x, tag).toBeGreaterThanOrEqual(stage.left - 4);
-              expect(s.x, tag).toBeLessThanOrEqual(stage.right + 4);
-              expect(s.y, tag).toBeGreaterThanOrEqual(stage.top - 4);
-              expect(s.y, tag).toBeLessThanOrEqual(stage.bottom + 4);
-            }
+        const { list, onScreen } = remiseOf(p.id, w, h);
+        for (const o of list) {
+          const s = onScreen(o.p.box);
+          const m = Math.min(s.l - stage.left, stage.right - s.r, s.t - stage.top, stage.bottom - s.b);
+          if (m < MARGIN) out.push(`${o.a.id} ${w}×${h} : marge ${m.toFixed(0)} px`);
+        }
       }
+    expect(out).toEqual([]);
+  });
+
+  it('au Phare, le potager garde au moins sa largeur jusqu’au bord gauche du cadre ; la lanterne reste entière', () => {
+    for (const [w, h] of screens) {
+      const stage = remiseStage(w, h);
+      const { onScreen } = remiseOf('phare', w, h);
+      const s = onScreen(byId('french-6e-phonology-fixture-1').p.box);
+      expect(s.l - stage.left, `${w}×${h}`).toBeGreaterThanOrEqual(s.r - s.l);
+      const l = onScreen(byId('french-6e-phonology-fixture-2').p.box);
+      expect(stage.right - l.r, `${w}×${h}`).toBeGreaterThanOrEqual(MARGIN);
     }
+  });
+
+  it('à la Gare maritime, la vitrine, du côté de Kéo (l’exception de côté), reste hors de la bande de passage entre Kéo et l’habitant', () => {
+    const { p } = byId('english-6e-grammar-fixture-1');
+    const k = scenetteKeo('ferry', remisePosed('ferry')).at;
+    const h = scenetteHabitant('ferry', remisePosed('ferry'));
+    for (const q of footprint(p.facets)) {
+      const between = q.x >= Math.min(k.x, h.x) && q.x <= Math.max(k.x, h.x);
+      expect(between && Math.abs(q.z - (k.z + h.z) / 2) < 0.6).toBe(false);
+    }
+    // Du côté de Kéo : à l'ouest de lui.
+    expect(boundsOf(p.facets).max[0]).toBeLessThan(k.x);
   });
 
   it('devant l’habitant ou Kéo (plus près de la caméra), un aménagement ne les couvre jamais à l’écran', () => {
     const out: string[] = [];
     for (const p of PLACES) {
-      const list = placed.filter((o) => o.a.place === p.id);
-      const b = list.map((o) => boundsOf(o.p.facets));
-      const include = { min: [0, 1, 2].map((i) => Math.min(...b.map((x) => x.min[i]))), max: [0, 1, 2].map((i) => Math.max(...b.map((x) => x.max[i]))) };
       const posed = remisePosed(p.id);
       const h = scenetteHabitant(p.id, posed);
       const k = scenetteKeo(p.id, posed).at;
@@ -310,19 +436,19 @@ describe('Le cadrage de la remise', () => {
         { name: 'l’habitant', min: [h.x - 0.3, h.y, h.z - 0.3], max: [h.x + 0.3, h.y + HABITANT_HEIGHT, h.z + 0.3] },
         { name: 'Kéo', min: [k.x - 0.3, k.y, k.z - 0.3], max: [k.x + 0.3, k.y + 1, k.z + 0.3] },
       ];
-      for (const [w, hh] of [...screens, [800, 1280]] as const) {
-        const { pose, shift } = remisePose(p.id, include, remiseStage(w, hh), w, hh, posed);
-        const onScreen = (box: { min: readonly number[]; max: readonly number[] }) => {
-          const s: { x: number; y: number }[] = [];
-          for (const x of [box.min[0], box.max[0]]) for (const y of [box.min[1], box.max[1]]) for (const z of [box.min[2], box.max[2]]) s.push(screenOf(pose, { x, y, z }, w, hh));
-          return { l: Math.min(...s.map((q) => q.x)) - shift.x, r: Math.max(...s.map((q) => q.x)) - shift.x, t: Math.min(...s.map((q) => q.y)) - shift.y, b: Math.max(...s.map((q) => q.y)) - shift.y };
-        };
+      for (const [w, hh] of screens) {
+        const { list, onScreen } = remiseOf(p.id, w, hh);
         for (const o of list) {
-          const ob = boundsOf(o.p.facets);
-          const so = onScreen(ob);
+          const ob = o.p.box;
           for (const f of figures) {
             // Derrière la figure (plus loin de la caméra, au nord), c'est elle qui le cache en partie : permis.
             if (ob.max[2] <= f.min[2]) continue;
+            // Seule la part de l'objet plus près que le dos de la figure peut la couvrir ; à côté d'elle (sans rien de
+            // commun en x), seule sa part plus près que le devant de la figure.
+            const beside = ob.max[0] < f.min[0] || ob.min[0] > f.max[0];
+            const near = beside ? f.max[2] : f.min[2];
+            if (ob.max[2] <= near) continue;
+            const so = onScreen({ min: [ob.min[0], ob.min[1], Math.max(ob.min[2], near)], max: ob.max });
             const sf = onScreen(f);
             if (Math.min(so.r, sf.r) > Math.max(so.l, sf.l) && Math.min(so.b, sf.b) > Math.max(so.t, sf.t)) out.push(`${o.a.id} couvre ${f.name} (${w}×${hh})`);
           }

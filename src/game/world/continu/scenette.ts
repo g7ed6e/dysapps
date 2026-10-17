@@ -812,6 +812,9 @@ export function scenettePose(place: PlaceId, stage: ScreenBox, width: number, he
 /** La marge autour de l'aménagement dans le cadrage de la remise, en unités du monde. */
 const REMISE_MARGIN = 0.4;
 
+/** La marge, en pixels, entre l'aménagement et le bord de la scène de la remise. */
+const REMISE_PIXELS = 16;
+
 /**
  * La pose de la caméra de la remise (GD-20, point 4, piste B, lot L0 : le cadrage prévu, montré en image fixe) : le
  * même angle, la même hauteur visée et le même recul par unité que la scénette du lieu, le cadre élargi juste assez pour
@@ -828,10 +831,11 @@ export function remisePose(place: PlaceId, include: { min: readonly number[]; ma
   const subject = { ...S, halfWidth: (right - left) / 2, bottom: Math.min(S.bottom, include.min[1] - f.y - REMISE_MARGIN / 2), top: Math.max(S.top, include.max[1] - f.y + REMISE_MARGIN / 2) };
   const framed = poseOfSubject(site, subject, (left + right) / 2, stage, width, height);
   // Le cadre est calculé dans le plan du sujet : ce qui est plus près de la caméra (l'aménagement devant l'habitant) paraît
-  // plus grand. La caméra recule alors, dans son axe, jusqu'à ce que les coins de la boîte tiennent dans la scène.
+  // plus grand. La caméra recule alors, dans son axe, jusqu'à ce que les coins de la boîte tiennent dans la scène, à
+  // `REMISE_PIXELS` de ses bords (directeur artistique, avis sur le lot L0 : entier dans la scène, avec une marge).
   const { pose } = framed;
-  const halfW = Math.max(24, (stage.right - stage.left) / 2);
-  const halfH = Math.max(24, (stage.bottom - stage.top) / 2);
+  const halfW = Math.max(24, (stage.right - stage.left) / 2 - REMISE_PIXELS);
+  const halfH = Math.max(24, (stage.bottom - stage.top) / 2 - REMISE_PIXELS);
   for (let i = 0; i < 4; i++) {
     let k = 0;
     for (const x of [include.min[0], include.max[0]])

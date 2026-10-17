@@ -13,7 +13,7 @@ import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
 import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, type CameraPose } from '../../world/continu/camera';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
-import { FacetBuilder, boundsOf, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
+import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
 import { OBSTACLE_TOUCH, branchRibbons, clampToOpen, deckLift, deckTop, isLinked, linkFacets, LAY_PLANKS, LINK_LAY, SIDE_STEP, linkFrame, linkLayAt, linkPlanks, obstacleOf, openPathRibbons, sideStepOf, type LinkLayState, type LinkedPlace } from '../../world/continu/links';
@@ -59,7 +59,7 @@ import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../worl
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
 import { placedAmenagement } from './amenagements';
-import { remisePosed, remiseStage, showsAmenagements } from '../../world/continu/amenagements';
+import { amenagementById, remiseInclude, remisePosed, remiseStage, showsAmenagements } from '../../world/continu/amenagements';
 
 /** Ce que la page donne à la scène. */
 export interface OpenWorldOptions {
@@ -2012,11 +2012,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       leaveScenette();
     }
     enterScenette(place, remisePosed(place));
-    const ids = placesState?.amenagements?.[place] ?? [];
-    const boxes = ids.map((id) => boundsOf(placedAmenagement(id, ground).facets));
-    const include = boxes.length
-      ? { min: [0, 1, 2].map((k) => Math.min(...boxes.map((b) => b.min[k]))), max: [0, 1, 2].map((k) => Math.max(...boxes.map((b) => b.max[k]))) }
-      : { min: [Infinity, Infinity, Infinity], max: [-Infinity, -Infinity, -Infinity] };
+    // Les tuiles du terrain suivent le point suivi : il vient à la scène de la remise (sinon, loin de Kéo, le sol du lieu
+    // manque et la mer paraît dessous ; défaut trouvé sur les captures du lot L0 au format téléphone).
+    Object.assign(focus, scenetteKeo(place, remisePosed(place)).at);
+    updateRings(true, true);
+    const include = remiseInclude(
+      (placesState?.amenagements?.[place] ?? []).flatMap((id) => {
+        const a = amenagementById(id);
+        return a ? [{ a, box: placedAmenagement(id, ground).box }] : [];
+      }),
+    );
     const qp = remisePose(place, include, remiseStage(viewW, viewH), viewW, viewH, remisePosed(place));
     remise = { place, pose: qp.pose };
     placeVisibility();

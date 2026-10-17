@@ -1,6 +1,7 @@
 // La pose d'un aménagement (GD-20, point 4, piste B, lot L0), sur un dessin fait à la main : sa coupe en morceaux, ses
-// éléments dans l'ordre de la pose, son demi-tour (le devant de la grille vers le sud), son échelle, son quart de tour, sa
-// hauteur (au plus bas du sol, ou sur la surface du lieu), et le cadre de la remise. Les dix-neuf de la table, avec
+// éléments dans l'ordre de la pose, son demi-tour (le devant de la grille vers le sud), son échelle (l'échelle commune,
+// ou la sienne pour la potence de façade), son quart de tour, sa hauteur (au plus bas du sol, sur la surface du lieu, au
+// plus haut sur son assise de pierre, ou sur la dalle de la scène), et le cadre de la remise. Les dix-neuf de la table, avec
 // leurs vrais dessins, se vérifient du côté de la vue (three/archipeo/amenagements.test.ts), qui les trace. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { screenOf } from './camera';
@@ -8,7 +9,7 @@ import { boundsOf } from './facets';
 import { placeById } from './plan6e';
 import { remisePose, scenetteHabitant, scenetteKeo, scenettePose } from './scenette';
 import { standingHeight } from './terrain';
-import { AMENAGEMENT_SCALE, AMENAGEMENTS, piecesOf, showsAmenagements, placeAmenagement, remisePosed, remiseStage, type Amenagement, type DrawnObject } from './amenagements';
+import { AMENAGEMENT_SCALE, AMENAGEMENTS, ASSISE_TRIANGLES, piecesOf, remiseInclude, showsAmenagements, placeAmenagement, remisePosed, remiseStage, type Amenagement, type DrawnObject } from './amenagements';
 
 /** Un triangle tourné vers le haut, de (x, z) à (x + 1, z + 1), à la hauteur y, dans le repère d'un dessin. */
 const flat = (x: number, y: number, z: number) => [x, y, z, x + 1, y, z, x, y, z + 1];
@@ -69,6 +70,50 @@ describe('La pose d’un aménagement', () => {
     expect(b.min[1]).toBeCloseTo(slope(b.min[0]), 5);
     const q = placeAmenagement(sample({ floor: 0.3 }), drawing(), () => -1.5);
     expect(boundsOf(q.facets).min[1]).toBeCloseTo(standingHeight(-1.5) + 0.3, 5);
+  });
+});
+
+describe('L’assise de pierre, la dalle de la scène, la potence', () => {
+  const c = placeById('quais').center;
+  const slope = (x: number) => 1 + (x - c.x) * 0.1;
+
+  it('sur une pente, à plat au plus haut du sol sous sa forme, sur une assise qui descend sous le sol au plus bas, posée avec le premier élément', () => {
+    const p = placeAmenagement(sample({ assise: true }), drawing(), (x) => slope(x));
+    const top = Math.max(...[-1, 1].map((u) => slope(c.x + 1 + u * AMENAGEMENT_SCALE)));
+    expect(p.base).toBeCloseTo(top, 5);
+    expect(p.assise).toEqual({ from: 0, to: ASSISE_TRIANGLES });
+    expect(p.facets.triangles).toBe(3 + ASSISE_TRIANGLES);
+    expect(p.elements[0]).toEqual({ from: 0, to: ASSISE_TRIANGLES + 1 });
+    const stone = boundsOf({ ...p.facets, positions: p.facets.positions.slice(0, ASSISE_TRIANGLES * 9) });
+    expect(stone.max[1]).toBeCloseTo(p.base, 5);
+    expect(stone.min[1]).toBeLessThan(slope(stone.min[0]));
+    // Sa boîte, sans l'assise : l'objet seul, posé sur elle.
+    expect(p.box.min[1]).toBeCloseTo(p.base, 5);
+    // Sans assise, rien de plus.
+    const q = placeAmenagement(sample(), drawing(), (x) => slope(x));
+    expect(q.assise).toBeUndefined();
+    expect(q.facets.triangles).toBe(3);
+  });
+
+  it('sur la dalle de la scène, à sa hauteur (celle des pieds de l’habitant), juste au-dessus d’elle, sur son assise', () => {
+    const p = placeAmenagement(sample({ scene: true }), drawing(), () => 0);
+    const h = scenetteHabitant('quais', remisePosed('quais'));
+    expect(p.base).toBeGreaterThan(h.y);
+    expect(p.base).toBeLessThan(h.y + 0.05);
+    expect(p.assise?.to).toBe(ASSISE_TRIANGLES);
+  });
+
+  it('à son échelle, si elle en a une (la potence de façade)', () => {
+    const p = placeAmenagement(sample({ scale: 1 }), drawing(), () => 0);
+    expect(boundsOf(p.facets).max[1] - boundsOf(p.facets).min[1]).toBeCloseTo(2, 5);
+  });
+
+  it('le cadre de la remise prend les aménagements du lieu, élargi en x de la marge de ceux qui en demandent une', () => {
+    const box = { min: [0, 0, 0], max: [1, 1, 1] };
+    const other = { min: [2, 0, -1], max: [3, 2, 0] };
+    expect(remiseInclude([{ a: sample(), box }, { a: sample(), box: other }])).toEqual({ min: [0, 0, -1], max: [3, 2, 1] });
+    expect(remiseInclude([{ a: sample({ frame: 1.5 }), box }, { a: sample(), box: other }])).toEqual({ min: [-1.5, 0, -1], max: [3, 2, 1] });
+    expect(remiseInclude([]).min[0]).toBe(Infinity);
   });
 });
 
