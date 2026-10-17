@@ -4,9 +4,9 @@ import { describe, expect, it } from 'vitest';
 import { FacetBuilder, boundsOf } from './facets';
 import { groundCost, mapCost, openWorldCost, OPEN_WORLD_BUDGET } from './budget';
 import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, markBeside, markOffset, occlusionLift, screenOf } from './camera';
-import { distance, distanceToPolyline, insidePolygon, type Vec3 } from './geometry';
+import { distance, distanceToPolyline, insidePolygon, linearRgb, type Vec3 } from './geometry';
 import { START_DISTANCE, atNode, edgesNear, findRoute, networkSamples, pathNode, pathRibbons, pathTopAt, routeLength, snapToNetwork, startOf } from './paths';
-import { COAST, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, NORTH_SHORE, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, hidesTraces, placeById, placeOfIsland } from './plan6e';
+import { COAST, COLORS_6E, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, NORTH_SHORE, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, hidesTraces, placeById, placeOfIsland } from './plan6e';
 import { modelOfPlace } from './places';
 import { sceneSpot } from './questionScene';
 import { SEA_TEXTURE, WATER_TONES, decodeSeaField, seaPixels, shallowness, toneOfFields, waterTone } from './sea';
@@ -168,7 +168,7 @@ describe('La mer et le lagon', () => {
     // Chaque pixel porte les deux champs (le cœur, l'eau claire) ; leur palier, comme le shader.
     const toneAt = (i: number, j: number) => {
       const k = (j * SEA_TEXTURE.size + i) * 4;
-      return toneOfFields({ night: decodeSeaField(px[k]), clear: decodeSeaField(px[k + 1]) });
+      return toneOfFields({ night: decodeSeaField(px[k]), clear: decodeSeaField(px[k + 1]), shelf: decodeSeaField(px[k + 2]) });
     };
     expect(toneAt(0, 0)).toBe(WATER_TONES.lagoon);
     expect(toneAt(SEA_TEXTURE.size / 2, SEA_TEXTURE.size / 2)).toBe(WATER_TONES.clear);
@@ -178,6 +178,13 @@ describe('La mer et le lagon', () => {
     // Le cœur de chaque bras de mer est le plus profond ; l'eau du lagon, claire ; loin du pont, le cœur s'arrête.
     for (const land of LINKED_LANDS) expect(waterTone(bridgeSite(land).mid), land).toBe(WATER_TONES.night);
     expect(waterTone(fromPlan([700, 600]))).toBe(WATER_TONES.clear);
+    // Hors de l'anneau, en s'éloignant de la côte : l'eau claire, le palier du milieu, puis le Bleu lagon (deuxième reprise).
+    const west = (x: number) => waterTone(fromPlan([x, 900]));
+    const tones = [395, 370, 340, 300, 200, 120].map(west);
+    expect(tones[0]).toBe(WATER_TONES.clear);
+    expect(tones).toContain(WATER_TONES.shelf);
+    expect(tones.at(-1)).toBe(WATER_TONES.lagoon);
+    expect(tones.indexOf(WATER_TONES.shelf)).toBeLessThan(tones.indexOf(WATER_TONES.lagoon));
   });
 });
 
@@ -232,10 +239,22 @@ describe('Les chemins aimantés', () => {
   it('les rubans des chemins ont leur dessus vers le ciel', () => {
     const f = pathRibbons(ground);
     expect(f.triangles).toBeGreaterThan(100);
+    // Le liseré brun des sentiers, à 3:1 au moins de leur sable (les deux couleurs de la matière ; mesuré aussi à l'écran).
+    const has = (hex: number) => {
+      const [r, g, b] = linearRgb(hex);
+      for (let k = 0; k < f.colors.length; k += 3) if (Math.abs(f.colors[k] - r) + Math.abs(f.colors[k + 1] - g) + Math.abs(f.colors[k + 2] - b) < 1e-5) return true;
+      return false;
+    };
+    expect(has(COLORS_6E.path)).toBe(true);
+    expect(has(COLORS_6E.pathEdge)).toBe(true);
+    const lum = (c: number) => { const [r, g, b] = linearRgb(c); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+    expect((lum(COLORS_6E.path) + 0.05) / (lum(COLORS_6E.pathEdge) + 0.05)).toBeGreaterThanOrEqual(3);
     // Quatorze lieux reliés (le chemin de la Turbine, lot L6a ; celui du Chantier naval, lot L6b : 4 880 ; le rivage nord, lot
     // L7, sa rampe et son muret : 6 120 ; le rivage sud et ses quatre chemins, lot L8 : 7 338, mesuré sur le monde réuni).
-    // Seize lieux (le large, lot L9 : le chemin de la côte ouest et la jetée de la Gare maritime, 8 592).
-    expect(f.triangles).toBeLessThan(8800);
+    // Seize lieux (le large, lot L9 : le chemin de la côte ouest et la jetée de la Gare maritime, 8 592). Le liseré de terre
+    // des sentiers (lot 3 des vraies terres, deuxième reprise) : quatre triangles de plus par morceau et un disque de sable
+    // de douze par nœud, 12 214.
+    expect(f.triangles).toBeLessThan(12600);
   });
 });
 

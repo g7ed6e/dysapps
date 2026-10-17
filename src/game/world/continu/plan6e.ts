@@ -45,8 +45,17 @@ export const COLORS_6E = {
   rock: 0x968e83,
   /** Le sable mouillé, juste sous l'eau. */
   wetSand: 0xc9ad78,
-  /** Les sentiers, un peu plus sombres que la plage pour se lire sur l'herbe. */
-  path: 0xd6bb86,
+  /**
+   * Les sentiers : un sable éclairci, plus clair que la plage (#E8CF9C), et sans ombre (la vue les dessine de leur couleur
+   * même) pour se lire sur la prairie claire sans l'assombrir (GD-20, point 3, lot 3, décision du directeur artistique
+   * du 17 octobre 2026 ; avant, #D6BB86, à 1,03:1 de l'herbe).
+   */
+  path: 0xe8d6a6,
+  /**
+   * Le liseré de terre des sentiers, continu de part et d'autre : un brun moyen, jamais presque-noir, à 3:1 au moins du
+   * sentier (même décision) ; le contraste du chemin ne tient pas à la seule teinte.
+   */
+  pathEdge: 0x8c7448,
   /** Le bois des pontons et de la digue (le sable chaud, plus sombre). */
   wood: 0xa9784a,
 } as const;

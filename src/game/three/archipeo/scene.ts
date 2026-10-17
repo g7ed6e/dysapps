@@ -20,7 +20,7 @@ import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type Bridge
 import { LINKED_LANDS, START_LAND, bridgeSpot, firstClosed, isBridgeSpot, landOf, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, edgesNear, findRoute, pathNode, pathRibbons, pathTopAt, snapToNetwork, startOf, type NetworkPoint } from '../../world/continu/paths';
-import { PLACES, TERRAIN, hidesTraces, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
+import { COLORS_6E, PLACES, TERRAIN, hidesTraces, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PAPER_COLOR } from '../../world/continu/printworks';
 import { PORT_MAP_POINT, PORT_ROOFLINES, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
@@ -500,9 +500,10 @@ const ROTOR = { turn: 0.35 } as const;
  * elles se lisent comme des lumières (directeur artistique), sans maillage ni appel de plus. Les autres faces gardent
  * leur lumière ; la couleur de la lampe n'est prise par rien d'autre dans le monde. La vapeur de la Turbine aussi
  * (`STEAM_COLORS`, lot L6a : des aplats clairs, jamais gris foncé à l'ombre), et le papier des feuilles de l'Imprimerie
- * (`PAPER_COLOR`, lot L7 : il se lit comme du papier, jamais comme une dalle de la cour). Les ailes de la pompe à vent y
- * tournent (`VANE`), et le rotor de la Turbine (`ROTOR`) : `vaneAngle` et `rotorAngle` sont partagés par les matériaux du
- * monde.
+ * (`PAPER_COLOR`, lot L7 : il se lit comme du papier, jamais comme une dalle de la cour), et le sable des sentiers
+ * (`COLORS_6E.path`, lot 3 des vraies terres : il se lit sur la prairie claire au soleil comme à contre-jour). Les
+ * ailes de la pompe à vent y tournent (`VANE`), et le rotor de la Turbine (`ROTOR`) : `vaneAngle` et `rotorAngle` sont
+ * partagés par les matériaux du monde.
  */
 function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }, rotorAngle: { value: number }): THREE.MeshLambertMaterial {
   const [r, g, b] = linearRgb(LAMP_COLOR);
@@ -515,6 +516,7 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
     shader.uniforms.steamColor = { value: new THREE.Vector3(...linearRgb(STEAM_COLORS[0])) };
     shader.uniforms.steamShade = { value: new THREE.Vector3(...linearRgb(STEAM_COLORS[1])) };
     shader.uniforms.paperColor = { value: new THREE.Vector3(...linearRgb(PAPER_COLOR)) };
+    shader.uniforms.pathColor = { value: new THREE.Vector3(...linearRgb(COLORS_6E.path)) };
     shader.uniforms.vaneColor = { value: new THREE.Vector3(vr, vg, vb) };
     shader.uniforms.vanePivot = { value: new THREE.Vector2(hub.x, hub.y) };
     shader.uniforms.vaneAngle = vaneAngle;
@@ -534,19 +536,19 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
         '#include <begin_vertex>\n#ifdef USE_COLOR\nif ( all( lessThan( abs( color.rgb - vaneColor ), vec3( 0.004 ) ) ) ) {\n\tvec2 vaneD = transformed.xy - vanePivot;\n\tfloat vaneC = cos( vaneAngle ), vaneS = sin( vaneAngle );\n\ttransformed.xy = vanePivot + vec2( vaneC * vaneD.x - vaneS * vaneD.y, vaneS * vaneD.x + vaneC * vaneD.y );\n} else if ( all( lessThan( abs( color.rgb - rotorColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( color.rgb - rotorRim ), vec3( 0.004 ) ) ) ) {\n\tvec2 rotorD = transformed.xy - rotorPivot;\n\tfloat rotorC = cos( rotorAngle ), rotorS = sin( rotorAngle );\n\ttransformed.xy = rotorPivot + vec2( rotorC * rotorD.x - rotorS * rotorD.y, rotorS * rotorD.x + rotorC * rotorD.y );\n}\n#endif',
       );
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform vec3 lampColor;\nuniform vec3 steamColor;\nuniform vec3 steamShade;\nuniform vec3 paperColor;')
+      .replace('#include <common>', '#include <common>\nuniform vec3 lampColor;\nuniform vec3 steamColor;\nuniform vec3 steamShade;\nuniform vec3 paperColor;\nuniform vec3 pathColor;')
       .replace(
         '#include <opaque_fragment>',
-        'if ( all( lessThan( abs( vColor.rgb - lampColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamShade ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - paperColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n#include <opaque_fragment>',
+        'if ( all( lessThan( abs( vColor.rgb - lampColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamShade ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - paperColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - pathColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n#include <opaque_fragment>',
       );
   };
   return m;
 }
 
 /**
- * Le matériau de l'eau (reprise du lot 3) : l'image de l'eau porte deux champs (le cœur des bras de mer, l'eau claire,
- * ./world/continu/sea.ts) ; le shader les lit interpolés et tranche net sur leur ligne zéro, adoucie d'un pixel d'écran
- * (`fwidth`) : trois paliers francs, au contour lisse qui épouse le bras, jamais une flaque pixellisée. Une ligne de
+ * Le matériau de l'eau (reprise du lot 3) : l'image de l'eau porte trois champs (le cœur des bras de mer, l'eau claire,
+ * le palier du milieu au large, ./world/continu/sea.ts) ; le shader les lit interpolés et tranche net sur leur ligne
+ * zéro, adoucie d'un pixel d'écran (`fwidth`) : quatre paliers francs, au contour lisse qui épouse le bras, jamais une flaque pixellisée. Une ligne de
  * shader, aucun appel ni aucune image de plus.
  */
 function seaMaterialOf(map: THREE.DataTexture): THREE.MeshBasicMaterial {
@@ -555,13 +557,14 @@ function seaMaterialOf(map: THREE.DataTexture): THREE.MeshBasicMaterial {
   m.onBeforeCompile = (shader) => {
     shader.uniforms.seaClear = { value: tone(WATER_TONES.clear) };
     shader.uniforms.seaLagoon = { value: tone(WATER_TONES.lagoon) };
+    shader.uniforms.seaShelf = { value: tone(WATER_TONES.shelf) };
     shader.uniforms.seaNight = { value: tone(WATER_TONES.night) };
     if (import.meta.env.DEV && !shader.fragmentShader.includes('#include <map_fragment>')) console.warn('seaMaterialOf : #include <map_fragment> introuvable');
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform vec3 seaClear;\nuniform vec3 seaLagoon;\nuniform vec3 seaNight;')
+      .replace('#include <common>', '#include <common>\nuniform vec3 seaClear;\nuniform vec3 seaLagoon;\nuniform vec3 seaShelf;\nuniform vec3 seaNight;')
       .replace(
         '#include <map_fragment>',
-        'vec2 seaF = texture2D( map, vMapUv ).rg - 128.0 / 255.0;\nvec2 seaW = fwidth( seaF ) * 0.75 + 1e-4;\nfloat seaN = smoothstep( -seaW.x, seaW.x, seaF.x );\nfloat seaC = smoothstep( -seaW.y, seaW.y, seaF.y );\ndiffuseColor.rgb *= mix( mix( seaLagoon, seaClear, seaC ), seaNight, seaN );',
+        'vec3 seaF = texture2D( map, vMapUv ).rgb - 128.0 / 255.0;\nvec3 seaW = fwidth( seaF ) * 0.75 + 1e-4;\nfloat seaN = smoothstep( -seaW.x, seaW.x, seaF.x );\nfloat seaC = smoothstep( -seaW.y, seaW.y, seaF.y );\nfloat seaM = smoothstep( -seaW.z, seaW.z, seaF.z );\ndiffuseColor.rgb *= mix( mix( mix( seaLagoon, seaShelf, seaM ), seaClear, seaC ), seaNight, seaN );',
       );
   };
   return m;

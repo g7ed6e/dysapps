@@ -74,6 +74,9 @@ export function placeRadius(id: (typeof PLACES)[number]['id']): number {
 /** L'Escale et ses abords, dans le repère du Port (`PORT.toLocal`) : rien n'y pousse. */
 const PORT_KEEP = { x0: -9, x1: 43, z0: -15, z1: 26 } as const;
 
+/** La part des places le long d'un chemin (à moins de `FLORA_KEEP.edge`) où pousse le premier plan (0,3 avant la deuxième reprise du lot 3). */
+const FLORA_EDGE_SHARE = 0.45;
+
 /** Le pas de la grille des places possibles (une au plus par case), en unités. */
 const FLORA_CELL = 2.6;
 
@@ -191,15 +194,16 @@ function pick(field: HeightField, p: Vec2, roll: number, look: number): FloraIte
     if (g > 0.24 && roll < 0.35 && hillsAt(p) < 2.5) kind = 'pin';
     else if (roll < 0.05) kind = 'rocher';
     scale = 0.8 + 0.5 * look;
+  } else if (path < FLORA_KEEP.edge && roll < FLORA_EDGE_SHARE && !inFrontOfCamera(p)) {
+    // Le premier plan, le long d'un chemin (deuxième reprise du lot 3, consultant Archipéo : un ou deux par cadre) : un
+    // buisson, un gros rocher à facettes, un pin, de part et d'autre de Kéo, jamais entre la caméra et lui.
+    kind = roll < 0.2 ? 'buisson' : roll < 0.32 ? 'rocher' : 'pin';
+    scale = kind === 'rocher' ? 1 + 0.6 * look : 0.8 + 0.4 * look;
+    far = false;
   } else if (g > 0.12) {
     // Un bosquet : des pins serrés, des buissons à l'orée.
     kind = g > 0.24 ? (roll < 0.85 ? 'pin' : 'buisson') : roll < 0.55 ? 'buisson' : roll < 0.7 ? 'pin' : null;
     scale = 0.8 + 0.5 * look;
-  } else if (path < FLORA_KEEP.edge && roll < 0.3) {
-    // Le premier plan, le long d'un chemin : un buisson, un gros rocher à facettes, un pin.
-    kind = roll < 0.14 ? 'buisson' : roll < 0.22 ? 'rocher' : 'pin';
-    scale = kind === 'rocher' ? 1 + 0.6 * look : 0.8 + 0.4 * look;
-    far = false;
   } else if (roll < 0.12) {
     kind = 'buisson';
     scale = 0.75 + 0.5 * look;

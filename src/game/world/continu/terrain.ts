@@ -566,15 +566,19 @@ const GROUND_TONES = {
   /** La prairie des bas, la plus claire. */
   low: COLORS_6E.grass,
   /** L'herbe à mi-hauteur, et les pentes douces tournées vers le soleil. */
-  mid: 0x6cc28b,
+  mid: 0x72c98e,
   /** Les hauteurs (au-dessus de `HIGH_FROM`) et le plateau de la falaise nord. */
   high: 0x58ab7f,
   /** Les flancs à l'ombre : le Vert île. */
   slope: 0x438b82,
   /** Les flancs des collines au soleil : un vert clair et chaud, bien séparé de la prairie et du flanc à l'ombre. */
-  sunny: 0x9cd296,
-  /** Les flancs des collines à l'ombre : le Vert île, un peu plus clair (il n'est éclairé que par le ciel). */
-  hillShade: 0x4c9688,
+  sunny: 0xa8dc9a,
+  /**
+   * Les flancs des collines à l'ombre : le Vert île, à peine plus clair (il n'est éclairé que par le ciel). Deuxième
+   * reprise du lot 3 (consultant Archipéo) : le soleil (#A8DC9A, avant #9CD296) et l'ombre (#468E83, avant #4C9688)
+   * plus écartés, l'herbe à mi-hauteur un peu plus claire (#72C98E, avant #6CC28B) ; la prairie des bas ne bouge pas.
+   */
+  hillShade: 0x468e83,
   /** La roche. */
   rock: COLORS_6E.rock,
 } as const;
