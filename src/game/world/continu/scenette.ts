@@ -60,8 +60,9 @@ import { MANGROVE, mangroveDeckTop } from './places';
 
 /**
  * Ce que l'élève lit de l'habitant : son rôle en tête du panneau, sans prénom tant que le mainteneur n'a pas tranché
- * (deambuler-scenettes.md, lot 2 : la fiche du 6e dit « habitants sans nom ni réplique ») ; `greeting`, la phrase
- * d'accueil, est vide pour la même raison : le panneau lui garde sa place, sous le rôle. `placement` : les
+ * (deambuler-scenettes.md, lot 2 : la fiche du 6e dit « habitants sans nom ni réplique ») ; `greeting`, une phrase
+ * courte qui explique un rôle peu familier, écrite sous le rôle à la première rencontre seulement (directeur
+ * artistique, relecture de L7 ; le texte du contenu), sinon `null`. `placement` : les
  * objets-réponses en rangée en bas (`rangee`, dispositions A et B) ; « à leur place » dans le décor (la disposition C)
  * viendra ici, si le mainteneur la choisit, sans changer le reste.
  */
@@ -87,7 +88,8 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   shipyard: { role: 'Le charpentier', greeting: null, placement: 'rangee' },
   // Le rivage nord (lot L7, directeur artistique, consultant Archipéo) : le rôle de chaque fichier de lieu (placeArt.ts).
   lookout: { role: placeArt('lookout')!.role, greeting: null, placement: 'rangee' },
-  archives: { role: placeArt('archives')!.role, greeting: null, placement: 'rangee' },
+  // « Copie » et non « recopie », le modèle des préfixes de Familles-craft (directeur du contenu pédagogique).
+  archives: { role: placeArt('archives')!.role, greeting: 'La copiste copie les textes à la main.', placement: 'rangee' },
   printworks: { role: placeArt('printworks')!.role, greeting: null, placement: 'rangee' },
   // Lot L8a : « la botaniste » (directeur artistique), le même mot partout.
   mangrove: { role: 'La botaniste', greeting: null, placement: 'rangee' },

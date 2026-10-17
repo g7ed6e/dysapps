@@ -1147,8 +1147,14 @@ describe('Le rivage nord, les écrans de référence redits (GD-20, point 8, lot
   };
 
   it('Familles-craft aux Archives : le sens, la racine trouée, les affixes écrits avec leur trait d’union', async () => {
+    const first = renderPlace('archives', 'word-families');
+    expect(await screen.findByText('La copiste')).toBeInTheDocument();
+    // La phrase de la copiste, à la première rencontre seulement depuis le lancement (relecture de L7).
+    await vi.waitFor(() => expect(document.querySelector('.world-scenette-greeting')?.textContent).toContain('La copiste copie les textes à la main.'));
+    first.unmount();
     renderPlace('archives', 'word-families');
     expect(await screen.findByText('La copiste')).toBeInTheDocument();
+    expect(document.querySelector('.world-scenette-greeting')).toBeNull();
     await start();
     expect(document.querySelector('.world-gap-word')?.textContent).toMatch(/^…|…$/);
     for (const a of answers()) expect(a.textContent?.trim()).toMatch(/^-|-$/);
