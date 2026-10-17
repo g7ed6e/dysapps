@@ -10,7 +10,7 @@ import { linearRgb } from './geometry';
  * crème de la planche à l'horizon, puis un bleu pâle, jamais saturé (aucun texte ne se lit sur le ciel, mais la marque du
  * lieu suivant s'y pose).
  */
-export const SKY_STOPS: readonly { at: number; color: number }[] = [
+const SKY_STOPS: readonly { at: number; color: number }[] = [
   { at: 0, color: 0xefe9d6 },
   { at: 6, color: 0xe6e9dc },
   { at: 18, color: 0xcfe2e6 },

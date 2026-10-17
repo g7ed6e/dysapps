@@ -13,7 +13,7 @@ import { SHADOW_DIR } from './sky';
 import { drawTile, groundTone, heightOnFar, heightOnMesh, landDistance, straitClearance, tileRect, type HeightField, type TileDetail } from './terrain';
 
 /** Ce qui pousse ou se pose : un pin, un palmier, un buisson, un rocher. */
-export type FloraKind = 'pin' | 'palmier' | 'buisson' | 'rocher';
+type FloraKind = 'pin' | 'palmier' | 'buisson' | 'rocher';
 
 /** Une plante ou un rocher : sa sorte, sa place, sa taille, son orientation, et sa teinte (un des trois gris d'un rocher). */
 export interface FloraItem {
@@ -199,7 +199,7 @@ const SHADOW_RADIUS: Record<FloraKind, number> = { pin: 0.95, palmier: 0.8, buis
  * Les facettes de ce qui pousse dans une tuile (sa végétation, ses rochers et leurs ombres, puis l'ombre des lieux dont
  * le centre y tombe), au niveau de détail de la tuile ; ou leur seul nombre (sans `b`).
  */
-export function drawFlora(field: HeightField, tx: number, tz: number, detail: TileDetail, b: FacetBuilder | null): number {
+function drawFlora(field: HeightField, tx: number, tz: number, detail: TileDetail, b: FacetBuilder | null): number {
   const ground = detail === 'near' ? (x: number, z: number) => heightOnMesh(field, x, z) : (x: number, z: number) => heightOnFar(field, x, z);
   let count = 0;
   for (const it of floraOf(field, tx, tz)) {

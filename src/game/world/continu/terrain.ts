@@ -140,7 +140,7 @@ function rampHeight(p: Vec2): number | null {
  * de l'eau et `strait` d'un bras de mer, de plus en plus jusqu'au bout de chaque intervalle : les chemins, les replats,
  * les plages et les rives restent ceux d'avant, la marche de Kéo aussi.
  */
-export const HILLS = { cell: 24, radius: [9, 15], height: [2.2, 5.5], path: [4, 14], place: [15, 26], coast: [BEACH + 1, BEACH + 12], strait: [6, 16] } as const;
+const HILLS = { cell: 24, radius: [9, 15], height: [2.2, 5.5], path: [4, 14], place: [15, 26], coast: [BEACH + 1, BEACH + 12], strait: [6, 16] } as const;
 
 /** La distance aux chemins, tirée une fois sur une grille de `PATH_GRID` unités (lue en bilinéaire). */
 const PATH_GRID = 2;
@@ -472,7 +472,7 @@ const GREVE_COLORS = [
  * hauteurs ; la pente, le Vert île du pack (#438B82), sur les flancs à l'ombre ; la roche, grise, sur ce qui est raide et
  * aux rives des bras de mer. Les couleurs sont celles de la matière ; la lumière (./sky.ts) les éclaire.
  */
-export const GROUND_TONES = {
+const GROUND_TONES = {
   /** Le sable au rivage (les plages, le bord de l'eau). */
   sand: COLORS_6E.sand,
   /** Le sable mouillé, au ras de l'eau. */

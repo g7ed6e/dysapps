@@ -11,7 +11,7 @@ import { PATH_NODES, placeById } from './plan6e';
 import { heightAt, landDistance, standingHeight } from './terrain';
 
 /** La couleur de la brume : la Brume du pack (#E5EBE3), celle du lointain aussi. */
-export const MIST_COLOR = 0xe5ebe3;
+const MIST_COLOR = 0xe5ebe3;
 
 /**
  * Un maillage de brume : trois sommets par triangle, et pour chacun sa normale (vers le haut), sa couleur et sa
