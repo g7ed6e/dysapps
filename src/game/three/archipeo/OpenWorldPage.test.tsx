@@ -1,7 +1,7 @@
 // « Relier » dans la page du monde ouvert (GD-20, point 3, lot 2 ; relecture de l'expert frontend) : la passerelle n'est
 // annoncée à la scène qu'une fois payée ; posée, la phrase vient, et celle d'un lieu devenu reliable la suit. La scène 3D
 // n'est pas là sous jsdom : une scène simulée pose la passerelle d'un coup (comme avec « Réduire les animations »).
-import { render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, vi } from 'vitest';
@@ -17,6 +17,9 @@ const scene = vi.hoisted(() => ({
   laid: [] as LinkedPlace[],
   pending: null as { place: LinkedPlace; events: LinkLayEvents } | null,
   closed: [] as readonly LinkedPlace[],
+  /** Pose animée : la passerelle annoncée attend (`laying`) qu'on la finisse. */
+  animated: false,
+  laying: null as { place: LinkedPlace; events: LinkLayEvents } | null,
 }));
 vi.mock('./scene', () => ({
   createOpenWorld: (_host: HTMLElement, options: OpenWorldOptions) => {
@@ -24,6 +27,7 @@ vi.mock('./scene', () => ({
     scene.laid = [];
     scene.pending = null;
     scene.closed = [];
+    scene.laying = null;
     const own: Partial<OpenWorld> = {
       question: () => [],
       setPlaces: () => false,
@@ -40,6 +44,10 @@ vi.mock('./scene', () => ({
         scene.closed = links.closed;
         if (!opened) return;
         scene.laid.push(p.place);
+        if (scene.animated) {
+          scene.laying = p;
+          return;
+        }
         p.events.tap();
         p.events.laid();
       },
@@ -62,6 +70,7 @@ vi.mock('../../BloclandContext', async (original) => {
 
 beforeEach(() => {
   pay.refuse = false;
+  scene.animated = false;
   vi.stubGlobal(
     'ResizeObserver',
     class {
@@ -116,4 +125,49 @@ test('un paiement refusé ne pose rien : aucune pose annoncée, aucune phrase', 
   expect(scene.laid).toEqual([]);
   await new Promise((r) => setTimeout(r, 700));
   expect(screen.queryByText('La passerelle est posée.')).not.toBeInTheDocument();
+});
+
+test('un toucher finit la pose et Kéo part : la phrase vient et reste écrite (consultant UX UI)', async () => {
+  scene.animated = true;
+  renderPage();
+  await relier('ecluses', 'Les Écluses');
+  expect(scene.laying?.place).toBe('ecluses');
+  expect(screen.queryByText('La passerelle est posée.')).not.toBeInTheDocument();
+  // « Y aller » ou un lieu touché pendant la pose : la scène la finit d'un coup (le toc, la fin), et Kéo part.
+  const { events } = scene.laying!;
+  act(() => {
+    events.tap();
+    events.laid();
+    scene.options!.onDepart();
+  });
+  const status = await screen.findByText('La passerelle est posée.', {}, { timeout: 2000 });
+  // Bien après le départ, la phrase est toujours là (elle reste 4 s par phrase).
+  await act(() => new Promise((r) => setTimeout(r, 1200)));
+  expect(status).toBeInTheDocument();
+  expect(status.closest('[role="status"]')!.textContent).toBe('La passerelle est posée. La Turbine peut être reliée.');
+});
+
+test('sur un petit écran, une phrase à la fois : le toucher garde celle qu’on lit, puis vient la suivante ; le lecteur d’écran a les deux', async () => {
+  vi.stubGlobal('matchMedia', (query: string) => ({ matches: true, media: query, addEventListener() {}, removeEventListener() {} }));
+  renderPage();
+  await relier('ecluses', 'Les Écluses');
+  const first = await screen.findByText('La passerelle est posée.', {}, { timeout: 2000 });
+  const second = screen.getByText('La Turbine peut être reliée.');
+  const box = first.closest('[role="status"]')!;
+  expect(box.textContent).toBe('La passerelle est posée. La Turbine peut être reliée.');
+  expect(first).not.toHaveClass('visually-hidden');
+  expect(second).toHaveClass('visually-hidden');
+  // Le toucher garde la première encore 4 s, puis la seconde vient à sa place.
+  vi.useFakeTimers();
+  try {
+    fireEvent.pointerDown(box.parentElement!);
+    act(() => vi.advanceTimersByTime(3900));
+    expect(first).not.toHaveClass('visually-hidden');
+    act(() => vi.advanceTimersByTime(200));
+    expect(first).toHaveClass('visually-hidden');
+    expect(second).not.toHaveClass('visually-hidden');
+    expect(box.textContent).toBe('La passerelle est posée. La Turbine peut être reliée.');
+  } finally {
+    vi.useRealTimers();
+  }
 });

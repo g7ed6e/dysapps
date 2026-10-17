@@ -13,7 +13,7 @@
 // sont ouverts ; un lieu fermé est derrière sa passerelle démontée, sous la brume ; le toucher, ou toucher sa passerelle
 // ou son cadenas sur la Carte, ouvre sa fiche (./ClosedPlaceSheet.tsx), où « Relier » paie la liaison de la grille : la
 // passerelle est posée d'un coup, un toc de bois, puis « La passerelle est posée. ». Chargé à la demande.
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
@@ -447,21 +447,42 @@ export default function OpenWorldPage() {
   // La phrase vient après le toc (jamais en même temps), reste écrite un moment, et se dit si la voix est active.
   const [saidShown, setSaidShown] = useState(false);
   const saidHide = useRef<number | undefined>(undefined);
-  // Toucher la phrase ou son haut-parleur la garde écrite encore un moment, pour l'élève qui n'a pas fini de la lire
-  // (référent dys).
-  const holdSaid = useCallback(() => {
+  // Sur un petit écran (téléphone, étroit ou couché), une phrase à la fois, environ 4 s chacune, dans l'ordre (référent
+  // dys, consultant UX UI, deuxième passe du lot 2) : `saidStep` est celle qu'on voit ; la voix, « Réécouter » et
+  // `role="status"` gardent les deux. Ailleurs, les deux ensemble, 4 s par phrase.
+  const small = useSmallScreen();
+  const smallNow = useRef(small);
+  useEffect(() => {
+    smallNow.current = small;
+  }, [small]);
+  const [saidStep, setSaidStep] = useState(0);
+  const saidAt = useRef({ step: 0, lines: 0 });
+  /** Dans `ms` millisecondes : la phrase suivante (petit écran), ou la fin. */
+  const nextSaid = useCallback((ms: number) => {
+    const tick = () => {
+      const at = saidAt.current;
+      if (smallNow.current && at.step < at.lines - 1) {
+        at.step += 1;
+        setSaidStep(at.step);
+        saidHide.current = window.setTimeout(tick, SAID_MS);
+      } else setSaidShown(false);
+    };
     window.clearTimeout(saidHide.current);
-    saidHide.current = window.setTimeout(() => setSaidShown(false), SAID_MS);
+    saidHide.current = window.setTimeout(tick, ms);
   }, []);
+  // Toucher la phrase ou son haut-parleur la garde écrite encore un moment, pour l'élève qui n'a pas fini de la lire
+  // (référent dys) ; sur un petit écran, celle qu'il lit, puis la suivante.
+  const holdSaid = useCallback(() => nextSaid(SAID_MS), [nextSaid]);
   useEffect(() => {
     if (!said) return;
     const show = window.setTimeout(() => {
       setSaidShown(true);
       if (settings.autoRead) speak(said.lines.join(' '));
     }, said.after);
-    window.clearTimeout(saidHide.current);
-    // Deux phrases restent écrites deux fois plus longtemps.
-    saidHide.current = window.setTimeout(() => setSaidShown(false), said.after + SAID_MS * said.lines.length);
+    saidAt.current = { step: 0, lines: said.lines.length };
+    setSaidStep(0);
+    // Deux phrases restent écrites deux fois plus longtemps : ensemble, ou l'une après l'autre sur un petit écran.
+    nextSaid(said.after + (smallNow.current ? SAID_MS : SAID_MS * said.lines.length));
     return () => {
       window.clearTimeout(show);
       window.clearTimeout(saidHide.current);
@@ -651,7 +672,8 @@ export default function OpenWorldPage() {
 
   return (
     <div className="world-page open-world">
-      <div className="world-stage" data-scene ref={stageRef}>
+      {/* `data-said` : la phrase de la passerelle est écrite (sur un petit écran, la marque se masque le temps qu'elle l'est). */}
+      <div className="world-stage" data-scene data-said={saidShown && !asking ? 'oui' : undefined} ref={stageRef}>
         <div ref={host} className="open-world-canvas" />
         {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
         {next && !asking && !mapOpen && !sheetOpen && (
@@ -738,9 +760,10 @@ export default function OpenWorldPage() {
             zone reste dans la page, vide le reste du temps, pour que les lecteurs d'écran annoncent la phrase ; le temps
             qu'elle est écrite, un haut-parleur la fait réentendre, et le toucher la garde écrite (référent dys). Sur la Carte, elle se tient en haut,
             hors des noms des lieux du sud. */}
-        <div className={`open-world-said${mapOpen ? ' on-map' : ''}`} data-shown={saidShown && !asking ? 'oui' : 'non'} onPointerDown={holdSaid} onFocus={holdSaid}>
+        <div className={`open-world-said${mapOpen ? ' on-map' : ''}`} data-shown={saidShown && !asking ? 'oui' : 'non'} data-etape={saidStep} onPointerDown={holdSaid} onFocus={holdSaid}>
           <p role="status">{saidShown && !asking && said ? said.lines.map((line, i) => (
-                <span key={line}>
+                // Sur un petit écran, l'autre phrase reste lue par le lecteur d'écran, cachée à la vue.
+                <span key={line} className={small && i !== saidStep ? 'visually-hidden' : undefined}>
                   {i > 0 && ' '}
                   {line}
                 </span>
@@ -826,6 +849,19 @@ const PASSERELLE_POSEE = 'La passerelle est posée.';
 /** Elle vient au moins tant de millisecondes après le toc (jamais en même temps), et reste écrite tant de millisecondes par phrase. */
 const SAID_AFTER_MS = 450;
 const SAID_MS = 4000;
+
+/** Un petit écran : un téléphone, étroit ou couché (la même requête que `.open-world-said`, openWorld.css). */
+const SMALL_SCREEN = '(max-width: 600px), (max-height: 500px)';
+const smallScreen = () => typeof window.matchMedia === 'function' && window.matchMedia(SMALL_SCREEN).matches;
+function subscribeSmallScreen(changed: () => void): () => void {
+  const m = typeof window.matchMedia === 'function' ? window.matchMedia(SMALL_SCREEN) : null;
+  m?.addEventListener('change', changed);
+  return () => m?.removeEventListener('change', changed);
+}
+/** Vrai sur un petit écran, relu quand l'écran tourne ou change de taille. */
+function useSmallScreen(): boolean {
+  return useSyncExternalStore(subscribeSmallScreen, smallScreen);
+}
 
 /** La dernière place posée de chaque cadenas. */
 const lockTransforms = new WeakMap<HTMLElement, string>();

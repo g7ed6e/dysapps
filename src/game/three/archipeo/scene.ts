@@ -648,9 +648,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     shown: number;
     tapped: boolean;
     step: { from: Vec2; to: Vec2; heading: number } | null;
+    /** Kéo a fait son pas de côté. */
+    stepped: boolean;
   } | null = null;
   let pendingLay: { place: LinkedPlace; events: LinkLayEvents } | null = null;
   const layState: LinkLayState = { planks: 0, fall: 0, landed: false, fade: 0, done: false };
+  // Après un pas de côté pendant une pose, la caméra reste où elle était jusqu'à la prochaine marche de Kéo (directeur
+  // artistique, deuxième passe du lot 2 : elle ne le rattrape pas pendant la phrase) ; la poursuite repart de sa place.
+  let cameraHeld = false;
   // Les lieux où Kéo ne passe pas : les fermés, et celui dont la passerelle se pose.
   let walkClosed: readonly LinkedPlace[] = [];
   // La transparence de la brume qui se lève, à ses sommets (refaite avec la brume, jamais par image).
@@ -1031,7 +1036,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     for (let i = 0; i < n; i++) rest[i] = planks.positions[i * 3 + 1];
     // De face au bord d'un ruisseau, Kéo cachait la planche du milieu : il fait un pas de côté (directeur artistique).
     const side = walk ? null : sideStepOf(obstacleOf(place), here, ground);
-    laying = { place, start: performance.now() / 1000, events, rest, per: n / LAY_PLANKS, shown: 0, tapped: false, step: side && { from: { ...here }, to: side.to, heading: side.heading } };
+    laying = { place, start: performance.now() / 1000, events, rest, per: n / LAY_PLANKS, shown: 0, tapped: false, step: side && { from: { ...here }, to: side.to, heading: side.heading }, stepped: false };
     // Sa place à lui, que le pas réécrit (jamais le point d'un nœud du réseau).
     if (side) here = { ...here };
     walkClosed = [...closed, place];
@@ -1076,6 +1081,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       } else {
         heading = step.heading;
         laying.step = null;
+        laying.stepped = true;
       }
     }
     const s = linkLayAt(t - laying.start, layState);
@@ -1108,6 +1114,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       heading = l.step.heading;
       placeKeo(here);
     }
+    if (l.step || l.stepped) cameraHeld = true;
     walkClosed = closed;
     poseMesh.visible = false;
     poseMesh.geometry.dispose();
@@ -1254,6 +1261,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    * fermé, au bord de sa passerelle démontée, tourné vers elle.
    */
   const jumpTo = (place: PlaceId) => {
+    cameraHeld = false;
     const shut = isLinked(place) && closed.includes(place) ? obstacleOf(place) : null;
     here = shut ? { ...shut.bank.at } : pathNode(placeById(place).door).at;
     heading = shut ? Math.atan2(-shut.toward.x, -shut.toward.z) : FACING_CAMERA;
@@ -1269,6 +1277,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   /** Kéo d'un coup à un endroit de l'Escale, tourné vers sa façade ; la page en ouvre le panneau. */
   const jumpToPort = (spot: PortSpot) => {
+    cameraHeld = false;
     here = pathNode(portNode(spot)).at;
     heading = portHeading(spot);
     exit = null;
@@ -1462,6 +1471,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
   };
   const setMap = (open: readonly PlaceId[] | null) => {
+    cameraHeld = false;
     if (open && asked) return;
     if (open) {
       const t0 = performance.now();
@@ -2264,8 +2274,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     body.bouger(t, dt, moving, reduceMotion, WALK_CADENCE);
     // La caméra rattrape Kéo hors de sa zone morte, et monte si le relief le cache ; arrêté près du Phare, elle lève
     // le regard vers la lanterne (jamais pendant la marche).
-    // Pendant la pose d'une passerelle, la caméra ne bouge pas, même quand Kéo fait son pas de côté.
-    if (!laying) {
+    // Pendant la pose d'une passerelle, la caméra ne bouge pas, même quand Kéo fait son pas de côté ; après elle, pas
+    // avant sa prochaine marche.
+    if (walk) cameraHeld = false;
+    if (!laying && !cameraHeld) {
       followStep(focus, keoFeet, dt, reduceMotion);
       lift = liftStep(lift, occlusionLift(focus, ground), dt, reduceMotion);
     }
