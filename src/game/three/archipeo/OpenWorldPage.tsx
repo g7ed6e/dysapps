@@ -57,14 +57,15 @@ declare global {
   }
 }
 
-/** Le titre d'une mission d'une île, pour la dire. */
 /**
  * Les lieux dont la voix a déjà dit le nom depuis le lancement de l'application : à pied, elle le dit à la première
  * arrivée seulement (choix du mainteneur, 17 octobre 2026, « une fois par partie » ; rien en sauvegarde). Depuis la liste
- * des lieux ou la marque, elle le dit déjà au toucher : le lieu compte alors comme nommé.
+ * des lieux ou la marque, elle le dit déjà au toucher : le lieu compte alors comme nommé. Sans lecture automatique, rien
+ * n'est compté.
  */
 const named = new Set<PlaceId | 'port'>();
 
+/** Le titre d'une mission d'une île, pour la dire. */
 const missionTitle = (island: string, mission: string) => getBiome(island)?.exercises.find((x) => x.id === mission)?.title ?? '';
 
 export default function OpenWorldPage() {
@@ -73,10 +74,12 @@ export default function OpenWorldPage() {
   const textes = useTextes();
   const { settings, speak } = useSettings();
   // La voix de l'arrivée, lue par la scène faite une fois (`onArrive`) : le réglage du moment.
-  const arrivalVoice = useRef((_name: string) => {});
+  // Rend vrai si la voix l'a dit : lecture automatique coupée, le lieu reste à nommer.
+  const arrivalVoice = useRef<(name: string) => boolean>(() => false);
   useEffect(() => {
     arrivalVoice.current = (name) => {
       if (settings.autoRead) speak(frenchTypography(name));
+      return settings.autoRead;
     };
   }, [settings.autoRead, speak]);
   const reduceMotion = useMoinsDAnimations();
@@ -222,10 +225,7 @@ export default function OpenWorldPage() {
       onArrive: (placeId) => {
         setWalking(false);
         if (!placeId) return;
-        if (!named.has(placeId)) {
-          named.add(placeId);
-          arrivalVoice.current(placeById(placeId).name);
-        }
+        if (!named.has(placeId) && arrivalVoice.current(placeById(placeId).name)) named.add(placeId);
         setPanel(null);
         setLieu({ place: placeId, focus: null });
       },
@@ -415,8 +415,10 @@ export default function OpenWorldPage() {
   const pickFromList = useCallback(
     (id: PlaceId | 'port') => {
       const name = id === 'port' ? textes.depart?.nom : placeById(id).name;
-      if (settings.autoRead && name) speak(frenchTypography(name));
-      named.add(id);
+      if (settings.autoRead && name) {
+        speak(frenchTypography(name));
+        named.add(id);
+      }
       pickOnMap(id);
     },
     [pickOnMap, settings.autoRead, speak, textes.depart],
@@ -577,8 +579,10 @@ export default function OpenWorldPage() {
   const goNext = () => {
     if (!next) return;
     const title = missionTitle(next.place.island, next.mission);
-    named.add(next.place.id);
-    if (settings.autoRead) speak(frenchTypography(`${next.place.name}. ${title}`));
+    if (settings.autoRead) {
+      speak(frenchTypography(`${next.place.name}. ${title}`));
+      named.add(next.place.id);
+    }
     world.current?.goTo(next.place.id, true);
   };
   // Court : le nom du lieu, puis la mission (consultant UX UI et référent dys).
