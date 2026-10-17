@@ -3,6 +3,7 @@
 // mission. Toucher le lieu l'ouvre ; une seule ligne est mise en avant, la prochaine mission ; une ligne qui se joue dans
 // le lieu porte un signe (le même partout, dit « Scène », comme le bouton qui ramène à la scène depuis « Vue simple » : une icône, un mot), les autres se jouent sur l'écran habituel, le temps de
 // la transition. Au retour d'une mission, la liste se rouvre, le focus sur la ligne jouée (`?lieu=`).
+import type { ReactNode } from 'react';
 import { Icon } from '../../../components/Icon';
 import { MissionRows, type MissionRow } from '../../../components/MissionRows';
 import { getBiome } from '../../biomes';
@@ -45,10 +46,12 @@ interface Props {
   focus: string | null;
   onPlay(mission: string): void;
   onClose(): void;
+  /** La ligne de l'habitant (GD-20, point 4, lot L1), en tête du panneau, avant les missions ; rien s'il n'attend rien. */
+  habitant?: ReactNode;
 }
 
 /** Le panneau d'un lieu : sa liste de missions. */
-export function PlacePanel({ place, missions, suggested, focus, onPlay, onClose }: Props) {
+export function PlacePanel({ place, missions, suggested, focus, onPlay, onClose, habitant }: Props) {
   useOpenPanel(onClose);
   const biome = getBiome(place.island);
   const rows: MissionRow[] = missions.map((m) => ({
@@ -72,6 +75,7 @@ export function PlacePanel({ place, missions, suggested, focus, onPlay, onClose 
   }));
   return (
     <MissionSheet id="panneau-lieu" className={`place-sheet${biome ? ` biome-${biome.id}` : ''}`} icon={biome?.icon ?? 'map'} title={place.name} onClose={onClose}>
+      {habitant}
       <MissionRows rows={rows} focus={focus ?? (missions.some((m) => m.mission === suggested) ? suggested : (missions[0]?.mission ?? null))} label={`Missions ${place.at}`} />
     </MissionSheet>
   );

@@ -64,6 +64,7 @@ import {
   Medal,
   Megaphone,
   Mountain,
+  Package,
   Network,
   Pickaxe,
   Pizza,
@@ -179,6 +180,8 @@ export const ICONS = {
   toi: User,
   medal: Medal,
   mountain: Mountain,
+  /** Le paquet de la remise (monde ouvert, GD-20, point 4) : la consigne d'une livraison, jamais celle d'une mission. */
+  paquet: Package,
   pizza: Pizza,
   play: Play,
   replay: RotateCcw,
