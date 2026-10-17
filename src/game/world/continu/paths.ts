@@ -181,11 +181,13 @@ export type RibbonLook = 'solid' | 'dashes' | 'thick';
 
 /**
  * Les tirets de la Carte (relectures du directeur artistique et du référent dys) : tant de pas du ruban dessinés, puis
- * tant de pas vides (un tiret de 6,25 unités, plus de deux fois sa largeur) ; leur demi-largeur, 1,4 unité, environ
- * 5 px à la vue de départ de la Carte à 1024 × 768 (1,8 px par unité) ; leur sable clair, qui se lit sur l'herbe. Ceux
+ * tant de pas vides (un tiret de 10 unités, plus de deux fois sa largeur) ; leur demi-largeur, 2 unités, environ
+ * 6 px à la vue de départ de la Carte à 1024 × 768 (1,8 px par unité) ; leur sable clair, qui se lit sur l'herbe. Ceux
  * de la liaison suggérée, plus épais encore, bordés d'un contour Nuit océan qui les détache de l'herbe (plus de 3:1).
+ * Levés d'une unité au-dessus du sol : la Carte dessine le terrain de loin (une case sur trois), plus haut par endroits
+ * que le sol exact, qui les enterrait ; vus de haut, ce décalage ne se voit pas.
  */
-const DASHES = { on: 5, off: 3, half: 1.4, thickHalf: 2.2, outline: 0.7, color: 0xf2dfb4, outlineColor: 0x142b38 } as const;
+const DASHES = { on: 8, off: 4, half: 2, thickHalf: 3, outline: 0.9, color: 0xf2dfb4, outlineColor: 0x142b38, lift: 1 } as const;
 
 /** Le bois là où le sol est sous l'eau (la digue, les pontons) ; sur la plage, c'est encore un sentier. */
 const deckAt = (ground: (x: number, z: number) => number, p: Vec2) => ground(p.x, p.z) < 0.05;
@@ -238,13 +240,13 @@ export function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => nu
     for (const [s0, s1] of spans) {
       if (s1 - s0 < 1e-3) continue;
       if (look === 'solid') piece(s0, s1, deck ? HALF_WIDTH.deck : HALF_WIDTH.path, deck ? COLORS_6E.wood : COLORS_6E.path, RIBBON_LIFT, true);
-      else if (look === 'dashes') piece(s0, s1, DASHES.half, DASHES.color, RIBBON_LIFT + 0.02, false);
+      else if (look === 'dashes') piece(s0, s1, DASHES.half, DASHES.color, DASHES.lift, false);
       else {
         // Le contour déborde un peu aux bouts du tiret, jamais sur l'eau d'un ruisseau peint.
         const lo = cut && s0 === cut[1] ? s0 : s0 - 0.35;
         const hi = cut && s1 === cut[0] ? s1 : s1 + 0.35;
-        piece(lo, hi, DASHES.thickHalf + DASHES.outline, DASHES.outlineColor, RIBBON_LIFT, false);
-        piece(s0, s1, DASHES.thickHalf, DASHES.color, RIBBON_LIFT + 0.1, false);
+        piece(lo, hi, DASHES.thickHalf + DASHES.outline, DASHES.outlineColor, DASHES.lift, false);
+        piece(s0, s1, DASHES.thickHalf, DASHES.color, DASHES.lift + 0.1, false);
       }
     }
   }
