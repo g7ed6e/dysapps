@@ -1,7 +1,9 @@
 // La mesure automatique (`?mesures=auto`), pour le mainteneur, sur la tablette de référence : la sauvegarde gelée, la
 // partie toute construite des mesures (world/budget.ts) jouée en mémoire, puis le tour des vues du 6e (l'île, reculée,
 // l'archipel, reculé, la Carte, l'ouverture et la fermeture de « Modifier le plan », la pose d'une partie en vague) ;
-// à la fin, un tableau à copier. Chargé à part (React.lazy), seulement avec cette adresse : aucun élève ne le voit.
+// à la fin, un tableau à copier. Avec le monde ouvert (`?monde=ouvert`, Archipéo), le tour est le sien : l'arrivée, la
+// marche d'un bout à l'autre de l'île, la Carte, une scénette (et après « Commencer », s'il y a un récit d'abord).
+// Chargé à part (React.lazy), seulement avec cette adresse : aucun élève ne le voit.
 // Elle se lance aussi depuis les Réglages (« Mesurer l’appareil », pages/settings/ApplicationSection.tsx). La vraie partie
 // revient par « Réglages » (la page rechargée sans `?mesures`, sur les Réglages), à tout moment.
 import { useEffect, useRef, useState } from 'react';
@@ -9,7 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import { useBlocland } from './BloclandContext';
 import { BIOMES, type BiomeId } from './biomes';
 import { toutConstruitAvecLesCommandes } from './world/budget';
-import { adresseSansMesure } from './rendering';
+import { adresseSansMesure, renduDuMonde } from './rendering';
+import { openWorldRequested } from './worldLayoutFactory';
 import { type LigneDeMesure, partieDeLaPose, partieDeMesure, resumerLesImages, tableauDesMesures } from './autoMeasure';
 import { MODIFIER_LE_PLAN } from './ArrangeBar';
 import { Icon } from '../components/Icon';
@@ -54,6 +57,31 @@ async function attendreLeMonde(ancienne: string): Promise<boolean> {
   }
   await attendre(2000);
   return Boolean(document.querySelector('.voxel-canvas'));
+}
+
+/**
+ * Le monde ouvert dessine (`window.__dysappsMondeOuvert`, posé avec `?mesures`) et ses chiffres ne bougent plus depuis
+ * une seconde ; au plus 30 s. Puis la caméra a le temps de se poser. Faux s'il ne vient pas.
+ */
+async function attendreLeMondeOuvert(): Promise<boolean> {
+  let avant = '';
+  let stable = 0;
+  for (let i = 0; i < 300 && stable < 10; i++) {
+    await attendre(100);
+    const cle = window.__dysappsMondeOuvert ? chiffres() : '';
+    stable = cle && cle === avant ? stable + 1 : 0;
+    avant = cle;
+  }
+  await attendre(2000);
+  return Boolean(window.__dysappsMondeOuvert);
+}
+
+/** Touche le bouton qui répond à `selecteur`, puis laisse la vue se poser ; faux s'il n'est pas à l'écran. */
+async function toucherPuisAttendre(selecteur: string, ms = 2500): Promise<boolean> {
+  const bouton = document.querySelector<HTMLButtonElement>(selecteur);
+  bouton?.click();
+  if (bouton) await attendre(ms);
+  return Boolean(bouton);
 }
 
 /** Ce que dessine la dernière image (appels/triangles), vide sans compteur. */
@@ -113,6 +141,40 @@ export default function AutoMeasure() {
       const { progress, world } = toutConstruitAvecLesCommandes();
       chargerPourLesMesures(partieDeMesure(progress, world, ile));
       navigate(`/adventure/${ile}`);
+      if (openWorldRequested(window.location.href) && renduDuMonde() === 'archipeo') {
+        // Le monde ouvert : tous les lieux reconstruits (la partie toute construite), Kéo devant le lieu de l'île.
+        if (!(await attendreLeMondeOuvert())) return setEtape('Pas de monde ouvert en 3D : rien à mesurer.');
+        await ligne('monde ouvert, à l’arrivée');
+        // La marche, du Phare aux Balises, au large : l'île traversée, les lieux qui entrent et sortent du champ.
+        window.__dysappsMondeOuvert?.goTo('phare', true);
+        await attendre(2500);
+        window.__dysappsMondeOuvert?.goTo('beacons');
+        await ligne('marche, du Phare aux Balises', 6000);
+        window.__dysappsMondeOuvert?.skip();
+        await attendre(2500);
+        // Le panneau des Balises, ouvert à l'arrivée, fermé (Échap) : la Carte s'ouvre sur le monde seul.
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        await attendre(500);
+        const carte = '.open-world-map-button:not(.open-world-lieux-button)';
+        if (!(await toucherPuisAttendre(carte, 3000))) notes.push('« Carte » : bouton non trouvé.');
+        else {
+          await ligne('Carte');
+          await toucherPuisAttendre(carte);
+        }
+        // Une scénette des Quais : la liste du lieu ouverte à l'arrivée, sa première mission jouée au lieu.
+        window.__dysappsMondeOuvert?.goTo('quais', true);
+        await attendre(2500);
+        const mission = [...document.querySelectorAll<HTMLButtonElement>('#panneau-lieu button.app-card')].find((b) => b.querySelector('.mission-sign'));
+        if (!mission) notes.push('Scénette : aucune mission des Quais jouée au lieu trouvée.');
+        else {
+          mission.click();
+          await attendre(3000);
+          await ligne('scénette des Quais');
+          // Une mission avec un récit d'abord (« Commencer ») : la question posée se mesure aussi.
+          if (await toucherPuisAttendre('.world-question-start', 3000)) await ligne('scénette, la question posée');
+        }
+        return finir('Mesure finie.');
+      }
       if (!(await attendreLeMonde(''))) return setEtape('Pas de monde en 3D (vue simple ?) : rien à mesurer.');
       await ligne('île');
       await reculer(10);
