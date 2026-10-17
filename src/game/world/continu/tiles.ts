@@ -1,10 +1,11 @@
 // La réserve des tuiles du terrain (./terrain.ts, et ce qui y pousse, ./flora.ts) pour la vue : faites à la demande et gardées. De loin, toutes gardées
 // (elles sont légères, et faites tout de suite) ; de près, les plus récentes seulement, et jamais plus d'une par image :
 // une tuile de près qui manque attend dans une file (`pump`, une par image), sa version de loin tenant sa place
-// jusque-là. Ainsi, franchir un anneau ne fait jamais une longue tâche (relecture de l'expert frontend). Code pur.
-import { boundsOf, type Facets } from './facets';
+// jusque-là. Ainsi, franchir un anneau ne fait jamais une longue tâche (relecture de l'expert frontend). Depuis la
+// reprise du lot 3, une tuile de la file se fait même en deux images : son sol, puis ce qui y pousse. Code pur.
+import { boundsOf, mergeFacets, type Facets } from './facets';
 import { TERRAIN } from './plan6e';
-import { landTileFacets } from './flora';
+import { landTileFacets, landTileFlora, landTileGround } from './flora';
 import { tileRect, type HeightField, type TileDetail } from './terrain';
 
 /** Une tuile prête à copier : ses facettes et sa boîte. */
@@ -24,7 +25,10 @@ export interface TileStore {
   near(index: number): Tile | null;
   /** Vide la file (les tuiles qui ne sont plus voulues). */
   clearQueue(): void;
-  /** Fait la première tuile de la file ; rend son rang, ou `null` si la file est vide. */
+  /**
+   * Avance la file d'un temps : le sol de la première tuile, ou ce qui pousse sur celle dont le sol est fait ; rend le
+   * rang de la tuile finie, ou `null` (la file est vide, ou seul un sol vient d'être fait).
+   */
   pump(): number | null;
   /** Combien de tuiles attendent. */
   pending(): number;
@@ -33,10 +37,12 @@ export interface TileStore {
 export function createTileStore(field: HeightField, nearKept = NEAR_TILES_KEPT): TileStore {
   const kept: Record<TileDetail, Map<number, Tile>> = { near: new Map(), far: new Map() };
   const queue = new Set<number>();
-  const make = (index: number, detail: TileDetail): Tile => {
-    const tx = index % TERRAIN.tilesX;
-    const tz = Math.floor(index / TERRAIN.tilesX);
-    const facets = landTileFacets(field, tx, tz, detail);
+  // La tuile dont le sol est fait, en attente de ce qui y pousse (une au plus).
+  let half: { index: number; ground: Facets } | null = null;
+  const at = (index: number) => [index % TERRAIN.tilesX, Math.floor(index / TERRAIN.tilesX)] as const;
+  const make = (index: number, detail: TileDetail, made?: Facets): Tile => {
+    const [tx, tz] = at(index);
+    const facets = made ?? landTileFacets(field, tx, tz, detail);
     const r = tileRect(tx, tz);
     const b = facets.triangles ? boundsOf(facets) : { min: [r.minX, 0, r.minZ] as [number, number, number], max: [r.maxX, 0, r.maxZ] as [number, number, number] };
     return { facets, min: b.min, max: b.max };
@@ -64,11 +70,23 @@ export function createTileStore(field: HeightField, nearKept = NEAR_TILES_KEPT):
     },
     clearQueue: () => queue.clear(),
     pump: () => {
+      if (half) {
+        const { index, ground } = half;
+        half = null;
+        queue.delete(index);
+        const [tx, tz] = at(index);
+        remember(index, 'near', make(index, 'near', mergeFacets([ground, landTileFlora(field, tx, tz, 'near')])));
+        return index;
+      }
       const next = queue.values().next();
       if (next.done) return null;
-      build(next.value, 'near');
-      return next.value;
+      queue.delete(next.value);
+      // Déjà faite entre-temps (un saut) : rien à refaire.
+      if (kept.near.has(next.value)) return next.value;
+      const [tx, tz] = at(next.value);
+      half = { index: next.value, ground: landTileGround(field, tx, tz, 'near') };
+      return null;
     },
-    pending: () => queue.size,
+    pending: () => queue.size + (half ? 1 : 0),
   };
 }

@@ -12,6 +12,7 @@ import { sceneSpot } from './questionScene';
 import { SEA_TEXTURE, WATER_TONES, decodeSeaField, seaPixels, shallowness, toneOfFields, waterTone } from './sea';
 import { HILLS, RING, RING_FLOOR, RING_LIFT, TILE_SIZE, buildHeightField, hillsAt, heightAt, heightOnFar, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
 import { createTileStore } from './tiles';
+import { landTileFacets } from './flora';
 import { VEIL_HEIGHT, VEIL_LAYERS, highest, veilFacets, veilShare } from './veil';
 import { bridgeSite } from './bridges';
 import { LANDS, LINKED_LANDS, landById } from './lands';
@@ -418,9 +419,15 @@ describe('La réserve des tuiles', () => {
     expect(wanted.length).toBeGreaterThan(1);
     for (const i of wanted) expect(store.near(i)).toBeNull();
     expect(store.pending()).toBe(wanted.length);
+    // En deux images (reprise du lot 3) : le sol, puis ce qui y pousse ; la tuile finie est la tuile entière.
+    expect(store.pump()).toBeNull();
+    expect(store.near(wanted[0])).toBeNull();
+    store.clearQueue();
+    for (const i of wanted) store.near(i);
     expect(store.pump()).toBe(wanted[0]);
     expect(store.pending()).toBe(wanted.length - 1);
-    expect(store.near(wanted[0])).not.toBeNull();
+    const whole = landTileFacets(field, wanted[0] % TERRAIN.tilesX, Math.floor(wanted[0] / TERRAIN.tilesX), 'near');
+    expect(Array.from(store.near(wanted[0])!.facets.positions)).toEqual(Array.from(whole.positions));
     store.clearQueue();
     expect(store.pump()).toBeNull();
     // Faite tout de suite quand on la demande (le départ, un saut) ; la même ensuite.

@@ -10,7 +10,7 @@ import { distance, distanceToPolyline, hash2, type Vec2 } from './geometry';
 import { LOOKOUT_RAMP, PATH_EDGES, PATH_NODES, PLACES, PORT, TERRAIN } from './plan6e';
 import { modelOfPlace } from './places';
 import { SHADOW_DIR } from './sky';
-import { drawTile, groundTone, heightOnFar, heightOnMesh, hillsAt, landDistance, straitClearance, tileRect, type HeightField, type TileDetail } from './terrain';
+import { drawTile, groundTone, heightOnFar, tileFacets, heightOnMesh, hillsAt, landDistance, straitClearance, tileRect, type HeightField, type TileDetail } from './terrain';
 
 /** Ce qui pousse ou se pose : un pin, un palmier, un buisson, un rocher. */
 type FloraKind = 'pin' | 'palmier' | 'buisson' | 'rocher';
@@ -59,12 +59,13 @@ export const FLORA_COLORS = {
 export const FLORA_KEEP = { path: 1.6, pathTall: 3, placeGap: 4, placeBand: 8, strait: 5, camera: 7.5, bank: 0.6, bankPath: 6, coast: 2.6, coastPath: 4, edge: 5.5 } as const;
 
 /** Le rayon de l'emprise d'un lieu (de son centre au plus loin de son modèle, en x et en z), entre 2 et 10 unités. */
+const PLACE_RADIUS_MAX = 10;
 const placeRadii = new Map<string, number>();
 export function placeRadius(id: (typeof PLACES)[number]['id']): number {
   let r = placeRadii.get(id);
   if (r === undefined) {
     const box = boundsOf(modelOfPlace(id).facets);
-    r = Math.max(2, Math.min(10, Math.max(-box.min[0], box.max[0], -box.min[2], box.max[2])));
+    r = Math.max(2, Math.min(PLACE_RADIUS_MAX, Math.max(-box.min[0], box.max[0], -box.min[2], box.max[2])));
     placeRadii.set(id, r);
   }
   return r;
@@ -138,7 +139,10 @@ function pick(field: HeightField, p: Vec2, roll: number, look: number): FloraIte
   let gap = Infinity;
   let south = false;
   for (const pl of PLACES) {
-    const g = distance(p, pl.center) - placeRadius(pl.id);
+    // L'emprise d'un lieu ne compte que s'il est assez près (sinon, son modèle n'est même pas demandé).
+    const far = distance(p, pl.center);
+    if (far - PLACE_RADIUS_MAX >= Math.min(gap, FLORA_KEEP.placeBand)) continue;
+    const g = far - placeRadius(pl.id);
     if (g < gap) {
       gap = g;
       south = p.z > pl.center.z + 1;
@@ -283,22 +287,36 @@ function drawFlora(field: HeightField, tx: number, tz: number, detail: TileDetai
     count += COST[it.kind][detail];
     if (b) drawItem(b, it, ground(it.x, it.z) - 0.08, detail);
   }
-  for (const s of placeShadows()) {
-    if (Math.floor((s.x - TERRAIN.minX) / (TERRAIN.step * TERRAIN.tileCells)) !== tx || Math.floor((s.z - TERRAIN.minZ) / (TERRAIN.step * TERRAIN.tileCells)) !== tz) continue;
-    count += shadow(b, ground, s.x, s.z, s.radius, s.radius * 0.45);
-  }
+  for (const s of placeShadows(tz * TERRAIN.tilesX + tx)) count += shadow(b, ground, s.x, s.z, s.radius, s.radius * 0.45);
   return count;
 }
 
-/** L'ombre au pied de chaque lieu : son centre, et un rayon tiré de son emprise (entre 1,6 et 4,5 unités). */
-let placeShadowList: { x: number; z: number; radius: number }[] | null = null;
-function placeShadows(): readonly { x: number; z: number; radius: number }[] {
-  placeShadowList ??= PLACES.map((p) => {
-    const box = boundsOf(modelOfPlace(p.id).facets);
-    const extent = Math.min(box.max[0] - box.min[0], box.max[2] - box.min[2]);
-    return { x: p.center.x, z: p.center.z, radius: Math.max(1.6, Math.min(4.5, 0.42 * extent)) };
+/**
+ * Les lieux dont le centre tombe dans chaque tuile (rangés une fois, sans rien construire) ; l'ombre au pied de chacun,
+ * de rayon tiré de son emprise (entre 1,6 et 4,5 unités), faite quand sa tuile l'est : le modèle d'un lieu n'est demandé
+ * que là.
+ */
+let placesByTile: Map<number, (typeof PLACES)[number][]> | null = null;
+const placeShadowOf = new Map<string, { x: number; z: number; radius: number }>();
+function placeShadows(index: number): readonly { x: number; z: number; radius: number }[] {
+  if (!placesByTile) {
+    placesByTile = new Map();
+    const size = TERRAIN.step * TERRAIN.tileCells;
+    for (const p of PLACES) {
+      const key = Math.floor((p.center.z - TERRAIN.minZ) / size) * TERRAIN.tilesX + Math.floor((p.center.x - TERRAIN.minX) / size);
+      placesByTile.set(key, [...(placesByTile.get(key) ?? []), p]);
+    }
+  }
+  return (placesByTile.get(index) ?? []).map((p) => {
+    let s = placeShadowOf.get(p.id);
+    if (!s) {
+      const box = boundsOf(modelOfPlace(p.id).facets);
+      const extent = Math.min(box.max[0] - box.min[0], box.max[2] - box.min[2]);
+      s = { x: p.center.x, z: p.center.z, radius: Math.max(1.6, Math.min(4.5, 0.42 * extent)) };
+      placeShadowOf.set(p.id, s);
+    }
+    return s;
   });
-  return placeShadowList;
 }
 
 /** Une plante ou un rocher, son pied à `y`. */
@@ -392,6 +410,21 @@ function trunk(b: FacetBuilder, from: readonly [number, number, number], to: rea
 export function landTileFacets(field: HeightField, tx: number, tz: number, detail: TileDetail): Facets {
   const b = new FacetBuilder();
   drawTile(field, tx, tz, detail, b);
+  drawFlora(field, tx, tz, detail, b);
+  return b.build();
+}
+
+/**
+ * Une tuile en deux temps (relecture du code, reprise du lot 3 : une tuile de près entière prenait jusqu'à 98 ms) : son
+ * sol et son écume, puis, à l'image suivante, ce qui y pousse ; réunis dans le même ordre que `landTileFacets`.
+ */
+export function landTileGround(field: HeightField, tx: number, tz: number, detail: TileDetail): Facets {
+  return tileFacets(field, tx, tz, detail);
+}
+
+/** Ce qui pousse dans une tuile et les ombres, seuls (le second temps de `landTileGround`). */
+export function landTileFlora(field: HeightField, tx: number, tz: number, detail: TileDetail): Facets {
+  const b = new FacetBuilder();
   drawFlora(field, tx, tz, detail, b);
   return b.build();
 }
