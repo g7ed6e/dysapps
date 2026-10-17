@@ -32,6 +32,8 @@ const vegetablePatch: ObjectDrawing = (at, pe) => {
   at.quad([x1, y0, h], [x1, y1, h], [x1 - r, y1 - r, h], [x1 - r, y0 + r, h], c, wood.dessus);
   at.quad([x1, y1, h], [x0, y1, h], [x0 + r, y1 - r, h], [x1 - r, y1 - r, h], c, wood.dessus);
   at.quad([x0, y1, h], [x0, y0, h], [x0 + r, y0 + r, h], [x0 + r, y1 - r, h], c, wood.dessus);
+  // Les marques des éléments (le monde ouvert : un par ressource livrée) : la jardinière, la terre, les pousses.
+  at.part();
   // La terre, en tronc de pyramide sur la jardinière.
   const [bx, by, tx, ty, zt] = [(x1 - x0) / 2 - r, (y1 - y0) / 2 - r, (x1 - x0) / 2 - 0.22, (y1 - y0) / 2 - 0.2, 1.02];
   const lower = [
@@ -52,6 +54,7 @@ const vegetablePatch: ObjectDrawing = (at, pe) => {
     at.quad([lower[i][0], lower[i][1], h], [lower[j][0], lower[j][1], h], [upper[j][0], upper[j][1], zt], [upper[i][0], upper[i][1], zt], d, earth.cote);
   }
   at.quad([upper[0][0], upper[0][1], zt], [upper[1][0], upper[1][1], zt], [upper[2][0], upper[2][1], zt], [upper[3][0], upper[3][1], zt], d, earth.dessus);
+  at.part();
   // Les pousses.
   const leaf = pe.color(C.leaf);
   for (const x of [0.75, 1.25, 1.75, 2.25]) at.pyramid(x, 0.5, 0.1, 0.1, zt, zt + 0.24, leaf);
@@ -68,7 +71,10 @@ const waterTrough: ObjectDrawing = (at, pe) => {
     at.block(x, 0.5, 0.46, 0.46, 0, 1.74, earth, { bottom: true, top: true });
     at.pyramid(x, 0.5, 0.25, 0.25, 1.74, 1.96, earth.dessus);
   }
+  // Les marques des morceaux (le monde ouvert) : les poteaux, le bassin, la traverse et la goulotte.
+  at.part();
   basin(at, pe, 0.85, 3.15, 0.12, 0.88, 0, 0.64, 0.12, pebble, 0.52);
+  at.part();
   at.box(0.73, 3.27, 0.42, 0.58, 1.48, 1.64, pe.color(C.lightWood), {});
   at.block(2, 0.5, 0.12, 0.12, 1.02, 1.48, pe.color(C.iron), {});
 };
@@ -90,7 +96,10 @@ const lanternPostOf =
   (at, pe) => {
     const { socle: s, step, pillar: p } = o;
     slab(at, s.x0, s.x1, s.y0, s.y1, 0, s.h, pe.block(s.block));
+    // Les marques des éléments (le monde ouvert) : le socle, la marche, le pilier et sa lanterne.
+    at.part();
     at.block(step.cx, step.cy, step.lx, step.ly, s.h, step.z1, step.tint(pe));
+    at.part();
     at.block(p.cx, p.cy, p.side, p.side, p.z0, 2, pe.block(p.block), { bottom: true });
     postLantern(at, pe, o.head[0], o.head[1], null, 2);
   };
@@ -129,9 +138,12 @@ const displayCaseOf =
     const pane = pe.block(glass);
     at.box(0.05, n - 0.05, 0.1, 0.9, 0, 0.84, door, { bottom: true, top: true });
     at.box(0, n, 0.05, 0.95, 0.84, 0.95, { dessus: door.dessus, cote: door.dessus }, {});
+    // Les marques des éléments (le monde ouvert) : le soubassement, la vitrine et ses montants, le toit.
+    at.part();
     at.box(0.12, n - 0.12, 0.2, 0.8, 0.95, 1.9, pane, { bottom: true, top: true });
     const upright = pe.color(C.wood);
     for (const x of uprights) at.block(x, 0.5, 0.1, 0.64, 0.95, 1.9, upright, { bottom: true, top: true });
+    at.part();
     at.roof(0, n, 0.05, 0.95, 1.9, 2.42, 'x', 0.08, pe.roof(), { tint: pe.color(C.cream), zFoot: 1.9 });
   };
 
@@ -149,14 +161,18 @@ const plaza: ObjectDrawing = (at, pe) => {
   const mosaic = pe.block(BLOC.mosaique);
   const [x0, x1, y0, y1, h] = [0.04, 1.96, 0.04, 1.96, 0.16];
   at.box(x0, x1, y0, y1, 0, h, mosaic, { bottom: true, top: true });
+  // Les marques des éléments (le monde ouvert) : la dalle, une moitié des carreaux, l'autre et la rosace, la lanterne.
+  at.part();
   const n = 4;
   const [px, py] = [(x1 - x0) / n, (y1 - y0) / n];
   for (let i = 0; i < n; i++)
     for (let j = 0; j < n; j++) {
+      if (i === n / 2 && j === 0) at.part();
       const [a, b] = [x0 + i * px, y0 + j * py];
       at.quad([a, b, h], [a + px, b, h], [a + px, b + py, h], [a, b + py, h], [1, 1, 0], (i + j) % 2 ? mosaic.cote : mosaic.dessus);
     }
   at.disc(1, 1, h + 0.012, 0.3, 8, pe.color(C.cream));
+  at.part();
   postLantern(at, pe, 2, 2, 0, 1);
 };
 
@@ -168,7 +184,10 @@ const shelf: ObjectDrawing = (at, pe) => {
   const cardboard = pe.block(BLOC.carton);
   const magnet = pe.block(BLOC.aimant);
   for (let k = 0; k < 3; k++) crate(at, k + 0.06, k + 0.94, 0.12, 0.88, 0, 0.76, cardboard, { dessus: cardboard.dessus, cote: cardboard.cote });
+  // Les marques des éléments (le monde ouvert) : les caisses, la planche, les aimants, les flacons et la lanterne.
+  at.part();
   at.box(0.02, 2.98, 0.1, 0.9, 0.76, 0.86, pe.color(C.lightWood), {});
+  at.part();
   for (const x of [0.5, 2.5]) {
     at.block(x, 0.5, 0.72, 0.62, 0.86, 1.46, magnet);
     flask(at, pe, x, 0.5, 1.46, 0.36, x < 1 ? 0x6fb7c8 : 0xb98ad0);
@@ -183,6 +202,7 @@ export function benchOnPosts(at: Workshop, pe: Paint, top: Tint, zHigh: number, 
     [0.5, 0.5],
     [2.5, 0.5],
   ], 0.24, foot);
+  at.part();
   at.box(0.62, 2.38, 0.44, 0.56, 0.3, 0.42, foot, { bottom: false, px: true, nx: true });
 }
 
@@ -194,6 +214,8 @@ const workbench: ObjectDrawing = (at, pe) => {
   const cardboard = pe.block(BLOC.carton);
   const magnet = pe.block(BLOC.aimant);
   benchOnPosts(at, pe, cardboard, 1, 0.22);
+  // La marque de la barre (le monde ouvert) ; le plateau, ses pieds et l'entretoise ont les leurs (`tableOnLegs`, `benchOnPosts`).
+  at.part();
   at.box(0.12, 2.88, 0.22, 0.78, 1, 1.5, magnet);
   const joint = pe.role('joint');
   for (const x of [0.8, 1.5, 2.2]) at.quad([x - 0.02, 0.215, 1.03], [x + 0.02, 0.215, 1.03], [x + 0.02, 0.215, 1.47], [x - 0.02, 0.215, 1.47], [x, 0.5, 1.25], joint);
@@ -210,6 +232,8 @@ const ballotBox: ObjectDrawing = (at, pe) => {
     [0.5, 0.5],
     [2.5, 0.5],
   ], 0.24, pe.role('yardPost'));
+  // La marque de l'urne (le monde ouvert) ; le plateau et ses pieds ont la leur (`tableOnLegs`).
+  at.part();
   at.block(1.5, 0.5, 0.56, 0.5, 1.05, 1.55, chalk, { bottom: true, top: true });
   at.prism(1.5, 0.5, 0.42, 0.3, 1.55, 1.66, 4, chalk.dessus, Math.PI / 4);
   at.quad([1.36, 0.47, 1.665], [1.64, 0.47, 1.665], [1.64, 0.53, 1.665], [1.36, 0.53, 1.665], [1.5, 0.5, 1], pe.color(C.iron));

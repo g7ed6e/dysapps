@@ -139,6 +139,8 @@ export function slab(at: Workshop, x0: number, x1: number, y0: number, y1: numbe
  */
 export function tableOnLegs(at: Workshop, x0: number, x1: number, y0: number, y1: number, zHigh: number, thick: number, tabletop: Tint, feet: readonly (readonly [number, number])[], legSide: number, foot: Tint): void {
   at.box(x0, x1, y0, y1, zHigh - thick, zHigh, tabletop, {});
+  // La marque des pieds (le monde ouvert les pose avant le plateau : world/continu/amenagements.ts).
+  at.part();
   for (const [px, py] of feet) at.block(px, py, legSide, legSide, 0, zHigh - thick, foot, { bottom: true, top: true });
 }
 
