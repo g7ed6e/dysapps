@@ -57,7 +57,7 @@ function nearestBridge(p: Vec2): number {
  * d'un bras de mer ; `clear`, de combien on est dans l'eau claire. Leur ligne zéro est le bord d'un palier : la vue les
  * lit dans l'image de l'eau, interpolés, et tranche net sur zéro (le contour suit le bras, lisse, sans pixels).
  */
-export function waterFields(p: Vec2): { night: number; clear: number } {
+function waterFields(p: Vec2): { night: number; clear: number } {
   if (insidePolygon(p, COAST)) {
     const deep = -straitClearance(p);
     const night = Math.min(deep - WATER_TONES.heart, WATER_TONES.cap) - Math.max(0, nearestBridge(p) - WATER_TONES.reach) * WATER_TONES.taper;
@@ -79,7 +79,7 @@ export function toneOfFields(f: { night: number; clear: number }): number {
 }
 
 /** Un champ codé dans un octet : 128 sur sa ligne zéro, `SEA_FIELD_SCALE` par unité, borné. */
-export const SEA_FIELD_SCALE = 16;
+const SEA_FIELD_SCALE = 16;
 const encode = (v: number) => Math.max(0, Math.min(255, Math.round(128 + v * SEA_FIELD_SCALE)));
 
 /** Décode un octet de l'image de l'eau en unités (les tests ; la vue, elle, tranche sur 128/255). */
