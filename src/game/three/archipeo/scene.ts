@@ -10,7 +10,6 @@
 import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { cielDe } from '../../world/palette';
 import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, type CameraPose } from '../../world/continu/camera';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
@@ -54,9 +53,10 @@ import {
   type ScenetteLayout,
 } from '../../world/continu/scenette';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
+import { HORIZON_COLOR, LIGHT, skyDome } from '../../world/continu/sky';
 import { buildHeightField, heightOnMesh, ringHeights, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
-import { MIST_COLOR, veilFacets, type VeilMesh } from '../../world/continu/veil';
+import { veilFacets, type VeilMesh } from '../../world/continu/veil';
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
@@ -337,6 +337,8 @@ const FRAMED_BRIDGE_NEAR = 12;
 /** Le bout de la caméra qui suit Kéo, et celui de la Carte (l'île entière, de haut), en unités. */
 const FOLLOW_FAR = 500;
 const MAP_FAR = 2000;
+/** Le rayon du dôme du ciel : en deçà du bout de la caméra qui suit Kéo (`FOLLOW_FAR`). */
+const SKY_RADIUS = 450;
 /** Sur la Carte, la brume du lointain commence au-delà de l'île : rien ne s'y efface (sans refaire les shaders). */
 const MAP_FOG = 5000;
 /** Sur la Carte, un toucher choisit le lieu le plus proche à moins de tant de pixels. */
@@ -557,23 +559,43 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const meter = createMeter(host, 'archipeo', options.meter.show, options.meter.expose);
 
   const scene = new THREE.Scene();
-  // La brume légère d'Archipéo : le lointain, le large et l'horizon s'y fondent ; le ciel est de sa couleur.
-  const mist = new THREE.Color(MIST_COLOR);
-  scene.background = mist;
-  const fog = new THREE.Fog(mist, WORLD_FOG.near, WORLD_FOG.far);
+  // La brume légère d'Archipéo : le lointain, le large et l'horizon s'y fondent, de la couleur de l'horizon du ciel (GD-20,
+  // point 3, lot 3 : la mer rejoint le ciel sans couture).
+  const horizon = new THREE.Color(HORIZON_COLOR);
+  scene.background = horizon;
+  const fog = new THREE.Fog(horizon, WORLD_FOG.near, WORLD_FOG.far);
   scene.fog = fog;
   const camera = new THREE.PerspectiveCamera(40, host.clientWidth / Math.max(1, host.clientHeight), 0.5, FOLLOW_FAR);
+  // Le mappage des tons neutre : les aplats gardent leur couleur, les blancs au soleil s'adoucissent (lot 3).
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = LIGHT.exposure;
 
-  // La lumière d'un matin clair (fiche du 6e, § 2) : le soleil du 6e, bas à l'est, et une ambiance chaude, renvoyée par
-  // le sable : les aplats gardent leur couleur sur les faces tournées vers la caméra (au sud).
-  const ciel = cielDe('6e', 1);
-  scene.add(new THREE.HemisphereLight(0xf4f1e8, 0xa89a7c, 1.5));
-  const sun = new THREE.DirectionalLight(ciel.soleil, 1.9);
-  sun.position.set(40, 55, 30);
+  // La lumière d'un matin clair (fiche du 6e, § 2 ; GD-20, point 3, lot 3) : une ambiance plus basse et froide, le
+  // soleil chaud, bas à l'est (`LIGHT`).
+  scene.add(new THREE.HemisphereLight(LIGHT.sky, LIGHT.ground, LIGHT.ambient));
+  const sun = new THREE.DirectionalLight(LIGHT.sun, LIGHT.sunIntensity);
+  sun.position.set(LIGHT.sunFrom.x, LIGHT.sunFrom.y, LIGHT.sunFrom.z);
   scene.add(sun);
+  // Le ciel : un dôme en dégradé, crème à l'horizon, bleu en haut, centré sur la caméra à chaque image (sa matrice
+  // seule), dessiné d'abord, sans brouillard ni profondeur : tout le reste passe devant. Un appel.
+  const skyGeometry = new THREE.BufferGeometry();
+  {
+    const dome = skyDome(SKY_RADIUS);
+    skyGeometry.setAttribute('position', new THREE.BufferAttribute(dome.positions, 3));
+    skyGeometry.setAttribute('color', new THREE.BufferAttribute(dome.colors, 3));
+  }
+  const skyMaterial = new THREE.MeshBasicMaterial({ vertexColors: true, fog: false, depthWrite: false, depthTest: false, side: THREE.DoubleSide });
+  const sky = new THREE.Mesh(skyGeometry, skyMaterial);
+  sky.matrixAutoUpdate = false;
+  sky.frustumCulled = false;
+  sky.renderOrder = -1;
+  // Juste avant d'être dessiné, il se recentre sur la caméra de l'image (rien n'est créé).
+  sky.onBeforeRender = (_r, _s, cam) => void sky.matrixWorld.setPosition(cam.position);
+  scene.add(sky);
 
   const geometries: THREE.BufferGeometry[] = [];
   const keep = <G extends THREE.BufferGeometry>(g: G) => (geometries.push(g), g);
+  keep(skyGeometry);
 
   // Le terrain : la carte de hauteurs, et deux anneaux de tuiles autour de Kéo (de près, chaque case ; de loin, une
   // sur trois), chacun un seul maillage, d'un seul matériau.
@@ -2636,6 +2658,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       veilMaterial.dispose();
       seaMaterial.dispose();
       seaTexture.dispose();
+      skyMaterial.dispose();
       ringMaterial.dispose();
       meter?.dispose();
       renderer.dispose();

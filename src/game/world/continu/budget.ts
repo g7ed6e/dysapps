@@ -16,16 +16,20 @@ import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene
 import type { ItemScene } from './questions';
 import { bellPlane, habitantHand, scenetteDecor, scenetteFinale } from './scenette';
 import { buildHeightField, heightOnMesh, tileRings, tileTriangleCounts } from './terrain';
+import { skyDome } from './sky';
 import { veilFacets } from './veil';
 
 /** Kéo : le modèle importé de près (1 500 triangles environ) et son anneau clair au sol, comme le poste « bonhomme » du monde en grille. */
 const KEO = { triangles: 1620, calls: 2 };
 
+/** Le dôme du ciel (GD-20, point 3, lot 3) : un maillage, dessiné d'abord, sur la Carte aussi. */
+const SKY = { triangles: skyDome(1).triangles, calls: 1 };
+
 /** L'enveloppe du monde ouvert : 75 000 triangles (relevée par le mainteneur, 16 octobre 2026), 18 appels. */
 export const OPEN_WORLD_BUDGET = { triangles: 75_000, calls: 18 } as const;
 
 export interface OpenWorldCost {
-  poste: 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
+  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
   triangles: number;
   calls: number;
 }
@@ -201,6 +205,7 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
   const paths = pathRibbons(height);
   const ground = groundCost();
   return [
+    { poste: 'ciel', ...SKY },
     { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
     { poste: 'mer', triangles: 2, calls: 1 },
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
@@ -217,7 +222,7 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
 }
 
 /**
- * La Carte des lieux ouverts (lot 3), le pire (les aménagements posés compris, comptés par la vue) : toute l'île de loin dans l'anneau de loin (celui de près vidé), la mer,
+ * La Carte des lieux ouverts (lot 3), le pire (les aménagements posés compris, comptés par la vue) : le ciel, toute l'île de loin dans l'anneau de loin (celui de près vidé), la mer,
  * les chemins, les lieux (sur la Carte, aucun n'est hors de la brume : un seul maillage, mais compté à deux appels, le
  * pire ; les ponts y ont en plus leur trait double), la brume des terres fermées, Kéo. Ni question, ni scénette, ni pose n'y
  * sont ouvertes : elle ne s'ouvre pas pendant une question, et l'ouvrir finit la pose.
@@ -230,5 +235,5 @@ export function mapCost(amenagements: number): { triangles: number; calls: numbe
   const places = placesCost();
   const veil = veilFacets(LINKED_LANDS).triangles;
   const marks = LINKED_LANDS.reduce((s, l) => s + bridgeMapMark(l).triangles, 0);
-  return { triangles: far + 2 + paths + places.triangles + amenagements + marks + veil + KEO.triangles, calls: 1 + 1 + 1 + places.calls + 1 + KEO.calls };
+  return { triangles: SKY.triangles + far + 2 + paths + places.triangles + amenagements + marks + veil + KEO.triangles, calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls };
 }

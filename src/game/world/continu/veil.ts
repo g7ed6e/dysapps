@@ -26,14 +26,16 @@ export interface VeilMesh {
 
 /**
  * Les deux voiles (artiste technique 3D, référent dys) : leur hauteur au-dessus du sol et leur transparence la plus
- * dense. Ensemble, jamais plus de 0,6 (vus d'en haut, 1 − 0,6 × 0,78, environ 53 %) : un lieu se lit toujours à
+ * dense. Ensemble, jamais plus de 0,62 (vus d'en haut, 1 − 0,54 × 0,84, environ 55 %) : un lieu se lit toujours à
  * travers ; le haut de son repère (la tour du Phare, la flèche de la grue) dépasse du second. Relecture du lot 1
- * (directeur artistique, référent dys) : plus dense au sol, le premier voile plus opaque et plus bas, le second jusqu'à
- * mi-hauteur des bâtiments, les toits au-dessus ; à reprendre avec la lumière du lot 3.
+ * (directeur artistique, référent dys) : plus dense au sol, jusqu'à mi-hauteur des bâtiments, les toits au-dessus.
+ * Reprise avec la lumière du lot 3 (GD-20, point 3) : une nappe plus basse et plus dense (46 % à 0,6 unité), le second
+ * voile plus léger : sous la nouvelle lumière, plus contrastée, le sol voilé se lit comme de la brume, jamais comme un
+ * mur ; ensemble, environ 55 %, jamais opaque.
  */
 export const VEIL_LAYERS: readonly { lift: number; alpha: number }[] = [
-  { lift: 0.8, alpha: 0.4 },
-  { lift: 2.4, alpha: 0.22 },
+  { lift: 0.6, alpha: 0.46 },
+  { lift: 1.9, alpha: 0.16 },
 ];
 
 /** La hauteur du voile le plus haut au-dessus du sol : bien moins que Kéo et un toit (le cadenas se pose au-dessus). */
