@@ -136,7 +136,7 @@ it('pas prête, avec une partie des blocs : « Tu en as 1 sur 3. » dans la phra
   sauver({ ...pret, stock: { [BLOC.terre]: 1 } });
   ouvrir(PLAINE);
   const mousso = document.querySelector(`[data-commande="${MOUSSO}"]`) as HTMLElement;
-  expect(mousso.textContent).toContain('Mousso : Il me faut 3 blocs de terre pour mon potager. Joue une mission de la Ferme des accords. Tu en as 1 sur 3.');
+  expect(mousso.textContent).toContain('Mousso : Il me faut 3\u00a0blocs de terre pour mon potager. Joue une mission de la Ferme des accords. Tu en as 1 sur 3.');
   expect(document.body.textContent).not.toContain('(tu en as');
 });
 

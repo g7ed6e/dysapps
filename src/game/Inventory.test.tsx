@@ -111,6 +111,6 @@ describe('à l’ouverture, seul le texte visible est lu', () => {
   it('les trophées lisent leur compte, pas l’accueil du pli', async () => {
     renderIn(<TrophySheet onClose={() => {}} />);
     await waitFor(() => expect(dit).toHaveLength(1));
-    expect(dit[0]).toMatch(/^Salle des trophées\s:\s0 trophée sur \d+\.$/u);
+    expect(dit[0]).toMatch(/^Salle des trophées\s:\s0\u00a0trophée sur \d+\.$/u);
   });
 });

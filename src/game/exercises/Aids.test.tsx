@@ -149,7 +149,7 @@ describe('Opérations posées', () => {
 describe('RuleCard', () => {
   it('lie la ponctuation haute à son mot : les deux-points ne passent jamais seuls en début de ligne', () => {
     const { container } = render(<RuleCard title="Soustraction posée" lines={['Chiffre du haut trop petit : ajoute 10 en haut.']} />);
-    expect(container.querySelector('li')?.textContent).toBe('Chiffre du haut trop petit\u00a0: ajoute 10 en haut.');
+    expect(container.querySelector('li')?.textContent).toBe('Chiffre du haut trop petit\u00a0: ajoute 10\u00a0en haut.');
   });
 });
 
