@@ -39,7 +39,7 @@ interface Props {
    */
   orderLabel?(place: PlaceId): string | null;
   /**
-   * Le lieu de la liaison suggérée (proposition au mainteneur, lot 2 des passerelles) : son cadenas plein, Nuit océan,
+   * Le lieu de la liaison suggérée (choix du mainteneur, « Cadenas plein », 17 octobre 2026) : son cadenas plein, Nuit océan,
    * l'icône claire, avec ses tirets épais ; rien, aucun.
    */
   suggested?: PlaceId | null;
