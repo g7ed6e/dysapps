@@ -5,7 +5,7 @@
 // la brume cache ce qui est plus loin. Code pur : la vue (three/archipeo/) ne fait que donner ces tableaux à Three.js.
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { BEACONS_FLAT, CLIFF, COAST, COLORS_6E, COMMONS_FLAT, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, LOOKOUT_RAMP, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PASS, RIVER, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, TERRAIN, UPLAND } from './plan6e';
+import { BEACONS_FLAT, CLIFF, COAST, COLORS_6E, COMMONS_FLAT, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, LOOKOUT_RAMP, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PASS, PATH_EDGES, PATH_NODES, RIVER, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, TERRAIN, UPLAND } from './plan6e';
 
 /** La distance signée à la terre ferme : positive sur la terre, négative dans l'eau (mer, lagon, passe, bassin, rivière). */
 export function landDistance(p: Vec2): number {
@@ -138,6 +138,11 @@ export interface HeightField {
   nx: number;
   nz: number;
   heights: Float32Array;
+  /**
+   * Les hauteurs du terrain de loin (une case sur `TERRAIN.coarse`), aux mêmes rangs : celles du sol, abaissées sous les
+   * chemins (`farHeights`) ; seuls les sommets de la grille grossière servent.
+   */
+  far: Float32Array;
 }
 
 let fieldCache: HeightField | null = null;
@@ -150,8 +155,86 @@ export function buildHeightField(): HeightField {
   const nz = tilesZ * tileCells + 1;
   const heights = new Float32Array(nx * nz);
   for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) heights[j * nx + i] = heightAt({ x: minX + i * step, z: minZ + j * step });
-  fieldCache = { minX, minZ, step, nx, nz, heights };
+  const field = { minX, minZ, step, nx, nz, heights, far: heights };
+  fieldCache = { ...field, far: farHeights(field) };
   return fieldCache;
+}
+
+/** Le dessus d'un chemin, au-dessus du sol sur sa ligne (`RIBBON_LIFT` de ./paths.ts), et l'air gardé sous lui de loin. */
+const PATH_TOP = 0.06;
+const FAR_CLEAR = 0.03;
+
+/**
+ * Le terrain de loin ne cache jamais les chemins (décision du directeur artistique, 17 octobre 2026 : ils restent continus
+ * à toute distance). Ses triangles, trois fois plus grands, passent par endroits au-dessus du sol exact, où sont posés
+ * les rubans des chemins (de 0,36 au plus) : de loin, un chemin s'y enterrait par tronçons. Chaque sommet de la grille
+ * grossière dont un triangle couvre un point d'un chemin (sa ligne, et à 0,4 de part et d'autre) trop haut descend
+ * d'autant, sous le dessus du ruban ; de loin, l'écart ne se voit pas, et la jupe des tuiles de près bouche la marche.
+ */
+function farHeights(f: HeightField): Float32Array {
+  const out = new Float32Array(f.heights);
+  const k = TERRAIN.coarse;
+  const cs = f.step * k;
+  const ci = Math.floor((f.nx - 1) / k);
+  const cj = Math.floor((f.nz - 1) / k);
+  const nodes = new Map(PATH_NODES.map((n) => [n.id, n.at]));
+  // L'abaissement voulu à chaque sommet grossier (rang fin), le plus grand demandé.
+  const drop = new Float32Array(out.length);
+  const fine = (x: number, z: number) => heightOnMesh(f, x, z);
+  for (const [ia, ib] of PATH_EDGES) {
+    const a = nodes.get(ia)!;
+    const c = nodes.get(ib)!;
+    const len = distance(a, c) || 1e-6;
+    const dx = (c.x - a.x) / len;
+    const dz = (c.z - a.z) / len;
+    const n = Math.max(1, Math.ceil(len / (f.step / 4)));
+    for (let q = 0; q <= n; q++) {
+      const lx = a.x + dx * ((len * q) / n);
+      const lz = a.z + dz * ((len * q) / n);
+      const top = standingHeight(fine(lx, lz)) + PATH_TOP - FAR_CLEAR;
+      for (const o of [-0.4, 0, 0.4]) {
+        const x = lx + dz * o;
+        const z = lz - dx * o;
+        const u = (x - f.minX) / cs;
+        const v = (z - f.minZ) / cs;
+        const i = Math.floor(u);
+        const j = Math.floor(v);
+        if (i < 0 || j < 0 || i >= ci || j >= cj) continue;
+        // Là où le sol exact passe déjà au-dessus du ruban (le flanc d'une pente), il le cache aussi de près.
+        const want = Math.max(top, fine(x, z));
+        const excess = farAt(out, f.nx, k, i, j, u - i, v - j) - want;
+        if (excess <= 0) continue;
+        for (const [di, dj] of [[0, 0], [1, 0], [0, 1], [1, 1]]) {
+          const r = (j + dj) * k * f.nx + (i + di) * k;
+          drop[r] = Math.max(drop[r], excess);
+        }
+      }
+    }
+  }
+  for (let r = 0; r < out.length; r++) out[r] -= drop[r];
+  return out;
+}
+
+/** La hauteur du terrain de loin dans la case grossière (`i`, `j`), à (`s`, `t`) dans la case : ses deux triangles en damier. */
+function farAt(h: Float32Array, nx: number, k: number, i: number, j: number, s: number, t: number): number {
+  const at = (di: number, dj: number) => h[(j + dj) * k * nx + (i + di) * k];
+  const h00 = at(0, 0);
+  const h10 = at(1, 0);
+  const h01 = at(0, 1);
+  const h11 = at(1, 1);
+  if (!flipped(i, j)) return s >= t ? h00 + s * (h10 - h00) + t * (h11 - h10) : h00 + t * (h01 - h00) + s * (h11 - h01);
+  return s + t <= 1 ? h00 + s * (h10 - h00) + t * (h01 - h00) : h11 + (1 - s) * (h01 - h11) + (1 - t) * (h10 - h11);
+}
+
+/** La hauteur du sol dessiné de loin en (x, z) : sur le triangle de la case grossière qui contient le point. */
+export function heightOnFar(f: HeightField, x: number, z: number): number {
+  const k = TERRAIN.coarse;
+  const u = (x - f.minX) / (f.step * k);
+  const v = (z - f.minZ) / (f.step * k);
+  const i = Math.floor(u);
+  const j = Math.floor(v);
+  if (i < 0 || j < 0 || (i + 1) * k >= f.nx || (j + 1) * k >= f.nz) return heightAt({ x, z });
+  return farAt(f.far, f.nx, k, i, j, u - i, v - j);
 }
 
 const at = (f: HeightField, i: number, j: number) => f.heights[j * f.nx + i];
@@ -255,7 +338,8 @@ function drawTile(f: HeightField, tx: number, tz: number, detail: TileDetail, b:
   const k = detail === 'near' ? 1 : TERRAIN.coarse;
   const n = TERRAIN.tileCells;
   const i0 = tx * n, j0 = tz * n;
-  const p = (i: number, j: number): P3 => [f.minX + i * f.step, at(f, i, j), f.minZ + j * f.step];
+  const h = detail === 'near' ? f.heights : f.far;
+  const p = (i: number, j: number): P3 => [f.minX + i * f.step, h[j * f.nx + i], f.minZ + j * f.step];
   let count = 0;
   for (let j = j0; j < j0 + n; j += k)
     for (let i = i0; i < i0 + n; i += k) {

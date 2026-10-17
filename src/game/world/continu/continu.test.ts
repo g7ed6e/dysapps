@@ -10,7 +10,7 @@ import { COAST, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_
 import { modelOfPlace } from './places';
 import { sceneSpot } from './questionScene';
 import { SEA_TEXTURE, seaPixels, shallowness } from './sea';
-import { RING, RING_LIFT, TILE_SIZE, buildHeightField, heightAt, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
+import { RING, RING_LIFT, TILE_SIZE, buildHeightField, heightAt, heightOnFar, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
 import { createTileStore } from './tiles';
 import { VEIL_HEIGHT, VEIL_PROFILE, veilFacets } from './veil';
 import { WALK_CADENCE, WALK_SPEED, skipWalk, startWalk, walkAt } from './walk';
@@ -586,5 +586,28 @@ describe('L’anneau clair sous Kéo (directeur artistique, 17 octobre 2026)', (
   it('sur des planches (Kéo plus haut que le sol), à plat sous ses pieds', () => {
     ringHeights(0, 0, 3, xz, (x) => x * 0.5, out);
     for (const y of out) expect(y).toBeCloseTo(RING_LIFT, 6);
+  });
+});
+
+describe('Les chemins de loin (directeur artistique, 17 octobre 2026)', () => {
+  it('le terrain de loin ne passe jamais au-dessus de la ligne d’un chemin : il reste continu à toute distance', () => {
+    const f = buildHeightField();
+    let lowered = 0;
+    for (const [ia, ib] of PATH_EDGES) {
+      const a = pathNode(ia).at;
+      const c = pathNode(ib).at;
+      const len = Math.hypot(c.x - a.x, c.z - a.z);
+      const n = Math.max(1, Math.ceil(len / 0.4));
+      for (let q = 0; q <= n; q++) {
+        const x = a.x + ((c.x - a.x) * q) / n;
+        const z = a.z + ((c.z - a.z) * q) / n;
+        // Le dessus du ruban (0,06 au-dessus du sol exact sur sa ligne), moins un peu d'air.
+        expect(heightOnFar(f, x, z), `${ia}–${ib}`).toBeLessThanOrEqual(standingHeight(heightOnMesh(f, x, z)) + 0.04 + 1e-4);
+      }
+    }
+    // Loin des chemins, le terrain de loin reste celui du sol.
+    for (let r = 0; r < f.far.length; r++) if (f.far[r] !== f.heights[r]) lowered++;
+    expect(lowered).toBeGreaterThan(0);
+    expect(lowered).toBeLessThan(f.far.length / 9 / 4);
   });
 });
