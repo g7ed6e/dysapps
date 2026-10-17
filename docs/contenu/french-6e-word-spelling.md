@@ -458,6 +458,7 @@ Pour tous les items :
 - bloc : `compound-6e`
 - combien : 2
 - petite construction : la grue
+- genre : féminin
 - demande : Il me faut {objet} pour ma grue. Assemble-les {à}.
 - prête : Tu as les {blocs} ! Livre-les à Rouxel.
 - posée : Grue posée chez Rouxel !

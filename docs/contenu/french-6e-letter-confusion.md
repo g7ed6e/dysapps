@@ -232,6 +232,7 @@ Pour tous les items :
 - bloc : `maths-6e-calculation`
 - combien : 4
 - petite construction : le puits
+- genre : masculin
 - demande : Il me faut {objet} pour mon puits. Joue une mission de la Plaine des nombres.
 - prête : Tu as les {blocs} ! Livre-les à Tunel.
 - posée : Puits posé chez Tunel !

@@ -574,6 +574,7 @@ Pour tous les items :
 - bloc : `french-6e-word-spelling`
 - combien : 3
 - petite construction : le tamis
+- genre : masculin
 - demande : Il me faut {objet} pour mon tamis. Joue une mission de la Carrière des mots.
 - prête : Tu as les {blocs} ! Livre-les à Silex.
 - posée : Tamis posé chez Silex !

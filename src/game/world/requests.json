@@ -5,6 +5,7 @@
     "block": "french-6e-grammar-spelling",
     "count": 3,
     "fixture": "french-6e-phonology-fixture-1",
+    "genre": "m",
     "blocland": {
       "name": "le potager",
       "ask": "Il me faut {objet} pour mon potager. Joue une mission de la Ferme des accords.",
@@ -18,6 +19,7 @@
     "block": "maths-6e-calculation",
     "count": 4,
     "fixture": "french-6e-letter-confusion-fixture-1",
+    "genre": "m",
     "blocland": {
       "name": "le puits",
       "ask": "Il me faut {objet} pour mon puits. Joue une mission de la Plaine des nombres.",
@@ -31,6 +33,7 @@
     "block": "compound-6e",
     "count": 2,
     "fixture": "french-6e-word-spelling-fixture-1",
+    "genre": "f",
     "blocland": {
       "name": "la grue",
       "ask": "Il me faut {objet} pour ma grue. Assemble-les {à}.",
@@ -44,6 +47,7 @@
     "block": "maths-6e-fractions",
     "count": 2,
     "fixture": "french-6e-grammar-spelling-fixture-1",
+    "genre": "m",
     "blocland": {
       "name": "le bac à eau",
       "ask": "Il me faut {objet} pour mon bac à eau. Joue une mission de la Rivière des fractions.",
@@ -58,6 +62,7 @@
     "count": 3,
     "fixture": "french-6e-reading-fixture-1",
     "afterPlan": "french-6e-reading-2",
+    "genre": "m",
     "blocland": {
       "name": "le poteau-lanterne",
       "ask": "Il me faut {objet} pour mon poteau-lanterne. Joue une mission du Volcan des décimaux.",
@@ -71,6 +76,7 @@
     "block": "french-6e-phonology",
     "count": 3,
     "fixture": "maths-6e-calculation-fixture-1",
+    "genre": "f",
     "blocland": {
       "name": "la boutique",
       "ask": "Il me faut {objet} pour ma boutique. Joue une mission de la Forêt des sons.",
@@ -84,6 +90,7 @@
     "block": "french-6e-letter-confusion",
     "count": 4,
     "fixture": "maths-6e-fractions-fixture-1",
+    "genre": "m",
     "blocland": {
       "name": "le lavoir",
       "ask": "Il me faut {objet} pour mon lavoir. Joue une mission de la Mine des lettres.",
@@ -97,6 +104,7 @@
     "block": "english-6e-vocabulary",
     "count": 4,
     "fixture": "maths-6e-decimals-fixture-1",
+    "genre": "m",
     "blocland": {
       "name": "le parasol",
       "ask": "Il me faut {objet} pour mon parasol. Joue une mission de la Baie des mots.",
@@ -266,6 +274,7 @@
     "block": "english-6e-grammar",
     "count": 2,
     "fixture": "english-6e-vocabulary-fixture-1",
+    "genre": "f",
     "blocland": {
       "name": "la pendule",
       "ask": "Il me faut {objet} pour ma pendule. Joue une mission de l’Horloge des verbes.",
@@ -279,6 +288,7 @@
     "block": "french-6e-reading",
     "count": 3,
     "fixture": "english-6e-grammar-fixture-1",
+    "genre": "f",
     "blocland": {
       "name": "la vitrine",
       "ask": "Il me faut {objet} pour ma vitrine. Joue une mission de la Tour du lecteur.",
@@ -370,6 +380,7 @@
     "block": "french-6e-word-spelling",
     "count": 3,
     "fixture": "history-6e-antiquity-fixture-1",
+    "genre": "m",
     "blocland": {
       "name": "le tamis",
       "ask": "Il me faut {objet} pour mon tamis. Joue une mission de la Carrière des mots.",
@@ -383,6 +394,7 @@
     "block": "history-6e-antiquity",
     "count": 4,
     "fixture": "geography-6e-living-fixture-1",
+    "genre": "f",
     "blocland": {
       "name": "la placette",
       "ask": "Il me faut {objet} pour ma placette. Joue une mission de la Fouille des siècles.",
@@ -396,6 +408,7 @@
     "block": "geography-6e-living",
     "count": 3,
     "fixture": "life-earth-sciences-6e-living-world-fixture-1",
+    "genre": "m",
     "blocland": {
       "name": "le nichoir",
       "ask": "Il me faut {objet} pour mon nichoir. Joue une mission de la Pointe des paysages.",
@@ -409,6 +422,7 @@
     "block": "technology-6e-objects",
     "count": 3,
     "fixture": "physics-chemistry-6e-matter-energy-fixture-1",
+    "genre": "f",
     "blocland": {
       "name": "l’étagère à flacons",
       "ask": "Il me faut {objet} pour mon étagère à flacons. Joue une mission du Hangar des inventions.",
@@ -422,6 +436,7 @@
     "block": "physics-chemistry-6e-matter-energy",
     "count": 3,
     "fixture": "technology-6e-objects-fixture-1",
+    "genre": "m",
     "blocland": {
       "name": "l’établi",
       "ask": "Il me faut {objet} pour mon établi. Joue une mission du Laboratoire des éléments.",
@@ -435,6 +450,7 @@
     "block": "life-earth-sciences-6e-living-world",
     "count": 3,
     "fixture": "civics-6e-democratic-society-fixture-1",
+    "genre": "f",
     "blocland": {
       "name": "l’urne",
       "ask": "Il me faut {objet} pour mon urne. Joue une mission de la Vallée du vivant.",

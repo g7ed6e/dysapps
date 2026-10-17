@@ -569,6 +569,7 @@ Pour tous les items :
 - bloc : `maths-6e-decimals`
 - combien : 3
 - petite construction : le poteau-lanterne
+- genre : masculin
 - demande : Il me faut {objet} pour mon poteau-lanterne. Joue une mission du Volcan des décimaux.
 - prête : Tu as les {blocs} ! Livre-les à Grimoire.
 - posée : Poteau-lanterne posé chez Grimoire !

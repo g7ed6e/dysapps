@@ -1,0 +1,7 @@
+{
+  "ask": "Il me faut {objet} pour {nom}. Joue une mission {au lieu}.",
+  "askAssembled": "Il me faut {objet} pour {nom}. Assemble les {blocs} {au lieu}.",
+  "ready": "Livre les {objet} {au lieu}.",
+  "remise": "Tu livres {objet} pour {nom}.",
+  "done": "{Nom} est {posé}."
+}

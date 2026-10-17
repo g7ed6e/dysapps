@@ -571,6 +571,7 @@ Pour tous les items :
 - bloc : `physics-chemistry-6e-matter-energy`
 - combien : 3
 - petite construction : l’établi
+- genre : masculin
 - demande : Il me faut {objet} pour mon établi. Joue une mission du Laboratoire des éléments.
 - prête : Tu as les {blocs} ! Livre-les à Pince.
 - posée : Établi posé chez Pince !

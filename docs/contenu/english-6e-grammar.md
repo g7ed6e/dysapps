@@ -469,6 +469,7 @@ Pour tous les items :
 - bloc : `french-6e-reading`
 - combien : 3
 - petite construction : la vitrine
+- genre : féminin
 - demande : Il me faut {objet} pour ma vitrine. Joue une mission de la Tour du lecteur.
 - prête : Tu as les {blocs} ! Livre-les à Tick.
 - posée : Vitrine posée chez Tick !

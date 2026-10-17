@@ -11,6 +11,7 @@ const tunel = [
   '- bloc : `maths-6e-calculation`',
   '- combien : 4',
   '- petite construction : le puits',
+  '- genre : masculin',
   '- demande : Il me faut {objet} pour mon puits. Joue une mission de la Plaine des nombres.',
   '- prête : Tu as les {blocs} ! Livre-les à Tunel.',
   '- posée : Puits posé chez Tunel !',
@@ -54,6 +55,7 @@ describe('les commandes des habitants en Markdown', () => {
       block: 'maths-6e-calculation',
       count: 4,
       fixture: 'french-6e-letter-confusion-fixture-1',
+      genre: 'm',
       blocland: {
         name: 'le puits',
         ask: 'Il me faut {objet} pour mon puits. Joue une mission de la Plaine des nombres.',
@@ -76,6 +78,7 @@ describe('les commandes des habitants en Markdown', () => {
     expect(lire(...remplacer('- bloc', '- bloc : maths-6e-calculation'))).toThrow('bloc : identifiant attendu entre accents graves');
     expect(lire(...tunel, '- couleur : rouge')).toThrow('champ inconnu « couleur »');
     expect(lire(...tunel, '- combien : 3')).toThrow('« combien » écrit deux fois');
+    expect(lire(...remplacer('- genre', '- genre : neutre'))).toThrow('genre : masculin ou féminin, lu « neutre »');
     expect(lire(...tunel.filter((l) => !l.startsWith('- posée')))).toThrow('commande french-6e-letter-confusion-request-1 : « posée » manque');
     expect(lire('- habitant : Tunel')).toThrow('un champ va sous le titre d’une commande');
     expect(() => lireIle([...debut.slice(0, 6), '## Les demandes', '', '## Les plans', ''].join('\n'), 'x.md')).toThrow('« ## Les demandes » vient après « ## Les plans »');
@@ -98,6 +101,8 @@ describe('les commandes des habitants en Markdown', () => {
     expect(verifier(remplacer('- prête', '- prête : Tu as les {nombre} ! Livre-les à Tunel.'))).toThrow('jeton inconnu {nombre}');
     expect(verifier(remplacer('- posée', '- posée : Puits posé chez Coco !'))).toThrow('posée : « Puits posé(e) chez Tunel ! »');
     expect(verifier([...tunel, '- après le plan : `french-6e-reading-2`'])).toThrow('n’est pas un plan de l’île');
+    // Au 6e, le monde ouvert accorde « posé » (GD-20, point 4) : le genre est obligatoire.
+    expect(verifier(tunel.filter((l) => !l.startsWith('- genre')))).toThrow('genre : masculin ou féminin, au 6e');
   });
 
   it('suit docs/contenu/ : une commande par île de français, de maths, d’anglais, d’histoire-géographie, de sciences et d’EMC, aucune dans un lieu d’option (LV2, latin-grec)', () => {

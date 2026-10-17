@@ -213,6 +213,7 @@ Pour tous les items :
 - bloc : `french-6e-letter-confusion`
 - combien : 4
 - petite construction : le lavoir
+- genre : masculin
 - demande : Il me faut {objet} pour mon lavoir. Joue une mission de la Mine des lettres.
 - prête : Tu as les {blocs} ! Livre-les à Nénu.
 - posée : Lavoir posé chez Nénu !
