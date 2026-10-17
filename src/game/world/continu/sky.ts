@@ -26,10 +26,12 @@ export const HORIZON_COLOR = SKY_STOPS[0].color;
  * vert renvoyé (`HemisphereLight`), plus bas qu'avant (1,35 au lieu de 1,5) ; le soleil chaud, plus fort et plus bas (environ 33° au
  * lieu de 47°), à l'est-sud-est : les pentes au soleil s'éclairent, les autres gardent leur couleur, plus sombre, jamais
  * presque noire (l'ambiance seule en donne encore le tiers). Le mappage des tons neutre de Three.js adoucit les blancs.
+ * Retouche : le ciel renvoyé moins bleu (#DDE8E6), l'herbe ne tire plus vers le vert d'eau ; le sol renvoyé plus clair
+ * (#A3AB8C), le dessous des tabliers et des piles ne tombe pas au presque-noir.
  */
 export const LIGHT = {
   sky: 0xdde8e6,
-  ground: 0x8e9a7c,
+  ground: 0xa3ab8c,
   ambient: 1.35,
   sun: 0xfff0d8,
   sunIntensity: 2.9,
