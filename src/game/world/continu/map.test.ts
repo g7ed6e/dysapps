@@ -114,11 +114,12 @@ describe('Les noms sur deux lignes', () => {
     expect(nameLines('Le Chantier naval')).toEqual(['Le Chantier', 'naval']);
     expect(nameLines('Les Marais salants')).toEqual(['Les Marais', 'salants']);
     expect(nameLines('La Turbine')).toEqual(['La', 'Turbine']);
-    expect(nameLines('L’Observatoire')).toEqual(['L’', 'Observatoire']);
+    expect(nameLines('L’Observatoire')).toEqual(['L’Observatoire']);
+    expect(nameLines('L’Escale')).toEqual(['L’Escale']);
     expect(nameLines('La Gare maritime')).toEqual(['La Gare', 'maritime']);
     expect(nameLines('Phare')).toEqual(['Phare']);
     // Les lignes redonnent le nom, lettre pour lettre.
-    for (const p of PLACES) expect(nameLines(p.name).join(' ').replace('’ ', '’')).toBe(p.name);
+    for (const p of PLACES) expect(nameLines(p.name).join(' ')).toBe(p.name);
   });
 });
 

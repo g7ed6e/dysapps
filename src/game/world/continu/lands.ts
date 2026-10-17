@@ -44,7 +44,7 @@ export const LINKED_LANDS: readonly LinkedLand[] = LANDS.map((l) => l.id).filter
 /** Une terre par son identifiant. */
 export const landById = (id: LandId): Land => LANDS.find((l) => l.id === id)!;
 
-/** La terre d'un lieu. */
+/** La terre d'un lieu (un test vérifie que chaque lieu est dans une terre et une seule). */
 export const landOf = (place: PlaceId): LandId => LANDS.find((l) => l.places.includes(place))!.id;
 
 /** Le prix d'un lieu : celui d'une liaison du 6e dans la grille (`LINK_PRICE`, un test le vérifie). */

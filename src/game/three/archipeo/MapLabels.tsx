@@ -62,11 +62,14 @@ interface Props {
 
 /**
  * Ce qui manque à une vue de la Carte, pesé (GD-20, « La Carte au plus grand texte ») : un lieu ouvert sans nom (réduit à
- * son icône, ou hors de l'écran) pèse le plus ; puis, sur tablette seulement, un lieu fermé hors de l'écran. Le nom tu
- * d'un lieu fermé ne compte pas : le nom d'un lieu ouvert, près de son lieu, passe avant lui (directeur artistique), et
- * le cadenas reste.
+ * son icône, ou hors de l'écran), et autant un lieu d'une terre fermée ou le cadenas d'un pont hors de l'écran, sur tout
+ * écran (consultant UX UI, relecture du lot 1 des « vraies terres » : la vue de départ garde à l'écran les quatre
+ * cadenas et tous les lieux ; avant, sur tablette seulement, et cent fois moins : la Carte se rapprochait des lieux
+ * ouverts et la Gare maritime sortait du cadre). À poids égal, la vue la plus proche de l'île entière l'emporte. Le nom
+ * tu d'un lieu fermé ne compte pas : le nom d'un lieu ouvert, près de son lieu, passe avant lui (directeur artistique),
+ * et le cadenas reste.
  */
-const MISSING = { unnamed: 100, offscreen: 1 } as const;
+const MISSING = { unnamed: 100, offscreen: 100 } as const;
 /** Un écran plus bas que tant de pixels est un téléphone couché (la même borne que openWorld.css). */
 const LOW_SCREEN = 500;
 const missingOf = (items: readonly MapLabel[], spots: readonly MapLabelSpot[]) => spots.reduce((n, s, i) => n + (items[i].kind === 'open' && !s.name ? MISSING.unnamed : 0), 0);
@@ -86,7 +89,7 @@ function Name({ text, wrap = false }: { text: string; wrap?: boolean }) {
     <span className="open-world-map-lines" data-lignes={wrap && text.length > ONE_LINE ? '2' : '1'}>
       {lines.map((line, i) => (
         <span key={i} className="open-world-map-line">
-          {i > 0 && !/[’']$/u.test(lines[i - 1]) ? ' ' : ''}
+          {i > 0 ? ' ' : ''}
           {line}
         </span>
       ))}
@@ -132,12 +135,11 @@ export function MapLabels({ openPlaces, closedLands, onPick, placer, onClosed, o
   // Pour une vue essayée : ce qui y manque (`missingOf`), un lieu hors de l'écran compté comme sans nom.
   const crowded = useCallback((spots: readonly MapSpotOnScreen[]) => {
     const items = itemsOf(spots);
-    const tablet = screen.current.height > LOW_SCREEN;
     let gone = 0;
     for (const s of spots) {
       if (s.shown || s.id === 'keo') continue;
       if (s.id === 'port' ? sizes.current.has('port') : !isBridgeSpot(s.id) && openPlaces.includes(s.id)) gone += MISSING.unnamed;
-      else if (s.id !== 'port' && tablet) gone += MISSING.offscreen;
+      else if (s.id !== 'port') gone += MISSING.offscreen;
     }
     // Sans la reprise des noms fermés : seules les pastilles comptent ici.
     return gone + missingOf(items, layoutMapLabels(items, obstacles.current, screen.current, false));

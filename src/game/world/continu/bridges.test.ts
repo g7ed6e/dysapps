@@ -2,7 +2,7 @@
 // terres, aucun chemin dessus, Kéo arrêté sur la culée d'un pont tombé et porté par le tablier d'un pont rebâti, le
 // dessin des deux états et sur la Carte. Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { BRIDGE, BRIDGE_TOUCH, KEO_STOP, allBridges, bridgeFacets, bridgeFloor, bridgeMapMark, bridgeSite, clampToOpen } from './bridges';
+import { BRIDGE, BRIDGE_TOUCH, KEO_STOP, allBridges, bridgeFacets, bridgeFloor, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen } from './bridges';
 import { linearRgb } from './geometry';
 import { LINKED_LANDS, NODE_LANDS, bridgeEdge, landById } from './lands';
 import { atNode, pathNode, pathRibbons, snapToNetwork, type NetworkPoint } from './paths';
@@ -20,9 +20,18 @@ describe('Les bras de mer', () => {
       expect(heightAt(s.mid), s.land).toBeLessThan(-0.6);
       // L'eau profonde : aucun haut-fond où passer à gué.
       expect(shallowness(s.mid), s.land).toBe(0);
-      // La rive, juste hors de l'eau : la levée de roche.
-      const near = { x: s.near.x + s.dir.x * (s.water[0] - 1.5), z: s.near.z + s.dir.z * (s.water[0] - 1.5) };
-      expect(heightAt(near), s.land).toBeGreaterThan(STRAIT_BANK.height * 0.8);
+      // La rive, près du pont : la levée de roche en deux gradins (relecture du lot 1, directeur artistique), le replat
+      // du premier au ras de l'eau, puis toute la hauteur, 1,5 à 2 au-dessus de l'eau.
+      // Le point du chemin, avant l'eau, à `c` unités d'elle.
+      const at = (c: number) => {
+        let d = s.water[0];
+        while (straitClearance({ x: s.near.x + s.dir.x * d, z: s.near.z + s.dir.z * d }, s.land) < c) d -= 0.02;
+        return { x: s.near.x + s.dir.x * d, z: s.near.z + s.dir.z * d };
+      };
+      expect(heightAt(at(1)), s.land).toBeGreaterThan(STRAIT_BANK.step * 0.8);
+      expect(heightAt(at(1)), s.land).toBeLessThan(STRAIT_BANK.height * 0.8);
+      expect(heightAt(at(2.6)), s.land).toBeGreaterThan(1.5);
+      expect(heightAt(at(2.6)), s.land).toBeLessThan(2.2);
     }
   });
 
@@ -118,6 +127,30 @@ describe('Les ponts', () => {
       expect(hasWood(after)).toBe(true);
       // Le tablier, au-dessus de la rive rocheuse : on passe dessous en barque.
       expect(BRIDGE.deck).toBeGreaterThan(STRAIT_BANK.height);
+    }
+  });
+
+  it('tombé (relecture du lot 1, directeur artistique) : deux moignons debout, 0,7 à 1,2 au-dessus de l’eau, rien de plus haut au milieu de l’eau ; le départ d’arche à 1,5 au moins ; le cadenas passé le milieu, côté terre fermée', () => {
+    for (const s of allBridges()) {
+      const f = bridgeFacets(s.land, false);
+      const along = (i: number) => (f.positions[i] - s.near.x) * s.dir.x + (f.positions[i + 2] - s.near.z) * s.dir.z;
+      // Le milieu de l'eau, hors des deux départs d'arche : seuls les moignons.
+      const from = s.water[0] + BRIDGE.over + 2.2;
+      const to = s.water[1] - BRIDGE.over - 1.5;
+      let top = -Infinity;
+      let arch = -Infinity;
+      for (let i = 0; i < f.positions.length; i += 3) {
+        const d = along(i);
+        if (d > from && d < to) top = Math.max(top, f.positions[i + 1]);
+        if (d > s.water[0] + BRIDGE.over && d < s.water[0] + BRIDGE.over + 1) arch = Math.max(arch, f.positions[i + 1]);
+      }
+      expect(top, s.land).toBeGreaterThanOrEqual(0.7);
+      expect(top, s.land).toBeLessThanOrEqual(1.25);
+      expect(arch, s.land).toBeGreaterThanOrEqual(1.5);
+      const lock = bridgeLockPoint(s.land);
+      const d = (lock.x - s.near.x) * s.dir.x + (lock.z - s.near.z) * s.dir.z;
+      expect(d, s.land).toBeGreaterThan((s.water[0] + s.water[1]) / 2);
+      expect(d, s.land).toBeLessThan(s.water[1]);
     }
   });
 

@@ -35,6 +35,10 @@ it('le nom entier de la terre, l’icône de chacun de ses lieux, une seule rang
   expect(sheet.querySelectorAll('.closed-land-places li')).toHaveLength(3);
   // Le nom de chaque lieu est lu par la voix (montré au grand texte seulement).
   expect(within(sheet).getByText('Les Ruines')).toHaveClass('closed-land-place-name');
+  // Et chaque lieu porte son nom dans son `aria-label` (référent dys, relecture du lot 1).
+  expect([...sheet.querySelectorAll('.closed-land-places li')].map((li) => li.getAttribute('aria-label'))).toEqual(['La Mangrove', 'Les Ruines', 'L’Observatoire']);
+  // « Relier » et ce que l'élève a, sur la même ligne (la même rangée).
+  expect(sheet.querySelector('.closed-place-row')!.contains(sheet.querySelector('.closed-place-have'))).toBe(true);
   const buttons = within(sheet).getAllByRole('button').filter((b) => b.classList.contains('closed-place-link'));
   expect(buttons).toHaveLength(1);
   expect(buttons[0]).toHaveTextContent('Relier');

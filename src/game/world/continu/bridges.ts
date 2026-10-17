@@ -1,8 +1,8 @@
 // Les ponts des terres du monde continu (GD-20, point 3, « vraies terres, vrais ponts », choix du mainteneur du 17 octobre
 // 2026) : un pont par bras de mer, sur la liaison du réseau qui le passe (./lands.ts, `bridgeEdge`). Avant : le chemin
-// finit sur une culée de pierre, un départ d'arche brisé, deux moignons de piles dans l'eau, la culée jumelle en face ;
-// Kéo s'arrête sur la culée, sans heurt ni son (`clampToOpen`). Après (ce lot : posé d'un coup) : pierre et bois, de la
-// famille des quais de l'Escale (concept retenu, ligne 3) : les culées, deux piles de pierre, le tablier de planches à
+// finit sur une culée de pierre, un départ d'arche brisé, deux moignons de piles debout dans l'eau, la culée jumelle en
+// face ; Kéo s'arrête sur la culée, sans heurt ni son (`clampToOpen`). Après (ce lot : posé d'un coup) : pierre et bois,
+// de la famille des quais de l'Escale (concept retenu, ligne 3) : les culées, trois ou quatre piles maçonnées, le tablier à
 // 1,9 au-dessus de l'eau, ses garde-corps, une lanterne de chaque côté de chaque culée ; Kéo marche sur la pierre et
 // sur le tablier (`bridgeFloor`). Tout entre dans le maillage des lieux, sans appel de plus ; sur la Carte, le pont se
 // dessine aussi en trait double, distinct d'un chemin. Code pur.
@@ -20,7 +20,10 @@ import { heightAt, standingHeight, straitClearance } from './terrain';
  */
 export const BRIDGE = { deck: 1.9, width: 3.2, over: 0.5, abutHalf: 2.1, foot: -1.6, plank: 0.14, post: 1.7, rail: 1.0, railOut: 1.5 } as const;
 
-/** Les couleurs du pont : la pierre des quais de l'Escale, son dessus plus clair ; le bois du tablier et des garde-corps ; les lanternes. */
+/**
+ * Les couleurs du pont : la pierre des quais de l'Escale, son dessus plus clair, le pied mouillé des piles et des
+ * moignons plus sombre, leur cassure aussi ; le bois du tablier et des garde-corps ; les lanternes, leur fer et leur verre Sable.
+ */
 const C = {
   stone: 0xb9b2a3,
   stoneTop: 0xd8d1c2,
@@ -28,8 +31,10 @@ const C = {
   wood: 0xa9784a,
   woodTop: 0xc6955f,
   rail: 0x8a5f3a,
+  wet: 0x6f675b,
+  broken: 0x8a8273,
   iron: 0x3f4a50,
-  glass: 0xf2dfb4,
+  glass: 0xdaa66a,
 } as const;
 
 /** Où Kéo s'arrête devant un pont pas encore rebâti : sur sa culée, à tant d'unités de l'eau (son rayon et un peu d'air). */
@@ -181,13 +186,123 @@ function abutments(b: FacetBuilder, s: BridgeSite): void {
   slab(b, s, s.water[1] - BRIDGE.over, s.abut[1], BRIDGE.abutHalf, BRIDGE.deck, abutTop(s, 1, s.abut[1]), C.stone, C.stoneTop);
 }
 
-/** Les deux piles, au tiers et aux deux tiers de l'eau (leur pied et leur part). */
-const pilesOf = (s: BridgeSite): number[] => [1 / 3, 2 / 3].map((k) => s.water[0] + (s.water[1] - s.water[0]) * k);
+/**
+ * Les piles (relecture du lot 1, directeur artistique : maçonnées, de section carrée, trois ou quatre, de l'eau au
+ * tablier) : leur côté ; leurs assises, de hauteurs égales du pied à leur chaperon ; le pied sombre, mouillé, jusqu'à
+ * tant au-dessus de l'eau.
+ */
+const PILE = { side: 1.4, courses: 4, inset: 0.1, wet: 0.35 } as const;
 
 /**
- * Un pont pas encore rebâti (`before`) : les deux culées ; de chaque côté, un départ d'arche brisé, une pierre penchée
- * vers l'eau ; deux moignons de piles qui affleurent. Rebâti : les culées, les piles, le tablier de planches, les
- * garde-corps et les quatre lanternes. Un seul maillage, réuni à celui des lieux.
+ * Le départ d'arche brisé : le bas de l'intrados contre la culée, au-dessus de l'eau ; l'épaisseur de pierre au bout,
+ * au-dessus de l'intrados ; de combien son dessus penche par unité vers le bout.
+ */
+const ARCH = { spring: 0.25, ring: 0.45, tilt: 0.12 } as const;
+
+/** Les piles, en part de l'eau depuis la rive de ce côté : trois sur un bras de moins de 13 unités, quatre au-delà. */
+const pilesOf = (s: BridgeSite): number[] => {
+  const n = s.water[1] - s.water[0] < 13 ? 3 : 4;
+  return Array.from({ length: n }, (_, k) => s.water[0] + ((s.water[1] - s.water[0]) * (k + 1)) / (n + 1));
+};
+
+/** Les moignons d'un pont tombé : deux des piles, la première et la dernière. */
+const stumpsOf = (s: BridgeSite): number[] => {
+  const piles = pilesOf(s);
+  return [piles[0], piles[piles.length - 1]];
+};
+
+/** Le cadenas d'un pont (le même sur les quatre) : au-dessus de l'eau, passé son milieu, du côté de la terre fermée. */
+export function bridgeLockPoint(land: LinkedLand): Vec2 {
+  const s = bridgeSite(land);
+  return frame(s)(s.water[0] + (s.water[1] - s.water[0]) * 0.6, 0);
+}
+
+/**
+ * Un fût de pierre de section carrée (`half` de demi-côté) à `d` sur la ligne d'un pont, du pied sous l'eau jusqu'à son
+ * dessus : quatre coins à `corners` (dans l'ordre : vers `near` à gauche, loin à gauche, loin à droite, vers `near` à
+ * droite) et une pointe à `peak` (sa place en part du demi-côté, sa hauteur), qui cassent le dessus en biais ; le pied
+ * plus sombre jusqu'à `PILE.wet` au-dessus de l'eau.
+ */
+function shaft(b: FacetBuilder, s: BridgeSite, d: number, half: number, corners: readonly [number, number, number, number], peak: readonly [number, number, number], color: number, top: number): void {
+  const at = frame(s);
+  const off = [
+    [-half, -half],
+    [half, -half],
+    [half, half],
+    [-half, half],
+  ] as const;
+  const p = (k: number, y: number) => {
+    const q = at(d + off[k][0], off[k][1]);
+    return [q.x, y, q.z] as const;
+  };
+  const wet = PILE.wet;
+  for (let k = 0; k < 4; k++) {
+    const n = (k + 1) % 4;
+    // Les faces regardent vers le dehors : le tour se fait dans le sens qui les tourne vers l'extérieur.
+    b.quad(p(n, BRIDGE.foot), p(k, BRIDGE.foot), p(k, wet), p(n, wet), C.wet);
+    b.quad(p(n, wet), p(k, wet), p(k, corners[k]), p(n, corners[n]), color);
+  }
+  const c = at(d + peak[0] * half, peak[1] * half);
+  const apex = [c.x, peak[2], c.z] as const;
+  for (let k = 0; k < 4; k++) {
+    const n = (k + 1) % 4;
+    b.triangle(apex, p(n, corners[n]), p(k, corners[k]), top);
+  }
+}
+
+/**
+ * Un départ d'arche brisé, de la culée à `from` vers l'eau (`sign`, +1 vers l'autre rive), long de `length` au plus :
+ * son dessus dans le prolongement de la culée, 1,8 au-dessus de l'eau, qui penche un peu vers le bout ; dessous,
+ * l'intrados courbe, un quart d'arc qui descend presque à l'eau contre la culée ; le bout cassé en dents, trois rangs de
+ * claveaux en escalier à travers la largeur (`teeth`, leur longueur en part de `length`), puis le vide franc jusqu'au
+ * premier moignon (directeur artistique, référence `detroit-avant-42`). Rien ne descend en marches vers l'eau.
+ */
+function archStart(b: FacetBuilder, s: BridgeSite, from: number, sign: 1 | -1, length: number, teeth: readonly [number, number, number]): void {
+  const at = frame(s);
+  const half = BRIDGE.width / 2;
+  const top = (u: number) => BRIDGE.deck - 0.1 - ARCH.tilt * u;
+  // L'intrados : un quart d'ellipse sur l'arc entier (`span`), de presque l'eau contre la culée jusque sous le dessus.
+  const span = length * 1.3;
+  const under = (u: number) => ARCH.spring + (BRIDGE.deck - 0.1 - ARCH.ring - ARCH.spring) * Math.sin((Math.PI / 2) * Math.min(1, u / span));
+  const p = (u: number, v: number, h: number) => {
+    const q = at(from + sign * u, v);
+    return [q.x, h, q.z] as const;
+  };
+  // Une tranche de `u0` à `u1`, de `v0` à `v1` à travers (v0 < v1) ; ses faces tournées vers le dehors quel que soit le
+  // sens du bras (`sign`), sa face du bout seulement si `end`, chaque flanc seulement s'il se voit (`sides`).
+  const slice = (u0: number, u1: number, v0: number, v1: number, end: boolean, sides: readonly [boolean, boolean]) => {
+    const [L, R] = sign > 0 ? [v1, v0] : [v0, v1];
+    const [lOut, rOut] = sign > 0 ? [sides[1], sides[0]] : [sides[0], sides[1]];
+    b.quad(p(u0, L, top(u0)), p(u1, L, top(u1)), p(u1, R, top(u1)), p(u0, R, top(u0)), C.stoneTop);
+    b.quad(p(u0, R, under(u0)), p(u1, R, under(u1)), p(u1, L, under(u1)), p(u0, L, under(u0)), C.wet);
+    if (lOut) b.quad(p(u0, L, under(u0)), p(u1, L, under(u1)), p(u1, L, top(u1)), p(u0, L, top(u0)), C.stone);
+    if (rOut) b.quad(p(u1, R, under(u1)), p(u0, R, under(u0)), p(u0, R, top(u0)), p(u1, R, top(u1)), C.stone);
+    if (end) b.quad(p(u1, L, under(u1)), p(u1, R, under(u1)), p(u1, R, top(u1)), p(u1, L, top(u1)), C.broken);
+  };
+  // Le corps plein jusqu'au plus court des claveaux, en deux tranches (l'intrados s'y courbe), puis chaque rang à sa
+  // longueur.
+  const solid = length * Math.min(...teeth);
+  slice(0, solid / 2, -half, half, false, [true, true]);
+  slice(solid / 2, solid, -half, half, false, [true, true]);
+  const w = (2 * half) / 3;
+  teeth.forEach((k, i) => {
+    const end = length * k;
+    if (end <= solid + 1e-6) {
+      // Le rang le plus court : sa face du bout, à travers sa seule largeur.
+      const v0 = -half + i * w;
+      const [L, R] = sign > 0 ? [v0 + w, v0] : [v0, v0 + w];
+      b.quad(p(solid, L, under(solid)), p(solid, R, under(solid)), p(solid, R, top(solid)), p(solid, L, top(solid)), C.broken);
+      return;
+    }
+    slice(solid, end, -half + i * w, -half + (i + 1) * w, true, [i === 0 || teeth[i - 1] < k, i === 2 || teeth[i + 1] < k]);
+  });
+}
+
+/**
+ * Un pont pas encore rebâti (`before`) : les deux culées ; de chaque côté, un départ d'arche brisé, plus court côté
+ * terre fermée ; deux moignons debout, de la section des piles, à leur place, cassés en biais. Rebâti : les culées, les
+ * piles maçonnées, le tablier de planches, les garde-corps et les quatre lanternes. Un seul maillage, réuni à celui des
+ * lieux.
  */
 export function bridgeFacets(land: LinkedLand, built: boolean): Facets {
   const b = new FacetBuilder();
@@ -196,27 +311,28 @@ export function bridgeFacets(land: LinkedLand, built: boolean): Facets {
   const yaw = Math.atan2(s.dir.x, s.dir.z);
   abutments(b, s);
   if (!built) {
-    // Le départ d'arche brisé : de chaque culée, une pierre qui avance sur l'eau et s'arrête net, penchée.
-    for (const [from, sign] of [
-      [s.water[0] + BRIDGE.over, 1],
-      [s.water[1] - BRIDGE.over, -1],
-    ] as const) {
-      const a = at(from, 0);
-      const c = at(from + sign * 1.6, 0.3 * sign);
-      b.beam({ x: a.x, y: BRIDGE.deck - 0.45, z: a.z }, { x: c.x, y: BRIDGE.deck - 1.05, z: c.z }, 0.9, C.pile);
-    }
-    // Les moignons des piles, à peine hors de l'eau, leur cassure de biais.
-    for (const [k, d] of pilesOf(s).entries()) {
-      const p = at(d, 0);
-      b.box({ x: p.x, y: BRIDGE.foot, z: p.z, yaw }, [BRIDGE.width + 0.4, -BRIDGE.foot + 0.35 + 0.15 * k, 1.1], C.pile, C.stoneTop);
-    }
+    archStart(b, s, s.water[0] + BRIDGE.over, 1, 2.1, [1, 0.8, 0.6]);
+    archStart(b, s, s.water[1] - BRIDGE.over, -1, 1.4, [0.6, 0.8, 1]);
+    // Les deux moignons, de 0,7 à 1,2 au-dessus de l'eau, le dessus cassé en biais (la pierre brute, plus sombre que le
+    // dessus des culées), sans dalle à plat.
+    const h = PILE.side / 2;
+    const [first, last] = stumpsOf(s);
+    shaft(b, s, first, h, [1.2, 0.65, 0.7, 1.15], [-0.8, 0.7, 1.2], C.pile, C.broken);
+    shaft(b, s, last, h, [0.65, 1.1, 1.2, 0.75], [0.7, -0.6, 1.2], C.pile, C.broken);
     return b.build();
   }
-  // Les piles, jusque sous le tablier, et leur chaperon.
+  // Les piles maçonnées, de l'eau jusque sous le tablier : leurs assises, chacune un peu en retrait de celle du dessous
+  // tour à tour (les joints se lisent), le pied sombre, puis leur chaperon.
+  const pileTop = BRIDGE.deck - BRIDGE.plank - 0.24;
   for (const d of pilesOf(s)) {
     const p = at(d, 0);
-    b.box({ x: p.x, y: BRIDGE.foot, z: p.z, yaw }, [BRIDGE.width + 0.4, BRIDGE.deck - 0.4 - BRIDGE.foot, 1.1], C.pile, C.stoneTop);
-    b.box({ x: p.x, y: BRIDGE.deck - 0.4, z: p.z, yaw }, [BRIDGE.width + 0.6, 0.18, 1.3], C.stone, C.stoneTop);
+    b.box({ x: p.x, y: BRIDGE.foot, z: p.z, yaw }, [PILE.side, PILE.wet - BRIDGE.foot, PILE.side], C.wet);
+    const course = (pileTop - 0.18 - PILE.wet) / PILE.courses;
+    for (let k = 0; k < PILE.courses; k++) {
+      const side = PILE.side - (k % 2 ? PILE.inset : 0);
+      b.box({ x: p.x, y: PILE.wet + k * course, z: p.z, yaw }, [side, course, side], k % 2 ? C.pile : C.stone);
+    }
+    b.box({ x: p.x, y: pileTop - 0.18, z: p.z, yaw }, [PILE.side + 0.3, 0.18, PILE.side + 0.3], C.stone, C.stoneTop);
   }
   // Le tablier : deux longerons sous cinq planches jointives, d'une culée à l'autre.
   const d0 = s.water[0] + BRIDGE.over - 0.3;
@@ -249,14 +365,19 @@ export function bridgeFacets(land: LinkedLand, built: boolean): Facets {
       last = head;
     }
   }
-  // Les lanternes, de chaque côté de chaque culée, au début du garde-corps : un mât de fer, la lanterne, son chapeau.
+  // Les lanternes, de chaque côté de chaque culée, au début du garde-corps : un mât de fer, puis une tête qu'on lit
+  // (directeur artistique) : son socle, le verre Sable dans sa cage de fer (deux barreaux en croix sur chaque face), son
+  // chapeau en pointe.
   for (const d of [s.abut[0] + 0.5, s.abut[1] - 0.5])
     for (const v of [-(BRIDGE.railOut + 0.35), BRIDGE.railOut + 0.35]) {
       const p = at(d, v);
       const y = surface(d);
-      b.box({ x: p.x, y, z: p.z, yaw }, [0.16, 1.7, 0.16], C.iron);
-      b.box({ x: p.x, y: y + 1.7, z: p.z, yaw }, [0.34, 0.4, 0.34], C.iron, C.glass);
-      b.prism({ x: p.x, y: y + 2.1, z: p.z, yaw }, 0.3, 0, 0.28, 4, C.iron);
+      b.box({ x: p.x, y, z: p.z, yaw }, [0.14, 1.6, 0.14], C.iron);
+      b.box({ x: p.x, y: y + 1.6, z: p.z, yaw }, [0.46, 0.08, 0.46], C.iron);
+      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.36, 0.44, 0.36], C.glass);
+      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.42, 0.44, 0.07], C.iron);
+      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.07, 0.44, 0.42], C.iron);
+      b.prism({ x: p.x, y: y + 2.12, z: p.z, yaw: yaw + Math.PI / 4 }, 0.36, 0, 0.32, 4, C.iron);
     }
   return b.build();
 }

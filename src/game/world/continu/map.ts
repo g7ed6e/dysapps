@@ -205,17 +205,16 @@ export interface MapLabelSpot {
 }
 
 /**
- * Un nom sur deux lignes, coupé entre deux mots (ou après un article élidé : « L’ » / « Observatoire »), jamais au
- * milieu d'un mot, à la coupure qui équilibre le mieux les deux lignes (en lettres) ; un seul mot reste sur une ligne.
- * La forme serrée d'une étiquette de la Carte (GD-20 : un lieu n'a qu'un nom, il passe sur deux lignes).
+ * Un nom sur deux lignes, coupé entre deux mots, jamais au milieu d'un mot ni après un article élidé (« L’Observatoire »
+ * reste entier : consultant UX UI, relecture du lot 1 des « vraies terres »), à la coupure qui équilibre le mieux les
+ * deux lignes (en lettres) ; un seul mot reste sur une ligne. La forme serrée d'une étiquette de la Carte (GD-20 : un
+ * lieu n'a qu'un nom, il passe sur deux lignes).
  */
 export function nameLines(name: string): readonly string[] {
   let best: { lines: [string, string]; longest: number } | undefined;
   for (let i = 1; i < name.length; i++) {
-    const space = name[i] === ' ';
-    const elided = name[i - 1] === '’' || name[i - 1] === "'";
-    if (!space && !elided) continue;
-    const lines: [string, string] = [name.slice(0, i).trimEnd(), name.slice(space ? i + 1 : i).trimStart()];
+    if (name[i] !== ' ') continue;
+    const lines: [string, string] = [name.slice(0, i).trimEnd(), name.slice(i + 1).trimStart()];
     if (!lines[0] || !lines[1]) continue;
     const longest = Math.max(lines[0].length, lines[1].length);
     if (!best || longest < best.longest) best = { lines, longest };

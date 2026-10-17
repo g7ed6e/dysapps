@@ -12,9 +12,9 @@
 // Kéo. Les terres (GD-20, point 3, « vraies terres, vrais ponts ») : quatre bras de mer coupent l'île en cinq terres ; au
 // départ, la Pointe du Phare est ouverte ; une terre fermée est derrière son pont tombé, sous la brume ; toucher l'un de
 // ses lieux, son pont, ou son cadenas sur la Carte, ouvre sa fiche (./ClosedLandSheet.tsx), où « Relier » paie la terre
-// entière : le pont est rebâti d'un coup, un toc de bois, puis « Le pont est rebâti. ». À l'ouverture, une terre déjà
-// ouverte reçoit toutes ses liaisons de la grille, sans rien débiter (`ensureLands`) ; les terres sont lues dans la
-// grille par ./landLinks.ts. Chargé à la demande.
+// entière : le pont est rebâti d'un coup, un toc de bois, puis « Le pont est rebâti. ». À l'ouverture, et quand les
+// liaisons changent, une terre ouverte reçoit toutes ses liaisons de la grille, sans rien débiter (`ensureLands`) ; les
+// terres sont lues dans la grille par ./landLinks.ts. Chargé à la demande.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { useHoldCelebrations } from '../../../components/Celebrations';
@@ -112,14 +112,12 @@ export default function OpenWorldPage() {
     const after = afterOf(land);
     return after ? afterLabel(land, after) : null;
   };
-  // À l'ouverture du monde : une terre déjà ouverte (un lieu relié dans la grille, ou joué) reçoit toutes ses liaisons de
-  // la grille, sans rien débiter ; une fois (sans rien à écrire, rien ne change).
-  const ensured = useRef(false);
+  // À l'ouverture du monde, et chaque fois que les liaisons de la grille changent en cours de session (un lieu relié par
+  // la grille, une mission jouée : relecture de l'expert frontend) : une terre ouverte reçoit toutes ses liaisons, sans
+  // rien débiter (sans rien à écrire, rien ne change : la même référence, aucune boucle).
   useEffect(() => {
-    if (ensured.current) return;
-    ensured.current = true;
     ensureOpenWorldLands(gridLands(), playedIslands(bornes));
-  }, [bornes, ensureOpenWorldLands]);
+  }, [state.world.links, bornes, ensureOpenWorldLands]);
   // La prochaine mission, jamais celle d'un lieu fermé : aucune ne s'y joue.
   const next = useMemo(() => nextMission(bornes, modele.destination, (id) => !isClosed(id)), [bornes, modele.destination, isClosed]);
   const nextPlace = next?.place ?? null;

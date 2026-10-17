@@ -110,14 +110,17 @@ export const RIVER = { line: poly([[1222, 418], [1258, 550], [1242, 730], [1292,
  * d'eau de rive à rive, un cœur d'eau profonde. Le Couchant, à l'ouest de l'Escale (le rectangle x 808 à 843, y 845 à 980,
  * écrit en ligne : ses bouts arrondis sont dans le lagon et dans la mer) ; le Large, sur le chemin des Balises ; le
  * Levant, du lagon jusqu'à la rivière, que `RIVER_MOUTH` élargit jusqu'à la mer ; les Crêtes, au nord, où le chemin de
- * crête entre les Filets et les Écluses a disparu.
+ * crête entre les Filets et les Écluses a disparu. Relecture du lot 1 (directeur artistique) : les bouts du bras
+ * s'évasent en entonnoir vers la mer et le lagon (`flare`, à chaque bout de la ligne : jusqu'où, en unités, et de
+ * combien la demi-largeur y grandit au bout même), plus loin au nord du Large, dont la part rectiligne raccourcit ; la
+ * largeur au pont ne change pas.
  */
 export const STRAITS = {
-  couchant: { line: poly([[825.5, 845], [825.5, 980]]), halfWidth: 6.25, bridge: ['sud-1', 'sud-2'] },
-  large: { line: poly([[608, 680], [605, 700], [560, 995], [556, 1015]]), halfWidth: 6, bridge: ['lar-1', 'lar-2'] },
-  levant: { line: poly([[1160, 682], [1172, 690], [1245, 742]]), halfWidth: 5.5, bridge: ['est-1', 'est-2'] },
-  cretes: { line: poly([[1122, 468], [1120, 450], [1133, 302], [1135, 285]]), halfWidth: 5.5, bridge: ['est-4', 'nord-1'] },
-} as const satisfies Record<string, { line: readonly Vec2[]; halfWidth: number; bridge: readonly [string, string] }>;
+  couchant: { line: poly([[825.5, 845], [825.5, 980]]), halfWidth: 6.25, bridge: ['sud-1', 'sud-2'], flare: [[16, 7], [16, 7]] },
+  large: { line: poly([[608, 680], [605, 700], [560, 995], [556, 1015]]), halfWidth: 6, bridge: ['lar-1', 'lar-2'], flare: [[34, 9], [16, 7]] },
+  levant: { line: poly([[1160, 682], [1172, 690], [1245, 742]]), halfWidth: 5.5, bridge: ['est-1', 'est-2'], flare: [[14, 6], [10, 4]] },
+  cretes: { line: poly([[1122, 468], [1120, 450], [1133, 302], [1135, 285]]), halfWidth: 5.5, bridge: ['est-4', 'nord-1'], flare: [[14, 6], [16, 7]] },
+} as const satisfies Record<string, { line: readonly Vec2[]; halfWidth: number; bridge: readonly [string, string]; flare: readonly [readonly [number, number], readonly [number, number]] }>;
 
 /** Un bras de mer, par sa terre. */
 export type StraitId = keyof typeof STRAITS;
@@ -140,6 +143,21 @@ export const BRIDGE_ABUT = 3.2;
  * bouge pas).
  */
 export const SALT_FLAT = { center: fromPlan([1430, 652]), radius: 9, fade: 5, height: 0.55 } as const;
+
+/**
+ * La porte des Écluses, depuis leur centre (relecture du lot 1 des « vraies terres », directeur artistique) : au
+ * sud-ouest du canal, au bout du chemin qui vient de l'ouest, sur un palier plat (`ECLUSES_LANDING`) taillé dans la pente
+ * de la vallée ; la caméra, tournée vers le nord, a le lieu devant elle, à droite de Kéo (avant, la porte à l'ouest, sur
+ * la pente, l'anneau de Kéo tordu sur le relief et le lieu hors du cadre).
+ */
+const ECLUSES_DOOR: Vec2 = { x: -5.5, z: 2.5 };
+
+/**
+ * Le palier de la porte des Écluses (relecture du lot 1 des « vraies terres », directeur artistique) : le sol y est
+ * aplani à cette hauteur dans ce rayon (en unités), puis rejoint la pente sur `fade` unités ; l'anneau de Kéo y reste
+ * plan.
+ */
+export const ECLUSES_LANDING = { center: { x: fromPlan([1226, 404]).x + ECLUSES_DOOR.x, z: fromPlan([1226, 404]).z + ECLUSES_DOOR.z }, radius: 1.5, fade: 4.5, height: 1.7 } as const;
 
 /**
  * Le replat de la Turbine (GD-20, point 8, lot L6a), sur la rive est de la rivière, au pied du haut pays : le sol y est
@@ -373,7 +391,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
     touchRadius: 5.5,
   },
   { id: 'filets', name: 'Les Filets', at: 'aux Filets', agree: 'mp', island: 'french-6e-grammar-spelling', scenes: ['word-classes', 'sorting', 'e-er-ez', 'plurals'], plan: [1061, 222], door: { x: -0.86, z: 3.29 }, yaw: 0.35, touchRadius: 5.5 },
-  { id: 'ecluses', name: 'Les Écluses', at: 'aux Écluses', agree: 'fp', island: 'maths-6e-fractions', scenes: ['number-line', 'equivalence', 'sharing', 'place-value', 'fraction-sums'], plan: [1226, 404], door: { x: -3.14, z: -0.71 }, yaw: 0, touchRadius: 5.5 },
+  { id: 'ecluses', name: 'Les Écluses', at: 'aux Écluses', agree: 'fp', island: 'maths-6e-fractions', scenes: ['number-line', 'equivalence', 'sharing', 'place-value', 'fraction-sums'], plan: [1226, 404], door: ECLUSES_DOOR, yaw: 0, touchRadius: 5.5 },
   // Les Marais salants (lot L5) : sur la grève plate de la côte est, face au large ; le nom affiché est un nom de
   // travail (le mainteneur peut choisir « Les Salins » ou « La Saline »), écrit ici seulement.
   {

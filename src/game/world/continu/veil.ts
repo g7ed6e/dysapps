@@ -25,12 +25,14 @@ export interface VeilMesh {
 
 /**
  * Les deux voiles (artiste technique 3D, référent dys) : leur hauteur au-dessus du sol et leur transparence la plus
- * dense. Ensemble, jamais plus de 0,6 : un lieu se lit toujours à travers ; le haut de son repère (la tour du Phare, la
- * flèche de la grue) dépasse du second.
+ * dense. Ensemble, jamais plus de 0,6 (vus d'en haut, 1 − 0,6 × 0,78, environ 53 %) : un lieu se lit toujours à
+ * travers ; le haut de son repère (la tour du Phare, la flèche de la grue) dépasse du second. Relecture du lot 1
+ * (directeur artistique, référent dys) : plus dense au sol, le premier voile plus opaque et plus bas, le second jusqu'à
+ * mi-hauteur des bâtiments, les toits au-dessus ; à reprendre avec la lumière du lot 3.
  */
 export const VEIL_LAYERS: readonly { lift: number; alpha: number }[] = [
-  { lift: 0.9, alpha: 0.38 },
-  { lift: 2.3, alpha: 0.24 },
+  { lift: 0.8, alpha: 0.4 },
+  { lift: 2.4, alpha: 0.22 },
 ];
 
 /** La hauteur du voile le plus haut au-dessus du sol : bien moins que Kéo et un toit (le cadenas se pose au-dessus). */
@@ -38,10 +40,11 @@ export const VEIL_HEIGHT = VEIL_LAYERS[VEIL_LAYERS.length - 1].lift;
 
 /**
  * Le dessin du voile : le pas de sa grille ; jusqu'où il s'étend loin d'un chemin ou d'un lieu de sa terre (`reach`,
- * effacé dès `reach × 0,6`) ; la largeur de son fondu vers une terre voisine (`border`) et vers l'eau (`shore`) ; autour
- * du centre d'un lieu, jusqu'où il couvre même l'eau (`place`).
+ * effacé dès `reach × 0,6`) ; la largeur de son fondu vers une terre voisine (`border`) et vers l'eau (`shore` : presque
+ * rien, il s'arrête net sur la rive, ses sommets mouillés posés sur elle, `toShore`) ; autour du centre d'un lieu,
+ * jusqu'où il couvre même l'eau (`place`).
  */
-const GRID = { step: 5, reach: 18, border: 5, shore: 3, place: 7 } as const;
+const GRID = { step: 5, reach: 18, border: 5, shore: 0.4, place: 7 } as const;
 
 /** Les repères d'une terre : les nœuds de ses chemins et le centre de ses lieux. */
 const featuresOf = (land: LandId): Vec2[] => [
@@ -54,19 +57,61 @@ const CENTERS = new Map<LandId, Vec2[]>(LANDS.map((l) => [l.id, l.places.map((id
 
 const nearest = (p: Vec2, points: readonly Vec2[]): number => points.reduce((d, q) => Math.min(d, distance(p, q)), Infinity);
 
+/** De `p` à `q`, passe-t-on sur l'eau (un pas d'une unité) ? */
+function acrossWater(p: Vec2, q: Vec2): boolean {
+  const n = Math.ceil(distance(p, q));
+  for (let k = 1; k < n; k++) if (landDistance({ x: p.x + ((q.x - p.x) * k) / n, z: p.z + ((q.z - p.z) * k) / n }) < 0) return true;
+  return false;
+}
+
 /** La part de brume de la terre `land` en `p` (0 à 1) : dans sa terre, près de ses repères, hors de l'eau. */
 export function veilShare(land: LinkedLand, p: Vec2): number {
   const own = nearest(p, FEATURES.get(land)!);
   if (own >= GRID.reach) return 0;
+  // Le repère d'une autre terre le plus proche, s'il touche presque celui-ci, et seulement s'il est du même côté de l'eau :
+  // de l'autre côté d'un bras de mer, il ne compte pas, et la brume va jusqu'à la rive (relecture du lot 1, directeur
+  // artistique : elle s'arrête net sur la rive d'en face).
   let other = Infinity;
-  for (const [id, points] of FEATURES) if (id !== land) other = Math.min(other, nearest(p, points));
+  for (const [id, points] of FEATURES) {
+    if (id === land) continue;
+    for (const q of points) {
+      const d = distance(p, q);
+      if (d < other && d < own + GRID.border && !acrossWater(p, q)) other = d;
+    }
+  }
   const inside = smoothstep(0, GRID.border, other - own);
   const near = 1 - smoothstep(GRID.reach * 0.6, GRID.reach, own);
   const dry = Math.max(smoothstep(-GRID.shore, 0.5, landDistance(p)), 1 - smoothstep(GRID.place, GRID.place + GRID.shore, nearest(p, CENTERS.get(land)!)));
   return inside * near * dry;
 }
 
-/** La brume d'une terre : ses deux voiles sur une grille qui suit le sol, les cases sans brume laissées de côté. */
+/** Un sommet ramené sur la rive se pose à tant d'unités au-delà, sur la terre : la brume s'y tient entière. */
+const SHORE_IN = 0.5;
+
+/**
+ * Un point de l'eau ramené sur la rive la plus proche (quelques pas de Newton sur la distance à la terre), s'il en est à
+ * moins de `most` unités ; sinon, rien.
+ */
+function toShore(p: Vec2, most: number): Vec2 | null {
+  let q = p;
+  for (let k = 0; k < 4; k++) {
+    const d = landDistance(q);
+    if (Math.abs(d - SHORE_IN) < 0.05) break;
+    const e = 0.25;
+    const gx = (landDistance({ x: q.x + e, z: q.z }) - landDistance({ x: q.x - e, z: q.z })) / (2 * e);
+    const gz = (landDistance({ x: q.x, z: q.z + e }) - landDistance({ x: q.x, z: q.z - e })) / (2 * e);
+    const g = Math.hypot(gx, gz) || 1;
+    q = { x: q.x - (gx / g) * (d - SHORE_IN), z: q.z - (gz / g) * (d - SHORE_IN) };
+  }
+  return landDistance(q) >= 0 && distance(p, q) <= most ? q : null;
+}
+
+/**
+ * La brume d'une terre : ses deux voiles sur une grille qui suit le sol, les cases sans brume laissées de côté. Un
+ * sommet de la grille sur l'eau, près de la rive, y est ramené (relecture du lot 1, directeur artistique : la brume
+ * s'arrête net sur la rive d'en face, sans fondu sur le bras de mer) ; il prend la brume de ce point de la rive (aucune,
+ * si la rive est celle d'une autre terre).
+ */
 function veilOf(pos: number[], nor: number[], col: number[], land: LinkedLand): void {
   const [r, g, b] = linearRgb(MIST_COLOR);
   const points = FEATURES.get(land)!;
@@ -76,27 +121,42 @@ function veilOf(pos: number[], nor: number[], col: number[], land: LinkedLand): 
   const maxZ = Math.max(...points.map((q) => q.z)) + GRID.reach;
   const nx = Math.ceil((maxX - minX) / GRID.step);
   const nz = Math.ceil((maxZ - minZ) / GRID.step);
-  // Chaque sommet de la grille : sa part de brume, et le sol sous lui (jamais sous l'eau).
+  // Chaque sommet de la grille : sa place (ramenée sur la rive s'il est sur l'eau, hors du lieu posé sur l'eau), sa
+  // part de brume, et le sol sous lui (jamais sous l'eau).
   const share: number[] = [];
   const floor: number[] = [];
+  const spot: Vec2[] = [];
+  // Un sommet resté sur l'eau, ou ramené sur la rive d'une autre terre : aucune case qui le touche n'est dessinée (rien
+  // ne s'étire sur l'eau d'une rive à l'autre).
+  const wet: boolean[] = [];
+  const centers = CENTERS.get(land)!;
   for (let j = 0; j <= nz; j++)
     for (let i = 0; i <= nx; i++) {
-      const p = { x: minX + i * GRID.step, z: minZ + j * GRID.step };
-      const s = veilShare(land, p);
+      let p = { x: minX + i * GRID.step, z: minZ + j * GRID.step };
+      let off = false;
+      if (landDistance(p) < 0 && nearest(p, centers) > GRID.place) {
+        const q = toShore(p, 2 * GRID.step);
+        if (q) p = q;
+        off = !q || veilShare(land, q) === 0;
+      }
+      const s = off ? 0 : veilShare(land, p);
+      spot.push(p);
       share.push(s);
+      wet.push(off);
       floor.push(s > 0 ? Math.max(0.05, standingHeight(heightAt(p))) : 0);
     }
   const at = (i: number, j: number) => j * (nx + 1) + i;
   for (const layer of VEIL_LAYERS) {
     const put = (i: number, j: number) => {
       const k = at(i, j);
-      pos.push(minX + i * GRID.step, floor[k] + layer.lift, minZ + j * GRID.step);
+      pos.push(spot[k].x, floor[k] + layer.lift, spot[k].z);
       nor.push(0, 1, 0);
       col.push(r, g, b, share[k] * layer.alpha);
     };
     for (let j = 0; j < nz; j++)
       for (let i = 0; i < nx; i++) {
         if (!share[at(i, j)] && !share[at(i + 1, j)] && !share[at(i, j + 1)] && !share[at(i + 1, j + 1)]) continue;
+        if (wet[at(i, j)] || wet[at(i + 1, j)] || wet[at(i, j + 1)] || wet[at(i + 1, j + 1)]) continue;
         // Vu d'en haut, dans le sens inverse des aiguilles d'une montre.
         put(i, j);
         put(i, j + 1);

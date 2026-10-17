@@ -1,13 +1,14 @@
 // La fiche d'une terre fermée du monde continu (GD-20, point 3, « vraies terres, vrais ponts » ; consultant UX UI) : le
 // panneau d'un lieu (`MissionSheet`), le nom entier de la terre pour titre, une rangée des icônes de ses lieux, sans
-// phrase (leur nom dessous au grand texte seulement), puis une seule rangée, « Relier », le prix en chiffre et l'icône
-// des ressources dans le bouton ; dessous, ce que l'élève a, « 8 / 12 ». Quand il en manque, le bouton reste à sa place,
+// phrase (leur nom dessous au grand texte seulement), puis une seule ligne, « Relier », le prix en chiffre et l'icône
+// des ressources dans le bouton, et à côté ce que l'élève a, « 8 / 12 » ; au plus grand texte, à 667 × 375, la fiche
+// tient sans défiler (référent dys, consultant UX UI, relecture du lot 1). Quand il en manque, le bouton reste à sa place,
 // inactif par sa forme (délavé, trait en tirets), focalisable et lu par la voix (`aria-disabled`, jamais `disabled`) ;
 // aucune phrase d'échec. Il n'est mis en avant que pour le pont suggéré. Aucune mission d'une terre fermée ne s'y montre
 // ni ne s'y joue. Toucher un lieu de la terre, son pont ou son cadenas sur la Carte l'ouvre. Une terre pas encore
 // reliable (le Large avant le Couchant, les Crêtes avant le Levant) : ni « Relier », ni prix, ni « 8 / 12 » ; le seul
-// cadenas, puis un bouton secondaire, le nom entier de la terre à relier d'abord et une flèche, qui ferme cette fiche et
-// ouvre la sienne (sans marche) ; la voix dit « Le Large : relie d'abord le Couchant. ».
+// cadenas, puis sur la même ligne un bouton secondaire, le nom entier de la terre à relier d'abord et une flèche, qui
+// ferme cette fiche et ouvre la sienne (sans marche) ; la voix dit « Le Large : relie d'abord le Couchant. ».
 import { useEffect, useRef } from 'react';
 import { Icon } from '../../../components/Icon';
 import { getBiome } from '../../biomes';
@@ -62,13 +63,14 @@ export function ClosedLandSheet({ land, after, onAfter, price, have, suggested, 
   const def = landById(land);
   const ready = have >= price;
   const className = 'place-sheet closed-land-sheet';
-  // Ses lieux : une icône chacun, leur nom dessous (montré au grand texte seulement, toujours lu par la voix).
+  // Ses lieux : une icône chacun, leur nom dessous (montré au grand texte seulement, hors d'un écran bas ; toujours lu
+  // par la voix, le nom de chaque lieu aussi dans son `aria-label` : référent dys).
   const places = (
     <ul className="closed-land-places">
       {def.places.map((id) => {
         const place = placeById(id);
         return (
-          <li key={id}>
+          <li key={id} aria-label={place.name}>
             <Icon name={getBiome(place.island)?.icon ?? 'map'} />
             <span className="closed-land-place-name">{place.name}</span>
           </li>

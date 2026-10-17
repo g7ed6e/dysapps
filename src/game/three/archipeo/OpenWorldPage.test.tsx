@@ -8,7 +8,9 @@ import { afterEach, beforeEach, vi } from 'vitest';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
-import type { LinkedLand } from '../../world/continu/lands';
+import { reachableIslands } from '../../world/archipelago';
+import { landById, type LinkedLand } from '../../world/continu/lands';
+import { placeById } from '../../world/continu/plan6e';
 import type { OpenWorld, OpenWorldOptions } from './scene';
 import OpenWorldPage from './OpenWorldPage';
 
@@ -33,13 +35,14 @@ vi.mock('./scene', () => ({
   },
 }));
 
-const pay = vi.hoisted(() => ({ refuse: false }));
+const pay = vi.hoisted(() => ({ refuse: false, ctx: null as ReturnType<typeof import('../../BloclandContext').useBlocland> | null }));
 vi.mock('../../BloclandContext', async (original) => {
   const m = await original<typeof import('../../BloclandContext')>();
   return {
     ...m,
     useBlocland: () => {
       const b = m.useBlocland();
+      pay.ctx = b;
       return pay.refuse ? { ...b, linkLand: () => ({ ok: false, reason: 'blocs', missing: 1 }) } : b;
     },
   };
@@ -145,4 +148,17 @@ test('sur un petit écran, une phrase à la fois : le toucher garde celle qu’o
   } finally {
     vi.useRealTimers();
   }
+});
+
+test('une terre à moitié ouverte en cours de session (un lieu relié par la grille) : le reste de la terre reçoit ses liaisons aussitôt, sans rien débiter (relecture de l’expert frontend)', async () => {
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  // Du Phare vers un lieu du Couchant, par la grille : une seule liaison, payée 4.
+  act(() => {
+    expect(pay.ctx!.buildBridge('french-6e-phonology-life-earth-sciences-6e-living-world')).toMatchObject({ ok: true });
+  });
+  const islands = reachableIslands([...pay.ctx!.state.world.links]);
+  for (const id of landById('couchant').places) expect(islands.has(placeById(id).island as never), id).toBe(true);
+  expect(pay.ctx!.state.stock['french-6e-letter-confusion']).toBe(8);
+  expect(scene.closed).toEqual(['large', 'levant', 'cretes']);
 });

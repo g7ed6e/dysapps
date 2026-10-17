@@ -16,7 +16,7 @@ import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP,
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
-import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeMapMark, bridgeSite, clampToOpen } from '../../world/continu/bridges';
+import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen } from '../../world/continu/bridges';
 import { LINKED_LANDS, START_LAND, bridgeSpot, firstClosed, isBridgeSpot, landOf, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, edgesNear, findRoute, pathNode, pathRibbons, pathTopAt, snapToNetwork, startOf, type NetworkPoint } from '../../world/continu/paths';
@@ -263,6 +263,11 @@ const LOCK_MARGIN = 24;
 const LOCK_LEFT = 72 + LOCK_MARGIN;
 /** Le cadenas d'un pont se pose de tant d'unités au-dessus de son tablier. */
 const LOCK_LIFT = 1.6;
+/**
+ * Kéo arrêté sur la culée d'un pont à rebâtir : la caméra vise à cette part du chemin de Kéo au milieu de l'eau (le
+ * cadenas et la culée jumelle restent dans l'image, Kéo aussi).
+ */
+const BRIDGE_AIM = 0.6;
 /** Sous un panneau ouvert, la caméra garde dans la part libre le lieu à cette hauteur au-dessus de son pied. */
 const FRAMED_PLACE_HEIGHT = 2;
 /** La fiche d'une terre fermée garde son pont dans la part libre quand Kéo se tient à moins de tant d'unités de lui. */
@@ -690,6 +695,25 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   placeKeo(here);
 
+  // Ce que la caméra vise : les pieds de Kéo ; arrêté sur la culée d'un pont à rebâtir, un point entre lui et le bras de
+  // mer (`BRIDGE_AIM`) : la caméra, toujours tournée vers le nord, garde à l'écran Kéo, le cadenas du pont et la culée
+  // jumelle, même sur un pont qui file vers l'ouest (le Couchant ; directeur artistique, consultant UX UI, relecture du
+  // lot 1). Rempli sur place, rien n'est créé à chaque image.
+  const aim: Vec3 = { ...keoFeet };
+  const aimed = (): Vec3 => {
+    aim.x = keoFeet.x;
+    aim.y = keoFeet.y;
+    aim.z = keoFeet.z;
+    if (walk) return aim;
+    for (const land of closed) {
+      const { stop, mid } = bridgeSite(land);
+      if (Math.abs(here.x - stop.at.x) + Math.abs(here.z - stop.at.z) > 0.3) continue;
+      aim.x += (mid.x - keoFeet.x) * BRIDGE_AIM;
+      aim.z += (mid.z - keoFeet.z) * BRIDGE_AIM;
+      break;
+    }
+    return aim;
+  };
   // La caméra suit un point lissé (`focus`), monté de `lift` quand le relief cache Kéo ; une seule pose, remplie sur place.
   const focus: Vec3 = { ...keoFeet };
   let lift = occlusionLift(focus, ground);
@@ -951,7 +975,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     walk = null;
     here = { ...stop.at };
     placeKeo(here);
-    followStep(focus, keoFeet, 0, true);
+    followStep(focus, aimed(), 0, true);
     lift = occlusionLift(focus, ground);
     updateRings(true, true);
     follow();
@@ -995,16 +1019,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     m.keo = { left: sx(roofB) - h * 0.3, top: sy(roofB), width: h * 0.6, height: h };
   };
 
-  // Les cadenas des ponts des terres fermées : leur point (au-dessus du milieu de l'eau), refaits quand les terres
-  // changent ; leur place à l'écran remplie sur place à chaque image.
+  // Les cadenas des ponts des terres fermées : leur point, le même sur les quatre ponts (`bridgeLockPoint` : au-dessus
+  // de l'eau, passé le milieu, du côté de la terre fermée ; directeur artistique), refaits quand les terres changent ;
+  // leur place à l'écran remplie sur place à chaque image.
   let locks: LockOnScreen[] = [];
   const lockPoints: THREE.Vector3[] = [];
   const setLocks = (lands: readonly LinkedLand[]) => {
     locks = lands.map((land) => ({ land, x: 0, y: 0, shown: false }));
     lockPoints.length = 0;
     for (const land of lands) {
-      const { mid } = bridgeSite(land);
-      lockPoints.push(new THREE.Vector3(mid.x, BRIDGE.deck + LOCK_LIFT, mid.z));
+      const at = bridgeLockPoint(land);
+      lockPoints.push(new THREE.Vector3(at.x, BRIDGE.deck + LOCK_LIFT, at.z));
     }
   };
   const reportLocks = () => {
@@ -1065,7 +1090,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     back = 0;
     keo.rotation.y = heading;
     placeKeo(here);
-    followStep(focus, keoFeet, 0, true);
+    followStep(focus, aimed(), 0, true);
     lift = occlusionLift(focus, ground);
     updateRings(true, true);
     follow();
@@ -1079,7 +1104,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     back = 0;
     keo.rotation.y = heading;
     placeKeo(here);
-    followStep(focus, keoFeet, 0, true);
+    followStep(focus, aimed(), 0, true);
     lift = occlusionLift(focus, ground);
     framed = spot;
     updateRings(true, true);
@@ -1622,7 +1647,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // La brume revient près de Kéo, la caméra derrière lui, sans passage.
       fog.near = WORLD_FOG.near;
       fog.far = WORLD_FOG.far;
-      followStep(focus, keoFeet, 0, true);
+      followStep(focus, aimed(), 0, true);
       follow();
       return [];
     }
@@ -2075,7 +2100,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     body.bouger(t, dt, moving, reduceMotion, WALK_CADENCE);
     // La caméra rattrape Kéo hors de sa zone morte, et monte si le relief le cache ; arrêté près du Phare, elle lève
     // le regard vers la lanterne (jamais pendant la marche).
-    followStep(focus, keoFeet, dt, reduceMotion);
+    followStep(focus, aimed(), dt, reduceMotion);
     lift = liftStep(lift, occlusionLift(focus, ground), dt, reduceMotion);
     look = lookUpStep(look, nearLantern() ? 1 : 0, dt, reduceMotion);
     if (back > 0 && !atExit()) back = reduceMotion ? 0 : Math.max(0, back - dt / EXIT_VIEW.down);

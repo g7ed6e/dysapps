@@ -206,8 +206,8 @@ export function bridgeCut(a: Vec2, c: Vec2, strait: StraitId): readonly [number,
 /**
  * Le ruban d'une liaison (`edge`, son rang dans `PATH_EDGES`), posé sur le sol, avec ses flancs ; en bois là où le sol
  * est sous l'eau, couleur de sentier ailleurs. Rien sur la pierre du Port ni sur l'îlot de la Gare maritime ; rien non
- * plus sur l'eau d'une passerelle de planches (`PLANK_BRIDGES`, dessinée à part), ni sur les culées et l'eau d'un pont
- * (GD-20, point 3, « vraies terres » : ./bridges.ts le dessine).
+ * plus sur l'eau de la passerelle de la Turbine ni de la jetée (`PLANK_BRIDGES`, dessinées à part), ni sur les culées
+ * et l'eau d'un pont (GD-20, point 3, « vraies terres » : ./bridges.ts le dessine).
  */
 function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, edge: number): void {
   const [ia, ib] = PATH_EDGES[edge];
@@ -326,8 +326,8 @@ export function pathTopAt(x: number, z: number, ground: (x: number, z: number) =
 }
 
 /**
- * Le dessin des chemins : un ruban par liaison (`edgeRibbon`), les passerelles de planches de la Turbine et de la Gare
- * maritime, le bord de quai des Quais, le muret de la rampe de la Vigie, un octogone sur chaque nœud. Rien sur la pierre
+ * Le dessin des chemins : un ruban par liaison (`edgeRibbon`), la passerelle de planches de la Turbine et la jetée de la
+ * Gare maritime, le bord de quai des Quais, le muret de la rampe de la Vigie, un octogone sur chaque nœud. Rien sur la pierre
  * du Port (GD-20, lot 2) : son pavage tient lieu de chemin ; rien sur les ponts des terres (./bridges.ts).
  */
 export function pathRibbons(ground: (x: number, z: number) => number): Facets {
@@ -345,22 +345,23 @@ export function pathRibbons(ground: (x: number, z: number) => number): Facets {
 }
 
 /**
- * Les liaisons qui passent l'eau sur une passerelle de planches plutôt que sur le ruban de bois : de la rive est à la
- * Turbine (lot L6a, directeur artistique : des planches qu'on lit, sur des pieux, comme aux Marais salants) ; la jetée de
- * la Gare maritime, de la côte ouest à son îlot (lot L9b). Toujours posées : dans une terre, aucun verrou entre les
- * lieux (GD-20, point 3, « vraies terres »).
+ * Les liaisons qui passent l'eau sur des planches posées sur des pieux plutôt que sur le ruban de bois : la passerelle
+ * de la rive est à la Turbine (lot L6a, directeur artistique : des planches qu'on lit, sur des pieux, comme aux Marais
+ * salants) ; la jetée de la Gare maritime, de la côte ouest à son îlot (lot L9b ; « jetée », jamais « passerelle » :
+ * consultant d'Archipéo, relecture du lot 1 des « vraies terres »). Toujours posées : dans une terre, aucun verrou entre
+ * les lieux (GD-20, point 3, « vraies terres »).
  */
 export const PLANK_BRIDGES: readonly (readonly [string, string])[] = [
   ['tur-1', 'tur-2'],
   ['lar-4', 'lar-5'],
 ];
 
-/** La liaison de `ia` à `ib` est-elle une passerelle de planches ? */
+/** La liaison de `ia` à `ib` passe-t-elle l'eau sur des planches (la passerelle de la Turbine, la jetée) ? */
 const isPlankBridge = (ia: string, ib: string): boolean => PLANK_BRIDGES.some(([u, v]) => (u === ia && v === ib) || (u === ib && v === ia));
 
 /**
- * Le bout de l'eau d'une passerelle de planches, de `a` à `b` (en suivant le sol `ground`) : du premier au dernier pas
- * du ruban sur l'eau, ou rien.
+ * Le bout de l'eau de planches posées (passerelle ou jetée), de `a` à `b` (en suivant le sol `ground`) : du premier
+ * au dernier pas du ruban sur l'eau, ou rien.
  */
 function plankSpan(ground: (x: number, z: number) => number, a: Vec2, c: Vec2): { from: Vec2; to: Vec2; y: number } | null {
   const len = distance(a, c);
@@ -382,18 +383,19 @@ function plankSpan(ground: (x: number, z: number) => number, a: Vec2, c: Vec2): 
 }
 
 /**
- * Une passerelle de planches : ses planches, son pas de pieux, leur section, le pied des pieux sous l'eau, leur tête
- * au-dessus des planches, ses bois (les planches ; les pieux et les traverses).
+ * Les planches posées (la passerelle de la Turbine, la jetée de la Gare maritime) : leurs planches, le pas des pieux,
+ * leur section, le pied des pieux sous l'eau, leur tête au-dessus des planches, leurs bois (les planches ; les pieux et
+ * les traverses).
  */
 const PLANKS = { count: 5, width: 0.4, thick: 0.12, reach: 0.6, step: 1.9, post: 0.2, foot: -1.4, head: 0.3, dark: 0x7a5636 } as const;
 
 /**
- * Le bois des planches d'une passerelle (GD-20, point 3, directeur artistique) : un sable plus clair que le Sable du pack
+ * Le bois des planches d'une passerelle ou de la jetée (GD-20, point 3, directeur artistique) : un sable plus clair que le Sable du pack
  * (#DAA66A), le dessus plus clair que le flanc, en aplats ; ses traverses franches, d'un bois plus sombre.
  */
 export const NEW_WOOD = { top: 0xf0cf98, side: 0xd9b077, beam: 0x8a5f3a } as const;
 
-/** Le repère d'une passerelle de planches de `from` à `to` : sa longueur, son cap, et un point à `o` en travers, `u` le long. */
+/** Le repère de planches posées (passerelle ou jetée) de `from` à `to` : longueur, cap, point à `o` en travers, `u` le long. */
 function bridgeFrame(from: Vec2, to: Vec2) {
   const len = distance(from, to) || 1e-6;
   const [dx, dz] = [(to.x - from.x) / len, (to.z - from.z) / len];
@@ -402,9 +404,10 @@ function bridgeFrame(from: Vec2, to: Vec2) {
 }
 
 /**
- * Une passerelle de planches de `from` à `to` (le bois des planches à `y`) sur l'eau : ses cinq planches jointives, aux
- * bords nets, posées dans le sens de la marche, qui débordent d'un pas sur chaque berge ; une paire de pieux à chaque
- * bout et de place en place, une traverse sous les planches à chaque paire, les têtes des pieux au-dessus des planches.
+ * Une passerelle ou une jetée de planches de `from` à `to` (le bois des planches à `y`) sur l'eau : cinq planches
+ * jointives, aux bords nets, posées dans le sens de la marche, qui débordent d'un pas sur chaque berge ; une paire de
+ * pieux à chaque bout et de place en place, une traverse sous les planches à chaque paire, les têtes des pieux
+ * au-dessus des planches.
  */
 function plankBridge(b: FacetBuilder, from: Vec2, to: Vec2, y: number): void {
   const P = PLANKS;

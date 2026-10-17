@@ -6,6 +6,14 @@ import { LANDS, LINKED_LANDS, NODE_LANDS, PRICE_PER_PLACE, bridgeEdge, firstClos
 import { PATH_EDGES, PLACES } from './plan6e';
 
 describe('Les cinq terres', () => {
+  it('chaque lieu est dans une terre et une seule, chaque terre se trouve par son nom (les « ! » de landById et landOf sont sûrs : relecture de l’expert frontend)', () => {
+    const all = LANDS.flatMap((l) => l.places);
+    expect(new Set(all).size).toBe(all.length);
+    expect(new Set(all)).toEqual(new Set(PLACES.map((p) => p.id)));
+    for (const p of PLACES) expect(LANDS.filter((l) => l.places.includes(p.id)), p.id).toHaveLength(1);
+    for (const l of LANDS) expect(landById(l.id)).toBe(l);
+  });
+
   it('sans les quatre ponts, le réseau fait exactement cinq morceaux, chacun avec les lieux de sa terre', () => {
     expect(new Set(NODE_LANDS.values())).toEqual(new Set(LANDS.map((l) => l.id)));
     for (const p of PLACES) expect(NODE_LANDS.get(p.door), p.id).toBe(landOf(p.id));
