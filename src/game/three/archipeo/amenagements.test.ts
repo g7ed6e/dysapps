@@ -23,6 +23,7 @@ import { remisePose, scenetteDecor, scenetteHabitant, scenetteKeo } from '../../
 import type { PlacedAmenagement } from '../../world/continu/amenagements';
 import { buildHeightField, heightOnMesh, standingHeight } from '../../world/continu/terrain';
 import { AMENAGEMENTS, AMENAGEMENT_SCALE, ASSISE_STONE, ASSISE_TRIANGLES, HABITANT_HEIGHT, MATTE_GLASS, QUAI_STONE, QUAI_TRIANGLES, amenagementsOf, piecesOf, remiseInclude, remisePosed, remiseStage } from '../../world/continu/amenagements';
+import { OBJECT_TOUCH_PIXELS, nearestPlace, touchedObject, type ObjectTarget } from '../../world/continu/toucher';
 import { casesDeLaPetiteConstruction } from '../../world/fixtures';
 import { COMMANDES } from '../../world/requests';
 import { POTENCE, amenagementsCost, drawnObject, placedAmenagement, posedAmenagements } from './amenagements';
@@ -98,14 +99,6 @@ const byId = (id: string) => {
   return o;
 };
 
-/**
- * Hors du rayon de toucher de leur lieu, par la place que le directeur artistique leur donne près de l'habitant (avis sur
- * le lot L0, points 3 à 5), là où l'habitant lui-même est hors du rayon : la boutique des Quais, à droite du docker ; le
- * lavoir des Écluses, sur le quai de pierre de l'éclusière ; le nichoir de la Mangrove, sur le platelage, à l'est de la
- * botaniste. Ils restent près de l'habitant ; leur toucher se tranche avec le geste du lot L1.
- */
-const BEYOND_TOUCH = ['maths-6e-calculation-fixture-1', 'maths-6e-fractions-fixture-1', 'life-earth-sciences-6e-living-world-fixture-1'];
-
 describe('La table des aménagements', () => {
   it('dix-neuf : les seize commandes du 6e et les trois objets d’entraide, chacun une petite construction de la grille', () => {
     expect(AMENAGEMENTS).toHaveLength(19);
@@ -151,7 +144,10 @@ describe('La place de chaque aménagement', () => {
   const obstacles = LINKED_LANDS.flatMap((l) => [bridgeFacets(l, false), bridgeFacets(l, true)]);
   const port = portFacets(PORT_WORST);
 
-  it('dans le rayon de toucher de son lieu (son toucher ouvre le lieu), loin de la porte, des chemins et du chenal de la Nef', () => {
+  // Son toucher ouvre son lieu (lot L1, une seule règle pour les dix-neuf, world/continu/toucher.ts) : il n'a plus à être
+  // dans le rayon de toucher de son lieu (la boutique des Quais, le lavoir des Écluses, le nichoir de la Mangrove sont
+  // près de l'habitant, hors du rayon) ; il n'est jamais dans celui d'un autre lieu.
+  it('dans le rayon d’aucun autre lieu, loin de la porte, des chemins et du chenal de la Nef', () => {
     const out: string[] = [];
     for (const { a, p } of placed) {
       const place = placeById(a.place);
@@ -165,10 +161,13 @@ describe('La place de chaque aménagement', () => {
         const [px, py] = toPlan(q);
         nef ||= px >= NEF_CHANNEL.x0 && px <= NEF_CHANNEL.x1 && py >= NEF_CHANNEL.y0 && py <= NEF_CHANNEL.y1;
       }
-      if (BEYOND_TOUCH.includes(a.id)) {
-        const h = scenetteHabitant(a.place, remisePosed(a.place));
-        if (r > Math.hypot(h.x - place.center.x, h.z - place.center.z) + 2) out.push(`${a.id} : à ${r.toFixed(2)} du centre, loin de l’habitant`);
-      } else if (r > place.touchRadius) out.push(`${a.id} : à ${r.toFixed(2)} du centre (rayon ${place.touchRadius})`);
+      const other = footprint(p.facets)
+        .map((q) => nearestPlace(q))
+        .find((id) => id !== null && id !== a.place);
+      if (other) out.push(`${a.id} : dans le rayon de toucher de ${other}`);
+      // Près de son habitant, ou dans le rayon de son lieu : jamais loin de ce qu'il dit.
+      const h = scenetteHabitant(a.place, remisePosed(a.place));
+      if (r > Math.max(place.touchRadius, Math.hypot(h.x - place.center.x, h.z - place.center.z) + 2)) out.push(`${a.id} : à ${r.toFixed(2)} du centre, loin du lieu et de l’habitant`);
       if (d <= 1.2) out.push(`${a.id} : à ${d.toFixed(2)} de la porte`);
       if (path <= 0.9) out.push(`${a.id} : à ${path.toFixed(2)} d’un chemin`);
       if (nef) out.push(`${a.id} : dans le chenal de la Nef`);
@@ -503,6 +502,31 @@ describe('Le cadrage de la remise', () => {
     };
     return { list, onScreen };
   }
+
+  it('toucher un aménagement ouvre son lieu, jamais un autre : en plein, et dans le disque de 48 px au moins autour, aux trois formats', () => {
+    const out: string[] = [];
+    const near = OBJECT_TOUCH_PIXELS - 6;
+    for (const p of PLACES)
+      for (const [w, h] of screens) {
+        const { list, onScreen } = remiseOf(p.id, w, h);
+        // Les aménagements de ce lieu et de ses voisins proches, comme la scène les met en concurrence sous le doigt.
+        const targets: ObjectTarget[] = placed
+          .filter((o) => Math.hypot(o.p.box.min[0] - p.center.x, o.p.box.min[2] - p.center.z) < 16)
+          .map((o) => {
+            const r = onScreen(o.p.box);
+            return { place: o.a.place, rect: { left: r.l, top: r.t, right: r.r, bottom: r.b } };
+          });
+        for (const o of list) {
+          const r = onScreen(o.p.box);
+          const [cx, cy] = [(r.l + r.r) / 2, (r.t + r.b) / 2];
+          for (const [dx, dy] of [[0, 0], [near, 0], [-near, 0], [0, near], [0, -near]]) {
+            const got = touchedObject(cx + dx, cy + dy, targets);
+            if (got !== p.id) out.push(`${o.a.id} ${w}×${h} (${dx}, ${dy}) : ${got ?? 'rien'}`);
+          }
+        }
+      }
+    expect(out).toEqual([]);
+  });
 
   it('chaque aménagement tient entier dans la scène de la remise, avec une marge, avec l’habitant et Kéo, aux trois formats', () => {
     const out: string[] = [];
