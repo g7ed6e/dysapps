@@ -16,7 +16,8 @@ import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP,
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
-import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen } from '../../world/continu/bridges';
+import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen } from '../../world/continu/bridges';
+import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { LINKED_LANDS, START_LAND, bridgeSpot, firstClosed, isBridgeSpot, landOf, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, edgesNear, findRoute, pathNode, pathRibbons, pathTopAt, snapToNetwork, startOf, type NetworkPoint } from '../../world/continu/paths';
@@ -153,10 +154,18 @@ export interface OpenWorld {
   setMark(place: PlaceId | null): void;
   /**
    * Les terres (GD-20, point 3, « vraies terres, vrais ponts ») : les terres fermées (sous la brume, leur pont tombé, Kéo
-   * s'arrête sur sa culée). Une terre qu'on vient de relier perd sa brume et voit son pont rebâti, d'un coup (la pose en
-   * trois temps viendra au second lot) ; refait seulement s'il change.
+   * s'arrête sur sa culée). Une terre qu'on vient de relier perd sa brume et voit son pont rebâti, d'un coup, ou par sa
+   * pose (`layLand`) ; refait seulement s'il change.
    */
   setLands(lands: { closed: readonly LinkedLand[] }): void;
+  /**
+   * La pose du pont d'une terre qu'on relie (GD-20, point 3, « La pose »), dite avant que les terres changent : au
+   * prochain `setLands` qui ouvre cette terre, la caméra immobile, les piles se relèvent, puis le tablier, puis les
+   * garde-corps et les lanternes ; `tap` à la fin (le toc), puis la brume de la terre se lève en fondu, `laid` à la fin
+   * (la phrase) ; Kéo ne passe pas avant. D'un coup, `tap` puis `laid` aussitôt, avec « Réduire les animations », sur la
+   * Carte, pendant une question, une pose ou une scénette, ou si le pont n'est pas à l'écran ; un toucher la finit.
+   */
+  layLand(land: LinkedLand, events: BridgeLayEvents): void;
   /** Où se tient Kéo, au sol (le voisin le plus proche de la fiche d'un lieu pas encore reliable). */
   keoAt(): Vec2;
   /**
@@ -239,6 +248,12 @@ interface QuestionRequest {
   mission: string;
   layout: ScenetteLayout;
   item: { scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[]; sort?: SortLook };
+}
+
+/** Ce que la pose d'un pont dit à la page : le toc (toutes ses parties posées), puis sa fin (la brume levée : la phrase). */
+export interface BridgeLayEvents {
+  tap(): void;
+  laid(): void;
 }
 
 /** Le cadenas du pont d'une terre fermée, à l'écran : en pixels, et s'il se voit. */
@@ -682,6 +697,19 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // les cadenas, les ponts tombés ou rebâtis).
   let closed: readonly LinkedLand[] = [];
   let veilKey = '';
+  // La pose d'un pont (GD-20, point 3, « La pose ») : ce qui se relève (`lay`, ses sommets à part dans le maillage de
+  // pose), son début, ce que la page attend ; le toc dit. `pendingLay` : annoncée, en attente des terres.
+  let laying: { lay: BridgeLay; start: number; events: BridgeLayEvents; tapped: boolean; drawn: number } | null = null;
+  let pendingLay: { land: LinkedLand; events: BridgeLayEvents } | null = null;
+  const layState: BridgeLayState = { landed: false, fade: 0, done: false };
+  // Les terres où Kéo ne passe pas : les fermées, et celle dont le pont se pose (il ne passe qu'à la fin).
+  let walkClosed: readonly LinkedLand[] = [];
+  // Le pont devant lequel la caméra reste cadrée après sa pose, Kéo toujours sur sa culée : elle ne bouge pas tant
+  // qu'il ne repart pas.
+  let heldBridge: LinkedLand | null = null;
+  // La transparence de la brume qui se lève, à ses sommets (refaite avec la brume, jamais par image).
+  let veilAlphas: Float32Array | null = null;
+  let veilFadeFrom = 0;
 
   // Kéo : le corps du bonhomme d'Archipéo (sa marche existante), son anneau clair au sol ; habillé dès que sa tenue est chargée.
   const keo = new THREE.Group();
@@ -732,7 +760,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const placeKeo = (p: Vec2) => {
     let y = standingHeight(ground(p.x, p.z));
     // Sur la culée d'un pont, et sur le tablier d'un pont rebâti, il marche sur la pierre et les planches.
-    const floor = bridgeFloor(p.x, p.z, closed);
+    const floor = bridgeFloor(p.x, p.z, walkClosed);
     if (floor !== null && floor > y) y = floor;
     keo.position.set(p.x, y, p.z);
     if (ring.position.x !== p.x || ring.position.z !== p.z || ring.position.y !== y) {
@@ -758,7 +786,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     aim.y = keoFeet.y;
     aim.z = keoFeet.z;
     if (walk) return aim;
-    for (const land of closed) {
+    for (const land of LINKED_LANDS) {
+      if (land !== heldBridge && !walkClosed.includes(land)) continue;
       const { stop, mid } = bridgeSite(land);
       if (Math.abs(here.x - stop.at.x) + Math.abs(here.z - stop.at.z) > 0.3) continue;
       aim.x += (mid.x - keoFeet.x) * BRIDGE_AIM;
@@ -939,10 +968,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   // Les ponts, tombés ou rebâtis, et leur trait double de la Carte, faits une fois chacun (ils ne dépendent que du sol).
   const bridgeCache = new Map<string, Facets>();
-  const bridgeOf = (land: LinkedLand, look: 'tombe' | 'rebati' | 'carte'): Facets => {
+  // Pendant sa pose (`pose`), le pont n'y a que ses culées et ses départs d'arche : le reste se relève à part.
+  const bridgeOf = (land: LinkedLand, look: 'tombe' | 'pose' | 'rebati' | 'carte'): Facets => {
     const k = `${land}|${look}`;
     let f = bridgeCache.get(k);
-    if (!f) bridgeCache.set(k, (f = look === 'carte' ? bridgeMapMark(land) : bridgeFacets(land, look === 'rebati')));
+    if (!f) bridgeCache.set(k, (f = look === 'carte' ? bridgeMapMark(land) : look === 'pose' ? bridgeLayRest(land) : bridgeFacets(land, look === 'rebati')));
     return f;
   };
   let placesKey = '';
@@ -956,7 +986,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -989,7 +1019,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Les ponts (GD-20, point 3, « vraies terres ») : tombé pour une terre fermée, rebâti sinon, dans le maillage des
     // lieux (aucun appel de plus) ; sur la Carte, chacun aussi en trait double, d'une autre forme qu'un chemin.
     for (const land of LINKED_LANDS) {
-      rest.push(bridgeOf(land, closed.includes(land) ? 'tombe' : 'rebati'));
+      rest.push(bridgeOf(land, closed.includes(land) ? 'tombe' : laying?.lay.land === land && !laying.tapped ? 'pose' : 'rebati'));
       if (mapView) rest.push(bridgeOf(land, 'carte'));
     }
     setGeometry(placesMesh, mergeFacets(rest));
@@ -1017,27 +1047,140 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   updateRings(true, true);
 
-  // La brume des terres fermées, et le cadenas de leur pont : refaits si la liste change ; une terre reliée perd la sienne
-  // d'un coup.
+  // La brume des terres fermées, et le cadenas de leur pont : refaits si la liste change ; une terre reliée perd son
+  // cadenas tout de suite, sa brume d'un coup, ou en fondu après le toc de sa pose (elle vient alors en dernier dans le
+  // maillage, sa transparence gardée à part).
   const updateVeil = () => {
-    const k = closed.join(',');
+    const fading = laying?.lay.land;
+    const k = `${closed.join(',')}|${fading ?? ''}`;
     if (k === veilKey) return;
     veilKey = k;
     setLocks(closed);
-    setVeilGeometry(veilMesh, veilFacets(closed));
+    const v = veilFacets(fading ? [...closed, fading] : closed, fading);
+    setVeilGeometry(veilMesh, v);
+    veilFadeFrom = v.fadingFrom;
+    veilAlphas = null;
+    if (!fading) return;
+    const n = v.positions.length / 3 - v.fadingFrom;
+    veilAlphas = new Float32Array(n);
+    for (let i = 0; i < n; i++) veilAlphas[i] = v.colors[(v.fadingFrom + i) * 4 + 3];
+  };
+  /** La brume de la terre dont le pont est posé, levée à la part `e` (0 : entière, 1 : partie). */
+  const fadeVeil = (e: number) => {
+    if (!veilAlphas) return;
+    const color = veilMesh.geometry.getAttribute('color') as THREE.BufferAttribute;
+    const a = color.array as Float32Array;
+    for (let i = 0; i < veilAlphas.length; i++) a[(veilFadeFrom + i) * 4 + 3] = veilAlphas[i] * (1 - e);
+    color.clearUpdateRanges();
+    color.addUpdateRange(veilFadeFrom * 4, veilAlphas.length * 4);
+    color.needsUpdate = true;
+  };
+  const layPoint = new THREE.Vector3();
+  /** Un point du monde à l'écran ? */
+  const onScreen = (x: number, y: number, z: number) => {
+    layPoint.set(x, y, z).project(camera);
+    return layPoint.z < 1 && Math.abs(layPoint.x) < 0.95 && Math.abs(layPoint.y) < 0.95;
+  };
+  /** Le pont d'une terre est-il à l'écran ? Son milieu ou l'un de ses bouts suffit : il est long. Hors de l'écran, il est posé d'un coup. */
+  const bridgeOnScreen = (land: LinkedLand) => {
+    const s = bridgeSite(land);
+    const at = (d: number) => onScreen(s.near.x + s.dir.x * d, BRIDGE.deck, s.near.z + s.dir.z * d);
+    return distance(here, s.mid) < WORLD_FOG.far && (at(s.water[0]) || at((s.water[0] + s.water[1]) / 2) || at(s.water[1]));
   };
   /**
-   * Les terres changent : la brume, les cadenas, les ponts ; Kéo, s'il se tenait au-delà d'un pont tombé (une adresse
-   * vers une terre fermée), revient sur la culée.
+   * La pose d'un pont commence : son maillage à part, de ce qui se relève (une copie de ses sommets, que la pose
+   * réécrit), sa boîte englobante tenant les piles sous l'eau (l'élimination hors champ reste allumée) ; les lieux n'en
+   * gardent que les culées et les départs d'arche. Kéo, sur sa culée, y reste cadré.
    */
-  const setLands = (lands: { closed: readonly LinkedLand[] }) => {
-    closed = lands.closed;
+  const startLay = (land: LinkedLand, events: BridgeLayEvents) => {
+    finishLay();
+    finishPose();
+    // Kéo sur la culée : la caméra reste cadrée sur le pont, posé d'un coup ou non.
+    const { stop } = bridgeSite(land);
+    if (!walk && Math.abs(here.x - stop.at.x) + Math.abs(here.z - stop.at.z) <= 0.3) heldBridge = land;
+    if (reduceMotion || mapView || asked || scenette || assembly || !bridgeOnScreen(land)) {
+      events.tap();
+      events.laid();
+      return;
+    }
+    const lay = bridgeLay(land);
+    laying = { lay, start: performance.now() / 1000, events, tapped: false, drawn: -1 };
+    walkClosed = [...closed, land];
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(lay.facets.positions), 3));
+    g.setAttribute('normal', new THREE.BufferAttribute(lay.facets.normals, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(lay.facets.colors, 3));
+    g.computeBoundingBox();
+    // `computeBoundingBox` vient de la calculer : elle n'est pas nulle.
+    g.boundingBox!.min.y -= lay.sink;
+    g.boundingSphere = g.boundingBox!.getBoundingSphere(new THREE.Sphere());
+    poseMesh.geometry.dispose();
+    poseMesh.geometry = g;
+    poseMesh.material = landMaterial;
+    poseMesh.position.set(0, 0, 0);
+    poseMesh.visible = true;
+    updateVeil();
+    placeVisibility();
+    stepLay(laying.start);
+  };
+  /** La pose à l'instant `t` (en secondes) : ce qui se relève, le toc, puis le fondu de la brume. */
+  const stepLay = (t: number) => {
+    if (!laying) return;
+    const u = t - laying.start;
+    const s = bridgeLayAt(laying.lay, u, layState);
+    if (!laying.tapped) {
+      const position = poseMesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+      bridgeLayPositions(laying.lay, u, position.array as Float32Array);
+      position.needsUpdate = true;
+      const drawn = bridgeLayDrawn(laying.lay, u);
+      if (drawn !== laying.drawn) poseMesh.geometry.setDrawRange(0, drawn);
+      laying.drawn = drawn;
+    }
+    if (s.landed && !laying.tapped) {
+      // Tout est posé : le pont rejoint les lieux, le toc.
+      laying.tapped = true;
+      placeVisibility();
+      poseMesh.visible = false;
+      laying.events.tap();
+    }
+    if (s.landed) fadeVeil(s.fade);
+    if (s.done) finishLay();
+  };
+  /** Finit la pose tout de suite : le pont rebâti, la brume partie, le toc s'il n'a pas été dit (`tell`), puis la fin. */
+  function finishLay(tell = true) {
+    if (!laying) return;
+    const l = laying;
+    laying = null;
+    walkClosed = closed;
+    poseMesh.visible = false;
+    poseMesh.geometry.dispose();
+    poseMesh.geometry = new THREE.BufferGeometry();
+    poseMesh.material = poseMaterial;
     updateVeil();
     placeVisibility();
     mapDirty = true;
+    if (!tell) return;
+    if (!l.tapped) l.events.tap();
+    l.events.laid();
+  }
+  /**
+   * Les terres changent : la brume, les cadenas, les ponts ; Kéo, s'il se tenait au-delà d'un pont tombé (une adresse
+   * vers une terre fermée), revient sur la culée. La terre dont la pose est annoncée (`layLand`), si elle s'ouvre, voit
+   * son pont se poser.
+   */
+  const setLands = (lands: { closed: readonly LinkedLand[] }) => {
+    const opened = pendingLay && closed.includes(pendingLay.land) && !lands.closed.includes(pendingLay.land) ? pendingLay : null;
+    pendingLay = null;
+    if (laying && lands.closed.includes(laying.lay.land)) finishLay(false);
+    closed = lands.closed;
+    walkClosed = laying ? [...closed, laying.lay.land] : closed;
+    updateVeil();
+    placeVisibility();
+    mapDirty = true;
+    if (opened) startLay(opened.land, opened.events);
     if (asked || scenette) return;
     const at = snapToNetwork(here);
-    const stop = clampToOpen(at, closed);
+    const stop = clampToOpen(at, walkClosed);
     if (stop === at) return;
     walk = null;
     here = { ...stop.at };
@@ -1167,8 +1310,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const startWalkTo = (target: NetworkPoint, place: PlaceId | null) => {
     const from = snapToNetwork(here);
-    // Au-delà d'un pont tombé, Kéo s'arrête sur sa culée, sans heurt ni son (GD-20, point 3).
-    const to = clampToOpen(target, closed);
+    // Au-delà d'un pont tombé, ou d'un pont qui se pose, Kéo s'arrête sur sa culée, sans heurt ni son (GD-20, point 3).
+    const to = clampToOpen(target, walkClosed);
     if (to !== target) place = null;
     const route = findRoute(from, to);
     // Kéo hors du chemin (sur le bord du quai, au retour d'une scénette) : il le rejoint d'abord.
@@ -1176,6 +1319,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     walkTarget = place;
     if (route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05) return arrive(place);
     walk = startWalk(route, performance.now());
+    heldBridge = null;
     options.onDepart();
   };
   /**
@@ -1183,6 +1327,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    * d'une terre fermée, sur la culée du pont à rebâtir d'abord, tourné vers l'eau.
    */
   const jumpTo = (place: PlaceId) => {
+    heldBridge = null;
     const door = atNode(placeById(place).door);
     const stop = clampToOpen(door, closed);
     const shut = stop !== door ? bridgeSite(firstClosed(landOf(place) as LinkedLand, closed)) : null;
@@ -1200,6 +1345,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   /** Kéo d'un coup à un endroit de l'Escale, tourné vers sa façade ; la page en ouvre le panneau. */
   const jumpToPort = (spot: PortSpot) => {
+    heldBridge = null;
     here = pathNode(portNode(spot)).at;
     heading = portHeading(spot);
     exit = null;
@@ -1246,6 +1392,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // d'assemblage.
     if (poseRun.active) return finishPose();
     if (assembly) return finishAssembly();
+    // Un toucher pendant la pose d'un pont la finit : le pont posé, le toc s'il n'a pas été dit.
+    if (laying) return finishLay();
     if (asked || remise || !d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > TAP.pixels || performance.now() - d.t > TAP.ms) return;
     // Un aménagement posé (GD-20, point 4, lot L1) : son lieu, toujours le sien, par son dessin ou le disque autour de lui ;
     // Kéo y marche, puis son panneau s'ouvre ; d'une terre fermée, la fiche de la terre.
@@ -1443,6 +1591,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (open) {
       const t0 = performance.now();
       // Rien ne bouge sur la Carte.
+      finishLay();
       finishPose();
       finishAssembly();
       // Kéo s'arrête où il est : la Carte n'est pas un trajet.
@@ -1788,6 +1937,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       follow();
       return [];
     }
+    finishLay();
     finishPose();
     finishAssembly();
     if (remise) {
@@ -2181,6 +2331,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const startPose = (place: PlaceId, parts: readonly PartShape[]) => {
     // Une pose en cours (deux réussites rapprochées) passe la main sans dire sa fin : seule la dernière la dit.
     poseRun.handOver();
+    finishLay();
     holding = { place, parts };
     placeVisibility();
     setGeometry(poseMesh, constructionFacets(place, parts, ground));
@@ -2224,6 +2375,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     options.onAssembled();
   };
   const startAssembly = () => {
+    finishLay();
     finishPose();
     finishAssembly();
     if (!port || !port.recipe.pieces.length || port.pile < 1 || asked || mapView) return options.onAssembled();
@@ -2376,6 +2528,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       meter?.tick(renderer.info, now);
       return;
     }
+    // La pose d'un pont : la caméra reste où elle est, Kéo attend sur la culée.
+    stepLay(t);
     placeKeo(here);
     // Il se tourne vers son cap en douceur, par le plus court (d'un coup avec « Réduire les animations »).
     const turn = Math.atan2(Math.sin(heading - keo.rotation.y), Math.cos(heading - keo.rotation.y));
@@ -2403,7 +2557,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   return {
     goTo: (place, jump = false) => {
-        finishPose();
+      finishLay();
+      finishPose();
       finishAssembly();
       setMap(null);
       if (jump) jumpTo(place);
@@ -2414,7 +2569,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       walk = skipWalk(walk, performance.now());
     },
     goToPort: (spot) => {
-        finishPose();
+      finishLay();
+      finishPose();
       finishAssembly();
       setMap(null);
       jumpToPort(spot);
@@ -2433,6 +2589,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       mapDirty = true;
     },
     setLands,
+    layLand: (land, events) => {
+      pendingLay = { land, events };
+    },
     keoAt: () => ({ x: here.x, z: here.z }),
     question: askQuestion,
     map: setMap,
@@ -2451,6 +2610,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     },
     dispose: () => {
       disposed = true;
+      laying = null;
+      pendingLay = null;
       cancelAnimationFrame(frame);
       window.clearTimeout(wheelRest);
       if (idleHandle) cancelIdle(idleHandle);

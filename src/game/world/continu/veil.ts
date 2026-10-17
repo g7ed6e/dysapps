@@ -3,7 +3,8 @@
 // opaque, où chaque lieu garde sa silhouette (référent dys) : deux voiles posés sur le sol, l'un à hauteur de Kéo,
 // l'autre un peu plus haut et plus léger, de la teinte du lointain. Chaque voile s'efface sur ses bords : loin des
 // chemins et des lieux de sa terre, vers une terre voisine, et sur l'eau (le bras de mer reste net, sa coupure bleue
-// se lit). Rien ne bouge : c'est un état, pas une animation ; elle part d'un coup quand on relie la terre. Code pur.
+// se lit). Rien ne bouge : c'est un état, pas une animation ; quand on relie la terre, elle se lève en fondu doux après le
+// toc du pont (d'un coup avec « Réduire les animations ») : la vue n'en change que la transparence. Code pur.
 import { distance, linearRgb, smoothstep, type Vec2 } from './geometry';
 import { LANDS, NODE_LANDS, type LandId, type LinkedLand } from './lands';
 import { PATH_NODES, placeById } from './plan6e';
@@ -170,9 +171,14 @@ function veilOf(pos: number[], nor: number[], col: number[], land: LinkedLand): 
 
 const cache = new Map<LinkedLand, VeilMesh>();
 
-/** La brume des terres fermées `lands` : un seul maillage (chaque terre calculée une fois). */
-export function veilFacets(lands: readonly LinkedLand[]): VeilMesh {
-  const parts = lands.map((land) => {
+/**
+ * La brume des terres fermées `lands` : un seul maillage (chaque terre calculée une fois). `fading` : la terre dont la
+ * brume se lève (GD-20, point 3, « La pose ») ; la sienne vient en dernier, à partir du sommet `fadingFrom`, pour que la
+ * vue n'en change que la transparence.
+ */
+export function veilFacets(lands: readonly LinkedLand[], fading?: LinkedLand): VeilMesh & { fadingFrom: number } {
+  const order = fading ? [...lands.filter((l) => l !== fading), fading] : lands;
+  const parts = order.map((land) => {
     const known = cache.get(land);
     if (known) return known;
     const pos: number[] = [];
@@ -192,5 +198,7 @@ export function veilFacets(lands: readonly LinkedLand[]): VeilMesh {
     }
     return out;
   };
-  return { positions: join('positions'), normals: join('normals'), colors: join('colors'), triangles: parts.reduce((n, m) => n + m.triangles, 0) };
+  const triangles = parts.reduce((n, m) => n + m.triangles, 0);
+  const last = fading ? parts[parts.length - 1].triangles : 0;
+  return { positions: join('positions'), normals: join('normals'), colors: join('colors'), triangles, fadingFrom: (triangles - last) * 3 };
 }

@@ -12,7 +12,8 @@
 // Kéo. Les terres (GD-20, point 3, « vraies terres, vrais ponts ») : quatre bras de mer coupent l'île en cinq terres ; au
 // départ, la Pointe du Phare est ouverte ; une terre fermée est derrière son pont tombé, sous la brume ; toucher l'un de
 // ses lieux, son pont, ou son cadenas sur la Carte, ouvre sa fiche (./ClosedLandSheet.tsx), où « Relier » paie la terre
-// entière : le pont est rebâti d'un coup, un toc de bois, puis « Le pont est rebâti. ». À l'ouverture, et quand les
+// entière : la caméra immobile, le pont se pose (ses piles, son tablier, ses garde-corps et ses lanternes), un toc de bois,
+// la brume de la terre se lève, puis « Le pont est rebâti. ». À l'ouverture, et quand les
 // liaisons changent, une terre ouverte reçoit toutes ses liaisons de la grille, sans rien débiter (`ensureLands`) ; les
 // terres sont lues dans la grille par ./landLinks.ts. Chargé à la demande.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
@@ -50,7 +51,7 @@ import { PlacePanel, placeFromParam, placeResume } from './PlacePanel';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
 import { portState } from './portState';
-import { createOpenWorld, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
+import { createOpenWorld, type BridgeLayEvents, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { usePlaceAddress, usePoseGuard } from './usePlaceReturn';
 import { WorldQuestion } from './WorldQuestion';
 import { CommandsSheet, HabitantLine } from './HabitantLine';
@@ -497,19 +498,39 @@ export default function OpenWorldPage() {
   const toggleList = list.toggle;
   /**
    * « Relier » (GD-20, point 3, « vraies terres ») : la terre entière, payée une fois ; la fiche se ferme, la caméra ne
-   * bouge pas, le pont est rebâti d'un coup (la pose en trois temps viendra au second lot), un toc de bois, la brume de
-   * la terre part. Puis « Le pont est rebâti. », jamais en même temps que le toc, et la phrase du pont que celui-ci rend
-   * reliable (« Le pont des Crêtes peut être rebâti. »). Sur la Carte, le focus va sur le nom d'un lieu de la terre.
+   * bouge pas, le pont se pose (les piles, le tablier, les garde-corps et les lanternes, environ 3 s), un seul toc de
+   * bois à la fin, puis la brume de la terre se lève en fondu (d'un coup avec « Réduire les animations », sur la Carte, ou
+   * si le pont n'est pas à l'écran, avec le même toc). Puis « Le pont est rebâti. », jamais en même temps que le toc, et
+   * la phrase du pont que celui-ci rend reliable (« Le pont des Crêtes peut être rebâti. »). Sur la Carte, le focus va sur
+   * le nom d'un lieu de la terre.
    */
   const relier = useCallback(
     (land: LinkedLand) => {
       const before = lands.closed;
+      const sounds = settings.sounds;
+      let tappedAt = 0;
+      const events: BridgeLayEvents = {
+        tap: () => {
+          tappedAt = performance.now();
+          if (sounds) playWoodTap();
+        },
+        laid: () => {
+          const linkable = landsAfter(land, before);
+          const after = Math.max(0, SAID_AFTER_MS - (performance.now() - tappedAt));
+          setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [PONT_REBATI, ...linkable.map(linkableLabel)], after }));
+        },
+      };
       if (!linkLand(gridLand(land)).ok) return;
-      if (settings.sounds) playWoodTap();
-      const linkable = landsAfter(land, before);
-      setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [PONT_REBATI, ...linkable.map(linkableLabel)], after: SAID_AFTER_MS }));
+      // Payée, puis annoncée avant que les terres changent dans la scène (`setLands` vient d'un effet, après le rendu) :
+      // la scène la pose quand elle les reçoit. Un paiement refusé n'annonce rien.
+      const w = world.current;
+      w?.layLand(land, events);
       if (mapOpen) focusAfter.current = landById(land).places[0];
       setLieu(null);
+      if (!w) {
+        events.tap();
+        events.laid();
+      }
     },
     [linkLand, lands.closed, mapOpen, settings.sounds],
   );

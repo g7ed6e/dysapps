@@ -4,6 +4,7 @@
 // (GD-20, L6b : « Un iPad 9e génération doit pouvoir faire tourner le jeu, donc on est large en triangles pour
 // l'instant »), les appels inchangés. Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
 import { WORLD_FOG } from './camera';
+import { bridgeLay } from './bridgeLay';
 import { bridgeFacets, bridgeMapMark } from './bridges';
 import { LINKED_LANDS } from './lands';
 import { networkSamples, pathRibbons } from './paths';
@@ -157,10 +158,14 @@ export const PORT_BUDGET = 4500;
 /**
  * Le passage d'une pose : la partie qui arrive, un maillage à part le temps qu'elle descende à sa place (moins d'une
  * seconde), puis réunie aux lieux. Compté large : la plus grande construction entière, sans sa ruine (une partie en
- * pose au plus une étape et demie), et ses triangles en plus de ceux des lieux.
+ * pose au plus une étape et demie), et ses triangles en plus de ceux des lieux. La pose d'un pont (GD-20, point 3, « La
+ * pose ») passe par le même maillage, jamais en même temps : ce qui se relève du pont (ses piles, son tablier, ses
+ * garde-corps et ses lanternes), les lieux n'en gardant que ses culées et ses départs d'arche.
  */
 function poseCost(ground: (x: number, z: number) => number): { triangles: number; calls: number } {
-  return { triangles: Math.max(...PLACES.map((p) => constructionFacets(p.id, [WHOLE], ground).triangles)), calls: 1 };
+  const places = Math.max(...PLACES.map((p) => constructionFacets(p.id, [WHOLE], ground).triangles));
+  const bridges = Math.max(...LINKED_LANDS.map((l) => bridgeLay(l).facets.triangles));
+  return { triangles: Math.max(places, bridges), calls: 1 };
 }
 
 /** L'écart entre deux points où l'on cherche le pire sol : Kéo se tient toujours sur le réseau des chemins. */
@@ -186,9 +191,9 @@ export function groundCost(): { triangles: number; calls: number; near: number; 
 }
 
 /**
- * Ce que coûte le monde continu, environ (avec les triangles des aménagements posés, que la vue compte) : le sol autour
- * de Kéo, tout le reste visible à la fois ; la brume des terres fermées, au pire (au départ, les quatre), en un
- * maillage : elle part d'un coup quand on relie une terre (le fondu reviendra avec la pose animée, au second lot).
+ * Ce que coûte le monde continu, environ (avec les triangles des aménagements posés, que la vue compte) : le sol autour de Kéo, tout le reste visible à la fois ; la brume des terres
+ * fermées, au pire (au départ, les quatre), en un maillage : quand on relie une terre, la sienne se lève en fondu après
+ * la pose de son pont (sa transparence seule change : aucun triangle de plus).
  */
 export function openWorldCost(amenagements: number): OpenWorldCost[] {
   const field = buildHeightField();
