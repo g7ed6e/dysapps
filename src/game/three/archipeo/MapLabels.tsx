@@ -38,6 +38,11 @@ interface Props {
    * d'abord les Écluses. » ; rien, la phrase d'un lieu fermé.
    */
   orderLabel?(place: PlaceId): string | null;
+  /**
+   * Le lieu de la liaison suggérée (proposition au mainteneur, lot 2 des passerelles) : son cadenas plein, Nuit océan,
+   * l'icône claire, avec ses tirets épais ; rien, aucun.
+   */
+  suggested?: PlaceId | null;
   /** L'état de chaque lieu ouvert (GD-20, lot 1) : en chantier, achevé, ou rien encore (aucune partie posée). */
   states: Readonly<Record<PlaceId, 'en-chantier' | 'restauree' | null>>;
   /** Les mots des états, ceux de l'univers (« En chantier »). */
@@ -84,7 +89,7 @@ function Name({ text, wrap = false }: { text: string; wrap?: boolean }) {
   );
 }
 
-export function MapLabels({ openPlaces, onPick, placer, onClosed, orderLabel, states, words, portName, onCrowded }: Props) {
+export function MapLabels({ openPlaces, onPick, placer, onClosed, orderLabel, suggested = null, states, words, portName, onCrowded }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number; narrow?: { w: number; h: number } }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
@@ -296,7 +301,7 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, orderLabel, st
             aria-label={orderLabel?.(p.id) ?? `${p.name} : fermé, la passerelle est démontée`}
             onClick={() => onClosed(p.id)}
           >
-            <span className="open-world-lock" aria-hidden="true">
+            <span className={`open-world-lock${p.id === suggested ? ' suggested' : ''}`} aria-hidden="true">
               <Icon name="lock" />
             </span>
             <span className="open-world-map-closed-name" aria-hidden="true">

@@ -858,6 +858,14 @@
   left: auto;
   top: auto;
 }
+/* Le cadenas de la liaison suggérée (proposition au mainteneur, lot 2 des passerelles) : plein, Nuit océan (#142B38),
+   l'icône d'un sable clair (#F2DFB4, celui des tirets), avec ses tirets épais : le seul cadenas mis en avant, par sa
+   forme pleine et pas seulement sa couleur. */
+.open-world-map-closed .open-world-lock.suggested {
+  border-color: #142b38;
+  background: #142b38;
+  color: #f2dfb4;
+}
 /* La cible du cadenas sur la Carte (consultant UX UI, lot 1 « Relier ») : 48 px au moins, par une marge invisible de 6 px
    autour du rond de 40 px (52 px), sans rien changer à son dessin ; elle ne déborde que de 6 px, moins que l'écart de 8 px
    gardé entre deux étiquettes, et ne couvre donc jamais une pastille voisine. */
