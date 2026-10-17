@@ -8,6 +8,7 @@
 // « Relier », ni prix, ni « 3 / 4 » ; le seul cadenas, puis, à la place de la rangée, un bouton secondaire, l'icône et le
 // nom entier du voisin à relier d'abord et une flèche, qui ferme cette fiche et ouvre celle du voisin (sans marche) ; la
 // voix dit « [Lieu] : relie d'abord [voisin]. ».
+import { useEffect, useRef } from 'react';
 import { Icon } from '../../../components/Icon';
 import { getBiome } from '../../biomes';
 import type { OpenPlace, PlaceId } from '../../world/continu/plan6e';
@@ -42,6 +43,12 @@ export function afterLabel(place: OpenPlace, neighbour: OpenPlace): string {
 
 export function ClosedPlaceSheet({ place, after, onAfter, price, have, suggested, onLink, onClose }: Props) {
   useOpenPanel(onClose);
+  // Le focus va sur le bouton d'action à l'ouverture, et au passage d'une fiche à celle du voisin (consultant UX UI) :
+  // « Relier », ou le voisin à relier d'abord.
+  const action = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    action.current?.focus();
+  }, [place.id, after?.id]);
   const biome = getBiome(place.island);
   const ready = have >= price;
   const className = `place-sheet closed-place-sheet${biome ? ` biome-${biome.id}` : ''}`;
@@ -53,7 +60,7 @@ export function ClosedPlaceSheet({ place, after, onAfter, price, have, suggested
           <span className="closed-place-lock" aria-hidden="true">
             <Icon name="lock" />
           </span>
-          <button type="button" className="button closed-place-after" aria-label={afterLabel(place, after)} onClick={() => onAfter?.(after.id)}>
+          <button ref={action} type="button" className="button closed-place-after" aria-label={afterLabel(place, after)} onClick={() => onAfter?.(after.id)}>
             <Icon name={getBiome(after.island)?.icon ?? 'map'} />
             <span className="closed-place-word">{after.name}</span>
             <Icon name="chevronRight" />
@@ -65,6 +72,7 @@ export function ClosedPlaceSheet({ place, after, onAfter, price, have, suggested
     <MissionSheet id="panneau-lieu-ferme" className={className} icon={biome?.icon ?? 'map'} title={place.name} onClose={onClose}>
       <div className="closed-place-row">
         <button
+          ref={action}
           type="button"
           className={`button closed-place-link${suggested ? ' primary' : ''}`}
           aria-disabled={ready ? undefined : 'true'}

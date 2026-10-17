@@ -37,7 +37,8 @@ import { PLACES, placeById, placeOfIsland, type OpenPlace, type PlaceId, type Po
 import { traceDone } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
-import { ClosedPlaceSheet } from './ClosedPlaceSheet';
+import { SpeakButton } from '../../../components/SpeakButton';
+import { ClosedPlaceSheet, afterLabel } from './ClosedPlaceSheet';
 import { constructionState, placeConstruction, posedShapes } from './constructionParts';
 import { MapLabels } from './MapLabels';
 import { PlacePanel, placeFromParam, placeResume } from './PlacePanel';
@@ -102,6 +103,12 @@ export default function OpenWorldPage() {
     if (!links.waiting.includes(place)) return null;
     const n = neighboursFirst(place, state.world.links, links.closed, world.current?.keoAt() ?? placeById(place).center)[0];
     return n ? placeById(n) : null;
+  };
+  // Le cadenas d'un lieu pas encore reliable, sur la Carte, dit la phrase d'ordre.
+  const orderLabel = (place: PlaceId): string | null => {
+    if (!isLinked(place)) return null;
+    const after = afterOf(place);
+    return after ? afterLabel(placeById(place), after) : null;
   };
   // La prochaine mission, jamais celle d'un lieu fermé : aucune ne s'y joue.
   const next = useMemo(() => nextMission(bornes, modele.destination, (id) => !isClosed(id)), [bornes, modele.destination, isClosed]);
@@ -628,7 +635,7 @@ export default function OpenWorldPage() {
         </div>
         {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
         {mapOpen && !asking && (
-          <MapLabels openPlaces={openPlaces} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} portName={textes.depart?.nom} onCrowded={reframeMap} />
+          <MapLabels openPlaces={openPlaces} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} portName={textes.depart?.nom} onCrowded={reframeMap} />
         )}
         {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
             le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à
@@ -682,10 +689,13 @@ export default function OpenWorldPage() {
           </div>
         )}
         {/* La phrase de la passerelle posée, sur fond uni, un moment (GD-20, point 3) : jamais pendant une question. La
-            zone reste dans la page, vide le reste du temps, pour que les lecteurs d'écran annoncent la phrase. */}
-        <p className="open-world-said" role="status">
-          {saidShown && !asking ? PASSERELLE_POSEE : ''}
-        </p>
+            zone reste dans la page, vide le reste du temps, pour que les lecteurs d'écran annoncent la phrase ; le temps
+            qu'elle est écrite, un haut-parleur la fait réentendre (référent dys). Sur la Carte, elle se tient en haut,
+            hors des noms des lieux du sud. */}
+        <div className={`open-world-said${mapOpen ? ' on-map' : ''}`} data-shown={saidShown && !asking ? 'oui' : 'non'}>
+          <p role="status">{saidShown && !asking ? PASSERELLE_POSEE : ''}</p>
+          {saidShown && !asking && <SpeakButton text={PASSERELLE_POSEE} label="Réécouter" compact />}
+        </div>
         {asking && world.current && (
           <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} plain={asking.plain} world={world.current} onClose={closeQuestion} />
         )}

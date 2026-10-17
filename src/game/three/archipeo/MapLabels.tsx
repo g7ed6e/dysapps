@@ -33,6 +33,11 @@ interface Props {
   placer: MutableRefObject<((spots: readonly MapSpotOnScreen[], moving?: boolean) => void) | null>;
   /** Un lieu fermé touché (son cadenas) : la page ouvre sa fiche, par-dessus la Carte (GD-20, point 3). */
   onClosed(place: PlaceId): void;
+  /**
+   * Ce que dit le cadenas d'un lieu pas encore reliable (consultant UX UI) : la phrase d'ordre, « La Turbine : relie
+   * d'abord les Écluses. » ; rien, la phrase d'un lieu fermé.
+   */
+  orderLabel?(place: PlaceId): string | null;
   /** L'état de chaque lieu ouvert (GD-20, lot 1) : en chantier, achevé, ou rien encore (aucune partie posée). */
   states: Readonly<Record<PlaceId, 'en-chantier' | 'restauree' | null>>;
   /** Les mots des états, ceux de l'univers (« En chantier »). */
@@ -79,7 +84,7 @@ function Name({ text, wrap = false }: { text: string; wrap?: boolean }) {
   );
 }
 
-export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words, portName, onCrowded }: Props) {
+export function MapLabels({ openPlaces, onPick, placer, onClosed, orderLabel, states, words, portName, onCrowded }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number; narrow?: { w: number; h: number } }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
@@ -288,7 +293,7 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, states, words,
             className="open-world-map-closed"
             data-lieu={p.id}
             hidden
-            aria-label={`${p.name} : fermé, la passerelle est démontée`}
+            aria-label={orderLabel?.(p.id) ?? `${p.name} : fermé, la passerelle est démontée`}
             onClick={() => onClosed(p.id)}
           >
             <span className="open-world-lock" aria-hidden="true">

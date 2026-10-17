@@ -854,7 +854,18 @@
   cursor: pointer;
 }
 .open-world-map-closed .open-world-lock {
-  position: static;
+  position: relative;
+  left: auto;
+  top: auto;
+}
+/* La cible du cadenas sur la Carte (consultant UX UI, lot 1 « Relier ») : 48 px au moins, par une marge invisible de 4 px
+   autour du rond de 40 px, sans rien changer à son dessin ; elle ne déborde que de 4 px, moins que l'écart de 8 px
+   gardé entre deux étiquettes, et ne couvre donc jamais une pastille voisine. */
+.open-world-map-closed .open-world-lock::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
 }
 .open-world-map-closed-name {
   margin-top: 2px;
@@ -2593,27 +2604,40 @@
   width: 1.2em;
   height: 1.2em;
 }
-/* « La passerelle est posée. » : sur fond uni, en bas au milieu, au-dessus de la barre ; transparente aux doigts, sans
-   rien qui bouge. Vide, elle ne montre rien. */
+/* « La passerelle est posée. » : sur fond uni, en bas au milieu, au-dessus de la barre ; sans rien qui bouge ; le
+   haut-parleur à côté de la phrase, 48 px, le seul élément touchable. Vide, elle ne montre rien. Sur la Carte, en haut,
+   hors des noms des lieux du sud. */
 .open-world-said {
   position: absolute;
   left: 50%;
   bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
   z-index: 5;
-  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   max-width: min(90vw, 30rem);
   width: max-content;
-  padding: 0.4rem 1rem;
+  padding: 0.3rem 0.4rem 0.3rem 1rem;
   border: var(--border-width, 2px) solid var(--text);
   border-radius: var(--radius-control, 12px);
   background: var(--surface);
   color: var(--text);
-  font-weight: 700;
-  text-align: center;
   pointer-events: none;
 }
-.open-world-said:empty {
+.open-world-said.on-map {
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  bottom: auto;
+}
+.open-world-said > p {
+  margin: 0;
+  font-weight: 700;
+  text-align: center;
+}
+.open-world-said > .speak-button {
+  pointer-events: auto;
+}
+.open-world-said[data-shown='non'] {
   padding: 0;
   border: 0;
 }
