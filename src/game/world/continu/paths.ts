@@ -179,8 +179,13 @@ const onFerryIslet = (p: Vec2): boolean => distance(p, FERRY_ISLET.center) < FER
  */
 export type RibbonLook = 'solid' | 'dashes' | 'thick';
 
-/** Les tirets : tant de pas du ruban dessinés, puis tant de pas vides ; la demi-largeur des tirets épais. */
-const DASHES = { on: 2, off: 2, thickHalf: 1.35 } as const;
+/**
+ * Les tirets de la Carte (relectures du directeur artistique et du référent dys) : tant de pas du ruban dessinés, puis
+ * tant de pas vides (un tiret de 6,25 unités, plus de deux fois sa largeur) ; leur demi-largeur, 1,4 unité, environ
+ * 5 px à la vue de départ de la Carte à 1024 × 768 (1,8 px par unité) ; leur sable clair, qui se lit sur l'herbe. Ceux
+ * de la liaison suggérée, plus épais encore, bordés d'un contour Nuit océan qui les détache de l'herbe (plus de 3:1).
+ */
+const DASHES = { on: 5, off: 3, half: 1.4, thickHalf: 2.2, outline: 0.7, color: 0xf2dfb4, outlineColor: 0x142b38 } as const;
 
 /** Le bois là où le sol est sous l'eau (la digue, les pontons) ; sur la plage, c'est encore un sentier. */
 const deckAt = (ground: (x: number, z: number) => number, p: Vec2) => ground(p.x, p.z) < 0.05;
@@ -190,7 +195,7 @@ const deckAt = (ground: (x: number, z: number) => number, p: Vec2) => ground(p.x
  * est sous l'eau, couleur de sentier ailleurs. Rien sur la pierre du Port ni sur l'îlot de la Gare maritime ; rien non
  * plus sur l'eau d'une passerelle de planches (`PLANK_BRIDGES`), que dessinent les liaisons (./links.ts).
  */
-export function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, edge: number, look: RibbonLook = 'solid'): void {
+export function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, edge: number, look: RibbonLook = 'solid', cut?: readonly [number, number]): void {
   const [ia, ib] = PATH_EDGES[edge];
   const a = pathNode(ia).at;
   const c = pathNode(ib).at;
@@ -199,30 +204,49 @@ export function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => nu
   const dx = (c.x - a.x) / len;
   const dz = (c.z - a.z) / len;
   const planks = isPlankBridge(ia, ib);
-  for (let k = 0; k < n; k++) {
-    if (look !== 'solid' && k % (DASHES.on + DASHES.off) >= DASHES.on) continue;
-    const p = { x: a.x + (dx * len * k) / n, z: a.z + (dz * len * k) / n };
-    const q = { x: a.x + (dx * len * (k + 1)) / n, z: a.z + (dz * len * (k + 1)) / n };
-    const mid = { x: (p.x + q.x) / 2, z: (p.z + q.z) / 2 };
-    // Sur la pierre du Port (son quai, sa place), pas de ruban : on y marche sur le pavage ; ni sur l'îlot de la Gare
-    // maritime (lot L9b), dont le quai est dans le lieu.
-    if (portFloor(mid.x, mid.z) !== null || onFerryIslet(mid)) continue;
-    const deck = deckAt(ground, mid);
-    if (planks && deck) continue;
-    const w = look === 'thick' ? DASHES.thickHalf : deck ? HALF_WIDTH.deck : HALF_WIDTH.path;
-    const color = deck ? COLORS_6E.wood : COLORS_6E.path;
-    const yp = standingHeight(ground(p.x, p.z)) + RIBBON_LIFT;
-    const yq = standingHeight(ground(q.x, q.z)) + RIBBON_LIFT;
+  const point = (d: number) => ({ x: a.x + dx * d, z: a.z + dz * d });
+  // Un morceau du ruban, de `d0` à `d1` unités du premier nœud.
+  const piece = (d0: number, d1: number, w: number, color: number, lift: number, sides: boolean) => {
+    const p = point(d0);
+    const q = point(d1);
+    const yp = standingHeight(ground(p.x, p.z)) + lift;
+    const yq = standingHeight(ground(q.x, q.z)) + lift;
     // À gauche du sens de marche : (dz, −dx) ; à droite : (−dz, dx).
     const pl = [p.x + dz * w, yp, p.z - dx * w] as const;
     const pr = [p.x - dz * w, yp, p.z + dx * w] as const;
     const ql = [q.x + dz * w, yq, q.z - dx * w] as const;
     const qr = [q.x - dz * w, yq, q.z + dx * w] as const;
     b.quad(pl, pr, qr, ql, color);
+    if (!sides) return;
     // Les flancs, jusque sous le sol ou dans l'eau.
     const down = (v: readonly [number, number, number]) => [v[0], v[1] - RIBBON_SIDE, v[2]] as const;
     b.quad(down(pr), down(qr), qr, pr, color);
     b.quad(down(ql), down(pl), pl, ql, color);
+  };
+  for (let k = 0; k < n; k++) {
+    if (look !== 'solid' && k % (DASHES.on + DASHES.off) >= DASHES.on) continue;
+    const d0 = (len * k) / n;
+    const d1 = (len * (k + 1)) / n;
+    const mid = point((d0 + d1) / 2);
+    // Sur la pierre du Port (son quai, sa place), pas de ruban : on y marche sur le pavage ; ni sur l'îlot de la Gare
+    // maritime (lot L9b), dont le quai est dans le lieu.
+    if (portFloor(mid.x, mid.z) !== null || onFerryIslet(mid)) continue;
+    const deck = deckAt(ground, mid);
+    if (planks && deck) continue;
+    // Le ruban s'arrête à l'eau d'un ruisseau peint (`cut`) : il ne passe jamais par-dessus.
+    const spans: [number, number][] = cut ? [[d0, Math.min(d1, cut[0])], [Math.max(d0, cut[1]), d1]] : [[d0, d1]];
+    for (const [s0, s1] of spans) {
+      if (s1 - s0 < 1e-3) continue;
+      if (look === 'solid') piece(s0, s1, deck ? HALF_WIDTH.deck : HALF_WIDTH.path, deck ? COLORS_6E.wood : COLORS_6E.path, RIBBON_LIFT, true);
+      else if (look === 'dashes') piece(s0, s1, DASHES.half, DASHES.color, RIBBON_LIFT + 0.02, false);
+      else {
+        // Le contour déborde un peu aux bouts du tiret, jamais sur l'eau d'un ruisseau peint.
+        const lo = cut && s0 === cut[1] ? s0 : s0 - 0.35;
+        const hi = cut && s1 === cut[0] ? s1 : s1 + 0.35;
+        piece(lo, hi, DASHES.thickHalf + DASHES.outline, DASHES.outlineColor, RIBBON_LIFT, false);
+        piece(s0, s1, DASHES.thickHalf, DASHES.color, RIBBON_LIFT + 0.1, false);
+      }
+    }
   }
 }
 

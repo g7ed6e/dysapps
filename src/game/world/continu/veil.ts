@@ -95,10 +95,11 @@ function dome(pos: number[], nor: number[], col: number[], c: Vec2, radius: numb
 }
 
 /**
- * La portée du banc de la Turbine (lot 1 « Relier », GD-20, point 3) : il couvre le corps du lieu, pas la rivière, où se
- * tient sa passerelle démontée (la rigole, au bout de ses abords, en sort).
+ * La portée du banc de quelques lieux (lot 1 « Relier », GD-20, point 3), pour que leur passerelle démontée tienne hors
+ * de lui : la Turbine, son corps, pas la rivière (la rigole, au bout de ses abords, en sort) ; les Ruines, leur arcade
+ * sans ses piles les plus à l'est, dans l'eau, pour que le ruisseau s'écarte du carrefour de `sud-2`.
  */
-const ENGINE_VEIL_REACH = 9.5;
+const VEIL_REACH: Partial<Record<PlaceId, number>> = { engine: 9.5, ruins: 9 };
 
 /** Un dôme du banc d'un lieu : son centre au sol, son rayon, sa part de la hauteur du banc. */
 interface VeilDome {
@@ -118,7 +119,7 @@ function veilDomes(id: PlaceId): readonly VeilDome[] {
   const { min, max } = boundsOf(modelOfPlace(id).facets);
   // Les Balises (lot L9a) : le banc couvre la station et sa cale, pas le chapelet de mâts dans la mer ; la Turbine, son
   // corps, pas la rivière.
-  const reach = (id === 'engine' ? ENGINE_VEIL_REACH : placeArt(id)?.veilReach) ?? Math.max(Math.abs(min[0]), Math.abs(max[0]), Math.abs(min[2]), Math.abs(max[2]));
+  const reach = VEIL_REACH[id] ?? placeArt(id)?.veilReach ?? Math.max(Math.abs(min[0]), Math.abs(max[0]), Math.abs(min[2]), Math.abs(max[2]));
   const radius = reach * 1.3 + 2;
   const { x, z } = place.center;
   const out: VeilDome[] = [

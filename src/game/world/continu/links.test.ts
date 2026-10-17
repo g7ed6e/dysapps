@@ -8,12 +8,14 @@ import {
   AFTER_NEIGHBOUR,
   BRANCH_EDGES,
   BRANCH_NODES,
+  KEO_STOP,
   OBSTACLE_TOUCH,
   PLACE_LINKS,
   START_PLACES,
   VEIL_MARGIN,
   allObstacles,
   branchOf,
+  branchRibbons,
   clampToOpen,
   closedPlaces,
   isLinked,
@@ -23,7 +25,7 @@ import {
   obstacleOf,
   reachableNodes,
 } from './links';
-import { atNode, findRoute, pathNode } from './paths';
+import { atNode, findRoute, routeLength, snapToNetwork } from './paths';
 import { PATH_EDGES, PLACES, placeById } from './plan6e';
 import { heightAt, standingHeight } from './terrain';
 import { underVeil } from './veil';
@@ -71,10 +73,36 @@ describe('Les passerelles démontées', () => {
       const near = distance(o.water.from, o.bank.at) < distance(o.water.to, o.bank.at) ? o.water.from : o.water.to;
       expect(underVeil(place, near, VEIL_MARGIN.whole)).toBe(false);
     }
-    // Le bord est plus loin du lieu que la passerelle.
-    const door = pathNode(placeById(place).door).at;
-    expect(findRoute(o.bank, atNode(placeById(place).door)).length).toBeGreaterThan(0);
-    expect(distance(o.bank.at, door)).toBeGreaterThan(distance(o.at, door) - 1e-6);
+    // Le bord est plus loin du lieu que la passerelle, en marchant.
+    const door = atNode(placeById(place).door);
+    expect(routeLength(findRoute(o.bank, door))).toBeGreaterThan(routeLength(findRoute(snapToNetwork(o.at), door)));
+  });
+
+  it('Kéo s’arrête avant les pieux, jamais entre eux (relecture du directeur artistique)', () => {
+    expect(KEO_STOP.stream).toBeGreaterThanOrEqual(2.4);
+    for (const o of allObstacles()) {
+      if (o.water) {
+        const near = Math.min(distance(o.bank.at, o.water.from), distance(o.bank.at, o.water.to));
+        expect(near, o.place).toBeGreaterThanOrEqual(KEO_STOP.water - 1e-6);
+      } else expect(distance(o.bank.at, o.at), o.place).toBeGreaterThanOrEqual(KEO_STOP.stream - 1e-6);
+    }
+  });
+
+  it('le ruban du chemin s’arrête à l’eau du ruisseau peint : il ne passe jamais par-dessus (les Ruines)', () => {
+    for (const o of allObstacles()) {
+      if (o.water) continue;
+      // Les tirets épais de la Carte, larges, peuvent frôler l'eau d'un coude voisin, vus de haut : seul compte le monde.
+      for (const look of ['solid', 'dashes'] as const) {
+        const f = branchRibbons(o.place, look, ground);
+        for (let i = 0; i < f.positions.length; i += 3) {
+          const dx = f.positions[i] - o.at.x;
+          const dz = f.positions[i + 2] - o.at.z;
+          const u = dx * o.toward.x + dz * o.toward.z;
+          const v = -dx * o.toward.z + dz * o.toward.x;
+          expect(Math.abs(u) > 0.55 || Math.abs(v) > 3, `${o.place} ${look}`).toBe(true);
+        }
+      }
+    }
   });
 
   it('les embranchements ne se croisent pas, et leurs carrefours restent sur le réseau ouvert', () => {

@@ -132,6 +132,8 @@ export interface LinkObstacle {
   bank: NetworkPoint;
   beyond: readonly number[];
   water: { from: Vec2; to: Vec2; y: number } | null;
+  /** La longueur des deux bras d'un ruisseau peint dans l'herbe, à gauche puis à droite du chemin (rien sur la vraie eau). */
+  arms: readonly [number, number];
 }
 
 /**
@@ -141,19 +143,27 @@ export interface LinkObstacle {
 export const VEIL_MARGIN = { middle: 2.5, whole: 1 } as const;
 
 /**
- * Le ruisseau peint : sa largeur dans le sens du chemin, sa longueur en travers, son eau ; les levées de terre de ses
- * deux bords (largeur, hauteur, terre) ; les pieux (section, hauteur au-dessus du sol, écart au chemin, bois patiné) ;
- * le bout de corde coupée ; le bord où Kéo s'arrête, à tant d'unités du milieu du ruisseau.
+ * Le ruisseau peint (relecture du directeur artistique) : sa largeur dans le sens du chemin, là où il le coupe ; sa
+ * longueur en travers, qui déborde nettement du chemin dans l'herbe, où il s'amincit jusqu'à `tip` ; son eau ; ses deux
+ * berges basses, de la famille du sable et du vert de berge des rives de la rivière, jamais d'un brun de bois (largeur,
+ * hauteur au plus 0,15, effilées à leurs bouts) ; les pieux (section, hauteur au-dessus du sol, écart au chemin, bois
+ * patiné) ; le bout de corde coupée.
  */
 const STREAM = {
   width: 1.3,
-  across: 5.6,
+  across: 7.6,
+  tip: 0.3,
   water: 0x3e9fb2,
-  levee: { width: 0.7, height: 0.32, earth: 0x8c6f4c, top: 0x9a7d58 },
+  levee: { width: 0.6, height: 0.08, sand: 0xe3c08a, green: 0x93c25e },
   post: { size: 0.22, height: 1.0, out: 1.15, wood: 0x7a5636 },
   rope: { thick: 0.07, color: 0xd2bd8f },
-  bank: 1.9,
 } as const;
+
+/** La largeur de l'eau à `v` unités du milieu du chemin, en travers, sur un bras long de `arm` : pleine sur le chemin, effilée dans l'herbe. */
+const streamWidth = (v: number, arm: number): number => {
+  const r = Math.min(1, Math.abs(v) / arm);
+  return STREAM.tip + (STREAM.width - STREAM.tip) * (1 - r * r);
+};
 
 /** Le pont neuf d'un ruisseau : trois planches jointives, leur épaisseur, leur débord sur chaque berge, leur hauteur au-dessus du sol. */
 const DECK = { count: 3, width: 0.56, thick: 0.1, reach: 0.75, lift: 0.3 } as const;
@@ -161,6 +171,19 @@ const DECK = { count: 3, width: 0.56, thick: 0.1, reach: 0.75, lift: 0.3 } as co
 /** Les pieux d'un ruisseau, de part et d'autre de l'eau et de ses levées, depuis son milieu ; la demi-longueur du pont neuf. */
 const POST_U = STREAM.width / 2 + STREAM.levee.width + 0.1;
 const DECK_HALF = POST_U + DECK.reach;
+
+/** Le rayon de Kéo au sol, son sac compris, et l'air laissé entre lui et les pieux quand il s'arrête au bord. */
+const KEO_RADIUS = 0.8;
+const STOP_CLEAR = 0.3;
+
+/**
+ * Où Kéo s'arrête devant une passerelle démontée (relecture du directeur artistique) : avant les pieux, jamais entre eux.
+ * Sur un ruisseau peint, à tant d'unités de son milieu ; sur la vraie eau, à tant d'unités du bout des planches.
+ */
+export const KEO_STOP = {
+  stream: POST_U + STREAM.post.size / 2 + KEO_RADIUS + STOP_CLEAR,
+  water: 0.1 + KEO_RADIUS + STOP_CLEAR + 0.3,
+} as const;
 
 /** Le bas des planches du pont neuf (le haut des traverses) : au-dessus du plus haut sol sous les pieux. */
 function deckBase(o: LinkObstacle, ground: (x: number, z: number) => number): number {
@@ -179,6 +202,41 @@ function along(edge: number, t: number): Vec2 {
   const a = pathNode(PATH_EDGES[edge][0]).at;
   const b = pathNode(PATH_EDGES[edge][1]).at;
   return { x: a.x + (b.x - a.x) * t, z: a.z + (b.z - a.z) * t };
+}
+
+/** La distance du point `p` au segment `a`–`b`. */
+function toSegment(p: Vec2, a: Vec2, b: Vec2): number {
+  const dx = b.x - a.x;
+  const dz = b.z - a.z;
+  const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.z - a.z) * dz) / (dx * dx + dz * dz || 1)));
+  return Math.hypot(p.x - a.x - dx * t, p.z - a.z - dz * t);
+}
+
+/**
+ * Le bras le plus court d'un ruisseau peint : il dépasse toujours du chemin (sa demi-largeur, 0,8), même là où un autre
+ * chemin passe tout près (un carrefour : les Ruines, l'Imprimerie).
+ */
+const MIN_ARM = 1.1;
+
+/**
+ * La longueur du bras d'un ruisseau centré en `c`, en travers du chemin qui va vers `toward`, du côté `side` : jusqu'à la
+ * moitié de `STREAM.across`, et pas plus loin que là où son eau et ses berges toucheraient un autre chemin que la liaison
+ * `edge` (à la demi-largeur d'un sentier et un peu d'air près).
+ */
+function armReach(c: Vec2, toward: Vec2, edge: number, side: -1 | 1): number {
+  const reach = STREAM.width / 2 + STREAM.levee.width;
+  const STEP = 0.2;
+  let clear = 0;
+  for (let v = 1.1; v <= STREAM.across / 2 + 1e-9; v += STEP) {
+    for (const u of [-reach, 0, reach]) {
+      const p = { x: c.x + toward.x * u - toward.z * v * side, z: c.z + toward.z * u + toward.x * v * side };
+      for (const [i, [a, b]] of PATH_EDGES.entries()) {
+        if (i !== edge && toSegment(p, pathNode(a).at, pathNode(b).at) < 0.95) return clear;
+      }
+    }
+    clear = v;
+  }
+  return STREAM.across / 2;
 }
 
 /** La passerelle démontée d'un lieu (calculée une fois). */
@@ -204,7 +262,7 @@ export function obstacleOf(place: LinkedPlace): LinkObstacle {
       const span = plankSpan((x, z) => heightAt({ x, z }), from, to);
       if (!span) continue;
       const near = distance(span.to, to) < distance(span.from, to) ? span.to : span.from;
-      const stop = Math.min(len, distance(from, near) + STREAM.bank * 0.6);
+      const stop = Math.min(len, distance(from, near) + KEO_STOP.water);
       found = {
         place,
         edge,
@@ -214,6 +272,7 @@ export function obstacleOf(place: LinkedPlace): LinkObstacle {
         bank: { edge, t: tOf(stop), at: along(edge, tOf(stop)) },
         beyond: branch.edges.slice(0, k),
         water: span,
+        arms: [0, 0],
       };
       break;
     }
@@ -222,14 +281,21 @@ export function obstacleOf(place: LinkedPlace): LinkObstacle {
     // Le bord où Kéo s'arrête peut toucher le carrefour (un embranchement court : les Ruines), jamais le ruisseau.
     // Loin d'un coude (ses levées ne passent pas sur l'autre chemin du coude), au moins à un pas de la porte.
     const start = half + (k === 0 ? 1 : 2.5);
-    for (let d = start; d + half + 0.6 <= len; d += STEP) {
+    // Le bord tient sur la même liaison (Kéo s'arrête avant les pieux, jamais au-delà du carrefour).
+    for (let d = start; d + KEO_STOP.stream <= len; d += STEP) {
       const c = { x: from.x + out.x * d, z: from.z + out.z * d };
       const inner = { x: c.x - out.x * half, z: c.z - out.z * half };
       if (underVeil(place, inner, VEIL_MARGIN.whole) || underVeil(place, c, VEIL_MARGIN.middle)) continue;
       if (heightAt(c) < 0.3 || portFloor(c.x, c.z) !== null) continue;
-      const stop = Math.min(len, d + STREAM.bank);
-      found = { place, edge, placeEnd, at: c, toward, bank: { edge, t: tOf(stop), at: along(edge, tOf(stop)) }, beyond: branch.edges.slice(0, k), water: null };
-      break;
+      // Le ruisseau et ses berges ne touchent aucun autre chemin (un coude tout près : la Vigie) : chaque bras s'arrête
+      // avant ; il dépasse toujours du chemin.
+      const arms = [armReach(c, toward, edge, -1), armReach(c, toward, edge, 1)] as const;
+      if (Math.min(...arms) < MIN_ARM) continue;
+      // Sur cette liaison, la place où les bras sont les plus longs (le premier à égalité).
+      if (found && Math.min(...found.arms) >= Math.min(...arms)) continue;
+      const stop = d + KEO_STOP.stream;
+      found = { place, edge, placeEnd, at: c, toward, bank: { edge, t: tOf(stop), at: along(edge, tOf(stop)) }, beyond: branch.edges.slice(0, k), water: null, arms };
+      if (Math.min(...arms) >= STREAM.across / 2) break;
     }
     if (found) break;
   }
@@ -268,30 +334,51 @@ function frame(o: LinkObstacle) {
   return (u: number, v: number): Vec2 => ({ x: o.at.x + d.x * u - d.z * v, z: o.at.z + d.z * u + d.x * v });
 }
 
+/** Le `k`-ième des `n` pas en travers d'un ruisseau, de l'extrémité de son bras gauche (`arms[0]`) à celle du droit (`arms[1]`). */
+const streamV = (k: number, n: number, arms: readonly [number, number]): number => -arms[0] + ((arms[0] + arms[1]) * k) / n;
+
 /**
- * Une levée de terre de `p` à `q` (au sol), de section en toit, large dans le sens `thick` (le sens du chemin) : sa base
- * enfouie un peu, ses deux pans en aplats (le pan vers le lieu un peu plus clair).
+ * Une berge du ruisseau, du côté `side` (−1 vers le carrefour, 1 vers le lieu) : une levée basse qui suit le bord de
+ * l'eau en travers du chemin, de section en toit, son pan vers l'eau de sable, son pan vers l'herbe vert de berge ; sa
+ * hauteur s'effile jusqu'à rien à ses deux bouts, comme l'eau.
  */
-function levee(b: FacetBuilder, ground: (x: number, z: number) => number, p: Vec2, q: Vec2, thick: Vec2): void {
+function bankFacets(b: FacetBuilder, ground: (x: number, z: number) => number, at: (u: number, v: number) => Vec2, side: -1 | 1, n: number, arms: readonly [number, number]): void {
   const L = STREAM.levee;
-  const w = L.width / 2;
-  const y = (v: Vec2) => standingHeight(ground(v.x, v.z));
-  const side = (v: Vec2, s: number) => ({ x: v.x + thick.x * w * s, z: v.z + thick.z * w * s });
-  const pl = side(p, -1), pr = side(p, 1), ql = side(q, -1), qr = side(q, 1);
-  const top = (v: Vec2) => [v.x, y(v) + L.height, v.z] as const;
-  const foot = (v: Vec2) => [v.x, y(v) - 0.1, v.z] as const;
-  const ridgeP = top(p);
-  const ridgeQ = top(q);
-  b.quad(foot(pl), foot(ql), ridgeQ, ridgeP, L.earth);
-  b.quad(foot(qr), foot(pr), ridgeP, ridgeQ, L.top);
-  b.triangle(foot(pr), foot(pl), ridgeP, L.earth);
-  b.triangle(foot(ql), foot(qr), ridgeQ, L.earth);
+  const y = (p: Vec2) => standingHeight(ground(p.x, p.z));
+  const ring = (k: number) => {
+    const v = streamV(k, n, arms);
+    const arm = v < 0 ? arms[0] : arms[1];
+    const r = Math.min(1, Math.abs(v) / arm);
+    const edge = streamWidth(v, arm) / 2;
+    const inner = at(side * edge, v);
+    const ridge = at(side * (edge + L.width / 2), v);
+    const outer = at(side * (edge + L.width), v);
+    const h = L.height * (1 - r * r);
+    return {
+      inner: [inner.x, y(inner) + 0.07, inner.z] as const,
+      ridge: [ridge.x, y(ridge) + 0.07 + h, ridge.z] as const,
+      outer: [outer.x, y(outer) - 0.02, outer.z] as const,
+    };
+  };
+  for (let k = 0; k < n; k++) {
+    const p = ring(k);
+    const q = ring(k + 1);
+    // Les faces regardent vers le haut : le sens des sommets dépend du côté.
+    if (side === 1) {
+      b.quad(p.inner, q.inner, q.ridge, p.ridge, L.sand);
+      b.quad(p.ridge, q.ridge, q.outer, p.outer, L.green);
+    } else {
+      b.quad(q.inner, p.inner, p.ridge, q.ridge, L.sand);
+      b.quad(q.ridge, p.ridge, p.outer, q.outer, L.green);
+    }
+  }
 }
 
 /**
- * Le dessin d'une passerelle : le ruisseau peint entre ses deux levées, et ses pieux ; démontée (`linked` faux), deux
- * traverses et le bout de corde coupée ; reliée, le pont neuf. À la Turbine et à la Gare maritime, la passerelle de
- * planches sur la vraie eau, sans ses planches tant qu'elle n'est pas reliée.
+ * Le dessin d'une passerelle : le ruisseau peint entre ses deux berges basses, et ses pieux ; démontée (`linked` faux),
+ * deux traverses (chacune sur son bord, jamais en travers de l'eau) et le bout de corde coupée ; reliée, le pont neuf. À
+ * la Turbine et à la Gare maritime, la passerelle de planches sur la vraie eau, sans ses planches tant qu'elle n'est pas
+ * reliée.
  */
 export function linkFacets(o: LinkObstacle, linked: boolean, ground: (x: number, z: number) => number): Facets {
   const b = new FacetBuilder();
@@ -302,23 +389,22 @@ export function linkFacets(o: LinkObstacle, linked: boolean, ground: (x: number,
   }
   const at = frame(o);
   const S = STREAM;
-  const n = 4;
-  // L'eau, immobile, à plat sur le sol, au-dessus du ruban du chemin.
+  const n = 10;
+  // L'eau, immobile, à plat sur le sol, au-dessus du sol du chemin (dont le ruban s'arrête à elle) ; pleine sur le chemin,
+  // effilée dans l'herbe.
+  const water = (u: number, v: number) => {
+    const p = at(u, v);
+    return [p.x, standingHeight(ground(p.x, p.z)) + 0.1, p.z] as const;
+  };
   for (let k = 0; k < n; k++) {
-    const v0 = -S.across / 2 + (S.across * k) / n;
-    const v1 = -S.across / 2 + (S.across * (k + 1)) / n;
-    const corners = [at(-S.width / 2, v0), at(-S.width / 2, v1), at(S.width / 2, v1), at(S.width / 2, v0)].map((p) => [p.x, standingHeight(ground(p.x, p.z)) + 0.1, p.z] as const);
-    b.quad(corners[0], corners[1], corners[2], corners[3], S.water);
+    const v0 = streamV(k, n, o.arms);
+    const v1 = streamV(k + 1, n, o.arms);
+    const w0 = streamWidth(v0, v0 < 0 ? o.arms[0] : o.arms[1]) / 2;
+    const w1 = streamWidth(v1, v1 <= 0 ? o.arms[0] : o.arms[1]) / 2;
+    b.quad(water(-w0, v0), water(-w1, v1), water(w1, v1), water(w0, v0), S.water);
   }
-  // Les deux levées, de part et d'autre de l'eau, un peu plus longues qu'elle.
-  for (const u of [-1, 1]) {
-    const c = S.width / 2 + S.levee.width / 2;
-    for (let k = 0; k < n; k++) {
-      const v0 = -(S.across + 0.4) / 2 + ((S.across + 0.4) * k) / n;
-      const v1 = -(S.across + 0.4) / 2 + ((S.across + 0.4) * (k + 1)) / n;
-      levee(b, ground, at(u * c, v0), at(u * c, v1), o.toward);
-    }
-  }
+  bankFacets(b, ground, at, -1, n, o.arms);
+  bankFacets(b, ground, at, 1, n, o.arms);
   // Les pieux : deux sur chaque bord, de part et d'autre du chemin.
   const yaw = Math.atan2(o.toward.x, o.toward.z);
   for (const u of [-POST_U, POST_U])
@@ -398,7 +484,17 @@ export const openPathRibbons = (ground: (x: number, z: number) => number): Facet
 export function branchRibbons(place: LinkedPlace, look: RibbonLook, ground: (x: number, z: number) => number): Facets {
   const b = new FacetBuilder();
   const branch = branchOf(place);
-  for (const edge of branch.edges) edgeRibbon(b, ground, edge, look);
+  // Le ruban s'arrête à l'eau du ruisseau peint, de part et d'autre (relecture du directeur artistique : aux Ruines, le
+  // sable du chemin passait par-dessus l'eau).
+  const o = isLinked(place) ? obstacleOf(place) : null;
+  for (const edge of branch.edges) {
+    let cut: readonly [number, number] | undefined;
+    if (o && !o.water && edge === o.edge) {
+      const d = distance(pathNode(PATH_EDGES[edge][0]).at, o.at);
+      cut = [d - STREAM.width / 2 + 0.05, d + STREAM.width / 2 - 0.05];
+    }
+    edgeRibbon(b, ground, edge, look, cut);
+  }
   if (look === 'solid') for (const id of branch.nodes) nodeOctagon(b, ground, id);
   return b.build();
 }
