@@ -171,7 +171,7 @@ const RIBBON_SIDE = 0.7;
  * 40 unités, où la brume commence), posée `drop` unité sous le sable du sentier : là où deux rubans se croisent (au
  * creux d'un coude), le sable de l'un passe sur le liseré de l'autre. Ses flancs sont du même brun.
  */
-export const PATH_EDGE = { width: 0.14, drop: 0.004 } as const;
+const PATH_EDGE = { width: 0.14, drop: 0.004 } as const;
 
 /**
  * L'îlot de la Gare maritime (lot L9b) : le sol y est le large (hors du terrain), le quai est modelé dans le lieu ; les

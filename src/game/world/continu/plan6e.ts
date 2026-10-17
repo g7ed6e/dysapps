@@ -46,11 +46,12 @@ export const COLORS_6E = {
   /** Le sable mouillé, juste sous l'eau. */
   wetSand: 0xc9ad78,
   /**
-   * Les sentiers : un sable éclairci, plus clair que la plage (#E8CF9C), et sans ombre (la vue les dessine de leur couleur
-   * même) pour se lire sur la prairie claire sans l'assombrir (GD-20, point 3, lot 3, décision du directeur artistique
-   * du 17 octobre 2026 ; avant, #D6BB86, à 1,03:1 de l'herbe).
+   * Les sentiers : un sable éclairci (#F0E2B6 : le #E8D6A6 demandé, un cran plus clair pour s'écarter de l'herbe), plus
+   * clair que la plage (#E8CF9C), et sans ombre (la vue les dessine de leur couleur même) pour se lire sur la prairie
+   * claire sans l'assombrir (GD-20, point 3, lot 3, décision du directeur artistique du 17 octobre 2026 ; avant, #D6BB86,
+   * à 1,03:1 de l'herbe).
    */
-  path: 0xe8d6a6,
+  path: 0xf0e2b6,
   /**
    * Le liseré de terre des sentiers, continu de part et d'autre : un brun moyen, jamais presque-noir, à 3:1 au moins du
    * sentier (même décision) ; le contraste du chemin ne tient pas à la seule teinte.
