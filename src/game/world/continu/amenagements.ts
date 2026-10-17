@@ -98,7 +98,7 @@ export const AMENAGEMENTS: readonly Amenagement[] = [
   { id: 'life-earth-sciences-6e-living-world-fixture-1', name: 'le nichoir', place: 'mangrove', kind: 'commande', elements: [[0], [1], [2]], at: { x: 5.7, z: 0.7 }, yaw: 0 },
   { id: 'physics-chemistry-6e-matter-energy-fixture-1', name: 'l’étagère à flacons', place: 'engine', kind: 'commande', elements: [[0], [1], [2]], at: { x: 4.3, z: 2.7 }, yaw: 0 },
   { id: 'technology-6e-objects-fixture-1', name: 'l’établi', place: 'shipyard', kind: 'commande', elements: [[1, 2], [0], [3]], at: { x: 5.0, z: 3.2 }, yaw: 0 },
-  { id: 'civics-6e-democratic-society-fixture-1', name: 'l’urne', place: 'commons', kind: 'commande', elements: [[1], [0], [2]], at: { x: 3.4, z: 6.0 }, yaw: 0 },
+  { id: 'civics-6e-democratic-society-fixture-1', name: 'l’urne', place: 'commons', kind: 'commande', elements: [[1], [0], [2]], at: { x: 3.6, z: 5.85 }, yaw: 0 },
 ];
 
 /** Un aménagement par son identifiant (celui de sa petite construction). */

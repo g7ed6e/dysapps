@@ -13,6 +13,7 @@ import { linearRgb, type Vec2 } from '../../world/continu/geometry';
 import { allObstacles, linkFacets } from '../../world/continu/links';
 import { networkSamples, pathNode } from '../../world/continu/paths';
 import { NEF_CHANNEL, PLACES, placeById, portFloor, toPlan, type PlaceId } from '../../world/continu/plan6e';
+import { PHARE_GARDEN } from '../../world/continu/places';
 import { PORT_WORST, portFacets } from '../../world/continu/port';
 import { placeTrace } from '../../world/continu/questionScene';
 import { remisePose, scenetteDecor, scenetteHabitant, scenetteKeo } from '../../world/continu/scenette';
@@ -200,6 +201,24 @@ describe('La place de chaque aménagement', () => {
     expect([...new Set(out)].slice(0, 20)).toEqual([]);
   });
 
+  it('le potager du Phare prolonge le jardin clos par l’ouverture de son muret est, sur le même sol', () => {
+    const potager = placed.find((o) => o.a.id === 'french-6e-phonology-fixture-1');
+    if (!potager) throw new Error('le potager');
+    const c = placeById('phare').center;
+    const b = boundsOf(potager.p.facets);
+    const g = PHARE_GARDEN;
+    // Son bord ouest dans l'épaisseur du muret est (0,3), là où il est ouvert ; tout entier dans la largeur de l'ouverture.
+    const wall = c.x + g.x + g.w / 2;
+    expect(b.min[0]).toBeGreaterThanOrEqual(wall - 0.15);
+    expect(b.min[0]).toBeLessThanOrEqual(wall + 0.15);
+    const half = g.d / 2 - g.eastWall;
+    expect(b.min[2]).toBeGreaterThanOrEqual(c.z + g.z - half);
+    expect(b.max[2]).toBeLessThanOrEqual(c.z + g.z + half);
+    // Le même sol que le jardin, sans marche ni socle : son pied à moins de 0,2 du sol du seuil, dans l'ouverture du muret
+    // (le sol y descend vers la tour : le potager, posé au plus bas, entre de 0,16 dans la pente à son bord ouest).
+    expect(Math.abs(b.min[1] - ground(wall, c.z + g.z))).toBeLessThan(0.2);
+  });
+
   it('plus bas que l’habitant d’une scénette, à l’échelle commune ; la grue des Archives, adossée à la façade, la seule exception', () => {
     expect(AMENAGEMENT_SCALE).toBe(0.45);
     expect(AMENAGEMENTS.filter((a) => a.facade).map((a) => a.id)).toEqual(['french-6e-word-spelling-fixture-1']);
@@ -275,6 +294,42 @@ describe('Le cadrage de la remise', () => {
             }
       }
     }
+  });
+
+  it('devant l’habitant ou Kéo (plus près de la caméra), un aménagement ne les couvre jamais à l’écran', () => {
+    const out: string[] = [];
+    for (const p of PLACES) {
+      const list = placed.filter((o) => o.a.place === p.id);
+      const b = list.map((o) => boundsOf(o.p.facets));
+      const include = { min: [0, 1, 2].map((i) => Math.min(...b.map((x) => x.min[i]))), max: [0, 1, 2].map((i) => Math.max(...b.map((x) => x.max[i]))) };
+      const posed = remisePosed(p.id);
+      const h = scenetteHabitant(p.id, posed);
+      const k = scenetteKeo(p.id, posed).at;
+      // L'habitant et Kéo, en boîtes (une épaule de chaque côté ; l'habitant de sa hauteur, Kéo de la sienne, plus petit).
+      const figures = [
+        { name: 'l’habitant', min: [h.x - 0.3, h.y, h.z - 0.3], max: [h.x + 0.3, h.y + HABITANT_HEIGHT, h.z + 0.3] },
+        { name: 'Kéo', min: [k.x - 0.3, k.y, k.z - 0.3], max: [k.x + 0.3, k.y + 1, k.z + 0.3] },
+      ];
+      for (const [w, hh] of [...screens, [800, 1280]] as const) {
+        const { pose, shift } = remisePose(p.id, include, remiseStage(w, hh), w, hh, posed);
+        const onScreen = (box: { min: readonly number[]; max: readonly number[] }) => {
+          const s: { x: number; y: number }[] = [];
+          for (const x of [box.min[0], box.max[0]]) for (const y of [box.min[1], box.max[1]]) for (const z of [box.min[2], box.max[2]]) s.push(screenOf(pose, { x, y, z }, w, hh));
+          return { l: Math.min(...s.map((q) => q.x)) - shift.x, r: Math.max(...s.map((q) => q.x)) - shift.x, t: Math.min(...s.map((q) => q.y)) - shift.y, b: Math.max(...s.map((q) => q.y)) - shift.y };
+        };
+        for (const o of list) {
+          const ob = boundsOf(o.p.facets);
+          const so = onScreen(ob);
+          for (const f of figures) {
+            // Derrière la figure (plus loin de la caméra, au nord), c'est elle qui le cache en partie : permis.
+            if (ob.max[2] <= f.min[2]) continue;
+            const sf = onScreen(f);
+            if (Math.min(so.r, sf.r) > Math.max(so.l, sf.l) && Math.min(so.b, sf.b) > Math.max(so.t, sf.t)) out.push(`${o.a.id} couvre ${f.name} (${w}×${hh})`);
+          }
+        }
+      }
+    }
+    expect(out).toEqual([]);
   });
 
   it('au Phare, la remise se joue au pied de la tour, jamais sur la galerie', () => {
