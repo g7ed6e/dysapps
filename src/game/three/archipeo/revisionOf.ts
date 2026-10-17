@@ -69,21 +69,41 @@ export function revisableInScene(def: Pick<ExerciseDef, 'type' | 'generate'>): b
 /**
  * Le passage de révision d'un lieu, aujourd'hui : les questions dues de ses missions (celles que l'habitant propose,
  * `revisionsDeLIle`) qui peuvent se revoir ici ; rien s'il n'y en a aucune (« Reprendre » garde alors l'écran habituel).
+ * Les exercices se chargent un à un, dans l'ordre de la file, et le chargement s'arrête dès que le passage a ses
+ * `REVISION_MAX` questions : une longue file ne charge que les premiers (avis de l'expert frontend, lots L2 et L3).
  */
-export async function revisionPlanOf(spaced: SpacedItem[], links: string[], place: PlaceId, lv2?: Lv2Choice, today = todayISO()): Promise<RevisionPlan | null> {
+export async function revisionPlanOf(
+  spaced: SpacedItem[],
+  links: string[],
+  place: PlaceId,
+  lv2?: Lv2Choice,
+  today = todayISO(),
+  load: (id: string) => Promise<ExerciseDef | undefined> = loadExercise,
+): Promise<RevisionPlan | null> {
   const island = placeById(place).island as BiomeId;
   const types = new Set(revisionsDeLIle(spaced, links, island, lv2, today).map((q) => q.type));
   const metas = new Map(CATALOG.filter((m) => m.biome === island && types.has(m.type)).map((m) => [m.id, m]));
-  const due = dueItems(spaced, today)
-    .map((s) => splitItem(s.itemId))
-    .filter((d) => metas.has(d.exercise));
-  const ids = [...new Set(due.map((d) => d.exercise))];
-  const defs = new Map((await Promise.all(ids.map(async (id) => [id, await loadExercise(id)] as const))).filter((e): e is readonly [string, ExerciseDef] => Boolean(e[1])));
+  const due = dueItems(spaced, today).flatMap((s) => {
+    const d = splitItem(s.itemId);
+    const meta = metas.get(d.exercise);
+    return meta ? [{ ...d, type: meta.type, level: meta.level }] : [];
+  });
+  const defs = new Map<string, ExerciseDef | undefined>();
   const eligible = (exercise: string, key: string) => {
     const def = defs.get(exercise);
     return Boolean(def && revisableInScene(def) && def.items.some((it) => it.key === key));
   };
-  const segments = planRevision(due, eligible).map((s) => ({ ...s, type: metas.get(s.exercise)!.type, level: metas.get(s.exercise)!.level }));
+  const taken = new Set<string>();
+  for (const d of due) {
+    if (taken.size >= REVISION_MAX) break;
+    if (!defs.has(d.exercise)) defs.set(d.exercise, await load(d.exercise));
+    if (eligible(d.exercise, d.key)) taken.add(`${d.exercise}:${d.key}`);
+  }
+  const loaded = due.filter((d) => defs.has(d.exercise));
+  const segments = planRevision(loaded, eligible).map((s) => {
+    const meta = loaded.find((d) => d.exercise === s.exercise);
+    return { ...s, type: meta?.type ?? '', level: meta?.level ?? 1 };
+  });
   if (!segments.length) return null;
   return { place, segments, total: segments.reduce((n, s) => n + s.keys.length, 0) };
 }

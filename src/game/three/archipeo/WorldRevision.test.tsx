@@ -100,6 +100,9 @@ describe('La révision dans la scène du lieu (GD-20, point 4, lot L3)', () => {
     expect(document.querySelector('.world-done .stars')).toBeNull();
     expect(screen.queryByRole('button', { name: /Détail/ })).toBeNull();
     expect(screen.getByRole('button', { name: /Continuer/ })).toBeInTheDocument();
+    // Le texte du bilan à gauche ; la série porte un nom lu (« Série, 1 jour d’affilée »).
+    expect(document.querySelector('.world-done-body')).toHaveClass('world-done-body-revised');
+    expect(screen.getByRole('listitem', { name: 'Série, 1 jour d’affilée' })).toBeInTheDocument();
     // Rien ne se pose dans la scène : une révision ne remet rien en marche.
     expect(world.scenetteEnd).toHaveBeenCalledWith(false);
     // La file enregistrée sous les mêmes clés ; ni étoiles, ni meilleur score, ni partie comptée.

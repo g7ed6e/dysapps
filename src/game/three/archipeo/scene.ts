@@ -1124,11 +1124,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const h = scenetteHabitant(place, remisePosed(place));
       return { x: h.x, y: h.y + SIGN_LIFT, z: h.z };
     },
-    place: (anchor, place) => {
+    place: (anchor, sign) => {
       projected.copy(anchor).project(camera);
       const x = sx(projected);
       const y = sy(projected);
-      return { x, y, shown: projected.z < 1 && distance(here, placeById(place).center) < WORLD_FOG.far && x > LOCK_LEFT && x < viewW - LOCK_MARGIN && y > LOCK_MARGIN && y < viewH - LOCK_MARGIN };
+      sign.x = x;
+      sign.y = y;
+      sign.shown = projected.z < 1 && distance(here, placeById(sign.place).center) < WORLD_FOG.far && x > LOCK_LEFT && x < viewW - LOCK_MARGIN && y > LOCK_MARGIN && y < viewH - LOCK_MARGIN;
     },
     onSigns: options.onSigns,
   });

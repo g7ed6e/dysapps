@@ -537,16 +537,28 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
 }
 
 /**
+ * Le compte du repère d'une révision : « 2 sur 5 » pour un écran d'une question, « 1 et 2 sur 4 » pour un écran qui en
+ * porte plusieurs (une manche de cloches), jamais « 1-2 » (le tiret se lit comme un moins). Le nombre écrit dit les
+ * marques allumées (avis du directeur artistique, du consultant UX UI et du référent dys, lots L2 et L3).
+ */
+function revisionCount(first: number, here: number, total: number): { count: string; label: string } {
+  const numbers = Array.from({ length: Math.max(1, here) }, (_, i) => first + i);
+  const said = numbers.length === 1 ? `${numbers[0]}` : `${numbers.slice(0, -1).join(', ')} et ${numbers[numbers.length - 1]}`;
+  const count = `${said} sur ${total}`;
+  return { count, label: `${numbers.length === 1 ? 'Question' : 'Questions'} ${count}` };
+}
+
+/**
  * Le repère d'une révision (GD-20, point 4, lot L3) : une marque par question du passage, toutes missions comprises, et
  * « 2 sur 5 » écrit au bout ; une marque passée dit une question revue, jamais une réussite ni un échec.
  */
 function RevisionSteps({ revision, screens, index }: { revision: RunnerRevision; screens: ExerciseItem[][]; index: number }) {
   const before = revision.offset + screens.slice(0, index).reduce((n, s) => n + s.length, 0);
   const here = screens[index]?.length ?? 1;
-  const count = `${before + 1} sur ${revision.total}`;
+  const { count, label } = revisionCount(before + 1, here, revision.total);
   // La même barre que celle des écrans (le lieu la place), le compte écrit au bout (`data-count`, openWorld.css).
   return (
-    <ol className="quiz-steps quiz-steps-revision" aria-label={`Question ${count}`} data-count={count}>
+    <ol className="quiz-steps quiz-steps-revision" aria-label={label} data-count={count}>
       {Array.from({ length: revision.total }, (_, i) => (
         <li key={i} className={i < before ? 'done' : i < before + here ? 'current' : ''} aria-hidden="true" />
       ))}

@@ -37,7 +37,7 @@ export function WorldDone({ completion, detail, pause, back, revised }: StageDon
   const streak = completion.streak.extended ? completion.streak.streak.current : 0;
   return (
     <div className="panel summary reward-panel world-done">
-      <div className="world-done-body">
+      <div className={`world-done-body${revised ? ' world-done-body-revised' : ''}`}>
         {revised ? (
           <div className="world-done-revised">
             <h2 id="fin-titre">
@@ -77,7 +77,7 @@ export function WorldDone({ completion, detail, pause, back, revised }: StageDon
             </li>
           )}
           {streak > 0 && (
-            <li aria-label={`${streak} jour${streak > 1 ? 's' : ''} d’affilée`}>
+            <li aria-label={`Série, ${streak} jour${streak > 1 ? 's' : ''} d’affilée`}>
               <Icon name="flame" size="1.4rem" />
               <span aria-hidden="true">{streak}</span>
             </li>

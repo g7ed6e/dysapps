@@ -2,15 +2,16 @@ import { render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
-import { ProgressProvider } from '../core/ProgressContext';
+import { ProgressProvider, useProgress } from '../core/ProgressContext';
 import { AppRoutes } from '../App';
-import { BloclandProvider } from './BloclandContext';
+import { BloclandProvider, useBlocland } from './BloclandContext';
 import { CATALOG, loadAllExercises } from './exercises';
 import { runItems, runSeed } from './exercises/run';
 import { frenchTypography } from '../components/math/RichText';
 import { plansFor } from './world/plans';
 import { todayISO } from './engine';
-import { ExerciseRunner } from './ExerciseRunner';
+import { ExerciseRunner, type RunnerRevision, type RunnerStage } from './ExerciseRunner';
+import type { Progress } from '../core/progress';
 import { getBiome } from './biomes';
 import type { ScreenProps } from './exercises/registry';
 import { filledGap } from './three/archipeo/fit';
@@ -160,6 +161,75 @@ describe('Le lanceur posé dans le monde ouvert (`stage`, lot 4)', () => {
     await user.click(screen.getByRole('button', { name: /Revenir au Phare/ }));
     expect(back).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole('link', { name: /Voir le bâtiment/ })).not.toBeInTheDocument();
+  });
+});
+
+describe('Le lanceur et la révision dans la scène (GD-20, point 4, lot L3, `stage.revision`)', () => {
+  const biome = getBiome('french-6e-phonology')!;
+  const seen: { progress: Progress | null } = { progress: null };
+  /** Lit la progression de l'application (la session de `completeSession`), et pose le lanceur avec son `stage`. */
+  function Harness({ stage }: { stage?: (completeRevision: ReturnType<typeof useBlocland>['completeRevision']) => RunnerStage }) {
+    const { completeRevision } = useBlocland();
+    seen.progress = useProgress().progress;
+    return <ExerciseRunner biome={biome} def={DEF} onReplay={() => {}} stage={stage?.(completeRevision)} />;
+  }
+  const mount = (stage?: (c: ReturnType<typeof useBlocland>['completeRevision']) => RunnerStage) =>
+    render(
+      <SettingsProvider>
+        <ProgressProvider>
+          <BloclandProvider>
+            <MemoryRouter>
+              <Harness stage={stage} />
+            </MemoryRouter>
+          </BloclandProvider>
+        </ProgressProvider>
+      </SettingsProvider>,
+    );
+  const sessions = () => seen.progress?.apps[`blocland:${DEF.id}`]?.sessions ?? 0;
+
+  it('une partie normale passe par `completeSession` : une partie de plus pour l’application', async () => {
+    const user = userEvent.setup();
+    mount();
+    expect(sessions()).toBe(0);
+    await play(user);
+    expect(sessions()).toBe(1);
+  });
+
+  it('avec `revision` : les items dus seuls, le repère du passage, « Suivant » si un morceau suit ; `revision.complete`, jamais `completeSession`', async () => {
+    const user = userEvent.setup();
+    const keys = [DEF.items[2].key, DEF.items[0].key];
+    let spy: ReturnType<typeof vi.fn<RunnerRevision['complete']>> | null = null;
+    mount((completeRevision) => {
+      spy ??= vi.fn<RunnerRevision['complete']>((def, results) => completeRevision(def, results, false));
+      return { instruction: 'La consigne du lieu.', back: { label: 'Revenir au Phare', onClick: () => {} }, className: 'in-world', revision: { keys, offset: 1, total: 4, more: true, complete: spy } };
+    });
+    for (const [i, key] of keys.entries()) {
+      expect(screen.getByRole('list', { name: `Question ${i + 2} sur 4` })).toHaveAttribute('data-count', `${i + 2} sur 4`);
+      const item = DEF.items.find((it) => it.key === key)!;
+      await user.click(screen.getByRole('button', { name: item.answer as string }));
+      const sheet = screen.getByRole('region', { name: 'Résultat' });
+      // Le dernier écran du morceau dit « Suivant » : un autre morceau suit (`more`).
+      await user.click(within(sheet).getByRole('button', { name: /Suivant/ }));
+    }
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy!.mock.calls[0][0]).toBe(DEF);
+    expect(spy!.mock.calls[0][1].map((r) => r.key)).toEqual(keys);
+    expect(sessions()).toBe(0);
+  });
+
+  it('un écran de plusieurs questions : « 1 et 2 sur 4 », ses deux marques allumées ensemble, lu « Questions 1 et 2 sur 4 »', () => {
+    const keys = [DEF.items[0].key, DEF.items[1].key];
+    mount((completeRevision) => ({
+      instruction: 'La consigne du lieu.',
+      back: { label: 'Revenir au Phare', onClick: () => {} },
+      className: 'in-world',
+      screens: (items) => [items],
+      revision: { keys, offset: 0, total: 4, more: true, complete: (def, results) => completeRevision(def, results, false) },
+    }));
+    const steps = screen.getByRole('list', { name: 'Questions 1 et 2 sur 4' });
+    expect(steps).toHaveAttribute('data-count', '1 et 2 sur 4');
+    expect(steps.querySelectorAll('li.current')).toHaveLength(2);
+    expect(steps.querySelectorAll('li')).toHaveLength(4);
   });
 });
 

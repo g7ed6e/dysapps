@@ -56,9 +56,10 @@ export const ENTRAIDE_PHRASES: EntraidePhrases = { stepMission: PHRASES.stepMiss
 
 /**
  * Les phrases de la révision jouée dans la scène du lieu (lot L3, B2) : l'entrée, sous le rôle, et la fin, en tête du
- * seul bilan. Jeton : questions (« 5 questions »). Jamais une date, un échec ni un retard.
+ * seul bilan (jeton : questions, « 5 questions ») ; le rappel de l'habitant, sans jeton (ni mission nommée ni nombre),
+ * qui remplace dans le monde ouvert la phrase de la grille. Jamais une date, un échec ni un retard.
  */
-export const REVISION_PHRASES = { entry: PHRASES.revisionEntry, done: PHRASES.revisionDone } as const;
+export const REVISION_PHRASES = { entry: PHRASES.revisionEntry, done: PHRASES.revisionDone, reminder: PHRASES.revisionReminder } as const;
 
 /** Le nombre de questions et le mot, accordé (« 1 question », « 5 questions »), pour le jeton `{questions}`. */
 export const questionsWord = (n: number): string => `${n} question${n > 1 ? 's' : ''}`;

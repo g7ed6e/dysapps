@@ -14,10 +14,14 @@ import type { PlaceId } from './plan6e';
 import { scenetteHabitant, scenetteKeo } from './scenette';
 
 /**
- * Le bois de la caisse : le bois sombre du monde continu (`darkWood` des lieux, places.ts), plus sombre que les blocs
- * qu'on y pose (le bois des blocs de bois, le galet, le métal se lisent dessus), et sa latte plus sombre encore.
+ * Le bois de la caisse : le bois sombre du monde continu (`darkWood` des lieux, places.ts) au dehors. Le côté d'un bloc
+ * de bois (#9c7a48) a presque la valeur de ce bois : sur un fond du même brun, deux blocs donnés se perdaient (directeur
+ * artistique et consultant d'Archipéo, avis sur les lots L2 et L3). Le dedans (le fond et la face intérieure de la
+ * paroi du fond, derrière les blocs) prend donc une ombre du même bois, bien plus sombre (`fond`) ; le haut des parois
+ * et une latte en travers de l'avant, un liseré clair (`liseré`, la Brume du monde ouvert), qui détache aussi la caisse
+ * de la grande caisse claire du docker. Les blocs gardent leurs couleurs, celles de leur icône.
  */
-export const CAISSE_WOOD = { dessus: 0x9a7048, cote: 0x8a6440, latte: 0x6b4c30 } as const;
+export const CAISSE_WOOD = { dessus: 0x9a7048, cote: 0x8a6440, fond: 0x3f2d20, liseré: 0xe5ebe3 } as const;
 
 /**
  * La caisse, en unités du monde : largeur (x), profondeur (z), hauteur, épaisseur de ses parois. Basse : les blocs
@@ -66,12 +70,14 @@ export function placedCaisse(place: PlaceId, count: number, block: { dessus: num
   const n = Math.max(0, Math.min(CAISSE_MAX, count));
   const crate = new FacetBuilder();
   const { w, d, h, wall } = CAISSE;
-  // Le fond, puis quatre parois (l'avant un peu plus bas : les blocs s'y voient de la caméra), et une latte en travers.
-  crate.box({ x: at.x, y: at.y, z: at.z }, [w, wall, d], CAISSE_WOOD.cote, CAISSE_WOOD.dessus);
-  crate.box({ x: at.x, y: at.y, z: at.z - d / 2 + wall / 2 }, [w, h, wall], CAISSE_WOOD.cote, CAISSE_WOOD.dessus);
-  crate.box({ x: at.x, y: at.y, z: at.z + d / 2 - wall / 2 }, [w, h * 0.7, wall], CAISSE_WOOD.cote, CAISSE_WOOD.dessus);
-  for (const side of [-1, 1]) crate.box({ x: at.x + side * (w / 2 - wall / 2), y: at.y, z: at.z }, [wall, h, d - 2 * wall], CAISSE_WOOD.cote, CAISSE_WOOD.dessus);
-  crate.box({ x: at.x, y: at.y + h * 0.25, z: at.z + d / 2 + 0.005 }, [w + 0.01, 0.05, 0.02], CAISSE_WOOD.latte);
+  // Le fond, sombre ; la paroi du fond, sombre (sa face intérieure est derrière les blocs) ; les trois autres parois du
+  // bois sombre (l'avant un peu plus bas : les blocs s'y voient de la caméra), leur haut d'un liseré clair ; et une
+  // latte claire en travers de l'avant.
+  crate.box({ x: at.x, y: at.y, z: at.z }, [w, wall, d], CAISSE_WOOD.fond, CAISSE_WOOD.fond);
+  crate.box({ x: at.x, y: at.y, z: at.z - d / 2 + wall / 2 }, [w, h, wall], CAISSE_WOOD.fond, CAISSE_WOOD.liseré);
+  crate.box({ x: at.x, y: at.y, z: at.z + d / 2 - wall / 2 }, [w, h * 0.7, wall], CAISSE_WOOD.cote, CAISSE_WOOD.liseré);
+  for (const side of [-1, 1]) crate.box({ x: at.x + side * (w / 2 - wall / 2), y: at.y, z: at.z }, [wall, h, d - 2 * wall], CAISSE_WOOD.cote, CAISSE_WOOD.liseré);
+  crate.box({ x: at.x, y: at.y + h * 0.25, z: at.z + d / 2 + 0.005 }, [w + 0.01, 0.05, 0.02], CAISSE_WOOD.liseré);
   const cubes = Array.from({ length: n }, (_, i) => {
     const b = new FacetBuilder();
     const s = caisseSlot(i);

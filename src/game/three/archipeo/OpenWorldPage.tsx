@@ -35,7 +35,7 @@ import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
 import { payableBlocks } from '../../world/archipelago';
 import { START_LAND, isBridgeSpot, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import type { PartShape } from '../../world/continu/construction';
-import { bornesDuMondeOuvert, firstToPlayAt, keepClear, missionsOfPlace, nextMission, playsInPlace, type MarkOnScreen, type Obstacle } from '../../world/continu/mission';
+import { bornesDuMondeOuvert, firstToPlayAt, keepClear, missionsOfPlace, nextMission, playsInPlace, type MarkOnScreen, type Obstacle, type ScreenRect } from '../../world/continu/mission';
 import { PLACES, placeById, placeOfIsland, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
@@ -250,7 +250,7 @@ export default function OpenWorldPage() {
 
   // Les dimensions que la marque lit à chaque image, relues seulement quand la page, la marque ou un bouton change de
   // taille (jamais une mise en page forcée par image).
-  const [layout] = useState(() => ({ width: 0, height: 0, markW: 0, markH: 0, obstacles: [] as Obstacle[] }));
+  const [layout] = useState(() => ({ width: 0, height: 0, markW: 0, markH: 0, obstacles: [] as Obstacle[], mark: { left: 0, top: 0, width: 0, height: 0, shown: false } }));
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
@@ -322,7 +322,7 @@ export default function OpenWorldPage() {
         setLieu({ place: placeId, focus: null });
       },
       onLocks: (locks) => placeLocks(locksRef.current, locks),
-      onSigns: (signs) => placeSigns(signsRef.current, signs),
+      onSigns: (signs) => placeSigns(signsRef.current, signs, layout),
       // Un lieu d'une terre fermée, ou son pont tombé, touché dans le monde : la fiche de la terre (GD-20, point 3).
       onClosed: (land) => {
         setPanel(null);
@@ -478,18 +478,33 @@ export default function OpenWorldPage() {
   );
   // « Reprendre » chez l'habitant (GD-20, point 4, lot L3, B2) : les questions dues des missions de ce lieu, jouées dans
   // sa scène ; s'il n'y en a aucune qui s'y revoie (les maths générées, l'Ascension), l'écran habituel, comme avant (B1).
+  // Le temps que ses exercices se chargent, « Reprendre » est occupé (`aria-busy`) et un second toucher ne relance rien ;
+  // si le chargement échoue (hors ligne, mise à jour en cours), l'écran habituel des révisions, comme sans plan.
   const navigate = useNavigate();
+  const [reprendreBusy, setReprendreBusy] = useState(false);
+  const reprendreRef = useRef(false);
   const reprendreAt = useCallback(async () => {
-    if (!lieu) return;
+    if (!lieu || reprendreRef.current) return;
     const place = lieu.place;
-    const plan = await revisionPlanOf(state.spaced, state.world.links, place, settings.lv2);
-    if (plan) {
-      setLieu(null);
-      setAsking({ place, mission: plan.segments[0].type, plain: false, revision: plan });
-      return;
+    const dues = () => revisionsDeLIle(state.spaced, state.world.links, placeById(place).island as BiomeId, settings.lv2);
+    reprendreRef.current = true;
+    setReprendreBusy(true);
+    try {
+      const plan = await revisionPlanOf(state.spaced, state.world.links, place, settings.lv2);
+      if (plan) {
+        setLieu(null);
+        setAsking({ place, mission: plan.segments[0].type, plain: false, revision: plan });
+        return;
+      }
+      const due = dues();
+      if (due.length) navigate(cheminDeRevision(due[0]));
+    } catch {
+      const due = dues();
+      if (due.length) navigate(cheminDeRevision(due[0]));
+    } finally {
+      reprendreRef.current = false;
+      setReprendreBusy(false);
     }
-    const dues = revisionsDeLIle(state.spaced, state.world.links, placeById(place).island as BiomeId, settings.lv2);
-    if (dues.length) navigate(cheminDeRevision(dues[0]));
   }, [lieu, state.spaced, state.world.links, settings.lv2, navigate]);
   const goPort = useCallback((spot: Exclude<PortSpot, 'quai'>) => {
     setPanel(null);
@@ -895,7 +910,7 @@ export default function OpenWorldPage() {
                 focus={lieu.focus}
                 onPlay={play}
                 onClose={closeLieu}
-                habitant={<HabitantLine place={lieu.place} line={habitantLineOf(state, lieu.place, assemblyAt)} entraide={entraideLineOf(vu, lieu.place, assemblyAt)} suggested={suggestedId} onDeliver={deliverAt} onEntraide={entraideAt} onReprendre={() => void reprendreAt()} onGo={goHabitant} />}
+                habitant={<HabitantLine place={lieu.place} line={habitantLineOf(state, lieu.place, assemblyAt)} entraide={entraideLineOf(vu, lieu.place, assemblyAt)} suggested={suggestedId} onDeliver={deliverAt} onEntraide={entraideAt} onReprendre={() => void reprendreAt()} reprendreBusy={reprendreBusy} onGo={goHabitant} />}
               />
             )}
           </div>
@@ -1040,7 +1055,14 @@ const COLUMN_ZONE = { width: 72, below: 16 } as const;
  * relues par le `ResizeObserver`) : sur son lieu, au-dessus du point, ou au bord, sa flèche tournée vers lui et la
  * distance en points dessous ; le panneau reste entier à l'écran et hors des boutons Réglages et « Y aller ».
  */
-function placeMark(mark: HTMLElement | null, arrow: HTMLElement | null, m: MarkOnScreen | null, size: { width: number; height: number; markW: number; markH: number; obstacles: Obstacle[] }): void {
+function placeMark(
+  mark: HTMLElement | null,
+  arrow: HTMLElement | null,
+  m: MarkOnScreen | null,
+  size: { width: number; height: number; markW: number; markH: number; obstacles: Obstacle[]; mark: ScreenRect & { shown: boolean } },
+): void {
+  // Là où la marque est posée, pour les pastilles qui l'évitent (HabitantSigns.tsx, `clearSign`) : écrit sur place.
+  size.mark.shown = false;
   if (!mark) return;
   mark.hidden = !m;
   if (!m) return;
@@ -1061,6 +1083,11 @@ function placeMark(mark: HTMLElement | null, arrow: HTMLElement | null, m: MarkO
     if (box.top + h > limit) box.top = limit - h;
   }
   const r = keepClear(box, size.obstacles, size.width, size.height, MARK_EDGE, MARK_EDGE);
+  size.mark.left = r.left;
+  size.mark.top = r.top;
+  size.mark.width = w;
+  size.mark.height = h;
+  size.mark.shown = true;
   mark.style.transform = `translate(${Math.round(r.left)}px, ${Math.round(r.top)}px)`;
   if (arrow) arrow.style.transform = m.inside ? '' : `rotate(${m.angle}rad)`;
 }

@@ -12,6 +12,7 @@ import { portFloor } from '../../world/continu/plan6e';
 import { remisePose, scenetteDecor, scenetteHabitant, scenetteKeo } from '../../world/continu/scenette';
 import { buildHeightField, heightOnMesh } from '../../world/continu/terrain';
 import { STORIES } from '../../world/stories';
+import { BLOCKS } from '../../biomes';
 import { placeOfIsland } from '../../world/continu/plan6e';
 import { placedAmenagement } from './amenagements';
 
@@ -54,6 +55,25 @@ describe('La caisse de « Donner »', () => {
     // Les couleurs viennent du bois et des blocs (une face un peu plus sombre ou plus claire : l'ombrage des facettes).
     expect(seen.size).toBeLessThanOrEqual(allowed.length * 3);
     expect(seen.size).toBeGreaterThan(0);
+  });
+
+  it('chaque bloc donné se détache de la caisse : son dessus et son côté à 2:1 au moins du fond sombre, et le liseré clair du bois sombre', () => {
+    // Le contraste de luminance (WCAG) entre deux couleurs 0xrrggbb.
+    const lum = (c: number) => {
+      const [r, g, b] = [(c >> 16) & 255, (c >> 8) & 255, c & 255].map((v) => (v / 255 <= 0.04045 ? v / 255 / 12.92 : ((v / 255 + 0.055) / 1.055) ** 2.4));
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const ratio = (a: number, b: number) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
+    const given = STORIES.filter((x) => x.region === '6e').flatMap((x) => x.steps.flatMap((st) => (st.kind === 'give' ? [st.block] : [])));
+    expect(given).toHaveLength(3);
+    const low: string[] = [];
+    for (const id of given)
+      for (const face of [BLOCKS[id].top, BLOCKS[id].side]) {
+        const r = ratio(parseInt(face.slice(1), 16), CAISSE_WOOD.fond);
+        if (r < 2) low.push(`${id} ${face} : ${r.toFixed(2)}`);
+      }
+    expect(low).toEqual([]);
+    expect(ratio(CAISSE_WOOD.liseré, CAISSE_WOOD.cote)).toBeGreaterThan(3);
   });
 
   it('posée sur le sol de la scène, à plat, à ses pieds : ni sur l’habitant ni sur Kéo, et rien du décor ne monte sous elle', () => {

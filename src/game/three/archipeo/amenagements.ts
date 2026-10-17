@@ -10,7 +10,7 @@ import type { PlaceId } from '../../world/continu/plan6e';
 import { Pinceau, type V3 } from '../../world/decor/brush';
 import { estPosee } from '../../world/fixtures';
 import { ASSEMBLIES } from '../../world/objects/assemblies';
-import { OBJECT_COLORS, paintFor } from '../../world/objects/pieces';
+import { OBJECT_COLORS, paintFor, tableOnLegs } from '../../world/objects/pieces';
 import { SILHOUETTES, type ObjectDrawing } from '../../world/objects/silhouettes';
 import { Workshop, type Tint } from '../../world/objects/workshop';
 import { BIOMES, BLOC } from '../../biomes';
@@ -87,14 +87,48 @@ const nichoir: ObjectDrawing = (at, pe, far) => {
 };
 
 /**
+ * La lanterne d'entraide du Phare dans le monde ouvert (consultant d'Archipéo, avis sur les lots L2 et L3, 17 octobre
+ * 2026) : sur le banc de la grille, une lanterne de quai qu'on porte à la main, et non la lanterne sur poteau des cours,
+ * qui se lisait comme un lampadaire au pied de la tour (et se confondait avec la lanterne du Phare, en haut). Un socle et
+ * un cadre de fer, quatre vitres en verre mat (éteinte : `MATTE_GLASS`), un toit en pointe et son anse au-dessus. Les
+ * mêmes marques que celle de la grille (le plateau, puis les pieds et la lanterne) : un seul élément, posé d'un bloc.
+ */
+export const LANTERNE_DE_QUAI = { side: 0.62, glass: [0.66, 1.36], roof: 1.66, anse: 1.98 } as const;
+
+const lanterneDeQuai: ObjectDrawing = (at, pe) => {
+  const wood = pe.block(BLOC.bois);
+  tableOnLegs(at, 0.04, 2.96, 0.14, 0.86, 0.56, 0.14, wood, [
+    [0.36, 0.5],
+    [2.64, 0.5],
+  ], 0.32, { dessus: wood.dessus, cote: wood.cote });
+  const frame = pe.role('lanternFrame');
+  const iron = pe.color(OBJECT_COLORS.iron);
+  const [cx, cy, s] = [1.5, 0.5, LANTERNE_DE_QUAI.side];
+  const [g0, g1] = LANTERNE_DE_QUAI.glass;
+  // Le socle, les vitres (en retrait du cadre), les quatre montants d'angle, le chapeau et le toit en pointe.
+  at.block(cx, cy, s, s, 0.56, g0, frame, { bottom: true });
+  at.block(cx, cy, s - 0.1, s - 0.1, g0, g1, { dessus: MATTE_GLASS.dessus, cote: MATTE_GLASS.cote }, { bottom: true, top: true });
+  const post = 0.09;
+  for (const dx of [-1, 1]) for (const dy of [-1, 1]) at.block(cx + dx * (s / 2 - post / 2), cy + dy * (s / 2 - post / 2), post, post, g0, g1, frame, { bottom: true, top: true });
+  at.block(cx, cy, s + 0.06, s + 0.06, g1, g1 + 0.07, frame, { bottom: false });
+  at.prism(cx, cy, s / 2 + 0.06, 0.07, g1 + 0.07, LANTERNE_DE_QUAI.roof, 4, frame, Math.PI / 4);
+  // L'anse : un arceau de fer, de part et d'autre de la pointe, qui dit « on la porte ».
+  const [a, z0, z1] = [0.2, LANTERNE_DE_QUAI.roof - 0.06, LANTERNE_DE_QUAI.anse];
+  at.beam([cx - a, cy, z0], [cx - a * 0.7, cy, z1], 0.055, iron, true);
+  at.beam([cx - a * 0.7, cy, z1], [cx + a * 0.7, cy, z1], 0.055, iron, true);
+  at.beam([cx + a * 0.7, cy, z1], [cx + a, cy, z0], 0.055, iron, true);
+};
+
+/**
  * Les dessins du 6e, par identifiant de petite construction : ceux de la grille ; la grue des Archives, sa potence de
- * façade ; le nichoir de la Mangrove, son entrée au pignon.
+ * façade ; le nichoir de la Mangrove, son entrée au pignon ; la lanterne d'entraide du Phare, une lanterne de quai.
  */
 const DRAWINGS: Readonly<Record<string, ObjectDrawing>> = {
   ...SILHOUETTES,
   ...ASSEMBLIES,
   'french-6e-word-spelling-fixture-1': potence,
   'life-earth-sciences-6e-living-world-fixture-1': nichoir,
+  'french-6e-phonology-fixture-2': lanterneDeQuai,
 };
 
 /** Un atelier dont les vitres (le feu de la grille) restent dans l'opaque, en verre mat : une lanterne éteinte. */

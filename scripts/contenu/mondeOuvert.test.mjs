@@ -17,13 +17,13 @@ const ENTRAIDE = [
   '- consigne donner : Tu donnes {objet} pour {nom}.',
   '- consigne apporter : Tu apportes {nom}.',
 ];
-const REVISION = ['- entrée : Tu revois {questions}.', '- fin : Tu as revu {questions}.'];
+const REVISION = ['- entrée : Tu revois {questions}.', '- fin : Tu as revu {questions}.', '- rappel : On revoit quelques questions ensemble.'];
 const md = (...l) => ['# Le monde ouvert', '', '## Les habitants', '', ...l, '', '## L’entraide', '', ...ENTRAIDE, '', '## La révision', '', ...REVISION, ''].join('\n');
 const lire = (...l) => () => lireMondeOuvert(md(...l), 'monde-ouvert.md');
 const remplacer = (avant, apres) => BONNES.map((l) => (l.startsWith(`- ${avant} :`) ? apres : l));
 
 describe('docs/contenu/monde-ouvert.md', () => {
-  it('lit les douze formes de ses trois sections, dans l’ordre du jeu', () => {
+  it('lit les treize formes de ses trois sections, dans l’ordre du jeu', () => {
     expect(lire(...BONNES)()).toEqual({
       ask: 'Il me faut {objet}. C’est pour {nom}. Joue une mission {au lieu}.',
       askAssembled: 'Il me faut {objet}. C’est pour {nom}. Assemble les {blocs} {au lieu}.',
@@ -37,6 +37,7 @@ describe('docs/contenu/monde-ouvert.md', () => {
       bringRemise: 'Tu apportes {nom}.',
       revisionEntry: 'Tu revois {questions}.',
       revisionDone: 'Tu as revu {questions}.',
+      revisionReminder: 'On revoit quelques questions ensemble.',
     });
   });
 
@@ -48,6 +49,9 @@ describe('docs/contenu/monde-ouvert.md', () => {
     // L'entrée de la révision ne dit jamais une date ni un échec : ses jetons seuls.
     const daté = md(...BONNES).replace('Tu revois {questions}.', 'Tu revois {questions} du {jour}.');
     expect(() => lireMondeOuvert(daté, 'monde-ouvert.md')).toThrow('jeton « {jour} » inconnu ici');
+    // Le rappel est une forme sans jeton : il ne nomme ni mission ni nombre.
+    const nommé = md(...BONNES).replace('On revoit quelques questions ensemble.', 'On revoit {questions} ensemble.');
+    expect(() => lireMondeOuvert(nommé, 'monde-ouvert.md')).toThrow('jeton « {questions} » inconnu ici');
   });
 
   it('refuse une forme manquante, inconnue ou écrite deux fois', () => {

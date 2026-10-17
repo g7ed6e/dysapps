@@ -1,7 +1,7 @@
 // La révision dans la scène du lieu (GD-20, point 4, lot L3, B2) : le passage d'un lieu, ses questions dues, 8 au plus,
 // dans l'ordre de la file, regroupées par exercice ; seules celles de ce lieu ; jamais un exercice généré (les maths des
 // Quais, des Écluses, des Marais salants), ni l'Ascension de la Vigie : ceux-là gardent l'écran habituel.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { CATALOG, loadExercise } from '../../exercises';
 import type { SpacedItem } from '../../engine';
 import { PLACES, placeById } from '../../world/continu/plan6e';
@@ -68,6 +68,24 @@ describe('Ce qui se revoit dans la scène', () => {
         { exercise: syl.id, type: 'syllables', level: syl.level, keys: [sylDef.items[1].key, sylDef.items[0].key] },
       ],
     });
+  });
+
+  it('charge les exercices dans l’ordre de la file et s’arrête à 8 questions : une longue file ne charge que les premiers', async () => {
+    const phare = placeById('phare');
+    const [syl] = CATALOG.filter((m) => m.biome === phare.island && m.type === 'syllables');
+    const [rimes] = CATALOG.filter((m) => m.biome === phare.island && m.type === 'rhymes');
+    const sylDef = (await loadExercise(syl.id))!;
+    const rimesDef = (await loadExercise(rimes.id))!;
+    expect(sylDef.items.length).toBeGreaterThanOrEqual(REVISION_MAX);
+    const spaced = [
+      ...sylDef.items.slice(0, REVISION_MAX).map((it, i) => due(`${syl.id}:${it.key}`, `2026-10-0${i + 1}`)),
+      ...rimesDef.items.slice(0, 4).map((it) => due(`${rimes.id}:${it.key}`, '2026-10-15')),
+    ];
+    const load = vi.fn(loadExercise);
+    const plan = await revisionPlanOf(spaced, LINKS, 'phare', 'none', TODAY, load);
+    expect(load.mock.calls.map(([id]) => id)).toEqual([syl.id]);
+    expect(plan?.total).toBe(REVISION_MAX);
+    expect(plan?.segments.map((x) => x.exercise)).toEqual([syl.id]);
   });
 
   it('rien à revoir ici dans la scène (seulement des maths générées) : pas de passage, « Reprendre » garde l’écran habituel', async () => {

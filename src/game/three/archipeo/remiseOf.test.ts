@@ -7,16 +7,17 @@
 // et l'étape faite, celle de la grille (`tapStoryStep`), sans rien de neuf dans la sauvegarde.
 import { describe, expect, it } from 'vitest';
 import { frenchTypography } from '../../../components/math/RichText';
-import { blockCount, blockName } from '../../biomes';
+import { BLOCKS, blockCount, blockName } from '../../biomes';
 import { sanitizeState } from '../../engine';
 import { lieuDAssemblage } from '../../world/assembly';
 import { amenagementById } from '../../world/continu/amenagements';
 import { PLACES } from '../../world/continu/plan6e';
-import { ENTRAIDE_PHRASES, HABITANT_PHRASES, REMISE_TIMING, filled, remiseDuration, voiceFallbackMs, type HabitantPhrases } from '../../world/continu/remise';
+import { ENTRAIDE_PHRASES, HABITANT_PHRASES, REMISE_TIMING, REVISION_PHRASES, filled, questionsWord, remiseDuration, voiceFallbackMs, type HabitantPhrases } from '../../world/continu/remise';
 import { COMMANDES, livrerLaCommande } from '../../world/requests';
 import { STORIES, STORY_XP, tapStoryStep } from '../../world/stories';
 import { posedAmenagements } from './amenagements';
 import {
+  entraideIcon,
   MAX_SIGNS,
   commandLines,
   entraideLineOf,
@@ -279,6 +280,23 @@ describe('L’entraide du 6e dans le monde ouvert (lot L2)', () => {
     const longues = textes.flatMap((t) => t.split(/(?<=\.)\s+/).filter((p) => mots(p) > MOTS_PAR_PHRASE).map((p) => `« ${p} »`));
     expect(longues).toEqual([]);
     expect(textes.filter((t) => /(^|\s)(à|de) (le|les)\s|[{}]|\s{2}/u.test(t) || !t.endsWith('.'))).toEqual([]);
+  });
+
+  it(`les phrases de la révision, remplies d’une et de huit questions, et le rappel : ${MOTS_PAR_PHRASE} mots au plus par phrase, sans accolade`, () => {
+    const mots = (phrase: string) => phrase.split(/\s+/).filter(Boolean).length;
+    expect([questionsWord(1), questionsWord(8)]).toEqual(['1 question', '8 questions']);
+    const textes = [1, 8].flatMap((n) => [filled(REVISION_PHRASES.entry, { questions: questionsWord(n) }), filled(REVISION_PHRASES.done, { questions: questionsWord(n) })]);
+    textes.push(REVISION_PHRASES.reminder);
+    expect(textes).toEqual(['Tu revois 1 question.', 'Tu as revu 1 question.', 'Tu revois 8 questions.', 'Tu as revu 8 questions.', 'On revoit quelques questions ensemble.']);
+    const longues = textes.flatMap((t) => t.split(/(?<=\.)\s+/).filter((p) => mots(p) > MOTS_PAR_PHRASE));
+    expect(longues).toEqual([]);
+    expect(textes.filter((t) => /[{}]|\s{2}/u.test(t) || !t.endsWith('.'))).toEqual([]);
+  });
+
+  it('l’icône de la lanterne pas encore posée : éteinte (verre mat, chapeau sombre), jamais le jaune de sa lueur ; les autres objets gardent leur bloc', () => {
+    expect(entraideIcon('lantern')).toEqual({ top: '#4a4f55', side: '#cfd9d6' });
+    expect(entraideIcon('lantern').top).not.toBe(BLOCKS.lantern.top);
+    for (const story of STORIES_6E.filter((x) => x.item !== 'lantern')) expect(entraideIcon(story.item)).toEqual({ top: BLOCKS[story.item].top, side: BLOCKS[story.item].side });
   });
 
   it('la ligne de l’habitant : « Donner » avec assez de blocs, sinon ce qui manque (la forme « demande ») ; « Apporter » ; rien pour une mission', () => {

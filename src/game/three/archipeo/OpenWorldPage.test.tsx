@@ -39,6 +39,12 @@ vi.mock('./scene', () => ({
   },
 }));
 
+// « Reprendre » quand le chargement des exercices échoue (hors ligne) : `revisionPlanOf` rejette une fois.
+const plan = vi.hoisted(() => ({ fail: false }));
+vi.mock('./revisionOf', async (original) => {
+  const m = await original<typeof import('./revisionOf')>();
+  return { ...m, revisionPlanOf: (...args: Parameters<typeof m.revisionPlanOf>) => (plan.fail ? Promise.reject(new Error('hors ligne')) : m.revisionPlanOf(...args)) };
+});
 const pay = vi.hoisted(() => ({ refuse: false, ctx: null as ReturnType<typeof import('../../BloclandContext').useBlocland> | null }));
 vi.mock('../../BloclandContext', async (original) => {
   const m = await original<typeof import('../../BloclandContext')>();
@@ -279,6 +285,17 @@ describe('« Reprendre » chez l’habitant (GD-20, point 4, lot L3)', () => {
     await reprendreAuxQuais();
     expect(await screen.findByRole('list', { name: 'Question 1 sur 1' })).toBeInTheDocument();
     expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
+  });
+
+  test('un chargement qui échoue (hors ligne) : « Reprendre » retombe sur l’écran habituel, sans rester muet', async () => {
+    plan.fail = true;
+    try {
+      localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, spaced: due(['maths-6e-calculation-measures-1:maths-6e-calculation-measures-1-2']) }));
+      await reprendreAuxQuais();
+      await vi.waitFor(() => expect(screen.getByTestId('adresse')).toHaveTextContent(/revision=1/));
+    } finally {
+      plan.fail = false;
+    }
   });
 
   test('rien qui se revoie ici (les maths générées) : « Reprendre » ouvre l’écran habituel, comme avant (B1)', async () => {

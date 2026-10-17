@@ -20,7 +20,7 @@
 import { BIOMES, BLOCKS, blockCount, blockName, type BiomeId, type BlockId } from '../../biomes';
 import type { GameState } from '../../engine/state';
 import { recetteDe } from '../../world/assembly';
-import { amenagementById } from '../../world/continu/amenagements';
+import { MATTE_GLASS, amenagementById } from '../../world/continu/amenagements';
 import { PLACES, placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
 import { ENTRAIDE_PHRASES, HABITANT_PHRASES, filled, type PhraseTokens, type RemiseKind } from '../../world/continu/remise';
 import { scenetteOf } from '../../world/continu/scenette';
@@ -211,6 +211,22 @@ export interface HabitantSign {
   suggested: boolean;
   /** Ce que lit le lecteur d'écran (« Commande, blocs de terre, au Phare », « Entraide, la lanterne, au Phare »). */
   label: string;
+}
+
+/** Une couleur du monde continu (0xrrggbb) en couleur d'icône (« #rrggbb »). */
+const hex = (c: number) => `#${c.toString(16).padStart(6, '0')}`;
+
+/**
+ * L'icône de l'objet d'une entraide tant qu'il n'est pas posé (consultant d'Archipéo, avis sur les lots L2 et L3) : la
+ * lanterne éteinte, son verre mat sur les côtés et son chapeau de fer sombre, et non le jaune du bloc de la grille (la
+ * lueur de la nuit, qui la dirait déjà allumée). Une fois posée, la pastille et la ligne s'en vont : le jaune ne se
+ * montre plus qu'à la fin de la remise. Les autres objets gardent leur bloc.
+ */
+const UNLIT: Partial<Record<BlockId, { top: string; side: string }>> = { lantern: { top: '#4a4f55', side: hex(MATTE_GLASS.cote) } };
+
+/** Les couleurs de l'icône de l'objet d'une entraide pas encore posé. */
+export function entraideIcon(block: BlockId): { top: string; side: string } {
+  return UNLIT[block] ?? { top: BLOCKS[block].top, side: BLOCKS[block].side };
 }
 
 /** Trois pastilles au plus à la fois (avis UX, point 3 : jamais un monde couvert de signes). */

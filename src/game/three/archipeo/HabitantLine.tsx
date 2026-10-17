@@ -1,7 +1,7 @@
 // La ligne de l'habitant (GD-20, point 4, lot L1 « Livrer ») : en tête du panneau de son lieu, son rôle et l'icône de
 // son île, une phrase, un seul bouton. Une seule chose à la fois, dans cet ordre : sa commande prête (« Livre 3 blocs
-// de terre au Phare. », « Livrer », la remise) ; ses révisions dues (« Reprendre », l'écran habituel des révisions, et
-// « Plus tard » ; la révision jouée dans la scène viendra au lot L3) ; sa commande à qui il manque des blocs (« Il me
+// de terre au Phare. », « Livrer », la remise) ; ses révisions dues (« On revoit quelques questions ensemble. »,
+// « Reprendre », la révision jouée dans la scène du lieu au lot L3, et « Plus tard ») ; sa commande à qui il manque des blocs (« Il me
 // faut 3 blocs de terre. C’est pour le potager. Joue une mission aux Filets. », « Y aller », vers le lieu de la
 // ressource, ou vers le lieu de l'Escale où l'on assemble). Et la liste « Commandes » du monde ouvert, que l'accès direct
 // ouvre : une ligne par commande ouverte, la même phrase, « Y aller ». Un bouton plein ne porte que la suggestion (GD-20 :
@@ -19,10 +19,11 @@ import { getBiome } from '../../biomes';
 import { ReminderButtons, ReminderText, useResidentReminder } from '../../ResidentReminder';
 import { Sheet } from '../../Sheet';
 import { placeById, type PlaceId } from '../../world/continu/plan6e';
+import { REVISION_PHRASES } from '../../world/continu/remise';
 import { scenetteOf } from '../../world/continu/scenette';
 import { useOpenPanel } from './PortPanels';
 import { StoryBadge } from '../../Stories';
-import type { EntraideLine, HabitantGo, HabitantLine as Line, entraideListLine } from './remiseOf';
+import { entraideIcon, type EntraideLine, type HabitantGo, type HabitantLine as Line, type entraideListLine } from './remiseOf';
 
 interface Props {
   place: PlaceId;
@@ -37,6 +38,8 @@ interface Props {
   onEntraide?(story: string): void;
   /** « Reprendre » : la révision de ce lieu jouée dans sa scène (GD-20, point 4, lot L3) ; sans lui, l'écran habituel. */
   onReprendre?(): void;
+  /** La révision se prépare (ses exercices se chargent) : « Reprendre » est occupé et ne se touche pas deux fois. */
+  reprendreBusy?: boolean;
   onGo(go: HabitantGo): void;
 }
 
@@ -51,10 +54,14 @@ type Shown =
  * d'entraide qui se fait d'un geste (« Donner », « Apporter ») ; les révisions dues ; ce qui manque à la commande ; ce
  * qui manque pour donner.
  */
-export function HabitantLine({ place, line, entraide = null, suggested, onDeliver, onEntraide, onReprendre, onGo }: Props) {
+export function HabitantLine({ place, line, entraide = null, suggested, onDeliver, onEntraide, onReprendre, reprendreBusy = false, onGo }: Props) {
   const textes = useTextes();
   const biome = getBiome(placeById(place).island);
-  const rappel = useResidentReminder(biome);
+  const due = useResidentReminder(biome);
+  // Le rappel du monde ouvert ne nomme aucune mission (le passage peut commencer par une autre) : sa phrase, écrite et
+  // lue (monde-ouvert.md, « La révision », « rappel ») ; la grille et Blocland gardent la leur.
+  const reminder = frenchTypography(REVISION_PHRASES.reminder);
+  const rappel = due ? { ...due, texte: reminder, lu: reminder, etranger: null } : null;
   if (!biome || (!line && !entraide && !rappel)) return null;
   const role = scenetteOf(place).role;
   const head = (title: string) => (
@@ -97,8 +104,10 @@ export function HabitantLine({ place, line, entraide = null, suggested, onDelive
               <Icon name="footprints" /> Y aller
             </button>
           ) : (
+            // « Donner » : le paquet ; « Apporter » : la main qui tient l'objet (le même signe que « tenu » du geste
+            // « ranger »), pour distinguer les deux gestes sans lire (avis du référent dys, lots L2 et L3).
             <button type="button" className={`button habitant-line-go${primary}`} onClick={() => onEntraide?.(shown.id)}>
-              <Icon name="paquet" /> {shown.kind === 'donner' ? (mots?.donner ?? 'Donner') : (mots?.apporter ?? 'Apporter')}
+              <Icon name={shown.kind === 'donner' ? 'paquet' : 'main'} /> {shown.kind === 'donner' ? (mots?.donner ?? 'Donner') : (mots?.apporter ?? 'Apporter')}
             </button>
           )}
         </div>
@@ -115,7 +124,7 @@ export function HabitantLine({ place, line, entraide = null, suggested, onDelive
       <div className="habitant-line-actions">
         <SpeakButton text={rappel.lu} label="Réécouter" compact />
         {/* Les révisions ne sont jamais la suggestion du monde ouvert : « Reprendre » reste simple (relecture du lot L1). */}
-        <ReminderButtons biome={biome} rappel={rappel} primary={false} onReprendre={onReprendre} />
+        <ReminderButtons biome={biome} rappel={rappel} primary={false} onReprendre={onReprendre} busy={reprendreBusy} />
       </div>
     </div>
   );
@@ -153,7 +162,7 @@ export function CommandsSheet({
           {entraide && quete && (
             <li key={entraide.story.id} className="habitant-line open-world-entraide">
               <p className="habitant-line-role">
-                <StoryBadge story={entraide.story} index={entraide.index} /> {entraide.role}
+                <StoryBadge story={entraide.story} index={entraide.index} icon={entraideIcon(entraide.story.item)} /> {entraide.role}
               </p>
               <p className="habitant-line-text">
                 <Syllabified text={quete} />

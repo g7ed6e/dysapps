@@ -10,5 +10,6 @@
   "giveRemise": "Tu donnes {objet} pour {nom}.",
   "bringRemise": "Tu apportes {nom}.",
   "revisionEntry": "Tu revois {questions}.",
-  "revisionDone": "Tu as revu {questions}."
+  "revisionDone": "Tu as revu {questions}.",
+  "revisionReminder": "On revoit quelques questions ensemble."
 }

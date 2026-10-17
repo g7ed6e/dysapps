@@ -26,7 +26,7 @@
 - consigne donner : Tu donnes {objet} pour {nom}.
 - consigne apporter : Tu apportes {nom}.
 
-> Les étapes de la quête d’entraide du 6e (`quetes.md`), que le jeu remplit (lot L2) : une phrase par étape, dans la ligne de l’habitant de l’étape et en tête de la liste « Commandes » ; une consigne pour la remise de « Donner » et d’« Apporter ». Les jetons :
+> Les étapes des trois quêtes d’entraide du 6e (`quetes.md` : la lanterne, le portillon, l’escalier), que le jeu remplit (lot L2) : une phrase par étape, dans la ligne de l’habitant de l’étape et en tête de la liste « Commandes » ; une consigne pour la remise de « Donner » et d’« Apporter ». Les jetons :
 > - `{objet}` : les ressources données, avec les mots de la réserve (« 2 blocs de bois ») ;
 > - `{nom}` : l’objet de l’entraide, avec son article, tel que l’écrit `quetes.md` (« la lanterne ») ;
 > - `{au lieu}` : le lieu de l’habitant de l’étape, dans sa forme « à » (« aux Quais »).
@@ -37,5 +37,8 @@
 
 - entrée : Tu revois {questions}.
 - fin : Tu as revu {questions}.
+- rappel : On revoit quelques questions ensemble.
 
-> La révision jouée dans la scène du lieu (lot L3) : la phrase d’entrée, en tête de la scène, sous le rôle, avant la consigne de la première mission ; la phrase de fin, en tête du seul bilan, à la place des étoiles (une révision ne change pas les étoiles). `{questions}` : leur nombre et le mot (« 5 questions », « 1 question »). Jamais une date, un échec ni un retard : ni « ratées », ni « à revoir », ni « encore ».
+> La révision jouée dans la scène du lieu (lot L3) : la phrase d’entrée, en tête de la scène, sous le rôle, avant la consigne de la première mission ; la phrase de fin, en tête du seul bilan, à la place des étoiles (une révision ne change pas les étoiles) ; le rappel, dans la ligne de l’habitant, avec « Reprendre » et « Plus tard », à la place de la phrase de la grille (« On reprend « … » ensemble ? ») dans le monde ouvert seulement : il ne nomme aucune mission (le passage ne commence pas forcément par la première nommée) ni aucun nombre (le passage se calcule au toucher de « Reprendre »), et vaut aussi quand « Reprendre » mène à l’écran habituel. Blocland et la grille gardent leur phrase. `{questions}` : leur nombre et le mot (« 5 questions », « 1 question »). **Le mot « question » est fixé par le code** (`questionsWord`, qui l’accorde au nombre) : une phrase ne peut pas dire « exercices » ni « items ». Jamais une date, un échec ni un retard : ni « ratées », ni « à revoir », ni « encore ».
+
+> La liste des lieux (sur la Carte, « Lieux ») n’a pas de forme ici : son étiquette lue ajoute **« avec »** et les aménagements posés du lieu (« Les Quais, …, avec le potager et la lanterne »), mots écrits par le code (`PlacesSheet.tsx`), comme les mots d’état. Si un univers veut sa propre formule, elle deviendra une forme de ce fichier.

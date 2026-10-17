@@ -137,10 +137,11 @@ export interface SignOnScreen {
 }
 
 /**
- * Les pastilles des habitants : `anchorOf` dit où se tient chacune dans le monde, `place` où elle tombe à l'écran et si
- * elle se voit ; `onSigns` les rend à la page (aucune n'est dessinée dans la 3D).
+ * Les pastilles des habitants : `anchorOf` dit où se tient chacune dans le monde, `place` écrit dans la pastille où elle
+ * tombe à l'écran et si elle se voit (sur place : rien n'est alloué à chaque image) ; `onSigns` les rend à la page
+ * (aucune n'est dessinée dans la 3D).
  */
-export function createSignsTracker({ anchorOf, place, onSigns }: { anchorOf(place: PlaceId): Vec3; place(anchor: THREE.Vector3, at: PlaceId): { x: number; y: number; shown: boolean }; onSigns?(signs: readonly SignOnScreen[]): void }) {
+export function createSignsTracker({ anchorOf, place, onSigns }: { anchorOf(place: PlaceId): Vec3; place(anchor: THREE.Vector3, sign: SignOnScreen): void; onSigns?(signs: readonly SignOnScreen[]): void }) {
   let signs: SignOnScreen[] = [];
   const anchors = new Map<PlaceId, THREE.Vector3>();
   return {
@@ -159,7 +160,7 @@ export function createSignsTracker({ anchorOf, place, onSigns }: { anchorOf(plac
       for (const s of signs) {
         const anchor = anchors.get(s.place);
         if (!anchor) continue;
-        Object.assign(s, place(anchor, s.place));
+        place(anchor, s);
       }
       onSigns?.(signs);
     },

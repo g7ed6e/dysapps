@@ -677,7 +677,15 @@
   min-height: 0;
   overflow-y: auto;
 }
-/* Le bilan d'une révision (GD-20, point 4, lot L3) : sa phrase à la place des étoiles, et sa voix. */
+/* Le bilan d'une révision (GD-20, point 4, lot L3) : sa phrase à la place des étoiles, et sa voix ; le texte et les
+   pastilles alignés à gauche, même sur deux lignes au plus grand texte (principes dys, avis du référent dys). */
+.world-question .world-done-body-revised {
+  align-items: flex-start;
+  text-align: left;
+}
+.world-question .world-done-body-revised .world-done-pills {
+  justify-content: flex-start;
+}
 .world-question .world-done-revised {
   display: flex;
   align-items: center;
@@ -686,6 +694,7 @@
 .world-question .world-done-revised h2 {
   margin: 0;
   font-size: max(20px, 1.3rem);
+  text-align: left;
 }
 .world-done-pills {
   display: flex;

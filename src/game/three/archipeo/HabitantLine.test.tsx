@@ -154,6 +154,9 @@ it('« Apporter » : la phrase de l’étape et son bouton, avant les révisions
   expect(within(group).queryByRole('link', { name: /Reprendre/ })).toBeNull();
   const bouton = within(group).getByRole('button', { name: /Apporter/ });
   expect(bouton).toHaveClass('primary');
+  // Sa propre icône, la main qui tient l'objet, pas le paquet de « Donner ».
+  expect(bouton.querySelector('svg.lucide-hand-grab')).not.toBeNull();
+  expect(bouton.querySelector('svg.lucide-package')).toBeNull();
   await userEvent.setup().click(bouton);
   expect(onEntraide).toHaveBeenCalledWith(lanterne.id);
 });
@@ -172,6 +175,10 @@ it('les révisions dues : « Reprendre » simple dans le monde ouvert, avant ce 
   const reprendre = screen.getByRole('link', { name: /Reprendre/ });
   expect(reprendre).not.toHaveClass('primary');
   expect(screen.getByRole('button', { name: 'Plus tard' })).toBeInTheDocument();
+  // Le rappel du monde ouvert ne nomme aucune mission (monde-ouvert.md, « La révision », « rappel »).
+  const group = screen.getByRole('group');
+  expect(group.textContent?.replace(/\s+/g, ' ')).toMatch(/On revoit quelques questions ensemble\./);
+  expect(group.textContent).not.toMatch(/On reprend/);
 });
 
 it('dans le monde ouvert, « Reprendre » lance la révision dans la scène du lieu (lot L3) : un bouton, simple, jamais un lien', async () => {
@@ -183,6 +190,17 @@ it('dans le monde ouvert, « Reprendre » lance la révision dans la scène du l
   expect(reprendre).not.toHaveClass('primary');
   await userEvent.setup().click(reprendre);
   expect(onReprendre).toHaveBeenCalledTimes(1);
+});
+
+it('« Reprendre » en cours de chargement : occupé et désactivé, un second toucher ne relance rien', async () => {
+  revisionDueAuPhare();
+  const onReprendre = vi.fn();
+  wrap(<HabitantLine place="phare" line={null} suggested={null} onDeliver={vi.fn()} onReprendre={onReprendre} reprendreBusy onGo={vi.fn()} />);
+  const reprendre = screen.getByRole('button', { name: /Reprendre/ });
+  expect(reprendre).toHaveAttribute('aria-busy', 'true');
+  expect(reprendre).toBeDisabled();
+  await userEvent.setup().click(reprendre);
+  expect(onReprendre).not.toHaveBeenCalled();
 });
 
 it('ce qui manque pour donner : la demande, « Y aller » vers le lieu de la ressource, jamais plein', async () => {

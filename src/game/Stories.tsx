@@ -30,9 +30,10 @@ export function storyBadgeReading(mots: { titre: string; etape: (n: number, tota
  * l'étape en cours (jamais « 2/3 », qui se lirait comme une fraction : référent dys). Lu « Entraide : la lanterne.
  * Étape 2 sur 3. »
  */
-export function StoryBadge({ story, index }: { story: Story; index: number }) {
+export function StoryBadge({ story, index, icon }: { story: Story; index: number; icon?: { top: string; side: string } }) {
   const mots = useTextes().quetes;
-  const bloc = BLOCKS[story.item];
+  // `icon` : d'autres couleurs pour l'objet (la lanterne éteinte du monde ouvert) ; sinon celles de son bloc.
+  const bloc = icon ?? BLOCKS[story.item];
   return (
     <span className="quete-signe" aria-label={mots ? storyBadgeReading(mots, story, index) : ''} role="img">
       <BlockIcon top={bloc.top} side={bloc.side} size={24} />
