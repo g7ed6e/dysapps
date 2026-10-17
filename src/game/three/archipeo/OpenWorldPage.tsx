@@ -40,6 +40,7 @@ import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { ClosedPlaceSheet, afterLabel, linkableLabel } from './ClosedPlaceSheet';
 import { constructionState, placeConstruction, posedShapes } from './constructionParts';
+import { posedAmenagements } from './amenagements';
 import { MapLabels } from './MapLabels';
 import { PlacePanel, placeFromParam, placeResume } from './PlacePanel';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
@@ -54,7 +55,7 @@ import './openWorld.css';
 declare global {
   interface Window {
     /** Le monde ouvert, pour les captures et les mesures (en développement, ou avec `?mesures`). */
-    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt'>;
+    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt' | 'remiseView'>;
   }
 }
 
@@ -273,7 +274,7 @@ export default function OpenWorldPage() {
     });
     world.current = w;
     setReady((n) => n + 1);
-    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, goToPort: w.goToPort, assemble: w.assemble, skip: w.skip, info: w.info, portAt: w.portAt };
+    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, goToPort: w.goToPort, assemble: w.assemble, skip: w.skip, info: w.info, portAt: w.portAt, remiseView: w.remiseView };
     return () => {
       w.dispose();
       world.current = null;
@@ -553,6 +554,8 @@ export default function OpenWorldPage() {
       ferry: of('ferry'),
     } satisfies Record<PlaceId, ReturnType<typeof of>>;
   }, [state.world.parts]);
+  // Les aménagements posés de chaque lieu (GD-20, point 4, lot L0) : les petites constructions livrées, la même sauvegarde.
+  const amenagements = useMemo(() => posedAmenagements(state.world.parts), [state.world.parts]);
   // Les traces des scénettes de chaque lieu : une par mission jouée en scénette, dès sa première réussite (les étoiles
   // gardées ; GD-20, point 8).
   const traces = useMemo(() => {
@@ -617,8 +620,8 @@ export default function OpenWorldPage() {
     shownBuilt.current = built;
     askedPlace.current = null;
     const fresh = before && place ? built[place].filter((s) => !before[place].includes(s)) : [];
-    if (!w.setPlaces({ built, traces }, place && fresh.length ? { place, parts: fresh } : undefined)) setPosePending(false);
-  }, [constructions, traces, asking, ready]);
+    if (!w.setPlaces({ built, traces, amenagements }, place && fresh.length ? { place, parts: fresh } : undefined)) setPosePending(false);
+  }, [constructions, traces, amenagements, asking, ready]);
   // L'état de chaque lieu sur la Carte, en icône et en mot (les mots d'état de l'univers).
   const states = useMemo(
     () => ({

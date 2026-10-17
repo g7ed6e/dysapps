@@ -13,7 +13,7 @@ import { loadedKeo } from '../../world/characters/imported/keo';
 import { cielDe } from '../../world/palette';
 import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, type CameraPose } from '../../world/continu/camera';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
-import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
+import { FacetBuilder, boundsOf, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
 import { OBSTACLE_TOUCH, branchRibbons, clampToOpen, deckLift, deckTop, isLinked, linkFacets, LAY_PLANKS, LINK_LAY, SIDE_STEP, linkFrame, linkLayAt, linkPlanks, obstacleOf, openPathRibbons, sideStepOf, type LinkLayState, type LinkedPlace } from '../../world/continu/links';
@@ -47,6 +47,7 @@ import {
   scenetteHidesPlace,
   scenetteKeo,
   scenettePose,
+  remisePose,
   type ScenetteFinale,
   type ScenetteLayout,
 } from '../../world/continu/scenette';
@@ -57,6 +58,8 @@ import { MIST_COLOR, VEIL_HEIGHT, veilFacets, type VeilMesh } from '../../world/
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
+import { placedAmenagement } from './amenagements';
+import { remisePosed, remiseStage, showsAmenagements } from '../../world/continu/amenagements';
 
 /** Ce que la page donne à la scène. */
 export interface OpenWorldOptions {
@@ -174,6 +177,12 @@ export interface OpenWorld {
    * dessine qu'une fois sa vue choisie, sans animation (consultant UX UI).
    */
   reframeMap(crowded: (spots: readonly MapSpotOnScreen[]) => number): void;
+  /**
+   * Le cadrage prévu de la remise (GD-20, point 4, lot L0, pour les captures seulement, sans geste) : la scénette du lieu,
+   * au Phare au pied de la tour, Kéo et l'habitant à leur place, ses aménagements posés montrés, la caméra élargie juste
+   * assez pour eux ; `null` la quitte.
+   */
+  remiseView(place: PlaceId | null): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
   info(): { calls: number; triangles: number; mapMs: number };
   /** Ce qu'un toucher en ce point de la fenêtre ouvrirait au Port, sans rien faire (la mesure des cibles). */
@@ -188,6 +197,8 @@ export interface OpenWorld {
 interface PlacesState {
   built: Readonly<Record<PlaceId, readonly PartShape[]>>;
   traces: Readonly<Record<PlaceId, readonly string[]>>;
+  /** Les aménagements posés de chaque lieu (GD-20, point 4, lot L0 : les petites constructions livrées, `world.parts`). */
+  amenagements?: Readonly<Partial<Record<PlaceId, readonly string[]>>>;
 }
 
 /**
@@ -842,6 +853,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let ringKey = '';
   // La scénette où se tient Kéo (plus bas, « La scénette d'un lieu »), et si l'étape qui porte sa trace est posée.
   let scenette: PlaceId | null = null;
+  /** Le cadrage de la remise montré (`remiseView`, lot L0 : les captures), et sa pose de caméra. */
+  let remise: { place: PlaceId; pose: CameraPose } | null = null;
   let posed = true;
   // La mission jouée dans la scénette : le retour garde sa trace dans le champ (GD-20, point 8).
   let scenetteMission: string | null = null;
@@ -918,7 +931,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${waiting.join(',')}|${suggestedLink}|${laying && !laying.tapped ? laying.place : ''}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${waiting.join(',')}|${suggestedLink}|${laying && !laying.tapped ? laying.place : ''}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -944,6 +957,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const hidden = hidesTraces(hiddenTrace, p.id);
       if (!hidden && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, scenette === p.id ? scenetteTraces(p.id, done, scenetteMission, posed) : done));
       if (p.id === 'phare' && lampShown) list.push(lampFacets);
+      // Les aménagements posés (GD-20, point 4, lot L0), dans le même maillage : cachés pendant toute question, comme les
+      // traces (au rivage nord et au large, ceux des lieux du même cadre) ; montrés dans le cadrage de la remise.
+      if (showsAmenagements(scenette, p.id, remise?.place ?? null)) for (const id of placesState?.amenagements?.[p.id] ?? []) list.push(placedAmenagement(id, ground).facets);
       // Les liaisons (GD-20, point 3) : l'embranchement du lieu et sa passerelle, démontée ou reliée ; sur la Carte, le
       // chemin d'un lieu fermé en tirets, plus épais pour la liaison suggérée, et aucun pour un lieu pas encore reliable.
       if (isLinked(p.id)) {
@@ -1747,10 +1763,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    * Entre dans la scénette d'un lieu : le décor de près, Kéo à sa place, sans son anneau. La scénette se joue sur le lieu
    * tel qu'il est bâti (`posed` : l'étape qui porte sa trace est posée ; sinon, au Phare, au pied de la tour).
    */
-  const enterScenette = (place: PlaceId) => {
+  const enterScenette = (place: PlaceId, site?: boolean) => {
     if (scenette === place) return;
     scenette = place;
-    posed = traceStagePosed(place, posedOf(place));
+    posed = site ?? traceStagePosed(place, posedOf(place));
     setGeometry(decorMesh, scenetteDecor(place, false, posed));
     // Aux Quais, la maquette du lieu (sa grue, son hangar) s'efface : le quai de la scénette a les siens. La trace de
     // la scénette aussi, sauf au Phare : la trace de la réussite (la barque chargée, le panier plein, la porte ouverte)
@@ -1824,6 +1840,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     finishLay();
     finishPose();
     finishAssembly();
+    if (remise) {
+      remise = null;
+      leaveScenette();
+    }
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
     const { place, layout, item } = q;
     scenetteMission = q.mission;
@@ -1968,6 +1988,42 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       stepDescent(performance.now() / 1000);
     }
     return labels;
+  };
+  /** Le cadrage prévu de la remise, en image fixe (lot L0) : voir `OpenWorld.remiseView`. */
+  const remiseView = (place: PlaceId | null) => {
+    if (asked || mapView) return;
+    if (!place) {
+      if (!remise) return;
+      remise = null;
+      leaveScenette();
+      keo.visible = true;
+      ring.visible = true;
+      setShift({ x: 0, y: 0 });
+      followStep(focus, keoFeet, 0, true);
+      follow();
+      return;
+    }
+    finishLay();
+    finishPose();
+    finishAssembly();
+    walk = null;
+    if (remise && remise.place !== place) {
+      remise = null;
+      leaveScenette();
+    }
+    enterScenette(place, remisePosed(place));
+    const ids = placesState?.amenagements?.[place] ?? [];
+    const boxes = ids.map((id) => boundsOf(placedAmenagement(id, ground).facets));
+    const include = boxes.length
+      ? { min: [0, 1, 2].map((k) => Math.min(...boxes.map((b) => b.min[k]))), max: [0, 1, 2].map((k) => Math.max(...boxes.map((b) => b.max[k]))) }
+      : { min: [Infinity, Infinity, Infinity], max: [-Infinity, -Infinity, -Infinity] };
+    const qp = remisePose(place, include, remiseStage(viewW, viewH), viewW, viewH, remisePosed(place));
+    remise = { place, pose: qp.pose };
+    placeVisibility();
+    fog.near = WORLD_FOG.near;
+    fog.far = WORLD_FOG.far;
+    setShift(qp.shift);
+    applyPose(qp.pose);
   };
   const scenetteEnd = (lit: boolean) => {
     if (!asked || !scenette) return;
@@ -2179,7 +2235,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // L'écran a changé de taille avant tout toucher : la vue de départ se choisit de nouveau, avant de se dessiner.
       if (first) mapSettling = MAP_SETTLE_FRAMES;
       showMap();
-    } else applyPose(asked ? asked.pose : pose);
+    } else applyPose(asked ? asked.pose : (remise?.pose ?? pose));
   };
   const observer = new ResizeObserver(resize);
   observer.observe(host);
@@ -2241,6 +2297,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       stepFinale(t);
       stepLamp(t);
       if (scenette) body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
+      options.onMark(null);
+      hideLocks();
+      renderer.render(scene, camera);
+      meter?.tick(renderer.info, now);
+      return;
+    }
+    if (remise) {
+      // Le cadrage de la remise (lot L0, les captures) : la caméra fixe, Kéo au repos.
+      body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
       options.onMark(null);
       hideLocks();
       renderer.render(scene, camera);
@@ -2340,6 +2405,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     reframeMap: reframeStart,
     scenetteEnd,
     setPlaces,
+    remiseView,
     info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, mapMs }),
     portAt: (clientX: number, clientY: number) => {
       const p = hitAt(clientX, clientY);

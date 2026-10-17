@@ -13,7 +13,7 @@
 // l'étape qui porte sa trace n'est pas posée (`posed`), avec ce qui est là (au Phare, au pied de la tour, la cloche
 // tombée sur le socle). Rien à lire n'est peint dans la 3D. Le décor de près est fait à l'arrivée et
 // libéré au départ par la vue. Code pur : la vue dessine.
-import { CAMERA_FOV, type CameraPose } from './camera';
+import { CAMERA_FOV, screenOf, type CameraPose } from './camera';
 import { FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { placeArt } from './northShore';
@@ -806,13 +806,56 @@ export function exitView(pose: CameraPose, keep: Vec3, feet: Vec3, amount: numbe
  */
 export function scenettePose(place: PlaceId, stage: ScreenBox, width: number, height: number, posed = true): { pose: CameraPose; shift: { x: number; y: number } } {
   const site = siteOf(place, posed);
+  return poseOfSubject(site, site.subject, site.floor().x + (site.keo.dx + site.habitant.dx) / 2, stage, width, height);
+}
+
+/** La marge autour de l'aménagement dans le cadrage de la remise, en unités du monde. */
+const REMISE_MARGIN = 0.4;
+
+/**
+ * La pose de la caméra de la remise (GD-20, point 4, piste B, lot L0 : le cadrage prévu, montré en image fixe) : le
+ * même angle, la même hauteur visée et le même recul par unité que la scénette du lieu, le cadre élargi juste assez pour
+ * prendre aussi l'aménagement posé (`include`, sa boîte dans le monde ; directeur artistique : « un peu plus large, le
+ * même regard »), du côté où il est.
+ */
+export function remisePose(place: PlaceId, include: { min: readonly number[]; max: readonly number[] }, stage: ScreenBox, width: number, height: number, posed = true): { pose: CameraPose; shift: { x: number; y: number } } {
+  const site = siteOf(place, posed);
   const S = site.subject;
+  const f = site.floor();
+  const mid = f.x + (site.keo.dx + site.habitant.dx) / 2;
+  const left = Math.min(mid - S.halfWidth, include.min[0] - REMISE_MARGIN);
+  const right = Math.max(mid + S.halfWidth, include.max[0] + REMISE_MARGIN);
+  const subject = { ...S, halfWidth: (right - left) / 2, bottom: Math.min(S.bottom, include.min[1] - f.y - REMISE_MARGIN / 2), top: Math.max(S.top, include.max[1] - f.y + REMISE_MARGIN / 2) };
+  const framed = poseOfSubject(site, subject, (left + right) / 2, stage, width, height);
+  // Le cadre est calculé dans le plan du sujet : ce qui est plus près de la caméra (l'aménagement devant l'habitant) paraît
+  // plus grand. La caméra recule alors, dans son axe, jusqu'à ce que les coins de la boîte tiennent dans la scène.
+  const { pose } = framed;
+  const halfW = Math.max(24, (stage.right - stage.left) / 2);
+  const halfH = Math.max(24, (stage.bottom - stage.top) / 2);
+  for (let i = 0; i < 4; i++) {
+    let k = 0;
+    for (const x of [include.min[0], include.max[0]])
+      for (const y of [include.min[1], include.max[1]])
+        for (const z of [include.min[2], include.max[2]]) {
+          const s = screenOf(pose, { x, y, z }, width, height);
+          k = Math.max(k, Math.abs(s.x - width / 2) / halfW, Math.abs(s.y - height / 2) / halfH);
+        }
+    if (k <= 1) break;
+    const t = pose.target;
+    const q = pose.position;
+    pose.position = { x: t.x + (q.x - t.x) * k * 1.02, y: t.y + (q.y - t.y) * k * 1.02, z: t.z + (q.z - t.z) * k * 1.02 };
+  }
+  return framed;
+}
+
+/** La pose qui cadre `S` (ses mesures depuis le sol de la scénette), centrée en `x`, dans la scène `stage`, vue du sud sous l'angle du lieu. */
+function poseOfSubject(site: ScenetteSite, S: ScenetteSite['subject'], x: number, stage: ScreenBox, width: number, height: number): { pose: CameraPose; shift: { x: number; y: number } } {
   const f = site.floor();
   const focal = height / 2 / Math.tan(((CAMERA_FOV / 2) * Math.PI) / 180);
   const halfW = Math.max(24, (stage.right - stage.left) / 2);
   const halfH = Math.max(24, (stage.bottom - stage.top) / 2);
   const dist = Math.max((S.halfWidth * focal) / halfW, ((S.top - S.bottom) / 2) * (focal / halfH)) * 1.05;
-  const target = { x: f.x + (site.keo.dx + site.habitant.dx) / 2, y: f.y + (S.top + S.bottom) / 2, z: f.z + S.depth };
+  const target = { x, y: f.y + (S.top + S.bottom) / 2, z: f.z + S.depth };
   const p = site.pitch;
   return {
     pose: {

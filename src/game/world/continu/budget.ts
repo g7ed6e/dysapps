@@ -23,7 +23,7 @@ const KEO = { triangles: 1620, calls: 2 };
 export const OPEN_WORLD_BUDGET = { triangles: 75_000, calls: 18 } as const;
 
 export interface OpenWorldCost {
-  poste: 'sol' | 'mer' | 'chemins' | 'lieux' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
+  poste: 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
   triangles: number;
   calls: number;
 }
@@ -186,11 +186,11 @@ export function groundCost(): { triangles: number; calls: number; near: number; 
 }
 
 /**
- * Ce que coûte le monde continu, environ : le sol autour de Kéo, tout le reste visible à la fois ; la brume de tous les
+ * Ce que coûte le monde continu, environ (avec les triangles des aménagements posés, que la vue compte) : le sol autour de Kéo, tout le reste visible à la fois ; la brume de tous les
  * lieux fermés, au pire (au départ, les quatorze), en un maillage : depuis le lot 1 « Relier » (GD-20, point 3), elle
  * part d'un coup quand on relie, sans second maillage qui se lève (le fondu reviendra avec la pose animée, au lot 2).
  */
-export function openWorldCost(): OpenWorldCost[] {
+export function openWorldCost(amenagements = 0): OpenWorldCost[] {
   const field = buildHeightField();
   const height = (x: number, z: number) => heightOnMesh(field, x, z);
   const paths = openPathRibbons(height);
@@ -200,6 +200,9 @@ export function openWorldCost(): OpenWorldCost[] {
     { poste: 'mer', triangles: 2, calls: 1 },
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
     { poste: 'lieux', ...placesCost(height) },
+    // Les aménagements (GD-20, point 4, lot L0) : les dix-neuf posés, dans le maillage des lieux, aucun appel de plus ;
+    // leurs triangles comptés par la vue, qui trace leurs dessins (three/archipeo/amenagements.ts, `amenagementsCost`).
+    { poste: 'aménagements', triangles: amenagements, calls: 0 },
     { poste: 'pose', ...poseCost(height) },
     { poste: 'brume', triangles: veilFacets(closedPlaces(() => false)).triangles, calls: 1 },
     { poste: 'kéo', ...KEO },
@@ -209,17 +212,17 @@ export function openWorldCost(): OpenWorldCost[] {
 }
 
 /**
- * La Carte des lieux ouverts (lot 3), le pire : toute l'île de loin dans l'anneau de loin (celui de près vidé), la mer,
+ * La Carte des lieux ouverts (lot 3), le pire (les aménagements posés compris, comptés par la vue) : toute l'île de loin dans l'anneau de loin (celui de près vidé), la mer,
  * les chemins, les lieux (sur la Carte, aucun n'est hors de la brume : un seul maillage, mais compté à deux appels, le
  * pire ; les embranchements des lieux fermés y sont en tirets, comptés pleins), la brume des lieux fermés, Kéo. Ni question, ni scénette, ni pose n'y
  * sont ouvertes : elle ne s'ouvre pas pendant une question, et l'ouvrir finit la pose.
  */
-export function mapCost(): { triangles: number; calls: number } {
+export function mapCost(amenagements = 0): { triangles: number; calls: number } {
   const field = buildHeightField();
   const height = (x: number, z: number) => heightOnMesh(field, x, z);
   const far = tileTriangleCounts(field, 'far').reduce((s, n) => s + n, 0);
   const paths = openPathRibbons(height).triangles;
   const places = placesCost(height);
   const veil = veilFacets(closedPlaces(() => false)).triangles;
-  return { triangles: far + 2 + paths + places.triangles + veil + KEO.triangles, calls: 1 + 1 + 1 + places.calls + 1 + KEO.calls };
+  return { triangles: far + 2 + paths + places.triangles + amenagements + veil + KEO.triangles, calls: 1 + 1 + 1 + places.calls + 1 + KEO.calls };
 }
