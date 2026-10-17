@@ -361,9 +361,12 @@
   margin: 0;
   overflow-y: auto;
 }
-/* « Presque ! » et l'indice redit, au deuxième essai : serrés en haut de la colonne, sans bulle ni saut. */
+/* « Presque ! » et l'indice redit, au deuxième essai : serrés sous la phrase (ou le mot troué), sans bulle ni saut ; la
+   consigne et la phrase restent où elles étaient au premier essai (relecture de L7, référent dys, consultant UX UI). Sur
+   un écran bas, l'étiquette à droite de la colonne (plus bas) ; en C, après les réponses (`mode-c`). */
 .world-question .in-world > .feedback {
-  margin: 0 0 0.3rem;
+  order: 1;
+  margin: 0.3rem 0 0;
 }
 .world-question .in-world > .feedback .feedback-shout {
   margin: 0;
@@ -983,6 +986,9 @@
   font-size: max(18px, 1.15rem);
 }
 .world-scenette-greeting {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   margin: 0.2rem 0 0;
 }
 /* Sur tablette, le panneau prend la hauteur de son texte, en haut ; « Valider » en bas à droite, à 3 % du bord, sous
