@@ -375,7 +375,6 @@ Pour tous les items :
 - bloc : `french-6e-grammar-spelling`
 - combien : 3
 - petite construction : le potager
-- genre : masculin
 - demande : Il me faut {objet} pour mon potager. Joue une mission de la Ferme des accords.
 - prête : Tu as les {blocs} ! Livre-les à Mousso.
 - posée : Potager posé chez Mousso !

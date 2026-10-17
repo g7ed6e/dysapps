@@ -4,17 +4,16 @@
 
 ## Les habitants
 
-- demande : Il me faut {objet} pour {nom}. Joue une mission {au lieu}.
-- demande assemblée : Il me faut {objet} pour {nom}. Assemble les {blocs} {au lieu}.
-- prête : Livre les {objet} {au lieu}.
+- demande : Il me faut {objet}. C’est pour {nom}. Joue une mission {au lieu}.
+- demande assemblée : Il me faut {objet}. C’est pour {nom}. Assemble les {blocs} {au lieu}.
+- prête : Livre {objet} {au lieu}.
 - consigne : Tu livres {objet} pour {nom}.
-- posée : {Nom} est {posé}.
+- posée : {Nom} est en place.
 
 > Les jetons, que le jeu remplace :
 > - `{objet}` : le nombre et le nom de la ressource, avec les mots de la réserve (« 3 blocs de sable ») ;
 > - `{blocs}` : le même nom sans nombre (« madriers ») ;
 > - `{nom}` : la petite construction, avec son article, telle que l’écrit « Les demandes » de son île (« le potager ») ; `{Nom}`, la même avec sa majuscule ;
-> - `{au lieu}` : le lieu, dans sa forme « à » (« au Phare », « aux Filets ») : dans la demande, le lieu de la ressource, ou le lieu où l’on assemble ; dans « prête », le lieu de l’habitant ;
-> - `{posé}` : « posé » ou « posée », selon le genre de la petite construction (`genre`, dans « Les demandes » de son île).
+> - `{au lieu}` : le lieu, dans sa forme « à » (« au Phare », « aux Filets ») : dans la demande, le lieu de la ressource, ou le lieu où l’on assemble, toujours en entier (« à l’Entrepôt des matériaux », la forme « à » de `assemblage.md`) ; dans « prête », le lieu de l’habitant.
 >
-> Le rôle de l’habitant (« L’éclusier ») n’entre pas dans la phrase : il s’écrit en tête de la ligne de l’habitant et de la scénette, avec son icône. Un point à la fin, jamais « ! » ; ni « merci », ni « vite », ni le mot « quête » ; ni prénom, ni créature, ni île de la grille ; rien sur le Rafiot.
+> Le nom de la ressource ne se raccourcit jamais : c’est le mot de la réserve. Le rôle de l’habitant (« L’éclusier ») n’entre pas dans la phrase : il s’écrit en tête de la ligne de l’habitant et de la scénette, avec son icône. Une idée par phrase, trois phrases au plus, et **dix mots au plus par phrase une fois les jetons remplis** (compté sur les seize commandes du 6e par `remiseOf.test.ts`, les nombres comptant pour un mot). Un point à la fin, jamais « ! » ; ni « merci », ni « vite », ni le mot « quête » ; ni prénom, ni créature, ni île de la grille ; rien sur le Rafiot.

@@ -178,7 +178,6 @@ Après ses plans, le fichier d’une île de français, de maths, d’anglais, d
 - bloc : `maths-6e-calculation`
 - combien : 4
 - petite construction : le puits
-- genre : masculin
 - demande : Il me faut {objet} pour mon puits. Joue une mission de la Plaine des nombres.
 - prête : Tu as les {blocs} ! Livre-les à Tunel.
 - posée : Puits posé chez Tunel !
@@ -191,7 +190,6 @@ Après ses plans, le fichier d’une île de français, de maths, d’anglais, d
 - **bloc** : le bloc d’une autre île du même archipel, ou le bloc assemblé de l’archipel quand sa recette ne prend pas le bloc de l’île ; jamais l’or, le cristal, un bloc de finition ni le bloc d’un lieu d’option (LV2, latin-grec). Dans un archipel, un bloc n’est demandé qu’une fois.
 - **combien** : de 2 à 4. La forme pose un cube du bloc livré pour chaque bloc demandé.
 - **petite construction** : son nom avec l’article (« le puits », « l’abri »), le même dans la liste, la demande et la réplique (« le puits de Tunel »).
-- **genre** (obligatoire au 6e) : `masculin` ou `féminin`, le genre de la petite construction ; le monde ouvert d’Archipéo s’en sert pour accorder sa phrase de fin (« Le potager est posé. », « La vitrine est posée. », `monde-ouvert.md`).
 - **demande** : deux phrases, le besoin puis le lieu et le geste : « Joue une mission de la (du, de l’) <île qui donne le bloc>. », ou « Assemble-les {à}. » pour un bloc assemblé ; jamais une notion ni une note.
 - **prête** : « Tu as les {blocs} ! Livre-les à <créature>. »
 - **posée** : « <Petite construction> posé(e) chez <créature> ! »
@@ -199,7 +197,7 @@ Après ses plans, le fichier d’une île de français, de maths, d’anglais, d
 
 Le nombre et le nom du bloc ne s’écrivent pas : le jeu met à la place de `{objet}` le nombre de blocs avec les mots de Mes blocs (« 4 briques », « 3 blocs de terre »), à la place de `{blocs}` le même nom sans nombre (« briques »), et à la place de `{à}` le lieu où l’on assemble (« à la Fabrique », `assemblage.md`) : l’objet porte ainsi le même nom partout. La phrase de la première fois (« Une commande, c’est une créature qui te demande des blocs pour une petite construction. Rien ne presse. ») est commune à toutes les îles : elle va avec les textes de l’univers, pas ici.
 
-Les phrases sont celles de Blocland (une « commande », une « petite construction ») ; Archipéo, en pause, n’affiche pas les commandes et n’a pas de phrases ici (dans le JSON, elles sont rangées sous `blocland`, pour qu’un autre univers ait les siennes à côté). La forme de chaque petite construction est dessinée par le code (`src/game/world/fixtures.ts`, testée) ; la note « > Forme » la décrit pour l’artiste technique 3D, et le jeu ne la lit pas. `scripts/contenu/demandes.mjs` lit la section et vérifie ces règles (avec les apostrophes typographiques, sans « … », deux phrases courtes au plus) ; `demandes.test.mjs` les teste. Changer un bloc, un nombre ou une petite construction passe par le directeur artistique ; une phrase, par le consultant de Blocland et le référent dys.
+Les phrases sont celles de la grille, les mêmes dans Blocland et dans Archipéo (une « commande », une « petite construction » ; dans le JSON, elles sont rangées sous `blocland`, pour qu’un autre univers ait les siennes à côté). Le monde ouvert d’Archipéo a les siennes, une forme pour toutes les commandes, dans `monde-ouvert.md` (plus bas). La forme de chaque petite construction est dessinée par le code (`src/game/world/fixtures.ts`, testée) ; la note « > Forme » la décrit pour l’artiste technique 3D, et le jeu ne la lit pas. `scripts/contenu/demandes.mjs` lit la section et vérifie ces règles (avec les apostrophes typographiques, sans « … », deux phrases courtes au plus) ; `demandes.test.mjs` les teste. Changer un bloc, un nombre ou une petite construction passe par le directeur artistique ; une phrase, par le consultant de Blocland et le référent dys.
 
 ## Les phrases des habitants du monde ouvert
 
@@ -208,17 +206,17 @@ Les phrases sont celles de Blocland (une « commande », une « petite construct
 ```md
 ## Les habitants
 
-- demande : Il me faut {objet} pour {nom}. Joue une mission {au lieu}.
-- demande assemblée : Il me faut {objet} pour {nom}. Assemble les {blocs} {au lieu}.
-- prête : Livre les {objet} {au lieu}.
+- demande : Il me faut {objet}. C’est pour {nom}. Joue une mission {au lieu}.
+- demande assemblée : Il me faut {objet}. C’est pour {nom}. Assemble les {blocs} {au lieu}.
+- prête : Livre {objet} {au lieu}.
 - consigne : Tu livres {objet} pour {nom}.
-- posée : {Nom} est {posé}.
+- posée : {Nom} est en place.
 ```
 
-- **les jetons**, que le jeu remplace : `{objet}`, le nombre et le nom de la ressource (« 3 pierres ») ; `{blocs}`, le même nom sans nombre ; `{nom}` et `{Nom}`, la petite construction avec son article, en minuscule ou avec sa majuscule ; `{au lieu}`, le lieu dans sa forme « à » (« au Phare ») ; `{posé}`, « posé » ou « posée » selon le `genre` de la commande. Chaque forme prend tous ses jetons, une fois, et aucun autre.
-- **la lecture** : deux phrases au plus, sept mots au plus par phrase (un jeton compte pour un mot), un point à la fin, jamais « ! » ni « … », l’apostrophe typographique, ni « merci », ni « vite », ni « quête », ni le Rafiot.
+- **les jetons**, que le jeu remplace : `{objet}`, le nombre et le nom de la ressource, avec les mots de la réserve (« 3 blocs de sable », « 2 madriers »), jamais raccourci ; `{blocs}`, le même nom sans nombre (« madriers ») ; `{nom}` et `{Nom}`, la petite construction avec son article, en minuscule ou avec sa majuscule ; `{au lieu}`, le lieu dans sa forme « à » (« au Phare »), et pour le lieu où l’on assemble la forme « à » de `assemblage.md`, en entier (« à l’Entrepôt des matériaux »). Chaque forme prend tous ses jetons, une fois, et aucun autre ; une accolade seule est refusée.
+- **la lecture** : une idée par phrase, trois phrases au plus, dix mots au plus par phrase **une fois les jetons remplis** (un nombre ou un mot élidé compte pour un mot), un point à la fin, jamais « ! » ni « … », l’apostrophe typographique, ni « merci », ni « vite », ni « quête », ni le Rafiot.
 
-`scripts/contenu/mondeOuvert.mjs` lit le fichier et vérifie ces règles ; `mondeOuvert.test.mjs` les teste. Une phrase change avec le directeur du contenu pédagogique, le consultant d’Archipéo et le référent dys.
+`scripts/contenu/mondeOuvert.mjs` lit le fichier et vérifie les jetons et la lecture ; `mondeOuvert.test.mjs` les teste. Le plafond de mots se compte sur le texte rempli, avec les seize commandes du 6e et chaque lieu : `src/game/three/archipeo/remiseOf.test.ts` le vérifie, avec l’absence de « à le », « de les » et d’accolade restée. Une phrase change avec le directeur du contenu pédagogique, le consultant d’Archipéo et le référent dys.
 
 ## Les quêtes
 

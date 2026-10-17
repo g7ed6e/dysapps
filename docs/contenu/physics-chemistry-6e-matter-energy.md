@@ -564,7 +564,6 @@ Pour tous les items :
 - bloc : `technology-6e-objects`
 - combien : 3
 - petite construction : l’étagère à flacons
-- genre : féminin
 - demande : Il me faut {objet} pour mon étagère à flacons. Joue une mission du Hangar des inventions.
 - prête : Tu as les {blocs} ! Livre-les à Bulle.
 - posée : Étagère à flacons posée chez Bulle !

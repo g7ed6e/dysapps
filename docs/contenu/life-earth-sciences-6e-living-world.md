@@ -564,7 +564,6 @@ Pour tous les items :
 - bloc : `geography-6e-living`
 - combien : 3
 - petite construction : le nichoir
-- genre : masculin
 - demande : Il me faut {objet} pour mon nichoir. Joue une mission de la Pointe des paysages.
 - prête : Tu as les {blocs} ! Livre-les à Fougère.
 - posée : Nichoir posé chez Fougère !

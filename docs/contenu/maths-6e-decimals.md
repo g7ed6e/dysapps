@@ -208,7 +208,6 @@ Pour tous les items :
 - bloc : `english-6e-vocabulary`
 - combien : 4
 - petite construction : le parasol
-- genre : masculin
 - demande : Il me faut {objet} pour mon parasol. Joue une mission de la Baie des mots.
 - prête : Tu as les {blocs} ! Livre-les à Lavi.
 - posée : Parasol posé chez Lavi !

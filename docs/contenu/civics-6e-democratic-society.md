@@ -435,7 +435,6 @@ Pour tous les items :
 - bloc : `life-earth-sciences-6e-living-world`
 - combien : 3
 - petite construction : l’urne
-- genre : féminin
 - demande : Il me faut {objet} pour mon urne. Joue une mission de la Vallée du vivant.
 - prête : Tu as les {blocs} ! Livre-les à Voix.
 - posée : Urne posée chez Voix !

@@ -41,7 +41,8 @@ import { FacetBuilder, boundsOf, mergeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
 import { hidesTraces, placeById, type PlaceId } from './plan6e';
 import { questionLayout, type ScreenBox } from './questionScene';
-import { scenetteHabitant, scenetteLayout } from './scenette';
+import { remisePose, scenetteHabitant, scenetteLayout } from './scenette';
+import type { CameraPose } from './camera';
 import { standingHeight } from './terrain';
 
 /**
@@ -336,6 +337,16 @@ function assiseFacets(turn: (x: number, z: number) => [number, number], ox: numb
  */
 export function remiseStage(width: number, height: number, grand = false): ScreenBox {
   return scenetteLayout({ count: 0, grand }, width, height, questionLayout({ count: 0 }, width, height)).scenette.stage;
+}
+
+/**
+ * Le cadrage de la remise de `place` sur un écran de `width` × `height` : les aménagements du lieu (`list`, ceux déjà là
+ * et celui qui se pose, avec leur boîte) entiers dans la scène de la remise, l'habitant et Kéo avec eux. La scène le
+ * calcule à l'entrée de la remise, et de nouveau quand l'écran change de taille (une tablette qui tourne pendant la
+ * pose : relecture du code du lot L1), sans refaire la scénette.
+ */
+export function remiseFrame(place: PlaceId, list: readonly { a: Amenagement; box: WorldBox }[], width: number, height: number): { pose: CameraPose; shift: { x: number; y: number } } {
+  return remisePose(place, remiseInclude(list), remiseStage(width, height), width, height, remisePosed(place));
 }
 
 /** Une boîte dans le monde : son plus petit et son plus grand coin, en x, y, z. */

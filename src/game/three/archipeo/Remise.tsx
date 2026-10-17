@@ -1,18 +1,21 @@
 // La remise (GD-20, point 4, piste B « La remise », lot L1 « Livrer ») : « Livrer » touché chez l'habitant, la scénette de
 // son lieu s'ouvre, cadrée un peu plus large pour l'aménagement (le même regard que la mission du lieu). Trois temps,
 // une seule action par temps (référent dys, arbitrages du directeur artistique, points 5 et 6) :
-// 1. la consigne, écrite et lue (« Tu livres 3 pierres pour le potager. »), sous le rôle de l'habitant, son icône, le
-//    paquet ; la pose ne part qu'à la fin de la voix, ou, sans voix, après un délai borné (world/continu/remise.ts) ;
+// 1. la consigne, écrite et lue (« Tu livres 3 blocs de terre pour le potager. »), sous le rôle de l'habitant, son
+//    icône, le paquet ; la pose ne part qu'à la fin de la voix, ou, sans voix, après un délai borné
+//    (world/continu/remise.ts) ;
 // 2. la pose : chaque élément descend à sa place, un toc chacun (tout d'un coup et un seul toc avec « Réduire les
 //    animations ») ;
-// 3. l'état final : tout est posé, la phrase de fin (« Le potager est posé. »), lue depuis son début, et « Continuer »,
-//    en bas, là où se tient la rangée des réponses d'une mission, le focus sur lui.
+// 3. l'état final : tout est posé, la phrase de fin (« Le potager est en place. »), qui prend la place de la consigne
+//    (un seul emplacement, consultant UX UI), lue depuis son début, et « Continuer », en bas, là où se tient la rangée
+//    des réponses d'une mission, le focus sur lui.
 // Un toucher n'importe où pendant les temps 1 et 2 (la zone de la scène, dite « Passer » au lecteur d'écran ; au clavier,
 // Entrée ou Espace) mène à l'état final, jamais plus loin : « Continuer » ne prend ni ce toucher ni la répétition de la
-// touche. « Vue simple » : la même consigne, l'icône de l'objet et la phrase de fin, puis « Continuer » (l'état final) ;
-// elle s'ouvre d'elle-même au plus grand texte sur un écran bas, comme en mission. La livraison (`deliver`, celle de la
-// grille) s'écrit une fois, à l'état final ; toute sortie par l'application (Retour du système, une autre adresse)
-// passe d'abord par lui. Une coupure brutale avant n'écrit rien : la commande reste prête.
+// touche. « Vue simple » (à la place de celui d'une mission, le coin de la pause laissé vide) : la consigne, l'icône de
+// l'objet et la phrase de fin, en liste, puis « Continuer » (l'état final) ; elle s'ouvre d'elle-même au plus grand texte
+// sur un écran vraiment bas, une fois sa taille mesurée, comme en mission. La livraison (`deliver`, celle de la grille)
+// s'écrit une fois, à l'état final ; toute sortie par l'application (Retour du système, une autre adresse) passe d'abord
+// par lui, et coupe la voix. Une coupure brutale avant n'écrit rien : la commande reste prête.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { Icon } from '../../../components/Icon';
 import { SpeakButton } from '../../../components/SpeakButton';
@@ -135,11 +138,13 @@ export function Remise({ world, request, deliver, onClose }: Props) {
     return () => {
       mounted.current = false;
       window.clearTimeout(timer);
-      // Démonté (une autre adresse, le Retour du système) : l'état final d'abord, donc la livraison, puis la scène quitte
-      // la remise. Le double montage du mode strict remonte avant la micro-tâche : rien ne s'écrit alors.
+      // Démonté (une autre adresse, le Retour du système) : l'état final d'abord, donc la livraison, la voix coupée, puis
+      // la scène quitte la remise (rien, si la page entière s'est fermée : la scène défaite ne fait plus rien). Le double
+      // montage du mode strict remonte avant la micro-tâche : rien ne s'écrit alors.
       queueMicrotask(() => {
         if (mounted.current) return;
         writeDelivery();
+        stop();
         world.remise(null);
       });
     };
@@ -147,13 +152,14 @@ export function Remise({ world, request, deliver, onClose }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // « Vue simple » d'office au plus grand texte sur un écran bas : l'état final, en liste.
+  // « Vue simple » d'office au plus grand texte sur un écran bas : l'état final, en liste. Jamais avant la mesure de la
+  // taille (au premier rendu, la taille vaut 0 : tout écran paraîtrait bas, et la remise serait sautée au montage).
   useEffect(() => {
-    if (grand && layout.low && !simple) {
+    if (size.h > 0 && grand && layout.low && !simple) {
       setSimple(true);
       toFinal(true);
     }
-  }, [grand, layout.low, simple, toFinal]);
+  }, [size.h, grand, layout.low, simple, toFinal]);
 
   // « Continuer » : le focus dès qu'il paraît ; ni le toucher qui a sauté la scène, ni la répétition de la touche.
   const continueRef = useRef<HTMLButtonElement>(null);
@@ -162,6 +168,12 @@ export function Remise({ world, request, deliver, onClose }: Props) {
     if (phase !== 'fin') return;
     shownAt.current = performance.now();
     continueRef.current?.focus();
+  }, [phase, simple]);
+  // En « Vue simple », la liste qui ne tient pas (le plus grand texte sur un écran bas) défile jusqu'à la phrase de fin.
+  const panelRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = panelRef.current;
+    if (phase === 'fin' && simple && el) el.scrollTop = el.scrollHeight;
   }, [phase, simple]);
   const skipRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -195,25 +207,35 @@ export function Remise({ world, request, deliver, onClose }: Props) {
     <div className={`open-world-remise${simple ? ' simple' : ''}${layout.low ? ' low' : ''}`} ref={box} style={style}>
       {/* La zone de la scène : un toucher y mène à l'état final, jamais plus loin ; sans bouton visible (une seule action). */}
       {!final && <button type="button" ref={skipRef} className="open-world-remise-skip" aria-label="Passer" onClick={() => toFinal(true)} />}
-      <section className="open-world-remise-panel" aria-labelledby="remise-consigne">
+      <section ref={panelRef} className="open-world-remise-panel" aria-labelledby="remise-consigne">
         <p className="open-world-remise-role">{request.role}</p>
         <div className="open-world-remise-consigne">
           <span className="open-world-remise-paquet" aria-hidden="true">
             <Icon name="paquet" />
           </span>
-          <p id="remise-consigne">
-            <Syllabified text={consigne} />
+          {/* La consigne, puis, à l'état final, la phrase de fin à sa place (dans la scène) ; une zone annoncée par les
+              lecteurs d'écran, là dès le début : seule la phrase de fin, qui change, est annoncée. En « Vue simple », la
+              consigne reste, la phrase de fin vient dessous, avec l'icône de l'objet. */}
+          <p id="remise-consigne" className={final && !simple ? 'open-world-remise-fin' : undefined} role="status">
+            <Syllabified text={final && !simple ? done : consigne} />
           </p>
-          <SpeakButton text={final ? `${consigne} ${done}` : consigne} label="Réécouter" compact />
+          <SpeakButton text={final ? (simple ? `${consigne} ${done}` : done) : consigne} label="Réécouter" compact />
         </div>
-        {simple && (
-          <p className="open-world-remise-objet">
-            {block && <BlockIcon top={block.top} side={block.side} size={36} />}
-          </p>
-        )}
-        {/* La phrase de fin, annoncée par les lecteurs d'écran ; la zone est là dès le début, vide jusqu'à l'état final. */}
+        {/* En « Vue simple » (toujours l'état final), l'icône de l'objet et la phrase de fin, sur une ligne, dans leur zone
+            annoncée, là dès le début, vide jusque-là. */}
         <p className="open-world-remise-fin" role="status">
-          {final ? <Syllabified text={done} /> : ''}
+          {final && simple ? (
+            <>
+              {block && (
+                <span className="open-world-remise-objet" aria-hidden="true">
+                  <BlockIcon top={block.top} side={block.side} size={36} />
+                </span>
+              )}
+              <Syllabified text={done} />
+            </>
+          ) : (
+            ''
+          )}
         </p>
       </section>
       {final && (

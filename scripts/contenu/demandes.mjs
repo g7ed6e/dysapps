@@ -13,8 +13,6 @@
 //   - bloc : `maths-6e-calculation`                             ← le bloc d'une autre île de l'archipel, ou son bloc assemblé
 //   - combien : 4                                               ← de 2 à 4 : un cube posé par bloc livré
 //   - petite construction : le puits                            ← son nom, avec l'article, le même partout
-//   - genre : masculin                                          ← son genre (masculin ou féminin) : l'accord de « posé »
-//                                                                 dans le monde ouvert d'Archipéo ; obligatoire au 6e
 //   - demande : Il me faut {objet} pour mon puits. Joue une mission de la Plaine des nombres.
 //   - prête : Tu as les {blocs} ! Livre-les à Tunel.
 //   - posée : Puits posé chez Tunel !
@@ -42,7 +40,6 @@ const CHAMPS = [
   ['bloc', 'block', true],
   ['combien', 'count', true],
   ['petite construction', 'name', true],
-  ['genre', 'genre', false],
   ['demande', 'ask', true],
   ['prête', 'ready', true],
   ['posée', 'done', true],
@@ -51,16 +48,6 @@ const CHAMPS = [
 const PAR_ETIQUETTE = new Map(CHAMPS.map((c) => [c[0], c]));
 const JETONS = ['{objet}', '{blocs}', '{à}'];
 const ID = /^`([a-z0-9-]+)`$/;
-
-/** Le genre d'une petite construction, tel qu'il s'écrit (`genre : masculin`), et ce qu'il donne dans le JSON. */
-export const GENRES = { masculin: 'm', féminin: 'f' };
-const ECRIT_DU_GENRE = Object.fromEntries(Object.entries(GENRES).map(([mot, g]) => [g, mot]));
-
-/**
- * Les classes dont les commandes disent leur genre : celles qui ont un monde ouvert (GD-20, point 4), où la phrase de
- * fin s'accorde (« Le potager est posé. », « La vitrine est posée. » ; arbitrage du directeur artistique, 17 octobre 2026).
- */
-export const CLASSES_AVEC_GENRE = ['6e'];
 
 /** Le nombre de blocs d'une commande : un cube posé par bloc livré, deux au moins (arbitrage du 3 octobre 2026). */
 export const COMBIEN_MIN = 2;
@@ -75,7 +62,6 @@ function versJson(ile, n, c) {
     count: c.count,
     fixture: `${ile}-fixture-${n}`,
     ...(c.afterPlan === undefined ? {} : { afterPlan: c.afterPlan }),
-    ...(c.genre === undefined ? {} : { genre: c.genre }),
     blocland: { name: c.name, ask: c.ask, ready: c.ready, done: c.done },
   };
 }
@@ -125,9 +111,6 @@ export function lireDemandes(lignes, debut, fichier, ile) {
         const id = ID.exec(v)?.[1];
         if (!id) throw erreur(`${m[1]} : identifiant attendu entre accents graves, lu « ${v} »`);
         v = id;
-      } else if (cle === 'genre') {
-        if (!Object.hasOwn(GENRES, v)) throw erreur(`genre : masculin ou féminin, lu « ${v} »`);
-        v = GENRES[v];
       } else if (cle === 'count') {
         if (!/^\d+$/.test(v) || Number(v) < COMBIEN_MIN || Number(v) > COMBIEN_MAX) throw erreur(`combien : un nombre de ${COMBIEN_MIN} à ${COMBIEN_MAX} attendu, lu « ${v} »`);
         v = Number(v);
@@ -147,7 +130,7 @@ export function ecrireDemandes(ile, demandes) {
   const lignes = [TITRE_DEMANDES, ''];
   demandes.forEach((d, k) => {
     if (d.id !== `${ile}-request-${k + 1}`) throw new Error(`commande ${d.id} : identifiant ${ile}-request-${k + 1} attendu`);
-    const valeurs = { resident: d.resident, block: `\`${d.block}\``, count: String(d.count), ...d.blocland, genre: d.genre && ECRIT_DU_GENRE[d.genre], afterPlan: d.afterPlan && `\`${d.afterPlan}\`` };
+    const valeurs = { resident: d.resident, block: `\`${d.block}\``, count: String(d.count), ...d.blocland, afterPlan: d.afterPlan && `\`${d.afterPlan}\`` };
     lignes.push(`### \`${d.id}\``, '');
     for (const [etiquette, cle] of CHAMPS) if (valeurs[cle] !== undefined) lignes.push(`- ${etiquette} : ${valeurs[cle]}`);
     lignes.push('');
@@ -196,7 +179,6 @@ export function verifierDemandes(iles, demandesParIle, recettes, plans) {
       archipel.set(d.block, d.id);
       demandesParArchipel.set(ile.classe, archipel);
       if (d.afterPlan !== undefined && !(plans.get(ile.id) ?? []).includes(d.afterPlan)) throw err(`après le plan : « ${d.afterPlan} » n’est pas un plan de l’île`);
-      if (CLASSES_AVEC_GENRE.includes(ile.classe) && d.genre === undefined) throw err('genre : masculin ou féminin, au 6e (l’accord de « posé » dans le monde ouvert)');
 
       const { name, ask, ready, done } = d.blocland;
       for (const [quoi, s] of [['petite construction', name], ['demande', ask], ['prête', ready], ['posée', done]]) {

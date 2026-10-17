@@ -709,7 +709,6 @@ Pour tous les items :
 - bloc : `english-6e-grammar`
 - combien : 2
 - petite construction : la pendule
-- genre : féminin
 - demande : Il me faut {objet} pour ma pendule. Joue une mission de l’Horloge des verbes.
 - prête : Tu as les {blocs} ! Livre-les à Robin.
 - posée : Pendule posée chez Robin !

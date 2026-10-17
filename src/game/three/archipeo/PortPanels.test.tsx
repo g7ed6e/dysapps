@@ -10,7 +10,7 @@ import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
 import { PortPanels, portFromParam, portResume, portReturn, type PortPanel } from './PortPanels';
 
-const NAMES = { nom: 'L’Escale', ecole: 'La Maison des Savoirs', succes: 'La Galerie des Merveilles', assemblage: 'Le Chantier de l’Escale' };
+const NAMES = { nom: 'L’Escale', ecole: 'La Maison des Savoirs', succes: 'La Galerie des Merveilles', assemblage: 'L’Entrepôt des matériaux' };
 
 function renderPanel(panel: PortPanel, onGo = vi.fn(), onClose = vi.fn()) {
   render(

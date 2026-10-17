@@ -49,7 +49,6 @@ import {
   scenetteKeo,
   scenetteHabitant,
   scenettePose,
-  remisePose,
   type ScenetteFinale,
   type ScenetteLayout,
 } from '../../world/continu/scenette';
@@ -61,7 +60,7 @@ import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../worl
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
 import { placedAmenagement } from './amenagements';
-import { amenagementById, remiseInclude, remisePosed, remiseStage, showsAmenagements, type PlacedAmenagement } from '../../world/continu/amenagements';
+import { amenagementById, remiseFrame, remisePosed, showsAmenagements, type PlacedAmenagement } from '../../world/continu/amenagements';
 import { REMISE_DROP, remiseAt } from '../../world/continu/remise';
 import { nearestPlace, screenRect, touchedObject, type ObjectTarget } from '../../world/continu/toucher';
 
@@ -877,8 +876,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let ringKey = '';
   // La scénette où se tient Kéo (plus bas, « La scénette d'un lieu »), et si l'étape qui porte sa trace est posée.
   let scenette: PlaceId | null = null;
-  /** Le cadrage de la remise montré (`remiseView`, lot L0 : les captures), et sa pose de caméra. */
-  let remise: { place: PlaceId; pose: CameraPose } | null = null;
+  /**
+   * Le cadrage de la remise montré (`remiseView`, lot L0 : les captures), sa pose de caméra, et l'aménagement qui s'y pose
+   * (`extra`, pris dans le cadre : le recadrage après un changement de taille le garde).
+   */
+  let remise: { place: PlaceId; pose: CameraPose; extra?: string } | null = null;
   /**
    * La remise jouée (lot L1) : l'aménagement qui se pose, le départ de sa pose (`null` : la consigne se dit encore), les
    * éléments posés, celui qui descend, et sa fin (posée d'elle-même, ou sautée).
@@ -1943,7 +1945,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    * l'aménagement qui va se poser, pris dans le cadre avec ceux qui sont déjà là.
    */
   const remiseView = (place: PlaceId | null, extra?: string) => {
-    if (asked || mapView) return;
+    // La page fermée : la scène défaite ne fait plus rien (la sortie de la remise arrive après, en micro-tâche).
+    if (disposed || asked || mapView) return;
     if (!place) {
       endRemise();
       if (!remise) return;
@@ -1968,18 +1971,26 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // manque et la mer paraît dessous ; défaut trouvé sur les captures du lot L0 au format téléphone).
     Object.assign(focus, scenetteKeo(place, remisePosed(place)).at);
     updateRings(true, true);
-    const shown = placesState?.amenagements?.[place] ?? [];
-    const include = remiseInclude(
-      [...shown, ...(extra && !shown.includes(extra) ? [extra] : [])].flatMap((id) => {
-        const a = amenagementById(id);
-        return a ? [{ a, box: placedAmenagement(id, ground).box }] : [];
-      }),
-    );
-    const qp = remisePose(place, include, remiseStage(viewW, viewH), viewW, viewH, remisePosed(place));
-    remise = { place, pose: qp.pose };
+    remise = { place, pose: pose, extra };
     placeVisibility();
     fog.near = WORLD_FOG.near;
     fog.far = WORLD_FOG.far;
+    refitRemise();
+  };
+  /**
+   * Le cadrage de la remise à la taille de l'écran : à l'entrée, et de nouveau quand l'écran change de taille (une
+   * tablette qui tourne pendant la pose), sans refaire la scénette : l'aménagement reste entier dans la scène.
+   */
+  const refitRemise = () => {
+    if (!remise) return;
+    const shown = placesState?.amenagements?.[remise.place] ?? [];
+    const extra = remise.extra;
+    const list = [...shown, ...(extra && !shown.includes(extra) ? [extra] : [])].flatMap((id) => {
+      const a = amenagementById(id);
+      return a ? [{ a, box: placedAmenagement(id, ground).box }] : [];
+    });
+    const qp = remiseFrame(remise.place, list, viewW, viewH);
+    remise.pose = qp.pose;
     setShift(qp.shift);
     applyPose(qp.pose);
   };
@@ -2003,7 +2014,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const playRemise = (r: { place: PlaceId; amenagement: string } | null, on?: RemiseEvents) => {
     if (!r) return remiseView(null);
-    if (asked || mapView || !amenagementById(r.amenagement)) return;
+    if (disposed || asked || mapView || !amenagementById(r.amenagement)) return;
     endRemise();
     remiseView(r.place, r.amenagement);
     if (!remise) return;
@@ -2267,7 +2278,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // L'écran a changé de taille avant tout toucher : la vue de départ se choisit de nouveau, avant de se dessiner.
       if (first) mapSettling = MAP_SETTLE_FRAMES;
       showMap();
-    } else applyPose(asked ? asked.pose : (remise?.pose ?? pose));
+    } else if (remise && !asked) refitRemise();
+    else applyPose(asked ? asked.pose : pose);
   };
   const observer = new ResizeObserver(resize);
   observer.observe(host);

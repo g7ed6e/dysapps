@@ -22,7 +22,7 @@ import { placeTrace } from '../../world/continu/questionScene';
 import { remisePose, scenetteDecor, scenetteHabitant, scenetteKeo } from '../../world/continu/scenette';
 import type { PlacedAmenagement } from '../../world/continu/amenagements';
 import { buildHeightField, heightOnMesh, standingHeight } from '../../world/continu/terrain';
-import { AMENAGEMENTS, AMENAGEMENT_SCALE, ASSISE_STONE, ASSISE_TRIANGLES, HABITANT_HEIGHT, MATTE_GLASS, QUAI_STONE, QUAI_TRIANGLES, amenagementsOf, piecesOf, remiseInclude, remisePosed, remiseStage } from '../../world/continu/amenagements';
+import { AMENAGEMENTS, AMENAGEMENT_SCALE, ASSISE_STONE, ASSISE_TRIANGLES, HABITANT_HEIGHT, MATTE_GLASS, QUAI_STONE, QUAI_TRIANGLES, amenagementsOf, piecesOf, remiseFrame, remiseInclude, remisePosed, remiseStage } from '../../world/continu/amenagements';
 import { OBJECT_TOUCH_PIXELS, nearestPlace, touchedObject, type ObjectTarget } from '../../world/continu/toucher';
 import { casesDeLaPetiteConstruction } from '../../world/fixtures';
 import { COMMANDES } from '../../world/requests';
@@ -541,6 +541,35 @@ describe('Le cadrage de la remise', () => {
         }
       }
     expect(out).toEqual([]);
+  });
+
+  it('l’écran change de taille pendant la remise (une tablette qui tourne) : le cadrage se recalcule, l’aménagement reste entier dans la nouvelle scène', () => {
+    const out: string[] = [];
+    let stale = 0;
+    /** La marge, à l'écran de `w` × `h`, de la boîte `box` vue avec la pose `fit` ; négative quand elle sort de la scène. */
+    const margin = (fit: ReturnType<typeof remiseFrame>, box: { min: readonly number[]; max: readonly number[] }, w: number, h: number) => {
+      const stage = remiseStage(w, h);
+      const s: { x: number; y: number }[] = [];
+      for (const x of [box.min[0], box.max[0]]) for (const y of [box.min[1], box.max[1]]) for (const z of [box.min[2], box.max[2]]) s.push(screenOf(fit.pose, { x, y, z }, w, h));
+      const [l, r] = [Math.min(...s.map((q) => q.x)) - fit.shift.x, Math.max(...s.map((q) => q.x)) - fit.shift.x];
+      const [t, b] = [Math.min(...s.map((q) => q.y)) - fit.shift.y, Math.max(...s.map((q) => q.y)) - fit.shift.y];
+      return Math.min(l - stage.left, stage.right - r, t - stage.top, stage.bottom - b);
+    };
+    for (const p of PLACES) {
+      const list = placed.filter((o) => o.a.place === p.id);
+      if (!list.length) continue;
+      const boxes = list.map((o) => ({ a: o.a, box: o.p.box }));
+      const before = remiseFrame(p.id, boxes, 1024, 768);
+      const after = remiseFrame(p.id, boxes, 768, 1024);
+      for (const o of list) {
+        const m = margin(after, o.p.box, 768, 1024);
+        if (m < MARGIN) out.push(`${o.a.id} 768×1024 : marge ${m.toFixed(0)} px`);
+        if (margin(before, o.p.box, 768, 1024) < MARGIN) stale++;
+      }
+    }
+    expect(out).toEqual([]);
+    // Sans le recalcul, la pose de l'ancienne taille sortirait des aménagements de la scène.
+    expect(stale).toBeGreaterThan(0);
   });
 
   it('au Phare, le potager garde au moins sa largeur jusqu’au bord gauche du cadre ; la lanterne reste entière', () => {

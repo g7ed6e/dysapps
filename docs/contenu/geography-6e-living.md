@@ -436,7 +436,6 @@ Pour tous les items :
 - bloc : `history-6e-antiquity`
 - combien : 4
 - petite construction : la placette
-- genre : féminin
 - demande : Il me faut {objet} pour ma placette. Joue une mission de la Fouille des siècles.
 - prête : Tu as les {blocs} ! Livre-les à Boussole.
 - posée : Placette posée chez Boussole !

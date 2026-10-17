@@ -2,8 +2,11 @@
 // les missions de son île) : le même panneau qu'une porte de l'école (`MissionSheet`, ./PortPanels.tsx), une ligne par
 // mission. Toucher le lieu l'ouvre ; une seule ligne est mise en avant, la prochaine mission ; une ligne qui se joue dans
 // le lieu porte un signe (le même partout, dit « Scène », comme le bouton qui ramène à la scène depuis « Vue simple » : une icône, un mot), les autres se jouent sur l'écran habituel, le temps de
-// la transition. Au retour d'une mission, la liste se rouvre, le focus sur la ligne jouée (`?lieu=`).
-import type { ReactNode } from 'react';
+// la transition. Au retour d'une mission, la liste se rouvre, le focus sur la ligne jouée (`?lieu=`). Sinon, quand
+// l'habitant attend quelque chose, le focus va sur le bouton de sa ligne (« Livrer », « Reprendre », « Y aller ») et le
+// panneau s'ouvre en haut, la ligne entière, rôle et icône compris (référent dys et consultant UX UI, relecture du lot
+// L1 : à 844 × 390, la première mission prenait le focus et faisait défiler le panneau).
+import { useEffect, useRef, type ReactNode } from 'react';
 import { Icon } from '../../../components/Icon';
 import { MissionRows, type MissionRow } from '../../../components/MissionRows';
 import { getBiome } from '../../biomes';
@@ -42,7 +45,10 @@ interface Props {
   missions: readonly MissionMark[];
   /** La prochaine mission, si elle est de ce lieu : sa ligne est mise en avant. */
   suggested: string | null;
-  /** La ligne qui prend le focus à l'ouverture : celle dont on revient, sinon la suggérée, sinon la première. */
+  /**
+   * La ligne qui prend le focus à l'ouverture : celle dont on revient ; sinon le bouton de la ligne de l'habitant, s'il en a
+   * une ; sinon la suggérée, sinon la première.
+   */
   focus: string | null;
   onPlay(mission: string): void;
   onClose(): void;
@@ -53,6 +59,19 @@ interface Props {
 /** Le panneau d'un lieu : sa liste de missions. */
 export function PlacePanel({ place, missions, suggested, focus, onPlay, onClose, habitant }: Props) {
   useOpenPanel(onClose);
+  // Après celui de la liste (l'effet d'un enfant passe avant celui du parent) : le bouton de la ligne de l'habitant prend
+  // le focus, sans faire défiler, et le panneau revient en haut.
+  const head = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (focus) return;
+    const button = head.current?.querySelector<HTMLElement>('.habitant-line-actions .button');
+    if (!button) return;
+    button.focus({ preventScroll: true });
+    for (let el = head.current?.parentElement ?? null; el; el = el.parentElement) {
+      el.scrollTop = 0;
+      if (el.classList.contains('open-world-panel')) break;
+    }
+  }, [place.id, focus]);
   const biome = getBiome(place.island);
   const rows: MissionRow[] = missions.map((m) => ({
     id: m.mission,
@@ -75,7 +94,9 @@ export function PlacePanel({ place, missions, suggested, focus, onPlay, onClose,
   }));
   return (
     <MissionSheet id="panneau-lieu" className={`place-sheet${biome ? ` biome-${biome.id}` : ''}`} icon={biome?.icon ?? 'map'} title={place.name} onClose={onClose}>
-      {habitant}
+      <div ref={head} className="place-sheet-habitant">
+        {habitant}
+      </div>
       <MissionRows rows={rows} focus={focus ?? (missions.some((m) => m.mission === suggested) ? suggested : (missions[0]?.mission ?? null))} label={`Missions ${place.at}`} />
     </MissionSheet>
   );

@@ -467,7 +467,6 @@ Pour tous les items :
 - bloc : `maths-6e-fractions`
 - combien : 2
 - petite construction : le bac à eau
-- genre : masculin
 - demande : Il me faut {objet} pour mon bac à eau. Joue une mission de la Rivière des fractions.
 - prête : Tu as les {blocs} ! Livre-les à Bloquette.
 - posée : Bac à eau posé chez Bloquette !

@@ -54,11 +54,6 @@ export interface Commande {
   fixture: string;
   /** La commande n'arrive qu'une fois ce plan de l'île bâti (Grimoire, après « La lanterne du phare »). */
   afterPlan?: string;
-  /**
-   * Le genre de la petite construction (masculin, féminin), là où une phrase s'accorde (« La vitrine est posée. ») : au 6e,
-   * pour le monde ouvert d'Archipéo (GD-20, point 4). La grille ne le lit pas.
-   */
-  genre?: 'm' | 'f';
   /** Les phrases de la commande, les mêmes dans Blocland et dans Archipéo. */
   blocland: PhrasesDeCommande;
 }

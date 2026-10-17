@@ -4,11 +4,11 @@ import { MONDE_OUVERT, produire } from './chemins.mjs';
 import { fautes, FORMES, lireMondeOuvert } from './mondeOuvert.mjs';
 
 const BONNES = [
-  '- demande : Il me faut {objet} pour {nom}. Joue une mission {au lieu}.',
-  '- demande assemblée : Il me faut {objet} pour {nom}. Assemble les {blocs} {au lieu}.',
-  '- prête : Livre les {objet} {au lieu}.',
+  '- demande : Il me faut {objet}. C’est pour {nom}. Joue une mission {au lieu}.',
+  '- demande assemblée : Il me faut {objet}. C’est pour {nom}. Assemble les {blocs} {au lieu}.',
+  '- prête : Livre {objet} {au lieu}.',
   '- consigne : Tu livres {objet} pour {nom}.',
-  '- posée : {Nom} est {posé}.',
+  '- posée : {Nom} est en place.',
 ];
 const md = (...l) => ['# Le monde ouvert', '', '## Les habitants', '', ...l, ''].join('\n');
 const lire = (...l) => () => lireMondeOuvert(md(...l), 'monde-ouvert.md');
@@ -17,11 +17,11 @@ const remplacer = (avant, apres) => BONNES.map((l) => (l.startsWith(`- ${avant} 
 describe('docs/contenu/monde-ouvert.md', () => {
   it('lit les cinq formes, dans l’ordre du jeu', () => {
     expect(lire(...BONNES)()).toEqual({
-      ask: 'Il me faut {objet} pour {nom}. Joue une mission {au lieu}.',
-      askAssembled: 'Il me faut {objet} pour {nom}. Assemble les {blocs} {au lieu}.',
-      ready: 'Livre les {objet} {au lieu}.',
+      ask: 'Il me faut {objet}. C’est pour {nom}. Joue une mission {au lieu}.',
+      askAssembled: 'Il me faut {objet}. C’est pour {nom}. Assemble les {blocs} {au lieu}.',
+      ready: 'Livre {objet} {au lieu}.',
       remise: 'Tu livres {objet} pour {nom}.',
-      done: '{Nom} est {posé}.',
+      done: '{Nom} est en place.',
     });
   });
 
@@ -35,7 +35,15 @@ describe('docs/contenu/monde-ouvert.md', () => {
   it('garde les jetons de chaque forme : tous, une fois, aucun autre', () => {
     expect(lire(...remplacer('prête', '- prête : Livre les pierres {au lieu}.'))).toThrow('le jeton « {objet} » manque');
     expect(lire(...remplacer('prête', '- prête : Livre les {objet} pour {nom}.'))).toThrow('jeton « {nom} » inconnu ici');
-    expect(lire(...remplacer('posée', '- posée : {Nom} est {posé}, {posé}.'))).toThrow('écrit deux fois');
+    expect(lire(...remplacer('posée', '- posée : {Nom} est en place, {Nom}.'))).toThrow('écrit deux fois');
+    expect(lire(...remplacer('posée', '- posée : {Nom} est {posé}.'))).toThrow('jeton « {posé} » inconnu ici');
+  });
+
+  it('refuse une accolade seule, ouverte ou fermée', () => {
+    expect(fautes('Livre {objet {au lieu}.', ['objet', 'au lieu']).join()).toMatch(/accolade seule/);
+    expect(fautes('Livre {objet} au lieu}.', ['objet', 'au lieu']).join()).toMatch(/accolade seule/);
+    expect(fautes('Livre {objet} {au lieu.', ['objet', 'au lieu']).join()).toMatch(/accolade seule/);
+    expect(lire(...remplacer('prête', '- prête : Livre {objet} {au lieu.'))).toThrow('accolade seule');
   });
 
   it('garde les règles de lecture : courtes, calmes, sans mot interdit', () => {
@@ -47,10 +55,9 @@ describe('docs/contenu/monde-ouvert.md', () => {
     expect(fautes('Merci, livre les {objet} {au lieu}.', ['objet', 'au lieu']).join()).toMatch(/« merci »/);
     expect(fautes('Livre vite les {objet} {au lieu}.', ['objet', 'au lieu']).join()).toMatch(/« vite »/);
     expect(fautes('La quête : livre les {objet} {au lieu}.', ['objet', 'au lieu']).join()).toMatch(/« quête »/);
-    expect(fautes('Livre. Les {objet}. {au lieu}.', ['objet', 'au lieu']).join()).toMatch(/deux phrases au plus/);
-    // Un jeton compte pour un mot, même quand le jeu le remplit de plusieurs (« 3 blocs de sable »).
-    expect(fautes('Livre tout de suite les {objet} {au lieu}.', ['objet', 'au lieu'])).toEqual([]);
-    expect(fautes('Livre donc tout de suite les {objet} {au lieu}.', ['objet', 'au lieu']).join()).toMatch(/8 mots, 7 au plus/);
+    expect(fautes('Livre. Les {objet}. Ici. {au lieu}.', ['objet', 'au lieu']).join()).toMatch(/3 phrases au plus/);
+    expect(fautes('Livre. Les {objet}. {au lieu}.', ['objet', 'au lieu'])).toEqual([]);
+    // Le plafond de mots se compte sur le texte rempli : src/game/three/archipeo/remiseOf.test.ts.
   });
 
   it('suit docs/contenu/monde-ouvert.md, et le JSON du jeu en est le reflet exact', () => {

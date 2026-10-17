@@ -1,10 +1,11 @@
 // La ligne de l'habitant (GD-20, point 4, lot L1 « Livrer ») : en tête du panneau de son lieu, son rôle et l'icône de
-// son île, une phrase, un seul bouton. Une seule chose à la fois, dans cet ordre : sa commande prête (« Livre les 3
-// pierres au Phare. », « Livrer », la remise) ; ses révisions dues (« Reprendre », l'écran habituel des révisions, et
+// son île, une phrase, un seul bouton. Une seule chose à la fois, dans cet ordre : sa commande prête (« Livre 3 blocs
+// de terre au Phare. », « Livrer », la remise) ; ses révisions dues (« Reprendre », l'écran habituel des révisions, et
 // « Plus tard » ; la révision jouée dans la scène viendra au lot L3) ; sa commande à qui il manque des blocs (« Il me
-// faut 3 pierres pour le potager. Joue une mission aux Filets. », « Y aller », vers le lieu de la ressource, ou vers le
-// lieu de l'Escale où l'on assemble). Et la liste « Commandes » du monde ouvert, que l'accès direct ouvre : une ligne
-// par commande ouverte, la même phrase, « Y aller ».
+// faut 3 blocs de terre. C’est pour le potager. Joue une mission aux Filets. », « Y aller », vers le lieu de la
+// ressource, ou vers le lieu de l'Escale où l'on assemble). Et la liste « Commandes » du monde ouvert, que l'accès direct
+// ouvre : une ligne par commande ouverte, la même phrase, « Y aller ». Un bouton plein ne porte que la suggestion (GD-20 :
+// « sans mise en avant tant qu'il n'est pas la suggestion ») : « Livrer » et « Y aller » restent simples sinon.
 import { Icon } from '../../../components/Icon';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { Syllabified } from '../../../components/Syllabified';
@@ -22,12 +23,14 @@ interface Props {
   place: PlaceId;
   /** La ligne de la commande de l'habitant (`habitantLineOf`), s'il en a une arrivée. */
   line: Line | null;
+  /** La commande que porte la suggestion, s'il y en a une : son bouton seul est plein. */
+  suggested: string | null;
   onDeliver(commande: string): void;
   onGo(go: HabitantGo): void;
 }
 
 /** La ligne de l'habitant d'un lieu, ou rien. */
-export function HabitantLine({ place, line, onDeliver, onGo }: Props) {
+export function HabitantLine({ place, line, suggested, onDeliver, onGo }: Props) {
   const textes = useTextes();
   const biome = getBiome(placeById(place).island);
   const rappel = useResidentReminder(biome);
@@ -49,11 +52,12 @@ export function HabitantLine({ place, line, onDeliver, onGo }: Props) {
         <div className="habitant-line-actions">
           <SpeakButton text={text} label="Réécouter" compact />
           {line.kind === 'livrer' ? (
-            <button type="button" className="button primary" onClick={() => onDeliver(line.commande)}>
+            <button type="button" className={`button habitant-line-go${line.commande === suggested ? ' primary' : ''}`} onClick={() => onDeliver(line.commande)}>
               <Icon name="paquet" /> {textes.commandes?.livrer ?? 'Livrer'}
             </button>
           ) : (
-            <button type="button" className="button primary" onClick={() => onGo(line.go)}>
+            // Ce qui manque n'est jamais la suggestion : « Y aller » reste simple.
+            <button type="button" className="button habitant-line-go" aria-label={`Y aller : ${goName(line.go, textes.depart?.assemblage)}`} onClick={() => onGo(line.go)}>
               <Icon name="footprints" /> Y aller
             </button>
           )}
@@ -76,8 +80,14 @@ export function HabitantLine({ place, line, onDeliver, onGo }: Props) {
   );
 }
 
-/** La liste « Commandes » du monde ouvert : les commandes ouvertes, dans l'ordre d'arrivée, chacune sa phrase et « Y aller ». */
-export function CommandsSheet({ lines, onGo, onClose }: { lines: readonly { place: PlaceId; line: Line }[]; onGo(go: HabitantGo): void; onClose(): void }) {
+/** Le nom, entier, du lieu où mène « Y aller » : un lieu, ou le lieu d'assemblage de l'Escale. */
+const goName = (go: HabitantGo, assembly = ''): string => ('port' in go ? assembly : placeById(go.place).name);
+
+/**
+ * La liste « Commandes » du monde ouvert : les commandes ouvertes, dans l'ordre d'arrivée, chacune sa phrase et « Y
+ * aller » ; seul celui de la commande que porte la suggestion (`suggested`) est plein.
+ */
+export function CommandsSheet({ lines, suggested, onGo, onClose }: { lines: readonly { place: PlaceId; line: Line }[]; suggested: string | null; onGo(go: HabitantGo): void; onClose(): void }) {
   useOpenPanel(onClose);
   const textes = useTextes();
   const titre = textes.commandes?.titre ?? 'Commandes';
@@ -98,7 +108,7 @@ export function CommandsSheet({ lines, onGo, onClose }: { lines: readonly { plac
                 </p>
                 <div className="habitant-line-actions">
                   <SpeakButton text={text} label="Réécouter" compact />
-                  <button type="button" className={`button${line.kind === 'livrer' ? ' primary' : ''}`} aria-label={`Y aller : ${'port' in go ? (textes.depart?.assemblage ?? '') : placeById(go.place).name}`} onClick={() => onGo(go)}>
+                  <button type="button" className={`button${line.commande === suggested ? ' primary' : ''}`} aria-label={`Y aller : ${goName(go, textes.depart?.assemblage)}`} onClick={() => onGo(go)}>
                     <Icon name="footprints" /> Y aller
                   </button>
                 </div>

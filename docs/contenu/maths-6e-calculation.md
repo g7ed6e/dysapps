@@ -209,7 +209,6 @@ Pour tous les items :
 - bloc : `french-6e-phonology`
 - combien : 3
 - petite construction : la boutique
-- genre : féminin
 - demande : Il me faut {objet} pour ma boutique. Joue une mission de la Forêt des sons.
 - prête : Tu as les {blocs} ! Livre-les à Coco.
 - posée : Boutique posée chez Coco !

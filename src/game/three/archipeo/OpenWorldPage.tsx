@@ -56,7 +56,7 @@ import { WorldQuestion } from './WorldQuestion';
 import { CommandsSheet, HabitantLine } from './HabitantLine';
 import { HabitantSigns, placeSigns } from './HabitantSigns';
 import { Remise } from './Remise';
-import { commandLines, habitantLineOf, habitantSigns, remiseOf, type HabitantGo, type RemiseRequest } from './remiseOf';
+import { commandLines, habitantLineOf, habitantSigns, readyCommande, remiseOf, suggestedCommande, type HabitantGo, type RemiseRequest } from './remiseOf';
 import './openWorld.css';
 
 declare global {
@@ -126,21 +126,32 @@ export default function OpenWorldPage() {
   }, [state.world.links, bornes, ensureOpenWorldLands]);
   // La prochaine mission, jamais celle d'un lieu fermé : aucune ne s'y joue.
   const next = useMemo(() => nextMission(bornes, modele.destination, (id) => !isClosed(id)), [bornes, modele.destination, isClosed]);
-  const nextPlace = next?.place ?? null;
-  // Les pastilles des habitants des lieux ouverts : leur commande prête (la suggérée mise en avant), sinon leurs révisions
-  // dues sans « Plus tard » ; trois au plus.
+  // Le lieu où se tient Kéo, arrivé (rien pendant la marche, ni à l'Escale) : la suggestion et les pastilles le lisent.
+  const [here, setHere] = useState<PlaceId | null>(null);
+  // La commande prête dans la suggestion (GD-20, « Une seule prochaine action mise en avant ») : à son rang, après le lieu
+  // où se tient Kéo tant qu'il y reste une mission jamais jouée, avant la prochaine mission d'un autre lieu. Quand elle la
+  // porte, la bulle dit sa phrase, avec « Livrer » si Kéo est chez l'habitant, sinon « Y aller » ; la marque va à son
+  // lieu ; sa pastille est la seule pleine ; aucune mission n'est mise en avant.
+  const readyCmd = useMemo(() => readyCommande(state, (p) => !isClosed(p), modele.destination.commande, here), [state, isClosed, modele.destination.commande, here]);
+  const hereToPlay = Boolean(here && !isClosed(here) && missionsOfPlace(placeById(here), bornes).some((b) => b.etat === 'new' || b.etat === 'locked'));
+  const suggestedCmd = suggestedCommande(readyCmd, hereToPlay);
+  const suggestedId = suggestedCmd?.commande ?? null;
+  const nextPlace = suggestedCmd ? placeById(suggestedCmd.place) : (next?.place ?? null);
+  // Les pastilles des habitants des lieux ouverts : leur commande prête (la suggérée seule pleine), sinon leurs révisions
+  // dues sans « Plus tard » ; trois au plus ; jamais au lieu où se tient Kéo (la bulle et la ligne du panneau portent
+  // déjà l'information, et la pastille ne recouvre jamais Kéo).
   const { remises } = usePlusTard();
   const signs = useMemo(
     () =>
       habitantSigns(state, {
-        open: (p) => !isClosed(p),
+        open: (p) => !isClosed(p) && p !== here,
         revisions: (p) => {
           const island = placeById(p).island as BiomeId;
           return !remises.has(island) && revisionsDeLIle(state.spaced, state.world.links, island, settings.lv2).length > 0;
         },
-        suggested: modele.destination.commande,
+        suggested: suggestedId ?? undefined,
       }),
-    [state, isClosed, remises, settings.lv2, modele.destination.commande],
+    [state, isClosed, here, remises, settings.lv2, suggestedId],
   );
 
   // Kéo part de l'endroit de l'Escale de l'adresse (le retour d'une mission de l'école, `?porte=maths`, ou d'une question
@@ -255,8 +266,8 @@ export default function OpenWorldPage() {
     for (const el of stage.querySelectorAll('.open-world-mark, .world-settings, .world-shortcuts, .open-world-go, .open-world-bar, .open-world-said')) observer.observe(el);
     measure();
     return () => observer.disconnect();
-    // La marque et « Y aller » changent d'élément avec la prochaine mission et la marche : on les observe de nouveau.
-  }, [layout, next, walking, asking, remise, sheetOpen]);
+    // La marque et « Y aller » changent d'élément avec la suggestion et la marche : on les observe de nouveau.
+  }, [layout, next, suggestedId, walking, asking, remise, sheetOpen]);
 
   useEffect(() => {
     const el = host.current;
@@ -267,6 +278,7 @@ export default function OpenWorldPage() {
       meter: { show: meterShown(), expose: import.meta.env.DEV || mesuresDemandees() },
       onDepart: () => {
         setWalking(true);
+        setHere(null);
         setPanel(null);
         setLieu(null);
         setCommandsOpen(false);
@@ -282,6 +294,7 @@ export default function OpenWorldPage() {
       // Kéo devant un lieu : son panneau s'ouvre, la liste de ses missions (GD-20, point 8).
       onArrive: (placeId) => {
         setWalking(false);
+        setHere(placeId);
         if (!placeId) return;
         if (!named.has(placeId) && arrivalVoice.current(placeById(placeId).name)) named.add(placeId);
         setPanel(null);
@@ -389,7 +402,8 @@ export default function OpenWorldPage() {
   const closeLieu = useCallback(() => setLieu(null), []);
   // Les habitants (GD-20, point 4, lot L1 « Livrer ») : « Livrer » ouvre la remise ; « Y aller » mène d'un coup au lieu de
   // la ressource (son nom dit, comme une ligne de la liste des lieux), ou au lieu de l'Escale où l'on assemble.
-  const assemblyName = textes.depart?.assemblage ?? '';
+  // Le lieu où l'on assemble, dans sa forme « à », en entier : celui de docs/contenu/assemblage.md, comme dans la grille.
+  const assemblyAt = textes.assemblage.a;
   const deliverAt = useCallback((commande: string) => {
     const r = remiseOf(commande);
     if (!r || !world.current) return;
@@ -713,6 +727,16 @@ export default function OpenWorldPage() {
     setBackTo(null);
   }, [backTo, asking, posePending]);
   const goNext = () => {
+    // La commande prête que porte la suggestion : « Livrer » chez l'habitant, sinon Kéo y va.
+    if (suggestedCmd) {
+      if (here === suggestedCmd.place) return deliverAt(suggestedCmd.commande);
+      if (settings.autoRead) {
+        speak(frenchTypography(placeById(suggestedCmd.place).name));
+        named.add(suggestedCmd.place);
+      }
+      world.current?.goTo(suggestedCmd.place, true);
+      return;
+    }
     if (!next) return;
     const title = missionTitle(next.place.island, next.mission);
     if (settings.autoRead) {
@@ -721,10 +745,12 @@ export default function OpenWorldPage() {
     }
     world.current?.goTo(next.place.id, true);
   };
-  // Court : le nom du lieu, puis la mission (consultant UX UI et référent dys).
-  const label = next ? `${next.place.name}, ${missionTitle(next.place.island, next.mission)}` : '';
+  // Court : le nom du lieu, puis la mission (consultant UX UI et référent dys) ; pour une commande, sa phrase « prête ».
+  const label = suggestedCmd ? frenchTypography(suggestedCmd.text.replace(/\.$/, '')) : next ? `${next.place.name}, ${missionTitle(next.place.island, next.mission)}` : '';
   // La marque dit aussi la distance, en mots, lue à la demande (jamais à chaque image).
-  const markLabel = next ? `${label}, ${DISTANCE_WORDS[far]}` : '';
+  const markLabel = nextPlace ? `${label}, ${DISTANCE_WORDS[far]}` : '';
+  // « Livrer » dans la bulle : la commande suggérée est celle de l'habitant du lieu où se tient Kéo.
+  const deliverHere = Boolean(suggestedCmd && here === suggestedCmd.place);
 
   // Une question ou une remise : la scène seule, ni marque, ni accès directs, ni panneau.
   const playing = Boolean(asking) || Boolean(remise);
@@ -735,7 +761,7 @@ export default function OpenWorldPage() {
       <div className="world-stage" data-scene data-said={saidShown && !playing ? 'oui' : undefined} ref={stageRef}>
         <div ref={host} className="open-world-canvas" />
         {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
-        {next && !playing && !mapOpen && !sheetOpen && (
+        {nextPlace && !playing && !mapOpen && !sheetOpen && (
           <button type="button" ref={markRef} className="open-world-mark" aria-label={markLabel} onClick={goNext}>
             <span className="open-world-arrow-box" aria-hidden="true">
               <span ref={arrowRef} className="open-world-arrow">
@@ -749,7 +775,7 @@ export default function OpenWorldPage() {
               </span>
             </span>
             {/* Le nom du lieu seul : aucune icône de lieu n'existe encore (le sapin de l'île d'aujourd'hui ne dit pas le Phare). */}
-            <span className="open-world-mark-word">{next.place.name}</span>
+            <span className="open-world-mark-word">{nextPlace.name}</span>
           </button>
         )}
         {/* Un cadenas sur le pont de chaque terre fermée : une icône sans texte, dite aux lecteurs d'écran (référent dys). */}
@@ -773,7 +799,7 @@ export default function OpenWorldPage() {
           <>
             <div className="open-world-voile" aria-hidden="true" onClick={list.close} />
             <div ref={listRef} className="open-world-panel open-world-panel-lieux-ouverts">
-              <PlacesSheet rows={placesRows(openPlaces, states, textes.etatsDIle, nextPlace?.id ?? null, textes.depart?.nom)} onPick={pickFromList} onClose={list.close} />
+              <PlacesSheet rows={placesRows(openPlaces, states, textes.etatsDIle, suggestedCmd ? null : (next?.place.id ?? null), textes.depart?.nom)} onPick={pickFromList} onClose={list.close} />
             </div>
           </>
         )}
@@ -784,7 +810,7 @@ export default function OpenWorldPage() {
         {!playing && !sheetOpen && <SettingsButton />}
         {commandsOpen && !playing && (
           <div ref={panelRef} className="open-world-panel open-world-panel-commandes">
-            <CommandsSheet lines={commandLines(state, assemblyName)} onGo={goHabitant} onClose={closeCommands} />
+            <CommandsSheet lines={commandLines(state, assemblyAt)} suggested={suggestedId} onGo={goHabitant} onClose={closeCommands} />
           </div>
         )}
         {/* Le panneau ouvert de l'Escale (GD-20, lot 2) : comme une question, il masque les accès directs, Réglages, la
@@ -815,11 +841,11 @@ export default function OpenWorldPage() {
               <PlacePanel
                 place={placeById(lieu.place)}
                 missions={missionsOfPlace(placeById(lieu.place), bornes)}
-                suggested={next?.place.id === lieu.place ? next.mission : null}
+                suggested={!suggestedCmd && next?.place.id === lieu.place ? next.mission : null}
                 focus={lieu.focus}
                 onPlay={play}
                 onClose={closeLieu}
-                habitant={<HabitantLine place={lieu.place} line={habitantLineOf(state, lieu.place, assemblyName)} onDeliver={deliverAt} onGo={goHabitant} />}
+                habitant={<HabitantLine place={lieu.place} line={habitantLineOf(state, lieu.place, assemblyAt)} suggested={suggestedId} onDeliver={deliverAt} onGo={goHabitant} />}
               />
             )}
           </div>
@@ -876,10 +902,20 @@ export default function OpenWorldPage() {
         )}
         {!playing && !mapOpen && !sheetOpen && (
           <div className="open-world-go">
-            {!next && !walking && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
+            {/* La phrase de la commande que porte la suggestion ; « Aucune mission » seulement quand rien n'attend. */}
+            {!walking && suggestedCmd && <p className="open-world-go-reason">{frenchTypography(suggestedCmd.text)}</p>}
+            {!next && !suggestedCmd && !walking && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
             {walking ? (
               <button type="button" className="button" onClick={() => world.current?.skip()}>
                 <Icon name="play" /> Passer le trajet
+              </button>
+            ) : deliverHere ? (
+              <button type="button" className="button primary" onClick={goNext}>
+                <Icon name="paquet" /> {textes.commandes?.livrer ?? 'Livrer'}
+              </button>
+            ) : suggestedCmd ? (
+              <button type="button" className="button primary" aria-label={`Y aller : ${placeById(suggestedCmd.place).name}`} onClick={goNext}>
+                <Icon name="footprints" /> Y aller
               </button>
             ) : (
               <button type="button" className="button primary" disabled={!next} aria-label={next ? `Y aller : ${label}` : undefined} onClick={goNext}>

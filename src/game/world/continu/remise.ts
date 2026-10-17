@@ -1,15 +1,14 @@
 // La remise (GD-20, point 4, piste B « La remise », choisie par le mainteneur le 17 octobre 2026 ; lot L1 « Livrer ») :
 // l'élève livre les ressources d'une commande chez l'habitant, dans la scénette de son lieu, et l'aménagement se pose
 // élément par élément, un par ressource livrée. Ce fichier tient ce qui se décide sans écran : les phrases des habitants
-// (docs/contenu/monde-ouvert.md, que `npm run contenu` écrit dans ./mondeOuvert.json), leurs jetons et l'accord de
-// « posé », le temps de la pose, et le délai qui la lance quand la voix ne dit pas sa fin. La commande elle-même (son
+// (docs/contenu/monde-ouvert.md, que `npm run contenu` écrit dans ./mondeOuvert.json) et leurs jetons, le temps de la pose, et le délai qui la lance quand la voix ne dit pas sa fin. La commande elle-même (son
 // bloc, son nombre, sa livraison) reste dans la grille : la vue la traduit (three/archipeo/remiseOf.ts). Code pur.
 //
 // Le déroulé (arbitrages du directeur artistique, points 5 et 6) :
-// 1. la consigne, écrite et lue (« Tu livres 3 pierres pour le potager. ») ; la pose ne part jamais pendant qu'une voix
+// 1. la consigne, écrite et lue (« Tu livres 3 blocs de terre pour le potager. ») ; la pose ne part jamais pendant qu'une voix
 //    parle : à la fin de la lecture, ou, sans voix, après un délai borné, calculé sur la longueur de la consigne ;
 // 2. la pose : un temps de calme, puis chaque élément descend à sa place, l'un après l'autre ;
-// 3. l'état final : tout est posé, la phrase de fin (« Le potager est posé. »), « Continuer ».
+// 3. l'état final : tout est posé, la phrase de fin (« Le potager est en place. »), qui remplace la consigne, « Continuer ».
 // Un toucher pendant 1 ou 2 mène à l'état final, jamais plus loin. Avec « Réduire les animations », tout se pose d'un
 // coup. La livraison compte à l'état final, une fois.
 import PHRASES from './mondeOuvert.json';
@@ -24,7 +23,7 @@ export interface HabitantPhrases {
   ready: string;
   /** La consigne de la remise. Jetons : objet, nom. */
   remise: string;
-  /** La fin : l'aménagement posé. Jetons : Nom, posé. */
+  /** La fin : l'aménagement en place. Jeton : Nom. */
   done: string;
 }
 
@@ -32,14 +31,12 @@ export const HABITANT_PHRASES: HabitantPhrases = PHRASES;
 
 /** Ce que les jetons valent pour une commande. */
 export interface PhraseTokens {
-  /** Le nombre et le nom de la ressource (« 3 pierres »). */
+  /** Le nombre et le nom de la ressource (« 3 blocs de terre »). */
   objet: string;
   /** Le même nom, sans nombre (« madriers »). */
   blocs: string;
   /** La petite construction, avec son article (« le potager »). */
   nom: string;
-  /** Son genre : l'accord de « posé ». */
-  genre: 'm' | 'f';
   /** Le lieu, dans sa forme « à » (« au Phare »). */
   auLieu: string;
 }
@@ -47,29 +44,19 @@ export interface PhraseTokens {
 /** La première lettre en capitale (« Le potager », « L’établi »). */
 export const capitalized = (s: string): string => s.charAt(0).toLocaleUpperCase('fr') + s.slice(1);
 
-/** « posé » ou « posée » (« Le potager est posé. », « La vitrine est posée. »). */
-export const agreedPosed = (genre: 'm' | 'f'): string => (genre === 'f' ? 'posée' : 'posé');
-
-/** Une phrase, ses jetons remplacés ; un jeton inconnu ou resté est une erreur (le script du contenu les vérifie déjà). */
+/**
+ * Une phrase, ses jetons remplacés ; un jeton inconnu, ou une accolade restée seule, est une erreur (le script du
+ * contenu les refuse déjà).
+ */
 export function filled(template: string, tokens: PhraseTokens): string {
-  const values: Record<string, string> = { objet: tokens.objet, blocs: tokens.blocs, nom: tokens.nom, Nom: capitalized(tokens.nom), 'au lieu': tokens.auLieu, posé: agreedPosed(tokens.genre) };
-  return template.replace(/\{([^}]+)\}/g, (_, k: string) => {
+  const values: Record<string, string> = { objet: tokens.objet, blocs: tokens.blocs, nom: tokens.nom, Nom: capitalized(tokens.nom), 'au lieu': tokens.auLieu };
+  const out = template.replace(/\{([^{}]+)\}/g, (_, k: string) => {
     const v = values[k];
     if (v === undefined) throw new Error(`Jeton inconnu dans une phrase d'habitant : {${k}}`);
     return v;
   });
-}
-
-/**
- * La forme « à » d'un lieu nommé avec son article (« Le Chantier de l’Escale » → « au Chantier de l’Escale », « La
- * Halle » → « à la Halle », « L’Escale » → « à l’Escale », « Les Quais » → « aux Quais ») ; sans article, « à » devant.
- */
-export function atForm(name: string): string {
-  const m = /^(?:(Les|Le|La) |(L’))(.*)$/u.exec(name);
-  if (!m) return `à ${name}`;
-  const article = m[1] ?? m[2];
-  const rest = m[3];
-  return article === 'Le' ? `au ${rest}` : article === 'La' ? `à la ${rest}` : article === 'L’' ? `à l’${rest}` : `aux ${rest}`;
+  if (/[{}]/.test(out)) throw new Error(`Accolade seule dans une phrase d'habitant : ${template}`);
+  return out;
 }
 
 /** Le temps de la pose, en secondes (directeur artistique, point 5 : de 8 à 10 s sans toucher, jamais plus). */
@@ -107,10 +94,10 @@ export function remiseAt(t: number, elements: number, reduce: boolean): RemiseMo
 
 /**
  * Le délai, en millisecondes, après lequel la pose part quand la voix ne dit pas sa fin (coupée, absente, ou sa fin qui
- * n'arrive pas) : le temps de lire la consigne, environ 70 ms par caractère et une seconde de plus, borné entre 2 et 6 s
- * (l'expert frontend fixe les valeurs, le référent dys les vérifie sur un appareil sans voix).
+ * n'arrive pas) : le temps de lire la consigne pour un lecteur dyslexique (référent dys, relecture du lot L1 : de 7 à 10
+ * caractères par seconde), 1,5 s et 110 ms par caractère, borné entre 3 et 8 s.
  */
-export const VOICE_FALLBACK = { base: 1000, perChar: 70, min: 2000, max: 6000 } as const;
+export const VOICE_FALLBACK = { base: 1500, perChar: 110, min: 3000, max: 8000 } as const;
 
 export function voiceFallbackMs(text: string): number {
   return Math.min(VOICE_FALLBACK.max, Math.max(VOICE_FALLBACK.min, VOICE_FALLBACK.base + text.length * VOICE_FALLBACK.perChar));

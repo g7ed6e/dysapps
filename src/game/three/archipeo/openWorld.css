@@ -2844,6 +2844,10 @@
 
 /* La ligne de l'habitant, en tête du panneau de son lieu, et dans la liste « Commandes » : son rôle et l'icône de l'île,
    une phrase, « Réécouter » et un seul bouton. */
+/* L'enveloppe de la ligne de l'habitant dans le panneau d'un lieu : sans boîte (la ligne garde sa mise en page). */
+.place-sheet-habitant {
+  display: contents;
+}
 .habitant-line {
   margin: 0 0 0.8rem;
   padding: 0.6rem 0.8rem;
@@ -2948,7 +2952,9 @@
   margin: 0;
 }
 .open-world-remise-objet {
-  margin: 0.6rem 0 0;
+  display: inline-flex;
+  vertical-align: middle;
+  margin-inline-end: 0.5rem;
 }
 .open-world-remise-suite {
   position: absolute;
@@ -2969,18 +2975,44 @@
   justify-content: center;
   transform: none;
 }
-/* « Vue simple » de la remise : à la place de celui d'une mission, en haut à droite. */
+/* « Vue simple » de la remise : exactement à la place de celui d'une mission (`.world-question-simple`), à gauche du coin
+   de la pause, qui reste vide (la remise n'a pas de pause) : le même mot à la même place (consultant UX UI). */
 .open-world-remise-simple {
   position: absolute;
   z-index: 2;
   top: calc(8px + env(safe-area-inset-top));
-  right: calc(0.6rem + env(safe-area-inset-right));
+  right: calc(0.6rem + 56px + 12px + env(safe-area-inset-right));
   height: 56px;
   min-height: 56px;
   margin: 0;
+  padding-block: 0;
+  line-height: 1;
   white-space: nowrap;
 }
-/* En « Vue simple », sur fond uni : la consigne, l'icône de l'objet, la phrase de fin, « Continuer ». */
+/* En « Vue simple », sur fond uni : une colonne, la liste (la consigne, l'icône de l'objet et la phrase de fin) sur toute
+   la largeur (40 rem au plus), qui défile si elle ne tient pas, puis « Continuer » dessous, jamais par-dessus ; sous la
+   rangée du haut (« Scène »), ou tout en haut sans elle (au plus grand texte sur un écran bas). */
 .open-world-remise.simple {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  padding: calc(8px + 56px + 8px + env(safe-area-inset-top)) 16px calc(0.8rem + env(safe-area-inset-bottom, 0px));
   background: var(--surface);
+}
+.open-world-remise.simple:not(:has(> .open-world-remise-simple)) {
+  padding-top: calc(8px + env(safe-area-inset-top));
+}
+.open-world-remise.simple .open-world-remise-panel {
+  position: static;
+  flex: 0 1 auto;
+  min-height: 0;
+  width: min(40rem, 100%);
+  max-height: none;
+}
+.open-world-remise.simple .open-world-remise-suite {
+  position: static;
+  flex: none;
+  transform: none;
 }
