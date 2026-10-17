@@ -23,16 +23,16 @@ export const HORIZON_COLOR = SKY_STOPS[0].color;
 
 /**
  * La lumière (artiste technique 3D ; à valider sur captures par le directeur artistique) : le ciel froid et le sol
- * vert renvoyé (`HemisphereLight`), plus bas qu'avant (1,5) ; le soleil chaud, plus fort et plus bas (environ 33° au
+ * vert renvoyé (`HemisphereLight`), plus bas qu'avant (1,35 au lieu de 1,5) ; le soleil chaud, plus fort et plus bas (environ 33° au
  * lieu de 47°), à l'est-sud-est : les pentes au soleil s'éclairent, les autres gardent leur couleur, plus sombre, jamais
  * presque noire (l'ambiance seule en donne encore le tiers). Le mappage des tons neutre de Three.js adoucit les blancs.
  */
 export const LIGHT = {
   sky: 0xd6e4ee,
   ground: 0x8e9a7c,
-  ambient: 1.15,
-  sun: 0xffe2b8,
-  sunIntensity: 2.5,
+  ambient: 1.35,
+  sun: 0xfff0d8,
+  sunIntensity: 2.9,
   /** D'où vient le soleil (une direction, pas une place). */
   sunFrom: { x: 52, y: 40, z: 34 },
   exposure: 1,

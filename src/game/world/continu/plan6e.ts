@@ -32,14 +32,17 @@ export const COLORS_6E = {
   lagoon: 0x2fb5a6,
   /** Bleu lagon du pack : l'eau profonde, le large. */
   deepSea: 0x178078,
-  /** Rivage : herbe, mousse sur la pierre. */
-  grass: 0x6cbf4e,
+  /**
+   * Rivage : herbe, mousse sur la pierre ; la prairie claire des bas (GD-20, point 3, lot 3 : un vert d'eau tiré vers le
+   * Vert île du pack, au lieu du vert acide #6CBF4E).
+   */
+  grass: 0x7bd2a4,
   /** L'herbe du haut de la falaise nord, plus sombre (le plan). */
   cliffTop: 0x4e8f3a,
-  /** Sable chaud : plages. */
-  sand: 0xe3c08a,
-  /** La roche des pentes raides (la falaise, les berges de la rivière). */
-  rock: 0x9c8466,
+  /** Sable chaud : plages (un peu plus clair au lot 3, sous le soleil plus chaud). */
+  sand: 0xe8cf9c,
+  /** La roche des pentes raides (la falaise, les berges de la rivière, les rives des bras de mer) : un gris chaud (lot 3). */
+  rock: 0x968e83,
   /** Le sable mouillé, juste sous l'eau. */
   wetSand: 0xc9ad78,
   /** Les sentiers, un peu plus sombres que la plage pour se lire sur l'herbe. */
@@ -843,8 +846,8 @@ export const PATH_EDGES: readonly (readonly [string, string])[] = [
  * détail : de près, chaque case ; de loin, une case sur `coarse` en chaque sens (`tileCells` en est un multiple).
  */
 export const TERRAIN = (() => {
-  const step = 1.25;
-  const tileCells = 24;
+  const step = 1.75;
+  const tileCells = 18;
   const tile = step * tileCells;
   const min = fromPlan([362, 86]);
   const max = fromPlan([1496, 1024]);
