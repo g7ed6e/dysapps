@@ -16,7 +16,7 @@
 // liaisons changent, une terre ouverte reçoit toutes ses liaisons de la grille, sans rien débiter (`ensureLands`) ; les
 // terres sont lues dans la grille par ./landLinks.ts. Chargé à la demande.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
@@ -27,7 +27,7 @@ import { useMoinsDAnimations } from '../../../core/motion';
 import { useTextes } from '../../../universes';
 import { useBlocland } from '../../BloclandContext';
 import { getBiome, type BiomeId } from '../../biomes';
-import { revisionsDeLIle, usePlusTard } from '../../reminders';
+import { cheminDeRevision, revisionsDeLIle, usePlusTard } from '../../reminders';
 import { exercisesOf, questProgress } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
 import { playWoodTap } from '../../sound';
@@ -53,6 +53,8 @@ import { portState } from './portState';
 import { createOpenWorld, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { usePlaceAddress, usePoseGuard } from './usePlaceReturn';
 import { WorldQuestion } from './WorldQuestion';
+import { WorldRevision } from './WorldRevision';
+import { revisionPlanOf, type RevisionPlan } from './revisionOf';
 import { CommandsSheet, HabitantLine } from './HabitantLine';
 import { HabitantSigns, placeSigns } from './HabitantSigns';
 import { Remise } from './Remise';
@@ -213,9 +215,10 @@ export default function OpenWorldPage() {
   const [walking, setWalking] = useState(false);
   // La mission choisie dans le panneau d'un lieu : elle se joue dans sa scénette, ou sur l'écran habituel (`plain`, une
   // mission dont la scénette n'est pas encore faite).
-  const [asking, setAsking] = useState<{ place: PlaceId; mission: string; plain: boolean } | null>(null);
+  // `revision` : « Reprendre » chez l'habitant, la révision du lieu jouée dans sa scène (GD-20, point 4, lot L3).
+  const [asking, setAsking] = useState<{ place: PlaceId; mission: string; plain: boolean; revision?: RevisionPlan } | null>(null);
   // La mission dont on revient : sa liste se rouvre après le bilan et la pose, le focus sur sa ligne.
-  const [backTo, setBackTo] = useState<{ place: PlaceId; mission: string } | null>(null);
+  const [backTo, setBackTo] = useState<{ place: PlaceId; mission: string | null } | null>(null);
   // La Carte des lieux ouverts (lot 3) : un état de la page, pas une adresse (`/adventure/map` mène à la Carte du
   // monde en grille) ; ses lieux posés à chaque image par la scène, comme les cadenas.
   const [mapOpen, setMapOpen] = useState(false);
@@ -473,6 +476,21 @@ export default function OpenWorldPage() {
     },
     [lieu],
   );
+  // « Reprendre » chez l'habitant (GD-20, point 4, lot L3, B2) : les questions dues des missions de ce lieu, jouées dans
+  // sa scène ; s'il n'y en a aucune qui s'y revoie (les maths générées, l'Ascension), l'écran habituel, comme avant (B1).
+  const navigate = useNavigate();
+  const reprendreAt = useCallback(async () => {
+    if (!lieu) return;
+    const place = lieu.place;
+    const plan = await revisionPlanOf(state.spaced, state.world.links, place, settings.lv2);
+    if (plan) {
+      setLieu(null);
+      setAsking({ place, mission: plan.segments[0].type, plain: false, revision: plan });
+      return;
+    }
+    const dues = revisionsDeLIle(state.spaced, state.world.links, placeById(place).island as BiomeId, settings.lv2);
+    if (dues.length) navigate(cheminDeRevision(dues[0]));
+  }, [lieu, state.spaced, state.world.links, settings.lv2, navigate]);
   const goPort = useCallback((spot: Exclude<PortSpot, 'quai'>) => {
     setPanel(null);
     world.current?.goToPort(spot);
@@ -743,7 +761,8 @@ export default function OpenWorldPage() {
   );
 
   const closeQuestion = useCallback(() => {
-    if (asking) setBackTo({ place: asking.place, mission: asking.mission });
+    // Après une révision, la liste du lieu se rouvre sans ligne choisie : on n'y a joué aucune mission entière.
+    if (asking) setBackTo({ place: asking.place, mission: asking.revision ? null : asking.mission });
     setAsking(null);
   }, [asking]);
   // Le retour d'une mission : après le bilan et la pose de la partie gagnée, la liste du lieu se rouvre, le focus sur la
@@ -876,7 +895,7 @@ export default function OpenWorldPage() {
                 focus={lieu.focus}
                 onPlay={play}
                 onClose={closeLieu}
-                habitant={<HabitantLine place={lieu.place} line={habitantLineOf(state, lieu.place, assemblyAt)} entraide={entraideLineOf(vu, lieu.place, assemblyAt)} suggested={suggestedId} onDeliver={deliverAt} onEntraide={entraideAt} onGo={goHabitant} />}
+                habitant={<HabitantLine place={lieu.place} line={habitantLineOf(state, lieu.place, assemblyAt)} entraide={entraideLineOf(vu, lieu.place, assemblyAt)} suggested={suggestedId} onDeliver={deliverAt} onEntraide={entraideAt} onReprendre={() => void reprendreAt()} onGo={goHabitant} />}
               />
             )}
           </div>
@@ -896,7 +915,11 @@ export default function OpenWorldPage() {
           {saidShown && !playing && said && <SpeakButton text={said.lines.join(' ')} label="Réécouter" compact />}
         </div>
         {asking && world.current && (
-          <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} plain={asking.plain} world={world.current} onClose={closeQuestion} />
+          asking.revision ? (
+            <WorldRevision key={`${asking.place}-revision`} plan={asking.revision} world={world.current} onClose={closeQuestion} />
+          ) : (
+            <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} plain={asking.plain} world={world.current} onClose={closeQuestion} />
+          )
         )}
         {remise && !asking && world.current && <Remise key={`${remise.kind}-${remise.id}`} world={world.current} request={remise} act={() => (remise.kind === 'livrer' ? deliver(remise.id) : tapStory(remise.id))} onClose={closeRemise} />}
         {/* La Carte : le même bouton que dans le reste du jeu, dans la barre du bas, à gauche (« Y aller » tient le milieu). */}

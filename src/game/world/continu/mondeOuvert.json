@@ -9,5 +9,6 @@
   "stepBring": "Apporte {nom} {au lieu}.",
   "giveRemise": "Tu donnes {objet} pour {nom}.",
   "bringRemise": "Tu apportes {nom}.",
-  "revisionEntry": "Tu revois {questions}."
+  "revisionEntry": "Tu revois {questions}.",
+  "revisionDone": "Tu as revu {questions}."
 }

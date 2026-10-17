@@ -16,6 +16,7 @@
 // Lot L2, l'entraide : la même remise pour « Donner » (les ressources descendent une à une dans une caisse,
 // ./caisse.ts ; la fin dit l'étape suivante) et « Apporter » (l'objet, d'un seul bloc, glisse de la main de Kéo à sa
 // place, plus lentement, `REMISE_TIMING.carry` ; la fin « posée », puis l'XP). L'étape compte à l'état final, une fois.
+// Lot L3, la révision jouée dans la scène du lieu : ses deux phrases (`REVISION_PHRASES`).
 import PHRASES from './mondeOuvert.json';
 
 /** Les phrases des habitants du monde ouvert, avec leurs jetons (docs/contenu/monde-ouvert.md). */
@@ -52,6 +53,15 @@ export interface EntraidePhrases {
 }
 
 export const ENTRAIDE_PHRASES: EntraidePhrases = { stepMission: PHRASES.stepMission, stepGive: PHRASES.stepGive, stepBring: PHRASES.stepBring, giveRemise: PHRASES.giveRemise, bringRemise: PHRASES.bringRemise };
+
+/**
+ * Les phrases de la révision jouée dans la scène du lieu (lot L3, B2) : l'entrée, sous le rôle, et la fin, en tête du
+ * seul bilan. Jeton : questions (« 5 questions »). Jamais une date, un échec ni un retard.
+ */
+export const REVISION_PHRASES = { entry: PHRASES.revisionEntry, done: PHRASES.revisionDone } as const;
+
+/** Le nombre de questions et le mot, accordé (« 1 question », « 5 questions »), pour le jeton `{questions}`. */
+export const questionsWord = (n: number): string => `${n} question${n > 1 ? 's' : ''}`;
 
 /** Ce que les jetons valent pour une commande, une étape d'entraide ou une révision (une forme ne lit que les siens). */
 export interface PhraseTokens {

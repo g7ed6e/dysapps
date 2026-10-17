@@ -36,5 +36,6 @@
 ## La révision
 
 - entrée : Tu revois {questions}.
+- fin : Tu as revu {questions}.
 
-> La révision jouée dans la scène du lieu (lot L3) : la phrase d’entrée, en tête de la scène, avant la consigne de la première mission. `{questions}` : leur nombre et le mot (« 5 questions », « 1 question »). Jamais une date, un échec ni un retard : ni « ratées », ni « à revoir », ni « encore ».
+> La révision jouée dans la scène du lieu (lot L3) : la phrase d’entrée, en tête de la scène, sous le rôle, avant la consigne de la première mission ; la phrase de fin, en tête du seul bilan, à la place des étoiles (une révision ne change pas les étoiles). `{questions}` : leur nombre et le mot (« 5 questions », « 1 question »). Jamais une date, un échec ni un retard : ni « ratées », ni « à revoir », ni « encore ».

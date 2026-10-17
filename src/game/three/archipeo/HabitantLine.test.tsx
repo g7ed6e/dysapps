@@ -3,7 +3,7 @@
 // monde ouvert : une ligne par commande ouverte. Le panneau du lieu : le focus sur le bouton de la ligne de l'habitant.
 // Lot L2 : l'étape d'entraide (« Donner », « Apporter ») juste après la commande prête, avant les révisions ; ce qui
 // manque pour donner en dernier ; « Reprendre » jamais plein (la suggestion ne le porte jamais) ; l'entraide en tête de
-// la liste « Commandes ».
+// la liste « Commandes ». Lot L3 : « Reprendre » lance la révision dans la scène du lieu (`onReprendre`).
 import { render, screen, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import userEvent from '@testing-library/user-event';
@@ -172,6 +172,17 @@ it('les révisions dues : « Reprendre » simple dans le monde ouvert, avant ce 
   const reprendre = screen.getByRole('link', { name: /Reprendre/ });
   expect(reprendre).not.toHaveClass('primary');
   expect(screen.getByRole('button', { name: 'Plus tard' })).toBeInTheDocument();
+});
+
+it('dans le monde ouvert, « Reprendre » lance la révision dans la scène du lieu (lot L3) : un bouton, simple, jamais un lien', async () => {
+  revisionDueAuPhare();
+  const onReprendre = vi.fn();
+  wrap(<HabitantLine place="phare" line={null} suggested={null} onDeliver={vi.fn()} onReprendre={onReprendre} onGo={vi.fn()} />);
+  expect(screen.queryByRole('link', { name: /Reprendre/ })).toBeNull();
+  const reprendre = screen.getByRole('button', { name: /Reprendre/ });
+  expect(reprendre).not.toHaveClass('primary');
+  await userEvent.setup().click(reprendre);
+  expect(onReprendre).toHaveBeenCalledTimes(1);
 });
 
 it('ce qui manque pour donner : la demande, « Y aller » vers le lieu de la ressource, jamais plein', async () => {

@@ -14,7 +14,7 @@
 // « Scène », à la même place, y ramène. Une mission dont la scénette n'est pas encore faite (GD-20, point 8, le temps de la
 // transition) se joue ici aussi, sur l'écran habituel (`plain` : l'écran de la grille, sur un panneau uni), avec le même
 // bilan et le même retour au lieu.
-import { Fragment, useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Fragment, type ComponentType, useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
@@ -33,8 +33,8 @@ import { useRememberPlace } from '../../../core/lastPlace';
 import { useLoaded } from '../../../core/useLoaded';
 import { useBlocland } from '../../BloclandContext';
 import { getBiome } from '../../biomes';
-import { levelFor } from '../../engine';
-import { ExerciseRunner, type RunnerStage } from '../../ExerciseRunner';
+import { levelFor, type Completion } from '../../engine';
+import { ExerciseRunner, type RunnerRevision, type RunnerStage, type StageDoneProps } from '../../ExerciseRunner';
 import { loadExercise, pickExercise } from '../../exercises';
 import { Aid } from '../../exercises/Aid';
 import { NoticeQuestion } from '../../exercises/CalculationScreen';
@@ -126,10 +126,29 @@ interface Props {
   world: OpenWorld;
   /** Fin de la question (« Revenir au Phare », Quitter) : la page rend la main au monde. */
   onClose(): void;
+  /** Un morceau d'une révision dans la scène du lieu (GD-20, point 4, lot L3, WorldRevision.tsx), à la place d'une partie. */
+  revision?: WorldRevisionPart;
 }
 
-export function WorldQuestion({ place, mission, plain = false, world, onClose }: Props) {
-  const { state } = useBlocland();
+/**
+ * Un morceau d'une révision jouée dans la scène du lieu (GD-20, point 4, lot L3) : l'exercice et le niveau de la file,
+ * ses clés dues, le repère compté sur tout le passage ; `entry` (« Tu revois 5 questions. ») ouvre la consigne du
+ * premier morceau. À la fin d'un morceau, `onPart` reçoit ce qu'il a donné ; le dernier montre le bilan `Done`.
+ */
+export interface WorldRevisionPart {
+  exercise: string;
+  level: number;
+  keys: readonly string[];
+  offset: number;
+  total: number;
+  last: boolean;
+  entry: string | null;
+  onPart(completion: Completion): void;
+  Done: ComponentType<StageDoneProps>;
+}
+
+export function WorldQuestion({ place, mission, plain = false, world, onClose, revision }: Props) {
+  const { state, completeRevision } = useBlocland();
   const { settings } = useSettings();
   const grandTexte = texteGrand(settings);
   // Les célébrations (« Succès débloqué », niveau) attendent la fin de la question et de son bilan : rien ne surgit
@@ -139,11 +158,17 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   const biome = getBiome(lieu.island);
   // « Ma dernière mission » (accès direct) y ramène, comme à une mission de la grille : la liste de son lieu s'ouvre.
   const missionTitle = biome?.exercises.find((e) => e.id === mission)?.title;
-  useRememberPlace(biome && missionTitle ? { path: `/adventure/${biome.id}/${mission}`, label: `${missionTitle} · ${biome.name}` } : null);
+  // Une révision n'est pas « Ma dernière mission » : seule une partie y ramène.
+  useRememberPlace(biome && missionTitle && !revision ? { path: `/adventure/${biome.id}/${mission}`, label: `${missionTitle} · ${biome.name}` } : null);
   const [run, setRun] = useState(0);
   // L'exercice est choisi comme sur l'écran classique (ExercisePage) : au lancement et à chaque « Rejouer ».
   const picked = useMemo(
-    () => (biome ? pickExercise(biome.id, mission, levelFor(state, mission), state.progress, exercisesToReview(state.spaced)) : undefined),
+    () =>
+      revision
+        ? { id: revision.exercise, level: revision.level }
+        : biome
+          ? pickExercise(biome.id, mission, levelFor(state, mission), state.progress, exercisesToReview(state.spaced))
+          : undefined,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [biome?.id, mission, run],
   );
@@ -573,7 +598,19 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   // En « Vue simple », un item dont la scène remplace la figure se joue tel que la référence l'écrit, consigne comprise
   // (directeur du contenu pédagogique, 16 octobre 2026) ; la scène garde la consigne du lieu.
   const referenceView = simple && item !== null && sceneDrawsFigure(item.scene);
-  const instruction = ready ? (referenceView ? ready.def.instruction : placeInstruction(place, ready.def.id, ready.level, ready.def.instruction, item?.scene)) : '';
+  const placed = ready ? (referenceView ? ready.def.instruction : placeInstruction(place, ready.def.id, ready.level, ready.def.instruction, item?.scene)) : '';
+  // La révision le dit en ouvrant sa consigne, sans date ni échec (« Tu revois 5 questions. »), lue avec elle.
+  const entry = revision?.entry ?? null;
+  const instruction = placed && entry ? `${entry} ${placed}` : placed;
+  // La fin d'un morceau de révision : la file et les blocs d'une révision, jamais la session de l'application.
+  const runnerRevision = useMemo<RunnerRevision | undefined>(
+    () =>
+      revision
+        ? { keys: revision.keys, offset: revision.offset, total: revision.total, more: !revision.last, complete: (def, results) => completeRevision(def, results, revision.last) }
+        : undefined,
+    [revision, completeRevision],
+  );
+  const Done = revision?.Done ?? WorldDone;
   const context = useMemo(() => ({ place, layout, show, instruction, simple, phraseVoice }), [place, layout, show, instruction, simple, phraseVoice]);
 
   const exerciseId = ready?.def.id;
@@ -606,7 +643,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     if (!exerciseId) return null;
     // L'écran habituel (le temps de la transition) : l'écran de la grille, ses items, sa consigne, sur un panneau uni ;
     // le bilan et le retour du lieu. Ni rôle, ni scène, ni « Vue simple » : la même forme dans tous les lieux.
-    if (plain) return { instruction, back: { label: `Revenir ${lieu.at}`, onClick: onClose }, Done: WorldDone, className: `in-world ecran-habituel${finished ? ' finished' : ''}` };
+    if (plain) return { instruction, back: { label: `Revenir ${lieu.at}`, onClick: onClose }, Done, revision: runnerRevision, className: `in-world ecran-habituel${finished ? ' finished' : ''}` };
     const extra: ReactNode = (
       <>
         {intro && (
@@ -731,7 +768,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
       instruction,
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },
       extra,
-      Done: WorldDone,
+      Done,
+      revision: runnerRevision,
       className:
         simple && !finished
           ? `in-world scenette simple${foldedSimple ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}${inColumn ? ' mode-c' : ''}`
@@ -748,6 +786,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     place,
     lieu.at,
     onClose,
+    Done,
+    runnerRevision,
     openSimple,
     intro,
     startItems,
@@ -858,7 +898,11 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
               def={ready.def}
               stage={stage}
               onComplete={(completion) => {
-                setSuccess(completion.stars >= 1);
+                // Un morceau de révision : le suivant prend sa place (WorldRevision) ; le dernier montre le bilan, sans
+                // réussite posée dans la scène (une révision ne remet rien en marche).
+                revision?.onPart(completion);
+                if (revision && !revision.last) return;
+                setSuccess(!revision && completion.stars >= 1);
                 setFinished(true);
               }}
               onReplay={() => {

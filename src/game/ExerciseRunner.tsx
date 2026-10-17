@@ -30,7 +30,7 @@ import { reviewKeys } from './review';
 import { cheminDeRevision, revisionsDeLIle } from './reminders';
 import { SCREEN_TYPES, retryAllowed, type ScreenAnswer, type ScreenProps } from './exercises/registry';
 import { autoReadText, dicteeAutoText } from './exercises/reading';
-import { runItems, runSeed } from './exercises/run';
+import { revisionItems, runItems, runSeed } from './exercises/run';
 import { fillTemplate, type ExerciseDef, type ExerciseItem, type ItemResult } from './exercises/types';
 import { SessionPause } from './SessionPause';
 import { Stars } from './Stars';
@@ -74,6 +74,25 @@ export interface RunnerStage {
   className?: string;
   /** Le bilan du lieu, à la place de celui de l'écran classique. */
   Done?: ComponentType<StageDoneProps>;
+  /** Un morceau d'une révision jouée dans la scène du lieu (GD-20, point 4, lot L3, `RunnerRevision`). */
+  revision?: RunnerRevision;
+}
+
+/**
+ * Un morceau d'une révision jouée dans la scène d'un lieu (GD-20, point 4, lot L3) : seuls les items dus de cette
+ * mission, sous leur clé (`keys`) ; le repère compte les questions de tout le passage (« 2 sur 5 ») ; la fin du morceau
+ * passe par `complete` (la file de répétition, les blocs d'une révision), jamais par la session de l'application : une
+ * révision partielle ne change ni le meilleur score ni le nombre de parties.
+ */
+export interface RunnerRevision {
+  keys: readonly string[];
+  /** Les questions déjà revues dans les morceaux d'avant. */
+  offset: number;
+  /** Les questions du passage. */
+  total: number;
+  /** Reste-t-il un morceau après celui-ci (le bouton dit alors « Suivant ») ? */
+  more: boolean;
+  complete(def: ExerciseDef, results: ItemResult[]): Completion;
 }
 
 /** Ce que le lanceur donne au bilan d'un lieu. */
@@ -100,7 +119,7 @@ function phraseDeLaPose(pose: NonNullable<Completion['pose']>): string {
 /** Découpe les items en écrans selon le type d'exercice. */
 function screensOf(def: ExerciseDef, seed = def.id, review: string[] = [], stage?: RunnerStage): ExerciseItem[][] {
   const batch = SCREEN_TYPES[def.type]?.batch ?? 1;
-  const items = runItems(def, seed, review);
+  const items = stage?.revision ? revisionItems(def, stage.revision.keys, seed) : runItems(def, seed, review);
   if (stage?.screens) return stage.screens(items, seed);
   if (batch === 'all') return [items];
   const out: ExerciseItem[][] = [];
@@ -257,11 +276,12 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
       setIndex(index + 1);
       return;
     }
-    const completion = complete(def, all);
+    const revision = inWorld?.revision;
+    const completion = revision ? revision.complete(def, all) : complete(def, all);
     // Les blocs gagnés (la mission et ses coffres) : au retour sur l'île, ils volent jusqu'au compteur (blockFlight.ts).
     const total = (stock: typeof state.stock) => Object.values(stock).reduce((n, v) => n + (v ?? 0), 0);
     retenirLesBlocs({ biome: biome.id, mission: def.type, bloc: completion.block, nombre: total(completion.state.stock) - total(state.stock), quand: Date.now() });
-    completeSession(`blocland:${def.id}`, Math.round(completion.score * 100));
+    if (!revision) completeSession(`blocland:${def.id}`, Math.round(completion.score * 100));
     setDone(completion);
     onComplete?.(completion);
     setPaused(pauseAfterNext);
@@ -452,11 +472,15 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
         </h2>
       )}
       {inWorld?.extra}
-      <ol className={`quiz-steps${etapesNeutres ? ' quiz-steps-neutres' : ''}`} aria-label={`Écran ${index + 1} sur ${screens.length}`}>
-        {screens.map((s, i) => (
-          <li key={s[0].key} className={i < index ? 'done' : i === index ? 'current' : ''} aria-hidden="true" />
-        ))}
-      </ol>
+      {inWorld?.revision ? (
+        <RevisionSteps revision={inWorld.revision} screens={screens} index={index} />
+      ) : (
+        <ol className={`quiz-steps${etapesNeutres ? ' quiz-steps-neutres' : ''}`} aria-label={`Écran ${index + 1} sur ${screens.length}`}>
+          {screens.map((s, i) => (
+            <li key={s[0].key} className={i < index ? 'done' : i === index ? 'current' : ''} aria-hidden="true" />
+          ))}
+        </ol>
+      )}
 
       {firstTry && !answered && (
         <Feedback shout="Presque !" message={retryMessage(def.type, items)} tone="rate" speakKey={`${index}-essai`} />
@@ -495,7 +519,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
               </p>
             </div>
             <button type="button" className="button primary next-button" onClick={next} autoFocus>
-              {index + 1 < screens.length ? (
+              {index + 1 < screens.length || inWorld?.revision?.more ? (
                 <>
                   Suivant <Icon name="play" />
                 </>
@@ -509,6 +533,24 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
         </div>
       )}
     </section>
+  );
+}
+
+/**
+ * Le repère d'une révision (GD-20, point 4, lot L3) : une marque par question du passage, toutes missions comprises, et
+ * « 2 sur 5 » écrit au bout ; une marque passée dit une question revue, jamais une réussite ni un échec.
+ */
+function RevisionSteps({ revision, screens, index }: { revision: RunnerRevision; screens: ExerciseItem[][]; index: number }) {
+  const before = revision.offset + screens.slice(0, index).reduce((n, s) => n + s.length, 0);
+  const here = screens[index]?.length ?? 1;
+  const count = `${before + 1} sur ${revision.total}`;
+  // La même barre que celle des écrans (le lieu la place), le compte écrit au bout (`data-count`, openWorld.css).
+  return (
+    <ol className="quiz-steps quiz-steps-revision" aria-label={`Question ${count}`} data-count={count}>
+      {Array.from({ length: revision.total }, (_, i) => (
+        <li key={i} className={i < before ? 'done' : i < before + here ? 'current' : ''} aria-hidden="true" />
+      ))}
+    </ol>
   );
 }
 

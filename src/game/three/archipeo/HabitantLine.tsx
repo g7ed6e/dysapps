@@ -35,6 +35,8 @@ interface Props {
   onDeliver(commande: string): void;
   /** « Donner », « Apporter » : la remise de l'étape d'entraide. */
   onEntraide?(story: string): void;
+  /** « Reprendre » : la révision de ce lieu jouée dans sa scène (GD-20, point 4, lot L3) ; sans lui, l'écran habituel. */
+  onReprendre?(): void;
   onGo(go: HabitantGo): void;
 }
 
@@ -49,7 +51,7 @@ type Shown =
  * d'entraide qui se fait d'un geste (« Donner », « Apporter ») ; les révisions dues ; ce qui manque à la commande ; ce
  * qui manque pour donner.
  */
-export function HabitantLine({ place, line, entraide = null, suggested, onDeliver, onEntraide, onGo }: Props) {
+export function HabitantLine({ place, line, entraide = null, suggested, onDeliver, onEntraide, onReprendre, onGo }: Props) {
   const textes = useTextes();
   const biome = getBiome(placeById(place).island);
   const rappel = useResidentReminder(biome);
@@ -113,7 +115,7 @@ export function HabitantLine({ place, line, entraide = null, suggested, onDelive
       <div className="habitant-line-actions">
         <SpeakButton text={rappel.lu} label="Réécouter" compact />
         {/* Les révisions ne sont jamais la suggestion du monde ouvert : « Reprendre » reste simple (relecture du lot L1). */}
-        <ReminderButtons biome={biome} rappel={rappel} primary={false} />
+        <ReminderButtons biome={biome} rappel={rappel} primary={false} onReprendre={onReprendre} />
       </div>
     </div>
   );

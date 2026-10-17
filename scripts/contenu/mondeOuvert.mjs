@@ -22,10 +22,11 @@
 //   ## La révision
 //
 //   - entrée : Tu revois {questions}.
+//   - fin : Tu as revu {questions}.
 //
 // Les étapes de l'entraide (lot L2) : une forme par geste, que le jeu remplit avec l'étape de la quête d'entraide du 6e
 // (src/game/world/stories.json) ; la fin d'« Apporter » reprend « posée », ce qui manque pour « Donner » reprend
-// « demande ». La révision jouée dans la scène du lieu (lot L3) : la phrase d'entrée, sans date ni échec.
+// « demande ». La révision jouée dans la scène du lieu (lot L3) : la phrase d'entrée et celle du bilan, sans date ni échec.
 //
 // Chaque forme a ses jetons, tous exigés, aucun autre permis, jamais une accolade seule. Règles de lecture (référent dys,
 // arbitrages du directeur artistique) : trois phrases au plus, un point à la fin, jamais « ! » ni « … », l'apostrophe
@@ -58,7 +59,13 @@ export const SECTIONS = [
       ['consigne apporter', 'bringRemise', ['nom']],
     ],
   ],
-  ['## La révision', [['entrée', 'revisionEntry', ['questions']]]],
+  [
+    '## La révision',
+    [
+      ['entrée', 'revisionEntry', ['questions']],
+      ['fin', 'revisionDone', ['questions']],
+    ],
+  ],
 ];
 
 /** Toutes les formes, section après section : le mot du Markdown, la clé du JSON et les jetons qu'elle prend. */

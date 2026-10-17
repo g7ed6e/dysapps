@@ -17,13 +17,13 @@ const ENTRAIDE = [
   '- consigne donner : Tu donnes {objet} pour {nom}.',
   '- consigne apporter : Tu apportes {nom}.',
 ];
-const REVISION = ['- entrée : Tu revois {questions}.'];
+const REVISION = ['- entrée : Tu revois {questions}.', '- fin : Tu as revu {questions}.'];
 const md = (...l) => ['# Le monde ouvert', '', '## Les habitants', '', ...l, '', '## L’entraide', '', ...ENTRAIDE, '', '## La révision', '', ...REVISION, ''].join('\n');
 const lire = (...l) => () => lireMondeOuvert(md(...l), 'monde-ouvert.md');
 const remplacer = (avant, apres) => BONNES.map((l) => (l.startsWith(`- ${avant} :`) ? apres : l));
 
 describe('docs/contenu/monde-ouvert.md', () => {
-  it('lit les onze formes de ses trois sections, dans l’ordre du jeu', () => {
+  it('lit les douze formes de ses trois sections, dans l’ordre du jeu', () => {
     expect(lire(...BONNES)()).toEqual({
       ask: 'Il me faut {objet}. C’est pour {nom}. Joue une mission {au lieu}.',
       askAssembled: 'Il me faut {objet}. C’est pour {nom}. Assemble les {blocs} {au lieu}.',
@@ -36,6 +36,7 @@ describe('docs/contenu/monde-ouvert.md', () => {
       giveRemise: 'Tu donnes {objet} pour {nom}.',
       bringRemise: 'Tu apportes {nom}.',
       revisionEntry: 'Tu revois {questions}.',
+      revisionDone: 'Tu as revu {questions}.',
     });
   });
 

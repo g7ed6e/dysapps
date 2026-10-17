@@ -42,3 +42,13 @@ export function runItems(def: ExerciseDef, seed: string, review: string[] = []):
   }
   return shuffleRunChoices(def, items, seed);
 }
+
+/**
+ * Les items d'une révision jouée dans la scène d'un lieu (GD-20, point 4, lot L3) : les seuls items dus, sous leur clé,
+ * dans l'ordre de la file ; leurs réponses changent de place comme dans une partie. Une clé qui n'est plus dans
+ * l'exercice est laissée de côté.
+ */
+export function revisionItems(def: ExerciseDef, keys: readonly string[], seed: string): ExerciseItem[] {
+  const items = keys.flatMap((k) => def.items.find((it) => it.key === k) ?? []);
+  return shuffleRunChoices(def, items, seed);
+}

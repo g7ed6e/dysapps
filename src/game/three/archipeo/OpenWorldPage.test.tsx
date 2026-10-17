@@ -4,7 +4,7 @@
 // 3D n'est pas là sous jsdom : une scène simulée.
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, vi } from 'vitest';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
@@ -245,4 +245,46 @@ test('l’étape « mission » de l’entraide porte la prochaine mission dans s
   expect(await screen.findByText('Joue une mission aux Quais.')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /^Y aller : Les Quais, / })).toHaveClass('primary');
   expect(scene.world!.setMark).toHaveBeenLastCalledWith('quais');
+});
+
+describe('« Reprendre » chez l’habitant (GD-20, point 4, lot L3)', () => {
+  const due = (ids: string[]) => ids.map((itemId) => ({ itemId, due: '2020-01-01', stage: 0, streak: 0 }));
+  function LocationProbe() {
+    return <output data-testid="adresse">{`${useLocation().pathname}${useLocation().search}`}</output>;
+  }
+  function renderWithProbe() {
+    render(
+      <SettingsProvider>
+        <ProgressProvider>
+          <BloclandProvider>
+            <MemoryRouter initialEntries={['/adventure']}>
+              <OpenWorldPage />
+              <LocationProbe />
+            </MemoryRouter>
+          </BloclandProvider>
+        </ProgressProvider>
+      </SettingsProvider>,
+    );
+  }
+  async function reprendreAuxQuais() {
+    renderWithProbe();
+    await screen.findByRole('button', { name: /Carte/ });
+    act(() => scene.options!.onArrive('quais'));
+    const sheet = await screen.findByRole('dialog', { name: 'Les Quais' });
+    await userEvent.setup().click(within(sheet).getByRole('button', { name: /Reprendre/ }));
+  }
+
+  test('les questions dues qui se revoient ici : la révision se joue dans la scène des Quais, sans quitter le monde ; un calcul tiré au hasard n’y entre pas', async () => {
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, spaced: due(['maths-6e-calculation-times-tables-1:5x7', 'maths-6e-calculation-measures-1:maths-6e-calculation-measures-1-2']) }));
+    await reprendreAuxQuais();
+    expect(await screen.findByRole('list', { name: 'Question 1 sur 1' })).toBeInTheDocument();
+    expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
+  });
+
+  test('rien qui se revoie ici (les maths générées) : « Reprendre » ouvre l’écran habituel, comme avant (B1)', async () => {
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, spaced: due(['maths-6e-calculation-times-tables-1:5x7']) }));
+    await reprendreAuxQuais();
+    await vi.waitFor(() => expect(screen.getByTestId('adresse')).toHaveTextContent(/revision=1/));
+    expect(document.querySelector('.quiz-steps-revision')).toBeNull();
+  });
 });

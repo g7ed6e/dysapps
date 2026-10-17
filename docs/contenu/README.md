@@ -223,9 +223,10 @@ Les phrases sont celles de la grille, les mêmes dans Blocland et dans Archipéo
 ## La révision
 
 - entrée : Tu revois {questions}.
+- fin : Tu as revu {questions}.
 ```
 
-Trois sections, dans cet ordre ; une forme ne s’écrit que dans la sienne. « L’entraide » (lot L2) donne la phrase de chaque étape de la quête d’entraide du 6e (`quetes.md`) et la consigne de la remise de « Donner » et d’« Apporter » ; la fin d’« Apporter » reprend « posée », ce qui manque pour « Donner » reprend « demande ». « La révision » (lot L3) donne la phrase d’entrée de la révision jouée dans la scène du lieu.
+Trois sections, dans cet ordre ; une forme ne s’écrit que dans la sienne. « L’entraide » (lot L2) donne la phrase de chaque étape de la quête d’entraide du 6e (`quetes.md`) et la consigne de la remise de « Donner » et d’« Apporter » ; la fin d’« Apporter » reprend « posée », ce qui manque pour « Donner » reprend « demande ». « La révision » (lot L3) donne les deux phrases de la révision jouée dans la scène du lieu : l’entrée, écrite et lue devant la consigne de la première mission revue, et la fin, celle du bilan ; ni l’une ni l’autre ne dit une date ou un échec.
 
 - **les jetons**, que le jeu remplace : `{objet}`, le nombre et le nom de la ressource, avec les mots de la réserve (« 3 blocs de sable », « 2 madriers »), jamais raccourci ; `{blocs}`, le même nom sans nombre (« madriers ») ; `{nom}` et `{Nom}`, la petite construction, ou l’objet de l’entraide, avec son article, en minuscule ou avec sa majuscule ; `{questions}`, le nombre de questions d’une révision et le mot (« 5 questions ») ; `{au lieu}`, le lieu dans sa forme « à » (« au Phare »), et pour le lieu où l’on assemble la forme « à » de `assemblage.md`, en entier (« à l’Entrepôt des matériaux »). Chaque forme prend tous ses jetons, une fois, et aucun autre ; une accolade seule est refusée.
 - **la lecture** : une idée par phrase, trois phrases au plus, dix mots au plus par phrase **une fois les jetons remplis** (un nombre ou un mot élidé compte pour un mot), un point à la fin, jamais « ! » ni « … », l’apostrophe typographique, ni « merci », ni « vite », ni « quête », ni le Rafiot.

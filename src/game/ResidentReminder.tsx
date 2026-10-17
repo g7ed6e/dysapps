@@ -89,14 +89,22 @@ export function ReminderText({ rappel }: { rappel: Rappel }) {
 /**
  * « Reprendre » et « Plus tard ». « Reprendre » est plein, sauf quand l'appelant dit qu'il ne porte pas la suggestion
  * (`primary={false}` : la ligne de l'habitant du monde ouvert, où la suggestion ne porte jamais les révisions).
+ * `onReprendre` : « Reprendre » lance la révision là où l'on est (la scène du lieu) au lieu d'ouvrir l'écran habituel.
  */
-export function ReminderButtons({ biome, rappel, onRemis, primary = true }: Props & { primary?: boolean }) {
+export function ReminderButtons({ biome, rappel, onRemis, onReprendre, primary = true }: Props & { primary?: boolean; onReprendre?(): void }) {
   const { remettre } = usePlusTard();
   return (
     <>
-      <Link to={rappel.chemin} className={`button${primary ? ' primary' : ''}`}>
-        <Icon name="replay" /> Reprendre
-      </Link>
+      {onReprendre ? (
+        // La révision jouée dans la scène du lieu (le monde ouvert, GD-20, point 4, lot L3) : l'appelant la lance.
+        <button type="button" className={`button${primary ? ' primary' : ''}`} onClick={onReprendre}>
+          <Icon name="replay" /> Reprendre
+        </button>
+      ) : (
+        <Link to={rappel.chemin} className={`button${primary ? ' primary' : ''}`}>
+          <Icon name="replay" /> Reprendre
+        </Link>
+      )}
       <button
         type="button"
         className="button"
