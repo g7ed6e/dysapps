@@ -8,7 +8,7 @@ describe('l’assemblage des blocs en Markdown', () => {
   it('lit le lieu et les recettes, avec les noms de chaque univers', () => {
     const a = lireAssemblage(md, 'assemblage.md');
     expect(a.lieu.blocland.titre).toBe('La Fabrique');
-    expect(a.lieu.archipeo.titre).toBe('La Halle aux matériaux');
+    expect(a.lieu.archipeo.titre).toBe('L’Entrepôt des matériaux');
     expect(a.recettes[1]).toEqual({
       bloc: 'compound-5e',
       archipelago: '5e',

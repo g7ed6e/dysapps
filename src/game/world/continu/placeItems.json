@@ -1,0 +1,186 @@
+{
+  "archipeo": {
+    "french-6e-grammar-spelling-plurals-1": [
+      {
+        "key": "french-6e-grammar-spelling-plurals-1-0",
+        "scene": {
+          "catch": "sardines",
+          "count": 3
+        },
+        "prompt": "Les sardines … brillent dans le filet.",
+        "choices": [
+          "gris",
+          "grise",
+          "grises"
+        ],
+        "answer": "grises",
+        "point": "adjectif au féminin pluriel",
+        "traps": [
+          "accord oublié",
+          "pluriel oublié"
+        ],
+        "hint": "Regarde le nom : « sardines », c’est féminin et pluriel.",
+        "explanation": "« Les sardines » est au féminin pluriel : l’adjectif prend -e puis -s, « grises ».",
+        "spoken": "Les sardines (mot manquant) brillent dans le filet.",
+        "rule": "Le nom commande : déterminant et adjectif prennent son genre et son nombre."
+      },
+      {
+        "key": "french-6e-grammar-spelling-plurals-1-1",
+        "scene": {
+          "catch": "filets",
+          "count": 3
+        },
+        "prompt": "Le pêcheur répare … filets.",
+        "choices": [
+          "son",
+          "sa",
+          "ses"
+        ],
+        "answer": "ses",
+        "point": "déterminant au pluriel",
+        "traps": [
+          "accord avec un autre nom"
+        ],
+        "hint": "Combien de filets ? Le déterminant doit le dire.",
+        "explanation": "« Filets » est au pluriel (un s) : le déterminant aussi, « ses filets ».",
+        "spoken": "Le pêcheur répare (mot manquant) filets.",
+        "rule": "Le nom commande : déterminant et adjectif prennent son genre et son nombre."
+      },
+      {
+        "key": "french-6e-grammar-spelling-plurals-1-2",
+        "scene": {
+          "catch": "mouette",
+          "count": 1
+        },
+        "prompt": "Une … mouette se pose sur le filet.",
+        "choices": [
+          "petit",
+          "petite",
+          "petits"
+        ],
+        "answer": "petite",
+        "point": "adjectif au féminin singulier",
+        "traps": [
+          "féminin oublié",
+          "pluriel en trop"
+        ],
+        "hint": "« Une mouette » : féminin ou masculin ? Une seule ou plusieurs ?",
+        "explanation": "« Une mouette » est au féminin singulier : l’adjectif prend un -e, « petite ».",
+        "spoken": "Une (mot manquant) mouette se pose sur le filet.",
+        "rule": "Le nom commande : déterminant et adjectif prennent son genre et son nombre."
+      },
+      {
+        "key": "french-6e-grammar-spelling-plurals-1-3",
+        "scene": {
+          "catch": "bocaux",
+          "count": 2
+        },
+        "prompt": "Le pêcheur remplit deux … de crevettes.",
+        "choices": [
+          "bocal",
+          "bocaux",
+          "bocals"
+        ],
+        "answer": "bocaux",
+        "point": "pluriel d’un nom en -al",
+        "traps": [
+          "pluriel régulier en -s"
+        ],
+        "hint": "Deux, c’est plusieurs. Pense à : un journal, des journaux.",
+        "explanation": "Au pluriel, les noms en -al deviennent -aux : un bocal, deux bocaux.",
+        "spoken": "Le pêcheur remplit deux (mot manquant) de crevettes.",
+        "rule": "Le nom commande : déterminant et adjectif prennent son genre et son nombre."
+      },
+      {
+        "key": "french-6e-grammar-spelling-plurals-1-4",
+        "scene": {
+          "catch": "crabes",
+          "count": 4
+        },
+        "prompt": "Les crabes … grimpent sur le filet.",
+        "choices": [
+          "vert",
+          "verts",
+          "vertes"
+        ],
+        "answer": "verts",
+        "point": "adjectif au masculin pluriel",
+        "traps": [
+          "-e ajouté par habitude"
+        ],
+        "hint": "« Crabes » : masculin ou féminin ? Un seul ou plusieurs ?",
+        "explanation": "« Les crabes » est au masculin pluriel : l’adjectif prend seulement un -s, « verts ».",
+        "spoken": "Les crabes (mot manquant) grimpent sur le filet.",
+        "rule": "Le nom commande : déterminant et adjectif prennent son genre et son nombre."
+      },
+      {
+        "key": "french-6e-grammar-spelling-plurals-1-5",
+        "scene": {
+          "catch": "pêche",
+          "count": 1
+        },
+        "prompt": "Le pêcheur a fait une … pêche.",
+        "choices": [
+          "bon",
+          "bonne",
+          "bonnes"
+        ],
+        "answer": "bonne",
+        "point": "adjectif au féminin singulier",
+        "traps": [
+          "féminin oublié",
+          "pluriel en trop"
+        ],
+        "hint": "« Une pêche » : féminin, et une seule.",
+        "explanation": "« Une pêche » est au féminin singulier : bon devient « bonne », avec deux n.",
+        "spoken": "Le pêcheur a fait une (mot manquant) pêche.",
+        "rule": "Le nom commande : déterminant et adjectif prennent son genre et son nombre."
+      },
+      {
+        "key": "french-6e-grammar-spelling-plurals-1-6",
+        "scene": {
+          "catch": "seaux",
+          "count": 3
+        },
+        "prompt": "Sur le ponton, les … sont pleins de crevettes.",
+        "choices": [
+          "seau",
+          "seaux",
+          "seaus"
+        ],
+        "answer": "seaux",
+        "point": "pluriel d’un nom en -eau",
+        "traps": [
+          "-s au lieu de -x"
+        ],
+        "hint": "« Les », c’est plusieurs. Pense à : un bateau, des bateaux.",
+        "explanation": "Les noms en -eau prennent un -x au pluriel : un seau, les seaux.",
+        "spoken": "Sur le ponton, les (mot manquant) sont pleins de crevettes.",
+        "rule": "Le nom commande : déterminant et adjectif prennent son genre et son nombre."
+      },
+      {
+        "key": "french-6e-grammar-spelling-plurals-1-7",
+        "scene": {
+          "catch": "crabe",
+          "count": 1
+        },
+        "prompt": "Regarde : … crabe pince le filet.",
+        "choices": [
+          "ce",
+          "cette",
+          "ces"
+        ],
+        "answer": "ce",
+        "point": "déterminant au masculin singulier",
+        "traps": [
+          "genre",
+          "nombre"
+        ],
+        "hint": "« Crabe » : masculin ou féminin ? Un seul ou plusieurs ?",
+        "explanation": "« Crabe » est au masculin singulier : le déterminant est « ce ». « Cette » va avec un nom féminin, « ces » avec un pluriel.",
+        "spoken": "Regarde : (mot manquant) crabe pince le filet.",
+        "rule": "Le nom commande : déterminant et adjectif prennent son genre et son nombre."
+      }
+    ]
+  }
+}

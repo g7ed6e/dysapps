@@ -171,13 +171,14 @@ export interface PasDeKeo {
 /**
  * Fait avancer le pas de Kéo de `dt` secondes (au temps `t`, pour le souffle) et rend sa pose : les angles de ses os et
  * la hauteur de son corps (de 0 à 1, à multiplier par `allure.monte`). L'élan monte et descend sur `depart` secondes, en
- * douceur ; à l'arrêt, le cycle repart de zéro et seul le souffle reste.
+ * douceur ; à l'arrêt, le cycle repart de zéro et seul le souffle reste. `cadence` : celle du monde continu, qui suit sa
+ * vitesse de marche (world/continu/walk.ts) ; sans elle, la cadence calme du monde en grille.
  */
-export function poseDeKeo(pas: PasDeKeo, t: number, dt: number, enMarche: boolean): ReturnType<typeof poseDeMarche> {
+export function poseDeKeo(pas: PasDeKeo, t: number, dt: number, enMarche: boolean, cadence: number = MARCHE_DE_KEO.allure.cadence): ReturnType<typeof poseDeMarche> {
   const { allure, depart, souffle } = MARCHE_DE_KEO;
   pas.rampe = Math.min(1, Math.max(0, pas.rampe + (enMarche ? dt : -dt) / depart));
   const elan = adoucir(pas.rampe);
-  pas.phi = elan > 0 ? (pas.phi + dt * allure.cadence) % (2 * Math.PI) : 0;
+  pas.phi = elan > 0 ? (pas.phi + dt * cadence) % (2 * Math.PI) : 0;
   const pose = poseDeMarche(allure, pas.phi, elan);
   // Le buste respire et penche un peu en avant quand il marche ; la tête compense, elle reste droite.
   const buste = cycle(souffle, t) - allure.penche * elan;
@@ -333,6 +334,58 @@ function adoucir(x: number): number {
   return c * c * (3 - 2 * c);
 }
 
+/** Le corps du bonhomme d'Archipéo : son maillage à squelette, son matériau, ses gestes. */
+export interface CorpsDuBonhomme {
+  mesh: THREE.SkinnedMesh;
+  materiau: MateriauALueur;
+  /**
+   * Kéo marche et respire ; le bonhomme dessiné en code balance ses membres ; avec `reduit`, la pose de repos.
+   * `cadence` : celle des jambes de Kéo, si elle suit une vitesse de marche (le monde continu).
+   */
+  bouger(t: number, dt: number, enMarche: boolean, reduit: boolean, cadence?: number): void;
+  dispose(): void;
+}
+
+/**
+ * Le corps du bonhomme, sous ses pieds, le visage vers −Z : Kéo dans la tenue de l'archipel s'il est chargé
+ * (../importedCharacters.ts, `loadKeo`), sinon le bonhomme dessiné en code. Le monde en grille (`habiller`) et le
+ * monde continu du prototype (./archipeo/) le posent chacun dans leur groupe.
+ */
+export function corpsDuBonhomme(archipel: Monde['archipel']): CorpsDuBonhomme {
+  const bonhomme = fusionDuBonhomme(archipel);
+  const materiau = materiauALueur();
+  const corps = squelette(geometrieDe(bonhomme), bonhomme.os, bonhomme.squelette, materiau.materiau, bonhomme.poids);
+  // Kéo (ses os de squelette.py) marche et respire ; le bonhomme dessiné en code balance ses membres.
+  const osDeKeo = new Map(bonhomme.squelette.map((o, i) => [o.nom, corps.bones[i]] as const));
+  const hanchesDeKeo = osDeKeo.has('thigh.L') ? osDeKeo.get('hips') : undefined;
+  const hauteurDesHanches = hanchesDeKeo?.position.y ?? 0;
+  const pasDeKeo: PasDeKeo = { phi: 0, rampe: 0 };
+  const membresDuBonhomme = bonhomme.squelette.map((o, i) => ({ os: corps.bones[i] as THREE.Object3D, sens: swingOf(o) })).filter((m) => m.sens);
+  return {
+    mesh: corps.mesh,
+    materiau,
+    bouger: (t, dt, enMarche, reduit, cadence) => {
+      if (!hanchesDeKeo) return balancer(membresDuBonhomme, t, enMarche);
+      if (reduit) {
+        // « Réduire les animations » : une pose fixe, celle du repos (l'appareil a pu le demander en cours de partie).
+        pasDeKeo.phi = pasDeKeo.rampe = 0;
+        for (const b of osDeKeo.values()) b.rotation.set(0, 0, 0);
+        hanchesDeKeo.position.y = hauteurDesHanches;
+        return;
+      }
+      const { angles, haut } = poseDeKeo(pasDeKeo, t, dt, enMarche, cadence);
+      for (const [nom, axe, angle] of angles) tourner(osDeKeo, nom, axe, angle);
+      hanchesDeKeo.position.y = hauteurDesHanches + MARCHE_DE_KEO.allure.monte * haut;
+    },
+    dispose: () => {
+      corps.mesh.removeFromParent();
+      corps.mesh.geometry.dispose();
+      corps.mesh.skeleton.dispose();
+      materiau.materiau.dispose();
+    },
+  };
+}
+
 /**
  * Les personnages d'Archipéo dans les groupes de la scène (./characters.ts, qui fait marcher le bonhomme) : le
  * bonhomme dans `avatar`, les boîtes de toucher des créatures et des Gardiens dans `creatures`, leurs maillages dans la
@@ -348,18 +401,10 @@ export function habiller(
 ): Habits {
   const { scene } = monde;
 
-  // Le bonhomme : posé par le groupe extérieur, sous ses pieds ; le modèle regarde vers −Z. Kéo dans la tenue de
-  // l'archipel s'il est chargé (../importedCharacters.ts, `loadKeo`), sinon le bonhomme dessiné en code.
-  const bonhomme = fusionDuBonhomme(monde.archipel);
-  const matBonhomme = materiauALueur();
-  const corpsDuBonhomme = squelette(geometrieDe(bonhomme), bonhomme.os, bonhomme.squelette, matBonhomme.materiau, bonhomme.poids);
-  avatar.add(corpsDuBonhomme.mesh);
-  // Kéo (ses os de squelette.py) marche et respire ; le bonhomme dessiné en code balance ses membres.
-  const osDeKeo = new Map(bonhomme.squelette.map((o, i) => [o.nom, corpsDuBonhomme.bones[i]] as const));
-  const hanchesDeKeo = osDeKeo.has('thigh.L') ? osDeKeo.get('hips') : undefined;
-  const hauteurDesHanches = hanchesDeKeo?.position.y ?? 0;
-  const pasDeKeo: PasDeKeo = { phi: 0, rampe: 0 };
-  const membresDuBonhomme = bonhomme.squelette.map((o, i) => ({ os: corpsDuBonhomme.bones[i] as THREE.Object3D, sens: swingOf(o) })).filter((m) => m.sens);
+  // Le bonhomme : posé par le groupe extérieur, sous ses pieds ; le modèle regarde vers −Z (`corpsDuBonhomme`).
+  const leBonhomme = corpsDuBonhomme(monde.archipel);
+  const matBonhomme = leBonhomme.materiau;
+  avatar.add(leBonhomme.mesh);
 
   // Les créatures et les Gardiens : leurs maillages dans la scène, leurs boîtes de toucher (invisibles) dans `creatures`.
   const boite = new THREE.BoxGeometry(1, 1, 1);
@@ -472,19 +517,7 @@ export function habiller(
   };
 
   return {
-    bougerLeBonhomme: (t, dt, enMarche, reduit) => {
-      if (!hanchesDeKeo) return balancer(membresDuBonhomme, t, enMarche);
-      if (reduit) {
-        // « Réduire les animations » : une pose fixe, celle du repos (l'appareil a pu le demander en cours de partie).
-        pasDeKeo.phi = pasDeKeo.rampe = 0;
-        for (const b of osDeKeo.values()) b.rotation.set(0, 0, 0);
-        hanchesDeKeo.position.y = hauteurDesHanches;
-        return;
-      }
-      const { angles, haut } = poseDeKeo(pasDeKeo, t, dt, enMarche);
-      for (const [nom, axe, angle] of angles) tourner(osDeKeo, nom, axe, angle);
-      hanchesDeKeo.position.y = hauteurDesHanches + MARCHE_DE_KEO.allure.monte * haut;
-    },
+    bougerLeBonhomme: (t, dt, enMarche, reduit) => leBonhomme.bouger(t, dt, enMarche, reduit),
     poserLesCreatures: (placements, pres = null) => {
       vider();
       const lesCreatures = placements.filter((c) => (c.kind ?? 'creature') === 'creature');
@@ -588,14 +621,12 @@ export function habiller(
     },
     dispose: () => {
       vider();
-      avatar.remove(corpsDuBonhomme.mesh);
-      corpsDuBonhomme.mesh.geometry.dispose();
-      corpsDuBonhomme.mesh.skeleton.dispose();
+      leBonhomme.dispose();
       boite.dispose();
       invisible.dispose();
       disque.dispose();
       matOmbres.dispose();
-      for (const m of [matBonhomme, matCreatures, matGardiens]) m.materiau.dispose();
+      for (const m of [matCreatures, matGardiens]) m.materiau.dispose();
     },
   };
 }

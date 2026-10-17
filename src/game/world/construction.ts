@@ -34,8 +34,8 @@
 // mur garde sa géométrie et sa fusion, avec un motif par face (le colombage, le bardage, le soubassement, le chaperon,
 // peints par le shader : l'attribut `motifs`) ; un bloc dont le kit dessine la pièce (un toit en pente, des pilotis)
 // laisse sa case à cette pièce, assemblée (./architecture/assembly.ts) et peinte dans l'opaque, à la fin. Seul le kit
-// des Premiers Rivages est rempli (lot 7b) : ailleurs, rien n'est remplacé. L'école, la salle des trophées et la Halle aux
-// matériaux de ce kit le prennent aussi (`caseDuLieu`) ; les monuments gardent leurs blocs taillés.
+// des Premiers Rivages est rempli (lot 7b) : ailleurs, rien n'est remplacé. L'école, la salle des trophées et
+// l’Entrepôt des matériaux de ce kit le prennent aussi (`caseDuLieu`) ; les monuments gardent leurs blocs taillés.
 //
 // Le toucher : la géométrie reste dans la case de son bloc (le biseau ne fait que rogner). `caseDeLaConstruction`
 // redonne la case touchée et la case devant la face, pour une face, un biseau ou un coin ; `caseDeLaPiece`, la case

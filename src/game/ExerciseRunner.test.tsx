@@ -10,6 +10,10 @@ import { runItems, runSeed } from './exercises/run';
 import { frenchTypography } from '../components/math/RichText';
 import { plansFor } from './world/plans';
 import { todayISO } from './engine';
+import { ExerciseRunner } from './ExerciseRunner';
+import { getBiome } from './biomes';
+import type { ScreenProps } from './exercises/registry';
+import { filledGap } from './three/archipeo/fit';
 
 const ALL = await loadAllExercises();
 const getExercise = (id: string) => ALL.find((e) => e.id === id);
@@ -58,7 +62,8 @@ async function play(user: ReturnType<typeof userEvent.setup>, wrongAt: number[] 
       await user.click(screen.getByRole('button', { name: second }));
     } else await user.click(screen.getByRole('button', { name: item.answer as string }));
     const sheet = screen.getByRole('region', { name: 'Résultat' });
-    if (wrongAt.includes(i)) expect(within(sheet).getByText(new RegExp(`On entend ${item.heard} : ${item.answer}, c’est le nombre de syllabes`))).toBeInTheDocument();
+    // Le découpage « pa-pil-lon » reste entier à l'affichage (un conteneur insécable) : la phrase se lit dans la correction entière.
+    if (wrongAt.includes(i)) expect(sheet.querySelector('.explanation')?.textContent).toMatch(new RegExp(`On entend ${item.heard}\\s:\\s${item.answer}, c’est le nombre de syllabes`));
     else expect(within(sheet).getByText('Bien entendu !')).toBeInTheDocument();
     await user.click(within(sheet).getByRole('button', { name: i < items.length - 1 ? /Suivant/ : /Voir mes blocs/ }));
   }
@@ -109,6 +114,93 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   await user.click(screen.getAllByRole('link', { name: /Forêt des sons/ })[0]);
   expect(screen.getByRole('img', { name: /2 étoiles sur 3, meilleur score 83 %/ })).toBeInTheDocument();
   expect(screen.getByText(/Tu en as 6/)).toBeInTheDocument();
+});
+
+describe('Le lanceur posé dans le monde ouvert (`stage`, lot 4)', () => {
+  it('sans `stage`, l’écran classique ne change pas : consigne écrite, étapes, ni « Vue simple » ni colonne du monde', async () => {
+    const user = userEvent.setup();
+    renderAt('/adventure/french-6e-phonology');
+    await user.click(screen.getByRole('link', { name: /Abattage syllabique/ }));
+    expect(await screen.findByRole('heading', { name: DEF.instruction })).toBeInTheDocument();
+    const quiz = document.querySelector('section.quiz')!;
+    expect(quiz.className).not.toMatch(/in-world|low|intro|finished/);
+    expect(screen.queryByRole('button', { name: /Vue simple/ })).not.toBeInTheDocument();
+    expect(quiz.querySelector('.quiz-steps')).not.toBeNull();
+    await play(user);
+    // La fin garde ses liens (le bâtiment, Rejouer), pas le retour à un lieu du monde.
+    expect(screen.getByRole('link', { name: /Voir le bâtiment/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Rejouer/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Revenir / })).not.toBeInTheDocument();
+  });
+
+  it('avec un `stage`, sa consigne, son ajout et sa classe ; la fin rend la main au lieu', async () => {
+    const user = userEvent.setup();
+    const back = vi.fn();
+    const biome = getBiome('french-6e-phonology')!;
+    render(
+      <SettingsProvider>
+        <ProgressProvider>
+          <BloclandProvider>
+            <MemoryRouter>
+              <ExerciseRunner
+                biome={biome}
+                def={DEF}
+                onReplay={() => {}}
+                stage={{ instruction: 'La consigne du lieu.', back: { label: 'Revenir au Phare', onClick: back }, extra: <p>Ajout du lieu</p>, className: 'in-world' }}
+              />
+            </MemoryRouter>
+          </BloclandProvider>
+        </ProgressProvider>
+      </SettingsProvider>,
+    );
+    expect(screen.getByRole('heading', { name: 'La consigne du lieu.' })).toBeInTheDocument();
+    expect(screen.getByText('Ajout du lieu')).toBeInTheDocument();
+    expect(document.querySelector('section.quiz.in-world')).not.toBeNull();
+    await play(user);
+    await user.click(screen.getByRole('button', { name: /Revenir au Phare/ }));
+    expect(back).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('link', { name: /Voir le bâtiment/ })).not.toBeInTheDocument();
+  });
+});
+
+describe('Le mot juste dans le trou, dans le monde ouvert', () => {
+  /** Un écran de lieu réduit : les choix, et la phrase complétée quand le lanceur donne une réponse juste. */
+  function GapScreen({ items, answered, onAnswer, ruledOut }: ScreenProps) {
+    const item = items[0];
+    const gap = filledGap('Le mot … ici.', String(item.answer), answered?.results);
+    return (
+      <div>
+        <p data-testid="phrase">{gap ? `${gap.before}${String(item.answer)}${gap.after}` : 'Le mot … ici.'}</p>
+        {(item.choices as string[]).map((c) => (
+          <button key={c} type="button" disabled={Boolean(answered) || Boolean(ruledOut?.includes(c))} onClick={() => onAnswer({ results: [{ key: item.key, correct: c === item.answer }], detail: { chosen: c } })}>
+            {c}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  it('après une réussite au deuxième essai, la phrase est complète ; jamais après une erreur', async () => {
+    const user = userEvent.setup();
+    render(
+      <SettingsProvider>
+        <ProgressProvider>
+          <BloclandProvider>
+            <MemoryRouter>
+              <ExerciseRunner biome={getBiome('french-6e-phonology')!} def={DEF} onReplay={() => {}} stage={{ Screen: GapScreen, back: { label: 'Revenir', onClick: () => {} }, className: 'in-world' }} />
+            </MemoryRouter>
+          </BloclandProvider>
+        </ProgressProvider>
+      </SettingsProvider>,
+    );
+    const [first] = runItems(DEF, runSeed(DEF), []);
+    const wrong = (first.choices as string[]).filter((c) => c !== first.answer);
+    await user.click(screen.getByRole('button', { name: wrong[0] }));
+    expect(screen.getByText('Presque !')).toBeInTheDocument();
+    expect(screen.getByTestId('phrase')).toHaveTextContent('Le mot … ici.');
+    await user.click(screen.getByRole('button', { name: String(first.answer) }));
+    expect(screen.getByTestId('phrase')).toHaveTextContent(`Le mot ${String(first.answer)} ici.`);
+  });
 });
 
 describe('« Reprendre » chez la créature (GD-4, étape 1)', () => {

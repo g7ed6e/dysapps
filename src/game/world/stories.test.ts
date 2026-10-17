@@ -45,7 +45,7 @@ describe('le contenu', () => {
     }
   });
   it('la phrase d’une étape « donner » dit les blocs donnés', () => {
-    expect(stepText(getStory(LANTERNE)!.steps[1])).toBe('Donne 2 blocs de bois à Coco.');
+    expect(stepText(getStory(LANTERNE)!.steps[1])).toBe('Donne 2\u00a0blocs de bois à Coco.');
   });
 });
 

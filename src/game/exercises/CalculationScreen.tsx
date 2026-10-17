@@ -4,7 +4,7 @@ import { RichText, frenchTypography } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
 import { Marked } from '../../components/ForeignWords';
-import { langAttr } from '../../core/speech';
+import { langAttr, type Lang } from '../../core/speech';
 import { Aid } from './Aid';
 import type { AidData } from './maths';
 import type { ScreenProps } from './registry';
@@ -39,30 +39,7 @@ export function CalculationScreen({ items, answered, onAnswer, ruledOut, onHelp,
   return (
     <div className="panel question calcul">
       {question ? (
-        <>
-          <div className="question-head">
-            <p className="question-prompt notice-question">
-              <Syllabified text={frenchTypography(question)} />
-            </p>
-            <SpeakButton text={frenchTypography(question)} label="Question" />
-          </div>
-          <div className="notice">
-            {image && (
-              <span className="notice-picto" aria-hidden="true">
-                {image}
-              </span>
-            )}
-            <ul className="notice-text" role="list" lang={langAttr(lang)}>
-              {prompt.split('\n').map((line, i) => (
-                <li key={i} className="notice-line">
-                  {/* Un document en français est le texte à lire : il se découpe en syllabes, comme une consigne. */}
-                  {lang === 'fr' ? <Syllabified text={frenchTypography(line)} /> : <RichText text={line} lang={lang} />}
-                </li>
-              ))}
-            </ul>
-            <SpeakButton text={spoken} label="Écouter" lang={lang} shown={String(prompt)} />
-          </div>
-        </>
+        <NoticeQuestion question={question} prompt={prompt} spoken={spoken} image={image} lang={lang} />
       ) : (
         <div className="question-head">
           <p className="question-prompt calcul-prompt" lang={langAttr(lang)}>
@@ -127,6 +104,39 @@ export function CalculationScreen({ items, answered, onAnswer, ruledOut, onHelp,
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Une question en français, puis le document à lire (panneau, menu, horaire, tableau), encadré, une ligne par « \n », lu
+ * dans sa langue : l'écran « calcul », et le panneau d'une scénette du monde continu (les mêmes mots).
+ */
+export function NoticeQuestion({ question, prompt, spoken, image, lang }: { question: string; prompt: string; spoken: string; image: string; lang: Lang }) {
+  return (
+    <>
+      <div className="question-head">
+        <p className="question-prompt notice-question">
+          <Syllabified text={frenchTypography(question)} />
+        </p>
+        <SpeakButton text={frenchTypography(question)} label="Question" />
+      </div>
+      <div className="notice">
+        {image && (
+          <span className="notice-picto" aria-hidden="true">
+            {image}
+          </span>
+        )}
+        <ul className="notice-text" role="list" lang={langAttr(lang)}>
+          {prompt.split('\n').map((line, i) => (
+            <li key={i} className="notice-line">
+              {/* Un document en français est le texte à lire : il se découpe en syllabes, comme une consigne. */}
+              {lang === 'fr' ? <Syllabified text={frenchTypography(line)} /> : <RichText text={line} lang={lang} />}
+            </li>
+          ))}
+        </ul>
+        <SpeakButton text={spoken} label="Écouter" lang={lang} shown={String(prompt)} />
+      </div>
+    </>
   );
 }
 

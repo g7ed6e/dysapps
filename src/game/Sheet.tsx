@@ -23,13 +23,18 @@ interface Props {
   closeLabel?: string;
   /** La croix prend le focus à l'ouverture. */
   autoFocusClose?: boolean;
+  /**
+   * Un dialogue modal (par défaut) : le reste de la page est hors de portée des lecteurs d'écran ; `false` quand des
+   * boutons de la page restent actifs à côté du panneau (la liste des lieux ouverts : « Retour » et « Lieux »).
+   */
+  modal?: boolean;
   onClose: () => void;
   children: ReactNode;
 }
 
-export function Sheet({ id, className, titleId, icon, title, subtitle, before, titleRef, closeLabel = 'Fermer le panneau', autoFocusClose, onClose, children }: Props) {
+export function Sheet({ id, className, titleId, icon, title, subtitle, before, titleRef, closeLabel = 'Fermer le panneau', autoFocusClose, modal = true, onClose, children }: Props) {
   return (
-    <section id={id} className={`island-sheet ${className}`} role="dialog" aria-labelledby={titleId} aria-modal="true">
+    <section id={id} className={`island-sheet ${className}`} role="dialog" aria-labelledby={titleId} aria-modal={modal}>
       <div className="island-sheet-head">
         {before}
         <div className="island-sheet-titles">

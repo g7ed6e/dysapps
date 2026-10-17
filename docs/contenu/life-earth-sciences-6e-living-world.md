@@ -186,12 +186,12 @@ Pour tous les items :
    - réponse : réfrigérateur
    - indice : Qu’est-ce qui ralentit les micro-organismes ?
    - explication : Le froid du réfrigérateur ralentit les micro-organismes qui abîment la viande. Au placard ou au soleil, ils se multiplient vite.
-4. énoncé : "Expérience sur deux tranches de pain\nTranche 1 : dans un sac fermé, au réfrigérateur.\nTranche 2 : dans un sac fermé, dans la cuisine.\nUne semaine plus tard :\nTranche 1 : pas de moisissure.\nTranche 2 : des taches vertes de moisissure."
+4. énoncé : "Expérience sur deux tranches de pain\nLes deux tranches restent une semaine dans un sac fermé.\nTranche 1, au réfrigérateur : pas de moisissure.\nTranche 2, dans la cuisine : des taches vertes de moisissure."
    - question : Que montre cette expérience ?
-   - lu : Expérience sur deux tranches de pain. Tranche 1, dans un sac fermé, au réfrigérateur. Tranche 2, dans un sac fermé, dans la cuisine. Une semaine plus tard. Tranche 1, pas de moisissure. Tranche 2, des taches vertes de moisissure.
+   - lu : Expérience sur deux tranches de pain. Les deux tranches restent une semaine dans un sac fermé. Tranche 1, au réfrigérateur, pas de moisissure. Tranche 2, dans la cuisine, des taches vertes de moisissure.
    - choix : le sac fait pousser la moisissure · le froid ralentit la moisissure · le pain moisit toujours
    - réponse : le froid ralentit la moisissure
-   - indice : Les deux tranches sont dans un sac. Qu’est-ce qui change entre elles ?
+   - indice : Une seule chose change entre les deux tranches. Laquelle ?
    - explication : Une seule chose change : le froid. Le froid ralentit les moisissures. Ce sont des micro-organismes : très nombreux, ils forment des taches.
 5. énoncé : Le yaourt est fabriqué avec du lait, grâce à des …
    - choix : sucres · bactéries · vitamines
@@ -467,7 +467,7 @@ Pour tous les items :
    - réponse : unicellulaire
    - indice : « Uni » veut dire un seul.
    - explication : Faite d’une seule cellule, la paramécie est unicellulaire. Pluricellulaire veut dire fait de nombreuses cellules, comme un chat ou un chêne.
-6. énoncé : "Il y a combien de temps ?\nFin des grands dinosaures : 66 millions d’années.\nPremiers humains de notre espèce : 300 000 ans.\nPremiers êtres vivants : plus de 3 milliards d’années."
+6. énoncé : "Il y a combien de temps ?\nFin des grands dinosaures : 66 millions d’années.\nPremiers humains de notre espèce : 300 000 ans.\nPremiers êtres vivants : plus de 3 milliards d’années."
    - question : Quel moment est le plus ancien ?
    - lu : Il y a combien de temps ? Fin des grands dinosaures, soixante-six millions d’années. Premiers humains de notre espèce, trois cent mille ans. Premiers êtres vivants, plus de trois milliards d’années.
    - choix : la fin des grands dinosaures · les premiers humains · les premiers êtres vivants
@@ -523,7 +523,7 @@ Pour tous les items :
    - réponse : atténuation
    - indice : Relis la ligne « Atténuer » du rappel.
    - explication : Rejeter moins de gaz à effet de serre, c’est atténuer le réchauffement. S’adapter, c’est changer sa façon de vivre parce que le climat a déjà changé.
-5. énoncé : Les étés sont plus secs : des agriculteurs cultivent des plantes qui ont besoin de moins d’eau. C’est une action d’…
+5. énoncé : Les étés sont plus secs : des agriculteurs sèment des plantes qui demandent peu d’eau. C’est une action d’…
    - choix : atténuation · observation · adaptation
    - réponse : adaptation
    - indice : Le climat a déjà changé : que font les agriculteurs ?

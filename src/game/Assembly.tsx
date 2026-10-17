@@ -1,4 +1,4 @@
-// Le lieu où l'on assemble les blocs (GD-2) : la Fabrique dans Blocland, la Halle aux matériaux dans Archipéo, sur
+// Le lieu où l'on assemble les blocs (GD-2) : la Fabrique dans Blocland, l’Entrepôt des matériaux dans Archipéo, sur
 // l'île de l'école de chaque archipel. Une recette par archipel atteint, toujours affichée (vignettes, nombres, noms,
 // lue à voix haute) ; un toucher sur « Assembler » ouvre une question sur les deux matières de la recette, et la bonne
 // réponse assemble le bloc (AssemblyQuestion.tsx). Pas de grille, rien à deviner, rien ne se perd (référent dys). Un
@@ -62,7 +62,7 @@ function Vignettes({ bloc, n }: { bloc: BlockId; n: number }) {
  * ce qu'il manque juste au-dessus du bouton, le bouton, ce qu'il vient de se passer, puis les monuments qui attendent
  * le bloc, chacun avec son nombre.
  */
-function RecetteCarte({ recette }: { recette: Recette }) {
+function RecetteCarte({ recette, back, stayInWorld = false }: { recette: Recette } & WorldReturn) {
   const { state, disassemble } = useBlocland();
   const navigate = useNavigate();
   const location = useLocation();
@@ -101,7 +101,7 @@ function RecetteCarte({ recette }: { recette: Recette }) {
   const onAssemble = () => {
     // Le bouton reste dans l'ordre du clavier quand il ne peut rien faire (aria-disabled) : le focus ne se perd pas.
     if (!peut) return;
-    navigate(questionPath(recette.bloc));
+    navigate(questionPath(recette.bloc), back ? { state: { from: back } } : undefined);
   };
   // Un bloc assemblé se défait : ses blocs reviennent, rien ne se perd (choix du mainteneur, relecture UX UI).
   const onDefaire = () => {
@@ -167,7 +167,7 @@ function RecetteCarte({ recette }: { recette: Recette }) {
           {dit?.texte ?? ''}
         </span>
         {dit && <SpeakButton text={dit.texte} label="Écouter" compact />}
-        {dit?.retour && (
+        {dit?.retour && !stayInWorld && (
           <Link to={`/adventure/${dit.retour.id}`} className="assemblage-retour">
             <Icon name="castle" /> Retourner à {dit.retour.name}
           </Link>
@@ -177,7 +177,7 @@ function RecetteCarte({ recette }: { recette: Recette }) {
         <ul className="assemblage-pour" aria-label={`Les monuments qui attendent des ${blockName(recette.bloc, 2)}`}>
           {pour.map(({ m, n }) => (
             <li key={m.id}>
-              <Icon name="castle" /> <Link to={`/adventure/${m.id}`}>{m.name}</Link> attend {blockCount(recette.bloc, n)}.
+              <Icon name="castle" /> {stayInWorld ? m.name : <Link to={`/adventure/${m.id}`}>{m.name}</Link>} attend {blockCount(recette.bloc, n)}.
             </li>
           ))}
         </ul>
@@ -186,22 +186,43 @@ function RecetteCarte({ recette }: { recette: Recette }) {
   );
 }
 
+/**
+ * Le retour au lieu dans le monde continu (GD-20, lot 2) : `back`, l'adresse où la question d'assemblage ramène (sinon
+ * la page du lieu) ; `stayInWorld`, sans les liens qui sortent du monde (les monuments, qu'il n'a pas encore).
+ */
+interface WorldReturn {
+  back?: string;
+  stayInWorld?: boolean;
+}
+
 /** Ce qu'on y fait, puis la recette de l'archipel (ou du bloc demandé) ; les autres sous un pli, un bouton principal à la fois. */
-function AssemblageBody() {
+export function AssemblageBody({ back, stayInWorld }: WorldReturn = {}) {
   const { assemblage } = useTextes();
   const { premiere, autres } = useRecettes();
   return (
     <div className="assemblage">
-      <p className="section-intro">
-        <Syllabified text={assemblage.presentation} />
-        <SpeakButton text={assemblage.presentation} label="Réécouter" compact />
-      </p>
-      {premiere && <RecetteCarte key={premiere.bloc} recette={premiere} />}
+      {stayInWorld ? (
+        // Dans le monde continu (GD-20, lot 2), le panneau est bas : l'accueil passe dans un pli avec Écouter, comme
+        // celui de la salle des succès, et « Assembler » se voit sans défiler.
+        <details className="sheet-more">
+          <summary>En savoir plus</summary>
+          <p>
+            <Syllabified text={assemblage.presentation} />
+            <SpeakButton text={assemblage.presentation} label="Écouter" compact />
+          </p>
+        </details>
+      ) : (
+        <p className="section-intro">
+          <Syllabified text={assemblage.presentation} />
+          <SpeakButton text={assemblage.presentation} label="Réécouter" compact />
+        </p>
+      )}
+      {premiere && <RecetteCarte key={premiere.bloc} recette={premiere} back={back} stayInWorld={stayInWorld} />}
       {autres.length > 0 && (
         <details className="assemblage-autres">
           <summary>Les autres archipels</summary>
           {autres.map((r) => (
-            <RecetteCarte key={r.bloc} recette={r} />
+            <RecetteCarte key={r.bloc} recette={r} back={back} stayInWorld={stayInWorld} />
           ))}
         </details>
       )}

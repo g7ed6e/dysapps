@@ -1,0 +1,2683 @@
+/* Le monde ouvert d'Archipéo (prototype du 6e, derrière `?monde=ouvert`) : chargé avec sa page, jamais dans le paquet
+   principal. La marque de la prochaine mission et « Y aller » sont des panneaux sur fond uni, en police de
+   l'application : rien à lire n'est peint dans la 3D. */
+.open-world-canvas {
+  position: absolute;
+  inset: 0;
+}
+/* La marque : le nom du lieu, posée au-dessus du lieu ; hors champ, au bord de l'écran, avec
+   sa flèche tournée vers lui. Elle ne bouge qu'avec la caméra. */
+.open-world-mark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 48px;
+  padding: 0.3rem 0.8rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  color: var(--text);
+  /* Un nom long passe à la ligne plutôt que de déborder (grand texte, OpenDyslexic) ; la taille reste celle de
+     l'application, 18 px au moins. */
+  max-width: min(16rem, 45vw);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  will-change: transform;
+}
+/* Cachée (une pose, la marque hors de l'écran) : l'attribut `hidden` l'emporte sur son `display`. */
+.open-world-mark[hidden] {
+  display: none;
+}
+.open-world-mark svg {
+  width: 1.4em;
+  height: 1.4em;
+  flex: none;
+}
+/* Au bord de l'écran : la flèche vers le lieu, et dessous la distance en points pleins (un : tout près ; trois : loin). */
+.open-world-arrow-box {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+.open-world-mark.hors-champ .open-world-arrow-box {
+  display: inline-flex;
+}
+.open-world-arrow {
+  display: inline-block;
+  line-height: 0;
+}
+.open-world-distance {
+  display: inline-flex;
+  gap: 4px;
+  line-height: 0;
+}
+/* Trois places, toujours dans le même ordre ; un point vide garde un trait net de la couleur du texte (le contraste du
+   texte sur le fond du panneau), sur le fond du panneau. */
+.open-world-distance i {
+  display: block;
+  box-sizing: border-box;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--text);
+  background: var(--surface);
+}
+/* Les points pleins disent la distance ; les autres restent vides, à la même place (rien ne saute). */
+.open-world-mark[data-loin='1'] .open-world-distance i:nth-child(-n + 1),
+.open-world-mark[data-loin='2'] .open-world-distance i:nth-child(-n + 2),
+.open-world-mark[data-loin='3'] .open-world-distance i {
+  background: var(--text);
+}
+.open-world-mark:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+/* « Y aller » : toujours au même endroit, en bas au milieu ; « Passer le trajet » prend sa place pendant la marche. */
+.open-world-go {
+  position: absolute;
+  left: 50%;
+  bottom: calc(0.8rem + env(safe-area-inset-bottom, 0px));
+  z-index: 3;
+  transform: translateX(-50%);
+}
+.open-world-go .button {
+  min-height: 56px;
+  min-width: 12rem;
+  justify-content: center;
+}
+/* La raison d'un « Y aller » grisé, écrite au-dessus de lui (pas seulement dite aux lecteurs d'écran). */
+.open-world-go-reason {
+  max-width: min(90vw, 24rem);
+  margin: 0 auto 0.4rem;
+  padding: 0.3rem 0.8rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  color: var(--text);
+  text-align: center;
+}
+.open-world-go {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* « Y aller » sans mission : délavé, comme un bouton vide du monde (WorldButton), sa raison écrite au-dessus. */
+/* Sur un écran bas (un téléphone couché, au plus grand texte surtout), « Y aller » se tient dans l'espace à droite de
+   « Carte », jamais dessus : « Carte » passe au-dessus, « Y aller » se centre dans ce qui reste et s'y rétrécit
+   (consultant UX UI). `--open-world-carte` : le bord droit de « Carte », posé par la page. */
+@media (max-height: 500px) {
+  .open-world-bar {
+    z-index: 4;
+  }
+  .open-world-go {
+    left: calc(var(--open-world-carte, 5.5rem) + 8px);
+    right: calc(0.6rem + env(safe-area-inset-right, 0px));
+    transform: none;
+  }
+  .open-world-go .button {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+.open-world-go .button:disabled {
+  border-style: dashed;
+  background: var(--secondary-bg);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+/* Une question posée dans un lieu (lot 4) : la consigne, la phrase, la règle, une action et le résultat dans une
+   colonne sur fond uni, à gauche (sa place vient de questionLayout, en variables) ; chaque réponse est une étiquette
+   opaque et l'objet du lieu qui la porte, touchables ensemble. Sur tablette, les objets sont dans le tiers du milieu,
+   leur étiquette au-dessus ; sur un téléphone couché (.low), les étiquettes en rangée en bas, les objets juste
+   au-dessus, la consigne en icône, la règle à droite : rien ne défile. Texte de 18 px au moins, cibles de 48 px au
+   moins. */
+.world-question {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.world-question > * {
+  pointer-events: auto;
+}
+/* La colonne. Le défilement n'y reste qu'en dernier recours (un très grand texte sur un petit téléphone). */
+.world-question .quiz.in-world {
+  position: static;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: var(--question-width);
+  max-height: var(--question-max-height);
+  margin: var(--question-top) 0 0 var(--question-left);
+  /* La marge du bas, que le repère de défilement et la bande de « Valider » recouvrent. */
+  --panneau-bas: 0.6rem;
+  padding: 0.6rem 0.8rem var(--panneau-bas);
+  overflow-y: auto;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: var(--radius, 16px);
+  background: var(--surface);
+  color: var(--text);
+  font-size: max(18px, 1.15rem);
+}
+.world-question .quiz.in-world > * {
+  flex: 0 0 auto;
+  min-height: 0;
+}
+/* La consigne, en haut de la colonne, à la même place d'un item à l'autre ; elle s'efface dès que l'élève a répondu
+   (la correction prend sa place, à toutes les hauteurs d'écran) et revient à l'item suivant. */
+.world-question .in-world > .consigne {
+  margin: 0 0 0.4rem;
+}
+.world-question .in-world.has-sheet > .consigne {
+  display: none;
+}
+.world-question .in-world .consigne-text,
+.world-question .in-world .question-prompt {
+  font-size: max(18px, 1.15rem);
+}
+.world-question .in-world .quiz-steps {
+  margin: 0 0 0.4rem;
+}
+/* « Vue simple » : en haut à droite de l'écran, à gauche de la pause (56 px), toujours à la même place, sur une ligne,
+   au-dessus de tout le reste de la question (rien ne le recouvre). */
+.world-question > .world-question-simple {
+  position: absolute;
+  z-index: 3;
+  top: calc(8px + env(safe-area-inset-top));
+  right: calc(0.6rem + 56px + 12px + env(safe-area-inset-right));
+  height: 56px;
+  min-height: 56px;
+  margin: 0;
+  padding-block: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+/* Le repli franc d'un écran bas quand le texte choisi ne tient pas : « Vue simple » en grand, la voix gardée. */
+.world-question .quiz.in-world > .world-question-offer {
+  min-height: 56px;
+  margin: 0 0 0.4rem;
+}
+.world-question .in-world.offer .question-prompt,
+.world-question .in-world.offer .world-question-reference,
+.world-question .in-world.offer .world-question-aid,
+.world-question .in-world.offer .calcul-hint {
+  display: none;
+}
+/* « Vue simple » proposé, puis les voix (la phrase, la consigne, les cloches) et « Valider » : le panneau descend
+   jusqu'aux étiquettes (les objets passent dessous), l'indice reste dans « Vue simple ». */
+.world-question .quiz.in-world.offer:not(.has-sheet) {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+  gap: 0.5rem;
+  max-height: calc(100% - var(--question-top) - 48px - 2 * var(--question-left));
+}
+.world-question .in-world.offer .world-hint-icon {
+  display: none;
+}
+/* Un mot plus large que son étiquette ne déborde jamais sur la voisine. */
+.world-question .in-world.offer .world-answer-label {
+  overflow: hidden;
+}
+.world-question .in-world.offer .quiz-steps {
+  display: none;
+}
+.world-question .in-world.offer .world-place,
+.world-question .in-world.offer .world-question-prompt {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+/* Une question sur un document (Mesures et figures) : comme la phrase, le document passe dans « Vue simple » ; ses
+   deux voix (la question, le document) restent sur la ligne. */
+.world-question .in-world.offer .notice {
+  display: contents;
+}
+.world-question .in-world.offer .notice-text,
+.world-question .in-world.offer .notice-picto {
+  display: none;
+}
+.world-question .in-world.offer .world-question-actions {
+  margin-top: 0;
+}
+.world-question .quiz.in-world.offer > .world-question-offer {
+  margin: 0;
+}
+/* Le résultat, quand « Vue simple » a été proposé : il descend jusqu'au bas de l'écran, les réponses sont données. */
+.world-question .quiz.in-world.offer.has-sheet {
+  max-height: calc(100% - var(--question-top) - var(--question-left));
+}
+/* « Commencer » : sous la consigne lue en entier, au premier item d'un écran bas. */
+.world-question .quiz.in-world > .world-question-start {
+  min-height: 56px;
+  margin: 0.4rem 0 0;
+}
+.world-question .world-place .question-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.world-question .world-place .question-prompt {
+  margin: 0;
+}
+.world-question-reference {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: max(18px, 1.05rem);
+}
+.world-question-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.world-question-actions:empty {
+  display: none;
+}
+/* L'indice : l'ampoule, le texte et son haut-parleur sur une ligne, le texte au milieu. */
+.world-question .world-place .calcul-hint {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  margin: 0.5rem 0 0;
+  padding: 0.3rem 0.5rem;
+}
+.world-question .world-place .validate-button {
+  min-height: 48px;
+}
+/* Le Phare : le son, la consigne, « Écouter les cloches » et « Valider » sur une ligne quand elle est assez large. */
+.world-question .world-place .sound-target {
+  align-self: center;
+  margin: 0 0.6rem 0 0;
+}
+/* Une action en icône (la consigne, l'indice) : 48 px, son mot dessous en grand texte sur un écran bas. */
+.world-icon {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+.world-icon .speak-button,
+.world-icon .world-hint {
+  min-width: 48px;
+  min-height: 48px;
+}
+.world-icon-label {
+  display: none;
+  font-size: max(18px, 0.9rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+:root[data-texte="grand"] .world-question .in-world.low .world-icon-label {
+  display: block;
+}
+/* La règle de l'item (la carte de l'accord, une aide de calcul) : sous la question, dans la colonne, sans second
+   cadre autour de la carte ; elle s'efface quand le résultat arrive (la correction redit la règle appliquée), pour que
+   le résultat tienne entier. */
+.world-question .aid.world-question-aid {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  border: none;
+  overflow: visible;
+  font-size: max(18px, 1rem);
+}
+.world-question .in-world.has-sheet .aid.world-question-aid {
+  display: none;
+}
+/* Sur tablette, si la carte manque de place, c'est elle seule qui défile dans son cadre, jamais la colonne. */
+.world-question .in-world:not(.low) .world-place,
+.world-question .in-world:not(.low) .world-question-prompt {
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+  min-height: 0;
+}
+.world-question .in-world:not(.low) .world-question-prompt > * {
+  flex: 0 0 auto;
+}
+.world-question .in-world:not(.low) .world-question-prompt > .aid.world-question-aid {
+  flex: 0 1 auto;
+  min-height: 8rem;
+  overflow-y: auto;
+}
+/* Sur un écran bas, à droite de la colonne, au-dessus de la scène (sa place vient de questionLayout). */
+.world-question .aid.world-question-aid.beside {
+  position: absolute;
+  box-sizing: border-box;
+  margin: 0;
+  overflow-y: auto;
+}
+/* « Presque ! » et l'indice redit, au deuxième essai : serrés sous la phrase (ou le mot troué), sans bulle ni saut ; la
+   consigne et la phrase restent où elles étaient au premier essai (relecture de L7, référent dys, consultant UX UI). La
+   rangée des réponses est posée dans la scène (hors de la colonne) ; en « Vue simple », la liste passe sous le retour.
+   Sur un écran bas, l'étiquette à droite de la colonne (plus bas) ; en C, après les réponses (`mode-c`). Seul l'ordre
+   affiché change : le retour n'est pas focalisable, la voix le dit à son arrivée. */
+.world-question .in-world > .feedback {
+  order: 1;
+  margin: 0.3rem 0 0;
+}
+.world-question .in-world.simple:not(.mode-c) .world-answers {
+  order: 2;
+}
+.world-question .in-world > .feedback .feedback-shout {
+  margin: 0;
+  animation: none;
+}
+.world-question .in-world > .feedback .feedback-body {
+  padding: 0.3rem 0.5rem;
+  gap: 0.4rem;
+}
+.world-question .in-world > .feedback .feedback-body::after {
+  display: none;
+}
+/* Les réponses : la cible de toucher couvre l'objet et son étiquette ; seule l'étiquette est peinte, sur fond uni,
+   l'objet se voit à travers. Sa place vient de questionLayout. */
+.world-answers {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.world-question .world-answers .world-answer {
+  position: absolute;
+  box-sizing: border-box;
+  display: block;
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-control, 12px);
+  background: transparent;
+  color: var(--text);
+  transition: none;
+  pointer-events: auto;
+}
+.world-question .world-answers .world-answer:focus-visible {
+  outline: 3px solid var(--primary-bg);
+  outline-offset: 2px;
+}
+.world-answer-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0 0.4rem;
+  border: var(--border-width, 2px) solid var(--ink);
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  color: var(--text);
+  font-size: max(18px, 1.15rem);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.world-answer:hover:not(:disabled) .world-answer-label {
+  border-color: var(--primary-bg);
+}
+.world-answer.picked .world-answer-label {
+  border-color: var(--on-sand);
+  background: var(--sand);
+  color: var(--on-sand);
+}
+.world-answer.right .world-answer-label {
+  border-color: var(--success);
+  background: var(--success-bg);
+  color: var(--success);
+}
+.world-answer.wrong .world-answer-label {
+  border-color: var(--error);
+  background: var(--error-bg);
+  color: var(--error);
+}
+.world-answer.ignored .world-answer-label {
+  opacity: 0.75;
+}
+.world-answers .word-picto {
+  font-size: 1.2rem;
+}
+.world-answers .word-note,
+.world-answers .word-mark {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 0.3rem;
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  font-size: max(18px, 1rem);
+}
+/* Le résultat suit la phrase dans la colonne, sans glisser (rien ne bouge près de la consigne). */
+.world-question .in-world .result-sheet,
+.world-question .in-world[data-bandeau="page"] .result-sheet {
+  position: static;
+  flex: 0 0 auto;
+  display: flex;
+  margin: 0.4rem 0 0;
+  padding: 0.5rem 0.6rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: var(--radius-control, 12px);
+  animation: none;
+}
+.world-question .in-world .result-sheet-inner {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+}
+.world-question .in-world .result-sheet .next-button,
+.world-question .in-world[data-bandeau="page"] .result-sheet .next-button {
+  position: static;
+  width: 100%;
+  min-width: 0;
+  min-height: 56px;
+  /* Le bandeau « page » (grand texte) colle ce bouton au bas de l'écran, coins du bas carrés : ici il reste dans la
+     colonne, avec ses quatre coins arrondis. */
+  padding: 0.4rem 12px;
+  border-radius: var(--radius-control, 12px);
+}
+/* Un téléphone couché : la consigne devient une icône (sauf au premier item, lue en entier avant « Commencer »), les
+   étapes une ligne fine, la phrase s'efface quand le résultat arrive (la correction la redit). */
+.world-question .quiz.in-world.low {
+  padding: 0.3rem 0.6rem;
+}
+.world-question .in-world.low > .consigne {
+  display: none;
+}
+.world-question .in-world.low .quiz-steps {
+  margin: 0 0 0.15rem;
+}
+.world-question .in-world.low .quiz-steps li {
+  height: 4px;
+}
+.world-question .in-world.low .world-question-actions {
+  margin-top: 0.15rem;
+}
+.world-question .in-world.low .world-hint {
+  padding: 0.2rem;
+}
+.world-question .in-world.low .world-hint-word,
+.world-question .in-world.low .world-answers .word-picto {
+  display: none;
+}
+.world-question .in-world.low.has-sheet .world-question-prompt {
+  display: none;
+}
+/* Le résultat d'un écran bas : la colonne s'élargit vers la droite (la règle s'est effacée), pour que l'explication
+   tienne sans défiler ; les étiquettes et leurs objets restent en vue dessous. */
+.world-question .quiz.in-world.low.has-sheet {
+  width: max(var(--question-width), calc(62% - var(--question-left)));
+}
+/* Un résultat trop long : pleine largeur, sous la barre de « Vue simple » et de la pause, jusqu'aux étiquettes (les
+   objets passent dessous ; la bonne étiquette reste en vue). */
+.world-question .quiz.in-world.low.has-sheet.sheet-wide {
+  width: calc(100% - 2 * var(--question-left));
+  margin-top: calc(var(--question-left) * 2 + 56px);
+  max-height: calc(100% - var(--question-left) * 4 - 56px - 48px);
+}
+/* La rangée à droite de la colonne (les Quais) : le résultat reste dans la colonne, à sa largeur et jusqu'en bas,
+   jamais sur une réponse ; la phrase complétée laisse sa place à l'explication (la ligne de calcul la redit). */
+.world-question .quiz.in-world.scenette.low.has-sheet.rangee-a-cote {
+  width: var(--question-width);
+  margin-top: 0;
+  max-height: var(--question-max-height);
+}
+.world-question .in-world.scenette.low.has-sheet.rangee-a-cote .world-question-prompt.filled {
+  display: none;
+}
+/* La phrase complète sur un écran bas : sa voix est dans le résultat, le « Bravo » serré. */
+.world-question .in-world.low.has-sheet .world-question-prompt.filled .speak-button {
+  display: none;
+}
+.world-question .in-world.low .result-sheet .feedback-shout {
+  font-size: max(18px, 1.15rem);
+  padding-block: 0;
+}
+/* « Presque ! » sur un écran bas : une étiquette à droite de la colonne, sous la barre du haut ; l'indice reste
+   derrière l'ampoule. */
+.world-question .in-world.low > .feedback {
+  position: absolute;
+  top: calc(var(--question-top) * 2 + 56px);
+  left: calc(var(--question-left) + var(--question-width) + 12px);
+  margin: 0;
+}
+.world-question .in-world.low > .feedback .feedback-body {
+  display: none;
+}
+.world-question .in-world.low .world-question-actions .world-question-reference {
+  align-self: center;
+  margin: 0 0.3rem 0 0;
+}
+.world-question .in-world.low .result-sheet,
+.world-question .in-world.low[data-bandeau="page"] .result-sheet {
+  margin-top: 0.2rem;
+  padding: 0.3rem 0.5rem;
+}
+.world-question .in-world.low .result-sheet .explanation {
+  margin-bottom: 0.4rem;
+}
+.world-question .in-world.low .result-sheet .next-button,
+.world-question .in-world.low[data-bandeau="page"] .result-sheet .next-button {
+  min-height: 48px;
+}
+.world-question .in-world.low .world-answer-label {
+  padding: 0 0.2rem;
+  gap: 0.2rem;
+}
+/* En C sur un écran bas, revenu de « Vue simple » à « Scène » (GD-20, point 8, L8), le résultat de la colonne reste à sa
+   largeur (il défile avec elle) : élargi, il couvrait Kéo, au bord gauche de la scène. La forme de la colonne : à la fin
+   de la feuille. */
+.world-question .quiz.in-world.low.has-sheet.scene-gardee {
+  width: var(--question-width);
+}
+/* Le premier item d'un écran bas : la consigne en entier, puis « Commencer », sur toute la largeur sous la barre du
+   haut ; la question et ses réponses attendent derrière. */
+.world-question .quiz.in-world.low.intro {
+  width: calc(100% - 2 * var(--question-left));
+  max-height: calc(100% - var(--question-top) * 3 - 56px);
+  margin-top: calc(var(--question-top) * 2 + 56px);
+}
+.world-question .in-world.low.intro > .consigne {
+  display: flex;
+}
+.world-question .in-world.intro .world-question-prompt,
+.world-question .in-world.intro .world-answers,
+.world-question .in-world.intro .quiz-steps {
+  display: none;
+}
+/* La phrase en pleine largeur (un très grand texte) : « Presque ! » reste dans le panneau. */
+.world-question .in-world.full > .feedback {
+  position: static;
+}
+/* Après « Bravo », la phrase complète reste écrite, sur un écran bas aussi ; le mot entré dans le trou est souligné. */
+.world-question .in-world.low.has-sheet .world-question-prompt.filled {
+  display: block;
+}
+.world-question .in-world.has-sheet .world-question-prompt.filled .world-question-actions {
+  display: none;
+}
+.world-filled {
+  color: var(--success);
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.2em;
+}
+/* Les deux haut-parleurs d'un écran bas ne se ressemblent pas : la phrase, un carré à droite de la phrase ; la
+   consigne, un rond sable, sur la ligne des icônes. */
+.world-question .world-consigne .speak-button {
+  border-radius: 50%;
+  background: var(--sand);
+  color: var(--on-sand);
+}
+/* Le bilan d'une mission : les étoiles, une rangée de pastilles, « Détail » ; « Continuer » fixe en bas, toujours en
+   vue (seul le détail ouvert défile). */
+.world-question .quiz.in-world.finished {
+  width: max(var(--question-width), min(30rem, calc(100% - 2 * var(--question-left))));
+  max-height: calc(100% - 2 * var(--question-top));
+  overflow: hidden;
+}
+/* Sur un écran bas, le bilan prend toute la largeur, à gauche de la pause. */
+.world-question .quiz.in-world.low.finished {
+  width: calc(100% - 2 * var(--question-left) - 56px - 12px);
+}
+/* Aux Quais (la rangée à droite de la colonne), le bilan reste dans la colonne, de haut en bas : la barque chargée et sa
+   lanterne restent en vue à droite (directeur artistique). */
+.world-question .quiz.in-world.scenette.low.finished.rangee-a-cote {
+  width: var(--question-width);
+  max-height: calc(100% - var(--question-top) - var(--question-left));
+}
+.world-question .quiz.in-world > .reward-panel {
+  flex: 0 1 auto;
+  border: none;
+  padding: 0;
+}
+.world-question .world-done {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: 0.5rem;
+  margin: 0;
+}
+.world-question .world-done-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.world-done-pills {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.world-done-pills li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 48px;
+  padding: 0 0.6rem;
+  border: var(--border-width, 2px) solid var(--ink);
+  border-radius: var(--radius-pill, 999px);
+  background: var(--surface);
+  font-weight: 700;
+  font-size: max(18px, 1.15rem);
+  white-space: nowrap;
+}
+.world-question .world-done-detail {
+  min-height: 48px;
+}
+.world-question .world-done-more {
+  align-self: stretch;
+}
+.world-question .world-done-more .reward-list {
+  margin: 0;
+}
+.world-question .world-done-continue {
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 56px;
+}
+/* Les repères de l'échelle des Écluses (0, 1, 2) : des panneaux sur fond uni, accrochés à leur cran. */
+.world-question-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: -0.9em 0 0 0.2em;
+  padding: 0 0.4rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+  font-size: max(18px, 1.1rem);
+  pointer-events: none;
+}
+/* Les fractions sous les deux sas de Deux rives : centrées sous leur sas, de même taille (GD-20, point 8, lot L2). */
+.world-question-label.centre {
+  margin: 0.15em 0 0;
+  text-align: center;
+}
+/* Le détail du bilan, ouvert d'un toucher : tout de suite là, sans arrivée l'une après l'autre. */
+.world-question .world-done-more .reward-list > li {
+  animation: none;
+}
+/* Le résultat d'un écran bas : « Bravo ! », sa voix et l'explication sur une ligne quand elle tient, « Suivant » dessous. */
+.world-question .in-world.low .result-sheet-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.5rem;
+}
+.world-question .in-world.low .result-sheet .feedback {
+  margin: 0;
+}
+.world-question .in-world.low .result-sheet .explanation {
+  flex: 1 1 14rem;
+  margin: 0 0 0.3rem;
+}
+/* Un mot de réponse qui ne tient pas entier dans son étiquette : on répond seulement dans « Vue simple », proposé
+   d'emblée ; les voix restent. Jamais de mot coupé, jamais d'étiquettes sur deux rangées. */
+.world-question .in-world.answers-out .world-answers,
+.world-question .in-world.answers-out .validate-button {
+  display: none;
+}
+/* Le cadenas d'un lieu encore sous la brume : une icône sur un rond uni, sans texte (dite aux lecteurs d'écran), posée
+   au-dessus du lieu ; rien à toucher. */
+.open-world-locks {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.open-world-lock {
+  position: absolute;
+  left: -20px;
+  top: -40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  will-change: transform;
+}
+.open-world-lock[hidden] {
+  display: none;
+}
+.open-world-lock svg {
+  width: 22px;
+  height: 22px;
+}
+/* La Carte des lieux ouverts (lot 3) : son bouton en bas à gauche, dans la marge de la zone sûre (« Y aller » tient le
+   milieu) ; un seul mot, toujours écrit sous l'icône, dans le bouton : « Carte », puis « Retour » quand elle est
+   ouverte (consultant UX UI, référent dys). */
+.open-world-bar {
+  position: absolute;
+  left: calc(0.6rem + env(safe-area-inset-left, 0px));
+  bottom: calc(0.8rem + env(safe-area-inset-bottom, 0px));
+  z-index: 3;
+}
+.open-world-map-button {
+  flex-direction: column;
+  gap: 2px;
+  min-width: 64px;
+  min-height: 56px;
+  padding: 4px 10px 6px;
+  line-height: 1.1;
+}
+.open-world-map-button svg {
+  width: 28px;
+  height: 28px;
+}
+/* Sur la Carte : Kéo, le nom de chaque lieu ouvert, le cadenas et le nom atténué de chaque lieu fermé, sur fond uni,
+   posés par MapLabels.tsx (coin haut gauche en `transform`), jamais l'un sur l'autre. */
+.open-world-map-places {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+/* Jusqu'à ce que la vue de départ soit choisie (GD-20, « La Carte au plus grand texte ») : les étiquettes ne se posent
+   pas une première fois pour changer aussitôt de place (consultant UX UI). */
+.open-world-map-places:not([data-pret='oui']) {
+  visibility: hidden;
+}
+.open-world-map-place,
+.open-world-map-closed,
+.open-world-map-keo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+.open-world-map-place[hidden],
+.open-world-map-closed[hidden],
+.open-world-map-keo[hidden] {
+  display: none;
+}
+.open-world-map-place {
+  min-height: 48px;
+  padding: 0.3rem 0.9rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+  overflow-wrap: normal;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.open-world-map-place:focus-visible,
+.open-world-map-closed:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+/* Un lieu fermé : son cadenas au-dessus du lieu, son nom dessous sur un panneau atténué (trait en tirets, texte
+   adouci, contraste gardé), tu s'il gênerait une autre étiquette ; tout le bloc se touche. */
+.open-world-map-closed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+.open-world-map-closed .open-world-lock {
+  position: relative;
+  left: auto;
+  top: auto;
+}
+/* Le cadenas de la liaison suggérée (choix du mainteneur, « Cadenas plein », 17 octobre 2026) : plein, Nuit océan (#142B38),
+   l'icône d'un sable clair (#F2DFB4, celui des tirets), avec ses tirets épais : le seul cadenas mis en avant, par sa
+   forme pleine et pas seulement sa couleur. */
+.open-world-map-closed .open-world-lock.suggested {
+  border-color: #142b38;
+  background: #142b38;
+  color: #f2dfb4;
+}
+/* La cible du cadenas sur la Carte (consultant UX UI, lot 1 « Relier ») : 48 px au moins, par une marge invisible de 6 px
+   autour du rond de 40 px (52 px), sans rien changer à son dessin ; elle ne déborde que de 6 px, moins que l'écart de 8 px
+   gardé entre deux étiquettes, et ne couvre donc jamais une pastille voisine. */
+.open-world-map-closed .open-world-lock::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+}
+.open-world-map-closed-name {
+  margin-top: 2px;
+  padding: 0.1rem 0.6rem;
+  border: var(--border-width, 2px) dashed var(--muted);
+  border-radius: var(--radius-control, 12px);
+  background: var(--secondary-bg);
+  color: var(--muted);
+  white-space: nowrap;
+  /* Glissé sous son cadenas pour rester entier dans l'écran ou laisser la place à un voisin, et descendu d'un pas s'il
+     touche le nom du dessus (`--nom-decale`, `--nom-baisse`, MapLabels.tsx). */
+  transform: translate(var(--nom-decale, 0px), var(--nom-baisse, 0px));
+}
+.open-world-map-closed[data-nom='non'] .open-world-map-closed-name {
+  visibility: hidden;
+}
+/* Seuls le cadenas et le nom montré se touchent : le nom tu ne cache jamais une étiquette voisine. */
+.open-world-map-closed {
+  pointer-events: none;
+}
+.open-world-map-closed .open-world-lock,
+.open-world-map-closed[data-nom='oui'] .open-world-map-closed-name,
+.open-world-map-closed[data-nom='serre'] .open-world-map-closed-name {
+  pointer-events: auto;
+}
+/* Sa forme serrée : son nom sur deux lignes, entre deux mots, jamais au milieu d'un mot, à la même taille de texte
+   (GD-20, « La Carte au plus grand texte » : sur tablette, le nom d'un lieu fermé passe sur deux lignes plutôt que de se
+   taire ; MapLabels.tsx, `layoutMapLabels`). */
+.open-world-map-closed[data-nom='serre'] .open-world-map-closed-name {
+  text-align: center;
+}
+/* Les deux lignes d'un nom (MapLabels.tsx, `nameLines`) : à la suite dans la forme entière, l'une sous l'autre dans la
+   forme serrée, chacune entière. */
+.open-world-map-closed[data-nom='serre'] .open-world-map-line,
+.open-world-map-place[data-nom='serre'] .open-world-map-line {
+  display: block;
+  white-space: nowrap;
+}
+/* Kéo : une pastille ronde unie à sa silhouette, et « Toi » à côté, sur un panneau : la forme et le mot le distinguent
+   du nom d'un lieu (un rectangle seul), jamais la couleur seule. */
+.open-world-map-keo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+}
+.open-world-map-keo-disc {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--surface);
+}
+.open-world-map-keo-disc svg {
+  width: 26px;
+  height: 26px;
+}
+/* Trop serré : la pastille seule, « Toi » reste dit aux lecteurs d'écran. */
+.open-world-map-keo[data-nom='non'] .open-world-map-keo-word {
+  visibility: hidden;
+}
+.open-world-map-keo-word {
+  padding: 0.1rem 0.6rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+}
+/* La barre du bas : « Carte », puis, la Carte ouverte, « Retour » et « Lieux » côte à côte sur la même ligne, à la même
+   taille, 16 px au moins entre eux (consultant UX UI : pas d'ouverture involontaire). */
+.open-world-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 16px;
+  /* La barre ne prend aux doigts que son bouton : la Carte se touche à côté. */
+  pointer-events: none;
+}
+.open-world-bar > .button {
+  pointer-events: auto;
+}
+/* La scénette (lot 2) : le rôle de l'habitant en tête du panneau, en gras ; la place de sa phrase d'accueil dessous. */
+.world-scenette-head {
+  margin: 0 0 0.3rem;
+}
+.world-scenette-role {
+  margin: 0;
+  font-weight: 700;
+  font-size: max(18px, 1.15rem);
+}
+.world-scenette-greeting {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.2rem 0 0;
+}
+/* Sur tablette, le panneau prend la hauteur de son texte, en haut ; « Valider » en bas à droite, à 3 % du bord, sous
+   la rangée des cloches (sa place est gardée par scenetteLayout). */
+.world-question .quiz.in-world.scenette:not(.low) {
+  max-height: var(--question-max-height);
+}
+.world-question .world-place .validate-button.world-validate {
+  position: absolute;
+  right: 3%;
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  z-index: 2;
+  width: auto;
+  min-width: 176px;
+  min-height: 56px;
+  justify-content: center;
+}
+/* Une cloche choisie : sa forme le dit dans la scène (elle se balance) ; son étiquette, un trait plus épais, pas
+   seulement une couleur. */
+.world-question .in-world.scenette .world-answer.picked .world-answer-label {
+  border-width: 4px;
+}
+/* Le geste « ranger » (les Filets, lot L4) : l'objet tenu, une bordure épaisse, et une main et « tenu » au-dessus de
+   son étiquette (le mot garde toute sa largeur) ; un objet rangé, sur fond de sable, le nom de son panier au-dessus ; les paniers s'ouvrent (un trait
+   épais) quand un objet est tenu. La forme le dit, pas seulement la couleur ; le trait épais est une ombre portée, hors
+   de l'étiquette : le mot garde toute sa largeur, rien ne bouge dedans. */
+.world-question .world-sort .world-sort-prise.held .world-answer-label {
+  border-color: var(--text);
+  box-shadow: 0 0 0 3px var(--text);
+}
+.world-answers .world-sort-tenu {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  white-space: nowrap;
+}
+.world-sort-main {
+  flex: 0 0 auto;
+  width: 1.1em;
+  height: 1.1em;
+}
+/* En « Vue simple », les étiquettes sont dans la liste : « tenu », le panier ou la correction suivent le mot, dans
+   l'étiquette (une note posée au-dessus n'aurait plus de place). */
+.world-question .in-world.simple .world-sort .word-note {
+  position: static;
+  transform: none;
+  padding: 0;
+  background: none;
+  margin-left: 0.4em;
+  font-size: inherit;
+  font-weight: 400;
+}
+.world-question .world-sort .world-sort-prise.placed:not(.right):not(.wrong) .world-answer-label {
+  background: var(--sand);
+  color: var(--on-sand);
+}
+.world-question .world-sort.tenu .world-sort-bin .world-answer-label {
+  border-color: var(--primary-bg);
+  box-shadow: 0 0 0 2px var(--primary-bg);
+}
+/* Les paniers se distinguent des sujets autrement que par leur place (relecture de L4, directeur artistique) : une
+   icône de panier sur leur étiquette, et un écart entre les deux groupes (l'étiquette d'un panier se retire du côté des
+   sujets ; sa zone de toucher reste entière). */
+.world-sort-panier {
+  flex: 0 0 auto;
+  width: 1.1em;
+  height: 1.1em;
+}
+.world-question .in-world:not(.simple) .world-sort-bins > li:first-child .world-answer-label {
+  right: 10px;
+}
+.world-question .in-world:not(.simple) .world-sort-bins > li:last-child .world-answer-label {
+  left: 10px;
+}
+/* Après « Valider », le verbe accordé sous le sujet (« Les chiens / mangent ») : deux lignes dans l'étiquette, le mot
+   garde sa largeur. */
+.world-question .world-sort .world-sort-prise.right .world-answer-label,
+.world-question .world-sort .world-sort-prise.wrong .world-answer-label {
+  flex-direction: column;
+  gap: 0;
+  line-height: 1.1;
+}
+.world-question .in-world.simple .world-sort .world-sort-prise.right .world-answer-label,
+.world-question .in-world.simple .world-sort .world-sort-prise.wrong .world-answer-label {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0 0.4em;
+}
+.world-sort-verbe {
+  font-weight: 400;
+}
+/* La ligne de la règle, sur un écran bas : toujours affichée sous la consigne, sur fond uni, un trait à gauche comme
+   la carte de règle (relecture de L4 : contenu et référent dys). */
+.world-question .world-sort-regle {
+  flex: 0 0 100%;
+  margin: 0.2rem 0 0;
+  padding: 0.1rem 0.5rem;
+  border-left: 4px solid var(--primary-bg);
+  background: var(--surface);
+  color: var(--text);
+  line-height: 1.3;
+  white-space: normal;
+}
+.world-question .world-sort-regle.a-cote {
+  position: absolute;
+  top: calc(8px + env(safe-area-inset-top) + 56px + 8px);
+  left: calc(var(--question-left) + var(--question-width) + 12px);
+  /* Elle s'arrête avant l'habitante, à droite de la scène (relecture de L4 : sa tête reste visible) ; deux lignes. */
+  right: calc(14% + env(safe-area-inset-right));
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.2rem 0.5rem;
+  line-height: 1.25;
+  border: var(--border-width, 2px) solid var(--text);
+  border-left-width: 6px;
+  border-radius: var(--radius-control, 12px);
+  font-size: max(18px, 1rem);
+}
+.world-question .in-world.offer .world-sort-regle.a-cote,
+.world-question .in-world.intro .world-sort-regle.a-cote {
+  display: none;
+}
+/* Le bilan d'une scénette sur tablette : en bas, sur la rangée des cloches effacées ; la lampe du Phare, en haut de la
+   scène, reste visible. */
+.world-question .quiz.in-world.scenette.finished:not(.low) {
+  margin-top: 0;
+  position: absolute;
+  left: var(--question-left);
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  max-height: calc(100% - 28% - 12px);
+}
+/* « Vue simple » proposé d'emblée dans une scénette sur tablette (un mot des cloches coupé en grand texte) : le panneau
+   reste une colonne, la consigne passe à la ligne ; les étiquettes effacées, il descend jusqu'au bas de l'écran. */
+.world-question .quiz.in-world.scenette.offer:not(.low) {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  max-height: calc(100% - var(--question-top) - 12px);
+}
+/* « Vue simple » dans une scénette sur un écran bas, au plus grand texte : le panneau reste une colonne qui défile, la
+   consigne écrite et sa voix gardées (référent dys) ; les étiquettes effacées, il descend jusqu'au bas de l'écran. */
+.world-question .quiz.in-world.scenette.low.offer {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  max-height: calc(100% - var(--question-top) - 8px);
+  overflow-y: auto;
+}
+.world-question .in-world.scenette.low.offer > .consigne {
+  display: flex;
+}
+/* Le rôle, puis « Vue simple » tout de suite dessous, avant la consigne : on le voit sans faire défiler. */
+.world-question .in-world.scenette.low.offer > .world-scenette-head {
+  order: -2;
+}
+.world-question .in-world.scenette.low.offer > .world-question-offer {
+  order: -1;
+}
+/* La figure d'un item des Quais (la figure exacte, le schéma coté, la grille) : dans la colonne, à sa largeur. */
+.world-question .world-question-figure {
+  margin: 0.2rem 0 0.4rem;
+}
+.world-question .world-question-figure svg {
+  max-width: 100%;
+  max-height: 16vh;
+  width: auto;
+  height: auto;
+}
+/* Le document d'une question (Mesures et figures) dans la colonne : le texte sur toute la largeur, à la taille de la
+   phrase, sa voix dessous à droite ; la colonne garde la place de l'indice et de la figure. */
+.world-question .world-place .notice {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.3rem;
+  margin: 0.3rem 0;
+  padding: 0.4rem 0.6rem;
+}
+.world-question .world-place .notice-text {
+  flex: 1 1 100%;
+  font-size: max(18px, 1.15rem);
+}
+/* « Vue simple » dans une scénette : la même question, sur un panneau uni qui couvre la scène (sous la pause), les
+   cloches en liste qui passe à la ligne, dans le même ordre, « Valider » dessous ; les cloches déjà choisies le restent. */
+.world-question .quiz.in-world.scenette.simple {
+  position: absolute;
+  top: calc(8px + 56px + 8px + env(safe-area-inset-top, 0px));
+  left: 8px;
+  right: 8px;
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  width: auto;
+  max-height: none;
+  margin: 0;
+  overflow-y: auto;
+}
+.world-question .in-world.simple > .consigne {
+  display: flex;
+}
+.world-question .in-world.simple .world-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0.6rem 0 0;
+}
+.world-question .in-world.simple .world-answers .world-answer {
+  position: static;
+  min-width: 48px;
+  min-height: 56px;
+}
+.world-question .in-world.simple .world-answer-label {
+  position: static;
+  min-height: 56px;
+  white-space: normal;
+}
+.world-question .in-world.simple .validate-button {
+  width: auto;
+  min-width: 176px;
+  min-height: 56px;
+}
+/* « Valider » sous la liste, dans une bande unie qui reste au bas du panneau quand il défile : toujours atteignable ;
+   rien ne passe dessus, la liste glisse dessous comme sous le bord du panneau. Le panneau garde la place de la bande
+   quand le clavier y amène une cloche. */
+.world-question .quiz.in-world.scenette.simple {
+  scroll-padding-bottom: calc(56px + 3rem);
+}
+.world-question .in-world.simple .world-simple-validate {
+  position: sticky;
+  /* Jusqu'au bord du panneau, par-dessus sa marge du bas : rien de la liste ne se voit sous la bande. */
+  bottom: -0.6rem;
+  z-index: 1;
+  display: flex;
+  margin: 0 0 -0.6rem;
+  padding: 16px 0 0.6rem;
+  background: var(--surface);
+}
+/* Sur un écran bas, la bande se fait plus mince : plus de place pour la liste. */
+@media (max-height: 500px) {
+  .world-question .in-world.simple .world-simple-validate {
+    padding-top: 8px;
+  }
+}
+/* Le repère qui dit que le panneau défile : une ombre au-dessus de la bande de « Valider » tant qu'il reste de quoi lire
+   plus bas, une ombre sous le bord du haut quand on est descendu (data-suite, posé par WorldQuestion). */
+.world-question .quiz.in-world.simple[data-suite="bas"] .world-simple-validate,
+.world-question .quiz.in-world.simple[data-suite="deux"] .world-simple-validate {
+  box-shadow: 0 -14px 12px -10px rgb(0 0 0 / 0.4);
+}
+/* Sans « Valider » (les paniers, les leviers, les caisses), le même repère au bas du panneau : un chevron vers le bas,
+   centré sur une bande du fond bordée d'un trait pointillé épais collé au bord, tant qu'il reste quoi que ce soit plus
+   bas, réponse, figure ou indice (data-repere), comme le chemin de la Carte. La bande tient toujours sa place sans en prendre (marge négative de sa
+   hauteur) : elle se montre ou se cache sans rien faire bouger. Ses marges se calculent depuis la marge du bas du
+   panneau (--panneau-bas) et sa hauteur (--repere-haut), jamais écrites à part. */
+.world-question .in-world .world-repere {
+  display: none;
+}
+.world-question .quiz.in-world:is(.simple, .mode-c) > .world-repere {
+  --repere-haut: 34px;
+  position: sticky;
+  bottom: calc(-1 * var(--panneau-bas));
+  z-index: 1;
+  order: 99;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--repere-haut);
+  margin: calc(-1 * var(--repere-haut)) 0 calc(-1 * var(--panneau-bas));
+  background: var(--surface);
+  border-bottom: 5px dashed currentColor;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+}
+.world-question .quiz.in-world:is(.simple, .mode-c)[data-repere] > .world-repere {
+  visibility: visible;
+}
+/* Le chevron ne remplit que le milieu de son carré : un carré plus grand que la bande, pour un chevron de 22 px. */
+.world-question .quiz.in-world:is(.simple, .mode-c) > .world-repere svg {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  /* Rien ne dépasse de la bande (le panneau ne s'allonge pas pour lui). */
+  margin-block: calc((var(--repere-haut) - 5px - 44px) / 2);
+  stroke-width: 3;
+}
+/* Avec « Valider », de quoi lire caché sous sa bande (au plus grand texte sur un téléphone couché, le sujet et les
+   paniers de l'Enclos, dérogation du 16 octobre 2026) : le chevron se pose à droite dans la bande, qui garde « Valider »
+   et la voix à gauche, et l'ombre au-dessus de la bande se fait nette, comme celle du haut (référent dys). */
+.world-question .quiz.in-world.simple:has(.world-simple-validate) > .world-repere {
+  --repere-haut: 48px;
+  z-index: 2;
+  width: 64px;
+  margin: calc(-1 * var(--repere-haut)) 0 calc(-1 * var(--panneau-bas)) auto;
+}
+.world-question .quiz.in-world.simple[data-repere] .world-simple-validate {
+  box-shadow:
+    0 -3px 0 rgb(0 0 0 / 0.45),
+    0 -16px 10px -8px rgb(0 0 0 / 0.55);
+}
+/* L'ombre du haut, nette (référent dys) : un trait sombre sous le bord, puis une ombre courte. */
+.world-question .quiz.in-world.simple[data-suite="haut"],
+.world-question .quiz.in-world.simple[data-suite="deux"] {
+  box-shadow:
+    inset 0 3px 0 rgb(0 0 0 / 0.45),
+    inset 0 16px 10px -8px rgb(0 0 0 / 0.55);
+}
+/* La question entière dans le panneau de « Vue simple » : c'est le panneau qui défile, rien ne s'y tasse. Le cadre de
+   l'écran s'efface (display: contents) : la bande de « Valider » se tient au bas du panneau entier, jamais par-dessus
+   le son et ses voix. */
+.world-question .in-world.simple .world-place {
+  display: contents;
+}
+.world-question .in-world.simple .world-question-prompt,
+.world-question .in-world.simple .world-answers {
+  flex: 0 0 auto;
+}
+/* Un mot coupé sur tablette : l'image devant le mot tombe d'abord (comme sur un écran bas), avant « Vue simple ». */
+.world-question .in-world.sans-image .world-answers .word-picto {
+  display: none;
+}
+/* L'écran habituel (GD-20, point 8, le temps de la transition) : une mission dont la scénette n'est pas faite se joue
+   sur l'écran de la grille, sur un panneau uni qui couvre la scène sous la pause, centré, qui défile s'il le faut ; la
+   consigne écrite en tête, comme sur la page d'une mission. La même forme dans tous les lieux. */
+.world-question .quiz.in-world.ecran-habituel {
+  position: absolute;
+  top: calc(8px + 56px + 8px + env(safe-area-inset-top, 0px));
+  left: max(8px, calc(50% - 400px));
+  right: max(8px, calc(50% - 400px));
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  width: auto;
+  max-height: none;
+  margin: 0;
+  overflow-y: auto;
+}
+.world-question .in-world.ecran-habituel > .consigne {
+  display: flex;
+}
+/* « Vue simple » sur un écran bas : le panneau prend toute la hauteur sous « Scène » et la pause ; la consigne repliée
+   en une ligne (le rôle, son début, sa voix, « Lire la suite »), la ligne du son serrée, les étapes en trait fin, les
+   cloches visibles dès l'ouverture en texte normal (au plus grand texte, la rangée suit la phrase, plus bas) ; la bande de « Valider » mince (un
+   bouton de 48 px, moins d'un cinquième du panneau). La tablette ne change pas. */
+.world-question .quiz.in-world.scenette.simple.simple-bas {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: flex-start;
+  column-gap: 0.5rem;
+  row-gap: 6px;
+  --panneau-bas: 4px;
+  padding: 4px 0.6rem var(--panneau-bas);
+  scroll-padding-bottom: 62px;
+}
+.world-question .quiz.in-world.simple-bas > *,
+.world-question .in-world.simple-bas .world-question-prompt,
+.world-question .in-world.simple-bas .world-answers,
+.world-question .in-world.simple-bas .world-simple-validate {
+  flex: 0 0 100%;
+  margin: 0;
+}
+/* La consigne du lanceur reste le titre du panneau, pour les lecteurs d'écran seulement : la ligne la remplace. */
+.world-question .quiz.in-world.simple-bas > .consigne {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.world-question .quiz.in-world.simple-bas > .world-consigne-line {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  min-width: 0;
+  gap: 0.4rem;
+}
+.world-question .in-world.simple-bas .world-consigne-fold {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  /* Repliée : une ligne ; les mots qui n'y tiennent pas sont cachés par WorldQuestion, « … » après le dernier mot
+     entier. */
+  max-height: 1.3em;
+  overflow: hidden;
+  /* La taille du texte choisie (1rem), sans le cran de plus d'un titre : le rôle tient sur la ligne au plus grand texte. */
+  font-size: max(18px, 1rem);
+  font-weight: 700;
+  line-height: 1.3;
+  cursor: pointer;
+}
+.world-question .in-world.simple-bas .world-consigne-fold .world-scenette-role {
+  font-size: inherit;
+}
+.world-question .quiz.in-world.simple-bas > .world-consigne-more {
+  flex: 0 0 auto;
+  min-width: 48px;
+  min-height: 48px;
+  padding-block: 0;
+  white-space: nowrap;
+}
+/* Au plus grand texte, le rôle tient sur la ligne de la consigne repliée, plus petit, dans un cadre qui le sépare de
+   la consigne (relecture dys et UX UI : « Le docker » collé à « Trouve le double… » se lisait d'un trait ; GD-20, point
+   8, lot L2 : une ligne de moins, pour que la rangée se voie dès l'ouverture quand la phrase fait trois lignes). */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold .world-scenette-role {
+  display: inline-block;
+  margin-right: 0.25em;
+  padding: 0 0.2em;
+  border: var(--border-width, 2px) solid currentColor;
+  border-radius: 6px;
+  /* 18 px au plus grand texte, la plus petite taille de texte de l'application. */
+  font-size: max(18px, 0.57em);
+  line-height: 1.25;
+  vertical-align: 0.15em;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold.role-seul {
+  max-height: calc(1.3em + 1.4em);
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold.role-seul .world-scenette-role {
+  display: block;
+  width: fit-content;
+}
+/* Au plus grand texte sur un écran bas, la ligne de la consigne repliée et la rangée ne prennent que la place d'une
+   cible : les boutons de la ligne à 48 px, les réponses à la taille du texte choisie (sans le cran de plus d'un titre),
+   48 px de haut au moins (GD-20, point 8, lot L2 : la rangée visible dès l'ouverture). */
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-line .speak-button,
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-more {
+  min-height: 48px;
+  padding-block: 0;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-line .speak-button svg,
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-more svg {
+  width: 32px;
+  height: 32px;
+}
+/* Les étapes, un trait de 4 px, collées sous la ligne de la consigne et sur la phrase : elles ne prennent pas de ligne. */
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .quiz-steps {
+  margin: -3px 0 -6px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answers .world-answer,
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answer-label {
+  min-height: 48px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answer-label {
+  padding-block: 0;
+  font-size: max(18px, 1rem);
+  line-height: 1.2;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answer-label .frac {
+  font-size: 1em;
+  line-height: 1.05;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answers {
+  gap: 6px;
+}
+/* Au plus grand texte, « Lire la suite » se réduit à son icône (son nom reste dit) : la ligne garde le rôle. */
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-more {
+  padding-inline: 10px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-more-word {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+/* Au plus grand texte sur un écran bas, la rangée vient tout de suite après la phrase de l'item : la consigne repliée,
+   les étapes, la phrase, les réponses et « Valider » ; l'indice, la figure et le rappel passent dessous (référent dys,
+   relecture de GD-20, point 8). Une phrase de plus de deux lignes pousse encore la rangée sous le pli. */
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > * {
+  order: 5;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .consigne,
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-line,
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-more,
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .quiz-steps {
+  order: 0;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt {
+  display: contents;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > * {
+  flex: 0 0 100%;
+  order: 4;
+  margin: 0;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head {
+  order: 1;
+  line-height: 1.3;
+}
+/* La phrase à la taille du texte choisie, sans le cran de plus d'un titre, comme les réponses : une ligne de moins
+   pour un problème des Quais (relecture de L2 : Carnet du passeur et Mesures et figures sans chevron). */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .question-prompt {
+  font-size: max(18px, 1rem);
+}
+/* La phrase prend toute la largeur : son haut-parleur (48 px, l'icône seule comme sur un écran étroit, son nom reste dit)
+   se pose en haut à droite, la première ligne seule lui laisse sa place (GD-20, point 8, lot L2 : une phrase de trois
+   lignes en tient souvent deux). La question d'un document des Quais aussi. */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head {
+  position: relative;
+  display: block;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head > .question-prompt::before {
+  content: "";
+  float: right;
+  width: 56px;
+  height: 48px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head > .speak-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-height: 48px;
+  padding: 0;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head > .speak-button svg {
+  width: 32px;
+  height: 32px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-question-prompt > .question-head > .speak-button span {
+  display: none;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answers {
+  order: 2;
+}
+/* Le geste « ranger » : la règle sous les paniers et les sujets, comme celle d'un item (lot L4). */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-sort > .world-sort-regle {
+  order: 1;
+  margin: 0;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-sort > .world-question-aid {
+  flex: 0 0 100%;
+  order: 4;
+  margin: 0;
+}
+/* Au Phare, la cible des cloches (« Le son [an] », « Rime avec chapeau ») sur la ligne de la consigne repliée, sous le
+   rôle, avant les mots : toujours affichée, jamais coupée (relecture de L3, référent dys : la règle toujours affichée) ;
+   « Écouter les cloches » à gauche de « Valider », dans sa bande. */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold:has(.world-consigne-cible) {
+  max-height: none;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold:has(.world-consigne-cible) .world-scenette-role {
+  display: block;
+  width: fit-content;
+}
+/* À l'Enclos, la ligne de règle sur la ligne de la consigne repliée, avant elle (dérogation du quatrième lot) :
+   toujours affichée, jamais coupée. */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold:has(.world-consigne-regle) {
+  max-height: none;
+}
+.world-question .in-world.simple-bas .world-consigne-regle {
+  font-weight: 400;
+}
+/* À l'Enclos, au plus grand texte sur un téléphone couché, la place gagnée sans réduire le texte (troisième passe dys de
+   L4) : la règle en interligne de 1,2, le panneau à 2 px du haut, les rangées resserrées, la voix des sujets à 48 px
+   dans la bande comme celles de la ligne de la consigne, la bande sans marge au-dessus de « Valider ». */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold:has(.world-consigne-regle) {
+  line-height: 1.2;
+}
+/* La voix et « Lire la suite » en haut de la ligne, à côté du rôle : dépliée, la consigne s'allonge dessous sans les
+   pousser sous la bande de « Valider ». */
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-line:has(.world-consigne-regle) {
+  align-items: flex-start;
+  align-self: flex-start;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas:has(.world-consigne-regle) > .world-consigne-more {
+  align-self: flex-start;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas:has(.world-sort) {
+  padding-top: 2px;
+}
+/* Les étapes ne prennent déjà aucune hauteur : les paniers, la première rangée en « Vue simple », remontent jusque
+   sous leur trait, et le sujet à 4 px sous les paniers. */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-sort > .world-sort-bins {
+  margin-top: -2px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-sort > .world-sort-bins + .world-answers {
+  margin-top: -2px;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-sort .world-simple-validate {
+  padding-top: 0;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-sort .world-simple-validate .speak-button {
+  min-height: 48px;
+  height: 48px;
+  padding-block: 0;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-sort .world-simple-validate .speak-button svg {
+  width: 32px;
+  height: 32px;
+}
+
+.world-question .in-world.simple-bas .world-consigne-cible {
+  display: inline-block;
+  white-space: nowrap;
+  font-weight: 400;
+}
+/* « Rime avec », « Le son » à la taille du rôle (18 px au moins) ; la cible à la taille du texte choisie. */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-cible .cible-mot {
+  font-size: max(18px, 0.57em);
+  font-weight: 700;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-cible strong {
+  line-height: 1.1;
+}
+.world-question .in-world.simple .world-simple-validate:has(.speak-button) {
+  align-items: center;
+  gap: 0.6rem;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-simple-validate {
+  order: 3;
+}
+/* Dépliée : la consigne entière, sous le rôle, à la ligne. */
+.world-question .in-world.simple-bas.consigne-ouverte .world-consigne-fold {
+  max-height: none;
+}
+.world-question .in-world.simple-bas .world-consigne-fold .world-scenette-role {
+  white-space: nowrap;
+}
+.world-question .in-world.simple-bas .quiz-steps li {
+  height: 4px;
+}
+.world-question .in-world.simple-bas .world-question-actions {
+  margin: 0;
+  align-items: center;
+}
+.world-question .in-world.simple-bas .world-answers {
+  gap: 8px;
+}
+.world-question .in-world.simple-bas .world-simple-validate {
+  bottom: -4px;
+  margin-bottom: -4px;
+  padding: 3px 0;
+}
+.world-question .in-world.simple-bas .world-simple-validate .validate-button {
+  min-height: 48px;
+  height: 48px;
+  padding-block: 0;
+  line-height: 1.1;
+}
+/* L'état de la construction d'un lieu sur la Carte (GD-20, lot 1, consultant UX UI) : sous son nom, dans sa pastille,
+   une icône et un mot (marteau et « En chantier », coche et l'état achevé), 1 rem au moins, sur le fond uni de la
+   pastille : jamais la couleur seule. */
+.open-world-map-place {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4em;
+}
+/* Une pastille : le nom, puis l'icône de l'état (le mot est dit par le bouton). Un nom de plus de 12 lettres passe sur
+   deux lignes, entre deux mots (jamais au milieu d'un mot), les autres tiennent sur une ligne : « Le Phare » toujours
+   (MapLabels.tsx, `Name`, `nameLines`). */
+.open-world-map-place-name {
+  display: block;
+  white-space: nowrap;
+}
+.open-world-map-lines[data-lignes='2'] .open-world-map-line {
+  display: block;
+}
+.open-world-map-state {
+  display: inline-flex;
+  align-items: center;
+}
+/* Sans état (aucune partie posée), l'icône « à explorer » ne se montre que dans la pastille réduite. */
+.open-world-map-state[data-etat='a-explorer'] {
+  display: none;
+}
+.open-world-map-state svg {
+  width: 1.15em;
+  height: 1.15em;
+  flex: none;
+}
+/* Nulle part dans l'écran sans toucher une autre étiquette (au plus grand texte, sur un téléphone) : la pastille réduite
+   à son icône, une cible de 48 px ; le nom et l'état restent dits par le bouton (MapLabels.tsx, `layoutMapLabels`). */
+.open-world-map-place[data-nom='non'] {
+  justify-content: center;
+  box-sizing: border-box;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  padding: 0;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-place-name {
+  display: none;
+}
+/* L'icône propre du lieu, celle de son île, dans la pastille réduite seulement : deux lieux réduits ne se confondent
+   pas ; l'état passe en petit insigne dans le coin bas droit, sur un disque uni (relecture du rivage sud, consultant UX
+   UI et référent dys). L'Escale garde son ancre seule. */
+.open-world-map-icon {
+  display: none;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-icon {
+  display: inline-flex;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-icon svg {
+  width: 26px;
+  height: 26px;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-icon ~ .open-world-map-state {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  justify-content: center;
+  border: 2px solid var(--text);
+  border-radius: 50%;
+  background: var(--surface);
+}
+.open-world-map-place[data-nom='non'] .open-world-map-icon ~ .open-world-map-state svg {
+  width: 14px;
+  height: 14px;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-state {
+  display: inline-flex;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-state svg {
+  width: 26px;
+  height: 26px;
+}
+/* Trop serrée près d'une autre : la pastille serrée, son nom sur deux lignes, plus étroit, l'icône de l'état dessous ;
+   un lieu ouvert ne perd jamais son nom (relecture de L6b, directeur artistique ; MapLabels.tsx, `layoutMapLabels`). */
+.open-world-map-place[data-nom='serre'] {
+  flex-direction: column;
+  gap: 0.1em;
+  padding: 0.2rem 0.5rem;
+}
+.open-world-map-place[data-nom='serre'] .open-world-map-place-name {
+  max-width: none;
+}
+/* Un accès direct sans rien à faire (les commandes, qui ne se livrent pas encore dans le monde continu) : délavé comme
+   « Y aller » sans mission (fond secondaire, trait en tirets, icône adoucie), mais opaque sur le monde : son icône
+   garde un contraste d'au moins 3:1 (référent dys) ; le bouton dit « indisponible ». */
+.open-world .world-button .button.vide {
+  opacity: 1;
+  border-style: dashed;
+  background: var(--secondary-bg);
+  color: var(--muted);
+}
+/* Les accès directs et Réglages (GD-20, lot 1) : la colonne et le bouton du monde en grille, tels quels, décalés de la
+   zone sûre de l'appareil (encoche, coins arrondis), comme « Y aller » et « Carte ». */
+.open-world .world-shortcuts {
+  top: calc(0.6rem + env(safe-area-inset-top, 0px));
+  left: calc(0.6rem + env(safe-area-inset-left, 0px));
+}
+.open-world .world-settings {
+  top: calc(0.6rem + env(safe-area-inset-top, 0px));
+  right: calc(0.6rem + env(safe-area-inset-right, 0px));
+}
+
+/* Les panneaux de l'Escale (GD-20, lot 2 ; consultant UX UI) : la fiche du Port, une porte de l'école, la galerie des
+   succès, le lieu d'assemblage. Un à la fois, sur fond uni. Sur tablette, en bas, à la hauteur de son contenu (le Port
+   reste visible au-dessus, la caméra y garde la porte) ; sur un écran bas (un téléphone couché), une colonne pleine
+   hauteur à gauche, la porte visible à droite ; la liste y défile si une ligne ne tient pas. */
+.open-world-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  max-height: 55%;
+}
+/* Le lieu d'assemblage, sur tablette : un peu plus haut, pour que « Assembler » se voie sans défiler (consultant UX UI). */
+.open-world-panel-chantier {
+  max-height: 62%;
+}
+.open-world-panel > .island-sheet {
+  max-height: 100%;
+  padding-bottom: max(1.2rem, env(safe-area-inset-bottom, 0px));
+  padding-inline: max(1rem, env(safe-area-inset-left, 0px)) max(1rem, env(safe-area-inset-right, 0px));
+}
+/* La tête (titre et croix) reste en haut quand la liste défile : la croix est la sortie, toujours visible. */
+.open-world-panel .island-sheet-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  min-height: 56px;
+  background: var(--surface);
+}
+@media (max-height: 500px) {
+  .open-world-panel {
+    top: 0;
+    right: auto;
+    width: 55%;
+    max-height: none;
+  }
+  .open-world-panel > .island-sheet {
+    height: 100%;
+    box-sizing: border-box;
+    padding-top: 0;
+    padding-bottom: max(0.8rem, env(safe-area-inset-bottom, 0px));
+  }
+  .open-world-panel .island-sheet-head {
+    padding-top: max(0.4rem, env(safe-area-inset-top, 0px));
+  }
+  /* La colonne est aussi étroite qu'un téléphone debout : le titre y prend la taille d'un écran étroit, et passe à la
+     ligne plutôt que sous la croix. Au plus grand texte, la colonne s'élargit pour qu'un nom de matière y tienne entier ;
+     la porte reste visible à droite. */
+  .open-world-panel .island-sheet-title {
+    font-size: 1.1rem;
+    overflow-wrap: break-word;
+  }
+  :root[data-texte="grand"] .open-world-panel {
+    width: 64%;
+  }
+  /* La fiche au plus grand texte : le nom et « Y aller » ne tiennent pas sur une ligne de la colonne (près de 500 px
+     pour 395) ; « Y aller » passe dessous, l'écart et le bouton resserrés, et la ligne coupée en bas du panneau montre
+     qu'il y en a d'autres. */
+  :root[data-texte="grand"] .port-row {
+    gap: 0.2rem 0.3rem;
+  }
+  :root[data-texte="grand"] .port-row-name {
+    gap: 0.3rem;
+    min-width: 0;
+  }
+  :root[data-texte="grand"] .port-row-go {
+    padding-inline: 0.5rem;
+    gap: 0.2rem;
+  }
+}
+/* Le panneau d'un lieu (GD-20, point 8) : la forme d'une porte de l'école, une ligne par mission. Le signe des missions
+   qui se jouent dans le lieu, le même partout, avant l'étiquette ; la prochaine mission, seule mise en avant, d'un
+   liseré épais de la couleur de l'action (sans rien faire bouger : la bordure garde sa place). */
+.place-sheet .mission-sign {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: 50%;
+  background: var(--surface);
+}
+.place-sheet .mission-sign svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+/* L'étiquette (étoiles, « Nouveau ») au milieu de la ligne, avec ou sans signe. */
+.place-sheet .apps-compact .app-card > .tag,
+.place-sheet .apps-compact .app-card > .stars {
+  align-self: center;
+  margin-block: 0;
+}
+/* La suggestion, seul état fort de la liste : une bordure épaisse et un anneau de la couleur de l'action, et un fond
+   teinté ; il reste quand le focus tombe sur une autre ligne (la ligne jouée), dont l'anneau du focus ne se voit qu'à la
+   navigation au clavier (:focus-visible, plus fin, de la couleur du focus). */
+.place-sheet .app-card.suggested,
+.lieux-sheet .app-card.suggested {
+  border-color: var(--primary-bg);
+  box-shadow:
+    inset 0 0 0 2px var(--primary-bg),
+    0 0 0 4px var(--primary-bg);
+  background: color-mix(in srgb, var(--primary-bg) 8%, var(--surface));
+}
+.place-sheet .app-card:focus:not(:focus-visible),
+.lieux-sheet .app-card:focus:not(:focus-visible) {
+  outline: none;
+}
+/* Au plus grand texte, dans la colonne d'un écran bas : sans l'icône de lecture, la même sur chaque ligne, le titre à la
+   taille du texte sur toute la largeur, puis le signe et l'étiquette côte à côte dessous ; deux missions tiennent sous
+   le titre du panneau. */
+:root[data-texte="grand"] .place-sheet .island-sheet-title {
+  font-size: 1rem;
+}
+:root[data-texte="grand"] .place-sheet .apps-compact .app-card {
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 56px;
+  padding: 0.2rem 0.5rem;
+  row-gap: 0;
+}
+:root[data-texte="grand"] .place-sheet .apps-compact .app-icon {
+  display: none;
+}
+:root[data-texte="grand"] .place-sheet .apps-compact .app-title {
+  grid-column: 1 / span 2;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+:root[data-texte="grand"] .place-sheet .mission-sign {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+:root[data-texte="grand"] .place-sheet .mission-sign svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+:root[data-texte="grand"] .place-sheet .apps-compact {
+  gap: 0.3rem;
+  margin-top: 0.3rem;
+}
+:root[data-texte="grand"] .place-sheet .apps-compact .app-card > .mission-sign {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+}
+:root[data-texte="grand"] .place-sheet .apps-compact .app-card > .mission-sign + * {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: start;
+}
+:root[data-texte="grand"] .place-sheet .apps-compact .app-card > .app-title + :not(.mission-sign) {
+  grid-column: 1 / span 2;
+}
+/* La liste des lieux ouverts, sur la Carte (bouton « Lieux », PlacesSheet.tsx) : le panneau d'un lieu, sur un voile
+   léger qui met la Carte en pause (un toucher dessus ferme la liste sans rien choisir). Sur tablette, en bas, au plus
+   60 % de la hauteur (la Carte reste visible au-dessus) ; sur un écran bas, une colonne à gauche, toute la hauteur, de
+   320 px à la moitié de l'écran. La liste défile en hauteur, jamais de côté ; la tête et la croix restent fixes. */
+.open-world-voile {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: rgb(0 0 0 / 0.28);
+}
+.open-world-panel-lieux-ouverts {
+  max-height: 60%;
+}
+.open-world-panel-lieux-ouverts > .island-sheet {
+  --panneau-bas: max(1.2rem, env(safe-area-inset-bottom, 0px));
+  padding-bottom: var(--panneau-bas);
+  /* Le panneau se tient dans ses 60 % : la liste rétrécit et défile (sans cela, au plus grand texte, elle sortait par le
+     haut de l'écran). */
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: none;
+}
+/* « Suite plus bas » : la bande et le chevron des questions (.world-repere), collés au bas du panneau sans y prendre de
+   place, tant qu'une ligne est sous le bord (`data-repere`, PlacesSheet.tsx) : une ligne qui finit juste au bord ne dit
+   pas, seule, qu'il y a une suite. */
+.lieux-repere {
+  --repere-haut: 34px;
+  position: sticky;
+  bottom: calc(-1 * var(--panneau-bas));
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: var(--repere-haut);
+  /* Il ne retire rien à la hauteur du panneau (sa marge du haut rend la sienne) : le panneau garde la place de sa
+     dernière ligne. */
+  margin: calc(-1 * var(--repere-haut)) 0 0;
+  background: var(--surface);
+  border-bottom: 5px dashed currentColor;
+  box-shadow: 0 -14px 12px -10px rgb(0 0 0 / 0.4);
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+}
+.island-sheet[data-repere='oui'] > .lieux-repere {
+  visibility: visible;
+}
+.lieux-repere svg {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin-block: calc((var(--repere-haut) - 5px - 44px) / 2);
+  stroke-width: 3;
+}
+@media (max-height: 500px) {
+  .open-world-panel-lieux-ouverts {
+    width: clamp(320px, 45%, 50%);
+    max-height: none;
+  }
+  .open-world-panel-lieux-ouverts > .island-sheet {
+    --panneau-bas: max(0.8rem, env(safe-area-inset-bottom, 0px));
+  }
+  /* Au plus grand texte, la moitié de l'écran (la règle des panneaux de l'Escale, 64 %, ne vaut pas ici). */
+  :root[data-texte="grand"] .open-world-panel-lieux-ouverts {
+    width: max(320px, 50%);
+  }
+}
+/* La liste ouverte : « Retour » et « Lieux » à côté d'elle, jamais dessous ni dessus (au-dessus du panneau du bas, à
+   droite de la colonne ; `--lieux-bas`, `--lieux-gauche`, posés par la page), au-dessus du voile. */
+.open-world-bar.avec-liste {
+  z-index: 7;
+  /* Trop large pour la place à droite de la colonne (au plus grand texte, sur un téléphone) : « Lieux » passe au-dessus
+     de « Retour », 16 px entre eux, plutôt que de sortir de l'écran. */
+  flex-wrap: wrap-reverse;
+  max-width: calc(100% - var(--lieux-gauche, 0px) - 1.2rem - env(safe-area-inset-right, 0px));
+  left: max(calc(0.6rem + env(safe-area-inset-left, 0px)), calc(var(--lieux-gauche, 0px) + 0.6rem));
+  bottom: max(calc(0.8rem + env(safe-area-inset-bottom, 0px)), calc(var(--lieux-bas, 0px) + 0.8rem));
+}
+.lieux-rows {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+/* Une ligne : l'icône du lieu (celle de sa pastille réduite), le nom entier, puis l'icône et le mot de l'état ; sur la
+   ligne de la prochaine mission, « Prochaine mission » écrit dessous. Toute la ligne est la cible, 56 px au moins ; le
+   nom passe à la ligne entre deux mots, jamais dans un mot ni tronqué. */
+.lieux-sheet .lieux-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "icone nom etat"
+    "icone suite suite";
+  align-items: center;
+  column-gap: 0.7rem;
+  row-gap: 0.1rem;
+  width: 100%;
+  min-height: 56px;
+  height: auto;
+  padding: 0.35rem 0.7rem;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.lieux-row-icon {
+  grid-area: icone;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+}
+.lieux-row-icon svg {
+  width: 24px;
+  height: 24px;
+}
+.lieux-row-name {
+  display: contents;
+}
+.lieux-row-text {
+  grid-area: nom;
+  min-width: 0;
+  font-weight: 700;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+.lieux-row-state,
+.lieux-row-next,
+.lieux-alone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.lieux-row-state {
+  grid-area: etat;
+  justify-self: end;
+  /* Le mot de l'état ne se coupe jamais entre ses mots (« En chantier », comme `.mot-lie`) : il passe entier à la ligne. */
+  white-space: nowrap;
+}
+.lieux-row-next {
+  grid-area: suite;
+  font-weight: 700;
+  color: var(--text);
+}
+.lieux-row-state svg,
+.lieux-row-next svg,
+.lieux-alone svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+}
+.lieux-alone {
+  margin: 0.8rem 0 0;
+  color: var(--muted);
+}
+/* Dans la colonne d'un écran bas, en texte normal : l'état passe sous l'icône et le nom, entier, puis « Prochaine
+   mission », qui passe à la ligne entre deux mots plutôt que de sortir de la ligne. */
+@media (max-height: 500px) {
+  .lieux-sheet .lieux-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "icone nom"
+      "etat etat"
+      "suite suite";
+  }
+  .lieux-row-state {
+    justify-self: start;
+  }
+}
+:root[data-texte="grand"] .open-world-panel-lieux-ouverts > .island-sheet {
+  padding-inline: max(10px, env(safe-area-inset-left, 0px)) max(10px, env(safe-area-inset-right, 0px));
+}
+/* Au plus grand texte, la ligne est du texte qui coule : l'icône du lieu en tête du nom, puis l'icône et le mot de l'état
+   à la suite, sur la ligne du nom s'ils y tiennent, sinon entiers sur la ligne d'après (jamais « En / chantier ») ;
+   « Prochaine mission » seul sur sa ligne (consultant UX UI, référent dys : un lieu sur une à deux lignes, pas trois à
+   quatre). Les icônes gardent leur taille (en pixels), les marges se resserrent (en pixels aussi), la ligne grandit, le
+   texte n'est jamais réduit. */
+:root[data-texte="grand"] .lieux-sheet .lieux-row {
+  display: block;
+  padding: 4px 8px;
+}
+:root[data-texte="grand"] .lieux-rows {
+  gap: 6px;
+}
+:root[data-texte="grand"] .lieux-row-name {
+  display: inline;
+}
+:root[data-texte="grand"] .lieux-row-text {
+  display: inline;
+}
+:root[data-texte="grand"] .lieux-row-icon {
+  display: inline-grid;
+  vertical-align: middle;
+  margin-inline-end: 8px;
+}
+:root[data-texte="grand"] .lieux-row-state {
+  display: inline-block;
+  max-width: 100%;
+}
+:root[data-texte="grand"] .lieux-row-next {
+  display: block;
+}
+:root[data-texte="grand"] .lieux-row-state svg,
+:root[data-texte="grand"] .lieux-row-next svg {
+  vertical-align: -3px;
+  margin-inline-end: 6px;
+}
+:root[data-texte="grand"] .lieux-sheet .island-sheet-title {
+  font-size: 1rem;
+}
+/* La fiche du Port : cinq lignes, l'icône et le nom à gauche, « Y aller » à droite, à la même place sur chaque ligne ;
+   dans une colonne trop étroite (au plus grand texte), « Y aller » passe sous le nom plutôt que de sortir du panneau. */
+.port-rows {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+.port-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  min-height: 56px;
+}
+.port-row-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+.port-row-go {
+  flex: none;
+  min-height: 48px;
+}
+
+/* Calculer avec des fractions (GD-20, point 8, lot L2) : les réponses restent dans la colonne, juste après la phrase, en
+   liste qui passe à la ligne, comme dans « Vue simple » ; la scène fait le décor, aucun objet ne les porte. La colonne
+   défile si l'indice, la figure et le rappel n'y tiennent pas dessous. */
+.world-question .quiz.in-world.reponses-colonne {
+  overflow-y: auto;
+}
+.world-question .in-world.reponses-colonne .world-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0.4rem 0;
+}
+.world-question .in-world.reponses-colonne .world-answers .world-answer {
+  position: static;
+  min-width: 72px;
+  min-height: 56px;
+}
+.world-question .in-world.reponses-colonne .world-answer-label {
+  position: static;
+  min-height: 56px;
+  white-space: normal;
+}
+/* Une fraction et le signe qui la suit restent ensemble en fin de ligne (la phrase de Deux rives, lot L2). */
+.world-question .world-nobreak {
+  white-space: nowrap;
+}
+
+/* Une rangée ou une colonne de réponses dont l'une est une fraction en colonne : toutes à la hauteur de la fraction, un
+   « 3 » seul pas plus petit qu'un « 3/5 » (référent dys, relecture de L2). Sur une même ligne, toutes à la même hauteur. */
+.world-question .in-world.simple .world-answers,
+.world-question .in-world.reponses-colonne .world-answers {
+  align-items: stretch;
+}
+.world-question .in-world.simple .world-answers:has(.frac) .world-answer-label,
+.world-question .in-world.reponses-colonne .world-answers:has(.frac) .world-answer-label {
+  min-height: calc(2.6em + 10px);
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-answers:has(.frac) .world-answer-label {
+  min-height: calc(2.2em + 10px);
+}
+/* Deux rives (GD-20, point 8, lot L3) : ses trois réponses sur une seule rangée, à la hauteur des fractions en colonne ;
+   « Elles sont égales » passe à la ligne entre deux mots dans son étiquette (jamais au milieu d'un mot) plutôt que
+   sous les fractions : une rangée de moins sous le pli au plus grand texte sur téléphone. */
+.world-question .in-world.simple .world-answers.une-rangee {
+  flex-wrap: nowrap;
+}
+.world-question .in-world.simple .world-answers.une-rangee .world-answer {
+  flex: 0 1 auto;
+  min-width: 48px;
+}
+.world-question .in-world.simple .world-answers.une-rangee .world-answer-label {
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+
+/* L'Abattage syllabique au Phare (GD-20, point 8, lot L3) : le mot, l'objet appris, à la taille du mot d'un item de la
+   grille, sans syllabes en couleurs ; au plus grand texte, jamais plus grand qu'il ne faut pour tenir sur la ligne. */
+.world-question .in-world .question-prompt.item-word {
+  font-size: 1.6rem;
+}
+:root[data-texte="grand"] .world-question .in-world .question-prompt.item-word {
+  font-size: max(1rem, min(1.6rem, 8.5vw));
+}
+/* Un repère qui passerait sous « Vue simple » ou la pause descend sous son point, le haut sur lui ; s'il les touche encore,
+   il se cache (relecture du lot L5, consultant UX UI). */
+.world-question-label[data-place="dessous"] {
+  margin-top: 0;
+}
+.world-question-label[data-place="cache"] {
+  visibility: hidden;
+}
+
+/* Le C (GD-20, point 8, lot L6a, règle du C, au plus grand texte sur téléphone comme ailleurs), dans la scène et dans
+   « Vue simple », dans le même ordre : la ligne de la consigne repliée (ou la consigne), la phrase, les réponses, le
+   document, le rappel. Le panneau seul défile (le document n'a jamais sa boîte à lui) ; la ligne de la consigne et la
+   phrase restent épinglées en haut quand il défile, sur le fond uni (la phrase sous la ligne, à sa hauteur mesurée,
+   --pin-ligne) ; une ombre nette sous la phrase dit qu'on est descendu, le chevron « Suite plus bas » qu'il reste à
+   lire. Seuls le document, le rappel, l'indice et la correction passent sous le pli. */
+.world-question .quiz.in-world.mode-c {
+  --pin-haut: 0.6rem;
+  overflow-y: auto;
+  padding-top: 0;
+}
+/* La marge du haut, épinglée elle aussi, sur toute la largeur : ce qui défile ne passe jamais au-dessus de la ligne de
+   la consigne ; dès que le panneau a défilé, la bande descend derrière toute la ligne (sur un écran bas, la ligne, « Lire
+   la suite » et les étapes ne la couvrent pas d'un bord à l'autre). Sa ligne à elle ne prend que la marge (sa marge du
+   bas rend le reste) : rien ne bouge quand elle descend. */
+.world-question .quiz.in-world.mode-c::before {
+  --pin-bande: 0px;
+  content: '';
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  order: -1;
+  flex: none;
+  width: 100%;
+  height: calc(var(--pin-haut) + var(--pin-bande));
+  margin-bottom: calc(-1 * var(--pin-bande));
+  background: var(--surface);
+  /* Jusqu'au bord du panneau, par-dessus sa marge intérieure du haut (quelle qu'elle soit d'une mise en page à l'autre). */
+  box-shadow: 0 -16px 0 var(--surface);
+  pointer-events: none;
+}
+.world-question .quiz.in-world.mode-c:is([data-suite="haut"], [data-suite="deux"])::before {
+  --pin-bande: var(--pin-ligne, 0px);
+}
+.world-question .in-world.mode-c .world-place,
+.world-question .in-world.mode-c .world-question-prompt {
+  display: contents;
+}
+.world-question .quiz.in-world.mode-c > *,
+.world-question .in-world.mode-c .world-question-prompt > * {
+  flex: 0 0 auto;
+}
+.world-question .quiz.in-world.mode-c:not(.simple-bas) > .consigne,
+.world-question .quiz.in-world.mode-c.simple-bas:not(.consigne-ouverte) > .world-consigne-line,
+.world-question .quiz.in-world.mode-c.simple-bas:not(.consigne-ouverte) > .world-consigne-more {
+  position: sticky;
+  top: var(--pin-haut);
+  z-index: 2;
+  background: var(--surface);
+}
+/* (`:root` en tête : la règle passe devant celle du plus grand texte sur un écran bas, qui pose la phrase en relatif.) */
+:root .world-question .quiz.in-world.mode-c:not([data-epingle="ligne"]) .world-question-prompt > .question-head {
+  position: sticky;
+  top: calc(var(--pin-haut) + var(--pin-ligne, 0px));
+  z-index: 2;
+  margin: 0;
+  padding-block: 0.2rem;
+  background: var(--surface);
+}
+.world-question .quiz.in-world.mode-c:not([data-epingle="ligne"])[data-suite="haut"] .question-head,
+.world-question .quiz.in-world.mode-c:not([data-epingle="ligne"])[data-suite="deux"] .question-head {
+  box-shadow:
+    0 3px 0 rgb(0 0 0 / 0.45),
+    0 16px 10px -8px rgb(0 0 0 / 0.55);
+}
+.world-question .quiz.in-world.mode-c[data-suite="haut"],
+.world-question .quiz.in-world.mode-c[data-suite="deux"] {
+  box-shadow: none;
+}
+/* La phrase trop haute pour être épinglée (plus de la moitié du panneau) défile : l'ombre passe sous la ligne de la
+   consigne, seule épinglée. */
+.world-question .quiz.in-world.mode-c[data-epingle="ligne"]:is([data-suite="haut"], [data-suite="deux"]) > :is(.consigne, .world-consigne-line, .world-consigne-more) {
+  box-shadow:
+    0 3px 0 rgb(0 0 0 / 0.45),
+    0 16px 10px -8px rgb(0 0 0 / 0.55);
+}
+/* Les réponses d'un C : une par ligne, sur toute la largeur, à gauche ; chacune passe à la ligne dans son étiquette,
+   jamais au milieu d'un mot ; toutes à la même hauteur, 48 px au moins (la plus haute donne la mesure). */
+.world-question .in-world.mode-c .world-answers {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 8px;
+  width: 100%;
+  margin: 0.4rem 0;
+}
+.world-question .in-world.mode-c .world-answers .world-answer {
+  position: static;
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
+}
+/* (`:root` en tête : passe devant les réglages du plus grand texte sur un écran bas, qui serrent l'interligne d'une
+   rangée.) Le contenu donne la hauteur : l'interligne d'OpenDyslexic n'y déborde jamais. */
+:root .world-question .quiz.in-world.mode-c .world-answers .world-answer {
+  height: auto;
+}
+:root .world-question .quiz.in-world.mode-c .world-answers .world-answer-label {
+  box-sizing: border-box;
+  height: auto;
+  /* Le cadre visible prend toute la rangée : une réponse d'une ligne à côté d'une de deux a le même cadre. */
+  min-height: 100%;
+  padding-block: 4px;
+  line-height: 1.35;
+}
+.world-question .in-world.mode-c .world-answer-label {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  min-height: 48px;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+/* Le document d'un C : toujours ouvert, sur le fond uni, après les réponses ; « Écouter le document » en tête, à droite
+   de la première ligne (48 px, l'icône seule, son nom dit). */
+.world-question .world-place .notice.world-document {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0.4rem 0;
+}
+.world-question .world-document > .speak-button {
+  float: right;
+  min-width: 48px;
+  min-height: 48px;
+  margin: 0 0 0.2rem 0.4rem;
+}
+.world-question .world-document .notice-text {
+  font-size: max(18px, 1.15rem);
+}
+/* L'ordre d'un C, quelle que soit la taille du texte (relecture de L6a) : ce qui reste épinglé (la ligne de la consigne, la
+   voix de la phrase quand elle défile, les étapes), la phrase (et la ligne de calcul), les réponses, puis, après une
+   réponse, la correction (et « Presque ! ») juste dessous, avant le document : la réponse touchée et la bonne réponse
+   restent visibles avec elle (www/pedagogie/principes.md) ; enfin le document, l'indice, la figure et le rappel. Rien ne
+   s'intercale entre la phrase et les réponses. */
+:root .world-question .quiz.in-world.mode-c > :is(.consigne, .world-consigne-line, .world-consigne-more, .world-phrase-voice, .quiz-steps) {
+  order: 0;
+}
+:root .world-question .quiz.in-world.mode-c .world-question-prompt > :is(.question-head, .world-question-reference) {
+  order: 1;
+}
+:root .world-question .quiz.in-world.mode-c .world-question-prompt > .world-answers {
+  order: 2;
+}
+:root .world-question .quiz.in-world.mode-c > :is(.result-sheet, .feedback) {
+  order: 3;
+}
+:root .world-question .quiz.in-world.mode-c .world-question-prompt > :not(.question-head, .world-question-reference, .world-answers) {
+  order: 4;
+}
+/* La correction d'un C, serrée : « Pas tout à fait » (ou « Bravo ! ») et sa voix sur une seule ligne (le message vide
+   du résultat ne la pousse plus à la ligne) : les réponses et « Suivant » tiennent ensemble sur tablette. */
+.world-question .in-world.mode-c .result-sheet .feedback-compact {
+  flex-wrap: nowrap;
+}
+.world-question .in-world.mode-c .result-sheet .feedback-body {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+.world-question .in-world.mode-c .result-sheet .feedback-body > p:empty {
+  display: none;
+}
+/* La voix de la phrase dans ce qui reste épinglé, seulement quand la phrase, trop haute (plus de la moitié du panneau
+   avec la ligne), défile avec le reste : la question reste à un geste (directeur artistique). Son mot, « Phrase », la
+   distingue de la voix de la consigne ; celle de la phrase s'efface (sa place gardée : rien ne bouge). Sur tablette, elle
+   tient sa bande sous la consigne, à droite ; sur un écran bas, elle prend la place des étapes, dans la ligne. */
+.world-question .world-phrase-voice {
+  display: none;
+}
+.world-question .quiz.in-world.mode-c[data-epingle="ligne"] > .world-phrase-voice {
+  position: sticky;
+  top: calc(var(--pin-haut) + var(--pin-ligne, 0px));
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  background: var(--surface);
+}
+.world-question .quiz.in-world.mode-c[data-epingle="ligne"] .question-head > .speak-button {
+  visibility: hidden;
+}
+.world-question .world-phrase-voice .speak-button {
+  min-height: 48px;
+  margin: 0;
+}
+.world-question .quiz.in-world.mode-c[data-epingle="ligne"]:is([data-suite="haut"], [data-suite="deux"]) > .world-phrase-voice {
+  box-shadow:
+    0 3px 0 rgb(0 0 0 / 0.45),
+    0 16px 10px -8px rgb(0 0 0 / 0.55);
+}
+/* En « Vue simple » d'un C sur un écran bas (relecture de L6a, consultant UX UI, piste 1 : rendre la place) : le panneau
+   monte jusqu'en haut de l'écran ; « Scène » (son icône seule, son nom dit) et la pause se tiennent au bout de la ligne
+   d'en-tête du panneau, que les étapes (ou la voix de la phrase) leur gardent ; le rôle de l'habitant quitte la ligne
+   (WorldQuestion) ; la marge épinglée du haut se fait mince. La ligne se tient à la hauteur de la pause : le monde
+   commence sous la marge du haut de la page (1rem, global.css, `.app-shell.focus .content`), la pause à 0.6rem du haut
+   de l'écran ; le panneau monte de la différence, moins son bord et sa marge épinglée. */
+.world-question .quiz.in-world.scenette.simple.simple-bas.mode-c {
+  --pin-haut: 4px;
+  --barre-haut: calc(56px + 12px + 56px - 8px - var(--border-width, 2px) + 8px + env(safe-area-inset-right, 0px));
+  top: calc(0.6rem - 1rem - var(--border-width, 2px) - var(--pin-haut));
+}
+.world-question:has(.quiz.in-world.mode-c.simple-bas) > .world-question-simple {
+  top: calc(0.6rem - 1rem);
+}
+:root .world-question .quiz.in-world.simple-bas.mode-c > .quiz-steps {
+  flex: 0 0 120px;
+  align-self: center;
+  margin: 0 var(--barre-haut) 0 0;
+}
+:root .world-question .quiz.in-world.simple-bas.mode-c > .world-phrase-voice {
+  top: var(--pin-haut);
+  flex: 0 0 auto;
+  align-self: center;
+  margin: 0 var(--barre-haut) 0 0;
+}
+.world-question .quiz.in-world.simple-bas.mode-c[data-epingle="ligne"] > .quiz-steps {
+  display: none;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c > .world-phrase-voice .speak-button {
+  padding-inline: 10px;
+  font-size: 18px;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c > .world-phrase-voice .speak-button svg {
+  width: 32px;
+  height: 32px;
+}
+.world-question:has(.quiz.in-world.mode-c.simple-bas) > .world-question-simple {
+  width: 56px;
+  min-width: 56px;
+  padding: 0;
+  justify-content: center;
+}
+.world-question:has(.quiz.in-world.mode-c.simple-bas) > .world-question-simple .world-question-simple-word {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* En C sur un écran bas, revenu de « Vue simple » à « Scène » (GD-20, point 8, L8 ; relecture UX UI, piste A) : la colonne,
+   à gauche, prend la forme serrée de « Vue simple » (`simple-bas`, WorldQuestion) : la consigne repliée en une ligne, son
+   « Lire la suite », puis les étapes ou la voix de la phrase, sur une rangée ; la phrase et les réponses dessous. La barre
+   du haut (« Vue simple », son icône seule, et la pause) se tient à droite de la colonne : rien ne la pousse vers le bas. */
+.world-question .quiz.in-world.scenette.scene-gardee.simple-bas {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: flex-start;
+  column-gap: 0.5rem;
+  row-gap: 6px;
+  --pin-haut: 4px;
+  padding: 4px 0.6rem 4px;
+}
+:root .world-question .quiz.in-world.scene-gardee.simple-bas.mode-c > :is(.quiz-steps, .world-phrase-voice) {
+  margin: 0;
+}
+:root .world-question .quiz.in-world.scene-gardee.simple-bas.mode-c > .quiz-steps {
+  flex: 1 0 100%;
+}
+/* « Lire la suite », son icône seule à toute taille de texte (son nom dit, WorldQuestion), en C sur un écran bas, dans
+   « Vue simple » comme dans la colonne revenue à « Scène » : sinon le mot prenait la place de la consigne repliée,
+   réduite à « … » à 667 × 375 (directeur artistique, L8). */
+.world-question .quiz.in-world.simple-bas.mode-c > .world-consigne-more {
+  padding-inline: 10px;
+}
+.world-question .in-world.simple-bas.mode-c .world-consigne-more-word {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+/* Le résultat tient dans la colonne, bord compris (« Suivant » sortait à droite). */
+.world-question .quiz.in-world.scene-gardee.simple-bas > .result-sheet {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+/* En C sur un écran bas, en « Vue simple » comme dans la colonne revenue à « Scène », la phrase, ses réponses et ce qui
+   les suit prennent chacun la largeur du panneau, à toute taille de texte : sans quoi la phrase restait sur une ligne,
+   coupée à droite, au texte normal (« …la vapeur d'eau re », relecture UX UI de L8). */
+.world-question .in-world.simple-bas.mode-c .world-question-prompt > * {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+/* Chaque voix touche le texte qu'elle lit (directeur artistique, L8 ; relecture UX UI, quatrième passe) : en C sur un
+   écran bas, en « Vue simple » comme dans la colonne revenue à « Scène », la voix de la phrase reste à droite de la
+   phrase, sur sa rangée, même quand la phrase n'est pas épinglée (elle défile alors avec elle) ; elle ne passe jamais
+   dans la ligne de la consigne, ni sur une rangée à elle. Les étapes gardent leur place. */
+:root .world-question .quiz.in-world.simple-bas.mode-c > .world-phrase-voice {
+  display: none;
+}
+.world-question .quiz.in-world.simple-bas.mode-c[data-epingle="ligne"] .question-head > .speak-button {
+  visibility: visible;
+}
+:root .world-question .quiz.in-world.simple-bas.mode-c[data-epingle="ligne"] > .quiz-steps {
+  display: flex;
+}
+/* Au plus grand texte, en « Vue simple » d'un C sur un écran bas, les étapes ne sont plus qu'une rangée de points sans
+   signe de lecture entre « Lire la suite » et « Scène » : elles quittent la ligne (relecture UX UI, quatrième passe) ;
+   elles reviennent dans la colonne revenue à « Scène », sous la ligne. */
+:root[data-texte="grand"] .world-question .quiz.in-world.scenette.simple.simple-bas.mode-c > .quiz-steps {
+  display: none;
+}
+/* La ligne repliée garde au moins son premier mot (WorldQuestion, `premier-mot`) : elle prend sa largeur, ses boutons
+   passent après elle. */
+.world-question .in-world.simple-bas .world-consigne-fold.premier-mot {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.world-question .quiz.in-world.simple-bas > .world-consigne-line:has(.premier-mot) {
+  min-width: auto;
+}
+/* En « Vue simple », la place de « Scène » et de la pause reste au bout de la première rangée quand la ligne garde son
+   premier mot, et au plus grand texte, où ni les étapes ni la voix de la phrase ne la tiennent plus : « Lire la suite »
+   ne passe jamais dessous. */
+.world-question .quiz.in-world.scenette.simple.simple-bas.mode-c:has(.premier-mot) > .world-consigne-more,
+:root[data-texte="grand"] .world-question .quiz.in-world.scenette.simple.simple-bas.mode-c > .world-consigne-more {
+  margin-right: var(--barre-haut);
+}
+/* Au plus grand texte, le résultat d'un C sur un écran bas (« Vue simple » et colonne revenue à « Scène ») se serre pour
+   que « Bravo ! » et « Suivant » se voient entiers ensemble (référent dys, L8) : « Bravo ! » sur une ligne, à la taille du
+   texte choisie, l'explication et « Suivant » sans marge de plus ; rien n'est réduit sous la taille choisie. */
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c .result-sheet {
+  padding: 4px 0.4rem;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c .result-sheet .feedback-shout {
+  padding: 0 0.4rem;
+  font-size: max(18px, 1rem);
+  white-space: nowrap;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c .result-sheet .explanation {
+  margin: 0 0 4px;
+  padding: 2px 0.5rem;
+}
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c .result-sheet .next-button {
+  min-height: 48px;
+  padding-block: 0;
+}
+/* « Lire la suite » passé sous la ligne qui garde son premier mot (WorldQuestion, `data-livre`) défile avec le panneau :
+   épinglé en haut, il se posait sur le premier mot (directeur artistique, L8). */
+:root .world-question .quiz.in-world.mode-c.simple-bas[data-livre="dessous"] > .world-consigne-more {
+  position: static;
+}
+
+/* La fiche d'un lieu fermé (GD-20, point 3, lot 1 « Relier » ; consultant UX UI) : une seule rangée, « Relier », le
+   prix et l'icône des ressources dans le bouton, ce que l'élève a dessous. Le bouton fait 48 px au moins et passe à la
+   ligne au plus grand texte plutôt que de déborder. */
+.closed-place-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding-block: 0.4rem;
+}
+.closed-place-link {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  min-width: 48px;
+  max-width: 100%;
+  white-space: normal;
+}
+.closed-place-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 700;
+}
+/* Un lieu pas encore reliable : le cadenas d'ordre (le même rond que sur la Carte), puis le bouton du voisin, secondaire,
+   48 px au moins, son nom entier qui passe à la ligne plutôt que de se couper. */
+.closed-place-lock {
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: 50%;
+  background: var(--surface);
+}
+.closed-place-lock svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+.closed-place-after {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  min-width: 48px;
+  max-width: 100%;
+  white-space: normal;
+  text-align: start;
+}
+/* Il en manque : inactif par sa forme, pas seulement par sa couleur (délavé, trait en tirets), et toujours focalisable. */
+.closed-place-link[aria-disabled='true'] {
+  border-style: dashed;
+  background: var(--secondary-bg);
+  color: var(--muted);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.closed-place-have {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0;
+  font-weight: 700;
+}
+.closed-place-have svg,
+.closed-place-price svg {
+  width: 1.2em;
+  height: 1.2em;
+}
+/* « La passerelle est posée. » (et la phrase d'un lieu devenu reliable) : sur fond uni, en bas au milieu, au-dessus de la barre ; sans rien qui bouge ; le
+   haut-parleur à côté de la phrase, 48 px, le seul élément touchable. Vide, elle ne montre rien. Sur la Carte, en haut,
+   hors des noms des lieux du sud. */
+.open-world-said {
+  position: absolute;
+  left: 50%;
+  /* Au-dessus de « Y aller », qui grandit avec le texte (110 px de haut au plus grand). */
+  bottom: calc(max(96px, 4.2rem) + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: min(90vw, 30rem);
+  width: max-content;
+  padding: 0.3rem 0.4rem 0.3rem 1rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  color: var(--text);
+  pointer-events: none;
+}
+.open-world-said.on-map {
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  bottom: auto;
+}
+.open-world-said > p {
+  margin: 0;
+  font-weight: 700;
+  text-align: center;
+}
+/* Une phrase par ligne (« La passerelle est posée. », puis « La Turbine peut être reliée. »). */
+.open-world-said > p > span {
+  display: block;
+}
+.open-world-said > .speak-button {
+  pointer-events: auto;
+}
+/* Les mots entiers, jamais coupés au milieu (« passerel-le »), même dans une boîte étroite. */
+.open-world-said > p {
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
+}
+/* Sur un téléphone (étroit ou couché), Kéo se tient juste au-dessus de « Y aller » : la boîte monte en haut, comme sur
+   la Carte, pour ne cacher ni Kéo ni « Y aller » (référent dys, consultant UX UI) ; étroit, le haut-parleur passe sous
+   les phrases, qui ont toute la largeur. */
+/* Une phrase à la fois (`SMALL_SCREEN`, OpenWorldPage.tsx), et la marque du lieu masquée tant que la boîte est écrite :
+   repoussée dessous, elle couvrait Kéo (référent dys, consultant UX UI) ; elle revient ensuite. */
+@media (max-width: 600px), (max-height: 500px) {
+  .world-stage[data-said='oui'] .open-world-mark {
+    visibility: hidden;
+  }
+  .open-world-said {
+    top: calc(8px + env(safe-area-inset-top, 0px));
+    bottom: auto;
+    max-width: calc(100vw - 16px);
+  }
+}
+@media (max-width: 600px) {
+  .open-world-said {
+    flex-direction: column;
+    padding: 0.4rem 0.6rem;
+  }
+}
+.open-world-said[data-shown='non'] {
+  padding: 0;
+  border: 0;
+}

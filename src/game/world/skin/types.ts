@@ -33,7 +33,7 @@ export interface Habillage {
   reperes: 'cadres' | 'libres';
   /**
    * Le lieu où l'on assemble les blocs (GD-2), sur l'île de l'école : la Fabrique (une halle de brique à toit plat, sa
-   * cheminée, une potence de rondins), ou la Halle aux matériaux (une halle basse en bois sur un socle de pierre, un
+   * cheminée, une potence de rondins), ou l’Entrepôt des matériaux (une halle basse en bois sur un socle de pierre, un
    * toit à deux pentes, une potence de bois). Même place, même porte : seule la silhouette change (world/terrain.ts).
    */
   atelier: Atelier;

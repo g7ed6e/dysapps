@@ -32,7 +32,7 @@ it('les îles-écoles sont celles dont la zone des plans est agrandie', () => {
   for (const b of BIOMES) if (!ECOLES.includes(b.id)) expect(zoneDesPlans(b.id), b.id).toBe(PLAN_ZONE);
 });
 
-it('devant : les bornes seules, au pas de 4, centrées sur la visée ; au milieu, l’école ; au fond, la Halle', () => {
+it('devant : les bornes seules, au pas de 4, centrées sur la visée ; au milieu, l’école ; au fond, l’Entrepôt', () => {
   expect(PLACES_DES_BORNES_DES_ECOLES).toEqual([0, 4, 8, 12, 16]);
   for (const id of ECOLES) {
     const bornes = questStations(id);

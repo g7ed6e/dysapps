@@ -143,10 +143,10 @@ describe('prête, livrée', () => {
 
   it('les phrases : le nombre et le nom de Mes blocs, le lieu où l’on assemble', () => {
     const mousso = getCommande(MOUSSO)!;
-    expect(texteDeLaCommande(mousso, 'ask', FABRIQUE)).toBe('Il me faut 3 blocs de terre pour mon potager. Joue une mission de la Ferme des accords.');
+    expect(texteDeLaCommande(mousso, 'ask', FABRIQUE)).toBe('Il me faut 3\u00a0blocs de terre pour mon potager. Joue une mission de la Ferme des accords.');
     expect(texteDeLaCommande(mousso, 'ready', FABRIQUE)).toBe('Tu as les blocs de terre\u00a0! Livre-les à Mousso.');
     expect(texteDeLaCommande(getCommande('french-6e-letter-confusion-request-1')!, 'ready', FABRIQUE)).toBe('Tu as les briques\u00a0! Livre-les à Tunel.');
-    expect(texteDeLaCommande(getCommande('french-6e-word-spelling-request-1')!, 'ask', FABRIQUE)).toBe('Il me faut 2 poutres pour ma grue. Assemble-les à la Fabrique.');
+    expect(texteDeLaCommande(getCommande('french-6e-word-spelling-request-1')!, 'ask', FABRIQUE)).toBe('Il me faut 2\u00a0poutres pour ma grue. Assemble-les à la Fabrique.');
     // Aucun jeton ne reste, dans aucune phrase.
     for (const c of COMMANDES) for (const p of ['ask', 'ready', 'done'] as const) expect(texteDeLaCommande(c, p, FABRIQUE)).not.toMatch(/[{}]/);
   });

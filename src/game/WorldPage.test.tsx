@@ -316,7 +316,7 @@ it('la Nef est amarrée au port de l’archipel ; le toucher ouvre sa fiche : l�
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
   expect(screen.queryByRole('dialog', { name: /Plaine des nombres/ })).not.toBeInTheDocument();
   const f = screen.getByRole('dialog', { name: 'La Nef' });
-  expect(f.textContent).toMatch(/Forme 1 sur 3, le voilier\. 0 blocs posés sur 27\. Il manque 18 blocs de bois, à gagner dans Forêt des sons\./);
+  expect(f.textContent).toMatch(/Forme 1\ssur 3, le voilier\. 0\sblocs posés sur 27\. Il manque 18\sblocs de bois, à gagner dans Forêt des sons\./u);
   expect(within(f).getByRole('link', { name: 'Forêt des sons' })).toHaveAttribute('href', expect.stringMatching(/^\/adventure\//));
   // Rien à poser : pas de bouton grisé.
   expect(within(f).queryByRole('button', { name: /Poser/ })).not.toBeInTheDocument();

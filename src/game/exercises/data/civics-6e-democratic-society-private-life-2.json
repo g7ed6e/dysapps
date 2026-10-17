@@ -174,8 +174,8 @@
     },
     {
       "key": "civics-6e-democratic-society-private-life-2-6",
-      "prompt": "La santé d’un camarade fait partie de sa vie privée. La raconter dans un groupe sans son accord, c’est …",
-      "spoken": "La santé d’un camarade fait partie de sa vie privée. La raconter dans un groupe sans son accord, c’est  (mot manquant) ",
+      "prompt": "Dire à tout un groupe qu’un camarade est malade, sans son accord, c’est …",
+      "spoken": "Dire à tout un groupe qu’un camarade est malade, sans son accord, c’est  (mot manquant) ",
       "choices": [
         "exercer sa liberté d’expression",
         "ne pas respecter sa vie privée",
@@ -207,9 +207,9 @@
       "choices": [
         "pour s’en souvenir plus facilement",
         "parce que chaque site le choisit",
-        "si l’un est découvert, les autres restent protégés"
+        "pour protéger les autres comptes"
       ],
-      "answer": "si l’un est découvert, les autres restent protégés",
+      "answer": "pour protéger les autres comptes",
       "hint": "Que se passe-t-il si le même mot de passe ouvre tous tes comptes ?",
       "explanation": "Avec un mot de passe par compte, si l’un est découvert, les autres restent protégés. Cette commission veille à la protection des données personnelles.",
       "aid": {

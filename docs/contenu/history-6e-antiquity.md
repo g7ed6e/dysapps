@@ -453,9 +453,9 @@ Pour tous les items :
    - réponse : auteur
    - indice : Qui a tenu la plume ?
    - explication : L’auteur écrit le document, ou le fait écrire. Le destinataire le reçoit. Un témoin a vu ce qu’il raconte, mais il n’écrit pas toujours.
-2. énoncé : Un gouverneur écrit une lettre à l’empereur : l’empereur est le … de la lettre.
-   - choix : auteur · témoin · destinataire
-   - réponse : destinataire
+2. énoncé : Un gouverneur écrit une lettre à l’empereur. Pour cette lettre, l’empereur est … .
+   - choix : l’auteur · le témoin · le destinataire
+   - réponse : le destinataire
    - indice : Qui reçoit la lettre ?
    - explication : L’empereur reçoit la lettre : il en est le destinataire. L’auteur, c’est le gouverneur, qui l’écrit.
 3. énoncé : Un auteur qui a vu lui-même ce qu’il raconte est un … .
@@ -473,7 +473,7 @@ Pour tous les items :
    - réponse : éloge
    - indice : Le discours dit-il du bien ou du mal ?
    - explication : Un éloge dit du bien. Un reproche dit du mal. Un résumé redit l’essentiel en peu de mots.
-6. énoncé : Les Romains racontent que Romulus est le fils du dieu Mars. Ils veulent montrer que Rome est … par les dieux.
+6. énoncé : Pour les Romains, Romulus est le fils du dieu Mars : Rome est donc … par les dieux.
    - choix : protégée · oubliée · punie
    - réponse : protégée
    - indice : Un fondateur fils d’un dieu : est-ce une bonne ou une mauvaise chose pour Rome ?
@@ -483,7 +483,7 @@ Pour tous les items :
    - réponse : scène
    - indice : Rome veut-elle cacher sa légende, ou la montrer à tous ?
    - explication : Mettre en scène, c’est montrer à tous, comme au théâtre : sur les pièces, chacun voit la légende de Rome. Mettre en doute, ce serait ne pas y croire.
-8. énoncé : Sur un mur de Pompéi, on lit : « Votez pour Polybius, il apporte du bon pain ! » Ce texte veut … les habitants.
+8. énoncé : Sur un mur de Pompéi : « Votez pour Polybius, il apporte du bon pain ! » Ce texte veut … les habitants.
    - choix : informer · convaincre · remercier
    - réponse : convaincre
    - indice : « Votez pour » : que veut l’auteur ?

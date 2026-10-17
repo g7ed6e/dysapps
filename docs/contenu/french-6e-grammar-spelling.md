@@ -368,6 +368,89 @@ Pour tous les items :
    - indice : Qui est-ce qui court ? Cherche après le verbe, et compte.
    - explication : Le sujet est après le verbe, et il y en a deux : une oie et un canard. Pluriel : « courent ».
 
+## Au lieu · Archipéo
+
+> Les items du lieu des Filets, dans le monde ouvert d’Archipéo (`?monde=ouvert`) : chaque item est le jumeau d’un item du niveau 1 du Troupeau (« jumeau » : son rang), il en porte la clé, le point d’accord, les sortes de pièges et la règle (la carte de la référence, réduite à la ligne « règle » ; entière dans « Vue simple ») ; la phrase parle de ce que la scène montre (« scène » : ce qui est posé, et combien). Règle « à l’essai » : docs/univers/univers.md, § 4.2. Proposés par le directeur du contenu pédagogique (questions-du-monde.md, 14 octobre 2026).
+
+### Niveau 1 · `french-6e-grammar-spelling-plurals-1`
+
+Pour tous les items :
+- trou lu : (mot manquant)
+- règle : Le nom commande : déterminant et adjectif prennent son genre et son nombre.
+
+1. jumeau : 1
+   - scène : sardines · 3
+   - énoncé : Les sardines … brillent dans le filet.
+   - choix : gris · grise · grises
+   - réponse : grises
+   - point : adjectif au féminin pluriel
+   - pièges : accord oublié · pluriel oublié
+   - indice : Regarde le nom : « sardines », c’est féminin et pluriel.
+   - explication : « Les sardines » est au féminin pluriel : l’adjectif prend -e puis -s, « grises ».
+2. jumeau : 2
+   - scène : filets · 3
+   - énoncé : Le pêcheur répare … filets.
+   - choix : son · sa · ses
+   - réponse : ses
+   - point : déterminant au pluriel
+   - pièges : accord avec un autre nom
+   - indice : Combien de filets ? Le déterminant doit le dire.
+   - explication : « Filets » est au pluriel (un s) : le déterminant aussi, « ses filets ».
+3. jumeau : 3
+   - scène : mouette · 1
+   - énoncé : Une … mouette se pose sur le filet.
+   - choix : petit · petite · petits
+   - réponse : petite
+   - point : adjectif au féminin singulier
+   - pièges : féminin oublié · pluriel en trop
+   - indice : « Une mouette » : féminin ou masculin ? Une seule ou plusieurs ?
+   - explication : « Une mouette » est au féminin singulier : l’adjectif prend un -e, « petite ».
+4. jumeau : 4
+   - scène : bocaux · 2
+   - énoncé : Le pêcheur remplit deux … de crevettes.
+   - choix : bocal · bocaux · bocals
+   - réponse : bocaux
+   - point : pluriel d’un nom en -al
+   - pièges : pluriel régulier en -s
+   - indice : Deux, c’est plusieurs. Pense à : un journal, des journaux.
+   - explication : Au pluriel, les noms en -al deviennent -aux : un bocal, deux bocaux.
+5. jumeau : 5
+   - scène : crabes · 4
+   - énoncé : Les crabes … grimpent sur le filet.
+   - choix : vert · verts · vertes
+   - réponse : verts
+   - point : adjectif au masculin pluriel
+   - pièges : -e ajouté par habitude
+   - indice : « Crabes » : masculin ou féminin ? Un seul ou plusieurs ?
+   - explication : « Les crabes » est au masculin pluriel : l’adjectif prend seulement un -s, « verts ».
+6. jumeau : 6
+   - scène : pêche · 1
+   - énoncé : Le pêcheur a fait une … pêche.
+   - choix : bon · bonne · bonnes
+   - réponse : bonne
+   - point : adjectif au féminin singulier
+   - pièges : féminin oublié · pluriel en trop
+   - indice : « Une pêche » : féminin, et une seule.
+   - explication : « Une pêche » est au féminin singulier : bon devient « bonne », avec deux n.
+7. jumeau : 7
+   - scène : seaux · 3
+   - énoncé : Sur le ponton, les … sont pleins de crevettes.
+   - choix : seau · seaux · seaus
+   - réponse : seaux
+   - point : pluriel d’un nom en -eau
+   - pièges : -s au lieu de -x
+   - indice : « Les », c’est plusieurs. Pense à : un bateau, des bateaux.
+   - explication : Les noms en -eau prennent un -x au pluriel : un seau, les seaux.
+8. jumeau : 8
+   - scène : crabe · 1
+   - énoncé : Regarde : … crabe pince le filet.
+   - choix : ce · cette · ces
+   - réponse : ce
+   - point : déterminant au masculin singulier
+   - pièges : genre · nombre
+   - indice : « Crabe » : masculin ou féminin ? Un seul ou plusieurs ?
+   - explication : « Crabe » est au masculin singulier : le déterminant est « ce ». « Cette » va avec un nom féminin, « ces » avec un pluriel.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

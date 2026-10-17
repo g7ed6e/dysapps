@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { thePlace } from './world/placeArticle';
 import { Link, useNavigate } from 'react-router-dom';
 import { Feedback } from '../components/Feedback';
@@ -28,7 +28,7 @@ import type { Completion } from './engine';
 import { levelFor } from './engine';
 import { reviewKeys } from './review';
 import { cheminDeRevision, revisionsDeLIle } from './reminders';
-import { SCREEN_TYPES, retryAllowed, type ScreenAnswer } from './exercises/registry';
+import { SCREEN_TYPES, retryAllowed, type ScreenAnswer, type ScreenProps } from './exercises/registry';
 import { autoReadText, dicteeAutoText } from './exercises/reading';
 import { runItems, runSeed } from './exercises/run';
 import { fillTemplate, type ExerciseDef, type ExerciseItem, type ItemResult } from './exercises/types';
@@ -53,6 +53,37 @@ interface Props {
    * même île s'il en reste, sinon le retour sur l'île de la créature.
    */
   revisionDeLIle?: boolean;
+  /** La mission jouée ailleurs que sur son écran (le monde ouvert d'Archipéo, `RunnerStage`). */
+  stage?: RunnerStage;
+}
+
+/**
+ * Une mission jouée dans un lieu du monde ouvert d'Archipéo (lot 4, derrière `?monde=ouvert`) : les mêmes items, tirés
+ * de la même graine, la même correction, les mêmes étoiles et le même barème ; seuls changent le découpage en écrans
+ * (les manches du Phare), l'écran qui pose l'item dans la scène, la consigne d'un lieu, et le retour (au lieu, pas sur
+ * l'île). `extra` : ce que le lieu ajoute sous la consigne (« Vue simple »).
+ */
+export interface RunnerStage {
+  screens?: (items: ExerciseItem[], seed: string) => ExerciseItem[][];
+  Screen?: ComponentType<ScreenProps>;
+  instruction?: string;
+  back: { label: string; onClick: () => void };
+  /** Ce que le lieu met en tête, avant la consigne (le rôle de l'habitant d'une scénette). */
+  head?: ReactNode;
+  extra?: ReactNode;
+  className?: string;
+  /** Le bilan du lieu, à la place de celui de l'écran classique. */
+  Done?: ComponentType<StageDoneProps>;
+}
+
+/** Ce que le lanceur donne au bilan d'un lieu. */
+export interface StageDoneProps {
+  completion: Completion;
+  /** Le détail des récompenses, tel que l'écran classique l'écrit. */
+  detail: ReactNode;
+  /** La pause de session quand elle tombe à la fin de cette mission, sinon `null`. */
+  pause: ReactNode;
+  back: RunnerStage['back'];
 }
 
 /** Le carillon de fin (`playDone`) : deux notes, la seconde à 160 ms, de 450 ms ; la voix vient après. */
@@ -67,9 +98,10 @@ function phraseDeLaPose(pose: NonNullable<Completion['pose']>): string {
 }
 
 /** Découpe les items en écrans selon le type d'exercice. */
-function screensOf(def: ExerciseDef, seed = def.id, review: string[] = []): ExerciseItem[][] {
+function screensOf(def: ExerciseDef, seed = def.id, review: string[] = [], stage?: RunnerStage): ExerciseItem[][] {
   const batch = SCREEN_TYPES[def.type]?.batch ?? 1;
   const items = runItems(def, seed, review);
+  if (stage?.screens) return stage.screens(items, seed);
   if (batch === 'all') return [items];
   const out: ExerciseItem[][] = [];
   for (let i = 0; i < items.length; i += batch) out.push(items.slice(i, i + batch));
@@ -80,7 +112,7 @@ function screensOf(def: ExerciseDef, seed = def.id, review: string[] = []): Exer
  * Lanceur d'exercice générique : la consigne reste écrite au-dessus de l'item (et lue à voix haute au début),
  * les écrans défilent un par un, feedback immédiat jamais punitif, puis récompense.
  */
-export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etapesNeutres = false, revisionDeLIle = false }: Props) {
+export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etapesNeutres = false, revisionDeLIle = false, stage: inWorld }: Props) {
   const { state, complete, pauseAfterNext, continueSession } = useBlocland();
   const { answer, completeSession } = useProgress();
   const [index, setIndex] = useState(0);
@@ -94,8 +126,9 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   // « Encore un peu » retire la pause : le focus va au bouton principal du bilan, pas dans le vide.
   const [repris, setRepris] = useState(0);
   const suiteRef = useRef<HTMLAnchorElement>(null);
+  const backRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    if (repris) suiteRef.current?.focus();
+    if (repris) (suiteRef.current ?? backRef.current)?.focus();
   }, [repris]);
   const sectionRef = useRef<HTMLElement>(null);
   const { settings, speak } = useSettings();
@@ -107,13 +140,15 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   const [seed] = useState(() => runSeed(def));
   // Les items à revoir aujourd'hui (répétition espacée) passent en tête ; fixés au démarrage de la partie.
   const [review] = useState(() => reviewKeys(state.spaced, def.id));
-  const screens = screensOf(def, seed, review);
+  const screens = screensOf(def, seed, review, inWorld);
+  const instruction = inWorld?.instruction ?? def.instruction;
   const items = screens[index];
 
   // Chaque écran suivant (et l'écran de fin) s'affiche en haut ; pas de saut au premier.
   useEffect(() => {
-    if (index > 0 || done) sectionRef.current?.scrollIntoView?.({ block: 'start' });
-  }, [index, done]);
+    // Dans le monde ouvert, la question reste à sa place sur la scène : rien ne défile.
+    if (!inWorld && (index > 0 || done)) sectionRef.current?.scrollIntoView?.({ block: 'start' });
+  }, [index, done, inWorld]);
 
   // La consigne est lue au début de la partie, sauf si l'écran lit déjà son mot (dictée) : les deux se couperaient.
   // Le Gardien a son propre texte d'accueil, et chaque manche affiche sa consigne.
@@ -138,7 +173,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   useEffect(() => {
     if (!autoRead) return;
     const dictee = dicteeAutoText(screens[0], def.lang, type?.listening);
-    speak(autoReadText(def.instruction, screens[0]), dictee ? puisDire(dictee, 0) : undefined);
+    speak(autoReadText(instruction, screens[0]), dictee ? puisDire(dictee, 0) : undefined);
     // Une lecture par partie.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [def.id]);
@@ -184,12 +219,13 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   useAnswerKeys(sectionRef);
   // Mode concentration pendant la partie ; « Quitter » ramène au panneau de l'île.
   const navigate = useNavigate();
-  useFocusMode(!done, () => navigate(`/adventure/${biome.id}`), 'L’XP des réponses déjà données est gardée ; les blocs se gagnent en finissant la mission.');
+  useFocusMode(!done, () => (inWorld ? inWorld.back.onClick() : navigate(`/adventure/${biome.id}`)), 'L’XP des réponses déjà données est gardée ; les blocs se gagnent en finissant la mission.');
 
   if (!type) {
     return <p className="intro">Ce type d’exercice ({def.type}) n’est pas encore disponible.</p>;
   }
-  const Screen = type.component;
+  const Screen = inWorld?.Screen ?? type.component;
+  const sectionClass = inWorld?.className ? ` ${inWorld.className}` : '';
 
   const onAnswer = (a: ScreenAnswer) => {
     if (answered) return;
@@ -249,91 +285,112 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
     const pose = done.pose;
     // « Reprendre » chez la créature : la révision suivante de l'île, ou le retour sur l'île.
     const revisionSuivante = revisionDeLIle ? revisionsDeLIle(done.state.spaced, done.state.world.links, biome.id, settings.lv2).find((q) => q.type !== def.type) : undefined;
+    const detail = (
+      <>
+        <ul className="reward-list">
+          <li>
+            <BlockIcon top={block.top} side={block.side} size={44} />
+            <strong>+{done.blocks}</strong> bloc{done.blocks > 1 ? 's' : ''} {ofBlock(done.block)}
+            {(done.bonus.first > 0 || done.bonus.stars > 0) && (
+              <span className="reward-bonus">
+                {[done.bonus.first > 0 && `+${done.bonus.first} première fois`, done.bonus.stars > 0 && `+${done.bonus.stars} pour ${done.stars} étoiles`]
+                  .filter(Boolean)
+                  .join(', ')}
+              </span>
+            )}
+          </li>
+          <li>
+            <Icon name="zap" size="1.6rem" />
+            <strong>+{done.xp}</strong> XP{done.perfect ? ' (bonus sans aide)' : ''}
+          </li>
+          {pose?.posees.map((partie, i, posees) => (
+            <li key={`pose-${partie.rang}`} className="reward-pose">
+              <Icon name="home" size="1.6rem" />
+              <span>
+                <strong>Partie posée : {minuscule(partie.nom)}.</strong>
+                {i === posees.length - 1 &&
+                  pose.plansFinis.map((plan) => (
+                    <span key={plan.id} className="reward-pose-fin">
+                      {' '}
+                      <Syllabified text={plan.done} /> <strong>+{plan.reward.xp}</strong> XP
+                    </span>
+                  ))}
+              </span>
+              {i === posees.length - 1 && <SpeakButton text={frenchTypography(phraseDeLaPose(pose))} label="Écouter" compact />}
+            </li>
+          ))}
+          {done.chestBlock && (
+            <li className="reward-chest">
+              <BlockIcon top={BLOCKS[done.chestBlock].top} side={BLOCKS[done.chestBlock].side} size={44} />
+              Coffre de régularité : <strong>+6</strong> blocs {ofBlock(done.chestBlock)} !
+            </li>
+          )}
+          <li className="reward-site">
+            <Icon name="hammer" size="1.6rem" />
+            <span>
+              <strong>À quoi servent tes blocs.</strong> <Syllabified text={site.text} />
+              {site.need > 1 && !site.ready && (
+                <span className="goal-gauge" role="img" aria-label={`${site.have} sur ${site.need}`}>
+                  <span className="goal-gauge-fill" style={{ width: `${(100 * site.have) / site.need}%` }} />
+                  <span className="goal-gauge-count" aria-hidden="true">
+                    {site.have} / {site.need}
+                  </span>
+                </span>
+              )}
+            </span>
+          </li>
+          {shipReady && site.kind !== 'navire' && (
+            <li className="reward-ship">
+              <Icon name="ship" size="1.6rem" />
+              <span>
+                <strong>La Nef a tous ses blocs !</strong> Va les poser au port, sur {getBiome(shipReady.biome)?.name}.
+              </span>
+            </li>
+          )}
+        </ul>
+        {done.streak.extended && (
+          <p className="reward-streak">
+            <Icon name="flame" /> {done.streak.streak.current} jour{done.streak.streak.current > 1 ? 's' : ''} d’affilée
+            {done.streak.streak.cracked ? ' (un jour manqué : joue demain pour réparer)' : ''}
+          </p>
+        )}
+      </>
+    );
+    const pause = paused ? (
+      <SessionPause
+        onContinuer={() => {
+          continueSession();
+          setPaused(false);
+          setRepris((n) => n + 1);
+        }}
+      />
+    ) : null;
+    // Dans le monde ouvert, le bilan est celui du lieu (`stage.Done`) : les étoiles, une rangée de pastilles, le détail
+    // sur demande et un seul bouton.
+    if (inWorld?.Done)
+      return (
+        <section className={`quiz${sectionClass}`} ref={sectionRef} aria-labelledby="fin-titre">
+          <inWorld.Done completion={done} detail={detail} pause={pause} back={inWorld.back} />
+        </section>
+      );
     return (
-      <section className="quiz" ref={sectionRef} aria-labelledby="fin-titre">
+      <section className={`quiz${sectionClass}`} ref={sectionRef} aria-labelledby="fin-titre">
         <div className="panel summary reward-panel">
           <h2 id="fin-titre">{done.perfect ? 'Sans faute !' : done.stars === 3 ? 'Superbe !' : done.stars === 2 ? 'Bien joué !' : 'Terminé !'}</h2>
           <Stars count={done.stars} size="2.4rem" />
           {done.newBest && done.state.progress[def.id].attempts > 1 && <p className="reward-best">Ton meilleur résultat !</p>}
-          <ul className="reward-list">
-            <li>
-              <BlockIcon top={block.top} side={block.side} size={44} />
-              <strong>+{done.blocks}</strong> bloc{done.blocks > 1 ? 's' : ''} {ofBlock(done.block)}
-              {(done.bonus.first > 0 || done.bonus.stars > 0) && (
-                <span className="reward-bonus">
-                  {[done.bonus.first > 0 && `+${done.bonus.first} première fois`, done.bonus.stars > 0 && `+${done.bonus.stars} pour ${done.stars} étoiles`]
-                    .filter(Boolean)
-                    .join(', ')}
-                </span>
-              )}
-            </li>
-            <li>
-              <Icon name="zap" size="1.6rem" />
-              <strong>+{done.xp}</strong> XP{done.perfect ? ' (bonus sans aide)' : ''}
-            </li>
-            {pose?.posees.map((partie, i, posees) => (
-              <li key={`pose-${partie.rang}`} className="reward-pose">
-                <Icon name="home" size="1.6rem" />
-                <span>
-                  <strong>Partie posée : {minuscule(partie.nom)}.</strong>
-                  {i === posees.length - 1 &&
-                    pose.plansFinis.map((plan) => (
-                      <span key={plan.id} className="reward-pose-fin">
-                        {' '}
-                        <Syllabified text={plan.done} /> <strong>+{plan.reward.xp}</strong> XP
-                      </span>
-                    ))}
-                </span>
-                {i === posees.length - 1 && <SpeakButton text={frenchTypography(phraseDeLaPose(pose))} label="Écouter" compact />}
-              </li>
-            ))}
-            {done.chestBlock && (
-              <li className="reward-chest">
-                <BlockIcon top={BLOCKS[done.chestBlock].top} side={BLOCKS[done.chestBlock].side} size={44} />
-                Coffre de régularité : <strong>+6</strong> blocs {ofBlock(done.chestBlock)} !
-              </li>
-            )}
-            <li className="reward-site">
-              <Icon name="hammer" size="1.6rem" />
-              <span>
-                <strong>À quoi servent tes blocs.</strong> <Syllabified text={site.text} />
-                {site.need > 1 && !site.ready && (
-                  <span className="goal-gauge" role="img" aria-label={`${site.have} sur ${site.need}`}>
-                    <span className="goal-gauge-fill" style={{ width: `${(100 * site.have) / site.need}%` }} />
-                    <span className="goal-gauge-count" aria-hidden="true">
-                      {site.have} / {site.need}
-                    </span>
-                  </span>
-                )}
-              </span>
-            </li>
-            {shipReady && site.kind !== 'navire' && (
-              <li className="reward-ship">
-                <Icon name="ship" size="1.6rem" />
-                <span>
-                  <strong>La Nef a tous ses blocs !</strong> Va les poser au port, sur {getBiome(shipReady.biome)?.name}.
-                </span>
-              </li>
-            )}
-          </ul>
-          {done.streak.extended && (
-            <p className="reward-streak">
-              <Icon name="flame" /> {done.streak.streak.current} jour{done.streak.streak.current > 1 ? 's' : ''} d’affilée
-              {done.streak.streak.cracked ? ' (un jour manqué : joue demain pour réparer)' : ''}
-            </p>
-          )}
+          {detail}
 
-          {paused ? (
-            <SessionPause
-              onContinuer={() => {
-                continueSession();
-                setPaused(false);
-                setRepris((n) => n + 1);
-              }}
-            />
+          {pause ? (
+            pause
           ) : (
             <div className="actions">
-              {pose ? (
+              {inWorld ? (
+                // Dans le monde ouvert : on revient au lieu, où la pièce remise en marche se voit.
+                <button type="button" ref={backRef} className="button primary" onClick={inWorld.back.onClick}>
+                  <Icon name="footprints" /> {inWorld.back.label}
+                </button>
+              ) : pose ? (
                 // Une partie vient d'être posée : on va la voir se poser, sur l'île de la mission (GD-6, la vague).
                 <Link ref={suiteRef} to={`/adventure/${biome.id}?worksite=part`} className="button primary" onClick={() => retenirLaPose(biome.id, pose.posees)}>
                   <Icon name="home" /> Voir le bâtiment
@@ -380,19 +437,21 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
     : null;
 
   return (
-    <section className={`quiz${answered ? ' has-sheet' : ''}`} ref={sectionRef} aria-labelledby="consigne">
+    <section className={`quiz${answered ? ' has-sheet' : ''}${sectionClass}`} ref={sectionRef} aria-labelledby="consigne">
+      {inWorld?.head}
       {ownConsigne ? (
         <div className="consigne">
           <h2 id="consigne" className="consigne-text">
-            <Syllabified text={frenchTypography(def.instruction)} />
+            <Syllabified text={frenchTypography(instruction)} />
           </h2>
-          <SpeakButton text={frenchTypography(def.instruction)} label="Consigne" compact />
+          <SpeakButton text={frenchTypography(instruction)} label="Consigne" compact />
         </div>
       ) : (
         <h2 id="consigne" className="visually-hidden">
-          {def.instruction}
+          {instruction}
         </h2>
       )}
+      {inWorld?.extra}
       <ol className={`quiz-steps${etapesNeutres ? ' quiz-steps-neutres' : ''}`} aria-label={`Écran ${index + 1} sur ${screens.length}`}>
         {screens.map((s, i) => (
           <li key={s[0].key} className={i < index ? 'done' : i === index ? 'current' : ''} aria-hidden="true" />

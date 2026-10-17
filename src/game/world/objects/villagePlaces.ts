@@ -1,7 +1,7 @@
 // Les trois lieux du village de l'île-école d'Archipéo, dessinés (lot 2 du 6e de la piste 3 « hybride », même style
 // que le lot 1 : low poly en aplats francs, sans texture, par le code ; dans l'esprit des bâtiments importés : un toit
 // franc, une ouverture sombre, une signature) : l'école et son clocheton à cloche d'or, la salle des trophées (ses
-// piliers, son fond de velours, ses socles, son faîte d'or) et la Halle aux matériaux (sa grande porte, son toit à deux
+// piliers, son fond de velours, ses socles, son faîte d'or) et l’Entrepôt des matériaux (sa grande porte, son toit à deux
 // pans, sa haute potence). De près (l'île où se trouve l'élève) le modèle entier, de 600 à 2 000 triangles ; de loin
 // ses volumes, 200 au plus.
 //
@@ -341,10 +341,10 @@ const trophyRoom: PlaceDrawing = (at, pe, cells, far) => {
   for (const x of [x0 + 0.2, x1 - 0.2]) at.pyramid(x, d / 2, 0.16, 0.16, zRidge + 0.06, zRidge + 0.5, gold);
 };
 
-// ---------- La Halle aux matériaux ----------
+// ---------- L’Entrepôt des matériaux ----------
 
 /**
- * La Halle aux matériaux (la halle au fond, la cour devant) : le soubassement de pierre et ses assises, les murs de
+ * L’Entrepôt des matériaux (la halle au fond, la cour devant) : le soubassement de pierre et ses assises, les murs de
  * planches, l'ossature de bois (poteaux, sablières, croix de Saint-André), la grande porte ouverte (sa bouche sombre, ses
  * deux vantaux rabattus), une fenêtre à chaque flanc, le toit franc à deux pans, le faîte en long, le pignon de planches
  * en façade ; la haute potence (son pied de pierre, son mât, son bras, sa jambe de force, la poulie et la corde jusqu'au

@@ -404,7 +404,7 @@ const CAPTURES = [
   ]),
   // Les îles-écoles en trois bandes (famille `trois-bandes`, lot en cours, 02/10/2026) : au Marché et à l'Atelier, la zone
   // des plans avec le troisième plan à moitié posé (`cour-mi` : sa première rangée, au fond de la zone depuis ce lot) ; à
-  // la Forêt, le lieu où l'on assemble (la Fabrique, ou la Halle aux matériaux dans Archipéo) près d'un plan posé
+  // la Forêt, le lieu où l'on assemble (la Fabrique, ou l’Entrepôt des matériaux dans Archipéo) près d'un plan posé
   // (`un-plan`), de jour et de nuit. La vue de l'île entière : le cadre serré se fixera sur ces premières captures.
   ...[['marche', 'maths-5e-proportionality'], ['atelier', 'maths-4e-algebra']].map(([court, ile]) => ({ nom: `trois-bandes-plans-${court}`, vue: 'île', famille: 'trois-bandes', ile, partie: 'cour-mi', finesse: 2 })),
   { nom: 'trois-bandes-assemblage', vue: 'île', famille: 'trois-bandes', ile: 'french-6e-phonology', partie: 'un-plan', finesse: 2 },

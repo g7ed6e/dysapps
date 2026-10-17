@@ -88,6 +88,7 @@ import {
   Target,
   TreePine,
   Trophy,
+  User,
   Volume2,
   VolumeX,
   Vote,
@@ -95,6 +96,8 @@ import {
   Smartphone,
   Workflow,
   Wrench,
+  HandGrab,
+  ShoppingBasket,
   X,
   Zap,
   createLucideIcon,
@@ -168,6 +171,12 @@ export const ICONS = {
   languages: Languages,
   lightbulb: Lightbulb,
   lock: Lock,
+  /** L'objet tenu du geste « ranger » (monde ouvert, GD-20, point 8, lot L4). */
+  main: HandGrab,
+  /** Un panier du geste « ranger » (monde ouvert, GD-20, point 8, relecture de L4). */
+  panier: ShoppingBasket,
+  /** Kéo sur la Carte du monde ouvert (« Toi »). */
+  toi: User,
   medal: Medal,
   mountain: Mountain,
   pizza: Pizza,

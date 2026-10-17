@@ -8,8 +8,9 @@
 // se réunissent (`joinIslands`, GD-9, point 10) : la paire entre dans la disposition (`joined`), bouge et tourne d'un
 // bloc autour du premier, ne se sépare plus ; la forme de leur construction est dans ./join.ts. Code pur, sans Three.js.
 import { type BiomeId, getBiome } from '../biomes';
-import type { World } from '../engine/state';
-import { BRIDGES, type BridgeDef, getBridge, isBiomeUnlocked, reachableIslands } from './archipelago';
+import type { GameState, World } from '../engine/state';
+import { buildBridge } from '../engine';
+import { BRIDGES, type BridgeDef, type BuildBridgeResult, buildUntracedLink, getBridge, isBiomeUnlocked, reachableIslands } from './archipelago';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, CORE, type IslandDef, startingIsland } from './map';
 import { SIDE_OF, LAYOUT_SIDE_OF } from './appliedLayout';
 import { boxOf, fittingPlaces, landRectangles, type FootprintPart, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, placedIsland, poseOfSpot, spotInSteps, tooSmallGaps } from './footprint';
@@ -271,6 +272,20 @@ function settle(avant: World, apres: World, a: ArchipelagoId): ArrangeResult {
 export function linksBrokenBy(world: World, id: BiomeId, spot: LayoutSpot): string[] {
   const r = moveIsland(world, id, spot);
   return r.ok ? r.relink : [];
+}
+
+/**
+ * Une liaison posée qui devient à reposer (GD-9) : payée dans le monde continu alors que la disposition de la grille ne
+ * la trace plus (GD-20, point 3, « Relier » ; `buildUntracedLink`). Rien ne se perd : elle reste construite, ses lieux
+ * restent ouverts, et on la repose gratuitement dans la grille.
+ */
+export function markForRelink(world: World, id: string): World {
+  const b = getBridge(id);
+  if (!b) return world;
+  const a = archipelagoOfIsland(b.from);
+  const r = regionOf(world, a);
+  if ((r.relink ?? []).includes(id)) return world;
+  return withRegion(world, a, { ...r, relink: [...(r.relink ?? []), id] });
 }
 
 /** Les liaisons à reposer d'une région (la pastille du bouton « Aménager » en dit le nombre). */
@@ -942,4 +957,18 @@ export function backToStartingMap(world: World, a: ArchipelagoId): World | null 
   const traces = routesIn(apres, a);
   const relink = (r.relink ?? []).filter((id) => traces.get(id) === null);
   return relink.length ? withRegion(apres, a, { ...regionOf(apres, a), relink }) : apres;
+}
+
+/**
+ * Relie un lieu depuis le monde continu (GD-20, point 3, « Relier ») : comme `buildBridge` ; si la liaison ne se trace pas
+ * dans la disposition de la grille (une région aménagée, GD-9 ; « loin »), elle se paie au même prix
+ * (`buildUntracedLink`) et devient une liaison à reposer, gratuite, dans la grille (`markForRelink`). Rien d'autre ne
+ * change ; un refus laisse l'état tel quel (un second « Relier » sur une liaison posée : « construit », rien de débité).
+ */
+export function payLink(state: GameState, id: string): { state: GameState; result: BuildBridgeResult } {
+  const r = buildBridge(state, id);
+  if (r.result.ok || r.result.reason !== 'loin') return r;
+  const u = buildUntracedLink(id, state.world.links, state.stock);
+  if (!u.ok) return { state, result: u.reason === 'loin' ? r.result : u };
+  return { state: { ...state, stock: u.inventory, world: markForRelink({ ...state.world, links: u.bridges }, id) }, result: u };
 }

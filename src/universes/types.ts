@@ -197,6 +197,23 @@ export interface TextesUnivers {
    * l'univers (« ouvrage ») ; sans lui, le mot du jeu (« liaison »).
    */
   liaisons?: LinkWord;
+  /**
+   * Le lieu de départ du monde continu (GD-20, lot 2), et ce qu'il rassemble : ses noms dans l'univers. Sans eux,
+   * l'univers n'a pas de monde continu (Blocland garde la grille).
+   */
+  depart?: TextesDepart;
+}
+
+/** Les noms du lieu de départ du monde continu et de ses bâtiments (GD-20, lot 2). */
+interface TextesDepart {
+  /** Le lieu de départ, avec l'article (« L'Escale »). */
+  nom: string;
+  /** L'école, avec l'article. */
+  ecole: string;
+  /** La salle des succès, avec l'article. */
+  succes: string;
+  /** Le lieu d'assemblage, avec l'article. */
+  assemblage: string;
 }
 
 /** Les mots de la construction qui réunit deux lieux dans un univers (GD-9). */

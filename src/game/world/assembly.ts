@@ -1,6 +1,6 @@
 // L'assemblage des blocs (GD-2, décidée par le mainteneur le 30 septembre 2026) : un bloc assemblé par archipel, qu'aucune
 // île ne donne, fait de blocs de deux îles de son archipel, dans un lieu de l'île de l'école (la Fabrique dans Blocland,
-// la Halle aux matériaux dans Archipéo). Seuls les monuments de son archipel en demandent, aux endroits qui comptent.
+// l’Entrepôt des matériaux dans Archipéo). Seuls les monuments de son archipel en demandent, aux endroits qui comptent.
 // La recette est fixe et toujours affichée ; un toucher assemble un bloc, sans grille ni recette à deviner. Code pur,
 // commun aux univers. Les recettes et les noms (du lieu et des blocs, propres à chaque univers) s'écrivent dans
 // docs/contenu/assemblage.md, que `npm run contenu` recopie dans recipes.ts ; les textes d'univers les reprennent.

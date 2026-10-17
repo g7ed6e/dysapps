@@ -1,6 +1,6 @@
 // Ce que les kits d'Archipéo ont en commun (le 6e, la référence, puis le 5e, 9 octobre 2026, le 4e et le 3e,
 // 10 octobre 2026) : les murs de bois sur pilotis, les poteaux de bois des liaisons et de la jetée du port, les lieux du
-// village (l'école, la salle des trophées, la Halle aux matériaux), la finition (la porte, la marche, la barrière) et la
+// village (l'école, la salle des trophées, l’Entrepôt des matériaux), la finition (la porte, la marche, la barrière) et la
 // plate-bande d'une matière seule au sol (la rizière, le pétale). Chaque kit les reprend avec ce qui lui est propre (son
 // port, la pierre de ses lieux, le mur de sa Halle : en colombage, sauf au 3e, qui n'en a pas). Code pur, sans Three.js.
 import { boiteDansLaCase, type DessinDePiece, type Facette } from '../rooms';
@@ -107,7 +107,7 @@ export interface PlaceWall {
  *   bout à l'autre (le pignon au bout de la halle, aucun au milieu), et son faîte d'or en faîte, qui s'allonge avec
  *   elle ; le fond de velours (le fond des trophées) est une tenture peinte (ses plis, son galon d'or) ; les socles de
  *   marbre vont au reste, et les trophées sont dessinés par world/construction.ts ;
- * - la Halle aux matériaux (le lieu où l'on assemble, dans son dessin d'Archipéo : `atelierModel('halle')`) : ses murs
+ * - l’Entrepôt des matériaux (le lieu où l'on assemble, dans son dessin d'Archipéo : `atelierModel('halle')`) : ses murs
  *   de bois sur leur rang de pierre en colombage (le rang de pierre devient le soubassement, comme aux maisons), son toit
  *   à deux pentes en pentes et son faîte ; la porte reste ouverte. Le dessin de Blocland (la Fabrique) n'est jamais
  *   repris : la construction taillée est celle d'Archipéo. `assembly` : le mur de son bois et celui de son rang de pierre,

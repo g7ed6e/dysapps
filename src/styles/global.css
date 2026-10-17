@@ -440,6 +440,65 @@ button.app-card:active {
   border-top-width: var(--border-width);
   border-top-color: var(--ink);
 }
+/* Les missions d'une matière en lignes (une porte de l'école du monde continu, GD-20, lot 2) : l'icône, le titre et
+   l'étiquette sur une ligne de 64 px au moins, toute la ligne est la cible ; dans une colonne étroite (au plus grand
+   texte), l'étiquette passe sous le titre plutôt que de sortir du panneau. */
+.apps-compact {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+}
+.apps-compact .app-card {
+  flex-direction: row;
+  flex-wrap: wrap;
+  min-width: 0;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 64px;
+  height: auto;
+  padding-block: 0.4rem;
+}
+/* Une ligne qui fait un geste (une mission d'un lieu du monde continu, jouée sur place) : la même que le lien. */
+.apps-compact button.app-card {
+  width: 100%;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.apps-compact .app-icon {
+  flex: none;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin: 0;
+}
+.apps-compact .app-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-weight: 700;
+}
+/* Au plus grand texte, l'étiquette passe sous le titre, l'icône à gauche des deux, et la ligne se resserre : deux
+   lignes par mission dans la colonne d'un écran bas (consultant UX UI). */
+:root[data-texte="grand"] .apps-compact .app-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.6rem;
+  row-gap: 0.15rem;
+  padding: 0.3rem 0.6rem;
+}
+:root[data-texte="grand"] .apps-compact .app-icon {
+  grid-row: span 2;
+  width: 1.8rem;
+  height: 1.8rem;
+}
+:root[data-texte="grand"] .apps-compact .app-card > .tag {
+  grid-column: 2;
+  justify-self: start;
+  margin-top: 0;
+}
 .subject-icon,
 .app-icon {
   display: grid;
@@ -7616,4 +7675,14 @@ fieldset {
   100% {
     transform: rotate(-90deg);
   }
+}
+
+/* Un mot composé, une inversion verbe-pronom ou la case à compléter avec le mot qui lui est collé ne se coupent pas à
+   l'affichage (`keepTogether`, core/typography.ts) ; le texte lu ne change pas. Une boîte en ligne, à la largeur de son
+   texte : elle passe entière à la ligne suivante ; seul un mot plus long que toute la ligne s'y coupe encore, en dernier
+   recours (`overflow-wrap: anywhere` ; avec `white-space: nowrap`, il ne jouerait pas et le mot sortirait du cadre). */
+.mot-lie {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }

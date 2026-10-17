@@ -88,16 +88,16 @@
     },
     {
       "key": "life-earth-sciences-6e-living-world-food-growth-1-3",
-      "prompt": "Expérience sur deux tranches de pain\nTranche 1 : dans un sac fermé, au réfrigérateur.\nTranche 2 : dans un sac fermé, dans la cuisine.\nUne semaine plus tard :\nTranche 1 : pas de moisissure.\nTranche 2 : des taches vertes de moisissure.",
+      "prompt": "Expérience sur deux tranches de pain\nLes deux tranches restent une semaine dans un sac fermé.\nTranche 1, au réfrigérateur : pas de moisissure.\nTranche 2, dans la cuisine : des taches vertes de moisissure.",
       "question": "Que montre cette expérience ?",
-      "spoken": "Expérience sur deux tranches de pain. Tranche 1, dans un sac fermé, au réfrigérateur. Tranche 2, dans un sac fermé, dans la cuisine. Une semaine plus tard. Tranche 1, pas de moisissure. Tranche 2, des taches vertes de moisissure.",
+      "spoken": "Expérience sur deux tranches de pain. Les deux tranches restent une semaine dans un sac fermé. Tranche 1, au réfrigérateur, pas de moisissure. Tranche 2, dans la cuisine, des taches vertes de moisissure.",
       "choices": [
         "le sac fait pousser la moisissure",
         "le froid ralentit la moisissure",
         "le pain moisit toujours"
       ],
       "answer": "le froid ralentit la moisissure",
-      "hint": "Les deux tranches sont dans un sac. Qu’est-ce qui change entre elles ?",
+      "hint": "Une seule chose change entre les deux tranches. Laquelle ?",
       "explanation": "Une seule chose change : le froid. Le froid ralentit les moisissures. Ce sont des micro-organismes : très nombreux, ils forment des taches.",
       "aid": {
         "kind": "rule-card",

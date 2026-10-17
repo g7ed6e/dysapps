@@ -12,11 +12,12 @@
       "choices": [
         "80°",
         "100°",
+        "120°",
         "140°"
       ],
       "answer": "80°",
       "hint": "Les trois angles font 180°. Combien font déjà les deux premiers ?",
-      "explanation": "40 + 60 = 100, et 180 − 100 = 80 : le troisième angle mesure 80°. 100°, c’est la somme des deux premiers ; 140°, c’est 180 − 40, en oubliant l’angle de 60°.",
+      "explanation": "40 + 60 = 100, et 180 − 100 = 80 : le troisième angle mesure 80°. 100°, c’est la somme des deux premiers ; 140°, c’est 180 − 40, en oubliant l’angle de 60° ; 120°, c’est 180 − 60, en oubliant l’angle de 40°.",
       "figure": {
         "kind": "triangle-angles",
         "props": {
@@ -47,13 +48,14 @@
       "prompt": "Un triangle isocèle a un angle de 80°. Ses deux autres angles sont égaux. Chacun mesure …",
       "spoken": "Un triangle isocèle a un angle de 80 degrés. Ses deux autres angles sont égaux. Chacun mesure combien de degrés ?",
       "choices": [
+        "40°",
         "50°",
         "80°",
         "100°"
       ],
       "answer": "50°",
       "hint": "180 − 80 donne les deux angles égaux ensemble. Puis partage en deux.",
-      "explanation": "180 − 80 = 100 pour les deux angles égaux ensemble, donc 100 ÷ 2 = 50° chacun. 100°, c’est oublier de partager en deux ; 80°, c’est croire que les trois angles sont égaux.",
+      "explanation": "180 − 80 = 100 pour les deux angles égaux ensemble, donc 100 ÷ 2 = 50° chacun. 100°, c’est oublier de partager en deux ; 80°, c’est croire que les trois angles sont égaux ; 40°, c’est partager l’angle de 80° au lieu de ce qui reste.",
       "figure": {
         "kind": "triangle-angles",
         "props": {
@@ -87,11 +89,12 @@
       "choices": [
         "30°",
         "60°",
+        "120°",
         "150°"
       ],
       "answer": "60°",
       "hint": "Un triangle rectangle a aussi un angle droit, de 90°.",
-      "explanation": "Les angles font 180° : 90 + 30 = 120, et 180 − 120 = 60°. 150°, c’est oublier l’angle droit ; 30°, c’est recopier l’angle donné : rien ne dit que les deux autres angles sont égaux.",
+      "explanation": "Les angles font 180° : 90 + 30 = 120, et 180 − 120 = 60°. 120°, c’est s’arrêter à la somme des deux angles connus, sans la retirer de 180 ; 150°, c’est oublier l’angle droit ; 30°, c’est recopier l’angle donné : rien ne dit que les deux autres angles sont égaux.",
       "figure": {
         "kind": "triangle-angles",
         "props": {
@@ -124,11 +127,12 @@
       "choices": [
         "60°",
         "90°",
+        "120°",
         "180°"
       ],
       "answer": "60°",
       "hint": "Les trois angles sont égaux et font 180° en tout.",
-      "explanation": "180 ÷ 3 = 60 : chaque angle mesure 60°. 180°, c’est la somme des trois ; 90°, c’est l’angle droit, qu’un triangle équilatéral n’a pas.",
+      "explanation": "180 ÷ 3 = 60 : chaque angle mesure 60°. 180°, c’est la somme des trois ; 90°, c’est l’angle droit, qu’un triangle équilatéral n’a pas ; 120°, c’est 360 ÷ 3 : un tour complet fait 360°, mais les angles d’un triangle font 180°.",
       "figure": {
         "kind": "triangle-angles",
         "props": {
@@ -162,11 +166,12 @@
       "choices": [
         "2 cm",
         "4 cm",
+        "6 cm",
         "8 cm"
       ],
       "answer": "8 cm",
       "hint": "Le diamètre traverse le cercle en passant par le centre.",
-      "explanation": "Le diamètre vaut deux rayons : 2 × 4 = 8 cm. 2 cm, c’est prendre la moitié : on a confondu rayon et diamètre.",
+      "explanation": "Le diamètre vaut deux rayons : 2 × 4 = 8 cm. 2 cm, c’est prendre la moitié : on a confondu rayon et diamètre ; 4 cm, c’est recopier le rayon ; 6 cm, c’est 4 + 2 : « deux rayons », c’est 4 × 2, pas 4 + 2.",
       "figure": {
         "kind": "plane-figure",
         "props": {
@@ -199,11 +204,12 @@
       "choices": [
         "3,5 cm",
         "7 cm",
-        "14 cm"
+        "14 cm",
+        "on ne peut pas savoir"
       ],
       "answer": "7 cm",
       "hint": "Relis la ligne « médiatrice » du rappel.",
-      "explanation": "Un point de la médiatrice est à la même distance de A et de B : MB = MA = 7 cm. 3,5 cm, c’est confondre avec le milieu ; 14 cm, c’est doubler.",
+      "explanation": "Un point de la médiatrice est à la même distance de A et de B : MB = MA = 7 cm. 3,5 cm, c’est confondre avec le milieu ; 14 cm, c’est doubler. On peut savoir sans mesurer : c’est ce que dit la médiatrice.",
       "figure": {
         "kind": "plane-figure",
         "props": {
@@ -234,13 +240,14 @@
       "prompt": "3 m² = … dm²",
       "spoken": "3 mètres carrés, c’est combien de décimètres carrés ?",
       "choices": [
+        "3 dm²",
         "30 dm²",
         "300 dm²",
         "3 000 dm²"
       ],
       "answer": "300 dm²",
       "hint": "1 m², c’est combien de dm² ?",
-      "explanation": "1 m² = 100 dm², donc 3 m² = 300 dm². 30 dm², c’est multiplier par 10 comme pour une longueur ; pour une aire, c’est 10 × 10 = 100.",
+      "explanation": "1 m² = 100 dm², donc 3 m² = 300 dm². 3 dm², c’est oublier de convertir ; 30 dm², c’est multiplier par 10 comme pour une longueur : pour une aire, c’est 10 × 10 = 100 ; 3 000 dm², c’est multiplier par 1 000.",
       "figure": {
         "kind": "ratio-table",
         "props": {
@@ -283,11 +290,12 @@
       "choices": [
         "le cinéma",
         "la piscine",
-        "le musée"
+        "le musée",
+        "le zoo"
       ],
       "answer": "le cinéma",
       "hint": "Écarte d’abord les sorties à 7 € ou plus. Puis regarde la durée.",
-      "explanation": "Moins de 7 € : le cinéma et la piscine. Au moins 2 h : seul le cinéma, 2 h ; la piscine ne dure qu’1 h. Le musée dure 2 h, mais coûte 8 €.",
+      "explanation": "Moins de 7 € : le cinéma et la piscine. Au moins 2 h : seul le cinéma, 2 h ; la piscine ne dure qu’1 h. Le musée dure 2 h, mais coûte 8 € ; le zoo dure 4 h, mais coûte 12 €.",
       "figure": {
         "kind": "ratio-table",
         "props": {

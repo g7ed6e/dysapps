@@ -76,7 +76,7 @@ Le mainteneur garde Blocland et son univers. Le plan d’Archipéo change sur tr
 | --- | --- | --- |
 | **Les noms** | Les noms des lieux (régions, îles, lieux du village), des Gardiens et des constructions (ouvrages, monuments, véhicule), décision du mainteneur | Le consultant de l’univers, validé par le directeur artistique |
 | **Le récit** | Le récit d’ensemble, la figure qui guide (la baleine d’Archipéo, les créatures de Blocland), les créatures et leurs répliques, l’allure d’un Gardien éteint puis rallumé (sentinelle ou statue de cubes) | Le consultant de l’univers, validé par le directeur artistique |
-| **Le monde** | Le rendu (§2), la palette et l’ambiance, les silhouettes, le décor, les personnages. Jamais le relief qui porte la marche, jamais les cases d’un plan. | Le consultant (quoi), l’artiste technique 3D (comment), le directeur artistique valide |
+| **Le monde** | La disposition du monde (en grille ou continue), décision du mainteneur ; Blocland garde la grille, aucune disposition continue n’est prévue pour lui. Le rendu (§2), la palette et l’ambiance, les silhouettes, le décor, les personnages, la forme d’une liaison et le dessin d’une partie (pour Blocland, son dessin d’aujourd’hui, figé). Jamais ce qui se gagne ni ce qui se pose : une partie, une liaison, l’aménagement de la région garde son identifiant, son ordre et son prix dans les deux dispositions. Dans une même disposition, le relief qui porte la marche et les cases d’un plan sont les mêmes pour tous les univers. | Le consultant (quoi), l’artiste technique 3D (comment), le directeur artistique valide |
 
 **Les consultants d’univers** (décision du mainteneur). Chaque univers a son agent, `consultant-<univers>`, sous l’autorité du directeur artistique. Il connaît son univers en profondeur (récit, ton, noms, silhouettes) et le défend. Il sait aussi prendre du recul et s’adapter à ce que les autres univers et le jeu commun imposent. Il propose et relit, sans modifier de fichier.
 
@@ -101,8 +101,17 @@ Le mainteneur veut que l’habillage aille jusqu’aux phrases de français (dé
 
 - Les sons, les homophones, les dictées, les familles de mots, les mots-outils.
 - Les verbes irréguliers et les faux amis en anglais.
-- Le calcul nu et les aides de maths (boîte de dix, droite graduée, fractions en colonne).
-- Pour chaque item : la consigne, la réponse, les choix et leur ordre, la règle (`rule-card`), le joker, la correction (`explanation`, `rule`, `why`, `tip`) et le barème.
+- Le calcul nu et les aides de maths (boîte de dix, droite graduée, fractions en colonne), sauf dans un univers à monde ouvert, qui peut poser le même calcul dans une phrase du lieu et dessiner la même figure avec les objets du lieu (ci-dessous, à l’essai).
+- Pour chaque item : la consigne, la réponse, les choix et leur ordre, la règle (`rule-card`), le joker, la correction (`explanation`, `rule`, `why`, `tip`) et le barème ; dans un univers à monde ouvert, seule la consigne peut parler du lieu (ci-dessous, à l’essai).
+
+**Dans un univers à monde ouvert** (Archipéo derrière `?monde=ouvert`, lot 4 du prototype du 6e, décision du mainteneur du 14 octobre 2026) : la question se pose dans un lieu, sur sa scène, et chaque question est le **jumeau** d’un item de référence. Règle **« à l’essai »** tant que dure le prototype :
+
+- Même `exerciceId:key`, même compétence, mêmes pièges, même barème ; les étoiles et les blocs se comptent avec le code commun.
+- Un son, un mot-outil reste le mot de référence : il est seulement porté par un objet du lieu (les cloches du Phare, en deux manches de six).
+- Un calcul nu garde sa réponse, ses choix et leur ordre ; la phrase du lieu, une idée par phrase (« 34 caisses sont sur le quai. La grue prend la moitié. Combien de caisses restent sur le quai ? ») a toujours la ligne de calcul de référence écrite dessous (« Moitié de 34 = … »).
+- Une figure (fraction coloriée, droite graduée) est dessinée par le lieu avec les mêmes nombres (le sas, l’échelle des Écluses : un trait de niveau et des bandes, jamais une couleur seule) ; la consigne le dit. Au sas, l’indice et la correction parlent du sas (« En bas : le nombre de parts égales du sas. En haut : le nombre de parts pleines d’eau. » ; « 3 parts pleines d’eau sur 4 parts égales : 3/4. »), sans changer la clé ni les choix (contenu, 14 octobre 2026).
+- Une phrase de français est réécrite pour le lieu (les Filets), avec le même point d’accord, les mêmes sortes de pièges et autant de choix ; elle s’écrit dans le Markdown de l’île, sous « ## Au lieu · Archipéo », relue par le directeur contenu pédagogique et le référent dys, et un test vérifie qu’elle a un jumeau.
+- « Vue simple » rouvre toujours l’écran classique de la même mission.
 
 Aucun univers ne rend un exercice plus facile. Aucun ne donne plus de blocs ou d’étoiles.
 

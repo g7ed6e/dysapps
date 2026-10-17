@@ -4,7 +4,8 @@
 // chiffrer un lot avant et après sans écrire de test jetable. Le poste « Dans la scène » (étiquettes, flèche, fanion,
 // balises) ne se compte que dans le navigateur : `npm run rendu:mesures` mesure la scène entière. En dessous, le monde en
 // blocs de Blocland (`sceneCost`), avec et sans les petites constructions des commandes, et les bulles
-// (`signesCost`, le même coût quel que soit l'état du jeu), sous son plafond.
+// (`signesCost`, le même coût quel que soit l'état du jeu), sous son plafond ; enfin le monde ouvert du 6e et sa Carte
+// (`openWorldCost`, `mapCost`, world/continu/budget.ts), hors de la sortie JSON.
 // `--archipel 6e,3e` : seulement ces archipels ; `--json` : les chiffres en JSON, pour un script.
 import { createServer } from 'vite';
 import { fileURLToPath } from 'node:url';
@@ -38,7 +39,7 @@ const server = await createServer({
 });
 try {
   const load = (p) => server.ssrLoadModule(p);
-  const [budget, { ARCHIPELAGO_IDS }, { loadMonumentsFromDisk }, { loadBuildingsFromDisk }, { loadNefFromDisk }, { chargerLesModelesDuDisque, loadKeoFromDisk }] =
+  const [budget, { ARCHIPELAGO_IDS }, { loadMonumentsFromDisk }, { loadBuildingsFromDisk }, { loadNefFromDisk }, { chargerLesModelesDuDisque, loadKeoFromDisk }, ouvert] =
     await Promise.all([
     load('/src/game/world/budget.ts'),
     load('/src/game/world/map.ts'),
@@ -46,6 +47,7 @@ try {
     load('/src/game/world/buildingModels.fromDisk.testing.ts'),
     load('/src/game/world/nefModels.fromDisk.testing.ts'),
     load('/src/game/world/characters/imported/fromDisk.testing.ts'),
+    load('/src/game/world/continu/budget.ts'),
   ]);
   // Les monuments et les bâtiments des plans importés d'Archipéo, comme la vue les charge : la construction se compte au
   // pire de leurs chantiers, les bâtiments de près sur une île et de loin ailleurs ; la Nef au pire de ses formes et de ses chantiers.
@@ -94,6 +96,10 @@ try {
     };
   });
 
+  // Le monde ouvert d'Archipéo (prototype du 6e, derrière le drapeau `?monde=ouvert`) : ses postes (`openWorldCost`) et
+  // la Carte de ses lieux (`mapCost`), sous leur enveloppe (`OPEN_WORLD_BUDGET`), que seul le mainteneur relève.
+  const mondeOuvert = !demandes || demandes.includes('6e') ? { postes: ouvert.openWorldCost(), carte: ouvert.mapCost(), enveloppe: ouvert.OPEN_WORLD_BUDGET } : null;
+
   if (JSON_SEUL) console.log(JSON.stringify(resultats, null, 2));
   else {
     const n = (x) => x.toLocaleString('fr-FR');
@@ -124,6 +130,18 @@ try {
       const p = b.pire;
       const pireDepasse = p.triangles > b.plafond.triangles || p.drawCalls > b.plafond.drawCalls ? ' ⚠' : '';
       console.log(`Au pire, la région aménagée (GD-9, \`worstCaseOfRegion\`) : ${n(p.triangles)} triangles (${n(p.base)} sans liaisons, dont ${n(p.choix)} pour le lieu soulevé face par face, ${n(p.liaisons)} de liaisons au plus long, ${n(p.reunions)} de réunions), ${p.drawCalls} appels${pireDepasse}.`);
+    }
+    if (mondeOuvert) {
+      const { postes, carte, enveloppe } = mondeOuvert;
+      console.log('\n## Le monde ouvert du 6e (prototype, `?monde=ouvert`)\n');
+      console.log('| Poste | Triangles | Appels |');
+      console.log('| --- | ---: | ---: |');
+      for (const p of postes) console.log(`| ${p.poste} | ${n(p.triangles)} | ${p.calls} |`);
+      const triangles = postes.reduce((s, p) => s + p.triangles, 0);
+      const calls = postes.reduce((s, p) => s + p.calls, 0);
+      const alerte = (t, c) => (t > enveloppe.triangles || c > enveloppe.calls ? ' ⚠' : '');
+      console.log(`| **total** | **${n(triangles)}** | **${calls}** |`);
+      console.log(`\nLe monde : ${n(triangles)} triangles, ${calls} appels${alerte(triangles, calls)} ; la Carte : ${n(carte.triangles)} triangles, ${carte.calls} appels${alerte(carte.triangles, carte.calls)} ; enveloppe ${n(enveloppe.triangles)} triangles, ${enveloppe.calls} appels (que seul le mainteneur relève).`);
     }
   }
 } finally {

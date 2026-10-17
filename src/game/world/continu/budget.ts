@@ -1,0 +1,225 @@
+// Le budget de dessin du monde continu (prototype du 6e), compté sans Three.js comme world/budget.ts le fait pour le
+// monde en grille : les triangles et les appels de chaque poste. Estimé au cadrage : environ 45 000 triangles et 12 à
+// 18 appels avec quatre lieux (prototype-6e.md, § 3) ; relevée par le mainteneur à 75 000 triangles le 16 octobre 2026
+// (GD-20, L6b : « Un iPad 9e génération doit pouvoir faire tourner le jeu, donc on est large en triangles pour
+// l'instant »), les appels inchangés. Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
+import { WORLD_FOG } from './camera';
+import { networkSamples } from './paths';
+import { allObstacles, branchRibbons, closedPlaces, linkFacets, openPathRibbons } from './links';
+import { PLACES, type PlaceId } from './plan6e';
+import { lanternLight, modelOfPlace } from './places';
+import { constructionFacets, WHOLE } from './construction';
+import { PORT_WORST, assemblyScene, portFacets } from './port';
+import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
+import type { ItemScene } from './questions';
+import { bellPlane, habitantHand, scenetteDecor, scenetteFinale } from './scenette';
+import { buildHeightField, heightOnMesh, tileRings, tileTriangleCounts } from './terrain';
+import { veilFacets } from './veil';
+
+/** Kéo : le modèle importé de près (1 500 triangles environ) et son anneau clair au sol, comme le poste « bonhomme » du monde en grille. */
+const KEO = { triangles: 1620, calls: 2 };
+
+/** L'enveloppe du monde ouvert : 75 000 triangles (relevée par le mainteneur, 16 octobre 2026), 18 appels. */
+export const OPEN_WORLD_BUDGET = { triangles: 75_000, calls: 18 } as const;
+
+export interface OpenWorldCost {
+  poste: 'sol' | 'mer' | 'chemins' | 'lieux' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
+  triangles: number;
+  calls: number;
+}
+
+/** Les scènes d'item les plus chargées de chaque lieu (le Phare : six cloches ; les Quais : 98 caisses, ou 49 et 49). */
+const HEAVIEST: readonly { place: PlaceId; scene: ItemScene }[] = [
+  { place: 'phare', scene: { kind: 'cloches' } },
+  { place: 'filets', scene: { kind: 'filets', catch: 'crabes', count: 4 } },
+  { place: 'ecluses', scene: { kind: 'echelle', n: 24, d: 12 } },
+  { place: 'ecluses', scene: { kind: 'sas', n: 12, d: 12 } },
+  // Deux rives : deux sas de dix parts (le générateur s'arrête à dix) ; le sas au repos des autres missions (lot L2).
+  { place: 'ecluses', scene: { kind: 'lockPair', a: [10, 10], b: [10, 10] } },
+  { place: 'ecluses', scene: { kind: 'lockIdle', column: false } },
+  { place: 'quais', scene: { kind: 'quai', op: 'moitie', before: 98, after: 49 } },
+  { place: 'quais', scene: { kind: 'quai', op: 'double', before: 49, after: 98 } },
+  // Les Marais salants (lot L5) : la jauge du bassin (dix graduations), et le bassin au repos des autres missions.
+  { place: 'saltworks', scene: { kind: 'jauge', start: 9, d: 10, n: 9 } },
+  { place: 'saltworks', scene: { kind: 'saline' } },
+  // La Turbine (lot L6a) : le C neutre, la soupape levée et sa bouffée (aucun objet de réponse).
+  { place: 'engine', scene: { kind: 'column' } },
+  // Le Chantier naval (lot L6b) : le C neutre, les tréteaux et la planche de bordé plaquée contre la coque.
+  { place: 'shipyard', scene: { kind: 'column' } },
+  // Le rivage nord (lot L7) : le C de la Vigie et son volet ouvert, puis chaque lieu au repos (ses objets de réponse).
+  { place: 'lookout', scene: { kind: 'column' } },
+  { place: 'lookout', scene: { kind: 'rest' } },
+  { place: 'archives', scene: { kind: 'rest' } },
+  { place: 'printworks', scene: { kind: 'rest' } },
+  // La Mangrove (lot L8a) : le C neutre, la pirogue qui glisse jusqu'au platelage.
+  { place: 'mangrove', scene: { kind: 'column' } },
+  // Les Ruines (lot L8b) : le C neutre, le seau du treuil de fouille qui remonte.
+  { place: 'ruins', scene: { kind: 'column' } },
+  // L'Observatoire (lot L8c) : le C neutre, la baie aux volets ouverts sur sa vitre.
+  { place: 'observatory', scene: { kind: 'column' } },
+  // La Halle (lot L8d) : le C neutre, la borne-fontaine, son filet et l'eau de son auge.
+  { place: 'commons', scene: { kind: 'column' } },
+  // Le large (lot L9) : la bouée témoin et son voyant, les bouées et le voyant marqué ; la malle témoin qui se ferme, les
+  // malles et le couvercle rabattu.
+  { place: 'beacons', scene: { kind: 'column' } },
+  { place: 'beacons', scene: { kind: 'restMark' } },
+  { place: 'ferry', scene: { kind: 'column' } },
+  { place: 'ferry', scene: { kind: 'restMark' } },
+];
+
+/**
+ * Une question, au pire : la scène de l'item répondu et six objets de réponse (un maillage), plus la réaction (un
+ * maillage). Kéo s'efface pendant la question : son poste ne compte pas en même temps, mais il reste compté (le pire cas).
+ */
+function questionCost(): { triangles: number; calls: number } {
+  let triangles = 0;
+  for (const { place, scene } of HEAVIEST) {
+    const s = sceneSpot(place);
+    const points = Array.from({ length: 6 }, (_, i) => ({ x: s.x - 5 + 2 * i, y: s.y, z: s.z + 6 }));
+    const item = itemScene(place, scene, true, points, 1);
+    // Au Phare, les cloches pendues à leur poutre, toutes balancées, et la corde de sonnerie.
+    const hang = place === 'phare' ? { hand: habitantHand(place), rail: bellPlane(place).rail } : undefined;
+    const objects = answerObjects(place, points, 1, { picked: [0, 1, 2, 3, 4, 5], hanging: hang });
+    triangles = Math.max(triangles, item.still.triangles + objects.triangles + (item.reaction?.facets.triangles ?? 0));
+  }
+  return { triangles, calls: 2 };
+}
+
+/**
+ * Une scénette (lot 2, le Phare ; lot 3, les Quais ; lot 4, les Filets et les Écluses ; lot L5, les Marais salants ; lot
+ * L6a, la Turbine), la plus chargée : le décor de près (la galerie, sa rambarde, la gardienne ; le docker ; le plancher
+ * de séchage et la pêcheuse ; le quai du sas, son canal, sa porte et l'éclusier ; le bord du bassin et la saunière ; le
+ * dallage et la machiniste), un maillage fait à
+ * l'arrivée et libéré au départ, du matériau du terrain, au plus fort de la réussite. L'objet de la réussite et sa
+ * lumière passent par le maillage de la réaction (la réaction de l'item cède sa place à l'objet qui va se poser, puis à
+ * la lumière ; au Phare, rien : les cloches s'effacent) : leurs triangles comptent ici, pas leur appel. Kéo y reste,
+ * sans son anneau (son appel est compté quand même : le pire cas).
+ */
+function scenetteCost(): { triangles: number; calls: number } {
+  // La scénette d'assemblage de l'Escale (GD-20, lot 2) passe par le maillage de la réaction : les pièces, puis le bloc.
+  const assembly = assemblyScene(PORT_WORST);
+  const triangles = Math.max(...SCENETTE_PLACES.map((p) => Math.max(scenetteDecor(p).triangles, successTriangles(p))), assembly.pieces.triangles, assembly.made.triangles);
+  return { triangles, calls: 1 };
+}
+
+/** La scène d'item la plus chargée d'un lieu à scénette posée (celle que la réussite reprend). */
+const FINALE_SCENES: Partial<Record<PlaceId, ItemScene>> = {
+  quais: { kind: 'quai', op: 'moitie', before: 98, after: 49 },
+  filets: { kind: 'filets', catch: 'crabes', count: 4 },
+  ecluses: { kind: 'echelle', n: 24, d: 12 },
+};
+
+/**
+ * La scénette à sa réussite : au Phare, le décor seul (la lanterne s'allume avec son haut, jamais à une réussite) ; ailleurs, le décor changé, l'objet posé et la lumière
+ * (la caisse dans la barque et la lanterne de proue des Quais ; le panier plein et le filet tendu des Filets ; le sas
+ * rempli, la porte ouverte et la barque passée des Écluses).
+ */
+function successTriangles(place: PlaceId): number {
+  const scene = FINALE_SCENES[place];
+  // Aux Filets, la réussite du Troupeau, la seule qui change le décor (le filet raccommodé et le panier plein).
+  const f = scene ? scenetteFinale(place, scene, 1, true, 'plurals') : null;
+  if (!f) return scenetteDecor(place).triangles;
+  return f.decor.triangles + f.landed.triangles + Math.max(f.moving.triangles, f.glow?.triangles ?? 0);
+}
+
+/**
+ * Les lieux qui ont leur scénette : tous, le Phare (lot 2), les Quais (lot 3), les Filets et les Écluses (lot 4), les
+ * Marais salants (lot L5), la Turbine (lot L6a).
+ */
+const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
+
+/**
+ * Les lieux (GD-20, lot 1) : tous les lieux entiers (leur ruine et leurs trois étapes : chaque lieu se rebâtit
+ * lui-même ; ce qui était tombé, relevé) et les traces de toutes leurs scénettes (aux Quais, une par mission, GD-20,
+ * point 8), réunis en un maillage, refait à chaque pose (jamais par image), avec la lumière de la lanterne du Phare
+ * allumée (sa couleur dessinée sans ombre, dans le même matériau) ; le lieu suivi, seul hors de la brume, dans un
+ * second (son matériau sans brouillard). Deux appels, quel que soit le nombre de lieux. L'Escale y entre (GD-20, lot 2),
+ * au plus chargé : toutes les places de sa galerie prises, ses portes pavoisées, ses barques, sa pile pleine
+ * (`PORT_WORST`) ; aucun appel de plus.
+ */
+function placesCost(ground: (x: number, z: number) => number): { triangles: number; calls: number } {
+  const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + placeTrace(p.id, [...p.scenes, ...(p.panels ?? [])]).triangles, 0);
+  return { triangles: triangles + lanternLight().triangles + portFacets(PORT_WORST).triangles + linksCost(ground), calls: 2 };
+}
+
+/**
+ * Les liaisons (GD-20, point 3, lot 1 « Relier ») : les embranchements des lieux qu'on relie, en plein, et chaque
+ * passerelle au plus chargé de ses deux états (démontée, ou reliée avec son pont neuf), dans le maillage des lieux :
+ * aucun appel de plus. Les tirets de la Carte en ont moins que le chemin plein.
+ */
+function linksCost(ground: (x: number, z: number) => number): number {
+  return allObstacles().reduce((s, o) => s + branchRibbons(o.place, 'solid', ground).triangles + Math.max(linkFacets(o, false, ground).triangles, linkFacets(o, true, ground).triangles), 0);
+}
+
+/** L'Escale seule, au plus chargé : son plafond (4 500 triangles, directeur artistique, GD-20, lot 2). */
+export const PORT_BUDGET = 4500;
+
+/**
+ * Le passage d'une pose : la partie qui arrive, un maillage à part le temps qu'elle descende à sa place (moins d'une
+ * seconde), puis réunie aux lieux. Compté large : la plus grande construction entière, sans sa ruine (une partie en
+ * pose au plus une étape et demie), et ses triangles en plus de ceux des lieux.
+ */
+function poseCost(ground: (x: number, z: number) => number): { triangles: number; calls: number } {
+  return { triangles: Math.max(...PLACES.map((p) => constructionFacets(p.id, [WHOLE], ground).triangles)), calls: 1 };
+}
+
+/** L'écart entre deux points où l'on cherche le pire sol : Kéo se tient toujours sur le réseau des chemins. */
+const SAMPLE_STEP = 4;
+
+/**
+ * Le sol, environ : les deux anneaux de tuiles (un maillage chacun) autour des points du réseau pris tous les quatre
+ * unités, le plus chargé de près et le plus chargé de loin (ils peuvent venir de deux points différents : on compte
+ * large).
+ */
+export function groundCost(): { triangles: number; calls: number; near: number; far: number } {
+  const field = buildHeightField();
+  const near = tileTriangleCounts(field, 'near');
+  const far = tileTriangleCounts(field, 'far');
+  let worstNear = 0;
+  let worstFar = 0;
+  for (const p of networkSamples(SAMPLE_STEP)) {
+    const rings = tileRings(p, WORLD_FOG.far);
+    worstNear = Math.max(worstNear, rings.near.reduce((s, t) => s + near[t], 0));
+    worstFar = Math.max(worstFar, rings.far.reduce((s, t) => s + far[t], 0));
+  }
+  return { triangles: worstNear + worstFar, calls: 2, near: worstNear, far: worstFar };
+}
+
+/**
+ * Ce que coûte le monde continu, environ : le sol autour de Kéo, tout le reste visible à la fois ; la brume de tous les
+ * lieux fermés, au pire (au départ, les quatorze), en un maillage : depuis le lot 1 « Relier » (GD-20, point 3), elle
+ * part d'un coup quand on relie, sans second maillage qui se lève (le fondu reviendra avec la pose animée, au lot 2).
+ */
+export function openWorldCost(): OpenWorldCost[] {
+  const field = buildHeightField();
+  const height = (x: number, z: number) => heightOnMesh(field, x, z);
+  const paths = openPathRibbons(height);
+  const ground = groundCost();
+  return [
+    { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
+    { poste: 'mer', triangles: 2, calls: 1 },
+    { poste: 'chemins', triangles: paths.triangles, calls: 1 },
+    { poste: 'lieux', ...placesCost(height) },
+    { poste: 'pose', ...poseCost(height) },
+    { poste: 'brume', triangles: veilFacets(closedPlaces(() => false)).triangles, calls: 1 },
+    { poste: 'kéo', ...KEO },
+    { poste: 'question', ...questionCost() },
+    { poste: 'scénette', ...scenetteCost() },
+  ];
+}
+
+/**
+ * La Carte des lieux ouverts (lot 3), le pire : toute l'île de loin dans l'anneau de loin (celui de près vidé), la mer,
+ * les chemins, les lieux (sur la Carte, aucun n'est hors de la brume : un seul maillage, mais compté à deux appels, le
+ * pire ; les embranchements des lieux fermés y sont en tirets, comptés pleins), la brume des lieux fermés, Kéo. Ni question, ni scénette, ni pose n'y
+ * sont ouvertes : elle ne s'ouvre pas pendant une question, et l'ouvrir finit la pose.
+ */
+export function mapCost(): { triangles: number; calls: number } {
+  const field = buildHeightField();
+  const height = (x: number, z: number) => heightOnMesh(field, x, z);
+  const far = tileTriangleCounts(field, 'far').reduce((s, n) => s + n, 0);
+  const paths = openPathRibbons(height).triangles;
+  const places = placesCost(height);
+  const veil = veilFacets(closedPlaces(() => false)).triangles;
+  return { triangles: far + 2 + paths + places.triangles + veil + KEO.triangles, calls: 1 + 1 + 1 + places.calls + 1 + KEO.calls };
+}

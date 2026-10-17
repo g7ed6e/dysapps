@@ -101,7 +101,38 @@ Une île qui cite des mots qui ne sont pas du français (le latin, le grec trans
 - **langue** : `la` (latin), `grc-Latn` (grec ancien en lettres latines), ou une langue vivante citée : `it`, `es`, `en`.
 - **lu** : comment la voix française dit le mot, jamais affiché ; obligatoire pour `la` et `grc-Latn`, absent pour une langue vivante, lue par sa propre voix.
 - Partout où le mot apparaît (énoncé, question, choix, indice, explication, aide), sans tenir compte des majuscules ni du trait qui montre une terminaison (« ros-am » se reconnaît comme « rosam »), il s’affiche marqué dans sa langue, sans syllabes colorées, et la voix le dit d’après son `lu` ([principes dys](../../www/pedagogie/principes.md), « Le latin et le grec »). `npm run contenu` l’écrit dans `foreignWords`, sur l’île, dans `src/game/islands.ts` ; le lecteur est `scripts/contenu/voix.mjs`.
-- L’ordre de la fin du fichier est fixe : `## La voix`, puis `## Les plans`, puis `## Les demandes`.
+- L’ordre de la fin du fichier est fixe : `## Au lieu · <univers>`, puis `## La voix`, puis `## Les plans`, puis `## Les demandes`.
+
+## Les items d’un lieu du monde ouvert
+
+Le monde ouvert d’Archipéo (prototype du 6e, derrière `?monde=ouvert`) pose certaines questions dans un lieu, avec une phrase qui parle de ce que la scène montre. Chaque item du lieu est le **jumeau** d’un item d’un niveau de l’île : il en porte la clé, le point travaillé, les sortes de pièges et la règle, avec autant de choix (règle « à l’essai », [Plusieurs univers](../univers/univers.md), § 4.2). Ils s’écrivent à la fin du fichier, avant `## La voix`, sous `## Au lieu · Archipéo`, niveau par niveau :
+
+```md
+## Au lieu · Archipéo
+
+### Niveau 1 · `french-6e-grammar-spelling-plurals-1`
+
+Pour tous les items :
+- trou lu : (mot manquant)
+- règle : Le nom commande : déterminant et adjectif prennent son genre et son nombre.
+
+1. jumeau : 1
+   - scène : sardines · 3
+   - énoncé : Les sardines … brillent dans le filet.
+   - choix : gris · grise · grises
+   - réponse : grises
+   - point : adjectif au féminin pluriel
+   - pièges : accord oublié · pluriel oublié
+   - indice : Regarde le nom : « sardines », c’est féminin et pluriel.
+   - explication : « Les sardines » est au féminin pluriel : l’adjectif prend -e puis -s, « grises ».
+```
+
+- **jumeau** : le rang de l’item de référence dans le niveau ; chaque item de référence a au plus un jumeau.
+- **scène** : ce que le lieu pose (pour les Filets : `sardines`, `filets`, `mouette`, `bocaux`, `crabes`, `pêche`, `seaux`, `crabe`) et combien ; la phrase dit ce qu’on voit.
+- **règle** (pour tous les items) : la seule ligne de la carte de règle de la référence que le lieu montre, sous le titre de la carte (une ligne de cette carte, vérifié) ; ce qui manque passe dans les indices. La carte entière reste dans « Vue simple ».
+- **point** et **pièges** : ce que le jumeau garde de la référence, relu par le directeur contenu pédagogique ; ils ne s’affichent pas.
+- `ecrireIle` (`scripts/contenu/format.mjs`, qui réécrit un fichier d’île depuis les JSON, pour une migration) ne garde pas cette section : après une réécriture, la remettre à la main.
+- `npm run contenu` les range dans `src/game/world/continu/placeItems.json`, que seul le monde ouvert lit ; le lecteur est `scripts/contenu/aulieu.mjs`, qui refuse un jumeau absent ou pris deux fois, un nombre de choix différent, une réponse hors des choix et un « … » resté dans le texte lu. Les Quais et les Écluses n’ont pas d’items du lieu : leur phrase et leur scène se tirent des nombres de l’item du générateur (`src/game/world/continu/questions.ts`), y compris le gabarit de Deux rives (deux sas, sa phrase, son indice et sa correction selon le cas), écrit là parce que ce format décrit un jumeau par item fixe. De même, les textes de l’Enclos aux Filets (sa consigne, `ENCLOS_INSTRUCTION` ; sa ligne de règle sur téléphone, `ENCLOS_RULE_LINE` ; les noms de ses paniers, `ENCLOS_BINS`) sont écrits dans `src/game/world/continu/questions.ts`, parce que l’Enclos se joue sur ses items de référence, sans jumeau : textes donnés par le directeur contenu pédagogique (relecture du quatrième lot du point 8 de GD-20, 15 octobre 2026), à changer avec lui ; la ligne de règle est une ligne de la carte de règle de son niveau (vérifié par un test).
 
 ## Les plans des bâtiments
 
