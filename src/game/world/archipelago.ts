@@ -648,13 +648,20 @@ export function buildBridge(id: string, bridges: string[], inventory: Partial<Re
   return payFor(bridge, bridges, inventory);
 }
 
-/** Paie une liaison avec les blocs de l'inventaire, les types les plus nombreux d'abord, et la pose. */
-function payFor(bridge: BridgeDef, bridges: string[], inventory: Partial<Record<BlockId, number>>): BuildBridgeResult {
+/**
+ * Paie `cost` avec les blocs de l'inventaire, les types les plus nombreux d'abord (on garde ainsi les blocs rares pour
+ * les plans) : l'inventaire après, et ce qui a été pris ; ou ce qui manque, rien de pris. Une liaison de la grille, ou
+ * une terre entière du monde continu (world/arrange.ts, `payLand`).
+ */
+export function payBlocks(
+  cost: number,
+  inventory: Partial<Record<BlockId, number>>,
+): { ok: true; inventory: Partial<Record<BlockId, number>>; used: Partial<Record<BlockId, number>> } | { ok: false; missing: number } {
   const have = payableBlocks(inventory);
-  if (have < bridge.cost) return { ok: false, reason: 'blocs', missing: bridge.cost - have };
+  if (have < cost) return { ok: false, missing: cost - have };
   const next = { ...inventory };
   const used: Partial<Record<BlockId, number>> = {};
-  let left = bridge.cost;
+  let left = cost;
   while (left > 0) {
     const richest = BRIDGE_BLOCKS.reduce((best, b) => ((next[b] ?? 0) > (next[best] ?? 0) ? b : best), BRIDGE_BLOCKS[0]);
     const take = Math.min(left, next[richest] ?? 0);
@@ -663,21 +670,14 @@ function payFor(bridge: BridgeDef, bridges: string[], inventory: Partial<Record<
     used[richest] = (used[richest] ?? 0) + take;
     left -= take;
   }
-  return { ok: true, bridges: [...bridges, bridge.id], inventory: next, used };
+  return { ok: true, inventory: next, used };
 }
 
-/**
- * Paie une liaison qui ouvre un lieu mais que la disposition de la grille ne trace plus (une région aménagée, GD-9) :
- * le monde continu la pose quand même (GD-20, point 3, « Relier »), au même prix ; la grille en fait une liaison à
- * reposer, gratuite (world/arrange.ts, `markForRelink`). Rien d'autre : une liaison qui se trace passe par
- * `buildBridge`.
- */
-export function buildUntracedLink(id: string, bridges: string[], inventory: Partial<Record<BlockId, number>>): BuildBridgeResult {
-  const bridge = getBridge(id);
-  if (!bridge) return { ok: false, reason: 'inconnu' };
-  if (bridgeBuilt(bridge, bridges)) return { ok: false, reason: 'construit' };
-  if (!opensAnIsland(bridge, reachableIslands(bridges)) || linkLength(bridge, bridges) !== null) return { ok: false, reason: 'loin' };
-  return payFor(bridge, bridges, inventory);
+/** Paie une liaison avec les blocs de l'inventaire (`payBlocks`), et la pose. */
+function payFor(bridge: BridgeDef, bridges: string[], inventory: Partial<Record<BlockId, number>>): BuildBridgeResult {
+  const r = payBlocks(bridge.cost, inventory);
+  if (!r.ok) return { ok: false, reason: 'blocs', missing: r.missing };
+  return { ok: true, bridges: [...bridges, bridge.id], inventory: r.inventory, used: r.used };
 }
 
 /** Le plus court chemin d'ouvrages (construits ou non) depuis une île de départ de son archipel jusqu'à une île. */

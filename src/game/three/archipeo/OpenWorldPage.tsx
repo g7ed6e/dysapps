@@ -9,10 +9,12 @@
 // puis le bilan, la pose de la partie gagnée, et la liste rouverte, le focus sur la ligne jouée. Les pièces
 // durables des lieux se tirent des étoiles gardées : rien de neuf dans la sauvegarde. La Carte des lieux ouverts (piste 1,
 // lot 3) s'ouvre du bouton « Carte », comme ailleurs dans le jeu : l'île vue de haut, un lieu ouvert touché y dépose
-// Kéo. Les liaisons (GD-20, point 3, lot 1 « Relier ») : au départ, comme dans la grille, seuls le Phare et les Quais
-// sont ouverts ; un lieu fermé est derrière sa passerelle démontée, sous la brume ; le toucher, ou toucher sa passerelle
-// ou son cadenas sur la Carte, ouvre sa fiche (./ClosedPlaceSheet.tsx), où « Relier » paie la liaison de la grille : la
-// passerelle est posée d'un coup, un toc de bois, puis « La passerelle est posée. ». Chargé à la demande.
+// Kéo. Les terres (GD-20, point 3, « vraies terres, vrais ponts ») : quatre bras de mer coupent l'île en cinq terres ; au
+// départ, la Pointe du Phare est ouverte ; une terre fermée est derrière son pont tombé, sous la brume ; toucher l'un de
+// ses lieux, son pont, ou son cadenas sur la Carte, ouvre sa fiche (./ClosedLandSheet.tsx), où « Relier » paie la terre
+// entière : le pont est rebâti d'un coup, un toc de bois, puis « Le pont est rebâti. ». À l'ouverture, et quand les
+// liaisons changent, une terre ouverte reçoit toutes ses liaisons de la grille, sans rien débiter (`ensureLands`) ; les
+// terres sont lues dans la grille par ./landLinks.ts. Chargé à la demande.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { useHoldCelebrations } from '../../../components/Celebrations';
@@ -30,23 +32,23 @@ import { mesuresDemandees, meterShown } from '../../rendering';
 import { playWoodTap } from '../../sound';
 import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
 import { payableBlocks } from '../../world/archipelago';
-import { isLinked, type LinkedPlace } from '../../world/continu/links';
+import { START_LAND, isBridgeSpot, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import type { PartShape } from '../../world/continu/construction';
 import { bornesDuMondeOuvert, keepClear, missionsOfPlace, nextMission, playsInPlace, type MarkOnScreen, type Obstacle } from '../../world/continu/mission';
-import { PLACES, placeById, placeOfIsland, type OpenPlace, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
+import { PLACES, placeById, placeOfIsland, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
-import { ClosedPlaceSheet, afterLabel, linkableLabel } from './ClosedPlaceSheet';
+import { ClosedLandSheet, afterLabel, closedLandLabel, linkableLabel } from './ClosedLandSheet';
 import { constructionState, placeConstruction, posedShapes } from './constructionParts';
+import { gridLand, gridLands, openWorldLands, playedIslands } from './landLinks';
 import { MapLabels } from './MapLabels';
 import { PlacePanel, placeFromParam, placeResume } from './PlacePanel';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
-import { neighboursFirst, openWorldLinks, payableLink } from './placeLinks';
 import { portState } from './portState';
-import { createOpenWorld, type LinkLayEvents, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
+import { createOpenWorld, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { usePlaceAddress, usePoseGuard } from './usePlaceReturn';
 import { WorldQuestion } from './WorldQuestion';
 import './openWorld.css';
@@ -71,7 +73,7 @@ const missionTitle = (island: string, mission: string) => getBiome(island)?.exer
 
 export default function OpenWorldPage() {
   const { biomeId } = useParams();
-  const { state, linkFromOpenWorld } = useBlocland();
+  const { state, linkLand, ensureOpenWorldLands } = useBlocland();
   const textes = useTextes();
   const { settings, speak } = useSettings();
   // La voix de l'arrivée, lue par la scène faite une fois (`onArrive`) : le réglage du moment.
@@ -94,22 +96,28 @@ export default function OpenWorldPage() {
   // Les bornes du monde ouvert : une mission réussie ici garde ses étoiles même si son île n'est pas encore reliée par
   // les ponts de la grille (sinon « Nouveau » au retour, la mission reproposée, la brume restée, jusqu'au rechargement).
   const bornes = useMemo(() => bornesDuMondeOuvert(modele.bornes, (ile, m) => questProgress(ile, m, vu.progress)?.stars ?? null), [modele, vu.progress]);
-  // Les liaisons (GD-20, point 3) : les lieux fermés, ceux que la grille n'a pas encore reliés (et où l'élève n'a pas
-  // encore joué), et la liaison suggérée par la prochaine destination.
-  const links = useMemo(() => openWorldLinks(state.world.links, bornes, modele.destination.ouvrage), [state.world.links, bornes, modele.destination.ouvrage]);
-  const isClosed = useCallback((id: PlaceId): boolean => isLinked(id) && links.closed.includes(id), [links]);
-  // Le voisin à relier d'abord d'un lieu pas encore reliable : le plus proche de Kéo (relu à l'ouverture de la fiche).
-  const afterOf = (place: LinkedPlace): OpenPlace | null => {
-    if (!links.waiting.includes(place)) return null;
-    const n = neighboursFirst(place, state.world.links, links.closed, world.current?.keoAt() ?? placeById(place).center)[0];
-    return n ? placeById(n) : null;
+  // Les terres (GD-20, point 3, « vraies terres ») : les terres fermées (aucun de leurs lieux relié dans la grille ni
+  // joué), celles pas encore reliables, et le pont suggéré par la prochaine destination.
+  const lands = useMemo(() => openWorldLands(state.world.links, bornes, modele.destination.ouvrage), [state.world.links, bornes, modele.destination.ouvrage]);
+  /** La terre fermée d'un lieu, ou rien. */
+  const closedLandOf = useCallback((id: PlaceId): LinkedLand | null => {
+    const land = landOf(id);
+    return land !== START_LAND && lands.closed.includes(land) ? land : null;
+  }, [lands]);
+  const isClosed = useCallback((id: PlaceId): boolean => closedLandOf(id) !== null, [closedLandOf]);
+  // La terre à relier d'abord d'une terre pas encore reliable (le Couchant pour le Large, le Levant pour les Crêtes).
+  const afterOf = (land: LinkedLand): LinkedLand | null => (lands.waiting.includes(land) ? (landById(land).after as LinkedLand) : null);
+  // Le cadenas d'une terre pas encore reliable, sur la Carte, dit la phrase d'ordre.
+  const orderLabel = (land: LinkedLand): string | null => {
+    const after = afterOf(land);
+    return after ? afterLabel(land, after) : null;
   };
-  // Le cadenas d'un lieu pas encore reliable, sur la Carte, dit la phrase d'ordre.
-  const orderLabel = (place: PlaceId): string | null => {
-    if (!isLinked(place)) return null;
-    const after = afterOf(place);
-    return after ? afterLabel(placeById(place), after) : null;
-  };
+  // À l'ouverture du monde, et chaque fois que les liaisons de la grille changent en cours de session (un lieu relié par
+  // la grille, une mission jouée : relecture de l'expert frontend) : une terre ouverte reçoit toutes ses liaisons, sans
+  // rien débiter (sans rien à écrire, rien ne change : la même référence, aucune boucle).
+  useEffect(() => {
+    ensureOpenWorldLands(gridLands(), playedIslands(bornes));
+  }, [state.world.links, bornes, ensureOpenWorldLands]);
   // La prochaine mission, jamais celle d'un lieu fermé : aucune ne s'y joue.
   const next = useMemo(() => nextMission(bornes, modele.destination, (id) => !isClosed(id)), [bornes, modele.destination, isClosed]);
   const nextPlace = next?.place ?? null;
@@ -129,7 +137,7 @@ export default function OpenWorldPage() {
   // Le panneau ouvert de l'Escale : sa fiche, une porte, la galerie, le lieu d'assemblage ; un à la fois.
   const [panel, setPanel] = useState<PortPanel | null>(null);
   // Le panneau ouvert d'un lieu (GD-20, point 8) : sa liste de missions, et la ligne qui y prend le focus (celle dont on
-  // revient) ; jamais en même temps qu'un panneau de l'Escale.
+  // revient) ; pour un lieu d'une terre fermée, la fiche de sa terre ; jamais en même temps qu'un panneau de l'Escale.
   const [lieu, setLieu] = useState<{ place: PlaceId; focus: string | null } | null>(null);
   const sheetOpen = Boolean(panel) || Boolean(lieu);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -141,7 +149,7 @@ export default function OpenWorldPage() {
   const stageRef = useRef<HTMLDivElement>(null);
   const markRef = useRef<HTMLButtonElement>(null);
   const arrowRef = useRef<HTMLSpanElement>(null);
-  // Les cadenas des lieux fermés, posés à chaque image par la scène (sans passer par React).
+  // Les cadenas des ponts des terres fermées, posés à chaque image par la scène (sans passer par React).
   const locksRef = useRef<HTMLDivElement>(null);
   // Le nombre de scènes faites : 0 avant la première ; refaite (« Réduire les animations » changé), elle reçoit de nouveau
   // la marque, la brume, la Carte et les lieux.
@@ -157,20 +165,17 @@ export default function OpenWorldPage() {
   const [mapOpen, setMapOpen] = useState(false);
   // Ce que les rappels de la scène appellent sur la Carte : poser les étiquettes, choisir un lieu touché dans la 3D.
   const mapPlacer = useRef<((spots: readonly MapSpotOnScreen[], moving?: boolean) => void) | null>(null);
-  // « La passerelle est posée. », affichée un moment après le toc (et dite, si la voix est active), suivie de la phrase
-  // d'un lieu devenu reliable s'il y en a (« La Turbine peut être reliée. ») ; `n` : une autre pose ; `after` : dans
+  // « Le pont est rebâti. », affichée un moment après le toc (et dite, si la voix est active), suivie de la phrase d'un
+  // pont devenu reliable s'il y en a (« Le pont des Crêtes peut être rebâti. ») ; `n` : un autre pont ; `after` : dans
   // combien de millisecondes (jamais en même temps que le toc).
   const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number } | null>(null);
-  // Les liaisons de la dernière image rendue : la fin d'une pose y lit les lieux devenus reliables.
-  const linksNow = useRef(links);
-  // L'heure du dernier toc, pour que la phrase vienne après lui.
-  const tappedAt = useRef(0);
-  // Où va le focus quand la fiche d'un lieu se ferme (le nom d'un lieu qu'on vient de relier, sur la Carte), sinon « Carte ».
+  // Où va le focus quand la fiche d'une terre se ferme (le nom d'un de ses lieux, qu'on vient de relier, sur la Carte),
+  // sinon « Carte ».
   const focusAfter = useRef<string | null>(null);
   // Au plus grand texte, un lieu ouvert sans la place de son nom : la vue de départ de la Carte change (GD-20, « La Carte
   // au plus grand texte »).
   const reframeMap = useCallback((crowded: (spots: readonly MapSpotOnScreen[]) => number) => world.current?.reframeMap(crowded), []);
-  const mapPick = useRef<(place: PlaceId | 'port') => void>(() => {});
+  const mapPick = useRef<(place: PlaceId | 'port' | BridgeSpot) => void>(() => {});
   const mapButton = useRef<HTMLButtonElement>(null);
   // La distance au prochain lieu, pour la voix (avis du référent dys) : relue à chaque image, mais l'état ne change
   // qu'avec le palier (un, deux ou trois points) : le libellé de la marque n'est refait que là.
@@ -210,7 +215,7 @@ export default function OpenWorldPage() {
           const r = el.getBoundingClientRect();
           return { left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height };
         }),
-        // La phrase de la passerelle, le temps qu'elle est écrite : la marque n'est jamais dessous (référent dys,
+        // La phrase du pont, le temps qu'elle est écrite : la marque n'est jamais dessous (référent dys,
         // consultant UX UI ; au plus grand texte, elle mordait la marque « Le Phare »).
         ...[...stage.querySelectorAll<HTMLElement>('.open-world-said[data-shown="oui"]')].map((el) => {
           const r = el.getBoundingClientRect();
@@ -255,10 +260,10 @@ export default function OpenWorldPage() {
         setLieu({ place: placeId, focus: null });
       },
       onLocks: (locks) => placeLocks(locksRef.current, locks),
-      // Un lieu fermé, ou sa passerelle démontée, touché dans le monde : sa fiche (GD-20, point 3).
-      onClosed: (placeId) => {
+      // Un lieu d'une terre fermée, ou son pont tombé, touché dans le monde : la fiche de la terre (GD-20, point 3).
+      onClosed: (land) => {
         setPanel(null);
-        setLieu({ place: placeId, focus: null });
+        setLieu({ place: landById(land).places[0], focus: null });
       },
       onMapPlaces: (spots, moving) => mapPlacer.current?.(spots, moving),
       onMapPick: (placeId) => mapPick.current(placeId),
@@ -364,14 +369,12 @@ export default function OpenWorldPage() {
     world.current?.goToPort(spot);
   }, []);
 
-  // Les liaisons dans la scène : la brume et les passerelles démontées des lieux fermés, les tirets de la Carte ; la pose
-  // d'une passerelle annoncée par « Relier » y commence.
+  // Les terres dans la scène : la brume et les ponts tombés des terres fermées, les ponts rebâtis des autres.
   useEffect(() => {
-    linksNow.current = links;
-    world.current?.setLinks(links);
-  }, [links, ready]);
+    world.current?.setLands(lands);
+  }, [lands, ready]);
 
-  // La Carte : les lieux ouverts sont ceux qui ne sont pas fermés.
+  // La Carte : les lieux ouverts sont ceux des terres ouvertes.
   const openPlaces = useMemo(() => PLACES.map((p) => p.id).filter((id) => !isClosed(id)), [isClosed]);
   useEffect(() => {
     world.current?.map(mapOpen && !asking ? openPlaces : null);
@@ -393,11 +396,18 @@ export default function OpenWorldPage() {
     world.current?.goToPort('quai');
   }, []);
   const pickOnMap = useCallback((id: PlaceId | 'port') => (id === 'port' ? pickPort() : pickPlace(id)), [pickPlace, pickPort]);
-  // Un lieu fermé touché sur la Carte (son cadenas) : sa fiche s'ouvre par-dessus, la Carte reste ouverte.
-  const openClosed = useCallback((place: PlaceId) => setLieu({ place, focus: null }), []);
-  // Un lieu touché dans la 3D : ouvert (l'Escale l'est toujours), on y va ; fermé, sa fiche s'ouvre.
+  // Une terre fermée touchée sur la Carte (le cadenas de son pont, l'un de ses lieux) : sa fiche s'ouvre par-dessus, la
+  // Carte reste ouverte.
+  const openClosed = useCallback((land: LinkedLand) => setLieu({ place: landById(land).places[0], focus: null }), []);
+  // Un lieu touché dans la 3D : ouvert (l'Escale l'est toujours), on y va ; d'une terre fermée, ou un pont, la fiche de
+  // la terre s'ouvre.
   useEffect(() => {
-    mapPick.current = (placeId) => (placeId === 'port' || openPlaces.includes(placeId) ? pickOnMap(placeId) : openClosed(placeId));
+    mapPick.current = (id) => {
+      if (isBridgeSpot(id)) return openClosed(landOfBridgeSpot(id));
+      if (id === 'port' || openPlaces.includes(id)) return pickOnMap(id);
+      const land = landOf(id);
+      if (land !== START_LAND) openClosed(land);
+    };
   }, [openPlaces, pickOnMap, openClosed]);
   // La liste des lieux ouverts, sur la Carte (bouton « Lieux ») ; Échap ferme la liste d'abord, puis la Carte, comme un
   // panneau.
@@ -406,43 +416,22 @@ export default function OpenWorldPage() {
   const openList = list.open;
   const toggleList = list.toggle;
   /**
-   * « Relier » (GD-20, point 3) : la liaison de la grille, payée ; la fiche se ferme, la caméra ne bouge pas, les cinq
-   * planches de la passerelle se posent l'une après l'autre, un toc de bois à la dernière, puis la brume du lieu se lève
-   * en fondu (lot 2 ; d'un coup avec « Réduire les animations » et sur la Carte, où le cadenas laisse la place au nom et
-   * le focus va sur lui). Puis « La passerelle est posée. », jamais en même temps que le toc, et la phrase d'un lieu
-   * devenu reliable par cette liaison.
+   * « Relier » (GD-20, point 3, « vraies terres ») : la terre entière, payée une fois ; la fiche se ferme, la caméra ne
+   * bouge pas, le pont est rebâti d'un coup (la pose en trois temps viendra au second lot), un toc de bois, la brume de
+   * la terre part. Puis « Le pont est rebâti. », jamais en même temps que le toc, et la phrase du pont que celui-ci rend
+   * reliable (« Le pont des Crêtes peut être rebâti. »). Sur la Carte, le focus va sur le nom d'un lieu de la terre.
    */
   const relier = useCallback(
-    (place: PlaceId) => {
-      const bridge = isLinked(place) ? payableLink(place, state.world.links) : null;
-      if (!bridge || !isLinked(place)) return;
-      const waitingBefore = links.waiting;
-      const sounds = settings.sounds;
-      const events: LinkLayEvents = {
-        tap: () => {
-          tappedAt.current = performance.now();
-          if (sounds) playWoodTap();
-        },
-        laid: () => {
-          const now = linksNow.current;
-          const linkable = waitingBefore.filter((p) => !now.waiting.includes(p) && now.closed.includes(p));
-          const after = Math.max(0, SAID_AFTER_MS - (performance.now() - tappedAt.current));
-          setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [PASSERELLE_POSEE, ...linkable.map((p) => linkableLabel(placeById(p)))], after }));
-        },
-      };
-      if (!linkFromOpenWorld(bridge.id).ok) return;
-      const w = world.current;
-      // Payée, puis annoncée avant que les liaisons changent dans la scène (`setLinks` vient d'un effet, après le rendu) :
-      // la scène la pose quand elle les reçoit. Un paiement refusé n'annonce rien.
-      w?.layLink(place, events);
-      if (mapOpen) focusAfter.current = place;
+    (land: LinkedLand) => {
+      const before = lands.closed;
+      if (!linkLand(gridLand(land)).ok) return;
+      if (settings.sounds) playWoodTap();
+      const linkable = landsAfter(land, before);
+      setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [PONT_REBATI, ...linkable.map(linkableLabel)], after: SAID_AFTER_MS }));
+      if (mapOpen) focusAfter.current = landById(land).places[0];
       setLieu(null);
-      if (!w) {
-        events.tap();
-        events.laid();
-      }
     },
-    [linkFromOpenWorld, links.waiting, mapOpen, settings.sounds, state.world.links],
+    [linkLand, lands.closed, mapOpen, settings.sounds],
   );
   // La phrase vient après le toc (jamais en même temps), reste écrite un moment, et se dit si la voix est active.
   const [saidShown, setSaidShown] = useState(false);
@@ -672,7 +661,7 @@ export default function OpenWorldPage() {
 
   return (
     <div className="world-page open-world">
-      {/* `data-said` : la phrase de la passerelle est écrite (sur un petit écran, la marque se masque le temps qu'elle l'est). */}
+      {/* `data-said` : la phrase du pont est écrite (sur un petit écran, la marque se masque le temps qu'elle l'est). */}
       <div className="world-stage" data-scene data-said={saidShown && !asking ? 'oui' : undefined} ref={stageRef}>
         <div ref={host} className="open-world-canvas" />
         {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
@@ -693,17 +682,17 @@ export default function OpenWorldPage() {
             <span className="open-world-mark-word">{next.place.name}</span>
           </button>
         )}
-        {/* Un cadenas sur chaque lieu fermé : une icône sans texte, dite aux lecteurs d'écran (référent dys). */}
+        {/* Un cadenas sur le pont de chaque terre fermée : une icône sans texte, dite aux lecteurs d'écran (référent dys). */}
         <div ref={locksRef} className="open-world-locks" hidden={Boolean(asking) || mapOpen || sheetOpen}>
-          {links.closed.map((id) => (
-            <span key={id} className="open-world-lock" data-lieu={id} role="img" aria-label={`${placeById(id).name} : fermé, la passerelle est démontée`} hidden>
+          {lands.closed.map((land) => (
+            <span key={land} className="open-world-lock" data-terre={land} role="img" aria-label={closedLandLabel(land)} hidden>
               <Icon name="lock" />
             </span>
           ))}
         </div>
         {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
         {mapOpen && !asking && (
-          <MapLabels openPlaces={openPlaces} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={links.suggested} portName={textes.depart?.nom} onCrowded={reframeMap} />
+          <MapLabels openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} portName={textes.depart?.nom} onCrowded={reframeMap} />
         )}
         {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
             le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à
@@ -731,17 +720,17 @@ export default function OpenWorldPage() {
             et « Y aller ». */}
         {lieu && !asking && (
           <div ref={panelRef} className="open-world-panel open-world-panel-lieu">
-            {isLinked(lieu.place) && isClosed(lieu.place) ? (
-              // Un lieu fermé (GD-20, point 3) : sa fiche, « Relier », aucune mission ; pas encore reliable (après un
-              // voisin), le voisin à relier d'abord, le plus proche de Kéo, dont le bouton ouvre la fiche.
-              <ClosedPlaceSheet
-                place={placeById(lieu.place)}
-                after={afterOf(lieu.place)}
-                onAfter={(n: PlaceId) => setLieu({ place: n, focus: null })}
-                price={payableLink(lieu.place, state.world.links)?.cost ?? 0}
+            {closedLandOf(lieu.place) ? (
+              // Un lieu d'une terre fermée (GD-20, point 3) : la fiche de la terre, « Relier », aucune mission ; pas
+              // encore reliable, la terre à relier d'abord, dont le bouton ouvre la fiche.
+              <ClosedLandSheet
+                land={closedLandOf(lieu.place)!}
+                after={afterOf(closedLandOf(lieu.place)!)}
+                onAfter={(land) => setLieu({ place: landById(land).places[0], focus: null })}
+                price={landPrice(closedLandOf(lieu.place)!)}
                 have={payableBlocks(state.stock)}
-                suggested={links.suggested === lieu.place}
-                onLink={() => relier(lieu.place)}
+                suggested={lands.suggested === closedLandOf(lieu.place)}
+                onLink={() => relier(closedLandOf(lieu.place)!)}
                 onClose={closeLieu}
               />
             ) : (
@@ -756,7 +745,7 @@ export default function OpenWorldPage() {
             )}
           </div>
         )}
-        {/* La phrase de la passerelle posée, sur fond uni, un moment (GD-20, point 3) : jamais pendant une question. La
+        {/* La phrase du pont rebâti, sur fond uni, un moment (GD-20, point 3) : jamais pendant une question. La
             zone reste dans la page, vide le reste du temps, pour que les lecteurs d'écran annoncent la phrase ; le temps
             qu'elle est écrite, un haut-parleur la fait réentendre, et le toucher la garde écrite (référent dys). Sur la Carte, elle se tient en haut,
             hors des noms des lieux du sud. */}
@@ -825,14 +814,14 @@ export default function OpenWorldPage() {
 }
 
 /**
- * Pose les cadenas des lieux sous la brume, image par image, sans passer par React : chacun au-dessus de son lieu
+ * Pose les cadenas des ponts des terres fermées, image par image, sans passer par React : chacun au-dessus de son pont
  * quand il se voit, caché sinon (jamais au bord de l'écran : seul le lieu suivant a sa flèche).
  */
 function placeLocks(root: HTMLElement | null, locks: readonly LockOnScreen[]): void {
   if (!root) return;
   for (const el of root.children) {
     if (!(el instanceof HTMLElement)) continue;
-    const lock = locks.find((l) => l.place === el.dataset.lieu);
+    const lock = locks.find((l) => l.land === el.dataset.terre);
     const shown = Boolean(lock?.shown);
     if (el.hidden === shown) el.hidden = !shown;
     if (!lock || !shown) continue;
@@ -844,8 +833,8 @@ function placeLocks(root: HTMLElement | null, locks: readonly LockOnScreen[]): v
   }
 }
 
-/** La phrase fixe de la passerelle posée (GD-20, point 3) : la même pour tous les lieux, sans accord à faire. */
-const PASSERELLE_POSEE = 'La passerelle est posée.';
+/** La phrase fixe du pont rebâti (GD-20, point 3) : la même pour toutes les terres, sans accord à faire. */
+const PONT_REBATI = 'Le pont est rebâti.';
 /** Elle vient au moins tant de millisecondes après le toc (jamais en même temps), et reste écrite tant de millisecondes par phrase. */
 const SAID_AFTER_MS = 450;
 const SAID_MS = 4000;

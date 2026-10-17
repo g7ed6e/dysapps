@@ -1,8 +1,9 @@
 // Les étiquettes de la Carte des lieux ouverts (piste 1, lot 3) : Kéo (une pastille unie à sa silhouette et « Toi »), le
 // nom de chaque lieu ouvert et l'icône de l'état de sa construction (un bouton qui y mène, GD-20, lot 1 ; le mot de
-// l'état, accordé au nom, est dit par le bouton), le cadenas de chaque lieu fermé et son nom atténué dessous (un
-// toucher ouvre la fiche du lieu fermé, par-dessus la Carte : GD-20, point 3, lot 1 « Relier »). Rien n'est écrit dans
-// la 3D : la scène
+// l'état, accordé au nom, est dit par le bouton) ; depuis « vraies terres, vrais ponts » (GD-20, point 3) : un cadenas
+// par pont à rebâtir, sur la coupure du bras de mer (plein pour le pont suggéré seul), et les lieux d'une terre fermée
+// en pastilles pâles, au contour en tirets, leur nom lisible, sans cadenas ; un toucher sur l'un ou l'autre ouvre la
+// fiche de la terre, par-dessus la Carte. Rien n'est écrit dans la 3D : la scène
 // donne les points à l'écran, posés ici sans passer par React ; aucune étiquette n'en recouvre une autre ni ne passe
 // sur la colonne des accès directs ou un bouton (`layoutMapLabels`, world/continu/map.ts) ; trop serrée, une pastille
 // se serre, son nom sur deux lignes ; sans aucune place près de son lieu, elle se réduit à son icône. Les tailles sont
@@ -13,12 +14,16 @@ import { getBiome } from '../../biomes';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
 import { MAP_BAR_ROOM, grown, layoutMapLabels, nameLines, type MapLabel, type MapLabelSpot, type Rect } from '../../world/continu/map';
 import { mapStateWord } from './constructionParts';
+import { bridgeSpot, isBridgeSpot, landOf, type LinkedLand } from '../../world/continu/lands';
 import { PLACES, type PlaceId } from '../../world/continu/plan6e';
+import { closedLandLabel } from './ClosedLandSheet';
 import type { MapSpotOnScreen } from './scene';
 
 interface Props {
-  /** Les lieux qu'on peut toucher ; les autres portent leur cadenas. */
+  /** Les lieux des terres ouvertes, qu'on peut toucher pour y aller ; les autres sont pâles et ouvrent la fiche de leur terre. */
   openPlaces: readonly PlaceId[];
+  /** Les terres fermées : le cadenas de leur pont. */
+  closedLands: readonly LinkedLand[];
   /** Un lieu ouvert ou l'Escale (`port`) touché : la page y dépose Kéo. */
   onPick(place: PlaceId | 'port'): void;
   /**
@@ -31,18 +36,18 @@ interface Props {
    * que la Carte glisse (sans la reprise des noms fermés, posée à l'arrêt).
    */
   placer: MutableRefObject<((spots: readonly MapSpotOnScreen[], moving?: boolean) => void) | null>;
-  /** Un lieu fermé touché (son cadenas) : la page ouvre sa fiche, par-dessus la Carte (GD-20, point 3). */
-  onClosed(place: PlaceId): void;
+  /** Une terre fermée touchée (le cadenas de son pont, ou l'un de ses lieux) : la page ouvre sa fiche, par-dessus la Carte. */
+  onClosed(land: LinkedLand): void;
   /**
-   * Ce que dit le cadenas d'un lieu pas encore reliable (consultant UX UI) : la phrase d'ordre, « La Turbine : relie
-   * d'abord les Écluses. » ; rien, la phrase d'un lieu fermé.
+   * Ce que dit le cadenas d'une terre pas encore reliable (consultant UX UI) : la phrase d'ordre, « Le Large : relie
+   * d'abord le Couchant. » ; rien, la phrase d'une terre fermée.
    */
-  orderLabel?(place: PlaceId): string | null;
+  orderLabel?(land: LinkedLand): string | null;
   /**
-   * Le lieu de la liaison suggérée (choix du mainteneur, « Cadenas plein », 17 octobre 2026) : son cadenas plein, Nuit océan,
-   * l'icône claire, avec ses tirets épais ; rien, aucun.
+   * La terre du pont suggéré (choix du mainteneur, « Cadenas plein », 17 octobre 2026) : son cadenas plein, Nuit océan,
+   * l'icône claire ; rien, aucun.
    */
-  suggested?: PlaceId | null;
+  suggested?: LinkedLand | null;
   /** L'état de chaque lieu ouvert (GD-20, lot 1) : en chantier, achevé, ou rien encore (aucune partie posée). */
   states: Readonly<Record<PlaceId, 'en-chantier' | 'restauree' | null>>;
   /** Les mots des états, ceux de l'univers (« En chantier »). */
@@ -57,11 +62,14 @@ interface Props {
 
 /**
  * Ce qui manque à une vue de la Carte, pesé (GD-20, « La Carte au plus grand texte ») : un lieu ouvert sans nom (réduit à
- * son icône, ou hors de l'écran) pèse le plus ; puis, sur tablette seulement, un lieu fermé hors de l'écran. Le nom tu
- * d'un lieu fermé ne compte pas : le nom d'un lieu ouvert, près de son lieu, passe avant lui (directeur artistique), et
- * le cadenas reste.
+ * son icône, ou hors de l'écran), et autant un lieu d'une terre fermée ou le cadenas d'un pont hors de l'écran, sur tout
+ * écran (consultant UX UI, relecture du lot 1 des « vraies terres » : la vue de départ garde à l'écran les quatre
+ * cadenas et tous les lieux ; avant, sur tablette seulement, et cent fois moins : la Carte se rapprochait des lieux
+ * ouverts et la Gare maritime sortait du cadre). À poids égal, la vue la plus proche de l'île entière l'emporte. Le nom
+ * tu d'un lieu fermé ne compte pas : le nom d'un lieu ouvert, près de son lieu, passe avant lui (directeur artistique),
+ * et le cadenas reste.
  */
-const MISSING = { unnamed: 100, offscreen: 1 } as const;
+const MISSING = { unnamed: 100, offscreen: 100 } as const;
 /** Un écran plus bas que tant de pixels est un téléphone couché (la même borne que openWorld.css). */
 const LOW_SCREEN = 500;
 const missingOf = (items: readonly MapLabel[], spots: readonly MapLabelSpot[]) => spots.reduce((n, s, i) => n + (items[i].kind === 'open' && !s.name ? MISSING.unnamed : 0), 0);
@@ -81,7 +89,7 @@ function Name({ text, wrap = false }: { text: string; wrap?: boolean }) {
     <span className="open-world-map-lines" data-lignes={wrap && text.length > ONE_LINE ? '2' : '1'}>
       {lines.map((line, i) => (
         <span key={i} className="open-world-map-line">
-          {i > 0 && !/[’']$/u.test(lines[i - 1]) ? ' ' : ''}
+          {i > 0 ? ' ' : ''}
           {line}
         </span>
       ))}
@@ -89,7 +97,7 @@ function Name({ text, wrap = false }: { text: string; wrap?: boolean }) {
   );
 }
 
-export function MapLabels({ openPlaces, onPick, placer, onClosed, orderLabel, suggested = null, states, words, portName, onCrowded }: Props) {
+export function MapLabels({ openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, states, words, portName, onCrowded }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number; narrow?: { w: number; h: number } }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
@@ -118,22 +126,22 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, orderLabel, su
     for (const s of spots) {
       const size = sizes.current.get(s.id);
       if (!s.shown || !size) continue;
-      const kind = s.id === 'keo' ? 'keo' : s.id === 'port' || openPlaces.includes(s.id) ? 'open' : 'closed';
+      // Un cadenas de pont ; Kéo ; une pastille, celle d'un lieu ouvert ou pâle.
+      const kind = s.id === 'keo' ? 'keo' : isBridgeSpot(s.id) ? 'closed' : 'open';
       items.push({ id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port', ...(size.narrow ? { narrow: size.narrow } : {}) });
     }
     return items;
-  }, [openPlaces]);
+  }, []);
   // Pour une vue essayée : ce qui y manque (`missingOf`), un lieu hors de l'écran compté comme sans nom.
   const crowded = useCallback((spots: readonly MapSpotOnScreen[]) => {
     const items = itemsOf(spots);
-    const tablet = screen.current.height > LOW_SCREEN;
     let gone = 0;
     for (const s of spots) {
       if (s.shown || s.id === 'keo') continue;
-      if (s.id === 'port' ? sizes.current.has('port') : openPlaces.includes(s.id)) gone += MISSING.unnamed;
-      else if (s.id !== 'port' && tablet) gone += MISSING.offscreen;
+      if (s.id === 'port' ? sizes.current.has('port') : !isBridgeSpot(s.id) && openPlaces.includes(s.id)) gone += MISSING.unnamed;
+      else if (s.id !== 'port') gone += MISSING.offscreen;
     }
-    // Sans la reprise des noms fermés : seuls les lieux ouverts comptent ici.
+    // Sans la reprise des noms fermés : seules les pastilles comptent ici.
     return gone + missingOf(items, layoutMapLabels(items, obstacles.current, screen.current, false));
   }, [itemsOf, openPlaces]);
 
@@ -147,7 +155,7 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, orderLabel, su
       if (node && node.hidden === s.shown) node.hidden = !s.shown;
     }
     const items = itemsOf(spots);
-    // Kéo d'abord, puis l'Escale (elle garde son nom), les autres lieux ouverts, puis les fermés : l'ordre de
+    // Kéo d'abord, puis l'Escale (elle garde son nom), les autres pastilles, puis les cadenas des ponts : l'ordre de
     // `layoutMapLabels` ; sur tablette, la Carte à l'arrêt (le geste fini, une taille changée), la reprise des noms
     // fermés tus (sur téléphone, un lieu fermé peut rester à son cadenas ; pendant un glisser, elle coûterait à chaque
     // image : expert frontend).
@@ -240,7 +248,7 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, orderLabel, su
     observer.observe(el);
     for (const node of el.querySelectorAll<HTMLElement>('[data-lieu]')) observer.observe(node);
     return () => observer.disconnect();
-  }, [openPlaces, place]);
+  }, [openPlaces, closedLands, place]);
 
 
   return (
@@ -265,8 +273,30 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, orderLabel, su
         </button>
       )}
       {PLACES.map((p) => {
+        if (!openPlaces.includes(p.id)) {
+          // Un lieu d'une terre fermée : sa pastille pâle, au contour en tirets, son nom lisible ; elle ouvre la fiche de sa terre.
+          const land = landOf(p.id) as LinkedLand;
+          return (
+            <button
+              key={p.id}
+              type="button"
+              className="open-world-map-place open-world-map-pale"
+              data-lieu={p.id}
+              hidden
+              aria-label={`${p.name}, ${orderLabel?.(land) ?? closedLandLabel(land)}`}
+              onClick={() => onClosed(land)}
+            >
+              <span className="open-world-map-place-name">
+                <Name text={p.name} wrap />
+              </span>
+              <span className="open-world-map-icon" aria-hidden="true">
+                <Icon name={getBiome(p.island)?.icon ?? 'map'} />
+              </span>
+            </button>
+          );
+        }
         const word = mapStateWord(p, states[p.id], words);
-        return openPlaces.includes(p.id) ? (
+        return (
           <button
             key={p.id}
             type="button"
@@ -291,25 +321,24 @@ export function MapLabels({ openPlaces, onPick, placer, onClosed, orderLabel, su
               <Icon name={islandStateIcon(states[p.id] ?? 'a-explorer')} />
             </span>
           </button>
-        ) : (
-          <button
-            key={p.id}
-            type="button"
-            className="open-world-map-closed"
-            data-lieu={p.id}
-            hidden
-            aria-label={orderLabel?.(p.id) ?? `${p.name} : fermé, la passerelle est démontée`}
-            onClick={() => onClosed(p.id)}
-          >
-            <span className={`open-world-lock${p.id === suggested ? ' suggested' : ''}`} aria-hidden="true">
-              <Icon name="lock" />
-            </span>
-            <span className="open-world-map-closed-name" aria-hidden="true">
-              <Name text={p.name} />
-            </span>
-          </button>
         );
       })}
+      {/* Le cadenas du pont de chaque terre fermée, sur la coupure du bras de mer : plein pour le pont suggéré seul. */}
+      {closedLands.map((land) => (
+        <button
+          key={land}
+          type="button"
+          className="open-world-map-closed open-world-map-bridge"
+          data-lieu={bridgeSpot(land)}
+          hidden
+          aria-label={orderLabel?.(land) ?? closedLandLabel(land)}
+          onClick={() => onClosed(land)}
+        >
+          <span className={`open-world-lock${land === suggested ? ' suggested' : ''}`} aria-hidden="true">
+            <Icon name="lock" />
+          </span>
+        </button>
+      ))}
     </div>
   );
 }
