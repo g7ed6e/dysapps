@@ -134,13 +134,91 @@ function rampHeight(p: Vec2): number | null {
 }
 
 /**
- * Les collines (GD-20, point 3, lot 3, deuxième levier graphique) : une colline ronde par case d'un réseau de `cell`
- * unités, sa place, sa largeur et sa hauteur tirées du hasard fixe de la case (`hash2` : le même relief à chaque
- * construction), son sommet adouci. Elles ne montent qu'à `path` unités d'un chemin, `place` du centre d'un lieu, `coast`
- * de l'eau et `strait` d'un bras de mer, de plus en plus jusqu'au bout de chaque intervalle : les chemins, les replats,
- * les plages et les rives restent ceux d'avant, la marche de Kéo aussi.
+ * Les collines (GD-20, point 3, lot 3, deuxième levier graphique ; reprise d'après la relecture du directeur artistique :
+ * « de vraies collines de 4 à 8 de haut, à grandes facettes, loin des chemins ») : une colline par case d'un réseau de
+ * `cell` unités (à la meilleure de `tries` places tirées dans la case), en pyramide à `sides` pans (5 à 7) et petit sommet plat (`top`, la part du rayon) : chaque pan est un
+ * plan, ses facettes ont toutes la même normale et se lisent comme une seule grande facette, flanc au soleil ou flanc à
+ * l'ombre. Sa place, son rayon, sa hauteur et son orientation viennent du hasard fixe de la case (`hash2`). Son rayon se
+ * réduit pour que toute son emprise reste à `path` unités au moins d'un chemin, `place` du centre d'un lieu, `coast` de
+ * l'eau et `strait` d'un bras de mer ; trop petite (`minRadius`), elle n'est pas posée. Les chemins, les replats, les
+ * plages, les rives et la marche de Kéo restent ceux d'avant.
  */
-const HILLS = { cell: 24, radius: [9, 15], height: [2.2, 5.5], path: [4, 14], place: [15, 26], coast: [BEACH + 1, BEACH + 12], strait: [6, 16] } as const;
+export const HILLS = { cell: 26, radius: [11, 19], height: [4, 8], sides: [5, 7], top: 0.12, minRadius: 6, tries: 4, path: 3, place: 15, coast: BEACH + 2, strait: 7 } as const;
+
+/** Une colline posée : son centre, son rayon, sa hauteur, son nombre de pans et l'angle du premier. */
+interface Hill {
+  x: number;
+  z: number;
+  r: number;
+  h: number;
+  sides: number;
+  turn: number;
+}
+
+/** La colline de chaque case du réseau (ou rien), tirée une fois. */
+const hillCache = new Map<number, Hill | null>();
+
+/** La colline de la case (`i`, `j`), ou rien (trop près d'un chemin, d'un lieu, de l'eau). */
+function hillOf(i: number, j: number): Hill | null {
+  const key = (i + 500) * 1000 + j + 500;
+  const known = hillCache.get(key);
+  if (known !== undefined) return known;
+  const H = HILLS;
+  // Quelques places tirées dans la case : la colline prend celle où elle peut être la plus large.
+  let c = { x: 0, z: 0 };
+  let r = -Infinity;
+  for (let k = 0; k < H.tries; k++) {
+    const q = { x: (i + 0.1 + 0.8 * hash2(i + 59 * k, j)) * H.cell, z: (j + 0.1 + 0.8 * hash2(j + 101 + 37 * k, i)) * H.cell };
+    let place = Infinity;
+    for (const pl of PLACES) place = Math.min(place, distance(q, pl.center));
+    const ramp = distanceToPolyline(q, [LOOKOUT_RAMP.from, LOOKOUT_RAMP.to]) - LOOKOUT_RAMP.halfWidth;
+    const room = Math.min(pathDistance(q, 40) - H.path, ramp - H.path, place - H.place, landDistance(q) - H.coast, straitClearance(q) - H.strait);
+    if (room > r) {
+      r = room;
+      c = q;
+    }
+  }
+  r = Math.min(r, H.radius[0] + (H.radius[1] - H.radius[0]) * hash2(i + 7, j + 13));
+  let hill: Hill | null = null;
+  if (r >= H.minRadius) {
+    // La hauteur suit le rayon gardé : une petite colline n'est jamais une aiguille.
+    const t = hash2(i + 31, j + 57);
+    const h = (H.height[0] + (H.height[1] - H.height[0]) * t) * Math.min(1, r / 10);
+    const sides = H.sides[0] + Math.floor(hash2(i + 3, j + 211) * (H.sides[1] - H.sides[0] + 1));
+    hill = { x: c.x, z: c.z, r, h, sides, turn: hash2(j + 17, i + 5) * 2 * Math.PI };
+  }
+  hillCache.set(key, hill);
+  return hill;
+}
+
+/** La hauteur d'une colline en `p` : une pyramide à pans plans, son sommet aplati. */
+function hillHeight(hl: Hill, p: Vec2): number {
+  const dx = p.x - hl.x;
+  const dz = p.z - hl.z;
+  if (dx * dx + dz * dz >= hl.r * hl.r) return 0;
+  // La distance « polygonale » au centre : le plus grand des pas vers chaque pan, rapporté à l'apothème.
+  let t = 0;
+  for (let k = 0; k < hl.sides; k++) {
+    const a = hl.turn + (2 * Math.PI * k) / hl.sides;
+    t = Math.max(t, dx * Math.cos(a) + dz * Math.sin(a));
+  }
+  t /= hl.r * Math.cos(Math.PI / hl.sides);
+  if (t >= 1) return 0;
+  return hl.h * Math.min(1, (1 - t) / (1 - HILLS.top));
+}
+
+/** La hauteur des collines en `p` (rien sur l'eau ni près des chemins et des lieux). */
+export function hillsAt(p: Vec2): number {
+  const ci = Math.floor(p.x / HILLS.cell);
+  const cj = Math.floor(p.z / HILLS.cell);
+  let h = 0;
+  for (let dj = -1; dj <= 1; dj++)
+    for (let di = -1; di <= 1; di++) {
+      const hl = hillOf(ci + di, cj + dj);
+      if (hl) h = Math.max(h, hillHeight(hl, p));
+    }
+  return h;
+}
 
 /** La distance aux chemins, tirée une fois sur une grille de `PATH_GRID` unités (lue en bilinéaire). */
 const PATH_GRID = 2;
@@ -177,38 +255,6 @@ function pathDistance(p: Vec2, cap: number): number {
   return Math.min(cap, (at(0, 0) * (1 - s) + at(1, 0) * s) * (1 - t) + (at(0, 1) * (1 - s) + at(1, 1) * s) * t);
 }
 
-/** La hauteur des collines en `p`, à `d` unités de l'eau (rien sur l'eau ni près des chemins et des lieux). */
-function hillsAt(p: Vec2, d: number): number {
-  const H = HILLS;
-  let w = smoothstep(H.coast[0], H.coast[1], d);
-  if (w <= 0) return 0;
-  w *= smoothstep(H.strait[0], H.strait[1], straitClearance(p));
-  if (w <= 0) return 0;
-  let place = Infinity;
-  for (const pl of PLACES) place = Math.min(place, distance(p, pl.center));
-  w *= smoothstep(H.place[0], H.place[1], place);
-  if (w <= 0) return 0;
-  w *= smoothstep(H.path[0], H.path[1], pathDistance(p, H.path[1]));
-  if (w <= 0) return 0;
-  const ci = Math.floor(p.x / H.cell);
-  const cj = Math.floor(p.z / H.cell);
-  let h = 0;
-  for (let dj = -1; dj <= 1; dj++)
-    for (let di = -1; di <= 1; di++) {
-      const i = ci + di;
-      const j = cj + dj;
-      const cx = (i + 0.2 + 0.6 * hash2(i, j)) * H.cell;
-      const cz = (j + 0.2 + 0.6 * hash2(j + 101, i)) * H.cell;
-      const r = H.radius[0] + (H.radius[1] - H.radius[0]) * hash2(i + 7, j + 13);
-      const t = Math.hypot(p.x - cx, p.z - cz) / r;
-      if (t >= 1) continue;
-      const top = H.height[0] + (H.height[1] - H.height[0]) * hash2(i + 31, j + 57);
-      // Une colline ronde : pentes droites, sommet adouci (les facettes y font les aplats de la planche).
-      h = Math.max(h, top * (1 - smoothstep(0.12, 1, t)));
-    }
-  return h * w;
-}
-
 /** La hauteur du sol sans la rampe de la Vigie. */
 function groundHeight(p: Vec2): number {
   // Loin de la côte, le large : la distance à la terre y dépasse celle à la boîte de la côte.
@@ -217,14 +263,16 @@ function groundHeight(p: Vec2): number {
   if (d < 0) return -0.35 + Math.max(d, -4) * 0.3;
   // La plage, puis l'herbe qui monte doucement vers l'intérieur.
   let h = 0.2 + 0.25 * smoothstep(0, BEACH, d) + 0.1 * Math.max(0, Math.min(d, 24) - BEACH);
+  // Les collines (GD-20, point 3, lot 3 : un relief marqué, des silhouettes) : loin des chemins, des lieux, de la côte
+  // et des bras de mer ; les chemins passent entre elles. Sur elles, ni bosse ni ondulation : leurs pans restent plans.
+  const hill = hillsAt(p);
+  const plain = 1 - smoothstep(0, 0.6, hill);
   // Des bosses douces, pour que les facettes accrochent la lumière (jamais sur la plage)…
   const bumps = Math.sin(p.x * 0.45) * Math.cos(p.z * 0.38) + 0.5 * Math.sin(p.x * 0.9 + p.z * 0.7);
-  h += 0.35 * bumps * smoothstep(BEACH, BEACH + 3, d);
+  h += 0.35 * bumps * smoothstep(BEACH, BEACH + 3, d) * plain;
   // … et de longues ondulations, qu'on monte et qu'on descend en marchant.
   h += 1.1 * Math.sin(p.x * 0.07 + 1.3) * Math.cos(p.z * 0.09 - 0.4) * smoothstep(BEACH, BEACH + 14, d);
-  // Les collines (GD-20, point 3, lot 3 : un relief plus marqué, des silhouettes) : loin des chemins, des lieux, de la
-  // côte et des bras de mer ; les chemins passent entre elles.
-  h += hillsAt(p, d);
+  h += hill;
   // Les rives rocheuses des bras de mer : la levée, jamais plus bas que le sol d'avant ; avant les replats, qui ne
   // bougent pas (aucun bras de mer n'entre dans un replat ni dans son fondu).
   const s = straitClearance(p);
@@ -485,12 +533,17 @@ const GROUND_TONES = {
   high: 0x58ab7f,
   /** Les flancs à l'ombre : le Vert île. */
   slope: 0x438b82,
+  /** Les flancs des collines au soleil : un vert clair et chaud, bien séparé de la prairie et du flanc à l'ombre. */
+  sunny: 0x9ed88a,
   /** La roche. */
   rock: COLORS_6E.rock,
 } as const;
 
-/** Les seuils des aplats : la pente (la part verticale de la normale) et l'altitude. */
-const TONE = { rock: 0.62, slope: 0.86, midFrom: 2.2, highFrom: 5, sand: 2 } as const;
+/**
+ * Les seuils des aplats : la pente (la part verticale de la normale) et l'altitude ; une facette est sur une colline au-dessus de
+ * `hill` de sa hauteur, et prend le vert de son flanc tant qu'elle n'est pas plate (`hillFlat`, le petit sommet).
+ */
+const TONE = { rock: 0.62, slope: 0.86, midFrom: 2.2, highFrom: 5, sand: 2, hill: 0.4, hillFlat: 0.995 } as const;
 
 /** Le sens d'où vient le soleil, à plat (l'opposé des ombres peintes, ./sky.ts) : un flanc qui le regarde est au soleil. */
 const SUN_FLAT = { x: -SHADOW_DIR.x, z: -SHADOW_DIR.z } as const;
@@ -525,11 +578,17 @@ function facetColor(a: P3, b: P3, c: P3): number {
   const z = (a[2] + b[2] + c[2]) / 3;
   const h = (a[1] + b[1] + c[1]) / 3;
   const flat = flatColor(x, z, h);
+  // Sur une colline, chaque pan prend le vert de son flanc (au soleil, ou à l'ombre), même peu pentu.
+  const hill = hillsAt({ x, z }) > TONE.hill && up < TONE.hillFlat && flat !== GROUND_TONES.rock;
+  if (hill) return sunSide(nx, ny, nz, len) ? GROUND_TONES.sunny : GROUND_TONES.slope;
   if (up >= TONE.slope || (flat !== GROUND_TONES.low && flat !== GROUND_TONES.mid && flat !== GROUND_TONES.high)) return flat;
-  // La normale tournée vers le haut (le sens des triangles varie) : son côté au soleil ou à l'ombre.
+  return sunSide(nx, ny, nz, len) ? GROUND_TONES.mid : GROUND_TONES.slope;
+}
+
+/** Une facette de normale (`nx`, `ny`, `nz`) regarde-t-elle le soleil ? La normale tournée vers le haut (le sens des triangles varie). */
+function sunSide(nx: number, ny: number, nz: number, len: number): boolean {
   const sign = ny < 0 ? -1 : 1;
-  const sunny = (sign * (nx * SUN_FLAT.x + nz * SUN_FLAT.z)) / len > 0.12;
-  return sunny ? GROUND_TONES.mid : GROUND_TONES.slope;
+  return (sign * (nx * SUN_FLAT.x + nz * SUN_FLAT.z)) / len > 0.12;
 }
 
 /** La couleur du sol en (x, z) à la hauteur `h`, à plat (les ombres peintes la reprennent, plus sombre). */

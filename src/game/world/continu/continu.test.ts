@@ -4,13 +4,13 @@ import { describe, expect, it } from 'vitest';
 import { FacetBuilder, boundsOf } from './facets';
 import { groundCost, mapCost, openWorldCost, OPEN_WORLD_BUDGET } from './budget';
 import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, markBeside, markOffset, occlusionLift, screenOf } from './camera';
-import { distance, insidePolygon, type Vec3 } from './geometry';
+import { distance, distanceToPolyline, insidePolygon, type Vec3 } from './geometry';
 import { START_DISTANCE, atNode, edgesNear, findRoute, networkSamples, pathNode, pathRibbons, pathTopAt, routeLength, snapToNetwork, startOf } from './paths';
 import { COAST, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, NORTH_SHORE, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, hidesTraces, placeById, placeOfIsland } from './plan6e';
 import { modelOfPlace } from './places';
 import { sceneSpot } from './questionScene';
 import { SEA_TEXTURE, WATER_TONES, seaPixels, shallowness, waterTone } from './sea';
-import { RING, RING_FLOOR, RING_LIFT, TILE_SIZE, buildHeightField, heightAt, heightOnFar, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
+import { HILLS, RING, RING_FLOOR, RING_LIFT, TILE_SIZE, buildHeightField, hillsAt, heightAt, heightOnFar, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
 import { createTileStore } from './tiles';
 import { VEIL_HEIGHT, VEIL_LAYERS, veilFacets, veilShare } from './veil';
 import { bridgeSite } from './bridges';
@@ -619,5 +619,31 @@ describe('Les chemins de loin (directeur artistique, 17 octobre 2026)', () => {
     for (let r = 0; r < f.far.length; r++) if (f.far[r] !== f.heights[r]) lowered++;
     expect(lowered).toBeGreaterThan(0);
     expect(lowered).toBeLessThan(f.far.length / 9 / 4);
+  });
+});
+
+describe('Les collines (GD-20, point 3, lot 3, reprise)', () => {
+  // Les points de l'île, tous les trois pas, et la hauteur des collines en chacun.
+  const samples: { x: number; z: number; h: number }[] = [];
+  for (let x = TERRAIN.minX; x < TERRAIN.minX + TERRAIN.tilesX * TILE_SIZE; x += 3)
+    for (let z = TERRAIN.minZ; z < TERRAIN.minZ + TERRAIN.tilesZ * TILE_SIZE; z += 3) samples.push({ x, z, h: hillsAt({ x, z }) });
+  const nodes = new Map(PATH_NODES.map((n) => [n.id, n.at]));
+  const pathDistance = (p: { x: number; z: number }) => Math.min(...PATH_EDGES.map(([a, b]) => distanceToPolyline(p, [nodes.get(a)!, nodes.get(b)!])));
+
+  it('de vraies collines : une dizaine au moins montent à plus de 5, aucune au-dessus de 8', () => {
+    const high = samples.filter((s) => s.h > 5);
+    const peaks: { x: number; z: number }[] = [];
+    for (const s of high) if (!peaks.some((q) => distance(q, s) < 15)) peaks.push(s);
+    expect(peaks.length).toBeGreaterThanOrEqual(10);
+    expect(Math.max(...samples.map((s) => s.h))).toBeLessThanOrEqual(HILLS.height[1] + 1e-6);
+  });
+
+  it('loin des chemins, des lieux et de l’eau : la marche de Kéo, les replats et les plages ne bougent pas', () => {
+    for (const s of samples) {
+      if (s.h === 0) continue;
+      expect(pathDistance(s)).toBeGreaterThan(HILLS.path - 0.01);
+      for (const p of PLACES) expect(distance(s, p.center)).toBeGreaterThan(HILLS.place - 0.01);
+      expect(landDistance(s)).toBeGreaterThan(HILLS.coast - 0.01);
+    }
   });
 });
