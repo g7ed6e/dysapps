@@ -453,6 +453,7 @@ export default function OpenWorldPage() {
   // Les terres dans la scène : la brume et les ponts tombés des terres fermées, les ponts rebâtis des autres.
   useEffect(() => {
     world.current?.setLands(lands);
+    layAnnounced.current = false;
   }, [lands, ready]);
 
   // La Carte : les lieux ouverts sont ceux des terres ouvertes.
@@ -504,6 +505,8 @@ export default function OpenWorldPage() {
    * la phrase du pont que celui-ci rend reliable (« Le pont des Crêtes peut être rebâti. »). Sur la Carte, le focus va sur
    * le nom d'un lieu de la terre.
    */
+  // Une pose annoncée à la scène, en attente de ses terres (`setLands`, dans l'effet ci-dessus).
+  const layAnnounced = useRef(false);
   const relier = useCallback(
     (land: LinkedLand) => {
       const before = lands.closed;
@@ -520,11 +523,17 @@ export default function OpenWorldPage() {
           setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [PONT_REBATI, ...linkable.map(linkableLabel)], after }));
         },
       };
+      // Une pose déjà annoncée, les terres pas encore changées dans la scène : rien de payé, rien d'annoncé (une
+      // seconde annonce effacerait la phrase de la première).
+      if (layAnnounced.current) return;
       if (!linkLand(gridLand(land)).ok) return;
       // Payée, puis annoncée avant que les terres changent dans la scène (`setLands` vient d'un effet, après le rendu) :
       // la scène la pose quand elle les reçoit. Un paiement refusé n'annonce rien.
       const w = world.current;
-      w?.layLand(land, events);
+      if (w) {
+        layAnnounced.current = true;
+        w.layLand(land, events);
+      }
       if (mapOpen) focusAfter.current = landById(land).places[0];
       setLieu(null);
       if (!w) {
@@ -973,7 +982,11 @@ function placeLocks(root: HTMLElement | null, locks: readonly LockOnScreen[]): v
 
 /** La phrase fixe du pont rebâti (GD-20, point 3) : la même pour toutes les terres, sans accord à faire. */
 const PONT_REBATI = 'Le pont est rebâti.';
-/** Elle vient au moins tant de millisecondes après le toc (jamais en même temps), et reste écrite tant de millisecondes par phrase. */
+/**
+ * Elle vient au moins tant de millisecondes après le toc (jamais en même temps), et reste écrite tant de millisecondes
+ * par phrase. Le délai ne joue que dans la pose « d'un coup » (le toc et la fin dits ensemble) : après une pose animée,
+ * le fondu de la brume dure plus longtemps et l'absorbe.
+ */
 const SAID_AFTER_MS = 450;
 const SAID_MS = 4000;
 

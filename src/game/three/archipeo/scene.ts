@@ -2590,6 +2590,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     },
     setLands,
     layLand: (land, events) => {
+      // Une seule pose annoncée à la fois : une seconde, avant que les terres changent, effacerait la phrase de la
+      // première (relecture du lot 2) ; la page ne l'annonce pas, la scène la refuse aussi.
+      if (pendingLay) return;
       pendingLay = { land, events };
     },
     keoAt: () => ({ x: here.x, z: here.z }),
