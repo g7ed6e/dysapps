@@ -160,7 +160,7 @@ export const AMENAGEMENTS: readonly Amenagement[] = [
   { id: 'french-6e-reading-fixture-1', name: 'le poteau-lanterne', place: 'lookout', kind: 'commande', elements: [[0], [1], [2]], at: { x: 4.4, z: 2.5 }, yaw: 0 },
   { id: 'french-6e-reading-fixture-2', name: 'l’escalier', place: 'lookout', kind: 'quete', elements: [[0]], at: { x: 4.2, z: 1.1 }, yaw: 0 },
   { id: 'maths-6e-calculation-fixture-1', name: 'la boutique', place: 'quais', kind: 'commande', elements: [[0], [1], [2]], at: { x: 6.0, z: 9.8 }, yaw: 0 },
-  { id: 'maths-6e-fractions-fixture-1', name: 'le lavoir', place: 'ecluses', kind: 'commande', elements: [[0], [1], [2], [3]], at: { x: 4.42, z: 4.7 }, yaw: 0, scene: true, quai: { x: [3.35, 5.05], z: [4.2, 5.24] } },
+  { id: 'maths-6e-fractions-fixture-1', name: 'le lavoir', place: 'ecluses', kind: 'commande', elements: [[0], [1], [2], [3]], at: { x: 4.42, z: 4.7 }, yaw: 0, scene: true, quai: { x: [2.8, 5.05], z: [4.2, 5.24] } },
   { id: 'maths-6e-decimals-fixture-1', name: 'le parasol', place: 'saltworks', kind: 'commande', elements: [[0], [1], [2], [3]], at: { x: 4.3, z: -1.7 }, yaw: 0 },
   { id: 'english-6e-vocabulary-fixture-1', name: 'la pendule', place: 'beacons', kind: 'commande', elements: [[0], [1]], at: { x: 3.45, z: -6.6 }, yaw: 0, scene: true },
   { id: 'english-6e-grammar-fixture-1', name: 'la vitrine', place: 'ferry', kind: 'commande', elements: [[0], [1], [2]], at: { x: -5.3, z: 0.8 }, yaw: Math.PI / 3, floor: 0.04 },
