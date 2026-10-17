@@ -262,6 +262,62 @@ export function nodeOctagon(b: FacetBuilder, ground: (x: number, z: number) => n
   b.prism({ x: node.at.x, y: y - RIBBON_SIDE, z: node.at.z }, w, w, RIBBON_SIDE, 8, deck ? COLORS_6E.wood : COLORS_6E.path);
 }
 
+/** Les liaisons dont le ruban passe à moins de `reach` unités de (`x`, `z`), écrites dans `out` (vidé d'abord). */
+export function edgesNear(x: number, z: number, reach: number, out: number[]): number[] {
+  out.length = 0;
+  PATH_EDGES.forEach(([ia, ib], edge) => {
+    const a = pathNode(ia).at;
+    const c = pathNode(ib).at;
+    if (segmentDistance(x, z, a.x, a.z, c.x, c.z) < reach + HALF_WIDTH.deck * 1.08) out.push(edge);
+  });
+  return out;
+}
+
+/** La distance de (`x`, `z`) au segment de (`ax`, `az`) à (`cx`, `cz`). */
+function segmentDistance(x: number, z: number, ax: number, az: number, cx: number, cz: number): number {
+  const dx = cx - ax;
+  const dz = cz - az;
+  const l2 = dx * dx + dz * dz || 1e-9;
+  const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2));
+  return Math.hypot(x - ax - dx * t, z - az - dz * t);
+}
+
+/**
+ * Le dessus des rubans des liaisons `edges` (et des octogones de leurs nœuds) en (`x`, `z`), le plus haut, ou −∞ hors
+ * d'eux : un ruban est plat en travers, à la hauteur du sol sur sa ligne, et dépasse donc du sol en travers d'une pente
+ * (l'anneau clair sous Kéo passe dessus, ./terrain.ts, `ringHeights`). Sans rien allouer.
+ */
+export function pathTopAt(x: number, z: number, ground: (x: number, z: number) => number, edges: readonly number[]): number {
+  let top = -Infinity;
+  for (const edge of edges) {
+    const [ia, ib] = PATH_EDGES[edge];
+    const a = pathNode(ia).at;
+    const c = pathNode(ib).at;
+    const len = Math.hypot(c.x - a.x, c.z - a.z) || 1e-9;
+    const dx = (c.x - a.x) / len;
+    const dz = (c.z - a.z) / len;
+    for (const node of [a, c]) {
+      const w = (deckAt(ground, node) ? HALF_WIDTH.deck : HALF_WIDTH.path) * 1.08;
+      if (Math.hypot(x - node.x, z - node.z) <= w) top = Math.max(top, standingHeight(ground(node.x, node.z)) + RIBBON_LIFT + 0.005);
+    }
+    const d = (x - a.x) * dx + (z - a.z) * dz;
+    if (d < 0 || d > len) continue;
+    const across = Math.abs(-(x - a.x) * dz + (z - a.z) * dx);
+    // Le ruban, de pas en pas (`RIBBON_STEP`), droit entre deux points de sa ligne.
+    const n = Math.max(1, Math.ceil(len / RIBBON_STEP));
+    const k = Math.min(n - 1, Math.floor((d / len) * n));
+    const d0 = (len * k) / n;
+    const d1 = (len * (k + 1)) / n;
+    const mx = a.x + dx * ((d0 + d1) / 2);
+    const mz = a.z + dz * ((d0 + d1) / 2);
+    if (across > (deckAt(ground, { x: mx, z: mz }) ? HALF_WIDTH.deck : HALF_WIDTH.path)) continue;
+    const y0 = standingHeight(ground(a.x + dx * d0, a.z + dz * d0));
+    const y1 = standingHeight(ground(a.x + dx * d1, a.z + dz * d1));
+    top = Math.max(top, y0 + ((y1 - y0) * (d - d0)) / (d1 - d0) + RIBBON_LIFT);
+  }
+  return top;
+}
+
 /**
  * Le dessin des chemins : un ruban par liaison (`edgeRibbon`), le bord de quai des Quais, le muret de la rampe de la
  * Vigie, un octogone sur chaque nœud. Sans les liaisons `skipEdges` ni les nœuds `skipNodes` : les embranchements des

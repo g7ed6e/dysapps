@@ -341,3 +341,32 @@ export function tileRings(focus: Vec2, far: number): { near: number[]; far: numb
     }
   return out;
 }
+
+/**
+ * L'anneau clair sous Kéo flotte de si peu au-dessus de ce qu'il couvre (le sol, le dessus des rubans des chemins) ;
+ * chaque sommet prend le plus haut de ce qui l'entoure à tant d'unités (plus que la moitié d'un pas de l'anneau) : un
+ * pas qui enjambe le bord d'un chemin passe dessus, jamais dessous.
+ */
+export const RING_LIFT = 0.04;
+const RING_REACH = 0.3;
+
+/**
+ * L'anneau clair sous Kéo épouse le sol (décision du directeur artistique, 17 octobre 2026 : aucune pente ne le coupe) :
+ * la hauteur de chacun de ses sommets (`xz`, leurs écarts au centre deux à deux), écrite dans `out`, depuis les pieds de
+ * Kéo (`feet`) en `cx`, `cz`, juste au-dessus de `surface` (le sol dessiné où l'on se tient, ou le dessus d'un chemin,
+ * qui dépasse en travers d'une pente) ; sur des planches (Kéo plus haut que ce qu'il y a sous lui), à plat sous ses
+ * pieds. Sans rien allouer : la vue l'appelle quand Kéo bouge.
+ */
+export function ringHeights(cx: number, cz: number, feet: number, xz: Float32Array, surface: (x: number, z: number) => number, out: Float32Array): void {
+  const onPlanks = feet - surface(cx, cz) > 0.1;
+  const r = RING_REACH;
+  for (let i = 0; i < out.length; i++) {
+    if (onPlanks) {
+      out[i] = RING_LIFT;
+      continue;
+    }
+    const x = cx + xz[2 * i];
+    const z = cz + xz[2 * i + 1];
+    out[i] = Math.max(surface(x, z), surface(x + r, z), surface(x - r, z), surface(x, z + r), surface(x, z - r)) - feet + RING_LIFT;
+  }
+}

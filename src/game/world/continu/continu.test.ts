@@ -5,12 +5,12 @@ import { FacetBuilder, boundsOf } from './facets';
 import { groundCost, mapCost, openWorldCost, OPEN_WORLD_BUDGET } from './budget';
 import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, markBeside, markOffset, occlusionLift, screenOf } from './camera';
 import { distance, insidePolygon, type Vec3 } from './geometry';
-import { START_DISTANCE, atNode, findRoute, networkSamples, pathNode, pathRibbons, routeLength, snapToNetwork, startOf } from './paths';
+import { START_DISTANCE, atNode, edgesNear, findRoute, networkSamples, pathNode, pathRibbons, pathTopAt, routeLength, snapToNetwork, startOf } from './paths';
 import { COAST, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, NORTH_SHORE, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, hidesTraces, placeById, placeOfIsland } from './plan6e';
 import { modelOfPlace } from './places';
 import { sceneSpot } from './questionScene';
 import { SEA_TEXTURE, seaPixels, shallowness } from './sea';
-import { RING, TILE_SIZE, buildHeightField, heightAt, heightOnMesh, landDistance, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
+import { RING, RING_LIFT, TILE_SIZE, buildHeightField, heightAt, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
 import { createTileStore } from './tiles';
 import { VEIL_HEIGHT, VEIL_PROFILE, veilFacets } from './veil';
 import { WALK_CADENCE, WALK_SPEED, skipWalk, startWalk, walkAt } from './walk';
@@ -539,5 +539,52 @@ describe('Le rivage nord (GD-20, point 8, lot L7)', () => {
     expect(hidesTraces('filets', 'lookout')).toBe(false);
     expect(hidesTraces('filets', 'filets')).toBe(true);
     expect(hidesTraces(null, 'lookout')).toBe(false);
+  });
+});
+
+describe('L’anneau clair sous Kéo (directeur artistique, 17 octobre 2026)', () => {
+  // Un anneau de 24 pas, comme celui de la vue (rayons 0,85 et 1,3).
+  const xz = new Float32Array(
+    Array.from({ length: 25 }, (_, k) => {
+      const r = k % 2 ? 1.3 : 0.85;
+      const a = (2 * Math.PI * k) / 24;
+      return [r * Math.cos(a), r * Math.sin(a)];
+    }).flat(),
+  );
+  const out = new Float32Array(25);
+  const field = buildHeightField();
+  const ground = (x: number, z: number) => heightOnMesh(field, x, z);
+
+  it('épouse le sol et passe sur les chemins : chaque sommet juste au-dessus du sol et du dessus des rubans, même en pente', () => {
+    const edges: number[] = [];
+    let above = 0;
+    // Kéo sur le réseau, au milieu de chaque liaison et sur chaque nœud.
+    const spots = [...PATH_NODES.map((n) => n.at), ...PATH_EDGES.map(([a, b]) => {
+      const p = PATH_NODES.find((n) => n.id === a)!.at;
+      const q = PATH_NODES.find((n) => n.id === b)!.at;
+      return { x: (p.x + q.x) / 2, z: (p.z + q.z) / 2 };
+    })];
+    for (const c of spots) {
+      edgesNear(c.x, c.z, 1.3, edges);
+      const surface = (x: number, z: number) => Math.max(standingHeight(ground(x, z)), pathTopAt(x, z, ground, edges));
+      const feet = standingHeight(ground(c.x, c.z));
+      ringHeights(c.x, c.z, feet, xz, surface, out);
+      for (let i = 0; i < out.length; i++) {
+        const x = c.x + xz[2 * i];
+        const z = c.z + xz[2 * i + 1];
+        const y = feet + out[i];
+        expect(y - standingHeight(ground(x, z))).toBeGreaterThanOrEqual(RING_LIFT - 1e-4);
+        // Au-dessus de tout ruban qui passe là, même ceux que `edgesNear` n'a pas retenus.
+        expect(y - pathTopAt(x, z, ground, PATH_EDGES.map((_, e) => e))).toBeGreaterThanOrEqual(RING_LIFT - 1e-4);
+        if (y - feet > 0.2) above++;
+      }
+    }
+    // Il y a bien des pentes et des chemins qui dépassent sous l'anneau : à plat, il y serait entré.
+    expect(above).toBeGreaterThan(0);
+  });
+
+  it('sur des planches (Kéo plus haut que le sol), à plat sous ses pieds', () => {
+    ringHeights(0, 0, 3, xz, (x) => x * 0.5, out);
+    for (const y of out) expect(y).toBeCloseTo(RING_LIFT, 6);
   });
 });

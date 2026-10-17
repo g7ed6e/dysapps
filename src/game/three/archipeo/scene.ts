@@ -18,7 +18,7 @@ import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/g
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
 import { OBSTACLE_TOUCH, branchRibbons, clampToOpen, deckLift, deckTop, isLinked, linkFacets, LAY_PLANKS, LINK_LAY, linkFrame, linkLayAt, linkPlanks, obstacleOf, openPathRibbons, type LinkLayState, type LinkedPlace } from '../../world/continu/links';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
-import { atNode, findRoute, pathNode, snapToNetwork, startOf, type NetworkPoint, type RibbonLook } from '../../world/continu/paths';
+import { atNode, edgesNear, findRoute, pathNode, pathTopAt, snapToNetwork, startOf, type NetworkPoint, type RibbonLook } from '../../world/continu/paths';
 import { PLACES, TERRAIN, hidesTraces, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PAPER_COLOR } from '../../world/continu/printworks';
@@ -51,7 +51,7 @@ import {
   type ScenetteLayout,
 } from '../../world/continu/scenette';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
-import { buildHeightField, heightOnMesh, standingHeight, tileRings } from '../../world/continu/terrain';
+import { buildHeightField, heightOnMesh, ringHeights, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { MIST_COLOR, VEIL_HEIGHT, veilFacets, type VeilMesh } from '../../world/continu/veil';
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
@@ -672,6 +672,20 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     });
   keo.scale.setScalar(KEO_SCALE);
   const ringGeometry = keep(new THREE.RingGeometry(KEO_RING.inner, KEO_RING.outer, 24).rotateX(-Math.PI / 2));
+  // L'anneau épouse le sol (directeur artistique) : ses sommets suivent le sol dessiné, refaits quand Kéo bouge ; sa
+  // sphère englobante tient les pentes.
+  const ringPosition = ringGeometry.getAttribute('position') as THREE.BufferAttribute;
+  const ringXZ = new Float32Array(ringPosition.count * 2);
+  for (let i = 0; i < ringPosition.count; i++) {
+    ringXZ[2 * i] = ringPosition.getX(i);
+    ringXZ[2 * i + 1] = ringPosition.getZ(i);
+  }
+  const ringY = new Float32Array(ringPosition.count);
+  // Ce que l'anneau couvre : le sol, ou le dessus d'un chemin proche (plat en travers, il dépasse du sol d'une pente).
+  const ringEdges: number[] = [];
+  const ringSurface = (x: number, z: number) => Math.max(standingHeight(ground(x, z)), pathTopAt(x, z, ground, ringEdges));
+  ringGeometry.computeBoundingSphere();
+  ringGeometry.boundingSphere!.radius += 2;
   const ringMaterial = new THREE.MeshBasicMaterial({ color: KEO_RING.color, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
   const ring = new THREE.Mesh(ringGeometry, ringMaterial);
   scene.add(ring);
@@ -692,7 +706,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Sur le pont neuf d'une passerelle reliée, il marche sur les planches.
     for (const place of decks) y += deckLift(p, obstacleOf(place), deckTops.get(place)!, y);
     keo.position.set(p.x, y, p.z);
-    ring.position.set(p.x, y + 0.02, p.z);
+    if (ring.position.x !== p.x || ring.position.z !== p.z || ring.position.y !== y) {
+      ring.position.set(p.x, y, p.z);
+      edgesNear(p.x, p.z, KEO_RING.outer, ringEdges);
+      ringHeights(p.x, p.z, y, ringXZ, ringSurface, ringY);
+      for (let i = 0; i < ringY.length; i++) ringPosition.setY(i, ringY[i]);
+      ringPosition.needsUpdate = true;
+    }
     keoFeet.x = p.x;
     keoFeet.y = y;
     keoFeet.z = p.z;
