@@ -9,7 +9,7 @@ import { START_DISTANCE, atNode, edgesNear, findRoute, networkSamples, pathNode,
 import { COAST, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, NORTH_SHORE, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, hidesTraces, placeById, placeOfIsland } from './plan6e';
 import { modelOfPlace } from './places';
 import { sceneSpot } from './questionScene';
-import { SEA_TEXTURE, WATER_TONES, seaPixels, shallowness, waterTone } from './sea';
+import { SEA_TEXTURE, WATER_TONES, decodeSeaField, seaPixels, shallowness, toneOfFields, waterTone } from './sea';
 import { HILLS, RING, RING_FLOOR, RING_LIFT, TILE_SIZE, buildHeightField, hillsAt, heightAt, heightOnFar, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
 import { createTileStore } from './tiles';
 import { VEIL_HEIGHT, VEIL_LAYERS, veilFacets, veilShare } from './veil';
@@ -164,14 +164,17 @@ describe('La mer et le lagon', () => {
     expect(shallowness(fromPlan([880, 20]))).toBe(0);
     const px = seaPixels();
     expect(px).toHaveLength(SEA_TEXTURE.size * SEA_TEXTURE.size * 4);
-    const at = (i: number, j: number) => Array.from(px.slice((j * SEA_TEXTURE.size + i) * 4, (j * SEA_TEXTURE.size + i) * 4 + 3));
-    expect(at(0, 0)).toEqual([0x17, 0x80, 0x78]);
-    const rgb = (hex: number) => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255];
-    expect(at(SEA_TEXTURE.size / 2, SEA_TEXTURE.size / 2)).toEqual(rgb(WATER_TONES.clear));
-    // Des paliers nets (lot 3) : chaque pixel est l'un des trois tons, aucun mélange.
-    const tones = new Set([WATER_TONES.clear, WATER_TONES.lagoon, WATER_TONES.night].map((c) => rgb(c).join()));
-    for (let j = 0; j < SEA_TEXTURE.size; j += 7) for (let i = 0; i < SEA_TEXTURE.size; i += 7) expect(tones.has(at(i, j).join())).toBe(true);
-    // Le cœur de chaque bras de mer est le plus profond ; l'eau du lagon, claire.
+    // Chaque pixel porte les deux champs (le cœur, l'eau claire) ; leur palier, comme le shader.
+    const toneAt = (i: number, j: number) => {
+      const k = (j * SEA_TEXTURE.size + i) * 4;
+      return toneOfFields({ night: decodeSeaField(px[k]), clear: decodeSeaField(px[k + 1]) });
+    };
+    expect(toneAt(0, 0)).toBe(WATER_TONES.lagoon);
+    expect(toneAt(SEA_TEXTURE.size / 2, SEA_TEXTURE.size / 2)).toBe(WATER_TONES.clear);
+    // Le large au Bleu lagon du pack, le lagon au turquoise clair et moins saturé de la reprise.
+    expect(WATER_TONES.lagoon).toBe(0x178078);
+    expect(WATER_TONES.clear).toBe(0x5cc3b5);
+    // Le cœur de chaque bras de mer est le plus profond ; l'eau du lagon, claire ; loin du pont, le cœur s'arrête.
     for (const land of LINKED_LANDS) expect(waterTone(bridgeSite(land).mid), land).toBe(WATER_TONES.night);
     expect(waterTone(fromPlan([700, 600]))).toBe(WATER_TONES.clear);
   });

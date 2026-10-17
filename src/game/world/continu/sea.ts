@@ -1,10 +1,11 @@
 // La mer et le lagon du monde continu : un seul plan d'eau au niveau 0, peint par une petite image tirée par le code
 // (rien d'importé) : l'eau claire du lagon et des bords, puis le bleu du large à quelques unités de la côte, en paliers
-// nets (GD-20, point 3, lot 3, cinquième levier graphique : plus de dégradé). Au-delà de l'image, la couleur du large (le
+// nets (GD-20, point 3, lot 3, cinquième levier graphique : plus de dégradé). L'image ne porte pas les couleurs mais deux
+// champs (reprise du lot 3) : la vue tranche net sur leur ligne zéro, et le bord de chaque palier est lisse. Au-delà de l'image, la couleur du large (le
 // bord de l'image) s'étend jusqu'à l'horizon. Les bras de mer (GD-20, point 3, « vraies terres ») ont un cœur d'eau
 // profonde, la Nuit océan du pack. L'écume du rivage est dans les tuiles du terrain (./terrain.ts, `FOAM`). Code pur.
 import { distance, insidePolygon, smoothstep, type Vec2 } from './geometry';
-import { BEACON_MASTS, COAST, COLORS_6E, FERRY_ISLET } from './plan6e';
+import { BEACON_MASTS, COAST, COLORS_6E, FERRY_ISLET, PATH_NODES, STRAITS } from './plan6e';
 import { landDistance, straitClearance } from './terrain';
 
 /**
@@ -31,37 +32,75 @@ export function shallowness(p: Vec2): number {
 }
 
 /**
- * Les trois paliers de l'eau (lot 3) : le turquoise clair du lagon et des bords, le Bleu lagon du pack (#178078) au
- * large et sur les épaules des bras de mer, la Nuit océan au cœur des bras de mer seulement, à plus de `heart` unités de
- * leurs rives. La Nuit océan pure du pack (#142B38), sans lumière sur l'eau, se lisait comme un trou
- * noir (essai sur captures ; le mainteneur : jamais assombrir jusqu'au presque-noir) : elle est éclaircie vers le Bleu
- * lagon (#1C5468), au choix du directeur artistique.
+ * Les trois paliers de l'eau (lot 3 ; reprise d'après la relecture du directeur artistique et du consultant) : le
+ * turquoise clair (#5CC3B5, plus clair et moins saturé qu'avant) réservé au lagon fermé et à une bande de bord autour de
+ * l'anneau ; un palier franc vers le Bleu lagon du pack (#178078) au large et sur les épaules des bras de mer ; la Nuit
+ * océan au cœur des bras de mer seulement, à plus de `heart` unités de leurs rives et, au-delà de `reach` unités du
+ * pont, de plus en plus étroit (`taper` par unité) : un cœur court, centré sur le pont. La Nuit océan pure du pack
+ * (#142B38) se lisait comme un trou noir (le mainteneur : jamais de presque-noir) : elle est éclaircie (#205E72).
  */
-export const WATER_TONES = { clear: 0x34bfae, lagoon: COLORS_6E.deepSea, night: 0x1c5468, heart: 3.2 } as const;
+export const WATER_TONES = { clear: 0x5cc3b5, lagoon: COLORS_6E.deepSea, night: 0x205e72, heart: 3.4, reach: 16, taper: 0.4 } as const;
+
+/** Le milieu de l'eau de chaque pont (le point le plus près de la ligne du bras, sur sa liaison). */
+let bridgeMids: Vec2[] | null = null;
+function nearestBridge(p: Vec2): number {
+  bridgeMids ??= Object.values(STRAITS).map((s) => {
+    const [a, b] = s.bridge.map((id) => PATH_NODES.find((n) => n.id === id)!.at);
+    return { x: (a.x + b.x) / 2, z: (a.z + b.z) / 2 };
+  });
+  return bridgeMids.reduce((d, m) => Math.min(d, distance(p, m)), Infinity);
+}
+
+/**
+ * Les deux champs de l'eau en un point, en unités, positifs du côté du palier : `night`, de combien on est dans le cœur
+ * d'un bras de mer ; `clear`, de combien on est dans l'eau claire. Leur ligne zéro est le bord d'un palier : la vue les
+ * lit dans l'image de l'eau, interpolés, et tranche net sur zéro (le contour suit le bras, lisse, sans pixels).
+ */
+export function waterFields(p: Vec2): { night: number; clear: number } {
+  if (insidePolygon(p, COAST)) {
+    const deep = -straitClearance(p);
+    const night = deep - WATER_TONES.heart - Math.max(0, nearestBridge(p) - WATER_TONES.reach) * WATER_TONES.taper;
+    return { night, clear: STRAIT_DEEP.clear - deep };
+  }
+  // Hors de l'anneau : la bande claire tant que l'eau est peu profonde (`shallowness` au-dessus de 0,75), mise à l'échelle
+  // d'une distance (environ dix unités pour toute la pente).
+  return { night: -8, clear: (shallowness(p) - 0.75) * 10 };
+}
 
 /** Le palier de l'eau en un point : le cœur d'un bras de mer, le Bleu lagon de ses épaules et du large, ou l'eau claire. */
 export function waterTone(p: Vec2): number {
-  if (insidePolygon(p, COAST)) {
-    const deep = -straitClearance(p);
-    return deep > WATER_TONES.heart ? WATER_TONES.night : deep > STRAIT_DEEP.clear ? WATER_TONES.lagoon : WATER_TONES.clear;
-  }
-  return shallowness(p) > 0.75 ? WATER_TONES.clear : WATER_TONES.lagoon;
+  return toneOfFields(waterFields(p));
 }
 
-const channels = (hex: number) => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255];
+/** Le palier que donnent les deux champs (comme le shader de la vue, sans son fondu d'un pixel). */
+export function toneOfFields(f: { night: number; clear: number }): number {
+  return f.night > 0 ? WATER_TONES.night : f.clear > 0 ? WATER_TONES.clear : WATER_TONES.lagoon;
+}
 
-/** Les pixels de l'eau, en rouge, vert, bleu, alpha (sRGB), ligne après ligne du nord au sud. */
+/** Un champ codé dans un octet : 128 sur sa ligne zéro, `SEA_FIELD_SCALE` par unité, borné. */
+export const SEA_FIELD_SCALE = 16;
+const encode = (v: number) => Math.max(0, Math.min(255, Math.round(128 + v * SEA_FIELD_SCALE)));
+
+/** Décode un octet de l'image de l'eau en unités (les tests ; la vue, elle, tranche sur 128/255). */
+export const decodeSeaField = (b: number) => (b - 128) / SEA_FIELD_SCALE;
+
+/**
+ * L'image de l'eau, ligne après ligne du nord au sud : rouge, le champ du cœur des bras de mer ; vert, celui de l'eau
+ * claire (codés par `encode`) ; bleu inutilisé ; alpha plein. Le bord de l'image reste au large (les deux champs au plus
+ * bas) : la couleur qui s'étend jusqu'à l'horizon.
+ */
 export function seaPixels(): Uint8Array {
   const { size, half } = SEA_TEXTURE;
   const out = new Uint8Array(size * size * 4);
   for (let j = 0; j < size; j++)
     for (let i = 0; i < size; i++) {
-      // Le bord de l'image reste au large : la couleur qui s'étend jusqu'à l'horizon.
       const edge = i === 0 || j === 0 || i === size - 1 || j === size - 1;
       const p = { x: -half + ((i + 0.5) * 2 * half) / size, z: -half + ((j + 0.5) * 2 * half) / size };
-      const rgb = channels(edge ? WATER_TONES.lagoon : waterTone(p));
+      const f = edge ? { night: -8, clear: -8 } : waterFields(p);
       const k = (j * size + i) * 4;
-      for (let c = 0; c < 3; c++) out[k + c] = rgb[c];
+      out[k] = encode(f.night);
+      out[k + 1] = encode(f.clear);
+      out[k + 2] = 0;
       out[k + 3] = 255;
     }
   return out;

@@ -52,7 +52,7 @@ import {
   type ScenetteFinale,
   type ScenetteLayout,
 } from '../../world/continu/scenette';
-import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
+import { SEA_TEXTURE, WATER_TONES, seaPixels } from '../../world/continu/sea';
 import { HORIZON_COLOR, LIGHT, SHADOW_DIR, skyDome } from '../../world/continu/sky';
 import { buildHeightField, heightOnMesh, ringHeights, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
@@ -543,6 +543,30 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
   return m;
 }
 
+/**
+ * Le matériau de l'eau (reprise du lot 3) : l'image de l'eau porte deux champs (le cœur des bras de mer, l'eau claire,
+ * ./world/continu/sea.ts) ; le shader les lit interpolés et tranche net sur leur ligne zéro, adoucie d'un pixel d'écran
+ * (`fwidth`) : trois paliers francs, au contour lisse qui épouse le bras, jamais une flaque pixellisée. Une ligne de
+ * shader, aucun appel ni aucune image de plus.
+ */
+function seaMaterialOf(map: THREE.DataTexture): THREE.MeshBasicMaterial {
+  const m = new THREE.MeshBasicMaterial({ map });
+  const tone = (hex: number) => new THREE.Vector3(...linearRgb(hex));
+  m.onBeforeCompile = (shader) => {
+    shader.uniforms.seaClear = { value: tone(WATER_TONES.clear) };
+    shader.uniforms.seaLagoon = { value: tone(WATER_TONES.lagoon) };
+    shader.uniforms.seaNight = { value: tone(WATER_TONES.night) };
+    if (import.meta.env.DEV && !shader.fragmentShader.includes('#include <map_fragment>')) console.warn('seaMaterialOf : #include <map_fragment> introuvable');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform vec3 seaClear;\nuniform vec3 seaLagoon;\nuniform vec3 seaNight;')
+      .replace(
+        '#include <map_fragment>',
+        'vec2 seaF = texture2D( map, vMapUv ).rg - 128.0 / 255.0;\nvec2 seaW = fwidth( seaF ) * 0.75 + 1e-4;\nfloat seaN = smoothstep( -seaW.x, seaW.x, seaF.x );\nfloat seaC = smoothstep( -seaW.y, seaW.y, seaF.y );\ndiffuseColor.rgb *= mix( mix( seaLagoon, seaClear, seaC ), seaNight, seaN );',
+      );
+  };
+  return m;
+}
+
 /** Une brume en géométrie : positions et couleurs avec leur transparence, sa boîte englobante juste. */
 function veilGeometry(v: VeilMesh): THREE.BufferGeometry {
   const g = new THREE.BufferGeometry();
@@ -622,7 +646,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   // La mer et le lagon : un plan d'eau à 0, peint par l'image de l'eau ; au-delà, le bord de l'image (le large).
   const seaTexture = new THREE.DataTexture(seaPixels(), SEA_TEXTURE.size, SEA_TEXTURE.size);
-  seaTexture.colorSpace = THREE.SRGBColorSpace;
+  // Des champs, pas des couleurs : lus tels quels, interpolés.
+  seaTexture.colorSpace = THREE.NoColorSpace;
   seaTexture.magFilter = THREE.LinearFilter;
   seaTexture.minFilter = THREE.LinearFilter;
   seaTexture.needsUpdate = true;
@@ -633,7 +658,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const pos = seaGeometry.getAttribute('position') as THREE.BufferAttribute;
   for (let k = 0; k < uv.count; k++) uv.setXY(k, (pos.getX(k) + SEA_TEXTURE.half) / (2 * SEA_TEXTURE.half), (pos.getZ(k) + SEA_TEXTURE.half) / (2 * SEA_TEXTURE.half));
   uv.needsUpdate = true;
-  const seaMaterial = new THREE.MeshBasicMaterial({ map: seaTexture });
+  const seaMaterial = seaMaterialOf(seaTexture);
   const sea = still(new THREE.Mesh(seaGeometry, seaMaterial));
   scene.add(sea);
   touchables.push(sea);
