@@ -320,10 +320,13 @@ describe('La place de chaque aménagement', () => {
       expect(p.base - (under ?? -Infinity)).toBeGreaterThanOrEqual(0);
       expect(p.base - (under ?? -Infinity)).toBeLessThanOrEqual(0.3);
     }
-    // De la marge autour du lavoir, sur le quai (pas juste au bord) ; à l'est, contre l'assise de la maison.
+    // De la marge autour du lavoir, sur le quai (pas juste au bord) ; à l'est, contre l'assise de la maison. Au nord et au
+    // sud, son pied garde au moins 0,1 de quai (directeur artistique, quatrième passe) ; son toit déborde, sans sortir du quai.
     const o = boundsOf(objectOnly(p));
     expect(o.min[0] - b.min[0]).toBeGreaterThanOrEqual(0.3);
     expect(Math.min(o.min[2] - b.min[2], b.max[2] - o.max[2])).toBeGreaterThanOrEqual(0);
+    const pied = boundsOf({ ...lavoir, positions: new Float32Array(feet) });
+    expect(Math.min(pied.min[2] - b.min[2], b.max[2] - pied.max[2])).toBeGreaterThanOrEqual(0.1);
     // Le morceau du quai de la scène : à la hauteur de sa dalle (un rien dessous : dans la remise, elle le couvre), et dans
     // elle, vu d'en haut.
     const deck = within(scenetteDecor('ecluses', false, true), b);
