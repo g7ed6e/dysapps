@@ -2548,6 +2548,31 @@
   gap: 0.25rem;
   font-weight: 700;
 }
+/* Un lieu pas encore reliable : le cadenas d'ordre (le même rond que sur la Carte), puis le bouton du voisin, secondaire,
+   48 px au moins, son nom entier qui passe à la ligne plutôt que de se couper. */
+.closed-place-lock {
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: 50%;
+  background: var(--surface);
+}
+.closed-place-lock svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+.closed-place-after {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  min-width: 48px;
+  max-width: 100%;
+  white-space: normal;
+  text-align: start;
+}
 /* Il en manque : inactif par sa forme, pas seulement par sa couleur (délavé, trait en tirets), et toujours focalisable. */
 .closed-place-link[aria-disabled='true'] {
   border-style: dashed;

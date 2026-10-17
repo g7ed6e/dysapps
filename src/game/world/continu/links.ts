@@ -22,19 +22,26 @@ export const START_PLACES = ['phare', 'quais'] as const satisfies readonly Place
 export type LinkedPlace = Exclude<PlaceId, (typeof START_PLACES)[number]>;
 
 /**
- * La table lieu → liaison : pour chaque lieu fermé, le lieu de départ d'où part sa liaison, selon le tronc par lequel
- * Kéo y arrive (les Quais pour l'est et le nord, le Phare, par l'Escale, pour le sud et le large). La liaison est celle
- * de la grille entre les îles des deux lieux (`linkIslands`) : la grille ne rend « loin » qu'une liaison dont aucun bout
- * n'est ouvert, et ces deux-là le sont dès le départ.
+ * Les lieux qu'on ne relie qu'après un voisin (choix du mainteneur, 17 octobre 2026, « Après un voisin ») : la Turbine,
+ * le Chantier naval, la Vigie et les Archives, dont la liaison depuis les Quais ne se trace pas dans la disposition de
+ * départ de la grille. Comme dans la grille, leur liaison part d'un lieu voisin déjà relié, celle qui s'en trace
+ * (`nearestDeparture`, résolue par la vue) ; tant qu'il n'y en a aucune, le lieu n'est pas encore reliable.
  */
-export const PLACE_LINKS: Readonly<Record<LinkedPlace, (typeof START_PLACES)[number]>> = {
+export const AFTER_NEIGHBOUR = ['engine', 'shipyard', 'lookout', 'archives'] as const satisfies readonly LinkedPlace[];
+
+/** Un lieu dont la liaison part d'un lieu du départ (la table) : tous ceux qu'on relie, sauf les quatre d'après un voisin. */
+export type FromStart = Exclude<LinkedPlace, (typeof AFTER_NEIGHBOUR)[number]>;
+
+/**
+ * La table lieu → liaison : pour chaque lieu dont la liaison part du départ, le lieu de départ d'où elle part, selon le
+ * tronc par lequel Kéo y arrive (les Quais pour l'est et le nord, le Phare, par l'Escale, pour le sud et le large). La
+ * liaison est celle de la grille entre les îles des deux lieux (`linkIslands`) : la grille ne rend « loin » qu'une
+ * liaison dont aucun bout n'est ouvert, et ces deux-là le sont dès le départ.
+ */
+export const PLACE_LINKS: Readonly<Record<FromStart, (typeof START_PLACES)[number]>> = {
   filets: 'quais',
   ecluses: 'quais',
   saltworks: 'quais',
-  engine: 'quais',
-  shipyard: 'quais',
-  lookout: 'quais',
-  archives: 'quais',
   printworks: 'quais',
   mangrove: 'phare',
   ruins: 'phare',
@@ -44,12 +51,18 @@ export const PLACE_LINKS: Readonly<Record<LinkedPlace, (typeof START_PLACES)[num
   ferry: 'phare',
 };
 
+/** La liaison du lieu part-elle du départ (la table) ? Sinon, il se relie après un voisin. */
+export const linksFromStart = (place: PlaceId): place is FromStart => place in PLACE_LINKS;
+
 /** Le lieu se relie-t-il (il n'est pas du départ) ? */
 export const isLinked = (place: PlaceId): place is LinkedPlace => !(START_PLACES as readonly PlaceId[]).includes(place);
 
-/** Les deux îles de la liaison d'un lieu (le départ, puis le lieu), que la vue résout en liaison de la grille ; rien au départ. */
+/**
+ * Les deux îles de la liaison de la table d'un lieu (le départ, puis le lieu), que la vue résout en liaison de la grille ;
+ * rien pour un lieu du départ ni pour un lieu qui se relie après un voisin.
+ */
 export function linkIslands(place: PlaceId): readonly [string, string] | null {
-  return isLinked(place) ? [placeById(PLACE_LINKS[place]).island, placeById(place).island] : null;
+  return linksFromStart(place) ? [placeById(PLACE_LINKS[place]).island, placeById(place).island] : null;
 }
 
 /**

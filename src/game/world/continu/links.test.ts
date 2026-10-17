@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { followPose, screenOf } from './camera';
 import { distance } from './geometry';
 import {
+  AFTER_NEIGHBOUR,
   BRANCH_EDGES,
   BRANCH_NODES,
   OBSTACLE_TOUCH,
@@ -18,6 +19,7 @@ import {
   isLinked,
   linkFacets,
   linkIslands,
+  linksFromStart,
   obstacleOf,
   reachableNodes,
 } from './links';
@@ -30,16 +32,21 @@ const linked = PLACES.map((p) => p.id).filter(isLinked);
 const ground = (x: number, z: number) => heightAt({ x, z });
 
 describe('La table lieu → liaison', () => {
-  it('quatorze lieux à relier, le Phare et les Quais ouverts au départ', () => {
+  it('quatorze lieux à relier, le Phare et les Quais ouverts au départ ; dix depuis le départ, quatre après un voisin', () => {
     expect(START_PLACES).toEqual(['phare', 'quais']);
     expect(linked).toHaveLength(14);
-    expect(Object.keys(PLACE_LINKS).sort()).toEqual([...linked].sort());
+    expect(AFTER_NEIGHBOUR).toEqual(['engine', 'shipyard', 'lookout', 'archives']);
+    expect([...Object.keys(PLACE_LINKS), ...AFTER_NEIGHBOUR].sort()).toEqual([...linked].sort());
     expect(closedPlaces(() => false)).toEqual(linked);
     expect(closedPlaces(() => true)).toEqual([]);
   });
 
-  it('chaque liaison part d’un lieu ouvert au départ et mène à l’île du lieu', () => {
+  it('chaque liaison de la table part d’un lieu ouvert au départ et mène à l’île du lieu ; aucune pour les quatre d’après un voisin', () => {
     for (const place of linked) {
+      if (!linksFromStart(place)) {
+        expect(linkIslands(place), place).toBeNull();
+        continue;
+      }
       const pair = linkIslands(place)!;
       expect(pair[0], place).toBe(placeById(PLACE_LINKS[place]).island);
       expect(pair[1], place).toBe(placeById(place).island);

@@ -1,51 +1,98 @@
 // Les liaisons du monde continu lues dans la grille (GD-20, point 3, lot 1 « Relier ») : chaque lieu à relier a sa
-// liaison de la grille, au prix du 6e, depuis un lieu ouvert au départ (posée, ou à reposer si la grille ne la trace pas) ;
+// liaison de la grille, au prix du 6e, depuis un lieu ouvert au départ ou, pour quatre d'entre eux, depuis un voisin relié ;
 // un lieu fermé s'ouvre quand sa liaison est posée, ou quand l'élève y a déjà joué.
 import { describe, expect, it } from 'vitest';
 import '../../world/linkGeometry';
-import { LINK_PRICE, buildBridge, buildUntracedLink, linkLength, reachableIslands } from '../../world/archipelago';
+import { LINK_PRICE, buildBridge, buildUntracedLink, getBridge, linkLength, reachableIslands } from '../../world/archipelago';
 import { markForRelink, linksToRelink } from '../../world/arrange';
-import { PLACE_LINKS, isLinked, type LinkedPlace } from '../../world/continu/links';
+import { AFTER_NEIGHBOUR, PLACE_LINKS, isLinked, linksFromStart } from '../../world/continu/links';
 import type { MissionMark } from '../../world/continu/mission';
-import { PLACES, placeById } from '../../world/continu/plan6e';
-import { linkOfPlace, openWorldLinks } from './placeLinks';
+import { PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
+import { linkOfPlace, linkToPay, neighboursFirst, openWorldLinks, payableLink } from './placeLinks';
 import { BLOC } from '../../biomes';
 import { EMPTY_STATE } from '../../engine';
 
 const linked = PLACES.map((p) => p.id).filter(isLinked);
 const rich = { [BLOC.pierre]: 20 };
 
-/**
- * Les liaisons de la table que la disposition de départ de la grille ne trace pas : la Turbine, le Chantier naval, la
- * Vigie et les Archives sont loin des Quais dans la grille. Reliées dans le monde continu, elles sont à reposer dans la
- * grille (GD-9) dès leur pose. Ce test dit la liste : qu'elle change, et la règle se relit.
- */
-const UNTRACED: readonly string[] = ['engine', 'shipyard', 'lookout', 'archives'];
+const between = (a: PlaceId, b: PlaceId) => getBridge(`${placeById(a).island}-${placeById(b).island}`) ?? getBridge(`${placeById(b).island}-${placeById(a).island}`)!;
+const other = (bridge: { from: string; to: string }, place: PlaceId) => PLACES.find((p) => p.island === (bridge.from === placeById(place).island ? bridge.to : bridge.from))?.id;
 
-describe('Chaque lieu à relier a sa liaison de la grille', () => {
-  it.each(linked)('%s : la liaison existe, coûte 4, part d’un lieu ouvert au départ et ouvre le lieu', (place) => {
+describe('Chaque lieu de la table a sa liaison de la grille', () => {
+  it.each(linked.filter(linksFromStart))('%s : la liaison existe, coûte 4, part d’un lieu ouvert au départ, se trace et ouvre le lieu', (place) => {
     const b = linkOfPlace(place)!;
     expect(b, place).toBeDefined();
     expect(b.cost).toBe(LINK_PRICE['6e']);
     const open = reachableIslands([]);
-    const from = placeById(PLACE_LINKS[place as LinkedPlace]).island;
-    expect(open.has(from as never)).toBe(true);
+    expect(open.has(placeById(PLACE_LINKS[place]).island as never)).toBe(true);
     expect([b.from, b.to]).toContain(placeById(place).island);
     expect(open.has(placeById(place).island as never)).toBe(false);
-    // Payée, elle ouvre le lieu : par `buildBridge` si elle se trace dans la disposition de départ, sinon posée « à
-    // reposer » (`buildUntracedLink`, puis `markForRelink`).
-    const traced = linkLength(b, []) !== null;
-    expect(traced, place).toBe(!UNTRACED.includes(place));
-    const r = traced ? buildBridge(b.id, [], rich) : buildUntracedLink(b.id, [], rich);
+    expect(linkLength(b, [])).not.toBeNull();
+    expect(linkToPay(place, [])).toBe(b);
+    const r = buildBridge(b.id, [], rich);
     expect(r.ok).toBe(true);
     if (r.ok) expect(reachableIslands(r.bridges).has(placeById(place).island as never)).toBe(true);
-    if (traced) expect(buildUntracedLink(b.id, [], rich)).toEqual({ ok: false, reason: 'loin' });
-    else expect(buildBridge(b.id, [], rich)).toEqual({ ok: false, reason: 'loin' });
+    expect(buildUntracedLink(b.id, [], rich)).toEqual({ ok: false, reason: 'loin' });
   });
 
   it('les lieux du départ n’ont pas de liaison', () => {
     expect(linkOfPlace('phare')).toBeNull();
     expect(linkOfPlace('quais')).toBeNull();
+  });
+});
+
+describe('Après un voisin (choix du mainteneur, 17 octobre 2026)', () => {
+  it('leur liaison depuis les Quais ne se trace pas dans la disposition de départ', () => {
+    for (const place of AFTER_NEIGHBOUR) expect(linkLength(between('quais', place), []), place).toBeNull();
+  });
+
+  it('comme la grille : la Vigie et les Archives se relient dès le départ depuis le Phare, d’où leur liaison se trace ; la Turbine et le Chantier naval attendent un voisin', () => {
+    for (const place of ['lookout', 'archives'] as const) {
+      const b = linkToPay(place, [])!;
+      expect(other(b, place), place).toBe('phare');
+      expect(b.cost).toBe(LINK_PRICE['6e']);
+      expect(buildBridge(b.id, [], rich).ok).toBe(true);
+    }
+    expect(linkToPay('engine', [])).toBeNull();
+    expect(linkToPay('shipyard', [])).toBeNull();
+    expect(openWorldLinks([], []).waiting).toEqual(['engine', 'shipyard']);
+  });
+
+  it('le voisin relié, le lieu devient reliable par la liaison de la grille qui se trace depuis lui, même identifiant, même prix', () => {
+    const ecluses = linkOfPlace('ecluses')!.id;
+    const b = linkToPay('engine', [ecluses])!;
+    expect(b).toBe(between('ecluses', 'engine'));
+    expect(b.cost).toBe(LINK_PRICE['6e']);
+    expect(openWorldLinks([ecluses], []).waiting).not.toContain('engine');
+    const r = buildBridge(b.id, [ecluses], rich);
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(reachableIslands(r.bridges).has(placeById('engine').island as never)).toBe(true);
+    // Le Chantier naval, après les Filets.
+    expect(other(linkToPay('shipyard', [linkOfPlace('filets')!.id])!, 'shipyard')).toBe('filets');
+  });
+
+  it('le voisin à relier d’abord : un lieu fermé d’où la liaison se trace, le plus proche de Kéo d’abord', () => {
+    const closed = openWorldLinks([], []).closed;
+    const near = (p: PlaceId) => placeById(p).center;
+    expect(neighboursFirst('engine', [], closed, near('ecluses'))[0]).toBe('ecluses');
+    expect(neighboursFirst('engine', [], closed, near('printworks'))[0]).toBe('printworks');
+    expect(neighboursFirst('engine', [], closed, near('engine')).sort()).toEqual(['ecluses', 'printworks']);
+  });
+
+  it('la suggestion ne choisit jamais un lieu pas encore reliable', () => {
+    const id = between('ecluses', 'engine').id;
+    expect(openWorldLinks([], [], id).suggested).toBeNull();
+    expect(openWorldLinks([linkOfPlace('ecluses')!.id], [], id).suggested).toBe('engine');
+  });
+
+  it('une sauvegarde d’avant les liaisons, ses voisins joués sans être reliés : le lieu reste reliable, par une liaison à reposer', () => {
+    const bornes: MissionMark[] = [
+      { ile: placeById('ecluses').island, mission: 'number-line', etat: 1 },
+      { ile: placeById('printworks').island, mission: 'x', etat: 1 },
+    ];
+    expect(openWorldLinks([], bornes).waiting).not.toContain('engine');
+    const b = payableLink('engine', [])!;
+    expect(buildUntracedLink(b.id, [], rich).ok).toBe(true);
   });
 });
 

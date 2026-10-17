@@ -30,10 +30,10 @@ import { mesuresDemandees, meterShown } from '../../rendering';
 import { playWoodTap } from '../../sound';
 import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
 import { payableBlocks } from '../../world/archipelago';
-import { isLinked } from '../../world/continu/links';
+import { isLinked, type LinkedPlace } from '../../world/continu/links';
 import type { PartShape } from '../../world/continu/construction';
 import { bornesDuMondeOuvert, keepClear, missionsOfPlace, nextMission, playsInPlace, type MarkOnScreen, type Obstacle } from '../../world/continu/mission';
-import { PLACES, placeById, placeOfIsland, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
+import { PLACES, placeById, placeOfIsland, type OpenPlace, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
@@ -43,7 +43,7 @@ import { MapLabels } from './MapLabels';
 import { PlacePanel, placeFromParam, placeResume } from './PlacePanel';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
-import { linkOfPlace, openWorldLinks } from './placeLinks';
+import { neighboursFirst, openWorldLinks, payableLink } from './placeLinks';
 import { portState } from './portState';
 import { createOpenWorld, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { usePlaceAddress, usePoseGuard } from './usePlaceReturn';
@@ -97,6 +97,12 @@ export default function OpenWorldPage() {
   // encore joué), et la liaison suggérée par la prochaine destination.
   const links = useMemo(() => openWorldLinks(state.world.links, bornes, modele.destination.ouvrage), [state.world.links, bornes, modele.destination.ouvrage]);
   const isClosed = useCallback((id: PlaceId): boolean => isLinked(id) && links.closed.includes(id), [links]);
+  // Le voisin à relier d'abord d'un lieu pas encore reliable : le plus proche de Kéo (relu à l'ouverture de la fiche).
+  const afterOf = (place: LinkedPlace): OpenPlace | null => {
+    if (!links.waiting.includes(place)) return null;
+    const n = neighboursFirst(place, state.world.links, links.closed, world.current?.keoAt() ?? placeById(place).center)[0];
+    return n ? placeById(n) : null;
+  };
   // La prochaine mission, jamais celle d'un lieu fermé : aucune ne s'y joue.
   const next = useMemo(() => nextMission(bornes, modele.destination, (id) => !isClosed(id)), [bornes, modele.destination, isClosed]);
   const nextPlace = next?.place ?? null;
@@ -385,14 +391,14 @@ export default function OpenWorldPage() {
    */
   const relier = useCallback(
     (place: PlaceId) => {
-      const bridge = linkOfPlace(place);
+      const bridge = isLinked(place) ? payableLink(place, state.world.links) : null;
       if (!bridge || !linkFromOpenWorld(bridge.id).ok) return;
       if (mapOpen) focusAfter.current = place;
       setLieu(null);
       if (settings.sounds) playWoodTap();
       setSaid((was) => ({ n: (was?.n ?? 0) + 1 }));
     },
-    [linkFromOpenWorld, mapOpen, settings.sounds],
+    [linkFromOpenWorld, mapOpen, settings.sounds, state.world.links],
   );
   // La phrase vient après le toc (jamais en même temps), reste écrite un moment, et se dit si la voix est active.
   const [saidShown, setSaidShown] = useState(false);
@@ -650,11 +656,14 @@ export default function OpenWorldPage() {
             et « Y aller ». */}
         {lieu && !asking && (
           <div ref={panelRef} className="open-world-panel open-world-panel-lieu">
-            {isClosed(lieu.place) ? (
-              // Un lieu fermé (GD-20, point 3) : sa fiche, « Relier », aucune mission.
+            {isLinked(lieu.place) && isClosed(lieu.place) ? (
+              // Un lieu fermé (GD-20, point 3) : sa fiche, « Relier », aucune mission ; pas encore reliable (après un
+              // voisin), le voisin à relier d'abord, le plus proche de Kéo, dont le bouton ouvre la fiche.
               <ClosedPlaceSheet
                 place={placeById(lieu.place)}
-                price={linkOfPlace(lieu.place)?.cost ?? 0}
+                after={afterOf(lieu.place)}
+                onAfter={(n: PlaceId) => setLieu({ place: n, focus: null })}
+                price={payableLink(lieu.place, state.world.links)?.cost ?? 0}
                 have={payableBlocks(state.stock)}
                 suggested={links.suggested === lieu.place}
                 onLink={() => relier(lieu.place)}

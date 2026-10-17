@@ -8,23 +8,24 @@ import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
 import { placeById } from '../../world/continu/plan6e';
-import { ClosedPlaceSheet, linkLabel } from './ClosedPlaceSheet';
+import { ClosedPlaceSheet, afterLabel, linkLabel } from './ClosedPlaceSheet';
 
-function renderSheet(have: number, suggested = false) {
+function renderSheet(have: number, suggested = false, after: 'ecluses' | null = null) {
   const onLink = vi.fn();
   const onClose = vi.fn();
+  const onAfter = vi.fn();
   render(
     <SettingsProvider>
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <ClosedPlaceSheet place={placeById('filets')} price={4} have={have} suggested={suggested} onLink={onLink} onClose={onClose} />
+            <ClosedPlaceSheet place={placeById(after ? 'engine' : 'filets')} after={after ? placeById(after) : null} onAfter={onAfter} price={4} have={have} suggested={suggested} onLink={onLink} onClose={onClose} />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
     </SettingsProvider>,
   );
-  return { onLink, onClose, sheet: screen.getByRole('dialog', { name: 'Les Filets' }) };
+  return { onLink, onClose, onAfter, sheet: screen.getByRole('dialog', { name: after ? 'La Turbine' : 'Les Filets' }) };
 }
 
 it('le nom entier du lieu, une seule rangée « Relier » et « 3 / 4 » dessous ; aucune mission', () => {
@@ -62,4 +63,20 @@ it('assez de ressources : « Relier » relie ; mis en avant pour la liaison sugg
 it('la liaison suggérée : « Relier » en avant', () => {
   const { sheet } = renderSheet(4, true);
   expect(within(sheet).getByRole('button', { name: linkLabel(4, 4) })).toHaveClass('primary');
+});
+
+it('un lieu pas encore reliable : ni « Relier », ni prix, ni « 3 / 4 » ; le cadenas et le voisin, qui ouvre sa fiche', async () => {
+  const user = userEvent.setup();
+  const { onAfter, onLink, sheet } = renderSheet(6, true, 'ecluses');
+  expect(within(sheet).queryByText('Relier')).toBeNull();
+  expect(sheet.querySelector('.closed-place-have')).toBeNull();
+  expect(sheet.querySelector('.closed-place-link')).toBeNull();
+  expect(sheet.querySelector('.closed-place-lock')).not.toBeNull();
+  const go = within(sheet).getByRole('button', { name: 'La Turbine : relie d’abord les Écluses.'.replace('’', "'") });
+  expect(go.getAttribute('aria-label')).toBe(afterLabel(placeById('engine'), placeById('ecluses')));
+  expect(go).toHaveTextContent('Les Écluses');
+  expect(go).not.toHaveClass('primary');
+  await user.click(go);
+  expect(onAfter).toHaveBeenCalledWith('ecluses');
+  expect(onLink).not.toHaveBeenCalled();
 });

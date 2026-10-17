@@ -128,7 +128,9 @@ export interface OpenWorld {
    * s'arrête au bord ; leur chemin en tirets sur la Carte) et la liaison suggérée (ses tirets plus épais). Un lieu qu'on
    * vient de relier perd sa brume d'un coup et garde le pont neuf de sa passerelle ; refait seulement s'il change.
    */
-  setLinks(links: { closed: readonly LinkedPlace[]; suggested: LinkedPlace | null }): void;
+  setLinks(links: { closed: readonly LinkedPlace[]; waiting: readonly LinkedPlace[]; suggested: LinkedPlace | null }): void;
+  /** Où se tient Kéo, au sol (le voisin le plus proche de la fiche d'un lieu pas encore reliable). */
+  keoAt(): Vec2;
   /**
    * Pose une question dans un lieu (lot 4), ou la retire (`null`) : la caméra coupe sur un cadrage fixe, la scène de
    * l'item se montre dans la fenêtre de la question, les objets des réponses au-dessus de leurs boutons. Rend la place à
@@ -614,6 +616,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Les liaisons : les lieux fermés, la liaison suggérée, et ce qui en est montré (la brume, les cadenas, les passerelles).
   let closed: readonly LinkedPlace[] = [];
   let suggestedLink: LinkedPlace | null = null;
+  // Les lieux fermés pas encore reliables (après un voisin) : la Carte ne dessine pas leur embranchement.
+  let waiting: readonly LinkedPlace[] = [];
   let veilKey = '';
   // Le dessus du pont neuf de chaque passerelle sur un ruisseau, calculé une fois (le sol ne change pas).
   const deckTops = new Map<LinkedPlace, number>();
@@ -851,7 +855,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${suggestedLink}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${waiting.join(',')}|${suggestedLink}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -878,10 +882,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (!hidden && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, scenette === p.id ? scenetteTraces(p.id, done, scenetteMission, posed) : done));
       if (p.id === 'phare' && lampShown) list.push(lampFacets);
       // Les liaisons (GD-20, point 3) : l'embranchement du lieu et sa passerelle, démontée ou reliée ; sur la Carte, le
-      // chemin d'un lieu fermé en tirets, plus épais pour la liaison suggérée.
+      // chemin d'un lieu fermé en tirets, plus épais pour la liaison suggérée, et aucun pour un lieu pas encore reliable.
       if (isLinked(p.id)) {
         const shut = closed.includes(p.id);
-        rest.push(linkOf(p.id, !shut), branchOf(p.id, mapView && shut ? (p.id === suggestedLink ? 'thick' : 'dashes') : 'solid'));
+        rest.push(linkOf(p.id, !shut));
+        if (!(mapView && waiting.includes(p.id))) rest.push(branchOf(p.id, mapView && shut ? (p.id === suggestedLink ? 'thick' : 'dashes') : 'solid'));
       }
     }
     setGeometry(placesMesh, mergeFacets(rest));
@@ -921,8 +926,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    * Les liaisons changent : la brume, les cadenas, les passerelles ; Kéo, s'il se tenait au-delà d'une passerelle
    * démontée (une adresse vers un lieu fermé), revient au bord.
    */
-  const setLinks = (links: { closed: readonly LinkedPlace[]; suggested: LinkedPlace | null }) => {
+  const setLinks = (links: { closed: readonly LinkedPlace[]; waiting: readonly LinkedPlace[]; suggested: LinkedPlace | null }) => {
     closed = links.closed;
+    waiting = links.waiting;
     suggestedLink = links.suggested;
     decks = PLACES.map((p) => p.id).filter((id): id is LinkedPlace => isLinked(id) && !closed.includes(id) && deckTops.has(id));
     updateVeil();
@@ -2095,6 +2101,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       mapDirty = true;
     },
     setLinks,
+    keoAt: () => ({ x: here.x, z: here.z }),
     question: askQuestion,
     map: setMap,
     reframeMap: reframeStart,
