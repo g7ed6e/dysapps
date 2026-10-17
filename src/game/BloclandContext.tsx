@@ -35,11 +35,11 @@ import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { useTextes } from '../universes';
 import { dueCountOnOpenPlaces } from './review';
-import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
+import { archipelagoOf, buildUntracedLink, getBridge, type ArchipelagoId } from './world/archipelago';
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
 import { STORY_XP, startStory, storyAfterMission, tapStoryStep, type StepResult } from './world/stories';
 import { applyLayout } from './world/appliedLayout';
-import { settleNewPlaces } from './world/arrange';
+import { markForRelink, settleNewPlaces } from './world/arrange';
 import type { World } from './engine/state';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
@@ -81,6 +81,11 @@ interface BloclandContextValue {
   disassemble: (bloc: BlockId) => AssembleResult;
   /** Construit un pont vers une île voisine, payé avec les blocs de l'inventaire. */
   buildBridge: (id: string) => BuildBridgeResult;
+  /**
+   * « Relier » du monde continu (GD-20, point 3) : la liaison de la grille, payée par `buildBridge` ; si la disposition
+   * aménagée de la grille ne la trace plus, elle est payée quand même et devient une liaison à reposer, gratuite (GD-9).
+   */
+  linkFromOpenWorld: (id: string) => BuildBridgeResult;
   /**
    * Livre une commande prête (GD-7, PR 3) : ses blocs sortent de l'inventaire, sa petite construction se pose chez la
    * créature. Puis une autre commande peut arriver.
@@ -239,8 +244,13 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     [pousser],
   );
   const disassemble = useCallback((bloc: BlockId) => appliquer(disassembleBlock(stateRef.current, bloc)), [appliquer]);
-  const buildBridge = useCallback((id: string) => {
-    const r = buildBridgePure(stateRef.current, id);
+  const buildBridge = useCallback((id: string, relinkIfUntraced = false) => {
+    let r = buildBridgePure(stateRef.current, id);
+    if (relinkIfUntraced && !r.result.ok && r.result.reason === 'loin') {
+      const s = stateRef.current;
+      const u = buildUntracedLink(id, s.world.links, s.stock);
+      r = u.ok ? { state: { ...s, stock: u.inventory, world: markForRelink({ ...s.world, links: u.bridges }, id) }, result: u } : { state: s, result: u.reason === 'loin' ? r.result : u };
+    }
     const bridge = getBridge(id);
     const built = r.result.ok && bridge ? commandeQuiArrive(r.state, archipelagoOf(bridge.from).classe) : r.state;
     const next = batisseurRef.current ? remplir(built) : built;
@@ -248,6 +258,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     setState(next);
     return r.result;
   }, [commandeQuiArrive]);
+  const linkFromOpenWorld = useCallback((id: string) => buildBridge(id, true), [buildBridge]);
   const deliver = useCallback(
     (id: string): Livraison<GameState> => {
       const r = livrerLaCommande(stateRef.current, id);
@@ -337,6 +348,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       finishPiece,
       disassemble,
       buildBridge,
+      linkFromOpenWorld,
       deliver,
       tapStory,
       moveTo,
@@ -363,6 +375,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       finishPiece,
       disassemble,
       buildBridge,
+      linkFromOpenWorld,
       deliver,
       tapStory,
       moveTo,

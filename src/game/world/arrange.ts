@@ -273,6 +273,20 @@ export function linksBrokenBy(world: World, id: BiomeId, spot: LayoutSpot): stri
   return r.ok ? r.relink : [];
 }
 
+/**
+ * Une liaison posée qui devient à reposer (GD-9) : payée dans le monde continu alors que la disposition de la grille ne
+ * la trace plus (GD-20, point 3, « Relier » ; `buildUntracedLink`). Rien ne se perd : elle reste construite, ses lieux
+ * restent ouverts, et on la repose gratuitement dans la grille.
+ */
+export function markForRelink(world: World, id: string): World {
+  const b = getBridge(id);
+  if (!b) return world;
+  const a = archipelagoOfIsland(b.from);
+  const r = regionOf(world, a);
+  if ((r.relink ?? []).includes(id)) return world;
+  return withRegion(world, a, { ...r, relink: [...(r.relink ?? []), id] });
+}
+
 /** Les liaisons à reposer d'une région (la pastille du bouton « Aménager » en dit le nombre). */
 export function linksToRelink(world: World, a: ArchipelagoId): string[] {
   return regionOf(world, a).relink ?? [];

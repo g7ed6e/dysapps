@@ -645,6 +645,11 @@ export function buildBridge(id: string, bridges: string[], inventory: Partial<Re
   if (state === 'built') return { ok: false, reason: 'construit' };
   if (state === 'far') return { ok: false, reason: 'loin' };
   if (state === 'blocked') return { ok: false, reason: 'plan' };
+  return payFor(bridge, bridges, inventory);
+}
+
+/** Paie une liaison avec les blocs de l'inventaire, les types les plus nombreux d'abord, et la pose. */
+function payFor(bridge: BridgeDef, bridges: string[], inventory: Partial<Record<BlockId, number>>): BuildBridgeResult {
   const have = payableBlocks(inventory);
   if (have < bridge.cost) return { ok: false, reason: 'blocs', missing: bridge.cost - have };
   const next = { ...inventory };
@@ -659,6 +664,20 @@ export function buildBridge(id: string, bridges: string[], inventory: Partial<Re
     left -= take;
   }
   return { ok: true, bridges: [...bridges, bridge.id], inventory: next, used };
+}
+
+/**
+ * Paie une liaison qui ouvre un lieu mais que la disposition de la grille ne trace plus (une région aménagée, GD-9) :
+ * le monde continu la pose quand même (GD-20, point 3, « Relier »), au même prix ; la grille en fait une liaison à
+ * reposer, gratuite (world/arrange.ts, `markForRelink`). Rien d'autre : une liaison qui se trace passe par
+ * `buildBridge`.
+ */
+export function buildUntracedLink(id: string, bridges: string[], inventory: Partial<Record<BlockId, number>>): BuildBridgeResult {
+  const bridge = getBridge(id);
+  if (!bridge) return { ok: false, reason: 'inconnu' };
+  if (bridgeBuilt(bridge, bridges)) return { ok: false, reason: 'construit' };
+  if (!opensAnIsland(bridge, reachableIslands(bridges)) || linkLength(bridge, bridges) !== null) return { ok: false, reason: 'loin' };
+  return payFor(bridge, bridges, inventory);
 }
 
 /** Le plus court chemin d'ouvrages (construits ou non) depuis une île de départ de son archipel jusqu'à une île. */
