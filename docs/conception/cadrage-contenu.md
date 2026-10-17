@@ -30,6 +30,10 @@ Le contenu livré, île par île, est décrit par les pages générées (archipe
 - La classe s’affiche sur les cartes et, au pied, sur le panneau d’une île (« Niveau 5e »). Les pages Français, Maths et Anglais listent les îles de leur matière, de la 6e à la 3e ; les archipels pas encore atteints y sont repliés.
 - Aucune île n’est imposée : un élève de 3e peut commencer par la Forêt. L’anglais donne plus de choix, pas plus d’obstacles : il ne change pas les étapes de la Nef.
 
+### Le nombre et ce qu’il compte
+
+- On écrit une espace simple entre un nombre en chiffres et ce qui le suit (« 66 millions », « 3,5 kg », « 30 °C », « 50 % »), et entre les tranches de milliers (« 9 000 ») : `frenchTypography` (`src/core/typography.ts`) la rend insécable à l’affichage et à la voix, pour que le nombre ne finisse pas une ligne et son unité ne commence pas la suivante (relecture dys du rivage sud, 16 octobre 2026). Ni passe sur les sources, ni test de données. Restent hors de la règle : les nombres en lettres, les chiffres romains et le « 30 » de « 12 h 30 ».
+
 ### Les îles par archipel et par matière
 
 Un archipel par classe. En français et en maths, une île par grand thème ; en anglais, deux îles par classe : une de vocabulaire et d’écoute, une de grammaire ; en LV2, une île par classe à partir de la 5e, la même pour l’allemand et l’espagnol.
