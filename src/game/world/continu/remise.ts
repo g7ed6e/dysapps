@@ -59,7 +59,11 @@ export function filled(template: string, tokens: PhraseTokens): string {
   return out;
 }
 
-/** Le temps de la pose, en secondes (directeur artistique, point 5 : de 8 à 10 s sans toucher, jamais plus). */
+/**
+ * Le temps de la pose, en secondes. La remise sans toucher, sans voix, tient en 10 s au plus (directeur artistique,
+ * point 5) : le délai de lecture de la consigne (`voiceFallbackMs`, allongé pour un lecteur dyslexique par le référent
+ * dys), puis cette pose ; vérifié sur les phrases réelles des seize commandes du 6e (remiseOf.test.ts).
+ */
 export const REMISE_TIMING = {
   /** Le calme entre la fin de la consigne et le premier élément. */
   settle: 0.8,

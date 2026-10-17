@@ -38,10 +38,6 @@ describe('Le temps de la pose', () => {
   it('avec « Réduire les animations », tout est posé d’un coup', () => {
     expect(remiseAt(0, 4, true)).toEqual({ posed: 4, falling: null, done: true });
   });
-
-  it('reste courte : de deux à quatre éléments, la pose dure moins de 2,5 s', () => {
-    for (const n of [2, 3, 4]) expect(remiseDuration(n)).toBeLessThan(2.5);
-  });
 });
 
 describe('Sans voix', () => {

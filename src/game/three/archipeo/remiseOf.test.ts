@@ -4,11 +4,12 @@
 // ce qui manque et où aller) ; la commande prête dans la suggestion ; les pastilles ; et la livraison, celle de la grille,
 // sans rien de neuf dans la sauvegarde.
 import { describe, expect, it } from 'vitest';
+import { frenchTypography } from '../../../components/math/RichText';
 import { sanitizeState } from '../../engine';
 import { lieuDAssemblage } from '../../world/assembly';
 import { amenagementById } from '../../world/continu/amenagements';
 import { PLACES } from '../../world/continu/plan6e';
-import { HABITANT_PHRASES, filled, type HabitantPhrases } from '../../world/continu/remise';
+import { HABITANT_PHRASES, filled, remiseDuration, voiceFallbackMs, type HabitantPhrases } from '../../world/continu/remise';
 import { COMMANDES, livrerLaCommande } from '../../world/requests';
 import { posedAmenagements } from './amenagements';
 import { MAX_SIGNS, commandLines, habitantLineOf, habitantSigns, placeOfCommande, readyCommande, remiseOf, sourceOf, suggestedCommande, tokensOf } from './remiseOf';
@@ -24,7 +25,21 @@ const MOTS_PAR_PHRASE = 10;
 const etat = (raw: Record<string, unknown>) => sanitizeState(raw);
 const byPlace = (place: string) => COMMANDES_6E.find((c) => placeOfCommande(c) === place)!;
 
+/**
+ * Le plafond de la remise sans toucher, sans voix : le temps de lire la consigne, puis la pose (directeur artistique,
+ * point 5 : 10 s au plus ; le délai de lecture allongé pour un lecteur dyslexique, référent dys, relecture du lot L1).
+ */
+const REMISE_MAX_S = 10;
+
 describe('La remise de chaque commande du 6e', () => {
+  it('sans voix, la consigne puis la pose tiennent en 10 s au plus, pour chacune des seize commandes (sa phrase réelle, ses éléments)', () => {
+    for (const c of COMMANDES_6E) {
+      const r = remiseOf(c.id)!;
+      const total = voiceFallbackMs(frenchTypography(r.consigne)) / 1000 + remiseDuration(r.elements);
+      expect(total, `${c.id} : « ${r.consigne} »`).toBeLessThanOrEqual(REMISE_MAX_S);
+    }
+  });
+
   it('seize commandes, chacune à son lieu, son aménagement, un élément par ressource livrée', () => {
     expect(COMMANDES_6E).toHaveLength(16);
     for (const c of COMMANDES_6E) {

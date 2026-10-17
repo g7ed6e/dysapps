@@ -7,7 +7,7 @@ import { EMPTY_STATE, type GameState } from '../../engine';
 import { questProgress } from '../../exercises';
 import { NOMS_ARCHIPELS } from '../archipelago';
 import { modeleDuMonde } from '../model';
-import { DISTANCE_SIGN_STEPS, bornesDuMondeOuvert, distanceSign, keepClear, markOnScreen, missionsOfPlace, nextMission, playedPlaces, playsInPlace, type MissionMark } from './mission';
+import { DISTANCE_SIGN_STEPS, bornesDuMondeOuvert, distanceSign, firstToPlayAt, keepClear, markOnScreen, missionsOfPlace, nextMission, playedPlaces, playsInPlace, type MissionMark } from './mission';
 import { KEO_STEP, PLACES, placeById, placeOfIsland } from './plan6e';
 
 // Une île sans lieu dans le prototype : la première du registre, tirée de `PLACES` (relecture du code de L8 : jamais un
@@ -107,6 +107,17 @@ describe('Les lieux fermés et la distance', () => {
 });
 
 describe('La prochaine mission', () => {
+  it('d’abord la première encore à jouer du lieu où se tient Kéo, s’il est ouvert, avant la destination du jeu (le rang 2 de la suggestion)', () => {
+    const ailleurs = { island: 'maths-6e-calculation', mission: 'times-tables' };
+    expect(nextMission(bornes, ailleurs, undefined, 'filets')).toMatchObject({ place: { id: 'filets' }, mission: 'word-classes' });
+    expect(firstToPlayAt(placeById('filets'), bornes)?.mission).toBe('word-classes');
+    // Au Phare, tout est joué : la destination du jeu reprend la main ; un lieu fermé ne compte pas.
+    expect(firstToPlayAt(placeById('phare'), bornes)).toBeUndefined();
+    expect(nextMission(bornes, ailleurs, undefined, 'phare')).toMatchObject({ place: { id: 'quais' }, mission: 'times-tables' });
+    expect(nextMission(bornes, ailleurs, (p) => p !== 'filets', 'filets')).toMatchObject({ place: { id: 'quais' } });
+    expect(nextMission(bornes, ailleurs, undefined, null)).toMatchObject({ place: { id: 'quais' } });
+  });
+
   it('celle de la prochaine destination du jeu, quand elle est d’un lieu, quelle que soit la mission de l’île', () => {
     expect(nextMission(bornes, { island: 'french-6e-grammar-spelling', mission: 'plurals' })).toMatchObject({ place: { id: 'filets' }, mission: 'plurals' });
     // Une mission de l'île qui ne se joue pas encore en scénette : elle se joue depuis le panneau du lieu.

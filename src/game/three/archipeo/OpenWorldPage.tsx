@@ -35,7 +35,7 @@ import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
 import { payableBlocks } from '../../world/archipelago';
 import { START_LAND, isBridgeSpot, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import type { PartShape } from '../../world/continu/construction';
-import { bornesDuMondeOuvert, keepClear, missionsOfPlace, nextMission, playsInPlace, type MarkOnScreen, type Obstacle } from '../../world/continu/mission';
+import { bornesDuMondeOuvert, firstToPlayAt, keepClear, missionsOfPlace, nextMission, playsInPlace, type MarkOnScreen, type Obstacle } from '../../world/continu/mission';
 import { PLACES, placeById, placeOfIsland, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
@@ -124,16 +124,17 @@ export default function OpenWorldPage() {
   useEffect(() => {
     ensureOpenWorldLands(gridLands(), playedIslands(bornes));
   }, [state.world.links, bornes, ensureOpenWorldLands]);
-  // La prochaine mission, jamais celle d'un lieu fermé : aucune ne s'y joue.
-  const next = useMemo(() => nextMission(bornes, modele.destination, (id) => !isClosed(id)), [bornes, modele.destination, isClosed]);
   // Le lieu où se tient Kéo, arrivé (rien pendant la marche, ni à l'Escale) : la suggestion et les pastilles le lisent.
   const [here, setHere] = useState<PlaceId | null>(null);
+  // La prochaine mission, jamais celle d'un lieu fermé : aucune ne s'y joue. Celle du lieu où se tient Kéo d'abord, tant
+  // qu'il y en reste une à jouer (le rang 2 de la suggestion) : la bulle, la marque et le panneau la suivent.
+  const next = useMemo(() => nextMission(bornes, modele.destination, (id) => !isClosed(id), here), [bornes, modele.destination, isClosed, here]);
   // La commande prête dans la suggestion (GD-20, « Une seule prochaine action mise en avant ») : à son rang, après le lieu
   // où se tient Kéo tant qu'il y reste une mission jamais jouée, avant la prochaine mission d'un autre lieu. Quand elle la
   // porte, la bulle dit sa phrase, avec « Livrer » si Kéo est chez l'habitant, sinon « Y aller » ; la marque va à son
   // lieu ; sa pastille est la seule pleine ; aucune mission n'est mise en avant.
   const readyCmd = useMemo(() => readyCommande(state, (p) => !isClosed(p), modele.destination.commande, here), [state, isClosed, modele.destination.commande, here]);
-  const hereToPlay = Boolean(here && !isClosed(here) && missionsOfPlace(placeById(here), bornes).some((b) => b.etat === 'new' || b.etat === 'locked'));
+  const hereToPlay = Boolean(here && next?.place.id === here && firstToPlayAt(next.place, bornes));
   const suggestedCmd = suggestedCommande(readyCmd, hereToPlay);
   const suggestedId = suggestedCmd?.commande ?? null;
   const nextPlace = suggestedCmd ? placeById(suggestedCmd.place) : (next?.place ?? null);

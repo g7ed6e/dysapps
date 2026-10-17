@@ -188,3 +188,29 @@ test('une commande prête porte la suggestion (GD-20, point 4, lot L1) : sa phra
   const sheet = await screen.findByRole('dialog', { name: 'Le Phare' });
   expect(within(sheet).getByRole('group')).toHaveTextContent('Livre 3 blocs de terre au Phare.');
 });
+
+test('Kéo au Phare, sa commande prête, une mission du Phare encore nouvelle, la destination du jeu ailleurs : la suggestion est la mission du Phare (le rang 2), jamais « Y aller » vers un autre lieu (avis du directeur artistique, deuxième passe du lot L1)', async () => {
+  const potager = COMMANDES.find((c) => c.fixture === 'french-6e-phonology-fixture-1')!;
+  // Dans la grille, l'élève se tient aux Quais, où une mission n'a jamais été jouée : la destination du jeu est là.
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { [potager.block]: potager.count }, world: { links: [], requests: [potager.id], place: placeById('quais').island } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  const w = scene.world!;
+  // Avant l'arrivée, la commande prête porte la suggestion (rang 3, Kéo n'est nulle part).
+  expect(screen.getByRole('button', { name: 'Y aller : Le Phare' })).toHaveClass('primary');
+  act(() => scene.options!.onArrive('phare'));
+  const sheet = await screen.findByRole('dialog', { name: 'Le Phare' });
+  // Le panneau met en avant une mission du Phare ; la ligne de l'habitant y est, sans « Livrer » plein.
+  expect(sheet.querySelector('[aria-current="step"]')).not.toBeNull();
+  const line = within(sheet).getByRole('group');
+  expect(line).toHaveTextContent('Livre 3 blocs de terre au Phare.');
+  expect(within(line).getByRole('button', { name: /Livrer/ })).not.toHaveClass('primary');
+  await userEvent.setup().keyboard('{Escape}');
+  expect(screen.queryByRole('dialog', { name: 'Le Phare' })).toBeNull();
+  // La bulle : « Y aller » vers le Phare et sa mission, jamais vers un autre lieu ; ni « Livrer » ni la phrase de la commande.
+  const go = screen.getByRole('button', { name: /^Y aller : / });
+  expect(go.getAttribute('aria-label')).toMatch(/^Y aller : Le Phare, /);
+  expect(screen.queryByText('Livre 3 blocs de terre au Phare.')).toBeNull();
+  expect(screen.queryByRole('button', { name: /Livrer/ })).toBeNull();
+  expect(w.setMark).toHaveBeenLastCalledWith('phare');
+});
