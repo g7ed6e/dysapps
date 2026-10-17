@@ -25,6 +25,8 @@ export interface VeilMesh {
   normals: Float32Array;
   colors: Float32Array;
   triangles: number;
+  /** Le premier sommet de la brume qui se lève (`veilFacets`, `fading`), dessinée en dernier ; sinon le nombre de sommets. */
+  fadingFrom: number;
 }
 
 /** La hauteur du banc au-dessus du sol, en unités : un peu plus que Kéo, bien moins que la grue (7) ou le Phare (14). */
@@ -141,11 +143,16 @@ function veilOf(pos: number[], nor: number[], col: number[], id: PlaceId): void 
   for (const d of veilDomes(id)) dome(pos, nor, col, d.center, d.radius, d.height, floor);
 }
 
-/** La brume des lieux `ids` : un seul maillage. */
-export function veilFacets(ids: readonly PlaceId[]): VeilMesh {
+/**
+ * La brume des lieux `ids` : un seul maillage ; celle de `fading` (le lieu qu'on vient de relier, le temps de son fondu)
+ * en dernier, à partir du sommet `fadingFrom` : la vue efface la transparence de ces sommets seuls, sans appel de plus.
+ */
+export function veilFacets(ids: readonly PlaceId[], fading?: PlaceId): VeilMesh {
   const pos: number[] = [];
   const nor: number[] = [];
   const col: number[] = [];
-  for (const id of ids) veilOf(pos, nor, col, id);
-  return { positions: new Float32Array(pos), normals: new Float32Array(nor), colors: new Float32Array(col), triangles: pos.length / 9 };
+  for (const id of ids) if (id !== fading) veilOf(pos, nor, col, id);
+  const fadingFrom = pos.length / 3;
+  if (fading) veilOf(pos, nor, col, fading);
+  return { positions: new Float32Array(pos), normals: new Float32Array(nor), colors: new Float32Array(col), triangles: pos.length / 9, fadingFrom };
 }

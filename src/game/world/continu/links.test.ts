@@ -9,6 +9,8 @@ import {
   BRANCH_EDGES,
   BRANCH_NODES,
   KEO_STOP,
+  LAY_PLANKS,
+  LINK_LAY,
   OBSTACLE_TOUCH,
   PLACE_LINKS,
   START_PLACES,
@@ -20,7 +22,10 @@ import {
   closedPlaces,
   isLinked,
   linkFacets,
+  linkFrame,
   linkIslands,
+  linkLayAt,
+  linkPlanks,
   linksFromStart,
   obstacleOf,
   reachableNodes,
@@ -28,7 +33,7 @@ import {
 import { atNode, findRoute, routeLength, snapToNetwork } from './paths';
 import { PATH_EDGES, PLACES, placeById } from './plan6e';
 import { heightAt, standingHeight } from './terrain';
-import { underVeil } from './veil';
+import { underVeil, veilFacets } from './veil';
 
 const linked = PLACES.map((p) => p.id).filter(isLinked);
 const ground = (x: number, z: number) => heightAt({ x, z });
@@ -163,5 +168,53 @@ describe('Les passerelles démontées', () => {
       expect(cut.positions.length, o.place).toBeGreaterThan(0);
       expect(laid.positions.length, o.place).toBeGreaterThan(0);
     }
+  });
+});
+
+describe('La pose d’une passerelle (lot 2)', () => {
+  const at = (u: number) => linkLayAt(u, { planks: 0, fall: 0, landed: false, fade: 0, done: false });
+
+  it('cinq planches, chacune une boîte : la passerelle prête et ses planches font la passerelle reliée', () => {
+    expect(LAY_PLANKS).toBe(5);
+    for (const o of allObstacles()) {
+      const planks = linkPlanks(o, ground);
+      expect(planks.triangles, o.place).toBe(LAY_PLANKS * 10);
+      expect(linkFrame(o, ground).triangles + planks.triangles, o.place).toBe(linkFacets(o, true, ground).triangles);
+    }
+  });
+
+  it('les planches se posent l’une après l’autre, en ralentissant, sans rebond ; un toc à la dernière, puis le fondu ; 2,5 s au plus', () => {
+    expect(at(0)).toMatchObject({ planks: 1, fall: LINK_LAY.drop, landed: false, fade: 0 });
+    for (let k = 0; k < LAY_PLANKS; k++) {
+      const start = k * LINK_LAY.plank;
+      expect(at(start + 0.01).planks).toBe(k + 1);
+      // Elle descend sans jamais remonter, de plus en plus lentement.
+      let was = Infinity;
+      let step = Infinity;
+      for (let i = 0; i < 10; i++) {
+        const f = at(start + (LINK_LAY.plank * i) / 10).fall;
+        expect(f).toBeLessThanOrEqual(was);
+        if (was !== Infinity) {
+          expect(was - f).toBeLessThanOrEqual(step + 1e-9);
+          step = was - f;
+        }
+        was = f;
+      }
+    }
+    const end = LAY_PLANKS * LINK_LAY.plank;
+    expect(at(end - 0.01).landed).toBe(false);
+    expect(at(end)).toMatchObject({ planks: LAY_PLANKS, fall: 0, landed: true, fade: 0, done: false });
+    expect(at(end + LINK_LAY.fade / 2).fade).toBeCloseTo(0.5);
+    expect(at(end + LINK_LAY.fade + 1e-6).done).toBe(true);
+    expect(end + LINK_LAY.fade).toBeLessThanOrEqual(2.5);
+  });
+
+  it('la brume du lieu qu’on relie se dessine en dernier, ses sommets à part : le reste ne bouge pas', () => {
+    const v = veilFacets(['filets', 'ecluses', 'ruins'], 'filets');
+    const rest = veilFacets(['ecluses', 'ruins']);
+    expect(v.fadingFrom).toBe(rest.positions.length / 3);
+    expect(Array.from(v.positions.slice(0, rest.positions.length))).toEqual(Array.from(rest.positions));
+    expect(v.triangles).toBe(rest.triangles + veilFacets(['filets']).triangles);
+    expect(rest.fadingFrom).toBe(rest.positions.length / 3);
   });
 });

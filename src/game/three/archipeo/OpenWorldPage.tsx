@@ -38,7 +38,7 @@ import { traceDone } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
-import { ClosedPlaceSheet, afterLabel } from './ClosedPlaceSheet';
+import { ClosedPlaceSheet, afterLabel, linkableLabel } from './ClosedPlaceSheet';
 import { constructionState, placeConstruction, posedShapes } from './constructionParts';
 import { MapLabels } from './MapLabels';
 import { PlacePanel, placeFromParam, placeResume } from './PlacePanel';
@@ -46,7 +46,7 @@ import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlace
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
 import { neighboursFirst, openWorldLinks, payableLink } from './placeLinks';
 import { portState } from './portState';
-import { createOpenWorld, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
+import { createOpenWorld, type LinkLayEvents, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { usePlaceAddress, usePoseGuard } from './usePlaceReturn';
 import { WorldQuestion } from './WorldQuestion';
 import './openWorld.css';
@@ -157,8 +157,14 @@ export default function OpenWorldPage() {
   const [mapOpen, setMapOpen] = useState(false);
   // Ce que les rappels de la scène appellent sur la Carte : poser les étiquettes, choisir un lieu touché dans la 3D.
   const mapPlacer = useRef<((spots: readonly MapSpotOnScreen[], moving?: boolean) => void) | null>(null);
-  // « La passerelle est posée. », affichée un moment après le toc (et dite, si la voix est active) ; `n` : une autre pose.
-  const [said, setSaid] = useState<{ n: number } | null>(null);
+  // « La passerelle est posée. », affichée un moment après le toc (et dite, si la voix est active), suivie de la phrase
+  // d'un lieu devenu reliable s'il y en a (« La Turbine peut être reliée. ») ; `n` : une autre pose ; `after` : dans
+  // combien de millisecondes (jamais en même temps que le toc).
+  const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number } | null>(null);
+  // Les liaisons de la dernière image rendue : la fin d'une pose y lit les lieux devenus reliables.
+  const linksNow = useRef(links);
+  // L'heure du dernier toc, pour que la phrase vienne après lui.
+  const tappedAt = useRef(0);
   // Où va le focus quand la fiche d'un lieu se ferme (le nom d'un lieu qu'on vient de relier, sur la Carte), sinon « Carte ».
   const focusAfter = useRef<string | null>(null);
   // Au plus grand texte, un lieu ouvert sans la place de son nom : la vue de départ de la Carte change (GD-20, « La Carte
@@ -352,8 +358,10 @@ export default function OpenWorldPage() {
     world.current?.goToPort(spot);
   }, []);
 
-  // Les liaisons dans la scène : la brume et les passerelles démontées des lieux fermés, les tirets de la Carte.
+  // Les liaisons dans la scène : la brume et les passerelles démontées des lieux fermés, les tirets de la Carte ; la pose
+  // d'une passerelle annoncée par « Relier » y commence.
   useEffect(() => {
+    linksNow.current = links;
     world.current?.setLinks(links);
   }, [links, ready]);
 
@@ -392,20 +400,42 @@ export default function OpenWorldPage() {
   const openList = list.open;
   const toggleList = list.toggle;
   /**
-   * « Relier » (GD-20, point 3, lot 1) : la liaison de la grille, payée ; la fiche se ferme, la passerelle est posée d'un
-   * coup (la pose animée viendra au lot 2), la brume du lieu part ; sur la Carte, le cadenas laisse la place au nom, le
-   * focus va sur lui. Un toc de bois, puis « La passerelle est posée. », jamais en même temps.
+   * « Relier » (GD-20, point 3) : la liaison de la grille, payée ; la fiche se ferme, la caméra ne bouge pas, les cinq
+   * planches de la passerelle se posent l'une après l'autre, un toc de bois à la dernière, puis la brume du lieu se lève
+   * en fondu (lot 2 ; d'un coup avec « Réduire les animations » et sur la Carte, où le cadenas laisse la place au nom et
+   * le focus va sur lui). Puis « La passerelle est posée. », jamais en même temps que le toc, et la phrase d'un lieu
+   * devenu reliable par cette liaison.
    */
   const relier = useCallback(
     (place: PlaceId) => {
       const bridge = isLinked(place) ? payableLink(place, state.world.links) : null;
-      if (!bridge || !linkFromOpenWorld(bridge.id).ok) return;
+      if (!bridge || !isLinked(place)) return;
+      const waitingBefore = links.waiting;
+      const sounds = settings.sounds;
+      const events: LinkLayEvents = {
+        tap: () => {
+          tappedAt.current = performance.now();
+          if (sounds) playWoodTap();
+        },
+        laid: () => {
+          const now = linksNow.current;
+          const linkable = waitingBefore.filter((p) => !now.waiting.includes(p) && now.closed.includes(p));
+          const after = Math.max(0, SAID_AFTER_MS - (performance.now() - tappedAt.current));
+          setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [PASSERELLE_POSEE, ...linkable.map((p) => linkableLabel(placeById(p)))], after }));
+        },
+      };
+      const w = world.current;
+      // Annoncée avant que les liaisons changent : la scène la pose quand elle les reçoit.
+      w?.layLink(place, events);
+      if (!linkFromOpenWorld(bridge.id).ok) return;
       if (mapOpen) focusAfter.current = place;
       setLieu(null);
-      if (settings.sounds) playWoodTap();
-      setSaid((was) => ({ n: (was?.n ?? 0) + 1 }));
+      if (!w) {
+        events.tap();
+        events.laid();
+      }
     },
-    [linkFromOpenWorld, mapOpen, settings.sounds, state.world.links],
+    [linkFromOpenWorld, links.waiting, mapOpen, settings.sounds, state.world.links],
   );
   // La phrase vient après le toc (jamais en même temps), reste écrite un moment, et se dit si la voix est active.
   const [saidShown, setSaidShown] = useState(false);
@@ -420,10 +450,11 @@ export default function OpenWorldPage() {
     if (!said) return;
     const show = window.setTimeout(() => {
       setSaidShown(true);
-      if (settings.autoRead) speak(PASSERELLE_POSEE);
-    }, SAID_AFTER_MS);
+      if (settings.autoRead) speak(said.lines.join(' '));
+    }, said.after);
     window.clearTimeout(saidHide.current);
-    saidHide.current = window.setTimeout(() => setSaidShown(false), SAID_AFTER_MS + SAID_MS);
+    // Deux phrases restent écrites deux fois plus longtemps.
+    saidHide.current = window.setTimeout(() => setSaidShown(false), said.after + SAID_MS * said.lines.length);
     return () => {
       window.clearTimeout(show);
       window.clearTimeout(saidHide.current);
@@ -701,8 +732,8 @@ export default function OpenWorldPage() {
             qu'elle est écrite, un haut-parleur la fait réentendre, et le toucher la garde écrite (référent dys). Sur la Carte, elle se tient en haut,
             hors des noms des lieux du sud. */}
         <div className={`open-world-said${mapOpen ? ' on-map' : ''}`} data-shown={saidShown && !asking ? 'oui' : 'non'} onPointerDown={holdSaid} onFocus={holdSaid}>
-          <p role="status">{saidShown && !asking ? PASSERELLE_POSEE : ''}</p>
-          {saidShown && !asking && <SpeakButton text={PASSERELLE_POSEE} label="Réécouter" compact />}
+          <p role="status">{saidShown && !asking && said ? said.lines.map((line) => <span key={line}>{line}</span>) : ''}</p>
+          {saidShown && !asking && said && <SpeakButton text={said.lines.join(' ')} label="Réécouter" compact />}
         </div>
         {asking && world.current && (
           <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} plain={asking.plain} world={world.current} onClose={closeQuestion} />
@@ -780,7 +811,7 @@ function placeLocks(root: HTMLElement | null, locks: readonly LockOnScreen[]): v
 
 /** La phrase fixe de la passerelle posée (GD-20, point 3) : la même pour tous les lieux, sans accord à faire. */
 const PASSERELLE_POSEE = 'La passerelle est posée.';
-/** Elle vient tant de millisecondes après le toc (jamais en même temps), et reste écrite tant de millisecondes. */
+/** Elle vient au moins tant de millisecondes après le toc (jamais en même temps), et reste écrite tant de millisecondes par phrase. */
 const SAID_AFTER_MS = 450;
 const SAID_MS = 4000;
 

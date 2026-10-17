@@ -11,7 +11,7 @@
 import { FacetBuilder, type Facets } from './facets';
 import { distance, type Vec2 } from './geometry';
 import { PATH_EDGES, PLACES, placeById, portFloor, type PlaceId } from './plan6e';
-import { NEW_WOOD, edgeRibbon, isPlankBridge, nodeOctagon, pathNode, pathRibbons, plankBridge, plankSpan, type NetworkPoint, type RibbonLook } from './paths';
+import { NEW_WOOD, bridgePlanks, edgeRibbon, isPlankBridge, nodeOctagon, pathNode, pathRibbons, plankBridge, plankSpan, type NetworkPoint, type RibbonLook } from './paths';
 import { heightAt, standingHeight } from './terrain';
 import { underVeil } from './veil';
 
@@ -165,8 +165,8 @@ const streamWidth = (v: number, arm: number): number => {
   return STREAM.tip + (STREAM.width - STREAM.tip) * (1 - r * r);
 };
 
-/** Le pont neuf d'un ruisseau : trois planches jointives, leur épaisseur, leur débord sur chaque berge, leur hauteur au-dessus du sol. */
-const DECK = { count: 3, width: 0.56, thick: 0.1, reach: 0.75, lift: 0.3 } as const;
+/** Le pont neuf d'un ruisseau : cinq planches jointives (posées l'une après l'autre, lot 2), leur épaisseur, leur débord sur chaque berge, leur hauteur au-dessus du sol. */
+const DECK = { count: 5, width: 0.34, thick: 0.1, reach: 0.75, lift: 0.3 } as const;
 
 /** Les pieux d'un ruisseau, de part et d'autre de l'eau et de ses levées, depuis son milieu ; la demi-longueur du pont neuf. */
 const POST_U = STREAM.width / 2 + STREAM.levee.width + 0.1;
@@ -382,10 +382,94 @@ function bankFacets(b: FacetBuilder, ground: (x: number, z: number) => number, a
  */
 export function linkFacets(o: LinkObstacle, linked: boolean, ground: (x: number, z: number) => number): Facets {
   const b = new FacetBuilder();
+  drawLink(b, o, linked ? 'linked' : 'bare', ground);
+  return b.build();
+}
+
+/**
+ * Une passerelle prête à recevoir ses planches, le temps de leur pose (GD-20, point 3, lot 2) : la reliée sans ses
+ * planches (le ruisseau, ses berges et ses pieux, les traverses neuves), ni corde ; ses planches à part (`linkPlanks`).
+ */
+export function linkFrame(o: LinkObstacle, ground: (x: number, z: number) => number): Facets {
+  const b = new FacetBuilder();
+  drawLink(b, o, 'frame', ground);
+  return b.build();
+}
+
+/**
+ * Les planches d'une passerelle reliée, seules, dans l'ordre de leur pose (d'un bord à l'autre), chacune une boîte de
+ * mêmes sommets : la vue les montre l'une après l'autre. `linkFrame` et elles font `linkFacets(o, true)`.
+ */
+export function linkPlanks(o: LinkObstacle, ground: (x: number, z: number) => number): Facets {
+  const b = new FacetBuilder();
+  if (o.water) bridgePlanks(b, o.water.from, o.water.to, o.water.y);
+  else deckPlanks(b, o, ground);
+  return b.build();
+}
+
+/** Le nombre de planches posées l'une après l'autre (sur un ruisseau comme sur l'eau). */
+export const LAY_PLANKS = DECK.count;
+
+/** Le pont neuf d'un ruisseau : ses planches jointives, aux bords nets, posées sur les traverses dans le sens de la marche. */
+function deckPlanks(b: FacetBuilder, o: LinkObstacle, ground: (x: number, z: number) => number): void {
+  const at = frame(o);
+  const yaw = Math.atan2(o.toward.x, o.toward.z);
+  const deckY = deckBase(o, ground);
+  for (let k = 0; k < DECK.count; k++) {
+    const v = -(DECK.count * DECK.width) / 2 + DECK.width / 2 + k * DECK.width;
+    const p = at(0, v);
+    b.box({ x: p.x, y: deckY, z: p.z, yaw }, [DECK.width, DECK.thick, 2 * DECK_HALF], NEW_WOOD.side, NEW_WOOD.top);
+  }
+}
+
+/**
+ * La pose d'une passerelle (GD-20, point 3, lot 2 ; directeur artistique) : la fiche fermée, la caméra immobile, les
+ * planches descendent l'une après l'autre sur les traverses (`plank` secondes chacune, de `drop` unités, en ralentissant
+ * à l'arrivée, sans rebond), un seul toc à la dernière, puis la brume du lieu se lève en fondu (`fade` secondes) : 2,3 s
+ * en tout, la phrase après. Avec « Réduire les animations », rien de cela : la passerelle est posée d'un coup.
+ */
+export const LINK_LAY = { plank: 0.3, drop: 0.9, fade: 0.8 } as const;
+
+/** La pose à un instant : les planches montrées, la hauteur de la dernière au-dessus de sa place, la brume levée (0 à 1). */
+export interface LinkLayState {
+  planks: number;
+  fall: number;
+  /** Toutes les planches posées : le toc. */
+  landed: boolean;
+  fade: number;
+  /** Le fondu fini : la phrase peut venir. */
+  done: boolean;
+}
+
+/** La pose `u` secondes après son début, écrite dans `out` (la vue l'appelle à chaque image, sans rien allouer). */
+export function linkLayAt(u: number, out: LinkLayState): LinkLayState {
+  const L = LINK_LAY;
+  const planksEnd = LAY_PLANKS * L.plank;
+  if (u < planksEnd) {
+    const k = Math.max(0, Math.floor(u / L.plank));
+    const e = Math.max(0, u / L.plank - k);
+    out.planks = k + 1;
+    out.fall = L.drop * (1 - e) * (1 - e);
+    out.landed = false;
+    out.fade = 0;
+    out.done = false;
+    return out;
+  }
+  out.planks = LAY_PLANKS;
+  out.fall = 0;
+  out.landed = true;
+  out.fade = Math.min(1, (u - planksEnd) / L.fade);
+  out.done = out.fade >= 1;
+  return out;
+}
+
+/** Une passerelle dans `b` : démontée (`bare`), prête à recevoir ses planches (`frame`), ou reliée (`linked`). */
+function drawLink(b: FacetBuilder, o: LinkObstacle, look: 'bare' | 'frame' | 'linked', ground: (x: number, z: number) => number): void {
+  const linked = look !== 'bare';
   if (o.water) {
-    plankBridge(b, o.water.from, o.water.to, o.water.y, linked);
+    plankBridge(b, o.water.from, o.water.to, o.water.y, look);
     if (!linked) rope(b, o, ground);
-    return b.build();
+    return;
   }
   const at = frame(o);
   const S = STREAM;
@@ -419,15 +503,8 @@ export function linkFacets(o: LinkObstacle, linked: boolean, ground: (x: number,
     const c = at(u, S.post.out + 0.15);
     b.beam({ x: a.x, y: deckY - 0.09, z: a.z }, { x: c.x, y: deckY - 0.09, z: c.z }, 0.18, linked ? NEW_WOOD.beam : S.post.wood);
   }
-  if (linked) {
-    // Le pont neuf : trois planches jointives, aux bords nets, posées sur les traverses dans le sens de la marche.
-    for (let k = 0; k < DECK.count; k++) {
-      const v = -(DECK.count * DECK.width) / 2 + DECK.width / 2 + k * DECK.width;
-      const p = at(0, v);
-      b.box({ x: p.x, y: deckY, z: p.z, yaw }, [DECK.width, DECK.thick, 2 * DECK_HALF], NEW_WOOD.side, NEW_WOOD.top);
-    }
-  } else rope(b, o, ground);
-  return b.build();
+  if (look === 'linked') deckPlanks(b, o, ground);
+  else if (look === 'bare') rope(b, o, ground);
 }
 
 /**

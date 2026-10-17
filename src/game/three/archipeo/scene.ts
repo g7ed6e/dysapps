@@ -16,7 +16,7 @@ import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP,
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
-import { OBSTACLE_TOUCH, branchRibbons, clampToOpen, deckLift, deckTop, isLinked, linkFacets, obstacleOf, openPathRibbons, type LinkedPlace } from '../../world/continu/links';
+import { OBSTACLE_TOUCH, branchRibbons, clampToOpen, deckLift, deckTop, isLinked, linkFacets, LAY_PLANKS, LINK_LAY, linkFrame, linkLayAt, linkPlanks, obstacleOf, openPathRibbons, type LinkLayState, type LinkedPlace } from '../../world/continu/links';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, findRoute, pathNode, snapToNetwork, startOf, type NetworkPoint, type RibbonLook } from '../../world/continu/paths';
 import { PLACES, TERRAIN, hidesTraces, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
@@ -126,9 +126,18 @@ export interface OpenWorld {
   /**
    * Les liaisons (GD-20, point 3, lot 1 « Relier ») : les lieux fermés (sous la brume, leur passerelle démontée, Kéo
    * s'arrête au bord ; leur chemin en tirets sur la Carte) et la liaison suggérée (ses tirets plus épais). Un lieu qu'on
-   * vient de relier perd sa brume d'un coup et garde le pont neuf de sa passerelle ; refait seulement s'il change.
+   * vient de relier perd sa brume et garde le pont neuf de sa passerelle, d'un coup, ou par sa pose (`layLink`) ; refait
+   * seulement s'il change.
    */
   setLinks(links: { closed: readonly LinkedPlace[]; waiting: readonly LinkedPlace[]; suggested: LinkedPlace | null }): void;
+  /**
+   * La pose de la passerelle d'un lieu qu'on relie (GD-20, point 3, lot 2), dite avant que les liaisons changent : au
+   * prochain `setLinks` qui ouvre ce lieu, ses cinq planches se posent l'une après l'autre, la caméra immobile, `tap` à la
+   * dernière (le toc), puis sa brume se lève en fondu, `laid` à la fin (la phrase) ; Kéo ne passe pas avant. D'un coup,
+   * `tap` puis `laid` aussitôt, avec « Réduire les animations », sur la Carte, pendant une question ou une scénette, ou si
+   * la passerelle n'est pas à l'écran.
+   */
+  layLink(place: LinkedPlace, events: LinkLayEvents): void;
   /** Où se tient Kéo, au sol (le voisin le plus proche de la fiche d'un lieu pas encore reliable). */
   keoAt(): Vec2;
   /**
@@ -473,6 +482,12 @@ function veilGeometry(v: VeilMesh): THREE.BufferGeometry {
   return g;
 }
 
+/** Ce que la pose d'une passerelle dit à la page : le toc (la dernière planche posée), puis sa fin (la phrase). */
+export interface LinkLayEvents {
+  tap(): void;
+  laid(): void;
+}
+
 export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): OpenWorld {
   const { reduceMotion } = options;
   const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -600,8 +615,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   touchables.push(placesMesh, landmarkMesh);
 
   // La brume sur les lieux fermés : un seul maillage, refait quand la liste change (jamais par image) ; sans lumière, de
-  // la couleur du lointain, transparente par sommet (dense en bas, effacée en haut et sur ses bords). Elle part d'un coup
-  // quand on relie (le fondu viendra avec la pose animée, lot 2).
+  // la couleur du lointain, transparente par sommet (dense en bas, effacée en haut et sur ses bords). Quand on relie,
+  // celle du lieu se lève en fondu après la pose de ses planches (lot 2) : dessinée en dernier, la transparence de ses
+  // seuls sommets s'efface, sans appel de plus ; d'un coup avec « Réduire les animations ».
   const veilMaterial = veilMaterialOf();
   const veilMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), veilMaterial));
   veilMesh.visible = false;
@@ -619,6 +635,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Les lieux fermés pas encore reliables (après un voisin) : la Carte ne dessine pas leur embranchement.
   let waiting: readonly LinkedPlace[] = [];
   let veilKey = '';
+  // La pose d'une passerelle en cours (lot 2) : le lieu, son début, ce qu'elle dit à la page ; ses planches dans le
+  // maillage de pose (du matériau des lieux, sans halo : relier ne pose aucune partie), la hauteur de leurs sommets à leur
+  // place (`rest`), le nombre de sommets d'une planche ; montrées, toc dit. `pendingLay` : annoncée, en attente des liaisons.
+  let laying: { place: LinkedPlace; start: number; events: LinkLayEvents; rest: Float32Array; per: number; shown: number; tapped: boolean } | null = null;
+  let pendingLay: { place: LinkedPlace; events: LinkLayEvents } | null = null;
+  const layState: LinkLayState = { planks: 0, fall: 0, landed: false, fade: 0, done: false };
+  // Les lieux où Kéo ne passe pas : les fermés, et celui dont la passerelle se pose.
+  let walkClosed: readonly LinkedPlace[] = [];
+  // La transparence de la brume qui se lève, à ses sommets (refaite avec la brume, jamais par image).
+  let veilAlphas: Float32Array | null = null;
+  let veilFadeFrom = 0;
   // Le dessus du pont neuf de chaque passerelle sur un ruisseau, calculé une fois (le sol ne change pas).
   const deckTops = new Map<LinkedPlace, number>();
   for (const p of PLACES) {
@@ -832,10 +859,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   // Les passerelles et les embranchements, faits une fois par état (ils ne dépendent que du sol).
   const linkCache = new Map<string, Facets>();
-  const linkOf = (place: LinkedPlace, linked: boolean): Facets => {
-    const k = `${place}|${linked}`;
+  const linkOf = (place: LinkedPlace, look: 'bare' | 'frame' | 'linked'): Facets => {
+    const k = `${place}|${look}`;
     let f = linkCache.get(k);
-    if (!f) linkCache.set(k, (f = linkFacets(obstacleOf(place), linked, ground)));
+    if (!f) linkCache.set(k, (f = look === 'frame' ? linkFrame(obstacleOf(place), ground) : linkFacets(obstacleOf(place), look === 'linked', ground)));
     return f;
   };
   const branchOf = (place: LinkedPlace, look: RibbonLook): Facets => {
@@ -855,7 +882,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${waiting.join(',')}|${suggestedLink}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${waiting.join(',')}|${suggestedLink}|${laying && !laying.tapped ? laying.place : ''}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -885,7 +912,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // chemin d'un lieu fermé en tirets, plus épais pour la liaison suggérée, et aucun pour un lieu pas encore reliable.
       if (isLinked(p.id)) {
         const shut = closed.includes(p.id);
-        rest.push(linkOf(p.id, !shut));
+        // Pendant la pose de ses planches, la passerelle les attend (elles sont dans le maillage de pose).
+        rest.push(linkOf(p.id, shut ? 'bare' : laying?.place === p.id && !laying.tapped ? 'frame' : 'linked'));
         if (!(mapView && waiting.includes(p.id))) rest.push(branchOf(p.id, mapView && shut ? (p.id === suggestedLink ? 'thick' : 'dashes') : 'solid'));
       }
     }
@@ -914,26 +942,140 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   updateRings(true, true);
 
-  // La brume des lieux fermés, et leurs cadenas : refaits si la liste change ; un lieu relié perd la sienne d'un coup.
+  // La brume des lieux fermés, et leurs cadenas : refaits si la liste change ; un lieu relié perd la sienne d'un coup,
+  // ou, pendant la pose de sa passerelle, la garde (en dernier) jusqu'à la fin de son fondu.
   const updateVeil = () => {
-    const k = closed.join(',');
+    const fading = laying?.place;
+    const k = `${closed.join(',')}|${fading ?? ''}`;
     if (k === veilKey) return;
     veilKey = k;
     setLocks(closed);
-    setVeilGeometry(veilMesh, veilFacets(closed));
+    const v = veilFacets(fading ? [...closed, fading] : closed, fading);
+    setVeilGeometry(veilMesh, v);
+    veilFadeFrom = v.fadingFrom;
+    veilAlphas = null;
+    if (!fading) return;
+    const n = v.positions.length / 3 - v.fadingFrom;
+    veilAlphas = new Float32Array(n);
+    for (let i = 0; i < n; i++) veilAlphas[i] = v.colors[(v.fadingFrom + i) * 4 + 3];
+  };
+  /** La brume du lieu dont la passerelle est posée, levée à la part `e` (0 : entière, 1 : partie). */
+  const fadeVeil = (e: number) => {
+    if (!veilAlphas) return;
+    const color = veilMesh.geometry.getAttribute('color') as THREE.BufferAttribute;
+    const a = color.array as Float32Array;
+    for (let i = 0; i < veilAlphas.length; i++) a[(veilFadeFrom + i) * 4 + 3] = veilAlphas[i] * (1 - e);
+    color.clearUpdateRanges();
+    color.addUpdateRange(veilFadeFrom * 4, veilAlphas.length * 4);
+    color.needsUpdate = true;
+  };
+  const layPoint = new THREE.Vector3();
+  /** La passerelle d'un lieu est-elle à l'écran ? (sa pose ne se joue que là ; ailleurs, elle est posée d'un coup.) */
+  const onScreen = (x: number, y: number, z: number) => {
+    layPoint.set(x, y, z).project(camera);
+    return layPoint.z < 1 && Math.abs(layPoint.x) < 0.95 && Math.abs(layPoint.y) < 0.95;
   };
   /**
+   * La passerelle d'un lieu est-elle à l'écran ? (sa pose ne se joue que là ; ailleurs, elle est posée d'un coup.) Sur
+   * la vraie eau, un de ses bouts ou son milieu suffit : elle est longue.
+   */
+  const linkOnScreen = (place: LinkedPlace) => {
+    const o = obstacleOf(place);
+    if (!o.water) return onScreen(o.at.x, standingHeight(ground(o.at.x, o.at.z)), o.at.z);
+    const { from, to, y } = o.water;
+    return onScreen(from.x, y, from.z) || onScreen(to.x, y, to.z) || onScreen((from.x + to.x) / 2, y, (from.z + to.z) / 2);
+  };
+  /** La pose d'une passerelle commence : la passerelle prête, ses planches à part, la première au-dessus de sa place. */
+  const startLay = (place: LinkedPlace, events: LinkLayEvents) => {
+    finishLay();
+    finishPose();
+    if (reduceMotion || mapView || asked || scenette || assembly || !linkOnScreen(place)) {
+      events.tap();
+      events.laid();
+      return;
+    }
+    const planks = linkPlanks(obstacleOf(place), ground);
+    const n = planks.positions.length / 3;
+    const rest = new Float32Array(n);
+    for (let i = 0; i < n; i++) rest[i] = planks.positions[i * 3 + 1];
+    laying = { place, start: performance.now() / 1000, events, rest, per: n / LAY_PLANKS, shown: 0, tapped: false };
+    walkClosed = [...closed, place];
+    poseMesh.material = landMaterial;
+    poseMesh.position.set(0, 0, 0);
+    setGeometry(poseMesh, planks);
+    // La boîte englobante tient les planches en haut : l'élimination hors champ reste allumée.
+    poseMesh.geometry.boundingBox!.max.y += LINK_LAY.drop;
+    poseMesh.geometry.computeBoundingSphere();
+    poseMesh.geometry.boundingSphere!.radius += LINK_LAY.drop;
+    poseMesh.geometry.setDrawRange(0, 0);
+    updateVeil();
+    placeVisibility();
+    stepLay(laying.start);
+  };
+  /** Une planche à sa hauteur : `fall` au-dessus de sa place. */
+  const placePlank = (k: number, fall: number) => {
+    if (!laying) return;
+    const position = poseMesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+    const a = position.array as Float32Array;
+    for (let i = k * laying.per; i < (k + 1) * laying.per; i++) a[i * 3 + 1] = laying.rest[i] + fall;
+    position.needsUpdate = true;
+  };
+  /** La pose à l'instant `t` (en secondes) : la planche qui descend, le toc à la dernière, puis le fondu de la brume. */
+  const stepLay = (t: number) => {
+    if (!laying) return;
+    const s = linkLayAt(t - laying.start, layState);
+    if (!laying.tapped) {
+      // Les planches déjà là, à leur place ; celle qui descend, au-dessus de la sienne.
+      for (let k = Math.max(0, laying.shown - 1); k < s.planks - 1; k++) placePlank(k, 0);
+      placePlank(s.planks - 1, s.fall);
+      if (s.planks !== laying.shown) poseMesh.geometry.setDrawRange(0, s.planks * laying.per);
+      laying.shown = s.planks;
+    }
+    if (s.landed && !laying.tapped) {
+      // La dernière est posée : les planches rejoignent les lieux, le toc.
+      laying.tapped = true;
+      placeVisibility();
+      poseMesh.visible = false;
+      laying.events.tap();
+    }
+    if (s.landed) fadeVeil(s.fade);
+    if (s.done) finishLay();
+  };
+  /** Finit la pose tout de suite : la passerelle posée, la brume partie, le toc s'il n'a pas été dit, puis la fin. */
+  function finishLay(tell = true) {
+    if (!laying) return;
+    const l = laying;
+    laying = null;
+    walkClosed = closed;
+    poseMesh.visible = false;
+    poseMesh.geometry.dispose();
+    poseMesh.geometry = new THREE.BufferGeometry();
+    poseMesh.material = poseMaterial;
+    updateVeil();
+    placeVisibility();
+    mapDirty = true;
+    if (!tell) return;
+    if (!l.tapped) l.events.tap();
+    l.events.laid();
+  }
+  /**
    * Les liaisons changent : la brume, les cadenas, les passerelles ; Kéo, s'il se tenait au-delà d'une passerelle
-   * démontée (une adresse vers un lieu fermé), revient au bord.
+   * démontée (une adresse vers un lieu fermé), revient au bord. Le lieu dont la pose est annoncée (`layLink`), s'il
+   * s'ouvre, voit poser sa passerelle.
    */
   const setLinks = (links: { closed: readonly LinkedPlace[]; waiting: readonly LinkedPlace[]; suggested: LinkedPlace | null }) => {
+    const opened = pendingLay && closed.includes(pendingLay.place) && !links.closed.includes(pendingLay.place) ? pendingLay : null;
+    pendingLay = null;
+    if (laying && links.closed.includes(laying.place)) finishLay(false);
     closed = links.closed;
+    walkClosed = laying ? [...closed, laying.place] : closed;
     waiting = links.waiting;
     suggestedLink = links.suggested;
     decks = PLACES.map((p) => p.id).filter((id): id is LinkedPlace => isLinked(id) && !closed.includes(id) && deckTops.has(id));
     updateVeil();
     placeVisibility();
     mapDirty = true;
+    if (opened) startLay(opened.place, opened.events);
     if (asked || scenette) return;
     const at = snapToNetwork(here);
     const stop = clampToOpen(at, closed);
@@ -1032,7 +1174,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const startWalkTo = (target: NetworkPoint, place: PlaceId | null) => {
     const from = snapToNetwork(here);
     // Au-delà d'une passerelle démontée, Kéo s'arrête au bord, sans heurt ni son (GD-20, point 3).
-    const to = clampToOpen(target, closed);
+    const to = clampToOpen(target, walkClosed);
     if (to !== target) place = null;
     const route = findRoute(from, to);
     // Kéo hors du chemin (sur le bord du quai, au retour d'une scénette) : il le rejoint d'abord.
@@ -1258,6 +1400,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (open && asked) return;
     if (open) {
       const t0 = performance.now();
+      // Rien ne bouge sur la Carte : une passerelle qui se pose est posée d'un coup.
+      finishLay();
       finishPose();
       finishAssembly();
       // Kéo s'arrête où il est : la Carte n'est pas un trajet.
@@ -1602,6 +1746,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       follow();
       return [];
     }
+    finishLay();
     finishPose();
     finishAssembly();
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
@@ -1862,6 +2007,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const startPose = (place: PlaceId, parts: readonly PartShape[]) => {
     // Une pose en cours (deux réussites rapprochées) passe la main sans dire sa fin : seule la dernière la dit.
     poseRun.handOver();
+    finishLay();
     holding = { place, parts };
     placeVisibility();
     setGeometry(poseMesh, constructionFacets(place, parts, ground));
@@ -1993,6 +2139,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (state.heading !== null) heading = state.heading;
       if (!state.moving) arrive(walkTarget);
     }
+    stepLay(t);
     if (mapView) {
       // La Carte : rien ne bouge que ce que les doigts font glisser ; les lieux à l'écran, pour leurs étiquettes.
       if (mapSettling) {
@@ -2071,6 +2218,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   return {
     goTo: (place, jump = false) => {
+      finishLay();
       finishPose();
       finishAssembly();
       setMap(null);
@@ -2082,6 +2230,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       walk = skipWalk(walk, performance.now());
     },
     goToPort: (spot) => {
+      finishLay();
       finishPose();
       finishAssembly();
       setMap(null);
@@ -2101,6 +2250,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       mapDirty = true;
     },
     setLinks,
+    layLink: (place, events) => {
+      pendingLay = { place, events };
+    },
     keoAt: () => ({ x: here.x, z: here.z }),
     question: askQuestion,
     map: setMap,
@@ -2114,6 +2266,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     },
     dispose: () => {
       disposed = true;
+      laying = null;
       cancelAnimationFrame(frame);
       window.clearTimeout(wheelRest);
       if (idleHandle) cancelIdle(idleHandle);

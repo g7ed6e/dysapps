@@ -324,7 +324,7 @@ export function plankSpan(ground: (x: number, z: number) => number, a: Vec2, c: 
  * Une passerelle de planches : ses planches, son pas de pieux, leur section, le pied des pieux sous l'eau, leur tête
  * au-dessus des planches, ses bois (les planches ; les pieux et les traverses).
  */
-const PLANKS = { count: 3, width: 0.66, thick: 0.12, reach: 0.6, step: 1.9, post: 0.2, foot: -1.4, head: 0.3, dark: 0x7a5636 } as const;
+const PLANKS = { count: 5, width: 0.4, thick: 0.12, reach: 0.6, step: 1.9, post: 0.2, foot: -1.4, head: 0.3, dark: 0x7a5636 } as const;
 
 /**
  * Le bois neuf d'une passerelle reliée (GD-20, point 3, directeur artistique) : un sable plus clair que le Sable du pack
@@ -332,26 +332,42 @@ const PLANKS = { count: 3, width: 0.66, thick: 0.12, reach: 0.6, step: 1.9, post
  */
 export const NEW_WOOD = { top: 0xf0cf98, side: 0xd9b077, beam: 0x8a5f3a } as const;
 
+/** Le repère d'une passerelle de planches de `from` à `to` : sa longueur, son cap, et un point à `o` en travers, `u` le long. */
+function bridgeFrame(from: Vec2, to: Vec2) {
+  const len = distance(from, to) || 1e-6;
+  const [dx, dz] = [(to.x - from.x) / len, (to.z - from.z) / len];
+  const mid = { x: (from.x + to.x) / 2, z: (from.z + to.z) / 2 };
+  return { len, yaw: Math.atan2(dx, dz), across: (o: number, u: number) => ({ x: mid.x + dx * u + dz * o, z: mid.z + dz * u - dx * o }) };
+}
+
+/**
+ * Les cinq planches neuves d'une passerelle de planches de `from` à `to` (le bois à `y`), jointives, aux bords nets,
+ * posées dans le sens de la marche, qui débordent d'un pas sur chaque berge ; dans l'ordre de leur pose (lot 2), d'un
+ * bord à l'autre, chacune de mêmes sommets (une boîte).
+ */
+export function bridgePlanks(b: FacetBuilder, from: Vec2, to: Vec2, y: number): void {
+  const P = PLANKS;
+  const { len, yaw, across } = bridgeFrame(from, to);
+  const half = (P.count * P.width) / 2;
+  for (let k = 0; k < P.count; k++) {
+    const at = across(-half + P.width / 2 + k * P.width, 0);
+    b.box({ x: at.x, y: y - P.thick, z: at.z, yaw }, [P.width, P.thick, len + 2 * P.reach], NEW_WOOD.side, NEW_WOOD.top);
+  }
+}
+
 /**
  * Une passerelle de planches de `from` à `to` (le bois des planches à `y`) sur l'eau : une paire de pieux à chaque bout
  * et de place en place, une traverse sous les planches à chaque paire, les têtes des pieux au-dessus des planches.
- * `planked` : reliée, trois planches neuves jointives aux bords nets, posées dans le sens de la marche, qui débordent
- * d'un pas sur chaque berge ; démontée (`false`), il ne reste que les pieux et les deux traverses des bouts.
+ * `look` : reliée (`linked`), ses cinq planches neuves (`bridgePlanks`) sur ses traverses neuves ; prête à les recevoir
+ * pendant leur pose (`frame`), les traverses neuves seules ; démontée (`bare`), il ne reste que les pieux et les deux
+ * traverses des bouts.
  */
-export function plankBridge(b: FacetBuilder, from: Vec2, to: Vec2, y: number, planked: boolean): void {
+export function plankBridge(b: FacetBuilder, from: Vec2, to: Vec2, y: number, look: 'bare' | 'frame' | 'linked'): void {
   const P = PLANKS;
-  const len = distance(from, to) || 1e-6;
-  const [dx, dz] = [(to.x - from.x) / len, (to.z - from.z) / len];
-  const yaw = Math.atan2(dx, dz);
-  const mid = { x: (from.x + to.x) / 2, z: (from.z + to.z) / 2 };
-  const across = (o: number, u: number) => ({ x: mid.x + dx * u + dz * o, z: mid.z + dz * u - dx * o });
+  const { len, yaw, across } = bridgeFrame(from, to);
   const half = (P.count * P.width) / 2;
-  if (planked)
-    for (let k = 0; k < P.count; k++) {
-      const o = -half + P.width / 2 + k * P.width;
-      const at = across(o, 0);
-      b.box({ x: at.x, y: y - P.thick, z: at.z, yaw }, [P.width, P.thick, len + 2 * P.reach], NEW_WOOD.side, NEW_WOOD.top);
-    }
+  const planked = look !== 'bare';
+  if (look === 'linked') bridgePlanks(b, from, to, y);
   const pairs = Math.max(2, Math.round(len / P.step) + 1);
   for (let k = 0; k < pairs; k++) {
     const u = -len / 2 + (len * k) / (pairs - 1);

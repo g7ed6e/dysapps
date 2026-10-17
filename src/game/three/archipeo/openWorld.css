@@ -2604,13 +2604,14 @@
   width: 1.2em;
   height: 1.2em;
 }
-/* « La passerelle est posée. » : sur fond uni, en bas au milieu, au-dessus de la barre ; sans rien qui bouge ; le
+/* « La passerelle est posée. » (et la phrase d'un lieu devenu reliable) : sur fond uni, en bas au milieu, au-dessus de la barre ; sans rien qui bouge ; le
    haut-parleur à côté de la phrase, 48 px, le seul élément touchable. Vide, elle ne montre rien. Sur la Carte, en haut,
    hors des noms des lieux du sud. */
 .open-world-said {
   position: absolute;
   left: 50%;
-  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  /* Au-dessus de « Y aller », qui grandit avec le texte (110 px de haut au plus grand). */
+  bottom: calc(max(96px, 4.2rem) + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
   z-index: 5;
   display: flex;
@@ -2633,6 +2634,10 @@
   margin: 0;
   font-weight: 700;
   text-align: center;
+}
+/* Une phrase par ligne (« La passerelle est posée. », puis « La Turbine peut être reliée. »). */
+.open-world-said > p > span {
+  display: block;
 }
 .open-world-said > .speak-button {
   pointer-events: auto;

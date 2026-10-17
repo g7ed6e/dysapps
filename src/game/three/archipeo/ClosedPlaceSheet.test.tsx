@@ -8,7 +8,7 @@ import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
 import { placeById } from '../../world/continu/plan6e';
-import { ClosedPlaceSheet, afterLabel, linkLabel } from './ClosedPlaceSheet';
+import { ClosedPlaceSheet, afterLabel, linkLabel, linkableLabel } from './ClosedPlaceSheet';
 
 function renderSheet(have: number, suggested = false, after: 'ecluses' | null = null) {
   const onLink = vi.fn();
@@ -79,4 +79,18 @@ it('un lieu pas encore reliable : ni « Relier », ni prix, ni « 3 / 4 » ; le 
   await user.click(go);
   expect(onAfter).toHaveBeenCalledWith('ecluses');
   expect(onLink).not.toHaveBeenCalled();
+});
+
+test('« peut être reliée » : accordée au nom de chaque lieu, son article gardé (lot 2)', () => {
+  const said = (id: Parameters<typeof placeById>[0]) => linkableLabel(placeById(id));
+  // Les deux qui attendent un voisin au départ.
+  expect(said('engine')).toBe('La Turbine peut être reliée.');
+  expect(said('shipyard')).toBe('Le Chantier naval peut être relié.');
+  // Les quatre accords, et l'article élidé.
+  expect(said('ecluses')).toBe('Les Écluses peuvent être reliées.');
+  expect(said('filets')).toBe('Les Filets peuvent être reliés.');
+  expect(said('saltworks')).toBe('Les Marais salants peuvent être reliés.');
+  expect(said('printworks')).toBe('L’Imprimerie peut être reliée.');
+  expect(said('observatory')).toBe('L’Observatoire peut être relié.');
+  expect(said('ferry')).toBe('La Gare maritime peut être reliée.');
 });

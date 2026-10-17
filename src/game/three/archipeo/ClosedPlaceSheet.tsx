@@ -41,6 +41,16 @@ export function afterLabel(place: OpenPlace, neighbour: OpenPlace): string {
   return `${place.name} : relie d'abord ${neighbour.name.charAt(0).toLowerCase()}${neighbour.name.slice(1)}.`;
 }
 
+/**
+ * La phrase d'un lieu qui devient reliable, son voisin relié (GD-20, point 3, lot 2), accordée à son nom : « La Turbine
+ * peut être reliée. », « Le Chantier naval peut être relié. », « Les Écluses peuvent être reliées. »
+ */
+export function linkableLabel(place: OpenPlace): string {
+  const plural = place.agree.endsWith('p');
+  const ending = `${place.agree.startsWith('f') ? 'e' : ''}${plural ? 's' : ''}`;
+  return `${place.name} ${plural ? 'peuvent' : 'peut'} être relié${ending}.`;
+}
+
 export function ClosedPlaceSheet({ place, after, onAfter, price, have, suggested, onLink, onClose }: Props) {
   useOpenPanel(onClose);
   // Le focus va sur le bouton d'action à l'ouverture, et au passage d'une fiche à celle du voisin (consultant UX UI) :
