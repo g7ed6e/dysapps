@@ -39,7 +39,7 @@ export function shallowness(p: Vec2): number {
  * pont, de plus en plus étroit (`taper` par unité) : un cœur court, centré sur le pont. La Nuit océan pure du pack
  * (#142B38) se lisait comme un trou noir (le mainteneur : jamais de presque-noir) : elle est éclaircie (#205E72).
  */
-export const WATER_TONES = { clear: 0x5cc3b5, lagoon: COLORS_6E.deepSea, night: 0x205e72, heart: 3.4, reach: 16, taper: 0.4 } as const;
+export const WATER_TONES = { clear: 0x5cc3b5, lagoon: COLORS_6E.deepSea, night: 0x205e72, heart: 3.4, reach: 8, taper: 0.6 } as const;
 
 /** Le milieu de l'eau de chaque pont (le point le plus près de la ligne du bras, sur sa liaison). */
 let bridgeMids: Vec2[] | null = null;

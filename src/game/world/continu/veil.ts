@@ -49,9 +49,12 @@ export const VEIL_HEIGHT = VEIL_LAYERS[VEIL_LAYERS.length - 1].lift;
  * Le dessin du voile : le pas de sa grille ; jusqu'où il s'étend loin d'un chemin ou d'un lieu de sa terre (`reach`,
  * effacé dès `reach × full`) ; la largeur de son fondu vers une terre voisine (`border`) et vers l'eau (`shore` : presque
  * rien, il s'arrête net sur la rive, ses sommets mouillés posés sur elle, `toShore`) ; autour du centre d'un lieu,
- * jusqu'où il couvre même l'eau (`place`).
+ * jusqu'où il couvre même l'eau (`place`). Reprise du lot 3 (directeur artistique : des « plaques de verre à arêtes
+ * droites ») : une grille plus fine (3 unités au lieu de 5) qui épouse mieux le sol, chaque sommet posé au-dessus du plus
+ * haut du sol autour de lui (aucune pente ne le perce d'une arête droite), et aucun bord net : là où une case est laissée
+ * de côté (sur l'eau), ses voisines s'effacent jusqu'à elle.
  */
-const GRID = { step: 5, reach: 22, full: 0.75, border: 5, shore: 0.4, place: 7 } as const;
+const GRID = { step: 3, reach: 22, full: 0.75, border: 5, shore: 0.4, place: 7 } as const;
 
 /** Les repères d'une terre : les nœuds de ses chemins et le centre de ses lieux. */
 const featuresOf = (land: LandId): Vec2[] => [
@@ -150,15 +153,27 @@ function veilOf(pos: number[], nor: number[], col: number[], land: LinkedLand): 
       spot.push(p);
       share.push(s);
       wet.push(off);
-      floor.push(s > 0 ? Math.max(0.05, standingHeight(heightAt(p))) : 0);
+      floor.push(s > 0 ? Math.max(0.05, standingHeight(highest(p))) : 0);
     }
   const at = (i: number, j: number) => j * (nx + 1) + i;
+  // Un sommet voisin d'un sommet mouillé (une case laissée de côté) n'a plus de brume : le bord s'efface, jamais net.
+  const soft = share.slice();
+  for (let j = 0; j <= nz; j++)
+    for (let i = 0; i <= nx; i++) {
+      if (!wet[at(i, j)]) continue;
+      for (let dj = -1; dj <= 1; dj++)
+        for (let di = -1; di <= 1; di++) {
+          const a = i + di;
+          const b = j + dj;
+          if (a >= 0 && b >= 0 && a <= nx && b <= nz) soft[at(a, b)] = 0;
+        }
+    }
   for (const layer of VEIL_LAYERS) {
     const put = (i: number, j: number) => {
       const k = at(i, j);
       pos.push(spot[k].x, floor[k] + layer.lift, spot[k].z);
       nor.push(0, 1, 0);
-      col.push(r, g, b, share[k] * layer.alpha);
+      col.push(r, g, b, soft[k] * layer.alpha);
     };
     for (let j = 0; j < nz; j++)
       for (let i = 0; i < nx; i++) {
@@ -173,6 +188,15 @@ function veilOf(pos: number[], nor: number[], col: number[], land: LinkedLand): 
         put(i + 1, j + 1);
       }
   }
+}
+
+/** Jusqu'où, autour d'un sommet du voile, on cherche le plus haut du sol (une demi-case). */
+const VEIL_AROUND = GRID.step / 2;
+
+/** Le plus haut du sol en `p` et à une demi-case autour : le voile passe au-dessus, jamais dedans. */
+export function highest(p: Vec2): number {
+  const e = VEIL_AROUND;
+  return Math.max(heightAt(p), heightAt({ x: p.x + e, z: p.z }), heightAt({ x: p.x - e, z: p.z }), heightAt({ x: p.x, z: p.z + e }), heightAt({ x: p.x, z: p.z - e }));
 }
 
 const cache = new Map<LinkedLand, VeilMesh>();

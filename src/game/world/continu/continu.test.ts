@@ -12,7 +12,7 @@ import { sceneSpot } from './questionScene';
 import { SEA_TEXTURE, WATER_TONES, decodeSeaField, seaPixels, shallowness, toneOfFields, waterTone } from './sea';
 import { HILLS, RING, RING_FLOOR, RING_LIFT, TILE_SIZE, buildHeightField, hillsAt, heightAt, heightOnFar, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
 import { createTileStore } from './tiles';
-import { VEIL_HEIGHT, VEIL_LAYERS, veilFacets, veilShare } from './veil';
+import { VEIL_HEIGHT, VEIL_LAYERS, highest, veilFacets, veilShare } from './veil';
 import { bridgeSite } from './bridges';
 import { LANDS, LINKED_LANDS, landById } from './lands';
 import { WALK_CADENCE, WALK_SPEED, skipWalk, startWalk, walkAt } from './walk';
@@ -390,13 +390,15 @@ describe('La brume des terres fermées', () => {
       for (const other of LANDS) if (other.id !== land) for (const id of other.places) expect(veilShare(land, placeById(id).center), id).toBe(0);
       const v = veilFacets([land]);
       for (let k = 0; k < v.positions.length; k += 3) {
-        const ground = Math.max(0.05, standingHeight(heightAt({ x: v.positions[k], z: v.positions[k + 2] })));
+        // Le voile passe au-dessus du plus haut du sol à une demi-case autour (reprise du lot 3).
+        const ground = Math.max(0.05, standingHeight(highest({ x: v.positions[k], z: v.positions[k + 2] })));
         expect(v.positions[k + 1] - ground).toBeLessThanOrEqual(VEIL_HEIGHT + 1e-4);
       }
       // Le repère de chaque lieu la dépasse.
       for (const id of landById(land).places) expect(modelOfPlace(id).top, id).toBeGreaterThan(VEIL_HEIGHT + 0.5);
     }
-    expect(veilFacets(LINKED_LANDS).triangles).toBeLessThan(6000);
+    // Une grille de 3 unités (reprise du lot 3) : environ 14 000 triangles pour les quatre terres.
+    expect(veilFacets(LINKED_LANDS).triangles).toBeLessThan(15000);
   });
 
   it('jamais opaque : les deux voiles réunis laissent voir chaque lieu ; nette sur le bras de mer', () => {

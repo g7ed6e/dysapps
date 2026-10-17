@@ -27,14 +27,18 @@ export const HORIZON_COLOR = SKY_STOPS[0].color;
  * lieu de 47°), à l'est-sud-est : les pentes au soleil s'éclairent, les autres gardent leur couleur, plus sombre, jamais
  * presque noire (l'ambiance seule en donne encore le tiers). Le mappage des tons neutre de Three.js adoucit les blancs.
  * Retouche : le ciel renvoyé moins bleu (#DDE8E6), l'herbe ne tire plus vers le vert d'eau ; le sol renvoyé plus clair
- * (#A3AB8C), le dessous des tabliers et des piles ne tombe pas au presque-noir.
+ * (#A3AB8C), le dessous des tabliers et des piles ne tombe pas au presque-noir. Reprise (directeur artistique : encore
+ * du presque-noir sous le pont) : le sol renvoyé, la lumière que l'eau claire et le sable rendent, plus clair et plus
+ * chaud (#E0D9C0), l'ambiance un peu plus haute (1,6) et le soleil un peu plus bas (2,75) : les faces à l'ombre et le
+ * dessous des tabliers remontent, les pans au soleil changent à peine ; la séparation des flancs des collines tient à
+ * leurs couleurs (./terrain.ts).
  */
 export const LIGHT = {
   sky: 0xdde8e6,
-  ground: 0xa3ab8c,
-  ambient: 1.35,
+  ground: 0xe0d9c0,
+  ambient: 1.6,
   sun: 0xfff0d8,
-  sunIntensity: 2.9,
+  sunIntensity: 2.75,
   /** D'où vient le soleil (une direction, pas une place). */
   sunFrom: { x: 52, y: 40, z: 34 },
   exposure: 1,

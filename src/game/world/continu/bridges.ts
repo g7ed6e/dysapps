@@ -31,7 +31,7 @@ const C = {
   wood: 0xa9784a,
   woodTop: 0xc6955f,
   rail: 0x8a5f3a,
-  wet: 0x6f675b,
+  wet: 0x958c7c,
   broken: 0x8a8273,
   iron: 0x3f4a50,
   glass: 0xdaa66a,
