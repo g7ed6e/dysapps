@@ -4,7 +4,7 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { beforeEach, vi } from 'vitest';
+import { afterEach, beforeEach, vi } from 'vitest';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
@@ -66,6 +66,11 @@ vi.mock('../../BloclandContext', async (original) => {
       return pay.refuse ? { ...b, linkFromOpenWorld: () => ({ ok: false }) } : b;
     },
   };
+});
+
+// Les substitutions (matchMedia du petit écran, ResizeObserver) ne passent pas d'un test à l'autre (relecture du code).
+afterEach(() => {
+  vi.unstubAllGlobals();
 });
 
 beforeEach(() => {
