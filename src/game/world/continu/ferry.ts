@@ -371,13 +371,14 @@ function luggageCart(b: FacetBuilder, g: Vec3): void {
   b.beam({ x: g.x - 0.7 * Math.sin(yaw), y: g.y + 0.34, z: g.z - 0.4 * Math.cos(yaw) }, { x: g.x - 1.1 * Math.sin(yaw), y: g.y + 0.9, z: g.z - 0.95 * Math.cos(yaw) }, 0.06, C.iron);
 }
 
-/** La passerelle d'embarquement posée au bord du quai ouest (Have ou has) : son tablier en pente, ses deux mains courantes. */
-function gangway(b: FacetBuilder, g: Vec3): void {
-  const from = { x: g.x + 1.0, y: g.y + FERRY_QUAY.top, z: g.z },
-    to = { x: g.x - 0.9, y: g.y - 0.25, z: g.z };
-  b.beam(from, to, 0.08, C.darkWood);
-  b.box({ x: (from.x + to.x) / 2, y: (from.y + to.y) / 2, z: g.z, yaw: Math.PI / 2, pitch: Math.atan2(from.y - to.y, from.x - to.x) }, [0.9, 0.06, 2.0], C.wood);
-  for (const side of [-1, 1]) b.beam({ ...from, y: from.y + 0.6, z: g.z + side * 0.42 }, { ...to, y: to.y + 0.6, z: g.z + side * 0.42 }, 0.05, C.iron);
+/**
+ * L'échelle de quai repliée, couchée au bord du quai ouest (Have got ; GD-20, point 3 : le mot « passerelle » est
+ * désormais celui des ponts, la trace devient une échelle) : ses deux montants, ses cinq barreaux.
+ */
+function foldedLadder(b: FacetBuilder, g: Vec3): void {
+  const y = g.y + FERRY_QUAY.top + 0.06;
+  for (const side of [-1, 1]) b.beam({ x: g.x + 1.0, y, z: g.z + side * 0.32 }, { x: g.x - 1.0, y, z: g.z + side * 0.32 }, 0.08, C.darkWood);
+  for (let k = 0; k < 5; k++) b.box({ x: g.x - 0.8 + k * 0.4, y: y - 0.03, z: g.z }, [0.07, 0.06, 0.64], C.wood);
 }
 
 /** Le bac amarré au quai nord (Présent simple) : sa coque, son liston, son pont et sa cabine, sur l'eau. */
@@ -443,7 +444,7 @@ export const FERRY: PlaceArt = {
   },
   traces: {
     'to-be': { at: FERRY_TRACE_SPOTS['to-be'], lift: 0.5, draw: (b, c) => luggageCart(b, { x: c.x + FERRY_TRACE_SPOTS['to-be'].x, y: c.y, z: c.z + FERRY_TRACE_SPOTS['to-be'].z }) },
-    'have-got': { at: FERRY_TRACE_SPOTS['have-got'], lift: 0.4, draw: (b, c) => gangway(b, { x: c.x + FERRY_TRACE_SPOTS['have-got'].x, y: c.y, z: c.z + FERRY_TRACE_SPOTS['have-got'].z }) },
+    'have-got': { at: FERRY_TRACE_SPOTS['have-got'], lift: 0.4, draw: (b, c) => foldedLadder(b, { x: c.x + FERRY_TRACE_SPOTS['have-got'].x, y: c.y, z: c.z + FERRY_TRACE_SPOTS['have-got'].z }) },
     'present-simple': { at: FERRY_TRACE_SPOTS['present-simple'], lift: 0.6, draw: (b, c) => ferryBoat(b, { x: c.x + FERRY_TRACE_SPOTS['present-simple'].x, y: c.y - 0.45, z: c.z + FERRY_TRACE_SPOTS['present-simple'].z }) },
     story: { at: FERRY_TRACE_SPOTS.story, lift: 0.6, draw: (b, c) => bench(b, { x: c.x + FERRY_TRACE_SPOTS.story.x, y: c.y + FERRY_QUAY.top, z: c.z + FERRY_TRACE_SPOTS.story.z }) },
   },

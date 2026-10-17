@@ -103,6 +103,38 @@ export const UPLAND = { center: fromPlan([1215, 330]), radius: 130 / PLAN_SCALE,
 export const RIVER = { line: poly([[1222, 418], [1258, 550], [1242, 730], [1292, 842], [1400, 912], [1490, 960]]), halfWidth: 2.4 };
 
 /**
+ * Les bras de mer (GD-20, point 3, « vraies terres, vrais ponts », choix du mainteneur du 17 octobre 2026) : quatre
+ * détroits creusés dans la terre, sur le même plan d'eau, qui coupent l'anneau en cinq terres ; chacun n'a qu'un passage,
+ * le pont de sa terre, sur la liaison `bridge` du réseau (du côté de la terre d'avant, puis de la terre qu'il ouvre).
+ * Coordonnées de l'artiste technique 3D (en pixels du plan) : une ligne et sa demi-largeur (en unités), 11 à 12,5 unités
+ * d'eau de rive à rive, un cœur d'eau profonde. Le Couchant, à l'ouest de l'Escale (le rectangle x 808 à 843, y 845 à 980,
+ * écrit en ligne : ses bouts arrondis sont dans le lagon et dans la mer) ; le Large, sur le chemin des Balises ; le
+ * Levant, du lagon jusqu'à la rivière, que `RIVER_MOUTH` élargit jusqu'à la mer ; les Crêtes, au nord, où le chemin de
+ * crête entre les Filets et les Écluses a disparu.
+ */
+export const STRAITS = {
+  couchant: { line: poly([[825.5, 845], [825.5, 980]]), halfWidth: 6.25, bridge: ['sud-1', 'sud-2'] },
+  large: { line: poly([[608, 680], [605, 700], [560, 995], [556, 1015]]), halfWidth: 6, bridge: ['lar-1', 'lar-2'] },
+  levant: { line: poly([[1160, 682], [1172, 690], [1245, 742]]), halfWidth: 5.5, bridge: ['est-1', 'est-2'] },
+  cretes: { line: poly([[1122, 468], [1120, 450], [1133, 302], [1135, 285]]), halfWidth: 5.5, bridge: ['est-4', 'nord-1'] },
+} as const satisfies Record<string, { line: readonly Vec2[]; halfWidth: number; bridge: readonly [string, string] }>;
+
+/** Un bras de mer, par sa terre. */
+export type StraitId = keyof typeof STRAITS;
+
+/**
+ * L'embouchure de la rivière (même décision) : élargie, du détroit du Levant jusqu'à la mer, pour qu'aucun gué ne reste
+ * entre le Levant et la Pointe du Phare ; plus haut, la rivière garde sa largeur de ruisseau, dans le Levant.
+ */
+export const RIVER_MOUTH = { line: poly([[1245, 742], [1292, 842], [1400, 912], [1495, 962]]), halfWidth: 4.5 } as const;
+
+/**
+ * La culée d'un pont sur sa rive : là où l'on est à moins de tant d'unités de l'eau de son bras de mer, le chemin laisse
+ * la place à la pierre du pont (./paths.ts, `bridgeCut` ; ./bridges.ts).
+ */
+export const BRIDGE_ABUT = 3.2;
+
+/**
  * La grève plate des Marais salants (GD-20, point 8, lot L5), sur la côte est, face au large : le sol y est aplani à
  * cette hauteur dans ce rayon (en unités), puis rejoint le sien sur `fade` unités ; seulement sur la terre (la côte ne
  * bouge pas).
@@ -654,8 +686,8 @@ export const PATH_NODES: readonly PathNode[] = [
   // Le carrefour des Filets (GD-20, point 3, lot 1 « Relier » ; tracé accepté par le directeur artistique) : reculé au sud
   // du lieu, hors de sa brume, pour que sa porte soit au bout d'un embranchement, jamais sur un chemin de passage.
   node('fil-0', [1064, 293]),
-  node('crete', [1128, 300]),
-  // Le carrefour des Écluses (même lot) : reculé à l'ouest du lieu, hors de sa brume ; le chemin des Marais salants y part.
+  // Le carrefour des Écluses (même lot) : reculé à l'ouest du lieu ; le chemin des Marais salants y part. Le chemin de
+  // crête qui le reliait aux Filets a disparu avec le détroit des Crêtes (GD-20, point 3, « vraies terres »).
   node('ecl-0', [1160, 414]),
   // Vers les Marais salants (lot L5) : des Écluses, une passerelle sur la rivière juste sous le bassin d'aval, puis la
   // terre de l'est, le long de la côte, jusqu'à la grève ; le chemin contourne les bassins par l'ouest et arrive au sud,
@@ -688,9 +720,10 @@ export const PATH_NODES: readonly PathNode[] = [
   node('vig-2', [896, 281]),
   node('vig-3', [842, 232]),
   node('vig-4', [826, 318]),
-  // Le rivage sud (lot L8) : de la place de l'Escale vers l'ouest, le long du lagon.
+  // Le rivage sud (lot L8) : de la place de l'Escale vers l'ouest, le long du lagon ; le pont du Couchant entre `sud-1`
+  // et `sud-2`, reculé à l'ouest du détroit (GD-20, point 3, « vraies terres », artiste technique 3D).
   node('sud-1', [858, 900]),
-  node('sud-2', [805, 905]),
+  node('sud-2', [790, 906]),
   node('sud-3', [725, 905]),
   // Vers la Mangrove (lot L8a) : du rivage sud, le chemin remonte vers la rive et arrive au sud-est du lieu.
   node('man-1', [700, 860]),
@@ -727,8 +760,6 @@ export const PATH_EDGES: readonly (readonly [string, string])[] = [
   ['nord-1', 'nord-2'],
   ['nord-2', 'fil-0'],
   ['fil-0', 'filets'],
-  ['fil-0', 'crete'],
-  ['crete', 'ecl-0'],
   ['ecl-0', 'sel-1'],
   ['sel-1', 'sel-2'],
   ['sel-2', 'sel-3'],

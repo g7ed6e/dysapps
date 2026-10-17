@@ -12,7 +12,9 @@ import { sceneSpot } from './questionScene';
 import { SEA_TEXTURE, seaPixels, shallowness } from './sea';
 import { RING, RING_FLOOR, RING_LIFT, TILE_SIZE, buildHeightField, heightAt, heightOnFar, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
 import { createTileStore } from './tiles';
-import { VEIL_HEIGHT, VEIL_PROFILE, veilFacets } from './veil';
+import { VEIL_HEIGHT, VEIL_LAYERS, veilFacets, veilShare } from './veil';
+import { bridgeSite } from './bridges';
+import { LANDS, LINKED_LANDS, landById } from './lands';
 import { WALK_CADENCE, WALK_SPEED, skipWalk, startWalk, walkAt } from './walk';
 
 const field = buildHeightField();
@@ -203,9 +205,10 @@ describe('Les chemins aimantés', () => {
     expect(route[0]).toEqual(pathNode('phare').at);
     expect(route[route.length - 1]).toEqual(pathNode('ecluses').at);
     expect(route.map((p) => PATH_NODES.find((n) => n.at === p)?.id)).toEqual(['phare', 'digue', 'ponton', 'quais', 'est-1', 'est-2', 'est-3', 'est-4', 'ecl-0', 'ecluses']);
-    // Des Filets aux Écluses : par la crête, plus court que par le lagon.
-    const parLaCrete = findRoute(atNode('filets'), atNode('ecluses'));
-    expect(parLaCrete.map((p) => PATH_NODES.find((n) => n.at === p)?.id)).toEqual(['filets', 'fil-0', 'crete', 'ecl-0', 'ecluses']);
+    // Des Filets aux Écluses : la crête n'a plus de chemin (GD-20, point 3, « vraies terres ») ; on passe le pont des Crêtes.
+    const parLePont = findRoute(atNode('filets'), atNode('ecluses'));
+    expect(parLePont.map((p) => PATH_NODES.find((n) => n.at === p)?.id)).toContain('nord-1');
+    expect(parLePont.map((p) => PATH_NODES.find((n) => n.at === p)?.id)).toContain('est-4');
   });
 
   it('d’un point au milieu d’une liaison à un autre sur la même liaison : tout droit', () => {
@@ -369,34 +372,30 @@ describe('La caméra qui suit Kéo', () => {
   });
 });
 
-describe('La brume sur les lieux', () => {
-  it('un banc bas et large : le repère du lieu le dépasse (la flèche de la grue, la tour du Phare)', () => {
+describe('La brume des terres fermées', () => {
+  it('basse, sur la terre fermée seule : ses lieux dessous, jamais ceux d’une terre ouverte', () => {
     expect(veilFacets([]).triangles).toBe(0);
-    for (const id of ['quais', 'phare'] as const) {
-      const v = veilFacets([id]);
-      const ground = standingHeight(heightAt(placeById(id).center));
-      let top = -Infinity;
-      let reach = 0;
+    for (const land of LINKED_LANDS) {
+      for (const id of landById(land).places) expect(veilShare(land, placeById(id).center), id).toBeGreaterThan(0.5);
+      for (const other of LANDS) if (other.id !== land) for (const id of other.places) expect(veilShare(land, placeById(id).center), id).toBe(0);
+      const v = veilFacets([land]);
       for (let k = 0; k < v.positions.length; k += 3) {
-        top = Math.max(top, v.positions[k + 1]);
-        reach = Math.max(reach, Math.hypot(v.positions[k] - placeById(id).center.x, v.positions[k + 2] - placeById(id).center.z));
+        const ground = Math.max(0.05, standingHeight(heightAt({ x: v.positions[k], z: v.positions[k + 2] })));
+        expect(v.positions[k + 1] - ground).toBeLessThanOrEqual(VEIL_HEIGHT + 1e-4);
       }
-      expect(top - ground).toBeLessThan(VEIL_HEIGHT + 2);
-      expect(top - ground).toBeLessThan(modelOfPlace(id).top - 2);
-      // Bien plus large que haut.
-      expect(reach).toBeGreaterThan(2.5 * VEIL_HEIGHT);
+      // Le repère de chaque lieu la dépasse.
+      for (const id of landById(land).places) expect(modelOfPlace(id).top, id).toBeGreaterThan(VEIL_HEIGHT + 0.5);
     }
-    expect(veilFacets(['quais', 'filets', 'ecluses']).triangles).toBeLessThan(1200);
+    expect(veilFacets(LINKED_LANDS).triangles).toBeLessThan(6000);
   });
 
-  it('dense en bas, effacée vers le haut et sur ses bords, jamais opaque : on devine le lieu dessous', () => {
-    expect(VEIL_PROFILE[0].a).toBe(0);
-    const densest = Math.max(...VEIL_PROFILE.map((p) => p.a));
-    expect(densest).toBeLessThanOrEqual(0.75);
-    expect(VEIL_PROFILE[VEIL_PROFILE.length - 1].a).toBeLessThan(densest);
-    const v = veilFacets(['filets']);
+  it('jamais opaque : les deux voiles réunis laissent voir chaque lieu ; nette sur le bras de mer', () => {
+    expect(VEIL_LAYERS.reduce((s, l) => s + l.alpha, 0)).toBeLessThanOrEqual(0.62);
+    const v = veilFacets(['cretes']);
     expect(v.colors.length).toBe((v.positions.length / 3) * 4);
-    for (let k = 3; k < v.colors.length; k += 4) expect(v.colors[k]).toBeLessThanOrEqual(densest + 1e-6);
+    for (let k = 3; k < v.colors.length; k += 4) expect(v.colors[k]).toBeLessThanOrEqual(Math.max(...VEIL_LAYERS.map((l) => l.alpha)) + 1e-6);
+    // Au milieu de chaque bras de mer, aucune brume : la coupure se lit.
+    for (const land of LINKED_LANDS) expect(veilShare(land, bridgeSite(land).mid)).toBe(0);
   });
 });
 

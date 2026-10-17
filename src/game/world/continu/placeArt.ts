@@ -82,11 +82,6 @@ export interface PlaceArt {
   traces: Readonly<Record<string, TraceArt>>;
   /** Où Kéo se tient au retour, depuis le centre du lieu. */
   exit: Vec2;
-  /**
-   * La portée de la brume du lieu, depuis son centre, quand le lieu s'étend loin de son corps (les mâts des Balises, en
-   * mer, lot L9a) : le banc couvre le corps, pas tout le large.
-   */
-  veilReach?: number;
   /** Le lieu s'efface le temps de sa scénette (la station des Balises serait entre la caméra et la cale, lot L9a). */
   hideInScenette?: true;
 }

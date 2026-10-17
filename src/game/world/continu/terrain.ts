@@ -5,14 +5,39 @@
 // la brume cache ce qui est plus loin. Code pur : la vue (three/archipeo/) ne fait que donner ces tableaux à Three.js.
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { BEACONS_FLAT, CLIFF, COAST, COLORS_6E, COMMONS_FLAT, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, LOOKOUT_RAMP, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PASS, PATH_EDGES, PATH_NODES, RIVER, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, TERRAIN, UPLAND } from './plan6e';
+import { BEACONS_FLAT, CLIFF, COAST, COLORS_6E, COMMONS_FLAT, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, LOOKOUT_RAMP, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PASS, PATH_EDGES, PATH_NODES, RIVER, RIVER_MOUTH, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, STRAITS, TERRAIN, UPLAND, type StraitId } from './plan6e';
 
-/** La distance signée à la terre ferme : positive sur la terre, négative dans l'eau (mer, lagon, passe, bassin, rivière). */
+/** Les bras de mer, dans l'ordre de `STRAITS`. */
+const STRAIT_LIST = Object.values(STRAITS);
+
+/**
+ * La distance à l'eau d'un bras de mer (GD-20, point 3, « vraies terres ») : positive sur la terre, négative dans son
+ * eau ; d'un seul bras (`id`), ou du plus proche.
+ */
+export function straitClearance(p: Vec2, id?: StraitId): number {
+  if (id) return distanceToPolyline(p, STRAITS[id].line) - STRAITS[id].halfWidth;
+  let d = Infinity;
+  for (const s of STRAIT_LIST) d = Math.min(d, distanceToPolyline(p, s.line) - s.halfWidth);
+  return d;
+}
+
+/**
+ * La distance signée à la terre ferme : positive sur la terre, négative dans l'eau (mer, lagon, passe, bassin, rivière,
+ * son embouchure élargie, les bras de mer).
+ */
 export function landDistance(p: Vec2): number {
   const ring = Math.min(signedDistance(p, COAST), -signedDistance(p, LAGOON), -signedDistance(p, PASS), -signedDistance(p, DOCK));
   const land = Math.max(ring, signedDistance(p, ISLET));
-  return Math.min(land, distanceToPolyline(p, RIVER.line) - RIVER.halfWidth);
+  const river = Math.min(distanceToPolyline(p, RIVER.line) - RIVER.halfWidth, distanceToPolyline(p, RIVER_MOUTH.line) - RIVER_MOUTH.halfWidth);
+  return Math.min(land, river, straitClearance(p));
 }
+
+/**
+ * Les rives rocheuses des bras de mer (artiste technique 3D) : une levée de roche de `height` au-dessus de l'eau, qui
+ * monte raide de la rive en `rise` unités, tient jusqu'à `hold`, puis rejoint le sol d'avant à `fade` ; sans plage, la
+ * roche jusqu'à `rock` unités de l'eau. Ni banc, ni gué, ni pierre de passage.
+ */
+export const STRAIT_BANK = { height: 1.6, rise: 1, hold: 3, fade: 8, rock: 2.5 } as const;
 
 /** La largeur de la plage, en unités (un peu moins de quatre pas). */
 const BEACH = 3;
@@ -73,6 +98,10 @@ function groundHeight(p: Vec2): number {
   h += 0.35 * bumps * smoothstep(BEACH, BEACH + 3, d);
   // … et de longues ondulations, qu'on monte et qu'on descend en marchant.
   h += 1.1 * Math.sin(p.x * 0.07 + 1.3) * Math.cos(p.z * 0.09 - 0.4) * smoothstep(BEACH, BEACH + 14, d);
+  // Les rives rocheuses des bras de mer : la levée, jamais plus bas que le sol d'avant ; avant les replats, qui ne
+  // bougent pas (aucun bras de mer n'entre dans un replat ni dans son fondu).
+  const s = straitClearance(p);
+  if (s < STRAIT_BANK.fade) h = Math.max(h, STRAIT_BANK.height * smoothstep(0, STRAIT_BANK.rise, s) * (1 - smoothstep(STRAIT_BANK.hold, STRAIT_BANK.fade, s)));
   // La falaise du nord : un plateau au-dessus, aux bords raides.
   h += CLIFF_HEIGHT * smoothstep(0, CLIFF_EDGE, signedDistance(p, CLIFF));
   // Le haut pays de l'est : une colline ronde, que la rivière entaille.
@@ -308,6 +337,8 @@ const GREVE_COLORS = [
 
 /** La couleur d'un sol presque plat en (x, z), à la hauteur `h` : le sable près de l'eau, l'herbe ailleurs. */
 function flatColor(x: number, z: number, h: number, vary: number): number {
+  // Les rives des bras de mer : de la roche, jamais de sable.
+  if (straitClearance({ x, z }) < STRAIT_BANK.rock) return COLORS_6E.rock;
   if (h < 0.12) return COLORS_6E.wetSand;
   const d = landDistance({ x, z });
   if (d < 1.3) return COLORS_6E.sand;

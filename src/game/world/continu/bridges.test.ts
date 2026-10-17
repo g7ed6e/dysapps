@@ -1,0 +1,128 @@
+// Les bras de mer et les ponts des terres (GD-20, point 3, « vraies terres, vrais ponts ») : l'eau profonde entre les
+// terres, aucun chemin dessus, Kéo arrêté sur la culée d'un pont tombé et porté par le tablier d'un pont rebâti, le
+// dessin des deux états et sur la Carte. Sans Three.js.
+import { describe, expect, it } from 'vitest';
+import { BRIDGE, BRIDGE_TOUCH, KEO_STOP, allBridges, bridgeFacets, bridgeFloor, bridgeMapMark, bridgeSite, clampToOpen } from './bridges';
+import { linearRgb } from './geometry';
+import { LINKED_LANDS, NODE_LANDS, bridgeEdge, landById } from './lands';
+import { atNode, pathNode, pathRibbons, snapToNetwork, type NetworkPoint } from './paths';
+import { BEACONS_FLAT, BRIDGE_ABUT, COMMONS_FLAT, ENGINE_FLAT, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PATH_EDGES, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, placeById } from './plan6e';
+import { STRAIT_BANK, buildHeightField, heightAt, heightOnMesh, landDistance, straitClearance } from './terrain';
+import { shallowness } from './sea';
+
+const field = buildHeightField();
+const ground = (x: number, z: number) => heightOnMesh(field, x, z);
+
+describe('Les bras de mer', () => {
+  it('de l’eau profonde au milieu de chaque passage, des rives rocheuses au-dessus de l’eau', () => {
+    for (const s of allBridges()) {
+      expect(landDistance(s.mid), s.land).toBeLessThan(0);
+      expect(heightAt(s.mid), s.land).toBeLessThan(-0.6);
+      // L'eau profonde : aucun haut-fond où passer à gué.
+      expect(shallowness(s.mid), s.land).toBe(0);
+      // La rive, juste hors de l'eau : la levée de roche.
+      const near = { x: s.near.x + s.dir.x * (s.water[0] - 1.5), z: s.near.z + s.dir.z * (s.water[0] - 1.5) };
+      expect(heightAt(near), s.land).toBeGreaterThan(STRAIT_BANK.height * 0.8);
+    }
+  });
+
+  it('aucun chemin sur l’eau, sauf la digue, les pontons, les planches de la rivière et les quatre ponts', () => {
+    const wet: string[] = [];
+    PATH_EDGES.forEach(([a, b]) => {
+      const A = pathNode(a).at;
+      const B = pathNode(b).at;
+      for (let k = 0; k <= 40; k++)
+        if (landDistance({ x: A.x + ((B.x - A.x) * k) / 40, z: A.z + ((B.z - A.z) * k) / 40 }) < 0) {
+          wet.push(`${a}–${b}`);
+          break;
+        }
+    });
+    const bridges = LINKED_LANDS.map((l) => PATH_EDGES[bridgeEdge(l)].join('–'));
+    expect(wet.filter((e) => !bridges.includes(e)).sort()).toEqual(['digue–ponton', 'lar-4–lar-5', 'lar-5–ferry', 'phare–digue', 'phare–port-quai', 'ponton–quais', 'sel-1–sel-2', 'tur-1–tur-2'].sort());
+    // Le ruban des chemins s'arrête au début des culées : aucun de ses sommets au-dessus d'un bras de mer.
+    const f = pathRibbons(ground);
+    for (let i = 0; i < f.positions.length; i += 3) expect(straitClearance({ x: f.positions[i], z: f.positions[i + 2] })).toBeGreaterThan(BRIDGE_ABUT - 1);
+  });
+
+  it('les replats des lieux ne bougent pas : aucun bras de mer n’entre dans un replat ni dans son fondu', () => {
+    const flats = [ENGINE_FLAT, MANGROVE_FLAT, RUINS_FLAT, OBSERVATORY_FLAT, COMMONS_FLAT, BEACONS_FLAT, SALT_FLAT, SHIPYARD_FLAT, ...NORTH_FLATS];
+    // La rive, elle, est levée avant les replats (terrain.ts) : leur plat la recouvre.
+    for (const f of flats) expect(straitClearance(f.center), `${f.center.x}, ${f.center.z}`).toBeGreaterThan(f.radius + f.fade);
+  });
+});
+
+describe('Les ponts', () => {
+  it('chaque pont : la culée de ce côté, l’eau, la culée d’en face ; Kéo s’arrête sur la culée, hors de l’eau', () => {
+    for (const s of allBridges()) {
+      expect(s.abut[0]).toBeLessThan(s.water[0]);
+      expect(s.water[0]).toBeLessThan(s.water[1]);
+      expect(s.water[1]).toBeLessThan(s.abut[1]);
+      expect(straitClearance(s.stop.at, s.land)).toBeGreaterThan(0);
+      expect(straitClearance(s.stop.at, s.land)).toBeLessThan(KEO_STOP + 0.3);
+      // Le bout ouvert du pont est du côté de la terre d'avant.
+      expect(NODE_LANDS.get(PATH_EDGES[s.edge][s.nearEnd])).toBe(landById(s.land).after);
+    }
+  });
+
+  it('bridgeFloor : la culée porte toujours Kéo ; le tablier, seulement rebâti ; ailleurs, rien', () => {
+    for (const s of allBridges()) {
+      const at = (d: number) => ({ x: s.near.x + s.dir.x * d, z: s.near.z + s.dir.z * d });
+      const mid = at((s.water[0] + s.water[1]) / 2);
+      expect(bridgeFloor(mid.x, mid.z, [s.land])).toBeNull();
+      expect(bridgeFloor(mid.x, mid.z, [])).toBe(BRIDGE.deck);
+      const stop = s.stop.at;
+      const floor = bridgeFloor(stop.x, stop.z, [s.land]);
+      expect(floor).not.toBeNull();
+      expect(floor!).toBeGreaterThan(heightAt(stop) - 0.3);
+      expect(floor!).toBeLessThanOrEqual(BRIDGE.deck);
+    }
+    expect(bridgeFloor(placeById('phare').center.x, placeById('phare').center.z, LINKED_LANDS)).toBeNull();
+  });
+
+  it('clampToOpen : Kéo s’arrête sur la culée du pont à rebâtir d’abord, jamais dans une terre fermée', () => {
+    const door = (id: Parameters<typeof placeById>[0]) => atNode(placeById(id).door);
+    expect(clampToOpen(door('ruins'), ['couchant'])).toBe(bridgeSite('couchant').stop);
+    // Le Large derrière le Couchant fermé : le pont du Couchant d'abord.
+    expect(clampToOpen(door('ferry'), ['couchant', 'large'])).toBe(bridgeSite('couchant').stop);
+    expect(clampToOpen(door('ferry'), ['large'])).toBe(bridgeSite('large').stop);
+    // Rien de fermé, ou une terre ouverte : le point lui-même.
+    const quais = door('quais');
+    expect(clampToOpen(quais, LINKED_LANDS)).toBe(quais);
+    const ruins = door('ruins');
+    expect(clampToOpen(ruins, [])).toBe(ruins);
+    expect(clampToOpen(ruins, ['levant', 'cretes'])).toBe(ruins);
+    // Sur la liaison du pont : avant la culée, le point ; au-delà, la culée.
+    for (const s of allBridges()) {
+      const on = (t: number): NetworkPoint => snapToNetwork({ x: 0, z: 0 }) && { edge: s.edge, t, at: s.stop.at };
+      const before = on(s.nearEnd === 0 ? s.stop.t / 2 : (1 + s.stop.t) / 2);
+      const beyond = on(s.nearEnd === 0 ? (1 + s.stop.t) / 2 : s.stop.t / 2);
+      expect(clampToOpen(before, [s.land])).toBe(before);
+      expect(clampToOpen(beyond, [s.land])).toBe(s.stop);
+      expect(clampToOpen(beyond, [])).toBe(beyond);
+    }
+  });
+
+  it('tombé : culées, départ d’arche brisé, moignons ; rebâti : posé d’un coup, du bois neuf, dans un budget serré', () => {
+    const wood = linearRgb(0xc6955f);
+    const hasWood = (f: { colors: ArrayLike<number> }) => {
+      for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - wood[k]) < 1e-6)) return true;
+      return false;
+    };
+    for (const land of LINKED_LANDS) {
+      const before = bridgeFacets(land, false);
+      const after = bridgeFacets(land, true);
+      expect(before.triangles).toBeGreaterThan(0);
+      expect(after.triangles).toBeGreaterThan(before.triangles);
+      expect(after.triangles).toBeLessThan(1300);
+      expect(hasWood(before)).toBe(false);
+      expect(hasWood(after)).toBe(true);
+      // Le tablier, au-dessus de la rive rocheuse : on passe dessous en barque.
+      expect(BRIDGE.deck).toBeGreaterThan(STRAIT_BANK.height);
+    }
+  });
+
+  it('sur la Carte, chaque pont en trait double ; sa cible de toucher fait 48 px au moins', () => {
+    for (const land of LINKED_LANDS) expect(bridgeMapMark(land).triangles).toBe(8);
+    expect(2 * BRIDGE_TOUCH.pixels).toBeGreaterThanOrEqual(48);
+  });
+});
