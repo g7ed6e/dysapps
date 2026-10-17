@@ -57,8 +57,8 @@ describe('La place de la scénette à l’écran', () => {
     expect(scenetteOf('phare')).toEqual({ role: 'La gardienne du phare', greeting: null, placement: 'rangee' });
     expect(scenetteOf('quais')).toEqual({ role: 'Le docker', greeting: null, placement: 'rangee' });
     expect(scenetteOf('filets')).toEqual({ role: 'La pêcheuse', greeting: null, placement: 'rangee' });
-    expect(scenetteOf('ecluses')).toEqual({ role: 'L’éclusier', greeting: null, placement: 'rangee' });
-    expect(scenetteOf('saltworks')).toEqual({ role: 'La saunière', greeting: null, placement: 'rangee' });
+    expect(scenetteOf('ecluses')).toEqual({ role: 'L’éclusier', greeting: 'L’éclusier ouvre et ferme l’écluse pour les bateaux.', placement: 'rangee' });
+    expect(scenetteOf('saltworks')).toEqual({ role: 'La saunière', greeting: 'La saunière récolte le sel de la mer.', placement: 'rangee' });
     expect(scenetteOf('engine')).toEqual({ role: 'La machiniste', greeting: null, placement: 'rangee' });
     expect(scenetteOf('shipyard')).toEqual({ role: 'Le charpentier', greeting: null, placement: 'rangee' });
     expect(scenetteOf('observatory')).toEqual({ role: 'La photographe', greeting: null, placement: 'rangee' });

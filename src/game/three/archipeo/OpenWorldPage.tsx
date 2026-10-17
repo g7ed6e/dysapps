@@ -58,6 +58,13 @@ declare global {
 }
 
 /** Le titre d'une mission d'une île, pour la dire. */
+/**
+ * Les lieux dont la voix a déjà dit le nom depuis le lancement de l'application : à pied, elle le dit à la première
+ * arrivée seulement (choix du mainteneur, 17 octobre 2026, « une fois par partie » ; rien en sauvegarde). Depuis la liste
+ * des lieux ou la marque, elle le dit déjà au toucher : le lieu compte alors comme nommé.
+ */
+const named = new Set<PlaceId | 'port'>();
+
 const missionTitle = (island: string, mission: string) => getBiome(island)?.exercises.find((x) => x.id === mission)?.title ?? '';
 
 export default function OpenWorldPage() {
@@ -65,6 +72,13 @@ export default function OpenWorldPage() {
   const { state, linkFromOpenWorld } = useBlocland();
   const textes = useTextes();
   const { settings, speak } = useSettings();
+  // La voix de l'arrivée, lue par la scène faite une fois (`onArrive`) : le réglage du moment.
+  const arrivalVoice = useRef((_name: string) => {});
+  useEffect(() => {
+    arrivalVoice.current = (name) => {
+      if (settings.autoRead) speak(frenchTypography(name));
+    };
+  }, [settings.autoRead, speak]);
   const reduceMotion = useMoinsDAnimations();
 
   // Les missions des quatre lieux et leur état : le modèle du monde, commun aux deux univers. `modeleDuMonde` lit la
@@ -208,6 +222,10 @@ export default function OpenWorldPage() {
       onArrive: (placeId) => {
         setWalking(false);
         if (!placeId) return;
+        if (!named.has(placeId)) {
+          named.add(placeId);
+          arrivalVoice.current(placeById(placeId).name);
+        }
         setPanel(null);
         setLieu({ place: placeId, focus: null });
       },
@@ -398,6 +416,7 @@ export default function OpenWorldPage() {
     (id: PlaceId | 'port') => {
       const name = id === 'port' ? textes.depart?.nom : placeById(id).name;
       if (settings.autoRead && name) speak(frenchTypography(name));
+      named.add(id);
       pickOnMap(id);
     },
     [pickOnMap, settings.autoRead, speak, textes.depart],
@@ -558,6 +577,7 @@ export default function OpenWorldPage() {
   const goNext = () => {
     if (!next) return;
     const title = missionTitle(next.place.island, next.mission);
+    named.add(next.place.id);
     if (settings.autoRead) speak(frenchTypography(`${next.place.name}. ${title}`));
     world.current?.goTo(next.place.id, true);
   };
