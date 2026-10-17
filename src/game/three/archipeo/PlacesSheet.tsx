@@ -4,13 +4,16 @@
 // ligne porte l'icône du lieu (celle de la pastille réduite de la Carte), son nom entier, l'icône et le mot de l'état de
 // sa construction ; la ligne de la prochaine mission seule est mise en avant, « Prochaine mission » écrit. Toucher une
 // ligne y mène d'un coup, comme une pastille (`pickPlace`). La croix, Échap (la liste d'abord, la Carte ensuite) ou un
-// toucher sur la Carte à côté ferment la liste sans rien choisir ; le focus revient sur « Lieux ».
+// toucher sur la Carte à côté ferment la liste sans rien choisir ; le focus revient sur « Lieux ». Le lecteur d'écran
+// lit aussi ce que les habitants ont reçu, posé dans le lieu (« …, avec le potager et la lanterne », lot L2 de GD-20,
+// point 4 : relecture du lot L1), rien à l'écran : la ligne garde sa place.
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon, type AnyIconName } from '../../../components/Icon';
 import { getBiome } from '../../biomes';
 import { Sheet } from '../../Sheet';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
+import { amenagementById } from '../../world/continu/amenagements';
 import { PLACES, type OpenPlace, type PlaceId } from '../../world/continu/plan6e';
 import { mapStateWord } from './constructionParts';
 
@@ -33,6 +36,8 @@ export interface PlacesRow {
   /** L'état de la construction, en icône et en mot ; rien pour l'Escale (rien ne s'y rebâtit). */
   state: { icon: AnyIconName; word: string } | null;
   next: boolean;
+  /** Ce qui est posé chez l'habitant (les noms des aménagements, avec leur article), lu par le lecteur d'écran. */
+  posed?: readonly string[];
 }
 
 /**
@@ -50,6 +55,7 @@ export function placesRows(
   words: Readonly<Record<IslandStateId, string>>,
   next: PlaceId | null,
   portName?: string,
+  posed?: Partial<Record<PlaceId, readonly string[]>>,
 ): PlacesRow[] {
   const port: PlacesRow[] = portName ? [{ id: 'port', name: portName, icon: 'ancre', state: null, next: false }] : [];
   return [
@@ -60,12 +66,17 @@ export function placesRows(
       icon: getBiome(p.island)?.icon ?? 'map',
       state: { icon: islandStateIcon(states[p.id] ?? 'a-explorer'), word: placeStateWord(p, states[p.id], words) },
       next: p.id === next,
+      posed: (posed?.[p.id] ?? []).flatMap((id) => amenagementById(id)?.name ?? []),
     })),
   ];
 }
 
-/** Ce que dit une ligne : « Y aller : [Nom], [état] », et « prochaine mission » sur la ligne mise en avant. */
-const rowLabel = (row: PlacesRow) => `Y aller : ${row.name}${row.state ? `, ${row.state.word.toLowerCase()}` : ''}${row.next ? `, ${NEXT_MISSION_WORD.toLowerCase()}` : ''}`;
+/** Ce que dit une ligne : « Y aller : [Nom], [état] », ce qui y est posé (« avec le potager »), et « prochaine mission » sur la ligne mise en avant. */
+const rowLabel = (row: PlacesRow) =>
+  `Y aller : ${row.name}${row.state ? `, ${row.state.word.toLowerCase()}` : ''}${row.posed?.length ? `, avec ${listWords(row.posed)}` : ''}${row.next ? `, ${NEXT_MISSION_WORD.toLowerCase()}` : ''}`;
+
+/** « le potager », « le potager et la lanterne », « a, b et c ». */
+const listWords = (words: readonly string[]) => (words.length < 2 ? (words[0] ?? '') : `${words.slice(0, -1).join(', ')} et ${words[words.length - 1]}`);
 
 /**
  * L'état de la liste sur la Carte : ouverte ou non, le bouton « Lieux » qui reprend le focus quand elle se ferme (la Carte

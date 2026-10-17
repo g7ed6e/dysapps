@@ -11,6 +11,22 @@
 //   - consigne : Tu livres {objet} pour {nom}.
 //   - posée : {Nom} est en place.
 //
+//   ## L’entraide
+//
+//   - mission : Joue une mission {au lieu}.
+//   - donner : Donne {objet} {au lieu}.
+//   - apporter : Apporte {nom} {au lieu}.
+//   - consigne donner : Tu donnes {objet} pour {nom}.
+//   - consigne apporter : Tu apportes {nom}.
+//
+//   ## La révision
+//
+//   - entrée : Tu revois {questions}.
+//
+// Les étapes de l'entraide (lot L2) : une forme par geste, que le jeu remplit avec l'étape de la quête d'entraide du 6e
+// (src/game/world/stories.json) ; la fin d'« Apporter » reprend « posée », ce qui manque pour « Donner » reprend
+// « demande ». La révision jouée dans la scène du lieu (lot L3) : la phrase d'entrée, sans date ni échec.
+//
 // Chaque forme a ses jetons, tous exigés, aucun autre permis, jamais une accolade seule. Règles de lecture (référent dys,
 // arbitrages du directeur artistique) : trois phrases au plus, un point à la fin, jamais « ! » ni « … », l'apostrophe
 // typographique, ni « merci », ni « vite », ni « quête », ni le Rafiot. Le plafond de mots se compte sur le texte rempli,
@@ -20,14 +36,33 @@ import { lireTexte } from './texte.mjs';
 
 export const FICHIER_MONDE_OUVERT = 'monde-ouvert.md';
 
-/** Les formes : le mot du Markdown, la clé du JSON et les jetons qu'elle prend. */
-export const FORMES = [
-  ['demande', 'ask', ['objet', 'nom', 'au lieu']],
-  ['demande assemblée', 'askAssembled', ['objet', 'nom', 'blocs', 'au lieu']],
-  ['prête', 'ready', ['objet', 'au lieu']],
-  ['consigne', 'remise', ['objet', 'nom']],
-  ['posée', 'done', ['Nom']],
+/** Les sections, dans l'ordre du fichier : leur titre, et leurs formes (le mot du Markdown, la clé du JSON, ses jetons). */
+export const SECTIONS = [
+  [
+    '## Les habitants',
+    [
+      ['demande', 'ask', ['objet', 'nom', 'au lieu']],
+      ['demande assemblée', 'askAssembled', ['objet', 'nom', 'blocs', 'au lieu']],
+      ['prête', 'ready', ['objet', 'au lieu']],
+      ['consigne', 'remise', ['objet', 'nom']],
+      ['posée', 'done', ['Nom']],
+    ],
+  ],
+  [
+    '## L’entraide',
+    [
+      ['mission', 'stepMission', ['au lieu']],
+      ['donner', 'stepGive', ['objet', 'au lieu']],
+      ['apporter', 'stepBring', ['nom', 'au lieu']],
+      ['consigne donner', 'giveRemise', ['objet', 'nom']],
+      ['consigne apporter', 'bringRemise', ['nom']],
+    ],
+  ],
+  ['## La révision', [['entrée', 'revisionEntry', ['questions']]]],
 ];
+
+/** Toutes les formes, section après section : le mot du Markdown, la clé du JSON et les jetons qu'elle prend. */
+export const FORMES = SECTIONS.flatMap(([, formes]) => formes);
 
 const INTERDITS = ['merci', 'vite', 'quête', 'quêtes', 'rafiot'];
 /** Les phrases d'une forme, au plus : une idée par phrase (le besoin, ce pour quoi, le geste). */
@@ -52,23 +87,25 @@ export function fautes(texte, jetons) {
   return f;
 }
 
-/** docs/contenu/monde-ouvert.md → { ask, askAssembled, ready, remise, done }. */
+/** docs/contenu/monde-ouvert.md → { ask, askAssembled, ready, remise, done, stepMission, …, revisionEntry }. */
 export function lireMondeOuvert(md, fichier) {
   const lignes = md.replace(/\r\n/g, '\n').split('\n');
-  const debut = lignes.indexOf('## Les habitants');
-  if (debut < 0) throw new Error(`${fichier} : la section « ## Les habitants » manque`);
   const sortie = {};
-  for (let i = debut + 1; i < lignes.length && !lignes[i].startsWith('## '); i++) {
-    const m = /^- ([^:]+?) : (.*)$/.exec(lignes[i]);
-    if (!m) continue;
-    const forme = FORMES.find(([mot]) => mot === m[1]);
-    if (!forme) throw new Error(`${fichier}, ligne ${i + 1} : forme « ${m[1]} » inconnue (${FORMES.map(([mot]) => mot).join(', ')})`);
-    const [, cle, jetons] = forme;
-    if (sortie[cle] !== undefined) throw new Error(`${fichier}, ligne ${i + 1} : « ${m[1]} » est écrite deux fois`);
-    const texte = lireTexte(m[2], i + 1);
-    const f = fautes(texte, jetons);
-    if (f.length) throw new Error(`${fichier}, ligne ${i + 1}, « ${m[1]} » : ${f.join(' ; ')}`);
-    sortie[cle] = texte;
+  for (const [titre, formes] of SECTIONS) {
+    const debut = lignes.indexOf(titre);
+    if (debut < 0) throw new Error(`${fichier} : la section « ${titre} » manque`);
+    for (let i = debut + 1; i < lignes.length && !lignes[i].startsWith('## '); i++) {
+      const m = /^- ([^:]+?) : (.*)$/.exec(lignes[i]);
+      if (!m) continue;
+      const forme = formes.find(([mot]) => mot === m[1]);
+      if (!forme) throw new Error(`${fichier}, ligne ${i + 1} : forme « ${m[1]} » inconnue dans « ${titre.slice(3)} » (${formes.map(([mot]) => mot).join(', ')})`);
+      const [, cle, jetons] = forme;
+      if (sortie[cle] !== undefined) throw new Error(`${fichier}, ligne ${i + 1} : « ${m[1]} » est écrite deux fois`);
+      const texte = lireTexte(m[2], i + 1);
+      const f = fautes(texte, jetons);
+      if (f.length) throw new Error(`${fichier}, ligne ${i + 1}, « ${m[1]} » : ${f.join(' ; ')}`);
+      sortie[cle] = texte;
+    }
   }
   for (const [mot, cle] of FORMES) if (sortie[cle] === undefined) throw new Error(`${fichier} : la forme « ${mot} » manque`);
   return Object.fromEntries(FORMES.map(([, cle]) => [cle, sortie[cle]]));

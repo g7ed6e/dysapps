@@ -2951,6 +2951,11 @@
 .open-world-remise-fin:empty {
   margin: 0;
 }
+/* L'XP d'une entraide finie (lot L2), sous la phrase de fin : la pastille du bilan, à gauche. */
+.open-world-remise-gain {
+  justify-content: flex-start;
+  margin-top: 0.5rem;
+}
 .open-world-remise-objet {
   display: inline-flex;
   vertical-align: middle;

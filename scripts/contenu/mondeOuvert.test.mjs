@@ -10,19 +10,43 @@ const BONNES = [
   '- consigne : Tu livres {objet} pour {nom}.',
   '- posée : {Nom} est en place.',
 ];
-const md = (...l) => ['# Le monde ouvert', '', '## Les habitants', '', ...l, ''].join('\n');
+const ENTRAIDE = [
+  '- mission : Joue une mission {au lieu}.',
+  '- donner : Donne {objet} {au lieu}.',
+  '- apporter : Apporte {nom} {au lieu}.',
+  '- consigne donner : Tu donnes {objet} pour {nom}.',
+  '- consigne apporter : Tu apportes {nom}.',
+];
+const REVISION = ['- entrée : Tu revois {questions}.'];
+const md = (...l) => ['# Le monde ouvert', '', '## Les habitants', '', ...l, '', '## L’entraide', '', ...ENTRAIDE, '', '## La révision', '', ...REVISION, ''].join('\n');
 const lire = (...l) => () => lireMondeOuvert(md(...l), 'monde-ouvert.md');
 const remplacer = (avant, apres) => BONNES.map((l) => (l.startsWith(`- ${avant} :`) ? apres : l));
 
 describe('docs/contenu/monde-ouvert.md', () => {
-  it('lit les cinq formes, dans l’ordre du jeu', () => {
+  it('lit les onze formes de ses trois sections, dans l’ordre du jeu', () => {
     expect(lire(...BONNES)()).toEqual({
       ask: 'Il me faut {objet}. C’est pour {nom}. Joue une mission {au lieu}.',
       askAssembled: 'Il me faut {objet}. C’est pour {nom}. Assemble les {blocs} {au lieu}.',
       ready: 'Livre {objet} {au lieu}.',
       remise: 'Tu livres {objet} pour {nom}.',
       done: '{Nom} est en place.',
+      stepMission: 'Joue une mission {au lieu}.',
+      stepGive: 'Donne {objet} {au lieu}.',
+      stepBring: 'Apporte {nom} {au lieu}.',
+      giveRemise: 'Tu donnes {objet} pour {nom}.',
+      bringRemise: 'Tu apportes {nom}.',
+      revisionEntry: 'Tu revois {questions}.',
     });
+  });
+
+  it('une forme n’est lue que dans sa section ; une section manquante est dite', () => {
+    // « donner » écrite sous « Les habitants » : inconnue là.
+    expect(lire(...BONNES, ENTRAIDE[1])).toThrow('forme « donner » inconnue dans « Les habitants »');
+    const sansRevision = md(...BONNES).replace('## La révision', '## Autre chose');
+    expect(() => lireMondeOuvert(sansRevision, 'monde-ouvert.md')).toThrow('la section « ## La révision » manque');
+    // L'entrée de la révision ne dit jamais une date ni un échec : ses jetons seuls.
+    const daté = md(...BONNES).replace('Tu revois {questions}.', 'Tu revois {questions} du {jour}.');
+    expect(() => lireMondeOuvert(daté, 'monde-ouvert.md')).toThrow('jeton « {jour} » inconnu ici');
   });
 
   it('refuse une forme manquante, inconnue ou écrite deux fois', () => {

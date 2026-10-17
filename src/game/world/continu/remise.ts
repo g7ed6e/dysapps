@@ -1,8 +1,9 @@
 // La remise (GD-20, point 4, piste B « La remise », choisie par le mainteneur le 17 octobre 2026 ; lot L1 « Livrer ») :
 // l'élève livre les ressources d'une commande chez l'habitant, dans la scénette de son lieu, et l'aménagement se pose
 // élément par élément, un par ressource livrée. Ce fichier tient ce qui se décide sans écran : les phrases des habitants
-// (docs/contenu/monde-ouvert.md, que `npm run contenu` écrit dans ./mondeOuvert.json) et leurs jetons, le temps de la pose, et le délai qui la lance quand la voix ne dit pas sa fin. La commande elle-même (son
-// bloc, son nombre, sa livraison) reste dans la grille : la vue la traduit (three/archipeo/remiseOf.ts). Code pur.
+// (docs/contenu/monde-ouvert.md, que `npm run contenu` écrit dans ./mondeOuvert.json) et leurs jetons, le temps de la
+// pose, et le délai qui la lance quand la voix ne dit pas sa fin. La commande elle-même (son bloc, son nombre, sa
+// livraison) reste dans la grille : la vue la traduit (three/archipeo/remiseOf.ts). Code pur.
 //
 // Le déroulé (arbitrages du directeur artistique, points 5 et 6) :
 // 1. la consigne, écrite et lue (« Tu livres 3 blocs de terre pour le potager. ») ; la pose ne part jamais pendant qu'une voix
@@ -11,6 +12,10 @@
 // 3. l'état final : tout est posé, la phrase de fin (« Le potager est en place. »), qui remplace la consigne, « Continuer ».
 // Un toucher pendant 1 ou 2 mène à l'état final, jamais plus loin. Avec « Réduire les animations », tout se pose d'un
 // coup. La livraison compte à l'état final, une fois.
+//
+// Lot L2, l'entraide : la même remise pour « Donner » (les ressources descendent une à une dans une caisse,
+// ./caisse.ts ; la fin dit l'étape suivante) et « Apporter » (l'objet, d'un seul bloc, glisse de la main de Kéo à sa
+// place, plus lentement, `REMISE_TIMING.carry` ; la fin « posée », puis l'XP). L'étape compte à l'état final, une fois.
 import PHRASES from './mondeOuvert.json';
 
 /** Les phrases des habitants du monde ouvert, avec leurs jetons (docs/contenu/monde-ouvert.md). */
@@ -27,29 +32,50 @@ export interface HabitantPhrases {
   done: string;
 }
 
-export const HABITANT_PHRASES: HabitantPhrases = PHRASES;
+export const HABITANT_PHRASES: HabitantPhrases = { ask: PHRASES.ask, askAssembled: PHRASES.askAssembled, ready: PHRASES.ready, remise: PHRASES.remise, done: PHRASES.done };
 
-/** Ce que les jetons valent pour une commande. */
+/**
+ * Les phrases de l'entraide (lot L2 : les étapes « mission », « donner », « apporter » de la quête du 6e, et la consigne
+ * de leur remise) : la fin d'« Apporter » reprend `done`, ce qui manque pour « Donner » reprend `ask`.
+ */
+export interface EntraidePhrases {
+  /** L'étape « mission ». Jeton : au lieu (celui de l'habitant de l'étape). */
+  stepMission: string;
+  /** L'étape « donner ». Jetons : objet, au lieu. */
+  stepGive: string;
+  /** L'étape « apporter ». Jetons : nom (l'objet de l'entraide), au lieu. */
+  stepBring: string;
+  /** La consigne de la remise de « Donner ». Jetons : objet, nom. */
+  giveRemise: string;
+  /** La consigne de la remise d'« Apporter ». Jeton : nom. */
+  bringRemise: string;
+}
+
+export const ENTRAIDE_PHRASES: EntraidePhrases = { stepMission: PHRASES.stepMission, stepGive: PHRASES.stepGive, stepBring: PHRASES.stepBring, giveRemise: PHRASES.giveRemise, bringRemise: PHRASES.bringRemise };
+
+/** Ce que les jetons valent pour une commande, une étape d'entraide ou une révision (une forme ne lit que les siens). */
 export interface PhraseTokens {
   /** Le nombre et le nom de la ressource (« 3 blocs de terre »). */
-  objet: string;
+  objet?: string;
   /** Le même nom, sans nombre (« madriers »). */
-  blocs: string;
-  /** La petite construction, avec son article (« le potager »). */
-  nom: string;
+  blocs?: string;
+  /** La petite construction, ou l'objet de l'entraide, avec son article (« le potager », « la lanterne »). */
+  nom?: string;
   /** Le lieu, dans sa forme « à » (« au Phare »). */
-  auLieu: string;
+  auLieu?: string;
+  /** Le nombre de questions d'une révision, et le mot (« 5 questions »). */
+  questions?: string;
 }
 
 /** La première lettre en capitale (« Le potager », « L’établi »). */
 export const capitalized = (s: string): string => s.charAt(0).toLocaleUpperCase('fr') + s.slice(1);
 
 /**
- * Une phrase, ses jetons remplacés ; un jeton inconnu, ou une accolade restée seule, est une erreur (le script du
- * contenu les refuse déjà).
+ * Une phrase, ses jetons remplacés ; un jeton inconnu ou sans valeur, ou une accolade restée seule, est une erreur (le
+ * script du contenu les refuse déjà).
  */
 export function filled(template: string, tokens: PhraseTokens): string {
-  const values: Record<string, string> = { objet: tokens.objet, blocs: tokens.blocs, nom: tokens.nom, Nom: capitalized(tokens.nom), 'au lieu': tokens.auLieu };
+  const values: Record<string, string | undefined> = { objet: tokens.objet, blocs: tokens.blocs, nom: tokens.nom, Nom: tokens.nom === undefined ? undefined : capitalized(tokens.nom), 'au lieu': tokens.auLieu, questions: tokens.questions };
   const out = template.replace(/\{([^{}]+)\}/g, (_, k: string) => {
     const v = values[k];
     if (v === undefined) throw new Error(`Jeton inconnu dans une phrase d'habitant : {${k}}`);
@@ -69,6 +95,11 @@ export const REMISE_TIMING = {
   settle: 0.8,
   /** La descente d'un élément jusqu'à sa place ; le suivant part quand il est posé. */
   element: 0.4,
+  /**
+   * L'objet d'entraide apporté (lot L2) : d'un seul bloc, il part de la main de Kéo et glisse jusqu'à sa place, plus
+   * lentement qu'un élément qui descend (le chemin est plus long).
+   */
+  carry: 0.9,
 } as const;
 
 /** La hauteur d'où un élément descend, en unités du monde (celle de la pose d'une partie, à l'échelle de l'objet). */
@@ -84,17 +115,23 @@ export interface RemiseMoment {
   done: boolean;
 }
 
-/** La durée de la pose de `elements` éléments (sans le calme, rien à poser : l'état final tout de suite). */
-export const remiseDuration = (elements: number): number => (elements > 0 ? REMISE_TIMING.settle + elements * REMISE_TIMING.element : 0);
+/**
+ * La durée de la pose de `elements` éléments (sans le calme, rien à poser : l'état final tout de suite) ; `per`, le temps
+ * d'un élément (celui qui descend, ou l'objet apporté qui glisse, `REMISE_TIMING.carry`).
+ */
+export const remiseDuration = (elements: number, per: number = REMISE_TIMING.element): number => (elements > 0 ? REMISE_TIMING.settle + elements * per : 0);
 
 /** La pose à l'instant `t` : avec « Réduire les animations » (`reduce`), tout est posé d'un coup. */
-export function remiseAt(t: number, elements: number, reduce: boolean): RemiseMoment {
-  if (reduce || t >= remiseDuration(elements)) return { posed: elements, falling: null, done: true };
+export function remiseAt(t: number, elements: number, reduce: boolean, per: number = REMISE_TIMING.element): RemiseMoment {
+  if (reduce || t >= remiseDuration(elements, per)) return { posed: elements, falling: null, done: true };
   const u = t - REMISE_TIMING.settle;
   if (u < 0) return { posed: 0, falling: null, done: false };
-  const index = Math.min(elements - 1, Math.floor(u / REMISE_TIMING.element));
-  return { posed: index, falling: { index, amount: (u - index * REMISE_TIMING.element) / REMISE_TIMING.element }, done: false };
+  const index = Math.min(elements - 1, Math.floor(u / per));
+  return { posed: index, falling: { index, amount: (u - index * per) / per }, done: false };
 }
+
+/** Les trois gestes de la remise : livrer une commande, donner des ressources pour l'entraide, apporter son objet. */
+export type RemiseKind = 'livrer' | 'donner' | 'apporter';
 
 /**
  * Le délai, en millisecondes, après lequel la pose part quand la voix ne dit pas sa fin (coupée, absente, ou sa fin qui

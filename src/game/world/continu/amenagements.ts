@@ -345,7 +345,7 @@ export function remiseStage(width: number, height: number, grand = false): Scree
  * calcule à l'entrée de la remise, et de nouveau quand l'écran change de taille (une tablette qui tourne pendant la
  * pose : relecture du code du lot L1), sans refaire la scénette.
  */
-export function remiseFrame(place: PlaceId, list: readonly { a: Amenagement; box: WorldBox }[], width: number, height: number): { pose: CameraPose; shift: { x: number; y: number } } {
+export function remiseFrame(place: PlaceId, list: readonly { a: Pick<Amenagement, 'frame'>; box: WorldBox }[], width: number, height: number): { pose: CameraPose; shift: { x: number; y: number } } {
   return remisePose(place, remiseInclude(list), remiseStage(width, height), width, height, remisePosed(place));
 }
 
@@ -360,7 +360,7 @@ export interface WorldBox {
  * élargie en x de la marge de ceux qui en demandent une (`frame` : le potager du Phare, au moins sa largeur jusqu'au
  * bord du cadre) ; vide s'il n'y en a aucun.
  */
-export function remiseInclude(list: readonly { a: Amenagement; box: WorldBox }[]): WorldBox {
+export function remiseInclude(list: readonly { a: Pick<Amenagement, 'frame'>; box: WorldBox }[]): WorldBox {
   if (!list.length) return { min: [Infinity, Infinity, Infinity], max: [-Infinity, -Infinity, -Infinity] };
   const min = [0, 1, 2].map((k) => Math.min(...list.map(({ a, box }) => box.min[k] - (k === 0 ? (a.frame ?? 0) : 0))));
   const max = [0, 1, 2].map((k) => Math.max(...list.map(({ a, box }) => box.max[k] + (k === 0 ? (a.frame ?? 0) : 0))));

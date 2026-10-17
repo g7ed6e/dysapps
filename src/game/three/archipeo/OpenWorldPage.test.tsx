@@ -214,3 +214,35 @@ test('Kéo au Phare, sa commande prête, une mission du Phare encore nouvelle, l
   expect(screen.queryByRole('button', { name: /Livrer/ })).toBeNull();
   expect(w.setMark).toHaveBeenLastCalledWith('phare');
 });
+
+test('l’entraide dans la suggestion (lot L2) : « Apporte la lanterne au Phare. », « Y aller », sa pastille pleine ; chez l’habitant, « Apporter » ouvre la remise, l’étape s’écrit une fois à l’état final, puis les 50 XP', async () => {
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, world: { links: [], stories: [{ id: 'story-6e-1', step: 2 }] } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  expect(await screen.findByText('Apporte la lanterne au Phare.')).toBeInTheDocument();
+  const w = scene.world!;
+  expect(screen.getByRole('button', { name: 'Y aller : Le Phare' })).toHaveClass('primary');
+  expect(w.setMark).toHaveBeenLastCalledWith('phare');
+  expect(document.querySelector('.open-world-sign[data-lieu="phare"]')).toHaveClass('suggested');
+  expect(document.querySelector('.open-world-sign[data-lieu="phare"]')).toHaveAttribute('aria-label', 'Entraide, la lanterne, au Phare');
+  act(() => scene.options!.onArrive('phare'));
+  // Arrivé : la marque se retire (la bulle porte le geste).
+  expect(document.querySelector('.open-world-mark')).toBeNull();
+  const sheet = await screen.findByRole('dialog', { name: 'Le Phare' });
+  await userEvent.setup().click(within(within(sheet).getByRole('group')).getByRole('button', { name: /Apporter/ }));
+  expect(w.remise).toHaveBeenLastCalledWith({ place: 'phare', amenagement: 'french-6e-phonology-fixture-2', carry: true }, expect.anything());
+  expect(pay.ctx!.state.world.stories).toEqual([{ id: 'story-6e-1', step: 2 }]);
+  fireEvent.click(screen.getByRole('button', { name: 'Passer' }));
+  expect(pay.ctx!.state.world.stories).toBeUndefined();
+  expect(pay.ctx!.state.world.parts['french-6e-phonology-fixture-2']).toBeDefined();
+  expect(screen.getByLabelText('50 XP')).toBeInTheDocument();
+});
+
+test('l’étape « mission » de l’entraide porte la prochaine mission dans son lieu : sa phrase dans la bulle, la marque aux Quais', async () => {
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, world: { links: [], stories: [{ id: 'story-6e-1', step: 0 }] } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  expect(await screen.findByText('Joue une mission aux Quais.')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /^Y aller : Les Quais, / })).toHaveClass('primary');
+  expect(scene.world!.setMark).toHaveBeenLastCalledWith('quais');
+});

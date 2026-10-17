@@ -86,12 +86,15 @@ export function ReminderText({ rappel }: { rappel: Rappel }) {
   );
 }
 
-/** « Reprendre » (le bouton principal) et « Plus tard ». */
-export function ReminderButtons({ biome, rappel, onRemis }: Props) {
+/**
+ * « Reprendre » et « Plus tard ». « Reprendre » est plein, sauf quand l'appelant dit qu'il ne porte pas la suggestion
+ * (`primary={false}` : la ligne de l'habitant du monde ouvert, où la suggestion ne porte jamais les révisions).
+ */
+export function ReminderButtons({ biome, rappel, onRemis, primary = true }: Props & { primary?: boolean }) {
   const { remettre } = usePlusTard();
   return (
     <>
-      <Link to={rappel.chemin} className="button primary">
+      <Link to={rappel.chemin} className={`button${primary ? ' primary' : ''}`}>
         <Icon name="replay" /> Reprendre
       </Link>
       <button
