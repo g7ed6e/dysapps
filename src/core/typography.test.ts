@@ -42,6 +42,18 @@ describe('keepTogether', () => {
   });
 });
 
+describe('frenchTypography', () => {
+  it('tient le nombre et ce qu’il compte sur la même ligne, sans toucher aux nombres entre eux', () => {
+    expect(frenchTypography('66 millions et 3 milliards')).toBe('66\u00a0millions et 3\u00a0milliards');
+    expect(frenchTypography('À 12 h, il fait 30 °C : 50 % de plus, 2 €.')).toBe('À 12\u00a0h, il fait 30\u00a0°C\u00a0: 50\u00a0% de plus, 2\u00a0€.');
+    expect(frenchTypography('2\u00a0000 mètres, 4,5 cm')).toBe('2\u00a0000\u00a0mètres, 4,5\u00a0cm');
+    expect(frenchTypography('9 000 mètres, 3,5 kg')).toBe('9\u00a0000\u00a0mètres, 3,5\u00a0kg');
+    expect(frenchTypography('5 000 = 100 000')).toBe('5\u00a0000 = 100\u00a0000');
+    expect(frenchTypography('3 + 4 = 7 et 1 2 3, 12 3456')).toBe('3 + 4 = 7\u00a0et 1 2 3, 12 3456');
+    expect(frenchTypography('Le chat dort.')).toBe('Le chat dort.');
+  });
+});
+
 describe('gluedEnds', () => {
   it('ce qui reste collé à une réponse posée dans la phrase', () => {
     expect(gluedEnds('ce métal conduit bien l’', ' et la chaleur.')).toEqual({ head: 'ce métal conduit bien ', tail: 'l’', lead: '', rest: ' et la chaleur.' });

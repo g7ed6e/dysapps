@@ -1,6 +1,15 @@
-/** Typographie française : espace insécable avant ? ! : ; » et après «, pour qu'ils ne restent pas seuls en début de ligne. */
+/**
+ * Typographie française : espace insécable avant ? ! : ; » et après «, pour qu'ils ne restent pas seuls en début de ligne ;
+ * entre les tranches de milliers (« 2 000 ») et entre un nombre écrit en chiffres et ce qui le suit (« 66 millions »,
+ * « 12 h », « 30 °C », « 50 % »), pour que l'un ne finisse pas une ligne et l'autre ne commence pas la suivante
+ * (relecture dys du rivage sud ; `cadrage-contenu.md`). Les sources ne changent pas : l'affichage et la voix s'en chargent.
+ */
 export function frenchTypography(text: string): string {
-  return text.replace(/ ([?!:;»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
+  return text
+    .replace(/ ([?!:;»])/g, '\u00a0$1')
+    .replace(/« /g, '«\u00a0')
+    .replace(/(\d) (?=\d{3}(?!\d))/g, '$1\u00a0')
+    .replace(/(\d) (?=[\p{L}%°€])/gu, '$1\u00a0');
 }
 
 /**
