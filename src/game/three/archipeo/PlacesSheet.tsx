@@ -166,16 +166,8 @@ export function PlacesSheet({ rows, onPick, onClose }: Props) {
                 <span className="app-icon lieux-row-icon" aria-hidden="true">
                   <Icon name={row.icon} />
                 </span>
-                <span className="lieux-row-text">
-                  {/* Une coupure permise après l'article élidé (« L’ / Imprimerie »), comme sur la Carte (`nameLines`) ;
-                      jamais dans un mot. */}
-                  {row.name.split(/(?<=[’'])/u).map((part, j) => (
-                    <span key={j}>
-                      {j > 0 && <wbr />}
-                      {part}
-                    </span>
-                  ))}
-                </span>
+                {/* Jamais de coupure après l'article élidé (« L’Imprimerie » reste entier), comme sur la Carte (`nameLines`). */}
+                <span className="lieux-row-text">{row.name}</span>
               </span>
               {/* L'espace où l'état passe à la ligne, au plus grand texte (sans effet dans la grille du texte normal). */}{' '}
               {row.state && (

@@ -39,7 +39,7 @@ import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelag
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
 import { STORY_XP, startStory, storyAfterMission, tapStoryStep, type StepResult } from './world/stories';
 import { applyLayout } from './world/appliedLayout';
-import { payLink, settleNewPlaces } from './world/arrange';
+import { ensureLands, payLand, settleNewPlaces, type GridLand, type PayLandResult } from './world/arrange';
 import type { World } from './engine/state';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
@@ -82,10 +82,15 @@ interface BloclandContextValue {
   /** Construit un pont vers une île voisine, payé avec les blocs de l'inventaire. */
   buildBridge: (id: string) => BuildBridgeResult;
   /**
-   * « Relier » du monde continu (GD-20, point 3) : la liaison de la grille, payée par `buildBridge` ; si la disposition
-   * aménagée de la grille ne la trace plus, elle est payée quand même et devient une liaison à reposer, gratuite (GD-9).
+   * « Relier » du monde continu (GD-20, point 3, « vraies terres ») : une terre entière, vue de la grille, payée une fois
+   * (`payLand`) ; chacun de ses lieux reçoit sa liaison de la grille.
    */
-  linkFromOpenWorld: (id: string) => BuildBridgeResult;
+  linkLand: (land: GridLand) => PayLandResult;
+  /**
+   * À l'ouverture du monde continu : les terres déjà ouvertes (un lieu relié dans la grille ou joué, les îles `played`)
+   * reçoivent toutes leurs liaisons, sans rien débiter (`ensureLands`) ; sans rien à écrire, rien ne change.
+   */
+  ensureOpenWorldLands: (lands: readonly GridLand[], played: readonly BiomeId[]) => void;
   /**
    * Livre une commande prête (GD-7, PR 3) : ses blocs sortent de l'inventaire, sa petite construction se pose chez la
    * créature. Puis une autre commande peut arriver.
@@ -244,10 +249,9 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     [pousser],
   );
   const disassemble = useCallback((bloc: BlockId) => appliquer(disassembleBlock(stateRef.current, bloc)), [appliquer]);
-  // Une liaison payée dans la grille (`buildBridge`) ou depuis le monde continu (`payLink`, GD-20, point 3) : la commande
-  // qui arrive, le mode bâtisseur, puis l'état.
-  const buildBridge = useCallback((id: string, fromOpenWorld = false) => {
-    const r = (fromOpenWorld ? payLink : buildBridgePure)(stateRef.current, id);
+  // Une liaison payée dans la grille : la commande qui arrive, le mode bâtisseur, puis l'état.
+  const buildBridge = useCallback((id: string) => {
+    const r = buildBridgePure(stateRef.current, id);
     const bridge = getBridge(id);
     const built = r.result.ok && bridge ? commandeQuiArrive(r.state, archipelagoOf(bridge.from).classe) : r.state;
     const next = batisseurRef.current ? remplir(built) : built;
@@ -255,7 +259,24 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     setState(next);
     return r.result;
   }, [commandeQuiArrive]);
-  const linkFromOpenWorld = useCallback((id: string) => buildBridge(id, true), [buildBridge]);
+  // Une terre reliée depuis le monde continu (GD-20, point 3) : de même, la commande qui arrive, le mode bâtisseur, l'état.
+  const linkLand = useCallback(
+    (land: GridLand) => {
+      const r = payLand(stateRef.current, land);
+      const built = r.result.ok ? commandeQuiArrive(r.state, archipelagoOf(land.islands[0]).classe) : r.state;
+      const next = batisseurRef.current ? remplir(built) : built;
+      stateRef.current = next;
+      setState(next);
+      return r.result;
+    },
+    [commandeQuiArrive],
+  );
+  const ensureOpenWorldLands = useCallback((lands: readonly GridLand[], played: readonly BiomeId[]) => {
+    const next = ensureLands(stateRef.current, lands, played);
+    if (next === stateRef.current) return;
+    stateRef.current = next;
+    setState(next);
+  }, []);
   const deliver = useCallback(
     (id: string): Livraison<GameState> => {
       const r = livrerLaCommande(stateRef.current, id);
@@ -345,7 +366,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       finishPiece,
       disassemble,
       buildBridge,
-      linkFromOpenWorld,
+      linkLand,
+      ensureOpenWorldLands,
       deliver,
       tapStory,
       moveTo,
@@ -372,7 +394,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       finishPiece,
       disassemble,
       buildBridge,
-      linkFromOpenWorld,
+      linkLand,
+      ensureOpenWorldLands,
       deliver,
       tapStory,
       moveTo,

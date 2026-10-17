@@ -743,8 +743,8 @@
 .world-question .in-world.answers-out .validate-button {
   display: none;
 }
-/* Le cadenas d'un lieu encore sous la brume : une icône sur un rond uni, sans texte (dite aux lecteurs d'écran), posée
-   au-dessus du lieu ; rien à toucher. */
+/* Le cadenas du pont d'une terre encore sous la brume : une icône sur un rond uni, sans texte (dite aux lecteurs
+   d'écran), posée au-dessus du pont tombé ; rien à toucher. */
 .open-world-locks {
   position: absolute;
   inset: 0;
@@ -795,8 +795,8 @@
   width: 28px;
   height: 28px;
 }
-/* Sur la Carte : Kéo, le nom de chaque lieu ouvert, le cadenas et le nom atténué de chaque lieu fermé, sur fond uni,
-   posés par MapLabels.tsx (coin haut gauche en `transform`), jamais l'un sur l'autre. */
+/* Sur la Carte : Kéo, le nom de chaque lieu ouvert, la pastille pâle des lieux des terres fermées et le cadenas de
+   chaque pont à rebâtir, sur fond uni, posés par MapLabels.tsx (coin haut gauche en `transform`), jamais l'un sur l'autre. */
 .open-world-map-places {
   position: absolute;
   inset: 0;
@@ -840,8 +840,17 @@
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
-/* Un lieu fermé : son cadenas au-dessus du lieu, son nom dessous sur un panneau atténué (trait en tirets, texte
-   adouci, contraste gardé), tu s'il gênerait une autre étiquette ; tout le bloc se touche. */
+/* Un lieu d'une terre fermée (GD-20, point 3, « vraies terres », consultant UX UI) : sa pastille pâle, au trait en
+   tirets, texte adouci (contraste gardé), sans cadenas ni état ; elle se touche et ouvre la fiche de sa terre. */
+.open-world-map-place.open-world-map-pale {
+  border-style: dashed;
+  border-color: var(--muted);
+  background: var(--secondary-bg);
+  color: var(--muted);
+  font-weight: 600;
+}
+/* Le cadenas du pont d'une terre fermée, posé sur la coupure du bras de mer (sans nom : le pont est sur la Carte en
+   trait double, la terre se lit à ses pastilles pâles) ; tout le bloc se touche. */
 .open-world-map-closed {
   display: flex;
   flex-direction: column;
@@ -858,7 +867,7 @@
   left: auto;
   top: auto;
 }
-/* Le cadenas de la liaison suggérée (choix du mainteneur, « Cadenas plein », 17 octobre 2026) : plein, Nuit océan (#142B38),
+/* Le cadenas du pont suggéré (choix du mainteneur, « Cadenas plein », 17 octobre 2026) : plein, Nuit océan (#142B38),
    l'icône d'un sable clair (#F2DFB4, celui des tirets), avec ses tirets épais : le seul cadenas mis en avant, par sa
    forme pleine et pas seulement sa couleur. */
 .open-world-map-closed .open-world-lock.suggested {
@@ -2541,25 +2550,73 @@
   position: static;
 }
 
-/* La fiche d'un lieu fermé (GD-20, point 3, lot 1 « Relier » ; consultant UX UI) : une seule rangée, « Relier », le
-   prix et l'icône des ressources dans le bouton, ce que l'élève a dessous. Le bouton fait 48 px au moins et passe à la
-   ligne au plus grand texte plutôt que de déborder. */
-.closed-place-row {
+/* La fiche d'une terre fermée (GD-20, point 3, « vraies terres » ; consultant UX UI) : les icônes de ses lieux en une
+   rangée dans le flux, qui passe à la ligne, puis une seule ligne, « Relier » (le prix et l'icône des ressources dans
+   le bouton) et ce que l'élève a, « 3 / 12 », à côté. Le bouton fait 48 px au moins. Relecture du lot 1 (référent dys,
+   consultant UX UI) : au plus grand texte, la fiche tient sans défiler à 667 × 375 (ci-dessous, l'écran bas). */
+.closed-land-places {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.2rem 0 0;
+  list-style: none;
+}
+.closed-land-places li {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 0.4rem;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
+  max-width: 6.5rem;
+  text-align: center;
+}
+.closed-land-places svg {
+  width: 2rem;
+  height: 2rem;
+}
+/* Le nom d'un lieu sous son icône : lu par la voix (`aria-label` du lieu), montré au grand texte seulement, sur une
+   ligne, jamais coupé dans un mot. */
+.closed-land-place-name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+:root[data-texte="grand"] .closed-land-places {
+  gap: 0.3rem 2.2rem;
+}
+:root[data-texte="grand"] .closed-land-places li {
+  max-width: none;
+}
+:root[data-texte="grand"] .closed-land-place-name {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  font-size: 0.85em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.closed-place-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.8rem;
   padding-block: 0.4rem;
 }
 .closed-place-link {
   display: inline-flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
   min-height: 48px;
   min-width: 48px;
   max-width: 100%;
-  white-space: normal;
+  white-space: nowrap;
 }
 .closed-place-price {
   display: inline-flex;
@@ -2567,8 +2624,63 @@
   gap: 0.25rem;
   font-weight: 700;
 }
-/* Un lieu pas encore reliable : le cadenas d'ordre (le même rond que sur la Carte), puis le bouton du voisin, secondaire,
-   48 px au moins, son nom entier qui passe à la ligne plutôt que de se couper. */
+/* L'écran bas (téléphone couché) au plus grand texte : le titre sur une ligne, sans l'icône de la Carte ; les lieux en
+   icônes seules (leurs noms dits par la voix), 48 px chacun ; « Relier » seul dans le bouton, serré à 48 px de haut,
+   et à côté, sur la même ligne, l'icône des ressources et « 3 / 12 », où se lit le prix, sans grand espace entre les
+   chiffres (le prix entier reste dans la voix du bouton) : rien n'est réduit sous la taille choisie, tout tient en
+   367 px sans défiler. La fiche d'ordre y passe le bouton sous le cadenas (« Le Couchant » ne tient pas à côté). */
+@media (max-height: 500px) {
+  /* La colonne un peu plus large (70 % au lieu de 64 %), ses bords resserrés : le titre et la ligne de « Relier » y
+     tiennent entiers ; Kéo et le pont restent dans la part libre, à droite. */
+  :root[data-texte="grand"] .open-world-panel:has(> .closed-land-sheet) {
+    width: 70%;
+  }
+  :root[data-texte="grand"] .open-world-panel > .closed-land-sheet {
+    padding-inline: max(0.5rem, env(safe-area-inset-left, 0px)) max(0.5rem, env(safe-area-inset-right, 0px));
+  }
+  :root[data-texte="grand"] .closed-land-sheet .island-sheet-title {
+    white-space: nowrap;
+    line-height: 1.25;
+  }
+  :root[data-texte="grand"] .closed-land-sheet .island-sheet-title > svg {
+    display: none;
+  }
+  :root[data-texte="grand"] .closed-land-sheet .closed-land-place-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  :root[data-texte="grand"] .closed-land-sheet .closed-land-places {
+    gap: 0.3rem;
+  }
+  :root[data-texte="grand"] .closed-land-sheet .closed-place-row {
+    gap: 0.3rem 0.25rem;
+    padding-block: 0.3rem 0;
+  }
+  :root[data-texte="grand"] .closed-land-sheet .closed-place-link,
+  :root[data-texte="grand"] .closed-land-sheet .closed-place-after {
+    padding: 0 0.4rem;
+    gap: 0.3rem;
+    line-height: 1.25;
+  }
+  :root[data-texte="grand"] .closed-land-sheet .closed-place-link > svg:first-child,
+  :root[data-texte="grand"] .closed-land-sheet .closed-place-price {
+    display: none;
+  }
+  :root[data-texte="grand"] .closed-land-sheet .closed-place-have {
+    line-height: 1.25;
+    white-space: nowrap;
+    word-spacing: 0;
+  }
+  :root[data-texte="grand"] .closed-land-sheet .closed-place-after {
+    white-space: nowrap;
+  }
+}
+/* Une terre pas encore reliable : le cadenas d'ordre (le même rond que sur la Carte), puis le bouton du voisin, secondaire,
+   48 px au moins, le nom entier de la terre d'avant qui passe à la ligne plutôt que de se couper. */
 .closed-place-lock {
   display: inline-grid;
   place-items: center;
@@ -2612,7 +2724,7 @@
   width: 1.2em;
   height: 1.2em;
 }
-/* « La passerelle est posée. » (et la phrase d'un lieu devenu reliable) : sur fond uni, en bas au milieu, au-dessus de la barre ; sans rien qui bouge ; le
+/* « Le pont est rebâti. » (et la phrase d'un pont devenu reliable) : sur fond uni, en bas au milieu, au-dessus de la barre ; sans rien qui bouge ; le
    haut-parleur à côté de la phrase, 48 px, le seul élément touchable. Vide, elle ne montre rien. Sur la Carte, en haut,
    hors des noms des lieux du sud. */
 .open-world-said {
@@ -2643,7 +2755,7 @@
   font-weight: 700;
   text-align: center;
 }
-/* Une phrase par ligne (« La passerelle est posée. », puis « La Turbine peut être reliée. »). */
+/* Une phrase par ligne (« Le pont est rebâti. », puis « Le pont des Crêtes peut être rebâti. »). */
 .open-world-said > p > span {
   display: block;
 }

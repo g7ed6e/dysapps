@@ -10,6 +10,10 @@ import { islandDef, startingIsland } from './world/map';
 import { layoutVersion } from './world/placement';
 import { degelerSauvegarde } from '../core/storage';
 import { EMPTY_STATE } from './engine/state';
+import { reachableIslands } from './world/archipelago';
+import { landById } from './world/continu/lands';
+import { gridLand } from './three/archipeo/landLinks';
+import { placeById } from './world/continu/plan6e';
 
 function Etat() {
   const { progress } = useProgress();
@@ -102,9 +106,9 @@ it('la partie des mesures (`?mesures=auto`) se joue en mémoire : la sauvegarde 
   localStorage.clear();
 });
 
-it('« Relier » depuis le monde continu (GD-20, point 3) : deux touchers de suite, un seul débit, une seule liaison, une commande au plus', () => {
+it('« Relier » une terre depuis le monde continu (GD-20, point 3, « vraies terres ») : deux touchers de suite, un seul débit, une commande au plus', () => {
   localStorage.clear();
-  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, progress: {}, stock: { 'french-6e-letter-confusion': 9 }, world: { parts: {}, log: [], links: [] } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, progress: {}, stock: { 'french-6e-letter-confusion': 15 }, world: { parts: {}, log: [], links: [] } }));
   let ctx: ReturnType<typeof useBlocland> | null = null;
   function Lien() {
     ctx = useBlocland();
@@ -119,23 +123,24 @@ it('« Relier » depuis le monde continu (GD-20, point 3) : deux touchers de sui
       </ProgressProvider>
     </SettingsProvider>,
   );
-  const id = 'french-6e-grammar-spelling-maths-6e-calculation';
   const before = ctx!.state.world.requests?.length ?? 0;
   let first: unknown;
   let second: unknown;
   act(() => {
-    first = ctx!.linkFromOpenWorld(id);
-    second = ctx!.linkFromOpenWorld(id);
+    first = ctx!.linkLand(gridLand('couchant'));
+    second = ctx!.linkLand(gridLand('couchant'));
   });
   expect(first).toMatchObject({ ok: true });
   expect(second).toEqual({ ok: false, reason: 'construit' });
-  expect(ctx!.state.stock['french-6e-letter-confusion']).toBe(5);
-  expect(ctx!.state.world.links.filter((l) => l === id)).toHaveLength(1);
+  // Le Couchant : trois lieux, 12 ressources, payées une fois.
+  expect(ctx!.state.stock['french-6e-letter-confusion']).toBe(3);
+  const open = reachableIslands(ctx!.state.world.links);
+  for (const id of landById('couchant').places) expect([...open]).toContain(placeById(id).island);
   expect((ctx!.state.world.requests?.length ?? 0) - before).toBeLessThanOrEqual(1);
-  // Pas assez pour une deuxième liaison : refusée, rien de débité.
+  // Les Crêtes attendent le Levant ; le Large coûte 8 : refusés, rien de débité.
   act(() => {
-    expect(ctx!.linkFromOpenWorld('maths-6e-calculation-maths-6e-fractions')).toMatchObject({ ok: true });
-    expect(ctx!.linkFromOpenWorld('maths-6e-calculation-maths-6e-decimals')).toEqual({ ok: false, reason: 'blocs', missing: 3 });
+    expect(ctx!.linkLand(gridLand('cretes'))).toEqual({ ok: false, reason: 'ordre' });
+    expect(ctx!.linkLand(gridLand('large'))).toEqual({ ok: false, reason: 'blocs', missing: 5 });
   });
-  expect(ctx!.state.stock['french-6e-letter-confusion'] ?? 0).toBe(1);
+  expect(ctx!.state.stock['french-6e-letter-confusion']).toBe(3);
 });

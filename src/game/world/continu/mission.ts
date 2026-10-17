@@ -66,8 +66,8 @@ export function nextMission(bornes: readonly MissionMark[], destination?: { isla
 
 /**
  * Les lieux déjà joués : une mission au moins y a été jouée (ses étoiles, même nulles). Avant les liaisons (GD-20, point
- * 3), tous les lieux du monde continu étaient ouverts : un lieu où l'élève a déjà joué le reste, sans liaison payée ni
- * rien de neuf dans la sauvegarde (la vue l'ouvre, ../../three/archipeo/placeLinks.ts).
+ * 3), tous les lieux du monde continu étaient ouverts : un lieu où l'élève a déjà joué le reste ouvert, et sa terre avec
+ * lui, sans liaison payée ni rien de neuf dans la sauvegarde (./lands.ts, `openWorldLands` ; ../arrange.ts, `ensureLands`).
  */
 export const playedPlaces = (bornes: readonly MissionMark[]): PlaceId[] => PLACES.filter((p) => missionsOfPlace(p, bornes).some((b) => typeof b.etat === 'number')).map((p) => p.id);
 

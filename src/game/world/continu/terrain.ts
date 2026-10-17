@@ -5,13 +5,85 @@
 // la brume cache ce qui est plus loin. Code pur : la vue (three/archipeo/) ne fait que donner ces tableaux à Three.js.
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { BEACONS_FLAT, CLIFF, COAST, COLORS_6E, COMMONS_FLAT, DECK_HEIGHT, DOCK, ENGINE_FLAT, ISLET, LAGOON, LOOKOUT_RAMP, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PASS, PATH_EDGES, PATH_NODES, RIVER, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, TERRAIN, UPLAND } from './plan6e';
+import { BEACONS_FLAT, CLIFF, COAST, COLORS_6E, COMMONS_FLAT, DECK_HEIGHT, DOCK, ECLUSES_LANDING, ENGINE_FLAT, ISLET, LAGOON, LOOKOUT_RAMP, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PASS, PATH_EDGES, PATH_NODES, RIVER, RIVER_MOUTH, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, STRAITS, TERRAIN, UPLAND, type StraitId } from './plan6e';
 
-/** La distance signée à la terre ferme : positive sur la terre, négative dans l'eau (mer, lagon, passe, bassin, rivière). */
+/** Les bras de mer, dans l'ordre de `STRAITS`, et leurs noms dans le même ordre. */
+const STRAIT_LIST = Object.values(STRAITS);
+const STRAIT_IDS = Object.keys(STRAITS) as StraitId[];
+
+/**
+ * La distance à l'eau d'un bras de mer (GD-20, point 3, « vraies terres ») : positive sur la terre, négative dans son
+ * eau ; d'un seul bras (`id`), ou du plus proche.
+ */
+export function straitClearance(p: Vec2, id?: StraitId): number {
+  if (id) return clearanceOf(p, STRAITS[id], BRIDGE_MIDS[STRAIT_IDS.indexOf(id)]);
+  let d = Infinity;
+  for (let k = 0; k < STRAIT_LIST.length; k++) d = Math.min(d, clearanceOf(p, STRAIT_LIST[k], BRIDGE_MIDS[k]));
+  return d;
+}
+
+/** Le milieu de l'eau d'un pont : le point de sa liaison (entre ses deux nœuds) le plus près de la ligne du bras. */
+const bridgeMid = (s: (typeof STRAIT_LIST)[number]): Vec2 => {
+  const [a, b] = s.bridge.map((id) => PATH_NODES.find((n) => n.id === id)!.at);
+  let best = a;
+  for (let k = 0; k <= 200; k++) {
+    const q = { x: a.x + ((b.x - a.x) * k) / 200, z: a.z + ((b.z - a.z) * k) / 200 };
+    if (distanceToPolyline(q, s.line) < distanceToPolyline(best, s.line)) best = q;
+  }
+  return best;
+};
+/** Le milieu de chaque pont, dans l'ordre de `STRAITS`. */
+const BRIDGE_MIDS: readonly Vec2[] = STRAIT_LIST.map(bridgeMid);
+/** Autour d'un pont, sur tant d'unités, puis fondu sur tant d'autres, la largeur du bras ne change pas (aucun évasement). */
+const FLARE_KEEP = { near: 12, fade: 6 } as const;
+
+/**
+ * La distance à l'eau d'un bras de mer, ses bouts évasés en entonnoir (`flare`, relecture du lot 1), jamais près de son
+ * pont : la largeur au pont reste celle d'avant.
+ */
+function clearanceOf(p: Vec2, s: (typeof STRAIT_LIST)[number], mid: Vec2): number {
+  const ends = [s.line[0], s.line[s.line.length - 1]];
+  const keep = smoothstep(FLARE_KEEP.near, FLARE_KEEP.near + FLARE_KEEP.fade, distance(p, mid));
+  let half: number = s.halfWidth;
+  if (keep > 0)
+    for (let k = 0; k < 2; k++) {
+      const [reach, extra] = s.flare[k];
+      half += keep * extra * (1 - smoothstep(0, reach, distance(p, ends[k])));
+    }
+  return distanceToPolyline(p, s.line) - half;
+}
+
+/**
+ * La distance signée à la terre ferme : positive sur la terre, négative dans l'eau (mer, lagon, passe, bassin, rivière,
+ * son embouchure élargie, les bras de mer).
+ */
 export function landDistance(p: Vec2): number {
   const ring = Math.min(signedDistance(p, COAST), -signedDistance(p, LAGOON), -signedDistance(p, PASS), -signedDistance(p, DOCK));
   const land = Math.max(ring, signedDistance(p, ISLET));
-  return Math.min(land, distanceToPolyline(p, RIVER.line) - RIVER.halfWidth);
+  const river = Math.min(distanceToPolyline(p, RIVER.line) - RIVER.halfWidth, distanceToPolyline(p, RIVER_MOUTH.line) - RIVER_MOUTH.halfWidth);
+  return Math.min(land, river, straitClearance(p));
+}
+
+/**
+ * Les rives rocheuses des bras de mer (artiste technique 3D) : une levée de roche de `height` au-dessus de l'eau, en
+ * deux gradins (`step` en `rise` unités depuis la rive, un replat jusqu'à `ledge`, puis le reste en `rise2`), qui tient
+ * jusqu'à `hold`, puis rejoint le sol d'avant à `fade` ; sans plage, la roche jusqu'à `rock` unités de l'eau. Toute sa
+ * hauteur à moins de `near` unités d'un pont, `low` de sa hauteur au-delà de `far`. Ni banc, ni gué, ni pierre de passage.
+ */
+export const STRAIT_BANK = { height: 1.8, step: 0.9, rise: 0.5, ledge: 1.4, rise2: 0.6, hold: 3.5, fade: 8, rock: 2.5, near: 9, far: 22, low: 0.55 } as const;
+
+/**
+ * La levée de roche d'un bras de mer en `p`, à `s` unités de son eau (relecture du lot 1, directeur artistique : plus de
+ * canyon) : deux gradins, le premier de `step` au ras de l'eau, un replat, puis le second jusqu'à `height` (1,5 à 2
+ * au-dessus de l'eau) ; toute sa hauteur près d'un pont (`near`), puis plus basse loin de lui (`low` de sa hauteur dès
+ * `far`), toujours en deux gradins.
+ */
+function bankHeight(p: Vec2, s: number): number {
+  const bridge = BRIDGE_MIDS.reduce((d, m) => Math.min(d, distance(p, m)), Infinity);
+  const k = 1 - (1 - STRAIT_BANK.low) * smoothstep(STRAIT_BANK.near, STRAIT_BANK.far, bridge);
+  const B = STRAIT_BANK;
+  const steps = B.step * smoothstep(0, B.rise, s) + (B.height - B.step) * smoothstep(B.ledge, B.ledge + B.rise2, s);
+  return k * steps * (1 - smoothstep(B.hold, B.fade, s));
 }
 
 /** La largeur de la plage, en unités (un peu moins de quatre pas). */
@@ -73,11 +145,18 @@ function groundHeight(p: Vec2): number {
   h += 0.35 * bumps * smoothstep(BEACH, BEACH + 3, d);
   // … et de longues ondulations, qu'on monte et qu'on descend en marchant.
   h += 1.1 * Math.sin(p.x * 0.07 + 1.3) * Math.cos(p.z * 0.09 - 0.4) * smoothstep(BEACH, BEACH + 14, d);
+  // Les rives rocheuses des bras de mer : la levée, jamais plus bas que le sol d'avant ; avant les replats, qui ne
+  // bougent pas (aucun bras de mer n'entre dans un replat ni dans son fondu).
+  const s = straitClearance(p);
+  if (s < STRAIT_BANK.fade) h = Math.max(h, bankHeight(p, s));
   // La falaise du nord : un plateau au-dessus, aux bords raides.
   h += CLIFF_HEIGHT * smoothstep(0, CLIFF_EDGE, signedDistance(p, CLIFF));
   // Le haut pays de l'est : une colline ronde, que la rivière entaille.
   const u = distance(p, UPLAND.center) / UPLAND.radius;
   h += UPLAND.height * smoothstep(1, 0.25, u) * smoothstep(0, 6, d);
+  // Le palier de la porte des Écluses (relecture du lot 1) : aplani dans la pente de la vallée.
+  const palier = smoothstep(ECLUSES_LANDING.radius + ECLUSES_LANDING.fade, ECLUSES_LANDING.radius, distance(p, ECLUSES_LANDING.center));
+  if (palier > 0) h += (ECLUSES_LANDING.height - h) * palier;
   // Le replat de la Turbine (lot L6a) : aplani, puis le sol d'avant, en pente douce (loin de la rivière).
   const replat = smoothstep(ENGINE_FLAT.radius + ENGINE_FLAT.fade, ENGINE_FLAT.radius, distance(p, ENGINE_FLAT.center));
   if (replat > 0) h += (ENGINE_FLAT.height - h) * replat;
@@ -308,6 +387,8 @@ const GREVE_COLORS = [
 
 /** La couleur d'un sol presque plat en (x, z), à la hauteur `h` : le sable près de l'eau, l'herbe ailleurs. */
 function flatColor(x: number, z: number, h: number, vary: number): number {
+  // Les rives des bras de mer : de la roche, jamais de sable.
+  if (straitClearance({ x, z }) < STRAIT_BANK.rock) return COLORS_6E.rock;
   if (h < 0.12) return COLORS_6E.wetSand;
   const d = landDistance({ x, z });
   if (d < 1.3) return COLORS_6E.sand;

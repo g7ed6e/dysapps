@@ -4,8 +4,9 @@
 // (GD-20, L6b : « Un iPad 9e génération doit pouvoir faire tourner le jeu, donc on est large en triangles pour
 // l'instant »), les appels inchangés. Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
 import { WORLD_FOG } from './camera';
-import { networkSamples } from './paths';
-import { allObstacles, branchRibbons, closedPlaces, linkFacets, openPathRibbons } from './links';
+import { bridgeFacets, bridgeMapMark } from './bridges';
+import { LINKED_LANDS } from './lands';
+import { networkSamples, pathRibbons } from './paths';
 import { PLACES, type PlaceId } from './plan6e';
 import { lanternLight, modelOfPlace } from './places';
 import { constructionFacets, WHOLE } from './construction';
@@ -137,18 +138,17 @@ const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
  * au plus chargé : toutes les places de sa galerie prises, ses portes pavoisées, ses barques, sa pile pleine
  * (`PORT_WORST`) ; aucun appel de plus.
  */
-function placesCost(ground: (x: number, z: number) => number): { triangles: number; calls: number } {
+function placesCost(): { triangles: number; calls: number } {
   const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + placeTrace(p.id, [...p.scenes, ...(p.panels ?? [])]).triangles, 0);
-  return { triangles: triangles + lanternLight().triangles + portFacets(PORT_WORST).triangles + linksCost(ground), calls: 2 };
+  return { triangles: triangles + lanternLight().triangles + portFacets(PORT_WORST).triangles + bridgesCost(), calls: 2 };
 }
 
 /**
- * Les liaisons (GD-20, point 3, lot 1 « Relier ») : les embranchements des lieux qu'on relie, en plein, et chaque
- * passerelle au plus chargé de ses deux états (démontée, ou reliée avec son pont neuf), dans le maillage des lieux :
- * aucun appel de plus. Les tirets de la Carte en ont moins que le chemin plein.
+ * Les ponts des terres (GD-20, point 3, « vraies terres, vrais ponts ») : chacun au plus chargé de ses deux états (tombé,
+ * ou rebâti), dans le maillage des lieux : aucun appel de plus.
  */
-function linksCost(ground: (x: number, z: number) => number): number {
-  return allObstacles().reduce((s, o) => s + branchRibbons(o.place, 'solid', ground).triangles + Math.max(linkFacets(o, false, ground).triangles, linkFacets(o, true, ground).triangles), 0);
+function bridgesCost(): number {
+  return LINKED_LANDS.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
 }
 
 /** L'Escale seule, au plus chargé : son plafond (4 500 triangles, directeur artistique, GD-20, lot 2). */
@@ -186,25 +186,25 @@ export function groundCost(): { triangles: number; calls: number; near: number; 
 }
 
 /**
- * Ce que coûte le monde continu, environ (avec les triangles des aménagements posés, que la vue compte) : le sol autour de Kéo, tout le reste visible à la fois ; la brume de tous les
- * lieux fermés, au pire (au départ, les quatorze), en un maillage : depuis le lot 1 « Relier » (GD-20, point 3), elle
- * part d'un coup quand on relie, sans second maillage qui se lève (le fondu reviendra avec la pose animée, au lot 2).
+ * Ce que coûte le monde continu, environ (avec les triangles des aménagements posés, que la vue compte) : le sol autour
+ * de Kéo, tout le reste visible à la fois ; la brume des terres fermées, au pire (au départ, les quatre), en un
+ * maillage : elle part d'un coup quand on relie une terre (le fondu reviendra avec la pose animée, au second lot).
  */
 export function openWorldCost(amenagements: number): OpenWorldCost[] {
   const field = buildHeightField();
   const height = (x: number, z: number) => heightOnMesh(field, x, z);
-  const paths = openPathRibbons(height);
+  const paths = pathRibbons(height);
   const ground = groundCost();
   return [
     { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
     { poste: 'mer', triangles: 2, calls: 1 },
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
-    { poste: 'lieux', ...placesCost(height) },
+    { poste: 'lieux', ...placesCost() },
     // Les aménagements (GD-20, point 4, lot L0) : les dix-neuf posés, dans le maillage des lieux, aucun appel de plus ;
     // leurs triangles comptés par la vue, qui trace leurs dessins (three/archipeo/amenagements.ts, `amenagementsCost`).
     { poste: 'aménagements', triangles: amenagements, calls: 0 },
     { poste: 'pose', ...poseCost(height) },
-    { poste: 'brume', triangles: veilFacets(closedPlaces(() => false)).triangles, calls: 1 },
+    { poste: 'brume', triangles: veilFacets(LINKED_LANDS).triangles, calls: 1 },
     { poste: 'kéo', ...KEO },
     { poste: 'question', ...questionCost() },
     { poste: 'scénette', ...scenetteCost() },
@@ -214,15 +214,16 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
 /**
  * La Carte des lieux ouverts (lot 3), le pire (les aménagements posés compris, comptés par la vue) : toute l'île de loin dans l'anneau de loin (celui de près vidé), la mer,
  * les chemins, les lieux (sur la Carte, aucun n'est hors de la brume : un seul maillage, mais compté à deux appels, le
- * pire ; les embranchements des lieux fermés y sont en tirets, comptés pleins), la brume des lieux fermés, Kéo. Ni question, ni scénette, ni pose n'y
+ * pire ; les ponts y ont en plus leur trait double), la brume des terres fermées, Kéo. Ni question, ni scénette, ni pose n'y
  * sont ouvertes : elle ne s'ouvre pas pendant une question, et l'ouvrir finit la pose.
  */
 export function mapCost(amenagements: number): { triangles: number; calls: number } {
   const field = buildHeightField();
   const height = (x: number, z: number) => heightOnMesh(field, x, z);
   const far = tileTriangleCounts(field, 'far').reduce((s, n) => s + n, 0);
-  const paths = openPathRibbons(height).triangles;
-  const places = placesCost(height);
-  const veil = veilFacets(closedPlaces(() => false)).triangles;
-  return { triangles: far + 2 + paths + places.triangles + amenagements + veil + KEO.triangles, calls: 1 + 1 + 1 + places.calls + 1 + KEO.calls };
+  const paths = pathRibbons(height).triangles;
+  const places = placesCost();
+  const veil = veilFacets(LINKED_LANDS).triangles;
+  const marks = LINKED_LANDS.reduce((s, l) => s + bridgeMapMark(l).triangles, 0);
+  return { triangles: far + 2 + paths + places.triangles + amenagements + marks + veil + KEO.triangles, calls: 1 + 1 + 1 + places.calls + 1 + KEO.calls };
 }

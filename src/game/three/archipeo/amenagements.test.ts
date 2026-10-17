@@ -1,6 +1,6 @@
 // Les aménagements du monde ouvert (GD-20, point 4, piste B, lot L0) : les dix-neuf petites constructions du 6e, leurs
 // dessins de la grille posés chacun à son lieu. La table (une place par lieu, au sol, dans le rayon de toucher, hors de
-// tout ce que le lieu, ses traces, l'Escale, les passerelles et la scénette posent ; jamais sur la porte, un chemin, le
+// tout ce que le lieu, ses traces, l'Escale, les ponts et la scénette posent ; jamais sur la porte, un chemin, le
 // chenal de la Nef), la coupe de chaque dessin en éléments, une par ressource que la commande demande, la règle de
 // hauteur et son exception (la grue des Archives, potence de façade, mesurée à l'architrave), l'assise de pierre sur
 // la pente, les places revues sur l'avis du directeur artistique (lot L0, 17 octobre 2026), le verre mat des lanternes
@@ -12,7 +12,8 @@ import { screenOf } from '../../world/continu/camera';
 import { WHOLE, constructionFacets } from '../../world/continu/construction';
 import { boundsOf, type Facets } from '../../world/continu/facets';
 import { linearRgb, type Vec2 } from '../../world/continu/geometry';
-import { allObstacles, linkFacets } from '../../world/continu/links';
+import { bridgeFacets } from '../../world/continu/bridges';
+import { LINKED_LANDS } from '../../world/continu/lands';
 import { networkSamples, pathNode } from '../../world/continu/paths';
 import { NEF_CHANNEL, PLACES, placeById, portFloor, toPlan, type PlaceId } from '../../world/continu/plan6e';
 import { PHARE_GARDEN } from '../../world/continu/places';
@@ -147,7 +148,7 @@ describe('La table des aménagements', () => {
 
 describe('La place de chaque aménagement', () => {
   const samples = networkSamples(0.25);
-  const obstacles = allObstacles().flatMap((o) => [linkFacets(o, false, ground), linkFacets(o, true, ground)]);
+  const obstacles = LINKED_LANDS.flatMap((l) => [bridgeFacets(l, false), bridgeFacets(l, true)]);
   const port = portFacets(PORT_WORST);
 
   it('dans le rayon de toucher de son lieu (son toucher ouvre le lieu), loin de la porte, des chemins et du chenal de la Nef', () => {
@@ -176,7 +177,7 @@ describe('La place de chaque aménagement', () => {
   });
 
   const NAMES = ['le lieu entier', 'le lieu en ruine', 'ses traces', 'le décor de la scénette', 'le décor de la scénette ouverte', 'l’Escale'];
-  it('rien du lieu (entier ou en ruine), de ses traces, de l’Escale, des passerelles ni du décor de la scénette ne monte sous sa forme', () => {
+  it('rien du lieu (entier ou en ruine), de ses traces, de l’Escale, des ponts ni du décor de la scénette ne monte sous sa forme', () => {
     const out: string[] = [];
     for (const { a, p } of placed) {
       const place = placeById(a.place);
@@ -201,7 +202,7 @@ describe('La place de chaque aménagement', () => {
           const top = topAt(f, q, ceiling);
           if (top !== null && top - base > worst) [worst, at] = [top - base, `${(q.x - place.center.x).toFixed(2)},${(q.z - place.center.z).toFixed(2)}`];
         }
-        if (worst >= 0.12) out.push(`${a.id} : ${NAMES[i] ?? (i < NAMES.length + obstacles.length ? 'une passerelle' : 'un autre aménagement')} monte de ${worst.toFixed(2)} en ${at}`);
+        if (worst >= 0.12) out.push(`${a.id} : ${NAMES[i] ?? (i < NAMES.length + obstacles.length ? 'un pont' : 'un autre aménagement')} monte de ${worst.toFixed(2)} en ${at}`);
       });
     }
     expect(out).toEqual([]);

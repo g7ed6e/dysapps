@@ -127,7 +127,7 @@ export const CLAC = { bruit: 0.03, duree: 0.07, filtreHz: 1500, corpsHz: 150, vo
 export const sonDePose = (pose: 'geste' | 'fondu'): (() => void) => (pose === 'geste' ? playClac : playPlace);
 
 /**
- * Le toc de bois de la passerelle posée (GD-20, point 3, lot 1 « Relier ») : un seul, doux et sourd. Un bruit bref passé
+ * Le toc de bois du pont rebâti (GD-20, point 3, « vraies terres, vrais ponts ») : un seul, doux et sourd. Un bruit bref passé
  * par un filtre bas et un corps grave, tous deux à hauteur fixe (rien ne monte : ce n'est ni une réussite ni une
  * fanfare), éteints en un dixième de seconde ; plus doux que le « clac ».
  */

@@ -7,10 +7,9 @@
 // ouverts, et on la repose gratuitement entre deux voisins au choix (`relinkBetween`). Deux lieux ouverts au plus près
 // se réunissent (`joinIslands`, GD-9, point 10) : la paire entre dans la disposition (`joined`), bouge et tourne d'un
 // bloc autour du premier, ne se sépare plus ; la forme de leur construction est dans ./join.ts. Code pur, sans Three.js.
-import { type BiomeId, getBiome } from '../biomes';
+import { type BiomeId, type BlockId, getBiome } from '../biomes';
 import type { GameState, World } from '../engine/state';
-import { buildBridge } from '../engine';
-import { BRIDGES, type BridgeDef, type BuildBridgeResult, buildUntracedLink, getBridge, isBiomeUnlocked, reachableIslands } from './archipelago';
+import { BRIDGES, type BridgeDef, bridgesOf, getBridge, isBiomeUnlocked, nearestDeparture, otherEnd, payBlocks, reachableIslands } from './archipelago';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, CORE, type IslandDef, startingIsland } from './map';
 import { SIDE_OF, LAYOUT_SIDE_OF } from './appliedLayout';
 import { boxOf, fittingPlaces, landRectangles, type FootprintPart, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, placedIsland, poseOfSpot, spotInSteps, tooSmallGaps } from './footprint';
@@ -275,11 +274,11 @@ export function linksBrokenBy(world: World, id: BiomeId, spot: LayoutSpot): stri
 }
 
 /**
- * Une liaison posée qui devient à reposer (GD-9) : payée dans le monde continu alors que la disposition de la grille ne
- * la trace plus (GD-20, point 3, « Relier » ; `buildUntracedLink`). Rien ne se perd : elle reste construite, ses lieux
- * restent ouverts, et on la repose gratuitement dans la grille.
+ * Une liaison posée qui devient à reposer (GD-9) : écrite par le monde continu alors que la disposition de la grille ne
+ * la trace plus (GD-20, point 3, une terre reliée, `payLand`, `ensureLands`). Rien ne se perd : elle reste construite,
+ * ses lieux restent ouverts, et on la repose gratuitement dans la grille.
  */
-export function markForRelink(world: World, id: string): World {
+function markForRelink(world: World, id: string): World {
   const b = getBridge(id);
   if (!b) return world;
   const a = archipelagoOfIsland(b.from);
@@ -959,16 +958,96 @@ export function backToStartingMap(world: World, a: ArchipelagoId): World | null 
   return relink.length ? withRegion(apres, a, { ...regionOf(apres, a), relink }) : apres;
 }
 
+// ---------- Les terres du monde continu ----------
+
 /**
- * Relie un lieu depuis le monde continu (GD-20, point 3, « Relier ») : comme `buildBridge` ; si la liaison ne se trace pas
- * dans la disposition de la grille (une région aménagée, GD-9 ; « loin »), elle se paie au même prix
- * (`buildUntracedLink`) et devient une liaison à reposer, gratuite, dans la grille (`markForRelink`). Rien d'autre ne
- * change ; un refus laisse l'état tel quel (un second « Relier » sur une liaison posée : « construit », rien de débité).
+ * Écrit dans `links` la liaison de la grille de chaque lieu fermé `islands` (GD-20, point 3, « vraies terres ») : celle
+ * qui part du lieu relié le plus proche et se trace (`nearestDeparture`, le même départ que « Relier » dans la grille),
+ * en boucle jusqu'à ce que plus rien ne s'ajoute (une liaison posée en rend d'autres traçables) ; pour un lieu qu'aucune
+ * ne relie dans la disposition aménagée, une liaison vers un lieu ouvert, à reposer, gratuite, dans la grille
+ * (`markForRelink`, GD-9). Chaque liaison écrite ouvre un seul lieu. Rien n'est payé ici.
  */
-export function payLink(state: GameState, id: string): { state: GameState; result: BuildBridgeResult } {
-  const r = buildBridge(state, id);
-  if (r.result.ok || r.result.reason !== 'loin') return r;
-  const u = buildUntracedLink(id, state.world.links, state.stock);
-  if (!u.ok) return { state, result: u.reason === 'loin' ? r.result : u };
-  return { state: { ...state, stock: u.inventory, world: markForRelink({ ...state.world, links: u.bridges }, id) }, result: u };
+function writeLandLinks(world: World, islands: readonly BiomeId[]): World {
+  let w = world;
+  let open = reachableIslands(w.links);
+  const left = () => islands.filter((id) => !open.has(id));
+  for (let grew = true; grew && left().length; ) {
+    grew = false;
+    for (const island of left()) {
+      const b = nearestDeparture(island, w.links, open);
+      if (!b) continue;
+      w = { ...w, links: [...w.links, b.id] };
+      open = reachableIslands(w.links);
+      grew = true;
+    }
+    if (grew) continue;
+    // Aucune ne se trace : la première liaison de la grille vers un lieu ouvert, à reposer.
+    for (const island of left()) {
+      const b = bridgesOf(island).find((x) => open.has(otherEnd(x, island)) && !w.links.includes(x.id));
+      if (!b) continue;
+      w = markForRelink({ ...w, links: [...w.links, b.id] }, b.id);
+      open = reachableIslands(w.links);
+      grew = true;
+      break;
+    }
+  }
+  return w;
+}
+
+/**
+ * Une terre du monde continu, vue de la grille (GD-20, point 3, « vraies terres, vrais ponts ») : les îles de ses lieux,
+ * la terre à relier d'abord (rien : la terre de départ, toujours ouverte) et son prix, payé une fois. La table des terres
+ * est dans world/continu/lands.ts ; la vue du monde continu en tire celle-ci (three/archipeo/landLinks.ts) : la grille
+ * ne lit pas le monde continu.
+ */
+export interface GridLand {
+  islands: readonly BiomeId[];
+  after: GridLand | null;
+  price: number;
+}
+
+/** Une terre est-elle ouverte dans la grille (un de ses lieux relié) ? Celle de départ l'est toujours. */
+const landOpenIn = (links: readonly string[], land: GridLand): boolean => {
+  if (!land.after) return true;
+  const open = reachableIslands([...links]);
+  return land.islands.some((id) => open.has(id));
+};
+
+export type PayLandResult =
+  | { ok: true; used: Partial<Record<BlockId, number>> }
+  | { ok: false; reason: 'inconnu' | 'construit' | 'ordre' | 'blocs'; missing?: number };
+
+/**
+ * Relie une terre depuis le monde continu (GD-20, point 3, « vraies terres, vrais ponts ») : son prix (4 ressources par
+ * lieu) payé une fois, puis la liaison de la grille de chacun de ses lieux écrite dans `links` (`writeLandLinks`).
+ * Refusée, l'état reste tel quel : la terre de départ (« inconnu »), une terre déjà ouverte (« construit », rien de
+ * débité : deux « Relier » de suite), sa terre d'avant fermée (« ordre » : le Large avant le Couchant), pas assez de
+ * ressources (« blocs », ce qui manque). Les conditions des liaisons de la grille (une mission réussie) ne s'y
+ * appliquent pas. Un seul nouvel état.
+ */
+export function payLand(state: GameState, land: GridLand): { state: GameState; result: PayLandResult } {
+  if (!land.after) return { state, result: { ok: false, reason: 'inconnu' } };
+  if (landOpenIn(state.world.links, land)) return { state, result: { ok: false, reason: 'construit' } };
+  if (!landOpenIn(state.world.links, land.after)) return { state, result: { ok: false, reason: 'ordre' } };
+  const paid = payBlocks(land.price, state.stock);
+  if (!paid.ok) return { state, result: { ok: false, reason: 'blocs', missing: paid.missing } };
+  return { state: { ...state, stock: paid.inventory, world: writeLandLinks(state.world, land.islands) }, result: { ok: true, used: paid.used } };
+}
+
+/**
+ * Les terres ouvertes, entières, à l'ouverture du monde continu (GD-20, point 3, 4a), sans rien débiter : la terre de
+ * départ (la Halle et le Chantier naval, offerts), chaque terre dont un lieu est ouvert dans la grille ou déjà joué
+ * (`played`, les îles de ces lieux), et celles qu'il faut traverser pour l'atteindre ; chacun de leurs lieux reçoit sa
+ * liaison de la grille (`writeLandLinks`). Une seule fois : sans rien à écrire, le même état (la même référence). Peut
+ * ajouter des liaisons à reposer dans une grille aménagée.
+ */
+export function ensureLands(state: GameState, lands: readonly GridLand[], played: readonly BiomeId[] = []): GameState {
+  const islands = reachableIslands(state.world.links);
+  const open = new Set<GridLand>();
+  for (const land of lands)
+    if (!land.after || land.islands.some((id) => islands.has(id) || played.includes(id))) for (let l: GridLand | null = land; l; l = l.after) open.add(l);
+  const missing = [...open].flatMap((l) => l.islands.filter((id) => !islands.has(id)));
+  if (!missing.length) return state;
+  const world = writeLandLinks(state.world, missing);
+  return world.links.length === state.world.links.length ? state : { ...state, world };
 }

@@ -500,7 +500,5 @@ export const BEACONS: PlaceArt = {
   },
   // Kéo au retour : à l'est de la porte, sur l'herbe, hors du chemin.
   exit: { x: 1.6, z: 6.8 },
-  // La brume couvre la station et sa cale, pas le chapelet des mâts dans la mer.
-  veilReach: 9,
   hideInScenette: true,
 };
