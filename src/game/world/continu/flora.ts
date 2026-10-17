@@ -10,7 +10,7 @@ import { distance, distanceToPolyline, hash2, type Vec2 } from './geometry';
 import { LOOKOUT_RAMP, PATH_EDGES, PATH_NODES, PLACES, PORT, TERRAIN } from './plan6e';
 import { modelOfPlace } from './places';
 import { SHADOW_DIR } from './sky';
-import { drawTile, groundTone, heightOnFar, heightOnMesh, landDistance, straitClearance, tileRect, type HeightField, type TileDetail } from './terrain';
+import { drawTile, groundTone, heightOnFar, heightOnMesh, hillsAt, landDistance, straitClearance, tileRect, type HeightField, type TileDetail } from './terrain';
 
 /** Ce qui pousse ou se pose : un pin, un palmier, un buisson, un rocher. */
 type FloraKind = 'pin' | 'palmier' | 'buisson' | 'rocher';
@@ -23,6 +23,8 @@ export interface FloraItem {
   scale: number;
   yaw: number;
   shade: number;
+  /** Dessinée de loin aussi (une part des pins, les palmiers, les gros rochers) ; sinon de près seulement. */
+  far: boolean;
 }
 
 /**
@@ -32,6 +34,9 @@ export interface FloraItem {
 export const FLORA_COLORS = {
   pine: 0x2f7d62,
   pineLight: 0x3c9270,
+  /** Les pins de loin (la forêt du fond, reprise du lot 3) : plus clairs, ils ne mouchettent plus la Carte. */
+  pineFar: 0x4a9a78,
+  pineFarLight: 0x5cab86,
   palm: 0x47a96f,
   bush: 0x3f9a74,
   bushLight: 0x55b083,
@@ -40,15 +45,30 @@ export const FLORA_COLORS = {
 } as const;
 
 /**
- * Où rien ne pousse : à moins de `path` unités d'un chemin (des grands arbres, `pathTall`), `place` du centre d'un lieu,
- * `strait` d'un bras de mer (les rives et les ponts), à l'Escale (`PORT_KEEP`, son quai, sa place, ses bâtiments et leurs
- * abords, dans son repère), dans l'eau. Un grand arbre ne pousse pas
- * non plus devant la caméra : à moins de `camera` unités au sud d'un chemin (la caméra suit Kéo depuis le sud), d'où il
- * couperait Kéo. Seuls des rochers se posent sur la rive d'un bras de mer (retouche du lot 3, d'après les concepts validés :
- * « détroit », des blocs gris au bord de l'eau), à plus de `bank` unités de son eau et `bankPath` d'un chemin (les culées et
- * les ponts restent dégagés).
+ * Où rien ne pousse : à moins de `path` unités d'un chemin (des grands arbres, `pathTall`), à moins de `placeGap` unités
+ * de l'emprise d'un lieu (`placeRadius`), `strait` d'un bras de mer (les rives et les ponts), à l'Escale (`PORT_KEEP`,
+ * son quai, sa place, ses bâtiments et leurs abords, dans son repère), dans l'eau. Un grand arbre ne pousse pas non plus
+ * devant la caméra : à moins de `camera` unités au sud d'un chemin (la caméra suit Kéo depuis le sud), d'où il couperait
+ * Kéo. Seuls des rochers se posent sur la rive d'un bras de mer (retouche du lot 3, d'après les concepts validés :
+ * « détroit », des blocs gris au bord de l'eau), à plus de `bank` unités de son eau et `bankPath` d'un chemin (les culées
+ * et les ponts restent dégagés) ; de même, de gros blocs gris sur la côte (reprise du lot 3, directeur artistique), à
+ * moins de `coast` unités de l'eau et plus de `coastPath` d'un chemin. Autour d'un lieu (reprise du lot 3, directeur
+ * artistique), un bosquet le cadre, de `placeGap` à `placeBand` unités de son emprise, jamais au sud de son centre (entre
+ * la caméra et Kéo) ; le long des chemins, quelques plantes et rochers de premier plan, jusqu'à `edge` unités.
  */
-export const FLORA_KEEP = { path: 1.6, pathTall: 3, place: 13, strait: 5, camera: 7.5, bank: 0.6, bankPath: 6 } as const;
+export const FLORA_KEEP = { path: 1.6, pathTall: 3, placeGap: 4, placeBand: 8, strait: 5, camera: 7.5, bank: 0.6, bankPath: 6, coast: 2.6, coastPath: 4, edge: 5.5 } as const;
+
+/** Le rayon de l'emprise d'un lieu (de son centre au plus loin de son modèle, en x et en z), entre 2 et 10 unités. */
+const placeRadii = new Map<string, number>();
+export function placeRadius(id: (typeof PLACES)[number]['id']): number {
+  let r = placeRadii.get(id);
+  if (r === undefined) {
+    const box = boundsOf(modelOfPlace(id).facets);
+    r = Math.max(2, Math.min(10, Math.max(-box.min[0], box.max[0], -box.min[2], box.max[2])));
+    placeRadii.set(id, r);
+  }
+  return r;
+}
 
 /** L'Escale et ses abords, dans le repère du Port (`PORT.toLocal`) : rien n'y pousse. */
 const PORT_KEEP = { x0: -9, x1: 43, z0: -15, z1: 26 } as const;
@@ -58,9 +78,9 @@ const FLORA_CELL = 2.6;
 
 /**
  * La part des cases où quelque chose peut pousser (retouche du lot 3 : 0,6 au lieu de 0,42, des bosquets plus larges ;
- * la végétation des concepts validés est plus fournie).
+ * la végétation des concepts validés est plus fournie ; reprise : 0,5, la forêt du fond moins dense).
  */
-const FLORA_DENSITY = 0.6;
+const FLORA_DENSITY = 0.5;
 
 /** Les arêtes des chemins, en segments, et la rampe de la Vigie. */
 const SEGMENTS: readonly (readonly [Vec2, Vec2])[] = (() => {
@@ -109,26 +129,50 @@ export function floraOf(field: HeightField, tx: number, tz: number): readonly Fl
 /** La sorte de ce qui pousse en `p`, ou rien (`roll`, `look` : le hasard fixe de la case, de 0 à 1). */
 function pick(field: HeightField, p: Vec2, roll: number, look: number): FloraItem | null {
   const d = landDistance(p);
-  if (d < 0.8) return null;
+  if (d < 0.3) return null;
   const bank = straitClearance(p);
   if (bank < FLORA_KEEP.bank) return null;
   const port = PORT.toLocal(p);
   if (port.x > PORT_KEEP.x0 && port.x < PORT_KEEP.x1 && port.z > PORT_KEEP.z0 && port.z < PORT_KEEP.z1) return null;
-  for (const pl of PLACES) if (distance(p, pl.center) < FLORA_KEEP.place) return null;
+  // Le lieu le plus près, rapporté à son emprise : trop près, rien ; dans la bande qui le cadre, un bosquet.
+  let gap = Infinity;
+  let south = false;
+  for (const pl of PLACES) {
+    const g = distance(p, pl.center) - placeRadius(pl.id);
+    if (g < gap) {
+      gap = g;
+      south = p.z > pl.center.z + 1;
+    }
+  }
+  if (gap < FLORA_KEEP.placeGap) return null;
   const path = pathDistance(p, FLORA_KEEP.camera + 1);
   if (path < FLORA_KEEP.path) return null;
+  const base = { x: p.x, z: p.z, yaw: look * 2 * Math.PI, shade: Math.floor(look * 3) % 3 };
   if (bank < FLORA_KEEP.strait) {
     // La rive d'un bras de mer : des rochers seuls, loin des chemins et des ponts.
     if (path < FLORA_KEEP.bankPath || roll > 0.55) return null;
-    return { kind: 'rocher', scale: 1.1 + 0.9 * look, x: p.x, z: p.z, yaw: look * 2 * Math.PI, shade: Math.floor(look * 3) % 3 };
+    return { kind: 'rocher', scale: 1.1 + 0.9 * look, ...base, far: true };
+  }
+  // Hors de la mer, le haut de l'estran : de gros blocs gris sur la côte, loin des chemins.
+  if (d < FLORA_KEEP.coast) {
+    if (path < FLORA_KEEP.coastPath || roll > 0.45) return null;
+    return { kind: 'rocher', scale: 1.4 + 1.0 * look, ...base, far: true };
   }
   const h = heightOnMesh(field, p.x, p.z);
   const slope = slopeAt(field, p);
   const g = grove(p);
-  const base = { x: p.x, z: p.z, yaw: look * 2 * Math.PI, shade: Math.floor(look * 3) % 3 };
+  const hill = hillsAt(p) > 0.6;
   let kind: FloraKind | null = null;
   let scale = 1;
-  if (slope > 0.75) {
+  // Pour la forêt du fond : une part des pins seulement est dessinée de loin.
+  let far = look < 0.55;
+  if (gap < FLORA_KEEP.placeBand) {
+    // Le bosquet qui cadre un lieu (de près seulement : sur la Carte, rien sous son nom), jamais au sud de lui.
+    if (south || roll > 0.75) return null;
+    kind = roll < 0.45 ? 'pin' : 'buisson';
+    scale = 0.85 + 0.4 * look;
+    far = false;
+  } else if (slope > 0.75 && !hill) {
     // Ce qui est raide : des rochers, parfois.
     if (roll < 0.35) kind = 'rocher';
     scale = 0.8 + 0.7 * look;
@@ -137,10 +181,21 @@ function pick(field: HeightField, p: Vec2, roll: number, look: number): FloraIte
     if (roll < 0.22) kind = 'palmier';
     else if (roll < 0.32) kind = 'rocher';
     scale = 0.85 + 0.35 * look;
-  } else if (g > 0.12 || (h > 4 && g > -0.05)) {
-    // Un bosquet (et les hauteurs) : des pins serrés, des buissons à l'orée.
-    kind = g > 0.24 || h > 4 ? (roll < 0.85 ? 'pin' : 'buisson') : roll < 0.55 ? 'buisson' : roll < 0.7 ? 'pin' : null;
+    far = kind === 'palmier';
+  } else if (hill) {
+    // Une colline : ses pans restent nus (de grandes facettes), sauf un bosquet à son pied et un rocher, parfois.
+    if (g > 0.24 && roll < 0.35 && hillsAt(p) < 2.5) kind = 'pin';
+    else if (roll < 0.05) kind = 'rocher';
     scale = 0.8 + 0.5 * look;
+  } else if (g > 0.12) {
+    // Un bosquet : des pins serrés, des buissons à l'orée.
+    kind = g > 0.24 ? (roll < 0.85 ? 'pin' : 'buisson') : roll < 0.55 ? 'buisson' : roll < 0.7 ? 'pin' : null;
+    scale = 0.8 + 0.5 * look;
+  } else if (path < FLORA_KEEP.edge && roll < 0.3) {
+    // Le premier plan, le long d'un chemin : un buisson, un gros rocher à facettes, un pin.
+    kind = roll < 0.14 ? 'buisson' : roll < 0.22 ? 'rocher' : 'pin';
+    scale = kind === 'rocher' ? 1 + 0.6 * look : 0.8 + 0.4 * look;
+    far = false;
   } else if (roll < 0.12) {
     kind = 'buisson';
     scale = 0.75 + 0.5 * look;
@@ -154,7 +209,9 @@ function pick(field: HeightField, p: Vec2, roll: number, look: number): FloraIte
   if (!kind) return null;
   const tall = kind === 'pin' || kind === 'palmier';
   if (tall && (path < FLORA_KEEP.pathTall || inFrontOfCamera(p))) return null;
-  return { kind, scale, ...base };
+  // De loin, ni buisson ni petit rocher : ils mouchetaient la Carte.
+  if (kind === 'buisson' || (kind === 'rocher' && scale < 1.3)) far = false;
+  return { kind, scale, ...base, far };
 }
 
 /** La pente du sol en `p` : la longueur de sa pente (0 à plat, 1 à 45°). */
@@ -220,7 +277,9 @@ function drawFlora(field: HeightField, tx: number, tz: number, detail: TileDetai
   const ground = detail === 'near' ? (x: number, z: number) => heightOnMesh(field, x, z) : (x: number, z: number) => heightOnFar(field, x, z);
   let count = 0;
   for (const it of floraOf(field, tx, tz)) {
-    count += shadow(b, ground, it.x, it.z, SHADOW_RADIUS[it.kind] * it.scale, 0.35 * it.scale);
+    // De loin, une part seulement (`far`), sans ombre peinte : la Carte et le fond ne sont plus mouchetés.
+    if (detail === 'far' && !it.far) continue;
+    if (detail === 'near') count += shadow(b, ground, it.x, it.z, SHADOW_RADIUS[it.kind] * it.scale, 0.35 * it.scale);
     count += COST[it.kind][detail];
     if (b) drawItem(b, it, ground(it.x, it.z) - 0.08, detail);
   }
@@ -255,8 +314,8 @@ function drawItem(b: FacetBuilder, it: FloraItem, y: number, detail: TileDetail)
         b.prism(at(1.15), 0.78 * s, 0, 1.15 * s, 5, C.pineLight);
         b.prism(at(1.8), 0.52 * s, 0, 1.0 * s, 5, C.pine);
       } else {
-        b.prism(at(0.3), 0.95 * s, 0, 1.7 * s, 5, C.pine);
-        b.prism(at(1.45), 0.6 * s, 0, 1.35 * s, 5, C.pineLight);
+        b.prism(at(0.3), 0.95 * s, 0, 1.7 * s, 5, C.pineFar);
+        b.prism(at(1.45), 0.6 * s, 0, 1.35 * s, 5, C.pineFarLight);
       }
       return;
     case 'palmier':

@@ -1,6 +1,6 @@
 // La végétation, les rochers, les ombres peintes et l'écume du monde continu (GD-20, point 3, lot 3, leviers 3 à 5).
 import { describe, expect, it } from 'vitest';
-import { FLORA_COLORS, FLORA_KEEP, SHADOW, floraOf, landTileCounts, landTileFacets, shadowColor, type FloraItem } from './flora';
+import { FLORA_COLORS, FLORA_KEEP, SHADOW, floraOf, placeRadius, landTileCounts, landTileFacets, shadowColor, type FloraItem } from './flora';
 import { distance, distanceToPolyline, linearRgb } from './geometry';
 import { PATH_EDGES, PATH_NODES, PLACES, PORT, TERRAIN } from './plan6e';
 import { FOAM, buildHeightField, landDistance, straitClearance } from './terrain';
@@ -28,13 +28,26 @@ describe('La végétation et les rochers', () => {
   it('jamais sur un chemin, un lieu, un pont, la rive d’un bras de mer, l’Escale ni dans l’eau ; aucun grand arbre devant la caméra', () => {
     for (const it of all) {
       const p = { x: it.x, z: it.z };
-      expect(landDistance(p)).toBeGreaterThan(0.5);
+      expect(landDistance(p)).toBeGreaterThan(0.25);
+      // Au bord de l'eau, de gros blocs gris seuls, loin des chemins.
+      if (landDistance(p) < FLORA_KEEP.coast) {
+        expect(it.kind).toBe('rocher');
+        expect(pathDistance(p)).toBeGreaterThanOrEqual(FLORA_KEEP.coastPath - 1e-6);
+      }
       // Sur la rive d'un bras de mer, des rochers seuls, loin des chemins (des culées et des ponts).
       if (it.kind === 'rocher') expect(straitClearance(p)).toBeGreaterThanOrEqual(FLORA_KEEP.bank);
       else expect(straitClearance(p)).toBeGreaterThanOrEqual(FLORA_KEEP.strait);
       if (straitClearance(p) < FLORA_KEEP.strait) expect(pathDistance(p)).toBeGreaterThanOrEqual(FLORA_KEEP.bankPath - 1e-6);
       expect(pathDistance(p)).toBeGreaterThanOrEqual(FLORA_KEEP.path - 1e-6);
-      for (const pl of PLACES) expect(distance(p, pl.center)).toBeGreaterThanOrEqual(FLORA_KEEP.place);
+      for (const pl of PLACES) {
+        const gap = distance(p, pl.center) - placeRadius(pl.id);
+        expect(gap).toBeGreaterThanOrEqual(FLORA_KEEP.placeGap);
+        // Le bosquet qui cadre un lieu n'est jamais au sud de lui (entre la caméra et Kéo), ni sur la Carte.
+        if (gap < FLORA_KEEP.placeBand && landDistance(p) >= FLORA_KEEP.coast && straitClearance(p) >= FLORA_KEEP.strait) {
+          expect(p.z).toBeLessThanOrEqual(pl.center.z + 1);
+          expect(it.far).toBe(false);
+        }
+      }
       const port = PORT.toLocal(p);
       expect(port.x > -9 && port.x < 43 && port.z > -15 && port.z < 26).toBe(false);
       if (it.kind === 'pin' || it.kind === 'palmier') {
