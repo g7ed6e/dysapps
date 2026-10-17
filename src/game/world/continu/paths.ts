@@ -191,6 +191,8 @@ const DASHES = { on: 8, off: 4, half: 2, thickHalf: 3, outline: 0.9, color: 0xf2
 
 /** Le bois là où le sol est sous l'eau (la digue, les pontons) ; sur la plage, c'est encore un sentier. */
 const deckAt = (ground: (x: number, z: number) => number, p: Vec2) => ground(p.x, p.z) < 0.05;
+/** La même chose en (`x`, `z`), sans objet (l'anneau sous Kéo l'appelle quand il bouge). */
+const deckAtXZ = (ground: (x: number, z: number) => number, x: number, z: number) => ground(x, z) < 0.05;
 
 /**
  * Le ruban d'une liaison (`edge`, son rang dans `PATH_EDGES`), posé sur le sol, avec ses flancs ; en bois là où le sol
@@ -262,14 +264,20 @@ export function nodeOctagon(b: FacetBuilder, ground: (x: number, z: number) => n
   b.prism({ x: node.at.x, y: y - RIBBON_SIDE, z: node.at.z }, w, w, RIBBON_SIDE, 8, deck ? COLORS_6E.wood : COLORS_6E.path);
 }
 
-/** Les liaisons dont le ruban passe à moins de `reach` unités de (`x`, `z`), écrites dans `out` (vidé d'abord). */
+/** Le dessus de l'octogone d'un nœud (`node`) en (`x`, `z`), ou −∞ hors de lui. */
+function nodeTopAt(x: number, z: number, ground: (x: number, z: number) => number, node: Vec2): number {
+  const w = (deckAtXZ(ground, node.x, node.z) ? HALF_WIDTH.deck : HALF_WIDTH.path) * 1.08;
+  return Math.hypot(x - node.x, z - node.z) <= w ? standingHeight(ground(node.x, node.z)) + RIBBON_LIFT + 0.005 : -Infinity;
+}
+
+/** Les liaisons dont le ruban passe à moins de `reach` unités de (`x`, `z`), écrites dans `out` (vidé d'abord), sans rien allouer. */
 export function edgesNear(x: number, z: number, reach: number, out: number[]): number[] {
   out.length = 0;
-  PATH_EDGES.forEach(([ia, ib], edge) => {
-    const a = pathNode(ia).at;
-    const c = pathNode(ib).at;
+  for (let edge = 0; edge < PATH_EDGES.length; edge++) {
+    const a = pathNode(PATH_EDGES[edge][0]).at;
+    const c = pathNode(PATH_EDGES[edge][1]).at;
     if (segmentDistance(x, z, a.x, a.z, c.x, c.z) < reach + HALF_WIDTH.deck * 1.08) out.push(edge);
-  });
+  }
   return out;
 }
 
@@ -296,10 +304,7 @@ export function pathTopAt(x: number, z: number, ground: (x: number, z: number) =
     const len = Math.hypot(c.x - a.x, c.z - a.z) || 1e-9;
     const dx = (c.x - a.x) / len;
     const dz = (c.z - a.z) / len;
-    for (const node of [a, c]) {
-      const w = (deckAt(ground, node) ? HALF_WIDTH.deck : HALF_WIDTH.path) * 1.08;
-      if (Math.hypot(x - node.x, z - node.z) <= w) top = Math.max(top, standingHeight(ground(node.x, node.z)) + RIBBON_LIFT + 0.005);
-    }
+    top = Math.max(top, nodeTopAt(x, z, ground, a), nodeTopAt(x, z, ground, c));
     const d = (x - a.x) * dx + (z - a.z) * dz;
     if (d < 0 || d > len) continue;
     const across = Math.abs(-(x - a.x) * dz + (z - a.z) * dx);
@@ -310,7 +315,7 @@ export function pathTopAt(x: number, z: number, ground: (x: number, z: number) =
     const d1 = (len * (k + 1)) / n;
     const mx = a.x + dx * ((d0 + d1) / 2);
     const mz = a.z + dz * ((d0 + d1) / 2);
-    if (across > (deckAt(ground, { x: mx, z: mz }) ? HALF_WIDTH.deck : HALF_WIDTH.path)) continue;
+    if (across > (deckAtXZ(ground, mx, mz) ? HALF_WIDTH.deck : HALF_WIDTH.path)) continue;
     const y0 = standingHeight(ground(a.x + dx * d0, a.z + dz * d0));
     const y1 = standingHeight(ground(a.x + dx * d1, a.z + dz * d1));
     top = Math.max(top, y0 + ((y1 - y0) * (d - d0)) / (d1 - d0) + RIBBON_LIFT);

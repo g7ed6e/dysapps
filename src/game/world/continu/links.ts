@@ -407,6 +407,40 @@ export function linkPlanks(o: LinkObstacle, ground: (x: number, z: number) => nu
   return b.build();
 }
 
+/**
+ * Le pas de côté de Kéo au début de la pose (décision du directeur artistique, relecture du lot 2) : de face, au bord
+ * d'un ruisseau, il cachait la planche du milieu. Il s'écarte, du côté ouvert, jusqu'à ce que son bord passe celui du
+ * pont neuf (`lateral`, depuis la ligne du chemin), en `seconds` secondes, pendant que la première planche descend ;
+ * la caméra ne bouge pas, il ne revient pas. `near` : au-delà de tant d'unités du bord, il ne cache rien.
+ */
+export const SIDE_STEP = { lateral: (DECK.count * DECK.width) / 2 + KEO_RADIUS, seconds: 0.45, near: 4, steep: 0.6 } as const;
+
+/**
+ * Où Kéo s'écarte, depuis `at`, pour la pose de la passerelle `o`, et vers où il regarde à la fin (le milieu du pont
+ * neuf, un cap comme ceux de la marche) ; rien s'il ne la cache pas (sur la vraie eau, loin du bord, déjà de côté), ou
+ * si aucun côté n'est praticable (l'eau, une pente raide). Le côté où le ruisseau s'étend le plus loin dans l'herbe
+ * d'abord : c'est là que la place est libre.
+ */
+export function sideStepOf(o: LinkObstacle, at: Vec2, ground: (x: number, z: number) => number): { to: Vec2; heading: number } | null {
+  if (o.water) return null;
+  const dx = at.x - o.at.x;
+  const dz = at.z - o.at.z;
+  const u = dx * o.toward.x + dz * o.toward.z;
+  const v = -dx * o.toward.z + dz * o.toward.x;
+  if (u > -POST_U || u < -(KEO_STOP.stream + SIDE_STEP.near) || Math.abs(v) >= SIDE_STEP.lateral) return null;
+  const here = standingHeight(ground(at.x, at.z));
+  const first = o.arms[1] >= o.arms[0] ? 1 : -1;
+  for (const side of [first, -first]) {
+    const lv = side * SIDE_STEP.lateral;
+    const to = { x: o.at.x + o.toward.x * u - o.toward.z * lv, z: o.at.z + o.toward.z * u + o.toward.x * lv };
+    const g = ground(to.x, to.z);
+    if (g < 0.05 || Math.abs(standingHeight(g) - here) > SIDE_STEP.steep) continue;
+    // Le cap de la marche (./walk.ts) : vers le milieu du pont neuf.
+    return { to, heading: Math.atan2(-(o.at.x - to.x), -(o.at.z - to.z)) };
+  }
+  return null;
+}
+
 /** Le nombre de planches posées l'une après l'autre (sur un ruisseau comme sur l'eau). */
 export const LAY_PLANKS = DECK.count;
 

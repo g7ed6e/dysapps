@@ -204,7 +204,7 @@ function farHeights(f: HeightField): Float32Array {
         const want = Math.max(top, fine(x, z));
         const excess = farAt(out, f.nx, k, i, j, u - i, v - j) - want;
         if (excess <= 0) continue;
-        for (const [di, dj] of [[0, 0], [1, 0], [0, 1], [1, 1]]) {
+        for (const [di, dj] of CELL_CORNERS) {
           const r = (j + dj) * k * f.nx + (i + di) * k;
           drop[r] = Math.max(drop[r], excess);
         }
@@ -214,6 +214,14 @@ function farHeights(f: HeightField): Float32Array {
   for (let r = 0; r < out.length; r++) out[r] -= drop[r];
   return out;
 }
+
+/** Les quatre coins d'une case. */
+const CELL_CORNERS = [
+  [0, 0],
+  [1, 0],
+  [0, 1],
+  [1, 1],
+] as const;
 
 /** La hauteur du terrain de loin dans la case grossière (`i`, `j`), à (`s`, `t`) dans la case : ses deux triangles en damier. */
 function farAt(h: Float32Array, nx: number, k: number, i: number, j: number, s: number, t: number): number {
@@ -433,6 +441,12 @@ export function tileRings(focus: Vec2, far: number): { near: number[]; far: numb
  */
 export const RING_LIFT = 0.04;
 const RING_REACH = 0.3;
+/**
+ * Il épouse une montée, mais ne plonge jamais d'une marche (directeur artistique, relecture du lot 2 : au bord d'un chemin
+ * surélevé, il faisait une jupe sur le flanc) : aucun sommet à plus de tant sous les pieds de Kéo ; au-dessus d'une
+ * marche ou d'une descente, il flotte un peu.
+ */
+export const RING_FLOOR = -0.1;
 
 /**
  * L'anneau clair sous Kéo épouse le sol (décision du directeur artistique, 17 octobre 2026 : aucune pente ne le coupe) :
@@ -451,6 +465,6 @@ export function ringHeights(cx: number, cz: number, feet: number, xz: Float32Arr
     }
     const x = cx + xz[2 * i];
     const z = cz + xz[2 * i + 1];
-    out[i] = Math.max(surface(x, z), surface(x + r, z), surface(x - r, z), surface(x, z + r), surface(x, z - r)) - feet + RING_LIFT;
+    out[i] = Math.max(RING_FLOOR, Math.max(surface(x, z), surface(x + r, z), surface(x - r, z), surface(x, z + r), surface(x, z - r)) - feet + RING_LIFT);
   }
 }

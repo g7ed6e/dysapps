@@ -12,6 +12,7 @@ import {
   LAY_PLANKS,
   LINK_LAY,
   OBSTACLE_TOUCH,
+  SIDE_STEP,
   PLACE_LINKS,
   START_PLACES,
   VEIL_MARGIN,
@@ -29,6 +30,7 @@ import {
   linksFromStart,
   obstacleOf,
   reachableNodes,
+  sideStepOf,
 } from './links';
 import { atNode, findRoute, routeLength, snapToNetwork } from './paths';
 import { PATH_EDGES, PLACES, placeById } from './plan6e';
@@ -216,5 +218,39 @@ describe('La pose d’une passerelle (lot 2)', () => {
     expect(Array.from(v.positions.slice(0, rest.positions.length))).toEqual(Array.from(rest.positions));
     expect(v.triangles).toBe(rest.triangles + veilFacets(['filets']).triangles);
     expect(rest.fadingFrom).toBe(rest.positions.length / 3);
+  });
+});
+
+describe('Le pas de côté de Kéo pendant la pose (directeur artistique, relecture du lot 2)', () => {
+  it('au bord de chaque ruisseau, Kéo s’écarte du pont neuf, sur le sol, sans pente raide, et regarde la passerelle', () => {
+    for (const o of allObstacles()) {
+      const step = sideStepOf(o, o.bank.at, ground);
+      if (o.water) {
+        // Sur la vraie eau, la passerelle est longue : il ne la cache pas.
+        expect(step, o.place).toBeNull();
+        continue;
+      }
+      expect(step, o.place).not.toBeNull();
+      const { to, heading } = step!;
+      const dx = to.x - o.at.x;
+      const dz = to.z - o.at.z;
+      // Même distance du ruisseau (le long du chemin), et de côté : son bord passe celui du pont neuf.
+      expect(dx * o.toward.x + dz * o.toward.z, o.place).toBeCloseTo(-distance(o.bank.at, o.at), 5);
+      expect(Math.abs(-dx * o.toward.z + dz * o.toward.x), o.place).toBeCloseTo(SIDE_STEP.lateral, 5);
+      expect(ground(to.x, to.z), o.place).toBeGreaterThan(0.05);
+      expect(Math.abs(standingHeight(ground(to.x, to.z)) - standingHeight(ground(o.bank.at.x, o.bank.at.z))), o.place).toBeLessThanOrEqual(SIDE_STEP.steep);
+      // Le cap de la marche (./walk.ts) : tourné vers le milieu du pont neuf.
+      expect(heading).toBeCloseTo(Math.atan2(-(o.at.x - to.x), -(o.at.z - to.z)), 6);
+      // Hors de la brume du lieu.
+      expect(underVeil(o.place, to), o.place).toBe(false);
+    }
+  });
+
+  it('pas de pas loin du bord, ni déjà de côté', () => {
+    const o = allObstacles().find((x) => !x.water)!;
+    const far = { x: o.at.x - o.toward.x * 12, z: o.at.z - o.toward.z * 12 };
+    expect(sideStepOf(o, far, ground)).toBeNull();
+    const step = sideStepOf(o, o.bank.at, ground)!;
+    expect(sideStepOf(o, step.to, ground)).toBeNull();
   });
 });

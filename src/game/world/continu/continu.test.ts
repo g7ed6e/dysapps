@@ -10,7 +10,7 @@ import { COAST, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_
 import { modelOfPlace } from './places';
 import { sceneSpot } from './questionScene';
 import { SEA_TEXTURE, seaPixels, shallowness } from './sea';
-import { RING, RING_LIFT, TILE_SIZE, buildHeightField, heightAt, heightOnFar, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
+import { RING, RING_FLOOR, RING_LIFT, TILE_SIZE, buildHeightField, heightAt, heightOnFar, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
 import { createTileStore } from './tiles';
 import { VEIL_HEIGHT, VEIL_PROFILE, veilFacets } from './veil';
 import { WALK_CADENCE, WALK_SPEED, skipWalk, startWalk, walkAt } from './walk';
@@ -555,7 +555,7 @@ describe('L’anneau clair sous Kéo (directeur artistique, 17 octobre 2026)', (
   const field = buildHeightField();
   const ground = (x: number, z: number) => heightOnMesh(field, x, z);
 
-  it('épouse le sol et passe sur les chemins : chaque sommet juste au-dessus du sol et du dessus des rubans, même en pente', () => {
+  it('épouse le sol et passe sur les chemins, sans jamais plonger d’une marche : chaque sommet juste au-dessus du sol et du dessus des rubans, et pas plus bas que les pieds moins 0,1', () => {
     const edges: number[] = [];
     let above = 0;
     // Kéo sur le réseau, au milieu de chaque liaison et sur chaque nœud.
@@ -574,6 +574,8 @@ describe('L’anneau clair sous Kéo (directeur artistique, 17 octobre 2026)', (
         const z = c.z + xz[2 * i + 1];
         const y = feet + out[i];
         expect(y - standingHeight(ground(x, z))).toBeGreaterThanOrEqual(RING_LIFT - 1e-4);
+        // Jamais une marche vers le bas : pas plus bas que les pieds de Kéo moins 0,1.
+        expect(out[i]).toBeGreaterThanOrEqual(RING_FLOOR - 1e-6);
         // Au-dessus de tout ruban qui passe là, même ceux que `edgesNear` n'a pas retenus.
         expect(y - pathTopAt(x, z, ground, PATH_EDGES.map((_, e) => e))).toBeGreaterThanOrEqual(RING_LIFT - 1e-4);
         if (y - feet > 0.2) above++;

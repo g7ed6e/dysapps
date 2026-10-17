@@ -2650,6 +2650,28 @@
 .open-world-said > .speak-button {
   pointer-events: auto;
 }
+/* Les mots entiers, jamais coupés au milieu (« passerel-le »), même dans une boîte étroite. */
+.open-world-said > p {
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
+}
+/* Sur un téléphone (étroit ou couché), Kéo se tient juste au-dessus de « Y aller » : la boîte monte en haut, comme sur
+   la Carte, pour ne cacher ni Kéo ni « Y aller » (référent dys, consultant UX UI) ; étroit, le haut-parleur passe sous
+   les phrases, qui ont toute la largeur. */
+@media (max-width: 600px), (max-height: 500px) {
+  .open-world-said {
+    top: calc(8px + env(safe-area-inset-top, 0px));
+    bottom: auto;
+    max-width: calc(100vw - 16px);
+  }
+}
+@media (max-width: 600px) {
+  .open-world-said {
+    flex-direction: column;
+    padding: 0.4rem 0.6rem;
+  }
+}
 .open-world-said[data-shown='non'] {
   padding: 0;
   border: 0;

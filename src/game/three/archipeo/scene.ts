@@ -16,7 +16,7 @@ import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP,
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
-import { OBSTACLE_TOUCH, branchRibbons, clampToOpen, deckLift, deckTop, isLinked, linkFacets, LAY_PLANKS, LINK_LAY, linkFrame, linkLayAt, linkPlanks, obstacleOf, openPathRibbons, type LinkLayState, type LinkedPlace } from '../../world/continu/links';
+import { OBSTACLE_TOUCH, branchRibbons, clampToOpen, deckLift, deckTop, isLinked, linkFacets, LAY_PLANKS, LINK_LAY, SIDE_STEP, linkFrame, linkLayAt, linkPlanks, obstacleOf, openPathRibbons, sideStepOf, type LinkLayState, type LinkedPlace } from '../../world/continu/links';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, edgesNear, findRoute, pathNode, pathTopAt, snapToNetwork, startOf, type NetworkPoint, type RibbonLook } from '../../world/continu/paths';
 import { PLACES, TERRAIN, hidesTraces, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
@@ -638,7 +638,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // La pose d'une passerelle en cours (lot 2) : le lieu, son début, ce qu'elle dit à la page ; ses planches dans le
   // maillage de pose (du matériau des lieux, sans halo : relier ne pose aucune partie), la hauteur de leurs sommets à leur
   // place (`rest`), le nombre de sommets d'une planche ; montrées, toc dit. `pendingLay` : annoncée, en attente des liaisons.
-  let laying: { place: LinkedPlace; start: number; events: LinkLayEvents; rest: Float32Array; per: number; shown: number; tapped: boolean } | null = null;
+  // `step` : le pas de côté de Kéo, de `from` à `to`, puis tourné vers la passerelle (`heading`).
+  let laying: {
+    place: LinkedPlace;
+    start: number;
+    events: LinkLayEvents;
+    rest: Float32Array;
+    per: number;
+    shown: number;
+    tapped: boolean;
+    step: { from: Vec2; to: Vec2; heading: number } | null;
+  } | null = null;
   let pendingLay: { place: LinkedPlace; events: LinkLayEvents } | null = null;
   const layState: LinkLayState = { planks: 0, fall: 0, landed: false, fade: 0, done: false };
   // Les lieux où Kéo ne passe pas : les fermés, et celui dont la passerelle se pose.
@@ -685,6 +695,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const ringEdges: number[] = [];
   const ringSurface = (x: number, z: number) => Math.max(standingHeight(ground(x, z)), pathTopAt(x, z, ground, ringEdges));
   ringGeometry.computeBoundingSphere();
+  // `computeBoundingSphere` vient de la calculer : elle n'est pas nulle.
   ringGeometry.boundingSphere!.radius += 2;
   const ringMaterial = new THREE.MeshBasicMaterial({ color: KEO_RING.color, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
   const ring = new THREE.Mesh(ringGeometry, ringMaterial);
@@ -1018,12 +1029,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const n = planks.positions.length / 3;
     const rest = new Float32Array(n);
     for (let i = 0; i < n; i++) rest[i] = planks.positions[i * 3 + 1];
-    laying = { place, start: performance.now() / 1000, events, rest, per: n / LAY_PLANKS, shown: 0, tapped: false };
+    // De face au bord d'un ruisseau, Kéo cachait la planche du milieu : il fait un pas de côté (directeur artistique).
+    const side = walk ? null : sideStepOf(obstacleOf(place), here, ground);
+    laying = { place, start: performance.now() / 1000, events, rest, per: n / LAY_PLANKS, shown: 0, tapped: false, step: side && { from: { ...here }, to: side.to, heading: side.heading } };
+    // Sa place à lui, que le pas réécrit (jamais le point d'un nœud du réseau).
+    if (side) here = { ...here };
     walkClosed = [...closed, place];
     poseMesh.material = landMaterial;
     poseMesh.position.set(0, 0, 0);
     setGeometry(poseMesh, planks);
-    // La boîte englobante tient les planches en haut : l'élimination hors champ reste allumée.
+    // La boîte englobante tient les planches en haut : l'élimination hors champ reste allumée. `geometryOf` (par
+    // `setGeometry`) vient de calculer la boîte, `computeBoundingSphere` la sphère : ni l'une ni l'autre n'est nulle.
     poseMesh.geometry.boundingBox!.max.y += LINK_LAY.drop;
     poseMesh.geometry.computeBoundingSphere();
     poseMesh.geometry.boundingSphere!.radius += LINK_LAY.drop;
@@ -1040,9 +1056,28 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     for (let i = k * laying.per; i < (k + 1) * laying.per; i++) a[i * 3 + 1] = laying.rest[i] + fall;
     position.needsUpdate = true;
   };
-  /** La pose à l'instant `t` (en secondes) : la planche qui descend, le toc à la dernière, puis le fondu de la brume. */
-  const stepLay = (t: number) => {
-    if (!laying) return;
+  /**
+   * La pose à l'instant `t` (en secondes) : le pas de côté de Kéo, la planche qui descend, le toc à la dernière, puis le
+   * fondu de la brume. Rend vrai tant que Kéo marche (son pas de côté).
+   */
+  const stepLay = (t: number): boolean => {
+    if (!laying) return false;
+    let stepping = false;
+    const step = laying.step;
+    if (step) {
+      const e = Math.min(1, (t - laying.start) / SIDE_STEP.seconds);
+      const k = e * e * (3 - 2 * e);
+      here.x = step.from.x + (step.to.x - step.from.x) * k;
+      here.z = step.from.z + (step.to.z - step.from.z) * k;
+      // Un quart de tour vers où il va, puis vers la passerelle.
+      if (e < 1) {
+        heading = Math.atan2(-(step.to.x - step.from.x), -(step.to.z - step.from.z));
+        stepping = true;
+      } else {
+        heading = step.heading;
+        laying.step = null;
+      }
+    }
     const s = linkLayAt(t - laying.start, layState);
     if (!laying.tapped) {
       // Les planches déjà là, à leur place ; celle qui descend, au-dessus de la sienne.
@@ -1060,12 +1095,19 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     if (s.landed) fadeVeil(s.fade);
     if (s.done) finishLay();
+    return stepping;
   };
   /** Finit la pose tout de suite : la passerelle posée, la brume partie, le toc s'il n'a pas été dit, puis la fin. */
   function finishLay(tell = true) {
     if (!laying) return;
     const l = laying;
     laying = null;
+    // Le pas de côté fini d'un coup : Kéo à sa place, tourné vers la passerelle.
+    if (l.step) {
+      here = { ...l.step.to };
+      heading = l.step.heading;
+      placeKeo(here);
+    }
     walkClosed = closed;
     poseMesh.visible = false;
     poseMesh.geometry.dispose();
@@ -1192,6 +1234,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     options.onArrive(place);
   };
   const startWalkTo = (target: NetworkPoint, place: PlaceId | null) => {
+    // Un toucher pendant la pose d'une passerelle (« Y aller », un lieu) la finit d'un coup, comme la Carte : il n'est
+    // jamais perdu (directeur artistique, relecture du lot 2).
+    finishLay();
     const from = snapToNetwork(here);
     // Au-delà d'une passerelle démontée, Kéo s'arrête au bord, sans heurt ni son (GD-20, point 3).
     const to = clampToOpen(target, walkClosed);
@@ -2069,6 +2114,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     options.onAssembled();
   };
   const startAssembly = () => {
+    finishLay();
     finishPose();
     finishAssembly();
     if (!port || !port.recipe.pieces.length || port.pile < 1 || asked || mapView) return options.onAssembled();
@@ -2159,7 +2205,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (state.heading !== null) heading = state.heading;
       if (!state.moving) arrive(walkTarget);
     }
-    stepLay(t);
+    if (stepLay(t)) moving = true;
     if (mapView) {
       // La Carte : rien ne bouge que ce que les doigts font glisser ; les lieux à l'écran, pour leurs étiquettes.
       if (mapSettling) {
@@ -2218,8 +2264,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     body.bouger(t, dt, moving, reduceMotion, WALK_CADENCE);
     // La caméra rattrape Kéo hors de sa zone morte, et monte si le relief le cache ; arrêté près du Phare, elle lève
     // le regard vers la lanterne (jamais pendant la marche).
-    followStep(focus, keoFeet, dt, reduceMotion);
-    lift = liftStep(lift, occlusionLift(focus, ground), dt, reduceMotion);
+    // Pendant la pose d'une passerelle, la caméra ne bouge pas, même quand Kéo fait son pas de côté.
+    if (!laying) {
+      followStep(focus, keoFeet, dt, reduceMotion);
+      lift = liftStep(lift, occlusionLift(focus, ground), dt, reduceMotion);
+    }
     look = lookUpStep(look, nearLantern() ? 1 : 0, dt, reduceMotion);
     if (back > 0 && !atExit()) back = reduceMotion ? 0 : Math.max(0, back - dt / EXIT_VIEW.down);
     if (back === 0) exit = null;

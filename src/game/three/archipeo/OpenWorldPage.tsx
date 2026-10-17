@@ -210,11 +210,17 @@ export default function OpenWorldPage() {
           const r = el.getBoundingClientRect();
           return { left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height };
         }),
+        // La phrase de la passerelle, le temps qu'elle est écrite : la marque n'est jamais dessous (référent dys,
+        // consultant UX UI ; au plus grand texte, elle mordait la marque « Le Phare »).
+        ...[...stage.querySelectorAll<HTMLElement>('.open-world-said[data-shown="oui"]')].map((el) => {
+          const r = el.getBoundingClientRect();
+          return { left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height };
+        }),
       ];
     };
     const observer = new ResizeObserver(measure);
     observer.observe(stage);
-    for (const el of stage.querySelectorAll('.open-world-mark, .world-settings, .world-shortcuts, .open-world-go, .open-world-bar')) observer.observe(el);
+    for (const el of stage.querySelectorAll('.open-world-mark, .world-settings, .world-shortcuts, .open-world-go, .open-world-bar, .open-world-said')) observer.observe(el);
     measure();
     return () => observer.disconnect();
     // La marque et « Y aller » changent d'élément avec la prochaine mission et la marche : on les observe de nouveau.
@@ -424,10 +430,11 @@ export default function OpenWorldPage() {
           setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [PASSERELLE_POSEE, ...linkable.map((p) => linkableLabel(placeById(p)))], after }));
         },
       };
-      const w = world.current;
-      // Annoncée avant que les liaisons changent : la scène la pose quand elle les reçoit.
-      w?.layLink(place, events);
       if (!linkFromOpenWorld(bridge.id).ok) return;
+      const w = world.current;
+      // Payée, puis annoncée avant que les liaisons changent dans la scène (`setLinks` vient d'un effet, après le rendu) :
+      // la scène la pose quand elle les reçoit. Un paiement refusé n'annonce rien.
+      w?.layLink(place, events);
       if (mapOpen) focusAfter.current = place;
       setLieu(null);
       if (!w) {
@@ -732,7 +739,12 @@ export default function OpenWorldPage() {
             qu'elle est écrite, un haut-parleur la fait réentendre, et le toucher la garde écrite (référent dys). Sur la Carte, elle se tient en haut,
             hors des noms des lieux du sud. */}
         <div className={`open-world-said${mapOpen ? ' on-map' : ''}`} data-shown={saidShown && !asking ? 'oui' : 'non'} onPointerDown={holdSaid} onFocus={holdSaid}>
-          <p role="status">{saidShown && !asking && said ? said.lines.map((line) => <span key={line}>{line}</span>) : ''}</p>
+          <p role="status">{saidShown && !asking && said ? said.lines.map((line, i) => (
+                <span key={line}>
+                  {i > 0 && ' '}
+                  {line}
+                </span>
+              )) : ''}</p>
           {saidShown && !asking && said && <SpeakButton text={said.lines.join(' ')} label="Réécouter" compact />}
         </div>
         {asking && world.current && (
