@@ -197,7 +197,26 @@ Après ses plans, le fichier d’une île de français, de maths, d’anglais, d
 
 Le nombre et le nom du bloc ne s’écrivent pas : le jeu met à la place de `{objet}` le nombre de blocs avec les mots de Mes blocs (« 4 briques », « 3 blocs de terre »), à la place de `{blocs}` le même nom sans nombre (« briques »), et à la place de `{à}` le lieu où l’on assemble (« à la Fabrique », `assemblage.md`) : l’objet porte ainsi le même nom partout. La phrase de la première fois (« Une commande, c’est une créature qui te demande des blocs pour une petite construction. Rien ne presse. ») est commune à toutes les îles : elle va avec les textes de l’univers, pas ici.
 
-Les phrases sont celles de Blocland (une « commande », une « petite construction ») ; Archipéo, en pause, n’affiche pas les commandes et n’a pas de phrases ici (dans le JSON, elles sont rangées sous `blocland`, pour qu’un autre univers ait les siennes à côté). La forme de chaque petite construction est dessinée par le code (`src/game/world/fixtures.ts`, testée) ; la note « > Forme » la décrit pour l’artiste technique 3D, et le jeu ne la lit pas. `scripts/contenu/demandes.mjs` lit la section et vérifie ces règles (avec les apostrophes typographiques, sans « … », deux phrases courtes au plus) ; `demandes.test.mjs` les teste. Changer un bloc, un nombre ou une petite construction passe par le directeur artistique ; une phrase, par le consultant de Blocland et le référent dys.
+Les phrases sont celles de la grille, les mêmes dans Blocland et dans Archipéo (une « commande », une « petite construction » ; dans le JSON, elles sont rangées sous `blocland`, pour qu’un autre univers ait les siennes à côté). Le monde ouvert d’Archipéo a les siennes, une forme pour toutes les commandes, dans `monde-ouvert.md` (plus bas). La forme de chaque petite construction est dessinée par le code (`src/game/world/fixtures.ts`, testée) ; la note « > Forme » la décrit pour l’artiste technique 3D, et le jeu ne la lit pas. `scripts/contenu/demandes.mjs` lit la section et vérifie ces règles (avec les apostrophes typographiques, sans « … », deux phrases courtes au plus) ; `demandes.test.mjs` les teste. Changer un bloc, un nombre ou une petite construction passe par le directeur artistique ; une phrase, par le consultant de Blocland et le référent dys.
+
+## Les phrases des habitants du monde ouvert
+
+`monde-ouvert.md` n’est pas une île : il tient les phrases des habitants du monde ouvert d’Archipéo ([GD-20](../gameplay/propositions/GD-20.md), point 4, prototype du 6e derrière `?monde=ouvert`), une seule forme par moment de la commande, que le jeu remplit avec la commande de chaque île. Les phrases de « Les demandes » restent celles de la grille. `npm run contenu` les écrit dans `src/game/world/continu/mondeOuvert.json`, que seul le monde ouvert lit :
+
+```md
+## Les habitants
+
+- demande : Il me faut {objet}. C’est pour {nom}. Joue une mission {au lieu}.
+- demande assemblée : Il me faut {objet}. C’est pour {nom}. Assemble les {blocs} {au lieu}.
+- prête : Livre {objet} {au lieu}.
+- consigne : Tu livres {objet} pour {nom}.
+- posée : {Nom} est en place.
+```
+
+- **les jetons**, que le jeu remplace : `{objet}`, le nombre et le nom de la ressource, avec les mots de la réserve (« 3 blocs de sable », « 2 madriers »), jamais raccourci ; `{blocs}`, le même nom sans nombre (« madriers ») ; `{nom}` et `{Nom}`, la petite construction avec son article, en minuscule ou avec sa majuscule ; `{au lieu}`, le lieu dans sa forme « à » (« au Phare »), et pour le lieu où l’on assemble la forme « à » de `assemblage.md`, en entier (« à l’Entrepôt des matériaux »). Chaque forme prend tous ses jetons, une fois, et aucun autre ; une accolade seule est refusée.
+- **la lecture** : une idée par phrase, trois phrases au plus, dix mots au plus par phrase **une fois les jetons remplis** (un nombre ou un mot élidé compte pour un mot), un point à la fin, jamais « ! » ni « … », l’apostrophe typographique, ni « merci », ni « vite », ni « quête », ni le Rafiot.
+
+`scripts/contenu/mondeOuvert.mjs` lit le fichier et vérifie les jetons et la lecture ; `mondeOuvert.test.mjs` les teste. Le plafond de mots se compte sur le texte rempli, avec les seize commandes du 6e et chaque lieu : `src/game/three/archipeo/remiseOf.test.ts` le vérifie, avec l’absence de « à le », « de les » et d’accolade restée. Une phrase change avec le directeur du contenu pédagogique, le consultant d’Archipéo et le référent dys.
 
 ## Les quêtes
 

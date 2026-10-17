@@ -207,6 +207,13 @@ export function lanternLight(): Facets {
 /** La couleur de la lampe allumée, la seule note chaude du monde : la vue la dessine sans ombre. */
 export const LAMP_COLOR = C.lamp;
 
+/**
+ * Le jardin clos de la gardienne du Phare, depuis le centre du lieu : son milieu, sa largeur (x) et sa profondeur (z),
+ * et la longueur de chacun des deux pans de son muret est, de part et d'autre de l'ouverture. Le potager du monde ouvert
+ * le prolonge par cette ouverture (world/continu/amenagements.ts, GD-20, point 4).
+ */
+export const PHARE_GARDEN = { x: -6, z: 0.5, w: 3.2, d: 3.4, eastWall: 1.2 } as const;
+
 /** Le rayon de la tour du Phare à la hauteur `y` : 1,7 à son pied (0,7), 1,2 sous la galerie (10,7). */
 const towerRadius = (y: number) => 1.7 - (0.5 * (y - 0.7)) / 10;
 
@@ -260,7 +267,7 @@ function phare(add: Add): void {
     b.prism({ x: 2.4, y: 11.75, z: -0.4 }, 0.28, 0.13, 0.55, 8, C.bell);
   });
   // Le muret du jardin clos, ouvert à l'est, puis ses deux carrés de légumes : bas, sur le plat de l'îlot.
-  const garden = { x: -6, z: 0.5, w: 3.2, d: 3.4 };
+  const garden = PHARE_GARDEN;
   const foot = g.foot(garden.x, garden.z, 1.8);
   add(2, 0.34, (b) => {
     const y = foot.low - 0.3;
@@ -269,7 +276,7 @@ function phare(add: Add): void {
     b.box({ x, y, z: z - d / 2 }, [w, h, 0.3], C.stone);
     b.box({ x, y, z: z + d / 2 }, [w, h, 0.3], C.stone);
     b.box({ x: x - w / 2, y, z }, [0.3, h, d], C.stone);
-    for (const side of [-1, 1]) b.box({ x: x + w / 2, y, z: z + side * (d / 2 - 0.6) }, [0.3, h, 1.2], C.stone);
+    for (const side of [-1, 1]) b.box({ x: x + w / 2, y, z: z + side * (d / 2 - garden.eastWall / 2) }, [0.3, h, garden.eastWall], C.stone);
   });
   add(2, 0.67, (b) => {
     for (const dx of [-0.75, 0.75]) b.box({ x: garden.x + dx, y: foot.low - 0.3, z: garden.z }, [1.0, foot.top - foot.low + 0.55, 2.4], C.darkWood, C.green);

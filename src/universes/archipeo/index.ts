@@ -640,9 +640,10 @@ export const ARCHIPEO = {
   },
   assemblage: lieuDAssemblage('archipeo'),
   // Le lieu de départ du monde continu (GD-20, lot 2), derrière le drapeau : noms choisis par le mainteneur le 15 octobre
-  // 2026 (L'Escale, la Maison des Savoirs), et ceux de la salle des succès et du lieu d'assemblage proposés par le
-  // consultant d'Archipéo. Dans la grille, le lieu d'assemblage reste l’Entrepôt des matériaux.
-  depart: { nom: 'L’Escale', ecole: 'La Maison des Savoirs', succes: 'La Galerie des Merveilles', assemblage: 'Le Chantier de l’Escale' },
+  // 2026 (L'Escale, la Maison des Savoirs), et celui de la salle des succès proposé par le consultant d'Archipéo. Le lieu
+  // d'assemblage porte le même nom que dans la grille, « L’Entrepôt des matériaux » (choix du mainteneur du 16 octobre
+  // 2026), lu dans docs/contenu/assemblage.md, sa seule source.
+  depart: { nom: 'L’Escale', ecole: 'La Maison des Savoirs', succes: 'La Galerie des Merveilles', assemblage: lieuDAssemblage('archipeo').titre },
   // Les noms d'avant GD-1, ceux des données (world/archipelago.ts).
   archipels: { '6e': 'Premiers Rivages', '5e': 'Îles Brumeuses', '4e': 'Anciens Ateliers', '3e': 'Îles du Ciel' },
   // Les rôles d'avant GD-1, ceux de core/progress.ts (ROLES), et leurs succès inchangés.

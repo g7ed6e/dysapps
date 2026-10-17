@@ -1,6 +1,7 @@
 // « Relier » dans la page du monde ouvert (GD-20, point 3, « vraies terres, vrais ponts » ; relecture de l'expert
 // frontend) : une terre payée, la scène reçoit ses terres fermées sans elle, le pont est rebâti d'un coup ; la phrase
-// vient, et celle du pont devenu reliable la suit. La scène 3D n'est pas là sous jsdom : une scène simulée.
+// vient, et celle du pont devenu reliable la suit. Et la commande prête dans la suggestion (lot L1 « Livrer »). La scène
+// 3D n'est pas là sous jsdom : une scène simulée.
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
@@ -11,12 +12,14 @@ import { BloclandProvider } from '../../BloclandContext';
 import { reachableIslands } from '../../world/archipelago';
 import { landById, type LinkedLand } from '../../world/continu/lands';
 import { placeById } from '../../world/continu/plan6e';
+import { COMMANDES } from '../../world/requests';
 import type { OpenWorld, OpenWorldOptions } from './scene';
 import OpenWorldPage from './OpenWorldPage';
 
 const scene = vi.hoisted(() => ({
   options: null as OpenWorldOptions | null,
   closed: [] as readonly LinkedLand[],
+  world: null as OpenWorld | null,
 }));
 vi.mock('./scene', () => ({
   createOpenWorld: (_host: HTMLElement, options: OpenWorldOptions) => {
@@ -31,7 +34,8 @@ vi.mock('./scene', () => ({
         scene.closed = lands.closed;
       },
     };
-    return new Proxy(own, { get: (t, k: string) => (t as Record<string, unknown>)[k] ?? ((t as Record<string, unknown>)[k] = vi.fn()) }) as OpenWorld;
+    scene.world = new Proxy(own, { get: (t, k: string) => (t as Record<string, unknown>)[k] ?? ((t as Record<string, unknown>)[k] = vi.fn()) }) as OpenWorld;
+    return scene.world;
   },
 }));
 
@@ -161,4 +165,52 @@ test('une terre à moitié ouverte en cours de session (un lieu relié par la gr
   for (const id of landById('couchant').places) expect(islands.has(placeById(id).island as never), id).toBe(true);
   expect(pay.ctx!.state.stock['french-6e-letter-confusion']).toBe(8);
   expect(scene.closed).toEqual(['large', 'levant', 'cretes']);
+});
+
+test('une commande prête porte la suggestion (GD-20, point 4, lot L1) : sa phrase dans la bulle, « Y aller » vers l’habitant, la marque à son lieu, sa pastille pleine ; jamais « Aucune mission » ; arrivé chez lui, sa pastille se retire', async () => {
+  const potager = COMMANDES.find((c) => c.fixture === 'french-6e-phonology-fixture-1')!;
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { [potager.block]: potager.count }, world: { links: [], requests: [potager.id] } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  expect(await screen.findByText('Livre 3 blocs de terre au Phare.')).toBeInTheDocument();
+  expect(screen.queryByText(/Aucune mission/)).toBeNull();
+  const go = screen.getByRole('button', { name: 'Y aller : Le Phare' });
+  expect(go).toHaveClass('primary');
+  const w = scene.world!;
+  expect(w.setMark).toHaveBeenLastCalledWith('phare');
+  expect(w.setSigns).toHaveBeenLastCalledWith(['phare']);
+  expect(document.querySelector('.open-world-sign[data-lieu="phare"]')).toHaveClass('suggested');
+  await userEvent.setup().click(go);
+  expect(w.goTo).toHaveBeenLastCalledWith('phare', true);
+  // Kéo arrivé au Phare : la pastille de son habitant ne s'affiche plus (elle couvrirait Kéo) ; le panneau s'ouvre.
+  act(() => scene.options!.onArrive('phare'));
+  expect(w.setSigns).toHaveBeenLastCalledWith([]);
+  const sheet = await screen.findByRole('dialog', { name: 'Le Phare' });
+  expect(within(sheet).getByRole('group')).toHaveTextContent('Livre 3 blocs de terre au Phare.');
+});
+
+test('Kéo au Phare, sa commande prête, une mission du Phare encore nouvelle, la destination du jeu ailleurs : la suggestion est la mission du Phare (le rang 2), jamais « Y aller » vers un autre lieu (avis du directeur artistique, deuxième passe du lot L1)', async () => {
+  const potager = COMMANDES.find((c) => c.fixture === 'french-6e-phonology-fixture-1')!;
+  // Dans la grille, l'élève se tient aux Quais, où une mission n'a jamais été jouée : la destination du jeu est là.
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { [potager.block]: potager.count }, world: { links: [], requests: [potager.id], place: placeById('quais').island } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  const w = scene.world!;
+  // Avant l'arrivée, la commande prête porte la suggestion (rang 3, Kéo n'est nulle part).
+  expect(screen.getByRole('button', { name: 'Y aller : Le Phare' })).toHaveClass('primary');
+  act(() => scene.options!.onArrive('phare'));
+  const sheet = await screen.findByRole('dialog', { name: 'Le Phare' });
+  // Le panneau met en avant une mission du Phare ; la ligne de l'habitant y est, sans « Livrer » plein.
+  expect(sheet.querySelector('[aria-current="step"]')).not.toBeNull();
+  const line = within(sheet).getByRole('group');
+  expect(line).toHaveTextContent('Livre 3 blocs de terre au Phare.');
+  expect(within(line).getByRole('button', { name: /Livrer/ })).not.toHaveClass('primary');
+  await userEvent.setup().keyboard('{Escape}');
+  expect(screen.queryByRole('dialog', { name: 'Le Phare' })).toBeNull();
+  // La bulle : « Y aller » vers le Phare et sa mission, jamais vers un autre lieu ; ni « Livrer » ni la phrase de la commande.
+  const go = screen.getByRole('button', { name: /^Y aller : / });
+  expect(go.getAttribute('aria-label')).toMatch(/^Y aller : Le Phare, /);
+  expect(screen.queryByText('Livre 3 blocs de terre au Phare.')).toBeNull();
+  expect(screen.queryByRole('button', { name: /Livrer/ })).toBeNull();
+  expect(w.setMark).toHaveBeenLastCalledWith('phare');
 });

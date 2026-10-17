@@ -39,7 +39,7 @@ const server = await createServer({
 });
 try {
   const load = (p) => server.ssrLoadModule(p);
-  const [budget, { ARCHIPELAGO_IDS }, { loadMonumentsFromDisk }, { loadBuildingsFromDisk }, { loadNefFromDisk }, { chargerLesModelesDuDisque, loadKeoFromDisk }, ouvert] =
+  const [budget, { ARCHIPELAGO_IDS }, { loadMonumentsFromDisk }, { loadBuildingsFromDisk }, { loadNefFromDisk }, { chargerLesModelesDuDisque, loadKeoFromDisk }, ouvert, { amenagementsCost }] =
     await Promise.all([
     load('/src/game/world/budget.ts'),
     load('/src/game/world/map.ts'),
@@ -48,6 +48,7 @@ try {
     load('/src/game/world/nefModels.fromDisk.testing.ts'),
     load('/src/game/world/characters/imported/fromDisk.testing.ts'),
     load('/src/game/world/continu/budget.ts'),
+    load('/src/game/three/archipeo/amenagements.ts'),
   ]);
   // Les monuments et les bâtiments des plans importés d'Archipéo, comme la vue les charge : la construction se compte au
   // pire de leurs chantiers, les bâtiments de près sur une île et de loin ailleurs ; la Nef au pire de ses formes et de ses chantiers.
@@ -97,8 +98,11 @@ try {
   });
 
   // Le monde ouvert d'Archipéo (prototype du 6e, derrière le drapeau `?monde=ouvert`) : ses postes (`openWorldCost`) et
-  // la Carte de ses lieux (`mapCost`), sous leur enveloppe (`OPEN_WORLD_BUDGET`), que seul le mainteneur relève.
-  const mondeOuvert = !demandes || demandes.includes('6e') ? { postes: ouvert.openWorldCost(), carte: ouvert.mapCost(), enveloppe: ouvert.OPEN_WORLD_BUDGET } : null;
+  // la Carte de ses lieux (`mapCost`), sous leur enveloppe (`OPEN_WORLD_BUDGET`), que seul le mainteneur relève ; les
+  // aménagements posés (GD-20, point 4), dont la vue trace les dessins, y entrent par leurs triangles.
+  const sixieme = !demandes || demandes.includes('6e');
+  const amenagements = sixieme ? amenagementsCost().triangles : 0;
+  const mondeOuvert = sixieme ? { postes: ouvert.openWorldCost(amenagements), carte: ouvert.mapCost(amenagements), enveloppe: ouvert.OPEN_WORLD_BUDGET } : null;
 
   if (JSON_SEUL) console.log(JSON.stringify(resultats, null, 2));
   else {

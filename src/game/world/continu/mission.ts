@@ -44,14 +44,27 @@ export const playsInPlace = (place: OpenPlace, mission: string): boolean => plac
 /** Une mission encore à jouer : jamais jouée, ou encore fermée dans la grille (elle s'ouvre ici). */
 const toPlay = (b: MissionMark) => b.etat === 'new' || b.etat === 'locked';
 
+/** La première mission encore à jouer d'un lieu, dans l'ordre de son île, ou rien. */
+export const firstToPlayAt = (place: OpenPlace, bornes: readonly MissionMark[]): MissionMark | undefined => missionsOfPlace(place, bornes).find(toPlay);
+
 /**
- * La prochaine mission du prototype : celle de la prochaine destination du jeu si elle se joue dans un lieu ouvert, sinon
+ * La prochaine mission du prototype : la première encore à jouer du lieu où se tient Kéo (`here`, s'il est ouvert : le
+ * rang 2 de la suggestion, index.md, « Une seule suggestion » ; avis du directeur artistique, deuxième passe du lot L1),
+ * sinon celle de la prochaine destination du jeu si elle se joue dans un lieu ouvert, sinon
  * la première encore à jouer, lieu ouvert par lieu ouvert dans l'ordre du plan (le Phare, puis les Quais : « au retour du
  * Phare, le prochain pas est évident ») et mission par mission dans l'ordre de l'île, sinon la première à reprendre (moins
  * de trois étoiles). Elle parcourt toutes les missions de chaque lieu, qu'elles se jouent en scénette ou non ; jamais celles
  * d'un lieu fermé (`open`, GD-20, point 3 : aucune mission d'un lieu fermé ne se joue). `null` quand tout est fait.
  */
-export function nextMission(bornes: readonly MissionMark[], destination?: { island: string; mission?: string }, open: (place: PlaceId) => boolean = () => true): NextMission | null {
+export function nextMission(
+  bornes: readonly MissionMark[],
+  destination?: { island: string; mission?: string },
+  open: (place: PlaceId) => boolean = () => true,
+  here?: PlaceId | null,
+): NextMission | null {
+  const at = here ? PLACES.find((p) => p.id === here) : undefined;
+  const mine = at && open(at.id) ? firstToPlayAt(at, bornes) : undefined;
+  if (at && mine) return { place: at, mission: mine.mission };
   const fromGame = destination && PLACES.find((p) => p.island === destination.island);
   if (fromGame && open(fromGame.id) && destination.mission && bornes.some((b) => b.ile === fromGame.island && b.mission === destination.mission))
     return { place: fromGame, mission: destination.mission };

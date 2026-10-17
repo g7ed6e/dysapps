@@ -4,7 +4,8 @@
 // et l'assemblage des blocs (docs/contenu/assemblage.md → src/game/world/recipes.ts, et ses questions →
 // src/game/exercises/data/assemblage-<bloc>.json), et les grands projets (docs/contenu/projets.md →
 // src/game/world/projects.json, et leurs banques de questions → src/game/exercises/data/assembly-<banque>.json), et les
-// items du lieu du monde ouvert (« ## Au lieu · <univers> » des îles → src/game/world/continu/placeItems.json).
+// items du lieu du monde ouvert (« ## Au lieu · <univers> » des îles → src/game/world/continu/placeItems.json), et les
+// phrases de ses habitants (docs/contenu/monde-ouvert.md → src/game/world/continu/mondeOuvert.json).
 // Module sans effet : generer.mjs (npm run contenu) et importer.mjs s'en servent.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -15,6 +16,7 @@ import { FICHIER_ASSEMBLAGE, ecrireRecettes, lireAssemblage, lireQuestions } fro
 import { verifierDemandes } from './demandes.mjs';
 import { FICHIER_QUETES, lireQuetes, verifierQuetes } from './quetes.mjs';
 import { FICHIER_PROJETS, lireBanques, lireProjets, verifierProjets } from './projets.mjs';
+import { FICHIER_MONDE_OUVERT, lireMondeOuvert } from './mondeOuvert.mjs';
 
 // Chemins depuis la racine du dépôt, d'où npm et vitest lancent les scripts.
 const racine = process.cwd();
@@ -28,6 +30,8 @@ export const QUETES = join(racine, 'src/game/world/stories.json');
 export const PROJETS = join(racine, 'src/game/world/projects.json');
 /** Les items du lieu des univers à monde ouvert (scripts/contenu/aulieu.mjs), lus par le seul monde ouvert. */
 export const AU_LIEU = join(racine, 'src/game/world/continu/placeItems.json');
+/** Les phrases des habitants du monde ouvert (docs/contenu/monde-ouvert.md), lues par le seul monde ouvert. */
+export const MONDE_OUVERT = join(racine, 'src/game/world/continu/mondeOuvert.json');
 
 /** Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. */
 const CHAMPS_ILE = ['name', 'module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'];
@@ -58,7 +62,7 @@ export function produire() {
   const demandesParIle = new Map();
   const plansParIle = new Map();
   const auLieuParUnivers = {};
-  for (const f of readdirSync(CONTENU).filter((n) => n.endsWith('.md') && n !== 'README.md' && n !== 'archipel.md' && n !== FICHIER_ASSEMBLAGE && n !== FICHIER_QUETES && n !== FICHIER_PROJETS).sort()) {
+  for (const f of readdirSync(CONTENU).filter((n) => n.endsWith('.md') && n !== 'README.md' && n !== 'archipel.md' && n !== FICHIER_ASSEMBLAGE && n !== FICHIER_QUETES && n !== FICHIER_PROJETS && n !== FICHIER_MONDE_OUVERT).sort()) {
     const fichier = join('docs/contenu', f);
     const { ile, biome, exercices, plans, demandes, auLieu } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
     if (f !== `${ile}.md`) throw new Error(`${fichier} : le fichier d'une île s'appelle <île>.md (${ile}.md)`);
@@ -93,6 +97,8 @@ export function produire() {
     }
   }
   sortie.set(AU_LIEU, JSON.stringify(auLieuParUnivers, null, 2) + '\n');
+  // Les phrases des habitants du monde ouvert (GD-20) : docs/contenu/monde-ouvert.md → src/game/world/continu/mondeOuvert.json.
+  sortie.set(MONDE_OUVERT, JSON.stringify(lireMondeOuvert(readFileSync(join(CONTENU, FICHIER_MONDE_OUVERT), 'utf8'), join('docs/contenu', FICHIER_MONDE_OUVERT)), null, 2) + '\n');
   const ordre = ordreDesIles();
   for (const id of ordre) if (!biomes.has(id)) throw new Error(`docs/contenu/archipel.md : l'île « ${id} » n'a pas de fichier docs/contenu/${id}.md`);
   for (const id of biomes.keys()) if (!ordre.includes(id)) throw new Error(`docs/contenu/${id}.md : l'île manque dans docs/contenu/archipel.md`);

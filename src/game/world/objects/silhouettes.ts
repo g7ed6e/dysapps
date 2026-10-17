@@ -133,12 +133,15 @@ const well: ObjectDrawing = (at, pe, far) => {
   annulus(P, cx, cz, M.foot.upper, M.wall.radius, M.foot.radius, n, top);
   const courses = M.wall.courses;
   for (let k = 0; k + 1 < courses.length; k++) flank(P, cx, cz, courses[k], courses[k + 1], M.wall.radius, n, true, (i) => ((i + k) % 2 ? darkSide : side));
+  // Les marques des éléments (le monde ouvert : un par ressource livrée) : le mur, la margelle et l'eau, le treuil, le toit.
+  at.part();
   flank(P, cx, cz, M.coping.lower, M.coping.upper, M.coping.radius, n, true, () => side);
   annulus(P, cx, cz, M.coping.upper, M.coping.inner, M.coping.radius, n, top);
   flank(P, cx, cz, M.water.upper, M.coping.upper, M.coping.inner, n, false, () => side);
   const r = M.coping.inner;
   annulus(P, cx, cz, M.water.upper, r * 0.8, r, n, v(C.edge));
   disc(P, cx, cz, M.water.upper, r * 0.8, n, v(C.water));
+  at.part();
   for (const s of [-1, 1]) threeBox(P, cx - p.side / 2, M.coping.upper, cz + s * p.gap - p.side / 2, cx + p.side / 2, p.upper, cz + s * p.gap + p.side / 2, v(C.wood), { top: true, bottom: true });
   const q = M.beam;
   threeBox(P, cx - q.side / 2, q.lower, cz - q.span, cx + q.side / 2, q.lower + q.side, cz + q.span, v(C.wood), { top: true });
@@ -154,6 +157,7 @@ const well: ObjectDrawing = (at, pe, far) => {
   const [sx, sz] = [cx + rs * Math.cos(sv.angle), cz + rs * Math.sin(sv.angle)];
   tronconique(P, sx, sz, M.coping.upper, M.coping.upper + sv.upper, sv.radii[0], sv.radii[1], 8, Math.PI / 8, v(C.lightWood), false);
   disc(P, sx, sz, M.coping.upper + sv.upper - 0.04, sv.radii[1] * 0.92, 8, v(C.water));
+  at.part();
   wellRoof(P, cx, cz, v(C.slate), true);
   // La faîtière, à cheval sur le faîte : ses deux bandes descendent du dessus du faîte jusque sur les pans (elle ne
   // flotte plus au-dessus d'eux, relecture des essais), fermée à ses deux bouts.
@@ -197,6 +201,8 @@ const crane: ObjectDrawing = (at, pe, far) => {
   at.pyramid(mx, my, 0.2, 0.2, 2.95, 3.15, pe.color(C.slate));
   // Les jambes de force, du mât au pied (de part et d'autre, le long de x : la flèche part le long de y).
   for (const s of [-1, 1]) at.beam([mx + s * 0.33, my, 0.24], [mx + s * 0.12, my, 1.0], 0.12, wood);
+  // La marque des deux éléments (le monde ouvert) : le mât, puis la flèche et ce qu'elle porte.
+  at.part();
   // La flèche de madrier et ses deux colliers.
   at.box(jib.x0, jib.x1, jib.y0, jib.y1, jib.z0, jib.z1, timber, {});
   const grey = pe.color(0x767e88);
@@ -243,9 +249,12 @@ const boutique: ObjectDrawing = (at, pe, far) => {
   at.box(0.02, 2.98, 0.08, 0.92, 0.9, 1.0, wood, {});
   const slat = pe.color(C.lightWood);
   for (const x of [0.98, 1.92]) at.quad([x, 0.14, 0.06], [x + 0.1, 0.14, 0.06], [x + 0.1, 0.14, 0.84], [x, 0.14, 0.84], [x + 0.05, 0.5, 0.45], slat);
+  // Les marques des éléments (le monde ouvert) : le comptoir, les poteaux, l'auvent et les paniers.
+  at.part();
   // Les poteaux et la poutre de brique.
   for (const x of [0.5, 2.5]) at.block(x, 1.5, 0.34, 0.34, 0, 2.0, brick, { bottom: true, top: true });
   at.box(0.33, 2.67, 1.33, 1.67, 2.0, 2.32, brick, {});
+  at.part();
   // L'auvent : six raies, leur dessous, le lambrequin devant, ses deux flancs.
   const e = 0.06;
   const bottom: [number, number, number] = [1.5, 1, 0];
@@ -301,13 +310,17 @@ const washhouse: ObjectDrawing = (at, pe, far) => {
     at.block(x, 1.5, 0.52, 0.52, 0.2, zPurlin - 0.36, stone, { bottom: true, top: true });
     at.block(x, 1.5, 0.62, 0.62, zPurlin - 0.36, zPurlin - 0.22, { dessus: stone.dessus, cote: stone.dessus }, {});
   }
+  // Les marques des éléments (le monde ouvert) : les piliers, le bassin, la panne, le toit.
+  at.part();
   basin(at, pe, 0.86, 2.14, 0.12, 1.88, 0, 0.6, 0.12, pebble, 0.48);
   // La pierre à laver, penchée sur le bord de devant du bassin.
   at.quad([0.98, 0.14, 0.62], [2.02, 0.14, 0.62], [2.02, 0.42, 0.52], [0.98, 0.42, 0.52], [1.5, 0.3, 0], stone.dessus);
   at.quad([0.98, 0.14, 0.62], [2.02, 0.14, 0.62], [2.02, 0.12, 0.54], [0.98, 0.12, 0.54], [1.5, 0.3, 0.5], stone.cote);
+  at.part();
   // La panne sur les piliers, sous le toit ; les jambes de force vers l'avant du toit.
   at.box(0.2, 2.8, 1.38, 1.62, zPurlin - 0.22, zPurlin, wood, {});
   for (const x of pillars) at.beam([x, 1.26, zPurlin - 0.7], [x, 0.5, roofZ(0.5) - t.e - 0.02], 0.1, wood);
+  at.part();
   // Le toit : son dessus, son dessous, ses quatre rives.
   at.quad(top(t.x0, t.y0), top(t.x1, t.y0), top(t.x1, t.y1), top(t.x0, t.y1), under, roof);
   at.quad(bottom(t.x0, t.y0), bottom(t.x1, t.y0), bottom(t.x1, t.y1), bottom(t.x0, t.y1), [1.5, 1, 5], roof);
@@ -343,10 +356,14 @@ const parasol: ObjectDrawing = (at, pe, far) => {
     return;
   }
   at.prism(cx, cy, 0.36, 0.3, 0, 0.18, 8, stone);
+  // Les marques des éléments (le monde ouvert) : le pied, le mât, une moitié de la toile, l'autre et la pointe.
+  at.part();
   at.prism(cx, cy, 0.09, 0.09, 0.18, canvas.zMiddle, 6, obsidian, 0, true);
+  at.part();
   const n = 12;
   const under: [number, number, number] = [cx, cy, 0];
   for (let i = 0; i < n; i++) {
+    if (i === n / 2) at.part();
     at.quad(pt(canvas.brim, canvas.zBrim, i, n), pt(canvas.brim, canvas.zBrim, i + 1, n), pt(canvas.middle, canvas.zMiddle, i + 1, n), pt(canvas.middle, canvas.zMiddle, i, n), under, stripe(i));
     at.tri(pt(canvas.middle, canvas.zMiddle, i, n), pt(canvas.middle, canvas.zMiddle, i + 1, n), [cx, cy, canvas.zTip], under, stripe(i));
     // Le dessous, d'un ton de cabine, et le volant qui pend au rebord.
@@ -392,6 +409,8 @@ const clock: ObjectDrawing = (at, pe, far) => {
   at.quad([0.72, 0.235, 0.84], [1.28, 0.235, 0.84], [1.28, 0.235, 1.74], [0.72, 0.235, 1.74], [1, 0.5, 1.3], iron);
   at.quad([0.97, 0.225, 1.12], [1.03, 0.225, 1.12], [1.03, 0.225, 1.72], [0.97, 0.225, 1.72], [1, 0.5, 1.4], dial.cote);
   frontDisc(1, 1.06, 0.12, 0.222, 6, dial.cote);
+  // La marque des deux éléments (le monde ouvert) : le pied et le corps, puis la tête et son fronton.
+  at.part();
   // La tête de cadran, le cadran, les repères, les aiguilles.
   at.box(head.x0, head.x1, head.y0, head.y1, head.z0, head.z1, dial, {});
   frontDisc(center.x, center.z, 0.36, yd, 12, dial.dessus);
@@ -430,6 +449,8 @@ const sieve: ObjectDrawing = (at, pe, far) => {
     at.pyramid(1.5, y, 0.11, 0.11, 1.32, 1.42, post);
   }
   at.box(1.42, 1.58, 0.61, 2.39, 1.2, 1.32, wood, { top: false, bottom: false, py: true, ny: true });
+  // Les marques des éléments (le monde ouvert) : les poteaux, le cadre et son sable, le tas.
+  at.part();
   // Le cadre : ses flancs, son rebord, son dessous ; le sable au ras du rebord.
   at.box(frame.x0, frame.x1, frame.y0, frame.y1, frame.z0, frame.z1, wood, { top: true });
   const r = 0.09;
@@ -450,6 +471,7 @@ const sieve: ObjectDrawing = (at, pe, far) => {
     [frame.x1 - 0.2, frame.y1 - 0.12],
   ])
     at.beam([1.5, y < 1.5 ? 1.2 : 1.8, 1.2], [x, y, z], 0.05, rope);
+  at.part();
   // Le tas de sable tamisé, sous le cadre.
   at.prism(1.5, 1.5, 0.62, 0, 0, 0.44, 8, sand.dessus);
 };
@@ -479,6 +501,8 @@ const birdhouse: ObjectDrawing = (at, pe, far) => {
   }
   at.block(1.5, 0.5, 0.42, 0.42, 0, 0.14, { dessus: pe.role('yardSlab'), cote: pe.role('yardStone') });
   at.block(1.5, 0.5, 0.22, 0.22, 0.14, house.z0, post, { bottom: true, top: true });
+  // Les marques des éléments (le monde ouvert) : le poteau, la maison, le toit.
+  at.part();
   at.box(house.x0, house.x1, house.y0, house.y1, house.z0, house.z1, wood, { top: true });
   // Les trois trous ronds sur la face de devant, et leurs perchoirs.
   const hole = pe.color(C.iron);
@@ -489,6 +513,7 @@ const birdhouse: ObjectDrawing = (at, pe, far) => {
     for (let i = 1; i < 5; i++) at.tri(p(0), p(i), p(i + 1), [x, 1, zt], hole);
     at.beam([x, house.y0, 1.2], [x, house.y0 - 0.2, 1.2], 0.06, pe.color(C.wood), true);
   }
+  at.part();
   // Le toit de chaume, épais, ses pignons de bois sur la maison, sa faîtière.
   at.roof(roof.x0, roof.x1, roof.y0, roof.y1, roof.lower, roof.upper, 'x', 0.16, thatch, { tint: wood, zFoot: house.z1 });
   const ridgeCap = pe.roof();

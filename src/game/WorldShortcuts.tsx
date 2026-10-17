@@ -31,7 +31,7 @@ function requestCount(world: World, a: ArchipelagoId, quetes: boolean): number {
 
 /**
  * En haut à gauche, en colonne : Reprendre, Révisions, Commandes. Toujours à leur place, délavés quand ils sont vides.
- * `requestsLater` : les commandes ne se livrent pas encore là où l'on est (le monde continu, avant le lot 4 de GD-20) :
+ * `requestsLater` : les commandes ne se livrent pas encore là où l'on est (un monde qui ne les livre pas) :
  * le bouton reste à sa place, délavé, sans compteur, et son toucher dit « indisponible pour l’instant » (comme son nom,
  * pour les lecteurs d'écran).
  */
@@ -41,10 +41,19 @@ export function WorldShortcuts({
   requestsLater = false,
   resumeFrom,
   resumeAt,
+  onRequests,
+  countQuests = true,
 }: {
   a: ArchipelagoId;
   requestsOpen: boolean;
   requestsLater?: boolean;
+  /**
+   * Ce qu'ouvre le bouton des commandes, à la place de leur adresse (le monde ouvert, GD-20, point 4, lot L1 : sa propre
+   * liste, par-dessus le monde) ; rien : la fiche des commandes de la grille.
+   */
+  onRequests?: () => void;
+  /** Le compteur compte aussi la quête d'entraide (rien dans le monde ouvert avant le lot L2). */
+  countQuests?: boolean;
   /**
    * D'où la dernière mission ramène (le monde continu, GD-20, lot 2 : une mission de l'école ramène à sa porte) ; rien :
    * son retour habituel.
@@ -61,7 +70,7 @@ export function WorldShortcuts({
   const textes = useTextes();
   const resume = lastPlace(state.world.links);
   const reviews = questsToReview(state.spaced, state.world.links);
-  const commandes = textes.commandes && !requestsLater ? requestCount(state.world, a, Boolean(textes.quetes)) : 0;
+  const commandes = textes.commandes && !requestsLater ? requestCount(state.world, a, countQuests && Boolean(textes.quetes)) : 0;
   return (
     <nav className="world-shortcuts" data-couvre="bouton" data-tuto="raccourcis" aria-label="Reprendre">
       <WorldButton
@@ -92,7 +101,7 @@ export function WorldShortcuts({
           count={commandes || undefined}
           pressed={requestsOpen}
           controls={requestsOpen ? 'panneau-commandes' : undefined}
-          onClick={() => navigate(requestsOpen ? '/adventure' : REQUESTS_PATH)}
+          onClick={() => (onRequests ? onRequests() : navigate(requestsOpen ? '/adventure' : REQUESTS_PATH))}
         />
       )}
     </nav>

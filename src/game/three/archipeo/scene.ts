@@ -47,6 +47,7 @@ import {
   scenetteTraces,
   scenetteHidesPlace,
   scenetteKeo,
+  scenetteHabitant,
   scenettePose,
   type ScenetteFinale,
   type ScenetteLayout,
@@ -58,6 +59,10 @@ import { MIST_COLOR, veilFacets, type VeilMesh } from '../../world/continu/veil'
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
+import { placedAmenagement } from './amenagements';
+import { amenagementById, remiseFrame, remisePosed, showsAmenagements, type PlacedAmenagement } from '../../world/continu/amenagements';
+import { REMISE_DROP, remiseAt } from '../../world/continu/remise';
+import { nearestPlace, screenRect, touchedObject, type ObjectTarget } from '../../world/continu/toucher';
 
 /** Ce que la page donne à la scène. */
 export interface OpenWorldOptions {
@@ -100,6 +105,25 @@ export interface OpenWorldOptions {
   meter: { show: boolean; expose: boolean };
   /** La pose d'une partie est finie (posée, la caméra revenue à Kéo, ou passée) : les célébrations peuvent venir. */
   onPosed(): void;
+  /**
+   * La place à l'écran des pastilles des habitants (GD-20, point 4, lot L1), à chaque image, comme les cadenas (la même
+   * liste, remplie sur place ; refaite quand `setSigns` change). Aucune pendant une question, une remise ou sur la Carte.
+   */
+  onSigns?(signs: readonly SignOnScreen[]): void;
+}
+
+/** La pastille de l'habitant d'un lieu, à l'écran : en pixels, et si elle se voit. */
+export interface SignOnScreen {
+  place: PlaceId;
+  x: number;
+  y: number;
+  shown: boolean;
+}
+
+/** Ce que la remise dit à la page : un élément posé (son toc), la pose finie d'elle-même. */
+export interface RemiseEvents {
+  element(): void;
+  done(): void;
 }
 
 export interface OpenWorld {
@@ -169,6 +193,25 @@ export interface OpenWorld {
    * dessine qu'une fois sa vue choisie, sans animation (consultant UX UI).
    */
   reframeMap(crowded: (spots: readonly MapSpotOnScreen[]) => number): void;
+  /**
+   * Le cadrage prévu de la remise (GD-20, point 4, lot L0, pour les captures seulement, sans geste) : la scénette du lieu,
+   * au Phare au pied de la tour, Kéo et l'habitant à leur place, ses aménagements posés montrés, la caméra élargie juste
+   * assez pour eux ; `null` la quitte.
+   */
+  remiseView(place: PlaceId | null): void;
+  /**
+   * La remise (GD-20, point 4, lot L1 « Livrer ») : le cadrage de la remise du lieu, l'aménagement `amenagement` à poser
+   * pris dans le cadre, rien de lui posé encore (son assise de pierre seule, s'il en a une) ; `null` la quitte (la caméra
+   * revient derrière Kéo, devant le lieu). La page la lance (`remiseStart`, à la fin de la consigne) et la finit
+   * (`remiseFinish`, un toucher qui saute) ; `on` dit chaque élément posé et la fin de la pose.
+   */
+  remise(r: { place: PlaceId; amenagement: string } | null, on?: RemiseEvents): void;
+  /** La pose de la remise part : un calme, puis chaque élément descend à sa place (tout d'un coup avec « Réduire les animations »). */
+  remiseStart(): void;
+  /** L'état final de la remise, tout de suite : tout est posé (un toucher qui saute, une sortie). */
+  remiseFinish(): void;
+  /** Les lieux dont l'habitant a une pastille (trois au plus), ou aucun. */
+  setSigns(places: readonly PlaceId[]): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
   info(): { calls: number; triangles: number; mapMs: number };
   /** Ce qu'un toucher en ce point de la fenêtre ouvrirait au Port, sans rien faire (la mesure des cibles). */
@@ -183,6 +226,8 @@ export interface OpenWorld {
 interface PlacesState {
   built: Readonly<Record<PlaceId, readonly PartShape[]>>;
   traces: Readonly<Record<PlaceId, readonly string[]>>;
+  /** Les aménagements posés de chaque lieu (GD-20, point 4, lot L0 : les petites constructions livrées, `world.parts`). */
+  amenagements?: Readonly<Partial<Record<PlaceId, readonly string[]>>>;
 }
 
 /**
@@ -226,6 +271,8 @@ export interface LabelOnScreen {
 
 /** La marge de la flèche au bord de l'écran, en pixels : hors des boutons des coins. */
 const MARK_MARGIN = 56;
+/** La pastille d'un habitant, à tant d'unités au-dessus de ses pieds (au-dessus de sa tête, de Kéo près de lui). */
+const SIGN_LIFT = 2.4;
 /** Un toucher : moins de tant de pixels de glissé, moins de tant de millisecondes. */
 const TAP = { pixels: 10, ms: 700 };
 /** Le cap de Kéo au départ : face à la caméra (le sud). */
@@ -610,6 +657,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   poseMesh.visible = false;
   scene.add(placesMesh, landmarkMesh, poseMesh);
   touchables.push(placesMesh, landmarkMesh);
+  // La remise (lot L1) : l'aménagement qui se pose, à part, du matériau des lieux (posé, il est déjà tel qu'au retour :
+  // rien ne s'allume) ; ses éléments posés par la plage de dessin, celui qui descend dans le maillage de la réaction. Un
+  // appel de plus, le temps de la remise seulement.
+  const remiseMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
+  remiseMesh.visible = false;
+  scene.add(remiseMesh);
 
   // La brume sur les terres fermées : un seul maillage, refait quand la liste change (jamais par image) ; sans lumière,
   // de la couleur du lointain, transparente par sommet (jamais opaque, effacée sur ses bords). Quand on relie une terre,
@@ -796,7 +849,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     return { x: place.center.x, y: (foot?.y ?? 0) + FRAMED_PLACE_HEIGHT, z: place.center.z };
   };
   const reframe = () => {
-    if (!frameRect || !framed || asked || mapView) return;
+    if (!frameRect || !framed || asked || remise || mapView) return;
     followPose(focus, lift, pose);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
@@ -809,7 +862,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     frameRect = free;
     if (place) framed = place;
     if (free) return reframe();
-    if (asked || mapView) return;
+    // Pendant une question ou une remise, la caméra garde son cadrage : le panneau se recadre à leur fin.
+    if (asked || remise || mapView) return;
     setShift({ x: 0, y: 0 });
     follow();
   };
@@ -822,6 +876,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let ringKey = '';
   // La scénette où se tient Kéo (plus bas, « La scénette d'un lieu »), et si l'étape qui porte sa trace est posée.
   let scenette: PlaceId | null = null;
+  /**
+   * Le cadrage de la remise montré (`remiseView`, lot L0 : les captures), sa pose de caméra, et l'aménagement qui s'y pose
+   * (`extra`, pris dans le cadre : le recadrage après un changement de taille le garde).
+   */
+  let remise: { place: PlaceId; pose: CameraPose; extra?: string } | null = null;
+  /**
+   * La remise jouée (lot L1) : l'aménagement qui se pose, le départ de sa pose (`null` : la consigne se dit encore), les
+   * éléments posés, celui qui descend, et sa fin (posée d'elle-même, ou sautée).
+   */
+  let remiseRun: { place: PlaceId; id: string; placed: PlacedAmenagement; start: number | null; posed: number; falling: number; done: boolean; on?: RemiseEvents } | null = null;
   let posed = true;
   // La mission jouée dans la scénette : le retour garde sa trace dans le champ (GD-20, point 8).
   let scenetteMission: string | null = null;
@@ -892,7 +956,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -918,6 +982,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const hidden = hidesTraces(hiddenTrace, p.id);
       if (!hidden && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, scenette === p.id ? scenetteTraces(p.id, done, scenetteMission, posed) : done));
       if (p.id === 'phare' && lampShown) list.push(lampFacets);
+      // Les aménagements posés (GD-20, point 4, lot L0), dans le même maillage : cachés pendant toute question, comme les
+      // traces (au rivage nord et au large, ceux des lieux du même cadre) ; montrés dans le cadrage de la remise.
+      if (showsAmenagements(scenette, p.id, remise?.place ?? null)) for (const id of placesState?.amenagements?.[p.id] ?? []) list.push(placedAmenagement(id, ground).facets);
     }
     // Les ponts (GD-20, point 3, « vraies terres ») : tombé pour une terre fermée, rebâti sinon, dans le maillage des
     // lieux (aucun appel de plus) ; sur la Carte, chacun aussi en trait double, d'une autre forme qu'un chemin.
@@ -1047,7 +1114,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
         l.y < viewH - LOCK_MARGIN;
     }
     options.onLocks(locks);
+    reportSigns();
   };
+  /** Les cadenas cachés (une question, une pose…) ; les pastilles des habitants aussi, aux mêmes moments. */
   const hideLocks = () => {
     let any = false;
     for (const l of locks) {
@@ -1055,6 +1124,39 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       l.shown = false;
     }
     if (any) options.onLocks(locks);
+    hideSigns();
+  };
+  // Les pastilles des habitants (GD-20, point 4, lot L1) : au-dessus de la place de l'habitant, là où la remise se joue
+  // et où l'aménagement se pose (au Phare, au pied de la tour), comme un cadenas au-dessus de son pont ; la même liste,
+  // remplie sur place à chaque image, refaite quand la page change les lieux (`setSigns`).
+  let signs: SignOnScreen[] = [];
+  const signAnchors = new Map<PlaceId, THREE.Vector3>();
+  const setSigns = (places: readonly PlaceId[]) => {
+    if (places.length === signs.length && places.every((p, i) => signs[i].place === p)) return;
+    signs = places.map((place) => ({ place, x: 0, y: 0, shown: false }));
+    for (const place of places) {
+      if (signAnchors.has(place)) continue;
+      const h = scenetteHabitant(place, remisePosed(place));
+      signAnchors.set(place, new THREE.Vector3(h.x, h.y + SIGN_LIFT, h.z));
+    }
+    options.onSigns?.(signs);
+  };
+  const reportSigns = () => {
+    if (!signs.length) return;
+    for (const s of signs) {
+      const anchor = signAnchors.get(s.place);
+      if (!anchor) continue;
+      projected.copy(anchor).project(camera);
+      s.x = sx(projected);
+      s.y = sy(projected);
+      s.shown = projected.z < 1 && distance(here, placeById(s.place).center) < WORLD_FOG.far && s.x > LOCK_LEFT && s.x < viewW - LOCK_MARGIN && s.y > LOCK_MARGIN && s.y < viewH - LOCK_MARGIN;
+    }
+    options.onSigns?.(signs);
+  };
+  const hideSigns = () => {
+    if (!signs.some((s) => s.shown)) return;
+    for (const s of signs) s.shown = false;
+    options.onSigns?.(signs);
   };
 
   const arrive = (place: PlaceId | null) => {
@@ -1144,7 +1246,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // d'assemblage.
     if (poseRun.active) return finishPose();
     if (assembly) return finishAssembly();
-    if (asked || !d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > TAP.pixels || performance.now() - d.t > TAP.ms) return;
+    if (asked || remise || !d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > TAP.pixels || performance.now() - d.t > TAP.ms) return;
+    // Un aménagement posé (GD-20, point 4, lot L1) : son lieu, toujours le sien, par son dessin ou le disque autour de lui ;
+    // Kéo y marche, puis son panneau s'ouvre ; d'une terre fermée, la fiche de la terre.
+    const object = objectAt(e.clientX, e.clientY);
+    if (object) {
+      const land = landOf(object);
+      if (land !== START_LAND && closed.includes(land)) return options.onClosed(land);
+      return startWalkTo(atNode(placeById(object).door), object);
+    }
     const p = hitAt(e.clientX, e.clientY);
     if (!p) return;
     // L'Escale : une porte, la galerie ou le lieu d'assemblage y mène Kéo d'un coup et en ouvre le panneau ; le reste du
@@ -1155,10 +1265,37 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Un lieu d'une terre fermée, ou son pont tombé : la fiche de la terre (GD-20, point 3), Kéo reste où il est.
     const shut = closedAt(p, e.clientX, e.clientY);
     if (shut) return options.onClosed(shut);
-    // Un lieu : Kéo va à sa porte.
-    const touched = PLACES.find((pl) => distance(p, pl.center) <= pl.touchRadius)?.id;
+    // Un lieu : Kéo va à sa porte ; si deux rayons prennent le point, le plus proche.
+    const touched = nearestPlace(p);
     if (touched) startWalkTo(atNode(placeById(touched).door), touched);
     else startWalkTo(snapToNetwork(p), null);
+  };
+  /**
+   * Le lieu de l'aménagement montré sous un toucher (`clientX`, `clientY`), s'il y en a un : sa boîte projetée à l'écran,
+   * et le disque de 48 px au moins autour d'elle (world/continu/toucher.ts) ; ni derrière la caméra, ni dans la brume.
+   */
+  const corner = new THREE.Vector3();
+  const objectAt = (clientX: number, clientY: number): PlaceId | null => {
+    if (!placesState?.amenagements) return null;
+    const targets: ObjectTarget[] = [];
+    for (const pl of PLACES) {
+      if (!showsAmenagements(scenette, pl.id, null) || distance(here, pl.center) > WORLD_FOG.far) continue;
+      for (const id of placesState.amenagements[pl.id] ?? []) {
+        const { box } = placedAmenagement(id, ground);
+        const points: { x: number; y: number }[] = [];
+        let behind = false;
+        for (const x of [box.min[0], box.max[0]])
+          for (const y of [box.min[1], box.max[1]])
+            for (const z of [box.min[2], box.max[2]]) {
+              corner.set(x, y, z).project(camera);
+              behind ||= corner.z >= 1;
+              points.push({ x: sx(corner), y: sy(corner) });
+            }
+        if (!behind) targets.push({ place: pl.id, rect: screenRect(points) });
+      }
+    }
+    const r = renderer.domElement.getBoundingClientRect();
+    return touchedObject(clientX - r.left, clientY - r.top, targets);
   };
   /**
    * La terre fermée sous un toucher (`p` au sol, `clientX`, `clientY` à l'écran) : l'un de ses lieux (son rayon de
@@ -1577,10 +1714,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    * Entre dans la scénette d'un lieu : le décor de près, Kéo à sa place, sans son anneau. La scénette se joue sur le lieu
    * tel qu'il est bâti (`posed` : l'étape qui porte sa trace est posée ; sinon, au Phare, au pied de la tour).
    */
-  const enterScenette = (place: PlaceId) => {
+  const enterScenette = (place: PlaceId, site?: boolean) => {
     if (scenette === place) return;
     scenette = place;
-    posed = traceStagePosed(place, posedOf(place));
+    posed = site ?? traceStagePosed(place, posedOf(place));
     setGeometry(decorMesh, scenetteDecor(place, false, posed));
     // Aux Quais, la maquette du lieu (sa grue, son hangar) s'efface : le quai de la scénette a les siens. La trace de
     // la scénette aussi, sauf au Phare : la trace de la réussite (la barque chargée, le panier plein, la porte ouverte)
@@ -1653,6 +1790,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     finishPose();
     finishAssembly();
+    if (remise) {
+      remise = null;
+      endRemise();
+      leaveScenette();
+    }
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
     const { place, layout, item } = q;
     scenetteMission = q.mission;
@@ -1798,6 +1940,134 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     return labels;
   };
+  /**
+   * Le cadrage de la remise (lot L0 en image fixe, `OpenWorld.remiseView` ; lot L1, la remise jouée) : `extra`,
+   * l'aménagement qui va se poser, pris dans le cadre avec ceux qui sont déjà là.
+   */
+  const remiseView = (place: PlaceId | null, extra?: string) => {
+    // La page fermée : la scène défaite ne fait plus rien (la sortie de la remise arrive après, en micro-tâche).
+    if (disposed || asked || mapView) return;
+    if (!place) {
+      endRemise();
+      if (!remise) return;
+      remise = null;
+      leaveScenette();
+      keo.visible = true;
+      ring.visible = true;
+      setShift({ x: 0, y: 0 });
+      followStep(focus, keoFeet, 0, true);
+      follow();
+      return;
+    }
+    finishPose();
+    finishAssembly();
+    walk = null;
+    if (remise && remise.place !== place) {
+      remise = null;
+      leaveScenette();
+    }
+    enterScenette(place, remisePosed(place));
+    // Les tuiles du terrain suivent le point suivi : il vient à la scène de la remise (sinon, loin de Kéo, le sol du lieu
+    // manque et la mer paraît dessous ; défaut trouvé sur les captures du lot L0 au format téléphone).
+    Object.assign(focus, scenetteKeo(place, remisePosed(place)).at);
+    updateRings(true, true);
+    remise = { place, pose: pose, extra };
+    placeVisibility();
+    fog.near = WORLD_FOG.near;
+    fog.far = WORLD_FOG.far;
+    refitRemise();
+  };
+  /**
+   * Le cadrage de la remise à la taille de l'écran : à l'entrée, et de nouveau quand l'écran change de taille (une
+   * tablette qui tourne pendant la pose), sans refaire la scénette : l'aménagement reste entier dans la scène.
+   */
+  const refitRemise = () => {
+    if (!remise) return;
+    const shown = placesState?.amenagements?.[remise.place] ?? [];
+    const extra = remise.extra;
+    const list = [...shown, ...(extra && !shown.includes(extra) ? [extra] : [])].flatMap((id) => {
+      const a = amenagementById(id);
+      return a ? [{ a, box: placedAmenagement(id, ground).box }] : [];
+    });
+    const qp = remiseFrame(remise.place, list, viewW, viewH);
+    remise.pose = qp.pose;
+    setShift(qp.shift);
+    applyPose(qp.pose);
+  };
+  // ---------- La remise (GD-20, point 4, lot L1 « Livrer ») ----------
+  /** L'aménagement de la remise est livré : la page l'a mis dans les lieux (il y est dessiné), son maillage à part se cache. */
+  const remiseDelivered = () => Boolean(remiseRun && placesState?.amenagements?.[remiseRun.place]?.includes(remiseRun.id));
+  /** Le début du premier triangle d'un élément qui descend : son assise de pierre reste au sol dès le début. */
+  const fallFrom = (run: NonNullable<typeof remiseRun>, i: number) => (i === 0 ? (run.placed.assise?.to ?? 0) : run.placed.elements[i].from);
+  /** Les `posed` premiers éléments posés (et l'assise, toujours là). */
+  const drawRemise = (run: NonNullable<typeof remiseRun>, posed: number) => {
+    const to = posed > 0 ? run.placed.elements[posed - 1].to : (run.placed.assise?.to ?? 0);
+    remiseMesh.geometry.setDrawRange(0, to * 3);
+    remiseMesh.visible = to > 0 && !remiseDelivered();
+  };
+  const endRemise = () => {
+    if (!remiseRun) return;
+    remiseRun = null;
+    remiseMesh.visible = false;
+    reactionMesh.visible = false;
+    reactionMesh.position.set(0, 0, 0);
+  };
+  const playRemise = (r: { place: PlaceId; amenagement: string } | null, on?: RemiseEvents) => {
+    if (!r) return remiseView(null);
+    if (disposed || asked || mapView || !amenagementById(r.amenagement)) return;
+    endRemise();
+    remiseView(r.place, r.amenagement);
+    if (!remise) return;
+    const placed = placedAmenagement(r.amenagement, ground);
+    remiseRun = { place: r.place, id: r.amenagement, placed, start: null, posed: 0, falling: -1, done: false, on };
+    remiseMesh.geometry.dispose();
+    remiseMesh.geometry = geometryOf(placed.facets);
+    drawRemise(remiseRun, 0);
+  };
+  const remiseStart = () => {
+    if (remiseRun && remiseRun.start === null && !remiseRun.done) remiseRun.start = performance.now() / 1000;
+  };
+  const remiseFinish = () => {
+    const run = remiseRun;
+    if (!run) return;
+    run.done = true;
+    run.posed = run.placed.elements.length;
+    drawRemise(run, run.posed);
+    reactionMesh.visible = false;
+  };
+  /** La pose de la remise à l'instant `t` : un toc par élément posé (un seul, tout d'un coup, avec « Réduire les animations »). */
+  const stepRemise = (t: number) => {
+    const run = remiseRun;
+    if (!run || run.start === null || run.done) return;
+    const n = run.placed.elements.length;
+    const m = remiseAt(t - run.start, n, reduceMotion);
+    if (m.posed !== run.posed) {
+      run.posed = m.posed;
+      drawRemise(run, m.posed);
+      run.on?.element();
+    }
+    if (m.falling) {
+      const i = m.falling.index;
+      if (run.falling !== i) {
+        run.falling = i;
+        const f = run.placed.facets;
+        const [from, to] = [fallFrom(run, i), run.placed.elements[i].to];
+        setGeometry(reactionMesh, { positions: f.positions.slice(from * 9, to * 9), normals: f.normals.slice(from * 9, to * 9), colors: f.colors.slice(from * 9, to * 9), triangles: to - from });
+        reactionMesh.material = landMaterial;
+        reactionMesh.rotation.set(0, 0, 0);
+        reactionMesh.scale.set(1, 1, 1);
+      }
+      // Elle descend de haut et ralentit en arrivant (rien ne rebondit).
+      const k = 1 - (1 - m.falling.amount) ** 3;
+      reactionMesh.position.set(0, REMISE_DROP * (1 - k), 0);
+      reactionMesh.visible = true;
+    } else reactionMesh.visible = false;
+    if (m.done) {
+      run.done = true;
+      reactionMesh.visible = false;
+      run.on?.done();
+    }
+  };
   const scenetteEnd = (lit: boolean) => {
     if (!asked || !scenette) return;
     // Une scénette posée (les Quais, les Filets, les Écluses) : la scène reste ; à la réussite, le décor change, un
@@ -1926,6 +2196,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const stepPose = (t: number) => poseRun.step(t);
   const setPlaces = (state: PlacesState, pose?: { place: PlaceId; parts: readonly PartShape[] }): boolean => {
     placesState = state;
+    // La livraison écrite (l'état final de la remise) : l'aménagement entre dans les lieux, son maillage à part se cache.
+    if (remiseDelivered()) remiseMesh.visible = false;
     if (pose?.parts.length && !asked && !mapView) {
       startPose(pose.place, pose.parts);
       return true;
@@ -2006,7 +2278,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // L'écran a changé de taille avant tout toucher : la vue de départ se choisit de nouveau, avant de se dessiner.
       if (first) mapSettling = MAP_SETTLE_FRAMES;
       showMap();
-    } else applyPose(asked ? asked.pose : pose);
+    } else if (remise && !asked) refitRemise();
+    else applyPose(asked ? asked.pose : pose);
   };
   const observer = new ResizeObserver(resize);
   observer.observe(host);
@@ -2067,6 +2340,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       stepFinale(t);
       stepLamp(t);
       if (scenette) body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
+      options.onMark(null);
+      hideLocks();
+      renderer.render(scene, camera);
+      meter?.tick(renderer.info, now);
+      return;
+    }
+    if (remise) {
+      // Le cadrage de la remise : la caméra fixe, Kéo au repos ; la remise jouée (lot L1) pose ses éléments.
+      stepRemise(t);
+      body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
       options.onMark(null);
       hideLocks();
       renderer.render(scene, camera);
@@ -2156,6 +2439,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     reframeMap: reframeStart,
     scenetteEnd,
     setPlaces,
+    remiseView: (place) => remiseView(place),
+    remise: playRemise,
+    remiseStart,
+    remiseFinish,
+    setSigns,
     info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, mapMs }),
     portAt: (clientX: number, clientY: number) => {
       const p = hitAt(clientX, clientY);
@@ -2174,7 +2462,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       renderer.domElement.removeEventListener('wheel', onWheel);
       body.dispose();
       for (const g of geometries) g.dispose();
-      for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, veilMesh, decorMesh]) m.geometry.dispose();
+      for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, remiseMesh, veilMesh, decorMesh]) m.geometry.dispose();
       lampMaterial.dispose();
       poseMaterial.dispose();
       nearRing.dispose();

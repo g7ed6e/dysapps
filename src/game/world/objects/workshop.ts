@@ -90,6 +90,18 @@ export class Workshop {
     };
   }
 
+  /**
+   * Les marques posées dans un dessin (`part`) : le nombre de triangles tracés à chacune, opaque et feu. Elles coupent le
+   * dessin en morceaux, dans l'ordre du dessin ; seul le monde ouvert d'Archipéo les lit (world/continu/amenagements.ts :
+   * un élément par ressource livrée) ; la grille ne les lit pas, et elles ne changent rien à ce qui est tracé.
+   */
+  readonly marks: number[] = [];
+
+  /** Une marque : ce qui suit est un autre morceau du dessin (la terre du potager, après sa jardinière). */
+  part(): void {
+    this.marks.push(this.triangles);
+  }
+
   private m(v: V3): V3 {
     return this.toWorld(v[0], v[1], v[2]);
   }
