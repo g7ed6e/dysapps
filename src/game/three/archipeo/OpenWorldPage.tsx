@@ -409,16 +409,24 @@ export default function OpenWorldPage() {
   );
   // La phrase vient après le toc (jamais en même temps), reste écrite un moment, et se dit si la voix est active.
   const [saidShown, setSaidShown] = useState(false);
+  const saidHide = useRef<number | undefined>(undefined);
+  // Toucher la phrase ou son haut-parleur la garde écrite encore un moment, pour l'élève qui n'a pas fini de la lire
+  // (référent dys).
+  const holdSaid = useCallback(() => {
+    window.clearTimeout(saidHide.current);
+    saidHide.current = window.setTimeout(() => setSaidShown(false), SAID_MS);
+  }, []);
   useEffect(() => {
     if (!said) return;
     const show = window.setTimeout(() => {
       setSaidShown(true);
       if (settings.autoRead) speak(PASSERELLE_POSEE);
     }, SAID_AFTER_MS);
-    const hide = window.setTimeout(() => setSaidShown(false), SAID_AFTER_MS + SAID_MS);
+    window.clearTimeout(saidHide.current);
+    saidHide.current = window.setTimeout(() => setSaidShown(false), SAID_AFTER_MS + SAID_MS);
     return () => {
       window.clearTimeout(show);
-      window.clearTimeout(hide);
+      window.clearTimeout(saidHide.current);
     };
     // La voix et son réglage ne relancent pas la phrase : seule une nouvelle pose (`said`) la relance.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -690,9 +698,9 @@ export default function OpenWorldPage() {
         )}
         {/* La phrase de la passerelle posée, sur fond uni, un moment (GD-20, point 3) : jamais pendant une question. La
             zone reste dans la page, vide le reste du temps, pour que les lecteurs d'écran annoncent la phrase ; le temps
-            qu'elle est écrite, un haut-parleur la fait réentendre (référent dys). Sur la Carte, elle se tient en haut,
+            qu'elle est écrite, un haut-parleur la fait réentendre, et le toucher la garde écrite (référent dys). Sur la Carte, elle se tient en haut,
             hors des noms des lieux du sud. */}
-        <div className={`open-world-said${mapOpen ? ' on-map' : ''}`} data-shown={saidShown && !asking ? 'oui' : 'non'}>
+        <div className={`open-world-said${mapOpen ? ' on-map' : ''}`} data-shown={saidShown && !asking ? 'oui' : 'non'} onPointerDown={holdSaid} onFocus={holdSaid}>
           <p role="status">{saidShown && !asking ? PASSERELLE_POSEE : ''}</p>
           {saidShown && !asking && <SpeakButton text={PASSERELLE_POSEE} label="Réécouter" compact />}
         </div>

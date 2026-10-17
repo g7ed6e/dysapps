@@ -858,8 +858,8 @@
   left: auto;
   top: auto;
 }
-/* La cible du cadenas sur la Carte (consultant UX UI, lot 1 « Relier ») : 48 px au moins, par une marge invisible de 4 px
-   autour du rond de 40 px, sans rien changer à son dessin ; elle ne déborde que de 4 px, moins que l'écart de 8 px
+/* La cible du cadenas sur la Carte (consultant UX UI, lot 1 « Relier ») : 48 px au moins, par une marge invisible de 6 px
+   autour du rond de 40 px (52 px), sans rien changer à son dessin ; elle ne déborde que de 6 px, moins que l'écart de 8 px
    gardé entre deux étiquettes, et ne couvre donc jamais une pastille voisine. */
 .open-world-map-closed .open-world-lock::after {
   content: '';
