@@ -50,6 +50,8 @@ describe('frenchTypography', () => {
     expect(frenchTypography('9 000 mètres, 3,5 kg')).toBe('9\u00a0000\u00a0mètres, 3,5\u00a0kg');
     expect(frenchTypography('5 000 = 100 000')).toBe('5\u00a0000 = 100\u00a0000');
     expect(frenchTypography('3 + 4 = 7 et 1 2 3, 12 3456')).toBe('3 + 4 = 7\u00a0et 1 2 3, 12 3456');
+    expect(frenchTypography('Combien font 2 ou 3 fois 4 ? 7 × 8 = 56')).toBe('Combien font 2\u00a0ou 3\u00a0fois 4\u00a0? 7 × 8 = 56');
+    expect(frenchTypography('I have 3 cats and 12 dogs.')).toBe('I have 3\u00a0cats and 12\u00a0dogs.');
     expect(frenchTypography('Le chat dort.')).toBe('Le chat dort.');
   });
 });

@@ -193,9 +193,6 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
   // La première rencontre de l'habitant depuis le lancement : sa phrase s'écrit au premier item seulement.
   const [meeting] = useState(() => scenette.greeting !== null && !greeted.has(place));
   const [greetItem, setGreetItem] = useState<string | null>(null);
-  useEffect(() => {
-    if (meeting) greeted.add(place);
-  }, [meeting, place]);
   const layout = useMemo(() => {
     const base = questionLayout({ count, bells: place === 'phare', aid: hasAid, widen }, size.w || 1, size.h || 1);
     // Les cloches portent des mots (la Chasse au son, les Rimes-échelle) ou un nombre (l'Abattage syllabique).
@@ -269,6 +266,12 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     setWiden((n) => Math.min(n, WIDEN_SCENE));
   }, [inColumn, layout.low]);
   const intro = layout.low && !introDone && !finished && !offer && !simple;
+  // La phrase de l'habitant, à la première rencontre : au premier item sur tablette ; sur un écran bas, avec
+  // « Commencer » seulement (consultant UX UI) ; jamais dans la ligne repliée. Comptée comme vue une fois affichée.
+  const greeting = scenette.greeting && greetItem === itemKey && (!layout.low || intro) ? scenette.greeting : null;
+  useEffect(() => {
+    if (greeting) greeted.add(place);
+  }, [greeting, place]);
   // La « Vue simple » serrée des écrans bas (la consigne repliée en une ligne, « Scène » et la pause dans la ligne
   // d'en-tête) : sur un écran bas, et au plus grand texte aussi sur tablette, où la consigne entière poussait la phrase
   // sous le pli (en C, mesure de 1024 × 768 au plus grand texte, deuxième passe de L6a ; en R, les réponses, lot L7).
@@ -665,9 +668,6 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     // elle ; la consigne reste dite, et dépliée, après la règle. La manche passe alors sous « Valider » et le panneau
     // défile (dérogation du 16 octobre 2026, choix du mainteneur : ce seul réglage, l'Enclos seulement).
     const rule = ranges && grandTexte && tight ? placeRuleLine(place, exerciseId, readyLevel) : null;
-    // La phrase de l'habitant, à la première rencontre : au premier item sur tablette ; sur un écran bas, avec
-    // « Commencer » seulement (consultant UX UI) ; jamais dans la ligne repliée.
-    const greeting = scenette.greeting && greetItem === itemKey && (!layout.low || intro) ? scenette.greeting : null;
     const head: ReactNode = tight ? (
         <div className="world-scenette-head world-consigne-line">
           <p className="world-consigne-fold" id="consigne-ligne">
@@ -767,8 +767,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose }:
     keptScene,
     tight,
     readyLevel,
-    greetItem,
-    itemKey,
+    greeting,
   ]);
 
   // La ligne repliée se coupe après un mot entier, jamais au milieu : les mots qui passeraient à la ligne sont cachés,

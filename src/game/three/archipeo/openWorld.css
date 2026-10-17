@@ -362,11 +362,16 @@
   overflow-y: auto;
 }
 /* « Presque ! » et l'indice redit, au deuxième essai : serrés sous la phrase (ou le mot troué), sans bulle ni saut ; la
-   consigne et la phrase restent où elles étaient au premier essai (relecture de L7, référent dys, consultant UX UI). Sur
-   un écran bas, l'étiquette à droite de la colonne (plus bas) ; en C, après les réponses (`mode-c`). */
+   consigne et la phrase restent où elles étaient au premier essai (relecture de L7, référent dys, consultant UX UI). La
+   rangée des réponses est posée dans la scène (hors de la colonne) ; en « Vue simple », la liste passe sous le retour.
+   Sur un écran bas, l'étiquette à droite de la colonne (plus bas) ; en C, après les réponses (`mode-c`). Seul l'ordre
+   affiché change : le retour n'est pas focalisable, la voix le dit à son arrivée. */
 .world-question .in-world > .feedback {
   order: 1;
   margin: 0.3rem 0 0;
+}
+.world-question .in-world.simple:not(.mode-c) .world-answers {
+  order: 2;
 }
 .world-question .in-world > .feedback .feedback-shout {
   margin: 0;

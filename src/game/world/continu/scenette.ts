@@ -79,16 +79,18 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   quais: { role: 'Le docker', greeting: null, placement: 'rangee' },
   // Lot 4 : « la pêcheuse » (le mot du consultant Archipéo, plus court à lire que « la ramendeuse »), « l'éclusier ».
   filets: { role: 'La pêcheuse', greeting: null, placement: 'rangee' },
-  ecluses: { role: 'L’éclusier', greeting: null, placement: 'rangee' },
+  ecluses: { role: 'L’éclusier', greeting: 'L’éclusier ouvre et ferme l’écluse pour les bateaux.', placement: 'rangee' },
   // Lot L5 : « la saunière » (directeur artistique, consultant Archipéo).
-  saltworks: { role: 'La saunière', greeting: null, placement: 'rangee' },
+  saltworks: { role: 'La saunière', greeting: 'La saunière récolte le sel de la mer.', placement: 'rangee' },
   // Lot L6a : « la machiniste » (directeur artistique : « la mécanicienne » ferait doublon avec Zia).
   engine: { role: 'La machiniste', greeting: null, placement: 'rangee' },
   // Lot L6b : « le charpentier » (directeur artistique).
   shipyard: { role: 'Le charpentier', greeting: null, placement: 'rangee' },
   // Le rivage nord (lot L7, directeur artistique, consultant Archipéo) : le rôle de chaque fichier de lieu (placeArt.ts).
   lookout: { role: placeArt('lookout')!.role, greeting: null, placement: 'rangee' },
-  // « Copie » et non « recopie », le modèle des préfixes de Familles-craft (directeur du contenu pédagogique).
+  // « Copie » et non « recopie », le modèle des préfixes de Familles-craft (directeur du contenu pédagogique). Une phrase
+  // pour un rôle qu'un élève de 11 ans ne devine ni par le mot ni par la scène (directeur artistique) : la copiste,
+  // l'éclusier, la saunière, le pilote du chenal.
   archives: { role: placeArt('archives')!.role, greeting: 'La copiste copie les textes à la main.', placement: 'rangee' },
   printworks: { role: placeArt('printworks')!.role, greeting: null, placement: 'rangee' },
   // Lot L8a : « la botaniste » (directeur artistique), le même mot partout.
@@ -101,7 +103,8 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   commons: { role: 'Le couvreur', greeting: null, placement: 'rangee' },
   // Le large (lot L9, directeur artistique, consultant Archipéo) : « le pilote du chenal » (jamais celui d'un avion),
   // « le chef de gare » ; le rôle de chaque fichier de lieu (placeArt.ts).
-  beacons: { role: placeArt('beacons')!.role, greeting: null, placement: 'rangee' },
+  // « Chenal » expliqué aussi, pas seulement « pilote » (directeur artistique).
+  beacons: { role: placeArt('beacons')!.role, greeting: 'Le pilote guide les bateaux dans le chenal, le passage sûr dans l’eau.', placement: 'rangee' },
   ferry: { role: placeArt('ferry')!.role, greeting: null, placement: 'rangee' },
 };
 
