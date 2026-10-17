@@ -934,45 +934,6 @@
 .open-world-bar > .button {
   pointer-events: auto;
 }
-/* « [Nom] : fermé pour l'instant », au toucher d'un cadenas (GD-20, « La Carte au plus grand texte ») : posé près du
-   cadenas, ou sur une bande en bas ou en haut de l'écran, par la page (placeClosedNote), jamais sur « Retour » ni sur
-   « Toi », ni, s'il a une autre place, sur le nom d'un lieu ouvert ; sur fond uni, au
-   dessus des étiquettes, transparent aux doigts (un cadenas ou un nom qu'il couvre se touche encore au travers). Il
-   passe à la ligne au plus grand texte plutôt que de s'étaler sur la Carte. */
-.open-world-map-note {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 1;
-  margin: 0;
-  max-width: min(80vw, 30rem);
-  width: max-content;
-  overflow-wrap: break-word;
-  pointer-events: none;
-  padding: 0.3rem 0.9rem;
-  border: var(--border-width, 2px) solid var(--text);
-  border-radius: var(--radius-control, 12px);
-  background: var(--surface);
-  color: var(--text);
-  font-weight: 700;
-}
-/* En bande, en bas ou en haut de l'écran, quand la forme large ne trouve pas de place près du cadenas (au plus grand
-   texte, sur un téléphone) : plus large, sur deux ou trois lignes (sa largeur posée par la page, `--note-largeur`). */
-.open-world-map-note[data-forme='bande'] {
-  max-width: var(--note-largeur, min(80vw, 30rem));
-}
-/* Le mot court (« [Nom] : fermé ») sur téléphone au plus grand texte, la voix disant la phrase entière ; le long ailleurs
-   (MapLabels, `data-court`). */
-.open-world-map-note:not([data-court='oui']) .open-world-map-note-short,
-.open-world-map-note:not([data-court='oui']) .open-world-map-note-said,
-.open-world-map-note[data-court='oui'] .open-world-map-note-long {
-  display: none;
-}
-.open-world-map-note:empty {
-  /* Vide, il reste dans la page (la voix dit le mot quand il s'écrit) sans rien montrer ni prendre de place. */
-  padding: 0;
-  border: 0;
-}
 /* La scénette (lot 2) : le rôle de l'habitant en tête du panneau, en gras ; la place de sa phrase d'accueil dessous. */
 .world-scenette-head {
   margin: 0 0 0.3rem;
@@ -2548,4 +2509,75 @@
    épinglé en haut, il se posait sur le premier mot (directeur artistique, L8). */
 :root .world-question .quiz.in-world.mode-c.simple-bas[data-livre="dessous"] > .world-consigne-more {
   position: static;
+}
+
+/* La fiche d'un lieu fermé (GD-20, point 3, lot 1 « Relier » ; consultant UX UI) : une seule rangée, « Relier », le
+   prix et l'icône des ressources dans le bouton, ce que l'élève a dessous. Le bouton fait 48 px au moins et passe à la
+   ligne au plus grand texte plutôt que de déborder. */
+.closed-place-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding-block: 0.4rem;
+}
+.closed-place-link {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  min-width: 48px;
+  max-width: 100%;
+  white-space: normal;
+}
+.closed-place-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 700;
+}
+/* Il en manque : inactif par sa forme, pas seulement par sa couleur (délavé, trait en tirets), et toujours focalisable. */
+.closed-place-link[aria-disabled='true'] {
+  border-style: dashed;
+  background: var(--secondary-bg);
+  color: var(--muted);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.closed-place-have {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0;
+  font-weight: 700;
+}
+.closed-place-have svg,
+.closed-place-price svg {
+  width: 1.2em;
+  height: 1.2em;
+}
+/* « La passerelle est posée. » : sur fond uni, en bas au milieu, au-dessus de la barre ; transparente aux doigts, sans
+   rien qui bouge. Vide, elle ne montre rien. */
+.open-world-said {
+  position: absolute;
+  left: 50%;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 5;
+  margin: 0;
+  max-width: min(90vw, 30rem);
+  width: max-content;
+  padding: 0.4rem 1rem;
+  border: var(--border-width, 2px) solid var(--text);
+  border-radius: var(--radius-control, 12px);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+  text-align: center;
+  pointer-events: none;
+}
+.open-world-said:empty {
+  padding: 0;
+  border: 0;
 }

@@ -202,10 +202,10 @@ describe('Les chemins aimantés', () => {
     const route = findRoute(atNode('phare'), atNode('ecluses'));
     expect(route[0]).toEqual(pathNode('phare').at);
     expect(route[route.length - 1]).toEqual(pathNode('ecluses').at);
-    expect(route.map((p) => PATH_NODES.find((n) => n.at === p)?.id)).toEqual(['phare', 'digue', 'ponton', 'quais', 'est-1', 'est-2', 'est-3', 'est-4', 'ecluses']);
+    expect(route.map((p) => PATH_NODES.find((n) => n.at === p)?.id)).toEqual(['phare', 'digue', 'ponton', 'quais', 'est-1', 'est-2', 'est-3', 'est-4', 'ecl-0', 'ecluses']);
     // Des Filets aux Écluses : par la crête, plus court que par le lagon.
     const parLaCrete = findRoute(atNode('filets'), atNode('ecluses'));
-    expect(parLaCrete).toHaveLength(3);
+    expect(parLaCrete.map((p) => PATH_NODES.find((n) => n.at === p)?.id)).toEqual(['filets', 'fil-0', 'crete', 'ecl-0', 'ecluses']);
   });
 
   it('d’un point au milieu d’une liaison à un autre sur la même liaison : tout droit', () => {

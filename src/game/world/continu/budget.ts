@@ -4,7 +4,8 @@
 // (GD-20, L6b : « Un iPad 9e génération doit pouvoir faire tourner le jeu, donc on est large en triangles pour
 // l'instant »), les appels inchangés. Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
 import { WORLD_FOG } from './camera';
-import { networkSamples, pathRibbons } from './paths';
+import { networkSamples } from './paths';
+import { allObstacles, branchRibbons, closedPlaces, linkFacets, openPathRibbons } from './links';
 import { PLACES, type PlaceId } from './plan6e';
 import { lanternLight, modelOfPlace } from './places';
 import { constructionFacets, WHOLE } from './construction';
@@ -136,9 +137,18 @@ const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
  * au plus chargé : toutes les places de sa galerie prises, ses portes pavoisées, ses barques, sa pile pleine
  * (`PORT_WORST`) ; aucun appel de plus.
  */
-function placesCost(): { triangles: number; calls: number } {
+function placesCost(ground: (x: number, z: number) => number): { triangles: number; calls: number } {
   const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + placeTrace(p.id, [...p.scenes, ...(p.panels ?? [])]).triangles, 0);
-  return { triangles: triangles + lanternLight().triangles + portFacets(PORT_WORST).triangles, calls: 2 };
+  return { triangles: triangles + lanternLight().triangles + portFacets(PORT_WORST).triangles + linksCost(ground), calls: 2 };
+}
+
+/**
+ * Les liaisons (GD-20, point 3, lot 1 « Relier ») : les embranchements des lieux qu'on relie, en plein, et chaque
+ * passerelle au plus chargé de ses deux états (démontée, ou reliée avec son pont neuf), dans le maillage des lieux :
+ * aucun appel de plus. Les tirets de la Carte en ont moins que le chemin plein.
+ */
+function linksCost(ground: (x: number, z: number) => number): number {
+  return allObstacles().reduce((s, o) => s + branchRibbons(o.place, 'solid', ground).triangles + Math.max(linkFacets(o, false, ground).triangles, linkFacets(o, true, ground).triangles), 0);
 }
 
 /** L'Escale seule, au plus chargé : son plafond (4 500 triangles, directeur artistique, GD-20, lot 2). */
@@ -176,21 +186,22 @@ export function groundCost(): { triangles: number; calls: number; near: number; 
 }
 
 /**
- * Ce que coûte le monde continu, environ : le sol autour de Kéo, tout le reste visible à la fois ; la brume des six
- * lieux, et le second maillage du banc qui se lève (moins d'une seconde).
+ * Ce que coûte le monde continu, environ : le sol autour de Kéo, tout le reste visible à la fois ; la brume de tous les
+ * lieux fermés, au pire (au départ, les quatorze), en un maillage : depuis le lot 1 « Relier » (GD-20, point 3), elle
+ * part d'un coup quand on relie, sans second maillage qui se lève (le fondu reviendra avec la pose animée, au lot 2).
  */
 export function openWorldCost(): OpenWorldCost[] {
   const field = buildHeightField();
-  const paths = pathRibbons((x, z) => heightOnMesh(field, x, z));
-  const ground = groundCost();
   const height = (x: number, z: number) => heightOnMesh(field, x, z);
+  const paths = openPathRibbons(height);
+  const ground = groundCost();
   return [
     { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
     { poste: 'mer', triangles: 2, calls: 1 },
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
-    { poste: 'lieux', ...placesCost() },
+    { poste: 'lieux', ...placesCost(height) },
     { poste: 'pose', ...poseCost(height) },
-    { poste: 'brume', triangles: veilFacets(PLACES.map((p) => p.id)).triangles, calls: 2 },
+    { poste: 'brume', triangles: veilFacets(closedPlaces(() => false)).triangles, calls: 1 },
     { poste: 'kéo', ...KEO },
     { poste: 'question', ...questionCost() },
     { poste: 'scénette', ...scenetteCost() },
@@ -200,15 +211,15 @@ export function openWorldCost(): OpenWorldCost[] {
 /**
  * La Carte des lieux ouverts (lot 3), le pire : toute l'île de loin dans l'anneau de loin (celui de près vidé), la mer,
  * les chemins, les lieux (sur la Carte, aucun n'est hors de la brume : un seul maillage, mais compté à deux appels, le
- * pire), la brume des lieux fermés (les six, et le banc qui se lève), Kéo. Ni question, ni scénette, ni pose n'y
+ * pire ; les embranchements des lieux fermés y sont en tirets, comptés pleins), la brume des lieux fermés, Kéo. Ni question, ni scénette, ni pose n'y
  * sont ouvertes : elle ne s'ouvre pas pendant une question, et l'ouvrir finit la pose.
  */
 export function mapCost(): { triangles: number; calls: number } {
   const field = buildHeightField();
   const height = (x: number, z: number) => heightOnMesh(field, x, z);
   const far = tileTriangleCounts(field, 'far').reduce((s, n) => s + n, 0);
-  const paths = pathRibbons(height).triangles;
-  const places = placesCost();
-  const veil = veilFacets(PLACES.map((p) => p.id)).triangles;
-  return { triangles: far + 2 + paths + places.triangles + veil + KEO.triangles, calls: 1 + 1 + 1 + places.calls + 2 + KEO.calls };
+  const paths = openPathRibbons(height).triangles;
+  const places = placesCost(height);
+  const veil = veilFacets(closedPlaces(() => false)).triangles;
+  return { triangles: far + 2 + paths + places.triangles + veil + KEO.triangles, calls: 1 + 1 + 1 + places.calls + 1 + KEO.calls };
 }

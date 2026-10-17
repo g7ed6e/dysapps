@@ -1,13 +1,13 @@
-// La brume posée sur les lieux pas encore ouverts (piste 1, lot 1, deambuler-scenettes.md ; retouchée après les
-// relectures du directeur artistique et du consultant Archipéo) : un banc bas, large et plat, posé sur le sol, de la
-// teinte du lointain. Ses flancs sont les plus denses un peu au-dessus du sol, et il s'efface vers le haut et sur ses
-// bords (une transparence par sommet, nulle au pourtour ; la vue efface aussi ce qu'on voit de biais, sa silhouette) :
-// on devine la forme du lieu à travers, et son repère (la tour du Phare, la flèche de la grue) dépasse du dessus, plus
-// clair. Trois dômes aplatis qui se chevauchent, sans pointe. Rien ne bouge : c'est un état, pas une
-// animation (le lever se joue dans la vue). Elle se lève à l'approche de Kéo et pour la prochaine mission
-// (./mission.ts, `veiledPlaces`). Code pur.
+// La brume posée sur les lieux fermés (piste 1, lot 1, deambuler-scenettes.md ; retouchée après les relectures du
+// directeur artistique et du consultant Archipéo) : un banc bas, large et plat, posé sur le sol, de la teinte du lointain.
+// Ses flancs sont les plus denses un peu au-dessus du sol, et il s'efface vers le haut et sur ses bords (une transparence
+// par sommet, nulle au pourtour ; la vue efface aussi ce qu'on voit de biais, sa silhouette) : on devine la forme du lieu
+// à travers, et son repère (la tour du Phare, la flèche de la grue) dépasse du dessus, plus clair. Trois dômes aplatis
+// qui se chevauchent, sans pointe. Rien ne bouge : c'est un état, pas une animation. Depuis le lot 1 « Relier » (GD-20,
+// point 3), elle ne couvre que les lieux pas encore reliés (./links.ts, `closedPlaces`), ne se lève plus à l'approche de
+// Kéo, et part quand on relie le lieu. Code pur.
 import { boundsOf } from './facets';
-import { linearRgb, type Vec2 } from './geometry';
+import { distance, linearRgb, type Vec2 } from './geometry';
 import { placeById, type PlaceId } from './plan6e';
 import { placeArt } from './northShore';
 import { modelOfPlace } from './places';
@@ -94,18 +94,50 @@ function dome(pos: number[], nor: number[], col: number[], c: Vec2, radius: numb
     }
 }
 
-/** Le banc d'un lieu : un grand dôme sur lui, deux plus petits de part et d'autre (est et ouest), qui le prolongent. */
-function veilOf(pos: number[], nor: number[], col: number[], id: PlaceId): void {
+/**
+ * La portée du banc de la Turbine (lot 1 « Relier », GD-20, point 3) : il couvre le corps du lieu, pas la rivière, où se
+ * tient sa passerelle démontée (la rigole, au bout de ses abords, en sort).
+ */
+const ENGINE_VEIL_REACH = 9.5;
+
+/** Un dôme du banc d'un lieu : son centre au sol, son rayon, sa part de la hauteur du banc. */
+interface VeilDome {
+  center: Vec2;
+  radius: number;
+  height: number;
+}
+
+/**
+ * Les trois dômes du banc d'un lieu : un grand sur lui, deux plus petits de part et d'autre (est et ouest), qui le
+ * prolongent. Calculés une fois par lieu.
+ */
+function veilDomes(id: PlaceId): readonly VeilDome[] {
+  const known = domes.get(id);
+  if (known) return known;
   const place = placeById(id);
   const { min, max } = boundsOf(modelOfPlace(id).facets);
-  // Les Balises (lot L9a) : le banc couvre la station et sa cale, pas le chapelet de mâts dans la mer.
-  const reach = placeArt(id)?.veilReach ?? Math.max(Math.abs(min[0]), Math.abs(max[0]), Math.abs(min[2]), Math.abs(max[2]));
+  // Les Balises (lot L9a) : le banc couvre la station et sa cale, pas le chapelet de mâts dans la mer ; la Turbine, son
+  // corps, pas la rivière.
+  const reach = (id === 'engine' ? ENGINE_VEIL_REACH : placeArt(id)?.veilReach) ?? Math.max(Math.abs(min[0]), Math.abs(max[0]), Math.abs(min[2]), Math.abs(max[2]));
   const radius = reach * 1.3 + 2;
   const { x, z } = place.center;
-  const floor = standingHeight(heightAt(place.center));
-  dome(pos, nor, col, place.center, radius, VEIL_HEIGHT, floor);
-  dome(pos, nor, col, { x: x - radius * 0.7, z: z + radius * 0.15 }, radius * 0.65, VEIL_HEIGHT * 0.75, floor);
-  dome(pos, nor, col, { x: x + radius * 0.7, z: z - radius * 0.1 }, radius * 0.6, VEIL_HEIGHT * 0.7, floor);
+  const out: VeilDome[] = [
+    { center: place.center, radius, height: VEIL_HEIGHT },
+    { center: { x: x - radius * 0.7, z: z + radius * 0.15 }, radius: radius * 0.65, height: VEIL_HEIGHT * 0.75 },
+    { center: { x: x + radius * 0.7, z: z - radius * 0.1 }, radius: radius * 0.6, height: VEIL_HEIGHT * 0.7 },
+  ];
+  domes.set(id, out);
+  return out;
+}
+const domes = new Map<PlaceId, readonly VeilDome[]>();
+
+/** Le point `p` est-il sous le banc du lieu `id`, ou à moins de `margin` unités de son pourtour ? */
+export const underVeil = (id: PlaceId, p: Vec2, margin = 0): boolean => veilDomes(id).some((d) => distance(p, d.center) < d.radius + margin);
+
+/** Le banc d'un lieu : ses trois dômes, jamais plus bas que le pied du lieu. */
+function veilOf(pos: number[], nor: number[], col: number[], id: PlaceId): void {
+  const floor = standingHeight(heightAt(placeById(id).center));
+  for (const d of veilDomes(id)) dome(pos, nor, col, d.center, d.radius, d.height, floor);
 }
 
 /** La brume des lieux `ids` : un seul maillage. */

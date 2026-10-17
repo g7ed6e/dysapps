@@ -651,12 +651,18 @@ export const PATH_NODES: readonly PathNode[] = [
   node('est-4', [1150, 452]),
   node('nord-1', [1092, 402]),
   node('nord-2', [1062, 330]),
+  // Le carrefour des Filets (GD-20, point 3, lot 1 « Relier » ; tracé accepté par le directeur artistique) : reculé au sud
+  // du lieu, hors de sa brume, pour que sa porte soit au bout d'un embranchement, jamais sur un chemin de passage.
+  node('fil-0', [1064, 293]),
   node('crete', [1128, 300]),
+  // Le carrefour des Écluses (même lot) : reculé à l'ouest du lieu, hors de sa brume ; le chemin des Marais salants y part.
+  node('ecl-0', [1160, 414]),
   // Vers les Marais salants (lot L5) : des Écluses, une passerelle sur la rivière juste sous le bassin d'aval, puis la
   // terre de l'est, le long de la côte, jusqu'à la grève ; le chemin contourne les bassins par l'ouest et arrive au sud,
   // face au lieu, où le chemin des abords le rejoint (relecture du directeur artistique : le lieu entier à l'arrivée ;
-  // le tracé des liaisons viendra plus tard).
-  node('sel-1', [1213, 428]),
+  // le tracé des liaisons viendra plus tard). Depuis le lot 1 « Relier » (GD-20, point 3), le chemin part du carrefour des
+  // Écluses et passe la rivière un peu plus au sud, hors de la brume des Écluses.
+  node('sel-1', [1215, 452]),
   node('sel-2', [1246, 434]),
   node('sel-3', [1300, 448]),
   node('sel-4', [1350, 480]),
@@ -715,13 +721,15 @@ export const PATH_EDGES: readonly (readonly [string, string])[] = [
   ['est-1', 'est-2'],
   ['est-2', 'est-3'],
   ['est-3', 'est-4'],
-  ['est-4', 'ecluses'],
+  ['est-4', 'ecl-0'],
+  ['ecl-0', 'ecluses'],
   ['est-4', 'nord-1'],
   ['nord-1', 'nord-2'],
-  ['nord-2', 'filets'],
-  ['filets', 'crete'],
-  ['crete', 'ecluses'],
-  ['ecluses', 'sel-1'],
+  ['nord-2', 'fil-0'],
+  ['fil-0', 'filets'],
+  ['fil-0', 'crete'],
+  ['crete', 'ecl-0'],
+  ['ecl-0', 'sel-1'],
   ['sel-1', 'sel-2'],
   ['sel-2', 'sel-3'],
   ['sel-3', 'sel-4'],

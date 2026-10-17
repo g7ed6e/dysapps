@@ -16,7 +16,8 @@ import { linearRgb } from './geometry';
 import { COMMONS, ENGINE, ENGINE_ROTOR_COLORS, LAMP_COLOR, OBSERVATORY, OBSERVATORY_TABLE, SHIPYARD, STEAM_COLORS, engineRill, engineRotorHub, hullEdge, hullPoint, modelOfPlace, ruinOf, slipRails } from './places';
 import { MANGROVE, mangroveCarbetFloor, mangroveDeckTop } from './places';
 import { RUINS, RUINS_ORNATE_ARCH, ruinsTop } from './places';
-import { PLANK_BRIDGES, pathRibbons } from './paths';
+import { NEW_WOOD, PLANK_BRIDGES, pathRibbons } from './paths';
+import { linkFacets, obstacleOf } from './links';
 import { networkSamples, pathNode } from './paths';
 import { buildHeightField, heightAt, heightOnMesh, landDistance, standingHeight, tileFacets } from './terrain';
 import PLACE_ITEMS from './placeItems.json';
@@ -660,27 +661,35 @@ describe('La Turbine (GD-20, point 8, lot L6a)', () => {
     expect(heightOnMesh(field, c.x + spill.x, z)).toBeLessThan(0);
   });
 
-  it('la passerelle vers la Turbine : des planches qu’on lit sur des pieux, au-dessus de la rivière (relecture de L6a)', () => {
+  it('la passerelle vers la Turbine : des planches neuves qu’on lit sur des pieux, au-dessus de la rivière, seulement une fois reliée (GD-20, point 3, lot 1)', () => {
     const field = buildHeightField();
-    const f = pathRibbons((x, z) => heightOnMesh(field, x, z));
+    const ground = (x: number, z: number) => heightOnMesh(field, x, z);
     expect(PLANK_BRIDGES).toEqual([
       ['tur-1', 'tur-2'],
       ['lar-4', 'lar-5'],
     ]);
-    const woods = [0xa9784a, 0xb98c5c, 0x7a5636].map(linearRgb);
-    const of = (rgb: number[]) => {
-      const out: number[] = [];
-      for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - rgb[k]) < 1e-6)) out.push(i);
+    const o = obstacleOf('engine');
+    expect(o.water).not.toBeNull();
+    const of = (f: { colors: ArrayLike<number>; positions: ArrayLike<number> }, color: number) => {
+      const rgb = linearRgb(color);
+      const out: (readonly [number, number, number])[] = [];
+      for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - rgb[k]) < 1e-6)) out.push([f.positions[i], f.positions[i + 1], f.positions[i + 2]]);
       return out;
     };
+    const linked = linkFacets(o, true, ground);
     // Les pieux plantés dans la rivière, leur tête au-dessus des planches.
-    const posts = of(woods[2]).map((i) => [f.positions[i], f.positions[i + 1], f.positions[i + 2]] as const);
+    const posts = of(linked, 0x7a5636);
     expect(posts.length).toBeGreaterThan(0);
     expect(Math.min(...posts.map((p) => p[1]))).toBeLessThan(-1);
-    const top = Math.max(...posts.map((p) => p[1]));
-    expect(top).toBeGreaterThan(0.6);
-    // Deux bois de planches, en alternance.
-    expect(of(woods[1]).length).toBeGreaterThan(0);
+    expect(Math.max(...posts.map((p) => p[1]))).toBeGreaterThan(0.6);
+    // Le bois neuf : le dessus des planches et les traverses claires.
+    expect(of(linked, NEW_WOOD.top).length).toBeGreaterThan(0);
+    expect(of(linked, NEW_WOOD.beam).length).toBeGreaterThan(0);
+    // Démontée : ni planche ni traverse neuve, les pieux restent ; et aucune planche dans le maillage des chemins.
+    const cut = linkFacets(o, false, ground);
+    expect(of(cut, NEW_WOOD.top)).toEqual([]);
+    expect(of(cut, 0x7a5636).length).toBeGreaterThan(0);
+    expect(of(pathRibbons(ground), NEW_WOOD.top)).toEqual([]);
   });
 
   it('le cadran solaire : un style de cuivre fin, jamais une plaque de fer pleine (relecture de L6a)', () => {

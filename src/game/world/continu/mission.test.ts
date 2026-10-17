@@ -7,7 +7,7 @@ import { EMPTY_STATE, type GameState } from '../../engine';
 import { questProgress } from '../../exercises';
 import { NOMS_ARCHIPELS } from '../archipelago';
 import { modeleDuMonde } from '../model';
-import { DISTANCE_SIGN_STEPS, bornesDuMondeOuvert, distanceSign, keepClear, markOnScreen, missionsOfPlace, nextMission, playsInPlace, veiledPlaces, type MissionMark } from './mission';
+import { DISTANCE_SIGN_STEPS, bornesDuMondeOuvert, distanceSign, keepClear, markOnScreen, missionsOfPlace, nextMission, playedPlaces, playsInPlace, type MissionMark } from './mission';
 import { KEO_STEP, PLACES, placeById, placeOfIsland } from './plan6e';
 
 // Une île sans lieu dans le prototype : la première du registre, tirée de `PLACES` (relecture du code de L8 : jamais un
@@ -80,15 +80,21 @@ describe('Un lieu porte toutes les missions de son île (GD-20, point 8)', () =>
   });
 });
 
-describe('La brume et la distance', () => {
-  it('la brume couvre les lieux dont aucune mission n’a été jouée, sauf le prochain', () => {
-    const next = nextMission(bornes);
-    expect(next?.place.id).toBe('quais');
-    // Le Phare et les Écluses ont été joués (une mission au moins) ; les Quais sont le prochain lieu.
-    expect(veiledPlaces(bornes, next)).toEqual(['filets']);
-    expect(veiledPlaces(bornes, null)).toEqual(['quais', 'filets']);
-    // Sans mission (une autre LV2), pas de brume.
-    expect(veiledPlaces(bornes.filter((b) => b.ile !== 'french-6e-grammar-spelling'), next)).toEqual([]);
+describe('Les lieux fermés et la distance', () => {
+  it('la prochaine mission saute les lieux fermés (GD-20, point 3, lot 1 « Relier »)', () => {
+    expect(nextMission(bornes)?.place.id).toBe('quais');
+    // Les Quais fermés : la mission suivante est aux Filets, puis, eux fermés aussi, aux Écluses (une mission à finir).
+    expect(nextMission(bornes, undefined, (p) => p !== 'quais')?.place.id).toBe('filets');
+    expect(nextMission(bornes, undefined, (p) => p !== 'quais' && p !== 'filets')?.place.id).toBe('ecluses');
+    // La destination choisie dans le jeu ne mène jamais à un lieu fermé.
+    expect(nextMission(bornes, { island: 'french-6e-grammar-spelling', mission: 'plurals' }, (p) => p !== 'filets')?.place.id).toBe('quais');
+    expect(nextMission(bornes, undefined, () => false)).toBeNull();
+  });
+
+  it('un lieu déjà joué reste ouvert : les lieux où une mission a un nombre d’étoiles', () => {
+    // Le Phare (3 étoiles) et les Écluses (2) ont été joués ; les Quais (verrouillés) et les Filets (nouveaux), non.
+    expect(playedPlaces(bornes)).toEqual(['phare', 'ecluses']);
+    expect(playedPlaces([])).toEqual([]);
   });
 
   it('la distance en un, deux ou trois points, jamais en texte', () => {

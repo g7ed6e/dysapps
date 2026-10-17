@@ -349,7 +349,7 @@ const REPAIR_TRIES = 12;
  * refusée).
  * Enfin le nom de chaque lieu fermé, sous son cadenas, glissé de côté au besoin (le cadenas toujours au-dessus de lui),
  * descendu jusqu'à `NEAR.reach`, puis sur deux lignes (`narrow`), se tait s'il gêne encore (le cadenas reste ; son
- * toucher dit « [Nom] : fermé pour l'instant »). Le nom d'un lieu ouvert, près de son lieu, passe avant celui d'un lieu
+ * toucher ouvre la fiche du lieu fermé). Le nom d'un lieu ouvert, près de son lieu, passe avant celui d'un lieu
  * fermé (directeur artistique) ; mais si les noms ouverts peuvent se poser autrement, tous près de leur lieu, en laissant
  * au lieu fermé une place, la pose est refaite avec cette place gardée (`repair`, la reprise ; sur la tablette, en texte
  * normal, le nom de l'Imprimerie prenait la place de celui des Filets). Sans `repair` (les vues essayées de
@@ -544,7 +544,7 @@ function attemptLayout(
   for (const l of closed) {
     const kept = reserved.get(l.id);
     const spot = kept && fits(l, kept, placed) ? kept : closedPlaces(l).find((c) => fits(l, c, placed));
-    // Ni entier ni sur deux lignes : il se tait (le cadenas reste ; son toucher dit « [Nom] : fermé pour l'instant »).
+    // Ni entier ni sur deux lignes : il se tait (le cadenas reste ; son toucher ouvre la fiche du lieu fermé).
     if (!spot) {
       mute.push(l.id);
       continue;
@@ -578,102 +578,4 @@ function attemptLayout(
     });
   };
   return { spots: labels.map((l) => out.get(l.id)!), crowded, mute, namedOpen, closedNamed, reserved, room };
-}
-
-/**
- * Les mots de « [Nom] : fermé pour l'instant », au toucher du cadenas d'un lieu fermé : écrits (`shown`) et dits par la
- * voix (`said`, rien : le mot écrit). Sur téléphone au plus grand texte (`short`), le mot court « [Nom] : fermé », sur
- * deux lignes au plus, posé sur les lieux fermés ; la voix garde la phrase entière du bouton, « [Nom] : sous la brume,
- * fermé pour l'instant » (GD-20, décision du directeur artistique du 16 octobre 2026 : le mot long cachait « Le Phare »
- * et « L'Escale » à 667 × 375, le Chantier naval à 844 × 390). Ailleurs, rien ne change.
- */
-export function closedNoteText(name: string, short: boolean): { shown: string; said?: string } {
-  // Espace insécable avant les deux-points : la ligne ne commence jamais par « : ».
-  if (!short) return { shown: `${name}\u00a0: fermé pour l’instant` };
-  return { shown: `${name}\u00a0: fermé`, said: `${name} : sous la brume, fermé pour l’instant` };
-}
-
-/**
- * Une forme mesurée de « [Nom] : fermé pour l'instant » : la large, qui se pose près du cadenas, ou une bande (`band`),
- * plus large et plus basse (deux ou trois lignes), le long du bas ou du haut de l'écran seulement.
- */
-export interface NoteSize {
-  w: number;
-  h: number;
-  band?: boolean;
-}
-
-/**
- * La place de « [Nom] : fermé pour l'instant », au toucher du cadenas d'un lieu fermé (GD-20, « La Carte au plus grand
- * texte », directeur artistique et consultant UX UI : il ne réserve plus de place à gauche, il s'écrit près du cadenas
- * touché, ou sur une bande en bas ou en haut de l'écran, seulement après le toucher). Les places, dans l'ordre : sous le
- * cadenas (sur le nom du lieu, qu'il redit), au-dessus, à droite, à gauche, dans une forme non `band` ; puis chaque bande,
- * la plus large d'abord (au plus grand texte sur un téléphone, il tient sur deux ou trois lignes, jamais dans une colonne
- * étroite de cinq : relecture du consultant UX UI), le long du bas de l'écran, puis du haut, du milieu vers les bords ;
- * puis, en dernier recours, la forme large, puis les bandes, n'importe où. Toujours entier dans l'écran, à un écart du bord ; la première place qui ne touche ni
- * `avoid` (les boutons de la page), ni `keep` (« Retour » et la pastille « Toi »), ni `names` (les pastilles des lieux
- * ouverts) ; sinon, hors des boutons (qui passeraient au-dessus du mot), celle qui cache le moins les pastilles
- * ouvertes ; sinon, hors de `keep`, celle qui couvre le moins de boutons et de pastilles ; rien ne convient (un écran trop
- * petit pour le mot) : celle qui touche le moins « Retour » et « Toi ». `at` est le point
- * du lieu, sous son cadenas ; `form`, l'indice de la forme choisie dans `sizes`.
- */
-export function placeClosedNote(
-  at: { x: number; y: number },
-  sizes: readonly NoteSize[],
-  avoid: readonly Rect[],
-  keep: readonly Rect[],
-  screen: { width: number; height: number },
-  names: readonly Rect[] = [],
-): { left: number; top: number; form: number } {
-  const list: { left: number; top: number; form: number; r: Rect }[] = [];
-  const inside = (left: number, w: number) => Math.min(Math.max(MAP_LABEL_GAP, left), screen.width - MAP_LABEL_GAP - w);
-  const add = (left: number, top: number, form: number) => {
-    const { w, h } = sizes[form];
-    list.push({ left, top, form, r: rect(left, top, w, h) });
-  };
-  // Le long d'une rangée, du milieu vers les bords, au pas de `NEAR.step`.
-  const along = (top: number, form: number) => {
-    const middle = inside(screen.width / 2 - sizes[form].w / 2, sizes[form].w);
-    add(middle, top, form);
-    for (let d = NEAR.step; d <= screen.width / 2; d += NEAR.step) {
-      add(inside(middle - d, sizes[form].w), top, form);
-      add(inside(middle + d, sizes[form].w), top, form);
-    }
-  };
-  const beside = sizes.map((s, form) => ({ ...s, form })).filter((s) => !s.band);
-  const bands = sizes.map((s, form) => ({ ...s, form })).filter((s) => s.band);
-  for (const { w, h, form } of beside) {
-    const lockTop = at.y - MAP_LOCK;
-    add(inside(at.x - w / 2, w), at.y + MAP_LABEL_GAP, form);
-    add(inside(at.x - w / 2, w), lockTop - MAP_LABEL_GAP - h, form);
-    add(inside(at.x + MAP_LOCK / 2 + MAP_LABEL_GAP, w), lockTop + MAP_LOCK / 2 - h / 2, form);
-    add(inside(at.x - MAP_LOCK / 2 - MAP_LABEL_GAP - w, w), lockTop + MAP_LOCK / 2 - h / 2, form);
-  }
-  for (const { h, form } of [...bands].sort((a, b) => b.w - a.w)) for (const top of [screen.height - MAP_LABEL_GAP - h, MAP_LABEL_GAP]) along(top, form);
-  // En dernier recours, toute la hauteur, au pas de `NEAR.step` : la forme large (le long du bas de l'écran, puis du haut,
-  // puis ailleurs), puis les bandes (ailleurs qu'en bas ou en haut), pour cacher le moins possible.
-  const rows = (h: number) => {
-    const list = [];
-    for (let top = MAP_LABEL_GAP + NEAR.step; top < screen.height - MAP_LABEL_GAP - h; top += NEAR.step) list.push(top);
-    return list;
-  };
-  for (const { h, form } of beside) for (const top of [screen.height - MAP_LABEL_GAP - h, MAP_LABEL_GAP, ...rows(h)]) along(top, form);
-  for (const { h, form } of bands) for (const top of rows(h)) along(top, form);
-  const onScreen = (r: Rect) => r.left >= MAP_LABEL_GAP - 0.5 && r.top >= MAP_LABEL_GAP - 0.5 && r.right <= screen.width - MAP_LABEL_GAP + 0.5 && r.bottom <= screen.height - MAP_LABEL_GAP + 0.5;
-  const area = (among: readonly Rect[]) => (r: Rect) => among.reduce((n, k) => n + Math.max(0, Math.min(r.right, k.right) - Math.max(r.left, k.left)) * Math.max(0, Math.min(r.bottom, k.bottom) - Math.max(r.top, k.top)), 0);
-  const least = (among: readonly { r: Rect; left: number; top: number; form: number }[], cost: (r: Rect) => number) =>
-    among.reduce<(typeof among)[number] | undefined>((b, p) => (!b || cost(p.r) < cost(b.r) ? p : b), undefined);
-  const shown = list.filter((p) => onScreen(p.r));
-  const free = (among: readonly Rect[]) => (p: { r: Rect }) => !among.some((a) => clash(a, p.r));
-  // Un bouton de la page passe au-dessus du mot (il le cacherait) : hors des boutons d'abord, puis le moins de noms
-  // ouverts cachés ; sans place hors des boutons, hors de « Retour » et « Toi », le moins de boutons et de noms couverts.
-  const outOfButtons = shown.filter(free([...avoid, ...keep]));
-  const covered = (r: Rect) => area(avoid)(r) + area(names)(r);
-  const best =
-    outOfButtons.find(free(names)) ??
-    least(outOfButtons, area(names)) ??
-    least(shown.filter(free(keep)), covered) ??
-    least(shown, area(keep)) ??
-    list[0];
-  return { left: best.left, top: best.top, form: best.form };
 }

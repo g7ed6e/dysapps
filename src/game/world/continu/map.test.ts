@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { markOffset, screenOf } from './camera';
 import type { Vec3 } from './geometry';
-import { ISLAND_BOX, MAP_BAR_ROOM, MAP_CAMERA, grown, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, closedNoteText, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, placeClosedNote, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
+import { ISLAND_BOX, MAP_BAR_ROOM, MAP_CAMERA, grown, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
 import { PLACES, placeById } from './plan6e';
 import { PORT_MAP_POINT } from './port';
 import { heightAt, standingHeight } from './terrain';
@@ -556,99 +556,6 @@ describe('La Carte avec le rivage nord (lot L7)', () => {
       if (w === 1024) for (let i = 1; i < labels.length; i++) expect(spots[i].name, labels[i].id).toBe(true);
     });
   }
-});
-
-describe('« [Nom] : fermé pour l’instant » (GD-20, « La Carte au plus grand texte »)', () => {
-  const screen = { width: 667, height: 375 };
-  const size = { w: 220, h: 60 };
-  const cross = (a: { left: number; top: number; right: number; bottom: number }, b: typeof a) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
-  it('s’écrit sous le cadenas touché, entier dans l’écran', () => {
-    const at = { x: 640, y: 150 };
-    const spot = placeClosedNote(at, [size], [], [], screen);
-    expect(spot.top).toBe(150 + MAP_LABEL_GAP);
-    expect(spot.left + size.w).toBeLessThanOrEqual(667 - MAP_LABEL_GAP);
-  });
-  it('jamais sur « Retour » ni sur « Toi » : au-dessus du cadenas, ou en bas de l’écran', () => {
-    const retour = { left: 10, top: 290, right: 130, bottom: 365 };
-    const toi = { left: 260, top: 200, right: 380, bottom: 250 };
-    const above = placeClosedNote({ x: 320, y: 190 }, [size], [], [retour, toi], screen);
-    expect(cross({ left: above.left, top: above.top, right: above.left + size.w, bottom: above.top + size.h }, toi)).toBe(false);
-    expect(above.top + size.h).toBeLessThanOrEqual(190 - MAP_LOCK);
-    // Ni dessous, ni dessus, ni à côté : le long du bas de l'écran, hors de « Retour ».
-    const wall = { left: 0, top: 0, right: 667, bottom: 290 };
-    const low = placeClosedNote({ x: 320, y: 190 }, [size], [wall], [retour], screen);
-    const box = { left: low.left, top: low.top, right: low.left + size.w, bottom: low.top + size.h };
-    expect(box.bottom).toBeLessThanOrEqual(375);
-    expect(cross(box, retour)).toBe(false);
-    expect(cross(box, wall)).toBe(false);
-    // Aucune place hors des autres boutons : il peut en couvrir un, jamais « Retour » ni « Toi ».
-    const full = { left: 0, top: 0, right: 667, bottom: 375 };
-    const last = placeClosedNote({ x: 320, y: 190 }, [size], [full], [retour, toi], screen);
-    const lastBox = { left: last.left, top: last.top, right: last.left + size.w, bottom: last.top + size.h };
-    expect(cross(lastBox, retour)).toBe(false);
-    expect(cross(lastBox, toi)).toBe(false);
-  });
-  it('trop large pour une place près du cadenas : il passe sur une bande, en bas ou en haut, sur deux ou trois lignes, jamais sur « Retour », « Toi » ni un nom ouvert', () => {
-    // Le téléphone couché au plus grand texte : « Retour » en bas à gauche, « Toi » au milieu, un nom ouvert en haut à
-    // gauche ; la forme large ne passe ni au-dessus de « Toi » ni entre lui et « Retour ».
-    const retour = { left: 20, top: 285, right: 200, bottom: 365 };
-    const toi = { left: 290, top: 100, right: 340, bottom: 144 };
-    const phare = { left: 90, top: 20, right: 260, bottom: 120 };
-    const wide = { w: 534, h: 132 };
-    const band = { w: 440, h: 132, band: true };
-    const tall = { w: 300, h: 190, band: true };
-    const spot = placeClosedNote({ x: 330, y: 200 }, [wide, band, tall], [], [retour, toi], screen, [phare]);
-    expect(spot.form).toBe(1);
-    const box = { left: spot.left, top: spot.top, right: spot.left + band.w, bottom: spot.top + band.h };
-    // Le long du bas de l'écran, à droite de « Retour ».
-    expect(box.bottom).toBe(375 - MAP_LABEL_GAP);
-    for (const r of [retour, toi, phare]) expect(cross(box, r)).toBe(false);
-  });
-  it('une bande se pose en bas ou en haut de l’écran ; au milieu en dernier recours seulement, jamais sur « Retour » ni « Toi »', () => {
-    const band = { w: 440, h: 100, band: true };
-    // Le cadenas au milieu, tout près de lui occupé : la bande en bas.
-    const around = { left: 200, top: 120, right: 470, bottom: 250 };
-    const low = placeClosedNote({ x: 330, y: 200 }, [{ w: 600, h: 60 }, band], [around], [], screen);
-    expect(low.form).toBe(1);
-    expect(low.top).toBe(375 - MAP_LABEL_GAP - band.h);
-    // Le haut et le bas pris par « Toi » et « Retour » : au milieu, hors d'eux.
-    const wall = { left: 0, top: 0, right: 667, bottom: 120 };
-    const floor = { left: 0, top: 250, right: 667, bottom: 375 };
-    const mid = placeClosedNote({ x: 330, y: 200 }, [band], [], [wall, floor], screen);
-    const box = { left: mid.left, top: mid.top, right: mid.left + band.w, bottom: mid.top + band.h };
-    expect(cross(box, wall)).toBe(false);
-    expect(cross(box, floor)).toBe(false);
-  });
-  it('sans place libre : jamais sur « Retour » ni « Toi », et le moins possible sur un nom ouvert', () => {
-    const retour = { left: 20, top: 285, right: 200, bottom: 365 };
-    const toi = { left: 290, top: 60, right: 340, bottom: 104 };
-    const escale = { left: 215, top: 280, right: 345, bottom: 355 };
-    const phare = { left: 113, top: 90, right: 282, bottom: 255 };
-    const band = { w: 420, h: 132, band: true };
-    const spot = placeClosedNote({ x: 380, y: 100 }, [{ w: 534, h: 132 }, band], [], [retour, toi], screen, [escale, phare]);
-    const size = spot.form ? band : { w: 534, h: 132 };
-    const box = { left: spot.left, top: spot.top, right: spot.left + size.w, bottom: spot.top + size.h };
-    expect(cross(box, retour)).toBe(false);
-    expect(cross(box, toi)).toBe(false);
-    // L'Escale, la pastille la plus proche du bas, n'est couverte qu'en partie au plus.
-    const covered = (r: typeof box) => Math.max(0, Math.min(box.right, r.right) - Math.max(box.left, r.left)) * Math.max(0, Math.min(box.bottom, r.bottom) - Math.max(box.top, r.top));
-    expect(covered(escale) + covered(phare)).toBeLessThan((escale.right - escale.left) * (escale.bottom - escale.top));
-  });
-});
-
-describe('le mot d’un lieu fermé (GD-20, téléphone au plus grand texte)', () => {
-  it('ailleurs, le mot long, écrit et dit', () => {
-    expect(closedNoteText('Les Marais salants', false)).toEqual({ shown: 'Les Marais salants\u00a0: fermé pour l’instant' });
-  });
-  it('sur téléphone au plus grand texte, le mot court écrit ; la voix garde la phrase entière du bouton', () => {
-    expect(closedNoteText('Les Marais salants', true)).toEqual({
-      shown: 'Les Marais salants\u00a0: fermé',
-      said: 'Les Marais salants : sous la brume, fermé pour l’instant',
-    });
-  });
-  it('la ligne ne commence jamais par les deux-points', () => {
-    for (const short of [false, true]) expect(closedNoteText('Les Quais', short).shown).toMatch(/^Les Quais\u00a0:/u);
-  });
 });
 
 describe('« Retour » et « Lieux » (relecture de L9)', () => {

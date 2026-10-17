@@ -173,112 +173,165 @@ const RIBBON_SIDE = 0.7;
 const onFerryIslet = (p: Vec2): boolean => distance(p, FERRY_ISLET.center) < FERRY_ISLET.radius;
 
 /**
- * Le dessin des chemins : un ruban par liaison, posé sur le sol (`ground`, la hauteur du sol dessiné), avec ses flancs ;
- * en bois là où le sol est sous l'eau (digue, pontons), couleur de sentier ailleurs. Un octogone couvre chaque nœud.
- * Rien sur la pierre du Port (GD-20, lot 2) : son pavage tient lieu de chemin.
+ * Comment se dessine le ruban d'une liaison : plein (le monde, un lieu relié sur la Carte), en tirets (sur la Carte, le
+ * chemin d'un lieu pas encore relié), en tirets épais (sur la Carte, celui de la liaison suggérée : le seul signe mis en
+ * avant). GD-20, point 3, lot 1 « Relier ».
  */
-export function pathRibbons(ground: (x: number, z: number) => number): Facets {
-  const b = new FacetBuilder();
-  // Le bois là où le sol est sous l'eau (la digue, les pontons) ; sur la plage, c'est encore un sentier.
-  const deckAt = (p: Vec2) => ground(p.x, p.z) < 0.05;
-  for (const [ia, ib] of PATH_EDGES) {
-    const a = pathNode(ia).at;
-    const c = pathNode(ib).at;
-    const len = distance(a, c);
-    const n = Math.max(1, Math.ceil(len / RIBBON_STEP));
-    const dx = (c.x - a.x) / len;
-    const dz = (c.z - a.z) / len;
-    // Une passerelle de planches (`PLANK_BRIDGES`) : ses planches et ses pieux de bout en bout de l'eau, à la place du
-    // ruban de bois.
-    const planks = PLANK_BRIDGES.some(([u, v]) => (u === ia && v === ib) || (u === ib && v === ia));
-    const spans: { from: Vec2; to: Vec2; y: number }[] = [];
-    for (let k = 0; k < n; k++) {
-      const p = { x: a.x + (dx * len * k) / n, z: a.z + (dz * len * k) / n };
-      const q = { x: a.x + (dx * len * (k + 1)) / n, z: a.z + (dz * len * (k + 1)) / n };
-      const mid = { x: (p.x + q.x) / 2, z: (p.z + q.z) / 2 };
-      // Sur la pierre du Port (son quai, sa place), pas de ruban : on y marche sur le pavage ; ni sur l'îlot de la Gare
-      // maritime (lot L9b), dont le quai est dans le lieu.
-      if (portFloor(mid.x, mid.z) !== null || onFerryIslet(mid)) continue;
-      const deck = deckAt(mid);
-      if (planks && deck) {
-        const y = Math.max(standingHeight(ground(p.x, p.z)), standingHeight(ground(q.x, q.z))) + RIBBON_LIFT;
-        const span = spans[0];
-        if (span) {
-          span.to = q;
-          span.y = Math.max(span.y, y);
-        } else spans.push({ from: p, to: q, y });
-        continue;
-      }
-      const w = deck ? HALF_WIDTH.deck : HALF_WIDTH.path;
-      const color = deck ? COLORS_6E.wood : COLORS_6E.path;
-      const yp = standingHeight(ground(p.x, p.z)) + RIBBON_LIFT;
-      const yq = standingHeight(ground(q.x, q.z)) + RIBBON_LIFT;
-      // À gauche du sens de marche : (dz, −dx) ; à droite : (−dz, dx).
-      const pl = [p.x + dz * w, yp, p.z - dx * w] as const;
-      const pr = [p.x - dz * w, yp, p.z + dx * w] as const;
-      const ql = [q.x + dz * w, yq, q.z - dx * w] as const;
-      const qr = [q.x - dz * w, yq, q.z + dx * w] as const;
-      b.quad(pl, pr, qr, ql, color);
-      // Les flancs, jusque sous le sol ou dans l'eau.
-      const down = (v: readonly [number, number, number]) => [v[0], v[1] - RIBBON_SIDE, v[2]] as const;
-      b.quad(down(pr), down(qr), qr, pr, color);
-      b.quad(down(ql), down(pl), pl, ql, color);
-    }
-    for (const span of spans) plankBridge(b, span.from, span.to, span.y);
+export type RibbonLook = 'solid' | 'dashes' | 'thick';
+
+/** Les tirets : tant de pas du ruban dessinés, puis tant de pas vides ; la demi-largeur des tirets épais. */
+const DASHES = { on: 2, off: 2, thickHalf: 1.35 } as const;
+
+/** Le bois là où le sol est sous l'eau (la digue, les pontons) ; sur la plage, c'est encore un sentier. */
+const deckAt = (ground: (x: number, z: number) => number, p: Vec2) => ground(p.x, p.z) < 0.05;
+
+/**
+ * Le ruban d'une liaison (`edge`, son rang dans `PATH_EDGES`), posé sur le sol, avec ses flancs ; en bois là où le sol
+ * est sous l'eau, couleur de sentier ailleurs. Rien sur la pierre du Port ni sur l'îlot de la Gare maritime ; rien non
+ * plus sur l'eau d'une passerelle de planches (`PLANK_BRIDGES`), que dessinent les liaisons (./links.ts).
+ */
+export function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, edge: number, look: RibbonLook = 'solid'): void {
+  const [ia, ib] = PATH_EDGES[edge];
+  const a = pathNode(ia).at;
+  const c = pathNode(ib).at;
+  const len = distance(a, c);
+  const n = Math.max(1, Math.ceil(len / RIBBON_STEP));
+  const dx = (c.x - a.x) / len;
+  const dz = (c.z - a.z) / len;
+  const planks = isPlankBridge(ia, ib);
+  for (let k = 0; k < n; k++) {
+    if (look !== 'solid' && k % (DASHES.on + DASHES.off) >= DASHES.on) continue;
+    const p = { x: a.x + (dx * len * k) / n, z: a.z + (dz * len * k) / n };
+    const q = { x: a.x + (dx * len * (k + 1)) / n, z: a.z + (dz * len * (k + 1)) / n };
+    const mid = { x: (p.x + q.x) / 2, z: (p.z + q.z) / 2 };
+    // Sur la pierre du Port (son quai, sa place), pas de ruban : on y marche sur le pavage ; ni sur l'îlot de la Gare
+    // maritime (lot L9b), dont le quai est dans le lieu.
+    if (portFloor(mid.x, mid.z) !== null || onFerryIslet(mid)) continue;
+    const deck = deckAt(ground, mid);
+    if (planks && deck) continue;
+    const w = look === 'thick' ? DASHES.thickHalf : deck ? HALF_WIDTH.deck : HALF_WIDTH.path;
+    const color = deck ? COLORS_6E.wood : COLORS_6E.path;
+    const yp = standingHeight(ground(p.x, p.z)) + RIBBON_LIFT;
+    const yq = standingHeight(ground(q.x, q.z)) + RIBBON_LIFT;
+    // À gauche du sens de marche : (dz, −dx) ; à droite : (−dz, dx).
+    const pl = [p.x + dz * w, yp, p.z - dx * w] as const;
+    const pr = [p.x - dz * w, yp, p.z + dx * w] as const;
+    const ql = [q.x + dz * w, yq, q.z - dx * w] as const;
+    const qr = [q.x - dz * w, yq, q.z + dx * w] as const;
+    b.quad(pl, pr, qr, ql, color);
+    // Les flancs, jusque sous le sol ou dans l'eau.
+    const down = (v: readonly [number, number, number]) => [v[0], v[1] - RIBBON_SIDE, v[2]] as const;
+    b.quad(down(pr), down(qr), qr, pr, color);
+    b.quad(down(ql), down(pl), pl, ql, color);
   }
+}
+
+/** L'octogone d'un nœud (les coudes n'ont pas de trou), sauf sur la pierre du Port et l'îlot de la Gare maritime. */
+export function nodeOctagon(b: FacetBuilder, ground: (x: number, z: number) => number, id: string): void {
+  const node = pathNode(id);
+  if (portFloor(node.at.x, node.at.z) !== null || onFerryIslet(node.at)) return;
+  const y = standingHeight(ground(node.at.x, node.at.z)) + RIBBON_LIFT + 0.005;
+  const deck = deckAt(ground, node.at);
+  const w = (deck ? HALF_WIDTH.deck : HALF_WIDTH.path) * 1.08;
+  b.prism({ x: node.at.x, y: y - RIBBON_SIDE, z: node.at.z }, w, w, RIBBON_SIDE, 8, deck ? COLORS_6E.wood : COLORS_6E.path);
+}
+
+/**
+ * Le dessin des chemins : un ruban par liaison (`edgeRibbon`), le bord de quai des Quais, le muret de la rampe de la
+ * Vigie, un octogone sur chaque nœud. Sans les liaisons `skipEdges` ni les nœuds `skipNodes` : les embranchements des
+ * lieux qu'on relie, que le maillage des lieux dessine (./links.ts, `openPathRibbons`). Rien sur la pierre du Port
+ * (GD-20, lot 2) : son pavage tient lieu de chemin.
+ */
+export function pathRibbons(ground: (x: number, z: number) => number, skipEdges: ReadonlySet<number> = NOTHING, skipNodes: ReadonlySet<string> = NOTHING_NAMED): Facets {
+  const b = new FacetBuilder();
+  PATH_EDGES.forEach((_, edge) => {
+    if (!skipEdges.has(edge)) edgeRibbon(b, ground, edge);
+  });
   dockEdge(b);
   // Le muret de la rampe de la Vigie (lot L7).
   lookoutRampWall(b);
-  // Un octogone sur chaque nœud : les coudes n'ont pas de trou.
-  for (const node of PATH_NODES) {
-    if (portFloor(node.at.x, node.at.z) !== null || onFerryIslet(node.at)) continue;
-    const y = standingHeight(ground(node.at.x, node.at.z)) + RIBBON_LIFT + 0.005;
-    const deck = deckAt(node.at);
-    const w = (deck ? HALF_WIDTH.deck : HALF_WIDTH.path) * 1.08;
-    b.prism({ x: node.at.x, y: y - RIBBON_SIDE, z: node.at.z }, w, w, RIBBON_SIDE, 8, deck ? COLORS_6E.wood : COLORS_6E.path);
-  }
+  for (const node of PATH_NODES) if (!skipNodes.has(node.id)) nodeOctagon(b, ground, node.id);
   return b.build();
 }
+const NOTHING: ReadonlySet<number> = new Set();
+const NOTHING_NAMED: ReadonlySet<string> = new Set();
 
 /**
  * Les liaisons qui passent l'eau sur une passerelle de planches plutôt que sur le ruban de bois : de la rive est à la
  * Turbine (lot L6a, directeur artistique : des planches qu'on lit, sur des pieux, comme aux Marais salants) ; la jetée de
- * la Gare maritime, de la côte ouest à son îlot (lot L9b).
+ * la Gare maritime, de la côte ouest à son îlot (lot L9b). Depuis le lot 1 « Relier » (GD-20, point 3), ce sont les
+ * passerelles démontées de ces deux lieux, où la vraie eau reste : leurs planches ne se posent qu'une fois le lieu relié
+ * (./links.ts).
  */
 export const PLANK_BRIDGES: readonly (readonly [string, string])[] = [
   ['tur-1', 'tur-2'],
   ['lar-4', 'lar-5'],
 ];
 
-/**
- * La passerelle : ses planches, son pas de pieux, leur section, le pied des pieux sous l'eau, leur tête au-dessus des
- * planches, ses deux bois (les planches en alternance, plus clair et plus sombre ; les pieux et les traverses).
- */
-const PLANKS = { count: 3, width: 0.66, gap: 0.1, thick: 0.12, reach: 0.6, step: 1.9, post: 0.2, foot: -1.4, head: 0.3, woods: [COLORS_6E.wood, 0xb98c5c], dark: 0x7a5636 } as const;
+/** La liaison de `ia` à `ib` est-elle une passerelle de planches ? */
+export const isPlankBridge = (ia: string, ib: string): boolean => PLANK_BRIDGES.some(([u, v]) => (u === ia && v === ib) || (u === ib && v === ia));
 
 /**
- * Une passerelle de planches de `from` à `to` (le bois des planches à `y`) : trois planches posées dans le sens de la
- * marche, des jours entre elles, qui débordent d'un pas sur chaque berge ; une paire de pieux à chaque bout et de place en
- * place, une traverse sous les planches à chaque paire, les têtes des pieux au-dessus des planches.
+ * Le bout de l'eau d'une passerelle de planches, de `a` à `b` (en suivant le sol `ground`) : du premier au dernier pas
+ * du ruban sur l'eau, ou rien.
  */
-function plankBridge(b: FacetBuilder, from: Vec2, to: Vec2, y: number): void {
+export function plankSpan(ground: (x: number, z: number) => number, a: Vec2, c: Vec2): { from: Vec2; to: Vec2; y: number } | null {
+  const len = distance(a, c);
+  const n = Math.max(1, Math.ceil(len / RIBBON_STEP));
+  const dx = (c.x - a.x) / len;
+  const dz = (c.z - a.z) / len;
+  let span: { from: Vec2; to: Vec2; y: number } | null = null;
+  for (let k = 0; k < n; k++) {
+    const p = { x: a.x + (dx * len * k) / n, z: a.z + (dz * len * k) / n };
+    const q = { x: a.x + (dx * len * (k + 1)) / n, z: a.z + (dz * len * (k + 1)) / n };
+    if (!deckAt(ground, { x: (p.x + q.x) / 2, z: (p.z + q.z) / 2 })) continue;
+    const y = Math.max(standingHeight(ground(p.x, p.z)), standingHeight(ground(q.x, q.z))) + RIBBON_LIFT;
+    if (span) {
+      span.to = q;
+      span.y = Math.max(span.y, y);
+    } else span = { from: p, to: q, y };
+  }
+  return span;
+}
+
+/**
+ * Une passerelle de planches : ses planches, son pas de pieux, leur section, le pied des pieux sous l'eau, leur tête
+ * au-dessus des planches, ses bois (les planches ; les pieux et les traverses).
+ */
+const PLANKS = { count: 3, width: 0.66, thick: 0.12, reach: 0.6, step: 1.9, post: 0.2, foot: -1.4, head: 0.3, dark: 0x7a5636 } as const;
+
+/**
+ * Le bois neuf d'une passerelle reliée (GD-20, point 3, directeur artistique) : un sable plus clair que le Sable du pack
+ * (#DAA66A), le dessus plus clair que le flanc, en aplats ; ses traverses franches, d'un bois plus sombre.
+ */
+export const NEW_WOOD = { top: 0xf0cf98, side: 0xd9b077, beam: 0x8a5f3a } as const;
+
+/**
+ * Une passerelle de planches de `from` à `to` (le bois des planches à `y`) sur l'eau : une paire de pieux à chaque bout
+ * et de place en place, une traverse sous les planches à chaque paire, les têtes des pieux au-dessus des planches.
+ * `planked` : reliée, trois planches neuves jointives aux bords nets, posées dans le sens de la marche, qui débordent
+ * d'un pas sur chaque berge ; démontée (`false`), il ne reste que les pieux et les deux traverses des bouts.
+ */
+export function plankBridge(b: FacetBuilder, from: Vec2, to: Vec2, y: number, planked: boolean): void {
   const P = PLANKS;
   const len = distance(from, to) || 1e-6;
   const [dx, dz] = [(to.x - from.x) / len, (to.z - from.z) / len];
   const yaw = Math.atan2(dx, dz);
   const mid = { x: (from.x + to.x) / 2, z: (from.z + to.z) / 2 };
   const across = (o: number, u: number) => ({ x: mid.x + dx * u + dz * o, z: mid.z + dz * u - dx * o });
-  const half = (P.count * P.width + (P.count - 1) * P.gap) / 2;
-  for (let k = 0; k < P.count; k++) {
-    const o = -half + P.width / 2 + k * (P.width + P.gap);
-    const at = across(o, 0);
-    b.box({ x: at.x, y: y - P.thick, z: at.z, yaw }, [P.width, P.thick, len + 2 * P.reach], P.woods[k % 2]);
-  }
+  const half = (P.count * P.width) / 2;
+  if (planked)
+    for (let k = 0; k < P.count; k++) {
+      const o = -half + P.width / 2 + k * P.width;
+      const at = across(o, 0);
+      b.box({ x: at.x, y: y - P.thick, z: at.z, yaw }, [P.width, P.thick, len + 2 * P.reach], NEW_WOOD.side, NEW_WOOD.top);
+    }
   const pairs = Math.max(2, Math.round(len / P.step) + 1);
   for (let k = 0; k < pairs; k++) {
     const u = -len / 2 + (len * k) / (pairs - 1);
     const beam = across(0, u);
-    b.box({ x: beam.x, y: y - P.thick - 0.16, z: beam.z, yaw }, [2 * half + 0.5, 0.16, 0.18], P.dark);
+    // Démontée, il ne reste que les deux traverses des bouts.
+    if (planked || k === 0 || k === pairs - 1) b.box({ x: beam.x, y: y - P.thick - 0.16, z: beam.z, yaw }, [2 * half + 0.5, 0.16, 0.18], planked ? NEW_WOOD.beam : P.dark);
     for (const side of [-1, 1]) {
       const at = across(side * (half + 0.18), u);
       b.box({ x: at.x, y: P.foot, z: at.z, yaw }, [P.post, y + P.head - P.foot, P.post], P.dark);

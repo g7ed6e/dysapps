@@ -1484,8 +1484,8 @@ function closedShutters(b: FacetBuilder, deg: number, r: number): void {
 /**
  * L'Observatoire (lot L8c), un belvédère couvert sur le tertre de la pointe sud, plus large que haut : une rotonde basse
  * (le tambour d'enduit rose pâle, ses grandes baies aux volets Bleu lagon, sa corniche) sous une coupole de zinc en
- * demi-sphère, ses côtes et un épi court, sans lanterneau ; ni fente, ni lunette, ni étoile. Avant (démonté, aucun
- * Ferrailleur) : le tambour arasé à mi-hauteur, ses baies vides ; les côtes de la coupole en tas et le zinc empilé sur le
+ * demi-sphère, ses côtes et un épi court, sans lanterneau ; ni fente, ni lunette, ni étoile. Avant (éteint par le
+ * temps et la mer) : le tambour arasé à mi-hauteur, ses baies vides ; les côtes de la coupole en tas et le zinc empilé sur le
  * tertre, au nord, une corde coupée près d'eux ; des volets couchés à l'ouest. Le corps : le tambour en deux rangées, ses
  * baies, puis ses volets fermés, sa corniche et sa porte. Le haut : les côtes, puis le zinc et l'épi. Les abords (l'étape
  * qui porte les traces) : la terrasse dallée et le chemin de la porte, puis son parapet, la table d'orientation (un
@@ -1706,7 +1706,7 @@ function roofCourses(b: FacetBuilder, from: number, to: number): void {
  * La Halle (lot L8d), une halle de village au sud de l'Escale : une grande toiture à quatre pans, basse et débordante,
  * de tuiles vernissées Vert île, sur dix piliers de la pierre des Passeurs, ouverte sur ses quatre côtés ; la toiture
  * fait presque tout le volume (plus large, plus basse que le lieu d'assemblage de l'Escale, une halle de bois à deux
- * pentes). Ni girouette, ni clocheton, ni horloge ; aucun symbole. Avant (éteinte, aucun Ferrailleur) : les piliers
+ * pentes). Ni girouette, ni clocheton, ni horloge ; aucun symbole. Avant (éteinte par le temps et la mer) : les piliers
  * usés, deux écimés, la charpente effondrée en travers, des tuiles éparses, de l'herbe dans le dallage usé. Le corps :
  * les piliers, puis les sablières, puis les entraits. Le haut (l'étape qui porte les traces) : les poinçons et le
  * faîtage de la charpente avec les rangs de tuiles du bas, puis ceux du haut, les arêtiers et l'épi du faîtage. Les abords : le dallage et le
@@ -2056,7 +2056,7 @@ const MANGROVE_TREE = {
 } as const;
 
 /**
- * La Mangrove (lot L8a). Avant (éteinte, aucun Ferrailleur) : la vasière ; des pilotis cassés et penchés dans l'eau, des
+ * La Mangrove (lot L8a). Avant (éteinte par le temps et la mer) : la vasière ; des pilotis cassés et penchés dans l'eau, des
  * planches échouées dans la vase ; le carbet sans toit, son plancher troué ; trois touffes basses de jeunes palétuviers.
  * Le corps (l'étape qui porte les traces) : le platelage de rive sur ses pieux, puis la passerelle en coude qui avance sur
  * l'eau. Le haut : le carbet sur pilotis et son toit de palmes à deux pentes (le plus haut point, le repère), puis les
@@ -2300,7 +2300,7 @@ function passeurArch(b: FacetBuilder, cx: number, half: number, ornate: boolean)
 export const RUINS_ORNATE_ARCH = 1;
 
 /**
- * Les Ruines (lot L8b). Avant (éteintes par le temps et la mer, aucun Ferrailleur) : le dallage ensablé et ses dalles
+ * Les Ruines (lot L8b). Avant (éteintes par le temps et la mer) : le dallage ensablé et ses dalles
  * noyées sous l'eau claire, deux piles tronquées debout, une pile couchée, des voussoirs épars dans le sable et l'eau peu
  * profonde. Le corps : les cinq piles relevées (d'abord celles de la terre, puis celles de l'eau) ; le sable et la pile
  * couchée s'en vont. Le haut : les quatre arcs surbaissés, leurs voussoirs, leurs clés au motif de vagues des Passeurs, puis

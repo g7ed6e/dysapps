@@ -2,7 +2,9 @@
 // tuiles, la mer et le lagon, les chemins, les quatre lieux, Kéo ; le toucher qui l'envoie au point du chemin le plus
 // proche, sa marche ; la marque de la prochaine mission, donnée à la page à chaque image. Piste 1, lot 1 : l'île
 // agrandie, la caméra qui suit Kéo (world/continu/camera.ts), le terrain rassemblé en deux anneaux autour de lui (de
-// près, de loin), la brume au loin et sur les lieux pas encore ouverts, d'où ne dépasse que le lieu suivant.
+// près, de loin), la brume au loin et sur les lieux fermés. Les liaisons (GD-20, point 3, lot 1 « Relier ») : les
+// passerelles démontées des lieux fermés, où Kéo s'arrête, et le pont neuf de ceux qu'on a reliés, dans le maillage des
+// lieux ; sur la Carte, le chemin d'un lieu fermé en tirets.
 // Chargée à la demande avec la page (./OpenWorldPage.tsx), seulement derrière le drapeau `?monde=ouvert`
 // (../../worldLayoutFactory.tsx). Tout ce qui se calcule sans Three.js est dans world/continu/.
 import * as THREE from 'three';
@@ -14,8 +16,9 @@ import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP,
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
-import { UNVEIL_DISTANCE, distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
-import { atNode, findRoute, pathNode, pathRibbons, snapToNetwork, startOf } from '../../world/continu/paths';
+import { OBSTACLE_TOUCH, branchRibbons, clampToOpen, deckLift, deckTop, isLinked, linkFacets, obstacleOf, openPathRibbons, type LinkedPlace } from '../../world/continu/links';
+import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
+import { atNode, findRoute, pathNode, snapToNetwork, startOf, type NetworkPoint, type RibbonLook } from '../../world/continu/paths';
 import { PLACES, TERRAIN, hidesTraces, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PAPER_COLOR } from '../../world/continu/printworks';
@@ -78,8 +81,10 @@ export interface OpenWorldOptions {
    * au repos), une pose de plus, `moving` faux.
    */
   onMapPlaces(spots: readonly MapSpotOnScreen[], moving: boolean): void;
-  /** Sur la Carte, un lieu touché dans la 3D (ouvert, la page ferme la Carte et y dépose Kéo ; fermé, elle le dit). */
+  /** Sur la Carte, un lieu touché dans la 3D (ouvert, la page ferme la Carte et y dépose Kéo ; fermé, elle ouvre sa fiche). */
   onMapPick(place: PlaceId | 'port'): void;
+  /** Dans le monde, un lieu fermé ou sa passerelle démontée touché (GD-20, point 3) : la page ouvre la fiche du lieu fermé. */
+  onClosed(place: LinkedPlace): void;
   /**
    * À l'Escale (GD-20, lot 2) : Kéo est devant une porte de l'école, la galerie ou le lieu d'assemblage (la page en ouvre
    * le panneau), ou l'on a touché le reste du Port (`fiche`, la page ouvre sa fiche).
@@ -107,9 +112,10 @@ export interface OpenWorld {
   setPort(state: PortState): void;
   /**
    * La part de l'écran que laisse un panneau ouvert (en pixels, `null` : tout l'écran) : la caméra y garde ce que le
-   * panneau concerne (la porte, la galerie, l'établi), sans bouger (un décalage de l'image).
+   * panneau concerne (la porte, la galerie, l'établi ; `place`, le lieu dont la fiche est ouverte, sa passerelle s'il est
+   * fermé et que Kéo se tient devant), sans bouger (un décalage de l'image).
    */
-  frame(free: { left: number; top: number; width: number; height: number } | null): void;
+  frame(free: { left: number; top: number; width: number; height: number } | null, place?: PlaceId): void;
   /**
    * La scénette d'assemblage, au retour d'une question réussie : les pièces de l'établi se joignent en un bloc, que la
    * grue pose sur le râtelier ; un toucher la passe, d'un coup avec « Réduire les animations ». `onAssembled` dit sa fin.
@@ -117,8 +123,12 @@ export interface OpenWorld {
   assemble(): void;
   /** Le lieu marqué (la prochaine mission), ou aucun : le seul lieu qui dépasse la brume. */
   setMark(place: PlaceId | null): void;
-  /** Les lieux sous la brume (world/continu/mission.ts, `veiledPlaces`) ; la scène lève celle des lieux que Kéo approche. */
-  setVeiled(places: readonly PlaceId[]): void;
+  /**
+   * Les liaisons (GD-20, point 3, lot 1 « Relier ») : les lieux fermés (sous la brume, leur passerelle démontée, Kéo
+   * s'arrête au bord ; leur chemin en tirets sur la Carte) et la liaison suggérée (ses tirets plus épais). Un lieu qu'on
+   * vient de relier perd sa brume d'un coup et garde le pont neuf de sa passerelle ; refait seulement s'il change.
+   */
+  setLinks(links: { closed: readonly LinkedPlace[]; suggested: LinkedPlace | null }): void;
   /**
    * Pose une question dans un lieu (lot 4), ou la retire (`null`) : la caméra coupe sur un cadrage fixe, la scène de
    * l'item se montre dans la fenêtre de la question, les objets des réponses au-dessus de leurs boutons. Rend la place à
@@ -180,7 +190,7 @@ interface QuestionRequest {
   item: { scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[]; sort?: SortLook };
 }
 
-/** Le cadenas d'un lieu sous la brume, à l'écran : en pixels, et s'il se voit. */
+/** Le cadenas d'un lieu fermé, à l'écran : en pixels, et s'il se voit. */
 export interface LockOnScreen {
   place: PlaceId;
   x: number;
@@ -226,8 +236,6 @@ const SLOW_FRAME_MS = 45;
 const SLOW_FRAMES = 30;
 /** Les anneaux du terrain se refont quand le point suivi s'est éloigné de tant d'unités de leur centre. */
 const RING_MOVE = 3;
-/** Le lever de la brume d'un lieu : un fondu court, en secondes (d'un bloc avec « Réduire les animations »). */
-const VEIL_FADE_SECONDS = 0.8;
 /**
  * La réussite d'une scénette posée (les Quais, les Filets, les Écluses) : l'objet qui va à sa place (la caisse dans la
  * barque, le panier plein, la barque qui passe la porte), puis la lumière (la lanterne de proue des Quais) ; 1,5 s en
@@ -248,6 +256,8 @@ const LOCK_LEFT = 72 + LOCK_MARGIN;
 const LOCK_LIFT = 1;
 /** Sous un panneau ouvert, la caméra garde dans la part libre le lieu à cette hauteur au-dessus de son pied. */
 const FRAMED_PLACE_HEIGHT = 2;
+/** La fiche d'un lieu fermé garde sa passerelle dans la part libre quand Kéo se tient à moins de tant d'unités d'elle. */
+const FRAMED_LINK_NEAR = 10;
 /** Le bout de la caméra qui suit Kéo, et celui de la Carte (l'île entière, de haut), en unités. */
 const FOLLOW_FAR = 500;
 const MAP_FAR = 2000;
@@ -525,8 +535,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   scene.add(sea);
   touchables.push(sea);
 
-  // Les chemins : sentiers, digue et pontons, un seul maillage.
-  const paths = still(new THREE.Mesh(keep(geometryOf(pathRibbons(ground))), landMaterial));
+  // Les chemins : sentiers, digue et pontons, un seul maillage ; sans les embranchements des lieux qu'on relie, que le
+  // maillage des lieux dessine (en tirets sur la Carte, pour un lieu fermé).
+  const paths = still(new THREE.Mesh(keep(geometryOf(openPathRibbons(ground))), landMaterial));
   scene.add(paths);
   touchables.push(paths);
 
@@ -586,28 +597,33 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   scene.add(placesMesh, landmarkMesh, poseMesh);
   touchables.push(placesMesh, landmarkMesh);
 
-  // La brume sur les lieux pas encore ouverts : un seul maillage, refait quand la liste change (jamais par image) ; sans
-  // lumière, de la couleur du lointain, transparente par sommet (dense en bas, effacée en haut et sur ses bords). Le banc
-  // d'un lieu qui se lève passe le temps de son fondu dans un second maillage (un appel de plus, moins d'une seconde).
+  // La brume sur les lieux fermés : un seul maillage, refait quand la liste change (jamais par image) ; sans lumière, de
+  // la couleur du lointain, transparente par sommet (dense en bas, effacée en haut et sur ses bords). Elle part d'un coup
+  // quand on relie (le fondu viendra avec la pose animée, lot 2).
   const veilMaterial = veilMaterialOf();
-  const fadeMaterial = veilMaterialOf();
   const veilMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), veilMaterial));
-  const fadeMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), fadeMaterial));
   veilMesh.visible = false;
-  fadeMesh.visible = false;
   // Après le reste : elle se pose par-dessus ce qu'elle voile.
   veilMesh.renderOrder = 1;
-  fadeMesh.renderOrder = 1;
-  scene.add(veilMesh, fadeMesh);
-  let fadeStart = 0;
+  scene.add(veilMesh);
   const setVeilGeometry = (mesh: THREE.Mesh, v: VeilMesh) => {
     mesh.geometry.dispose();
     mesh.geometry = veilGeometry(v);
     mesh.visible = v.triangles > 0;
   };
-  let veiled: readonly PlaceId[] = [];
-  const approached = new Set<PlaceId>();
+  // Les liaisons : les lieux fermés, la liaison suggérée, et ce qui en est montré (la brume, les cadenas, les passerelles).
+  let closed: readonly LinkedPlace[] = [];
+  let suggestedLink: LinkedPlace | null = null;
   let veilKey = '';
+  // Le dessus du pont neuf de chaque passerelle sur un ruisseau, calculé une fois (le sol ne change pas).
+  const deckTops = new Map<LinkedPlace, number>();
+  for (const p of PLACES) {
+    if (!isLinked(p.id)) continue;
+    const top = deckTop(obstacleOf(p.id), ground);
+    if (top !== null) deckTops.set(p.id, top);
+  }
+  // Les lieux reliés qui ont un pont neuf sur un ruisseau (Kéo monte sur ses planches), refaits avec les liaisons.
+  let decks: LinkedPlace[] = [];
 
   // Kéo : le corps du bonhomme d'Archipéo (sa marche existante), son anneau clair au sol ; habillé dès que sa tenue est chargée.
   const keo = new THREE.Group();
@@ -641,7 +657,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   keo.rotation.y = heading;
   const keoFeet: Vec3 = { x: here.x, y: 0, z: here.z };
   const placeKeo = (p: Vec2) => {
-    const y = standingHeight(ground(p.x, p.z));
+    let y = standingHeight(ground(p.x, p.z));
+    // Sur le pont neuf d'une passerelle reliée, il marche sur les planches.
+    for (const place of decks) y += deckLift(p, obstacleOf(place), deckTops.get(place)!, y);
     keo.position.set(p.x, y, p.z);
     ring.position.set(p.x, y + 0.02, p.z);
     keoFeet.x = p.x;
@@ -718,9 +736,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // est ouvert), jamais à chaque image.
   let framed: PortSpot | PlaceId | null = startPlace?.id ?? startSpot;
   let frameRect: { left: number; top: number; width: number; height: number } | null = null;
-  const subjectOf = (spot: PortSpot | PlaceId): Vec3 => {
+  const subjectOf = (spot: PortSpot | PlaceId): Vec3 | null => {
     const place = PLACES.find((p) => p.id === spot);
     if (!place) return portSubject(spot as PortSpot, port?.trophies.length ?? 0);
+    // La fiche d'un lieu fermé : sa passerelle, si Kéo se tient devant (de loin, la caméra reste où elle est).
+    if (isLinked(place.id) && closed.includes(place.id)) {
+      const o = obstacleOf(place.id);
+      return distance(here, o.at) < FRAMED_LINK_NEAR ? { x: o.at.x, y: standingHeight(ground(o.at.x, o.at.z)) + 1, z: o.at.z } : null;
+    }
     if (exit && atExit()) return exit.keep;
     const foot = feet.get(place.id);
     return { x: place.center.x, y: (foot?.y ?? 0) + FRAMED_PLACE_HEIGHT, z: place.center.z };
@@ -730,12 +753,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     followPose(focus, lift, pose);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
-    const p = screenOf(pose, subjectOf(framed), viewW, viewH);
-    setShift({ x: Math.round(p.x - (frameRect.left + frameRect.width / 2)), y: Math.round(p.y - (frameRect.top + frameRect.height / 2)) });
+    const subject = subjectOf(framed);
+    const p = subject && screenOf(pose, subject, viewW, viewH);
+    setShift(p ? { x: Math.round(p.x - (frameRect.left + frameRect.width / 2)), y: Math.round(p.y - (frameRect.top + frameRect.height / 2)) } : { x: 0, y: 0 });
     follow();
   };
-  const setFrame = (free: typeof frameRect) => {
+  const setFrame = (free: typeof frameRect, place?: PlaceId) => {
     frameRect = free;
+    if (place) framed = place;
     if (free) return reframe();
     if (asked || mapView) return;
     setShift({ x: 0, y: 0 });
@@ -801,6 +826,20 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!f) traceFacets.set(k, (f = placeTrace(id, done)));
     return f;
   };
+  // Les passerelles et les embranchements, faits une fois par état (ils ne dépendent que du sol).
+  const linkCache = new Map<string, Facets>();
+  const linkOf = (place: LinkedPlace, linked: boolean): Facets => {
+    const k = `${place}|${linked}`;
+    let f = linkCache.get(k);
+    if (!f) linkCache.set(k, (f = linkFacets(obstacleOf(place), linked, ground)));
+    return f;
+  };
+  const branchOf = (place: LinkedPlace, look: RibbonLook): Facets => {
+    const k = `${place}|${look}`;
+    let f = linkCache.get(`chemin|${k}`);
+    if (!f) linkCache.set(`chemin|${k}`, (f = branchRibbons(place, look, ground)));
+    return f;
+  };
   let placesKey = '';
   /**
    * Refait le maillage des lieux si ce qu'il montre a changé : le lieu suivi à part (sauf sur la Carte), la maquette des
@@ -812,7 +851,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}`).join(',') : ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${suggestedLink}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -838,6 +877,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const hidden = hidesTraces(hiddenTrace, p.id);
       if (!hidden && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, scenette === p.id ? scenetteTraces(p.id, done, scenetteMission, posed) : done));
       if (p.id === 'phare' && lampShown) list.push(lampFacets);
+      // Les liaisons (GD-20, point 3) : l'embranchement du lieu et sa passerelle, démontée ou reliée ; sur la Carte, le
+      // chemin d'un lieu fermé en tirets, plus épais pour la liaison suggérée.
+      if (isLinked(p.id)) {
+        const shut = closed.includes(p.id);
+        rest.push(linkOf(p.id, !shut), branchOf(p.id, mapView && shut ? (p.id === suggestedLink ? 'thick' : 'dashes') : 'solid'));
+      }
     }
     setGeometry(placesMesh, mergeFacets(rest));
     setGeometry(landmarkMesh, mergeFacets(mark));
@@ -864,39 +909,36 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   updateRings(true, true);
 
-  // La brume des lieux : ceux que la page donne, moins ceux que Kéo a approchés ; refaite si la liste change.
-  let shown: readonly PlaceId[] = [];
+  // La brume des lieux fermés, et leurs cadenas : refaits si la liste change ; un lieu relié perd la sienne d'un coup.
   const updateVeil = () => {
-    const ids = veiled.filter((id) => !approached.has(id));
-    const k = ids.join(',');
+    const k = closed.join(',');
     if (k === veilKey) return;
     veilKey = k;
-    // Les bancs qui se lèvent (Kéo approche, la mission devient la prochaine) s'effacent en un fondu court.
-    const lifted = shown.filter((id) => !ids.includes(id));
-    shown = ids;
-    setLocks(ids);
-    setVeilGeometry(veilMesh, veilFacets(ids));
-    if (lifted.length && !reduceMotion) {
-      setVeilGeometry(fadeMesh, veilFacets(lifted));
-      fadeMaterial.opacity = 1;
-      fadeStart = performance.now() / 1000;
-    }
+    setLocks(closed);
+    setVeilGeometry(veilMesh, veilFacets(closed));
   };
-  /** Le fondu du banc qui se lève, à l'instant `t` (en secondes) ; fini, son maillage s'éteint. */
-  const fadeVeil = (t: number) => {
-    if (!fadeMesh.visible) return;
-    const u = Math.min(1, (t - fadeStart) / VEIL_FADE_SECONDS);
-    fadeMaterial.opacity = 1 - u;
-    if (u >= 1) fadeMesh.visible = false;
-  };
-  const approach = () => {
-    let changed = false;
-    for (const id of veiled)
-      if (!approached.has(id) && distance(here, placeById(id).center) < UNVEIL_DISTANCE) {
-        approached.add(id);
-        changed = true;
-      }
-    if (changed) updateVeil();
+  /**
+   * Les liaisons changent : la brume, les cadenas, les passerelles ; Kéo, s'il se tenait au-delà d'une passerelle
+   * démontée (une adresse vers un lieu fermé), revient au bord.
+   */
+  const setLinks = (links: { closed: readonly LinkedPlace[]; suggested: LinkedPlace | null }) => {
+    closed = links.closed;
+    suggestedLink = links.suggested;
+    decks = PLACES.map((p) => p.id).filter((id): id is LinkedPlace => isLinked(id) && !closed.includes(id) && deckTops.has(id));
+    updateVeil();
+    placeVisibility();
+    mapDirty = true;
+    if (asked || scenette) return;
+    const at = snapToNetwork(here);
+    const stop = clampToOpen(at, closed);
+    if (stop === at) return;
+    walk = null;
+    here = { ...stop.at };
+    placeKeo(here);
+    followStep(focus, keoFeet, 0, true);
+    lift = occlusionLift(focus, ground);
+    updateRings(true, true);
+    follow();
   };
 
   // La marque de la prochaine mission : au-dessus du lieu, ou au bord, avec la distance en signe.
@@ -979,11 +1021,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     walk = null;
     if (place) framed = place;
     startPrebuild();
-    approach();
     options.onArrive(place);
   };
-  const startWalkTo = (to: ReturnType<typeof snapToNetwork>, place: PlaceId | null) => {
+  const startWalkTo = (target: NetworkPoint, place: PlaceId | null) => {
     const from = snapToNetwork(here);
+    // Au-delà d'une passerelle démontée, Kéo s'arrête au bord, sans heurt ni son (GD-20, point 3).
+    const to = clampToOpen(target, closed);
+    if (to !== target) place = null;
     const route = findRoute(from, to);
     // Kéo hors du chemin (sur le bord du quai, au retour d'une scénette) : il le rejoint d'abord.
     if (distance(here, from.at) > 0.05) route.unshift(here);
@@ -992,18 +1036,21 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     walk = startWalk(route, performance.now());
     options.onDepart();
   };
-  /** Kéo d'un coup devant un lieu : la caméra le suit d'un bloc (une coupe, jamais un long travelling). */
+  /**
+   * Kéo d'un coup devant un lieu : la caméra le suit d'un bloc (une coupe, jamais un long travelling). Devant un lieu
+   * fermé, au bord de sa passerelle démontée, tourné vers elle.
+   */
   const jumpTo = (place: PlaceId) => {
-    here = pathNode(placeById(place).door).at;
-    heading = FACING_CAMERA;
+    const shut = isLinked(place) && closed.includes(place) ? obstacleOf(place) : null;
+    here = shut ? { ...shut.bank.at } : pathNode(placeById(place).door).at;
+    heading = shut ? Math.atan2(-shut.toward.x, -shut.toward.z) : FACING_CAMERA;
     exit = null;
     back = 0;
-    keo.rotation.y = FACING_CAMERA;
+    keo.rotation.y = heading;
     placeKeo(here);
     followStep(focus, keoFeet, 0, true);
     lift = occlusionLift(focus, ground);
     updateRings(true, true);
-    approach();
     follow();
     arrive(place);
   };
@@ -1019,7 +1066,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     lift = occlusionLift(focus, ground);
     framed = spot;
     updateRings(true, true);
-    approach();
     follow();
     reframe();
     arrive(null);
@@ -1064,10 +1110,38 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const atPort = portTouch(p);
     if (atPort === 'fiche') return options.onPort('fiche');
     if (atPort) return jumpToPort(atPort);
+    // Un lieu fermé, ou sa passerelle démontée : la fiche du lieu fermé (GD-20, point 3), Kéo reste où il est.
+    const shut = closedAt(p, e.clientX, e.clientY);
+    if (shut) return options.onClosed(shut);
     // Un lieu : Kéo va à sa porte.
     const touched = PLACES.find((pl) => distance(p, pl.center) <= pl.touchRadius)?.id;
     if (touched) startWalkTo(atNode(placeById(touched).door), touched);
     else startWalkTo(snapToNetwork(p), null);
+  };
+  /**
+   * Le lieu fermé sous un toucher (`p` au sol, `clientX`, `clientY` à l'écran) : le lieu lui-même (son rayon de toucher),
+   * ou sa passerelle démontée, dans son rayon au sol ou, de loin, à `OBSTACLE_TOUCH.pixels` pixels d'elle à l'écran (la
+   * cible fait 48 px au moins, à toute distance).
+   */
+  const closedAt = (p: Vec2, clientX: number, clientY: number): LinkedPlace | null => {
+    if (!closed.length) return null;
+    const r = renderer.domElement.getBoundingClientRect();
+    const x = clientX - r.left;
+    const y = clientY - r.top;
+    let best: LinkedPlace | null = null;
+    let bestD = Infinity;
+    for (const place of closed) {
+      const o = obstacleOf(place);
+      if (distance(p, placeById(place).center) <= placeById(place).touchRadius) return place;
+      projected.set(o.at.x, standingHeight(ground(o.at.x, o.at.z)), o.at.z).project(camera);
+      const px = Math.hypot(sx(projected) - x, sy(projected) - y);
+      const d = distance(p, o.at);
+      if (projected.z < 1 && (d <= OBSTACLE_TOUCH.radius || px <= OBSTACLE_TOUCH.pixels) && px < bestD) {
+        best = place;
+        bestD = px;
+      }
+    }
+    return best;
   };
   renderer.domElement.addEventListener('pointerdown', onDown);
   renderer.domElement.addEventListener('pointerup', onUp);
@@ -1913,10 +1987,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (state.heading !== null) heading = state.heading;
       if (!state.moving) arrive(walkTarget);
     }
-    // Le banc qui se lève finit son fondu, même si une question s'ouvre à l'arrivée.
-    // Un banc qui finit de se lever redessine la Carte jusqu'à sa dernière image.
-    if (fadeMesh.visible) mapDirty = true;
-    fadeVeil(t);
     if (mapView) {
       // La Carte : rien ne bouge que ce que les doigts font glisser ; les lieux à l'écran, pour leurs étiquettes.
       if (mapSettling) {
@@ -1984,7 +2054,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     updateRings();
     // Une tuile de près au plus par image : la suivante de la file, puis l'anneau de près refait avec elle.
     if (tiles.pump() !== null) setNear(false);
-    if (moving) approach();
     reportMark();
     reportLocks();
     renderer.render(scene, camera);
@@ -2025,12 +2094,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       placeVisibility();
       mapDirty = true;
     },
-    setVeiled: (places) => {
-      veiled = places;
-      approach();
-      updateVeil();
-      mapDirty = true;
-    },
+    setLinks,
     question: askQuestion,
     map: setMap,
     reframeMap: reframeStart,
@@ -2054,7 +2118,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       renderer.domElement.removeEventListener('wheel', onWheel);
       body.dispose();
       for (const g of geometries) g.dispose();
-      for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, veilMesh, fadeMesh, decorMesh]) m.geometry.dispose();
+      for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, veilMesh, decorMesh]) m.geometry.dispose();
       lampMaterial.dispose();
       poseMaterial.dispose();
       nearRing.dispose();
@@ -2062,7 +2126,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       landMaterial.dispose();
       landmarkMaterial.dispose();
       veilMaterial.dispose();
-      fadeMaterial.dispose();
       seaMaterial.dispose();
       seaTexture.dispose();
       ringMaterial.dispose();

@@ -45,18 +45,19 @@ export const playsInPlace = (place: OpenPlace, mission: string): boolean => plac
 const toPlay = (b: MissionMark) => b.etat === 'new' || b.etat === 'locked';
 
 /**
- * La prochaine mission du prototype : celle de la prochaine destination du jeu si elle se joue dans un lieu, sinon la
- * première encore à jouer, lieu par lieu dans l'ordre du plan (le Phare, puis les Quais : « au retour du Phare, le
- * prochain pas est évident ») et mission par mission dans l'ordre de l'île, sinon la première à reprendre (moins de trois
- * étoiles). Elle parcourt toutes les missions de chaque lieu, qu'elles se jouent en scénette ou non. `null` quand tout est
- * fait.
+ * La prochaine mission du prototype : celle de la prochaine destination du jeu si elle se joue dans un lieu ouvert, sinon
+ * la première encore à jouer, lieu ouvert par lieu ouvert dans l'ordre du plan (le Phare, puis les Quais : « au retour du
+ * Phare, le prochain pas est évident ») et mission par mission dans l'ordre de l'île, sinon la première à reprendre (moins
+ * de trois étoiles). Elle parcourt toutes les missions de chaque lieu, qu'elles se jouent en scénette ou non ; jamais celles
+ * d'un lieu fermé (`open`, GD-20, point 3 : aucune mission d'un lieu fermé ne se joue). `null` quand tout est fait.
  */
-export function nextMission(bornes: readonly MissionMark[], destination?: { island: string; mission?: string }): NextMission | null {
+export function nextMission(bornes: readonly MissionMark[], destination?: { island: string; mission?: string }, open: (place: PlaceId) => boolean = () => true): NextMission | null {
   const fromGame = destination && PLACES.find((p) => p.island === destination.island);
-  if (fromGame && destination.mission && bornes.some((b) => b.ile === fromGame.island && b.mission === destination.mission))
+  if (fromGame && open(fromGame.id) && destination.mission && bornes.some((b) => b.ile === fromGame.island && b.mission === destination.mission))
     return { place: fromGame, mission: destination.mission };
   for (const test of [toPlay, (b: MissionMark) => typeof b.etat === 'number' && b.etat < 3])
     for (const place of PLACES) {
+      if (!open(place.id)) continue;
       const b = missionsOfPlace(place, bornes).find(test);
       if (b) return { place, mission: b.mission };
     }
@@ -64,19 +65,11 @@ export function nextMission(bornes: readonly MissionMark[], destination?: { isla
 }
 
 /**
- * Les lieux sous la brume (piste 1, lot 1) : ceux dont aucune mission n'a encore été jouée (ils restent ouverts : on peut
- * y aller, la brume se lève à l'approche de Kéo, ../../three/archipeo/scene.ts), sauf le lieu de la prochaine mission. Un
- * lieu sans mission (une autre LV2) n'a pas de brume : rien n'y attend.
+ * Les lieux déjà joués : une mission au moins y a été jouée (ses étoiles, même nulles). Avant les liaisons (GD-20, point
+ * 3), tous les lieux du monde continu étaient ouverts : un lieu où l'élève a déjà joué le reste, sans liaison payée ni
+ * rien de neuf dans la sauvegarde (la vue l'ouvre, ../../three/archipeo/placeLinks.ts).
  */
-export function veiledPlaces(bornes: readonly MissionMark[], next: NextMission | null): PlaceId[] {
-  return PLACES.filter((p) => {
-    const own = missionsOfPlace(p, bornes);
-    return own.length > 0 && own.every(toPlay) && p.id !== next?.place.id;
-  }).map((p) => p.id);
-}
-
-/** La brume d'un lieu se lève quand Kéo arrive à tant d'unités de son centre. */
-export const UNVEIL_DISTANCE = 26;
+export const playedPlaces = (bornes: readonly MissionMark[]): PlaceId[] => PLACES.filter((p) => missionsOfPlace(p, bornes).some((b) => typeof b.etat === 'number')).map((p) => p.id);
 
 /**
  * La distance au lieu de la prochaine mission, en signe (avis du consultant UX UI : jamais en texte) : un, deux ou

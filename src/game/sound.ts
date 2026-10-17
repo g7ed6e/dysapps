@@ -126,6 +126,49 @@ export const CLAC = { bruit: 0.03, duree: 0.07, filtreHz: 1500, corpsHz: 150, vo
 /** Le son de pose de l'univers : le « clac » de Blocland (geste `geste`), le « toc » commun d'Archipéo (`fondu`). */
 export const sonDePose = (pose: 'geste' | 'fondu'): (() => void) => (pose === 'geste' ? playClac : playPlace);
 
+/**
+ * Le toc de bois de la passerelle posée (GD-20, point 3, lot 1 « Relier ») : un seul, doux et sourd. Un bruit bref passé
+ * par un filtre bas et un corps grave, tous deux à hauteur fixe (rien ne monte : ce n'est ni une réussite ni une
+ * fanfare), éteints en un dixième de seconde ; plus doux que le « clac ».
+ */
+export function playWoodTap(): void {
+  const ac = context();
+  if (!ac || speaking()) return;
+  const t = ac.currentTime;
+  if (!tapBuffer || tapBuffer.sampleRate !== ac.sampleRate) {
+    tapBuffer = ac.createBuffer(1, Math.ceil(ac.sampleRate * WOOD_TAP.bruit), ac.sampleRate);
+    const data = tapBuffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length) ** 2;
+  }
+  const src = ac.createBufferSource();
+  src.buffer = tapBuffer;
+  const filter = ac.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = WOOD_TAP.filtreHz;
+  const knock = ac.createGain();
+  knock.gain.setValueAtTime(WOOD_TAP.volume, t);
+  knock.gain.exponentialRampToValueAtTime(0.001, t + WOOD_TAP.bruit);
+  src.connect(filter).connect(knock).connect(ac.destination);
+  src.start(t);
+  src.stop(t + WOOD_TAP.bruit);
+  const osc = ac.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(WOOD_TAP.corpsHz, t);
+  const body = ac.createGain();
+  body.gain.setValueAtTime(0.0001, t);
+  body.gain.linearRampToValueAtTime(WOOD_TAP.volume, t + 0.005);
+  body.gain.exponentialRampToValueAtTime(0.001, t + WOOD_TAP.duree);
+  osc.connect(body).connect(ac.destination);
+  osc.start(t);
+  osc.stop(t + WOOD_TAP.duree);
+}
+
+/** Le bruit court du toc de bois, tiré une fois. */
+let tapBuffer: AudioBuffer | null = null;
+
+/** Les valeurs du toc de bois : durée du bruit et du corps (secondes), filtre et corps (Hz), volume (sous celui du « clac »). */
+const WOOD_TAP = { bruit: 0.04, duree: 0.1, filtreHz: 700, corpsHz: 190, volume: 0.14 } as const;
+
 /** « Pop » clair : un bloc se retire. */
 export function playRemove(): void {
   blip(330, 660, 0.1, 0.12, 'triangle');
