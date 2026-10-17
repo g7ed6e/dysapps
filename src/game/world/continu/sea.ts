@@ -36,10 +36,11 @@ export function shallowness(p: Vec2): number {
  * turquoise clair (#5CC3B5, plus clair et moins saturé qu'avant) réservé au lagon fermé et à une bande de bord autour de
  * l'anneau ; un palier franc vers le Bleu lagon du pack (#178078) au large et sur les épaules des bras de mer ; la Nuit
  * océan au cœur des bras de mer seulement, à plus de `heart` unités de leurs rives et, au-delà de `reach` unités du
- * pont, de plus en plus étroit (`taper` par unité) : un cœur court, centré sur le pont. La Nuit océan pure du pack
+ * pont, de plus en plus étroit (`taper` par unité, sa profondeur bornée à `cap`) : un cœur court, d'un seul tenant,
+ * centré sur le pont, qu'aucun évasement du bras ne prolonge. La Nuit océan pure du pack
  * (#142B38) se lisait comme un trou noir (le mainteneur : jamais de presque-noir) : elle est éclaircie (#205E72).
  */
-export const WATER_TONES = { clear: 0x5cc3b5, lagoon: COLORS_6E.deepSea, night: 0x205e72, heart: 3.4, reach: 8, taper: 0.6 } as const;
+export const WATER_TONES = { clear: 0x5cc3b5, lagoon: COLORS_6E.deepSea, night: 0x205e72, heart: 3.4, cap: 1.5, reach: 10, taper: 0.5 } as const;
 
 /** Le milieu de l'eau de chaque pont (le point le plus près de la ligne du bras, sur sa liaison). */
 let bridgeMids: Vec2[] | null = null;
@@ -59,7 +60,7 @@ function nearestBridge(p: Vec2): number {
 export function waterFields(p: Vec2): { night: number; clear: number } {
   if (insidePolygon(p, COAST)) {
     const deep = -straitClearance(p);
-    const night = deep - WATER_TONES.heart - Math.max(0, nearestBridge(p) - WATER_TONES.reach) * WATER_TONES.taper;
+    const night = Math.min(deep - WATER_TONES.heart, WATER_TONES.cap) - Math.max(0, nearestBridge(p) - WATER_TONES.reach) * WATER_TONES.taper;
     return { night, clear: STRAIT_DEEP.clear - deep };
   }
   // Hors de l'anneau : la bande claire tant que l'eau est peu profonde (`shallowness` au-dessus de 0,75), mise à l'échelle

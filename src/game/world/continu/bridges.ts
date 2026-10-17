@@ -31,6 +31,8 @@ const C = {
   wood: 0xa9784a,
   woodTop: 0xc6955f,
   rail: 0x8a5f3a,
+  /** Les longerons sous le tablier, plus clairs que les garde-corps : vus d'en dessous, à l'ombre, jamais presque noirs (reprise du lot 3). */
+  beam: 0xc79a68,
   wet: 0x958c7c,
   broken: 0x8a8273,
   iron: 0x3f4a50,
@@ -359,7 +361,7 @@ export function bridgeParts(land: LinkedLand): BridgeParts {
   for (const v of [-1, 1]) {
     const a = at(d0, v * 1.1);
     const c = at(d1, v * 1.1);
-    deck.beam({ x: a.x, y: BRIDGE.deck - BRIDGE.plank - 0.12, z: a.z }, { x: c.x, y: BRIDGE.deck - BRIDGE.plank - 0.12, z: c.z }, 0.24, C.rail);
+    deck.beam({ x: a.x, y: BRIDGE.deck - BRIDGE.plank - 0.12, z: a.z }, { x: c.x, y: BRIDGE.deck - BRIDGE.plank - 0.12, z: c.z }, 0.24, C.beam);
   }
   const planks = 5;
   const w = BRIDGE.width / planks;
