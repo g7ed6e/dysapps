@@ -6,6 +6,7 @@ import {
   EMPTY_STATE,
   disassembleBlock,
   buildBridge as buildBridgePure,
+  payLink,
   completeExercise,
   completePortalQuest,
   fillPlanCell as fillPlanCellPure,
@@ -35,11 +36,11 @@ import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { useTextes } from '../universes';
 import { dueCountOnOpenPlaces } from './review';
-import { archipelagoOf, buildUntracedLink, getBridge, type ArchipelagoId } from './world/archipelago';
+import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
 import { STORY_XP, startStory, storyAfterMission, tapStoryStep, type StepResult } from './world/stories';
 import { applyLayout } from './world/appliedLayout';
-import { markForRelink, settleNewPlaces } from './world/arrange';
+import { settleNewPlaces } from './world/arrange';
 import type { World } from './engine/state';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
@@ -244,13 +245,10 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     [pousser],
   );
   const disassemble = useCallback((bloc: BlockId) => appliquer(disassembleBlock(stateRef.current, bloc)), [appliquer]);
-  const buildBridge = useCallback((id: string, relinkIfUntraced = false) => {
-    let r = buildBridgePure(stateRef.current, id);
-    if (relinkIfUntraced && !r.result.ok && r.result.reason === 'loin') {
-      const s = stateRef.current;
-      const u = buildUntracedLink(id, s.world.links, s.stock);
-      r = u.ok ? { state: { ...s, stock: u.inventory, world: markForRelink({ ...s.world, links: u.bridges }, id) }, result: u } : { state: s, result: u.reason === 'loin' ? r.result : u };
-    }
+  // Une liaison payée dans la grille (`buildBridge`) ou depuis le monde continu (`payLink`, GD-20, point 3) : la commande
+  // qui arrive, le mode bâtisseur, puis l'état.
+  const buildBridge = useCallback((id: string, fromOpenWorld = false) => {
+    const r = (fromOpenWorld ? payLink : buildBridgePure)(stateRef.current, id);
     const bridge = getBridge(id);
     const built = r.result.ok && bridge ? commandeQuiArrive(r.state, archipelagoOf(bridge.from).classe) : r.state;
     const next = batisseurRef.current ? remplir(built) : built;

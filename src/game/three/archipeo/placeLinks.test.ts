@@ -4,13 +4,13 @@
 import { describe, expect, it } from 'vitest';
 import '../../world/linkGeometry';
 import { LINK_PRICE, buildBridge, buildUntracedLink, getBridge, linkLength, reachableIslands } from '../../world/archipelago';
-import { markForRelink, linksToRelink } from '../../world/arrange';
+import { linksToRelink, markForRelink, relinkBetween } from '../../world/arrange';
 import { AFTER_NEIGHBOUR, PLACE_LINKS, isLinked, linksFromStart } from '../../world/continu/links';
 import type { MissionMark } from '../../world/continu/mission';
 import { PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
 import { linkOfPlace, linkToPay, neighboursFirst, openWorldLinks, payableLink } from './placeLinks';
 import { BLOC } from '../../biomes';
-import { EMPTY_STATE } from '../../engine';
+import { EMPTY_STATE, payLink, sanitizeState, type GameState } from '../../engine';
 
 const linked = PLACES.map((p) => p.id).filter(isLinked);
 const rich = { [BLOC.pierre]: 20 };
@@ -125,5 +125,71 @@ describe('Relier quand la grille aménagée ne trace plus la liaison (GD-9)', ()
     expect(linksToRelink(world, '6e')).toEqual([b.id]);
     expect(linksToRelink(markForRelink(world, b.id), '6e')).toEqual([b.id]);
     expect(markForRelink(EMPTY_STATE.world, 'inconnue')).toBe(EMPTY_STATE.world);
+  });
+});
+
+describe('Payer une liaison depuis le monde continu (payLink, relecture du code)', () => {
+  const withStock = (n: number, links: string[] = []): GameState => ({ ...EMPTY_STATE, stock: { [BLOC.pierre]: n }, world: { ...EMPTY_STATE.world, links } });
+  const filets = () => linkOfPlace('filets')!.id;
+
+  it('une liaison qui se trace : le stock débité du prix, la liaison posée, rien à reposer', () => {
+    const r = payLink(withStock(6), filets());
+    expect(r.result.ok).toBe(true);
+    expect(r.state.stock[BLOC.pierre]).toBe(2);
+    expect(r.state.world.links).toEqual([filets()]);
+    expect(linksToRelink(r.state.world, '6e')).toEqual([]);
+  });
+
+  it('deux « Relier » de suite : un seul débit (le second dit « construit » et ne change rien)', () => {
+    const once = payLink(withStock(8), filets());
+    const twice = payLink(once.state, filets());
+    expect(twice.result).toEqual({ ok: false, reason: 'construit' });
+    expect(twice.state).toBe(once.state);
+    expect(twice.state.stock[BLOC.pierre]).toBe(4);
+  });
+
+  it('pas assez de ressources : refusé, ce qui manque dit, rien de débité', () => {
+    const s = withStock(3);
+    const r = payLink(s, filets());
+    expect(r.result).toEqual({ ok: false, reason: 'blocs', missing: 1 });
+    expect(r.state).toBe(s);
+  });
+
+  it('une liaison dont aucun bout n’est ouvert : « loin », rien de débité', () => {
+    const s = withStock(10);
+    const r = payLink(s, between('ecluses', 'engine').id);
+    expect(r.result).toEqual({ ok: false, reason: 'loin' });
+    expect(r.state).toBe(s);
+  });
+
+  it('le repli d’une sauvegarde d’avant les liaisons : payableLink choisit toujours le lieu du départ le plus proche, et la liaison est à reposer', () => {
+    const b = payableLink('engine', [])!;
+    expect(payableLink('engine', [])).toBe(b);
+    expect(other(b, 'engine')).toBe('quais');
+    expect(other(payableLink('shipyard', [])!, 'shipyard')).toBe('quais');
+    const r = payLink(withStock(6), b.id);
+    expect(r.result.ok).toBe(true);
+    expect(r.state.stock[BLOC.pierre]).toBe(2);
+    expect(linksToRelink(r.state.world, '6e')).toEqual([b.id]);
+    expect(reachableIslands(r.state.world.links).has(placeById('engine').island as never)).toBe(true);
+  });
+
+  it('à reposer, puis reposée dans la grille, puis rechargée : rien ne se perd, sans migration', () => {
+    const ecluses = linkOfPlace('ecluses')!.id;
+    const untraced = payableLink('engine', [])!.id;
+    const paid = payLink(withStock(6, [ecluses]), untraced).state;
+    expect(linksToRelink(paid.world, '6e')).toEqual([untraced]);
+    // Rechargée telle quelle : la liaison reste à reposer, la Turbine ouverte.
+    const reloaded = sanitizeState(JSON.parse(JSON.stringify(paid)));
+    expect(linksToRelink(reloaded.world, '6e')).toEqual([untraced]);
+    expect(reachableIslands(reloaded.world.links).has(placeById('engine').island as never)).toBe(true);
+    // Reposée gratuitement, depuis les Écluses : plus rien à reposer, la Turbine toujours ouverte, même après rechargement.
+    const r = relinkBetween(reloaded.world, untraced, between('ecluses', 'engine').id);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const again = sanitizeState(JSON.parse(JSON.stringify({ ...reloaded, world: r.world })));
+    expect(linksToRelink(again.world, '6e')).toEqual([]);
+    expect(reachableIslands(again.world.links).has(placeById('engine').island as never)).toBe(true);
+    expect(again.stock).toEqual(reloaded.stock);
   });
 });

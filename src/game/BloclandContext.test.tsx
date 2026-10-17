@@ -101,3 +101,41 @@ it('la partie des mesures (`?mesures=auto`) se joue en mémoire : la sauvegarde 
   degelerSauvegarde();
   localStorage.clear();
 });
+
+it('« Relier » depuis le monde continu (GD-20, point 3) : deux touchers de suite, un seul débit, une seule liaison, une commande au plus', () => {
+  localStorage.clear();
+  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, progress: {}, stock: { 'french-6e-letter-confusion': 9 }, world: { parts: {}, log: [], links: [] } }));
+  let ctx: ReturnType<typeof useBlocland> | null = null;
+  function Lien() {
+    ctx = useBlocland();
+    return null;
+  }
+  render(
+    <SettingsProvider>
+      <ProgressProvider>
+        <BloclandProvider>
+          <Lien />
+        </BloclandProvider>
+      </ProgressProvider>
+    </SettingsProvider>,
+  );
+  const id = 'french-6e-grammar-spelling-maths-6e-calculation';
+  const before = ctx!.state.world.requests?.length ?? 0;
+  let first: unknown;
+  let second: unknown;
+  act(() => {
+    first = ctx!.linkFromOpenWorld(id);
+    second = ctx!.linkFromOpenWorld(id);
+  });
+  expect(first).toMatchObject({ ok: true });
+  expect(second).toEqual({ ok: false, reason: 'construit' });
+  expect(ctx!.state.stock['french-6e-letter-confusion']).toBe(5);
+  expect(ctx!.state.world.links.filter((l) => l === id)).toHaveLength(1);
+  expect((ctx!.state.world.requests?.length ?? 0) - before).toBeLessThanOrEqual(1);
+  // Pas assez pour une deuxième liaison : refusée, rien de débité.
+  act(() => {
+    expect(ctx!.linkFromOpenWorld('maths-6e-calculation-maths-6e-fractions')).toMatchObject({ ok: true });
+    expect(ctx!.linkFromOpenWorld('maths-6e-calculation-maths-6e-decimals')).toEqual({ ok: false, reason: 'blocs', missing: 3 });
+  });
+  expect(ctx!.state.stock['french-6e-letter-confusion'] ?? 0).toBe(1);
+});

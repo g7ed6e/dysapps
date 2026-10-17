@@ -6,12 +6,12 @@
 // n'est relié. Un lieu ouvert dans une disposition l'est dans l'autre : ouvert dans la grille (ses liaisons posées,
 // `reachableIslands`), il l'est ici ; un lieu où l'élève a déjà joué avant les liaisons le reste (`playedPlaces`). Rien
 // de neuf dans la sauvegarde.
-import { BRIDGES, getBridge, linkLength, nearestDeparture, reachableIslands, type BridgeDef } from '../../world/archipelago';
+import { getBridge, linkLength, nearestDeparture, reachableIslands, type BridgeDef } from '../../world/archipelago';
 import type { BiomeId } from '../../biomes';
 import { distance, type Vec2 } from '../../world/continu/geometry';
-import { closedPlaces, isLinked, linkIslands, linksFromStart, obstacleOf, type LinkedPlace } from '../../world/continu/links';
+import { START_PLACES, closedPlaces, isLinked, linkIslands, linksFromStart, obstacleOf, type LinkedPlace } from '../../world/continu/links';
 import { playedPlaces, type MissionMark } from '../../world/continu/mission';
-import { PLACES, placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
+import { placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
 
 /** La liaison de la grille entre deux îles, dans un sens ou dans l'autre. */
 const bridgeBetween = (a: string, b: string): BridgeDef | null => getBridge(`${a}-${b}`) ?? getBridge(`${b}-${a}`) ?? null;
@@ -85,11 +85,14 @@ export function openWorldLinks(links: readonly string[], bornes: readonly Missio
 
 /**
  * La liaison que paie « Relier » pour un lieu fermé reliable : `linkToPay`, sinon (un lieu d'après un voisin dont les
- * voisins ont été joués sans être reliés) la liaison de la grille vers le lieu de départ le plus proche, à reposer.
+ * voisins ont été joués sans être reliés, une sauvegarde d'avant les liaisons) la liaison de la grille vers le lieu du
+ * départ le plus proche de lui (le Phare ou les Quais, à vol d'oiseau ; le premier du départ à égalité), qui sera à
+ * reposer dans la grille. Toujours la même pour un même lieu.
  */
 export function payableLink(place: LinkedPlace, links: readonly string[]): BridgeDef | null {
   const direct = linkToPay(place, links);
   if (direct) return direct;
-  const island = placeById(place).island;
-  return BRIDGES.find((b) => (b.from === island || b.to === island) && PLACES.some((p) => !isLinked(p.id) && (p.island === b.from || p.island === b.to))) ?? null;
+  const here = placeById(place);
+  const start = [...START_PLACES].sort((a, b) => distance(placeById(a).center, here.center) - distance(placeById(b).center, here.center))[0];
+  return bridgeBetween(placeById(start).island, here.island);
 }
