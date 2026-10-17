@@ -34,9 +34,9 @@ export const COLORS_6E = {
   deepSea: 0x178078,
   /**
    * Rivage : herbe, mousse sur la pierre ; la prairie claire des bas (GD-20, point 3, lot 3 : un vert d'eau tiré vers le
-   * Vert île du pack, au lieu du vert acide #6CBF4E).
+   * Vert île du pack, au lieu du vert acide #6CBF4E ; retouche : plus vert, moins d'eau, d'après les concepts validés).
    */
-  grass: 0x7bd2a4,
+  grass: 0x8ad59c,
   /** L'herbe du haut de la falaise nord, plus sombre (le plan). */
   cliffTop: 0x4e8f3a,
   /** Sable chaud : plages (un peu plus clair au lot 3, sous le soleil plus chaud). */

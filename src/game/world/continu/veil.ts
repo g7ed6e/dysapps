@@ -10,8 +10,11 @@ import { LANDS, NODE_LANDS, type LandId, type LinkedLand } from './lands';
 import { PATH_NODES, placeById } from './plan6e';
 import { heightAt, landDistance, standingHeight } from './terrain';
 
-/** La couleur de la brume : la Brume du pack (#E5EBE3), celle du lointain aussi. */
-const MIST_COLOR = 0xe5ebe3;
+/**
+ * La couleur de la brume : la Brume du pack (#E5EBE3), un peu plus claire (#EEF1EC, retouche du lot 3) pour se lire
+ * sur l'herbe au soleil, plus claire qu'avant.
+ */
+const MIST_COLOR = 0xeef1ec;
 
 /**
  * Un maillage de brume : trois sommets par triangle, et pour chacun sa normale (vers le haut), sa couleur et sa
@@ -31,11 +34,12 @@ export interface VeilMesh {
  * (directeur artistique, référent dys) : plus dense au sol, jusqu'à mi-hauteur des bâtiments, les toits au-dessus.
  * Reprise avec la lumière du lot 3 (GD-20, point 3) : une nappe plus basse et plus dense (46 % à 0,6 unité), le second
  * voile plus léger : sous la nouvelle lumière, plus contrastée, le sol voilé se lit comme de la brume, jamais comme un
- * mur ; ensemble, environ 55 %, jamais opaque.
+ * mur ; ensemble, environ 55 %, jamais opaque. Retouche du lot 3 : la nappe à 50 % et 0,5 unité, le second voile à
+ * 12 % (ensemble 56 %), et la nappe pleine plus loin des chemins et des lieux (`GRID.reach`, `GRID.full`).
  */
 export const VEIL_LAYERS: readonly { lift: number; alpha: number }[] = [
-  { lift: 0.6, alpha: 0.46 },
-  { lift: 1.9, alpha: 0.16 },
+  { lift: 0.5, alpha: 0.5 },
+  { lift: 1.7, alpha: 0.12 },
 ];
 
 /** La hauteur du voile le plus haut au-dessus du sol : bien moins que Kéo et un toit (le cadenas se pose au-dessus). */
@@ -43,11 +47,11 @@ export const VEIL_HEIGHT = VEIL_LAYERS[VEIL_LAYERS.length - 1].lift;
 
 /**
  * Le dessin du voile : le pas de sa grille ; jusqu'où il s'étend loin d'un chemin ou d'un lieu de sa terre (`reach`,
- * effacé dès `reach × 0,6`) ; la largeur de son fondu vers une terre voisine (`border`) et vers l'eau (`shore` : presque
+ * effacé dès `reach × full`) ; la largeur de son fondu vers une terre voisine (`border`) et vers l'eau (`shore` : presque
  * rien, il s'arrête net sur la rive, ses sommets mouillés posés sur elle, `toShore`) ; autour du centre d'un lieu,
  * jusqu'où il couvre même l'eau (`place`).
  */
-const GRID = { step: 5, reach: 18, border: 5, shore: 0.4, place: 7 } as const;
+const GRID = { step: 5, reach: 22, full: 0.75, border: 5, shore: 0.4, place: 7 } as const;
 
 /** Les repères d'une terre : les nœuds de ses chemins et le centre de ses lieux. */
 const featuresOf = (land: LandId): Vec2[] => [
@@ -83,7 +87,7 @@ export function veilShare(land: LinkedLand, p: Vec2): number {
     }
   }
   const inside = smoothstep(0, GRID.border, other - own);
-  const near = 1 - smoothstep(GRID.reach * 0.6, GRID.reach, own);
+  const near = 1 - smoothstep(GRID.reach * GRID.full, GRID.reach, own);
   const dry = Math.max(smoothstep(-GRID.shore, 0.5, landDistance(p)), 1 - smoothstep(GRID.place, GRID.place + GRID.shore, nearest(p, CENTERS.get(land)!)));
   return inside * near * dry;
 }

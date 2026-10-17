@@ -480,9 +480,9 @@ const GROUND_TONES = {
   /** La prairie des bas, la plus claire. */
   low: COLORS_6E.grass,
   /** L'herbe à mi-hauteur, et les pentes douces tournées vers le soleil. */
-  mid: 0x63bf92,
+  mid: 0x6cc28b,
   /** Les hauteurs (au-dessus de `HIGH_FROM`) et le plateau de la falaise nord. */
-  high: 0x52a888,
+  high: 0x58ab7f,
   /** Les flancs à l'ombre : le Vert île. */
   slope: 0x438b82,
   /** La roche. */

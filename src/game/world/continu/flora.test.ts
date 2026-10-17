@@ -29,7 +29,10 @@ describe('La végétation et les rochers', () => {
     for (const it of all) {
       const p = { x: it.x, z: it.z };
       expect(landDistance(p)).toBeGreaterThan(0.5);
-      expect(straitClearance(p)).toBeGreaterThanOrEqual(FLORA_KEEP.strait);
+      // Sur la rive d'un bras de mer, des rochers seuls, loin des chemins (des culées et des ponts).
+      if (it.kind === 'rocher') expect(straitClearance(p)).toBeGreaterThanOrEqual(FLORA_KEEP.bank);
+      else expect(straitClearance(p)).toBeGreaterThanOrEqual(FLORA_KEEP.strait);
+      if (straitClearance(p) < FLORA_KEEP.strait) expect(pathDistance(p)).toBeGreaterThanOrEqual(FLORA_KEEP.bankPath - 1e-6);
       expect(pathDistance(p)).toBeGreaterThanOrEqual(FLORA_KEEP.path - 1e-6);
       for (const pl of PLACES) expect(distance(p, pl.center)).toBeGreaterThanOrEqual(FLORA_KEEP.place);
       const port = PORT.toLocal(p);
@@ -77,7 +80,7 @@ describe('Les tuiles entières', () => {
   });
 
   it('une ombre est plus sombre que son sol, et plus froide, jamais noire', () => {
-    for (const ground of [0x7bd2a4, 0x438b82, 0xe8cf9c, 0x968e83]) {
+    for (const ground of [0x8ad59c, 0x438b82, 0xe8cf9c, 0x968e83]) {
       const s = shadowColor(ground);
       const [r, g, b] = [(s >> 16) & 255, (s >> 8) & 255, s & 255];
       expect(r).toBeLessThan((ground >> 16) & 255);

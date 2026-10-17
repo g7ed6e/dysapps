@@ -28,7 +28,7 @@ export const HORIZON_COLOR = SKY_STOPS[0].color;
  * presque noire (l'ambiance seule en donne encore le tiers). Le mappage des tons neutre de Three.js adoucit les blancs.
  */
 export const LIGHT = {
-  sky: 0xd6e4ee,
+  sky: 0xdde8e6,
   ground: 0x8e9a7c,
   ambient: 1.35,
   sun: 0xfff0d8,

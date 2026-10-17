@@ -44,15 +44,23 @@ export const FLORA_COLORS = {
  * `strait` d'un bras de mer (les rives et les ponts), à l'Escale (`PORT_KEEP`, son quai, sa place, ses bâtiments et leurs
  * abords, dans son repère), dans l'eau. Un grand arbre ne pousse pas
  * non plus devant la caméra : à moins de `camera` unités au sud d'un chemin (la caméra suit Kéo depuis le sud), d'où il
- * couperait Kéo.
+ * couperait Kéo. Seuls des rochers se posent sur la rive d'un bras de mer (retouche du lot 3, d'après les concepts validés :
+ * « détroit », des blocs gris au bord de l'eau), à plus de `bank` unités de son eau et `bankPath` d'un chemin (les culées et
+ * les ponts restent dégagés).
  */
-export const FLORA_KEEP = { path: 1.6, pathTall: 3, place: 13, strait: 5, camera: 7.5 } as const;
+export const FLORA_KEEP = { path: 1.6, pathTall: 3, place: 13, strait: 5, camera: 7.5, bank: 0.6, bankPath: 6 } as const;
 
 /** L'Escale et ses abords, dans le repère du Port (`PORT.toLocal`) : rien n'y pousse. */
 const PORT_KEEP = { x0: -9, x1: 43, z0: -15, z1: 26 } as const;
 
 /** Le pas de la grille des places possibles (une au plus par case), en unités. */
 const FLORA_CELL = 2.6;
+
+/**
+ * La part des cases où quelque chose peut pousser (retouche du lot 3 : 0,6 au lieu de 0,42, des bosquets plus larges ;
+ * la végétation des concepts validés est plus fournie).
+ */
+const FLORA_DENSITY = 0.6;
 
 /** Les arêtes des chemins, en segments, et la rampe de la Vigie. */
 const SEGMENTS: readonly (readonly [Vec2, Vec2])[] = (() => {
@@ -88,10 +96,10 @@ export function floraOf(field: HeightField, tx: number, tz: number): readonly Fl
   for (let j = j0; j * FLORA_CELL < r.maxZ; j++)
     for (let i = i0; i * FLORA_CELL < r.maxX; i++) {
       const roll = hash2(i * 3 + 1, j * 5 + 2);
-      if (roll > 0.42) continue;
+      if (roll > FLORA_DENSITY) continue;
       const p = { x: (i + 0.15 + 0.7 * hash2(i, j + 911)) * FLORA_CELL, z: (j + 0.15 + 0.7 * hash2(i + 577, j)) * FLORA_CELL };
       if (p.x >= r.maxX || p.z >= r.maxZ) continue;
-      const item = pick(field, p, roll / 0.42, hash2(j + 41, i + 83));
+      const item = pick(field, p, roll / FLORA_DENSITY, hash2(j + 41, i + 83));
       if (item) out.push(item);
     }
   cache.set(key, out);
@@ -102,12 +110,18 @@ export function floraOf(field: HeightField, tx: number, tz: number): readonly Fl
 function pick(field: HeightField, p: Vec2, roll: number, look: number): FloraItem | null {
   const d = landDistance(p);
   if (d < 0.8) return null;
-  if (straitClearance(p) < FLORA_KEEP.strait) return null;
+  const bank = straitClearance(p);
+  if (bank < FLORA_KEEP.bank) return null;
   const port = PORT.toLocal(p);
   if (port.x > PORT_KEEP.x0 && port.x < PORT_KEEP.x1 && port.z > PORT_KEEP.z0 && port.z < PORT_KEEP.z1) return null;
   for (const pl of PLACES) if (distance(p, pl.center) < FLORA_KEEP.place) return null;
   const path = pathDistance(p, FLORA_KEEP.camera + 1);
   if (path < FLORA_KEEP.path) return null;
+  if (bank < FLORA_KEEP.strait) {
+    // La rive d'un bras de mer : des rochers seuls, loin des chemins et des ponts.
+    if (path < FLORA_KEEP.bankPath || roll > 0.55) return null;
+    return { kind: 'rocher', scale: 1.1 + 0.9 * look, x: p.x, z: p.z, yaw: look * 2 * Math.PI, shade: Math.floor(look * 3) % 3 };
+  }
   const h = heightOnMesh(field, p.x, p.z);
   const slope = slopeAt(field, p);
   const g = grove(p);
@@ -123,14 +137,17 @@ function pick(field: HeightField, p: Vec2, roll: number, look: number): FloraIte
     if (roll < 0.22) kind = 'palmier';
     else if (roll < 0.32) kind = 'rocher';
     scale = 0.85 + 0.35 * look;
-  } else if (g > 0.25) {
-    // Un bosquet : des pins serrés, des buissons à l'orée.
-    kind = g > 0.38 ? 'pin' : roll < 0.5 ? 'buisson' : null;
-    scale = 0.8 + 0.45 * look;
-  } else if (roll < 0.1) {
+  } else if (g > 0.12 || (h > 4 && g > -0.05)) {
+    // Un bosquet (et les hauteurs) : des pins serrés, des buissons à l'orée.
+    kind = g > 0.24 || h > 4 ? (roll < 0.85 ? 'pin' : 'buisson') : roll < 0.55 ? 'buisson' : roll < 0.7 ? 'pin' : null;
+    scale = 0.8 + 0.5 * look;
+  } else if (roll < 0.12) {
     kind = 'buisson';
     scale = 0.75 + 0.5 * look;
-  } else if (roll < 0.14) {
+  } else if (roll < 0.15) {
+    kind = 'pin';
+    scale = 0.85 + 0.4 * look;
+  } else if (roll < 0.19) {
     kind = 'rocher';
     scale = 0.6 + 0.6 * look;
   }

@@ -2,7 +2,7 @@
 // monde en grille : les triangles et les appels de chaque poste. Estimé au cadrage : environ 45 000 triangles et 12 à
 // 18 appels avec quatre lieux (prototype-6e.md, § 3) ; relevée par le mainteneur à 75 000 triangles le 16 octobre 2026
 // (GD-20, L6b : « Un iPad 9e génération doit pouvoir faire tourner le jeu, donc on est large en triangles pour
-// l'instant »), les appels inchangés. Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
+// l'instant »), puis à 86 000 le 17 octobre 2026 (GD-20, point 3, lot 3), les appels inchangés. Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
 import { WORLD_FOG } from './camera';
 import { bridgeLay } from './bridgeLay';
 import { bridgeFacets, bridgeMapMark } from './bridges';
@@ -29,8 +29,12 @@ const KEO = { triangles: 1630, calls: 3 };
 /** Le dôme du ciel (GD-20, point 3, lot 3) : un maillage, dessiné d'abord, sur la Carte aussi. */
 const SKY = { triangles: skyDome(1).triangles, calls: 1 };
 
-/** L'enveloppe du monde ouvert : 75 000 triangles (relevée par le mainteneur, 16 octobre 2026), 18 appels. */
-export const OPEN_WORLD_BUDGET = { triangles: 75_000, calls: 18 } as const;
+/**
+ * L'enveloppe du monde ouvert : 86 000 triangles, 18 appels (relevée par le mainteneur le 17 octobre 2026 pour les cinq
+ * leviers graphiques du lot 3 de GD-20, point 3 : « plafond 86 000 triangles et 18 appels » ; 75 000 depuis le 16 octobre).
+ * La Carte la touche presque (toute l'île de loin, sa végétation comprise).
+ */
+export const OPEN_WORLD_BUDGET = { triangles: 86_000, calls: 18 } as const;
 
 export interface OpenWorldCost {
   poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
