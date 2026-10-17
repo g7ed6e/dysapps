@@ -5,13 +5,12 @@
 // l'apprentissage (`learning.ts`). Il en réexporte les noms publics.
 import { type BiomeId, BIOMES, type BlockId, BLOCKS, getBiome } from './biomes';
 import { cellKey, planCells, type PlanDef } from './world/plans';
-import { markForRelink } from './world/arrange';
 import { assemblables, noterQuestion, recetteDe, type TirageAssemblage, tirageNeuf } from './world/assembly';
 import { missionsTerminees, type Partie, poserLesParties } from './world/parts';
 import { buildPiece, projectOf } from './world/projects';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { starsFor } from '../core/stars';
-import { archipelagoOf, buildBridge as buildBridgePure, buildUntracedLink, type BuildBridgeResult, getArchipelago, isBiomeUnlocked, reachableIslands, voyageId } from './world/archipelago';
+import { archipelagoOf, buildBridge as buildBridgePure, type BuildBridgeResult, getArchipelago, isBiomeUnlocked, reachableIslands, voyageId } from './world/archipelago';
 import { beatenGuardians, kitReady, VEHICLE_STAGES, type VehicleStage } from './world/vehicle';
 import type { DrawKey, GameState, SpacedItem } from './engine/state';
 import { todayISO } from './engine/dates';
@@ -372,20 +371,6 @@ export function buildBridge(state: GameState, id: string): { state: GameState; r
   const result = buildBridgePure(id, state.world.links, state.stock, { progress: state.progress, plans: state.world.parts });
   if (!result.ok) return { state, result };
   return { state: { ...state, stock: result.inventory, world: { ...state.world, links: result.bridges } }, result };
-}
-
-/**
- * Relie un lieu depuis le monde continu (GD-20, point 3, « Relier ») : comme `buildBridge` ; si la liaison ne se trace pas
- * dans la disposition de la grille (une région aménagée, GD-9 ; « loin »), elle se paie au même prix
- * (`buildUntracedLink`) et devient une liaison à reposer, gratuite, dans la grille (`markForRelink`). Rien d'autre ne
- * change ; un refus laisse l'état tel quel (un second « Relier » sur une liaison posée : « construit », rien de débité).
- */
-export function payLink(state: GameState, id: string): { state: GameState; result: BuildBridgeResult } {
-  const r = buildBridge(state, id);
-  if (r.result.ok || r.result.reason !== 'loin') return r;
-  const u = buildUntracedLink(id, state.world.links, state.stock);
-  if (!u.ok) return { state, result: u.reason === 'loin' ? r.result : u };
-  return { state: { ...state, stock: u.inventory, world: markForRelink({ ...state.world, links: u.bridges }, id) }, result: u };
 }
 
 /** Le bonhomme va sur une île ouverte (sinon, rien ne change). */

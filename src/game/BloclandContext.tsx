@@ -6,7 +6,6 @@ import {
   EMPTY_STATE,
   disassembleBlock,
   buildBridge as buildBridgePure,
-  payLink,
   completeExercise,
   completePortalQuest,
   fillPlanCell as fillPlanCellPure,
@@ -40,7 +39,7 @@ import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelag
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
 import { STORY_XP, startStory, storyAfterMission, tapStoryStep, type StepResult } from './world/stories';
 import { applyLayout } from './world/appliedLayout';
-import { settleNewPlaces } from './world/arrange';
+import { payLink, settleNewPlaces } from './world/arrange';
 import type { World } from './engine/state';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */

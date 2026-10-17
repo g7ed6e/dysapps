@@ -10,7 +10,8 @@ import type { MissionMark } from '../../world/continu/mission';
 import { PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
 import { linkOfPlace, linkToPay, neighboursFirst, openWorldLinks, payableLink } from './placeLinks';
 import { BLOC } from '../../biomes';
-import { EMPTY_STATE, payLink, sanitizeState, type GameState } from '../../engine';
+import { EMPTY_STATE, sanitizeState, type GameState } from '../../engine';
+import { payLink } from '../../world/arrange';
 
 const linked = PLACES.map((p) => p.id).filter(isLinked);
 const rich = { [BLOC.pierre]: 20 };
