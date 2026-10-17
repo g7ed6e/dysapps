@@ -5,7 +5,7 @@
 // dans la sauvegarde (`world.parts`, comme dans la grille) : posé dans la grille, il l'est ici, et inversement, sans rien
 // de neuf dans la sauvegarde. C'est le seul fichier qui lise à la fois la grille et le monde continu pour eux. Sans
 // Three.js : testé sous jsdom.
-import { AMENAGEMENTS, ASSISE_TRIANGLES, MATTE_GLASS, amenagementById, placeAmenagement, type DrawnObject, type PlacedAmenagement } from '../../world/continu/amenagements';
+import { AMENAGEMENTS, ASSISE_TRIANGLES, MATTE_GLASS, QUAI_TRIANGLES, amenagementById, placeAmenagement, type DrawnObject, type PlacedAmenagement } from '../../world/continu/amenagements';
 import type { PlaceId } from '../../world/continu/plan6e';
 import { Pinceau, type V3 } from '../../world/decor/brush';
 import { estPosee } from '../../world/fixtures';
@@ -139,7 +139,10 @@ export function posedAmenagements(parts: Record<string, string[]>): Record<Place
   return out;
 }
 
-/** Ce que coûtent les dix-neuf aménagements posés, dans le maillage des lieux : leurs triangles (et ceux des assises), aucun appel de plus. */
+/**
+ * Ce que coûtent les dix-neuf aménagements posés, dans le maillage des lieux : leurs triangles (et ceux des assises et du
+ * morceau de quai du lavoir), aucun appel de plus.
+ */
 export function amenagementsCost(): { triangles: number; calls: number } {
-  return { triangles: AMENAGEMENTS.reduce((n, a) => n + drawnObject(a.id).positions.length / 9 + (a.assise || a.scene ? ASSISE_TRIANGLES : 0), 0), calls: 0 };
+  return { triangles: AMENAGEMENTS.reduce((n, a) => n + drawnObject(a.id).positions.length / 9 + (a.assise || a.scene ? ASSISE_TRIANGLES : 0) + (a.quai ? QUAI_TRIANGLES : 0), 0), calls: 0 };
 }

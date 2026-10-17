@@ -23,6 +23,11 @@
 //   seuil du muret). Sur la dalle de la scène (`scene`, que seule la scénette pose : la cale des Balises, le quai de
 //   pierre des Écluses), l'objet est à la hauteur de la dalle, sur son assise : à la marche, elle le porte ; dans la
 //   remise, elle est dans la dalle.
+// - Le quai de la scène (`quai`) : au-delà d'une marche basse (0,3), à la marche, on ne dessine pas de socle ; on dessine
+//   aussi le morceau du sol de la scène qui porte l'objet (directeur artistique, troisième passe, point C). Le lavoir des
+//   Écluses : le morceau du quai de pierre du sas sous lui, même pierre, même dessus, même hauteur que dans la remise,
+//   assez large pour qu'il y paraisse posé ; à fleur du sol en haut de la pente (est), un mur de quai droit en bas (ouest
+//   et sud), contre l'assise de la maison de l'éclusier ; hors de l'axe de sa porte, la table au sud de lui.
 // - Hors du rayon de toucher : là où l'habitant de la scénette l'est lui-même, le directeur artistique met l'objet près
 //   de lui (la boutique des Quais, à droite du docker ; le lavoir des Écluses, entre l'éclusière et sa maison, hors de
 //   l'axe de la porte ; le nichoir de la Mangrove, à l'est de la botaniste) : leur toucher se tranche au lot L1.
@@ -32,7 +37,7 @@
 // Le potager du Phare prolonge le jardin clos par l'ouverture de son muret. Les lanternes (celle d'entraide du Phare,
 // le poteau-lanterne de la Vigie) restent éteintes : leurs vitres en verre mat (la vue les peint, `MATTE_GLASS`). Code
 // pur.
-import { FacetBuilder, boundsOf, type Facets } from './facets';
+import { FacetBuilder, boundsOf, mergeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
 import { hidesTraces, placeById, type PlaceId } from './plan6e';
 import { questionLayout, type ScreenBox } from './questionScene';
@@ -59,6 +64,18 @@ export const ASSISE_STONE = { dessus: 0xb9b2a3, cote: 0x9a9488 } as const;
 
 /** Les triangles d'une assise : un pavé sans dessous. */
 export const ASSISE_TRIANGLES = 10;
+
+/** La pierre du quai de la scène (le quai du sas des Écluses, scenette.ts, `lockQuay`) : son dessus, son flanc. */
+export const QUAI_STONE = { dessus: 0xb9b2a3, cote: 0x8f897d } as const;
+
+/** Les triangles du morceau de quai de la scène : un pavé sans dessous. */
+export const QUAI_TRIANGLES = 10;
+
+/**
+ * Le dessus du morceau de quai, sous la dalle de la scène (dans la remise, elle le couvre : jamais deux faces l'une sur
+ * l'autre) ; l'assise de l'objet y entre d'autant (`QUAI.sink`), un rien, et dépasse de lui juste ce qu'elle dépasse de la dalle.
+ */
+const QUAI = { drop: 0.02, sink: 0.05 } as const;
 
 /** Le débord de l'assise autour de la forme de l'objet (une marche basse), et ce qu'elle entre sous le sol au plus bas. */
 const ASSISE = { rim: 0.06, sink: 0.12 } as const;
@@ -106,6 +123,12 @@ export interface Amenagement {
   /** Sur la dalle de la scène de la remise (les Balises), à sa hauteur, sur une assise de pierre qui le porte à la marche. */
   scene?: true;
   /**
+   * Sur la dalle de la scène, là où son assise dépasserait le sol de plus d'une marche basse (0,3) à la marche : le
+   * morceau du quai de la scène qui le porte, dessiné aussi à la marche (le lavoir des Écluses), ses bords en x et en z
+   * depuis le centre du lieu. Son dessus, celui de la dalle ; son pied, sous le sol au plus bas.
+   */
+  quai?: { x: readonly [number, number]; z: readonly [number, number] };
+  /**
    * Adossé à une façade (la grue des Archives, en potence) : la seule exception à la règle de hauteur, écrite dans le
    * test ; son échelle (`scale`) la mesure à la façade, le haut de son mât juste sous l'architrave.
    */
@@ -137,7 +160,7 @@ export const AMENAGEMENTS: readonly Amenagement[] = [
   { id: 'french-6e-reading-fixture-1', name: 'le poteau-lanterne', place: 'lookout', kind: 'commande', elements: [[0], [1], [2]], at: { x: 4.4, z: 2.5 }, yaw: 0 },
   { id: 'french-6e-reading-fixture-2', name: 'l’escalier', place: 'lookout', kind: 'quete', elements: [[0]], at: { x: 4.2, z: 1.1 }, yaw: 0 },
   { id: 'maths-6e-calculation-fixture-1', name: 'la boutique', place: 'quais', kind: 'commande', elements: [[0], [1], [2]], at: { x: 6.0, z: 9.8 }, yaw: 0 },
-  { id: 'maths-6e-fractions-fixture-1', name: 'le lavoir', place: 'ecluses', kind: 'commande', elements: [[0], [1], [2], [3]], at: { x: 4.42, z: 4.7 }, yaw: 0, scene: true },
+  { id: 'maths-6e-fractions-fixture-1', name: 'le lavoir', place: 'ecluses', kind: 'commande', elements: [[0], [1], [2], [3]], at: { x: 4.42, z: 4.7 }, yaw: 0, scene: true, quai: { x: [3.35, 5.05], z: [4.2, 5.24] } },
   { id: 'maths-6e-decimals-fixture-1', name: 'le parasol', place: 'saltworks', kind: 'commande', elements: [[0], [1], [2], [3]], at: { x: 4.3, z: -1.7 }, yaw: 0 },
   { id: 'english-6e-vocabulary-fixture-1', name: 'la pendule', place: 'beacons', kind: 'commande', elements: [[0], [1]], at: { x: 3.45, z: -6.6 }, yaw: 0, scene: true },
   { id: 'english-6e-grammar-fixture-1', name: 'la vitrine', place: 'ferry', kind: 'commande', elements: [[0], [1], [2]], at: { x: -5.3, z: 0.8 }, yaw: Math.PI / 3, floor: 0.04 },
@@ -164,8 +187,10 @@ export interface PlacedAmenagement {
   base: number;
   /** Sa boîte dans le monde, sans son assise (celle que le cadrage de la remise prend). */
   box: WorldBox;
-  /** Son assise de pierre, s'il en a une : ses triangles, au début du premier élément. */
+  /** Son assise de pierre, s'il en a une, et le morceau de quai sous elle : leurs triangles, au début du premier élément. */
   assise?: { from: number; to: number };
+  /** Le dessus du morceau de quai de la scène sous lui, s'il en a un. */
+  quai?: number;
 }
 
 /** Les morceaux d'un dessin : de marque en marque, en triangles. */
@@ -221,7 +246,10 @@ export function placeAmenagement(a: Amenagement, d: DrawnObject, ground: (x: num
           : low;
   // Sur la pente, l'assise déborde un peu (une marche basse) ; sous la dalle de la scène, elle reste sous sa forme.
   const rim = a.assise ? ASSISE.rim : 0;
-  const stone = a.assise || a.scene ? assiseFacets(turn, ox, oz, hx + rim, hz + rim, low - ASSISE.sink, y) : null;
+  // Sur le morceau de quai de la scène, l'assise y entre un rien : elle ne descend plus jusqu'au sol.
+  const quaiTop = a.quai ? y - SCENE_LIFT - QUAI.drop : undefined;
+  const assise = a.assise || a.scene ? assiseFacets(turn, ox, oz, hx + rim, hz + rim, quaiTop !== undefined ? quaiTop - QUAI.sink : low - ASSISE.sink, y) : null;
+  const stone = assise && a.quai && quaiTop !== undefined ? mergeFacets([quaiFacets(a.quai, p, quaiTop, ground), assise]) : assise;
   const n = d.positions.length;
   const extra = stone ? stone.positions.length : 0;
   const positions = new Float32Array(n + extra);
@@ -263,7 +291,23 @@ export function placeAmenagement(a: Amenagement, d: DrawnObject, ground: (x: num
   const facets = { positions, normals, colors, triangles: t };
   const from = stone ? stone.positions.length : 0;
   const box = boundsOf({ ...facets, positions: positions.subarray(from) });
-  return { facets, elements, base: y, box, ...(stone ? { assise: { from: 0, to: stone.triangles } } : {}) };
+  return { facets, elements, base: y, box, ...(stone ? { assise: { from: 0, to: stone.triangles } } : {}), ...(quaiTop !== undefined ? { quai: quaiTop } : {}) };
+}
+
+/**
+ * Le morceau du quai de la scène sous un objet, à la marche : un pavé sans dessous, de ses bords (depuis le centre du
+ * lieu `c`), son dessus en `top`, son pied sous le sol au plus bas sous lui (relevé tous les quarts d'unité) : en bas de
+ * la pente, un mur de quai droit ; en haut, à fleur du sol.
+ */
+function quaiFacets(q: NonNullable<Amenagement['quai']>, c: Vec2, top: number, ground: (x: number, z: number) => number): Facets {
+  const [x0, x1, z0, z1] = [c.x + q.x[0], c.x + q.x[1], c.z + q.z[0], c.z + q.z[1]];
+  const [nx, nz] = [Math.ceil((x1 - x0) / 0.25), Math.ceil((z1 - z0) / 0.25)];
+  let low = Infinity;
+  for (let i = 0; i <= nx; i++) for (let k = 0; k <= nz; k++) low = Math.min(low, ground(x0 + ((x1 - x0) * i) / nx, z0 + ((z1 - z0) * k) / nz));
+  const bottom = low - ASSISE.sink;
+  const b = new FacetBuilder();
+  b.box({ x: (x0 + x1) / 2, y: bottom, z: (z0 + z1) / 2 }, [x1 - x0, top - bottom, z1 - z0], QUAI_STONE.cote, QUAI_STONE.dessus);
+  return b.build();
 }
 
 /**

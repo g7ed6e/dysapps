@@ -21,7 +21,7 @@ import { placeTrace } from '../../world/continu/questionScene';
 import { remisePose, scenetteDecor, scenetteHabitant, scenetteKeo } from '../../world/continu/scenette';
 import type { PlacedAmenagement } from '../../world/continu/amenagements';
 import { buildHeightField, heightOnMesh, standingHeight } from '../../world/continu/terrain';
-import { AMENAGEMENTS, AMENAGEMENT_SCALE, ASSISE_STONE, ASSISE_TRIANGLES, HABITANT_HEIGHT, MATTE_GLASS, amenagementsOf, piecesOf, remiseInclude, remisePosed, remiseStage } from '../../world/continu/amenagements';
+import { AMENAGEMENTS, AMENAGEMENT_SCALE, ASSISE_STONE, ASSISE_TRIANGLES, HABITANT_HEIGHT, MATTE_GLASS, QUAI_STONE, QUAI_TRIANGLES, amenagementsOf, piecesOf, remiseInclude, remisePosed, remiseStage } from '../../world/continu/amenagements';
 import { casesDeLaPetiteConstruction } from '../../world/fixtures';
 import { COMMANDES } from '../../world/requests';
 import { POTENCE, amenagementsCost, drawnObject, placedAmenagement, posedAmenagements } from './amenagements';
@@ -74,6 +74,13 @@ function topAt(f: Facets, q: Vec2, ceiling = Infinity): number | null {
     top = top === null ? y : Math.max(top, y);
   }
   return top;
+}
+
+/** L'objet sur son assise, sans le morceau de quai de la scène sous elle (le quai, ses premiers triangles). */
+function withoutQuai(a: (typeof AMENAGEMENTS)[number], p: PlacedAmenagement): Facets {
+  const from = (a.quai ? QUAI_TRIANGLES : 0) * 9;
+  const positions = p.facets.positions.slice(from);
+  return { positions, normals: p.facets.normals.slice(from), colors: p.facets.colors.slice(from), triangles: positions.length / 9 };
 }
 
 /** L'objet seul, sans son assise de pierre. */
@@ -131,8 +138,9 @@ describe('La table des aménagements', () => {
       expect(p.elements[0].from).toBe(0);
       for (let i = 1; i < p.elements.length; i++) expect(p.elements[i].from).toBe(p.elements[i - 1].to);
       expect(p.elements.at(-1)?.to).toBe(p.facets.triangles);
-      expect(p.facets.triangles).toBe(drawnObject(a.id).positions.length / 9 + (p.assise ? ASSISE_TRIANGLES : 0));
-      expect(p.assise?.to ?? 0).toBe(p.assise ? ASSISE_TRIANGLES : 0);
+      const stone = (p.assise ? ASSISE_TRIANGLES : 0) + (a.quai ? QUAI_TRIANGLES : 0);
+      expect(p.facets.triangles).toBe(drawnObject(a.id).positions.length / 9 + stone);
+      expect(p.assise?.to ?? 0).toBe(stone);
     }
   });
 });
@@ -184,9 +192,12 @@ describe('La place de chaque aménagement', () => {
         ...obstacles,
         ...placed.filter((o) => o.a.id !== a.id).map((o) => o.p.facets),
       ].map((f) => within(f, boundsOf(p.facets)));
+      // Le morceau de quai de la scène (le lavoir des Écluses) est sous la dalle de la scène : l'habitant et son levier y
+      // sont posés, au-dessus de lui ; il compte pour tout le reste.
+      const [whole, onDeck] = [footprint(p.facets), footprint(withoutQuai(a, p))];
       others.forEach((f, i) => {
         let [worst, at] = [0, ''];
-        for (const q of footprint(p.facets)) {
+        for (const q of i === 3 || i === 4 ? onDeck : whole) {
           const top = topAt(f, q, ceiling);
           if (top !== null && top - base > worst) [worst, at] = [top - base, `${(q.x - place.center.x).toFixed(2)},${(q.z - place.center.z).toFixed(2)}`];
         }
@@ -257,11 +268,13 @@ describe('La place de chaque aménagement', () => {
       expect(b.max[1], a.id).toBeCloseTo(p.base, 5);
       // Son pied sous le sol, partout : elle ne flotte jamais.
       for (const q of footprint(stone as Facets)) expect(ground(q.x, q.z), a.id).toBeGreaterThan(b.min[1]);
-      // Dans la pierre du muret, et rien d'autre ; elle se pose avec le premier élément.
-      const [top, side] = [linearRgb(ASSISE_STONE.dessus), linearRgb(ASSISE_STONE.cote)];
+      // Dans la pierre du muret, et rien d'autre (le morceau de quai, dans celle du quai de la scène) ; elle se pose avec le
+      // premier élément.
+      const quai = (a.quai ? QUAI_TRIANGLES : 0) * 9;
       for (let k = 0; k < p.assise.to * 9; k += 3) {
+        const stones = k < quai ? QUAI_STONE : ASSISE_STONE;
         const c = [p.facets.colors[k], p.facets.colors[k + 1], p.facets.colors[k + 2]];
-        expect([top, side].some((rgb) => rgb.every((v, i) => Math.abs(v - c[i]) < 1e-3)), a.id).toBe(true);
+        expect([linearRgb(stones.dessus), linearRgb(stones.cote)].some((rgb) => rgb.every((v, i) => Math.abs(v - c[i]) < 1e-3)), a.id).toBe(true);
       }
       expect(p.elements[0].from).toBe(0);
     }
@@ -285,6 +298,75 @@ describe('La place de chaque aménagement', () => {
     expect(Math.abs(potager.p.base - ground(wall, c.z + g.z))).toBeLessThan(0.03);
     for (const x of [b.min[0], b.max[0]]) for (const z of [b.min[2], b.max[2]]) expect(ground(x, z) - potager.p.base).toBeLessThanOrEqual(0.03);
     expect(ground(b.max[0], c.z + g.z)).toBeLessThan(potager.p.base - 0.05);
+  });
+
+  it('le lavoir des Écluses, à la marche, sur le morceau du quai de la scène : son assise n’en dépasse pas d’une marche basse ; le quai, à fleur du sol en haut de la pente, un mur droit en bas, contre la maison, hors de l’axe de sa porte et de la table', () => {
+    const { a, p } = byId('maths-6e-fractions-fixture-1');
+    const c = placeById('ecluses').center;
+    expect(AMENAGEMENTS.filter((x) => x.quai).map((x) => x.id)).toEqual([a.id]);
+    const q = a.quai!;
+    const top = p.quai!;
+    const quai = { ...p.facets, positions: p.facets.positions.slice(0, QUAI_TRIANGLES * 9) };
+    const b = boundsOf(quai);
+    // Le dessus du quai, sous tout ce qui pose le lavoir (ses triangles qui touchent son pied ; son toit déborde) : son
+    // assise le dépasse de moins d'une marche basse (0,3), partout.
+    expect(b.max[1]).toBeCloseTo(top, 5);
+    const lavoir = objectOnly(p);
+    const feet: number[] = [];
+    for (let k = 0; k < lavoir.positions.length; k += 9) if (Math.min(lavoir.positions[k + 1], lavoir.positions[k + 4], lavoir.positions[k + 7]) < p.base + 0.1) feet.push(...lavoir.positions.slice(k, k + 9));
+    for (const pt of footprint({ ...lavoir, positions: new Float32Array(feet) })) {
+      const under = topAt(quai, pt);
+      expect(under, `${pt.x.toFixed(2)},${pt.z.toFixed(2)}`).not.toBeNull();
+      expect(p.base - (under ?? -Infinity)).toBeGreaterThanOrEqual(0);
+      expect(p.base - (under ?? -Infinity)).toBeLessThanOrEqual(0.3);
+    }
+    // De la marge autour du lavoir, sur le quai (pas juste au bord) ; à l'est, contre l'assise de la maison.
+    const o = boundsOf(objectOnly(p));
+    expect(o.min[0] - b.min[0]).toBeGreaterThanOrEqual(0.3);
+    expect(Math.min(o.min[2] - b.min[2], b.max[2] - o.max[2])).toBeGreaterThanOrEqual(0);
+    // Le morceau du quai de la scène : à la hauteur de sa dalle (un rien dessous : dans la remise, elle le couvre), et dans
+    // elle, vu d'en haut.
+    const deck = within(scenetteDecor('ecluses', false, true), b);
+    for (const pt of [{ x: b.min[0] + 0.01, z: b.min[2] + 0.01 }, { x: b.min[0] + 0.01, z: b.max[2] - 0.01 }, { x: b.max[0] - 0.01, z: b.min[2] + 0.01 }, { x: b.max[0] - 0.01, z: b.max[2] - 0.01 }]) {
+      const d = topAt(deck, pt, top + 0.1);
+      expect(d, `${pt.x.toFixed(2)},${pt.z.toFixed(2)}`).not.toBeNull();
+      expect((d ?? Infinity) - top).toBeGreaterThan(0);
+      expect((d ?? Infinity) - top).toBeLessThan(0.05);
+    }
+    // Son pied sous le sol partout : il ne flotte jamais ; en haut de la pente, à fleur du sol (moins de 0,3) ; en bas, un mur.
+    let [low, high] = [Infinity, -Infinity];
+    for (const pt of footprint(quai)) {
+      const g = ground(pt.x, pt.z);
+      expect(g).toBeGreaterThan(b.min[1]);
+      [low, high] = [Math.min(low, g), Math.max(high, g)];
+    }
+    expect(top - high).toBeLessThan(0.3);
+    expect(top - low).toBeGreaterThan(0.6);
+    // Contre l'assise de la maison de l'éclusier (son mur ouest), sans entrer dans sa porte : le quai s'arrête au nord de
+    // l'axe de la porte, qui donne à l'ouest ; la porte, plus haut que le pied de la maison, au-dessus de son assise.
+    const house = within(constructionFacets('ecluses', [WHOLE], ground), { min: [b.max[0] - 0.01, 0, b.min[2]], max: [b.max[0] + 0.3, 0, b.max[2]] });
+    expect(topAt(house, { x: b.max[0] + 0.05, z: (b.min[2] + b.max[2]) / 2 }, top)).not.toBeNull();
+    expect(c.x + q.x[1]).toBeCloseTo(b.max[0], 5);
+    const model = constructionFacets('ecluses', [WHOLE], ground);
+    let door = Infinity;
+    for (let k = 0; k < model.positions.length; k += 9) {
+      const xs = [model.positions[k], model.positions[k + 3], model.positions[k + 6]];
+      const zs = [model.positions[k + 2], model.positions[k + 5], model.positions[k + 8]];
+      const ys = [model.positions[k + 1], model.positions[k + 4], model.positions[k + 7]];
+      // La porte : la feuille fine posée contre le mur ouest, du seuil à hauteur d'épaule.
+      const thin = Math.max(...xs) - Math.min(...xs) < 0.1 && Math.max(...zs) - Math.min(...zs) < 0.8;
+      if (thin && Math.min(...xs) > b.max[0] - 0.1 && Math.min(...xs) < b.max[0] + 0.2 && Math.max(...ys) - Math.min(...ys) > 0.9) door = Math.min(door, ...zs);
+    }
+    expect(door).toBeLessThan(Infinity);
+    expect(b.max[2]).toBeLessThanOrEqual(door);
+    // La table de l'éclusier : au sud du quai, sans le toucher ; ses pieds dans le sol, jamais en l'air.
+    const table = placeTrace('ecluses', ['sharing']);
+    const gate = placeTrace('ecluses', []).positions.length;
+    const t = boundsOf({ ...table, positions: table.positions.slice(gate) });
+    expect(t.min[2]).toBeGreaterThan(b.max[2] + 0.1);
+    for (let k = gate; k < table.positions.length; k += 3) if (table.positions[k + 1] < t.min[1] + 1e-4) expect(ground(table.positions[k], table.positions[k + 2])).toBeGreaterThan(table.positions[k + 1]);
+    // Loin des chemins de Kéo.
+    for (const s of networkSamples(0.25)) expect(Math.max(b.min[0] - s.x, s.x - b.max[0], b.min[2] - s.z, s.z - b.max[2])).toBeGreaterThan(1);
   });
 
   it('plus bas que l’habitant d’une scénette, à l’échelle commune ; la grue des Archives, potence de façade, la seule exception', () => {

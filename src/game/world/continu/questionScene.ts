@@ -2275,12 +2275,13 @@ const QUAIS_TRACES: Record<string, (b: FacetBuilder, cx: number, cz: number) => 
 
 /**
  * Où se pose la trace de chaque mission des Écluses (hors des Nénuphars, la porte d'amont ouverte), depuis le centre du
- * lieu : la barque dans le bassin d'aval, la table devant la maison de l'éclusier, l'escalier contre le mur est du
- * bassin d'aval, la lanterne du sas sur le coin sud-ouest de ce bassin ; tous dans le champ du retour d'une scénette, au sud.
+ * lieu : la barque dans le bassin d'aval, la table devant la maison de l'éclusier (au sud du quai du lavoir, sans le
+ * toucher : world/continu/amenagements.ts), l'escalier contre le mur est du bassin d'aval, la lanterne du sas sur le coin
+ * sud-ouest de ce bassin ; tous dans le champ du retour d'une scénette, au sud.
  */
 export const ECLUSES_TRACE_SPOTS = {
   equivalence: { x: 0, z: 3 },
-  sharing: { x: 4.1, z: 5.2 },
+  sharing: { x: 4.1, z: 6.3 },
   'place-value': { x: 2.75, z: 2.6 },
   'fraction-sums': { x: -2.05, z: 4.35 },
 } as const;
@@ -2311,12 +2312,13 @@ const ECLUSES_TRACES: Record<string, (b: FacetBuilder, cx: number, y0: number, c
   sharing: (b, x, _y0, z) => {
     const o = ECLUSES_TRACE_SPOTS.sharing;
     const g = { x: x + o.x, y: groundAt({ x: x + o.x, z: z + o.z }), z: z + o.z };
-    const low = g.y - 0.3;
-    // La table : son plateau clair sur quatre pieds sombres, assez hauts pour descendre dans la pente ; deux bancs.
-    for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.box({ x: g.x + sx * 0.6, y: low, z: g.z + sz * 0.3 }, [0.1, 1.05, 0.1], C.post);
+    const low = g.y - 0.5;
+    // La table : son plateau clair sur quatre pieds sombres, assez hauts pour descendre dans la pente (jamais en l'air) ;
+    // deux bancs.
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) b.box({ x: g.x + sx * 0.6, y: low, z: g.z + sz * 0.3 }, [0.1, 1.25, 0.1], C.post);
     b.box({ x: g.x, y: g.y + 0.75, z: g.z }, [1.5, 0.1, 0.85], C.post, C.newWood);
     for (const sz of [-1, 1]) {
-      for (const sx of [-1, 1]) b.box({ x: g.x + sx * 0.55, y: low, z: g.z + sz * 0.75 }, [0.08, 0.72, 0.08], C.post);
+      for (const sx of [-1, 1]) b.box({ x: g.x + sx * 0.55, y: low, z: g.z + sz * 0.75 }, [0.08, 0.92, 0.08], C.post);
       b.box({ x: g.x, y: g.y + 0.42, z: g.z + sz * 0.75 }, [1.4, 0.08, 0.3], C.post, C.newWood);
     }
   },

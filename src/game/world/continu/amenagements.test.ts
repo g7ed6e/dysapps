@@ -9,7 +9,7 @@ import { boundsOf } from './facets';
 import { placeById } from './plan6e';
 import { remisePose, scenetteHabitant, scenetteKeo, scenettePose } from './scenette';
 import { standingHeight } from './terrain';
-import { AMENAGEMENT_SCALE, AMENAGEMENTS, ASSISE_TRIANGLES, piecesOf, remiseInclude, showsAmenagements, placeAmenagement, remisePosed, remiseStage, type Amenagement, type DrawnObject } from './amenagements';
+import { AMENAGEMENT_SCALE, AMENAGEMENTS, ASSISE_TRIANGLES, QUAI_TRIANGLES, piecesOf, remiseInclude, showsAmenagements, placeAmenagement, remisePosed, remiseStage, type Amenagement, type DrawnObject } from './amenagements';
 
 /** Un triangle tourné vers le haut, de (x, z) à (x + 1, z + 1), à la hauteur y, dans le repère d'un dessin. */
 const flat = (x: number, y: number, z: number) => [x, y, z, x + 1, y, z, x, y, z + 1];
@@ -101,6 +101,24 @@ describe('L’assise de pierre, la dalle de la scène, la potence', () => {
     expect(p.base).toBeGreaterThan(h.y);
     expect(p.base).toBeLessThan(h.y + 0.05);
     expect(p.assise?.to).toBe(ASSISE_TRIANGLES);
+  });
+
+  it('sur la dalle de la scène, avec le morceau de son quai à la marche : un pavé de ses bords, son dessus juste sous la dalle, son pied sous le sol au plus bas ; l’assise y entre un rien', () => {
+    const quai = { x: [0, 2], z: [1, 3] } as const;
+    const p = placeAmenagement(sample({ scene: true, quai }), drawing(), (x) => slope(x));
+    const h = scenetteHabitant('quais', remisePosed('quais'));
+    expect(p.assise).toEqual({ from: 0, to: QUAI_TRIANGLES + ASSISE_TRIANGLES });
+    expect(p.facets.triangles).toBe(3 + QUAI_TRIANGLES + ASSISE_TRIANGLES);
+    const q = boundsOf({ ...p.facets, positions: p.facets.positions.slice(0, QUAI_TRIANGLES * 9) });
+    expect([q.min[0], q.max[0], q.min[2], q.max[2]].map((v, i) => v - [c.x, c.x, c.z, c.z][i])).toEqual([0, 2, 1, 3].map((v) => expect.closeTo(v, 5)));
+    expect(p.quai).toBeCloseTo(q.max[1], 5);
+    expect(q.max[1]).toBeLessThan(h.y);
+    expect(q.max[1]).toBeGreaterThan(h.y - 0.05);
+    expect(q.min[1]).toBeLessThan(slope(c.x));
+    const stone = boundsOf({ ...p.facets, positions: p.facets.positions.slice(QUAI_TRIANGLES * 9, (QUAI_TRIANGLES + ASSISE_TRIANGLES) * 9) });
+    expect(stone.max[1]).toBeCloseTo(p.base, 5);
+    expect(stone.min[1]).toBeLessThan(q.max[1]);
+    expect(stone.min[1]).toBeGreaterThan(q.max[1] - 0.1);
   });
 
   it('à son échelle, si elle en a une (la potence de façade)', () => {
