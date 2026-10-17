@@ -51,7 +51,9 @@ const page = () => (document.body.textContent ?? '').replace(/[\u00a0\u202f]/g, 
 const sans = (t: unknown) => String(t).replace(/[\u00a0\u202f]/g, ' ');
 
 /** Le bouton d'un choix (son texte entier). */
-const choix = (texte: string) => within(screen.getByRole('group', { name: 'Réponses possibles' })).getByRole('button', { name: texte });
+// Le nom accessible garde l'espace insécable entre le nombre et ce qu'il compte (`frenchTypography`) : on la lit comme une espace.
+const nomde = (texte: string) => (nom: string) => nom.replace(/\u00a0/g, ' ') === texte;
+const choix = (texte: string) => within(screen.getByRole('group', { name: 'Réponses possibles' })).getByRole('button', { name: nomde(texte) });
 
 afterEach(() => {
   localStorage.clear();
@@ -123,7 +125,7 @@ it('une erreur laisse un second essai, avec l’indice et la réponse barrée ; 
   const user = userEvent.setup();
   const { item, juste, faux } = partie({ 'french-6e-phonology': 4, 'maths-6e-calculation': 2 });
   renderFabrique('/adventure/assembly/compound-6e');
-  await user.click(await screen.findByRole('button', { name: faux[0] }));
+  await user.click(await screen.findByRole('button', { name: nomde(faux[0]) }));
   expect(screen.getByText('Presque !')).toBeInTheDocument();
   expect(page()).toContain(`Indice : ${sans(item.hint)}`);
   expect(choix(faux[0])).toBeDisabled();
@@ -141,7 +143,7 @@ it('deux erreurs : rien n’est perdu, l’explication s’affiche, la question 
   const user = userEvent.setup();
   const { item, faux } = partie({ 'french-6e-phonology': 2, 'maths-6e-calculation': 1 });
   renderFabrique('/adventure/assembly/compound-6e');
-  await user.click(await screen.findByRole('button', { name: faux[0] }));
+  await user.click(await screen.findByRole('button', { name: nomde(faux[0]) }));
   await user.click(choix(faux[1]));
   expect(screen.getByText('Pas tout à fait')).toBeInTheDocument();
   expect(page()).toContain(sans(item.explanation));
@@ -163,7 +165,7 @@ it('un double toucher sur la bonne réponse n’assemble qu’un bloc', async ()
   const user = userEvent.setup();
   const { juste } = partie({ 'french-6e-phonology': 4, 'maths-6e-calculation': 2 });
   renderFabrique('/adventure/assembly/compound-6e');
-  await user.dblClick(await screen.findByRole('button', { name: juste }));
+  await user.dblClick(await screen.findByRole('button', { name: nomde(juste) }));
   expect(sauvegarde().stock).toMatchObject({ 'french-6e-phonology': 2, 'maths-6e-calculation': 1, 'compound-6e': 1 });
 });
 
@@ -181,7 +183,7 @@ it('le résultat s’ouvre sur sa fin s’il tient dans l’écran, sur son déb
       hauteur.mockReturnValue({ height: haut } as DOMRect);
       const { juste } = partie({ 'french-6e-phonology': 2, 'maths-6e-calculation': 1 });
       const { unmount } = renderFabrique('/adventure/assembly/compound-6e');
-      await user.click(await screen.findByRole('button', { name: juste }));
+      await user.click(await screen.findByRole('button', { name: nomde(juste) }));
       expect(defile).toHaveBeenCalledWith(expect.objectContaining({ block }));
       // Le focus reste sur le bouton principal, sans défiler jusqu'à lui.
       expect(screen.getByRole('link', { name: /Revenir à la Fabrique/ })).toHaveFocus();
