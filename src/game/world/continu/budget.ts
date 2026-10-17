@@ -15,12 +15,16 @@ import { PORT_WORST, assemblyScene, portFacets } from './port';
 import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
 import type { ItemScene } from './questions';
 import { bellPlane, habitantHand, scenetteDecor, scenetteFinale } from './scenette';
-import { buildHeightField, heightOnMesh, tileRings, tileTriangleCounts } from './terrain';
+import { landTileCounts } from './flora';
+import { buildHeightField, heightOnMesh, tileRings } from './terrain';
 import { skyDome } from './sky';
 import { veilFacets } from './veil';
 
-/** Kéo : le modèle importé de près (1 500 triangles environ) et son anneau clair au sol, comme le poste « bonhomme » du monde en grille. */
-const KEO = { triangles: 1620, calls: 2 };
+/**
+ * Kéo : le modèle importé de près (1 500 triangles environ) et son anneau clair au sol, comme le poste « bonhomme » du
+ * monde en grille ; son ombre peinte (GD-20, point 3, lot 3 : 10 triangles, un appel).
+ */
+const KEO = { triangles: 1630, calls: 3 };
 
 /** Le dôme du ciel (GD-20, point 3, lot 3) : un maillage, dessiné d'abord, sur la Carte aussi. */
 const SKY = { triangles: skyDome(1).triangles, calls: 1 };
@@ -182,8 +186,8 @@ const SAMPLE_STEP = 4;
  */
 export function groundCost(): { triangles: number; calls: number; near: number; far: number } {
   const field = buildHeightField();
-  const near = tileTriangleCounts(field, 'near');
-  const far = tileTriangleCounts(field, 'far');
+  const near = landTileCounts(field, 'near');
+  const far = landTileCounts(field, 'far');
   let worstNear = 0;
   let worstFar = 0;
   for (const p of networkSamples(SAMPLE_STEP)) {
@@ -230,7 +234,7 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
 export function mapCost(amenagements: number): { triangles: number; calls: number } {
   const field = buildHeightField();
   const height = (x: number, z: number) => heightOnMesh(field, x, z);
-  const far = tileTriangleCounts(field, 'far').reduce((s, n) => s + n, 0);
+  const far = landTileCounts(field, 'far').reduce((s, n) => s + n, 0);
   const paths = pathRibbons(height).triangles;
   const places = placesCost();
   const veil = veilFacets(LINKED_LANDS).triangles;

@@ -1,10 +1,11 @@
-// La réserve des tuiles du terrain (./terrain.ts) pour la vue : faites à la demande et gardées. De loin, toutes gardées
+// La réserve des tuiles du terrain (./terrain.ts, et ce qui y pousse, ./flora.ts) pour la vue : faites à la demande et gardées. De loin, toutes gardées
 // (elles sont légères, et faites tout de suite) ; de près, les plus récentes seulement, et jamais plus d'une par image :
 // une tuile de près qui manque attend dans une file (`pump`, une par image), sa version de loin tenant sa place
 // jusque-là. Ainsi, franchir un anneau ne fait jamais une longue tâche (relecture de l'expert frontend). Code pur.
 import { boundsOf, type Facets } from './facets';
 import { TERRAIN } from './plan6e';
-import { tileFacets, tileRect, type HeightField, type TileDetail } from './terrain';
+import { landTileFacets } from './flora';
+import { tileRect, type HeightField, type TileDetail } from './terrain';
 
 /** Une tuile prête à copier : ses facettes et sa boîte. */
 export interface Tile {
@@ -35,7 +36,7 @@ export function createTileStore(field: HeightField, nearKept = NEAR_TILES_KEPT):
   const make = (index: number, detail: TileDetail): Tile => {
     const tx = index % TERRAIN.tilesX;
     const tz = Math.floor(index / TERRAIN.tilesX);
-    const facets = tileFacets(field, tx, tz, detail);
+    const facets = landTileFacets(field, tx, tz, detail);
     const r = tileRect(tx, tz);
     const b = facets.triangles ? boundsOf(facets) : { min: [r.minX, 0, r.minZ] as [number, number, number], max: [r.maxX, 0, r.maxZ] as [number, number, number] };
     return { facets, min: b.min, max: b.max };

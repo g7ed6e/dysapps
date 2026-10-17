@@ -53,7 +53,7 @@ import {
   type ScenetteLayout,
 } from '../../world/continu/scenette';
 import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
-import { HORIZON_COLOR, LIGHT, skyDome } from '../../world/continu/sky';
+import { HORIZON_COLOR, LIGHT, SHADOW_DIR, skyDome } from '../../world/continu/sky';
 import { buildHeightField, heightOnMesh, ringHeights, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
@@ -298,6 +298,11 @@ const FACING_CAMERA = Math.PI;
  */
 const KEO_SCALE = 1.25;
 const KEO_RING = { inner: 0.85, outer: 1.3, color: 0xfff6dc };
+/**
+ * L'ombre peinte de Kéo (lot 3) : un disque de `radius`, décalé de `shift` du côté opposé au soleil, dans le creux de
+ * l'anneau (jamais sur lui) ; un bleu-vert sombre, transparent, jamais noir ; un rien sous l'anneau (`below`).
+ */
+const KEO_SHADOW = { radius: 0.5, sides: 10, shift: 0.26, color: 0x1f3d3b, opacity: 0.3, below: 0.01 } as const;
 /**
  * La finesse du rendu : l'anticrénelage reste (la scène est légère, quelques milliers de triangles) ; le rapport de
  * pixels est plafonné à 2, puis ramené à 1 si l'appareil peine (des images de plus de 45 ms, trente de suite), comme
@@ -767,6 +772,20 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const ringMaterial = new THREE.MeshBasicMaterial({ color: KEO_RING.color, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
   const ring = new THREE.Mesh(ringGeometry, ringMaterial);
   scene.add(ring);
+  // L'ombre peinte de Kéo (GD-20, point 3, lot 3) : un disque sombre et transparent dans le creux de l'anneau, décalé du
+  // côté opposé au soleil, qui épouse le sol comme lui ; il le suit (enfant de l'anneau), caché avec lui. Un appel.
+  const shadowGeometry = keep(new THREE.CircleGeometry(KEO_SHADOW.radius, KEO_SHADOW.sides).rotateX(-Math.PI / 2).translate(SHADOW_DIR.x * KEO_SHADOW.shift, 0, SHADOW_DIR.z * KEO_SHADOW.shift));
+  const shadowPosition = shadowGeometry.getAttribute('position') as THREE.BufferAttribute;
+  const shadowXZ = new Float32Array(shadowPosition.count * 2);
+  for (let i = 0; i < shadowPosition.count; i++) {
+    shadowXZ[2 * i] = shadowPosition.getX(i);
+    shadowXZ[2 * i + 1] = shadowPosition.getZ(i);
+  }
+  const shadowY = new Float32Array(shadowPosition.count);
+  shadowGeometry.computeBoundingSphere();
+  shadowGeometry.boundingSphere!.radius += 2;
+  const shadowMaterial = new THREE.MeshBasicMaterial({ color: KEO_SHADOW.color, transparent: true, opacity: KEO_SHADOW.opacity, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
+  ring.add(new THREE.Mesh(shadowGeometry, shadowMaterial));
 
   // Où est Kéo, où il va.
   // Au départ, sur le chemin, à quelques pas du lieu (on voit le Phare de plus loin que sa porte) ; à l'Escale, à son
@@ -791,6 +810,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       ringHeights(p.x, p.z, y, ringXZ, ringSurface, ringY);
       for (let i = 0; i < ringY.length; i++) ringPosition.setY(i, ringY[i]);
       ringPosition.needsUpdate = true;
+      ringHeights(p.x, p.z, y, shadowXZ, ringSurface, shadowY);
+      for (let i = 0; i < shadowY.length; i++) shadowPosition.setY(i, shadowY[i] - KEO_SHADOW.below);
+      shadowPosition.needsUpdate = true;
     }
     keoFeet.x = p.x;
     keoFeet.y = y;
@@ -2660,6 +2682,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       seaTexture.dispose();
       skyMaterial.dispose();
       ringMaterial.dispose();
+      shadowMaterial.dispose();
       meter?.dispose();
       renderer.dispose();
       renderer.domElement.remove();

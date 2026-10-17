@@ -9,7 +9,7 @@ import { START_DISTANCE, atNode, edgesNear, findRoute, networkSamples, pathNode,
 import { COAST, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, NORTH_SHORE, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, hidesTraces, placeById, placeOfIsland } from './plan6e';
 import { modelOfPlace } from './places';
 import { sceneSpot } from './questionScene';
-import { SEA_TEXTURE, seaPixels, shallowness } from './sea';
+import { SEA_TEXTURE, WATER_TONES, seaPixels, shallowness, waterTone } from './sea';
 import { RING, RING_FLOOR, RING_LIFT, TILE_SIZE, buildHeightField, heightAt, heightOnFar, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
 import { createTileStore } from './tiles';
 import { VEIL_HEIGHT, VEIL_LAYERS, veilFacets, veilShare } from './veil';
@@ -166,7 +166,14 @@ describe('La mer et le lagon', () => {
     expect(px).toHaveLength(SEA_TEXTURE.size * SEA_TEXTURE.size * 4);
     const at = (i: number, j: number) => Array.from(px.slice((j * SEA_TEXTURE.size + i) * 4, (j * SEA_TEXTURE.size + i) * 4 + 3));
     expect(at(0, 0)).toEqual([0x17, 0x80, 0x78]);
-    expect(at(SEA_TEXTURE.size / 2, SEA_TEXTURE.size / 2)).toEqual([0x2f, 0xb5, 0xa6]);
+    const rgb = (hex: number) => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255];
+    expect(at(SEA_TEXTURE.size / 2, SEA_TEXTURE.size / 2)).toEqual(rgb(WATER_TONES.clear));
+    // Des paliers nets (lot 3) : chaque pixel est l'un des trois tons, aucun mélange.
+    const tones = new Set([WATER_TONES.clear, WATER_TONES.lagoon, WATER_TONES.night].map((c) => rgb(c).join()));
+    for (let j = 0; j < SEA_TEXTURE.size; j += 7) for (let i = 0; i < SEA_TEXTURE.size; i += 7) expect(tones.has(at(i, j).join())).toBe(true);
+    // Le cœur de chaque bras de mer est le plus profond ; l'eau du lagon, claire.
+    for (const land of LINKED_LANDS) expect(waterTone(bridgeSite(land).mid), land).toBe(WATER_TONES.night);
+    expect(waterTone(fromPlan([700, 600]))).toBe(WATER_TONES.clear);
   });
 });
 
@@ -454,8 +461,9 @@ describe('Le budget du monde continu', () => {
     const cost = openWorldCost(0);
     expect(cost.find((c) => c.poste === 'lieux')?.calls).toBe(2);
     expect(cost.find((c) => c.poste === 'pose')?.calls).toBe(1);
-    // Il reste de la place pour les lots suivants (lieu de départ, obstacles, Nef, repère) : 4 appels au moins.
-    expect(OPEN_WORLD_BUDGET.calls - cost.reduce((s, c) => s + c.calls, 0)).toBeGreaterThanOrEqual(4);
+    // Il reste de la place pour les lots suivants (Nef, repère) : 3 appels au moins (4 avant le lot 3 de GD-20, point 3,
+    // qui prend le ciel et l'ombre de Kéo).
+    expect(OPEN_WORLD_BUDGET.calls - cost.reduce((s, c) => s + c.calls, 0)).toBeGreaterThanOrEqual(3);
   });
 
   it('la Carte des lieux ouverts, toute l’île de loin, tient aussi dans l’enveloppe', () => {

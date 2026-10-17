@@ -537,6 +537,59 @@ export function groundTone(x: number, z: number, h: number): number {
   return flatColor(x, z, h);
 }
 
+/**
+ * L'écume au rivage (GD-20, point 3, lot 3, cinquième levier graphique) : des bandes blanches à plat sur l'eau, le long
+ * de la ligne où le sol dessiné passe sous l'eau (dans chaque facette qu'elle traverse) : une bande pleine contre le
+ * rivage (`width`), puis, après `gap`, une bande plus fine (`outer`). Plus larges de loin, où les cases sont trois fois
+ * plus grandes. Rien ne bouge (« Réduire les animations » n'a rien à arrêter).
+ */
+export const FOAM = { lift: 0.035, width: 0.3, gap: 0.4, outer: 0.16, far: 1.8, color: 0xf2f4ee } as const;
+
+/** Le point où l'arête (p, q) passe le niveau de l'eau, ou rien. */
+const waterCross = (p: P3, q: P3): [number, number] | null => {
+  if (p[1] > 0 === q[1] > 0) return null;
+  const t = p[1] / (p[1] - q[1]);
+  return [p[0] + t * (q[0] - p[0]), p[2] + t * (q[2] - p[2])];
+};
+
+/** Les bandes d'écume d'une facette (a, b, c), ou leur seul nombre de triangles (sans `out`). */
+function foam(a: P3, b: P3, c: P3, detail: TileDetail, out: FacetBuilder | null): number {
+  const cuts = [waterCross(a, b), waterCross(b, c), waterCross(c, a)].filter((x): x is [number, number] => x !== null);
+  if (cuts.length !== 2) return 0;
+  // Vers le large : la pente de la facette, à plat, vers le bas.
+  const ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2];
+  const vx = c[0] - a[0], vy = c[1] - a[1], vz = c[2] - a[2];
+  let nx = uy * vz - uz * vy;
+  const ny = uz * vx - ux * vz;
+  let nz = ux * vy - uy * vx;
+  if (ny < 0) {
+    nx = -nx;
+    nz = -nz;
+  }
+  const l = Math.hypot(nx, nz);
+  if (l < 1e-9) return 0;
+  const dx = nx / l, dz = nz / l;
+  const k = detail === 'far' ? FOAM.far : 1;
+  const bands: [number, number][] = [
+    [0, FOAM.width * k],
+    [(FOAM.width + FOAM.gap) * k, (FOAM.width + FOAM.gap + FOAM.outer) * k],
+  ];
+  if (!out) return 2 * bands.length;
+  const [p, q] = cuts;
+  // Tournée vers le ciel : (p, p + w, q + w, q) dans un sens, ou l'inverse.
+  const ccw = (q[0] - p[0]) * dz - (q[1] - p[1]) * dx > 0;
+  const y = FOAM.lift;
+  for (const [from, to] of bands) {
+    const p0: P3 = [p[0] + dx * from, y, p[1] + dz * from];
+    const q0: P3 = [q[0] + dx * from, y, q[1] + dz * from];
+    const p1: P3 = [p[0] + dx * to, y, p[1] + dz * to];
+    const q1: P3 = [q[0] + dx * to, y, q[1] + dz * to];
+    if (ccw) out.quad(p0, p1, q1, q0, FOAM.color);
+    else out.quad(q0, q1, p1, p0, FOAM.color);
+  }
+  return 2 * bands.length;
+}
+
 /** Les deux niveaux de détail d'une tuile : chaque case (de près), ou une sur `TERRAIN.coarse` en chaque sens (de loin). */
 export type TileDetail = 'near' | 'far';
 
@@ -550,7 +603,7 @@ const SKIRT_DEPTH = 1.2;
  * Les facettes d'une tuile, ou leur seul nombre (sans `b`, rien n'est construit) : ses cases au niveau de détail
  * `detail`, sans celles qui sont sous l'eau, et une jupe sur son pourtour.
  */
-function drawTile(f: HeightField, tx: number, tz: number, detail: TileDetail, b: FacetBuilder | null): number {
+export function drawTile(f: HeightField, tx: number, tz: number, detail: TileDetail, b: FacetBuilder | null): number {
   const k = detail === 'near' ? 1 : TERRAIN.coarse;
   const n = TERRAIN.tileCells;
   const i0 = tx * n, j0 = tz * n;
@@ -564,6 +617,8 @@ function drawTile(f: HeightField, tx: number, tz: number, detail: TileDetail, b:
         ? [[p00, p01, p10], [p11, p10, p01]]
         : [[p00, p11, p10], [p00, p01, p11]];
       for (const [a, bb, c] of tris) {
+        // L'écume au rivage (lot 3), même sous une facette noyée : là où le sol passe sous l'eau.
+        count += foam(a, bb, c, detail, b);
         if (Math.max(a[1], bb[1], c[1]) < HIDDEN_BELOW) continue;
         count++;
         b?.triangle(a, bb, c, facetColor(a, bb, c));
