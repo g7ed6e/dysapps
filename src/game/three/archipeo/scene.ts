@@ -974,7 +974,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // banc s'en vont chacun dans son maillage, le temps de leur mouvement (jamais pendant une question ni une pose).
   let nefLookNow: NefLook = 0;
   let nefDrop: { start: number; from: NefLook; to: NefLook } | null = null;
-  let nefTrip: { start: number; done: () => void } | null = null;
+  let nefTrip: { start: number; done: () => void; outSince: number | null } | null = null;
+  /** La Nef qui part, ramenée à l'écran (sa place projetée). */
+  const nefSeen = new THREE.Vector3();
   const nefModelCache = new Map<string, Facets>();
   /** Des parties du voilier, dans le repère de la Nef, ou rien (pas encore chargé, ou aucune partie). */
   const nefModel = (names: readonly string[]): Facets | null => {
@@ -2864,7 +2866,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       done();
       return;
     }
-    nefTrip = { start: performance.now() / 1000, done };
+    nefTrip = { start: performance.now() / 1000, done, outSince: null };
     setGeometry(nefMesh, f);
     setGeometry(bancMesh, nefBanc);
     stepNefTrip(nefTrip.start);
@@ -2889,7 +2891,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     nefMesh.position.set(at.x, at.y, at.z);
     nefMesh.rotation.y = at.yaw;
     bancMesh.position.x = -at.bancShift;
-    if (u >= 1) finishNefTrip();
+    // Sortie de l'image (le haut du mât compris), elle finit son départ peu après.
+    nefSeen.set(at.x, at.y + 2, at.z).project(camera);
+    const out = nefSeen.z > 1 || Math.abs(nefSeen.x) > 1.15 || Math.abs(nefSeen.y) > 1.15;
+    if (!out) nefTrip.outSince = null;
+    else nefTrip.outSince ??= t;
+    if (u >= 1 || (nefTrip.outSince !== null && t - nefTrip.outSince >= NEF_DEPARTURE.outOfView)) finishNefTrip();
   };
   const setPlaces = (state: PlacesState, pose?: { place: PlaceId; parts: readonly PartShape[] }): boolean => {
     placesState = state;

@@ -46,6 +46,11 @@ interface Props {
   names: PortNames;
   /** « Y aller » d'une ligne de la fiche : Kéo y va d'un coup, son panneau s'ouvre à l'arrivée. */
   onGo(spot: Exclude<PortSpot, 'quai'>): void;
+  /**
+   * La Nef de l'Escale (GD-21), tant qu'elle n'est pas partie : une sixième ligne qui ouvre sa fiche, toujours au même
+   * endroit, même quand la Nef est au bord de l'image ou cachée (relecture du référent dys et du consultant UX UI).
+   */
+  onNef?(): void;
   onClose(): void;
 }
 
@@ -65,9 +70,9 @@ export function useOpenPanel(onClose: () => void): void {
 }
 
 /** Le panneau ouvert de l'Escale. */
-export function PortPanels({ panel, names, onGo, onClose }: Props) {
+export function PortPanels({ panel, names, onGo, onNef, onClose }: Props) {
   useOpenPanel(onClose);
-  if (panel === 'fiche') return <PortSheet names={names} onGo={onGo} onClose={onClose} />;
+  if (panel === 'fiche') return <PortSheet names={names} onGo={onGo} onNef={onNef} onClose={onClose} />;
   if (panel === 'succes') return <TrophySheet title={names.succes} stayInWorld onClose={onClose} />;
   if (panel === 'chantier')
     return (
@@ -110,8 +115,8 @@ const ROWS: readonly { spot: Exclude<PortSpot, 'quai'>; icon: AnyIconName; name:
   { spot: 'chantier', icon: 'hammer', name: 'Assembler' },
 ];
 
-/** La fiche du Port : cinq lignes, chacune « Y aller » à droite, sans compteur ni mise en avant. */
-function PortSheet({ names, onGo, onClose }: { names: PortNames; onGo: Props['onGo']; onClose(): void }) {
+/** La fiche du Port : cinq lignes (six avec la Nef), chacune « Y aller » à droite, sans compteur ni mise en avant. */
+function PortSheet({ names, onGo, onNef, onClose }: { names: PortNames; onGo: Props['onGo']; onNef?: Props['onNef']; onClose(): void }) {
   return (
     <Sheet id="panneau-escale" className="port-sheet" titleId="escale-titre" icon="ancre" title={names.nom} onClose={onClose} autoFocusClose>
       <ul className="port-rows">
@@ -125,6 +130,16 @@ function PortSheet({ names, onGo, onClose }: { names: PortNames; onGo: Props['on
             </button>
           </li>
         ))}
+        {onNef && (
+          <li className="port-row">
+            <span className="port-row-name">
+              <Icon name="ship" /> La Nef
+            </span>
+            <button type="button" className="button port-row-go" aria-label="Y aller : La Nef" onClick={onNef}>
+              <Icon name="footprints" /> Y aller
+            </button>
+          </li>
+        )}
       </ul>
     </Sheet>
   );

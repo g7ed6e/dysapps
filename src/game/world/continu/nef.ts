@@ -111,9 +111,8 @@ export function nefAtBerth(model: Facets): Facets {
 const C = {
   ber: 0xa9784a,
   berDark: 0x8a6440,
-  // La brume du large (consultant Archipéo, « Brume ») : claire, jamais blanche pure ; ses flancs un peu plus froids.
+  // La brume du large (consultant Archipéo, « Brume ») : claire, jamais blanche pure, sans socle d'une autre teinte.
   banc: 0xe5ebe3,
-  bancSide: 0xcfd8d4,
   // La bouée, à la couleur de la bande de la Nef.
   buoy: 0x2f6fa8,
   buoyTop: 0xf2eee4,
@@ -132,9 +131,11 @@ function berLocal(b: FacetBuilder, departed: boolean): void {
     b.box({ x, y: 0.05, z: z + dz }, [1.3, 0.16, 0.24], C.berDark, C.ber);
   }
   if (!departed) return;
-  // La bouée : un flotteur rond, son dessus clair, au nord du ber (le monde dit que la Nef est partie, sans texte).
-  b.prism({ x, y: -0.15, z: z - 2.8 }, 0.42, 0.34, 0.5, 8, C.buoy, C.buoyTop);
-  b.prism({ x, y: 0.35, z: z - 2.8 }, 0.08, 0.08, 0.7, 4, C.buoy);
+  // La bouée : un gros flotteur rond sur l'eau, au flanc ouest du ber, son dessus clair bien visible (le monde dit que la
+  // Nef est partie, sans texte ; relecture du directeur artistique et du consultant Archipéo).
+  const bx = x - 2.1;
+  b.prism({ x: bx, y: -0.25, z }, 0.66, 0.5, 0.7, 10, C.buoy, C.buoyTop);
+  b.prism({ x: bx, y: 0.45, z }, 0.12, 0.12, 0.9, 5, C.buoy);
 }
 
 /** Le ber (et la bouée après le départ), posé dans le monde. */
@@ -145,36 +146,57 @@ export function berFacets(look: NefLook): Facets {
 }
 
 /**
- * Le banc de brume du large (index.md, « L'obstacle » ; GD-21) : quatre gros volumes ronds et opaques, posés sur l'eau
+ * Le banc de brume du large (index.md, « L'obstacle » ; GD-21) : six gros volumes ronds et opaques, de tailles inégales,
+ * qui se chevauchent et se décalent vers le large (relecture du directeur artistique), posés sur l'eau
  * au-delà de la passe de l'ouest (plan6e.ts, `PASS`, de x −179 à −96), en travers du chenal de la Nef, plus hauts que la
  * terre la plus haute, immobiles. De forme, de place et de hauteur, il n'a rien du voile bas des terres fermées.
  * Toujours dessiné hors de la brume du lointain (la vue le met dans le maillage du lieu suivi) : on le voit de l'Escale.
  */
 export const NEF_BANC: readonly { x: number; z: number; r: number; h: number }[] = [
-  { x: -212, z: -34, r: 15, h: 21 },
-  { x: -206, z: -8, r: 17, h: 24 },
-  { x: -209, z: 20, r: 16, h: 22 },
-  { x: -215, z: 46, r: 14, h: 21 },
+  { x: -205, z: -32, r: 13, h: 20 },
+  { x: -215, z: -13, r: 19, h: 26 },
+  { x: -204, z: 6, r: 12, h: 21 },
+  { x: -213, z: 25, r: 17, h: 24 },
+  { x: -205, z: 44, r: 12, h: 21 },
+  { x: -224, z: 58, r: 15, h: 22 },
 ];
 
-/** Le profil d'un volume du banc : du pied sur l'eau au sommet arrondi (rayon et hauteur relatifs). */
+/** Le profil d'un volume du banc : du pied sur l'eau au sommet doux (rayon et hauteur relatifs). */
 const DOME: readonly (readonly [number, number])[] = [
   [1, 0],
-  [1, 0.3],
-  [0.82, 0.62],
-  [0.48, 0.88],
+  [0.97, 0.28],
+  [0.84, 0.56],
+  [0.6, 0.8],
+  [0.3, 0.95],
   [0, 1],
 ];
+
+/** Les pans d'un volume du banc. */
+const BANC_SIDES = 10;
 
 /** Le banc, dans le monde, décalé de `shift` vers l'ouest (son retrait au départ de la Nef). */
 export function bancFacets(shift = 0): Facets {
   const b = new FacetBuilder();
-  for (const v of NEF_BANC)
-    for (let k = 0; k < DOME.length - 1; k++) {
-      const [r0, y0] = DOME[k];
-      const [r1, y1] = DOME[k + 1];
-      b.prism({ x: v.x - shift, y: y0 * v.h - 1, z: v.z }, r0 * v.r, r1 * v.r, (y1 - y0) * v.h + (k === 0 ? 1 : 0), 7, k === 0 ? C.bancSide : C.banc);
+  NEF_BANC.forEach((v, i) => {
+    // Chaque volume tourné autrement : leurs pans ne s'alignent pas d'un volume à l'autre. Ses anneaux seuls, sans les
+    // disques cachés entre deux étages ; le pied un peu sous l'eau.
+    const yaw = i * 0.7;
+    const rings = DOME.map(([r, y], k) =>
+      Array.from({ length: BANC_SIDES }, (_, j): [number, number, number] => {
+        const a = yaw + (2 * Math.PI * j) / BANC_SIDES;
+        return [v.x - shift + r * v.r * Math.cos(a), k === 0 ? -1 : y * v.h, v.z + r * v.r * Math.sin(a)];
+      }),
+    );
+    for (let k = 0; k < rings.length - 1; k++) {
+      const lo = rings[k];
+      const hi = rings[k + 1];
+      for (let j = 0; j < BANC_SIDES; j++) {
+        const n = (j + 1) % BANC_SIDES;
+        if (k === rings.length - 2) b.triangle(lo[n], lo[j], hi[j], C.banc);
+        else b.quad(lo[n], lo[j], hi[j], hi[n], C.banc);
+      }
     }
+  });
   return b.build();
 }
 
@@ -190,13 +212,15 @@ export function nefTouched(p: Vec2): boolean {
 }
 
 /**
- * Le départ (GD-21) : la Nef glisse de son poste vers la passe, puis au large, et le banc se retire vers l'horizon ; six
- * secondes (huit au plus, index.md, « Le passage »), qu'un toucher termine ; d'un coup avec « Réduire les animations ».
+ * Le départ (GD-21) : la Nef glisse de son poste vers la passe, puis au large, et le banc se retire vers l'horizon ; huit
+ * secondes au plus (index.md, « Le passage »), qu'un toucher termine ; d'un coup avec « Réduire les animations ». La
+ * caméra ne bouge pas : le départ finit `outOfView` secondes après que la Nef a quitté l'image, l'élève ne regarde
+ * jamais un lagon vide (relecture du directeur artistique et de l'artiste technique 3D).
  */
-export const NEF_DEPARTURE = { seconds: 6, bancFrom: 0.3, bancShift: 170 } as const;
+export const NEF_DEPARTURE = { seconds: 8, bancFrom: 0.3, bancShift: 170, outOfView: 0.5 } as const;
 
 /** Le chemin de la Nef au départ, dans le monde : son poste, le lagon, la passe, le large, au-delà du banc. */
-function departureRoute(): Vec2[] {
+const ROUTE: readonly Vec2[] = (() => {
   const at = nefBerthWorld();
   return [
     { x: at.x, z: at.z },
@@ -206,13 +230,15 @@ function departureRoute(): Vec2[] {
     { x: -175, z: 8 },
     { x: -260, z: 8 },
   ];
-}
+})();
+const LEGS = ROUTE.slice(1).map((p, i) => Math.hypot(p.x - ROUTE[i].x, p.z - ROUTE[i].z));
+const ROUTE_LENGTH = LEGS.reduce((s, l) => s + l, 0);
 
 /**
  * Lente au départ, puis de plus en plus vite : la Nef quitte son ber et traverse le lagon sous les yeux de l'élève (la
- * caméra ne bouge pas : la moitié du temps dans l'image), puis file vers la passe et le large.
+ * caméra ne bouge pas), puis file vers la passe et le large (relecture du directeur artistique).
  */
-const easeIn = (u: number) => u ** 2.4;
+const easeIn = (u: number) => u ** 2.2;
 
 /**
  * Où est la Nef au départ, à la fraction `u` (0 à 1) du temps : sa place sur le chemin (à vitesse régulière en
@@ -220,15 +246,12 @@ const easeIn = (u: number) => u ** 2.4;
  */
 export function nefDeparture(u: number): { x: number; y: number; z: number; yaw: number; bancShift: number } {
   const t = Math.min(1, Math.max(0, u));
-  const route = departureRoute();
-  const lengths = route.slice(1).map((p, i) => Math.hypot(p.x - route[i].x, p.z - route[i].z));
-  const total = lengths.reduce((s, l) => s + l, 0);
-  let d = easeIn(t) * total;
+  let d = easeIn(t) * ROUTE_LENGTH;
   let i = 0;
-  while (i < lengths.length - 1 && d > lengths[i]) d -= lengths[i++];
-  const a = route[i];
-  const b = route[i + 1];
-  const f = lengths[i] > 0 ? Math.min(1, d / lengths[i]) : 1;
+  while (i < LEGS.length - 1 && d > LEGS[i]) d -= LEGS[i++];
+  const a = ROUTE[i];
+  const b = ROUTE[i + 1];
+  const f = LEGS[i] > 0 ? Math.min(1, d / LEGS[i]) : 1;
   const dx = b.x - a.x;
   const dz = b.z - a.z;
   // La proue du modèle regarde vers −z de son repère : un cap `yaw` la tourne vers (−sin, −cos).

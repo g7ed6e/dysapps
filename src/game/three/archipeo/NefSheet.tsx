@@ -14,7 +14,6 @@ import { planStatus, type GameState } from '../../engine';
 import { EarnLink } from '../../PlanSection';
 import { useVehicleBuilder } from '../../useVehicleBuilder';
 import { BlockIcon } from '../../Voxel';
-import { PastillesDeLaNef } from '../../WorldCard';
 import { voyageId } from '../../world/archipelago';
 import { nefLook, type NefLook } from '../../world/continu/nef';
 import { planCells } from '../../world/plans';
@@ -44,6 +43,26 @@ export function nefLookOf(state: GameState, kit: boolean): NefLook {
   return nefLook({ hull, all: planStatus(state, stage).complete, sail: kit, departed: state.world.links.includes(voyageId(stage.to)) });
 }
 
+/** Ce qu'il reste à achever, en mots courts, sous les signes de la fiche : « 1 lieu à achever. » */
+const nefWaitShort = (missing: number): string => `${missing} lieu${missing > 1 ? 'x' : ''} à achever.`;
+
+/**
+ * Les trois pastilles des temps de la Nef du monde continu (la coque, le mât, la voile ; GD-21) : fait (pleine, avec une
+ * coche), en cours (pleine), à venir (un anneau) ; l'état se lit à la forme, pas à la couleur seule. Les pastilles des
+ * formes de la grille (`PastillesDeLaNef`) compteraient le voilier, le dirigeable et l'aéronef : ici, un seul voyage.
+ */
+function PastillesDesTemps({ look }: { look: NefLook }) {
+  return (
+    <span className="signe nef-pastilles" aria-hidden="true">
+      {([1, 2, 3] as const).map((t) => (
+        <span key={t} className={`nef-pastille${t <= look ? ' faite' : t === look + 1 ? ' en-cours' : ''}`}>
+          {t <= look && <Icon name="check" />}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 /** Ce que dit la Nef qui a tous ses blocs et attend sa voile : ce qu'il reste à faire, jamais un manque. */
 export function nefWaitLabel(missing: number): string {
   return `La Nef a tous ses blocs ! Achève encore ${missing} lieu${missing > 1 ? 'x' : ''} pour hisser sa voile.`;
@@ -56,12 +75,14 @@ interface Props {
   missing: number;
   /** « Partir » : la page ferme la fiche, la Nef part, puis le voyage se fait. */
   onDepart(stage: VehicleStage): void;
+  /** « Carte » : la fiche se ferme, la Carte s'ouvre (les lieux à achever). */
+  onMap(): void;
   onClose(): void;
 }
 
 const cap = (s: string) => `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
 
-export function NefSheet({ kit, missing, onDepart, onClose }: Props) {
+export function NefSheet({ kit, missing, onDepart, onMap, onClose }: Props) {
   useOpenPanel(onClose);
   const { state } = useBlocland();
   const textes = useTextes();
@@ -90,7 +111,8 @@ export function NefSheet({ kit, missing, onDepart, onClose }: Props) {
   const manquants = manque ? manque[1] - (state.stock[manque[0]] ?? 0) : 0;
   const ou = manque ? (earnIsland(manque[0])?.name ?? whereToEarn(manque[0])) : '';
   const nom = stageWords(stage, textes.libelles.formesDeLaNef).name;
-  const etape = `Forme ${stage.stage} sur ${VEHICLE_STAGES.length}, ${nom.charAt(0).toLowerCase()}${nom.slice(1)}`;
+  const etape = `${cap(nom)}`;
+  const look = nefLookOf(state, kit);
   const phrase = ready
     ? `${titre} est prête : pars vers les ${textes.archipels[stage.to]} quand tu veux.`
     : waiting
@@ -98,18 +120,24 @@ export function NefSheet({ kit, missing, onDepart, onClose }: Props) {
       : manque
         ? `${status.done} blocs posés sur ${status.total}. Il manque ${blockCount(manque[0], manquants)}, à gagner dans ${ou}.`
         : `${status.done} blocs posés sur ${status.total}.`;
-  // En signes tant qu'on construit ; une phrase quand elle attend sa voile ou qu'elle est prête.
-  const enSignes = !ready && !waiting;
+  // En signes tant qu'on construit ou qu'elle attend sa voile (le moins de texte possible, consultant UX UI) ; une
+  // phrase quand elle est prête.
+  const enSignes = !ready;
   return (
     <MissionSheet id="panneau-nef" className="nef-sheet" icon="ship" title={titre} onClose={onClose}>
       {enSignes ? (
         <>
           <p className="visually-hidden">{frenchTypography(`${etape}. ${phrase}`)}</p>
           <p className="world-fiche-phrase fiche-signes" aria-hidden="true">
-            <PastillesDeLaNef stage={stage.stage} />{' '}
+            <PastillesDesTemps look={look} />{' '}
             <span className="signe">
               <Icon name="cube" /> {status.done}/{status.total}
             </span>{' '}
+            {waiting && (
+              <span className="signe">
+                <Icon name="map" /> {missing}
+              </span>
+            )}
             {manque && (
               <span className="signe">
                 <BlockIcon top={BLOCKS[manque[0]].top} side={BLOCKS[manque[0]].side} size={28} /> {manquants}
@@ -121,16 +149,26 @@ export function NefSheet({ kit, missing, onDepart, onClose }: Props) {
               {blockCount(manque[0], manquants)} <EarnLink block={manque[0]} here={NEF_PORT} />.
             </p>
           )}
+          {waiting && (
+            <p className="world-fiche-phrase" aria-hidden="true">
+              <Syllabified text={frenchTypography(nefWaitShort(missing))} />
+            </p>
+          )}
         </>
       ) : (
         <p className="world-fiche-phrase">
-          <PastillesDeLaNef stage={ready ? stage.stage + 1 : stage.stage} /> <Syllabified text={frenchTypography(phrase)} />
+          <PastillesDesTemps look={look} /> <Syllabified text={frenchTypography(phrase)} />
         </p>
       )}
       <div className="nef-sheet-actions">
         {ready ? (
           <button ref={action} type="button" className="button primary" aria-label={`Partir vers les ${textes.archipels[stage.to]}`} onClick={() => onDepart(stage)}>
             <Icon name="ship" /> Partir
+          </button>
+        ) : waiting ? (
+          // Achever un lieu se fait ailleurs : la Carte montre les lieux et leur état.
+          <button ref={action} type="button" className="button" onClick={onMap}>
+            <Icon name="map" /> Carte
           </button>
         ) : (
           ship.canFill && (

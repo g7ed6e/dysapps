@@ -58,6 +58,6 @@ describe('la Nef du monde continu (GD-21)', () => {
     const { ber, banc } = nefSiteTriangles();
     expect(berFacets(0).triangles).toBeLessThan(ber);
     expect(banc).toBe(bancFacets(30).triangles);
-    expect(ber + banc).toBeLessThan(600);
+    expect(ber + banc).toBeLessThan(800);
   });
 });

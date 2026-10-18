@@ -384,6 +384,9 @@ export default function OpenWorldPage() {
     return () => {
       w.dispose();
       world.current = null;
+      // Une scène refaite pendant le départ de la Nef (l'écran tourné) ne le finit pas : la page reprend la main, la Nef
+      // revient sur son ber, rien n'est parti (relecture de l'expert frontend).
+      setDeparting(false);
       if (window.__dysappsMondeOuvert?.info === w.info) delete window.__dysappsMondeOuvert;
     };
     // La scène est faite une fois (et refaite si l'appareil change « Réduire les animations ») ; `start` ne change pas.
@@ -997,9 +1000,18 @@ export default function OpenWorldPage() {
         {panel && !playing && (panel === 'nef' || textes.depart) && (
           <div ref={panelRef} className={`open-world-panel open-world-panel-${panel}`}>
             {panel === 'nef' ? (
-              <NefSheet kit={sail.kit} missing={sail.missing} onDepart={departNef} onClose={closePanel} />
+              <NefSheet
+                kit={sail.kit}
+                missing={sail.missing}
+                onDepart={departNef}
+                onMap={() => {
+                  setPanel(null);
+                  setMapOpen(true);
+                }}
+                onClose={closePanel}
+              />
             ) : (
-              <PortPanels panel={panel} names={textes.depart!} onGo={goPort} onClose={closePanel} />
+              <PortPanels panel={panel} names={textes.depart!} onGo={goPort} onNef={nefLookNow === 4 ? undefined : () => setPanel('nef')} onClose={closePanel} />
             )}
           </div>
         )}
