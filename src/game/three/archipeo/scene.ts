@@ -377,9 +377,10 @@ const CAMERA_TURN = { step: Math.PI / 4, seconds: 0.35, rings: Math.PI / 8, dead
  * « caméra libre ») : deux doigts la font tourner autour du point visé de la scène ; les objets des réponses restent
  * sous leurs boutons (ils se reposent au sol sous eux à chaque image du geste), le décor tourne. Hors de la pose
  * prévue, elle garde `clearance` unités devant tout volume (le lieu, le décor de près) et au-dessus du sol, sans
- * s'approcher à moins de `minDistance` du point visé.
+ * s'approcher à moins de `minDistance` du point visé. Quand un volume l'arrêterait à moins de `keep` de sa distance (un
+ * lieu haut juste derrière la scène), elle monte d'abord au-dessus, par crans de `climb`, jusqu'à `topElevation`.
  */
-const SCENE_TURN = { clearance: 1, minDistance: 4, keoHead: 1.3, habitantHead: 1.5, margin: 0.3, tries: 8, rise: 0.6 } as const;
+const SCENE_TURN = { clearance: 1, minDistance: 4, keoHead: 1.3, habitantHead: 1.5, margin: 0.3, tries: 8, rise: 0.6, keep: 0.7, climb: (8 * Math.PI) / 180, climbs: 5, topElevation: (65 * Math.PI) / 180 } as const;
 /**
  * La finesse du rendu : l'anticrénelage reste (la scène est légère, quelques milliers de triangles) ; le rapport de
  * pixels est plafonné à 2, puis ramené à 1 si l'appareil peine (des images de plus de 45 ms, trente de suite), comme
@@ -2496,11 +2497,26 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     turnDir.set(pose.position.x - t.x, pose.position.y - t.y, pose.position.z - t.z);
     const dist = turnDir.length();
     turnDir.normalize();
-    raycaster.set(turnFrom, turnDir);
-    raycaster.far = dist + SCENE_TURN.clearance;
     // Les maillages montrés seulement (un lieu effacé le temps de la scénette ne retient pas la caméra).
-    const hit = raycaster.intersectObjects([placesMesh, landmarkMesh, decorMesh].filter((m) => m.visible), false).find((h) => h.distance > 0.5);
-    raycaster.far = Infinity;
+    const shown = [placesMesh, landmarkMesh, decorMesh].filter((m) => m.visible);
+    const obstacle = () => {
+      raycaster.set(turnFrom, turnDir);
+      raycaster.far = dist + SCENE_TURN.clearance;
+      const h = raycaster.intersectObjects(shown, false).find((i) => i.distance > 0.5);
+      raycaster.far = Infinity;
+      return h;
+    };
+    let hit = obstacle();
+    // Un volume haut juste derrière la scène (la tour du Guet) : la caméra monte au-dessus, à la même distance, plutôt
+    // que de s'approcher jusque dans lui ; au plus `SCENE_TURN.climbs` crans de `climb`.
+    const horizontal = Math.hypot(turnDir.x, turnDir.z);
+    let elevation = Math.atan2(turnDir.y, horizontal);
+    for (let k = 0; k < SCENE_TURN.climbs && hit && hit.distance - SCENE_TURN.clearance < dist * SCENE_TURN.keep; k++) {
+      elevation = Math.min(SCENE_TURN.topElevation, elevation + SCENE_TURN.climb);
+      const c = Math.cos(elevation) / horizontal;
+      turnDir.set(turnDir.x * c, Math.sin(elevation), turnDir.z * c);
+      hit = obstacle();
+    }
     let d = hit ? Math.max(SCENE_TURN.minDistance, Math.min(dist, hit.distance - SCENE_TURN.clearance)) : dist;
     let rise = 0;
     const place = () => {
