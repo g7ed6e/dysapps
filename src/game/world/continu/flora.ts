@@ -5,6 +5,7 @@
 // sous elle plus sombre, du côté opposé au soleil. Ils entrent dans les tuiles du terrain (./tiles.ts) : aucun maillage
 // ni appel de plus, et ce qui est loin ou hors champ tombe avec sa tuile. Leur place vient du hasard fixe de chaque
 // case (`hash2`) : le même monde à chaque construction. Rien ne bouge. Code pur.
+import { keptClearForDetour } from './detours';
 import { FacetBuilder, boundsOf, type Facets, type Placement } from './facets';
 import { distance, distanceToPolyline, hash2, type Vec2 } from './geometry';
 import { LOOKOUT_RAMP, PATH_EDGES, PATH_NODES, PLACES, PORT, TERRAIN } from './plan6e';
@@ -134,6 +135,8 @@ export function floraOf(field: HeightField, tx: number, tz: number): readonly Fl
 function pick(field: HeightField, p: Vec2, roll: number, look: number): FloraItem | null {
   const d = landDistance(p);
   if (d < 0.3) return null;
+  // Les Détours (lot 2 du déplacement libre) : leurs collines nues, leurs sentes et le bord d'eau toujours libres.
+  if (keptClearForDetour(p)) return null;
   const bank = straitClearance(p);
   if (bank < FLORA_KEEP.bank) return null;
   const port = PORT.toLocal(p);

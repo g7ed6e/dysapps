@@ -2822,6 +2822,16 @@
     padding: 0.4rem 0.6rem;
   }
 }
+/* En haut du monde (le nom d'un Détour, et toute phrase sur un téléphone) : entre les deux colonnes de boutons des coins,
+   jamais dessus (0,6rem du bord, 56 px de bouton, 8 px d'écart), le nom passé sur deux lignes s'il le faut. */
+.open-world-said.on-top {
+  top: calc(8px + env(safe-area-inset-top, 0px));
+  bottom: auto;
+}
+.open-world-said.on-top,
+.world-stage .open-world-said:not(.on-map) {
+  max-width: min(30rem, calc(100vw - 2 * (0.6rem + 64px) - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
+}
 .open-world-said[data-shown='non'] {
   padding: 0;
   border: 0;

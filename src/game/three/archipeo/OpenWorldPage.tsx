@@ -32,7 +32,8 @@ import { getBiome, type BiomeId } from '../../biomes';
 import { cheminDeRevision, revisionsDeLIle, usePlusTard } from '../../reminders';
 import { exercisesOf, questProgress } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
-import { playWoodTap } from '../../sound';
+import { playDetourWind, playWhaleBlow, playWoodTap } from '../../sound';
+import { detourById, type DetourId } from '../../world/continu/detours';
 import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
 import { payableBlocks } from '../../world/archipelago';
 import { START_LAND, isBridgeSpot, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
@@ -66,7 +67,7 @@ import './openWorld.css';
 declare global {
   interface Window {
     /** Le monde ouvert, pour les captures et les mesures (en développement, ou avec `?mesures`). */
-    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt' | 'remiseView'>;
+    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt' | 'remiseView' | 'standAt' | 'turn'>;
   }
 }
 
@@ -87,7 +88,7 @@ const missionTitle = (island: string, mission: string) => getBiome(island)?.exer
 
 export default function OpenWorldPage() {
   const { biomeId } = useParams();
-  const { state, linkLand, ensureOpenWorldLands, deliver, tapStory } = useBlocland();
+  const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour } = useBlocland();
   const textes = useTextes();
   const { settings, speak } = useSettings();
   // La voix de l'arrivée, lue par la scène faite une fois (`onArrive`) : le réglage du moment.
@@ -239,7 +240,13 @@ export default function OpenWorldPage() {
   // « Le pont est rebâti. », affichée un moment après le toc (et dite, si la voix est active), suivie de la phrase d'un
   // pont devenu reliable s'il y en a (« Le pont des Crêtes peut être rebâti. ») ; `n` : un autre pont ; `after` : dans
   // combien de millisecondes (jamais en même temps que le toc).
-  const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number } | null>(null);
+  // Le nom d'un Détour où Kéo s'est arrêté s'écrit de même, en haut (`top`), et part dès qu'il en repart (`detour`).
+  const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number; top?: boolean; detour?: DetourId } | null>(null);
+  // Le Détour où Kéo s'est arrêté (GD-20, déplacement libre, lot 2), ou aucun : au cairn éteint, « Rallumer ».
+  const [detourHere, setDetourHere] = useState<DetourId | null>(null);
+  // Ce que fait la page à l'arrivée sur un Détour, lu par la scène faite une fois : le réglage et l'état du moment.
+  const detourArrive = useRef<(id: DetourId | null) => void>(() => undefined);
+  const soundsOn = useRef(settings.sounds);
   // Où va le focus quand la fiche d'une terre se ferme (le nom d'un de ses lieux, qu'on vient de relier, sur la Carte),
   // sinon « Carte ».
   const focusAfter = useRef<string | null>(null);
@@ -333,6 +340,10 @@ export default function OpenWorldPage() {
         setPanel(null);
         setLieu({ place: placeId, focus: null });
       },
+      onDetour: (id) => detourArrive.current(id),
+      onWhaleBlow: () => {
+        if (soundsOn.current) playWhaleBlow();
+      },
       onLocks: (locks) => placeLocks(locksRef.current, locks),
       onSigns: (signs) => placeSigns(signsRef.current, signs, layout),
       onYaw: (yaw) => {
@@ -359,7 +370,7 @@ export default function OpenWorldPage() {
     });
     world.current = w;
     setReady((n) => n + 1);
-    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, goToPort: w.goToPort, assemble: w.assemble, skip: w.skip, info: w.info, portAt: w.portAt, remiseView: w.remiseView };
+    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, goToPort: w.goToPort, assemble: w.assemble, skip: w.skip, info: w.info, portAt: w.portAt, remiseView: w.remiseView, standAt: w.standAt, turn: w.turn };
     return () => {
       w.dispose();
       world.current = null;
@@ -367,6 +378,26 @@ export default function OpenWorldPage() {
     };
     // La scène est faite une fois (et refaite si l'appareil change « Réduire les animations ») ; `start` ne change pas.
   }, [start, reduceMotion, layout]);
+
+  // Les Détours (GD-20, déplacement libre, lot 2) : arrivé, Kéo le trouve (sa sente reste tracée), le vent souffle un
+  // instant et son nom s'écrit une fois, en haut, et se dit ; reparti, le nom reste écrit ses quatre secondes, pour
+  // l'élève qui n'a pas fini de le lire (référent dys). Rien d'autre : ni compteur, ni récompense.
+  useEffect(() => {
+    soundsOn.current = settings.sounds;
+    detourArrive.current = (id) => {
+      setDetourHere(id);
+      if (!id) return;
+      findDetour(id);
+      if (settings.sounds) playDetourWind();
+      setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [detourById(id).name], after: 0, top: true, detour: id }));
+    };
+  }, [findDetour, settings.sounds]);
+  useEffect(() => {
+    world.current?.setDetours(state.world.detours ?? [], state.world.detoursLit ?? []);
+  }, [state.world.detours, state.world.detoursLit, ready]);
+  // Le cairn éteint où se tient Kéo, à rallumer, ou rien.
+  const cairnToLight = detourHere !== null && detourById(detourHere).kind === 'cairn' && !(state.world.detoursLit ?? []).includes(detourHere) ? detourHere : null;
+  const relightHere = cairnToLight !== null;
 
   useEffect(() => {
     world.current?.setMark(nextPlace?.id ?? null);
@@ -966,7 +997,7 @@ export default function OpenWorldPage() {
             zone reste dans la page, vide le reste du temps, pour que les lecteurs d'écran annoncent la phrase ; le temps
             qu'elle est écrite, un haut-parleur la fait réentendre, et le toucher la garde écrite (référent dys). Sur la Carte, elle se tient en haut,
             hors des noms des lieux du sud. */}
-        <div className={`open-world-said${mapOpen ? ' on-map' : ''}`} data-shown={saidShown && !playing ? 'oui' : 'non'} data-etape={saidStep} onPointerDown={holdSaid} onFocus={holdSaid}>
+        <div className={`open-world-said${mapOpen ? ' on-map' : said?.top ? ' on-top' : ''}`} data-shown={saidShown && !playing ? 'oui' : 'non'} data-etape={saidStep} onPointerDown={holdSaid} onFocus={holdSaid}>
           <p role="status">{saidShown && !playing && said ? said.lines.map((line, i) => (
                 // Sur un petit écran, l'autre phrase reste lue par le lecteur d'écran, cachée à la vue.
                 <span key={line} className={small && i !== saidStep ? 'visually-hidden' : undefined}>
@@ -1039,11 +1070,17 @@ export default function OpenWorldPage() {
           <div className="open-world-go">
             {/* La phrase de ce que porte la suggestion chez un habitant (sa commande, l'étape d'entraide) ; « Aucune
                 mission » seulement quand rien n'attend. */}
-            {!walking && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
-            {!next && !suggestedCmd && !walking && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
+            {!walking && !relightHere && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
+            {!next && !suggestedCmd && !walking && !relightHere && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
             {walking ? (
               <button type="button" className="button" onClick={() => world.current?.skip()}>
                 <Icon name="play" /> Passer le trajet
+              </button>
+            ) : relightHere ? (
+              // Au cairn éteint d'un Détour, un seul geste, à la place du bouton du monde (comme « Livrer ») ; ensuite,
+              // la flamme reste, sans phrase ni « bravo ».
+              <button type="button" className="button primary" onClick={() => cairnToLight && lightDetour(cairnToLight)}>
+                <Icon name="flame" /> Rallumer
               </button>
             ) : deliverHere ? (
               <button type="button" className="button primary" onClick={goNext}>

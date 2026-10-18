@@ -46,6 +46,7 @@ Les règles dys de l’application ([Principes](../../www/pedagogie/principes.md
 
 - **Au bon moment et au bon endroit** : la réponse d’abord, la célébration ensuite, jamais sur la question ; un message d’erreur dit quoi faire ensuite (Nielsen, heuristique 9 « aider à reconnaître et corriger les erreurs »).
 - **Court et toujours pareil** : les mots de résultat de l’application, pas une phrase nouvelle à chaque fois.
+- **Le temps de lire** : un message qui ne demande aucune action (le nom d’un Détour du monde ouvert) reste affiché toute sa durée, même si l’élève repart (référent dys, 18 octobre 2026).
 
 ### Deux univers, une interface
 

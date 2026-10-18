@@ -3,6 +3,7 @@
 // 18 appels avec quatre lieux (prototype-6e.md, § 3) ; relevée par le mainteneur à 75 000 triangles le 16 octobre 2026
 // (GD-20, L6b : « Un iPad 9e génération doit pouvoir faire tourner le jeu, donc on est large en triangles pour
 // l'instant »), puis à 86 000 le 17 octobre 2026 (GD-20, point 3, lot 3), les appels inchangés. Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
+import { FAUNA, birdFacets, detourTrianglesAtMost, spoutFacets, whaleFacets } from './detours';
 import { WORLD_FOG } from './camera';
 import { bridgeLay } from './bridgeLay';
 import { bridgeFacets, bridgeMapMark } from './bridges';
@@ -30,6 +31,9 @@ import { veilFacets } from './veil';
  */
 const KEO = { triangles: 3170, calls: 5 };
 
+/** La baleine, son souffle et les cinq oiseaux du bord d'eau (GD-20, déplacement libre, lot 2) : un maillage. */
+const FAUNA_COST = { triangles: whaleFacets().triangles + spoutFacets().triangles + FAUNA.birds * birdFacets().triangles, calls: 1 };
+
 /** Le dôme du ciel (GD-20, point 3, lot 3) : un maillage, dessiné d'abord, sur la Carte aussi. */
 const SKY = { triangles: skyDome(1).triangles, calls: 1 };
 
@@ -42,7 +46,7 @@ const SKY = { triangles: skyDome(1).triangles, calls: 1 };
 export const OPEN_WORLD_BUDGET = { triangles: 86_000, calls: 20 } as const;
 
 export interface OpenWorldCost {
-  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
+  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
   triangles: number;
   calls: number;
 }
@@ -229,6 +233,11 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
     // Les aménagements (GD-20, point 4, lot L0) : les dix-neuf posés, dans le maillage des lieux, aucun appel de plus ;
     // leurs triangles comptés par la vue, qui trace leurs dessins (three/archipeo/amenagements.ts, `amenagementsCost`).
     { poste: 'aménagements', triangles: amenagements, calls: 0 },
+    // Les Détours (GD-20, déplacement libre, lot 2) : leurs pierres, le cairn allumé et toutes les sentes tracées, au pire,
+    // dans le maillage des lieux, aucun appel de plus ; la baleine et les oiseaux du bord d'eau, un maillage, montré
+    // seulement près du bord d'eau.
+    { poste: 'détours', triangles: detourTrianglesAtMost(), calls: 0 },
+    { poste: 'faune', ...FAUNA_COST },
     { poste: 'pose', ...poseCost(height) },
     { poste: 'brume', triangles: veilFacets(LINKED_LANDS).triangles, calls: 1 },
     { poste: 'kéo', ...KEO },
@@ -251,5 +260,10 @@ export function mapCost(amenagements: number): { triangles: number; calls: numbe
   const places = placesCost();
   const veil = veilFacets(LINKED_LANDS).triangles;
   const marks = LINKED_LANDS.reduce((s, l) => s + bridgeMapMark(l).triangles, 0);
-  return { triangles: SKY.triangles + far + 2 + paths + places.triangles + amenagements + marks + veil + KEO.triangles, calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls };
+  // Les Détours, leurs sentes tracées comprises, dans le maillage des lieux ; la baleine et les oiseaux, au bord d'eau.
+  const detours = detourTrianglesAtMost();
+  return {
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + amenagements + detours + FAUNA_COST.triangles + marks + veil + KEO.triangles,
+    calls: SKY.calls + 1 + 1 + 1 + places.calls + FAUNA_COST.calls + 1 + KEO.calls,
+  };
 }
