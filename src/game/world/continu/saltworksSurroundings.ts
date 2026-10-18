@@ -67,7 +67,7 @@ const groundAt = (x: number, z: number): number => Math.max(0, heightAt({ x, z }
  * Les bassins de l'ouest, dans le repère du sol de la scène (x à l'est, z au sud) : leurs bords ; `dry`,
  * le bassin asséché. Ils prolongent le bassin de l'item (le muret de Kéo s'arrête à 6,2 de part et d'autre).
  */
-export const SALINE_POOLS = [
+const SALINE_POOLS = [
   { x0: -10.1, x1: -6.4, z0: -1.6, z1: 1.3, dry: false },
   { x0: -10.1, x1: -6.4, z0: -5.4, z1: -1.6, dry: true },
   { x0: -10.1, x1: -6.4, z0: -9.0, z1: -5.4, dry: false },

@@ -401,13 +401,14 @@ const SITES: Record<PlaceId, ScenetteSite> = {
     pitch: (20 * Math.PI) / 180,
   },
   // La scène reste proche (réserve du directeur artistique) : Kéo, les caisses et le docker, la barque dessous ; la
-  // flèche de la grue peut passer sous le panneau.
+  // flèche de la grue peut passer sous le panneau. Plus près et plus bas depuis la reprise du lieu (directeur artistique,
+  // évaluation du 18 octobre 2026 : « caméra trop haute et loin ») : la maison à colombages entre dans le cadre, derrière.
   quais: {
     floor: quayFloor,
-    keo: { dx: -4.3, dz: 0, scale: 0.6, yaw: Math.PI - 0.45 },
-    habitant: { dx: 3.5, dz: 0 },
-    subject: { halfWidth: 4.9, bottom: -1.1, top: 2.5, depth: 0.2 },
-    pitch: (24 * Math.PI) / 180,
+    keo: { dx: -4, dz: 0, scale: 0.6, yaw: Math.PI - 0.45 },
+    habitant: { dx: 3.4, dz: 0 },
+    subject: { halfWidth: 4.4, bottom: -1.1, top: 3.3, depth: 0.2 },
+    pitch: (18 * Math.PI) / 180,
   },
   // Les Filets (lot 4) : Kéo et la pêcheuse sur le plancher de séchage, de part et d'autre du filet étendu ; le séchoir
   // du lieu derrière eux (son pan raccommodé à la réussite).

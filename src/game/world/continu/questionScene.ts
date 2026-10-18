@@ -15,8 +15,14 @@ import { heightAt, standingHeight } from './terrain';
 
 const C = {
   deck: 0xa9784a,
-  /** Le dessus du quai, plus clair : les caisses s'y détachent. */
-  quay: 0xd2ab78,
+  /**
+   * Le dessus du quai, plus clair : les caisses s'y détachent ; sa tranche, du même bois (reprise des Quais : des planches
+   * claires sur leurs pieux, pas une dalle brune). Le plancher de la barque, à fleur d'eau.
+   */
+  quay: 0xdcc08f,
+  quaySide: 0xb08658,
+  boatFloor: 0xc08c58,
+  boatInside: 0xd0a26a,
   crane: 0xd9a441,
   rope: 0x5a4632,
   deckSide: 0x8a6440,
@@ -1231,6 +1237,27 @@ function barque(b: FacetBuilder, at: Vec3, length: number, width: number): void 
   for (const dx of [-length / 2 + 0.6, length / 2 - 0.6]) b.box({ x: at.x + dx, y: y + 0.42, z: at.z }, [0.34, 0.1, width - 2 * wall], C.newWood);
 }
 
+/**
+ * Le plancher de la barque de la scène des Quais, à fleur d'eau (évaluation du directeur artistique : la barque se lisait
+ * comme un cadre vide, son fond sous l'eau) : un aplat de bois entre les bordés, et deux joints le long de la coque.
+ */
+function boatFloor(b: FacetBuilder, at: Vec3, length: number, width: number): void {
+  const wall = 0.22, y = at.y + 0.015;
+  const x0 = at.x - length / 2 + wall, x1 = at.x + length / 2, z0 = at.z - width / 2 + wall, z1 = at.z + width / 2 - wall;
+  b.quad([x0, y, z1], [x1, y, z1], [x1, y, z0], [x0, y, z0], C.boatFloor);
+  // Le fond de la proue, jusqu'à un pas de sa pointe.
+  b.triangle([x1, y, z1], [x1 + BOW_SHARE * width - 0.3, y, at.z], [x1, y, z0], C.boatFloor);
+  for (const k of [-1, 1]) {
+    const z = at.z + (k * (z1 - z0)) / 6;
+    b.quad([x0, y + 0.005, z + 0.02], [x1, y + 0.005, z + 0.02], [x1, y + 0.005, z - 0.02], [x0, y + 0.005, z - 0.02], C.deckSide);
+  }
+  // Le bordé vu de l'intérieur, en bois (le bleu reste dehors) : les deux flancs et le tableau arrière.
+  const top = at.y - 0.3 + 0.75 - 0.01, e = 0.005;
+  b.quad([x0, y, z0 + e], [x1, y, z0 + e], [x1, top, z0 + e], [x0, top, z0 + e], C.boatInside);
+  b.quad([x1, y, z1 - e], [x0, y, z1 - e], [x0, top, z1 - e], [x1, top, z1 - e], C.boatInside);
+  b.quad([x0 + e, y, z1], [x0 + e, y, z0], [x0 + e, top, z0], [x0 + e, top, z1], C.boatInside);
+}
+
 /** La longueur de la proue, en part de la largeur de la coque : une pointe courte. */
 const BOW_SHARE = 0.5;
 /** Le côté de la vitre de la lanterne de proue. */
@@ -1761,7 +1788,7 @@ function quai(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'quai' }>, answ
   const edge = o.z + QUAY.depth / 2;
   const qd = Math.max(QUAY.depth, front.d + gap + back.d + 0.5 + QUAY.strip);
   const qw = Math.max(QUAY.width, Math.max(front.w, back.w) + 4);
-  b.box({ x: o.x, y: o.y - PLATFORM_DEPTH, z: edge - qd / 2 }, [qw, PLATFORM_DEPTH, qd], C.deckSide, C.quay);
+  b.box({ x: o.x, y: o.y - PLATFORM_DEPTH, z: edge - qd / 2 }, [qw, PLATFORM_DEPTH, qd], C.quaySide, C.quay);
   // Les blocs de caisses, au milieu du quai, un peu à gauche (le docker et la grue sont à droite).
   const x0 = o.x - 0.4 - Math.max(front.w, back.w) / 2 + CRATE_PITCH / 2;
   const zFront = edge - QUAY.strip - front.d + CRATE_PITCH / 2;
@@ -1769,6 +1796,7 @@ function quai(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'quai' }>, answ
   // La barque dans le bassin, contre le bord de pierre.
   const boat = quayBoat(scene, o);
   barque(b, boat.at, boat.length, boat.width);
+  boatFloor(b, boat.at, boat.length, boat.width);
   const onBoat = boat.cargo;
   // La grue au bout est du quai : son pied, son mât, sa flèche vers l'ouest au-dessus du quai, la corde et le crochet.
   // Tant que le haut des Quais (leur grue) n'est pas posé (`posed`), son pied de pierre seul : la grue attend.

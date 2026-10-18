@@ -357,7 +357,13 @@ describe('Le quai du docker', () => {
   const quay = scenetteKeo('quais').at;
 
   it('le docker, en quelques volumes, se tient sur le quai, à droite de Kéo, sa caisse et son crochet en main', () => {
-    const docker = scenetteDecor('quais');
+    // Le décor de près porte aussi les abords du lieu (./quaisSurroundings.ts, faits après le docker, avant les ombres au
+    // pied) : on les retire pour juger le docker seul.
+    const decor = scenetteDecor('quais');
+    const surroundings = surroundingsTriangles('quais');
+    const own = decor.triangles - surroundings - 14;
+    const positions = new Float32Array([...decor.positions.slice(0, own * 9), ...decor.positions.slice((own + surroundings) * 9)]);
+    const docker = { ...decor, positions, triangles: positions.length / 9 };
     expect(docker.triangles).toBeGreaterThan(0);
     expect(docker.triangles).toBeLessThan(1500);
     const b = boundsOf(docker);
