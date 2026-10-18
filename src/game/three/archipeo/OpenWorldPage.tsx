@@ -993,7 +993,7 @@ export default function OpenWorldPage() {
             zone reste dans la page, vide le reste du temps, pour que les lecteurs d'écran annoncent la phrase ; le temps
             qu'elle est écrite, un haut-parleur la fait réentendre, et le toucher la garde écrite (référent dys). Sur la Carte, elle se tient en haut,
             hors des noms des lieux du sud. */}
-        <div className={`open-world-said${mapOpen || said?.top ? ' on-map' : ''}`} data-shown={saidShown && !playing ? 'oui' : 'non'} data-etape={saidStep} onPointerDown={holdSaid} onFocus={holdSaid}>
+        <div className={`open-world-said${mapOpen ? ' on-map' : said?.top ? ' on-top' : ''}`} data-shown={saidShown && !playing ? 'oui' : 'non'} data-etape={saidStep} onPointerDown={holdSaid} onFocus={holdSaid}>
           <p role="status">{saidShown && !playing && said ? said.lines.map((line, i) => (
                 // Sur un petit écran, l'autre phrase reste lue par le lecteur d'écran, cachée à la vue.
                 <span key={line} className={small && i !== saidStep ? 'visually-hidden' : undefined}>
