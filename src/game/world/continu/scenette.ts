@@ -1626,13 +1626,13 @@ const SALT_PAN = { half: 6.2, front: 1.4, water: 1.8, low: 0.15, rise: 0.35 } as
 
 /**
  * Le plancher de séchage des Filets, de part et d'autre de la plate-forme du filet (la scène de l'item), à sa hauteur :
- * Kéo à l'ouest, la pêcheuse à l'est. `center` : la plate-forme aussi (la réussite, quand le filet a quitté le
- * plancher).
+ * Kéo à l'ouest, la pêcheuse à l'est. `center` : la plate-forme seule, à la place de celle de l'item (la réussite,
+ * quand le filet a quitté le plancher ; les deux côtés y sont déjà, avec le décor de près).
  */
 function dryingDeck(b: FacetBuilder, center: boolean): void {
   const o = floorOf('filets');
   const depth = sceneDepth('filets');
-  for (const side of center ? [-1, 0, 1] : [-1, 1]) {
+  for (const side of center ? [0] : [-1, 1]) {
     const w = side === 0 ? FILET_DECK.inner * 2 : FILET_DECK.outer - FILET_DECK.inner;
     const x = o.x + side * (FILET_DECK.inner + FILET_DECK.outer) / 2;
     b.box({ x, y: o.y - depth, z: o.z }, [w, depth, FILET_DECK.depth], C.woodSide, C.wood);

@@ -685,8 +685,17 @@ describe('Une scénette se joue sur le lieu tel qu’il est bâti (GD-20, lot 1)
       expect(scenetteFinale('filets', scene, 0.8, true, m), m).toBeNull();
       expect(scenetteFinale('filets', { kind: 'enclos' }, 0.8, false, m), m).toBeNull();
     }
-    expect(boundsOf(bare.decor).max[1]).toBeLessThan(boundsOf(built.decor).max[1]);
-    expect(boundsOf(bare.decor).max[1]).toBeLessThan(sceneSpot('filets').y + 1.5);
+    // Le haut du décor autour du plancher et du séchoir (à moins de 7 du point de la scène) : les abords du lieu, la
+    // cabane et le filet tendu de l'anse, se tiennent plus loin (./filetsSurroundings.ts).
+    const o = sceneSpot('filets');
+    const topNear = (f: { positions: Float32Array }) => {
+      let top = -Infinity;
+      for (let k = 0; k < f.positions.length; k += 3)
+        if (Math.hypot(f.positions[k] - o.x, f.positions[k + 2] - o.z) < 7) top = Math.max(top, f.positions[k + 1]);
+      return top;
+    };
+    expect(topNear(bare.decor)).toBeLessThan(topNear(built.decor));
+    expect(topNear(bare.decor)).toBeLessThan(o.y + 1.5);
     expect(scenetteDecor('ecluses', false, false).triangles).toBeLessThan(scenetteDecor('ecluses', false, true).triangles);
     expect(scenetteDecor('ecluses', true, false).triangles).toBeLessThan(scenetteDecor('ecluses', true, true).triangles);
   });
