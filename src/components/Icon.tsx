@@ -15,7 +15,8 @@ import {
   ArrowUpRight,
   Move,
   RotateCw,
-  Navigation2,
+  IterationCcw,
+  IterationCw,
   Undo2,
   Unlink,
   Merge,
@@ -223,9 +224,9 @@ export const ICONS = {
   // La vue en liste (« En liste »).
   liste: List,
   tourner: RotateCw,
-  // La caméra du monde ouvert qui tourne dans l'autre sens, et l'aiguille de sa boussole, pointée vers le nord.
-  tournerGauche: RotateCcw,
-  boussole: Navigation2,
+  // La caméra du monde ouvert qui tourne autour de Kéo : deux flèches en boucle, symétriques, distinctes de « Rejouer ».
+  tournerGauche: IterationCcw,
+  tournerDroite: IterationCw,
   // L'écran « Tourne ton appareil » (components/RotateDevice.tsx).
   appareil: Smartphone,
   defaire: Undo2,

@@ -329,7 +329,7 @@ const KEO_LAYER = 1;
  * elle a tourné de plus de `rings` depuis leur dernier tirage ; deux doigts qui tournent de moins de `deadAngle` ne la
  * tournent pas encore (un pincement ou deux doigts posés ne la bougent pas).
  */
-const CAMERA_TURN = { step: Math.PI / 4, seconds: 0.35, rings: Math.PI / 8, deadAngle: 0.06 } as const;
+const CAMERA_TURN = { step: Math.PI / 4, seconds: 0.35, rings: Math.PI / 8, deadAngle: 0.2 } as const;
 /**
  * La finesse du rendu : l'anticrénelage reste (la scène est légère, quelques milliers de triangles) ; le rapport de
  * pixels est plafonné à 2, puis ramené à 1 si l'appareil peine (des images de plus de 45 ms, trente de suite), comme
@@ -1628,6 +1628,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const onDown = (e: PointerEvent) => {
     if (mapView) return mapDown(e);
     fingers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    // Capturé dès le premier doigt : un pointeur levé hors du dessin repasse par `onUp` et ne reste pas compté
+    // (expert frontend : à la souris, un doigt fantôme bloquait ensuite tout toucher).
+    try {
+      renderer.domElement.setPointerCapture(e.pointerId);
+    } catch {
+      // Un pointeur déjà relâché : rien à capturer.
+    }
     if (fingers.size === 1) {
       down = { x: e.clientX, y: e.clientY, t: performance.now() };
       return;
@@ -1635,14 +1642,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Deux doigts : ce n'est plus un toucher (Kéo ne part pas, même si le premier se lève seul) ; s'ils tournent, la
     // caméra tourne autour de Kéo (GD-20, rotation libre).
     down = null;
-    if (fingers.size === 2) {
-      try {
-        for (const id of fingers.keys()) renderer.domElement.setPointerCapture(id);
-      } catch {
-        // Un pointeur déjà relâché : rien à capturer.
-      }
-      twist = { angle: fingersAngle(), started: false };
-    }
+    if (fingers.size === 2) twist = { angle: fingersAngle(), started: false };
   };
   /** L'angle de la ligne entre les deux premiers doigts posés, à l'écran. */
   const fingersAngle = () => {
@@ -1653,8 +1653,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let twist: { angle: number; started: boolean } | null = null;
   /** Deux doigts qui tournent : la caméra tourne d'autant, le monde suivant les doigts ; elle reste où on la laisse. */
   const twistMove = () => {
-    if (!twist || fingers.size < 2 || asked || remise || scenette || poseRun.active || assembly || laying) return;
+    if (!twist || fingers.size < 2) return;
     const angle = fingersAngle();
+    // Pendant une question, une pose ou une remise, la caméra ne tourne pas, et l'écart ne s'accumule pas.
+    if (asked || remise || scenette || poseRun.active || assembly || laying) {
+      twist.angle = angle;
+      return;
+    }
     const d = wrapAngle(angle - twist.angle);
     if (!twist.started && Math.abs(d) < CAMERA_TURN.deadAngle) return;
     twist.started = true;

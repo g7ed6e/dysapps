@@ -20,6 +20,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, use
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
+import { WorldButton } from '../../WorldButton';
 import { Loading } from '../../../components/Loading';
 import { frenchTypography } from '../../../components/math/RichText';
 import { useProgress } from '../../../core/ProgressContext';
@@ -207,9 +208,15 @@ export default function OpenWorldPage() {
   const markRef = useRef<HTMLButtonElement>(null);
   const arrowRef = useRef<HTMLSpanElement>(null);
   // L'aiguille de la boussole (GD-20, rotation libre de la caméra) : tournée sans passer par React, à chaque image où la
-  // caméra tourne ; `northRef` dit si la caméra est vers le nord (le bouton « Nord » n'a alors rien à faire).
-  const needleRef = useRef<HTMLSpanElement>(null);
+  // caméra tourne ; le dernier angle est gardé pour l'aiguille recréée (retour de la Carte, d'un panneau, d'une partie).
+  // `turned` : la caméra n'est pas vers le nord (sinon le bouton « Nord » n'a rien à faire).
+  const needleRef = useRef<HTMLSpanElement | null>(null);
+  const yawRef = useRef(0);
   const [turned, setTurned] = useState(false);
+  const needle = useCallback((el: HTMLSpanElement | null) => {
+    needleRef.current = el;
+    if (el) el.style.transform = `rotate(${yawRef.current.toFixed(3)}rad)`;
+  }, []);
   // Les cadenas des ponts des terres fermées, posés à chaque image par la scène (sans passer par React).
   const locksRef = useRef<HTMLDivElement>(null);
   // Les pastilles des habitants (GD-20, point 4, lot L1), posées à chaque image par la scène, comme les cadenas.
@@ -330,6 +337,7 @@ export default function OpenWorldPage() {
       onSigns: (signs) => placeSigns(signsRef.current, signs, layout),
       onYaw: (yaw) => {
         // Le nord à l'écran : l'aiguille tourne comme le monde.
+        yawRef.current = yaw;
         if (needleRef.current) needleRef.current.style.transform = `rotate(${yaw.toFixed(3)}rad)`;
         setTurned(Math.abs(yaw) > 0.01);
       },
@@ -1009,20 +1017,22 @@ export default function OpenWorldPage() {
           </nav>
         )}
         {/* La caméra qui tourne autour de Kéo (GD-20, rotation libre) : deux doigts qui tournent, ou ces boutons, d'une
-            main ; la boussole montre le nord et y ramène. Sous Réglages, au bord droit, sans mot. */}
+            main ; la boussole montre le nord et y ramène. Sous Réglages, au bord droit, sans mot ; le doigt posé écrit leur
+            nom, comme tous les boutons du monde. Vers le nord, la boussole est délavée et son toucher le dit. */}
         {!playing && !mapOpen && !sheetOpen && (
           <div className="open-world-camera" role="group" aria-label="Caméra">
-            <button type="button" className="button" aria-label={turned ? 'Nord' : 'Nord : la caméra regarde déjà le nord'} onClick={() => world.current?.turn(0)}>
-              <span ref={needleRef} className="open-world-needle" aria-hidden="true">
-                <Icon name="boussole" />
-              </span>
-            </button>
-            <button type="button" className="button" aria-label="Tourner vers la gauche" onClick={() => world.current?.turn(-1)}>
-              <Icon name="tournerGauche" />
-            </button>
-            <button type="button" className="button" aria-label="Tourner vers la droite" onClick={() => world.current?.turn(1)}>
-              <Icon name="tourner" />
-            </button>
+            <WorldButton
+              icon={
+                <span ref={needle} className="open-world-needle" aria-hidden="true">
+                  <CompassNeedle />
+                </span>
+              }
+              name="Nord"
+              empty={turned ? undefined : 'déjà vers le nord'}
+              onClick={() => world.current?.turn(0)}
+            />
+            <WorldButton icon="tournerGauche" name="Tourner vers la gauche" onClick={() => world.current?.turn(-1)} />
+            <WorldButton icon="tournerDroite" name="Tourner vers la droite" onClick={() => world.current?.turn(1)} />
           </div>
         )}
         {!playing && !mapOpen && !sheetOpen && (
@@ -1052,6 +1062,20 @@ export default function OpenWorldPage() {
         )}
       </div>
     </div>
+  );
+}
+
+/**
+ * L'aiguille de la boussole : un losange, la moitié nord pleine, la moitié sud en contour (jamais une lettre ; référent
+ * dys et consultant UX UI : une flèche seule se lisait « A »).
+ */
+function CompassNeedle() {
+  return (
+    <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true" focusable="false">
+      <path d="M12 2 L17 12 L7 12 Z" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M7 12 L17 12 L12 22 Z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <circle cx="12" cy="12" r="1.6" fill="var(--surface, #fff)" stroke="currentColor" strokeWidth="1.2" />
+    </svg>
   );
 }
 
