@@ -21,6 +21,7 @@ import { mangroveSurroundings } from './mangroveSurroundings';
 import { ruinsSurroundings } from './ruinsSurroundings';
 import { beaconsSurroundings } from './beaconsSurroundings';
 import { ferrySurroundings } from './ferrySurroundings';
+import { commonsSurroundings } from './commonsSurroundings';
 
 /** L'état du lieu : l'étape qui porte la trace posée (`posed`), la réussite montrée (`open`). */
 export interface SurroundingsState {
@@ -55,4 +56,5 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   ruins: ruinsSurroundings,
   beacons: beaconsSurroundings,
   ferry: ferrySurroundings,
+  commons: commonsSurroundings,
 };

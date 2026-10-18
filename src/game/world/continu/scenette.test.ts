@@ -1254,8 +1254,8 @@ describe('La Halle (GD-20, point 8, lot L8d)', () => {
   };
 
   it('le couvreur, en peu de triangles : le haut clair, le bas du corps sombre, deux jambes, tête nue, une tuile canal sous le bras', () => {
-    const decor = scenetteDecor('commons');
-    // Les deux ombres au pied (lot commun des scénettes) comprises.
+    const decor = scenetteCore('commons');
+    // Les deux ombres au pied (lot commun des scénettes) comprises ; sans les abords (./commonsSurroundings.ts).
     expect(decor.triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
     const at = scenetteHabitant('commons');
     const shirt = colored(decor, 0xbfdccb);
