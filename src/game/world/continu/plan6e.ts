@@ -240,6 +240,35 @@ export const COMMONS_FLAT = { center: fromPlan([935, 915]), radius: 9, fade: 5, 
 export const BEACONS_FLAT = { center: fromPlan([428, 690]), radius: 5.5, fade: 4, height: 1 } as const;
 
 /**
+ * Les collines des Détours (GD-20, déplacement libre, lot 2, piste B « Les sentes qui restent », choix du mainteneur du
+ * 18 octobre 2026 ; places du consultant d'Archipéo, forme de l'artiste technique 3D) : une colline posée à la main par
+ * terre, à la place d'une colline tirée au hasard (terrain.ts, `hillsAt`). Un plateau (`plateau`, l'apothème de son
+ * hexagone), six pans en falaise (pente `cliff`, au-delà de ce qui se marche) et une seule face douce, une rampe droite de
+ * `halfWidth` de demi-largeur qui descend du plateau à la pente `ramp`, vers l'angle `face` (en radians, dans le plan :
+ * x vers l'est, z vers le sud), ses côtés en falaise. Chaque colline garde 3 unités d'un chemin, 15 d'un lieu, 5 de la
+ * côte et 7 d'un bras de mer (le test du terrain le vérifie) ; sa rampe finit près d'un chemin, d'où on la voit.
+ */
+export const DETOUR_HILL = { plateau: 2.5, cliff: 1.5, ramp: 0.45, halfWidth: 2.2 } as const;
+
+/** Une colline de Détour : son identifiant (celui du Détour), le centre de son plateau, sa hauteur et le sens de sa rampe. */
+export interface DetourHill {
+  id: string;
+  at: Vec2;
+  height: number;
+  face: number;
+}
+
+const deg = (d: number) => (d * Math.PI) / 180;
+
+/** Les quatre collines (le cinquième Détour, au Large, est un bord d'eau, sans colline). */
+export const DETOUR_HILLS: readonly DetourHill[] = [
+  { id: 'butte-chantier', at: { x: 119, z: 94 }, height: 7, face: deg(150) },
+  { id: 'braise-herons', at: { x: -42, z: 126 }, height: 6, face: deg(180) },
+  { id: 'colline-aube', at: { x: 151.5, z: 34 }, height: 7, face: deg(255) },
+  { id: 'haut-cretes', at: { x: 26, z: -134 }, height: 8, face: deg(0) },
+];
+
+/**
  * Le chenal de la Nef (GD-20, lot 5) : de la passe jusqu'au bord de l'image de la mer, la bande où l'on ne pose ni mât,
  * ni bouée, ni jetée (lot L9, directeur artistique et artiste technique 3D), en pixels du plan : de x 0 à la passe
  * (612), de y 565 à 660.

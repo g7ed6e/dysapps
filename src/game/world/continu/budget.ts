@@ -4,6 +4,7 @@
 // (GD-20, L6b : « Un iPad 9e génération doit pouvoir faire tourner le jeu, donc on est large en triangles pour
 // l'instant »), puis à 86 000 le 17 octobre 2026 (GD-20, point 3, lot 3), les appels inchangés, puis à 98 000 triangles et 21
 // appels le 18 octobre 2026 pour les habitants en 3D (« on peut augmenter le budget », mesure sur iPad avant la fusion). Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
+import { FAUNA, birdFacets, detourTrianglesAtMost, spoutFacets, whaleFacets } from './detours';
 import { WORLD_FOG } from './camera';
 import { bridgeLay } from './bridgeLay';
 import { bridgeFacets, bridgeMapMark } from './bridges';
@@ -32,13 +33,16 @@ import { veilFacets } from './veil';
  */
 const KEO = { triangles: 3170, calls: 5 };
 
+/** La baleine, son souffle et les cinq oiseaux du bord d'eau (GD-20, déplacement libre, lot 2) : un maillage. */
+const FAUNA_COST = { triangles: whaleFacets().triangles + spoutFacets().triangles + FAUNA.birds * birdFacets().triangles, calls: 1 };
+
 /** Le dôme du ciel (GD-20, point 3, lot 3) : un maillage, dessiné d'abord, sur la Carte aussi. */
 const SKY = { triangles: skyDome(1).triangles, calls: 1 };
 
 /**
  * L'enveloppe du monde ouvert : 98 000 triangles, 21 appels, relevée par le mainteneur le 18 octobre 2026 pour les
  * habitants des scénettes en modèles 3D (« on peut augmenter le budget » ; les images par seconde à mesurer sur l'iPad
- * avant la fusion), la réserve de 3 appels gardée. Avant : 86 000 triangles (17 octobre 2026, les cinq leviers graphiques
+ * avant la fusion) ; avec les Détours (#459), 19 appels au pire, 2 de réserve. Avant : 86 000 triangles (17 octobre 2026, les cinq leviers graphiques
  * du lot 3 de GD-20, point 3 : « plafond 86 000 triangles et 18 appels » ; 75 000 depuis le 16 octobre) et 20 appels (le
  * déplacement libre, la silhouette de Kéo et la marque au sol, 18 octobre 2026).
  * La Carte la touche presque (toute l'île de loin, sa végétation comprise).
@@ -46,7 +50,7 @@ const SKY = { triangles: skyDome(1).triangles, calls: 1 };
 export const OPEN_WORLD_BUDGET = { triangles: 98_000, calls: 21 } as const;
 
 export interface OpenWorldCost {
-  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
+  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
   triangles: number;
   calls: number;
 }
@@ -243,6 +247,11 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
     // Les aménagements (GD-20, point 4, lot L0) : les dix-neuf posés, dans le maillage des lieux, aucun appel de plus ;
     // leurs triangles comptés par la vue, qui trace leurs dessins (three/archipeo/amenagements.ts, `amenagementsCost`).
     { poste: 'aménagements', triangles: amenagements, calls: 0 },
+    // Les Détours (GD-20, déplacement libre, lot 2) : leurs pierres, le cairn allumé et toutes les sentes tracées, au pire,
+    // dans le maillage des lieux, aucun appel de plus ; la baleine et les oiseaux du bord d'eau, un maillage, montré
+    // seulement près du bord d'eau.
+    { poste: 'détours', triangles: detourTrianglesAtMost(), calls: 0 },
+    { poste: 'faune', ...FAUNA_COST },
     { poste: 'pose', ...poseCost(height) },
     { poste: 'brume', triangles: veilFacets(LINKED_LANDS).triangles, calls: 1 },
     { poste: 'kéo', ...KEO },
@@ -265,5 +274,10 @@ export function mapCost(amenagements: number): { triangles: number; calls: numbe
   const places = placesCost();
   const veil = veilFacets(LINKED_LANDS).triangles;
   const marks = LINKED_LANDS.reduce((s, l) => s + bridgeMapMark(l).triangles, 0);
-  return { triangles: SKY.triangles + far + 2 + paths + places.triangles + amenagements + marks + veil + KEO.triangles, calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls };
+  // Les Détours, leurs sentes tracées comprises, dans le maillage des lieux ; la baleine et les oiseaux, au bord d'eau.
+  const detours = detourTrianglesAtMost();
+  return {
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + amenagements + detours + FAUNA_COST.triangles + marks + veil + KEO.triangles,
+    calls: SKY.calls + 1 + 1 + 1 + places.calls + FAUNA_COST.calls + 1 + KEO.calls,
+  };
 }

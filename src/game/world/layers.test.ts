@@ -18,6 +18,8 @@ const REGLES = [
   'engine/dates',
   'engine/sanitize',
   'engine/learning',
+  // Les identifiants des Détours du monde continu et leur assainissement (GD-20, déplacement libre, lot 2).
+  'engine/detours',
   'boss',
   'bossCore',
   'trophies',

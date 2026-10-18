@@ -45,9 +45,12 @@ const LOOK_DISTANCE = 10;
 
 const tanHalf = (fov: number) => Math.tan(((fov / 2) * Math.PI) / 180);
 
-/** L'angle sous l'horizon d'une caméra à `height` au-dessus des pieds de Kéo : son milieu reste à `keoOnScreen`. */
-function followPitch(height: number): number {
-  const toKeo = Math.atan2(height - KEO_MIDDLE, FOLLOW.back);
+/**
+ * L'angle sous l'horizon d'une caméra à `height` au-dessus des pieds de Kéo et `back` derrière lui : son milieu reste à
+ * `keoOnScreen`.
+ */
+function followPitch(height: number, back: number = FOLLOW.back): number {
+  const toKeo = Math.atan2(height - KEO_MIDDLE, back);
   return toKeo - Math.atan((2 * FOLLOW.keoOnScreen - 1) * tanHalf(FOLLOW.fov));
 }
 
@@ -55,20 +58,28 @@ function followPitch(height: number): number {
 export const wrapAngle = (a: number): number => Math.atan2(Math.sin(a), Math.cos(a));
 
 /**
+ * La vue d'un Détour (GD-20, déplacement libre, lot 2) : Kéo arrêté sur un Détour, la caméra monte de `height` et
+ * recule jusqu'à `back` fois sa distance (référent dys : 1,6 au plus), sans tourner ; elle monte en `up` secondes et
+ * revient en `down`, d'un coup avec « Réduire les animations ».
+ */
+const DETOUR_VIEW = { height: 8, back: 1.6, up: 1.2, down: 0.8 } as const;
+
+/**
  * La pose de la caméra qui suit le point `focus` (les pieds de Kéo, lissés), montée de `lift` au-dessus d'un relief,
  * tournée de `yaw` autour de lui (en radians, depuis le sud : 0 au sud, tournée vers le nord ; π/2 à l'est, tournée
- * vers l'ouest) ; remplie dans `out` s'il est donné (la vue la refait à chaque image
- * sans rien créer).
+ * vers l'ouest), et montée de la part `rise` de la vue d'un Détour (0 : la caméra qui suit, 1 : toute la vue) ; remplie
+ * dans `out` s'il est donné (la vue la refait à chaque image sans rien créer).
  */
-export function followPose(focus: Vec3, lift = 0, out?: CameraPose, yaw = 0): CameraPose {
-  const height = FOLLOW.height + lift;
-  const pitch = followPitch(height);
+export function followPose(focus: Vec3, lift = 0, out?: CameraPose, yaw = 0, rise = 0): CameraPose {
+  const height = FOLLOW.height + lift + DETOUR_VIEW.height * rise;
+  const back = FOLLOW.back * (1 + (DETOUR_VIEW.back - 1) * rise);
+  const pitch = followPitch(height, back);
   const pose = out ?? { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: FOLLOW.fov, lens: 0 };
   const bx = Math.sin(yaw);
   const bz = Math.cos(yaw);
-  pose.position.x = focus.x + FOLLOW.back * bx;
+  pose.position.x = focus.x + back * bx;
   pose.position.y = focus.y + height;
-  pose.position.z = focus.z + FOLLOW.back * bz;
+  pose.position.z = focus.z + back * bz;
   pose.target.x = pose.position.x - LOOK_DISTANCE * Math.cos(pitch) * bx;
   pose.target.y = pose.position.y - LOOK_DISTANCE * Math.sin(pitch);
   pose.target.z = pose.position.z - LOOK_DISTANCE * Math.cos(pitch) * bz;
@@ -204,6 +215,19 @@ export function lookUp(pose: CameraPose, top: Vec3, feet: Vec3, amount: number, 
   pose.target.y = p.y - LOOK_DISTANCE * Math.sin(a);
   pose.target.z = p.z + LOOK_DISTANCE * Math.cos(a) * fz;
 }
+
+/**
+ * L'avancée de la vue d'un Détour à l'image suivante, vers `wanted` (0 ou 1), de façon linéaire ; d'un bloc avec
+ * « Réduire les animations ». La vue en prend `detourRise` (un départ franc, une arrivée douce).
+ */
+export function detourViewStep(current: number, wanted: 0 | 1, dt: number, reduceMotion: boolean): number {
+  if (reduceMotion) return wanted;
+  const step = Math.max(0, dt) / (wanted > current ? DETOUR_VIEW.up : DETOUR_VIEW.down);
+  return wanted > current ? Math.min(1, current + step) : Math.max(0, current - step);
+}
+
+/** La part de la vue d'un Détour pour une avancée `t` (de 0 à 1) : elle ralentit en arrivant (référent dys). */
+export const detourRise = (t: number): number => t * (2 - t);
 
 /** La part du regard levé à l'image suivante, vers `wanted` (0 ou 1) ; d'un bloc avec « Réduire les animations ». */
 export function lookUpStep(current: number, wanted: 0 | 1, dt: number, reduceMotion: boolean): number {
