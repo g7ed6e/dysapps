@@ -47,7 +47,7 @@ interface Props {
   /** « Y aller » d'une ligne de la fiche : Kéo y va d'un coup, son panneau s'ouvre à l'arrivée. */
   onGo(spot: Exclude<PortSpot, 'quai'>): void;
   /**
-   * La Nef de l'Escale (GD-21), tant qu'elle n'est pas partie : une sixième ligne qui ouvre sa fiche, toujours au même
+   * La Nef de l'Escale (GD-21), tant qu'elle n'est pas partie : une ligne de plus, en tête, qui ouvre sa fiche, toujours au même
    * endroit, même quand la Nef est au bord de l'image ou cachée (relecture du référent dys et du consultant UX UI).
    */
   onNef?(): void;
@@ -120,16 +120,7 @@ function PortSheet({ names, onGo, onNef, onClose }: { names: PortNames; onGo: Pr
   return (
     <Sheet id="panneau-escale" className="port-sheet" titleId="escale-titre" icon="ancre" title={names.nom} onClose={onClose} autoFocusClose>
       <ul className="port-rows">
-        {ROWS.map((r) => (
-          <li key={r.spot} className="port-row">
-            <span className="port-row-name">
-              <Icon name={r.icon} /> {r.name}
-            </span>
-            <button type="button" className="button port-row-go" aria-label={`Y aller : ${r.name}`} onClick={() => onGo(r.spot)}>
-              <Icon name="footprints" /> Y aller
-            </button>
-          </li>
-        ))}
+        {/* La Nef d'abord : visible sans défiler, même au plus grand texte (consultant UX UI). */}
         {onNef && (
           <li className="port-row">
             <span className="port-row-name">
@@ -140,6 +131,16 @@ function PortSheet({ names, onGo, onNef, onClose }: { names: PortNames; onGo: Pr
             </button>
           </li>
         )}
+        {ROWS.map((r) => (
+          <li key={r.spot} className="port-row">
+            <span className="port-row-name">
+              <Icon name={r.icon} /> {r.name}
+            </span>
+            <button type="button" className="button port-row-go" aria-label={`Y aller : ${r.name}`} onClick={() => onGo(r.spot)}>
+              <Icon name="footprints" /> Y aller
+            </button>
+          </li>
+        ))}
       </ul>
     </Sheet>
   );

@@ -38,12 +38,14 @@ it('la fiche du Port a cinq lignes, chacune avec « Y aller », qui mènent à l
   expect(onGo).toHaveBeenCalledWith('chantier');
 });
 
-it('la Nef pas encore partie : une sixième ligne qui ouvre sa fiche (GD-21)', async () => {
+it('la Nef pas encore partie : une ligne en tête qui ouvre sa fiche (GD-21)', async () => {
   const user = userEvent.setup();
   const onNef = vi.fn();
   renderPanel('fiche', vi.fn(), vi.fn(), onNef);
   const sheet = screen.getByRole('dialog', { name: 'L’Escale' });
-  await user.click(within(sheet).getByRole('button', { name: 'Y aller : La Nef' }));
+  const go = within(sheet).getAllByRole('button', { name: /^Y aller/ });
+  expect(go[0].getAttribute('aria-label')).toBe('Y aller : La Nef');
+  await user.click(go[0]);
   expect(onNef).toHaveBeenCalled();
 });
 
