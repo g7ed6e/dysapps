@@ -40,14 +40,14 @@ const FAUNA_COST = { triangles: whaleFacets().triangles + spoutFacets().triangle
 const SKY = { triangles: skyDome(1).triangles, calls: 1 };
 
 /**
- * L'enveloppe du monde ouvert : 98 000 triangles, 21 appels, relevée par le mainteneur le 18 octobre 2026 pour les
+ * L'enveloppe du monde ouvert : 98 000 triangles, 22 appels (21, puis 22 avec les Détours pour garder 3 appels de réserve, carte « Monter à 22 »), relevée par le mainteneur le 18 octobre 2026 pour les
  * habitants des scénettes en modèles 3D (« on peut augmenter le budget » ; les images par seconde à mesurer sur l'iPad
- * avant la fusion) ; avec les Détours (#459), 19 appels au pire, 2 de réserve. Avant : 86 000 triangles (17 octobre 2026, les cinq leviers graphiques
+ * avant la fusion) ; avec les Détours (#459), 19 appels au pire, 3 de réserve. Avant : 86 000 triangles (17 octobre 2026, les cinq leviers graphiques
  * du lot 3 de GD-20, point 3 : « plafond 86 000 triangles et 18 appels » ; 75 000 depuis le 16 octobre) et 20 appels (le
  * déplacement libre, la silhouette de Kéo et la marque au sol, 18 octobre 2026).
  * La Carte la touche presque (toute l'île de loin, sa végétation comprise).
  */
-export const OPEN_WORLD_BUDGET = { triangles: 98_000, calls: 21 } as const;
+export const OPEN_WORLD_BUDGET = { triangles: 98_000, calls: 22 } as const;
 
 export interface OpenWorldCost {
   poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
