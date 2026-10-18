@@ -5,6 +5,7 @@
 // l'instant »), puis à 86 000 le 17 octobre 2026 (GD-20, point 3, lot 3), les appels inchangés, puis à 98 000 triangles et 21
 // appels le 18 octobre 2026 pour les habitants en 3D (« on peut augmenter le budget », mesure sur iPad avant la fusion). Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
 import { FAUNA, birdFacets, detourTrianglesAtMost, spoutFacets, whaleFacets } from './detours';
+import { NEF_MODEL_TRIANGLES, nefSiteTriangles } from './nef';
 import { WORLD_FOG } from './camera';
 import { bridgeLay } from './bridgeLay';
 import { bridgeFacets, bridgeMapMark } from './bridges';
@@ -40,17 +41,19 @@ const FAUNA_COST = { triangles: whaleFacets().triangles + spoutFacets().triangle
 const SKY = { triangles: skyDome(1).triangles, calls: 1 };
 
 /**
- * L'enveloppe du monde ouvert : 98 000 triangles, 22 appels (21, puis 22 avec les Détours pour garder 3 appels de réserve, carte « Monter à 22 »), relevée par le mainteneur le 18 octobre 2026 pour les
- * habitants des scénettes en modèles 3D (« on peut augmenter le budget » ; les images par seconde à mesurer sur l'iPad
- * avant la fusion) ; avec les Détours (#459), 19 appels au pire, 3 de réserve. Avant : 86 000 triangles (17 octobre 2026, les cinq leviers graphiques
+ * L'enveloppe du monde ouvert : 100 000 triangles, 22 appels, relevée pour la Nef (GD-21, « on peut augmenter le budget si
+ * besoin », mainteneur, 18 octobre 2026 ; 98 000 avant). Les 98 000 triangles et 22 appels (21, puis 22 avec les
+ * Détours pour garder 3 appels de réserve, carte « Monter à 22 ») ont été relevés par le mainteneur le 18 octobre 2026
+ * pour les habitants des scénettes en modèles 3D (« on peut augmenter le budget » ; les images par seconde à mesurer sur
+ * l'iPad avant la fusion) ; avec les Détours (#459), 19 appels au pire, 3 de réserve. Avant : 86 000 triangles (17 octobre 2026, les cinq leviers graphiques
  * du lot 3 de GD-20, point 3 : « plafond 86 000 triangles et 18 appels » ; 75 000 depuis le 16 octobre) et 20 appels (le
  * déplacement libre, la silhouette de Kéo et la marque au sol, 18 octobre 2026).
  * La Carte la touche presque (toute l'île de loin, sa végétation comprise).
  */
-export const OPEN_WORLD_BUDGET = { triangles: 98_000, calls: 22 } as const;
+export const OPEN_WORLD_BUDGET = { triangles: 100_000, calls: 22 } as const;
 
 export interface OpenWorldCost {
-  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
+  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette' | 'nef';
   triangles: number;
   calls: number;
 }
@@ -187,6 +190,17 @@ function bridgesCost(): number {
   return LINKED_LANDS.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
 }
 
+/**
+ * La Nef du monde continu (GD-21) : le voilier entier, voile hissée, et son ber dans le maillage des lieux ; le banc du
+ * large dans celui du lieu suivi (hors de la brume du lointain) : aucun appel de plus. Pendant l'arrivée d'un temps (la
+ * partie qui descend) et pendant le départ (la Nef et le banc qui s'en vont), un ou deux maillages à part, jamais en même
+ * temps qu'une question, une scénette ou une pose, plus chargées : comptés dans leurs appels.
+ */
+function nefCost(): { triangles: number; calls: number } {
+  const site = nefSiteTriangles();
+  return { triangles: NEF_MODEL_TRIANGLES + site.ber + site.banc, calls: 0 };
+}
+
 /** L'Escale seule, au plus chargé : son plafond (4 500 triangles, directeur artistique, GD-20, lot 2). */
 export const PORT_BUDGET = 4500;
 
@@ -257,6 +271,7 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
     { poste: 'kéo', ...KEO },
     { poste: 'question', ...questionCost() },
     { poste: 'scénette', ...scenetteCost() },
+    { poste: 'nef', ...nefCost() },
   ];
 }
 
@@ -277,7 +292,7 @@ export function mapCost(amenagements: number): { triangles: number; calls: numbe
   // Les Détours, leurs sentes tracées comprises, dans le maillage des lieux ; la baleine et les oiseaux, au bord d'eau.
   const detours = detourTrianglesAtMost();
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + amenagements + detours + FAUNA_COST.triangles + marks + veil + KEO.triangles,
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + amenagements + detours + FAUNA_COST.triangles + marks + veil + KEO.triangles + nefCost().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + FAUNA_COST.calls + 1 + KEO.calls,
   };
 }

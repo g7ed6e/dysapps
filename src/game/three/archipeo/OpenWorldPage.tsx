@@ -52,6 +52,8 @@ import { MapLabels } from './MapLabels';
 import { PlacePanel, placeFromParam, placeResume } from './PlacePanel';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
+import { NefSheet, nefLookOf, nefSail } from './NefSheet';
+import type { VehicleStage } from '../../world/vehicle';
 import { portState } from './portState';
 import { createOpenWorld, type BridgeLayEvents, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { usePlaceAddress, usePoseGuard } from './usePlaceReturn';
@@ -88,7 +90,7 @@ const missionTitle = (island: string, mission: string) => getBiome(island)?.exer
 
 export default function OpenWorldPage() {
   const { biomeId } = useParams();
-  const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour } = useBlocland();
+  const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour, launch } = useBlocland();
   const textes = useTextes();
   const { settings, speak } = useSettings();
   // La voix de l'arrivée, lue par la scène faite une fois (`onArrive`) : le réglage du moment.
@@ -188,8 +190,10 @@ export default function OpenWorldPage() {
   const lieuParam = placeFromParam(params.get('lieu'));
   const missionParam = params.get('mission');
   const [start] = useState<PlaceId | PortSpot>(() => arrival.spot ?? lieuParam ?? placeOfIsland(biomeId ?? '')?.id ?? 'quai');
-  // Le panneau ouvert de l'Escale : sa fiche, une porte, la galerie, le lieu d'assemblage ; un à la fois.
-  const [panel, setPanel] = useState<PortPanel | null>(null);
+  // Le panneau ouvert de l'Escale : sa fiche, une porte, la galerie, le lieu d'assemblage, la Nef ; un à la fois.
+  const [panel, setPanel] = useState<PortPanel | 'nef' | null>(null);
+  // La Nef part (GD-21) : la scène seule, comme pendant une question, jusqu'à l'arrivée en 5e.
+  const [departing, setDeparting] = useState(false);
   // Le panneau ouvert d'un lieu (GD-20, point 8) : sa liste de missions, et la ligne qui y prend le focus (celle dont on
   // revient) ; pour un lieu d'une terre fermée, la fiche de sa terre ; jamais en même temps qu'un panneau de l'Escale.
   const [lieu, setLieu] = useState<{ place: PlaceId; focus: string | null } | null>(null);
@@ -200,7 +204,7 @@ export default function OpenWorldPage() {
   const [remise, setRemise] = useState<RemiseRequest | null>(null);
   const sheetOpen = Boolean(panel) || Boolean(lieu) || commandsOpen;
   const panelRef = useRef<HTMLDivElement>(null);
-  const { progress } = useProgress();
+  const { progress, launchVoyage } = useProgress();
   const port = useMemo(() => portState(state, progress), [state, progress]);
 
   const host = useRef<HTMLDivElement>(null);
@@ -360,6 +364,12 @@ export default function OpenWorldPage() {
       onMapPlaces: (spots, moving) => mapPlacer.current?.(spots, moving),
       onMapPick: (placeId) => mapPick.current(placeId),
       onPosed: () => setPosePending(false),
+      // La Nef, son ber ou le banc du large touché (GD-21) : sa fiche, Kéo reste où il est.
+      onNef: () => {
+        setLieu(null);
+        setCommandsOpen(false);
+        setPanel('nef');
+      },
       onMark: (m) => {
         placeMark(markRef.current, arrowRef.current, m, layout);
         if (m && m.far !== farRef.current) {
@@ -762,6 +772,32 @@ export default function OpenWorldPage() {
       ferry: of('ferry'),
     } satisfies Record<PlaceId, ReturnType<typeof of>>;
   }, [state.world.parts]);
+  // La Nef de l'Escale (GD-21) : sa voile vient avec trois lieux achevés (le monde continu n'a pas de Gardiens) ; son
+  // temps, montré sur le ber.
+  const achieved = useMemo(() => Object.values(constructions).filter((c) => constructionState(c) === 'restauree').length, [constructions]);
+  const sail = useMemo(() => nefSail(state, achieved), [state, achieved]);
+  const nefLookNow = useMemo(() => nefLookOf(state, sail.kit), [state, sail.kit]);
+  useEffect(() => {
+    if (!departing) world.current?.setNef(nefLookNow);
+  }, [nefLookNow, departing, ready]);
+  // « Partir » : la fiche se ferme, la Nef glisse vers la passe ; à la fin (ou au toucher), le voyage se fait et l'élève
+  // arrive en 5e, dans la grille (le monde continu n'a que le 6e).
+  const departNef = useCallback(
+    (stage: VehicleStage) => {
+      const w = world.current;
+      if (!w) return;
+      setPanel(null);
+      setDeparting(true);
+      w.departNef(() => {
+        const r = launch(stage, sail.kit);
+        setDeparting(false);
+        if (!r.ok) return;
+        launchVoyage(stage.reward.xp);
+        navigate(`/adventure/${r.to}`, { replace: true });
+      });
+    },
+    [launch, launchVoyage, navigate, sail.kit],
+  );
   // Les aménagements posés de chaque lieu (GD-20, point 4, lot L0) : les petites constructions livrées, la même sauvegarde.
   const amenagements = useMemo(() => posedAmenagements(state.world.parts), [state.world.parts]);
   // Les traces des scénettes de chaque lieu : une par mission jouée en scénette, dès sa première réussite (les étoiles
@@ -895,7 +931,7 @@ export default function OpenWorldPage() {
   const deliverHere = Boolean(suggestedCmd && here === suggestedCmd.place);
 
   // Une question ou une remise : la scène seule, ni marque, ni accès directs, ni panneau.
-  const playing = Boolean(asking) || Boolean(remise);
+  const playing = Boolean(asking) || Boolean(remise) || departing;
 
   return (
     <div className="world-page open-world">
@@ -958,9 +994,13 @@ export default function OpenWorldPage() {
         )}
         {/* Le panneau ouvert de l'Escale (GD-20, lot 2) : comme une question, il masque les accès directs, Réglages, la
             Carte et « Y aller » ; un seul panneau à la fois. */}
-        {panel && !playing && textes.depart && (
+        {panel && !playing && (panel === 'nef' || textes.depart) && (
           <div ref={panelRef} className={`open-world-panel open-world-panel-${panel}`}>
-            <PortPanels panel={panel} names={textes.depart} onGo={goPort} onClose={closePanel} />
+            {panel === 'nef' ? (
+              <NefSheet kit={sail.kit} missing={sail.missing} onDepart={departNef} onClose={closePanel} />
+            ) : (
+              <PortPanels panel={panel} names={textes.depart!} onGo={goPort} onClose={closePanel} />
+            )}
           </div>
         )}
         {/* Le panneau d'un lieu (GD-20, point 8) : comme celui d'une porte, il masque les accès directs, Réglages, la Carte

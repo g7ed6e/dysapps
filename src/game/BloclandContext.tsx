@@ -121,8 +121,11 @@ interface BloclandContextValue {
    * de la partie ; rien d'autre ne change (ni l'inventaire, ni la progression).
    */
   arrange: (next: Pick<World, 'links' | 'layout'>) => void;
-  /** Largue les amarres de la Nef : le voyage est fait, le bonhomme arrive au port d'en face. */
-  launch: (stage: VehicleStage) => LaunchResult;
+  /**
+   * Largue les amarres de la Nef : le voyage est fait, le bonhomme arrive au port d'en face. `kit`, à la place des
+   * Gardiens, dans le monde continu (GD-21).
+   */
+  launch: (stage: VehicleStage, kit?: boolean) => LaunchResult;
   reset: () => void;
   /** Le mode bâtisseur est-il ouvert ? (une copie de la partie, en mémoire seulement) */
   batisseur: boolean;
@@ -340,8 +343,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     stateRef.current = etat;
     setState(etat);
   }, []);
-  const launch = useCallback((stage: VehicleStage) => {
-    const r = launchVehiclePure(stateRef.current, stage);
+  const launch = useCallback((stage: VehicleStage, kit?: boolean) => {
+    const r = launchVehiclePure(stateRef.current, stage, kit);
     if (r.result.ok) {
       stateRef.current = r.state;
       setState(r.state);
