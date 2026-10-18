@@ -3,6 +3,7 @@ import { GAME_VERSION } from '../../core/migration';
 import type { BiomeId, BlockId } from '../biomes';
 import type { TirageAssemblage } from '../world/assembly';
 import type { Layout } from '../world/savedLayout';
+import type { DetourId } from '../world/continu/detours';
 
 export interface ExerciseProgress {
   stars: 0 | 1 | 2 | 3;
@@ -93,6 +94,14 @@ export interface World {
    * défi est réussi. Absent pour une partie neuve, où la règle est entière (boss.ts, `isBossUnlocked`).
    */
   challengesKeptOpen?: BiomeId[];
+  /**
+   * Les Détours trouvés dans le monde continu (GD-20, déplacement libre, lot 2 : world/continu/detours.ts), dans leur
+   * ordre : leur sente reste tracée. Absent tant qu'aucun n'est trouvé, et dans une sauvegarde d'avant les Détours. Ne
+   * sert jamais à montrer ce qui manque (référent dys).
+   */
+  detours?: DetourId[];
+  /** Les cairns de Détour rallumés (le seul, celui de la Braise des Hérons) : ils restent allumés. */
+  detoursLit?: DetourId[];
 }
 
 export interface LogEntry {

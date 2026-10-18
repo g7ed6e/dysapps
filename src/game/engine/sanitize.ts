@@ -15,6 +15,7 @@ import { bridgesFromLegacyProgress, getBridge, getVoyage, grantAccess, isBiomeUn
 import { lireTirage, recetteDe, type TirageAssemblage } from '../world/assembly';
 import { archipelDeLaCommande, getCommande, MAX_COMMANDES_OUVERTES } from '../world/requests';
 import { getStory, isStoryDone } from '../world/stories';
+import { sanitizeDetours } from '../world/continu/detours';
 import { PROJECT_BANKS } from '../world/projects';
 import { pairOfJoinId, sanitizeLayout } from '../world/savedLayout';
 import type { DrawKey, ExerciseProgress, GameState, LogEntry, SpacedItem, TypeStats } from './state';
@@ -247,6 +248,10 @@ export function sanitizeState(input: unknown): GameState {
       if (typeof id !== 'string' || !isMovedPlace(id) || challengesKeptOpen.includes(id) || isBossBeaten(id, progress)) continue;
       challengesKeptOpen.push(id);
     }
+  // Les Détours trouvés et les cairns rallumés (GD-20, déplacement libre, lot 2) : connus, sans doublon, dans leur ordre ;
+  // un cairn ne se rallume qu'une fois son Détour trouvé.
+  const detours = sanitizeDetours(world.detours);
+  const detoursLit = sanitizeDetours(world.detoursLit).filter((id) => detours.includes(id));
   return {
     version: GAME_VERSION,
     progress,
@@ -256,7 +261,7 @@ export function sanitizeState(input: unknown): GameState {
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
     fluency,
-    world: { parts, log, links, ...(place ? { place } : {}), ...(requests.length ? { requests } : {}), ...(stories.length ? { stories } : {}), ...(layout ? { layout } : {}), ...(challengesKeptOpen.length ? { challengesKeptOpen } : {}) },
+    world: { parts, log, links, ...(place ? { place } : {}), ...(requests.length ? { requests } : {}), ...(stories.length ? { stories } : {}), ...(layout ? { layout } : {}), ...(challengesKeptOpen.length ? { challengesKeptOpen } : {}), ...(detours.length ? { detours } : {}), ...(detoursLit.length ? { detoursLit } : {}) },
     ...(Object.keys(assemblyDraw).length ? { assemblyDraw } : {}),
   };
 }

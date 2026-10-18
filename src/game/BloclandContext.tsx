@@ -42,6 +42,7 @@ import { STORY_XP, startStory, storyAfterMission, tapStoryStep, type StepResult 
 import { applyLayout } from './world/appliedLayout';
 import { ensureLands, payLand, settleNewPlaces, type GridLand, type PayLandResult } from './world/arrange';
 import type { World } from './engine/state';
+import { findDetour, lightDetour, type DetourId } from './world/continu/detours';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
 const SESSION_MAX_EXERCISES = 3;
@@ -108,6 +109,10 @@ interface BloclandContextValue {
    * la dernière, l'objet se pose chez l'habitant, avec de l'XP ; puis la quête suivante peut arriver.
    */
   tapStory: (id: string) => StepResult<GameState>;
+  /** Un Détour trouvé dans le monde continu (GD-20, déplacement libre, lot 2) : sa sente reste tracée. */
+  findDetour: (id: DetourId) => void;
+  /** Le cairn d'un Détour trouvé, rallumé (« Rallumer ») : il reste allumé. */
+  lightDetour: (id: DetourId) => void;
   /** Le bonhomme va sur une île ouverte. */
   moveTo: (id: BiomeId) => void;
   /**
@@ -292,6 +297,15 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     stateRef.current = next;
     setState(next);
   }, []);
+  // Les Détours (GD-20, déplacement libre, lot 2) : écrits seulement quand quelque chose change.
+  const onDetour = useCallback((step: (s: GameState) => GameState) => {
+    const next = step(stateRef.current);
+    if (next === stateRef.current) return;
+    stateRef.current = next;
+    setState(next);
+  }, []);
+  const findDetourCb = useCallback((id: DetourId) => onDetour((s) => findDetour(s, id)), [onDetour]);
+  const lightDetourCb = useCallback((id: DetourId) => onDetour((s) => lightDetour(s, id)), [onDetour]);
   const deliver = useCallback(
     (id: string): Livraison<GameState> => {
       const r = livrerLaCommande(stateRef.current, id);
@@ -386,6 +400,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       ensureOpenWorldLands,
       deliver,
       tapStory,
+      findDetour: findDetourCb,
+      lightDetour: lightDetourCb,
       moveTo,
       arrange,
       launch,
@@ -415,6 +431,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       ensureOpenWorldLands,
       deliver,
       tapStory,
+      findDetourCb,
+      lightDetourCb,
       moveTo,
       arrange,
       launch,

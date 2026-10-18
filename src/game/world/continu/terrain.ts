@@ -6,7 +6,7 @@
 import { FacetBuilder, type Facets } from './facets';
 import { SHADOW_DIR } from './sky';
 import { distance, distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { BEACONS_FLAT, CLIFF, COAST, COLORS_6E, COMMONS_FLAT, DECK_HEIGHT, DOCK, ECLUSES_LANDING, ENGINE_FLAT, ISLET, LAGOON, LOOKOUT_RAMP, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PASS, PATH_EDGES, PATH_NODES, PLACES, RIVER, RIVER_MOUTH, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, STRAITS, TERRAIN, UPLAND, type StraitId } from './plan6e';
+import { BEACONS_FLAT, CLIFF, COAST, COLORS_6E, COMMONS_FLAT, DECK_HEIGHT, DETOUR_HILL, DETOUR_HILLS, DOCK, ECLUSES_LANDING, ENGINE_FLAT, ISLET, LAGOON, LOOKOUT_RAMP, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PASS, PATH_EDGES, PATH_NODES, PLACES, RIVER, RIVER_MOUTH, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, STRAITS, TERRAIN, UPLAND, type DetourHill, type StraitId } from './plan6e';
 
 /** Les bras de mer, dans l'ordre de `STRAITS`, et leurs noms dans le même ordre. */
 const STRAIT_LIST = Object.values(STRAITS);
@@ -180,7 +180,9 @@ function hillOf(i: number, j: number): Hill | null {
   }
   r = Math.min(r, H.radius[0] + (H.radius[1] - H.radius[0]) * hash2(i + 7, j + 13));
   let hill: Hill | null = null;
-  if (r >= H.minRadius) {
+  // Une colline de Détour a pris la place (plan6e.ts, `DETOUR_HILLS`) : pas de colline tirée qui la touche.
+  const nearDetour = DETOUR_HILLS.some((d) => distance(c, d.at) < r + detourReach(d));
+  if (r >= H.minRadius && !nearDetour) {
     // La hauteur suit le rayon gardé : une petite colline n'est jamais une aiguille.
     const t = hash2(i + 31, j + 57);
     const h = (H.height[0] + (H.height[1] - H.height[0]) * t) * Math.min(1, r / 10);
@@ -207,11 +209,65 @@ function hillHeight(hl: Hill, p: Vec2): number {
   return hl.h * Math.min(1, (1 - t) / (1 - HILLS.top));
 }
 
+/** La longueur de la rampe d'une colline de Détour, du centre de son plateau à son pied. */
+const rampLength = (d: DetourHill): number => DETOUR_HILL.plateau + d.height / DETOUR_HILL.ramp;
+
+/** Jusqu'où va une colline de Détour depuis le centre de son plateau (sa rampe, plus loin que ses falaises). */
+export const detourReach = (d: DetourHill): number => Math.max(rampLength(d), (DETOUR_HILL.plateau + d.height / DETOUR_HILL.cliff) / Math.cos(Math.PI / 6)) + 0.5;
+
+/** Le pied de la rampe d'une colline de Détour, là où elle rejoint le sol. */
+export function detourFoot(d: DetourHill): Vec2 {
+  const l = rampLength(d);
+  return { x: d.at.x + Math.cos(d.face) * l, z: d.at.z + Math.sin(d.face) * l };
+}
+
+/**
+ * La hauteur d'une colline de Détour en `p`, et la part de la colline sous lui : son plateau, sa rampe (la face douce) ou
+ * une falaise. Le plateau et ses six pans en falaise font un tronc de pyramide ; la rampe, droite, prolonge le plateau
+ * vers `face`, ses côtés en falaise.
+ */
+function detourHillAt(d: DetourHill, p: Vec2): { h: number; part: 'top' | 'ramp' | 'cliff' } | null {
+  const dx = p.x - d.at.x;
+  const dz = p.z - d.at.z;
+  const reach = detourReach(d);
+  if (dx * dx + dz * dz >= reach * reach) return null;
+  const { plateau, cliff, ramp, halfWidth } = DETOUR_HILL;
+  let t = 0;
+  for (let k = 0; k < 6; k++) {
+    const a = d.face + (Math.PI * k) / 3;
+    t = Math.max(t, dx * Math.cos(a) + dz * Math.sin(a));
+  }
+  const body = d.height - cliff * Math.max(0, t - plateau);
+  const ux = Math.cos(d.face);
+  const uz = Math.sin(d.face);
+  const along = dx * ux + dz * uz;
+  const lateral = Math.abs(dz * ux - dx * uz);
+  const slope = along > plateau ? d.height - ramp * (along - plateau) - cliff * Math.max(0, lateral - halfWidth) : -Infinity;
+  const h = Math.max(body, slope);
+  if (h <= 0) return null;
+  if (t <= plateau) return { h, part: 'top' };
+  return { h, part: slope >= body && lateral <= halfWidth ? 'ramp' : 'cliff' };
+}
+
+/** La colline de Détour la plus haute en `p`, et sa part, ou rien. */
+function detourAt(p: Vec2): { h: number; part: 'top' | 'ramp' | 'cliff' } | null {
+  let best: { h: number; part: 'top' | 'ramp' | 'cliff' } | null = null;
+  for (const d of DETOUR_HILLS) {
+    const o = detourHillAt(d, p);
+    if (o && (!best || o.h > best.h)) best = o;
+  }
+  return best;
+}
+
 /**
  * Le pan de colline sous `p` regarde-t-il le soleil ? `null` hors d'une colline ou sur son sommet plat. Le pan, pas la
  * facette : toutes les facettes d'un pan prennent le même vert, même celles qu'une arête coupe.
  */
 function hillSunny(p: Vec2): boolean | null {
+  // La rampe d'un Détour, toujours du vert clair du soleil, d'où qu'elle regarde : la face qui se monte se lit de loin
+  // (artiste technique 3D) ; son plateau prend le vert du sol.
+  const detour = detourAt(p);
+  if (detour && detour.h >= hillsAtRandom(p)) return detour.part === 'ramp' ? true : detour.part === 'top' ? null : false;
   const ci = Math.floor(p.x / HILLS.cell);
   const cj = Math.floor(p.z / HILLS.cell);
   let best = 0;
@@ -243,8 +299,13 @@ function hillSunny(p: Vec2): boolean | null {
   return sunny;
 }
 
-/** La hauteur des collines en `p` (rien sur l'eau ni près des chemins et des lieux). */
+/** La hauteur des collines en `p` (rien sur l'eau ni près des chemins et des lieux), Détours compris. */
 export function hillsAt(p: Vec2): number {
+  return Math.max(hillsAtRandom(p), detourAt(p)?.h ?? 0);
+}
+
+/** La hauteur des collines tirées au hasard en `p`. */
+function hillsAtRandom(p: Vec2): number {
   const ci = Math.floor(p.x / HILLS.cell);
   const cj = Math.floor(p.z / HILLS.cell);
   let h = 0;
