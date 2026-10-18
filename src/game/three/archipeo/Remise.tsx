@@ -16,6 +16,13 @@
 // sur un écran vraiment bas, une fois sa taille mesurée, comme en mission. La livraison (`deliver`, celle de la grille)
 // s'écrit une fois, à l'état final ; toute sortie par l'application (Retour du système, une autre adresse) passe d'abord
 // par lui, et coupe la voix. Une coupure brutale avant n'écrit rien : la commande reste prête.
+//
+// Lot L2, l'entraide : la même remise pour ses deux gestes. « Donner » : les blocs donnés descendent un à un dans une
+// caisse ouverte, aux pieds de l'habitant (world/continu/caisse.ts), et la fin dit l'étape suivante (« Apporte la
+// lanterne au Phare. ») ; « Continuer » seul, jamais « Y aller » (arbitrages, point 5) : au retour, la suggestion la
+// porte. « Apporter » : l'objet passe de la main de Kéo à sa place, d'un seul bloc ; la fin « posée », puis les 50 XP de
+// l'entraide finie, avec l'icône et le compte habituels. L'étape (`tapStory`) s'écrit comme la livraison : une fois, à
+// l'état final.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { Icon } from '../../../components/Icon';
 import { SpeakButton } from '../../../components/SpeakButton';
@@ -43,8 +50,8 @@ type Phase = 'consigne' | 'pose' | 'fin';
 interface Props {
   world: OpenWorld;
   request: RemiseRequest;
-  /** Écrit la livraison (une fois : le composant la garde). */
-  deliver(): void;
+  /** Écrit la livraison, ou l'étape d'entraide (une fois : le composant la garde). */
+  act(): void;
   /** « Continuer » : la remise est finie, la page rend le monde. */
   onClose(): void;
 }
@@ -52,7 +59,7 @@ interface Props {
 /** La voix parle-t-elle encore ? */
 const speaking = () => isSpeechAvailable() && window.speechSynthesis.speaking;
 
-export function Remise({ world, request, deliver, onClose }: Props) {
+export function Remise({ world, request, act, onClose }: Props) {
   const { settings, speak, stop } = useSettings();
   const grand = texteGrand(settings);
   const box = useRef<HTMLDivElement>(null);
@@ -75,10 +82,10 @@ export function Remise({ world, request, deliver, onClose }: Props) {
   // Au plus grand texte sur un écran bas, « Vue simple » d'office (comme en mission) : l'état final, sa liste.
   const [simple, setSimple] = useState(false);
   const delivered = useRef(false);
-  const deliverOnce = useRef(deliver);
+  const deliverOnce = useRef(act);
   useEffect(() => {
-    deliverOnce.current = deliver;
-  }, [deliver]);
+    deliverOnce.current = act;
+  }, [act]);
   const writeDelivery = useCallback(() => {
     if (delivered.current) return;
     delivered.current = true;
@@ -122,15 +129,12 @@ export function Remise({ world, request, deliver, onClose }: Props) {
       setPhase('pose');
       world.remiseStart();
     };
-    world.remise(
-      { place: request.place, amenagement: request.amenagement },
-      {
-        element: () => {
-          if (settings.sounds) playWoodTap();
-        },
-        done: () => toFinalRef.current(false),
+    world.remise(request.play, {
+      element: () => {
+        if (settings.sounds) playWoodTap();
       },
-    );
+      done: () => toFinalRef.current(false),
+    });
     const voice = settings.autoRead && isSpeechAvailable();
     if (voice) speak(consigne, () => window.setTimeout(start, 0));
     // La fin de la voix qui n'arrive jamais, ou pas de voix : le délai borné (plus long d'un cap quand la voix lit).
@@ -148,7 +152,7 @@ export function Remise({ world, request, deliver, onClose }: Props) {
         world.remise(null);
       });
     };
-    // Une seule remise par montage : la page la monte avec sa clé (la commande).
+    // Une seule remise par montage : la page la monte avec sa clé (la commande, ou la quête et son étape).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -237,6 +241,15 @@ export function Remise({ world, request, deliver, onClose }: Props) {
             ''
           )}
         </p>
+        {/* L'XP d'une entraide finie, après la phrase de fin, avec l'icône et le compte habituels (ceux du bilan). */}
+        {final && request.xp ? (
+          <ul className="world-done-pills open-world-remise-gain">
+            <li aria-label={`${request.xp} XP`}>
+              <Icon name="zap" size="1.4rem" />
+              <span aria-hidden="true">+{request.xp}</span>
+            </li>
+          </ul>
+        ) : null}
       </section>
       {final && (
         <div className="open-world-remise-suite">

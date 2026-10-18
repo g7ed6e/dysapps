@@ -7,6 +7,7 @@ import {
   disassembleBlock,
   buildBridge as buildBridgePure,
   completeExercise,
+  completeRevision,
   completePortalQuest,
   fillPlanCell as fillPlanCellPure,
   launchVehicle as launchVehiclePure,
@@ -54,6 +55,12 @@ interface BloclandContextValue {
    */
   disposition: number;
   complete: (def: ExerciseDef, results: ItemResult[]) => Completion;
+  /**
+   * Un morceau d'une révision jouée dans la scène d'un lieu du monde ouvert (GD-20, point 4, lot L3) : la file de
+   * répétition et les blocs d'une révision, sans rien d'une mission finie (ni étape de quête, ni commande, ni partie du
+   * bâtiment). `last` : le dernier morceau du passage, qui compte, lui, comme un exercice de la session.
+   */
+  completeRevision: (def: ExerciseDef, results: ItemResult[], last: boolean) => Completion;
   /** Une mission du portail (l'école du village) terminée, score entre 0 et 1 : des blocs de l'île de l'école. */
   completePortal: (score: number, firstTime: boolean) => PortalCompletion;
   /** Items à revoir aujourd'hui, sur les lieux ouverts. */
@@ -187,6 +194,14 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     for (const plan of completion.pose?.plansFinis ?? []) completePlan(plan.reward.xp);
     return completion;
   }, [completePlan, commandeQuiArrive]);
+
+  const completeRevisionInPlace = useCallback((def: ExerciseDef, results: ItemResult[], last: boolean) => {
+    const completion = completeRevision(stateRef.current, def, results, todayISO());
+    stateRef.current = completion.state;
+    setState(completion.state);
+    if (last) setSessionCount((n) => n + 1);
+    return completion;
+  }, []);
 
   const completePortal = useCallback((score: number, firstTime: boolean) => {
     const completion = completePortalQuest(stateRef.current, score, firstTime, todayISO());
@@ -354,6 +369,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       state,
       disposition,
       complete,
+      completeRevision: completeRevisionInPlace,
       completePortal,
       dueCount,
       sessionCount,
@@ -382,6 +398,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       state,
       disposition,
       complete,
+      completeRevisionInPlace,
       completePortal,
       dueCount,
       sessionCount,

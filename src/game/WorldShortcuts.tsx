@@ -42,7 +42,6 @@ export function WorldShortcuts({
   resumeFrom,
   resumeAt,
   onRequests,
-  countQuests = true,
 }: {
   a: ArchipelagoId;
   requestsOpen: boolean;
@@ -52,8 +51,6 @@ export function WorldShortcuts({
    * liste, par-dessus le monde) ; rien : la fiche des commandes de la grille.
    */
   onRequests?: () => void;
-  /** Le compteur compte aussi la quête d'entraide (rien dans le monde ouvert avant le lot L2). */
-  countQuests?: boolean;
   /**
    * D'où la dernière mission ramène (le monde continu, GD-20, lot 2 : une mission de l'école ramène à sa porte) ; rien :
    * son retour habituel.
@@ -70,7 +67,7 @@ export function WorldShortcuts({
   const textes = useTextes();
   const resume = lastPlace(state.world.links);
   const reviews = questsToReview(state.spaced, state.world.links);
-  const commandes = textes.commandes && !requestsLater ? requestCount(state.world, a, countQuests && Boolean(textes.quetes)) : 0;
+  const commandes = textes.commandes && !requestsLater ? requestCount(state.world, a, Boolean(textes.quetes)) : 0;
   return (
     <nav className="world-shortcuts" data-couvre="bouton" data-tuto="raccourcis" aria-label="Reprendre">
       <WorldButton

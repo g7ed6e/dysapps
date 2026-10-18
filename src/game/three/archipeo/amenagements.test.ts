@@ -26,7 +26,7 @@ import { AMENAGEMENTS, AMENAGEMENT_SCALE, ASSISE_STONE, ASSISE_TRIANGLES, HABITA
 import { OBJECT_TOUCH_PIXELS, nearestPlace, touchedObject, type ObjectTarget } from '../../world/continu/toucher';
 import { casesDeLaPetiteConstruction } from '../../world/fixtures';
 import { COMMANDES } from '../../world/requests';
-import { POTENCE, amenagementsCost, drawnObject, placedAmenagement, posedAmenagements } from './amenagements';
+import { LANTERNE_DE_QUAI, POTENCE, amenagementsCost, drawnObject, placedAmenagement, posedAmenagements } from './amenagements';
 
 const field = buildHeightField();
 const ground = (x: number, z: number) => portFloor(x, z) ?? heightOnMesh(field, x, z);
@@ -463,6 +463,23 @@ describe('Les lanternes éteintes', () => {
       expect(hasColor(id, 0xffd36b), id).toBe(false);
     }
     for (const a of AMENAGEMENTS) expect(hasColor(a.id, 0xffd36b), a.id).toBe(false);
+  });
+
+  it('la lanterne d’entraide du Phare : une lanterne de quai sur le banc, son anse au-dessus du toit, plus de poteau', () => {
+    const d = drawnObject('french-6e-phonology-fixture-2');
+    // Le repère de la forme : Y, la hauteur, en cases.
+    let top = 0;
+    let lowGlass = Infinity;
+    const glass = linearRgb(MATTE_GLASS.cote);
+    for (let k = 0; k < d.positions.length; k += 3) {
+      top = Math.max(top, d.positions[k + 1]);
+      if (same(d.colors, k, glass)) lowGlass = Math.min(lowGlass, d.positions[k + 1]);
+    }
+    expect(top).toBeGreaterThan(LANTERNE_DE_QUAI.roof);
+    expect(top).toBeLessThan(LANTERNE_DE_QUAI.anse + 0.1);
+    // Les vitres commencent juste au-dessus du banc (0,56 case) : la lanterne est posée, pas en haut d'un poteau.
+    expect(lowGlass).toBeCloseTo(LANTERNE_DE_QUAI.glass[0], 2);
+    expect(d.marks).toHaveLength(1);
   });
 });
 

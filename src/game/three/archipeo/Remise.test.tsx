@@ -2,7 +2,8 @@
 // final (la livraison écrite une fois, la phrase de fin, « Continuer » qui prend le focus) ; un toucher qui saute mène à
 // l'état final, jamais plus loin ; « Vue simple » aussi ; une sortie par l'application passe par l'état final. Au plus
 // grand texte, la « Vue simple » d'office seulement sur un écran vraiment bas, une fois la taille mesurée ; sous le mode
-// strict de React, une seule livraison.
+// strict de React, une seule livraison. Lot L2 : « Donner » (la caisse jouée, la fin qui dit l'étape suivante, l'étape
+// écrite une fois) et « Apporter » (l'objet depuis la main de Kéo, les 50 XP après la phrase de fin).
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { StrictMode, type ReactNode } from 'react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
@@ -10,7 +11,9 @@ import { SettingsProvider } from '../../../core/SettingsContext';
 import { COMMANDES } from '../../world/requests';
 import { voiceFallbackMs } from '../../world/continu/remise';
 import { Remise } from './Remise';
-import { remiseOf, type RemiseRequest } from './remiseOf';
+import { sanitizeState } from '../../engine';
+import { STORIES } from '../../world/stories';
+import { entraideRemiseOf, remiseOf, type RemiseRequest } from './remiseOf';
 import type { OpenWorld, RemiseEvents } from './scene';
 
 const request = remiseOf(COMMANDES.find((c) => c.fixture === 'french-6e-phonology-fixture-1')!.id) as RemiseRequest;
@@ -30,14 +33,14 @@ function fakeWorld() {
 /** Le plus grand texte des réglages (`texteGrand`) : OpenDyslexic grande taille, espacements au maximum. */
 const GRAND_TEXTE = { fontSize: 32, letterSpacing: 0.2 };
 
-function renderRemise({ w = 1024, h = 768, strict = false }: { w?: number; h?: number; strict?: boolean } = {}) {
+function renderRemise({ w = 1024, h = 768, strict = false, req = request }: { w?: number; h?: number; strict?: boolean; req?: RemiseRequest } = {}) {
   const f = fakeWorld();
   const deliver = vi.fn();
   const onClose = vi.fn();
   const tree: ReactNode = (
     <SettingsProvider>
       <div data-w={w} data-h={h}>
-        <Remise world={f.world} request={request} deliver={deliver} onClose={onClose} />
+        <Remise world={f.world} request={req} act={deliver} onClose={onClose} />
       </div>
     </SettingsProvider>
   );
@@ -176,4 +179,37 @@ it('quitter avant l’état final (une autre adresse, le Retour du système) l�
   await Promise.resolve();
   expect(deliver).toHaveBeenCalledTimes(1);
   expect(calls.remise).toHaveBeenLastCalledWith(null);
+});
+
+const lanterne = STORIES.find((x) => x.id === 'story-6e-1')!;
+const entraide = (step: number, stock: Record<string, number> = {}) => sanitizeState({ stock, world: { links: [], stories: [{ id: lanterne.id, step }] } });
+
+it('« Donner » : la caisse et ses blocs dans la scène, la fin dit l’étape suivante, l’étape écrite une fois, « Continuer » seul', () => {
+  const req = entraideRemiseOf(entraide(1, { 'french-6e-phonology': 2 }), lanterne.id)!;
+  const { calls, events, deliver } = renderRemise({ req });
+  expect(calls.remise).toHaveBeenCalledWith({ place: 'quais', caisse: { count: 2, block: expect.objectContaining({ dessus: expect.any(Number), cote: expect.any(Number) }) } }, expect.anything());
+  expect(consigneZone()).toHaveTextContent('Tu donnes 2 blocs de bois pour la lanterne.');
+  act(() => vi.advanceTimersByTime(voiceFallbackMs(req.consigne) + 10));
+  act(() => events().done());
+  expect(deliver).toHaveBeenCalledTimes(1);
+  expect(consigneZone()).toHaveTextContent('Apporte la lanterne au Phare.');
+  // Une seule action : « Continuer », jamais « Y aller » (la suggestion la porte au retour) ; aucune XP avant la fin.
+  expect(screen.getAllByRole('button').map((b) => b.textContent?.trim())).toEqual(expect.arrayContaining(['Continuer']));
+  expect(screen.queryByRole('button', { name: /Y aller/ })).toBeNull();
+  expect(screen.queryByLabelText('50 XP')).toBeNull();
+});
+
+it('« Apporter » : l’objet part de la main de Kéo, puis la fin « posée » et les 50 XP après elle', () => {
+  const req = entraideRemiseOf(entraide(2), lanterne.id)!;
+  const { calls, deliver } = renderRemise({ req });
+  expect(calls.remise).toHaveBeenCalledWith({ place: 'phare', amenagement: 'french-6e-phonology-fixture-2', carry: true }, expect.anything());
+  expect(consigneZone()).toHaveTextContent('Tu apportes la lanterne.');
+  expect(screen.queryByLabelText('50 XP')).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Passer' }));
+  expect(deliver).toHaveBeenCalledTimes(1);
+  expect(consigneZone()).toHaveTextContent('La lanterne est en place.');
+  const xp = screen.getByLabelText('50 XP');
+  expect(xp).toHaveTextContent('+50');
+  // Après la phrase, dans l'ordre du panneau.
+  expect(consigneZone().compareDocumentPosition(xp) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 });

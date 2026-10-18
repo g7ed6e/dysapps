@@ -38,6 +38,13 @@ describe('Le temps de la pose', () => {
   it('avec « Réduire les animations », tout est posé d’un coup', () => {
     expect(remiseAt(0, 4, true)).toEqual({ posed: 4, falling: null, done: true });
   });
+
+  it('l’objet apporté (lot L2) : un seul, plus lent qu’un élément qui descend', () => {
+    expect(REMISE_TIMING.carry).toBeGreaterThan(REMISE_TIMING.element);
+    expect(remiseDuration(1, REMISE_TIMING.carry)).toBeCloseTo(REMISE_TIMING.settle + REMISE_TIMING.carry, 5);
+    expect(remiseAt(REMISE_TIMING.settle + REMISE_TIMING.carry / 2, 1, false, REMISE_TIMING.carry)).toEqual({ posed: 0, falling: { index: 0, amount: expect.closeTo(0.5, 5) }, done: false });
+    expect(remiseAt(0, 1, true, REMISE_TIMING.carry).done).toBe(true);
+  });
 });
 
 describe('Sans voix', () => {

@@ -310,6 +310,38 @@ export function completeExercise(state: GameState, def: ExerciseDef, results: It
 }
 
 /**
+ * Une révision jouée dans la scène d'un lieu du monde ouvert (GD-20, point 4, lot L3, B2) : les seules questions dues
+ * d'un exercice, pas une partie entière. Les sept conditions du directeur du contenu pédagogique : la file enregistrée
+ * comme après une mission (`recordSpaced`, sous la même clé, à la fin de chaque exercice) ; le gain d'une révision
+ * d'aujourd'hui (`blocsDUneRevision`, quel que soit le score ; l'XP, la série et le coffre comme après une mission) ;
+ * mais une révision partielle ne change ni le niveau (`adapt`), ni les étoiles, ni le meilleur score, ni le nombre de
+ * parties : `progress` et `types` restent tels quels, et aucune partie du bâtiment ne se pose.
+ */
+export function completeRevision(state: GameState, def: ExerciseDef, results: ItemResult[], today: string, rng: () => number = Math.random): Completion {
+  const score = scoreOf(results);
+  const perfect = results.every((r) => r.correct && r.attempts <= 1 && !r.usedHelp);
+  const blocks = blocsDUneRevision(def);
+  const xp = Math.round(def.reward.xp * (perfect ? 1.5 : 1));
+  let spaced = state.spaced;
+  for (const r of results) spaced = recordSpaced(spaced, `${def.id}:${r.key}`, r.correct && r.attempts <= 1, today);
+  const { streak, inventory, chests, chestBlock } = playedToday(state, def.reward.block, blocks, today, rng);
+  return {
+    state: { ...state, spaced, stock: inventory, streak: streak.streak, chests },
+    score,
+    stars: starsFor(score),
+    newBest: false,
+    blocks,
+    block: def.reward.block,
+    bonus: { stars: 0, first: 0 },
+    xp,
+    perfect,
+    revision: true,
+    streak,
+    ...(chestBlock ? { chestBlock } : {}),
+  };
+}
+
+/**
  * Une mission jouée aujourd'hui : ses blocs dans l'inventaire, le streak du jour et, tous les CHEST_EVERY jours
  * d'affilée, un coffre de blocs communs. Partagé par les missions d'île et celles de l'école du village.
  */

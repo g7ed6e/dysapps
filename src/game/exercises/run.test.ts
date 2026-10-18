@@ -1,6 +1,6 @@
 import { exercisesOf, loadAllExercises } from './index';
 import { SCREEN_TYPES } from './registry';
-import { runItems, runSeed } from './run';
+import { revisionItems, runItems, runSeed } from './run';
 import type { ExerciseDef } from './types';
 
 const EXERCISES = await loadAllExercises();
@@ -63,4 +63,13 @@ it('les lots élargis ont des clés uniques et des réponses présentes dans les
       if (Array.isArray(item.choices) && item.answer !== undefined) expect(item.choices.map(String), `${def.id} ${item.key}`).toContain(String(item.answer));
     if (def.perRun) expect(def.perRun, def.id).toBeLessThanOrEqual(def.items.length);
   }
+});
+
+it('une révision dans la scène d’un lieu ne joue que les items dus, sous leur clé, dans l’ordre de la file (GD-20, point 4, lot L3)', () => {
+  const def = full(exercisesOf('maths-6e-calculation', 'measures')[0]);
+  const keys = [def.items[5].key, def.items[2].key, 'retiree'];
+  const items = revisionItems(def, keys, `${def.id}#r`);
+  // La clé retirée du contenu est laissée de côté ; les autres gardent leur ordre et leur contenu.
+  expect(items.map((i) => i.key)).toEqual([def.items[5].key, def.items[2].key]);
+  expect(items[0].prompt).toBe(def.items[5].prompt);
 });
