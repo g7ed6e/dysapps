@@ -3,7 +3,7 @@ import { GAME_VERSION } from '../../core/migration';
 import type { BiomeId, BlockId } from '../biomes';
 import type { TirageAssemblage } from '../world/assembly';
 import type { Layout } from '../world/savedLayout';
-import type { DetourId } from '../world/detoursSaved';
+import type { DetourId } from './detours';
 
 export interface ExerciseProgress {
   stars: 0 | 1 | 2 | 3;
@@ -95,7 +95,7 @@ export interface World {
    */
   challengesKeptOpen?: BiomeId[];
   /**
-   * Les Détours trouvés dans le monde continu (GD-20, déplacement libre, lot 2 : world/detoursSaved.ts), dans leur
+   * Les Détours trouvés dans le monde continu (GD-20, déplacement libre, lot 2 : engine/detours.ts, world/detoursSaved.ts), dans leur
    * ordre : leur sente reste tracée. Absent tant qu'aucun n'est trouvé, et dans une sauvegarde d'avant les Détours. Ne
    * sert jamais à montrer ce qui manque (référent dys).
    */

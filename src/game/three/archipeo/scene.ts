@@ -999,12 +999,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const playing = t !== null && t >= 0 && t < FAUNA_END;
     faunaMesh.visible = near || playing;
     if (!faunaMesh.visible) return;
-    // Avec « Réduire les animations », la baleine se tient en surface tant que Kéo est là.
-    const pose = faunaPose(shore, reduceMotion ? (detourHere === shore.id ? 0 : null) : t, reduceMotion);
-    // Rien ne bouge (les oiseaux posés, la baleine sous l'eau ou immobile) : les sommets d'avant restent.
-    const key = reduceMotion || !playing ? (pose.whale ? 'surface' : 'rest') : null;
+    // Avec « Réduire les animations », la baleine se tient en surface tant que Kéo est là. Rien ne bouge (les oiseaux
+    // posés, la baleine sous l'eau ou immobile) : les sommets d'avant restent, sans rien calculer.
+    const surface = reduceMotion && detourHere === shore.id;
+    const key = reduceMotion ? (surface ? 'surface' : 'rest') : playing ? null : 'rest';
     if (key !== null && key === faunaKey) return;
     faunaKey = key;
+    const pose = faunaPose(shore, reduceMotion ? (surface ? 0 : null) : t, reduceMotion);
     const w = pose.whale;
     if (w) writeFacets(whaleBase, 0, w.x, w.y, w.z, w.yaw - Math.PI / 2, w.pitch);
     else faunaPositions.fill(0, 0, spoutAt);

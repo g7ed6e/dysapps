@@ -1,20 +1,10 @@
-// Les Détours du monde continu dans la sauvegarde (GD-20, déplacement libre, lot 2). Leur dessin et leur place restent
-// dans world/continu/detours.ts, que le reste du jeu ne lit pas (la coupure du monde continu) : ce fichier n'en garde
-// que les identifiants, les mêmes dans le même ordre (le test des Détours le vérifie).
+// Trouver un Détour du monde continu et rallumer son cairn, sur l'état d'une partie (GD-20, déplacement libre, lot 2) ;
+// leurs identifiants et leur assainissement sont dans engine/detours.ts.
+import { sanitizeDetours, type DetourId } from '../engine/detours';
 import type { World } from '../engine/state';
-
-/** Les cinq Détours, un par terre. */
-export const DETOUR_IDS = ['butte-chantier', 'braise-herons', 'bout-large', 'colline-aube', 'haut-cretes'] as const;
-export type DetourId = (typeof DETOUR_IDS)[number];
 
 /** Les Détours dont le cairn se rallume : le seul de la Braise des Hérons. */
 export const DETOUR_CAIRNS: readonly DetourId[] = ['braise-herons'];
-
-/** Les Détours trouvés, dans l'ordre de `DETOUR_IDS`, sans doublon ni inconnu (la sauvegarde). */
-export function sanitizeDetours(raw: unknown): DetourId[] {
-  if (!Array.isArray(raw)) return [];
-  return DETOUR_IDS.filter((id) => raw.includes(id));
-}
 
 /** Un Détour trouvé : sa sente reste tracée. Le même état s'il l'était déjà (rien à écrire). */
 export function findDetour<S extends { world: World }>(state: S, id: DetourId): S {

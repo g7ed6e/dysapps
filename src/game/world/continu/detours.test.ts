@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { sanitizeState } from '../../engine/sanitize';
 import { EMPTY_STATE } from '../../engine/state';
-import { DETOUR_CAIRNS, DETOUR_IDS as SAVED_IDS, findDetour, lightDetour, sanitizeDetours } from '../detoursSaved';
-import { DETOURS, DETOUR_IDS, SENTE, cairnSpot, detourAtPoint, detourFacets, keptClearForDetour } from './detours';
+import { DETOUR_IDS as SAVED_IDS, sanitizeDetours } from '../../engine/detours';
+import { DETOUR_CAIRNS, findDetour, lightDetour } from '../detoursSaved';
+import { followPose, detourRise, detourViewStep } from './camera';
+import { DETOURS, DETOUR_IDS, FAUNA, FAUNA_BLOW, FAUNA_END, SENTE, birdFacets, cairnSpot, detourAtPoint, detourFacets, faunaPose, keptClearForDetour } from './detours';
 import { buildWalkGrid, cellOf, freeRoute, isWalkable } from './freeWalk';
 import { distance, distanceToPolyline, linearRgb, type Vec2 } from './geometry';
 import { LANDS } from './lands';
@@ -151,5 +153,56 @@ describe('les Détours', () => {
     // Un cairn rallumé sans son Détour trouvé ne se garde pas.
     const odd = sanitizeState({ ...EMPTY_STATE, world: { ...EMPTY_STATE.world, detoursLit: ['braise-herons'] } });
     expect(odd.world.detoursLit).toBeUndefined();
+  });
+
+  it('montent la vue en 1,2 s et la rendent en 0,8 s, sans la tourner ; d’un coup avec « Réduire les animations »', () => {
+    let v = 0;
+    for (let k = 0; k < 11; k++) v = detourViewStep(v, 1, 0.1, false);
+    expect(v).toBeLessThan(1);
+    v = detourViewStep(v, 1, 0.1, false);
+    expect(v).toBe(1);
+    for (let k = 0; k < 8; k++) v = detourViewStep(v, 0, 0.1, false);
+    expect(v).toBeCloseTo(0, 6);
+    expect(detourViewStep(0, 1, 0.01, true)).toBe(1);
+    expect(detourViewStep(1, 0, 0.01, true)).toBe(0);
+    expect(detourRise(0)).toBe(0);
+    expect(detourRise(1)).toBe(1);
+    // Plus haut, plus loin (×1,6 au plus), le même cap.
+    const focus = { x: 0, y: 0, z: 0 };
+    const low = followPose(focus, 0, undefined, 0.7, 0);
+    const high = followPose(focus, 0, undefined, 0.7, 1);
+    expect(high.position.y).toBeGreaterThan(low.position.y);
+    const flat = (p: { position: { x: number; z: number } }) => Math.hypot(p.position.x, p.position.z);
+    expect(flat(high) / flat(low)).toBeLessThanOrEqual(1.6 + 1e-9);
+    expect(Math.atan2(high.position.x, high.position.z)).toBeCloseTo(Math.atan2(low.position.x, low.position.z), 9);
+  });
+
+  it('jouent la baleine et les oiseaux du bord d’eau toujours de même, loin de Kéo, et immobiles avec « Réduire les animations »', () => {
+    const shore = DETOURS.find((d) => d.kind === 'rive')!;
+    // Au repos : les oiseaux posés, ailes repliées, à `perchOff` de Kéo au moins ; pas de baleine.
+    const rest = faunaPose(shore, null);
+    expect(rest.whale).toBeNull();
+    expect(rest.spout).toBeNull();
+    for (const b of rest.birds) {
+      expect(b.perched).toBe(true);
+      expect(distance(b, shore.at)).toBeGreaterThanOrEqual(FAUNA.perchOff - 1e-9);
+    }
+    // La même scène au même instant.
+    expect(faunaPose(shore, 2)).toEqual(faunaPose(shore, 2));
+    // La baleine loin de Kéo, son souffle au début de son temps en surface, rien après la fin.
+    for (let t = 0; t < FAUNA_END; t += 0.25) {
+      const p = faunaPose(shore, t);
+      if (p.whale) expect(distance(p.whale, shore.at)).toBeGreaterThan(12);
+      for (const b of p.birds) expect(distance(b, shore.at), `${t}`).toBeGreaterThan(2.5);
+    }
+    expect(faunaPose(shore, FAUNA_BLOW + 0.3).spout).not.toBeNull();
+    expect(faunaPose(shore, FAUNA_END + 0.1)).toEqual(rest);
+    // « Réduire les animations » : le dos en surface, sans souffle, les oiseaux posés.
+    const still = faunaPose(shore, FAUNA_BLOW + 0.3, true);
+    expect(still.whale?.pitch).toBe(0);
+    expect(still.spout).toBeNull();
+    expect(still.birds).toEqual(rest.birds);
+    // Posé ou en vol, le même nombre de sommets : la vue passe de l'un à l'autre sans changer son maillage.
+    expect(birdFacets(true).positions.length).toBe(birdFacets().positions.length);
   });
 });

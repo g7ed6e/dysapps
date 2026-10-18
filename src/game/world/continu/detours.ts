@@ -14,7 +14,7 @@ import { LAMP_COLOR } from './places';
 import { COLORS_6E, DETOUR_HILL, DETOUR_HILLS } from './plan6e';
 import { detourFoot, detourReach, heightAt, landDistance, standingHeight } from './terrain';
 
-/** Les cinq Détours, un par terre (les mêmes, dans le même ordre, que world/detoursSaved.ts, pour la sauvegarde). */
+/** Les cinq Détours, un par terre (les mêmes, dans le même ordre, que engine/detours.ts, pour la sauvegarde). */
 export const DETOUR_IDS = ['butte-chantier', 'braise-herons', 'bout-large', 'colline-aube', 'haut-cretes'] as const;
 export type DetourId = (typeof DETOUR_IDS)[number];
 
@@ -267,6 +267,24 @@ const ease = (u: number) => {
   return x * x * (3 - 2 * x);
 };
 
+/** Les perchoirs des oiseaux d'un bord d'eau, faits une fois : en rang au bord de l'eau, d'un côté du Détour, à `perchOff` unités de Kéo au moins. */
+const perches = new Map<DetourId, FaunaPose['birds']>();
+function perchesOf(shore: Detour): FaunaPose['birds'] {
+  let out = perches.get(shore.id);
+  if (!out) {
+    const sx = Math.cos(shore.face);
+    const sz = Math.sin(shore.face);
+    out = Array.from({ length: FAUNA.birds }, (_, k) => {
+      const side = FAUNA.perchOff + k * 0.9;
+      const x = shore.at.x + sx * (0.8 + 0.3 * (k % 2)) - sz * side;
+      const z = shore.at.z + sz * (0.8 + 0.3 * (k % 2)) + sx * side;
+      return { x, y: Math.max(0, standingHeight(heightAt({ x, z }))), z, yaw: shore.face + 0.6 * k, perched: true };
+    });
+    perches.set(shore.id, out);
+  }
+  return out;
+}
+
 /** La longueur de la baleine, de la queue au museau. */
 const WHALE_LENGTH = 7.5;
 
@@ -278,13 +296,7 @@ const WHALE_LENGTH = 7.5;
 export function faunaPose(shore: Detour, t: number | null, still = false): FaunaPose {
   const sx = Math.cos(shore.face);
   const sz = Math.sin(shore.face);
-  // Les perchoirs : en rang au bord de l'eau, d'un côté du Détour, à `perchOff` unités de Kéo au moins.
-  const perch = Array.from({ length: FAUNA.birds }, (_, k) => {
-    const side = FAUNA.perchOff + k * 0.9;
-    const x = shore.at.x + sx * (0.8 + 0.3 * (k % 2)) - sz * side;
-    const z = shore.at.z + sz * (0.8 + 0.3 * (k % 2)) + sx * side;
-    return { x, y: Math.max(0, standingHeight(heightAt({ x, z }))), z, yaw: shore.face + 0.6 * k, perched: true };
-  });
+  const perch = perchesOf(shore);
   const playing = t !== null && t >= 0 && t < FAUNA_END;
   // Le cap de la baleine : le long de la côte, de son côté vers le milieu.
   const yaw = Math.atan2(sx, -sz);

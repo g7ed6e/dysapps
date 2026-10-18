@@ -395,7 +395,9 @@ export default function OpenWorldPage() {
   useEffect(() => {
     world.current?.setDetours(state.world.detours ?? [], state.world.detoursLit ?? []);
   }, [state.world.detours, state.world.detoursLit, ready]);
-  const relightHere = detourHere !== null && detourById(detourHere).kind === 'cairn' && !(state.world.detoursLit ?? []).includes(detourHere);
+  // Le cairn éteint où se tient Kéo, à rallumer, ou rien.
+  const cairnToLight = detourHere !== null && detourById(detourHere).kind === 'cairn' && !(state.world.detoursLit ?? []).includes(detourHere) ? detourHere : null;
+  const relightHere = cairnToLight !== null;
 
   useEffect(() => {
     world.current?.setMark(nextPlace?.id ?? null);
@@ -1077,7 +1079,7 @@ export default function OpenWorldPage() {
             ) : relightHere ? (
               // Au cairn éteint d'un Détour, un seul geste, à la place du bouton du monde (comme « Livrer ») ; ensuite,
               // la flamme reste, sans phrase ni « bravo ».
-              <button type="button" className="button primary" onClick={() => lightDetour(detourHere!)}>
+              <button type="button" className="button primary" onClick={() => cairnToLight && lightDetour(cairnToLight)}>
                 <Icon name="flame" /> Rallumer
               </button>
             ) : deliverHere ? (
