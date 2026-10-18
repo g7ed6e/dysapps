@@ -10,7 +10,7 @@
 import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, type CameraPose } from '../../world/continu/camera';
+import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose } from '../../world/continu/camera';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
@@ -114,6 +114,11 @@ export interface OpenWorldOptions {
    * liste, remplie sur place ; refaite quand `setSigns` change). Aucune pendant une question, une remise ou sur la Carte.
    */
   onSigns?(signs: readonly SignOnScreen[]): void;
+  /**
+   * La caméra a tourné autour de Kéo (GD-20, rotation libre) : `yaw` en radians, 0 tournée vers le nord, croissant quand
+   * le monde tourne dans le sens des aiguilles d'une montre ; la page en tourne sa boussole. À chaque image où il change.
+   */
+  onYaw?(yaw: number): void;
 }
 
 export type { RemiseEvents, SignOnScreen } from './remiseRun';
@@ -132,6 +137,11 @@ export interface OpenWorld {
   goTo(place: PlaceId, jump?: boolean): void;
   /** Saute le trajet en cours : Kéo est arrivé. */
   skip(): void;
+  /**
+   * Tourne la caméra autour de Kéo d'un cran (`1` : le monde dans le sens des aiguilles d'une montre, `-1` : dans l'autre),
+   * ou la remet vers le nord (`0`) ; en douceur, d'un coup avec « Réduire les animations ».
+   */
+  turn(step: -1 | 0 | 1): void;
   /** Kéo d'un coup à un endroit de l'Escale, tourné vers sa façade : la page en ouvre le panneau (`onPort`). */
   goToPort(spot: PortSpot): void;
   /** Ce que montre l'Escale (ses portes, ses trophées, l'état de la région, la pile) : refait seulement s'il change. */
@@ -313,6 +323,13 @@ const KEO_SILHOUETTE = { color: KEO_RING.color, opacity: 0.6 } as const;
 const WALK_GRID_DELAY = 2500;
 /** La couche de Kéo : dessiné à part, pour que sa silhouette se voie à travers le décor. */
 const KEO_LAYER = 1;
+/**
+ * La caméra qui tourne autour de Kéo (GD-20, « Le déplacement libre », rotation libre à deux doigts, choix du mainteneur
+ * du 18 octobre 2026) : un cran des boutons (un huitième de tour), en `seconds` ; les anneaux de tuiles refaits quand
+ * elle a tourné de plus de `rings` depuis leur dernier tirage ; deux doigts qui tournent de moins de `deadAngle` ne la
+ * tournent pas encore (un pincement ou deux doigts posés ne la bougent pas).
+ */
+const CAMERA_TURN = { step: Math.PI / 4, seconds: 0.35, rings: Math.PI / 8, deadAngle: 0.06 } as const;
 /**
  * La finesse du rendu : l'anticrénelage reste (la scène est légère, quelques milliers de triangles) ; le rapport de
  * pixels est plafonné à 2, puis ramené à 1 si l'appareil peine (des images de plus de 45 ms, trente de suite), comme
@@ -941,8 +958,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   // La caméra suit un point lissé (`focus`), monté de `lift` quand le relief cache Kéo ; une seule pose, remplie sur place.
   const focus: Vec3 = { ...keoFeet };
-  let lift = occlusionLift(focus, ground);
-  const pose: CameraPose = followPose(focus, lift);
+  // La caméra tournée autour de Kéo (GD-20, rotation libre) : `yaw`, et le tour en cours des boutons (`turning`).
+  let yaw = 0;
+  let turning: { from: number; to: number; start: number } | null = null;
+  let lift = occlusionLift(focus, ground, yaw);
+  const pose: CameraPose = followPose(focus, lift, undefined, yaw);
   // La taille de l'écran est relue au redimensionnement seulement (rien n'est lu ni créé à chaque image).
   let viewW = Math.max(1, host.clientWidth);
   let viewH = Math.max(1, host.clientHeight);
@@ -995,12 +1015,46 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let back = 0;
   const atExit = () => !walk && exit !== null && distance(here, exit.at) < 0.05;
   const follow = () => {
-    followPose(focus, lift, pose);
+    followPose(focus, lift, pose, yaw);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     applyPose(pose);
   };
   follow();
+  /**
+   * Tourne la caméra autour de Kéo, à l'angle `to` : la vue du retour d'une scénette se rend (la caméra qui suit reprend
+   * la main), la boussole de la page suit.
+   */
+  const setYaw = (to: number) => {
+    const y = wrapAngle(to);
+    if (y === yaw) return;
+    yaw = y;
+    exit = null;
+    back = 0;
+    options.onYaw?.(yaw);
+  };
+  /** La caméra d'un coup vers le nord (l'arrivée d'un « Y aller », l'Escale, une scénette). */
+  const faceNorth = () => {
+    turning = null;
+    setYaw(0);
+  };
+  /** Un tour des boutons : vers `to`, par le plus court, en douceur ; d'un coup avec « Réduire les animations ». */
+  const turnTo = (to: number) => {
+    if (reduceMotion) {
+      turning = null;
+      setYaw(to);
+      return;
+    }
+    turning = { from: yaw, to: yaw + wrapAngle(to - yaw), start: performance.now() };
+  };
+  /** Le tour des boutons, à l'image `now` : départ et arrivée en douceur. */
+  const stepTurn = (now: number) => {
+    if (!turning) return;
+    const u = Math.min(1, (now - turning.start) / (CAMERA_TURN.seconds * 1000));
+    const k = u * u * (3 - 2 * u);
+    setYaw(turning.from + (turning.to - turning.from) * k);
+    if (u >= 1) turning = null;
+  };
   // Un panneau ouvert (l'Escale, GD-20, lot 2 ; un lieu et sa liste de missions, point 8) : la part de l'écran qu'il
   // laisse, et l'endroit dont la caméra y garde le sujet (la porte, la galerie, l'établi ; le lieu, ou la trace que la
   // scénette vient de laisser), par un décalage de l'image, calculé à l'ouverture (Kéo ne bouge pas tant que le panneau
@@ -1022,7 +1076,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const reframe = () => {
     if (!frameRect || !framed || asked || remise || mapView) return;
-    followPose(focus, lift, pose);
+    followPose(focus, lift, pose, yaw);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     const subject = subjectOf(framed);
@@ -1045,6 +1099,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // La Carte ouverte : sa pose (plus bas, « La Carte des lieux ouverts »).
   let mapView: MapView | null = null;
   const ringCenter = { x: Number.NaN, z: Number.NaN };
+  let ringYaw = 0;
   let ringKey = '';
   // La scénette où se tient Kéo (plus bas, « La scénette d'un lieu »), et si l'étape qui porte sa trace est posée.
   let scenette: PlaceId | null = null;
@@ -1169,10 +1224,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const setNear = (now: boolean) => nearRing.set(nearIndices.map((i) => (now ? tiles.build(i, 'near') : (tiles.near(i) ?? tiles.build(i, 'far')))));
   /** Les anneaux autour du point suivi ; `now` (le départ, un saut) : les tuiles de près faites tout de suite. */
   const updateRings = (force = false, now = false) => {
-    if (!force && Math.hypot(focus.x - ringCenter.x, focus.z - ringCenter.z) < RING_MOVE) return;
+    if (!force && Math.hypot(focus.x - ringCenter.x, focus.z - ringCenter.z) < RING_MOVE && Math.abs(wrapAngle(yaw - ringYaw)) < CAMERA_TURN.rings) return;
     ringCenter.x = focus.x;
     ringCenter.z = focus.z;
-    const rings = tileRings(ringCenter, WORLD_FOG.far);
+    ringYaw = yaw;
+    const rings = tileRings(ringCenter, WORLD_FOG.far, yaw);
     const k = `${rings.near.join(',')}|${rings.far.join(',')}`;
     if (k !== ringKey) {
       ringKey = k;
@@ -1326,7 +1382,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     here = { ...stop.at };
     placeKeo(here);
     followStep(focus, aimed(), 0, true);
-    lift = occlusionLift(focus, ground);
+    lift = occlusionLift(focus, ground, yaw);
     updateRings(true, true);
     follow();
   };
@@ -1504,12 +1560,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const shut = stop !== door ? bridgeSite(firstClosed(landOf(place) as LinkedLand, closed)) : null;
     here = shut ? { ...stop.at } : pathNode(placeById(place).door).at;
     heading = shut ? Math.atan2(-shut.dir.x, -shut.dir.z) : FACING_CAMERA;
+    faceNorth();
     exit = null;
     back = 0;
     keo.rotation.y = heading;
     placeKeo(here);
     followStep(focus, aimed(), 0, true);
-    lift = occlusionLift(focus, ground);
+    lift = occlusionLift(focus, ground, yaw);
     updateRings(true, true);
     follow();
     arrive(place);
@@ -1519,12 +1576,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     heldBridge = null;
     here = pathNode(portNode(spot)).at;
     heading = portHeading(spot);
+    faceNorth();
     exit = null;
     back = 0;
     keo.rotation.y = heading;
     placeKeo(here);
     followStep(focus, aimed(), 0, true);
-    lift = occlusionLift(focus, ground);
+    lift = occlusionLift(focus, ground, yaw);
     framed = spot;
     updateRings(true, true);
     follow();
@@ -1569,12 +1627,48 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let down: { x: number; y: number; t: number } | null = null;
   const onDown = (e: PointerEvent) => {
     if (mapView) return mapDown(e);
-    down = { x: e.clientX, y: e.clientY, t: performance.now() };
+    fingers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (fingers.size === 1) {
+      down = { x: e.clientX, y: e.clientY, t: performance.now() };
+      return;
+    }
+    // Deux doigts : ce n'est plus un toucher (Kéo ne part pas, même si le premier se lève seul) ; s'ils tournent, la
+    // caméra tourne autour de Kéo (GD-20, rotation libre).
+    down = null;
+    if (fingers.size === 2) {
+      try {
+        for (const id of fingers.keys()) renderer.domElement.setPointerCapture(id);
+      } catch {
+        // Un pointeur déjà relâché : rien à capturer.
+      }
+      twist = { angle: fingersAngle(), started: false };
+    }
+  };
+  /** L'angle de la ligne entre les deux premiers doigts posés, à l'écran. */
+  const fingersAngle = () => {
+    const [a, b] = [...fingers.values()];
+    return Math.atan2(b.y - a.y, b.x - a.x);
+  };
+  /** Deux doigts posés dans le monde : l'angle de leur ligne au dernier mouvement, et s'ils ont déjà tourné la caméra. */
+  let twist: { angle: number; started: boolean } | null = null;
+  /** Deux doigts qui tournent : la caméra tourne d'autant, le monde suivant les doigts ; elle reste où on la laisse. */
+  const twistMove = () => {
+    if (!twist || fingers.size < 2 || asked || remise || scenette || poseRun.active || assembly || laying) return;
+    const angle = fingersAngle();
+    const d = wrapAngle(angle - twist.angle);
+    if (!twist.started && Math.abs(d) < CAMERA_TURN.deadAngle) return;
+    twist.started = true;
+    twist.angle = angle;
+    turning = null;
+    setYaw(yaw + d);
   };
   const onCancel = (e: PointerEvent) => {
     down = null;
     if (!fingers.delete(e.pointerId)) return;
-    if (fingers.size < 2) pinch = null;
+    if (fingers.size < 2) {
+      pinch = null;
+      twist = null;
+    }
     mapAtRest();
   };
   /** Le point du monde sous un toucher (au sol, ou sur un lieu), ou rien. */
@@ -1589,6 +1683,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const d = down;
     down = null;
     if (mapView) return mapUp(e, d);
+    fingers.delete(e.pointerId);
+    if (fingers.size < 2) twist = null;
     // Un toucher pendant une pose la passe : la partie est à sa place, la caméra revient à Kéo ; de même la scénette
     // d'assemblage.
     if (poseRun.active) return finishPose();
@@ -1881,7 +1977,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const onMove = (e: PointerEvent) => {
     const finger = fingers.get(e.pointerId);
-    if (!mapView || !finger) return;
+    if (!finger) return;
+    if (!mapView) {
+      finger.x = e.clientX;
+      finger.y = e.clientY;
+      return twistMove();
+    }
     const before = { x: finger.x, y: finger.y };
     finger.x = e.clientX;
     finger.y = e.clientY;
@@ -2077,6 +2178,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const enterScenette = (place: PlaceId, site?: boolean) => {
     if (scenette === place) return;
     scenette = place;
+    // Au retour, la caméra qui suit est tournée vers le nord, comme la scénette.
+    faceNorth();
     posed = site ?? traceStagePosed(place, posedOf(place));
     setGeometry(decorMesh, scenetteDecor(place, false, posed));
     // Aux Quais, la maquette du lieu (sa grue, son hangar) s'efface : le quai de la scénette a les siens. La trace de
@@ -2497,7 +2600,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     land: landPose,
     turn: () => {
       copyPose(current, poseFrom);
-      followPose(focus, lift, poseTo);
+      followPose(focus, lift, poseTo, yaw);
       lookUp(poseTo, lanternTop, keoFeet, look, viewH);
       if (exit) exitView(poseTo, exit.keep, keoFeet, back, exit.view);
     },
@@ -2717,8 +2820,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     body.bouger(t, dt, moving, reduceMotion, WALK_CADENCE);
     // La caméra rattrape Kéo hors de sa zone morte, et monte si le relief le cache ; arrêté près du Phare, elle lève
     // le regard vers la lanterne (jamais pendant la marche).
+    stepTurn(now);
     followStep(focus, aimed(), dt, reduceMotion);
-    lift = liftStep(lift, occlusionLift(focus, ground), dt, reduceMotion);
+    lift = liftStep(lift, occlusionLift(focus, ground, yaw), dt, reduceMotion);
     look = lookUpStep(look, nearLantern() ? 1 : 0, dt, reduceMotion);
     if (back > 0 && !atExit()) back = reduceMotion ? 0 : Math.max(0, back - dt / EXIT_VIEW.down);
     if (back === 0) exit = null;
@@ -2748,6 +2852,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     skip: () => {
       if (!walk) return;
       walk = skipWalk(walk, performance.now());
+    },
+    turn: (step) => {
+      if (mapView || asked || scenette || remise) return;
+      turnTo(step === 0 ? 0 : (turning?.to ?? yaw) + step * CAMERA_TURN.step);
     },
     goToPort: (spot) => {
       finishLay();

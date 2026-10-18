@@ -187,10 +187,12 @@ function poseCost(ground: (x: number, z: number) => number): { triangles: number
 
 /** L'écart entre deux points où l'on cherche le pire sol : Kéo se tient toujours sur le réseau des chemins. */
 const SAMPLE_STEP = 4;
+/** La caméra tourne autour de Kéo (GD-20, rotation libre) : le sol est compté dans tant de directions. */
+const SAMPLE_YAWS = 8;
 
 /**
  * Le sol, environ : les deux anneaux de tuiles (un maillage chacun) autour des points du réseau pris tous les quatre
- * unités, le plus chargé de près et le plus chargé de loin (ils peuvent venir de deux points différents : on compte
+ * unités, la caméra tournée dans huit directions, le plus chargé de près et le plus chargé de loin (ils peuvent venir de deux points différents : on compte
  * large).
  */
 export function groundCost(): { triangles: number; calls: number; near: number; far: number } {
@@ -199,11 +201,12 @@ export function groundCost(): { triangles: number; calls: number; near: number; 
   const far = landTileCounts(field, 'far');
   let worstNear = 0;
   let worstFar = 0;
-  for (const p of networkSamples(SAMPLE_STEP)) {
-    const rings = tileRings(p, WORLD_FOG.far);
-    worstNear = Math.max(worstNear, rings.near.reduce((s, t) => s + near[t], 0));
-    worstFar = Math.max(worstFar, rings.far.reduce((s, t) => s + far[t], 0));
-  }
+  for (const p of networkSamples(SAMPLE_STEP))
+    for (let y = 0; y < SAMPLE_YAWS; y++) {
+      const rings = tileRings(p, WORLD_FOG.far, (2 * Math.PI * y) / SAMPLE_YAWS);
+      worstNear = Math.max(worstNear, rings.near.reduce((s, t) => s + near[t], 0));
+      worstFar = Math.max(worstFar, rings.far.reduce((s, t) => s + far[t], 0));
+    }
   return { triangles: worstNear + worstFar, calls: 2, near: worstNear, far: worstFar };
 }
 

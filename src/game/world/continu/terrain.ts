@@ -784,13 +784,20 @@ export function tileRect(tx: number, tz: number): { minX: number; minZ: number; 
  */
 export const RING = { near: 22, behind: 14 } as const;
 
-/** Les tuiles de chaque anneau autour du point `focus` (des rangs, dans l'ordre de la grille), jusqu'à `far` unités. */
-export function tileRings(focus: Vec2, far: number): { near: number[]; far: number[] } {
+/**
+ * Les tuiles de chaque anneau autour du point `focus` (des rangs, dans l'ordre de la grille), jusqu'à `far` unités ;
+ * rien de plus de `RING.behind` derrière Kéo, la caméra tournée de `yaw` (0 : vers le nord, derrière est le sud).
+ */
+export function tileRings(focus: Vec2, far: number, yaw = 0): { near: number[]; far: number[] } {
   const out = { near: [] as number[], far: [] as number[] };
+  const bx = Math.sin(yaw);
+  const bz = Math.cos(yaw);
   for (let tz = 0; tz < TERRAIN.tilesZ; tz++)
     for (let tx = 0; tx < TERRAIN.tilesX; tx++) {
       const r = tileRect(tx, tz);
-      if (r.minZ > focus.z + RING.behind) continue;
+      // Le coin de la tuile le moins derrière Kéo : s'il l'est encore de plus de `RING.behind`, la tuile ne se voit pas.
+      const behind = ((bx > 0 ? r.minX : r.maxX) - focus.x) * bx + ((bz > 0 ? r.minZ : r.maxZ) - focus.z) * bz;
+      if (behind > RING.behind) continue;
       const dx = Math.max(r.minX - focus.x, 0, focus.x - r.maxX);
       const dz = Math.max(r.minZ - focus.z, 0, focus.z - r.maxZ);
       const d = Math.hypot(dx, dz);

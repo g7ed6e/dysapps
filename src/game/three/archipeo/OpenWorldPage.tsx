@@ -206,6 +206,10 @@ export default function OpenWorldPage() {
   const stageRef = useRef<HTMLDivElement>(null);
   const markRef = useRef<HTMLButtonElement>(null);
   const arrowRef = useRef<HTMLSpanElement>(null);
+  // L'aiguille de la boussole (GD-20, rotation libre de la caméra) : tournée sans passer par React, à chaque image où la
+  // caméra tourne ; `northRef` dit si la caméra est vers le nord (le bouton « Nord » n'a alors rien à faire).
+  const needleRef = useRef<HTMLSpanElement>(null);
+  const [turned, setTurned] = useState(false);
   // Les cadenas des ponts des terres fermées, posés à chaque image par la scène (sans passer par React).
   const locksRef = useRef<HTMLDivElement>(null);
   // Les pastilles des habitants (GD-20, point 4, lot L1), posées à chaque image par la scène, comme les cadenas.
@@ -271,7 +275,7 @@ export default function OpenWorldPage() {
       const reserve: Obstacle[] = column ? [{ left: 0, top: 0, width: Math.max(COLUMN_ZONE.width, column.right - s.left + MARK_EDGE), height: column.bottom - s.top + COLUMN_ZONE.below, below: true }] : [];
       layout.obstacles = [
         ...reserve,
-        ...[...stage.querySelectorAll<HTMLElement>('.world-settings, .open-world-go, .open-world-bar')].map((el) => {
+        ...[...stage.querySelectorAll<HTMLElement>('.world-settings, .open-world-camera, .open-world-go, .open-world-bar')].map((el) => {
           const r = el.getBoundingClientRect();
           return { left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height };
         }),
@@ -285,7 +289,7 @@ export default function OpenWorldPage() {
     };
     const observer = new ResizeObserver(measure);
     observer.observe(stage);
-    for (const el of stage.querySelectorAll('.open-world-mark, .world-settings, .world-shortcuts, .open-world-go, .open-world-bar, .open-world-said')) observer.observe(el);
+    for (const el of stage.querySelectorAll('.open-world-mark, .world-settings, .open-world-camera, .open-world-go, .open-world-bar, .open-world-said')) observer.observe(el);
     measure();
     return () => observer.disconnect();
     // La marque et « Y aller » changent d'élément avec la suggestion et la marche : on les observe de nouveau.
@@ -324,6 +328,11 @@ export default function OpenWorldPage() {
       },
       onLocks: (locks) => placeLocks(locksRef.current, locks),
       onSigns: (signs) => placeSigns(signsRef.current, signs, layout),
+      onYaw: (yaw) => {
+        // Le nord à l'écran : l'aiguille tourne comme le monde.
+        if (needleRef.current) needleRef.current.style.transform = `rotate(${yaw.toFixed(3)}rad)`;
+        setTurned(Math.abs(yaw) > 0.01);
+      },
       // Un lieu d'une terre fermée, ou son pont tombé, touché dans le monde : la fiche de la terre (GD-20, point 3).
       onClosed: (land) => {
         setPanel(null);
@@ -998,6 +1007,23 @@ export default function OpenWorldPage() {
               </button>
             )}
           </nav>
+        )}
+        {/* La caméra qui tourne autour de Kéo (GD-20, rotation libre) : deux doigts qui tournent, ou ces boutons, d'une
+            main ; la boussole montre le nord et y ramène. Sous Réglages, au bord droit, sans mot. */}
+        {!playing && !mapOpen && !sheetOpen && (
+          <div className="open-world-camera" role="group" aria-label="Caméra">
+            <button type="button" className="button" aria-label={turned ? 'Nord' : 'Nord : la caméra regarde déjà le nord'} onClick={() => world.current?.turn(0)}>
+              <span ref={needleRef} className="open-world-needle" aria-hidden="true">
+                <Icon name="boussole" />
+              </span>
+            </button>
+            <button type="button" className="button" aria-label="Tourner vers la gauche" onClick={() => world.current?.turn(-1)}>
+              <Icon name="tournerGauche" />
+            </button>
+            <button type="button" className="button" aria-label="Tourner vers la droite" onClick={() => world.current?.turn(1)}>
+              <Icon name="tourner" />
+            </button>
+          </div>
         )}
         {!playing && !mapOpen && !sheetOpen && (
           <div className="open-world-go">
