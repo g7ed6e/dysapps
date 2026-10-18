@@ -16,6 +16,7 @@ import { phareSurroundings } from './phareSurroundings';
 import { filetsSurroundings } from './filetsSurroundings';
 import { archivesSurroundings } from './archivesSurroundings';
 import { shipyardSurroundings } from './shipyardSurroundings';
+import { printworksSurroundings } from './printworksSurroundings';
 
 /** L'état du lieu : l'étape qui porte la trace posée (`posed`), la réussite montrée (`open`). */
 export interface SurroundingsState {
@@ -45,4 +46,5 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   filets: filetsSurroundings,
   archives: archivesSurroundings,
   shipyard: shipyardSurroundings,
+  printworks: printworksSurroundings,
 };

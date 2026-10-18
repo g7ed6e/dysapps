@@ -400,6 +400,12 @@ function northSite(place: PlaceId): ScenetteSite {
 /** Le cap de départ de la scénette des Écluses : dans l'axe du canal, à l'est, un peu au sud de son axe. */
 const ECLUSES_START = (65 * Math.PI) / 180;
 
+/**
+ * Le cap de départ de la scénette de l'Imprimerie : un peu depuis le sud-ouest (reprise du lieu, 18 octobre 2026). L'atelier
+ * du lieu glisse sous le panneau, à gauche ; à droite, l'atelier ouvert des abords, sa presse et la corde de séchage.
+ */
+const PRINTWORKS_START = (-20 * Math.PI) / 180;
+
 const SITES: Record<PlaceId, ScenetteSite> = {
   phare: {
     floor: galleryFloor,
@@ -476,7 +482,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   },
   lookout: northSite('lookout'),
   archives: northSite('archives'),
-  printworks: northSite('printworks'),
+  printworks: { ...northSite('printworks'), start: PRINTWORKS_START },
   beacons: northSite('beacons'),
   ferry: northSite('ferry'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
