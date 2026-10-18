@@ -8,19 +8,18 @@
 // forme : l'artiste technique 3D ; les durées : le référent dys. Code pur.
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, type Vec2 } from './geometry';
-import type { World } from '../../engine/state';
 import type { LandId } from './lands';
 import { snapToNetwork } from './paths';
 import { LAMP_COLOR } from './places';
-import { COLORS_6E, DETOUR_HILL, DETOUR_HILLS, type DetourHill } from './plan6e';
+import { COLORS_6E, DETOUR_HILL, DETOUR_HILLS } from './plan6e';
 import { detourFoot, detourReach, heightAt, landDistance, standingHeight } from './terrain';
 
-/** Les cinq Détours, un par terre. */
+/** Les cinq Détours, un par terre (les mêmes, dans le même ordre, que world/detoursSaved.ts, pour la sauvegarde). */
 export const DETOUR_IDS = ['butte-chantier', 'braise-herons', 'bout-large', 'colline-aube', 'haut-cretes'] as const;
 export type DetourId = (typeof DETOUR_IDS)[number];
 
 /** Ce qu'est un Détour : un sommet, le sommet au cairn à rallumer, ou un bord d'eau. */
-export type DetourKind = 'sommet' | 'cairn' | 'rive';
+type DetourKind = 'sommet' | 'cairn' | 'rive';
 
 export interface Detour {
   id: DetourId;
@@ -89,11 +88,6 @@ export const DETOURS: readonly Detour[] = DETOUR_IDS.map(detourOf);
 
 export const detourById = (id: DetourId): Detour => DETOURS.find((d) => d.id === id)!;
 
-export const isDetourId = (id: unknown): id is DetourId => typeof id === 'string' && (DETOUR_IDS as readonly string[]).includes(id);
-
-/** La colline d'un Détour, ou rien (le bord d'eau). */
-export const hillOfDetour = (id: DetourId): DetourHill | undefined => DETOUR_HILLS.find((h) => h.id === id);
-
 /** Le Détour où se tient Kéo en `p`, ou rien. */
 export function detourAtPoint(p: Vec2): Detour | null {
   for (const d of DETOURS) if (distance(p, d.at) <= d.radius) return d;
@@ -114,26 +108,6 @@ export function keptClearForDetour(p: Vec2): boolean {
     if (d.kind === 'rive' && distance(p, d.at) < KEEP.shore) return true;
   }
   return false;
-}
-
-/** Les Détours trouvés, dans l'ordre de `DETOUR_IDS`, sans doublon ni inconnu (la sauvegarde). */
-export function sanitizeDetours(raw: unknown): DetourId[] {
-  if (!Array.isArray(raw)) return [];
-  return DETOUR_IDS.filter((id) => raw.includes(id));
-}
-
-/** Un Détour trouvé : sa sente reste tracée. Le même état s'il l'était déjà (rien à écrire). */
-export function findDetour<S extends { world: World }>(state: S, id: DetourId): S {
-  const found = state.world.detours ?? [];
-  if (found.includes(id)) return state;
-  return { ...state, world: { ...state.world, detours: sanitizeDetours([...found, id]) } };
-}
-
-/** Le cairn d'un Détour trouvé, rallumé pour de bon. Le même état s'il l'était déjà, ou si ce n'est pas un cairn trouvé. */
-export function lightDetour<S extends { world: World }>(state: S, id: DetourId): S {
-  const lit = state.world.detoursLit ?? [];
-  if (lit.includes(id) || detourById(id).kind !== 'cairn' || !(state.world.detours ?? []).includes(id)) return state;
-  return { ...state, world: { ...state.world, detoursLit: sanitizeDetours([...lit, id]) } };
 }
 
 /**
@@ -242,8 +216,73 @@ export function detourFacets(found: readonly DetourId[], cairnLit: boolean): Fac
   return b.build();
 }
 
-/** Les mesures de la baleine et des oiseaux (référent dys : à plus de 12 unités de Kéo, jamais au centre de l'écran). */
-export const FAUNA = { whaleOff: 22, whaleSide: 9, birds: 5, birdRadius: 3.2, birdTurn: 9, birdRise: 3.5, surface: 3.2 } as const;
+/**
+ * La baleine et les oiseaux du bord d'eau (référent dys) : la baleine à `whaleOff` unités au large et `whaleSide` de côté
+ * (à plus de 12 unités de Kéo, jamais au centre de l'écran), elle monte en `rise` secondes, reste `stay` secondes en
+ * surface et plonge en `dive` (plus de 2 secondes en tout), en nageant de `swim` unités ; `birds` oiseaux posés près de
+ * l'eau se lèvent l'un après l'autre (`stagger`), tournent lentement (un tour en `turn` secondes, jamais moins de 8), à
+ * `radius` et `lift` unités, puis se reposent au bout de `flight` secondes, en `land`.
+ */
+export const FAUNA = { whaleOff: 22, whaleSide: 9, rise: 1.2, stay: 1.8, dive: 1.4, swim: 3, birds: 5, stagger: 0.25, turn: 9, radius: 3.2, lift: 3.5, flight: 7, land: 2 } as const;
+
+/** Une pose de la baleine et des oiseaux : leur place, leur cap (et la bascule de la baleine qui plonge). */
+export interface FaunaPose {
+  whale: { x: number; y: number; z: number; yaw: number; pitch: number } | null;
+  birds: { x: number; y: number; z: number; yaw: number }[];
+}
+
+/** La fin de la scène de la baleine et des oiseaux, en secondes depuis son départ. */
+export const FAUNA_END = Math.max(FAUNA.rise + FAUNA.stay + FAUNA.dive, FAUNA.stagger * (FAUNA.birds - 1) + FAUNA.flight + 0.3);
+
+/** Le départ doux et l'arrivée douce, de 0 à 1. */
+const ease = (u: number) => {
+  const x = Math.min(1, Math.max(0, u));
+  return x * x * (3 - 2 * x);
+};
+
+/**
+ * La baleine et les oiseaux du bord d'eau `shore`, `t` secondes après le départ de leur scène (`null` : pas de scène, les
+ * oiseaux posés, la baleine sous l'eau) ; `still` (« Réduire les animations ») : pendant la scène, les oiseaux restent
+ * posés et le dos de la baleine se tient immobile en surface.
+ */
+export function faunaPose(shore: Detour, t: number | null, still = false): FaunaPose {
+  const sx = Math.cos(shore.face);
+  const sz = Math.sin(shore.face);
+  // Les perchoirs : un arc au bord de l'eau, devant le Détour, sur le sol.
+  const perch = Array.from({ length: FAUNA.birds }, (_, k) => {
+    const a = shore.face + ((k - (FAUNA.birds - 1) / 2) * Math.PI) / 7;
+    const x = shore.at.x + sx * 1.2 + Math.cos(a) * 1.6;
+    const z = shore.at.z + sz * 1.2 + Math.sin(a) * 1.6;
+    return { x, y: standingHeight(heightAt({ x, z })), z, yaw: shore.face + k };
+  });
+  const playing = t !== null && t >= 0 && t < FAUNA_END;
+  // Le cap de la baleine : le long de la côte, de son côté vers le milieu.
+  const yaw = Math.atan2(sx, -sz);
+  const at = { x: shore.at.x + sx * FAUNA.whaleOff - sz * FAUNA.whaleSide, z: shore.at.z + sz * FAUNA.whaleOff + sx * FAUNA.whaleSide };
+  if (!playing) return { whale: null, birds: perch };
+  if (still) return { whale: { x: at.x, y: -0.05, z: at.z, yaw, pitch: 0 }, birds: perch };
+  const whaleEnd = FAUNA.rise + FAUNA.stay + FAUNA.dive;
+  let whale: FaunaPose['whale'] = null;
+  if (t < whaleEnd) {
+    const swim = (FAUNA.swim * t) / whaleEnd;
+    const fx = Math.sin(yaw) * swim;
+    const fz = Math.cos(yaw) * swim;
+    const up = ease(t / FAUNA.rise);
+    const down = ease((t - FAUNA.rise - FAUNA.stay) / FAUNA.dive);
+    whale = { x: at.x + fx, y: -1.6 + 1.55 * up - 2 * down, z: at.z + fz, yaw, pitch: -0.45 * down };
+  }
+  const birds = perch.map((p, k) => {
+    const u = t - 0.3 - FAUNA.stagger * k;
+    if (u <= 0 || u >= FAUNA.flight) return p;
+    const a = p.yaw + (2 * Math.PI * u) / FAUNA.turn;
+    const r = FAUNA.radius * ease(u / 1.5);
+    const fly = { x: shore.at.x + sx * 2 + Math.cos(a) * r, y: p.y + FAUNA.lift * ease(u / 4), z: shore.at.z + sz * 2 + Math.sin(a) * r, yaw: -a - Math.PI / 2 };
+    // La fin du vol : chacun revient se poser sur son perchoir.
+    const back = ease((u - (FAUNA.flight - FAUNA.land)) / FAUNA.land);
+    return { x: fly.x + (p.x - fly.x) * back, y: fly.y + (p.y - fly.y) * back, z: fly.z + (p.z - fly.z) * back, yaw: back > 0.5 ? p.yaw : fly.yaw };
+  });
+  return { whale, birds };
+}
 
 /**
  * La baleine : un dos long et bas, sa nageoire et sa queue en éventail, en aplats gris-bleu (le concept des

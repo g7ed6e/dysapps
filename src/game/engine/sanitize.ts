@@ -15,7 +15,7 @@ import { bridgesFromLegacyProgress, getBridge, getVoyage, grantAccess, isBiomeUn
 import { lireTirage, recetteDe, type TirageAssemblage } from '../world/assembly';
 import { archipelDeLaCommande, getCommande, MAX_COMMANDES_OUVERTES } from '../world/requests';
 import { getStory, isStoryDone } from '../world/stories';
-import { sanitizeDetours } from '../world/continu/detours';
+import { sanitizeDetours } from '../world/detoursSaved';
 import { PROJECT_BANKS } from '../world/projects';
 import { pairOfJoinId, sanitizeLayout } from '../world/savedLayout';
 import type { DrawKey, ExerciseProgress, GameState, LogEntry, SpacedItem, TypeStats } from './state';

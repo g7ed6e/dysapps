@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { sanitizeState } from '../../engine/sanitize';
 import { EMPTY_STATE } from '../../engine/state';
-import { DETOURS, DETOUR_IDS, SENTE, cairnSpot, detourAtPoint, detourFacets, findDetour, keptClearForDetour, lightDetour, sanitizeDetours } from './detours';
+import { DETOUR_CAIRNS, DETOUR_IDS as SAVED_IDS, findDetour, lightDetour, sanitizeDetours } from '../detoursSaved';
+import { DETOURS, DETOUR_IDS, SENTE, cairnSpot, detourAtPoint, detourFacets, keptClearForDetour } from './detours';
 import { buildWalkGrid, cellOf, freeRoute, isWalkable } from './freeWalk';
 import { distance, distanceToPolyline, linearRgb, type Vec2 } from './geometry';
 import { LANDS } from './lands';
@@ -26,7 +27,9 @@ describe('les Détours', () => {
       // Le mot « belvédère » est le nom d'une île du 3e : il ne s'affiche jamais.
       expect(d.name.toLowerCase(), d.id).not.toContain('belvédère');
     }
-    expect(DETOURS.filter((d) => d.kind === 'cairn')).toHaveLength(1);
+    expect(DETOURS.filter((d) => d.kind === 'cairn').map((d) => d.id)).toEqual(DETOUR_CAIRNS);
+    // La sauvegarde garde les mêmes, dans le même ordre.
+    expect(SAVED_IDS).toEqual(DETOUR_IDS);
     expect(DETOURS.filter((d) => d.kind === 'rive')).toHaveLength(1);
   });
 

@@ -42,7 +42,7 @@ import { STORY_XP, startStory, storyAfterMission, tapStoryStep, type StepResult 
 import { applyLayout } from './world/appliedLayout';
 import { ensureLands, payLand, settleNewPlaces, type GridLand, type PayLandResult } from './world/arrange';
 import type { World } from './engine/state';
-import { findDetour, lightDetour, type DetourId } from './world/continu/detours';
+import { findDetour, lightDetour, type DetourId } from './world/detoursSaved';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
 const SESSION_MAX_EXERCISES = 3;

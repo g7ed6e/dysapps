@@ -251,6 +251,44 @@ export function playWhaleBlow(): void {
   tone(82, 1.1, 'sine', 0.06, 62, 0.15, 0.6);
 }
 
+/**
+ * Le vent d'un Détour (GD-20, déplacement libre, lot 2 ; référent dys) : un souffle court et bas, du bruit filtré grave,
+ * une seconde au plus, entrée et sortie en 150 ms, sans mélodie ni attaque ; il ne dit rien. Il se tait dès que la voix
+ * parle (la voix passe toujours avant).
+ */
+export const DETOUR_WIND = { seconds: 1, fade: 0.15, volume: 0.03, filterHz: 520 } as const;
+
+export function playDetourWind(): void {
+  const ac = context();
+  if (!ac || speaking()) return;
+  const t = ac.currentTime;
+  const src = ac.createBufferSource();
+  src.buffer = noiseBuffer(ac);
+  src.loop = true;
+  const filter = ac.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = DETOUR_WIND.filterHz;
+  const gain = ac.createGain();
+  const { seconds, fade, volume } = DETOUR_WIND;
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.linearRampToValueAtTime(volume, t + fade);
+  gain.gain.setValueAtTime(volume, t + seconds - fade);
+  gain.gain.linearRampToValueAtTime(0.0001, t + seconds);
+  src.connect(filter).connect(gain).connect(ac.destination);
+  src.start(t);
+  src.stop(t + seconds + 0.05);
+  // La voix commence : le souffle s'efface aussitôt.
+  const watch = window.setInterval(() => {
+    if (ac.currentTime > t + seconds) return window.clearInterval(watch);
+    if (!speaking()) return;
+    window.clearInterval(watch);
+    const now = ac.currentTime;
+    gain.gain.cancelScheduledValues(now);
+    gain.gain.setValueAtTime(gain.gain.value, now);
+    gain.gain.linearRampToValueAtTime(0.0001, now + 0.08);
+  }, 50);
+}
+
 // ---------- Ambiance (en option) : vent continu, oiseaux le jour, grillons la nuit ----------
 
 let ambience: { gain: GainNode; stop: () => void } | null = null;

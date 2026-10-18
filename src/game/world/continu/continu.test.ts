@@ -545,9 +545,9 @@ describe('Le budget du monde continu', () => {
     const cost = openWorldCost(0);
     expect(cost.find((c) => c.poste === 'lieux')?.calls).toBe(2);
     expect(cost.find((c) => c.poste === 'pose')?.calls).toBe(1);
-    // Il reste de la place pour les lots suivants (Nef, repère) : 3 appels au moins (4 avant le lot 3 de GD-20, point 3,
-    // qui prend le ciel et l'ombre de Kéo).
-    expect(OPEN_WORLD_BUDGET.calls - cost.reduce((s, c) => s + c.calls, 0)).toBeGreaterThanOrEqual(3);
+    // Il reste de la place pour les lots suivants (la Nef) : 2 appels au moins (3 avant les Détours, dont la baleine et
+    // les oiseaux prennent un appel ; 4 avant le lot 3 de GD-20, point 3, qui prend le ciel et l'ombre de Kéo).
+    expect(OPEN_WORLD_BUDGET.calls - cost.reduce((s, c) => s + c.calls, 0)).toBeGreaterThanOrEqual(2);
   });
 
   it('la Carte des lieux ouverts, toute l’île de loin, tient aussi dans l’enveloppe', () => {

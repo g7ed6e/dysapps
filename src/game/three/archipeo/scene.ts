@@ -10,7 +10,8 @@
 import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose } from '../../world/continu/camera';
+import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, detourRise, detourViewStep, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose } from '../../world/continu/camera';
+import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_END, birdFacets, detourAtPoint, detourFacets, faunaPose, whaleFacets, type DetourId } from '../../world/continu/detours';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
@@ -119,6 +120,12 @@ export interface OpenWorldOptions {
    * le monde tourne dans le sens des aiguilles d'une montre ; la page en tourne sa boussole. À chaque image où il change.
    */
   onYaw?(yaw: number): void;
+  /**
+   * Kéo s'est arrêté sur un Détour (GD-20, déplacement libre, lot 2) : immobile quelques dixièmes de seconde sur son
+   * plateau ou au bord d'eau (jamais au passage), puis `null` dès qu'il en repart ; la page écrit son nom, le garde trouvé,
+   * propose « Rallumer » au cairn.
+   */
+  onDetour?(id: DetourId | null): void;
 }
 
 export type { RemiseEvents, SignOnScreen } from './remiseRun';
@@ -137,6 +144,11 @@ export interface OpenWorld {
   goTo(place: PlaceId, jump?: boolean): void;
   /** Saute le trajet en cours : Kéo est arrivé. */
   skip(): void;
+  /**
+   * Kéo d'un coup en un point du sol (les mesures et les captures seulement : la vue d'un Détour) ; la caméra le suit
+   * d'un bloc. Rien si l'on n'y marche pas.
+   */
+  standAt(p: Vec2): void;
   /**
    * Tourne la caméra autour de Kéo d'un cran (`1` : le monde dans le sens des aiguilles d'une montre, `-1` : dans l'autre),
    * ou la remet vers le nord (`0`) ; en douceur, d'un coup avec « Réduire les animations ».
@@ -228,6 +240,11 @@ export interface OpenWorld {
   remiseFinish(): void;
   /** Les lieux dont l'habitant a une pastille (trois au plus), ou aucun. */
   setSigns(places: readonly PlaceId[]): void;
+  /**
+   * Les Détours trouvés (leur sente tracée, dans le monde et sur la Carte) et les cairns rallumés (GD-20, déplacement
+   * libre, lot 2), dans le maillage des lieux : refait seulement s'ils changent.
+   */
+  setDetours(found: readonly DetourId[], lit: readonly DetourId[]): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
   info(): { calls: number; triangles: number; mapMs: number };
   /** Ce qu'un toucher en ce point de la fenêtre ouvrirait au Port, sans rien faire (la mesure des cibles). */
@@ -911,6 +928,104 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let here: Vec2 = startPlace ? startOf(startPlace.door, startPlace.center).at : pathNode(portNode(startSpot!)).at;
   let walk: Walk | null = null;
   let walkTarget: PlaceId | null = null;
+  // Les Détours (GD-20, déplacement libre, lot 2) : ceux trouvés (leur sente tracée), les cairns rallumés, celui où Kéo
+  // s'est arrêté (dit à la page), depuis quand il s'y tient immobile, et l'avancée de la vue qui monte.
+  let detoursFound: readonly DetourId[] = [];
+  let detoursLit: readonly DetourId[] = [];
+  let detourHere: DetourId | null = null;
+  let detourStill = 0;
+  let detourView = 0;
+  let detourDecor: { key: string; facets: Facets } | null = null;
+  const detourFacetsNow = (): Facets => {
+    const key = `${detoursFound.join(',')}|${detoursLit.join(',')}`;
+    if (detourDecor?.key !== key) detourDecor = { key, facets: detourFacets(detoursFound, detoursLit.includes('braise-herons')) };
+    return detourDecor.facets;
+  };
+  // La baleine et les oiseaux du bord d'eau : un seul maillage, dont les sommets sont réécrits sur place pendant leur
+  // scène ; montré seulement près du bord d'eau. Leur horloge n'avance que hors des questions et de la Carte (tout se
+  // fige quand un panneau s'ouvre, référent dys) ; la scène ne revient pas avant `faunaAgain` secondes.
+  const shore = DETOURS.find((d) => d.kind === 'rive')!;
+  const whaleBase = whaleFacets();
+  const birdBase = birdFacets();
+  const faunaGeometry = keep(new THREE.BufferGeometry());
+  const faunaPositions = new Float32Array(whaleBase.positions.length + FAUNA.birds * birdBase.positions.length);
+  faunaGeometry.setAttribute('position', new THREE.BufferAttribute(faunaPositions, 3).setUsage(THREE.DynamicDrawUsage));
+  faunaGeometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(faunaPositions.length), 3));
+  {
+    const colors = new Float32Array(faunaPositions.length);
+    colors.set(whaleBase.colors, 0);
+    for (let k = 0; k < FAUNA.birds; k++) colors.set(birdBase.colors, whaleBase.colors.length + k * birdBase.colors.length);
+    faunaGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  }
+  // Toute la scène tient dans cette sphère (le bord d'eau, la baleine au large) : l'élimination hors champ reste juste.
+  faunaGeometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(shore.at.x + Math.cos(shore.face) * 12, 0, shore.at.z + Math.sin(shore.face) * 12), FAUNA.whaleOff + FAUNA.whaleSide + 8);
+  const faunaMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, side: THREE.DoubleSide });
+  const faunaMesh = new THREE.Mesh(faunaGeometry, faunaMaterial);
+  faunaMesh.matrixAutoUpdate = false;
+  faunaMesh.visible = false;
+  scene.add(faunaMesh);
+  let faunaClock = 0;
+  let faunaStart: number | null = null;
+  let faunaKey: string | null = null;
+  /** Écrit des facettes de base tournées (cap `yaw`, bascule `pitch`) et posées en (x, y, z), à partir du rang `offset`. */
+  const writeFacets = (base: Facets, offset: number, x: number, y: number, z: number, yaw: number, pitch: number) => {
+    const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+    const src = base.positions;
+    for (let k = 0; k < src.length; k += 3) {
+      // La bascule autour de l'axe des ailes (z), puis le cap autour de la verticale ; la tête vers +x.
+      const px = src[k] * cp - src[k + 1] * sp;
+      const py = src[k] * sp + src[k + 1] * cp;
+      const pz = src[k + 2];
+      faunaPositions[offset + k] = x + px * cy + pz * sy;
+      faunaPositions[offset + k + 1] = y + py;
+      faunaPositions[offset + k + 2] = z - px * sy + pz * cy;
+    }
+  };
+  /** La baleine et les oiseaux à l'image suivante : leur scène part à l'arrivée au bord d'eau, puis se joue. */
+  const stepFauna = (dt: number, arrived: boolean) => {
+    faunaClock += dt;
+    if (arrived && (faunaStart === null || faunaClock - faunaStart >= Math.max(FAUNA_END, DETOUR_TIMING.faunaAgain))) faunaStart = faunaClock + DETOUR_TIMING.faunaDelay - DETOUR_TIMING.settle;
+    const near = distance(here, shore.at) < 45;
+    const t = faunaStart === null ? null : faunaClock - faunaStart;
+    const playing = t !== null && t >= 0 && t < FAUNA_END;
+    faunaMesh.visible = near || playing;
+    if (!faunaMesh.visible) return;
+    // Avec « Réduire les animations », la baleine se tient en surface tant que Kéo est là.
+    const pose = faunaPose(shore, reduceMotion ? (detourHere === shore.id ? 0 : null) : t, reduceMotion);
+    // Rien ne bouge (les oiseaux posés, la baleine sous l'eau ou immobile) : les sommets d'avant restent.
+    const key = reduceMotion || !playing ? (pose.whale ? 'surface' : 'rest') : null;
+    if (key !== null && key === faunaKey) return;
+    faunaKey = key;
+    const w = pose.whale;
+    if (w) writeFacets(whaleBase, 0, w.x, w.y, w.z, w.yaw - Math.PI / 2, w.pitch);
+    else faunaPositions.fill(0, 0, whaleBase.positions.length);
+    pose.birds.forEach((b, k) => writeFacets(birdBase, whaleBase.positions.length + k * birdBase.positions.length, b.x, b.y, b.z, b.yaw, 0));
+    (faunaGeometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
+  };
+  /**
+   * Kéo sur un Détour : immobile `settle` secondes sur son plateau ou au bord d'eau, il y est arrivé (la page le sait) ;
+   * dès qu'il en repart, `null`. La vue monte tant qu'il y reste, et revient quand il repart.
+   */
+  const stepDetour = (now: number, moving: boolean, dt: number) => {
+    const d = moving || walk ? null : detourAtPoint(here);
+    let arrived = false;
+    if (!d) {
+      detourStill = 0;
+      if (detourHere) {
+        detourHere = null;
+        options.onDetour?.(null);
+      }
+    } else if (detourHere !== d.id) {
+      if (!detourStill) detourStill = now;
+      else if (now - detourStill >= DETOUR_TIMING.settle * 1000) {
+        detourHere = d.id;
+        arrived = d.kind === 'rive';
+        options.onDetour?.(d.id);
+      }
+    }
+    detourView = detourViewStep(detourView, detourHere ? 1 : 0, dt, reduceMotion);
+    stepFauna(dt, arrived);
+  };
   let heading = startSpot ? portHeading(startSpot) : FACING_CAMERA;
   keo.rotation.y = heading;
   const keoFeet: Vec3 = { x: here.x, y: 0, z: here.z };
@@ -1015,7 +1130,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let back = 0;
   const atExit = () => !walk && exit !== null && distance(here, exit.at) < 0.05;
   const follow = () => {
-    followPose(focus, lift, pose, yaw);
+    followPose(focus, lift, pose, yaw, detourRise(detourView));
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     applyPose(pose);
@@ -1076,7 +1191,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const reframe = () => {
     if (!frameRect || !framed || asked || remise || mapView) return;
-    followPose(focus, lift, pose, yaw);
+    followPose(focus, lift, pose, yaw, detourRise(detourView));
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     const subject = subjectOf(framed);
@@ -1179,7 +1294,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -1215,6 +1330,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       rest.push(bridgeOf(land, closed.includes(land) ? 'tombe' : laying?.lay.land === land && !laying.tapped ? 'pose' : 'rebati'));
       if (mapView) rest.push(bridgeOf(land, 'carte'));
     }
+    // Les Détours : leurs pierres, le cairn, les sentes trouvées (dans le monde comme sur la Carte), sans appel de plus.
+    rest.push(detourFacetsNow());
     setGeometry(placesMesh, mergeFacets(rest));
     setGeometry(landmarkMesh, mergeFacets(mark));
     mapDirty = true;
@@ -1561,6 +1678,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     here = shut ? { ...stop.at } : pathNode(placeById(place).door).at;
     heading = shut ? Math.atan2(-shut.dir.x, -shut.dir.z) : FACING_CAMERA;
     faceNorth();
+    detourView = 0;
     exit = null;
     back = 0;
     keo.rotation.y = heading;
@@ -1577,6 +1695,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     here = pathNode(portNode(spot)).at;
     heading = portHeading(spot);
     faceNorth();
+    detourView = 0;
     exit = null;
     back = 0;
     keo.rotation.y = heading;
@@ -2823,6 +2942,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const turn = Math.atan2(Math.sin(heading - keo.rotation.y), Math.cos(heading - keo.rotation.y));
     keo.rotation.y += reduceMotion ? turn : turn * Math.min(1, dt * 12);
     body.bouger(t, dt, moving, reduceMotion, WALK_CADENCE);
+    stepDetour(now, moving, dt);
     // La caméra rattrape Kéo hors de sa zone morte, et monte si le relief le cache ; arrêté près du Phare, elle lève
     // le regard vers la lanterne (jamais pendant la marche).
     stepTurn(now);
@@ -2857,6 +2977,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     skip: () => {
       if (!walk) return;
       walk = skipWalk(walk, performance.now());
+    },
+    standAt: (p) => {
+      if (mapView || asked || !isWalkable(grid(), p, walkClosed)) return;
+      walk = null;
+      here = { x: p.x, z: p.z };
+      placeKeo(here);
+      followStep(focus, aimed(), 0, true);
+      lift = occlusionLift(focus, ground, yaw);
+      updateRings(true, true);
+      follow();
+      arrive(null);
     },
     turn: (step) => {
       if (mapView || asked || scenette || remise) return;
@@ -2900,6 +3031,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     remiseStart,
     remiseFinish,
     setSigns,
+    setDetours: (found, lit) => {
+      if (found.join(',') === detoursFound.join(',') && lit.join(',') === detoursLit.join(',')) return;
+      detoursFound = [...found];
+      detoursLit = [...lit];
+      placeVisibility();
+      mapDirty = true;
+    },
     info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, mapMs }),
     portAt: (clientX: number, clientY: number) => {
       const p = hitAt(clientX, clientY);
@@ -2926,6 +3064,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, remiseMesh, veilMesh, decorMesh]) m.geometry.dispose();
       lampMaterial.dispose();
       poseMaterial.dispose();
+      faunaMaterial.dispose();
       nearRing.dispose();
       farRing.dispose();
       landMaterial.dispose();
