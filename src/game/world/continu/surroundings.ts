@@ -11,6 +11,7 @@ import { quaisSurroundings } from './quaisSurroundings';
 import { eclusesSurroundings } from './eclusesSurroundings';
 import { saltworksSurroundings } from './saltworksSurroundings';
 import { engineSurroundings } from './engineSurroundings';
+import { lookoutSurroundings } from './lookoutSurroundings';
 
 /** L'état du lieu : l'étape qui porte la trace posée (`posed`), la réussite montrée (`open`). */
 export interface SurroundingsState {
@@ -35,4 +36,5 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,
   engine: engineSurroundings,
+  lookout: lookoutSurroundings,
 };
