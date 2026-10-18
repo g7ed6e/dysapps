@@ -20,6 +20,7 @@ import { printworksSurroundings } from './printworksSurroundings';
 import { mangroveSurroundings } from './mangroveSurroundings';
 import { ruinsSurroundings } from './ruinsSurroundings';
 import { beaconsSurroundings } from './beaconsSurroundings';
+import { ferrySurroundings } from './ferrySurroundings';
 
 /** L'état du lieu : l'étape qui porte la trace posée (`posed`), la réussite montrée (`open`). */
 export interface SurroundingsState {
@@ -53,4 +54,5 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   mangrove: mangroveSurroundings,
   ruins: ruinsSurroundings,
   beacons: beaconsSurroundings,
+  ferry: ferrySurroundings,
 };
