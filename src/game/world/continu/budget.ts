@@ -3,7 +3,7 @@
 // 18 appels avec quatre lieux (prototype-6e.md, § 3) ; relevée par le mainteneur à 75 000 triangles le 16 octobre 2026
 // (GD-20, L6b : « Un iPad 9e génération doit pouvoir faire tourner le jeu, donc on est large en triangles pour
 // l'instant »), puis à 86 000 le 17 octobre 2026 (GD-20, point 3, lot 3), les appels inchangés. Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
-import { FAUNA, birdFacets, detourTrianglesAtMost, whaleFacets } from './detours';
+import { FAUNA, birdFacets, detourTrianglesAtMost, spoutFacets, whaleFacets } from './detours';
 import { WORLD_FOG } from './camera';
 import { bridgeLay } from './bridgeLay';
 import { bridgeFacets, bridgeMapMark } from './bridges';
@@ -31,8 +31,8 @@ import { veilFacets } from './veil';
  */
 const KEO = { triangles: 3170, calls: 5 };
 
-/** La baleine et les cinq oiseaux du bord d'eau (GD-20, déplacement libre, lot 2) : un maillage. */
-const FAUNA_COST = { triangles: whaleFacets().triangles + FAUNA.birds * birdFacets().triangles, calls: 1 };
+/** La baleine, son souffle et les cinq oiseaux du bord d'eau (GD-20, déplacement libre, lot 2) : un maillage. */
+const FAUNA_COST = { triangles: whaleFacets().triangles + spoutFacets().triangles + FAUNA.birds * birdFacets().triangles, calls: 1 };
 
 /** Le dôme du ciel (GD-20, point 3, lot 3) : un maillage, dessiné d'abord, sur la Carte aussi. */
 const SKY = { triangles: skyDome(1).triangles, calls: 1 };

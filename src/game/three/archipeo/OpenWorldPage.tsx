@@ -32,7 +32,7 @@ import { getBiome, type BiomeId } from '../../biomes';
 import { cheminDeRevision, revisionsDeLIle, usePlusTard } from '../../reminders';
 import { exercisesOf, questProgress } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
-import { playDetourWind, playWoodTap } from '../../sound';
+import { playDetourWind, playWhaleBlow, playWoodTap } from '../../sound';
 import { detourById, type DetourId } from '../../world/continu/detours';
 import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
 import { payableBlocks } from '../../world/archipelago';
@@ -246,6 +246,7 @@ export default function OpenWorldPage() {
   const [detourHere, setDetourHere] = useState<DetourId | null>(null);
   // Ce que fait la page à l'arrivée sur un Détour, lu par la scène faite une fois : le réglage et l'état du moment.
   const detourArrive = useRef<(id: DetourId | null) => void>(() => undefined);
+  const soundsOn = useRef(settings.sounds);
   // Où va le focus quand la fiche d'une terre se ferme (le nom d'un de ses lieux, qu'on vient de relier, sur la Carte),
   // sinon « Carte ».
   const focusAfter = useRef<string | null>(null);
@@ -340,6 +341,9 @@ export default function OpenWorldPage() {
         setLieu({ place: placeId, focus: null });
       },
       onDetour: (id) => detourArrive.current(id),
+      onWhaleBlow: () => {
+        if (soundsOn.current) playWhaleBlow();
+      },
       onLocks: (locks) => placeLocks(locksRef.current, locks),
       onSigns: (signs) => placeSigns(signsRef.current, signs, layout),
       onYaw: (yaw) => {
@@ -376,15 +380,13 @@ export default function OpenWorldPage() {
   }, [start, reduceMotion, layout]);
 
   // Les Détours (GD-20, déplacement libre, lot 2) : arrivé, Kéo le trouve (sa sente reste tracée), le vent souffle un
-  // instant et son nom s'écrit une fois, en haut, et se dit ; reparti, le nom part avec lui. Rien d'autre : ni compteur,
-  // ni récompense.
+  // instant et son nom s'écrit une fois, en haut, et se dit ; reparti, le nom reste écrit ses quatre secondes, pour
+  // l'élève qui n'a pas fini de le lire (référent dys). Rien d'autre : ni compteur, ni récompense.
   useEffect(() => {
+    soundsOn.current = settings.sounds;
     detourArrive.current = (id) => {
       setDetourHere(id);
-      if (!id) {
-        setSaid((was) => (was?.detour ? null : was));
-        return;
-      }
+      if (!id) return;
       findDetour(id);
       if (settings.sounds) playDetourWind();
       setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [detourById(id).name], after: 0, top: true, detour: id }));

@@ -229,7 +229,7 @@ export function detourFoot(d: DetourHill): Vec2 {
 function detourHillAt(d: DetourHill, p: Vec2): { h: number; part: 'top' | 'ramp' | 'cliff' } | null {
   const dx = p.x - d.at.x;
   const dz = p.z - d.at.z;
-  const reach = detourReach(d);
+  const reach = DETOUR_REACH.get(d) ?? detourReach(d);
   if (dx * dx + dz * dz >= reach * reach) return null;
   const { plateau, cliff, ramp, halfWidth } = DETOUR_HILL;
   let t = 0;
@@ -249,6 +249,12 @@ function detourHillAt(d: DetourHill, p: Vec2): { h: number; part: 'top' | 'ramp'
   return { h, part: slope >= body && lateral <= halfWidth ? 'ramp' : 'cliff' };
 }
 
+/** La portée de chaque colline de Détour, calculée une fois (`heightAt` la lit à chaque point). */
+const DETOUR_REACH = new Map(DETOUR_HILLS.map((d) => [d, detourReach(d)]));
+
+/** Le haut de la normale d'une facette de rampe (sa pente, 0,45), moins une marge pour les facettes de la grille. */
+const RAMP_UP = 1 / Math.hypot(1, DETOUR_HILL.ramp) - 0.025;
+
 /** La colline de Détour la plus haute en `p`, et sa part, ou rien. */
 function detourAt(p: Vec2): { h: number; part: 'top' | 'ramp' | 'cliff' } | null {
   let best: { h: number; part: 'top' | 'ramp' | 'cliff' } | null = null;
@@ -263,11 +269,13 @@ function detourAt(p: Vec2): { h: number; part: 'top' | 'ramp' | 'cliff' } | null
  * Le pan de colline sous `p` regarde-t-il le soleil ? `null` hors d'une colline ou sur son sommet plat. Le pan, pas la
  * facette : toutes les facettes d'un pan prennent le même vert, même celles qu'une arête coupe.
  */
-function hillSunny(p: Vec2): boolean | null {
+function hillSunny(p: Vec2, up: number): boolean | null {
   // La rampe d'un Détour, toujours du vert clair du soleil, d'où qu'elle regarde : la face qui se monte se lit de loin
-  // (artiste technique 3D) ; son plateau prend le vert du sol.
+  // (artiste technique 3D) ; son plateau prend le vert du sol. Une facette de la rampe plus raide qu'elle (au bord, à
+  // cheval sur la falaise) prend le vert d'ombre de la falaise : des flancs d'un seul tenant, sans dents de scie
+  // (directeur artistique).
   const detour = detourAt(p);
-  if (detour && detour.h >= hillsAtRandom(p)) return detour.part === 'ramp' ? true : detour.part === 'top' ? null : false;
+  if (detour && detour.h >= hillsAtRandom(p)) return detour.part === 'top' ? null : detour.part === 'ramp' && up >= RAMP_UP;
   const ci = Math.floor(p.x / HILLS.cell);
   const cj = Math.floor(p.z / HILLS.cell);
   let best = 0;
@@ -685,7 +693,7 @@ function facetColor(a: P3, b: P3, c: P3): number {
   const flat = flatColor(x, z, h);
   // Sur une colline, chaque pan prend le vert de son flanc (au soleil, ou à l'ombre), même peu pentu.
   if (hillsAt({ x, z }) > TONE.hill && up < TONE.hillFlat && flat !== GROUND_TONES.rock) {
-    const sunny = hillSunny({ x, z });
+    const sunny = hillSunny({ x, z }, up);
     if (sunny !== null) return sunny ? GROUND_TONES.sunny : GROUND_TONES.hillShade;
   }
   if (up >= TONE.slope || (flat !== GROUND_TONES.low && flat !== GROUND_TONES.mid && flat !== GROUND_TONES.high)) return flat;

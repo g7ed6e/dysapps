@@ -11,7 +11,7 @@ import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, detourRise, detourViewStep, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose } from '../../world/continu/camera';
-import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_END, birdFacets, detourAtPoint, detourFacets, faunaPose, whaleFacets, type DetourId } from '../../world/continu/detours';
+import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourFacets, faunaPose, spoutFacets, whaleFacets, type DetourId } from '../../world/continu/detours';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
@@ -126,6 +126,8 @@ export interface OpenWorldOptions {
    * propose « Rallumer » au cairn.
    */
   onDetour?(id: DetourId | null): void;
+  /** La baleine du bord d'eau souffle : la page fait entendre son souffle si les sons sont actifs. */
+  onWhaleBlow?(): void;
 }
 
 export type { RemiseEvents, SignOnScreen } from './remiseRun';
@@ -946,15 +948,20 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // fige quand un panneau s'ouvre, référent dys) ; la scène ne revient pas avant `faunaAgain` secondes.
   const shore = DETOURS.find((d) => d.kind === 'rive')!;
   const whaleBase = whaleFacets();
+  const spoutBase = spoutFacets();
   const birdBase = birdFacets();
+  const birdPerched = birdFacets(true);
+  const spoutAt = whaleBase.positions.length;
+  const birdsAt = spoutAt + spoutBase.positions.length;
   const faunaGeometry = keep(new THREE.BufferGeometry());
-  const faunaPositions = new Float32Array(whaleBase.positions.length + FAUNA.birds * birdBase.positions.length);
+  const faunaPositions = new Float32Array(birdsAt + FAUNA.birds * birdBase.positions.length);
   faunaGeometry.setAttribute('position', new THREE.BufferAttribute(faunaPositions, 3).setUsage(THREE.DynamicDrawUsage));
   faunaGeometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(faunaPositions.length), 3));
   {
     const colors = new Float32Array(faunaPositions.length);
     colors.set(whaleBase.colors, 0);
-    for (let k = 0; k < FAUNA.birds; k++) colors.set(birdBase.colors, whaleBase.colors.length + k * birdBase.colors.length);
+    colors.set(spoutBase.colors, spoutAt);
+    for (let k = 0; k < FAUNA.birds; k++) colors.set(birdBase.colors, birdsAt + k * birdBase.colors.length);
     faunaGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   }
   // Toute la scène tient dans cette sphère (le bord d'eau, la baleine au large) : l'élimination hors champ reste juste.
@@ -968,14 +975,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let faunaStart: number | null = null;
   let faunaKey: string | null = null;
   /** Écrit des facettes de base tournées (cap `yaw`, bascule `pitch`) et posées en (x, y, z), à partir du rang `offset`. */
-  const writeFacets = (base: Facets, offset: number, x: number, y: number, z: number, yaw: number, pitch: number) => {
+  const writeFacets = (base: Facets, offset: number, x: number, y: number, z: number, yaw: number, pitch: number, scale = 1, stretch = 1) => {
     const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
     const src = base.positions;
     for (let k = 0; k < src.length; k += 3) {
       // La bascule autour de l'axe des ailes (z), puis le cap autour de la verticale ; la tête vers +x.
-      const px = src[k] * cp - src[k + 1] * sp;
-      const py = src[k] * sp + src[k + 1] * cp;
-      const pz = src[k + 2];
+      const px = (src[k] * cp - src[k + 1] * stretch * sp) * scale;
+      const py = (src[k] * sp + src[k + 1] * stretch * cp) * scale;
+      const pz = src[k + 2] * scale;
       faunaPositions[offset + k] = x + px * cy + pz * sy;
       faunaPositions[offset + k + 1] = y + py;
       faunaPositions[offset + k + 2] = z - px * sy + pz * cy;
@@ -987,6 +994,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (arrived && (faunaStart === null || faunaClock - faunaStart >= Math.max(FAUNA_END, DETOUR_TIMING.faunaAgain))) faunaStart = faunaClock + DETOUR_TIMING.faunaDelay - DETOUR_TIMING.settle;
     const near = distance(here, shore.at) < 45;
     const t = faunaStart === null ? null : faunaClock - faunaStart;
+    // Le souffle de la baleine, entendu à l'instant où le jet part (jamais avec « Réduire les animations »).
+    if (!reduceMotion && t !== null && t >= FAUNA_BLOW && t - dt < FAUNA_BLOW) options.onWhaleBlow?.();
     const playing = t !== null && t >= 0 && t < FAUNA_END;
     faunaMesh.visible = near || playing;
     if (!faunaMesh.visible) return;
@@ -998,8 +1007,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     faunaKey = key;
     const w = pose.whale;
     if (w) writeFacets(whaleBase, 0, w.x, w.y, w.z, w.yaw - Math.PI / 2, w.pitch);
-    else faunaPositions.fill(0, 0, whaleBase.positions.length);
-    pose.birds.forEach((b, k) => writeFacets(birdBase, whaleBase.positions.length + k * birdBase.positions.length, b.x, b.y, b.z, b.yaw, 0));
+    else faunaPositions.fill(0, 0, spoutAt);
+    const j = pose.spout;
+    if (j) writeFacets(spoutBase, spoutAt, j.x, j.y, j.z, 0, 0, Math.max(0.05, j.grow), 1.6);
+    else faunaPositions.fill(0, spoutAt, birdsAt);
+    pose.birds.forEach((b, k) => writeFacets(b.perched ? birdPerched : birdBase, birdsAt + k * birdBase.positions.length, b.x, b.y, b.z, b.yaw, 0));
     (faunaGeometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
   };
   /**
