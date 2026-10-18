@@ -45,6 +45,14 @@ export interface WalkGrid {
 }
 
 const LAND_INDEX = new Map<LandId, number>(LANDS.map((l, i) => [l.id, i]));
+// Les terres fermées tiennent dans un masque de 31 bits (`closedMask`).
+if (LANDS.length > 31) throw new Error('freeWalk : plus de 31 terres, le masque des terres fermées ne suffit plus');
+/** Le rang d'une terre dans `LANDS` (toute terre y est ; sinon, une erreur plutôt qu'un rang faux). */
+function landIndex(l: LandId): number {
+  const i = LAND_INDEX.get(l);
+  if (i === undefined) throw new Error(`freeWalk : terre inconnue « ${l} »`);
+  return i;
+}
 
 /** La distance d'un point au segment de `a` à `b`, et sa part le long de lui. */
 function onSegment(p: Vec2, a: Vec2, b: Vec2): { d: number; t: number } {
@@ -55,11 +63,31 @@ function onSegment(p: Vec2, a: Vec2, b: Vec2): { d: number; t: number } {
   return { d: Math.hypot(p.x - a.x - dx * t, p.z - a.z - dz * t), t };
 }
 
-let gridCache: WalkGrid | null = null;
+/** La grille déjà tirée, et le terrain dont elle vient (un autre terrain la retire). */
+let gridCache: { field: HeightField; grid: WalkGrid } | null = null;
 
-/** Tire la grille de ce qui se marche (une fois : le plan ne change pas ; seules les terres fermées changent, à la lecture). */
+/** Tant de rangées de cases entre deux pauses du tirage (`walkGridSteps`). */
+const ROWS_PER_STEP = 8;
+/** De même, tant de chemins, et tant de cases quand la terre se propage. */
+const EDGES_PER_STEP = 16;
+const CELLS_PER_STEP = 20_000;
+
+/** Tire la grille de ce qui se marche d'un coup (une fois par terrain : seules les terres fermées changent, à la lecture). */
 export function buildWalkGrid(field: HeightField): WalkGrid {
-  if (gridCache) return gridCache;
+  const steps = walkGridSteps(field);
+  for (;;) {
+    const r = steps.next();
+    if (r.done) return r.value;
+  }
+}
+
+/**
+ * Le tirage de la grille par tranches : chaque `next()` fait quelques rangées (ou quelques tuiles de végétation) puis
+ * rend la main, si bien que la vue le mène au repos sans à-coup ; le dernier rend la grille. Une grille déjà tirée pour
+ * ce terrain est rendue au premier pas.
+ */
+export function* walkGridSteps(field: HeightField): Generator<void, WalkGrid, void> {
+  if (gridCache?.field === field) return gridCache.grid;
   const { cell } = FREE_WALK;
   const minX = TERRAIN.minX;
   const minZ = TERRAIN.minZ;
@@ -71,7 +99,8 @@ export function buildWalkGrid(field: HeightField): WalkGrid {
 
   // Le sol : assez haut au-dessus de l'eau, pas trop raide, ou la pierre de l'Escale.
   const e = cell / 2;
-  for (let j = 0; j < nz; j++)
+  for (let j = 0; j < nz; j++) {
+    if (j % ROWS_PER_STEP === ROWS_PER_STEP - 1) yield;
     for (let i = 0; i < nx; i++) {
       const p = centerOf(i, j);
       if (portFloor(p.x, p.z) !== null) {
@@ -84,6 +113,7 @@ export function buildWalkGrid(field: HeightField): WalkGrid {
       const gz = (heightOnMesh(field, p.x, p.z + e) - heightOnMesh(field, p.x, p.z - e)) / (2 * e);
       if (Math.hypot(gx, gz) <= FREE_WALK.slope) kind[j * nx + i] = GROUND;
     }
+  }
 
   // Ce qui bloque : un disque (la végétation), ou une boîte tournée (un lieu, les bâtiments de l'Escale).
   const blockDisk = (c: Vec2, r: number) => {
@@ -107,7 +137,10 @@ export function buildWalkGrid(field: HeightField): WalkGrid {
       }
   };
   for (let tz = 0; tz < TERRAIN.tilesZ; tz++)
-    for (let tx = 0; tx < TERRAIN.tilesX; tx++) for (const it of floraOf(field, tx, tz)) blockDisk(it, FLORA_RADIUS[it.kind] * it.scale + FREE_WALK.keo);
+    for (let tx = 0; tx < TERRAIN.tilesX; tx++) {
+      for (const it of floraOf(field, tx, tz)) blockDisk(it, FLORA_RADIUS[it.kind] * it.scale + FREE_WALK.keo);
+      yield;
+    }
   for (const pl of PLACES) {
     const b = boundsOf(modelOfPlace(pl.id).facets);
     const c = Math.cos(pl.yaw);
@@ -122,13 +155,16 @@ export function buildWalkGrid(field: HeightField): WalkGrid {
     blockBox(pl.center, 16, toLocal, { x0: b.min[0] - k, x1: b.max[0] + k, z0: b.min[2] - k, z1: b.max[2] + k });
   }
   blockBox(PORT.toWorld((PORT_BUILDINGS.x0 + PORT_BUILDINGS.x1) / 2, (PORT_BUILDINGS.z0 + PORT_BUILDINGS.z1) / 2), 30, PORT.toLocal, PORT_BUILDINGS);
+  yield;
 
   // Les chemins, toujours marchés (la digue, les pontons, les portes des lieux, les culées), et leur terre ; sur la
   // liaison d'un pont, la part au-delà de l'arrêt de Kéo est de la terre du pont (fermée tant qu'il n'est pas rebâti).
   const bridgeOf = new Map<number, LinkedLand>(LINKED_LANDS.map((l) => [bridgeEdge(l), l]));
   // Les cases d'un pont : elles ne donnent pas leur terre à l'herbe voisine (la rive d'en face la prendrait).
   const onBridge = new Uint8Array(nx * nz);
-  PATH_EDGES.forEach(([ia, ib], edge) => {
+  for (let edge = 0; edge < PATH_EDGES.length; edge++) {
+    if (edge % EDGES_PER_STEP === EDGES_PER_STEP - 1) yield;
+    const [ia, ib] = PATH_EDGES[edge];
     const a = pathNode(ia).at;
     const b = pathNode(ib).at;
     const r = FREE_WALK.path;
@@ -151,17 +187,20 @@ export function buildWalkGrid(field: HeightField): WalkGrid {
           l = beyond ? site.land : (NODE_LANDS.get(PATH_EDGES[edge][site.nearEnd]) ?? START_LAND);
         } else l = NODE_LANDS.get(t < 0.5 ? ia : ib) ?? START_LAND;
         // Une case déjà prise par un chemin d'une autre terre garde la sienne (un croisement près d'un pont).
-        if (kind[k] === PATH && land[k] >= 0 && land[k] !== LAND_INDEX.get(l)) continue;
+        const li = landIndex(l);
+        if (kind[k] === PATH && land[k] >= 0 && land[k] !== li) continue;
         kind[k] = PATH;
-        land[k] = LAND_INDEX.get(l)!;
+        land[k] = li;
         onBridge[k] = site ? 1 : 0;
       }
-  });
+  }
+  yield;
 
   // La terre du reste : de proche en proche depuis les chemins, sans passer par une case de pont (sa terre est à part).
   const queue: number[] = [];
   for (let k = 0; k < kind.length; k++) if (kind[k] === PATH && !onBridge[k]) queue.push(k);
   for (let q = 0; q < queue.length; q++) {
+    if (q % CELLS_PER_STEP === CELLS_PER_STEP - 1) yield;
     const k = queue[q];
     const i = k % nx;
     const j = (k - i) / nx;
@@ -177,8 +216,9 @@ export function buildWalkGrid(field: HeightField): WalkGrid {
   }
   // Ce qu'aucun chemin n'atteint (un îlot, un replat isolé par les pentes) ne se marche pas.
   for (let k = 0; k < kind.length; k++) if (land[k] < 0) kind[k] = BLOCKED;
-  gridCache = { minX, minZ, cell, nx, nz, kind, land };
-  return gridCache;
+  const grid: WalkGrid = { minX, minZ, cell, nx, nz, kind, land };
+  gridCache = { field, grid };
+  return grid;
 }
 
 const STEPS4: readonly (readonly [number, number])[] = [
@@ -199,7 +239,7 @@ const STEPS8: readonly (readonly [number, number, number])[] = [
 ];
 
 /** Les terres où l'on ne marche pas (leurs rangs), d'une liste de terres fermées. */
-const closedMask = (closed: readonly LinkedLand[]): number => closed.reduce((m, l) => m | (1 << LAND_INDEX.get(l)!), 0);
+const closedMask = (closed: readonly LinkedLand[]): number => closed.reduce((m, l) => m | (1 << landIndex(l)), 0);
 
 /** La case sous un point, ou −1 hors de la grille. */
 export function cellOf(g: WalkGrid, p: Vec2): number {
@@ -263,20 +303,49 @@ export function nearestWalkable(g: WalkGrid, p: Vec2, closed: readonly LinkedLan
 const stepCost = (g: WalkGrid, k: number) => (g.kind[k] === PATH ? FREE_WALK.pathCost : 1);
 
 /**
- * La ligne de `a` à `b` se marche-t-elle, et ce qu'elle coûte (les cases traversées, au pas d'une demi-case) ; `Infinity`
- * si elle passe par une case où l'on ne marche pas.
+ * La ligne de `a` à `b` se marche-t-elle, et ce qu'elle coûte ; `Infinity` si elle touche une case où l'on ne marche
+ * pas. Toutes les cases qu'elle traverse sont vues, de bord à bord (jamais un coin de tronc sauté entre deux essais), et
+ * chacune compte pour la longueur qu'elle y fait ; passer juste par le coin de deux cases demande que les deux autres
+ * se marchent, comme un pas en diagonale.
  */
 function lineCost(g: WalkGrid, a: Vec2, b: Vec2, mask: number): number {
   const len = distance(a, b);
-  const n = Math.max(1, Math.ceil(len / (g.cell / 2)));
+  const x = (a.x - g.minX) / g.cell;
+  const z = (a.z - g.minZ) / g.cell;
+  const dx = (b.x - g.minX) / g.cell - x;
+  const dz = (b.z - g.minZ) / g.cell - z;
+  let i = Math.floor(x);
+  let j = Math.floor(z);
+  const si = Math.sign(dx);
+  const sj = Math.sign(dz);
+  const tdx = dx ? Math.abs(1 / dx) : Infinity;
+  const tdz = dz ? Math.abs(1 / dz) : Infinity;
+  let tx = dx > 0 ? (i + 1 - x) * tdx : dx < 0 ? (x - i) * tdx : Infinity;
+  let tz = dz > 0 ? (j + 1 - z) * tdz : dz < 0 ? (z - j) * tdz : Infinity;
+  const at = (ci: number, cj: number) => (ci < 0 || cj < 0 || ci >= g.nx || cj >= g.nz ? -1 : cj * g.nx + ci);
+  let t = 0;
   let cost = 0;
-  for (let s = 0; s <= n; s++) {
-    const p = { x: a.x + ((b.x - a.x) * s) / n, z: a.z + ((b.z - a.z) * s) / n };
-    const k = cellOf(g, p);
+  for (;;) {
+    const k = at(i, j);
     if (!walkable(g, k, mask)) return Infinity;
-    if (s > 0) cost += (stepCost(g, k) * len) / n;
+    const next = Math.min(tx, tz, 1);
+    cost += stepCost(g, k) * (next - t) * len;
+    t = next;
+    if (t >= 1) return cost;
+    if (Math.abs(tx - tz) < 1e-9) {
+      if (!walkable(g, at(i + si, j), mask) || !walkable(g, at(i, j + sj), mask)) return Infinity;
+      i += si;
+      j += sj;
+      tx += tdx;
+      tz += tdz;
+    } else if (tx < tz) {
+      i += si;
+      tx += tdx;
+    } else {
+      j += sj;
+      tz += tdz;
+    }
   }
-  return cost;
 }
 
 /**
@@ -297,14 +366,17 @@ export function freeRoute(g: WalkGrid, from: Vec2, to: Vec2, closed: readonly Li
     start = cellOf(g, near);
   }
   if (start === goal) return [from, to];
-  const n = g.nx * g.nz;
-  const cost = new Float32Array(n).fill(Infinity);
-  const came = new Int32Array(n).fill(-1);
-  const closedSet = new Uint8Array(n);
-  const goalC = centerOfCell(g, goal);
+  const { cost, came, closedSet } = scratchOf(g);
+  cost.fill(Infinity);
+  came.fill(-1);
+  closedSet.fill(0);
+  const gi = goal % g.nx;
+  const gj = (goal - gi) / g.nx;
+  // L'estimation qui reste : la ligne droite, toute sur un chemin (elle ne surestime jamais).
+  const hScale = g.cell * FREE_WALK.pathCost;
   const h = (k: number) => {
-    const c = centerOfCell(g, k);
-    return distance(c, goalC) * FREE_WALK.pathCost;
+    const i = k % g.nx;
+    return Math.hypot(i - gi, (k - i) / g.nx - gj) * hScale;
   };
   const heap = new MinHeap();
   cost[start] = 0;
@@ -341,13 +413,14 @@ export function freeRoute(g: WalkGrid, from: Vec2, to: Vec2, closed: readonly Li
   points[0] = walkable(g, cellOf(g, from), mask) ? from : points[0];
   points[points.length - 1] = to;
   const costs = cells.map((k) => cost[k]);
-  // Le lissage : depuis chaque point gardé, le plus loin qu'on rejoint en ligne droite sans payer plus que le détour.
+  // Le lissage : depuis chaque point gardé, le plus loin qu'on rejoint en ligne droite sans payer plus que le détour,
+  // parmi les `SMOOTH_WINDOW` suivants (un long trajet ne coûte pas un essai par paire de points).
   const route: Vec2[] = [points[0]];
   if (points[0] !== from) route.unshift(from);
   let i = 0;
   while (i < points.length - 1) {
     let best = i + 1;
-    for (let j = points.length - 1; j > i + 1; j--) {
+    for (let j = Math.min(points.length - 1, i + SMOOTH_WINDOW); j > i + 1; j--) {
       if (lineCost(g, points[i], points[j], mask) <= costs[j] - costs[i] + 1e-3) {
         best = j;
         break;
@@ -357,6 +430,21 @@ export function freeRoute(g: WalkGrid, from: Vec2, to: Vec2, closed: readonly Li
     i = best;
   }
   return route;
+}
+
+/** Le lissage essaie la ligne droite vers tant de points suivants au plus. */
+const SMOOTH_WINDOW = 40;
+
+/** Les tableaux de travail de l'A*, faits une fois par grille et remis à zéro à chaque trajet. */
+const scratch = new WeakMap<WalkGrid, { cost: Float32Array; came: Int32Array; closedSet: Uint8Array }>();
+function scratchOf(g: WalkGrid) {
+  let s = scratch.get(g);
+  if (!s) {
+    const n = g.nx * g.nz;
+    s = { cost: new Float32Array(n), came: new Int32Array(n), closedSet: new Uint8Array(n) };
+    scratch.set(g, s);
+  }
+  return s;
 }
 
 /** Un tas binaire de cases par priorité croissante (A*). */

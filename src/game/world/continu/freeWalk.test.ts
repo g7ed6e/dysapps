@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { bridgeSite } from './bridges';
-import { FREE_WALK, buildWalkGrid, cellOf, freeRoute, isWalkable, nearestWalkable, onPathCell } from './freeWalk';
+import { FREE_WALK, buildWalkGrid, cellOf, freeRoute, isWalkable, nearestWalkable, onPathCell, walkGridSteps } from './freeWalk';
 import { distance, type Vec2 } from './geometry';
 import { LANDS, LINKED_LANDS, landOf } from './lands';
 import { pathNode } from './paths';
@@ -38,6 +38,11 @@ describe('la grille de ce qui se marche', () => {
     }
     expect(wet).toBe(0);
     for (const pl of PLACES) expect(isWalkable(grid, pl.center, []), pl.id).toBe(false);
+  });
+
+  it('se tire par tranches, et la grille déjà tirée revient au premier pas', () => {
+    expect(walkGridSteps(field).next()).toEqual({ done: true, value: grid });
+    expect(buildWalkGrid(field)).toBe(grid);
   });
 
   it("garde les terres séparées : deux cases voisines d'herbe sont de la même terre", () => {
@@ -90,6 +95,28 @@ describe('le trajet libre', () => {
     const across = freeRoute(grid, start, nearestWalkable(grid, beyond, [])!, []);
     expect(across).not.toBeNull();
     expect(freeRoute(grid, start, nearestWalkable(grid, beyond, [])!, ['couchant'])).toBeNull();
+  });
+
+  it('fait un long trajet, du Phare au fond des Crêtes, toutes terres ouvertes, vite et sur des pas qui se marchent', () => {
+    let far: Vec2 | null = null;
+    for (let k = 0; k < grid.kind.length; k++) {
+      if (grid.kind[k] !== 1 || LANDS[grid.land[k]].id !== 'cretes') continue;
+      const i = k % grid.nx;
+      const p = { x: grid.minX + (i + 0.5) * grid.cell, z: grid.minZ + ((k - i) / grid.nx + 0.5) * grid.cell };
+      if (!far || distance(p, start) > distance(far, start)) far = p;
+    }
+    const t = performance.now();
+    const route = freeRoute(grid, start, far!, [])!;
+    const ms = performance.now() - t;
+    process.stderr.write(`long trajet ${distance(start, far!).toFixed(0)} u, ${route.length} points, ${ms.toFixed(0)} ms\n`);
+    expect(route).not.toBeNull();
+    expect(ms).toBeLessThan(1500);
+    for (let s = 1; s < route.length; s++) {
+      const a = route[s - 1];
+      const b = route[s];
+      const n = Math.ceil(distance(a, b) / 0.2);
+      for (let q = 0; q <= n; q++) expect(isWalkable(grid, { x: a.x + ((b.x - a.x) * q) / n, z: a.z + ((b.z - a.z) * q) / n }, [])).toBe(true);
+    }
   });
 
   it("ramène un toucher dans l'eau au plus proche où l'on marche", () => {

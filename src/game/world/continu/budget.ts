@@ -36,7 +36,7 @@ const SKY = { triangles: skyDome(1).triangles, calls: 1 };
 /**
  * L'enveloppe du monde ouvert : 86 000 triangles, 20 appels (relevée par le mainteneur le 17 octobre 2026 pour les cinq
  * leviers graphiques du lot 3 de GD-20, point 3 : « plafond 86 000 triangles et 18 appels » ; 75 000 depuis le 16 octobre ;
- * 20 appels pour le déplacement libre, la silhouette de Kéo et la marque au sol, proposés au mainteneur le 18 octobre 2026).
+ * 20 appels pour le déplacement libre, la silhouette de Kéo et la marque au sol, choisis par le mainteneur le 18 octobre 2026).
  * La Carte la touche presque (toute l'île de loin, sa végétation comprise).
  */
 export const OPEN_WORLD_BUDGET = { triangles: 86_000, calls: 20 } as const;
