@@ -38,6 +38,9 @@ const C = {
   shrimp: 0xe58f7a,
   stone: 0xb9b2a3,
   stoneDark: 0x8f897d,
+  /** Le dos des parois des sas des Écluses : deux pierres claires (à l'ombre, il reste clair). */
+  wallBack: 0xe2ddd2,
+  wallBackAlt: 0xd2ccbf,
   /** Les dalles chaudes du sol d'une scène (lot commun des scénettes), à la place de la pierre grise : scenette.ts. */
   paving: 0xd6b98e,
   pavingSide: 0xb0926a,
@@ -1093,7 +1096,8 @@ function boat(b: FacetBuilder, x: number, y: number, z: number, length = 2.4): v
  * elle (`stop`, devant le sas), puis passée, dans le champ (`beyond`) ; au sud du canal, la berge (`forecourt`, sa
  * profondeur, assez pour que son flanc sorte du cadre ; plus large que le canal de `bank` de chaque côté), bordée de
  * pierre (`kerb`), puis le chemin de halage (`towpath`) et l'herbe, sous la rangée des leviers (retour du directeur
- * artistique : la pierre en bordure seulement).
+ * artistique : la pierre en bordure seulement). Le canal court sur `reach` unités de chaque côté du sas, jusqu'à ses
+ * abords (./eclusesSurroundings.ts : il sort d'une voûte à l'ouest, descend vers la mer à l'est).
  */
 export const LOCK = {
   front: 0.8,
@@ -1108,10 +1112,30 @@ export const LOCK = {
   stop: 0.2,
   beyond: 3.4,
   forecourt: 11,
-  bank: 4,
+  bank: 1,
   kerb: 0.45,
   towpath: 1.1,
+  reach: 12,
 } as const;
+
+/**
+ * La paroi d'un sas des Écluses (sa face, au sud, porte l'item) et son dos fini, vu quand la caméra tourne (directeur
+ * artistique, deuxième passe du 18 octobre 2026 : « le dos de la paroi du sas est un aplat brun sombre ») : trois assises
+ * de blocs d'une pierre claire, joints décalés (la pierre de la paroi entre eux), et une margelle claire sur le haut.
+ */
+function lockWall(b: FacetBuilder, x: number, y: number, z: number, w: number, h: number): void {
+  b.box({ x, y, z }, [w, h, 0.6], C.stoneDark, C.stone);
+  const back = z - 0.3 - 0.03;
+  const course = (h - 0.1) / 3;
+  for (let k = 0; k < 3; k++) {
+    const cuts = k % 2 ? [0, 0.28, 0.72, 1] : [0, 0.5, 1];
+    for (let i = 0; i + 1 < cuts.length; i++) {
+      const x0 = x - w / 2 + 0.05 + cuts[i] * (w - 0.1), x1 = x - w / 2 + 0.05 + cuts[i + 1] * (w - 0.1);
+      b.box({ x: (x0 + x1) / 2, y: y + 0.05 + k * course, z: back }, [x1 - x0 - 0.06, course - 0.06, 0.06], (i + k) % 2 ? C.wallBack : C.wallBackAlt);
+    }
+  }
+  b.box({ x, y: y + h, z: z - 0.04 }, [w + 0.12, 0.12, 0.74], C.wallBackAlt, C.wallBack);
+}
 
 /** La barque des Écluses, sa coque vers l'est, au repère de la réaction (la vue la déplace). */
 export function lockBoat(): Facets {
@@ -1305,7 +1329,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
       band = h / d,
       zf = o.z + 0.35;
     // La paroi du sas, de face : les bandes égales (des traits, sans chiffres), l'eau dans les `n` du bas.
-    b.box({ x: o.x, y: o.y, z: o.z }, [w + 0.5, h + 0.3, 0.6], C.stoneDark, C.stone);
+    lockWall(b, o.x, o.y, o.z, w + 0.5, h + 0.3);
     for (let k = 0; k < d; k++) b.box({ x: o.x, y: o.y + 0.15 + k * band + 0.03, z: zf }, [w, band - 0.06, 0.05], k < n ? C.water : C.empty);
     // Le trait du niveau de l'eau, large et clair : le niveau se lit sans la couleur.
     b.box({ x: o.x, y: o.y + 0.15 + n * band - 0.06, z: zf + 0.04 }, [w + 0.8, 0.12, 0.06], C.level);
@@ -1321,7 +1345,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
       const d = Math.max(1, d0),
         n = Math.max(0, Math.min(d, n0)),
         band = PAIR.h / d;
-      b.box({ x: cx, y: o.y, z: o.z }, [PAIR.w + 0.3, PAIR.h + 0.3, 0.6], C.stoneDark, C.stone);
+      lockWall(b, cx, o.y, o.z, PAIR.w + 0.3, PAIR.h + 0.3);
       for (let k = 0; k < d; k++) b.box({ x: cx, y: o.y + 0.15 + k * band + 0.03, z: zf }, [PAIR.w, band - 0.06, 0.05], k < n ? C.water : C.empty);
       b.box({ x: cx, y: o.y + 0.15 + n * band - 0.05, z: zf + 0.04 }, [PAIR.w + 0.1, 0.1, 0.06], C.level);
       labels.push({ text: `${n0}/${d0}`, at: { x: cx, y: o.y - 0.25, z: zf }, center: true });
@@ -1331,7 +1355,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     // Le sas au repos (lot L2) : sa paroi de pierre, sa vanne de bois fermée, sa tige et son volant ; rien de l'item.
     platform(4.6, 1.6, true);
     const zf = o.z + 0.35;
-    b.box({ x: o.x, y: o.y, z: o.z }, [3.5, 3.5, 0.6], C.stoneDark, C.stone);
+    lockWall(b, o.x, o.y, o.z, 3.5, 3.5);
     b.box({ x: o.x, y: o.y + 0.15, z: zf }, [1.5, 1.7, 0.08], C.lever, C.deck);
     for (const dx of [-0.5, 0, 0.5]) b.box({ x: o.x + dx, y: o.y + 0.15, z: zf + 0.05 }, [0.06, 1.7, 0.03], C.deckSide);
     // La tige de la vanne, et son volant de manœuvre : une roue de fer à huit pans, face à la caméra, sur son moyeu.
@@ -1353,7 +1377,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
       zf = o.z + 0.35,
       px = o.x + 0.9;
     // Le bassin et son eau, jusqu'au cran `n`.
-    b.box({ x: o.x - 0.6, y: o.y, z: o.z }, [2.2, 2 * unit + 0.4, 0.6], C.stoneDark, C.stone);
+    lockWall(b, o.x - 0.6, o.y, o.z, 2.2, 2 * unit + 0.4);
     b.box({ x: o.x - 0.6, y: o.y + 0.1, z: zf }, [2, (n / d) * unit, 0.05], C.water);
     // Le poteau gradué, de 0 à 2 : un cran par part, un grand cran aux unités (leurs nombres sont des panneaux).
     b.box({ x: px, y: o.y, z: zf }, [0.22, 2 * unit + 0.3, 0.12], C.white);
@@ -1685,6 +1709,10 @@ function jauge(b: FacetBuilder, labels: SceneLabel[], scene: Extract<ItemScene, 
   const level = y0 + (n / d) * J.height;
   // La cuve : son fond d'argile, ses deux montants de bois ; le vide clair au-dessus de l'eau.
   b.box({ x: o.x - 0.25, y: o.y - 0.2, z }, [J.tank + 0.5, J.height + 0.6, 0.35], C.clay, C.clayTop);
+  // De dos (caméra libre), la cuve n'est pas une dalle nue : deux montants de bois à ses bords et deux cerclages.
+  const back = z - 0.2;
+  for (const side of [-1, 1]) b.box({ x: o.x - 0.25 + side * (J.tank / 2 + 0.17), y: o.y - 0.2, z: back }, [0.16, J.height + 0.6, 0.1], C.post);
+  for (const h of [0.35, 0.7]) b.box({ x: o.x - 0.25, y: o.y - 0.2 + h * (J.height + 0.6), z: back }, [J.tank + 0.36, 0.13, 0.08], C.post);
   b.box({ x: o.x - 0.25, y: y0, z: zf - 0.02 }, [J.tank, J.height, 0.04], C.empty);
   b.box({ x: o.x - 0.25, y: y0, z: zf }, [J.tank, level - y0, 0.05], C.pan);
   // Le poteau gradué, blanc, de l'entier du bas à celui du haut.

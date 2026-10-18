@@ -966,7 +966,8 @@ const C = {
   // Sable du pack (#DAA66A), à la place de la pierre grise qui faisait une estrade ; ses joints et sa tranche plus bruns.
   paving: 0xd6b98e,
   pavingSide: 0xb0926a,
-  water: 0x2f8fc8,
+  /** L'eau du canal des Écluses : le Lagon du pack, turquoise (directeur artistique : le bleu saturé sortait de la palette). */
+  canal: COLORS_6E.lagoon,
   // La berge du canal : l'herbe, le chemin et la roche des berges du monde (COLORS_6E).
   grass: COLORS_6E.grass,
   path: COLORS_6E.path,
@@ -1638,8 +1639,8 @@ function lockQuay(b: FacetBuilder, open: boolean, posed: boolean): void {
   for (const side of [-1, 1]) b.box({ x: o.x + side * 4.05, y: o.y - depth, z: o.z }, [3.5, depth, 1.6], C.pavingSide, C.paving);
   const width = LOCK.back - LOCK.front;
   const mid = o.z + (LOCK.front + LOCK.back) / 2;
-  const long = 2 * LOCK.half;
-  b.box({ x: o.x, y: o.y - depth, z: mid }, [long, depth - LOCK.water, width], C.stoneSide, C.water);
+  const long = 2 * LOCK.reach;
+  b.box({ x: o.x, y: o.y - depth, z: mid }, [long, depth - LOCK.water, width], C.stoneSide, C.canal);
   // La berge : la bordure de pierre, un peu plus haute, puis l'herbe ; le chemin de halage posé dessus.
   const bank = o.z + LOCK.back;
   b.box({ x: o.x, y: o.y - depth, z: bank + LOCK.kerb / 2 }, [long, depth + 0.04, LOCK.kerb], C.stoneSide, C.stone);

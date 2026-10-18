@@ -7,7 +7,8 @@ import { FOLLOW, KEO_HEIGHT, LOOK_UP, followPose, lookUp, lookUpStep, orbitAroun
 import { FacetBuilder, boundsOf, placeFacets } from './facets';
 import { distance, linearRgb } from './geometry';
 import { startOf } from './paths';
-import { placeById } from './plan6e';
+import { placeById, type PlaceId } from './plan6e';
+import { SURROUNDINGS } from './surroundings';
 import { COMMONS, OBSERVATORY, SHIPYARD, SHORES, SLIP_N, STEAM_GAP, commonsPillars, drumFace, hullEdge, modelOfPlace } from './places';
 import { ANSWER_LAYOUT, COMMONS_PAVING_RISE, ENGINE_PAVING_RISE, FOUNTAIN, JAUGE, LOCK, OBSERVATORY_BAY, OBSERVATORY_PAVING_RISE, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, swingTo, type ScreenBox } from './questionScene';
 import {
@@ -51,6 +52,13 @@ const screens = [
   [844, 390],
   [667, 375],
 ] as const;
+
+/** Les triangles des abords d'un lieu (./surroundings.ts), autour du sol de sa scène. */
+function surroundingsTriangles(place: PlaceId): number {
+  const b = new FacetBuilder();
+  SURROUNDINGS[place]?.(b, { ...sceneSpot(place), y: scenetteKeo(place).at.y }, { open: false, posed: true });
+  return b.build().triangles;
+}
 
 describe('La place de la scénette à l’écran', () => {
   it('chaque lieu a sa scénette, chaque habitant nommé par son rôle seul, sans phrase d’accueil', () => {
@@ -478,7 +486,8 @@ describe('Les Filets et les Écluses (lot 4), les Marais salants (lot L5), la Tu
       }
       const decor = scenetteDecor(place);
       expect(decor.triangles).toBeGreaterThan(0);
-      expect(decor.triangles).toBeLessThan(1500);
+      // Les abords du lieu (./surroundings.ts) à part : ils ont leur propre compte (le test de chaque lieu).
+      expect(decor.triangles - surroundingsTriangles(place)).toBeLessThan(1500);
       // Les paniers et les leviers sur une margelle à terre, à la hauteur du plancher ; la caisse des Quais seule part.
       expect(scenetteDeck(place)).toEqual({ y: floor + LAND_DECK, onLand: true });
       expect(answerLeaves(place)).toBe(false);
@@ -774,8 +783,9 @@ describe('Les Marais salants (GD-20, point 8, lot L5)', () => {
 
   it('la saunière, en peu de triangles, sur le muret au bord du bassin ; le décor de près en un maillage léger', () => {
     const decor = scenetteDecor('saltworks');
-    // Les deux ombres au pied (lot commun des scénettes) comprises : 14 triangles.
-    expect(decor.triangles).toBeLessThan(414);
+    // Les deux ombres au pied (lot commun des scénettes) comprises : 14 triangles ; les abords à part
+    // (./saltworksSurroundings.test.ts).
+    expect(decor.triangles - surroundingsTriangles('saltworks')).toBeLessThan(414);
     const habitant = scenetteHabitant('saltworks');
     const keo = scenetteKeo('saltworks').at;
     expect(keo.x).toBeLessThan(o.x);
