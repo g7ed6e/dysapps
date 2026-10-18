@@ -949,7 +949,8 @@ describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
   };
 
   it('le charpentier, en peu de triangles, sur le plancher levé au-dessus de la grève : tablier ardoise, maillet en main', () => {
-    const decor = scenetteDecor('shipyard');
+    // Le décor de près sans les abords (./shipyardSurroundings.ts, jugés à part) : le plancher, le charpentier.
+    const decor = scenetteCore('shipyard');
     // Les deux ombres au pied (lot commun des scénettes) comprises.
     expect(decor.triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
     const habitant = scenetteHabitant('shipyard');

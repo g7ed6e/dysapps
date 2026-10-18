@@ -112,6 +112,9 @@ const C = {
   shipSlate: 0x4d6a82,
   wornKeel: 0x9a8a78,
   wornPlank: 0xb3a68f,
+  // Les membrures nues de la ruine (évaluation du directeur artistique, 18 octobre 2026 : « un peu plus sombres ») : le
+  // bois gris de la ruine, un cran plus brun et plus sombre, jamais presque noir.
+  wornShipRib: 0x86775f,
   // La Mangrove (lot L8a, directeur artistique) : le feuillage des palétuviers et son ombre (ni l'herbe ni le haut de
   // falaise), leurs troncs et leurs racines, la vase (plus sombre que la boue de ruine, jamais presque noire), les
   // passerelles en deux bois et leurs pieux, les cordes des rambardes, les palmes du carbet.
@@ -1295,7 +1298,7 @@ function shipyard(add: Add): void {
     0,
     (b) => {
       shipSpine(b, C.wornKeel);
-      shipRibs(b, C.wornWood);
+      shipRibs(b, C.wornShipRib);
       shipCradle(b, C.wornKeel, false);
     },
     { stage: 0, row: 0.34 },
@@ -1305,7 +1308,7 @@ function shipyard(add: Add): void {
     'ruine',
     0,
     (b) => {
-      for (const [x, z, yaw] of SCATTERED_PLANKS) b.box({ x, y: g.at(x, z) - 0.02, z, yaw }, [0.32, 0.08, 2.3], C.wornPlank);
+      for (const [x, z, yaw] of SCATTERED_PLANKS) b.box({ x, y: g.at(x, z) + 0.01, z, yaw }, [0.32, 0.08, 2.3], C.wornPlank);
     },
     { stage: 0, row: 0.67 },
   );
