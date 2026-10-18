@@ -14,11 +14,11 @@ On conçoit un niveau à la fois, et chaque étape se valide avant la suivante. 
 Une page, rangée dans `docs/univers/archipeo/intentions/` (celle du 6e, Les Premiers Rivages, sert de modèle), qui donne :
 - l'idée en une phrase et trois couleurs ;
 - le grand lieu, qu'on voit dès l'arrivée ;
-- chaque lieu, avec sa raison d'être chez les Passeurs, ce qu'on y fait, son Veilleur (nom, taille par rapport à Kéo) et son état de départ (éteint ou démonté) ;
+- chaque lieu, avec sa raison d'être, ce qu'on y fait, son habitant (son métier), sa pièce maîtresse (le cœur du lieu, que les Ferrailleurs ont récupérée) et sa ruine de départ ;
 - l'équipier qui embarque et ce que font les Ferrailleurs.
 
 Le directeur artistique et le consultant Archipéo l'écrivent ; le directeur du contenu rattache toutes les missions de `docs/contenu/` aux lieux ; le référent dys la relit. Les règles :
-- deux lieux, ou deux Veilleurs, n'ont jamais la même initiale ;
+- deux lieux n'ont jamais la même initiale ;
 - aucun homophone gênant, aucune ligature ;
 - rien à lire dans la 3D.
 
@@ -30,9 +30,9 @@ Un dessin en aplats, sans recherche de beauté : la forme de l'île, qui est rel
 
 - Un socle commun à toutes les images du niveau (style low poly en aplats, caméra, lumière, matières), puis un paragraphe par lieu qui nomme l'objet qui le fait reconnaître.
 - Des mots positifs seulement : Z-Image n'a pas de prompt négatif.
-- Mots à éviter pour les Veilleurs : « sentinel » et « glyph head » donnent des piliers, des cheminées ou un robot en blocs (trop Blocland). « robed statue, bronze mask » marche mieux. Pas de moaï : le mainteneur les a écartés, et ils écrasaient chaque lieu.
+- Aucune statue ni figure gardienne : les Veilleurs sont abandonnés (15 octobre 2026) et les moaï écartés. Le lieu se reconnaît à son mécanisme (une lentille, des vannes, une presse), démonté puis remis en place.
 - Un lieu demandé seul se pose sur son propre îlot : il faut le placer « sur un bout de rivage », ou mieux, partir de la vue globale (étape 5).
-- Pour les Ferrailleurs : pas d'uniforme, un bateau diesel sans voile ni mât.
+- Pour les Ferrailleurs : pas d'uniforme (graphite et prune dépareillés, un liseré clair, du bronze récupéré), un remorqueur diesel sans voile ni mât, le Rafiot. « Mast » ou « sail » dans le prompt fait revenir le mât : décrire « a wide flat diesel tugboat with a crane and a tall exhaust pipe ».
 
 ## 4. La vue globale, guidée par le plan
 
