@@ -623,10 +623,10 @@ export const PLACES: readonly OpenPlace[] = PLACE_SPECS.map((s) => ({
   touchRadius: s.touchRadius,
 }));
 
-/** Un lieu par son identifiant. */
+/** Un lieu du 6e seulement, par son identifiant (pour un lieu de tout niveau : `placeById` de ./levelPlan.ts). */
 export const placeById = (id: PlaceId): OpenPlace => PLACES.find((p) => p.id === id)!;
 
-/** Le lieu qui reprend les missions d'une île, s'il y en a un. */
+/** Le lieu du 6e seulement qui reprend les missions d'une île, s'il y en a un (tout niveau : ./levelPlan.ts). */
 export const placeOfIsland = (island: string): OpenPlace | undefined => PLACES.find((p) => p.island === island);
 
 /** Un nœud du réseau des chemins. */

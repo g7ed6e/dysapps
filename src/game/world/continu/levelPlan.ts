@@ -65,11 +65,14 @@ export const OPEN_WORLD_LEVELS = Object.keys(PLANS) as readonly OpenWorldLevel[]
 /** Le plan d'un niveau. */
 export const planFor = (level: OpenWorldLevel): LevelPlan => PLANS[level];
 
+/** Tous les plans enregistrés. */
+export const ALL_PLANS: readonly LevelPlan[] = Object.values(PLANS);
+
 /** Les lieux de tous les plans. */
-const ALL_PLACES: readonly OpenPlace[] = Object.values(PLANS).flatMap((p) => p.places);
+const ALL_PLACES: readonly OpenPlace[] = ALL_PLANS.flatMap((p) => p.places);
 
 /** Les terres de tous les plans. */
-export const ALL_LANDS: readonly Land[] = Object.values(PLANS).flatMap((p) => p.lands);
+export const ALL_LANDS: readonly Land[] = ALL_PLANS.flatMap((p) => p.lands);
 
 /** Un lieu par son identifiant, quel que soit son niveau. */
 export const placeById = (id: PlaceId): OpenPlace => ALL_PLACES.find((p) => p.id === id)!;

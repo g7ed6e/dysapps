@@ -2,7 +2,7 @@
 // de disposition ouvre le monde ouvert aux mêmes archipels ; un lieu se retrouve par son seul identifiant.
 import { describe, expect, it } from 'vitest';
 import { OPEN_WORLD_ARCHIPELAGOS } from '../../worldLayoutFactory';
-import { ALL_LANDS, OPEN_WORLD_LEVELS, levelOfPlace, placeById, placeOfIsland, planFor } from './levelPlan';
+import { ALL_LANDS, ALL_PLANS, OPEN_WORLD_LEVELS, levelOfPlace, placeById, placeOfIsland, planFor } from './levelPlan';
 import { COAST, LANDS_6E, OFFSHORE, PATH_EDGES, PLACES, STRAITS, TERRAIN } from './plan6e';
 
 describe('Le plan par niveau', () => {
@@ -31,5 +31,13 @@ describe('Le plan par niveau', () => {
     }
     expect(placeOfIsland('maths-5e-proportionality')).toBeUndefined();
     expect(ALL_LANDS).toEqual(LANDS_6E);
+  });
+
+  it('les identifiants des lieux, des îles et des terres sont uniques entre tous les plans, et chaque plan a une seule terre de départ', () => {
+    const unique = (ids: readonly string[]) => expect(new Set(ids).size).toBe(ids.length);
+    unique(ALL_PLANS.flatMap((p) => p.places.map((q) => q.id)));
+    unique(ALL_PLANS.flatMap((p) => p.places.map((q) => q.island)));
+    unique(ALL_PLANS.flatMap((p) => p.lands.map((l) => l.id)));
+    for (const plan of ALL_PLANS) expect(plan.lands.filter((l) => l.after === null)).toHaveLength(1);
   });
 });
