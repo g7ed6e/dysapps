@@ -14,7 +14,7 @@ import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { NEF_DEPARTURE, NEF_LIFT, bancFacets, bancTouched, berFacets, nefArrivingParts, nefAtBerth, nefBerthWorld, nefDeparture, nefModelFacets, nefShownParts, nefTouched, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, detourRise, detourViewStep, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose } from '../../world/continu/camera';
+import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, WORLD_FOG, detourRise, detourViewStep, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourFacets, faunaPose, spoutFacets, whaleFacets, type DetourId } from '../../world/continu/detours';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
@@ -1149,6 +1149,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const focus: Vec3 = { ...keoFeet };
   // La caméra tournée autour de Kéo (GD-20, rotation libre) : `yaw`, et le tour en cours des boutons (`turning`).
   let yaw = 0;
+  /**
+   * L'angle dont la caméra a tourné autour de la scénette (`SCENE_TURN`), la scène à refaire à l'image suivante, et la
+   * dernière question posée, avec laquelle elle se refait. Déclarés ici, avant le premier `updateRings`, qui les lit ;
+   * remis à zéro en quittant la scénette (`leaveScenette`).
+   */
+  let sceneYaw = 0;
+  let sceneTurnPending = false;
+  let lastQuestion: QuestionRequest | null = null;
   let turning: { from: number; to: number; start: number } | null = null;
   let lift = occlusionLift(focus, ground, yaw);
   const pose: CameraPose = followPose(focus, lift, undefined, yaw);
@@ -2353,11 +2361,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // quand), puis la lumière ; `finaleShown` : elle est montrée (le décor de près a changé).
   let finale: { from: THREE.Vector3; start: number; f: ScenetteFinale } | null = null;
   let finaleShown = false;
-  /** L'angle dont la caméra a tourné autour de la scénette (`SCENE_TURN`), et la scène à refaire à l'image suivante. */
-  let sceneYaw = 0;
-  let sceneTurnPending = false;
-  /** La dernière question posée : la scène se refait avec elle quand la caméra tourne. */
-  let lastQuestion: QuestionRequest | null = null;
   /** Ceux qui écrivent les repères de la scène (la page) : la caméra tournée les déplace. */
   const sceneTurnListeners = new Set<(labels: LabelOnScreen[]) => void>();
   const turnFrom = new THREE.Vector3();
@@ -2437,6 +2440,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!scenette) return;
     const left = scenette;
     scenette = null;
+    sceneYaw = 0;
+    sceneTurnPending = false;
+    lastQuestion = null;
     descent.active = false;
     placeVisibility();
     unlitReaction();
@@ -2479,19 +2485,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const turnScenePose = (pose: CameraPose) => {
     if (!sceneYaw) return;
     const t = pose.target;
-    const dx = pose.position.x - t.x;
-    const dz = pose.position.z - t.z;
-    const c = Math.cos(sceneYaw);
-    const s = Math.sin(sceneYaw);
-    // Le même sens que la caméra qui suit Kéo (`occlusionLift`) : à l'angle `a`, elle est en (sin a, cos a) du point visé.
-    pose.position = { x: t.x + dx * c + dz * s, y: pose.position.y, z: t.z - dx * s + dz * c };
+    pose.position = orbitAround(pose.position, t, sceneYaw);
     turnFrom.set(t.x, t.y, t.z);
     turnDir.set(pose.position.x - t.x, pose.position.y - t.y, pose.position.z - t.z);
     const dist = turnDir.length();
     turnDir.normalize();
     raycaster.set(turnFrom, turnDir);
     raycaster.far = dist + SCENE_TURN.clearance;
-    const hit = raycaster.intersectObjects([placesMesh, landmarkMesh, decorMesh], false).find((h) => h.distance > 0.5);
+    // Les maillages montrés seulement (un lieu effacé le temps de la scénette ne retient pas la caméra).
+    const hit = raycaster.intersectObjects([placesMesh, landmarkMesh, decorMesh].filter((m) => m.visible), false).find((h) => h.distance > 0.5);
     raycaster.far = Infinity;
     const d = hit ? Math.max(SCENE_TURN.minDistance, Math.min(dist, hit.distance - SCENE_TURN.clearance)) : dist;
     pose.position = { x: t.x + turnDir.x * d, y: t.y + turnDir.y * d, z: t.z + turnDir.z * d };
@@ -2500,9 +2502,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const askQuestion = (q: QuestionRequest | null): LabelOnScreen[] => {
     if (!q) {
-      sceneYaw = 0;
-      sceneTurnPending = false;
-      lastQuestion = null;
       if (!asked) return [];
       asked = null;
       reaction = null;
@@ -3295,6 +3294,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     },
     dispose: () => {
       disposed = true;
+      sceneTurnListeners.clear();
       laying = null;
       pendingLay = null;
       cancelAnimationFrame(frame);

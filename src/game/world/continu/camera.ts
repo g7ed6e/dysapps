@@ -275,3 +275,16 @@ export function screenOf(pose: CameraPose, p: Vec3, width: number, height: numbe
   const sy = (rx * ux + ry * uy + rz * uz) / ul / half;
   return { x: ((sx + 1) / 2) * width, y: ((1 - sy) / 2) * height };
 }
+
+/**
+ * Un point tourné de `angle` autour de l'axe vertical qui passe par `pivot` (sa hauteur gardée), dans le sens de la
+ * caméra qui suit Kéo (`occlusionLift`) : un point au sud du pivot (vers +z) passe en (sin a, cos a) de lui. La caméra
+ * d'une scénette tourne ainsi autour de son point visé (« caméra libre », lot commun des scénettes).
+ */
+export function orbitAround(point: Vec3, pivot: Vec3, angle: number): Vec3 {
+  const dx = point.x - pivot.x;
+  const dz = point.z - pivot.z;
+  const c = Math.cos(angle);
+  const s = Math.sin(angle);
+  return { x: pivot.x + dx * c + dz * s, y: point.y, z: pivot.z - dx * s + dz * c };
+}

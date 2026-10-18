@@ -3,7 +3,7 @@
 // Quais (lot 3), les Filets et les Écluses (lot 4) : leur habitant, leur cadrage, leur réussite et leur retour. Sans
 // Three.js.
 import { describe, expect, it } from 'vitest';
-import { FOLLOW, KEO_HEIGHT, LOOK_UP, followPose, lookUp, lookUpStep, screenOf } from './camera';
+import { FOLLOW, KEO_HEIGHT, LOOK_UP, followPose, lookUp, lookUpStep, orbitAround, screenOf } from './camera';
 import { FacetBuilder, boundsOf, placeFacets } from './facets';
 import { distance, linearRgb } from './geometry';
 import { startOf } from './paths';
@@ -1389,3 +1389,18 @@ function expectLegsAndHair(decor: { colors: Float32Array; positions: Float32Arra
   // Sur les côtés, ils descendent aux oreilles, sous le milieu de la tête.
   expect(Math.min(...hair.filter((v) => Math.abs(v[0] - at.x) > 0.2).map((v) => v[1]))).toBeLessThan(at.y + 1.13);
 }
+
+describe('La caméra libre des scénettes (lot commun)', () => {
+  it('tourne autour du point visé, à la même distance et à la même hauteur, dans le sens de la caméra qui suit Kéo', () => {
+    const pivot = { x: 10, y: 2, z: -4 };
+    const south = { x: 10, y: 7, z: 2 };
+    expect(orbitAround(south, pivot, 0)).toEqual(south);
+    const quarter = orbitAround(south, pivot, Math.PI / 2);
+    expect(quarter.x).toBeCloseTo(16, 6);
+    expect(quarter.z).toBeCloseTo(-4, 6);
+    expect(quarter.y).toBe(7);
+    const half = orbitAround(south, pivot, Math.PI);
+    expect(half.x).toBeCloseTo(10, 6);
+    expect(half.z).toBeCloseTo(-10, 6);
+  });
+});
