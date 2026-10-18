@@ -96,7 +96,7 @@ function renderPage() {
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter initialEntries={['/adventure']}>
-            <OpenWorldPage />
+            <OpenWorldPage level="6e" />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -317,7 +317,7 @@ describe('« Reprendre » chez l’habitant (GD-20, point 4, lot L3)', () => {
         <ProgressProvider>
           <BloclandProvider>
             <MemoryRouter initialEntries={['/adventure']}>
-              <OpenWorldPage />
+              <OpenWorldPage level="6e" />
               <LocationProbe />
             </MemoryRouter>
           </BloclandProvider>

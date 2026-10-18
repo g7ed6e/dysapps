@@ -5,7 +5,7 @@
 // page. Ici, la pose de la caméra et ses limites, sans Three.js ; la vue fait le reste (../../three/archipeo/scene.ts).
 import { screenOf, type CameraPose } from './camera';
 import type { Vec2 } from './geometry';
-import { COAST, OFFSHORE } from './plan6e';
+import type { LevelPlan } from './levelPlan';
 
 /**
  * La caméra de la Carte : son angle sous l'horizon (presque à plomb, un peu de biais pour garder le relief), son champ
@@ -21,31 +21,47 @@ export interface MapView {
   distance: number;
 }
 
+/** La boîte de l'île d'un plan, en unités. */
+export interface IslandBox {
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
+}
+
+const boxes = new WeakMap<LevelPlan, IslandBox>();
+
 /**
- * La boîte de l'île (le bord de son anneau de sable, et le large qui en dépasse : les mâts des Balises et l'îlot de la
- * Gare maritime, lot L9), en unités.
+ * La boîte de l'île d'un plan (sa côte, et le large qui en dépasse : au 6e, le bord de son anneau de sable, les mâts des
+ * Balises et l'îlot de la Gare maritime, lot L9), en unités.
  */
-export const ISLAND_BOX = (() => {
-  const xs = [...COAST, ...OFFSHORE].map((p) => p.x);
-  const zs = [...COAST, ...OFFSHORE].map((p) => p.z);
-  return { minX: Math.min(...xs), maxX: Math.max(...xs), minZ: Math.min(...zs), maxZ: Math.max(...zs) };
-})();
+export function islandBox(plan: LevelPlan): IslandBox {
+  let box = boxes.get(plan);
+  if (!box) {
+    const xs = [...plan.coast, ...plan.offshore].map((p) => p.x);
+    const zs = [...plan.coast, ...plan.offshore].map((p) => p.z);
+    boxes.set(plan, (box = { minX: Math.min(...xs), maxX: Math.max(...xs), minZ: Math.min(...zs), maxZ: Math.max(...zs) }));
+  }
+  return box;
+}
 
 /** La distance la plus lointaine qu'on cherche, en unités (bien au-delà de l'île entière). */
 const FARTHEST = 4000;
 
 /**
- * La distance où l'île entière tient dans un écran de rapport `aspect` (largeur sur hauteur), avec sa marge : les
+ * La distance où l'île entière d'un plan tient dans un écran de rapport `aspect` (largeur sur hauteur), avec sa marge : les
  * quatre coins de sa boîte à l'écran, en perspective (le bord sud, plus proche, est plus grand), cherchée par
- * dichotomie. Le résultat ne dépend que du rapport : il est gardé.
+ * dichotomie. Le résultat ne dépend que du plan et du rapport : il est gardé.
  */
-export function fitDistance(aspect: number): number {
+export function fitDistance(plan: LevelPlan, aspect: number): number {
   const key = Math.round(aspect * 1000);
+  let fits = fitsOf.get(plan);
+  if (!fits) fitsOf.set(plan, (fits = new Map()));
   const known = fits.get(key);
   if (known !== undefined) return known;
   const h = 1000;
   const w = Math.max(0.1, aspect) * h;
-  const { minX, maxX, minZ, maxZ } = ISLAND_BOX;
+  const { minX, maxX, minZ, maxZ } = islandBox(plan);
   const x = (minX + maxX) / 2;
   const z = (minZ + maxZ) / 2;
   const corners = [
@@ -70,7 +86,7 @@ export function fitDistance(aspect: number): number {
   fits.set(key, d);
   return d;
 }
-const fits = new Map<number, number>();
+const fitsOf = new WeakMap<LevelPlan, Map<number, number>>();
 
 /**
  * La Carte au plus grand texte (GD-20, « La Carte au plus grand texte », directeur artistique) : si un lieu ouvert n'a
@@ -88,8 +104,8 @@ export const MAP_REFRAME = { step: 1.1, most: 2 } as const;
  * sinon celle qui le réduit le plus, la plus proche de l'île entière. Le texte normal, où chaque nom a déjà sa place,
  * garde l'île entière.
  */
-export function reframeMap(aspect: number, open: readonly Vec2[], crowded: (v: MapView) => number): MapView {
-  const start = mapStart(aspect);
+export function reframeMap(plan: LevelPlan, aspect: number, open: readonly Vec2[], crowded: (v: MapView) => number): MapView {
+  const start = mapStart(plan, aspect);
   let best = { view: start, count: crowded(start) };
   if (!best.count) return start;
   const xs = open.map((p) => p.x);
@@ -98,7 +114,7 @@ export function reframeMap(aspect: number, open: readonly Vec2[], crowded: (v: M
   for (let k = MAP_REFRAME.step; k <= MAP_REFRAME.most * 1.0001; k *= MAP_REFRAME.step) {
     const farther = { x: start.x, z: start.z, distance: start.distance * k };
     const fartherOnOpen = { x: toward.x, z: toward.z, distance: start.distance * k };
-    const closer = clampMap({ x: toward.x, z: toward.z, distance: start.distance / k }, aspect);
+    const closer = clampMap(plan, { x: toward.x, z: toward.z, distance: start.distance / k }, aspect);
     for (const view of [farther, fartherOnOpen, closer]) {
       const count = crowded(view);
       if (count < best.count) best = { view, count };
@@ -109,36 +125,38 @@ export function reframeMap(aspect: number, open: readonly Vec2[], crowded: (v: M
 }
 
 /** La Carte à l'ouverture : l'île entière, au milieu de l'écran. */
-export function mapStart(aspect: number): MapView {
-  return { x: (ISLAND_BOX.minX + ISLAND_BOX.maxX) / 2, z: (ISLAND_BOX.minZ + ISLAND_BOX.maxZ) / 2, distance: fitDistance(aspect) };
+export function mapStart(plan: LevelPlan, aspect: number): MapView {
+  const box = islandBox(plan);
+  return { x: (box.minX + box.maxX) / 2, z: (box.minZ + box.maxZ) / 2, distance: fitDistance(plan, aspect) };
 }
 
 /**
  * La pose garde l'île sous les yeux : la distance entre la plus proche et l'île entière (ou `farthest`, la Carte
  * reculée au plus grand texte, `reframeMap`), le point regardé dans l'île.
  */
-export function clampMap(v: MapView, aspect: number, farthest = fitDistance(aspect)): MapView {
-  const distance = Math.min(Math.max(fitDistance(aspect), farthest), Math.max(MAP_CAMERA.closest, v.distance));
+export function clampMap(plan: LevelPlan, v: MapView, aspect: number, farthest = fitDistance(plan, aspect)): MapView {
+  const distance = Math.min(Math.max(fitDistance(plan, aspect), farthest), Math.max(MAP_CAMERA.closest, v.distance));
+  const box = islandBox(plan);
   return {
-    x: Math.min(ISLAND_BOX.maxX, Math.max(ISLAND_BOX.minX, v.x)),
-    z: Math.min(ISLAND_BOX.maxZ, Math.max(ISLAND_BOX.minZ, v.z)),
+    x: Math.min(box.maxX, Math.max(box.minX, v.x)),
+    z: Math.min(box.maxZ, Math.max(box.minZ, v.z)),
     distance,
   };
 }
 
 /** La Carte glissée : le point regardé déplacé de (`dx`, `dz`), dans ses limites. */
-export function panMap(v: MapView, dx: number, dz: number, aspect: number, farthest?: number): MapView {
-  return clampMap({ x: v.x + dx, z: v.z + dz, distance: v.distance }, aspect, farthest);
+export function panMap(plan: LevelPlan, v: MapView, dx: number, dz: number, aspect: number, farthest?: number): MapView {
+  return clampMap(plan, { x: v.x + dx, z: v.z + dz, distance: v.distance }, aspect, farthest);
 }
 
 /**
  * La Carte zoomée d'un facteur (`factor` > 1 rapproche), autour du point du sol `toward` (sous les doigts ou le
  * pointeur) : ce point reste où il est à l'écran, sauf aux limites.
  */
-export function zoomMap(v: MapView, factor: number, toward: Vec2, aspect: number, farthest?: number): MapView {
-  const want = clampMap({ ...v, distance: v.distance / Math.max(0.01, factor) }, aspect, farthest).distance;
+export function zoomMap(plan: LevelPlan, v: MapView, factor: number, toward: Vec2, aspect: number, farthest?: number): MapView {
+  const want = clampMap(plan, { ...v, distance: v.distance / Math.max(0.01, factor) }, aspect, farthest).distance;
   const k = want / v.distance;
-  return clampMap({ x: toward.x + (v.x - toward.x) * k, z: toward.z + (v.z - toward.z) * k, distance: want }, aspect, farthest);
+  return clampMap(plan, { x: toward.x + (v.x - toward.x) * k, z: toward.z + (v.z - toward.z) * k, distance: want }, aspect, farthest);
 }
 
 /** La pose de la caméra pour une pose de la Carte, remplie dans `out` s'il est donné. */

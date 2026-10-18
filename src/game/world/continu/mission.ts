@@ -2,7 +2,8 @@
 // UX UI, 13 octobre 2026), posée au-dessus de son lieu, ou une flèche au bord de l'écran quand le lieu est hors champ.
 // Code pur : les bornes viennent du modèle du monde (world/model.ts), commun aux deux univers.
 import { distance, type Vec2 } from './geometry';
-import { KEO_STEP, PLACES, type OpenPlace, type PlaceId } from './plan6e';
+import type { LevelPlan, OpenPlace, PlaceId } from './levelPlan';
+import { KEO_STEP } from './plan6e';
 
 /** Une borne de mission, comme la rend le modèle du monde : à faire, ses étoiles, ou fermée. */
 export interface MissionMark {
@@ -48,7 +49,7 @@ const toPlay = (b: MissionMark) => b.etat === 'new' || b.etat === 'locked';
 export const firstToPlayAt = (place: OpenPlace, bornes: readonly MissionMark[]): MissionMark | undefined => missionsOfPlace(place, bornes).find(toPlay);
 
 /**
- * La prochaine mission du prototype : la première encore à jouer du lieu où se tient Kéo (`here`, s'il est ouvert : le
+ * La prochaine mission d'un plan (`plan`) : la première encore à jouer du lieu où se tient Kéo (`here`, s'il est ouvert : le
  * rang 2 de la suggestion, index.md, « Une seule suggestion » ; avis du directeur artistique, deuxième passe du lot L1),
  * sinon celle de la prochaine destination du jeu si elle se joue dans un lieu ouvert, sinon
  * la première encore à jouer, lieu ouvert par lieu ouvert dans l'ordre du plan (le Phare, puis les Quais : « au retour du
@@ -57,19 +58,20 @@ export const firstToPlayAt = (place: OpenPlace, bornes: readonly MissionMark[]):
  * d'un lieu fermé (`open`, GD-20, point 3 : aucune mission d'un lieu fermé ne se joue). `null` quand tout est fait.
  */
 export function nextMission(
+  plan: LevelPlan,
   bornes: readonly MissionMark[],
   destination?: { island: string; mission?: string },
   open: (place: PlaceId) => boolean = () => true,
   here?: PlaceId | null,
 ): NextMission | null {
-  const at = here ? PLACES.find((p) => p.id === here) : undefined;
+  const at = here ? plan.places.find((p) => p.id === here) : undefined;
   const mine = at && open(at.id) ? firstToPlayAt(at, bornes) : undefined;
   if (at && mine) return { place: at, mission: mine.mission };
-  const fromGame = destination && PLACES.find((p) => p.island === destination.island);
+  const fromGame = destination && plan.places.find((p) => p.island === destination.island);
   if (fromGame && open(fromGame.id) && destination.mission && bornes.some((b) => b.ile === fromGame.island && b.mission === destination.mission))
     return { place: fromGame, mission: destination.mission };
   for (const test of [toPlay, (b: MissionMark) => typeof b.etat === 'number' && b.etat < 3])
-    for (const place of PLACES) {
+    for (const place of plan.places) {
       if (!open(place.id)) continue;
       const b = missionsOfPlace(place, bornes).find(test);
       if (b) return { place, mission: b.mission };
@@ -78,11 +80,11 @@ export function nextMission(
 }
 
 /**
- * Les lieux déjà joués : une mission au moins y a été jouée (ses étoiles, même nulles). Avant les liaisons (GD-20, point
+ * Les lieux déjà joués d'un plan : une mission au moins y a été jouée (ses étoiles, même nulles). Avant les liaisons (GD-20, point
  * 3), tous les lieux du monde continu étaient ouverts : un lieu où l'élève a déjà joué le reste ouvert, et sa terre avec
  * lui, sans liaison payée ni rien de neuf dans la sauvegarde (./lands.ts, `openWorldLands` ; ../arrange.ts, `ensureLands`).
  */
-export const playedPlaces = (bornes: readonly MissionMark[]): PlaceId[] => PLACES.filter((p) => missionsOfPlace(p, bornes).some((b) => typeof b.etat === 'number')).map((p) => p.id);
+export const playedPlaces = (plan: LevelPlan, bornes: readonly MissionMark[]): PlaceId[] => plan.places.filter((p) => missionsOfPlace(p, bornes).some((b) => typeof b.etat === 'number')).map((p) => p.id);
 
 /**
  * La distance au lieu de la prochaine mission, en signe (avis du consultant UX UI : jamais en texte) : un, deux ou

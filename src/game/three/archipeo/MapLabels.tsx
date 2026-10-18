@@ -15,11 +15,13 @@ import { islandStateIcon, type IslandStateId } from '../../world/islandState';
 import { MAP_BAR_ROOM, grown, layoutMapLabels, nameLines, type MapLabel, type MapLabelSpot, type Rect } from '../../world/continu/map';
 import { mapStateWord } from './constructionParts';
 import { bridgeSpot, isBridgeSpot, landOf, type LinkedLand } from '../../world/continu/lands';
-import { PLACES, type PlaceId } from '../../world/continu/plan6e';
+import type { OpenPlace, PlaceId } from '../../world/continu/levelPlan';
 import { closedLandLabel } from './ClosedLandSheet';
 import type { MapSpotOnScreen } from './scene';
 
 interface Props {
+  /** Les lieux du plan du niveau, dans son ordre. */
+  places: readonly OpenPlace[];
   /** Les lieux des terres ouvertes, qu'on peut toucher pour y aller ; les autres sont pâles et ouvrent la fiche de leur terre. */
   openPlaces: readonly PlaceId[];
   /** Les terres fermées : le cadenas de leur pont. */
@@ -97,7 +99,7 @@ function Name({ text, wrap = false }: { text: string; wrap?: boolean }) {
   );
 }
 
-export function MapLabels({ openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, states, words, portName, onCrowded }: Props) {
+export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, states, words, portName, onCrowded }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number; narrow?: { w: number; h: number } }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
@@ -272,7 +274,7 @@ export function MapLabels({ openPlaces, closedLands, onPick, placer, onClosed, o
           </span>
         </button>
       )}
-      {PLACES.map((p) => {
+      {places.map((p) => {
         if (!openPlaces.includes(p.id)) {
           // Un lieu d'une terre fermée : sa pastille pâle, au contour en tirets, son nom lisible ; elle ouvre la fiche de sa terre.
           const land = landOf(p.id) as LinkedLand;

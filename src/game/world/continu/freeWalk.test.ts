@@ -2,10 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { bridgeSite } from './bridges';
 import { FREE_WALK, buildWalkGrid, cellOf, freeRoute, isWalkable, nearestWalkable, onPathCell, walkGridSteps } from './freeWalk';
 import { distance, type Vec2 } from './geometry';
-import { LANDS, LINKED_LANDS, landOf } from './lands';
+import { landOf, linkedLands } from './lands';
 import { pathNode } from './paths';
 import { PLACES, placeById } from './plan6e';
 import { buildHeightField, heightOnMesh, straitClearance } from './terrain';
+import { planFor } from './levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
+const LANDS = PLAN.lands;
+const LINKED_LANDS = linkedLands(PLAN);
 
 const field = buildHeightField();
 const t0 = performance.now();

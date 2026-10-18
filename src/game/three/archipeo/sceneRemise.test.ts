@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { COMMANDES } from '../../world/requests';
 import { createOpenWorld, type OpenWorld, type OpenWorldOptions } from './scene';
+import { planFor } from '../../world/continu/levelPlan';
 
 const made = vi.hoisted(() => ({ cameras: [] as THREE.PerspectiveCamera[] }));
 vi.mock('three', async (original) => {
@@ -69,6 +70,7 @@ beforeAll(() => {
   const noop = () => {};
   const before = made.cameras.length;
   world = createOpenWorld(host, {
+    plan: planFor('6e'),
     start: 'phare',
     reduceMotion: true,
     meter: { show: false, expose: false },

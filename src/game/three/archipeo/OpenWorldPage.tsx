@@ -36,10 +36,11 @@ import { playDetourWind, playWhaleBlow, playWoodTap } from '../../sound';
 import { detourById, type DetourId } from '../../world/continu/detours';
 import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
 import { payableBlocks } from '../../world/archipelago';
-import { START_LAND, isBridgeSpot, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
+import { isBridgeSpot, isLinkedLand, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import type { PartShape } from '../../world/continu/construction';
 import { bornesDuMondeOuvert, firstToPlayAt, keepClear, missionsOfPlace, nextMission, playsInPlace, type MarkOnScreen, type Obstacle, type ScreenRect } from '../../world/continu/mission';
-import { PLACES, placeById, placeOfIsland, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
+import { placeById, placeOfIsland, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
+import type { PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
@@ -88,7 +89,12 @@ const gestureWord = (kind: SuggestedAction['kind'] | undefined, textes: ReturnTy
 /** Le titre d'une mission d'une île, pour la dire. */
 const missionTitle = (island: string, mission: string) => getBiome(island)?.exercises.find((x) => x.id === mission)?.title ?? '';
 
-export default function OpenWorldPage() {
+/**
+ * Le monde ouvert d'un niveau (`level`, choisi par la fabrique de disposition) : la page lit son plan (GD-22) et le
+ * passe à la scène.
+ */
+export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
+  const plan = planFor(level);
   const { biomeId } = useParams();
   const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour, launch } = useBlocland();
   const textes = useTextes();
@@ -109,17 +115,17 @@ export default function OpenWorldPage() {
   const vu = useMemo(() => gameAsShown(state, textes), [state, textes]);
   // `settings.lv2` n'est pas lu dans le calcul, il le refait (voir plus haut) : la règle le croit inutile.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const modele = useMemo(() => modeleDuMonde(vu, '6e', textes.archipels, textes.libelles), [vu, textes, settings.lv2]);
+  const modele = useMemo(() => modeleDuMonde(vu, level, textes.archipels, textes.libelles), [vu, level, textes, settings.lv2]);
   // Les bornes du monde ouvert : une mission réussie ici garde ses étoiles même si son île n'est pas encore reliée par
   // les ponts de la grille (sinon « Nouveau » au retour, la mission reproposée, la brume restée, jusqu'au rechargement).
   const bornes = useMemo(() => bornesDuMondeOuvert(modele.bornes, (ile, m) => questProgress(ile, m, vu.progress)?.stars ?? null), [modele, vu.progress]);
   // Les terres (GD-20, point 3, « vraies terres ») : les terres fermées (aucun de leurs lieux relié dans la grille ni
   // joué), celles pas encore reliables, et le pont suggéré par la prochaine destination.
-  const lands = useMemo(() => openWorldLands(state.world.links, bornes, modele.destination.ouvrage), [state.world.links, bornes, modele.destination.ouvrage]);
+  const lands = useMemo(() => openWorldLands(plan, state.world.links, bornes, modele.destination.ouvrage), [plan, state.world.links, bornes, modele.destination.ouvrage]);
   /** La terre fermée d'un lieu, ou rien. */
   const closedLandOf = useCallback((id: PlaceId): LinkedLand | null => {
     const land = landOf(id);
-    return land !== START_LAND && lands.closed.includes(land) ? land : null;
+    return isLinkedLand(land) && lands.closed.includes(land) ? land : null;
   }, [lands]);
   const isClosed = useCallback((id: PlaceId): boolean => closedLandOf(id) !== null, [closedLandOf]);
   // La terre à relier d'abord d'une terre pas encore reliable (le Couchant pour le Large, le Levant pour les Crêtes).
@@ -133,23 +139,23 @@ export default function OpenWorldPage() {
   // la grille, une mission jouée : relecture de l'expert frontend) : une terre ouverte reçoit toutes ses liaisons, sans
   // rien débiter (sans rien à écrire, rien ne change : la même référence, aucune boucle).
   useEffect(() => {
-    ensureOpenWorldLands(gridLands(), playedIslands(bornes));
-  }, [state.world.links, bornes, ensureOpenWorldLands]);
+    ensureOpenWorldLands(gridLands(plan), playedIslands(plan, bornes));
+  }, [plan, state.world.links, bornes, ensureOpenWorldLands]);
   // Le lieu où se tient Kéo, arrivé (rien pendant la marche, ni à l'Escale) : la suggestion et les pastilles le lisent.
   const [here, setHere] = useState<PlaceId | null>(null);
   // La prochaine mission, jamais celle d'un lieu fermé : aucune ne s'y joue. Celle du lieu où se tient Kéo d'abord, tant
   // qu'il y en reste une à jouer (le rang 2 de la suggestion) : la bulle, la marque et le panneau la suivent.
-  const nextFree = useMemo(() => nextMission(bornes, modele.destination, (id) => !isClosed(id), here), [bornes, modele.destination, isClosed, here]);
+  const nextFree = useMemo(() => nextMission(plan, bornes, modele.destination, (id) => !isClosed(id), here), [plan, bornes, modele.destination, isClosed, here]);
   // La commande prête dans la suggestion (GD-20, « Une seule prochaine action mise en avant ») : à son rang, après le lieu
   // où se tient Kéo tant qu'il y reste une mission jamais jouée, avant la prochaine mission d'un autre lieu. Quand elle la
   // porte, la bulle dit sa phrase, avec « Livrer » si Kéo est chez l'habitant, sinon « Y aller » ; la marque va à son
   // lieu ; sa pastille est la seule pleine ; aucune mission n'est mise en avant.
-  const readyCmd = useMemo(() => readyCommande(state, (p) => !isClosed(p), modele.destination.commande, here), [state, isClosed, modele.destination.commande, here]);
+  const readyCmd = useMemo(() => readyCommande(plan, state, (p) => !isClosed(p), modele.destination.commande, here), [plan, state, isClosed, modele.destination.commande, here]);
   const hereToPlay = Boolean(here && nextFree?.place.id === here && firstToPlayAt(nextFree.place, bornes));
   // L'étape d'entraide (lot L2), juste après la commande prête : un geste chez l'habitant (« Donner », « Apporter »),
   // porté comme une commande prête ; une mission à jouer chez lui, portée comme la prochaine mission, dans son lieu (la
   // première encore à jouer, sinon à reprendre, sinon la première), la bulle disant la phrase de l'étape.
-  const stepSuggestion = useMemo(() => entraideSuggestion(vu, (p) => !isClosed(p)), [vu, isClosed]);
+  const stepSuggestion = useMemo(() => entraideSuggestion(plan, vu, (p) => !isClosed(p)), [plan, vu, isClosed]);
   const suggestedAct = suggestedAction(readyCmd, stepSuggestion, hereToPlay);
   const suggestedId = suggestedAct?.id ?? null;
   const suggestedCmd: SuggestedAction | null = suggestedAct && suggestedAct.kind !== 'mission' ? suggestedAct : null;
@@ -157,8 +163,8 @@ export default function OpenWorldPage() {
     if (suggestedAct?.kind !== 'mission') return nextFree;
     const place = placeById(suggestedAct.place);
     const first = missionsOfPlace(place, bornes)[0];
-    return nextMission(bornes, undefined, (id) => id === place.id, place.id) ?? (first ? { place, mission: first.mission } : nextFree);
-  }, [suggestedAct?.kind, suggestedAct?.place, nextFree, bornes]);
+    return nextMission(plan, bornes, undefined, (id) => id === place.id, place.id) ?? (first ? { place, mission: first.mission } : nextFree);
+  }, [plan, suggestedAct?.kind, suggestedAct?.place, nextFree, bornes]);
   const nextPlace = suggestedCmd ? placeById(suggestedCmd.place) : (next?.place ?? null);
   // Les pastilles des habitants des lieux ouverts : leur commande prête (la suggérée seule pleine), sinon leurs révisions
   // dues sans « Plus tard » ; trois au plus ; jamais au lieu où se tient Kéo (la bulle et la ligne du panneau portent
@@ -166,7 +172,7 @@ export default function OpenWorldPage() {
   const { remises } = usePlusTard();
   const signs = useMemo(
     () =>
-      habitantSigns(vu, {
+      habitantSigns(plan, vu, {
         open: (p) => !isClosed(p) && p !== here,
         revisions: (p) => {
           const island = placeById(p).island as BiomeId;
@@ -175,7 +181,7 @@ export default function OpenWorldPage() {
         suggested: suggestedId ?? undefined,
         titre: textes.quetes?.titre,
       }),
-    [vu, state.spaced, state.world.links, isClosed, here, remises, settings.lv2, suggestedId, textes.quetes?.titre],
+    [plan, vu, state.spaced, state.world.links, isClosed, here, remises, settings.lv2, suggestedId, textes.quetes?.titre],
   );
 
   // Kéo part de l'endroit de l'Escale de l'adresse (le retour d'une mission de l'école, `?porte=maths`, ou d'une question
@@ -187,7 +193,7 @@ export default function OpenWorldPage() {
     spot: portFromParam(params.get('porte')),
     assembled: Boolean((location.state as { assemble?: string } | null)?.assemble),
   }));
-  const lieuParam = placeFromParam(params.get('lieu'));
+  const lieuParam = placeFromParam(plan, params.get('lieu'));
   const missionParam = params.get('mission');
   const [start] = useState<PlaceId | PortSpot>(() => arrival.spot ?? lieuParam ?? placeOfIsland(biomeId ?? '')?.id ?? 'quai');
   // Le panneau ouvert de l'Escale : sa fiche, une porte, la galerie, le lieu d'assemblage, la Nef ; un à la fois.
@@ -205,7 +211,7 @@ export default function OpenWorldPage() {
   const sheetOpen = Boolean(panel) || Boolean(lieu) || commandsOpen;
   const panelRef = useRef<HTMLDivElement>(null);
   const { progress, launchVoyage } = useProgress();
-  const port = useMemo(() => portState(state, progress), [state, progress]);
+  const port = useMemo(() => portState(state, progress, level), [state, progress, level]);
 
   const host = useRef<HTMLDivElement>(null);
   const world = useRef<OpenWorld | null>(null);
@@ -317,6 +323,7 @@ export default function OpenWorldPage() {
     const el = host.current;
     if (!el) return;
     const w = createOpenWorld(el, {
+      plan,
       start,
       reduceMotion,
       meter: { show: meterShown(), expose: import.meta.env.DEV || mesuresDemandees() },
@@ -390,7 +397,7 @@ export default function OpenWorldPage() {
       if (window.__dysappsMondeOuvert?.info === w.info) delete window.__dysappsMondeOuvert;
     };
     // La scène est faite une fois (et refaite si l'appareil change « Réduire les animations ») ; `start` ne change pas.
-  }, [start, reduceMotion, layout]);
+  }, [plan, start, reduceMotion, layout]);
 
   // Les Détours (GD-20, déplacement libre, lot 2) : arrivé, Kéo le trouve (sa sente reste tracée), le vent souffle un
   // instant et son nom s'écrit une fois, en haut, et se dit ; reparti, le nom reste écrit ses quatre secondes, pour
@@ -496,12 +503,12 @@ export default function OpenWorldPage() {
   // « Donner », « Apporter » (lot L2) : la remise de l'étape d'entraide, telle qu'elle se présente maintenant.
   const entraideAt = useCallback(
     (story: string) => {
-      const r = entraideRemiseOf(vu, story);
+      const r = entraideRemiseOf(plan, vu, story);
       if (!r || !world.current) return;
       setLieu(null);
       setRemise(r);
     },
-    [vu],
+    [plan, vu],
   );
   /** Le geste que porte la suggestion, chez l'habitant où se tient Kéo. */
   const actAt = (a: SuggestedAction) => (a.kind === 'livrer' ? deliverAt(a.id) : entraideAt(a.id));
@@ -580,7 +587,7 @@ export default function OpenWorldPage() {
   }, [lands, ready]);
 
   // La Carte : les lieux ouverts sont ceux des terres ouvertes.
-  const openPlaces = useMemo(() => PLACES.map((p) => p.id).filter((id) => !isClosed(id)), [isClosed]);
+  const openPlaces = useMemo(() => plan.places.map((p) => p.id).filter((id) => !isClosed(id)), [plan, isClosed]);
   useEffect(() => {
     world.current?.map(mapOpen && !asking ? openPlaces : null);
   }, [mapOpen, asking, openPlaces, ready]);
@@ -611,7 +618,7 @@ export default function OpenWorldPage() {
       if (isBridgeSpot(id)) return openClosed(landOfBridgeSpot(id));
       if (id === 'port' || openPlaces.includes(id)) return pickOnMap(id);
       const land = landOf(id);
-      if (land !== START_LAND) openClosed(land);
+      if (isLinkedLand(land)) openClosed(land);
     };
   }, [openPlaces, pickOnMap, openClosed]);
   // La liste des lieux ouverts, sur la Carte (bouton « Lieux ») ; Échap ferme la liste d'abord, puis la Carte, comme un
@@ -972,7 +979,7 @@ export default function OpenWorldPage() {
         </div>
         {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
         {mapOpen && !asking && (
-          <MapLabels openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} portName={textes.depart?.nom} onCrowded={reframeMap} />
+          <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} portName={textes.depart?.nom} onCrowded={reframeMap} />
         )}
         {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
             le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à
@@ -981,18 +988,18 @@ export default function OpenWorldPage() {
           <>
             <div className="open-world-voile" aria-hidden="true" onClick={list.close} />
             <div ref={listRef} className="open-world-panel open-world-panel-lieux-ouverts">
-              <PlacesSheet rows={placesRows(openPlaces, states, textes.etatsDIle, suggestedCmd ? null : (next?.place.id ?? null), textes.depart?.nom, amenagements)} onPick={pickFromList} onClose={list.close} />
+              <PlacesSheet rows={placesRows(plan, openPlaces, states, textes.etatsDIle, suggestedCmd ? null : (next?.place.id ?? null), textes.depart?.nom, amenagements)} onPick={pickFromList} onClose={list.close} />
             </div>
           </>
         )}
         {/* Les accès directs (décision « Sans Menu », GD-20, lot 1) : la colonne du monde en grille, telle quelle ; les
             commandes ouvrent la liste du monde ouvert (lot L1), sans la quête d'entraide (lot L2). Masquée pendant une
             question ou une remise. */}
-        {!playing && !sheetOpen && <WorldShortcuts a="6e" requestsOpen={commandsOpen} onRequests={openCommands} resumeFrom={portResume} resumeAt={placeResume} />}
+        {!playing && !sheetOpen && <WorldShortcuts a={level} requestsOpen={commandsOpen} onRequests={openCommands} resumeFrom={portResume} resumeAt={placeResume} />}
         {!playing && !sheetOpen && <SettingsButton />}
         {commandsOpen && !playing && (
           <div ref={panelRef} className="open-world-panel open-world-panel-commandes">
-            <CommandsSheet lines={commandLines(state, assemblyAt)} entraide={entraideListLine(vu, (p) => !isClosed(p), assemblyAt)} suggested={suggestedId} onGo={goHabitant} onClose={closeCommands} />
+            <CommandsSheet lines={commandLines(plan, state, assemblyAt)} entraide={entraideListLine(plan, vu, (p) => !isClosed(p), assemblyAt)} suggested={suggestedId} onGo={goHabitant} onClose={closeCommands} />
           </div>
         )}
         {/* Le panneau ouvert de l'Escale (GD-20, lot 2) : comme une question, il masque les accès directs, Réglages, la
@@ -1040,7 +1047,7 @@ export default function OpenWorldPage() {
                 focus={lieu.focus}
                 onPlay={play}
                 onClose={closeLieu}
-                habitant={<HabitantLine place={lieu.place} line={habitantLineOf(state, lieu.place, assemblyAt)} entraide={entraideLineOf(vu, lieu.place, assemblyAt)} suggested={suggestedId} onDeliver={deliverAt} onEntraide={entraideAt} onReprendre={() => void reprendreAt()} reprendreBusy={reprendreBusy} onGo={goHabitant} />}
+                habitant={<HabitantLine place={lieu.place} line={habitantLineOf(state, lieu.place, assemblyAt)} entraide={entraideLineOf(plan, vu, lieu.place, assemblyAt)} suggested={suggestedId} onDeliver={deliverAt} onEntraide={entraideAt} onReprendre={() => void reprendreAt()} reprendreBusy={reprendreBusy} onGo={goHabitant} />}
               />
             )}
           </div>

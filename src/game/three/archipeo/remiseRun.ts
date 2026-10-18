@@ -13,7 +13,7 @@ import * as THREE from 'three';
 import type { PlacedAmenagement } from '../../world/continu/amenagements';
 import type { Facets } from '../../world/continu/facets';
 import type { Vec3 } from '../../world/continu/geometry';
-import type { PlaceId } from '../../world/continu/plan6e';
+import type { PlaceId } from '../../world/continu/levelPlan';
 import { remiseAt } from '../../world/continu/remise';
 
 /** Ce que la remise dit à la page : un élément posé (son toc), la pose finie d'elle-même. */

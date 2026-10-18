@@ -4,7 +4,7 @@
 import { useEffect, useRef } from 'react';
 import { getBiome } from '../../biomes';
 import { POSE_GUARD_SECONDS } from '../../world/continu/construction';
-import { placeById, type PlaceId } from '../../world/continu/plan6e';
+import { placeById, type PlaceId } from '../../world/continu/levelPlan';
 
 interface PlaceAddress {
   /** Le lieu de l'adresse, déjà borné (`placeFromParam`). */

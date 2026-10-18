@@ -2,9 +2,14 @@
 // le pont suggéré seul ; les lieux des terres fermées en pastilles pâles, touchables, qui ouvrent la fiche de leur terre.
 import { fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, vi } from 'vitest';
-import { LINKED_LANDS, placesOfLands, type LinkedLand } from '../../world/continu/lands';
+import { type LinkedLand, linkedLands, placesOfLands } from '../../world/continu/lands';
 import { PLACES, type PlaceId } from '../../world/continu/plan6e';
 import { MapLabels } from './MapLabels';
+import { planFor } from '../../world/continu/levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
+const LINKED_LANDS = linkedLands(PLAN);
 
 // Pas de ResizeObserver sous jsdom : les étiquettes ne relisent leurs tailles qu'avec lui.
 beforeEach(() => {
@@ -23,7 +28,7 @@ const words = { 'a-explorer': 'À explorer', 'en-chantier': 'En chantier', resta
 
 function renderMap(suggested: LinkedLand | null, onClosed = vi.fn()) {
   const { container } = render(
-    <MapLabels openPlaces={placesOfLands(['pointe'])} closedLands={LINKED_LANDS} onPick={() => {}} placer={{ current: null }} onClosed={onClosed} suggested={suggested} states={states} words={words} />,
+    <MapLabels places={PLAN.places} openPlaces={placesOfLands(PLAN, ['pointe'])} closedLands={LINKED_LANDS} onPick={() => {}} placer={{ current: null }} onClosed={onClosed} suggested={suggested} states={states} words={words} />,
   );
   const locks = [...container.querySelectorAll<HTMLElement>('.open-world-map-closed')].map((b) => ({ id: b.dataset.lieu, full: b.querySelector('.open-world-lock')!.classList.contains('suggested'), el: b }));
   const pale = [...container.querySelectorAll<HTMLElement>('.open-world-map-pale')];

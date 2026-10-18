@@ -1,6 +1,6 @@
 // La liste des lieux ouverts (GD-20, « La Carte au plus grand texte », bouton « Lieux », choix du mainteneur du 16 octobre
 // 2026) : sur la Carte, le bouton « Lieux », à droite de « Retour », ouvre le même panneau qu'un lieu (`Sheet`), une ligne
-// par lieu ouvert dans l'ordre de jeu (l'Escale, puis `PLACES`), jamais par proximité ni par ordre alphabétique. Une
+// par lieu ouvert dans l'ordre de jeu (l'Escale, puis les lieux du plan), jamais par proximité ni par ordre alphabétique. Une
 // ligne porte l'icône du lieu (celle de la pastille réduite de la Carte), son nom entier, l'icône et le mot de l'état de
 // sa construction ; la ligne de la prochaine mission seule est mise en avant, « Prochaine mission » écrit. Toucher une
 // ligne y mène d'un coup, comme une pastille (`pickPlace`). La croix, Échap (la liste d'abord, la Carte ensuite) ou un
@@ -14,7 +14,7 @@ import { getBiome } from '../../biomes';
 import { Sheet } from '../../Sheet';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
 import { amenagementById } from '../../world/continu/amenagements';
-import { PLACES, type OpenPlace, type PlaceId } from '../../world/continu/plan6e';
+import type { LevelPlan, OpenPlace, PlaceId } from '../../world/continu/levelPlan';
 import { mapStateWord } from './constructionParts';
 
 /** Le nom du panneau, dit aussi par la croix. */
@@ -48,8 +48,9 @@ function placeStateWord(place: OpenPlace, state: BuildState, words: Readonly<Rec
   return mapStateWord(place, state, words) ?? words['a-explorer'];
 }
 
-/** Les lignes, dans l'ordre de jeu : l'Escale (s'il y en a une), puis les lieux ouverts dans l'ordre de `PLACES`. */
+/** Les lignes, dans l'ordre de jeu : l'Escale (s'il y en a une), puis les lieux ouverts dans l'ordre du plan. */
 export function placesRows(
+  plan: LevelPlan,
   open: readonly PlaceId[],
   states: Readonly<Record<PlaceId, BuildState>>,
   words: Readonly<Record<IslandStateId, string>>,
@@ -60,7 +61,7 @@ export function placesRows(
   const port: PlacesRow[] = portName ? [{ id: 'port', name: portName, icon: 'ancre', state: null, next: false }] : [];
   return [
     ...port,
-    ...PLACES.filter((p) => open.includes(p.id)).map((p) => ({
+    ...plan.places.filter((p) => open.includes(p.id)).map((p) => ({
       id: p.id,
       name: p.name,
       icon: getBiome(p.island)?.icon ?? 'map',

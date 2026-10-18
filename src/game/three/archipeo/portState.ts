@@ -8,15 +8,12 @@ import { BADGES, type Progress } from '../../../core/progress';
 import { BLOCKS, type BlockId } from '../../biomes';
 import type { GameState } from '../../engine';
 import { trophyBlock } from '../../trophies';
-import { BRIDGES, getArchipelago, islandsOf, voyageId } from '../../world/archipelago';
+import { BRIDGES, getArchipelago, islandsOf, nextArchipelago, voyageId, type ArchipelagoId } from '../../world/archipelago';
 import { recetteDeLArchipel } from '../../world/assembly';
 import type { DoorState, PortState, RegionDegree, TrophyAccent } from '../../world/continu/port';
 import type { PortSubject } from '../../world/continu/plan6e';
 import { monumentsOf } from '../../world/monuments';
 import { partiesDe, partiePosee, partiesPosees } from '../../world/parts';
-
-/** La seule région du monde continu. */
-const REGION = '6e' as const;
 
 /**
  * L'état d'une porte de l'école : fermée tant qu'aucune mission de sa matière n'est réussie, ouverte (sa lanterne
@@ -50,36 +47,37 @@ export function trophyAccents(badges: Progress['badges']): TrophyAccent[] {
  * construite qui en part), en développement (en plus, une grande construction commencée), ouverte (le passage vers la
  * région suivante fait).
  */
-export function regionDegree(world: GameState['world']): RegionDegree {
+export function regionDegree(world: GameState['world'], region: ArchipelagoId): RegionDegree {
   const { parts, links } = world;
-  if (links.includes(voyageId('5e'))) return 4;
-  const islands = islandsOf(REGION).map((b) => b.id);
+  const next = nextArchipelago(region);
+  if (next && links.includes(voyageId(next.classe))) return 4;
+  const islands = islandsOf(region).map((b) => b.id);
   if (!islands.some((id) => partiesPosees(id, parts) > 0)) return 0;
-  const start = getArchipelago(REGION).school;
+  const start = getArchipelago(region).school;
   const startDone = partiesDe(start).length > 0 && partiesDe(start).every((p) => partiePosee(p, parts));
   const linked = BRIDGES.some((b) => b.cost > 0 && (b.from === start || b.to === start) && links.includes(b.id));
   if (!startDone || !linked) return 1;
-  return monumentsOf(REGION).some((m) => (parts[m.id]?.length ?? 0) > 0) ? 3 : 2;
+  return monumentsOf(region).some((m) => (parts[m.id]?.length ?? 0) > 0) ? 3 : 2;
 }
 
 /** Une couleur `#rrggbb` en nombre. */
 const hex = (c: string) => Number.parseInt(c.slice(1), 16);
 
 /** La recette de la région sur l'établi : la couleur de chaque bloc à donner, autant de fois qu'il en faut, et celle du bloc assemblé. */
-function recipeColors(): { bloc: BlockId | null; pieces: number[]; made: number } {
-  const r = recetteDeLArchipel(REGION);
+function recipeColors(region: ArchipelagoId): { bloc: BlockId | null; pieces: number[]; made: number } {
+  const r = recetteDeLArchipel(region);
   if (!r) return { bloc: null, pieces: [], made: 0xdcba86 };
   return { bloc: r.bloc, pieces: r.ingredients.flatMap((i) => Array.from({ length: i.n }, () => hex(BLOCKS[i.bloc].top))), made: hex(BLOCKS[r.bloc].top) };
 }
 
-/** Ce que montre l'Escale pour une sauvegarde : ses portes, ses trophées, l'état de la région, la pile, la recette. */
-export function portState(state: GameState, progress: Progress): PortState {
-  const recipe = recipeColors();
+/** Ce que montre le lieu de départ de la région `region` (au 6e, l'Escale) pour une sauvegarde : ses portes, ses trophées, l'état de la région, la pile, la recette. */
+export function portState(state: GameState, progress: Progress, region: ArchipelagoId): PortState {
+  const recipe = recipeColors(region);
   const door = (s: PortSubject) => doorState(s, progress.apps);
   return {
     doors: { french: door('french'), maths: door('maths'), english: door('english') },
     trophies: trophyAccents(progress.badges),
-    degree: regionDegree(state.world),
+    degree: regionDegree(state.world, region),
     pile: recipe.bloc ? (state.stock[recipe.bloc] ?? 0) : 0,
     recipe: { pieces: recipe.pieces, made: recipe.made },
   };

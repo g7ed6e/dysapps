@@ -8,7 +8,8 @@ import { KEO_STOP, bridgeSite } from './bridges';
 import { boundsOf } from './facets';
 import { floraOf, type FloraItem } from './flora';
 import { distance, type Vec2 } from './geometry';
-import { LANDS, LINKED_LANDS, NODE_LANDS, START_LAND, bridgeEdge, type LandId, type LinkedLand } from './lands';
+import { bridgeEdge, linkedLands, nodeLands, startLandOf, type LandId, type LinkedLand } from './lands';
+import { planFor } from './levelPlan';
 import { pathNode } from './paths';
 import { PATH_EDGES, PLACES, PORT, PORT_PAVING, TERRAIN, portFloor } from './plan6e';
 import { modelOfPlace } from './places';
@@ -44,6 +45,11 @@ export interface WalkGrid {
   land: Int8Array;
 }
 
+/** La marche libre est encore celle du plan du 6e (GD-22, lot 1 : le plan par niveau). */
+const PLAN = planFor('6e');
+const LANDS = PLAN.lands;
+const START_LAND = startLandOf(PLAN);
+const NODE_LANDS = nodeLands(PLAN);
 const LAND_INDEX = new Map<LandId, number>(LANDS.map((l, i) => [l.id, i]));
 // Les terres fermées tiennent dans un masque de 31 bits (`closedMask`).
 if (LANDS.length > 31) throw new Error('freeWalk : plus de 31 terres, le masque des terres fermées ne suffit plus');
@@ -159,7 +165,7 @@ export function* walkGridSteps(field: HeightField): Generator<void, WalkGrid, vo
 
   // Les chemins, toujours marchés (la digue, les pontons, les portes des lieux, les culées), et leur terre ; sur la
   // liaison d'un pont, la part au-delà de l'arrêt de Kéo est de la terre du pont (fermée tant qu'il n'est pas rebâti).
-  const bridgeOf = new Map<number, LinkedLand>(LINKED_LANDS.map((l) => [bridgeEdge(l), l]));
+  const bridgeOf = new Map<number, LinkedLand>(linkedLands(PLAN).map((l) => [bridgeEdge(PLAN, l), l]));
   // Les cases d'un pont : elles ne donnent pas leur terre à l'herbe voisine (la rive d'en face la prendrait).
   const onBridge = new Uint8Array(nx * nz);
   for (let edge = 0; edge < PATH_EDGES.length; edge++) {
