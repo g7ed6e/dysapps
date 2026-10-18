@@ -1024,7 +1024,8 @@ describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
 
 describe('La Mangrove (GD-20, point 8, lot L8a)', () => {
   const o = sceneSpot('mangrove');
-  const decor = scenetteDecor('mangrove');
+  // La botaniste et le platelage seuls : les abords du lieu (./mangroveSurroundings.ts) ont leurs propres tests.
+  const decor = scenetteCore('mangrove');
   const of = (hex: number) => {
     const rgb = linearRgb(hex);
     const out: [number, number, number][] = [];
