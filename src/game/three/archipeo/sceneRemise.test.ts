@@ -14,7 +14,7 @@ vi.mock('three', async (original) => {
   const m = await original<typeof import('three')>();
   class WebGLRenderer {
     domElement = document.createElement('canvas');
-    info = { render: { calls: 0, triangles: 0 }, memory: {} };
+    info = { render: { calls: 0, triangles: 0 }, memory: {}, autoReset: true, reset() {} };
     shadowMap = {};
     setPixelRatio() {}
     setSize() {}

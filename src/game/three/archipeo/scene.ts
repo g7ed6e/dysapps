@@ -18,6 +18,7 @@ import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView 
 import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen } from '../../world/continu/bridges';
 import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { LINKED_LANDS, START_LAND, bridgeSpot, firstClosed, isBridgeSpot, landOf, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
+import { buildWalkGrid, freeRoute, isWalkable, nearestWalkable, onPathCell, type WalkGrid } from '../../world/continu/freeWalk';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, edgesNear, findRoute, pathNode, pathRibbons, pathTopAt, snapToNetwork, startOf, type NetworkPoint } from '../../world/continu/paths';
 import { COLORS_6E, PLACES, TERRAIN, hidesTraces, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
@@ -299,6 +300,17 @@ const KEO_RING = { inner: 0.85, outer: 1.3, color: 0xfff6dc };
  * l'anneau (jamais sur lui) ; un bleu-vert sombre, transparent, jamais noir ; un rien sous l'anneau (`below`).
  */
 const KEO_SHADOW = { radius: 0.5, sides: 10, shift: 0.26, color: 0x1f3d3b, opacity: 0.3, below: 0.01 } as const;
+/**
+ * Le déplacement libre (GD-20, « Le déplacement libre », lot 1) : la marque au sol là où va Kéo, un anneau plus petit
+ * que le sien, de la même couleur claire, sans texte, posé jusqu'à l'arrivée ; et sa silhouette, de la même couleur,
+ * vue à travers ce qui le cache (un arbre, une colline, un lieu), jamais sur lui. La grille de ce qui se marche se tire
+ * au repos, `WALK_GRID_DELAY` ms après l'arrivée dans le monde (ou au premier toucher qui en a besoin).
+ */
+const FREE_MARK = { inner: 0.38, outer: 0.62, segments: 20 } as const;
+const KEO_SILHOUETTE = { color: KEO_RING.color, opacity: 0.6 } as const;
+const WALK_GRID_DELAY = 2500;
+/** La couche de Kéo : dessiné à part, pour que sa silhouette se voie à travers le décor. */
+const KEO_LAYER = 1;
 /**
  * La finesse du rendu : l'anticrénelage reste (la scène est légère, quelques milliers de triangles) ; le rapport de
  * pixels est plafonné à 2, puis ramené à 1 si l'appareil peine (des images de plus de 45 ms, trente de suite), comme
@@ -594,14 +606,20 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const fog = new THREE.Fog(horizon, WORLD_FOG.near, WORLD_FOG.far);
   scene.fog = fog;
   const camera = new THREE.PerspectiveCamera(40, host.clientWidth / Math.max(1, host.clientHeight), 0.5, FOLLOW_FAR);
+  // Elle voit le monde et Kéo, à part sur sa couche (sa silhouette, `drawWithSilhouette`).
+  camera.layers.enable(KEO_LAYER);
   // Le mappage des tons neutre : les aplats gardent leur couleur, les blancs au soleil s'adoucissent (lot 3).
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = LIGHT.exposure;
 
   // La lumière d'un matin clair (fiche du 6e, § 2 ; GD-20, point 3, lot 3) : une ambiance plus basse et froide, le
   // soleil chaud, bas à l'est (`LIGHT`).
-  scene.add(new THREE.HemisphereLight(LIGHT.sky, LIGHT.ground, LIGHT.ambient));
+  const sky0 = new THREE.HemisphereLight(LIGHT.sky, LIGHT.ground, LIGHT.ambient);
+  scene.add(sky0);
   const sun = new THREE.DirectionalLight(LIGHT.sun, LIGHT.sunIntensity);
+  // Les lumières éclairent aussi Kéo quand il est dessiné à part, sur sa couche.
+  sky0.layers.enable(KEO_LAYER);
+  sun.layers.enable(KEO_LAYER);
   sun.position.set(LIGHT.sunFrom.x, LIGHT.sunFrom.y, LIGHT.sunFrom.z);
   scene.add(sun);
   // Le ciel : un dôme en dégradé, crème à l'horizon, bleu en haut, centré sur la caméra à chaque image (sa matrice
@@ -767,6 +785,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   scene.add(keo);
   let body: CorpsDuBonhomme = corpsDuBonhomme('6e');
   keo.add(body.mesh);
+  body.mesh.layers.set(KEO_LAYER);
   let disposed = false;
   if (!loadedKeo('6e'))
     void loadKeo('6e').then(() => {
@@ -774,6 +793,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       body.dispose();
       body = corpsDuBonhomme('6e');
       keo.add(body.mesh);
+      body.mesh.layers.set(KEO_LAYER);
       mapDirty = true;
     });
   keo.scale.setScalar(KEO_SCALE);
@@ -810,6 +830,34 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   shadowGeometry.boundingSphere!.radius += 2;
   const shadowMaterial = new THREE.MeshBasicMaterial({ color: KEO_SHADOW.color, transparent: true, opacity: KEO_SHADOW.opacity, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
   ring.add(new THREE.Mesh(shadowGeometry, shadowMaterial));
+  // La marque au sol du déplacement libre : posée où va Kéo, épousant le sol comme son anneau ; cachée à l'arrivée.
+  const markGeometry = keep(new THREE.RingGeometry(FREE_MARK.inner, FREE_MARK.outer, FREE_MARK.segments).rotateX(-Math.PI / 2));
+  const markPosition = markGeometry.getAttribute('position') as THREE.BufferAttribute;
+  const markXZ = new Float32Array(markPosition.count * 2);
+  for (let i = 0; i < markPosition.count; i++) {
+    markXZ[2 * i] = markPosition.getX(i);
+    markXZ[2 * i + 1] = markPosition.getZ(i);
+  }
+  const markY = new Float32Array(markPosition.count);
+  markGeometry.computeBoundingSphere();
+  markGeometry.boundingSphere!.radius += 2;
+  const freeMark = new THREE.Mesh(markGeometry, ringMaterial);
+  freeMark.visible = false;
+  scene.add(freeMark);
+  const markEdges: number[] = [];
+  const markSurface = (x: number, z: number) => Math.max(standingHeight(ground(x, z)), pathTopAt(x, z, ground, markEdges));
+  const showFreeMark = (p: Vec2 | null) => {
+    freeMark.visible = p !== null;
+    if (!p) return;
+    const y = standingHeight(ground(p.x, p.z));
+    freeMark.position.set(p.x, y, p.z);
+    edgesNear(p.x, p.z, FREE_MARK.outer, markEdges);
+    ringHeights(p.x, p.z, y, markXZ, markSurface, markY);
+    for (let i = 0; i < markY.length; i++) markPosition.setY(i, markY[i]);
+    markPosition.needsUpdate = true;
+  };
+  // La silhouette de Kéo : son corps dessiné une deuxième fois, là seulement où le décor passe devant lui.
+  const silhouetteMaterial = new THREE.MeshBasicMaterial({ color: KEO_SILHOUETTE.color, transparent: true, opacity: KEO_SILHOUETTE.opacity, depthWrite: false, depthFunc: THREE.GreaterDepth, fog: false });
 
   // Où est Kéo, où il va.
   // Au départ, sur le chemin, à quelques pas du lieu (on voit le Phare de plus loin que sa porte) ; à l'Escale, à son
@@ -1242,6 +1290,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     mapDirty = true;
     if (opened) startLay(opened.land, opened.events);
     if (asked || scenette) return;
+    // Hors des chemins, dans une terre ouverte : il reste où il est.
+    if (offNetwork() && isWalkable(grid(), here, walkClosed)) return;
     const at = snapToNetwork(here);
     const stop = clampToOpen(at, walkClosed);
     if (stop === at) return;
@@ -1353,8 +1403,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const reportSigns = signsTracker.report;
   const hideSigns = signsTracker.hide;
 
+  // La grille de ce qui se marche (le déplacement libre), tirée une fois, au repos ou au premier besoin.
+  let walkGrid: WalkGrid | null = null;
+  const grid = () => (walkGrid ??= buildWalkGrid(field));
+  const gridTimer = window.setTimeout(grid, WALK_GRID_DELAY);
+  /** Kéo hors des chemins (dans un pré, au bord de l'eau) ? */
+  const offNetwork = () => !onPathCell(grid(), here);
+
   const arrive = (place: PlaceId | null) => {
     walk = null;
+    showFreeMark(null);
     if (place) framed = place;
     startPrebuild();
     options.onArrive(place);
@@ -1364,13 +1422,33 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Au-delà d'un pont tombé, ou d'un pont qui se pose, Kéo s'arrête sur sa culée, sans heurt ni son (GD-20, point 3).
     const to = clampToOpen(target, walkClosed);
     if (to !== target) place = null;
-    const route = findRoute(from, to);
-    // Kéo hors du chemin (sur le bord du quai, au retour d'une scénette) : il le rejoint d'abord.
-    if (distance(here, from.at) > 0.05) route.unshift(here);
+    // Kéo hors des chemins (le déplacement libre) : le trajet libre jusqu'à la porte, qui préfère les chemins ; sinon le
+    // réseau, et s'il est hors du chemin (sur le bord du quai, au retour d'une scénette), il le rejoint d'abord.
+    const free = distance(here, from.at) > 0.05 && offNetwork() ? freeRoute(grid(), here, to.at, walkClosed) : null;
+    const route = free ?? findRoute(from, to);
+    if (!free && distance(here, from.at) > 0.05) route.unshift(here);
+    showFreeMark(null);
     walkTarget = place;
     if (route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05) return arrive(place);
     walk = startWalk(route, performance.now());
     heldBridge = null;
+    options.onDepart();
+  };
+  /**
+   * Le déplacement libre : Kéo va au point du sol touché, ou au plus proche où l'on marche (l'eau, un rocher, une terre
+   * fermée), par le trajet libre ; la marque au sol l'y attend. Sans grille utile (hors du terrain), le réseau, comme
+   * avant.
+   */
+  const startFreeWalk = (p: Vec2) => {
+    const g = grid();
+    const to = nearestWalkable(g, p, walkClosed);
+    const route = to ? freeRoute(g, here, to, walkClosed) : null;
+    if (!to || !route) return startWalkTo(snapToNetwork(p), null);
+    walkTarget = null;
+    heldBridge = null;
+    if (route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05) return arrive(null);
+    walk = startWalk(route, performance.now());
+    showFreeMark(to);
     options.onDepart();
   };
   /**
@@ -1411,6 +1489,29 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     reframe();
     arrive(null);
     options.onPort(spot);
+  };
+
+  /**
+   * L'image de la marche, en trois passes comptées ensemble : le monde sans Kéo, sa silhouette là où le décor le cache
+   * (sa profondeur derrière celle du décor), puis Kéo lui-même, qui recouvre la silhouette là où on le voit.
+   */
+  const drawWithSilhouette = () => {
+    renderer.info.reset();
+    renderer.info.autoReset = false;
+    camera.layers.set(0);
+    renderer.render(scene, camera);
+    renderer.autoClear = false;
+    // Le fond n'est pas repeint par-dessus le monde.
+    scene.background = null;
+    camera.layers.set(KEO_LAYER);
+    scene.overrideMaterial = silhouetteMaterial;
+    renderer.render(scene, camera);
+    scene.overrideMaterial = null;
+    renderer.render(scene, camera);
+    scene.background = horizon;
+    renderer.autoClear = true;
+    camera.layers.enable(0);
+    renderer.info.autoReset = true;
   };
 
   // Le toucher : un lieu touché y envoie Kéo ; ailleurs (sol, eau), au point du chemin le plus proche.
@@ -1467,7 +1568,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Un lieu : Kéo va à sa porte ; si deux rayons prennent le point, le plus proche.
     const touched = nearestPlace(p);
     if (touched) startWalkTo(atNode(placeById(touched).door), touched);
-    else startWalkTo(snapToNetwork(p), null);
+    else startFreeWalk(p);
   };
   /**
    * Le lieu de l'aménagement montré sous un toucher (`clientX`, `clientY`), s'il y en a un : sa boîte projetée à l'écran,
@@ -2568,7 +2669,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (tiles.pump() !== null) setNear(false);
     reportMark();
     reportLocks();
-    renderer.render(scene, camera);
+    drawWithSilhouette();
     meter?.tick(renderer.info, now);
   };
   loop();
@@ -2637,6 +2738,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       pendingLay = null;
       cancelAnimationFrame(frame);
       window.clearTimeout(wheelRest);
+      window.clearTimeout(gridTimer);
       if (idleHandle) cancelIdle(idleHandle);
       observer.disconnect();
       renderer.domElement.removeEventListener('pointerdown', onDown);
@@ -2659,6 +2761,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       skyMaterial.dispose();
       ringMaterial.dispose();
       shadowMaterial.dispose();
+      silhouetteMaterial.dispose();
       meter?.dispose();
       renderer.dispose();
       renderer.domElement.remove();
