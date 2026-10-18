@@ -56,6 +56,7 @@ import {
 } from './questionScene';
 import type { ItemScene } from './questions';
 import { heightAt, standingHeight } from './terrain';
+import { SHADOW_DIR } from './sky';
 import { HABITANT_HEIGHT, habitantEastSide, habitantWestHand, loadedHabitant } from './habitants';
 import { MANGROVE, mangroveDeckTop } from './places';
 
@@ -960,6 +961,10 @@ const C = {
   lightWood: 0xd9a441,
   stone: 0xb9b2a3,
   stoneSide: 0x8f897d,
+  // Les dalles du sol d'une scène (lot commun des scénettes, directeur artistique) : une pierre chaude, tirée vers le
+  // Sable du pack (#DAA66A), à la place de la pierre grise qui faisait une estrade ; ses joints et sa tranche plus bruns.
+  paving: 0xd6b98e,
+  pavingSide: 0xb0926a,
   water: 0x2f8fc8,
   // La berge du canal : l'herbe, le chemin et la roche des berges du monde (COLORS_6E).
   grass: COLORS_6E.grass,
@@ -1040,7 +1045,6 @@ const C = {
   tileShade: 0x356f68,
   // Les chaussures des quatre habitants du rivage sud (relectures de L8) : sombres, sous leurs deux jambes.
   shoe: 0x2f2826,
-  paving: 0xd6cebc,
   // Le filet raccommodé (le même que sur le séchoir, questionScene.ts, `mendedNet`) et ses mailles.
   newRope: 0xc9a36a,
   netLine: 0x6f5e42,
@@ -1248,13 +1252,13 @@ function machiniste(b: FacetBuilder, place: PlaceId, body: boolean): void {
 function enginePaving(b: FacetBuilder): void {
   const o = floorOf('engine');
   const depth = sceneDepth('engine');
-  b.box({ x: o.x, y: o.y - depth, z: o.z }, [2 * ENGINE_PAVING.half, depth, ENGINE_PAVING.depth], C.stoneSide, C.stone);
+  b.box({ x: o.x, y: o.y - depth, z: o.z }, [2 * ENGINE_PAVING.half, depth, ENGINE_PAVING.depth], C.pavingSide, C.paving);
   // Les joints : deux traits plus sombres en travers, à plat sur la pierre (leurs flancs, d'un centième, ne se voyaient
   // pas : la machiniste et ses cheveux communs tiennent ainsi sous les 400 triangles de la scénette).
   const [z0, z1, y] = [o.z - ENGINE_PAVING.depth / 2, o.z + ENGINE_PAVING.depth / 2, o.y + 0.01];
   for (const dx of [-ENGINE_PAVING.half / 2, ENGINE_PAVING.half / 2]) {
     const [x0, x1] = [o.x + dx - 0.025, o.x + dx + 0.025];
-    b.quad([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0], C.stoneSide);
+    b.quad([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0], C.pavingSide);
   }
 }
 
@@ -1468,7 +1472,7 @@ function observatoryPaving(b: FacetBuilder): void {
   const o = floorOf('observatory');
   const depth = sceneDepth('observatory');
   // Sans joints (relecture de L8c-d : de chaque côté des personnages, un trait en oblique se lisait comme un bâton).
-  b.box({ x: o.x, y: o.y - depth, z: o.z + OBSERVATORY_PAVING.dz }, [2 * OBSERVATORY_PAVING.half, depth, OBSERVATORY_PAVING.depth], C.stoneSide, C.stone);
+  b.box({ x: o.x, y: o.y - depth, z: o.z + OBSERVATORY_PAVING.dz }, [2 * OBSERVATORY_PAVING.half, depth, OBSERVATORY_PAVING.depth], C.pavingSide, C.paving);
 }
 
 /**
@@ -1630,7 +1634,7 @@ const FILET_DECK = { inner: 2.7, outer: 5.8, depth: 3.2 } as const;
 function lockQuay(b: FacetBuilder, open: boolean, posed: boolean): void {
   const o = floorOf('ecluses');
   const depth = sceneDepth('ecluses');
-  for (const side of [-1, 1]) b.box({ x: o.x + side * 4.05, y: o.y - depth, z: o.z }, [3.5, depth, 1.6], C.stoneSide, C.stone);
+  for (const side of [-1, 1]) b.box({ x: o.x + side * 4.05, y: o.y - depth, z: o.z }, [3.5, depth, 1.6], C.pavingSide, C.paving);
   const width = LOCK.back - LOCK.front;
   const mid = o.z + (LOCK.front + LOCK.back) / 2;
   const long = 2 * LOCK.half;
@@ -1700,8 +1704,60 @@ export function scenetteSetting(place: PlaceId, open = false, posed = true): Fac
   return decorBuilder(place, open, posed, false).build();
 }
 
-/** Le décor de près, avec le pion dessiné en code (`body`) ou sans corps. */
+/** Le décor de près, avec le pion dessiné en code (`body`) ou sans corps, et les ombres au pied de Kéo et de l'habitant. */
 function decorBuilder(place: PlaceId, open: boolean, posed: boolean, body: boolean): FacetBuilder {
+  const b = sceneDecor(place, open, posed, body);
+  footShadow(b, scenetteKeo(place, posed).at, FOOT_SHADOW.keo, floorShadow(place, posed));
+  footShadow(b, scenetteHabitant(place, posed), FOOT_SHADOW.habitant, floorShadow(place, posed));
+  return b;
+}
+
+/**
+ * Les ombres au pied dans une scénette (lot commun des scénettes, directeur artistique : « une ombre au pied, du côté
+ * opposé au soleil, un aplat opaque ») : une ellipse de sept triangles, son bord côté soleil sous les pieds, allongée à
+ * l'opposé du soleil (`SHADOW_DIR`), un rien au-dessus du sol de la scène.
+ */
+const FOOT_SHADOW = { keo: { radius: 0.3, long: 0.55 }, habitant: { radius: 0.36, long: 0.66 }, lift: 0.025, sides: 7 } as const;
+
+/**
+ * La couleur de l'ombre selon le sol de la scène : les planches (le bois, assombri d'un tiers), les dalles, la terre
+ * battue ; jamais transparente, jamais noire.
+ */
+const FLOOR_SHADOWS = { planks: 0x7a5636, paving: 0xa58660, earth: 0xb98a55 } as const;
+const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
+  phare: 'paving',
+  quais: 'planks',
+  filets: 'planks',
+  ecluses: 'paving',
+  saltworks: 'earth',
+  engine: 'paving',
+  shipyard: 'planks',
+  lookout: 'paving',
+  archives: 'paving',
+  printworks: 'earth',
+  mangrove: 'planks',
+  ruins: 'paving',
+  observatory: 'paving',
+  commons: 'paving',
+  beacons: 'planks',
+  ferry: 'planks',
+};
+const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
+
+function footShadow(b: FacetBuilder, at: Vec3, size: { radius: number; long: number }, color: number): void {
+  const n = FOOT_SHADOW.sides;
+  const back = size.long - size.radius;
+  const c: [number, number, number] = [at.x + SHADOW_DIR.x * back, at.y + FOOT_SHADOW.lift, at.z + SHADOW_DIR.z * back];
+  const rim = Array.from({ length: n }, (_, k): [number, number, number] => {
+    const u = size.long * Math.cos((2 * Math.PI * k) / n);
+    const v = size.radius * Math.sin((2 * Math.PI * k) / n);
+    return [c[0] + u * SHADOW_DIR.x - v * SHADOW_DIR.z, c[1], c[2] + u * SHADOW_DIR.z + v * SHADOW_DIR.x];
+  });
+  for (let k = 0; k < n; k++) b.triangle(c, rim[(k + 1) % n], rim[k], color);
+}
+
+/** Le décor de près, avec le pion dessiné en code (`body`) ou sans corps. */
+function sceneDecor(place: PlaceId, open: boolean, posed: boolean, body: boolean): FacetBuilder {
   const b = new FacetBuilder();
   if (place === 'quais') {
     docker(b, place, body);

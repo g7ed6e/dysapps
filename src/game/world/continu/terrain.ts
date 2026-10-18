@@ -697,7 +697,23 @@ function facetColor(a: P3, b: P3, c: P3): number {
     if (sunny !== null) return sunny ? GROUND_TONES.sunny : GROUND_TONES.hillShade;
   }
   if (up >= TONE.slope || (flat !== GROUND_TONES.low && flat !== GROUND_TONES.mid && flat !== GROUND_TONES.high)) return flat;
-  return sunSide(nx, ny, nz, len) ? GROUND_TONES.mid : GROUND_TONES.slope;
+  // La pente lissée autour de la facette (lot commun des scénettes, directeur artistique : « plus de moucheture ») : sur
+  // une petite bosse, ses triangles voisins regardaient tantôt le soleil, tantôt l'ombre, une teinte chacun au hasard de
+  // leur sens ; ils prennent maintenant tous l'aplat du plan autour d'eux, et seules les vraies pentes passent au Vert île.
+  const smooth = smoothNormal(x, z);
+  if (smooth.up >= TONE.slope) return flat;
+  return sunSide(smooth.nx, smooth.up, smooth.nz, 1) ? GROUND_TONES.mid : GROUND_TONES.slope;
+}
+
+/** Le pas de la pente lissée, en unités : plus large qu'une case du sol de près, pour qu'une bosse n'y compte pas. */
+const SMOOTH_STEP = 2.5;
+
+/** La normale du sol lissée en (x, z) : sa pente sur `SMOOTH_STEP` unités de part et d'autre, rendue unitaire. */
+function smoothNormal(x: number, z: number): { nx: number; up: number; nz: number } {
+  const gx = (heightAt({ x: x + SMOOTH_STEP, z }) - heightAt({ x: x - SMOOTH_STEP, z })) / (2 * SMOOTH_STEP);
+  const gz = (heightAt({ x, z: z + SMOOTH_STEP }) - heightAt({ x, z: z - SMOOTH_STEP })) / (2 * SMOOTH_STEP);
+  const len = Math.hypot(gx, 1, gz);
+  return { nx: -gx / len, up: 1 / len, nz: -gz / len };
 }
 
 /** Une facette de normale (`nx`, `ny`, `nz`) regarde-t-elle le soleil ? La normale tournée vers le haut (le sens des triangles varie). */

@@ -17,7 +17,7 @@ import { placeById, type PlaceId } from '../../world/continu/plan6e';
 import enclos from '../../exercises/data/french-6e-grammar-spelling-word-classes-1.json';
 
 // La scène 3D n'est pas là sous jsdom : la question ne lui demande que de poser les objets et d'allumer la lampe.
-const world = { question: vi.fn(() => []), scenetteEnd: vi.fn() } as unknown as OpenWorld;
+const world = { question: vi.fn(() => []), onSceneTurn: vi.fn(() => () => {}), scenetteEnd: vi.fn() } as unknown as OpenWorld;
 
 beforeEach(() => {
   vi.stubGlobal(

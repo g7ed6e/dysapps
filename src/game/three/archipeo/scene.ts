@@ -203,6 +203,11 @@ export interface OpenWorld {
    */
   question(q: QuestionRequest | null): LabelOnScreen[];
   /**
+   * Écoute les repères de la scène quand la caméra tourne pendant une scénette (deux doigts, « caméra libre ») : ils
+   * suivent le décor, comme ceux que rend `question`. Rend de quoi ne plus écouter.
+   */
+  onSceneTurn(listener: (labels: LabelOnScreen[]) => void): () => void;
+  /**
    * La fin de la mission dans une scénette (le Phare) : la caméra reste dans la galerie, les objets des réponses
    * s'effacent, et à la réussite (`lit`) la lampe du Phare s'allume (tout de suite avec « Réduire les animations »).
    * `question(null)` la quitte.
@@ -365,6 +370,14 @@ const KEO_LAYER = 1;
  * tournent pas encore (un pincement ou deux doigts posés ne la bougent pas).
  */
 const CAMERA_TURN = { step: Math.PI / 4, seconds: 0.35, rings: Math.PI / 8, deadAngle: 0.2 } as const;
+/**
+ * La caméra qui tourne aussi pendant une scénette (lot commun des scénettes, choix du mainteneur du 18 octobre 2026 :
+ * « caméra libre ») : deux doigts la font tourner autour du point visé de la scène ; les objets des réponses restent
+ * sous leurs boutons (ils se reposent au sol sous eux à chaque image du geste), le décor tourne. Hors de la pose
+ * prévue, elle garde `clearance` unités devant tout volume (le lieu, le décor de près) et au-dessus du sol, sans
+ * s'approcher à moins de `minDistance` du point visé.
+ */
+const SCENE_TURN = { clearance: 1, minDistance: 4 } as const;
 /**
  * La finesse du rendu : l'anticrénelage reste (la scène est légère, quelques milliers de triangles) ; le rapport de
  * pixels est plafonné à 2, puis ramené à 1 si l'appareil peine (des images de plus de 45 ms, trente de suite), comme
@@ -1416,11 +1429,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const setNear = (now: boolean) => nearRing.set(nearIndices.map((i) => (now ? tiles.build(i, 'near') : (tiles.near(i) ?? tiles.build(i, 'far')))));
   /** Les anneaux autour du point suivi ; `now` (le départ, un saut) : les tuiles de près faites tout de suite. */
   const updateRings = (force = false, now = false) => {
-    if (!force && Math.hypot(focus.x - ringCenter.x, focus.z - ringCenter.z) < RING_MOVE && Math.abs(wrapAngle(yaw - ringYaw)) < CAMERA_TURN.rings) return;
+    // Pendant une scénette, la caméra tourne autour de la scène (`sceneYaw`) : les tuiles suivent son regard.
+    const look = yaw + (scenette && asked ? sceneYaw : 0);
+    if (!force && Math.hypot(focus.x - ringCenter.x, focus.z - ringCenter.z) < RING_MOVE && Math.abs(wrapAngle(look - ringYaw)) < CAMERA_TURN.rings) return;
     ringCenter.x = focus.x;
     ringCenter.z = focus.z;
-    ringYaw = yaw;
-    const rings = tileRings(ringCenter, WORLD_FOG.far, yaw);
+    ringYaw = look;
+    const rings = tileRings(ringCenter, WORLD_FOG.far, look);
     const k = `${rings.near.join(',')}|${rings.far.join(',')}`;
     if (k !== ringKey) {
       ringKey = k;
@@ -1849,7 +1864,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const twistMove = () => {
     if (!twist || fingers.size < 2) return;
     const angle = fingersAngle();
-    // Pendant une question, une pose ou une remise, la caméra ne tourne pas, et l'écart ne s'accumule pas.
+    // Pendant une scénette, la caméra tourne autour de la scène (« caméra libre ») ; la scène se refait à l'image suivante.
+    if (asked && scenette && !remise && !descent.active && !finaleShown && !poseRun.active && !assembly && !laying) {
+      const d = wrapAngle(angle - twist.angle);
+      if (!twist.started && Math.abs(d) < CAMERA_TURN.deadAngle) return;
+      twist.started = true;
+      twist.angle = angle;
+      sceneYaw = wrapAngle(sceneYaw + d);
+      sceneTurnPending = true;
+      return;
+    }
+    // Pendant une pose, une remise ou la fin d'une scénette, la caméra ne tourne pas, et l'écart ne s'accumule pas.
     if (asked || remise || scenette || poseRun.active || assembly || laying) {
       twist.angle = angle;
       return;
@@ -2328,6 +2353,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // quand), puis la lumière ; `finaleShown` : elle est montrée (le décor de près a changé).
   let finale: { from: THREE.Vector3; start: number; f: ScenetteFinale } | null = null;
   let finaleShown = false;
+  /** L'angle dont la caméra a tourné autour de la scénette (`SCENE_TURN`), et la scène à refaire à l'image suivante. */
+  let sceneYaw = 0;
+  let sceneTurnPending = false;
+  /** La dernière question posée : la scène se refait avec elle quand la caméra tourne. */
+  let lastQuestion: QuestionRequest | null = null;
+  /** Ceux qui écrivent les repères de la scène (la page) : la caméra tournée les déplace. */
+  const sceneTurnListeners = new Set<(labels: LabelOnScreen[]) => void>();
+  const turnFrom = new THREE.Vector3();
+  const turnDir = new THREE.Vector3();
   // La scène de l'item est-elle à montrer (cachée le temps de la descente) ?
   let itemShown = false;
   const descent = {
@@ -2438,8 +2472,37 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hit = raycaster.ray.intersectPlane(vertical, ground3);
     return hit ? { x: hit.x, y: hit.y, z } : null;
   };
+  /**
+   * Tourne la pose prévue d'une scénette de `sceneYaw` autour de son point visé, puis l'écarte des volumes et du sol
+   * (`SCENE_TURN`). À l'angle nul, la pose prévue, telle quelle.
+   */
+  const turnScenePose = (pose: CameraPose) => {
+    if (!sceneYaw) return;
+    const t = pose.target;
+    const dx = pose.position.x - t.x;
+    const dz = pose.position.z - t.z;
+    const c = Math.cos(sceneYaw);
+    const s = Math.sin(sceneYaw);
+    // Le même sens que la caméra qui suit Kéo (`occlusionLift`) : à l'angle `a`, elle est en (sin a, cos a) du point visé.
+    pose.position = { x: t.x + dx * c + dz * s, y: pose.position.y, z: t.z - dx * s + dz * c };
+    turnFrom.set(t.x, t.y, t.z);
+    turnDir.set(pose.position.x - t.x, pose.position.y - t.y, pose.position.z - t.z);
+    const dist = turnDir.length();
+    turnDir.normalize();
+    raycaster.set(turnFrom, turnDir);
+    raycaster.far = dist + SCENE_TURN.clearance;
+    const hit = raycaster.intersectObjects([placesMesh, landmarkMesh, decorMesh], false).find((h) => h.distance > 0.5);
+    raycaster.far = Infinity;
+    const d = hit ? Math.max(SCENE_TURN.minDistance, Math.min(dist, hit.distance - SCENE_TURN.clearance)) : dist;
+    pose.position = { x: t.x + turnDir.x * d, y: t.y + turnDir.y * d, z: t.z + turnDir.z * d };
+    const floor = ground(pose.position.x, pose.position.z) + SCENE_TURN.clearance;
+    if (pose.position.y < floor) pose.position.y = floor;
+  };
   const askQuestion = (q: QuestionRequest | null): LabelOnScreen[] => {
     if (!q) {
+      sceneYaw = 0;
+      sceneTurnPending = false;
+      lastQuestion = null;
       if (!asked) return [];
       asked = null;
       reaction = null;
@@ -2467,6 +2530,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
     const { place, layout, item } = q;
+    // Une autre scénette repart de sa pose prévue.
+    if (scenette !== place) sceneYaw = 0;
+    lastQuestion = q;
     scenetteMission = q.mission;
     walk = null;
     // Une nouvelle question (« Rejouer ») : la lampe rend le maillage de la réaction, le décor de près reprend son état
@@ -2485,6 +2551,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     fog.near = WORLD_FOG.near;
     fog.far = WORLD_FOG.far;
     const qp = scenettePose(place, layout.scenette.stage, viewW, viewH, posed);
+    turnScenePose(qp.pose);
     if (entering && !reduceMotion) {
       copyPose(qp.pose, descent.to);
       descent.fromShift = fromShift;
@@ -2500,7 +2567,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     applyPose(qp.pose);
     camera.updateMatrixWorld();
     const slotFeet = layout.slots.map((o) => o.foot);
-    const objectsKey = `${place}|${viewW}x${viewH}|${slotFeet.map((o) => `${o.x},${o.y}`).join(';')}`;
+    const objectsKey = `${place}|${viewW}x${viewH}|${sceneYaw.toFixed(4)}|${slotFeet.map((o) => `${o.x},${o.y}`).join(';')}`;
     const itemKey = `${JSON.stringify(item.scene)}|${item.right.join(',')}`;
     const spot = sceneSpot(place);
     // Dans une scénette, les cloches pendent devant la rambarde ; les caisses sont posées sur un ponton du bassin ; les
@@ -3008,6 +3075,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     last = now;
     const t = now / 1000;
     stepNefDrop(t);
+    // La caméra tournée pendant une scénette : la scène se refait une fois par image au plus, et ses repères suivent.
+    if (sceneTurnPending) {
+      sceneTurnPending = false;
+      if (lastQuestion && asked && scenette) {
+        const labels = askQuestion(lastQuestion);
+        updateRings();
+        for (const l of sceneTurnListeners) l(labels);
+      }
+    }
     // Les ailes de la pompe à vent tournent lentement ; à l'arrêt avec « Réduire les animations ».
     if (!reduceMotion) vaneAngle.value = (t * VANE.turn) % (2 * Math.PI);
     // Le rotor de la Turbine tourne lentement, à l'arrêt pendant toute question et sur la Carte (il reprend où il s'était
@@ -3179,6 +3255,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     },
     keoAt: () => ({ x: here.x, z: here.z }),
     question: askQuestion,
+    onSceneTurn: (listener) => {
+      sceneTurnListeners.add(listener);
+      return () => void sceneTurnListeners.delete(listener);
+    },
     map: setMap,
     reframeMap: reframeStart,
     scenetteEnd,

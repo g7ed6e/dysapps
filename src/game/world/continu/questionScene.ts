@@ -38,6 +38,9 @@ const C = {
   shrimp: 0xe58f7a,
   stone: 0xb9b2a3,
   stoneDark: 0x8f897d,
+  /** Les dalles chaudes du sol d'une scène (lot commun des scénettes), à la place de la pierre grise : scenette.ts. */
+  paving: 0xd6b98e,
+  pavingSide: 0xb0926a,
   water: 0x2f8fc8,
   waterTop: 0x5fb3e0,
   empty: 0xe4ddcf,
@@ -696,7 +699,7 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
     for (let i = 1; i < points.length; i++)
       b.box({ x: (points[i - 1].x + points[i].x) / 2, y: y - 0.02, z }, [0.05 * s, 0.035, depth - 2 * rim], C.ochreJoint);
   } else if (kind === 'sac') saltRack(b, mid, y, z, span, s, look.ground ?? y);
-  else b.box({ x: mid, y: y - skirt, z }, [span, skirt, 0.8 * s], C.deckSide, C.deck);
+  else rowDeck(b, mid, y, z, span, 0.8 * s, skirt, look.ground);
   if (look.sort) {
     sortObjects(b, points, y, s, look.sort);
     return b.build();
@@ -723,6 +726,26 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
     }
   }
   return b.build();
+}
+
+/** Les pieux sous le ponton des réponses (lot commun des scénettes, directeur artistique) : au plus 2,5 d'écart. */
+const ROW_PILES = { gap: 2.5, side: 0.16, thick: 0.2 } as const;
+
+/**
+ * Le ponton sous la rangée des réponses, son dessus en `y` : une tranche d'au moins `ROW_PILES.thick` (aucune plaque
+ * mince), et, quand il ne descend pas jusqu'au sol (`ground`, rien sur l'eau), sa rangée de pieux devant, jusqu'au sol
+ * ou sous l'eau : rien ne flotte.
+ */
+function rowDeck(b: FacetBuilder, mid: number, y: number, z: number, span: number, depth: number, skirt: number, ground: number | undefined): void {
+  const t = Math.max(skirt, ROW_PILES.thick);
+  b.box({ x: mid, y: y - t, z }, [span, t, depth], C.deckSide, C.deck);
+  const foot = ground ?? UNDER_WATER;
+  if (y - t - foot < 0.05) return;
+  const n = Math.max(2, Math.ceil(span / ROW_PILES.gap) + 1);
+  for (let i = 0; i < n; i++) {
+    const x = mid - span / 2 + ROW_PILES.side / 2 + ((span - ROW_PILES.side) * i) / (n - 1);
+    b.box({ x, y: foot, z: z + depth / 2 - ROW_PILES.side / 2 }, [ROW_PILES.side, y - t - foot, ROW_PILES.side], C.post);
+  }
 }
 
 /**
@@ -1238,7 +1261,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
   // Une plate-forme sous la scène : elle ne flotte jamais ; de bois aux Filets, de pierre aux Écluses (le sas).
   const depth = sceneDepth(place);
   const platform = (w: number, d: number, stone = false) =>
-    b.box({ x: o.x, y: o.y - depth, z: o.z }, [w, depth, d], stone ? C.stoneDark : C.deckSide, stone ? C.stone : C.deck);
+    b.box({ x: o.x, y: o.y - depth, z: o.z }, [w, depth, d], stone ? C.pavingSide : C.deckSide, stone ? C.paving : C.deck);
   // La barque des Écluses passe dans le canal, devant le sas, et s'arrête devant la porte fermée.
   const lockReaction = (): Reaction => {
     const r = new FacetBuilder();

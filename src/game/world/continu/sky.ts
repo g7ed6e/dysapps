@@ -31,17 +31,20 @@ export const HORIZON_COLOR = SKY_STOPS[0].color;
  * du presque-noir sous le pont) : le sol renvoyé, la lumière que l'eau claire et le sable rendent, plus clair et plus
  * chaud (#E0D9C0), l'ambiance un peu plus haute (1,6) et le soleil un peu plus bas (2,75) : les faces à l'ombre et le
  * dessous des tabliers remontent, les pans au soleil changent à peine ; la séparation des flancs des collines tient à
- * leurs couleurs (./terrain.ts).
+ * leurs couleurs (./terrain.ts). Lot commun des scénettes (directeur artistique, 18 octobre 2026 : « lumière rasante
+ * dorée ») : le soleil plus bas encore (environ 23° au lieu de 33°, même azimut : les flancs au soleil et à l'ombre ne
+ * changent pas de côté), plus chaud (#FFE2B0), plus fort, et l'ambiance plus basse (1,15) : une face au soleil ressort
+ * deux fois plus claire que la même à l'ombre, qui garde sa couleur (l'exposition un peu relevée la tient claire).
  */
 export const LIGHT = {
   sky: 0xdde8e6,
   ground: 0xe0d9c0,
-  ambient: 1.6,
-  sun: 0xfff0d8,
-  sunIntensity: 2.75,
+  ambient: 1.15,
+  sun: 0xffe2b0,
+  sunIntensity: 3.3,
   /** D'où vient le soleil (une direction, pas une place). */
-  sunFrom: { x: 52, y: 40, z: 34 },
-  exposure: 1,
+  sunFrom: { x: 52, y: 26.4, z: 34 },
+  exposure: 1.12,
 } as const;
 
 /** Le sens où tombent les ombres peintes, au sol (l'opposé du soleil, à plat, d'une unité). */

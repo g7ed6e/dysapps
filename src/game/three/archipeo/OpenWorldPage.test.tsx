@@ -30,6 +30,7 @@ vi.mock('./scene', () => ({
     scene.closed = [];
     const own: Partial<OpenWorld> = {
       question: () => [],
+      onSceneTurn: () => () => {},
       setPlaces: () => false,
       keoAt: () => ({ x: 0, z: 0 }),
       info: () => ({ calls: 0, triangles: 0, mapMs: 0 }),

@@ -356,7 +356,8 @@ describe('Le quai du docker', () => {
     // Debout sur la bande de devant du quai, à hauteur d'homme (Kéo est à l'échelle 0,6 de la scénette).
     expect(b.min[1]).toBeGreaterThanOrEqual(quay.y - 0.1);
     expect(b.max[1]).toBeLessThan(quay.y + 2.5);
-    expect(b.min[0]).toBeGreaterThan(quay.x);
+    // Le décor de près porte aussi l'ombre au pied de Kéo (lot commun des scénettes) : à moins d'une unité de lui.
+    expect(b.min[0]).toBeGreaterThan(quay.x - 1);
     expect(scenetteHabitant('quais').x).toBeGreaterThan(quay.x);
     // Ni lampe à allumer, ni cloches pendues : la caisse monte au crochet de la grue.
     expect(answersHang('quais')).toBe(false);
@@ -773,7 +774,8 @@ describe('Les Marais salants (GD-20, point 8, lot L5)', () => {
 
   it('la saunière, en peu de triangles, sur le muret au bord du bassin ; le décor de près en un maillage léger', () => {
     const decor = scenetteDecor('saltworks');
-    expect(decor.triangles).toBeLessThan(400);
+    // Les deux ombres au pied (lot commun des scénettes) comprises : 14 triangles.
+    expect(decor.triangles).toBeLessThan(414);
     const habitant = scenetteHabitant('saltworks');
     const keo = scenetteKeo('saltworks').at;
     expect(keo.x).toBeLessThan(o.x);
@@ -848,7 +850,8 @@ describe('La Turbine (GD-20, point 8, lot L6a)', () => {
 
   it('la machiniste, en peu de triangles, sur le dallage devant la chaudière, levé au-dessus du replat', () => {
     const decor = scenetteDecor('engine');
-    expect(decor.triangles).toBeLessThan(400);
+    // Les deux ombres au pied (lot commun des scénettes) comprises : 14 triangles.
+    expect(decor.triangles).toBeLessThan(414);
     // Des cheveux sombres et leur chignon, au-dessus de la tête (les lunettes relevées s'y lisent) ; la burette, un cône de
     // cuivre plus large en bas qu'en haut, et son bec fin (relecture de L6a : ni tête chauve, ni torche).
     const habitantAt = scenetteHabitant('engine');
@@ -930,7 +933,8 @@ describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
 
   it('le charpentier, en peu de triangles, sur le plancher levé au-dessus de la grève : tablier ardoise, maillet en main', () => {
     const decor = scenetteDecor('shipyard');
-    expect(decor.triangles).toBeLessThan(400);
+    // Les deux ombres au pied (lot commun des scénettes) comprises : 14 triangles.
+    expect(decor.triangles).toBeLessThan(414);
     const habitant = scenetteHabitant('shipyard');
     const keo = scenetteKeo('shipyard').at;
     expect(keo.x).toBeLessThan(o.x);
@@ -1011,7 +1015,8 @@ describe('La Mangrove (GD-20, point 8, lot L8a)', () => {
   };
 
   it('la botaniste, en peu de triangles : le bas du corps sombre, le haut clair, ses cheveux sombres et sa tresse, un petit carnet contre elle', () => {
-    expect(decor.triangles).toBeLessThan(400);
+    // Les deux ombres au pied (lot commun des scénettes) comprises : 14 triangles.
+    expect(decor.triangles).toBeLessThan(414);
     expect(scenetteOf('mangrove').role).toBe('La botaniste');
     const at = scenetteHabitant('mangrove');
     // Le bas sombre jusqu'au sol (jamais un seul prisme clair, relecture de L6b), le haut corail au-dessus.
@@ -1061,7 +1066,8 @@ describe('Les Ruines (GD-20, point 8, lot L8b)', () => {
   };
 
   it('l’archéologue, en peu de triangles : le bas du corps sombre, le haut clair, ses cheveux gris courts, sa brosse de fouille', () => {
-    expect(decor.triangles).toBeLessThan(400);
+    // Les deux ombres au pied (lot commun des scénettes) comprises : 14 triangles.
+    expect(decor.triangles).toBeLessThan(414);
     expect(scenetteOf('ruins').role).toBe('L’archéologue');
     const at = scenetteHabitant('ruins');
     // Le bas sombre jusqu'au sol (jamais un seul prisme clair, relecture de L6b), le haut bleu ciel au-dessus.
@@ -1111,7 +1117,8 @@ describe('L’Observatoire (GD-20, point 8, lot L8c)', () => {
 
   it('la photographe, en peu de triangles : le haut clair, le bas du corps sombre, sa chambre de bois sur trépied à côté d’elle', () => {
     const decor = scenetteDecor('observatory');
-    expect(decor.triangles).toBeLessThan(400);
+    // Les deux ombres au pied (lot commun des scénettes) comprises : 14 triangles.
+    expect(decor.triangles).toBeLessThan(414);
     const at = scenetteHabitant('observatory');
     // La veste lavande en haut, le pantalon gris chaud en bas (relecture de L6b : jamais un prisme clair jusqu'au sol) ;
     // deux jambes, des chaussures, des cheveux jusqu'à la nuque (relecture de L8c-d).
@@ -1229,7 +1236,8 @@ describe('La Halle (GD-20, point 8, lot L8d)', () => {
 
   it('le couvreur, en peu de triangles : le haut clair, le bas du corps sombre, deux jambes, tête nue, une tuile canal sous le bras', () => {
     const decor = scenetteDecor('commons');
-    expect(decor.triangles).toBeLessThan(400);
+    // Les deux ombres au pied (lot commun des scénettes) comprises : 14 triangles.
+    expect(decor.triangles).toBeLessThan(414);
     const at = scenetteHabitant('commons');
     const shirt = colored(decor, 0xbfdccb);
     expect(Math.min(...shirt.map((v) => v[1]))).toBeGreaterThan(at.y + 0.4);
