@@ -1,7 +1,8 @@
 // « Relier » dans la page du monde ouvert (GD-20, point 3, « vraies terres, vrais ponts » ; relecture de l'expert
-// frontend) : une terre payée, la scène reçoit ses terres fermées sans elle, le pont est rebâti d'un coup ; la phrase
-// vient, et celle du pont devenu reliable la suit. Et la commande prête dans la suggestion (lot L1 « Livrer »). La scène
-// 3D n'est pas là sous jsdom : une scène simulée.
+// frontend) : une terre payée, la scène reçoit ses terres fermées sans elle et la pose de son pont ; la phrase vient après
+// la fin de la pose, jamais avec le toc, et celle du pont devenu reliable la suit. Et la commande prête dans la suggestion
+// (lot L1 « Livrer »). La scène 3D n'est pas là sous jsdom : une scène simulée, qui pose le pont d'un coup (`instant`), ou
+// attend qu'on dise le toc et la fin.
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router-dom';
@@ -13,13 +14,15 @@ import { reachableIslands } from '../../world/archipelago';
 import { landById, type LinkedLand } from '../../world/continu/lands';
 import { placeById } from '../../world/continu/plan6e';
 import { COMMANDES } from '../../world/requests';
-import type { OpenWorld, OpenWorldOptions } from './scene';
+import type { BridgeLayEvents, OpenWorld, OpenWorldOptions } from './scene';
 import OpenWorldPage from './OpenWorldPage';
 
 const scene = vi.hoisted(() => ({
   options: null as OpenWorldOptions | null,
   closed: [] as readonly LinkedLand[],
   world: null as OpenWorld | null,
+  instant: true,
+  lay: null as { land: LinkedLand; events: BridgeLayEvents } | null,
 }));
 vi.mock('./scene', () => ({
   createOpenWorld: (_host: HTMLElement, options: OpenWorldOptions) => {
@@ -30,8 +33,16 @@ vi.mock('./scene', () => ({
       setPlaces: () => false,
       keoAt: () => ({ x: 0, z: 0 }),
       info: () => ({ calls: 0, triangles: 0, mapMs: 0 }),
+      layLand: (land, events) => {
+        scene.lay = { land, events };
+      },
       setLands: (lands) => {
         scene.closed = lands.closed;
+        const lay = scene.lay;
+        if (!scene.instant || !lay || lands.closed.includes(lay.land)) return;
+        scene.lay = null;
+        lay.events.tap();
+        lay.events.laid();
       },
     };
     scene.world = new Proxy(own, { get: (t, k: string) => (t as Record<string, unknown>)[k] ?? ((t as Record<string, unknown>)[k] = vi.fn()) }) as OpenWorld;
@@ -65,6 +76,8 @@ afterEach(() => {
 
 beforeEach(() => {
   pay.refuse = false;
+  scene.instant = true;
+  scene.lay = null;
   vi.stubGlobal(
     'ResizeObserver',
     class {
@@ -113,6 +126,46 @@ test('au départ, les quatre terres sont fermées dans la scène ; relier le Lev
   expect(box.textContent).toBe(BOTH);
   // Deux phrases, une par ligne, séparées d'une espace pour le lecteur d'écran (« Réécouter » n'est là qu'avec une voix).
   expect(box.querySelectorAll('span')).toHaveLength(2);
+});
+
+test('la pose du pont : la scène la reçoit pour la terre payée ; la phrase attend sa fin, jamais avec le toc', async () => {
+  scene.instant = false;
+  renderPage();
+  await relier('couchant', 'Le Couchant');
+  expect(scene.closed).toEqual(['large', 'levant', 'cretes']);
+  expect(scene.lay?.land).toBe('couchant');
+  vi.useFakeTimers();
+  try {
+    // Le toc : aucune phrase avec lui, ni pendant que la brume se lève.
+    act(() => scene.lay!.events.tap());
+    act(() => vi.advanceTimersByTime(1000));
+    expect(screen.queryByText('Le pont est rebâti.')).not.toBeInTheDocument();
+    // La fin de la pose : la phrase.
+    act(() => scene.lay!.events.laid());
+    act(() => vi.advanceTimersByTime(10));
+    expect(screen.getByText('Le pont est rebâti.')).toBeInTheDocument();
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+test('un pont posé d’un coup (« Réduire les animations ») : le toc, puis la phrase un moment après, jamais avec lui', async () => {
+  scene.instant = false;
+  renderPage();
+  await relier('couchant', 'Le Couchant');
+  vi.useFakeTimers();
+  try {
+    act(() => {
+      scene.lay!.events.tap();
+      scene.lay!.events.laid();
+    });
+    act(() => vi.advanceTimersByTime(10));
+    expect(screen.queryByText('Le pont est rebâti.')).not.toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(500));
+    expect(screen.getByText('Le pont est rebâti.')).toBeInTheDocument();
+  } finally {
+    vi.useRealTimers();
+  }
 });
 
 test('un paiement refusé ne relie rien : aucune terre ouverte, aucune phrase', async () => {

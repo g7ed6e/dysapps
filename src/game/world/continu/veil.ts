@@ -3,14 +3,18 @@
 // opaque, où chaque lieu garde sa silhouette (référent dys) : deux voiles posés sur le sol, l'un à hauteur de Kéo,
 // l'autre un peu plus haut et plus léger, de la teinte du lointain. Chaque voile s'efface sur ses bords : loin des
 // chemins et des lieux de sa terre, vers une terre voisine, et sur l'eau (le bras de mer reste net, sa coupure bleue
-// se lit). Rien ne bouge : c'est un état, pas une animation ; elle part d'un coup quand on relie la terre. Code pur.
+// se lit). Rien ne bouge : c'est un état, pas une animation ; quand on relie la terre, elle se lève en fondu doux après le
+// toc du pont (d'un coup avec « Réduire les animations ») : la vue n'en change que la transparence. Code pur.
 import { distance, linearRgb, smoothstep, type Vec2 } from './geometry';
 import { LANDS, NODE_LANDS, type LandId, type LinkedLand } from './lands';
 import { PATH_NODES, placeById } from './plan6e';
 import { heightAt, landDistance, standingHeight } from './terrain';
 
-/** La couleur de la brume : la Brume du pack (#E5EBE3), celle du lointain aussi. */
-export const MIST_COLOR = 0xe5ebe3;
+/**
+ * La couleur de la brume : la Brume du pack (#E5EBE3), un peu plus claire (#EEF1EC, retouche du lot 3) pour se lire
+ * sur l'herbe au soleil, plus claire qu'avant.
+ */
+const MIST_COLOR = 0xeef1ec;
 
 /**
  * Un maillage de brume : trois sommets par triangle, et pour chacun sa normale (vers le haut), sa couleur et sa
@@ -25,14 +29,17 @@ export interface VeilMesh {
 
 /**
  * Les deux voiles (artiste technique 3D, référent dys) : leur hauteur au-dessus du sol et leur transparence la plus
- * dense. Ensemble, jamais plus de 0,6 (vus d'en haut, 1 − 0,6 × 0,78, environ 53 %) : un lieu se lit toujours à
+ * dense. Ensemble, jamais plus de 0,62 (vus d'en haut, 1 − 0,54 × 0,84, environ 55 %) : un lieu se lit toujours à
  * travers ; le haut de son repère (la tour du Phare, la flèche de la grue) dépasse du second. Relecture du lot 1
- * (directeur artistique, référent dys) : plus dense au sol, le premier voile plus opaque et plus bas, le second jusqu'à
- * mi-hauteur des bâtiments, les toits au-dessus ; à reprendre avec la lumière du lot 3.
+ * (directeur artistique, référent dys) : plus dense au sol, jusqu'à mi-hauteur des bâtiments, les toits au-dessus.
+ * Reprise avec la lumière du lot 3 (GD-20, point 3) : une nappe plus basse et plus dense (46 % à 0,6 unité), le second
+ * voile plus léger : sous la nouvelle lumière, plus contrastée, le sol voilé se lit comme de la brume, jamais comme un
+ * mur ; ensemble, environ 55 %, jamais opaque. Retouche du lot 3 : la nappe à 50 % et 0,5 unité, le second voile à
+ * 12 % (ensemble 56 %), et la nappe pleine plus loin des chemins et des lieux (`GRID.reach`, `GRID.full`).
  */
 export const VEIL_LAYERS: readonly { lift: number; alpha: number }[] = [
-  { lift: 0.8, alpha: 0.4 },
-  { lift: 2.4, alpha: 0.22 },
+  { lift: 0.5, alpha: 0.5 },
+  { lift: 1.7, alpha: 0.12 },
 ];
 
 /** La hauteur du voile le plus haut au-dessus du sol : bien moins que Kéo et un toit (le cadenas se pose au-dessus). */
@@ -40,11 +47,14 @@ export const VEIL_HEIGHT = VEIL_LAYERS[VEIL_LAYERS.length - 1].lift;
 
 /**
  * Le dessin du voile : le pas de sa grille ; jusqu'où il s'étend loin d'un chemin ou d'un lieu de sa terre (`reach`,
- * effacé dès `reach × 0,6`) ; la largeur de son fondu vers une terre voisine (`border`) et vers l'eau (`shore` : presque
+ * effacé dès `reach × full`) ; la largeur de son fondu vers une terre voisine (`border`) et vers l'eau (`shore` : presque
  * rien, il s'arrête net sur la rive, ses sommets mouillés posés sur elle, `toShore`) ; autour du centre d'un lieu,
- * jusqu'où il couvre même l'eau (`place`).
+ * jusqu'où il couvre même l'eau (`place`). Reprise du lot 3 (directeur artistique : des « plaques de verre à arêtes
+ * droites ») : une grille plus fine (3 unités au lieu de 5) qui épouse mieux le sol, chaque sommet posé au-dessus du plus
+ * haut du sol autour de lui (aucune pente ne le perce d'une arête droite), et aucun bord net : là où une case est laissée
+ * de côté (sur l'eau), ses voisines s'effacent jusqu'à elle.
  */
-const GRID = { step: 5, reach: 18, border: 5, shore: 0.4, place: 7 } as const;
+const GRID = { step: 3, reach: 22, full: 0.75, border: 5, shore: 0.4, place: 7 } as const;
 
 /** Les repères d'une terre : les nœuds de ses chemins et le centre de ses lieux. */
 const featuresOf = (land: LandId): Vec2[] => [
@@ -80,7 +90,7 @@ export function veilShare(land: LinkedLand, p: Vec2): number {
     }
   }
   const inside = smoothstep(0, GRID.border, other - own);
-  const near = 1 - smoothstep(GRID.reach * 0.6, GRID.reach, own);
+  const near = 1 - smoothstep(GRID.reach * GRID.full, GRID.reach, own);
   const dry = Math.max(smoothstep(-GRID.shore, 0.5, landDistance(p)), 1 - smoothstep(GRID.place, GRID.place + GRID.shore, nearest(p, CENTERS.get(land)!)));
   return inside * near * dry;
 }
@@ -143,15 +153,27 @@ function veilOf(pos: number[], nor: number[], col: number[], land: LinkedLand): 
       spot.push(p);
       share.push(s);
       wet.push(off);
-      floor.push(s > 0 ? Math.max(0.05, standingHeight(heightAt(p))) : 0);
+      floor.push(s > 0 ? Math.max(0.05, standingHeight(highest(p))) : 0);
     }
   const at = (i: number, j: number) => j * (nx + 1) + i;
+  // Un sommet voisin d'un sommet mouillé (une case laissée de côté) n'a plus de brume : le bord s'efface, jamais net.
+  const soft = share.slice();
+  for (let j = 0; j <= nz; j++)
+    for (let i = 0; i <= nx; i++) {
+      if (!wet[at(i, j)]) continue;
+      for (let dj = -1; dj <= 1; dj++)
+        for (let di = -1; di <= 1; di++) {
+          const a = i + di;
+          const b = j + dj;
+          if (a >= 0 && b >= 0 && a <= nx && b <= nz) soft[at(a, b)] = 0;
+        }
+    }
   for (const layer of VEIL_LAYERS) {
     const put = (i: number, j: number) => {
       const k = at(i, j);
       pos.push(spot[k].x, floor[k] + layer.lift, spot[k].z);
       nor.push(0, 1, 0);
-      col.push(r, g, b, share[k] * layer.alpha);
+      col.push(r, g, b, soft[k] * layer.alpha);
     };
     for (let j = 0; j < nz; j++)
       for (let i = 0; i < nx; i++) {
@@ -168,11 +190,25 @@ function veilOf(pos: number[], nor: number[], col: number[], land: LinkedLand): 
   }
 }
 
+/** Jusqu'où, autour d'un sommet du voile, on cherche le plus haut du sol (une demi-case). */
+const VEIL_AROUND = GRID.step / 2;
+
+/** Le plus haut du sol en `p` et à une demi-case autour : le voile passe au-dessus, jamais dedans. */
+export function highest(p: Vec2): number {
+  const e = VEIL_AROUND;
+  return Math.max(heightAt(p), heightAt({ x: p.x + e, z: p.z }), heightAt({ x: p.x - e, z: p.z }), heightAt({ x: p.x, z: p.z + e }), heightAt({ x: p.x, z: p.z - e }));
+}
+
 const cache = new Map<LinkedLand, VeilMesh>();
 
-/** La brume des terres fermées `lands` : un seul maillage (chaque terre calculée une fois). */
-export function veilFacets(lands: readonly LinkedLand[]): VeilMesh {
-  const parts = lands.map((land) => {
+/**
+ * La brume des terres fermées `lands` : un seul maillage (chaque terre calculée une fois). `fading` : la terre dont la
+ * brume se lève (GD-20, point 3, « La pose ») ; la sienne vient en dernier, à partir du sommet `fadingFrom`, pour que la
+ * vue n'en change que la transparence.
+ */
+export function veilFacets(lands: readonly LinkedLand[], fading?: LinkedLand): VeilMesh & { fadingFrom: number } {
+  const order = fading ? [...lands.filter((l) => l !== fading), fading] : lands;
+  const parts = order.map((land) => {
     const known = cache.get(land);
     if (known) return known;
     const pos: number[] = [];
@@ -192,5 +228,7 @@ export function veilFacets(lands: readonly LinkedLand[]): VeilMesh {
     }
     return out;
   };
-  return { positions: join('positions'), normals: join('normals'), colors: join('colors'), triangles: parts.reduce((n, m) => n + m.triangles, 0) };
+  const triangles = parts.reduce((n, m) => n + m.triangles, 0);
+  const last = fading ? parts[parts.length - 1].triangles : 0;
+  return { positions: join('positions'), normals: join('normals'), colors: join('colors'), triangles, fadingFrom: (triangles - last) * 3 };
 }

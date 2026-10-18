@@ -6,7 +6,7 @@
 // 1,9 au-dessus de l'eau, ses garde-corps, une lanterne de chaque côté de chaque culée ; Kéo marche sur la pierre et
 // sur le tablier (`bridgeFloor`). Tout entre dans le maillage des lieux, sans appel de plus ; sur la Carte, le pont se
 // dessine aussi en trait double, distinct d'un chemin. Code pur.
-import { FacetBuilder, type Facets } from './facets';
+import { FacetBuilder, mergeFacets, type Facets } from './facets';
 import { distance, type Vec2 } from './geometry';
 import { LINKED_LANDS, bridgeEdge, firstClosed, NODE_LANDS, START_LAND, type LinkedLand } from './lands';
 import { bridgeCut, pathNode, type NetworkPoint } from './paths';
@@ -31,7 +31,9 @@ const C = {
   wood: 0xa9784a,
   woodTop: 0xc6955f,
   rail: 0x8a5f3a,
-  wet: 0x6f675b,
+  /** Les longerons sous le tablier, plus clairs que les garde-corps : vus d'en dessous, à l'ombre, jamais presque noirs (reprise du lot 3). */
+  beam: 0xc79a68,
+  wet: 0x958c7c,
   broken: 0x8a8273,
   iron: 0x3f4a50,
   glass: 0xdaa66a,
@@ -298,33 +300,50 @@ function archStart(b: FacetBuilder, s: BridgeSite, from: number, sign: 1 | -1, l
   });
 }
 
+/** Les morceaux d'un pont rebâti, dans l'ordre de sa pose (GD-20, point 3, « La pose ») : ses piles, une à une ; son tablier ; ses garde-corps et ses lanternes. */
+export interface BridgeParts {
+  piles: Facets[];
+  deck: Facets;
+  rails: Facets;
+}
+
 /**
- * Un pont pas encore rebâti (`before`) : les deux culées ; de chaque côté, un départ d'arche brisé, plus court côté
- * terre fermée ; deux moignons debout, de la section des piles, à leur place, cassés en biais. Rebâti : les culées, les
- * piles maçonnées, le tablier de planches, les garde-corps et les quatre lanternes. Un seul maillage, réuni à celui des
- * lieux.
+ * Le dessus d'un pont rebâti à `d` unités de `near` sur sa ligne : la rampe d'une culée, ou le tablier. Les garde-corps
+ * et les lanternes y sont posés.
  */
-export function bridgeFacets(land: LinkedLand, built: boolean): Facets {
+export function bridgeSurface(s: BridgeSite, d: number): number {
+  return d <= s.water[0] + BRIDGE.over ? abutTop(s, 0, d) : d >= s.water[1] - BRIDGE.over ? abutTop(s, 1, d) : BRIDGE.deck;
+}
+
+/** Les deux culées seules (`abutmentsOnly`), ou avec les deux départs d'arche brisés (`arches`). */
+function abutmentFacets(s: BridgeSite, arches: boolean): Facets {
   const b = new FacetBuilder();
+  abutments(b, s);
+  if (arches) {
+    archStart(b, s, s.water[0] + BRIDGE.over, 1, 2.1, [1, 0.8, 0.6]);
+    archStart(b, s, s.water[1] - BRIDGE.over, -1, 1.4, [0.6, 0.8, 1]);
+  }
+  return b.build();
+}
+
+/**
+ * Le pont pendant sa pose, sans ce qui se relève (GD-20, point 3, « La pose ») : les deux culées et les départs d'arche,
+ * que le tablier vient couvrir ; les moignons ont laissé la place aux piles qui se relèvent.
+ */
+export const bridgeLayRest = (land: LinkedLand): Facets => abutmentFacets(bridgeSite(land), true);
+
+/**
+ * Les morceaux d'un pont rebâti, sans ses culées : les piles maçonnées, de l'eau jusque sous le tablier (leurs assises,
+ * chacune un peu en retrait de celle du dessous tour à tour : les joints se lisent, le pied sombre, puis leur chaperon) ;
+ * le tablier de planches sur ses deux longerons ; les garde-corps et les quatre lanternes.
+ */
+export function bridgeParts(land: LinkedLand): BridgeParts {
   const s = bridgeSite(land);
   const at = frame(s);
   const yaw = Math.atan2(s.dir.x, s.dir.z);
-  abutments(b, s);
-  if (!built) {
-    archStart(b, s, s.water[0] + BRIDGE.over, 1, 2.1, [1, 0.8, 0.6]);
-    archStart(b, s, s.water[1] - BRIDGE.over, -1, 1.4, [0.6, 0.8, 1]);
-    // Les deux moignons, de 0,7 à 1,2 au-dessus de l'eau, le dessus cassé en biais (la pierre brute, plus sombre que le
-    // dessus des culées), sans dalle à plat.
-    const h = PILE.side / 2;
-    const [first, last] = stumpsOf(s);
-    shaft(b, s, first, h, [1.2, 0.65, 0.7, 1.15], [-0.8, 0.7, 1.2], C.pile, C.broken);
-    shaft(b, s, last, h, [0.65, 1.1, 1.2, 0.75], [0.7, -0.6, 1.2], C.pile, C.broken);
-    return b.build();
-  }
-  // Les piles maçonnées, de l'eau jusque sous le tablier : leurs assises, chacune un peu en retrait de celle du dessous
-  // tour à tour (les joints se lisent), le pied sombre, puis leur chaperon.
   const pileTop = BRIDGE.deck - BRIDGE.plank - 0.24;
-  for (const d of pilesOf(s)) {
+  const piles = pilesOf(s).map((d) => {
+    const b = new FacetBuilder();
     const p = at(d, 0);
     b.box({ x: p.x, y: BRIDGE.foot, z: p.z, yaw }, [PILE.side, PILE.wet - BRIDGE.foot, PILE.side], C.wet);
     const course = (pileTop - 0.18 - PILE.wet) / PILE.courses;
@@ -333,32 +352,34 @@ export function bridgeFacets(land: LinkedLand, built: boolean): Facets {
       b.box({ x: p.x, y: PILE.wet + k * course, z: p.z, yaw }, [side, course, side], k % 2 ? C.pile : C.stone);
     }
     b.box({ x: p.x, y: pileTop - 0.18, z: p.z, yaw }, [PILE.side + 0.3, 0.18, PILE.side + 0.3], C.stone, C.stoneTop);
-  }
+    return b.build();
+  });
   // Le tablier : deux longerons sous cinq planches jointives, d'une culée à l'autre.
+  const deck = new FacetBuilder();
   const d0 = s.water[0] + BRIDGE.over - 0.3;
   const d1 = s.water[1] - BRIDGE.over + 0.3;
   for (const v of [-1, 1]) {
     const a = at(d0, v * 1.1);
     const c = at(d1, v * 1.1);
-    b.beam({ x: a.x, y: BRIDGE.deck - BRIDGE.plank - 0.12, z: a.z }, { x: c.x, y: BRIDGE.deck - BRIDGE.plank - 0.12, z: c.z }, 0.24, C.rail);
+    deck.beam({ x: a.x, y: BRIDGE.deck - BRIDGE.plank - 0.12, z: a.z }, { x: c.x, y: BRIDGE.deck - BRIDGE.plank - 0.12, z: c.z }, 0.24, C.beam);
   }
   const planks = 5;
   const w = BRIDGE.width / planks;
   for (let k = 0; k < planks; k++) {
     const p = at((d0 + d1) / 2, -BRIDGE.width / 2 + w / 2 + k * w);
-    b.box({ x: p.x, y: BRIDGE.deck - BRIDGE.plank, z: p.z, yaw }, [w - 0.03, BRIDGE.plank, d1 - d0], C.wood, C.woodTop);
+    deck.box({ x: p.x, y: BRIDGE.deck - BRIDGE.plank, z: p.z, yaw }, [w - 0.03, BRIDGE.plank, d1 - d0], C.wood, C.woodTop);
   }
   // Les garde-corps : des poteaux d'une culée à l'autre, une main courante qui suit la rampe des culées.
+  const b = new FacetBuilder();
   const from = s.abut[0] + 0.5;
   const to = s.abut[1] - 0.5;
   const n = Math.max(2, Math.ceil((to - from) / BRIDGE.post) + 1);
-  const surface = (d: number) => (d <= s.water[0] + BRIDGE.over ? abutTop(s, 0, d) : d >= s.water[1] - BRIDGE.over ? abutTop(s, 1, d) : BRIDGE.deck);
   for (const v of [-BRIDGE.railOut, BRIDGE.railOut]) {
     let last: { x: number; y: number; z: number } | null = null;
     for (let k = 0; k < n; k++) {
       const d = from + ((to - from) * k) / (n - 1);
       const p = at(d, v);
-      const y = surface(d);
+      const y = bridgeSurface(s, d);
       b.box({ x: p.x, y, z: p.z, yaw }, [0.16, BRIDGE.rail, 0.16], C.rail);
       const head = { x: p.x, y: y + BRIDGE.rail - 0.06, z: p.z };
       if (last) b.beam(last, head, 0.12, C.rail);
@@ -371,7 +392,7 @@ export function bridgeFacets(land: LinkedLand, built: boolean): Facets {
   for (const d of [s.abut[0] + 0.5, s.abut[1] - 0.5])
     for (const v of [-(BRIDGE.railOut + 0.35), BRIDGE.railOut + 0.35]) {
       const p = at(d, v);
-      const y = surface(d);
+      const y = bridgeSurface(s, d);
       b.box({ x: p.x, y, z: p.z, yaw }, [0.14, 1.6, 0.14], C.iron);
       b.box({ x: p.x, y: y + 1.6, z: p.z, yaw }, [0.46, 0.08, 0.46], C.iron);
       b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.36, 0.44, 0.36], C.glass);
@@ -379,8 +400,43 @@ export function bridgeFacets(land: LinkedLand, built: boolean): Facets {
       b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.07, 0.44, 0.42], C.iron);
       b.prism({ x: p.x, y: y + 2.12, z: p.z, yaw: yaw + Math.PI / 4 }, 0.36, 0, 0.32, 4, C.iron);
     }
+  return { piles, deck: deck.build(), rails: b.build() };
+}
+
+/**
+ * Un pont pas encore rebâti (`before`) : les deux culées ; de chaque côté, un départ d'arche brisé, plus court côté
+ * terre fermée ; deux moignons debout, de la section des piles, à leur place, cassés en biais. Rebâti : les culées, les
+ * piles maçonnées, le tablier de planches, les garde-corps et les quatre lanternes (`bridgeParts`). Un seul maillage,
+ * réuni à celui des lieux.
+ */
+export function bridgeFacets(land: LinkedLand, built: boolean): Facets {
+  const s = bridgeSite(land);
+  if (built) {
+    const parts = bridgeParts(land);
+    return mergeFacets([abutmentFacets(s, false), ...parts.piles, parts.deck, parts.rails]);
+  }
+  const b = new FacetBuilder();
+  b.append(abutmentFacets(s, true));
+  // Les deux moignons, de 0,7 à 1,2 au-dessus de l'eau, le dessus cassé en biais (la pierre brute, plus sombre que le
+  // dessus des culées), sans dalle à plat.
+  const h = PILE.side / 2;
+  const [first, last] = stumpsOf(s);
+  shaft(b, s, first, h, STUMPS[0].corners, STUMPS[0].peak, C.pile, C.broken);
+  shaft(b, s, last, h, STUMPS[1].corners, STUMPS[1].peak, C.pile, C.broken);
   return b.build();
 }
+
+/** Les deux moignons d'un pont tombé : la hauteur de leurs quatre coins, et la pointe de leur cassure. */
+const STUMPS = [
+  { corners: [1.2, 0.65, 0.7, 1.15], peak: [-0.8, 0.7, 1.2] },
+  { corners: [0.65, 1.1, 1.2, 0.75], peak: [0.7, -0.6, 1.2] },
+] as const;
+
+/** Le haut moyen d'un moignon au-dessus de l'eau : une pile qui se relève à sa place part de là. */
+export const STUMP_TOP = (STUMPS[0].corners.reduce((a, c) => a + c, 0) + STUMPS[1].corners.reduce((a, c) => a + c, 0)) / 8;
+
+/** Les piles d'un pont qui prennent la place d'un moignon : la première et la dernière. */
+export const stumpPile = (land: LinkedLand, k: number): boolean => k === 0 || k === pilesOf(bridgeSite(land)).length - 1;
 
 /**
  * Le pont sur la Carte (référent dys : la coupure bleue nette, et le pont en trait double, d'une autre forme que le

@@ -10,17 +10,17 @@
 import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { cielDe } from '../../world/palette';
 import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, type CameraPose } from '../../world/continu/camera';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
-import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen } from '../../world/continu/bridges';
+import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen } from '../../world/continu/bridges';
+import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { LINKED_LANDS, START_LAND, bridgeSpot, firstClosed, isBridgeSpot, landOf, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, edgesNear, findRoute, pathNode, pathRibbons, pathTopAt, snapToNetwork, startOf, type NetworkPoint } from '../../world/continu/paths';
-import { PLACES, TERRAIN, hidesTraces, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
+import { COLORS_6E, PLACES, TERRAIN, hidesTraces, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
 import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PAPER_COLOR } from '../../world/continu/printworks';
 import { PORT_MAP_POINT, PORT_ROOFLINES, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
@@ -52,10 +52,11 @@ import {
   type ScenetteFinale,
   type ScenetteLayout,
 } from '../../world/continu/scenette';
-import { SEA_TEXTURE, seaPixels } from '../../world/continu/sea';
+import { SEA_TEXTURE, WATER_TONES, seaPixels } from '../../world/continu/sea';
+import { HORIZON_COLOR, LIGHT, SHADOW_DIR, skyDome } from '../../world/continu/sky';
 import { buildHeightField, heightOnMesh, ringHeights, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
-import { MIST_COLOR, veilFacets, type VeilMesh } from '../../world/continu/veil';
+import { veilFacets, type VeilMesh } from '../../world/continu/veil';
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
@@ -149,10 +150,18 @@ export interface OpenWorld {
   setMark(place: PlaceId | null): void;
   /**
    * Les terres (GD-20, point 3, « vraies terres, vrais ponts ») : les terres fermées (sous la brume, leur pont tombé, Kéo
-   * s'arrête sur sa culée). Une terre qu'on vient de relier perd sa brume et voit son pont rebâti, d'un coup (la pose en
-   * trois temps viendra au second lot) ; refait seulement s'il change.
+   * s'arrête sur sa culée). Une terre qu'on vient de relier perd sa brume et voit son pont rebâti, d'un coup, ou par sa
+   * pose (`layLand`) ; refait seulement s'il change.
    */
   setLands(lands: { closed: readonly LinkedLand[] }): void;
+  /**
+   * La pose du pont d'une terre qu'on relie (GD-20, point 3, « La pose »), dite avant que les terres changent : au
+   * prochain `setLands` qui ouvre cette terre, la caméra immobile, les piles se relèvent, puis le tablier, puis les
+   * garde-corps et les lanternes ; `tap` à la fin (le toc), puis la brume de la terre se lève en fondu, `laid` à la fin
+   * (la phrase) ; Kéo ne passe pas avant. D'un coup, `tap` puis `laid` aussitôt, avec « Réduire les animations », sur la
+   * Carte, pendant une question, une pose ou une scénette, ou si le pont n'est pas à l'écran ; un toucher la finit.
+   */
+  layLand(land: LinkedLand, events: BridgeLayEvents): void;
   /** Où se tient Kéo, au sol (le voisin le plus proche de la fiche d'un lieu pas encore reliable). */
   keoAt(): Vec2;
   /**
@@ -237,6 +246,12 @@ interface QuestionRequest {
   item: { scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[]; sort?: SortLook };
 }
 
+/** Ce que la pose d'un pont dit à la page : le toc (toutes ses parties posées), puis sa fin (la brume levée : la phrase). */
+export interface BridgeLayEvents {
+  tap(): void;
+  laid(): void;
+}
+
 /** Le cadenas du pont d'une terre fermée, à l'écran : en pixels, et s'il se voit. */
 export interface LockOnScreen {
   land: LinkedLand;
@@ -280,6 +295,11 @@ const FACING_CAMERA = Math.PI;
 const KEO_SCALE = 1.25;
 const KEO_RING = { inner: 0.85, outer: 1.3, color: 0xfff6dc };
 /**
+ * L'ombre peinte de Kéo (lot 3) : un disque de `radius`, décalé de `shift` du côté opposé au soleil, dans le creux de
+ * l'anneau (jamais sur lui) ; un bleu-vert sombre, transparent, jamais noir ; un rien sous l'anneau (`below`).
+ */
+const KEO_SHADOW = { radius: 0.5, sides: 10, shift: 0.26, color: 0x1f3d3b, opacity: 0.3, below: 0.01 } as const;
+/**
  * La finesse du rendu : l'anticrénelage reste (la scène est légère, quelques milliers de triangles) ; le rapport de
  * pixels est plafonné à 2, puis ramené à 1 si l'appareil peine (des images de plus de 45 ms, trente de suite), comme
  * le monde en grille (../loop.ts).
@@ -318,6 +338,8 @@ const FRAMED_BRIDGE_NEAR = 12;
 /** Le bout de la caméra qui suit Kéo, et celui de la Carte (l'île entière, de haut), en unités. */
 const FOLLOW_FAR = 500;
 const MAP_FAR = 2000;
+/** Le rayon du dôme du ciel : en deçà du bout de la caméra qui suit Kéo (`FOLLOW_FAR`). */
+const SKY_RADIUS = 450;
 /** Sur la Carte, la brume du lointain commence au-delà de l'île : rien ne s'y efface (sans refaire les shaders). */
 const MAP_FOG = 5000;
 /** Sur la Carte, un toucher choisit le lieu le plus proche à moins de tant de pixels. */
@@ -474,9 +496,10 @@ const ROTOR = { turn: 0.35 } as const;
  * elles se lisent comme des lumières (directeur artistique), sans maillage ni appel de plus. Les autres faces gardent
  * leur lumière ; la couleur de la lampe n'est prise par rien d'autre dans le monde. La vapeur de la Turbine aussi
  * (`STEAM_COLORS`, lot L6a : des aplats clairs, jamais gris foncé à l'ombre), et le papier des feuilles de l'Imprimerie
- * (`PAPER_COLOR`, lot L7 : il se lit comme du papier, jamais comme une dalle de la cour). Les ailes de la pompe à vent y
- * tournent (`VANE`), et le rotor de la Turbine (`ROTOR`) : `vaneAngle` et `rotorAngle` sont partagés par les matériaux du
- * monde.
+ * (`PAPER_COLOR`, lot L7 : il se lit comme du papier, jamais comme une dalle de la cour), et le sable des sentiers
+ * (`COLORS_6E.path`, lot 3 des vraies terres : il se lit sur la prairie claire au soleil comme à contre-jour). Les
+ * ailes de la pompe à vent y tournent (`VANE`), et le rotor de la Turbine (`ROTOR`) : `vaneAngle` et `rotorAngle` sont
+ * partagés par les matériaux du monde.
  */
 function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }, rotorAngle: { value: number }): THREE.MeshLambertMaterial {
   const [r, g, b] = linearRgb(LAMP_COLOR);
@@ -489,6 +512,7 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
     shader.uniforms.steamColor = { value: new THREE.Vector3(...linearRgb(STEAM_COLORS[0])) };
     shader.uniforms.steamShade = { value: new THREE.Vector3(...linearRgb(STEAM_COLORS[1])) };
     shader.uniforms.paperColor = { value: new THREE.Vector3(...linearRgb(PAPER_COLOR)) };
+    shader.uniforms.pathColor = { value: new THREE.Vector3(...linearRgb(COLORS_6E.path)) };
     shader.uniforms.vaneColor = { value: new THREE.Vector3(vr, vg, vb) };
     shader.uniforms.vanePivot = { value: new THREE.Vector2(hub.x, hub.y) };
     shader.uniforms.vaneAngle = vaneAngle;
@@ -508,10 +532,35 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
         '#include <begin_vertex>\n#ifdef USE_COLOR\nif ( all( lessThan( abs( color.rgb - vaneColor ), vec3( 0.004 ) ) ) ) {\n\tvec2 vaneD = transformed.xy - vanePivot;\n\tfloat vaneC = cos( vaneAngle ), vaneS = sin( vaneAngle );\n\ttransformed.xy = vanePivot + vec2( vaneC * vaneD.x - vaneS * vaneD.y, vaneS * vaneD.x + vaneC * vaneD.y );\n} else if ( all( lessThan( abs( color.rgb - rotorColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( color.rgb - rotorRim ), vec3( 0.004 ) ) ) ) {\n\tvec2 rotorD = transformed.xy - rotorPivot;\n\tfloat rotorC = cos( rotorAngle ), rotorS = sin( rotorAngle );\n\ttransformed.xy = rotorPivot + vec2( rotorC * rotorD.x - rotorS * rotorD.y, rotorS * rotorD.x + rotorC * rotorD.y );\n}\n#endif',
       );
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform vec3 lampColor;\nuniform vec3 steamColor;\nuniform vec3 steamShade;\nuniform vec3 paperColor;')
+      .replace('#include <common>', '#include <common>\nuniform vec3 lampColor;\nuniform vec3 steamColor;\nuniform vec3 steamShade;\nuniform vec3 paperColor;\nuniform vec3 pathColor;')
       .replace(
         '#include <opaque_fragment>',
-        'if ( all( lessThan( abs( vColor.rgb - lampColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamShade ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - paperColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n#include <opaque_fragment>',
+        'if ( all( lessThan( abs( vColor.rgb - lampColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamShade ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - paperColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - pathColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n#include <opaque_fragment>',
+      );
+  };
+  return m;
+}
+
+/**
+ * Le matériau de l'eau (reprise du lot 3) : l'image de l'eau porte trois champs (le cœur des bras de mer, l'eau claire,
+ * le palier du milieu au large, ./world/continu/sea.ts) ; le shader les lit interpolés et tranche net sur leur ligne
+ * zéro, adoucie d'un pixel d'écran (`fwidth`) : quatre paliers francs, au contour lisse qui épouse le bras, jamais une flaque pixellisée. Une ligne de
+ * shader, aucun appel ni aucune image de plus.
+ */
+function seaMaterialOf(map: THREE.DataTexture): THREE.MeshBasicMaterial {
+  const m = new THREE.MeshBasicMaterial({ map });
+  const tone = (hex: number) => new THREE.Vector3(...linearRgb(hex));
+  m.onBeforeCompile = (shader) => {
+    shader.uniforms.seaClear = { value: tone(WATER_TONES.clear) };
+    shader.uniforms.seaLagoon = { value: tone(WATER_TONES.lagoon) };
+    shader.uniforms.seaShelf = { value: tone(WATER_TONES.shelf) };
+    shader.uniforms.seaNight = { value: tone(WATER_TONES.night) };
+    if (import.meta.env.DEV && !shader.fragmentShader.includes('#include <map_fragment>')) console.warn('seaMaterialOf : #include <map_fragment> introuvable');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform vec3 seaClear;\nuniform vec3 seaLagoon;\nuniform vec3 seaShelf;\nuniform vec3 seaNight;')
+      .replace(
+        '#include <map_fragment>',
+        'vec3 seaF = texture2D( map, vMapUv ).rgb - 128.0 / 255.0;\nvec3 seaW = fwidth( seaF ) * 0.75 + 1e-4;\nfloat seaN = smoothstep( -seaW.x, seaW.x, seaF.x );\nfloat seaC = smoothstep( -seaW.y, seaW.y, seaF.y );\nfloat seaM = smoothstep( -seaW.z, seaW.z, seaF.z );\ndiffuseColor.rgb *= mix( mix( mix( seaLagoon, seaShelf, seaM ), seaClear, seaC ), seaNight, seaN );',
       );
   };
   return m;
@@ -538,23 +587,43 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const meter = createMeter(host, 'archipeo', options.meter.show, options.meter.expose);
 
   const scene = new THREE.Scene();
-  // La brume légère d'Archipéo : le lointain, le large et l'horizon s'y fondent ; le ciel est de sa couleur.
-  const mist = new THREE.Color(MIST_COLOR);
-  scene.background = mist;
-  const fog = new THREE.Fog(mist, WORLD_FOG.near, WORLD_FOG.far);
+  // La brume légère d'Archipéo : le lointain, le large et l'horizon s'y fondent, de la couleur de l'horizon du ciel (GD-20,
+  // point 3, lot 3 : la mer rejoint le ciel sans couture).
+  const horizon = new THREE.Color(HORIZON_COLOR);
+  scene.background = horizon;
+  const fog = new THREE.Fog(horizon, WORLD_FOG.near, WORLD_FOG.far);
   scene.fog = fog;
   const camera = new THREE.PerspectiveCamera(40, host.clientWidth / Math.max(1, host.clientHeight), 0.5, FOLLOW_FAR);
+  // Le mappage des tons neutre : les aplats gardent leur couleur, les blancs au soleil s'adoucissent (lot 3).
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = LIGHT.exposure;
 
-  // La lumière d'un matin clair (fiche du 6e, § 2) : le soleil du 6e, bas à l'est, et une ambiance chaude, renvoyée par
-  // le sable : les aplats gardent leur couleur sur les faces tournées vers la caméra (au sud).
-  const ciel = cielDe('6e', 1);
-  scene.add(new THREE.HemisphereLight(0xf4f1e8, 0xa89a7c, 1.5));
-  const sun = new THREE.DirectionalLight(ciel.soleil, 1.9);
-  sun.position.set(40, 55, 30);
+  // La lumière d'un matin clair (fiche du 6e, § 2 ; GD-20, point 3, lot 3) : une ambiance plus basse et froide, le
+  // soleil chaud, bas à l'est (`LIGHT`).
+  scene.add(new THREE.HemisphereLight(LIGHT.sky, LIGHT.ground, LIGHT.ambient));
+  const sun = new THREE.DirectionalLight(LIGHT.sun, LIGHT.sunIntensity);
+  sun.position.set(LIGHT.sunFrom.x, LIGHT.sunFrom.y, LIGHT.sunFrom.z);
   scene.add(sun);
+  // Le ciel : un dôme en dégradé, crème à l'horizon, bleu en haut, centré sur la caméra à chaque image (sa matrice
+  // seule), dessiné d'abord, sans brouillard ni profondeur : tout le reste passe devant. Un appel.
+  const skyGeometry = new THREE.BufferGeometry();
+  {
+    const dome = skyDome(SKY_RADIUS);
+    skyGeometry.setAttribute('position', new THREE.BufferAttribute(dome.positions, 3));
+    skyGeometry.setAttribute('color', new THREE.BufferAttribute(dome.colors, 3));
+  }
+  const skyMaterial = new THREE.MeshBasicMaterial({ vertexColors: true, fog: false, depthWrite: false, depthTest: false, side: THREE.DoubleSide });
+  const sky = new THREE.Mesh(skyGeometry, skyMaterial);
+  sky.matrixAutoUpdate = false;
+  sky.frustumCulled = false;
+  sky.renderOrder = -1;
+  // Juste avant d'être dessiné, il se recentre sur la caméra de l'image (rien n'est créé).
+  sky.onBeforeRender = (_r, _s, cam) => void sky.matrixWorld.setPosition(cam.position);
+  scene.add(sky);
 
   const geometries: THREE.BufferGeometry[] = [];
   const keep = <G extends THREE.BufferGeometry>(g: G) => (geometries.push(g), g);
+  keep(skyGeometry);
 
   // Le terrain : la carte de hauteurs, et deux anneaux de tuiles autour de Kéo (de près, chaque case ; de loin, une
   // sur trois), chacun un seul maillage, d'un seul matériau.
@@ -576,7 +645,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   // La mer et le lagon : un plan d'eau à 0, peint par l'image de l'eau ; au-delà, le bord de l'image (le large).
   const seaTexture = new THREE.DataTexture(seaPixels(), SEA_TEXTURE.size, SEA_TEXTURE.size);
-  seaTexture.colorSpace = THREE.SRGBColorSpace;
+  // Des champs, pas des couleurs : lus tels quels, interpolés.
+  seaTexture.colorSpace = THREE.NoColorSpace;
   seaTexture.magFilter = THREE.LinearFilter;
   seaTexture.minFilter = THREE.LinearFilter;
   seaTexture.needsUpdate = true;
@@ -587,7 +657,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const pos = seaGeometry.getAttribute('position') as THREE.BufferAttribute;
   for (let k = 0; k < uv.count; k++) uv.setXY(k, (pos.getX(k) + SEA_TEXTURE.half) / (2 * SEA_TEXTURE.half), (pos.getZ(k) + SEA_TEXTURE.half) / (2 * SEA_TEXTURE.half));
   uv.needsUpdate = true;
-  const seaMaterial = new THREE.MeshBasicMaterial({ map: seaTexture });
+  const seaMaterial = seaMaterialOf(seaTexture);
   const sea = still(new THREE.Mesh(seaGeometry, seaMaterial));
   scene.add(sea);
   touchables.push(sea);
@@ -678,6 +748,19 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // les cadenas, les ponts tombés ou rebâtis).
   let closed: readonly LinkedLand[] = [];
   let veilKey = '';
+  // La pose d'un pont (GD-20, point 3, « La pose ») : ce qui se relève (`lay`, ses sommets à part dans le maillage de
+  // pose), son début, ce que la page attend ; le toc dit. `pendingLay` : annoncée, en attente des terres.
+  let laying: { lay: BridgeLay; start: number; events: BridgeLayEvents; tapped: boolean; drawn: number } | null = null;
+  let pendingLay: { land: LinkedLand; events: BridgeLayEvents } | null = null;
+  const layState: BridgeLayState = { landed: false, fade: 0, done: false };
+  // Les terres où Kéo ne passe pas : les fermées, et celle dont le pont se pose (il ne passe qu'à la fin).
+  let walkClosed: readonly LinkedLand[] = [];
+  // Le pont devant lequel la caméra reste cadrée après sa pose, Kéo toujours sur sa culée : elle ne bouge pas tant
+  // qu'il ne repart pas.
+  let heldBridge: LinkedLand | null = null;
+  // La transparence de la brume qui se lève, à ses sommets (refaite avec la brume, jamais par image).
+  let veilAlphas: Float32Array | null = null;
+  let veilFadeFrom = 0;
 
   // Kéo : le corps du bonhomme d'Archipéo (sa marche existante), son anneau clair au sol ; habillé dès que sa tenue est chargée.
   const keo = new THREE.Group();
@@ -713,6 +796,20 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const ringMaterial = new THREE.MeshBasicMaterial({ color: KEO_RING.color, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
   const ring = new THREE.Mesh(ringGeometry, ringMaterial);
   scene.add(ring);
+  // L'ombre peinte de Kéo (GD-20, point 3, lot 3) : un disque sombre et transparent dans le creux de l'anneau, décalé du
+  // côté opposé au soleil, qui épouse le sol comme lui ; il le suit (enfant de l'anneau), caché avec lui. Un appel.
+  const shadowGeometry = keep(new THREE.CircleGeometry(KEO_SHADOW.radius, KEO_SHADOW.sides).rotateX(-Math.PI / 2).translate(SHADOW_DIR.x * KEO_SHADOW.shift, 0, SHADOW_DIR.z * KEO_SHADOW.shift));
+  const shadowPosition = shadowGeometry.getAttribute('position') as THREE.BufferAttribute;
+  const shadowXZ = new Float32Array(shadowPosition.count * 2);
+  for (let i = 0; i < shadowPosition.count; i++) {
+    shadowXZ[2 * i] = shadowPosition.getX(i);
+    shadowXZ[2 * i + 1] = shadowPosition.getZ(i);
+  }
+  const shadowY = new Float32Array(shadowPosition.count);
+  shadowGeometry.computeBoundingSphere();
+  shadowGeometry.boundingSphere!.radius += 2;
+  const shadowMaterial = new THREE.MeshBasicMaterial({ color: KEO_SHADOW.color, transparent: true, opacity: KEO_SHADOW.opacity, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
+  ring.add(new THREE.Mesh(shadowGeometry, shadowMaterial));
 
   // Où est Kéo, où il va.
   // Au départ, sur le chemin, à quelques pas du lieu (on voit le Phare de plus loin que sa porte) ; à l'Escale, à son
@@ -728,7 +825,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const placeKeo = (p: Vec2) => {
     let y = standingHeight(ground(p.x, p.z));
     // Sur la culée d'un pont, et sur le tablier d'un pont rebâti, il marche sur la pierre et les planches.
-    const floor = bridgeFloor(p.x, p.z, closed);
+    const floor = bridgeFloor(p.x, p.z, walkClosed);
     if (floor !== null && floor > y) y = floor;
     keo.position.set(p.x, y, p.z);
     if (ring.position.x !== p.x || ring.position.z !== p.z || ring.position.y !== y) {
@@ -737,6 +834,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       ringHeights(p.x, p.z, y, ringXZ, ringSurface, ringY);
       for (let i = 0; i < ringY.length; i++) ringPosition.setY(i, ringY[i]);
       ringPosition.needsUpdate = true;
+      ringHeights(p.x, p.z, y, shadowXZ, ringSurface, shadowY);
+      for (let i = 0; i < shadowY.length; i++) shadowPosition.setY(i, shadowY[i] - KEO_SHADOW.below);
+      shadowPosition.needsUpdate = true;
     }
     keoFeet.x = p.x;
     keoFeet.y = y;
@@ -754,7 +854,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     aim.y = keoFeet.y;
     aim.z = keoFeet.z;
     if (walk) return aim;
-    for (const land of closed) {
+    for (const land of LINKED_LANDS) {
+      if (land !== heldBridge && !walkClosed.includes(land)) continue;
       const { stop, mid } = bridgeSite(land);
       if (Math.abs(here.x - stop.at.x) + Math.abs(here.z - stop.at.z) > 0.3) continue;
       aim.x += (mid.x - keoFeet.x) * BRIDGE_AIM;
@@ -930,10 +1031,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   // Les ponts, tombés ou rebâtis, et leur trait double de la Carte, faits une fois chacun (ils ne dépendent que du sol).
   const bridgeCache = new Map<string, Facets>();
-  const bridgeOf = (land: LinkedLand, look: 'tombe' | 'rebati' | 'carte'): Facets => {
+  // Pendant sa pose (`pose`), le pont n'y a que ses culées et ses départs d'arche : le reste se relève à part.
+  const bridgeOf = (land: LinkedLand, look: 'tombe' | 'pose' | 'rebati' | 'carte'): Facets => {
     const k = `${land}|${look}`;
     let f = bridgeCache.get(k);
-    if (!f) bridgeCache.set(k, (f = look === 'carte' ? bridgeMapMark(land) : bridgeFacets(land, look === 'rebati')));
+    if (!f) bridgeCache.set(k, (f = look === 'carte' ? bridgeMapMark(land) : look === 'pose' ? bridgeLayRest(land) : bridgeFacets(land, look === 'rebati')));
     return f;
   };
   let placesKey = '';
@@ -947,7 +1049,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -980,7 +1082,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Les ponts (GD-20, point 3, « vraies terres ») : tombé pour une terre fermée, rebâti sinon, dans le maillage des
     // lieux (aucun appel de plus) ; sur la Carte, chacun aussi en trait double, d'une autre forme qu'un chemin.
     for (const land of LINKED_LANDS) {
-      rest.push(bridgeOf(land, closed.includes(land) ? 'tombe' : 'rebati'));
+      rest.push(bridgeOf(land, closed.includes(land) ? 'tombe' : laying?.lay.land === land && !laying.tapped ? 'pose' : 'rebati'));
       if (mapView) rest.push(bridgeOf(land, 'carte'));
     }
     setGeometry(placesMesh, mergeFacets(rest));
@@ -1008,27 +1110,140 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   updateRings(true, true);
 
-  // La brume des terres fermées, et le cadenas de leur pont : refaits si la liste change ; une terre reliée perd la sienne
-  // d'un coup.
+  // La brume des terres fermées, et le cadenas de leur pont : refaits si la liste change ; une terre reliée perd son
+  // cadenas tout de suite, sa brume d'un coup, ou en fondu après le toc de sa pose (elle vient alors en dernier dans le
+  // maillage, sa transparence gardée à part).
   const updateVeil = () => {
-    const k = closed.join(',');
+    const fading = laying?.lay.land;
+    const k = `${closed.join(',')}|${fading ?? ''}`;
     if (k === veilKey) return;
     veilKey = k;
     setLocks(closed);
-    setVeilGeometry(veilMesh, veilFacets(closed));
+    const v = veilFacets(fading ? [...closed, fading] : closed, fading);
+    setVeilGeometry(veilMesh, v);
+    veilFadeFrom = v.fadingFrom;
+    veilAlphas = null;
+    if (!fading) return;
+    const n = v.positions.length / 3 - v.fadingFrom;
+    veilAlphas = new Float32Array(n);
+    for (let i = 0; i < n; i++) veilAlphas[i] = v.colors[(v.fadingFrom + i) * 4 + 3];
+  };
+  /** La brume de la terre dont le pont est posé, levée à la part `e` (0 : entière, 1 : partie). */
+  const fadeVeil = (e: number) => {
+    if (!veilAlphas) return;
+    const color = veilMesh.geometry.getAttribute('color') as THREE.BufferAttribute;
+    const a = color.array as Float32Array;
+    for (let i = 0; i < veilAlphas.length; i++) a[(veilFadeFrom + i) * 4 + 3] = veilAlphas[i] * (1 - e);
+    color.clearUpdateRanges();
+    color.addUpdateRange(veilFadeFrom * 4, veilAlphas.length * 4);
+    color.needsUpdate = true;
+  };
+  const layPoint = new THREE.Vector3();
+  /** Un point du monde à l'écran ? */
+  const onScreen = (x: number, y: number, z: number) => {
+    layPoint.set(x, y, z).project(camera);
+    return layPoint.z < 1 && Math.abs(layPoint.x) < 0.95 && Math.abs(layPoint.y) < 0.95;
+  };
+  /** Le pont d'une terre est-il à l'écran ? Son milieu ou l'un de ses bouts suffit : il est long. Hors de l'écran, il est posé d'un coup. */
+  const bridgeOnScreen = (land: LinkedLand) => {
+    const s = bridgeSite(land);
+    const at = (d: number) => onScreen(s.near.x + s.dir.x * d, BRIDGE.deck, s.near.z + s.dir.z * d);
+    return distance(here, s.mid) < WORLD_FOG.far && (at(s.water[0]) || at((s.water[0] + s.water[1]) / 2) || at(s.water[1]));
   };
   /**
-   * Les terres changent : la brume, les cadenas, les ponts ; Kéo, s'il se tenait au-delà d'un pont tombé (une adresse
-   * vers une terre fermée), revient sur la culée.
+   * La pose d'un pont commence : son maillage à part, de ce qui se relève (une copie de ses sommets, que la pose
+   * réécrit), sa boîte englobante tenant les piles sous l'eau (l'élimination hors champ reste allumée) ; les lieux n'en
+   * gardent que les culées et les départs d'arche. Kéo, sur sa culée, y reste cadré.
    */
-  const setLands = (lands: { closed: readonly LinkedLand[] }) => {
-    closed = lands.closed;
+  const startLay = (land: LinkedLand, events: BridgeLayEvents) => {
+    finishLay();
+    finishPose();
+    // Kéo sur la culée : la caméra reste cadrée sur le pont, posé d'un coup ou non.
+    const { stop } = bridgeSite(land);
+    if (!walk && Math.abs(here.x - stop.at.x) + Math.abs(here.z - stop.at.z) <= 0.3) heldBridge = land;
+    if (reduceMotion || mapView || asked || scenette || assembly || !bridgeOnScreen(land)) {
+      events.tap();
+      events.laid();
+      return;
+    }
+    const lay = bridgeLay(land);
+    laying = { lay, start: performance.now() / 1000, events, tapped: false, drawn: -1 };
+    walkClosed = [...closed, land];
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(lay.facets.positions), 3));
+    g.setAttribute('normal', new THREE.BufferAttribute(lay.facets.normals, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(lay.facets.colors, 3));
+    g.computeBoundingBox();
+    // `computeBoundingBox` vient de la calculer : elle n'est pas nulle.
+    g.boundingBox!.min.y -= lay.sink;
+    g.boundingSphere = g.boundingBox!.getBoundingSphere(new THREE.Sphere());
+    poseMesh.geometry.dispose();
+    poseMesh.geometry = g;
+    poseMesh.material = landMaterial;
+    poseMesh.position.set(0, 0, 0);
+    poseMesh.visible = true;
+    updateVeil();
+    placeVisibility();
+    stepLay(laying.start);
+  };
+  /** La pose à l'instant `t` (en secondes) : ce qui se relève, le toc, puis le fondu de la brume. */
+  const stepLay = (t: number) => {
+    if (!laying) return;
+    const u = t - laying.start;
+    const s = bridgeLayAt(laying.lay, u, layState);
+    if (!laying.tapped) {
+      const position = poseMesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+      bridgeLayPositions(laying.lay, u, position.array as Float32Array);
+      position.needsUpdate = true;
+      const drawn = bridgeLayDrawn(laying.lay, u);
+      if (drawn !== laying.drawn) poseMesh.geometry.setDrawRange(0, drawn);
+      laying.drawn = drawn;
+    }
+    if (s.landed && !laying.tapped) {
+      // Tout est posé : le pont rejoint les lieux, le toc.
+      laying.tapped = true;
+      placeVisibility();
+      poseMesh.visible = false;
+      laying.events.tap();
+    }
+    if (s.landed) fadeVeil(s.fade);
+    if (s.done) finishLay();
+  };
+  /** Finit la pose tout de suite : le pont rebâti, la brume partie, le toc s'il n'a pas été dit (`tell`), puis la fin. */
+  function finishLay(tell = true) {
+    if (!laying) return;
+    const l = laying;
+    laying = null;
+    walkClosed = closed;
+    poseMesh.visible = false;
+    poseMesh.geometry.dispose();
+    poseMesh.geometry = new THREE.BufferGeometry();
+    poseMesh.material = poseMaterial;
     updateVeil();
     placeVisibility();
     mapDirty = true;
+    if (!tell) return;
+    if (!l.tapped) l.events.tap();
+    l.events.laid();
+  }
+  /**
+   * Les terres changent : la brume, les cadenas, les ponts ; Kéo, s'il se tenait au-delà d'un pont tombé (une adresse
+   * vers une terre fermée), revient sur la culée. La terre dont la pose est annoncée (`layLand`), si elle s'ouvre, voit
+   * son pont se poser.
+   */
+  const setLands = (lands: { closed: readonly LinkedLand[] }) => {
+    const opened = pendingLay && closed.includes(pendingLay.land) && !lands.closed.includes(pendingLay.land) ? pendingLay : null;
+    pendingLay = null;
+    if (laying && lands.closed.includes(laying.lay.land)) finishLay(false);
+    closed = lands.closed;
+    walkClosed = laying ? [...closed, laying.lay.land] : closed;
+    updateVeil();
+    placeVisibility();
+    mapDirty = true;
+    if (opened) startLay(opened.land, opened.events);
     if (asked || scenette) return;
     const at = snapToNetwork(here);
-    const stop = clampToOpen(at, closed);
+    const stop = clampToOpen(at, walkClosed);
     if (stop === at) return;
     walk = null;
     here = { ...stop.at };
@@ -1146,8 +1361,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const startWalkTo = (target: NetworkPoint, place: PlaceId | null) => {
     const from = snapToNetwork(here);
-    // Au-delà d'un pont tombé, Kéo s'arrête sur sa culée, sans heurt ni son (GD-20, point 3).
-    const to = clampToOpen(target, closed);
+    // Au-delà d'un pont tombé, ou d'un pont qui se pose, Kéo s'arrête sur sa culée, sans heurt ni son (GD-20, point 3).
+    const to = clampToOpen(target, walkClosed);
     if (to !== target) place = null;
     const route = findRoute(from, to);
     // Kéo hors du chemin (sur le bord du quai, au retour d'une scénette) : il le rejoint d'abord.
@@ -1155,6 +1370,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     walkTarget = place;
     if (route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05) return arrive(place);
     walk = startWalk(route, performance.now());
+    heldBridge = null;
     options.onDepart();
   };
   /**
@@ -1162,6 +1378,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    * d'une terre fermée, sur la culée du pont à rebâtir d'abord, tourné vers l'eau.
    */
   const jumpTo = (place: PlaceId) => {
+    heldBridge = null;
     const door = atNode(placeById(place).door);
     const stop = clampToOpen(door, closed);
     const shut = stop !== door ? bridgeSite(firstClosed(landOf(place) as LinkedLand, closed)) : null;
@@ -1179,6 +1396,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   /** Kéo d'un coup à un endroit de l'Escale, tourné vers sa façade ; la page en ouvre le panneau. */
   const jumpToPort = (spot: PortSpot) => {
+    heldBridge = null;
     here = pathNode(portNode(spot)).at;
     heading = portHeading(spot);
     exit = null;
@@ -1225,6 +1443,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // d'assemblage.
     if (poseRun.active) return finishPose();
     if (assembly) return finishAssembly();
+    // Un toucher pendant la pose d'un pont la finit : le pont posé, le toc s'il n'a pas été dit.
+    if (laying) return finishLay();
     if (asked || remise || !d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > TAP.pixels || performance.now() - d.t > TAP.ms) return;
     // Un aménagement posé (GD-20, point 4, lot L1) : son lieu, toujours le sien, par son dessin ou le disque autour de lui ;
     // Kéo y marche, puis son panneau s'ouvre ; d'une terre fermée, la fiche de la terre.
@@ -1422,6 +1642,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (open) {
       const t0 = performance.now();
       // Rien ne bouge sur la Carte.
+      finishLay();
       finishPose();
       finishAssembly();
       // Kéo s'arrête où il est : la Carte n'est pas un trajet.
@@ -1767,6 +1988,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       follow();
       return [];
     }
+    finishLay();
     finishPose();
     finishAssembly();
     if (remise) {
@@ -2129,6 +2351,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const startPose = (place: PlaceId, parts: readonly PartShape[]) => {
     // Une pose en cours (deux réussites rapprochées) passe la main sans dire sa fin : seule la dernière la dit.
     poseRun.handOver();
+    finishLay();
     holding = { place, parts };
     placeVisibility();
     setGeometry(poseMesh, constructionFacets(place, parts, ground));
@@ -2172,6 +2395,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     options.onAssembled();
   };
   const startAssembly = () => {
+    finishLay();
     finishPose();
     finishAssembly();
     if (!port || !port.recipe.pieces.length || port.pile < 1 || asked || mapView) return options.onAssembled();
@@ -2324,6 +2548,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       meter?.tick(renderer.info, now);
       return;
     }
+    // La pose d'un pont : la caméra reste où elle est, Kéo attend sur la culée.
+    stepLay(t);
     placeKeo(here);
     // Il se tourne vers son cap en douceur, par le plus court (d'un coup avec « Réduire les animations »).
     const turn = Math.atan2(Math.sin(heading - keo.rotation.y), Math.cos(heading - keo.rotation.y));
@@ -2351,7 +2577,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   return {
     goTo: (place, jump = false) => {
-        finishPose();
+      finishLay();
+      finishPose();
       finishAssembly();
       setMap(null);
       if (jump) jumpTo(place);
@@ -2362,7 +2589,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       walk = skipWalk(walk, performance.now());
     },
     goToPort: (spot) => {
-        finishPose();
+      finishLay();
+      finishPose();
       finishAssembly();
       setMap(null);
       jumpToPort(spot);
@@ -2381,6 +2609,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       mapDirty = true;
     },
     setLands,
+    layLand: (land, events) => {
+      // Une seule pose annoncée à la fois : une seconde, avant que les terres changent, effacerait la phrase de la
+      // première (relecture du lot 2) ; la page ne l'annonce pas, la scène la refuse aussi.
+      if (pendingLay) return;
+      pendingLay = { land, events };
+    },
     keoAt: () => ({ x: here.x, z: here.z }),
     question: askQuestion,
     map: setMap,
@@ -2399,6 +2633,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     },
     dispose: () => {
       disposed = true;
+      laying = null;
+      pendingLay = null;
       cancelAnimationFrame(frame);
       window.clearTimeout(wheelRest);
       if (idleHandle) cancelIdle(idleHandle);
@@ -2420,7 +2656,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       veilMaterial.dispose();
       seaMaterial.dispose();
       seaTexture.dispose();
+      skyMaterial.dispose();
       ringMaterial.dispose();
+      shadowMaterial.dispose();
       meter?.dispose();
       renderer.dispose();
       renderer.domElement.remove();

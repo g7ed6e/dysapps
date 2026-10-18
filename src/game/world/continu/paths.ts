@@ -165,6 +165,13 @@ const RIBBON_STEP = 1.25;
 /** Le dessus du ruban au-dessus du sol, et la profondeur de ses flancs. */
 const RIBBON_LIFT = 0.06;
 const RIBBON_SIDE = 0.7;
+/**
+ * Le liseré de terre d'un sentier (GD-20, point 3, lot 3, décision du directeur artistique du 17 octobre 2026) : une
+ * bande brune (`COLORS_6E.pathEdge`) de `width` unités de chaque côté, dans la largeur du ruban (au moins 2 px à
+ * 40 unités, où la brume commence), posée `drop` unité sous le sable du sentier : là où deux rubans se croisent (au
+ * creux d'un coude), le sable de l'un passe sur le liseré de l'autre. Ses flancs sont du même brun.
+ */
+const PATH_EDGE = { width: 0.14, drop: 0.004 } as const;
 
 /**
  * L'îlot de la Gare maritime (lot L9b) : le sol y est le large (hors du terrain), le quai est modelé dans le lieu ; les
@@ -222,21 +229,34 @@ function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, e
   const cut = strait ? bridgeCut(a, c, strait) : null;
   const point = (d: number) => ({ x: a.x + dx * d, z: a.z + dz * d });
   // Un morceau du ruban, de `d0` à `d1` unités du premier nœud.
-  const piece = (d0: number, d1: number, w: number, color: number) => {
+  const piece = (d0: number, d1: number, w: number, deck: boolean) => {
     const p = point(d0);
     const q = point(d1);
     const yp = standingHeight(ground(p.x, p.z)) + RIBBON_LIFT;
     const yq = standingHeight(ground(q.x, q.z)) + RIBBON_LIFT;
-    // À gauche du sens de marche : (dz, −dx) ; à droite : (−dz, dx).
-    const pl = [p.x + dz * w, yp, p.z - dx * w] as const;
-    const pr = [p.x - dz * w, yp, p.z + dx * w] as const;
-    const ql = [q.x + dz * w, yq, q.z - dx * w] as const;
-    const qr = [q.x - dz * w, yq, q.z + dx * w] as const;
-    b.quad(pl, pr, qr, ql, color);
-    // Les flancs, jusque sous le sol ou dans l'eau.
+    // À gauche du sens de marche : (dz, −dx) ; à droite : (−dz, dx), à `o` unités de la ligne et `y` sous le dessus.
+    const left = (v: Vec2, y: number, o: number) => [v.x + dz * o, y, v.z - dx * o] as const;
+    const right = (v: Vec2, y: number, o: number) => [v.x - dz * o, y, v.z + dx * o] as const;
     const down = (v: readonly [number, number, number]) => [v[0], v[1] - RIBBON_SIDE, v[2]] as const;
-    b.quad(down(pr), down(qr), qr, pr, color);
-    b.quad(down(ql), down(pl), pl, ql, color);
+    const pl = left(p, yp, w);
+    const pr = right(p, yp, w);
+    const ql = left(q, yq, w);
+    const qr = right(q, yq, w);
+    if (deck) {
+      b.quad(pl, pr, qr, ql, COLORS_6E.wood);
+      b.quad(down(pr), down(qr), qr, pr, COLORS_6E.wood);
+      b.quad(down(ql), down(pl), pl, ql, COLORS_6E.wood);
+      return;
+    }
+    // Le sable du sentier, puis son liseré de chaque côté, un peu plus bas, et les flancs du liseré.
+    const i = w - PATH_EDGE.width;
+    const e = PATH_EDGE.drop;
+    b.quad(left(p, yp, i), right(p, yp, i), right(q, yq, i), left(q, yq, i), COLORS_6E.path);
+    const lpe = left(p, yp - e, w), rpe = right(p, yp - e, w), lqe = left(q, yq - e, w), rqe = right(q, yq - e, w);
+    b.quad(lpe, left(p, yp - e, i), left(q, yq - e, i), lqe, COLORS_6E.pathEdge);
+    b.quad(right(p, yp - e, i), rpe, rqe, right(q, yq - e, i), COLORS_6E.pathEdge);
+    b.quad(down(rpe), down(rqe), rqe, rpe, COLORS_6E.pathEdge);
+    b.quad(down(lqe), down(lpe), lpe, lqe, COLORS_6E.pathEdge);
   };
   for (let k = 0; k < n; k++) {
     const d0 = (len * k) / n;
@@ -251,7 +271,7 @@ function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, e
     const spans: [number, number][] = cut ? [[d0, Math.min(d1, cut[0])], [Math.max(d0, cut[1]), d1]] : [[d0, d1]];
     for (const [s0, s1] of spans) {
       if (s1 - s0 < 1e-3) continue;
-      piece(s0, s1, deck ? HALF_WIDTH.deck : HALF_WIDTH.path, deck ? COLORS_6E.wood : COLORS_6E.path);
+      piece(s0, s1, deck ? HALF_WIDTH.deck : HALF_WIDTH.path, deck);
     }
   }
 }
@@ -263,8 +283,22 @@ function nodeOctagon(b: FacetBuilder, ground: (x: number, z: number) => number, 
   const y = standingHeight(ground(node.at.x, node.at.z)) + RIBBON_LIFT + 0.005;
   const deck = deckAt(ground, node.at);
   const w = (deck ? HALF_WIDTH.deck : HALF_WIDTH.path) * 1.08;
-  b.prism({ x: node.at.x, y: y - RIBBON_SIDE, z: node.at.z }, w, w, RIBBON_SIDE, 8, deck ? COLORS_6E.wood : COLORS_6E.path);
+  if (deck) {
+    b.prism({ x: node.at.x, y: y - RIBBON_SIDE, z: node.at.z }, w, w, RIBBON_SIDE, 8, COLORS_6E.wood);
+    return;
+  }
+  // Un sentier : l'octogone en brun du liseré, sous les rubans (il ferme le liseré au dehors d'un coude), et dessus un
+  // disque de sable, du rayon du sable des rubans (le sable se rejoint au coude, sans trait brun en travers).
+  const base = y - 0.005 - 2 * PATH_EDGE.drop;
+  b.prism({ x: node.at.x, y: base - RIBBON_SIDE, z: node.at.z }, w, w, RIBBON_SIDE, 8, COLORS_6E.pathEdge);
+  const r = (HALF_WIDTH.path - PATH_EDGE.width) / Math.cos(Math.PI / NODE_SAND_SIDES);
+  const yy = y - 0.005;
+  const at = (k: number) => [node.at.x + r * Math.cos((2 * Math.PI * k) / NODE_SAND_SIDES), yy, node.at.z + r * Math.sin((2 * Math.PI * k) / NODE_SAND_SIDES)] as const;
+  for (let k = 0; k < NODE_SAND_SIDES; k++) b.triangle([node.at.x, yy, node.at.z], at(k + 1), at(k), COLORS_6E.path);
 }
+
+/** Les côtés du disque de sable d'un nœud : assez pour qu'il couvre le sable des rubans qui y arrivent. */
+const NODE_SAND_SIDES = 12;
 
 /** Le dessus de l'octogone d'un nœud (`node`) en (`x`, `z`), ou −∞ hors de lui. */
 function nodeTopAt(x: number, z: number, ground: (x: number, z: number) => number, node: Vec2): number {

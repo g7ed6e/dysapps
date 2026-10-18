@@ -2,8 +2,9 @@
 // monde en grille : les triangles et les appels de chaque poste. Estimé au cadrage : environ 45 000 triangles et 12 à
 // 18 appels avec quatre lieux (prototype-6e.md, § 3) ; relevée par le mainteneur à 75 000 triangles le 16 octobre 2026
 // (GD-20, L6b : « Un iPad 9e génération doit pouvoir faire tourner le jeu, donc on est large en triangles pour
-// l'instant »), les appels inchangés. Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
+// l'instant »), puis à 86 000 le 17 octobre 2026 (GD-20, point 3, lot 3), les appels inchangés. Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
 import { WORLD_FOG } from './camera';
+import { bridgeLay } from './bridgeLay';
 import { bridgeFacets, bridgeMapMark } from './bridges';
 import { LINKED_LANDS } from './lands';
 import { networkSamples, pathRibbons } from './paths';
@@ -14,17 +15,29 @@ import { PORT_WORST, assemblyScene, portFacets } from './port';
 import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
 import type { ItemScene } from './questions';
 import { bellPlane, habitantHand, scenetteDecor, scenetteFinale } from './scenette';
-import { buildHeightField, heightOnMesh, tileRings, tileTriangleCounts } from './terrain';
+import { landTileCounts } from './flora';
+import { buildHeightField, heightOnMesh, tileRings } from './terrain';
+import { skyDome } from './sky';
 import { veilFacets } from './veil';
 
-/** Kéo : le modèle importé de près (1 500 triangles environ) et son anneau clair au sol, comme le poste « bonhomme » du monde en grille. */
-const KEO = { triangles: 1620, calls: 2 };
+/**
+ * Kéo : le modèle importé de près (1 500 triangles environ) et son anneau clair au sol, comme le poste « bonhomme » du
+ * monde en grille ; son ombre peinte (GD-20, point 3, lot 3 : 10 triangles, un appel).
+ */
+const KEO = { triangles: 1630, calls: 3 };
 
-/** L'enveloppe du monde ouvert : 75 000 triangles (relevée par le mainteneur, 16 octobre 2026), 18 appels. */
-export const OPEN_WORLD_BUDGET = { triangles: 75_000, calls: 18 } as const;
+/** Le dôme du ciel (GD-20, point 3, lot 3) : un maillage, dessiné d'abord, sur la Carte aussi. */
+const SKY = { triangles: skyDome(1).triangles, calls: 1 };
+
+/**
+ * L'enveloppe du monde ouvert : 86 000 triangles, 18 appels (relevée par le mainteneur le 17 octobre 2026 pour les cinq
+ * leviers graphiques du lot 3 de GD-20, point 3 : « plafond 86 000 triangles et 18 appels » ; 75 000 depuis le 16 octobre).
+ * La Carte la touche presque (toute l'île de loin, sa végétation comprise).
+ */
+export const OPEN_WORLD_BUDGET = { triangles: 86_000, calls: 18 } as const;
 
 export interface OpenWorldCost {
-  poste: 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
+  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';
   triangles: number;
   calls: number;
 }
@@ -157,10 +170,14 @@ export const PORT_BUDGET = 4500;
 /**
  * Le passage d'une pose : la partie qui arrive, un maillage à part le temps qu'elle descende à sa place (moins d'une
  * seconde), puis réunie aux lieux. Compté large : la plus grande construction entière, sans sa ruine (une partie en
- * pose au plus une étape et demie), et ses triangles en plus de ceux des lieux.
+ * pose au plus une étape et demie), et ses triangles en plus de ceux des lieux. La pose d'un pont (GD-20, point 3, « La
+ * pose ») passe par le même maillage, jamais en même temps : ce qui se relève du pont (ses piles, son tablier, ses
+ * garde-corps et ses lanternes), les lieux n'en gardant que ses culées et ses départs d'arche.
  */
 function poseCost(ground: (x: number, z: number) => number): { triangles: number; calls: number } {
-  return { triangles: Math.max(...PLACES.map((p) => constructionFacets(p.id, [WHOLE], ground).triangles)), calls: 1 };
+  const places = Math.max(...PLACES.map((p) => constructionFacets(p.id, [WHOLE], ground).triangles));
+  const bridges = Math.max(...LINKED_LANDS.map((l) => bridgeLay(l).facets.triangles));
+  return { triangles: Math.max(places, bridges), calls: 1 };
 }
 
 /** L'écart entre deux points où l'on cherche le pire sol : Kéo se tient toujours sur le réseau des chemins. */
@@ -173,8 +190,8 @@ const SAMPLE_STEP = 4;
  */
 export function groundCost(): { triangles: number; calls: number; near: number; far: number } {
   const field = buildHeightField();
-  const near = tileTriangleCounts(field, 'near');
-  const far = tileTriangleCounts(field, 'far');
+  const near = landTileCounts(field, 'near');
+  const far = landTileCounts(field, 'far');
   let worstNear = 0;
   let worstFar = 0;
   for (const p of networkSamples(SAMPLE_STEP)) {
@@ -186,9 +203,9 @@ export function groundCost(): { triangles: number; calls: number; near: number; 
 }
 
 /**
- * Ce que coûte le monde continu, environ (avec les triangles des aménagements posés, que la vue compte) : le sol autour
- * de Kéo, tout le reste visible à la fois ; la brume des terres fermées, au pire (au départ, les quatre), en un
- * maillage : elle part d'un coup quand on relie une terre (le fondu reviendra avec la pose animée, au second lot).
+ * Ce que coûte le monde continu, environ (avec les triangles des aménagements posés, que la vue compte) : le sol autour de Kéo, tout le reste visible à la fois ; la brume des terres
+ * fermées, au pire (au départ, les quatre), en un maillage : quand on relie une terre, la sienne se lève en fondu après
+ * la pose de son pont (sa transparence seule change : aucun triangle de plus).
  */
 export function openWorldCost(amenagements: number): OpenWorldCost[] {
   const field = buildHeightField();
@@ -196,6 +213,7 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
   const paths = pathRibbons(height);
   const ground = groundCost();
   return [
+    { poste: 'ciel', ...SKY },
     { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
     { poste: 'mer', triangles: 2, calls: 1 },
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
@@ -212,7 +230,7 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
 }
 
 /**
- * La Carte des lieux ouverts (lot 3), le pire (les aménagements posés compris, comptés par la vue) : toute l'île de loin dans l'anneau de loin (celui de près vidé), la mer,
+ * La Carte des lieux ouverts (lot 3), le pire (les aménagements posés compris, comptés par la vue) : le ciel, toute l'île de loin dans l'anneau de loin (celui de près vidé), la mer,
  * les chemins, les lieux (sur la Carte, aucun n'est hors de la brume : un seul maillage, mais compté à deux appels, le
  * pire ; les ponts y ont en plus leur trait double), la brume des terres fermées, Kéo. Ni question, ni scénette, ni pose n'y
  * sont ouvertes : elle ne s'ouvre pas pendant une question, et l'ouvrir finit la pose.
@@ -220,10 +238,10 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
 export function mapCost(amenagements: number): { triangles: number; calls: number } {
   const field = buildHeightField();
   const height = (x: number, z: number) => heightOnMesh(field, x, z);
-  const far = tileTriangleCounts(field, 'far').reduce((s, n) => s + n, 0);
+  const far = landTileCounts(field, 'far').reduce((s, n) => s + n, 0);
   const paths = pathRibbons(height).triangles;
   const places = placesCost();
   const veil = veilFacets(LINKED_LANDS).triangles;
   const marks = LINKED_LANDS.reduce((s, l) => s + bridgeMapMark(l).triangles, 0);
-  return { triangles: far + 2 + paths + places.triangles + amenagements + marks + veil + KEO.triangles, calls: 1 + 1 + 1 + places.calls + 1 + KEO.calls };
+  return { triangles: SKY.triangles + far + 2 + paths + places.triangles + amenagements + marks + veil + KEO.triangles, calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls };
 }

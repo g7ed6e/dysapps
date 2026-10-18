@@ -4,15 +4,16 @@ import { describe, expect, it } from 'vitest';
 import { FacetBuilder, boundsOf } from './facets';
 import { groundCost, mapCost, openWorldCost, OPEN_WORLD_BUDGET } from './budget';
 import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, markBeside, markOffset, occlusionLift, screenOf } from './camera';
-import { distance, insidePolygon, type Vec3 } from './geometry';
+import { distance, distanceToPolyline, insidePolygon, linearRgb, type Vec3 } from './geometry';
 import { START_DISTANCE, atNode, edgesNear, findRoute, networkSamples, pathNode, pathRibbons, pathTopAt, routeLength, snapToNetwork, startOf } from './paths';
-import { COAST, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, NORTH_SHORE, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, hidesTraces, placeById, placeOfIsland } from './plan6e';
+import { COAST, COLORS_6E, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, NORTH_SHORE, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, hidesTraces, placeById, placeOfIsland } from './plan6e';
 import { modelOfPlace } from './places';
 import { sceneSpot } from './questionScene';
-import { SEA_TEXTURE, seaPixels, shallowness } from './sea';
-import { RING, RING_FLOOR, RING_LIFT, TILE_SIZE, buildHeightField, heightAt, heightOnFar, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
+import { SEA_TEXTURE, WATER_TONES, decodeSeaField, seaPixels, shallowness, toneOfFields, waterTone } from './sea';
+import { HILLS, RING, RING_FLOOR, RING_LIFT, TILE_SIZE, buildHeightField, hillsAt, heightAt, heightOnFar, heightOnMesh, landDistance, ringHeights, standingHeight, tileFacets, tileRect, tileRings, tileTriangleCounts } from './terrain';
 import { createTileStore } from './tiles';
-import { VEIL_HEIGHT, VEIL_LAYERS, veilFacets, veilShare } from './veil';
+import { landTileFacets } from './flora';
+import { VEIL_HEIGHT, VEIL_LAYERS, highest, veilFacets, veilShare } from './veil';
 import { bridgeSite } from './bridges';
 import { LANDS, LINKED_LANDS, landById } from './lands';
 import { WALK_CADENCE, WALK_SPEED, skipWalk, startWalk, walkAt } from './walk';
@@ -164,9 +165,26 @@ describe('La mer et le lagon', () => {
     expect(shallowness(fromPlan([880, 20]))).toBe(0);
     const px = seaPixels();
     expect(px).toHaveLength(SEA_TEXTURE.size * SEA_TEXTURE.size * 4);
-    const at = (i: number, j: number) => Array.from(px.slice((j * SEA_TEXTURE.size + i) * 4, (j * SEA_TEXTURE.size + i) * 4 + 3));
-    expect(at(0, 0)).toEqual([0x17, 0x80, 0x78]);
-    expect(at(SEA_TEXTURE.size / 2, SEA_TEXTURE.size / 2)).toEqual([0x2f, 0xb5, 0xa6]);
+    // Chaque pixel porte les deux champs (le cœur, l'eau claire) ; leur palier, comme le shader.
+    const toneAt = (i: number, j: number) => {
+      const k = (j * SEA_TEXTURE.size + i) * 4;
+      return toneOfFields({ night: decodeSeaField(px[k]), clear: decodeSeaField(px[k + 1]), shelf: decodeSeaField(px[k + 2]) });
+    };
+    expect(toneAt(0, 0)).toBe(WATER_TONES.lagoon);
+    expect(toneAt(SEA_TEXTURE.size / 2, SEA_TEXTURE.size / 2)).toBe(WATER_TONES.clear);
+    // Le large au Bleu lagon du pack, le lagon au turquoise clair et moins saturé de la reprise.
+    expect(WATER_TONES.lagoon).toBe(0x178078);
+    expect(WATER_TONES.clear).toBe(0x5cc3b5);
+    // Le cœur de chaque bras de mer est le plus profond ; l'eau du lagon, claire ; loin du pont, le cœur s'arrête.
+    for (const land of LINKED_LANDS) expect(waterTone(bridgeSite(land).mid), land).toBe(WATER_TONES.night);
+    expect(waterTone(fromPlan([700, 600]))).toBe(WATER_TONES.clear);
+    // Hors de l'anneau, en s'éloignant de la côte : l'eau claire, le palier du milieu, puis le Bleu lagon (deuxième reprise).
+    const west = (x: number) => waterTone(fromPlan([x, 900]));
+    const tones = [395, 370, 340, 300, 200, 120].map(west);
+    expect(tones[0]).toBe(WATER_TONES.clear);
+    expect(tones).toContain(WATER_TONES.shelf);
+    expect(tones.at(-1)).toBe(WATER_TONES.lagoon);
+    expect(tones.indexOf(WATER_TONES.shelf)).toBeLessThan(tones.indexOf(WATER_TONES.lagoon));
   });
 });
 
@@ -221,10 +239,22 @@ describe('Les chemins aimantés', () => {
   it('les rubans des chemins ont leur dessus vers le ciel', () => {
     const f = pathRibbons(ground);
     expect(f.triangles).toBeGreaterThan(100);
+    // Le liseré brun des sentiers, à 3:1 au moins de leur sable (les deux couleurs de la matière ; mesuré aussi à l'écran).
+    const has = (hex: number) => {
+      const [r, g, b] = linearRgb(hex);
+      for (let k = 0; k < f.colors.length; k += 3) if (Math.abs(f.colors[k] - r) + Math.abs(f.colors[k + 1] - g) + Math.abs(f.colors[k + 2] - b) < 1e-5) return true;
+      return false;
+    };
+    expect(has(COLORS_6E.path)).toBe(true);
+    expect(has(COLORS_6E.pathEdge)).toBe(true);
+    const lum = (c: number) => { const [r, g, b] = linearRgb(c); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+    expect((lum(COLORS_6E.path) + 0.05) / (lum(COLORS_6E.pathEdge) + 0.05)).toBeGreaterThanOrEqual(3);
     // Quatorze lieux reliés (le chemin de la Turbine, lot L6a ; celui du Chantier naval, lot L6b : 4 880 ; le rivage nord, lot
     // L7, sa rampe et son muret : 6 120 ; le rivage sud et ses quatre chemins, lot L8 : 7 338, mesuré sur le monde réuni).
-    // Seize lieux (le large, lot L9 : le chemin de la côte ouest et la jetée de la Gare maritime, 8 592).
-    expect(f.triangles).toBeLessThan(8800);
+    // Seize lieux (le large, lot L9 : le chemin de la côte ouest et la jetée de la Gare maritime, 8 592). Le liseré de terre
+    // des sentiers (lot 3 des vraies terres, deuxième reprise) : quatre triangles de plus par morceau et un disque de sable
+    // de douze par nœud, 12 214.
+    expect(f.triangles).toBeLessThan(12600);
   });
 });
 
@@ -380,13 +410,15 @@ describe('La brume des terres fermées', () => {
       for (const other of LANDS) if (other.id !== land) for (const id of other.places) expect(veilShare(land, placeById(id).center), id).toBe(0);
       const v = veilFacets([land]);
       for (let k = 0; k < v.positions.length; k += 3) {
-        const ground = Math.max(0.05, standingHeight(heightAt({ x: v.positions[k], z: v.positions[k + 2] })));
+        // Le voile passe au-dessus du plus haut du sol à une demi-case autour (reprise du lot 3).
+        const ground = Math.max(0.05, standingHeight(highest({ x: v.positions[k], z: v.positions[k + 2] })));
         expect(v.positions[k + 1] - ground).toBeLessThanOrEqual(VEIL_HEIGHT + 1e-4);
       }
       // Le repère de chaque lieu la dépasse.
       for (const id of landById(land).places) expect(modelOfPlace(id).top, id).toBeGreaterThan(VEIL_HEIGHT + 0.5);
     }
-    expect(veilFacets(LINKED_LANDS).triangles).toBeLessThan(6000);
+    // Une grille de 3 unités (reprise du lot 3) : environ 14 000 triangles pour les quatre terres.
+    expect(veilFacets(LINKED_LANDS).triangles).toBeLessThan(15000);
   });
 
   it('jamais opaque : les deux voiles réunis laissent voir chaque lieu ; nette sur le bras de mer', () => {
@@ -406,9 +438,15 @@ describe('La réserve des tuiles', () => {
     expect(wanted.length).toBeGreaterThan(1);
     for (const i of wanted) expect(store.near(i)).toBeNull();
     expect(store.pending()).toBe(wanted.length);
+    // En deux images (reprise du lot 3) : le sol, puis ce qui y pousse ; la tuile finie est la tuile entière.
+    expect(store.pump()).toBeNull();
+    expect(store.near(wanted[0])).toBeNull();
+    store.clearQueue();
+    for (const i of wanted) store.near(i);
     expect(store.pump()).toBe(wanted[0]);
     expect(store.pending()).toBe(wanted.length - 1);
-    expect(store.near(wanted[0])).not.toBeNull();
+    const whole = landTileFacets(field, wanted[0] % TERRAIN.tilesX, Math.floor(wanted[0] / TERRAIN.tilesX), 'near');
+    expect(Array.from(store.near(wanted[0])!.facets.positions)).toEqual(Array.from(whole.positions));
     store.clearQueue();
     expect(store.pump()).toBeNull();
     // Faite tout de suite quand on la demande (le départ, un saut) ; la même ensuite.
@@ -440,8 +478,8 @@ describe('Le budget du monde continu', () => {
     expect(g.triangles).toBe(g.near + g.far);
   });
 
-  it('tient dans l’enveloppe relevée par le mainteneur (75 000 triangles, 16 octobre 2026), les appels inchangés', () => {
-    expect(OPEN_WORLD_BUDGET).toEqual({ triangles: 75_000, calls: 18 });
+  it('tient dans l’enveloppe relevée par le mainteneur (86 000 triangles, 17 octobre 2026), les appels inchangés', () => {
+    expect(OPEN_WORLD_BUDGET).toEqual({ triangles: 86_000, calls: 18 });
     // Sans les aménagements, dont la vue trace les dessins : le tout se compte dans three/archipeo/amenagements.test.ts.
     const cost = openWorldCost(0);
     const triangles = cost.reduce((s, c) => s + c.triangles, 0);
@@ -454,8 +492,9 @@ describe('Le budget du monde continu', () => {
     const cost = openWorldCost(0);
     expect(cost.find((c) => c.poste === 'lieux')?.calls).toBe(2);
     expect(cost.find((c) => c.poste === 'pose')?.calls).toBe(1);
-    // Il reste de la place pour les lots suivants (lieu de départ, obstacles, Nef, repère) : 4 appels au moins.
-    expect(OPEN_WORLD_BUDGET.calls - cost.reduce((s, c) => s + c.calls, 0)).toBeGreaterThanOrEqual(4);
+    // Il reste de la place pour les lots suivants (Nef, repère) : 3 appels au moins (4 avant le lot 3 de GD-20, point 3,
+    // qui prend le ciel et l'ombre de Kéo).
+    expect(OPEN_WORLD_BUDGET.calls - cost.reduce((s, c) => s + c.calls, 0)).toBeGreaterThanOrEqual(3);
   });
 
   it('la Carte des lieux ouverts, toute l’île de loin, tient aussi dans l’enveloppe', () => {
@@ -611,5 +650,31 @@ describe('Les chemins de loin (directeur artistique, 17 octobre 2026)', () => {
     for (let r = 0; r < f.far.length; r++) if (f.far[r] !== f.heights[r]) lowered++;
     expect(lowered).toBeGreaterThan(0);
     expect(lowered).toBeLessThan(f.far.length / 9 / 4);
+  });
+});
+
+describe('Les collines (GD-20, point 3, lot 3, reprise)', () => {
+  // Les points de l'île, tous les trois pas, et la hauteur des collines en chacun.
+  const samples: { x: number; z: number; h: number }[] = [];
+  for (let x = TERRAIN.minX; x < TERRAIN.minX + TERRAIN.tilesX * TILE_SIZE; x += 3)
+    for (let z = TERRAIN.minZ; z < TERRAIN.minZ + TERRAIN.tilesZ * TILE_SIZE; z += 3) samples.push({ x, z, h: hillsAt({ x, z }) });
+  const nodes = new Map(PATH_NODES.map((n) => [n.id, n.at]));
+  const pathDistance = (p: { x: number; z: number }) => Math.min(...PATH_EDGES.map(([a, b]) => distanceToPolyline(p, [nodes.get(a)!, nodes.get(b)!])));
+
+  it('de vraies collines : une dizaine au moins montent à plus de 5, aucune au-dessus de 8', () => {
+    const high = samples.filter((s) => s.h > 5);
+    const peaks: { x: number; z: number }[] = [];
+    for (const s of high) if (!peaks.some((q) => distance(q, s) < 15)) peaks.push(s);
+    expect(peaks.length).toBeGreaterThanOrEqual(10);
+    expect(Math.max(...samples.map((s) => s.h))).toBeLessThanOrEqual(HILLS.height[1] + 1e-6);
+  });
+
+  it('loin des chemins, des lieux et de l’eau : la marche de Kéo, les replats et les plages ne bougent pas', () => {
+    for (const s of samples) {
+      if (s.h === 0) continue;
+      expect(pathDistance(s)).toBeGreaterThan(HILLS.path - 0.01);
+      for (const p of PLACES) expect(distance(s, p.center)).toBeGreaterThan(HILLS.place - 0.01);
+      expect(landDistance(s)).toBeGreaterThan(HILLS.coast - 0.01);
+    }
   });
 });

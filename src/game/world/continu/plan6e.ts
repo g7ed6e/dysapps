@@ -32,18 +32,31 @@ export const COLORS_6E = {
   lagoon: 0x2fb5a6,
   /** Bleu lagon du pack : l'eau profonde, le large. */
   deepSea: 0x178078,
-  /** Rivage : herbe, mousse sur la pierre. */
-  grass: 0x6cbf4e,
+  /**
+   * Rivage : herbe, mousse sur la pierre ; la prairie claire des bas (GD-20, point 3, lot 3 : un vert d'eau tiré vers le
+   * Vert île du pack, au lieu du vert acide #6CBF4E ; retouche : plus vert, moins d'eau, d'après les concepts validés).
+   */
+  grass: 0x8ad59c,
   /** L'herbe du haut de la falaise nord, plus sombre (le plan). */
   cliffTop: 0x4e8f3a,
-  /** Sable chaud : plages. */
-  sand: 0xe3c08a,
-  /** La roche des pentes raides (la falaise, les berges de la rivière). */
-  rock: 0x9c8466,
+  /** Sable chaud : plages (un peu plus clair au lot 3, sous le soleil plus chaud). */
+  sand: 0xe8cf9c,
+  /** La roche des pentes raides (la falaise, les berges de la rivière, les rives des bras de mer) : un gris chaud (lot 3). */
+  rock: 0x968e83,
   /** Le sable mouillé, juste sous l'eau. */
   wetSand: 0xc9ad78,
-  /** Les sentiers, un peu plus sombres que la plage pour se lire sur l'herbe. */
-  path: 0xd6bb86,
+  /**
+   * Les sentiers : un sable éclairci (#F0E2B6 : le #E8D6A6 demandé, un cran plus clair pour s'écarter de l'herbe), plus
+   * clair que la plage (#E8CF9C), et sans ombre (la vue les dessine de leur couleur même) pour se lire sur la prairie
+   * claire sans l'assombrir (GD-20, point 3, lot 3, décision du directeur artistique du 17 octobre 2026 ; avant, #D6BB86,
+   * à 1,03:1 de l'herbe).
+   */
+  path: 0xf0e2b6,
+  /**
+   * Le liseré de terre des sentiers, continu de part et d'autre : un brun moyen, jamais presque-noir, à 3:1 au moins du
+   * sentier (même décision) ; le contraste du chemin ne tient pas à la seule teinte.
+   */
+  pathEdge: 0x8c7448,
   /** Le bois des pontons et de la digue (le sable chaud, plus sombre). */
   wood: 0xa9784a,
 } as const;
@@ -843,8 +856,8 @@ export const PATH_EDGES: readonly (readonly [string, string])[] = [
  * détail : de près, chaque case ; de loin, une case sur `coarse` en chaque sens (`tileCells` en est un multiple).
  */
 export const TERRAIN = (() => {
-  const step = 1.25;
-  const tileCells = 24;
+  const step = 1.75;
+  const tileCells = 18;
   const tile = step * tileCells;
   const min = fromPlan([362, 86]);
   const max = fromPlan([1496, 1024]);
