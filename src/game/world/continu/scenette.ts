@@ -56,6 +56,7 @@ import {
 } from './questionScene';
 import type { ItemScene } from './questions';
 import { heightAt, standingHeight } from './terrain';
+import { HABITANT_HEIGHT, habitantEastSide, habitantWestHand, loadedHabitant } from './habitants';
 import { MANGROVE, mangroveDeckTop } from './places';
 
 /**
@@ -935,6 +936,9 @@ const C = {
   coatShade: 0xe8bf4a,
   head: 0xe3c08a,
   cap: 0x142b38,
+  // Le rouge du bonnet du modèle 3D de la gardienne, relevé dans sa texture (médiane des pixels rouges du haut du
+  // modèle) : la poignée de la corde et le maillet le prennent quand le modèle est montré.
+  modelCap: 0xd44330,
   rope: 0xe5ebe3,
   // La pêcheuse (consultant Archipéo, lot 2) : tablier herbe sur une robe sable chaud, chapeau de paille, navette de bois.
   dress: 0x4f7fa3,
@@ -1081,9 +1085,17 @@ function trouserLegs(b: FacetBuilder, at: Vec3, color: number): void {
 /** Le haut du pantalon des habitants du rivage sud, au-dessus de leurs pieds : le bas de leur veste. */
 const TROUSER_TOP = 0.47;
 
-/** La main de l'habitant, au bout de son bras tendu vers la rambarde : la corde de sonnerie y part. */
+/**
+ * La main de l'habitant, d'où part la corde de sonnerie : celle de son modèle tournée vers Kéo, s'il est montré
+ * (./habitants.ts) ; sinon au bout du bras du pion, tendu vers la rambarde.
+ */
 export function habitantHand(place: PlaceId, posed = true): Vec3 {
   const at = scenetteHabitant(place, posed);
+  const model = loadedHabitant(place);
+  if (model) {
+    const h = habitantWestHand(model);
+    return { x: at.x + h.x, y: at.y + h.y, z: at.z + h.z };
+  }
   return { x: at.x - 0.15, y: at.y + 0.78, z: at.z + 0.75 };
 }
 
@@ -1093,21 +1105,25 @@ export function habitantHand(place: PlaceId, posed = true): Vec3 {
  * sa poignée, de la couleur du bonnet, la détache du jaune du ciré (retour du directeur artistique). Au pied de la tour
  * (`posed` faux), elle tient un maillet de bois, pour frapper la cloche tombée.
  */
-function gardienne(b: FacetBuilder, place: PlaceId, posed: boolean): void {
+function gardienne(b: FacetBuilder, place: PlaceId, posed: boolean, body: boolean): void {
   const at = scenetteHabitant(place, posed);
-  b.prism(at, 0.4, 0.27, 0.92, 12, C.coat, C.coatShade);
-  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 12, 8, C.head);
-  b.prism({ x: at.x, y: at.y + 1.2, z: at.z }, 0.25, 0.12, 0.2, 12, C.cap);
   const hand = habitantHand(place, posed);
-  b.beam({ x: at.x - 0.12, y: at.y + 0.82, z: at.z + 0.12 }, hand, 0.15, C.coat);
+  if (body) {
+    b.prism(at, 0.4, 0.27, 0.92, 12, C.coat, C.coatShade);
+    sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 12, 8, C.head);
+    b.prism({ x: at.x, y: at.y + 1.2, z: at.z }, 0.25, 0.12, 0.2, 12, C.cap);
+    b.beam({ x: at.x - 0.12, y: at.y + 0.82, z: at.z + 0.12 }, hand, 0.15, C.coat);
+  }
+  // La couleur du bonnet : celui du pion, ou celui du modèle 3D quand il est montré.
+  const cap = loadedHabitant(place) ? C.modelCap : C.cap;
   if (posed) {
-    b.box({ x: hand.x, y: hand.y - 0.1, z: hand.z }, [0.16, 0.2, 0.16], C.cap);
+    b.box({ x: hand.x, y: hand.y - 0.1, z: hand.z }, [0.16, 0.2, 0.16], cap);
     return;
   }
   // Le maillet : son manche tenu dans la main, sa tête en travers, de la couleur du bonnet.
   const head = { x: hand.x - 0.05, y: hand.y - 0.42, z: hand.z + 0.18 };
-  b.beam(hand, head, 0.06, C.cap);
-  b.box({ x: head.x, y: head.y - 0.09, z: head.z, yaw: 0.3 }, [0.32, 0.18, 0.18], C.cap);
+  b.beam(hand, head, 0.06, cap);
+  b.box({ x: head.x, y: head.y - 0.09, z: head.z, yaw: 0.3 }, [0.32, 0.18, 0.18], cap);
 }
 
 /**
@@ -1115,16 +1131,18 @@ function gardienne(b: FacetBuilder, place: PlaceId, posed: boolean): void {
  * (une sphère sable), la casquette (un disque jaune lanterne et sa visière), un bras posé sur une caisse à sa gauche ;
  * de l'autre main, il tient son crochet de levage (un manche et un anneau).
  */
-function docker(b: FacetBuilder, place: PlaceId): void {
+function docker(b: FacetBuilder, place: PlaceId, body: boolean): void {
   const at = scenetteHabitant(place);
+  // La caisse à côté de lui, posée au sol : elle reste avec son modèle ; le crochet du pion, à la main, part avec lui.
+  const crate = { x: at.x - 0.72, y: at.y, z: at.z + 0.05 };
+  b.box(crate, [0.6, 0.6, 0.6], C.crate, C.crateTop);
+  if (!body) return;
   // Le cube arrondi : un prisme à huit pans, presque droit.
   b.prism({ ...at, yaw: Math.PI / 8 }, 0.38, 0.33, 0.92, 8, C.vest, C.vestShade);
   sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 12, 8, C.head);
   b.prism({ x: at.x, y: at.y + 1.25, z: at.z }, 0.26, 0.26, 0.08, 12, C.dockCap);
   b.box({ x: at.x, y: at.y + 1.25, z: at.z + 0.27 }, [0.3, 0.05, 0.2], C.dockCap);
-  // Le bras gauche posé sur une caisse, à côté de lui.
-  const crate = { x: at.x - 0.72, y: at.y, z: at.z + 0.05 };
-  b.box(crate, [0.6, 0.6, 0.6], C.crate, C.crateTop);
+  // Le bras gauche posé sur la caisse.
   b.beam({ x: at.x - 0.28, y: at.y + 0.84, z: at.z }, { x: crate.x + 0.12, y: crate.y + 0.66, z: crate.z }, 0.15, C.vest);
   // Le bras droit tombe le long du corps ; sa main tient le crochet de levage.
   const hand = { x: at.x + 0.42, y: at.y + 0.5, z: at.z + 0.08 };
@@ -1136,7 +1154,8 @@ function docker(b: FacetBuilder, place: PlaceId): void {
  * La pêcheuse, immobile, en quatre volumes (consultant Archipéo) : sa robe et son tablier herbe par-devant, la tête, le
  * chapeau de paille à large bord, le bras tendu vers le filet, la navette de bois à la main.
  */
-function pecheuse(b: FacetBuilder, place: PlaceId): void {
+function pecheuse(b: FacetBuilder, place: PlaceId, body: boolean): void {
+  if (!body) return;
   const at = scenetteHabitant(place);
   b.prism(at, 0.4, 0.27, 0.92, 12, C.dress, C.dressShade);
   // Le tablier, devant la robe (vers la caméra), plus clair : il la détache du plancher.
@@ -1154,18 +1173,20 @@ function pecheuse(b: FacetBuilder, place: PlaceId): void {
  * L'éclusier, immobile, en quatre volumes (consultant Archipéo) : le ciré lagon, la tête, le béret, le bras posé sur le
  * levier de vanne planté à côté de lui (son socle de pierre, sa poignée rouge, comme les leviers des réponses).
  */
-function eclusier(b: FacetBuilder, place: PlaceId): void {
+function eclusier(b: FacetBuilder, place: PlaceId, body: boolean): void {
   const at = scenetteHabitant(place);
-  b.prism(at, 0.42, 0.28, 0.92, 12, C.lockCoat, C.lockCoatShade);
-  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 12, 8, C.head);
-  // Le béret : un disque plat, un peu penché, et sa queue.
-  b.prism({ x: at.x + 0.03, y: at.y + 1.26, z: at.z, pitch: 0.15 }, 0.27, 0.24, 0.08, 12, C.beret);
-  b.box({ x: at.x + 0.03, y: at.y + 1.36, z: at.z }, [0.04, 0.06, 0.04], C.beret);
+  // Le levier de vanne, planté à côté de lui sur son socle : il reste avec son modèle (qui porte sa clé dorée).
   const lever = { x: at.x - 0.62, y: at.y, z: at.z + 0.25 };
   b.box(lever, [0.36, 0.22, 0.32], C.stoneSide, C.stone);
   const top = { x: lever.x + 0.05, y: lever.y + 1.05, z: lever.z - 0.18 };
   b.beam({ x: lever.x, y: lever.y + 0.2, z: lever.z }, top, 0.08, C.lever);
   b.box({ x: top.x, y: top.y - 0.06, z: top.z }, [0.18, 0.14, 0.14], C.knob);
+  if (!body) return;
+  b.prism(at, 0.42, 0.28, 0.92, 12, C.lockCoat, C.lockCoatShade);
+  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 12, 8, C.head);
+  // Le béret : un disque plat, un peu penché, et sa queue.
+  b.prism({ x: at.x + 0.03, y: at.y + 1.26, z: at.z, pitch: 0.15 }, 0.27, 0.24, 0.08, 12, C.beret);
+  b.box({ x: at.x + 0.03, y: at.y + 1.36, z: at.z }, [0.04, 0.06, 0.04], C.beret);
   b.beam({ x: at.x - 0.26, y: at.y + 0.84, z: at.z + 0.06 }, { x: top.x + 0.06, y: top.y - 0.04, z: top.z + 0.02 }, 0.15, C.lockCoat);
 }
 
@@ -1174,7 +1195,9 @@ function eclusier(b: FacetBuilder, place: PlaceId): void {
  * tablier terre cuite par-devant (il la détache du sel et du muret), la tête, le chapeau de paille à large bord, un bras
  * tendu sur le manche de sa pelle à sel, plantée debout à côté d'elle, sa lame de bois au sol.
  */
-function sauniere(b: FacetBuilder, place: PlaceId): void {
+function sauniere(b: FacetBuilder, place: PlaceId, body: boolean): void {
+  // Son modèle porte son râteau : la pelle du pion en ferait deux outils.
+  if (!body) return;
   const at = scenetteHabitant(place);
   b.prism(at, 0.4, 0.27, 0.92, 12, C.linen, C.linenShade);
   b.box({ x: at.x, y: at.y + 0.08, z: at.z + 0.3, pitch: 0.12 }, [0.44, 0.74, 0.06], C.terracotta);
@@ -1196,7 +1219,8 @@ function sauniere(b: FacetBuilder, place: PlaceId): void {
  * torche, le feu est exclu du lieu). Elle ne dit rien. Pour tenir sous les 400 triangles de la scénette : le bandeau des
  * lunettes sans dessus, les verres sans leur face cachée contre le front, la burette en cône pointu.
  */
-function machiniste(b: FacetBuilder, place: PlaceId): void {
+function machiniste(b: FacetBuilder, place: PlaceId, body: boolean): void {
+  if (!body) return;
   const at = scenetteHabitant(place);
   trouserLegs(b, at, C.lagoonTrousers);
   b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.33, 0.28, 0.92 - TROUSER_TOP, 10, C.lagoonCoat, C.lagoonCoatShade);
@@ -1241,7 +1265,8 @@ function enginePaving(b: FacetBuilder): void {
  * qui couvre le haut des cheveux, et sa visière ; un bras le long du corps, son maillet de
  * calfat à la main, la tête du maillet longue et ronde, de bois dur, au bout d'un manche court. Il ne dit rien.
  */
-function charpentier(b: FacetBuilder, place: PlaceId): void {
+function charpentier(b: FacetBuilder, place: PlaceId, body: boolean): void {
+  if (!body) return;
   const at = scenetteHabitant(place);
   trouserLegs(b, at, C.workTrousers);
   b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.33, 0.28, 0.92 - TROUSER_TOP, 10, C.shirt, C.shirtShade);
@@ -1284,7 +1309,8 @@ const ENGINE_PAVING = { half: 5.2, depth: 2.8 } as const;
  * contre elle un petit carnet fermé (plus petit que celui de Kéo), sa couverture Bleu lagon et sa sangle de cuir. Ni
  * loupe, ni chapeau ; elle ne dit rien.
  */
-function botaniste(b: FacetBuilder, place: PlaceId): void {
+function botaniste(b: FacetBuilder, place: PlaceId, body: boolean): void {
+  if (!body) return;
   const at = scenetteHabitant(place);
   trouserLegs(b, at, C.nightBlue);
   b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.31, 0.26, 0.92 - TROUSER_TOP, 10, C.coral, C.coralShade);
@@ -1332,7 +1358,8 @@ function mangroveDeck(b: FacetBuilder): void {
  * plate plus large que le manche et la frange de ses soies en bas (relecture DA de L8 : jamais un maillet, jamais une calotte ni
  * une robe). Ni chapeau à bord, ni barbe, ni lunettes, ni gilet, ni truelle ; il ne dit rien.
  */
-function archeologue(b: FacetBuilder, place: PlaceId): void {
+function archeologue(b: FacetBuilder, place: PlaceId, body: boolean): void {
+  if (!body) return;
   const at = scenetteHabitant(place);
   trouserLegs(b, at, C.brownTrousers);
   b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.31, 0.29, 0.92 - TROUSER_TOP, 10, C.skyShirt, C.skyShirtShade);
@@ -1375,17 +1402,21 @@ const RUINS_PAVING = { half: 4.8, depth: 3.0 } as const;
  * chambre photographique de bois sur son trépied, une main posée dessus, l'objectif tourné vers le large, à l'est (ni
  * éclair, ni reflet, ni image montrée). Elle ne dit rien.
  */
-function photographe(b: FacetBuilder, place: PlaceId): void {
+function photographe(b: FacetBuilder, place: PlaceId, body: boolean): void {
   const at = scenetteHabitant(place);
-  trouserLegs(b, at, C.warmGrey);
-  b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.33, 0.27, 0.92 - TROUSER_TOP, 10, C.lavender, C.lavenderShade);
-  sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
-  habitantHair(b, at, C.hair);
-  // Le bras de l'ouest, le long du corps ; celui de l'est, posé sur la chambre.
-  b.beam({ x: at.x - 0.27, y: at.y + 0.84, z: at.z + 0.02 }, { x: at.x - 0.33, y: at.y + 0.42, z: at.z + 0.08 }, 0.14, C.lavender);
   const cam = PHOTO_CAMERA;
   const top = { x: at.x + cam.dx, y: at.y + cam.height, z: at.z + cam.dz };
-  b.beam({ x: at.x + 0.27, y: at.y + 0.84, z: at.z + 0.02 }, { x: top.x - 0.1, y: top.y + cam.body[1] + 0.02, z: top.z }, 0.14, C.lavender);
+  if (body) {
+    trouserLegs(b, at, C.warmGrey);
+    b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.33, 0.27, 0.92 - TROUSER_TOP, 10, C.lavender, C.lavenderShade);
+    sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
+    habitantHair(b, at, C.hair);
+    // Le bras de l'ouest, le long du corps ; celui de l'est, posé sur la chambre.
+    b.beam({ x: at.x - 0.27, y: at.y + 0.84, z: at.z + 0.02 }, { x: at.x - 0.33, y: at.y + 0.42, z: at.z + 0.08 }, 0.14, C.lavender);
+    b.beam({ x: at.x + 0.27, y: at.y + 0.84, z: at.z + 0.02 }, { x: top.x - 0.1, y: top.y + cam.body[1] + 0.02, z: top.z }, 0.14, C.lavender);
+  }
+  // La chambre sur son trépied, à côté d'elle : elle reste avec son modèle, plus lisible que le petit appareil qu'il porte
+  // en bandoulière (le trépied dit « photographe » de loin).
   // Le trépied : trois pieds de bois, du dessous de la chambre jusqu'au sol, écartés.
   for (const a of [0.3, 2.4, 4.5]) b.beam({ x: top.x, y: top.y, z: top.z }, { x: top.x + 0.32 * Math.cos(a), y: at.y, z: top.z + 0.32 * Math.sin(a) }, 0.05, C.woodSide);
   // La chambre : son corps de bois clair, son soufflet sombre, sa planchette avant et son objectif, vers l'est.
@@ -1452,8 +1483,24 @@ const OBSERVATORY_PAVING = { half: 4.6, depth: 2.35, dz: 0.32 } as const;
  * tête nue, ses cheveux sombres et courts (ni chapeau, ni casque, ni écharpe, ni pendentif) ; sous son bras de l'est,
  * une tuile verte de la toiture, couchée le long de son flanc. Ni marteau, ni outil qui frappe. Il ne dit rien.
  */
-function couvreur(b: FacetBuilder, place: PlaceId): void {
+function couvreur(b: FacetBuilder, place: PlaceId, body: boolean): void {
   const at = scenetteHabitant(place);
+  const model = body ? null : loadedHabitant(place);
+  if (model) {
+    // Avec son modèle (son sac au dos, les bras le long du corps, sans tuile) : la même tuile, dressée au sol à côté de
+    // lui, à l'est (`COUVREUR_STANDING_TILE`, relecture du directeur artistique : couchée à 55° avec un vide, elle se lisait
+    // comme tombée), son bas sur la dalle, son haut appuyé contre sa jambe : le bord de sa voûte touche le dehors de la
+    // jambe à la hauteur de son haut (`habitantEastSide`), sans vide.
+    const T = COUVREUR_STANDING_TILE;
+    const height = T.length * Math.sin(T.slope) + 0.01;
+    const leg = habitantEastSide(model, (height - 0.12) / HABITANT_HEIGHT, height / HABITANT_HEIGHT);
+    canalTile(b, { x: at.x + leg + T.r * Math.sin(T.slope), y: at.y + height, z: at.z + T.dz }, T);
+    return;
+  }
+  if (!body) {
+    canalTile(b, { x: at.x + COUVREUR_TILE.dx, y: at.y + COUVREUR_TILE.height, z: at.z + COUVREUR_TILE.dz }, COUVREUR_TILE);
+    return;
+  }
   trouserLegs(b, at, C.rooferLeather);
   b.prism({ x: at.x, y: at.y + TROUSER_TOP, z: at.z }, 0.33, 0.27, 0.92 - TROUSER_TOP, 10, C.rooferShirt, C.rooferShirtShade);
   sphere(b, { x: at.x, y: at.y + 1.13, z: at.z }, 0.23, 8, 6, C.head);
@@ -1477,12 +1524,15 @@ function couvreur(b: FacetBuilder, place: PlaceId): void {
  */
 const COUVREUR_TILE = { dx: 0.33, height: 0.78, dz: 0.12, slope: (55 * Math.PI) / 180, length: 0.5, r: 0.085, thick: 0.03, segments: 4, grip: 0.8 } as const;
 
+/** La tuile du couvreur posée au sol contre la jambe de son modèle : dressée à 72°, presque dans le plan de ses jambes. */
+const COUVREUR_STANDING_TILE = { ...COUVREUR_TILE, slope: (72 * Math.PI) / 180, dz: 0.04 } as const;
+
 /**
  * Une tuile canal : une demi-voûte le long de sa ligne de faîte, qui part de `top` et descend vers l'est selon sa pente ;
  * sa face bombée (dehors) vers +z, la caméra, son creux derrière ; ses deux bords longs et ses deux bouts fermés. Rend où
  * la main la tient : sur son bord de l'est, le haut, un peu derrière lui (le bras passe derrière elle).
  */
-function canalTile(b: FacetBuilder, top: Vec3, T: typeof COUVREUR_TILE): { grip: Vec3 } {
+function canalTile(b: FacetBuilder, top: Vec3, T: { slope: number; length: number; r: number; thick: number; segments: number; grip: number }): { grip: Vec3 } {
   const u: [number, number, number] = [Math.cos(T.slope), -Math.sin(T.slope), 0];
   const n: [number, number, number] = [Math.sin(T.slope), Math.cos(T.slope), 0];
   const point = (s: number, theta: number, r: number): [number, number, number] => [
@@ -1633,68 +1683,84 @@ function beamRest(b: FacetBuilder, x: number, z: number, from: number, top: numb
  * sont la scène de l'item) ; aux Filets, le plancher de séchage et la pêcheuse ; aux Écluses, le quai du sas, le canal
  * et sa porte (`open` : ouverte, à la réussite), et l'éclusier ; aux Marais salants, le bord du bassin et la saunière. Un seul maillage, du matériau du terrain. Tant que
  * l'étape qui porte la trace n'est pas posée (`posed` faux), rien d'elle : au Phare, ni galerie ni rambarde, la gardienne
- * au pied de la tour, son maillet à la main ; aux Écluses, le canal sans sa porte.
+ * au pied de la tour, son maillet à la main ; aux Écluses, le canal sans sa porte. Quand le modèle 3D de l'habitant est
+ * montré (./habitants.ts, choix du mainteneur du 18 octobre 2026), il est dessiné à part, avec sa texture, par la vue :
+ * le décor se fait alors sans le corps du pion, et garde ce que la scénette lui fait tenir ou poser à côté de lui (la
+ * corde de la cloche, la caisse du docker, le levier de l'éclusier, la chambre de la photographe, la tuile du couvreur).
  */
 export function scenetteDecor(place: PlaceId, open = false, posed = true): Facets {
+  return decorBuilder(place, open, posed, !loadedHabitant(place)).build();
+}
+
+/**
+ * Le décor de près sans le corps de l'habitant, comme quand son modèle est montré : le sol de la scène, la rambarde, et
+ * ce que l'habitant tient ou a à côté de lui et que la scénette garde. Le budget y ajoute le modèle (./budget.ts).
+ */
+export function scenetteSetting(place: PlaceId, open = false, posed = true): Facets {
+  return decorBuilder(place, open, posed, false).build();
+}
+
+/** Le décor de près, avec le pion dessiné en code (`body`) ou sans corps. */
+function decorBuilder(place: PlaceId, open: boolean, posed: boolean, body: boolean): FacetBuilder {
   const b = new FacetBuilder();
   if (place === 'quais') {
-    docker(b, place);
-    return b.build();
+    docker(b, place, body);
+    return b;
   }
   if (place === 'filets') {
     dryingDeck(b, false);
-    pecheuse(b, place);
-    return b.build();
+    pecheuse(b, place, body);
+    return b;
   }
   if (place === 'ecluses') {
     lockQuay(b, open, posed);
-    eclusier(b, place);
-    return b.build();
+    eclusier(b, place, body);
+    return b;
   }
   if (place === 'saltworks') {
     saltPan(b);
-    sauniere(b, place);
-    return b.build();
+    sauniere(b, place, body);
+    return b;
   }
   if (place === 'engine') {
     enginePaving(b);
-    machiniste(b, place);
-    return b.build();
+    machiniste(b, place, body);
+    return b;
   }
   if (place === 'shipyard') {
     shipyardFloor(b);
-    charpentier(b, place);
-    return b.build();
+    charpentier(b, place, body);
+    return b;
   }
   const art = placeArt(place);
   if (art) {
     // Le rivage nord (lot L7) : le sol de la scène et l'habitant, dessinés dans le fichier du lieu.
-    art.decor(b, floorOf(place), scenetteHabitant(place), sphere);
-    return b.build();
+    art.decor(b, floorOf(place), scenetteHabitant(place), sphere, body);
+    return b;
   }
   if (place === 'mangrove') {
     mangroveDeck(b);
-    botaniste(b, place);
-    return b.build();
+    botaniste(b, place, body);
+    return b;
   }
   if (place === 'ruins') {
     ruinsPaving(b);
-    archeologue(b, place);
-    return b.build();
+    archeologue(b, place, body);
+    return b;
   }
   if (place === 'observatory') {
     observatoryPaving(b);
-    photographe(b, place);
-    return b.build();
+    photographe(b, place, body);
+    return b;
   }
   if (place === 'commons') {
     commonsPaving(b);
-    couvreur(b, place);
-    return b.build();
+    couvreur(b, place, body);
+    return b;
   }
   if (!posed) {
-    gardienne(b, place, false);
-    return b.build();
+    gardienne(b, place, false, body);
+    return b;
   }
   const f = floorOf(place);
   const R = GALLERY.radius;
@@ -1711,8 +1777,8 @@ export function scenetteDecor(place: PlaceId, open = false, posed = true): Facet
     for (const y of [GALLERY.rail, GALLERY.rail * 0.45])
       b.beam({ x: p.x, y: f.y + y, z: p.z }, { x: q.x, y: f.y + y, z: q.z }, y === GALLERY.rail ? 0.09 : 0.06, C.rail);
   }
-  gardienne(b, place, true);
-  return b.build();
+  gardienne(b, place, true, body);
+  return b;
 }
 
 /**

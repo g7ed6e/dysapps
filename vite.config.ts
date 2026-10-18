@@ -124,11 +124,26 @@ export default defineConfig({
       },
       workbox: {
         // Tout ce qui sert hors ligne, y compris les fichiers chargés à la demande (3D, quêtes, exercices), les textures
-        // PNG de l'interface et les personnages importés d'Archipéo (.glb, compactés).
+        // PNG de l'interface et les personnages importés d'Archipéo (.glb, compactés), sauf les habitants (plus bas).
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,glb}'],
         // Les écrans de lancement (un par appareil) ne servent qu'au démarrage de l'appli installée sur iPhone et iPad :
-        // les précharger ferait télécharger 1 Mo d'images à tous les élèves.
-        globIgnores: ['splash/**'],
+        // les précharger ferait télécharger 1 Mo d'images à tous les élèves. Les seize habitants des scénettes du monde
+        // ouvert (`habitant-*.glb`, 12,4 Mo, src/game/importedCharacters.ts) non plus : ils se gardent à la demande
+        // (`runtimeCaching`), hors ligne seuls les lieux déjà vus ont leur modèle, les autres leur pion.
+        globIgnores: ['splash/**', 'assets/habitant-*.glb'],
+        // Un habitant chargé une fois (son lieu approché) reste servi du cache, sans réseau ; le nom de son fichier change
+        // à chaque nouvelle version, l'ancien sort par le nombre ou par l'âge.
+        runtimeCaching: [
+          {
+            urlPattern: /\/assets\/habitant-[\w-]+\.glb$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'dysapps-habitants-3d',
+              expiration: { maxEntries: 16, maxAgeSeconds: 90 * 24 * 60 * 60 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+        ],
         // Les icônes sont demandées avec leur empreinte (« ?v= ») : le service worker les sert quand même hors ligne.
         ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^v$/],
       },

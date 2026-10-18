@@ -215,3 +215,17 @@ Puis refaire `controle.png` avec `rendre_controle.py` (brut, 1 500, 200). Le tes
 ## À reprendre au modèle 3D
 
 Les retouches propres à chaque personnage (barbe des Sphinx, fils épaissis, yeux repeints…) sont dans la [fiche des concepts](README.md#à-reprendre-au-modèle-3d). Chaque modèle retravaillé passe ensuite par le directeur artistique et le référent dys, sur captures, avant d’entrer dans le jeu.
+
+## Les habitants des scénettes du monde ouvert (18 octobre 2026)
+
+Les seize habitants des scénettes du monde ouvert du 6e (`?monde=ouvert`) sont des modèles texturés, tirés de leurs concepts et validés par le mainteneur le 18 octobre 2026. Leur chaîne est à part de celle des Gardiens et des créatures, et tourne hors du dépôt (Bibliothèque, `archipeo/habitants-6e/3d-v2/seize.md`) :
+
+- un brut TRELLIS 1024 (texture 2048), gardé dans la Bibliothèque ;
+- réduit dans Blender à 17 000 triangles (corps 10 000, tête 7 000), ou 22 500 pour la saunière et le chef de gare (tête 12 500), la tête soudée pour les Filets, les Marais salants, les Ruines et la Gare maritime ;
+- la texture éclaircie par grappes vers le concept (les noirs de la tête épargnés), gardée en JPEG 2048 dans le fichier ;
+- la texture de huit lieux retouchée après les relectures du 18 octobre 2026 (Écluses, Gare maritime, Phare, Observatoire, Halle, Vigie, Archives, Quais : couleurs du concept, triangles d’une autre matière repeints, gilet du docker foncé pour le contraste en gris), positions, UV et indices identiques octet pour octet ;
+- compacté (`compacter.py`) : sans normales (le jeu les ombre en facettes), positions en int16 (`KHR_mesh_quantization`), UV en 16 bits, indices, sans squelette.
+
+Le dépôt garde le résultat, `modeles/6e-habitant-<lieu>/habitant.glb`, sans `controle.png` ni ligne dans `reglages.csv` (la planche de contrôle, `planche-seize-reduits.jpg`, est dans la Bibliothèque). Le build le publie tel quel : `scripts/rendu/compacterGlb.mjs` ne compacte que les modèles à couleurs de sommets. Le jeu le lit avec `lireGlbTexture` (`src/game/world/characters/imported/glb.ts`), le pose à la place du pion de la scénette, à sa hauteur, face à la caméra (`src/game/world/continu/habitants.ts`), et le dessine dans la vue (`src/game/three/archipeo/habitantModels.ts`). Un fichier qui manque ou ne se lit pas laisse le pion dessiné en code.
+
+Écarts connus, à reprendre si on rouvre un modèle (consultant Archipéo, 18 octobre 2026) : la longue-vue du guetteur garde son volume sur l’épaule (seule sa couleur passe au cuivre) ; la plume de la copiste fait encore deux pointes de face et de dos ; le chapeau de papier de l’imprimeur reste blanc, fondu dans ses cheveux ; la gardienne du Phare et le pilote des Balises se ressemblent (ciré jaune, bonnet rouge), comme leurs concepts. Les couleurs des concepts font foi, plus celles des anciens pions.

@@ -22,6 +22,7 @@ import { placeTrace } from '../../world/continu/questionScene';
 import { remisePose, scenetteDecor, scenetteHabitant, scenetteKeo } from '../../world/continu/scenette';
 import type { PlacedAmenagement } from '../../world/continu/amenagements';
 import { buildHeightField, heightOnMesh, standingHeight } from '../../world/continu/terrain';
+import { HABITANT_HALVES } from '../../world/continu/habitants';
 import { AMENAGEMENTS, AMENAGEMENT_SCALE, ASSISE_STONE, ASSISE_TRIANGLES, HABITANT_HEIGHT, MATTE_GLASS, QUAI_STONE, QUAI_TRIANGLES, amenagementsOf, piecesOf, remiseFrame, remiseInclude, remisePosed, remiseStage } from '../../world/continu/amenagements';
 import { OBJECT_TOUCH_PIXELS, nearestPlace, touchedObject, type ObjectTarget } from '../../world/continu/toucher';
 import { casesDeLaPetiteConstruction } from '../../world/fixtures';
@@ -618,9 +619,10 @@ describe('Le cadrage de la remise', () => {
       const posed = remisePosed(p.id);
       const h = scenetteHabitant(p.id, posed);
       const k = scenetteKeo(p.id, posed).at;
-      // L'habitant et Kéo, en boîtes (une épaule de chaque côté ; l'habitant de sa hauteur, Kéo de la sienne, plus petit).
+      // L'habitant et Kéo, en boîtes (l'habitant à la taille de son modèle, ./habitants.ts ; Kéo d'une épaule de chaque côté,
+      // de sa hauteur, plus petit).
       const figures = [
-        { name: 'l’habitant', min: [h.x - 0.3, h.y, h.z - 0.3], max: [h.x + 0.3, h.y + HABITANT_HEIGHT, h.z + 0.3] },
+        { name: 'l’habitant', min: [h.x - HABITANT_HALVES[p.id].x, h.y, h.z - HABITANT_HALVES[p.id].z], max: [h.x + HABITANT_HALVES[p.id].x, h.y + HABITANT_HEIGHT, h.z + HABITANT_HALVES[p.id].z] },
         { name: 'Kéo', min: [k.x - 0.3, k.y, k.z - 0.3], max: [k.x + 0.3, k.y + 1, k.z + 0.3] },
       ];
       for (const [w, hh] of screens) {

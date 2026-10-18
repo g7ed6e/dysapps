@@ -51,8 +51,8 @@ import { standingHeight } from './terrain';
  */
 export const AMENAGEMENT_SCALE = 0.45;
 
-/** La hauteur de l'habitant d'une scénette, en unités du monde (le plus petit, mesuré sur les décors de près). */
-export const HABITANT_HEIGHT = 1.4;
+/** La hauteur de l'habitant d'une scénette, en unités du monde (son modèle, ./habitants.ts, comme son pion). */
+export { HABITANT_HEIGHT } from './habitants';
 
 /**
  * Le verre mat des lanternes éteintes (consultant Archipéo, arbitrage du directeur artistique, point 3) : le dessus et

@@ -9,6 +9,7 @@
 // (../../worldLayoutFactory.tsx). Tout ce qui se calcule sans Three.js est dans world/continu/.
 import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
+import { createHabitantModels } from './habitantModels';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, detourRise, detourViewStep, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourFacets, faunaPose, spoutFacets, whaleFacets, type DetourId } from '../../world/continu/detours';
@@ -835,6 +836,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       mapDirty = true;
     });
   keo.scale.setScalar(KEO_SCALE);
+  // L'habitant de la scénette en modèle 3D (./habitantModels.ts) : un maillage texturé à part, un appel ; sa texture
+  // envoyée à la carte graphique dès qu'elle est décodée (à l'approche du lieu), jamais au premier dessin de la scénette.
+  // Fait ici, avant tout ce qui l'appelle (`setFrame`, l'entrée et la sortie d'une scénette, `dispose`).
+  const habitants = createHabitantModels(scene, (t) => renderer.initTexture(t));
   const ringGeometry = keep(new THREE.RingGeometry(KEO_RING.inner, KEO_RING.outer, 24).rotateX(-Math.PI / 2));
   // L'anneau épouse le sol (directeur artistique) : ses sommets suivent le sol dessiné, refaits quand Kéo bouge ; sa
   // sphère englobante tient les pentes.
@@ -1215,6 +1220,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const setFrame = (free: typeof frameRect, place?: PlaceId) => {
     frameRect = free;
     if (place) framed = place;
+    // Le panneau d'un lieu s'ouvre (Kéo y arrive) : le modèle de son habitant se prépare, avant sa scénette.
+    if (place) habitants.prefetch(place);
     if (free) return reframe();
     // Pendant une question ou une remise, la caméra garde son cadrage : le panneau se recadre à leur fin.
     if (asked || remise || mapView) return;
@@ -2318,6 +2325,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Au retour, la caméra qui suit est tournée vers le nord, comme la scénette.
     faceNorth();
     posed = site ?? traceStagePosed(place, posedOf(place));
+    // Le modèle de l'habitant, s'il est prêt, avant le décor de près : celui-ci se fait alors sans le pion.
+    habitants.show(place, scenetteHabitant(place, posed));
     setGeometry(decorMesh, scenetteDecor(place, false, posed));
     // Aux Quais, la maquette du lieu (sa grue, son hangar) s'efface : le quai de la scénette a les siens. La trace de
     // la scénette aussi, sauf au Phare : la trace de la réussite (la barque chargée, le panier plein, la porte ouverte)
@@ -2343,6 +2352,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     decorMesh.geometry.dispose();
     decorMesh.geometry = new THREE.BufferGeometry();
     decorMesh.visible = false;
+    habitants.hide();
     keo.scale.setScalar(KEO_SCALE);
     // Aux Quais, Kéo reste sur le bord du quai, face à la caméra, qui garde la barque chargée (d'un coup, comme tout
     // retour de question).
@@ -3073,6 +3083,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       renderer.domElement.removeEventListener('pointermove', onMove);
       renderer.domElement.removeEventListener('wheel', onWheel);
       body.dispose();
+      habitants.dispose();
       for (const g of geometries) g.dispose();
       for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, remiseMesh, veilMesh, decorMesh]) m.geometry.dispose();
       lampMaterial.dispose();

@@ -4,7 +4,7 @@
 // avec les personnages d'Archipéo : Blocland ne les télécharge jamais.
 import type { ArchipelagoId } from './world/archipelago';
 import { archipelagoOfIsland } from './world/archipelagos';
-import { lireGlb } from './world/characters/imported/glb';
+import { lireGlb, lireGlbTexture, type ModeleTexture } from './world/characters/imported/glb';
 import { registerKeo, KEO_FILE, loadedKeo, KEO_OUTFITS } from './world/characters/imported/keo';
 import { enregistrer, FICHIER, ILES_IMPORTEES, modeleImporte, nomDuModele, type Genre, type Niveau } from './world/characters/imported/models';
 
@@ -20,7 +20,7 @@ const adresseDe = (nom: string, niveau: Niveau): string | undefined => ADRESSES[
 /** Le chargement de chaque archipel, et s'il a manqué un fichier, quand il a fini. */
 const enCours = new Map<ArchipelagoId, { p: Promise<void>; manque?: number }>();
 /** Un chargement qui a manqué un fichier se refait au plus tôt après ce délai (le défi et les fiches l'attendent). */
-const RELANCE_MS = 30_000;
+export const RELANCE_MS = 30_000;
 
 /**
  * Charge les modèles importés d'un archipel, ses Gardiens et ses créatures, de près et de loin (une fois par archipel).
@@ -84,5 +84,48 @@ export function loadKeo(archipel: ArchipelagoId): Promise<void> {
     }
   })();
   keoLoads.set(archipel, chargement);
+  return chargement.p;
+}
+
+/**
+ * L'adresse du modèle de chaque habitant des scénettes du monde ouvert (« 6e-habitant-<lieu> »), texturé, déjà compacté
+ * par sa chaîne : le build le publie tel quel (scripts/rendu/compacterGlb.mjs).
+ */
+const HABITANTS = import.meta.glob('../../docs/univers/archipeo/personnages/modeles/6e-habitant-*/habitant.glb', {
+  query: '?url',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
+/** Les chargements en cours des habitants, et s'ils ont manqué, quand. */
+const habitantLoads = new Map<string, { p: Promise<ModeleTexture | null>; manque?: number }>();
+
+/**
+ * Charge le modèle d'un habitant des scénettes (son dossier, « 6e-habitant-<lieu> ») : lu, ou rien. Ne rejette jamais :
+ * un fichier qui manque ou ne se lit pas laisse le pion dessiné en code, et se redemande au plus tôt `RELANCE_MS` plus
+ * tard. Rien n'est gardé une fois lu (la vue garde ce qu'elle montre) : un second appel relit le fichier, que le service
+ * worker garde à la première lecture (cache « dysapps-habitants-3d », vite.config.ts).
+ */
+export function loadHabitant(nom: string): Promise<ModeleTexture | null> {
+  const deja = habitantLoads.get(nom);
+  if (deja && (deja.manque === undefined || performance.now() - deja.manque < RELANCE_MS)) return deja.p;
+  const url = HABITANTS[`../../docs/univers/archipeo/personnages/modeles/${nom}/habitant.glb`];
+  const chargement: { p: Promise<ModeleTexture | null>; manque?: number } = { p: Promise.resolve(null) };
+  chargement.p = (async () => {
+    try {
+      if (!url) throw new Error(`Modèle inconnu : ${nom}`);
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(String(r.status));
+      return lireGlbTexture(await r.arrayBuffer());
+    } catch {
+      // Hors ligne sans le fichier, ou un fichier abîmé : le pion dessiné en code reste.
+      chargement.manque = performance.now();
+      return null;
+    } finally {
+      // Lu (ou manqué) : le prochain appel relit le fichier, ou attend la relance.
+      if (chargement.manque === undefined) habitantLoads.delete(nom);
+    }
+  })();
+  habitantLoads.set(nom, chargement);
   return chargement.p;
 }
