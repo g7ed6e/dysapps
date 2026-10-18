@@ -2,8 +2,9 @@
  * Le kit commun des abords des scénettes (./surroundings.ts) : ce que les lieux partagent, pour que les seize lieux se
  * fassent de la même main. Le sol du monde en un point, un hasard fixe, les couleurs de nature et de pierre, un rocher à
  * facettes, une touffe d'herbe, un petit tas conique (le sel, le sable, la terre) et la maison à colombages au toit
- * d'ardoise (sur un socle de pierre ou sur pilotis, son toit en réparation ou non). Aplats francs, une couleur par
- * facette, rien de presque noir. Code pur, sans Three.js.
+ * d'ardoise (sur un socle de pierre ou sur pilotis, son toit en réparation ou non) ; le bois de l'eau, venu des Quais :
+ * le ponton sur pieux, la barque et son plancher, le tonneau, la pile de planches. Aplats francs, une couleur par facette,
+ * rien de presque noir. Code pur, sans Three.js.
  */
 import type { FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
@@ -365,4 +366,193 @@ function roof(b: FacetBuilder, L: Local, W: number, D: number, slope: number, re
   const [ax, ay, az] = L(u0 - 0.05, yR, 0),
     [cx, cy, cz] = L(u1 + 0.05, yR, 0);
   b.beam({ x: ax, y: ay, z: az }, { x: cx, y: cy, z: cz }, 0.16, H.ridge);
+}
+
+/**
+ * Le bois des pontons, des tonneaux et des piles (les Quais, d'abord) : les planches claires, leur tranche, leurs joints ;
+ * les douelles d'un tonneau, son cerclage, son fond.
+ */
+export const TIMBER = {
+  plank: 0xdcc08f,
+  plankSide: 0xb08658,
+  seam: 0xb48c5c,
+  stave: 0x9a6a3e,
+  hoop: 0x7f8b90,
+  lid: 0xc08c55,
+} as const;
+
+/** Un tonneau posé en (x, y, z) : deux troncs de cône de douelles, un cerclage au ventre, le fond clair. */
+export function barrel(b: FacetBuilder, x: number, y: number, z: number): void {
+  const r0 = 0.27,
+    r1 = 0.33,
+    h = 0.38,
+    sides = 7;
+  b.prism({ x, y, z }, r0, r1, h, sides, TIMBER.stave);
+  b.band({ x, y: y + h - 0.06, z }, r1 + 0.01, 0.12, sides, TIMBER.hoop);
+  b.prism({ x, y: y + h, z }, r1, r0, h, sides, TIMBER.stave, TIMBER.lid);
+}
+
+/**
+ * Une pile de planches le long de z, posée en (x, y, z) : un lit par nombre de `rows` (de bas en haut, `rows[k]` planches
+ * côte à côte), de `length` de long, chaque lit un peu plus court et décalé d'un rien. Sans cales : on les pose à part.
+ */
+export function plankStack(b: FacetBuilder, x: number, y: number, z: number, rows: readonly number[], length: number): void {
+  const w = 0.24,
+    t = 0.09;
+  rows.forEach((n, layer) => {
+    for (let i = 0; i < n; i++) {
+      const px = x + (i - (n - 1) / 2) * (w + 0.02);
+      b.box({ x: px, y: y + layer * t, z: z + (layer % 2 ? 0.15 : 0) }, [w, t, length - layer * 0.25], TIMBER.plankSide, TIMBER.plank);
+    }
+  });
+}
+
+/**
+ * Un ponton sur pieux : son plancher de `from` à `to` (au sol, en x et z), de largeur `width`, son dessus en `top` ; ses
+ * planches en travers (un joint tous les 0,7), `pairs` paires de pieux (6 par défaut) plantés jusqu'au fond (`groundAt`,
+ * enfoncés de 0,12), et, si `braces` le dit, des écharpes de pieu en pieu sur un flanc : +1 à gauche en allant de
+ * `from` à `to` (à l'est pour un ponton qui part vers le sud), −1 à droite, de `braceFoot` (0,05 par défaut, un rien
+ * au-dessus de l'eau) jusque sous le plancher.
+ */
+export interface PontoonSpec {
+  from: { x: number; z: number };
+  to: { x: number; z: number };
+  width: number;
+  top: number;
+  pairs?: number;
+  braces?: -1 | 0 | 1;
+  braceFoot?: number;
+}
+
+export function pontoon(b: FacetBuilder, spec: PontoonSpec): void {
+  const { from, to, width: W, top: y } = spec;
+  const len = Math.hypot(to.x - from.x, to.z - from.z);
+  const ax = (to.x - from.x) / len,
+    az = (to.z - from.z) / len;
+  const yaw = Math.atan2(ax, az);
+  // Un point du ponton : `t` le long de son axe, depuis `from` ; `u` en travers, vers sa gauche.
+  const at = (t: number, u: number) => ({ x: from.x + ax * t + az * u, z: from.z + az * t - ax * u });
+  const mid = at(len / 2, 0);
+  b.box({ x: mid.x, y: y - 0.16, z: mid.z, yaw }, [W, 0.16, len], TIMBER.plankSide, TIMBER.plank);
+  const seam = (t: number, u: number): P3 => {
+    const p = at(t, u);
+    return [p.x, y + 0.012, p.z];
+  };
+  for (let k = 1; k * 0.7 < len; k++) {
+    const t = k * 0.7;
+    b.quad(seam(t + 0.02, -W / 2), seam(t + 0.02, W / 2), seam(t - 0.02, W / 2), seam(t - 0.02, -W / 2), TIMBER.seam);
+  }
+  const pairs = spec.pairs ?? 6;
+  const ts = Array.from({ length: pairs }, (_, i) => 0.15 + ((len - 0.3) * i) / (pairs - 1));
+  for (const t of ts)
+    for (const side of [-1, 1]) {
+      const p = at(t, side * (W / 2 - 0.05));
+      const foot = groundAt(p.x, p.z, 0.12);
+      b.box({ x: p.x, y: foot, z: p.z, yaw }, [0.2, y + 0.12 - foot, 0.2], NATURE.pile);
+    }
+  const side = spec.braces ?? 0;
+  if (!side) return;
+  const low = spec.braceFoot ?? 0.05;
+  for (let i = 1; i < pairs - 1; i++) {
+    const p = at(ts[i], side * (W / 2 + 0.06)),
+      q = at(ts[i + 1], side * (W / 2 + 0.06));
+    b.beam({ x: p.x, y: low, z: p.z }, { x: q.x, y: y - 0.2, z: q.z }, 0.09, NATURE.pile);
+  }
+}
+
+/**
+ * Les couleurs de la barque : ses bordés bleus, son fond, son plat-bord clair ; le socle et le toit de sa lanterne, sa
+ * vitre éteinte (le gris-bleu de la lanterne du Phare) ; son mât court, plus sombre que ses bancs ; son plancher, ses
+ * joints et le bordé vu de l'intérieur.
+ */
+const BARQUE = {
+  hull: 0x4f7fa3,
+  hullTop: 0xa9784a,
+  wale: 0xc28a52,
+  lanternFrame: 0x8f897d,
+  glassOff: 0xbfd0d3,
+  mast: 0xa57a4f,
+  floor: 0xc08c58,
+  seam: 0x8a6440,
+  inside: 0xd0a26a,
+} as const;
+
+/** La hauteur du plancher d'une barque au-dessus de l'eau : un rien, pour que l'eau ne passe jamais au travers. */
+export const BARQUE_FLOOR = 0.05;
+/** Le côté de la vitre de la lanterne de proue. */
+export const LANTERN_GLASS = 0.2;
+/** La longueur de la proue, en part de la largeur de la coque : une pointe courte. */
+const BOW_SHARE = 0.5;
+/** La hauteur du mât court, au-dessus du bas de la coque. */
+const BARQUE_MAST = 2.1;
+
+/** La pointe de la proue, le haut de l'étrave et le bas de la vitre de sa lanterne, pour une barque (`barque`). */
+export function barqueBow(at: Vec3, length: number, width: number): { tip: Vec3; stemTop: Vec3; lantern: Vec3 } {
+  const y = at.y - 0.3;
+  const tip = { x: at.x + length / 2 + BOW_SHARE * width, y, z: at.z };
+  const stemTop = { x: tip.x + 0.3, y: y + 1.35, z: at.z };
+  return { tip, stemTop, lantern: { x: stemTop.x, y: stemTop.y + 0.06, z: at.z } };
+}
+
+/**
+ * La barque amarrée (les Quais, lot 3, réserve du directeur artistique : reconnaissable) : une coque ouverte, son fond de
+ * bois, ses bordés bleus au plat-bord clair, la proue en pointe à l'est, et deux bancs en travers ; sur l'étrave, la
+ * lanterne éteinte, et un mât court dans le banc de la poupe (`look.lantern`, `look.mast` : vrais par défaut). `at` : le
+ * milieu de son fond, à la surface de l'eau. Sans plancher : `barqueFloor` le pose.
+ */
+export function barque(b: FacetBuilder, at: Vec3, length: number, width: number, look: { lantern?: boolean; mast?: boolean } = {}): void {
+  const wall = 0.22,
+    h = 0.75,
+    y = at.y - 0.3;
+  const K = BARQUE;
+  b.box({ x: at.x, y, z: at.z }, [length, 0.2, width], K.hull, K.hullTop);
+  for (const side of [-1, 1]) b.box({ x: at.x, y, z: at.z + side * (width / 2 - wall / 2) }, [length, h, wall], K.hull, K.wale);
+  b.box({ x: at.x - length / 2 + wall / 2, y, z: at.z }, [wall, h, width], K.hull, K.wale);
+  // La proue (directeur artistique) : courte, à la largeur de la coque, ses deux bordés qui se rejoignent en pointe sur
+  // un fond en losange bas (creuse, comme le reste de la barque) ; l'étrave monte de la pointe, penchée vers l'avant, et
+  // porte la lanterne.
+  const bow = barqueBow(at, length, width);
+  const end = at.x + length / 2;
+  const bowLen = bow.tip.x - end;
+  b.prism({ x: end, y, z: at.z }, width / 2, width / 2, 0.2, 4, K.hull, K.hullTop);
+  const side = Math.hypot(bowLen, width / 2);
+  const angle = Math.atan2(width / 2, bowLen);
+  for (const k of [-1, 1]) b.box({ x: end + bowLen / 2, y, z: at.z + (k * width) / 4, yaw: k * angle }, [side + wall / 2, h, wall], K.hull, K.wale);
+  b.beam({ x: bow.tip.x - 0.08, y, z: at.z }, bow.stemTop, 0.2, K.hull);
+  if (look.lantern ?? true) {
+    // La lanterne de proue : son socle et son toit sombres, sa vitre éteinte entre les deux.
+    b.box({ x: bow.lantern.x, y: bow.lantern.y - 0.06, z: at.z }, [0.26, 0.06, 0.26], K.lanternFrame);
+    b.box({ x: bow.lantern.x, y: bow.lantern.y, z: at.z }, [LANTERN_GLASS, LANTERN_GLASS, LANTERN_GLASS], K.glassOff);
+    b.box({ x: bow.lantern.x, y: bow.lantern.y + LANTERN_GLASS, z: at.z }, [0.3, 0.07, 0.3], K.lanternFrame);
+  }
+  // Deux bancs en travers, à la poupe et à la proue, hors de la place des caisses.
+  for (const dx of [-length / 2 + 0.6, length / 2 - 0.6]) b.box({ x: at.x + dx, y: y + 0.42, z: at.z }, [0.34, 0.1, width - 2 * wall], K.wale);
+  // Un mât court, planté dans le banc de la poupe (directeur artistique, reprise des abords des Quais) : loin du crochet
+  // de la grue et de la place où il descend la caisse, à la proue.
+  if (look.mast ?? true) b.beam({ x: at.x - length / 2 + 0.6, y: y + 0.4, z: at.z }, { x: at.x - length / 2 + 0.6, y: y + BARQUE_MAST, z: at.z }, 0.11, K.mast);
+}
+
+/**
+ * Le plancher d'une barque (`barque`), à fleur d'eau (évaluation du directeur artistique : sans lui, la barque se lisait
+ * comme un cadre vide, son fond sous l'eau) : un aplat de bois entre les bordés, jusqu'à un pas de la pointe de la
+ * proue, deux joints le long de la coque, et le bordé vu de l'intérieur, en bois (le bleu reste dehors).
+ */
+export function barqueFloor(b: FacetBuilder, at: Vec3, length: number, width: number): void {
+  const wall = 0.22,
+    y = at.y + BARQUE_FLOOR;
+  const x0 = at.x - length / 2 + wall,
+    x1 = at.x + length / 2,
+    z0 = at.z - width / 2 + wall,
+    z1 = at.z + width / 2 - wall;
+  b.quad([x0, y, z1], [x1, y, z1], [x1, y, z0], [x0, y, z0], BARQUE.floor);
+  b.triangle([x1, y, z1], [x1 + BOW_SHARE * width - 0.3, y, at.z], [x1, y, z0], BARQUE.floor);
+  for (const k of [-1, 1]) {
+    const z = at.z + (k * (z1 - z0)) / 6;
+    b.quad([x0, y + 0.005, z + 0.02], [x1, y + 0.005, z + 0.02], [x1, y + 0.005, z - 0.02], [x0, y + 0.005, z - 0.02], BARQUE.seam);
+  }
+  const top = at.y - 0.3 + 0.75 - 0.01,
+    e = 0.005;
+  b.quad([x0, y, z0 + e], [x1, y, z0 + e], [x1, top, z0 + e], [x0, top, z0 + e], BARQUE.inside);
+  b.quad([x1, y, z1 - e], [x0, y, z1 - e], [x0, top, z1 - e], [x1, top, z1 - e], BARQUE.inside);
+  b.quad([x0 + e, y, z1], [x0 + e, y, z0], [x0 + e, top, z0], [x0 + e, top, z1], BARQUE.inside);
 }

@@ -3,7 +3,7 @@
  * planches claires tenu par ses pieux au bord du bassin, une jetée sur pilotis le long de la rive est, la maison à
  * colombages sur pilotis au toit d'ardoise bleue en réparation (ses liteaux posés), des tonneaux, des piles de planches,
  * un voilier amarré au sud-ouest du bassin et des rochers à facettes de pierre chaude sur les rives (le kit commun,
- * ./surroundingsKit.ts, pour la maison et les rochers). Fini tout autour, puisque la caméra tourne à deux doigts : de
+ * ./surroundingsKit.ts, pour la maison, la jetée, les tonneaux, les planches et les rochers). Fini tout autour, puisque la caméra tourne à deux doigts : de
  * face, la maison derrière le docker, entière sous « Vue simple » ; de côté, la jetée et les planches ; de dos, le bassin,
  * le voilier et la rive sud, la maison sous le panneau.
  *
@@ -15,20 +15,14 @@ import type { FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
 import { QUAY } from './questionScene';
 import type { SurroundingsState } from './surroundings';
-import { NATURE, groundAt, rock, timberHouse } from './surroundingsKit';
+import { NATURE, TIMBER, barrel, groundAt, plankStack, pontoon, rock, timberHouse } from './surroundingsKit';
 import { heightAt } from './terrain';
 
 const C = {
-  /** Les planches claires du quai et de la jetée, leur tranche, leurs joints. */
-  plank: 0xdcc08f,
-  plankSide: 0xb08658,
-  seam: 0xb48c5c,
+  /** Les joints des planches du quai (le bois du kit commun). */
+  seam: TIMBER.seam,
   /** Les pieux (le bois des pieux des pontons, lot commun des scénettes). */
   pile: NATURE.pile,
-  /** Les tonneaux : les douelles, le cerclage, le fond. */
-  stave: 0x9a6a3e,
-  hoop: 0x7f8b90,
-  lid: 0xc08c55,
   /** Le voilier : sa coque blanche, sa bande bleue, son pont, son mât, sa voile ferlée, ses haubans. */
   hull: 0xf2eee4,
   stripe: 0x4f7fa3,
@@ -89,30 +83,14 @@ function quayPiles(b: FacetBuilder, f: Vec3): void {
 }
 
 /**
- * La jetée sur pilotis, le long de la rive est du bassin : du rivage, au nord, vers le large ; ses planches en travers,
- * ses pieux par paires, des écharpes sur sa face est, un tonneau au bout.
+ * La jetée sur pilotis (le ponton du kit commun), le long de la rive est du bassin : du rivage, au nord, vers le large ;
+ * ses planches en travers, ses pieux par paires, des écharpes sur sa face est, un tonneau au bout.
  */
 function jetty(b: FacetBuilder, f: Vec3): void {
   const J = QUAIS_SURROUNDINGS.jetty;
-  const x = f.x + J.dx, z0 = f.z + J.from, z1 = f.z + J.to, y = J.top;
-  const len = z1 - z0;
-  b.box({ x, y: y - 0.16, z: (z0 + z1) / 2 }, [J.width, 0.16, len], C.plankSide, C.plank);
-  for (let k = 1; k * 0.7 < len; k++) {
-    const z = z0 + k * 0.7;
-    b.quad([x - J.width / 2, y + 0.012, z + 0.02], [x + J.width / 2, y + 0.012, z + 0.02], [x + J.width / 2, y + 0.012, z - 0.02], [x - J.width / 2, y + 0.012, z - 0.02], C.seam);
-  }
-  const rows = 6;
-  const zs = Array.from({ length: rows }, (_, i) => z0 + 0.15 + ((len - 0.3) * i) / (rows - 1));
-  for (const z of zs)
-    for (const side of [-1, 1]) {
-      const px = x + side * (J.width / 2 - 0.05);
-      const foot = footAt(px, z);
-      b.box({ x: px, y: foot, z }, [0.2, y + 0.12 - foot, 0.2], C.pile);
-    }
-  // Les écharpes sur la face est, de pieu en pieu, au-dessus de l'eau.
-  const ex = x + J.width / 2 + 0.06;
-  for (let i = 1; i < rows - 1; i++) b.beam({ x: ex, y: 0.05, z: zs[i] }, { x: ex, y: y - 0.2, z: zs[i + 1] }, 0.09, C.pile);
-  barrel(b, x - 0.3, y, z1 - 0.5);
+  const x = f.x + J.dx, z0 = f.z + J.from, z1 = f.z + J.to;
+  pontoon(b, { from: { x, z: z0 }, to: { x, z: z1 }, width: J.width, top: J.top, braces: 1 });
+  barrel(b, x - 0.3, J.top, z1 - 0.5);
 }
 
 /**
@@ -130,27 +108,8 @@ function house(b: FacetBuilder, f: Vec3): void {
   const yx = f.x + Y.dx, yz = f.z + Y.dz;
   const yy = heightAt({ x: yx, z: yz }) + 0.1;
   for (const dz of [-0.85, 0.85]) b.box({ x: yx, y: footAt(yx, yz + dz), z: yz + dz }, [1.2, yy - footAt(yx, yz + dz), 0.18], C.pile);
-  planks(b, yx, yy, yz, [4, 3, 2], 2.4);
+  plankStack(b, yx, yy, yz, [4, 3, 2], 2.4);
   for (const [dx, dz] of [[-0.2, 1.75], [0.6, 1.9]]) barrel(b, yx + dx, heightAt({ x: yx + dx, z: yz + dz }) - 0.04, yz + dz);
-}
-
-/** Un tonneau posé en (x, y, z) : deux troncs de cône de douelles, un cerclage au ventre, le fond clair. */
-function barrel(b: FacetBuilder, x: number, y: number, z: number): void {
-  const r0 = 0.27, r1 = 0.33, h = 0.38, sides = 7;
-  b.prism({ x, y, z }, r0, r1, h, sides, C.stave);
-  b.band({ x, y: y + h - 0.06, z }, r1 + 0.01, 0.12, sides, C.hoop);
-  b.prism({ x, y: y + h, z }, r1, r0, h, sides, C.stave, C.lid);
-}
-
-/** Une pile de planches le long de z, posée en (x, y, z) : des lits de `rows` planches, de `length` de long. */
-function planks(b: FacetBuilder, x: number, y: number, z: number, rows: readonly number[], length: number): void {
-  const w = 0.24, t = 0.09;
-  rows.forEach((n, layer) => {
-    for (let i = 0; i < n; i++) {
-      const px = x + (i - (n - 1) / 2) * (w + 0.02);
-      b.box({ x: px, y: y + layer * t, z: z + (layer % 2 ? 0.15 : 0) }, [w, t, length - layer * 0.25], C.plankSide, C.plank);
-    }
-  });
 }
 
 /** La rive ouest, au-delà du bout du quai : une pile de planches sur ses deux cales, un tonneau. */
@@ -159,7 +118,7 @@ function westShore(b: FacetBuilder, f: Vec3): void {
   const x = f.x + P.dx, z = f.z + P.dz;
   const y = heightAt({ x, z }) + 0.12;
   for (const dz of [-0.8, 0.8]) b.box({ x, y: footAt(x, z + dz), z: z + dz }, [1.1, y - footAt(x, z + dz), 0.18], C.pile);
-  planks(b, x, y, z, [3, 2], 2.2);
+  plankStack(b, x, y, z, [3, 2], 2.2);
   barrel(b, x - 1, heightAt({ x: x - 1, z: z - 1 }) - 0.04, z - 1);
 }
 

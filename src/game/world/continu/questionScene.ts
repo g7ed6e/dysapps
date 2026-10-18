@@ -11,6 +11,7 @@ import type { ItemScene } from './questions';
 import { COMMONS, ENGINE, FILETS_RACK, OBSERVATORY, SHIPYARD, SLIP_N, SLIP_U, SLIP_YAW, STEAM_GAP, VALVE_PUFFS, drumFace, engineSteam, filetsRack, hullEdge, hullPoint, slipPoint } from './places';
 import { MANGROVE, mangroveDeckTop } from './places';
 import { RUINS } from './places';
+import { BARQUE_FLOOR, LANTERN_GLASS, barque, barqueBow, barqueFloor } from './surroundingsKit';
 import { heightAt, standingHeight } from './terrain';
 
 const C = {
@@ -18,12 +19,10 @@ const C = {
   /**
    * Le dessus du quai, plus clair : les caisses s'y détachent ; sa tranche, du même bois (reprise des Quais : des planches
    * claires sur leurs pieux, pas une dalle brune ; éclairci encore à la reprise des abords, référent dys : vus de côté ou
-   * de dos, Kéo et le docker s'y détachent). Le plancher de la barque, à fleur d'eau.
+   * de dos, Kéo et le docker s'y détachent).
    */
   quay: 0xf7e9cc,
   quaySide: 0xb08658,
-  boatFloor: 0xc08c58,
-  boatInside: 0xd0a26a,
   crane: 0xd9a441,
   rope: 0x5a4632,
   deckSide: 0x8a6440,
@@ -45,9 +44,13 @@ const C = {
   shrimp: 0xe58f7a,
   stone: 0xb9b2a3,
   stoneDark: 0x8f897d,
-  /** Le dos des parois des sas des Écluses : deux pierres claires (à l'ombre, il reste clair). */
-  wallBack: 0xe2ddd2,
-  wallBackAlt: 0xd2ccbf,
+  /**
+   * Le dos et les bouts des parois des sas des Écluses : le bois sombre des portes d'écluse du canal
+   * (./eclusesSurroundings.ts), en planches de deux tons, ses traverses et sa margelle d'un bois plus clair.
+   */
+  gateWood: 0x6e5038,
+  gateWoodAlt: 0x7d5b3f,
+  gateWoodTop: 0x8a6848,
   /** Les dalles chaudes du sol d'une scène (lot commun des scénettes), à la place de la pierre grise : scenette.ts. */
   paving: 0xd6b98e,
   pavingSide: 0xb0926a,
@@ -79,8 +82,6 @@ const C = {
   hull: 0x4f7fa3,
   hullTop: 0xa9784a,
   lamp: 0xffd36b,
-  /** La vitre éteinte de la lanterne de proue (le gris-bleu de la lanterne du Phare). */
-  glassOff: 0xbfd0d3,
   newRope: 0xc9a36a,
   /** La toile claire des ballots de l'Enclos, et son ombre (relecture de L4 : ils se détachent du ponton). */
   canvas: 0xeadfc6,
@@ -88,8 +89,6 @@ const C = {
   strawInside: 0x8c6a2e,
   canvasShade: 0xd3c3a2,
   newWood: 0xc28a52,
-  /** Le mât court de la barque des Quais : un bois moyen, plus sombre que ses bancs. */
-  mast: 0xa57a4f,
   paint: 0xd9a441,
   /** L'anneau des élingues, en fer sombre (la moufle de la grue est en ardoise). */
   iron: 0x4a555c,
@@ -1132,22 +1131,28 @@ export const LOCK = {
 } as const;
 
 /**
- * La paroi d'un sas des Écluses (sa face, au sud, porte l'item) et son dos fini, vu quand la caméra tourne (directeur
- * artistique, deuxième passe du 18 octobre 2026 : « le dos de la paroi du sas est un aplat brun sombre ») : trois assises
- * de blocs d'une pierre claire, joints décalés (la pierre de la paroi entre eux), et une margelle claire sur le haut.
+ * La paroi d'un sas des Écluses (sa face, au sud, porte l'item) et son dos fini, vu quand la caméra tourne : le dos et
+ * les bouts habillés du bois sombre des portes d'écluse du concept (directeur artistique, troisième passe du 18 octobre
+ * 2026 : de côté et de dos, un pilier de pierre au milieu du cadre), en planches debout de deux tons et deux traverses,
+ * et une margelle de bois sur le haut. La face reste de pierre autour de l'item.
  */
 function lockWall(b: FacetBuilder, x: number, y: number, z: number, w: number, h: number): void {
   b.box({ x, y, z }, [w, h, 0.6], C.stoneDark, C.stone);
-  const back = z - 0.3 - 0.03;
-  const course = (h - 0.1) / 3;
-  for (let k = 0; k < 3; k++) {
-    const cuts = k % 2 ? [0, 0.28, 0.72, 1] : [0, 0.5, 1];
-    for (let i = 0; i + 1 < cuts.length; i++) {
-      const x0 = x - w / 2 + 0.05 + cuts[i] * (w - 0.1), x1 = x - w / 2 + 0.05 + cuts[i + 1] * (w - 0.1);
-      b.box({ x: (x0 + x1) / 2, y: y + 0.05 + k * course, z: back }, [x1 - x0 - 0.06, course - 0.06, 0.06], (i + k) % 2 ? C.wallBack : C.wallBackAlt);
-    }
+  // Les planches du dos, à plat sur lui ; ses deux bouts.
+  const back = z - 0.3 - 0.01;
+  const n = Math.max(3, Math.round(w / 0.55));
+  for (let i = 0; i < n; i++) {
+    const x0 = x - w / 2 + (w * i) / n,
+      x1 = x - w / 2 + (w * (i + 1)) / n;
+    b.quad([x1, y, back], [x0, y, back], [x0, y + h, back], [x1, y + h, back], i % 2 ? C.gateWood : C.gateWoodAlt);
   }
-  b.box({ x, y: y + h, z: z - 0.04 }, [w + 0.12, 0.12, 0.74], C.wallBackAlt, C.wallBack);
+  for (const side of [-1, 1]) {
+    const ex = x + side * (w / 2 + 0.01);
+    const [z0, z1] = side > 0 ? [z + 0.3, z - 0.3] : [z - 0.3, z + 0.3];
+    b.quad([ex, y, z0], [ex, y, z1], [ex, y + h, z1], [ex, y + h, z0], C.gateWood);
+  }
+  for (const k of [0.22, 0.68]) b.box({ x, y: y + k * h, z: back - 0.04 }, [w - 0.1, 0.18, 0.08], C.gateWood, C.gateWoodTop);
+  b.box({ x, y: y + h, z: z - 0.04 }, [w + 0.12, 0.12, 0.74], C.gateWood, C.gateWoodTop);
 }
 
 /** La barque des Écluses, sa coque vers l'est, au repère de la réaction (la vue la déplace). */
@@ -1212,79 +1217,6 @@ export function fullBasket(b: FacetBuilder, at: Vec3, s = 1): void {
   for (let k = 0; k < 4; k++) fish(f, ((k % 2) - 0.5) * 0.36, 0, (Math.floor(k / 2) - 0.5) * 0.28, 0.25 * (k % 2 ? 1 : -1));
   for (let k = 0; k < 2; k++) fish(f, (k - 0.5) * 0.3, 0.2, 0, 0.3 * (k ? -1 : 1));
   b.append(placed(f.build(), 0.75 * s, { x: at.x, y: at.y + h - 0.12 * s, z: at.z }));
-}
-
-/**
- * La barque amarrée des Quais (lot 3, réserve du directeur artistique : reconnaissable) : une coque ouverte, son fond
- * de bois, ses bordés bleus au plat-bord clair, la proue en pointe à l'est, et deux bancs en travers. `at` : le milieu de
- * son fond, à la surface de l'eau.
- */
-function barque(b: FacetBuilder, at: Vec3, length: number, width: number): void {
-  const wall = 0.22, h = 0.75, y = at.y - 0.3;
-  b.box({ x: at.x, y, z: at.z }, [length, 0.2, width], C.hull, C.hullTop);
-  for (const side of [-1, 1]) b.box({ x: at.x, y, z: at.z + side * (width / 2 - wall / 2) }, [length, h, wall], C.hull, C.newWood);
-  b.box({ x: at.x - length / 2 + wall / 2, y, z: at.z }, [wall, h, width], C.hull, C.newWood);
-  // La proue (directeur artistique) : courte, à la largeur de la coque, ses deux bordés qui se rejoignent en pointe sur
-  // un fond en losange bas (creuse, comme le reste de la barque) ; l'étrave monte de la pointe, penchée vers l'avant, et
-  // porte la lanterne.
-  const bow = boatBow(at, length, width);
-  const end = at.x + length / 2;
-  const bowLen = bow.tip.x - end;
-  b.prism({ x: end, y, z: at.z }, width / 2, width / 2, 0.2, 4, C.hull, C.hullTop);
-  const side = Math.hypot(bowLen, width / 2);
-  const angle = Math.atan2(width / 2, bowLen);
-  for (const k of [-1, 1])
-    b.box({ x: end + bowLen / 2, y, z: at.z + (k * width) / 4, yaw: k * angle }, [side + wall / 2, h, wall], C.hull, C.newWood);
-  b.beam({ x: bow.tip.x - 0.08, y, z: at.z }, bow.stemTop, 0.2, C.hull);
-  // La lanterne de proue : son socle et son toit sombres, sa vitre éteinte entre les deux.
-  b.box({ x: bow.lantern.x, y: bow.lantern.y - 0.06, z: at.z }, [0.26, 0.06, 0.26], C.stoneDark);
-  b.box({ x: bow.lantern.x, y: bow.lantern.y, z: at.z }, [LANTERN_GLASS, LANTERN_GLASS, LANTERN_GLASS], C.glassOff);
-  b.box({ x: bow.lantern.x, y: bow.lantern.y + LANTERN_GLASS, z: at.z }, [0.3, 0.07, 0.3], C.stoneDark);
-  // Deux bancs en travers, à la poupe et à la proue, hors de la place des caisses.
-  for (const dx of [-length / 2 + 0.6, length / 2 - 0.6]) b.box({ x: at.x + dx, y: y + 0.42, z: at.z }, [0.34, 0.1, width - 2 * wall], C.newWood);
-  // Un mât court, planté dans le banc de la poupe (directeur artistique, reprise des abords) : loin du crochet de la
-  // grue et de la place où il descend la caisse, à la proue.
-  b.beam({ x: at.x - length / 2 + 0.6, y: y + 0.4, z: at.z }, { x: at.x - length / 2 + 0.6, y: y + BOAT_MAST, z: at.z }, 0.11, C.mast);
-}
-
-/** La hauteur du mât court de la barque des Quais, au-dessus du bas de sa coque. */
-const BOAT_MAST = 2.1;
-
-/**
- * Le plancher de la barque de la scène des Quais, à fleur d'eau (évaluation du directeur artistique : la barque se lisait
- * comme un cadre vide, son fond sous l'eau) : un aplat de bois entre les bordés, et deux joints le long de la coque.
- */
-function boatFloor(b: FacetBuilder, at: Vec3, length: number, width: number): void {
-  const wall = 0.22, y = at.y + BOAT_FLOOR;
-  const x0 = at.x - length / 2 + wall, x1 = at.x + length / 2, z0 = at.z - width / 2 + wall, z1 = at.z + width / 2 - wall;
-  b.quad([x0, y, z1], [x1, y, z1], [x1, y, z0], [x0, y, z0], C.boatFloor);
-  // Le fond de la proue, jusqu'à un pas de sa pointe.
-  b.triangle([x1, y, z1], [x1 + BOW_SHARE * width - 0.3, y, at.z], [x1, y, z0], C.boatFloor);
-  for (const k of [-1, 1]) {
-    const z = at.z + (k * (z1 - z0)) / 6;
-    b.quad([x0, y + 0.005, z + 0.02], [x1, y + 0.005, z + 0.02], [x1, y + 0.005, z - 0.02], [x0, y + 0.005, z - 0.02], C.deckSide);
-  }
-  // Le bordé vu de l'intérieur, en bois (le bleu reste dehors) : les deux flancs et le tableau arrière.
-  const top = at.y - 0.3 + 0.75 - 0.01, e = 0.005;
-  b.quad([x0, y, z0 + e], [x1, y, z0 + e], [x1, top, z0 + e], [x0, top, z0 + e], C.boatInside);
-  b.quad([x1, y, z1 - e], [x0, y, z1 - e], [x0, top, z1 - e], [x1, top, z1 - e], C.boatInside);
-  b.quad([x0 + e, y, z1], [x0 + e, y, z0], [x0 + e, top, z0], [x0 + e, top, z1], C.boatInside);
-}
-
-/** Le plancher de la barque des Quais au-dessus de l'eau : un rien, pour que l'eau ne passe jamais au travers. */
-const BOAT_FLOOR = 0.05;
-
-/** La longueur de la proue, en part de la largeur de la coque : une pointe courte. */
-const BOW_SHARE = 0.5;
-/** Le côté de la vitre de la lanterne de proue. */
-const LANTERN_GLASS = 0.2;
-
-/** La pointe de la proue, le haut de l'étrave et le bas de la vitre de sa lanterne, pour une barque. */
-function boatBow(at: Vec3, length: number, width: number): { tip: Vec3; stemTop: Vec3; lantern: Vec3 } {
-  const y = at.y - 0.3;
-  const tip = { x: at.x + length / 2 + BOW_SHARE * width, y, z: at.z };
-  const stemTop = { x: tip.x + 0.3, y: y + 1.35, z: at.z };
-  return { tip, stemTop, lantern: { x: stemTop.x, y: stemTop.y + 0.06, z: at.z } };
 }
 
 /** Le crochet de levage, au bout de la corde : une tige et un anneau ouvert (huit pavés). */
@@ -1812,7 +1744,7 @@ function quai(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'quai' }>, answ
   // La barque dans le bassin, contre le bord de pierre.
   const boat = quayBoat(scene, o);
   barque(b, boat.at, boat.length, boat.width);
-  boatFloor(b, boat.at, boat.length, boat.width);
+  barqueFloor(b, boat.at, boat.length, boat.width);
   const onBoat = boat.cargo;
   // La grue au bout est du quai : son pied, son mât, sa flèche vers l'ouest au-dessus du quai, la corde et le crochet.
   // Tant que le haut des Quais (leur grue) n'est pas posé (`posed`), son pied de pierre seul : la grue attend.
@@ -1861,9 +1793,9 @@ export function quayBoat(scene: Extract<ItemScene, { kind: 'quai' }>, o: Vec3 = 
     width,
     // Les caisses posées sur le plancher, au milieu de la coque en travers (les palettes n'ont pas d'allée entre elles et
     // le bordé : directeur artistique, reprise des abords, elles ne le chevauchent plus).
-    cargo: { x: at.x - cargo.w / 2 - 0.5 + CRATE_PITCH / 2, y: at.y + BOAT_FLOOR, z: at.z - cargo.rows / 2 + CRATE_PITCH / 2 },
-    hold: { x: at.x + length / 2 - 1.25, y: at.y + BOAT_FLOOR, z: at.z },
-    lantern: boatBow(at, length, width).lantern,
+    cargo: { x: at.x - cargo.w / 2 - 0.5 + CRATE_PITCH / 2, y: at.y + BARQUE_FLOOR, z: at.z - cargo.rows / 2 + CRATE_PITCH / 2 },
+    hold: { x: at.x + length / 2 - 1.25, y: at.y + BARQUE_FLOOR, z: at.z },
+    lantern: barqueBow(at, length, width).lantern,
   };
 }
 

@@ -1,15 +1,18 @@
 /**
  * Les abords de la scénette des Marais salants (reprise lieu par lieu, d'après le concept du 18 octobre 2026) : une
  * saline qui travaille tout autour du bassin où se tiennent Kéo et la saunière, finie de chaque côté puisque la caméra
- * tourne (« caméra libre »). Au nord, le muret du bassin de l'item et ses petits cônes de sel ; au nord-est, derrière la
- * saunière, deux bassins d'eau claire presque blanche et, entre eux, un bassin asséché craquelé, entre des murets d'argile
- * qui portent des cônes de sel, un tas de sel sur la grève ; des dunes et un palmier derrière le hangar ; à l'est, le
- * chenal qui descend à la mer et sa petite vanne de bois ; au sud, la cabane de bois au toit bleu, sa pile de planches,
- * la brouette chargée, un second tas, les dunes. Partout, des touffes d'herbe sèche et quelques rochers ; pas de sapin
- * (consultant Archipéo : ./flora.ts n'en fait pousser aucun autour du lieu). Rien de haut entre la caméra de face et la
- * scène (la rangée des réponses, Kéo, la saunière, la jauge et la vanne de l'item) : ce qui est au sud se tient derrière
- * la caméra de face ou hors de son champ. Des aplats francs, une couleur par facette ; aucun appel de plus (le décor de
- * près).
+ * tourne (« caméra libre »). Au nord, le muret du bassin de l'item et ses petits cônes de sel ; au sud, au premier plan
+ * comme dans le concept (directeur artistique, deuxième passe : de biais, les bassins du nord-est se lisaient comme du
+ * sable, au bord du cadre), deux rangs de bassins d'eau pâle (le Lagon éclairci) entre des diguettes brunes qui portent
+ * des cônes de sel, l'un des bassins asséché et craquelé ; de face, le premier rang sous les pieds de Kéo et de la
+ * saunière, au-dessus de la rangée des sacs ; de dos, les deux rangs derrière eux, la cabane au-delà. À l'est, le chenal
+ * qui descend à la mer et sa petite vanne de bois ; au sud-ouest, la cabane de bois au toit bleu, sa pile de planches, la
+ * brouette chargée, un tas de sel, les dunes ; le sentier qui arrive de l'ouest, de sable tassé, plus foncé que le sel (le
+ * blanc reste au sel seul), coupé par une dune et des touffes. Partout, des touffes d'herbe sèche et quelques rochers ;
+ * pas de sapin (consultant Archipéo : ./flora.ts n'en fait pousser aucun autour du lieu). Rien de haut entre la caméra de
+ * face et la scène (la rangée des réponses, Kéo, la saunière, la jauge et la vanne de l'item) : les bassins sont à ras de
+ * sol, ce qui est haut se tient derrière la caméra de face ou hors de son champ. Des aplats francs, une couleur par
+ * facette ; aucun appel de plus (le décor de près).
  */
 import type { FacetBuilder } from './facets';
 import { shadowColor, FLORA_COLORS } from './flora';
@@ -17,17 +20,26 @@ import type { Vec3 } from './geometry';
 import { SHADOW_DIR } from './sky';
 import type { SurroundingsState } from './surroundings';
 import { DRY_TUFT, NATURE, SALT, groundAt as groundOf, heap, rock as stone, tuft, type P3 } from './surroundingsKit';
+import { pathSand } from './paths';
 import { placeById } from './plan6e';
-import { heightAt, standingHeight } from './terrain';
+import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 
 /** Les couleurs des abords : celles du lieu (places.ts, questionScene.ts) et quelques valeurs propres à la saline. */
 const C = {
   /** L'argile des murets, son dessus (les murets du lieu). */
   clay: 0xb59a72,
   clayTop: 0xc7ad83,
-  /** L'eau des bassins de récolte : claire, presque blanche (le sel qui s'y forme), son reflet plus clair encore. */
-  brine: 0xcfe4e2,
-  brineGlint: 0xeaf3ef,
+  /**
+   * L'eau des bassins de récolte : pâle, le Lagon éclairci (directeur artistique, deuxième passe : presque blanche, elle
+   * se lisait comme du sable ; le blanc reste au sel), son reflet plus clair.
+   */
+  brine: 0x9edbd1,
+  brineGlint: 0xc9ece5,
+  /** Les diguettes brunes entre les bassins de récolte, leur dessus. */
+  dyke: 0x8f6b48,
+  dykeTop: 0xa47e57,
+  /** Le sable tassé du sentier qui arrive à la porte du lieu : plus foncé que le sel et que le sable du sentier ailleurs. */
+  tamped: 0xc9ad80,
   /** Le reflet sur l'eau du bassin de l'item (scenette.ts, `pan`), plus clair. */
   panGlint: 0xa6e4da,
   /** Le chenal, l'eau de mer qui entre : le Lagon éclairci (directeur artistique ; avant, un bleu qui virait à l'ardoise). */
@@ -58,18 +70,17 @@ const C = {
 const groundAt = (x: number, z: number): number => groundOf(x, z, 0, 0);
 
 /**
- * Les bassins de récolte, dans le repère du sol de la scène (x à l'est, z au sud) : leurs bords ; `dry`, le bassin
- * asséché. Au nord-est, derrière la saunière, dans la moitié droite du cadre de face (directeur artistique : à l'ouest, ils
- * étaient sous le panneau), entre la grille du lieu et la grève, au sud du parasol (la commande de la saunière) et de la
- * pompe de la Pente graduée.
+ * Les rangs de bassins de récolte, dans le repère du sol de la scène (x à l'est, z au sud) : leurs bords en z, les
+ * diguettes en travers en x (de l'ouest à l'est) ; `dry`, le rang du bassin asséché. Au sud de la scène, au premier plan
+ * (le premier rang à l'est du sentier qui arrive de l'ouest, le second plus au sud, au-delà de la place où la rangée des
+ * sacs se pose de face) ; la cabane au-delà.
  */
-const SALINE_POOLS = [
-  { x0: 3.95, x1: 7.5, z0: -3.9, z1: -2.5, dry: false },
-  { x0: 3.95, x1: 7.5, z0: -5.3, z1: -3.9, dry: true },
-  { x0: 3.95, x1: 7.5, z0: -6.7, z1: -5.3, dry: false },
+const SALINE_ROWS = [
+  { z0: 1.9, z1: 3.9, xs: [-1.4, 0.75, 2.9, 5.0], dry: -1 },
+  { z0: 5.8, z1: 8.7, xs: [-5.8, -3.1, -0.4, 2.2], dry: 1 },
 ] as const;
 
-/** Les murets : leur largeur, leur haut et celui de l'eau au-dessus du sol (les murets du lieu : 0,32 et 0,3). */
+/** Les diguettes : leur largeur, leur haut et celui de l'eau au-dessus du sol. */
 const LEVEE = { width: 0.3, top: 0.3, water: 0.14 } as const;
 
 export function saltworksSurroundings(b: FacetBuilder, floor: Vec3, state: SurroundingsState): void {
@@ -80,10 +91,12 @@ export function saltworksSurroundings(b: FacetBuilder, floor: Vec3, state: Surro
   itemPanEdge(b, floor, g0);
   // Le haut posé, le corps l'est aussi : l'eau est dans les six bassins du lieu, qui prennent leurs reflets.
   if (state.posed) placePoolGlints(b);
-  for (const p of SALINE_POOLS) pool(b, X(p.x0), X(p.x1), Z(p.z0), Z(p.z1), p.dry);
+  for (const row of SALINE_ROWS) salineRow(b, row.xs.map(X), Z(row.z0), Z(row.z1), row.dry);
   channel(b, floor, g0);
-  // Les cônes de sel sur les murets (au nord du bassin de l'item, et des bassins de récolte) ; les gros tas, sur la grève.
-  for (const [dx, dz, r] of SMALL_CONES) heap(b, X(dx), groundAt(X(dx), Z(dz)) + LEVEE.top, Z(dz), r, 6);
+  tampedPath(b);
+  // Les cônes de sel sur les murets et les diguettes (au nord du bassin de l'item, entre les bassins de récolte) ; les
+  // gros tas, sur la grève.
+  for (const [dx, dz, r] of SMALL_CONES) heap(b, X(dx), groundAt(X(dx), Z(dz)) + LEVEE.top, Z(dz), r, 5);
   for (const [dx, dz, r] of BIG_HEAPS) {
     const y = groundAt(X(dx), Z(dz));
     shadow(b, X(dx), y, Z(dz), r * 1.05);
@@ -99,16 +112,16 @@ export function saltworksSurroundings(b: FacetBuilder, floor: Vec3, state: Surro
   for (const [i, [dx, dz, s]] of TUFTS.entries()) tuft(b, { x: X(dx), y: groundAt(X(dx), Z(dz)), z: Z(dz) }, i + 50, DRY_TUFT, s * 1.2);
 }
 
-/** Les petits cônes de sel, sur les murets : x, z depuis le sol de la scène, rayon. */
+/** Les petits cônes de sel, sur les murets et les diguettes : x, z depuis le sol de la scène, rayon. */
 const SMALL_CONES: readonly (readonly [number, number, number])[] = [
   [-2.2, -2.12, 0.22],
   [4.3, -2.12, 0.2],
-  [5.9, -2.5, 0.24],
-  [3.95, -3.2, 0.2],
-  [7.5, -4.6, 0.22],
-  [5.7, -5.3, 0.24],
-  [3.95, -6.0, 0.2],
-  [7.5, -6.4, 0.2],
+  [0.75, 3.3, 0.2],
+  [2.9, 3.4, 0.2],
+  [5.0, 3.5, 0.2],
+  [-3.1, 6.4, 0.22],
+  [-0.4, 6.6, 0.18],
+  [-5.8, 7.2, 0.2],
 ];
 
 /** Les gros tas de sel, posés sur la grève : x, z, rayon. */
@@ -125,6 +138,8 @@ const DUNES: readonly (readonly [number, number, number, number, number])[] = [
   [3.2, -15.8, 3, 1.3, 0.2],
   [-2.6, -17.6, 2.8, 1.3, -0.5],
   [-9.4, -4.6, 2.4, 0.9, 0.8],
+  // En travers du sentier, au nord du coude de l'ouest : vu de l'est, il ne file plus d'un trait jusqu'à l'horizon.
+  [-7.6, -12.5, 2.6, 1.1, 0.3],
 ];
 
 /** Les rochers : x, z, rayon. */
@@ -153,6 +168,9 @@ const TUFTS: readonly (readonly [number, number, number])[] = [
   [-4.8, 2.7, 0.9],
   [-6.0, 1.6, 1],
   [-8.4, 2.9, 0.9],
+  // Sur le sentier même, vers le nord : il se coupe en tronçons.
+  [-9.2, -2.2, 1.1],
+  [-8.3, -7.6, 1.1],
 ];
 
 /**
@@ -187,43 +205,46 @@ function placePoolGlints(b: FacetBuilder): void {
 }
 
 /**
- * Un bassin de récolte (ou asséché, `dry`) : son eau claire posée sur le sol (une dalle, ses côtés d'argile), ses quatre
- * murets, un reflet en biais ; asséché, son fond brun et ses plaques craquelées un peu au-dessus.
+ * Un rang de bassins de récolte, de `z0` à `z1`, entre les diguettes en travers en `xs` : l'eau pâle de chaque bassin, à
+ * plat (les diguettes en cachent les bords), un reflet en biais ; le bassin `dry` asséché, son fond brun et ses plaques
+ * craquelées ; les diguettes brunes, les deux longues et celles en travers, du plus bas du sol sous le rang jusqu'un peu
+ * au-dessus du plus haut.
  */
-function pool(b: FacetBuilder, x0: number, x1: number, z0: number, z1: number, dry: boolean): void {
-  const cx = (x0 + x1) / 2,
-    cz = (z0 + z1) / 2;
+function salineRow(b: FacetBuilder, xs: readonly number[], z0: number, z1: number, dry: number): void {
+  const x0 = xs[0],
+    x1 = xs[xs.length - 1];
   let low = Infinity,
     high = -Infinity;
-  for (const x of [x0, cx, x1])
-    for (const z of [z0, cz, z1]) {
+  for (const x of xs)
+    for (const z of [z0, (z0 + z1) / 2, z1]) {
       const h = groundAt(x, z);
       low = Math.min(low, h);
       high = Math.max(high, h);
     }
   const foot = low - 0.15;
-  const water = high + (dry ? 0.06 : LEVEE.water);
-  b.box({ x: cx, y: foot, z: cz }, [x1 - x0, water - foot, z1 - z0], C.clay, dry ? C.crackFloor : C.brine);
-  const w = LEVEE.width,
-    top = high + LEVEE.top - foot;
-  for (const z of [z0, z1]) b.box({ x: cx, y: foot, z }, [x1 - x0 + w, top, w], C.clay, C.clayTop);
-  for (const x of [x0, x1]) b.box({ x, y: foot, z: cz }, [w, top, z1 - z0 - w], C.clay, C.clayTop);
-  if (!dry) {
-    glint(b, x0 + 0.5, x1 - 0.9, z0 + 0.6, z0 + 1.0, water + 0.01, 0.7, C.brineGlint);
-    glint(b, x0 + 1.2, x1 - 0.4, z1 - 1.0, z1 - 0.75, water + 0.01, 0.5, C.brineGlint);
-    return;
+  const w = LEVEE.width;
+  for (let i = 0; i + 1 < xs.length; i++) {
+    const a = xs[i],
+      c = xs[i + 1];
+    const y = high + (i === dry ? 0.06 : LEVEE.water);
+    b.quad([a, y, z1], [c, y, z1], [c, y, z0], [a, y, z0], i === dry ? C.crackFloor : C.brine);
+    if (i === dry) cracks(b, a + w / 2, c - w / 2, z0 + w / 2, z1 - w / 2, y + 0.02);
+    else glint(b, a + 0.4, c - 0.7, z0 + 0.5, z0 + 0.85, y + 0.01, 0.5, C.brineGlint);
   }
-  // Les plaques craquelées : une grille de 3 × 4 cases, chacune un quadrilatère irrégulier, des fentes entre elles.
+  const top = high + LEVEE.top - foot;
+  for (const z of [z0, z1]) b.box({ x: (x0 + x1) / 2, y: foot, z }, [x1 - x0 + w, top, w], C.dyke, C.dykeTop);
+  for (const x of xs) b.box({ x, y: foot, z: (z0 + z1) / 2 }, [w, top, z1 - z0 - w], C.dyke, C.dykeTop);
+}
+
+/** Les plaques craquelées d'un bassin asséché, au-dessus de son fond : 3 × 4 quadrilatères irréguliers, des fentes entre eux. */
+function cracks(b: FacetBuilder, x0: number, x1: number, z0: number, z1: number, y: number): void {
   const nx = 3,
     nz = 4,
-    gap = 0.06,
-    y = water + 0.02;
+    gap = 0.06;
   const jitter = (i: number, k: number, t: number) => Math.sin(i * 12.9898 + k * 78.233 + t * 37.719) * 0.12;
   const at = (i: number, k: number): [number, number] => {
     const inside = i > 0 && i < nx && k > 0 && k < nz;
-    const u = x0 + w / 2 + ((x1 - x0 - w) * i) / nx + (inside ? jitter(i, k, 1) : 0);
-    const v = z0 + w / 2 + ((z1 - z0 - w) * k) / nz + (inside ? jitter(i, k, 2) : 0);
-    return [u, v];
+    return [x0 + ((x1 - x0) * i) / nx + (inside ? jitter(i, k, 1) : 0), z0 + ((z1 - z0) * k) / nz + (inside ? jitter(i, k, 2) : 0)];
   };
   for (let i = 0; i < nx; i++)
     for (let k = 0; k < nz; k++) {
@@ -236,6 +257,17 @@ function pool(b: FacetBuilder, x0: number, x1: number, z0: number, z1: number, d
       });
       b.quad(p[0], p[1], p[2], p[3], C.crackPlate);
     }
+}
+
+/**
+ * Le sentier qui arrive à la porte du lieu, de l'ouest, puis du nord (directeur artistique, deuxième passe : vu de l'est,
+ * une bande presque blanche jusqu'à l'horizon) : son sable repeint en sable tassé, plus foncé que le sel, sur ses deux
+ * liaisons et au coude.
+ */
+function tampedPath(b: FacetBuilder): void {
+  const field = buildHeightField();
+  const ground = (x: number, z: number) => heightOnMesh(field, x, z);
+  pathSand(b, ground, [['sel-7', 'saltworks'], ['sel-6', 'sel-7']], ['sel-7'], { color: C.tamped, lift: 0.012 });
 }
 
 /**
