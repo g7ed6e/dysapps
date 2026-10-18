@@ -25,11 +25,11 @@ export interface SurroundingsState {
 export type Surroundings = (b: FacetBuilder, floor: Vec3, state: SurroundingsState) => void;
 
 /**
- * Le plafond des abords d'un lieu, en triangles. Le poste de la scénette (./budget.ts) compte le lieu le plus chargé :
- * aux Écluses, au 18 octobre 2026, 1 413 triangles d'abords et 250 pour le reste du décor de près à la réussite, moins le
- * pion que son modèle remplace, pour un monde à 99 747 triangles sur 100 000. Au plafond, les Écluses mettraient le
- * monde à 99 834 ; un autre lieu le garde sous 100 000 tant que le reste de son décor de près, moins son pion, ne passe
- * pas 410 triangles. Le test de chaque lieu du registre le vérifie (./surroundings.test.ts).
+ * Le plafond des abords d'un lieu, en triangles. Le poste de la scénette (./budget.ts) compte le lieu le plus chargé,
+ * aux Filets au 18 octobre 2026 (1 876 triangles de décor de près au pire, moins le pion que son modèle remplace), pour
+ * un monde à 99 960 triangles sur 100 000 : un lieu le garde sous l'enveloppe tant que son décor de près au pire, abords
+ * compris et pion retiré, ne passe pas 1 916 triangles. Le test de l'enveloppe (./continu.test.ts) et celui de chaque
+ * lieu du registre (./surroundings.test.ts) le vérifient.
  */
 export const SURROUNDINGS_MAX = 1500;
 
