@@ -936,6 +936,9 @@ const C = {
   coatShade: 0xe8bf4a,
   head: 0xe3c08a,
   cap: 0x142b38,
+  // Le rouge du bonnet du modèle 3D de la gardienne, relevé dans sa texture (médiane des pixels rouges du haut du
+  // modèle) : la poignée de la corde et le maillet le prennent quand le modèle est montré.
+  modelCap: 0xd44330,
   rope: 0xe5ebe3,
   // La pêcheuse (consultant Archipéo, lot 2) : tablier herbe sur une robe sable chaud, chapeau de paille, navette de bois.
   dress: 0x4f7fa3,
@@ -1111,14 +1114,16 @@ function gardienne(b: FacetBuilder, place: PlaceId, posed: boolean, body: boolea
     b.prism({ x: at.x, y: at.y + 1.2, z: at.z }, 0.25, 0.12, 0.2, 12, C.cap);
     b.beam({ x: at.x - 0.12, y: at.y + 0.82, z: at.z + 0.12 }, hand, 0.15, C.coat);
   }
+  // La couleur du bonnet : celui du pion, ou celui du modèle 3D quand il est montré.
+  const cap = loadedHabitant(place) ? C.modelCap : C.cap;
   if (posed) {
-    b.box({ x: hand.x, y: hand.y - 0.1, z: hand.z }, [0.16, 0.2, 0.16], C.cap);
+    b.box({ x: hand.x, y: hand.y - 0.1, z: hand.z }, [0.16, 0.2, 0.16], cap);
     return;
   }
   // Le maillet : son manche tenu dans la main, sa tête en travers, de la couleur du bonnet.
   const head = { x: hand.x - 0.05, y: hand.y - 0.42, z: hand.z + 0.18 };
-  b.beam(hand, head, 0.06, C.cap);
-  b.box({ x: head.x, y: head.y - 0.09, z: head.z, yaw: 0.3 }, [0.32, 0.18, 0.18], C.cap);
+  b.beam(hand, head, 0.06, cap);
+  b.box({ x: head.x, y: head.y - 0.09, z: head.z, yaw: 0.3 }, [0.32, 0.18, 0.18], cap);
 }
 
 /**

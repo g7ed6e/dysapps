@@ -91,7 +91,7 @@ export function loadKeo(archipel: ArchipelagoId): Promise<void> {
  * L'adresse du modèle de chaque habitant des scénettes du monde ouvert (« 6e-habitant-<lieu> »), texturé, déjà compacté
  * par sa chaîne : le build le publie tel quel (scripts/rendu/compacterGlb.mjs).
  */
-const HABITANTS = import.meta.glob('../../docs/univers/archipeo/personnages/modeles/6e-habitant-*/final.glb', {
+const HABITANTS = import.meta.glob('../../docs/univers/archipeo/personnages/modeles/6e-habitant-*/habitant.glb', {
   query: '?url',
   import: 'default',
   eager: true,
@@ -103,13 +103,13 @@ const habitantLoads = new Map<string, { p: Promise<ModeleTexture | null>; manque
 /**
  * Charge le modèle d'un habitant des scénettes (son dossier, « 6e-habitant-<lieu> ») : lu, ou rien. Ne rejette jamais :
  * un fichier qui manque ou ne se lit pas laisse le pion dessiné en code, et se redemande au plus tôt `RELANCE_MS` plus
- * tard. Rien n'est gardé une fois lu (la vue garde ce qu'elle montre) : un second appel relit le fichier, servi par le
- * service worker.
+ * tard. Rien n'est gardé une fois lu (la vue garde ce qu'elle montre) : un second appel relit le fichier, que le service
+ * worker garde à la première lecture (cache « dysapps-habitants-3d », vite.config.ts).
  */
 export function loadHabitant(nom: string): Promise<ModeleTexture | null> {
   const deja = habitantLoads.get(nom);
   if (deja && (deja.manque === undefined || performance.now() - deja.manque < RELANCE_MS)) return deja.p;
-  const url = HABITANTS[`../../docs/univers/archipeo/personnages/modeles/${nom}/final.glb`];
+  const url = HABITANTS[`../../docs/univers/archipeo/personnages/modeles/${nom}/habitant.glb`];
   const chargement: { p: Promise<ModeleTexture | null>; manque?: number } = { p: Promise.resolve(null) };
   chargement.p = (async () => {
     try {

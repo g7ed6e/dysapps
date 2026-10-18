@@ -13,14 +13,14 @@ import { createHabitantModels } from './habitantModels';
 
 const DOSSIER = resolve(__dirname, '../../../../docs/univers/archipeo/personnages/modeles');
 const fichier = (nom: string) => {
-  const b = readFileSync(resolve(DOSSIER, nom, 'final.glb'));
+  const b = readFileSync(resolve(DOSSIER, nom, 'habitant.glb'));
   return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
 };
 
 /** Un faux fetch : le fichier du dépôt dont l'adresse finit par le dossier demandé, ou une erreur 404. */
 function fauxFetch(manquants: Set<string> = new Set()) {
   return vi.fn(async (url: string) => {
-    const nom = /(6e-habitant-[a-z]+)\/final\.glb/.exec(String(url))?.[1];
+    const nom = /(6e-habitant-[a-z]+)\/habitant\.glb/.exec(String(url))?.[1];
     if (!nom || manquants.has(nom)) return new Response(null, { status: 404 });
     return new Response(fichier(nom));
   });
@@ -58,7 +58,7 @@ describe('Le chargement d’un habitant', () => {
     expect(m).not.toBeNull();
     expect(m!.indices.length / 3).toBe(17_000);
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect(String(fetch.mock.calls[0][0])).toContain('6e-habitant-phare/final.glb');
+    expect(String(fetch.mock.calls[0][0])).toContain('6e-habitant-phare/habitant.glb');
   });
 
   it('ne rejette jamais : un fichier qui manque rend rien, et ne se redemande qu’après le délai de relance', async () => {

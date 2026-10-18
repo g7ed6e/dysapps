@@ -2,7 +2,8 @@
 // monde en grille : les triangles et les appels de chaque poste. Estimé au cadrage : environ 45 000 triangles et 12 à
 // 18 appels avec quatre lieux (prototype-6e.md, § 3) ; relevée par le mainteneur à 75 000 triangles le 16 octobre 2026
 // (GD-20, L6b : « Un iPad 9e génération doit pouvoir faire tourner le jeu, donc on est large en triangles pour
-// l'instant »), puis à 86 000 le 17 octobre 2026 (GD-20, point 3, lot 3), les appels inchangés. Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
+// l'instant »), puis à 86 000 le 17 octobre 2026 (GD-20, point 3, lot 3), les appels inchangés, puis à 98 000 triangles et 21
+// appels le 18 octobre 2026 pour les habitants en 3D (« on peut augmenter le budget », mesure sur iPad avant la fusion). Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
 import { WORLD_FOG } from './camera';
 import { bridgeLay } from './bridgeLay';
 import { bridgeFacets, bridgeMapMark } from './bridges';
@@ -35,12 +36,14 @@ const KEO = { triangles: 3170, calls: 5 };
 const SKY = { triangles: skyDome(1).triangles, calls: 1 };
 
 /**
- * L'enveloppe du monde ouvert : 86 000 triangles, 20 appels (relevée par le mainteneur le 17 octobre 2026 pour les cinq
- * leviers graphiques du lot 3 de GD-20, point 3 : « plafond 86 000 triangles et 18 appels » ; 75 000 depuis le 16 octobre ;
- * 20 appels pour le déplacement libre, la silhouette de Kéo et la marque au sol, choisis par le mainteneur le 18 octobre 2026).
+ * L'enveloppe du monde ouvert : 98 000 triangles, 21 appels, relevée par le mainteneur le 18 octobre 2026 pour les
+ * habitants des scénettes en modèles 3D (« on peut augmenter le budget » ; les images par seconde à mesurer sur l'iPad
+ * avant la fusion), la réserve de 3 appels gardée. Avant : 86 000 triangles (17 octobre 2026, les cinq leviers graphiques
+ * du lot 3 de GD-20, point 3 : « plafond 86 000 triangles et 18 appels » ; 75 000 depuis le 16 octobre) et 20 appels (le
+ * déplacement libre, la silhouette de Kéo et la marque au sol, 18 octobre 2026).
  * La Carte la touche presque (toute l'île de loin, sa végétation comprise).
  */
-export const OPEN_WORLD_BUDGET = { triangles: 86_000, calls: 20 } as const;
+export const OPEN_WORLD_BUDGET = { triangles: 98_000, calls: 21 } as const;
 
 export interface OpenWorldCost {
   poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette';

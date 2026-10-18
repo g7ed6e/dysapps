@@ -1,6 +1,6 @@
 // Les habitants des scénettes en modèles 3D (choix du mainteneur, 18 octobre 2026) : un modèle texturé par lieu, tiré du
 // concept de l'habitant (TRELLIS, réduit à 17 000 triangles, 22 500 pour la saunière et le chef de gare), rangé dans
-// docs/univers/archipeo/personnages/modeles/6e-habitant-<lieu>/final.glb. Code pur, sans DOM ni Three.js : le nom du
+// docs/univers/archipeo/personnages/modeles/6e-habitant-<lieu>/habitant.glb. Code pur, sans DOM ni Three.js : le nom du
 // fichier, sa mise à la place du pion (sa hauteur, ses pieds, son cap) et le registre des modèles montrés, que le décor de
 // près consulte (./scenette.ts : sans modèle, le pion dessiné en code ; avec, le décor sans son corps). Ce qui charge le
 // fichier et le dessine est dans la vue (../../importedCharacters.ts, `loadHabitant` ; ../../three/archipeo/habitants.ts).
@@ -37,7 +37,7 @@ export const HABITANT_HALVES: Readonly<Record<PlaceId, { x: number; z: number }>
 export const habitantModelName = (place: PlaceId): string => `6e-habitant-${place}`;
 
 /** Le fichier du modèle, dans son dossier : une seule version, l'habitant ne se voit que de près, dans sa scénette. */
-export const HABITANT_FILE = 'final.glb';
+export const HABITANT_FILE = 'habitant.glb';
 
 /**
  * Les triangles d'un modèle d'habitant, au plus (le budget les compte à la place du pion) : 17 000, et 22 500 pour la

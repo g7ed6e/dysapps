@@ -111,6 +111,19 @@ describe('Le décor de près, le modèle montré', () => {
     }
   });
 
+  it('au Phare, la poignée de la corde et le maillet prennent le rouge du bonnet du modèle, une couleur que le pion n’a pas', () => {
+    for (const posed of [true, false]) {
+      const colors = (f: Facets) => new Set(Array.from({ length: f.triangles }, (_, t) => f.colors.slice(t * 9, t * 9 + 3).join(',')));
+      const pawn = colors(scenetteDecor('phare', false, posed));
+      register('phare');
+      const added = [...colors(scenetteDecor('phare', false, posed))].filter((c) => !pawn.has(c));
+      expect(added, String(posed)).toHaveLength(1);
+      const [r, g, b] = added[0].split(',').map(Number);
+      expect(r, String(posed)).toBeGreaterThan(2 * Math.max(g, b));
+      forgetHabitants();
+    }
+  });
+
   it('les objets que la scénette garde à côté de lui (la caisse, le levier, la chambre, la tuile) restent hors de son corps', () => {
     for (const id of ['quais', 'ecluses', 'observatory', 'commons'] as const) {
       register(id);
