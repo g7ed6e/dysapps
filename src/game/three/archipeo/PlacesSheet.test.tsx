@@ -147,3 +147,9 @@ it('une ligne choisie ferme la Carte et la liste : la Carte rouverte ne la montr
   expect(screen.getByRole('button', { name: 'Lieux' })).toHaveAttribute('aria-expanded', 'false');
   expect(screen.queryByRole('dialog')).toBeNull();
 });
+
+it('ce qui est posé chez l’habitant est lu, rien à l’écran : « …, avec le potager et la lanterne »', () => {
+  const { rows } = renderSheet(placesRows(['phare', 'quais'], STATES, WORDS, null, undefined, { phare: ['french-6e-phonology-fixture-1', 'french-6e-phonology-fixture-2'], quais: [] }));
+  expect(rows.map((r) => r.getAttribute('aria-label'))).toEqual(['Y aller : Le Phare, restauré, avec le potager et la lanterne', 'Y aller : Les Quais, en chantier']);
+  expect(rows[0]).not.toHaveTextContent('potager');
+});

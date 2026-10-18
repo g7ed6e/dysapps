@@ -1,6 +1,9 @@
 // La ligne de l'habitant (GD-20, point 4, lot L1) : sa commande prête (« Livrer »), ses révisions (« Reprendre »), ce qui
 // manque (« Y aller ») ; une seule à la fois ; un bouton plein seulement pour la suggestion. La liste « Commandes » du
 // monde ouvert : une ligne par commande ouverte. Le panneau du lieu : le focus sur le bouton de la ligne de l'habitant.
+// Lot L2 : l'étape d'entraide (« Donner », « Apporter ») juste après la commande prête, avant les révisions ; ce qui
+// manque pour donner en dernier ; « Reprendre » jamais plein (la suggestion ne le porte jamais) ; l'entraide en tête de
+// la liste « Commandes ». Lot L3 : « Reprendre » lance la révision dans la scène du lieu (`onReprendre`).
 import { render, screen, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import userEvent from '@testing-library/user-event';
@@ -9,13 +12,15 @@ import { beforeEach, expect, it, vi } from 'vitest';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
-import { sanitizeState } from '../../engine';
+import { sanitizeState, todayISO } from '../../engine';
+import { CATALOG } from '../../exercises';
+import { STORIES } from '../../world/stories';
 import { lieuDAssemblage } from '../../world/assembly';
 import { PLACES } from '../../world/continu/plan6e';
 import { COMMANDES } from '../../world/requests';
 import { CommandsSheet, HabitantLine } from './HabitantLine';
 import { PlacePanel } from './PlacePanel';
-import { commandLines, habitantLineOf, placeOfCommande, sourceOf } from './remiseOf';
+import { commandLines, entraideLineOf, entraideListLine, habitantLineOf, placeOfCommande, sourceOf } from './remiseOf';
 
 const potager = COMMANDES.find((c) => c.fixture === 'french-6e-phonology-fixture-1')!;
 const boutique = COMMANDES.find((c) => placeOfCommande(c) === 'quais')!;
@@ -128,4 +133,98 @@ it('la liste « Commandes » : chaque commande ouverte, sa phrase, « Y aller »
   expect(onGo).toHaveBeenCalledWith({ place: 'phare' });
   await userEvent.setup().keyboard('{Escape}');
   expect(onClose).toHaveBeenCalled();
+});
+
+const lanterne = STORIES.find((x) => x.id === 'story-6e-1')!;
+const avecLanterne = (step: number, stock: Record<string, number> = {}, requests: string[] = []) => sanitizeState({ stock, world: { links: [], requests, stories: [{ id: lanterne.id, step }] } });
+/** Une révision due au Phare (l'île de Mousso), dans la sauvegarde que lit la ligne. */
+function revisionDueAuPhare() {
+  const syllabes = CATALOG.find((e) => e.biome === PLACES.find((p) => p.id === 'phare')!.island && e.type === 'syllables')!;
+  localStorage.setItem('dysapps:game', JSON.stringify({ spaced: [{ itemId: `${syllabes.id}:cabane`, due: todayISO(), stage: 0, streak: 0 }], progress: { [syllabes.id]: { stars: 1, attempts: 1, best: 0.3 } } }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'map-reshaped': true, 'baleine-6e-arrivee': true, 'baleine-6e-ouvrage': true }));
+}
+
+it('« Apporter » : la phrase de l’étape et son bouton, avant les révisions dues ; plein seulement s’il porte la suggestion', async () => {
+  revisionDueAuPhare();
+  const state = avecLanterne(2);
+  const onEntraide = vi.fn();
+  wrap(<HabitantLine place="phare" line={null} entraide={entraideLineOf(state, 'phare', ENTREPOT)} suggested={lanterne.id} onDeliver={vi.fn()} onEntraide={onEntraide} onGo={vi.fn()} />);
+  const group = screen.getByRole('group');
+  expect(group.textContent?.replace(/\s+/g, ' ')).toMatch(/Apporte la lanterne au Phare\./);
+  expect(within(group).queryByRole('link', { name: /Reprendre/ })).toBeNull();
+  const bouton = within(group).getByRole('button', { name: /Apporter/ });
+  expect(bouton).toHaveClass('primary');
+  // Sa propre icône, la main qui tient l'objet, pas le paquet de « Donner ».
+  expect(bouton.querySelector('svg.lucide-hand-grab')).not.toBeNull();
+  expect(bouton.querySelector('svg.lucide-package')).toBeNull();
+  await userEvent.setup().click(bouton);
+  expect(onEntraide).toHaveBeenCalledWith(lanterne.id);
+});
+
+it('la commande prête passe avant l’étape d’entraide ; une seule ligne à la fois', () => {
+  const state = avecLanterne(2, { [potager.block]: potager.count }, [potager.id]);
+  wrap(<HabitantLine place="phare" line={habitantLineOf(state, 'phare', ENTREPOT)} entraide={entraideLineOf(state, 'phare', ENTREPOT)} suggested={null} onDeliver={vi.fn()} onGo={vi.fn()} />);
+  expect(screen.getAllByRole('group')).toHaveLength(1);
+  expect(screen.getByRole('button', { name: /Livrer/ })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /Apporter/ })).toBeNull();
+});
+
+it('les révisions dues : « Reprendre » simple dans le monde ouvert, avant ce qui manque pour donner', () => {
+  revisionDueAuPhare();
+  wrap(<HabitantLine place="phare" line={null} suggested={null} onDeliver={vi.fn()} onGo={vi.fn()} />);
+  const reprendre = screen.getByRole('link', { name: /Reprendre/ });
+  expect(reprendre).not.toHaveClass('primary');
+  expect(screen.getByRole('button', { name: 'Plus tard' })).toBeInTheDocument();
+  // Le rappel du monde ouvert ne nomme aucune mission (monde-ouvert.md, « La révision », « rappel »).
+  const group = screen.getByRole('group');
+  expect(group.textContent?.replace(/\s+/g, ' ')).toMatch(/On revoit quelques questions ensemble\./);
+  expect(group.textContent).not.toMatch(/On reprend/);
+});
+
+it('dans le monde ouvert, « Reprendre » lance la révision dans la scène du lieu (lot L3) : un bouton, simple, jamais un lien', async () => {
+  revisionDueAuPhare();
+  const onReprendre = vi.fn();
+  wrap(<HabitantLine place="phare" line={null} suggested={null} onDeliver={vi.fn()} onReprendre={onReprendre} onGo={vi.fn()} />);
+  expect(screen.queryByRole('link', { name: /Reprendre/ })).toBeNull();
+  const reprendre = screen.getByRole('button', { name: /Reprendre/ });
+  expect(reprendre).not.toHaveClass('primary');
+  await userEvent.setup().click(reprendre);
+  expect(onReprendre).toHaveBeenCalledTimes(1);
+});
+
+it('« Reprendre » en cours de chargement : occupé et désactivé, un second toucher ne relance rien', async () => {
+  revisionDueAuPhare();
+  const onReprendre = vi.fn();
+  wrap(<HabitantLine place="phare" line={null} suggested={null} onDeliver={vi.fn()} onReprendre={onReprendre} reprendreBusy onGo={vi.fn()} />);
+  const reprendre = screen.getByRole('button', { name: /Reprendre/ });
+  expect(reprendre).toHaveAttribute('aria-busy', 'true');
+  expect(reprendre).toBeDisabled();
+  await userEvent.setup().click(reprendre);
+  expect(onReprendre).not.toHaveBeenCalled();
+});
+
+it('ce qui manque pour donner : la demande, « Y aller » vers le lieu de la ressource, jamais plein', async () => {
+  const state = avecLanterne(1, { 'french-6e-phonology': 1 });
+  const onGo = vi.fn();
+  wrap(<HabitantLine place="quais" line={null} entraide={entraideLineOf(state, 'quais', ENTREPOT)} suggested={lanterne.id} onDeliver={vi.fn()} onGo={onGo} />);
+  const group = screen.getByRole('group');
+  expect(group.textContent?.replace(/\s+/g, ' ')).toMatch(/Il me faut 2 blocs de bois\. C’est pour la lanterne\. Joue une mission au Phare\./);
+  const go = within(group).getByRole('button', { name: 'Y aller : Le Phare' });
+  expect(go).not.toHaveClass('primary');
+  await userEvent.setup().click(go);
+  expect(onGo).toHaveBeenCalledWith({ place: 'phare' });
+});
+
+it('la liste « Commandes » : l’entraide en tête, son signe (l’objet, « Étape 1 sur 3 ») et « Y aller » vers son lieu', async () => {
+  const state = avecLanterne(0, {}, [potager.id]);
+  const onGo = vi.fn();
+  wrap(<CommandsSheet lines={commandLines(state, ENTREPOT)} entraide={entraideListLine(state, () => true, ENTREPOT)} suggested={lanterne.id} onGo={onGo} onClose={vi.fn()} />);
+  const rows = within(screen.getByRole('dialog', { name: /Commandes/ })).getAllByRole('listitem');
+  expect(rows).toHaveLength(2);
+  expect(within(rows[0]).getByRole('img', { name: 'Entraide : la lanterne. Étape 1 sur 3.' })).toBeInTheDocument();
+  expect(rows[0].textContent?.replace(/\s+/g, ' ')).toMatch(/Joue une mission aux Quais\./);
+  const go = within(rows[0]).getByRole('button', { name: 'Y aller : Les Quais' });
+  expect(go).toHaveClass('primary');
+  await userEvent.setup().click(go);
+  expect(onGo).toHaveBeenCalledWith({ place: 'quais' });
 });

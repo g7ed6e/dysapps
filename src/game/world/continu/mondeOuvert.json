@@ -3,5 +3,13 @@
   "askAssembled": "Il me faut {objet}. C’est pour {nom}. Assemble les {blocs} {au lieu}.",
   "ready": "Livre {objet} {au lieu}.",
   "remise": "Tu livres {objet} pour {nom}.",
-  "done": "{Nom} est en place."
+  "done": "{Nom} est en place.",
+  "stepMission": "Joue une mission {au lieu}.",
+  "stepGive": "Donne {objet} {au lieu}.",
+  "stepBring": "Apporte {nom} {au lieu}.",
+  "giveRemise": "Tu donnes {objet} pour {nom}.",
+  "bringRemise": "Tu apportes {nom}.",
+  "revisionEntry": "Tu revois {questions}.",
+  "revisionDone": "Tu as revu {questions}.",
+  "revisionReminder": "On revoit quelques questions ensemble."
 }

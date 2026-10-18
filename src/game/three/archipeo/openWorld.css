@@ -187,6 +187,20 @@
 .world-question .in-world .quiz-steps {
   margin: 0 0 0.4rem;
 }
+/* La révision dans la scène (GD-20, point 4, lot L3) : une marque par question du passage, et « 2 sur 5 » écrit au
+   bout de la barre, dans le texte de la page (jamais plus petit que la consigne de la barre). */
+.world-question .in-world .quiz-steps-revision {
+  align-items: center;
+}
+.world-question .in-world .quiz-steps-revision::after {
+  content: attr(data-count);
+  flex: none;
+  margin-inline-start: 0.4rem;
+  font-size: max(16px, 1rem);
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
 /* « Vue simple » : en haut à droite de l'écran, à gauche de la pause (56 px), toujours à la même place, sur une ligne,
    au-dessus de tout le reste de la question (rien ne le recouvre). */
 .world-question > .world-question-simple {
@@ -662,6 +676,25 @@
   flex: 0 1 auto;
   min-height: 0;
   overflow-y: auto;
+}
+/* Le bilan d'une révision (GD-20, point 4, lot L3) : sa phrase à la place des étoiles, et sa voix ; le texte et les
+   pastilles alignés à gauche, même sur deux lignes au plus grand texte (principes dys, avis du référent dys). */
+.world-question .world-done-body-revised {
+  align-items: flex-start;
+  text-align: left;
+}
+.world-question .world-done-body-revised .world-done-pills {
+  justify-content: flex-start;
+}
+.world-question .world-done-revised {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.world-question .world-done-revised h2 {
+  margin: 0;
+  font-size: max(20px, 1.3rem);
+  text-align: left;
 }
 .world-done-pills {
   display: flex;
@@ -2950,6 +2983,11 @@
 }
 .open-world-remise-fin:empty {
   margin: 0;
+}
+/* L'XP d'une entraide finie (lot L2), sous la phrase de fin : la pastille du bilan, à gauche. */
+.open-world-remise-gain {
+  justify-content: flex-start;
+  margin-top: 0.5rem;
 }
 .open-world-remise-objet {
   display: inline-flex;

@@ -10,16 +10,23 @@
 //   lit (`useResidentReminder`).
 // - La remise : la consigne, la phrase de fin, l'aménagement qui se pose et son nombre d'éléments.
 // - La commande prête que la suggestion porte, et son rang dans la suggestion (`suggestionOf`).
-// - Les pastilles des habitants : une par commande prête, puis par lieu qui a des révisions dues, trois au plus.
+// - Les pastilles des habitants : la suggérée, puis une par commande prête, puis l'étape d'entraide, puis par lieu qui
+//   a des révisions dues, trois au plus.
+// - L'entraide (lot L2) : la quête ouverte du 6e (world/stories.ts, la même sauvegarde), son étape dans son lieu
+//   (« Donne 2 blocs de bois aux Quais. », « Donner » ; « Apporte la lanterne au Phare. », « Apporter » ; ce qui manque
+//   pour donner, la forme « demande »), sa remise (la caisse de « Donner », l'objet d'« Apporter »), et sa place dans la
+//   suggestion, juste après la commande prête.
 // Sans React ni Three.js : testé sous jsdom.
-import { BIOMES, blockCount, blockName, type BiomeId, type BlockId } from '../../biomes';
+import { BIOMES, BLOCKS, blockCount, blockName, type BiomeId, type BlockId } from '../../biomes';
 import type { GameState } from '../../engine/state';
 import { recetteDe } from '../../world/assembly';
-import { amenagementById } from '../../world/continu/amenagements';
+import { MATTE_GLASS, amenagementById } from '../../world/continu/amenagements';
 import { PLACES, placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
-import { HABITANT_PHRASES, filled, type PhraseTokens } from '../../world/continu/remise';
+import { ENTRAIDE_PHRASES, HABITANT_PHRASES, filled, type PhraseTokens, type RemiseKind } from '../../world/continu/remise';
 import { scenetteOf } from '../../world/continu/scenette';
 import { commandeDeLIle, commandesArrivees, commandesOuvertes, estLivree, estPrete, getCommande, type Commande } from '../../world/requests';
+import { STORY_XP, canTapStep, openStoryOf, type Story, type StoryStep } from '../../world/stories';
+import type { RemisePlay } from './scene';
 
 /** Où mène « Y aller » d'une commande à qui il manque des blocs : un lieu, ou le lieu de l'Escale où l'on assemble. */
 export type HabitantGo = { place: PlaceId } | { port: 'chantier' };
@@ -62,21 +69,25 @@ export function habitantLineOf(state: Pick<GameState, 'stock' | 'world'>, place:
   return { kind: 'manque', commande: c.id, role, text: filled('port' in go ? HABITANT_PHRASES.askAssembled : HABITANT_PHRASES.ask, tokensOf(c, at)), go };
 }
 
-/** La remise d'une commande : son lieu, l'aménagement qui s'y pose, ses éléments, le rôle, la consigne, la fin. */
+/** La remise : la livraison d'une commande, ou une étape d'entraide faite d'un geste (« Donner », « Apporter »). */
 export interface RemiseRequest {
-  commande: string;
+  kind: RemiseKind;
+  /** La commande livrée, ou la quête d'entraide dont l'étape se fait. */
+  id: string;
   place: PlaceId;
-  /** L'aménagement (l'identifiant de la petite construction, sa sauvegarde). */
-  amenagement: string;
-  /** Ses éléments : un par ressource livrée. */
+  /** Ce que la scène pose : l'aménagement d'une commande, la caisse et ses blocs, l'objet apporté. */
+  play: RemisePlay;
+  /** Ses éléments : un par ressource livrée ou donnée ; un seul pour l'objet apporté. */
   elements: number;
   role: string;
-  /** « Tu livres 3 blocs de terre pour le potager. » */
+  /** « Tu livres 3 blocs de terre pour le potager. », « Tu donnes 2 blocs de bois pour la lanterne. » */
   consigne: string;
-  /** « Le potager est en place. » */
+  /** « Le potager est en place. » ; après « Donner », l'étape suivante (« Apporte la lanterne au Phare. »). */
   done: string;
-  /** Le bloc livré (l'icône de la consigne, et la pastille). */
+  /** L'icône de la consigne et de « Vue simple » : le bloc livré ou donné, l'objet apporté. */
   block: BlockId;
+  /** L'XP annoncée après la phrase de fin : celle d'une entraide finie (« Apporter »). */
+  xp?: number;
 }
 
 /** La remise d'une commande du 6e qui a son aménagement dans le monde ouvert, sinon rien. */
@@ -86,19 +97,136 @@ export function remiseOf(id: string): RemiseRequest | null {
   const place = c && placeOfCommande(c);
   if (!c || !a || !place || a.place !== place) return null;
   const t = tokensOf(c, placeById(place).at);
-  return { commande: c.id, place, amenagement: a.id, elements: a.elements.length, role: scenetteOf(place).role, consigne: filled(HABITANT_PHRASES.remise, t), done: filled(HABITANT_PHRASES.done, t), block: c.block };
+  return {
+    kind: 'livrer',
+    id: c.id,
+    place,
+    play: { place, amenagement: a.id },
+    elements: a.elements.length,
+    role: scenetteOf(place).role,
+    consigne: filled(HABITANT_PHRASES.remise, t),
+    done: filled(HABITANT_PHRASES.done, t),
+    block: c.block,
+  };
 }
 
-/** La pastille d'un habitant, au-dessus de son lieu : sa commande prête, ou ses révisions dues. */
+/** L'entraide ouverte du 6e : sa quête, l'étape en cours, son rang, et le lieu du monde ouvert où elle se fait. */
+export interface EntraideStep {
+  story: Story;
+  step: StoryStep;
+  index: number;
+  place: PlaceId;
+}
+
+/** L'entraide ouverte du 6e, si son étape se fait dans un lieu du monde ouvert, sinon rien. */
+export function entraideOf(state: Pick<GameState, 'world'>): EntraideStep | null {
+  const o = openStoryOf(state.world, '6e');
+  const place = o && placeOfIsland(o.step.place)?.id;
+  return o && place ? { ...o, place } : null;
+}
+
+/** La phrase d'une étape d'entraide, à son lieu (« Joue une mission aux Quais. », « Donne 2 blocs de bois aux Quais. »). */
+export function stepPhrase(story: Pick<Story, 'name'>, step: StoryStep): string {
+  const place = placeOfIsland(step.place);
+  const auLieu = place?.at ?? '';
+  if (step.kind === 'give') return filled(ENTRAIDE_PHRASES.stepGive, { objet: blockCount(step.block, step.count), auLieu });
+  if (step.kind === 'bring') return filled(ENTRAIDE_PHRASES.stepBring, { nom: story.name, auLieu });
+  return filled(ENTRAIDE_PHRASES.stepMission, { auLieu });
+}
+
+/** La ligne d'entraide de l'habitant d'un lieu : son étape à faire d'un geste, ou ce qui manque pour donner. */
+export type EntraideLine =
+  | { kind: 'donner' | 'apporter'; story: string; role: string; text: string }
+  | { kind: 'manque'; story: string; role: string; text: string; go: HabitantGo };
+
+/**
+ * La ligne d'entraide de l'habitant de `place`, quand l'étape en cours se fait chez lui d'un geste : « Donner » (assez
+ * de blocs dans le stock), « Apporter » ; sinon, pour donner, ce qui manque et « Y aller » (la forme « demande », pour
+ * l'objet de l'entraide). Rien pour une étape « mission » : la liste des missions du lieu est juste en dessous, et la
+ * suggestion la porte.
+ */
+export function entraideLineOf(state: Pick<GameState, 'stock' | 'world'>, place: PlaceId, assemblyAt: string): EntraideLine | null {
+  const e = entraideOf(state);
+  if (!e || e.place !== place || e.step.kind === 'mission') return null;
+  const role = scenetteOf(place).role;
+  if (canTapStep(state, e.step)) return { kind: e.step.kind === 'give' ? 'donner' : 'apporter', story: e.story.id, role, text: stepPhrase(e.story, e.step) };
+  if (e.step.kind !== 'give') return null;
+  const go = sourceOf(e.step);
+  if (!go) return null;
+  const at = 'port' in go ? assemblyAt : placeById(go.place).at;
+  const t = { objet: blockCount(e.step.block, e.step.count), blocs: blockName(e.step.block, e.step.count), nom: e.story.name, auLieu: at };
+  return { kind: 'manque', story: e.story.id, role, text: filled('port' in go ? HABITANT_PHRASES.askAssembled : HABITANT_PHRASES.ask, t), go };
+}
+
+/** Les deux faces d'un bloc, en nombres, pour la 3D (son dessus, son côté). */
+const facesOf = (block: BlockId) => ({ dessus: parseInt(BLOCKS[block].top.slice(1), 16), cote: parseInt(BLOCKS[block].side.slice(1), 16) });
+
+/**
+ * La remise d'une étape d'entraide faite d'un geste, telle qu'elle se présente maintenant : « Donner », la caisse et
+ * ses blocs, la fin qui dit l'étape suivante ; « Apporter », l'objet qui passe de la main de Kéo à sa place, la fin
+ * « posée », puis l'XP de l'entraide finie. Rien si l'étape ne peut pas se faire maintenant.
+ */
+export function entraideRemiseOf(state: Pick<GameState, 'stock' | 'world'>, id: string): RemiseRequest | null {
+  const e = entraideOf(state);
+  if (!e || e.story.id !== id || !canTapStep(state, e.step)) return null;
+  const role = scenetteOf(e.place).role;
+  if (e.step.kind === 'give') {
+    const following = e.story.steps[e.index + 1];
+    const objet = blockCount(e.step.block, e.step.count);
+    return {
+      kind: 'donner',
+      id,
+      place: e.place,
+      play: { place: e.place, caisse: { count: e.step.count, block: facesOf(e.step.block) } },
+      elements: e.step.count,
+      role,
+      consigne: filled(ENTRAIDE_PHRASES.giveRemise, { objet, nom: e.story.name }),
+      done: following ? stepPhrase(e.story, following) : filled(HABITANT_PHRASES.done, { nom: e.story.name }),
+      block: e.step.block,
+    };
+  }
+  const a = amenagementById(e.story.fixture);
+  if (!a || a.place !== e.place) return null;
+  return {
+    kind: 'apporter',
+    id,
+    place: e.place,
+    play: { place: e.place, amenagement: a.id, carry: true },
+    elements: a.elements.length,
+    role,
+    consigne: filled(ENTRAIDE_PHRASES.bringRemise, { nom: e.story.name }),
+    done: filled(HABITANT_PHRASES.done, { nom: e.story.name }),
+    block: e.story.item,
+    xp: STORY_XP,
+  };
+}
+
+/** La pastille d'un habitant, au-dessus de son lieu : sa commande prête, son étape d'entraide, ou ses révisions dues. */
 export interface HabitantSign {
   place: PlaceId;
-  kind: 'commande' | 'revision';
-  /** Le bloc demandé, pour une commande (son icône). */
+  kind: 'commande' | 'entraide' | 'revision';
+  /** Son icône : le bloc demandé pour une commande, l'objet pour l'entraide (rien pour des révisions : la notion). */
   block?: BlockId;
-  /** La seule mise en avant : la commande de la prochaine destination. */
+  /** La seule mise en avant : celle de la suggestion. */
   suggested: boolean;
-  /** Ce que lit le lecteur d'écran (« Commande, blocs de terre, au Phare »). */
+  /** Ce que lit le lecteur d'écran (« Commande, blocs de terre, au Phare », « Entraide, la lanterne, au Phare »). */
   label: string;
+}
+
+/** Une couleur du monde continu (0xrrggbb) en couleur d'icône (« #rrggbb »). */
+const hex = (c: number) => `#${c.toString(16).padStart(6, '0')}`;
+
+/**
+ * L'icône de l'objet d'une entraide tant qu'il n'est pas posé (consultant d'Archipéo, avis sur les lots L2 et L3) : la
+ * lanterne éteinte, son verre mat sur les côtés et son chapeau de fer sombre, et non le jaune du bloc de la grille (la
+ * lueur de la nuit, qui la dirait déjà allumée). Une fois posée, la pastille et la ligne s'en vont : le jaune ne se
+ * montre plus qu'à la fin de la remise. Les autres objets gardent leur bloc.
+ */
+const UNLIT: Partial<Record<BlockId, { top: string; side: string }>> = { lantern: { top: '#4a4f55', side: hex(MATTE_GLASS.cote) } };
+
+/** Les couleurs de l'icône de l'objet d'une entraide pas encore posé. */
+export function entraideIcon(block: BlockId): { top: string; side: string } {
+  return UNLIT[block] ?? { top: BLOCKS[block].top, side: BLOCKS[block].side };
 }
 
 /** Trois pastilles au plus à la fois (avis UX, point 3 : jamais un monde couvert de signes). */
@@ -136,28 +264,64 @@ export function readyCommande(state: Pick<GameState, 'stock' | 'world'>, open: (
   return r ? { commande: r.c.id, place: r.place, text: filled(HABITANT_PHRASES.ready, tokensOf(r.c, placeById(r.place).at)) } : null;
 }
 
+/** Ce que la suggestion porte chez un habitant : sa commande prête, ou l'étape d'entraide (`mission` : jouer chez lui). */
+export interface SuggestedAction {
+  kind: 'livrer' | 'donner' | 'apporter' | 'mission';
+  /** La commande, ou la quête d'entraide. */
+  id: string;
+  place: PlaceId;
+  /** La phrase de la bulle (« Livre 3 blocs de terre au Phare. », « Apporte la lanterne au Phare. »). */
+  text: string;
+}
+
 /**
- * Le rang de la commande prête dans la suggestion (GD-20, « Une seule prochaine action mise en avant », l'ordre de
- * index.md) : le passage prêt à partir (pas encore dans le monde ouvert) ; sinon le lieu où se tient Kéo, tant qu'il y
- * reste une mission jamais jouée (`hereToPlay`) ; sinon la commande prête ; sinon la prochaine mission. Rend la commande
- * quand c'est elle que la suggestion porte, sinon rien (la prochaine mission garde la suggestion).
+ * L'étape d'entraide que la suggestion peut porter, dans un lieu ouvert : une mission à jouer chez l'habitant, ou un
+ * geste qui peut se faire maintenant. Pas ce qui manque pour donner : comme une commande pas prête, elle attend, et la
+ * prochaine mission garde la suggestion.
  */
-export function suggestedCommande(ready: ReadyCommande | null, hereToPlay: boolean): ReadyCommande | null {
-  return ready && !hereToPlay ? ready : null;
+export function entraideSuggestion(state: Pick<GameState, 'stock' | 'world'>, open: (place: PlaceId) => boolean): SuggestedAction | null {
+  const e = entraideOf(state);
+  if (!e || !open(e.place)) return null;
+  if (e.step.kind !== 'mission' && !canTapStep(state, e.step)) return null;
+  const kind = e.step.kind === 'mission' ? 'mission' : e.step.kind === 'give' ? 'donner' : 'apporter';
+  return { kind, id: e.story.id, place: e.place, text: stepPhrase(e.story, e.step) };
+}
+
+/**
+ * Ce que la suggestion porte chez un habitant (GD-20, « Une seule prochaine action mise en avant », l'ordre de index.md) :
+ * rien tant que Kéo se tient dans un lieu où il reste une mission jamais jouée (`hereToPlay`) ; sinon la commande prête ;
+ * sinon l'étape d'entraide, juste après elle ; sinon rien (la prochaine mission garde la suggestion).
+ */
+export function suggestedAction(ready: ReadyCommande | null, step: SuggestedAction | null, hereToPlay: boolean): SuggestedAction | null {
+  if (hereToPlay) return null;
+  if (ready) return { kind: 'livrer', id: ready.commande, place: ready.place, text: ready.text };
+  return step;
 }
 
 /**
  * Les pastilles des habitants des lieux ouverts (`open` ; la page en ôte le lieu où se tient Kéo, dont la ligne du
- * panneau et la bulle portent déjà l'information) : la commande suggérée d'abord (`suggested`, celle que porte la
- * suggestion, la seule pleine), puis les autres commandes prêtes dans l'ordre d'arrivée, puis les lieux qui ont des
- * révisions dues (`revisions`, sans « Plus tard ») dans l'ordre des lieux ; un lieu n'a qu'une pastille ; trois au plus.
+ * panneau et la bulle portent déjà l'information) : celle que porte la suggestion d'abord (`suggested`, la seule pleine),
+ * puis les commandes prêtes dans l'ordre d'arrivée, puis l'étape d'entraide qui se fait d'un geste (« Donner » avec assez
+ * de blocs, « Apporter » ; son icône, l'objet), puis les lieux qui ont des révisions dues (`revisions`, sans « Plus
+ * tard ») dans l'ordre des lieux ; un lieu n'a qu'une pastille ; trois au plus. `titre` : le mot de l'entraide dans
+ * l'univers (`quetes.titre`, jamais « quête »).
  */
-export function habitantSigns(state: Pick<GameState, 'stock' | 'world'>, { open, revisions, suggested }: { open: (place: PlaceId) => boolean; revisions: (place: PlaceId) => boolean; suggested?: string }): HabitantSign[] {
+export function habitantSigns(
+  state: Pick<GameState, 'stock' | 'world'>,
+  { open, revisions, suggested, titre = 'Entraide' }: { open: (place: PlaceId) => boolean; revisions: (place: PlaceId) => boolean; suggested?: string; titre?: string },
+): HabitantSign[] {
   const out: HabitantSign[] = [];
+  const e = entraideOf(state);
+  const entraide: HabitantSign | null =
+    e && e.step.kind !== 'mission' && open(e.place) && canTapStep(state, e.step)
+      ? { place: e.place, kind: 'entraide', block: e.story.item, suggested: e.story.id === suggested, label: `${titre}, ${e.story.name}, ${placeById(e.place).at}` }
+      : null;
+  if (entraide?.suggested) out.push(entraide);
   for (const { c, place } of readyInOpen(state, open, suggested)) {
     if (out.some((s) => s.place === place)) continue;
     out.push({ place, kind: 'commande', block: c.block, suggested: c.id === suggested, label: `Commande, ${blockName(c.block, c.count)}, ${placeById(place).at}` });
   }
+  if (entraide && !entraide.suggested && !out.some((s) => s.place === entraide.place)) out.push(entraide);
   for (const p of PLACES) {
     if (!open(p.id) || !revisions(p.id) || out.some((s) => s.place === p.id)) continue;
     out.push({ place: p.id, kind: 'revision', suggested: false, label: `Révisions, ${p.at}` });
@@ -172,4 +336,21 @@ export function commandLines(state: Pick<GameState, 'stock' | 'world'>, assembly
     const line = place && habitantLineOf(state, place, assemblyAt);
     return place && line ? [{ place, line }] : [];
   });
+}
+
+/**
+ * L'entraide en tête de la liste « Commandes » : sa quête, sa phrase (l'étape à son lieu, ou ce qui manque pour donner)
+ * et où mène son « Y aller » ; rien sans entraide ouverte dans un lieu ouvert.
+ */
+export function entraideListLine(
+  state: Pick<GameState, 'stock' | 'world'>,
+  open: (place: PlaceId) => boolean,
+  assemblyAt: string,
+): { story: Story; index: number; place: PlaceId; role: string; text: string; go: HabitantGo } | null {
+  const e = entraideOf(state);
+  if (!e || !open(e.place)) return null;
+  const line = entraideLineOf(state, e.place, assemblyAt);
+  const base = { story: e.story, index: e.index, place: e.place, role: scenetteOf(e.place).role };
+  if (line?.kind === 'manque') return { ...base, text: line.text, go: line.go };
+  return { ...base, text: stepPhrase(e.story, e.step), go: { place: e.place } };
 }

@@ -2,12 +2,27 @@
 // rangée de pastilles « icône + nombre » sur une ligne, sans phrases ; le détail de l'écran classique derrière
 // « Détail » ; un seul bouton, « Continuer », fixe sous le bilan et toujours visible. Les célébrations (« Succès
 // débloqué ») attendent que le bilan se ferme (WorldQuestion les retient).
+// Le bilan d'une révision dans la scène (GD-20, point 4, lot L3, `revised`) : un seul, à la fin du passage ; sa phrase
+// (« Tu as revu 5 questions. ») à la place des étoiles, rien qui dise un score ou un échec, les pastilles de tout le
+// passage, et ni « Détail » (celui d'une mission) ni rien d'autre que « Continuer ».
 import { useState } from 'react';
 import { Icon } from '../../../components/Icon';
 import { BLOCKS, ofBlock } from '../../biomes';
 import type { StageDoneProps } from '../../ExerciseRunner';
 import { Stars } from '../../Stars';
 import { BlockIcon } from '../../Voxel';
+import { Syllabified } from '../../../components/Syllabified';
+import { SpeakButton } from '../../../components/SpeakButton';
+import { frenchTypography } from '../../../components/math/RichText';
+import type { BlockId } from '../../biomes';
+
+/** Ce qu'un passage de révision a donné, tous ses morceaux réunis. */
+export interface RevisedSummary {
+  /** La phrase de fin, remplie (« Tu as revu 5 questions. »). */
+  said: string;
+  blocks: { block: BlockId; n: number }[];
+  xp: number;
+}
 
 /** Le titre du bilan, dit aux lecteurs d'écran (les étoiles le montrent). */
 function titleOf(completion: StageDoneProps['completion']): string {
@@ -15,27 +30,39 @@ function titleOf(completion: StageDoneProps['completion']): string {
   return completion.stars === 3 ? 'Superbe !' : completion.stars === 2 ? 'Bien joué !' : 'Terminé !';
 }
 
-export function WorldDone({ completion, detail, pause, back }: StageDoneProps) {
+export function WorldDone({ completion, detail, pause, back, revised }: StageDoneProps & { revised?: RevisedSummary }) {
   const [open, setOpen] = useState(false);
-  const block = BLOCKS[completion.block];
   const chest = completion.chestBlock ? BLOCKS[completion.chestBlock] : null;
   const parts = completion.pose?.posees.length ?? 0;
   const streak = completion.streak.extended ? completion.streak.streak.current : 0;
   return (
     <div className="panel summary reward-panel world-done">
-      <div className="world-done-body">
-        <h2 id="fin-titre" className="visually-hidden">
-          {titleOf(completion)}
-        </h2>
-        <Stars count={completion.stars} size="2.4rem" />
+      <div className={`world-done-body${revised ? ' world-done-body-revised' : ''}`}>
+        {revised ? (
+          <div className="world-done-revised">
+            <h2 id="fin-titre">
+              <Syllabified text={frenchTypography(revised.said)} />
+            </h2>
+            <SpeakButton text={frenchTypography(revised.said)} compact />
+          </div>
+        ) : (
+          <>
+            <h2 id="fin-titre" className="visually-hidden">
+              {titleOf(completion)}
+            </h2>
+            <Stars count={completion.stars} size="2.4rem" />
+          </>
+        )}
         <ul className="world-done-pills">
-          <li aria-label={`${completion.blocks} bloc${completion.blocks > 1 ? 's' : ''} ${ofBlock(completion.block)}`}>
-            <BlockIcon top={block.top} side={block.side} size={32} />
-            <span aria-hidden="true">+{completion.blocks}</span>
-          </li>
-          <li aria-label={`${completion.xp} XP`}>
+          {(revised?.blocks ?? [{ block: completion.block, n: completion.blocks }]).map(({ block: id, n }) => (
+            <li key={id} aria-label={`${n} bloc${n > 1 ? 's' : ''} ${ofBlock(id)}`}>
+              <BlockIcon top={BLOCKS[id].top} side={BLOCKS[id].side} size={32} />
+              <span aria-hidden="true">+{n}</span>
+            </li>
+          ))}
+          <li aria-label={`${revised?.xp ?? completion.xp} XP`}>
             <Icon name="zap" size="1.4rem" />
-            <span aria-hidden="true">+{completion.xp}</span>
+            <span aria-hidden="true">+{revised?.xp ?? completion.xp}</span>
           </li>
           {parts > 0 && (
             <li aria-label={`${parts} partie${parts > 1 ? 's' : ''} posée${parts > 1 ? 's' : ''}`}>
@@ -50,16 +77,18 @@ export function WorldDone({ completion, detail, pause, back }: StageDoneProps) {
             </li>
           )}
           {streak > 0 && (
-            <li aria-label={`${streak} jour${streak > 1 ? 's' : ''} d’affilée`}>
+            <li aria-label={`Série, ${streak} jour${streak > 1 ? 's' : ''} d’affilée`}>
               <Icon name="flame" size="1.4rem" />
               <span aria-hidden="true">{streak}</span>
             </li>
           )}
         </ul>
-        <button type="button" className="button world-done-detail" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-          <Icon name="liste" /> Détail
-        </button>
-        {open && <div className="world-done-more">{detail}</div>}
+        {!revised && (
+          <button type="button" className="button world-done-detail" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+            <Icon name="liste" /> Détail
+          </button>
+        )}
+        {open && !revised && <div className="world-done-more">{detail}</div>}
       </div>
       {pause ?? (
         <button type="button" className="button primary world-done-continue" autoFocus onClick={back.onClick}>

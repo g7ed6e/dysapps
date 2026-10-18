@@ -2,6 +2,8 @@
 // passe) : la scène vraie, sans moteur WebGL sous jsdom (un `WebGLRenderer` simulé, qui ne dessine rien), et son
 // `ResizeObserver` appelé à la main. Une tablette qui tourne pendant la remise, puis revient : la caméra retrouve le
 // cadrage de la remise, pas celle qui suit Kéo. Sans la branche de `resize` qui rappelle `refitRemise`, ce test échoue.
+// Lot L2 : la caisse de « Donner » (aux Quais) et l'objet d'« Apporter » (la lanterne du Phare) se jouent dans la même
+// remise, et leur cadrage suit l'écran de même.
 import * as THREE from 'three';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { COMMANDES } from '../../world/requests';
@@ -101,6 +103,22 @@ describe('La remise quand l’écran change de taille', () => {
     expect(portrait).not.toEqual(landscape);
     turn(1024, 768);
     expect(shot()).toEqual(landscape);
+    world.remise(null);
+  });
+
+  it('la caisse de « Donner » aux Quais, puis la lanterne apportée au Phare : la remise se joue, l’état final tout de suite, et le cadrage suit l’écran', () => {
+    world.remise({ place: 'quais', caisse: { count: 2, block: { dessus: 0xc29a5f, cote: 0x9c7a48 } } }, { element: () => {}, done: () => {} });
+    const landscape = shot();
+    turn(768, 1024);
+    expect(shot()).not.toEqual(landscape);
+    turn(1024, 768);
+    expect(shot()).toEqual(landscape);
+    world.remiseStart();
+    world.remiseFinish();
+    world.remise({ place: 'phare', amenagement: 'french-6e-phonology-fixture-2', carry: true }, { element: () => {}, done: () => {} });
+    world.remiseStart();
+    world.remiseFinish();
+    expect(shot()).not.toEqual(landscape);
     world.remise(null);
   });
 });

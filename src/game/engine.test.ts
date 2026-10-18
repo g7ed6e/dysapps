@@ -3,6 +3,8 @@ import {
   adapt,
   addDays,
   completeExercise,
+  completeRevision,
+  blocsDUneRevision,
   completePortalQuest,
   daysBetween,
   dueItems,
@@ -292,5 +294,34 @@ describe('les sauvegardes d’avant le nouveau dessin des bâtiments', () => {
     expect(partial.stock).toEqual({ 'french-6e-phonology': 3 });
     const done = sanitizeState({ world: { parts: { 'french-6e-phonology-1': keys } } });
     expect(done.stock).toEqual({});
+  });
+});
+
+describe('la révision jouée dans la scène d’un lieu (GD-20, point 4, lot L3)', () => {
+  const today = '2026-10-17';
+  const queue = ['a', 'b', 'c'].map((k) => ({ itemId: `${DEF.id}:${k}`, due: '2026-10-10', stage: 0, streak: 0 }));
+  const before = { ...EMPTY_STATE, spaced: queue, progress: { [DEF.id]: { stars: 2 as const, attempts: 3, best: 0.6 } } };
+
+  it('la file avance sous les mêmes clés ; les blocs d’une révision, quel que soit le score', () => {
+    const c = completeRevision(before, DEF, [ok('a'), ko('b')], today, () => 0.5);
+    expect(c.revision).toBe(true);
+    expect(c.blocks).toBe(blocsDUneRevision(DEF));
+    expect(c.state.stock[DEF.reward.block]).toBe(blocsDUneRevision(DEF));
+    const spaced = new Map(c.state.spaced.map((s) => [s.itemId, s]));
+    expect(spaced.get(`${DEF.id}:a`)).toMatchObject({ stage: 1, streak: 1 });
+    expect(spaced.get(`${DEF.id}:b`)).toMatchObject({ stage: 0, streak: 0, due: addDays(today, 1) });
+    // Une question pas revue reste due, telle quelle.
+    expect(spaced.get(`${DEF.id}:c`)).toEqual(queue[2]);
+  });
+
+  it('une révision partielle ne change ni les étoiles, ni le meilleur score, ni les parties, ni le niveau', () => {
+    const c = completeRevision(before, DEF, [ok('a'), ok('b'), ok('c')], today);
+    expect(c.state.progress).toBe(before.progress);
+    expect(c.state.types).toBe(before.types);
+    expect(c.state.world.parts).toBe(before.world.parts);
+    expect(c.newBest).toBe(false);
+    expect(c.pose).toBeUndefined();
+    // La série du jour, comme après une mission.
+    expect(c.streak.extended).toBe(true);
   });
 });
