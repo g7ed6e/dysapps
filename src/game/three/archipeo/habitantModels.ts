@@ -3,10 +3,11 @@
 // jamais les seize d'un coup (../../importedCharacters.ts, `loadHabitant`) ; son image décodée hors du fil principal
 // (`createImageBitmap`, sans adresse blob:, que la politique de sécurité refuse) ; un maillage texturé, ombré en facettes,
 // sous la lumière du monde. Au plus deux modèles gardés (le lieu approché et celui de la scénette) : une texture de 2048
-// pèse environ 22 Mo dans la carte graphique, le plus ancien est libéré. Tant que le modèle d'un lieu n'est pas prêt à
+// pèse environ 22 Mo dans la carte graphique, le plus ancien est libéré avant d'en faire un troisième. Un lieu dont le
+// modèle a manqué (fichier absent, image indécodable) ne se redemande qu'après `RELANCE_MS`. Tant que le modèle d'un lieu n'est pas prêt à
 // l'entrée de sa scénette (ou hors ligne, ou illisible), le pion dessiné en code reste pour toute la scénette.
 import * as THREE from 'three';
-import { loadHabitant } from '../../importedCharacters';
+import { loadHabitant, RELANCE_MS } from '../../importedCharacters';
 import type { ModeleTexture } from '../../world/characters/imported/glb';
 import { forgetHabitant, habitantFit, habitantModelName, registerHabitant, type HabitantFit } from '../../world/continu/habitants';
 import type { PlaceId } from '../../world/continu/plan6e';
@@ -86,33 +87,45 @@ export function createHabitantModels(scene: THREE.Scene, prepare: (t: THREE.Text
     return { place, positions: m.positions, fit, geometry, texture, material };
   };
 
-  const keep = (r: Ready) => {
-    ready.push(r);
-    while (ready.length > KEPT) {
-      // Jamais celui de la scénette ouverte.
+  /** La place d'un modèle de plus : les plus anciens libérés tant qu'il y en a `KEPT`, jamais celui de la scénette ouverte. */
+  const makeRoom = () => {
+    while (ready.length >= KEPT) {
       const i = ready.findIndex((x) => x.place !== current);
-      const [old] = ready.splice(i, 1);
-      release(old);
+      if (i < 0) return;
+      release(ready.splice(i, 1)[0]);
     }
   };
+  /** Quand le modèle d'un lieu a manqué (le lieu, l'instant) : il n'est redemandé qu'après `RELANCE_MS`. */
+  const failed = new Map<PlaceId, number>();
 
   const prefetch = (place: PlaceId) => {
     if (disposed || pending.has(place) || ready.some((r) => r.place === place)) return;
+    const missed = failed.get(place);
+    if (missed !== undefined && performance.now() - missed < RELANCE_MS) return;
+    failed.delete(place);
     pending.add(place);
     void (async () => {
       try {
         const m = await loadHabitant(habitantModelName(place));
-        if (!m || disposed) return;
+        if (disposed) return;
+        if (!m) {
+          failed.set(place, performance.now());
+          return;
+        }
         const bitmap = await decode(m.image);
         if (disposed) {
           bitmap.close();
           return;
         }
+        // La place d'abord, puis le modèle : jamais trois textures à la fois.
+        makeRoom();
         const r = build(place, m, bitmap);
         prepare(r.texture);
-        keep(r);
+        ready.push(r);
       } catch {
-        // Une image qui ne se décode pas (navigateur trop ancien) : le pion reste.
+        // Une image qui ne se décode pas (navigateur trop ancien) : le pion reste, et le fichier n'est pas relu à chaque
+        // ouverture du panneau du lieu.
+        failed.set(place, performance.now());
       } finally {
         pending.delete(place);
       }

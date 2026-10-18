@@ -3,7 +3,7 @@
 // docs/univers/archipeo/personnages/modeles/6e-habitant-<lieu>/habitant.glb. Code pur, sans DOM ni Three.js : le nom du
 // fichier, sa mise à la place du pion (sa hauteur, ses pieds, son cap) et le registre des modèles montrés, que le décor de
 // près consulte (./scenette.ts : sans modèle, le pion dessiné en code ; avec, le décor sans son corps). Ce qui charge le
-// fichier et le dessine est dans la vue (../../importedCharacters.ts, `loadHabitant` ; ../../three/archipeo/habitants.ts).
+// fichier et le dessine est dans la vue (../../importedCharacters.ts, `loadHabitant` ; ../../three/archipeo/habitantModels.ts).
 import type { PlaceId } from './plan6e';
 
 /** La hauteur de l'habitant d'une scénette, en unités du monde (celle du pion dessiné en code, et de son modèle). */

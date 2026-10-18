@@ -20,7 +20,7 @@ const adresseDe = (nom: string, niveau: Niveau): string | undefined => ADRESSES[
 /** Le chargement de chaque archipel, et s'il a manqué un fichier, quand il a fini. */
 const enCours = new Map<ArchipelagoId, { p: Promise<void>; manque?: number }>();
 /** Un chargement qui a manqué un fichier se refait au plus tôt après ce délai (le défi et les fiches l'attendent). */
-const RELANCE_MS = 30_000;
+export const RELANCE_MS = 30_000;
 
 /**
  * Charge les modèles importés d'un archipel, ses Gardiens et ses créatures, de près et de loin (une fois par archipel).

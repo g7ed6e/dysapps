@@ -817,6 +817,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       mapDirty = true;
     });
   keo.scale.setScalar(KEO_SCALE);
+  // L'habitant de la scénette en modèle 3D (./habitantModels.ts) : un maillage texturé à part, un appel ; sa texture
+  // envoyée à la carte graphique dès qu'elle est décodée (à l'approche du lieu), jamais au premier dessin de la scénette.
+  // Fait ici, avant tout ce qui l'appelle (`setFrame`, l'entrée et la sortie d'une scénette, `dispose`).
+  const habitants = createHabitantModels(scene, (t) => renderer.initTexture(t));
   const ringGeometry = keep(new THREE.RingGeometry(KEO_RING.inner, KEO_RING.outer, 24).rotateX(-Math.PI / 2));
   // L'anneau épouse le sol (directeur artistique) : ses sommets suivent le sol dessiné, refaits quand Kéo bouge ; sa
   // sphère englobante tient les pentes.
@@ -2124,9 +2128,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const decorMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
   decorMesh.visible = false;
   scene.add(decorMesh);
-  // L'habitant de la scénette en modèle 3D (./habitantModels.ts) : un maillage texturé à part, un appel ; sa texture
-  // envoyée à la carte graphique dès qu'elle est décodée (à l'approche du lieu), jamais au premier dessin de la scénette.
-  const habitants = createHabitantModels(scene, (t) => renderer.initTexture(t));
   const lampMaterial = new THREE.MeshBasicMaterial({ color: LANTERN.off });
   const lampOff = new THREE.Color(LANTERN.off);
   const lampOn = new THREE.Color(LANTERN.on);

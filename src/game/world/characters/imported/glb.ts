@@ -78,15 +78,30 @@ function lecteur(view: DataView, type: number, normalized: boolean): { size: num
 /** Les valeurs d'un accesseur, `n` composantes par élément (les `n` premières s'il en a plus : RGBA lu en RVB). */
 function valeurs(gltf: Gltf, bin: DataView, index: number, n: number): Float32Array {
   const a = gltf.accessors[index];
-  const v = gltf.bufferViews[a.bufferView];
+  if (!a) throw new Error(`Accesseur inconnu : ${index}`);
+  const v = vue(gltf, bin, a.bufferView);
   const { size, read } = lecteur(bin, a.componentType, a.normalized === true);
   const components = COMPONENTS[a.type];
+  if (!components || n > components) throw new Error(`Type d’accesseur inconnu : ${a.type}`);
   const stride = v.byteStride ?? size * components;
   const base = (v.byteOffset ?? 0) + (a.byteOffset ?? 0);
+  // Tout l'accesseur dans sa vue, avant d'allouer quoi que ce soit (un `count` démesuré est refusé, jamais alloué).
+  if (!Number.isInteger(a.count) || a.count < 0 || (a.count > 0 && (a.byteOffset ?? 0) + (a.count - 1) * stride + components * size > v.byteLength))
+    throw new Error(`Accesseur hors de sa vue : ${index}`);
   const out = new Float32Array(a.count * n);
   for (let i = 0; i < a.count; i++) for (let k = 0; k < n; k++) out[i * n + k] = read(base + i * stride + k * size);
   return out;
 }
+
+/** Une vue du binaire, entière dans lui. */
+function vue(gltf: Gltf, bin: DataView, index: number): Gltf['bufferViews'][number] {
+  const v = gltf.bufferViews[index];
+  if (!v || (v.byteOffset ?? 0) < 0 || v.byteLength < 0 || (v.byteOffset ?? 0) + v.byteLength > bin.byteLength) throw new Error(`Vue hors du binaire : ${index}`);
+  return v;
+}
+
+/** Les types d'image qu'un modèle texturé peut ranger dans son fichier. */
+const IMAGES = new Set(['image/jpeg', 'image/png']);
 
 /** Les deux morceaux d'un .glb : son JSON et son binaire. */
 function morceaux(buffer: ArrayBuffer): { gltf: Gltf; bin: DataView } {
@@ -176,7 +191,8 @@ export function lireGlbTexture(buffer: ArrayBuffer): ModeleTexture {
   const source = gltf.textures?.[gltf.materials?.[prim.material ?? -1]?.pbrMetallicRoughness?.baseColorTexture?.index ?? -1]?.source;
   const image = gltf.images?.[source ?? -1];
   if (!image || image.bufferView === undefined || !image.mimeType) throw new Error('Modèle sans image de couleur rangée dans le fichier');
-  const v = gltf.bufferViews[image.bufferView];
+  if (!IMAGES.has(image.mimeType)) throw new Error(`Type d’image refusé : ${image.mimeType}`);
+  const v = vue(gltf, bin, image.bufferView);
   const bytes = new Uint8Array(bin.buffer, bin.byteOffset + (v.byteOffset ?? 0), v.byteLength).slice();
   const positions = valeurs(gltf, bin, prim.attributes.POSITION, 3);
   const [tx, ty, tz] = node.translation ?? [0, 0, 0];

@@ -1487,13 +1487,14 @@ function couvreur(b: FacetBuilder, place: PlaceId, body: boolean): void {
   const at = scenetteHabitant(place);
   const model = body ? null : loadedHabitant(place);
   if (model) {
-    // Avec son modèle (son sac au dos, les bras le long du corps, sans tuile) : la même tuile, posée au sol à côté de lui,
-    // à l'est, son bas sur la dalle, son haut penché vers sa jambe, juste en dehors d'elle ; à hauteur de bras, sans bras
-    // qui la porte, elle flottait.
-    const T = COUVREUR_TILE;
-    const height = T.length * Math.sin(T.slope) + 0.02;
-    const east = habitantEastSide(model, 0, height / HABITANT_HEIGHT + 0.05);
-    canalTile(b, { x: at.x + east + T.r, y: at.y + height, z: at.z + T.dz }, T);
+    // Avec son modèle (son sac au dos, les bras le long du corps, sans tuile) : la même tuile, dressée au sol à côté de
+    // lui, à l'est (`COUVREUR_STANDING_TILE`, relecture du directeur artistique : couchée à 55° avec un vide, elle se lisait
+    // comme tombée), son bas sur la dalle, son haut appuyé contre sa jambe : le bord de sa voûte touche le dehors de la
+    // jambe à la hauteur de son haut (`habitantEastSide`), sans vide.
+    const T = COUVREUR_STANDING_TILE;
+    const height = T.length * Math.sin(T.slope) + 0.01;
+    const leg = habitantEastSide(model, (height - 0.12) / HABITANT_HEIGHT, height / HABITANT_HEIGHT);
+    canalTile(b, { x: at.x + leg + T.r * Math.sin(T.slope), y: at.y + height, z: at.z + T.dz }, T);
     return;
   }
   if (!body) {
@@ -1523,12 +1524,15 @@ function couvreur(b: FacetBuilder, place: PlaceId, body: boolean): void {
  */
 const COUVREUR_TILE = { dx: 0.33, height: 0.78, dz: 0.12, slope: (55 * Math.PI) / 180, length: 0.5, r: 0.085, thick: 0.03, segments: 4, grip: 0.8 } as const;
 
+/** La tuile du couvreur posée au sol contre la jambe de son modèle : dressée à 72°, presque dans le plan de ses jambes. */
+const COUVREUR_STANDING_TILE = { ...COUVREUR_TILE, slope: (72 * Math.PI) / 180, dz: 0.04 } as const;
+
 /**
  * Une tuile canal : une demi-voûte le long de sa ligne de faîte, qui part de `top` et descend vers l'est selon sa pente ;
  * sa face bombée (dehors) vers +z, la caméra, son creux derrière ; ses deux bords longs et ses deux bouts fermés. Rend où
  * la main la tient : sur son bord de l'est, le haut, un peu derrière lui (le bras passe derrière elle).
  */
-function canalTile(b: FacetBuilder, top: Vec3, T: typeof COUVREUR_TILE): { grip: Vec3 } {
+function canalTile(b: FacetBuilder, top: Vec3, T: { slope: number; length: number; r: number; thick: number; segments: number; grip: number }): { grip: Vec3 } {
   const u: [number, number, number] = [Math.cos(T.slope), -Math.sin(T.slope), 0];
   const n: [number, number, number] = [Math.sin(T.slope), Math.cos(T.slope), 0];
   const point = (s: number, theta: number, r: number): [number, number, number] => [

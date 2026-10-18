@@ -118,7 +118,9 @@ describe('Les modèles dans la vue', () => {
     const fetch = fauxFetch();
     vi.stubGlobal('fetch', fetch);
     const scene = new THREE.Scene();
-    const h = createHabitantModels(scene, () => {});
+    // À chaque texture faite, jamais plus de deux images vivantes : le plus ancien est libéré avant.
+    const live: number[] = [];
+    const h = createHabitantModels(scene, () => live.push(bitmaps.filter((b) => b.close.mock.calls.length === 0).length));
     h.prefetch('quais');
     h.prefetch('quais');
     await settle();
@@ -138,6 +140,7 @@ describe('Les modèles dans la vue', () => {
     await settle();
     expect(disposed).toHaveBeenCalled();
     expect(bitmaps[0].close).toHaveBeenCalled();
+    expect(Math.max(...live)).toBeLessThanOrEqual(2);
     h.dispose();
     expect(scene.children).not.toContain(h.mesh);
     for (const b of bitmaps) expect(b.close).toHaveBeenCalled();
@@ -158,6 +161,30 @@ describe('Les modèles dans la vue', () => {
     expect(h.show('ruins', { x: 0, y: 0, z: 0 })).toBe(false);
     expect(h.show('mangrove', { x: 0, y: 0, z: 0 })).toBe(false);
     expect(loadedHabitant('mangrove')).toBeNull();
+    h.dispose();
+  });
+
+  it('un modèle qui a manqué n’est redemandé qu’après le délai de relance, pas à chaque ouverture du panneau', async () => {
+    vi.useFakeTimers({ toFake: ['performance'] });
+    const fetch = fauxFetch();
+    vi.stubGlobal('fetch', fetch);
+    vi.stubGlobal(
+      'createImageBitmap',
+      vi.fn(async () => {
+        throw new Error('trop ancien');
+      }),
+    );
+    const h = createHabitantModels(new THREE.Scene(), () => {});
+    h.prefetch('shipyard');
+    await settle();
+    h.prefetch('shipyard');
+    h.prefetch('shipyard');
+    await settle();
+    expect(fetch).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(31_000);
+    h.prefetch('shipyard');
+    await settle();
+    expect(fetch).toHaveBeenCalledTimes(2);
     h.dispose();
   });
 });
