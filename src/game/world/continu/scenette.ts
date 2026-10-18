@@ -1041,6 +1041,8 @@ const C = {
   bristle: 0x6f5a44,
   passeurStone: 0xdcd0b5,
   passeurShade: 0xb9a988,
+  /** Le second ton des dalles de la scène des Ruines, un peu plus chaud que la pierre des Passeurs (le dallage se lit en dalles). */
+  passeurWarm: 0xd3c4a3,
   trousers: 0x4d6a82,
   // Le charpentier (lot L6b, directeur artistique, consultant Archipéo) : chemise Brume, tablier ardoise (le cuir se
   // confondrait avec la quille), casquette de cuir ; son maillet de calfat, la tête de bois dur ; le plancher de planches.
@@ -1409,20 +1411,41 @@ function archeologue(b: FacetBuilder, place: PlaceId, body: boolean): void {
 }
 
 /**
- * Le dallage de la scène des Ruines (lot L8b) : des dalles de pierre des Passeurs devant l'arcade, sur toute la largeur
- * de la scène, levées au-dessus de celles du lieu (la scénette se joue aussi avant qu'elles soient dégagées) ; leurs
- * joints, en travers et en long.
+ * Le dallage de la scène des Ruines (lot L8b ; repris avec les abords, directeur artistique : « la même estrade grise
+ * partout », il devient le sol du lieu) : deux rangs de dalles de pierre des Passeurs, décalés d'une demi-dalle à chaque
+ * bout, que leur bord ne dessine plus le rectangle d'une estrade ; levés au-dessus du dallage usé du lieu (la scénette
+ * se joue aussi avant qu'il soit dégagé). Chaque rang : un bloc de l'ombre de la pierre, un rien plus bas que le sol de
+ * la scène, et ses dalles posées dessus, en deux tons alternés ; entre elles, les joints, de l'ombre. Les abords
+ * (./ruinsSurroundings.ts) posent des touffes et des blocs à leur bord.
  */
 function ruinsPaving(b: FacetBuilder): void {
   const o = floorOf('ruins');
   const depth = sceneDepth('ruins');
-  b.box({ x: o.x, y: o.y - depth, z: o.z }, [2 * RUINS_PAVING.half, depth, RUINS_PAVING.depth], C.passeurShade, C.passeurStone);
-  for (const dx of [-RUINS_PAVING.half / 2, 0, RUINS_PAVING.half / 2]) b.box({ x: o.x + dx, y: o.y, z: o.z }, [0.05, 0.01, RUINS_PAVING.depth], C.passeurShade);
-  b.box({ x: o.x, y: o.y, z: o.z - 0.2 }, [2 * RUINS_PAVING.half, 0.01, 0.05], C.passeurShade);
+  const P = RUINS_PAVING;
+  for (const [r, row] of P.rows.entries()) {
+    const [x0, x1, z0, z1] = [o.x + row.x0, o.x + row.x1, o.z + row.z0, o.z + row.z1];
+    b.box({ x: (x0 + x1) / 2, y: o.y - depth, z: (z0 + z1) / 2 }, [x1 - x0, depth - P.joint, z1 - z0], C.passeurShade);
+    const w = (x1 - x0) / P.slabs;
+    for (let k = 0; k < P.slabs; k++) {
+      const [a, c] = [x0 + k * w + P.gap, x0 + (k + 1) * w - P.gap];
+      b.quad([a, o.y, z1 - P.gap], [c, o.y, z1 - P.gap], [c, o.y, z0 + P.gap], [a, o.y, z0 + P.gap], (k + r) % 2 ? C.passeurStone : C.passeurWarm);
+    }
+  }
 }
 
-/** Le dallage de la scène des Ruines : sa demi-largeur et sa profondeur. */
-const RUINS_PAVING = { half: 4.8, depth: 3.0 } as const;
+/**
+ * Le dallage de la scène des Ruines : ses deux rangs (leurs bords, depuis le sol de la scène), le nombre de dalles de
+ * chacun, le joint (de combien le bloc du rang est plus bas que ses dalles) et le demi-joint entre deux dalles.
+ */
+const RUINS_PAVING = {
+  rows: [
+    { x0: -4.8, x1: 4.3, z0: -1.5, z1: -0.02 },
+    { x0: -4.3, x1: 4.8, z0: 0.02, z1: 1.5 },
+  ],
+  slabs: 6,
+  joint: 0.012,
+  gap: 0.03,
+} as const;
 
 /**
  * La photographe, immobile, une visiteuse de l'Observatoire (jamais son occupante, consultant Archipéo) : le haut clair,

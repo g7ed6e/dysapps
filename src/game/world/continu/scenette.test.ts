@@ -1085,8 +1085,8 @@ describe('Les Ruines (GD-20, point 8, lot L8b)', () => {
   };
 
   it('l’archéologue, en peu de triangles : le bas du corps sombre, le haut clair, ses cheveux gris courts, sa brosse de fouille', () => {
-    // Les deux ombres au pied (lot commun des scénettes) comprises.
-    expect(decor.triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
+    // Les deux ombres au pied (lot commun des scénettes) comprises ; les abords à part (./ruinsSurroundings.test.ts).
+    expect(decor.triangles - scenetteSurroundings('ruins').triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
     expect(scenetteOf('ruins').role).toBe('L’archéologue');
     const at = scenetteHabitant('ruins');
     // Le bas sombre jusqu'au sol (jamais un seul prisme clair, relecture de L6b), le haut bleu ciel au-dessus.
