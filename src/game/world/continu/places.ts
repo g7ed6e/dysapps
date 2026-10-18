@@ -70,6 +70,11 @@ const C = {
   wornTop: 0x9e9482,
   wornWood: 0x9f9279,
   wornWall: 0xb9ae98,
+  // La ruine du Phare : le blanc passé de sa tour (un cran sous le blanc du fût neuf) et la pierre chaude de son socle.
+  wornWhite: 0xe6e0d2,
+  wornWhiteTop: 0xd6cebd,
+  socle: 0xb3a690,
+  socleTop: 0xc4b8a2,
   mud: 0xa39a85,
   // Les Marais salants (lot L5) : le sel blanc cassé (la Brume du pack, jamais un blanc pur), son ombre gris-bleu et sa
   // base ocre ; l'eau des bassins, plus claire et plus bleue que la mer ; l'argile des murets ; le sable qui les comble.
@@ -225,14 +230,16 @@ const towerRadius = (y: number) => 1.7 - (0.5 * (y - 0.7)) / 10;
  */
 function phare(add: Add): void {
   const g = siteGround('phare');
+  // La ruine du Phare dit encore une tour blanche (directeur artistique, évaluation du 18 octobre 2026 : « rien ne dit
+  // phare même en ruine ») : le moignon et ses pierres d'un blanc passé, le socle d'une pierre chaude, jamais sombre.
   add('ruine', 0, (b) => {
-    b.prism({ x: 0, y: SINK, z: 0 }, 3.6, 2.9, 1.5, 7, C.darkStone);
-    b.prism({ x: 0, y: 0.7, z: 0 }, 1.7, towerRadius(3.4), 2.7, 8, C.worn, C.wornTop);
+    b.prism({ x: 0, y: SINK, z: 0 }, 3.6, 2.9, 1.5, 7, C.socle, C.socleTop);
+    b.prism({ x: 0, y: 0.7, z: 0 }, 1.7, towerRadius(3.4), 2.7, 8, C.wornWhite, C.wornWhiteTop);
     // Le haut ébréché du moignon, et des pierres tombées sur le socle (hors de la place de la scénette, devant la porte).
-    b.box({ x: 0.75, y: 3.4, z: 0.7, yaw: 0.4 }, [0.8, 0.5, 0.6], C.worn, C.wornTop);
-    b.box({ x: -2.35, y: 0.7, z: 0.6, yaw: 0.5 }, [0.8, 0.5, 0.6], C.worn, C.wornTop);
-    b.box({ x: 2.1, y: 0.7, z: -1.3, yaw: -0.3 }, [0.6, 0.45, 0.7], C.worn, C.wornTop);
-    b.box({ x: 2.45, y: 0.7, z: 0.75, yaw: 0.9 }, [0.5, 0.35, 0.45], C.worn, C.wornTop);
+    b.box({ x: 0.75, y: 3.4, z: 0.7, yaw: 0.4 }, [0.8, 0.5, 0.6], C.wornWhite, C.wornWhiteTop);
+    b.box({ x: -2.35, y: 0.7, z: 0.6, yaw: 0.5 }, [0.8, 0.5, 0.6], C.wornWhite, C.wornWhiteTop);
+    b.box({ x: 2.1, y: 0.7, z: -1.3, yaw: -0.3 }, [0.6, 0.45, 0.7], C.wornWhite, C.wornWhiteTop);
+    b.box({ x: 2.45, y: 0.7, z: 0.75, yaw: 0.9 }, [0.5, 0.35, 0.45], C.wornWhite, C.wornWhiteTop);
   });
   // La cloche tombée et sa potence brisée, couchées sur le socle parmi les pierres : la galerie les raccroche.
   add(

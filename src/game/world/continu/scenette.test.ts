@@ -251,7 +251,8 @@ describe('La galerie du Phare', () => {
   });
 
   it('le décor de près : la galerie et sa rambarde au niveau de la galerie du Phare, la gardienne en peu de triangles', () => {
-    const decor = scenetteDecor('phare');
+    // Sans les abords (./phareSurroundings.ts), dont la potence passe la rambarde et dont le test est à part.
+    const decor = scenetteCore('phare');
     expect(decor.triangles).toBeGreaterThan(0);
     expect(decor.triangles).toBeLessThan(2500);
     const b = boundsOf(decor);
@@ -641,9 +642,10 @@ describe('Une scénette se joue sur le lieu tel qu’il est bâti (GD-20, lot 1)
   });
 
   it('au Phare sans sa galerie : ni galerie ni rambarde, la gardienne et son maillet ; les cloches posées, pas pendues', () => {
-    const decor = boundsOf(scenetteDecor('phare', false, false));
+    // Sans les abords (./phareSurroundings.ts) : l'échafaudage du chantier monte au-dessus du moignon.
+    const decor = boundsOf(scenetteCore('phare', false, false));
     expect(decor.max[1]).toBeLessThan(foot + PHARE_SOCLE + 1.6);
-    expect(scenetteDecor('phare', false, false).triangles).toBeLessThan(scenetteDecor('phare').triangles);
+    expect(scenetteCore('phare', false, false).triangles).toBeLessThan(scenetteCore('phare').triangles);
     expect(answersHang('phare', false)).toBe(false);
     expect(answersHang('phare', true)).toBe(true);
     const deck = scenetteDeck('phare', false);
