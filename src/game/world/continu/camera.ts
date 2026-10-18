@@ -1,5 +1,6 @@
 // La caméra du monde continu (piste 1, lot 1, choix du mainteneur du 14 octobre 2026) : elle suit Kéo de trois quarts,
-// de 4 à 5 m de haut et 6 m derrière lui, toujours tournée vers le nord (jamais libre, jamais de roulis) ; Kéo y tient
+// de 4 à 5 m de haut et 6 m derrière lui, tournée vers le nord par défaut, jamais de roulis ; depuis le 18 octobre 2026
+// (GD-20, « Le déplacement libre », rotation libre, piste 1), l'élève la tourne autour de Kéo (`yaw`) ; Kéo y tient
 // environ un sixième de la hauteur de l'écran, un peu sous le milieu, et le haut de l'image garde l'horizon, où le
 // repère du lieu suivant dépasse la brume. Elle ne bouge pas tant que Kéo reste dans une petite zone morte, puis le
 // rattrape en douceur ; avec « Réduire les animations », elle le suit d'un bloc (coupe franche). Si le relief passe
@@ -50,20 +51,27 @@ function followPitch(height: number): number {
   return toKeo - Math.atan((2 * FOLLOW.keoOnScreen - 1) * tanHalf(FOLLOW.fov));
 }
 
+/** Un angle ramené entre −π et π (le plus court chemin d'une rotation). */
+export const wrapAngle = (a: number): number => Math.atan2(Math.sin(a), Math.cos(a));
+
 /**
- * La pose de la caméra qui suit le point `focus` (les pieds de Kéo, lissés), montée de `lift` au-dessus d'un relief ;
- * remplie dans `out` s'il est donné (la vue la refait à chaque image sans rien créer).
+ * La pose de la caméra qui suit le point `focus` (les pieds de Kéo, lissés), montée de `lift` au-dessus d'un relief,
+ * tournée de `yaw` autour de lui (en radians, depuis le sud : 0 au sud, tournée vers le nord ; π/2 à l'est, tournée
+ * vers l'ouest) ; remplie dans `out` s'il est donné (la vue la refait à chaque image
+ * sans rien créer).
  */
-export function followPose(focus: Vec3, lift = 0, out?: CameraPose): CameraPose {
+export function followPose(focus: Vec3, lift = 0, out?: CameraPose, yaw = 0): CameraPose {
   const height = FOLLOW.height + lift;
   const pitch = followPitch(height);
   const pose = out ?? { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: FOLLOW.fov, lens: 0 };
-  pose.position.x = focus.x;
+  const bx = Math.sin(yaw);
+  const bz = Math.cos(yaw);
+  pose.position.x = focus.x + FOLLOW.back * bx;
   pose.position.y = focus.y + height;
-  pose.position.z = focus.z + FOLLOW.back;
-  pose.target.x = focus.x;
+  pose.position.z = focus.z + FOLLOW.back * bz;
+  pose.target.x = pose.position.x - LOOK_DISTANCE * Math.cos(pitch) * bx;
   pose.target.y = pose.position.y - LOOK_DISTANCE * Math.sin(pitch);
-  pose.target.z = pose.position.z - LOOK_DISTANCE * Math.cos(pitch);
+  pose.target.z = pose.position.z - LOOK_DISTANCE * Math.cos(pitch) * bz;
   pose.fov = FOLLOW.fov;
   pose.lens = 0;
   return pose;
@@ -108,15 +116,17 @@ const OCCLUSION = { clearance: 0.6, samples: 12, maxLift: 14 } as const;
 
 /**
  * De combien monter la caméra pour que le relief (`ground`, la hauteur du sol en x, z) ne cache pas Kéo, dont les
- * pieds sont en `focus` : 0 le plus souvent. La caméra regarde toujours vers le nord : la ligne reste au-dessus de x.
+ * pieds sont en `focus`, la caméra tournée de `yaw` : 0 le plus souvent.
  */
-export function occlusionLift(focus: Vec3, ground: (x: number, z: number) => number): number {
+export function occlusionLift(focus: Vec3, ground: (x: number, z: number) => number, yaw = 0): number {
+  const bx = Math.sin(yaw);
+  const bz = Math.cos(yaw);
   const head = focus.y + KEO_HEIGHT * 0.8;
   const rise = FOLLOW.height - KEO_HEIGHT * 0.8;
   let need = 0;
   for (let s = 1; s <= OCCLUSION.samples; s++) {
     const t = s / OCCLUSION.samples;
-    const g = ground(focus.x, focus.z + t * FOLLOW.back) + OCCLUSION.clearance;
+    const g = ground(focus.x + t * FOLLOW.back * bx, focus.z + t * FOLLOW.back * bz) + OCCLUSION.clearance;
     // La ligne passe à head + t·(rise + lift) : il faut lift ≥ (g − head) / t − rise.
     need = Math.max(need, (g - head) / t - rise);
   }
@@ -148,17 +158,21 @@ export const LOOK_UP = { within: 24, air: 0.08, minAir: 0.02, footRoom: 78, lowe
 /**
  * Lève le regard de `pose` (remplie sur place) de la part `amount` (0 : la caméra qui suit, 1 : le regard levé) pour
  * que `top` (le haut de la lanterne) entre à l'écran ; les pieds de Kéo (`feet`) restent au-dessus du bas de l'écran
- * de `footRoom` pixels, sur un écran de `height` pixels. La caméra regarde toujours vers le nord et ne recule pas :
- * seuls sa hauteur et son angle sous l'horizon changent.
+ * de `footRoom` pixels, sur un écran de `height` pixels. La caméra garde sa direction et ne recule pas : seuls sa
+ * hauteur et son angle sous l'horizon changent.
  */
 export function lookUp(pose: CameraPose, top: Vec3, feet: Vec3, amount: number, height: number): void {
   if (amount <= 0) return;
   const p = pose.position;
   const y0 = p.y;
-  const pitch0 = Math.atan2(y0 - pose.target.y, p.z - pose.target.z);
+  // La direction du regard, à plat (vers le nord quand la caméra n'est pas tournée).
+  const flat = Math.hypot(pose.target.x - p.x, pose.target.z - p.z) || 1e-9;
+  const fx = (pose.target.x - p.x) / flat;
+  const fz = (pose.target.z - p.z) / flat;
+  const pitch0 = Math.atan2(y0 - pose.target.y, flat);
   const t = tanHalf(pose.fov);
-  const dTop = Math.max(0.1, p.z - top.z);
-  const dFeet = Math.max(0.1, p.z - feet.z);
+  const dTop = Math.max(0.1, (top.x - p.x) * fx + (top.z - p.z) * fz);
+  const dFeet = Math.max(0.1, (feet.x - p.x) * fx + (feet.z - p.z) * fz);
   // L'angle le plus bas, sous l'axe, où les pieds restent au-dessus de « Y aller ».
   const feetMax = Math.atan((1 - 2 * Math.min(0.45, LOOK_UP.footRoom / Math.max(1, height))) * t);
   // Le regard qui met la lanterne à `air` du haut de l'écran, d'une caméra à la hauteur `y`, et l'angle des pieds.
@@ -186,8 +200,9 @@ export function lookUp(pose: CameraPose, top: Vec3, feet: Vec3, amount: number, 
   const k = u * u * (3 - 2 * u);
   const a = pitch0 + (found.pitch - pitch0) * k;
   p.y = y0 + (found.y - y0) * k;
+  pose.target.x = p.x + LOOK_DISTANCE * Math.cos(a) * fx;
   pose.target.y = p.y - LOOK_DISTANCE * Math.sin(a);
-  pose.target.z = p.z - LOOK_DISTANCE * Math.cos(a);
+  pose.target.z = p.z + LOOK_DISTANCE * Math.cos(a) * fz;
 }
 
 /** La part du regard levé à l'image suivante, vers `wanted` (0 ou 1) ; d'un bloc avec « Réduire les animations ». */

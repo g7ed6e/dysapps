@@ -3054,3 +3054,29 @@
   flex: none;
   transform: none;
 }
+/* La caméra qui tourne autour de Kéo (GD-20, rotation libre) : la boussole et les deux tours, sous Réglages, au bord
+   droit, des carrés sans mot comme Réglages ; l'aiguille montre le nord à l'écran. */
+.open-world-camera {
+  position: absolute;
+  right: calc(0.6rem + env(safe-area-inset-right, 0px));
+  top: calc(0.6rem + 56px + 16px);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.open-world-camera .button {
+  width: 56px;
+  min-width: 56px;
+  height: 56px;
+  min-height: 56px;
+  padding: 0;
+  justify-content: center;
+}
+.open-world-camera .button svg {
+  width: 30px;
+  height: 30px;
+}
+.open-world-needle {
+  display: inline-flex;
+}

@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { FacetBuilder, boundsOf } from './facets';
 import { groundCost, mapCost, openWorldCost, OPEN_WORLD_BUDGET } from './budget';
-import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, markBeside, markOffset, occlusionLift, screenOf } from './camera';
+import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, markBeside, markOffset, occlusionLift, screenOf, wrapAngle } from './camera';
 import { distance, distanceToPolyline, insidePolygon, linearRgb, type Vec3 } from './geometry';
 import { START_DISTANCE, atNode, edgesNear, findRoute, networkSamples, pathNode, pathRibbons, pathTopAt, routeLength, snapToNetwork, startOf } from './paths';
 import { COAST, COLORS_6E, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, NORTH_SHORE, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, hidesTraces, placeById, placeOfIsland } from './plan6e';
@@ -379,6 +379,59 @@ describe('La caméra qui suit Kéo', () => {
     for (const p of networkSamples(4)) expect(occlusionLift({ x: p.x, y: standingHeight(ground(p.x, p.z)), z: p.z }, ground)).toBeLessThan(6);
   });
 
+  it('la caméra tourne autour de Kéo (GD-20, rotation libre) : vers le nord à 0, à l’est à π/2, le relief et le regard levé suivent', () => {
+    expect(wrapAngle(Math.PI * 3)).toBeCloseTo(Math.PI, 9);
+    expect(wrapAngle(-Math.PI / 2 - 2 * Math.PI)).toBeCloseTo(-Math.PI / 2, 9);
+    const feet = { x: 3, y: 1, z: -2 };
+    // À 0, la pose d'avant la rotation : derrière Kéo au sud.
+    const north = followPose(feet, 0, undefined, 0);
+    expect(north.position.x).toBe(feet.x);
+    expect(north.position.z).toBeCloseTo(feet.z + FOLLOW.back, 9);
+    expect(north).toEqual(followPose(feet));
+    // À π/2, à l'est, tournée vers l'ouest ; Kéo à la même place à l'écran.
+    const east = followPose(feet, 0, undefined, Math.PI / 2);
+    expect(east.position.x).toBeCloseTo(feet.x + FOLLOW.back, 9);
+    expect(east.position.z).toBeCloseTo(feet.z, 9);
+    expect(east.target.x).toBeLessThan(east.position.x);
+    expect(screenOf(east, feet, 1024, 768).y).toBeCloseTo(screenOf(north, feet, 1024, 768).y, 6);
+    expect(screenOf(east, feet, 1024, 768).x).toBeCloseTo(512, 6);
+    // Une crête à l'est : elle ne lève la caméra que tournée vers l'ouest.
+    const ridge = (x: number) => (x > feet.x + 4 && x < feet.x + 6 ? 7 : 1);
+    expect(occlusionLift(feet, ridge, 0)).toBe(0);
+    expect(occlusionLift(feet, ridge, Math.PI / 2)).toBeGreaterThan(0);
+    // Le regard levé garde la direction de la caméra tournée.
+    const top = { x: feet.x - 12, y: 14, z: feet.z };
+    const pose = followPose(feet, 0, undefined, Math.PI / 2);
+    lookUp(pose, top, feet, 1, 768);
+    expect(pose.target.z).toBeCloseTo(pose.position.z, 6);
+    expect(pose.target.x).toBeLessThan(pose.position.x);
+    expect(screenOf(pose, top, 1024, 768).y).toBeLessThanOrEqual(768 * LOOK_UP.air + 1e-6);
+  });
+
+  it('les anneaux de tuiles tournent avec la caméra : la tuile sous Kéo toujours là, rien derrière elle', () => {
+    for (const p of networkSamples(40))
+      for (let k = 0; k < 8; k++) {
+        const yaw = (k * Math.PI) / 4;
+        const rings = tileRings(p, WORLD_FOG.far, yaw);
+        const all = [...rings.near, ...rings.far];
+        const under = all.find((i) => {
+          const r = tileRect(i % TERRAIN.tilesX, Math.floor(i / TERRAIN.tilesX));
+          return p.x >= r.minX && p.x <= r.maxX && p.z >= r.minZ && p.z <= r.maxZ;
+        });
+        // (Un point hors du terrain, la Gare maritime au large, n'a pas de tuile, dans aucune direction.)
+        const inside = p.x >= TERRAIN.minX && p.z >= TERRAIN.minZ && p.x < TERRAIN.minX + TERRAIN.tilesX * TILE_SIZE && p.z < TERRAIN.minZ + TERRAIN.tilesZ * TILE_SIZE;
+        if (inside) expect(under, `${p.x},${p.z} à ${k}/8`).toBeDefined();
+        for (const i of all) {
+          const r = tileRect(i % TERRAIN.tilesX, Math.floor(i / TERRAIN.tilesX));
+          const bx = Math.sin(yaw);
+          const bz = Math.cos(yaw);
+          const behind = ((bx > 0 ? r.minX : r.maxX) - p.x) * bx + ((bz > 0 ? r.minZ : r.maxZ) - p.z) * bz;
+          expect(behind).toBeLessThanOrEqual(RING.behind + 1e-9);
+        }
+      }
+    expect(tileRings(pathNode('quais').at, WORLD_FOG.far, 0)).toEqual(tileRings(pathNode('quais').at, WORLD_FOG.far));
+  });
+
   it('au départ, Kéo est sur le chemin, à 9 unités du pied du lieu, au sud du Phare', () => {
     for (const p of PLACES) {
       const s = startOf(p.door, p.center);
@@ -478,8 +531,8 @@ describe('Le budget du monde continu', () => {
     expect(g.triangles).toBe(g.near + g.far);
   });
 
-  it('tient dans l’enveloppe relevée par le mainteneur (86 000 triangles, 17 octobre 2026), les appels inchangés', () => {
-    expect(OPEN_WORLD_BUDGET).toEqual({ triangles: 86_000, calls: 18 });
+  it('tient dans l’enveloppe relevée par le mainteneur (86 000 triangles, 17 octobre 2026 ; 20 appels, déplacement libre, 18 octobre 2026)', () => {
+    expect(OPEN_WORLD_BUDGET).toEqual({ triangles: 86_000, calls: 20 });
     // Sans les aménagements, dont la vue trace les dessins : le tout se compte dans three/archipeo/amenagements.test.ts.
     const cost = openWorldCost(0);
     const triangles = cost.reduce((s, c) => s + c.triangles, 0);
