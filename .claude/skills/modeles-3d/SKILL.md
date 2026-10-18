@@ -27,6 +27,8 @@ Regarder le contrôle : socle pas entièrement parti ou pattes coupées, changer
 
 `python3 scripts/rendu/modeles/squelette.py -- <dossier du modèle> <quarts> [réglages]`, avec les quarts et réglages de la colonne 4 de sa ligne (`cou=`, `queue=non|sol`, `jambes=non`, `bras=…` (`bras=0.115` : des bras collés au tronc, Kéo), `leve=…`, `teinte=…`, `entrejambe=0.42` : un jean serré, Kéo) ; relire la planche de `apercu_squelette.py` (`-- <dossier> <quarts> <image.png>`), qui montre les poses de repos et de marche ; `marche.py` y recopie le cycle de marche de `paintedCharacters.ts` : le changer des deux côtés à la fois. Le jeu anime les os par le code (`src/game/three/paintedCharacters.ts`).
 
+Un personnage en pose A qui doit courir, sauter, attraper ou lancer (les ados de l'équipage) prend un autre squelette, à 17 os : voir le skill [`animer-modele-3d`](../animer-modele-3d/SKILL.md), qui dit aussi comment contrôler une animation (planche et vidéo, avec et sans texture).
+
 ## 5. Les aplats d'une créature (`aplats.py`)
 
 Les quatre couleurs tirées de la texture sont sombres et bigarrées (l'ombre est peinte dans la texture) : elles dénotent à côté du décor. On les remplace par des aplats clairs.
