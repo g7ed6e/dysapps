@@ -17,9 +17,10 @@ const C = {
   deck: 0xa9784a,
   /**
    * Le dessus du quai, plus clair : les caisses s'y détachent ; sa tranche, du même bois (reprise des Quais : des planches
-   * claires sur leurs pieux, pas une dalle brune). Le plancher de la barque, à fleur d'eau.
+   * claires sur leurs pieux, pas une dalle brune ; éclairci encore à la reprise des abords, référent dys : vus de côté ou
+   * de dos, Kéo et le docker s'y détachent). Le plancher de la barque, à fleur d'eau.
    */
-  quay: 0xdcc08f,
+  quay: 0xf7e9cc,
   quaySide: 0xb08658,
   boatFloor: 0xc08c58,
   boatInside: 0xd0a26a,
@@ -87,6 +88,8 @@ const C = {
   strawInside: 0x8c6a2e,
   canvasShade: 0xd3c3a2,
   newWood: 0xc28a52,
+  /** Le mât court de la barque des Quais : un bois moyen, plus sombre que ses bancs. */
+  mast: 0xa57a4f,
   paint: 0xd9a441,
   /** L'anneau des élingues, en fer sombre (la moufle de la grue est en ardoise). */
   iron: 0x4a555c,
@@ -1040,15 +1043,19 @@ export function crateLayout(count: number): {
 const CRATE = 0.4;
 const CRATE_PITCH = 0.48;
 
-/** La place que prennent les caisses de `count` : largeur (x) et profondeur (z). */
-function crateBlock(count: number): { w: number; d: number } {
+/**
+ * La place que prennent les caisses de `count` : largeur (x) et profondeur (z), allées comprises ; `rows`, la profondeur
+ * des seules caisses, du bord de la première rangée à celui de la dernière (sans l'allée après la dernière palette).
+ */
+function crateBlock(count: number): { w: number; d: number; rows: number } {
   const { palettes, singles } = crateLayout(count);
   const pw = 5 * CRATE_PITCH + 0.3,
     pd = 2 * CRATE_PITCH + 0.3;
   const cols = Math.min(3, palettes);
   const w = cols * pw + (singles ? (palettes ? 0.2 : 0) + Math.min(5, singles) * CRATE_PITCH : 0);
   const d = Math.max(Math.ceil(palettes / 3) * pd, Math.ceil(singles / 5) * CRATE_PITCH);
-  return { w: Math.max(w, CRATE_PITCH), d: Math.max(d, CRATE_PITCH) };
+  const rows = Math.max(Math.ceil(palettes / 3) * pd - (palettes ? 0.3 : 0), Math.ceil(singles / 5) * CRATE_PITCH);
+  return { w: Math.max(w, CRATE_PITCH), d: Math.max(d, CRATE_PITCH), rows: Math.max(rows, CRATE_PITCH) };
 }
 
 /** Les caisses de `count`, rangées depuis (x0, z0) : les palettes en grille de trois de front, les caisses seules à droite. */
@@ -1235,14 +1242,20 @@ function barque(b: FacetBuilder, at: Vec3, length: number, width: number): void 
   b.box({ x: bow.lantern.x, y: bow.lantern.y + LANTERN_GLASS, z: at.z }, [0.3, 0.07, 0.3], C.stoneDark);
   // Deux bancs en travers, à la poupe et à la proue, hors de la place des caisses.
   for (const dx of [-length / 2 + 0.6, length / 2 - 0.6]) b.box({ x: at.x + dx, y: y + 0.42, z: at.z }, [0.34, 0.1, width - 2 * wall], C.newWood);
+  // Un mât court, planté dans le banc de la poupe (directeur artistique, reprise des abords) : loin du crochet de la
+  // grue et de la place où il descend la caisse, à la proue.
+  b.beam({ x: at.x - length / 2 + 0.6, y: y + 0.4, z: at.z }, { x: at.x - length / 2 + 0.6, y: y + BOAT_MAST, z: at.z }, 0.11, C.mast);
 }
+
+/** La hauteur du mât court de la barque des Quais, au-dessus du bas de sa coque. */
+const BOAT_MAST = 2.1;
 
 /**
  * Le plancher de la barque de la scène des Quais, à fleur d'eau (évaluation du directeur artistique : la barque se lisait
  * comme un cadre vide, son fond sous l'eau) : un aplat de bois entre les bordés, et deux joints le long de la coque.
  */
 function boatFloor(b: FacetBuilder, at: Vec3, length: number, width: number): void {
-  const wall = 0.22, y = at.y + 0.015;
+  const wall = 0.22, y = at.y + BOAT_FLOOR;
   const x0 = at.x - length / 2 + wall, x1 = at.x + length / 2, z0 = at.z - width / 2 + wall, z1 = at.z + width / 2 - wall;
   b.quad([x0, y, z1], [x1, y, z1], [x1, y, z0], [x0, y, z0], C.boatFloor);
   // Le fond de la proue, jusqu'à un pas de sa pointe.
@@ -1257,6 +1270,9 @@ function boatFloor(b: FacetBuilder, at: Vec3, length: number, width: number): vo
   b.quad([x1, y, z1 - e], [x0, y, z1 - e], [x0, top, z1 - e], [x1, top, z1 - e], C.boatInside);
   b.quad([x0 + e, y, z1], [x0 + e, y, z0], [x0 + e, top, z0], [x0 + e, top, z1], C.boatInside);
 }
+
+/** Le plancher de la barque des Quais au-dessus de l'eau : un rien, pour que l'eau ne passe jamais au travers. */
+const BOAT_FLOOR = 0.05;
 
 /** La longueur de la proue, en part de la largeur de la coque : une pointe courte. */
 const BOW_SHARE = 0.5;
@@ -1843,8 +1859,10 @@ export function quayBoat(scene: Extract<ItemScene, { kind: 'quai' }>, o: Vec3 = 
     at,
     length,
     width,
-    cargo: { x: at.x - cargo.w / 2 - 0.5 + CRATE_PITCH / 2, y: at.y - 0.11, z: at.z - cargo.d / 2 + CRATE_PITCH / 2 },
-    hold: { x: at.x + length / 2 - 1.25, y: at.y - 0.1, z: at.z },
+    // Les caisses posées sur le plancher, au milieu de la coque en travers (les palettes n'ont pas d'allée entre elles et
+    // le bordé : directeur artistique, reprise des abords, elles ne le chevauchent plus).
+    cargo: { x: at.x - cargo.w / 2 - 0.5 + CRATE_PITCH / 2, y: at.y + BOAT_FLOOR, z: at.z - cargo.rows / 2 + CRATE_PITCH / 2 },
+    hold: { x: at.x + length / 2 - 1.25, y: at.y + BOAT_FLOOR, z: at.z },
     lantern: boatBow(at, length, width).lantern,
   };
 }

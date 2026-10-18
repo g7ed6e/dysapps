@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FacetBuilder } from './facets';
-import { saltworksSurroundings } from './saltworksSurroundings';
-import { scenetteHabitant, scenetteKeo } from './scenette';
+import { scenetteHabitant, scenetteKeo, scenetteSurroundings } from './scenette';
 import { sceneSpot } from './questionScene';
 
 /** Le sol de la scène des Marais salants : le dessus du muret (scenette.ts, `saltLevee`). */
@@ -11,14 +9,7 @@ const floor = () => {
 };
 
 describe('Les abords des Marais salants', () => {
-  const b = new FacetBuilder();
-  saltworksSurroundings(b, floor(), { posed: true, open: false });
-  const f = b.build();
-
-  it('tiennent dans leur part du budget de la scénette', () => {
-    expect(f.triangles).toBeGreaterThan(600);
-    expect(f.triangles).toBeLessThanOrEqual(1500);
-  });
+  const f = scenetteSurroundings('saltworks');
 
   it('ne dressent rien entre la caméra de face et la scène (Kéo, la saunière, la rangée des réponses)', () => {
     const o = floor();

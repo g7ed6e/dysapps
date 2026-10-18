@@ -1,20 +1,22 @@
 /**
  * Les abords de la scénette des Marais salants (reprise lieu par lieu, d'après le concept du 18 octobre 2026) : une
  * saline qui travaille tout autour du bassin où se tiennent Kéo et la saunière, finie de chaque côté puisque la caméra
- * tourne (« caméra libre »). Au nord, le muret du bassin de l'item et ses petits cônes de sel, un gros tas de sel à l'est
- * de la grille du lieu, des dunes et un palmier derrière le hangar ; à l'ouest, deux bassins d'eau claire presque blanche
- * et, entre eux, un bassin asséché craquelé, entre des murets d'argile ; à l'est, le chenal qui descend à la mer et sa petite
- * vanne de bois ; au sud, la cabane de bois au toit bleu, sa pile de planches, la brouette chargée, un second tas, les
- * dunes. Partout, des touffes d'herbe sèche et quelques rochers. Rien de haut entre la caméra de face et la scène (la
- * rangée des réponses, Kéo, la saunière, la jauge et la vanne de l'item) : ce qui est au sud se tient derrière la caméra
- * de face ou hors de son champ. Des aplats francs, une couleur par facette ; environ 1 300 triangles, aucun appel de
- * plus (le décor de près).
+ * tourne (« caméra libre »). Au nord, le muret du bassin de l'item et ses petits cônes de sel ; au nord-est, derrière la
+ * saunière, deux bassins d'eau claire presque blanche et, entre eux, un bassin asséché craquelé, entre des murets d'argile
+ * qui portent des cônes de sel, un tas de sel sur la grève ; des dunes et un palmier derrière le hangar ; à l'est, le
+ * chenal qui descend à la mer et sa petite vanne de bois ; au sud, la cabane de bois au toit bleu, sa pile de planches,
+ * la brouette chargée, un second tas, les dunes. Partout, des touffes d'herbe sèche et quelques rochers ; pas de sapin
+ * (consultant Archipéo : ./flora.ts n'en fait pousser aucun autour du lieu). Rien de haut entre la caméra de face et la
+ * scène (la rangée des réponses, Kéo, la saunière, la jauge et la vanne de l'item) : ce qui est au sud se tient derrière
+ * la caméra de face ou hors de son champ. Des aplats francs, une couleur par facette ; aucun appel de plus (le décor de
+ * près).
  */
 import type { FacetBuilder } from './facets';
 import { shadowColor, FLORA_COLORS } from './flora';
 import type { Vec3 } from './geometry';
 import { SHADOW_DIR } from './sky';
 import type { SurroundingsState } from './surroundings';
+import { DRY_TUFT, NATURE, SALT, groundAt as groundOf, heap, rock as stone, tuft, type P3 } from './surroundingsKit';
 import { placeById } from './plan6e';
 import { heightAt, standingHeight } from './terrain';
 
@@ -26,17 +28,13 @@ const C = {
   /** L'eau des bassins de récolte : claire, presque blanche (le sel qui s'y forme), son reflet plus clair encore. */
   brine: 0xcfe4e2,
   brineGlint: 0xeaf3ef,
-  /** Le reflet sur l'eau du bassin de l'item (#5FB3E0), plus clair. */
-  panGlint: 0x9fd3ee,
-  /** Le chenal, l'eau de mer qui entre (plus profonde que les bassins). */
-  channel: 0x4fa6d6,
+  /** Le reflet sur l'eau du bassin de l'item (scenette.ts, `pan`), plus clair. */
+  panGlint: 0xa6e4da,
+  /** Le chenal, l'eau de mer qui entre : le Lagon éclairci (directeur artistique ; avant, un bleu qui virait à l'ardoise). */
+  channel: 0x55c2b4,
   /** Le bassin asséché : le fond et ses plaques craquelées. */
   crackFloor: 0xb39470,
   crackPlate: 0xdcc6a0,
-  /** Le sel : son dessus, son ombre gris-bleu, son pied ocre où il touche l'argile (jamais un blanc pur). */
-  salt: 0xe5ebe3,
-  saltShade: 0xb9c4c8,
-  saltBase: 0xc9a46c,
   /** Le bois : planches de la cabane, poteaux, planches neuves, bois sombre (jamais presque noir). */
   planks: 0xc98e55,
   plankShade: 0xb98049,
@@ -50,27 +48,25 @@ const C = {
   tray: 0xb5793f,
   trayTop: 0xc98d50,
   wheel: 0x5f6a70,
-  /** Les dunes de sable pâle (la lumière dorée les chauffe), l'herbe sèche (deux tons). */
-  dune: 0xead7ae,
-  dry: 0xc8b25a,
-  dryShade: 0xa89a4a,
+  /** Les dunes de sable pâle (la lumière dorée les chauffe). */
+  dune: NATURE.dune,
   /** La vase claire de la grève (terrain.ts, `GREVE`), pour l'ombre peinte. */
   mud: 0xc8c2aa,
 } as const;
 
-type P3 = [number, number, number];
-
 /** Le sol en un point (le terrain, jamais sous l'eau). */
-const groundAt = (x: number, z: number): number => Math.max(0, heightAt({ x, z }));
+const groundAt = (x: number, z: number): number => groundOf(x, z, 0, 0);
 
 /**
- * Les bassins de l'ouest, dans le repère du sol de la scène (x à l'est, z au sud) : leurs bords ; `dry`,
- * le bassin asséché. Ils prolongent le bassin de l'item (le muret de Kéo s'arrête à 6,2 de part et d'autre).
+ * Les bassins de récolte, dans le repère du sol de la scène (x à l'est, z au sud) : leurs bords ; `dry`, le bassin
+ * asséché. Au nord-est, derrière la saunière, dans la moitié droite du cadre de face (directeur artistique : à l'ouest, ils
+ * étaient sous le panneau), entre la grille du lieu et la grève, au sud du parasol (la commande de la saunière) et de la
+ * pompe de la Pente graduée.
  */
 const SALINE_POOLS = [
-  { x0: -10.1, x1: -6.4, z0: -1.6, z1: 1.3, dry: false },
-  { x0: -10.1, x1: -6.4, z0: -5.4, z1: -1.6, dry: true },
-  { x0: -10.1, x1: -6.4, z0: -9.0, z1: -5.4, dry: false },
+  { x0: 3.95, x1: 7.5, z0: -3.9, z1: -2.5, dry: false },
+  { x0: 3.95, x1: 7.5, z0: -5.3, z1: -3.9, dry: true },
+  { x0: 3.95, x1: 7.5, z0: -6.7, z1: -5.3, dry: false },
 ] as const;
 
 /** Les murets : leur largeur, leur haut et celui de l'eau au-dessus du sol (les murets du lieu : 0,32 et 0,3). */
@@ -86,12 +82,12 @@ export function saltworksSurroundings(b: FacetBuilder, floor: Vec3, state: Surro
   if (state.posed) placePoolGlints(b);
   for (const p of SALINE_POOLS) pool(b, X(p.x0), X(p.x1), Z(p.z0), Z(p.z1), p.dry);
   channel(b, floor, g0);
-  // Les cônes de sel sur les murets (à l'ouest, au nord du bassin de l'item) ; les gros tas, au nord-est et au sud-est.
-  for (const [dx, dz, r] of SMALL_CONES) saltCone(b, X(dx), groundAt(X(dx), Z(dz)) + LEVEE.top, Z(dz), r, 6);
+  // Les cônes de sel sur les murets (au nord du bassin de l'item, et des bassins de récolte) ; les gros tas, sur la grève.
+  for (const [dx, dz, r] of SMALL_CONES) heap(b, X(dx), groundAt(X(dx), Z(dz)) + LEVEE.top, Z(dz), r, 6);
   for (const [dx, dz, r] of BIG_HEAPS) {
     const y = groundAt(X(dx), Z(dz));
     shadow(b, X(dx), y, Z(dz), r * 1.05);
-    saltCone(b, X(dx), y + 0.08, Z(dz), r, 9);
+    heap(b, X(dx), y + 0.08, Z(dz), r, 9);
   }
   cabin(b, X(-6.0), Z(11.0));
   plankPile(b, X(-3.6), Z(12.3));
@@ -99,25 +95,25 @@ export function saltworksSurroundings(b: FacetBuilder, floor: Vec3, state: Surro
   palm(b, X(-8.4), Z(9.4), 1.1, 0.6);
   palm(b, X(5.4), Z(-11.6), 1.0, 2.4);
   for (const [dx, dz, r, h, yaw] of DUNES) dune(b, X(dx), Z(dz), r, h, yaw);
-  for (const [dx, dz, r, k] of ROCKS) rock(b, X(dx), Z(dz), r, FLORA_COLORS.rocks[k]);
-  for (const [dx, dz, s] of TUFTS) tuft(b, X(dx), Z(dz), s);
+  for (const [i, [dx, dz, r]] of ROCKS.entries()) rock(b, X(dx), Z(dz), r, i);
+  for (const [i, [dx, dz, s]] of TUFTS.entries()) tuft(b, { x: X(dx), y: groundAt(X(dx), Z(dz)), z: Z(dz) }, i + 50, DRY_TUFT, s * 1.2);
 }
 
 /** Les petits cônes de sel, sur les murets : x, z depuis le sol de la scène, rayon. */
 const SMALL_CONES: readonly (readonly [number, number, number])[] = [
   [-2.2, -2.12, 0.22],
   [4.3, -2.12, 0.2],
-  [-8.25, 1.3, 0.24],
-  [-6.4, -3.6, 0.2],
-  [-10.1, -3.2, 0.22],
-  [-8.3, -5.4, 0.24],
-  [-6.4, -7.4, 0.2],
-  [-10.1, -7.2, 0.2],
+  [5.9, -2.5, 0.24],
+  [3.95, -3.2, 0.2],
+  [7.5, -4.6, 0.22],
+  [5.7, -5.3, 0.24],
+  [3.95, -6.0, 0.2],
+  [7.5, -6.4, 0.2],
 ];
 
 /** Les gros tas de sel, posés sur la grève : x, z, rayon. */
 const BIG_HEAPS: readonly (readonly [number, number, number])[] = [
-  [4.8, -2.72, 0.48],
+  [8.9, -5.0, 0.48],
   [4.8, 5.4, 0.72],
 ];
 
@@ -128,15 +124,16 @@ const DUNES: readonly (readonly [number, number, number, number, number])[] = [
   [-11.5, 11, 3, 1.4, 1.2],
   [3.2, -15.8, 3, 1.3, 0.2],
   [-2.6, -17.6, 2.8, 1.3, -0.5],
+  [-9.4, -4.6, 2.4, 0.9, 0.8],
 ];
 
-/** Les rochers : x, z, rayon, le gris (FLORA_COLORS.rocks). */
-const ROCKS: readonly (readonly [number, number, number, number])[] = [
-  [-6.6, 11.6, 0.55, 0],
-  [-3.4, 12.6, 0.35, 1],
-  [7.8, 2.6, 0.5, 1],
-  [-11.2, -6.5, 0.45, 1],
-  [1.6, -14.2, 0.4, 0],
+/** Les rochers : x, z, rayon. */
+const ROCKS: readonly (readonly [number, number, number])[] = [
+  [-6.6, 11.6, 0.55],
+  [-3.4, 12.6, 0.35],
+  [7.8, 2.6, 0.5],
+  [-11.2, -6.5, 0.45],
+  [1.6, -14.2, 0.4],
 ];
 
 /** Les touffes d'herbe sèche : x, z, taille. */
@@ -147,10 +144,15 @@ const TUFTS: readonly (readonly [number, number, number])[] = [
   [-11.0, -1.0, 0.9],
   [-11.0, -9.5, 1],
   [-3.8, -13.5, 0.9],
-  [4.6, -9.0, 0.8],
-  [7.0, -5.0, 0.8],
+  [8.2, -9.6, 0.8],
+  [8.9, -7.2, 0.8],
   [-8.4, 13.2, 1],
   [-5.2, 3.6, 0.9],
+  // Le long du sentier qui arrive à la porte du lieu depuis l'ouest (vu en enfilade, de l'est, il se lisait comme un pan
+  // dressé) : quelques touffes sur ses bords le posent au sol.
+  [-4.8, 2.7, 0.9],
+  [-6.0, 1.6, 1],
+  [-8.4, 2.9, 0.9],
 ];
 
 /**
@@ -265,12 +267,6 @@ function channel(b: FacetBuilder, f: Vec3, g0: number): void {
   b.beam({ x: vx - 0.05, y: f.y + 0.3, z: vz - 0.2 }, { x: vx - 0.05, y: f.y + 0.3, z: vz + 0.2 }, 0.07, C.door);
 }
 
-/** Un cône de sel : son pied ocre, son corps blanc cassé, son sommet émoussé (un tronc court fermé d'un dessus plat). */
-function saltCone(b: FacetBuilder, x: number, y: number, z: number, r: number, sides: number): void {
-  b.prism({ x, y: y - 0.08, z }, r * 1.08, r * 1.0, 0.12 + r * 0.06, sides, C.saltBase, C.saltShade);
-  b.prism({ x, y: y + 0.04 + r * 0.06, z, yaw: 0.3 }, r, r * 0.22, r * 1.2, sides, C.salt, C.saltShade);
-}
-
 /** Une ombre peinte à l'opposé du soleil (sept triangles, la vase assombrie), son bord côté soleil au pied. */
 function shadow(b: FacetBuilder, x: number, y: number, z: number, radius: number): void {
   const n = 7;
@@ -330,7 +326,7 @@ function wheelbarrow(b: FacetBuilder, x: number, z: number, yaw: number): void {
   ];
   // La caisse : un profil en trapèze épaissi, en travers ; tournée pour que la roue soit devant.
   b.extrude({ ...p(0, 0.36, 0), yaw: yaw - Math.PI / 2 }, tray.map(([u, h]) => [u, h] as [number, number]), 0.72, C.tray, C.trayTop);
-  saltCone(b, p(0.02, 0, 0).x, y + 0.6, p(0.02, 0, 0).z, 0.32, 6);
+  heap(b, p(0.02, 0, 0).x, y + 0.6, p(0.02, 0, 0).z, 0.32, 6, SALT);
   b.drum({ ...p(0.72, -0.05, 0.22), yaw: yaw + Math.PI / 2, pitch: Math.PI / 2 }, 0.22, 0.1, 8, C.wheel, C.post);
   for (const v of [-0.3, 0.3]) {
     b.beam(p(0.72, v * 0.5, 0.22), p(-1.05, v, 0.55), 0.06, C.post);
@@ -393,26 +389,9 @@ function dune(b: FacetBuilder, x: number, z: number, r: number, h: number, yaw: 
   upward(b, foot[5], foot[0], ridge[0], C.dune);
 }
 
-/** Un rocher gris : un prisme bas à cinq côtés, son dessus plus étroit. */
-function rock(b: FacetBuilder, x: number, z: number, r: number, color: number): void {
+/** Un rocher à facettes du kit commun, son ombre peinte au pied. */
+function rock(b: FacetBuilder, x: number, z: number, r: number, seed: number): void {
   const y = groundAt(x, z);
   shadow(b, x, y, z, r);
-  b.prism({ x, y: y - 0.05, z, yaw: x * 0.7 }, r, r * 0.55, r * 0.85, 5, color);
-}
-
-/** Une touffe d'herbe sèche : trois brins, chacun deux facettes adossées (on les voit de tous les côtés). */
-function tuft(b: FacetBuilder, x: number, z: number, s: number): void {
-  const y = groundAt(x, z);
-  for (let k = 0; k < 3; k++) {
-    const a = (k * 2 * Math.PI) / 3 + x;
-    const ca = Math.cos(a),
-      sa = Math.sin(a);
-    const w = 0.09 * s;
-    const p: P3 = [x - sa * w, y, z + ca * w];
-    const q: P3 = [x + sa * w, y, z - ca * w];
-    const tip: P3 = [x + ca * 0.22 * s, y + 0.42 * s, z + sa * 0.22 * s];
-    const color = k === 1 ? C.dryShade : C.dry;
-    b.triangle(p, q, tip, color);
-    b.triangle(q, p, tip, color);
-  }
+  stone(b, { x, y: y + 0.05, z }, r, r * 0.85, seed + 30);
 }

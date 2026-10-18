@@ -351,6 +351,11 @@ interface ScenetteSite {
   habitant: { dx: number; dz: number };
   subject: { halfWidth: number; bottom: number; top: number; depth: number };
   pitch: number;
+  /**
+   * Le cap de départ de la caméra, l'angle dont elle a déjà tourné autour du point visé quand la scénette s'ouvre et à
+   * chaque nouvel item (comme à deux doigts, `orbitAround`) ; nul ou absent : de face, vue du sud.
+   */
+  start?: number;
 }
 
 /** Le sol de la galerie du Phare. */
@@ -392,6 +397,9 @@ function northSite(place: PlaceId): ScenetteSite {
   };
 }
 
+/** Le cap de départ de la scénette des Écluses : dans l'axe du canal, à l'est, un peu au sud de son axe. */
+const ECLUSES_START = (65 * Math.PI) / 180;
+
 const SITES: Record<PlaceId, ScenetteSite> = {
   phare: {
     floor: galleryFloor,
@@ -407,7 +415,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
     floor: quayFloor,
     keo: { dx: -4, dz: 0, scale: 0.6, yaw: Math.PI - 0.45 },
     habitant: { dx: 3.4, dz: 0 },
-    subject: { halfWidth: 4.4, bottom: -1.1, top: 3.3, depth: 0.2 },
+    subject: { halfWidth: 4.4, bottom: -1.1, top: 3.7, depth: 0.2 },
     pitch: (18 * Math.PI) / 180,
   },
   // Les Filets (lot 4) : Kéo et la pêcheuse sur le plancher de séchage, de part et d'autre du filet étendu ; le séchoir
@@ -427,6 +435,10 @@ const SITES: Record<PlaceId, ScenetteSite> = {
     habitant: { dx: 3.7, dz: 0.1 },
     subject: { halfWidth: 5.3, bottom: -0.6, top: 3.5, depth: 0.6 },
     pitch: (22 * Math.PI) / 180,
+    // Dans l'axe du canal, depuis l'aval, à l'est (recommandation du directeur artistique du 18 octobre 2026, en attente
+    // du mainteneur ; pour revenir de face, retirer `start`) : un peu en biais, pour que la paroi du sas et son niveau
+    // d'eau restent lisibles et que la paroi ne cache pas Kéo.
+    start: ECLUSES_START,
   },
   // Les Marais salants (lot L5) : Kéo et la saunière sur le muret d'argile au bord d'un bassin, au premier plan ; la
   // jauge ou la vanne du bassin entre eux, dans l'eau ; la grille des bassins et le hangar à sel derrière. Assez serrés
@@ -547,6 +559,9 @@ const siteOf = (place: PlaceId, posed = true): ScenetteSite => (place === 'phare
 
 /** L'angle de la caméra de la scénette du Phare sous l'horizon, et le temps de la descente (coupe franche avec « Réduire les animations »). */
 export const SCENETTE_CAMERA = { pitch: (20 * Math.PI) / 180, seconds: 0.9 } as const;
+
+/** Le cap de départ de la caméra d'une scénette (`ScenetteSite.start`) : 0, de face. */
+export const scenetteStartYaw = (place: PlaceId, posed = true): number => siteOf(place, posed).start ?? 0;
 
 /** Le sol d'une scénette, dans le monde. */
 const floorOf = (place: PlaceId, posed = true): Vec3 => siteOf(place, posed).floor();
@@ -987,7 +1002,8 @@ const C = {
   terracotta: 0xc0643c,
   clay: 0xb59a72,
   clayTop: 0xc7ad83,
-  pan: 0x5fb3e0,
+  // L'eau du bassin des Marais salants : le Lagon éclairci (directeur artistique ; avant #5FB3E0, qui virait à l'ardoise).
+  pan: 0x62c6b9,
   // La machiniste (lot L6a, directeur artistique) : veste bleu lagon, foulard ocre (pas la terre cuite de la brique),
   // lunettes relevées sur le front, burette d'huile de cuivre ; le dallage de pierre des Écluses devant la chaudière.
   lagoonCoat: 0x178078,
@@ -1708,12 +1724,27 @@ export function scenetteSetting(place: PlaceId, open = false, posed = true): Fac
 }
 
 /**
- * Le décor de près, avec le pion dessiné en code (`body`) ou sans corps, les abords du lieu (./surroundings.ts) et les
- * ombres au pied de Kéo et de l'habitant.
+ * Le décor de près sans les abords du lieu : le sol de la scène, l'habitant (son pion dessiné en code s'il n'a pas de
+ * modèle) et les ombres au pied. Les tests y jugent l'habitant seul ; le décor montré y ajoute les abords.
  */
-function decorBuilder(place: PlaceId, open: boolean, posed: boolean, body: boolean): FacetBuilder {
-  const b = sceneDecor(place, open, posed, body);
+export function scenetteCore(place: PlaceId, open = false, posed = true): Facets {
+  return decorBuilder(place, open, posed, !loadedHabitant(place), false).build();
+}
+
+/** Les abords d'un lieu seuls (./surroundings.ts), autour du sol de sa scène, tels que le décor de près les porte. */
+export function scenetteSurroundings(place: PlaceId, open = false, posed = true): Facets {
+  const b = new FacetBuilder();
   SURROUNDINGS[place]?.(b, floorOf(place, posed), { open, posed });
+  return b.build();
+}
+
+/**
+ * Le décor de près, avec le pion dessiné en code (`body`) ou sans corps, les abords du lieu (./surroundings.ts, sauf
+ * `surroundings` faux) et les ombres au pied de Kéo et de l'habitant.
+ */
+function decorBuilder(place: PlaceId, open: boolean, posed: boolean, body: boolean, surroundings = true): FacetBuilder {
+  const b = sceneDecor(place, open, posed, body);
+  if (surroundings) SURROUNDINGS[place]?.(b, floorOf(place, posed), { open, posed });
   footShadow(b, scenetteKeo(place, posed).at, FOOT_SHADOW.keo, floorShadow(place, posed));
   footShadow(b, scenetteHabitant(place, posed), FOOT_SHADOW.habitant, floorShadow(place, posed));
   return b;
@@ -1725,6 +1756,9 @@ function decorBuilder(place: PlaceId, open: boolean, posed: boolean, body: boole
  * l'opposé du soleil (`SHADOW_DIR`), un rien au-dessus du sol de la scène.
  */
 const FOOT_SHADOW = { keo: { radius: 0.3, long: 0.55 }, habitant: { radius: 0.36, long: 0.66 }, lift: 0.025, sides: 7 } as const;
+
+/** Les triangles des deux ombres au pied, de Kéo et de l'habitant, dans le décor de près. */
+export const FOOT_SHADOW_TRIANGLES = 2 * FOOT_SHADOW.sides;
 
 /**
  * La couleur de l'ombre selon le sol de la scène : les planches (le bois, assombri d'un tiers), les dalles, la terre

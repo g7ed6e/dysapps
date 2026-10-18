@@ -55,6 +55,7 @@ import {
   scenetteKeo,
   scenetteHabitant,
   scenettePose,
+  scenetteStartYaw,
   type ScenetteFinale,
   type ScenetteLayout,
 } from '../../world/continu/scenette';
@@ -2558,10 +2559,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
     const { place, layout, item } = q;
-    // Une autre scénette, et chaque nouvel item, repartent de la pose prévue, de face (référent dys, consultant UX UI :
-    // un élève qui a tourné par mégarde retrouve la scène qui aide à répondre sans refaire le geste).
+    // Une autre scénette, et chaque nouvel item, repartent de la pose prévue, à son cap de départ (de face, sauf aux
+    // Écluses, dans l'axe du canal ; référent dys, consultant UX UI : un élève qui a tourné par mégarde retrouve la scène
+    // qui aide à répondre sans refaire le geste).
     const nextItem = `${q.mission}|${item.key ?? JSON.stringify(item.scene)}`;
-    if (scenette !== place || nextItem !== lastItem) sceneYaw = 0;
+    const turnBack = scenette !== place || nextItem !== lastItem;
     lastItem = nextItem;
     lastQuestion = q;
     scenetteMission = q.mission;
@@ -2579,6 +2581,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (entering) copyPose(current, descent.from);
     const fromShift = { ...shift };
     enterScenette(place);
+    // Le cap de départ se lit une fois la scénette entrée (au Phare, son lieu dépend de ce qui est posé).
+    if (turnBack) sceneYaw = scenetteStartYaw(place, posed);
     fog.near = WORLD_FOG.near;
     fog.far = WORLD_FOG.far;
     const qp = scenettePose(place, layout.scenette.stage, viewW, viewH, posed);

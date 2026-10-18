@@ -1,64 +1,53 @@
 /**
  * Les abords de la scénette des Écluses (reprise du lieu d'après le concept validé du 18 octobre 2026, « scenettes-6e-
- * ecluses-v2 ») : le canal bordé de blocs de pierre grise à facettes, raccordé de chaque côté (il sort d'une voûte sous
- * la colline à l'ouest ; à l'est, une porte d'aval, puis un ruisseau qui descend vers la mer), sa berge nord en herbe,
- * qui descend en talus derrière les dalles, le chemin de halage sur la berge sud, de gros rochers gris clair, des
- * touffes d'herbe, des sapins et la maison à colombages de l'éclusier, au toit d'ardoise bleue, sur la colline. Fini tout
- * autour (la caméra tourne à deux doigts) ; ce qui est haut reste hors du tour de la caméra, ce qui est près reste bas :
- * rien ne cache Kéo, l'éclusier, le sas ni la rangée des leviers. Aplats francs, une couleur par facette, rien de
+ * ecluses-v2 ») : le canal bordé de blocs de pierre chaude à facettes (le kit commun, ./surroundingsKit.ts), raccordé de
+ * chaque côté (il sort d'une voûte sous la colline à l'ouest ; à l'est, il descend en ruisseau vers la mer), fermé à
+ * chaque bout par la porte d'écluse du concept (vantaux de bois sombre, deux hauts poteaux, balanciers à bout blanc) ; sa
+ * berge nord en herbe, qui descend en talus derrière les dalles, l'eau du premier bassin du lieu entre les talus, le
+ * chemin de halage sur la berge sud, de gros rochers clairs, des touffes d'herbe, des sapins et la maison à colombages de
+ * l'éclusier, au toit d'ardoise bleue, sur la colline. Fini tout autour (la caméra tourne à deux doigts, et la scénette
+ * s'ouvre dans l'axe du canal, ./scenette.ts) ; ce qui est haut reste hors du tour de la caméra, ce qui est près reste
+ * bas : rien ne cache Kéo, l'éclusier, le sas ni la rangée des leviers. Aplats francs, une couleur par facette, rien de
  * presque noir. Code pur.
  */
 import type { FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
-import { COLORS_6E } from './plan6e';
+import { placeById } from './plan6e';
 import { LOCK } from './questionScene';
 import type { SurroundingsState } from './surroundings';
-import { heightAt } from './terrain';
+import { GREEN_TUFT, NATURE, STONE, groundAt as groundOf, jitter, rock, timberHouse, tuft } from './surroundingsKit';
+import { heightAt, standingHeight } from './terrain';
 
 const C = {
-  // La pierre des berges (le gris des ouvrages voisins, consultant Archipéo) : deux tons de flanc, un dessus plus clair.
-  block: 0xb2b2ad,
-  blockAlt: 0xa2a29d,
-  blockTop: 0xd2d2cc,
-  blockBevel: 0xc2c2bc,
-  blockBevelAlt: 0xb8b8b2,
-  // Les rochers, gris clair, leurs facettes en deux tons.
-  boulder: 0xc6c3bb,
-  boulderShade: 0xaeaba3,
-  grass: COLORS_6E.grass,
-  grassLight: 0x90d8a2,
-  grassDeep: 0x82cd95,
-  rock: COLORS_6E.rock,
-  // Les touffes d'herbe et les sapins : deux verts plus soutenus que la prairie, le tronc brun moyen.
-  tuft: 0x5fae6a,
-  tuftDark: 0x4c9a5a,
+  // La pierre des berges : la pierre chaude du kit commun (consultant Archipéo), deux tons de flanc, un dessus plus clair.
+  block: STONE.side,
+  blockAlt: STONE.sideAlt,
+  blockTop: STONE.top,
+  blockBevel: STONE.bevel,
+  blockBevelAlt: STONE.bevelAlt,
+  grass: NATURE.grass,
+  grassLight: NATURE.grassLight,
+  grassDeep: NATURE.grassDeep,
+  rock: NATURE.rock,
+  // Les sapins : deux verts plus soutenus que la prairie, le tronc brun moyen.
   fir: 0x3f8f5a,
   firLight: 0x56a568,
   trunk: 0x8a5a36,
-  // La maison de l'éclusier : le crépi crème, les colombages bruns (pas noirs), l'ardoise bleue, la porte rouge.
-  wall: 0xefe6d2,
-  timber: 0x8a5a36,
-  slate: 0x5f7f9a,
-  slateGable: 0x6f8fa8,
+  // La porte de la maison de l'éclusier, rouge.
   door: 0xc0503a,
-  glass: 0xbfd0d3,
-  chimney: 0x9aa0a3,
   // La voûte d'où sort le canal : son arc clair, son creux d'un bleu-vert profond (jamais noir).
-  arch: 0xd2cfc7,
+  arch: 0xd8ccb6,
   hollow: 0x3f6f74,
-  // Les portes d'aval : le bois de la porte du sas.
-  gate: 0x9a7048,
-  water: COLORS_6E.lagoon,
+  // Les portes d'écluse des bouts du canal (la signature du concept) : un bois sombre, jamais presque noir, son dessus
+  // un ton plus clair ; le bout blanc des balanciers.
+  gate: 0x6e5038,
+  gateTop: 0x8a6848,
+  tip: 0xf2eee4,
+  water: NATURE.water,
 } as const;
 
-/** Un nombre entre 0 et 1, toujours le même pour un même `n` (le décor ne change pas d'une visite à l'autre). */
-function jitter(n: number): number {
-  const s = Math.sin(n * 127.1 + 311.7) * 43758.5453;
-  return s - Math.floor(s);
-}
-
 /** Le sol du monde en un point, un peu enfoncé : ce qu'on y pose ne flotte jamais au-dessus d'une facette plus basse. */
-const groundAt = (x: number, z: number): number => heightAt({ x, z }) - 0.15;
+const groundAt = (x: number, z: number): number => groundOf(x, z, 0.15);
 
 export function eclusesSurroundings(b: FacetBuilder, floor: Vec3, _state: SurroundingsState): void {
   const o = floor;
@@ -68,19 +57,25 @@ export function eclusesSurroundings(b: FacetBuilder, floor: Vec3, _state: Surrou
   const reach = LOCK.reach;
   bankBlocks(b, o, water, north, south, reach);
   northBank(b, o, north, reach);
-  vault(b, o, water, north, south, reach);
-  tailGate(b, o, water, north, south, reach);
+  vault(b, o, water, north, south);
+  // Les deux portes d'écluse des bouts du canal : celle d'amont devant la voûte (au fond, vue dans l'axe du canal depuis
+  // l'aval), ses balanciers en travers sur les berges, comme au concept ; celle d'aval avant le ruisseau, ses balanciers
+  // vers l'est, hors de la berge de la rangée des leviers.
+  lockGate(b, o, o.x + ECLUSES_VAULT + GATE_INSET.west, water, north, south, 1, false);
+  lockGate(b, o, o.x + reach - GATE_INSET.east, water, north, south, -1, true);
+  stream(b, o, water);
+  firstBasin(b);
   for (const [k, [dx, dz, r, h]] of BOULDERS.entries()) {
     const x = o.x + dx, z = o.z + dz;
-    boulder(b, { x, y: dz > LOCK.back && Math.abs(dx) < reach + LOCK.bank ? o.y : groundAt(x, z), z }, r, h, k);
+    rock(b, { x, y: dz > LOCK.back && Math.abs(dx) < reach + LOCK.bank ? o.y : groundAt(x, z), z }, r, h, k);
   }
   for (const [k, [dx, dz]] of TUFTS.entries()) {
     const x = o.x + dx, z = o.z + dz;
-    tuft(b, { x, y: dz > LOCK.back && Math.abs(dx) < reach + LOCK.bank ? o.y : Math.max(o.y, groundAt(x, z) + 0.1), z }, k);
+    tuft(b, { x, y: dz > LOCK.back && Math.abs(dx) < reach + LOCK.bank ? o.y : Math.max(o.y, groundAt(x, z) + 0.1), z }, k, GREEN_TUFT);
   }
   for (const [k, [dx, dz, r]] of MOUNDS.entries()) mound(b, { x: o.x + dx, y: o.y, z: o.z + dz }, r, k);
   for (const [k, [dx, dz, s]] of FIRS.entries()) fir(b, o.x + dx, o.z + dz, s, k);
-  lockKeeperHouse(b, o.x + HOUSE.dx, o.z + HOUSE.dz);
+  timberHouse(b, { x: o.x + HOUSE.dx, z: o.z + HOUSE.dz, yaw: Math.PI, width: HOUSE.w, depth: HOUSE.d, wall: HOUSE.h, slope: HOUSE.slope, chimney: true, door: C.door });
 }
 
 /**
@@ -90,22 +85,22 @@ export function eclusesSurroundings(b: FacetBuilder, floor: Vec3, _state: Surrou
  */
 function bankBlocks(b: FacetBuilder, o: Vec3, water: number, north: number, south: number, reach: number): void {
   const deep = water - 0.2;
-  let x = o.x - reach;
+  let x = o.x + ECLUSES_VAULT;
   let k = 0;
   while (x < o.x + reach - 0.2) {
-    const len = Math.min(o.x + reach - x, 1.2 + 0.6 * jitter(k));
+    const len = Math.min(o.x + reach - x, BLOCK.south + 0.8 * jitter(k));
     const rise = 0.18 + 0.24 * jitter(k + 40);
     chunk(b, { x: x + len / 2, y: deep, z: south + 0.34, yaw: (jitter(k + 80) - 0.5) * 0.1 }, [len - 0.07, o.y + rise - deep, 0.78], k);
     x += len;
     k++;
   }
   // Au nord : la margelle devant les dalles (|x| < DECK), des blocs au-delà.
-  x = o.x - reach;
+  x = o.x + ECLUSES_VAULT;
   k = 0;
   while (x < o.x + reach - 0.2) {
-    const len = Math.min(o.x + reach - x, 1.3 + 0.6 * jitter(k + 120));
+    const len = Math.min(o.x + reach - x, BLOCK.north + 0.8 * jitter(k + 120));
     const mid = x + len / 2 - o.x;
-    if (Math.abs(mid) < DECK + 0.3) b.box({ x: x + len / 2, y: deep, z: north - 0.12 }, [len - 0.05, o.y + 0.025 - deep, 0.3], k % 2 ? C.block : C.blockAlt, C.blockTop);
+    if (Math.abs(mid) - len / 2 < DECK + 0.3) b.box({ x: x + len / 2, y: deep, z: north - 0.12 }, [len - 0.05, o.y + 0.025 - deep, 0.3], k % 2 ? C.block : C.blockAlt, C.blockTop);
     else chunk(b, { x: x + len / 2, y: deep, z: north - 0.24, yaw: (jitter(k + 170) - 0.5) * 0.1 }, [len - 0.07, o.y + 0.16 + 0.2 * jitter(k + 160) - deep, 0.6], k + 1);
     x += len;
     k++;
@@ -135,8 +130,20 @@ function chunk(b: FacetBuilder, at: { x: number; y: number; z: number; yaw: numb
   b.quad(v(i0, sy, j0), v(i0, sy, j1), v(i1, sy, j1), v(i1, sy, j0), C.blockTop);
 }
 
+/**
+ * Le mur de tête de la voûte d'où sort le canal, depuis le milieu du sas : là où le sol du monde passe sous l'eau du canal
+ * (plus à l'ouest, il le recouvrait, et la porte d'amont se dressait dans l'herbe). Les blocs des berges partent de lui.
+ */
+export const ECLUSES_VAULT = -8.4;
+
 /** L'arête abattue des blocs du canal. */
 const BEVEL = 0.16;
+
+/**
+ * La longueur des blocs des berges, au plus court (0,8 de plus au plus long) : allongés (avant 1,2 et 1,3) pour payer
+ * les portes d'écluse des bouts du canal.
+ */
+const BLOCK = { south: 2.4, north: 2.5 } as const;
 
 /** La demi-largeur des dalles de la scène (le sas, Kéo et l'éclusier), et leur profondeur (scenette.ts, `lockQuay`). */
 const DECK = 5.8;
@@ -183,8 +190,8 @@ function talus(b: FacetBuilder, x0: number, x1: number, zTop: number, zFoot: num
  * La voûte de l'amont, au bout ouest du canal : le mur de tête, de pierre, sous la colline (un remblai d'herbe), son arc
  * clair et son creux, d'où le canal sort ; sa margelle sur le haut du mur.
  */
-function vault(b: FacetBuilder, o: Vec3, water: number, north: number, south: number, reach: number): void {
-  const x = o.x - reach;
+function vault(b: FacetBuilder, o: Vec3, water: number, north: number, south: number): void {
+  const x = o.x + ECLUSES_VAULT;
   const mid = (north + south) / 2;
   const top = o.y + 1.7;
   b.box({ x: x - 0.4, y: water - 0.4, z: mid }, [0.8, top - water + 0.4, south - north + 3.4], C.block, C.blockTop);
@@ -202,20 +209,44 @@ function vault(b: FacetBuilder, o: Vec3, water: number, north: number, south: nu
   b.plate({ ...face, x: x + 0.012 }, arc(0.78, 0), C.hollow);
 }
 
+/** L'écart des portes d'écluse aux bouts du canal (la voûte à l'ouest, le ruisseau à l'est). */
+const GATE_INSET = { west: 0.9, east: 0.3 } as const;
+
 /**
- * La porte d'aval, au bout est du canal : deux bornes de pierre, deux vantaux de bois fermés et leurs balanciers sur
- * les berges ; au-delà, l'eau descend en ruisseau vers la mer, au nord-est.
+ * Une porte d'écluse en travers du canal, en `x` (la signature du concept) : deux bornes de pierre aux gonds, deux
+ * vantaux fermés de bois sombre, un haut poteau sur chaque berge (du côté `post` de la porte, +1 : l'est), et sur chaque
+ * berge un balancier couché, le long de la porte vers le dehors du canal (`along` faux) ou le long du canal vers l'est,
+ * son bout blanc posé sur un chevalet planté dans le sol (rien ne flotte).
  */
-function tailGate(b: FacetBuilder, o: Vec3, water: number, north: number, south: number, reach: number): void {
-  const x = o.x + reach - 0.25;
-  const mid = (north + south) / 2;
-  for (const z of [north - 0.1, south + 0.1]) b.box({ x, y: water, z }, [0.42, o.y + 0.55 - water, 0.42], C.blockAlt, C.blockTop);
+function lockGate(b: FacetBuilder, o: Vec3, x: number, water: number, north: number, south: number, post: 1 | -1, along: boolean): void {
+  const mid = (north + south) / 2,
+    half = (south - north) / 2;
+  const y = o.y + 1.05;
   for (const side of [-1, 1]) {
-    const z = mid + (side * (south - north)) / 4;
-    b.box({ x: x + 0.05, y: water - 0.3, z }, [0.16, o.y + 0.35 - water + 0.3, (south - north) / 2 - 0.04], C.gate);
-    b.beam({ x: x + 0.05, y: o.y + 0.3, z: side < 0 ? north : south }, { x: x + 1.5, y: o.y + 0.3, z: side < 0 ? north - 0.5 : south + 0.5 }, 0.13, C.gate);
+    const bank = side < 0 ? north - 0.3 : south + 0.3;
+    b.box({ x, y: water, z: side < 0 ? north - 0.1 : south + 0.1 }, [0.42, o.y + 0.55 - water, 0.42], C.blockAlt, C.blockTop);
+    b.box({ x, y: water - 0.3, z: mid + (side * half) / 2 }, [0.2, o.y + 0.95 - water + 0.3, half - 0.04], C.gate, C.gateTop);
+    b.box({ x: x + post * 0.3, y: o.y - 0.1, z: bank }, [0.26, GATE_POST + 0.1, 0.26], C.gate, C.gateTop);
+    // Le balancier : du haut de la porte, sur la berge, jusqu'à son bout blanc.
+    const from = { x, y, z: side < 0 ? north - 0.1 : south + 0.1 };
+    const u = along ? { x: 1, z: 0 } : { x: 0, z: side };
+    const at = (t: number) => ({ x: from.x + u.x * t, y, z: from.z + u.z * t });
+    b.beam(from, at(BALANCE.length - BALANCE.tip), 0.2, C.gate);
+    b.beam(at(BALANCE.length - BALANCE.tip), at(BALANCE.length), 0.22, C.tip);
+    const rest = at(BALANCE.length - BALANCE.tip - 0.1);
+    const foot = Math.min(o.y, groundAt(rest.x, rest.z));
+    b.box({ x: rest.x, y: foot, z: rest.z }, [0.12, y - 0.1 - foot, 0.12], C.gate);
   }
-  // Le ruisseau : un ruban d'eau posé sur le sol, qui descend de la porte vers la mer.
+}
+
+/** Les balanciers des portes d'écluse : leur longueur, et celle de leur bout blanc. */
+const BALANCE = { length: 2.8, tip: 0.6 } as const;
+
+/** La hauteur des poteaux des portes d'écluse au-dessus du sol de la scène (sous le haut que le tour de la caméra permet). */
+const GATE_POST = 2.3;
+
+/** Le ruisseau, sous la porte d'aval : un ruban d'eau posé sur le sol, qui descend de la porte vers la mer. */
+function stream(b: FacetBuilder, o: Vec3, water: number): void {
   let prev: { x: number; z: number; y: number; w: number } | null = null;
   for (const [dx, dz, w] of STREAM) {
     const px = o.x + dx, pz = o.z + dz;
@@ -236,6 +267,24 @@ function tailGate(b: FacetBuilder, o: Vec3, water: number, north: number, south:
   }
 }
 
+/**
+ * L'eau du premier bassin du lieu, juste derrière les dalles de la scène (places.ts, `ecluses`) : vu de dos, entre les
+ * talus, il se lisait comme une fosse brune (directeur artistique). Une eau basse sur son fond, sous ses murs ébréchés ;
+ * le bassin refait (son corps posé) la recouvre de sa pierre et de son eau.
+ */
+function firstBasin(b: FacetBuilder): void {
+  const c = placeById('ecluses').center;
+  const y = standingHeight(heightAt(c)) + BASIN.water;
+  const x0 = c.x - BASIN.half[0], x1 = c.x + BASIN.half[0], z0 = c.z + BASIN.z - BASIN.half[1], z1 = c.z + BASIN.z + BASIN.half[1];
+  b.quad([x0, y, z1], [x1, y, z1], [x1, y, z0], [x0, y, z0], C.water);
+}
+
+/**
+ * Le premier bassin du lieu, dans son repère (places.ts, `ecluses` : son milieu à 3 au sud du centre, ses murs de 0,4
+ * jusqu'à 2,2 et 1,5 de lui) : le dedans de ses murs, et son eau, juste sous le haut de son mur le plus ébréché.
+ */
+const BASIN = { z: 3, half: [1.8, 1.1], water: -0.78 } as const;
+
 /** Le ruisseau sous la porte d'aval, depuis le milieu du sas : ses points (x, z) et sa demi-largeur, vers la mer. */
 const STREAM: readonly (readonly [number, number, number])[] = [
   [LOCK.reach, 1.5, 0.75],
@@ -245,31 +294,6 @@ const STREAM: readonly (readonly [number, number, number])[] = [
   [22, -6, 0.5],
   [24.5, -9, 0.5],
 ];
-
-/**
- * Un rocher à facettes : une base à six pans un peu enfoncée, une ceinture plus étroite, une pointe ; chaque facette de
- * l'un des deux gris, l'un après l'autre.
- */
-function boulder(b: FacetBuilder, at: Vec3, r: number, h: number, seed: number): void {
-  const n = 6;
-  const lo: [number, number, number][] = [];
-  const hi: [number, number, number][] = [];
-  for (let k = 0; k < n; k++) {
-    const a = ((k + jitter(seed * 7 + k) * 0.4) * 2 * Math.PI) / n;
-    const r0 = r * (0.85 + 0.25 * jitter(seed * 11 + k));
-    lo.push([at.x + r0 * Math.cos(a), at.y - 0.15, at.z + r0 * Math.sin(a)]);
-    const a1 = a + Math.PI / n;
-    const r1 = r * (0.55 + 0.25 * jitter(seed * 13 + k));
-    hi.push([at.x + r1 * Math.cos(a1), at.y + h * (0.55 + 0.2 * jitter(seed * 17 + k)), at.z + r1 * Math.sin(a1)]);
-  }
-  const tip: [number, number, number] = [at.x + (jitter(seed) - 0.5) * r * 0.4, at.y + h, at.z + (jitter(seed + 3) - 0.5) * r * 0.4];
-  for (let k = 0; k < n; k++) {
-    const m = (k + 1) % n;
-    b.triangle(lo[m], lo[k], hi[k], k % 2 ? C.boulder : C.boulderShade);
-    b.triangle(lo[m], hi[k], hi[m], k % 2 ? C.boulderShade : C.boulder);
-    b.triangle(tip, hi[m], hi[k], k % 2 ? C.boulder : C.blockTop);
-  }
-}
 
 /** Les rochers, depuis le milieu du sas : (x, z, rayon, hauteur). Sur la berge, loin des leviers ; derrière, sur la pente. */
 const BOULDERS: readonly (readonly [number, number, number, number])[] = [
@@ -283,15 +307,6 @@ const BOULDERS: readonly (readonly [number, number, number, number])[] = [
   [14.6, 4, 1, 1.1],
 ];
 
-/** Une touffe d'herbe : trois brins en pointe, un peu penchés, de deux verts. */
-function tuft(b: FacetBuilder, at: Vec3, seed: number): void {
-  for (let k = 0; k < 3; k++) {
-    const a = (k * 2 * Math.PI) / 3 + jitter(seed + k) * 0.6;
-    const h = 0.32 + 0.18 * jitter(seed * 3 + k);
-    b.prism({ x: at.x + 0.09 * Math.cos(a), y: at.y, z: at.z + 0.09 * Math.sin(a), yaw: a, pitch: 0.25 }, 0.07, 0, h, 3, k % 2 ? C.tuft : C.tuftDark);
-  }
-}
-
 /** Les touffes d'herbe, depuis le milieu du sas : le long du chemin de halage, au pied des rochers, sur la berge nord. */
 const TUFTS: readonly (readonly [number, number])[] = [
   [-6.4, 3.9],
@@ -304,11 +319,11 @@ const TUFTS: readonly (readonly [number, number])[] = [
   [9.4, 5.8],
   [-7.4, 6.1],
   [-9.6, 6.8],
-  [-11.2, 4],
+  [-8.0, 4.4],
   [11.6, 3.6],
   [-6.6, 0.1],
   [-8.6, -0.2],
-  [-10.6, 0.3],
+  [-7.4, 0.3],
   [6.6, 0.2],
   [8.8, -0.1],
   [10.8, 0.3],
@@ -344,8 +359,8 @@ const MOUNDS: readonly (readonly [number, number, number])[] = [
   [7.2, 6.8, 1.5],
   [-8.6, 9.8, 1.6],
   [6.4, 10.6, 1.5],
-  [-11.2, 4.6, 1.3],
-  [-9.6, -0.1, 1.2],
+  [-7.6, 8.4, 1.3],
+  [-7.2, -0.1, 1.0],
   [9.8, 0, 1.2],
 ];
 
@@ -381,46 +396,7 @@ const FIRS: readonly (readonly [number, number, number])[] = [
  * La maison de l'éclusier, au sud-ouest, au-delà de la berge, depuis le milieu du sas : hors du tour de la caméra, au
  * fond quand on regarde la scène de dos (le dos du sas, la berge, puis elle).
  */
-const HOUSE = { dx: -6, dz: 22.5, w: 4, d: 2.8, h: 2.2, roof: 1.6 } as const;
-
-/**
- * La maison de l'éclusier : un socle de pierre qui rattrape la pente, des murs de crépi crème à colombages bruns, un
- * toit d'ardoise bleue à deux pans, une cheminée, une porte rouge et des fenêtres.
- */
-function lockKeeperHouse(b: FacetBuilder, x: number, z: number): void {
-  const { w, d, h, roof } = HOUSE;
-  let low = Infinity, high = -Infinity;
-  for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1], [0, 0]]) {
-    const y = groundAt(x + (sx * w) / 2, z + (sz * d) / 2);
-    low = Math.min(low, y);
-    high = Math.max(high, y);
-  }
-  const base = high + 0.25;
-  b.box({ x, y: low - 0.2, z }, [w + 0.2, base - low + 0.2, d + 0.2], C.block, C.blockTop);
-  b.box({ x, y: base, z }, [w, h, d], C.wall);
-  b.gableRoof({ x, y: base + h, z }, w + 0.5, d + 0.5, roof, C.slate, C.wall);
-  b.box({ x: x + w * 0.28, y: base + h + 0.3, z: z - d * 0.2 }, [0.32, roof + 0.2, 0.32], C.chimney);
-  // Les colombages, des aplats posés sur le crépi : sur les deux longs pans, la sablière, la lisse, trois poteaux et deux
-  // écharpes à l'étage ; au rez-de-chaussée, la porte (du côté du canal, au nord) et une fenêtre.
-  for (const face of [1, -1]) {
-    const at = { x, y: base, z: z + face * (d / 2 + 0.012), yaw: face > 0 ? 0 : Math.PI };
-    const t = 0.1, sill = 1;
-    b.plate(at, rect(-w / 2, h - t, w / 2, h), C.timber);
-    b.plate(at, rect(-w / 2, sill, w / 2, sill + t), C.timber);
-    for (const px of [-w / 2, -t / 2, w / 2 - t]) b.plate(at, rect(px, 0, px + t, h), C.timber);
-    b.plate(at, [[-w / 2 + t, sill + t], [-w / 2 + 2.5 * t, sill + t], [-t / 2, h - t], [-2 * t, h - t]], C.timber);
-    b.plate(at, [[w / 2 - 2.5 * t, sill + t], [w / 2 - t, sill + t], [2 * t, h - t], [t / 2, h - t]], C.timber);
-    const out = { ...at, z: at.z + face * 0.005 };
-    b.plate(out, rect(0.5, 0.3, 1.25, 0.8), C.glass);
-    b.plate(out, face < 0 ? rect(-1.35, 0, -0.7, 0.95) : rect(-1.25, 0.3, -0.5, 0.8), face < 0 ? C.door : C.glass);
-  }
-  // Aux pignons, un poteau au milieu et la sablière.
-  for (const face of [1, -1]) {
-    const at = { x: x + face * (w / 2 + 0.012), y: base, z, yaw: (face * Math.PI) / 2 };
-    b.plate(at, rect(-0.05, 0, 0.05, h), C.timber);
-    b.plate(at, rect(-d / 2, h - 0.1, d / 2, h), C.timber);
-  }
-}
+const HOUSE = { dx: -6, dz: 22.5, w: 4, d: 2.8, h: 2.2, slope: 0.97 } as const;
 
 /** Un rectangle, dans le sens inverse des aiguilles d'une montre (pour `plate`). */
 const rect = (x0: number, y0: number, x1: number, y1: number): [number, number][] => [

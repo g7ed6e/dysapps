@@ -1,17 +1,13 @@
 // Les abords de la scénette des Écluses : légers, bas dans le tour de la caméra, rien sous les pieds de Kéo et de
 // l'éclusier ni devant le sas, le canal raccordé de chaque côté. Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { eclusesSurroundings } from './eclusesSurroundings';
-import { FacetBuilder, type Facets } from './facets';
+import { ECLUSES_VAULT } from './eclusesSurroundings';
+import { boundsOf, type Facets } from './facets';
 import { LOCK, sceneSpot } from './questionScene';
-import { scenetteHabitant, scenetteKeo } from './scenette';
+import { scenetteCore, scenetteHabitant, scenetteKeo, scenetteSurroundings } from './scenette';
 
 const floor = sceneSpot('ecluses');
-const around = (open = false, posed = true): Facets => {
-  const b = new FacetBuilder();
-  eclusesSurroundings(b, floor, { open, posed });
-  return b.build();
-};
+const around = (open = false, posed = true): Facets => scenetteSurroundings('ecluses', open, posed);
 
 /** Les sommets des abords, depuis le milieu du sas. */
 const points = (f: Facets): { dx: number; dy: number; dz: number }[] => {
@@ -21,10 +17,8 @@ const points = (f: Facets): { dx: number; dy: number; dz: number }[] => {
 };
 
 describe('Les abords des Écluses', () => {
-  it('tiennent dans leur part du budget de la scénette, et ne changent pas d’un état à l’autre', () => {
+  it('ne changent pas d’un état à l’autre (leur poids : ./surroundings.test.ts)', () => {
     const f = around();
-    expect(f.triangles).toBeGreaterThan(0);
-    expect(f.triangles).toBeLessThanOrEqual(1500);
     expect(around(true, true).triangles).toBe(f.triangles);
     expect(around(false, false).triangles).toBe(f.triangles);
   });
@@ -47,7 +41,19 @@ describe('Les abords des Écluses', () => {
   it('raccordent le canal de chaque côté : la voûte à l’ouest, la porte d’aval à l’est', () => {
     const pts = points(around());
     const inCanal = (p: { dz: number }) => p.dz > LOCK.front && p.dz < LOCK.back;
-    expect(pts.some((p) => inCanal(p) && p.dx < -LOCK.reach + 0.1 && p.dy > 1)).toBe(true);
+    expect(pts.some((p) => inCanal(p) && p.dx < ECLUSES_VAULT + 0.1 && p.dy > 1)).toBe(true);
     expect(pts.some((p) => inCanal(p) && p.dx > LOCK.reach - 0.5 && p.dy > 0.2)).toBe(true);
+  });
+
+  it('se posent sur la berge de la scène, qui déborde du canal de LOCK.bank de chaque côté : rien n’y flotte au bout', () => {
+    // La berge sud de la scène (scenette.ts, `lockQuay`) : la plus large pièce du décor de près.
+    const b = boundsOf(scenetteCore('ecluses'));
+    expect(LOCK.bank).toBe(1);
+    expect(b.max[0] - floor.x).toBeCloseTo(LOCK.reach + LOCK.bank, 5);
+    expect(floor.x - b.min[0]).toBeCloseTo(LOCK.reach + LOCK.bank, 5);
+    // Ce qui est posé au haut de la berge (son pied à 0,15 sous le sol de la scène) reste au-dessus d'elle.
+    const feet = points(around()).filter((p) => p.dz > LOCK.back + LOCK.kerb && p.dz < LOCK.back + LOCK.forecourt && Math.abs(p.dy + 0.15) < 1e-5);
+    expect(feet.length).toBeGreaterThan(0);
+    for (const p of feet) expect(Math.abs(p.dx)).toBeLessThanOrEqual(LOCK.reach + LOCK.bank);
   });
 });

@@ -1,9 +1,8 @@
-// Les abords de la scénette des Quais : leur poids en triangles, et ce qui y est haut reste hors de l'anneau où la
-// rangée des réponses se pose quand la caméra tourne, et hors du regard de la caméra de face. Sans Three.js.
+// Les abords de la scénette des Quais : ce qui y est haut reste hors de l'anneau où la rangée des réponses se pose quand
+// la caméra tourne, et hors du regard de la caméra de face (leur poids : ./surroundings.test.ts). Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { FacetBuilder } from './facets';
-import { QUAIS_SURROUNDINGS, RING, quaisSurroundings } from './quaisSurroundings';
-import { scenetteHabitant, scenetteKeo } from './scenette';
+import { QUAIS_SURROUNDINGS, RING } from './quaisSurroundings';
+import { scenetteHabitant, scenetteKeo, scenetteSurroundings } from './scenette';
 
 const keo = scenetteKeo('quais').at;
 const docker = scenetteHabitant('quais');
@@ -11,19 +10,9 @@ const docker = scenetteHabitant('quais');
 const floor = { x: keo.x + 4, y: keo.y, z: keo.z };
 const target = { x: (keo.x + docker.x) / 2, z: keo.z };
 
-function surroundings() {
-  const b = new FacetBuilder();
-  quaisSurroundings(b, floor, { open: false, posed: true });
-  return b.build();
-}
+const surroundings = () => scenetteSurroundings('quais');
 
 describe('les abords des Quais', () => {
-  it('tiennent dans leur part du budget de la scénette', () => {
-    const f = surroundings();
-    expect(f.triangles).toBeGreaterThan(800);
-    expect(f.triangles).toBeLessThanOrEqual(1300);
-  });
-
   it('ne mettent rien de haut dans l’anneau de la rangée des réponses, ni entre Kéo et le docker', () => {
     const p = surroundings().positions;
     for (let k = 0; k < p.length; k += 3) {
