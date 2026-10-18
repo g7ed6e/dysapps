@@ -30,7 +30,7 @@ Un dessin en aplats, sans recherche de beauté : la forme de l'île, qui est rel
 
 - Un socle commun à toutes les images du niveau (style low poly en aplats, caméra, lumière, matières), puis un paragraphe par lieu qui nomme l'objet qui le fait reconnaître.
 - Des mots positifs seulement : Z-Image n'a pas de prompt négatif.
-- Aucune statue ni figure gardienne : les Veilleurs sont abandonnés (15 octobre 2026) et les moaï écartés. Le lieu se reconnaît à son mécanisme (une lentille, des vannes, une presse), démonté puis remis en place.
+- Aucune statue ni figure gardienne : les Veilleurs sont abandonnés (15 octobre 2026) et les moaï écartés. Le lieu se reconnaît à son mécanisme (une lentille, des vannes, une presse), tombé ou manquant, puis remis en place.
 - Un lieu demandé seul se pose sur son propre îlot : il faut le placer « sur un bout de rivage », ou mieux, partir de la vue globale (étape 5).
 - Pour les Ferrailleurs : pas d'uniforme (graphite et prune dépareillés, un liseré clair, du bronze récupéré), un remorqueur diesel sans voile ni mât, le Rafiot. « Mast » ou « sail » dans le prompt fait revenir le mât : décrire « a wide flat diesel tugboat with a crane and a tall exhaust pipe ».
 

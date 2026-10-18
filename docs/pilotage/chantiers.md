@@ -81,7 +81,7 @@ Demandé par le mainteneur le 10 octobre 2026 (« Idéation refonte (et rename) 
 
 ### Archipéo repensé : l'équipage, le cœur du lieu, les Ferrailleurs (GD-19)
 
-Demandé par le mainteneur le 12 octobre 2026 : challenger l'univers d'Archipéo, à commencer par les personnages repris de Blocland. Direction décidée ([GD-19](../gameplay/propositions/GD-19.md)) : un équipage de cinq ados à la place des 58 créatures, le cœur du lieu à la place des Gardiens (les Veilleurs, proposés d'abord, sont abandonnés le 15 octobre 2026), les Ferrailleurs et leur Rafiot, et des niveaux en mondes continus à arpenter, avec des lieux qui ont une raison d'être ; accordée le 18 octobre 2026 au monde continu de GD-20. Idéation seulement : aucun code.
+Demandé par le mainteneur le 12 octobre 2026 : challenger l'univers d'Archipéo, à commencer par les personnages repris de Blocland. Direction décidée ([GD-19](../gameplay/propositions/GD-19.md)) : un équipage de cinq ados à la place des 58 créatures, le cœur du lieu à la place des Gardiens (les Veilleurs, proposés d'abord, sont abandonnés le 15 octobre 2026), les Ferrailleurs et leur Rafiot (nom provisoire), et des niveaux en mondes continus à arpenter, avec des lieux qui ont une raison d'être ; accordée le 18 octobre 2026 au monde continu de GD-20. Idéation seulement : aucun code.
 
 | Étape | État | Suite |
 | --- | --- | --- |
