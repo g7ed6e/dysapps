@@ -1739,7 +1739,7 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   ruins: 'paving',
   observatory: 'paving',
   commons: 'paving',
-  beacons: 'planks',
+  beacons: 'paving',
   ferry: 'planks',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];

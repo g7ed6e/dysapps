@@ -294,7 +294,8 @@ interface QuestionRequest {
   place: PlaceId;
   mission: string;
   layout: ScenetteLayout;
-  item: { scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[]; sort?: SortLook };
+  /** `key` : la clé de l'item (un autre item ramène la caméra de la scénette de face). */
+  item: { key?: string; scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[]; sort?: SortLook };
 }
 
 /** Ce que la pose d'un pont dit à la page : le toc (toutes ses parties posées), puis sa fin (la brume levée : la phrase). */
@@ -377,7 +378,7 @@ const CAMERA_TURN = { step: Math.PI / 4, seconds: 0.35, rings: Math.PI / 8, dead
  * prévue, elle garde `clearance` unités devant tout volume (le lieu, le décor de près) et au-dessus du sol, sans
  * s'approcher à moins de `minDistance` du point visé.
  */
-const SCENE_TURN = { clearance: 1, minDistance: 4 } as const;
+const SCENE_TURN = { clearance: 1, minDistance: 4, keoHead: 1.3, habitantHead: 1.5, margin: 0.3, tries: 8, rise: 0.6 } as const;
 /**
  * La finesse du rendu : l'anticrénelage reste (la scène est légère, quelques milliers de triangles) ; le rapport de
  * pixels est plafonné à 2, puis ramené à 1 si l'appareil peine (des images de plus de 45 ms, trente de suite), comme
@@ -1157,6 +1158,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let sceneYaw = 0;
   let sceneTurnPending = false;
   let lastQuestion: QuestionRequest | null = null;
+  /** L'item de la dernière question posée (sa mission, sa clé) : un autre ramène la caméra de face. */
+  let lastItem = '';
   let turning: { from: number; to: number; start: number } | null = null;
   let lift = occlusionLift(focus, ground, yaw);
   const pose: CameraPose = followPose(focus, lift, undefined, yaw);
@@ -2365,6 +2368,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const sceneTurnListeners = new Set<(labels: LabelOnScreen[]) => void>();
   const turnFrom = new THREE.Vector3();
   const turnDir = new THREE.Vector3();
+  const turnSight = new THREE.Vector3();
+  const toVector = (p: Vec3) => new THREE.Vector3(p.x, p.y, p.z);
   // La scène de l'item est-elle à montrer (cachée le temps de la descente) ?
   let itemShown = false;
   const descent = {
@@ -2495,10 +2500,34 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Les maillages montrés seulement (un lieu effacé le temps de la scénette ne retient pas la caméra).
     const hit = raycaster.intersectObjects([placesMesh, landmarkMesh, decorMesh].filter((m) => m.visible), false).find((h) => h.distance > 0.5);
     raycaster.far = Infinity;
-    const d = hit ? Math.max(SCENE_TURN.minDistance, Math.min(dist, hit.distance - SCENE_TURN.clearance)) : dist;
-    pose.position = { x: t.x + turnDir.x * d, y: t.y + turnDir.y * d, z: t.z + turnDir.z * d };
-    const floor = ground(pose.position.x, pose.position.z) + SCENE_TURN.clearance;
-    if (pose.position.y < floor) pose.position.y = floor;
+    let d = hit ? Math.max(SCENE_TURN.minDistance, Math.min(dist, hit.distance - SCENE_TURN.clearance)) : dist;
+    let rise = 0;
+    const place = () => {
+      pose.position = { x: t.x + turnDir.x * d, y: t.y + turnDir.y * d + rise, z: t.z + turnDir.z * d };
+      const floor = ground(pose.position.x, pose.position.z) + SCENE_TURN.clearance;
+      if (pose.position.y < floor) pose.position.y = floor;
+    };
+    place();
+    // Rien ne cache Kéo ni l'habitant (directeur artistique, relecture du lot commun) : tant que l'un d'eux est caché
+    // par un volume, la caméra s'approche et monte, au plus `SCENE_TURN.tries` fois.
+    const heads = [keo.position.clone().setY(keo.position.y + SCENE_TURN.keoHead), ...(scenette ? [toVector(scenetteHabitant(scenette, posed)).setY(scenetteHabitant(scenette, posed).y + SCENE_TURN.habitantHead)] : [])];
+    const blockers = [placesMesh, landmarkMesh, decorMesh].filter((m) => m.visible);
+    const hidden = () =>
+      heads.some((h) => {
+        turnFrom.set(pose.position.x, pose.position.y, pose.position.z);
+        turnSight.subVectors(h, turnFrom);
+        const far = turnSight.length() - SCENE_TURN.margin;
+        raycaster.set(turnFrom, turnSight.normalize());
+        raycaster.far = far;
+        const blocked = raycaster.intersectObjects(blockers, false).length > 0;
+        raycaster.far = Infinity;
+        return blocked;
+      });
+    for (let k = 0; k < SCENE_TURN.tries && hidden(); k++) {
+      d = Math.max(SCENE_TURN.minDistance, d * 0.85);
+      rise += SCENE_TURN.rise;
+      place();
+    }
   };
   const askQuestion = (q: QuestionRequest | null): LabelOnScreen[] => {
     if (!q) {
@@ -2529,8 +2558,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
     const { place, layout, item } = q;
-    // Une autre scénette repart de sa pose prévue.
-    if (scenette !== place) sceneYaw = 0;
+    // Une autre scénette, et chaque nouvel item, repartent de la pose prévue, de face (référent dys, consultant UX UI :
+    // un élève qui a tourné par mégarde retrouve la scène qui aide à répondre sans refaire le geste).
+    const nextItem = `${q.mission}|${item.key ?? JSON.stringify(item.scene)}`;
+    if (scenette !== place || nextItem !== lastItem) sceneYaw = 0;
+    lastItem = nextItem;
     lastQuestion = q;
     scenetteMission = q.mission;
     walk = null;
