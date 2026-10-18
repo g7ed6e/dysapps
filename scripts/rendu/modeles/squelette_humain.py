@@ -30,12 +30,15 @@ args = sys.argv[sys.argv.index("--") + 1:]
 base, out, planche = args[0], args[1], args[2]
 S = {"menton": 0.79, "sh_z": 0.735, "sh_x": 0.1, "hip_z": 0.47, "buste": 0.118, "tt_lib": 0.4, "epaule_r": 0.09}
 VIDEO = None
+REGLAGES = set(S) | {"jupe"}
 for kv in args[3:]:
-    k, v = kv.split("=", 1)
-    if k == "video":
+    k, _, v = kv.partition("=")
+    if k == "video" and v:
         VIDEO = v
-    else:
+    elif k in REGLAGES and v.replace(".", "", 1).isdigit():
         S[k] = float(v)
+    else:
+        sys.exit(f"réglage inconnu ou sans valeur : {kv!r} (attendus : {', '.join(sorted(REGLAGES))}, video=<dossier>)")
 SHZ, SHX, HIPZ = S["sh_z"], S["sh_x"], S["hip_z"]
 NOM = os.path.splitext(os.path.basename(out))[0]
 
@@ -327,7 +330,7 @@ s.render.filepath = planche
 bpy.ops.render.render(write_still=True)
 s.display.shading.color_type = "SINGLE"
 s.display.shading.single_color = (0.72, 0.72, 0.72)
-s.render.filepath = planche.replace(".png", "-gris.png")
+s.render.filepath = os.path.splitext(planche)[0] + "-gris.png"
 bpy.ops.render.render(write_still=True)
 
 # ------------------------------------------------ la vidéo : marche, course, saut, attraper, lancer (9 s)
@@ -374,4 +377,7 @@ if VIDEO:
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", "24", "-i", images[0], "-framerate", "24",
                     "-i", images[1], "-filter_complex", "[0][1]hstack=inputs=2,format=yuv420p", "-c:v", "libx264",
                     "-crf", "22", "-movflags", "+faststart", os.path.join(VIDEO, NOM + ".mp4")], check=True)
+    for mode in ("tex", "gris"):
+        for i in range(s.frame_start, s.frame_end + 1):
+            os.remove(os.path.join(VIDEO, f"{NOM}-{mode}-{i:04d}.png"))
     print("vidéo :", os.path.join(VIDEO, NOM + ".mp4"))
