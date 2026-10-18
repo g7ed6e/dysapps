@@ -57,6 +57,7 @@ import {
 import type { ItemScene } from './questions';
 import { heightAt, standingHeight } from './terrain';
 import { SHADOW_DIR } from './sky';
+import { SURROUNDINGS } from './surroundings';
 import { HABITANT_HEIGHT, habitantEastSide, habitantWestHand, loadedHabitant } from './habitants';
 import { MANGROVE, mangroveDeckTop } from './places';
 
@@ -1704,9 +1705,13 @@ export function scenetteSetting(place: PlaceId, open = false, posed = true): Fac
   return decorBuilder(place, open, posed, false).build();
 }
 
-/** Le décor de près, avec le pion dessiné en code (`body`) ou sans corps, et les ombres au pied de Kéo et de l'habitant. */
+/**
+ * Le décor de près, avec le pion dessiné en code (`body`) ou sans corps, les abords du lieu (./surroundings.ts) et les
+ * ombres au pied de Kéo et de l'habitant.
+ */
 function decorBuilder(place: PlaceId, open: boolean, posed: boolean, body: boolean): FacetBuilder {
   const b = sceneDecor(place, open, posed, body);
+  SURROUNDINGS[place]?.(b, floorOf(place, posed), { open, posed });
   footShadow(b, scenetteKeo(place, posed).at, FOOT_SHADOW.keo, floorShadow(place, posed));
   footShadow(b, scenetteHabitant(place, posed), FOOT_SHADOW.habitant, floorShadow(place, posed));
   return b;
