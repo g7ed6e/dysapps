@@ -3,7 +3,7 @@
 // 16 bits ramenés par la translation et l'échelle du nœud (KHR_mesh_quantization), les couleurs en octets, sans
 // indices. Environ trois fois plus léger ; src/game/world/characters/imported/glb.ts lit les deux. Le squelette d'un
 // modèle qui en a un (scripts/rendu/modeles/squelette.py) suit tel quel : ses os, et quatre os et poids en octets par
-// sommet.
+// sommet. Un modèle texturé, déjà compacté par sa chaîne (les habitants du monde ouvert), passe tel quel.
 
 const GLB = 0x46546c67;
 const JSON_CHUNK = 0x4e4f534a;
@@ -56,6 +56,9 @@ export function compacterGlb(bytes) {
   const node = json.nodes.find((n) => n.mesh !== undefined) ?? { mesh: 0 };
   if (node.rotation || node.matrix) throw new Error('Nœud tourné non pris en charge');
   const prim = json.meshes[node.mesh].primitives[0];
+  // Un modèle texturé (les habitants du monde ouvert : TEXCOORD_0 et son image, sans couleurs de sommets) arrive déjà
+  // compacté par sa chaîne (positions en int16, UV en 16 bits, sans normales) : il passe tel quel, jamais regrossi.
+  if (prim.attributes.COLOR_0 === undefined && prim.attributes.TEXCOORD_0 !== undefined) return bytes;
   const lesPos = valeurs(json, bin, prim.attributes.POSITION, 3);
   const lesCol = valeurs(json, bin, prim.attributes.COLOR_0, 3);
   // Sans indices : à facettes plates, les sommets ne se partagent presque pas, et les indices pèsent plus qu'ils n'épargnent.

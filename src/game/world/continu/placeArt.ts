@@ -70,8 +70,11 @@ export interface PlaceArt {
     subject: { halfWidth: number; bottom: number; top: number; depth: number };
     pitch: number;
   };
-  /** Le décor de près : le sol de la scène (`floor`) et l'habitant, ses pieds en `at`. */
-  decor(b: FacetBuilder, floor: Vec3, at: Vec3, sphere: Sphere): void;
+  /**
+   * Le décor de près : le sol de la scène (`floor`) et l'habitant, ses pieds en `at` ; sans `body`, le sol seul (son
+   * modèle 3D prend sa place, ./habitants.ts, et ce que le pion tient à la main part avec lui).
+   */
+  decor(b: FacetBuilder, floor: Vec3, at: Vec3, sphere: Sphere, body?: boolean): void;
   /** L'objet qui porte les réponses (les missions en R), ou rien (toutes en C). */
   answer: AnswerArt | null;
   /** Le décor des missions en R, au repos (rien de l'item ne s'y montre), posé sur la scène en `o`. */

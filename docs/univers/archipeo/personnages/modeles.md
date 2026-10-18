@@ -215,3 +215,14 @@ Puis refaire `controle.png` avec `rendre_controle.py` (brut, 1 500, 200). Le tes
 ## À reprendre au modèle 3D
 
 Les retouches propres à chaque personnage (barbe des Sphinx, fils épaissis, yeux repeints…) sont dans la [fiche des concepts](README.md#à-reprendre-au-modèle-3d). Chaque modèle retravaillé passe ensuite par le directeur artistique et le référent dys, sur captures, avant d’entrer dans le jeu.
+
+## Les habitants des scénettes du monde ouvert (18 octobre 2026)
+
+Les seize habitants des scénettes du monde ouvert du 6e (`?monde=ouvert`) sont des modèles texturés, tirés de leurs concepts et validés par le mainteneur le 18 octobre 2026. Leur chaîne est à part de celle des Gardiens et des créatures, et tourne hors du dépôt (Bibliothèque, `archipeo/habitants-6e/3d-v2/seize.md`) :
+
+- un brut TRELLIS 1024 (texture 2048), gardé dans la Bibliothèque ;
+- réduit dans Blender à 17 000 triangles (corps 10 000, tête 7 000), ou 22 500 pour la saunière et le chef de gare (tête 12 500), la tête soudée pour les Filets, les Marais salants, les Ruines et la Gare maritime ;
+- la texture éclaircie par grappes vers le concept (les noirs de la tête épargnés), gardée en JPEG 2048 dans le fichier ;
+- compacté (`compacter.py`) : sans normales (le jeu les ombre en facettes), positions en int16 (`KHR_mesh_quantization`), UV en 16 bits, indices, sans squelette.
+
+Le dépôt garde le résultat, `modeles/6e-habitant-<lieu>/final.glb`, sans `controle.png` ni ligne dans `reglages.csv` (la planche de contrôle, `planche-seize-reduits.jpg`, est dans la Bibliothèque). Le build le publie tel quel : `scripts/rendu/compacterGlb.mjs` ne compacte que les modèles à couleurs de sommets. Le jeu le lit avec `lireGlbTexture` (`src/game/world/characters/imported/glb.ts`), le pose à la place du pion de la scénette, à sa hauteur, face à la caméra (`src/game/world/continu/habitants.ts`), et le dessine dans la vue (`src/game/three/archipeo/habitantModels.ts`). Un fichier qui manque ou ne se lit pas laisse le pion dessiné en code.

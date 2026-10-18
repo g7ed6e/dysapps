@@ -14,7 +14,8 @@ import { constructionFacets, WHOLE } from './construction';
 import { PORT_WORST, assemblyScene, portFacets } from './port';
 import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
 import type { ItemScene } from './questions';
-import { bellPlane, habitantHand, scenetteDecor, scenetteFinale } from './scenette';
+import { HABITANT_TRIANGLES } from './habitants';
+import { bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
 import { landTileCounts } from './flora';
 import { buildHeightField, heightOnMesh, tileRings } from './terrain';
 import { skyDome } from './sky';
@@ -112,13 +113,23 @@ function questionCost(): { triangles: number; calls: number } {
  * l'arrivée et libéré au départ, du matériau du terrain, au plus fort de la réussite. L'objet de la réussite et sa
  * lumière passent par le maillage de la réaction (la réaction de l'item cède sa place à l'objet qui va se poser, puis à
  * la lumière ; au Phare, rien : les cloches s'effacent) : leurs triangles comptent ici, pas leur appel. Kéo y reste,
- * sans son anneau (son appel est compté quand même : le pire cas).
+ * sans son anneau (son appel est compté quand même : le pire cas). L'habitant est son modèle 3D (`pawnTriangles`), un
+ * appel à lui.
  */
 function scenetteCost(): { triangles: number; calls: number } {
   // La scénette d'assemblage de l'Escale (GD-20, lot 2) passe par le maillage de la réaction : les pièces, puis le bloc.
   const assembly = assemblyScene(PORT_WORST);
-  const triangles = Math.max(...SCENETTE_PLACES.map((p) => Math.max(scenetteDecor(p).triangles, successTriangles(p))), assembly.pieces.triangles, assembly.made.triangles);
-  return { triangles, calls: 1 };
+  const triangles = Math.max(...SCENETTE_PLACES.map((p) => Math.max(scenetteDecor(p).triangles, successTriangles(p)) - pawnTriangles(p) + HABITANT_TRIANGLES), assembly.pieces.triangles, assembly.made.triangles);
+  return { triangles, calls: 2 };
+}
+
+/**
+ * Le corps du pion d'un lieu, que son modèle 3D remplace (./habitants.ts, choix du mainteneur du 18 octobre 2026) : le
+ * décor de près avec lui, moins le décor sans lui. Le modèle est compté à sa place, au plus (`HABITANT_TRIANGLES`), dans
+ * un maillage à part, de son matériau texturé : un appel de plus que le décor.
+ */
+function pawnTriangles(place: PlaceId): number {
+  return scenetteDecor(place).triangles - scenetteSetting(place).triangles;
 }
 
 /** La scène d'item la plus chargée d'un lieu à scénette posée (celle que la réussite reprend). */

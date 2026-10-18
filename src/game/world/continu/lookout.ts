@@ -333,7 +333,7 @@ const SCENE_FLOOR = { half: 5, depth: 2.8 } as const;
  * l'écharpe ocre au cou et son pan sur la poitrine, la tête et les cheveux ; le bras droit baissé, sa longue-vue de
  * cuivre repliée à la main. Il ne dit rien.
  */
-function decor(b: FacetBuilder, floor: Vec3, at: Vec3, sphere: Sphere): void {
+function decor(b: FacetBuilder, floor: Vec3, at: Vec3, sphere: Sphere, body = true): void {
   const F = SCENE_FLOOR;
   let low = floor.y;
   for (let x = -F.half; x <= F.half + 1e-6; x += F.half / 2)
@@ -341,6 +341,8 @@ function decor(b: FacetBuilder, floor: Vec3, at: Vec3, sphere: Sphere): void {
   const depth = floor.y - low + 0.3;
   b.box({ x: floor.x, y: floor.y - depth, z: floor.z }, [2 * F.half, depth, F.depth], C.pavingSide, C.paving);
   for (const dx of [-F.half / 2, F.half / 2]) b.box({ x: floor.x + dx, y: floor.y, z: floor.z }, [0.05, 0.01, F.depth], C.pavingSide);
+  // Son modèle porte sa longue-vue sur l'épaule : celle du pion part avec lui.
+  if (!body) return;
   b.prism(at, 0.27, 0.26, 0.46, 10, C.trousers);
   b.prism({ x: at.x, y: at.y + 0.38, z: at.z }, 0.4, 0.28, 0.56, 10, C.coat);
   b.prism({ x: at.x, y: at.y + 0.8, z: at.z }, 0.33, 0.27, 0.17, 10, C.scarf);

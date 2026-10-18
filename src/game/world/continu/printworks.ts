@@ -414,9 +414,11 @@ export const PRINTWORKS: PlaceArt = {
    * fantôme), sa chemise Sable, son tablier Nuit océan par-devant, la tête, son chapeau de papier plié à une seule corne,
    * penchée vers l'est ; un bras le long du corps, l'autre plié, le rouleau encreur à la main, tendu vers Kéo.
    */
-  decor(b, floor, at, sphere) {
+  decor(b, floor, at, sphere, body = true) {
     b.box({ x: floor.x, y: floor.y - 0.4, z: floor.z }, [9.4, 0.4, 2.8], C.flagShade, C.flag);
     for (const dx of [-3.1, 0.4, 2.0]) b.box({ x: floor.x + dx, y: floor.y, z: floor.z }, [0.05, 0.01, 2.8], C.flagShade);
+    // Son modèle (sa salopette, sans chapeau de papier, comme son concept retenu) : le rouleau du pion, à la main, part avec lui.
+    if (!body) return;
     for (const dx of [-0.13, 0.13]) b.box({ x: at.x + dx, y: at.y, z: at.z }, [0.2, 0.46, 0.24], C.trousers);
     b.prism({ x: at.x, y: at.y + 0.44, z: at.z }, 0.31, 0.26, 0.48, 10, C.shirt);
     b.extrude(

@@ -426,14 +426,15 @@ export const BEACONS: PlaceArt = {
     pitch: (18 * Math.PI) / 180,
   },
   // Le sol de la scène : les dalles de la cale, sur toute sa largeur, jusqu'au sol sous elle ; le pilote.
-  decor(b, floor, at, sphere) {
+  decor(b, floor, at, sphere, body = true) {
     const F = SCENE_FLOOR;
     let low = floor.y;
     for (let dx = -F.half; dx <= F.half + 1e-6; dx += F.half / 2) for (const dz of [-F.depth / 2, 0, F.depth / 2]) low = Math.min(low, standingHeight(heightAt({ x: floor.x + dx, z: floor.z + dz })));
     const depth = floor.y - low + 0.3;
     b.box({ x: floor.x, y: floor.y - depth, z: floor.z }, [2 * F.half, depth, F.depth], C.stoneShade, C.stone);
     for (const dx of [-F.half / 2, F.half / 2]) b.box({ x: floor.x + dx, y: floor.y, z: floor.z }, [0.05, 0.01, F.depth], C.stoneShade);
-    pilote(b, at, sphere);
+    // Son modèle porte le filin sur l'épaule, comme le pion.
+    if (body) pilote(b, at, sphere);
   },
   answer: {
     size: { height: TRESTLE.h + BUOY_TOP + BUOY.sunk + 0.3, half: TRESTLE.w / 2 + 0.04 },

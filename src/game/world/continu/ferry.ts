@@ -412,12 +412,13 @@ export const FERRY: PlaceArt = {
     pitch: (27 * Math.PI) / 180,
   },
   // Le sol de la scène : les dalles du quai, sur toute sa largeur, jusque sous l'eau ; le chef de gare.
-  decor(b, floor, at, sphere) {
+  decor(b, floor, at, sphere, body = true) {
     const F = SCENE_FLOOR;
     const depth = 1.2;
     b.box({ x: floor.x, y: floor.y - depth, z: floor.z }, [2 * F.half, depth, F.depth], C.stoneShade, C.stone);
     for (const dx of [-F.half / 2, F.half / 2]) b.box({ x: floor.x + dx, y: floor.y, z: floor.z }, [0.05, 0.01, F.depth], C.stoneShade);
-    chefDeGare(b, at, sphere);
+    // Son modèle porte son sifflet au cou ; le porte-voix du pion, à la main, part avec lui.
+    if (body) chefDeGare(b, at, sphere);
   },
   answer: {
     size: { height: TRUNK.h + TRUNK.lid + 0.25, half: TRUNK.w / 2 + 0.04 },

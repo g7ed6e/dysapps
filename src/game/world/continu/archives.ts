@@ -429,13 +429,14 @@ export const ARCHIVES: PlaceArt = {
     pitch: (18 * Math.PI) / 180,
   },
   // Le sol de la scène : des dalles de calcaire, la suite du parvis, sur toute sa largeur, jusqu'au sol sous elle.
-  decor(b, floor, at, sphere) {
+  decor(b, floor, at, sphere, body = true) {
     let low = floor.y;
     for (let dx = -5; dx <= 5; dx += 1) for (const dz of [-1.4, 0, 1.4]) low = Math.min(low, Math.max(heightAt({ x: floor.x + dx, z: floor.z + dz }), -0.3));
     const depth = Math.max(0.6, floor.y - low + 0.2);
     b.box({ x: floor.x, y: floor.y - depth, z: floor.z }, [10.4, depth, 2.8], C.joint, C.slab);
     for (const dx of [-2.6, 0, 2.6]) b.box({ x: floor.x + dx, y: floor.y, z: floor.z }, [0.05, 0.01, 2.8], C.joint);
-    copiste(b, at, sphere);
+    // Son modèle porte sa plume dans le chignon : celle du pion, à la main, part avec lui.
+    if (body) copiste(b, at, sphere);
   },
   answer: {
     size: { height: DRAWER.h + DRAWER.cards, half: DRAWER.w / 2 + 0.04 },
