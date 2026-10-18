@@ -10,3 +10,5 @@ Chaque sous-lot part de sa fiche et écrit ce qu’il a construit dans sa sous-s
 Chaque fiche a les mêmes rubriques : l’intention, les repères signatures, le relief, le décor à redessiner, l’ambiance, la brume et la fumée, les interdits, les captures et critères d’acceptation, l’enveloppe du décor, les questions pour le mainteneur, puis ce qu’elle demande à R5 et ce qu’elle change pour Blocland.
 
 Deux intentions plus anciennes, versées ici le 30 septembre 2026 depuis les fichiers du projet, gardent leur texte d’origine : `r6-personnages.md` (lot R6, les couleurs et proportions du bonhomme et des créatures) et `r7-2d-peinte.md` (lot R7, la 2D peinte). Ce qui a été construit est dans les sections R6 et R7 du [cadrage Archipéo](../cadrage.md).
+
+Depuis le 13 octobre 2026, `concepts/` garde les concepts validés d'Archipéo repensé ([GD-19](../../../gameplay/propositions/GD-19.md)), en WebP : l'équipage sur le pont de la Nef (deux graines), la bande des Ferrailleurs (18 octobre 2026). Leur Rafiot est à refaire : sans mât, et sans lieu debout qu'ils pilleraient. La fiche et les concepts de chaque niveau entrent avec la pull request de ce niveau.
