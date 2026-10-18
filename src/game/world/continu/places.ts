@@ -811,7 +811,7 @@ function engineBoiler(b: FacetBuilder, x0: number, y: number, z: number, color: 
 
 /**
  * La Turbine (lot L6a). Avant : la source bouchée de galets, sa margelle usée ; le massif de briques ébréché ; la
- * chaudière couchée dans l'herbe ; le rotor couché à plat, deux aubes manquantes, et son carter ouvert à côté. Le corps :
+ * chaudière couchée dans l'herbe ; le rotor couché à plat, deux aubes manquantes (son carter n'y gît plus). Le corps :
  * la source dégagée (son eau laiteuse, ses cercles), le massif et la chaudière redressée, puis les conduites de cuivre.
  * Le haut : le rotor dans son carter et l'arbre vers l'est, l'évent de briques, puis son panache (l'étape qui porte les
  * traces). Les abords : le chemin de la porte, un muret de pierres sèches, la rigole vers la rivière. Ce qui gît dans la
@@ -849,17 +849,9 @@ function engine(add: Add): void {
   );
   // La chaudière couchée dans l'herbe, au nord du massif, de travers ; relevée avec lui.
   add('ruine', 0, (b) => engineBoiler(b, B.x0 - 0.2, B.r - 0.05, B.z - 2.2, C.wornIron, C.wornIron, Math.PI / 2 - 0.35), { stage: 0, row: 0.5 });
-  // Le rotor couché à plat dans l'herbe, deux aubes manquantes, et son carter ouvert à côté, sur le flanc ; le haut les
-  // relève.
-  add(
-    'ruine',
-    0,
-    (b) => {
-      engineRotor(b, { x: R.x - 0.6, y: 0.12, z: 2.1, pitch: -Math.PI / 2 }, [C.wornIron, C.wornSteel], [4, 5]);
-      engineCasing(b, { x: R.x + 2.4, y: 0, z: -2.3, pitch: -Math.PI / 2, yaw: 0.5 }, C.wornIron, C.wornIron);
-    },
-    { stage: 1, row: 0 },
-  );
+  // Le rotor couché à plat dans l'herbe, deux aubes manquantes ; le haut le relève. Son carter ne gît plus sur le flanc,
+  // au nord-est (directeur artistique, 18 octobre 2026 : la masse de fer, de dos, bouchait la vue comme un rocher).
+  add('ruine', 0, (b) => engineRotor(b, { x: R.x - 0.6, y: 0.12, z: 2.1, pitch: -Math.PI / 2 }, [C.wornIron, C.wornSteel], [4, 5]), { stage: 1, row: 0 });
   // Le corps : la source dégagée, sa margelle de pierre, son eau laiteuse et ses trois cercles à fleur d'eau, fins,
   // concentriques et pleins sur tout leur tour, immobiles (le bouillonnement ; elle ne fume pas). Rien au milieu que
   // l'eau claire (directeur artistique, relecture de L6a : ni secteurs ni centre sombre).

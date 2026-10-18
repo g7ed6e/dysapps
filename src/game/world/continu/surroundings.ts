@@ -10,6 +10,7 @@ import type { PlaceId } from './plan6e';
 import { quaisSurroundings } from './quaisSurroundings';
 import { eclusesSurroundings } from './eclusesSurroundings';
 import { saltworksSurroundings } from './saltworksSurroundings';
+import { engineSurroundings } from './engineSurroundings';
 
 /** L'état du lieu : l'étape qui porte la trace posée (`posed`), la réussite montrée (`open`). */
 export interface SurroundingsState {
@@ -33,4 +34,5 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,
+  engine: engineSurroundings,
 };

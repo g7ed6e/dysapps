@@ -856,8 +856,8 @@ describe('La Turbine (GD-20, point 8, lot L6a)', () => {
 
   it('la machiniste, en peu de triangles, sur le dallage devant la chaudière, levé au-dessus du replat', () => {
     const decor = scenetteDecor('engine');
-    // Les deux ombres au pied (lot commun des scénettes) comprises.
-    expect(decor.triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
+    // Les deux ombres au pied (lot commun des scénettes) comprises ; les abords à part (./surroundings.test.ts).
+    expect(decor.triangles - scenetteSurroundings('engine').triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
     // Des cheveux sombres et leur chignon, au-dessus de la tête (les lunettes relevées s'y lisent) ; la burette, un cône de
     // cuivre plus large en bas qu'en haut, et son bec fin (relecture de L6a : ni tête chauve, ni torche).
     const habitantAt = scenetteHabitant('engine');
