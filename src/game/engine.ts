@@ -422,14 +422,18 @@ export type LaunchResult =
   | { ok: true; to: BiomeId }
   | { ok: false; reason: 'loin' | 'construit' | 'blocs' | 'gardiens'; missing: number };
 
-/** Peut-on embarquer ? Le port de départ ouvert, le voyage pas encore fait, toutes les cases posées, assez de Gardiens vaincus. */
-export function canLaunch(state: GameState, stage: VehicleStage): LaunchResult {
+/**
+ * Peut-on embarquer ? Le port de départ ouvert, le voyage pas encore fait, toutes les cases posées, assez de Gardiens
+ * vaincus. `kit` dit à la place des Gardiens si le kit est arrivé : le monde continu, qui n'a pas de Gardiens, le donne
+ * avec ses lieux achevés (GD-21).
+ */
+export function canLaunch(state: GameState, stage: VehicleStage, kit = kitReady(stage, state.progress)): LaunchResult {
   const bridges = state.world.links;
   if (!reachableIslands(bridges).has(stage.biome)) return { ok: false, reason: 'loin', missing: 0 };
   if (bridges.includes(voyageId(stage.to))) return { ok: false, reason: 'construit', missing: 0 };
   const status = planStatus(state, stage);
   if (!status.complete) return { ok: false, reason: 'blocs', missing: status.total - status.done };
-  if (!kitReady(stage, state.progress)) return { ok: false, reason: 'gardiens', missing: stage.guardians - beatenGuardians(stage.from, state.progress) };
+  if (!kit) return { ok: false, reason: 'gardiens', missing: stage.guardians - beatenGuardians(stage.from, state.progress) };
   return { ok: true, to: getArchipelago(stage.to).port };
 }
 
@@ -437,8 +441,8 @@ export function canLaunch(state: GameState, stage: VehicleStage): LaunchResult {
  * Largue les amarres : le voyage est fait (et le reste : on revient quand on veut), le bonhomme arrive au port d'en face.
  * Un acte explicite, jamais un effet du dernier bloc posé.
  */
-export function launchVehicle(state: GameState, stage: VehicleStage): { state: GameState; result: LaunchResult } {
-  const result = canLaunch(state, stage);
+export function launchVehicle(state: GameState, stage: VehicleStage, kit?: boolean): { state: GameState; result: LaunchResult } {
+  const result = canLaunch(state, stage, kit);
   if (!result.ok) return { state, result };
   return { state: { ...state, world: { ...state.world, links: [...state.world.links, voyageId(stage.to)], place: result.to } }, result };
 }

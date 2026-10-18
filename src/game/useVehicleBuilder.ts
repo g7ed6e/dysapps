@@ -54,7 +54,16 @@ function saved(stage: VehicleStage, at: { x: number; y: number; z: number }) {
   return c ? { x: c.x + o.x, y: c.y + o.y, z: c.z + o.z } : null;
 }
 
-export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
+/**
+ * Le monde continu, qui n'a pas de Gardiens (GD-21) : `kit` dit si le kit est arrivé, et `waiting` la phrase de la Nef
+ * qui a tous ses blocs et attend encore sa voile.
+ */
+export interface KitInstead {
+  kit: boolean;
+  waiting: string;
+}
+
+export function useVehicleBuilder(island: BiomeId, instead?: KitInstead): VehicleBuilder {
   const { state, fillPlan } = useBlocland();
   const { settings, speak } = useSettings();
   const textes = useTextes();
@@ -66,8 +75,8 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const previousDone = here ? here.stage === 1 || state.world.links.includes(voyageId(VEHICLE_STAGES[here.stage - 2].to)) : false;
   const stage = here && previousDone && !state.world.links.includes(voyageId(here.to)) ? here : null;
   const status = stage ? planStatus(state, stage) : null;
-  const launch = stage ? canLaunch(state, stage) : null;
-  const kit = stage ? kitReady(stage, state.progress) : false;
+  const kit = stage ? (instead?.kit ?? kitReady(stage, state.progress)) : false;
+  const launch = stage ? canLaunch(state, stage, kit) : null;
   const sound = (f: () => void) => settings.sounds && f();
   // Le son de pose de l'univers (le « clac » de Blocland, le « toc » d'Archipéo), lu une fois.
   const [playPlace] = useState(() => sonDePose(habillageDuMonde().pose));
@@ -101,7 +110,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const finished = (done: VehicleStage) => {
     const msg = kit
       ? stageWords(done, textes.libelles.formesDeLaNef).fin(textes.archipels[done.to])
-      : textes.libelles.navireAttend(done.guardians, stageWords(done, textes.libelles.formesDeLaNef).short);
+      : (instead?.waiting ?? textes.libelles.navireAttend(done.guardians, stageWords(done, textes.libelles.formesDeLaNef).short));
     setNotice(msg);
     sound(playDone);
     // La voix attend la fin de la mue de la Nef (GD-15, référent dys) : dans Blocland, quand l'appareil ne demande pas

@@ -10,6 +10,9 @@
 import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { createHabitantModels } from './habitantModels';
+import { loadNef } from '../../importedNef';
+import { nefParts } from '../../world/nefModels';
+import { NEF_DEPARTURE, NEF_LIFT, bancFacets, bancTouched, berFacets, nefArrivingParts, nefAtBerth, nefBerthWorld, nefDeparture, nefModelFacets, nefShownParts, nefTouched, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, detourRise, detourViewStep, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourFacets, faunaPose, spoutFacets, whaleFacets, type DetourId } from '../../world/continu/detours';
@@ -129,6 +132,8 @@ export interface OpenWorldOptions {
   onDetour?(id: DetourId | null): void;
   /** La baleine du bord d'eau souffle : la page fait entendre son souffle si les sons sont actifs. */
   onWhaleBlow?(): void;
+  /** La Nef, son ber ou le banc du large touché (GD-21) : la page ouvre la fiche de la Nef, Kéo reste où il est. */
+  onNef?(): void;
 }
 
 export type { RemiseEvents, SignOnScreen } from './remiseRun';
@@ -248,10 +253,20 @@ export interface OpenWorld {
    * libre, lot 2), dans le maillage des lieux : refait seulement s'ils changent.
    */
   setDetours(found: readonly DetourId[], lit: readonly DetourId[]): void;
+  /**
+   * Où en est la Nef de l'Escale (GD-21) : le ber vide, la coque, le mât, la voile hissée, ou partie. Un temps qui
+   * arrive descend à sa place (d'un coup avec « Réduire les animations ») ; le reste est dans le maillage des lieux.
+   */
+  setNef(look: NefLook): void;
+  /**
+   * Le départ de la Nef (GD-21) : la caméra ne bouge pas, la Nef glisse vers la passe, le banc se retire ; huit secondes
+   * au plus, qu'un toucher termine (d'un coup avec « Réduire les animations ») ; `done` à la fin, par n'importe quel chemin.
+   */
+  departNef(done: () => void): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
   info(): { calls: number; triangles: number; mapMs: number };
-  /** Ce qu'un toucher en ce point de la fenêtre ouvrirait au Port, sans rien faire (la mesure des cibles). */
-  portAt(clientX: number, clientY: number): PortSpot | 'fiche' | null;
+  /** Ce qu'un toucher en ce point de la fenêtre ouvrirait au Port, la Nef comprise, sans rien faire (la mesure des cibles). */
+  portAt(clientX: number, clientY: number): PortSpot | 'fiche' | 'nef' | null;
   dispose(): void;
 }
 
@@ -778,7 +793,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   placesMesh.visible = false;
   landmarkMesh.visible = false;
   poseMesh.visible = false;
-  scene.add(placesMesh, landmarkMesh, poseMesh);
+  // La Nef qui arrive ou qui part, et le banc qui se retire (GD-21) : du matériau du lieu suivi, hors de la brume.
+  const nefMesh = new THREE.Mesh(new THREE.BufferGeometry(), landmarkMaterial);
+  const bancMesh = new THREE.Mesh(new THREE.BufferGeometry(), landmarkMaterial);
+  nefMesh.visible = false;
+  bancMesh.visible = false;
+  scene.add(placesMesh, landmarkMesh, poseMesh, nefMesh, bancMesh);
   touchables.push(placesMesh, landmarkMesh);
   // La remise (lot L1) : l'aménagement qui se pose, à part, du matériau des lieux (posé, il est déjà tel qu'au retour :
   // rien ne s'allume) ; ses éléments posés par la plage de dessin, celui qui descend dans le maillage de la réaction. Un
@@ -948,6 +968,29 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (detourDecor?.key !== key) detourDecor = { key, facets: detourFacets(detoursFound, detoursLit.includes('braise-herons')) };
     return detourDecor.facets;
   };
+  // La Nef de l'Escale (GD-21) : son temps (la page le donne), le modèle du voilier chargé à la demande (sans lui, le
+  // ber seul), ses parties montrées réunies aux lieux, le banc du large dans le maillage du lieu suivi (hors de la brume
+  // du lointain). Le temps qui arrive descend à part (`nefDrop`, dans `nefMesh`) ; au départ (`nefTrip`), la Nef et le
+  // banc s'en vont chacun dans son maillage, le temps de leur mouvement (jamais pendant une question ni une pose).
+  let nefLookNow: NefLook = 0;
+  let nefDrop: { start: number; from: NefLook; to: NefLook } | null = null;
+  let nefTrip: { start: number; done: () => void; outSince: number | null } | null = null;
+  /** La Nef qui part, ramenée à l'écran (sa place projetée). */
+  const nefSeen = new THREE.Vector3();
+  const nefModelCache = new Map<string, Facets>();
+  /** Des parties du voilier, dans le repère de la Nef, ou rien (pas encore chargé, ou aucune partie). */
+  const nefModel = (names: readonly string[]): Facets | null => {
+    const parts = nefParts(1);
+    if (!parts || names.length === 0) return null;
+    const k = names.join(',');
+    let f = nefModelCache.get(k);
+    if (!f) nefModelCache.set(k, (f = nefModelFacets(parts, names)));
+    return f;
+  };
+  const nefBer = { quay: berFacets(0), gone: berFacets(4) };
+  const nefBanc = bancFacets();
+  /** Le temps que les parties nouvelles de la Nef mettent à descendre sur le ber. */
+  const NEF_DROP_SECONDS = 0.8;
   // La baleine et les oiseaux du bord d'eau : un seul maillage, dont les sommets sont réécrits sur place pendant leur
   // scène ; montré seulement près du bord d'eau. Leur horloge n'avance que hors des questions et de la Carte (tout se
   // fige quand un panneau s'ouvre, référent dys) ; la scène ne revient pas avant `faunaAgain` secondes.
@@ -1314,7 +1357,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}${nefParts(1) ? 'm' : ''}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -1352,10 +1395,22 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     // Les Détours : leurs pierres, le cairn, les sentes trouvées (dans le monde comme sur la Carte), sans appel de plus.
     rest.push(detourFacetsNow());
+    // La Nef (GD-21) : son ber (vide, et la bouée, une fois partie), ses parties posées (sans celles qui descendent), et le
+    // banc du large tant qu'elle n'est pas partie, hors de la brume (sur la Carte, avec les lieux).
+    const gone = nefLookNow === 4 || Boolean(nefTrip);
+    rest.push(nefLookNow === 4 ? nefBer.gone : nefBer.quay);
+    const nefNow = gone ? null : nefModel(nefShownParts(nefDrop ? nefDrop.from : nefLookNow));
+    if (nefNow) rest.push(nefAtBerth(nefNow));
+    if (!gone) (mapView ? rest : mark).push(nefBanc);
     setGeometry(placesMesh, mergeFacets(rest));
     setGeometry(landmarkMesh, mergeFacets(mark));
     mapDirty = true;
   };
+  // Le voilier chargé à la demande (GD-21) : les lieux se refont avec lui (la clé des lieux sait s'il est là).
+  if (!nefParts(1))
+    void loadNef().then((changed) => {
+      if (!disposed && changed) placeVisibility();
+    });
   let nearIndices: number[] = [];
   /** L'anneau de près : ses tuiles prêtes, ou leur version de loin en attendant (une seule faite par image, `pump`). */
   const setNear = (now: boolean) => nearRing.set(nearIndices.map((i) => (now ? tiles.build(i, 'near') : (tiles.near(i) ?? tiles.build(i, 'far')))));
@@ -1832,6 +1887,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Un toucher pendant une pose la passe : la partie est à sa place, la caméra revient à Kéo ; de même la scénette
     // d'assemblage.
     if (poseRun.active) return finishPose();
+    // Un toucher pendant le départ de la Nef le termine (GD-21).
+    if (nefTrip) return finishNefTrip();
     if (assembly) return finishAssembly();
     // Un toucher pendant la pose d'un pont la finit : le pont posé, le toc s'il n'a pas été dit.
     if (laying) return finishLay();
@@ -1846,6 +1903,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     const p = hitAt(e.clientX, e.clientY);
     if (!p) return;
+    // La Nef, son ber ou le banc du large : la fiche de la Nef (GD-21), Kéo reste où il est ; partie, plus rien.
+    if (options.onNef && nefLookNow !== 4 && (nefTouched(p) || bancTouched(p))) return options.onNef();
     // L'Escale : une porte, la galerie ou le lieu d'assemblage y mène Kéo d'un coup et en ouvre le panneau ; le reste du
     // Port ouvre sa fiche (Kéo reste où il est).
     const atPort = portTouch(p);
@@ -2775,6 +2834,70 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const finishPose = () => poseRun.finish();
   /** La pose à l'instant `t` (en secondes). */
   const stepPose = (t: number) => poseRun.step(t);
+  /** Le temps de la Nef qui arrive : ses parties nouvelles descendent sur le ber, de haut, et ralentissent en arrivant. */
+  const startNefDrop = (from: NefLook, to: NefLook) => {
+    const f = nefModel(nefArrivingParts(from, to));
+    if (!f) return;
+    const at = nefBerthWorld();
+    nefDrop = { start: performance.now() / 1000, from, to };
+    setGeometry(nefMesh, f);
+    nefMesh.position.set(at.x, NEF_LIFT.ber + POSE_DROP, at.z);
+    nefMesh.rotation.y = at.yaw;
+  };
+  const finishNefDrop = () => {
+    if (!nefDrop) return;
+    nefDrop = null;
+    nefMesh.visible = false;
+    placeVisibility();
+  };
+  const stepNefDrop = (t: number) => {
+    if (!nefDrop) return;
+    const u = Math.min(1, (t - nefDrop.start) / NEF_DROP_SECONDS);
+    nefMesh.position.y = NEF_LIFT.ber + POSE_DROP * (1 - u) ** 3;
+    if (u >= 1) finishNefDrop();
+  };
+  /** Le départ de la Nef : elle et le banc dans leurs maillages à part, le temps du voyage ; la caméra ne bouge pas. */
+  const startNefTrip = (done: () => void) => {
+    finishNefDrop();
+    const f = nefModel(nefShownParts(3));
+    if (reduceMotion || mapView || !f) {
+      nefLookNow = 4;
+      placeVisibility();
+      done();
+      return;
+    }
+    nefTrip = { start: performance.now() / 1000, done, outSince: null };
+    setGeometry(nefMesh, f);
+    setGeometry(bancMesh, nefBanc);
+    stepNefTrip(nefTrip.start);
+    placeVisibility();
+  };
+  /** La Nef partie : le ber vide et sa bouée, le banc levé ; la page passe à la suite (la grille, en 5e). */
+  const finishNefTrip = () => {
+    const trip = nefTrip;
+    if (!trip) return;
+    nefTrip = null;
+    nefMesh.visible = false;
+    bancMesh.visible = false;
+    bancMesh.position.x = 0;
+    nefLookNow = 4;
+    placeVisibility();
+    trip.done();
+  };
+  const stepNefTrip = (t: number) => {
+    if (!nefTrip) return;
+    const u = Math.min(1, (t - nefTrip.start) / NEF_DEPARTURE.seconds);
+    const at = nefDeparture(u);
+    nefMesh.position.set(at.x, at.y, at.z);
+    nefMesh.rotation.y = at.yaw;
+    bancMesh.position.x = -at.bancShift;
+    // Sortie de l'image (le haut du mât compris), elle finit son départ peu après.
+    nefSeen.set(at.x, at.y + 2, at.z).project(camera);
+    const out = nefSeen.z > 1 || Math.abs(nefSeen.x) > 1.15 || Math.abs(nefSeen.y) > 1.15;
+    if (!out) nefTrip.outSince = null;
+    else nefTrip.outSince ??= t;
+    if (u >= 1 || (nefTrip.outSince !== null && t - nefTrip.outSince >= NEF_DEPARTURE.outOfView)) finishNefTrip();
+  };
   const setPlaces = (state: PlacesState, pose?: { place: PlaceId; parts: readonly PartShape[] }): boolean => {
     placesState = state;
     // La livraison écrite (l'état final de la remise) : l'aménagement entre dans les lieux, son maillage à part se cache.
@@ -2884,6 +3007,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));
     last = now;
     const t = now / 1000;
+    stepNefDrop(t);
     // Les ailes de la pompe à vent tournent lentement ; à l'arrêt avec « Réduire les animations ».
     if (!reduceMotion) vaneAngle.value = (t * VANE.turn) % (2 * Math.PI);
     // Le rotor de la Turbine tourne lentement, à l'arrêt pendant toute question et sur la Carte (il reprend où il s'était
@@ -2941,6 +3065,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (assembly) {
       // La scénette d'assemblage : la caméra reste derrière Kéo, le bloc va de l'établi au râtelier.
       stepAssembly(t);
+      body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
+      options.onMark(null);
+      hideLocks();
+      renderer.render(scene, camera);
+      meter?.tick(renderer.info, now);
+      return;
+    }
+    if (nefTrip) {
+      // Le départ de la Nef : la caméra ne bouge pas, Kéo attend où il est ; ni marque ni cadenas.
+      stepNefTrip(t);
       body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
       options.onMark(null);
       hideLocks();
@@ -3054,6 +3188,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     remiseStart,
     remiseFinish,
     setSigns,
+    setNef: (look) => {
+      if (look === nefLookNow || nefTrip) return;
+      const from = nefLookNow;
+      finishNefDrop();
+      nefLookNow = look;
+      if (!reduceMotion && !mapView && look !== 4 && look > from) startNefDrop(from, look);
+      placeVisibility();
+    },
+    departNef: (done) => {
+      if (nefTrip || nefLookNow === 4) return done();
+      startNefTrip(done);
+    },
     setDetours: (found, lit) => {
       if (found.join(',') === detoursFound.join(',') && lit.join(',') === detoursLit.join(',')) return;
       detoursFound = [...found];
@@ -3064,6 +3210,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, mapMs }),
     portAt: (clientX: number, clientY: number) => {
       const p = hitAt(clientX, clientY);
+      if (p && options.onNef && nefLookNow !== 4 && (nefTouched(p) || bancTouched(p))) return 'nef';
       return p ? portTouch(p) : null;
     },
     dispose: () => {
@@ -3085,7 +3232,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       body.dispose();
       habitants.dispose();
       for (const g of geometries) g.dispose();
-      for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, remiseMesh, veilMesh, decorMesh]) m.geometry.dispose();
+      for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, remiseMesh, veilMesh, decorMesh, nefMesh, bancMesh]) m.geometry.dispose();
       lampMaterial.dispose();
       poseMaterial.dispose();
       faunaMaterial.dispose();

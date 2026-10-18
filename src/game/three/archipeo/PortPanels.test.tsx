@@ -12,13 +12,13 @@ import { PortPanels, portFromParam, portResume, portReturn, type PortPanel } fro
 
 const NAMES = { nom: 'L’Escale', ecole: 'La Maison des Savoirs', succes: 'La Galerie des Merveilles', assemblage: 'L’Entrepôt des matériaux' };
 
-function renderPanel(panel: PortPanel, onGo = vi.fn(), onClose = vi.fn()) {
+function renderPanel(panel: PortPanel, onGo = vi.fn(), onClose = vi.fn(), onNef?: () => void) {
   render(
     <SettingsProvider>
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <PortPanels panel={panel} names={NAMES} onGo={onGo} onClose={onClose} />
+            <PortPanels panel={panel} names={NAMES} onGo={onGo} onNef={onNef} onClose={onClose} />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -36,6 +36,17 @@ it('la fiche du Port a cinq lignes, chacune avec « Y aller », qui mènent à l
   expect(go.map((b) => b.getAttribute('aria-label'))).toEqual(['Y aller : Français', 'Y aller : Maths', 'Y aller : Anglais', 'Y aller : Succès', 'Y aller : Assembler']);
   await user.click(go[4]);
   expect(onGo).toHaveBeenCalledWith('chantier');
+});
+
+it('la Nef pas encore partie : une ligne en tête qui ouvre sa fiche (GD-21)', async () => {
+  const user = userEvent.setup();
+  const onNef = vi.fn();
+  renderPanel('fiche', vi.fn(), vi.fn(), onNef);
+  const sheet = screen.getByRole('dialog', { name: 'L’Escale' });
+  const go = within(sheet).getAllByRole('button', { name: /^Y aller/ });
+  expect(go[0].getAttribute('aria-label')).toBe('Y aller : La Nef');
+  await user.click(go[0]);
+  expect(onNef).toHaveBeenCalled();
 });
 
 it('une porte montre ses missions, sans sous-titre (la façade se voit à côté) ; aucun lien ne sort du monde', () => {
