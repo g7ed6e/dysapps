@@ -34,17 +34,21 @@ import { translatePath } from './core/legacyIds';
 import { movedPath } from './core/movedIds';
 import { useImmersive } from './game/useImmersive';
 import { mesuresAutomatiques } from './game/rendering';
+import { niveauDApercu } from './game/previewLevel';
+import { PreviewLevel } from './game/PreviewLevel';
 
 /** La mesure automatique (`?mesures=auto`), chargée à part : aucun élève ne la télécharge. */
 const AutoMeasure = lazy(() => import('./game/AutoMeasure'));
 
 // HashRouter : les URL en « #/… » fonctionnent sur GitHub Pages sans configuration serveur.
 export function App() {
+  const niveau = niveauDApercu();
   return (
     <SettingsProvider>
       <ProgressProvider>
         <BloclandProvider>
           <HashRouter>
+            {niveau && <PreviewLevel niveau={niveau} />}
             <AppRoutes />
             <TitleScreen />
             <AppBadge />
