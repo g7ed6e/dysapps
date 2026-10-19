@@ -718,6 +718,11 @@ function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: reado
         `#ifdef USE_FOG\nfloat fogFactor = smoothstep( fogNear, fogFar, vFogDepth ) * mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) );\n#ifdef USE_COLOR\n${thinFogLines(thin)}\n#endif\ngl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n#endif`,
       );
   };
+  // La clé du programme est fixe : Three.js réutilise le programme compilé de toute matière qui porte la même clé, sans
+  // relire `onBeforeCompile`. Elle ne vaut donc que tant qu'un seul niveau prend la lumière par la hauteur, avec une
+  // seule liste `thin` (le 5e) ; un autre niveau qui la prendrait avec d'autres couleurs peu voilées devrait mettre sa
+  // liste dans la clé. Les couleurs de `thin` (huit au 5e : huit comparaisons par fragment, à mesurer sur l'iPad) sont
+  // loin de toute autre couleur du 5e (world/continu/thinFog.test.ts).
   m.customProgramCacheKey = () => 'archipeo-hauteur';
   return m;
 }

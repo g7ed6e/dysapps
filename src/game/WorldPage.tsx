@@ -1004,6 +1004,8 @@ export function WorldPage() {
     if (!phraseDeCreature || decouverteDite.current === phraseDeCreature) return;
     decouverteDite.current = phraseDeCreature;
     if (settings.autoRead) speak(frenchTypography(phraseDeCreature.text));
+    // Seulement quand la bulle se montre : ni le réglage qui change, ni `speak` (refait par le contexte des réglages) ne
+    // la font redire ; `decouverteDite` garde la phrase déjà dite.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phraseDeCreature]);
   // Un panneau en plein écran par-dessus le monde (l'île, un lieu, Blocs, le menu, le voyage sans animation).

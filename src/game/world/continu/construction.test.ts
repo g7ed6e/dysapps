@@ -354,16 +354,23 @@ describe('La pose d’une partie', () => {
     for (const p of PLACES) {
       const pose = poseView(p.id, ground, { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: CAMERA_FOV, lens: 1 });
       const pts = constructionFacets(p.id, [WHOLE], ground).positions;
-      for (const { w, h } of SCREENS)
+      for (const { w, h } of SCREENS) {
+        // Le cadre de tous les sommets à l'écran, puis quatre vérifications par lieu et par écran (pas quatre par sommet).
+        const at = { x0: Infinity, x1: -Infinity, y0: Infinity, y1: -Infinity };
         for (let k = 0; k < pts.length; k += 3) {
           // Sous l'eau (les pieux, la quille de la barque), la mer le cache.
           if (pts[k + 1] < 0) continue;
           const s = screenOf(pose, { x: pts[k], y: pts[k + 1], z: pts[k + 2] }, w, h);
-          expect(s.y, `${p.id} ${w}`).toBeGreaterThan(0);
-          expect(s.y, `${p.id} ${w}`).toBeLessThan(h);
-          expect(s.x, `${p.id} ${w}`).toBeGreaterThan(-w * 0.05);
-          expect(s.x, `${p.id} ${w}`).toBeLessThan(w * 1.05);
+          at.x0 = Math.min(at.x0, s.x);
+          at.x1 = Math.max(at.x1, s.x);
+          at.y0 = Math.min(at.y0, s.y);
+          at.y1 = Math.max(at.y1, s.y);
         }
+        expect(at.y0, `${p.id} ${w}`).toBeGreaterThan(0);
+        expect(at.y1, `${p.id} ${w}`).toBeLessThan(h);
+        expect(at.x0, `${p.id} ${w}`).toBeGreaterThan(-w * 0.05);
+        expect(at.x1, `${p.id} ${w}`).toBeLessThan(w * 1.05);
+      }
     }
   });
 

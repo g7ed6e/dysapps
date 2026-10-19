@@ -52,17 +52,20 @@ export function nefLookOf(state: GameState, kit: boolean, stage: VehicleStage = 
  * formes de la grille (`PastillesDeLaNef`) compteraient le voilier, le dirigeable et l'aéronef : ici, un seul voyage.
  * Au dirigeable, la troisième porte le gouvernail en croix tant qu'il n'est pas fixé (référent dys, retouche du lot 4).
  */
-function PastillesDesTemps({ look, form }: { look: NefLook; form: number }) {
+function PastillesDesTemps({ look, form }: { look: NefLook; form: VehicleStage['stage'] }) {
   return (
     <span className="signe nef-pastilles" aria-hidden="true">
       {([1, 2, 3] as const).map((t) => (
         <span key={t} className={`nef-pastille${t <= look ? ' faite' : t === look + 1 ? ' en-cours' : ''}`}>
-          {t <= look ? <Icon name="check" /> : t === 3 && form === 2 && <RudderCross />}
+          {t <= look ? <Icon name="check" /> : t === 3 && form === RUDDER_FORM && <RudderCross />}
         </span>
       ))}
     </span>
   );
 }
+
+/** La forme de la Nef dont le dernier temps est le gouvernail : le dirigeable (`VEHICLE_STAGES[1]`, forme 2 de world/nefModels.ts). */
+const RUDDER_FORM: VehicleStage['stage'] = 2;
 
 /** Le gouvernail du dirigeable, vu de l'arrière : une croix de quatre ailerons (un dessin simple, à la couleur du texte). */
 function RudderCross() {
@@ -101,7 +104,6 @@ interface Props {
   onMap(): void;
   onClose(): void;
 }
-
 
 export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClose }: Props) {
   useOpenPanel(onClose);

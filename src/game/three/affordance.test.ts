@@ -2,7 +2,7 @@
 // petits à l'écran se touchent dans un carré de 48 pixels autour d'eux, les autres objets directement ; rien sur la Carte ni pendant le
 // voyage. Les bulles sont dessinées par ./signs.ts (signs.test.ts).
 import * as THREE from 'three';
-import { onTestFinished } from 'vitest';
+import { afterAll, beforeAll } from 'vitest';
 import type { BiomeId } from '../biomes';
 import { cleDeLaCreature, cleDeLObjet, SIGNE, signesDesObjets, zoneDuToucher, type CibleDeLaBulle, type EtatDuSigne, type ObjetTouche, type SigneDObjet, type ToucherDirect } from '../world/affordance';
 import { BIOMES } from '../biomes';
@@ -104,21 +104,27 @@ it('le Golem de roche : un Gardien à faire, sa bulle au-dessus de sa tête', ()
   expect(s.z).toBeCloseTo(golem.origin.z + Math.max(...golem.cubes.map((c) => c.z)) + 1 + SIGNE.auDessus, 6);
 });
 
-it('au téléphone (390 × 844), toucher à côté de la borne la plus proche du Gardien ouvre la borne, pas le Gardien', () => {
+describe('au téléphone (390 × 844), toucher à côté de la borne la plus proche du Gardien ouvre la borne, pas le Gardien', () => {
   // Les îles où le Gardien se tient sur un côté de la bande de devant (GD-11), près des bornes : le Belvédère de Thalès
   // (le Sphinx de marbre), et les autres (world/terrain.test.ts les nomme ; ni la Mine des lettres ni la Tour du lecteur
   // depuis que le chemin du bonhomme depuis ses arrivées écarte les côtés ; le Hangar des inventions, l'Imprimerie des
   // révolutions et le Verger de la santé depuis le seuil de 75 %, neuf îles). Mesuré le 8 octobre 2026 : aucun de ces
   // Gardiens ne fait moins de 48 pixels au téléphone, il n'a pas de zone ; là où une zone de Gardien chevauche celle
   // d'une borne, la borne gagne (`zoneRetenue`, world/affordance.test.ts).
+  // Les liens et les îles, faits une fois ; les cubes d'un archipel, une fois pour ses îles (expert frontend : le même
+  // travail, sans le refaire pour chaque île).
   const liens = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => linkWholeRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];
   const taille = { w: 390, h: 844 };
+  const iles = BIOMES.filter((b) => guardianSpot(b.id).y <= QUEST_ROW + 1).map((b) => b.id);
+  const cubesDe = new Map<string, ReturnType<typeof worldCubes>>();
   // Avec l'option latin : sans elle, la Grotte des légendes (GD-13) n'a aucune borne.
-  retenirReglages({ ...DEFAULT_SETTINGS, lca: 'la' });
-  onTestFinished(() => retenirReglages(null));
-  for (const ile of BIOMES.filter((b) => guardianSpot(b.id).y <= QUEST_ROW + 1).map((b) => b.id)) {
+  beforeAll(() => retenirReglages({ ...DEFAULT_SETTINGS, lca: 'la' }));
+  afterAll(() => retenirReglages(null));
+
+  it.each(iles)('%s', (ile) => {
     const a = archipelagoOfIsland(ile);
-    const cubes = worldCubes(a, {}, { parts: {}, log: [], links: liens }, false);
+    if (!cubesDe.has(a)) cubesDe.set(a, worldCubes(a, {}, { parts: {}, log: [], links: liens }, false));
+    const cubes = cubesDe.get(a)!;
     const quests = [...new Set(cubes.filter((c) => c.quest && c.tag === ile).map((c) => c.quest!))].map((id) => ({ id, state: 'new' as const }));
     const creatures = guardianPlacements(a, {}, liens, true, [], HABILLAGES.blocland.echelleDesGardiens).filter((g) => g.id === ile);
     const b = worldBounds(a);
@@ -166,5 +172,5 @@ it('au téléphone (390 × 844), toucher à côté de la borne la plus proche du
         const doigt = { x: z.x + (i / 4) * (z.w / 2 - 0.5), y: z.y + (j / 4) * (z.h / 2 - 0.5) };
         for (const direct of [null, sol]) expect(zones[zoneDuToucher(direct, lesZones, doigt)]?.objet.genre, `${ile} ${doigt.x}, ${doigt.y}`).toBe('borne');
       }
-  }
+  });
 });
