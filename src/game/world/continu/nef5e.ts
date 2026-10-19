@@ -3,7 +3,7 @@
 // proue vers le large ; immobile à quai. Ses trois temps : la nacelle (la coque du voilier) et sa lanterne, là dès
 // l'arrivée (la grille la reprend de la forme d'avant, `kept`) ; l'enveloppe et ses cordes ; le gouvernail en croix,
 // fixé sur l'enveloppe. Ce qui ne sert plus au voilier est rangé sur le bout du ponton (la voile pliée, le mât et la
-// vergue couchés), et part quand sa sœur arrive (./nefModels.ts, `NEF_SISTERS`). Son obstacle, au nord, au-delà des
+// vergue couchés), et part quand sa sœur arrive (world/nefModels.ts, `NEF_SISTERS`). Son obstacle, au nord, au-delà des
 // Aiguilles, en mer : le mur de nuages, de grands volumes ronds et pleins, immobiles, plus hauts que les aiguilles ;
 // derrière lui, au nord-est, le panache du 4e. Le départ : la Nef monte à la verticale au-dessus de la canopée, vire au
 // nord et file vers le mur, à l'écart de la Montée, et le mur s'écarte vers le nord ; le panache reste. Code pur.
@@ -11,7 +11,6 @@ import { FacetBuilder, placeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
 import { LISIERE_PONTON } from './lisiere';
 import { berLocal, type BerColors, type NefFlight, type NefLook, type NefSite } from './nef';
-import { NEF_SISTERS } from '../nefModels';
 import { LISIERE, QUAY_5E } from './plan5e';
 import { SHADOW_DIR_5E } from './sky';
 
@@ -42,15 +41,18 @@ const BER_COLORS: BerColors = { ber: 0xa68672, berDark: 0x8c766a, buoy: 0x2f6fa8
 /** Le gréement déposé : la toile de la voile et sa bande, le bois du mât et de la vergue. */
 const RIG_COLORS = { sail: 0xf2eee4, band: 0x2f6fa8, spar: 0x9f9279 } as const;
 
-/** Les pièces du gréement, et la partie du dirigeable dont l'arrivée les fait partir (sa sœur, `NEF_SISTERS`). */
-const RIG_PIECES = ['voile', 'mat', 'vergue'] as const;
-type RigPiece = (typeof RIG_PIECES)[number];
+/**
+ * Les pièces du gréement, et la partie du dirigeable dont l'arrivée les fait partir : sa sœur dans la mue de la grille
+ * (world/nefModels.ts, `NEF_SISTERS[2]`, que le monde continu ne lit pas : un test vérifie qu'elles s'accordent).
+ */
+export const RIG_SISTERS = { voile: 'ballon', mat: 'suspentes', vergue: 'empennage' } as const;
+type RigPiece = keyof typeof RIG_SISTERS;
+const RIG_PIECES = Object.keys(RIG_SISTERS) as RigPiece[];
 
 /** Le temps où une pièce du gréement part : celui de la partie neuve qui la reprend. */
 function rigLeaves(piece: RigPiece): 1 | 2 | 3 {
-  const sister = Object.entries(NEF_SISTERS[2]).find(([, from]) => from === piece)?.[0];
-  const t = ([1, 2, 3] as const).find((k) => sister !== undefined && (NEF_5E_TEMPS[k] as readonly string[]).includes(sister));
-  return t ?? 2;
+  const sister: string = RIG_SISTERS[piece];
+  return ([1, 2, 3] as const).find((k) => (NEF_5E_TEMPS[k] as readonly string[]).includes(sister)) ?? 2;
 }
 
 /** Les pièces du gréement encore rangées sur le ponton à un temps (aucune après le départ). */
@@ -148,7 +150,7 @@ export function wallFacets(shift = 0): Facets {
 }
 
 /** Le panache : une colonne qui s'élargit en montant, son haut arrondi. */
-export function plumeFacets(): Facets {
+function plumeFacets(): Facets {
   const b = new FacetBuilder();
   const { x, z, h } = NEF_PLUME;
   const SIDES = 7;

@@ -49,7 +49,7 @@ interface Rect {
 }
 
 /** Le repère d'un site : son origine, son cap, et le passage du repère au monde et retour (plan6e.ts, `PORT`). */
-export interface PortFrame {
+interface PortFrame {
   readonly origin: Vec2;
   readonly yaw: number;
   toWorld(lx: number, lz: number): Vec2;
@@ -57,7 +57,7 @@ export interface PortFrame {
 }
 
 /** Les matières d'un site : la pierre, les murs, l'ardoise, le bois, les ferrures, la lampe. */
-export interface PortColors {
+interface PortColors {
   stone: number;
   stoneSide: number;
   coping: number;

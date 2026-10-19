@@ -3525,6 +3525,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   /** Le départ de la Nef : elle et son obstacle dans leurs maillages à part, le temps du voyage ; la caméra ne bouge pas. */
   const startNefTrip = (done: () => void) => {
     finishNefDrop();
+    // Le maillage de la pose (une pose, un pont, la lueur, la caisse qui roule) se ferme : jamais en même temps (budget).
+    finishRide();
+    finishLay();
+    finishPose();
+    endGlow();
     const f = nefModel(nefShownParts(3, nefSite.temps));
     if (reduceMotion || mapView || !f) {
       nefLookNow = 4;

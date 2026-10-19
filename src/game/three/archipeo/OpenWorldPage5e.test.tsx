@@ -79,12 +79,12 @@ function renderPage() {
   );
 }
 
-test('la scène reçoit le plan du 5e ; ni l’Escale, ni la Nef, ni les Détours n’y sont donnés', async () => {
+test('la scène reçoit le plan du 5e, la Lisière et le dirigeable (lot 4) ; les Détours n’y sont pas donnés', async () => {
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });
   expect(scene.options!.plan.level).toBe('5e');
-  expect(scene.world!.setPort).not.toHaveBeenCalled();
-  expect(scene.world!.setNef).not.toHaveBeenCalled();
+  expect(scene.world!.setPort).toHaveBeenCalled();
+  expect(scene.world!.setNef).toHaveBeenCalled();
   expect(scene.world!.setDetours).not.toHaveBeenCalled();
   // Les trois terres qu'on relie sont fermées au départ.
   expect([...scene.closed].sort()).toEqual(['aiguilles', 'contreforts', 'roselieres']);

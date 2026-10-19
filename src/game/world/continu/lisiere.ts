@@ -17,7 +17,7 @@ import type { PortSite } from './port';
  * du 5e ; le bois #A9784A de l'Escale virait à l'orange vif, il ne revient pas), le bronze ocre des ferrures, la lanterne
  * d'ocre (`COLORS_5E.lantern`, que la vue du 5e dessine sans ombre). Les ardoises gardent celles de l'Escale.
  */
-export const LISIERE_COLORS = {
+const LISIERE_COLORS = {
   stone: COLORS_5E.stone,
   stoneSide: COLORS_5E.stoneShade,
   coping: COLORS_5E.stoneSun,

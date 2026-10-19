@@ -30,7 +30,7 @@ interface WaterTones {
 }
 
 /** Le lieu de départ d'un niveau : sa place (./port.ts dessine ses bâtiments), sa Nef, la caméra à son quai. */
-export interface Departure {
+interface Departure {
   port: PortSite;
   nef: NefSite;
   /** La pierre du lieu de départ sous un point du monde, ou rien (lue à chaque image : rien n'y est créé). */

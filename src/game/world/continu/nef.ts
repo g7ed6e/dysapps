@@ -77,7 +77,7 @@ const NEF_BERTH = { x: PORT_PAVING.quay.x0 - 1.6, z: -4.5 } as const;
  * La hauteur de la Nef : sur son ber tant qu'elle est à quai (sa quille hors de l'eau), à flot dès qu'elle en glisse, au
  * début du départ (`slide`, la part du temps du départ).
  */
-export const NEF_LIFT = { ber: 0.85, afloat: 0.35, slide: 0.08 } as const;
+const NEF_LIFT = { ber: 0.85, afloat: 0.35, slide: 0.08 } as const;
 
 /** Le poste de la Nef dans le monde, et son cap (celui du Port : la proue au nord). */
 export function nefBerthWorld(): { x: number; z: number; yaw: number } {
