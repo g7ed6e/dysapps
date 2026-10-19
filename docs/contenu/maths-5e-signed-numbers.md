@@ -18,14 +18,14 @@ créature : Frimas
 - description : Compare deux relatifs, puis lis un point sur la droite.
 - compétences : c4.ma.5e.nombres.relatifs · c4.ma.5e.geometrie.reperage
 
-## Banquise · `adding`
+## Plus et moins · `adding`
 
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Additionne et soustrais des relatifs avec le bond sur la droite.
 - compétences : c4.ma.5e.nombres.calcul-relatifs
 
-## Icebergs des fractions · `fractions`
+## Fractions · `fractions`
 
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
