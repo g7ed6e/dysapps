@@ -15,6 +15,7 @@ import { buildHeightField, heightOnMesh } from '../../world/continu/terrain';
 import { STORIES } from '../../world/stories';
 import { BLOCKS } from '../../biomes';
 import { placeOfIsland } from '../../world/continu/plan6e';
+import { sixthPlace } from '../../world/continu/levelPlan';
 import { placedAmenagement } from './amenagements';
 
 const field = buildHeightField();
@@ -85,7 +86,7 @@ describe('La caisse de « Donner »', () => {
       const k = scenetteKeo(place, posed).at;
       expect(at.y, place).toBeCloseTo(h.y, 5);
       // Ni sous l'habitant (la demi-largeur de son modèle, bras compris), ni sous Kéo (une épaule).
-      expect(Math.hypot(at.x - h.x, at.z - h.z) - Math.hypot(CAISSE.w, CAISSE.d) / 2, place).toBeGreaterThan(HABITANT_HALVES[place].x);
+      expect(Math.hypot(at.x - h.x, at.z - h.z) - Math.hypot(CAISSE.w, CAISSE.d) / 2, place).toBeGreaterThan(HABITANT_HALVES[sixthPlace(place)].x);
       expect(Math.hypot(at.x - k.x, at.z - k.z) - Math.hypot(CAISSE.w, CAISSE.d) / 2, place).toBeGreaterThan(0.3);
       // Le décor de la scénette : aucun de ses triangles au-dessus du sol sous la caisse.
       const decor = scenetteDecor(place, false, posed);
@@ -121,7 +122,7 @@ describe('La caisse de « Donner »', () => {
       const h = scenetteHabitant(place, posed);
       const k = scenetteKeo(place, posed).at;
       const figures = [
-        { name: 'l’habitant', min: [h.x - HABITANT_HALVES[place].x, h.y, h.z - HABITANT_HALVES[place].z], max: [h.x + HABITANT_HALVES[place].x, h.y + HABITANT_HEIGHT, h.z + HABITANT_HALVES[place].z] },
+        { name: 'l’habitant', min: [h.x - HABITANT_HALVES[sixthPlace(place)].x, h.y, h.z - HABITANT_HALVES[sixthPlace(place)].z], max: [h.x + HABITANT_HALVES[sixthPlace(place)].x, h.y + HABITANT_HEIGHT, h.z + HABITANT_HALVES[sixthPlace(place)].z] },
         { name: 'Kéo', min: [k.x - 0.3, k.y, k.z - 0.3], max: [k.x + 0.3, k.y + 1, k.z + 0.3] },
       ];
       for (const [w, hh] of screens) {

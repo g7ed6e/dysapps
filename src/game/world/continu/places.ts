@@ -11,7 +11,9 @@ import type { Stage } from './construction';
 import { FacetBuilder, boundsOf, placeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
 import { placeArt } from './northShore';
-import { COLORS_6E, PATH_NODES, placeById, type PlaceId } from './plan6e';
+import type { PlaceId } from './levelPlan';
+import { COLORS_6E, PATH_NODES, placeById, type PlaceId as PlaceId6e } from './plan6e';
+import { RUINS_5E } from './ruins5e';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 import { landDistance } from './terrain';
 
@@ -178,7 +180,7 @@ const C = {
 type Add = (stage: Stage | 'ruine', row: number, draw: (b: FacetBuilder) => void, until?: PlacePiece['until']) => void;
 
 /** Le sol sous un point du lieu (dans son repère), depuis le sol du centre ; sur l'eau, le niveau de l'eau. */
-function siteGround(id: PlaceId): { at(lx: number, lz: number): number; foot(lx: number, lz: number, r: number): { top: number; low: number }; water: number } {
+function siteGround(id: PlaceId6e): { at(lx: number, lz: number): number; foot(lx: number, lz: number, r: number): { top: number; low: number }; water: number } {
   const p = placeById(id);
   const c = Math.cos(p.yaw),
     s = Math.sin(p.yaw);
@@ -1883,7 +1885,7 @@ const SALT_CONES: readonly (readonly [number, number, number])[] = [
 /**
  * Un lieu du rivage nord (lot L7) : dessiné dans son fichier (placeArt.ts), son sol et sa porte lus ici, dans son repère.
  */
-function northPlace(id: PlaceId): (add: Add) => void {
+function northPlace(id: PlaceId6e): (add: Add) => void {
   return (add) => {
     const art = placeArt(id)!;
     const c = placeById(id).center;
@@ -1929,7 +1931,7 @@ export const MANGROVE = {
 } as const;
 
 /** Le sol d'un lieu sous un point de son repère, depuis le sol de son centre, sans le plancher de l'eau (la vase). */
-function rawGround(id: PlaceId): (lx: number, lz: number) => number {
+function rawGround(id: PlaceId6e): (lx: number, lz: number) => number {
   const p = placeById(id);
   const h0 = standingHeight(heightAt(p.center));
   return (lx, lz) => heightAt({ x: p.center.x + lx, z: p.center.z + lz }) - h0;
@@ -2473,6 +2475,12 @@ const RUINS_FALLEN_VOUSSOIRS = [
   [4.8, -4.9, -0.7],
 ] as const;
 
+/** Une ruine du 5e (./ruins5e.ts), en une seule pièce : ses lieux n'ont pas encore d'étapes (GD-22, lot 2). */
+const ruinOnly =
+  (draw: (b: FacetBuilder) => void) =>
+  (add: Add): void =>
+    add('ruine', 0, draw);
+
 const DRAWN: Record<PlaceId, (add: Add) => void> = {
   phare,
   quais,
@@ -2491,6 +2499,21 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   // Le large (lot L9) : dessinés dans leur fichier, comme le rivage nord.
   beacons: northPlace('beacons'),
   ferry: northPlace('ferry'),
+  // Le 5e (GD-22, lot 2) : des ruines simples.
+  montee: ruinOnly(RUINS_5E.montee),
+  radeaux: ruinOnly(RUINS_5E.radeaux),
+  croisee: ruinOnly(RUINS_5E.croisee),
+  instants: ruinOnly(RUINS_5E.instants),
+  semaphore: ruinOnly(RUINS_5E.semaphore),
+  gaillard: ruinOnly(RUINS_5E.gaillard),
+  donjon: ruinOnly(RUINS_5E.donjon),
+  terrasses: ruinOnly(RUINS_5E.terrasses),
+  fumerolles: ruinOnly(RUINS_5E.fumerolles),
+  etuve: ruinOnly(RUINS_5E.etuve),
+  nacelles: ruinOnly(RUINS_5E.nacelles),
+  hameau: ruinOnly(RUINS_5E.hameau),
+  auberge: ruinOnly(RUINS_5E.auberge),
+  oracle: ruinOnly(RUINS_5E.oracle),
 };
 
 const pieces = new Map<PlaceId, PlacePiece[]>();

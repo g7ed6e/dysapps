@@ -908,6 +908,24 @@
   background: #142b38;
   color: #f2dfb4;
 }
+/* La marque « suggéré » sur la Carte (consultant UX UI, seconde relecture du lot 2 du 5e : la Montée, les Radeaux, le
+   Hameau et l'Auberge se ressemblaient) : un double contour, par la forme et pas seulement la couleur, autour de la
+   pastille du prochain lieu (`aria-current="step"`) et du cadenas de la terre suggérée. Un anneau du fond uni, puis un
+   anneau de la couleur du trait, dans l'écart de 8 px gardé entre deux étiquettes ; le contour du focus, lui, reste
+   dehors. Au 6e comme au 5e. */
+.open-world-map-place.suggested {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 5px var(--text);
+}
+.open-world-map-closed .open-world-lock.suggested {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 5px #142b38;
+}
+.open-world-map-place.suggested:focus-visible {
+  outline-offset: 7px;
+}
 /* La cible du cadenas sur la Carte (consultant UX UI, lot 1 « Relier ») : 48 px au moins, par une marge invisible de 6 px
    autour du rond de 40 px (52 px), sans rien changer à son dessin ; elle ne déborde que de 6 px, moins que l'écart de 8 px
    gardé entre deux étiquettes, et ne couvre donc jamais une pastille voisine. */
@@ -977,6 +995,93 @@
 .open-world-map-keo-disc svg {
   width: 26px;
   height: 26px;
+}
+/* Le triangle « en haut » (GD-22, le plateau du 5e) : collé au nom d'un lieu du haut, dans sa dernière ligne, qui ne se
+   coupe pas ; sur « Toi » quand Kéo est sur le plateau. Une forme pleine de la couleur du texte, sur le fond uni de
+   l'étiquette, jamais une couleur seule ; le bouton dit « en haut ». */
+.open-world-map-up {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 0.3em;
+  border-left: 0.36em solid transparent;
+  border-right: 0.36em solid transparent;
+  border-bottom: 0.62em solid currentColor;
+  vertical-align: 0.05em;
+}
+.open-world-map-keo:not([data-haut='oui']) .open-world-map-up {
+  display: none;
+}
+/* Le triangle « en haut » de la pastille réduite à son icône, et de Kéo sans « Toi » (au plus grand texte, sur un
+   téléphone ; référent dys, relecture du lot 2 du 5e : il disparaissait avec le nom) : un insigne rond, uni, collé au
+   coin haut droit de l'icône, le triangle de la couleur du texte dedans ; l'état garde le coin bas droit. */
+.open-world-map-up-badge {
+  display: none;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-up-badge,
+.open-world-map-keo[data-nom='non'][data-haut='oui'] .open-world-map-up-badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--text);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1;
+}
+.open-world-map-up-badge .open-world-map-up {
+  margin-left: 0;
+  vertical-align: 0;
+}
+.open-world-map-keo-disc {
+  position: relative;
+}
+/* Sur un téléphone couché, un nom d'une seule ligne n'a pas d'interligne à garder (aucune ligne ne le suit) : sa pastille
+   prend la hauteur de sa ligne, plus l'espace des lettres, au lieu de celle de deux (consultant UX UI, relecture du lot 2
+   du 5e : au plus grand texte, « La Montée » faisait 100 px de haut et masquait le plateau). Les noms sur deux lignes
+   gardent l'interligne choisi. Au 6e aussi. */
+@media (max-height: 500px) {
+  .open-world-map-place:not([data-nom='serre']) .open-world-map-lines:not([data-lignes='2']),
+  .open-world-map-closed:not([data-nom='serre']) .open-world-map-closed-name {
+    line-height: 1.2;
+  }
+  .open-world-map-place:not([data-nom='serre']):not([data-nom='non']) {
+    padding-block: 0.1rem;
+  }
+  /* Le bloc du nom garde sinon l'interligne de la page autour de sa ligne (seconde relecture du lot 2 : la pastille
+     faisait encore 65 px, 85 px avant, au plus grand texte) ; un nom sur deux lignes reprend l'interligne choisi. La
+     pastille entière prend la largeur de son nom sur une ligne, sans retour possible. */
+  .open-world-map-place:not([data-nom='serre']):not([data-nom='non']) {
+    width: max-content;
+  }
+  .open-world-map-place:not([data-nom='serre']) .open-world-map-place-name {
+    line-height: 1.2;
+  }
+  .open-world-map-place:not([data-nom='serre']) .open-world-map-lines[data-lignes='2'] {
+    line-height: var(--line-height);
+  }
+}
+/* Le nom d'une terre fermée sous le cadenas de son passage (GD-22, lot 2, au 5e), et l'icône de la cabine de la Montée
+   devant celui des Aiguilles : la forme du nom tu des lieux fermés (tirets, fond adouci), l'icône à la taille du texte. */
+.open-world-map-closed-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+.open-world-map-closed-name > svg {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+}
+.open-world-map-closed[data-nom='serre'] .open-world-map-closed-name {
+  flex-direction: column;
 }
 /* Trop serré : la pastille seule, « Toi » reste dit aux lecteurs d'écran. */
 .open-world-map-keo[data-nom='non'] .open-world-map-keo-word {

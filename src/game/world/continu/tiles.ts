@@ -6,7 +6,7 @@
 import { boundsOf, mergeFacets, type Facets } from './facets';
 import { TERRAIN } from './plan6e';
 import { landTileFacets, landTileFlora, landTileGround } from './flora';
-import { tileRect, type HeightField, type TileDetail } from './terrain';
+import { tileRect, type HeightField, type TileDetail, type TileGrid } from './terrain';
 
 /** Une tuile prête à copier : ses facettes et sa boîte. */
 export interface Tile {
@@ -34,16 +34,28 @@ export interface TileStore {
   pending(): number;
 }
 
-export function createTileStore(field: HeightField, nearKept = NEAR_TILES_KEPT): TileStore {
+/** Ce qu'un niveau dessine d'une tuile (GD-22, lot 2) : sa grille, la tuile entière, son sol seul, ce qui y pousse seul. */
+export interface TileSource {
+  readonly grid: TileGrid;
+  facets(field: HeightField, tx: number, tz: number, detail: TileDetail): Facets;
+  ground(field: HeightField, tx: number, tz: number, detail: TileDetail): Facets;
+  flora(field: HeightField, tx: number, tz: number, detail: TileDetail): Facets;
+}
+
+/** Les tuiles du 6e (./flora.ts). */
+export const TILES_6E: TileSource = { grid: TERRAIN, facets: landTileFacets, ground: landTileGround, flora: landTileFlora };
+
+export function createTileStore(field: HeightField, nearKept = NEAR_TILES_KEPT, source: TileSource = TILES_6E): TileStore {
+  const { grid } = source;
   const kept: Record<TileDetail, Map<number, Tile>> = { near: new Map(), far: new Map() };
   const queue = new Set<number>();
   // La tuile dont le sol est fait, en attente de ce qui y pousse (une au plus).
   let half: { index: number; ground: Facets } | null = null;
-  const at = (index: number) => [index % TERRAIN.tilesX, Math.floor(index / TERRAIN.tilesX)] as const;
+  const at = (index: number) => [index % grid.tilesX, Math.floor(index / grid.tilesX)] as const;
   const make = (index: number, detail: TileDetail, made?: Facets): Tile => {
     const [tx, tz] = at(index);
-    const facets = made ?? landTileFacets(field, tx, tz, detail);
-    const r = tileRect(tx, tz);
+    const facets = made ?? source.facets(field, tx, tz, detail);
+    const r = tileRect(tx, tz, grid);
     const b = facets.triangles ? boundsOf(facets) : { min: [r.minX, 0, r.minZ] as [number, number, number], max: [r.maxX, 0, r.maxZ] as [number, number, number] };
     return { facets, min: b.min, max: b.max };
   };
@@ -75,7 +87,7 @@ export function createTileStore(field: HeightField, nearKept = NEAR_TILES_KEPT):
         half = null;
         queue.delete(index);
         const [tx, tz] = at(index);
-        remember(index, 'near', make(index, 'near', mergeFacets([ground, landTileFlora(field, tx, tz, 'near')])));
+        remember(index, 'near', make(index, 'near', mergeFacets([ground, source.flora(field, tx, tz, 'near')])));
         return index;
       }
       const next = queue.values().next();
@@ -84,7 +96,7 @@ export function createTileStore(field: HeightField, nearKept = NEAR_TILES_KEPT):
       // Déjà faite entre-temps (un saut) : rien à refaire.
       if (kept.near.has(next.value)) return next.value;
       const [tx, tz] = at(next.value);
-      half = { index: next.value, ground: landTileGround(field, tx, tz, 'near') };
+      half = { index: next.value, ground: source.ground(field, tx, tz, 'near') };
       return null;
     },
     pending: () => queue.size + (half ? 1 : 0),

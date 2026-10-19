@@ -6,7 +6,7 @@ import { groundCost, mapCost, openWorldCost, OPEN_WORLD_BUDGET } from './budget'
 import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, markBeside, markOffset, occlusionLift, screenOf, wrapAngle } from './camera';
 import { distance, distanceToPolyline, insidePolygon, linearRgb, type Vec3 } from './geometry';
 import { START_DISTANCE, atNode, edgesNear, findRoute, networkSamples, pathNode, pathRibbons, pathTopAt, routeLength, snapToNetwork, startOf } from './paths';
-import { COAST, COLORS_6E, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, NORTH_SHORE, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, hidesTraces, placeById, placeOfIsland } from './plan6e';
+import { COAST, COLORS_6E, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, NORTH_SHORE, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, hidesTraces, placeOfIsland } from './plan6e';
 import { modelOfPlace } from './places';
 import { sceneSpot } from './questionScene';
 import { SEA_TEXTURE, WATER_TONES, decodeSeaField, seaPixels, shallowness, toneOfFields, waterTone } from './sea';
@@ -17,7 +17,7 @@ import { VEIL_HEIGHT, VEIL_LAYERS, highest, veilFacets, veilShare } from './veil
 import { bridgeSite } from './bridges';
 import { landById, linkedLands } from './lands';
 import { WALK_CADENCE, WALK_SPEED, skipWalk, startWalk, walkAt } from './walk';
-import { planFor } from './levelPlan';
+import { placeById, planFor } from './levelPlan';
 
 /** Le plan du 6e, le seul enregistré (GD-22). */
 const PLAN = planFor('6e');

@@ -6,7 +6,8 @@
 // ponts ») : le pont tombé de chaque terre fermée, où Kéo s'arrête sur la culée, et le pont rebâti de celles qu'on a
 // reliées, dans le maillage des lieux ; sur la Carte, chaque pont en trait double.
 // Chargée à la demande avec la page (./OpenWorldPage.tsx), seulement derrière le drapeau `?monde=ouvert`
-// (../../worldLayoutFactory.tsx). Tout ce qui se calcule sans Three.js est dans world/continu/.
+// (../../worldLayoutFactory.tsx). Tout ce qui se calcule sans Three.js est dans world/continu/. Depuis GD-22 (lot 2), elle
+// lit ce que son niveau dessine (world/continu/levelWorld.ts) : au 5e, sans ce qui n'est encore qu'au 6e (`sixth`).
 import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { createHabitantModels } from './habitantModels';
@@ -23,10 +24,15 @@ import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView 
 import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen } from '../../world/continu/bridges';
 import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
-import { placeById, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
+import { isSixthPlace, placeById, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
+import { levelWorld, type LevelWorld } from '../../world/continu/levelWorld';
+import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from '../../world/continu/mist5e';
+import { pathMapEdges5e } from '../../world/continu/paths5e';
+import { COLORS_5E, DEPARTURE_5E } from '../../world/continu/plan5e';
+import { onPlateau } from '../../world/continu/terrain5e';
 import { freeRoute, isWalkable, nearestWalkable, onPathCell, walkGridSteps, type WalkGrid } from '../../world/continu/freeWalk';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
-import { atNode, edgesNear, findRoute, pathNode, pathRibbons, pathTopAt, snapToNetwork, startOf, type NetworkPoint } from '../../world/continu/paths';
+import { edgesNear, pathTopAt, type NetworkPoint } from '../../world/continu/paths';
 import { COLORS_6E, hidesTraces, portFloor, portNode, type PortSpot } from '../../world/continu/plan6e';
 import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PAPER_COLOR } from '../../world/continu/printworks';
@@ -66,9 +72,9 @@ import {
   type ScenetteFinale,
   type ScenetteLayout,
 } from '../../world/continu/scenette';
-import { SEA_TEXTURE, WATER_TONES, seaPixels } from '../../world/continu/sea';
-import { HORIZON_COLOR, LIGHT, SHADOW_DIR, skyDome } from '../../world/continu/sky';
-import { buildHeightField, heightOnMesh, ringHeights, standingHeight, tileRings } from '../../world/continu/terrain';
+import { SEA_TEXTURE } from '../../world/continu/sea';
+import { skyDome, type HeightLight } from '../../world/continu/sky';
+import { ringHeights, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
@@ -331,6 +337,11 @@ export interface MapSpotOnScreen {
   x: number;
   y: number;
   shown: boolean;
+  /**
+   * Un lieu du haut, ou Kéo sur le plateau (GD-22, lot 2 : le 5e a deux étages) : la Carte met un triangle « en haut » à
+   * côté de son nom. Jamais au 6e, qui est à plat.
+   */
+  up?: boolean;
 }
 
 /** Un repère de la scène à l'écran, en pixels. */
@@ -633,19 +644,59 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
 }
 
 /**
+ * La lumière par la hauteur (GD-22, lot 2, retouche : les deux étages du 5e ; ./world/continu/sky.ts, `HeightLight`),
+ * ajoutée au matériau du décor : sous `low`, le soleil affaibli et le ciel renvoyé refroidi (la pénombre sous la
+ * canopée) ; au-dessus de `high`, toute la lumière (l'or sur les sommets) ; le brouillard s'éclaircit en hauteur (les
+ * sommets dépassent la brume du lointain). La hauteur est celle d'un sommet de chaque triangle (`flat`, le dernier :
+ * le haut d'un pan dressé), pas interpolée : chaque facette garde un seul aplat. La lanterne d'ocre du 5e (`COLORS_5E.lantern`) se dessine sans ombre, comme la
+ * lampe du 6e. Quelques lignes de shader après celles de `unshadedLamp`, aucun appel de plus ; le programme a sa propre
+ * clé (le 6e garde le sien, inchangé).
+ */
+function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight): THREE.MeshLambertMaterial {
+  const before = m.onBeforeCompile;
+  const lantern = new THREE.Vector3(...linearRgb(COLORS_5E.lantern));
+  m.onBeforeCompile = (shader, renderer) => {
+    before.call(m, shader, renderer);
+    shader.uniforms.heightLow = { value: light.low };
+    shader.uniforms.heightHigh = { value: light.high };
+    shader.uniforms.heightSunLow = { value: light.sunLow };
+    shader.uniforms.heightTintLow = { value: new THREE.Vector3(...light.tintLow) };
+    shader.uniforms.heightFog = { value: new THREE.Vector3(light.fogFrom, light.fogTo, light.fogTop) };
+    shader.uniforms.lanternColor = { value: lantern };
+    if (import.meta.env.DEV && !shader.fragmentShader.includes('#include <lights_fragment_end>')) console.warn('heightLit : #include <lights_fragment_end> introuvable, la lumière reste à plat');
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nflat varying float vHeight;')
+      .replace('#include <project_vertex>', '#include <project_vertex>\nvHeight = ( modelMatrix * vec4( transformed, 1.0 ) ).y;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nflat varying float vHeight;\nuniform float heightLow;\nuniform float heightHigh;\nuniform float heightSunLow;\nuniform vec3 heightTintLow;\nuniform vec3 heightFog;\nuniform vec3 lanternColor;')
+      .replace(
+        '#include <lights_fragment_end>',
+        '#include <lights_fragment_end>\nfloat heightLift = smoothstep( heightLow, heightHigh, vHeight );\nreflectedLight.directDiffuse *= mix( heightSunLow, 1.0, heightLift );\nreflectedLight.indirectDiffuse *= mix( heightTintLow, vec3( 1.0 ), heightLift );',
+      )
+      .replace('#include <opaque_fragment>', '#ifdef USE_COLOR\nif ( all( lessThan( abs( vColor.rgb - lanternColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n#endif\n#include <opaque_fragment>')
+      .replace(
+        '#include <fog_fragment>',
+        '#ifdef USE_FOG\nfloat fogFactor = smoothstep( fogNear, fogFar, vFogDepth ) * mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) );\ngl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n#endif',
+      );
+  };
+  m.customProgramCacheKey = () => 'archipeo-hauteur';
+  return m;
+}
+
+/**
  * Le matériau de l'eau (reprise du lot 3) : l'image de l'eau porte trois champs (le cœur des bras de mer, l'eau claire,
  * le palier du milieu au large, ./world/continu/sea.ts) ; le shader les lit interpolés et tranche net sur leur ligne
  * zéro, adoucie d'un pixel d'écran (`fwidth`) : quatre paliers francs, au contour lisse qui épouse le bras, jamais une flaque pixellisée. Une ligne de
  * shader, aucun appel ni aucune image de plus.
  */
-function seaMaterialOf(map: THREE.DataTexture): THREE.MeshBasicMaterial {
+function seaMaterialOf(map: THREE.DataTexture, tones: LevelWorld['water']): THREE.MeshBasicMaterial {
   const m = new THREE.MeshBasicMaterial({ map });
   const tone = (hex: number) => new THREE.Vector3(...linearRgb(hex));
   m.onBeforeCompile = (shader) => {
-    shader.uniforms.seaClear = { value: tone(WATER_TONES.clear) };
-    shader.uniforms.seaLagoon = { value: tone(WATER_TONES.lagoon) };
-    shader.uniforms.seaShelf = { value: tone(WATER_TONES.shelf) };
-    shader.uniforms.seaNight = { value: tone(WATER_TONES.night) };
+    shader.uniforms.seaClear = { value: tone(tones.clear) };
+    shader.uniforms.seaLagoon = { value: tone(tones.lagoon) };
+    shader.uniforms.seaShelf = { value: tone(tones.shelf) };
+    shader.uniforms.seaNight = { value: tone(tones.night) };
     if (import.meta.env.DEV && !shader.fragmentShader.includes('#include <map_fragment>')) console.warn('seaMaterialOf : #include <map_fragment> introuvable');
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', '#include <common>\nuniform vec3 seaClear;\nuniform vec3 seaLagoon;\nuniform vec3 seaShelf;\nuniform vec3 seaNight;')
@@ -673,6 +724,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Le plan du niveau (GD-22) : son niveau, ses lieux et ses terres qu'on relie, lus une fois.
   const { level, places: PLACES } = plan;
   const LINKED_LANDS = linkedLands(plan);
+  // Ce que la vue lit du niveau (GD-22, lot 2) : son sol, ses chemins, ses tuiles, son eau, son ciel. `sixth` : le 6e,
+  // seul à avoir l'Escale, la Nef, les Détours, la faune, les scénettes, les remises et les traces ; au 5e, tout cela
+  // reste caché, et rien ne s'y appelle (aucun lieu du 5e n'arrive à `sixthPlace`).
+  const world = levelWorld(level);
+  const { sixth, net } = world;
+  const { atNode, findRoute, pathNode, snapToNetwork, startOf } = net;
+  const LIGHT = world.light;
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(host.clientWidth, host.clientHeight, false);
@@ -683,7 +741,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const scene = new THREE.Scene();
   // La brume légère d'Archipéo : le lointain, le large et l'horizon s'y fondent, de la couleur de l'horizon du ciel (GD-20,
   // point 3, lot 3 : la mer rejoint le ciel sans couture).
-  const horizon = new THREE.Color(HORIZON_COLOR);
+  const horizon = new THREE.Color(world.horizon);
   scene.background = horizon;
   const fog = new THREE.Fog(horizon, WORLD_FOG.near, WORLD_FOG.far);
   scene.fog = fog;
@@ -705,10 +763,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   sun.position.set(LIGHT.sunFrom.x, LIGHT.sunFrom.y, LIGHT.sunFrom.z);
   scene.add(sun);
   // Le ciel : un dôme en dégradé, crème à l'horizon, bleu en haut, centré sur la caméra à chaque image (sa matrice
-  // seule), dessiné d'abord, sans brouillard ni profondeur : tout le reste passe devant. Un appel.
+  // seule), dessiné d'abord, sans brouillard ni profondeur : tout le reste passe devant. Un appel. Sans brouillard, parce
+  // qu'il est lui-même le lointain : son bas a la couleur du brouillard, qui le voilerait d'une teinte unie.
   const skyGeometry = new THREE.BufferGeometry();
   {
-    const dome = skyDome(SKY_RADIUS);
+    const dome = skyDome(SKY_RADIUS, world.sky);
     skyGeometry.setAttribute('position', new THREE.BufferAttribute(dome.positions, 3));
     skyGeometry.setAttribute('color', new THREE.BufferAttribute(dome.colors, 3));
   }
@@ -727,22 +786,24 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   // Le terrain : la carte de hauteurs, et deux anneaux de tuiles autour de Kéo (de près, chaque case ; de loin, une
   // sur trois), chacun un seul maillage, d'un seul matériau.
-  const field = buildHeightField();
-  // Le sol dessiné, ou la pierre de l'Escale (son quai, sa place) là où Kéo y marche.
-  const ground = (x: number, z: number) => portFloor(x, z) ?? heightOnMesh(field, x, z);
+  const field = world.field();
+  // Le sol dessiné, ou, au 6e, la pierre de l'Escale (son quai, sa place) là où Kéo y marche.
+  const ground = world.ground(field);
   // L'angle des ailes de la pompe à vent des Marais salants, avancé par la boucle d'image (partagé par les deux matériaux).
   const vaneAngle = { value: 0 };
   // L'angle du rotor de la Turbine, avancé de même, sauf pendant une question.
   const rotorAngle = { value: 0 };
   const landMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), vaneAngle, rotorAngle);
-  const tiles = createTileStore(field);
+  // Au 5e, la lumière par la hauteur (ses deux étages) ; le 6e garde son matériau tel quel.
+  if (world.heightLight) heightLit(landMaterial, world.heightLight);
+  const tiles = createTileStore(field, undefined, world.tiles);
   const nearRing = new RingMesh(landMaterial, 9000);
   const farRing = new RingMesh(landMaterial, 6000);
   scene.add(nearRing.mesh, farRing.mesh);
   const touchables: THREE.Object3D[] = [nearRing.mesh, farRing.mesh];
 
   // La mer et le lagon : un plan d'eau à 0, peint par l'image de l'eau ; au-delà, le bord de l'image (le large).
-  const seaTexture = new THREE.DataTexture(seaPixels(), SEA_TEXTURE.size, SEA_TEXTURE.size);
+  const seaTexture = new THREE.DataTexture(world.seaPixels(), SEA_TEXTURE.size, SEA_TEXTURE.size);
   // Des champs, pas des couleurs : lus tels quels, interpolés.
   seaTexture.colorSpace = THREE.NoColorSpace;
   seaTexture.magFilter = THREE.LinearFilter;
@@ -755,14 +816,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const pos = seaGeometry.getAttribute('position') as THREE.BufferAttribute;
   for (let k = 0; k < uv.count; k++) uv.setXY(k, (pos.getX(k) + SEA_TEXTURE.half) / (2 * SEA_TEXTURE.half), (pos.getZ(k) + SEA_TEXTURE.half) / (2 * SEA_TEXTURE.half));
   uv.needsUpdate = true;
-  const seaMaterial = seaMaterialOf(seaTexture);
+  const seaMaterial = seaMaterialOf(seaTexture, world.water);
   const sea = still(new THREE.Mesh(seaGeometry, seaMaterial));
   scene.add(sea);
   touchables.push(sea);
 
   // Les chemins : sentiers, digue et pontons, un seul maillage, jusqu'aux culées des ponts (GD-20, point 3, « vraies
   // terres » : les ponts sont dans le maillage des lieux).
-  const paths = still(new THREE.Mesh(keep(geometryOf(pathRibbons(ground))), landMaterial));
+  const paths = still(new THREE.Mesh(keep(geometryOf(world.pathFacets(ground))), landMaterial));
   scene.add(paths);
   touchables.push(paths);
 
@@ -790,9 +851,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   }
   // Les lieux hauts dont le regard se lève pour cadrer le haut à l'arrivée : la lanterne du Phare ; le toit et le mât de
   // la Vigie (lot L7). `lanternTop` : le haut du plus proche, que `lookUp` cadre.
-  const TALL: readonly PlaceId[] = ['phare', 'lookout'];
+  // Le 5e n'en a pas (ses lieux sont des ruines) : le regard ne s'y lève pas.
+  const TALL: readonly PlaceId[] = sixth ? ['phare', 'lookout'] : [];
   const tallTops = new Map<PlaceId, Vec3>(TALL.map((id) => [id, { x: placeById(id).center.x, y: feet.get(id)!.y + modelOfPlace(id).top, z: placeById(id).center.z }]));
-  const lanternTop: Vec3 = { ...tallTops.get('phare')! };
+  // Au 5e (aucun lieu haut), `lanternTop` reste à l'origine, (0, 0, 0) : il n'est jamais cadré. `nearLantern` n'y trouve
+  // aucun lieu, la part du regard levé (`look`) reste à 0, et `lookUp` ne bouge alors pas la caméra : ce point ne compte
+  // pas (expert frontend, relecture du lot 2). La Montée, plus haute que le Phare, n'y entre pas : son sommet sort du
+  // champ de toute façon, et le regard levé est un geste du 6e.
+  const lanternTop: Vec3 = { ...(tallTops.get('phare') ?? { x: 0, y: 0, z: 0 }) };
   /** La hauteur bâtie de chaque lieu, au-dessus de son pied (le lieu entier tant que la page n'a rien dit). */
   const builtTop = new Map<PlaceId, number>();
   const whole = (id: PlaceId) => (builtTop.get(id) ?? modelOfPlace(id).top) >= modelOfPlace(id).top - 0.5;
@@ -812,7 +878,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Le lieu suivi, à part, du même matériau, pris dans la brume comme le reste : sorti d'elle, il se détachait net du
   // lointain voilé (retour du mainteneur, 19 octobre 2026) ; de loin, c'est la marque qui le montre.
   const landmarkMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
-  const poseMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: false, emissive: POSE_GLOW });
+  // Au 6e, sans brouillard : la partie qui descend, tout près, se détache plus claire. Au 5e, dans le brouillard comme
+  // tout son décor (GD-22, lot 2) : son éclat (`emissive`) suffit à la détacher.
+  const poseMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: !sixth, emissive: POSE_GLOW });
   const poseMesh = new THREE.Mesh(new THREE.BufferGeometry(), poseMaterial);
   // La lumière de la lanterne du Phare, allumée (son haut posé) : réunie aux lieux, de la couleur
   // de la lampe, que leurs matériaux dessinent sans ombre (`unshadedLamp`) ; aucun appel de plus.
@@ -849,6 +917,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     mesh.geometry = veilGeometry(v);
     mesh.visible = v.triangles > 0;
   };
+  // La brume des failles du 5e (GD-22, lot 2 ; ./world/continu/mist5e.ts) : des nappes basses et immobiles au creux des
+  // failles, du matériau de la brume (prise dans le brouillard), faites une fois ; cachées sur la Carte, qui montre la
+  // ligne de la falaise à leur place. Un appel ; aucun au 6e.
+  const riftMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), veilMaterial));
+  riftMesh.renderOrder = 1;
+  riftMesh.visible = false;
+  if (!sixth) {
+    setVeilGeometry(riftMesh, riftMistFacets());
+    scene.add(riftMesh);
+  }
   // Les terres (GD-20, point 3, « vraies terres, vrais ponts ») : les terres fermées, et ce qui en est montré (la brume,
   // les cadenas, les ponts tombés ou rebâtis).
   let closed: readonly LinkedLand[] = [];
@@ -910,7 +988,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const ringY = new Float32Array(ringPosition.count);
   // Ce que l'anneau couvre : le sol, ou le dessus d'un chemin proche (plat en travers, il dépasse du sol d'une pente).
   const ringEdges: number[] = [];
-  const ringSurface = (x: number, z: number) => Math.max(standingHeight(ground(x, z)), pathTopAt(x, z, ground, ringEdges));
+  const ringSurface = (x: number, z: number) => Math.max(standingHeight(ground(x, z)), pathTopAt(x, z, ground, ringEdges, world.ribbons));
   ringGeometry.computeBoundingSphere();
   // `computeBoundingSphere` vient de la calculer : elle n'est pas nulle.
   ringGeometry.boundingSphere!.radius += 2;
@@ -919,7 +997,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   scene.add(ring);
   // L'ombre peinte de Kéo (GD-20, point 3, lot 3) : un disque sombre et transparent dans le creux de l'anneau, décalé du
   // côté opposé au soleil, qui épouse le sol comme lui ; il le suit (enfant de l'anneau), caché avec lui. Un appel.
-  const shadowGeometry = keep(new THREE.CircleGeometry(KEO_SHADOW.radius, KEO_SHADOW.sides).rotateX(-Math.PI / 2).translate(SHADOW_DIR.x * KEO_SHADOW.shift, 0, SHADOW_DIR.z * KEO_SHADOW.shift));
+  const shadowGeometry = keep(new THREE.CircleGeometry(KEO_SHADOW.radius, KEO_SHADOW.sides).rotateX(-Math.PI / 2).translate(world.shadowDir.x * KEO_SHADOW.shift, 0, world.shadowDir.z * KEO_SHADOW.shift));
   const shadowPosition = shadowGeometry.getAttribute('position') as THREE.BufferAttribute;
   const shadowXZ = new Float32Array(shadowPosition.count * 2);
   for (let i = 0; i < shadowPosition.count; i++) {
@@ -947,7 +1025,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   freeMark.visible = false;
   scene.add(freeMark);
   const markEdges: number[] = [];
-  const markSurface = (x: number, z: number) => Math.max(standingHeight(ground(x, z)), pathTopAt(x, z, ground, markEdges));
+  const markSurface = (x: number, z: number) => Math.max(standingHeight(ground(x, z)), pathTopAt(x, z, ground, markEdges, world.ribbons));
   let markScale = 0;
   let markPulse = 0;
   const markAt = new THREE.Vector3();
@@ -964,7 +1042,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     markScale = sc;
     freeMark.scale.set(sc, 1, sc);
     for (let i = 0; i < markXZ.length; i++) markScaledXZ[i] = markXZ[i] * sc;
-    edgesNear(markAt.x, markAt.z, FREE_MARK.outer * sc, markEdges);
+    edgesNear(markAt.x, markAt.z, FREE_MARK.outer * sc, markEdges, world.ribbons);
     ringHeights(markAt.x, markAt.z, markAt.y, markScaledXZ, markSurface, markY);
     for (let i = 0; i < markY.length; i++) markPosition.setY(i, markY[i]);
     markPosition.needsUpdate = true;
@@ -982,7 +1060,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     showFreeMark(p);
     markPulse = window.setTimeout(() => showFreeMark(null), FREE_MARK.pulseMs);
   };
-  // La silhouette de Kéo : son corps dessiné une deuxième fois, là seulement où le décor passe devant lui.
+  // La silhouette de Kéo : son corps dessiné une deuxième fois, là seulement où le décor passe devant lui. Sans
+  // brouillard : elle montre où est Kéo derrière le décor, et doit se lire même au loin (ce n'est pas un décor).
   const silhouetteMaterial = new THREE.MeshBasicMaterial({ color: KEO_SILHOUETTE.color, transparent: true, opacity: KEO_SILHOUETTE.opacity, depthWrite: false, depthFunc: THREE.GreaterDepth, fog: false });
 
   // Où est Kéo, où il va.
@@ -990,7 +1069,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // endroit (le quai, face à la caméra ; devant une porte, tourné vers elle).
   const startPlace = PLACES.find((p) => p.id === options.start);
   const startSpot = startPlace ? null : (options.start as PortSpot);
-  let here: Vec2 = startPlace ? startOf(startPlace.door, startPlace.center).at : pathNode(portNode(startSpot!)).at;
+  // Au 5e, pas d'Escale : un départ hors d'un lieu se fait sur le quai de la côte (`DEPARTURE_5E`).
+  let here: Vec2 = startPlace ? startOf(startPlace.door, startPlace.center).at : pathNode(sixth ? portNode(startSpot!) : DEPARTURE_5E.node).at;
   let walk: Walk | null = null;
   let walkTarget: PlaceId | null = null;
   // Les Détours (GD-20, déplacement libre, lot 2) : ceux trouvés (leur sente tracée), les cairns rallumés, celui où Kéo
@@ -1078,7 +1158,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const stepFauna = (dt: number, arrived: boolean) => {
     faunaClock += dt;
     if (arrived && (faunaStart === null || faunaClock - faunaStart >= Math.max(FAUNA_END, DETOUR_TIMING.faunaAgain))) faunaStart = faunaClock + DETOUR_TIMING.faunaDelay - DETOUR_TIMING.settle;
-    const near = distance(here, shore.at) < 45;
+    const near = sixth && distance(here, shore.at) < 45;
     const t = faunaStart === null ? null : faunaClock - faunaStart;
     // Le souffle de la baleine, entendu à l'instant où le jet part (jamais avec « Réduire les animations »).
     if (!reduceMotion && t !== null && t >= FAUNA_BLOW && t - dt < FAUNA_BLOW) options.onWhaleBlow?.();
@@ -1106,7 +1186,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    * dès qu'il en repart, `null`. La vue monte tant qu'il y reste, et revient quand il repart.
    */
   const stepDetour = (now: number, moving: boolean, dt: number) => {
-    const d = moving || walk ? null : detourAtPoint(here);
+    // Les Détours sont du 6e : au 5e, Kéo n'en trouve aucun.
+    const d = moving || walk || !sixth ? null : detourAtPoint(here);
     let arrived = false;
     if (!d) {
       detourStill = 0;
@@ -1125,18 +1206,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     detourView = detourViewStep(detourView, detourHere ? 1 : 0, dt, reduceMotion);
     stepFauna(dt, arrived);
   };
-  let heading = startSpot ? portHeading(startSpot) : FACING_CAMERA;
+  let heading = startSpot && sixth ? portHeading(startSpot) : FACING_CAMERA;
   keo.rotation.y = heading;
   const keoFeet: Vec3 = { x: here.x, y: 0, z: here.z };
   const placeKeo = (p: Vec2) => {
     let y = standingHeight(ground(p.x, p.z));
     // Sur la culée d'un pont, et sur le tablier d'un pont rebâti, il marche sur la pierre et les planches.
-    const floor = bridgeFloor(p.x, p.z, walkClosed);
+    const floor = bridgeFloor(p.x, p.z, walkClosed, plan);
     if (floor !== null && floor > y) y = floor;
     keo.position.set(p.x, y, p.z);
     if (ring.position.x !== p.x || ring.position.z !== p.z || ring.position.y !== y) {
       ring.position.set(p.x, y, p.z);
-      edgesNear(p.x, p.z, KEO_RING.outer, ringEdges);
+      edgesNear(p.x, p.z, KEO_RING.outer, ringEdges, world.ribbons);
       ringHeights(p.x, p.z, y, ringXZ, ringSurface, ringY);
       for (let i = 0; i < ringY.length; i++) ringPosition.setY(i, ringY[i]);
       ringPosition.needsUpdate = true;
@@ -1288,11 +1369,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // laisse, et l'endroit dont la caméra y garde le sujet (la porte, la galerie, l'établi ; le lieu, ou la trace que la
   // scénette vient de laisser), par un décalage de l'image, calculé à l'ouverture (Kéo ne bouge pas tant que le panneau
   // est ouvert), jamais à chaque image.
-  let framed: PortSpot | PlaceId | null = startPlace?.id ?? startSpot;
+  let framed: PortSpot | PlaceId | null = startPlace?.id ?? (sixth ? startSpot : null);
   let frameRect: { left: number; top: number; width: number; height: number } | null = null;
   const subjectOf = (spot: PortSpot | PlaceId): Vec3 | null => {
     const place = PLACES.find((p) => p.id === spot);
-    if (!place) return portSubject(spot as PortSpot, port?.trophies.length ?? 0);
+    if (!place) return sixth ? portSubject(spot as PortSpot, port?.trophies.length ?? 0) : null;
     // La fiche d'une terre fermée : le pont à rebâtir d'abord, si Kéo se tient devant (de loin, la caméra reste où elle est).
     const land = landOf(place.id);
     if (isLinkedLand(land) && closed.includes(land)) {
@@ -1317,7 +1398,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     frameRect = free;
     if (place) framed = place;
     // Le panneau d'un lieu s'ouvre (Kéo y arrive) : le modèle de son habitant se prépare, avant sa scénette.
-    if (place) habitants.prefetch(place);
+    if (place && sixth) habitants.prefetch(place);
     if (free) return reframe();
     // Pendant une question ou une remise, la caméra garde son cadrage : le panneau se recadre à leur fin.
     if (asked || remise || mapView) return;
@@ -1357,7 +1438,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let assembly: { start: number; scene: ReturnType<typeof assemblyScene>; joined: boolean } | null = null;
   /** Les facettes de l'Escale, refaites quand ce qu'elle montre change. */
   const portOf = (): Facets | null => {
-    if (!port) return null;
+    if (!port || !sixth) return null;
     const k = `${JSON.stringify(port)}|${assembly ? 'a' : ''}`;
     if (k !== portKey || !portMesh) {
       portKey = k;
@@ -1402,6 +1483,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     return f;
   };
   let placesKey = '';
+  // La ligne de la falaise du 5e sur la Carte, et la bande sombre de ses chemins, faites une fois (rien au 6e).
+  const cliffLine: Facets = sixth ? mergeFacets([]) : mergeFacets([cliffMapLine(), pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark)]);
   /**
    * Refait le maillage des lieux si ce qu'il montre a changé : le lieu suivi à part (sauf sur la Carte), la maquette des
    * Quais et les traces cachées pendant leur scénette (la scénette a les siennes), les parties retenues par une pose ;
@@ -1418,7 +1501,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
     const rest: Facets[] = portFacetsNow ? [portFacetsNow] : [];
     const mark: Facets[] = [];
-    lampShown = lanternLit(posedOf('phare'));
+    lampShown = sixth && lanternLit(posedOf('phare'));
     for (const p of PLACES) {
       const ruin = ruins.get(p.id);
       const ruinTop = ruinTops.get(p.id);
@@ -1436,7 +1519,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Au rivage nord (lot L7), les trois lieux sont dans le même cadre : les traces des trois se cachent pendant toute
       // question de l'un (directeur artistique).
       const hidden = hidesTraces(hiddenTrace, p.id);
-      if (!hidden && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, scenette === p.id ? scenetteTraces(p.id, done, scenetteMission, posed) : done));
+      if (!hidden && isSixthPlace(p.id) && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, scenette === p.id ? scenetteTraces(p.id, done, scenetteMission, posed) : done));
       if (p.id === 'phare' && lampShown) list.push(lampFacets);
       // Les aménagements posés (GD-20, point 4, lot L0), dans le même maillage : cachés pendant toute question, comme les
       // traces (au rivage nord et au large, ceux des lieux du même cadre) ; montrés dans le cadrage de la remise.
@@ -1447,6 +1530,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     for (const land of LINKED_LANDS) {
       rest.push(bridgeOf(land, closed.includes(land) ? 'tombe' : laying?.lay.land === land && !laying.tapped ? 'pose' : 'rebati'));
       if (mapView) rest.push(bridgeOf(land, 'carte'));
+    }
+    // Au 5e, sur la Carte, la ligne de la falaise (GD-22, lot 2) : le bord du plateau, et la bande sombre des chemins, dans
+    // le maillage des lieux.
+    if (!sixth) {
+      if (mapView) rest.push(cliffLine);
+      setGeometry(placesMesh, mergeFacets(rest));
+      setGeometry(landmarkMesh, mergeFacets(mark));
+      mapDirty = true;
+      return;
     }
     // Les Détours : leurs pierres, le cairn, les sentes trouvées (dans le monde comme sur la Carte), sans appel de plus.
     rest.push(detourFacetsNow());
@@ -1461,8 +1553,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     setGeometry(landmarkMesh, mergeFacets(mark));
     mapDirty = true;
   };
-  // Le voilier chargé à la demande (GD-21) : les lieux se refont avec lui (la clé des lieux sait s'il est là).
-  if (!nefParts(1))
+  // Le voilier chargé à la demande (GD-21) : les lieux se refont avec lui (la clé des lieux sait s'il est là). Au 6e seulement.
+  if (sixth && !nefParts(1))
     void loadNef().then((changed) => {
       if (!disposed && changed) placeVisibility();
     });
@@ -1477,7 +1569,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     ringCenter.x = focus.x;
     ringCenter.z = focus.z;
     ringYaw = look;
-    const rings = tileRings(ringCenter, WORLD_FOG.far, look);
+    const rings = tileRings(ringCenter, WORLD_FOG.far, look, world.tiles.grid);
     const k = `${rings.near.join(',')}|${rings.far.join(',')}`;
     if (k !== ringKey) {
       ringKey = k;
@@ -1625,7 +1717,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Hors des chemins, dans une terre ouverte : il reste où il est (sans grille encore tirée, il est sur le réseau).
     if (walkGrid && !onPathCell(walkGrid, here) && isWalkable(walkGrid, here, walkClosed)) return;
     const at = snapToNetwork(here);
-    const stop = clampToOpen(at, walkClosed);
+    const stop = clampToOpen(at, walkClosed, plan);
     if (stop === at) return;
     walk = null;
     here = { ...stop.at };
@@ -1648,7 +1740,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     projected.copy(mark).project(camera);
     const far = distanceSign(here, placeById(markPlace).center);
     const m = markOnScreen({ x: sx(projected), y: sy(projected), behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far, markBeside(markPlace) && whole(markPlace));
-    if (m.inside && portFloor(here.x, here.z) !== null) markAtPort(m);
+    if (m.inside && sixth && portFloor(here.x, here.z) !== null) markAtPort(m);
     options.onMark(m);
   };
   /**
@@ -1738,7 +1830,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // La grille de ce qui se marche (le déplacement libre), tirée une fois : par tranches au repos (`stepGrid`, plus bas),
   // ou le reste d'un coup au premier besoin.
   let walkGrid: WalkGrid | null = null;
-  const walkSteps = walkGridSteps(field);
+  const walkSteps = walkGridSteps(field, plan);
   /** Une tranche du tirage ; vrai quand la grille est là. */
   const gridStep = (): boolean => {
     if (walkGrid) return true;
@@ -1763,7 +1855,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const startWalkTo = (target: NetworkPoint, place: PlaceId | null) => {
     const from = snapToNetwork(here);
     // Au-delà d'un pont tombé, ou d'un pont qui se pose, Kéo s'arrête sur sa culée, sans heurt ni son (GD-20, point 3).
-    const to = clampToOpen(target, walkClosed);
+    const to = clampToOpen(target, walkClosed, plan);
     if (to !== target) place = null;
     // Kéo hors des chemins (le déplacement libre) : le trajet libre jusqu'à la porte, qui préfère les chemins ; sinon le
     // réseau, et s'il est hors du chemin (sur le bord du quai, au retour d'une scénette), il le rejoint d'abord.
@@ -1773,7 +1865,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     showFreeMark(null);
     walkTarget = place;
     // Kéo part vers un lieu : le modèle de son habitant se prépare pendant la marche, avant « Livrer » ou une mission.
-    if (place) habitants.prefetch(place);
+    if (place && sixth) habitants.prefetch(place);
     if (route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05) return arrive(place);
     walk = startWalk(route, performance.now());
     heldBridge = null;
@@ -1807,7 +1899,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const jumpTo = (place: PlaceId) => {
     heldBridge = null;
     const door = atNode(placeById(place).door);
-    const stop = clampToOpen(door, closed);
+    const stop = clampToOpen(door, closed, plan);
     const shut = stop !== door ? bridgeSite(firstClosed(landOf(place) as LinkedLand, closed)) : null;
     here = shut ? { ...stop.at } : pathNode(placeById(place).door).at;
     heading = shut ? Math.atan2(-shut.dir.x, -shut.dir.z) : FACING_CAMERA;
@@ -1825,6 +1917,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   /** Kéo d'un coup à un endroit de l'Escale, tourné vers sa façade ; la page en ouvre le panneau. */
   const jumpToPort = (spot: PortSpot) => {
+    // Au 5e, pas d'Escale.
+    if (!sixth) return;
     heldBridge = null;
     here = pathNode(portNode(spot)).at;
     heading = portHeading(spot);
@@ -1976,10 +2070,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const p = hitAt(e.clientX, e.clientY);
     if (!p) return;
     // La Nef, son ber ou le banc du large : la fiche de la Nef (GD-21), Kéo reste où il est ; partie, plus rien.
-    if (options.onNef && nefLookNow !== 4 && (nefTouched(p) || bancTouched(p))) return options.onNef();
+    if (sixth && options.onNef && nefLookNow !== 4 && (nefTouched(p) || bancTouched(p))) return options.onNef();
     // L'Escale : une porte, la galerie ou le lieu d'assemblage y mène Kéo d'un coup et en ouvre le panneau ; le reste du
-    // Port ouvre sa fiche (Kéo reste où il est).
-    const atPort = portTouch(p);
+    // Port ouvre sa fiche (Kéo reste où il est). Au 6e seulement.
+    const atPort = sixth ? portTouch(p) : null;
     if (atPort === 'fiche') return options.onPort('fiche');
     if (atPort) return jumpToPort(atPort);
     // Un lieu d'une terre fermée, ou son pont tombé : la fiche de la terre (GD-20, point 3), Kéo reste où il est.
@@ -2056,11 +2150,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const mapCamera: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
   const allTiles = Array.from({ length: plan.terrain.tilesX * plan.terrain.tilesZ }, (_, i) => i);
   const mapSpots: MapSpotOnScreen[] = [
-    ...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false })),
+    ...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false, ...(plan.upper.includes(p.id) ? { up: true } : {}) })),
     ...LINKED_LANDS.map((land) => ({ id: bridgeSpot(land), x: 0, y: 0, shown: false })),
-    { id: 'port' as const, x: 0, y: 0, shown: false },
+    // L'Escale n'est qu'au 6e : au 5e, aucun point « port » sur la Carte.
+    ...(sixth ? [{ id: 'port' as const, x: 0, y: 0, shown: false }] : []),
     { id: 'keo' as const, x: 0, y: 0, shown: false },
   ];
+  // Kéo, sur la Carte du 5e : en haut quand il est sur le plateau (refait à chaque pose, sans rien créer).
+  const keoSpot = mapSpots[mapSpots.length - 1];
   const portPoint = new THREE.Vector3(PORT_MAP_POINT.x, PORT_MAP_POINT.y, PORT_MAP_POINT.z);
   let mapMs = 0;
   const keoPoint = new THREE.Vector3();
@@ -2096,6 +2193,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       l.y = ((1 - projected.y) / 2) * viewH;
       l.shown = projected.z < 1 && mapShown(l.x, l.y);
     }
+    if (plan.upper.length) keoSpot.up = onPlateau(keoFeet);
     mapMoving = fingers.size > 0 || wheelRest !== 0;
     options.onMapPlaces(mapSpots, mapMoving);
   };
@@ -2180,6 +2278,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       camera.updateProjectionMatrix();
       nearRing.set([]);
       farRing.set(allTiles.map((i) => tiles.build(i, 'far')));
+      // La brume des failles ne se montre pas sur la Carte : la ligne de la falaise y est à sa place.
+      riftMesh.visible = false;
       placeVisibility();
       setShift({ x: 0, y: 0 });
       options.onMark(null);
@@ -2199,6 +2299,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     fog.far = WORLD_FOG.far;
     camera.far = FOLLOW_FAR;
     camera.updateProjectionMatrix();
+    riftMesh.visible = !sixth;
     updateRings(true, true);
     follow();
   };
@@ -2618,6 +2719,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
     const { place, layout, item } = q;
+    // Au 5e, aucune scénette encore : ses missions se jouent sur l'écran habituel, la scène n'en montre rien.
+    if (!isSixthPlace(place)) return [];
     // Une autre scénette, et chaque nouvel item, repartent de la pose prévue, à son cap de départ (de face, sauf aux
     // Écluses, dans l'axe du canal ; référent dys, consultant UX UI : un élève qui a tourné par mégarde retrouve la scène
     // qui aide à répondre sans refaire le geste).
@@ -3077,7 +3180,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     placesState = state;
     // La livraison écrite (l'état final de la remise) : l'aménagement entre dans les lieux, son maillage à part se cache.
     if (remiseRun.active && remise && placesState.amenagements?.[remise.place]?.includes(remise.extra ?? '')) remiseMesh.visible = false;
-    if (pose?.parts.length && !asked && !mapView) {
+    // Au 5e, les lieux restent des ruines (GD-22, lot 2) : aucune partie ne s'y pose encore.
+    if (pose?.parts.length && !asked && !mapView && isSixthPlace(pose.place)) {
       startPose(pose.place, pose.parts);
       return true;
     }
@@ -3411,6 +3515,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, mapMs }),
     portAt: (clientX: number, clientY: number) => {
       const p = hitAt(clientX, clientY);
+      if (!sixth) return null;
       if (p && options.onNef && nefLookNow !== 4 && (nefTouched(p) || bancTouched(p))) return 'nef';
       return p ? portTouch(p) : null;
     },

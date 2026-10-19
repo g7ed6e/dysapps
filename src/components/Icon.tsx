@@ -23,6 +23,7 @@ import {
   Blocks,
   BookOpen,
   Box,
+  CableCar,
   Calculator,
   Castle,
   CloudSun,
@@ -206,6 +207,8 @@ export const ICONS = {
   // Le menu (trois traits) : partout où l'on ouvre le menu ; ⏸ reste la pause d'une partie (mode concentration).
   menu: Menu,
   ancre: Anchor,
+  /** La cabine de la Montée, le passage des Aiguilles sur la Carte du monde ouvert du 5e (GD-22, lot 2). */
+  cabine: CableCar,
   cube: Box,
   ouvrage: Ouvrage,
   // Le mode « Aménager » (GD-9) : quatre flèches, les flèches de la barre, « Tourner », ↶, une liaison à reposer.

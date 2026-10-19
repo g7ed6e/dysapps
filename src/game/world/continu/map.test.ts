@@ -147,6 +147,15 @@ describe('Les étiquettes de la Carte', () => {
   const apart = (a: ReturnType<typeof boxOf>, b: ReturnType<typeof boxOf>) =>
     a.right + MAP_LABEL_GAP <= b.left || b.right + MAP_LABEL_GAP <= a.left || a.bottom + MAP_LABEL_GAP <= b.top || b.bottom + MAP_LABEL_GAP <= a.top;
 
+  it('un lieu du bas au pied d’un plateau (le 5e) pose son nom d’abord sous lui, les autres au-dessus', () => {
+    const screen = { width: 800, height: 360 };
+    const at = { x: 400, y: 150, w: 200, h: 48 };
+    const [low] = layoutMapLabels([{ id: 'montee', kind: 'open', ...at, below: true }], [], screen);
+    const [high] = layoutMapLabels([{ id: 'montee', kind: 'open', ...at }], [], screen);
+    expect(low.top).toBeGreaterThan(at.y);
+    expect(high.top + at.h).toBeLessThanOrEqual(at.y);
+  });
+
   it('aucune étiquette n’en recouvre une autre, même Kéo devant son lieu, dans l’écran et hors des boutons', () => {
     const screen = { width: 844, height: 390 };
     const retour = { left: 20, top: 286, right: 200, bottom: 366 };

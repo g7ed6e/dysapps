@@ -41,9 +41,10 @@ export interface OpenWorldLands {
 
 /**
  * Les terres du monde continu d'un plan : `links`, les liaisons posées de la grille ; `bornes`, les missions du monde ouvert (un
- * lieu où l'élève a déjà joué est ouvert) ; `ouvrage`, la liaison que propose la prochaine destination, s'il y en a une.
+ * lieu où l'élève a déjà joué est ouvert) ; `ouvrage`, la liaison que propose la prochaine destination, s'il y en a une ;
+ * `island`, l'île de cette destination.
  */
-export function openWorldLands(plan: LevelPlan, links: readonly string[], bornes: readonly MissionMark[], ouvrage?: string): OpenWorldLands {
+export function openWorldLands(plan: LevelPlan, links: readonly string[], bornes: readonly MissionMark[], ouvrage?: string, island?: string): OpenWorldLands {
   const islands: ReadonlySet<string> = reachableIslands([...links]);
   const played = new Set(playedPlaces(plan, bornes));
   const open = openLands(plan, (id: PlaceId) => islands.has(placeById(id).island) || played.has(id));
@@ -54,6 +55,12 @@ export function openWorldLands(plan: LevelPlan, links: readonly string[], bornes
   const end = bridge && islands.has(bridge.from) !== islands.has(bridge.to) ? (islands.has(bridge.from) ? bridge.to : bridge.from) : undefined;
   const place = end ? placeOfIsland(end)?.id : undefined;
   const land = place ? landOf(place) : undefined;
-  const suggested = land && isLinkedLand(land) && closed.includes(land) && !waiting.includes(land) ? land : null;
+  const fromOuvrage = land && isLinkedLand(land) && closed.includes(land) && !waiting.includes(land) ? land : null;
+  // La prochaine destination se calcule pour tout le jeu (../../world/destination.ts) : la liaison qu'elle propose peut
+  // être celle d'un autre niveau (au 5e, celle du 6e où l'élève joue encore), et aucun cadenas du plan n'était plein
+  // (consultant UX UI, relecture du lot 2 du 5e) ; sans liaison, elle peut mener à une île d'un autre niveau. Alors, la
+  // première terre du plan qu'on peut relier, dans son ordre.
+  const elsewhere = place !== undefined ? !plan.places.some((p) => p.id === place) : !ouvrage && island !== undefined && !plan.places.some((p) => p.island === island);
+  const suggested = fromOuvrage ?? (elsewhere ? (closed.find((l) => !waiting.includes(l)) ?? null) : null);
   return { closed, waiting, suggested };
 }

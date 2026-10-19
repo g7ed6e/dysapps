@@ -5,7 +5,8 @@
 // balises) ne se compte que dans le navigateur : `npm run rendu:mesures` mesure la scène entière. En dessous, le monde en
 // blocs de Blocland (`sceneCost`), avec et sans les petites constructions des commandes, et les bulles
 // (`signesCost`, le même coût quel que soit l'état du jeu), sous son plafond ; enfin le monde ouvert du 6e et sa Carte
-// (`openWorldCost`, `mapCost`, world/continu/budget.ts), hors de la sortie JSON.
+// (`openWorldCost`, `mapCost`, world/continu/budget.ts), puis celui du 5e (`openWorldCost5e`, `mapCost5e`), hors de la
+// sortie JSON.
 // `--archipel 6e,3e` : seulement ces archipels ; `--json` : les chiffres en JSON, pour un script.
 import { createServer } from 'vite';
 import { fileURLToPath } from 'node:url';
@@ -102,7 +103,10 @@ try {
   // aménagements posés (GD-20, point 4), dont la vue trace les dessins, y entrent par leurs triangles.
   const sixieme = !demandes || demandes.includes('6e');
   const amenagements = sixieme ? amenagementsCost().triangles : 0;
-  const mondeOuvert = sixieme ? { postes: ouvert.openWorldCost(amenagements), carte: ouvert.mapCost(amenagements), enveloppe: ouvert.OPEN_WORLD_BUDGET } : null;
+  const mondeOuvert = sixieme ? { niveau: '6e', postes: ouvert.openWorldCost(amenagements), carte: ouvert.mapCost(amenagements), enveloppe: ouvert.OPEN_WORLD_BUDGET } : null;
+  // Le monde ouvert du 5e (GD-22, lot 2 : toute l'île en grandes masses), sous la même enveloppe.
+  const cinquieme = !demandes || demandes.includes('5e');
+  const mondeOuvert5e = cinquieme ? { niveau: '5e', postes: ouvert.openWorldCost5e(), carte: ouvert.mapCost5e(), enveloppe: ouvert.OPEN_WORLD_BUDGET } : null;
 
   if (JSON_SEUL) console.log(JSON.stringify(resultats, null, 2));
   else {
@@ -135,9 +139,10 @@ try {
       const pireDepasse = p.triangles > b.plafond.triangles || p.drawCalls > b.plafond.drawCalls ? ' ⚠' : '';
       console.log(`Au pire, la région aménagée (GD-9, \`worstCaseOfRegion\`) : ${n(p.triangles)} triangles (${n(p.base)} sans liaisons, dont ${n(p.choix)} pour le lieu soulevé face par face, ${n(p.liaisons)} de liaisons au plus long, ${n(p.reunions)} de réunions), ${p.drawCalls} appels${pireDepasse}.`);
     }
-    if (mondeOuvert) {
-      const { postes, carte, enveloppe } = mondeOuvert;
-      console.log('\n## Le monde ouvert du 6e (prototype, `?monde=ouvert`)\n');
+    for (const monde of [mondeOuvert, mondeOuvert5e]) {
+      if (!monde) continue;
+      const { niveau, postes, carte, enveloppe } = monde;
+      console.log(`\n## Le monde ouvert du ${niveau} (prototype, \`?monde=ouvert\`)\n`);
       console.log('| Poste | Triangles | Appels |');
       console.log('| --- | ---: | ---: |');
       for (const p of postes) console.log(`| ${p.poste} | ${n(p.triangles)} | ${p.calls} |`);

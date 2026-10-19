@@ -191,6 +191,11 @@ export interface MapLabel {
    */
   first?: boolean;
   /**
+   * Un lieu du bas au pied d'un plateau (GD-22, le 5e) : son nom cherche d'abord sa place sous lui, puis au-dessus ; le
+   * plateau, au nord, reste à découvert (consultant UX UI, relecture du lot 2 : le nom de la Montée masquait le plateau).
+   */
+  below?: boolean;
+  /**
    * La taille de sa forme serrée, son nom sur deux lignes (entre deux mots), plus étroit, prise quand la forme entière ne
    * trouve pas de place : pour un lieu ouvert, sa pastille, l'icône de l'état dessous (relecture de L6b, directeur
    * artistique : un lieu ouvert ne perd jamais son nom) ; pour un lieu fermé, son cadenas et son nom sur deux lignes
@@ -463,11 +468,13 @@ function attemptLayout(
     const places = (w: number, h: number) => {
       const above = rect(l.x - w / 2, l.y - h, w, h);
       const below = rect(l.x - w / 2, l.y + MAP_LABEL_GAP, w, h);
-      const list = [above, below];
-      // Décalé vers un côté libre, en haut puis en bas, d'une demi-hauteur à la fois.
+      const list = l.below ? [below, above] : [above, below];
+      // Décalé vers un côté libre, en haut puis en bas (en bas puis en haut pour un lieu du bas), d'une demi-hauteur à la fois.
       for (let k = 1; k <= SHIFTS; k++) {
         const dy = (k * (h + MAP_LABEL_GAP)) / 2;
-        list.push(rect(above.left, above.top - dy, w, h), rect(below.left, below.top + dy, w, h));
+        const up = rect(above.left, above.top - dy, w, h);
+        const down = rect(below.left, below.top + dy, w, h);
+        list.push(...(l.below ? [down, up] : [up, down]));
       }
       list.push(rect(l.x + MAP_LABEL_GAP, l.y - h / 2, w, h), rect(l.x - MAP_LABEL_GAP - w, l.y - h / 2, w, h));
       return list;

@@ -1,0 +1,263 @@
+// Les quatorze lieux du 5e en ruines simples (GD-22, lot 2, « toute l'île en grandes masses ») : à leur place, une
+// silhouette lisible pour chacun, sans les finir (leurs étapes de chantier viendront avec leur lot). Chaque ruine est
+// dessinée dans le repère de son lieu (y = 0 au sol, sous le centre), en quelques volumes de 4 à 6 aplats : la pierre
+// des aiguilles (gris chaud moussu), le bois gris de la ruine, l'ocre des Contreforts, la mousse, le bronze éteint ; rien
+// de presque noir, rien à lire. Retouche du lot 2 (directeur artistique : « des boîtes génériques ») : chaque ruine a sa
+// hauteur et son contour propres. La Montée est la plus haute aiguille de l'île, au centre, de la famille des aiguilles
+// (./spire5e.ts) : verticale, son rail de bois sur la face sud, cassé en haut, sa cabine tombée au pied, sa lanterne
+// éteinte au bout du rail ; le Donjon, une tour carrée sur son piton de roche ; les Radeaux, des plateformes sur pieux
+// posées sur l'eau du grand chenal. Code pur.
+import type { FacetBuilder } from './facets';
+import { COLORS_5E, PLACES_5E, type PlaceId5e } from './plan5e';
+import { spire, spireRadiusAt } from './spire5e';
+import { heightAt5e } from './terrain5e';
+import { standingHeight } from './terrain';
+
+/** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter sur une pente. */
+const SINK = -0.8;
+
+const C = {
+  stone: COLORS_5E.stone,
+  shade: COLORS_5E.stoneShade,
+  sun: COLORS_5E.stoneSun,
+  moss: COLORS_5E.plateauMoss,
+  ochre: COLORS_5E.ochre,
+  // Le bois gris de la ruine et son ombre (comme au 6e : délavé, jamais sombre).
+  wood: 0x9f9279,
+  woodShade: 0x86775f,
+  // Le bronze éteint de la lanterne de la Montée, et le toit d'ardoise des maisons (un gris-bleu franc).
+  bronze: 0x9c8452,
+  slate: 0x6f8089,
+  // L'enduit passé des murs du Hameau et de l'Auberge.
+  wall: 0xb9ae98,
+} as const;
+
+/**
+ * La hauteur de la Montée au-dessus de son pied : la plus haute aiguille, qui dépasse la canopée de toute l'île (retouche
+ * du lot 2 : 46 ne suffisait pas depuis la Lisière).
+ */
+export const MONTEE_HEIGHT = 60;
+
+/** Le rayon du pied de la Montée, et ses pans. */
+const MONTEE_RADIUS = 7.5;
+const MONTEE_SIDES = 7;
+
+/** Le haut du rail de la Montée, en part de sa hauteur, et la hauteur où il est cassé. */
+const RAIL = { top: 0.74, broken: 0.6, gap: 1.3 } as const;
+
+/** Un tas de blocs tombés, au pied d'un mur : trois pavés de travers. */
+function rubble(b: FacetBuilder, x: number, z: number, s: number, color: number, top: number): void {
+  b.box({ x, y: SINK, z, yaw: 0.4 }, [s, s * 0.7 - SINK, s * 0.8], color, top);
+  b.box({ x: x + s * 0.8, y: SINK, z: z + s * 0.3, yaw: 1.1 }, [s * 0.6, s * 0.45 - SINK, s * 0.6], color, top);
+  b.box({ x: x - s * 0.5, y: SINK, z: z + s * 0.7, yaw: 2.3 }, [s * 0.5, s * 0.35 - SINK, s * 0.7], color, top);
+}
+
+/** Un mur bas cassé : un pavé dont le haut descend par marches. */
+function brokenWall(b: FacetBuilder, x: number, z: number, length: number, height: number, yaw: number, color: number, top: number): void {
+  const steps = 3;
+  const w = length / steps;
+  const c = Math.cos(yaw),
+    s = Math.sin(yaw);
+  for (let k = 0; k < steps; k++) {
+    const u = -length / 2 + w * (k + 0.5);
+    const h = height * (1 - k * 0.3);
+    b.box({ x: x + u * c, y: SINK, z: z - u * s, yaw }, [w, h - SINK, 0.8], color, top);
+  }
+}
+
+/**
+ * La Montée : l'aiguille (./spire5e.ts), la plus haute ; sur sa face sud, celle que l'on voit en arrivant, le rail de la
+ * cabine (deux montants de bois qui suivent la pierre), cassé aux trois cinquièmes, son bout qui pend ; au bout du rail,
+ * la lanterne éteinte ; au pied, la cabine tombée, de travers, et des blocs.
+ */
+function montee(b: FacetBuilder): void {
+  const H = MONTEE_HEIGHT;
+  const s = { x: 0, y: SINK, z: 0, radius: MONTEE_RADIUS, height: H - SINK, sides: MONTEE_SIDES, turn: Math.PI / 2 + Math.PI / MONTEE_SIDES };
+  spire(b, s);
+  // Le rail : deux montants, contre la face sud (z positif : un pan du fût y est tourné), de leur pied à la cassure, puis
+  // de la cassure au haut ; ils suivent la pierre qui se resserre.
+  const face = (y: number) => spireRadiusAt(s, y - SINK) * Math.cos(Math.PI / MONTEE_SIDES) + 0.3;
+  for (const x of [-0.9, 0.9]) {
+    b.beam({ x, y: SINK, z: face(SINK) }, { x, y: H * RAIL.broken, z: face(H * RAIL.broken) }, 0.45, C.woodShade);
+    b.beam({ x, y: H * RAIL.broken + RAIL.gap, z: face(H * RAIL.broken + RAIL.gap) }, { x, y: H * RAIL.top, z: face(H * RAIL.top) }, 0.4, C.wood);
+  }
+  // Le bout cassé qui pend, de biais, sous la cassure.
+  b.beam({ x: 0.9, y: H * RAIL.broken + RAIL.gap, z: face(H * RAIL.broken) + 0.3 }, { x: 2.6, y: H * RAIL.broken - 3.5, z: face(H * RAIL.broken) + 1.2 }, 0.35, C.wood);
+  // La lanterne éteinte, au bout du rail : quatre montants de bronze, son toit pointu.
+  const ty = H * RAIL.top;
+  const tz = face(ty) + 0.6;
+  for (let k = 0; k < 4; k++) b.box({ x: k % 2 ? 0.7 : -0.7, y: ty, z: tz + (k < 2 ? 0.7 : -0.5) }, [0.25, 1.6, 0.25], C.bronze);
+  b.prism({ x: 0, y: ty + 1.6, z: tz + 0.1, yaw: Math.PI / 4 }, 1.3, 0, 1.2, 4, C.bronze);
+  // La cabine tombée, au pied du rail, de travers : sa caisse de bois, son toit d'ardoise.
+  b.box({ x: 3.6, y: SINK, z: MONTEE_RADIUS + 1.6, yaw: 0.35, pitch: 0.1 }, [3.2, 2.6 - SINK, 2.6], C.woodShade, C.slate);
+  rubble(b, -5.2, MONTEE_RADIUS + 0.8, 1.8, C.shade, C.moss);
+}
+
+/** La hauteur du sol sous un lieu du 5e (là où la vue pose sa ruine). */
+const siteY = (id: PlaceId5e): number => standingHeight(heightAt5e(PLACES_5E.find((p) => p.id === id)!.center));
+
+/** Le pont des plateformes des Radeaux au-dessus de l'eau, dans le monde. */
+const RAFT_DECK = 0.55;
+
+/**
+ * Les Radeaux : sur l'eau du grand chenal, au sud de leur porte (retouche du lot 2, directeur artistique, « les
+ * plateformes des Radeaux sur l'eau ») : trois plateformes de rondins sur pieux, l'une penchée, reliées à la rive par une
+ * passerelle ; un mât de pieux plus haut, qui les signale de loin.
+ */
+function radeaux(b: FacetBuilder): void {
+  // Le repère de la ruine est posé au sol du lieu : l'eau est `siteY` plus bas.
+  const deck = RAFT_DECK - siteY('radeaux');
+  const pile = (x: number, z: number, top: number) => b.prism({ x, y: deck - 2.4, z }, 0.35, 0.3, top - deck + 2.4, 5, C.woodShade);
+  b.box({ x: 0, y: SINK, z: 2.5 }, [1.8, 0.35 - SINK, 5], C.woodShade, C.wood);
+  b.box({ x: -1.5, y: deck - 0.4, z: 8 }, [6, 0.6, 4.5], C.woodShade, C.wood);
+  b.box({ x: 4, y: deck - 0.4, z: 10, yaw: -0.3, pitch: 0.1 }, [4.5, 0.6, 3.6], C.woodShade, C.wood);
+  b.box({ x: -2.5, y: deck - 0.4, z: 13, yaw: 0.5 }, [3.6, 0.5, 3], C.woodShade, C.wood);
+  for (const [x, z, top] of [[-4.5, 6, deck + 1.6], [1.5, 6, deck + 1.2], [-4.5, 10, deck + 1], [1.5, 10, deck + 1.4], [6, 12, deck + 1.1], [-4, 14.5, deck + 0.9]] as const) pile(x, z, top);
+  pile(-1.5, 8, deck + 6.5);
+}
+
+/** La Croisée :/** La Croisée : la borne de pierre du carrefour, cassée en biseau, sur son dallage en croix. */
+function croisee(b: FacetBuilder): void {
+  b.box({ x: 0, y: SINK, z: 0 }, [10, 0.35 - SINK, 3], C.shade, C.stone);
+  b.box({ x: 0, y: SINK, z: 0 }, [3, 0.35 - SINK, 10], C.shade, C.stone);
+  b.prism({ x: 0, y: 0.3, z: 0, yaw: Math.PI / 4 }, 1.6, 1.2, 6.5, 4, C.stone, C.sun);
+  b.prism({ x: 0, y: 6.8, z: 0, yaw: Math.PI / 4 }, 1.2, 0.5, 1.4, 4, C.sun);
+  b.box({ x: 2.6, y: SINK, z: 3.2, yaw: 0.6 }, [1.2, 0.9 - SINK, 3], C.shade, C.moss);
+}
+
+/** Les Instants : un cercle de pierres levées (un cadran), son style cassé, couché au milieu. */
+function instants(b: FacetBuilder): void {
+  const n = 7;
+  for (let k = 0; k < n; k++) {
+    const a = (2 * Math.PI * k) / n;
+    const h = k % 3 === 1 ? 1.6 : 3.4 - (k % 2) * 0.8;
+    b.box({ x: 5 * Math.cos(a), y: SINK, z: 5 * Math.sin(a), yaw: -a }, [1, h - SINK, 1.6], C.stone, C.sun);
+  }
+  b.prism({ x: 0, y: SINK, z: 0 }, 1.6, 1.6, 0.6 - SINK, 8, C.shade, C.moss);
+  b.box({ x: 1.2, y: 0.6, z: 0.4, yaw: 0.5 }, [5, 0.8, 0.8], C.stone, C.sun);
+}
+
+/** Le Sémaphore : un mât de bois sur un socle de pierre, ses deux bras cassés, l'un tombé au pied. */
+function semaphore(b: FacetBuilder): void {
+  b.box({ x: 0, y: SINK, z: 0 }, [4, 2 - SINK, 4], C.shade, C.stone);
+  b.box({ x: 0, y: 2, z: 0 }, [0.9, 13, 0.9], C.woodShade, C.wood);
+  b.beam({ x: 0, y: 12, z: 0 }, { x: 3.4, y: 13.6, z: 0 }, 0.6, C.wood);
+  b.beam({ x: 0, y: 9, z: 0 }, { x: -1.6, y: 8.2, z: 0 }, 0.6, C.wood);
+  b.box({ x: 2.8, y: SINK, z: 2.5, yaw: 0.9 }, [4, 0.5 - SINK, 0.6], C.woodShade, C.wood);
+  rubble(b, -3, 2.2, 1.2, C.shade, C.moss);
+}
+
+/** Le Gaillard : le pont haut d'un vieux navire échoué sur le plateau, sur ses étais de pierre, son garde-corps cassé. */
+function gaillard(b: FacetBuilder): void {
+  for (const [x, z] of [[-3.5, -2], [3.5, -2], [-3.5, 2], [3.5, 2]] as const) b.box({ x, y: SINK, z }, [1.4, 3.2 - SINK, 1.4], C.shade, C.stone);
+  b.box({ x: 0, y: 3.2, z: 0, pitch: 0.06 }, [10, 0.8, 6], C.woodShade, C.wood);
+  // L'étrave : un coin relevé vers l'est.
+  b.prism({ x: 5.4, y: 3.2, z: 0, yaw: 0 }, 3, 0.4, 2.2, 3, C.woodShade, C.wood);
+  for (let k = 0; k < 4; k++) b.box({ x: -4 + k * 2.2, y: 4, z: 2.8 }, [0.4, k === 2 ? 0.5 : 1.6, 0.4], C.wood);
+  b.box({ x: -1, y: 4, z: 2.8 }, [7, 0.35, 0.35], C.wood);
+}
+
+/**
+ * Le Donjon : sur son piton de roche à pans, moussu, une tour carrée, haute et étroite, son haut cassé en dents, une
+ * brèche, sa porte au sud, des marches taillées qui montent au piton ; des blocs au pied.
+ */
+function donjon(b: FacetBuilder): void {
+  const P = 5.5;
+  b.prism({ x: 0, y: SINK, z: 0, yaw: 0.25 }, 6.8, 4.6, P - SINK, 6, C.stone, C.moss);
+  b.prism({ x: -3.4, y: SINK, z: 2.4, yaw: 0.9 }, 3.2, 1.8, 3.2 - SINK, 5, C.shade, C.moss);
+  b.box({ x: 0, y: P - 0.3, z: 0 }, [5.2, 13.3, 5.2], C.stone, C.sun);
+  for (const [x, z, h] of [[-2, -2, 2.6], [2, -2, 1.2], [-2, 2, 1.8], [2, 2, 2.6]] as const) b.box({ x, y: P + 13, z }, [1.2, h, 1.2], C.stone, C.sun);
+  b.box({ x: 0, y: P, z: 2.65 }, [1.5, 2.6, 0.2], C.shade);
+  b.box({ x: 2.65, y: P + 8, z: 0.4 }, [0.2, 2.2, 1.1], C.shade);
+  for (let k = 0; k < 3; k++) b.box({ x: 0.8, y: SINK, z: 6.4 - k * 1.1 }, [2, (k + 1) * 1.6 - SINK, 1.2], C.shade, C.stone);
+  rubble(b, 5.2, 3.2, 1.6, C.shade, C.moss);
+}
+
+/** Les Terrasses : trois gradins de murets de pierre ocre, le haut écroulé d'un côté. */
+function terrasses(b: FacetBuilder): void {
+  for (let k = 0; k < 3; k++) {
+    const w = 11 - k * 3;
+    const d = 9 - k * 2.6;
+    const top = (k + 1) * 1.3;
+    b.box({ x: 0, y: SINK, z: -k * 0.8 }, [w, top - SINK, d], C.ochre, C.moss);
+  }
+  rubble(b, 4.5, 3.8, 1.4, C.ochre, C.moss);
+}
+
+/** Les Fumerolles : trois bouches de pierre en cône, ouvertes, et la margelle cassée qui les entourait. */
+function fumerolles(b: FacetBuilder): void {
+  for (const [x, z, r, h] of [[0, 0, 3, 3.5], [-4, 2.5, 2.2, 2.4], [3.6, 3, 1.8, 1.8]] as const) {
+    b.prism({ x, y: SINK, z }, r, r * 0.45, h - SINK, 6, C.ochre, C.shade);
+  }
+  brokenWall(b, -1, -4.5, 7, 1.4, 0.15, C.stone, C.sun);
+}
+
+/** L'Étuve : un tambour de pierre bas, sa coupole à pans à demi effondrée, la porte en arc. */
+function etuve(b: FacetBuilder): void {
+  b.prism({ x: 0, y: SINK, z: 0, yaw: 0.2 }, 5, 5, 4 - SINK, 8, C.stone, C.sun);
+  b.prism({ x: -0.6, y: 4, z: -0.4, yaw: 0.2 }, 4.6, 1.6, 3, 8, C.shade, C.sun);
+  b.box({ x: 0, y: SINK, z: 4.85 }, [2, 3 - SINK, 0.4], C.woodShade);
+  rubble(b, 4.5, -2.5, 1.6, C.shade, C.moss);
+}
+
+/** Les Nacelles : un portique de bois au bord du plateau, sa poutre cassée, une nacelle tombée. */
+function nacelles(b: FacetBuilder): void {
+  b.box({ x: -4, y: SINK, z: 0 }, [1.2, 10 - SINK, 1.2], C.woodShade, C.wood);
+  b.box({ x: 4, y: SINK, z: 0 }, [1.2, 7 - SINK, 1.2], C.woodShade, C.wood);
+  b.beam({ x: -4, y: 9.6, z: 0 }, { x: 1.5, y: 9.2, z: 0 }, 0.8, C.wood);
+  b.beam({ x: 1.5, y: 9.2, z: 0 }, { x: 1.5, y: 6.5, z: 0 }, 0.15, C.woodShade);
+  b.box({ x: 2.5, y: SINK, z: 3, yaw: 0.5, pitch: 0.3 }, [2.6, 1.8 - SINK, 2], C.woodShade, C.bronze);
+  b.box({ x: 0, y: SINK, z: 0 }, [10, 0.4 - SINK, 3], C.shade, C.stone);
+}
+
+/** Une maison en ruine : ses murs, un pignon debout, son toit à moitié. */
+function house(b: FacetBuilder, x: number, z: number, sx: number, sz: number, h: number, yaw: number, whole: boolean): void {
+  b.box({ x, y: SINK, z, yaw }, [sx, h - SINK, sz], C.wall, C.shade);
+  if (whole) b.gableRoof({ x, y: h, z, yaw }, sx * 0.55, sz + 0.4, sz * 0.45, C.slate, C.wall);
+}
+
+/** Le Hameau : trois maisons basses, une seule a gardé un bout de toit. */
+function hameau(b: FacetBuilder): void {
+  house(b, -3.5, 0, 5, 4, 3, 0.2, true);
+  house(b, 3.5, -2, 4, 3.5, 2.4, -0.4, false);
+  house(b, 1.5, 4, 3.5, 3, 1.6, 0.8, false);
+}
+
+/** L'Auberge : une grande maison à étage, son toit crevé d'un côté, l'enseigne tombée. */
+function auberge(b: FacetBuilder): void {
+  b.box({ x: 0, y: SINK, z: 0 }, [9, 6 - SINK, 6], C.wall, C.shade);
+  b.gableRoof({ x: -2.2, y: 6, z: 0 }, 4.6, 6.6, 3, C.slate, C.wall);
+  b.box({ x: 2.6, y: 6, z: 0 }, [3.6, 1.6, 6], C.wall, C.shade);
+  b.box({ x: 0, y: SINK, z: 3.05 }, [1.8, 2.8 - SINK, 0.2], C.woodShade);
+  b.box({ x: 5.4, y: SINK, z: 3.5, yaw: 0.4 }, [2.4, 0.4 - SINK, 1.2], C.woodShade, C.wood);
+}
+
+/** L'Oracle : un cercle de colonnes sur une estrade, trois debout, deux brisées, un fronton tombé. */
+function oracle(b: FacetBuilder): void {
+  b.prism({ x: 0, y: SINK, z: 0, yaw: 0.1 }, 6, 6, 1 - SINK, 10, C.shade, C.stone);
+  const n = 6;
+  for (let k = 0; k < n; k++) {
+    const a = (2 * Math.PI * k) / n + 0.3;
+    const h = [7, 2.2, 7, 3.4, 7, 1.2][k];
+    b.prism({ x: 4.6 * Math.cos(a), y: 1, z: 4.6 * Math.sin(a) }, 0.75, 0.65, h, 6, C.stone, C.sun);
+  }
+  b.box({ x: 4, y: SINK, z: -4.5, yaw: 0.7 }, [4.5, 0.9 - SINK, 1.4], C.stone, C.moss);
+}
+
+/** La ruine de chaque lieu du 5e, dessinée dans son repère. */
+export const RUINS_5E: Readonly<Record<PlaceId5e, (b: FacetBuilder) => void>> = {
+  montee,
+  radeaux,
+  croisee,
+  instants,
+  semaphore,
+  gaillard,
+  donjon,
+  terrasses,
+  fumerolles,
+  etuve,
+  nacelles,
+  hameau,
+  auberge,
+  oracle,
+};

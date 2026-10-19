@@ -4,10 +4,10 @@ import { describe, expect, it } from 'vitest';
 import { EMPTY_STATE, type GameState } from '../../engine/state';
 import { getBridge, reachableIslands } from '../../world/archipelago';
 import { ensureLands, payLand } from '../../world/arrange';
-import { PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
+import { PLACES } from '../../world/continu/plan6e';
 import { landById, type LandId, landOf, startLandOf } from '../../world/continu/lands';
 import { gridLand, gridLands, openWorldLands } from './landLinks';
-import { planFor } from '../../world/continu/levelPlan';
+import { placeById, planFor, type PlaceId } from '../../world/continu/levelPlan';
 
 /** Le plan du 6e, le seul enregistré (GD-22). */
 const PLAN = planFor('6e');
@@ -36,6 +36,17 @@ describe('Ce que le monde montre des terres', () => {
     expect(openWorldLands(PLAN, [], [], id).suggested).toBe('couchant');
     // Une liaison entre deux lieux fermés n'ouvre rien : aucun pont suggéré.
     expect(openWorldLands(PLAN, [], [], 'history-6e-antiquity-geography-6e-living').suggested).toBeNull();
+  });
+
+  it('au 5e, une prochaine destination d’un autre niveau suggère la première terre du plan qu’on peut relier (relecture du lot 2)', () => {
+    const plan5 = planFor('5e');
+    // La liaison du 6e qui ouvre le Couchant, vue du 5e : la terre suggérée est celle du 5e qu'on relie d'abord.
+    const id = 'french-6e-phonology-life-earth-sciences-6e-living-world';
+    expect(openWorldLands(plan5, [], [], id).suggested).toBe('roselieres');
+    // Sans liaison, une destination dans une île du 6e : de même.
+    expect(openWorldLands(plan5, [], [], undefined, 'french-6e-letter-confusion').suggested).toBe('roselieres');
+    // Au 6e, une mission du 6e : rien de suggéré, comme avant.
+    expect(openWorldLands(PLAN, [], [], undefined, 'french-6e-letter-confusion').suggested).toBeNull();
   });
 
   it('la Pointe : le Phare et les Quais ouverts dans la grille, la Halle et le Chantier naval offerts à l’ouverture', () => {

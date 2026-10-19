@@ -356,14 +356,15 @@ export const LARGE: readonly PlaceId[] = ['beacons', 'ferry'];
  * Pendant une question d'un lieu (`asked`), les traces que la vue cache : les siennes ; au rivage nord, où les trois
  * lieux sont voisins, celles des trois (lot L7, directeur artistique) ; au large, celles des deux (lot L9).
  */
-export function hidesTraces(asked: PlaceId | null, place: PlaceId): boolean {
+export function hidesTraces(asked: string | null, place: string): boolean {
   if (asked === null) return false;
-  const together = (group: readonly PlaceId[]) => group.includes(asked) && group.includes(place);
+  const together = (group: readonly string[]) => group.includes(asked) && group.includes(place);
   return asked === place || together(NORTH_SHORE) || together(LARGE);
 }
 
-export interface OpenPlace {
-  id: PlaceId;
+/** Un lieu d'un plan (`Id` : les identifiants des lieux de son niveau ; tous niveaux : ./levelPlan.ts). */
+export interface OpenPlace<Id extends string = PlaceId> {
+  id: Id;
   /** Le nouveau nom (fiche du 6e, § 4 ; pas encore validé : il ne s'affiche que derrière le drapeau). */
   name: string;
   /** « au Phare », « aux Quais » : pour les phrases. */

@@ -37,6 +37,17 @@ export const HORIZON_COLOR = SKY_STOPS[0].color;
  * #E4E4D4, le sol renvoyé #E8D3A8) : une face au soleil ressort deux fois plus claire que la même à l'ombre, qui garde
  * sa couleur (l'exposition relevée, 1,18, la tient claire ; valeurs du directeur artistique).
  */
+/** La lumière d'un niveau, que la vue donne à Three.js. */
+export interface SceneLight {
+  readonly sky: number;
+  readonly ground: number;
+  readonly ambient: number;
+  readonly sun: number;
+  readonly sunIntensity: number;
+  readonly sunFrom: { readonly x: number; readonly y: number; readonly z: number };
+  readonly exposure: number;
+}
+
 export const LIGHT = {
   sky: 0xe4e4d4,
   ground: 0xe8d3a8,
@@ -54,13 +65,82 @@ export const SHADOW_DIR = (() => {
   return { x: -LIGHT.sunFrom.x / l, z: -LIGHT.sunFrom.z / l };
 })();
 
+/**
+ * Le ciel et la lumière du 5e (GD-22, lot 2 ; fiche du niveau, § 2 : « fin d'après-midi », planche de rendu validée le 19
+ * octobre 2026) : un soleil bas et doré, à l'ouest-sud-ouest (environ 18°), qui prend les sommets, le plateau et les
+ * aiguilles ; en bas, sous la canopée, une lumière plus sombre et diffuse, tirée vers le bleu-vert (`HEIGHT_LIGHT_5E`).
+ * Le ciel en dégradé : doré à l'horizon, une brume gris-vert en haut, jamais saturée. Retouche du lot 2 (directeur
+ * artistique : « la lumière est plate, sans or sur les sommets ni pénombre en bas ; le ciel est crème et uni ») : le
+ * soleil moins orangé (la pierre grise virait au tabac), le ciel renvoyé plus fort et plus gris (la pierre reste grise à
+ * l'ombre, jamais presque noire), l'écart entre les deux étages porté par la hauteur.
+ */
+const SKY_STOPS_5E: readonly { at: number; color: number }[] = [
+  { at: 0, color: 0xeed3a0 },
+  { at: 6, color: 0xebd9b6 },
+  { at: 18, color: 0xdcdac9 },
+  { at: 40, color: 0xc7cfc8 },
+  { at: 90, color: 0xb6c1bf },
+];
+
+/** La couleur de l'horizon du 5e : la brume du lointain et le bas du dôme, un or pâle. */
+export const HORIZON_COLOR_5E = SKY_STOPS_5E[0].color;
+
+/**
+ * La lumière du 5e (valeurs de l'artiste technique 3D, à valider sur captures) : le ciel renvoyé gris-vert et fort (2,7),
+ * le sol renvoyé d'un gris d'olive, le soleil d'un or pâle (#FFDCAA), 4,6, bas à l'ouest-sud-ouest ; l'exposition un peu
+ * plus basse qu'au 6e (1,12). Au soleil, la pierre du haut sort dorée (#B7AA82 environ), à l'ombre grise (#555D4F) ; le
+ * sol de la forêt, en bas, reste sombre et bleu-vert (#2D5444 environ), jamais presque noir.
+ */
+export const LIGHT_5E = {
+  sky: 0xd0dad8,
+  ground: 0xa4a28c,
+  ambient: 2.7,
+  sun: 0xffdcaa,
+  sunIntensity: 4.6,
+  sunFrom: { x: -58, y: 22, z: 26 },
+  exposure: 1.12,
+} as const satisfies SceneLight;
+
+/**
+ * La lumière par la hauteur, au 5e (artiste technique 3D) : les deux étages de la planche. Sous `low` (le sol de la
+ * forêt, le bas des troncs), le soleil ne passe qu'à `sunLow` de sa force (la canopée l'arrête), et le ciel renvoyé prend
+ * la teinte `tintLow` (rouge, vert, bleu : plus froide, vers le bleu-vert) ; au-dessus de `high` (le haut de la falaise, le
+ * plateau, les aiguilles, la Montée), toute la lumière ; entre les deux, un fondu. Le brouillard s'éclaircit en hauteur :
+ * de `fogFrom` à `fogTo`, sa part tombe à `fogTop`, et les sommets dépassent la brume du lointain (la Montée se voit de
+ * la Lisière). Une ligne de shader dans le matériau du décor (three/archipeo/scene.ts), aucun appel de plus ; rien ne
+ * bouge.
+ */
+export interface HeightLight {
+  readonly low: number;
+  readonly high: number;
+  readonly sunLow: number;
+  readonly tintLow: readonly [number, number, number];
+  readonly fogFrom: number;
+  readonly fogTo: number;
+  readonly fogTop: number;
+}
+
+export const HEIGHT_LIGHT_5E: HeightLight = { low: 2.5, high: 12, sunLow: 0.2, tintLow: [0.86, 0.97, 1.04], fogFrom: 14, fogTo: 40, fogTop: 0.45 };
+
+/** Le sens où tombent les ombres peintes du 5e (l'opposé de son soleil, à plat). */
+export const SHADOW_DIR_5E = (() => {
+  const l = Math.hypot(LIGHT_5E.sunFrom.x, LIGHT_5E.sunFrom.z);
+  return { x: -LIGHT_5E.sunFrom.x / l, z: -LIGHT_5E.sunFrom.z / l };
+})();
+
+/** Le ciel d'un niveau : ses couleurs, de l'horizon au zénith. */
+export type SkyStops = readonly { at: number; color: number }[];
+
+/** Les couleurs du ciel du 6e (le défaut) et du 5e. */
+export const SKY_OF = { '6e': SKY_STOPS, '5e': SKY_STOPS_5E } as const satisfies Record<string, SkyStops>;
+
 /** La couleur du ciel à une hauteur angulaire (degrés ; sous l'horizon, l'horizon), en rouge, vert, bleu linéaires. */
-export function skyColorAt(elevation: number): [number, number, number] {
+export function skyColorAt(elevation: number, stops: SkyStops = SKY_STOPS): [number, number, number] {
   const e = Math.max(0, Math.min(90, elevation));
   let k = 0;
-  while (k < SKY_STOPS.length - 2 && e > SKY_STOPS[k + 1].at) k++;
-  const a = SKY_STOPS[k];
-  const b = SKY_STOPS[k + 1];
+  while (k < stops.length - 2 && e > stops[k + 1].at) k++;
+  const a = stops[k];
+  const b = stops[k + 1];
   const t = (e - a.at) / (b.at - a.at);
   const ca = linearRgb(a.color);
   const cb = linearRgb(b.color);
@@ -81,7 +161,7 @@ export interface SkyDome {
  * Le dôme du ciel, de rayon `radius`, centré sur la caméra par la vue : un dégradé par sommet (le seul du monde : le
  * ciel n'est pas une facette), sans lumière ni brouillard, vu des deux côtés.
  */
-export function skyDome(radius: number): SkyDome {
+export function skyDome(radius: number, stops: SkyStops = SKY_STOPS): SkyDome {
   const { sides, rows } = SKY_DOME;
   const pos: number[] = [];
   const col: number[] = [];
@@ -92,7 +172,7 @@ export function skyDome(radius: number): SkyDome {
   };
   const push = (row: number, k: number) => {
     pos.push(...vertex(row, k));
-    col.push(...skyColorAt(rows[row]));
+    col.push(...skyColorAt(rows[row], stops));
   };
   for (let r = 0; r < rows.length - 1; r++)
     for (let k = 0; k < sides; k++) {

@@ -5,6 +5,7 @@
 // près consulte (./scenette.ts : sans modèle, le pion dessiné en code ; avec, le décor sans son corps). Ce qui charge le
 // fichier et le dessine est dans la vue (../../importedCharacters.ts, `loadHabitant` ; ../../three/archipeo/habitantModels.ts).
 import { levelOfPlace, type PlaceId } from './levelPlan';
+import type { PlaceId as PlaceId6e } from './plan6e';
 
 /** La hauteur de l'habitant d'une scénette, en unités du monde (celle du pion dessiné en code, et de son modèle). */
 export const HABITANT_HEIGHT = 1.4;
@@ -14,7 +15,7 @@ export const HABITANT_HEIGHT = 1.4;
  * depuis ses pieds, au centième près : la boîte de l'habitant dans les tests de chevauchement. Un test les relit dans les
  * fichiers.
  */
-export const HABITANT_HALVES: Readonly<Record<PlaceId, { x: number; z: number }>> = {
+export const HABITANT_HALVES: Readonly<Record<PlaceId6e, { x: number; z: number }>> = {
   phare: { x: 0.32, z: 0.18 },
   quais: { x: 0.32, z: 0.19 },
   filets: { x: 0.36, z: 0.22 },

@@ -7,13 +7,16 @@
 // confirmer par le mainteneur. Ce que le monde montre des terres se lit dans la grille, par la vue
 // (../../three/archipeo/landLinks.ts, `openWorldLands`) : rien de neuf dans la sauvegarde. Les terres d'un niveau sont
 // dans son plan (./levelPlan.ts, GD-22) ; celles du 6e, dans ./plan6e.ts (`LANDS_6E`). Code pur.
-import { ALL_LANDS, type LevelPlan, type PlaceId } from './levelPlan';
+import { ALL_LANDS, ALL_PLANS, type LevelPlan, type PlaceId } from './levelPlan';
 
-/** Une terre : la Pointe du Phare (le départ, avec l'Escale), puis les quatre qu'on relie. */
-export type LandId = 'pointe' | 'couchant' | 'large' | 'levant' | 'cretes';
+/**
+ * Une terre. Au 6e : la Pointe du Phare (le départ, avec l'Escale), puis les quatre qu'on relie ; au 5e (GD-22, lot 2) :
+ * les Frondaisons (le départ, avec la Lisière), puis les Roselières, les Contreforts et les Aiguilles, sur le plateau.
+ */
+export type LandId = 'pointe' | 'couchant' | 'large' | 'levant' | 'cretes' | 'frondaisons' | 'roselieres' | 'contreforts' | 'aiguilles';
 
-/** Une terre qu'on relie : toutes, sauf celle du départ. */
-export type LinkedLand = Exclude<LandId, 'pointe'>;
+/** Une terre qu'on relie : toutes, sauf celles du départ. */
+export type LinkedLand = Exclude<LandId, 'pointe' | 'frondaisons'>;
 
 export interface Land {
   id: LandId;
@@ -48,11 +51,14 @@ export function linkedLands(plan: LevelPlan): readonly LinkedLand[] {
   return out;
 }
 
-/** Le prix d'un lieu : celui d'une liaison du 6e dans la grille (`LINK_PRICE`, un test le vérifie). */
+/** Le prix d'un lieu au 6e : celui d'une liaison du 6e dans la grille (`LINK_PRICE`, un test le vérifie). */
 export const PRICE_PER_PLACE = 4;
 
-/** Le prix d'une terre : 4 ressources par lieu, payé une fois. */
-export const landPrice = (land: LandId): number => PRICE_PER_PLACE * landById(land).places.length;
+/** Le plan d'une terre (ses identifiants sont uniques d'un niveau à l'autre). */
+export const planOfLand = (land: LandId): LevelPlan => ALL_PLANS.find((p) => p.lands.some((l) => l.id === land))!;
+
+/** Le prix d'une terre : le prix d'un lieu de son niveau (4 au 6e, 5 au 5e) par lieu, payé une fois. */
+export const landPrice = (land: LandId): number => planOfLand(land).pricePerPlace * landById(land).places.length;
 
 /** La liaison du réseau des chemins qui passe le pont d'une terre (son rang dans les liaisons du plan). */
 export function bridgeEdge(plan: LevelPlan, land: LinkedLand): number {
