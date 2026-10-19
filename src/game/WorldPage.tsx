@@ -997,6 +997,9 @@ export function WorldPage() {
   // (qui attend son instant, puis s'ouvre) soit fermé : à l'arrivée par la Nef, la baleine d'abord, la créature après
   // « J'ai compris » (référent dys, consultant UX UI et consultant d'Archipéo, retouche du lot 4 du 5e).
   const phraseDeCreature = said && !ficheVue && !whaleNext ? said : null;
+  // Les célébrations attendent aussi qu'elle soit fermée : un succès ne tombe jamais sur la phrase (référent dys et
+  // consultant UX UI, deuxième passe du lot 4 du 5e).
+  useHoldCelebrations(!!phraseDeCreature);
   const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || phraseDeCreature);
   // La découverte dite par la voix (avec la lecture automatique) quand sa bulle se montre, une seule fois.
   const decouverteDite = useRef<typeof said>(null);

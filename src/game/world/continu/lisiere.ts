@@ -145,7 +145,7 @@ const PHARE_SPOT = { east: 60, south: 60, high: 1.9, w: 1.35, h: 0.65 } as const
  * seul point chaud, immobile, plus large que haut, deux fois plus grand qu'au premier passage (à l'œil) : la couleur des
  * lanternes du 5e (`COLORS_5E.lantern`, dessinée sans ombre), un liseré sombre derrière elle (le contraste contre le
  * ciel du couchant), et sous elle une petite tour gris-bleu. La vue ne les brouille presque pas (levelWorld.ts,
- * `thinFog`). 24 triangles.
+ * `thinFog`). 28 triangles.
  */
 export const PHARE_LIGHT: Vec3 = (() => {
   const q = QUAY_5E.from;

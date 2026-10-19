@@ -897,6 +897,8 @@ describe('une seule fenêtre à la fois à l’arrivée (retouche du lot 4 du 5e
     expect(ligne()).toBeUndefined();
     await user.click(compris);
     expect(ligne()).toBeDefined();
+    // Un succès qui arrive ne tombe pas sur la phrase : les bandeaux attendent qu'elle soit fermée.
+    expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
   });
 });
 
