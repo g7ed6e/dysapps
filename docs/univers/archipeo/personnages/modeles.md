@@ -229,3 +229,18 @@ Les seize habitants des scénettes du monde ouvert du 6e (`?monde=ouvert`) sont 
 Le dépôt garde le résultat, `modeles/6e-habitant-<lieu>/habitant.glb`, sans `controle.png` ni ligne dans `reglages.csv` (la planche de contrôle, `planche-seize-reduits.jpg`, est dans la Bibliothèque). Le build le publie tel quel : `scripts/rendu/compacterGlb.mjs` ne compacte que les modèles à couleurs de sommets. Le jeu le lit avec `lireGlbTexture` (`src/game/world/characters/imported/glb.ts`), le pose à la place du pion de la scénette, à sa hauteur, face à la caméra (`src/game/world/continu/habitants.ts`), et le dessine dans la vue (`src/game/three/archipeo/habitantModels.ts`). Un fichier qui manque ou ne se lit pas laisse le pion dessiné en code.
 
 Écarts connus, à reprendre si on rouvre un modèle (consultant Archipéo, 18 octobre 2026) : la longue-vue du guetteur garde son volume sur l’épaule (seule sa couleur passe au cuivre) ; la plume de la copiste fait encore deux pointes de face et de dos ; le chapeau de papier de l’imprimeur reste blanc, fondu dans ses cheveux ; la gardienne du Phare et le pilote des Balises se ressemblent (ciré jaune, bonnet rouge), comme leurs concepts. Les couleurs des concepts font foi, plus celles des anciens pions.
+
+## Les habitants du monde ouvert du 5e (19 octobre 2026)
+
+Les quatorze habitants du 5e (un par lieu, nommés par leur métier : la fontainière de la Montée, le marchand des Radeaux, la cordière de la Croisée, le tailleur de pierre des Instants, le signaleur du Sémaphore, la peintre du Gaillard, la maçonne du Donjon, le riziculteur des Terrasses, la sondeuse des Fumerolles, le souffleur de verre de l’Étuve, la câbliste des Nacelles, le boulanger du Hameau, l’aubergiste de l’Auberge, le conteur de l’Oracle) entrent en modèles fixes (choix du mainteneur, 19 octobre 2026). Leur chaîne tourne hors du dépôt (Bibliothèque, `archipeo/univers-challenge/niveaux/5e/monde-ouvert/habitants-3d/`, outils dans `outils/`) :
+
+- un brut TRELLIS 1024 (texture 2048) par concept (`concepts/habitants/`, graine 42, la fontainière en 2026, les versions v2 du boulanger, du signaleur et de la peintre) ;
+- sa texture WebP réécrite en PNG (l’import de Blender la perdait à l’export), puis réduit à 60 000 triangles et privé de sa doublure : TRELLIS double les vêtements d’une peau intérieure, environ la moitié du modèle, qui perçait le tablier en taches une fois réduit ; une face d’où aucun rayon ne sort du modèle part ;
+- réduit à 8 000 triangles au plus (plafond du directeur artistique pour le 5e), corps 4 500 et tête 3 500 ;
+- la texture éclaircie par grappes vers le concept, comme au 6e, en JPEG 2048 ;
+- compacté (`compacter.py quant=1`) : sans normales, positions en int16 (`KHR_mesh_quantization`), sans squelette.
+
+Le dépôt garde `modeles/5e-habitant-<lieu>/habitant.glb` (`<lieu>` : l’identifiant du lieu dans `plan5e.ts`), lu comme ceux du 6e (`loadHabitant`, `habitantModelName`). Un test (`src/game/world/characters/imported/habitants5e.test.ts`) vérifie qu’il y en a un par lieu du 5e, sous 8 000 triangles.
+
+Écarts connus : le visage du riziculteur reste sombre sous son chapeau, la lanterne du conteur flotte un peu vue de profil. Les versions animées (squelette à 17 os, marche réaliste) sont dans la Bibliothèque (`animes/`, `videos/`) : le jeu ne sait pas encore animer ces os ; le tablier du boulanger et le manteau du conteur s’y déchirent encore.
+
