@@ -9,7 +9,8 @@ import { lookoutRampWall } from './lookout';
 import { standingHeight, straitClearance } from './terrain';
 
 /** Le réseau du 6e (./network.ts). */
-const NET = createNetwork(PATH_NODES, PATH_EDGES);
+export const NETWORK_6E = createNetwork(PATH_NODES, PATH_EDGES);
+const NET = NETWORK_6E;
 
 export type { NetworkPoint } from './network';
 export { START_DISTANCE } from './network';
@@ -105,7 +106,7 @@ export interface RibbonNet {
 }
 
 /** Le réseau du 6e, pour son dessin. */
-const RIBBONS_6E: RibbonNet = {
+export const RIBBONS_6E: RibbonNet = {
   edges: PATH_EDGES,
   node: (id) => pathNode(id),
   cut: (edge) => {

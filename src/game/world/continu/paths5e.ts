@@ -60,7 +60,7 @@ export const isLand5e = (land: LinkedLand): land is Link5e => land in LINKS_5E;
 const cuts = new Map<number, readonly [number, number] | null>();
 
 /** Le réseau du 5e, pour son dessin. */
-const RIBBONS_5E: RibbonNet = {
+export const RIBBONS_5E: RibbonNet = {
   edges: PATH_EDGES_5E,
   node: (id) => NETWORK_5E.pathNode(id),
   cut: (edge) => {

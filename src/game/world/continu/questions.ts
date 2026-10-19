@@ -7,7 +7,7 @@
 // a son gabarit (les deux sas), les autres missions gardent leurs items de référence (GD-20, point 8, lot L2). Code
 // pur : la vue dessine, le jeu commun compte les étoiles et le barème.
 import PLACE_ITEMS from './placeItems.json';
-import { sixthPlace, type PlaceId as AnyPlaceId } from './levelPlan';
+import { isSixthPlace, sixthPlace, type PlaceId as AnyPlaceId } from './levelPlan';
 import type { PlaceId } from './plan6e';
 
 /** Un item d'exercice, vu d'ici : sa clé, et ses champs (ceux du jeu commun, sans en dépendre). */
@@ -176,6 +176,8 @@ export const ENCLOS_RULE_LINE = [
 
 /** La ligne de règle d'une mission qui en a une (l'Enclos), au niveau donné ; `null` sinon. */
 export function placeRuleLine(anyPlace: AnyPlaceId, exerciseId: string, level: number): string | null {
+  // Un lieu du 5e n'a pas encore de consigne à lui (GD-22, lot 2) : la consigne de référence.
+  if (!isSixthPlace(anyPlace)) return null;
   const place = sixthPlace(anyPlace);
   return rangeGesture(place, exerciseId) ? ENCLOS_RULE_LINE[level >= 2 ? 1 : 0] : null;
 }
@@ -189,6 +191,8 @@ export function placeRuleLine(anyPlace: AnyPlaceId, exerciseId: string, level: n
  * (`pairScene` rend `null`, il se joue sur le sas au repos) garde la consigne de référence (contenu, relecture de L2).
  */
 export function placeInstruction(anyPlace: AnyPlaceId, exerciseId: string, level: number, reference: string, scene?: ItemScene): string {
+  // Un lieu du 5e n'a pas encore de consigne à lui (GD-22, lot 2) : la consigne de référence.
+  if (!isSixthPlace(anyPlace)) return reference;
   const place = sixthPlace(anyPlace);
   // Au Phare, l'Abattage syllabique se répond en touchant une cloche : « tape » s'y lirait « frappe la cloche une fois
   // par syllabe » (relecture de L3, contenu). Sa première phrase change ; la fin des niveaux 2 et 3 reste.
@@ -666,6 +670,7 @@ export const RANGE_PER_GRAND_ROUND = 1;
  * n'est pas construit) : ses paniers ; `null` sinon. Aux Filets, l'Enclos.
  */
 export function rangeGesture(anyPlace: AnyPlaceId, exerciseId: string): readonly RangeBin[] | null {
+  if (!isSixthPlace(anyPlace)) return null;
   const place = sixthPlace(anyPlace);
   return place === 'filets' && missionIs(exerciseId, 'word-classes') ? ENCLOS_BINS : null;
 }

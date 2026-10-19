@@ -34,6 +34,11 @@ interface Props {
    */
   portName?: string;
   /**
+   * Les lieux du haut (GD-22 : le plateau du 5e) : un triangle « en haut » collé à leur nom, et sur Kéo quand il y est
+   * (`up`, le point que la scène donne) ; rien au 6e.
+   */
+  upper?: readonly PlaceId[];
+  /**
    * La page y range la fonction qui pose les étiquettes (le rappel `onMapPlaces` de la scène l'appelle) ; `moving` tant
    * que la Carte glisse (sans la reprise des noms fermés, posée à l'arrêt).
    */
@@ -85,7 +90,7 @@ const ONE_LINE = 12;
  * de 12 `ch` : au plus grand texte, l'espacement des lettres d'OpenDyslexic la débordait, et « Le Chantier naval » y
  * passait sur trois lignes) ; à la suite, sur une ligne, sinon (openWorld.css).
  */
-function Name({ text, wrap = false }: { text: string; wrap?: boolean }) {
+function Name({ text, wrap = false, up = false }: { text: string; wrap?: boolean; up?: boolean }) {
   const lines = nameLines(text);
   return (
     <span className="open-world-map-lines" data-lignes={wrap && text.length > ONE_LINE ? '2' : '1'}>
@@ -93,13 +98,25 @@ function Name({ text, wrap = false }: { text: string; wrap?: boolean }) {
         <span key={i} className="open-world-map-line">
           {i > 0 ? ' ' : ''}
           {line}
+          {/* Le triangle « en haut » (GD-22) : dans la dernière ligne du nom, qui ne se coupe pas, toujours collé à lui
+              (référent dys : jamais seul ni sur une autre ligne). */}
+          {up && i === lines.length - 1 && <Up />}
         </span>
       ))}
     </span>
   );
 }
 
-export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, states, words, portName, onCrowded }: Props) {
+/** Le triangle « en haut », dessiné en CSS (openWorld.css), jamais une couleur seule : sa forme le dit, le bouton le lit. */
+const Up = () => <span className="open-world-map-up" aria-hidden="true" />;
+
+/** Ce que dit un lieu du haut, après son nom. */
+const UP_WORDS = ', en haut';
+
+/** Ce que dit la pastille de Kéo. */
+const KEO_LABEL = 'Toi : Kéo est ici';
+
+export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, states, words, portName, upper = [], onCrowded }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number; narrow?: { w: number; h: number } }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
@@ -155,6 +172,14 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
     for (const s of spots) {
       const node = el.querySelector<HTMLElement>(`[data-lieu="${s.id}"]`);
       if (node && node.hidden === s.shown) node.hidden = !s.shown;
+      // Kéo sur le plateau (GD-22) : le triangle « en haut » à côté de « Toi », et dit.
+      if (node && s.id === 'keo' && s.up !== undefined) {
+        const haut = s.up ? 'oui' : 'non';
+        if (node.dataset.haut !== haut) {
+          node.dataset.haut = haut;
+          node.setAttribute('aria-label', `${KEO_LABEL}${s.up ? UP_WORDS : ''}`);
+        }
+      }
     }
     const items = itemsOf(spots);
     // Kéo d'abord, puis l'Escale (elle garde son nom), les autres pastilles, puis les cadenas des ponts : l'ordre de
@@ -255,12 +280,13 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
 
   return (
     <div ref={root} className="open-world-map-places">
-      <span className="open-world-map-keo" data-lieu="keo" role="img" aria-label="Toi : Kéo est ici" hidden>
+      <span className="open-world-map-keo" data-lieu="keo" role="img" aria-label={KEO_LABEL} hidden>
         <span className="open-world-map-keo-disc" aria-hidden="true">
           <Icon name="toi" />
         </span>
         <span className="open-world-map-keo-word" aria-hidden="true">
           Toi
+          {upper.length > 0 && <Up />}
         </span>
       </span>
       {/* L'Escale : une pastille comme les lieux, toujours ouverte, sans état ni cadenas (consultant UX UI). */}
@@ -285,11 +311,11 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
               className="open-world-map-place open-world-map-pale"
               data-lieu={p.id}
               hidden
-              aria-label={`${p.name}, ${orderLabel?.(land) ?? closedLandLabel(land)}`}
+              aria-label={`${p.name}${upper.includes(p.id) ? UP_WORDS : ''}, ${orderLabel?.(land) ?? closedLandLabel(land)}`}
               onClick={() => onClosed(land)}
             >
               <span className="open-world-map-place-name">
-                <Name text={p.name} wrap />
+                <Name text={p.name} wrap up={upper.includes(p.id)} />
               </span>
               <span className="open-world-map-icon" aria-hidden="true">
                 <Icon name={getBiome(p.island)?.icon ?? 'map'} />
@@ -305,11 +331,11 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
             className="open-world-map-place"
             data-lieu={p.id}
             hidden
-            aria-label={`Y aller : ${p.name}${word ? `, ${word.toLowerCase()}` : ''}`}
+            aria-label={`Y aller : ${p.name}${upper.includes(p.id) ? UP_WORDS : ''}${word ? `, ${word.toLowerCase()}` : ''}`}
             onClick={() => onPick(p.id)}
           >
             <span className="open-world-map-place-name">
-              <Name text={p.name} wrap />
+              <Name text={p.name} wrap up={upper.includes(p.id)} />
             </span>
             {/* Dans la pastille réduite seulement, l'icône propre du lieu (celle de son île) : deux lieux ouverts réduits ne
                 se confondent pas ; l'état y passe en petit insigne, dans son coin (relecture du rivage sud). */}

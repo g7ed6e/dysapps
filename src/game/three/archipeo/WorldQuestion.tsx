@@ -40,9 +40,9 @@ import { Aid } from '../../exercises/Aid';
 import { NoticeQuestion } from '../../exercises/CalculationScreen';
 import type { ScreenProps } from '../../exercises/registry';
 import { exercisesToReview } from '../../review';
-import { placeById, type PlaceId } from '../../world/continu/levelPlan';
+import { isSixthPlace, placeById, type PlaceId } from '../../world/continu/levelPlan';
 import { WIDEN_FULL, WIDEN_OFFER, WIDEN_SCENE, questionLayout } from '../../world/continu/questionScene';
-import { scenetteLayout, scenetteOf } from '../../world/continu/scenette';
+import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
 import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { BellScreen, BellTarget } from './BellScreen';
@@ -147,6 +147,9 @@ export interface WorldRevisionPart {
   Done: ComponentType<StageDoneProps>;
 }
 
+/** La scénette d'un lieu qui n'en a pas (le 5e, GD-22, lot 2) : ni rôle ni phrase d'accueil. */
+const NO_SCENETTE: Scenette = { role: '', greeting: null, placement: 'rangee' };
+
 export function WorldQuestion({ place, mission, plain = false, world, onClose, revision }: Props) {
   const { state, completeRevision } = useBlocland();
   const { settings } = useSettings();
@@ -214,7 +217,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   // largeur (« Elles sont égales », Deux rives, GD-20, point 8, lot L2), avant de faire tomber l'image ou de proposer
   // « Vue simple ».
   const [wideRow, setWideRow] = useState(false);
-  const scenette = scenetteOf(place);
+  // Un lieu du 5e n'a pas encore de scénette (GD-22, lot 2) : ses missions se jouent toujours sur l'écran habituel,
+  // sans habitant ni phrase d'accueil.
+  const scenette = isSixthPlace(place) ? scenetteOf(place) : NO_SCENETTE;
   // La première rencontre de l'habitant depuis le lancement : sa phrase s'écrit au premier item seulement.
   const [meeting] = useState(() => scenette.greeting !== null && !greeted.has(place));
   const [greetItem, setGreetItem] = useState<string | null>(null);

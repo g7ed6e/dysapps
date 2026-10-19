@@ -978,6 +978,22 @@
   width: 26px;
   height: 26px;
 }
+/* Le triangle « en haut » (GD-22, le plateau du 5e) : collé au nom d'un lieu du haut, dans sa dernière ligne, qui ne se
+   coupe pas ; sur « Toi » quand Kéo est sur le plateau. Une forme pleine de la couleur du texte, sur le fond uni de
+   l'étiquette, jamais une couleur seule ; le bouton dit « en haut ». */
+.open-world-map-up {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 0.3em;
+  border-left: 0.36em solid transparent;
+  border-right: 0.36em solid transparent;
+  border-bottom: 0.62em solid currentColor;
+  vertical-align: 0.05em;
+}
+.open-world-map-keo:not([data-haut='oui']) .open-world-map-up {
+  display: none;
+}
 /* Trop serré : la pastille seule, « Toi » reste dit aux lecteurs d'écran. */
 .open-world-map-keo[data-nom='non'] .open-world-map-keo-word {
   visibility: hidden;

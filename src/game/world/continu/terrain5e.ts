@@ -327,3 +327,13 @@ export function tileCounts5e(field: HeightField, detail: TileDetail): Int32Array
   for (let tz = 0; tz < tilesZ; tz++) for (let tx = 0; tx < tilesX; tx++) out[tz * tilesX + tx] = drawTileWith(field, tx, tz, detail, null, PAINT_5E) + drawFlora5e(tx, tz, detail, null);
   return out;
 }
+
+/**
+ * Ce qui bloque la marche libre dans une tuile du 5e (./freeWalk.ts) : le pied de chaque palétuvier, ses racines
+ * comprises (un buisson, son dôme), et chaque aiguille ; un disque chacun (son centre, son rayon).
+ */
+export function obstaclesIn5e(tx: number, tz: number): { x: number; z: number; r: number }[] {
+  const out = treesIn(tx, tz).map((t) => ({ x: t.x, z: t.z, r: (t.shrub ? 1.6 : 2) * t.size }));
+  for (const n of needlesIn(tx, tz)) out.push({ x: n.at.x, z: n.at.z, r: n.radius });
+  return out;
+}

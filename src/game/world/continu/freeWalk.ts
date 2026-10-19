@@ -9,11 +9,13 @@ import { boundsOf } from './facets';
 import { floraOf, type FloraItem } from './flora';
 import { distance, type Vec2 } from './geometry';
 import { bridgeEdge, linkedLands, nodeLands, startLandOf, type LandId, type LinkedLand } from './lands';
-import { planFor } from './levelPlan';
+import { planFor, type LevelPlan } from './levelPlan';
 import { pathNode } from './paths';
-import { PATH_EDGES, PLACES, PORT, PORT_PAVING, TERRAIN, portFloor } from './plan6e';
+import { NETWORK_5E } from './paths5e';
+import { PORT, PORT_PAVING, TERRAIN, portFloor } from './plan6e';
 import { modelOfPlace } from './places';
 import { heightOnMesh, type HeightField } from './terrain';
+import { obstaclesIn5e } from './terrain5e';
 
 /**
  * Les réglages de la grille : le pas d'une case (la moitié de celui du terrain) ; le sol le plus bas où l'on marche (au-
@@ -34,7 +36,10 @@ const BLOCKED = 0;
 const GROUND = 1;
 const PATH = 2;
 
-/** La grille de ce qui se marche : son coin, son pas, ses cases, la sorte de chaque case et sa terre (son rang dans `LANDS`, ou −1). */
+/**
+ * La grille de ce qui se marche : son coin, son pas, ses cases, la sorte de chaque case et sa terre (son rang dans
+ * `lands`, les terres de son plan, ou −1).
+ */
 export interface WalkGrid {
   minX: number;
   minZ: number;
@@ -43,20 +48,44 @@ export interface WalkGrid {
   nz: number;
   kind: Uint8Array;
   land: Int8Array;
+  lands: readonly LandId[];
 }
 
-/** La marche libre est encore celle du plan du 6e (GD-22, lot 1 : le plan par niveau). */
-const PLAN = planFor('6e');
-const LANDS = PLAN.lands;
-const START_LAND = startLandOf(PLAN);
-const NODE_LANDS = nodeLands(PLAN);
-const LAND_INDEX = new Map<LandId, number>(LANDS.map((l, i) => [l.id, i]));
-// Les terres fermées tiennent dans un masque de 31 bits (`closedMask`).
-if (LANDS.length > 31) throw new Error('freeWalk : plus de 31 terres, le masque des terres fermées ne suffit plus');
-/** Le rang d'une terre dans `LANDS` (toute terre y est ; sinon, une erreur plutôt qu'un rang faux). */
-function landIndex(l: LandId): number {
-  const i = LAND_INDEX.get(l);
-  if (i === undefined) throw new Error(`freeWalk : terre inconnue « ${l} »`);
+/** Le plan du 6e : celui de la marche libre quand on ne dit pas le plan. */
+const PLAN_6E = planFor('6e');
+
+/**
+ * Ce que la marche libre lit d'un niveau (GD-22, lot 2) : un nœud de son réseau, le sol où l'on marche toujours (la
+ * pierre de l'Escale, au 6e), ce qui bloque dans une tuile (la végétation, les aiguilles), et les boîtes en plus des
+ * lieux (les bâtiments de l'Escale).
+ */
+interface WalkWorld {
+  node(id: string): Vec2;
+  paved(x: number, z: number): boolean;
+  obstacles(field: HeightField, tx: number, tz: number): readonly { x: number; z: number; r: number }[];
+  boxes(block: (center: Vec2, reach: number, toLocal: (p: Vec2) => Vec2, box: { x0: number; x1: number; z0: number; z1: number }) => void): void;
+}
+
+const WALK_6E: WalkWorld = {
+  node: (id) => pathNode(id).at,
+  paved: (x, z) => portFloor(x, z) !== null,
+  obstacles: (field, tx, tz) => floraOf(field, tx, tz).map((it) => ({ x: it.x, z: it.z, r: FLORA_RADIUS[it.kind] * it.scale })),
+  boxes: (block) => block(PORT.toWorld((PORT_BUILDINGS.x0 + PORT_BUILDINGS.x1) / 2, (PORT_BUILDINGS.z0 + PORT_BUILDINGS.z1) / 2), 30, PORT.toLocal, PORT_BUILDINGS),
+};
+
+const WALK_5E: WalkWorld = {
+  node: (id) => NETWORK_5E.pathNode(id).at,
+  paved: () => false,
+  obstacles: (_field, tx, tz) => obstaclesIn5e(tx, tz),
+  boxes: () => {},
+};
+
+const walkWorldOf = (plan: LevelPlan): WalkWorld => (plan.level === '5e' ? WALK_5E : WALK_6E);
+
+/** Le rang d'une terre dans celles de la grille (toute terre y est ; sinon, une erreur plutôt qu'un rang faux). */
+function landIndex(lands: readonly LandId[], l: LandId): number {
+  const i = lands.indexOf(l);
+  if (i < 0) throw new Error(`freeWalk : terre inconnue « ${l} »`);
   return i;
 }
 
@@ -69,8 +98,8 @@ function onSegment(p: Vec2, a: Vec2, b: Vec2): { d: number; t: number } {
   return { d: Math.hypot(p.x - a.x - dx * t, p.z - a.z - dz * t), t };
 }
 
-/** La grille déjà tirée, et le terrain dont elle vient (un autre terrain la retire). */
-let gridCache: { field: HeightField; grid: WalkGrid } | null = null;
+/** Les grilles déjà tirées, par terrain (chaque niveau a le sien). */
+const gridCache = new WeakMap<HeightField, WalkGrid>();
 
 /** Tant de rangées de cases entre deux pauses du tirage (`walkGridSteps`). */
 const ROWS_PER_STEP = 8;
@@ -79,8 +108,8 @@ const EDGES_PER_STEP = 16;
 const CELLS_PER_STEP = 20_000;
 
 /** Tire la grille de ce qui se marche d'un coup (une fois par terrain : seules les terres fermées changent, à la lecture). */
-export function buildWalkGrid(field: HeightField): WalkGrid {
-  const steps = walkGridSteps(field);
+export function buildWalkGrid(field: HeightField, plan: LevelPlan = PLAN_6E): WalkGrid {
+  const steps = walkGridSteps(field, plan);
   for (;;) {
     const r = steps.next();
     if (r.done) return r.value;
@@ -92,13 +121,21 @@ export function buildWalkGrid(field: HeightField): WalkGrid {
  * rend la main, si bien que la vue le mène au repos sans à-coup ; le dernier rend la grille. Une grille déjà tirée pour
  * ce terrain est rendue au premier pas.
  */
-export function* walkGridSteps(field: HeightField): Generator<void, WalkGrid, void> {
-  if (gridCache?.field === field) return gridCache.grid;
+export function* walkGridSteps(field: HeightField, plan: LevelPlan = PLAN_6E): Generator<void, WalkGrid, void> {
+  const known = gridCache.get(field);
+  if (known) return known;
+  const world = walkWorldOf(plan);
+  const lands = plan.lands.map((l) => l.id);
+  // Les terres fermées tiennent dans un masque de 31 bits (`closedMask`).
+  if (lands.length > 31) throw new Error('freeWalk : plus de 31 terres, le masque des terres fermées ne suffit plus');
+  const startLand = startLandOf(plan);
+  const nodeLand = nodeLands(plan);
+  const T = plan.terrain;
   const { cell } = FREE_WALK;
-  const minX = TERRAIN.minX;
-  const minZ = TERRAIN.minZ;
-  const nx = Math.ceil((TERRAIN.tilesX * TERRAIN.tileCells * TERRAIN.step) / cell);
-  const nz = Math.ceil((TERRAIN.tilesZ * TERRAIN.tileCells * TERRAIN.step) / cell);
+  const minX = T.minX;
+  const minZ = T.minZ;
+  const nx = Math.ceil((T.tilesX * T.tileCells * T.step) / cell);
+  const nz = Math.ceil((T.tilesZ * T.tileCells * T.step) / cell);
   const kind = new Uint8Array(nx * nz);
   const land = new Int8Array(nx * nz).fill(-1);
   const centerOf = (i: number, j: number): Vec2 => ({ x: minX + (i + 0.5) * cell, z: minZ + (j + 0.5) * cell });
@@ -109,7 +146,7 @@ export function* walkGridSteps(field: HeightField): Generator<void, WalkGrid, vo
     if (j % ROWS_PER_STEP === ROWS_PER_STEP - 1) yield;
     for (let i = 0; i < nx; i++) {
       const p = centerOf(i, j);
-      if (portFloor(p.x, p.z) !== null) {
+      if (world.paved(p.x, p.z)) {
         kind[j * nx + i] = GROUND;
         continue;
       }
@@ -142,12 +179,12 @@ export function* walkGridSteps(field: HeightField): Generator<void, WalkGrid, vo
         if (l.x >= box.x0 && l.x <= box.x1 && l.z >= box.z0 && l.z <= box.z1) kind[j * nx + i] = BLOCKED;
       }
   };
-  for (let tz = 0; tz < TERRAIN.tilesZ; tz++)
-    for (let tx = 0; tx < TERRAIN.tilesX; tx++) {
-      for (const it of floraOf(field, tx, tz)) blockDisk(it, FLORA_RADIUS[it.kind] * it.scale + FREE_WALK.keo);
+  for (let tz = 0; tz < T.tilesZ; tz++)
+    for (let tx = 0; tx < T.tilesX; tx++) {
+      for (const it of world.obstacles(field, tx, tz)) blockDisk(it, it.r + FREE_WALK.keo);
       yield;
     }
-  for (const pl of PLACES) {
+  for (const pl of plan.places) {
     const b = boundsOf(modelOfPlace(pl.id).facets);
     const c = Math.cos(pl.yaw);
     const s = Math.sin(pl.yaw);
@@ -160,19 +197,20 @@ export function* walkGridSteps(field: HeightField): Generator<void, WalkGrid, vo
     const k = FREE_WALK.keo;
     blockBox(pl.center, 16, toLocal, { x0: b.min[0] - k, x1: b.max[0] + k, z0: b.min[2] - k, z1: b.max[2] + k });
   }
-  blockBox(PORT.toWorld((PORT_BUILDINGS.x0 + PORT_BUILDINGS.x1) / 2, (PORT_BUILDINGS.z0 + PORT_BUILDINGS.z1) / 2), 30, PORT.toLocal, PORT_BUILDINGS);
+  world.boxes(blockBox);
   yield;
 
   // Les chemins, toujours marchés (la digue, les pontons, les portes des lieux, les culées), et leur terre ; sur la
   // liaison d'un pont, la part au-delà de l'arrêt de Kéo est de la terre du pont (fermée tant qu'il n'est pas rebâti).
-  const bridgeOf = new Map<number, LinkedLand>(linkedLands(PLAN).map((l) => [bridgeEdge(PLAN, l), l]));
+  const bridgeOf = new Map<number, LinkedLand>(linkedLands(plan).map((l) => [bridgeEdge(plan, l), l]));
   // Les cases d'un pont : elles ne donnent pas leur terre à l'herbe voisine (la rive d'en face la prendrait).
   const onBridge = new Uint8Array(nx * nz);
-  for (let edge = 0; edge < PATH_EDGES.length; edge++) {
+  const edges = plan.pathEdges;
+  for (let edge = 0; edge < edges.length; edge++) {
     if (edge % EDGES_PER_STEP === EDGES_PER_STEP - 1) yield;
-    const [ia, ib] = PATH_EDGES[edge];
-    const a = pathNode(ia).at;
-    const b = pathNode(ib).at;
+    const [ia, ib] = edges[edge];
+    const a = world.node(ia);
+    const b = world.node(ib);
     const r = FREE_WALK.path;
     const bridge = bridgeOf.get(edge);
     const site = bridge ? bridgeSite(bridge) : null;
@@ -190,10 +228,10 @@ export function* walkGridSteps(field: HeightField): Generator<void, WalkGrid, vo
           // Sur un pont : du côté ouvert jusqu'à l'arrêt de Kéo, sa terre d'avant ; au-delà, la terre du pont.
           const fromNear = site.nearEnd === 0 ? t : 1 - t;
           const beyond = fromNear * site.length > site.water[0] - KEO_STOP + 1e-6;
-          l = beyond ? site.land : (NODE_LANDS.get(PATH_EDGES[edge][site.nearEnd]) ?? START_LAND);
-        } else l = NODE_LANDS.get(t < 0.5 ? ia : ib) ?? START_LAND;
+          l = beyond ? site.land : (nodeLand.get(edges[edge][site.nearEnd]) ?? startLand);
+        } else l = nodeLand.get(t < 0.5 ? ia : ib) ?? startLand;
         // Une case déjà prise par un chemin d'une autre terre garde la sienne (un croisement près d'un pont).
-        const li = landIndex(l);
+        const li = landIndex(lands, l);
         if (kind[k] === PATH && land[k] >= 0 && land[k] !== li) continue;
         kind[k] = PATH;
         land[k] = li;
@@ -222,8 +260,8 @@ export function* walkGridSteps(field: HeightField): Generator<void, WalkGrid, vo
   }
   // Ce qu'aucun chemin n'atteint (un îlot, un replat isolé par les pentes) ne se marche pas.
   for (let k = 0; k < kind.length; k++) if (land[k] < 0) kind[k] = BLOCKED;
-  const grid: WalkGrid = { minX, minZ, cell, nx, nz, kind, land };
-  gridCache = { field, grid };
+  const grid: WalkGrid = { minX, minZ, cell, nx, nz, kind, land, lands };
+  gridCache.set(field, grid);
   return grid;
 }
 
@@ -245,7 +283,7 @@ const STEPS8: readonly (readonly [number, number, number])[] = [
 ];
 
 /** Les terres où l'on ne marche pas (leurs rangs), d'une liste de terres fermées. */
-const closedMask = (closed: readonly LinkedLand[]): number => closed.reduce((m, l) => m | (1 << landIndex(l)), 0);
+const closedMask = (g: WalkGrid, closed: readonly LinkedLand[]): number => closed.reduce((m, l) => m | (1 << landIndex(g.lands, l)), 0);
 
 /** La case sous un point, ou −1 hors de la grille. */
 export function cellOf(g: WalkGrid, p: Vec2): number {
@@ -264,7 +302,7 @@ const walkable = (g: WalkGrid, k: number, mask: number): boolean => k >= 0 && g.
 
 /** Le point se marche-t-il, les terres `closed` fermées ? */
 export function isWalkable(g: WalkGrid, p: Vec2, closed: readonly LinkedLand[]): boolean {
-  return walkable(g, cellOf(g, p), closedMask(closed));
+  return walkable(g, cellOf(g, p), closedMask(g, closed));
 }
 
 /** Le point sur un chemin ? (Kéo y suit alors le réseau, comme avant.) */
@@ -278,7 +316,7 @@ export function onPathCell(g: WalkGrid, p: Vec2): boolean {
  * sinon le centre de la case marchable la plus proche, à `FREE_WALK.search` unités au plus ; rien au-delà.
  */
 export function nearestWalkable(g: WalkGrid, p: Vec2, closed: readonly LinkedLand[]): Vec2 | null {
-  const mask = closedMask(closed);
+  const mask = closedMask(g, closed);
   const k0 = cellOf(g, p);
   if (walkable(g, k0, mask)) return p;
   const i0 = Math.floor((p.x - g.minX) / g.cell);
@@ -361,7 +399,7 @@ function lineCost(g: WalkGrid, a: Vec2, b: Vec2, mask: number): number {
  * s'atteint pas (il doit se marcher : `nearestWalkable` d'abord).
  */
 export function freeRoute(g: WalkGrid, from: Vec2, to: Vec2, closed: readonly LinkedLand[]): Vec2[] | null {
-  const mask = closedMask(closed);
+  const mask = closedMask(g, closed);
   let start = cellOf(g, from);
   const goal = cellOf(g, to);
   if (!walkable(g, goal, mask)) return null;

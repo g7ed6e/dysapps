@@ -10,8 +10,8 @@ import { LANDS_5E, PLACES_5E } from './plan5e';
 describe('Le plan par niveau', () => {
   it('deux plans, le 6e et le 5e ; la fabrique de disposition n’ouvre que des niveaux qui ont leur plan', () => {
     expect(OPEN_WORLD_LEVELS).toEqual(['6e', '5e']);
-    // Le 5e a son plan et son terrain ; sa vue (la scène, la page) vient avec la seconde moitié du lot 2.
-    for (const a of OPEN_WORLD_ARCHIPELAGOS) expect(OPEN_WORLD_LEVELS).toContain(a);
+    // Les mêmes listes : chaque niveau qui a son plan a son monde ouvert, et seulement lui.
+    expect([...OPEN_WORLD_ARCHIPELAGOS]).toEqual([...OPEN_WORLD_LEVELS]);
   });
 
   it('le plan du 6e est celui de plan6e.ts, sans rien changer', () => {
