@@ -26,9 +26,15 @@ md.decimate_type = "COLLAPSE"
 md.ratio = min(1, cible / n0)
 md.use_collapse_triangulate = True
 bpy.ops.object.modifier_apply(modifier="d")
-for img in bpy.data.images:
+# Depuis octobre 2026, TRELLIS livre ses textures en WebP, que l'export JPEG ignore sans erreur :
+# chaque image est recopiée pixel par pixel dans une image neuve, que l'export sait écrire.
+for img in list(bpy.data.images):
     if img.size[0] > tex:
         img.scale(tex, tex)
-    img.pack()
+    copie = bpy.data.images.new(img.name + "-copie", img.size[0], img.size[1], alpha=False)
+    copie.colorspace_settings.name = img.colorspace_settings.name
+    copie.pixels.foreach_set(list(img.pixels))
+    copie.pack()
+    img.user_remap(copie)
 bpy.ops.export_scene.gltf(filepath=out, use_selection=True, export_image_format="JPEG", export_jpeg_quality=88)
 print("ok", n0, "->", len(o.data.polygons), "triangles")
