@@ -146,7 +146,8 @@ export const NEF_WALL: readonly Cumulus[] = [
  * large enfoui derrière le mur, une silhouette continue, sans étranglement, qui monte au-dessus de lui et s'ouvre en
  * nuage au sommet, deux boules côte à côte ; légèrement penchée vers l'est ; gris froid, plus sombre que le mur, jamais
  * noir ; aucune arête droite de haut en bas. `[hauteur, rayon, déport vers l'est]` de chaque boule, du pied au sommet ;
- * les deux dernières font le sommet.
+ * les deux dernières font le sommet. Vu du quai, le mur cache tout ce qui est sous 61 unités environ là où il se dresse
+ * (la ligne de vue au ras des cumulus) : il monte jusqu'à 124, sa moitié haute au-dessus (captures v3 du lot 4).
  */
 export const NEF_PLUME = {
   x: -165,
@@ -156,8 +157,11 @@ export const NEF_PLUME = {
     [27, 20, 3],
     [40, 20, 6],
     [53, 21, 9],
-    [67, 22, 10],
-    [65, 19, 33],
+    [66, 21, 11],
+    [79, 22, 13],
+    [92, 23, 14],
+    [105, 24, 15],
+    [102, 21, 37],
   ],
 } as const satisfies { x: number; z: number; balls: readonly (readonly [number, number, number])[] };
 

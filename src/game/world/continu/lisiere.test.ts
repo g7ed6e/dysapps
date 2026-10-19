@@ -181,10 +181,11 @@ describe('Le dirigeable en trois temps', () => {
     expect(wallTouched(NEF_5E.berth)).toBe(false);
   });
 
-  it('coûte sous ses plafonds : le modèle, son ber et la bouée 1 900 ; le gréement 150 ; le mur et le panache 700', () => {
+  it('coûte sous ses plafonds : le modèle, son ber et la bouée 1 900 ; le gréement 150 ; le mur et le panache 800', () => {
     const t = nef5eSiteTriangles();
     expect(t.ber).toBeLessThanOrEqual(150 + 196);
-    expect(t.wall + t.plume).toBeLessThanOrEqual(700);
+    // 800 depuis les captures v3 : le panache monte au-dessus du mur vu du quai (216 triangles), dans l'enveloppe du monde ouvert inchangée.
+    expect(t.wall + t.plume).toBeLessThanOrEqual(800);
   });
 });
 

@@ -462,10 +462,16 @@ const NEF_FRAMED_HEIGHT = 2.5;
 const FRAMED_BRIDGE_NEAR = 12;
 /** Le bout de la caméra qui suit Kéo, et celui de la Carte (l'île entière, de haut), en unités. */
 const FOLLOW_FAR = 500;
+/**
+ * Au 5e, le bout de la caméra qui suit Kéo va plus loin : vu du quai de la Lisière, le panache de la Nef (x −165,
+ * z −300, ./world/continu/nef5e.ts, `NEF_PLUME`) est à quelque 510 à 580 unités de profondeur, au-delà de 500, qui n'en
+ * laissait qu'une tranche (captures v3 du lot 4). Le 6e garde 500.
+ */
+const FOLLOW_FAR_5E = 700;
 /** Le regard levé au quai du lieu de départ ne vaut que la caméra tournée à moins de tant de son cap (en radians). */
 const QUAY_LOOK_TURN = 0.6;
 const MAP_FAR = 2000;
-/** Le rayon du dôme du ciel : en deçà du bout de la caméra qui suit Kéo (`FOLLOW_FAR`). */
+/** Le rayon du dôme du ciel : en deçà du bout de la caméra qui suit Kéo (`FOLLOW_FAR`) ; dessiné sans profondeur, tout le reste passe devant. */
 const SKY_RADIUS = 450;
 /** Sur la Carte, la brume du lointain commence au-delà de l'île : rien ne s'y efface (sans refaire les shaders). */
 const MAP_FOG = 5000;
@@ -773,6 +779,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // reste caché, et rien ne s'y appelle, sauf la scénette et les traces de la Montée (GD-22, lot 3, `hasScenette`).
   const world = levelWorld(level);
   const { sixth, net } = world;
+  const followFar = sixth ? FOLLOW_FAR : FOLLOW_FAR_5E;
   // Le lieu de départ du niveau et sa Nef (GD-20, lot 2 ; GD-21 ; GD-22, lot 4) : l'Escale et le voilier au 6e, la
   // Lisière et le dirigeable au 5e.
   const departure = world.departure;
@@ -795,7 +802,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   scene.background = horizon;
   const fog = new THREE.Fog(horizon, WORLD_FOG.near, WORLD_FOG.far);
   scene.fog = fog;
-  const camera = new THREE.PerspectiveCamera(40, host.clientWidth / Math.max(1, host.clientHeight), 0.5, FOLLOW_FAR);
+  const camera = new THREE.PerspectiveCamera(40, host.clientWidth / Math.max(1, host.clientHeight), 0.5, followFar);
   // Elle voit le monde et Kéo, à part sur sa couche (sa silhouette, `drawWithSilhouette`).
   camera.layers.enable(KEO_LAYER);
   // Le mappage des tons neutre : les aplats gardent leur couleur, les blancs au soleil s'adoucissent (lot 3).
@@ -2543,7 +2550,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     options.onMapPlaces(mapSpots, false);
     fog.near = WORLD_FOG.near;
     fog.far = WORLD_FOG.far;
-    camera.far = FOLLOW_FAR;
+    camera.far = followFar;
     camera.updateProjectionMatrix();
     riftMesh.visible = !sixth;
     updateRings(true, true);
