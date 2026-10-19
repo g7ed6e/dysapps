@@ -80,17 +80,26 @@
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
-/* « Y aller » : toujours au même endroit, en bas au milieu ; « Passer le trajet » prend sa place pendant la marche. */
+/* « Y aller » : toujours au même endroit, en bas au milieu ; « Passer le trajet » prend sa place pendant la marche.
+   Centrée sur toute la largeur (jamais plus large que l'écran) : au plus grand texte, sur un téléphone, la rangée passe
+   sur deux lignes sans sortir de l'écran ; si elle déborde alors au-dessus de « Carte », la page la lève au-dessus de
+   lui (`data-go-leve`, `--open-world-carte-dessus` : la hauteur du haut de « Carte » depuis le bas). */
 .open-world-go {
   position: absolute;
-  left: 50%;
+  left: 0;
+  right: 0;
+  width: fit-content;
+  max-width: calc(100% - 1.2rem - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+  margin-inline: auto;
   bottom: calc(0.8rem + env(safe-area-inset-bottom, 0px));
   z-index: 3;
-  transform: translateX(-50%);
+}
+.world-stage[data-go-leve='oui'] .open-world-go {
+  bottom: calc(var(--open-world-carte-dessus, 4.5rem) + 8px);
 }
 .open-world-go .button {
   min-height: 56px;
-  min-width: 12rem;
+  min-width: min(12rem, 100vw - 2rem);
   justify-content: center;
 }
 /* Le bouton du monde et, près d'une gare de la cabine de la Montée (GD-22, lot 3), « Monter » ou « Descendre » à côté,
@@ -139,7 +148,7 @@
   .open-world-go {
     left: calc(var(--open-world-carte, 5.5rem) + 8px);
     right: calc(0.6rem + env(safe-area-inset-right, 0px));
-    transform: none;
+    max-width: none;
   }
   .open-world-go .button {
     min-width: 0;

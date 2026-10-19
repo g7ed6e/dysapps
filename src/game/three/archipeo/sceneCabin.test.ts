@@ -5,14 +5,14 @@
 // trajet de cabine, la question les finit et le maillage se cache.
 import * as THREE from 'three';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { bridgeSite, cabinPoint } from '../../world/continu/bridges';
+import { bridgeSite, cabinCarBox, cabinCarParked, cabinPoint, cabinStops } from '../../world/continu/bridges';
 import { cabinOf } from '../../world/continu/cabinRide';
 import { placeRecord, planFor } from '../../world/continu/levelPlan';
 import { questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout } from '../../world/continu/scenette';
 import { createOpenWorld, type OpenWorld, type OpenWorldOptions } from './scene';
 
-const made = vi.hoisted(() => ({ scenes: [] as THREE.Scene[] }));
+const made = vi.hoisted(() => ({ scenes: [] as THREE.Scene[], cameras: [] as THREE.PerspectiveCamera[] }));
 vi.mock('three', async (original) => {
   const m = await original<typeof import('three')>();
   class WebGLRenderer {
@@ -36,7 +36,13 @@ vi.mock('three', async (original) => {
       made.scenes.push(this);
     }
   }
-  return { ...m, WebGLRenderer, Scene };
+  class PerspectiveCamera extends m.PerspectiveCamera {
+    constructor(...args: ConstructorParameters<typeof m.PerspectiveCamera>) {
+      super(...args);
+      made.cameras.push(this);
+    }
+  }
+  return { ...m, WebGLRenderer, Scene, PerspectiveCamera };
 });
 
 const PLAN = planFor('5e');
@@ -46,6 +52,7 @@ const FOOT = cabinPoint(SITE, SITE.abut[0] - 2);
 const [W, H] = [1024, 768];
 let world: OpenWorld;
 let scene: THREE.Scene;
+let camera: THREE.PerspectiveCamera;
 let clock = 1000;
 let queued: FrameRequestCallback[] = [];
 const departs: number[] = [];
@@ -85,6 +92,7 @@ beforeAll(() => {
   document.body.appendChild(host);
   const noop = () => {};
   const before = made.scenes.length;
+  const camerasBefore = made.cameras.length;
   world = createOpenWorld(host, {
     plan: PLAN,
     start: 'quai',
@@ -103,6 +111,7 @@ beforeAll(() => {
     onCabin: (c) => void cabins.push(c),
   } as OpenWorldOptions);
   scene = made.scenes[before];
+  camera = made.cameras[camerasBefore];
   world.setLands({ closed: [] });
   world.setPlaces(empty());
 });
@@ -142,6 +151,47 @@ describe('La cabine de la Montée, dans la scène', () => {
     for (let k = 0; k < 200 && cabins.at(-1)?.riding; k++) frame(50);
     expect(cabins.at(-1)?.riding).toBeNull();
     expect(poseMesh().visible).toBe(false);
+  });
+
+  it('la caisse touchée quand Kéo attend à sa gare lance le trajet, comme le bouton', () => {
+    world.standAt(FOOT);
+    for (let k = 0; k < 40; k++) frame(50);
+    expect(cabins.at(-1)).toEqual({ side: 'bas', riding: null });
+    // Le milieu de la caisse qui attend au pied, à l'écran.
+    const box = cabinCarBox(LAND, 'bas');
+    camera.updateMatrixWorld();
+    const p = new THREE.Vector3((box.min[0] + box.max[0]) / 2, (box.min[1] + box.max[1]) / 2, (box.min[2] + box.max[2]) / 2).project(camera);
+    expect(Math.abs(p.x) < 1 && Math.abs(p.y) < 1 && p.z < 1).toBe(true);
+    const x = ((p.x + 1) / 2) * W;
+    const y = ((1 - p.y) / 2) * H;
+    const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+    canvas.dispatchEvent(new PointerEvent('pointerdown', { pointerId: 2, clientX: x, clientY: y, bubbles: true }));
+    canvas.dispatchEvent(new PointerEvent('pointerup', { pointerId: 2, clientX: x, clientY: y, bubbles: true }));
+    for (let k = 0; k < 40 && cabins.at(-1)?.riding !== 'haut'; k++) frame(50);
+    expect(cabins.at(-1)).toEqual({ side: null, riding: 'haut' });
+    world.skip();
+    frame();
+    expect(cabins.at(-1)?.riding).toBeNull();
+  });
+
+  it('en haut, la caisse s’ouvre (ni poteaux ni toit) quand Kéo y entre, et retrouve son toit quand il s’en va', () => {
+    rideUp();
+    for (let k = 0; k < 300 && cabins.at(-1)?.side !== 'haut'; k++) frame(50);
+    expect(cabins.at(-1)).toEqual({ side: 'haut', riding: null });
+    const places = () => (scene.getObjectByName('lieux') as THREE.Mesh).geometry.getAttribute('position').count / 3;
+    const away = () => {
+      world.standAt(cabinPoint(SITE, SITE.abut[1] + 20));
+      for (let k = 0; k < 60; k++) frame(50);
+    };
+    away();
+    const roofed = places();
+    world.standAt(cabinPoint(SITE, cabinStops(SITE).top));
+    for (let k = 0; k < 10; k++) frame(50);
+    const roof = cabinCarParked(LAND, 'haut', true).triangles - cabinCarParked(LAND, 'haut', false).triangles;
+    expect(roof).toBeGreaterThan(0);
+    expect(places()).toBe(roofed - roof);
+    away();
+    expect(places()).toBe(roofed);
   });
 
   it('« Passer le trajet » dans la caisse la finit proprement : Kéo en haut, la caisse à sa gare, le maillage de la pose caché', () => {

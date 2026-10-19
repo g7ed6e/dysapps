@@ -3,7 +3,7 @@
 // la caisse, monte ou descend avec elle, en ligne droite le long du rail, puis reprend la marche. La caisse roule à
 // vitesse douce, son départ et son arrivée amortis, sans balancement ni secousse (./walk.ts, `RIDE`). Ce fichier coupe
 // le trajet en trois et dit où est la caisse ; la vue la pose. Code pur, sans Three.js.
-import { bridgeSite, cabinPoint, cabinStops, isCabin, type BridgeSite } from './bridges';
+import { CABIN_CAR, bridgeSite, cabinPoint, cabinStops, isCabin, type BridgeSite } from './bridges';
 import { distance, type Vec2 } from './geometry';
 import { linkedLands, type LinkedLand } from './lands';
 import type { LevelPlan } from './levelPlan';
@@ -98,4 +98,28 @@ export function cabinSide(land: LinkedLand, here: Vec2, reach = 3.2): 'bas' | 'h
   if (d >= s.abut[0] - 4.2 && d <= stops.bottom + reach * 0.5) return 'bas';
   if (d >= stops.top - reach * 0.5 && d <= s.abut[1] + ARRIVAL_TOP + 1) return 'haut';
   return null;
+}
+
+/**
+ * Autour de la caisse de la gare du haut, la bande où Kéo compte comme près d'elle : la caméra ordinaire, de l'autre
+ * côté, la verrait entre elle et lui (`near`) ; et, plus loin vers le plateau, celle où la caméra retenue au bord la
+ * survole en s'approchant de lui (`held`, mesuré : jusqu'à 5,7 unités du milieu de la caisse). L'arrivée du bouton
+ * « Monter » (`ARRIVAL_TOP`) reste au-delà : la caisse y garde son toit.
+ */
+const CAR_ZONE = { near: 2.5, held: 6, side: 3 } as const;
+
+/**
+ * La caisse qui attend à la gare du haut s'ouvre-t-elle (sans poteaux ni toit, `bridgeFacets`) ? Seconde relecture du
+ * lot 3 (directeur artistique) : jamais de toit ni de poteau de la caisse entre la caméra et Kéo. En haut, la caisse est
+ * au bord du plateau : la caméra qui garde son pied sur le plateau (`cliffHold`) s'approche de Kéo et passerait sous
+ * son toit, ou le verrait de dessus. Elle s'ouvre donc quand Kéo est dedans ou tout près, ou un peu plus loin sur la
+ * gare quand la caméra est retenue au bord (`held`) ; ailleurs, et au pied, elle garde son toit.
+ */
+export function cabinCarOpen(land: LinkedLand, here: Vec2, held: boolean): boolean {
+  const s = bridgeSite(land);
+  const { d, v } = along(s, here);
+  const dd = d - cabinStops(s).top;
+  const w = CABIN_CAR.width / 2;
+  if (Math.abs(dd) <= CABIN_CAR.half + CAR_ZONE.near && Math.abs(v) <= w + CAR_ZONE.near) return true;
+  return held && dd >= 0 && dd <= CABIN_CAR.half + CAR_ZONE.held && Math.abs(v) <= w + CAR_ZONE.side;
 }

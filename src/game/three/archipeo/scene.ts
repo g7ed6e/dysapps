@@ -22,7 +22,7 @@ import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
 import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinPoint, cabinStops, cabinYaw, clampToOpen, type CabinCar } from '../../world/continu/bridges';
-import { cabinButtonRoute, cabinOf, cabinSide, routeWithRide } from '../../world/continu/cabinRide';
+import { cabinButtonRoute, cabinCarOpen, cabinOf, cabinSide, routeWithRide } from '../../world/continu/cabinRide';
 import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/continu/montee5e';
 import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
@@ -894,6 +894,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (tallTop) tallTop.y = foot.y + top;
   };
   const placesMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
+  placesMesh.name = 'lieux';
   // Le lieu suivi, à part, du même matériau, pris dans la brume comme le reste : sorti d'elle, il se détachait net du
   // lointain voilé (retour du mainteneur, 19 octobre 2026) ; de loin, c'est la marque qui le montre.
   const landmarkMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
@@ -964,6 +965,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const cabinLand = cabinOf(plan);
   const cabinSite = cabinLand ? bridgeSite(cabinLand) : null;
   let carAt: CabinCar = 'bas';
+  // La caisse de la gare du haut ouverte, sans poteaux ni toit (`cabinCarOpen`) : la caméra au bord ne passe jamais dessous.
+  let carOpen = false;
   let rideUp: boolean | null = null;
   let carRolling = false;
   let cabinTold = '';
@@ -1381,6 +1384,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       hold.back = first ? holdTarget.back : liftStep(hold.back, holdTarget.back, dt, reduceMotion);
     }
     hold.held = holdStep(hold.held, want ? 1 : 0, dt, reduceMotion);
+    // La caisse de la gare du haut s'ouvre avant que la caméra s'approche, et ne se referme qu'une fois la caméra
+    // revenue (les lieux ne se refont qu'au changement).
+    const open = cabinLand !== null && carAt === 'haut' && !carRolling && cabinCarOpen(cabinLand, here, want || hold.held > 0.01);
+    if (open === carOpen) return;
+    carOpen = open;
+    placeVisibility();
   };
   // La caméra posée à la main (`view`, les captures seulement).
   let manualView: CameraPose | null = null;
@@ -1540,9 +1549,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const bridgeOf = (land: LinkedLand, look: 'tombe' | 'pose' | 'rebati' | 'carte'): Facets => {
     // La cabine rebâtie : sa caisse où elle attend (au pied, en haut, ou partie rouler).
     const car = land === cabinLand && look === 'rebati' ? carAt : 'bas';
-    const k = `${land}|${look}|${car}`;
+    const open = car === 'haut' && carOpen;
+    const k = `${land}|${look}|${car}|${open}`;
     let f = bridgeCache.get(k);
-    if (!f) bridgeCache.set(k, (f = look === 'carte' ? bridgeMapMark(land) : look === 'pose' ? bridgeLayRest(land) : bridgeFacets(land, look === 'rebati', car)));
+    if (!f) bridgeCache.set(k, (f = look === 'carte' ? bridgeMapMark(land) : look === 'pose' ? bridgeLayRest(land) : bridgeFacets(land, look === 'rebati', car, open)));
     return f;
   };
   let placesKey = '';
@@ -1558,7 +1568,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}${nefParts(1) ? 'm' : ''}|${carAt}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}${nefParts(1) ? 'm' : ''}|${carAt}${carOpen ? 'o' : ''}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.

@@ -310,6 +310,17 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       const carte = stage.querySelector<HTMLElement>('.open-world-map-button')?.getBoundingClientRect();
       const carteRight = carte ? `${Math.round(carte.right - s.left)}px` : '';
       if (stage.style.getPropertyValue('--open-world-carte') !== carteRight) stage.style.setProperty('--open-world-carte', carteRight);
+      // Sur un écran étroit (un téléphone, au plus grand texte surtout), la rangée du bas, sur une ou deux lignes, déborde
+      // au-dessus de « Carte » : elle se pose alors au-dessus de lui (seconde relecture du lot 3, consultant UX UI). Lu à
+      // l'horizontale seulement (la rangée levée garde sa largeur : aucun aller-retour).
+      const goBox = stage.querySelector<HTMLElement>('.open-world-go')?.getBoundingClientRect();
+      const lifted = carte && goBox && goBox.width > 0 && goBox.left < carte.right + MARK_EDGE - 1 ? 'oui' : '';
+      if ((stage.dataset.goLeve ?? '') !== lifted) {
+        if (lifted) stage.dataset.goLeve = lifted;
+        else delete stage.dataset.goLeve;
+      }
+      const carteTop = carte ? `${Math.round(s.bottom - carte.top)}px` : '';
+      if (stage.style.getPropertyValue('--open-world-carte-dessus') !== carteTop) stage.style.setProperty('--open-world-carte-dessus', carteTop);
       layout.width = s.width;
       layout.height = s.height;
       layout.markW = markRef.current?.offsetWidth ?? 0;
@@ -322,7 +333,10 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         ...reserve,
         ...[...stage.querySelectorAll<HTMLElement>('.world-settings, .open-world-camera, .open-world-go, .open-world-bar')].map((el) => {
           const r = el.getBoundingClientRect();
-          return { left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height };
+          // La rangée du bas (« Y aller », « Monter », « Passer le trajet ») : un écart double, la marque n'y colle jamais
+          // (seconde relecture du lot 3, consultant UX UI : 16 px au moins, sur une ou deux lignes).
+          const m = el.classList.contains('open-world-go') ? GO_CLEAR : 0;
+          return { left: r.left - s.left - m, top: r.top - s.top - m, width: r.width + 2 * m, height: r.height + 2 * m };
         }),
         // La phrase du pont, le temps qu'elle est écrite : la marque n'est jamais dessous (référent dys,
         // consultant UX UI ; au plus grand texte, elle mordait la marque « Le Phare »).
@@ -1225,6 +1239,9 @@ const DISTANCE_WORDS = { 1: 'tout près', 2: 'pas loin', 3: 'loin' } as const;
 
 /** L'écart minimal entre la marque et le bord de l'écran ou un bouton, en pixels. */
 const MARK_EDGE = 8;
+
+/** Ce que la marque laisse en plus autour de la rangée du bas, au-delà de `MARK_EDGE`. */
+const GO_CLEAR = 8;
 
 /** La zone de la colonne des accès directs que la marque évite : sa largeur au moins, et sa marge sous la colonne. */
 const COLUMN_ZONE = { width: 72, below: 16 } as const;

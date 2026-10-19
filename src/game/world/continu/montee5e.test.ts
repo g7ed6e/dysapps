@@ -2,9 +2,9 @@
 // caisse, son trajet, la caméra au bord du plateau et le budget du 5e. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { OPEN_WORLD_BUDGET, openWorldCost5e } from './budget';
-import { CABIN_CAR, KEO_ROOM, bridgeFacets, bridgeFloor, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinStops } from './bridges';
-import { cabinButtonRoute, cabinOf, cabinSide, routeWithRide } from './cabinRide';
-import { CLIFF_HOLD, FOLLOW, cliffHold, type CliffHold } from './camera';
+import { CABIN_CAR, KEO_ROOM, bridgeFacets, bridgeFloor, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinCarParked, cabinStops } from './bridges';
+import { cabinButtonRoute, cabinCarOpen, cabinOf, cabinSide, routeWithRide } from './cabinRide';
+import { CLIFF_HOLD, FOLLOW, cliffHold, followPose, type CliffHold } from './camera';
 import { WHOLE, constructionFacets, traceStagePosed } from './construction';
 import { FacetBuilder } from './facets';
 import { distance } from './geometry';
@@ -328,6 +328,84 @@ describe('La caméra au bord du plateau', () => {
   it('le dessus du plateau du 5e se lit comme la vue le lit (`plateauShare`)', () => {
     const donjon = PLAN.places.find((p) => p.id === 'donjon')!;
     expect(plateauShare(donjon.center)).toBeGreaterThan(0.95);
+  });
+});
+
+describe('La caisse de la gare du haut et la caméra au bord (seconde relecture du lot 3)', () => {
+  const land = cabinOf(PLAN)!;
+  const s = bridgeSite(land);
+  const stops = cabinStops(s);
+  const at = (d: number, v: number) => ({ x: s.near.x + s.dir.x * d - s.dir.z * v, z: s.near.z + s.dir.z * d + s.dir.x * v });
+  // Les poteaux et le toit de la caisse du haut : ce que la caisse fermée a de plus que l'ouverte (ils viennent en dernier).
+  const closedCar = cabinCarParked(land, 'haut', true);
+  const openCar = cabinCarParked(land, 'haut', false);
+  const roof = closedCar.positions.subarray(openCar.positions.length);
+  /** Le segment de `a` à `b` traverse-t-il un triangle du toit ou d'un poteau (Möller-Trumbore) ? */
+  const hitsRoof = (a: readonly number[], b: readonly number[]): boolean => {
+    const dir = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+    for (let i = 0; i < roof.length; i += 9) {
+      const e1 = [roof[i + 3] - roof[i], roof[i + 4] - roof[i + 1], roof[i + 5] - roof[i + 2]];
+      const e2 = [roof[i + 6] - roof[i], roof[i + 7] - roof[i + 1], roof[i + 8] - roof[i + 2]];
+      const p = [dir[1] * e2[2] - dir[2] * e2[1], dir[2] * e2[0] - dir[0] * e2[2], dir[0] * e2[1] - dir[1] * e2[0]];
+      const det = e1[0] * p[0] + e1[1] * p[1] + e1[2] * p[2];
+      if (Math.abs(det) < 1e-9) continue;
+      const t0 = [a[0] - roof[i], a[1] - roof[i + 1], a[2] - roof[i + 2]];
+      const u = (t0[0] * p[0] + t0[1] * p[1] + t0[2] * p[2]) / det;
+      if (u < 0 || u > 1) continue;
+      const q = [t0[1] * e1[2] - t0[2] * e1[1], t0[2] * e1[0] - t0[0] * e1[2], t0[0] * e1[1] - t0[1] * e1[0]];
+      const v = (dir[0] * q[0] + dir[1] * q[1] + dir[2] * q[2]) / det;
+      if (v < 0 || u + v > 1) continue;
+      const t = (e2[0] * q[0] + e2[1] * q[1] + e2[2] * q[2]) / det;
+      if (t > 0 && t < 1) return true;
+    }
+    return false;
+  };
+
+  it('fermée, elle a ses quatre poteaux et son toit ; ouverte, ni l’un ni l’autre, rien au-dessus de ses murets', () => {
+    expect(roof.length).toBeGreaterThan(0);
+    const floor = cabinCarFloor(s, stops.top);
+    for (let i = 1; i < openCar.positions.length; i += 3) expect(openCar.positions[i]).toBeLessThanOrEqual(floor + CABIN_CAR.wall + 1e-4);
+    const none = bridgeFacets(land, true, null).triangles;
+    expect(bridgeFacets(land, true, 'haut', true).triangles).toBe(none + openCar.triangles);
+    // Au pied, elle garde toujours son toit.
+    expect(bridgeFacets(land, true, 'bas', true).triangles).toBe(bridgeFacets(land, true, 'bas').triangles);
+  });
+
+  it('elle s’ouvre quand Kéo est dedans, ou à la gare du haut la caméra retenue ; loin d’elle, jamais', () => {
+    expect(cabinCarOpen(land, at(stops.top, 0), false)).toBe(true);
+    expect(cabinCarOpen(land, at(s.abut[1] + 3, 0), true)).toBe(true);
+    expect(cabinCarOpen(land, at(s.abut[1] + 3, 0), false)).toBe(false);
+    expect(cabinCarOpen(land, at(s.abut[1] + 30, 0), true)).toBe(false);
+    // À l'arrivée du bouton « Monter », Kéo est déjà sorti de la gare : la caisse a son toit, même pendant que la caméra
+    // tourne vers le Donjon (retenue au bord un instant).
+    const arrival = cabinButtonRoute(land, at(s.abut[0] - 2, 0), true).at(-1)!;
+    for (const held of [false, true]) expect(cabinCarOpen(land, arrival, held)).toBe(false);
+  });
+
+  it('à la gare du haut, à chaque cap, jamais de toit ni de poteau de la caisse entre la caméra et Kéo', () => {
+    const onTop = (x: number, z: number) => plateauShare({ x, z }) >= 0.8;
+    const pose = followPose({ x: 0, y: 0, z: 0 });
+    let checked = 0;
+    const fails: string[] = [];
+    for (let d = stops.top - CABIN_CAR.half; d <= s.abut[1] + 9; d += 0.5)
+      for (let v = -4; v <= 4; v += 0.5) {
+        const p = at(d, v);
+        const y = bridgeFloor(p.x, p.z, [], PLAN) ?? heightAt5e(p);
+        if (cabinSide(land, p) !== 'haut' || (!onTop(p.x, p.z) && bridgeFloor(p.x, p.z, [], PLAN) === null)) continue;
+        for (let k = 0; k < 16; k++) {
+          const yaw = (k / 16) * 2 * Math.PI - Math.PI;
+          const hold: CliffHold = { height: 0, back: 0, held: 0, level: 0 };
+          const held = cliffHold({ x: p.x, y, z: p.z }, yaw, 0, onTop, hold);
+          if (cabinCarOpen(land, p, held)) continue;
+          hold.held = held ? 1 : 0;
+          followPose({ x: p.x, y, z: p.z }, 0, pose, yaw, 0, hold);
+          const cam = [pose.position.x, pose.position.y, pose.position.z];
+          for (const h of [0.3, 1.2, KEO_ROOM - 0.1]) if (hitsRoof(cam, [p.x, y + h, p.z])) fails.push(`d ${(d - stops.top).toFixed(1)} v ${v} cap ${k} h ${h} held ${held} lvl ${hold.level} side ${cabinSide(land, p)}`);
+          checked++;
+        }
+      }
+    expect(fails).toEqual([]);
+    expect(checked).toBeGreaterThan(500);
   });
 });
 
