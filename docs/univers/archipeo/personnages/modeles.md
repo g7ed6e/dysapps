@@ -212,6 +212,8 @@ python3 scripts/rendu/modeles/aplats.py -- docs/univers/archipeo/personnages/mod
 
 Puis refaire `controle.png` avec `rendre_controle.py` (brut, 1 500, 200). Le test `src/game/world/characters/imported/models.test.ts` vérifie que chaque créature de la table est bien peinte avec ses cibles. La chaîne entière, du concept au jeu, est décrite pas à pas dans le skill [`modeles-3d`](../../../../.claude/skills/modeles-3d/SKILL.md).
 
+Un personnage en pose A qui doit courir, sauter, attraper et lancer (les cinq ados de l'équipage, 16 octobre 2026) suit une autre voie, hors du jeu pour l'instant : `alleger_brut.py` allège le brut TRELLIS à environ 20 000 triangles en gardant sa texture, puis `squelette_humain.py` retire sa doublure intérieure, pose un squelette de 17 os (coudes, mains, pieds), calcule ses poids et rend une planche de six poses et une vidéo, avec et sans texture. Le jeu n'anime pas encore ces os. Le skill [`animer-modele-3d`](../../../../.claude/skills/animer-modele-3d/SKILL.md) décrit les deux squelettes et leurs pièges.
+
 ## À reprendre au modèle 3D
 
 Les retouches propres à chaque personnage (barbe des Sphinx, fils épaissis, yeux repeints…) sont dans la [fiche des concepts](README.md#à-reprendre-au-modèle-3d). Chaque modèle retravaillé passe ensuite par le directeur artistique et le référent dys, sur captures, avant d’entrer dans le jeu.
