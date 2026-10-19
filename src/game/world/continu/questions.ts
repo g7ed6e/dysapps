@@ -7,8 +7,7 @@
 // a son gabarit (les deux sas), les autres missions gardent leurs items de référence (GD-20, point 8, lot L2). Code
 // pur : la vue dessine, le jeu commun compte les étoiles et le barème.
 import PLACE_ITEMS from './placeItems.json';
-import { isSixthPlace, sixthPlace, type PlaceId as AnyPlaceId } from './levelPlan';
-import type { PlaceId } from './plan6e';
+import { isSixthPlace, scenePlace, sixthPlace, type PlaceId as AnyPlaceId, type ScenePlaceId as PlaceId } from './levelPlan';
 
 /** Un item d'exercice, vu d'ici : sa clé, et ses champs (ceux du jeu commun, sans en dépendre). */
 export interface QuestionItem {
@@ -420,7 +419,7 @@ function inInstructionOrder(exerciseId: string, it: QuestionItem): { choices?: s
  * `reference` : les items de « Vue simple ».
  */
 export function placeItems(anyPlace: AnyPlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction = written, reference = false): PlacedItem[] {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   const placed = placedInScene(place, exerciseId, items, say);
   // « Vue simple » (`reference`) joue l'item de référence en entier quand la scène remplace sa figure : sa consigne, sa
   // phrase, son indice, sa correction et sa figure d'origine (directeur du contenu pédagogique, 16 octobre 2026) ; la
@@ -481,6 +480,9 @@ function northItem(exerciseId: string, it: QuestionItem): Partial<PlacedItem> {
 /** Les items posés dans la scène d'un lieu (`placeItems`), avec ses textes. */
 function placedInScene(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction): PlacedItem[] {
   if (place === 'phare') return items.map((it) => ({ ...it, placeScene: { kind: 'cloches' } }));
+  // La Montée (GD-22, lot 3) : ses cinq missions en R, avec leurs items de référence ; les réponses portées par les
+  // godets pendus, le lieu au repos ; les nombres, la droite et les figures restent dans le panneau.
+  if (place === 'montee') return items.map((it) => ({ ...it, placeScene: REST }));
   // La Turbine (GD-20, point 8, lot L6a) et le Chantier naval (lot L6b) : leurs quatre missions en C, aux deux niveaux,
   // avec leurs items de référence (consigne, phrase, document, rappel) ; la scène fait le décor, les réponses restent dans
   // la colonne.

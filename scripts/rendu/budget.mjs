@@ -106,7 +106,9 @@ try {
   const mondeOuvert = sixieme ? { niveau: '6e', postes: ouvert.openWorldCost(amenagements), carte: ouvert.mapCost(amenagements), enveloppe: ouvert.OPEN_WORLD_BUDGET } : null;
   // Le monde ouvert du 5e (GD-22, lot 2 : toute l'île en grandes masses), sous la même enveloppe.
   const cinquieme = !demandes || demandes.includes('5e');
-  const mondeOuvert5e = cinquieme ? { niveau: '5e', postes: ouvert.openWorldCost5e(), carte: ouvert.mapCost5e(), enveloppe: ouvert.OPEN_WORLD_BUDGET } : null;
+  // Au 5e (lot 3), deux cas qui ne se montrent jamais ensemble : la scénette de la Montée ouverte (le pire), puis le
+  // monde hors scénette (la pose, la caisse de la cabine qui roule).
+  const mondeOuvert5e = cinquieme ? { niveau: '5e', postes: ouvert.openWorldCost5e(), carte: ouvert.mapCost5e(), enveloppe: ouvert.OPEN_WORLD_BUDGET, horsScenette: ouvert.openWorldCost5e('monde') } : null;
 
   if (JSON_SEUL) console.log(JSON.stringify(resultats, null, 2));
   else {
@@ -151,6 +153,13 @@ try {
       const alerte = (t, c) => (t > enveloppe.triangles || c > enveloppe.calls ? ' ⚠' : '');
       console.log(`| **total** | **${n(triangles)}** | **${calls}** |`);
       console.log(`\nLe monde : ${n(triangles)} triangles, ${calls} appels${alerte(triangles, calls)} ; la Carte : ${n(carte.triangles)} triangles, ${carte.calls} appels${alerte(carte.triangles, carte.calls)} ; enveloppe ${n(enveloppe.triangles)} triangles, ${enveloppe.calls} appels (que seul le mainteneur relève).`);
+      if (monde.horsScenette) {
+        const h = monde.horsScenette;
+        const ht = h.reduce((s, p) => s + p.triangles, 0);
+        const hc = h.reduce((s, p) => s + p.calls, 0);
+        const pose = h.find((p) => p.poste === 'pose');
+        console.log(`Hors scénette (la pose ou la caisse qui roule à la place de la question et de la scénette) : ${n(ht)} triangles, ${hc} appels${alerte(ht, hc)}${pose ? ` (pose : ${n(pose.triangles)} triangles, ${pose.calls} appel)` : ''}.`);
+      }
     }
   }
 } finally {

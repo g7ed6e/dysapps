@@ -17,8 +17,9 @@ import { CAMERA_FOV, screenOf, wrapAngle, type CameraPose } from './camera';
 import { FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { placeArt } from './northShore';
-import { sixthPlace, type PlaceId as AnyPlaceId } from './levelPlan';
-import { COLORS_6E, DECK_HEIGHT, placeById, type PlaceId } from './plan6e';
+import { placeById, scenePlace, type PlaceId as AnyPlaceId, type ScenePlaceId as PlaceId } from './levelPlan';
+import { heightFor } from './placeGround';
+import { COLORS_6E, DECK_HEIGHT } from './plan6e';
 import {
   ANSWER_LAYOUT,
   ECLUSES_TRACE_SPOTS,
@@ -110,10 +111,12 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // « Chenal » expliqué aussi, pas seulement « pilote » (directeur artistique).
   beacons: { role: placeArt('beacons')!.role, greeting: 'Le pilote guide les bateaux dans le chenal, le passage sûr dans l’eau.', placement: 'rangee' },
   ferry: { role: placeArt('ferry')!.role, greeting: null, placement: 'rangee' },
+  // Le 5e, la Montée (GD-22, lot 3) : « la fontainière » (directeur artistique), son nom attend le mot du mainteneur.
+  montee: { role: placeArt('montee')!.role, greeting: 'La fontainière fait monter l’eau du bassin le long du rail, godet par godet.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
-export const scenetteOf = (place: AnyPlaceId): Scenette => SCENETTES[sixthPlace(place)];
+export const scenetteOf = (place: AnyPlaceId): Scenette => SCENETTES[scenePlace(place)];
 
 // ---------- La place de la scénette à l'écran ----------
 
@@ -504,6 +507,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   printworks: { ...northSite('printworks'), start: PRINTWORKS_START },
   beacons: northSite('beacons'),
   ferry: northSite('ferry'),
+  montee: northSite('montee'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -587,10 +591,10 @@ const siteOf = (place: PlaceId, posed = true): ScenetteSite => (place === 'phare
 export const SCENETTE_CAMERA = { pitch: (20 * Math.PI) / 180, seconds: 0.9 } as const;
 
 /** Le cap de départ de la caméra d'une scénette (`ScenetteSite.start`) : 0, de face. */
-export const scenetteStartYaw = (place: AnyPlaceId, posed = true): number => siteOf(sixthPlace(place), posed).start ?? 0;
+export const scenetteStartYaw = (place: AnyPlaceId, posed = true): number => siteOf(scenePlace(place), posed).start ?? 0;
 
 /** L'arc de la caméra d'une scénette autour de son cap de départ (`ScenetteSite.arc`) ; `null` : le tour complet. */
-export const scenetteArc = (place: AnyPlaceId, posed = true): number | null => siteOf(sixthPlace(place), posed).arc ?? null;
+export const scenetteArc = (place: AnyPlaceId, posed = true): number | null => siteOf(scenePlace(place), posed).arc ?? null;
 
 /**
  * L'angle de la caméra autour de la scène après un geste de `d` : borné à l'arc autour du cap de départ, s'il y en a
@@ -658,7 +662,7 @@ const floorOf = (place: PlaceId, posed = true): Vec3 => siteOf(place, posed).flo
 
 /** La place de Kéo dans la scénette : ses pieds, son échelle et son cap. */
 export function scenetteKeo(anyPlace: AnyPlaceId, posed = true): { at: Vec3; scale: number; yaw: number } {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   const f = floorOf(place, posed);
   const k = siteOf(place, posed).keo;
   return { at: { x: f.x + k.dx, y: f.y, z: f.z + k.dz }, scale: k.scale, yaw: k.yaw };
@@ -666,7 +670,7 @@ export function scenetteKeo(anyPlace: AnyPlaceId, posed = true): { at: Vec3; sca
 
 /** Où se tient l'habitant de la scénette (ses pieds). */
 export function scenetteHabitant(anyPlace: AnyPlaceId, posed = true): Vec3 {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   const f = floorOf(place, posed);
   const h = siteOf(place, posed).habitant;
   return { x: f.x + h.dx, y: f.y, z: f.z + h.dz };
@@ -684,7 +688,7 @@ export function scenetteHabitant(anyPlace: AnyPlaceId, posed = true): Vec3 {
  * caméra garde alors le lieu (`placeKeep`).
  */
 export function scenetteExit(anyPlace: AnyPlaceId, posed = true, mission?: string): { at: Vec2; keep: Vec3; view?: ExitView } | null {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   if (!posed) return null;
   if (place === 'phare') {
     const exit = mission && Object.hasOwn(PHARE_EXITS, mission) ? PHARE_EXITS[mission] : null;
@@ -753,7 +757,7 @@ export function scenetteExit(anyPlace: AnyPlaceId, posed = true, mission?: strin
     const trace = mission && Object.hasOwn(art.traces, mission) ? art.traces[mission] : null;
     if (!trace) return { at, keep: placeKeep(place) };
     const g = { x: c.x + trace.at.x, z: c.z + trace.at.z };
-    return { at, keep: { x: g.x, y: standingHeight(heightAt(g)) + trace.lift, z: g.z } };
+    return { at, keep: { x: g.x, y: standingHeight(heightFor(place)(g)) + trace.lift, z: g.z } };
   }
   if (place === 'mangrove') {
     // La trace de la mission jouée (GD-20, point 8, lot L8a) : la caméra garde le milieu de sa hauteur ; Kéo se tient à
@@ -811,9 +815,9 @@ export function scenetteExit(anyPlace: AnyPlaceId, posed = true, mission?: strin
  * reconnaisse avec la partie qu'on vient de poser au-dessus de la liste, plutôt que Kéo de près.
  */
 export function placeKeep(anyPlace: AnyPlaceId): Vec3 {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   const c = placeById(place).center;
-  return { x: c.x, y: standingHeight(heightAt(c)) + PLACE_KEEP_HEIGHT, z: c.z };
+  return { x: c.x, y: standingHeight(heightFor(place)(c)) + PLACE_KEEP_HEIGHT, z: c.z };
 }
 /** La hauteur du point gardé au-dessus du pied du lieu. */
 const PLACE_KEEP_HEIGHT = 1.5;
@@ -918,7 +922,7 @@ export function exitView(pose: CameraPose, keep: Vec3, feet: Vec3, amount: numbe
  * scénette dure.
  */
 export function scenettePose(anyPlace: AnyPlaceId, stage: ScreenBox, width: number, height: number, posed = true): { pose: CameraPose; shift: { x: number; y: number } } {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   const site = siteOf(place, posed);
   return poseOfSubject(site, site.subject, site.floor().x + (site.keo.dx + site.habitant.dx) / 2, stage, width, height);
 }
@@ -936,7 +940,7 @@ const REMISE_PIXELS = 16;
  * même regard »), du côté où il est.
  */
 export function remisePose(anyPlace: AnyPlaceId, include: { min: readonly number[]; max: readonly number[] }, stage: ScreenBox, width: number, height: number, posed = true): { pose: CameraPose; shift: { x: number; y: number } } {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   const site = siteOf(place, posed);
   const S = site.subject;
   const f = site.floor();
@@ -992,7 +996,7 @@ function poseOfSubject(site: ScenetteSite, S: ScenetteSite['subject'], x: number
  * voit pas deux. Au Phare, non : la tour porte la galerie ; aux Filets et aux Écluses non plus : leurs cabanes, leur
  * séchoir et leurs bassins font le fond de la scène.
  */
-export const scenetteHidesPlace = (place: AnyPlaceId): boolean => place === 'quais' || placeArt(sixthPlace(place))?.hideInScenette === true;
+export const scenetteHidesPlace = (place: AnyPlaceId): boolean => place === 'quais' || placeArt(scenePlace(place))?.hideInScenette === true;
 
 /**
  * Les pièces du lieu s'effacent-elles le temps de la scénette ? Partout sauf au Phare (ses lampes sont sur la galerie) :
@@ -1008,7 +1012,7 @@ export const scenetteHidesPieces = (place: AnyPlaceId): boolean => place !== 'ph
  * joués sur la galerie ; la corne et le mât, au sol, restent hors du cadre. `done` : les missions réussies du lieu.
  */
 export function scenetteTraces(anyPlace: AnyPlaceId, done: readonly string[], mission: string | null, posed: boolean): readonly string[] {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   if (place !== 'phare' || !posed || mission === 'sound-hunt') return done;
   return done.filter((m) => m !== 'sound-hunt');
 }
@@ -1023,7 +1027,7 @@ export const answersHang = (place: AnyPlaceId, posed = true): boolean => place =
  * La bonne réponse quitte-t-elle la rangée (la caisse des Quais monte au crochet) ? Ailleurs, elle reste ; à la Gare
  * maritime (lot L9b), la malle reste, et son couvercle la quitte : la réaction le rabat sur elle.
  */
-export const answerLeaves = (place: AnyPlaceId): boolean => place === 'quais' || placeArt(sixthPlace(place))?.answer?.replaces === true;
+export const answerLeaves = (place: AnyPlaceId): boolean => place === 'quais' || placeArt(scenePlace(place))?.answer?.replaces === true;
 
 /**
  * La hauteur du ponton des réponses d'une scénette, quand elles sont posées : celle des pontons du monde, sur l'eau du
@@ -1031,7 +1035,7 @@ export const answerLeaves = (place: AnyPlaceId): boolean => place === 'quais' ||
  * avec la berge du canal ; le ponton descend jusqu'au sol, `ground`).
  */
 export const scenetteDeck = (place: AnyPlaceId, posed = true): { y: number; onLand: boolean } =>
-  place === 'quais' ? { y: DECK_HEIGHT, onLand: false } : { y: floorOf(sixthPlace(place), posed).y + LAND_DECK, onLand: true };
+  place === 'quais' ? { y: DECK_HEIGHT, onLand: false } : { y: floorOf(scenePlace(place), posed).y + LAND_DECK, onLand: true };
 
 /** La margelle des réponses à terre, au-dessus du plancher de la scène. */
 export const LAND_DECK = 0.08;
@@ -1042,7 +1046,7 @@ export const LAND_DECK = 0.08;
  * (`through`, `normal`), à la même distance de l'axe. `rail` : le point de la rambarde de face, au sud.
  */
 export function bellPlane(anyPlace: AnyPlaceId, yaw = 0): { through: Vec3; normal: { x: number; z: number }; pivot: Vec3; rail: Vec3 } {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   const f = floorOf(place);
   const d = GALLERY.radius + 0.45;
   const normal = { x: Math.sin(yaw), z: Math.cos(yaw) };
@@ -1231,7 +1235,7 @@ const TROUSER_TOP = 0.47;
  * (./habitants.ts) ; sinon au bout du bras du pion, tendu vers la rambarde.
  */
 export function habitantHand(anyPlace: AnyPlaceId, posed = true): Vec3 {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   const at = scenetteHabitant(place, posed);
   const model = loadedHabitant(place);
   if (model) {
@@ -1870,7 +1874,7 @@ function beamRest(b: FacetBuilder, x: number, z: number, from: number, top: numb
  * `topped` : l'étape du haut du lieu est posée (à la Mangrove, le carbet relevé : ses abords changent).
  */
 export function scenetteDecor(anyPlace: AnyPlaceId, open = false, posed = true, topped = false): Facets {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   return decorBuilder(place, open, posed, !loadedHabitant(place), true, topped).build();
 }
 
@@ -1941,6 +1945,7 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   commons: 'paving',
   beacons: 'paving',
   ferry: 'planks',
+  montee: 'planks',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 
@@ -2088,7 +2093,7 @@ function moved(f: Facets, at: Vec3): Facets {
  * change). Sans les abords, le panier plein ne vient pas : rien ne se montre avant son étape pour disparaître au retour.
  */
 export function scenetteFinale(anyPlace: AnyPlaceId, scene: ItemScene, scale: number, posed = true, mission = ''): ScenetteFinale | null {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   if (place === 'quais') {
     if (scene.kind !== 'quai') return null;
     const s = quaySuccess(scene, scale);

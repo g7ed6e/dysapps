@@ -94,6 +94,11 @@
   justify-content: center;
 }
 /* La raison d'un « Y aller » grisé, écrite au-dessus de lui (pas seulement dite aux lecteurs d'écran). */
+/* La cabine de la Montée pendant son trajet (GD-22, lot 3) : le bouton reste, grisé, dans l'ordre du clavier. */
+.open-world-go .button[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 .open-world-go-reason {
   max-width: min(90vw, 24rem);
   margin: 0 auto 0.4rem;

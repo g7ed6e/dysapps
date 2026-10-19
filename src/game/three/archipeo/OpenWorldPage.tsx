@@ -70,7 +70,7 @@ import './openWorld.css';
 declare global {
   interface Window {
     /** Le monde ouvert, pour les captures et les mesures (en développement, ou avec `?mesures`). */
-    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt' | 'remiseView' | 'standAt' | 'turn'>;
+    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt' | 'remiseView' | 'standAt' | 'turn' | 'ride'>;
   }
 }
 
@@ -241,6 +241,9 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // la marque, la brume, la Carte et les lieux.
   const [ready, setReady] = useState(0);
   const [walking, setWalking] = useState(false);
+  // La cabine de la Montée (GD-22, lot 3) : Kéo à l'une de ses gares (le bouton « Haut » ou « Bas » à la place du bouton
+  // du monde), et pendant son trajet (le bouton reste, inactif).
+  const [cabin, setCabin] = useState<{ side: 'bas' | 'haut' | null; riding: boolean }>({ side: null, riding: false });
   // La mission choisie dans le panneau d'un lieu : elle se joue dans sa scénette, ou sur l'écran habituel (`plain`, une
   // mission dont la scénette n'est pas encore faite).
   // `revision` : « Reprendre » chez l'habitant, la révision du lieu jouée dans sa scène (GD-20, point 4, lot L3).
@@ -357,6 +360,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         setLieu({ place: placeId, focus: null });
       },
       onDetour: (id) => detourArrive.current(id),
+      onCabin: setCabin,
       onWhaleBlow: () => {
         if (soundsOn.current) playWhaleBlow();
       },
@@ -392,7 +396,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     });
     world.current = w;
     setReady((n) => n + 1);
-    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, goToPort: w.goToPort, assemble: w.assemble, skip: w.skip, info: w.info, portAt: w.portAt, remiseView: w.remiseView, standAt: w.standAt, turn: w.turn };
+    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, goToPort: w.goToPort, assemble: w.assemble, skip: w.skip, info: w.info, portAt: w.portAt, remiseView: w.remiseView, standAt: w.standAt, turn: w.turn, ride: w.ride };
     return () => {
       w.dispose();
       world.current = null;
@@ -1067,9 +1071,15 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           <div className="open-world-go">
             {/* La phrase de ce que porte la suggestion chez un habitant (sa commande, l'étape d'entraide) ; « Aucune
                 mission » seulement quand rien n'attend. */}
-            {!walking && !relightHere && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
-            {!next && !suggestedCmd && !walking && !relightHere && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
-            {walking ? (
+            {!walking && !cabin.side && !relightHere && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
+            {!next && !suggestedCmd && !walking && !cabin.side && !relightHere && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
+            {cabin.side ? (
+              // La cabine (GD-22, lot 3 ; intention du directeur artistique, § 4) : « Haut » au pied, « Bas » en haut, à la
+              // place du bouton du monde ; pendant le trajet, il reste là, inactif (lu, jamais caché).
+              <button type="button" className="button primary" aria-disabled={cabin.riding || undefined} onClick={() => !cabin.riding && world.current?.ride()}>
+                <Icon name="cabine" /> {cabin.side === 'bas' ? 'Haut' : 'Bas'}
+              </button>
+            ) : walking ? (
               <button type="button" className="button" onClick={() => world.current?.skip()}>
                 <Icon name="play" /> Passer le trajet
               </button>
