@@ -6,7 +6,8 @@
  */
 import type { FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
-import type { PlaceId } from './plan6e';
+import type { ScenePlaceId as PlaceId } from './levelPlan';
+import { monteeSurroundings } from './monteeSurroundings';
 import { quaisSurroundings } from './quaisSurroundings';
 import { eclusesSurroundings } from './eclusesSurroundings';
 import { saltworksSurroundings } from './saltworksSurroundings';
@@ -47,6 +48,8 @@ export type Surroundings = (b: FacetBuilder, floor: Vec3, state: SurroundingsSta
 export const SURROUNDINGS_MAX = 1500;
 
 export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
+  // Le 5e (GD-22, lot 3) : la Montée.
+  montee: monteeSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,

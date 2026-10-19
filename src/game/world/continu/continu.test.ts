@@ -468,11 +468,15 @@ describe('La brume des terres fermées', () => {
       for (const id of landById(land).places) expect(veilShare(land, placeById(id).center), id).toBeGreaterThan(0.5);
       for (const other of LANDS) if (other.id !== land) for (const id of other.places) expect(veilShare(land, placeById(id).center), id).toBe(0);
       const v = veilFacets([land]);
-      for (let k = 0; k < v.positions.length; k += 3) {
+      // Un sommet sur sept (un pas premier, qui ne retombe pas sur le même coin de chaque case de la grille) : plusieurs
+      // centaines par terre ; les 41 600 sommets faisaient frôler les 5 s au test (seconde relecture du lot 3).
+      let seen = 0;
+      for (let k = 0; k < v.positions.length; k += 3 * 7, seen++) {
         // Le voile passe au-dessus du plus haut du sol à une demi-case autour (reprise du lot 3).
         const ground = Math.max(0.05, standingHeight(highest({ x: v.positions[k], z: v.positions[k + 2] })));
         expect(v.positions[k + 1] - ground).toBeLessThanOrEqual(VEIL_HEIGHT + 1e-4);
       }
+      expect(seen, land).toBeGreaterThan(300);
       // Le repère de chaque lieu la dépasse.
       for (const id of landById(land).places) expect(modelOfPlace(id).top, id).toBeGreaterThan(VEIL_HEIGHT + 0.5);
     }

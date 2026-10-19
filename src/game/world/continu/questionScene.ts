@@ -6,8 +6,9 @@
 import { boundsOf, FacetBuilder, placeFacets, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { placeArt } from './northShore';
-import { sixthPlace, type PlaceId as AnyPlaceId } from './levelPlan';
-import { DOCK_EDGE, placeById, type PlaceId } from './plan6e';
+import { placeById, scenePlace, type PlaceId as AnyPlaceId, type ScenePlaceId as PlaceId } from './levelPlan';
+import { heightFor } from './placeGround';
+import { DOCK_EDGE } from './plan6e';
 import type { ItemScene } from './questions';
 import { COMMONS, ENGINE, FILETS_RACK, OBSERVATORY, SHIPYARD, SLIP_N, SLIP_U, SLIP_YAW, STEAM_GAP, VALVE_PUFFS, drumFace, engineSteam, filetsRack, hullEdge, hullPoint, slipPoint } from './places';
 import { MANGROVE, mangroveDeckTop } from './places';
@@ -164,6 +165,9 @@ const C = {
 /** La hauteur où l'on se tient en un point (le sol, ou le dessus de la digue sur l'eau). */
 const groundAt = (p: Vec2): number => standingHeight(heightAt(p));
 
+/** La même, sur le sol du niveau d'un lieu (la Montée, au 5e : ./placeGround.ts). */
+const groundOf = (place: PlaceId, p: Vec2): number => standingHeight(heightFor(place)(p));
+
 /**
  * Le quai de la scénette des Quais (piste 1, lot 3) : son bord sur le bassin (`front`, en unités au sud du centre du
  * lieu, contre le bord de quai de pierre), sa largeur et sa profondeur au moins, et la bande de devant où se tiennent
@@ -204,6 +208,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   // Le large (lot L9) : la cale des Balises, le quai sous l'auvent de la Gare maritime.
   beacons: placeArt('beacons')!.sceneSpot,
   ferry: placeArt('ferry')!.sceneSpot,
+  // Le 5e (GD-22, lot 3) : le plancher de la Montée, devant le bassin, face au trait de zéro.
+  montee: placeArt('montee')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -223,12 +229,12 @@ function spotSamples(place: PlaceId): Vec2[] {
  * une pente ; elle descend jusqu'au sol sous elle, `sceneDepth`).
  */
 export function sceneSpot(anyPlace: AnyPlaceId): Vec3 {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   const p = placeById(place);
   const s = SCENE_SPOT[place];
   const at = { x: p.center.x + s.dx, z: p.center.z + s.dz };
-  let y = groundAt(at);
-  for (const q of spotSamples(place)) y = Math.max(y, groundAt(q));
+  let y = groundOf(place, at);
+  for (const q of spotSamples(place)) y = Math.max(y, groundOf(place, q));
   return { x: at.x, y, z: at.z };
 }
 
@@ -244,7 +250,8 @@ const UNDER_WATER = -0.3;
  */
 export function sceneDepth(place: PlaceId): number {
   const y = sceneSpot(place).y;
-  const low = Math.min(...spotSamples(place).map((q) => Math.max(UNDER_WATER, heightAt(q))));
+  const height = heightFor(place);
+  const low = Math.min(...spotSamples(place).map((q) => Math.max(UNDER_WATER, height(q))));
   return Math.max(PLATFORM_DEPTH, y - low + 0.2);
 }
 
@@ -448,6 +455,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   // Le large (lot L9) : les bouées des Balises, les malles de la Gare maritime.
   beacons: 'lieu',
   ferry: 'lieu',
+  // Le 5e (GD-22, lot 3) : les godets pendus de la Montée.
+  montee: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
@@ -467,7 +476,7 @@ const stepOf = (points: readonly Vec3[]): number => (points.length > 1 ? Math.hy
  * qu'un objet déborde sur la place de son voisin.
  */
 export function answerScale(anyPlace: AnyPlaceId, points: readonly Vec3[], height: number): number {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   const kind = ANSWER_OBJECT[place];
   if (!kind) return 1;
   const size = kind === 'lieu' ? placeArt(place)?.answer?.size : OBJECT_SIZE[kind];
@@ -898,7 +907,7 @@ function groundBells(b: FacetBuilder, points: readonly Vec3[], s: number, ground
  * `look.hanging.rail` : le point de la rambarde de face, que le tour emporte ; la main de l'habitant ne bouge pas.
  */
 export function facingAnswerObjects(anyPlace: AnyPlaceId, points: readonly Vec3[], s: number, look: AnswerLook, pivot: Vec3, yaw: number): Facets {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   if (!yaw) return answerObjects(place, points, s, look);
   const c = Math.cos(yaw), sn = Math.sin(yaw);
   // L'inverse du tour de `placeFacets` : du monde au repère de face, centré sur le pivot.
@@ -1262,7 +1271,7 @@ const ORIGIN: Vec3 = { x: 0, y: 0, z: 0 };
  * `scale` : l'échelle de ces objets (`answerScale`).
  */
 export function itemScene(anyPlace: AnyPlaceId, scene: ItemScene, answered: boolean, right: readonly Vec3[] = [], scale = 1, posed = true): ItemSceneFacets {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   const b = new FacetBuilder();
   const o = sceneSpot(place);
   const labels: SceneLabel[] = [];
@@ -1952,10 +1961,10 @@ function lockGate(b: FacetBuilder, x: number, y: number, z: number, open: boolea
  * Rien avant la première réussite, sauf la porte fermée des Écluses.
  */
 export function placeTrace(anyPlace: AnyPlaceId, done: readonly string[]): Facets {
-  const place = sixthPlace(anyPlace);
+  const place = scenePlace(anyPlace);
   const b = new FacetBuilder();
   const p = placeById(place);
-  const y0 = groundAt(p.center);
+  const y0 = groundOf(place, p.center);
   const { x, z } = p.center;
   if (place === 'ecluses') {
     lockGate(b, x, y0, z, done.includes('number-line'));

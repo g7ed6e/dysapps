@@ -40,7 +40,7 @@ import { Aid } from '../../exercises/Aid';
 import { NoticeQuestion } from '../../exercises/CalculationScreen';
 import type { ScreenProps } from '../../exercises/registry';
 import { exercisesToReview } from '../../review';
-import { isSixthPlace, placeById, type PlaceId } from '../../world/continu/levelPlan';
+import { hasScenette, placeById, type PlaceId } from '../../world/continu/levelPlan';
 import { WIDEN_FULL, WIDEN_OFFER, WIDEN_SCENE, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
 import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
@@ -219,7 +219,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   const [wideRow, setWideRow] = useState(false);
   // Un lieu du 5e n'a pas encore de scénette (GD-22, lot 2) : ses missions se jouent toujours sur l'écran habituel,
   // sans habitant ni phrase d'accueil.
-  const scenette = isSixthPlace(place) ? scenetteOf(place) : NO_SCENETTE;
+  const scenette = hasScenette(place) ? scenetteOf(place) : NO_SCENETTE;
   // La première rencontre de l'habitant depuis le lancement : sa phrase s'écrit au premier item seulement.
   const [meeting] = useState(() => scenette.greeting !== null && !greeted.has(place));
   const [greetItem, setGreetItem] = useState<string | null>(null);

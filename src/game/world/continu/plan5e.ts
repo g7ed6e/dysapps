@@ -167,7 +167,7 @@ interface PlaceSpec extends Omit<OpenPlace<PlaceId5e>, 'center' | 'door' | 'scen
  * scénette : toutes passent par l'écran habituel, depuis le panneau du lieu.
  */
 const PLACE_SPECS: readonly PlaceSpec[] = [
-  { id: 'montee', name: 'La Montée', at: 'à la Montée', agree: 'fs', island: 'maths-5e-signed-numbers', plan: [900, 585], door: { x: 0, z: 11 } },
+  { id: 'montee', name: 'La Montée', at: 'à la Montée', agree: 'fs', island: 'maths-5e-signed-numbers', plan: [900, 585], door: { x: 0, z: 14.4 } },
   { id: 'radeaux', name: 'Les Radeaux', at: 'aux Radeaux', agree: 'mp', island: 'maths-5e-proportionality', plan: [1175, 700], door: { x: 5, z: -4 } },
   { id: 'croisee', name: 'La Croisée', at: 'à la Croisée', agree: 'fs', island: 'french-5e-homophones', plan: [1000, 840], door: { x: 0, z: 7.5 } },
   { id: 'instants', name: 'Les Instants', at: 'aux Instants', agree: 'mp', island: 'french-5e-conjugation', plan: [770, 800], door: { x: 3, z: 7.5 } },
@@ -183,6 +183,14 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'oracle', name: 'L’Oracle', at: 'à l’Oracle', agree: 'ms', island: 'lca-5e-legends', plan: [760, 340], door: { x: 3, z: 7 } },
 ];
 
+/**
+ * Les missions qui se jouent dans la scénette d'un lieu du 5e (GD-22, lot 3) : à la Montée, les cinq, sous le rail
+ * gradué ; les autres lieux n'ont pas encore la leur (l'écran habituel).
+ */
+const SCENES_5E: Partial<Record<PlaceId5e, readonly string[]>> = {
+  montee: ['thermometer', 'adding', 'fractions', 'order-of-operations', 'conversions-angles'],
+};
+
 /** Le rayon de toucher d'un lieu du 5e : large, rien de précis à viser. */
 const TOUCH_RADIUS = 7;
 
@@ -192,7 +200,7 @@ export const PLACES_5E: readonly OpenPlace<PlaceId5e>[] = PLACE_SPECS.map((s) =>
   at: s.at,
   agree: s.agree,
   island: s.island,
-  scenes: [],
+  scenes: SCENES_5E[s.id] ?? [],
   center: fromPlan5e(s.plan),
   yaw: 0,
   door: s.id,
@@ -200,6 +208,12 @@ export const PLACES_5E: readonly OpenPlace<PlaceId5e>[] = PLACE_SPECS.map((s) =>
 }));
 
 /** Les lieux du plateau, le haut (la terre des Aiguilles) : la Carte met un triangle « en haut » à côté de leur nom. */
+/**
+ * Les lieux qui ne comptent pas dans le prix de leur terre (décision du mainteneur, 19 octobre 2026) : l’Oracle, lieu en
+ * option, ne compte pas dans celui de la cabine de la Montée, qui vaut quatre lieux (20) et non cinq (25). Le changer ici.
+ */
+export const UNPRICED_PLACES_5E: readonly PlaceId5e[] = ['oracle'];
+
 export const UPPER_PLACES_5E: readonly PlaceId5e[] = ['semaphore', 'gaillard', 'donjon', 'nacelles', 'oracle'];
 
 /**

@@ -58,7 +58,10 @@ export const PRICE_PER_PLACE = 4;
 export const planOfLand = (land: LandId): LevelPlan => ALL_PLANS.find((p) => p.lands.some((l) => l.id === land))!;
 
 /** Le prix d'une terre : le prix d'un lieu de son niveau (4 au 6e, 5 au 5e) par lieu, payé une fois. */
-export const landPrice = (land: LandId): number => planOfLand(land).pricePerPlace * landById(land).places.length;
+export const landPrice = (land: LandId): number => {
+  const plan = planOfLand(land);
+  return plan.pricePerPlace * landById(land).places.filter((p) => !plan.unpriced.includes(p)).length;
+};
 
 /** La liaison du réseau des chemins qui passe le pont d'une terre (son rang dans les liaisons du plan). */
 export function bridgeEdge(plan: LevelPlan, land: LinkedLand): number {

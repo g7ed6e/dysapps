@@ -8,9 +8,10 @@ import { FAUNA, birdFacets, detourTrianglesAtMost, spoutFacets, whaleFacets } fr
 import { NEF_MODEL_TRIANGLES, nefSiteTriangles } from './nef';
 import { WORLD_FOG } from './camera';
 import { bridgeLay } from './bridgeLay';
-import { bridgeFacets, bridgeMapMark } from './bridges';
+import { bridgeFacets, bridgeMapMark, cabinCarFacets, isCabin } from './bridges';
+import { monteeGlowBand } from './montee5e';
 import { linkedLands } from './lands';
-import { planFor } from './levelPlan';
+import { planFor, scenePlace } from './levelPlan';
 import { networkSamples, pathRibbons } from './paths';
 import { PLACES, type PlaceId } from './plan6e';
 import { lanternLight, modelOfPlace } from './places';
@@ -337,22 +338,64 @@ function groundCost5e(): { triangles: number; calls: number; near: number; far: 
 }
 
 /**
- * Les lieux du 5e : les quatorze ruines (ils n'ont pas encore d'étapes ni de traces) et ses passages, chacun au plus
- * chargé de ses deux états (tombé, ou relevé), en deux maillages comme au 6e.
+ * Les lieux du 5e : les treize ruines, la Montée entière (sa ruine et ses trois étapes, lot 3) et les traces de ses cinq
+ * missions, et ses passages, chacun au plus chargé de ses deux états (tombé, ou relevé), en deux maillages comme au 6e.
  */
 function placesCost5e(): { triangles: number; calls: number } {
-  const ruins = PLAN_5E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles, 0);
+  const ruins = PLAN_5E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + (p.scenes.length ? placeTrace(p.id, p.scenes).triangles : 0), 0);
   const passages = LINKED_LANDS_5E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
   return { triangles: ruins + passages, calls: 2 };
 }
 
 /**
- * Ce que coûte le monde ouvert du 5e (ce lot : toute l'île en grandes masses) : le ciel, le sol et sa forêt, la mer, les
- * chemins, les lieux et leurs passages, la pose d'un passage (le plus chargé, relevé), la brume des terres fermées (au
- * départ, les trois), la brume des failles, Kéo. Ni aménagements, ni Détours, ni faune, ni question ni scénette dans le
- * monde, ni Nef : ils viennent avec leurs lots.
+ * Le maillage de la pose au 5e, au plus chargé : un passage qui se relève, une partie de la Montée qui descend, la caisse
+ * de la cabine qui roule (lot 3) ou la lueur de la Montée restaurée. Un appel.
  */
-export function openWorldCost5e(): OpenWorldCost5e[] {
+function poseCost5e(): { triangles: number; calls: number } {
+  const field = buildHeightField5e();
+  const ground = (x: number, z: number) => groundOn5e(field, x, z);
+  const lays = Math.max(...LINKED_LANDS_5E.map((l) => (isCabin(l) ? bridgeFacets(l, true).triangles : bridgeLay(l).facets.triangles)));
+  const parts = Math.max(...PLAN_5E.places.filter((p) => p.scenes.length).map((p) => constructionFacets(p.id, [WHOLE], ground).triangles));
+  const car = Math.max(...LINKED_LANDS_5E.filter(isCabin).map((l) => cabinCarFacets(l).triangles));
+  return { triangles: Math.max(lays, parts, car, monteeGlowBand().triangles), calls: 1 };
+}
+
+/**
+ * Une question du 5e, au pire (lot 3, la Montée) : le lieu au repos et six godets choisis, dans un maillage, et la
+ * réaction dans un autre ; deux appels.
+ */
+function questionCost5e(): { triangles: number; calls: number } {
+  let triangles = 0;
+  for (const p of PLAN_5E.places.filter((q) => q.scenes.length)) {
+    const s = sceneSpot(p.id);
+    const points = Array.from({ length: 6 }, (_, i) => ({ x: s.x - 5 + 2 * i, y: s.y, z: s.z + 6 }));
+    const item = itemScene(p.id, { kind: 'rest' }, true, points, 1);
+    const objects = answerObjects(scenePlace(p.id), points, 1, { picked: [0, 1, 2, 3, 4, 5] });
+    triangles = Math.max(triangles, item.still.triangles + objects.triangles + (item.reaction?.facets.triangles ?? 0));
+  }
+  return { triangles, calls: 2 };
+}
+
+/**
+ * La scénette du 5e (lot 3, la Montée) : son décor de près, abords et ombres compris, avec la fontainière en pion dessiné
+ * par le code, dans un seul maillage (un appel). Son modèle 3D, plus tard (≤ 8 000 triangles, choix du mainteneur du 19
+ * octobre 2026 : un lot à part), prendra la place du pion avec un appel de plus.
+ */
+function scenetteCost5e(): { triangles: number; calls: number } {
+  const triangles = Math.max(...PLAN_5E.places.filter((p) => p.scenes.length).map((p) => Math.max(scenetteDecor(scenePlace(p.id)).triangles, scenetteDecor(scenePlace(p.id), true).triangles)));
+  return { triangles, calls: 1 };
+}
+
+/**
+ * Ce que coûte le monde ouvert du 5e (lot 2 : toute l'île en grandes masses ; lot 3 : la Montée finie) : le ciel, le sol
+ * et sa forêt, la mer, les chemins, les lieux et leurs passages, la brume des terres fermées (au départ, les trois), la
+ * brume des failles, Kéo ; puis, selon `view` : la scénette ouverte (`scenette`, le pire : la question et le décor de
+ * près de la Montée) ou le monde hors scénette (`monde` : le maillage de la pose, une partie qui descend, un passage qui
+ * se relève, la caisse qui roule). Les deux ne se montrent jamais ensemble : une question finit toute pose
+ * (three/archipeo/scene.ts, `askQuestion`), et aucune pose ne commence pendant une question (`setPlaces`). Ni
+ * aménagements, ni Détours, ni faune, ni Nef : ils viennent avec leurs lots.
+ */
+export function openWorldCost5e(view: 'scenette' | 'monde' = 'scenette'): OpenWorldCost5e[] {
   const field = buildHeightField5e();
   const ground = groundCost5e();
   const paths = pathRibbons5e((x, z) => groundOn5e(field, x, z));
@@ -362,10 +405,15 @@ export function openWorldCost5e(): OpenWorldCost5e[] {
     { poste: 'mer', triangles: 2, calls: 1 },
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
     { poste: 'lieux', ...placesCost5e() },
-    { poste: 'pose', triangles: Math.max(...LINKED_LANDS_5E.map((l) => bridgeFacets(l, true).triangles)), calls: 1 },
     { poste: 'brume', triangles: veilFacets(LINKED_LANDS_5E).triangles, calls: 1 },
     { poste: 'failles', triangles: riftMistFacets().triangles, calls: 1 },
     { poste: 'kéo', ...KEO },
+    ...(view === 'monde'
+      ? [{ poste: 'pose' as const, ...poseCost5e() }]
+      : [
+          { poste: 'question' as const, ...questionCost5e() },
+          { poste: 'scénette' as const, ...scenetteCost5e() },
+        ]),
   ];
 }
 

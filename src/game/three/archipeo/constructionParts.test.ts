@@ -82,3 +82,15 @@ describe('Le mot d’état d’un lieu sur la Carte', () => {
     expect(stateWord('restauree', textesDe('blocland').etatsDIle, 'fp')).toBe('Bâties');
   });
 });
+
+describe('La Montée du 5e (GD-22, lot 3)', () => {
+  it('chacune de ses cinq parties pose quelque chose de visible, et toutes ensemble la Montée entière', async () => {
+    const { buildHeightField5e, groundOn5e } = await import('../../world/continu/terrain5e');
+    const f5 = buildHeightField5e();
+    const g5 = (x: number, z: number) => groundOn5e(f5, x, z);
+    const shapes = partShapes('maths-5e-signed-numbers' as BiomeId);
+    expect(shapes).toHaveLength(5);
+    for (const [i, shape] of shapes.entries()) expect(constructionFacets('montee', [shape], g5).triangles, String(i)).toBeGreaterThan(0);
+    expect(constructionFacets('montee', shapes, g5).triangles).toBe(constructionFacets('montee', [WHOLE], g5).triangles);
+  });
+});
