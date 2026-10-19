@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import type { PlaceId } from '../../world/continu/plan6e';
+import { planFor } from '../../world/continu/levelPlan';
 import { questionLayout } from '../../world/continu/questionScene';
 import { scenetteDecor, scenetteLayout, scenetteSurroundings } from '../../world/continu/scenette';
 import { SURROUNDINGS } from '../../world/continu/surroundings';
@@ -74,6 +75,7 @@ beforeAll(() => {
   const noop = () => {};
   const before = made.scenes.length;
   world = createOpenWorld(host, {
+    plan: planFor('6e'),
     start: 'phare',
     reduceMotion: true,
     meter: { show: false, expose: false },
