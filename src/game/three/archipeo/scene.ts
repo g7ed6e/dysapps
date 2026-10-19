@@ -735,8 +735,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // L'angle du rotor de la Turbine, avancé de même, sauf pendant une question.
   const rotorAngle = { value: 0 };
   const landMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), vaneAngle, rotorAngle);
-  // Le lieu suivant n'est pas pris dans la brume : de loin, c'est lui qu'on voit.
-  const landmarkMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: false }), vaneAngle, rotorAngle);
   const tiles = createTileStore(field);
   const nearRing = new RingMesh(landMaterial, 9000);
   const farRing = new RingMesh(landMaterial, 6000);
@@ -811,7 +809,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (tallTop) tallTop.y = foot.y + top;
   };
   const placesMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
-  const landmarkMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landmarkMaterial));
+  // Le lieu suivi, à part, du même matériau, pris dans la brume comme le reste : sorti d'elle, il se détachait net du
+  // lointain voilé (retour du mainteneur, 19 octobre 2026) ; de loin, c'est la marque qui le montre.
+  const landmarkMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
   const poseMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: false, emissive: POSE_GLOW });
   const poseMesh = new THREE.Mesh(new THREE.BufferGeometry(), poseMaterial);
   // La lumière de la lanterne du Phare, allumée (son haut posé) : réunie aux lieux, de la couleur
@@ -821,9 +821,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   placesMesh.visible = false;
   landmarkMesh.visible = false;
   poseMesh.visible = false;
-  // La Nef qui arrive ou qui part, et le banc qui se retire (GD-21) : du matériau du lieu suivi, hors de la brume.
-  const nefMesh = new THREE.Mesh(new THREE.BufferGeometry(), landmarkMaterial);
-  const bancMesh = new THREE.Mesh(new THREE.BufferGeometry(), landmarkMaterial);
+  // La Nef qui arrive ou qui part, et le banc qui se retire (GD-21) : du matériau des lieux.
+  const nefMesh = new THREE.Mesh(new THREE.BufferGeometry(), landMaterial);
+  const bancMesh = new THREE.Mesh(new THREE.BufferGeometry(), landMaterial);
   nefMesh.visible = false;
   bancMesh.visible = false;
   scene.add(placesMesh, landmarkMesh, poseMesh, nefMesh, bancMesh);
@@ -1451,7 +1451,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Les Détours : leurs pierres, le cairn, les sentes trouvées (dans le monde comme sur la Carte), sans appel de plus.
     rest.push(detourFacetsNow());
     // La Nef (GD-21) : son ber (vide, et la bouée, une fois partie), ses parties posées (sans celles qui descendent), et le
-    // banc du large tant qu'elle n'est pas partie, hors de la brume (sur la Carte, avec les lieux).
+    // banc du large tant qu'elle n'est pas partie, avec le lieu suivi (sur la Carte, avec les lieux).
     const gone = nefLookNow === 4 || Boolean(nefTrip);
     rest.push(nefLookNow === 4 ? nefBer.gone : nefBer.quay);
     const nefNow = gone ? null : nefModel(nefShownParts(nefDrop ? nefDrop.from : nefLookNow));
@@ -3441,7 +3441,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       nearRing.dispose();
       farRing.dispose();
       landMaterial.dispose();
-      landmarkMaterial.dispose();
       veilMaterial.dispose();
       seaMaterial.dispose();
       seaTexture.dispose();
