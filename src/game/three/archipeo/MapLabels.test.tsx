@@ -41,6 +41,8 @@ test('un cadenas par pont ; celui du pont suggéré, et lui seul, est plein', ()
   expect(locks.map((l) => l.id)).toEqual(['pont-couchant', 'pont-large', 'pont-levant', 'pont-cretes']);
   expect(locks.filter((l) => l.full).map((l) => l.id)).toEqual(['pont-levant']);
   expect(locks[0].el.getAttribute('aria-label')).toBe('Le Couchant : fermé, le pont est à rebâtir.');
+  // La voix dit le suggéré, que le cadenas plein montre.
+  expect(locks[2].el.getAttribute('aria-label')).toBe('Le Levant : fermé, le pont est à rebâtir. Suggéré.');
 });
 
 test('sans pont suggéré, aucun cadenas plein', () => {

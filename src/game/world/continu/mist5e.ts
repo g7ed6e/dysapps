@@ -3,7 +3,7 @@
 // les failles (au pied de la falaise, là où le plateau tombe sur la forêt, et dans l'entaille du chenal de l'ouest) et au
 // pied des aiguilles ; jamais sur un chemin ni sur un lieu, jamais sur la Carte (la vue la cache), jamais devant un
 // texte. Rien ne bouge : « Réduire les animations » n'a rien à arrêter. Sur la Carte, le plateau se lit par la ligne de
-// sa falaise, un trait double levé au-dessus de son rebord, sur l'île seulement. Code pur.
+// sa falaise, une bande sombre à dents levée au-dessus de son rebord, sur l'île seulement. Code pur.
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, linearRgb, signedDistance, type Vec2 } from './geometry';
 import { CHANNELS_5E, COAST_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E } from './plan5e';
@@ -157,41 +157,56 @@ export function cliffMapSegments(): [Vec2, Vec2][] {
 }
 
 /**
- * La ligne de la falaise sur la Carte (fiche, § 6 : « le plateau dessiné avec la ligne de sa falaise ») : un trait sombre
- * entre deux clairs (un liseré dehors, un trait au milieu), le long du rebord, levés au-dessus du plateau pour se lire de
- * haut ; d'une autre forme que le tiret d'un chemin et que le trait double d'un pont. Seulement sur l'île (retouche du lot 2, directeur artistique :
- * le trait débordait sur la mer, aux deux bouts du plateau). Dans le maillage des lieux : aucun appel de plus.
+ * La ligne de la falaise sur la Carte (fiche, § 6 : « le plateau dessiné avec la ligne de sa falaise ») : le signe d'une
+ * falaise sur une carte, asymétrique, d'une autre forme que le chemin (un ruban de sable bordé de sombre des deux côtés,
+ * ./paths5e.ts, `pathMapEdges5e`) et que le trait double d'un pont. Une bande sombre dominante le long du rebord, côté
+ * plateau, sur la pierre ; du seul côté du pied, un liseré clair sur la mousse et la forêt, coupé de dents sombres
+ * tournées vers le bas, qu'aucun chemin ni pont ne porte (retouche du lot 2, directeur artistique : en trois traits,
+ * clair, sombre, clair, le rebord se lisait comme une route, alors que le plateau ne se rejoint que par la Montée et sa
+ * cabine). Levée au-dessus du plateau pour se lire de haut ; seulement sur l'île (le trait débordait sur la mer, aux deux
+ * bouts du plateau). Dans le maillage des lieux : aucun appel de plus.
  */
 export function cliffMapLine(): Facets {
   const b = new FacetBuilder();
   const y = PLATEAU.height + 2.5;
-  const segments = cliffMapSegments();
-  const strip = (half: number, lift: number, color: number) => {
-    for (const [a, c] of segments) {
-      const len = distance(a, c);
-      const nx = (-(c.z - a.z) / len) * half;
-      const nz = ((c.x - a.x) / len) * half;
-      b.quad([a.x + nx, y + lift, a.z + nz], [c.x + nx, y + lift, c.z + nz], [c.x - nx, y + lift, c.z - nz], [a.x - nx, y + lift, a.z - nz], color);
+  const { back, front, rim, reach, pitch, tooth } = CLIFF_MAP_SHAPE;
+  for (const [a, c] of cliffMapSegments()) {
+    const len = distance(a, c);
+    // Le long du tronçon, puis vers le pied (le plateau est au nord, à gauche du sens d'ouest en est).
+    const ux = (c.x - a.x) / len;
+    const uz = (c.z - a.z) / len;
+    const at = (d: number, o: number, lift: number) => [a.x + ux * d - uz * o, y + lift, a.z + uz * d + ux * o] as const;
+    // Chaque bande de `lo` à `hi` (vers le pied) : le même sens de tour que les dents (face vers le haut).
+    const band = (lo: number, hi: number, lift: number, color: number) => b.quad(at(0, hi, lift), at(len, hi, lift), at(len, lo, lift), at(0, lo, lift), color);
+    band(front, rim, 0, CLIFF_MAP_COLORS.light);
+    band(-back, front, 0.05, CLIFF_MAP_COLORS.dark);
+    // Les dents : leur base contre la bande sombre, leur pointe dans le liseré, qui reste d'un seul tenant au-dessous ;
+    // espacées de `pitch`, centrées sur le tronçon.
+    if (len < tooth) continue;
+    const count = Math.floor((len - tooth) / pitch) + 1;
+    const first = (len - (count - 1) * pitch) / 2;
+    for (let k = 0; k < count; k++) {
+      const d = first + k * pitch;
+      b.triangle(at(d, reach, 0.1), at(d + tooth / 2, front, 0.1), at(d - tooth / 2, front, 0.1), CLIFF_MAP_COLORS.dark);
     }
-  };
-  strip(CLIFF_MAP_WIDTHS.edge, 0, CLIFF_MAP_COLORS.light);
-  strip(CLIFF_MAP_WIDTHS.dark, 0.05, CLIFF_MAP_COLORS.dark);
-  strip(CLIFF_MAP_WIDTHS.core, 0.1, CLIFF_MAP_COLORS.light);
+  }
   return b.build();
 }
 
 /**
- * Les demi-largeurs des trois traits de la falaise sur la Carte, du dehors au milieu : le liseré clair, le sombre, le
- * clair du milieu (référent dys, seconde relecture du lot 2 : le sombre seul, d'un pixel à peine, tombait à 2,6:1 contre
- * la mousse sombre et la forêt au pied du plateau). Le liseré clair borde le trait là où le fond est sombre, le sombre
- * là où il est clair ; chacun d'au moins un pixel sur la Carte de la tablette.
+ * La forme de la falaise sur la Carte, en unités depuis le rebord, vers le pied (une unité, deux pixels environ sur la
+ * Carte de la tablette) : la bande sombre de `back` côté plateau à `front` côté pied ; le liseré clair de `front` à
+ * `rim` ; les dents sombres, larges de `tooth` à leur base, de pointe à `reach` (le liseré reste d'un seul tenant de
+ * `reach` à `rim`, un trait clair continu sous la dentelure), une toutes les `pitch` unités. Le sombre
+ * borde la pierre, le clair la mousse et la forêt du pied (référent dys, seconde relecture du lot 2 : le sombre seul
+ * tombait à 2,6:1 contre la mousse sombre et la forêt).
  */
-export const CLIFF_MAP_WIDTHS = { edge: 2.4, dark: 1.6, core: 0.6 } as const;
+export const CLIFF_MAP_SHAPE = { back: 1.4, front: 0.6, rim: 2.8, reach: 2, tooth: 2, pitch: 5 } as const;
 
 /**
- * Les couleurs des traits de la falaise sur la Carte : le sombre, le clair (liseré et milieu) ; le sombre est aussi le
+ * Les couleurs de la falaise sur la Carte : le sombre (la bande et les dents), le clair (le liseré du pied) ; le sombre est aussi le
  * liseré des chemins sur la Carte (./paths5e.ts, `pathMapEdges5e`). Mesurés sur la capture de la Carte de la tablette
  * (référent dys, seconde relecture du lot 2) : le sombre contre la pierre du plateau, 4,8:1 ; le liseré clair contre la
- * mousse sombre du pied, 3,9:1, contre la forêt, 5,9:1 ; le clair contre le sombre, 10,9:1.
+ * mousse sombre du pied, 3,9:1, contre la forêt, 5,9:1 ; le clair contre le sombre, 10,9:1. La forme change à la retouche du lot 2, pas les teintes.
  */
 export const CLIFF_MAP_COLORS = { dark: 0x3a362c, light: 0xefe4c8 } as const;

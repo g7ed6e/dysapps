@@ -5,13 +5,13 @@ import { describe, expect, it } from 'vitest';
 import { LINK_PRICE, islandsOf } from '../archipelago';
 import { OPEN_WORLD_BUDGET, mapCost5e, openWorldCost5e } from './budget';
 import { bridgeFacets, bridgeFloor, bridgeSite, clampToOpen, isCabin } from './bridges';
-import { distance, distanceToPolyline, linearRgb, signedDistance, type Vec2 } from './geometry';
+import { closestOnSegment, distance, distanceToPolyline, linearRgb, signedDistance, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
 import { planFor } from './levelPlan';
-import { CLIFF_MAP_COLORS, CLIFF_MAP_WIDTHS, cliffMapLine, cliffMapSegments, riftMistFacets, riftMistSpots, RIFT_MIST } from './mist5e';
+import { CLIFF_MAP_COLORS, CLIFF_MAP_SHAPE, cliffMapLine, cliffMapSegments, riftMistFacets, riftMistSpots, RIFT_MIST } from './mist5e';
 import { modelOfPlace } from './places';
 import { NETWORK_5E, PATH_MAP_EDGE, pathMapEdges5e, pathRibbons5e, quayFacets } from './paths5e';
-import { COAST_5E, COLORS_5E, DEPARTURE_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PLATEAU, QUAY_5E, UPPER_PLACES_5E } from './plan5e';
+import { COAST_5E, COLORS_5E, DEPARTURE_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, UPPER_PLACES_5E } from './plan5e';
 import { COLORS_6E } from './plan6e';
 import { MONTEE_HEIGHT } from './ruins5e';
 import { HEIGHT_LIGHT_5E, HORIZON_COLOR_5E, LIGHT_5E, SKY_OF, skyColorAt, skyDome } from './sky';
@@ -195,7 +195,48 @@ describe('La Carte : le trait de la falaise', () => {
       expect(signedDistance(a, COAST_5E)).toBeGreaterThan(1.5);
       expect(signedDistance(b, COAST_5E)).toBeGreaterThan(1.5);
     }
-    expect(cliffMapLine().triangles).toBe(segments.length * 6);
+    // Deux bandes par tronçon (quatre triangles), puis une dent par `pitch` unités.
+    const { tooth, pitch } = CLIFF_MAP_SHAPE;
+    const teeth = segments.reduce((n, [a, b]) => (distance(a, b) < tooth ? n : n + Math.floor((distance(a, b) - tooth) / pitch) + 1), 0);
+    expect(teeth).toBeGreaterThan(60);
+    expect(cliffMapLine().triangles).toBe(segments.length * 4 + teeth);
+  });
+
+  it('asymétrique, d’une autre forme qu’un chemin : le sombre côté plateau, le clair et les dents du seul côté du pied (retouche du lot 2)', () => {
+    const line = cliffMapLine();
+    const segments = cliffMapSegments();
+    const p = line.positions;
+    const c = line.colors;
+    const dark = linearRgb(CLIFF_MAP_COLORS.dark);
+    const light = linearRgb(CLIFF_MAP_COLORS.light);
+    let teeth = 0;
+    let insideDark = 0;
+    for (let i = 0; i < p.length; i += 9) {
+      const centre = { x: (p[i] + p[i + 3] + p[i + 6]) / 3, z: (p[i + 2] + p[i + 5] + p[i + 8]) / 3 };
+      // De quel côté du rebord : dans le plateau (côté sombre) ou dehors, vers le pied.
+      const inside = signedDistance(centre, PLATEAU_5E) > 0;
+      const isLight = Math.abs(c[i] - light[0]) < 1e-3 && Math.abs(c[i + 1] - light[1]) < 1e-3;
+      const isDark = Math.abs(c[i] - dark[0]) < 1e-3 && Math.abs(c[i + 1] - dark[1]) < 1e-3;
+      expect(isLight || isDark).toBe(true);
+      // Le clair, jamais côté plateau (sur la pierre il se confond) : le liseré borde le pied seulement.
+      if (isLight) expect(inside).toBe(false);
+      else if (Math.abs(p[i + 1] - (PLATEAU.height + 2.55)) < 1e-3) insideDark += inside ? 1 : 0;
+      // Toutes les facettes d'une face vers le haut (lues de la Carte).
+      const ux = p[i + 3] - p[i], uz = p[i + 5] - p[i + 2], vx = p[i + 6] - p[i], vz = p[i + 8] - p[i + 2];
+      expect(uz * vx - ux * vz).toBeGreaterThan(0);
+      // Une dent : un triangle sombre seul, levé au-dessus des deux bandes.
+      if (isDark && Math.abs(p[i + 1] - (PLATEAU.height + 2.6)) < 1e-3) teeth++;
+    }
+    expect(teeth).toBe(line.triangles - segments.length * 4);
+    // La bande sombre, elle, déborde côté plateau (sur la pierre) : une de ses deux moitiés par tronçon au moins.
+    expect(insideDark).toBeGreaterThanOrEqual(segments.length);
+    // Le sombre domine : sa bande au moins deux fois plus large que le trait clair continu.
+    // Le liseré reste un trait continu sous les dents, d'au moins un pixel (0,6 unité) ; les dents laissent du clair entre elles.
+    const { back, front, rim, reach, tooth, pitch } = CLIFF_MAP_SHAPE;
+    expect(reach - front).toBeGreaterThanOrEqual(1);
+    expect(rim - reach).toBeGreaterThanOrEqual(0.6);
+    expect(back + front).toBeGreaterThanOrEqual(2 * (rim - reach));
+    expect(tooth).toBeLessThanOrEqual(pitch / 2);
   });
 
   it('se lit sur la pierre du plateau (3:1 au moins, sous la même lumière), son trait clair sur le sombre', () => {
@@ -208,17 +249,12 @@ describe('La Carte : le trait de la falaise', () => {
     expect(luminance(linearRgb(CLIFF_MAP_COLORS.dark))).toBeGreaterThan(NOT_BLACK);
   });
 
-  it('un liseré clair dehors : il se lit sur la mousse sombre et la forêt du pied, le sombre sur la pierre (seconde relecture du lot 2)', () => {
+  it('un liseré clair du côté du pied : il se lit sur la mousse sombre et la forêt du pied, le sombre sur la pierre (seconde relecture du lot 2)', () => {
     const contrast = (a: number, b: number) => {
       const [la, lb] = [luminance(linearRgb(a)), luminance(linearRgb(b))];
       return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
     };
     for (const ground of [COLORS_5E.moss, COLORS_5E.mossShade, COLORS_5E.mossSun, FOREST_COLORS.canopy, FOREST_COLORS.canopyTop]) expect(contrast(CLIFF_MAP_COLORS.light, ground), ground.toString(16)).toBeGreaterThan(3);
-    // Du dehors au milieu, trois traits d'au moins 0,6 unité chacun (un pixel sur la Carte de la tablette).
-    const { edge, dark, core } = CLIFF_MAP_WIDTHS;
-    expect(edge - dark).toBeGreaterThanOrEqual(0.6);
-    expect(dark - core).toBeGreaterThanOrEqual(0.6);
-    expect(core * 2).toBeGreaterThanOrEqual(0.6);
   });
 });
 
@@ -240,6 +276,22 @@ describe('La Carte : le liseré sombre des chemins', () => {
       const z = (p[i + 2] + p[i + 5] + p[i + 8]) / 3;
       expect(y).toBeGreaterThan(0);
       expect(y - ground(x, z)).toBeGreaterThan(-1);
+    }
+  });
+
+  it('aucun morceau à cheval sur la côte : sous chaque bande, la ligne du chemin est sur la terre', () => {
+    const p = edges.positions;
+    const lines = PATH_EDGES_5E.map(([a, b]) => [node(a), node(b)] as const);
+    for (let i = 0; i < p.length; i += 3) {
+      // Le sommet ramené sur la ligne de sa liaison (la plus proche) : la terre, jamais l'eau.
+      const v = { x: p[i], z: p[i + 2] };
+      let best = { d: Infinity, at: v };
+      for (const [a, b] of lines) {
+        const q = closestOnSegment(v, a, b).point;
+        const d = distance(v, q);
+        if (d < best.d) best = { d, at: q };
+      }
+      expect(ground(best.at.x, best.at.z), `${v.x.toFixed(1)} ${v.z.toFixed(1)}`).toBeGreaterThanOrEqual(0.05);
     }
   });
 

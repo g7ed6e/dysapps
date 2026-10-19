@@ -136,6 +136,12 @@ const UpBadge = () => (
 /** Ce que dit un lieu du haut, après son nom. */
 const UP_WORDS = ', en haut';
 
+/**
+ * Ce que dit le cadenas du pont suggéré, après sa phrase (consultant UX UI, seconde relecture du lot 2 du 5e) : la voix
+ * dit ce que montrent son plein et son double contour ; la pastille du prochain lieu le dit par `aria-current`.
+ */
+const SUGGESTED_WORDS = ' Suggéré.';
+
 /** Ce que dit la pastille de Kéo. */
 const KEO_LABEL = 'Toi : Kéo est ici';
 
@@ -390,7 +396,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
           className="open-world-map-closed open-world-map-bridge"
           data-lieu={bridgeSpot(land)}
           hidden
-          aria-label={orderLabel?.(land) ?? closedLandLabel(land)}
+          aria-label={`${orderLabel?.(land) ?? closedLandLabel(land)}${land === suggested ? SUGGESTED_WORDS : ''}`}
           onClick={() => onClosed(land)}
         >
           <span className={`open-world-lock${land === suggested ? ' suggested' : ''}`} aria-hidden="true">

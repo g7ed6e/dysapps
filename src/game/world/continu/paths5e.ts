@@ -121,8 +121,8 @@ export const pathRibbons5e = (ground: (x: number, z: number) => number): Facets 
  * pierre du plateau et sous la brume claire des terres fermées, tombait sous 3:1. Sur la Carte seulement, une bande
  * sombre de chaque côté du ruban, juste hors de son sable (la couleur sombre de la falaise), un rien au-dessus de lui :
  * elle ne couvre jamais le sable, et se lit d'au moins un pixel sur la Carte de la tablette. Ni sur l'eau (le bois des
- * pontons), ni sur les passages (le trait double des ponts et de la cabine). Dans le maillage des lieux, comme la ligne
- * de la falaise : aucun appel de plus.
+ * pontons : un morceau dont un bout ou le milieu est sur l'eau n'en a pas), ni sur les passages (le trait double des
+ * ponts et de la cabine). Dans le maillage des lieux, comme la ligne de la falaise : aucun appel de plus.
  */
 export function pathMapEdges5e(ground: (x: number, z: number) => number, color: number): Facets {
   const b = new FacetBuilder();
@@ -140,8 +140,8 @@ export function pathMapEdges5e(ground: (x: number, z: number) => number, color: 
     for (let k = 0; k < n; k++) {
       const d0 = (len * k) / n;
       const d1 = (len * (k + 1)) / n;
-      const mid = point((d0 + d1) / 2);
-      if (ground(mid.x, mid.z) < 0.05) continue;
+      // Le morceau entier sur la terre, ses deux bouts et son milieu : un morceau à cheval sur la côte ne déborde pas sur l'eau.
+      if ([d0, (d0 + d1) / 2, d1].some((d) => { const v = point(d); return ground(v.x, v.z) < 0.05; })) continue;
       const spans: [number, number][] = cut ? [[d0, Math.min(d1, cut[0])], [Math.max(d0, cut[1]), d1]] : [[d0, d1]];
       for (const [s0, s1] of spans) {
         if (s1 - s0 < 1e-3) continue;
