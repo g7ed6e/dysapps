@@ -114,6 +114,29 @@ describe('Les modèles dans la vue', () => {
     h.dispose();
   });
 
+  it('le modèle prêt après l’entrée de la scénette de son lieu est dit à la vue, une fois ; jamais pour un autre lieu ni après la sortie', async () => {
+    vi.stubGlobal('fetch', fauxFetch());
+    const ready = vi.fn();
+    const h = createHabitantModels(new THREE.Scene(), () => {}, ready);
+    const at = { x: 0, y: 0, z: 0 };
+    // « Livrer » touché aussitôt arrivé : la remise s'ouvre avant le fichier.
+    expect(h.show('quais', at)).toBe(false);
+    await settle();
+    expect(ready).toHaveBeenCalledTimes(1);
+    expect(ready).toHaveBeenCalledWith('quais');
+    // La vue le montre alors : le pion part.
+    expect(h.show('quais', at)).toBe(true);
+    expect(loadedHabitant('quais')).not.toBeNull();
+    h.hide();
+    // Préparé hors de toute scénette, ou sorti avant son arrivée : rien n'est dit.
+    h.prefetch('phare');
+    expect(h.show('ecluses', at)).toBe(false);
+    h.hide();
+    await settle();
+    expect(ready).toHaveBeenCalledTimes(1);
+    h.dispose();
+  });
+
   it('à l’approche d’un lieu, son modèle se prépare ; deux au plus sont gardés, le plus ancien libéré, jamais celui de la scénette', async () => {
     const fetch = fauxFetch();
     vi.stubGlobal('fetch', fetch);
