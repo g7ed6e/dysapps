@@ -5,8 +5,8 @@
 // texte. Rien ne bouge : « Réduire les animations » n'a rien à arrêter. Sur la Carte, le plateau se lit par la ligne de
 // sa falaise, une bande sombre à dents levée au-dessus de son rebord, sur l'île seulement. Code pur.
 import { FacetBuilder, type Facets } from './facets';
-import { distance, distanceToPolyline, linearRgb, signedDistance, type Vec2 } from './geometry';
-import { CHANNELS_5E, COAST_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E } from './plan5e';
+import { distance, distanceToPolyline, linearRgb, type Vec2 } from './geometry';
+import { CHANNELS_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E } from './plan5e';
 import { heightAt5e, landDistance5e, plateauShare } from './terrain5e';
 import type { VeilMesh } from './veil';
 
@@ -130,12 +130,14 @@ export function riftMistFacets(): VeilMesh {
   return mistCache;
 }
 
-/** Le trait de la falaise s'arrête à tant d'unités en deçà de la côte : jamais sur la mer. */
+/** Le trait de la falaise s'arrête à tant d'unités en deçà de la côte et des chenaux : jamais sur l'eau. */
 const CLIFF_INLAND = 2;
 
 /**
- * Le bord du plateau, sur l'île seulement : chaque côté de son polygone gardé là où il est à `CLIFF_INLAND` unités au
- * moins de la côte (cherché d'unité en unité), en un tronçon d'un seul tenant par côté.
+ * Le bord du plateau, sur la terre seulement : chaque côté de son polygone gardé là où il est à `CLIFF_INLAND` unités au
+ * moins de la côte et de l'eau des chenaux (`landDistance5e`, cherché d'unité en unité), en un tronçon par morceau d'un
+ * seul tenant : un côté que coupe un chenal en donne deux (retouche du lot 2, directeur artistique : la ligne passait
+ * au-dessus de l'eau du chenal de l'ouest, là où il entaille le plateau).
  */
 export function cliffMapSegments(): [Vec2, Vec2][] {
   const out: [Vec2, Vec2][] = [];
@@ -145,13 +147,14 @@ export function cliffMapSegments(): [Vec2, Vec2][] {
     const n = Math.max(1, Math.ceil(distance(a, c)));
     const at = (i: number) => ({ x: a.x + ((c.x - a.x) * i) / n, z: a.z + ((c.z - a.z) * i) / n });
     let first = -1;
-    let last = -1;
-    for (let i = 0; i <= n; i++) {
-      if (signedDistance(at(i), COAST_5E) <= CLIFF_INLAND) continue;
-      if (first < 0) first = i;
-      last = i;
+    for (let i = 0; i <= n + 1; i++) {
+      const dry = i <= n && landDistance5e(at(i)) > CLIFF_INLAND;
+      if (dry && first < 0) first = i;
+      if (!dry && first >= 0) {
+        if (i - 1 > first) out.push([at(first), at(i - 1)]);
+        first = -1;
+      }
     }
-    if (first >= 0 && last > first) out.push([at(first), at(last)]);
   }
   return out;
 }
@@ -163,8 +166,8 @@ export function cliffMapSegments(): [Vec2, Vec2][] {
  * plateau, sur la pierre ; du seul côté du pied, un liseré clair sur la mousse et la forêt, coupé de dents sombres
  * tournées vers le bas, qu'aucun chemin ni pont ne porte (retouche du lot 2, directeur artistique : en trois traits,
  * clair, sombre, clair, le rebord se lisait comme une route, alors que le plateau ne se rejoint que par la Montée et sa
- * cabine). Levée au-dessus du plateau pour se lire de haut ; seulement sur l'île (le trait débordait sur la mer, aux deux
- * bouts du plateau). Dans le maillage des lieux : aucun appel de plus.
+ * cabine). Levée au-dessus du plateau pour se lire de haut ; seulement sur la terre (le trait débordait sur la mer, aux deux
+ * bouts du plateau, et sur l'eau du chenal de l'ouest). Dans le maillage des lieux : aucun appel de plus.
  */
 export function cliffMapLine(): Facets {
   const b = new FacetBuilder();

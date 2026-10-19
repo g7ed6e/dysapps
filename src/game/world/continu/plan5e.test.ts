@@ -239,6 +239,24 @@ describe('La Carte : le trait de la falaise', () => {
     expect(tooth).toBeLessThanOrEqual(pitch / 2);
   });
 
+  it('jamais sur l’eau des chenaux : la ligne coupée là où le chenal de l’ouest entaille le plateau (retouche du lot 2)', () => {
+    const segments = cliffMapSegments();
+    for (const [a, b] of segments)
+      for (let t = 0; t <= 1; t += 0.05) {
+        const p = { x: a.x + (b.x - a.x) * t, z: a.z + (b.z - a.z) * t };
+        expect(channelClearance(p), `${p.x.toFixed(1)} ${p.z.toFixed(1)}`).toBeGreaterThan(1.5);
+      }
+    // Aucune facette de la ligne (bandes et dents) au-dessus de l'eau d'un chenal.
+    const p = cliffMapLine().positions;
+    for (let i = 0; i < p.length; i += 9) {
+      const centre = { x: (p[i] + p[i + 3] + p[i + 6]) / 3, z: (p[i + 2] + p[i + 5] + p[i + 8]) / 3 };
+      expect(channelClearance(centre), `${centre.x.toFixed(1)} ${centre.z.toFixed(1)}`).toBeGreaterThan(0);
+    }
+    // Le chenal de l'ouest coupe un côté du plateau : la ligne s'arrête de part et d'autre de son eau.
+    const ends = segments.flat().map((e) => channelClearance(e, 'ouest'));
+    expect(ends.filter((d) => d < 3).length, ends.map((d) => d.toFixed(1)).join(' ')).toBe(2);
+  });
+
   it('se lit sur la pierre du plateau (3:1 au moins, sous la même lumière), son trait clair sur le sombre', () => {
     const contrast = (a: number, b: number) => {
       const [la, lb] = [luminance(linearRgb(a)), luminance(linearRgb(b))];
