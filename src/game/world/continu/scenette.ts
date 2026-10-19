@@ -413,9 +413,11 @@ const PRINTWORKS_START = (-20 * Math.PI) / 180;
 
 /**
  * Les arcs de la caméra au Phare et au Guet, réglés sur captures (19 octobre 2026). Sur la galerie, 40° (directeur
- * artistique : pas moins) : la potence des abords, au revers de la tour, n'y entre jamais ; la poutre des cloches
- * (questionScene.ts, `hangBells`) croise encore la gardienne à la taille à la butée ; plus loin, elle passe devant Kéo
- * d'un côté, devant la gardienne de l'autre, et les grandes cloches de la mission 2 la couvrent jusqu'aux hanches. Au
+ * artistique : pas moins) : la potence des abords, au revers de la tour, n'y entre jamais ; le portique des cloches
+ * (questionScene.ts, `hangBells`) tourne avec la caméra autour de l'axe de la galerie (`bellPlane`,
+ * `facingAnswerObjects`) : de face, horizontal, sous la rambarde, ses cloches sous leurs boutons. À chaque butée, dans
+ * les deux missions, la poutre, ses potences et la plus grande cloche de la mission 2 restent sous les pieds de Kéo et
+ * de la gardienne, de peu : celui qui s'avance vers la caméra a les pieds juste au-dessus de la poutre. Au
  * pied de la tour, 70° : plus loin, la tour cache Kéo d'un côté, Kéo cache la gardienne de l'autre. Au Guet, 120° : la
  * caméra monte au-dessus de la tour et les garde entiers jusque-là.
  */
@@ -1026,10 +1028,21 @@ export const scenetteDeck = (place: PlaceId, posed = true): { y: number; onLand:
 /** La margelle des réponses à terre, au-dessus du plancher de la scène. */
 export const LAND_DECK = 0.08;
 
-/** Le plan où pendent les cloches : devant la rambarde, au sud (la vue y pose les objets sous chaque réponse). */
-export function bellPlane(place: PlaceId): { z: number; rail: Vec3 } {
+/**
+ * Le plan où pendent les cloches : devant la rambarde, au sud de face (la vue y pose les objets sous chaque réponse),
+ * tourné de `yaw` autour de l'axe de la galerie (`pivot`) avec la caméra de la scénette : il lui fait toujours face
+ * (`through`, `normal`), à la même distance de l'axe. `rail` : le point de la rambarde de face, au sud.
+ */
+export function bellPlane(place: PlaceId, yaw = 0): { through: Vec3; normal: { x: number; z: number }; pivot: Vec3; rail: Vec3 } {
   const f = floorOf(place);
-  return { z: f.z + GALLERY.radius + 0.45, rail: { x: f.x, y: f.y + GALLERY.rail, z: f.z + GALLERY.radius } };
+  const d = GALLERY.radius + 0.45;
+  const normal = { x: Math.sin(yaw), z: Math.cos(yaw) };
+  return {
+    through: { x: f.x + d * normal.x, y: f.y, z: f.z + d * normal.z },
+    normal,
+    pivot: { x: f.x, y: f.y, z: f.z },
+    rail: { x: f.x, y: f.y + GALLERY.rail, z: f.z + GALLERY.radius },
+  };
 }
 
 const C = {

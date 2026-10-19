@@ -30,7 +30,7 @@ import { COLORS_6E, PLACES, TERRAIN, hidesTraces, placeById, portFloor, portNode
 import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PAPER_COLOR } from '../../world/continu/printworks';
 import { PORT_MAP_POINT, PORT_ROOFLINES, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
-import { HELD_LIFT, SALT_PUMP, answerObjects, answerScale, inBasket, itemScene, placeTrace, rankInBasket, saltPumpHub, sceneSpot, sortPrise, sortScales, swingTo, type Reaction, type SortLook } from '../../world/continu/questionScene';
+import { HELD_LIFT, SALT_PUMP, answerScale, facingAnswerObjects, inBasket, itemScene, placeTrace, rankInBasket, saltPumpHub, sceneSpot, sortPrise, sortScales, swingTo, type Reaction, type SortLook } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
 import {
   EXIT_VIEW,
@@ -2495,13 +2495,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     placeKeo(here);
   };
   const vertical = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-  /** Le point du plan vertical `z` (face à la caméra) sous un point de l'écran, avec la pose de la caméra déjà posée. */
-  const planeUnder = (sx: number, sy: number, z: number) => {
+  /**
+   * Le point d'un plan vertical (sa normale horizontale `normal`, passant par `through` ; face à la caméra) sous un point
+   * de l'écran, avec la pose de la caméra déjà posée.
+   */
+  const planeUnder = (sx: number, sy: number, through: Vec3, normal: { x: number; z: number }) => {
     pointer.set((sx / viewW) * 2 - 1, -(sy / viewH) * 2 + 1);
     raycaster.setFromCamera(pointer, camera);
-    vertical.constant = -z;
+    vertical.normal.set(normal.x, 0, normal.z);
+    vertical.constant = -(normal.x * through.x + normal.z * through.z);
     const hit = raycaster.ray.intersectPlane(vertical, ground3);
-    return hit ? { x: hit.x, y: hit.y, z } : null;
+    return hit ? { x: hit.x, y: hit.y, z: hit.z } : null;
   };
   /**
    * Tourne la pose prévue d'une scénette de `sceneYaw` autour de son point visé, puis l'écarte des volumes et du sol
@@ -2650,10 +2654,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Dans une scénette, les cloches pendent devant la rambarde ; les caisses sont posées sur un ponton du bassin ; les
     // paniers et les leviers sur une margelle à terre, à la hauteur du plancher de la scène, relevée si le sol monte
     // devant elle (elle ne s'y enfonce jamais), sa jupe jusqu'au sol.
-    const hang = answersHang(place, posed) ? bellPlane(place) : null;
+    // Les cloches pendent dans un plan qui tourne avec la caméra autour de l'axe de la galerie : la poutre reste de face,
+    // horizontale, sous la rambarde, sur tout l'arc (directeur artistique, 19 octobre 2026).
+    const hang = answersHang(place, posed) ? bellPlane(place, sceneYaw) : null;
     const deck = scenetteDeck(place, posed);
     let deckY = deck.y;
-    const pointsAt = (y: number) => slotFeet.map((o) => (hang ? planeUnder(o.x, o.y, hang.z) : groundUnder(o.x, o.y, y)) ?? spot);
+    const pointsAt = (y: number) => slotFeet.map((o) => (hang ? planeUnder(o.x, o.y, hang.through, hang.normal) : groundUnder(o.x, o.y, y)) ?? spot);
     let points = pointsAt(deckY);
     let landBelow: number | undefined;
     if (deck.onLand && !hang) {
@@ -2692,15 +2698,22 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const merged = new FacetBuilder();
     merged.append(facets.still);
     merged.append(
-      answerObjects(place, points, scale, {
-        sort: sort ? { ...sort, moving } : undefined,
-        // Une cloche choisie se balance jusqu'à la réponse ; une caisse tentée reste penchée.
-        picked: hang && item.answered ? [] : item.picked,
-        // La bonne caisse est partie au crochet avec la réaction.
-        gone: answerLeaves(place) && item.answered ? item.right : [],
-        hanging: hang ? { hand: habitantHand(place, posed), rail: hang.rail } : undefined,
-        ground: landBelow,
-      }),
+      facingAnswerObjects(
+        place,
+        points,
+        scale,
+        {
+          sort: sort ? { ...sort, moving } : undefined,
+          // Une cloche choisie se balance jusqu'à la réponse ; une caisse tentée reste penchée.
+          picked: hang && item.answered ? [] : item.picked,
+          // La bonne caisse est partie au crochet avec la réaction.
+          gone: answerLeaves(place) && item.answered ? item.right : [],
+          hanging: hang ? { hand: habitantHand(place, posed), rail: hang.rail } : undefined,
+          ground: landBelow,
+        },
+        hang?.pivot ?? spot,
+        hang ? sceneYaw : 0,
+      ),
     );
     setGeometry(itemMesh, merged.build());
     itemShown = itemMesh.visible;

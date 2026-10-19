@@ -887,6 +887,26 @@ function groundBells(b: FacetBuilder, points: readonly Vec3[], s: number, ground
   for (const p of points) bell(b, p, s, BRONZE);
 }
 
+/**
+ * Les objets des réponses face à une caméra tournée de `yaw` autour de l'axe vertical qui passe par `pivot` (l'axe de la
+ * galerie du Phare) : dessinés comme de face, puis tournés avec elle. La poutre des cloches reste ainsi horizontale à
+ * l'écran, sous la rambarde et sous les pieds de Kéo et de la gardienne, sur tout l'arc de la caméra ; ses potences
+ * restent sur la rambarde, ronde autour de l'axe. `points` : les pieds des objets dans le monde, dans le plan tourné ;
+ * `look.hanging.rail` : le point de la rambarde de face, que le tour emporte ; la main de l'habitant ne bouge pas.
+ */
+export function facingAnswerObjects(place: PlaceId, points: readonly Vec3[], s: number, look: AnswerLook, pivot: Vec3, yaw: number): Facets {
+  if (!yaw) return answerObjects(place, points, s, look);
+  const c = Math.cos(yaw), sn = Math.sin(yaw);
+  // L'inverse du tour de `placeFacets` : du monde au repère de face, centré sur le pivot.
+  const local = (p: Vec3): Vec3 => {
+    const dx = p.x - pivot.x, dz = p.z - pivot.z;
+    return { x: dx * c - dz * sn, y: p.y, z: dx * sn + dz * c };
+  };
+  const h = look.hanging;
+  const hanging = h && { hand: local(h.hand), rail: { x: h.rail.x - pivot.x, y: h.rail.y, z: h.rail.z - pivot.z } };
+  return placeFacets(answerObjects(place, points.map(local), s, { ...look, hanging }), { x: pivot.x, y: 0, z: pivot.z, yaw });
+}
+
 // ---------- La scène d'un item ----------
 
 /** Un panneau de la page accroché à un point de la scène (les repères 0, 1, 2 de l'échelle). */

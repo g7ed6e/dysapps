@@ -9,7 +9,7 @@ import { distance, linearRgb } from './geometry';
 import { startOf } from './paths';
 import { placeById } from './plan6e';
 import { COMMONS, OBSERVATORY, SHIPYARD, SHORES, SLIP_N, STEAM_GAP, commonsPillars, drumFace, hullEdge, modelOfPlace } from './places';
-import { ANSWER_LAYOUT, COMMONS_PAVING_RISE, ENGINE_PAVING_RISE, FOUNTAIN, JAUGE, LOCK, OBSERVATORY_BAY, OBSERVATORY_PAVING_RISE, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, swingTo, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, COMMONS_PAVING_RISE, ENGINE_PAVING_RISE, FOUNTAIN, JAUGE, LOCK, OBSERVATORY_BAY, OBSERVATORY_PAVING_RISE, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, facingAnswerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, swingTo, type ScreenBox } from './questionScene';
 import {
   GALLERY,
   LANTERN,
@@ -262,10 +262,29 @@ describe('La galerie du Phare', () => {
     expect(modelOfPlace('phare').top).toBeGreaterThan(GALLERY.floor);
   });
 
+  it('la caméra tournée, le portique des cloches tourne avec elle autour de l\'axe de la galerie : de face, horizontal', () => {
+    const yaw = (40 * Math.PI) / 180;
+    const front = bellPlane('phare');
+    const turned = bellPlane('phare', yaw);
+    const axis = front.pivot;
+    // Le plan tourné reste à la même distance de l'axe, face à la caméra.
+    expect(distance(turned.through, axis)).toBeCloseTo(distance(front.through, axis), 6);
+    expect(turned.normal.x).toBeCloseTo(Math.sin(yaw), 6);
+    const points = [-1.5, 0, 1.5].map((dx) => ({ x: axis.x + dx, y: floor - 0.4, z: front.through.z }));
+    const hand = habitantHand('phare');
+    const still = facingAnswerObjects('phare', points, 0.6, { hanging: { hand, rail: front.rail } }, axis, 0);
+    // Les mêmes cloches, la main de la gardienne tournée avec elles : le portique entier, tourné de `yaw` autour de l'axe.
+    const moved = facingAnswerObjects('phare', points.map((p) => orbitAround(p, axis, yaw)), 0.6, { hanging: { hand: orbitAround(hand, axis, yaw), rail: front.rail } }, axis, yaw);
+    const centred = still.positions.map((v, i) => v - (i % 3 === 0 ? axis.x : i % 3 === 2 ? axis.z : 0));
+    const expected = placeFacets({ ...still, positions: centred }, { x: axis.x, y: 0, z: axis.z, yaw });
+    expect(moved.triangles).toBe(still.triangles);
+    for (let i = 0; i < moved.positions.length; i += 97) expect(moved.positions[i]).toBeCloseTo(expected.positions[i], 3);
+  });
+
   it('les cloches pendent à leur poutre devant la rambarde ; une cloche choisie se balance, sans changer de place', () => {
     const plane = bellPlane('phare');
     const c = placeById('phare').center;
-    const points = [-1.5, 0, 1.5].map((dx) => ({ x: c.x + dx, y: floor - 0.4, z: plane.z }));
+    const points = [-1.5, 0, 1.5].map((dx) => ({ x: c.x + dx, y: floor - 0.4, z: plane.through.z }));
     const hang = { hand: habitantHand('phare'), rail: plane.rail };
     const still = answerObjects('phare', points, 0.6, { hanging: hang });
     const swung = answerObjects('phare', points, 0.6, { picked: [1], hanging: hang });
@@ -273,7 +292,7 @@ describe('La galerie du Phare', () => {
     expect(Array.from(swung.positions)).not.toEqual(Array.from(still.positions));
     // Sans lettre : la cloche n'a que des volumes ; la frise de vagues est en saillie sur son corps.
     const b = boundsOf(still);
-    expect(b.max[2]).toBeGreaterThan(plane.z);
+    expect(b.max[2]).toBeGreaterThan(plane.through.z);
     expect(b.min[2]).toBeLessThanOrEqual(plane.rail.z);
     // La lumière de la réaction : la même cloche, un peu plus grande.
     expect(itemScene('phare', { kind: 'cloches' }, true, points.slice(0, 1), 0.6).reaction?.facets.triangles).toBeGreaterThan(0);
