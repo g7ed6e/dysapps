@@ -56,6 +56,10 @@ import {
   scenetteHabitant,
   scenettePose,
   scenetteStartYaw,
+  scenetteArc,
+  turnSceneYaw,
+  sceneReturnYaw,
+  SCENE_RETURN,
   type ScenetteFinale,
   type ScenetteLayout,
 } from '../../world/continu/scenette';
@@ -1162,6 +1166,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let lastQuestion: QuestionRequest | null = null;
   /** L'item de la dernière question posée (sa mission, sa clé) : un autre ramène la caméra de face. */
   let lastItem = '';
+  /**
+   * Le retour en douceur au cap de départ à chaque nouvel item (`SCENE_RETURN`) : un seul objet, rempli sur place ; un
+   * geste à deux doigts l'interrompt.
+   */
+  const sceneReturn = { active: false, start: 0, from: 0, to: 0 };
   let turning: { from: number; to: number; start: number } | null = null;
   let lift = occlusionLift(focus, ground, yaw);
   const pose: CameraPose = followPose(focus, lift, undefined, yaw);
@@ -1885,7 +1894,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (!twist.started && Math.abs(d) < CAMERA_TURN.deadAngle) return;
       twist.started = true;
       twist.angle = angle;
-      sceneYaw = wrapAngle(sceneYaw + d);
+      // Le geste interrompt le retour au cap de départ et part de l'angle courant ; au Phare et au Guet, il s'arrête au
+      // bout de l'arc (`ScenetteSite.arc`).
+      sceneReturn.active = false;
+      sceneYaw = turnSceneYaw(sceneYaw, d, scenetteStartYaw(scenette, posed), scenetteArc(scenette, posed));
       sceneTurnPending = true;
       return;
     }
@@ -2451,6 +2463,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const left = scenette;
     scenette = null;
     sceneYaw = 0;
+    sceneReturn.active = false;
     sceneTurnPending = false;
     lastQuestion = null;
     descent.active = false;
@@ -2604,7 +2617,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const fromShift = { ...shift };
     enterScenette(place);
     // Le cap de départ se lit une fois la scénette entrée (au Phare, son lieu dépend de ce qui est posé).
-    if (turnBack) sceneYaw = scenetteStartYaw(place, posed);
+    // En entrant, la descente part déjà vers le cap ; à un nouvel item de la même scène, la caméra y glisse en douceur
+    // (`sceneReturn`, à partir de l'image suivante), d'un coup avec « Réduire les animations ».
+    if (turnBack) {
+      const to = scenetteStartYaw(place, posed);
+      sceneReturn.active = !entering && !reduceMotion && Math.abs(wrapAngle(to - sceneYaw)) > 1e-4;
+      if (sceneReturn.active) {
+        sceneReturn.start = performance.now() / 1000;
+        sceneReturn.from = sceneYaw;
+        sceneReturn.to = to;
+      } else sceneYaw = to;
+    }
     fog.near = WORLD_FOG.near;
     fog.far = WORLD_FOG.far;
     const qp = scenettePose(place, layout.scenette.stage, viewW, viewH, posed);
@@ -3113,6 +3136,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const observer = new ResizeObserver(resize);
   observer.observe(host);
 
+  /** Le retour au cap de départ à l'instant `t` (en secondes) : l'angle avance, la scène se refait à cette image. */
+  const stepSceneReturn = (t: number) => {
+    if (!sceneReturn.active) return;
+    if (!asked || !scenette) {
+      sceneReturn.active = false;
+      return;
+    }
+    const u = (t - sceneReturn.start) / SCENE_RETURN.seconds;
+    sceneYaw = sceneReturnYaw(sceneReturn.from, sceneReturn.to, u);
+    if (u >= 1) sceneReturn.active = false;
+    sceneTurnPending = true;
+  };
   // La boucle d'image : la marche, la caméra qui suit, la marque (quelques petits objets par image : la place de Kéo, la marque).
   let frame = 0;
   let last = performance.now();
@@ -3132,6 +3167,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     last = now;
     const t = now / 1000;
     stepNefDrop(t);
+    stepSceneReturn(t);
     // La caméra tournée pendant une scénette : la scène se refait une fois par image au plus, et ses repères suivent.
     if (sceneTurnPending) {
       sceneTurnPending = false;

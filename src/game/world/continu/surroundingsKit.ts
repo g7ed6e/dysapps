@@ -1,10 +1,11 @@
 /**
  * Le kit commun des abords des scénettes (./surroundings.ts) : ce que les lieux partagent, pour que les seize lieux se
  * fassent de la même main. Le sol du monde en un point, un hasard fixe, les couleurs de nature et de pierre, un rocher à
- * facettes, une touffe d'herbe, un sapin, une facette tournée du bon côté quel que soit l'ordre de ses sommets, un petit tas conique (le sel, le sable, la terre) et la maison à colombages au toit
- * d'ardoise (sur un socle de pierre ou sur pilotis, son toit en réparation ou non) ; le bois de l'eau, venu des Quais :
- * le ponton sur pieux, la barque et son plancher, le tonneau, la pile de planches. Aplats francs, une couleur par facette,
- * rien de presque noir. Code pur, sans Three.js.
+ * facettes, une touffe d'herbe, un sapin, une facette tournée du bon côté quel que soit l'ordre de ses sommets, un petit
+ * tas conique (le sel, le sable, la terre) et la maison à colombages au toit d'ardoise (sur un socle de pierre ou sur
+ * pilotis, son toit en réparation ou non) ; le bois de l'eau, venu des Quais : le ponton sur pieux, la barque et son
+ * plancher, le tonneau, la pile de planches. Aplats francs, une couleur par facette, rien de presque noir. Code pur, sans
+ * Three.js.
  */
 import type { FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';

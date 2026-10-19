@@ -13,7 +13,7 @@
 // l'étape qui porte sa trace n'est pas posée (`posed`), avec ce qui est là (au Phare, au pied de la tour, la cloche
 // tombée sur le socle). Rien à lire n'est peint dans la 3D. Le décor de près est fait à l'arrivée et
 // libéré au départ par la vue. Code pur : la vue dessine.
-import { CAMERA_FOV, screenOf, type CameraPose } from './camera';
+import { CAMERA_FOV, screenOf, wrapAngle, type CameraPose } from './camera';
 import { FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { placeArt } from './northShore';
@@ -356,6 +356,11 @@ interface ScenetteSite {
    * chaque nouvel item (comme à deux doigts, `orbitAround`) ; nul ou absent : de face, vue du sud.
    */
   start?: number;
+  /**
+   * L'arc où la caméra peut tourner, de part et d'autre du cap de départ (en radians) ; absent : le tour complet. Au Phare
+   * et au Guet, de dos, le lieu cache Kéo et l'habitant (directeur artistique, 19 octobre 2026).
+   */
+  arc?: number;
 }
 
 /** Le sol de la galerie du Phare. */
@@ -406,6 +411,14 @@ const ECLUSES_START = (65 * Math.PI) / 180;
  */
 const PRINTWORKS_START = (-20 * Math.PI) / 180;
 
+/**
+ * Les arcs de la caméra au Phare et au Guet, réglés sur captures (19 octobre 2026) : à la butée, Kéo et l'habitant restent
+ * entiers. Sur la galerie, 50° : plus loin, la potence et les cloches les coupent, puis la lanterne les cache. Au pied de
+ * la tour, 70° : plus loin, la tour cache Kéo d'un côté, Kéo cache la gardienne de l'autre. Au Guet, 120° : la caméra
+ * monte au-dessus de la tour et les garde entiers jusque-là.
+ */
+export const SCENETTE_ARCS = { phare: (50 * Math.PI) / 180, phareFoot: (70 * Math.PI) / 180, lookout: (120 * Math.PI) / 180 } as const;
+
 const SITES: Record<PlaceId, ScenetteSite> = {
   phare: {
     floor: galleryFloor,
@@ -413,6 +426,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
     habitant: { dx: 1.45, dz: 2.3 },
     subject: { halfWidth: 2.2, bottom: -0.1, top: 2.3, depth: 2 },
     pitch: (20 * Math.PI) / 180,
+    arc: SCENETTE_ARCS.phare,
   },
   // La scène reste proche (réserve du directeur artistique) : Kéo, les caisses et le docker, la barque dessous ; la
   // flèche de la grue peut passer sous le panneau. Plus près et plus bas depuis la reprise du lieu (directeur artistique,
@@ -480,7 +494,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
     subject: { halfWidth: 3.8, bottom: -0.4, top: 3.3, depth: 0.2 },
     pitch: (18 * Math.PI) / 180,
   },
-  lookout: northSite('lookout'),
+  lookout: { ...northSite('lookout'), arc: SCENETTE_ARCS.lookout },
   archives: northSite('archives'),
   printworks: { ...northSite('printworks'), start: PRINTWORKS_START },
   beacons: northSite('beacons'),
@@ -555,6 +569,7 @@ const PHARE_FOOT: ScenetteSite = {
   habitant: { dx: 1.45, dz: 2.05 },
   subject: { halfWidth: 2.2, bottom: -0.1, top: 2.3, depth: 2 },
   pitch: (9 * Math.PI) / 180,
+  arc: SCENETTE_ARCS.phareFoot,
 };
 
 /**
@@ -568,6 +583,32 @@ export const SCENETTE_CAMERA = { pitch: (20 * Math.PI) / 180, seconds: 0.9 } as 
 
 /** Le cap de départ de la caméra d'une scénette (`ScenetteSite.start`) : 0, de face. */
 export const scenetteStartYaw = (place: PlaceId, posed = true): number => siteOf(place, posed).start ?? 0;
+
+/** L'arc de la caméra d'une scénette autour de son cap de départ (`ScenetteSite.arc`) ; `null` : le tour complet. */
+export const scenetteArc = (place: PlaceId, posed = true): number | null => siteOf(place, posed).arc ?? null;
+
+/**
+ * L'angle de la caméra autour de la scène après un geste de `d` : borné à l'arc autour du cap de départ, s'il y en a
+ * un (une butée douce : au-delà, le geste ne fait plus rien, sans rebond).
+ */
+export function turnSceneYaw(yaw: number, d: number, start: number, arc: number | null): number {
+  if (arc === null) return wrapAngle(yaw + d);
+  const off = Math.max(-arc, Math.min(arc, wrapAngle(yaw - start) + d));
+  return wrapAngle(start + off);
+}
+
+/** Le retour de la caméra au cap de départ à chaque nouvel item : sa durée (d'un coup avec « Réduire les animations »). */
+export const SCENE_RETURN = { seconds: 0.6 } as const;
+
+/**
+ * L'angle du retour au cap de départ à la part `u` (de 0 à 1) de sa durée : de `from` vers `to` par le plus court, en
+ * ralentissant jusqu'à l'arrivée, sans la dépasser (une courbe cubique).
+ */
+export function sceneReturnYaw(from: number, to: number, u: number): number {
+  const k = Math.min(1, Math.max(0, u));
+  const ease = 1 - (1 - k) ** 3;
+  return wrapAngle(from + wrapAngle(to - from) * ease);
+}
 
 /** Le sol d'une scénette, dans le monde. */
 const floorOf = (place: PlaceId, posed = true): Vec3 => siteOf(place, posed).floor();
