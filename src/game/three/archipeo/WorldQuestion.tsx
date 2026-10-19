@@ -556,10 +556,13 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     const r = box.current?.querySelector('.quiz.in-world')?.getBoundingClientRect();
     const origin = box.current?.getBoundingClientRect();
     const panel = r && origin ? { left: r.left - origin.left, top: r.top - origin.top, right: r.right - origin.left, bottom: r.bottom - origin.top } : null;
-    setLabels(shown.filter((l) => inVisibleScene(l, size.w, size.h, panel)));
+    const visible = (all: LabelOnScreen[]) => all.filter((l) => inVisibleScene(l, size.w, size.h, panel));
+    setLabels(visible(shown));
     // `intro` : sur un téléphone couché, le panneau de « Commencer » couvre la scène ; il se réduit à la colonne au
     // premier item, et les repères se recalculent (sans lui, les deux entiers de la jauge des Marais salants restaient
     // cachés jusqu'à la première réponse, lot L5).
+    // La caméra tournée à deux doigts pendant la scénette (« caméra libre ») : les repères suivent le décor.
+    return world.onSceneTurn((labels) => setLabels(visible(labels)));
   }, [world, place, mission, plain, layout, item, size, finished, intro]);
   // Un repère de la scène ne passe jamais sous les boutons du haut (« Vue simple », la pause, à droite d'elle) : sur un
   // téléphone couché, l'entier du haut de la jauge les touchait (relecture du lot L5, consultant UX UI). Il descend alors

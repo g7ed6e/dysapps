@@ -46,6 +46,9 @@ const C = {
   slate: 0x6f8089,
   // La vitre de la lanterne éteinte : claire, gris-bleu, proche de la Brume du pack (#E5EBE3).
   glass: 0xbfd0d3,
+  // Le toit de la lanterne du Phare : une ardoise brune et chaude (consultant Archipéo, 19 octobre 2026 : vu de dos, son
+  // pan à l'ombre ne tombe plus dans le gris-noir).
+  lanternRoof: 0x8f7766,
   // La lanterne allumée : la seule note chaude du monde, vue jusque depuis la Carte.
   lamp: 0xffd36b,
   // La galerie du Phare : une pierre claire, plus sombre que la tour, pour qu'elle se détache.
@@ -70,6 +73,11 @@ const C = {
   wornTop: 0x9e9482,
   wornWood: 0x9f9279,
   wornWall: 0xb9ae98,
+  // La ruine du Phare : le blanc passé de sa tour (un cran sous le blanc du fût neuf) et la pierre chaude de son socle.
+  wornWhite: 0xe6e0d2,
+  wornWhiteTop: 0xd6cebd,
+  socle: 0xb3a690,
+  socleTop: 0xc4b8a2,
   mud: 0xa39a85,
   // Les Marais salants (lot L5) : le sel blanc cassé (la Brume du pack, jamais un blanc pur), son ombre gris-bleu et sa
   // base ocre ; l'eau des bassins, plus claire et plus bleue que la mer ; l'argile des murets ; le sable qui les comble.
@@ -94,8 +102,10 @@ const C = {
   steam: 0xe6ece4,
   steamShade: 0xc8d2cf,
   wornBrick: 0xb89a86,
-  wornIron: 0x8c969b,
-  wornSteel: 0xb3babd,
+  // Le fer usé de la ruine (la chaudière couchée, le rotor à plat) : rouillé, vers la pierre chaude des abords (STONE,
+  // surroundingsKit.ts), jamais un gris-bleu froid (consultant Archipéo, 19 octobre 2026).
+  wornIron: 0xa39480,
+  wornSteel: 0xc4b6a0,
   // Le Chantier naval (lot L6b, directeur artistique) : le bordé et son second ton, la quille et les rails, les œuvres
   // vives terre cuite, l'ardoise du toit de l'atelier (le sable tassé du chantier est celui du sol, terrain.ts ; la cale
   // ensablée, du sable chaud des plages) ; la ruine : la quille, les rails et
@@ -107,6 +117,9 @@ const C = {
   shipSlate: 0x4d6a82,
   wornKeel: 0x9a8a78,
   wornPlank: 0xb3a68f,
+  // Les membrures nues de la ruine (évaluation du directeur artistique, 18 octobre 2026 : « un peu plus sombres ») : le
+  // bois gris de la ruine, un cran plus brun et plus sombre, jamais presque noir.
+  wornShipRib: 0x86775f,
   // La Mangrove (lot L8a, directeur artistique) : le feuillage des palétuviers et son ombre (ni l'herbe ni le haut de
   // falaise), leurs troncs et leurs racines, la vase (plus sombre que la boue de ruine, jamais presque noire), les
   // passerelles en deux bois et leurs pieux, les cordes des rambardes, les palmes du carbet.
@@ -130,17 +143,18 @@ const C = {
   bronze: 0x9c7a3c,
   drownedStone: 0xa8d4c0,
   digSand: 0xcdb58a,
-  // L'Observatoire (lot L8c, directeur artistique) : l'enduit rose pâle du tambour et son ombre (ni le sable chaud ni la
-  // terre cuite), le zinc clair de la coupole et ses côtes, les volets Bleu lagon ; sa table d'orientation, de la pierre
-  // des Passeurs (`passeurStone`, plus haut). La ruine :
+  // L'Observatoire (lot L8c, directeur artistique) : l'enduit du tambour et son ombre, ramenés du rose pâle vers le Sable
+  // du pack (#DAA66A ; abords de l'Observatoire, deuxième passe du directeur artistique, 18 octobre 2026 : sous le soleil
+  // chaud, le rose virait à la terre cuite), le zinc clair de la coupole et ses côtes, les volets Bleu lagon ; sa table
+  // d'orientation, de la pierre des Passeurs (`passeurStone`, plus haut). La ruine :
   // l'enduit, le zinc et les volets délavés, d'un ton moyen, jamais sombres ; la corde coupée.
-  plaster: 0xe3b9a3,
-  plasterShade: 0xc99a84,
+  plaster: 0xe0bf94,
+  plasterShade: 0xc4a074,
   zinc: 0xb7c3c8,
   rib: 0x8e9da4,
   shutter: 0x178078,
-  wornPlaster: 0xbfaa9c,
-  wornPlasterTop: 0xb09d90,
+  wornPlaster: 0xc4ad8e,
+  wornPlasterTop: 0xb59f82,
   wornZinc: 0xa9b1b3,
   wornRib: 0x9aa3a6,
   wornShutter: 0x6f9e98,
@@ -152,9 +166,11 @@ const C = {
   tileShade: 0x356f68,
   oak: 0x8e6a48,
   paving: 0xd6cebc,
-  wornTile: 0x8aaba5,
-  wornPasseurs: 0xb8b09f,
-  wornPasseursTop: 0xaaa290,
+  // Relecture du 19 octobre 2026 : vue de dos, la ruine se lisait sombre et froide ; les tuiles tombées passent à un
+  // vert d'eau clair, les piliers usés à une pierre chaude plus claire (leurs faces à l'ombre restent lisibles).
+  wornTile: 0xa9cdbd,
+  wornPasseurs: 0xcdbd9f,
+  wornPasseursTop: 0xd9cbb0,
   wornPaving: 0xbdb6a6,
 } as const;
 
@@ -225,14 +241,16 @@ const towerRadius = (y: number) => 1.7 - (0.5 * (y - 0.7)) / 10;
  */
 function phare(add: Add): void {
   const g = siteGround('phare');
+  // La ruine du Phare dit encore une tour blanche (directeur artistique, évaluation du 18 octobre 2026 : « rien ne dit
+  // phare même en ruine ») : le moignon et ses pierres d'un blanc passé, le socle d'une pierre chaude, jamais sombre.
   add('ruine', 0, (b) => {
-    b.prism({ x: 0, y: SINK, z: 0 }, 3.6, 2.9, 1.5, 7, C.darkStone);
-    b.prism({ x: 0, y: 0.7, z: 0 }, 1.7, towerRadius(3.4), 2.7, 8, C.worn, C.wornTop);
+    b.prism({ x: 0, y: SINK, z: 0 }, 3.6, 2.9, 1.5, 7, C.socle, C.socleTop);
+    b.prism({ x: 0, y: 0.7, z: 0 }, 1.7, towerRadius(3.4), 2.7, 8, C.wornWhite, C.wornWhiteTop);
     // Le haut ébréché du moignon, et des pierres tombées sur le socle (hors de la place de la scénette, devant la porte).
-    b.box({ x: 0.75, y: 3.4, z: 0.7, yaw: 0.4 }, [0.8, 0.5, 0.6], C.worn, C.wornTop);
-    b.box({ x: -2.35, y: 0.7, z: 0.6, yaw: 0.5 }, [0.8, 0.5, 0.6], C.worn, C.wornTop);
-    b.box({ x: 2.1, y: 0.7, z: -1.3, yaw: -0.3 }, [0.6, 0.45, 0.7], C.worn, C.wornTop);
-    b.box({ x: 2.45, y: 0.7, z: 0.75, yaw: 0.9 }, [0.5, 0.35, 0.45], C.worn, C.wornTop);
+    b.box({ x: 0.75, y: 3.4, z: 0.7, yaw: 0.4 }, [0.8, 0.5, 0.6], C.wornWhite, C.wornWhiteTop);
+    b.box({ x: -2.35, y: 0.7, z: 0.6, yaw: 0.5 }, [0.8, 0.5, 0.6], C.wornWhite, C.wornWhiteTop);
+    b.box({ x: 2.1, y: 0.7, z: -1.3, yaw: -0.3 }, [0.6, 0.45, 0.7], C.wornWhite, C.wornWhiteTop);
+    b.box({ x: 2.45, y: 0.7, z: 0.75, yaw: 0.9 }, [0.5, 0.35, 0.45], C.wornWhite, C.wornWhiteTop);
   });
   // La cloche tombée et sa potence brisée, couchées sur le socle parmi les pierres : la galerie les raccroche.
   add(
@@ -257,7 +275,7 @@ function phare(add: Add): void {
   add(1, 0, (b) => b.prism({ x: 0, y: 10.7, z: 0 }, 1.4, 1.4, 0.4, 8, C.gallery));
   // La vitre, éteinte ; allumée, la lumière la recouvre (`lanternLight`).
   add(1, 0.34, (b) => b.prism({ x: 0, y: LANTERN.y, z: 0 }, LANTERN.r, LANTERN.r, LANTERN.h, 8, C.glass));
-  add(1, 0.67, (b) => b.prism({ x: 0, y: 12.6, z: 0 }, 1.35, 0, 1.1, 8, C.slate));
+  add(1, 0.67, (b) => b.prism({ x: 0, y: 12.6, z: 0 }, 1.35, 0, 1.1, 8, C.lanternRoof));
   // La galerie, large et bien marquée (sa dalle et son garde-corps), et sa cloche à l'est, sur sa potence.
   add(2, 0, (b) => {
     b.prism({ x: 0, y: 10.7, z: 0 }, 2.1, 2.1, 0.4, 8, C.gallery);
@@ -811,7 +829,7 @@ function engineBoiler(b: FacetBuilder, x0: number, y: number, z: number, color: 
 
 /**
  * La Turbine (lot L6a). Avant : la source bouchée de galets, sa margelle usée ; le massif de briques ébréché ; la
- * chaudière couchée dans l'herbe ; le rotor couché à plat, deux aubes manquantes, et son carter ouvert à côté. Le corps :
+ * chaudière couchée dans l'herbe ; le rotor couché à plat, deux aubes manquantes (son carter n'y gît plus). Le corps :
  * la source dégagée (son eau laiteuse, ses cercles), le massif et la chaudière redressée, puis les conduites de cuivre.
  * Le haut : le rotor dans son carter et l'arbre vers l'est, l'évent de briques, puis son panache (l'étape qui porte les
  * traces). Les abords : le chemin de la porte, un muret de pierres sèches, la rigole vers la rivière. Ce qui gît dans la
@@ -849,17 +867,9 @@ function engine(add: Add): void {
   );
   // La chaudière couchée dans l'herbe, au nord du massif, de travers ; relevée avec lui.
   add('ruine', 0, (b) => engineBoiler(b, B.x0 - 0.2, B.r - 0.05, B.z - 2.2, C.wornIron, C.wornIron, Math.PI / 2 - 0.35), { stage: 0, row: 0.5 });
-  // Le rotor couché à plat dans l'herbe, deux aubes manquantes, et son carter ouvert à côté, sur le flanc ; le haut les
-  // relève.
-  add(
-    'ruine',
-    0,
-    (b) => {
-      engineRotor(b, { x: R.x - 0.6, y: 0.12, z: 2.1, pitch: -Math.PI / 2 }, [C.wornIron, C.wornSteel], [4, 5]);
-      engineCasing(b, { x: R.x + 2.4, y: 0, z: -2.3, pitch: -Math.PI / 2, yaw: 0.5 }, C.wornIron, C.wornIron);
-    },
-    { stage: 1, row: 0 },
-  );
+  // Le rotor couché à plat dans l'herbe, deux aubes manquantes ; le haut le relève. Son carter ne gît plus sur le flanc,
+  // au nord-est (directeur artistique, 18 octobre 2026 : la masse de fer, de dos, bouchait la vue comme un rocher).
+  add('ruine', 0, (b) => engineRotor(b, { x: R.x - 0.6, y: 0.12, z: 2.1, pitch: -Math.PI / 2 }, [C.wornIron, C.wornSteel], [4, 5]), { stage: 1, row: 0 });
   // Le corps : la source dégagée, sa margelle de pierre, son eau laiteuse et ses trois cercles à fleur d'eau, fins,
   // concentriques et pleins sur tout leur tour, immobiles (le bouillonnement ; elle ne fume pas). Rien au milieu que
   // l'eau claire (directeur artistique, relecture de L6a : ni secteurs ni centre sombre).
@@ -1296,7 +1306,7 @@ function shipyard(add: Add): void {
     0,
     (b) => {
       shipSpine(b, C.wornKeel);
-      shipRibs(b, C.wornWood);
+      shipRibs(b, C.wornShipRib);
       shipCradle(b, C.wornKeel, false);
     },
     { stage: 0, row: 0.34 },
@@ -1306,7 +1316,7 @@ function shipyard(add: Add): void {
     'ruine',
     0,
     (b) => {
-      for (const [x, z, yaw] of SCATTERED_PLANKS) b.box({ x, y: g.at(x, z) - 0.02, z, yaw }, [0.32, 0.08, 2.3], C.wornPlank);
+      for (const [x, z, yaw] of SCATTERED_PLANKS) b.box({ x, y: g.at(x, z) + 0.01, z, yaw }, [0.32, 0.08, 2.3], C.wornPlank);
     },
     { stage: 0, row: 0.67 },
   );

@@ -69,6 +69,8 @@ export interface PlaceArt {
     habitant: { dx: number; dz: number };
     subject: { halfWidth: number; bottom: number; top: number; depth: number };
     pitch: number;
+    /** Le cap de départ de la caméra, autour du point visé (scenette.ts, `ScenetteSite.start`) ; absent : de face. */
+    start?: number;
   };
   /**
    * Le décor de près : le sol de la scène (`floor`) et l'habitant, ses pieds en `at` ; sans `body`, le sol seul (son

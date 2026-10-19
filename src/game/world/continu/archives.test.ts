@@ -5,7 +5,7 @@ import { constructionFacets, fallenFacets, ruinFacets, WHOLE, type PartShape, ty
 import { boundsOf, FacetBuilder } from './facets';
 import { modelOfPlace, ruinOf } from './places';
 import { placeById } from './plan6e';
-import { scenetteDecor } from './scenette';
+import { scenetteDecor, scenetteSurroundings } from './scenette';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 
 const field = buildHeightField();
@@ -22,8 +22,8 @@ describe('les Archives', () => {
     const traces = b.build().triangles;
     process.stdout.write(`\narchives: lieu ${model}, ruine ${ruinOf('archives').triangles}, traces ${traces}, total ${model + traces}, scénette ${scenetteDecor('archives').triangles}\n`);
     expect(model + traces).toBeLessThanOrEqual(2400);
-    // La scénette (son sol et la copiste) reste sous celle de la Turbine.
-    expect(scenetteDecor('archives').triangles).toBeLessThan(scenetteDecor('engine').triangles);
+    // La scénette (son sol et la copiste, sans ses abords, ./archivesSurroundings.ts) reste sous celle de la Turbine.
+    expect(scenetteDecor('archives').triangles - scenetteSurroundings('archives').triangles).toBeLessThan(scenetteDecor('engine').triangles);
   });
 
   it('se rebâtissent : une ruine basse, puis chaque étape en rangées non vides, rien en double', () => {

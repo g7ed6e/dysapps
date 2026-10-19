@@ -214,9 +214,10 @@ export function bridgeCut(a: Vec2, c: Vec2, strait: StraitId): readonly [number,
  * Le ruban d'une liaison (`edge`, son rang dans `PATH_EDGES`), posé sur le sol, avec ses flancs ; en bois là où le sol
  * est sous l'eau, couleur de sentier ailleurs. Rien sur la pierre du Port ni sur l'îlot de la Gare maritime ; rien non
  * plus sur l'eau de la passerelle de la Turbine ni de la jetée (`PLANK_BRIDGES`, dessinées à part), ni sur les culées
- * et l'eau d'un pont (GD-20, point 3, « vraies terres » : ./bridges.ts le dessine).
+ * et l'eau d'un pont (GD-20, point 3, « vraies terres » : ./bridges.ts le dessine). `tint` : son sable seul, repeint
+ * (`pathSand`).
  */
-function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, edge: number): void {
+function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, edge: number, tint?: SandTint): void {
   const [ia, ib] = PATH_EDGES[edge];
   const a = pathNode(ia).at;
   const c = pathNode(ib).at;
@@ -242,6 +243,12 @@ function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, e
     const pr = right(p, yp, w);
     const ql = left(q, yq, w);
     const qr = right(q, yq, w);
+    const i = w - PATH_EDGE.width;
+    if (tint) {
+      // Le sable seul, d'une autre couleur, un rien au-dessus de celui du sentier (`pathSand`).
+      if (!deck) b.quad(left(p, yp + tint.lift, i), right(p, yp + tint.lift, i), right(q, yq + tint.lift, i), left(q, yq + tint.lift, i), tint.color);
+      return;
+    }
     if (deck) {
       b.quad(pl, pr, qr, ql, COLORS_6E.wood);
       b.quad(down(pr), down(qr), qr, pr, COLORS_6E.wood);
@@ -249,7 +256,6 @@ function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, e
       return;
     }
     // Le sable du sentier, puis son liseré de chaque côté, un peu plus bas, et les flancs du liseré.
-    const i = w - PATH_EDGE.width;
     const e = PATH_EDGE.drop;
     b.quad(left(p, yp, i), right(p, yp, i), right(q, yq, i), left(q, yq, i), COLORS_6E.path);
     const lpe = left(p, yp - e, w), rpe = right(p, yp - e, w), lqe = left(q, yq - e, w), rqe = right(q, yq - e, w);
@@ -273,6 +279,34 @@ function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, e
       if (s1 - s0 < 1e-3) continue;
       piece(s0, s1, deck ? HALF_WIDTH.deck : HALF_WIDTH.path, deck);
     }
+  }
+}
+
+/** Le sable d'un sentier repeint : sa couleur, et sa hauteur au-dessus du sable du sentier. */
+export interface SandTint {
+  color: number;
+  lift: number;
+}
+
+/**
+ * Le sable d'un bout du réseau, repeint d'une autre couleur (le décor de près d'une scénette : le sable tassé de la
+ * saline, plus foncé que le sel) : sur chaque liaison de `edges` (ses deux nœuds), le sable de son ruban, dans les mêmes
+ * morceaux, un rien au-dessus ; sur chaque nœud de `nodes`, son disque de sable. Le liseré brun et le bois restent ceux
+ * du monde. Deux triangles par morceau, douze par nœud.
+ */
+export function pathSand(b: FacetBuilder, ground: (x: number, z: number) => number, edges: readonly (readonly [string, string])[], nodes: readonly string[], tint: SandTint): void {
+  for (const [ia, ib] of edges) {
+    const edge = PATH_EDGES.findIndex(([a, c]) => (a === ia && c === ib) || (a === ib && c === ia));
+    if (edge < 0) throw new Error(`Liaison inconnue : ${ia}, ${ib}`);
+    edgeRibbon(b, ground, edge, tint);
+  }
+  for (const id of nodes) {
+    const node = pathNode(id);
+    if (deckAt(ground, node.at)) continue;
+    const y = standingHeight(ground(node.at.x, node.at.z)) + RIBBON_LIFT + tint.lift;
+    const r = (HALF_WIDTH.path - PATH_EDGE.width) / Math.cos(Math.PI / NODE_SAND_SIDES);
+    const at = (k: number) => [node.at.x + r * Math.cos((2 * Math.PI * k) / NODE_SAND_SIDES), y, node.at.z + r * Math.sin((2 * Math.PI * k) / NODE_SAND_SIDES)] as const;
+    for (let k = 0; k < NODE_SAND_SIDES; k++) b.triangle([node.at.x, y, node.at.z], at(k + 1), at(k), tint.color);
   }
 }
 

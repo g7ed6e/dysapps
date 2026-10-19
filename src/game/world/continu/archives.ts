@@ -32,6 +32,10 @@ const C = {
   rubbleTop: 0xb7ad98,
   // Le parvis : ses dalles et leurs joints ; le muret.
   slab: 0xd2c4a6,
+  // Le sol de la scène : les dalles chaudes des scènes (lot commun des scénettes), leurs joints et leur tranche.
+  paving: 0xd6b98e,
+  pavingAlt: 0xccad80,
+  pavingSide: 0xb0926a,
   joint: 0xb3a587,
   wall: 0xc4b69a,
   wallTop: 0xd6c9ad,
@@ -415,6 +419,49 @@ function copiste(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   b.extrude({ x: tip.x + 0.06, y: tip.y + 0.18, z: tip.z - 0.03, yaw: 0.3 }, [[0, 0], [0.07, 0.1], [0.08, 0.32], [0.02, 0.44], [-0.04, 0.2]], 0.02, C.quill);
 }
 
+/**
+ * Le cap de départ de la caméra de la scénette (avis du directeur artistique, 18 octobre 2026 : la maison de la copiste
+ * dans la moitié droite du cadre) : un peu tournée vers l'ouest, la caméra regarde vers le nord-est ; de face, le pan de
+ * roche de l'éperon prend toute la droite du cadre et la maison, à l'est de lui, n'y entre pas.
+ */
+const ARCHIVES_START = (-33 * Math.PI) / 180;
+
+/**
+ * Les rangs de dalles du sol de la scène (directeur artistique, lot commun : plus d'estrade grise) : du nord au sud, le
+ * milieu du rang (depuis le sol de la scène), ses deux bouts (inégaux : le bord n'est pas une boîte), ses joints en
+ * travers.
+ */
+const FLOOR_ROWS: readonly { z: number; from: number; to: number; joints: readonly number[] }[] = [
+  { z: -0.7, from: -5.1, to: 5.35, joints: [-3.9, -2.65, -1.35, -0.05, 1.25, 2.55, 3.95] },
+  { z: 0.7, from: -5.45, to: 5.05, joints: [-4.4, -3.2, -1.95, -0.7, 0.6, 1.9, 3.25] },
+];
+
+/** La profondeur d'un rang de dalles. */
+const FLOOR_ROW_DEPTH = 1.4;
+
+/**
+ * Le sol de la scène : deux rangs de dalles chaudes (#D6B98E, tranche #B0926A), chacun jusqu'au plus bas du sol sous
+ * lui, leurs bouts décalés ; sur le dessus, les dalles presque carrées, une sur trois un ton plus sombre (#CCAD80),
+ * séparées par des joints de la couleur de la tranche.
+ */
+function sceneFloor(b: FacetBuilder, floor: Vec3): void {
+  const deep = FLOOR_ROW_DEPTH;
+  for (const [r, row] of FLOOR_ROWS.entries()) {
+    const z = floor.z + row.z;
+    let low = floor.y;
+    for (let x = row.from; x <= row.to; x += 1) for (const dz of [-deep / 2, deep / 2]) low = Math.min(low, Math.max(heightAt({ x: floor.x + x, z: z + dz }), -0.3));
+    const depth = Math.max(0.4, floor.y - low + 0.2);
+    b.box({ x: floor.x + (row.from + row.to) / 2, y: floor.y - depth, z }, [row.to - row.from, depth, deep], C.pavingSide);
+    const edges = [row.from, ...row.joints, row.to];
+    const y = floor.y + 0.008;
+    for (let k = 0; k < edges.length - 1; k++) {
+      const [x0, x1] = [floor.x + edges[k] + 0.035, floor.x + edges[k + 1] - 0.035];
+      const [z0, z1] = [z - deep / 2 + 0.035, z + deep / 2 - 0.035];
+      b.quad([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0], (k + 2 * r) % 3 === 1 ? C.pavingAlt : C.paving);
+    }
+  }
+}
+
 export const ARCHIVES: PlaceArt = {
   role: 'La copiste',
   model,
@@ -427,14 +474,11 @@ export const ARCHIVES: PlaceArt = {
     habitant: { dx: 2.6, dz: 0.25 },
     subject: { halfWidth: 3.7, bottom: -0.4, top: 3.2, depth: 0.3 },
     pitch: (18 * Math.PI) / 180,
+    start: ARCHIVES_START,
   },
-  // Le sol de la scène : des dalles de calcaire, la suite du parvis, sur toute sa largeur, jusqu'au sol sous elle.
+  // Le sol de la scène : des dalles de pierre chaude, à joints décalés, la suite du parvis, jusqu'au sol sous elle.
   decor(b, floor, at, sphere, body = true) {
-    let low = floor.y;
-    for (let dx = -5; dx <= 5; dx += 1) for (const dz of [-1.4, 0, 1.4]) low = Math.min(low, Math.max(heightAt({ x: floor.x + dx, z: floor.z + dz }), -0.3));
-    const depth = Math.max(0.6, floor.y - low + 0.2);
-    b.box({ x: floor.x, y: floor.y - depth, z: floor.z }, [10.4, depth, 2.8], C.joint, C.slab);
-    for (const dx of [-2.6, 0, 2.6]) b.box({ x: floor.x + dx, y: floor.y, z: floor.z }, [0.05, 0.01, 2.8], C.joint);
+    sceneFloor(b, floor);
     // Son modèle porte sa plume dans le chignon : celle du pion, à la main, part avec lui.
     if (body) copiste(b, at, sphere);
   },

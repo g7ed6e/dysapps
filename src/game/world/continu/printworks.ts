@@ -54,14 +54,21 @@ const C = {
   hat: 0xe5ebe3,
   hatFold: 0xc9d3d0,
   head: 0xe3c08a,
-  // La ruine : délavée (crépi passé, bois gris, ardoise pâlie, fer usé), d'un ton moyen, jamais sombre.
-  wornCrepi: 0xc4c4b8,
-  wornCrepiTop: 0xb3b2a5,
-  wornTimber: 0x9f9279,
-  wornSlate: 0x96a3aa,
+  // La ruine : délavée (crépi passé, bois gris, ardoise pâlie, fer usé), d'un ton moyen, jamais sombre ; chaude, plus
+  // de gris neutre (directeur artistique, évaluation du 18 octobre 2026 : « bâtiment = boîtes grises » ; consultant
+  // Archipéo : la pierre chaude des abords).
+  wornCrepi: 0xd6c7a8,
+  wornCrepiTop: 0xc4b392,
+  wornTimber: 0xa07e5a,
+  wornSlate: 0x8299b4,
   wornIron: 0x8c969b,
-  wornStone: 0xaaa08d,
-  wornStoneTop: 0x9e9482,
+  wornStone: 0xb9ad98,
+  wornStoneTop: 0xaa9e8a,
+  // Le sol de la scène : la terre battue de la cour, sa pente douce, ses dalles chaudes (docs/rendu/style.md).
+  earth: 0xcfa978,
+  earthSide: 0xc49f6c,
+  slab: 0xd6b98e,
+  slabSide: 0xb0926a,
 } as const;
 
 /**
@@ -106,6 +113,13 @@ const LINE = { a: { x: 4.3, z: -0.5 }, b: { x: 6.0, z: 2.3 }, height: 1.9 } as c
 
 /** L'établi, devant la façade, sous la fenêtre large. */
 const BENCH = { x: 1.85, z: 0.78, length: 1.7, depth: 0.55, height: 0.82 } as const;
+
+/**
+ * La scène de la scénette, décalée vers l'est du milieu du lieu (reprise du lieu, d'après le concept du 18 octobre 2026) :
+ * vu de la caméra, l'atelier passe à gauche, sous le panneau de la consigne, et la moitié droite du cadre s'ouvre sur les
+ * abords (./printworksSurroundings.ts) ; la cour y est encore plate.
+ */
+const SCENE_SHIFT = 1.2;
 
 /** Le haut du toit (sous le lanterneau) au-dessus du sol du lieu. */
 const RIDGE = SHOP.top + ROOF.rise;
@@ -364,6 +378,50 @@ function model(add: AddPiece, ground: SiteGround): void {
   });
 }
 
+/**
+ * Le sol de la scène (directeur artistique, évaluation du 18 octobre 2026 : plus d'estrade grise qui flotte, le sol du
+ * lieu) : la terre battue de la cour, à peine plus haute qu'elle, ses quatre bords en pente douce jusque sous le sol ;
+ * quelques dalles chaudes enfoncées dedans, loin des pieds de Kéo et de l'imprimeur. Dix triangles et quatre dalles.
+ */
+const EARTH_FLOOR = { half: [3.9, 1.3], skirt: 1.0, sink: 0.3 } as const;
+const FLOOR_SLABS: readonly (readonly [number, number, number, number, number])[] = [
+  [-0.9, -0.45, 1.0, 0.7, 0.1],
+  [0.75, 0.55, 0.8, 0.6, -0.15],
+  [3.2, -0.75, 0.6, 0.5, 0.2],
+  [-3.4, 0.8, 0.6, 0.5, -0.1],
+];
+
+function earthFloor(b: FacetBuilder, f: Vec3): void {
+  const [hx, hz] = EARTH_FLOOR.half;
+  const s = EARTH_FLOOR.skirt;
+  const y0 = f.y - EARTH_FLOOR.sink;
+  // Les coins, dans le sens inverse des aiguilles d'une montre vu d'en haut : le dessus, puis le pied élargi.
+  const corners = [
+    [-1, 1],
+    [1, 1],
+    [1, -1],
+    [-1, -1],
+  ] as const;
+  const top = corners.map(([i, k]): [number, number, number] => [f.x + i * hx, f.y, f.z + k * hz]);
+  const foot = corners.map(([i, k]): [number, number, number] => [f.x + i * (hx + s), y0, f.z + k * (hz + s)]);
+  b.quad(top[0], top[1], top[2], top[3], C.earth);
+  for (let k = 0; k < 4; k++) {
+    const n = (k + 1) % 4;
+    b.quad(foot[k], foot[n], top[n], top[k], C.earthSide);
+  }
+  for (const [dx, dz, w, d, yaw] of FLOOR_SLABS) b.box({ x: f.x + dx, y: f.y - 0.02, z: f.z + dz, yaw }, [w, 0.04, d], C.slabSide, C.slab);
+}
+
+/**
+ * La presse à bras debout, ses pieds en `at`, tournée de `yaw` (face au sud quand il est nul) : celle de l'atelier
+ * ouvert des abords de la scénette (./printworksSurroundings.ts), la même que celle du lieu.
+ */
+export function standingPress(b: FacetBuilder, at: Vec3, yaw: number): void {
+  const f = new FacetBuilder();
+  press(f, C.iron, C.ironTop, C.wood);
+  rolled(b, f.build(), at, 0, yaw);
+}
+
 /** Le sol sous un point du monde, au-dessus du sol du lieu (les traces, dessinées dans le monde). */
 const groundAt = (x: number, z: number) => standingHeight(heightAt({ x, z }));
 
@@ -401,7 +459,7 @@ export const PRINTWORKS: PlaceArt = {
   role: 'L’imprimeur',
   model,
   traceStage: 2,
-  sceneSpot: { dx: 0, dz: 4.4, half: [4.6, 1.4], fine: true },
+  sceneSpot: { dx: SCENE_SHIFT, dz: 4.4, half: [3.6, 1.2], fine: true },
   site: {
     rise: 0.15,
     keo: { dx: -2.6, dz: 0.25, scale: 0.6, yaw: Math.PI - 0.4 },
@@ -415,8 +473,7 @@ export const PRINTWORKS: PlaceArt = {
    * penchée vers l'est ; un bras le long du corps, l'autre plié, le rouleau encreur à la main, tendu vers Kéo.
    */
   decor(b, floor, at, sphere, body = true) {
-    b.box({ x: floor.x, y: floor.y - 0.4, z: floor.z }, [9.4, 0.4, 2.8], C.flagShade, C.flag);
-    for (const dx of [-3.1, 0.4, 2.0]) b.box({ x: floor.x + dx, y: floor.y, z: floor.z }, [0.05, 0.01, 2.8], C.flagShade);
+    earthFloor(b, floor);
     // Son modèle (sa salopette, sans chapeau de papier, comme son concept retenu) : le rouleau du pion, à la main, part avec lui.
     if (!body) return;
     for (const dx of [-0.13, 0.13]) b.box({ x: at.x + dx, y: at.y, z: at.z }, [0.2, 0.46, 0.24], C.trousers);

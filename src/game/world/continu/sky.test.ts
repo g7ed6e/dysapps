@@ -23,8 +23,9 @@ test('le dôme du ciel : crème à l’horizon (la couleur de la brume du lointa
 test('le soleil, plus bas qu’avant, à l’est ; l’ambiance garde le tiers de la lumière (jamais presque noir) ; les ombres peintes tombent à l’opposé', () => {
   const { x, y, z } = LIGHT.sunFrom;
   const elevation = (Math.atan2(y, Math.hypot(x, z)) * 180) / Math.PI;
-  expect(elevation).toBeGreaterThan(25);
-  expect(elevation).toBeLessThan(40);
+  // Rasant (lot commun des scénettes) : entre 20° et 26°.
+  expect(elevation).toBeGreaterThan(20);
+  expect(elevation).toBeLessThan(26);
   expect(x).toBeGreaterThan(0);
   const up = y / Math.hypot(x, y, z);
   expect(LIGHT.ambient / (LIGHT.ambient + LIGHT.sunIntensity * up)).toBeGreaterThan(0.3);

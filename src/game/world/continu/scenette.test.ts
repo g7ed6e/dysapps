@@ -3,13 +3,13 @@
 // Quais (lot 3), les Filets et les Écluses (lot 4) : leur habitant, leur cadrage, leur réussite et leur retour. Sans
 // Three.js.
 import { describe, expect, it } from 'vitest';
-import { FOLLOW, KEO_HEIGHT, LOOK_UP, followPose, lookUp, lookUpStep, screenOf } from './camera';
+import { FOLLOW, KEO_HEIGHT, LOOK_UP, followPose, lookUp, lookUpStep, orbitAround, screenOf } from './camera';
 import { FacetBuilder, boundsOf, placeFacets } from './facets';
 import { distance, linearRgb } from './geometry';
 import { startOf } from './paths';
 import { placeById } from './plan6e';
 import { COMMONS, OBSERVATORY, SHIPYARD, SHORES, SLIP_N, STEAM_GAP, commonsPillars, drumFace, hullEdge, modelOfPlace } from './places';
-import { ANSWER_LAYOUT, COMMONS_PAVING_RISE, ENGINE_PAVING_RISE, FOUNTAIN, JAUGE, LOCK, OBSERVATORY_BAY, OBSERVATORY_PAVING_RISE, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, swingTo, type ScreenBox } from './questionScene';
+import { ANSWER_LAYOUT, COMMONS_PAVING_RISE, ENGINE_PAVING_RISE, FOUNTAIN, JAUGE, LOCK, OBSERVATORY_BAY, OBSERVATORY_PAVING_RISE, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, facingAnswerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, swingTo, type ScreenBox } from './questionScene';
 import {
   GALLERY,
   LANTERN,
@@ -17,7 +17,10 @@ import {
   bellPlane,
   habitantHand,
   answersHang,
+  scenetteCore,
   scenetteDecor,
+  scenetteSurroundings,
+  FOOT_SHADOW_TRIANGLES,
   scenetteHabitant,
   scenetteHidesPlace,
   scenetteKeo,
@@ -51,6 +54,7 @@ const screens = [
   [844, 390],
   [667, 375],
 ] as const;
+
 
 describe('La place de la scénette à l’écran', () => {
   it('chaque lieu a sa scénette, chaque habitant nommé par son rôle seul, sans phrase d’accueil', () => {
@@ -247,7 +251,8 @@ describe('La galerie du Phare', () => {
   });
 
   it('le décor de près : la galerie et sa rambarde au niveau de la galerie du Phare, la gardienne en peu de triangles', () => {
-    const decor = scenetteDecor('phare');
+    // Sans les abords (./phareSurroundings.ts), dont la potence passe la rambarde et dont le test est à part.
+    const decor = scenetteCore('phare');
     expect(decor.triangles).toBeGreaterThan(0);
     expect(decor.triangles).toBeLessThan(2500);
     const b = boundsOf(decor);
@@ -257,10 +262,29 @@ describe('La galerie du Phare', () => {
     expect(modelOfPlace('phare').top).toBeGreaterThan(GALLERY.floor);
   });
 
+  it('la caméra tournée, le portique des cloches tourne avec elle autour de l\'axe de la galerie : de face, horizontal', () => {
+    const yaw = (40 * Math.PI) / 180;
+    const front = bellPlane('phare');
+    const turned = bellPlane('phare', yaw);
+    const axis = front.pivot;
+    // Le plan tourné reste à la même distance de l'axe, face à la caméra.
+    expect(distance(turned.through, axis)).toBeCloseTo(distance(front.through, axis), 6);
+    expect(turned.normal.x).toBeCloseTo(Math.sin(yaw), 6);
+    const points = [-1.5, 0, 1.5].map((dx) => ({ x: axis.x + dx, y: floor - 0.4, z: front.through.z }));
+    const hand = habitantHand('phare');
+    const still = facingAnswerObjects('phare', points, 0.6, { hanging: { hand, rail: front.rail } }, axis, 0);
+    // Les mêmes cloches, la main de la gardienne tournée avec elles : le portique entier, tourné de `yaw` autour de l'axe.
+    const moved = facingAnswerObjects('phare', points.map((p) => orbitAround(p, axis, yaw)), 0.6, { hanging: { hand: orbitAround(hand, axis, yaw), rail: front.rail } }, axis, yaw);
+    const centred = still.positions.map((v, i) => v - (i % 3 === 0 ? axis.x : i % 3 === 2 ? axis.z : 0));
+    const expected = placeFacets({ ...still, positions: centred }, { x: axis.x, y: 0, z: axis.z, yaw });
+    expect(moved.triangles).toBe(still.triangles);
+    for (let i = 0; i < moved.positions.length; i += 97) expect(moved.positions[i]).toBeCloseTo(expected.positions[i], 3);
+  });
+
   it('les cloches pendent à leur poutre devant la rambarde ; une cloche choisie se balance, sans changer de place', () => {
     const plane = bellPlane('phare');
     const c = placeById('phare').center;
-    const points = [-1.5, 0, 1.5].map((dx) => ({ x: c.x + dx, y: floor - 0.4, z: plane.z }));
+    const points = [-1.5, 0, 1.5].map((dx) => ({ x: c.x + dx, y: floor - 0.4, z: plane.through.z }));
     const hang = { hand: habitantHand('phare'), rail: plane.rail };
     const still = answerObjects('phare', points, 0.6, { hanging: hang });
     const swung = answerObjects('phare', points, 0.6, { picked: [1], hanging: hang });
@@ -268,7 +292,7 @@ describe('La galerie du Phare', () => {
     expect(Array.from(swung.positions)).not.toEqual(Array.from(still.positions));
     // Sans lettre : la cloche n'a que des volumes ; la frise de vagues est en saillie sur son corps.
     const b = boundsOf(still);
-    expect(b.max[2]).toBeGreaterThan(plane.z);
+    expect(b.max[2]).toBeGreaterThan(plane.through.z);
     expect(b.min[2]).toBeLessThanOrEqual(plane.rail.z);
     // La lumière de la réaction : la même cloche, un peu plus grande.
     expect(itemScene('phare', { kind: 'cloches' }, true, points.slice(0, 1), 0.6).reaction?.facets.triangles).toBeGreaterThan(0);
@@ -349,14 +373,16 @@ describe('Le quai du docker', () => {
   const quay = scenetteKeo('quais').at;
 
   it('le docker, en quelques volumes, se tient sur le quai, à droite de Kéo, sa caisse et son crochet en main', () => {
-    const docker = scenetteDecor('quais');
+    // Le décor de près sans les abords du lieu (./quaisSurroundings.ts) : le docker seul, et les ombres au pied.
+    const docker = scenetteCore('quais');
     expect(docker.triangles).toBeGreaterThan(0);
     expect(docker.triangles).toBeLessThan(1500);
     const b = boundsOf(docker);
     // Debout sur la bande de devant du quai, à hauteur d'homme (Kéo est à l'échelle 0,6 de la scénette).
     expect(b.min[1]).toBeGreaterThanOrEqual(quay.y - 0.1);
     expect(b.max[1]).toBeLessThan(quay.y + 2.5);
-    expect(b.min[0]).toBeGreaterThan(quay.x);
+    // Le décor de près porte aussi l'ombre au pied de Kéo (lot commun des scénettes) : à moins d'une unité de lui.
+    expect(b.min[0]).toBeGreaterThan(quay.x - 1);
     expect(scenetteHabitant('quais').x).toBeGreaterThan(quay.x);
     // Ni lampe à allumer, ni cloches pendues : la caisse monte au crochet de la grue.
     expect(answersHang('quais')).toBe(false);
@@ -477,7 +503,8 @@ describe('Les Filets et les Écluses (lot 4), les Marais salants (lot L5), la Tu
       }
       const decor = scenetteDecor(place);
       expect(decor.triangles).toBeGreaterThan(0);
-      expect(decor.triangles).toBeLessThan(1500);
+      // Les abords du lieu (./surroundings.ts) à part : ils ont leur propre compte (le test de chaque lieu).
+      expect(scenetteCore(place).triangles).toBeLessThan(1500);
       // Les paniers et les leviers sur une margelle à terre, à la hauteur du plancher ; la caisse des Quais seule part.
       expect(scenetteDeck(place)).toEqual({ y: floor + LAND_DECK, onLand: true });
       expect(answerLeaves(place)).toBe(false);
@@ -634,9 +661,10 @@ describe('Une scénette se joue sur le lieu tel qu’il est bâti (GD-20, lot 1)
   });
 
   it('au Phare sans sa galerie : ni galerie ni rambarde, la gardienne et son maillet ; les cloches posées, pas pendues', () => {
-    const decor = boundsOf(scenetteDecor('phare', false, false));
+    // Sans les abords (./phareSurroundings.ts) : l'échafaudage du chantier monte au-dessus du moignon.
+    const decor = boundsOf(scenetteCore('phare', false, false));
     expect(decor.max[1]).toBeLessThan(foot + PHARE_SOCLE + 1.6);
-    expect(scenetteDecor('phare', false, false).triangles).toBeLessThan(scenetteDecor('phare').triangles);
+    expect(scenetteCore('phare', false, false).triangles).toBeLessThan(scenetteCore('phare').triangles);
     expect(answersHang('phare', false)).toBe(false);
     expect(answersHang('phare', true)).toBe(true);
     const deck = scenetteDeck('phare', false);
@@ -676,8 +704,17 @@ describe('Une scénette se joue sur le lieu tel qu’il est bâti (GD-20, lot 1)
       expect(scenetteFinale('filets', scene, 0.8, true, m), m).toBeNull();
       expect(scenetteFinale('filets', { kind: 'enclos' }, 0.8, false, m), m).toBeNull();
     }
-    expect(boundsOf(bare.decor).max[1]).toBeLessThan(boundsOf(built.decor).max[1]);
-    expect(boundsOf(bare.decor).max[1]).toBeLessThan(sceneSpot('filets').y + 1.5);
+    // Le haut du décor autour du plancher et du séchoir (à moins de 7 du point de la scène) : les abords du lieu, la
+    // cabane et le filet tendu de l'anse, se tiennent plus loin (./filetsSurroundings.ts).
+    const o = sceneSpot('filets');
+    const topNear = (f: { positions: Float32Array }) => {
+      let top = -Infinity;
+      for (let k = 0; k < f.positions.length; k += 3)
+        if (Math.hypot(f.positions[k] - o.x, f.positions[k + 2] - o.z) < 7) top = Math.max(top, f.positions[k + 1]);
+      return top;
+    };
+    expect(topNear(bare.decor)).toBeLessThan(topNear(built.decor));
+    expect(topNear(bare.decor)).toBeLessThan(o.y + 1.5);
     expect(scenetteDecor('ecluses', false, false).triangles).toBeLessThan(scenetteDecor('ecluses', false, true).triangles);
     expect(scenetteDecor('ecluses', true, false).triangles).toBeLessThan(scenetteDecor('ecluses', true, true).triangles);
   });
@@ -773,7 +810,8 @@ describe('Les Marais salants (GD-20, point 8, lot L5)', () => {
 
   it('la saunière, en peu de triangles, sur le muret au bord du bassin ; le décor de près en un maillage léger', () => {
     const decor = scenetteDecor('saltworks');
-    expect(decor.triangles).toBeLessThan(400);
+    // Les deux ombres au pied (lot commun des scénettes) comprises ; les abords à part (./surroundings.test.ts).
+    expect(decor.triangles - scenetteSurroundings('saltworks').triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
     const habitant = scenetteHabitant('saltworks');
     const keo = scenetteKeo('saltworks').at;
     expect(keo.x).toBeLessThan(o.x);
@@ -848,7 +886,8 @@ describe('La Turbine (GD-20, point 8, lot L6a)', () => {
 
   it('la machiniste, en peu de triangles, sur le dallage devant la chaudière, levé au-dessus du replat', () => {
     const decor = scenetteDecor('engine');
-    expect(decor.triangles).toBeLessThan(400);
+    // Les deux ombres au pied (lot commun des scénettes) comprises ; les abords à part (./surroundings.test.ts).
+    expect(decor.triangles - scenetteSurroundings('engine').triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
     // Des cheveux sombres et leur chignon, au-dessus de la tête (les lunettes relevées s'y lisent) ; la burette, un cône de
     // cuivre plus large en bas qu'en haut, et son bec fin (relecture de L6a : ni tête chauve, ni torche).
     const habitantAt = scenetteHabitant('engine');
@@ -929,8 +968,10 @@ describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
   };
 
   it('le charpentier, en peu de triangles, sur le plancher levé au-dessus de la grève : tablier ardoise, maillet en main', () => {
-    const decor = scenetteDecor('shipyard');
-    expect(decor.triangles).toBeLessThan(400);
+    // Le décor de près sans les abords (./shipyardSurroundings.ts, jugés à part) : le plancher, le charpentier.
+    const decor = scenetteCore('shipyard');
+    // Les deux ombres au pied (lot commun des scénettes) comprises.
+    expect(decor.triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
     const habitant = scenetteHabitant('shipyard');
     const keo = scenetteKeo('shipyard').at;
     expect(keo.x).toBeLessThan(o.x);
@@ -1002,7 +1043,8 @@ describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
 
 describe('La Mangrove (GD-20, point 8, lot L8a)', () => {
   const o = sceneSpot('mangrove');
-  const decor = scenetteDecor('mangrove');
+  // La botaniste et le platelage seuls : les abords du lieu (./mangroveSurroundings.ts) ont leurs propres tests.
+  const decor = scenetteCore('mangrove');
   const of = (hex: number) => {
     const rgb = linearRgb(hex);
     const out: [number, number, number][] = [];
@@ -1011,7 +1053,8 @@ describe('La Mangrove (GD-20, point 8, lot L8a)', () => {
   };
 
   it('la botaniste, en peu de triangles : le bas du corps sombre, le haut clair, ses cheveux sombres et sa tresse, un petit carnet contre elle', () => {
-    expect(decor.triangles).toBeLessThan(400);
+    // Les deux ombres au pied (lot commun des scénettes) comprises.
+    expect(decor.triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
     expect(scenetteOf('mangrove').role).toBe('La botaniste');
     const at = scenetteHabitant('mangrove');
     // Le bas sombre jusqu'au sol (jamais un seul prisme clair, relecture de L6b), le haut corail au-dessus.
@@ -1061,7 +1104,8 @@ describe('Les Ruines (GD-20, point 8, lot L8b)', () => {
   };
 
   it('l’archéologue, en peu de triangles : le bas du corps sombre, le haut clair, ses cheveux gris courts, sa brosse de fouille', () => {
-    expect(decor.triangles).toBeLessThan(400);
+    // Les deux ombres au pied (lot commun des scénettes) comprises ; les abords à part (./ruinsSurroundings.test.ts).
+    expect(decor.triangles - scenetteSurroundings('ruins').triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
     expect(scenetteOf('ruins').role).toBe('L’archéologue');
     const at = scenetteHabitant('ruins');
     // Le bas sombre jusqu'au sol (jamais un seul prisme clair, relecture de L6b), le haut bleu ciel au-dessus.
@@ -1110,8 +1154,10 @@ describe('L’Observatoire (GD-20, point 8, lot L8c)', () => {
   };
 
   it('la photographe, en peu de triangles : le haut clair, le bas du corps sombre, sa chambre de bois sur trépied à côté d’elle', () => {
-    const decor = scenetteDecor('observatory');
-    expect(decor.triangles).toBeLessThan(400);
+    // Sans les abords du lieu (./observatorySurroundings.ts, leur propre compte) ; les deux ombres au pied (lot commun des
+    // scénettes) comprises.
+    const decor = scenetteCore('observatory');
+    expect(decor.triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
     const at = scenetteHabitant('observatory');
     // La veste lavande en haut, le pantalon gris chaud en bas (relecture de L6b : jamais un prisme clair jusqu'au sol) ;
     // deux jambes, des chaussures, des cheveux jusqu'à la nuque (relecture de L8c-d).
@@ -1228,8 +1274,9 @@ describe('La Halle (GD-20, point 8, lot L8d)', () => {
   };
 
   it('le couvreur, en peu de triangles : le haut clair, le bas du corps sombre, deux jambes, tête nue, une tuile canal sous le bras', () => {
-    const decor = scenetteDecor('commons');
-    expect(decor.triangles).toBeLessThan(400);
+    const decor = scenetteCore('commons');
+    // Les deux ombres au pied (lot commun des scénettes) comprises ; sans les abords (./commonsSurroundings.ts).
+    expect(decor.triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
     const at = scenetteHabitant('commons');
     const shirt = colored(decor, 0xbfdccb);
     expect(Math.min(...shirt.map((v) => v[1]))).toBeGreaterThan(at.y + 0.4);
@@ -1381,3 +1428,18 @@ function expectLegsAndHair(decor: { colors: Float32Array; positions: Float32Arra
   // Sur les côtés, ils descendent aux oreilles, sous le milieu de la tête.
   expect(Math.min(...hair.filter((v) => Math.abs(v[0] - at.x) > 0.2).map((v) => v[1]))).toBeLessThan(at.y + 1.13);
 }
+
+describe('La caméra libre des scénettes (lot commun)', () => {
+  it('tourne autour du point visé, à la même distance et à la même hauteur, dans le sens de la caméra qui suit Kéo', () => {
+    const pivot = { x: 10, y: 2, z: -4 };
+    const south = { x: 10, y: 7, z: 2 };
+    expect(orbitAround(south, pivot, 0)).toEqual(south);
+    const quarter = orbitAround(south, pivot, Math.PI / 2);
+    expect(quarter.x).toBeCloseTo(16, 6);
+    expect(quarter.z).toBeCloseTo(-4, 6);
+    expect(quarter.y).toBe(7);
+    const half = orbitAround(south, pivot, Math.PI);
+    expect(half.x).toBeCloseTo(10, 6);
+    expect(half.z).toBeCloseTo(-10, 6);
+  });
+});

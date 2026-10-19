@@ -14,9 +14,9 @@ import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { NEF_DEPARTURE, NEF_LIFT, bancFacets, bancTouched, berFacets, nefArrivingParts, nefAtBerth, nefBerthWorld, nefDeparture, nefModelFacets, nefShownParts, nefTouched, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, detourRise, detourViewStep, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose } from '../../world/continu/camera';
+import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, WORLD_FOG, detourRise, detourViewStep, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourFacets, faunaPose, spoutFacets, whaleFacets, type DetourId } from '../../world/continu/detours';
-import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
+import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
@@ -31,7 +31,7 @@ import { COLORS_6E, hidesTraces, portFloor, portNode, type PortSpot } from '../.
 import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PAPER_COLOR } from '../../world/continu/printworks';
 import { PORT_MAP_POINT, PORT_ROOFLINES, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
-import { HELD_LIFT, SALT_PUMP, answerObjects, answerScale, inBasket, itemScene, placeTrace, rankInBasket, saltPumpHub, sceneSpot, sortPrise, sortScales, swingTo, type Reaction, type SortLook } from '../../world/continu/questionScene';
+import { HELD_LIFT, SALT_PUMP, answerScale, facingAnswerObjects, inBasket, itemScene, placeTrace, rankInBasket, saltPumpHub, sceneSpot, sortPrise, sortScales, swingTo, type Reaction, type SortLook } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
 import {
   EXIT_VIEW,
@@ -56,6 +56,13 @@ import {
   scenetteKeo,
   scenetteHabitant,
   scenettePose,
+  scenetteStartYaw,
+  scenetteArc,
+  turnSceneYaw,
+  startSceneReturn,
+  stepSceneReturn,
+  stopSceneReturn,
+  type SceneReturn,
   type ScenetteFinale,
   type ScenetteLayout,
 } from '../../world/continu/scenette';
@@ -206,6 +213,11 @@ export interface OpenWorld {
    */
   question(q: QuestionRequest | null): LabelOnScreen[];
   /**
+   * Écoute les repères de la scène quand la caméra tourne pendant une scénette (deux doigts, « caméra libre ») : ils
+   * suivent le décor, comme ceux que rend `question`. Rend de quoi ne plus écouter.
+   */
+  onSceneTurn(listener: (labels: LabelOnScreen[]) => void): () => void;
+  /**
    * La fin de la mission dans une scénette (le Phare) : la caméra reste dans la galerie, les objets des réponses
    * s'effacent, et à la réussite (`lit`) la lampe du Phare s'allume (tout de suite avec « Réduire les animations »).
    * `question(null)` la quitte.
@@ -292,7 +304,8 @@ interface QuestionRequest {
   place: PlaceId;
   mission: string;
   layout: ScenetteLayout;
-  item: { scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[]; sort?: SortLook };
+  /** `key` : la clé de l'item (un autre item ramène la caméra de la scénette de face). */
+  item: { key?: string; scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[]; sort?: SortLook };
 }
 
 /** Ce que la pose d'un pont dit à la page : le toc (toutes ses parties posées), puis sa fin (la brume levée : la phrase). */
@@ -368,6 +381,15 @@ const KEO_LAYER = 1;
  * tournent pas encore (un pincement ou deux doigts posés ne la bougent pas).
  */
 const CAMERA_TURN = { step: Math.PI / 4, seconds: 0.35, rings: Math.PI / 8, deadAngle: 0.2 } as const;
+/**
+ * La caméra qui tourne aussi pendant une scénette (lot commun des scénettes, choix du mainteneur du 18 octobre 2026 :
+ * « caméra libre ») : deux doigts la font tourner autour du point visé de la scène ; les objets des réponses restent
+ * sous leurs boutons (ils se reposent au sol sous eux à chaque image du geste), le décor tourne. Hors de la pose
+ * prévue, elle garde `clearance` unités devant tout volume (le lieu, le décor de près) et au-dessus du sol, sans
+ * s'approcher à moins de `minDistance` du point visé. Quand un volume l'arrêterait à moins de `keep` de sa distance (un
+ * lieu haut juste derrière la scène), elle monte d'abord au-dessus, par crans de `climb`, jusqu'à `topElevation`.
+ */
+const SCENE_TURN = { clearance: 1, minDistance: 4, keoHead: 1.3, habitantHead: 1.5, margin: 0.3, tries: 8, rise: 0.6, keep: 0.7, climb: (8 * Math.PI) / 180, climbs: 5, topElevation: (65 * Math.PI) / 180 } as const;
 /**
  * La finesse du rendu : l'anticrénelage reste (la scène est légère, quelques milliers de triangles) ; le rapport de
  * pixels est plafonné à 2, puis ramené à 1 si l'appareil peine (des images de plus de 45 ms, trente de suite), comme
@@ -1142,6 +1164,21 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const focus: Vec3 = { ...keoFeet };
   // La caméra tournée autour de Kéo (GD-20, rotation libre) : `yaw`, et le tour en cours des boutons (`turning`).
   let yaw = 0;
+  /**
+   * L'angle dont la caméra a tourné autour de la scénette (`SCENE_TURN`), la scène à refaire à l'image suivante, et la
+   * dernière question posée, avec laquelle elle se refait. Déclarés ici, avant le premier `updateRings`, qui les lit ;
+   * remis à zéro en quittant la scénette (`leaveScenette`).
+   */
+  let sceneYaw = 0;
+  let sceneTurnPending = false;
+  let lastQuestion: QuestionRequest | null = null;
+  /** L'item de la dernière question posée (sa mission, sa clé) : un autre ramène la caméra de face. */
+  let lastItem = '';
+  /**
+   * Le retour en douceur au cap de départ à chaque nouvel item (`SCENE_RETURN`) : un seul objet, rempli sur place ; un
+   * geste à deux doigts l'interrompt.
+   */
+  const sceneReturn: SceneReturn = { active: false, start: 0, from: 0, to: 0 };
   let turning: { from: number; to: number; start: number } | null = null;
   let lift = occlusionLift(focus, ground, yaw);
   const pose: CameraPose = followPose(focus, lift, undefined, yaw);
@@ -1293,6 +1330,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    */
   let remise: { place: PlaceId; pose: CameraPose; extra?: string; box?: WorldBox } | null = null;
   let posed = true;
+  // L'étape du haut du lieu de la scénette posée : ses abords en dépendent (le carbet de la Mangrove).
+  let topped = false;
   // La mission jouée dans la scénette : le retour garde sa trace dans le champ (GD-20, point 8).
   let scenetteMission: string | null = null;
   // La Carte ne se redessine que si sa vue, la taille, la brume ou ce qu'elle montre change (expert frontend).
@@ -1422,11 +1461,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const setNear = (now: boolean) => nearRing.set(nearIndices.map((i) => (now ? tiles.build(i, 'near') : (tiles.near(i) ?? tiles.build(i, 'far')))));
   /** Les anneaux autour du point suivi ; `now` (le départ, un saut) : les tuiles de près faites tout de suite. */
   const updateRings = (force = false, now = false) => {
-    if (!force && Math.hypot(focus.x - ringCenter.x, focus.z - ringCenter.z) < RING_MOVE && Math.abs(wrapAngle(yaw - ringYaw)) < CAMERA_TURN.rings) return;
+    // Pendant une scénette, la caméra tourne autour de la scène (`sceneYaw`) : les tuiles suivent son regard.
+    const look = yaw + (scenette && asked ? sceneYaw : 0);
+    if (!force && Math.hypot(focus.x - ringCenter.x, focus.z - ringCenter.z) < RING_MOVE && Math.abs(wrapAngle(look - ringYaw)) < CAMERA_TURN.rings) return;
     ringCenter.x = focus.x;
     ringCenter.z = focus.z;
-    ringYaw = yaw;
-    const rings = tileRings(ringCenter, WORLD_FOG.far, yaw);
+    ringYaw = look;
+    const rings = tileRings(ringCenter, WORLD_FOG.far, look);
     const k = `${rings.near.join(',')}|${rings.far.join(',')}`;
     if (k !== ringKey) {
       ringKey = k;
@@ -1855,7 +1896,20 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const twistMove = () => {
     if (!twist || fingers.size < 2) return;
     const angle = fingersAngle();
-    // Pendant une question, une pose ou une remise, la caméra ne tourne pas, et l'écart ne s'accumule pas.
+    // Pendant une scénette, la caméra tourne autour de la scène (« caméra libre ») ; la scène se refait à l'image suivante.
+    if (asked && scenette && !remise && !descent.active && !finaleShown && !poseRun.active && !assembly && !laying) {
+      const d = wrapAngle(angle - twist.angle);
+      if (!twist.started && Math.abs(d) < CAMERA_TURN.deadAngle) return;
+      twist.started = true;
+      twist.angle = angle;
+      // Le geste interrompt le retour au cap de départ et part de l'angle courant ; au Phare et au Guet, il s'arrête au
+      // bout de l'arc (`ScenetteSite.arc`).
+      stopSceneReturn(sceneReturn);
+      sceneYaw = turnSceneYaw(sceneYaw, d, scenetteStartYaw(scenette, posed), scenetteArc(scenette, posed));
+      sceneTurnPending = true;
+      return;
+    }
+    // Pendant une pose, une remise ou la fin d'une scénette, la caméra ne tourne pas, et l'écart ne s'accumule pas.
     if (asked || remise || scenette || poseRun.active || assembly || laying) {
       twist.angle = angle;
       return;
@@ -2334,6 +2388,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // quand), puis la lumière ; `finaleShown` : elle est montrée (le décor de près a changé).
   let finale: { from: THREE.Vector3; start: number; f: ScenetteFinale } | null = null;
   let finaleShown = false;
+  /** Ceux qui écrivent les repères de la scène (la page) : la caméra tournée les déplace. */
+  const sceneTurnListeners = new Set<(labels: LabelOnScreen[]) => void>();
+  const turnFrom = new THREE.Vector3();
+  const turnDir = new THREE.Vector3();
+  const turnSight = new THREE.Vector3();
+  const toVector = (p: Vec3) => new THREE.Vector3(p.x, p.y, p.z);
   // La scène de l'item est-elle à montrer (cachée le temps de la descente) ?
   let itemShown = false;
   const descent = {
@@ -2390,9 +2450,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Au retour, la caméra qui suit est tournée vers le nord, comme la scénette.
     faceNorth();
     posed = site ?? traceStagePosed(place, posedOf(place));
+    topped = stageComplete(posedOf(place), 1);
     // Le modèle de l'habitant, s'il est prêt, avant le décor de près : celui-ci se fait alors sans le pion.
     habitants.show(place, scenetteHabitant(place, posed));
-    setGeometry(decorMesh, scenetteDecor(place, false, posed));
+    setGeometry(decorMesh, scenetteDecor(place, false, posed, topped));
     // Aux Quais, la maquette du lieu (sa grue, son hangar) s'efface : le quai de la scénette a les siens. La trace de
     // la scénette aussi, sauf au Phare : la trace de la réussite (la barque chargée, le panier plein, la porte ouverte)
     // n'est pas dessinée deux fois.
@@ -2409,6 +2470,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!scenette) return;
     const left = scenette;
     scenette = null;
+    sceneYaw = 0;
+    sceneReturn.active = false;
+    sceneTurnPending = false;
+    lastQuestion = null;
     descent.active = false;
     placeVisibility();
     unlitReaction();
@@ -2436,13 +2501,81 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     placeKeo(here);
   };
   const vertical = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-  /** Le point du plan vertical `z` (face à la caméra) sous un point de l'écran, avec la pose de la caméra déjà posée. */
-  const planeUnder = (sx: number, sy: number, z: number) => {
+  /**
+   * Le point d'un plan vertical (sa normale horizontale `normal`, passant par `through` ; face à la caméra) sous un point
+   * de l'écran, avec la pose de la caméra déjà posée.
+   */
+  const planeUnder = (sx: number, sy: number, through: Vec3, normal: { x: number; z: number }) => {
     pointer.set((sx / viewW) * 2 - 1, -(sy / viewH) * 2 + 1);
     raycaster.setFromCamera(pointer, camera);
-    vertical.constant = -z;
+    vertical.normal.set(normal.x, 0, normal.z);
+    vertical.constant = -(normal.x * through.x + normal.z * through.z);
     const hit = raycaster.ray.intersectPlane(vertical, ground3);
-    return hit ? { x: hit.x, y: hit.y, z } : null;
+    return hit ? { x: hit.x, y: hit.y, z: hit.z } : null;
+  };
+  /**
+   * Tourne la pose prévue d'une scénette de `sceneYaw` autour de son point visé, puis l'écarte des volumes et du sol
+   * (`SCENE_TURN`). À l'angle nul, la pose prévue, telle quelle.
+   */
+  const turnScenePose = (pose: CameraPose) => {
+    if (!sceneYaw) return;
+    const t = pose.target;
+    pose.position = orbitAround(pose.position, t, sceneYaw);
+    turnFrom.set(t.x, t.y, t.z);
+    turnDir.set(pose.position.x - t.x, pose.position.y - t.y, pose.position.z - t.z);
+    const dist = turnDir.length();
+    turnDir.normalize();
+    // Les maillages montrés seulement (un lieu effacé le temps de la scénette ne retient pas la caméra).
+    const shown = [placesMesh, landmarkMesh, decorMesh].filter((m) => m.visible);
+    const obstacle = () => {
+      raycaster.set(turnFrom, turnDir);
+      raycaster.far = dist + SCENE_TURN.clearance;
+      const h = raycaster.intersectObjects(shown, false).find((i) => i.distance > 0.5);
+      raycaster.far = Infinity;
+      return h;
+    };
+    let hit = obstacle();
+    // Un volume haut juste derrière la scène (la tour du Guet) : la caméra monte au-dessus, à la même distance, plutôt
+    // que de s'approcher jusque dans lui ; au plus `SCENE_TURN.climbs` crans de `climb`.
+    // Le cap horizontal, unitaire, figé avant la montée : chaque cran repart de lui, sans cumuler les cosinus.
+    const horizontal = Math.hypot(turnDir.x, turnDir.z);
+    const hx = horizontal > 1e-6 ? turnDir.x / horizontal : 0;
+    const hz = horizontal > 1e-6 ? turnDir.z / horizontal : 0;
+    let elevation = Math.atan2(turnDir.y, horizontal);
+    for (let k = 0; k < SCENE_TURN.climbs && horizontal > 1e-6 && hit && hit.distance - SCENE_TURN.clearance < dist * SCENE_TURN.keep; k++) {
+      elevation = Math.min(SCENE_TURN.topElevation, elevation + SCENE_TURN.climb);
+      const c = Math.cos(elevation);
+      turnDir.set(hx * c, Math.sin(elevation), hz * c);
+      hit = obstacle();
+    }
+    let d = hit ? Math.max(SCENE_TURN.minDistance, Math.min(dist, hit.distance - SCENE_TURN.clearance)) : dist;
+    let rise = 0;
+    const place = () => {
+      pose.position = { x: t.x + turnDir.x * d, y: t.y + turnDir.y * d + rise, z: t.z + turnDir.z * d };
+      const floor = ground(pose.position.x, pose.position.z) + SCENE_TURN.clearance;
+      if (pose.position.y < floor) pose.position.y = floor;
+    };
+    place();
+    // Rien ne cache Kéo ni l'habitant (directeur artistique, relecture du lot commun) : tant que l'un d'eux est caché
+    // par un volume, la caméra s'approche et monte, au plus `SCENE_TURN.tries` fois.
+    const heads = [keo.position.clone().setY(keo.position.y + SCENE_TURN.keoHead), ...(scenette ? [toVector(scenetteHabitant(scenette, posed)).setY(scenetteHabitant(scenette, posed).y + SCENE_TURN.habitantHead)] : [])];
+    const blockers = [placesMesh, landmarkMesh, decorMesh].filter((m) => m.visible);
+    const hidden = () =>
+      heads.some((h) => {
+        turnFrom.set(pose.position.x, pose.position.y, pose.position.z);
+        turnSight.subVectors(h, turnFrom);
+        const far = turnSight.length() - SCENE_TURN.margin;
+        raycaster.set(turnFrom, turnSight.normalize());
+        raycaster.far = far;
+        const blocked = raycaster.intersectObjects(blockers, false).length > 0;
+        raycaster.far = Infinity;
+        return blocked;
+      });
+    for (let k = 0; k < SCENE_TURN.tries && hidden(); k++) {
+      d = Math.max(SCENE_TURN.minDistance, d * 0.85);
+      rise += SCENE_TURN.rise;
+      place();
+    }
   };
   const askQuestion = (q: QuestionRequest | null): LabelOnScreen[] => {
     if (!q) {
@@ -2473,6 +2606,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     if (host.clientWidth && host.clientHeight && (host.clientWidth !== viewW || host.clientHeight !== viewH)) resize();
     const { place, layout, item } = q;
+    // Une autre scénette, et chaque nouvel item, repartent de la pose prévue, à son cap de départ (de face, sauf aux
+    // Écluses, dans l'axe du canal ; référent dys, consultant UX UI : un élève qui a tourné par mégarde retrouve la scène
+    // qui aide à répondre sans refaire le geste).
+    const nextItem = `${q.mission}|${item.key ?? JSON.stringify(item.scene)}`;
+    const turnBack = scenette !== place || nextItem !== lastItem;
+    lastItem = nextItem;
+    lastQuestion = q;
     scenetteMission = q.mission;
     walk = null;
     // Une nouvelle question (« Rejouer ») : la lampe rend le maillage de la réaction, le décor de près reprend son état
@@ -2481,16 +2621,24 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (finaleShown && scenette === place && !item.answered) {
       finale = null;
       finaleShown = false;
-      setGeometry(decorMesh, scenetteDecor(place, false, posed));
+      setGeometry(decorMesh, scenetteDecor(place, false, posed, topped));
     }
     // La scénette : Kéo à côté de l'habitant ; la brume reste celle du monde (la caméra est près).
     const entering = scenette !== place;
     if (entering) copyPose(current, descent.from);
     const fromShift = { ...shift };
     enterScenette(place);
+    // Le cap de départ se lit une fois la scénette entrée (au Phare, son lieu dépend de ce qui est posé).
+    // En entrant, la descente part déjà vers le cap ; à un nouvel item de la même scène, la caméra y glisse en douceur
+    // (`sceneReturn`, à partir de l'image suivante), d'un coup avec « Réduire les animations ».
+    if (turnBack) {
+      const to = scenetteStartYaw(place, posed);
+      sceneYaw = startSceneReturn(sceneReturn, sceneYaw, to, performance.now() / 1000, entering || reduceMotion);
+    }
     fog.near = WORLD_FOG.near;
     fog.far = WORLD_FOG.far;
     const qp = scenettePose(place, layout.scenette.stage, viewW, viewH, posed);
+    turnScenePose(qp.pose);
     if (entering && !reduceMotion) {
       copyPose(qp.pose, descent.to);
       descent.fromShift = fromShift;
@@ -2506,16 +2654,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     applyPose(qp.pose);
     camera.updateMatrixWorld();
     const slotFeet = layout.slots.map((o) => o.foot);
-    const objectsKey = `${place}|${viewW}x${viewH}|${slotFeet.map((o) => `${o.x},${o.y}`).join(';')}`;
+    const objectsKey = `${place}|${viewW}x${viewH}|${sceneYaw.toFixed(4)}|${slotFeet.map((o) => `${o.x},${o.y}`).join(';')}`;
     const itemKey = `${JSON.stringify(item.scene)}|${item.right.join(',')}`;
     const spot = sceneSpot(place);
     // Dans une scénette, les cloches pendent devant la rambarde ; les caisses sont posées sur un ponton du bassin ; les
     // paniers et les leviers sur une margelle à terre, à la hauteur du plancher de la scène, relevée si le sol monte
     // devant elle (elle ne s'y enfonce jamais), sa jupe jusqu'au sol.
-    const hang = answersHang(place, posed) ? bellPlane(place) : null;
+    // Les cloches pendent dans un plan qui tourne avec la caméra autour de l'axe de la galerie : la poutre reste de face,
+    // horizontale, sous la rambarde, sur tout l'arc (directeur artistique, 19 octobre 2026).
+    const hang = answersHang(place, posed) ? bellPlane(place, sceneYaw) : null;
     const deck = scenetteDeck(place, posed);
     let deckY = deck.y;
-    const pointsAt = (y: number) => slotFeet.map((o) => (hang ? planeUnder(o.x, o.y, hang.z) : groundUnder(o.x, o.y, y)) ?? spot);
+    const pointsAt = (y: number) => slotFeet.map((o) => (hang ? planeUnder(o.x, o.y, hang.through, hang.normal) : groundUnder(o.x, o.y, y)) ?? spot);
     let points = pointsAt(deckY);
     let landBelow: number | undefined;
     if (deck.onLand && !hang) {
@@ -2554,15 +2704,22 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const merged = new FacetBuilder();
     merged.append(facets.still);
     merged.append(
-      answerObjects(place, points, scale, {
-        sort: sort ? { ...sort, moving } : undefined,
-        // Une cloche choisie se balance jusqu'à la réponse ; une caisse tentée reste penchée.
-        picked: hang && item.answered ? [] : item.picked,
-        // La bonne caisse est partie au crochet avec la réaction.
-        gone: answerLeaves(place) && item.answered ? item.right : [],
-        hanging: hang ? { hand: habitantHand(place, posed), rail: hang.rail } : undefined,
-        ground: landBelow,
-      }),
+      facingAnswerObjects(
+        place,
+        points,
+        scale,
+        {
+          sort: sort ? { ...sort, moving } : undefined,
+          // Une cloche choisie se balance jusqu'à la réponse ; une caisse tentée reste penchée.
+          picked: hang && item.answered ? [] : item.picked,
+          // La bonne caisse est partie au crochet avec la réaction.
+          gone: answerLeaves(place) && item.answered ? item.right : [],
+          hanging: hang ? { hand: habitantHand(place, posed), rail: hang.rail } : undefined,
+          ground: landBelow,
+        },
+        hang?.pivot ?? spot,
+        hang ? sceneYaw : 0,
+      ),
     );
     setGeometry(itemMesh, merged.build());
     itemShown = itemMesh.visible;
@@ -2995,6 +3152,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const observer = new ResizeObserver(resize);
   observer.observe(host);
 
+  /** Le retour au cap de départ à l'instant `t` (en secondes) : l'angle avance, la scène se refait à cette image. */
+  const advanceSceneReturn = (t: number) => {
+    if (!sceneReturn.active) return;
+    if (!asked || !scenette) {
+      sceneReturn.active = false;
+      return;
+    }
+    const y = stepSceneReturn(sceneReturn, t);
+    if (y === null) return;
+    sceneYaw = y;
+    sceneTurnPending = true;
+  };
   // La boucle d'image : la marche, la caméra qui suit, la marque (quelques petits objets par image : la place de Kéo, la marque).
   let frame = 0;
   let last = performance.now();
@@ -3014,6 +3183,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     last = now;
     const t = now / 1000;
     stepNefDrop(t);
+    advanceSceneReturn(t);
+    // La caméra tournée pendant une scénette : la scène se refait une fois par image au plus, et ses repères suivent.
+    if (sceneTurnPending) {
+      sceneTurnPending = false;
+      if (lastQuestion && asked && scenette) {
+        const labels = askQuestion(lastQuestion);
+        updateRings();
+        for (const l of sceneTurnListeners) l(labels);
+      }
+    }
     // Les ailes de la pompe à vent tournent lentement ; à l'arrêt avec « Réduire les animations ».
     if (!reduceMotion) vaneAngle.value = (t * VANE.turn) % (2 * Math.PI);
     // Le rotor de la Turbine tourne lentement, à l'arrêt pendant toute question et sur la Carte (il reprend où il s'était
@@ -3185,6 +3364,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     },
     keoAt: () => ({ x: here.x, z: here.z }),
     question: askQuestion,
+    onSceneTurn: (listener) => {
+      sceneTurnListeners.add(listener);
+      return () => void sceneTurnListeners.delete(listener);
+    },
     map: setMap,
     reframeMap: reframeStart,
     scenetteEnd,
@@ -3221,6 +3404,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     },
     dispose: () => {
       disposed = true;
+      sceneTurnListeners.clear();
       laying = null;
       pendingLay = null;
       cancelAnimationFrame(frame);

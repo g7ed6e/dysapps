@@ -11,12 +11,18 @@ import type { ItemScene } from './questions';
 import { COMMONS, ENGINE, FILETS_RACK, OBSERVATORY, SHIPYARD, SLIP_N, SLIP_U, SLIP_YAW, STEAM_GAP, VALVE_PUFFS, drumFace, engineSteam, filetsRack, hullEdge, hullPoint, slipPoint } from './places';
 import { MANGROVE, mangroveDeckTop } from './places';
 import { RUINS } from './places';
+import { BARQUE_FLOOR, LANTERN_GLASS, barque, barqueBow, barqueFloor } from './surroundingsKit';
 import { heightAt, standingHeight } from './terrain';
 
 const C = {
   deck: 0xa9784a,
-  /** Le dessus du quai, plus clair : les caisses s'y détachent. */
-  quay: 0xd2ab78,
+  /**
+   * Le dessus du quai, plus clair : les caisses s'y détachent ; sa tranche, du même bois (reprise des Quais : des planches
+   * claires sur leurs pieux, pas une dalle brune ; éclairci encore à la reprise des abords, référent dys : vus de côté ou
+   * de dos, Kéo et le docker s'y détachent).
+   */
+  quay: 0xf7e9cc,
+  quaySide: 0xb08658,
   crane: 0xd9a441,
   rope: 0x5a4632,
   deckSide: 0x8a6440,
@@ -38,6 +44,16 @@ const C = {
   shrimp: 0xe58f7a,
   stone: 0xb9b2a3,
   stoneDark: 0x8f897d,
+  /**
+   * Le dos et les bouts des parois des sas des Écluses : le bois sombre des portes d'écluse du canal
+   * (./eclusesSurroundings.ts), en planches de deux tons, ses traverses et sa margelle d'un bois plus clair.
+   */
+  gateWood: 0x6e5038,
+  gateWoodAlt: 0x7d5b3f,
+  gateWoodTop: 0x8a6848,
+  /** Les dalles chaudes du sol d'une scène (lot commun des scénettes), à la place de la pierre grise : scenette.ts. */
+  paving: 0xd6b98e,
+  pavingSide: 0xb0926a,
   water: 0x2f8fc8,
   waterTop: 0x5fb3e0,
   empty: 0xe4ddcf,
@@ -66,8 +82,6 @@ const C = {
   hull: 0x4f7fa3,
   hullTop: 0xa9784a,
   lamp: 0xffd36b,
-  /** La vitre éteinte de la lanterne de proue (le gris-bleu de la lanterne du Phare). */
-  glassOff: 0xbfd0d3,
   newRope: 0xc9a36a,
   /** La toile claire des ballots de l'Enclos, et son ombre (relecture de L4 : ils se détachent du ponton). */
   canvas: 0xeadfc6,
@@ -129,10 +143,11 @@ const C = {
   pitFloor: 0xa48b62,
   tentCanvas: 0xe8e0cc,
   cord: 0xe0d3b0,
-  // L'Observatoire (lot L8c, directeur artistique) : l'enduit rose pâle du tambour et son ombre, la vitre pâle et unie,
-  // les volets Bleu lagon ; la pierre des Passeurs, `passeurStone` (plus haut, la même valeur de base que places.ts).
-  plaster: 0xe3b9a3,
-  plasterShade: 0xc99a84,
+  // L'Observatoire (lot L8c, directeur artistique) : l'enduit du tambour et son ombre (les mêmes que places.ts, ramenés
+  // vers le Sable du pack), la vitre pâle et unie, les volets Bleu lagon ; la pierre des Passeurs, `passeurStone` (plus
+  // haut, la même valeur de base que places.ts).
+  plaster: 0xe0bf94,
+  plasterShade: 0xc4a074,
   bayGlass: 0xd9e6e8,
   shutter: 0x178078,
   // La Halle (lot L8d, directeur artistique) : le bronze des Passeurs (le bec de la borne), l'eau du filet et de l'auge,
@@ -696,7 +711,7 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
     for (let i = 1; i < points.length; i++)
       b.box({ x: (points[i - 1].x + points[i].x) / 2, y: y - 0.02, z }, [0.05 * s, 0.035, depth - 2 * rim], C.ochreJoint);
   } else if (kind === 'sac') saltRack(b, mid, y, z, span, s, look.ground ?? y);
-  else b.box({ x: mid, y: y - skirt, z }, [span, skirt, 0.8 * s], C.deckSide, C.deck);
+  else rowDeck(b, mid, y, z, span, 0.8 * s, skirt, look.ground);
   if (look.sort) {
     sortObjects(b, points, y, s, look.sort);
     return b.build();
@@ -723,6 +738,26 @@ export function answerObjects(place: PlaceId, points: readonly Vec3[], s: number
     }
   }
   return b.build();
+}
+
+/** Les pieux sous le ponton des réponses (lot commun des scénettes, directeur artistique) : au plus 2,5 d'écart. */
+const ROW_PILES = { gap: 2.5, side: 0.16, thick: 0.2 } as const;
+
+/**
+ * Le ponton sous la rangée des réponses, son dessus en `y` : une tranche d'au moins `ROW_PILES.thick` (aucune plaque
+ * mince), et, quand il ne descend pas jusqu'au sol (`ground`, rien sur l'eau), sa rangée de pieux devant, jusqu'au sol
+ * ou sous l'eau : rien ne flotte.
+ */
+function rowDeck(b: FacetBuilder, mid: number, y: number, z: number, span: number, depth: number, skirt: number, ground: number | undefined): void {
+  const t = Math.max(skirt, ROW_PILES.thick);
+  b.box({ x: mid, y: y - t, z }, [span, t, depth], C.deckSide, C.deck);
+  const foot = ground ?? UNDER_WATER;
+  if (y - t - foot < 0.05) return;
+  const n = Math.max(2, Math.ceil(span / ROW_PILES.gap) + 1);
+  for (let i = 0; i < n; i++) {
+    const x = mid - span / 2 + ROW_PILES.side / 2 + ((span - ROW_PILES.side) * i) / (n - 1);
+    b.box({ x, y: foot, z: z + depth / 2 - ROW_PILES.side / 2 }, [ROW_PILES.side, y - t - foot, ROW_PILES.side], C.post);
+  }
 }
 
 /**
@@ -850,6 +885,26 @@ function groundBells(b: FacetBuilder, points: readonly Vec3[], s: number, ground
   b.box({ x: left - 0.1 * s, y, z: z - 0.15 * s, yaw: 0.5 }, [0.45 * s, 0.3 * s, 0.4 * s], C.stoneDark, C.stone);
   b.box({ x: right + 0.05 * s, y, z: z + 0.2 * s, yaw: -0.4 }, [0.4 * s, 0.26 * s, 0.35 * s], C.stoneDark, C.stone);
   for (const p of points) bell(b, p, s, BRONZE);
+}
+
+/**
+ * Les objets des réponses face à une caméra tournée de `yaw` autour de l'axe vertical qui passe par `pivot` (l'axe de la
+ * galerie du Phare) : dessinés comme de face, puis tournés avec elle. La poutre des cloches reste ainsi horizontale à
+ * l'écran, sous la rambarde et sous les pieds de Kéo et de la gardienne, sur tout l'arc de la caméra ; ses potences
+ * restent sur la rambarde, ronde autour de l'axe. `points` : les pieds des objets dans le monde, dans le plan tourné ;
+ * `look.hanging.rail` : le point de la rambarde de face, que le tour emporte ; la main de l'habitant ne bouge pas.
+ */
+export function facingAnswerObjects(place: PlaceId, points: readonly Vec3[], s: number, look: AnswerLook, pivot: Vec3, yaw: number): Facets {
+  if (!yaw) return answerObjects(place, points, s, look);
+  const c = Math.cos(yaw), sn = Math.sin(yaw);
+  // L'inverse du tour de `placeFacets` : du monde au repère de face, centré sur le pivot.
+  const local = (p: Vec3): Vec3 => {
+    const dx = p.x - pivot.x, dz = p.z - pivot.z;
+    return { x: dx * c - dz * sn, y: p.y, z: dx * sn + dz * c };
+  };
+  const h = look.hanging;
+  const hanging = h && { hand: local(h.hand), rail: { x: h.rail.x - pivot.x, y: h.rail.y, z: h.rail.z - pivot.z } };
+  return placeFacets(answerObjects(place, points.map(local), s, { ...look, hanging }), { x: pivot.x, y: 0, z: pivot.z, yaw });
 }
 
 // ---------- La scène d'un item ----------
@@ -1008,15 +1063,19 @@ export function crateLayout(count: number): {
 const CRATE = 0.4;
 const CRATE_PITCH = 0.48;
 
-/** La place que prennent les caisses de `count` : largeur (x) et profondeur (z). */
-function crateBlock(count: number): { w: number; d: number } {
+/**
+ * La place que prennent les caisses de `count` : largeur (x) et profondeur (z), allées comprises ; `rows`, la profondeur
+ * des seules caisses, du bord de la première rangée à celui de la dernière (sans l'allée après la dernière palette).
+ */
+function crateBlock(count: number): { w: number; d: number; rows: number } {
   const { palettes, singles } = crateLayout(count);
   const pw = 5 * CRATE_PITCH + 0.3,
     pd = 2 * CRATE_PITCH + 0.3;
   const cols = Math.min(3, palettes);
   const w = cols * pw + (singles ? (palettes ? 0.2 : 0) + Math.min(5, singles) * CRATE_PITCH : 0);
   const d = Math.max(Math.ceil(palettes / 3) * pd, Math.ceil(singles / 5) * CRATE_PITCH);
-  return { w: Math.max(w, CRATE_PITCH), d: Math.max(d, CRATE_PITCH) };
+  const rows = Math.max(Math.ceil(palettes / 3) * pd - (palettes ? 0.3 : 0), Math.ceil(singles / 5) * CRATE_PITCH);
+  return { w: Math.max(w, CRATE_PITCH), d: Math.max(d, CRATE_PITCH), rows: Math.max(rows, CRATE_PITCH) };
 }
 
 /** Les caisses de `count`, rangées depuis (x0, z0) : les palettes en grille de trois de front, les caisses seules à droite. */
@@ -1070,7 +1129,8 @@ function boat(b: FacetBuilder, x: number, y: number, z: number, length = 2.4): v
  * elle (`stop`, devant le sas), puis passée, dans le champ (`beyond`) ; au sud du canal, la berge (`forecourt`, sa
  * profondeur, assez pour que son flanc sorte du cadre ; plus large que le canal de `bank` de chaque côté), bordée de
  * pierre (`kerb`), puis le chemin de halage (`towpath`) et l'herbe, sous la rangée des leviers (retour du directeur
- * artistique : la pierre en bordure seulement).
+ * artistique : la pierre en bordure seulement). Le canal court sur `reach` unités de chaque côté du sas, jusqu'à ses
+ * abords (./eclusesSurroundings.ts : il sort d'une voûte à l'ouest, descend vers la mer à l'est).
  */
 export const LOCK = {
   front: 0.8,
@@ -1085,10 +1145,36 @@ export const LOCK = {
   stop: 0.2,
   beyond: 3.4,
   forecourt: 11,
-  bank: 4,
+  bank: 1,
   kerb: 0.45,
   towpath: 1.1,
+  reach: 12,
 } as const;
+
+/**
+ * La paroi d'un sas des Écluses (sa face, au sud, porte l'item) et son dos fini, vu quand la caméra tourne : le dos et
+ * les bouts habillés du bois sombre des portes d'écluse du concept (directeur artistique, troisième passe du 18 octobre
+ * 2026 : de côté et de dos, un pilier de pierre au milieu du cadre), en planches debout de deux tons et deux traverses,
+ * et une margelle de bois sur le haut. La face reste de pierre autour de l'item.
+ */
+function lockWall(b: FacetBuilder, x: number, y: number, z: number, w: number, h: number): void {
+  b.box({ x, y, z }, [w, h, 0.6], C.stoneDark, C.stone);
+  // Les planches du dos, à plat sur lui ; ses deux bouts.
+  const back = z - 0.3 - 0.01;
+  const n = Math.max(3, Math.round(w / 0.55));
+  for (let i = 0; i < n; i++) {
+    const x0 = x - w / 2 + (w * i) / n,
+      x1 = x - w / 2 + (w * (i + 1)) / n;
+    b.quad([x1, y, back], [x0, y, back], [x0, y + h, back], [x1, y + h, back], i % 2 ? C.gateWood : C.gateWoodAlt);
+  }
+  for (const side of [-1, 1]) {
+    const ex = x + side * (w / 2 + 0.01);
+    const [z0, z1] = side > 0 ? [z + 0.3, z - 0.3] : [z - 0.3, z + 0.3];
+    b.quad([ex, y, z0], [ex, y, z1], [ex, y + h, z1], [ex, y + h, z0], C.gateWood);
+  }
+  for (const k of [0.22, 0.68]) b.box({ x, y: y + k * h, z: back - 0.04 }, [w - 0.1, 0.18, 0.08], C.gateWood, C.gateWoodTop);
+  b.box({ x, y: y + h, z: z - 0.04 }, [w + 0.12, 0.12, 0.74], C.gateWood, C.gateWoodTop);
+}
 
 /** La barque des Écluses, sa coque vers l'est, au repère de la réaction (la vue la déplace). */
 export function lockBoat(): Facets {
@@ -1154,49 +1240,6 @@ export function fullBasket(b: FacetBuilder, at: Vec3, s = 1): void {
   b.append(placed(f.build(), 0.75 * s, { x: at.x, y: at.y + h - 0.12 * s, z: at.z }));
 }
 
-/**
- * La barque amarrée des Quais (lot 3, réserve du directeur artistique : reconnaissable) : une coque ouverte, son fond
- * de bois, ses bordés bleus au plat-bord clair, la proue en pointe à l'est, et deux bancs en travers. `at` : le milieu de
- * son fond, à la surface de l'eau.
- */
-function barque(b: FacetBuilder, at: Vec3, length: number, width: number): void {
-  const wall = 0.22, h = 0.75, y = at.y - 0.3;
-  b.box({ x: at.x, y, z: at.z }, [length, 0.2, width], C.hull, C.hullTop);
-  for (const side of [-1, 1]) b.box({ x: at.x, y, z: at.z + side * (width / 2 - wall / 2) }, [length, h, wall], C.hull, C.newWood);
-  b.box({ x: at.x - length / 2 + wall / 2, y, z: at.z }, [wall, h, width], C.hull, C.newWood);
-  // La proue (directeur artistique) : courte, à la largeur de la coque, ses deux bordés qui se rejoignent en pointe sur
-  // un fond en losange bas (creuse, comme le reste de la barque) ; l'étrave monte de la pointe, penchée vers l'avant, et
-  // porte la lanterne.
-  const bow = boatBow(at, length, width);
-  const end = at.x + length / 2;
-  const bowLen = bow.tip.x - end;
-  b.prism({ x: end, y, z: at.z }, width / 2, width / 2, 0.2, 4, C.hull, C.hullTop);
-  const side = Math.hypot(bowLen, width / 2);
-  const angle = Math.atan2(width / 2, bowLen);
-  for (const k of [-1, 1])
-    b.box({ x: end + bowLen / 2, y, z: at.z + (k * width) / 4, yaw: k * angle }, [side + wall / 2, h, wall], C.hull, C.newWood);
-  b.beam({ x: bow.tip.x - 0.08, y, z: at.z }, bow.stemTop, 0.2, C.hull);
-  // La lanterne de proue : son socle et son toit sombres, sa vitre éteinte entre les deux.
-  b.box({ x: bow.lantern.x, y: bow.lantern.y - 0.06, z: at.z }, [0.26, 0.06, 0.26], C.stoneDark);
-  b.box({ x: bow.lantern.x, y: bow.lantern.y, z: at.z }, [LANTERN_GLASS, LANTERN_GLASS, LANTERN_GLASS], C.glassOff);
-  b.box({ x: bow.lantern.x, y: bow.lantern.y + LANTERN_GLASS, z: at.z }, [0.3, 0.07, 0.3], C.stoneDark);
-  // Deux bancs en travers, à la poupe et à la proue, hors de la place des caisses.
-  for (const dx of [-length / 2 + 0.6, length / 2 - 0.6]) b.box({ x: at.x + dx, y: y + 0.42, z: at.z }, [0.34, 0.1, width - 2 * wall], C.newWood);
-}
-
-/** La longueur de la proue, en part de la largeur de la coque : une pointe courte. */
-const BOW_SHARE = 0.5;
-/** Le côté de la vitre de la lanterne de proue. */
-const LANTERN_GLASS = 0.2;
-
-/** La pointe de la proue, le haut de l'étrave et le bas de la vitre de sa lanterne, pour une barque. */
-function boatBow(at: Vec3, length: number, width: number): { tip: Vec3; stemTop: Vec3; lantern: Vec3 } {
-  const y = at.y - 0.3;
-  const tip = { x: at.x + length / 2 + BOW_SHARE * width, y, z: at.z };
-  const stemTop = { x: tip.x + 0.3, y: y + 1.35, z: at.z };
-  return { tip, stemTop, lantern: { x: stemTop.x, y: stemTop.y + 0.06, z: at.z } };
-}
-
 /** Le crochet de levage, au bout de la corde : une tige et un anneau ouvert (huit pavés). */
 export function liftingHook(b: FacetBuilder, top: Vec3, color: number, r = 0.16): void {
   b.box({ x: top.x, y: top.y - 0.3, z: top.z }, [0.07, 0.3, 0.07], color);
@@ -1238,7 +1281,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
   // Une plate-forme sous la scène : elle ne flotte jamais ; de bois aux Filets, de pierre aux Écluses (le sas).
   const depth = sceneDepth(place);
   const platform = (w: number, d: number, stone = false) =>
-    b.box({ x: o.x, y: o.y - depth, z: o.z }, [w, depth, d], stone ? C.stoneDark : C.deckSide, stone ? C.stone : C.deck);
+    b.box({ x: o.x, y: o.y - depth, z: o.z }, [w, depth, d], stone ? C.pavingSide : C.deckSide, stone ? C.paving : C.deck);
   // La barque des Écluses passe dans le canal, devant le sas, et s'arrête devant la porte fermée.
   const lockReaction = (): Reaction => {
     const r = new FacetBuilder();
@@ -1282,7 +1325,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
       band = h / d,
       zf = o.z + 0.35;
     // La paroi du sas, de face : les bandes égales (des traits, sans chiffres), l'eau dans les `n` du bas.
-    b.box({ x: o.x, y: o.y, z: o.z }, [w + 0.5, h + 0.3, 0.6], C.stoneDark, C.stone);
+    lockWall(b, o.x, o.y, o.z, w + 0.5, h + 0.3);
     for (let k = 0; k < d; k++) b.box({ x: o.x, y: o.y + 0.15 + k * band + 0.03, z: zf }, [w, band - 0.06, 0.05], k < n ? C.water : C.empty);
     // Le trait du niveau de l'eau, large et clair : le niveau se lit sans la couleur.
     b.box({ x: o.x, y: o.y + 0.15 + n * band - 0.06, z: zf + 0.04 }, [w + 0.8, 0.12, 0.06], C.level);
@@ -1298,7 +1341,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
       const d = Math.max(1, d0),
         n = Math.max(0, Math.min(d, n0)),
         band = PAIR.h / d;
-      b.box({ x: cx, y: o.y, z: o.z }, [PAIR.w + 0.3, PAIR.h + 0.3, 0.6], C.stoneDark, C.stone);
+      lockWall(b, cx, o.y, o.z, PAIR.w + 0.3, PAIR.h + 0.3);
       for (let k = 0; k < d; k++) b.box({ x: cx, y: o.y + 0.15 + k * band + 0.03, z: zf }, [PAIR.w, band - 0.06, 0.05], k < n ? C.water : C.empty);
       b.box({ x: cx, y: o.y + 0.15 + n * band - 0.05, z: zf + 0.04 }, [PAIR.w + 0.1, 0.1, 0.06], C.level);
       labels.push({ text: `${n0}/${d0}`, at: { x: cx, y: o.y - 0.25, z: zf }, center: true });
@@ -1308,7 +1351,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
     // Le sas au repos (lot L2) : sa paroi de pierre, sa vanne de bois fermée, sa tige et son volant ; rien de l'item.
     platform(4.6, 1.6, true);
     const zf = o.z + 0.35;
-    b.box({ x: o.x, y: o.y, z: o.z }, [3.5, 3.5, 0.6], C.stoneDark, C.stone);
+    lockWall(b, o.x, o.y, o.z, 3.5, 3.5);
     b.box({ x: o.x, y: o.y + 0.15, z: zf }, [1.5, 1.7, 0.08], C.lever, C.deck);
     for (const dx of [-0.5, 0, 0.5]) b.box({ x: o.x + dx, y: o.y + 0.15, z: zf + 0.05 }, [0.06, 1.7, 0.03], C.deckSide);
     // La tige de la vanne, et son volant de manœuvre : une roue de fer à huit pans, face à la caméra, sur son moyeu.
@@ -1330,7 +1373,7 @@ export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, r
       zf = o.z + 0.35,
       px = o.x + 0.9;
     // Le bassin et son eau, jusqu'au cran `n`.
-    b.box({ x: o.x - 0.6, y: o.y, z: o.z }, [2.2, 2 * unit + 0.4, 0.6], C.stoneDark, C.stone);
+    lockWall(b, o.x - 0.6, o.y, o.z, 2.2, 2 * unit + 0.4);
     b.box({ x: o.x - 0.6, y: o.y + 0.1, z: zf }, [2, (n / d) * unit, 0.05], C.water);
     // Le poteau gradué, de 0 à 2 : un cran par part, un grand cran aux unités (leurs nombres sont des panneaux).
     b.box({ x: px, y: o.y, z: zf }, [0.22, 2 * unit + 0.3, 0.12], C.white);
@@ -1662,6 +1705,10 @@ function jauge(b: FacetBuilder, labels: SceneLabel[], scene: Extract<ItemScene, 
   const level = y0 + (n / d) * J.height;
   // La cuve : son fond d'argile, ses deux montants de bois ; le vide clair au-dessus de l'eau.
   b.box({ x: o.x - 0.25, y: o.y - 0.2, z }, [J.tank + 0.5, J.height + 0.6, 0.35], C.clay, C.clayTop);
+  // De dos (caméra libre), la cuve n'est pas une dalle nue : deux montants de bois à ses bords et deux cerclages.
+  const back = z - 0.2;
+  for (const side of [-1, 1]) b.box({ x: o.x - 0.25 + side * (J.tank / 2 + 0.17), y: o.y - 0.2, z: back }, [0.16, J.height + 0.6, 0.1], C.post);
+  for (const h of [0.35, 0.7]) b.box({ x: o.x - 0.25, y: o.y - 0.2 + h * (J.height + 0.6), z: back }, [J.tank + 0.36, 0.13, 0.08], C.post);
   b.box({ x: o.x - 0.25, y: y0, z: zf - 0.02 }, [J.tank, J.height, 0.04], C.empty);
   b.box({ x: o.x - 0.25, y: y0, z: zf }, [J.tank, level - y0, 0.05], C.pan);
   // Le poteau gradué, blanc, de l'entier du bas à celui du haut.
@@ -1710,7 +1757,7 @@ function quai(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'quai' }>, answ
   const edge = o.z + QUAY.depth / 2;
   const qd = Math.max(QUAY.depth, front.d + gap + back.d + 0.5 + QUAY.strip);
   const qw = Math.max(QUAY.width, Math.max(front.w, back.w) + 4);
-  b.box({ x: o.x, y: o.y - PLATFORM_DEPTH, z: edge - qd / 2 }, [qw, PLATFORM_DEPTH, qd], C.deckSide, C.quay);
+  b.box({ x: o.x, y: o.y - PLATFORM_DEPTH, z: edge - qd / 2 }, [qw, PLATFORM_DEPTH, qd], C.quaySide, C.quay);
   // Les blocs de caisses, au milieu du quai, un peu à gauche (le docker et la grue sont à droite).
   const x0 = o.x - 0.4 - Math.max(front.w, back.w) / 2 + CRATE_PITCH / 2;
   const zFront = edge - QUAY.strip - front.d + CRATE_PITCH / 2;
@@ -1718,6 +1765,7 @@ function quai(b: FacetBuilder, scene: Extract<ItemScene, { kind: 'quai' }>, answ
   // La barque dans le bassin, contre le bord de pierre.
   const boat = quayBoat(scene, o);
   barque(b, boat.at, boat.length, boat.width);
+  barqueFloor(b, boat.at, boat.length, boat.width);
   const onBoat = boat.cargo;
   // La grue au bout est du quai : son pied, son mât, sa flèche vers l'ouest au-dessus du quai, la corde et le crochet.
   // Tant que le haut des Quais (leur grue) n'est pas posé (`posed`), son pied de pierre seul : la grue attend.
@@ -1764,9 +1812,11 @@ export function quayBoat(scene: Extract<ItemScene, { kind: 'quai' }>, o: Vec3 = 
     at,
     length,
     width,
-    cargo: { x: at.x - cargo.w / 2 - 0.5 + CRATE_PITCH / 2, y: at.y - 0.11, z: at.z - cargo.d / 2 + CRATE_PITCH / 2 },
-    hold: { x: at.x + length / 2 - 1.25, y: at.y - 0.1, z: at.z },
-    lantern: boatBow(at, length, width).lantern,
+    // Les caisses posées sur le plancher, au milieu de la coque en travers (les palettes n'ont pas d'allée entre elles et
+    // le bordé : directeur artistique, reprise des abords, elles ne le chevauchent plus).
+    cargo: { x: at.x - cargo.w / 2 - 0.5 + CRATE_PITCH / 2, y: at.y + BARQUE_FLOOR, z: at.z - cargo.rows / 2 + CRATE_PITCH / 2 },
+    hold: { x: at.x + length / 2 - 1.25, y: at.y + BARQUE_FLOOR, z: at.z },
+    lantern: barqueBow(at, length, width).lantern,
   };
 }
 

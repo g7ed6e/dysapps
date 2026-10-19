@@ -13,7 +13,7 @@ import { BEACON_MASTS, COLORS_6E, FERRY_ISLET, LARGE, NEF_CHANNEL, PATH_NODES, h
 import { networkSamples } from './paths';
 import { answerObjects, itemScene, placeTrace } from './questionScene';
 import { COLUMN, REST_MARK, placeItems, type QuestionItem } from './questions';
-import { scenetteDecor, scenetteHidesPlace, scenetteLayout, scenettePose } from './scenette';
+import { scenetteCore, scenetteHidesPlace, scenetteLayout, scenettePose } from './scenette';
 import { screenOf } from './camera';
 import { questionLayout } from './questionScene';
 import { shallowness } from './sea';
@@ -23,8 +23,14 @@ const field = buildHeightField();
 const ground = (x: number, z: number) => heightOnMesh(field, x, z);
 const missions = (id: PlaceId) => placeById(id).scenes.concat(placeById(id).panels ?? []);
 
-/** Tout ce que le lieu dessine dans le monde : sa ruine, ce qui y est tombé, le lieu entier, ses traces, sa scénette. */
-const everything = (id: PlaceId): Facets[] => [ruinFacets(id, ground), fallenFacets(id, [], ground), constructionFacets(id, [WHOLE], ground), placeTrace(id, missions(id)), scenetteDecor(id)];
+/**
+ * Ce que le lieu dessine dans le monde et qui y demeure quand on navigue : sa ruine, ce qui y est tombé, le lieu entier,
+ * ses traces, le décor de près de sa scénette (son sol, son habitant). Sans les abords de la scénette (./surroundings.ts),
+ * faits à l'arrivée dans la scénette et libérés au départ, quand la Nef reste sur son ber de l'Escale : aux Balises, ils
+ * montrent de face le ponton du baliseur, ses bouées, les îlots et le voilier sur l'eau du chenal (concept du 18 octobre
+ * 2026). Le chenal reste libre de tout ce qui demeure.
+ */
+const lasting = (id: PlaceId): Facets[] => [ruinFacets(id, ground), fallenFacets(id, [], ground), constructionFacets(id, [WHOLE], ground), placeTrace(id, missions(id)), scenetteCore(id)];
 
 /** Les sommets de ces facettes, en coordonnées du plan (x, y du plan). */
 const planPoints = (list: readonly Facets[]): [number, number][] => {
@@ -63,7 +69,7 @@ describe('Le large (lot L9)', () => {
 
   it('le chenal de la Nef reste libre : rien des deux lieux, aucun nœud ni ruban du large entre y 565 et 660', () => {
     for (const id of LARGE) {
-      const inside = planPoints(everything(id)).filter(inChannel);
+      const inside = planPoints(lasting(id)).filter(inChannel);
       expect(inside.slice(0, 3), id).toEqual([]);
     }
     for (const n of PATH_NODES.filter((n) => n.id.startsWith('lar-'))) expect(inChannel(toPlan(n.at)), n.id).toBe(false);
@@ -74,7 +80,7 @@ describe('Le large (lot L9)', () => {
   it('les mâts des Balises, roches comprises, restent au sud du chenal (y du plan ≥ 668)', () => {
     for (const m of BEACON_MASTS) expect(toPlan(m)[1] - (MAST.rock * 2.8)).toBeGreaterThanOrEqual(668);
     // À l'ouest de la station (là où sont les mâts), aucun sommet du lieu au nord de 668.
-    const west = planPoints(everything('beacons')).filter(([x]) => x < 410);
+    const west = planPoints(lasting('beacons')).filter(([x]) => x < 410);
     expect(west.length).toBeGreaterThan(0);
     expect(Math.min(...west.map(([, y]) => y))).toBeGreaterThanOrEqual(668);
     // La cale et son ponton s'arrêtent au bord du chenal.

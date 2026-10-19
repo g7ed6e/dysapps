@@ -31,6 +31,10 @@ const C = {
   sand: 0xdaa66a,
   mist: 0xe5ebe3,
   paving: 0xcdbf9f,
+  // Le replat de sable de la scène (le sable des chemins, plan6e.ts) et ses talus dorés, en deux tons.
+  terrace: 0xf0e2b6,
+  terraceSlope: 0xe6d5ad,
+  terraceSide: 0xd8c59c,
   pavingSide: 0x9f927a,
   wall: 0xa8987a,
   wallTop: 0xbfae8c,
@@ -325,8 +329,52 @@ export function lookoutRampWall(b: FacetBuilder): void {
   }
 }
 
-/** Le dallage de la scène : sa demi-largeur et sa profondeur. */
-const SCENE_FLOOR = { half: 5, depth: 2.8 } as const;
+/**
+ * Le sol de la scène : sa demi-largeur et sa profondeur ; l'évasement de ses talus, plus court au nord (le pied de la
+ * tour, et la place des aménagements du guetteur, à l'est derrière lui : amenagements.ts).
+ */
+const SCENE_FLOOR = { half: 5, depth: 2.8, skirt: 1.2, skirtNorth: 0.3 } as const;
+
+/**
+ * Les talus du sol de la scène (directeur artistique, évaluation du 18 octobre 2026 : « seule sur une dalle beige ») : du
+ * bord du dessus, ils descendent jusqu'au terrain, `skirt` plus loin, en pans de sable doré ; le sol se lit comme le
+ * replat de sable où le sentier arrive au pied de la tour, plus comme une dalle posée sur l'herbe.
+ */
+function terraceSkirt(b: FacetBuilder, floor: Vec3): void {
+  const F = SCENE_FLOOR;
+  const [hx, hz] = [F.half, F.depth / 2];
+  // Le tour du dessus, d'ouest en est par le nord, un point tous les 2,5 au plus le long des bords ; chaque point a sa
+  // direction vers le dehors (les coins, en biais).
+  type Rim = [number, number, number, number];
+  const d = Math.SQRT1_2;
+  const corners: Rim[] = [
+    [-hx, -hz, -d, -d],
+    [hx, -hz, d, -d],
+    [hx, hz, d, d],
+    [-hx, hz, -d, d],
+  ];
+  const pts: Rim[] = [];
+  for (let c = 0; c < 4; c++) {
+    const [x0, z0] = corners[c],
+      [x1, z1] = corners[(c + 1) % 4];
+    pts.push(corners[c]);
+    const n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, z1 - z0) / 2.5));
+    // La normale du bord : la direction des deux coins, moyennée et ramenée sur l'axe.
+    const [nx, nz] = [Math.sign(corners[c][2] + corners[(c + 1) % 4][2]), Math.sign(corners[c][3] + corners[(c + 1) % 4][3])];
+    for (let k = 1; k < n; k++) pts.push([x0 + ((x1 - x0) * k) / n, z0 + ((z1 - z0) * k) / n, nx, nz]);
+  }
+  const top = (p: Rim): [number, number, number] => [floor.x + p[0], floor.y - 0.02, floor.z + p[1]];
+  const out = (p: Rim): [number, number, number] => {
+    const x = floor.x + p[0] + p[2] * F.skirt,
+      z = floor.z + p[1] + p[3] * (p[3] < 0 ? F.skirtNorth : F.skirt);
+    return [x, standingHeight(heightAt({ x, z })) - 0.12, z];
+  };
+  for (let k = 0; k < pts.length; k++) {
+    const p = pts[k],
+      q = pts[(k + 1) % pts.length];
+    b.quad(top(q), out(q), out(p), top(p), k % 2 ? C.terraceSide : C.terraceSlope);
+  }
+}
 
 /**
  * Le sol de la scène et le guetteur, immobile : son pantalon brun sous le caban Nuit océan (le bas du corps sombre),
@@ -339,8 +387,8 @@ function decor(b: FacetBuilder, floor: Vec3, at: Vec3, sphere: Sphere, body = tr
   for (let x = -F.half; x <= F.half + 1e-6; x += F.half / 2)
     for (let z = -F.depth / 2; z <= F.depth / 2 + 1e-6; z += F.depth / 2) low = Math.min(low, standingHeight(heightAt({ x: floor.x + x, z: floor.z + z })));
   const depth = floor.y - low + 0.3;
-  b.box({ x: floor.x, y: floor.y - depth, z: floor.z }, [2 * F.half, depth, F.depth], C.pavingSide, C.paving);
-  for (const dx of [-F.half / 2, F.half / 2]) b.box({ x: floor.x + dx, y: floor.y, z: floor.z }, [0.05, 0.01, F.depth], C.pavingSide);
+  b.box({ x: floor.x, y: floor.y - depth, z: floor.z }, [2 * F.half, depth, F.depth], C.terraceSide, C.terrace);
+  terraceSkirt(b, floor);
   // Son modèle porte sa longue-vue sur l'épaule : celle du pion part avec lui.
   if (!body) return;
   b.prism(at, 0.27, 0.26, 0.46, 10, C.trousers);

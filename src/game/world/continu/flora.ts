@@ -8,7 +8,7 @@
 import { keptClearForDetour } from './detours';
 import { FacetBuilder, boundsOf, type Facets, type Placement } from './facets';
 import { distance, distanceToPolyline, hash2, type Vec2 } from './geometry';
-import { LOOKOUT_RAMP, PATH_EDGES, PATH_NODES, PLACES, PORT, TERRAIN } from './plan6e';
+import { LOOKOUT_RAMP, PATH_EDGES, PATH_NODES, PLACES, PORT, SALT_FLAT, TERRAIN } from './plan6e';
 import { modelOfPlace } from './places';
 import { SHADOW_DIR } from './sky';
 import { drawTile, groundTone, heightOnFar, tileFacets, heightOnMesh, hillsAt, landDistance, straitClearance, tileRect, type HeightField, type TileDetail } from './terrain';
@@ -55,9 +55,10 @@ export const FLORA_COLORS = {
  * et les ponts restent dégagés) ; de même, de gros blocs gris sur la côte (reprise du lot 3, directeur artistique), à
  * moins de `coast` unités de l'eau et plus de `coastPath` d'un chemin. Autour d'un lieu (reprise du lot 3, directeur
  * artistique), un bosquet le cadre, de `placeGap` à `placeBand` unités de son emprise, jamais au sud de son centre (entre
- * la caméra et Kéo) ; le long des chemins, quelques plantes et rochers de premier plan, jusqu'à `edge` unités.
+ * la caméra et Kéo) ; le long des chemins, quelques plantes et rochers de premier plan, jusqu'à `edge` unités. Aucun pin
+ * à moins de `salt` unités du centre des Marais salants.
  */
-export const FLORA_KEEP = { path: 1.6, pathTall: 3, placeGap: 4, placeBand: 8, strait: 5, camera: 7.5, bank: 0.6, bankPath: 6, coast: 2.6, coastPath: 4, edge: 5.5 } as const;
+export const FLORA_KEEP = { path: 1.6, pathTall: 3, placeGap: 4, placeBand: 8, strait: 5, camera: 7.5, bank: 0.6, bankPath: 6, coast: 2.6, coastPath: 4, edge: 5.5, salt: 40 } as const;
 
 /** Le rayon de l'emprise d'un lieu (de son centre au plus loin de son modèle, en x et en z), entre 2 et 10 unités. */
 const PLACE_RADIUS_MAX = 10;
@@ -218,6 +219,10 @@ function pick(field: HeightField, p: Vec2, roll: number, look: number): FloraIte
     scale = 0.6 + 0.6 * look;
   }
   if (!kind) return null;
+  // Pas de sapin aux Marais salants (consultant Archipéo, reprise de la scénette du 18 octobre 2026) : autour de la grève,
+  // jusqu'au bord du cadre de la scénette, quelle que soit la façon dont la caméra tourne, rien que des buissons et des
+  // rochers.
+  if (kind === 'pin' && distance(p, SALT_FLAT.center) < FLORA_KEEP.salt) return null;
   const tall = kind === 'pin' || kind === 'palmier';
   if (tall && (path < FLORA_KEEP.pathTall || inFrontOfCamera(p))) return null;
   // De loin, ni buisson ni petit rocher : ils mouchetaient la Carte.
@@ -240,7 +245,7 @@ function inFrontOfCamera(p: Vec2): boolean {
 }
 
 /** Une ombre peinte : un disque à `sides` côtés posé sur le sol, plus sombre que lui, du côté opposé au soleil. */
-export const SHADOW = { lift: 0.05, darken: [0.66, 0.74, 0.84], sides: 7 } as const;
+export const SHADOW = { lift: 0.05, darken: [0.66, 0.74, 0.84], sides: 7, stretch: 1.6 } as const;
 
 /** La couleur d'une ombre sur un sol de couleur `ground` (sRGB) : plus sombre et plus froide, jamais noire. */
 export function shadowColor(ground: number): number {
@@ -258,12 +263,19 @@ export function shadowColor(ground: number): number {
 function shadow(b: FacetBuilder | null, ground: (x: number, z: number) => number, x: number, z: number, radius: number, shift: number): number {
   const n = SHADOW.sides;
   if (!b) return n;
-  const cx = x + SHADOW_DIR.x * shift;
-  const cz = z + SHADOW_DIR.z * shift;
+  // Le soleil rasant (lot commun des scénettes) : l'ombre s'allonge à l'opposé du soleil (`stretch` fois sa largeur),
+  // son bord du côté du soleil restant au pied ; le même nombre de triangles.
+  const long = radius * SHADOW.stretch;
+  const cx = x + SHADOW_DIR.x * (shift + long - radius);
+  const cz = z + SHADOW_DIR.z * (shift + long - radius);
   const color = shadowColor(groundTone(cx, cz, ground(cx, cz)));
   const at = (px: number, pz: number): [number, number, number] => [px, ground(px, pz) + SHADOW.lift, pz];
   const c = at(cx, cz);
-  const rim = Array.from({ length: n }, (_, k) => at(cx + radius * Math.cos((2 * Math.PI * k) / n), cz + radius * Math.sin((2 * Math.PI * k) / n)));
+  const rim = Array.from({ length: n }, (_, k) => {
+    const u = long * Math.cos((2 * Math.PI * k) / n);
+    const v = radius * Math.sin((2 * Math.PI * k) / n);
+    return at(cx + u * SHADOW_DIR.x - v * SHADOW_DIR.z, cz + u * SHADOW_DIR.z + v * SHADOW_DIR.x);
+  });
   // Vu d'en haut, dans le sens inverse des aiguilles d'une montre (le côté éclairé de la facette, tourné vers le ciel).
   for (let k = 0; k < n; k++) b.triangle(c, rim[(k + 1) % n], rim[k], color);
   return n;

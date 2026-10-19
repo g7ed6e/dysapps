@@ -603,16 +603,18 @@ type P3 = [number, number, number];
 
 /**
  * La grève des Marais salants (relecture du lot L5, directeur artistique) : de la vase claire sous les bassins et autour,
- * jusqu'à `inner` unités du centre de la grève plate, puis fondue vers l'herbe sur `fade` unités, en trois aplats
- * concentriques (la vase, une herbe rase sur le sable, l'herbe ; plus aucun hasard depuis le lot 3 de GD-20, point 3).
+ * jusqu'à `inner` unités du centre de la grève plate, puis fondue vers l'herbe sur `fade` unités, en aplats concentriques
+ * (`bands` : jusqu'où va chacun, en part du fondu ; plus aucun hasard depuis le lot 3 de GD-20, point 3). Depuis la
+ * reprise de la scénette (directeur artistique, 18 octobre 2026 : « l'herbe verte en recul, de la grève et des dunes
+ * jusqu'au bord du cadre »), la vase, puis le sable des dunes (#E2CD9E), puis une herbe rase, l'herbe à 24 unités.
  */
-const GREVE = { inner: 8, fade: 4, mud: 0xc8c2aa, sparse: 0xa9b979 } as const;
+const GREVE = { inner: 8, fade: 16, bands: [[0.25, 0xc8c2aa], [0.75, 0xe2cd9e], [1, 0xa9b979]] } as const;
 
 /**
  * La grève du Chantier naval (lot L6b, directeur artistique) : le sable tassé du chantier (#DAA66A, plus brun que le sable
  * chaud des plages), sous la cale, la coque et l'atelier, puis fondu vers l'herbe de même.
  */
-const SHIPYARD_GREVE = { inner: 6.5, fade: 3.5, mud: 0xdaa66a, sparse: 0xb3ad68 } as const;
+const SHIPYARD_GREVE = { inner: 6.5, fade: 3.5, bands: [[0.33, 0xdaa66a], [0.66, 0xb3ad68]] } as const;
 
 /** Les grèves colorées : leur centre, et leurs couleurs. */
 const GREVE_COLORS = [
@@ -670,7 +672,7 @@ function flatColor(x: number, z: number, h: number): number {
   if (d < TONE.sand && h < 1.2) return GROUND_TONES.sand;
   for (const g of GREVE_COLORS) {
     const u = (distance({ x, z }, g.center) - g.inner) / g.fade;
-    if (u < 1) return u < 0.33 ? g.mud : u < 0.66 ? g.sparse : GROUND_TONES.low;
+    if (u < 1) return g.bands.find(([until]) => u < until)?.[1] ?? GROUND_TONES.low;
   }
   if (signedDistance({ x, z }, CLIFF) > 0.6) return GROUND_TONES.high;
   return h < TONE.midFrom ? GROUND_TONES.low : h < TONE.highFrom ? GROUND_TONES.mid : GROUND_TONES.high;
@@ -697,7 +699,23 @@ function facetColor(a: P3, b: P3, c: P3): number {
     if (sunny !== null) return sunny ? GROUND_TONES.sunny : GROUND_TONES.hillShade;
   }
   if (up >= TONE.slope || (flat !== GROUND_TONES.low && flat !== GROUND_TONES.mid && flat !== GROUND_TONES.high)) return flat;
-  return sunSide(nx, ny, nz, len) ? GROUND_TONES.mid : GROUND_TONES.slope;
+  // La pente lissée autour de la facette (lot commun des scénettes, directeur artistique : « plus de moucheture ») : sur
+  // une petite bosse, ses triangles voisins regardaient tantôt le soleil, tantôt l'ombre, une teinte chacun au hasard de
+  // leur sens ; ils prennent maintenant tous l'aplat du plan autour d'eux, et seules les vraies pentes passent au Vert île.
+  const smooth = smoothNormal(x, z);
+  if (smooth.up >= TONE.slope) return flat;
+  return sunSide(smooth.nx, smooth.up, smooth.nz, 1) ? GROUND_TONES.mid : GROUND_TONES.slope;
+}
+
+/** Le pas de la pente lissée, en unités : plus large qu'une case du sol de près, pour qu'une bosse n'y compte pas. */
+const SMOOTH_STEP = 2.5;
+
+/** La normale du sol lissée en (x, z) : sa pente sur `SMOOTH_STEP` unités de part et d'autre, rendue unitaire. */
+function smoothNormal(x: number, z: number): { nx: number; up: number; nz: number } {
+  const gx = (heightAt({ x: x + SMOOTH_STEP, z }) - heightAt({ x: x - SMOOTH_STEP, z })) / (2 * SMOOTH_STEP);
+  const gz = (heightAt({ x, z: z + SMOOTH_STEP }) - heightAt({ x, z: z - SMOOTH_STEP })) / (2 * SMOOTH_STEP);
+  const len = Math.hypot(gx, 1, gz);
+  return { nx: -gx / len, up: 1 / len, nz: -gz / len };
 }
 
 /** Une facette de normale (`nx`, `ny`, `nz`) regarde-t-elle le soleil ? La normale tournée vers le haut (le sens des triangles varie). */

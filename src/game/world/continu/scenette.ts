@@ -13,7 +13,7 @@
 // l'étape qui porte sa trace n'est pas posée (`posed`), avec ce qui est là (au Phare, au pied de la tour, la cloche
 // tombée sur le socle). Rien à lire n'est peint dans la 3D. Le décor de près est fait à l'arrivée et
 // libéré au départ par la vue. Code pur : la vue dessine.
-import { CAMERA_FOV, screenOf, type CameraPose } from './camera';
+import { CAMERA_FOV, screenOf, wrapAngle, type CameraPose } from './camera';
 import { FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { placeArt } from './northShore';
@@ -56,6 +56,8 @@ import {
 } from './questionScene';
 import type { ItemScene } from './questions';
 import { heightAt, standingHeight } from './terrain';
+import { SHADOW_DIR } from './sky';
+import { SURROUNDINGS } from './surroundings';
 import { HABITANT_HEIGHT, habitantEastSide, habitantWestHand, loadedHabitant } from './habitants';
 import { MANGROVE, mangroveDeckTop } from './places';
 
@@ -349,6 +351,16 @@ interface ScenetteSite {
   habitant: { dx: number; dz: number };
   subject: { halfWidth: number; bottom: number; top: number; depth: number };
   pitch: number;
+  /**
+   * Le cap de départ de la caméra, l'angle dont elle a déjà tourné autour du point visé quand la scénette s'ouvre et à
+   * chaque nouvel item (comme à deux doigts, `orbitAround`) ; nul ou absent : de face, vue du sud.
+   */
+  start?: number;
+  /**
+   * L'arc où la caméra peut tourner, de part et d'autre du cap de départ (en radians) ; absent : le tour complet. Au Phare
+   * et au Guet, de dos, le lieu cache Kéo et l'habitant (directeur artistique, 19 octobre 2026).
+   */
+  arc?: number;
 }
 
 /** Le sol de la galerie du Phare. */
@@ -390,6 +402,27 @@ function northSite(place: PlaceId): ScenetteSite {
   };
 }
 
+/** Le cap de départ de la scénette des Écluses : dans l'axe du canal, à l'est, un peu au sud de son axe. */
+const ECLUSES_START = (65 * Math.PI) / 180;
+
+/**
+ * Le cap de départ de la scénette de l'Imprimerie : un peu depuis le sud-ouest (reprise du lieu, 18 octobre 2026). L'atelier
+ * du lieu glisse sous le panneau, à gauche ; à droite, l'atelier ouvert des abords, sa presse et la corde de séchage.
+ */
+const PRINTWORKS_START = (-20 * Math.PI) / 180;
+
+/**
+ * Les arcs de la caméra au Phare et au Guet, réglés sur captures (19 octobre 2026). Sur la galerie, 40° (directeur
+ * artistique : pas moins) : la potence des abords, au revers de la tour, n'y entre jamais ; le portique des cloches
+ * (questionScene.ts, `hangBells`) tourne avec la caméra autour de l'axe de la galerie (`bellPlane`,
+ * `facingAnswerObjects`) : de face, horizontal, sous la rambarde, ses cloches sous leurs boutons. À chaque butée, dans
+ * les deux missions, la poutre, ses potences et la plus grande cloche de la mission 2 restent sous les pieds de Kéo et
+ * de la gardienne, de peu : celui qui s'avance vers la caméra a les pieds juste au-dessus de la poutre. Au
+ * pied de la tour, 70° : plus loin, la tour cache Kéo d'un côté, Kéo cache la gardienne de l'autre. Au Guet, 120° : la
+ * caméra monte au-dessus de la tour et les garde entiers jusque-là.
+ */
+export const SCENETTE_ARCS = { phare: (40 * Math.PI) / 180, phareFoot: (70 * Math.PI) / 180, lookout: (120 * Math.PI) / 180 } as const;
+
 const SITES: Record<PlaceId, ScenetteSite> = {
   phare: {
     floor: galleryFloor,
@@ -397,15 +430,17 @@ const SITES: Record<PlaceId, ScenetteSite> = {
     habitant: { dx: 1.45, dz: 2.3 },
     subject: { halfWidth: 2.2, bottom: -0.1, top: 2.3, depth: 2 },
     pitch: (20 * Math.PI) / 180,
+    arc: SCENETTE_ARCS.phare,
   },
   // La scène reste proche (réserve du directeur artistique) : Kéo, les caisses et le docker, la barque dessous ; la
-  // flèche de la grue peut passer sous le panneau.
+  // flèche de la grue peut passer sous le panneau. Plus près et plus bas depuis la reprise du lieu (directeur artistique,
+  // évaluation du 18 octobre 2026 : « caméra trop haute et loin ») : la maison à colombages entre dans le cadre, derrière.
   quais: {
     floor: quayFloor,
-    keo: { dx: -4.3, dz: 0, scale: 0.6, yaw: Math.PI - 0.45 },
-    habitant: { dx: 3.5, dz: 0 },
-    subject: { halfWidth: 4.9, bottom: -1.1, top: 2.5, depth: 0.2 },
-    pitch: (24 * Math.PI) / 180,
+    keo: { dx: -4, dz: 0, scale: 0.6, yaw: Math.PI - 0.45 },
+    habitant: { dx: 3.4, dz: 0 },
+    subject: { halfWidth: 4.4, bottom: -1.1, top: 3.7, depth: 0.2 },
+    pitch: (18 * Math.PI) / 180,
   },
   // Les Filets (lot 4) : Kéo et la pêcheuse sur le plancher de séchage, de part et d'autre du filet étendu ; le séchoir
   // du lieu derrière eux (son pan raccommodé à la réussite).
@@ -424,6 +459,10 @@ const SITES: Record<PlaceId, ScenetteSite> = {
     habitant: { dx: 3.7, dz: 0.1 },
     subject: { halfWidth: 5.3, bottom: -0.6, top: 3.5, depth: 0.6 },
     pitch: (22 * Math.PI) / 180,
+    // Dans l'axe du canal, depuis l'aval, à l'est (recommandation du directeur artistique du 18 octobre 2026, en attente
+    // du mainteneur ; pour revenir de face, retirer `start`) : un peu en biais, pour que la paroi du sas et son niveau
+    // d'eau restent lisibles et que la paroi ne cache pas Kéo.
+    start: ECLUSES_START,
   },
   // Les Marais salants (lot L5) : Kéo et la saunière sur le muret d'argile au bord d'un bassin, au premier plan ; la
   // jauge ou la vanne du bassin entre eux, dans l'eau ; la grille des bassins et le hangar à sel derrière. Assez serrés
@@ -459,9 +498,9 @@ const SITES: Record<PlaceId, ScenetteSite> = {
     subject: { halfWidth: 3.8, bottom: -0.4, top: 3.3, depth: 0.2 },
     pitch: (18 * Math.PI) / 180,
   },
-  lookout: northSite('lookout'),
+  lookout: { ...northSite('lookout'), arc: SCENETTE_ARCS.lookout },
   archives: northSite('archives'),
-  printworks: northSite('printworks'),
+  printworks: { ...northSite('printworks'), start: PRINTWORKS_START },
   beacons: northSite('beacons'),
   ferry: northSite('ferry'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
@@ -534,6 +573,7 @@ const PHARE_FOOT: ScenetteSite = {
   habitant: { dx: 1.45, dz: 2.05 },
   subject: { halfWidth: 2.2, bottom: -0.1, top: 2.3, depth: 2 },
   pitch: (9 * Math.PI) / 180,
+  arc: SCENETTE_ARCS.phareFoot,
 };
 
 /**
@@ -544,6 +584,73 @@ const siteOf = (place: PlaceId, posed = true): ScenetteSite => (place === 'phare
 
 /** L'angle de la caméra de la scénette du Phare sous l'horizon, et le temps de la descente (coupe franche avec « Réduire les animations »). */
 export const SCENETTE_CAMERA = { pitch: (20 * Math.PI) / 180, seconds: 0.9 } as const;
+
+/** Le cap de départ de la caméra d'une scénette (`ScenetteSite.start`) : 0, de face. */
+export const scenetteStartYaw = (place: PlaceId, posed = true): number => siteOf(place, posed).start ?? 0;
+
+/** L'arc de la caméra d'une scénette autour de son cap de départ (`ScenetteSite.arc`) ; `null` : le tour complet. */
+export const scenetteArc = (place: PlaceId, posed = true): number | null => siteOf(place, posed).arc ?? null;
+
+/**
+ * L'angle de la caméra autour de la scène après un geste de `d` : borné à l'arc autour du cap de départ, s'il y en a
+ * un (une butée douce : au-delà, le geste ne fait plus rien, sans rebond).
+ */
+export function turnSceneYaw(yaw: number, d: number, start: number, arc: number | null): number {
+  if (arc === null) return wrapAngle(yaw + d);
+  const off = Math.max(-arc, Math.min(arc, wrapAngle(yaw - start) + d));
+  return wrapAngle(start + off);
+}
+
+/** Le retour de la caméra au cap de départ à chaque nouvel item : sa durée (d'un coup avec « Réduire les animations »). */
+export const SCENE_RETURN = { seconds: 0.6 } as const;
+
+/**
+ * L'angle du retour au cap de départ à la part `u` (de 0 à 1) de sa durée : de `from` vers `to` par le plus court, en
+ * ralentissant jusqu'à l'arrivée, sans la dépasser (une courbe cubique).
+ */
+export function sceneReturnYaw(from: number, to: number, u: number): number {
+  const k = Math.min(1, Math.max(0, u));
+  const ease = 1 - (1 - k) ** 3;
+  return wrapAngle(from + wrapAngle(to - from) * ease);
+}
+
+/**
+ * Le retour au cap de départ en cours (la vue en garde un seul, rempli sur place : rien n'est créé à chaque image) : s'il
+ * avance, l'instant où il est parti (en secondes), l'angle d'où il part et le cap où il va.
+ */
+export interface SceneReturn {
+  active: boolean;
+  start: number;
+  from: number;
+  to: number;
+}
+
+/**
+ * Lance le retour au cap `to` depuis l'angle courant `yaw`, à l'instant `now` (en secondes), et rend l'angle à prendre
+ * tout de suite. Un retour en cours (un nouvel item avant la fin du précédent) repart de l'angle où il en est. D'un coup
+ * (`instant` : l'entrée dans la scénette, « Réduire les animations »), ou si la caméra est déjà au cap : rien ne glisse.
+ */
+export function startSceneReturn(r: SceneReturn, yaw: number, to: number, now: number, instant: boolean): number {
+  r.active = !instant && Math.abs(wrapAngle(to - yaw)) > 1e-4;
+  if (!r.active) return to;
+  r.start = now;
+  r.from = yaw;
+  r.to = to;
+  return yaw;
+}
+
+/** L'angle du retour à l'instant `now`, ou `null` s'il n'y en a pas ; arrivé au cap, il s'arrête. */
+export function stepSceneReturn(r: SceneReturn, now: number): number | null {
+  if (!r.active) return null;
+  const u = (now - r.start) / SCENE_RETURN.seconds;
+  if (u >= 1) r.active = false;
+  return sceneReturnYaw(r.from, r.to, u);
+}
+
+/** Un geste à deux doigts interrompt le retour : la caméra reste à l'angle où il l'a laissée, le geste part de là. */
+export function stopSceneReturn(r: SceneReturn): void {
+  r.active = false;
+}
 
 /** Le sol d'une scénette, dans le monde. */
 const floorOf = (place: PlaceId, posed = true): Vec3 => siteOf(place, posed).floor();
@@ -921,10 +1028,21 @@ export const scenetteDeck = (place: PlaceId, posed = true): { y: number; onLand:
 /** La margelle des réponses à terre, au-dessus du plancher de la scène. */
 export const LAND_DECK = 0.08;
 
-/** Le plan où pendent les cloches : devant la rambarde, au sud (la vue y pose les objets sous chaque réponse). */
-export function bellPlane(place: PlaceId): { z: number; rail: Vec3 } {
+/**
+ * Le plan où pendent les cloches : devant la rambarde, au sud de face (la vue y pose les objets sous chaque réponse),
+ * tourné de `yaw` autour de l'axe de la galerie (`pivot`) avec la caméra de la scénette : il lui fait toujours face
+ * (`through`, `normal`), à la même distance de l'axe. `rail` : le point de la rambarde de face, au sud.
+ */
+export function bellPlane(place: PlaceId, yaw = 0): { through: Vec3; normal: { x: number; z: number }; pivot: Vec3; rail: Vec3 } {
   const f = floorOf(place);
-  return { z: f.z + GALLERY.radius + 0.45, rail: { x: f.x, y: f.y + GALLERY.rail, z: f.z + GALLERY.radius } };
+  const d = GALLERY.radius + 0.45;
+  const normal = { x: Math.sin(yaw), z: Math.cos(yaw) };
+  return {
+    through: { x: f.x + d * normal.x, y: f.y, z: f.z + d * normal.z },
+    normal,
+    pivot: { x: f.x, y: f.y, z: f.z },
+    rail: { x: f.x, y: f.y + GALLERY.rail, z: f.z + GALLERY.radius },
+  };
 }
 
 const C = {
@@ -960,7 +1078,19 @@ const C = {
   lightWood: 0xd9a441,
   stone: 0xb9b2a3,
   stoneSide: 0x8f897d,
-  water: 0x2f8fc8,
+  // Les dalles du sol d'une scène (lot commun des scénettes, directeur artistique) : une pierre chaude, tirée vers le
+  // Sable du pack (#DAA66A), à la place de la pierre grise qui faisait une estrade ; ses joints et sa tranche plus bruns.
+  paving: 0xd6b98e,
+  pavingSide: 0xb0926a,
+  /**
+   * Les dalles de l'Observatoire, la pierre chaude claire du kit des abords (`STONE.top`) : sous le soleil rasant, les
+   * dalles chaudes du lot commun se lisaient comme une estrade brune.
+   */
+  pavingLight: 0xdcd1bc,
+  /** Le talus d'herbe sous la dalle de l'Observatoire : le tertre monte jusqu'aux dalles (un vert du kit, `grassDeep`). */
+  pavingBank: 0x82cd95,
+  /** L'eau du canal des Écluses : le Lagon du pack, turquoise (directeur artistique : le bleu saturé sortait de la palette). */
+  canal: COLORS_6E.lagoon,
   // La berge du canal : l'herbe, le chemin et la roche des berges du monde (COLORS_6E).
   grass: COLORS_6E.grass,
   path: COLORS_6E.path,
@@ -979,7 +1109,8 @@ const C = {
   terracotta: 0xc0643c,
   clay: 0xb59a72,
   clayTop: 0xc7ad83,
-  pan: 0x5fb3e0,
+  // L'eau du bassin des Marais salants : le Lagon éclairci (directeur artistique ; avant #5FB3E0, qui virait à l'ardoise).
+  pan: 0x62c6b9,
   // La machiniste (lot L6a, directeur artistique) : veste bleu lagon, foulard ocre (pas la terre cuite de la brique),
   // lunettes relevées sur le front, burette d'huile de cuivre ; le dallage de pierre des Écluses devant la chaudière.
   lagoonCoat: 0x178078,
@@ -1011,6 +1142,8 @@ const C = {
   bristle: 0x6f5a44,
   passeurStone: 0xdcd0b5,
   passeurShade: 0xb9a988,
+  /** Le second ton des dalles de la scène des Ruines, un peu plus chaud que la pierre des Passeurs (le dallage se lit en dalles). */
+  passeurWarm: 0xd3c4a3,
   trousers: 0x4d6a82,
   // Le charpentier (lot L6b, directeur artistique, consultant Archipéo) : chemise Brume, tablier ardoise (le cuir se
   // confondrait avec la quille), casquette de cuir ; son maillet de calfat, la tête de bois dur ; le plancher de planches.
@@ -1040,7 +1173,6 @@ const C = {
   tileShade: 0x356f68,
   // Les chaussures des quatre habitants du rivage sud (relectures de L8) : sombres, sous leurs deux jambes.
   shoe: 0x2f2826,
-  paving: 0xd6cebc,
   // Le filet raccommodé (le même que sur le séchoir, questionScene.ts, `mendedNet`) et ses mailles.
   newRope: 0xc9a36a,
   netLine: 0x6f5e42,
@@ -1248,13 +1380,13 @@ function machiniste(b: FacetBuilder, place: PlaceId, body: boolean): void {
 function enginePaving(b: FacetBuilder): void {
   const o = floorOf('engine');
   const depth = sceneDepth('engine');
-  b.box({ x: o.x, y: o.y - depth, z: o.z }, [2 * ENGINE_PAVING.half, depth, ENGINE_PAVING.depth], C.stoneSide, C.stone);
+  b.box({ x: o.x, y: o.y - depth, z: o.z }, [2 * ENGINE_PAVING.half, depth, ENGINE_PAVING.depth], C.pavingSide, C.paving);
   // Les joints : deux traits plus sombres en travers, à plat sur la pierre (leurs flancs, d'un centième, ne se voyaient
   // pas : la machiniste et ses cheveux communs tiennent ainsi sous les 400 triangles de la scénette).
   const [z0, z1, y] = [o.z - ENGINE_PAVING.depth / 2, o.z + ENGINE_PAVING.depth / 2, o.y + 0.01];
   for (const dx of [-ENGINE_PAVING.half / 2, ENGINE_PAVING.half / 2]) {
     const [x0, x1] = [o.x + dx - 0.025, o.x + dx + 0.025];
-    b.quad([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0], C.stoneSide);
+    b.quad([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0], C.pavingSide);
   }
 }
 
@@ -1380,20 +1512,41 @@ function archeologue(b: FacetBuilder, place: PlaceId, body: boolean): void {
 }
 
 /**
- * Le dallage de la scène des Ruines (lot L8b) : des dalles de pierre des Passeurs devant l'arcade, sur toute la largeur
- * de la scène, levées au-dessus de celles du lieu (la scénette se joue aussi avant qu'elles soient dégagées) ; leurs
- * joints, en travers et en long.
+ * Le dallage de la scène des Ruines (lot L8b ; repris avec les abords, directeur artistique : « la même estrade grise
+ * partout », il devient le sol du lieu) : deux rangs de dalles de pierre des Passeurs, décalés d'une demi-dalle à chaque
+ * bout, que leur bord ne dessine plus le rectangle d'une estrade ; levés au-dessus du dallage usé du lieu (la scénette
+ * se joue aussi avant qu'il soit dégagé). Chaque rang : un bloc de l'ombre de la pierre, un rien plus bas que le sol de
+ * la scène, et ses dalles posées dessus, en deux tons alternés ; entre elles, les joints, de l'ombre. Les abords
+ * (./ruinsSurroundings.ts) posent des touffes et des blocs à leur bord.
  */
 function ruinsPaving(b: FacetBuilder): void {
   const o = floorOf('ruins');
   const depth = sceneDepth('ruins');
-  b.box({ x: o.x, y: o.y - depth, z: o.z }, [2 * RUINS_PAVING.half, depth, RUINS_PAVING.depth], C.passeurShade, C.passeurStone);
-  for (const dx of [-RUINS_PAVING.half / 2, 0, RUINS_PAVING.half / 2]) b.box({ x: o.x + dx, y: o.y, z: o.z }, [0.05, 0.01, RUINS_PAVING.depth], C.passeurShade);
-  b.box({ x: o.x, y: o.y, z: o.z - 0.2 }, [2 * RUINS_PAVING.half, 0.01, 0.05], C.passeurShade);
+  const P = RUINS_PAVING;
+  for (const [r, row] of P.rows.entries()) {
+    const [x0, x1, z0, z1] = [o.x + row.x0, o.x + row.x1, o.z + row.z0, o.z + row.z1];
+    b.box({ x: (x0 + x1) / 2, y: o.y - depth, z: (z0 + z1) / 2 }, [x1 - x0, depth - P.joint, z1 - z0], C.passeurShade);
+    const w = (x1 - x0) / P.slabs;
+    for (let k = 0; k < P.slabs; k++) {
+      const [a, c] = [x0 + k * w + P.gap, x0 + (k + 1) * w - P.gap];
+      b.quad([a, o.y, z1 - P.gap], [c, o.y, z1 - P.gap], [c, o.y, z0 + P.gap], [a, o.y, z0 + P.gap], (k + r) % 2 ? C.passeurStone : C.passeurWarm);
+    }
+  }
 }
 
-/** Le dallage de la scène des Ruines : sa demi-largeur et sa profondeur. */
-const RUINS_PAVING = { half: 4.8, depth: 3.0 } as const;
+/**
+ * Le dallage de la scène des Ruines : ses deux rangs (leurs bords, depuis le sol de la scène), le nombre de dalles de
+ * chacun, le joint (de combien le bloc du rang est plus bas que ses dalles) et le demi-joint entre deux dalles.
+ */
+const RUINS_PAVING = {
+  rows: [
+    { x0: -4.8, x1: 4.3, z0: -1.5, z1: -0.02 },
+    { x0: -4.3, x1: 4.8, z0: 0.02, z1: 1.5 },
+  ],
+  slabs: 6,
+  joint: 0.012,
+  gap: 0.03,
+} as const;
 
 /**
  * La photographe, immobile, une visiteuse de l'Observatoire (jamais son occupante, consultant Archipéo) : le haut clair,
@@ -1466,16 +1619,33 @@ const PHOTO_CAMERA = { dx: 0.72, dz: 0.12, height: 0.88, body: [0.34, 0.3, 0.32]
  */
 function observatoryPaving(b: FacetBuilder): void {
   const o = floorOf('observatory');
-  const depth = sceneDepth('observatory');
-  // Sans joints (relecture de L8c-d : de chaque côté des personnages, un trait en oblique se lisait comme un bâton).
-  b.box({ x: o.x, y: o.y - depth, z: o.z + OBSERVATORY_PAVING.dz }, [2 * OBSERVATORY_PAVING.half, depth, OBSERVATORY_PAVING.depth], C.stoneSide, C.stone);
+  const P = OBSERVATORY_PAVING;
+  // Sans joints (relecture de L8c-d : de chaque côté des personnages, un trait en oblique se lisait comme un bâton). Plus
+  // d'estrade qui flotte (directeur artistique, abords de l'Observatoire, 18 octobre 2026) : le dessus des dalles, puis,
+  // à l'est, au sud et à l'ouest, un talus d'herbe qui descend en pente jusque sous l'herbe du tertre ; au nord, contre
+  // le tambour, rien. Le sentier de la porte y arrive par une marche, et des dalles éparses la fondent dans l'herbe
+  // (./observatorySurroundings.ts).
+  const x0 = o.x - P.half,
+    x1 = o.x + P.half,
+    z0 = o.z + P.dz - P.depth / 2,
+    z1 = o.z + P.dz + P.depth / 2;
+  const foot = Math.min(...[x0, x1].flatMap((x) => [z0, z1].map((z) => standingHeight(heightAt({ x, z }))))) - 0.06;
+  const s = P.slope;
+  const y = o.y;
+  b.quad([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0], C.pavingLight);
+  b.quad([x0, y, z1], [x0 - s, foot, z1 + s], [x1 + s, foot, z1 + s], [x1, y, z1], C.pavingBank);
+  b.quad([x1, y, z1], [x1 + s, foot, z1 + s], [x1 + s, foot, z0], [x1, y, z0], C.pavingBank);
+  b.quad([x0, y, z0], [x0 - s, foot, z0], [x0 - s, foot, z1 + s], [x0, y, z1], C.pavingBank);
+  // Les deux bouts nord du talus, fermés (vus de dos, à l'est et à l'ouest du tambour).
+  b.triangle([x1, y, z0], [x1 + s, foot, z0], [x1, foot, z0], C.pavingBank);
+  b.triangle([x0, y, z0], [x0, foot, z0], [x0 - s, foot, z0], C.pavingBank);
 }
 
 /**
  * La dalle de l'Observatoire : sa demi-largeur, sa profondeur, son milieu un peu au sud du point de la scène (son bord
- * nord contre le tambour, jamais dedans).
+ * nord contre le tambour, jamais dedans), l'avancée de son talus.
  */
-const OBSERVATORY_PAVING = { half: 4.6, depth: 2.35, dz: 0.32 } as const;
+const OBSERVATORY_PAVING = { half: 4.6, depth: 2.35, dz: 0.32, slope: 0.55 } as const;
 
 /**
  * Le couvreur, immobile, l'artisan qui refait la toiture de la Halle (un métier, jamais un élu) : le haut clair, sa
@@ -1603,13 +1773,13 @@ const SALT_PAN = { half: 6.2, front: 1.4, water: 1.8, low: 0.15, rise: 0.35 } as
 
 /**
  * Le plancher de séchage des Filets, de part et d'autre de la plate-forme du filet (la scène de l'item), à sa hauteur :
- * Kéo à l'ouest, la pêcheuse à l'est. `center` : la plate-forme aussi (la réussite, quand le filet a quitté le
- * plancher).
+ * Kéo à l'ouest, la pêcheuse à l'est. `center` : la plate-forme seule, à la place de celle de l'item (la réussite,
+ * quand le filet a quitté le plancher ; les deux côtés y sont déjà, avec le décor de près).
  */
 function dryingDeck(b: FacetBuilder, center: boolean): void {
   const o = floorOf('filets');
   const depth = sceneDepth('filets');
-  for (const side of center ? [-1, 0, 1] : [-1, 1]) {
+  for (const side of center ? [0] : [-1, 1]) {
     const w = side === 0 ? FILET_DECK.inner * 2 : FILET_DECK.outer - FILET_DECK.inner;
     const x = o.x + side * (FILET_DECK.inner + FILET_DECK.outer) / 2;
     b.box({ x, y: o.y - depth, z: o.z }, [w, depth, FILET_DECK.depth], C.woodSide, C.wood);
@@ -1630,11 +1800,11 @@ const FILET_DECK = { inner: 2.7, outer: 5.8, depth: 3.2 } as const;
 function lockQuay(b: FacetBuilder, open: boolean, posed: boolean): void {
   const o = floorOf('ecluses');
   const depth = sceneDepth('ecluses');
-  for (const side of [-1, 1]) b.box({ x: o.x + side * 4.05, y: o.y - depth, z: o.z }, [3.5, depth, 1.6], C.stoneSide, C.stone);
+  for (const side of [-1, 1]) b.box({ x: o.x + side * 4.05, y: o.y - depth, z: o.z }, [3.5, depth, 1.6], C.pavingSide, C.paving);
   const width = LOCK.back - LOCK.front;
   const mid = o.z + (LOCK.front + LOCK.back) / 2;
-  const long = 2 * LOCK.half;
-  b.box({ x: o.x, y: o.y - depth, z: mid }, [long, depth - LOCK.water, width], C.stoneSide, C.water);
+  const long = 2 * LOCK.reach;
+  b.box({ x: o.x, y: o.y - depth, z: mid }, [long, depth - LOCK.water, width], C.stoneSide, C.canal);
   // La berge : la bordure de pierre, un peu plus haute, puis l'herbe ; le chemin de halage posé dessus.
   const bank = o.z + LOCK.back;
   b.box({ x: o.x, y: o.y - depth, z: bank + LOCK.kerb / 2 }, [long, depth + 0.04, LOCK.kerb], C.stoneSide, C.stone);
@@ -1687,9 +1857,10 @@ function beamRest(b: FacetBuilder, x: number, z: number, from: number, top: numb
  * montré (./habitants.ts, choix du mainteneur du 18 octobre 2026), il est dessiné à part, avec sa texture, par la vue :
  * le décor se fait alors sans le corps du pion, et garde ce que la scénette lui fait tenir ou poser à côté de lui (la
  * corde de la cloche, la caisse du docker, le levier de l'éclusier, la chambre de la photographe, la tuile du couvreur).
+ * `topped` : l'étape du haut du lieu est posée (à la Mangrove, le carbet relevé : ses abords changent).
  */
-export function scenetteDecor(place: PlaceId, open = false, posed = true): Facets {
-  return decorBuilder(place, open, posed, !loadedHabitant(place)).build();
+export function scenetteDecor(place: PlaceId, open = false, posed = true, topped = false): Facets {
+  return decorBuilder(place, open, posed, !loadedHabitant(place), true, topped).build();
 }
 
 /**
@@ -1700,8 +1871,82 @@ export function scenetteSetting(place: PlaceId, open = false, posed = true): Fac
   return decorBuilder(place, open, posed, false).build();
 }
 
+/**
+ * Le décor de près sans les abords du lieu : le sol de la scène, l'habitant (son pion dessiné en code s'il n'a pas de
+ * modèle) et les ombres au pied. Les tests y jugent l'habitant seul ; le décor montré y ajoute les abords.
+ */
+export function scenetteCore(place: PlaceId, open = false, posed = true): Facets {
+  return decorBuilder(place, open, posed, !loadedHabitant(place), false).build();
+}
+
+/** Les abords d'un lieu seuls (./surroundings.ts), autour du sol de sa scène, tels que le décor de près les porte. */
+export function scenetteSurroundings(place: PlaceId, open = false, posed = true, topped = false): Facets {
+  const b = new FacetBuilder();
+  SURROUNDINGS[place]?.(b, floorOf(place, posed), { open, posed, topped });
+  return b.build();
+}
+
+/**
+ * Le décor de près, avec le pion dessiné en code (`body`) ou sans corps, les abords du lieu (./surroundings.ts, sauf
+ * `surroundings` faux) et les ombres au pied de Kéo et de l'habitant.
+ */
+function decorBuilder(place: PlaceId, open: boolean, posed: boolean, body: boolean, surroundings = true, topped = false): FacetBuilder {
+  const b = sceneDecor(place, open, posed, body);
+  if (surroundings) SURROUNDINGS[place]?.(b, floorOf(place, posed), { open, posed, topped });
+  footShadow(b, scenetteKeo(place, posed).at, FOOT_SHADOW.keo, floorShadow(place, posed));
+  footShadow(b, scenetteHabitant(place, posed), FOOT_SHADOW.habitant, floorShadow(place, posed));
+  return b;
+}
+
+/**
+ * Les ombres au pied dans une scénette (lot commun des scénettes, directeur artistique : « une ombre au pied, du côté
+ * opposé au soleil, un aplat opaque ») : une ellipse de sept triangles, son bord côté soleil sous les pieds, allongée à
+ * l'opposé du soleil (`SHADOW_DIR`), un rien au-dessus du sol de la scène.
+ */
+const FOOT_SHADOW = { keo: { radius: 0.3, long: 0.55 }, habitant: { radius: 0.36, long: 0.66 }, lift: 0.025, sides: 7 } as const;
+
+/** Les triangles des deux ombres au pied, de Kéo et de l'habitant, dans le décor de près. */
+export const FOOT_SHADOW_TRIANGLES = 2 * FOOT_SHADOW.sides;
+
+/**
+ * La couleur de l'ombre selon le sol de la scène : les planches (le bois, assombri d'un tiers), les dalles, la terre
+ * battue ; jamais transparente, jamais noire.
+ */
+const FLOOR_SHADOWS = { planks: 0x7a5636, paving: 0xa58660, earth: 0xb98a55 } as const;
+const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
+  phare: 'paving',
+  quais: 'planks',
+  filets: 'planks',
+  ecluses: 'paving',
+  saltworks: 'earth',
+  engine: 'paving',
+  shipyard: 'planks',
+  lookout: 'paving',
+  archives: 'paving',
+  printworks: 'earth',
+  mangrove: 'planks',
+  ruins: 'paving',
+  observatory: 'paving',
+  commons: 'paving',
+  beacons: 'paving',
+  ferry: 'planks',
+};
+const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
+
+function footShadow(b: FacetBuilder, at: Vec3, size: { radius: number; long: number }, color: number): void {
+  const n = FOOT_SHADOW.sides;
+  const back = size.long - size.radius;
+  const c: [number, number, number] = [at.x + SHADOW_DIR.x * back, at.y + FOOT_SHADOW.lift, at.z + SHADOW_DIR.z * back];
+  const rim = Array.from({ length: n }, (_, k): [number, number, number] => {
+    const u = size.long * Math.cos((2 * Math.PI * k) / n);
+    const v = size.radius * Math.sin((2 * Math.PI * k) / n);
+    return [c[0] + u * SHADOW_DIR.x - v * SHADOW_DIR.z, c[1], c[2] + u * SHADOW_DIR.z + v * SHADOW_DIR.x];
+  });
+  for (let k = 0; k < n; k++) b.triangle(c, rim[(k + 1) % n], rim[k], color);
+}
+
 /** Le décor de près, avec le pion dessiné en code (`body`) ou sans corps. */
-function decorBuilder(place: PlaceId, open: boolean, posed: boolean, body: boolean): FacetBuilder {
+function sceneDecor(place: PlaceId, open: boolean, posed: boolean, body: boolean): FacetBuilder {
   const b = new FacetBuilder();
   if (place === 'quais') {
     docker(b, place, body);

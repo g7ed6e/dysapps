@@ -39,11 +39,13 @@ const C = {
   path: COLORS_6E.path,
   wood: 0xa9784a,
   darkWood: 0x8a6440,
-  // La ruine : délavée, d'un ton moyen, jamais sombre.
+  // La ruine : délavée, d'un ton moyen, jamais sombre ; le fer rouillé des colonnes et des tôles tombées, d'un brun et
+  // d'un ocre chauds (relecture du 19 octobre 2026 : le gris et le vert-gris se lisaient froids, des rails et des dalles),
+  // le bois et la pierre chaude des abords (surroundingsKit.ts, `TIMBER.plankSide`, `STONE`).
   worn: 0xbdb5a3,
   wornTop: 0xb0a896,
-  wornIron: 0x8c969b,
-  wornSheet: 0x8aaba5,
+  wornIron: 0xb08658,
+  wornSheet: 0xcdb08a,
   // Les malles (#8A5A36), leurs cercles de fer (#2F3E48), leur sangle de cuir (#7A4E2E).
   trunk: 0x8a5a36,
   trunkTop: 0x9c6a42,
@@ -80,6 +82,9 @@ export const CANOPY = { x0: -5.4, x1: 1.9, z0: -5.9, z1: -2.3, columns: [-5.0, -
 
 /** Le pavillon, au bout est de l'auvent : son milieu, sa largeur, sa profondeur, ses murs, son toit en croupe. */
 const PAVILION = { x: 3.6, z: -3.4, w: 2.8, d: 3.0, wall: 2.1, roof: 1.0, eave: 0.25 } as const;
+
+/** Le long du bord nord du quai ébréché, juste au nord de la première rangée de colonnes : les colonnes couchées. */
+const FALLEN_Z = -5.75;
 
 /** Les bittes d'amarrage, au bord du quai (dans le repère du lieu). */
 const BOLLARDS: readonly Vec2[] = [
@@ -181,23 +186,26 @@ function model(add: AddPiece, ground: SiteGround, door: Vec2): void {
     },
     { stage: 0, row: 0.34 },
   );
-  // Les colonnes debout sans couverture, deux d'entre elles couchées sur le quai ; les colonnes neuves les remplacent.
+  // Les colonnes debout sans couverture, celle du milieu cassée bas, deux autres couchées au bord du quai ;
+  // les colonnes neuves les remplacent. Rien de haut au nord de la scène (relecture du 19 octobre 2026 : vue de dos, la
+  // colonne du milieu et une colonne couchée en travers faisaient une croix entre Kéo et le chef de gare) : le tronçon
+  // reste bas, les colonnes couchées longent le bord du quai, entre les colonnes debout, et ne touchent plus la scène.
   add(
     'ruine',
     0,
     (b) => {
-      for (const [x, z] of [
-        [A.columns[0], A.rows[0]],
-        [A.columns[1], A.rows[0]],
-        [A.columns[2], A.rows[0]],
-        [A.columns[0], A.rows[1]],
+      for (const [x, z, h] of [
+        [A.columns[0], A.rows[0], A.height],
+        [A.columns[1], A.rows[0], 0.7],
+        [A.columns[2], A.rows[0], A.height],
+        [A.columns[0], A.rows[1], A.height],
       ] as const)
-        column(b, x, z, A.height, C.wornIron);
-      for (const [x, z, yaw] of [
-        [-1.2, -3.4, 0.25],
-        [0.6, -1.6, -0.6],
+        column(b, x, z, h, C.wornIron);
+      for (const [x0, x1] of [
+        [-4.4, -2.2],
+        [-1.0, 1.0],
       ] as const)
-        b.beam({ x: x - Math.cos(yaw) * 1.2, y: Q.top + 0.08, z: z - Math.sin(yaw) * 1.2 }, { x: x + Math.cos(yaw) * 1.2, y: Q.top + 0.1, z: z + Math.sin(yaw) * 1.2 }, 0.16, C.wornIron);
+        b.beam({ x: x0, y: Q.top, z: FALLEN_Z }, { x: x1, y: Q.top + 0.02, z: FALLEN_Z }, 0.16, C.wornIron);
     },
     { stage: 1, row: 0 },
   );
