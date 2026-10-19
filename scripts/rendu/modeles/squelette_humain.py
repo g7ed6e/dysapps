@@ -1,13 +1,17 @@
 # Le squelette humain d'un personnage en pose A (un ado de l'équipage d'Archipéo) : 17 os avec coudes, mains et pieds,
 # pour marcher, courir, sauter, attraper et lancer. Il part d'un brut TRELLIS allégé (alleger_brut.py), qu'il garde
 # tel quel (forme et texture), retire la doublure intérieure, pose les os, calcule les poids et exporte le .glb animé
-# (devant −X, comme les modèles du jeu). Il rend ensuite la planche des six poses avec et sans texture, et, avec
-# video=<dossier>, une vidéo de 9 s des mêmes gestes, texture à gauche, gris uni à droite (ffmpeg).
+# (devant −X, comme les modèles du jeu). Les jambes (hanche, genou, cheville, pied) se lisent sur le modèle, et un pied
+# trop ouvert est remis droit. La marche et la course suivent un cycle réel, image par image (`ALLURES`). Il rend la
+# planche des six poses avec et sans texture, les planches de la marche et de la course (huit instants, de profil et de
+# face), et, avec video=<dossier>, une vidéo d’environ 11 s des mêmes gestes, texture à gauche, gris uni à droite (ffmpeg, ou
+# le montage de Blender quand ffmpeg manque).
 # Squelette à part de squelette.py (9 os, bras d'un seul os, pour les créatures et Kéo) : le jeu ne l'anime pas encore.
 #
 #   python3.11 squelette_humain.py -- <allégé.glb> <sortie.glb> <planche.png> [réglage=valeur …] [video=<dossier>]
 #
 # Réglages, en hauteurs du modèle (hauteur 1, devant −Y, gauche du personnage en +X) :
+#   pieds (6) : l'ouverture d'un pied au-delà de laquelle on le tourne vers l'avant, en degrés ;
 #   menton (0.79), sh_z et sh_x (l'épaule : 0.735 et 0.1), hip_z (la hanche : 0.47) ;
 #   buste (0.118) : à quelle distance du milieu commence le bras ; tt_lib (0.4) : à partir d'où, le long du bras, tout
 #   ce qui est près de son axe lui revient (0.15 pour un bras près du corps) ; epaule_r (0.09) : le rayon du fondu buste
@@ -17,6 +21,7 @@
 import math
 import os
 import random
+import shutil
 import subprocess
 import sys
 
@@ -28,7 +33,7 @@ from mathutils.bvhtree import BVHTree
 
 args = sys.argv[sys.argv.index("--") + 1:]
 base, out, planche = args[0], args[1], args[2]
-S = {"menton": 0.79, "sh_z": 0.735, "sh_x": 0.1, "hip_z": 0.47, "buste": 0.118, "tt_lib": 0.4, "epaule_r": 0.09}
+S = {"pieds": 6, "menton": 0.79, "sh_z": 0.735, "sh_x": 0.1, "hip_z": 0.47, "buste": 0.118, "tt_lib": 0.4, "epaule_r": 0.09}
 VIDEO = None
 REGLAGES = set(S) | {"jupe"}
 for kv in args[3:]:
@@ -82,8 +87,66 @@ bm.to_mesh(mesh.data)
 bm.free()
 print("faces intérieures retirées :", len(interieures))
 
-# ------------------------------------------------ le squelette (17 os)
+# ------------------------------------------------ les jambes, lues sur le modèle, et les pieds remis droits
+# Un sac, une radio ou un tube dans le dos décalent le milieu de la boîte : les jambes ne sont pas en y = 0, ni à un
+# écart fixe. Hanche, genou et cheville se lisent tranche par tranche sur chaque jambe, et le pied sur sa semelle. Un pied
+# ouvert de plus de `pieds` degrés (TRELLIS en ouvre souvent dix ou douze) est tourné autour de sa cheville, fondu
+# jusqu'au bas du tibia : un pied ouvert, plié au genou, fait marcher en canard.
 P = np.array([v.co[:] for v in mesh.data.vertices])
+
+
+def tranche(sx, z0, z1, large=0.16):
+    t = P[(P[:, 2] >= z0) & (P[:, 2] < z1) & (sx * P[:, 0] > 0.008) & (sx * P[:, 0] < large)]
+    return t
+
+
+JAMBES = {}
+for cote, sx in (("L", 1), ("R", -1)):
+    semelle = tranche(sx, 0, 0.05, 0.2)
+    c = semelle[:, :2].mean(0)
+    _, _, vt = np.linalg.svd(semelle[:, :2] - c)
+    d = vt[0] if vt[0][1] < 0 else -vt[0]
+    ouverture = math.degrees(math.atan2(sx * d[0], -d[1]))
+    tourne = 0.0
+    if abs(ouverture) > S["pieds"]:
+        tourne = math.radians(ouverture - math.copysign(S["pieds"], ouverture))
+        cheville_xy = tranche(sx, 0.06, 0.11)[:, :2].mean(0)
+        a = -sx * tourne
+        ca, sa = math.cos(a), math.sin(a)
+        for v in mesh.data.vertices:
+            x_, y_, z_ = v.co
+            if sx * x_ <= 0.008 or z_ >= 0.14:
+                continue
+            k = 1.0 if z_ < 0.08 else (0.14 - z_) / 0.06
+            dx, dy = x_ - cheville_xy[0], y_ - cheville_xy[1]
+            v.co.x = cheville_xy[0] + (dx * math.cos(a * k) - dy * math.sin(a * k))
+            v.co.y = cheville_xy[1] + (dx * math.sin(a * k) + dy * math.cos(a * k))
+    print(f"pied {cote} : ouvert de {ouverture:.1f} degrés, tourné de {math.degrees(tourne):.1f}")
+P = np.array([v.co[:] for v in mesh.data.vertices])
+def milieu(t, x0=None):
+    """Le milieu d'une coupe de jambe : entre ses bords (la moyenne pencherait vers ce qui dépasse, le bout d'une
+    chaussure, une poche), autour de x0 si on le donne (pour ne prendre que la jambe)."""
+    if x0 is not None:
+        t = t[np.abs(t[:, 0] - x0) < 0.045]
+    return np.array([(t[:, 0].min() + t[:, 0].max()) / 2, (t[:, 1].min() + t[:, 1].max()) / 2, t[:, 2].mean()])
+
+
+for cote, sx in (("L", 1), ("R", -1)):
+    genou = milieu(tranche(sx, HIPZ / 2 - 0.02, HIPZ / 2 + 0.02))
+    # la cheville au-dessus de la chaussure, la hanche dans la cuisse : une jambe debout est presque droite
+    cheville = milieu(tranche(sx, 0.11, 0.15), genou[0])
+    hanche = milieu(tranche(sx, HIPZ - 0.12, HIPZ - 0.07), genou[0])
+    hanche[1] = genou[1] + max(-0.02, min(0.02, hanche[1] - genou[1]))
+    cheville[1] = genou[1] + max(-0.02, min(0.02, cheville[1] - genou[1]))
+    semelle = tranche(sx, 0, 0.04, 0.2)
+    pointe = semelle[np.argmin(semelle[:, 1])]
+    talon = semelle[np.argmax(semelle[:, 1])]
+    JAMBES[cote] = {"hanche": Vector((hanche[0], hanche[1], HIPZ)), "genou": Vector((genou[0], genou[1] - 0.005, HIPZ / 2)),
+                    "cheville": Vector((cheville[0], cheville[1], 0.08)),
+                    "pointe": Vector((cheville[0], pointe[1] + 0.01, 0.02)), "talon": float(talon[1])}
+BASSIN_Y = (JAMBES["L"]["hanche"].y + JAMBES["R"]["hanche"].y) / 2
+
+# ------------------------------------------------ le squelette (17 os)
 x, z = P[:, 0], P[:, 2]
 EPAULES = {"L": Vector((SHX, 0, SHZ)), "R": Vector((-SHX, 0, SHZ))}
 POIGNETS = {}
@@ -110,8 +173,8 @@ def os_(nom, tete, queue, parent=None):
 
 
 COU = S["menton"] - 0.02
-os_("hips", (0, 0, HIPZ - 0.04), (0, 0, HIPZ + 0.06))
-os_("spine", (0, 0, HIPZ + 0.06), (0, 0, SHZ - 0.02), "hips")
+os_("hips", (0, BASSIN_Y, HIPZ - 0.04), (0, BASSIN_Y, HIPZ + 0.06))
+os_("spine", (0, BASSIN_Y, HIPZ + 0.06), (0, 0, SHZ - 0.02), "hips")
 os_("head", (0, 0, COU), (0, 0, 1.0), "spine")
 for cote, sx in (("L", 1), ("R", -1)):
     sh, w = EPAULES[cote], POIGNETS[cote]
@@ -119,11 +182,10 @@ for cote, sx in (("L", 1), ("R", -1)):
     os_("upperarm." + cote, sh, coude, "spine")
     os_("forearm." + cote, coude, w, "upperarm." + cote)
     os_("hand." + cote, w, w + (w - sh).normalized() * 0.07, "forearm." + cote)
-    hanche, cheville = Vector((sx * 0.055, 0, HIPZ)), Vector((sx * 0.06, 0, 0.08))
-    genou = (hanche + cheville) / 2 + Vector((0, -0.01, 0))
-    os_("thigh." + cote, hanche, genou, "hips")
-    os_("shin." + cote, genou, cheville, "thigh." + cote)
-    os_("foot." + cote, cheville, Vector((sx * 0.06, -0.08, 0.02)), "shin." + cote)
+    j = JAMBES[cote]
+    os_("thigh." + cote, j["hanche"], j["genou"], "hips")
+    os_("shin." + cote, j["genou"], j["cheville"], "thigh." + cote)
+    os_("foot." + cote, j["cheville"], j["pointe"], "shin." + cote)
 for b in E:
     b.align_roll(Vector((0, -1, 0)))
 bpy.ops.object.mode_set(mode="OBJECT")
@@ -159,7 +221,9 @@ for cote, sx in (("L", 1), ("R", -1)):
     hors_bras &= ~bras
     # L'épaule : les manches passent en douceur du buste au bras (sinon elles se déchirent bras levé).
     fondu[cote] = ((sx * qx > 0.04) & (qz > SHZ - 0.12) & (qz < SHZ + 0.05) & (qy < 0.06)
-                   & (np.linalg.norm(Q - sh, axis=1) < S["epaule_r"]))
+                   & (np.linalg.norm(Q - sh, axis=1) < S["epaule_r"])
+                   # sous l'aisselle, le flanc reste au buste : il est dans l'axe du bras baissé, pas dans le bras
+                   & (bras | (qz > SHZ - 0.05)))
     a = np.clip((tt + 0.05) / 0.35, 0, 1)
     part_du_bras[cote] = a * a * (3 - 2 * a)
     jambe = (sx * qx > -0.0015) & (qz < HIPZ - 0.02) & ~((np.abs(qx) > SHX + 0.03) & (qz > 0.3))
@@ -247,13 +311,100 @@ rig.rotation_euler = (0, 0, 0)
 #   bras ou jambe en avant : ("X", -a) ; en arrière : ("X", +a)
 #   bras écarté du corps : gauche ("Y", -a), droite ("Y", +a)
 #   coude plié : ("X", -a) ; genou plié : ("X", +a) ; buste penché en avant : ("X", +a) ; épaule droite qui recule : ("Z", -a)
+# ------------------------------------------------ la marche et la course : un cycle réel, image par image
+# Les angles des articulations au fil d'un cycle (en % du cycle, du contact du talon au contact suivant du même pied),
+# d'après les données d'analyse de la marche (Perry et Burnfield, « Gait Analysis ») et de la course (Novacheck, « The
+# biomechanics of running », 1998) : la hanche (flexion vers l'avant), le genou (flexion), la cheville (pointe relevée).
+# L'autre jambe a un demi-cycle de retard. La hanche de ces données se mesure sur un bassin penché en avant (une dizaine
+# de degrés à la marche, une quinzaine à la course) : nos os partent d'un bassin droit, on retire cette bascule
+# (`bassin_avant`), sans quoi les deux jambes restent en avant du corps et il marche penché en arrière. Le bassin tourne avec la jambe qui avance et descend du côté de la jambe en
+# l'air ; les épaules tournent à l'inverse ; les bras balancent à l'opposé des jambes, coudes un peu pliés (pliés à
+# angle droit en course), rapprochés du corps depuis la pose A ; le buste penche un peu en course. Le corps monte et
+# descend pour que le pied le plus bas touche juste le sol (calcul des longueurs des os), et décolle en course.
+ALLURES = {
+    "marche": {"duree": 1.1, "hanche": [(0, 30), (12, 28), (30, 10), (50, -10), (62, 0), (75, 22), (87, 32), (100, 30)],
+               "genou": [(0, 5), (15, 18), (38, 4), (50, 6), (62, 38), (73, 60), (87, 25), (100, 5)],
+               "cheville": [(0, 0), (8, -7), (30, 6), (47, 10), (62, -18), (75, -3), (87, 1), (100, 0)],
+               "bassin_avant": 10, "bassin": 4, "bascule": 4, "epaules": 0.6, "bras": 16, "coude": (15, 10), "rapproche": 22, "penche": 2,
+               "envol": 0},
+    "course": {"duree": 0.72, "hanche": [(0, 38), (20, 20), (38, -8), (50, 0), (70, 40), (85, 55), (100, 38)],
+               "genou": [(0, 22), (14, 42), (38, 18), (55, 60), (72, 105), (88, 55), (100, 22)],
+               "cheville": [(0, 5), (14, 20), (38, -22), (55, -10), (75, 5), (100, 5)],
+               "bassin_avant": 15, "bassin": 6, "bascule": 3, "epaules": 0.8, "bras": 32, "coude": (85, 15), "rapproche": 24, "penche": 10,
+               "envol": 0.025},
+}
+
+
+def courbe(points, pc):
+    """La valeur d'une courbe périodique (Catmull-Rom) au pourcentage pc du cycle."""
+    pc %= 100
+    xs = [x for x, _ in points]
+    i = max(k for k in range(len(xs) - 1) if xs[k] <= pc)
+    y = [v for _, v in points[:-1]]
+    n = len(y)
+    p0, p1, p2, p3 = y[(i - 1) % n], y[i % n], y[(i + 1) % n], y[(i + 2) % n]
+    t = (pc - xs[i]) / (xs[i + 1] - xs[i])
+    return 0.5 * (2 * p1 + (p2 - p0) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (3 * p1 - p0 - 3 * p2 + p3) * t ** 3)
+
+
+def longueurs(cote):
+    j = JAMBES[cote]
+    return (j["hanche"] - j["genou"]).length, (j["genou"] - j["cheville"]).length, j
+
+
+def plus_bas(cote, h, k, c):
+    """La hauteur, sous la hanche, du point le plus bas du pied (talon ou pointe), dans le plan de la marche."""
+    a, b, j = longueurs(cote)
+    t1, t2 = math.radians(h), math.radians(h - k)
+    cheville = -(a * math.cos(t1) + b * math.cos(t2))
+    phi = math.radians(h - k + c)  # la semelle, pointe relevée
+    talon = Vector((j["talon"] - j["cheville"].y, -0.08))
+    pointe = Vector((j["pointe"].y - j["cheville"].y, -0.06))
+    hauteurs = []
+    for q in (talon, pointe):
+        # vers l'avant = −y : on tourne le point de la semelle de phi (pointe vers le haut)
+        av, ht = -q.x, q.y
+        hauteurs.append(cheville + av * math.sin(phi) + ht * math.cos(phi))
+    return min(hauteurs)
+
+
+def allure(nom, pc):
+    """La pose d'une allure au pourcentage pc du cycle de la jambe gauche, et la hauteur du corps."""
+    A = ALLURES[nom]
+    pose, bas = {}, []
+    for cote, sx, decale in (("L", 1, 0), ("R", -1, 50)):
+        q = pc + decale
+        h, k, c = courbe(A["hanche"], q) - A["bassin_avant"], courbe(A["genou"], q), courbe(A["cheville"], q)
+        pose["thigh." + cote] = ("X", -h)
+        pose["shin." + cote] = ("X", k)
+        pose["foot." + cote] = ("X", -c)
+        bas.append(plus_bas(cote, h, k, c))
+        # le bras opposé à la jambe : en avant quand la jambe de l'autre côté avance
+        avance = -A["bras"] * math.cos(2 * math.pi * q / 100)
+        pose["upperarm." + cote] = [("Y", sx * A["rapproche"]), ("X", -avance)]
+        coude = A["coude"][0] + A["coude"][1] * max(0.0, avance) / A["bras"]
+        pose["forearm." + cote] = ("X", -coude)
+    rot = A["bassin"] * math.cos(2 * math.pi * pc / 100)  # > 0 : la hanche gauche en avant
+    pose["hips"] = [("Z", -rot), ("Y", -A["bascule"] * math.sin(2 * math.pi * pc / 100))]
+    # le dos rattrape le bassin puis tourne les épaules à l'inverse ; la tête revient face à la marche
+    pose["spine"] = [("Z", (1 + A["epaules"]) * rot), ("X", A["penche"])]
+    pose["head"] = [("Z", -A["epaules"] * rot), ("X", -A["penche"] * 0.7)]
+    repos = min(plus_bas("L", 0, 0, 0), plus_bas("R", 0, 0, 0))
+    haut = repos - min(bas)
+    if A["envol"]:
+        # en course, deux vols par cycle (après chaque appui) : le corps monte en cloche
+        for debut in (38, 88):
+            t = ((pc - debut) % 100) / 12
+            if t < 1:
+                haut += A["envol"] * math.sin(math.pi * t)
+    return pose, haut
+
+
+HAUTEURS = {"marche": allure("marche", 0)[1], "course": allure("course", 80)[1]}
 POSES = {
     "repos": {},
-    "marche": {"thigh.L": ("X", -25), "shin.L": ("X", 10), "thigh.R": ("X", 20), "shin.R": ("X", 30),
-               "upperarm.L": ("X", 22), "upperarm.R": ("X", -22), "forearm.L": ("X", -12), "forearm.R": ("X", -25)},
-    "course": {"thigh.L": ("X", -55), "shin.L": ("X", 60), "thigh.R": ("X", 30), "shin.R": ("X", 85),
-               "upperarm.L": ("X", 45), "upperarm.R": ("X", -50), "forearm.L": ("X", -70), "forearm.R": ("X", -85),
-               "spine": ("X", 12)},
+    "marche": allure("marche", 0)[0],
+    "course": allure("course", 80)[0],
     "saut": {"thigh.L": ("X", -75), "shin.L": ("X", 95), "thigh.R": ("X", -45), "shin.R": ("X", 80),
              "upperarm.L": [("Y", -95), ("X", -20)], "upperarm.R": [("Y", 95), ("X", -20)],
              "forearm.L": ("Y", -20), "forearm.R": ("Y", 20)},
@@ -277,15 +428,6 @@ def poser(pose):
         for axe, degres in rotations if isinstance(rotations, list) else [rotations]:
             q = Quaternion((inverse @ AXES[axe]).normalized(), math.radians(degres)) @ q
         pb.rotation_quaternion = q
-
-
-def miroir(pose):
-    """La même pose de l'autre côté : .L et .R s'échangent, les rotations sur Y et Z changent de signe."""
-    m = {}
-    for nom, rotations in pose.items():
-        autre = nom[:-1] + ("R" if nom.endswith("L") else "L") if nom[-2:] in (".L", ".R") else nom
-        m[autre] = [(axe, -d if axe in "YZ" else d) for axe, d in (rotations if isinstance(rotations, list) else [rotations])]
-    return m
 
 
 # ------------------------------------------------ la planche : six poses, avec puis sans texture
@@ -313,8 +455,8 @@ vers = Vector((math.sin(t) * 6, -math.cos(t) * 6, 1.2))
 avant = -vers.normalized()
 droite = avant.cross(Vector((0, 0, 1))).normalized()
 haut = droite.cross(avant)
-for i, o in enumerate(copies):
-    o.location = droite * (i * 0.75)
+for i, (o, nom) in enumerate(zip(copies, POSES)):
+    o.location = droite * (i * 0.75) + Vector((0, 0, HAUTEURS.get(nom, 0)))
 bpy.context.view_layer.update()
 pts = [o.matrix_world @ v.co for o in copies for v in o.data.vertices]
 u, w = [p.dot(droite) for p in pts], [p.dot(haut) for p in pts]
@@ -333,6 +475,50 @@ s.display.shading.single_color = (0.72, 0.72, 0.72)
 s.render.filepath = os.path.splitext(planche)[0] + "-gris.png"
 bpy.ops.render.render(write_still=True)
 
+# ------------------------------------------------ les cycles : huit instants de la marche et de la course, de profil et de face
+# Pour juger les pieds (droits, posés à plat, qui ne glissent pas sous le sol), les genoux (qui plient vers l'avant) et
+# le bassin : `<planche>-marche.png` et `<planche>-course.png`, en gris, une rangée de profil, une de face.
+for o in copies:
+    o.hide_render = True
+s.display.shading.color_type = "SINGLE"
+vue_planche = (cam.location.copy(), cam.rotation_euler.copy(), cd.ortho_scale, s.render.resolution_x, s.render.resolution_y)
+for nom in ("marche", "course"):
+    rangs = []
+    for r, (vue, ecart) in enumerate(((Vector((1, 0, 0)), Vector((0, -1, 0))), (Vector((0, -1, 0)), Vector((1, 0, 0))))):
+        for i in range(9):
+            # la première copie est au repos, pour comparer
+            pose, h = allure(nom, (i - 1) * 12.5) if i else ({}, 0)
+            poser(pose)
+            bpy.context.view_layer.update()
+            dg = bpy.context.evaluated_depsgraph_get()
+            me = bpy.data.meshes.new_from_object(mesh.evaluated_get(dg), depsgraph=dg)
+            o = bpy.data.objects.new(f"{nom}-{r}-{i}", me)
+            s.collection.objects.link(o)
+            # chaque rangée regarde le personnage d'un côté : on décale les copies dans le plan de l'image
+            o.location = ecart * (i * 0.55) + Vector((0, 0, h - r * 1.25)) + (vue * 3 if r else Vector())
+            rangs.append(o)
+    poser({})
+    # une caméra de profil (depuis +X) pour la rangée du haut ; la rangée du bas est tournée face à elle
+    for o in rangs:
+        if "-1-" in o.name:
+            o.rotation_euler = (0, 0, math.radians(90))
+            o.location = Vector((0, -(int(o.name[-1]) * 0.55), o.location.z))
+    bpy.context.view_layer.update()
+    pts = [o.matrix_world @ v.co for o in rangs for v in o.data.vertices]
+    ys, zs = [p_.y for p_ in pts], [p_.z for p_ in pts]
+    s.render.resolution_x, s.render.resolution_y = 2400, 750
+    cd.ortho_scale = 1.05 * max(max(ys) - min(ys), (max(zs) - min(zs)) * 2400 / 750)
+    cam.location = (6, (min(ys) + max(ys)) / 2, (min(zs) + max(zs)) / 2)
+    cam.rotation_euler = (math.radians(90), 0, math.radians(90))
+    s.render.filepath = os.path.splitext(planche)[0] + f"-{nom}.png"
+    bpy.ops.render.render(write_still=True)
+    for o in rangs:
+        bpy.data.objects.remove(o)
+for o in copies:
+    o.hide_render = False
+mesh.hide_render = rig.hide_render = True
+cam.location, cam.rotation_euler, cd.ortho_scale, s.render.resolution_x, s.render.resolution_y = vue_planche
+
 # ------------------------------------------------ la vidéo : marche, course, saut, attraper, lancer (9 s)
 if VIDEO:
     for o in copies:
@@ -347,15 +533,23 @@ if VIDEO:
              "forearm.R": ("X", -80), "spine": ("X", -4)}
     SUITE = {"upperarm.R": [("X", -75), ("Y", -15)], "forearm.R": ("X", -10), "upperarm.L": ("X", 30),
              "spine": [("Z", 20), ("X", 15)], "thigh.R": ("X", -20), "shin.R": ("X", 15), "thigh.L": ("X", 10)}
-    M, Mm = POSES["marche"], miroir(POSES["marche"])
-    C, Cm = POSES["course"], miroir(POSES["course"])
-    # (image, pose, hauteur du corps) à 24 images par seconde ; le corps accroupi descend de 0,17.
-    CLES = [(0, {}, 0), (8, M, 0), (20, Mm, 0), (32, M, 0), (44, Mm, 0), (56, M, 0),
-            (64, C, 0.02), (72, Cm, 0.02), (80, C, 0.02), (88, Cm, 0.02), (96, {}, 0),
-            (106, ACCROUPI, -0.17), (112, ELAN, 0.08), (120, POSES["saut"], 0.3), (128, ELAN, 0.1),
-            (134, ACCROUPI, -0.17), (144, {}, 0),
-            (152, POSES["attraper"], 0), (158, PRISE, 0), (170, PRISE, 0), (178, {}, 0),
-            (188, POSES["lancer"], 0), (194, SUITE, 0), (206, SUITE, 0), (216, {}, 0)]
+    # (image, pose, hauteur du corps) à 24 images par seconde : la marche et la course image par image (deux cycles
+    # chacune, entrées et sorties adoucies), puis le saut, attraper et lancer en poses clés ; accroupi, le corps descend
+    # de 0,17.
+    CLES = [(0, {}, 0)]
+    image = 6
+    for nom, cycles in (("marche", 2), ("course", 3)):
+        n = round(ALLURES[nom]["duree"] * 24 * cycles)
+        for i in range(n + 1):
+            pose, h = allure(nom, 100 * cycles * i / n)
+            CLES.append((image + i, pose, h))
+        image += n + 8
+        CLES.append((image, {}, 0))
+        image += 4
+    CLES += [(image + d, pose, h) for d, pose, h in [
+        (10, ACCROUPI, -0.17), (16, ELAN, 0.08), (24, POSES["saut"], 0.3), (32, ELAN, 0.1), (38, ACCROUPI, -0.17),
+        (48, {}, 0), (56, POSES["attraper"], 0), (62, PRISE, 0), (74, PRISE, 0), (82, {}, 0),
+        (92, POSES["lancer"], 0), (98, SUITE, 0), (110, SUITE, 0), (120, {}, 0)]]
     for image, pose, h in CLES:
         poser(pose)
         for pb in rig.pose.bones:
@@ -374,9 +568,31 @@ if VIDEO:
         s.render.filepath = os.path.join(VIDEO, f"{NOM}-{mode}-")
         bpy.ops.render.render(animation=True)
     images = [os.path.join(VIDEO, f"{NOM}-{mode}-%04d.png") for mode in ("tex", "gris")]
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", "24", "-i", images[0], "-framerate", "24",
-                    "-i", images[1], "-filter_complex", "[0][1]hstack=inputs=2,format=yuv420p", "-c:v", "libx264",
-                    "-crf", "22", "-movflags", "+faststart", os.path.join(VIDEO, NOM + ".mp4")], check=True)
+    if shutil.which("ffmpeg"):
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", "24", "-i", images[0], "-framerate", "24",
+                        "-i", images[1], "-filter_complex", "[0][1]hstack=inputs=2,format=yuv420p", "-c:v", "libx264",
+                        "-crf", "22", "-movflags", "+faststart", os.path.join(VIDEO, NOM + ".mp4")], check=True)
+    else:
+        # Sans ffmpeg (le Mac mini) : le montage de Blender met les deux suites d'images côte à côte et encode la vidéo.
+        m = bpy.data.scenes.new("montage")
+        m.render.resolution_x, m.render.resolution_y = 2 * s.render.resolution_x, s.render.resolution_y
+        m.render.fps, m.frame_start, m.frame_end = 24, s.frame_start, s.frame_end
+        ed = m.sequence_editor_create()
+        pistes = ed.strips if hasattr(ed, "strips") else ed.sequences
+        for k, mode in enumerate(("tex", "gris")):
+            noms = [f"{NOM}-{mode}-{i:04d}.png" for i in range(s.frame_start, s.frame_end + 1)]
+            st = pistes.new_image(mode, os.path.join(VIDEO, noms[0]), k + 1, s.frame_start)
+            for n in noms[1:]:
+                st.elements.append(n)
+            if hasattr(st, "fit_method"):
+                st.fit_method = "ORIGINAL"
+            st.transform.offset_x = (k - 0.5) * s.render.resolution_x
+        if hasattr(m.render.image_settings, "media_type"):
+            m.render.image_settings.media_type = "VIDEO"
+        m.render.image_settings.file_format = "FFMPEG"
+        m.render.ffmpeg.format, m.render.ffmpeg.codec, m.render.ffmpeg.constant_rate_factor = "MPEG4", "H264", "HIGH"
+        m.render.filepath = os.path.join(VIDEO, NOM + ".mp4")
+        bpy.ops.render.render(animation=True, scene=m.name)
     for mode in ("tex", "gris"):
         for i in range(s.frame_start, s.frame_end + 1):
             os.remove(os.path.join(VIDEO, f"{NOM}-{mode}-{i:04d}.png"))

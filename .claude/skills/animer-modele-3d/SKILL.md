@@ -33,7 +33,7 @@ python3.11 scripts/rendu/modeles/alleger_brut.py -- <brut.glb> <allégé.glb> 20
 python3.11 scripts/rendu/modeles/squelette_humain.py -- <allégé.glb> <sortie.glb> <planche.png> [réglage=valeur …] [video=<dossier>]
 ```
 
-Le module `bpy` (Python 3.11) suffit, sans écran ; les messages « EGL Error » sont sans gravité. La vidéo demande `ffmpeg`.
+Le module `bpy` (Python 3.11) suffit, sans écran ; les messages « EGL Error » sont sans gravité. Sur le Mac mini, Blender lance le même script : `/Applications/Blender.app/Contents/MacOS/Blender -b -P scripts/rendu/modeles/squelette_humain.py -- …`. La vidéo passe par `ffmpeg`, ou par le montage de Blender quand il manque.
 
 - **Garder le brut.** Ne pas repeindre, ne pas réduire fort : 20 000 triangles gardent un ado fidèle, 8 000 passent, 3 000 cassent la forme. Le brut regarde déjà −Y : ne pas le tourner, le script l'exporte devant −X comme les modèles du jeu.
 - **La doublure.** TRELLIS double les vêtements d'une peau intérieure qui perce au moindre geste. Le script retire chaque face dont aucun rayon ne sort du modèle. Il reste 7 000 à 10 000 triangles.
@@ -52,6 +52,8 @@ Le module `bpy` (Python 3.11) suffit, sans écran ; les messages « EGL Error »
   - manche qui se déchire bras levé : le fondu buste → bras de l'épaule (`epaule_r`), plus large pour un manteau ;
   - manteau long qui se déchire entre les jambes : `jupe`, le pan suit à moitié le bassin, à moitié la cuisse ;
   - toiles entre jambe et jambe ou entre bras et buste : le script les coupe en gardant les sommets (`FACES_ONLY`), sur lesquels les poids sont posés.
+- **Les jambes se lisent sur le modèle.** Un sac, une radio ou un tube dans le dos décalent le milieu du modèle : la hanche, le genou et la cheville se prennent au milieu de la coupe de chaque jambe (entre ses bords, pas en moyenne : le bout d'une chaussure ou une poche la tireraient), une jambe debout restant presque droite ; le pied, sur sa semelle, jusqu'à la pointe. Un pied ouvert de plus de `pieds` degrés (6 ; TRELLIS en ouvre souvent dix ou douze) est tourné vers l'avant autour de sa cheville, fondu jusqu'au bas du tibia. Les os posés à des places fixes, loin des jambes du modèle, et les pieds ouverts faisaient marcher et courir les ados en canard (mainteneur, 19 octobre 2026).
+- **La marche et la course suivent un cycle réel**, image par image, et non deux poses qui s'échangent (`ALLURES`, `allure`) : les angles de la hanche, du genou et de la cheville au fil du cycle, d'après l'analyse de la marche (Perry et Burnfield) et de la course (Novacheck, 1998), l'autre jambe un demi-cycle plus tard ; la hanche diminuée de la bascule du bassin de ces données (10° à la marche, 15° à la course), sinon les deux jambes restent en avant et le corps penche en arrière ; le talon qui attaque pointe relevée, le pied qui pousse sur la pointe ; le bassin qui tourne avec la jambe qui avance et descend du côté de la jambe en l'air, les épaules à l'inverse, la tête face à la marche ; les bras rapprochés du corps depuis la pose A, balancés à l'opposé des jambes, coudes un peu pliés (à angle droit en course) ; le corps qui monte et descend pour que le pied le plus bas touche juste le sol (longueurs des os), et deux vols par cycle en course. Ce sont les principes des animateurs (contact, réception, passage, poussée ; Richard Williams) avec des valeurs mesurées.
 - **Les poses s'écrivent en axes du monde**, jamais sur les axes locaux des os, inversés d'un os à l'autre : c'est ce qui faisait rentrer les bras dans le buste. Devant −Y, gauche +X :
   - bras ou jambe en avant `("X", -a)`, en arrière `("X", +a)` ; coude plié `("X", -a)` ; genou plié `("X", +a)` ;
   - bras écarté : gauche `("Y", -a)`, droite `("Y", +a)` ; buste penché en avant `("X", +a)` ; épaule droite qui recule `("Z", -a)` ;
@@ -61,7 +63,7 @@ Le module `bpy` (Python 3.11) suffit, sans écran ; les messages « EGL Error »
 
 ## 5. Contrôler : toujours avec ET sans texture
 
-Le mainteneur juge chaque étape sur deux rangées : la texture (ou les aplats), puis un gris uni qui montre la forme seule (Workbench, `color_type` SINGLE). `squelette_humain.py` rend la planche des six poses (repos, marche, course, saut, attraper, lancer) en `<planche>.png` et `<planche>-gris.png`. Avec `video=<dossier>`, il rend aussi `<nom>.mp4` : 9 s, texture à gauche, gris à droite.
+Le mainteneur juge chaque étape sur deux rangées : la texture (ou les aplats), puis un gris uni qui montre la forme seule (Workbench, `color_type` SINGLE). `squelette_humain.py` rend la planche des six poses (repos, marche, course, saut, attraper, lancer) en `<planche>.png` et `<planche>-gris.png`, puis `<planche>-marche.png` et `<planche>-course.png` : huit instants du cycle, de profil et de face, après une copie au repos. On y juge les pieds (droits de face, posés à plat, jamais sous le sol), les genoux (qui plient vers l'avant), le corps (droit à la marche, un peu penché en course). Avec `video=<dossier>`, il rend aussi `<nom>.mp4` : environ 11 s, texture à gauche, gris à droite.
 
 Regarder les images une à une avant d'envoyer, surtout en gris : bras qui rentre dans le buste ou qui tourne à l'envers, membre détaché, manche ou manteau déchiré, pieds qui flottent. Corriger, relancer, puis seulement livrer.
 
