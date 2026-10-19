@@ -136,7 +136,7 @@ export function seedFacets(): Facets {
 export const SEED_AT: Vec2 = SEED.at;
 
 /** La place de la lumière du Phare depuis le pied du ponton (à 85 unités, au sud-est, là où la mer se lit encore), sa hauteur, sa taille (demi-largeur, demi-hauteur). */
-const PHARE_SPOT = { east: 60, south: 60, high: 1.9, w: 1.35, h: 0.65 } as const;
+const PHARE_SPOT = { east: 60, south: 60, high: 1.9, w: 1.85, h: 0.89 } as const;
 
 /**
  * La lumière du Phare, vers le 6e (directeur artistique, point 3 de la retouche ; consultant d'Archipéo, point 3 ;
@@ -145,7 +145,10 @@ const PHARE_SPOT = { east: 60, south: 60, high: 1.9, w: 1.35, h: 0.65 } as const
  * seul point chaud, immobile, plus large que haut, deux fois plus grand qu'au premier passage (à l'œil) : la couleur des
  * lanternes du 5e (`COLORS_5E.lantern`, dessinée sans ombre), un liseré sombre derrière elle (le contraste contre le
  * ciel du couchant), et sous elle une petite tour gris-bleu. La vue ne les brouille presque pas (levelWorld.ts,
- * `thinFog`). 28 triangles.
+ * `thinFog`). 28 triangles. Vue du quai, elle est derrière la caméra de l'arrivée (cap 0,8) ; quatre crans de la
+ * caméra (un demi-tour, d'un côté ou de l'autre, cap 3,94 ou −2,34) la mettent au milieu de l'image (à 0,3° de l'axe),
+ * sur la ligne où la mer rejoint le ciel, la lumière large de 30 pixels sur 1 024 (38 avec son liseré) : ce que demande
+ * le directeur artistique (seconde passe), la taille réglée pour (`PHARE_SPOT`).
  */
 export const PHARE_LIGHT: Vec3 = (() => {
   const q = QUAY_5E.from;

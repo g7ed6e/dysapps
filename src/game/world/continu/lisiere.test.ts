@@ -4,17 +4,18 @@
 import { describe, expect, it } from 'vitest';
 import { NEF_SISTERS } from '../nefModels';
 import { lisiereCost } from './budget';
-import { WORLD_FOG } from './camera';
-import { distance, distanceToPolyline } from './geometry';
+import { WORLD_FOG, followPose, lookUp, screenOf } from './camera';
+import { distance, distanceToPolyline, linearRgb } from './geometry';
 import { LISIERE_PONTON, LISIERE_SITE, LISIERE_VIEW, PHARE_DARK, PHARE_LIGHT, SEED_AT, phareLightFacets, seedFacets } from './lisiere';
 import { levelWorld } from './levelWorld';
 import { planFor } from './levelPlan';
 import { MONTEE_HEIGHT } from './montee5e';
 import type { NefFlight } from './nef';
-import { NEF_5E, NEF_5E_DEPARTURE, NEF_5E_TEMPS, NEF_PLUME, NEF_WALL, PLUME_COLORS, RIG_SISTERS, WALL_COLORS, nef5eFlight, nef5eSiteTriangles, nef5eTouched, RIG_SPAN, rigShown, wallFacets, wallSides, wallTouched } from './nef5e';
+import { NEF_5E, NEF_5E_DEPARTURE, NEF_5E_TEMPS, NEF_PLUME, NEF_WALL, PLUME_COLORS, PLUME_SQUASH, RIG_SISTERS, WALL_COLORS, nef5eFlight, nef5eSiteTriangles, nef5eTouched, RIG_SPAN, rigShown, wallFacets, wallSides, wallTouched } from './nef5e';
 import { NETWORK_5E } from './paths5e';
 import { ANSE_5E, COLORS_5E, DEPARTURE_5E, LISIERE, LISIERE_LEVEL, LISIERE_BUILDINGS, LISIERE_PAVING, NEEDLES_5E, NEF_TAKEOFF_5E, PATH_EDGES_5E, PLATEAU, QUAY_5E, inLisiereClearing, lisiereFloor } from './plan5e';
 import { HORIZON_COLOR_5E } from './sky';
+import { modelOfPlace } from './places';
 import { portHeading, portTouch } from './port';
 import { heightAt5e } from './terrain5e';
 
@@ -116,6 +117,24 @@ describe('La graine géante et la lumière du Phare', () => {
     // Le liseré sombre contre le ciel du couchant, et la lumière contre lui (référent dys, 3:1).
     expect(contrast(PHARE_DARK, HORIZON_COLOR_5E)).toBeGreaterThanOrEqual(3);
     expect(contrast(COLORS_5E.lantern, PHARE_DARK)).toBeGreaterThanOrEqual(3);
+    // Quatre crans de la caméra au quai (un demi-tour) la mettent au milieu de l'image, sur la ligne où la mer rejoint le
+    // ciel (la mer au bout du brouillard), la lumière large d'au moins 30 pixels sur 1 024 ; la première vue ne la montre pas.
+    const keo = { x: DEPARTURE_5E.at.x, y: LISIERE_LEVEL, z: DEPARTURE_5E.at.z };
+    const turned = followPose(keo, 0, undefined, LISIERE_VIEW.yaw + Math.PI);
+    const S = (p: { x: number; y: number; z: number }) => screenOf(turned, p, 1024, 768);
+    const lantern = linearRgb(COLORS_5E.lantern);
+    const xs: number[] = [];
+    for (let k = 0; k < f.positions.length; k += 3)
+      if (lantern.every((v, c) => Math.abs(f.colors[k + c] - v) < 1e-6)) xs.push(S({ x: f.positions[k], y: f.positions[k + 1], z: f.positions[k + 2] }).x);
+    expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThanOrEqual(30);
+    const at = S(PHARE_LIGHT);
+    expect(Math.abs(at.x - 512)).toBeLessThan(20);
+    const toward = { x: PHARE_LIGHT.x - turned.position.x, z: PHARE_LIGHT.z - turned.position.z };
+    const d = Math.hypot(toward.x, toward.z);
+    const sea = S({ x: turned.position.x + (toward.x / d) * WORLD_FOG.far, y: 0, z: turned.position.z + (toward.z / d) * WORLD_FOG.far });
+    expect(Math.abs(at.y - sea.y)).toBeLessThan(10);
+    const first = followPose(keo, 0, undefined, LISIERE_VIEW.yaw);
+    expect((PHARE_LIGHT.x - first.position.x) * (first.target.x - first.position.x) + (PHARE_LIGHT.z - first.position.z) * (first.target.z - first.position.z)).toBeLessThan(0);
     // Presque sans brouillard, à la couleur des lanternes.
     const thin = levelWorld('5e').thinFog;
     expect(thin.find((t) => t.color === COLORS_5E.lantern)!.fog).toBeLessThan(0.2);
@@ -191,19 +210,24 @@ describe('Le mur de nuages et le départ par les airs', () => {
     // Les deux cumulus de la brèche glissent l'un vers l'ouest, l'autre vers l'est.
     expect(NEF_WALL.filter((v) => v.side === -1)).toHaveLength(1);
     expect(NEF_WALL.filter((v) => v.side === 1)).toHaveLength(1);
-    // Le panache, derrière le mur, derrière la brèche.
+    // Le panache, derrière le mur.
     expect(NEF_PLUME.z).toBeLessThan(Math.min(...NEF_WALL.map((v) => v.z - v.r)));
-    const west = NEF_WALL.find((v) => v.side === -1)!;
-    const east = NEF_WALL.find((v) => v.side === 1)!;
-    expect(NEF_PLUME.x).toBeGreaterThan(west.x - west.r);
-    expect(NEF_PLUME.x).toBeLessThan(east.x);
-    // Ses boules grossissent en montant, se chevauchent (aucune arête droite de haut en bas) et penchent vers l'est.
-    NEF_PLUME.balls.slice(1).forEach(([y, r, e], i) => {
-      const [y0, r0, e0] = NEF_PLUME.balls[i];
-      expect(r).toBeGreaterThan(r0);
-      expect(y - y0).toBeLessThan(r + r0);
+    // Des boules plus larges que hautes, très chevauchées (leurs milieux à moins des deux tiers d'un rayon), qui penchent
+    // vers l'est ; au-dessus du pied, aucune plus étroite que celle d'en dessous (aucun étranglement) ; au sommet, deux
+    // boules côte à côte, qui se chevauchent.
+    expect(PLUME_SQUASH).toBeLessThan(1);
+    const column = NEF_PLUME.balls.slice(0, -1);
+    column.slice(1).forEach(([y, r, e], i) => {
+      const [y0, r0, e0] = column[i];
+      expect(y - y0).toBeLessThanOrEqual((2 / 3) * Math.min(r, r0));
       expect(e).toBeGreaterThanOrEqual(e0);
+      if (i > 0) expect(r).toBeGreaterThanOrEqual(r0);
     });
+    const [ya, ra, ea] = NEF_PLUME.balls[NEF_PLUME.balls.length - 2];
+    const [yb, rb, eb] = NEF_PLUME.balls[NEF_PLUME.balls.length - 1];
+    expect(Math.abs(ya - yb)).toBeLessThan(0.25 * Math.min(ra, rb));
+    expect(Math.abs(ea - eb)).toBeGreaterThan(Math.min(ra, rb));
+    expect(Math.abs(ea - eb)).toBeLessThan(ra + rb);
     expect(wallFacets(30, 30).triangles).toBe(wallFacets().triangles);
   });
 
@@ -212,6 +236,69 @@ describe('Le mur de nuages et le départ par les airs', () => {
     expect(lum(WALL_COLORS.shade)).toBeLessThan(lum(WALL_COLORS.lit) * 0.7);
     const thin = levelWorld('5e').thinFog;
     for (const c of [...Object.values(WALL_COLORS), ...Object.values(PLUME_COLORS)]) expect(thin.find((t) => t.color === c)!.fog, c.toString(16)).toBeLessThan(1);
+  });
+
+  it('vu du quai : le panache dépasse le mur, la Nef passe toujours à sa droite, jamais devant lui, et finit dans la moitié est de la brèche', () => {
+    // La caméra de l'arrivée au quai, telle que la vue la pose (le regard levé vers le sommet de la Montée).
+    const keo = { x: DEPARTURE_5E.at.x, y: LISIERE_LEVEL, z: DEPARTURE_5E.at.z };
+    const top = { x: montee.x, y: heightAt5e(montee) + modelOfPlace('montee').top, z: montee.z };
+    const pose = followPose(keo, 0, undefined, LISIERE_VIEW.yaw);
+    lookUp(pose, top, keo, 1, 768);
+    const S = (p: { x: number; y: number; z: number }) => screenOf(pose, p, 1024, 768);
+    const fx = pose.target.x - pose.position.x;
+    const fz = pose.target.z - pose.position.z;
+    const fl = Math.hypot(fx, fz);
+    const right = { x: -fz / fl, z: fx / fl };
+    /** Le bord gauche et droit, à l'écran, d'une sphère de rayon `r` (à plat). */
+    const across = (c: { x: number; y: number; z: number }, r: number) => [S({ x: c.x - right.x * r, y: c.y, z: c.z - right.z * r }).x, S({ x: c.x + right.x * r, y: c.y, z: c.z + right.z * r }).x];
+    const balls = NEF_PLUME.balls.map(([y, r, e]) => across({ x: NEF_PLUME.x + e, y, z: NEF_PLUME.z }, r));
+    const plumeRight = Math.max(...balls.map((b) => b[1]));
+    const topWidth = Math.max(...balls.slice(-2).map((b) => b[1] - b[0]));
+    // Le haut du panache, au-dessus du haut des cumulus qui sont devant lui.
+    const plumeTop = S({ x: NEF_PLUME.x, y: Math.max(...NEF_PLUME.balls.map(([y, r]) => y + PLUME_SQUASH * r)), z: NEF_PLUME.z }).y;
+    for (const v of NEF_WALL) {
+      const [l, r] = across({ x: v.x, y: v.h, z: v.z }, v.r);
+      if (r > balls[balls.length - 2][0] && l < plumeRight) expect(plumeTop, `${v.x}`).toBeLessThan(S({ x: v.x, y: v.h, z: v.z }).y - 15);
+    }
+    // La Nef (7,2 de long : elle fait ainsi les 265 pixels de la capture, sur son ber), à droite du panache à tout instant,
+    // d'au moins la largeur de la boule du sommet.
+    const LENGTH = 7.2;
+    const f: NefFlight = { x: 0, y: 0, z: 0, yaw: 0, shiftX: 0, shiftZ: 0, open: 0 };
+    for (let i = 0; i <= 160; i++) {
+      nef5eFlight(i / 160, f);
+      const dx = (-Math.sin(f.yaw) * LENGTH) / 2;
+      const dz = (-Math.cos(f.yaw) * LENGTH) / 2;
+      const left = Math.min(S({ x: f.x + dx, y: f.y + 2.3, z: f.z + dz }).x, S({ x: f.x - dx, y: f.y + 2.3, z: f.z - dz }).x);
+      expect(left - plumeRight, `${i}`).toBeGreaterThanOrEqual(topWidth);
+    }
+    // La fin : dans la moitié est de la brèche ouverte (entre son milieu et le bord du cumulus de l'est), à l'écran.
+    const opened = NEF_WALL.map((v) => across({ x: v.x + v.side * NEF_5E_DEPARTURE.open, y: 0.6 * v.h, z: v.z - NEF_5E_DEPARTURE.back }, v.r));
+    const eastIndex = NEF_WALL.findIndex((v) => v.side === 1);
+    const breachRight = opened[eastIndex][0];
+    const breachLeft = Math.max(...opened.slice(0, eastIndex).map((b) => b[1]));
+    const end = S({ x: f.x, y: f.y + 2.3, z: f.z }).x;
+    expect(end).toBeGreaterThan((breachLeft + breachRight) / 2);
+    expect(end).toBeLessThan(breachRight);
+  });
+
+  it('finit vers 6,2 s : la Nef n’est plus qu’un point (12 pixels) un peu après 5 s, le mur ouvert à 6,24 s ; 8 s au plus', () => {
+    const keo = { x: DEPARTURE_5E.at.x, y: LISIERE_LEVEL, z: DEPARTURE_5E.at.z };
+    const top = { x: montee.x, y: heightAt5e(montee) + modelOfPlace('montee').top, z: montee.z };
+    const pose = followPose(keo, 0, undefined, LISIERE_VIEW.yaw);
+    lookUp(pose, top, keo, 1, 768);
+    const f: NefFlight = { x: 0, y: 0, z: 0, yaw: 0, shiftX: 0, shiftZ: 0, open: 0 };
+    const { seconds, openTo, outOfView, pointBeyond } = NEF_5E_DEPARTURE;
+    let point: number = seconds;
+    for (let t = 0; t <= seconds; t += 0.05) {
+      nef5eFlight(t / seconds, f);
+      if (Math.hypot(f.x - pose.position.x, f.y + 2 - pose.position.y, f.z - pose.position.z) > pointBeyond) {
+        point = t;
+        break;
+      }
+    }
+    const end = Math.min(seconds, Math.max(openTo * seconds, point + outOfView));
+    expect(end).toBeGreaterThanOrEqual(6);
+    expect(end).toBeLessThanOrEqual(6.5);
   });
 
   it('ouvre la brèche sommet par sommet : chacun glisse dans le sens de son cumulus', () => {

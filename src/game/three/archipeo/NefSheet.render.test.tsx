@@ -51,7 +51,7 @@ describe('la fiche de la Nef du monde continu (GD-21)', () => {
     // Une seule idée, la même à l'écran et au lecteur d'écran (référent dys, retouche du lot 4).
     expect(said('.visually-hidden')).toBe('Encore 1 lieu à achever.');
     expect(said('.fiche-signes + .world-fiche-phrase')).toBe('Encore 1 lieu à achever.');
-    expect(document.querySelector('.nef-gouvernail')).toBeNull();
+    expect(document.querySelectorAll('.nef-pastille')[2].querySelector('svg')).toBeNull();
     expect(screen.queryByRole('button', { name: /Partir/ })).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: /Carte/ }));
     expect(onMap).toHaveBeenCalled();
@@ -71,8 +71,8 @@ describe('la fiche de la Nef du monde continu (GD-21)', () => {
     show(false, 2, dirigeable);
     expect(said('.visually-hidden')).toBe('Encore 2 lieux à achever.');
     expect(said('.fiche-signes + .world-fiche-phrase')).toBe('Encore 2 lieux à achever.');
-    // Le gouvernail en croix, sur la troisième pastille, tant qu'il n'est pas fixé.
-    expect(document.querySelectorAll('.nef-pastille')[2].querySelector('.nef-gouvernail')).not.toBeNull();
+    // Les mêmes pastilles qu'au 6e : aucun dessin sur la troisième (seconde passe du directeur artistique).
+    expect(document.querySelectorAll('.nef-pastille')[2].querySelector('svg')).toBeNull();
   });
 
   it('au monde ouvert, un bloc qui manque se gagne dans un lieu du plan, nommé comme lui (chaque cadre nomme ce qu’il montre)', () => {

@@ -50,29 +50,18 @@ export function nefLookOf(state: GameState, kit: boolean, stage: VehicleStage = 
  * Les trois pastilles des temps de la Nef du monde continu (la coque, le mât, la voile ; GD-21) : fait (pleine, avec une
  * coche), en cours (pleine), à venir (un anneau) ; l'état se lit à la forme, pas à la couleur seule. Les pastilles des
  * formes de la grille (`PastillesDeLaNef`) compteraient le voilier, le dirigeable et l'aéronef : ici, un seul voyage.
- * Au dirigeable, la troisième porte le gouvernail en croix tant qu'il n'est pas fixé (référent dys, retouche du lot 4).
+ * Les mêmes pastilles aux deux niveaux : aucun dessin sur la troisième (le gouvernail en croix se lisait « + » à 16 px ;
+ * directeur artistique, seconde passe du lot 4) ; le mot « gouvernail » reste dans les textes.
  */
-function PastillesDesTemps({ look, form }: { look: NefLook; form: VehicleStage['stage'] }) {
+function PastillesDesTemps({ look }: { look: NefLook }) {
   return (
     <span className="signe nef-pastilles" aria-hidden="true">
       {([1, 2, 3] as const).map((t) => (
         <span key={t} className={`nef-pastille${t <= look ? ' faite' : t === look + 1 ? ' en-cours' : ''}`}>
-          {t <= look ? <Icon name="check" /> : t === 3 && form === RUDDER_FORM && <RudderCross />}
+          {t <= look && <Icon name="check" />}
         </span>
       ))}
     </span>
-  );
-}
-
-/** La forme de la Nef dont le dernier temps est le gouvernail : le dirigeable (`VEHICLE_STAGES[1]`, forme 2 de world/nefModels.ts). */
-const RUDDER_FORM: VehicleStage['stage'] = 2;
-
-/** Le gouvernail du dirigeable, vu de l'arrière : une croix de quatre ailerons (un dessin simple, à la couleur du texte). */
-function RudderCross() {
-  return (
-    <svg className="nef-gouvernail" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M12 3v18M3 12h18" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" fill="none" />
-    </svg>
   );
 }
 
@@ -156,7 +145,7 @@ export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClo
           {/* Une seule idée quand elle attend son dernier temps (référent dys) ; sinon la forme, puis la jauge. */}
           <p className="visually-hidden">{frenchTypography(waiting ? phrase : `${etape}. ${phrase}`)}</p>
           <p className="world-fiche-phrase fiche-signes" aria-hidden="true">
-            <PastillesDesTemps look={look} form={building.stage} />{' '}
+            <PastillesDesTemps look={look} />{' '}
             <span className="signe">
               <Icon name="cube" /> {status.done}/{status.total}
             </span>{' '}
@@ -184,7 +173,7 @@ export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClo
         </>
       ) : (
         <p className="world-fiche-phrase">
-          <PastillesDesTemps look={look} form={building.stage} /> <Syllabified text={frenchTypography(phrase)} />
+          <PastillesDesTemps look={look} /> <Syllabified text={frenchTypography(phrase)} />
         </p>
       )}
       <div className="nef-sheet-actions">

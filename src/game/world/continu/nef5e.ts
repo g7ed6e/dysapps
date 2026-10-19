@@ -140,12 +140,29 @@ export const NEF_WALL: readonly Cumulus[] = [
 ];
 
 /**
- * Le panache du 4e (directeur artistique, retouche B ; consultant d'Archipéo, retouche 8) : derrière la brèche vue du
- * quai, des boules de fumée empilées qui grossissent en montant et s'ouvrent en nuage au sommet, légèrement penchées
- * vers l'est ; gris froid, plus sombre que le mur, jamais noir ; aucune arête droite de haut en bas. `[hauteur, rayon,
- * déport vers l'est]` de chaque boule.
+ * Le panache du 4e (directeur artistique, retouche B et seconde passe ; consultant d'Archipéo, retouches 8) : derrière
+ * le mur, à l'ouest de la brèche vue du quai (la Nef passe toujours à sa droite), des boules de fumée plus larges que
+ * hautes (`PLUME_SQUASH`), très chevauchées (leurs milieux à moins des deux tiers d'un rayon l'un de l'autre), le pied
+ * large enfoui derrière le mur, une silhouette continue, sans étranglement, qui monte au-dessus de lui et s'ouvre en
+ * nuage au sommet, deux boules côte à côte ; légèrement penchée vers l'est ; gris froid, plus sombre que le mur, jamais
+ * noir ; aucune arête droite de haut en bas. `[hauteur, rayon, déport vers l'est]` de chaque boule, du pied au sommet ;
+ * les deux dernières font le sommet.
  */
-export const NEF_PLUME = { x: -62, z: -292, balls: [[6, 7, 0], [18, 8.5, 2], [34, 10.5, 5], [53, 13.5, 9], [76, 18, 14]] } as const;
+export const NEF_PLUME = {
+  x: -165,
+  z: -300,
+  balls: [
+    [14, 21, 0],
+    [27, 20, 3],
+    [40, 20, 6],
+    [53, 21, 9],
+    [67, 22, 10],
+    [65, 19, 33],
+  ],
+} as const satisfies { x: number; z: number; balls: readonly (readonly [number, number, number])[] };
+
+/** Les boules du panache, plus larges que hautes : leur hauteur, en part de leur rayon. */
+export const PLUME_SQUASH = 0.8;
 
 /** Les couleurs du mur (le côté au soleil, l'ombre gris-bleu, le dessous) et du panache (l'ombre, le soleil, le haut). */
 export const WALL_COLORS = { lit: 0xebe7dc, shade: 0xa7b3bc, under: 0x96a3ad } as const;
@@ -219,14 +236,15 @@ export function wallSides(): Float32Array {
   return sides;
 }
 
-/** Une boule de fumée : un pôle bas, deux anneaux de six pans, un pôle haut ; ses pans au soleil plus clairs. */
+/** Une boule de fumée, aplatie (`PLUME_SQUASH`) : un pôle bas, deux anneaux de six pans, un pôle haut ; ses pans au soleil plus clairs. */
 function smokeBall(b: FacetBuilder, x: number, y: number, z: number, r: number, turn: number, top: boolean): void {
   const SIDES = 6;
   const ring = (dy: number, rr: number, t: number) => Array.from({ length: SIDES }, (_, j): [number, number, number] => [x + rr * Math.cos(t + (2 * Math.PI * j) / SIDES), y + dy, z + rr * Math.sin(t + (2 * Math.PI * j) / SIDES)]);
-  const lo = ring(-0.38 * r, 0.93 * r, turn);
-  const hi = ring(0.38 * r, 0.93 * r, turn + Math.PI / SIDES);
-  const down: [number, number, number] = [x, y - r, z];
-  const up: [number, number, number] = [x, y + r, z];
+  const v = PLUME_SQUASH * r;
+  const lo = ring(-0.38 * v, 0.93 * r, turn);
+  const hi = ring(0.38 * v, 0.93 * r, turn + Math.PI / SIDES);
+  const down: [number, number, number] = [x, y - v, z];
+  const up: [number, number, number] = [x, y + v, z];
   const shade = (j: number) => {
     const a = turn + (2 * Math.PI * (j + 0.5)) / SIDES;
     return Math.cos(a) * SUN.x + Math.sin(a) * SUN.z > 0 ? PLUME_COLORS.lit : PLUME_COLORS.side;
@@ -244,7 +262,8 @@ function smokeBall(b: FacetBuilder, x: number, y: number, z: number, r: number, 
 function plumeFacets(): Facets {
   const b = new FacetBuilder();
   const { x, z, balls } = NEF_PLUME;
-  balls.forEach(([y, r, east], i) => smokeBall(b, x + east, y, z, r, i * 0.7, i === balls.length - 1));
+  // Les deux dernières, côte à côte, font le sommet : leur haut prend la couleur claire du nuage.
+  balls.forEach(([y, r, east], i) => smokeBall(b, x + east, y, z, r, i * 0.7, i >= balls.length - 2));
   return b.build();
 }
 
@@ -260,19 +279,21 @@ export function nef5eTouched(p: Vec2): boolean {
 }
 
 /**
- * Le départ, par les airs (directeur artistique, retouche 1 et 2 ; consultant d'Archipéo, retouche 1) : huit secondes
- * au plus, qu'un toucher termine. Le mur s'ouvre de `open` (chaque cumulus du milieu) et recule de `back`, de `openFrom`
- * (la Nef vire) à `openTo` du temps ; la Nef reste dans l'image de la caméra du quai tout le long, et le départ finit
- * `outOfView` secondes après qu'elle est passée au-delà de la brèche (à `pointBeyond` unités de la caméra, un point) ou
- * a quitté l'image, mais jamais avant que le mur soit ouvert.
+ * Le départ, par les airs (directeur artistique, retouche 1 et 2 et seconde passe ; consultant d'Archipéo, retouche 1) :
+ * huit secondes au plus, qu'un toucher termine. Le mur s'ouvre de `open` (chaque cumulus du milieu) et recule de `back`,
+ * de `openFrom` (la Nef vire) à `openTo` du temps ; la Nef reste dans l'image de la caméra du quai tout le long, et le
+ * départ finit `outOfView` secondes après qu'elle n'est plus qu'un point (à `pointBeyond` unités de la caméra, elle fait
+ * environ 12 pixels de large sur 1 024, vers 5 s) ou a quitté l'image, mais jamais avant que le mur soit ouvert (6,24 s) :
+ * vers 6,2 s en tout.
  */
-export const NEF_5E_DEPARTURE = { seconds: 8, openFrom: 0.19, openTo: 0.72, open: 30, back: 30, outOfView: 0.5, pointBeyond: 400 } as const;
+export const NEF_5E_DEPARTURE = { seconds: 8, openFrom: 0.19, openTo: 0.78, open: 40, back: 30, outOfView: 0.5, pointBeyond: 180 } as const;
 
 /**
  * Le chemin du départ, dans le monde : du ber, la Nef se lève en biais au-dessus de l'anse, puis monte au ras des cimes
  * vers le nord-ouest (l'envol que la forêt laisse libre, plan5e.ts, `NEF_TAKEOFF_5E`), vire au nord, passe au-dessus du
  * plateau, plus haut que les aiguilles qu'elle longe, à l'écart de la Montée (à droite d'elle vue du quai), et file par
- * la brèche, à côté du panache, en montant (lot4/route : la caméra du quai la garde dans l'image tout le long).
+ * la moitié est de la brèche, sur le ciel clair, en montant ; vue du quai, elle reste à droite du panache, à plus de la
+ * largeur de sa boule du sommet, jamais devant lui (la caméra du quai la garde dans l'image tout le long).
  */
 const ROUTE: readonly [number, number, number][] = [
   [BERTH.x, LIFT.ber, BERTH.z],
@@ -280,8 +301,8 @@ const ROUTE: readonly [number, number, number][] = [
   [194, 8, 82],
   [180, 13, 64],
   [100, 44, -70],
-  [-11, 55, -215],
-  [-28, 62, -300],
+  [6, 55, -215],
+  [-16, 62, -300],
 ];
 const LEGS = ROUTE.slice(1).map((p, i) => Math.hypot(p[0] - ROUTE[i][0], p[1] - ROUTE[i][1], p[2] - ROUTE[i][2]));
 const ROUTE_LENGTH = LEGS.reduce((s, l) => s + l, 0);
