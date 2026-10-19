@@ -887,7 +887,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // L'habitant de la scénette en modèle 3D (./habitantModels.ts) : un maillage texturé à part, un appel ; sa texture
   // envoyée à la carte graphique dès qu'elle est décodée (à l'approche du lieu), jamais au premier dessin de la scénette.
   // Fait ici, avant tout ce qui l'appelle (`setFrame`, l'entrée et la sortie d'une scénette, `dispose`).
-  const habitants = createHabitantModels(scene, (t) => renderer.initTexture(t));
+  // Un modèle prêt après l'entrée de la remise de son lieu (« Livrer » touché aussitôt arrivé) prend la place du pion : rien
+  // de la remise ne dépend du pion ; dans une mission, ce qui pend de la main de l'habitant s'y règle, le pion reste.
+  const habitants = createHabitantModels(
+    scene,
+    (t) => renderer.initTexture(t),
+    (place) => {
+      if (scenette !== place || remise?.place !== place || asked) return;
+      habitants.show(place, scenetteHabitant(place, posed));
+      setGeometry(decorMesh, scenetteDecor(place, false, posed, topped));
+    },
+  );
   const ringGeometry = keep(new THREE.RingGeometry(KEO_RING.inner, KEO_RING.outer, 24).rotateX(-Math.PI / 2));
   // L'anneau épouse le sol (directeur artistique) : ses sommets suivent le sol dessiné, refaits quand Kéo bouge ; sa
   // sphère englobante tient les pentes.
@@ -1762,6 +1772,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!free && distance(here, from.at) > 0.05) route.unshift(here);
     showFreeMark(null);
     walkTarget = place;
+    // Kéo part vers un lieu : le modèle de son habitant se prépare pendant la marche, avant « Livrer » ou une mission.
+    if (place) habitants.prefetch(place);
     if (route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05) return arrive(place);
     walk = startWalk(route, performance.now());
     heldBridge = null;

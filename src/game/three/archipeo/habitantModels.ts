@@ -5,7 +5,8 @@
 // sous la lumière du monde. Au plus deux modèles gardés (le lieu approché et celui de la scénette) : une texture de 2048
 // pèse environ 22 Mo dans la carte graphique, le plus ancien est libéré avant d'en faire un troisième. Un lieu dont le
 // modèle a manqué (fichier absent, image indécodable) ne se redemande qu'après `RELANCE_MS`. Tant que le modèle d'un lieu n'est pas prêt à
-// l'entrée de sa scénette (ou hors ligne, ou illisible), le pion dessiné en code reste pour toute la scénette.
+// l'entrée de sa scénette (ou hors ligne, ou illisible), le pion dessiné en code reste ; le modèle qui arrive pendant la
+// scénette est dit à la vue (`onReady`), qui le montre là où rien ne dépend encore du pion (une remise).
 import * as THREE from 'three';
 import { loadHabitant, RELANCE_MS } from '../../importedCharacters';
 import type { ModeleTexture } from '../../world/characters/imported/glb';
@@ -49,7 +50,7 @@ async function decode(image: ModeleTexture['image']): Promise<ImageBitmap> {
  * Les modèles des habitants : un seul maillage dans la scène, qui prend la géométrie et le matériau du lieu montré ;
  * `prepare` (le rendu) envoie la texture à la carte graphique dès qu'elle est décodée, avant la scénette.
  */
-export function createHabitantModels(scene: THREE.Scene, prepare: (t: THREE.Texture) => void): HabitantModels {
+export function createHabitantModels(scene: THREE.Scene, prepare: (t: THREE.Texture) => void, onReady?: (place: PlaceId) => void): HabitantModels {
   const ready: Ready[] = [];
   const pending = new Set<PlaceId>();
   let disposed = false;
@@ -122,6 +123,8 @@ export function createHabitantModels(scene: THREE.Scene, prepare: (t: THREE.Text
         const r = build(place, m, bitmap);
         prepare(r.texture);
         ready.push(r);
+        // Arrivé après l'entrée de la scénette de son lieu (le pion montré) : la vue décide de le montrer.
+        if (current === place && !mesh.visible) onReady?.(place);
       } catch {
         // Une image qui ne se décode pas (navigateur trop ancien) : le pion reste, et le fichier n'est pas relu à chaque
         // ouverture du panneau du lieu.
