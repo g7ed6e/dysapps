@@ -174,9 +174,14 @@ describe('La scène du 5e', () => {
     expect(shader.fragmentShader).toContain('mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) )');
     expect(shader.fragmentShader).not.toContain('#include <fog_fragment>');
     expect(shader.fragmentShader).toContain('lanternColor');
-    // Les couleurs peu voilées (lot 4, retouche) : la lumière du Phare et sa tour, le mur et le panache, une ligne chacune.
-    expect(shader.fragmentShader.match(/fogFactor \*= 0\.\d+;/g)).toHaveLength(levelWorld('5e').thinFog.length);
-    expect(shader.fragmentShader).toContain('fogFactor *= 0.12;');
+    // Les couleurs peu voilées (lot 4, retouche) : la lumière du Phare et sa tour, le mur et le panache, une ligne chacune ;
+    // le panache, sans ombre (troisième passe), garde sa couleur.
+    const thin = levelWorld('5e').thinFog;
+    expect(shader.fragmentShader.match(/thinFogK = 0\.\d+;/g)).toHaveLength(thin.length);
+    expect(shader.fragmentShader).toContain('thinFogK = 0.12; }');
+    expect(shader.fragmentShader.match(/thinFogK = 0\.\d+; outgoingLight = vColor\.rgb; \}/g)).toHaveLength(thin.filter((t) => t.unlit).length);
+    expect(shader.fragmentShader).toContain('* thinFogK;');
+    expect(shader.fragmentShader.indexOf('float thinFogK')).toBeLessThan(shader.fragmentShader.indexOf('* thinFogK;'));
     // La lampe du 6e et la lanterne du 5e, puis le morceau de Three.js, une seule fois.
     expect(shader.fragmentShader.split('#include <opaque_fragment>')).toHaveLength(2);
     expect(Object.keys(shader.uniforms)).toEqual(expect.arrayContaining(['heightLow', 'heightHigh', 'heightSunLow', 'heightTintLow', 'heightFog', 'lanternColor', 'lampColor']));

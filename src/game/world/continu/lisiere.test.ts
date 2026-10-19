@@ -11,7 +11,7 @@ import { levelWorld } from './levelWorld';
 import { planFor } from './levelPlan';
 import { MONTEE_HEIGHT } from './montee5e';
 import type { NefFlight } from './nef';
-import { NEF_5E, NEF_5E_DEPARTURE, NEF_5E_TEMPS, NEF_PLUME, NEF_WALL, PLUME_COLORS, PLUME_SQUASH, RIG_SISTERS, WALL_COLORS, nef5eFlight, nef5eSiteTriangles, nef5eTouched, RIG_SPAN, rigShown, wallFacets, wallSides, wallTouched } from './nef5e';
+import { FOLLOW_FAR_5E, NEF_5E, NEF_5E_DEPARTURE, NEF_5E_TEMPS, NEF_PLUME, NEF_WALL, PLUME_COLORS, PLUME_SQUASH, RIG_SISTERS, WALL_COLORS, nef5eFlight, nef5eSiteTriangles, nef5eTouched, RIG_SPAN, rigShown, wallFacets, wallSides, wallTouched } from './nef5e';
 import { NETWORK_5E } from './paths5e';
 import { ANSE_5E, COLORS_5E, DEPARTURE_5E, LISIERE, LISIERE_LEVEL, LISIERE_BUILDINGS, LISIERE_PAVING, NEEDLES_5E, NEF_TAKEOFF_5E, PATH_EDGES_5E, PLATEAU, QUAY_5E, inLisiereClearing, lisiereFloor } from './plan5e';
 import { HORIZON_COLOR_5E } from './sky';
@@ -184,7 +184,8 @@ describe('Le dirigeable en trois temps', () => {
   it('coûte sous ses plafonds : le modèle, son ber et la bouée 1 900 ; le gréement 150 ; le mur et le panache 800', () => {
     const t = nef5eSiteTriangles();
     expect(t.ber).toBeLessThanOrEqual(150 + 196);
-    // 800 depuis les captures v3 : le panache monte au-dessus du mur vu du quai (216 triangles), dans l'enveloppe du monde ouvert inchangée.
+    // 800, plafond définitif (directeur artistique, troisième passe) : le panache monte au-dessus du mur vu du quai, son
+    // sommet plat et large (240 triangles), dans l'enveloppe du monde ouvert inchangée.
     expect(t.wall + t.plume).toBeLessThanOrEqual(800);
   });
 });
@@ -214,26 +215,35 @@ describe('Le mur de nuages et le départ par les airs', () => {
     // Le panache, derrière le mur.
     expect(NEF_PLUME.z).toBeLessThan(Math.min(...NEF_WALL.map((v) => v.z - v.r)));
     // Des boules plus larges que hautes, très chevauchées (leurs milieux à moins des deux tiers d'un rayon), qui penchent
-    // vers l'est ; au-dessus du pied, aucune plus étroite que celle d'en dessous (aucun étranglement) ; au sommet, deux
-    // boules côte à côte, qui se chevauchent.
+    // vers l'est ; au-dessus du pied, aucune plus étroite que celle d'en dessous (aucun étranglement) ; au sommet, plat
+    // et large, une boule de chaque côté de la dernière, à sa hauteur, qui la chevauche.
     expect(PLUME_SQUASH).toBeLessThan(1);
-    const column = NEF_PLUME.balls.slice(0, -1);
+    const column = NEF_PLUME.balls;
     column.slice(1).forEach(([y, r, e], i) => {
       const [y0, r0, e0] = column[i];
       expect(y - y0).toBeLessThanOrEqual((2 / 3) * Math.min(r, r0));
       expect(e).toBeGreaterThanOrEqual(e0);
       if (i > 0) expect(r).toBeGreaterThanOrEqual(r0);
     });
-    const [ya, ra, ea] = NEF_PLUME.balls[NEF_PLUME.balls.length - 2];
-    const [yb, rb, eb] = NEF_PLUME.balls[NEF_PLUME.balls.length - 1];
-    expect(Math.abs(ya - yb)).toBeLessThan(0.25 * Math.min(ra, rb));
-    expect(Math.abs(ea - eb)).toBeGreaterThan(Math.min(ra, rb));
-    expect(Math.abs(ea - eb)).toBeLessThan(ra + rb);
+    const [ya, ra, ea] = column[column.length - 1];
+    for (const [yb, rb, eb] of NEF_PLUME.crown) {
+      expect(Math.abs(ya - yb)).toBeLessThan(0.25 * Math.min(ra, rb));
+      expect(Math.abs(ea - eb)).toBeGreaterThan(Math.min(ra, rb));
+      expect(Math.abs(ea - eb)).toBeLessThan(ra + rb);
+    }
+    expect(NEF_PLUME.crown.map(([, , e]) => Math.sign(e - ea)).sort()).toEqual([-1, 1]);
     expect(wallFacets(30, 30).triangles).toBe(wallFacets().triangles);
   });
 
-  it('un gris froid pour le panache, jamais noir ; une ombre gris-bleu plus sombre que le soleil du mur, moins voilés que le reste', () => {
+  it('un gris clair et froid pour le panache, jamais noir, son soleil à 15 % au plus de son ombre ; une ombre gris-bleu plus sombre que le soleil du mur, moins voilés que le reste', () => {
     for (const c of Object.values(PLUME_COLORS)) expect(lum(c)).toBeGreaterThan(0.15);
+    // Froid : le bleu au-dessus du rouge.
+    for (const c of Object.values(PLUME_COLORS)) expect(c & 0xff, c.toString(16)).toBeGreaterThanOrEqual(c >> 16);
+    // L'écart soleil et ombre, sur les valeurs à l'écran (la moyenne des trois canaux) : 10 à 15 %.
+    const value = (c: number) => ((c >> 16) + ((c >> 8) & 255) + (c & 255)) / 3;
+    expect(value(PLUME_COLORS.lit) / value(PLUME_COLORS.side)).toBeGreaterThanOrEqual(1.1);
+    expect(value(PLUME_COLORS.lit) / value(PLUME_COLORS.side)).toBeLessThanOrEqual(1.15);
+    expect(lum(PLUME_COLORS.side)).toBeLessThan(lum(WALL_COLORS.shade));
     expect(lum(WALL_COLORS.shade)).toBeLessThan(lum(WALL_COLORS.lit) * 0.7);
     const thin = levelWorld('5e').thinFog;
     for (const c of [...Object.values(WALL_COLORS), ...Object.values(PLUME_COLORS)]) expect(thin.find((t) => t.color === c)!.fog, c.toString(16)).toBeLessThan(1);
@@ -252,15 +262,20 @@ describe('Le mur de nuages et le départ par les airs', () => {
     const right = { x: -fz / fl, z: fx / fl };
     /** Le bord gauche et droit, à l'écran, d'une sphère de rayon `r` (à plat). */
     const across = (c: { x: number; y: number; z: number }, r: number) => [S({ x: c.x - right.x * r, y: c.y, z: c.z - right.z * r }).x, S({ x: c.x + right.x * r, y: c.y, z: c.z + right.z * r }).x];
-    const balls = NEF_PLUME.balls.map(([y, r, e]) => across({ x: NEF_PLUME.x + e, y, z: NEF_PLUME.z }, r));
+    const all = [...NEF_PLUME.balls, ...NEF_PLUME.crown];
+    const balls = all.map(([y, r, e]) => across({ x: NEF_PLUME.x + e, y, z: NEF_PLUME.z }, r));
+    const plumeLeft = Math.min(...balls.map((b) => b[0]));
     const plumeRight = Math.max(...balls.map((b) => b[1]));
-    const topWidth = Math.max(...balls.slice(-2).map((b) => b[1] - b[0]));
+    const topWidth = Math.max(...balls.slice(NEF_PLUME.balls.length - 1).map((b) => b[1] - b[0]));
     // Le haut du panache, au-dessus du haut des cumulus qui sont devant lui.
-    const plumeTop = S({ x: NEF_PLUME.x, y: Math.max(...NEF_PLUME.balls.map(([y, r]) => y + PLUME_SQUASH * r)), z: NEF_PLUME.z }).y;
+    const plumeTop = S({ x: NEF_PLUME.x, y: Math.max(...all.map(([y, r]) => y + PLUME_SQUASH * r)), z: NEF_PLUME.z }).y;
     for (const v of NEF_WALL) {
       const [l, r] = across({ x: v.x, y: v.h, z: v.z }, v.r);
-      if (r > balls[balls.length - 2][0] && l < plumeRight) expect(plumeTop, `${v.x}`).toBeLessThan(S({ x: v.x, y: v.h, z: v.z }).y - 15);
+      if (r > plumeLeft && l < plumeRight) expect(plumeTop, `${v.x}`).toBeLessThan(S({ x: v.x, y: v.h, z: v.z }).y - 15);
     }
+    // Tout le panache en deçà du bout de la caméra du 5e (expert frontend) : plus loin, il disparaîtrait sans bruit.
+    const C = pose.position;
+    for (const [y, r, e] of all) expect(Math.hypot(NEF_PLUME.x + e - C.x, y - C.y, NEF_PLUME.z - C.z) + r).toBeLessThan(FOLLOW_FAR_5E);
     // La Nef (7,2 de long : elle fait ainsi les 265 pixels de la capture, sur son ber), à droite du panache à tout instant,
     // d'au moins la largeur de la boule du sommet.
     const LENGTH = 7.2;

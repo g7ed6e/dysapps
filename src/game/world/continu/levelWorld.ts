@@ -33,10 +33,12 @@ interface WaterTones {
 export interface ThinFog {
   readonly color: number;
   readonly fog: number;
+  /** Dessinée sans ombre : la vue garde sa couleur telle quelle (le panache, une fumée). */
+  readonly unlit?: boolean;
 }
 
-/** La part du brouillard que gardent la lumière du Phare et sa tour, puis le mur et le panache. */
-const THIN_FOG_5E = { phare: 0.12, wall: 0.6 } as const;
+/** La part du brouillard que gardent la lumière du Phare et sa tour, le mur, puis le panache. */
+const THIN_FOG_5E = { phare: 0.12, wall: 0.6, plume: 0.45 } as const;
 
 /** Le lieu de départ d'un niveau : sa place (./port.ts dessine ses bâtiments), sa Nef, la caméra à son quai. */
 interface Departure {
@@ -142,7 +144,8 @@ const WORLD_5E: LevelWorld = {
   heightLight: HEIGHT_LIGHT_5E,
   thinFog: [
     ...[COLORS_5E.lantern, PHARE_DARK].map((color) => ({ color, fog: THIN_FOG_5E.phare })),
-    ...[...Object.values(WALL_COLORS), ...Object.values(PLUME_COLORS)].map((color) => ({ color, fog: THIN_FOG_5E.wall })),
+    ...Object.values(WALL_COLORS).map((color) => ({ color, fog: THIN_FOG_5E.wall })),
+    ...Object.values(PLUME_COLORS).map((color) => ({ color, fog: THIN_FOG_5E.plume, unlit: true })),
   ],
   departure: DEPARTURE_5E_SITE,
 };

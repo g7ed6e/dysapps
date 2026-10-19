@@ -76,6 +76,7 @@ import {
 } from '../../world/continu/scenette';
 import { SEA_TEXTURE } from '../../world/continu/sea';
 import { skyDome, type HeightLight } from '../../world/continu/sky';
+import { FOLLOW_FAR_5E } from '../../world/continu/nef5e';
 import { ringHeights, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
@@ -462,12 +463,7 @@ const NEF_FRAMED_HEIGHT = 2.5;
 const FRAMED_BRIDGE_NEAR = 12;
 /** Le bout de la caméra qui suit Kéo, et celui de la Carte (l'île entière, de haut), en unités. */
 const FOLLOW_FAR = 500;
-/**
- * Au 5e, le bout de la caméra qui suit Kéo va plus loin : vu du quai de la Lisière, le panache de la Nef (x −165,
- * z −300, ./world/continu/nef5e.ts, `NEF_PLUME`) est à quelque 510 à 580 unités de profondeur, au-delà de 500, qui n'en
- * laissait qu'une tranche (captures v3 du lot 4). Le 6e garde 500.
- */
-const FOLLOW_FAR_5E = 700;
+// Au 5e, `FOLLOW_FAR_5E` (./world/continu/nef5e.ts), pour le panache de la Nef, au-delà de 500 vu du quai.
 /** Le regard levé au quai du lieu de départ ne vaut que la caméra tournée à moins de tant de son cap (en radians). */
 const QUAY_LOOK_TURN = 0.6;
 const MAP_FAR = 2000;
@@ -676,14 +672,15 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
 
 /**
  * Les couleurs peu voilées (./world/continu/levelWorld.ts, `thinFog` : au 5e, la lumière du Phare au ras de l'horizon,
- * le mur et le panache) : chacune ne garde que sa part du brouillard du lointain. Une ligne de shader par couleur, des
- * constantes (le programme reste celui du 5e).
+ * le mur et le panache) : chacune ne garde que sa part du brouillard du lointain (`thinFogK`, lu par le brouillard), et
+ * celles qui se dessinent sans ombre (`unlit` : le panache, une fumée et non une roche) gardent leur couleur telle
+ * quelle. Une ligne de shader par couleur, une seule comparaison chacune, des constantes (le programme reste celui du 5e).
  */
 function thinFogLines(list: readonly ThinFog[]): string {
   return list
-    .map(({ color, fog }) => {
+    .map(({ color, fog, unlit }) => {
       const [r, g, b] = linearRgb(color).map((v) => v.toFixed(5));
-      return `if ( all( lessThan( abs( vColor.rgb - vec3( ${r}, ${g}, ${b} ) ), vec3( 0.004 ) ) ) ) fogFactor *= ${fog.toFixed(2)};`;
+      return `if ( all( lessThan( abs( vColor.rgb - vec3( ${r}, ${g}, ${b} ) ), vec3( 0.004 ) ) ) ) { thinFogK = ${fog.toFixed(2)};${unlit ? ' outgoingLight = vColor.rgb;' : ''} }`;
     })
     .join('\n');
 }
@@ -718,10 +715,13 @@ function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: reado
         '#include <lights_fragment_end>',
         '#include <lights_fragment_end>\nfloat heightLift = smoothstep( heightLow, heightHigh, vHeight );\nreflectedLight.directDiffuse *= mix( heightSunLow, 1.0, heightLift );\nreflectedLight.indirectDiffuse *= mix( heightTintLow, vec3( 1.0 ), heightLift );',
       )
-      .replace('#include <opaque_fragment>', '#ifdef USE_COLOR\nif ( all( lessThan( abs( vColor.rgb - lanternColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n#endif\n#include <opaque_fragment>')
+      .replace(
+        '#include <opaque_fragment>',
+        `float thinFogK = 1.0;\n#ifdef USE_COLOR\nif ( all( lessThan( abs( vColor.rgb - lanternColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n${thinFogLines(thin)}\n#endif\n#include <opaque_fragment>`,
+      )
       .replace(
         '#include <fog_fragment>',
-        `#ifdef USE_FOG\nfloat fogFactor = smoothstep( fogNear, fogFar, vFogDepth ) * mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) );\n#ifdef USE_COLOR\n${thinFogLines(thin)}\n#endif\ngl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n#endif`,
+        '#ifdef USE_FOG\nfloat fogFactor = smoothstep( fogNear, fogFar, vFogDepth ) * mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) ) * thinFogK;\ngl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n#endif',
       );
   };
   // La clé du programme est fixe : Three.js réutilise le programme compilé de toute matière qui porte la même clé, sans

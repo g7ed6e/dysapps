@@ -144,9 +144,10 @@ export const NEF_WALL: readonly Cumulus[] = [
  * le mur, à l'ouest de la brèche vue du quai (la Nef passe toujours à sa droite), des boules de fumée plus larges que
  * hautes (`PLUME_SQUASH`), très chevauchées (leurs milieux à moins des deux tiers d'un rayon l'un de l'autre), le pied
  * large enfoui derrière le mur, une silhouette continue, sans étranglement, qui monte au-dessus de lui et s'ouvre en
- * nuage au sommet, deux boules côte à côte ; légèrement penchée vers l'est ; gris froid, plus sombre que le mur, jamais
- * noir ; aucune arête droite de haut en bas. `[hauteur, rayon, déport vers l'est]` de chaque boule, du pied au sommet ;
- * les deux dernières font le sommet. Vu du quai, le mur cache tout ce qui est sous 61 unités environ là où il se dresse
+ * nuage au sommet, plat et large (`crown`) ; légèrement penchée vers l'est ; une matière de fumée et non de roche
+ * (troisième passe) : gris clair et froid, un cran sous l'ombre du mur, jamais noir, dessiné sans ombre (`thinFog`,
+ * `unlit`) pour que le soleil et l'ombre ne s'écartent que de leurs couleurs ; aucune arête droite de haut en bas.
+ * `[hauteur, rayon, déport vers l'est]` de chaque boule, la colonne du pied au sommet (`balls`). Vu du quai, le mur cache tout ce qui est sous 61 unités environ là où il se dresse
  * (la ligne de vue au ras des cumulus) : il monte jusqu'à 124, sa moitié haute au-dessus (captures v3 du lot 4).
  */
 export const NEF_PLUME = {
@@ -161,16 +162,28 @@ export const NEF_PLUME = {
     [79, 22, 13],
     [92, 23, 14],
     [105, 24, 15],
+  ],
+  // Le sommet, plat et large (directeur artistique, troisième passe) : de part et d'autre de la dernière boule, à sa
+  // hauteur, une boule à l'ouest et une à l'est.
+  crown: [
+    [103, 21, -9],
     [102, 21, 37],
   ],
-} as const satisfies { x: number; z: number; balls: readonly (readonly [number, number, number])[] };
+} as const satisfies { x: number; z: number; balls: readonly (readonly [number, number, number])[]; crown: readonly (readonly [number, number, number])[] };
+
+/**
+ * Au 5e, le bout de la caméra qui suit Kéo (three/archipeo/scene.ts) : vu du quai, le panache est à 510 à 580 unités de
+ * profondeur, au-delà des 500 du 6e, qui n'en laissaient qu'une tranche (captures v3 du lot 4). Un test garde tout le
+ * panache en deçà.
+ */
+export const FOLLOW_FAR_5E = 700;
 
 /** Les boules du panache, plus larges que hautes : leur hauteur, en part de leur rayon. */
 export const PLUME_SQUASH = 0.8;
 
 /** Les couleurs du mur (le côté au soleil, l'ombre gris-bleu, le dessous) et du panache (l'ombre, le soleil, le haut). */
 export const WALL_COLORS = { lit: 0xebe7dc, shade: 0xa7b3bc, under: 0x96a3ad } as const;
-export const PLUME_COLORS = { side: 0x857e78, lit: 0x958e88, top: 0x9c968f } as const;
+export const PLUME_COLORS = { side: 0x7f868e, lit: 0x8e959e, top: 0x9ea5ac } as const;
 
 /** Le profil d'un dôme : du pied sous l'eau au sommet arrondi, presque plat (rayon et hauteur relatifs ; et celui d'une épaule). */
 const DOME: readonly (readonly [number, number])[] = [
@@ -240,7 +253,7 @@ export function wallSides(): Float32Array {
   return sides;
 }
 
-/** Une boule de fumée, aplatie (`PLUME_SQUASH`) : un pôle bas, deux anneaux de six pans, un pôle haut ; ses pans au soleil plus clairs. */
+/** Une boule de fumée, aplatie (`PLUME_SQUASH`) : un pôle bas, deux anneaux de six pans, un pôle haut ; ses pans au soleil plus clairs, d'environ 12 %. */
 function smokeBall(b: FacetBuilder, x: number, y: number, z: number, r: number, turn: number, top: boolean): void {
   const SIDES = 6;
   const ring = (dy: number, rr: number, t: number) => Array.from({ length: SIDES }, (_, j): [number, number, number] => [x + rr * Math.cos(t + (2 * Math.PI * j) / SIDES), y + dy, z + rr * Math.sin(t + (2 * Math.PI * j) / SIDES)]);
@@ -255,7 +268,8 @@ function smokeBall(b: FacetBuilder, x: number, y: number, z: number, r: number, 
   };
   for (let j = 0; j < SIDES; j++) {
     const n = (j + 1) % SIDES;
-    b.triangle(lo[j], lo[n], down, PLUME_COLORS.side);
+    // Le pôle bas de la couleur du pan au-dessus de lui : aucune corniche sombre entre deux boules.
+    b.triangle(lo[j], lo[n], down, shade(j));
     b.triangle(lo[n], lo[j], hi[j], shade(j));
     b.triangle(hi[j], hi[n], lo[n], shade(j));
     b.triangle(hi[n], hi[j], up, top ? PLUME_COLORS.top : shade(j));
@@ -265,9 +279,10 @@ function smokeBall(b: FacetBuilder, x: number, y: number, z: number, r: number, 
 /** Le panache : ses boules, de la mer au nuage du sommet. */
 function plumeFacets(): Facets {
   const b = new FacetBuilder();
-  const { x, z, balls } = NEF_PLUME;
-  // Les deux dernières, côte à côte, font le sommet : leur haut prend la couleur claire du nuage.
-  balls.forEach(([y, r, east], i) => smokeBall(b, x + east, y, z, r, i * 0.7, i >= balls.length - 2));
+  const { x, z, balls, crown } = NEF_PLUME;
+  // La dernière boule de la colonne et celles qui l'entourent font le sommet : leur haut prend la couleur claire du nuage.
+  balls.forEach(([y, r, east], i) => smokeBall(b, x + east, y, z, r, i * 0.7, i === balls.length - 1));
+  crown.forEach(([y, r, east], i) => smokeBall(b, x + east, y, z, r, (balls.length + i) * 0.7, true));
   return b.build();
 }
 
