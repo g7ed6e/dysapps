@@ -17,7 +17,7 @@ import type { FacetBuilder } from './facets';
 import { FLORA_COLORS } from './flora';
 import type { Vec3 } from './geometry';
 import type { SurroundingsState } from './surroundings';
-import { GREEN_TUFT, TIMBER, groundAt, heap, rock, tuft, type HeapTones, type P3 } from './surroundingsKit';
+import { GREEN_TUFT, TIMBER, groundAt, heap, quadToward, rock, triangleToward, tuft, type HeapTones, type P3 } from './surroundingsKit';
 
 /** Les couleurs des abords : la pierre des Passeurs (celle du lieu), le bois, la toile, l'osier, la terre de la fouille. */
 const C = {
@@ -107,7 +107,7 @@ export function ruinsSurroundings(b: FacetBuilder, floor: Vec3, _state: Surround
       s = Math.sin(yaw) * 0.42,
       cw = Math.cos(yaw) * 0.32,
       sw = Math.sin(yaw) * 0.32;
-    faced(b, [[x - c - sw, y, z + s - cw], [x + c - sw, y, z - s - cw], [x + c + sw, y, z - s + cw], [x - c + sw, y, z + s + cw]], [0, 1, 0], i % 2 ? C.stone : C.stoneWarm);
+    quadToward(b, [[x - c - sw, y, z + s - cw], [x + c - sw, y, z - s - cw], [x + c + sw, y, z - s + cw], [x - c + sw, y, z + s + cw]], { normal: [0, 1, 0] }, i % 2 ? C.stone : C.stoneWarm);
   }
   for (const [dx, dz, s] of PINES) pine(b, X(dx), Z(dz), s);
 }
@@ -180,25 +180,6 @@ const TUFTS: readonly (readonly [number, number, number])[] = [
   [7.2, 1.1, 0.8],
 ];
 
-/** Les sommets `a`, `c`, `d` tournent-ils dans le sens inverse des aiguilles d'une montre, vus depuis `n` ? */
-function toward(a: P3, c: P3, d: P3, n: P3): boolean {
-  const u = [c[0] - a[0], c[1] - a[1], c[2] - a[2]],
-    v = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
-  return (u[1] * v[2] - u[2] * v[1]) * n[0] + (u[2] * v[0] - u[0] * v[2]) * n[1] + (u[0] * v[1] - u[1] * v[0]) * n[2] >= 0;
-}
-
-/** Un quadrilatère tourné vers `n`, quel que soit l'ordre de ses sommets. */
-function faced(b: FacetBuilder, p: readonly P3[], n: P3, color: number): void {
-  if (toward(p[0], p[1], p[2], n)) b.quad(p[0], p[1], p[2], p[3], color);
-  else b.quad(p[3], p[2], p[1], p[0], color);
-}
-
-/** Un triangle tourné vers `n`, quel que soit l'ordre de ses sommets. */
-function facedTriangle(b: FacetBuilder, a: P3, c: P3, d: P3, n: P3, color: number): void {
-  if (toward(a, c, d, n)) b.triangle(a, c, d, color);
-  else b.triangle(a, d, c, color);
-}
-
 /**
  * L'arcade debout, dans l'eau, au nord de la scène, d'est en ouest, face au sud : trois piles et leur imposte, deux arcs
  * surbaissés en anse de panier (comme ceux de l'arcade du lieu : jamais un plein cintre), leurs voussoirs en deux pierres
@@ -255,13 +236,13 @@ function arch(b: FacetBuilder, cx: number, z: number, half: number, top: number)
       [zf, 1],
       [zb, -1],
     ] as const) {
-      faced(b, [[ia[0], ia[1], zz], [ib[0], ib[1], zz], [ob[0], ob[1], zz], [oa[0], oa[1], zz]], [0, 0, out], color);
-      faced(b, [[oa[0], oa[1], zz], [ob[0], ob[1], zz], [ob[0], top, zz], [oa[0], top, zz]], [0, 0, out], C.stone);
+      quadToward(b, [[ia[0], ia[1], zz], [ib[0], ib[1], zz], [ob[0], ob[1], zz], [oa[0], oa[1], zz]], { normal: [0, 0, out] }, color);
+      quadToward(b, [[oa[0], oa[1], zz], [ob[0], ob[1], zz], [ob[0], top, zz], [oa[0], top, zz]], { normal: [0, 0, out] }, C.stone);
     }
     const mid = (ta + tb) / 2;
-    faced(b, [[ia[0], ia[1], zf], [ib[0], ib[1], zf], [ib[0], ib[1], zb], [ia[0], ia[1], zb]], [-Math.cos(mid), -Math.sin(mid), 0], C.stoneShade);
+    quadToward(b, [[ia[0], ia[1], zf], [ib[0], ib[1], zf], [ib[0], ib[1], zb], [ia[0], ia[1], zb]], { normal: [-Math.cos(mid), -Math.sin(mid), 0] }, C.stoneShade);
   }
-  faced(b, [[cx - half - A.ring, top, zf], [cx + half + A.ring, top, zf], [cx + half + A.ring, top, zb], [cx - half - A.ring, top, zb]], [0, 1, 0], C.stone);
+  quadToward(b, [[cx - half - A.ring, top, zf], [cx + half + A.ring, top, zf], [cx + half + A.ring, top, zb], [cx - half - A.ring, top, zb]], { normal: [0, 1, 0] }, C.stone);
 }
 
 /**
@@ -280,11 +261,11 @@ function tent(b: FacetBuilder, x: number, z: number): void {
   const [hw, hl, h] = [T.width / 2, T.length / 2, T.height];
   const n = (u: number, v: number, w: number): P3 => [u * c + w * s, v, -u * s + w * c];
   // Les deux pans, jusqu'au sol, puis les deux pignons ; au pignon du sud, l'ouverture.
-  faced(b, [at(-hw, 0, -hl), at(-hw, 0, hl), at(0, h, hl), at(0, h, -hl)], n(-h, hw, 0), C.canvas);
-  faced(b, [at(hw, 0, -hl), at(hw, 0, hl), at(0, h, hl), at(0, h, -hl)], n(h, hw, 0), C.canvas);
-  for (const sw of [-1, 1]) facedTriangle(b, at(-hw, 0, sw * hl), at(hw, 0, sw * hl), at(0, h, sw * hl), n(0, 0, sw), C.canvasShade);
+  quadToward(b, [at(-hw, 0, -hl), at(-hw, 0, hl), at(0, h, hl), at(0, h, -hl)], { normal: n(-h, hw, 0) }, C.canvas);
+  quadToward(b, [at(hw, 0, -hl), at(hw, 0, hl), at(0, h, hl), at(0, h, -hl)], { normal: n(h, hw, 0) }, C.canvas);
+  for (const sw of [-1, 1]) triangleToward(b, at(-hw, 0, sw * hl), at(hw, 0, sw * hl), at(0, h, sw * hl), { normal: n(0, 0, sw) }, C.canvasShade);
   const front = hl + 0.015;
-  facedTriangle(b, at(-0.36, 0, front), at(0.36, 0, front), at(0, h * 0.74, front), n(0, 0, 1), C.opening);
+  triangleToward(b, at(-0.36, 0, front), at(0.36, 0, front), at(0, h * 0.74, front), { normal: n(0, 0, 1) }, C.opening);
   for (const sw of [-1, 1]) {
     const foot = at(0, -0.1, sw * (hl + 0.05)),
       top = at(0, h + 0.16, sw * (hl + 0.05));
@@ -305,7 +286,7 @@ function dig(b: FacetBuilder, f: Vec3): void {
   for (const x of [x0, x1]) for (const z of [z0, z1]) y = Math.max(y, groundAt(x, z));
   const low = Math.min(groundAt(x0, z0), groundAt(x1, z1), groundAt(x0, z1), groundAt(x1, z0)) - 0.08;
   const rim = 0.1;
-  faced(b, [[x0, y + 0.04, z0], [x1, y + 0.04, z0], [x1, y + 0.04, z1], [x0, y + 0.04, z1]], [0, 1, 0], C.digSand);
+  quadToward(b, [[x0, y + 0.04, z0], [x1, y + 0.04, z0], [x1, y + 0.04, z1], [x0, y + 0.04, z1]], { normal: [0, 1, 0] }, C.digSand);
   const [cx, cz, w, d] = [(x0 + x1) / 2, (z0 + z1) / 2, x1 - x0, z1 - z0];
   for (const side of [-1, 1]) {
     b.box({ x: cx, y: low, z: cz + (side * (d + rim)) / 2 }, [w + 2 * rim, y + 0.06 - low, rim], C.digEdge);

@@ -15,7 +15,7 @@ import type { Vec3 } from './geometry';
 import { placeById } from './plan6e';
 import { LOCK } from './questionScene';
 import type { SurroundingsState } from './surroundings';
-import { GREEN_TUFT, NATURE, STONE, groundAt as groundOf, jitter, rock, timberHouse, tuft } from './surroundingsKit';
+import { GREEN_TUFT, NATURE, STONE, fir, groundAt as groundOf, jitter, rock, timberHouse, tuft } from './surroundingsKit';
 import { heightAt, standingHeight } from './terrain';
 
 const C = {
@@ -29,10 +29,6 @@ const C = {
   grassLight: NATURE.grassLight,
   grassDeep: NATURE.grassDeep,
   rock: NATURE.rock,
-  // Les sapins : deux verts plus soutenus que la prairie, le tronc brun moyen.
-  fir: 0x3f8f5a,
-  firLight: 0x56a568,
-  trunk: 0x8a5a36,
   // La porte de la maison de l'éclusier, rouge.
   door: 0xc0503a,
   // La voûte d'où sort le canal : son arc clair, son creux d'un bleu-vert profond (jamais noir).
@@ -74,7 +70,7 @@ export function eclusesSurroundings(b: FacetBuilder, floor: Vec3, _state: Surrou
     tuft(b, { x, y: dz > LOCK.back && Math.abs(dx) < reach + LOCK.bank ? o.y : Math.max(o.y, groundAt(x, z) + 0.1), z }, k, GREEN_TUFT);
   }
   for (const [k, [dx, dz, r]] of MOUNDS.entries()) mound(b, { x: o.x + dx, y: o.y, z: o.z + dz }, r, k);
-  for (const [k, [dx, dz, s]] of FIRS.entries()) fir(b, o.x + dx, o.z + dz, s, k);
+  for (const [k, [dx, dz, s]] of FIRS.entries()) fir(b, o.x + dx, o.z + dz, s, jitter(k + 200) * Math.PI, 0.15);
   timberHouse(b, { x: o.x + HOUSE.dx, z: o.z + HOUSE.dz, yaw: Math.PI, width: HOUSE.w, depth: HOUSE.d, wall: HOUSE.h, slope: HOUSE.slope, chimney: true, door: C.door });
 }
 
@@ -363,17 +359,6 @@ const MOUNDS: readonly (readonly [number, number, number])[] = [
   [-7.2, -0.1, 1.0],
   [9.8, 0, 1.2],
 ];
-
-/** Un sapin à facettes : son tronc, trois étages de cônes à six pans, de deux verts, posé sur le sol du monde. */
-function fir(b: FacetBuilder, x: number, z: number, s: number, seed: number): void {
-  const y = groundAt(x, z);
-  const yaw = jitter(seed + 200) * Math.PI;
-  b.prism({ x, y, z, yaw }, 0.16 * s, 0.12 * s, 0.9 * s, 4, C.trunk);
-  for (let k = 0; k < 3; k++) {
-    const r = (1.25 - 0.3 * k) * s;
-    b.prism({ x, y: y + (0.7 + 0.85 * k) * s, z, yaw: yaw + k * 0.5 }, r, 0, 1.5 * s, 6, k % 2 ? C.firLight : C.fir);
-  }
-}
 
 /**
  * Les sapins, depuis le milieu du sas : (x, z, échelle). Tous hors du tour de la caméra (elle tourne à quelque 18,5

@@ -40,10 +40,10 @@ const C = {
   /** La bouée : blanc cassé et rouge, en quartiers. */
   buoyWhite: 0xf2eee4,
   buoyRed: 0xc8553d,
-  /** La vieille lanterne : son armature Nuit océan éclaircie, sa vitre gris-bleu (celle du Phare), son toit d'ardoise. */
+  /** La vieille lanterne : son armature Nuit océan éclaircie, sa vitre gris-bleu (celle du Phare), son toit d'ardoise brune (celle de la lanterne du Phare). */
   frame: 0x3d5878,
   glass: 0xcfdfe2,
-  slate: 0x6f8089,
+  slate: 0x8f7766,
   /** Les blocs taillés : la pierre blanche de la tour, leur dessus plus clair. */
   ashlar: 0xe2dccd,
   ashlarTop: 0xf2eee4,

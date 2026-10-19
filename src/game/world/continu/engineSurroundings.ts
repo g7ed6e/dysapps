@@ -17,8 +17,8 @@ import type { FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
 import { placeById } from './plan6e';
 import type { SurroundingsState } from './surroundings';
-import { GREEN_TUFT, NATURE, STONE, groundAt, rock, timberHouse, tuft, type P3 } from './surroundingsKit';
-import { buildHeightField, heightAt, heightOnMesh } from './terrain';
+import { GREEN_TUFT, NATURE, STONE, fir, groundAt, rock, timberHouse, tuft, type P3 } from './surroundingsKit';
+import { buildHeightField, heightAt, heightOnMesh, type HeightField } from './terrain';
 
 const C = {
   /** L'eau du bief : un vert d'eau plus clair que le lagon, pour qu'une fois ombrée elle rejoigne la teinte de la rivière. */
@@ -37,10 +37,7 @@ const C = {
   /** La charpente : les poteaux de colombage, le bois neuf des chevrons et des liteaux. */
   timber: 0x9a6e45,
   fresh: 0xe6c88f,
-  /** Les sapins du fond (les verts des Écluses), le bois des troncs, l'écorce et le bout des bûches. */
-  fir: 0x3f8f5a,
-  firLight: 0x56a568,
-  trunk: 0x8a5a36,
+  /** Le tas de bûches : l'écorce et le bout des bûches. */
   bark: 0x8a6440,
   logEnd: 0xd9b98a,
 } as const;
@@ -94,12 +91,13 @@ function houseSpec(c: { x: number; z: number }) {
 }
 
 /** Le sol dessiné en un point (celui des tuiles), jamais sous le sol du plan : l'eau du bief ne s'y enfonce pas. */
-function ground(x: number, z: number): number {
-  return Math.max(heightAt({ x, z }), heightOnMesh(buildHeightField(), x, z));
+function ground(field: HeightField, x: number, z: number): number {
+  return Math.max(heightAt({ x, z }), heightOnMesh(field, x, z));
 }
 
 /** Le plus haut et le plus bas du sol sous un bief de `a` à `e`, sur toute sa largeur. */
 function groundSpan(a: { x: number; z: number }, e: { x: number; z: number }): { high: number; low: number } {
+  const field = buildHeightField();
   const half = ENGINE_SURROUNDINGS.half;
   const len = Math.hypot(e.x - a.x, e.z - a.z) || 1;
   const nx = -(e.z - a.z) / len,
@@ -110,7 +108,7 @@ function groundSpan(a: { x: number; z: number }, e: { x: number; z: number }): {
   for (let k = 0; k <= n; k++)
     for (const s of [-half, 0, half]) {
       const t = k / n;
-      const y = ground(a.x + (e.x - a.x) * t + nx * s, a.z + (e.z - a.z) * t + nz * s);
+      const y = ground(field, a.x + (e.x - a.x) * t + nx * s, a.z + (e.z - a.z) * t + nz * s);
       high = Math.max(high, y);
       low = Math.min(low, y);
     }
@@ -123,11 +121,12 @@ function groundSpan(a: { x: number; z: number }, e: { x: number; z: number }): {
  */
 export function engineRace(): { from: { x: number; z: number }; to: { x: number; z: number }; level: number }[] {
   const c = placeById('engine').center;
+  const field = buildHeightField();
   const pts = ENGINE_SURROUNDINGS.race.map(([x, z]) => ({ x: c.x + x, z: c.z + z }));
   // La berge : le long du dernier tronçon, là où le sol descend sous l'eau de la rivière.
   const [p, q] = [pts[pts.length - 2], pts[pts.length - 1]];
   let t = 0;
-  while (t < 1 && ground(p.x + (q.x - p.x) * t, p.z + (q.z - p.z) * t) > RIVER + 0.05) t += 0.02;
+  while (t < 1 && ground(field, p.x + (q.x - p.x) * t, p.z + (q.z - p.z) * t) > RIVER + 0.05) t += 0.02;
   pts[pts.length - 1] = { x: p.x + (q.x - p.x) * t, z: p.z + (q.z - p.z) * t };
   const pools = pts.slice(1).map((to, k) => ({ from: pts[k], to, level: groundSpan(pts[k], to).high + LIFT }));
   for (let k = pools.length - 2; k >= 0; k--) pools[k].level = Math.max(pools[k].level, pools[k + 1].level + STEP);
@@ -339,16 +338,8 @@ function banks(b: FacetBuilder, c: { x: number; z: number }): void {
       z = c.z + dz;
     rock(b, { x, y: groundAt(x, z, 0.05), z }, r, h, k + 60);
   }
-  for (const [k, [dx, dz, s]] of FIRS.entries()) fir(b, c.x + dx, c.z + dz, s, k);
+  for (const [k, [dx, dz, s]] of FIRS.entries()) fir(b, c.x + dx, c.z + dz, s, k * 0.9, 0.15);
   logs(b, c.x + LOGS.x, c.z + LOGS.z);
-}
-
-/** Un sapin : son tronc, trois étages de cônes à six pans, de deux verts plus soutenus que la prairie. */
-function fir(b: FacetBuilder, x: number, z: number, s: number, seed: number): void {
-  const y = groundAt(x, z, 0.15);
-  const yaw = seed * 0.9;
-  b.prism({ x, y, z, yaw }, 0.16 * s, 0.12 * s, 0.9 * s, 4, C.trunk);
-  for (let k = 0; k < 3; k++) b.prism({ x, y: y + (0.7 + 0.85 * k) * s, z, yaw: yaw + k * 0.5 }, (1.25 - 0.3 * k) * s, 0, 1.5 * s, 6, k % 2 ? C.firLight : C.fir);
 }
 
 /** Le tas de bûches, le long de x, sur deux cales : des rondins à six pans, leur bout clair. */

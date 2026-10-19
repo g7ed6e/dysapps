@@ -13,7 +13,7 @@ import type { FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
 import { placeById } from './plan6e';
 import type { SurroundingsState } from './surroundings';
-import { GREEN_TUFT, STONE, groundAt as groundOf, jitter, rock, tuft, type P3 } from './surroundingsKit';
+import { GREEN_TUFT, STONE, fir, groundAt as groundOf, jitter, rock, tuft, type P3 } from './surroundingsKit';
 
 const C = {
   // Le bois de l'échafaudage : les poteaux et les lisses un ton sombre (jamais presque noir), les planches neuves claires.
@@ -26,10 +26,6 @@ const C = {
   // L'oriflamme : un ocre chaud, son revers un ton plus sombre (elle se lit sur le ciel crème comme sur les pins).
   flag: 0xd0743f,
   flagShade: 0xb5653f,
-  // Les pins : deux verts plus soutenus que la prairie, le tronc brun moyen (comme aux Écluses).
-  fir: 0x3f8f5a,
-  firLight: 0x56a568,
-  trunk: 0x8a5a36,
 } as const;
 
 /** Le sol du monde en un point, un peu enfoncé : ce qu'on y pose ne flotte jamais au-dessus d'une facette plus basse. */
@@ -74,7 +70,7 @@ export function lookoutSurroundings(b: FacetBuilder, floor: Vec3, state: Surroun
       z = floor.z + dz;
     tuft(b, { x, y: groundAt(x, z), z }, i + 90, GREEN_TUFT, s);
   }
-  for (const [k, [dx, dz, s]] of FIRS.entries()) fir(b, floor.x + dx, floor.z + dz, s, k);
+  for (const [k, [dx, dz, s]] of FIRS.entries()) fir(b, floor.x + dx, floor.z + dz, s, jitter(k + 300) * Math.PI, 0.12);
 }
 
 /** Un point du repère de la tour : à l'angle `deg`, à `r` du centre, à `y` au-dessus de son pied. */
@@ -181,17 +177,6 @@ function twoSided(b: FacetBuilder, p: P3, q: P3, r: P3, s: P3 | null, face: numb
   } else {
     b.triangle(p, q, r, face);
     b.triangle(r, q, p, back);
-  }
-}
-
-/** Un pin (comme aux Écluses) : un tronc à quatre pans, trois étages de cônes à six pans, de deux verts. */
-function fir(b: FacetBuilder, x: number, z: number, s: number, seed: number): void {
-  const y = groundAt(x, z);
-  const yaw = jitter(seed + 300) * Math.PI;
-  b.prism({ x, y, z, yaw }, 0.16 * s, 0.12 * s, 0.9 * s, 4, C.trunk);
-  for (let k = 0; k < 3; k++) {
-    const r = (1.2 - 0.3 * k) * s;
-    b.prism({ x, y: y + (0.7 + 0.85 * k) * s, z, yaw: yaw + k * 0.5 }, r, 0, 1.5 * s, 6, k % 2 ? C.firLight : C.fir);
   }
 }
 

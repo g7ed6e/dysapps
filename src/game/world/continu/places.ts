@@ -46,6 +46,9 @@ const C = {
   slate: 0x6f8089,
   // La vitre de la lanterne éteinte : claire, gris-bleu, proche de la Brume du pack (#E5EBE3).
   glass: 0xbfd0d3,
+  // Le toit de la lanterne du Phare : une ardoise brune et chaude (consultant Archipéo, 19 octobre 2026 : vu de dos, son
+  // pan à l'ombre ne tombe plus dans le gris-noir).
+  lanternRoof: 0x8f7766,
   // La lanterne allumée : la seule note chaude du monde, vue jusque depuis la Carte.
   lamp: 0xffd36b,
   // La galerie du Phare : une pierre claire, plus sombre que la tour, pour qu'elle se détache.
@@ -99,8 +102,10 @@ const C = {
   steam: 0xe6ece4,
   steamShade: 0xc8d2cf,
   wornBrick: 0xb89a86,
-  wornIron: 0x8c969b,
-  wornSteel: 0xb3babd,
+  // Le fer usé de la ruine (la chaudière couchée, le rotor à plat) : rouillé, vers la pierre chaude des abords (STONE,
+  // surroundingsKit.ts), jamais un gris-bleu froid (consultant Archipéo, 19 octobre 2026).
+  wornIron: 0xa39480,
+  wornSteel: 0xc4b6a0,
   // Le Chantier naval (lot L6b, directeur artistique) : le bordé et son second ton, la quille et les rails, les œuvres
   // vives terre cuite, l'ardoise du toit de l'atelier (le sable tassé du chantier est celui du sol, terrain.ts ; la cale
   // ensablée, du sable chaud des plages) ; la ruine : la quille, les rails et
@@ -270,7 +275,7 @@ function phare(add: Add): void {
   add(1, 0, (b) => b.prism({ x: 0, y: 10.7, z: 0 }, 1.4, 1.4, 0.4, 8, C.gallery));
   // La vitre, éteinte ; allumée, la lumière la recouvre (`lanternLight`).
   add(1, 0.34, (b) => b.prism({ x: 0, y: LANTERN.y, z: 0 }, LANTERN.r, LANTERN.r, LANTERN.h, 8, C.glass));
-  add(1, 0.67, (b) => b.prism({ x: 0, y: 12.6, z: 0 }, 1.35, 0, 1.1, 8, C.slate));
+  add(1, 0.67, (b) => b.prism({ x: 0, y: 12.6, z: 0 }, 1.35, 0, 1.1, 8, C.lanternRoof));
   // La galerie, large et bien marquée (sa dalle et son garde-corps), et sa cloche à l'est, sur sa potence.
   add(2, 0, (b) => {
     b.prism({ x: 0, y: 10.7, z: 0 }, 2.1, 2.1, 0.4, 8, C.gallery);

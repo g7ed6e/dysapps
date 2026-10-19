@@ -24,7 +24,7 @@ import type { Vec3 } from './geometry';
 import { placeById } from './plan6e';
 import { MANGROVE } from './places';
 import type { SurroundingsState } from './surroundings';
-import { NATURE, TIMBER, barque, barqueFloor, groundAt, jitter, pontoon, rock, tuft, type P3 } from './surroundingsKit';
+import { NATURE, TIMBER, barque, barqueFloor, groundAt, jitter, pontoon, rock, triangleToward, tuft, type P3 } from './surroundingsKit';
 
 const C = {
   /** Le bois des palétuviers (places.ts, `mangroveWood`), un peu plus chaud au soleil sur les racines. */
@@ -126,16 +126,6 @@ const TUFTS: readonly (readonly [number, number])[] = [
   [6.8, 6.0],
 ];
 
-/** Un triangle tourné à l'opposé de `from` (le cœur d'un volume), quel que soit l'ordre de ses sommets. */
-function away(b: FacetBuilder, p: P3, q: P3, r: P3, from: P3, color: number): void {
-  const u = [q[0] - p[0], q[1] - p[1], q[2] - p[2]];
-  const v = [r[0] - p[0], r[1] - p[1], r[2] - p[2]];
-  const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
-  const c = [(p[0] + q[0] + r[0]) / 3 - from[0], (p[1] + q[1] + r[1]) / 3 - from[1], (p[2] + q[2] + r[2]) / 3 - from[2]];
-  if (n[0] * c[0] + n[1] * c[1] + n[2] * c[2] >= 0) b.triangle(p, q, r, color);
-  else b.triangle(p, r, q, color);
-}
-
 /** Un tronçon à trois pans, de `a` (rayon `r0`) à `c` (rayon `r1`), sans dessus ni dessous : une racine, un tronc. */
 function limb(b: FacetBuilder, a: P3, c: P3, r0: number, r1: number, color: number, alt = color): void {
   const d = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
@@ -158,8 +148,8 @@ function limb(b: FacetBuilder, a: P3, c: P3, r0: number, r1: number, color: numb
   for (let k = 0; k < 3; k++) {
     const m = (k + 1) % 3;
     const tone = k === 0 ? alt : color;
-    away(b, lo[k], lo[m], hi[m], mid, tone);
-    away(b, lo[k], hi[m], hi[k], mid, tone);
+    triangleToward(b, lo[k], lo[m], hi[m], { awayFrom: mid }, tone);
+    triangleToward(b, lo[k], hi[m], hi[k], { awayFrom: mid }, tone);
   }
 }
 
@@ -184,10 +174,10 @@ function leafMass(b: FacetBuilder, c: P3, r: number, h: number, seed: number): v
   const tip: P3 = [c[0] + 0.1 * r * Math.cos(turn), c[1] + 0.68 * h, c[2] + 0.1 * r * Math.sin(turn)];
   for (let k = 0; k < n; k++) {
     const m = (k + 1) % n;
-    away(b, belt[k], belt[m], under, c, C.leafUnder);
-    away(b, belt[k], belt[m], crown[k], c, k % 2 ? C.leafSide : C.leafSideAlt);
-    away(b, crown[k], belt[m], crown[m], c, k % 2 ? C.leafSideAlt : C.leafTop);
-    away(b, crown[k], crown[m], tip, c, k % 2 ? C.leafTop : C.leafTopAlt);
+    triangleToward(b, belt[k], belt[m], under, { awayFrom: c }, C.leafUnder);
+    triangleToward(b, belt[k], belt[m], crown[k], { awayFrom: c }, k % 2 ? C.leafSide : C.leafSideAlt);
+    triangleToward(b, crown[k], belt[m], crown[m], { awayFrom: c }, k % 2 ? C.leafSideAlt : C.leafTop);
+    triangleToward(b, crown[k], crown[m], tip, { awayFrom: c }, k % 2 ? C.leafTop : C.leafTopAlt);
   }
 }
 
@@ -272,14 +262,14 @@ function cabin(b: FacetBuilder, X: (dx: number) => number, Z: (dz: number) => nu
   for (const sgn of [1, -1]) {
     const pt = (px: number, t: number): P3 => [px, yE + t * (yR - yE), z + sgn * run * (1 - t)];
     const heart: P3 = [x, top, z];
-    away(b, pt(x0, 0), pt(x1, 0), pt(x1, 0.5), heart, C.slate);
-    away(b, pt(x0, 0), pt(x1, 0.5), pt(x0, 0.5), heart, C.slate);
-    away(b, pt(x0, 0.5), pt(x1, 0.5), pt(x1, 1), heart, C.slateLight);
-    away(b, pt(x0, 0.5), pt(x1, 1), pt(x0, 1), heart, C.slateLight);
+    triangleToward(b, pt(x0, 0), pt(x1, 0), pt(x1, 0.5), { awayFrom: heart }, C.slate);
+    triangleToward(b, pt(x0, 0), pt(x1, 0.5), pt(x0, 0.5), { awayFrom: heart }, C.slate);
+    triangleToward(b, pt(x0, 0.5), pt(x1, 0.5), pt(x1, 1), { awayFrom: heart }, C.slateLight);
+    triangleToward(b, pt(x0, 0.5), pt(x1, 1), pt(x0, 1), { awayFrom: heart }, C.slateLight);
   }
   for (const sx of [-1, 1]) {
     const gx = x + (sx * W) / 2;
-    away(b, [gx, top + H, z - D / 2], [gx, top + H, z + D / 2], [gx, yR, z], [x, top + H, z], C.plankShade);
+    triangleToward(b, [gx, top + H, z - D / 2], [gx, top + H, z + D / 2], [gx, yR, z], { awayFrom: [x, top + H, z] }, C.plankShade);
   }
   b.beam({ x: x0 - 0.05, y: yR, z }, { x: x1 + 0.05, y: yR, z }, 0.16, C.ridge);
   // Sur le perron, à droite de la porte : la caisse de jeunes plants.

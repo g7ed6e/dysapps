@@ -19,7 +19,7 @@ import { SHIPYARD, SLIP_N, SLIP_U, slipPoint, slipRails } from './places';
 import { COLORS_6E, PATH_NODES, placeById } from './plan6e';
 import { SHADOW_DIR } from './sky';
 import type { SurroundingsState } from './surroundings';
-import { TIMBER, barque, barqueFloor, barrel, groundAt as groundOf, plankStack, type P3 } from './surroundingsKit';
+import { TIMBER, barque, barqueFloor, barrel, groundAt as groundOf, plankStack, quadToward, type P3 } from './surroundingsKit';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 
 /** Les couleurs des abords du Chantier naval : le sable et le bois du chantier. */
@@ -103,16 +103,6 @@ export function shipyardSurroundings(b: FacetBuilder, floor: Vec3, _state: Surro
 /** Un point du monde depuis le repère du lieu. */
 const at = (o: { x: number; y: number; z: number }, lx: number, ly: number, lz: number): P3 => [o.x + lx, o.y + ly, o.z + lz];
 
-/** Un quadrilatère plan tourné vers `out`, quel que soit l'ordre de ses sommets (dans l'ordre du tour). */
-function facing(b: FacetBuilder, q: readonly [P3, P3, P3, P3], out: P3, color: number): void {
-  const [a, c, d] = [q[0], q[1], q[2]];
-  const u = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
-  const v = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
-  const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
-  if (n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0) b.quad(q[0], q[1], q[2], q[3], color);
-  else b.quad(q[3], q[2], q[1], q[0], color);
-}
-
 /** Un triangle tourné vers le ciel, quel que soit l'ordre de ses sommets. */
 function upward(b: FacetBuilder, p: P3, q: P3, r: P3, color: number): void {
   const ny = (q[2] - p[2]) * (r[0] - p[0]) - (q[0] - p[0]) * (r[2] - p[2]);
@@ -141,7 +131,9 @@ export function sandField(lx: number, lz: number): number {
 /** La distance, dans le repère du lieu, au chemin de la porte du lieu à la grande porte de l'atelier (places.ts). */
 function pathDistance(lx: number, lz: number): number {
   const c = placeById('shipyard').center;
-  const door = PATH_NODES.find((n) => n.id === 'shipyard')!.at;
+  const node = PATH_NODES.find((n) => n.id === 'shipyard');
+  if (!node) throw new Error('Chantier naval : le chemin du monde (places.ts) n’a plus de nœud « shipyard ».');
+  const door = node.at;
   const H = SHIPYARD.shop;
   const [ax, az] = [door.x - c.x, door.z - c.z];
   const [bx, bz] = [H.x, H.z + H.d / 2 + 0.5];
@@ -228,11 +220,11 @@ function slab(b: FacetBuilder, o: { x: number; y: number; z: number }, s0: numbe
     const q = slipPoint(s, bb);
     return at(o, q.x, top(s) + dy, q.z);
   };
-  facing(b, [p(s0, b0, 0), p(s1, b0, 0), p(s1, b1, 0), p(s0, b1, 0)], [0, 1, 0], color);
+  quadToward(b, [p(s0, b0, 0), p(s1, b0, 0), p(s1, b1, 0), p(s0, b1, 0)], { normal: [0, 1, 0] }, color);
   if (thick <= 0) return;
-  facing(b, [p(s0, b1, -thick), p(s1, b1, -thick), p(s1, b1, 0), p(s0, b1, 0)], [SLIP_N.x, 0, SLIP_N.z], side);
-  facing(b, [p(s0, b0, -thick), p(s1, b0, -thick), p(s1, b0, 0), p(s0, b0, 0)], [-SLIP_N.x, 0, -SLIP_N.z], side);
-  if (head) facing(b, [p(s0, b0, -thick), p(s0, b1, -thick), p(s0, b1, 0), p(s0, b0, 0)], [-SLIP_U.x, 0, -SLIP_U.z], side);
+  quadToward(b, [p(s0, b1, -thick), p(s1, b1, -thick), p(s1, b1, 0), p(s0, b1, 0)], { normal: [SLIP_N.x, 0, SLIP_N.z] }, side);
+  quadToward(b, [p(s0, b0, -thick), p(s1, b0, -thick), p(s1, b0, 0), p(s0, b0, 0)], { normal: [-SLIP_N.x, 0, -SLIP_N.z] }, side);
+  if (head) quadToward(b, [p(s0, b0, -thick), p(s0, b1, -thick), p(s0, b1, 0), p(s0, b0, 0)], { normal: [-SLIP_U.x, 0, -SLIP_U.z] }, side);
 }
 
 /** Le point `s` de la cale, à `bb` de son axe, est-il sous le plancher de la scène (à `pad` près) ? */

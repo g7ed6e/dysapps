@@ -21,10 +21,10 @@ import { COLORS_6E, placeById } from './plan6e';
 import { OBSERVATORY } from './places';
 import type { SurroundingsState } from './surroundings';
 import { GREEN_TUFT, STONE, TIMBER, barque, barqueFloor, barrel, groundAt as groundOf, jitter, plankStack, rock, tuft, type P3 } from './surroundingsKit';
-import { buildHeightField, heightOnMesh, standingHeight } from './terrain';
+import { buildHeightField, heightOnMesh, standingHeight, type HeightField } from './terrain';
 
 /** Le sol tel que le monde le dessine (le maillage du terrain, pas sa formule) : les rubans s'y posent sans s'y enfoncer. */
-const meshGround = (x: number, z: number): number => heightOnMesh(buildHeightField(), x, z);
+const meshGround = (field: HeightField, x: number, z: number): number => heightOnMesh(field, x, z);
 
 /** Les couleurs des abords : celles du lieu (places.ts) et quelques valeurs propres à l'Observatoire. */
 const C = {
@@ -323,6 +323,7 @@ const SLABS: readonly (readonly [number, number, number, number, number])[] = [
  * morceau tous les 1,6 au plus, posé sur le sol de sa ligne ; `line`, depuis le centre du lieu.
  */
 function trail(b: FacetBuilder, X: Axis, Z: Axis, line: readonly (readonly [number, number])[]): void {
+  const field = buildHeightField();
   const w = TRAIL.half,
     edge = 0.14,
     lift = 0.07;
@@ -336,8 +337,8 @@ function trail(b: FacetBuilder, X: Axis, Z: Axis, line: readonly (readonly [numb
     for (let i = 0; i < n; i++) {
       const p = { x: X(ax + (bx - ax) * (i / n)), z: Z(az + (bz - az) * (i / n)) };
       const q = { x: X(ax + (bx - ax) * ((i + 1) / n)), z: Z(az + (bz - az) * ((i + 1) / n)) };
-      const yp = standingHeight(meshGround(p.x, p.z)) + lift,
-        yq = standingHeight(meshGround(q.x, q.z)) + lift;
+      const yp = standingHeight(meshGround(field, p.x, p.z)) + lift,
+        yq = standingHeight(meshGround(field, q.x, q.z)) + lift;
       // À gauche du sens de marche : (dz, −dx), à `o` de la ligne.
       const at = (v: { x: number; z: number }, y: number, o: number): P3 => [v.x + dz * o, y, v.z - dx * o];
       const i0 = w - edge;
@@ -353,6 +354,7 @@ function trail(b: FacetBuilder, X: Axis, Z: Axis, line: readonly (readonly [numb
  * un morceau tous les 2,2 au plus ; à sa source, deux rochers (posés avec les autres).
  */
 function brook(b: FacetBuilder, X: Axis, Z: Axis): void {
+  const field = buildHeightField();
   const line = BROOK.line;
   const w = BROOK.half,
     bw = BROOK.bank;
@@ -367,8 +369,8 @@ function brook(b: FacetBuilder, X: Axis, Z: Axis): void {
       const p = { x: X(ax + (bx - ax) * (i / n)), z: Z(az + (bz - az) * (i / n)) };
       const q = { x: X(ax + (bx - ax) * ((i + 1) / n)), z: Z(az + (bz - az) * ((i + 1) / n)) };
       // Un rien au-dessus du sol dessiné ; le bas du ruisseau ne passe jamais sous la mer : il la rejoint à fleur d'eau.
-      const yp = Math.max(0.02, meshGround(p.x, p.z) + 0.03),
-        yq = Math.max(0.02, meshGround(q.x, q.z) + 0.03);
+      const yp = Math.max(0.02, meshGround(field, p.x, p.z) + 0.03),
+        yq = Math.max(0.02, meshGround(field, q.x, q.z) + 0.03);
       const at = (v: { x: number; z: number }, y: number, o: number): P3 => [v.x + dz * o, y, v.z - dx * o];
       b.quad(at(p, yp, w), at(p, yp, -w), at(q, yq, -w), at(q, yq, w), C.brook);
       b.quad(at(p, yp + 0.12, w + bw), at(p, yp, w), at(q, yq, w), at(q, yq + 0.12, w + bw), C.bank);

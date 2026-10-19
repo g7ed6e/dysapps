@@ -1,7 +1,7 @@
 /**
  * Le kit commun des abords des scénettes (./surroundings.ts) : ce que les lieux partagent, pour que les seize lieux se
  * fassent de la même main. Le sol du monde en un point, un hasard fixe, les couleurs de nature et de pierre, un rocher à
- * facettes, une touffe d'herbe, un petit tas conique (le sel, le sable, la terre) et la maison à colombages au toit
+ * facettes, une touffe d'herbe, un sapin, une facette tournée du bon côté quel que soit l'ordre de ses sommets, un petit tas conique (le sel, le sable, la terre) et la maison à colombages au toit
  * d'ardoise (sur un socle de pierre ou sur pilotis, son toit en réparation ou non) ; le bois de l'eau, venu des Quais :
  * le ponton sur pieux, la barque et son plancher, le tonneau, la pile de planches. Aplats francs, une couleur par facette,
  * rien de presque noir. Code pur, sans Three.js.
@@ -108,6 +108,52 @@ export function tuft(b: FacetBuilder, at: Vec3, seed: number, tones: readonly [n
     const h = (0.32 + 0.18 * jitter(seed * 3 + k)) * s;
     b.prism({ x: at.x + 0.09 * s * Math.cos(a), y: at.y, z: at.z + 0.09 * s * Math.sin(a), yaw: a, pitch: 0.25 }, 0.07 * s, 0, h, 3, tones[k % 2]);
   }
+}
+
+/** Les verts d'un sapin et son tronc. */
+const FIR = { needles: 0x3f8f5a, needlesLight: 0x56a568, trunk: 0x8a5a36 } as const;
+
+/**
+ * Un sapin à facettes en (x, z), son pied enfoncé de `sink` dans le sol du monde, tourné de `yaw` : un tronc à quatre
+ * pans, trois étages de cônes à six pans, de deux verts, de taille `s`. Trente triangles.
+ */
+export function fir(b: FacetBuilder, x: number, z: number, s: number, yaw: number, sink = 0): void {
+  const y = groundAt(x, z, sink);
+  b.prism({ x, y, z, yaw }, 0.16 * s, 0.12 * s, 0.9 * s, 4, FIR.trunk);
+  for (let k = 0; k < 3; k++) {
+    b.prism({ x, y: y + (0.7 + 0.85 * k) * s, z, yaw: yaw + k * 0.5 }, (1.25 - 0.3 * k) * s, 0, 1.5 * s, 6, k % 2 ? FIR.needlesLight : FIR.needles);
+  }
+}
+
+/** Où regarde une facette : le long d'une normale, ou à l'opposé d'un point (le cœur du volume qu'elle ferme). */
+export type Aim = { normal: P3 } | { awayFrom: P3 };
+
+/** La facette (a, c, d), prise dans cet ordre, regarde-t-elle du côté de `aim` ? `centre` : son milieu. */
+function looks(a: P3, c: P3, d: P3, aim: Aim, centre: P3): boolean {
+  const u = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+  const v = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
+  const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+  const w = 'normal' in aim ? aim.normal : [centre[0] - aim.awayFrom[0], centre[1] - aim.awayFrom[1], centre[2] - aim.awayFrom[2]];
+  return n[0] * w[0] + n[1] * w[1] + n[2] * w[2] >= 0;
+}
+
+/** Le milieu de quelques sommets. */
+function centreOf(p: readonly P3[]): P3 {
+  const c: P3 = [0, 0, 0];
+  for (const q of p) for (let i = 0; i < 3; i++) c[i] += q[i] / p.length;
+  return c;
+}
+
+/** Un triangle tourné vers `aim`, quel que soit l'ordre de ses sommets. */
+export function triangleToward(b: FacetBuilder, a: P3, c: P3, d: P3, aim: Aim, color: number): void {
+  if (looks(a, c, d, aim, centreOf([a, c, d]))) b.triangle(a, c, d, color);
+  else b.triangle(a, d, c, color);
+}
+
+/** Un quadrilatère plan tourné vers `aim`, quel que soit le sens de ses sommets (pris dans l'ordre du tour). */
+export function quadToward(b: FacetBuilder, q: readonly [P3, P3, P3, P3], aim: Aim, color: number): void {
+  if (looks(q[0], q[1], q[2], aim, centreOf(q))) b.quad(q[0], q[1], q[2], q[3], color);
+  else b.quad(q[3], q[2], q[1], q[0], color);
 }
 
 /** Les tons d'un petit tas conique : son pied (où il touche le sol), son corps, son ombre et son sommet émoussé. */
