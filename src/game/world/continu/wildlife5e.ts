@@ -153,7 +153,7 @@ export function spots5e(): readonly Spot5e[] {
 }
 
 /** Les aiguilles où tournent les choucas : loin des lieux du haut et du sommet de la cabine (leurs étiquettes, son bouton). */
-export function jackdawNeedles(): readonly number[] {
+function jackdawNeedles(): readonly number[] {
   const upper = PLACES_5E.filter((p) => UPPER_PLACES_5E.includes(p.id));
   const cabin = nodeAt(LINKS_5E.aiguilles.bridge[1]);
   return NEEDLES_5E.map((_, i) => i).filter((i) => {
