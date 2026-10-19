@@ -2509,12 +2509,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     let hit = obstacle();
     // Un volume haut juste derrière la scène (la tour du Guet) : la caméra monte au-dessus, à la même distance, plutôt
     // que de s'approcher jusque dans lui ; au plus `SCENE_TURN.climbs` crans de `climb`.
+    // Le cap horizontal, unitaire, figé avant la montée : chaque cran repart de lui, sans cumuler les cosinus.
     const horizontal = Math.hypot(turnDir.x, turnDir.z);
+    const hx = horizontal > 1e-6 ? turnDir.x / horizontal : 0;
+    const hz = horizontal > 1e-6 ? turnDir.z / horizontal : 0;
     let elevation = Math.atan2(turnDir.y, horizontal);
-    for (let k = 0; k < SCENE_TURN.climbs && hit && hit.distance - SCENE_TURN.clearance < dist * SCENE_TURN.keep; k++) {
+    for (let k = 0; k < SCENE_TURN.climbs && horizontal > 1e-6 && hit && hit.distance - SCENE_TURN.clearance < dist * SCENE_TURN.keep; k++) {
       elevation = Math.min(SCENE_TURN.topElevation, elevation + SCENE_TURN.climb);
-      const c = Math.cos(elevation) / horizontal;
-      turnDir.set(turnDir.x * c, Math.sin(elevation), turnDir.z * c);
+      const c = Math.cos(elevation);
+      turnDir.set(hx * c, Math.sin(elevation), hz * c);
       hit = obstacle();
     }
     let d = hit ? Math.max(SCENE_TURN.minDistance, Math.min(dist, hit.distance - SCENE_TURN.clearance)) : dist;
