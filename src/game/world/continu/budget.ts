@@ -29,6 +29,7 @@ import { TERRAIN_5E } from './plan5e';
 import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from './mist5e';
 import { skyDome } from './sky';
 import { veilFacets } from './veil';
+import { wildlifeTriangles } from './wildlife';
 
 /** Les terres qu'on relie du 6e : le budget est celui du monde ouvert du 6e (GD-22, lot 1 : le plan par niveau). */
 const LINKED_LANDS_6E = linkedLands(planFor('6e'));
@@ -43,14 +44,19 @@ const LINKED_LANDS_6E = linkedLands(planFor('6e'));
  */
 const KEO = { triangles: 3170, calls: 5 };
 
-/** La baleine, son souffle et les cinq oiseaux du bord d'eau (GD-20, déplacement libre, lot 2) : un maillage. */
-const FAUNA_COST = { triangles: whaleFacets().triangles + spoutFacets().triangles + FAUNA.birds * birdFacets().triangles, calls: 1 };
+/**
+ * La baleine, son souffle et les cinq oiseaux du bord d'eau (GD-20, déplacement libre, lot 2), et les bêtes des côtes
+ * (mouettes, crabes, poissons ; piste « Ambiance », 19 octobre 2026, ./wildlife.ts) : un maillage, toutes à la fois.
+ */
+const FAUNA_COST = { triangles: whaleFacets().triangles + spoutFacets().triangles + FAUNA.birds * birdFacets().triangles + wildlifeTriangles(), calls: 1 };
 
 /** Le dôme du ciel (GD-20, point 3, lot 3) : un maillage, dessiné d'abord, sur la Carte aussi. */
 const SKY = { triangles: skyDome(1).triangles, calls: 1 };
 
 /**
- * L'enveloppe du monde ouvert : 100 000 triangles, 22 appels, relevée pour la Nef (GD-21, « on peut augmenter le budget si
+ * L'enveloppe du monde ouvert : 100 140 triangles, 22 appels, relevée de 140 triangles pour les bêtes des côtes (piste
+ * « Ambiance », choisie par le mainteneur le 19 octobre 2026 avec « environ +300 triangles, 0 appel » : 134 triangles
+ * de plus, et les 40 de marge d'avant gardés). Avant : 100 000 triangles, 22 appels, relevée pour la Nef (GD-21, « on peut augmenter le budget si
  * besoin », mainteneur, 18 octobre 2026 ; 98 000 avant). Les 98 000 triangles et 22 appels (21, puis 22 avec les
  * Détours pour garder 3 appels de réserve, carte « Monter à 22 ») ont été relevés par le mainteneur le 18 octobre 2026
  * pour les habitants des scénettes en modèles 3D (« on peut augmenter le budget » ; les images par seconde à mesurer sur
@@ -59,7 +65,7 @@ const SKY = { triangles: skyDome(1).triangles, calls: 1 };
  * déplacement libre, la silhouette de Kéo et la marque au sol, 18 octobre 2026).
  * La Carte la touche presque (toute l'île de loin, sa végétation comprise).
  */
-export const OPEN_WORLD_BUDGET = { triangles: 100_000, calls: 22 } as const;
+export const OPEN_WORLD_BUDGET = { triangles: 100_140, calls: 22 } as const;
 
 export interface OpenWorldCost {
   poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette' | 'nef';
