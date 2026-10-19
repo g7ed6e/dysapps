@@ -1189,7 +1189,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   /**
    * Les bêtes des côtes à l'image suivante ; vrai si leurs sommets ont changé. Avec « Réduire les animations », elles ne
-   * sont réécrites que quand leurs places changent : posées, sans bouger, et les crabes ne s'enfouissent pas.
+   * sont réécrites que quand leurs places changent : posées, sans bouger.
    */
   const stepCritters = (dt: number): boolean => {
     if (!sixth) return false;
@@ -1214,10 +1214,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       for (let k = 0; k < WILDLIFE.perGroup.gulls; k++) writeCritter(poses[k] ?? null, gullsAt + (s * WILDLIFE.perGroup.gulls + k) * gullLength, gullLength);
     });
     const crabLength = critters.crab.positions.length;
-    // Avec « Réduire les animations », Kéo ne fait pas s'enfouir les crabes : il est compté au loin.
-    const keoFor = reduceMotion ? { x: Infinity, z: Infinity } : here;
     heldCrabs.forEach((spot, s) => {
-      const poses = spot === null ? [] : crabsPose(spot, t, reduceMotion, keoFor);
+      const poses = spot === null ? [] : crabsPose(spot, t, reduceMotion, here);
       for (let k = 0; k < WILDLIFE.perGroup.crabs; k++) writeCritter(poses[k] ?? null, crabsAt + (s * WILDLIFE.perGroup.crabs + k) * crabLength, crabLength);
     });
     const fishLength = critters.fish.positions.length;
@@ -1238,7 +1236,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const flush = () => {
       if (critterMoved) (faunaGeometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
     };
-    if (!near && !playing) return flush();
+    if (!near && !playing) {
+      // Loin du bord d'eau, sa scène finie : la baleine, son jet et les oiseaux s'effacent (le maillage reste dessiné
+      // pour les bêtes des côtes), et se réécrivent au retour.
+      if (faunaKey !== 'gone') {
+        faunaKey = 'gone';
+        faunaPositions.fill(0, 0, gullsAt);
+        (faunaGeometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
+      }
+      return flush();
+    }
     // Avec « Réduire les animations », la baleine se tient en surface tant que Kéo est là. Rien ne bouge (les oiseaux
     // posés, la baleine sous l'eau ou immobile) : les sommets d'avant restent, sans rien calculer.
     const surface = reduceMotion && detourHere === shore.id;

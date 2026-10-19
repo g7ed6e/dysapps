@@ -53,15 +53,15 @@ describe('La vie animale des côtes du 6e (piste « Ambiance »)', () => {
     expect(gullsPose(i, 40, true)).toEqual(still);
   });
 
-  it('les crabes filent un pas puis se reposent, s’enfouissent près de Kéo ; immobiles avec « Réduire les animations »', () => {
+  it('les crabes filent un pas puis se reposent, immobiles près de Kéo et avec « Réduire les animations »', () => {
     const i = beachSpots[0];
     const far = { x: 1e4, z: 1e4 };
     // Au repos au départ de leur cycle, ils bougent ensuite.
     const a = crabsPose(i, 0, false, far);
     const moves = [1, 3, 6, 8, 11].some((t) => crabsPose(i, t, false, far).some((c, k) => distance(c, a[k]) > 0.3));
     expect(moves).toBe(true);
-    const near = crabsPose(i, 0, false, a[0]);
-    expect(near[0].y).toBeLessThan(a[0].y - 0.2);
+    const rest = crabsPose(i, 0, true, far);
+    for (const t of [1, 3, 6, 8, 11]) expect(crabsPose(i, t, false, a[0])).toEqual(rest);
     expect(crabsPose(i, 7, true, far)).toEqual(crabsPose(i, 0, true, far));
   });
 

@@ -21,8 +21,8 @@ import { heightAt, landDistance, standingHeight } from './terrain';
 /**
  * Les mesures : les places tous les `spacing` unités de côte ; combien de bêtes à la fois (`slots`) ; la mouette tourne
  * en `gullTurn` secondes sur un cercle de `gullRadius`, à `gullHeight` au-dessus de l'eau ; le crabe se repose
- * `crabRest` secondes, puis file de côté sur `crabStep` unités en `crabRun` secondes, et s'enfouit quand Kéo approche
- * (`crabShy`) ; un poisson saute toutes les `fishEvery` secondes, `fishLeap` secondes en l'air.
+ * `crabRest` secondes, puis file de côté sur `crabStep` unités en `crabRun` secondes, et se tient immobile quand Kéo est
+ * à moins de `crabCalm` unités (rien ne bouge dans son champ, référent dys) ; un poisson saute toutes les `fishEvery` secondes, `fishLeap` secondes en l'air.
  */
 export const WILDLIFE = {
   spacing: 18,
@@ -31,13 +31,13 @@ export const WILDLIFE = {
   keep: 90,
   appear: 45,
   gullRadius: 5,
-  gullHeight: 5.5,
+  gullHeight: 4,
   gullTurn: 16,
   crabRest: 5,
   crabRun: 1.4,
   crabStep: 1.2,
-  crabShy: [2.5, 4.5],
-  fishEvery: 9,
+  crabCalm: 6,
+  fishEvery: 16,
   fishLeap: 0.9,
   fishArc: 1.1,
   fishLength: 2.4,
@@ -145,7 +145,7 @@ const ease = (u: number) => {
 };
 
 /** Un décalage fixe, de 0 à 1, propre à une place et à une bête du groupe. */
-const phase = (spot: number, k: number) => (((spot * 7919 + k * 104729) % 1000) + 1000) / 1000 % 1;
+const phase = (spot: number, k: number) => ((spot * 7919 + k * 104729) % 1000) / 1000;
 
 /**
  * Les mouettes d'une place à l'instant `t` : `perGroup.gulls` mouettes sur un cercle au-dessus de l'eau, au bord de la
@@ -158,7 +158,8 @@ export function gullsPose(spot: number, t: number, still: boolean): CritterPose[
   for (let k = 0; k < WILDLIFE.perGroup.gulls; k++) {
     if (still) {
       // Posées le long de la plage (ou, sans plage, sur l'eau, comme au repos sur les vagues).
-      const side = (k - 1) * 0.9;
+      // À cinq unités des crabes, le long de la plage : chaque bête se lit seule (directeur artistique).
+      const side = 5 + k * 0.9;
       const x = ground.x - s.inland.z * side;
       const z = ground.z + s.inland.x * side;
       out.push({ x, y: s.beach ? Math.max(0, standingHeight(heightAt({ x, z }))) : 0.02, z, yaw: Math.atan2(s.inland.z, -s.inland.x), pitch: 0, form: 'perched' });
@@ -178,7 +179,7 @@ export function gullsPose(spot: number, t: number, still: boolean): CritterPose[
 
 /**
  * Les crabes d'une place à l'instant `t` : `perGroup.crabs` crabes sur la plage, de côté, qui filent un pas puis se
- * reposent (aller, repos, retour, repos) ; ils s'enfouissent dans le sable quand Kéo (`keo`) approche. `still` : à leur
+ * reposent (aller, repos, retour, repos) ; près de Kéo (`keo`), chacun se tient à sa place de repos. `still` : à leur
  * place de repos.
  */
 export function crabsPose(spot: number, t: number, still: boolean, keo: Vec2): CritterPose[] {
@@ -190,7 +191,7 @@ export function crabsPose(spot: number, t: number, still: boolean, keo: Vec2): C
   for (let k = 0; k < WILDLIFE.perGroup.crabs; k++) {
     const home = { x: b.x + along.x * (k * 2.2 - 1.1) + s.inland.x * 0.4 * k, z: b.z + along.z * (k * 2.2 - 1.1) + s.inland.z * 0.4 * k };
     let off = 0;
-    if (!still) {
+    if (!still && distance(home, keo) >= WILDLIFE.crabCalm) {
       const u = (t + phase(spot, k) * cycle) % cycle;
       const R = WILDLIFE.crabRest, F = WILDLIFE.crabRun;
       off = u < R ? 0 : u < R + F ? ease((u - R) / F) : u < 2 * R + F ? 1 : 1 - ease((u - 2 * R - F) / F);
@@ -198,11 +199,8 @@ export function crabsPose(spot: number, t: number, still: boolean, keo: Vec2): C
     }
     const x = home.x + along.x * off;
     const z = home.z + along.z * off;
-    const d = distance({ x, z }, keo);
-    const [near, far] = WILDLIFE.crabShy;
-    const dig = 1 - ease((d - near) / (far - near));
     // De face vers la mer : il file de côté, le long de la plage.
-    out.push({ x, y: Math.max(0, standingHeight(heightAt({ x, z }))) - 0.35 * dig, z, yaw: Math.atan2(s.inland.z, -s.inland.x), pitch: 0, form: 'crab' });
+    out.push({ x, y: Math.max(0, standingHeight(heightAt({ x, z }))), z, yaw: Math.atan2(s.inland.z, -s.inland.x), pitch: 0, form: 'crab' });
   }
   return out;
 }
@@ -235,7 +233,7 @@ function crabFacets(): Facets {
   const b = new FacetBuilder();
   const shell = 0xc8673d;
   const side = 0xa4512f;
-  const claw = 0xe08a55;
+  const claw = 0xeba070;
   const R = 0.28;
   const top: [number, number, number] = [0, 0.2, 0];
   const ring = Array.from({ length: 6 }, (_, k) => [Math.cos((Math.PI * k) / 3) * R * 0.85, 0.08, Math.sin((Math.PI * k) / 3) * R * 1.2] as [number, number, number]);
@@ -245,8 +243,8 @@ function crabFacets(): Facets {
     const c = ring[(k + 1) % 6];
     b.triangle(a, c, [c[0], 0, c[2]], side);
   }
-  // Les pinces, en avant, une de chaque côté.
-  for (const s of [-1, 1]) b.triangle([0.18, 0.1, 0.12 * s], [0.42, 0.14, 0.2 * s], [0.3, 0.2, 0.06 * s], claw);
+  // Les pinces, couchées en avant, larges et presque à plat (debout, elles se lisaient comme des cornes).
+  for (const s of [-1, 1]) b.triangle([0.2, 0.1, 0.06 * s], [0.48, 0.13, 0.14 * s], [0.26, 0.12, 0.28 * s], claw);
   // Les pattes : trois éclats de chaque côté, posés au sol.
   for (const s of [-1, 1]) for (const x of [-0.12, 0.02]) b.triangle([x, 0.08, 0.3 * s], [x + 0.08, 0.08, 0.3 * s], [x - 0.02, 0, 0.48 * s], side);
   return b.build();
