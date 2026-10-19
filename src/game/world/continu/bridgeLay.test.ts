@@ -3,8 +3,13 @@
 import { describe, expect, it } from 'vitest';
 import { BRIDGE_LAY, bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLayState } from './bridgeLay';
 import { bridgeFacets, bridgeLayRest, bridgeParts, bridgeSite } from './bridges';
-import { LINKED_LANDS } from './lands';
+import { linkedLands } from './lands';
 import { veilFacets } from './veil';
+import { planFor } from './levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
+const LINKED_LANDS = linkedLands(PLAN);
 
 const state = (): BridgeLayState => ({ landed: false, fade: 0, done: false });
 

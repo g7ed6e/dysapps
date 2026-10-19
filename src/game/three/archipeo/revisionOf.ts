@@ -16,7 +16,7 @@ import { SCREEN_TYPES } from '../../exercises/registry';
 import type { ExerciseDef } from '../../exercises/types';
 import { revisionsDeLIle } from '../../reminders';
 import type { Lv2Choice } from '../../../core/settings';
-import { placeById, type PlaceId } from '../../world/continu/plan6e';
+import { placeById, type PlaceId } from '../../world/continu/levelPlan';
 
 /** Les questions d'un passage, au plus (directeur du contenu pédagogique, condition 6 : la longueur d'un exercice). */
 export const REVISION_MAX = 8;

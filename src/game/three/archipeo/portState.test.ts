@@ -40,17 +40,17 @@ describe('l’état de l’Escale tiré de la sauvegarde', () => {
 
   it('la région monte d’un degré à la fois : abandonnée, réactivée, en reconstruction, en développement, ouverte', () => {
     const empty: GameState['world'] = { parts: {}, links: [] } as unknown as GameState['world'];
-    expect(regionDegree(empty)).toBe(0);
+    expect(regionDegree(empty, '6e')).toBe(0);
     const start = getArchipelago('6e').school;
     const first = partiesDe(start)[0];
     const one = Object.fromEntries(first.cases.map(({ plan, keys }) => [plan.id, keys]));
-    expect(regionDegree({ ...empty, parts: one })).toBe(1);
+    expect(regionDegree({ ...empty, parts: one }, '6e')).toBe(1);
     const whole = allParts(start);
-    expect(regionDegree({ ...empty, parts: whole })).toBe(1);
+    expect(regionDegree({ ...empty, parts: whole }, '6e')).toBe(1);
     const link = BRIDGES.find((b) => b.cost > 0 && (b.from === start || b.to === start))!;
-    expect(regionDegree({ ...empty, parts: whole, links: [link.id] })).toBe(2);
+    expect(regionDegree({ ...empty, parts: whole, links: [link.id] }, '6e')).toBe(2);
     const monument = monumentsOf('6e')[0];
-    expect(regionDegree({ ...empty, parts: { ...whole, [monument.id]: ['0'] }, links: [link.id] })).toBe(3);
-    expect(regionDegree({ ...empty, links: [voyageId('5e')] })).toBe(4);
+    expect(regionDegree({ ...empty, parts: { ...whole, [monument.id]: ['0'] }, links: [link.id] }, '6e')).toBe(3);
+    expect(regionDegree({ ...empty, links: [voyageId('5e')] }, '6e')).toBe(4);
   });
 });

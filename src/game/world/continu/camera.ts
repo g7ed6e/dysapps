@@ -7,7 +7,7 @@
 // entre elle et Kéo, elle monte juste assez pour le voir. La caméra d'une scénette (./scenette.ts) garde le champ de
 // toujours (`CAMERA_FOV`). Code pur : la vue pose la caméra.
 import type { Vec3 } from './geometry';
-import type { PlaceId } from './plan6e';
+import type { PlaceId } from './levelPlan';
 import { modelOfPlace } from './places';
 
 /** Le champ vertical de la caméra d'une scénette, en degrés. */

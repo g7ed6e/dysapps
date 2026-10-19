@@ -15,6 +15,10 @@ import { sanitizeState } from '../../engine';
 import { STORIES } from '../../world/stories';
 import { entraideRemiseOf, remiseOf, type RemiseRequest } from './remiseOf';
 import type { OpenWorld, RemiseEvents } from './scene';
+import { planFor } from '../../world/continu/levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
 
 const request = remiseOf(COMMANDES.find((c) => c.fixture === 'french-6e-phonology-fixture-1')!.id) as RemiseRequest;
 
@@ -185,7 +189,7 @@ const lanterne = STORIES.find((x) => x.id === 'story-6e-1')!;
 const entraide = (step: number, stock: Record<string, number> = {}) => sanitizeState({ stock, world: { links: [], stories: [{ id: lanterne.id, step }] } });
 
 it('« Donner » : la caisse et ses blocs dans la scène, la fin dit l’étape suivante, l’étape écrite une fois, « Continuer » seul', () => {
-  const req = entraideRemiseOf(entraide(1, { 'french-6e-phonology': 2 }), lanterne.id)!;
+  const req = entraideRemiseOf(PLAN, entraide(1, { 'french-6e-phonology': 2 }), lanterne.id)!;
   const { calls, events, deliver } = renderRemise({ req });
   expect(calls.remise).toHaveBeenCalledWith({ place: 'quais', caisse: { count: 2, block: expect.objectContaining({ dessus: expect.any(Number), cote: expect.any(Number) }) } }, expect.anything());
   expect(consigneZone()).toHaveTextContent('Tu donnes 2 blocs de bois pour la lanterne.');
@@ -200,7 +204,7 @@ it('« Donner » : la caisse et ses blocs dans la scène, la fin dit l’étape 
 });
 
 it('« Apporter » : l’objet part de la main de Kéo, puis la fin « posée » et les 50 XP après elle', () => {
-  const req = entraideRemiseOf(entraide(2), lanterne.id)!;
+  const req = entraideRemiseOf(PLAN, entraide(2), lanterne.id)!;
   const { calls, deliver } = renderRemise({ req });
   expect(calls.remise).toHaveBeenCalledWith({ place: 'phare', amenagement: 'french-6e-phonology-fixture-2', carry: true }, expect.anything());
   expect(consigneZone()).toHaveTextContent('Tu apportes la lanterne.');

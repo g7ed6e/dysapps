@@ -10,7 +10,7 @@ import type { Completion } from '../../engine';
 import type { StageDoneProps } from '../../ExerciseRunner';
 import { playsInPlace } from '../../world/continu/mission';
 import { REVISION_PHRASES, filled, questionsWord } from '../../world/continu/remise';
-import { placeById } from '../../world/continu/plan6e';
+import { placeById } from '../../world/continu/levelPlan';
 import type { RevisionPlan } from './revisionOf';
 import type { OpenWorld } from './scene';
 import { WorldDone, type RevisedSummary } from './WorldDone';

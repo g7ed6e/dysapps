@@ -15,8 +15,14 @@ import { createTileStore } from './tiles';
 import { landTileFacets } from './flora';
 import { VEIL_HEIGHT, VEIL_LAYERS, highest, veilFacets, veilShare } from './veil';
 import { bridgeSite } from './bridges';
-import { LANDS, LINKED_LANDS, landById } from './lands';
+import { landById, linkedLands } from './lands';
 import { WALK_CADENCE, WALK_SPEED, skipWalk, startWalk, walkAt } from './walk';
+import { planFor } from './levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
+const LANDS = PLAN.lands;
+const LINKED_LANDS = linkedLands(PLAN);
 
 const field = buildHeightField();
 const ground = (x: number, z: number) => heightOnMesh(field, x, z);

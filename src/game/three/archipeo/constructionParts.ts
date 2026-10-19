@@ -6,7 +6,7 @@
 // suivent, de bas en haut. Sans Three.js : testé sous jsdom.
 import type { BiomeId } from '../../biomes';
 import type { PartShape, Stage } from '../../world/continu/construction';
-import type { OpenPlace } from '../../world/continu/plan6e';
+import type { OpenPlace } from '../../world/continu/levelPlan';
 import type { IslandStateId } from '../../world/islandState';
 import { partiePosee, partiesDe } from '../../world/parts';
 import { plansFor } from '../../world/plans';

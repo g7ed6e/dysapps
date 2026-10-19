@@ -2,8 +2,15 @@
 // relient, leurs lieux, leur prix, leur ordre. Ce que la grille en reçoit : ../../three/archipeo/landLinks.test.ts.
 import { describe, expect, it } from 'vitest';
 import { LINK_PRICE } from '../archipelago';
-import { LANDS, LINKED_LANDS, NODE_LANDS, PRICE_PER_PLACE, bridgeEdge, firstClosed, landById, landOf, landPrice, landsAfter, openLands, placesOfLands } from './lands';
+import { bridgeEdge, firstClosed, landById, landOf, landPrice, landsAfter, linkedLands, nodeLands, openLands, placesOfLands, PRICE_PER_PLACE } from './lands';
 import { PATH_EDGES, PLACES } from './plan6e';
+import { planFor } from './levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
+const LANDS = PLAN.lands;
+const LINKED_LANDS = linkedLands(PLAN);
+const NODE_LANDS = nodeLands(PLAN);
 
 describe('Les cinq terres', () => {
   it('chaque lieu est dans une terre et une seule, chaque terre se trouve par son nom (les « ! » de landById et landOf sont sûrs : relecture de l’expert frontend)', () => {
@@ -20,14 +27,14 @@ describe('Les cinq terres', () => {
   });
 
   it('chaque pont est le seul passage entre sa terre et celle d’avant ; aucune autre liaison ne passe d’une terre à l’autre', () => {
-    const bridges = new Set(LINKED_LANDS.map(bridgeEdge));
+    const bridges = new Set(LINKED_LANDS.map((l) => bridgeEdge(PLAN, l)));
     expect(bridges.size).toBe(4);
     PATH_EDGES.forEach(([a, b], i) => {
       const ends = new Set([NODE_LANDS.get(a), NODE_LANDS.get(b)]);
       if (!bridges.has(i)) expect(ends.size, `${a}–${b}`).toBe(1);
     });
     for (const land of LINKED_LANDS) {
-      const [a, b] = PATH_EDGES[bridgeEdge(land)];
+      const [a, b] = PATH_EDGES[bridgeEdge(PLAN, land)];
       expect(new Set([NODE_LANDS.get(a), NODE_LANDS.get(b)])).toEqual(new Set([land, landById(land).after]));
     }
   });
@@ -53,11 +60,11 @@ describe('Les cinq terres', () => {
     expect(landsAfter('levant', ['levant', 'cretes'])).toEqual(['cretes']);
     expect(landsAfter('levant', ['levant'])).toEqual([]);
     // Une terre ouverte ouvre celle d'avant : un lieu du Large joué ouvre le Couchant.
-    expect([...openLands((id) => id === 'ferry')].sort()).toEqual(['couchant', 'large', 'pointe']);
+    expect([...openLands(PLAN, (id) => id === 'ferry')].sort()).toEqual(['couchant', 'large', 'pointe']);
   });
 
   it('placesOfLands rend les lieux des terres dans l’ordre du plan', () => {
-    expect(placesOfLands(['large'])).toEqual(['beacons', 'ferry']);
+    expect(placesOfLands(PLAN, ['large'])).toEqual(['beacons', 'ferry']);
   });
 });
 

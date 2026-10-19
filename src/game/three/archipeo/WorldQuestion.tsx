@@ -40,7 +40,7 @@ import { Aid } from '../../exercises/Aid';
 import { NoticeQuestion } from '../../exercises/CalculationScreen';
 import type { ScreenProps } from '../../exercises/registry';
 import { exercisesToReview } from '../../review';
-import { placeById, type PlaceId } from '../../world/continu/plan6e';
+import { placeById, type PlaceId } from '../../world/continu/levelPlan';
 import { WIDEN_FULL, WIDEN_OFFER, WIDEN_SCENE, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf } from '../../world/continu/scenette';
 import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';

@@ -9,7 +9,7 @@ import { boundsOf, placeFacets, type Facets } from './facets';
 import type { Vec3 } from './geometry';
 import { placeArt } from './northShore';
 import { pathNode } from './paths';
-import { placeById, type PlaceId } from './plan6e';
+import { placeById, type PlaceId } from './levelPlan';
 import { drawPieces, modelOfPlace, ruinOf, type PlacePiece } from './places';
 import { scenetteExit } from './scenette';
 import { standingHeight } from './terrain';

@@ -21,6 +21,10 @@ import { COMMANDES } from '../../world/requests';
 import { CommandsSheet, HabitantLine } from './HabitantLine';
 import { PlacePanel } from './PlacePanel';
 import { commandLines, entraideLineOf, entraideListLine, habitantLineOf, placeOfCommande, sourceOf } from './remiseOf';
+import { planFor } from '../../world/continu/levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
 
 const potager = COMMANDES.find((c) => c.fixture === 'french-6e-phonology-fixture-1')!;
 const boutique = COMMANDES.find((c) => placeOfCommande(c) === 'quais')!;
@@ -120,7 +124,7 @@ it('la liste « Commandes » : chaque commande ouverte, sa phrase, « Y aller »
   const state = sanitizeState({ stock: { [potager.block]: potager.count }, world: { links: [], requests: [boutique.id, potager.id] } });
   const onGo = vi.fn();
   const onClose = vi.fn();
-  wrap(<CommandsSheet lines={commandLines(state, ENTREPOT)} suggested={potager.id} onGo={onGo} onClose={onClose} />);
+  wrap(<CommandsSheet lines={commandLines(PLAN, state, ENTREPOT)} suggested={potager.id} onGo={onGo} onClose={onClose} />);
   const sheet = screen.getByRole('dialog', { name: /Commandes/ });
   const rows = within(sheet).getAllByRole('listitem');
   expect(rows).toHaveLength(2);
@@ -148,7 +152,7 @@ it('« Apporter » : la phrase de l’étape et son bouton, avant les révisions
   revisionDueAuPhare();
   const state = avecLanterne(2);
   const onEntraide = vi.fn();
-  wrap(<HabitantLine place="phare" line={null} entraide={entraideLineOf(state, 'phare', ENTREPOT)} suggested={lanterne.id} onDeliver={vi.fn()} onEntraide={onEntraide} onGo={vi.fn()} />);
+  wrap(<HabitantLine place="phare" line={null} entraide={entraideLineOf(PLAN, state, 'phare', ENTREPOT)} suggested={lanterne.id} onDeliver={vi.fn()} onEntraide={onEntraide} onGo={vi.fn()} />);
   const group = screen.getByRole('group');
   expect(group.textContent?.replace(/\s+/g, ' ')).toMatch(/Apporte la lanterne au Phare\./);
   expect(within(group).queryByRole('link', { name: /Reprendre/ })).toBeNull();
@@ -163,7 +167,7 @@ it('« Apporter » : la phrase de l’étape et son bouton, avant les révisions
 
 it('la commande prête passe avant l’étape d’entraide ; une seule ligne à la fois', () => {
   const state = avecLanterne(2, { [potager.block]: potager.count }, [potager.id]);
-  wrap(<HabitantLine place="phare" line={habitantLineOf(state, 'phare', ENTREPOT)} entraide={entraideLineOf(state, 'phare', ENTREPOT)} suggested={null} onDeliver={vi.fn()} onGo={vi.fn()} />);
+  wrap(<HabitantLine place="phare" line={habitantLineOf(state, 'phare', ENTREPOT)} entraide={entraideLineOf(PLAN, state, 'phare', ENTREPOT)} suggested={null} onDeliver={vi.fn()} onGo={vi.fn()} />);
   expect(screen.getAllByRole('group')).toHaveLength(1);
   expect(screen.getByRole('button', { name: /Livrer/ })).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: /Apporter/ })).toBeNull();
@@ -206,7 +210,7 @@ it('« Reprendre » en cours de chargement : occupé et désactivé, un second t
 it('ce qui manque pour donner : la demande, « Y aller » vers le lieu de la ressource, jamais plein', async () => {
   const state = avecLanterne(1, { 'french-6e-phonology': 1 });
   const onGo = vi.fn();
-  wrap(<HabitantLine place="quais" line={null} entraide={entraideLineOf(state, 'quais', ENTREPOT)} suggested={lanterne.id} onDeliver={vi.fn()} onGo={onGo} />);
+  wrap(<HabitantLine place="quais" line={null} entraide={entraideLineOf(PLAN, state, 'quais', ENTREPOT)} suggested={lanterne.id} onDeliver={vi.fn()} onGo={onGo} />);
   const group = screen.getByRole('group');
   expect(group.textContent?.replace(/\s+/g, ' ')).toMatch(/Il me faut 2 blocs de bois\. C’est pour la lanterne\. Joue une mission au Phare\./);
   const go = within(group).getByRole('button', { name: 'Y aller : Le Phare' });
@@ -218,7 +222,7 @@ it('ce qui manque pour donner : la demande, « Y aller » vers le lieu de la res
 it('la liste « Commandes » : l’entraide en tête, son signe (l’objet, « Étape 1 sur 3 ») et « Y aller » vers son lieu', async () => {
   const state = avecLanterne(0, {}, [potager.id]);
   const onGo = vi.fn();
-  wrap(<CommandsSheet lines={commandLines(state, ENTREPOT)} entraide={entraideListLine(state, () => true, ENTREPOT)} suggested={lanterne.id} onGo={onGo} onClose={vi.fn()} />);
+  wrap(<CommandsSheet lines={commandLines(PLAN, state, ENTREPOT)} entraide={entraideListLine(PLAN, state, () => true, ENTREPOT)} suggested={lanterne.id} onGo={onGo} onClose={vi.fn()} />);
   const rows = within(screen.getByRole('dialog', { name: /Commandes/ })).getAllByRole('listitem');
   expect(rows).toHaveLength(2);
   expect(within(rows[0]).getByRole('img', { name: 'Entraide : la lanterne. Étape 1 sur 3.' })).toBeInTheDocument();

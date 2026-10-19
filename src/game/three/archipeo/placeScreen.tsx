@@ -12,7 +12,7 @@ import type { ExerciseItem } from '../../exercises/types';
 import { Aid } from '../../exercises/Aid';
 import type { AidData } from '../../exercises/maths';
 import type { AnswerSlot, QuestionLayout, SortLook } from '../../world/continu/questionScene';
-import type { PlaceId } from '../../world/continu/plan6e';
+import type { PlaceId } from '../../world/continu/levelPlan';
 import type { ScenetteLayout } from '../../world/continu/scenette';
 import { isItemScene, type ItemScene } from '../../world/continu/questions';
 

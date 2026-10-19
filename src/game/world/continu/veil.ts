@@ -6,7 +6,8 @@
 // se lit). Rien ne bouge : c'est un état, pas une animation ; quand on relie la terre, elle se lève en fondu doux après le
 // toc du pont (d'un coup avec « Réduire les animations ») : la vue n'en change que la transparence. Code pur.
 import { distance, linearRgb, smoothstep, type Vec2 } from './geometry';
-import { LANDS, NODE_LANDS, type LandId, type LinkedLand } from './lands';
+import { nodeLands, type LandId, type LinkedLand } from './lands';
+import { planFor } from './levelPlan';
 import { PATH_NODES, placeById } from './plan6e';
 import { heightAt, landDistance, standingHeight } from './terrain';
 
@@ -55,6 +56,10 @@ export const VEIL_HEIGHT = VEIL_LAYERS[VEIL_LAYERS.length - 1].lift;
  * de côté (sur l'eau), ses voisines s'effacent jusqu'à elle.
  */
 const GRID = { step: 3, reach: 22, full: 0.75, border: 5, shore: 0.4, place: 7 } as const;
+
+/** La brume est encore celle du plan du 6e (GD-22, lot 1 : le plan par niveau). */
+const LANDS = planFor('6e').lands;
+const NODE_LANDS = nodeLands(planFor('6e'));
 
 /** Les repères d'une terre : les nœuds de ses chemins et le centre de ses lieux. */
 const featuresOf = (land: LandId): Vec2[] => [

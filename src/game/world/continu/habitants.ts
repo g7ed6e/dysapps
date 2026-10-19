@@ -4,7 +4,7 @@
 // fichier, sa mise à la place du pion (sa hauteur, ses pieds, son cap) et le registre des modèles montrés, que le décor de
 // près consulte (./scenette.ts : sans modèle, le pion dessiné en code ; avec, le décor sans son corps). Ce qui charge le
 // fichier et le dessine est dans la vue (../../importedCharacters.ts, `loadHabitant` ; ../../three/archipeo/habitantModels.ts).
-import type { PlaceId } from './plan6e';
+import { levelOfPlace, type PlaceId } from './levelPlan';
 
 /** La hauteur de l'habitant d'une scénette, en unités du monde (celle du pion dessiné en code, et de son modèle). */
 export const HABITANT_HEIGHT = 1.4;
@@ -33,8 +33,8 @@ export const HABITANT_HALVES: Readonly<Record<PlaceId, { x: number; z: number }>
   ferry: { x: 0.36, z: 0.16 },
 };
 
-/** Le dossier du modèle de l'habitant d'un lieu (docs/univers/archipeo/personnages/modeles/<nom>/). */
-export const habitantModelName = (place: PlaceId): string => `6e-habitant-${place}`;
+/** Le dossier du modèle de l'habitant d'un lieu (docs/univers/archipeo/personnages/modeles/<nom>/), préfixé de son niveau. */
+export const habitantModelName = (place: PlaceId): string => `${levelOfPlace(place)}-habitant-${place}`;
 
 /** Le fichier du modèle, dans son dossier : une seule version, l'habitant ne se voit que de près, dans sa scénette. */
 export const HABITANT_FILE = 'habitant.glb';

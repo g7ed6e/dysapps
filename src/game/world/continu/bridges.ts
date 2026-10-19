@@ -8,7 +8,8 @@
 // dessine aussi en trait double, distinct d'un chemin. Code pur.
 import { FacetBuilder, mergeFacets, type Facets } from './facets';
 import { distance, type Vec2 } from './geometry';
-import { LINKED_LANDS, bridgeEdge, firstClosed, NODE_LANDS, START_LAND, type LinkedLand } from './lands';
+import { bridgeEdge, firstClosed, isLinkedLand, linkedLands, nodeLands, startLandOf, type LinkedLand } from './lands';
+import { planFor } from './levelPlan';
 import { bridgeCut, pathNode, type NetworkPoint } from './paths';
 import { PATH_EDGES, STRAITS } from './plan6e';
 import { heightAt, standingHeight, straitClearance } from './terrain';
@@ -62,13 +63,16 @@ export interface BridgeSite {
   mid: Vec2;
 }
 
+/** Les ponts sont encore ceux du plan du 6e (GD-22, lot 1 : le plan par niveau). */
+const PLAN = planFor('6e');
+
 const sites = new Map<LinkedLand, BridgeSite>();
 
 /** Le pont d'une terre (calculé une fois). */
 export function bridgeSite(land: LinkedLand): BridgeSite {
   const known = sites.get(land);
   if (known) return known;
-  const edge = bridgeEdge(land);
+  const edge = bridgeEdge(PLAN, land);
   const [a, b] = STRAITS[land].bridge;
   const nearEnd: 0 | 1 = PATH_EDGES[edge][0] === a ? 0 : 1;
   const near = pathNode(a).at;
@@ -105,7 +109,7 @@ export function bridgeSite(land: LinkedLand): BridgeSite {
 }
 
 /** Les quatre ponts, dans l'ordre des terres. */
-export const allBridges = (): BridgeSite[] => LINKED_LANDS.map(bridgeSite);
+export const allBridges = (): BridgeSite[] => linkedLands(PLAN).map(bridgeSite);
 
 /** Le dessus de la culée de ce côté (`side` 0) ou d'en face (1) d'un pont, à `d` unités de `near` sur sa ligne : une rampe douce du sol à la hauteur du tablier. */
 function abutTop(s: BridgeSite, side: 0 | 1, d: number): number {
@@ -121,7 +125,7 @@ function abutTop(s: BridgeSite, side: 0 | 1, d: number): number {
  */
 export function bridgeFloor(x: number, z: number, closed: readonly LinkedLand[]): number | null {
   let top: number | null = null;
-  for (const land of LINKED_LANDS) {
+  for (const land of linkedLands(PLAN)) {
     const s = bridgeSite(land);
     const dx = x - s.near.x;
     const dz = z - s.near.z;
@@ -154,8 +158,8 @@ export function clampToOpen(p: NetworkPoint, closed: readonly LinkedLand[]): Net
     const beyond = s.nearEnd === 0 ? p.t > s.stop.t : p.t < s.stop.t;
     return beyond ? s.stop : p;
   }
-  const land = NODE_LANDS.get(PATH_EDGES[p.edge][0]) ?? START_LAND;
-  return land !== START_LAND && closed.includes(land) ? bridgeSite(firstClosed(land, closed)).stop : p;
+  const land = nodeLands(PLAN).get(PATH_EDGES[p.edge][0]) ?? startLandOf(PLAN);
+  return isLinkedLand(land) && closed.includes(land) ? bridgeSite(firstClosed(land, closed)).stop : p;
 }
 
 /** La zone de toucher d'un pont : un rayon autour du milieu de son eau, et, de loin, tant de pixels à l'écran au moins (48 et plus). */

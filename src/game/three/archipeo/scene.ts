@@ -22,11 +22,12 @@ import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/g
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
 import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen } from '../../world/continu/bridges';
 import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
-import { LINKED_LANDS, START_LAND, bridgeSpot, firstClosed, isBridgeSpot, landOf, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
+import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
+import { placeById, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
 import { freeRoute, isWalkable, nearestWalkable, onPathCell, walkGridSteps, type WalkGrid } from '../../world/continu/freeWalk';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { atNode, edgesNear, findRoute, pathNode, pathRibbons, pathTopAt, snapToNetwork, startOf, type NetworkPoint } from '../../world/continu/paths';
-import { COLORS_6E, PLACES, TERRAIN, hidesTraces, placeById, portFloor, portNode, type PlaceId, type PortSpot } from '../../world/continu/plan6e';
+import { COLORS_6E, hidesTraces, portFloor, portNode, type PortSpot } from '../../world/continu/plan6e';
 import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PAPER_COLOR } from '../../world/continu/printworks';
 import { PORT_MAP_POINT, PORT_ROOFLINES, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
@@ -82,6 +83,8 @@ import { nearestPlace, screenRect, touchedObject, type ObjectTarget } from '../.
 
 /** Ce que la page donne à la scène. */
 export interface OpenWorldOptions {
+  /** Le plan du niveau (GD-22) : ses lieux, ses terres, l'étendue de son terrain, et le niveau de Kéo. */
+  plan: LevelPlan;
   /** Le lieu où Kéo se tient au départ, ou l'endroit de l'Escale (son quai, une porte de l'école…). */
   start: PlaceId | PortSpot;
   /** « Réduire les animations » : Kéo arrive tout de suite, la caméra le suit d'un bloc. */
@@ -666,7 +669,10 @@ function veilGeometry(v: VeilMesh): THREE.BufferGeometry {
 }
 
 export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): OpenWorld {
-  const { reduceMotion } = options;
+  const { reduceMotion, plan } = options;
+  // Le plan du niveau (GD-22) : son niveau, ses lieux et ses terres qu'on relie, lus une fois.
+  const { level, places: PLACES } = plan;
+  const LINKED_LANDS = linkedLands(plan);
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(host.clientWidth, host.clientHeight, false);
@@ -864,15 +870,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Kéo : le corps du bonhomme d'Archipéo (sa marche existante), son anneau clair au sol ; habillé dès que sa tenue est chargée.
   const keo = new THREE.Group();
   scene.add(keo);
-  let body: CorpsDuBonhomme = corpsDuBonhomme('6e');
+  let body: CorpsDuBonhomme = corpsDuBonhomme(level);
   keo.add(body.mesh);
   body.mesh.layers.set(KEO_LAYER);
   let disposed = false;
-  if (!loadedKeo('6e'))
-    void loadKeo('6e').then(() => {
-      if (disposed || !loadedKeo('6e')) return;
+  if (!loadedKeo(level))
+    void loadKeo(level).then(() => {
+      if (disposed || !loadedKeo(level)) return;
       body.dispose();
-      body = corpsDuBonhomme('6e');
+      body = corpsDuBonhomme(level);
       keo.add(body.mesh);
       body.mesh.layers.set(KEO_LAYER);
       mapDirty = true;
@@ -1279,7 +1285,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!place) return portSubject(spot as PortSpot, port?.trophies.length ?? 0);
     // La fiche d'une terre fermée : le pont à rebâtir d'abord, si Kéo se tient devant (de loin, la caméra reste où elle est).
     const land = landOf(place.id);
-    if (land !== START_LAND && closed.includes(land)) {
+    if (isLinkedLand(land) && closed.includes(land)) {
       const s = bridgeSite(firstClosed(land, closed));
       return distance(here, s.mid) < FRAMED_BRIDGE_NEAR ? { x: s.mid.x, y: BRIDGE.deck, z: s.mid.z } : null;
     }
@@ -1952,7 +1958,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const object = objectAt(e.clientX, e.clientY);
     if (object) {
       const land = landOf(object);
-      if (land !== START_LAND && closed.includes(land)) return options.onClosed(land);
+      if (isLinkedLand(land) && closed.includes(land)) return options.onClosed(land);
       return startWalkTo(atNode(placeById(object).door), object);
     }
     const p = hitAt(e.clientX, e.clientY);
@@ -1968,7 +1974,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const shut = closedAt(p, e.clientX, e.clientY);
     if (shut) return options.onClosed(shut);
     // Un lieu : Kéo va à sa porte ; si deux rayons prennent le point, le plus proche.
-    const touched = nearestPlace(p);
+    const touched = nearestPlace(p, PLACES);
     if (touched) startWalkTo(atNode(placeById(touched).door), touched);
     else startFreeWalk(p);
   };
@@ -2008,7 +2014,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!closed.length) return null;
     for (const pl of PLACES) {
       const land = landOf(pl.id);
-      if (land !== START_LAND && closed.includes(land) && distance(p, pl.center) <= pl.touchRadius) return land;
+      if (isLinkedLand(land) && closed.includes(land) && distance(p, pl.center) <= pl.touchRadius) return land;
     }
     const r = renderer.domElement.getBoundingClientRect();
     const x = clientX - r.left;
@@ -2036,7 +2042,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // des terres fermées gardée. Un doigt la fait glisser, deux la pincent, la molette la zoome (comme la Carte du monde en
   // grille) ; un toucher près d'un lieu le choisit. Fermée, les anneaux autour de Kéo reviennent.
   const mapCamera: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
-  const allTiles = Array.from({ length: TERRAIN.tilesX * TERRAIN.tilesZ }, (_, i) => i);
+  const allTiles = Array.from({ length: plan.terrain.tilesX * plan.terrain.tilesZ }, (_, i) => i);
   const mapSpots: MapSpotOnScreen[] = [
     ...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false })),
     ...LINKED_LANDS.map((land) => ({ id: bridgeSpot(land), x: 0, y: 0, shown: false })),
@@ -2114,7 +2120,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const a = aspect();
     const open = [...mapOpen.map((id) => marks.get(id)), portPoint].filter((m): m is THREE.Vector3 => Boolean(m));
     // Les points des lieux pour une vue essayée, sans toucher la caméra (`screenOf`, la même projection).
-    const view = reframeMap(a, open, (v) => {
+    const view = reframeMap(plan, a, open, (v) => {
       const pose = mapPose(v, probePose);
       for (const l of probeSpots) {
         const mark = mapMark(l.id);
@@ -2128,7 +2134,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       return crowded(probeSpots);
     });
     mapFar = view.distance;
-    mapView = mapFirst = clampMap(view, a, mapFar);
+    mapView = mapFirst = clampMap(plan, view, a, mapFar);
     mapSettling = 0;
     showMap();
   };
@@ -2152,7 +2158,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (walk) arrive(null);
       mapOpen = open;
       if (!mapView) {
-        mapView = mapFirst = mapStart(aspect());
+        mapView = mapFirst = mapStart(plan, aspect());
         mapFar = 0;
         mapSettling = MAP_SETTLE_FRAMES;
       }
@@ -2249,7 +2255,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const mx = (a.x + b.x) / 2;
       const my = (a.y + b.y) / 2;
       const at = mapGround(mx, my);
-      if (at) mapView = zoomMap(mapView, gap / pinch.gap, at, aspect(), mapFar);
+      if (at) mapView = zoomMap(plan, mapView, gap / pinch.gap, at, aspect(), mapFar);
       showMap();
       dragMap(pinch.mx, pinch.my, mx, my);
       pinch.gap = gap;
@@ -2265,7 +2271,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const a = mapGround(x0, y0);
     const b = mapGround(x1, y1);
     if (!a || !b) return;
-    mapView = panMap(mapView, a.x - b.x, a.z - b.z, aspect(), mapFar);
+    mapView = panMap(plan, mapView, a.x - b.x, a.z - b.z, aspect(), mapFar);
     showMap();
   };
   const mapUp = (e: PointerEvent, d: { x: number; y: number; t: number } | null) => {
@@ -2304,7 +2310,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       mapAtRest();
     }, MAP_WHEEL_REST);
     if (!at) return;
-    mapView = zoomMap(mapView, factor, at, aspect(), mapFar);
+    mapView = zoomMap(plan, mapView, factor, at, aspect(), mapFar);
     showMap();
   };
   renderer.domElement.addEventListener('pointermove', onMove);
@@ -3135,7 +3141,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (mapView) {
       const first = mapView === mapFirst;
       mapFar = 0;
-      mapView = first ? mapStart(aspect()) : clampMap(mapView, aspect());
+      mapView = first ? mapStart(plan, aspect()) : clampMap(plan, mapView, aspect());
       mapFirst = first ? mapView : null;
       // L'écran a changé de taille avant tout toucher : la vue de départ se choisit de nouveau, avant de se dessiner.
       if (first) mapSettling = MAP_SETTLE_FRAMES;

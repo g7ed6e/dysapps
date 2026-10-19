@@ -7,10 +7,14 @@ import { followPose, detourRise, detourViewStep } from './camera';
 import { DETOURS, DETOUR_IDS, FAUNA, FAUNA_BLOW, FAUNA_END, SENTE, birdFacets, cairnSpot, detourAtPoint, detourFacets, faunaPose, keptClearForDetour } from './detours';
 import { buildWalkGrid, cellOf, freeRoute, isWalkable } from './freeWalk';
 import { distance, distanceToPolyline, linearRgb, type Vec2 } from './geometry';
-import { LANDS } from './lands';
 import { routeLength } from './paths';
 import { COLORS_6E, DETOUR_HILL, DETOUR_HILLS, LOOKOUT_RAMP, PATH_EDGES, PATH_NODES, PLACES } from './plan6e';
 import { buildHeightField, detourFoot, detourReach, heightAt, landDistance, straitClearance } from './terrain';
+import { planFor } from './levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
+const LANDS = PLAN.lands;
 
 const field = buildHeightField();
 const grid = buildWalkGrid(field);

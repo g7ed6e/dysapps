@@ -9,6 +9,10 @@ import { NOMS_ARCHIPELS } from '../archipelago';
 import { modeleDuMonde } from '../model';
 import { DISTANCE_SIGN_STEPS, bornesDuMondeOuvert, distanceSign, firstToPlayAt, keepClear, markOnScreen, missionsOfPlace, nextMission, playedPlaces, playsInPlace, type MissionMark } from './mission';
 import { KEO_STEP, PLACES, placeById, placeOfIsland } from './plan6e';
+import { planFor } from './levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
 
 // Une île sans lieu dans le prototype : la première du registre, tirée de `PLACES` (relecture du code de L8 : jamais un
 // nom en dur, qu'un lieu nouveau rendrait faux), et sa première mission. Depuis le large (lot L9), toutes les îles du 6e
@@ -82,19 +86,19 @@ describe('Un lieu porte toutes les missions de son île (GD-20, point 8)', () =>
 
 describe('Les lieux fermés et la distance', () => {
   it('la prochaine mission saute les lieux fermés (GD-20, point 3, lot 1 « Relier »)', () => {
-    expect(nextMission(bornes)?.place.id).toBe('quais');
+    expect(nextMission(PLAN, bornes)?.place.id).toBe('quais');
     // Les Quais fermés : la mission suivante est aux Filets, puis, eux fermés aussi, aux Écluses (une mission à finir).
-    expect(nextMission(bornes, undefined, (p) => p !== 'quais')?.place.id).toBe('filets');
-    expect(nextMission(bornes, undefined, (p) => p !== 'quais' && p !== 'filets')?.place.id).toBe('ecluses');
+    expect(nextMission(PLAN, bornes, undefined, (p) => p !== 'quais')?.place.id).toBe('filets');
+    expect(nextMission(PLAN, bornes, undefined, (p) => p !== 'quais' && p !== 'filets')?.place.id).toBe('ecluses');
     // La destination choisie dans le jeu ne mène jamais à un lieu fermé.
-    expect(nextMission(bornes, { island: 'french-6e-grammar-spelling', mission: 'plurals' }, (p) => p !== 'filets')?.place.id).toBe('quais');
-    expect(nextMission(bornes, undefined, () => false)).toBeNull();
+    expect(nextMission(PLAN, bornes, { island: 'french-6e-grammar-spelling', mission: 'plurals' }, (p) => p !== 'filets')?.place.id).toBe('quais');
+    expect(nextMission(PLAN, bornes, undefined, () => false)).toBeNull();
   });
 
   it('un lieu déjà joué reste ouvert : les lieux où une mission a un nombre d’étoiles', () => {
     // Le Phare (3 étoiles) et les Écluses (2) ont été joués ; les Quais (verrouillés) et les Filets (nouveaux), non.
-    expect(playedPlaces(bornes)).toEqual(['phare', 'ecluses']);
-    expect(playedPlaces([])).toEqual([]);
+    expect(playedPlaces(PLAN, bornes)).toEqual(['phare', 'ecluses']);
+    expect(playedPlaces(PLAN, [])).toEqual([]);
   });
 
   it('la distance en un, deux ou trois points, jamais en texte', () => {
@@ -109,30 +113,30 @@ describe('Les lieux fermés et la distance', () => {
 describe('La prochaine mission', () => {
   it('d’abord la première encore à jouer du lieu où se tient Kéo, s’il est ouvert, avant la destination du jeu (le rang 2 de la suggestion)', () => {
     const ailleurs = { island: 'maths-6e-calculation', mission: 'times-tables' };
-    expect(nextMission(bornes, ailleurs, undefined, 'filets')).toMatchObject({ place: { id: 'filets' }, mission: 'word-classes' });
+    expect(nextMission(PLAN, bornes, ailleurs, undefined, 'filets')).toMatchObject({ place: { id: 'filets' }, mission: 'word-classes' });
     expect(firstToPlayAt(placeById('filets'), bornes)?.mission).toBe('word-classes');
     // Au Phare, tout est joué : la destination du jeu reprend la main ; un lieu fermé ne compte pas.
     expect(firstToPlayAt(placeById('phare'), bornes)).toBeUndefined();
-    expect(nextMission(bornes, ailleurs, undefined, 'phare')).toMatchObject({ place: { id: 'quais' }, mission: 'times-tables' });
-    expect(nextMission(bornes, ailleurs, (p) => p !== 'filets', 'filets')).toMatchObject({ place: { id: 'quais' } });
-    expect(nextMission(bornes, ailleurs, undefined, null)).toMatchObject({ place: { id: 'quais' } });
+    expect(nextMission(PLAN, bornes, ailleurs, undefined, 'phare')).toMatchObject({ place: { id: 'quais' }, mission: 'times-tables' });
+    expect(nextMission(PLAN, bornes, ailleurs, (p) => p !== 'filets', 'filets')).toMatchObject({ place: { id: 'quais' } });
+    expect(nextMission(PLAN, bornes, ailleurs, undefined, null)).toMatchObject({ place: { id: 'quais' } });
   });
 
   it('celle de la prochaine destination du jeu, quand elle est d’un lieu, quelle que soit la mission de l’île', () => {
-    expect(nextMission(bornes, { island: 'french-6e-grammar-spelling', mission: 'plurals' })).toMatchObject({ place: { id: 'filets' }, mission: 'plurals' });
+    expect(nextMission(PLAN, bornes, { island: 'french-6e-grammar-spelling', mission: 'plurals' })).toMatchObject({ place: { id: 'filets' }, mission: 'plurals' });
     // Une mission de l'île qui ne se joue pas encore en scénette : elle se joue depuis le panneau du lieu.
-    expect(nextMission(bornes, { island: 'french-6e-phonology', mission: 'syllables' })).toMatchObject({ place: { id: 'phare' }, mission: 'syllables' });
+    expect(nextMission(PLAN, bornes, { island: 'french-6e-phonology', mission: 'syllables' })).toMatchObject({ place: { id: 'phare' }, mission: 'syllables' });
     // Une île sans lieu, ou une mission inconnue de l'île : la suivante du plan.
-    expect(nextMission(bornes, { island: sansLieu.id, mission: missionSansLieu })).toMatchObject({ place: { id: 'quais' } });
-    expect(nextMission(bornes, { island: 'french-6e-phonology', mission: 'inconnue' })).toMatchObject({ place: { id: 'quais' } });
+    expect(nextMission(PLAN, bornes, { island: sansLieu.id, mission: missionSansLieu })).toMatchObject({ place: { id: 'quais' } });
+    expect(nextMission(PLAN, bornes, { island: 'french-6e-phonology', mission: 'inconnue' })).toMatchObject({ place: { id: 'quais' } });
   });
 
   it('sinon la première encore à jouer (fermée dans la grille comprise), lieu par lieu, mission par mission ; hors des lieux, rien', () => {
-    expect(nextMission(bornes)).toMatchObject({ place: { id: 'quais' }, mission: 'times-tables' });
+    expect(nextMission(PLAN, bornes)).toMatchObject({ place: { id: 'quais' }, mission: 'times-tables' });
     const sansNouvelle = bornes.map((b) => (b.etat === 'new' || b.etat === 'locked' ? { ...b, etat: 3 } : b));
-    expect(nextMission(sansNouvelle)).toMatchObject({ place: { id: 'ecluses' }, mission: 'number-line' });
-    expect(nextMission(bornes.filter((b) => b.ile === sansLieu.id))).toBeNull();
-    expect(nextMission(bornes.map((b) => ({ ...b, etat: 3 })))).toBeNull();
+    expect(nextMission(PLAN, sansNouvelle)).toMatchObject({ place: { id: 'ecluses' }, mission: 'number-line' });
+    expect(nextMission(PLAN, bornes.filter((b) => b.ile === sansLieu.id))).toBeNull();
+    expect(nextMission(PLAN, bornes.map((b) => ({ ...b, etat: 3 })))).toBeNull();
   });
 });
 
@@ -212,8 +216,8 @@ describe('Les bornes du monde ouvert (correctif du quatrième lot du point 8)', 
     expect(filets.filter((b) => b.mission !== 'word-classes').every((b) => b.etat === 'locked')).toBe(true);
     expect(vues.filter((b) => b.ile !== 'french-6e-grammar-spelling')).toEqual(modele.bornes.filter((b) => b.ile !== 'french-6e-grammar-spelling'));
     const onlyFilets = vues.filter((b) => b.ile === 'french-6e-grammar-spelling');
-    expect(nextMission(onlyFilets)).toMatchObject({ place: { id: 'filets' }, mission: 'sorting' });
-    expect(nextMission(modele.bornes.filter((b) => b.ile === 'french-6e-grammar-spelling'))?.mission).toBe('word-classes');
+    expect(nextMission(PLAN, onlyFilets)).toMatchObject({ place: { id: 'filets' }, mission: 'sorting' });
+    expect(nextMission(PLAN, modele.bornes.filter((b) => b.ile === 'french-6e-grammar-spelling'))?.mission).toBe('word-classes');
   });
 
 });
