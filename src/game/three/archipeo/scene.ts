@@ -88,7 +88,8 @@ import { placedCaisse } from '../../world/continu/caisse';
 import { REMISE_DROP, REMISE_TIMING } from '../../world/continu/remise';
 import { createRemiseRun, createSignsTracker, type RemiseEvents, type SignOnScreen } from './remiseRun';
 import { nearestPlace, screenRect, touchedObject, type ObjectTarget } from '../../world/continu/toucher';
-import { assignSpots, coastSpots, crabsPose, critterForms, fishPose, gullsPose, WILDLIFE, type CritterPose } from '../../world/continu/wildlife';
+import { assignSpots, wildlifeGroups6e, type CritterPose } from '../../world/continu/wildlife';
+import { allCritterForms, wildlifeGroups5e } from '../../world/continu/wildlife5e';
 
 /** Ce que la page donne à la scène. */
 export interface OpenWorldOptions {
@@ -745,8 +746,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const { level, places: PLACES } = plan;
   const LINKED_LANDS = linkedLands(plan);
   // Ce que la vue lit du niveau (GD-22, lot 2) : son sol, ses chemins, ses tuiles, son eau, son ciel. `sixth` : le 6e,
-  // seul à avoir l'Escale, la Nef, les Détours, la faune, les scénettes, les remises et les traces ; au 5e, tout cela
-  // reste caché, et rien ne s'y appelle, sauf la scénette et les traces de la Montée (GD-22, lot 3, `hasScenette`).
+  // seul à avoir l'Escale, la Nef, les Détours, les scénettes, les remises et les traces ; au 5e, tout cela reste caché,
+  // et rien ne s'y appelle, sauf la scénette et les traces de la Montée (GD-22, lot 3, `hasScenette`), et sa faune.
   const world = levelWorld(level);
   const { sixth, net } = world;
   const { atNode, findRoute, pathNode, snapToNetwork, startOf } = net;
@@ -1160,16 +1161,19 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const birdPerched = birdFacets(true);
   const spoutAt = whaleBase.positions.length;
   const birdsAt = spoutAt + spoutBase.positions.length;
-  // La vie animale des côtes du 6e (piste « Ambiance », 19 octobre 2026 ; world/continu/wildlife.ts), dans le même
-  // maillage, après les oiseaux du bord d'eau : les mouettes, les crabes, puis les poissons, chacun à sa place fixe.
-  const critters = critterForms();
-  const gullCount = WILDLIFE.slots.gulls * WILDLIFE.perGroup.gulls;
-  const crabCount = WILDLIFE.slots.crabs * WILDLIFE.perGroup.crabs;
-  const gullsAt = birdsAt + FAUNA.birds * birdBase.positions.length;
-  const crabsAt = gullsAt + gullCount * critters.gull.positions.length;
-  const fishAt = crabsAt + crabCount * critters.crab.positions.length;
+  // La vie animale (world/continu/wildlife.ts) : au 6e, les côtes (piste « Ambiance », 19 octobre 2026) ; au 5e, terre
+  // par terre (piste « Ambiance par terre », même jour ; world/continu/wildlife5e.ts). Dans le même maillage, après les
+  // oiseaux du bord d'eau : chaque espèce à sa place fixe, chacune de ses bêtes à la taille de sa forme.
+  const critters = allCritterForms();
+  const groundAt = (p: Vec2) => ground(p.x, p.z);
+  const groups = (sixth ? wildlifeGroups6e() : wildlifeGroups5e(groundAt)).map((g) => ({ ...g, length: critters[g.form].positions.length, start: 0, held: [] as (number | null)[] }));
+  let critterEnd = birdsAt + FAUNA.birds * birdBase.positions.length;
+  for (const g of groups) {
+    g.start = critterEnd;
+    critterEnd += g.slots * g.perGroup * g.length;
+  }
   const faunaGeometry = keep(new THREE.BufferGeometry());
-  const faunaPositions = new Float32Array(fishAt + WILDLIFE.slots.fish * critters.fish.positions.length);
+  const faunaPositions = new Float32Array(critterEnd);
   faunaGeometry.setAttribute('position', new THREE.BufferAttribute(faunaPositions, 3).setUsage(THREE.DynamicDrawUsage));
   faunaGeometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(faunaPositions.length), 3));
   {
@@ -1177,9 +1181,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     colors.set(whaleBase.colors, 0);
     colors.set(spoutBase.colors, spoutAt);
     for (let k = 0; k < FAUNA.birds; k++) colors.set(birdBase.colors, birdsAt + k * birdBase.colors.length);
-    for (let k = 0; k < gullCount; k++) colors.set(critters.gull.colors, gullsAt + k * critters.gull.colors.length);
-    for (let k = 0; k < crabCount; k++) colors.set(critters.crab.colors, crabsAt + k * critters.crab.colors.length);
-    for (let k = 0; k < WILDLIFE.slots.fish; k++) colors.set(critters.fish.colors, fishAt + k * critters.fish.colors.length);
+    for (const g of groups) for (let k = 0; k < g.slots * g.perGroup; k++) colors.set(critters[g.form].colors, g.start + k * g.length);
     faunaGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   }
   // Toute la scène tient dans cette sphère (le bord d'eau, la baleine au large) : l'élimination hors champ reste juste.
@@ -1187,9 +1189,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const faunaMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, side: THREE.DoubleSide });
   const faunaMesh = new THREE.Mesh(faunaGeometry, faunaMaterial);
   faunaMesh.matrixAutoUpdate = false;
-  faunaMesh.visible = false;
-  // Au 6e, les bêtes des côtes suivent Kéo partout sur l'île : le maillage se dessine toujours, sans élimination hors champ.
-  if (sixth) faunaMesh.frustumCulled = false;
+  // Les bêtes suivent Kéo partout sur l'île : le maillage se dessine toujours, sans élimination hors champ.
+  faunaMesh.frustumCulled = false;
   scene.add(faunaMesh);
   let faunaClock = 0;
   let faunaStart: number | null = null;
@@ -1208,18 +1209,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       faunaPositions[offset + k + 2] = z - px * sy + pz * cy;
     }
   };
-  // Les places des bêtes des côtes : celles qui conviennent à chacune (une plage pour les crabes, le large pour les
-  // poissons), et celles que tient chaque groupe, revues deux fois par seconde autour de Kéo.
-  const coast = sixth ? coastSpots() : [];
-  const spotsFor = (ok: (i: number) => boolean) => coast.map((_, i) => i).filter(ok);
-  const gullSpots = spotsFor(() => true);
-  const crabSpots = spotsFor((i) => coast[i].beach !== null);
-  const fishSpots = spotsFor((i) => coast[i].sea !== null);
-  const beachAt = (i: number) => coast[i].beach ?? coast[i].sea!;
-  const seaAt = (i: number) => coast[i].sea!;
-  let heldGulls: (number | null)[] = [];
-  let heldCrabs: (number | null)[] = [];
-  let heldFish: (number | null)[] = [];
   let critterClock = 0;
   let critterAssigned = -Infinity;
   /** Écrit une bête à sa place du maillage, ou l'efface (aucune bête : des sommets nuls, rien ne se dessine). */
@@ -1228,38 +1217,28 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     else faunaPositions.fill(0, offset, offset + length);
   };
   /**
-   * Les bêtes des côtes à l'image suivante ; vrai si leurs sommets ont changé. Avec « Réduire les animations », elles ne
-   * sont réécrites que quand leurs places changent : posées, sans bouger.
+   * Les bêtes à l'image suivante ; vrai si leurs sommets ont changé. Leurs places (celles que tient chaque groupe) sont
+   * revues deux fois par seconde autour de Kéo. Avec « Réduire les animations », elles ne sont réécrites que quand leurs
+   * places changent : posées, sans bouger.
    */
   const stepCritters = (dt: number): boolean => {
-    if (!sixth) return false;
     critterClock += dt;
-    const moved = critterClock - critterAssigned >= 0.5;
-    if (moved) {
+    if (critterClock - critterAssigned >= 0.5) {
       critterAssigned = critterClock;
-      const g = assignSpots(gullSpots, beachAt, here, heldGulls, WILDLIFE.slots.gulls);
-      const c = assignSpots(crabSpots, beachAt, here, heldCrabs, WILDLIFE.slots.crabs);
-      const f = assignSpots(fishSpots, seaAt, here, heldFish, WILDLIFE.slots.fish);
-      const same = (a: readonly (number | null)[], b: readonly (number | null)[]) => a.length === b.length && a.every((v, k) => v === b[k]);
-      const changed = !same(g, heldGulls) || !same(c, heldCrabs) || !same(f, heldFish);
-      heldGulls = g;
-      heldCrabs = c;
-      heldFish = f;
+      let changed = false;
+      for (const g of groups) {
+        const next = assignSpots(g.spots, g.at, here, g.held, g.slots);
+        changed ||= next.length !== g.held.length || next.some((v, k) => v !== g.held[k]);
+        g.held = next;
+      }
       if (reduceMotion && !changed) return false;
     } else if (reduceMotion) return false;
     const t = critterClock;
-    const gullLength = critters.gull.positions.length;
-    heldGulls.forEach((spot, s) => {
-      const poses = spot === null ? [] : gullsPose(spot, t, reduceMotion);
-      for (let k = 0; k < WILDLIFE.perGroup.gulls; k++) writeCritter(poses[k] ?? null, gullsAt + (s * WILDLIFE.perGroup.gulls + k) * gullLength, gullLength);
-    });
-    const crabLength = critters.crab.positions.length;
-    heldCrabs.forEach((spot, s) => {
-      const poses = spot === null ? [] : crabsPose(spot, t, reduceMotion, here);
-      for (let k = 0; k < WILDLIFE.perGroup.crabs; k++) writeCritter(poses[k] ?? null, crabsAt + (s * WILDLIFE.perGroup.crabs + k) * crabLength, crabLength);
-    });
-    const fishLength = critters.fish.positions.length;
-    heldFish.forEach((spot, s) => writeCritter(spot === null ? null : fishPose(spot, s, t, reduceMotion), fishAt + s * fishLength, fishLength));
+    for (const g of groups)
+      g.held.forEach((spot, s) => {
+        const poses = spot === null ? [] : g.pose(spot, s, t, reduceMotion, here);
+        for (let k = 0; k < g.perGroup; k++) writeCritter(poses[k] ?? null, g.start + (s * g.perGroup + k) * g.length, g.length);
+      });
     return true;
   };
   /** La baleine et les oiseaux à l'image suivante : leur scène part à l'arrivée au bord d'eau, puis se joue. */
@@ -1272,7 +1251,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!reduceMotion && t !== null && t >= FAUNA_BLOW && t - dt < FAUNA_BLOW) options.onWhaleBlow?.();
     const playing = t !== null && t >= 0 && t < FAUNA_END;
     const critterMoved = stepCritters(dt);
-    faunaMesh.visible = sixth || near || playing;
     const flush = () => {
       if (critterMoved) (faunaGeometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
     };
@@ -1281,7 +1259,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // pour les bêtes des côtes), et se réécrivent au retour.
       if (faunaKey !== 'gone') {
         faunaKey = 'gone';
-        faunaPositions.fill(0, 0, gullsAt);
+        faunaPositions.fill(0, 0, groups[0]?.start ?? critterEnd);
         (faunaGeometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
       }
       return flush();

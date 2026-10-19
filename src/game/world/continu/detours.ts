@@ -390,12 +390,10 @@ export function spoutFacets(): Facets {
 /**
  * Un oiseau de mer, blanc, la tête vers +x, huit triangles : en vol, deux ailes en V ouvert ; posé (`perched`), les ailes
  * repliées le long du corps, plus ramassé (consultant d'Archipéo). Les mêmes sommets dans le même ordre : la vue passe de
- * l'un à l'autre sans changer son maillage.
+ * l'un à l'autre sans changer son maillage. `white` et `tip` : ses deux aplats (le choucas du 5e les change).
  */
-export function birdFacets(perched = false): Facets {
+export function birdFacets(perched = false, white = 0xf2f1ea, tip = 0x9aa3a8): Facets {
   const b = new FacetBuilder();
-  const white = 0xf2f1ea;
-  const tip = 0x9aa3a8;
   const w: readonly [number, number, number] = perched ? [-0.15, 0.24, 0.16] : [-0.1, 0.12, 0.55];
   const e: readonly [number, number, number] = perched ? [-0.42, 0.2, 0.09] : [-0.25, 0.16, 0.85];
   const n = (p: readonly [number, number, number]) => [p[0], p[1], -p[2]] as const;

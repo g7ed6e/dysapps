@@ -1,8 +1,8 @@
 // Ce que la vue du monde ouvert lit d'un niveau pour le dessiner (GD-22, lot 2) : sa carte de hauteurs et son sol, son
 // réseau des chemins et leur dessin, ses tuiles, son eau, son ciel et sa lumière. Le 6e garde tout ce qu'il avait (les
 // mêmes fonctions, appelées de même) ; le 5e prend les siennes (./terrain5e.ts, ./paths5e.ts, ./sea.ts, ./sky.ts). Ce
-// que le 5e n'a pas encore (l'Escale, la Nef, les Détours, la faune, les scénettes) reste du 6e : la vue le coupe par
-// `sixth`. Code pur.
+// que le 5e n'a pas encore (l'Escale, la Nef, les Détours, les scénettes) reste du 6e : la vue le coupe par `sixth` ; la
+// faune a celle de chaque niveau (./wildlife.ts, ./wildlife5e.ts). Code pur.
 import type { Facets } from './facets';
 import type { Vec2 } from './geometry';
 import type { OpenWorldLevel } from './levelPlan';
@@ -27,7 +27,7 @@ interface WaterTones {
 
 /** Ce que la vue lit d'un niveau. */
 export interface LevelWorld {
-  /** Le monde est-il celui du 6e (l'Escale, la Nef, les Détours, la faune, les scénettes, les remises) ? */
+  /** Le monde est-il celui du 6e (l'Escale, la Nef, les Détours, les scénettes, les remises) ? */
   readonly sixth: boolean;
   /** La carte de hauteurs (faite une fois, gardée). */
   field(): HeightField;

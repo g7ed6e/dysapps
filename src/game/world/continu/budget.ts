@@ -29,7 +29,8 @@ import { TERRAIN_5E } from './plan5e';
 import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from './mist5e';
 import { skyDome } from './sky';
 import { veilFacets } from './veil';
-import { wildlifeTriangles } from './wildlife';
+import { groupsTriangles, wildlifeTriangles } from './wildlife';
+import { allCritterForms, wildlifeGroups5e } from './wildlife5e';
 
 /** Les terres qu'on relie du 6e : le budget est celui du monde ouvert du 6e (GD-22, lot 1 : le plan par niveau). */
 const LINKED_LANDS_6E = linkedLands(planFor('6e'));
@@ -392,8 +393,8 @@ function scenetteCost5e(): { triangles: number; calls: number } {
  * brume des failles, Kéo ; puis, selon `view` : la scénette ouverte (`scenette`, le pire : la question et le décor de
  * près de la Montée) ou le monde hors scénette (`monde` : le maillage de la pose, une partie qui descend, un passage qui
  * se relève, la caisse qui roule). Les deux ne se montrent jamais ensemble : une question finit toute pose
- * (three/archipeo/scene.ts, `askQuestion`), et aucune pose ne commence pendant une question (`setPlaces`). Ni
- * aménagements, ni Détours, ni faune, ni Nef : ils viennent avec leurs lots.
+ * (three/archipeo/scene.ts, `askQuestion`), et aucune pose ne commence pendant une question (`setPlaces`). La faune de
+ * chaque terre (./wildlife5e.ts), un maillage. Ni aménagements, ni Détours, ni Nef : ils viennent avec leurs lots.
  */
 export function openWorldCost5e(view: 'scenette' | 'monde' = 'scenette'): OpenWorldCost5e[] {
   const field = buildHeightField5e();
@@ -407,6 +408,9 @@ export function openWorldCost5e(view: 'scenette' | 'monde' = 'scenette'): OpenWo
     { poste: 'lieux', ...placesCost5e() },
     { poste: 'brume', triangles: veilFacets(LINKED_LANDS_5E).triangles, calls: 1 },
     { poste: 'failles', triangles: riftMistFacets().triangles, calls: 1 },
+    // La vie animale du 5e (piste « Ambiance par terre », 19 octobre 2026, ./wildlife5e.ts) : toutes les bêtes à la fois,
+    // un maillage (celui de la baleine au 6e).
+    { poste: 'faune', triangles: groupsTriangles(wildlifeGroups5e(), allCritterForms()), calls: 1 },
     { poste: 'kéo', ...KEO },
     ...(view === 'monde'
       ? [{ poste: 'pose' as const, ...poseCost5e() }]

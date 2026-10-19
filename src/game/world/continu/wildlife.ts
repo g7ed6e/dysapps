@@ -135,17 +135,52 @@ export interface CritterPose {
   yaw: number;
   /** La bascule de la tête (le poisson qui saute) ; 0 sinon. */
   pitch: number;
-  form: 'gull' | 'perched' | 'crab' | 'fish';
+  form: CritterForm;
 }
 
+/** Les formes des bêtes du 6e, puis celles du 5e (./wildlife5e.ts). */
+export type CritterForm6e = 'gull' | 'perched' | 'crab' | 'fish';
+export type CritterForm = CritterForm6e | 'croc' | 'mangroveCrab' | 'heron' | 'egret' | 'jackdaw' | 'jackdawPerched';
+
+/**
+ * Une espèce d'un niveau, telle que la vue la tient : `slots` groupes de `perGroup` bêtes, chacun à une place de `spots`
+ * (`at` : où elle est, pour la choisir près de Kéo) ; `pose` : les bêtes d'un groupe à l'instant `t` (`null` : aucune,
+ * rien ne se dessine). `form` : la forme qui donne aux bêtes du groupe leur place dans le maillage et leurs couleurs ; les
+ * autres formes qu'elles prennent ont les mêmes sommets, dans le même ordre (la mouette posée, le choucas posé).
+ */
+export interface CritterGroup {
+  form: CritterForm;
+  slots: number;
+  perGroup: number;
+  spots: readonly number[];
+  at: (spot: number) => Vec2;
+  pose: (spot: number, slot: number, t: number, still: boolean, keo: Vec2) => readonly (CritterPose | null)[];
+}
+
+/** Les mouettes, les crabes et les poissons des côtes du 6e, en espèces que la vue tient. */
+export function wildlifeGroups6e(): CritterGroup[] {
+  const coast = coastSpots();
+  const all = coast.map((_, i) => i);
+  const beachAt = (i: number) => coast[i].beach ?? coast[i].sea!;
+  const seaAt = (i: number) => coast[i].sea!;
+  return [
+    { form: 'gull', slots: WILDLIFE.slots.gulls, perGroup: WILDLIFE.perGroup.gulls, spots: all, at: beachAt, pose: (spot, _s, t, still) => gullsPose(spot, t, still) },
+    { form: 'crab', slots: WILDLIFE.slots.crabs, perGroup: WILDLIFE.perGroup.crabs, spots: all.filter((i) => coast[i].beach !== null), at: beachAt, pose: (spot, _s, t, still, keo) => crabsPose(spot, t, still, keo) },
+    { form: 'fish', slots: WILDLIFE.slots.fish, perGroup: 1, spots: all.filter((i) => coast[i].sea !== null), at: seaAt, pose: (spot, slot, t, still) => [fishPose(spot, slot, t, still)] },
+  ];
+}
+
+/** Les triangles de toutes les bêtes d'un niveau à la fois, au pire (chacune dans la forme de sa place). */
+export const groupsTriangles = (groups: readonly CritterGroup[], forms: Partial<Record<CritterForm, Facets>>): number => groups.reduce((n, g) => n + g.slots * g.perGroup * forms[g.form]!.triangles, 0);
+
 /** Le départ doux et l'arrivée douce, de 0 à 1. */
-const ease = (u: number) => {
+export const ease = (u: number) => {
   const x = Math.min(1, Math.max(0, u));
   return x * x * (3 - 2 * x);
 };
 
 /** Un décalage fixe, de 0 à 1, propre à une place et à une bête du groupe. */
-const phase = (spot: number, k: number) => ((spot * 7919 + k * 104729) % 1000) / 1000;
+export const phase = (spot: number, k: number) => ((spot * 7919 + k * 104729) % 1000) / 1000;
 
 /**
  * Les mouettes d'une place à l'instant `t` : `perGroup.gulls` mouettes sur un cercle au-dessus de l'eau, au bord de la
@@ -184,12 +219,19 @@ export function gullsPose(spot: number, t: number, still: boolean): CritterPose[
  */
 export function crabsPose(spot: number, t: number, still: boolean, keo: Vec2): CritterPose[] {
   const s = coastSpots()[spot];
-  const b = s.beach!;
-  const along = { x: -s.inland.z, z: s.inland.x };
+  return crabsOn(s.beach!, s.inland, spot, t, still, keo, 'crab', heightAt);
+}
+
+/**
+ * Les crabes d'une plage `b` (`inland` : la direction de la terre) : le cœur de `crabsPose`, que le 5e reprend pour ses
+ * crabes de palétuvier (sa forme, son sol `ground`).
+ */
+export function crabsOn(b: Vec2, inland: Vec2, spot: number, t: number, still: boolean, keo: Vec2, form: CritterForm, ground: (p: Vec2) => number): CritterPose[] {
+  const along = { x: -inland.z, z: inland.x };
   const cycle = 2 * (WILDLIFE.crabRest + WILDLIFE.crabRun);
   const out: CritterPose[] = [];
   for (let k = 0; k < WILDLIFE.perGroup.crabs; k++) {
-    const home = { x: b.x + along.x * (k * 2.2 - 1.1) + s.inland.x * 0.4 * k, z: b.z + along.z * (k * 2.2 - 1.1) + s.inland.z * 0.4 * k };
+    const home = { x: b.x + along.x * (k * 2.2 - 1.1) + inland.x * 0.4 * k, z: b.z + along.z * (k * 2.2 - 1.1) + inland.z * 0.4 * k };
     let off = 0;
     if (!still && distance(home, keo) >= WILDLIFE.crabCalm) {
       const u = (t + phase(spot, k) * cycle) % cycle;
@@ -200,7 +242,7 @@ export function crabsPose(spot: number, t: number, still: boolean, keo: Vec2): C
     const x = home.x + along.x * off;
     const z = home.z + along.z * off;
     // De face vers la mer : il file de côté, le long de la plage.
-    out.push({ x, y: Math.max(0, standingHeight(heightAt({ x, z }))), z, yaw: Math.atan2(s.inland.z, -s.inland.x), pitch: 0, form: 'crab' });
+    out.push({ x, y: Math.max(0, standingHeight(ground({ x, z }))), z, yaw: Math.atan2(inland.z, -inland.x), pitch: 0, form });
   }
   return out;
 }
@@ -210,9 +252,13 @@ export function crabsPose(spot: number, t: number, still: boolean, keo: Vec2): C
  * rapport à la côte ; sous l'eau le reste du temps (`null`). `still` : jamais.
  */
 export function fishPose(spot: number, slot: number, t: number, still: boolean): CritterPose | null {
+  const s = coastSpots()[spot];
+  return fishOn(s.sea!, s.inland, slot, t, still);
+}
+
+/** Le poisson d'un point d'eau `s` (`inland` : la direction de la rive) : le cœur de `fishPose`, que le 5e reprend. */
+export function fishOn(s: Vec2, inland: Vec2, slot: number, t: number, still: boolean): CritterPose | null {
   if (still) return null;
-  const s = coastSpots()[spot].sea!;
-  const inland = coastSpots()[spot].inland;
   // Les deux poissons sautent chacun à son tour (jamais ensemble).
   const u = (t + (slot * WILDLIFE.fishEvery) / WILDLIFE.slots.fish) % WILDLIFE.fishEvery;
   if (u > WILDLIFE.fishLeap) return null;
@@ -229,11 +275,8 @@ export function fishPose(spot: number, slot: number, t: number, still: boolean):
  * Le crabe : une carapace basse à six pans, deux pinces et six pattes en éclats, en aplats brique et orange brûlé
  * (jamais presque noir) ; la tête (ses pinces) vers +x.
  */
-function crabFacets(): Facets {
+export function crabFacets(shell = 0xc8673d, side = 0xa4512f, claw = 0xeba070): Facets {
   const b = new FacetBuilder();
-  const shell = 0xc8673d;
-  const side = 0xa4512f;
-  const claw = 0xeba070;
   const R = 0.28;
   const top: [number, number, number] = [0, 0.2, 0];
   const ring = Array.from({ length: 6 }, (_, k) => [Math.cos((Math.PI * k) / 3) * R * 0.85, 0.08, Math.sin((Math.PI * k) / 3) * R * 1.2] as [number, number, number]);
@@ -269,9 +312,9 @@ function fishFacets(): Facets {
   return b.build();
 }
 
-/** Les formes, faites une fois. */
-let forms: Record<CritterPose['form'], Facets> | null = null;
-export function critterForms(): Record<CritterPose['form'], Facets> {
+/** Les formes du 6e, faites une fois (celles du 5e : ./wildlife5e.ts). */
+let forms: Record<CritterForm6e, Facets> | null = null;
+export function critterForms(): Record<CritterForm6e, Facets> {
   forms ??= { gull: birdFacets(), perched: birdFacets(true), crab: crabFacets(), fish: fishFacets() };
   return forms;
 }
@@ -280,8 +323,4 @@ export function critterForms(): Record<CritterPose['form'], Facets> {
 export const CRITTER_COUNT = WILDLIFE.slots.gulls * WILDLIFE.perGroup.gulls + WILDLIFE.slots.crabs * WILDLIFE.perGroup.crabs + WILDLIFE.slots.fish;
 
 /** Les triangles de toutes les bêtes à la fois, au pire (chacune dans sa forme la plus chargée). */
-export function wildlifeTriangles(): number {
-  const f = critterForms();
-  const gull = Math.max(f.gull.triangles, f.perched.triangles);
-  return WILDLIFE.slots.gulls * WILDLIFE.perGroup.gulls * gull + WILDLIFE.slots.crabs * WILDLIFE.perGroup.crabs * f.crab.triangles + WILDLIFE.slots.fish * f.fish.triangles;
-}
+export const wildlifeTriangles = (): number => groupsTriangles(wildlifeGroups6e(), critterForms());
