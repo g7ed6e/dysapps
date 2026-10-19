@@ -1,5 +1,6 @@
 // Le niveau d'essai de la pré-version (`?niveau=5e`, ./previewLevel.ts) : à l'ouverture de la page, la partie au début du
-// niveau remplace, en mémoire, celle de l'appareil, la sauvegarde gelée. Monté seulement avec cette adresse.
+// niveau remplace, en mémoire, celle de l'appareil, la sauvegarde gelée. Monté seulement avec cette adresse, sous
+// BloclandProvider : son effet passe avant celui qui enregistre la partie (les enfants d'abord), rien ne s'écrit donc.
 import { useEffect, useRef } from 'react';
 import { useBlocland } from './BloclandContext';
 import type { ArchipelagoId } from './world/archipelago';
