@@ -36,7 +36,7 @@ const C = {
 } as const;
 
 /** La pierre des aiguilles, pour les roches : la pierre #8E938B, son ombre et son dessus clair. */
-export const STONE_5E: RockTones = { light: COLORS_5E.stone, shade: COLORS_5E.stoneShade, top: COLORS_5E.stoneSun };
+const STONE_5E: RockTones = { light: COLORS_5E.stone, shade: COLORS_5E.stoneShade, top: COLORS_5E.stoneSun };
 
 /** D'où vient le soleil du 5e, à plat (sky.ts, `LIGHT_5E.sunFrom`) : les pans qui lui tournent le dos prennent l'ombre. */
 const SUN_FLAT = { x: -0.91, z: 0.41 } as const;

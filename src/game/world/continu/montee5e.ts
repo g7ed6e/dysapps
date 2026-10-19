@@ -108,10 +108,10 @@ export const RAIL_SPANS = [-0.5, 14, 29, MONTEE_HEIGHT * RAIL.top] as const;
 const BREAK = { at: MONTEE_HEIGHT * 0.6, gap: 1.3 } as const;
 
 /** Le bassin de pierre au pied du rail (dans le repère du lieu) : ses bords, la hauteur de sa margelle et de son eau. */
-export const BASIN = { x0: -5.2, x1: 5.2, z0: 6.2, z1: 11.4, rim: 0.5, wall: 0.45, water: 0.16 } as const;
+const BASIN = { x0: -5.2, x1: 5.2, z0: 6.2, z1: 11.4, rim: 0.5, wall: 0.45, water: 0.16 } as const;
 
 /** Le trait de zéro, au ras de l'eau du bassin. */
-export const ZERO = BASIN.water + 0.02;
+const ZERO = BASIN.water + 0.02;
 
 /** Le ponton d'approche : du chemin, au sud, jusqu'au pied du rail ; sa demi-largeur, son plancher, ses deux lanternes (au bout nord). */
 const PONTOON = { half: 1.1, from: 13.6, to: 8.1, deck: 0.5, lantern: 8.7 } as const;
@@ -123,7 +123,7 @@ const PULLEY = { r: 0.55, out: 1.5, spread: 0.75 } as const;
 const LANTERN = { lift: 1.2, r: 0.42, h: 0.8, out: 0.7 } as const;
 
 /** Le devant de la pierre de la face sud à la hauteur `y` (dans le repère du lieu), où se pose le dos du rail. */
-export function railFace(y: number): number {
+function railFace(y: number): number {
   return spireRadiusAt(SPIRE, y - SINK) * Math.cos(Math.PI / MONTEE_SIDES) + 0.3;
 }
 
@@ -525,7 +525,7 @@ function groundOf(c: Vec3, dx: number, dz: number): Vec3 {
 const lifted = (c: Vec3, x: number, y: number, z: number): Vec3 => ({ x: c.x + x, y: c.y + y, z: c.z + z });
 
 /** Où se pose la trace de chaque mission, depuis le centre du lieu (la caméra du retour en garde la place). */
-export const MONTEE_TRACE_SPOTS = {
+const MONTEE_TRACE_SPOTS = {
   thermometer: { x: 0, z: 7.4 },
   adding: { x: 1.9, z: 7.4 },
   fractions: { x: 0, z: 6 },
