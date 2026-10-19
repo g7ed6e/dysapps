@@ -541,8 +541,8 @@ describe('Le budget du monde continu', () => {
     expect(g.triangles).toBe(g.near + g.far);
   });
 
-  it('tient dans l’enveloppe relevée par le mainteneur (100 000 triangles et 22 appels, la Nef, 18 octobre 2026)', () => {
-    expect(OPEN_WORLD_BUDGET).toEqual({ triangles: 100_000, calls: 22 });
+  it('tient dans l’enveloppe relevée par le mainteneur (100 140 triangles et 22 appels, les bêtes des côtes, 19 octobre 2026)', () => {
+    expect(OPEN_WORLD_BUDGET).toEqual({ triangles: 100_140, calls: 22 });
     // Sans les aménagements, dont la vue trace les dessins : le tout se compte dans three/archipeo/amenagements.test.ts.
     const cost = openWorldCost(0);
     const triangles = cost.reduce((s, c) => s + c.triangles, 0);

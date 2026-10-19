@@ -88,6 +88,7 @@ import { placedCaisse } from '../../world/continu/caisse';
 import { REMISE_DROP, REMISE_TIMING } from '../../world/continu/remise';
 import { createRemiseRun, createSignsTracker, type RemiseEvents, type SignOnScreen } from './remiseRun';
 import { nearestPlace, screenRect, touchedObject, type ObjectTarget } from '../../world/continu/toucher';
+import { assignSpots, coastSpots, crabsPose, critterForms, fishPose, gullsPose, WILDLIFE, type CritterPose } from '../../world/continu/wildlife';
 
 /** Ce que la page donne à la scène. */
 export interface OpenWorldOptions {
@@ -1190,8 +1191,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const birdPerched = birdFacets(true);
   const spoutAt = whaleBase.positions.length;
   const birdsAt = spoutAt + spoutBase.positions.length;
+  // La vie animale des côtes du 6e (piste « Ambiance », 19 octobre 2026 ; world/continu/wildlife.ts), dans le même
+  // maillage, après les oiseaux du bord d'eau : les mouettes, les crabes, puis les poissons, chacun à sa place fixe.
+  const critters = critterForms();
+  const gullCount = WILDLIFE.slots.gulls * WILDLIFE.perGroup.gulls;
+  const crabCount = WILDLIFE.slots.crabs * WILDLIFE.perGroup.crabs;
+  const gullsAt = birdsAt + FAUNA.birds * birdBase.positions.length;
+  const crabsAt = gullsAt + gullCount * critters.gull.positions.length;
+  const fishAt = crabsAt + crabCount * critters.crab.positions.length;
   const faunaGeometry = keep(new THREE.BufferGeometry());
-  const faunaPositions = new Float32Array(birdsAt + FAUNA.birds * birdBase.positions.length);
+  const faunaPositions = new Float32Array(fishAt + WILDLIFE.slots.fish * critters.fish.positions.length);
   faunaGeometry.setAttribute('position', new THREE.BufferAttribute(faunaPositions, 3).setUsage(THREE.DynamicDrawUsage));
   faunaGeometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(faunaPositions.length), 3));
   {
@@ -1199,6 +1208,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     colors.set(whaleBase.colors, 0);
     colors.set(spoutBase.colors, spoutAt);
     for (let k = 0; k < FAUNA.birds; k++) colors.set(birdBase.colors, birdsAt + k * birdBase.colors.length);
+    for (let k = 0; k < gullCount; k++) colors.set(critters.gull.colors, gullsAt + k * critters.gull.colors.length);
+    for (let k = 0; k < crabCount; k++) colors.set(critters.crab.colors, crabsAt + k * critters.crab.colors.length);
+    for (let k = 0; k < WILDLIFE.slots.fish; k++) colors.set(critters.fish.colors, fishAt + k * critters.fish.colors.length);
     faunaGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   }
   // Toute la scène tient dans cette sphère (le bord d'eau, la baleine au large) : l'élimination hors champ reste juste.
@@ -1207,6 +1219,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const faunaMesh = new THREE.Mesh(faunaGeometry, faunaMaterial);
   faunaMesh.matrixAutoUpdate = false;
   faunaMesh.visible = false;
+  // Au 6e, les bêtes des côtes suivent Kéo partout sur l'île : le maillage se dessine toujours, sans élimination hors champ.
+  if (sixth) faunaMesh.frustumCulled = false;
   scene.add(faunaMesh);
   let faunaClock = 0;
   let faunaStart: number | null = null;
@@ -1225,6 +1239,60 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       faunaPositions[offset + k + 2] = z - px * sy + pz * cy;
     }
   };
+  // Les places des bêtes des côtes : celles qui conviennent à chacune (une plage pour les crabes, le large pour les
+  // poissons), et celles que tient chaque groupe, revues deux fois par seconde autour de Kéo.
+  const coast = sixth ? coastSpots() : [];
+  const spotsFor = (ok: (i: number) => boolean) => coast.map((_, i) => i).filter(ok);
+  const gullSpots = spotsFor(() => true);
+  const crabSpots = spotsFor((i) => coast[i].beach !== null);
+  const fishSpots = spotsFor((i) => coast[i].sea !== null);
+  const beachAt = (i: number) => coast[i].beach ?? coast[i].sea!;
+  const seaAt = (i: number) => coast[i].sea!;
+  let heldGulls: (number | null)[] = [];
+  let heldCrabs: (number | null)[] = [];
+  let heldFish: (number | null)[] = [];
+  let critterClock = 0;
+  let critterAssigned = -Infinity;
+  /** Écrit une bête à sa place du maillage, ou l'efface (aucune bête : des sommets nuls, rien ne se dessine). */
+  const writeCritter = (pose: CritterPose | null, offset: number, length: number) => {
+    if (pose) writeFacets(critters[pose.form], offset, pose.x, pose.y, pose.z, pose.yaw, pose.pitch);
+    else faunaPositions.fill(0, offset, offset + length);
+  };
+  /**
+   * Les bêtes des côtes à l'image suivante ; vrai si leurs sommets ont changé. Avec « Réduire les animations », elles ne
+   * sont réécrites que quand leurs places changent : posées, sans bouger.
+   */
+  const stepCritters = (dt: number): boolean => {
+    if (!sixth) return false;
+    critterClock += dt;
+    const moved = critterClock - critterAssigned >= 0.5;
+    if (moved) {
+      critterAssigned = critterClock;
+      const g = assignSpots(gullSpots, beachAt, here, heldGulls, WILDLIFE.slots.gulls);
+      const c = assignSpots(crabSpots, beachAt, here, heldCrabs, WILDLIFE.slots.crabs);
+      const f = assignSpots(fishSpots, seaAt, here, heldFish, WILDLIFE.slots.fish);
+      const same = (a: readonly (number | null)[], b: readonly (number | null)[]) => a.length === b.length && a.every((v, k) => v === b[k]);
+      const changed = !same(g, heldGulls) || !same(c, heldCrabs) || !same(f, heldFish);
+      heldGulls = g;
+      heldCrabs = c;
+      heldFish = f;
+      if (reduceMotion && !changed) return false;
+    } else if (reduceMotion) return false;
+    const t = critterClock;
+    const gullLength = critters.gull.positions.length;
+    heldGulls.forEach((spot, s) => {
+      const poses = spot === null ? [] : gullsPose(spot, t, reduceMotion);
+      for (let k = 0; k < WILDLIFE.perGroup.gulls; k++) writeCritter(poses[k] ?? null, gullsAt + (s * WILDLIFE.perGroup.gulls + k) * gullLength, gullLength);
+    });
+    const crabLength = critters.crab.positions.length;
+    heldCrabs.forEach((spot, s) => {
+      const poses = spot === null ? [] : crabsPose(spot, t, reduceMotion, here);
+      for (let k = 0; k < WILDLIFE.perGroup.crabs; k++) writeCritter(poses[k] ?? null, crabsAt + (s * WILDLIFE.perGroup.crabs + k) * crabLength, crabLength);
+    });
+    const fishLength = critters.fish.positions.length;
+    heldFish.forEach((spot, s) => writeCritter(spot === null ? null : fishPose(spot, s, t, reduceMotion), fishAt + s * fishLength, fishLength));
+    return true;
+  };
   /** La baleine et les oiseaux à l'image suivante : leur scène part à l'arrivée au bord d'eau, puis se joue. */
   const stepFauna = (dt: number, arrived: boolean) => {
     faunaClock += dt;
@@ -1234,13 +1302,26 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Le souffle de la baleine, entendu à l'instant où le jet part (jamais avec « Réduire les animations »).
     if (!reduceMotion && t !== null && t >= FAUNA_BLOW && t - dt < FAUNA_BLOW) options.onWhaleBlow?.();
     const playing = t !== null && t >= 0 && t < FAUNA_END;
-    faunaMesh.visible = near || playing;
-    if (!faunaMesh.visible) return;
+    const critterMoved = stepCritters(dt);
+    faunaMesh.visible = sixth || near || playing;
+    const flush = () => {
+      if (critterMoved) (faunaGeometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
+    };
+    if (!near && !playing) {
+      // Loin du bord d'eau, sa scène finie : la baleine, son jet et les oiseaux s'effacent (le maillage reste dessiné
+      // pour les bêtes des côtes), et se réécrivent au retour.
+      if (faunaKey !== 'gone') {
+        faunaKey = 'gone';
+        faunaPositions.fill(0, 0, gullsAt);
+        (faunaGeometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
+      }
+      return flush();
+    }
     // Avec « Réduire les animations », la baleine se tient en surface tant que Kéo est là. Rien ne bouge (les oiseaux
     // posés, la baleine sous l'eau ou immobile) : les sommets d'avant restent, sans rien calculer.
     const surface = reduceMotion && detourHere === shore.id;
     const key = reduceMotion ? (surface ? 'surface' : 'rest') : playing ? null : 'rest';
-    if (key !== null && key === faunaKey) return;
+    if (key !== null && key === faunaKey) return flush();
     faunaKey = key;
     const pose = faunaPose(shore, reduceMotion ? (surface ? 0 : null) : t, reduceMotion);
     const w = pose.whale;
