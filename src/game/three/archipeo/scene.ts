@@ -13,7 +13,7 @@ import { loadKeo } from '../../importedCharacters';
 import { createHabitantModels } from './habitantModels';
 import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
-import { NEF_DEPARTURE, NEF_LIFT, bancFacets, bancTouched, berFacets, nefArrivingParts, nefAtBerth, nefBerthWorld, nefDeparture, nefModelFacets, nefShownParts, nefTouched, type NefLook } from '../../world/continu/nef';
+import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, WORLD_FOG, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourFacets, faunaPose, spoutFacets, whaleFacets, type DetourId } from '../../world/continu/detours';
@@ -30,15 +30,15 @@ import { hasScenette, placeById, type LevelPlan, type PlaceId } from '../../worl
 import { levelWorld, type LevelWorld } from '../../world/continu/levelWorld';
 import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from '../../world/continu/mist5e';
 import { pathMapEdges5e } from '../../world/continu/paths5e';
-import { COLORS_5E, DEPARTURE_5E } from '../../world/continu/plan5e';
+import { COLORS_5E } from '../../world/continu/plan5e';
 import { onPlateau, plateauShare } from '../../world/continu/terrain5e';
 import { freeRoute, isWalkable, nearestWalkable, onPathCell, walkGridSteps, type WalkGrid } from '../../world/continu/freeWalk';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { edgesNear, pathTopAt, type NetworkPoint } from '../../world/continu/paths';
-import { COLORS_6E, hidesTraces, portFloor, portNode, type PortSpot } from '../../world/continu/plan6e';
+import { COLORS_6E, hidesTraces, portNode, type PortSpot } from '../../world/continu/plan6e';
 import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PAPER_COLOR } from '../../world/continu/printworks';
-import { PORT_MAP_POINT, PORT_ROOFLINES, assemblyScene, portFacets, portHeading, portSubject, portTouch, type PortState } from '../../world/continu/port';
+import { assemblyScene, portFacets, portHeading, portMapPoint, portRooflines, portSubject, portTouch, type PortState } from '../../world/continu/port';
 import { HELD_LIFT, SALT_PUMP, answerScale, facingAnswerObjects, inBasket, itemScene, placeTrace, rankInBasket, saltPumpHub, sceneSpot, sortPrise, sortScales, swingTo, type Reaction, type SortLook } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
 import {
@@ -458,6 +458,8 @@ const FRAMED_PLACE_HEIGHT = 2;
 const FRAMED_BRIDGE_NEAR = 12;
 /** Le bout de la caméra qui suit Kéo, et celui de la Carte (l'île entière, de haut), en unités. */
 const FOLLOW_FAR = 500;
+/** Le regard levé au quai du lieu de départ ne vaut que la caméra tournée à moins de tant de son cap (en radians). */
+const QUAY_LOOK_TURN = 0.6;
 const MAP_FAR = 2000;
 /** Le rayon du dôme du ciel : en deçà du bout de la caméra qui suit Kéo (`FOLLOW_FAR`). */
 const SKY_RADIUS = 450;
@@ -671,6 +673,12 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
  * lampe du 6e. Quelques lignes de shader après celles de `unshadedLamp`, aucun appel de plus ; le programme a sa propre
  * clé (le 6e garde le sien, inchangé).
  */
+/**
+ * La lumière du Phare, vers le 6e (GD-22, lot 4 : un point chaud au ras de l'horizon, vu de la Lisière) : la couleur de
+ * la lampe (`LAMP_COLOR`, que rien d'autre ne prend au 5e) ne prend que tant du brouillard du lointain, et se voit au loin.
+ */
+const LAMP_FOG = 0.3;
+
 function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight): THREE.MeshLambertMaterial {
   const before = m.onBeforeCompile;
   const lantern = new THREE.Vector3(...linearRgb(COLORS_5E.lantern));
@@ -695,8 +703,9 @@ function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight): THREE.Mesh
       .replace('#include <opaque_fragment>', '#ifdef USE_COLOR\nif ( all( lessThan( abs( vColor.rgb - lanternColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n#endif\n#include <opaque_fragment>')
       .replace(
         '#include <fog_fragment>',
-        '#ifdef USE_FOG\nfloat fogFactor = smoothstep( fogNear, fogFar, vFogDepth ) * mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) );\ngl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n#endif',
-      );
+        '#ifdef USE_FOG\nfloat fogFactor = smoothstep( fogNear, fogFar, vFogDepth ) * mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) );\n#ifdef USE_COLOR\nif ( all( lessThan( abs( vColor.rgb - lampColor ), vec3( 0.004 ) ) ) ) fogFactor *= LAMP_FOG;\n#endif\ngl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n#endif',
+      )
+      .replace('#include <common>', `#include <common>\n#define LAMP_FOG ${LAMP_FOG.toFixed(2)}`);
   };
   m.customProgramCacheKey = () => 'archipeo-hauteur';
   return m;
@@ -748,6 +757,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // reste caché, et rien ne s'y appelle, sauf la scénette et les traces de la Montée (GD-22, lot 3, `hasScenette`).
   const world = levelWorld(level);
   const { sixth, net } = world;
+  // Le lieu de départ du niveau et sa Nef (GD-20, lot 2 ; GD-21 ; GD-22, lot 4) : l'Escale et le voilier au 6e, la
+  // Lisière et le dirigeable au 5e.
+  const departure = world.departure;
+  const site = departure.port;
+  const nefSite = departure.nef;
+  const siteRooflines = portRooflines(site);
   const { atNode, findRoute, pathNode, snapToNetwork, startOf } = net;
   const LIGHT = world.light;
   const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -873,11 +888,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Le 5e n'en a pas (ses lieux sont des ruines) : le regard ne s'y lève pas.
   const TALL: readonly PlaceId[] = sixth ? ['phare', 'lookout'] : [];
   const tallTops = new Map<PlaceId, Vec3>(TALL.map((id) => [id, { x: placeById(id).center.x, y: feet.get(id)!.y + modelOfPlace(id).top, z: placeById(id).center.z }]));
-  // Au 5e (aucun lieu haut), `lanternTop` reste à l'origine, (0, 0, 0) : il n'est jamais cadré. `nearLantern` n'y trouve
-  // aucun lieu, la part du regard levé (`look`) reste à 0, et `lookUp` ne bouge alors pas la caméra : ce point ne compte
-  // pas (expert frontend, relecture du lot 2). La Montée, plus haute que le Phare, n'y entre pas : son sommet sort du
-  // champ de toute façon, et le regard levé est un geste du 6e.
+  // Au 5e, aucun lieu haut : le regard ne se lève qu'au quai de la Lisière, tourné vers la Montée, pour que son sommet
+  // entre dans la première image (GD-22, lot 4, `quayLook`) ; ailleurs, `look` reste à 0 et `lookUp` ne bouge pas la
+  // caméra (`lanternTop` reste à l'origine tant qu'il n'est pas cadré).
   const lanternTop: Vec3 = { ...(tallTops.get('phare') ?? { x: 0, y: 0, z: 0 }) };
+  // Le haut que le regard levé cadre au quai du lieu de départ (au 5e, le sommet de la Montée : la première image de la
+  // Lisière la montre au fond ; GD-22, lot 4), et l'endroit du quai.
+  const quayLook: Vec3 | null = departure.lookAt ? { x: placeById(departure.lookAt).center.x, y: (feet.get(departure.lookAt)?.y ?? 0) + modelOfPlace(departure.lookAt).top, z: placeById(departure.lookAt).center.z } : null;
+  const quayPoint = net.pathNode(portNode('quai')).at;
   /** La hauteur bâtie de chaque lieu, au-dessus de son pied (le lieu entier tant que la page n'a rien dit). */
   const builtTop = new Map<PlaceId, number>();
   const whole = (id: PlaceId) => (builtTop.get(id) ?? modelOfPlace(id).top) >= modelOfPlace(id).top - 0.5;
@@ -1109,8 +1127,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // endroit (le quai, face à la caméra ; devant une porte, tourné vers elle).
   const startPlace = PLACES.find((p) => p.id === options.start);
   const startSpot = startPlace ? null : (options.start as PortSpot);
-  // Au 5e, pas d'Escale : un départ hors d'un lieu se fait sur le quai de la côte (`DEPARTURE_5E`).
-  let here: Vec2 = startPlace ? startOf(startPlace.door, startPlace.center).at : pathNode(sixth ? portNode(startSpot!) : DEPARTURE_5E.node).at;
+  // Hors d'un lieu, à son endroit du lieu de départ du niveau (l'Escale, la Lisière).
+  let here: Vec2 = startPlace ? startOf(startPlace.door, startPlace.center).at : pathNode(portNode(startSpot!)).at;
   let walk: Walk | null = null;
   let walkTarget: PlaceId | null = null;
   // Les Détours (GD-20, déplacement libre, lot 2) : ceux trouvés (leur sente tracée), les cairns rallumés, celui où Kéo
@@ -1126,27 +1144,40 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (detourDecor?.key !== key) detourDecor = { key, facets: detourFacets(detoursFound, detoursLit.includes('braise-herons')) };
     return detourDecor.facets;
   };
-  // La Nef de l'Escale (GD-21) : son temps (la page le donne), le modèle du voilier chargé à la demande (sans lui, le
-  // ber seul), ses parties montrées réunies aux lieux, le banc du large dans le maillage du lieu suivi (hors de la brume
-  // du lointain). Le temps qui arrive descend à part (`nefDrop`, dans `nefMesh`) ; au départ (`nefTrip`), la Nef et le
-  // banc s'en vont chacun dans son maillage, le temps de leur mouvement (jamais pendant une question ni une pose).
+  // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son temps (la page le donne), le modèle de sa forme chargé à la
+  // demande (sans lui, le ber seul), ses parties montrées réunies aux lieux, son obstacle (le banc du large, le mur de
+  // nuages) avec eux. Le temps qui arrive descend à part (`nefDrop`, dans `nefMesh`) ; au départ (`nefTrip`), la Nef et
+  // l'obstacle s'en vont chacun dans son maillage, le temps de leur mouvement (jamais pendant une question ni une pose).
+  // Le premier temps dit par la page se montre tel quel, sans descente : rien ne bouge à l'ouverture (directeur
+  // artistique, lot 4).
   let nefLookNow: NefLook = 0;
+  let nefKnown = false;
+  const flight: NefFlight = { x: 0, y: 0, z: 0, yaw: 0, shiftX: 0, shiftZ: 0 };
   let nefDrop: { start: number; from: NefLook; to: NefLook } | null = null;
   let nefTrip: { start: number; done: () => void; outSince: number | null } | null = null;
   /** La Nef qui part, ramenée à l'écran (sa place projetée). */
   const nefSeen = new THREE.Vector3();
   const nefModelCache = new Map<string, Facets>();
-  /** Des parties du voilier, dans le repère de la Nef, ou rien (pas encore chargé, ou aucune partie). */
+  /** Des parties de la forme de la Nef, dans son repère, ou rien (pas encore chargée, ou aucune partie). */
   const nefModel = (names: readonly string[]): Facets | null => {
-    const parts = nefParts(1);
+    const parts = nefParts(nefSite.form);
     if (!parts || names.length === 0) return null;
     const k = names.join(',');
     let f = nefModelCache.get(k);
-    if (!f) nefModelCache.set(k, (f = nefModelFacets(parts, names)));
+    if (!f) nefModelCache.set(k, (f = nefModelFacets(parts, names, nefSite.model)));
     return f;
   };
-  const nefBer = { quay: berFacets(0), gone: berFacets(4) };
-  const nefBanc = bancFacets();
+  /** Le ber à chaque temps (au 5e, le gréement déposé change avec lui), fait une fois. */
+  const nefBers = new Map<NefLook, Facets>();
+  const nefBer = (look: NefLook): Facets => {
+    let f = nefBers.get(look);
+    if (!f) nefBers.set(look, (f = nefSite.ber(look)));
+    return f;
+  };
+  const nefBanc = nefSite.obstacle();
+  const nefStays = nefSite.stays();
+  const nefAfter = nefSite.after();
+  const siteDecor = departure.decor();
   /** Le temps que les parties nouvelles de la Nef mettent à descendre sur le ber. */
   const NEF_DROP_SECONDS = 0.8;
   // La baleine et les oiseaux du bord d'eau : un seul maillage, dont les sommets sont réécrits sur place pendant leur
@@ -1246,7 +1277,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     detourView = detourViewStep(detourView, detourHere ? 1 : 0, dt, reduceMotion);
     stepFauna(dt, arrived);
   };
-  let heading = startSpot && sixth ? portHeading(startSpot) : FACING_CAMERA;
+  let heading = startSpot ? portHeading(startSpot, site, departure.viewYaw) : FACING_CAMERA;
   keo.rotation.y = heading;
   const keoFeet: Vec3 = { x: here.x, y: 0, z: here.z };
   const placeKeo = (p: Vec2) => {
@@ -1296,7 +1327,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // La caméra suit un point lissé (`focus`), monté de `lift` quand le relief cache Kéo ; une seule pose, remplie sur place.
   const focus: Vec3 = { ...keoFeet };
   // La caméra tournée autour de Kéo (GD-20, rotation libre) : `yaw`, et le tour en cours des boutons (`turning`).
-  let yaw = 0;
+  // Au départ à un endroit du lieu de départ, son cap (à la Lisière, vers la Montée) ; devant un lieu, le nord.
+  let yaw = startSpot ? (startSpot === 'quai' ? departure.viewYaw : departure.facadeYaw) : 0;
   /**
    * L'angle dont la caméra a tourné autour de la scénette (`SCENE_TURN`), la scène à refaire à l'image suivante, et la
    * dernière question posée, avec laquelle elle se refait. Déclarés ici, avant le premier `updateRings`, qui les lit ;
@@ -1358,7 +1390,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (walk) return false;
     const near = TALL.find((id) => distance(here, placeById(id).center) < LOOK_UP.within);
     if (near) Object.assign(lanternTop, tallTops.get(near)!);
-    return near !== undefined;
+    if (near !== undefined) return true;
+    // Au quai du lieu de départ du 5e, tourné vers son cap : le sommet de la Montée, au fond (directeur artistique, lot 4).
+    if (!quayLook || distance(here, quayPoint) > 0.5 || Math.abs(wrapAngle(yaw - departure.viewYaw)) > QUAY_LOOK_TURN) return false;
+    Object.assign(lanternTop, quayLook);
+    return true;
   };
   let look = nearLantern() ? 1 : 0;
   // Le retour d'une scénette (aux Quais) : Kéo reste sur le bord du quai, la caméra garde la barque chargée dans le
@@ -1401,6 +1437,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     applyPose(pose);
   };
   follow();
+  // La boussole de la page suit le cap de départ (à la Lisière, vers la Montée).
+  if (yaw !== 0) options.onYaw?.(yaw);
   /**
    * Tourne la caméra autour de Kéo, à l'angle `to` : la vue du retour d'une scénette se rend (la caméra qui suit reprend
    * la main), la boussole de la page suit.
@@ -1439,11 +1477,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // laisse, et l'endroit dont la caméra y garde le sujet (la porte, la galerie, l'établi ; le lieu, ou la trace que la
   // scénette vient de laisser), par un décalage de l'image, calculé à l'ouverture (Kéo ne bouge pas tant que le panneau
   // est ouvert), jamais à chaque image.
-  let framed: PortSpot | PlaceId | null = startPlace?.id ?? (sixth ? startSpot : null);
+  let framed: PortSpot | PlaceId | null = startPlace?.id ?? startSpot;
   let frameRect: { left: number; top: number; width: number; height: number } | null = null;
   const subjectOf = (spot: PortSpot | PlaceId): Vec3 | null => {
     const place = PLACES.find((p) => p.id === spot);
-    if (!place) return sixth ? portSubject(spot as PortSpot, port?.trophies.length ?? 0) : null;
+    if (!place) return portSubject(spot as PortSpot, port?.trophies.length ?? 0, site);
     // La fiche d'une terre fermée : le pont à rebâtir d'abord, si Kéo se tient devant (de loin, la caméra reste où elle est).
     const land = landOf(place.id);
     if (isLinkedLand(land) && closed.includes(land)) {
@@ -1508,11 +1546,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let assembly: { start: number; scene: ReturnType<typeof assemblyScene>; joined: boolean } | null = null;
   /** Les facettes de l'Escale, refaites quand ce qu'elle montre change. */
   const portOf = (): Facets | null => {
-    if (!port || !sixth) return null;
+    if (!port) return null;
     const k = `${JSON.stringify(port)}|${assembly ? 'a' : ''}`;
     if (k !== portKey || !portMesh) {
       portKey = k;
-      portMesh = portFacets(port, { assembling: Boolean(assembly) });
+      portMesh = portFacets(port, { assembling: Boolean(assembly) }, site);
     }
     return portMesh;
   };
@@ -1568,7 +1606,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}${nefParts(1) ? 'm' : ''}|${carAt}${carOpen ? 'o' : ''}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}${nefParts(nefSite.form) ? 'm' : ''}|${carAt}${carOpen ? 'o' : ''}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -1604,6 +1642,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       rest.push(bridgeOf(land, closed.includes(land) ? 'tombe' : laying?.lay.land === land && !laying.tapped ? 'pose' : 'rebati'));
       if (mapView) rest.push(bridgeOf(land, 'carte'));
     }
+    // La Nef (GD-21 ; GD-22, lot 4) : son ber (vide, et la bouée, une fois partie ; au 5e, le gréement déposé), ses
+    // parties posées (sans celles qui descendent), et son obstacle tant qu'elle n'est pas partie, avec le lieu suivi (sur
+    // la Carte, avec les lieux) ; au 5e, le mur écarté après le départ, et le panache du 4e, toujours.
+    const gone = nefLookNow === 4 || Boolean(nefTrip);
+    const berLook: NefLook = nefTrip ? 3 : nefDrop ? nefDrop.from : nefLookNow;
+    rest.push(nefBer(berLook));
+    const nefNow = gone ? null : nefModel(nefShownParts(nefDrop ? nefDrop.from : nefLookNow, nefSite.temps));
+    if (nefNow) rest.push(nefAtBerth(nefNow, nefSite));
+    if (!gone) (mapView ? rest : mark).push(nefBanc);
+    else if (nefLookNow === 4 && nefAfter) rest.push(nefAfter);
+    if (nefStays) rest.push(nefStays);
+    if (siteDecor) rest.push(siteDecor);
     // Au 5e, sur la Carte, la ligne de la falaise (GD-22, lot 2) : le bord du plateau, et la bande sombre des chemins, dans
     // le maillage des lieux.
     if (!sixth) {
@@ -1615,19 +1665,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     // Les Détours : leurs pierres, le cairn, les sentes trouvées (dans le monde comme sur la Carte), sans appel de plus.
     rest.push(detourFacetsNow());
-    // La Nef (GD-21) : son ber (vide, et la bouée, une fois partie), ses parties posées (sans celles qui descendent), et le
-    // banc du large tant qu'elle n'est pas partie, avec le lieu suivi (sur la Carte, avec les lieux).
-    const gone = nefLookNow === 4 || Boolean(nefTrip);
-    rest.push(nefLookNow === 4 ? nefBer.gone : nefBer.quay);
-    const nefNow = gone ? null : nefModel(nefShownParts(nefDrop ? nefDrop.from : nefLookNow));
-    if (nefNow) rest.push(nefAtBerth(nefNow));
-    if (!gone) (mapView ? rest : mark).push(nefBanc);
     setGeometry(placesMesh, mergeFacets(rest));
     setGeometry(landmarkMesh, mergeFacets(mark));
     mapDirty = true;
   };
-  // Le voilier chargé à la demande (GD-21) : les lieux se refont avec lui (la clé des lieux sait s'il est là). Au 6e seulement.
-  if (sixth && !nefParts(1))
+  // La forme de la Nef chargée à la demande (GD-21) : les lieux se refont avec elle (la clé des lieux sait si elle est là).
+  if (!nefParts(nefSite.form))
     void loadNef().then((changed) => {
       if (!disposed && changed) placeVisibility();
     });
@@ -1814,7 +1857,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     projected.copy(mark).project(camera);
     const far = distanceSign(here, placeById(markPlace).center);
     const m = markOnScreen({ x: sx(projected), y: sy(projected), behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far, markBeside(markPlace) && whole(markPlace));
-    if (m.inside && sixth && portFloor(here.x, here.z) !== null) markAtPort(m);
+    if (m.inside && departure.floor(here.x, here.z) !== null) markAtPort(m);
     options.onMark(m);
   };
   /**
@@ -1823,7 +1866,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    */
   const markAtPort = (m: MarkOnScreen) => {
     let ceiling = Infinity;
-    for (const [a, b] of PORT_ROOFLINES) {
+    for (const [a, b] of siteRooflines) {
       roofA.set(a.x, a.y, a.z).project(camera);
       roofB.set(b.x, b.y, b.z).project(camera);
       if (roofA.z > 1 || roofB.z > 1) continue;
@@ -2010,12 +2053,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   /** Kéo d'un coup à un endroit de l'Escale, tourné vers sa façade ; la page en ouvre le panneau. */
   const jumpToPort = (spot: PortSpot) => {
-    // Au 5e, pas d'Escale.
-    if (!sixth) return;
     heldBridge = null;
     here = pathNode(portNode(spot)).at;
-    heading = portHeading(spot);
-    faceNorth();
+    heading = portHeading(spot, site, departure.viewYaw);
+    // La caméra au cap du quai (vers la Montée, à la Lisière), ou face aux façades.
+    turning = null;
+    setYaw(spot === 'quai' ? departure.viewYaw : departure.facadeYaw);
     detourView = 0;
     exit = null;
     back = 0;
@@ -2167,11 +2210,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     const p = hitAt(e.clientX, e.clientY);
     if (!p) return;
-    // La Nef, son ber ou le banc du large : la fiche de la Nef (GD-21), Kéo reste où il est ; partie, plus rien.
-    if (sixth && options.onNef && nefLookNow !== 4 && (nefTouched(p) || bancTouched(p))) return options.onNef();
-    // L'Escale : une porte, la galerie ou le lieu d'assemblage y mène Kéo d'un coup et en ouvre le panneau ; le reste du
-    // Port ouvre sa fiche (Kéo reste où il est). Au 6e seulement.
-    const atPort = sixth ? portTouch(p) : null;
+    // La Nef, son ber ou son obstacle (le banc du large, le mur de nuages) : la fiche de la Nef (GD-21), Kéo reste où il
+    // est ; partie, plus rien.
+    if (options.onNef && nefLookNow !== 4 && (nefSite.touched(p) || nefSite.obstacleTouched(p))) return options.onNef();
+    // Le lieu de départ : une porte, la galerie ou le lieu d'assemblage y mène Kéo d'un coup et en ouvre le panneau ; le
+    // reste ouvre sa fiche (Kéo reste où il est).
+    const atPort = portTouch(p, site);
     if (atPort === 'fiche') return options.onPort('fiche');
     if (atPort) return jumpToPort(atPort);
     // Un lieu d'une terre fermée, ou son pont tombé : la fiche de la terre (GD-20, point 3), Kéo reste où il est.
@@ -2250,13 +2294,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const mapSpots: MapSpotOnScreen[] = [
     ...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false, ...(plan.upper.includes(p.id) ? { up: true } : {}) })),
     ...LINKED_LANDS.map((land) => ({ id: bridgeSpot(land), x: 0, y: 0, shown: false })),
-    // L'Escale n'est qu'au 6e : au 5e, aucun point « port » sur la Carte.
-    ...(sixth ? [{ id: 'port' as const, x: 0, y: 0, shown: false }] : []),
+    // Le lieu de départ (l'Escale, la Lisière).
+    { id: 'port' as const, x: 0, y: 0, shown: false },
     { id: 'keo' as const, x: 0, y: 0, shown: false },
   ];
   // Kéo, sur la Carte du 5e : en haut quand il est sur le plateau (refait à chaque pose, sans rien créer).
   const keoSpot = mapSpots[mapSpots.length - 1];
-  const portPoint = new THREE.Vector3(PORT_MAP_POINT.x, PORT_MAP_POINT.y, PORT_MAP_POINT.z);
+  const portSpotPoint = portMapPoint(site);
+  const portPoint = new THREE.Vector3(portSpotPoint.x, portSpotPoint.y, portSpotPoint.z);
   let mapMs = 0;
   const keoPoint = new THREE.Vector3();
   const fingers = new Map<number, { x: number; y: number }>();
@@ -3376,12 +3421,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   }
   /** Le temps de la Nef qui arrive : ses parties nouvelles descendent sur le ber, de haut, et ralentissent en arrivant. */
   const startNefDrop = (from: NefLook, to: NefLook) => {
-    const f = nefModel(nefArrivingParts(from, to));
+    const f = nefModel(nefArrivingParts(from, to, nefSite.temps));
     if (!f) return;
-    const at = nefBerthWorld();
+    const at = nefSite.berth;
     nefDrop = { start: performance.now() / 1000, from, to };
     setGeometry(nefMesh, f);
-    nefMesh.position.set(at.x, NEF_LIFT.ber + POSE_DROP, at.z);
+    nefMesh.position.set(at.x, nefSite.lift.ber + POSE_DROP, at.z);
     nefMesh.rotation.y = at.yaw;
   };
   const finishNefDrop = () => {
@@ -3393,13 +3438,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const stepNefDrop = (t: number) => {
     if (!nefDrop) return;
     const u = Math.min(1, (t - nefDrop.start) / NEF_DROP_SECONDS);
-    nefMesh.position.y = NEF_LIFT.ber + POSE_DROP * (1 - u) ** 3;
+    nefMesh.position.y = nefSite.lift.ber + POSE_DROP * (1 - u) ** 3;
     if (u >= 1) finishNefDrop();
   };
-  /** Le départ de la Nef : elle et le banc dans leurs maillages à part, le temps du voyage ; la caméra ne bouge pas. */
+  /** Le départ de la Nef : elle et son obstacle dans leurs maillages à part, le temps du voyage ; la caméra ne bouge pas. */
   const startNefTrip = (done: () => void) => {
     finishNefDrop();
-    const f = nefModel(nefShownParts(3));
+    const f = nefModel(nefShownParts(3, nefSite.temps));
     if (reduceMotion || mapView || !f) {
       nefLookNow = 4;
       placeVisibility();
@@ -3419,24 +3464,24 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     nefTrip = null;
     nefMesh.visible = false;
     bancMesh.visible = false;
-    bancMesh.position.x = 0;
+    bancMesh.position.set(0, 0, 0);
     nefLookNow = 4;
     placeVisibility();
     trip.done();
   };
   const stepNefTrip = (t: number) => {
     if (!nefTrip) return;
-    const u = Math.min(1, (t - nefTrip.start) / NEF_DEPARTURE.seconds);
-    const at = nefDeparture(u);
+    const u = Math.min(1, (t - nefTrip.start) / nefSite.seconds);
+    const at = nefSite.flight(u, flight);
     nefMesh.position.set(at.x, at.y, at.z);
     nefMesh.rotation.y = at.yaw;
-    bancMesh.position.x = -at.bancShift;
-    // Sortie de l'image (le haut du mât compris), elle finit son départ peu après.
+    bancMesh.position.set(at.shiftX, 0, at.shiftZ);
+    // Sortie de l'image (le haut du mât ou de l'enveloppe compris), elle finit son départ peu après.
     nefSeen.set(at.x, at.y + 2, at.z).project(camera);
     const out = nefSeen.z > 1 || Math.abs(nefSeen.x) > 1.15 || Math.abs(nefSeen.y) > 1.15;
     if (!out) nefTrip.outSince = null;
     else nefTrip.outSince ??= t;
-    if (u >= 1 || (nefTrip.outSince !== null && t - nefTrip.outSince >= NEF_DEPARTURE.outOfView)) finishNefTrip();
+    if (u >= 1 || (nefTrip.outSince !== null && t - nefTrip.outSince >= nefSite.outOfView)) finishNefTrip();
   };
   const setPlaces = (state: PlacesState, pose?: { place: PlaceId; parts: readonly PartShape[] }): boolean => {
     placesState = state;
@@ -3775,7 +3820,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const from = nefLookNow;
       finishNefDrop();
       nefLookNow = look;
-      if (!reduceMotion && !mapView && look !== 4 && look > from) startNefDrop(from, look);
+      // Le premier temps dit (l'ouverture) se montre tel quel ; les suivants descendent sur le ber.
+      const first = !nefKnown;
+      nefKnown = true;
+      if (!first && !reduceMotion && !mapView && look !== 4 && look > from) startNefDrop(from, look);
       placeVisibility();
     },
     departNef: (done) => {
@@ -3792,9 +3840,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, mapMs }),
     portAt: (clientX: number, clientY: number) => {
       const p = hitAt(clientX, clientY);
-      if (!sixth) return null;
-      if (p && options.onNef && nefLookNow !== 4 && (nefTouched(p) || bancTouched(p))) return 'nef';
-      return p ? portTouch(p) : null;
+      if (p && options.onNef && nefLookNow !== 4 && (nefSite.touched(p) || nefSite.obstacleTouched(p))) return 'nef';
+      return p ? portTouch(p, site) : null;
     },
     dispose: () => {
       disposed = true;

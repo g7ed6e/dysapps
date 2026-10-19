@@ -11,7 +11,7 @@
 import type { Vec2 } from './geometry';
 import type { Land } from './lands';
 import type { PathNode } from './network';
-import type { OpenPlace } from './plan6e';
+import { portNode, type OpenPlace } from './plan6e';
 
 /** Pixels du plan par unité du monde : l'île fait environ 430 unités d'est en ouest. */
 const PLAN_SCALE = 3.2;
@@ -218,18 +218,114 @@ export const UPPER_PLACES_5E: readonly PlaceId5e[] = ['semaphore', 'gaillard', '
 
 /**
  * Le lieu de départ du 5e, au sud-est (fiche, § 5) : le débarcadère de la Lisière, près du Hameau, au fond de l'anse.
- * Ce lot n'en pose que le quai, où Kéo arrive (le nœud du quai a le nom de celui de l'Escale, `port-quai`, que la page
- * connaît), et le ponton ; l'école, la galerie, l'Entrepôt et la Nef viennent avec leur lot.
+ * Kéo arrive à son quai, au pied du ponton (le nœud du quai a le nom de celui de l'Escale, `port-quai`, que la page
+ * connaît). Son nom est celui de l'univers (src/universes/archipeo/index.ts, `depart.niveaux`).
  */
-export const DEPARTURE_5E = { name: 'La Lisière', node: 'port-quai', at: fromPlan5e([1548, 915]) } as const;
+export const DEPARTURE_5E = { node: 'port-quai', at: fromPlan5e([1548, 915]) } as const;
 
 /**
  * Le ponton de la Lisière (retouche du lot 2, consultant d'Archipéo : « le quai ne se voit pas ») : des planches sur
  * pieux, du quai vers le cœur de l'anse, au nord, devant Kéo et la caméra au départ ; deux lanternes d'ocre à son bout.
  * `from` : son pied, sur la rive ; `to` : son bout, sur l'eau ; `width` : sa largeur ; `deck` : la hauteur de ses planches
- * au-dessus de l'eau. Un décor : on n'y marche pas.
+ * au-dessus de l'eau (au lot 4, un rien sous la pierre de la place, `LISIERE_LEVEL`). Un décor : on n'y marche pas.
  */
-export const QUAY_5E = { from: fromPlan5e([1549, 908]), to: fromPlan5e([1574, 862]), width: 2.6, deck: 0.7 } as const;
+export const QUAY_5E = { from: fromPlan5e([1549, 908]), to: fromPlan5e([1574, 862]), width: 2.6, deck: 1.0 } as const;
+
+/**
+ * La Lisière (GD-22, lot 4, intention du directeur artistique du 19 octobre 2026) : une clairière au fond de l'anse,
+ * entre le quai et le Hameau. Son repère est celui de l'Escale (plan6e.ts, `PORT`) : les trois bâtiments à la même
+ * place (`x` le long de la rangée, de la galerie à l'Entrepôt ; `z` de leur dos vers la place, devant leurs façades),
+ * tourné pour que, depuis le quai, le regard qui va vers la Montée passe au-dessus de la place, la rangée à sa gauche,
+ * en vue de trois quarts. Le ponton part du bout de la place (`z` 17), le long de `z` : la Nef est à sa gauche, dans
+ * l'anse. Kéo arrive au pied du ponton (`LISIERE_QUAY_SPOT`, sur `DEPARTURE_5E`).
+ */
+export const LISIERE_QUAY_SPOT: readonly [number, number] = [-6, 15];
+export const LISIERE = (() => {
+  const yaw = 2.65;
+  const c = Math.cos(yaw),
+    s = Math.sin(yaw);
+  const [kx, kz] = LISIERE_QUAY_SPOT;
+  const at = DEPARTURE_5E.at;
+  const origin = { x: at.x - (kx * c + kz * s), z: at.z - (-kx * s + kz * c) };
+  return {
+    origin,
+    yaw,
+    /** Un point du repère de la Lisière dans le monde. */
+    toWorld: (lx: number, lz: number): Vec2 => ({ x: origin.x + lx * c + lz * s, z: origin.z - lx * s + lz * c }),
+    /** Un point du monde dans le repère de la Lisière. */
+    toLocal: (p: Vec2): Vec2 => {
+      const dx = p.x - origin.x,
+        dz = p.z - origin.z;
+      return { x: dx * c - dz * s, z: dx * s + dz * c };
+    },
+  } as const;
+})();
+
+/**
+ * Le pavage de la Lisière, dans son repère : la place de pierre grise devant la rangée, jusqu'au pied du ponton, et le
+ * quai où il prend pied. Plate, à `LISIERE_LEVEL` (le sol de la clairière est sous elle).
+ */
+export const LISIERE_PAVING = {
+  quay: { x0: -8.5, x1: -2, z0: 13, z1: 17.6 },
+  square: { x0: -8, x1: 40, z0: 6.5, z1: 17 },
+} as const;
+
+/** La hauteur de la pierre de la Lisière, au-dessus de l'eau. */
+export const LISIERE_LEVEL = 1.2;
+
+const LISIERE_COS = Math.cos(LISIERE.yaw);
+const LISIERE_SIN = Math.sin(LISIERE.yaw);
+
+/** Un point du monde dans le repère de la Lisière, sans rien créer (`out`, rempli sur place). */
+function lisiereLocal(x: number, z: number, out: { x: number; z: number }): { x: number; z: number } {
+  const dx = x - LISIERE.origin.x,
+    dz = z - LISIERE.origin.z;
+  out.x = dx * LISIERE_COS - dz * LISIERE_SIN;
+  out.z = dx * LISIERE_SIN + dz * LISIERE_COS;
+  return out;
+}
+const scratch = { x: 0, z: 0 };
+
+/**
+ * La pierre de la Lisière sous un point du monde (`x`, `z`), ou rien hors de son pavage : Kéo s'y tient, au-dessus du
+ * sol. Lue à chaque image : rien n'y est créé.
+ */
+export function lisiereFloor(x: number, z: number): number | null {
+  const l = lisiereLocal(x, z, scratch);
+  const { quay: q, square: s } = LISIERE_PAVING;
+  const inside = (l.x >= q.x0 && l.x <= q.x1 && l.z >= q.z0 && l.z <= q.z1) || (l.x >= s.x0 && l.x <= s.x1 && l.z >= s.z0 && l.z <= s.z1);
+  return inside ? LISIERE_LEVEL : null;
+}
+
+/**
+ * Les bâtiments de la Lisière dans son repère (./port.ts les dessine à la même place qu'à l'Escale : de la galerie à la
+ * grue, du dos des socles aux façades) : la marche libre les contourne.
+ */
+export const LISIERE_BUILDINGS = { x0: 3.6, x1: 38.4, z0: 1.1, z1: 6.4 } as const;
+
+/**
+ * La clairière de la Lisière (directeur artistique : « la place est dégagée, sans tronc, la canopée se tient à
+ * distance ») : la place, la rangée et leurs abords, dans son repère ; la forêt n'y pousse pas.
+ */
+const LISIERE_CLEARING = { x0: LISIERE_PAVING.square.x0 - 6, x1: LISIERE_PAVING.square.x1 + 7, z0: LISIERE_BUILDINGS.z0 - 7, z1: LISIERE_PAVING.square.z1 + 8 } as const;
+
+/** Ce point du monde est-il dans la clairière de la Lisière ? */
+export function inLisiereClearing(p: Vec2): boolean {
+  const l = lisiereLocal(p.x, p.z, scratch);
+  return l.x > LISIERE_CLEARING.x0 && l.x < LISIERE_CLEARING.x1 && l.z > LISIERE_CLEARING.z0 && l.z < LISIERE_CLEARING.z1;
+}
+
+/** Les nœuds de la Lisière, dans son repère : le quai, le bout de la place, puis devant chaque façade, comme à l'Escale. */
+const LISIERE_NODES: readonly { id: string; at: readonly [number, number] }[] = [
+  { id: 'port-place', at: [-3, 10.5] },
+  { id: portNode('succes'), at: [13, 9.5] },
+  { id: portNode('french'), at: [19.3, 9.5] },
+  { id: portNode('maths'), at: [22.5, 9.5] },
+  { id: portNode('english'), at: [25.7, 9.5] },
+  { id: portNode('chantier'), at: [34, 9.5] },
+  // Au bout de la place, passé la grue : le chemin du Hameau en part.
+  { id: 'lis-1', at: [43, 9] },
+];
 
 const node = (id: string, p: [number, number]): PathNode => ({ id, at: fromPlan5e(p) });
 
@@ -247,7 +343,7 @@ const doorNode = (s: PlaceSpec): PathNode => {
 export const PATH_NODES_5E: readonly PathNode[] = [
   ...PLACE_SPECS.map(doorNode),
   node(DEPARTURE_5E.node, [1548, 915]),
-  node('lis-1', [1470, 905]),
+  ...LISIERE_NODES.map(({ id, at }) => ({ id, at: LISIERE.toWorld(at[0], at[1]) })),
   node('fro-1', [1385, 890]),
   node('aub-1', [1400, 1000]),
   node('fro-2', [1360, 790]),
@@ -275,7 +371,14 @@ export const PATH_NODES_5E: readonly PathNode[] = [
 /** Les liaisons : sentiers, le pont de chaque terre et la cabine de la Montée. */
 export const PATH_EDGES_5E: readonly (readonly [string, string])[] = [
   // Les Frondaisons.
-  [DEPARTURE_5E.node, 'lis-1'],
+  // La Lisière : du quai à la place, le long des façades, puis vers le Hameau.
+  [DEPARTURE_5E.node, 'port-place'],
+  ['port-place', portNode('succes')],
+  [portNode('succes'), portNode('french')],
+  [portNode('french'), portNode('maths')],
+  [portNode('maths'), portNode('english')],
+  [portNode('english'), portNode('chantier')],
+  [portNode('chantier'), 'lis-1'],
   ['lis-1', 'fro-1'],
   ['fro-1', 'hameau'],
   ['fro-1', 'aub-1'],

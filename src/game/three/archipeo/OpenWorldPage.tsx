@@ -53,7 +53,7 @@ import { MapLabels } from './MapLabels';
 import { PlacePanel, placeFromParam, placeResume } from './PlacePanel';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
-import { NefSheet, nefLookOf, nefSail } from './NefSheet';
+import { NefSheet, nefLookOf, nefSail, nefStageOf } from './NefSheet';
 import type { VehicleStage } from '../../world/vehicle';
 import { portState } from './portState';
 import { createOpenWorld, type BridgeLayEvents, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
@@ -98,12 +98,14 @@ const missionTitle = (island: string, mission: string) => getBiome(island)?.exer
  */
 export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const plan = planFor(level);
-  // Le 6e seul a l'Escale, la Nef, les Détours, les habitants (leurs commandes, l'entraide, leurs pastilles) et les
-  // scénettes (GD-22, lot 2) : au 5e, la page n'en montre rien, et ses missions se jouent sur l'écran habituel.
+  // Le 6e seul a les Détours, les habitants (leurs commandes, l'entraide, leurs pastilles) et les scénettes de tous ses
+  // lieux (GD-22, lot 2) ; chaque niveau a son lieu de départ et sa Nef (GD-22, lot 4 : la Lisière et le dirigeable).
   const sixth = level === '6e';
   const { biomeId } = useParams();
   const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour, launch } = useBlocland();
   const textes = useTextes();
+  // Les noms du lieu de départ du niveau : l'Escale au 6e, la Lisière au 5e ; ses bâtiments gardent leur nom.
+  const departNames = useMemo(() => (textes.depart ? { ...textes.depart, nom: textes.depart.noms?.[level as '5e'] ?? textes.depart.nom } : undefined), [textes.depart, level]);
   const { settings, speak } = useSettings();
   // La voix de l'arrivée, lue par la scène faite une fois (`onArrive`) : le réglage du moment.
   // Rend vrai si la voix l'a dit : lecture automatique coupée, le lieu reste à nommer.
@@ -489,8 +491,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
 
   // L'Escale (GD-20, lot 2) : ses portes, ses trophées, l'état de la région, la pile, tirés de la sauvegarde.
   useEffect(() => {
-    if (sixth) world.current?.setPort(port);
-  }, [sixth, port, ready]);
+    world.current?.setPort(port);
+  }, [port, ready]);
   // L'adresse d'un lieu (`?lieu=quais&mission=make-ten`, « Ma dernière mission ») : Kéo y est déposé, sa liste s'ouvre, le
   // focus sur la mission de l'adresse si elle est du lieu ; à chaque navigation, même vers la même adresse.
   const jumpTo = useCallback((place: PlaceId) => {
@@ -785,14 +787,14 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // l'arrivée (référent dys).
   const pickFromList = useCallback(
     (id: PlaceId | 'port') => {
-      const name = id === 'port' ? textes.depart?.nom : placeById(id).name;
+      const name = id === 'port' ? departNames?.nom : placeById(id).name;
       if (settings.autoRead && name) {
         speak(frenchTypography(name));
         named.add(id);
       }
       pickOnMap(id);
     },
-    [pickOnMap, settings.autoRead, speak, textes.depart],
+    [pickOnMap, settings.autoRead, speak, departNames],
   );
   const listRef = useRef<HTMLDivElement>(null);
   // La liste ouverte : « Retour » et « Lieux » se tiennent à côté d'elle, jamais dessous (au-dessus du panneau du bas sur
@@ -827,14 +829,15 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     };
     return placeRecord(plan, of);
   }, [plan, state.world.parts]);
-  // La Nef de l'Escale (GD-21) : sa voile vient avec trois lieux achevés (le monde continu n'a pas de Gardiens) ; son
-  // temps, montré sur le ber.
+  // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son dernier temps (la voile au 6e, le gouvernail au 5e) vient avec
+  // autant de lieux achevés que la grille demande de Gardiens (le monde continu n'en a pas) ; son temps, montré sur le ber.
+  const nefStage = nefStageOf(level);
   const achieved = useMemo(() => Object.values(constructions).filter((c) => constructionState(c) === 'restauree').length, [constructions]);
-  const sail = useMemo(() => nefSail(state, achieved), [state, achieved]);
-  const nefLookNow = useMemo(() => nefLookOf(state, sail.kit), [state, sail.kit]);
+  const sail = useMemo(() => nefSail(state, achieved, nefStage), [state, achieved, nefStage]);
+  const nefLookNow = useMemo(() => nefLookOf(state, sail.kit, nefStage), [state, sail.kit, nefStage]);
   useEffect(() => {
-    if (sixth && !departing) world.current?.setNef(nefLookNow);
-  }, [sixth, nefLookNow, departing, ready]);
+    if (!departing) world.current?.setNef(nefLookNow);
+  }, [nefLookNow, departing, ready]);
   // « Partir » : la fiche se ferme, la Nef glisse vers la passe ; à la fin (ou au toucher), le voyage se fait et l'élève
   // arrive en 5e, dans la disposition que choisit la fabrique (le monde ouvert du 5e derrière `?monde=ouvert`, GD-22).
   const departNef = useCallback(
@@ -976,7 +979,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         </div>
         {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
         {mapOpen && !asking && (
-          <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nextPlace?.id ?? null} portName={sixth ? textes.depart?.nom : undefined} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} />
+          <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nextPlace?.id ?? null} portName={departNames?.nom} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} />
         )}
         {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
             le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à
@@ -985,7 +988,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           <>
             <div className="open-world-voile" aria-hidden="true" onClick={list.close} />
             <div ref={listRef} className="open-world-panel open-world-panel-lieux-ouverts">
-              <PlacesSheet rows={placesRows(plan, openPlaces, states, textes.etatsDIle, suggestedCmd ? null : (next?.place.id ?? null), sixth ? textes.depart?.nom : undefined, amenagements)} onPick={pickFromList} onClose={list.close} />
+              <PlacesSheet rows={placesRows(plan, openPlaces, states, textes.etatsDIle, suggestedCmd ? null : (next?.place.id ?? null), departNames?.nom, amenagements)} onPick={pickFromList} onClose={list.close} />
             </div>
           </>
         )}
@@ -1001,10 +1004,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         )}
         {/* Le panneau ouvert de l'Escale (GD-20, lot 2) : comme une question, il masque les accès directs, Réglages, la
             Carte et « Y aller » ; un seul panneau à la fois. */}
-        {sixth && panel && !playing && (panel === 'nef' || textes.depart) && (
+        {panel && !playing && (panel === 'nef' || departNames) && (
           <div ref={panelRef} className={`open-world-panel open-world-panel-${panel}`}>
             {panel === 'nef' ? (
               <NefSheet
+                stage={nefStage}
                 kit={sail.kit}
                 missing={sail.missing}
                 onDepart={departNef}
@@ -1015,7 +1019,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                 onClose={closePanel}
               />
             ) : (
-              <PortPanels panel={panel} names={textes.depart!} onGo={goPort} onNef={nefLookNow === 4 ? undefined : () => setPanel('nef')} onClose={closePanel} />
+              <PortPanels panel={panel} names={departNames!} onGo={goPort} onNef={nefLookNow === 4 ? undefined : () => setPanel('nef')} onClose={closePanel} />
             )}
           </div>
         )}

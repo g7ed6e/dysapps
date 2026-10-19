@@ -5,16 +5,20 @@ import { describe, expect, it, vi } from 'vitest';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
+import { voyageId } from '../../world/archipelago';
 import { planCells } from '../../world/plans';
 import { VEHICLE_STAGES } from '../../world/vehicle';
-import { NefSheet } from './NefSheet';
+import { NefSheet, nefStageOf } from './NefSheet';
 
 const stage = VEHICLE_STAGES[0];
 
-function show(kit: boolean, missing: number) {
+function show(kit: boolean, missing: number, building = stage) {
   localStorage.clear();
   localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo', autoRead: false, sounds: false }));
-  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, world: { parts: { [stage.id]: planCells(stage).map((c) => c.key) }, links: [] } }));
+  // Au 5e, le voilier est parti du 6e : le dirigeable se construit à la Lisière.
+  const before = VEHICLE_STAGES.filter((s) => s.stage < building.stage);
+  const parts = Object.fromEntries([...before, building].map((s) => [s.id, planCells(s).map((c) => c.key)]));
+  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, world: { parts, links: before.map((s) => voyageId(s.to)) } }));
   const onDepart = vi.fn();
   const onMap = vi.fn();
   render(
@@ -22,7 +26,7 @@ function show(kit: boolean, missing: number) {
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <NefSheet kit={kit} missing={missing} onDepart={onDepart} onMap={onMap} onClose={() => {}} />
+            <NefSheet stage={building} kit={kit} missing={missing} onDepart={onDepart} onMap={onMap} onClose={() => {}} />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -45,5 +49,12 @@ describe('la fiche de la Nef du monde continu (GD-21)', () => {
     const { onDepart } = show(true, 0);
     await userEvent.click(screen.getByRole('button', { name: /Partir/ }));
     expect(onDepart).toHaveBeenCalledWith(stage);
+  });
+
+  it('au 5e, le dirigeable attend son gouvernail (GD-22, lot 4)', () => {
+    const dirigeable = nefStageOf('5e');
+    expect(dirigeable.stage).toBe(2);
+    show(false, 2, dirigeable);
+    expect(screen.getByText(/La Nef a tous ses blocs ! Achève encore 2 lieux pour fixer son gouvernail\./)).toBeTruthy();
   });
 });

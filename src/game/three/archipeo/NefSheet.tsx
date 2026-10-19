@@ -14,30 +14,32 @@ import { planStatus, type GameState } from '../../engine';
 import { EarnLink } from '../../PlanSection';
 import { useVehicleBuilder } from '../../useVehicleBuilder';
 import { BlockIcon } from '../../Voxel';
-import { voyageId } from '../../world/archipelago';
+import { voyageId, type ArchipelagoId } from '../../world/archipelago';
 import { nefLook, type NefLook } from '../../world/continu/nef';
 import { planCells } from '../../world/plans';
 import { earnIsland, whereToEarn } from '../../world/uses';
 import { VEHICLE_NAME, VEHICLE_STAGES, kitReady, stageWords, type VehicleStage } from '../../world/vehicle';
 import { MissionSheet, useOpenPanel } from './PortPanels';
 
-/** Le port de la Nef du 6e (`VEHICLE_STAGES[0].biome`) : son chantier est à l'Escale du monde continu. */
-const NEF_PORT: BiomeId = VEHICLE_STAGES[0].biome;
+/**
+ * La forme de la Nef qui se construit au lieu de départ d'un niveau du monde continu : le voilier au 6e (son chantier à
+ * l'Escale), le dirigeable au 5e (à la Lisière, GD-22, lot 4).
+ */
+export const nefStageOf = (level: ArchipelagoId): VehicleStage => VEHICLE_STAGES.find((s) => s.from === level) ?? VEHICLE_STAGES[0];
 
 /**
- * La voile de la Nef du monde continu, qui n'a pas de Gardiens : elle arrive avec autant de lieux achevés que la grille
- * demande de Gardiens rallumés (trois en 6e), ou avec les Gardiens rallumés dans la grille. `missing` : les lieux qu'il
+ * Le dernier temps de la Nef du monde continu, qui n'a pas de Gardiens : il arrive avec autant de lieux achevés que la
+ * grille demande de Gardiens rallumés (trois en 6e pour la voile, deux en 5e pour le gouvernail : règle de GD-21,
+ * décision du mainteneur du 19 octobre 2026), ou avec les Gardiens rallumés dans la grille. `missing` : les lieux qu'il
  * reste à achever.
  */
-export function nefSail(state: GameState, achieved: number): { kit: boolean; missing: number } {
-  const stage = VEHICLE_STAGES[0];
+export function nefSail(state: GameState, achieved: number, stage: VehicleStage = VEHICLE_STAGES[0]): { kit: boolean; missing: number } {
   const kit = kitReady(stage, state.progress) || achieved >= stage.guardians;
   return { kit, missing: kit ? 0 : stage.guardians - achieved };
 }
 
 /** Le temps de la Nef dans une sauvegarde : la coque (ses cases du bas), toutes les cases, la voile, le voyage fait. */
-export function nefLookOf(state: GameState, kit: boolean): NefLook {
-  const stage = VEHICLE_STAGES[0];
+export function nefLookOf(state: GameState, kit: boolean, stage: VehicleStage = VEHICLE_STAGES[0]): NefLook {
   const done = new Set(state.world.parts[stage.id] ?? []);
   const hull = planCells(stage, stage.cells.filter((c) => c.z === 0)).every((c) => done.has(c.key));
   return nefLook({ hull, all: planStatus(state, stage).complete, sail: kit, departed: state.world.links.includes(voyageId(stage.to)) });
@@ -63,12 +65,20 @@ function PastillesDesTemps({ look }: { look: NefLook }) {
   );
 }
 
-/** Ce que dit la Nef qui a tous ses blocs et attend sa voile : ce qu'il reste à faire, jamais un manque. */
-export function nefWaitLabel(missing: number): string {
-  return `La Nef a tous ses blocs ! Achève encore ${missing} lieu${missing > 1 ? 'x' : ''} pour hisser sa voile.`;
+/**
+ * Ce qu'attend la Nef qui a tous ses blocs, par forme : la voile du voilier, le gouvernail du dirigeable (GD-22, lot 4 :
+ * le troisième temps du 5e est le gouvernail, même si la grille nomme son kit « l'enveloppe »).
+ */
+const LAST_TEMPS: Readonly<Record<1 | 2 | 3, string>> = { 1: 'hisser sa voile', 2: 'fixer son gouvernail', 3: 'monter ses hélices' };
+
+/** Ce que dit la Nef qui a tous ses blocs et attend son dernier temps : ce qu'il reste à faire, jamais un manque. */
+export function nefWaitLabel(missing: number, stage: 1 | 2 | 3 = 1): string {
+  return `La Nef a tous ses blocs ! Achève encore ${missing} lieu${missing > 1 ? 'x' : ''} pour ${LAST_TEMPS[stage]}.`;
 }
 
 interface Props {
+  /** La forme qui se construit au lieu de départ du niveau (`nefStageOf`). */
+  stage: VehicleStage;
   /** La voile est arrivée (assez de lieux achevés, ou de Gardiens rallumés dans la grille). */
   kit: boolean;
   /** Les lieux qu'il reste à achever pour la voile. */
@@ -82,11 +92,12 @@ interface Props {
 
 const cap = (s: string) => `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
 
-export function NefSheet({ kit, missing, onDepart, onMap, onClose }: Props) {
+export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClose }: Props) {
   useOpenPanel(onClose);
   const { state } = useBlocland();
   const textes = useTextes();
-  const ship = useVehicleBuilder(NEF_PORT, { kit, waiting: nefWaitLabel(missing) });
+  const port: BiomeId = building.biome;
+  const ship = useVehicleBuilder(port, { kit, waiting: nefWaitLabel(missing, building.stage) });
   const { stage, status, launch } = ship;
   const titre = cap(VEHICLE_NAME);
   // Le focus va sur le bouton d'action à l'ouverture (consultant UX UI), « Poser » ou « Partir ».
@@ -112,11 +123,11 @@ export function NefSheet({ kit, missing, onDepart, onMap, onClose }: Props) {
   const ou = manque ? (earnIsland(manque[0])?.name ?? whereToEarn(manque[0])) : '';
   const nom = stageWords(stage, textes.libelles.formesDeLaNef).name;
   const etape = `${cap(nom)}`;
-  const look = nefLookOf(state, kit);
+  const look = nefLookOf(state, kit, building);
   const phrase = ready
     ? `${titre} est prête : pars vers les ${textes.archipels[stage.to]} quand tu veux.`
     : waiting
-      ? nefWaitLabel(missing)
+      ? nefWaitLabel(missing, stage.stage)
       : manque
         ? `${status.done} blocs posés sur ${status.total}. Il manque ${blockCount(manque[0], manquants)}, à gagner dans ${ou}.`
         : `${status.done} blocs posés sur ${status.total}.`;
@@ -146,7 +157,7 @@ export function NefSheet({ kit, missing, onDepart, onMap, onClose }: Props) {
           </p>
           {manque && (
             <p className="world-fiche-phrase">
-              {blockCount(manque[0], manquants)} <EarnLink block={manque[0]} here={NEF_PORT} />.
+              {blockCount(manque[0], manquants)} <EarnLink block={manque[0]} here={port} />.
             </p>
           )}
           {waiting && (

@@ -7,7 +7,9 @@
 // galerie, un socle de pierre par place et un trophée par succès ; le lieu d'assemblage, son établi, sa grue, son
 // râtelier dont la pile montre le stock. Aucun texte, aucun chiffre (rien à lire dans la 3D) ; les emblèmes des matières
 // et les trophées se distinguent par leur forme, l'accent de couleur ne porte jamais seul le sens. Tout est réuni dans
-// le maillage des lieux : aucun appel de plus. Code pur.
+// le maillage des lieux : aucun appel de plus. Le même dessin sert au lieu de départ de chaque niveau (GD-22, lot 4) :
+// un site (`PortSite`) dit son repère, son pavage, sa hauteur, son quai et ses matières ; l'Escale du 6e (`ESCALE`), la
+// Lisière du 5e (./lisiere.ts). Code pur.
 import { FacetBuilder, placeFacets, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { PORT, PORT_PAVING, PORT_QUAY_SPOT, PORT_SUBJECTS, portLevel, type PortSpot, type PortSubject } from './plan6e';
@@ -38,7 +40,69 @@ export interface PortShown {
   assembling: boolean;
 }
 
-const C = {
+/** Un rectangle du repère d'un site. */
+interface Rect {
+  x0: number;
+  x1: number;
+  z0: number;
+  z1: number;
+}
+
+/** Le repère d'un site : son origine, son cap, et le passage du repère au monde et retour (plan6e.ts, `PORT`). */
+export interface PortFrame {
+  readonly origin: Vec2;
+  readonly yaw: number;
+  toWorld(lx: number, lz: number): Vec2;
+  toLocal(p: Vec2): Vec2;
+}
+
+/** Les matières d'un site : la pierre, les murs, l'ardoise, le bois, les ferrures, la lampe. */
+export interface PortColors {
+  stone: number;
+  stoneSide: number;
+  coping: number;
+  plinth: number;
+  white: number;
+  wall: number;
+  frame: number;
+  slate: number;
+  paleSlate: number;
+  shingle: number;
+  wood: number;
+  darkWood: number;
+  newWood: number;
+  door: number;
+  inside: number;
+  socle: number;
+  bollard: number;
+  lamp: number;
+  habitant: readonly number[];
+  skin: number;
+}
+
+/**
+ * Un lieu de départ (GD-22, lot 4) : son repère, son pavage (le quai et la place), la hauteur de sa pierre, l'endroit
+ * du quai où Kéo se tient, ses matières, et ce que son quai porte (le chaperon, les bittes, la lanterne de la région,
+ * la ligne des habitants, les barques), dans son repère. Les bâtiments sont à la même place dans tous les repères.
+ */
+export interface PortSite {
+  frame: PortFrame;
+  paving: { quay: Rect; square: Rect };
+  level(lz: number): number;
+  quaySpot: readonly [number, number];
+  colors: PortColors;
+  quay: {
+    /** Le chaperon clair au bout du quai (`z0`), là où il avance dans l'eau. */
+    coping: boolean;
+    bollards: readonly (readonly [number, number])[];
+    lamp: readonly [number, number];
+    habitants: { z: number; xs: readonly number[] };
+    /** Les barques : leur milieu, à flot ; leur long côté suit `z` du repère. */
+    boats: readonly (readonly [number, number])[];
+  };
+}
+
+const C: PortColors = {
   stone: 0xd2cab8,
   stoneSide: 0xb9b2a3,
   coping: 0xe2dccd,
@@ -58,14 +122,32 @@ const C = {
   // L'intérieur d'une porte ouverte : un brun chaud, moyen, jamais sombre.
   inside: 0x9c8a70,
   socle: 0xd8d1c2,
-  // La matière des trophées : une pierre claire, la même pour tous.
-  trophy: 0xece4d0,
   bollard: 0x6f8089,
   // La lanterne allumée : la couleur de la lampe du monde (places.ts, `LAMP_COLOR`), que la vue dessine sans ombre.
   lamp: 0xffd36b,
   habitant: [0x8c9f7a, 0xb5866a, 0x7f93a8],
   skin: 0xd9b38c,
-} as const;
+};
+
+/** La matière des trophées : une pierre claire, la même pour tous, à chaque niveau (les succès ne sont pas d'un niveau). */
+const TROPHY_STONE = 0xece4d0;
+
+/** L'Escale du 6e (GD-20, lot 2) : son repère et son pavage (plan6e.ts), sa pierre claire, son bois. */
+export const ESCALE: PortSite = {
+  frame: PORT,
+  paving: PORT_PAVING,
+  level: portLevel,
+  quaySpot: PORT_QUAY_SPOT,
+  colors: C,
+  quay: {
+    coping: true,
+    bollards: [-7.5, -4.5, -1.5].map((z) => [PORT_PAVING.quay.x1 - 0.35, z] as const),
+    lamp: [PORT_PAVING.quay.x1 - 0.5, PORT_PAVING.quay.z0 + 0.6],
+    habitants: { z: 11.6, xs: [5.5, 15, 30] },
+    // Deux barques amarrées le long du quai, à l'est (l'ouest reste à la Nef).
+    boats: [-6.8, -3.2].map((z) => [PORT_PAVING.quay.x1 + 1.0, z] as const),
+  },
+};
 
 /** L'accent de chaque matière (emblème, fanions) : jamais seul pour dire la matière, la forme le dit. */
 const SUBJECT_ACCENT: Readonly<Record<PortSubject, number>> = { french: 0x3f78b5, maths: 0xc8553d, english: 0x3f9a6b };
@@ -80,7 +162,8 @@ const DEEP = -1.8;
 /** Le dessus des socles des bâtiments : la pierre de la place devant leurs façades. */
 const FACADE_Z = 6.5;
 const BACK_Z = 1.5;
-const PLINTH = portLevel(FACADE_Z);
+/** Le dessus des socles d'un site. */
+const plinthOf = (s: PortSite) => s.level(FACADE_Z);
 
 /** La galerie des succès : sa largeur d'arcade, son bord est (elle s'allonge vers le quai), ses arcades au départ et au plus. */
 const GALLERY = { east: 16, arcade: 3, base: 2, most: 4 } as const;
@@ -114,43 +197,45 @@ export function galleryArcades(n: number): number {
 }
 
 /** La place du trophée `i` dans le repère du Port : l'arcade (de l'est vers le quai), le rang (devant, puis le gradin), la colonne. */
-export function trophySlot(i: number): { x: number; y: number; z: number } {
+export function trophySlot(i: number, site: PortSite = ESCALE): { x: number; y: number; z: number } {
   const arcade = Math.floor(i / 6);
   const row = Math.floor((i % 6) / 3);
   const col = i % 3;
   const mid = GALLERY.east - GALLERY.arcade * (arcade + 0.5);
-  return { x: mid + (col - 1) * 0.85, y: PLINTH + (row ? 1.0 : 0.6), z: row ? 3.3 : 5.0 };
+  return { x: mid + (col - 1) * 0.85, y: plinthOf(site) + (row ? 1.0 : 0.6), z: row ? 3.3 : 5.0 };
 }
 
-/** Un dessus de pierre qui suit la pente du Port (`portLevel`), du bord `z0` au bord `z1`, et ses flancs jusqu'à `bottom`. */
-function paving(b: FacetBuilder, r: { x0: number; x1: number; z0: number; z1: number }, bottom: number): void {
+/** Un dessus de pierre qui suit la hauteur du site (`level`), du bord `z0` au bord `z1`, et ses flancs jusqu'à `bottom`. */
+function paving(b: FacetBuilder, s: PortSite, r: Rect, bottom: number): void {
+  const { level, colors: C } = s;
   const cut = Math.min(r.z1, Math.max(r.z0, 1));
   const zs = [r.z0, ...(cut > r.z0 && cut < r.z1 ? [cut] : []), r.z1];
   for (let k = 0; k + 1 < zs.length; k++) {
     const a = zs[k],
       c = zs[k + 1];
-    b.quad([r.x0, portLevel(a), a], [r.x0, portLevel(c), c], [r.x1, portLevel(c), c], [r.x1, portLevel(a), a], C.stone);
+    b.quad([r.x0, level(a), a], [r.x0, level(c), c], [r.x1, level(c), c], [r.x1, level(a), a], C.stone);
     // Les flancs est et ouest.
-    b.quad([r.x0, bottom, a], [r.x0, bottom, c], [r.x0, portLevel(c), c], [r.x0, portLevel(a), a], C.stoneSide);
-    b.quad([r.x1, bottom, c], [r.x1, bottom, a], [r.x1, portLevel(a), a], [r.x1, portLevel(c), c], C.stoneSide);
+    b.quad([r.x0, bottom, a], [r.x0, bottom, c], [r.x0, level(c), c], [r.x0, level(a), a], C.stoneSide);
+    b.quad([r.x1, bottom, c], [r.x1, bottom, a], [r.x1, level(a), a], [r.x1, level(c), c], C.stoneSide);
   }
-  b.quad([r.x1, bottom, r.z0], [r.x0, bottom, r.z0], [r.x0, portLevel(r.z0), r.z0], [r.x1, portLevel(r.z0), r.z0], C.stoneSide);
-  b.quad([r.x0, bottom, r.z1], [r.x1, bottom, r.z1], [r.x1, portLevel(r.z1), r.z1], [r.x0, portLevel(r.z1), r.z1], C.stoneSide);
+  b.quad([r.x1, bottom, r.z0], [r.x0, bottom, r.z0], [r.x0, level(r.z0), r.z0], [r.x1, level(r.z0), r.z0], C.stoneSide);
+  b.quad([r.x0, bottom, r.z1], [r.x1, bottom, r.z1], [r.x1, level(r.z1), r.z1], [r.x0, level(r.z1), r.z1], C.stoneSide);
 }
 
-/** Le quai et la place : la pierre, le chaperon clair du quai, trois bittes d'amarrage sur son flanc est. */
-function quayAndSquare(b: FacetBuilder): void {
-  const { quay, square } = PORT_PAVING;
-  paving(b, quay, DEEP);
-  paving(b, square, SINK);
-  const top = portLevel(quay.z0);
-  b.box({ x: 0, y: top, z: quay.z0 + 0.15 }, [quay.x1 - quay.x0, 0.12, 0.3], C.coping);
-  for (const z of [-7.5, -4.5, -1.5]) b.prism({ x: quay.x1 - 0.35, y: top, z }, 0.2, 0.17, 0.45, 6, C.bollard);
+/** Le quai et la place : la pierre, le chaperon clair du quai (à l'Escale), les bittes d'amarrage. */
+function quayAndSquare(b: FacetBuilder, s: PortSite): void {
+  const { quay, square } = s.paving;
+  const C = s.colors;
+  paving(b, s, quay, DEEP);
+  paving(b, s, square, SINK);
+  const top = s.level(quay.z0);
+  if (s.quay.coping) b.box({ x: (quay.x0 + quay.x1) / 2, y: top, z: quay.z0 + 0.15 }, [quay.x1 - quay.x0, 0.12, 0.3], C.coping);
+  for (const [x, z] of s.quay.bollards) b.prism({ x, y: s.level(z), z }, 0.2, 0.17, 0.45, 6, C.bollard);
 }
 
 /** Le socle d'un bâtiment, du dessous du sol au niveau de la place devant sa façade. */
-function plinth(b: FacetBuilder, x0: number, x1: number): void {
-  b.box({ x: (x0 + x1) / 2, y: SINK, z: (BACK_Z + FACADE_Z) / 2 }, [x1 - x0, PLINTH - SINK, FACADE_Z - BACK_Z], C.plinth, C.stone);
+function plinth(b: FacetBuilder, s: PortSite, x0: number, x1: number): void {
+  b.box({ x: (x0 + x1) / 2, y: SINK, z: (BACK_Z + FACADE_Z) / 2 }, [x1 - x0, plinthOf(s) - SINK, FACADE_Z - BACK_Z], s.colors.plinth, s.colors.stone);
 }
 
 /** Un arc surbaissé entre deux points de même hauteur, en trois pièces (les reins et la clé). */
@@ -170,11 +255,13 @@ function arch(b: FacetBuilder, x0: number, x1: number, y: number, z: number, ris
  * travée de plus l'allonge d'une arcade vers le quai, entière, d'un coup ; rien ne monte sur son toit. Un socle vide
  * reste une pierre nue.
  */
-function gallery(b: FacetBuilder, trophies: readonly TrophyAccent[]): void {
+function gallery(b: FacetBuilder, s: PortSite, trophies: readonly TrophyAccent[]): void {
+  const C = s.colors;
+  const PLINTH = plinthOf(s);
   const n = galleryArcades(trophies.length);
   const x1 = GALLERY.east;
   const x0 = x1 - n * GALLERY.arcade;
-  plinth(b, x0 - 0.2, x1 + 0.2);
+  plinth(b, s, x0 - 0.2, x1 + 0.2);
   const top = PLINTH + 2.2;
   b.box({ x: (x0 + x1) / 2, y: PLINTH, z: BACK_Z + 0.45 }, [x1 - x0, 3.0, 0.4], C.wall);
   for (let k = 0; k <= n; k++) b.box({ x: x1 - k * GALLERY.arcade, y: PLINTH, z: FACADE_Z - 0.3 }, [0.45, 2.2, 0.45], C.white);
@@ -183,13 +270,13 @@ function gallery(b: FacetBuilder, trophies: readonly TrophyAccent[]): void {
   b.box({ x: (x0 + x1) / 2, y: PLINTH + 3.0, z: (BACK_Z + FACADE_Z) / 2 }, [x1 - x0 + 0.7, 0.28, FACADE_Z - BACK_Z + 0.5], C.paleSlate, C.paleSlate);
   // Les socles : trois devant, trois sur le gradin du fond, par arcade.
   for (let i = 0; i < n * 6; i++) {
-    const s = trophySlot(i);
-    b.box({ x: s.x, y: PLINTH, z: s.z }, [0.55, s.y - PLINTH, 0.55], C.socle);
+    const t = trophySlot(i, s);
+    b.box({ x: t.x, y: PLINTH, z: t.z }, [0.55, t.y - PLINTH, 0.55], C.socle);
   }
   trophies.slice(0, n * 6).forEach((accent, i) => {
-    const s = trophySlot(i);
-    b.box({ x: s.x, y: s.y, z: s.z }, [0.46, 0.05, 0.46], TROPHY_ACCENT[accent]);
-    b.append(placeFacets(trophyShape(i % TROPHY_SHAPES), { x: s.x, y: s.y + 0.05, z: s.z }));
+    const t = trophySlot(i, s);
+    b.box({ x: t.x, y: t.y, z: t.z }, [0.46, 0.05, 0.46], TROPHY_ACCENT[accent]);
+    b.append(placeFacets(trophyShape(i % TROPHY_SHAPES), { x: t.x, y: t.y + 0.05, z: t.z }));
   });
 }
 
@@ -205,7 +292,7 @@ export function trophyShape(kind: number): Facets {
   const known = shapes.get(kind);
   if (known) return known;
   const b = new FacetBuilder();
-  const m = C.trophy;
+  const m = TROPHY_STONE;
   const v = (x: number, y: number) => ({ x, y, z: 0 });
   switch (kind) {
     case 0: // Le coquillage en spirale : trois tours qui montent en se décalant.
@@ -268,7 +355,7 @@ export function trophyShape(kind: number): Facets {
  * dans son repère (le cartouche face au sud) : le livre ouvert sur sa plume (large et bas), le compas ouvert (en A), la
  * rose des vents à quatre branches (en étoile).
  */
-function emblem(b: FacetBuilder, s: PortSubject, x: number, y: number, z: number): void {
+function emblem(b: FacetBuilder, C: PortColors, s: PortSubject, x: number, y: number, z: number): void {
   b.drum({ x, y, z, pitch: Math.PI / 2 }, 0.58, 0.1, 10, C.frame, C.coping);
   const a = SUBJECT_ACCENT[s];
   const f = z + 0.1;
@@ -303,10 +390,12 @@ function emblem(b: FacetBuilder, s: PortSubject, x: number, y: number, z: number
  * porte : fermée (son vantail), ouverte (le vantail rabattu, l'intérieur) avec sa lanterne allumée à côté, puis
  * pavoisée (une guirlande de fanions unis au-dessus de l'arche) ; aucun compteur.
  */
-function school(b: FacetBuilder, doors: PortState['doors'], degree: RegionDegree): void {
+function school(b: FacetBuilder, site: PortSite, doors: PortState['doors'], degree: RegionDegree): void {
+  const C = site.colors;
+  const PLINTH = plinthOf(site);
   const x0 = SCHOOL.x - SCHOOL.width / 2,
     x1 = SCHOOL.x + SCHOOL.width / 2;
-  plinth(b, x0 - 0.2, x1 + 0.2);
+  plinth(b, site, x0 - 0.2, x1 + 0.2);
   b.box({ x: SCHOOL.x, y: PLINTH, z: (BACK_Z + FACADE_Z - 0.2) / 2 + 0.05 }, [SCHOOL.width, SCHOOL.wall, FACADE_Z - BACK_Z - 0.2], C.white, C.wall);
   b.gableRoof({ x: SCHOOL.x, y: PLINTH + SCHOOL.wall, z: (BACK_Z + FACADE_Z) / 2 }, SCHOOL.width + 0.8, FACADE_Z - BACK_Z + 1, 2.6, C.slate, C.white);
   const front = FACADE_Z - 0.2;
@@ -348,16 +437,16 @@ function school(b: FacetBuilder, doors: PortState['doors'], degree: RegionDegree
         b.triangle(tri[0], tri[1], tri[2], SUBJECT_ACCENT[s]);
       }
     }
-    emblem(b, s, x, PLINTH + DOOR.height + DOOR.arch + 1.15, front + 0.05);
+    emblem(b, C, s, x, PLINTH + DOOR.height + DOOR.arch + 1.15, front + 0.05);
   }
-  for (const x of SCHOOL.windows) shutters(b, x, PLINTH + DOOR.height + DOOR.arch + 1.15, front, degree >= 1);
+  for (const x of SCHOOL.windows) shutters(b, C, x, PLINTH + DOOR.height + DOOR.arch + 1.15, front, degree >= 1);
 }
 
 /**
  * Une fenêtre de la façade haute de l'école, entre deux cartouches : ses volets clos tant que la région est abandonnée
  * (le Port endormi), ouverts et rabattus contre le mur dès qu'elle est réactivée (directeur artistique).
  */
-function shutters(b: FacetBuilder, x: number, y: number, front: number, open: boolean): void {
+function shutters(b: FacetBuilder, C: PortColors, x: number, y: number, front: number, open: boolean): void {
   const { width: w, height: h } = WINDOW;
   const bottom = y - h / 2;
   b.box({ x, y: bottom - 0.08, z: front + 0.03 }, [w + 0.2, h + 0.16, 0.06], C.frame, C.coping);
@@ -373,11 +462,13 @@ function shutters(b: FacetBuilder, x: number, y: number, front: number, open: bo
  * l'un, une de l'autre), une grue de bois dehors, côté est, dont la flèche entre sous le toit par le côté ouvert
  * jusqu'au-dessus de l'établi, et le râtelier dont la pile montre le stock (dix madriers au plus).
  */
-function hall(b: FacetBuilder, state: PortState, shown: PortShown): void {
+function hall(b: FacetBuilder, site: PortSite, state: PortState, shown: PortShown): void {
+  const C = site.colors;
+  const PLINTH = plinthOf(site);
   const x0 = HALL.x - HALL.width / 2,
     x1 = HALL.x + HALL.width / 2;
   // Le socle s'étend à l'est sous le pied de la grue.
-  plinth(b, x0 - 0.2, x1 + 1.3);
+  plinth(b, site, x0 - 0.2, x1 + 1.3);
   const top = PLINTH + HALL.posts;
   const midZ = (BACK_Z + FACADE_Z) / 2;
   for (const x of [x0 + 0.3, HALL.x, x1 - 0.3]) for (const z of [BACK_Z + 0.5, FACADE_Z - 0.5]) b.box({ x, y: PLINTH, z }, [0.35, HALL.posts, 0.35], C.wood);
@@ -408,14 +499,14 @@ function hall(b: FacetBuilder, state: PortState, shown: PortShown): void {
   }
   const pile = Math.min(PILE_MOST, Math.max(0, state.pile - (shown.assembling ? 1 : 0)));
   for (let k = 0; k < pile; k++) {
-    const p = rackSlotLocal(k);
+    const p = rackSlotLocal(site, k);
     b.box({ x: p.x, y: p.y, z: p.z }, MADRIER.size, state.recipe.made);
   }
 }
 
 /** La place du madrier `k` sur le râtelier, dans le repère du Port : deux par rang, de bas en haut. */
-function rackSlotLocal(k: number): Vec3 {
-  return { x: RACK.x + (k % 2 ? 0.2 : -0.2), y: PLINTH + RACK.top + Math.floor(k / 2) * MADRIER.size[1], z: (RACK.z0 + RACK.z1) / 2 };
+function rackSlotLocal(site: PortSite, k: number): Vec3 {
+  return { x: RACK.x + (k % 2 ? 0.2 : -0.2), y: plinthOf(site) + RACK.top + Math.floor(k / 2) * MADRIER.size[1], z: (RACK.z0 + RACK.z1) / 2 };
 }
 
 /** Une couleur un peu plus sombre (les flancs d'un bloc, comme `side` de ses deux couleurs). */
@@ -434,47 +525,47 @@ function benchPieces(colors: readonly number[], at: Vec3): Facets {
 }
 
 /** Ce que l'état de la région ajoute au Port, un ajout par degré : la lanterne du quai, des habitants, des barques. */
-function wakes(b: FacetBuilder, degree: RegionDegree): void {
-  const { quay } = PORT_PAVING;
-  const top = portLevel(quay.z0);
+function wakes(b: FacetBuilder, site: PortSite, degree: RegionDegree): void {
+  const C = site.colors;
+  const { lamp, habitants, boats } = site.quay;
   if (degree >= 1) {
-    const at = { x: quay.x1 - 0.5, z: quay.z0 + 0.6 };
+    const top = site.level(lamp[1]);
+    const at = { x: lamp[0], z: lamp[1] };
     b.box({ x: at.x, y: top, z: at.z }, [0.18, 2.2, 0.18], C.bollard);
     b.box({ x: at.x, y: top + 2.2, z: at.z }, [0.36, 0.42, 0.36], C.lamp);
     b.prism({ x: at.x, y: top + 2.62, z: at.z }, 0.3, 0, 0.22, 4, C.bollard);
   }
   if (degree >= 2)
-    // Trois habitants sur la place, au bord sud, loin des portes et du chemin.
-    [5.5, 15, 30].forEach((x, i) => {
-      const z = 11.6;
-      const y = portLevel(z);
-      b.prism({ x, y, z }, 0.36, 0.26, 1.35, 6, C.habitant[i]);
+    // Trois habitants sur la place, loin des portes et du chemin.
+    habitants.xs.forEach((x, i) => {
+      const z = habitants.z;
+      const y = site.level(z);
+      b.prism({ x, y, z }, 0.36, 0.26, 1.35, 6, C.habitant[i % C.habitant.length]);
       b.prism({ x, y: y + 1.35, z }, 0.2, 0.22, 0.28, 6, C.skin);
-      b.prism({ x, y: y + 1.63, z }, 0.22, 0, 0.18, 6, C.habitant[i]);
+      b.prism({ x, y: y + 1.63, z }, 0.22, 0, 0.18, 6, C.habitant[i % C.habitant.length]);
     });
   if (degree >= 3)
-    // Deux barques amarrées le long du quai, à l'est (l'ouest reste à la Nef).
-    for (const z of [-6.8, -3.2]) {
-      const x = quay.x1 + 1.0;
+    // Deux barques amarrées le long du quai.
+    for (const [x, z] of boats) {
       b.box({ x, y: -0.3, z }, [1.1, 0.7, 2.6], C.wood, C.darkWood);
       b.box({ x, y: 0.2, z }, [0.8, 0.1, 0.25], C.newWood);
     }
 }
 
 /** Le Port entier, dans son repère. */
-function portLocal(state: PortState, shown: PortShown): Facets {
+function portLocal(site: PortSite, state: PortState, shown: PortShown): Facets {
   const b = new FacetBuilder();
-  quayAndSquare(b);
-  gallery(b, state.trophies);
-  school(b, state.doors, state.degree);
-  hall(b, state, shown);
-  wakes(b, state.degree);
+  quayAndSquare(b, site);
+  gallery(b, site, state.trophies);
+  school(b, site, state.doors, state.degree);
+  hall(b, site, state, shown);
+  wakes(b, site, state.degree);
   return b.build();
 }
 
-/** Le Port posé dans le monde. */
-export function portFacets(state: PortState, shown: PortShown = { assembling: false }): Facets {
-  return placeFacets(portLocal(state, shown), { x: PORT.origin.x, y: 0, z: PORT.origin.z, yaw: PORT.yaw });
+/** Le Port posé dans le monde (l'Escale, ou le lieu de départ `site` d'un autre niveau). */
+export function portFacets(state: PortState, shown: PortShown = { assembling: false }, site: PortSite = ESCALE): Facets {
+  return placeFacets(portLocal(site, state, shown), { x: site.frame.origin.x, y: 0, z: site.frame.origin.z, yaw: site.frame.yaw });
 }
 
 /** Le Port au plus chargé : toutes ses places prises, ses portes pavoisées, ses barques, sa pile pleine (le budget). */
@@ -486,9 +577,9 @@ export const PORT_WORST: PortState = {
   recipe: { pieces: [0xc29a5f, 0xc29a5f, 0xd98a5a], made: 0xdcba86 },
 };
 
-/** Un point du repère du Port dans le monde, à la hauteur `y`. */
-const world3 = (x: number, y: number, z: number): Vec3 => {
-  const p = PORT.toWorld(x, z);
+/** Un point du repère d'un site dans le monde, à la hauteur `y`. */
+const world3 = (site: PortSite, x: number, y: number, z: number): Vec3 => {
+  const p = site.frame.toWorld(x, z);
   return { x: p.x, y, z: p.z };
 };
 
@@ -497,8 +588,8 @@ const world3 = (x: number, y: number, z: number): Vec3 => {
  * l'école (toute la largeur de son tiers de façade), la galerie, le lieu d'assemblage (des zones larges, jamais un
  * détail à viser), ou le reste du Port (sa fiche) ; rien hors du Port.
  */
-export function portTouch(p: Vec2): PortSpot | 'fiche' | null {
-  const l = PORT.toLocal(p);
+export function portTouch(p: Vec2, site: PortSite = ESCALE): PortSpot | 'fiche' | null {
+  const l = site.frame.toLocal(p);
   const inFront = l.z >= BACK_Z - 0.5 && l.z <= FACADE_Z + 2;
   if (inFront && Math.abs(l.x - SCHOOL.x) <= SCHOOL.width / 2 + 0.3) {
     let best: PortSubject = PORT_SUBJECTS[0];
@@ -507,58 +598,71 @@ export function portTouch(p: Vec2): PortSpot | 'fiche' | null {
   }
   if (inFront && l.x >= GALLERY.east - GALLERY.most * GALLERY.arcade - 0.3 && l.x <= GALLERY.east + 0.3) return 'succes';
   if (inFront && Math.abs(l.x - HALL.x) <= HALL.width / 2 + 0.3) return 'chantier';
-  const { quay, square } = PORT_PAVING;
-  const near = (r: { x0: number; x1: number; z0: number; z1: number }) => l.x >= r.x0 - 1 && l.x <= r.x1 + 1 && l.z >= r.z0 - 1 && l.z <= r.z1 + 1;
+  const { quay, square } = site.paving;
+  const near = (r: Rect) => l.x >= r.x0 - 1 && l.x <= r.x1 + 1 && l.z >= r.z0 - 1 && l.z <= r.z1 + 1;
   return near(quay) || near(square) || (l.z >= BACK_Z - 0.5 && l.z <= FACADE_Z && l.x >= square.x0 && l.x <= square.x1) ? 'fiche' : null;
 }
 
-/** Le cap de Kéo à un endroit du Port : face à sa façade, ou, au quai, face à la caméra. */
-export function portHeading(spot: PortSpot): number {
-  return spot === 'quai' ? Math.PI : PORT.yaw;
+/**
+ * Le cap de Kéo à un endroit du Port : face à sa façade, ou, au quai, face à la caméra (`viewYaw`, le cap de la caméra
+ * à l'arrivée au quai : au nord à l'Escale).
+ */
+export function portHeading(spot: PortSpot, site: PortSite = ESCALE, viewYaw = 0): number {
+  return spot === 'quai' ? viewYaw + Math.PI : site.frame.yaw;
 }
 
 /** Ce que la caméra garde en vue pendant le panneau d'un endroit : le haut de sa porte, la galerie, l'établi, Kéo au quai. */
-export function portSubject(spot: PortSpot, trophies = 0): Vec3 {
-  if (spot === 'quai') return world3(PORT_QUAY_SPOT[0], portLevel(PORT_QUAY_SPOT[1]) + 1.2, PORT_QUAY_SPOT[1]);
+export function portSubject(spot: PortSpot, trophies = 0, site: PortSite = ESCALE): Vec3 {
+  const PLINTH = plinthOf(site);
+  if (spot === 'quai') return world3(site, site.quaySpot[0], site.level(site.quaySpot[1]) + 1.2, site.quaySpot[1]);
   if (spot === 'succes') {
     const n = galleryArcades(trophies);
-    return world3(GALLERY.east - (n * GALLERY.arcade) / 2, PLINTH + 1.3, 4.5);
+    return world3(site, GALLERY.east - (n * GALLERY.arcade) / 2, PLINTH + 1.3, 4.5);
   }
-  if (spot === 'chantier') return world3(HALL.x, PLINTH + 1.4, 4.5);
-  return world3(doorX(spot), PLINTH + 2.0, FACADE_Z);
+  if (spot === 'chantier') return world3(site, HALL.x, PLINTH + 1.4, 4.5);
+  return world3(site, doorX(spot), PLINTH + 2.0, FACADE_Z);
 }
 
 /**
- * Les lignes de toit du Port, côté place, d'un bout à l'autre (dans le monde) : le bas du toit de l'école, celui de la
- * galerie (allongée au plus), le faîte du pignon de la halle. L'étiquette de la marque ne descend jamais sous elles :
- * elle ne passe ni sur un cartouche, ni sur une porte (directeur artistique).
+ * Les lignes de toit d'un lieu de départ, côté place, d'un bout à l'autre (dans le monde) : le bas du toit de l'école,
+ * celui de la galerie (allongée au plus), le faîte du pignon de la halle. L'étiquette de la marque ne descend jamais
+ * sous elles : elle ne passe ni sur un cartouche, ni sur une porte (directeur artistique).
  */
-export const PORT_ROOFLINES: readonly (readonly [Vec3, Vec3])[] = [
-  [world3(SCHOOL.x - SCHOOL.width / 2 - 0.4, PLINTH + SCHOOL.wall, FACADE_Z + 0.5), world3(SCHOOL.x + SCHOOL.width / 2 + 0.4, PLINTH + SCHOOL.wall, FACADE_Z + 0.5)],
-  [world3(GALLERY.east - GALLERY.most * GALLERY.arcade - 0.35, PLINTH + 3.0, FACADE_Z + 0.25), world3(GALLERY.east + 0.35, PLINTH + 3.0, FACADE_Z + 0.25)],
-  [world3(HALL.x - HALL.width / 2 - 0.3, PLINTH + HALL.posts + HALL.ridge, FACADE_Z + 0.45), world3(HALL.x + HALL.width / 2 + 0.3, PLINTH + HALL.posts + HALL.ridge, FACADE_Z + 0.45)],
-];
+export function portRooflines(site: PortSite): readonly (readonly [Vec3, Vec3])[] {
+  const PLINTH = plinthOf(site);
+  return [
+    [world3(site, SCHOOL.x - SCHOOL.width / 2 - 0.4, PLINTH + SCHOOL.wall, FACADE_Z + 0.5), world3(site, SCHOOL.x + SCHOOL.width / 2 + 0.4, PLINTH + SCHOOL.wall, FACADE_Z + 0.5)],
+    [world3(site, GALLERY.east - GALLERY.most * GALLERY.arcade - 0.35, PLINTH + 3.0, FACADE_Z + 0.25), world3(site, GALLERY.east + 0.35, PLINTH + 3.0, FACADE_Z + 0.25)],
+    [world3(site, HALL.x - HALL.width / 2 - 0.3, PLINTH + HALL.posts + HALL.ridge, FACADE_Z + 0.45), world3(site, HALL.x + HALL.width / 2 + 0.3, PLINTH + HALL.posts + HALL.ridge, FACADE_Z + 0.45)],
+  ];
+}
 
-/** Sur la Carte, le point de l'Escale : au-dessus du toit de l'école. */
-export const PORT_MAP_POINT: Vec3 = world3(SCHOOL.x, PLINTH + SCHOOL.wall + 3.4, (BACK_Z + FACADE_Z) / 2);
+/** Les lignes de toit de l'Escale. */
+export const PORT_ROOFLINES = portRooflines(ESCALE);
+
+/** Sur la Carte, le point d'un lieu de départ : au-dessus du toit de l'école. */
+export const portMapPoint = (site: PortSite): Vec3 => world3(site, SCHOOL.x, plinthOf(site) + SCHOOL.wall + 3.4, (BACK_Z + FACADE_Z) / 2);
+
+/** Sur la Carte, le point de l'Escale. */
+export const PORT_MAP_POINT: Vec3 = portMapPoint(ESCALE);
 
 /**
  * La scénette d'assemblage (pure) : les pièces de la recette sur l'établi, puis le bloc assemblé, à poser dans le
  * monde ; d'où il part (l'établi) et où il arrive (la place suivante du râtelier, `k` = la pile d'avant).
  */
-export function assemblyScene(state: PortState): { pieces: Facets; made: Facets; from: Vec3; to: Vec3 } {
+export function assemblyScene(state: PortState, site: PortSite = ESCALE): { pieces: Facets; made: Facets; from: Vec3; to: Vec3 } {
   const bench = { x: 0, y: 0, z: 0 };
   const madrier = new FacetBuilder();
   // Le madrier de la teinte du bloc assemblé (celle de son icône), toutes ses faces : la halle garde son bois sombre.
   madrier.box({ x: 0, y: 0, z: 0, yaw: Math.PI / 2 }, MADRIER.size, state.recipe.made);
   // Les pièces et le madrier, dans le repère de l'établi, tournés comme le Port (la vue les déplace en bloc).
-  const turn = (f: Facets) => placeFacets(f, { x: 0, y: 0, z: 0, yaw: PORT.yaw });
-  const slot = rackSlotLocal(Math.min(PILE_MOST - 1, Math.max(0, state.pile - 1)));
+  const turn = (f: Facets) => placeFacets(f, { x: 0, y: 0, z: 0, yaw: site.frame.yaw });
+  const slot = rackSlotLocal(site, Math.min(PILE_MOST - 1, Math.max(0, state.pile - 1)));
   // Le madrier part couché le long de l'établi, et arrive couché en travers du râtelier : un quart de tour en route.
   return {
     pieces: turn(benchPieces(state.recipe.pieces, bench)),
     made: turn(madrier.build()),
-    from: world3(BENCH.x, PLINTH + BENCH.top, BENCH.z),
-    to: world3(slot.x, slot.y, slot.z),
+    from: world3(site, BENCH.x, plinthOf(site) + BENCH.top, BENCH.z),
+    to: world3(site, slot.x, slot.y, slot.z),
   };
 }

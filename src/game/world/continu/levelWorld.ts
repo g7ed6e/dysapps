@@ -5,12 +5,16 @@
 // `sixth`. Code pur.
 import type { Facets } from './facets';
 import type { Vec2 } from './geometry';
-import type { OpenWorldLevel } from './levelPlan';
+import { LISIERE_SITE, LISIERE_VIEW, lisiereDecorFacets } from './lisiere';
+import { NEF_6E, type NefSite } from './nef';
+import { NEF_5E } from './nef5e';
+import { ESCALE, type PortSite } from './port';
+import type { OpenWorldLevel, PlaceId } from './levelPlan';
 import type { Network } from './network';
 import { NETWORK_5E, RIBBONS_5E, pathRibbons5e } from './paths5e';
 import { NETWORK_6E, RIBBONS_6E, pathRibbons, type RibbonNet } from './paths';
 import { portFloor } from './plan6e';
-import { TERRAIN_5E } from './plan5e';
+import { TERRAIN_5E, lisiereFloor } from './plan5e';
 import { WATER_TONES, WATER_TONES_5E, seaPixels, seaPixels5e } from './sea';
 import { HEIGHT_LIGHT_5E, HORIZON_COLOR, HORIZON_COLOR_5E, LIGHT, LIGHT_5E, SHADOW_DIR, SHADOW_DIR_5E, SKY_OF, type HeightLight, type SceneLight, type SkyStops } from './sky';
 import { buildHeightField, heightOnMesh, type HeightField } from './terrain';
@@ -25,9 +29,28 @@ interface WaterTones {
   readonly night: number;
 }
 
+/** Le lieu de départ d'un niveau : sa place (./port.ts dessine ses bâtiments), sa Nef, la caméra à son quai. */
+export interface Departure {
+  port: PortSite;
+  nef: NefSite;
+  /** La pierre du lieu de départ sous un point du monde, ou rien (lue à chaque image : rien n'y est créé). */
+  floor(x: number, z: number): number | null;
+  /** Le cap de la caméra à l'arrivée au quai (0 : le nord). */
+  viewYaw: number;
+  /** Le cap de la caméra devant une façade (une porte, la galerie, l'assemblage). */
+  facadeYaw: number;
+  /**
+   * Le haut que le regard levé cadre quand Kéo se tient au quai (au 5e, le sommet de la Montée, au fond : directeur
+   * artistique, lot 4) ; rien au 6e.
+   */
+  lookAt: PlaceId | null;
+  /** Ce qui ne change jamais autour du lieu de départ (au 5e, la graine géante et la lumière du Phare), ou rien. */
+  decor(): Facets | null;
+}
+
 /** Ce que la vue lit d'un niveau. */
 export interface LevelWorld {
-  /** Le monde est-il celui du 6e (l'Escale, la Nef, les Détours, la faune, les scénettes, les remises) ? */
+  /** Le monde est-il celui du 6e (les Détours, la faune, les habitants, les remises) ? */
   readonly sixth: boolean;
   /** La carte de hauteurs (faite une fois, gardée). */
   field(): HeightField;
@@ -51,7 +74,22 @@ export interface LevelWorld {
   readonly shadowDir: Vec2;
   /** La lumière et le brouillard par la hauteur (au 5e, ses deux étages) ; rien au 6e, à plat. */
   readonly heightLight: HeightLight | null;
+  /** Son lieu de départ et sa Nef. */
+  readonly departure: Departure;
 }
+
+const DEPARTURE_6E: Departure = { port: ESCALE, nef: NEF_6E, floor: portFloor, viewYaw: 0, facadeYaw: 0, lookAt: null, decor: () => null };
+
+let decor5e: Facets | null = null;
+const DEPARTURE_5E_SITE: Departure = {
+  port: LISIERE_SITE,
+  nef: NEF_5E,
+  floor: lisiereFloor,
+  viewYaw: LISIERE_VIEW.yaw,
+  facadeYaw: LISIERE_SITE.frame.yaw,
+  lookAt: 'montee',
+  decor: () => (decor5e ??= lisiereDecorFacets()),
+};
 
 const WORLD_6E: LevelWorld = {
   sixth: true,
@@ -68,12 +106,13 @@ const WORLD_6E: LevelWorld = {
   horizon: HORIZON_COLOR,
   shadowDir: SHADOW_DIR,
   heightLight: null,
+  departure: DEPARTURE_6E,
 };
 
 const WORLD_5E: LevelWorld = {
   sixth: false,
   field: buildHeightField5e,
-  ground: (field) => (x, z) => groundOn5e(field, x, z),
+  ground: (field) => (x, z) => lisiereFloor(x, z) ?? groundOn5e(field, x, z),
   net: NETWORK_5E,
   ribbons: RIBBONS_5E,
   pathFacets: pathRibbons5e,
@@ -85,6 +124,7 @@ const WORLD_5E: LevelWorld = {
   horizon: HORIZON_COLOR_5E,
   shadowDir: SHADOW_DIR_5E,
   heightLight: HEIGHT_LIGHT_5E,
+  departure: DEPARTURE_5E_SITE,
 };
 
 /** Ce que la vue lit du niveau `level`. */
