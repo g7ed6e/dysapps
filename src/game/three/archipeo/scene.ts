@@ -666,6 +666,12 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
 }
 
 /**
+ * La lumière du Phare, vers le 6e (GD-22, lot 4 : un point chaud au ras de l'horizon, vu de la Lisière) : la couleur de
+ * la lampe (`LAMP_COLOR`, que rien d'autre ne prend au 5e) ne prend que tant du brouillard du lointain, et se voit au loin.
+ */
+const LAMP_FOG = 0.3;
+
+/**
  * La lumière par la hauteur (GD-22, lot 2, retouche : les deux étages du 5e ; ./world/continu/sky.ts, `HeightLight`),
  * ajoutée au matériau du décor : sous `low`, le soleil affaibli et le ciel renvoyé refroidi (la pénombre sous la
  * canopée) ; au-dessus de `high`, toute la lumière (l'or sur les sommets) ; le brouillard s'éclaircit en hauteur (les
@@ -674,12 +680,6 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
  * lampe du 6e. Quelques lignes de shader après celles de `unshadedLamp`, aucun appel de plus ; le programme a sa propre
  * clé (le 6e garde le sien, inchangé).
  */
-/**
- * La lumière du Phare, vers le 6e (GD-22, lot 4 : un point chaud au ras de l'horizon, vu de la Lisière) : la couleur de
- * la lampe (`LAMP_COLOR`, que rien d'autre ne prend au 5e) ne prend que tant du brouillard du lointain, et se voit au loin.
- */
-const LAMP_FOG = 0.3;
-
 function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight): THREE.MeshLambertMaterial {
   const before = m.onBeforeCompile;
   const lantern = new THREE.Vector3(...linearRgb(COLORS_5E.lantern));

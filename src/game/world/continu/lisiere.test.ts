@@ -91,6 +91,8 @@ describe('Le dirigeable en trois temps', () => {
 
   it('le gréement rangé sur le ponton part quand sa sœur arrive, comme la mue de la grille', () => {
     for (const [piece, sister] of Object.entries(RIG_SISTERS)) expect(NEF_SISTERS[2][sister], piece).toBe(piece);
+    // Et dans l'autre sens : chaque pièce que le dirigeable reprend du voilier (la coque et la lanterne restent) est au gréement.
+    expect(Object.entries(NEF_SISTERS[2]).filter(([part, from]) => part !== from).map(([part]) => part).sort()).toEqual(Object.values(RIG_SISTERS).sort());
     expect(rigShown(1).sort()).toEqual(['mat', 'vergue', 'voile']);
     expect(rigShown(2)).toEqual(['vergue']);
     expect(rigShown(3)).toEqual([]);

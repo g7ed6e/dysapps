@@ -52,7 +52,9 @@ const RIG_PIECES = Object.keys(RIG_SISTERS) as RigPiece[];
 /** Le temps où une pièce du gréement part : celui de la partie neuve qui la reprend. */
 function rigLeaves(piece: RigPiece): 1 | 2 | 3 {
   const sister: string = RIG_SISTERS[piece];
-  return ([1, 2, 3] as const).find((k) => (NEF_5E_TEMPS[k] as readonly string[]).includes(sister)) ?? 2;
+  const temps = ([1, 2, 3] as const).find((k) => (NEF_5E_TEMPS[k] as readonly string[]).includes(sister));
+  if (temps === undefined) throw new Error(`nef5e : la sœur ${sister} de ${piece} n'est dans aucun temps`);
+  return temps;
 }
 
 /** Les pièces du gréement encore rangées sur le ponton à un temps (aucune après le départ). */
