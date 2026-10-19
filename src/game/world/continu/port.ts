@@ -97,8 +97,9 @@ export interface PortSite {
     bollards: readonly (readonly [number, number])[];
     lamp: readonly [number, number];
     habitants: { z: number; xs: readonly number[] };
-    /** Les barques : leur milieu, à flot ; leur long côté suit `z` du repère. */
+    /** Les barques : leur milieu, à flot ; leur long côté suit `z` du repère, tourné de `boatYaw` (0 par défaut). */
     boats: readonly (readonly [number, number])[];
+    boatYaw?: number;
   };
 }
 
@@ -547,8 +548,9 @@ function wakes(b: FacetBuilder, site: PortSite, degree: RegionDegree): void {
   if (degree >= 3)
     // Deux barques amarrées le long du quai.
     for (const [x, z] of boats) {
-      b.box({ x, y: -0.3, z }, [1.1, 0.7, 2.6], C.wood, C.darkWood);
-      b.box({ x, y: 0.2, z }, [0.8, 0.1, 0.25], C.newWood);
+      const yaw = site.quay.boatYaw ?? 0;
+      b.box({ x, y: -0.3, z, yaw }, [1.1, 0.7, 2.6], C.wood, C.darkWood);
+      b.box({ x, y: 0.2, z, yaw }, [0.8, 0.1, 0.25], C.newWood);
     }
 }
 

@@ -11,15 +11,16 @@ import { useTextes } from '../../../universes';
 import { BLOCKS, blockCount, type BiomeId, type BlockId } from '../../biomes';
 import { useBlocland } from '../../BloclandContext';
 import { planStatus, type GameState } from '../../engine';
-import { EarnLink } from '../../PlanSection';
+import { EarnLink, useEarnWhere } from '../../PlanSection';
 import { useVehicleBuilder } from '../../useVehicleBuilder';
 import { BlockIcon } from '../../Voxel';
 import { voyageId, type ArchipelagoId } from '../../world/archipelago';
 import { nefLook, type NefLook } from '../../world/continu/nef';
 import { planCells } from '../../world/plans';
-import { earnIsland, whereToEarn } from '../../world/uses';
 import { VEHICLE_NAME, VEHICLE_STAGES, kitReady, stageWords, type VehicleStage } from '../../world/vehicle';
 import { MissionSheet, useOpenPanel } from './PortPanels';
+
+const cap = (s: string) => `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
 
 /**
  * La forme de la Nef qui se construit au lieu de départ d'un niveau du monde continu : le voilier au 6e (son chantier à
@@ -45,36 +46,47 @@ export function nefLookOf(state: GameState, kit: boolean, stage: VehicleStage = 
   return nefLook({ hull, all: planStatus(state, stage).complete, sail: kit, departed: state.world.links.includes(voyageId(stage.to)) });
 }
 
-/** Ce qu'il reste à achever, en mots courts, sous les signes de la fiche : « 1 lieu à achever. » */
-const nefWaitShort = (missing: number): string => `${missing} lieu${missing > 1 ? 'x' : ''} à achever.`;
-
 /**
  * Les trois pastilles des temps de la Nef du monde continu (la coque, le mât, la voile ; GD-21) : fait (pleine, avec une
  * coche), en cours (pleine), à venir (un anneau) ; l'état se lit à la forme, pas à la couleur seule. Les pastilles des
  * formes de la grille (`PastillesDeLaNef`) compteraient le voilier, le dirigeable et l'aéronef : ici, un seul voyage.
+ * Au dirigeable, la troisième porte le gouvernail en croix tant qu'il n'est pas fixé (référent dys, retouche du lot 4).
  */
-function PastillesDesTemps({ look }: { look: NefLook }) {
+function PastillesDesTemps({ look, form }: { look: NefLook; form: number }) {
   return (
     <span className="signe nef-pastilles" aria-hidden="true">
       {([1, 2, 3] as const).map((t) => (
         <span key={t} className={`nef-pastille${t <= look ? ' faite' : t === look + 1 ? ' en-cours' : ''}`}>
-          {t <= look && <Icon name="check" />}
+          {t <= look ? <Icon name="check" /> : t === 3 && form === 2 && <RudderCross />}
         </span>
       ))}
     </span>
   );
 }
 
-/**
- * Ce qu'attend la Nef qui a tous ses blocs, par forme : la voile du voilier, le gouvernail du dirigeable (GD-22, lot 4 :
- * le troisième temps du 5e est le gouvernail, même si la grille nomme son kit « l'enveloppe »).
- */
-const LAST_TEMPS: Readonly<Record<1 | 2 | 3, string>> = { 1: 'hisser sa voile', 2: 'fixer son gouvernail', 3: 'monter ses hélices' };
-
-/** Ce que dit la Nef qui a tous ses blocs et attend son dernier temps : ce qu'il reste à faire, jamais un manque. */
-export function nefWaitLabel(missing: number, stage: 1 | 2 | 3 = 1): string {
-  return `La Nef a tous ses blocs ! Achève encore ${missing} lieu${missing > 1 ? 'x' : ''} pour ${LAST_TEMPS[stage]}.`;
+/** Le gouvernail du dirigeable, vu de l'arrière : une croix de quatre ailerons (un dessin simple, à la couleur du texte). */
+function RudderCross() {
+  return (
+    <svg className="nef-gouvernail" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 3v18M3 12h18" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" fill="none" />
+    </svg>
+  );
 }
+
+/**
+ * Ce que dit la Nef qui a tous ses blocs et attend son dernier temps (la voile du voilier, le gouvernail du dirigeable) :
+ * une seule idée, ce qu'il reste à faire, jamais un manque (référent dys, retouche du lot 4) ; la même à l'écran, au
+ * lecteur d'écran et à la voix.
+ */
+export function nefWaitLabel(missing: number): string {
+  return `Encore ${missing} lieu${missing > 1 ? 'x' : ''} à achever.`;
+}
+
+/** Ce que dit la Nef prête : sa destination seule (référent dys et consultant UX UI, retouche du lot 4). */
+export const nefReadyLabel = (to: string): string => `Prête. Direction : les ${to}.`;
+
+/** L'annonce du départ, au lecteur d'écran et à la voix (référent dys, retouche du lot 4). */
+export const NEF_LEAVES = `${cap(VEHICLE_NAME)} part.`;
 
 interface Props {
   /** La forme qui se construit au lieu de départ du niveau (`nefStageOf`). */
@@ -90,14 +102,15 @@ interface Props {
   onClose(): void;
 }
 
-const cap = (s: string) => `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
 
 export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClose }: Props) {
   useOpenPanel(onClose);
   const { state } = useBlocland();
   const textes = useTextes();
   const port: BiomeId = building.biome;
-  const ship = useVehicleBuilder(port, { kit, waiting: nefWaitLabel(missing, building.stage) });
+  const vers = textes.archipels[building.to];
+  const ship = useVehicleBuilder(port, { kit, waiting: nefWaitLabel(missing), ready: nefReadyLabel(vers) });
+  const earnWhere = useEarnWhere();
   const { stage, status, launch } = ship;
   const titre = cap(VEHICLE_NAME);
   // Le focus va sur le bouton d'action à l'ouverture (consultant UX UI), « Poser » ou « Partir ».
@@ -120,16 +133,16 @@ export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClo
   // Le premier bloc qui manque (dans l'inventaire aussi) : où le gagner.
   const manque = !status.complete ? ((Object.entries(status.missing) as [BlockId, number][]).find(([b, n]) => n > (state.stock[b] ?? 0)) ?? null) : null;
   const manquants = manque ? manque[1] - (state.stock[manque[0]] ?? 0) : 0;
-  const ou = manque ? (earnIsland(manque[0])?.name ?? whereToEarn(manque[0])) : '';
+  const ou = manque ? earnWhere(manque[0]) : '';
   const nom = stageWords(stage, textes.libelles.formesDeLaNef).name;
   const etape = `${cap(nom)}`;
   const look = nefLookOf(state, kit, building);
   const phrase = ready
-    ? `${titre} est prête : pars vers les ${textes.archipels[stage.to]} quand tu veux.`
+    ? nefReadyLabel(textes.archipels[stage.to])
     : waiting
-      ? nefWaitLabel(missing, stage.stage)
+      ? nefWaitLabel(missing)
       : manque
-        ? `${status.done} blocs posés sur ${status.total}. Il manque ${blockCount(manque[0], manquants)}, à gagner dans ${ou}.`
+        ? `${status.done} blocs posés sur ${status.total}. Il manque ${blockCount(manque[0], manquants)}, à gagner ${ou}.`
         : `${status.done} blocs posés sur ${status.total}.`;
   // En signes tant qu'on construit ou qu'elle attend sa voile (le moins de texte possible, consultant UX UI) ; une
   // phrase quand elle est prête.
@@ -138,9 +151,10 @@ export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClo
     <MissionSheet id="panneau-nef" className="nef-sheet" icon="ship" title={titre} onClose={onClose}>
       {enSignes ? (
         <>
-          <p className="visually-hidden">{frenchTypography(`${etape}. ${phrase}`)}</p>
+          {/* Une seule idée quand elle attend son dernier temps (référent dys) ; sinon la forme, puis la jauge. */}
+          <p className="visually-hidden">{frenchTypography(waiting ? phrase : `${etape}. ${phrase}`)}</p>
           <p className="world-fiche-phrase fiche-signes" aria-hidden="true">
-            <PastillesDesTemps look={look} />{' '}
+            <PastillesDesTemps look={look} form={building.stage} />{' '}
             <span className="signe">
               <Icon name="cube" /> {status.done}/{status.total}
             </span>{' '}
@@ -162,13 +176,13 @@ export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClo
           )}
           {waiting && (
             <p className="world-fiche-phrase" aria-hidden="true">
-              <Syllabified text={frenchTypography(nefWaitShort(missing))} />
+              <Syllabified text={frenchTypography(phrase)} />
             </p>
           )}
         </>
       ) : (
         <p className="world-fiche-phrase">
-          <PastillesDesTemps look={look} /> <Syllabified text={frenchTypography(phrase)} />
+          <PastillesDesTemps look={look} form={building.stage} /> <Syllabified text={frenchTypography(phrase)} />
         </p>
       )}
       <div className="nef-sheet-actions">

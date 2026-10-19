@@ -4,6 +4,7 @@
 // Carte ; la Carte a le point « port » de la Lisière (lot 4), et met « en haut » aux lieux du plateau ; tout le décor prend le
 // brouillard, sauf le ciel, qui est le lointain lui-même, et la silhouette de Kéo, qui doit se lire au loin.
 import * as THREE from 'three';
+import { levelWorld } from '../../world/continu/levelWorld';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { linkedLands } from '../../world/continu/lands';
 import { placeRecord, planFor } from '../../world/continu/levelPlan';
@@ -173,9 +174,9 @@ describe('La scène du 5e', () => {
     expect(shader.fragmentShader).toContain('mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) )');
     expect(shader.fragmentShader).not.toContain('#include <fog_fragment>');
     expect(shader.fragmentShader).toContain('lanternColor');
-    // La lumière du Phare (lot 4), de la couleur de la lampe du 6e : le brouillard du lointain ne l'efface qu'à peine.
-    expect(shader.fragmentShader).toContain('fogFactor *= LAMP_FOG');
-    expect(shader.fragmentShader).toMatch(/#define LAMP_FOG 0\.\d+/);
+    // Les couleurs peu voilées (lot 4, retouche) : la lumière du Phare et sa tour, le mur et le panache, une ligne chacune.
+    expect(shader.fragmentShader.match(/fogFactor \*= 0\.\d+;/g)).toHaveLength(levelWorld('5e').thinFog.length);
+    expect(shader.fragmentShader).toContain('fogFactor *= 0.12;');
     // La lampe du 6e et la lanterne du 5e, puis le morceau de Three.js, une seule fois.
     expect(shader.fragmentShader.split('#include <opaque_fragment>')).toHaveLength(2);
     expect(Object.keys(shader.uniforms)).toEqual(expect.arrayContaining(['heightLow', 'heightHigh', 'heightSunLow', 'heightTintLow', 'heightFog', 'lanternColor', 'lampColor']));

@@ -50,10 +50,11 @@ import { constructionState, placeConstruction, posedShapes } from './constructio
 import { posedAmenagements } from './amenagements';
 import { gridLand, gridLands, openWorldLands, playedIslands } from './landLinks';
 import { MapLabels } from './MapLabels';
-import { PlacePanel, placeFromParam, placeResume } from './PlacePanel';
+import { PlacePanel, earnPlacesOf, placeFromParam, placeResume } from './PlacePanel';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
-import { NefSheet, nefLookOf, nefSail, nefStageOf } from './NefSheet';
+import { NEF_LEAVES, NefSheet, nefLookOf, nefSail, nefStageOf } from './NefSheet';
+import { EarnPlaces } from '../../PlanSection';
 import type { VehicleStage } from '../../world/vehicle';
 import { portState } from './portState';
 import { createOpenWorld, type BridgeLayEvents, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
@@ -531,7 +532,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       const r = el.getBoundingClientRect();
       // En colonne à gauche (un écran bas) : la part à sa droite ; en bas : la part au-dessus.
       const column = r.top - s.top < 8 && r.width < s.width * 0.8;
-      w.frame(column ? { left: r.right - s.left, top: 0, width: s.right - r.right, height: s.height } : { left: 0, top: 0, width: s.width, height: Math.max(1, r.top - s.top) }, lieu?.place);
+      w.frame(column ? { left: r.right - s.left, top: 0, width: s.right - r.right, height: s.height } : { left: 0, top: 0, width: s.width, height: Math.max(1, r.top - s.top) }, panel === 'nef' ? 'nef' : lieu?.place);
     };
     const observer = new ResizeObserver(measure);
     observer.observe(stage);
@@ -846,6 +847,9 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       if (!w) return;
       setPanel(null);
       setDeparting(true);
+      // L'annonce du départ (référent dys, retouche du lot 4) : courte, dans la zone du lecteur d'écran, et dite par la
+      // voix avec la lecture automatique.
+      if (settings.autoRead) speak(NEF_LEAVES);
       w.departNef(() => {
         const r = launch(stage, sail.kit);
         setDeparting(false);
@@ -854,7 +858,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         navigate(`/adventure/${r.to}`, { replace: true });
       });
     },
-    [launch, launchVoyage, navigate, sail.kit],
+    [launch, launchVoyage, navigate, sail.kit, settings.autoRead, speak],
   );
   // Les aménagements posés de chaque lieu (GD-20, point 4, lot L0) : les petites constructions livrées, la même sauvegarde.
   const amenagements = useMemo(() => posedAmenagements(state.world.parts), [state.world.parts]);
@@ -940,10 +944,15 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // « Livrer », « Donner » ou « Apporter » dans la bulle : le geste suggéré est celui de l'habitant où se tient Kéo.
   const deliverHere = Boolean(suggestedCmd && here === suggestedCmd.place);
 
+  // Les renvois à une île (« à gagner dans… », la fiche de la Nef, l'Entrepôt) disent le lieu du plan qui reprend ses
+  // missions, et y mènent (consultant d'Archipéo, retouche du lot 4 : chaque cadre nomme ce qu'il montre).
+  const earnPlaces = useMemo(() => earnPlacesOf(plan), [plan]);
+
   // Une question ou une remise : la scène seule, ni marque, ni accès directs, ni panneau.
   const playing = Boolean(asking) || Boolean(remise) || departing;
 
   return (
+    <EarnPlaces.Provider value={earnPlaces}>
     <div className="world-page open-world">
       {/* `data-said` : la phrase du pont est écrite (sur un petit écran, la marque se masque le temps qu'elle l'est). */}
       <div className="world-stage" data-scene data-said={saidShown && !playing ? 'oui' : undefined} ref={stageRef}>
@@ -1173,8 +1182,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         <p role="status" className="visually-hidden">
           {cabinSaid.text}
         </p>
+        <p role="status" className="visually-hidden">
+          {departing ? NEF_LEAVES : ''}
+        </p>
       </div>
     </div>
+    </EarnPlaces.Provider>
   );
 }
 

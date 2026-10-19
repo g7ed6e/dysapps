@@ -3,7 +3,7 @@ import { EMPTY_STATE, type GameState } from '../../engine';
 import { voyageId } from '../../world/archipelago';
 import { planCells } from '../../world/plans';
 import { VEHICLE_STAGES } from '../../world/vehicle';
-import { nefLookOf, nefSail, nefWaitLabel } from './NefSheet';
+import { NEF_LEAVES, nefLookOf, nefReadyLabel, nefSail, nefWaitLabel } from './NefSheet';
 
 const stage = VEHICLE_STAGES[0];
 const withParts = (keys: string[], links: string[] = EMPTY_STATE.world.links): GameState => ({ ...EMPTY_STATE, world: { ...EMPTY_STATE.world, parts: { [stage.id]: keys }, links } });
@@ -15,8 +15,10 @@ describe('la Nef du monde continu (GD-21)', () => {
   });
 
   it('dit ce qu’il reste à faire, jamais un manque', () => {
-    expect(nefWaitLabel(1)).toBe('La Nef a tous ses blocs ! Achève encore 1 lieu pour hisser sa voile.');
-    expect(nefWaitLabel(2)).toMatch(/2 lieux/);
+    expect(nefWaitLabel(1)).toBe('Encore 1 lieu à achever.');
+    expect(nefWaitLabel(2)).toBe('Encore 2 lieux à achever.');
+    expect(nefReadyLabel('Anciens Ateliers')).toBe('Prête. Direction : les Anciens Ateliers.');
+    expect(NEF_LEAVES).toBe('La Nef part.');
   });
 
   it('lit son temps dans la sauvegarde de la grille', () => {
@@ -28,5 +30,14 @@ describe('la Nef du monde continu (GD-21)', () => {
     expect(nefLookOf(withParts(all), false)).toBe(2);
     expect(nefLookOf(withParts(all), true)).toBe(3);
     expect(nefLookOf(withParts(all, [...EMPTY_STATE.world.links, voyageId(stage.to)]), true)).toBe(4);
+  });
+
+  it('au 5e, la nacelle est là dès l’arrivée : la première pastille est faite, rien n’est encore posé (UX 3, voulu)', () => {
+    const dirigeable = VEHICLE_STAGES[1];
+    // La nacelle est reprise du voilier (`kept`) : le dirigeable n'a aucune case à poser au pied de son plan.
+    expect(dirigeable.cells.filter((c) => c.z === 0)).toHaveLength(0);
+    expect(nefLookOf(EMPTY_STATE, false, dirigeable)).toBe(1);
+    // Au 6e, rien posé, rien de fait.
+    expect(nefLookOf(EMPTY_STATE, false, stage)).toBe(0);
   });
 });

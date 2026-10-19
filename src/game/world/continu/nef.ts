@@ -295,6 +295,8 @@ export interface NefFlight {
   /** Le déplacement de l'obstacle, à plat. */
   shiftX: number;
   shiftZ: number;
+  /** L'ouverture de la brèche : chaque sommet de l'obstacle glisse d'autant en `x`, dans son sens (`obstacleSides`). */
+  open: number;
 }
 
 /**
@@ -322,6 +324,15 @@ export interface NefSite {
   /** Le départ : sa durée, le temps après la sortie de l'image où il finit, et la Nef à la fraction `u` (rempli dans `out`). */
   seconds: number;
   outOfView: number;
+  /**
+   * Le sens de glissement de chaque sommet de l'obstacle quand la brèche s'ouvre (−1, 0 ou 1 ; au 6e, aucun : le banc
+   * glisse d'un bloc).
+   */
+  obstacleSides?(): Float32Array;
+  /** La fraction du temps avant laquelle le départ ne finit pas (l'obstacle s'ouvre jusque-là ; au 6e, 0). */
+  obstacleDone: number;
+  /** Au-delà de cette distance à la caméra, la Nef n'est plus qu'un point : le départ finit comme si elle était sortie (au 6e, jamais). */
+  pointBeyond: number;
   flight(u: number, out: NefFlight): NefFlight;
 }
 
@@ -342,6 +353,8 @@ export const NEF_6E: NefSite = {
   touched: nefTouched,
   seconds: NEF_DEPARTURE.seconds,
   outOfView: NEF_DEPARTURE.outOfView,
+  obstacleDone: 0,
+  pointBeyond: Infinity,
   flight: (u, out) => {
     const d = nefDeparture(u);
     out.x = d.x;
@@ -350,6 +363,7 @@ export const NEF_6E: NefSite = {
     out.yaw = d.yaw;
     out.shiftX = -d.bancShift;
     out.shiftZ = 0;
+    out.open = 0;
     return out;
   },
 };

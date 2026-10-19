@@ -4303,6 +4303,15 @@ figure.class-table {
   height: 0.95em;
   color: var(--surface, #fff);
 }
+/* Le gouvernail en croix du dirigeable, sur la troisième pastille : à la couleur du texte dans l'anneau, au fond du
+   panneau sur la pastille pleine (en cours). */
+.nef-pastille .nef-gouvernail {
+  width: 0.8em;
+  height: 0.8em;
+}
+.nef-pastille.en-cours .nef-gouvernail {
+  color: var(--surface, #fff);
+}
 /* Le nom d'un lieu dans la ligne du haut ne se coupe pas en fin de ligne : il passe entier à la ligne suivante (il ne
    se coupe que s'il ne tient pas seul sur une ligne). */
 .signe-voisin {

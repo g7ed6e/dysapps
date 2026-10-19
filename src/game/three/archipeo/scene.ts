@@ -27,7 +27,7 @@ import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/contin
 import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { hasScenette, placeById, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
-import { levelWorld, type LevelWorld } from '../../world/continu/levelWorld';
+import { levelWorld, type LevelWorld, type ThinFog } from '../../world/continu/levelWorld';
 import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from '../../world/continu/mist5e';
 import { pathMapEdges5e } from '../../world/continu/paths5e';
 import { COLORS_5E } from '../../world/continu/plan5e';
@@ -205,9 +205,10 @@ export interface OpenWorld {
   /**
    * La part de l'écran que laisse un panneau ouvert (en pixels, `null` : tout l'écran) : la caméra y garde ce que le
    * panneau concerne (la porte, la galerie, l'établi ; `place`, le lieu dont la fiche est ouverte ; pour la fiche d'une
-   * terre fermée, l'un de ses lieux : le pont à rebâtir, si Kéo se tient devant), sans bouger (un décalage de l'image).
+   * terre fermée, l'un de ses lieux : le pont à rebâtir, si Kéo se tient devant ; `'nef'`, la Nef sur son ber, pour sa
+   * fiche), sans bouger (un décalage de l'image).
    */
-  frame(free: { left: number; top: number; width: number; height: number } | null, place?: PlaceId): void;
+  frame(free: { left: number; top: number; width: number; height: number } | null, place?: PlaceId | 'nef'): void;
   /**
    * La scénette d'assemblage, au retour d'une question réussie : les pièces de l'établi se joignent en un bloc, que la
    * grue pose sur le râtelier ; un toucher la passe, d'un coup avec « Réduire les animations ». `onAssembled` dit sa fin.
@@ -455,6 +456,8 @@ const LOCK_LIFT = 1.6;
 const BRIDGE_AIM = 0.6;
 /** Sous un panneau ouvert, la caméra garde dans la part libre le lieu à cette hauteur au-dessus de son pied. */
 const FRAMED_PLACE_HEIGHT = 2;
+/** La fiche de la Nef ouverte : la caméra garde dans la part libre ce point au-dessus de son ber (la nacelle et le bas de l'enveloppe). */
+const NEF_FRAMED_HEIGHT = 2.5;
 /** La fiche d'une terre fermée garde son pont dans la part libre quand Kéo se tient à moins de tant d'unités de lui. */
 const FRAMED_BRIDGE_NEAR = 12;
 /** Le bout de la caméra qui suit Kéo, et celui de la Carte (l'île entière, de haut), en unités. */
@@ -666,10 +669,18 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
 }
 
 /**
- * La lumière du Phare, vers le 6e (GD-22, lot 4 : un point chaud au ras de l'horizon, vu de la Lisière) : la couleur de
- * la lampe (`LAMP_COLOR`, que rien d'autre ne prend au 5e) ne prend que tant du brouillard du lointain, et se voit au loin.
+ * Les couleurs peu voilées (./world/continu/levelWorld.ts, `thinFog` : au 5e, la lumière du Phare au ras de l'horizon,
+ * le mur et le panache) : chacune ne garde que sa part du brouillard du lointain. Une ligne de shader par couleur, des
+ * constantes (le programme reste celui du 5e).
  */
-const LAMP_FOG = 0.3;
+function thinFogLines(list: readonly ThinFog[]): string {
+  return list
+    .map(({ color, fog }) => {
+      const [r, g, b] = linearRgb(color).map((v) => v.toFixed(5));
+      return `if ( all( lessThan( abs( vColor.rgb - vec3( ${r}, ${g}, ${b} ) ), vec3( 0.004 ) ) ) ) fogFactor *= ${fog.toFixed(2)};`;
+    })
+    .join('\n');
+}
 
 /**
  * La lumière par la hauteur (GD-22, lot 2, retouche : les deux étages du 5e ; ./world/continu/sky.ts, `HeightLight`),
@@ -680,7 +691,7 @@ const LAMP_FOG = 0.3;
  * lampe du 6e. Quelques lignes de shader après celles de `unshadedLamp`, aucun appel de plus ; le programme a sa propre
  * clé (le 6e garde le sien, inchangé).
  */
-function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight): THREE.MeshLambertMaterial {
+function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: readonly ThinFog[]): THREE.MeshLambertMaterial {
   const before = m.onBeforeCompile;
   const lantern = new THREE.Vector3(...linearRgb(COLORS_5E.lantern));
   m.onBeforeCompile = (shader, renderer) => {
@@ -704,9 +715,8 @@ function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight): THREE.Mesh
       .replace('#include <opaque_fragment>', '#ifdef USE_COLOR\nif ( all( lessThan( abs( vColor.rgb - lanternColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n#endif\n#include <opaque_fragment>')
       .replace(
         '#include <fog_fragment>',
-        '#ifdef USE_FOG\nfloat fogFactor = smoothstep( fogNear, fogFar, vFogDepth ) * mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) );\n#ifdef USE_COLOR\nif ( all( lessThan( abs( vColor.rgb - lampColor ), vec3( 0.004 ) ) ) ) fogFactor *= LAMP_FOG;\n#endif\ngl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n#endif',
-      )
-      .replace('#include <common>', `#include <common>\n#define LAMP_FOG ${LAMP_FOG.toFixed(2)}`);
+        `#ifdef USE_FOG\nfloat fogFactor = smoothstep( fogNear, fogFar, vFogDepth ) * mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) );\n#ifdef USE_COLOR\n${thinFogLines(thin)}\n#endif\ngl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n#endif`,
+      );
   };
   m.customProgramCacheKey = () => 'archipeo-hauteur';
   return m;
@@ -830,7 +840,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const rotorAngle = { value: 0 };
   const landMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), vaneAngle, rotorAngle);
   // Au 5e, la lumière par la hauteur (ses deux étages) ; le 6e garde son matériau tel quel.
-  if (world.heightLight) heightLit(landMaterial, world.heightLight);
+  if (world.heightLight) heightLit(landMaterial, world.heightLight, world.thinFog);
   const tiles = createTileStore(field, undefined, world.tiles);
   const nearRing = new RingMesh(landMaterial, 9000);
   const farRing = new RingMesh(landMaterial, 6000);
@@ -1153,9 +1163,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // artistique, lot 4).
   let nefLookNow: NefLook = 0;
   let nefKnown = false;
-  const flight: NefFlight = { x: 0, y: 0, z: 0, yaw: 0, shiftX: 0, shiftZ: 0 };
+  const flight: NefFlight = { x: 0, y: 0, z: 0, yaw: 0, shiftX: 0, shiftZ: 0, open: 0 };
   let nefDrop: { start: number; from: NefLook; to: NefLook } | null = null;
-  let nefTrip: { start: number; done: () => void; outSince: number | null } | null = null;
+  let nefTrip: { start: number; done: () => void; outSince: number | null; farSince: number | null } | null = null;
+  /** Au 5e, le sens de glissement de chaque sommet du mur, pour ouvrir la brèche sans rien refaire (aucun au 6e). */
+  const nefSides = nefSite.obstacleSides?.() ?? null;
   /** La Nef qui part, ramenée à l'écran (sa place projetée). */
   const nefSeen = new THREE.Vector3();
   const nefModelCache = new Map<string, Facets>();
@@ -1560,6 +1572,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // est ouvert), jamais à chaque image.
   let framed: PortSpot | PlaceId | null = startPlace?.id ?? startSpot;
   let frameRect: { left: number; top: number; width: number; height: number } | null = null;
+  /** La fiche de la Nef ouverte : la caméra garde la Nef sur son ber, l'enveloppe comprise (artiste technique 3D, retouche du lot 4). */
+  let framedNef = false;
+  const nefFramed: Vec3 = { x: nefSite.berth.x, y: nefSite.lift.ber + NEF_FRAMED_HEIGHT, z: nefSite.berth.z };
   const subjectOf = (spot: PortSpot | PlaceId): Vec3 | null => {
     const place = PLACES.find((p) => p.id === spot);
     if (!place) return portSubject(spot as PortSpot, port?.trophies.length ?? 0, site);
@@ -1574,20 +1589,21 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     return { x: place.center.x, y: (foot?.y ?? 0) + FRAMED_PLACE_HEIGHT, z: place.center.z };
   };
   const reframe = () => {
-    if (!frameRect || !framed || asked || remise || mapView) return;
+    if (!frameRect || (!framed && !framedNef) || asked || remise || mapView) return;
     followPose(focus, lift, pose, yaw, detourRise(detourView));
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
-    const subject = subjectOf(framed);
+    const subject = framedNef ? nefFramed : framed && subjectOf(framed);
     const p = subject && screenOf(pose, subject, viewW, viewH);
     setShift(p ? { x: Math.round(p.x - (frameRect.left + frameRect.width / 2)), y: Math.round(p.y - (frameRect.top + frameRect.height / 2)) } : { x: 0, y: 0 });
     follow();
   };
-  const setFrame = (free: typeof frameRect, place?: PlaceId) => {
+  const setFrame = (free: typeof frameRect, place?: PlaceId | 'nef') => {
     frameRect = free;
-    if (place) framed = place;
+    framedNef = place === 'nef';
+    if (place && place !== 'nef') framed = place;
     // Le panneau d'un lieu s'ouvre (Kéo y arrive) : le modèle de son habitant se prépare, avant sa scénette.
-    if (place && sixth) habitants.prefetch(place);
+    if (place && place !== 'nef' && sixth) habitants.prefetch(place);
     if (free) return reframe();
     // Pendant une question ou une remise, la caméra garde son cadrage : le panneau se recadre à leur fin.
     if (asked || remise || mapView) return;
@@ -3537,9 +3553,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       done();
       return;
     }
-    nefTrip = { start: performance.now() / 1000, done, outSince: null };
+    nefTrip = { start: performance.now() / 1000, done, outSince: null, farSince: null };
     setGeometry(nefMesh, f);
-    setGeometry(bancMesh, nefBanc);
+    // La brèche (5e) : ses sommets glissent dans une copie (l'obstacle de la Nef reste tel quel, en cache) ; la boîte
+    // englobante s'élargit de l'ouverture la plus grande, l'élimination hors champ reste juste.
+    setGeometry(bancMesh, nefSides ? { ...nefBanc, positions: nefBanc.positions.slice() } : nefBanc);
+    if (nefSides) {
+      const wide = nefSite.flight(1, flight).open;
+      const g = bancMesh.geometry;
+      g.boundingBox?.min.setX(g.boundingBox.min.x - wide);
+      g.boundingBox?.max.setX(g.boundingBox.max.x + wide);
+      if (g.boundingSphere) g.boundingSphere.radius += wide;
+    }
     stepNefTrip(nefTrip.start);
     placeVisibility();
   };
@@ -3562,12 +3587,26 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     nefMesh.position.set(at.x, at.y, at.z);
     nefMesh.rotation.y = at.yaw;
     bancMesh.position.set(at.shiftX, 0, at.shiftZ);
-    // Sortie de l'image (le haut du mât ou de l'enveloppe compris), elle finit son départ peu après.
-    nefSeen.set(at.x, at.y + 2, at.z).project(camera);
+    if (nefSides) {
+      const pos = bancMesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+      const base = nefBanc.positions;
+      const arr = pos.array as Float32Array;
+      for (let i = 0; i < nefSides.length; i++) arr[3 * i] = base[3 * i] + nefSides[i] * at.open;
+      pos.needsUpdate = true;
+    }
+    // Sortie de l'image (le haut du mât ou de l'enveloppe compris), ou si loin qu'elle n'est plus qu'un point : elle
+    // finit son départ peu après, mais jamais avant que son obstacle soit ouvert (au 5e, la brèche).
+    nefSeen.set(at.x, at.y + 2, at.z);
+    const far = nefSeen.distanceTo(camera.position) > nefSite.pointBeyond;
+    nefSeen.project(camera);
     const out = nefSeen.z > 1 || Math.abs(nefSeen.x) > 1.15 || Math.abs(nefSeen.y) > 1.15;
     if (!out) nefTrip.outSince = null;
     else nefTrip.outSince ??= t;
-    if (u >= 1 || (nefTrip.outSince !== null && t - nefTrip.outSince >= nefSite.outOfView)) finishNefTrip();
+    if (!far) nefTrip.farSince = null;
+    else nefTrip.farSince ??= t;
+    const long = (since: number | null) => since !== null && t - since >= nefSite.outOfView;
+    const gone = long(nefTrip.outSince) || long(nefTrip.farSince);
+    if (u >= 1 || (gone && u >= nefSite.obstacleDone)) finishNefTrip();
   };
   const setPlaces = (state: PlacesState, pose?: { place: PlaceId; parts: readonly PartShape[] }): boolean => {
     placesState = state;

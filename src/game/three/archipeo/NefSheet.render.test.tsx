@@ -5,19 +5,24 @@ import { describe, expect, it, vi } from 'vitest';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
-import { voyageId } from '../../world/archipelago';
+import { NOMS_ARCHIPELS, voyageId } from '../../world/archipelago';
 import { planCells } from '../../world/plans';
 import { VEHICLE_STAGES } from '../../world/vehicle';
+import { EarnPlaces, type EarnPlaceOf } from '../../PlanSection';
+import { planFor } from '../../world/continu/levelPlan';
 import { NefSheet, nefStageOf } from './NefSheet';
+import { earnPlacesOf } from './PlacePanel';
 
 const stage = VEHICLE_STAGES[0];
 
-function show(kit: boolean, missing: number, building = stage) {
+function show(kit: boolean, missing: number, building = stage, opts: { drop?: number; earn?: EarnPlaceOf } = {}) {
   localStorage.clear();
   localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo', autoRead: false, sounds: false }));
   // Au 5e, le voilier est parti du 6e : le dirigeable se construit à la Lisière.
   const before = VEHICLE_STAGES.filter((s) => s.stage < building.stage);
   const parts = Object.fromEntries([...before, building].map((s) => [s.id, planCells(s).map((c) => c.key)]));
+  // Des cases du haut pas encore posées (sans blocs en réserve) : il en manque.
+  if (opts.drop) parts[building.id] = parts[building.id].slice(0, -opts.drop);
   localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, world: { parts, links: before.map((s) => voyageId(s.to)) } }));
   const onDepart = vi.fn();
   const onMap = vi.fn();
@@ -26,7 +31,9 @@ function show(kit: boolean, missing: number, building = stage) {
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <NefSheet stage={building} kit={kit} missing={missing} onDepart={onDepart} onMap={onMap} onClose={() => {}} />
+            <EarnPlaces.Provider value={opts.earn ?? null}>
+              <NefSheet stage={building} kit={kit} missing={missing} onDepart={onDepart} onMap={onMap} onClose={() => {}} />
+            </EarnPlaces.Provider>
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -35,18 +42,25 @@ function show(kit: boolean, missing: number, building = stage) {
   return { onDepart, onMap };
 }
 
+/** Le texte d'un élément de la fiche, ses espaces fines et insécables ramenées à des espaces. */
+const said = (selector: string) => document.querySelector(`#panneau-nef ${selector}`)?.textContent?.replace(/[\u00a0\u202f]/g, ' ').trim();
+
 describe('la fiche de la Nef du monde continu (GD-21)', () => {
   it('attend sa voile : le nombre de lieux à achever, et la Carte à la place de l’action', async () => {
     const { onMap, onDepart } = show(false, 1);
-    expect(screen.getByText(/La Nef a tous ses blocs ! Achève encore 1 lieu pour hisser sa voile\./)).toBeTruthy();
+    // Une seule idée, la même à l'écran et au lecteur d'écran (référent dys, retouche du lot 4).
+    expect(said('.visually-hidden')).toBe('Encore 1 lieu à achever.');
+    expect(said('.fiche-signes + .world-fiche-phrase')).toBe('Encore 1 lieu à achever.');
+    expect(document.querySelector('.nef-gouvernail')).toBeNull();
     expect(screen.queryByRole('button', { name: /Partir/ })).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: /Carte/ }));
     expect(onMap).toHaveBeenCalled();
     expect(onDepart).not.toHaveBeenCalled();
   });
 
-  it('prête : « Partir » seulement au toucher du bouton', async () => {
+  it('prête : sa destination seule, et « Partir » seulement au toucher du bouton', async () => {
     const { onDepart } = show(true, 0);
+    expect(said('.world-fiche-phrase')).toBe(`Prête. Direction : les ${NOMS_ARCHIPELS[stage.to]}.`);
     await userEvent.click(screen.getByRole('button', { name: /Partir/ }));
     expect(onDepart).toHaveBeenCalledWith(stage);
   });
@@ -55,6 +69,17 @@ describe('la fiche de la Nef du monde continu (GD-21)', () => {
     const dirigeable = nefStageOf('5e');
     expect(dirigeable.stage).toBe(2);
     show(false, 2, dirigeable);
-    expect(screen.getByText(/La Nef a tous ses blocs ! Achève encore 2 lieux pour fixer son gouvernail\./)).toBeTruthy();
+    expect(said('.visually-hidden')).toBe('Encore 2 lieux à achever.');
+    expect(said('.fiche-signes + .world-fiche-phrase')).toBe('Encore 2 lieux à achever.');
+    // Le gouvernail en croix, sur la troisième pastille, tant qu'il n'est pas fixé.
+    expect(document.querySelectorAll('.nef-pastille')[2].querySelector('.nef-gouvernail')).not.toBeNull();
+  });
+
+  it('au monde ouvert, un bloc qui manque se gagne dans un lieu du plan, nommé comme lui (chaque cadre nomme ce qu’il montre)', () => {
+    const plan = planFor('5e');
+    show(false, 0, nefStageOf('5e'), { drop: 3, earn: earnPlacesOf(plan) });
+    const link = screen.getByRole('link');
+    expect(plan.places.map((p) => p.at)).toContain(link.textContent);
+    expect(link.getAttribute('href')).toMatch(/^\/adventure\?lieu=/);
   });
 });

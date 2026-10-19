@@ -872,6 +872,26 @@ it('à la première arrivée au port, sa créature parle de la Nef, une seule fo
   expect(ligne()).toBeUndefined();
 });
 
+describe('une seule fenêtre à la fois à l’arrivée (retouche du lot 4 du 5e)', () => {
+  beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: true }));
+  afterEach(() => vi.useRealTimers());
+
+  it('au port, le mot de la baleine d’abord, puis la phrase de la créature après « J’ai compris »', async () => {
+    localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+    // Le mot d'arrivée de la baleine pas encore dit (comme à l'arrivée par la Nef dans un nouvel archipel).
+    localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'map-reshaped': true }));
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const ligne = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line') && el.textContent?.includes('la Nef attend ses blocs'));
+    renderAt('/adventure/maths-6e-calculation');
+    expect(ligne()).toBeUndefined();
+    act(() => vi.advanceTimersByTime(1300));
+    const compris = screen.getByRole('button', { name: /J’ai compris/ });
+    expect(ligne()).toBeUndefined();
+    await user.click(compris);
+    expect(ligne()).toBeDefined();
+  });
+});
+
 it('le soleil et la lune ne sont plus dans la barre : le jour est forcé tant que le tutoriel n’est pas vu, puis le réglage décide', () => {
   const premier = renderAt('/adventure');
   expect(screen.getByTestId('lumiere')).toHaveTextContent('jour');

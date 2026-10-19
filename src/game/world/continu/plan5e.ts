@@ -223,55 +223,72 @@ export const UPPER_PLACES_5E: readonly PlaceId5e[] = ['semaphore', 'gaillard', '
  */
 export const DEPARTURE_5E = { node: 'port-quai', at: fromPlan5e([1548, 915]) } as const;
 
+/** La hauteur de la pierre de la Lisière, au-dessus de l'eau : la place, le quai et le ponton, au même niveau. */
+export const LISIERE_LEVEL = 1.2;
+
 /**
  * Le ponton de la Lisière (retouche du lot 2, consultant d'Archipéo : « le quai ne se voit pas ») : des planches sur
  * pieux, du quai vers le cœur de l'anse, au nord, devant Kéo et la caméra au départ ; deux lanternes d'ocre à son bout.
  * `from` : son pied, sur la rive ; `to` : son bout, sur l'eau ; `width` : sa largeur ; `deck` : la hauteur de ses planches
- * au-dessus de l'eau (au lot 4, un rien sous la pierre de la place, `LISIERE_LEVEL`). Un décor : on n'y marche pas.
+ * au-dessus de l'eau, celle de la pierre du quai (retouche du lot 4 : aucune marche entre le quai et le ponton ; deux
+ * centimètres sous elle, pour que la pierre se dessine par-dessus où ils se touchent). Un décor : on n'y marche pas.
  */
-export const QUAY_5E = { from: fromPlan5e([1549, 908]), to: fromPlan5e([1574, 862]), width: 2.6, deck: 1.0 } as const;
+export const QUAY_5E = { from: fromPlan5e([1549, 908]), to: fromPlan5e([1574, 862]), width: 2.6, deck: LISIERE_LEVEL - 0.02 } as const;
 
-/**
- * La Lisière (GD-22, lot 4, intention du directeur artistique du 19 octobre 2026) : une clairière au fond de l'anse,
- * entre le quai et le Hameau. Son repère est celui de l'Escale (plan6e.ts, `PORT`) : les trois bâtiments à la même
- * place (`x` le long de la rangée, de la galerie à l'Entrepôt ; `z` de leur dos vers la place, devant leurs façades),
- * tourné pour que, depuis le quai, le regard qui va vers la Montée passe au-dessus de la place, la rangée à sa gauche,
- * en vue de trois quarts. Le ponton part du bout de la place (`z` 17), le long de `z` : la Nef est à sa gauche, dans
- * l'anse. Kéo arrive au pied du ponton (`LISIERE_QUAY_SPOT`, sur `DEPARTURE_5E`).
- */
-export const LISIERE_QUAY_SPOT: readonly [number, number] = [-6, 15];
-export const LISIERE = (() => {
-  const yaw = 2.65;
+/** Un repère à plat : son origine, son cap ; `toWorld` et `toLocal` passent de l'un à l'autre (`x` puis `z`, comme `PORT`). */
+export interface Frame5e {
+  readonly origin: Vec2;
+  readonly yaw: number;
+  toWorld(lx: number, lz: number): Vec2;
+  toLocal(p: Vec2): Vec2;
+}
+
+/** Le repère tourné de `yaw` où le point local (`kx`, `kz`) tombe sur le pied du ponton (`DEPARTURE_5E`). */
+function frameAtQuay(yaw: number, kx: number, kz: number): Frame5e {
   const c = Math.cos(yaw),
     s = Math.sin(yaw);
-  const [kx, kz] = LISIERE_QUAY_SPOT;
   const at = DEPARTURE_5E.at;
   const origin = { x: at.x - (kx * c + kz * s), z: at.z - (-kx * s + kz * c) };
   return {
     origin,
     yaw,
-    /** Un point du repère de la Lisière dans le monde. */
-    toWorld: (lx: number, lz: number): Vec2 => ({ x: origin.x + lx * c + lz * s, z: origin.z - lx * s + lz * c }),
-    /** Un point du monde dans le repère de la Lisière. */
-    toLocal: (p: Vec2): Vec2 => {
+    toWorld: (lx, lz) => ({ x: origin.x + lx * c + lz * s, z: origin.z - lx * s + lz * c }),
+    toLocal: (p) => {
       const dx = p.x - origin.x,
         dz = p.z - origin.z;
       return { x: dx * c - dz * s, z: dx * s + dz * c };
     },
-  } as const;
-})();
+  };
+}
 
 /**
- * Le pavage de la Lisière, dans son repère : la place de pierre grise devant la rangée, jusqu'au pied du ponton, et le
- * quai où il prend pied. Plate, à `LISIERE_LEVEL` (le sol de la clairière est sous elle).
+ * Le repère de l'anse (celui de la Lisière au lot 4, avant sa retouche) : le ponton y suit `z`, de son pied (`z` 17) à
+ * son bout (`z` 33) ; la Nef, son ber, le gréement déposé, les barques et la graine s'y placent (./lisiere.ts, ./nef5e.ts).
+ */
+export const ANSE_5E = frameAtQuay(2.65, -6, 15);
+
+/**
+ * La Lisière (GD-22, lot 4, intention du directeur artistique du 19 octobre 2026) : une clairière au fond de l'anse,
+ * entre le quai et le Hameau. Son repère est celui de l'Escale (plan6e.ts, `PORT`) : les trois bâtiments à la même
+ * place (`x` le long de la rangée, de la galerie à l'Entrepôt ; `z` de leur dos vers la place, devant leurs façades).
+ * Retouche du lot 4 (directeur artistique, point 4 : depuis le quai, la galerie, la Maison et l'Entrepôt se lisent
+ * chacun, aucun caché à plus d'un tiers) : la rangée court au nord, à l'ouest du quai, ses façades tournées vers l'est
+ * et vers lui ; Kéo arrive au bout du quai, à 18 unités devant elles (`LISIERE_QUAY_SPOT`, sur `DEPARTURE_5E`) ; vue de
+ * la caméra du quai, de trois quarts, la rangée tient à gauche du milieu, la Montée au-dessus de la galerie, plus haute
+ * qu'elle (lot4/tune : les façades vues à 35°, 49° et 57° de face, aucune devant une autre).
+ */
+export const LISIERE_QUAY_SPOT: readonly [number, number] = [0, 25];
+export const LISIERE = frameAtQuay(1.7, LISIERE_QUAY_SPOT[0], LISIERE_QUAY_SPOT[1]);
+
+/**
+ * Le pavage de la Lisière, dans son repère : la place de pierre grise devant la rangée, et le quai qui la prolonge
+ * jusqu'au pied du ponton, bord à bord avec elle, au même niveau (aucune marche). Plats, à `LISIERE_LEVEL` (le sol de
+ * la clairière est sous eux).
  */
 export const LISIERE_PAVING = {
-  quay: { x0: -8.5, x1: -2, z0: 13, z1: 17.6 },
+  quay: { x0: -3, x1: 3, z0: 17, z1: 26.5 },
   square: { x0: -8, x1: 40, z0: 6.5, z1: 17 },
 } as const;
-
-/** La hauteur de la pierre de la Lisière, au-dessus de l'eau. */
-export const LISIERE_LEVEL = 1.2;
 
 const LISIERE_COS = Math.cos(LISIERE.yaw);
 const LISIERE_SIN = Math.sin(LISIERE.yaw);
@@ -305,19 +322,31 @@ export const LISIERE_BUILDINGS = { x0: 3.6, x1: 38.4, z0: 1.1, z1: 6.4 } as cons
 
 /**
  * La clairière de la Lisière (directeur artistique : « la place est dégagée, sans tronc, la canopée se tient à
- * distance ») : la place, la rangée et leurs abords, dans son repère ; la forêt n'y pousse pas.
+ * distance ») : la place, la rangée, le quai et leurs abords, dans son repère ; la forêt n'y pousse pas.
  */
-const LISIERE_CLEARING = { x0: LISIERE_PAVING.square.x0 - 6, x1: LISIERE_PAVING.square.x1 + 7, z0: LISIERE_BUILDINGS.z0 - 7, z1: LISIERE_PAVING.square.z1 + 8 } as const;
+const LISIERE_CLEARING = { x0: LISIERE_PAVING.square.x0 - 6, x1: LISIERE_PAVING.square.x1 + 7, z0: LISIERE_BUILDINGS.z0 - 7, z1: LISIERE_PAVING.quay.z1 + 4 } as const;
 
-/** Ce point du monde est-il dans la clairière de la Lisière ? */
+/**
+ * L'envol de la Nef du 5e (./nef5e.ts) : du ber vers le nord-ouest, au ras des cimes. La canopée s'en tient à
+ * `NEF_TAKEOFF_5E.clear` unités (directeur artistique, retouche du lot 4 : la Nef monte en biais juste au-dessus des
+ * cimes, sans jamais les traverser).
+ */
+export const NEF_TAKEOFF_5E = { from: { x: 204.4, z: 94.4 }, to: { x: 180, z: 64 }, clear: 9 } as const;
+
+/** Ce point du monde est-il dans la clairière de la Lisière, ou sous l'envol de la Nef ? */
 export function inLisiereClearing(p: Vec2): boolean {
   const l = lisiereLocal(p.x, p.z, scratch);
-  return l.x > LISIERE_CLEARING.x0 && l.x < LISIERE_CLEARING.x1 && l.z > LISIERE_CLEARING.z0 && l.z < LISIERE_CLEARING.z1;
+  if (l.x > LISIERE_CLEARING.x0 && l.x < LISIERE_CLEARING.x1 && l.z > LISIERE_CLEARING.z0 && l.z < LISIERE_CLEARING.z1) return true;
+  const { from: a, to: b, clear } = NEF_TAKEOFF_5E;
+  const abx = b.x - a.x,
+    abz = b.z - a.z;
+  const t = Math.max(0, Math.min(1, ((p.x - a.x) * abx + (p.z - a.z) * abz) / (abx * abx + abz * abz)));
+  return Math.hypot(p.x - a.x - abx * t, p.z - a.z - abz * t) < clear;
 }
 
 /** Les nœuds de la Lisière, dans son repère : le quai, le bout de la place, puis devant chaque façade, comme à l'Escale. */
 const LISIERE_NODES: readonly { id: string; at: readonly [number, number] }[] = [
-  { id: 'port-place', at: [-3, 10.5] },
+  { id: 'port-place', at: [0, 15] },
   { id: portNode('succes'), at: [13, 9.5] },
   { id: portNode('french'), at: [19.3, 9.5] },
   { id: portNode('maths'), at: [22.5, 9.5] },
