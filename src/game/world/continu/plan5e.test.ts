@@ -463,7 +463,8 @@ describe('Le budget du 5e', () => {
     const triangles = cost.reduce((s, c) => s + c.triangles, 0);
     const calls = cost.reduce((s, c) => s + c.calls, 0);
     expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles * 0.8);
-    expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls - 5);
+    // Quatre appels de réserve depuis la faune (piste « Ambiance par terre », 19 octobre 2026), cinq avant.
+    expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls - 4);
     const map = mapCost5e();
     expect(map.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
     expect(map.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);

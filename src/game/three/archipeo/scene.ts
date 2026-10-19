@@ -1167,7 +1167,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const critters = allCritterForms();
   const groundAt = (p: Vec2) => ground(p.x, p.z);
   const groups = (sixth ? wildlifeGroups6e() : wildlifeGroups5e(groundAt)).map((g) => ({ ...g, length: critters[g.form].positions.length, start: 0, held: [] as (number | null)[] }));
-  let critterEnd = birdsAt + FAUNA.birds * birdBase.positions.length;
+  // La baleine, son souffle et les oiseaux du bord d'eau sont du 6e : au 5e, le maillage ne tient que les bêtes.
+  const whaleEnd = sixth ? birdsAt + FAUNA.birds * birdBase.positions.length : 0;
+  let critterEnd = whaleEnd;
   for (const g of groups) {
     g.start = critterEnd;
     critterEnd += g.slots * g.perGroup * g.length;
@@ -1178,13 +1180,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   faunaGeometry.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(faunaPositions.length), 3));
   {
     const colors = new Float32Array(faunaPositions.length);
-    colors.set(whaleBase.colors, 0);
-    colors.set(spoutBase.colors, spoutAt);
-    for (let k = 0; k < FAUNA.birds; k++) colors.set(birdBase.colors, birdsAt + k * birdBase.colors.length);
+    if (sixth) {
+      colors.set(whaleBase.colors, 0);
+      colors.set(spoutBase.colors, spoutAt);
+      for (let k = 0; k < FAUNA.birds; k++) colors.set(birdBase.colors, birdsAt + k * birdBase.colors.length);
+    }
     for (const g of groups) for (let k = 0; k < g.slots * g.perGroup; k++) colors.set(critters[g.form].colors, g.start + k * g.length);
     faunaGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   }
-  // Toute la scène tient dans cette sphère (le bord d'eau, la baleine au large) : l'élimination hors champ reste juste.
+  // La sphère de la scène du bord d'eau (la baleine au large), pour les calculs qui la lisent ; le maillage n'est pas
+  // éliminé hors champ (ci-dessous).
   faunaGeometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(shore.at.x + Math.cos(shore.face) * 12, 0, shore.at.z + Math.sin(shore.face) * 12), FAUNA.whaleOff + FAUNA.whaleSide + 8);
   const faunaMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, side: THREE.DoubleSide });
   const faunaMesh = new THREE.Mesh(faunaGeometry, faunaMaterial);
@@ -1259,7 +1264,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // pour les bêtes des côtes), et se réécrivent au retour.
       if (faunaKey !== 'gone') {
         faunaKey = 'gone';
-        faunaPositions.fill(0, 0, groups[0]?.start ?? critterEnd);
+        faunaPositions.fill(0, 0, whaleEnd);
         (faunaGeometry.getAttribute('position') as THREE.BufferAttribute).needsUpdate = true;
       }
       return flush();

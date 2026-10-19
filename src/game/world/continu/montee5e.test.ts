@@ -412,10 +412,10 @@ describe('La caisse de la gare du haut et la caméra au bord (seconde relecture 
 describe('Le budget du 5e, avec la Montée', () => {
   const sum = (c: { triangles: number; calls: number }[]) => c.reduce((a, p) => ({ triangles: a.triangles + p.triangles, calls: a.calls + p.calls }), { triangles: 0, calls: 0 });
 
-  it('scénette ouverte : 88 000 triangles et 17 appels au plus ; hors scénette, 78 000 au plus ; sous l’enveloppe', () => {
+  it('scénette ouverte : 88 000 triangles et 18 appels au plus (la faune comprise) ; hors scénette, 78 000 au plus ; sous l’enveloppe', () => {
     const open = sum(openWorldCost5e());
     expect(open.triangles).toBeLessThanOrEqual(88_000);
-    expect(open.calls).toBeLessThanOrEqual(17);
+    expect(open.calls).toBeLessThanOrEqual(18);
     const world = sum(openWorldCost5e('monde'));
     expect(world.triangles).toBeLessThanOrEqual(78_000);
     expect(world.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);

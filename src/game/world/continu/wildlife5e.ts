@@ -14,7 +14,7 @@ import { birdFacets } from './detours';
 import { FacetBuilder, type Facets } from './facets';
 import { closestOnSegment, distance, type Vec2 } from './geometry';
 import type { LandId } from './lands';
-import { CHANNELS_5E, COAST_5E, DEPARTURE_5E, LANDS_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, UPPER_PLACES_5E } from './plan5e';
+import { CHANNELS_5E, COAST_5E, DEPARTURE_5E, LANDS_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E } from './plan5e';
 import { heightAt5e, landDistance5e, onPlateau } from './terrain5e';
 import { crabFacets, crabsOn, critterForms, ease, fishOn, phase, WILDLIFE, type CritterForm, type CritterGroup, type CritterPose } from './wildlife';
 
@@ -152,13 +152,15 @@ export function spots5e(): readonly Spot5e[] {
   return spots;
 }
 
-/** Les aiguilles où tournent les choucas : loin des lieux du haut et du sommet de la cabine (leurs étiquettes, son bouton). */
+/**
+ * Les aiguilles où tournent les choucas : loin de tous les lieux et des deux bouts de la cabine (leurs étiquettes, son
+ * bouton ; référent dys).
+ */
 function jackdawNeedles(): readonly number[] {
-  const upper = PLACES_5E.filter((p) => UPPER_PLACES_5E.includes(p.id));
-  const cabin = nodeAt(LINKS_5E.aiguilles.bridge[1]);
+  const cabin = LINKS_5E.aiguilles.bridge.map(nodeAt);
   return NEEDLES_5E.map((_, i) => i).filter((i) => {
     const at = NEEDLES_5E[i].at;
-    return onPlateau(at) && upper.every((p) => distance(at, p.center) >= 20) && distance(at, cabin) >= 20;
+    return onPlateau(at) && PLACES_5E.every((p) => distance(at, p.center) >= 20) && cabin.every((c) => distance(at, c) >= 20);
   });
 }
 
@@ -247,10 +249,10 @@ export function wildlifeGroups5e(ground: (p: Vec2) => number = heightAt5e): Crit
   return [
     // Les Frondaisons : les crocodiles, dans l'eau ou sur la rive d'en face des chemins ; les crabes de palétuvier.
     { form: 'croc', slots: S.crocs, perGroup: 1, spots: where('frondaisons', null, (s) => s.water || pathDistance(s.at) >= WILDLIFE_5E.crocClearOfPaths), at, pose: (spot, _s, t, still, keo) => [crocPose(spot, t, still, keo, ground)] },
-    { form: 'mangroveCrab', slots: S.crabs, perGroup: WILDLIFE.perGroup.crabs, spots: where('frondaisons', false), at, pose: (spot, _s, t, still, keo) => crabsOn(all[spot].at, all[spot].toLand, spot, t, still, keo, 'mangroveCrab', ground) },
+    { form: 'mangroveCrab', slots: S.crabs, perGroup: WILDLIFE.perGroup.crabs, spots: where('frondaisons', false), at, pose: (spot, _s, t, still, keo) => crabsOn(all[spot].at, all[spot].toLand, spot, t, still, keo, 'mangroveCrab', ground, WILDLIFE.perGroup.crabs) },
     // Les Roselières : les hérons au bord de l'eau, les poissons qui sautent.
     { form: 'heron', slots: S.herons, perGroup: 1, spots: where('roselieres', false), at, pose: (spot, _s, t, still, keo) => [waderPose(spot, 0, t, still, keo, 'heron', ground)] },
-    { form: 'fish', slots: S.fish, perGroup: 1, spots: where('roselieres', true), at, pose: (spot, slot, t, still) => [fishOn(all[spot].at, all[spot].toLand, slot, t, still)] },
+    { form: 'fish', slots: S.fish, perGroup: 1, spots: where('roselieres', true), at, pose: (spot, slot, t, still) => [fishOn(all[spot].at, all[spot].toLand, slot, t, still, S.fish)] },
     // Les Contreforts : les aigrettes, par deux.
     { form: 'egret', slots: S.egrets, perGroup: WILDLIFE_5E.perGroup.egrets, spots: where('contreforts', false), at, pose: (spot, _s, t, still, keo) => [0, 1].map((k) => waderPose(spot, k, t, still, keo, 'egret', ground)) },
     // Les Aiguilles : les choucas autour des aiguilles.
