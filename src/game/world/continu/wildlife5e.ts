@@ -183,7 +183,7 @@ export function crocPose(spot: number, t: number, still: boolean, keo: Vec2, gro
     return { x, y: Math.max(0, ground({ x, z })), z, yaw: yawOf({ x: -s.toLand.x, z: -s.toLand.z }), pitch: 0, form: 'croc' };
   }
   const off = still ? 0 : WILDLIFE_5E.crocDrift * Math.sin((2 * Math.PI * t) / WILDLIFE_5E.crocTurn + phase(spot, 1) * 6) * calmed(s.at, keo);
-  return { x: s.at.x + s.along.x * off, y: -0.1, z: s.at.z + s.along.z * off, yaw: yawOf({ x: s.along.x * way, z: s.along.z * way }), pitch: 0, form: 'croc' };
+  return { x: s.at.x + s.along.x * off, y: -0.04, z: s.at.z + s.along.z * off, yaw: yawOf({ x: s.along.x * way, z: s.along.z * way }), pitch: 0, form: 'croc' };
 }
 
 /**
