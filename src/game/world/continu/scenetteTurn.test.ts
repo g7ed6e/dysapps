@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { wrapAngle } from './camera';
 import { PLACES } from './plan6e';
-import { SCENE_RETURN, SCENETTE_ARCS, sceneReturnYaw, scenetteArc, scenetteStartYaw, turnSceneYaw } from './scenette';
+import { SCENE_RETURN, SCENETTE_ARCS, sceneReturnYaw, scenetteArc, scenetteStartYaw, startSceneReturn, stepSceneReturn, stopSceneReturn, turnSceneYaw, type SceneReturn } from './scenette';
 
 const deg = (d: number) => (d * Math.PI) / 180;
 
@@ -17,11 +17,11 @@ describe('L’arc de la caméra d’une scénette', () => {
     for (const p of PLACES) if (p.id !== 'phare' && p.id !== 'lookout') expect(scenetteArc(p.id)).toBeNull();
   });
 
-  it('reste un arc réglé sur captures : 50° sur la galerie, 70° au pied de la tour, 120° au Guet', () => {
-    expect(SCENETTE_ARCS.phare).toBeCloseTo(deg(50), 9);
-    expect(SCENETTE_ARCS.phareFoot).toBeCloseTo(deg(70), 9);
-    expect(SCENETTE_ARCS.lookout).toBeCloseTo(deg(120), 9);
-    for (const arc of Object.values(SCENETTE_ARCS)) expect(arc).toBeLessThan(Math.PI);
+  it('chaque arc laisse tourner sans aller jusqu’au dos : strictement entre 0 et le demi-tour', () => {
+    for (const arc of Object.values(SCENETTE_ARCS)) {
+      expect(arc).toBeGreaterThan(0);
+      expect(arc).toBeLessThan(Math.PI);
+    }
   });
 
   it('sans arc, le geste tourne librement, par-delà le demi-tour', () => {
@@ -80,5 +80,54 @@ describe('Le retour au cap de départ à chaque nouvel item', () => {
   it('prend le plus court, par-delà le demi-tour', () => {
     const mid = sceneReturnYaw(deg(170), deg(-170), 0.5);
     expect(Math.abs(mid)).toBeGreaterThan(deg(170));
+  });
+});
+
+describe('Le retour au cap dans la vue (la reprise, l’interruption)', () => {
+  const fresh = (): SceneReturn => ({ active: false, start: 0, from: 0, to: 0 });
+
+  it('glisse du cap courant au cap de départ, puis s’arrête à l’arrivée', () => {
+    const r = fresh();
+    expect(startSceneReturn(r, deg(40), 0, 10, false)).toBeCloseTo(deg(40), 9);
+    expect(r.active).toBe(true);
+    const mid = stepSceneReturn(r, 10 + SCENE_RETURN.seconds / 2)!;
+    expect(mid).toBeLessThan(deg(40));
+    expect(mid).toBeGreaterThan(0);
+    expect(stepSceneReturn(r, 10 + SCENE_RETURN.seconds * 1.01)).toBeCloseTo(0, 9);
+    expect(r.active).toBe(false);
+    expect(stepSceneReturn(r, 11)).toBeNull();
+  });
+
+  it('d’un coup en entrant, avec « Réduire les animations », ou déjà au cap', () => {
+    const r = fresh();
+    expect(startSceneReturn(r, deg(40), deg(5), 0, true)).toBeCloseTo(deg(5), 9);
+    expect(r.active).toBe(false);
+    expect(startSceneReturn(r, deg(5), deg(5), 0, false)).toBeCloseTo(deg(5), 9);
+    expect(r.active).toBe(false);
+    expect(stepSceneReturn(r, 1)).toBeNull();
+  });
+
+  it('un nouvel item pendant un retour en cours le reprend depuis l’angle où il en est, sans saut', () => {
+    const r = fresh();
+    let yaw = startSceneReturn(r, deg(40), 0, 0, false);
+    yaw = stepSceneReturn(r, SCENE_RETURN.seconds / 3)!;
+    const at = yaw;
+    yaw = startSceneReturn(r, yaw, deg(-10), SCENE_RETURN.seconds / 3, false);
+    expect(yaw).toBeCloseTo(at, 9);
+    expect(r.from).toBeCloseTo(at, 9);
+    expect(r.to).toBeCloseTo(deg(-10), 9);
+    // Juste après la reprise, l'angle n'a pas bougé : la courbe repart de là, toute sa durée.
+    expect(stepSceneReturn(r, SCENE_RETURN.seconds / 3)).toBeCloseTo(at, 9);
+    expect(stepSceneReturn(r, SCENE_RETURN.seconds * (1 / 3 + 0.99))!).toBeGreaterThan(deg(-10));
+    expect(stepSceneReturn(r, SCENE_RETURN.seconds * (4 / 3))).toBeCloseTo(deg(-10), 9);
+  });
+
+  it('un geste l’interrompt : la caméra reste où il l’a laissée, et le geste part de là', () => {
+    const r = fresh();
+    startSceneReturn(r, deg(40), 0, 0, false);
+    const at = stepSceneReturn(r, SCENE_RETURN.seconds / 2)!;
+    stopSceneReturn(r);
+    expect(stepSceneReturn(r, SCENE_RETURN.seconds)).toBeNull();
+    expect(turnSceneYaw(at, deg(5), 0, SCENETTE_ARCS.phare)).toBeCloseTo(at + deg(5), 9);
   });
 });

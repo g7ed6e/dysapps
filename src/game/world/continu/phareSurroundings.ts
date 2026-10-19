@@ -9,9 +9,9 @@
  * - au pied de la tour (galerie pas posée) : l'échafaudage en U au revers de la tour, ses deux planchers et sa lisse,
  *   l'échelle à l'est qui y monte, la potence sur son haut et la bouée qui pend ; au nord-est, la petite grue de bois qui
  *   hisse un bloc taillé ; à l'est, la vieille lanterne posée de travers contre un bloc, les caisses et les blocs taillés ;
- * - sur la galerie (posée) : l'échafaudage démonté, la potence de bois sur la galerie, à l'est, et sa bouée qui pend au
- *   bord ; la longue échelle qui monte du pied à la galerie, à l'ouest-nord-ouest ; au pied, les caisses et les blocs qui
- *   restent.
+ * - sur la galerie (posée) : l'échafaudage démonté, la potence de bois sur la galerie, au revers de la tour (au nord,
+ *   hors du tour de la caméra), et sa bouée qui pend au bord ; la longue échelle qui monte du pied à la galerie, à
+ *   l'ouest-nord-ouest ; au pied, les caisses et les blocs qui restent.
  * Dans les deux, la bande Nuit océan sur la tour (à mi-hauteur du moignon au pied, au tiers de la tour entière vue de la
  * galerie), des rochers de pierre chaude et des touffes d'herbe autour de l'îlot (le kit commun, ./surroundingsKit.ts).
  *
@@ -74,8 +74,12 @@ export const PHARE_SURROUNDINGS = {
   /** La potence du haut de l'échafaudage, sa flèche vers l'est, la bouée au bout. */
   footGibbet: { x: 2.15, z: -2.25, reach: 1.75, top: 5.35, buoy: 3.05 },
   crane: { x: 6.3, z: -3.4, top: 5.6 },
-  /** La potence de la galerie, à l'est, et sa bouée, sous le plancher de la galerie (`GALLERY.floor`, 11,55). */
-  galleryGibbet: { angle: -0.2, r: 3.05, reach: 1.65, rise: 1.7, drop: 1.55 },
+  /**
+   * La potence de la galerie, au revers de la tour (au nord, sa flèche vers le large), et sa bouée, sous le plancher de
+   * la galerie (`GALLERY.floor`, 11,55). Dans le dos de la scène : à la butée de l'arc de la caméra (scenette.ts,
+   * `SCENETTE_ARCS`), elle reste derrière la lanterne ou au bord du cadre, jamais devant Kéo ni la gardienne.
+   */
+  galleryGibbet: { angle: -Math.PI / 2, r: 3.05, reach: 1.65, rise: 1.7, drop: 1.55 },
   /** La longue échelle de la galerie, à l'ouest-nord-ouest : son pied et son haut (au-dessus de la rambarde). */
   galleryLadder: { angle: Math.PI + 0.45, foot: 4.05, top: 3.5, topY: 12.6 },
 } as const;
@@ -283,8 +287,8 @@ function fallenLantern(ctx: Ctx, dx: number, dz: number): void {
 }
 
 /**
- * La potence de bois de la galerie, à l'est : son poteau sur le plancher, sa flèche qui passe la rambarde, son
- * aisselier, la corde et la bouée qui pend sous le bord de la galerie, face au sud.
+ * La potence de bois de la galerie, au revers de la tour : son poteau sur le plancher, sa flèche qui passe la rambarde,
+ * son aisselier, la corde et la bouée qui pend sous le bord de la galerie, face au sud.
  */
 function galleryGibbet(ctx: Ctx): void {
   const { b, at } = ctx;

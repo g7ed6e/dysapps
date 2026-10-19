@@ -412,12 +412,14 @@ const ECLUSES_START = (65 * Math.PI) / 180;
 const PRINTWORKS_START = (-20 * Math.PI) / 180;
 
 /**
- * Les arcs de la caméra au Phare et au Guet, réglés sur captures (19 octobre 2026) : à la butée, Kéo et l'habitant restent
- * entiers. Sur la galerie, 50° : plus loin, la potence et les cloches les coupent, puis la lanterne les cache. Au pied de
- * la tour, 70° : plus loin, la tour cache Kéo d'un côté, Kéo cache la gardienne de l'autre. Au Guet, 120° : la caméra
- * monte au-dessus de la tour et les garde entiers jusque-là.
+ * Les arcs de la caméra au Phare et au Guet, réglés sur captures (19 octobre 2026). Sur la galerie, 40° (directeur
+ * artistique : pas moins) : la potence des abords, au revers de la tour, n'y entre jamais ; la poutre des cloches
+ * (questionScene.ts, `hangBells`) croise encore la gardienne à la taille à la butée ; plus loin, elle passe devant Kéo
+ * d'un côté, devant la gardienne de l'autre, et les grandes cloches de la mission 2 la couvrent jusqu'aux hanches. Au
+ * pied de la tour, 70° : plus loin, la tour cache Kéo d'un côté, Kéo cache la gardienne de l'autre. Au Guet, 120° : la
+ * caméra monte au-dessus de la tour et les garde entiers jusque-là.
  */
-export const SCENETTE_ARCS = { phare: (50 * Math.PI) / 180, phareFoot: (70 * Math.PI) / 180, lookout: (120 * Math.PI) / 180 } as const;
+export const SCENETTE_ARCS = { phare: (40 * Math.PI) / 180, phareFoot: (70 * Math.PI) / 180, lookout: (120 * Math.PI) / 180 } as const;
 
 const SITES: Record<PlaceId, ScenetteSite> = {
   phare: {
@@ -608,6 +610,44 @@ export function sceneReturnYaw(from: number, to: number, u: number): number {
   const k = Math.min(1, Math.max(0, u));
   const ease = 1 - (1 - k) ** 3;
   return wrapAngle(from + wrapAngle(to - from) * ease);
+}
+
+/**
+ * Le retour au cap de départ en cours (la vue en garde un seul, rempli sur place : rien n'est créé à chaque image) : s'il
+ * avance, l'instant où il est parti (en secondes), l'angle d'où il part et le cap où il va.
+ */
+export interface SceneReturn {
+  active: boolean;
+  start: number;
+  from: number;
+  to: number;
+}
+
+/**
+ * Lance le retour au cap `to` depuis l'angle courant `yaw`, à l'instant `now` (en secondes), et rend l'angle à prendre
+ * tout de suite. Un retour en cours (un nouvel item avant la fin du précédent) repart de l'angle où il en est. D'un coup
+ * (`instant` : l'entrée dans la scénette, « Réduire les animations »), ou si la caméra est déjà au cap : rien ne glisse.
+ */
+export function startSceneReturn(r: SceneReturn, yaw: number, to: number, now: number, instant: boolean): number {
+  r.active = !instant && Math.abs(wrapAngle(to - yaw)) > 1e-4;
+  if (!r.active) return to;
+  r.start = now;
+  r.from = yaw;
+  r.to = to;
+  return yaw;
+}
+
+/** L'angle du retour à l'instant `now`, ou `null` s'il n'y en a pas ; arrivé au cap, il s'arrête. */
+export function stepSceneReturn(r: SceneReturn, now: number): number | null {
+  if (!r.active) return null;
+  const u = (now - r.start) / SCENE_RETURN.seconds;
+  if (u >= 1) r.active = false;
+  return sceneReturnYaw(r.from, r.to, u);
+}
+
+/** Un geste à deux doigts interrompt le retour : la caméra reste à l'angle où il l'a laissée, le geste part de là. */
+export function stopSceneReturn(r: SceneReturn): void {
+  r.active = false;
 }
 
 /** Le sol d'une scénette, dans le monde. */

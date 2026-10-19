@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import type { Facets } from './facets';
 import { PHARE_SURROUNDINGS } from './phareSurroundings';
 import { placeById } from './plan6e';
-import { scenetteHabitant, scenetteKeo, scenetteSurroundings } from './scenette';
+import { GALLERY, SCENETTE_ARCS, scenetteHabitant, scenetteKeo, scenetteSurroundings } from './scenette';
 import { heightAt, standingHeight } from './terrain';
 
 const c = placeById('phare').center;
@@ -55,6 +55,14 @@ describe('Les abords du Phare', () => {
     expect(out.some((p) => p.dy > 12.5)).toBe(true);
     expect(out.some((p) => p.dy < 10.5 && p.dy > 9)).toBe(true);
     expect(Math.min(...f.map((p) => p.dy))).toBeLessThan(1);
+  });
+
+  it('sur la galerie : ce qui passe la rambarde, hors de la tour, reste dans le dos, loin du tour de la caméra', () => {
+    // La caméra part du sud (+z) et tourne d'au plus `SCENETTE_ARCS.phare` de part et d'autre ; 30° de marge.
+    const limit = SCENETTE_ARCS.phare + Math.PI / 6;
+    const high = points(scenetteSurroundings('phare', false, true)).filter((p) => p.dy > GALLERY.floor + GALLERY.rail + 0.15 && Math.hypot(p.dx, p.dz) > 2.2);
+    expect(high.length).toBeGreaterThan(0);
+    for (const p of high) expect(Math.abs(Math.atan2(p.dx, p.dz))).toBeGreaterThan(limit);
   });
 
   it('posent la bande entre le haut de la porte et le haut du moignon, au pied', () => {
