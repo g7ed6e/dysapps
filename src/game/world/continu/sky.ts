@@ -67,32 +67,60 @@ export const SHADOW_DIR = (() => {
 
 /**
  * Le ciel et la lumière du 5e (GD-22, lot 2 ; fiche du niveau, § 2 : « fin d'après-midi », planche de rendu validée le 19
- * octobre 2026) : un soleil bas et doré, à l'ouest-sud-ouest (environ 15°), qui prend les sommets, le plateau et les
- * aiguilles ; en bas, sous les racines, une lumière diffuse, que portent surtout les couleurs du sol (./terrain5e.ts : le
- * bas plus froid et plus sourd, le haut plus chaud). L'horizon pêche pâle, le haut du ciel un bleu-gris doux, jamais
- * saturé ; l'ambiance un peu plus basse qu'au 6e, jamais au point de rendre une face presque noire.
+ * octobre 2026) : un soleil bas et doré, à l'ouest-sud-ouest (environ 18°), qui prend les sommets, le plateau et les
+ * aiguilles ; en bas, sous la canopée, une lumière plus sombre et diffuse, tirée vers le bleu-vert (`HEIGHT_LIGHT_5E`).
+ * Le ciel en dégradé : doré à l'horizon, une brume gris-vert en haut, jamais saturée. Retouche du lot 2 (directeur
+ * artistique : « la lumière est plate, sans or sur les sommets ni pénombre en bas ; le ciel est crème et uni ») : le
+ * soleil moins orangé (la pierre grise virait au tabac), le ciel renvoyé plus fort et plus gris (la pierre reste grise à
+ * l'ombre, jamais presque noire), l'écart entre les deux étages porté par la hauteur.
  */
 const SKY_STOPS_5E: readonly { at: number; color: number }[] = [
-  { at: 0, color: 0xf0dfc4 },
-  { at: 6, color: 0xeadfca },
-  { at: 18, color: 0xd9dcd2 },
-  { at: 40, color: 0xbccfd6 },
-  { at: 90, color: 0xa9c3d2 },
+  { at: 0, color: 0xeed3a0 },
+  { at: 6, color: 0xebd9b6 },
+  { at: 18, color: 0xdcdac9 },
+  { at: 40, color: 0xc7cfc8 },
+  { at: 90, color: 0xb6c1bf },
 ];
 
-/** La couleur de l'horizon du 5e : la brume du lointain et le bas du dôme. */
+/** La couleur de l'horizon du 5e : la brume du lointain et le bas du dôme, un or pâle. */
 export const HORIZON_COLOR_5E = SKY_STOPS_5E[0].color;
 
-/** La lumière du 5e : le ciel renvoyé un peu plus froid, le sol renvoyé ocre, le soleil plus bas et plus orangé qu'au 6e. */
+/**
+ * La lumière du 5e (valeurs de l'artiste technique 3D, à valider sur captures) : le ciel renvoyé gris-vert et fort (2,7),
+ * le sol renvoyé d'un gris d'olive, le soleil d'un or pâle (#FFDCAA), 4,6, bas à l'ouest-sud-ouest ; l'exposition un peu
+ * plus basse qu'au 6e (1,12). Au soleil, la pierre du haut sort dorée (#B7AA82 environ), à l'ombre grise (#555D4F) ; le
+ * sol de la forêt, en bas, reste sombre et bleu-vert (#2D5444 environ), jamais presque noir.
+ */
 export const LIGHT_5E = {
-  sky: 0xdcdcd0,
-  ground: 0xd8c49a,
-  ambient: 0.95,
-  sun: 0xffc884,
-  sunIntensity: 3.4,
-  sunFrom: { x: -58, y: 16, z: 26 },
-  exposure: 1.18,
+  sky: 0xd0dad8,
+  ground: 0xa4a28c,
+  ambient: 2.7,
+  sun: 0xffdcaa,
+  sunIntensity: 4.6,
+  sunFrom: { x: -58, y: 22, z: 26 },
+  exposure: 1.12,
 } as const satisfies SceneLight;
+
+/**
+ * La lumière par la hauteur, au 5e (artiste technique 3D) : les deux étages de la planche. Sous `low` (le sol de la
+ * forêt, le bas des troncs), le soleil ne passe qu'à `sunLow` de sa force (la canopée l'arrête), et le ciel renvoyé prend
+ * la teinte `tintLow` (rouge, vert, bleu : plus froide, vers le bleu-vert) ; au-dessus de `high` (le haut de la falaise, le
+ * plateau, les aiguilles, la Montée), toute la lumière ; entre les deux, un fondu. Le brouillard s'éclaircit en hauteur :
+ * de `fogFrom` à `fogTo`, sa part tombe à `fogTop`, et les sommets dépassent la brume du lointain (la Montée se voit de
+ * la Lisière). Une ligne de shader dans le matériau du décor (three/archipeo/scene.ts), aucun appel de plus ; rien ne
+ * bouge.
+ */
+export interface HeightLight {
+  readonly low: number;
+  readonly high: number;
+  readonly sunLow: number;
+  readonly tintLow: readonly [number, number, number];
+  readonly fogFrom: number;
+  readonly fogTo: number;
+  readonly fogTop: number;
+}
+
+export const HEIGHT_LIGHT_5E: HeightLight = { low: 2.5, high: 12, sunLow: 0.2, tintLow: [0.86, 0.97, 1.04], fogFrom: 14, fogTo: 40, fogTop: 0.45 };
 
 /** Le sens où tombent les ombres peintes du 5e (l'opposé de son soleil, à plat). */
 export const SHADOW_DIR_5E = (() => {

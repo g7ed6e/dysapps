@@ -124,7 +124,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const bornes = useMemo(() => bornesDuMondeOuvert(modele.bornes, (ile, m) => questProgress(ile, m, vu.progress)?.stars ?? null), [modele, vu.progress]);
   // Les terres (GD-20, point 3, « vraies terres ») : les terres fermées (aucun de leurs lieux relié dans la grille ni
   // joué), celles pas encore reliables, et le pont suggéré par la prochaine destination.
-  const lands = useMemo(() => openWorldLands(plan, state.world.links, bornes, modele.destination.ouvrage), [plan, state.world.links, bornes, modele.destination.ouvrage]);
+  const lands = useMemo(() => openWorldLands(plan, state.world.links, bornes, modele.destination.ouvrage, modele.destination.island), [plan, state.world.links, bornes, modele.destination.ouvrage, modele.destination.island]);
   /** La terre fermée d'un lieu, ou rien. */
   const closedLandOf = useCallback((id: PlaceId): LinkedLand | null => {
     const land = landOf(id);
@@ -917,7 +917,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         </div>
         {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
         {mapOpen && !asking && (
-          <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} portName={sixth ? textes.depart?.nom : undefined} upper={plan.upper} onCrowded={reframeMap} />
+          <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} portName={sixth ? textes.depart?.nom : undefined} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} />
         )}
         {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
             le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à

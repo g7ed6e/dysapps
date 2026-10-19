@@ -12,7 +12,7 @@ import { NETWORK_6E, RIBBONS_6E, pathRibbons, type RibbonNet } from './paths';
 import { portFloor } from './plan6e';
 import { TERRAIN_5E } from './plan5e';
 import { WATER_TONES, WATER_TONES_5E, seaPixels, seaPixels5e } from './sea';
-import { HORIZON_COLOR, HORIZON_COLOR_5E, LIGHT, LIGHT_5E, SHADOW_DIR, SHADOW_DIR_5E, SKY_OF, type SceneLight, type SkyStops } from './sky';
+import { HEIGHT_LIGHT_5E, HORIZON_COLOR, HORIZON_COLOR_5E, LIGHT, LIGHT_5E, SHADOW_DIR, SHADOW_DIR_5E, SKY_OF, type HeightLight, type SceneLight, type SkyStops } from './sky';
 import { buildHeightField, heightOnMesh, type HeightField } from './terrain';
 import { buildHeightField5e, groundOn5e, tileFacets5e, tileFlora5e, tileGround5e } from './terrain5e';
 import { TILES_6E, type TileSource } from './tiles';
@@ -49,6 +49,8 @@ export interface LevelWorld {
   readonly sky: SkyStops;
   readonly horizon: number;
   readonly shadowDir: Vec2;
+  /** La lumière et le brouillard par la hauteur (au 5e, ses deux étages) ; rien au 6e, à plat. */
+  readonly heightLight: HeightLight | null;
 }
 
 const WORLD_6E: LevelWorld = {
@@ -65,6 +67,7 @@ const WORLD_6E: LevelWorld = {
   sky: SKY_OF['6e'],
   horizon: HORIZON_COLOR,
   shadowDir: SHADOW_DIR,
+  heightLight: null,
 };
 
 const WORLD_5E: LevelWorld = {
@@ -81,6 +84,7 @@ const WORLD_5E: LevelWorld = {
   sky: SKY_OF['5e'],
   horizon: HORIZON_COLOR_5E,
   shadowDir: SHADOW_DIR_5E,
+  heightLight: HEIGHT_LIGHT_5E,
 };
 
 /** Ce que la vue lit du niveau `level`. */

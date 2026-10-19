@@ -5,18 +5,18 @@ import { describe, expect, it } from 'vitest';
 import { LINK_PRICE, islandsOf } from '../archipelago';
 import { OPEN_WORLD_BUDGET, mapCost5e, openWorldCost5e } from './budget';
 import { bridgeFacets, bridgeFloor, bridgeSite, clampToOpen, isCabin } from './bridges';
-import { distance, distanceToPolyline, linearRgb, type Vec2 } from './geometry';
+import { distance, distanceToPolyline, linearRgb, signedDistance, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
 import { planFor } from './levelPlan';
-import { cliffMapLine, riftMistFacets, riftMistSpots, RIFT_MIST } from './mist5e';
+import { CLIFF_MAP_COLORS, cliffMapLine, cliffMapSegments, riftMistFacets, riftMistSpots, RIFT_MIST } from './mist5e';
 import { modelOfPlace } from './places';
-import { NETWORK_5E, pathRibbons5e } from './paths5e';
-import { COLORS_5E, DEPARTURE_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PLATEAU, UPPER_PLACES_5E } from './plan5e';
+import { NETWORK_5E, pathRibbons5e, quayFacets } from './paths5e';
+import { COAST_5E, COLORS_5E, DEPARTURE_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PLATEAU, QUAY_5E, UPPER_PLACES_5E } from './plan5e';
 import { MONTEE_HEIGHT } from './ruins5e';
-import { HORIZON_COLOR_5E, LIGHT_5E, SKY_OF, skyDome } from './sky';
+import { HEIGHT_LIGHT_5E, HORIZON_COLOR_5E, LIGHT_5E, SKY_OF, skyColorAt, skyDome } from './sky';
 import { SEA_TEXTURE, WATER_TONES_5E, seaPixels5e, waterTone5e } from './sea';
 import { FOREST_COLORS, buildHeightField5e, channelClearance, groundFar5e, groundOn5e, heightAt5e, landDistance5e, onPlateau, plateauShare, tileFacets5e, tileFlora5e, tileGround5e } from './terrain5e';
-import { veilFacets, veilShare } from './veil';
+import { VEIL_LAYERS, VEIL_LAYERS_5E, veilFacets, veilShare } from './veil';
 
 const PLAN = planFor('5e');
 const LINKED = linkedLands(PLAN);
@@ -39,7 +39,7 @@ describe('Le plan du 5e', () => {
 
   it('la Lisière, le départ, au sud-est, dans les Frondaisons, près du Hameau', () => {
     expect(nodeLands(PLAN).get(DEPARTURE_5E.node)).toBe('frondaisons');
-    expect(distance(node(DEPARTURE_5E.node), PLAN.places.find((p) => p.id === 'hameau')!.center)).toBeLessThan(80);
+    expect(distance(node(DEPARTURE_5E.node), PLAN.places.find((p) => p.id === 'hameau')!.center)).toBeLessThan(85);
     expect(DEPARTURE_5E.at.x).toBeGreaterThan(0);
     expect(DEPARTURE_5E.at.z).toBeGreaterThan(0);
   });
@@ -116,6 +116,98 @@ describe('Deux étages, par la seule hauteur du sol', () => {
   });
 });
 
+describe('Les silhouettes : une famille d’aiguilles, une ruine par lieu', () => {
+  it('toutes les aiguilles dépassent la tour du Donjon ; la Montée les dépasse toutes, et la canopée de loin', () => {
+    const donjon = PLAN.places.find((p) => p.id === 'donjon')!;
+    const donjonTop = heightAt5e(donjon.center) + modelOfPlace('donjon').top;
+    for (const n of NEEDLES_5E) expect(heightAt5e(n.at) + n.height, `${n.at.x}, ${n.at.z}`).toBeGreaterThan(donjonTop + 2);
+    // La canopée la plus haute : un palétuvier de près, sa seconde couronne comprise (moins de 9 unités au-dessus du sol).
+    expect(modelOfPlace('montee').top).toBeGreaterThan(MONTEE_HEIGHT - 2);
+    expect(MONTEE_HEIGHT).toBeGreaterThan(6 * 9);
+  });
+
+  it('chaque ruine a sa hauteur et son contour propres : aucune boîte commune', () => {
+    const sizes = PLAN.places.map((p) => {
+      const f = modelOfPlace(p.id).facets;
+      const min = [Infinity, Infinity, Infinity];
+      const max = [-Infinity, -Infinity, -Infinity];
+      for (let k = 0; k < f.positions.length; k++) {
+        min[k % 3] = Math.min(min[k % 3], f.positions[k]);
+        max[k % 3] = Math.max(max[k % 3], f.positions[k]);
+      }
+      return `${Math.round(max[0] - min[0])}×${Math.round(max[1] - min[1])}×${Math.round(max[2] - min[2])}`;
+    });
+    expect(new Set(sizes).size).toBe(PLAN.places.length);
+    // Le Donjon : une tour plus haute que large, sur son piton.
+    expect(modelOfPlace('donjon').top).toBeGreaterThan(18);
+  });
+
+  it('les Radeaux : leurs plateformes sur l’eau du grand chenal, à ras de l’eau', () => {
+    const radeaux = PLAN.places.find((p) => p.id === 'radeaux')!;
+    const f = modelOfPlace('radeaux').facets;
+    const y0 = Math.max(heightAt5e(radeaux.center), 0.04);
+    let wet = 0;
+    for (let k = 0; k < f.positions.length; k += 3) {
+      const p = { x: radeaux.center.x + f.positions[k], z: radeaux.center.z + f.positions[k + 2] };
+      const y = y0 + f.positions[k + 1];
+      if (channelClearance(p, 'grand') < -1 && y > 0 && y < 1.2) wet++;
+    }
+    expect(wet).toBeGreaterThan(20);
+  });
+});
+
+describe('La Lisière : l’eau et le ponton au départ', () => {
+  it('Kéo part au pied du ponton ; le ponton avance au nord, de la rive sur l’eau sombre de l’anse', () => {
+    expect(distance(DEPARTURE_5E.at, QUAY_5E.from)).toBeLessThan(3);
+    expect(landDistance5e(QUAY_5E.from)).toBeGreaterThan(0);
+    expect(channelClearance(QUAY_5E.to, 'anse')).toBeLessThan(-2);
+    expect(waterTone5e(QUAY_5E.to)).toBe(WATER_TONES_5E.night);
+    // Au nord de Kéo : la caméra, tournée vers le nord au départ, a l'eau et le ponton devant elle.
+    expect(QUAY_5E.to.z).toBeLessThan(DEPARTURE_5E.at.z - 8);
+    expect(Math.abs(QUAY_5E.to.x - DEPARTURE_5E.at.x)).toBeLessThan(QUAY_5E.to.z < DEPARTURE_5E.at.z ? DEPARTURE_5E.at.z - QUAY_5E.to.z : 0);
+    // Ses deux lanternes d'ocre.
+    const f = quayFacets();
+    const [r, g, b] = linearRgb(COLORS_5E.lantern);
+    let lit = 0;
+    for (let k = 0; k < f.colors.length; k += 3) if (Math.abs(f.colors[k] - r) < 1e-6 && Math.abs(f.colors[k + 1] - g) < 1e-6 && Math.abs(f.colors[k + 2] - b) < 1e-6) lit++;
+    expect(lit).toBe(2 * 10 * 3);
+  });
+
+  it('aucun arbre ne couvre l’eau des chenaux : un tronc se tient loin de l’eau', () => {
+    const field = buildHeightField5e();
+    for (const [tx, tz] of [[9, 7], [10, 8], [5, 7], [13, 9]] as const) {
+      const f = tileFlora5e(field, tx, tz, 'far');
+      // De loin, la seule canopée : son centre est au-dessus de la terre.
+      for (let k = 0; k < f.positions.length; k += 9) {
+        const p = { x: (f.positions[k] + f.positions[k + 3] + f.positions[k + 6]) / 3, z: (f.positions[k + 2] + f.positions[k + 5] + f.positions[k + 8]) / 3 };
+        expect(channelClearance(p), `${p.x}, ${p.z}`).toBeGreaterThan(-1.5);
+      }
+    }
+  });
+});
+
+describe('La Carte : le trait de la falaise', () => {
+  it('sur l’île seulement, jamais sur la mer', () => {
+    const segments = cliffMapSegments();
+    expect(segments.length).toBeGreaterThan(8);
+    for (const [a, b] of segments) {
+      expect(signedDistance(a, COAST_5E)).toBeGreaterThan(1.5);
+      expect(signedDistance(b, COAST_5E)).toBeGreaterThan(1.5);
+    }
+    expect(cliffMapLine().triangles).toBe(segments.length * 4);
+  });
+
+  it('se lit sur la pierre du plateau (3:1 au moins, sous la même lumière), son trait clair sur le sombre', () => {
+    const contrast = (a: number, b: number) => {
+      const [la, lb] = [luminance(linearRgb(a)), luminance(linearRgb(b))];
+      return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+    };
+    for (const ground of [COLORS_5E.stone, COLORS_5E.stoneSun, COLORS_5E.plateauMoss]) expect(contrast(CLIFF_MAP_COLORS.dark, ground), ground.toString(16)).toBeGreaterThan(3);
+    expect(contrast(CLIFF_MAP_COLORS.light, CLIFF_MAP_COLORS.dark)).toBeGreaterThan(7);
+    expect(luminance(linearRgb(CLIFF_MAP_COLORS.dark))).toBeGreaterThan(NOT_BLACK);
+  });
+});
+
 describe('Les passages : deux ponts et la cabine de la Montée', () => {
   it('fermé, Kéo s’arrête avant ; relié, il passe, et sur la cabine il monte du bas au plateau', () => {
     for (const land of LINKED) {
@@ -153,16 +245,38 @@ describe('La brume', () => {
     expect(veilFacets(LINKED).triangles).toBeGreaterThan(0);
   });
 
-  it('celle des failles : au pied de la falaise, jamais sur un chemin ni sur un lieu', () => {
+  it('la brume d’état du 5e : trois voiles jusqu’au ras de la canopée, jamais opaque, jamais sur un chemin', () => {
+    const through = (layers: readonly { alpha: number }[]) => 1 - layers.reduce((s, l) => s * (1 - l.alpha), 1);
+    // Le plafond du référent dys pour les voiles réunis (./veil.ts) : 0,62.
+    expect(through(VEIL_LAYERS_5E)).toBeLessThanOrEqual(0.62);
+    expect(through(VEIL_LAYERS)).toBeLessThanOrEqual(0.62);
+    expect(Math.max(...VEIL_LAYERS_5E.map((l) => l.lift))).toBeGreaterThan(6);
+    for (const land of LINKED)
+      for (const [a, b] of PATH_EDGES_5E) {
+        const p = node(a);
+        const q = node(b);
+        expect(veilShare(land, { x: (p.x + q.x) / 2, z: (p.z + q.z) / 2 }), `${land} ${a}–${b}`).toBe(0);
+      }
+  });
+
+  it('celle des failles : au pied de la falaise, dans l’entaille du chenal de l’ouest et au pied des aiguilles, jamais sur un chemin ni sur un lieu', () => {
     const spots = riftMistSpots();
     expect(spots.length).toBeGreaterThan(5);
-    for (const s of spots) {
-      expect(plateauShare(s)).toBeLessThan(0.3);
-      for (const [a, b] of PATH_EDGES_5E) expect(distanceToPolyline(s, [node(a), node(b)])).toBeGreaterThan(RIFT_MIST.radius);
-      for (const p of PLAN.places) expect(distance(s, p.center)).toBeGreaterThan(RIFT_MIST.radius + 2);
+    const atNeedle = (s: Vec2) => NEEDLES_5E.some((n) => distance(s, n.at) < n.radius + 1);
+    // Au pied de chaque aiguille assez loin des chemins, une nappe ; les autres, en bas, sous la falaise.
+    expect(spots.filter((s) => atNeedle(s.at)).length).toBeGreaterThan(5);
+    for (const { at, radius } of spots) {
+      expect(radius).toBeGreaterThanOrEqual(RIFT_MIST.smallest);
+      expect(radius).toBeLessThanOrEqual(RIFT_MIST.radius);
+      if (!atNeedle(at)) expect(plateauShare(at)).toBeLessThan(0.3);
+      for (const [a, b] of PATH_EDGES_5E) expect(distanceToPolyline(at, [node(a), node(b)])).toBeGreaterThanOrEqual(radius + RIFT_MIST.path - 1e-6);
+      for (const p of PLAN.places) expect(distance(at, p.center)).toBeGreaterThanOrEqual(radius + RIFT_MIST.place - 1e-6);
     }
+    // Deux voiles par nappe, au-dessus du sol de la forêt ; jamais plus denses que leur cœur.
     const m = riftMistFacets();
-    for (let k = 3; k < m.colors.length; k += 4) expect(m.colors[k]).toBeLessThanOrEqual(RIFT_MIST.alpha);
+    expect(m.triangles).toBe(spots.length * RIFT_MIST.layers.length * RIFT_MIST.sides);
+    const most = Math.max(...RIFT_MIST.layers.map((l) => l.alpha));
+    for (let k = 3; k < m.colors.length; k += 4) expect(m.colors[k]).toBeLessThanOrEqual(most);
   });
 });
 
@@ -192,6 +306,30 @@ describe('Les couleurs et la lumière', () => {
     };
     for (const [tx, tz] of [[7, 5], [7, 2], [3, 6], [10, 7]] as const) check(tileFacets5e(field, tx, tz, 'near').colors, `tuile ${tx}, ${tz}`);
     for (const p of PLAN.places) check(modelOfPlace(p.id).facets.colors, p.id);
+  });
+
+  it('deux étages de lumière : en bas, le soleil affaibli et la lumière refroidie ; en haut, toute la lumière ; les sommets sortent de la brume', () => {
+    const h = HEIGHT_LIGHT_5E;
+    // Le sol de la forêt sous `low`, le plateau au-dessus de `high`.
+    expect(h.low).toBeGreaterThan(1.5);
+    expect(h.high).toBeLessThan(PLATEAU.height);
+    expect(h.sunLow).toBeLessThan(0.35);
+    // Plus froide en bas : le bleu et le vert gardés, le rouge baissé.
+    expect(h.tintLow[0]).toBeLessThan(h.tintLow[1]);
+    expect(h.tintLow[1]).toBeLessThanOrEqual(h.tintLow[2]);
+    // Le brouillard s'éclaircit au-dessus du plateau, jamais jusqu'à rien : le sommet de la Montée y reste voilé.
+    expect(h.fogFrom).toBeGreaterThan(PLATEAU.height);
+    expect(h.fogTo).toBeLessThan(MONTEE_HEIGHT);
+    expect(h.fogTop).toBeGreaterThan(0.3);
+    expect(h.fogTop).toBeLessThan(0.7);
+  });
+
+  it('le ciel en dégradé : doré à l’horizon, une brume grise en haut', () => {
+    const [r0, , b0] = skyColorAt(0, SKY_OF['5e']);
+    const [r1, g1, b1] = skyColorAt(90, SKY_OF['5e']);
+    expect(r0 - b0).toBeGreaterThan(0.25);
+    expect(Math.max(r1, g1, b1) - Math.min(r1, g1, b1)).toBeLessThan(0.12);
+    expect(linearRgb(HORIZON_COLOR_5E)).toEqual(skyColorAt(0, SKY_OF['5e']));
   });
 
   it('un soleil bas, de l’ouest, sur la fin de l’après-midi', () => {

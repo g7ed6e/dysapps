@@ -37,26 +37,32 @@ export const COLORS_5E = {
   waterShallow: 0x2b6a62,
   /** Le large, autour de l'île. */
   sea: 0x24605c,
-  /** La vase des rives, au ras de l'eau. */
-  mud: 0x7d7a5c,
-  /** Le sol de la forêt, une mousse olive. */
-  moss: 0x6f8a4f,
-  /** Le sol plus haut de la forêt, et les flancs au soleil. */
-  mossSun: 0x8fa35f,
-  /** Les flancs à l'ombre, en bas. */
-  mossShade: 0x5b7652,
+  /** La vase des rives, au ras de l'eau : un gris d'olive éteint. */
+  mud: 0x6c6d58,
+  /**
+   * Le sol de la forêt, en bas, sous la canopée (retouche du lot 2, directeur artistique : « le vert est trop jaune ») :
+   * une mousse sombre tirée vers le bleu-vert, discrète.
+   */
+  moss: 0x4f6a5a,
+  /** Les flancs au soleil, en bas. */
+  mossSun: 0x637a62,
+  /** Les flancs à l'ombre, en bas (jamais presque noirs). */
+  mossShade: 0x465f52,
   /** L'ocre des Contreforts, au pied des aiguilles. */
   ochre: 0xb39a64,
-  /** La pierre des aiguilles et des falaises. */
+  /** La pierre des aiguilles, du plateau et des falaises : le gris chaud moussu de la fiche (§ 2). */
   stone: 0x8e938b,
-  /** La pierre à l'ombre. */
-  stoneShade: 0x777d76,
+  /** La pierre à l'ombre : un aplat plus sombre, jamais presque noir. */
+  stoneShade: 0x777d77,
   /** La pierre claire, au soleil bas. */
-  stoneSun: 0xa9ab9e,
-  /** La mousse sur le plateau. */
-  plateauMoss: 0x7f9467,
-  /** La lanterne, le bronze rallumé. */
+  stoneSun: 0xaeb0a3,
+  /** La mousse sur la pierre du plateau, grise, en taches. */
+  plateauMoss: 0x7c8a6c,
+  /** La lanterne d'ocre, le bronze rallumé. */
   lantern: 0xe0a84a,
+  /** Les planches du ponton de la Lisière, et leur ombre. */
+  plank: 0x9b7c58,
+  plankShade: 0x7b6549,
 } as const;
 
 /** Le bord de l'île (la vase comprise), dans le sens des aiguilles d'une montre depuis le nord-ouest. */
@@ -82,12 +88,16 @@ export const PLATEAU = { height: 13, cliff: 4 } as const;
 /**
  * Les chenaux de la forêt (fiche, § 5 : « des chenaux profonds dans la Forêt, sans gué ») : une ligne et sa demi-largeur
  * (en unités). Le chenal de l'ouest, du pied de la falaise à la mer du sud, sépare les Contreforts ; le grand chenal, de
- * lui jusqu'à la mer du sud-est, passe au sud de la Montée et sépare les Roselières. Chacun n'a qu'un passage, le pont de
- * sa terre.
+ * lui jusqu'à la mer du sud-est, passe au sud de la Montée, longe les Radeaux (leurs plateformes sont sur son eau) et
+ * sépare les Roselières. Chacun n'a qu'un passage, le pont de sa terre. Retouche du lot 2 (directeur artistique : « l'eau
+ * des chenaux ne se voit pas en 3D ») : un peu plus larges, la forêt tenue hors de l'eau (./terrain5e.ts). L'anse de la
+ * Lisière, au nord du débarcadère : une baie courte ouverte sur la mer de l'est, où avance le ponton ; elle ne sépare
+ * aucune terre.
  */
 export const CHANNELS_5E = {
-  ouest: { line: poly([[632, 418], [625, 520], [612, 620], [600, 700], [585, 830], [560, 950], [545, 1070]]), halfWidth: 5.5 },
-  grand: { line: poly([[605, 698], [760, 700], [900, 695], [1000, 692], [1100, 725], [1160, 760], [1230, 820], [1260, 920], [1245, 1010], [1230, 1100]]), halfWidth: 6 },
+  ouest: { line: poly([[632, 418], [625, 520], [612, 620], [600, 700], [585, 830], [560, 950], [545, 1070]]), halfWidth: 6.5 },
+  grand: { line: poly([[605, 698], [760, 700], [900, 695], [1000, 694], [1090, 716], [1150, 728], [1205, 745], [1240, 805], [1262, 920], [1245, 1010], [1230, 1100]]), halfWidth: 7 },
+  anse: { line: poly([[1660, 850], [1590, 862], [1556, 880]]), halfWidth: 5.5 },
 } as const satisfies Record<string, { line: readonly Vec2[]; halfWidth: number }>;
 
 /** Un chenal, par son nom. */
@@ -109,21 +119,21 @@ const needle = (p: [number, number], radius: number, height: number, sides: numb
 
 /**
  * Les aiguilles du plateau (fiche, § 5 : « les aiguilles en sont les piliers »), loin des chemins et des lieux (un test le
- * vérifie), et deux chicots dans les Contreforts. La Montée, la plus haute, est un lieu (./ruins5e.ts).
+ * vérifie) : une seule famille, effilée et facettée (retouche du lot 2, directeur artistique : les chicots trapus des
+ * Contreforts sont retirés), toutes plus hautes que la tour du Donjon. La Montée, la plus haute, est un lieu
+ * (./ruins5e.ts) ; toutes se dessinent par `spire` (./spire5e.ts).
  */
 export const NEEDLES_5E: readonly Needle[] = [
-  needle([560, 190], 5, 28, 6, 0.3),
-  needle([905, 170], 6, 27, 7, 1.1),
-  needle([1190, 222], 5, 26, 6, 0.7),
-  needle([1440, 250], 4.5, 24, 5, 0.2),
-  needle([640, 400], 4, 22, 6, 1.4),
-  needle([1110, 420], 4, 20, 5, 0.9),
-  needle([1450, 380], 4, 22, 6, 0.5),
-  needle([480, 330], 4.5, 25, 6, 1.9),
-  needle([330, 330], 4, 20, 5, 1.2),
-  needle([760, 120], 4, 26, 6, 0.1),
-  needle([330, 640], 3, 7, 5, 0.6),
-  needle([470, 860], 2.6, 6, 5, 1.7),
+  needle([560, 190], 5, 34, 6, 0.3),
+  needle([905, 170], 6, 36, 7, 1.1),
+  needle([1190, 222], 5, 33, 6, 0.7),
+  needle([1440, 250], 4.5, 31, 5, 0.2),
+  needle([690, 380], 4, 28, 6, 1.4),
+  needle([1110, 420], 4, 27, 5, 0.9),
+  needle([1450, 380], 4, 29, 6, 0.5),
+  needle([480, 330], 4.5, 32, 6, 1.9),
+  needle([330, 330], 4, 27, 5, 1.2),
+  needle([760, 120], 4, 33, 6, 0.1),
 ];
 
 /** Les lieux du 5e : leurs identifiants restent neutres, leurs noms sont ceux de la fiche (§ 4). */
@@ -151,13 +161,14 @@ interface PlaceSpec extends Omit<OpenPlace<PlaceId5e>, 'center' | 'door' | 'scen
 
 /**
  * Les quatorze lieux (fiche, § 4 : la colonne « Île actuelle » donne l'île qu'ils remplacent), à leur place sur le plan
- * et à leur étage : le bas (la Forêt, les Contreforts) ou le plateau (les Aiguilles). Les Radeaux sont posés au bord du
- * grand chenal (« sur le grand chenal »), un peu au sud de leur rond sur le plan. Aucune mission ne se joue encore en
+ * et à leur étage : le bas (la Forêt, les Contreforts) ou le plateau (les Aiguilles). Les Radeaux, validés en (1 175,
+ * 700) par le directeur artistique, sont au bord du grand chenal, leurs plateformes sur son eau ; leur porte est au
+ * nord-est, sur la terre. Aucune mission ne se joue encore en
  * scénette : toutes passent par l'écran habituel, depuis le panneau du lieu.
  */
 const PLACE_SPECS: readonly PlaceSpec[] = [
-  { id: 'montee', name: 'La Montée', at: 'à la Montée', agree: 'fs', island: 'maths-5e-signed-numbers', plan: [900, 585], door: { x: 0, z: 9 } },
-  { id: 'radeaux', name: 'Les Radeaux', at: 'aux Radeaux', agree: 'mp', island: 'maths-5e-proportionality', plan: [1175, 700], door: { x: 4, z: 5.5 } },
+  { id: 'montee', name: 'La Montée', at: 'à la Montée', agree: 'fs', island: 'maths-5e-signed-numbers', plan: [900, 585], door: { x: 0, z: 11 } },
+  { id: 'radeaux', name: 'Les Radeaux', at: 'aux Radeaux', agree: 'mp', island: 'maths-5e-proportionality', plan: [1175, 700], door: { x: 5, z: -4 } },
   { id: 'croisee', name: 'La Croisée', at: 'à la Croisée', agree: 'fs', island: 'french-5e-homophones', plan: [1000, 840], door: { x: 0, z: 7.5 } },
   { id: 'instants', name: 'Les Instants', at: 'aux Instants', agree: 'mp', island: 'french-5e-conjugation', plan: [770, 800], door: { x: 3, z: 7.5 } },
   { id: 'semaphore', name: 'Le Sémaphore', at: 'au Sémaphore', agree: 'ms', island: 'english-5e-vocabulary', plan: [420, 240], door: { x: 2, z: 8 } },
@@ -192,11 +203,19 @@ export const PLACES_5E: readonly OpenPlace<PlaceId5e>[] = PLACE_SPECS.map((s) =>
 export const UPPER_PLACES_5E: readonly PlaceId5e[] = ['semaphore', 'gaillard', 'donjon', 'nacelles', 'oracle'];
 
 /**
- * Le lieu de départ du 5e, au sud-est (fiche, § 5) : le débarcadère de la Lisière, près du Hameau. Ce lot n'en pose que le
- * quai, où Kéo arrive (le nœud du quai a le nom de celui de l'Escale, `port-quai`, que la page connaît) ; l'école, la
- * galerie, l'Entrepôt et la Nef viennent avec leur lot.
+ * Le lieu de départ du 5e, au sud-est (fiche, § 5) : le débarcadère de la Lisière, près du Hameau, au fond de l'anse.
+ * Ce lot n'en pose que le quai, où Kéo arrive (le nœud du quai a le nom de celui de l'Escale, `port-quai`, que la page
+ * connaît), et le ponton ; l'école, la galerie, l'Entrepôt et la Nef viennent avec leur lot.
  */
-export const DEPARTURE_5E = { name: 'La Lisière', node: 'port-quai', at: fromPlan5e([1528, 925]) } as const;
+export const DEPARTURE_5E = { name: 'La Lisière', node: 'port-quai', at: fromPlan5e([1548, 915]) } as const;
+
+/**
+ * Le ponton de la Lisière (retouche du lot 2, consultant d'Archipéo : « le quai ne se voit pas ») : des planches sur
+ * pieux, du quai vers le cœur de l'anse, au nord, devant Kéo et la caméra au départ ; deux lanternes d'ocre à son bout.
+ * `from` : son pied, sur la rive ; `to` : son bout, sur l'eau ; `width` : sa largeur ; `deck` : la hauteur de ses planches
+ * au-dessus de l'eau. Un décor : on n'y marche pas.
+ */
+export const QUAY_5E = { from: fromPlan5e([1549, 908]), to: fromPlan5e([1574, 862]), width: 2.6, deck: 0.7 } as const;
 
 const node = (id: string, p: [number, number]): PathNode => ({ id, at: fromPlan5e(p) });
 
@@ -213,7 +232,7 @@ const doorNode = (s: PlaceSpec): PathNode => {
  */
 export const PATH_NODES_5E: readonly PathNode[] = [
   ...PLACE_SPECS.map(doorNode),
-  node(DEPARTURE_5E.node, [1528, 925]),
+  node(DEPARTURE_5E.node, [1548, 915]),
   node('lis-1', [1470, 905]),
   node('fro-1', [1385, 890]),
   node('aub-1', [1400, 1000]),

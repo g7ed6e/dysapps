@@ -2,13 +2,14 @@
 // par la seule hauteur du sol (jamais un sol posé sur un autre). En bas, la forêt de racines (les Frondaisons, les
 // Roselières) et les Contreforts, coupés de chenaux d'eau sombre, profonds, sans gué ; au nord, le plateau de pierre,
 // bordé de vraies falaises (13 unités en 4), qui tombe dans la mer au nord ; le chenal de l'ouest l'entaille. Sur le
-// plateau, les aiguilles de basalte, à pans ; dans la forêt, des palétuviers géants en masses (leurs racines en arceaux,
-// une canopée basse), loin des chemins et des lieux. Les tuiles, leurs deux niveaux de détail et leurs anneaux sont ceux
+// plateau, les aiguilles de basalte, effilées et à pans (./spire5e.ts) ; dans la forêt, des palétuviers géants en masses
+// (leurs racines en arceaux, une canopée basse), loin des chemins, des lieux et de l'eau. Les tuiles, leurs deux niveaux de détail et leurs anneaux sont ceux
 // du 6e (./terrain.ts) : seuls la hauteur, la peinture et ce qui pousse changent. Code pur.
 import { FacetBuilder, type Facets } from './facets';
 import { distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { CHANNELS_5E, COAST_5E, COLORS_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E, TERRAIN_5E, type ChannelId, type Needle } from './plan5e';
+import { CHANNELS_5E, COAST_5E, COLORS_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, TERRAIN_5E, type ChannelId, type Needle } from './plan5e';
 import { SHADOW_DIR_5E } from './sky';
+import { spire, spireTriangles } from './spire5e';
 import { drawTileWith, farHeightsOf, heightOnFar, heightOnMesh, tileRect, type GroundPaint, type HeightField, type P3, type TileDetail } from './terrain';
 
 /** Le fond de la mer autour de l'île, et celui des chenaux : profonds, sans gué ni banc (fiche, § 5). */
@@ -107,9 +108,16 @@ const SUN_FLAT = { x: -SHADOW_DIR_5E.x, z: -SHADOW_DIR_5E.z } as const;
 /** Une tache du sol, par cases de cinq unités : des aplats d'un seul tenant, jamais une moucheture. */
 const patch = (x: number, z: number): number => hash2(Math.floor(x / 5) + 4000, Math.floor(z / 5) + 4000);
 
-/** La couleur d'un sol à plat en (x, z), à la hauteur `h`. */
+/**
+ * La couleur d'un sol à plat en (x, z), à la hauteur `h`. Le dessus du plateau est de pierre (retouche du lot 2,
+ * directeur artistique : il se lisait comme une prairie) : des dalles grises, claires ou plus sombres, quelques taches de
+ * mousse grise ; en bas, la mousse sombre de la forêt, l'ocre des Contreforts.
+ */
 function flat5e(x: number, z: number, h: number): number {
-  if (h > TOP_FROM) return patch(x, z) < 0.22 ? COLORS_5E.stoneSun : COLORS_5E.plateauMoss;
+  if (h > TOP_FROM) {
+    const k = patch(x, z);
+    return k < 0.45 ? COLORS_5E.stone : k < 0.78 ? COLORS_5E.stoneSun : COLORS_5E.plateauMoss;
+  }
   if (h < 0.3) return COLORS_5E.mud;
   const p = { x, z };
   if (contreforts(p) > 0.5) return patch(x, z) < 0.6 ? COLORS_5E.ochre : COLORS_5E.mossSun;
@@ -145,25 +153,26 @@ const PAINT_5E: GroundPaint = { facet: facet5e, flat: flat5e, foam: noFoam };
 // ---------- Ce qui pousse, et les aiguilles ----------
 
 /**
- * Les couleurs de la forêt : le feuillage des palétuviers et son dessus au soleil (deux verts olive, ni l'herbe ni la
- * mousse du sol), leurs racines et leur tronc (un bois gris-brun, jamais sombre) ; aux Contreforts, des buissons d'olive
- * sèche.
+ * Les couleurs de la forêt : le feuillage des palétuviers et son dessus au soleil (deux verts gris tirés vers le bleu,
+ * discrets : retouche du lot 2, « le vert est trop jaune »), leurs racines et leur tronc (un bois gris-brun, jamais
+ * sombre) ; aux Contreforts, des buissons d'olive sèche, vers l'ocre.
  */
 export const FOREST_COLORS = {
-  canopy: 0x58764a,
-  canopyTop: 0x6f8c52,
-  root: 0x857560,
-  trunk: 0x76684f,
-  shrub: 0x8a8f55,
-  shrubTop: 0x9fa063,
+  canopy: 0x56695a,
+  canopyTop: 0x6b7d62,
+  root: 0x7c7060,
+  trunk: 0x6f6452,
+  shrub: 0x8a8a5e,
+  shrubTop: 0x9e9b6c,
 } as const;
 
 /**
  * Où pousse la forêt : une place tous les `cell` unités au plus, gardée une fois sur `keep` ; jamais à moins de `path`
- * unités d'un chemin, de `place` du centre d'un lieu (la Montée : `montee`), ni sur le plateau, sa falaise ou l'eau
- * profonde (les racines tiennent au bord de l'eau, jusqu'à `wet` unités dedans).
+ * unités d'un chemin, de `place` du centre d'un lieu (la Montée : `montee`), de `quay` du ponton de la Lisière, ni sur le
+ * plateau ou sa falaise ; un tronc se tient à `dry` unités au moins de l'eau (retouche du lot 2, directeur artistique :
+ * la canopée couvrait les chenaux, leur eau ne se voyait pas en 3D).
  */
-const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 13, cliff: 2.5, wet: 1.2 } as const;
+const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, quay: 5, cliff: 2.5, dry: 2.2 } as const;
 
 /** Les tronçons des chemins du 5e (pour garder la forêt à distance). */
 const SEGMENTS: readonly (readonly [Vec2, Vec2])[] = (() => {
@@ -201,8 +210,8 @@ function treesIn(tx: number, tz: number): readonly Tree[] {
       const p = { x: (i + 0.15 + 0.7 * hash2(i + 101, j)) * c, z: (j + 0.15 + 0.7 * hash2(i, j + 211)) * c };
       if (p.x < r.minX || p.x >= r.maxX || p.z < r.minZ || p.z >= r.maxZ) continue;
       if (plateauEdge(p) > -FOREST_KEEP.cliff) continue;
-      if (landDistance5e(p) < -FOREST_KEEP.wet || signedDistance(p, COAST_5E) < 1) continue;
-      if (nearPath(p, FOREST_KEEP.path) || nearPlace(p)) continue;
+      if (landDistance5e(p) < FOREST_KEEP.dry || signedDistance(p, COAST_5E) < 1) continue;
+      if (nearPath(p, FOREST_KEEP.path) || nearPlace(p) || distanceToPolyline(p, [QUAY_5E.from, QUAY_5E.to]) < FOREST_KEEP.quay) continue;
       const shrub = contreforts(p) > 0.5;
       out.push({ x: p.x, z: p.z, y: heightAt5e(p), size: (shrub ? 0.62 : 0.85) + 0.4 * hash2(i + 7, j + 13), yaw: 6.283 * hash2(i + 31, j + 17), shrub });
     }
@@ -271,21 +280,13 @@ const needlesIn = (tx: number, tz: number): Needle[] => {
 /** Le pied d'une aiguille s'enfonce d'autant : jamais elle ne flotte sur une pente. */
 const NEEDLE_SINK = 1;
 
-/**
- * Une aiguille de basalte, à pans : un fût qui se resserre, un second, un peu tourné, puis sa pointe ; la pierre au
- * soleil sur ses dessus (le soleil bas prend les sommets). La même de près et de loin : elle se voit de toute l'île.
- */
+/** Une aiguille du plateau (./spire5e.ts, la famille de la Montée). La même de près et de loin : elle se voit de toute l'île. */
 function drawNeedle(b: FacetBuilder, n: Needle): number {
-  const y = heightAt5e(n.at) - NEEDLE_SINK;
-  const h = n.height + NEEDLE_SINK;
-  b.prism({ x: n.at.x, y, z: n.at.z, yaw: n.turn }, n.radius, n.radius * 0.72, h * 0.58, n.sides, COLORS_5E.stone, COLORS_5E.stoneSun);
-  b.prism({ x: n.at.x, y: y + h * 0.58, z: n.at.z, yaw: n.turn + 0.4 }, n.radius * 0.66, n.radius * 0.34, h * 0.32, n.sides, COLORS_5E.stoneShade, COLORS_5E.stoneSun);
-  b.prism({ x: n.at.x, y: y + h * 0.9, z: n.at.z, yaw: n.turn + 0.9 }, n.radius * 0.34, 0, h * 0.1, n.sides, COLORS_5E.stoneSun);
-  return needleTriangles(n);
+  return spire(b, { x: n.at.x, y: heightAt5e(n.at) - NEEDLE_SINK, z: n.at.z, radius: n.radius, height: n.height + NEEDLE_SINK, sides: n.sides, turn: n.turn });
 }
 
-/** Les triangles d'une aiguille : deux fûts (côtés et dessus) et une pointe. */
-const needleTriangles = (n: Needle): number => 2 * (3 * n.sides) + n.sides;
+/** Les triangles d'une aiguille. */
+const needleTriangles = (n: Needle): number => spireTriangles(n.sides);
 
 /** Ce qui pousse dans une tuile, et ses aiguilles, ou leur seul nombre (sans `b`). */
 function drawFlora5e(tx: number, tz: number, detail: TileDetail, b: FacetBuilder | null): number {

@@ -994,6 +994,65 @@
 .open-world-map-keo:not([data-haut='oui']) .open-world-map-up {
   display: none;
 }
+/* Le triangle « en haut » de la pastille réduite à son icône, et de Kéo sans « Toi » (au plus grand texte, sur un
+   téléphone ; référent dys, relecture du lot 2 du 5e : il disparaissait avec le nom) : un insigne rond, uni, collé au
+   coin haut droit de l'icône, le triangle de la couleur du texte dedans ; l'état garde le coin bas droit. */
+.open-world-map-up-badge {
+  display: none;
+}
+.open-world-map-place[data-nom='non'] .open-world-map-up-badge,
+.open-world-map-keo[data-nom='non'][data-haut='oui'] .open-world-map-up-badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--text);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1;
+}
+.open-world-map-up-badge .open-world-map-up {
+  margin-left: 0;
+  vertical-align: 0;
+}
+.open-world-map-keo-disc {
+  position: relative;
+}
+/* Sur un téléphone couché, un nom d'une seule ligne n'a pas d'interligne à garder (aucune ligne ne le suit) : sa pastille
+   prend la hauteur de sa ligne, plus l'espace des lettres, au lieu de celle de deux (consultant UX UI, relecture du lot 2
+   du 5e : au plus grand texte, « La Montée » faisait 100 px de haut et masquait le plateau). Les noms sur deux lignes
+   gardent l'interligne choisi. Au 6e aussi. */
+@media (max-height: 500px) {
+  .open-world-map-place:not([data-nom='serre']) .open-world-map-lines:not([data-lignes='2']),
+  .open-world-map-closed:not([data-nom='serre']) .open-world-map-closed-name {
+    line-height: 1.2;
+  }
+  .open-world-map-place:not([data-nom='serre']):not([data-nom='non']) {
+    padding-block: 0.1rem;
+  }
+}
+/* Le nom d'une terre fermée sous le cadenas de son passage (GD-22, lot 2, au 5e), et l'icône de la cabine de la Montée
+   devant celui des Aiguilles : la forme du nom tu des lieux fermés (tirets, fond adouci), l'icône à la taille du texte. */
+.open-world-map-closed-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+.open-world-map-closed-name > svg {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+}
+.open-world-map-closed[data-nom='serre'] .open-world-map-closed-name {
+  flex-direction: column;
+}
 /* Trop serré : la pastille seule, « Toi » reste dit aux lecteurs d'écran. */
 .open-world-map-keo[data-nom='non'] .open-world-map-keo-word {
   visibility: hidden;

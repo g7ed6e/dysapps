@@ -14,7 +14,8 @@ import { getBiome } from '../../biomes';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
 import { MAP_BAR_ROOM, grown, layoutMapLabels, nameLines, type MapLabel, type MapLabelSpot, type Rect } from '../../world/continu/map';
 import { mapStateWord } from './constructionParts';
-import { bridgeSpot, isBridgeSpot, landOf, type LinkedLand } from '../../world/continu/lands';
+import { bridgeSpot, isBridgeSpot, landById, landOf, type LinkedLand } from '../../world/continu/lands';
+import { isCabin } from '../../world/continu/bridges';
 import type { OpenPlace, PlaceId } from '../../world/continu/levelPlan';
 import { closedLandLabel } from './ClosedLandSheet';
 import type { MapSpotOnScreen } from './scene';
@@ -38,6 +39,12 @@ interface Props {
    * (`up`, le point que la scène donne) ; rien au 6e.
    */
   upper?: readonly PlaceId[];
+  /**
+   * Le nom de chaque terre fermée sous le cadenas de son passage (GD-22, lot 2, retouche : consultant d'Archipéo, « le nom
+   * de la terre fermée ne se lit pas sur la Carte ») ; devant lui, l'icône de la cabine pour la terre du haut (consultant
+   * UX UI : la cabine près de la Montée). Au 5e seulement : le 6e garde ses cadenas seuls.
+   */
+  landNames?: boolean;
   /**
    * La page y range la fonction qui pose les étiquettes (le rappel `onMapPlaces` de la scène l'appelle) ; `moving` tant
    * que la Carte glisse (sans la reprise des noms fermés, posée à l'arrêt).
@@ -110,13 +117,23 @@ function Name({ text, wrap = false, up = false }: { text: string; wrap?: boolean
 /** Le triangle « en haut », dessiné en CSS (openWorld.css), jamais une couleur seule : sa forme le dit, le bouton le lit. */
 const Up = () => <span className="open-world-map-up" aria-hidden="true" />;
 
+/**
+ * Le triangle « en haut » de la pastille réduite à son icône (au plus grand texte, sur un téléphone ; référent dys,
+ * relecture du lot 2 : il disparaissait avec le nom) : un insigne collé au coin haut de l'icône, sur un disque uni.
+ */
+const UpBadge = () => (
+  <span className="open-world-map-up-badge" aria-hidden="true">
+    <Up />
+  </span>
+);
+
 /** Ce que dit un lieu du haut, après son nom. */
 const UP_WORDS = ', en haut';
 
 /** Ce que dit la pastille de Kéo. */
 const KEO_LABEL = 'Toi : Kéo est ici';
 
-export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, states, words, portName, upper = [], onCrowded }: Props) {
+export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, states, words, portName, upper = [], landNames = false, onCrowded }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number; narrow?: { w: number; h: number } }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
@@ -133,10 +150,12 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
   const asked = useRef(-1);
   const answered = useRef(false);
   const crowdedRef = useRef(onCrowded);
+  const upperRef = useRef(upper);
   // Les props relues par les poses (appelées par la scène, hors du rendu de React), rangées après chaque rendu.
   useLayoutEffect(() => {
     crowdedRef.current = onCrowded;
-  }, [onCrowded]);
+    upperRef.current = upper;
+  }, [onCrowded, upper]);
 
   // Les étiquettes à poser pour des points donnés, avec leurs tailles mesurées (les points cachés ou pas encore mesurés
   // n'en ont pas).
@@ -147,7 +166,9 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       if (!s.shown || !size) continue;
       // Un cadenas de pont ; Kéo ; une pastille, celle d'un lieu ouvert ou pâle.
       const kind = s.id === 'keo' ? 'keo' : isBridgeSpot(s.id) ? 'closed' : 'open';
-      items.push({ id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port', ...(size.narrow ? { narrow: size.narrow } : {}) });
+      // Au 5e (des lieux du haut), le nom d'un lieu du bas se pose d'abord sous lui : le plateau reste à découvert.
+      const below = kind === 'open' && upperRef.current.length > 0 && s.id !== 'port' && !upperRef.current.includes(s.id as PlaceId);
+      items.push({ id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port', ...(below ? { below } : {}), ...(size.narrow ? { narrow: size.narrow } : {}) });
     }
     return items;
   }, []);
@@ -283,6 +304,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       <span className="open-world-map-keo" data-lieu="keo" role="img" aria-label={KEO_LABEL} hidden>
         <span className="open-world-map-keo-disc" aria-hidden="true">
           <Icon name="toi" />
+          {upper.length > 0 && <UpBadge />}
         </span>
         <span className="open-world-map-keo-word" aria-hidden="true">
           Toi
@@ -319,6 +341,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
               </span>
               <span className="open-world-map-icon" aria-hidden="true">
                 <Icon name={getBiome(p.island)?.icon ?? 'map'} />
+                {upper.includes(p.id) && <UpBadge />}
               </span>
             </button>
           );
@@ -341,6 +364,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
                 se confondent pas ; l'état y passe en petit insigne, dans son coin (relecture du rivage sud). */}
             <span className="open-world-map-icon" aria-hidden="true">
               <Icon name={getBiome(p.island)?.icon ?? 'map'} />
+              {upper.includes(p.id) && <UpBadge />}
             </span>
             {/* L'état de sa construction, à côté de son nom (dessous dans la pastille serrée) : une icône, jamais la couleur
                 seule ; son mot, accordé, est dit par le bouton. Sans état, l'icône « à explorer » ne se montre que dans la pastille
@@ -365,6 +389,12 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
           <span className={`open-world-lock${land === suggested ? ' suggested' : ''}`} aria-hidden="true">
             <Icon name="lock" />
           </span>
+          {landNames && (
+            <span className="open-world-map-closed-name" aria-hidden="true">
+              {isCabin(land) && <Icon name="cabine" />}
+              <Name text={landById(land).name} />
+            </span>
+          )}
         </button>
       ))}
     </div>

@@ -5,12 +5,12 @@
 // chemins et des lieux de sa terre, vers une terre voisine, et sur l'eau (le bras de mer reste net, sa coupure bleue
 // se lit). Rien ne bouge : c'est un état, pas une animation ; quand on relie la terre, elle se lève en fondu doux après le
 // toc du pont (d'un coup avec « Réduire les animations ») : la vue n'en change que la transparence. Code pur.
-import { distance, linearRgb, smoothstep, type Vec2 } from './geometry';
+import { distance, distanceToPolyline, linearRgb, smoothstep, type Vec2 } from './geometry';
 import { nodeLands, planOfLand, type LandId, type LinkedLand } from './lands';
 import { placeById, planFor, type LevelPlan } from './levelPlan';
 import type { PathNode } from './network';
 import { PATH_NODES } from './plan6e';
-import { PATH_NODES_5E } from './plan5e';
+import { PATH_EDGES_5E, PATH_NODES_5E } from './plan5e';
 import { heightAt, heightAt as heightAt6e, landDistance, standingHeight } from './terrain';
 import { heightAt5e, landDistance5e, plateauShare } from './terrain5e';
 
@@ -50,6 +50,24 @@ export const VEIL_LAYERS: readonly { lift: number; alpha: number }[] = [
 export const VEIL_HEIGHT = VEIL_LAYERS[VEIL_LAYERS.length - 1].lift;
 
 /**
+ * Les voiles du 5e (retouche du lot 2, directeur artistique : « la brume d'état ne se voit pas en 3D » ; artiste technique
+ * 3D) : sous la canopée de la forêt, les deux voiles du 6e restaient cachés. Trois voiles : la nappe basse et dense, un
+ * voile entre les troncs, un dernier au ras de la canopée (les houppiers en sortent). Ensemble, vus d'en haut, environ
+ * 60 % (1 − 0,62 × 0,82 × 0,78), jamais plus que le 6e : jamais opaque, un lieu se lit toujours à travers.
+ */
+export const VEIL_LAYERS_5E: readonly { lift: number; alpha: number }[] = [
+  { lift: 0.6, alpha: 0.38 },
+  { lift: 3.2, alpha: 0.18 },
+  { lift: 6.8, alpha: 0.22 },
+];
+
+/**
+ * Au 5e, la brume s'écarte des chemins de sa terre (retouche du lot 2 : jamais sur un chemin) : nulle sur le chemin, à
+ * `clear` unités de son axe, pleine à `full`.
+ */
+const PATH_CLEAR_5E = { clear: 1.6, full: 4.5 } as const;
+
+/**
  * Le dessin du voile : le pas de sa grille ; jusqu'où il s'étend loin d'un chemin ou d'un lieu de sa terre (`reach`,
  * effacé dès `reach × full`) ; la largeur de son fondu vers une terre voisine (`border`) et vers l'eau (`shore` : presque
  * rien, il s'arrête net sur la rive, ses sommets mouillés posés sur elle, `toShore`) ; autour du centre d'un lieu,
@@ -72,9 +90,13 @@ interface VeilWorld {
   landDistance(p: Vec2): number;
   heightAt(p: Vec2): number;
   level(land: LandId, p: Vec2): number;
+  /** Ses voiles. */
+  layers: readonly { lift: number; alpha: number }[];
+  /** La part de brume qu'un chemin laisse en `p` (de 0 sur lui à 1 loin de lui) ; au 6e, partout 1. */
+  clear(p: Vec2): number;
 }
 
-function veilWorld(plan: LevelPlan, nodes: readonly PathNode[], base: Pick<VeilWorld, 'landDistance' | 'heightAt' | 'level'>): VeilWorld {
+function veilWorld(plan: LevelPlan, nodes: readonly PathNode[], base: Pick<VeilWorld, 'landDistance' | 'heightAt' | 'level' | 'layers' | 'clear'>): VeilWorld {
   const nodeLand = nodeLands(plan);
   const featuresOf = (land: LandId): Vec2[] => [
     ...nodes.filter((n) => nodeLand.get(n.id) === land).map((n) => n.at),
@@ -89,6 +111,9 @@ function veilWorld(plan: LevelPlan, nodes: readonly PathNode[], base: Pick<VeilW
 
 let world6e: VeilWorld | null = null;
 let world5e: VeilWorld | null = null;
+
+/** Les tronçons des chemins du 5e. */
+const PATH_SEGMENTS_5E: readonly (readonly [Vec2, Vec2])[] = PATH_EDGES_5E.map(([a, b]) => [PATH_NODES_5E.find((n) => n.id === a)!.at, PATH_NODES_5E.find((n) => n.id === b)!.at] as const);
 
 /** Les lieux du plateau du 5e (GD-22) : les Aiguilles. */
 const UPPER_LAND_5E: LandId = 'aiguilles';
@@ -108,8 +133,10 @@ function levelWorld(land: LandId): VeilWorld {
       landDistance: landDistance5e,
       heightAt: heightAt5e,
       level: (l, p) => (l === UPPER_LAND_5E ? smoothstep(0.35, 0.75, plateauShare(p)) : 1 - smoothstep(0.05, 0.4, plateauShare(p))),
+      layers: VEIL_LAYERS_5E,
+      clear: (p) => smoothstep(PATH_CLEAR_5E.clear, PATH_CLEAR_5E.full, Math.min(...PATH_SEGMENTS_5E.map(([a, b]) => distanceToPolyline(p, [a, b])))),
     }));
-  return (world6e ??= veilWorld(planFor('6e'), PATH_NODES, { landDistance, heightAt, level: () => 1 }));
+  return (world6e ??= veilWorld(planFor('6e'), PATH_NODES, { landDistance, heightAt, level: () => 1, layers: VEIL_LAYERS, clear: () => 1 }));
 }
 
 const nearest = (p: Vec2, points: readonly Vec2[]): number => points.reduce((d, q) => Math.min(d, distance(p, q)), Infinity);
@@ -140,7 +167,7 @@ export function veilShare(land: LinkedLand, p: Vec2): number {
   const inside = smoothstep(0, GRID.border, other - own);
   const near = 1 - smoothstep(GRID.reach * GRID.full, GRID.reach, own);
   const dry = Math.max(smoothstep(-GRID.shore, 0.5, w.landDistance(p)), 1 - smoothstep(GRID.place, GRID.place + GRID.shore, nearest(p, w.centers.get(land)!)));
-  return inside * near * dry * w.level(land, p);
+  return inside * near * dry * w.level(land, p) * w.clear(p);
 }
 
 /** Un sommet ramené sur la rive se pose à tant d'unités au-delà, sur la terre : la brume s'y tient entière. */
@@ -217,7 +244,7 @@ function veilOf(pos: number[], nor: number[], col: number[], land: LinkedLand): 
           if (a >= 0 && b >= 0 && a <= nx && b <= nz) soft[at(a, b)] = 0;
         }
     }
-  for (const layer of VEIL_LAYERS) {
+  for (const layer of w.layers) {
     const put = (i: number, j: number) => {
       const k = at(i, j);
       pos.push(spot[k].x, floor[k] + layer.lift, spot[k].z);

@@ -2,7 +2,7 @@
 // simulé, qui ne dessine rien). Elle lit le plan du 5e : rien de ce qui n'est qu'au 6e (l'Escale, la Nef, les Détours,
 // les scénettes) ne s'y appelle, aucune erreur `sixthPlace` ; la brume des failles s'y montre dans le monde, jamais sur
 // la Carte ; la Carte n'a pas de point « port », et met « en haut » aux lieux du plateau ; tout le décor prend le
-// brouillard, sauf le ciel, qui est le lointain lui-même.
+// brouillard, sauf le ciel, qui est le lointain lui-même, et la silhouette de Kéo, qui doit se lire au loin.
 import * as THREE from 'three';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { linkedLands } from '../../world/continu/lands';
@@ -12,7 +12,7 @@ import { questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout } from '../../world/continu/scenette';
 import { createOpenWorld, type MapSpotOnScreen, type OpenWorld, type OpenWorldOptions } from './scene';
 
-const made = vi.hoisted(() => ({ scenes: [] as THREE.Scene[] }));
+const made = vi.hoisted(() => ({ scenes: [] as THREE.Scene[], overrides: [] as THREE.Material[] }));
 vi.mock('three', async (original) => {
   const m = await original<typeof import('three')>();
   class WebGLRenderer {
@@ -21,7 +21,10 @@ vi.mock('three', async (original) => {
     shadowMap = {};
     setPixelRatio() {}
     setSize() {}
-    render() {}
+    // Le matériau de remplacement d'un passage (la silhouette de Kéo, `drawWithSilhouette`), relevé.
+    render(scene: THREE.Scene) {
+      if (scene.overrideMaterial) made.overrides.push(scene.overrideMaterial);
+    }
     dispose() {}
     compile() {}
     setClearColor() {}
@@ -144,13 +147,39 @@ describe('La scène du 5e', () => {
     expect(spots.find((s) => s.id === 'keo')).toBeDefined();
   });
 
-  it('tout le décor prend le brouillard : seul le ciel, le lointain lui-même, l’ignore', () => {
+  it('le décor du 5e a sa lumière par la hauteur : chaque ligne trouve sa place dans le shader de Three.js', () => {
+    let land: THREE.MeshLambertMaterial | undefined;
+    scene.traverse((o) => {
+      if (o instanceof THREE.Mesh && o.material instanceof THREE.MeshLambertMaterial && o.material.customProgramCacheKey() === 'archipeo-hauteur') land = o.material;
+    });
+    expect(land).toBeDefined();
+    const shader = { vertexShader: THREE.ShaderLib.lambert.vertexShader, fragmentShader: THREE.ShaderLib.lambert.fragmentShader, uniforms: {} } as unknown as THREE.WebGLProgramParametersWithUniforms;
+    land!.onBeforeCompile(shader, {} as THREE.WebGLRenderer);
+    expect(shader.vertexShader).toContain('vHeight = ( modelMatrix * vec4( transformed, 1.0 ) ).y;');
+    expect(shader.fragmentShader).toContain('reflectedLight.directDiffuse *= mix( heightSunLow, 1.0, heightLift );');
+    expect(shader.fragmentShader).toContain('mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) )');
+    expect(shader.fragmentShader).not.toContain('#include <fog_fragment>');
+    expect(shader.fragmentShader).toContain('lanternColor');
+    // La lampe du 6e et la lanterne du 5e, puis le morceau de Three.js, une seule fois.
+    expect(shader.fragmentShader.split('#include <opaque_fragment>')).toHaveLength(2);
+    expect(Object.keys(shader.uniforms)).toEqual(expect.arrayContaining(['heightLow', 'heightHigh', 'heightSunLow', 'heightTintLow', 'heightFog', 'lanternColor', 'lampColor']));
+  });
+
+  it('tout le décor prend le brouillard ; deux exceptions : le ciel, le lointain lui-même, et la silhouette de Kéo', () => {
     const fogless: THREE.Material[] = [];
     scene.traverse((o) => {
       if (!(o instanceof THREE.Mesh)) return;
       for (const m of [o.material].flat() as THREE.Material[]) if ('fog' in m && m.fog === false) fogless.push(m);
     });
+    // Dans la scène, le ciel seul : dessiné d'abord, sans profondeur.
     expect(fogless).toHaveLength(1);
     expect(fogless[0].depthTest).toBe(false);
+    // L'autre, hors de la scène : la silhouette de Kéo, le matériau qui remplace tous les autres le temps d'un passage
+    // (là seulement où le décor passe devant lui) ; sans brouillard, elle dit où il est même au loin. Ce n'est pas un décor.
+    expect(made.overrides.length).toBeGreaterThan(0);
+    for (const m of made.overrides) {
+      expect('fog' in m && m.fog).toBe(false);
+      expect(m.depthFunc).toBe(THREE.GreaterDepth);
+    }
   });
 });

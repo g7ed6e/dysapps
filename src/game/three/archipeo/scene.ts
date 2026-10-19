@@ -27,7 +27,7 @@ import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLand
 import { isSixthPlace, placeById, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
 import { levelWorld, type LevelWorld } from '../../world/continu/levelWorld';
 import { cliffMapLine, riftMistFacets } from '../../world/continu/mist5e';
-import { DEPARTURE_5E } from '../../world/continu/plan5e';
+import { COLORS_5E, DEPARTURE_5E } from '../../world/continu/plan5e';
 import { onPlateau } from '../../world/continu/terrain5e';
 import { freeRoute, isWalkable, nearestWalkable, onPathCell, walkGridSteps, type WalkGrid } from '../../world/continu/freeWalk';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
@@ -72,7 +72,7 @@ import {
   type ScenetteLayout,
 } from '../../world/continu/scenette';
 import { SEA_TEXTURE } from '../../world/continu/sea';
-import { skyDome } from '../../world/continu/sky';
+import { skyDome, type HeightLight } from '../../world/continu/sky';
 import { ringHeights, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
@@ -643,6 +643,46 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
 }
 
 /**
+ * La lumière par la hauteur (GD-22, lot 2, retouche : les deux étages du 5e ; ./world/continu/sky.ts, `HeightLight`),
+ * ajoutée au matériau du décor : sous `low`, le soleil affaibli et le ciel renvoyé refroidi (la pénombre sous la
+ * canopée) ; au-dessus de `high`, toute la lumière (l'or sur les sommets) ; le brouillard s'éclaircit en hauteur (les
+ * sommets dépassent la brume du lointain). La hauteur est celle d'un sommet de chaque triangle (`flat`, le dernier :
+ * le haut d'un pan dressé), pas interpolée : chaque facette garde un seul aplat. La lanterne d'ocre du 5e (`COLORS_5E.lantern`) se dessine sans ombre, comme la
+ * lampe du 6e. Quelques lignes de shader après celles de `unshadedLamp`, aucun appel de plus ; le programme a sa propre
+ * clé (le 6e garde le sien, inchangé).
+ */
+function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight): THREE.MeshLambertMaterial {
+  const before = m.onBeforeCompile;
+  const lantern = new THREE.Vector3(...linearRgb(COLORS_5E.lantern));
+  m.onBeforeCompile = (shader, renderer) => {
+    before.call(m, shader, renderer);
+    shader.uniforms.heightLow = { value: light.low };
+    shader.uniforms.heightHigh = { value: light.high };
+    shader.uniforms.heightSunLow = { value: light.sunLow };
+    shader.uniforms.heightTintLow = { value: new THREE.Vector3(...light.tintLow) };
+    shader.uniforms.heightFog = { value: new THREE.Vector3(light.fogFrom, light.fogTo, light.fogTop) };
+    shader.uniforms.lanternColor = { value: lantern };
+    if (import.meta.env.DEV && !shader.fragmentShader.includes('#include <lights_fragment_end>')) console.warn('heightLit : #include <lights_fragment_end> introuvable, la lumière reste à plat');
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nflat varying float vHeight;')
+      .replace('#include <project_vertex>', '#include <project_vertex>\nvHeight = ( modelMatrix * vec4( transformed, 1.0 ) ).y;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nflat varying float vHeight;\nuniform float heightLow;\nuniform float heightHigh;\nuniform float heightSunLow;\nuniform vec3 heightTintLow;\nuniform vec3 heightFog;\nuniform vec3 lanternColor;')
+      .replace(
+        '#include <lights_fragment_end>',
+        '#include <lights_fragment_end>\nfloat heightLift = smoothstep( heightLow, heightHigh, vHeight );\nreflectedLight.directDiffuse *= mix( heightSunLow, 1.0, heightLift );\nreflectedLight.indirectDiffuse *= mix( heightTintLow, vec3( 1.0 ), heightLift );',
+      )
+      .replace('#include <opaque_fragment>', '#ifdef USE_COLOR\nif ( all( lessThan( abs( vColor.rgb - lanternColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n#endif\n#include <opaque_fragment>')
+      .replace(
+        '#include <fog_fragment>',
+        '#ifdef USE_FOG\nfloat fogFactor = smoothstep( fogNear, fogFar, vFogDepth ) * mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) );\ngl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n#endif',
+      );
+  };
+  m.customProgramCacheKey = () => 'archipeo-hauteur';
+  return m;
+}
+
+/**
  * Le matériau de l'eau (reprise du lot 3) : l'image de l'eau porte trois champs (le cœur des bras de mer, l'eau claire,
  * le palier du milieu au large, ./world/continu/sea.ts) ; le shader les lit interpolés et tranche net sur leur ligne
  * zéro, adoucie d'un pixel d'écran (`fwidth`) : quatre paliers francs, au contour lisse qui épouse le bras, jamais une flaque pixellisée. Une ligne de
@@ -753,6 +793,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // L'angle du rotor de la Turbine, avancé de même, sauf pendant une question.
   const rotorAngle = { value: 0 };
   const landMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), vaneAngle, rotorAngle);
+  // Au 5e, la lumière par la hauteur (ses deux étages) ; le 6e garde son matériau tel quel.
+  if (world.heightLight) heightLit(landMaterial, world.heightLight);
   const tiles = createTileStore(field, undefined, world.tiles);
   const nearRing = new RingMesh(landMaterial, 9000);
   const farRing = new RingMesh(landMaterial, 6000);
@@ -811,6 +853,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Le 5e n'en a pas (ses lieux sont des ruines) : le regard ne s'y lève pas.
   const TALL: readonly PlaceId[] = sixth ? ['phare', 'lookout'] : [];
   const tallTops = new Map<PlaceId, Vec3>(TALL.map((id) => [id, { x: placeById(id).center.x, y: feet.get(id)!.y + modelOfPlace(id).top, z: placeById(id).center.z }]));
+  // Au 5e (aucun lieu haut), `lanternTop` reste à l'origine, (0, 0, 0) : il n'est jamais cadré. `nearLantern` n'y trouve
+  // aucun lieu, la part du regard levé (`look`) reste à 0, et `lookUp` ne bouge alors pas la caméra : ce point ne compte
+  // pas (expert frontend, relecture du lot 2). La Montée, plus haute que le Phare, n'y entre pas : son sommet sort du
+  // champ de toute façon, et le regard levé est un geste du 6e.
   const lanternTop: Vec3 = { ...(tallTops.get('phare') ?? { x: 0, y: 0, z: 0 }) };
   /** La hauteur bâtie de chaque lieu, au-dessus de son pied (le lieu entier tant que la page n'a rien dit). */
   const builtTop = new Map<PlaceId, number>();

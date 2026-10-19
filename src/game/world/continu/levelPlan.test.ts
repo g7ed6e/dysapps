@@ -3,11 +3,20 @@
 // par son seul identifiant.
 import { describe, expect, it } from 'vitest';
 import { OPEN_WORLD_ARCHIPELAGOS } from '../../worldLayoutFactory';
-import { ALL_LANDS, ALL_PLANS, OPEN_WORLD_LEVELS, levelOfPlace, placeById, placeOfIsland, planFor } from './levelPlan';
+import { ALL_LANDS, ALL_PLANS, OPEN_WORLD_LEVELS, levelOfPlace, placeById, placeOfIsland, placeRecord, planFor } from './levelPlan';
 import { COAST, LANDS_6E, OFFSHORE, PATH_EDGES, PLACES, STRAITS, TERRAIN } from './plan6e';
 import { LANDS_5E, PLACES_5E } from './plan5e';
 
 describe('Le plan par niveau', () => {
+  it('`placeRecord` a une clé par lieu de son plan, et aucune autre, pour chaque plan (expert frontend, relecture du lot 2 du 5e)', () => {
+    // Le type `Record<PlaceId, T>` ne le vérifie plus depuis que `PlaceId` réunit les lieux de tous les niveaux.
+    for (const plan of ALL_PLANS) {
+      const record = placeRecord(plan, (id) => id);
+      expect(Object.keys(record).sort(), plan.level).toEqual(plan.places.map((p) => p.id).sort());
+      for (const p of plan.places) expect(record[p.id], p.id).toBe(p.id);
+    }
+  });
+
   it('deux plans, le 6e et le 5e ; la fabrique de disposition n’ouvre que des niveaux qui ont leur plan', () => {
     expect(OPEN_WORLD_LEVELS).toEqual(['6e', '5e']);
     // Les mêmes listes : chaque niveau qui a son plan a son monde ouvert, et seulement lui.
