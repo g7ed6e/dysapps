@@ -453,7 +453,7 @@ it('maths générées : la partie garde les choix tirés, et la bonne réponse p
   expect(report).toEqual([]);
 }, 60_000);
 
-it('Icebergs des fractions : une seule bonne réponse, calculée depuis l’énoncé, et les pièges tirés d’erreurs réelles', () => {
+it('Fractions du Glacier : une seule bonne réponse, calculée depuis l’énoncé, et les pièges tirés d’erreurs réelles', () => {
   const byId = (id: string) => COLLEGE_EXERCISES.find((d) => d.id === id)!;
   const parse = (f: string): [number, number] => {
     const [n, d] = f.split('/').map(Number);

@@ -31,7 +31,7 @@ export const MOVED_ITEMS: Readonly<Record<string, string>> = Object.fromEntries(
 
 /**
  * Les étoiles d'une mission ne baissent jamais (www/pedagogie/principes.md) : une mission qui reste à sa place mais
- * perd un niveau (l'Aiguillage du Carrefour, les Étals du Marché, les Icebergs du Glacier) garderait sinon ses étoiles
+ * perd un niveau (l'Aiguillage du Carrefour, les Étals du Marché, les Fractions du Glacier) garderait sinon ses étoiles
  * dans le seul niveau parti. Ses étoiles sont aussi données à un niveau qui reste (`<exercice parti>` → `<exercice
  * resté>`), sans partie jouée de plus ; le niveau parti les garde aussi dans sa nouvelle place.
  */

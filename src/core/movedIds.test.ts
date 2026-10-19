@@ -67,7 +67,7 @@ it('les étoiles des exercices déplacés passent à leur nouvel identifiant ; l
     'french-4e-vocabulary-conjunctions-1': P(1, 1, 0.5),
     'french-4e-vocabulary-conjunctions-3': P(2, 5, 0.9),
     'french-5e-conjugation-tense-recognition-1': P(3, 1, 1),
-    // Les Étals et les Icebergs perdent leur niveau 3 : leurs étoiles restent aussi dans la mission, au niveau 2, avec leur
+    // Les Étals et les Fractions du Glacier perdent leur niveau 3 : leurs étoiles restent aussi dans la mission, au niveau 2, avec leur
     // meilleur score, sans partie de plus. L'Aiguillage a déjà mieux au niveau 2 : rien ne change.
     'maths-5e-proportionality-proportion-tables-2': P(2, 0, 0.75),
     'maths-5e-signed-numbers-fractions-2': P(3, 0, 1),
@@ -216,7 +216,7 @@ it('chaque item écrit, déplacé ou resté, retrouve sa clé dans son exercice,
   expect(g.spaced).toEqual([]);
 });
 
-it('les étoiles d’une mission ne baissent jamais : l’Aiguillage, les Étals et les Icebergs, qui perdent un niveau', () => {
+it('les étoiles d’une mission ne baissent jamais : l’Aiguillage, les Étals et les Fractions du Glacier, qui perdent un niveau', () => {
   const avant = {
     version: 3,
     progress: {
