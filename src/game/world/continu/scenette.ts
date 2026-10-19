@@ -111,8 +111,9 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // « Chenal » expliqué aussi, pas seulement « pilote » (directeur artistique).
   beacons: { role: placeArt('beacons')!.role, greeting: 'Le pilote guide les bateaux dans le chenal, le passage sûr dans l’eau.', placement: 'rangee' },
   ferry: { role: placeArt('ferry')!.role, greeting: null, placement: 'rangee' },
-  // Le 5e, la Montée (GD-22, lot 3) : « la fontainière » (directeur artistique), son nom attend le mot du mainteneur.
-  montee: { role: placeArt('montee')!.role, greeting: 'La fontainière fait monter l’eau du bassin le long du rail, godet par godet.', placement: 'rangee' },
+  // Le 5e, la Montée (GD-22, lot 3) : « la fontainière » (directeur artistique), son nom attend le mot du mainteneur ; sa
+  // réplique, une idée, le sommet (consultant d'Archipéo et référent dys, première relecture du lot 3).
+  montee: { role: placeArt('montee')!.role, greeting: 'La fontainière monte l’eau jusqu’au sommet, godet par godet.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */

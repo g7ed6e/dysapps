@@ -1,5 +1,5 @@
 // Le trajet de la cabine de la Montée (GD-22, lot 3 ; intention du directeur artistique du 19 octobre 2026, § 4) : un
-// trajet qui passe la cabine (la marche vers un lieu du plateau, ou le bouton « Haut » et « Bas ») y entre à l'arrêt de
+// trajet qui passe la cabine (la marche vers un lieu du plateau, ou le bouton « Monter » et « Descendre ») y entre à l'arrêt de
 // la caisse, monte ou descend avec elle, en ligne droite le long du rail, puis reprend la marche. La caisse roule à
 // vitesse douce, son départ et son arrivée amortis, sans balancement ni secousse (./walk.ts, `RIDE`). Ce fichier coupe
 // le trajet en trois et dit où est la caisse ; la vue la pose. Code pur, sans Three.js.
@@ -70,7 +70,7 @@ export function routeWithRide(route: readonly Vec2[], land: LinkedLand): RideRou
 }
 
 /**
- * Le trajet du bouton « Haut » ou « Bas » : de là où se tient Kéo, à l'arrêt de son côté, l'autre arrêt, puis un pas sur
+ * Le trajet du bouton « Monter » ou « Descendre » : de là où se tient Kéo, à l'arrêt de son côté, l'autre arrêt, puis un pas sur
  * la gare d'arrivée (il ressort de la caisse).
  */
 export function cabinButtonRoute(land: LinkedLand, here: Vec2, up: boolean): readonly Vec2[] {
@@ -85,7 +85,7 @@ export function cabinButtonRoute(land: LinkedLand, here: Vec2, up: boolean): rea
 }
 
 /**
- * Où se tient Kéo par rapport à la cabine (le bouton « Haut » ou « Bas ») : à la gare du pied ou dans la caisse qui y
+ * Où se tient Kéo par rapport à la cabine (le bouton « Monter » ou « Descendre ») : à la gare du pied ou dans la caisse qui y
  * attend (`bas`), à la gare du haut (`haut`), ou ailleurs (`null`). `reach` : à tant d'unités de l'arrêt, au plus.
  */
 export function cabinSide(land: LinkedLand, here: Vec2, reach = 3.2): 'bas' | 'haut' | null {

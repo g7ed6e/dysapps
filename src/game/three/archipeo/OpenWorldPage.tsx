@@ -70,7 +70,10 @@ import './openWorld.css';
 declare global {
   interface Window {
     /** Le monde ouvert, pour les captures et les mesures (en développement, ou avec `?mesures`). */
-    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt' | 'remiseView' | 'standAt' | 'turn' | 'ride'>;
+    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt' | 'remiseView' | 'standAt' | 'turn' | 'ride' | 'view'> & {
+      /** La dernière partie d'un lieu, posée de nouveau sous les yeux (la pose, puis la lueur de la Montée : les captures). */
+      poseAgain(place: PlaceId): boolean;
+    };
   }
 }
 
@@ -241,9 +244,19 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // la marque, la brume, la Carte et les lieux.
   const [ready, setReady] = useState(0);
   const [walking, setWalking] = useState(false);
-  // La cabine de la Montée (GD-22, lot 3) : Kéo à l'une de ses gares (le bouton « Haut » ou « Bas » à la place du bouton
-  // du monde), et pendant son trajet (le bouton reste, inactif).
-  const [cabin, setCabin] = useState<{ side: 'bas' | 'haut' | null; riding: boolean }>({ side: null, riding: false });
+  // La cabine de la Montée (GD-22, lot 3 ; arbitrage de la première relecture) : Kéo à l'arrêt à l'une de ses gares (le
+  // bouton « Monter » ou « Descendre », à côté de « Y aller », qui reste le bouton principal), et où va la caisse pendant
+  // qu'elle roule. À son arrivée, une phrase courte pour la voix et le lecteur d'écran, jamais écrite à l'écran
+  // (`cabinSaid`, son numéro pour redire la même phrase).
+  const [cabin, setCabin] = useState<{ side: 'bas' | 'haut' | null; riding: 'haut' | 'bas' | null }>({ side: null, riding: null });
+  const [cabinSaid, setCabinSaid] = useState<{ text: string; n: number }>({ text: '', n: 0 });
+  const cabinRiding = useRef<'haut' | 'bas' | null>(null);
+  const onCabin = useCallback((c: { side: 'bas' | 'haut' | null; riding: 'haut' | 'bas' | null }) => {
+    const was = cabinRiding.current;
+    cabinRiding.current = c.riding;
+    if (was && !c.riding) setCabinSaid((p) => ({ text: was === 'haut' ? 'Tu es en haut.' : 'Tu es en bas.', n: p.n + 1 }));
+    setCabin(c);
+  }, []);
   // La mission choisie dans le panneau d'un lieu : elle se joue dans sa scénette, ou sur l'écran habituel (`plain`, une
   // mission dont la scénette n'est pas encore faite).
   // `revision` : « Reprendre » chez l'habitant, la révision du lieu jouée dans sa scène (GD-20, point 4, lot L3).
@@ -360,7 +373,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         setLieu({ place: placeId, focus: null });
       },
       onDetour: (id) => detourArrive.current(id),
-      onCabin: setCabin,
+      onCabin,
       onWhaleBlow: () => {
         if (soundsOn.current) playWhaleBlow();
       },
@@ -396,7 +409,25 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     });
     world.current = w;
     setReady((n) => n + 1);
-    if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsMondeOuvert = { goTo: w.goTo, goToPort: w.goToPort, assemble: w.assemble, skip: w.skip, info: w.info, portAt: w.portAt, remiseView: w.remiseView, standAt: w.standAt, turn: w.turn, ride: w.ride };
+    if (import.meta.env.DEV || mesuresDemandees())
+      window.__dysappsMondeOuvert = {
+        goTo: w.goTo,
+        goToPort: w.goToPort,
+        assemble: w.assemble,
+        skip: w.skip,
+        info: w.info,
+        portAt: w.portAt,
+        remiseView: w.remiseView,
+        standAt: w.standAt,
+        turn: w.turn,
+        ride: w.ride,
+        view: w.view,
+        poseAgain: (place) => {
+          const now = placesNow.current;
+          const parts = now?.built[place] ?? [];
+          return now !== null && parts.length > 0 && w.setPlaces(now, { place, parts: parts.slice(-1) });
+        },
+      };
     return () => {
       w.dispose();
       world.current = null;
@@ -406,7 +437,14 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       if (window.__dysappsMondeOuvert?.info === w.info) delete window.__dysappsMondeOuvert;
     };
     // La scène est faite une fois (et refaite si l'appareil change « Réduire les animations ») ; `start` ne change pas.
-  }, [plan, start, reduceMotion, layout]);
+  }, [plan, start, reduceMotion, layout, onCabin]);
+
+  // L'arrivée de la cabine, dite par la voix (avec la lecture automatique) ; le lecteur d'écran la lit dans sa zone.
+  useEffect(() => {
+    if (cabinSaid.text && settings.autoRead) speak(cabinSaid.text);
+    // Seulement à une arrivée nouvelle, jamais quand le réglage change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cabinSaid]);
 
   // Les Détours (GD-20, déplacement libre, lot 2) : arrivé, Kéo le trouve (sa sente reste tracée), le vent souffle un
   // instant et son nom s'écrit une fois, en haut, et se dit ; reparti, le nom reste écrit ses quatre secondes, pour
@@ -818,6 +856,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // après le bilan, sous les yeux de l'élève ; les autres changements (une partie posée dans la grille) sont là, sans
   // pose. Rien ne change pendant une question : la partie attend la fin du bilan.
   const shownBuilt = useRef<Record<PlaceId, readonly PartShape[]> | null>(null);
+  // Ce que la scène a reçu en dernier (`poseAgain`, les captures seulement).
+  const placesNow = useRef<Parameters<OpenWorld['setPlaces']>[0] | null>(null);
   const askedPlace = useRef<PlaceId | null>(null);
   useEffect(() => {
     if (!asking) return;
@@ -833,7 +873,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     shownBuilt.current = built;
     askedPlace.current = null;
     const fresh = before && place ? built[place].filter((s) => !before[place].includes(s)) : [];
-    if (!w.setPlaces({ built, traces, amenagements }, place && fresh.length ? { place, parts: fresh } : undefined)) setPosePending(false);
+    placesNow.current = { built, traces, amenagements };
+    if (!w.setPlaces(placesNow.current, place && fresh.length ? { place, parts: fresh } : undefined)) setPosePending(false);
   }, [plan, constructions, traces, amenagements, asking, ready]);
   // L'état de chaque lieu sur la Carte, en icône et en mot (les mots d'état de l'univers).
   const states = useMemo(
@@ -1071,15 +1112,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           <div className="open-world-go">
             {/* La phrase de ce que porte la suggestion chez un habitant (sa commande, l'étape d'entraide) ; « Aucune
                 mission » seulement quand rien n'attend. */}
-            {!walking && !cabin.side && !relightHere && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
-            {!next && !suggestedCmd && !walking && !cabin.side && !relightHere && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
-            {cabin.side ? (
-              // La cabine (GD-22, lot 3 ; intention du directeur artistique, § 4) : « Haut » au pied, « Bas » en haut, à la
-              // place du bouton du monde ; pendant le trajet, il reste là, inactif (lu, jamais caché).
-              <button type="button" className="button primary" aria-disabled={cabin.riding || undefined} onClick={() => !cabin.riding && world.current?.ride()}>
-                <Icon name="cabine" /> {cabin.side === 'bas' ? 'Haut' : 'Bas'}
-              </button>
-            ) : walking ? (
+            {!walking && !relightHere && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
+            {!next && !suggestedCmd && !walking && !relightHere && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
+            <div className="open-world-go-row">
+            {walking ? (
+              // Pendant tout trajet (la marche, la cabine, la marche) : « Passer le trajet », à contraste plein, saute
+              // jusqu'à l'arrivée.
               <button type="button" className="button" onClick={() => world.current?.skip()}>
                 <Icon name="play" /> Passer le trajet
               </button>
@@ -1102,8 +1140,21 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                 <Icon name="footprints" /> Y aller
               </button>
             )}
+            {/* La cabine (GD-22, lot 3 ; arbitrage de la première relecture) : Kéo à l'arrêt près d'une gare, un bouton
+                secondaire à côté du bouton du monde, « Monter » au pied, « Descendre » en haut ; jamais pendant une
+                marche. */}
+            {!walking && cabin.side && (
+              <button type="button" className="button open-world-cabin" onClick={() => world.current?.ride()}>
+                <Icon name="cabine" /> {cabin.side === 'bas' ? 'Monter' : 'Descendre'}
+              </button>
+            )}
+            </div>
           </div>
         )}
+        {/* L'arrivée de la cabine : une phrase courte pour le lecteur d'écran, jamais écrite à l'écran. */}
+        <p role="status" className="visually-hidden">
+          {cabinSaid.text}
+        </p>
       </div>
     </div>
   );

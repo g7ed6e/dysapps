@@ -91,59 +91,96 @@ export function followPose(focus: Vec3, lift = 0, out?: CameraPose, yaw = 0, ris
 }
 
 /**
- * La caméra au bord du plateau (GD-22, lot 3 ; intention du directeur artistique, § 7) : sur le plateau, son pied ne passe
- * jamais au-delà du bord ni sous son niveau. Quand le cap la mettrait au-dessus du vide, elle se redresse en plongée par
- * crans de `step`, à la même distance de Kéo, jusqu'à `max` (65°) au plus ; si cela ne suffit pas, elle s'approche de lui,
- * jusqu'à `nearest` unités. `samples` : les points vérifiés entre Kéo et le pied de la caméra.
+ * La caméra au bord du plateau (GD-22, lot 3 ; intention du directeur artistique, § 7, et première relecture) : sur le
+ * plateau, son pied ne passe jamais au-delà du bord ni sous son niveau. Quand le cap la mettrait au-dessus du vide, elle
+ * s'approche D'ABORD de Kéo, à la même plongée, par `approachSteps` crans, jusqu'à `approach` unités de lui ; PUIS
+ * seulement elle se redresse en plongée, par crans de `step`, jusqu'à `max` (65°) au plus ; en dernier, à 65°, elle
+ * s'approche encore jusqu'à `nearest`. `samples` : les points vérifiés entre Kéo et le pied de la caméra. Pour ne pas
+ * pomper au seuil, elle ne relâche un cran que si le cran plus lâche garde son pied sur le plateau avec `margin` unités
+ * de plus (elle se retient tout de suite, se relâche avec de la marge).
  */
-export const CLIFF_HOLD = { step: (8 * Math.PI) / 180, max: (65 * Math.PI) / 180, nearest: 4, samples: 6 } as const;
+export const CLIFF_HOLD = { approach: 5, approachSteps: 4, step: (8 * Math.PI) / 180, max: (65 * Math.PI) / 180, nearest: 4, samples: 6, margin: 1 } as const;
 
 /**
- * Ce que la caméra retient au bord du plateau : sa hauteur au-dessus des pieds de Kéo et son recul (la cible), et la part
- * retenue de 0 à 1 (lissée par la vue, comme la montée, `liftStep`).
+ * Ce que la caméra retient au bord du plateau : sa hauteur au-dessus des pieds de Kéo et son recul (la cible), la part
+ * retenue de 0 à 1 (lissée par la vue, comme la montée, `liftStep`), et le cran retenu (`level`, 0 : la poursuite
+ * ordinaire), que `cliffHold` garde d'une image à l'autre.
  */
 export interface CliffHold {
   height: number;
   back: number;
   held: number;
+  level: number;
+}
+
+/** Le nombre de crans de redressement, de l'élévation ordinaire `e0` jusqu'à 65°. */
+const tiltSteps = (e0: number): number => Math.max(0, Math.ceil((CLIFF_HOLD.max - e0) / CLIFF_HOLD.step - 1e-9));
+
+/** Le dernier cran : l'approche, le redressement, puis l'approche finale à 65°. */
+const lastLevel = (e0: number): number => CLIFF_HOLD.approachSteps + tiltSteps(e0) + 1;
+
+/** La distance de la caméra à Kéo au cran `level` (sa distance ordinaire : `r0`). */
+function levelDistance(level: number, r0: number, e0: number): number {
+  const near = Math.min(r0, CLIFF_HOLD.approach);
+  if (level <= CLIFF_HOLD.approachSteps) return r0 + ((near - r0) * level) / CLIFF_HOLD.approachSteps;
+  return level < lastLevel(e0) ? near : Math.min(near, CLIFF_HOLD.nearest);
+}
+
+/** La plongée de la caméra au cran `level` (l'ordinaire : `e0`). */
+function levelElevation(level: number, e0: number): number {
+  const k = level - CLIFF_HOLD.approachSteps;
+  if (k <= 0) return e0;
+  return Math.max(e0, Math.min(CLIFF_HOLD.max, e0 + Math.min(k, tiltSteps(e0)) * CLIFF_HOLD.step));
+}
+
+/** Le recul de la caméra au cran `level`. */
+const levelBack = (level: number, r0: number, e0: number): number => levelDistance(level, r0, e0) * Math.cos(levelElevation(level, e0));
+
+/** Le pied de la caméra, reculée de `back` (plus `margin`) derrière Kéo dans la direction (`bx`, `bz`), reste-t-il sur le plateau ? */
+function clearBehind(focus: Vec3, bx: number, bz: number, back: number, margin: number, onTop: (x: number, z: number) => boolean): boolean {
+  const reach = back + margin;
+  for (let k = 1; k <= CLIFF_HOLD.samples; k++) {
+    const t = (k / CLIFF_HOLD.samples) * reach;
+    if (!onTop(focus.x + t * bx, focus.z + t * bz)) return false;
+  }
+  return true;
 }
 
 /**
  * La hauteur et le recul de la caméra qui gardent son pied sur le dessus du plateau (`onTop`), Kéo en `focus` sur le
- * plateau, la caméra tournée de `yaw`, montée de `lift` : remplis dans `out` ; rend vrai s'il faut retenir la caméra
- * (faux : la poursuite ordinaire, `out` n'est pas touché). Rien n'est créé : la vue l'appelle à chaque image.
+ * plateau, la caméra tournée de `yaw`, montée de `lift` : remplis dans `out`, avec le cran (`out.level`, gardé d'une
+ * image à l'autre) ; rend vrai s'il faut retenir la caméra (faux : la poursuite ordinaire, `out.level` à 0). Rien n'est
+ * créé : la vue l'appelle à chaque image.
  */
 export function cliffHold(focus: Vec3, yaw: number, lift: number, onTop: (x: number, z: number) => boolean, out: CliffHold): boolean {
-  if (!onTop(focus.x, focus.z)) return false;
+  if (!onTop(focus.x, focus.z)) {
+    out.level = 0;
+    return false;
+  }
   const bx = Math.sin(yaw);
   const bz = Math.cos(yaw);
-  const clear = (back: number) => {
-    for (let k = 1; k <= CLIFF_HOLD.samples; k++) {
-      const t = (k / CLIFF_HOLD.samples) * back;
-      if (!onTop(focus.x + t * bx, focus.z + t * bz)) return false;
-    }
-    return true;
-  };
   const height = FOLLOW.height + lift;
-  if (clear(FOLLOW.back)) return false;
-  const r = Math.hypot(height, FOLLOW.back);
+  const r0 = Math.hypot(height, FOLLOW.back);
   const e0 = Math.atan2(height, FOLLOW.back);
-  // Par crans, jusqu'à 65° : le premier qui garde le pied sur le plateau.
-  for (let e = e0 + CLIFF_HOLD.step; ; e = Math.min(CLIFF_HOLD.max, e + CLIFF_HOLD.step)) {
-    const back = r * Math.cos(e);
-    if (clear(back) || e >= CLIFF_HOLD.max) {
-      out.height = r * Math.sin(e);
-      out.back = back;
-      if (e >= CLIFF_HOLD.max && !clear(back)) {
-        // À 65°, elle s'approche de Kéo, à la même plongée, jusqu'à ce que son pied soit sur le plateau.
-        let d = r;
-        while (d > CLIFF_HOLD.nearest && !clear(d * Math.cos(e))) d -= 0.5;
-        out.height = d * Math.sin(e);
-        out.back = d * Math.cos(e);
-      }
-      return true;
-    }
+  const last = lastLevel(e0);
+  // Le premier cran qui garde le pied sur le plateau (le dernier, sinon).
+  let need = 0;
+  while (need < last && !clearBehind(focus, bx, bz, levelBack(need, r0, e0), 0, onTop)) need++;
+  let level = Math.min(out.level, last);
+  if (need >= level) level = need;
+  else {
+    // Relâcher : seulement jusqu'au cran qui tient avec de la marge.
+    let k = need;
+    while (k < level && !clearBehind(focus, bx, bz, levelBack(k, r0, e0), CLIFF_HOLD.margin, onTop)) k++;
+    level = k;
   }
+  out.level = level;
+  if (level === 0) return false;
+  const d = levelDistance(level, r0, e0);
+  const e = levelElevation(level, e0);
+  out.height = d * Math.sin(e);
+  out.back = d * Math.cos(e);
+  return true;
 }
 
 /** La part retenue au bord du plateau, à l'image suivante : comme la montée, vite pour se retenir, doucement pour revenir. */

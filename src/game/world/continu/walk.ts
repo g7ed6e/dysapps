@@ -33,11 +33,14 @@ export interface Walk {
   route: readonly Vec2[];
   length: number;
   start: number;
-  ride?: { from: number; to: number };
+  /** La part dans la caisse, et le cap de Kéo pendant qu'elle roule (vers où elle va), calculé une fois au départ. */
+  ride?: { from: number; to: number; heading: number };
 }
 
 export function startWalk(route: readonly Vec2[], now: number, ride?: { from: number; to: number } | null): Walk {
-  return ride ? { route, length: routeLength(route), start: now, ride: { from: ride.from, to: ride.to } } : { route, length: routeLength(route), start: now };
+  if (!ride) return { route, length: routeLength(route), start: now };
+  const heading = headingTowards(pointAt(route, ride.from).at, pointAt(route, ride.to).at);
+  return { route, length: routeLength(route), start: now, ride: { from: ride.from, to: ride.to, heading } };
 }
 
 /**
@@ -119,9 +122,8 @@ export function walkAt(walk: Walk, now: number, reduceMotion: boolean): WalkStat
   const { at, segment } = pointAt(walk.route, Math.min(d, walk.length));
   const a = walk.route[Math.max(0, segment - 1)];
   const b = walk.route[segment];
-  // Dans la caisse, Kéo regarde où elle va (le haut ou le bas du rail) : son cap ne bouge pas pendant le trajet.
-  const ride = walk.ride && riding !== null ? walk.ride : null;
-  const heading = ride ? headingTowards(pointAt(walk.route, ride.from).at, pointAt(walk.route, ride.to).at) : a && b && distance(a, b) > 1e-6 ? headingTowards(a, b) : null;
+  // Dans la caisse, Kéo regarde où elle va (le haut ou le bas du rail) : son cap, calculé au départ, ne bouge pas.
+  const heading = walk.ride && riding !== null ? walk.ride.heading : a && b && distance(a, b) > 1e-6 ? headingTowards(a, b) : null;
   return { at, heading, moving: !done, riding: done ? null : riding, veil };
 }
 

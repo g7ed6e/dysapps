@@ -93,12 +93,26 @@
   min-width: 12rem;
   justify-content: center;
 }
-/* La raison d'un « Y aller » grisé, écrite au-dessus de lui (pas seulement dite aux lecteurs d'écran). */
-/* La cabine de la Montée pendant son trajet (GD-22, lot 3) : le bouton reste, grisé, dans l'ordre du clavier. */
-.open-world-go .button[aria-disabled="true"] {
-  opacity: 0.55;
-  cursor: not-allowed;
+/* Le bouton du monde et, près d'une gare de la cabine de la Montée (GD-22, lot 3), « Monter » ou « Descendre » à côté,
+   en bouton secondaire ; ils passent l'un sous l'autre s'il n'y a pas la place. */
+.open-world-go-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
 }
+.open-world-go .button.open-world-cabin {
+  min-width: 0;
+}
+/* Le voile de la brume (« Réduire les animations », le fondu de la cabine de la Montée) : sa couleur, jamais le noir ;
+   la scène n'en pose que l'opacité. Il ne prend aucun toucher. */
+.open-world-veil {
+  position: absolute;
+  inset: 0;
+  background: #e5ebe3;
+  pointer-events: none;
+}
+/* La raison d'un « Y aller » grisé, écrite au-dessus de lui (pas seulement dite aux lecteurs d'écran). */
 .open-world-go-reason {
   max-width: min(90vw, 24rem);
   margin: 0 auto 0.4rem;

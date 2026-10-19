@@ -16,7 +16,9 @@
 import { FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
+import { hangingLantern, lowRock, mangroveTree, rootArch } from './monteeSurroundings';
 import { COLORS_5E } from './plan5e';
+import { tuft } from './surroundingsKit';
 import { spire, spireRadiusAt, type Spire } from './spire5e';
 import { standingHeight } from './terrain';
 import { heightAt5e } from './terrain5e';
@@ -47,7 +49,7 @@ const SPIRE: Spire = {
 
 /**
  * Les couleurs de la Montée : la palette du lot 2 (la pierre, l'eau des racines, l'ocre), le bois gris de la ruine, le
- * bois neuf du rail remonté (un brun franc, plus chaud que le gris), le bronze, la corde. Rien de presque noir.
+ * bois neuf du rail remonté (un brun désaturé, plus chaud que le gris), le bronze, la corde. Rien de presque noir.
  */
 const C = {
   stone: COLORS_5E.stone,
@@ -59,10 +61,13 @@ const C = {
   // Le bois gris de la ruine et son ombre (comme au 6e : délavé, jamais sombre).
   wornWood: 0x9f9279,
   wornShade: 0x86775f,
-  // Le bois neuf du rail : la planche, ses montants, ses encoches (un brun d'ombre, jamais noir).
-  newWood: 0xb0763f,
-  newShade: 0x8c5a33,
-  notch: 0x5e4632,
+  // Le bois neuf du rail : la planche, ses montants, ses encoches (un brun d'ombre, jamais noir). Des tons gris-bruns :
+  // la lumière chaude du 5e (sky.ts, `LIGHT_5E`) les tire vers le brun ; à l'écran, la planche au soleil donne un bois
+  // brun désaturé autour de #A87A50 (première relecture du lot 3 : #B0763F donnait un orange, #BA6E18), les encoches
+  // un brun sombre autour de #554031. L'orange reste à la lueur et à la lanterne.
+  newWood: 0xa68672,
+  newShade: 0x8c766a,
+  notch: 0x605658,
   // Le trait de zéro passé, puis repeint (la trace du Thermomètre) : un crème franc, jamais le blanc pur.
   zeroFaded: 0xa99f8b,
   zero: 0xefe3c2,
@@ -232,6 +237,89 @@ function bucket(b: FacetBuilder, at: Vec3, s: number, tilt = 0, colors: { body: 
   }
 }
 
+/**
+ * Le sol de forêt du lieu (première relecture du lot 3 : le pied de l'aiguille et la clairière du sud étaient nus), dans
+ * le repère du lieu, le sud vers +z. Au pied de l'aiguille, trois racines en arceaux qui sortent de la pierre, hors du
+ * rail et de la gare de la cabine. Dans la clairière, au sud du chemin, des plaques de litière, des touffes de mousse
+ * basses ; sur ses bords seulement, des roches basses et des arceaux : rien de haut dans l'anneau de la scénette.
+ */
+/** Le palétuvier à la lanterne, à l'ouest du ponton, dans le repère du lieu : sa place, sa taille, son cap. */
+const LANTERN_TREE = { x: -9.4, z: 8.1, s: 1.15, yaw: 0.3 } as const;
+
+const FLOOR = {
+  // Les racines du pied : de la pierre (le rayon du pied de l'aiguille, un peu dedans) vers le dehors, et leur hauteur.
+  footRoots: [
+    [Math.PI, 3.8, 1.4],
+    [2.5, 3.2, 1.1],
+    [0.45, 3.6, 1.2],
+  ],
+  footFrom: 6.3,
+  // Les plaques de litière de la clairière : leur milieu et leur rayon.
+  litter: [
+    [-4.5, 20, 1.8],
+    [3.5, 23, 2.1],
+    [-10, 22.5, 1.6],
+    [9, 20.5, 1.7],
+    [-1, 27, 1.9],
+    [11.5, 26, 1.5],
+  ],
+  tufts: [
+    [-8.6, -2],
+    [-9.6, 3],
+    [7.9, -1.2],
+    [8.8, 6.4],
+    [-6, 18],
+    [-3, 21.6],
+    [2.5, 19],
+    [6, 22.6],
+    [-9, 24.2],
+    [10, 18.8],
+    [0.5, 25.6],
+    [-13, 20],
+    [13.5, 23.6],
+    [4, 28],
+  ],
+  // Les bords de la clairière : roches basses (rayon, hauteur), arceaux (d'un pied à l'autre, hauteur).
+  rocks: [
+    [-16, 19, 1.3, 0.55],
+    [15, 17.6, 1.1, 0.45],
+    [-12.5, 27, 1.0, 0.4],
+    [17, 24, 1.2, 0.5],
+  ],
+  arches: [
+    [-19, 21, -16.6, 24.4, 1.3],
+    [18.4, 19.6, 20, 23.2, 1.2],
+    [-6, 29, -2.6, 29.6, 1.0],
+  ],
+  litterColor: 0x6e6a52,
+} as const;
+
+function forestFloor(b: FacetBuilder, ground: SiteGround): void {
+  const at = (x: number, z: number) => ground.at(x, z);
+  for (const [a, len, h] of FLOOR.footRoots) {
+    const from = { x: FLOOR.footFrom * Math.cos(a), z: FLOOR.footFrom * Math.sin(a) };
+    const to = { x: (FLOOR.footFrom + len) * Math.cos(a + 0.12), z: (FLOOR.footFrom + len) * Math.sin(a + 0.12) };
+    rootArch(b, from, to, h, 0.34, at);
+  }
+  // La litière : un disque à sept pans, irrégulier, à peine au-dessus du sol.
+  FLOOR.litter.forEach(([cx, cz, r], i) => {
+    const n = 7;
+    const y = (x: number, z: number) => at(x, z) + 0.05;
+    const c: [number, number, number] = [cx, y(cx, cz), cz];
+    const ring = Array.from({ length: n }, (_, k) => {
+      const ang = (2 * Math.PI * (k + 0.3 * Math.sin(i * 3 + k))) / n;
+      const rr = r * (0.75 + 0.25 * Math.cos(i * 5 + k * 2));
+      const x = cx + rr * Math.cos(ang),
+        z = cz + rr * Math.sin(ang);
+      return [x, y(x, z), z] as [number, number, number];
+    });
+    for (let k = 0; k < n; k++) b.triangle(c, ring[(k + 1) % n], ring[k], FLOOR.litterColor);
+  });
+  FLOOR.tufts.forEach(([x, z], i) => tuft(b, { x, y: at(x, z) - 0.02, z }, i + 31, [COLORS_5E.mossSun, COLORS_5E.plateauMoss], 1.2));
+  FLOOR.rocks.forEach(([x, z, r, h], i) => lowRock(b, { x, y: at(x, z) - 0.1, z }, r, h, i + 51));
+  for (const [x0, z0, x1, z1, h] of FLOOR.arches) rootArch(b, { x: x0, z: z0 }, { x: x1, z: z1 }, h, 0.3, at);
+}
+
 /** Le dessus d'un godet pendu, au-dessus de son fond, à l'échelle 1 : là où sa corde rejoint son anse. */
 const BUCKET_TOP = 0.64;
 
@@ -245,6 +333,16 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
   add('ruine', 0, (b) => {
     spire(b, SPIRE);
   });
+  // Le sol de forêt, toujours là : les racines au pied de l'aiguille, la clairière du sud et ses bords.
+  add('ruine', 0, (b) => forestFloor(b, ground));
+  // Le palétuvier de l'ouest et sa lanterne pendue (planche, vue du haut) : éteinte dans la ruine, d'ocre avec le haut,
+  // comme la lanterne du sommet ; au lieu, pour qu'on les voie toutes les deux de loin.
+  const T = LANTERN_TREE;
+  const tree = new FacetBuilder();
+  const { branch } = mangroveTree(tree, T.x, T.z, T.s, T.yaw, (x, z) => ground.at(x, z));
+  add('ruine', 0, (b) => b.append(tree.build()));
+  add('ruine', 0, (b) => hangingLantern(b, branch, false), { stage: 1, row: 0.5 });
+  add(1, 0.5, (b) => hangingLantern(b, branch, true));
   // Le rail de la ruine, en bois gris, par travées : chacune s'en va quand la travée neuve se pose à sa place. La
   // troisième porte la cassure, le vide, le haut resté accroché et son bout qui pend.
   add('ruine', 0, (b) => uprights(b, RAIL_SPANS[0], RAIL_SPANS[1], C.wornShade), { stage: 0, row: 0 });
@@ -451,34 +549,57 @@ function bucketChain(b: FacetBuilder, c: Vec3): void {
   }
 }
 
-/** Les câbles partagés des poulies (Fractions, `fractions`) : du bloc des poulies, deux câbles vers deux ancres, de part et d'autre du bassin. */
+/**
+ * Les ancres des câbles partagés (première relecture du lot 3 : des blocs au bout d'une corde se lisaient comme des poids
+ * pendus) : une dalle de pierre basse, enfoncée dans le sol (sous son point le plus bas, elle ne flotte jamais), son
+ * anneau de bronze debout dessus, assez grand pour se voir de la caméra du lieu ; le câble descend jusqu'à l'anneau.
+ */
+const ANCHOR = { x: 7.4, z: 7.2, slab: [1.7, 1.2] as const, rise: 0.16, ring: 0.3 } as const;
+
+/** Les câbles partagés des poulies (Fractions, `fractions`) : du bloc des poulies, deux câbles vers deux ancres au sol, de part et d'autre du bassin. */
 function sharedCables(b: FacetBuilder, c: Vec3): void {
   const y = RAIL_SPANS[3] - 0.4;
   const hub = { x: 0, y: y + 0.1, z: railFace(y) + PULLEY.out };
+  const [w, d] = ANCHOR.slab;
   for (const side of [-1, 1]) {
-    const x = side * 7.4;
-    const z = 7.2;
-    const g = groundOf(c, x, z);
-    b.beam(lifted(c, hub.x + side * 0.3, hub.y, hub.z), { x: g.x, y: g.y + 0.7, z: g.z }, 0.06, C.rope);
-    // L'ancre : un bloc de pierre et son anneau de bronze.
-    b.box({ x: g.x, y: g.y - 0.3, z: g.z, yaw: 0.3 }, [0.9, 1.0, 0.9], C.stoneShade, C.stoneSun);
-    b.band({ x: g.x, y: g.y + 0.62, z: g.z, pitch: Math.PI / 2 }, 0.2, 0.06, 6, C.bronze);
+    const x = side * ANCHOR.x;
+    const g = groundOf(c, x, ANCHOR.z);
+    // Le sol le plus bas et le plus haut sous la dalle : elle s'y enfonce, son dessus juste au-dessus du plus haut.
+    let low = g.y,
+      high = g.y;
+    for (const dx of [-w / 2, w / 2])
+      for (const dz of [-d / 2, d / 2]) {
+        const h = groundOf(c, x + dx, ANCHOR.z + dz).y;
+        low = Math.min(low, h);
+        high = Math.max(high, h);
+      }
+    const top = high + ANCHOR.rise;
+    b.box({ x: g.x, y: low - 0.3, z: g.z, yaw: side * 0.25 }, [w, top - low + 0.3, d], C.stoneShade, C.stoneSun);
+    // L'anneau de bronze, debout sur la dalle, face au sud (la caméra du lieu le voit rond) ; son piton.
+    const ring = { x: g.x - side * 0.15, y: top + ANCHOR.ring + 0.04, z: g.z };
+    b.box({ x: ring.x, y: top - 0.02, z: ring.z }, [0.16, 0.08, 0.16], C.bronze);
+    b.annulus({ x: ring.x, y: ring.y, z: ring.z - 0.04, pitch: Math.PI / 2 }, ANCHOR.ring - 0.1, ANCHOR.ring, 0.08, 8, C.bronze);
+    b.beam(lifted(c, hub.x + side * 0.3, hub.y, hub.z), { x: ring.x, y: ring.y + ANCHOR.ring, z: ring.z }, 0.06, C.rope);
   }
 }
 
-/** Les contrepoids équilibrés (Priorités) : deux pierres rondes pendues à la poulie de l'ouest, à la même hauteur. */
+/**
+ * Les contrepoids équilibrés (Priorités ; première relecture du lot 3 : une pierre à chaque poulie, à la même hauteur) :
+ * de chaque poulie, un bras court vers le dehors, au-delà de la chaîne à godets à l'est et de la cuve jaugée à l'ouest ;
+ * à son bout, une corde et une pierre ronde, les deux à la même hauteur.
+ */
+const COUNTERWEIGHT = { arm: 3, hang: 30 } as const;
+
 function counterweights(b: FacetBuilder, c: Vec3): void {
-  const from = pulleyRim(-1);
-  const hang = 30;
-  for (const [dx, dz] of [
-    [0, 0],
-    [-0.75, -0.35],
-  ] as const) {
-    const x = from.x + dx;
-    const z = from.z + dz;
-    b.beam(lifted(c, x, from.y, z), lifted(c, x, hang + 0.9, z), 0.06, C.rope);
-    b.drum({ x: c.x + x, y: c.y + hang, z: c.z + z, pitch: Math.PI / 2 }, 0.48, 0.42, 8, C.stone, C.stoneSun);
-    b.band({ x: c.x + x, y: c.y + hang + 0.82, z: c.z + z, pitch: Math.PI / 2 }, 0.12, 0.05, 6, C.bronze);
+  const y = RAIL_SPANS[3] - 0.4;
+  const z0 = railFace(y) + PULLEY.out;
+  const z1 = railFace(COUNTERWEIGHT.hang) + PULLEY.out;
+  for (const side of [-1, 1]) {
+    const x = side * COUNTERWEIGHT.arm;
+    b.beam(lifted(c, side * PULLEY.spread, y, z0), lifted(c, x + side * 0.1, y, z0), 0.16, C.newShade);
+    b.beam(lifted(c, x, y, z0), lifted(c, x, COUNTERWEIGHT.hang + 0.9, z1), 0.06, C.rope);
+    b.drum({ x: c.x + x, y: c.y + COUNTERWEIGHT.hang, z: c.z + z1, pitch: Math.PI / 2 }, 0.48, 0.42, 8, C.stone, C.stoneSun);
+    b.band({ x: c.x + x, y: c.y + COUNTERWEIGHT.hang + 0.82, z: c.z + z1, pitch: Math.PI / 2 }, 0.12, 0.05, 6, C.bronze);
   }
 }
 

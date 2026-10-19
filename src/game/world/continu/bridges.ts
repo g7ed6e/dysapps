@@ -6,7 +6,7 @@
 // 1,9 au-dessus de l'eau, ses garde-corps, une lanterne de chaque côté de chaque culée ; Kéo marche sur la pierre et
 // sur le tablier (`bridgeFloor`). Tout entre dans le maillage des lieux, sans appel de plus ; sur la Carte, le pont se
 // dessine aussi en trait double, distinct d'un chemin. Code pur.
-import { FacetBuilder, mergeFacets, placeFacets, type Facets } from './facets';
+import { FacetBuilder, boundsOf, mergeFacets, placeFacets, type Facets } from './facets';
 import { distance, type Vec2 } from './geometry';
 import { bridgeEdge, firstClosed, isLinkedLand, linkedLands, nodeLands, planOfLand, startLandOf, type LinkedLand } from './lands';
 import { planFor, type LevelPlan } from './levelPlan';
@@ -607,9 +607,14 @@ function cabinTrack(rails: FacetBuilder, posts: FacetBuilder, s: BridgeSite, fro
  * La caisse de la cabine (GD-22, lot 3 : une seule caisse, celle du passage) : un plancher toujours de niveau, ouvert aux
  * deux bouts (Kéo y entre au pied, en ressort en haut), deux murets sur les côtés, quatre poteaux et un toit à deux pans ;
  * dessous, son châssis en coin, qui épouse la pente du rail. `half` : sa demi-longueur le long du rail ; `floor` : le
- * plancher au-dessus du rail, à son bout du haut ; `wall`, `posts` : la hauteur des murets et des poteaux.
+ * plancher au-dessus du rail, à son bout du haut ; `wall`, `posts` : la hauteur des murets et des poteaux, sous le toit
+ * (première relecture du lot 3 : la tête de Kéo, 2,4 unités debout, passait dans le toit ; il y tient avec une demi-unité
+ * de marge, `KEO_ROOM`).
  */
-export const CABIN_CAR = { half: 0.8, width: 2, floor: 0.3, plank: 0.12, wall: 0.85, posts: 2.15 } as const;
+export const CABIN_CAR = { half: 0.8, width: 2, floor: 0.3, plank: 0.12, wall: 0.85, posts: 2.95 } as const;
+
+/** La hauteur de Kéo debout dans la caisse (ses cheveux compris) : le toit commence au moins une demi-unité plus haut. */
+export const KEO_ROOM = 2.45;
 
 /** Le haut d'un rail par unité de longueur : la pente de la cabine. */
 const cabinSlope = (s: BridgeSite): number => (s.base[1] - s.base[0]) / (s.abut[1] - s.abut[0]);
@@ -675,6 +680,16 @@ export function cabinCarFacets(land: LinkedLand): Facets {
 function carAt(s: BridgeSite, d: number): Facets {
   const p = cabinPoint(s, d);
   return placeFacets(cabinCarFacets(s.land), { x: p.x, y: cabinCarFloor(s, d), z: p.z, yaw: cabinYaw(s) });
+}
+
+/**
+ * La boîte de la caisse qui attend à sa gare (`bas` ou `haut`), dans le monde : la vue en fait la cible d'un toucher (la
+ * caisse touchée lance le trajet, comme le bouton ; première relecture du lot 3).
+ */
+export function cabinCarBox(land: LinkedLand, car: 'bas' | 'haut'): { min: [number, number, number]; max: [number, number, number] } {
+  const s = bridgeSite(land);
+  const stops = cabinStops(s);
+  return boundsOf(carAt(s, car === 'bas' ? stops.bottom : stops.top));
 }
 
 /** La caisse de la ruine, couchée à côté du rail au pied. */
