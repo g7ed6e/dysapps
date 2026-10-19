@@ -24,10 +24,14 @@ import { ferrySurroundings } from './ferrySurroundings';
 import { commonsSurroundings } from './commonsSurroundings';
 import { observatorySurroundings } from './observatorySurroundings';
 
-/** L'état du lieu : l'étape qui porte la trace posée (`posed`), la réussite montrée (`open`). */
+/**
+ * L'état du lieu : l'étape qui porte la trace posée (`posed`), la réussite montrée (`open`), l'étape du haut posée
+ * (`topped` : le carbet de la Mangrove relevé, ses abords changent ; faux par défaut, l'état le plus chargé).
+ */
 export interface SurroundingsState {
   posed: boolean;
   open: boolean;
+  topped?: boolean;
 }
 
 /** Les abords d'un lieu, autour du sol de sa scène (`floor`). */

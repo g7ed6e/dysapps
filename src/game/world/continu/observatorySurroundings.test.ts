@@ -44,7 +44,7 @@ describe('Les abords de l’Observatoire', () => {
     }
   });
 
-  it('tiennent ce qui est haut derrière la tour, au nord de son centre (l’échafaudage, la lunette, les lanternes du pont)', () => {
+  it('tiennent ce qui est haut derrière la tour, au nord de son centre (l’échafaudage et sa charge, les lanternes du pont)', () => {
     for (const p of points(f)) if (p.y > floor + 1) expect(p.z).toBeLessThan(c.z + 0.5);
   });
 

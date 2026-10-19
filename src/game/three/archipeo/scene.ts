@@ -16,7 +16,7 @@ import { NEF_DEPARTURE, NEF_LIFT, bancFacets, bancTouched, berFacets, nefArrivin
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, WORLD_FOG, detourRise, detourViewStep, followPose, followStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourFacets, faunaPose, spoutFacets, whaleFacets, type DetourId } from '../../world/continu/detours';
-import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, traceStagePosed, type PartShape } from '../../world/continu/construction';
+import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
@@ -1313,6 +1313,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    */
   let remise: { place: PlaceId; pose: CameraPose; extra?: string; box?: WorldBox } | null = null;
   let posed = true;
+  // L'étape du haut du lieu de la scénette posée : ses abords en dépendent (le carbet de la Mangrove).
+  let topped = false;
   // La mission jouée dans la scénette : le retour garde sa trace dans le champ (GD-20, point 8).
   let scenetteMission: string | null = null;
   // La Carte ne se redessine que si sa vue, la taille, la brume ou ce qu'elle montre change (expert frontend).
@@ -2428,9 +2430,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Au retour, la caméra qui suit est tournée vers le nord, comme la scénette.
     faceNorth();
     posed = site ?? traceStagePosed(place, posedOf(place));
+    topped = stageComplete(posedOf(place), 1);
     // Le modèle de l'habitant, s'il est prêt, avant le décor de près : celui-ci se fait alors sans le pion.
     habitants.show(place, scenetteHabitant(place, posed));
-    setGeometry(decorMesh, scenetteDecor(place, false, posed));
+    setGeometry(decorMesh, scenetteDecor(place, false, posed, topped));
     // Aux Quais, la maquette du lieu (sa grue, son hangar) s'efface : le quai de la scénette a les siens. La trace de
     // la scénette aussi, sauf au Phare : la trace de la réussite (la barque chargée, le panier plein, la porte ouverte)
     // n'est pas dessinée deux fois.
@@ -2593,7 +2596,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (finaleShown && scenette === place && !item.answered) {
       finale = null;
       finaleShown = false;
-      setGeometry(decorMesh, scenetteDecor(place, false, posed));
+      setGeometry(decorMesh, scenetteDecor(place, false, posed, topped));
     }
     // La scénette : Kéo à côté de l'habitant ; la brume reste celle du monde (la caméra est près).
     const entering = scenette !== place;

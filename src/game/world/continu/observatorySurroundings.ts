@@ -3,7 +3,8 @@
  * du 18 octobre 2026, sans concept dessiné) : le belvédère sur son tertre, fini tout autour puisque la caméra tourne
  * (« caméra libre »). Dans la moitié droite du cadre de face (la gauche est sous le panneau), derrière la tour, au
  * nord-nord-est : un échafaudage de bois clair contre le tambour, deux planchers, son escalier qui monte de l'est, et sur le
- * plancher du haut une lunette de laiton sur trépied, tournée vers le ciel de l'est ; plus loin, un ruisseau qui descend de la
+ * plancher du haut une caisse et une toile roulée du chantier (ni lunette : le lieu est un belvédère de géographie, relecture
+ * du 19 octobre 2026) ; plus loin, un ruisseau qui descend de la
  * colline de l'est jusqu'au bras de mer de l'ouest, passé par un petit pont de bois à quatre lanternes (le fer et le
  * verre Sable des ponts des terres), sur un sentier qui part du chemin de la porte, longe le tertre à l'est et monte
  * rejoindre le chemin de la colline : il mène quelque part. Le pied de la tour est habillé : touffes d'herbe, blocs
@@ -32,10 +33,12 @@ const C = {
   poleShade: 0xb08658,
   deck: TIMBER.plank,
   deckSide: TIMBER.plankSide,
-  /** La lunette : le tube de laiton, ses bagues et son trépied de bois sombre (jamais presque noir). */
-  brass: 0xc9a24e,
-  brassDark: 0x9c7a3c,
-  tripod: 0x7a5538,
+  /** Sur le plancher du haut : la caisse (le bois du kit, son couvercle) et la toile roulée, écrue, ses liens de chanvre. */
+  crate: TIMBER.stave,
+  crateLid: TIMBER.lid,
+  canvas: 0xe8dcc0,
+  canvasEnd: 0xd6c8a8,
+  cord: 0x9c8462,
   /** L'enduit usé des blocs tombés (places.ts, `wornPlaster`), et son dessus. */
   plaster: 0xc4ad8e,
   plasterTop: 0xb59f82,
@@ -173,7 +176,7 @@ const facing = (deg: number) => Math.atan2(Math.cos((deg * Math.PI) / 180), Math
  * face, derrière la tour, un peu à droite, il laisse au pont la place du bord du cadre) : deux cadres de deux poteaux,
  * leurs traverses sous chaque plancher, les deux planchers de planches de la travée, le garde-corps du haut, une écharpe
  * sur la face du dehors ; l'escalier qui monte de l'est au premier plancher, ses deux limons et ses six marches ; sur le
- * plancher du haut, la lunette.
+ * plancher du haut, une caisse et une toile roulée.
  */
 function scaffold(b: FacetBuilder, X: Axis, Z: Axis, ground: Ground): void {
   const S = OBSERVATORY_SCAFFOLD;
@@ -225,29 +228,30 @@ function scaffold(b: FacetBuilder, X: Axis, Z: Axis, ground: Ground): void {
     const y = foot(from) + (top - foot(from)) * t;
     b.box({ x: X(p.x), y: y - 0.02, z: Z(p.z), yaw: facing(deg) }, [0.3, 0.06, S.outer - S.inner - 0.1], C.deckSide, C.deck);
   }
-  // La lunette, sur le plancher du haut, au milieu de la travée, tournée vers le ciel de l'est (vue de face, de profil).
+  // Sur le plancher du haut, au milieu de la travée : la caisse et la toile roulée du chantier (bas, rien vers le ciel).
   const deg = (S.angles[0] + S.angles[1]) / 2;
   const at = polar(deg, mid);
-  telescope(b, { x: X(at.x), y: Math.min(foot(S.angles[0]), foot(S.angles[1])) + S.decks[1] + 0.02, z: Z(at.z) }, -10);
+  deckLoad(b, { x: X(at.x), y: Math.min(foot(S.angles[0]), foot(S.angles[1])) + S.decks[1] + 0.02, z: Z(at.z) }, facing(deg));
 }
 
 /**
- * La lunette sur son trépied, tournée vers l'angle `deg` (de l'est vers le sud) et vers le haut : trois pieds de bois,
- * le tube de laiton, sa bague d'objectif plus large et son oculaire.
+ * Ce que porte le plancher du haut, son milieu en `at`, tourné de `yaw` (le long du tambour) : une caisse de bois au
+ * couvercle clair, et à côté une toile écrue roulée, couchée, deux liens de chanvre. Une soixantaine de triangles.
  */
-function telescope(b: FacetBuilder, at: Vec3, deg: number): void {
-  const head = { x: at.x, y: at.y + 0.85, z: at.z };
-  for (let k = 0; k < 3; k++) {
-    const a = (k * 2 * Math.PI) / 3 + 0.4;
-    b.beam({ x: at.x + 0.32 * Math.cos(a), y: at.y, z: at.z + 0.32 * Math.sin(a) }, head, 0.05, C.tripod);
-  }
-  const out = { x: Math.cos((deg * Math.PI) / 180), z: Math.sin((deg * Math.PI) / 180) };
-  const up = 0.55;
-  const dir = { x: out.x * Math.cos(up), y: Math.sin(up), z: out.z * Math.cos(up) };
-  const along = (t: number) => ({ x: head.x + dir.x * t, y: head.y + 0.06 + dir.y * t, z: head.z + dir.z * t });
-  b.beam(along(-0.45), along(0.75), 0.12, C.brass);
-  b.beam(along(0.62), along(0.82), 0.18, C.brassDark);
-  b.beam(along(-0.58), along(-0.42), 0.07, C.brassDark);
+function deckLoad(b: FacetBuilder, at: Vec3, yaw: number): void {
+  const c = Math.cos(yaw),
+    s = Math.sin(yaw);
+  // Le long de la travée (l'axe x du repère tourné) : la caisse d'un côté, la toile de l'autre.
+  const along = (t: number) => ({ x: at.x + t * c, z: at.z - t * s });
+  const box = along(-0.35);
+  b.box({ x: box.x, y: at.y, z: box.z, yaw }, [0.5, 0.42, 0.42], C.crate, C.crateLid);
+  const roll = along(0.35);
+  // La toile : un rouleau couché en travers du plancher (son axe, l'axe z du repère tourné), deux liens de chanvre.
+  const r = 0.13,
+    len = 0.66;
+  const across = (t: number) => ({ x: roll.x + t * s, y: at.y + r, z: roll.z + t * c, yaw, pitch: Math.PI / 2 });
+  b.drum(across(-len / 2), r, len, 7, C.canvas, C.canvasEnd);
+  for (const t of [-0.2, 0.16]) b.band(across(t), r + 0.012, 0.05, 7, C.cord);
 }
 
 /**

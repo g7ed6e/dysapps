@@ -14,8 +14,8 @@ const target = { x: (keo.x + botaniste.x) / 2, z: keo.z };
 const floorY = keo.y;
 const c = placeById('mangrove').center;
 
-function vertices(): [number, number, number][] {
-  const p = scenetteSurroundings('mangrove').positions;
+function vertices(topped = false): [number, number, number][] {
+  const p = scenetteSurroundings('mangrove', false, true, topped).positions;
   const out: [number, number, number][] = [];
   for (let k = 0; k < p.length; k += 3) out.push([p[k], p[k + 1], p[k + 2]]);
   return out;
@@ -29,26 +29,26 @@ function toSegment(x: number, z: number, a: { x: number; z: number }, b: { x: nu
 }
 
 describe('les abords de la Mangrove', () => {
-  it('ne mettent rien de haut près de Kéo, de la botaniste et de la pirogue', () => {
-    for (const [x, y, z] of vertices()) {
+  it.each([false, true])('ne mettent rien de haut près de Kéo, de la botaniste et de la pirogue (carbet relevé : %s)', (topped) => {
+    for (const [x, y, z] of vertices(topped)) {
       if (y <= floorY + 0.15) continue;
       expect(Math.hypot(x - target.x, z - target.z)).toBeGreaterThan(RING + 0.7);
     }
   });
 
-  it('ne dressent rien devant la caméra de face, entre la scène et elle', () => {
-    for (const [x, y, z] of vertices()) {
+  it.each([false, true])('ne dressent rien devant la caméra de face, entre la scène et elle (carbet relevé : %s)', (topped) => {
+    for (const [x, y, z] of vertices(topped)) {
       if (z < keo.z + 4 || y < 1.2) continue;
       expect(Math.abs(x - target.x)).toBeGreaterThan(4.5);
     }
   });
 
-  it('laissent la place à la passerelle en coude et au carbet du lieu bâti', () => {
+  it.each([false, true])('laissent la place à la passerelle en coude et au carbet du lieu bâti (carbet relevé : %s)', (topped) => {
     const W = MANGROVE.walk;
     const K = MANGROVE.carbet;
     // La passerelle et ses pieux (à une demi-largeur et 0,1 de son axe, de section 0,14) ; le carbet et son toit.
     const reach = W.width / 2 + 0.1 + 0.07;
-    for (const [wx, y, wz] of vertices()) {
+    for (const [wx, y, wz] of vertices(topped)) {
       if (y < 0) continue;
       const [x, z] = [wx - c.x, wz - c.z];
       expect(Math.min(toSegment(x, z, W.start, W.knee), toSegment(x, z, W.knee, W.end))).toBeGreaterThan(reach);
@@ -64,5 +64,22 @@ describe('les abords de la Mangrove', () => {
     // Le perron de la cabane reçoit le bout du ponton.
     expect(Math.abs(pontoon.to.dx - cabin.dx)).toBeLessThan(cabin.width / 2);
     expect(pontoon.to.dz).toBeLessThan(cabin.dz + cabin.depth / 2 + 0.15 + cabin.porch + 0.2);
+  });
+
+  it('suivent l’état du lieu : le ponton et la cabane tant que le carbet est en ruine, la barque seule au ponton du carbet une fois relevé', () => {
+    const { cabin } = MANGROVE_SURROUNDINGS;
+    // Le sol de la scène : au milieu de Kéo et de la botaniste, 0,35 au nord de leurs pieds (scenette.ts).
+    const floor = { x: target.x, z: keo.z - 0.35 };
+    // Les murs de la cabane, entre le plancher et l'avant-toit, dans son emprise.
+    const inCabin = (topped: boolean) =>
+      vertices(topped).filter(([x, y, z]) => y > floorY + 0.3 && y < floorY + 1.5 && Math.abs(x - floor.x - cabin.dx) < cabin.width / 2 + 0.05 && Math.abs(z - floor.z - cabin.dz) < cabin.depth / 2 + 0.05);
+    expect(inCabin(false).length).toBeGreaterThan(0);
+    expect(inCabin(true)).toHaveLength(0);
+    // Plus léger une fois relevé : le ponton et la cabane partis, la barque reste.
+    expect(scenetteSurroundings('mangrove', false, true, true).triangles).toBeLessThan(scenetteSurroundings('mangrove').triangles);
+    // La barque, au bout ouest du petit ponton d'accostage du carbet, à moins de 2 de lui.
+    const P = MANGROVE.pontoon;
+    const boat = vertices(true).filter(([x, y, z]) => y > -0.1 && y < 0.6 && Math.abs(z - c.z - P.z) < 0.8 && x - c.x < P.x - P.w / 2 && x - c.x > P.x - P.w / 2 - 2.6);
+    expect(boat.length).toBeGreaterThan(20);
   });
 });

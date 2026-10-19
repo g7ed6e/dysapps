@@ -1,15 +1,20 @@
 /**
  * Les abords de la scénette des Balises (reprise lieu par lieu, d'après les concepts du 18 octobre 2026,
- * « scenettes-6e-balises ») : de face, à droite de la cale, le ponton du baliseur qui part vers le large, bordé de bouées
- * rouge et blanc, et à son bout, sur une plate-forme à garde-corps, la cabane de guet au toit d'ardoise bleue et sa
- * longue-vue de laiton tournée vers la passe ; au-delà, le chenal marqué de bouées, deux îlots (l'un à palmier et
- * rocher, l'autre à pins) et un voilier au loin dans le chenal. De côté (vers l'ouest), la mer de la passe, deux roches
- * et un îlot à pin ; de dos, la grève qui monte : des pins, des rochers de pierre chaude, des touffes d'herbe sèche, le
- * dépôt du baliseur (deux bouées de rechange couchées, un tonneau). Le kit commun (./surroundingsKit.ts) pour le ponton,
+ * « scenettes-6e-balises ») : de face, à droite de la cale, le ponton du baliseur qui part vers le large, et à son bout,
+ * sur une plate-forme à garde-corps, la cabane de guet au toit d'ardoise bleue et sa longue-vue de laiton tournée vers la
+ * passe ; au-delà, deux bouées du chenal, deux îlots (l'un à palmier et rocher, l'autre à pins) et un voilier au loin
+ * dans le chenal. De côté (vers l'ouest), la mer de la passe, deux roches et un îlot à pin ; de dos, la grève qui monte :
+ * des pins, des rochers de pierre chaude, des touffes d'herbe sèche, le dépôt du baliseur (une bouée de rechange
+ * couchée, un tonneau).
+ *
+ * Pas de bouées à compter (référent dys, relecture du 19 octobre 2026) : la mission des nombres (Numbers) se joue ici,
+ * avec le même décor que la première, et le lieu tient déjà ses mâts de signaux hors du cadre (./beacons.ts, « Numbers
+ * n'en compte aucun ») pour qu'on ne les compte pas : les abords ne rendent pas ce qu'il cachait. Il y a donc trois bouées en tout, jamais plus de deux dans un même champ, jamais en rang
+ * ni en groupe ; blanches et bleues, loin du rouge-orangé des tonneaux des réponses. Le ponton n'en porte aucune. Le kit commun (./surroundingsKit.ts) pour le ponton,
  * les rochers, les touffes et le tonneau.
  *
  * Rien de haut dans l'anneau où la rangée des objets-réponses se pose quand la caméra tourne (`RING` des Quais, 7,5 du
- * point visé, plus une marge) : le pied du ponton y reste au ras du sol de la scène, ses bouées commencent au-delà. Rien
+ * point visé, plus une marge) : le pied du ponton y reste au ras du sol de la scène. Rien
  * de haut entre la caméra de face et la scène : au sud, ce qui se dresse se tient sur les côtés ou derrière la caméra,
  * et ce qui est sous son regard reste bas (des pierres, des touffes).
  * Aplats francs, une couleur par facette, jamais presque noir. Code pur.
@@ -22,8 +27,11 @@ import type { SurroundingsState } from './surroundings';
 import { DRY_TUFT, NATURE, barrel, groundAt, pontoon, rock, tuft, type P3 } from './surroundingsKit';
 
 const C = {
-  /** Les bouées du baliseur : un rouge chaud et un blanc cassé (jamais un blanc pur). */
-  red: 0xd0553f,
+  /**
+   * Les bouées du baliseur : un blanc cassé (jamais un blanc pur) et un bleu de mer, loin du rouge-orangé des tonneaux
+   * des réponses (référent dys).
+   */
+  blue: 0x4f7fa3,
   white: 0xf2eee4,
   /** La cabane de guet : ses planches, ses montants, sa porte, sa vitre gris-bleu (pas un trou noir). */
   planks: 0xc98e55,
@@ -83,18 +91,18 @@ export function beaconsSurroundings(b: FacetBuilder, floor: Vec3, _state: Surrou
 }
 
 /**
- * Une bouée du baliseur, posée en (x, y, z), à l'échelle `s` : en obus, le corps blanc, une bande rouge au pied, la pointe
- * rouge. Vingt-cinq triangles (deux cerclages et une pointe : la pointe ferme le haut du corps).
+ * Une bouée du baliseur, posée en (x, y, z), à l'échelle `s` : en obus, le corps blanc, une bande bleue au pied, la pointe
+ * bleue. Vingt-cinq triangles (deux cerclages et une pointe : la pointe ferme le haut du corps).
  */
 function buoy(b: FacetBuilder, x: number, y: number, z: number, s = 1): void {
-  b.band({ x, y, z }, 0.2 * s, 0.13 * s, 5, C.red);
+  b.band({ x, y, z }, 0.2 * s, 0.13 * s, 5, C.blue);
   b.band({ x, y: y + 0.13 * s, z }, 0.185 * s, 0.21 * s, 5, C.white);
-  b.prism({ x, y: y + 0.34 * s, z }, 0.185 * s, 0, 0.26 * s, 5, C.red);
+  b.prism({ x, y: y + 0.34 * s, z }, 0.185 * s, 0, 0.26 * s, 5, C.blue);
 }
 
 /**
- * Le ponton du baliseur (le ponton du kit commun), à l'est de la cale : du rivage, au sud, vers le large ; ses bouées
- * rouge et blanc en rang sur ses deux bords, au-delà de l'anneau de la rangée ; sa plate-forme de bout, plus large.
+ * Le ponton du baliseur (le ponton du kit commun), à l'est de la cale : du rivage, au sud, vers le large ; sa
+ * plate-forme de bout, plus large. Sans bouées sur ses bords : en rang, elles se comptaient (référent dys).
  */
 function jetty(b: FacetBuilder, f: Vec3): void {
   const P = BEACONS_SURROUNDINGS.pontoon;
@@ -102,10 +110,6 @@ function jetty(b: FacetBuilder, f: Vec3): void {
   const x = f.x + P.dx;
   pontoon(b, { from: { x, z: f.z + P.from }, to: { x, z: f.z + P.to }, width: P.width, top: P.top, pairs: 5 });
   pontoon(b, { from: { x: f.x + H.dx, z: f.z + H.from }, to: { x: f.x + H.dx, z: f.z + H.to }, width: H.width, top: P.top, pairs: 2 });
-  for (let k = 0; k < 5; k++) {
-    const z = f.z - 7.8 - k * 1.1;
-    for (const side of [-1, 1]) buoy(b, x + side * (P.width / 2 - 0.2), P.top, z);
-  }
 }
 
 /**
@@ -156,16 +160,16 @@ function hut(b: FacetBuilder, f: Vec3): void {
   b.beam({ x: x0 + 0.7, y: y + 0.75, z: rz }, { x: x1, y: y + 0.75, z: rz }, 0.09, C.post);
 }
 
-/** Les bouées du chenal, au-delà du bout du ponton, de part et d'autre de la voie du voilier : (dx, dz). */
-const CHANNEL_BUOYS: readonly (readonly [number, number])[] = [
-  [-4.4, -14.8],
+/**
+ * Les bouées du chenal, au-delà du bout du ponton, de part et d'autre de la voie du voilier, loin l'une de l'autre :
+ * (dx, dz). Deux seulement, jamais plus dans le champ de face (référent dys : rien à compter à la mission des nombres).
+ */
+export const CHANNEL_BUOYS: readonly (readonly [number, number])[] = [
   [-1.0, -16.0],
   [-5.8, -24.0],
-  [-1.6, -25.5],
-  [-13.5, -12.0],
 ];
 
-/** Le chenal : ses bouées, plus grandes que celles du ponton, à demi dans l'eau. */
+/** Le chenal : ses deux bouées, à demi dans l'eau. */
 function channel(b: FacetBuilder, f: Vec3): void {
   for (const [dx, dz] of CHANNEL_BUOYS) buoy(b, f.x + dx, -0.25, f.z + dz, 1.9);
 }
@@ -281,9 +285,12 @@ const SHORE_TUFTS: readonly (readonly [number, number])[] = [
   [3.0, 12.8],
 ];
 
+/** La bouée de rechange du dépôt, couchée dans l'herbe : (dx, dz, cap). */
+export const SPARE_BUOY = [3.4, 10.0, 0.4] as const;
+
 /**
  * La grève autour de la scène : les rochers de pierre chaude, les pins, les touffes d'herbe sèche ; au sud-est, le dépôt
- * du baliseur : deux bouées de rechange couchées dans l'herbe et un tonneau.
+ * du baliseur : une bouée de rechange couchée dans l'herbe et un tonneau.
  */
 function shore(b: FacetBuilder, f: Vec3): void {
   for (const [dx, dz, r, h, seed] of SHORE_ROCKS) {
@@ -301,16 +308,15 @@ function shore(b: FacetBuilder, f: Vec3): void {
       z = f.z + dz;
     tuft(b, { x, y: groundAt(x, z, 0.03), z }, k + 1, DRY_TUFT, 1.2);
   }
-  // Le dépôt du baliseur, derrière la scène de dos, sous le regard de la caméra de face : deux bouées de rechange couchées, la pointe vers le nord, un tonneau.
-  for (const [dx, dz, yaw] of [
-    [3.2, 9.6, 0.4],
-    [4.0, 10.5, -0.3],
-  ] as const) {
+  // Le dépôt du baliseur, derrière la scène de dos, sous le regard de la caméra de face : une bouée de rechange couchée,
+  // la pointe vers le nord (une seule : rien à compter), un tonneau.
+  {
+    const [dx, dz, yaw] = SPARE_BUOY;
     const x = f.x + dx,
       z = f.z + dz;
     const y = groundAt(x, z, 0.02) + 0.18;
     b.prism({ x, y, z, yaw, pitch: -Math.PI / 2 }, 0.2, 0.17, 0.34, 5, C.white);
-    b.prism({ x: x - Math.sin(yaw) * 0.34, y, z: z - Math.cos(yaw) * 0.34, yaw, pitch: -Math.PI / 2 }, 0.17, 0, 0.26, 5, C.red);
+    b.prism({ x: x - Math.sin(yaw) * 0.34, y, z: z - Math.cos(yaw) * 0.34, yaw, pitch: -Math.PI / 2 }, 0.17, 0, 0.26, 5, C.blue);
   }
   const bx = f.x + 4.6,
     bz = f.z + 9.6;

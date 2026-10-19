@@ -1763,9 +1763,10 @@ function beamRest(b: FacetBuilder, x: number, z: number, from: number, top: numb
  * montré (./habitants.ts, choix du mainteneur du 18 octobre 2026), il est dessiné à part, avec sa texture, par la vue :
  * le décor se fait alors sans le corps du pion, et garde ce que la scénette lui fait tenir ou poser à côté de lui (la
  * corde de la cloche, la caisse du docker, le levier de l'éclusier, la chambre de la photographe, la tuile du couvreur).
+ * `topped` : l'étape du haut du lieu est posée (à la Mangrove, le carbet relevé : ses abords changent).
  */
-export function scenetteDecor(place: PlaceId, open = false, posed = true): Facets {
-  return decorBuilder(place, open, posed, !loadedHabitant(place)).build();
+export function scenetteDecor(place: PlaceId, open = false, posed = true, topped = false): Facets {
+  return decorBuilder(place, open, posed, !loadedHabitant(place), true, topped).build();
 }
 
 /**
@@ -1785,9 +1786,9 @@ export function scenetteCore(place: PlaceId, open = false, posed = true): Facets
 }
 
 /** Les abords d'un lieu seuls (./surroundings.ts), autour du sol de sa scène, tels que le décor de près les porte. */
-export function scenetteSurroundings(place: PlaceId, open = false, posed = true): Facets {
+export function scenetteSurroundings(place: PlaceId, open = false, posed = true, topped = false): Facets {
   const b = new FacetBuilder();
-  SURROUNDINGS[place]?.(b, floorOf(place, posed), { open, posed });
+  SURROUNDINGS[place]?.(b, floorOf(place, posed), { open, posed, topped });
   return b.build();
 }
 
@@ -1795,9 +1796,9 @@ export function scenetteSurroundings(place: PlaceId, open = false, posed = true)
  * Le décor de près, avec le pion dessiné en code (`body`) ou sans corps, les abords du lieu (./surroundings.ts, sauf
  * `surroundings` faux) et les ombres au pied de Kéo et de l'habitant.
  */
-function decorBuilder(place: PlaceId, open: boolean, posed: boolean, body: boolean, surroundings = true): FacetBuilder {
+function decorBuilder(place: PlaceId, open: boolean, posed: boolean, body: boolean, surroundings = true, topped = false): FacetBuilder {
   const b = sceneDecor(place, open, posed, body);
-  if (surroundings) SURROUNDINGS[place]?.(b, floorOf(place, posed), { open, posed });
+  if (surroundings) SURROUNDINGS[place]?.(b, floorOf(place, posed), { open, posed, topped });
   footShadow(b, scenetteKeo(place, posed).at, FOOT_SHADOW.keo, floorShadow(place, posed));
   footShadow(b, scenetteHabitant(place, posed), FOOT_SHADOW.habitant, floorShadow(place, posed));
   return b;

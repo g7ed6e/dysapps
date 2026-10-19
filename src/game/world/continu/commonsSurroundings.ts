@@ -1,12 +1,12 @@
 /**
  * Les abords de la scénette de la Halle (d'après les concepts du 18 octobre 2026, « scenettes-6e-maison-commune ») : au
- * nord-est, derrière la Halle, la maison à colombages du couvreur au toit d'ardoise bleue en réparation (le kit commun,
+ * nord, derrière la Halle, la maison à colombages du couvreur au toit d'ardoise bleue en réparation (le kit commun,
  * ./surroundingsKit.ts), sur sa petite place pavée : son échelle appuyée à l'égout, une pile d'ardoises neuves à son pied,
  * deux paquets d'ardoises sur son toit et une guirlande de fanions en travers de sa façade ; plus loin, deux maisons du
  * village. Au sud-ouest, l'étal du marché tourné vers la Halle, un banc, des pins et des buissons ronds ; à l'est, la
  * réserve du chantier (ardoises, tonneaux, planches). Fini tout autour, puisque la caméra tourne à deux doigts : de face,
- * la maison, l'échelle et la guirlande dans la moitié droite du cadre, au-dessus des piliers, l'école de l'Escale au
- * fond ; de côté, la réserve du chantier et la maison du village de l'ouest ; de dos, l'étal et les pins devant la mer.
+ * la maison, l'échelle et la guirlande au milieu du cadre visible, entre les deux piliers du milieu, au-dessus des têtes
+ * de Kéo et du couvreur ; de côté, la réserve du chantier et la maison du village de l'ouest ; de dos, l'étal et les pins devant la mer.
  *
  * Rien de haut entre la caméra de face et la scène, ni tout près du point visé (à moins de `RING` de lui) : seules les
  * touffes y restent, sous le genou de Kéo. Rien de détaillé derrière la tête du couvreur ni derrière la borne-fontaine
@@ -52,12 +52,13 @@ const BUSH: RockTones = { light: 0x55b083, shade: 0x3f9a74, top: 0x6cc092 };
 
 /**
  * Où sont les abords, depuis le sol de la scène (`floor`, le milieu de la dalle, entre Kéo et le couvreur ; le centre de
- * la Halle est 4,4 plus au nord) : la maison du couvreur (son milieu, sa largeur, sa profondeur, la hauteur de ses murs,
+ * la Halle est 4,4 plus au nord) : la maison du couvreur (relecture du 19 octobre 2026 : de face, elle se lit entière
+ * dans l'entre-deux des deux piliers du milieu, au-dessus des têtes, entre Kéo et le couvreur) (son milieu, sa largeur, sa profondeur, la hauteur de ses murs,
  * la pente de son toit, l'écart de son échelle et de sa pile d'ardoises au milieu de sa façade), l'étal, les deux maisons
  * du village (leur cap), la réserve du chantier, le banc.
  */
 export const COMMONS_SURROUNDINGS = {
-  house: { dx: 4.4, dz: -12.8, width: 4.4, depth: 3.0, wall: 2.4, slope: 0.9, ladder: -1.2, pile: 0.85 },
+  house: { dx: 0, dz: -12.8, width: 3.4, depth: 3.0, wall: 2.4, slope: 0.9, ladder: -1.2, pile: 1.3 },
   stall: { dx: -5.4, dz: 9.4 },
   village: [
     { dx: -12.5, dz: -4.5, yaw: Math.PI / 2, width: 3.4, depth: 2.6, wall: 1.9 },
@@ -85,7 +86,7 @@ export function commonsSurroundings(b: FacetBuilder, floor: Vec3, _state: Surrou
 const footAt = (x: number, z: number, sink = 0.08): number => groundAt(x, z, sink);
 
 /**
- * La maison du couvreur, au nord-est derrière la Halle (le kit commun) : sur sa place pavée, la façade au sud, son toit
+ * La maison du couvreur, au nord derrière la Halle (le kit commun) : sur sa place pavée, la façade au sud, son toit
  * d'ardoise en réparation (un morceau à nu et ses liteaux neufs) et sa cheminée ; l'échelle appuyée à l'égout ; contre
  * son coin ouest, la pile d'ardoises neuves ; sur le toit, à côté du morceau à nu, deux paquets d'ardoises ; la
  * guirlande en travers de la façade.
@@ -95,15 +96,16 @@ function house(b: FacetBuilder, f: Vec3): void {
   const x = f.x + H.dx,
     z = f.z + H.dz;
   // La place de la maison : un aplat de dalles pâles, un peu plus large qu'elle, au ras du sol.
-  const sq = { w: H.width + 4.2, d: H.depth + 3.4 };
+  // Son bord sud s'arrête au dallage de la Halle.
+  const sq = { w: H.width + 4.2, d: H.depth + 2.5, dz: 0.25 };
   let low = Infinity;
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) low = Math.min(low, footAt(x + (sx * sq.w) / 2, z + 0.6 + (sz * sq.d) / 2, 0.1));
-  b.box({ x, y: low, z: z + 0.6 }, [sq.w, groundAt(x, z) + 0.06 - low, sq.d], C.pavingSide, C.square);
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) low = Math.min(low, footAt(x + (sx * sq.w) / 2, z + sq.dz + (sz * sq.d) / 2, 0.1));
+  b.box({ x, y: low, z: z + sq.dz }, [sq.w, groundAt(x, z) + 0.06 - low, sq.d], C.pavingSide, C.square);
   const floorY = timberHouse(b, { x, z, width: H.width, depth: H.depth, wall: H.wall, slope: H.slope, repair: true, chimney: true });
   const front = z + H.depth / 2;
   const eave = floorY + H.wall - H.slope * 0.45;
-  // L'échelle, à gauche de la porte, appuyée à l'égout au bord du morceau à nu (de face, loin derrière le couvreur, qui
-  // est devant le milieu de la maison) : deux montants, cinq barreaux.
+  // L'échelle, à gauche de la porte, appuyée à l'égout au bord du morceau à nu (de face, loin de la tête du couvreur) :
+  // deux montants, cinq barreaux.
   const lx = x + H.ladder;
   const footZ = front + 1.0,
     topZ = front + 0.5;
@@ -132,8 +134,8 @@ function house(b: FacetBuilder, f: Vec3): void {
   const yEave = floorY + H.wall - H.slope * over,
     yRidge = floorY + H.wall + (H.slope * H.depth) / 2;
   for (const [u, t] of [
-    [0.95, 0.4],
-    [1.6, 0.62],
+    [0.8, 0.4],
+    [1.3, 0.62],
   ] as const)
     b.box({ x: x + u, y: yEave + (yRidge - yEave) * t + 0.02, z: z + run * (1 - t), pitch: Math.atan(H.slope) }, [0.5, 0.12, 0.34], C.slateLight, C.slateEdge);
   garland(b, x, floorY + H.wall - 0.2, front + 0.08, H.width / 2 + 0.1);

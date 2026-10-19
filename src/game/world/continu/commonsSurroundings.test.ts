@@ -3,6 +3,8 @@
 import { describe, expect, it } from 'vitest';
 import { COMMONS_SURROUNDINGS, RING } from './commonsSurroundings';
 import { screenOf } from './camera';
+import { placeById } from './plan6e';
+import { COMMONS } from './places';
 import { questionLayout } from './questionScene';
 import { scenetteHabitant, scenetteKeo, scenetteLayout, scenettePose, scenetteSurroundings } from './scenette';
 
@@ -33,7 +35,7 @@ describe('les abords de la Halle', () => {
     }
   });
 
-  it('posent la maison du couvreur dans la moitié droite du cadre de face, l’échelle à l’écart du couvreur', () => {
+  it('posent la maison du couvreur de face, dans l’entre-deux des piliers du milieu, l’échelle à l’écart du couvreur', () => {
     const H = COMMONS_SURROUNDINGS.house;
     expect(H.dz).toBeLessThan(-10);
     const [w, h] = [1024, 768];
@@ -43,12 +45,18 @@ describe('les abords de la Halle', () => {
     const screenX = (x: number, y: number, z: number) => screenOf(pose, { x, y, z }, w, h).x - shift.x;
     const o = { x: target.x, z: keo.z - 0.6 };
     const front = o.z + H.dz + H.depth / 2;
-    // La maison entière entre le milieu de la scène et le bord droit de l'écran.
-    const mid = (stage.left + stage.right) / 2;
+    // Les bords intérieurs des deux piliers du milieu, sur les deux rangs (le plus étroit des deux passages), à mi-hauteur.
+    const c = placeById('commons').center;
+    const P = COMMONS.pillar;
+    const left = Math.max(...[P.z, -P.z].map((z) => screenX(c.x + P.xs[1] + P.side / 2, floorY + 1.5, c.z + z)));
+    const right = Math.min(...[P.z, -P.z].map((z) => screenX(c.x + P.xs[2] - P.side / 2, floorY + 1.5, c.z + z)));
+    // La façade entière dans le passage (à 15 pixels près), loin des têtes de Kéo et du couvreur.
     for (const u of [-H.width / 2, H.width / 2]) {
       const x = screenX(o.x + H.dx + u, floorY + 1, front);
-      expect(x).toBeGreaterThan(mid);
-      expect(x).toBeLessThan(w);
+      expect(x).toBeGreaterThan(left - 15);
+      expect(x).toBeLessThan(right + 15);
+      expect(x).toBeGreaterThan(screenX(keo.x, keo.y + 1.2, keo.z) + 60);
+      expect(x).toBeLessThan(screenX(couvreur.x, couvreur.y + 1.5, couvreur.z) - 60);
     }
     // L'échelle ne se dresse pas derrière la tête du couvreur : à plus de 30 pixels de lui.
     const ladder = screenX(o.x + H.dx + H.ladder, floorY + 1.5, front + 0.75);

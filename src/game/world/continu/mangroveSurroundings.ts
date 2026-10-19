@@ -8,6 +8,11 @@
  * houppier en grosses masses à facettes. De côté, d'autres palétuviers dans le lagon, à l'est ; de dos, au bord de la
  * vasière, de jeunes palétuviers et des rochers de pierre chaude.
  *
+ * Les abords suivent l'état du lieu (relecture du 19 octobre 2026) : tant que le carbet n'est pas relevé (`topped` faux,
+ * l'étape du haut de places.ts, `MANGROVE`, pas encore posée), le ponton et la cabane sont là, la barque amarrée à son
+ * pied. Le carbet bâti, ils s'en vont : le carbet tient leur place, seuls restent les palétuviers, les rochers et la
+ * barque, amarrée au petit ponton d'accostage du carbet.
+ *
  * Le lieu bâti (places.ts, `MANGROVE`) garde sa passerelle en coude, son carbet et ses trois palétuviers : le ponton
  * longe la passerelle à l'est sans la toucher, la cabane et les palétuviers se tiennent hors de son emprise ; quand le
  * lieu est relevé, la passerelle et le ponton se lisent comme deux bras d'un même réseau de planches. Rien de haut entre
@@ -16,6 +21,8 @@
  */
 import type { FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
+import { placeById } from './plan6e';
+import { MANGROVE } from './places';
 import type { SurroundingsState } from './surroundings';
 import { NATURE, TIMBER, barque, barqueFloor, groundAt, jitter, pontoon, rock, tuft, type P3 } from './surroundingsKit';
 
@@ -90,14 +97,17 @@ const ROCKS: readonly (readonly [number, number, number, number, number])[] = [
   [7.4, 6.8, 0.65, 0.5, 12],
 ];
 
-export function mangroveSurroundings(b: FacetBuilder, floor: Vec3, _state: SurroundingsState): void {
+export function mangroveSurroundings(b: FacetBuilder, floor: Vec3, state: SurroundingsState): void {
   const X = (dx: number) => floor.x + dx;
   const Z = (dz: number) => floor.z + dz;
   const P = MANGROVE_SURROUNDINGS.pontoon;
   const top = floor.y - P.drop;
-  pontoon(b, { from: { x: X(P.from.dx), z: Z(P.from.dz) }, to: { x: X(P.to.dx), z: Z(P.to.dz) }, width: P.width, top, pairs: P.pairs });
-  cabin(b, X, Z, top);
-  moored(b, X, Z, top);
+  if (state.topped) dockedAtCarbet(b, top);
+  else {
+    pontoon(b, { from: { x: X(P.from.dx), z: Z(P.from.dz) }, to: { x: X(P.to.dx), z: Z(P.to.dz) }, width: P.width, top, pairs: P.pairs });
+    cabin(b, X, Z, top);
+    moored(b, X, Z, top);
+  }
   for (const [dx, dz, s, seed, segments] of TREES) mangroveTree(b, X(dx), Z(dz), s, seed, segments);
   for (const [dx, dz, s] of SAPLINGS) {
     const x = X(dx),
@@ -277,6 +287,23 @@ function cabin(b: FacetBuilder, X: (dx: number) => number, Z: (dz: number) => nu
     cz = z + D / 2 + 0.42;
   b.box({ x: cx, y: top, z: cz }, [0.62, 0.32, 0.42], C.crate, TIMBER.lid);
   for (const [k, dx] of [-0.16, 0.05, 0.2].entries()) b.prism({ x: cx + dx, y: top + 0.32, z: cz + (k % 2 ? 0.08 : -0.06), yaw: k }, 0.09, 0, 0.32, 3, C.sprout);
+}
+
+/**
+ * Le carbet bâti : la barque amarrée au petit ponton d'accostage du carbet (places.ts, `MANGROVE.pontoon`), à l'ouest de
+ * son bout, sa proue vers lui ; son pieu au coin du ponton et son amarre (le pieu tient même avant le ponton).
+ */
+function dockedAtCarbet(b: FacetBuilder, top: number): void {
+  const c = placeById('mangrove').center;
+  const P = MANGROVE.pontoon;
+  const B = MANGROVE_SURROUNDINGS.barque;
+  const at = { x: c.x + P.x - P.w / 2 - 0.25 - B.length / 2, y: 0, z: c.z + P.z };
+  barque(b, at, B.length, B.width, { lantern: false, mast: false });
+  barqueFloor(b, at, B.length, B.width);
+  const post = { x: c.x + P.x - P.w / 2 - 0.12, z: c.z + P.z - P.d / 2 - 0.16 };
+  const foot = groundAt(post.x, post.z, 0.12);
+  b.box({ x: post.x, y: foot, z: post.z }, [0.18, top + 0.35 - foot, 0.18], NATURE.pile);
+  b.beam({ x: post.x, y: top + 0.2, z: post.z }, { x: at.x + B.length / 2, y: 0.42, z: at.z - B.width / 2 + 0.12 }, 0.035, C.rope);
 }
 
 /** La barque amarrée au pied de la cabane, à l'ouest du ponton, sa proue vers lui ; son pieu et son amarre. */

@@ -28,11 +28,20 @@ describe('les abords de la Gare maritime', () => {
     }
   });
 
-  it('posent la gare, le bac et l’îlot à la croix au nord, derrière la scène, la gare et le débarcadère à droite', () => {
-    const { station, bac, cross, landing } = FERRY_SURROUNDINGS;
+  it('posent la gare, le bac et l’îlot de l’amer au nord, derrière la scène, la gare et le débarcadère à droite', () => {
+    const { station, bac, amer, landing } = FERRY_SURROUNDINGS;
     expect(station.dx).toBeGreaterThan(0);
     expect(landing.dx).toBeGreaterThan(station.dx);
-    for (const dz of [station.dz, bac.dz, cross.dz]) expect(dz).toBeLessThan(-8);
-    expect(cross.dz).toBeLessThan(bac.dz);
+    for (const dz of [station.dz, bac.dz, amer.dz]) expect(dz).toBeLessThan(-8);
+    expect(amer.dz).toBeLessThan(bac.dz);
+  });
+
+  it('tiennent l’amer trapu : rien sur l’îlot ne dépasse la tourelle et son chapeau', () => {
+    const { amer } = FERRY_SURROUNDINGS;
+    const p = f.positions;
+    for (let k = 0; k < p.length; k += 3) {
+      if (Math.hypot(p[k] - (target.x + amer.dx), p[k + 2] - (keo.z - 0.25 + amer.dz)) > amer.radius * 1.2) continue;
+      expect(p[k + 1]).toBeLessThan(amer.height + 0.5);
+    }
   });
 });

@@ -161,9 +161,11 @@ const C = {
   tileShade: 0x356f68,
   oak: 0x8e6a48,
   paving: 0xd6cebc,
-  wornTile: 0x8aaba5,
-  wornPasseurs: 0xb8b09f,
-  wornPasseursTop: 0xaaa290,
+  // Relecture du 19 octobre 2026 : vue de dos, la ruine se lisait sombre et froide ; les tuiles tombées passent à un
+  // vert d'eau clair, les piliers usés à une pierre chaude plus claire (leurs faces à l'ombre restent lisibles).
+  wornTile: 0xa9cdbd,
+  wornPasseurs: 0xcdbd9f,
+  wornPasseursTop: 0xd9cbb0,
   wornPaving: 0xbdb6a6,
 } as const;
 
