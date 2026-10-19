@@ -200,6 +200,12 @@ export const PLACES_5E: readonly OpenPlace<PlaceId5e>[] = PLACE_SPECS.map((s) =>
 }));
 
 /** Les lieux du plateau, le haut (la terre des Aiguilles) : la Carte met un triangle « en haut » à côté de leur nom. */
+/**
+ * Les lieux qui ne comptent pas dans le prix de leur terre (décision du mainteneur, 19 octobre 2026) : l’Oracle, lieu en
+ * option, ne compte pas dans celui de la cabine de la Montée, qui vaut quatre lieux (20) et non cinq (25). Le changer ici.
+ */
+export const UNPRICED_PLACES_5E: readonly PlaceId5e[] = ['oracle'];
+
 export const UPPER_PLACES_5E: readonly PlaceId5e[] = ['semaphore', 'gaillard', 'donjon', 'nacelles', 'oracle'];
 
 /**

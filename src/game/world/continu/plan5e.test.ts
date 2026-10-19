@@ -45,9 +45,10 @@ describe('Le plan du 5e', () => {
     expect(DEPARTURE_5E.at.z).toBeGreaterThan(0);
   });
 
-  it('le prix d’une terre : celui d’une liaison du 5e par lieu (10, 15, 25)', () => {
+  it('le prix d’une terre : celui d’une liaison du 5e par lieu, l’Oracle en option ne compte pas (10, 15, 20)', () => {
     expect(PLAN.pricePerPlace).toBe(LINK_PRICE['5e']);
-    expect(LINKED.map(landPrice)).toEqual([10, 15, 25]);
+    expect(PLAN.unpriced).toEqual(['oracle']);
+    expect(LINKED.map(landPrice)).toEqual([10, 15, 20]);
   });
 
   it('sans ses trois passages, le réseau fait exactement les quatre terres', () => {
