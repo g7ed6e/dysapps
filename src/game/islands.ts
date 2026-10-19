@@ -433,7 +433,7 @@ export const ILES = [
       },
       {
         "id": "adding",
-        "title": "Banquise",
+        "title": "Plus et moins",
         "description": "Additionne et soustrais des relatifs avec le bond sur la droite.",
         "programme": [
           "c4.ma.5e.nombres.calcul-relatifs"
@@ -441,7 +441,7 @@ export const ILES = [
       },
       {
         "id": "fractions",
-        "title": "Icebergs des fractions",
+        "title": "Fractions",
         "description": "Compare, puis additionne et soustrais des fractions : la règle reste affichée.",
         "programme": [
           "c4.ma.5e.nombres.fractions",

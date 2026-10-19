@@ -265,6 +265,10 @@ Le programme de maths de 2026 (`cycle4-maths-2026.pdf`) place en 4e « le théor
 - Le niveau 4 (`maths-4e-algebra-pythagorean-theorem-4`) est le travail de logique : un raisonnement complet, ce qu’on sait puis ce qu’on conclut, et l’élève dit quelle propriété a servi, en trois lignes et une question à part (« le théorème », « la réciproque », « la contraposée », toujours dans cet ordre). Les trois reviennent aussi souvent ; la contraposée part d’un triangle voisin d’un triplet connu (6, 8, 9). La carte de règle tient en trois lignes : rectangle donc égalité ; égalité donc rectangle ; pas d’égalité donc pas rectangle. Piège : prendre le théorème pour sa réciproque, qui parlent de la même égalité.
 - Compétences citées : `c4.ma.d.pythagore` et `c4.ma.a.carres-racine`, déjà couvertes par le Belvédère : aucune exclusion ne bouge. Aucune sauvegarde n’est migrée : la mission est neuve, celle du Belvédère ne change pas.
 
+### Les titres de missions communs aux univers (décision du 19 octobre 2026)
+
+Le titre d’une mission est un repère stable, le même dans les deux univers (`docs/univers/univers.md`, § « repères stables ») : il dit la notion avec des mots courants, jamais le décor d’un seul univers. Le Glacier des relatifs devient la Montée dans le monde ouvert d’Archipéo ; ses missions « Banquise » et « Icebergs des fractions » deviennent « Plus et moins » (`adding`) et « Fractions » (`fractions`), choix du mainteneur (piste « Neutre »). « Montées et descentes » a été écarté : la droite de l’aide est horizontale, on y avance sans monter. « Thermomètre », « Priorités » et « Mesures et angles » restent. Les identifiants, les étoiles et les sauvegardes ne changent pas ; le décor passe par le récit et les répliques de chaque univers.
+
 ## La suite à couvrir
 
 Le rattachement des missions aux [programmes officiels](programmes.md) a mis en face du contenu ce qui manque. Une pull request par lot ; chacune retire de `src/curriculum/exclusions.ts` les exclusions « à couvrir » qu’elle couvre. Certains manques n’ont pas d’exclusion : la compétence est déjà citée par une mission, mais une partie n’est pas travaillée.

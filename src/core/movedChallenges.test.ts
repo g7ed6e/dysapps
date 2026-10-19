@@ -49,7 +49,7 @@ it('la Forge et le Glacier : une mission arrivée ou partie ne referme pas un d�
   };
   const s = sanitizeState(format3({ ...forge, ...glacier }));
   expect(s.world.challengesKeptOpen).toEqual(['maths-4e-powers', 'maths-5e-signed-numbers']);
-  // Les Icebergs ont perdu leur niveau étoilé, mais pas leurs étoiles (gardées au niveau 2). Le Glacier a reçu deux
+  // Les Fractions du Glacier ont perdu leur niveau étoilé, mais pas leurs étoiles (gardées au niveau 2). Le Glacier a reçu deux
   // missions depuis (GD-14) : la règle d'aujourd'hui dit non, le champ le garde ouvert quoi qu'il arrive.
   expect(s.progress['maths-5e-signed-numbers-fractions-2']).toEqual({ stars: 3, attempts: 0, best: 0.8 });
   expect(isBossUnlocked(getBiome('maths-5e-signed-numbers')!, s.progress)).toBe(false);

@@ -267,7 +267,7 @@ const FREQUENCY_RULES = [
 const FREQUENCY_TOTALS = [16, 18, 20, 24, 30];
 
 /**
- * Pas `fractionChoices` (Icebergs) : ici, les voisins restent sur le même dénominateur (un élève de plus ou de moins),
+ * Pas `fractionChoices` (Fractions du Glacier) : ici, les voisins restent sur le même dénominateur (un élève de plus ou de moins),
  * et jamais la même valeur n'est proposée écrite autrement, même non simplifiée.
  * Réponses-fractions rangées de la plus petite à la plus grande : la bonne et trois pièges de valeurs différentes (une
  * seule réponse juste, jamais la même fraction écrite autrement). La place de la réponse est tirée au hasard, comme
