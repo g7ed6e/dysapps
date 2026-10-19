@@ -12,7 +12,7 @@ import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
 import { reachableIslands } from '../../world/archipelago';
 import { landById, type LinkedLand } from '../../world/continu/lands';
-import { placeById } from '../../world/continu/plan6e';
+import { placeById } from '../../world/continu/levelPlan';
 import { COMMANDES } from '../../world/requests';
 import type { BridgeLayEvents, OpenWorld, OpenWorldOptions } from './scene';
 import OpenWorldPage from './OpenWorldPage';

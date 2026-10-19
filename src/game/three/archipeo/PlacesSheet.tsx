@@ -52,7 +52,7 @@ function placeStateWord(place: OpenPlace, state: BuildState, words: Readonly<Rec
 export function placesRows(
   plan: LevelPlan,
   open: readonly PlaceId[],
-  states: Readonly<Record<PlaceId, BuildState>>,
+  states: Readonly<Partial<Record<PlaceId, BuildState>>>,
   words: Readonly<Record<IslandStateId, string>>,
   next: PlaceId | null,
   portName?: string,
@@ -65,7 +65,7 @@ export function placesRows(
       id: p.id,
       name: p.name,
       icon: getBiome(p.island)?.icon ?? 'map',
-      state: { icon: islandStateIcon(states[p.id] ?? 'a-explorer'), word: placeStateWord(p, states[p.id], words) },
+      state: { icon: islandStateIcon(states[p.id] ?? 'a-explorer'), word: placeStateWord(p, states[p.id] ?? null, words) },
       next: p.id === next,
       posed: (posed?.[p.id] ?? []).flatMap((id) => amenagementById(id)?.name ?? []),
     })),

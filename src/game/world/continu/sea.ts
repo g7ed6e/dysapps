@@ -6,7 +6,9 @@
 // profonde, la Nuit océan du pack. L'écume du rivage est dans les tuiles du terrain (./terrain.ts, `FOAM`). Code pur.
 import { distance, insidePolygon, smoothstep, type Vec2 } from './geometry';
 import { BEACON_MASTS, COAST, COLORS_6E, FERRY_ISLET, PATH_NODES, STRAITS } from './plan6e';
+import { COAST_5E, COLORS_5E } from './plan5e';
 import { landDistance, straitClearance } from './terrain';
+import { channelClearance, landDistance5e } from './terrain5e';
 
 /**
  * L'image de l'eau : son côté en pixels, et le carré du monde qu'elle couvre, centré sur l'origine ; environ un pixel
@@ -108,13 +110,18 @@ export const decodeSeaField = (b: number) => (b - 128) / SEA_FIELD_SCALE;
  * bas) : la couleur qui s'étend jusqu'à l'horizon.
  */
 export function seaPixels(): Uint8Array {
+  return pixelsOf(waterFields);
+}
+
+/** L'image des champs `fields`, ligne après ligne du nord au sud, son bord au large. */
+function pixelsOf(fields: (p: Vec2) => SeaFields): Uint8Array {
   const { size, half } = SEA_TEXTURE;
   const out = new Uint8Array(size * size * 4);
   for (let j = 0; j < size; j++)
     for (let i = 0; i < size; i++) {
       const edge = i === 0 || j === 0 || i === size - 1 || j === size - 1;
       const p = { x: -half + ((i + 0.5) * 2 * half) / size, z: -half + ((j + 0.5) * 2 * half) / size };
-      const f = edge ? { night: -8, clear: -8, shelf: -8 } : waterFields(p);
+      const f = edge ? { night: -8, clear: -8, shelf: -8 } : fields(p);
       const k = (j * size + i) * 4;
       out[k] = encode(f.night);
       out[k + 1] = encode(f.clear);
@@ -122,4 +129,34 @@ export function seaPixels(): Uint8Array {
       out[k + 3] = 255;
     }
   return out;
+}
+
+// ---------- L'eau du 5e (GD-22, lot 2) ----------
+
+/**
+ * Les paliers de l'eau du 5e (fiche, § 2 : « l'eau des racines, calme et sombre ») : le cœur des chenaux, l'eau des
+ * racines (#1E5452, jamais plus sombre : le mainteneur refuse le presque-noir) ; le bord des rives, un cran plus clair ;
+ * le large autour de l'île, entre les deux ; la bande du bord de mer, comme le bord des rives. Mêmes champs, même shader
+ * que le 6e : seules les couleurs changent. `heart` : à tant d'unités de la rive, on est au cœur d'un chenal.
+ */
+export const WATER_TONES_5E = { clear: COLORS_5E.waterShallow, shelf: COLORS_5E.waterShallow, lagoon: COLORS_5E.sea, night: COLORS_5E.water, heart: 1.8 } as const;
+
+/** Les trois champs de l'eau du 5e en un point : le cœur des chenaux, le bord des rives, la bande du bord de mer. */
+function waterFields5e(p: Vec2): SeaFields {
+  const chan = channelClearance(p);
+  if (insidePolygon(p, COAST_5E)) return { night: -chan - WATER_TONES_5E.heart, clear: STRAIT_DEEP.clear + chan, shelf: -8 };
+  const coast = landDistance5e(p);
+  return { night: -8, clear: coast + 2.5, shelf: coast + 9 };
+}
+
+/** L'image de l'eau du 5e, codée comme celle du 6e (`seaPixels`). */
+export function seaPixels5e(): Uint8Array {
+  return pixelsOf(waterFields5e);
+}
+
+/** Le palier de l'eau du 5e en un point. */
+export function waterTone5e(p: Vec2): number {
+  const f = waterFields5e(p);
+  const t = WATER_TONES_5E;
+  return f.night > 0 ? t.night : f.clear > 0 ? t.clear : (f.shelf ?? -1) > 0 ? t.shelf : t.lagoon;
 }

@@ -37,6 +37,17 @@ export const HORIZON_COLOR = SKY_STOPS[0].color;
  * #E4E4D4, le sol renvoyé #E8D3A8) : une face au soleil ressort deux fois plus claire que la même à l'ombre, qui garde
  * sa couleur (l'exposition relevée, 1,18, la tient claire ; valeurs du directeur artistique).
  */
+/** La lumière d'un niveau, que la vue donne à Three.js. */
+export interface SceneLight {
+  readonly sky: number;
+  readonly ground: number;
+  readonly ambient: number;
+  readonly sun: number;
+  readonly sunIntensity: number;
+  readonly sunFrom: { readonly x: number; readonly y: number; readonly z: number };
+  readonly exposure: number;
+}
+
 export const LIGHT = {
   sky: 0xe4e4d4,
   ground: 0xe8d3a8,
@@ -54,13 +65,54 @@ export const SHADOW_DIR = (() => {
   return { x: -LIGHT.sunFrom.x / l, z: -LIGHT.sunFrom.z / l };
 })();
 
+/**
+ * Le ciel et la lumière du 5e (GD-22, lot 2 ; fiche du niveau, § 2 : « fin d'après-midi », planche de rendu validée le 19
+ * octobre 2026) : un soleil bas et doré, à l'ouest-sud-ouest (environ 15°), qui prend les sommets, le plateau et les
+ * aiguilles ; en bas, sous les racines, une lumière diffuse, que portent surtout les couleurs du sol (./terrain5e.ts : le
+ * bas plus froid et plus sourd, le haut plus chaud). L'horizon pêche pâle, le haut du ciel un bleu-gris doux, jamais
+ * saturé ; l'ambiance un peu plus basse qu'au 6e, jamais au point de rendre une face presque noire.
+ */
+const SKY_STOPS_5E: readonly { at: number; color: number }[] = [
+  { at: 0, color: 0xf0dfc4 },
+  { at: 6, color: 0xeadfca },
+  { at: 18, color: 0xd9dcd2 },
+  { at: 40, color: 0xbccfd6 },
+  { at: 90, color: 0xa9c3d2 },
+];
+
+/** La couleur de l'horizon du 5e : la brume du lointain et le bas du dôme. */
+export const HORIZON_COLOR_5E = SKY_STOPS_5E[0].color;
+
+/** La lumière du 5e : le ciel renvoyé un peu plus froid, le sol renvoyé ocre, le soleil plus bas et plus orangé qu'au 6e. */
+export const LIGHT_5E = {
+  sky: 0xdcdcd0,
+  ground: 0xd8c49a,
+  ambient: 0.95,
+  sun: 0xffc884,
+  sunIntensity: 3.4,
+  sunFrom: { x: -58, y: 16, z: 26 },
+  exposure: 1.18,
+} as const satisfies SceneLight;
+
+/** Le sens où tombent les ombres peintes du 5e (l'opposé de son soleil, à plat). */
+export const SHADOW_DIR_5E = (() => {
+  const l = Math.hypot(LIGHT_5E.sunFrom.x, LIGHT_5E.sunFrom.z);
+  return { x: -LIGHT_5E.sunFrom.x / l, z: -LIGHT_5E.sunFrom.z / l };
+})();
+
+/** Le ciel d'un niveau : ses couleurs, de l'horizon au zénith. */
+export type SkyStops = readonly { at: number; color: number }[];
+
+/** Les couleurs du ciel du 6e (le défaut) et du 5e. */
+export const SKY_OF = { '6e': SKY_STOPS, '5e': SKY_STOPS_5E } as const satisfies Record<string, SkyStops>;
+
 /** La couleur du ciel à une hauteur angulaire (degrés ; sous l'horizon, l'horizon), en rouge, vert, bleu linéaires. */
-export function skyColorAt(elevation: number): [number, number, number] {
+export function skyColorAt(elevation: number, stops: SkyStops = SKY_STOPS): [number, number, number] {
   const e = Math.max(0, Math.min(90, elevation));
   let k = 0;
-  while (k < SKY_STOPS.length - 2 && e > SKY_STOPS[k + 1].at) k++;
-  const a = SKY_STOPS[k];
-  const b = SKY_STOPS[k + 1];
+  while (k < stops.length - 2 && e > stops[k + 1].at) k++;
+  const a = stops[k];
+  const b = stops[k + 1];
   const t = (e - a.at) / (b.at - a.at);
   const ca = linearRgb(a.color);
   const cb = linearRgb(b.color);
@@ -81,7 +133,7 @@ export interface SkyDome {
  * Le dôme du ciel, de rayon `radius`, centré sur la caméra par la vue : un dégradé par sommet (le seul du monde : le
  * ciel n'est pas une facette), sans lumière ni brouillard, vu des deux côtés.
  */
-export function skyDome(radius: number): SkyDome {
+export function skyDome(radius: number, stops: SkyStops = SKY_STOPS): SkyDome {
   const { sides, rows } = SKY_DOME;
   const pos: number[] = [];
   const col: number[] = [];
@@ -92,7 +144,7 @@ export function skyDome(radius: number): SkyDome {
   };
   const push = (row: number, k: number) => {
     pos.push(...vertex(row, k));
-    col.push(...skyColorAt(rows[row]));
+    col.push(...skyColorAt(rows[row], stops));
   };
   for (let r = 0; r < rows.length - 1; r++)
     for (let k = 0; k < sides; k++) {

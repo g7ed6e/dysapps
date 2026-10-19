@@ -9,7 +9,7 @@ import { boundsOf, placeFacets, type Facets } from './facets';
 import type { Vec3 } from './geometry';
 import { placeArt } from './northShore';
 import { pathNode } from './paths';
-import { placeById, type PlaceId } from './levelPlan';
+import { isSixthPlace, placeById, type PlaceId } from './levelPlan';
 import { drawPieces, modelOfPlace, ruinOf, type PlacePiece } from './places';
 import { scenetteExit } from './scenette';
 import { standingHeight } from './terrain';
@@ -86,9 +86,10 @@ export const WHOLE: PartShape = [
  * d'amont des Écluses, le hangar à sel des Marais salants, la turbine (le haut) ; le ponton du Chantier naval (les
  * abords : sa trace d'Information est au bout du ponton) ; le platelage de la Mangrove (le corps, lot L8a), les abords
  * des Ruines (lot L8b), la terrasse de l'Observatoire (les abords, lot L8c), la toiture de la Halle (le haut, lot L8d).
- * Tant que cette étape n'est pas posée, la trace attend : rien ne flotte dans le vide.
+ * Tant que cette étape n'est pas posée, la trace attend : rien ne flotte dans le vide. Les lieux du 5e n'ont pas encore
+ * de trace (GD-22, lot 2).
  */
-const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = {
+const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   phare: 2,
   quais: 1,
   filets: 2,
@@ -115,7 +116,10 @@ const TRACE_STAGE: Readonly<Record<PlaceId, Stage>> = {
  * séchoir des Filets, la grue des Quais, la porte d'amont des Écluses) ; sinon, avec ce qui est là, au sol ou sur l'eau :
  * une scénette se joue sur le lieu tel qu'il est bâti, rien d'achevé ne se montre avant d'être posé.
  */
-export const traceStagePosed = (place: PlaceId, parts: readonly PartShape[]): boolean => stageComplete(parts, TRACE_STAGE[place]);
+export const traceStagePosed = (place: PlaceId, parts: readonly PartShape[]): boolean => {
+  const stage = TRACE_STAGE[place];
+  return stage !== undefined && stageComplete(parts, stage);
+};
 
 /** La trace d'un lieu se montre-t-elle ? Sa scénette réussie (`done`), et l'étape qui la porte posée. */
 export const traceShown = (place: PlaceId, parts: readonly PartShape[], done: boolean): boolean => done && traceStagePosed(place, parts);
@@ -210,7 +214,7 @@ const KEO_HALF = 0.55;
  */
 export function keoSpots(place: PlaceId, ground: (x: number, z: number) => number): number[] {
   const spots = [pathNode(placeById(place).door).at];
-  const exit = scenetteExit(place);
+  const exit = isSixthPlace(place) ? scenetteExit(place) : null;
   if (exit) spots.push(exit.at);
   const out: number[] = [];
   for (const s of spots) {

@@ -6,10 +6,13 @@
 // se lit). Rien ne bouge : c'est un état, pas une animation ; quand on relie la terre, elle se lève en fondu doux après le
 // toc du pont (d'un coup avec « Réduire les animations ») : la vue n'en change que la transparence. Code pur.
 import { distance, linearRgb, smoothstep, type Vec2 } from './geometry';
-import { nodeLands, type LandId, type LinkedLand } from './lands';
-import { planFor } from './levelPlan';
-import { PATH_NODES, placeById } from './plan6e';
-import { heightAt, landDistance, standingHeight } from './terrain';
+import { nodeLands, planOfLand, type LandId, type LinkedLand } from './lands';
+import { placeById, planFor, type LevelPlan } from './levelPlan';
+import type { PathNode } from './network';
+import { PATH_NODES } from './plan6e';
+import { PATH_NODES_5E } from './plan5e';
+import { heightAt, heightAt as heightAt6e, landDistance, standingHeight } from './terrain';
+import { heightAt5e, landDistance5e, plateauShare } from './terrain5e';
 
 /**
  * La couleur de la brume : la Brume du pack (#E5EBE3), un peu plus claire (#EEF1EC, retouche du lot 3) pour se lire
@@ -57,47 +60,87 @@ export const VEIL_HEIGHT = VEIL_LAYERS[VEIL_LAYERS.length - 1].lift;
  */
 const GRID = { step: 3, reach: 22, full: 0.75, border: 5, shore: 0.4, place: 7 } as const;
 
-/** La brume est encore celle du plan du 6e (GD-22, lot 1 : le plan par niveau). */
-const LANDS = planFor('6e').lands;
-const NODE_LANDS = nodeLands(planFor('6e'));
+/**
+ * Ce que la brume lit d'un niveau (GD-22, lot 2) : les repères de chaque terre (les nœuds de ses chemins et le centre
+ * de ses lieux), le centre des lieux de chaque terre (la brume couvre un lieu même posé sur l'eau : la Gare maritime, sur
+ * son îlot), l'eau et le sol ; et, au 5e, l'étage de chaque terre (`level` : la brume des Aiguilles reste sur le plateau,
+ * celle d'en bas sous la falaise, de 0 à 1).
+ */
+interface VeilWorld {
+  features: ReadonlyMap<LandId, Vec2[]>;
+  centers: ReadonlyMap<LandId, Vec2[]>;
+  landDistance(p: Vec2): number;
+  heightAt(p: Vec2): number;
+  level(land: LandId, p: Vec2): number;
+}
 
-/** Les repères d'une terre : les nœuds de ses chemins et le centre de ses lieux. */
-const featuresOf = (land: LandId): Vec2[] => [
-  ...PATH_NODES.filter((n) => NODE_LANDS.get(n.id) === land).map((n) => n.at),
-  ...LANDS.find((l) => l.id === land)!.places.map((id) => placeById(id).center),
-];
-const FEATURES = new Map<LandId, Vec2[]>(LANDS.map((l) => [l.id, featuresOf(l.id)]));
-/** Le centre des lieux de chaque terre : la brume couvre un lieu même posé sur l'eau (la Gare maritime, sur son îlot). */
-const CENTERS = new Map<LandId, Vec2[]>(LANDS.map((l) => [l.id, l.places.map((id) => placeById(id).center)]));
+function veilWorld(plan: LevelPlan, nodes: readonly PathNode[], base: Pick<VeilWorld, 'landDistance' | 'heightAt' | 'level'>): VeilWorld {
+  const nodeLand = nodeLands(plan);
+  const featuresOf = (land: LandId): Vec2[] => [
+    ...nodes.filter((n) => nodeLand.get(n.id) === land).map((n) => n.at),
+    ...plan.lands.find((l) => l.id === land)!.places.map((id) => placeById(id).center),
+  ];
+  return {
+    ...base,
+    features: new Map(plan.lands.map((l) => [l.id, featuresOf(l.id)])),
+    centers: new Map(plan.lands.map((l) => [l.id, l.places.map((id) => placeById(id).center)])),
+  };
+}
+
+let world6e: VeilWorld | null = null;
+let world5e: VeilWorld | null = null;
+
+/** Les lieux du plateau du 5e (GD-22) : les Aiguilles. */
+const UPPER_LAND_5E: LandId = 'aiguilles';
+
+const worldOfLand = new Map<LandId, VeilWorld>();
+
+/** La brume du niveau d'une terre (faite une fois par niveau, retrouvée sans rien chercher ensuite). */
+function worldOf(land: LandId): VeilWorld {
+  let w = worldOfLand.get(land);
+  if (!w) worldOfLand.set(land, (w = levelWorld(land)));
+  return w;
+}
+
+function levelWorld(land: LandId): VeilWorld {
+  if (planOfLand(land).level === '5e')
+    return (world5e ??= veilWorld(planFor('5e'), PATH_NODES_5E, {
+      landDistance: landDistance5e,
+      heightAt: heightAt5e,
+      level: (l, p) => (l === UPPER_LAND_5E ? smoothstep(0.35, 0.75, plateauShare(p)) : 1 - smoothstep(0.05, 0.4, plateauShare(p))),
+    }));
+  return (world6e ??= veilWorld(planFor('6e'), PATH_NODES, { landDistance, heightAt, level: () => 1 }));
+}
 
 const nearest = (p: Vec2, points: readonly Vec2[]): number => points.reduce((d, q) => Math.min(d, distance(p, q)), Infinity);
 
 /** De `p` à `q`, passe-t-on sur l'eau (un pas d'une unité) ? */
-function acrossWater(p: Vec2, q: Vec2): boolean {
+function acrossWater(w: VeilWorld, p: Vec2, q: Vec2): boolean {
   const n = Math.ceil(distance(p, q));
-  for (let k = 1; k < n; k++) if (landDistance({ x: p.x + ((q.x - p.x) * k) / n, z: p.z + ((q.z - p.z) * k) / n }) < 0) return true;
+  for (let k = 1; k < n; k++) if (w.landDistance({ x: p.x + ((q.x - p.x) * k) / n, z: p.z + ((q.z - p.z) * k) / n }) < 0) return true;
   return false;
 }
 
 /** La part de brume de la terre `land` en `p` (0 à 1) : dans sa terre, près de ses repères, hors de l'eau. */
 export function veilShare(land: LinkedLand, p: Vec2): number {
-  const own = nearest(p, FEATURES.get(land)!);
+  const w = worldOf(land);
+  const own = nearest(p, w.features.get(land)!);
   if (own >= GRID.reach) return 0;
   // Le repère d'une autre terre le plus proche, s'il touche presque celui-ci, et seulement s'il est du même côté de l'eau :
   // de l'autre côté d'un bras de mer, il ne compte pas, et la brume va jusqu'à la rive (relecture du lot 1, directeur
   // artistique : elle s'arrête net sur la rive d'en face).
   let other = Infinity;
-  for (const [id, points] of FEATURES) {
+  for (const [id, points] of w.features) {
     if (id === land) continue;
     for (const q of points) {
       const d = distance(p, q);
-      if (d < other && d < own + GRID.border && !acrossWater(p, q)) other = d;
+      if (d < other && d < own + GRID.border && !acrossWater(w, p, q)) other = d;
     }
   }
   const inside = smoothstep(0, GRID.border, other - own);
   const near = 1 - smoothstep(GRID.reach * GRID.full, GRID.reach, own);
-  const dry = Math.max(smoothstep(-GRID.shore, 0.5, landDistance(p)), 1 - smoothstep(GRID.place, GRID.place + GRID.shore, nearest(p, CENTERS.get(land)!)));
-  return inside * near * dry;
+  const dry = Math.max(smoothstep(-GRID.shore, 0.5, w.landDistance(p)), 1 - smoothstep(GRID.place, GRID.place + GRID.shore, nearest(p, w.centers.get(land)!)));
+  return inside * near * dry * w.level(land, p);
 }
 
 /** Un sommet ramené sur la rive se pose à tant d'unités au-delà, sur la terre : la brume s'y tient entière. */
@@ -107,18 +150,18 @@ const SHORE_IN = 0.5;
  * Un point de l'eau ramené sur la rive la plus proche (quelques pas de Newton sur la distance à la terre), s'il en est à
  * moins de `most` unités ; sinon, rien.
  */
-function toShore(p: Vec2, most: number): Vec2 | null {
+function toShore(w: VeilWorld, p: Vec2, most: number): Vec2 | null {
   let q = p;
   for (let k = 0; k < 4; k++) {
-    const d = landDistance(q);
+    const d = w.landDistance(q);
     if (Math.abs(d - SHORE_IN) < 0.05) break;
     const e = 0.25;
-    const gx = (landDistance({ x: q.x + e, z: q.z }) - landDistance({ x: q.x - e, z: q.z })) / (2 * e);
-    const gz = (landDistance({ x: q.x, z: q.z + e }) - landDistance({ x: q.x, z: q.z - e })) / (2 * e);
+    const gx = (w.landDistance({ x: q.x + e, z: q.z }) - w.landDistance({ x: q.x - e, z: q.z })) / (2 * e);
+    const gz = (w.landDistance({ x: q.x, z: q.z + e }) - w.landDistance({ x: q.x, z: q.z - e })) / (2 * e);
     const g = Math.hypot(gx, gz) || 1;
     q = { x: q.x - (gx / g) * (d - SHORE_IN), z: q.z - (gz / g) * (d - SHORE_IN) };
   }
-  return landDistance(q) >= 0 && distance(p, q) <= most ? q : null;
+  return w.landDistance(q) >= 0 && distance(p, q) <= most ? q : null;
 }
 
 /**
@@ -129,7 +172,8 @@ function toShore(p: Vec2, most: number): Vec2 | null {
  */
 function veilOf(pos: number[], nor: number[], col: number[], land: LinkedLand): void {
   const [r, g, b] = linearRgb(MIST_COLOR);
-  const points = FEATURES.get(land)!;
+  const w = worldOf(land);
+  const points = w.features.get(land)!;
   const minX = Math.min(...points.map((q) => q.x)) - GRID.reach;
   const maxX = Math.max(...points.map((q) => q.x)) + GRID.reach;
   const minZ = Math.min(...points.map((q) => q.z)) - GRID.reach;
@@ -144,13 +188,13 @@ function veilOf(pos: number[], nor: number[], col: number[], land: LinkedLand): 
   // Un sommet resté sur l'eau, ou ramené sur la rive d'une autre terre : aucune case qui le touche n'est dessinée (rien
   // ne s'étire sur l'eau d'une rive à l'autre).
   const wet: boolean[] = [];
-  const centers = CENTERS.get(land)!;
+  const centers = w.centers.get(land)!;
   for (let j = 0; j <= nz; j++)
     for (let i = 0; i <= nx; i++) {
       let p = { x: minX + i * GRID.step, z: minZ + j * GRID.step };
       let off = false;
-      if (landDistance(p) < 0 && nearest(p, centers) > GRID.place) {
-        const q = toShore(p, 2 * GRID.step);
+      if (w.landDistance(p) < 0 && nearest(p, centers) > GRID.place) {
+        const q = toShore(w, p, 2 * GRID.step);
         if (q) p = q;
         off = !q || veilShare(land, q) === 0;
       }
@@ -158,7 +202,7 @@ function veilOf(pos: number[], nor: number[], col: number[], land: LinkedLand): 
       spot.push(p);
       share.push(s);
       wet.push(off);
-      floor.push(s > 0 ? Math.max(0.05, standingHeight(highest(p))) : 0);
+      floor.push(s > 0 ? Math.max(0.05, standingHeight(highest(p, w.heightAt))) : 0);
     }
   const at = (i: number, j: number) => j * (nx + 1) + i;
   // Un sommet voisin d'un sommet mouillé (une case laissée de côté) n'a plus de brume : le bord s'efface, jamais net.
@@ -199,7 +243,7 @@ function veilOf(pos: number[], nor: number[], col: number[], land: LinkedLand): 
 const VEIL_AROUND = GRID.step / 2;
 
 /** Le plus haut du sol en `p` et à une demi-case autour : le voile passe au-dessus, jamais dedans. */
-export function highest(p: Vec2): number {
+export function highest(p: Vec2, heightAt: (p: Vec2) => number = heightAt6e): number {
   const e = VEIL_AROUND;
   return Math.max(heightAt(p), heightAt({ x: p.x + e, z: p.z }), heightAt({ x: p.x - e, z: p.z }), heightAt({ x: p.x, z: p.z + e }), heightAt({ x: p.x, z: p.z - e }));
 }

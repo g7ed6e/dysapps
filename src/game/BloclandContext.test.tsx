@@ -13,7 +13,7 @@ import { EMPTY_STATE } from './engine/state';
 import { reachableIslands } from './world/archipelago';
 import { landById } from './world/continu/lands';
 import { gridLand } from './three/archipeo/landLinks';
-import { placeById } from './world/continu/plan6e';
+import { placeById } from './world/continu/levelPlan';
 
 function Etat() {
   const { progress } = useProgress();

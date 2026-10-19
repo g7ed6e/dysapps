@@ -22,6 +22,10 @@ import { HABITANT_TRIANGLES } from './habitants';
 import { bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
 import { landTileCounts } from './flora';
 import { buildHeightField, heightOnMesh, tileRings } from './terrain';
+import { buildHeightField5e, groundOn5e, tileCounts5e } from './terrain5e';
+import { NETWORK_5E, pathRibbons5e } from './paths5e';
+import { TERRAIN_5E } from './plan5e';
+import { cliffMapLine, riftMistFacets } from './mist5e';
 import { skyDome } from './sky';
 import { veilFacets } from './veil';
 
@@ -298,5 +302,81 @@ export function mapCost(amenagements: number): { triangles: number; calls: numbe
   return {
     triangles: SKY.triangles + far + 2 + paths + places.triangles + amenagements + detours + FAUNA_COST.triangles + marks + veil + KEO.triangles + nefCost().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + FAUNA_COST.calls + 1 + KEO.calls,
+  };
+}
+
+// ---------- Le 5e (GD-22, lot 2) ----------
+
+/** Le plan du 5e et ses terres qu'on relie (deux ponts et la cabine). */
+const PLAN_5E = planFor('5e');
+const LINKED_LANDS_5E = linkedLands(PLAN_5E);
+
+/** Le poste de la brume des failles du 5e (./mist5e.ts) : un maillage transparent, caché sur la Carte. */
+export type OpenWorldCost5e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'failles' };
+
+/** Le sol du 5e, compté comme celui du 6e (`groundCost`) : autour des points de son réseau, dans huit directions. */
+function groundCost5e(): { triangles: number; calls: number; near: number; far: number } {
+  const field = buildHeightField5e();
+  const near = tileCounts5e(field, 'near');
+  const far = tileCounts5e(field, 'far');
+  let worstNear = 0;
+  let worstFar = 0;
+  for (const p of NETWORK_5E.networkSamples(SAMPLE_STEP))
+    for (let y = 0; y < SAMPLE_YAWS; y++) {
+      const rings = tileRings(p, WORLD_FOG.far, (2 * Math.PI * y) / SAMPLE_YAWS, TERRAIN_5E);
+      worstNear = Math.max(worstNear, rings.near.reduce((s, t) => s + near[t], 0));
+      worstFar = Math.max(worstFar, rings.far.reduce((s, t) => s + far[t], 0));
+    }
+  return { triangles: worstNear + worstFar, calls: 2, near: worstNear, far: worstFar };
+}
+
+/**
+ * Les lieux du 5e : les quatorze ruines (ils n'ont pas encore d'étapes ni de traces) et ses passages, chacun au plus
+ * chargé de ses deux états (tombé, ou relevé), en deux maillages comme au 6e.
+ */
+function placesCost5e(): { triangles: number; calls: number } {
+  const ruins = PLAN_5E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles, 0);
+  const passages = LINKED_LANDS_5E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
+  return { triangles: ruins + passages, calls: 2 };
+}
+
+/**
+ * Ce que coûte le monde ouvert du 5e (ce lot : toute l'île en grandes masses) : le ciel, le sol et sa forêt, la mer, les
+ * chemins, les lieux et leurs passages, la pose d'un passage (le plus chargé, relevé), la brume des terres fermées (au
+ * départ, les trois), la brume des failles, Kéo. Ni aménagements, ni Détours, ni faune, ni question ni scénette dans le
+ * monde, ni Nef : ils viennent avec leurs lots.
+ */
+export function openWorldCost5e(): OpenWorldCost5e[] {
+  const field = buildHeightField5e();
+  const ground = groundCost5e();
+  const paths = pathRibbons5e((x, z) => groundOn5e(field, x, z));
+  return [
+    { poste: 'ciel', ...SKY },
+    { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
+    { poste: 'mer', triangles: 2, calls: 1 },
+    { poste: 'chemins', triangles: paths.triangles, calls: 1 },
+    { poste: 'lieux', ...placesCost5e() },
+    { poste: 'pose', triangles: Math.max(...LINKED_LANDS_5E.map((l) => bridgeFacets(l, true).triangles)), calls: 1 },
+    { poste: 'brume', triangles: veilFacets(LINKED_LANDS_5E).triangles, calls: 1 },
+    { poste: 'failles', triangles: riftMistFacets().triangles, calls: 1 },
+    { poste: 'kéo', ...KEO },
+  ];
+}
+
+/**
+ * La Carte du 5e, en un seul plan : le ciel, toute l'île de loin, la mer, les chemins, les lieux (deux appels, le pire),
+ * le trait double des ponts et de la cabine et la ligne de la falaise (dans le maillage des lieux), la brume des terres
+ * fermées, Kéo ; jamais la brume des failles.
+ */
+export function mapCost5e(): { triangles: number; calls: number } {
+  const field = buildHeightField5e();
+  const far = tileCounts5e(field, 'far').reduce((s, n) => s + n, 0);
+  const paths = pathRibbons5e((x, z) => groundOn5e(field, x, z)).triangles;
+  const places = placesCost5e();
+  const marks = LINKED_LANDS_5E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + cliffMapLine().triangles;
+  const veil = veilFacets(LINKED_LANDS_5E).triangles;
+  return {
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + marks + veil + KEO.triangles,
+    calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
   };
 }

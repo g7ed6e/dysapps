@@ -39,7 +39,7 @@ import { payableBlocks } from '../../world/archipelago';
 import { isBridgeSpot, isLinkedLand, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import type { PartShape } from '../../world/continu/construction';
 import { bornesDuMondeOuvert, firstToPlayAt, keepClear, missionsOfPlace, nextMission, playsInPlace, type MarkOnScreen, type Obstacle, type ScreenRect } from '../../world/continu/mission';
-import { placeById, placeOfIsland, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
+import { placeById, placeOfIsland, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
 import type { PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
@@ -763,25 +763,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       const biome = getBiome(placeById(id).island);
       return biome ? placeConstruction(biome.id, state.world.parts) : { shapes: [], posed: [] };
     };
-    return {
-      phare: of('phare'),
-      quais: of('quais'),
-      filets: of('filets'),
-      ecluses: of('ecluses'),
-      saltworks: of('saltworks'),
-      engine: of('engine'),
-      shipyard: of('shipyard'),
-      lookout: of('lookout'),
-      archives: of('archives'),
-      printworks: of('printworks'),
-      mangrove: of('mangrove'),
-      ruins: of('ruins'),
-      observatory: of('observatory'),
-      commons: of('commons'),
-      beacons: of('beacons'),
-      ferry: of('ferry'),
-    } satisfies Record<PlaceId, ReturnType<typeof of>>;
-  }, [state.world.parts]);
+    return placeRecord(plan, of);
+  }, [plan, state.world.parts]);
   // La Nef de l'Escale (GD-21) : sa voile vient avec trois lieux achevés (le monde continu n'a pas de Gardiens) ; son
   // temps, montré sur le ber.
   const achieved = useMemo(() => Object.values(constructions).filter((c) => constructionState(c) === 'restauree').length, [constructions]);
@@ -819,25 +802,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       // Les missions restées sur l'écran habituel (lot L7 : Ascension, le Filon) laissent leur trace aussi.
       return biome ? [...p.scenes, ...(p.panels ?? [])].filter((m) => traceDone(exercisesOf(biome.id, m).map((e) => state.progress[e.id]?.stars ?? 0))) : [];
     };
-    return {
-      phare: of('phare'),
-      quais: of('quais'),
-      filets: of('filets'),
-      ecluses: of('ecluses'),
-      saltworks: of('saltworks'),
-      engine: of('engine'),
-      shipyard: of('shipyard'),
-      lookout: of('lookout'),
-      archives: of('archives'),
-      printworks: of('printworks'),
-      mangrove: of('mangrove'),
-      ruins: of('ruins'),
-      observatory: of('observatory'),
-      commons: of('commons'),
-      beacons: of('beacons'),
-      ferry: of('ferry'),
-    } satisfies Record<PlaceId, string[]>;
-  }, [state.progress]);
+    return placeRecord(plan, of);
+  }, [plan, state.progress]);
   // Ce que la scène montre déjà, et le lieu de la dernière question : une partie arrivée pendant une question s'y pose
   // après le bilan, sous les yeux de l'élève ; les autres changements (une partie posée dans la grille) sont là, sans
   // pose. Rien ne change pendant une question : la partie attend la fin du bilan.
@@ -851,52 +817,18 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   useEffect(() => {
     const w = world.current;
     if (!w || asking) return;
-    const built: Record<PlaceId, readonly PartShape[]> = {
-      phare: posedShapes(constructions.phare),
-      quais: posedShapes(constructions.quais),
-      filets: posedShapes(constructions.filets),
-      ecluses: posedShapes(constructions.ecluses),
-      saltworks: posedShapes(constructions.saltworks),
-      engine: posedShapes(constructions.engine),
-      shipyard: posedShapes(constructions.shipyard),
-      lookout: posedShapes(constructions.lookout),
-      archives: posedShapes(constructions.archives),
-      printworks: posedShapes(constructions.printworks),
-      mangrove: posedShapes(constructions.mangrove),
-      ruins: posedShapes(constructions.ruins),
-      observatory: posedShapes(constructions.observatory),
-      commons: posedShapes(constructions.commons),
-      beacons: posedShapes(constructions.beacons),
-      ferry: posedShapes(constructions.ferry),
-    };
+    const built: Record<PlaceId, readonly PartShape[]> = placeRecord(plan, (id) => posedShapes(constructions[id]));
     const before = shownBuilt.current;
     const place = askedPlace.current;
     shownBuilt.current = built;
     askedPlace.current = null;
     const fresh = before && place ? built[place].filter((s) => !before[place].includes(s)) : [];
     if (!w.setPlaces({ built, traces, amenagements }, place && fresh.length ? { place, parts: fresh } : undefined)) setPosePending(false);
-  }, [constructions, traces, amenagements, asking, ready]);
+  }, [plan, constructions, traces, amenagements, asking, ready]);
   // L'état de chaque lieu sur la Carte, en icône et en mot (les mots d'état de l'univers).
   const states = useMemo(
-    () => ({
-      phare: constructionState(constructions.phare),
-      quais: constructionState(constructions.quais),
-      filets: constructionState(constructions.filets),
-      ecluses: constructionState(constructions.ecluses),
-      saltworks: constructionState(constructions.saltworks),
-      engine: constructionState(constructions.engine),
-      shipyard: constructionState(constructions.shipyard),
-      lookout: constructionState(constructions.lookout),
-      archives: constructionState(constructions.archives),
-      printworks: constructionState(constructions.printworks),
-      mangrove: constructionState(constructions.mangrove),
-      ruins: constructionState(constructions.ruins),
-      observatory: constructionState(constructions.observatory),
-      commons: constructionState(constructions.commons),
-      beacons: constructionState(constructions.beacons),
-      ferry: constructionState(constructions.ferry),
-    }),
-    [constructions],
+    () => placeRecord(plan, (id) => constructionState(constructions[id])),
+    [plan, constructions],
   );
 
   const closeQuestion = useCallback(() => {

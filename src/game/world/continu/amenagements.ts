@@ -39,6 +39,7 @@
 // pur.
 import { FacetBuilder, boundsOf, mergeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
+import { sixthPlace, type PlaceId as AnyPlaceId } from './levelPlan';
 import { hidesTraces, placeById, type PlaceId } from './plan6e';
 import { questionLayout, type ScreenBox } from './questionScene';
 import { remisePose, scenetteHabitant, scenetteLayout } from './scenette';
@@ -345,7 +346,8 @@ export function remiseStage(width: number, height: number, grand = false): Scree
  * calcule à l'entrée de la remise, et de nouveau quand l'écran change de taille (une tablette qui tourne pendant la
  * pose : relecture du code du lot L1), sans refaire la scénette.
  */
-export function remiseFrame(place: PlaceId, list: readonly { a: Pick<Amenagement, 'frame'>; box: WorldBox }[], width: number, height: number): { pose: CameraPose; shift: { x: number; y: number } } {
+export function remiseFrame(anyPlace: AnyPlaceId, list: readonly { a: Pick<Amenagement, 'frame'>; box: WorldBox }[], width: number, height: number): { pose: CameraPose; shift: { x: number; y: number } } {
+  const place = sixthPlace(anyPlace);
   return remisePose(place, remiseInclude(list), remiseStage(width, height), width, height, remisePosed(place));
 }
 
@@ -371,11 +373,11 @@ export function remiseInclude(list: readonly { a: Pick<Amenagement, 'frame'>; bo
  * Le site de la scénette où la remise se joue : au Phare, toujours au pied de la tour (directeur artistique, point 4 :
  * jamais sur la galerie) ; ailleurs, celui des missions.
  */
-export const remisePosed = (place: PlaceId): boolean => place !== 'phare';
+export const remisePosed = (place: AnyPlaceId): boolean => place !== 'phare';
 
 /**
  * Les aménagements d'un lieu se montrent-ils ? Toujours, sauf pendant une question ou une scénette (`scenette`) qui
  * cache les traces du lieu (les siennes ; au rivage nord et au large, celles des lieux du même cadre) : ils ne gênent
  * jamais la scène d'une question. Dans le cadrage de la remise (`remise`), ceux du lieu se montrent.
  */
-export const showsAmenagements = (scenette: PlaceId | null, place: PlaceId, remise: PlaceId | null): boolean => remise === place || !hidesTraces(scenette, place);
+export const showsAmenagements = (scenette: AnyPlaceId | null, place: AnyPlaceId, remise: AnyPlaceId | null): boolean => remise === place || !hidesTraces(scenette, place);

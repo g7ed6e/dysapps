@@ -6,7 +6,7 @@ import { BRIDGE, BRIDGE_TOUCH, KEO_STOP, allBridges, bridgeFacets, bridgeFloor, 
 import { linearRgb } from './geometry';
 import { bridgeEdge, landById, linkedLands, nodeLands } from './lands';
 import { atNode, pathNode, pathRibbons, snapToNetwork, type NetworkPoint } from './paths';
-import { BEACONS_FLAT, BRIDGE_ABUT, COMMONS_FLAT, ENGINE_FLAT, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PATH_EDGES, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, placeById } from './plan6e';
+import { BEACONS_FLAT, BRIDGE_ABUT, COMMONS_FLAT, ENGINE_FLAT, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PATH_EDGES, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, placeById, type StraitId } from './plan6e';
 import { STRAIT_BANK, buildHeightField, heightAt, heightOnMesh, landDistance, straitClearance } from './terrain';
 import { shallowness } from './sea';
 import { planFor } from './levelPlan';
@@ -22,22 +22,22 @@ const ground = (x: number, z: number) => heightOnMesh(field, x, z);
 describe('Les bras de mer', () => {
   it('de l’eau profonde au milieu de chaque passage, des rives rocheuses au-dessus de l’eau', () => {
     for (const s of allBridges()) {
-      expect(landDistance(s.mid), s.land).toBeLessThan(0);
-      expect(heightAt(s.mid), s.land).toBeLessThan(-0.6);
+      expect(landDistance(s.mid), s.land as StraitId).toBeLessThan(0);
+      expect(heightAt(s.mid), s.land as StraitId).toBeLessThan(-0.6);
       // L'eau profonde : aucun haut-fond où passer à gué.
-      expect(shallowness(s.mid), s.land).toBe(0);
+      expect(shallowness(s.mid), s.land as StraitId).toBe(0);
       // La rive, près du pont : la levée de roche en deux gradins (relecture du lot 1, directeur artistique), le replat
       // du premier au ras de l'eau, puis toute la hauteur, 1,5 à 2 au-dessus de l'eau.
       // Le point du chemin, avant l'eau, à `c` unités d'elle.
       const at = (c: number) => {
         let d = s.water[0];
-        while (straitClearance({ x: s.near.x + s.dir.x * d, z: s.near.z + s.dir.z * d }, s.land) < c) d -= 0.02;
+        while (straitClearance({ x: s.near.x + s.dir.x * d, z: s.near.z + s.dir.z * d }, s.land as StraitId) < c) d -= 0.02;
         return { x: s.near.x + s.dir.x * d, z: s.near.z + s.dir.z * d };
       };
-      expect(heightAt(at(1)), s.land).toBeGreaterThan(STRAIT_BANK.step * 0.8);
-      expect(heightAt(at(1)), s.land).toBeLessThan(STRAIT_BANK.height * 0.8);
-      expect(heightAt(at(2.6)), s.land).toBeGreaterThan(1.5);
-      expect(heightAt(at(2.6)), s.land).toBeLessThan(2.2);
+      expect(heightAt(at(1)), s.land as StraitId).toBeGreaterThan(STRAIT_BANK.step * 0.8);
+      expect(heightAt(at(1)), s.land as StraitId).toBeLessThan(STRAIT_BANK.height * 0.8);
+      expect(heightAt(at(2.6)), s.land as StraitId).toBeGreaterThan(1.5);
+      expect(heightAt(at(2.6)), s.land as StraitId).toBeLessThan(2.2);
     }
   });
 
@@ -72,8 +72,8 @@ describe('Les ponts', () => {
       expect(s.abut[0]).toBeLessThan(s.water[0]);
       expect(s.water[0]).toBeLessThan(s.water[1]);
       expect(s.water[1]).toBeLessThan(s.abut[1]);
-      expect(straitClearance(s.stop.at, s.land)).toBeGreaterThan(0);
-      expect(straitClearance(s.stop.at, s.land)).toBeLessThan(KEO_STOP + 0.3);
+      expect(straitClearance(s.stop.at, s.land as StraitId)).toBeGreaterThan(0);
+      expect(straitClearance(s.stop.at, s.land as StraitId)).toBeLessThan(KEO_STOP + 0.3);
       // Le bout ouvert du pont est du côté de la terre d'avant.
       expect(NODE_LANDS.get(PATH_EDGES[s.edge][s.nearEnd])).toBe(landById(s.land).after);
     }
@@ -150,13 +150,13 @@ describe('Les ponts', () => {
         if (d > from && d < to) top = Math.max(top, f.positions[i + 1]);
         if (d > s.water[0] + BRIDGE.over && d < s.water[0] + BRIDGE.over + 1) arch = Math.max(arch, f.positions[i + 1]);
       }
-      expect(top, s.land).toBeGreaterThanOrEqual(0.7);
-      expect(top, s.land).toBeLessThanOrEqual(1.25);
-      expect(arch, s.land).toBeGreaterThanOrEqual(1.5);
+      expect(top, s.land as StraitId).toBeGreaterThanOrEqual(0.7);
+      expect(top, s.land as StraitId).toBeLessThanOrEqual(1.25);
+      expect(arch, s.land as StraitId).toBeGreaterThanOrEqual(1.5);
       const lock = bridgeLockPoint(s.land);
       const d = (lock.x - s.near.x) * s.dir.x + (lock.z - s.near.z) * s.dir.z;
-      expect(d, s.land).toBeGreaterThan((s.water[0] + s.water[1]) / 2);
-      expect(d, s.land).toBeLessThan(s.water[1]);
+      expect(d, s.land as StraitId).toBeGreaterThan((s.water[0] + s.water[1]) / 2);
+      expect(d, s.land as StraitId).toBeLessThan(s.water[1]);
     }
   });
 

@@ -1,14 +1,17 @@
-// Le plan par niveau (GD-22, lot 1) : un seul plan enregistré, celui du 6e, tiré de ./plan6e.ts tel quel ; la fabrique
-// de disposition ouvre le monde ouvert aux mêmes archipels ; un lieu se retrouve par son seul identifiant.
+// Le plan par niveau (GD-22, lots 1 et 2) : deux plans enregistrés, celui du 6e, tiré de ./plan6e.ts tel quel, et celui
+// du 5e ; la fabrique de disposition n'ouvre le monde ouvert qu'à des niveaux qui ont leur plan ; un lieu se retrouve
+// par son seul identifiant.
 import { describe, expect, it } from 'vitest';
 import { OPEN_WORLD_ARCHIPELAGOS } from '../../worldLayoutFactory';
 import { ALL_LANDS, ALL_PLANS, OPEN_WORLD_LEVELS, levelOfPlace, placeById, placeOfIsland, planFor } from './levelPlan';
 import { COAST, LANDS_6E, OFFSHORE, PATH_EDGES, PLACES, STRAITS, TERRAIN } from './plan6e';
+import { LANDS_5E, PLACES_5E } from './plan5e';
 
 describe('Le plan par niveau', () => {
-  it('un seul plan, celui du 6e, et la fabrique de disposition connaît les mêmes niveaux', () => {
-    expect(OPEN_WORLD_LEVELS).toEqual(['6e']);
-    expect([...OPEN_WORLD_ARCHIPELAGOS]).toEqual([...OPEN_WORLD_LEVELS]);
+  it('deux plans, le 6e et le 5e ; la fabrique de disposition n’ouvre que des niveaux qui ont leur plan', () => {
+    expect(OPEN_WORLD_LEVELS).toEqual(['6e', '5e']);
+    // Le 5e a son plan et son terrain ; sa vue (la scène, la page) vient avec la seconde moitié du lot 2.
+    for (const a of OPEN_WORLD_ARCHIPELAGOS) expect(OPEN_WORLD_LEVELS).toContain(a);
   });
 
   it('le plan du 6e est celui de plan6e.ts, sans rien changer', () => {
@@ -29,8 +32,12 @@ describe('Le plan par niveau', () => {
       expect(placeOfIsland(p.island)).toBe(p);
       expect(levelOfPlace(p.id)).toBe('6e');
     }
-    expect(placeOfIsland('maths-5e-proportionality')).toBeUndefined();
-    expect(ALL_LANDS).toEqual(LANDS_6E);
+    for (const p of PLACES_5E) {
+      expect(placeById(p.id)).toBe(p);
+      expect(placeOfIsland(p.island)).toBe(p);
+      expect(levelOfPlace(p.id)).toBe('5e');
+    }
+    expect(ALL_LANDS).toEqual([...LANDS_6E, ...LANDS_5E]);
   });
 
   it('les identifiants des lieux, des îles et des terres sont uniques entre tous les plans, et chaque plan a une seule terre de départ', () => {

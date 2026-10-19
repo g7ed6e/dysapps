@@ -8,11 +8,14 @@
 // dessine aussi en trait double, distinct d'un chemin. Code pur.
 import { FacetBuilder, mergeFacets, type Facets } from './facets';
 import { distance, type Vec2 } from './geometry';
-import { bridgeEdge, firstClosed, isLinkedLand, linkedLands, nodeLands, startLandOf, type LinkedLand } from './lands';
-import { planFor } from './levelPlan';
+import { bridgeEdge, firstClosed, isLinkedLand, linkedLands, nodeLands, planOfLand, startLandOf, type LinkedLand } from './lands';
+import { planFor, type LevelPlan } from './levelPlan';
 import { bridgeCut, pathNode, type NetworkPoint } from './paths';
-import { PATH_EDGES, STRAITS } from './plan6e';
+import { NETWORK_5E, isLand5e, passageCut } from './paths5e';
+import { LINKS_5E } from './plan5e';
+import type { StraitId } from './plan6e';
 import { heightAt, standingHeight, straitClearance } from './terrain';
+import { channelClearance, heightAt5e } from './terrain5e';
 
 /**
  * Le pont (artiste technique 3D) : le dessus du tablier au-dessus de l'eau ; sa largeur ; le débord des culées sur l'eau ;
@@ -63,8 +66,45 @@ export interface BridgeSite {
   mid: Vec2;
 }
 
-/** Les ponts sont encore ceux du plan du 6e (GD-22, lot 1 : le plan par niveau). */
-const PLAN = planFor('6e');
+/** Le plan du 6e : celui des ponts quand on ne dit pas le plan. */
+const PLAN_6E = planFor('6e');
+
+/**
+ * Ce qu'un pont lit de son niveau (GD-22, lot 2) : un nœud de son réseau, l'eau de son bras de mer ou de son chenal, la
+ * part de sa liaison que prennent ses culées, le sol. Le 6e et le 5e ont chacun le leur ; un pont se retrouve par sa
+ * terre (les identifiants des terres sont uniques d'un niveau à l'autre).
+ */
+interface BridgeWorld {
+  node(id: string): Vec2;
+  clearance(p: Vec2, land: LinkedLand): number;
+  cut(a: Vec2, c: Vec2, land: LinkedLand): readonly [number, number];
+  height(p: Vec2): number;
+}
+
+const WORLD_6E: BridgeWorld = {
+  node: (id) => pathNode(id).at,
+  clearance: (p, land) => straitClearance(p, land as StraitId),
+  cut: (a, c, land) => bridgeCut(a, c, land as StraitId),
+  height: heightAt,
+};
+
+/** Hors d'un chenal (la cabine), aucune eau : la distance est toujours positive. */
+const DRY = 1e9;
+
+const WORLD_5E: BridgeWorld = {
+  node: (id) => NETWORK_5E.pathNode(id).at,
+  clearance: (p, land) => {
+    const channel = isLand5e(land) ? LINKS_5E[land].channel : null;
+    return channel ? channelClearance(p, channel) : DRY;
+  },
+  cut: (a, c, land) => (isLand5e(land) ? passageCut(a, c, land) : [0, 0]),
+  height: heightAt5e,
+};
+
+const worldOf = (land: LinkedLand): BridgeWorld => (planOfLand(land).level === '5e' ? WORLD_5E : WORLD_6E);
+
+/** Le passage d'une terre est-il la cabine de la Montée (au 5e), et non un pont ? */
+export const isCabin = (land: LinkedLand): boolean => isLand5e(land) && LINKS_5E[land].kind === 'cabine';
 
 const sites = new Map<LinkedLand, BridgeSite>();
 
@@ -72,23 +112,30 @@ const sites = new Map<LinkedLand, BridgeSite>();
 export function bridgeSite(land: LinkedLand): BridgeSite {
   const known = sites.get(land);
   if (known) return known;
-  const edge = bridgeEdge(PLAN, land);
-  const [a, b] = STRAITS[land].bridge;
-  const nearEnd: 0 | 1 = PATH_EDGES[edge][0] === a ? 0 : 1;
-  const near = pathNode(a).at;
-  const far = pathNode(b).at;
+  const world = worldOf(land);
+  const plan = planOfLand(land);
+  const edge = bridgeEdge(plan, land);
+  const [a, b] = plan.bridges[land]!;
+  const nearEnd: 0 | 1 = plan.pathEdges[edge][0] === a ? 0 : 1;
+  const near = world.node(a);
+  const far = world.node(b);
   const length = distance(near, far);
   const dir = { x: (far.x - near.x) / length, z: (far.z - near.z) / length };
   const at = (d: number): Vec2 => ({ x: near.x + dir.x * d, z: near.z + dir.z * d });
   // L'eau sur la ligne du chemin, de rive à rive.
   let w0 = length;
   let w1 = 0;
-  for (let d = 0; d <= length; d += 0.05) {
-    if (straitClearance(at(d), land) >= 0) continue;
-    w0 = Math.min(w0, d);
-    w1 = Math.max(w1, d);
-  }
-  const abut = bridgeCut(near, far, land);
+  const abut = world.cut(near, far, land);
+  if (isCabin(land)) {
+    // La cabine : son « eau » est sa montée, de son pied à son haut ; Kéo s'arrête sur la gare du pied.
+    w0 = abut[0];
+    w1 = abut[1];
+  } else
+    for (let d = 0; d <= length; d += 0.05) {
+      if (world.clearance(at(d), land) >= 0) continue;
+      w0 = Math.min(w0, d);
+      w1 = Math.max(w1, d);
+    }
   const stopD = w0 - KEO_STOP;
   const t = nearEnd === 0 ? stopD / length : 1 - stopD / length;
   const site: BridgeSite = {
@@ -100,7 +147,7 @@ export function bridgeSite(land: LinkedLand): BridgeSite {
     length,
     abut,
     water: [w0, w1],
-    base: [standingHeight(heightAt(at(abut[0]))), standingHeight(heightAt(at(abut[1])))],
+    base: [standingHeight(world.height(at(abut[0]))), standingHeight(world.height(at(abut[1])))],
     stop: { edge, t, at: at(stopD) },
     mid: at((w0 + w1) / 2),
   };
@@ -108,8 +155,8 @@ export function bridgeSite(land: LinkedLand): BridgeSite {
   return site;
 }
 
-/** Les quatre ponts, dans l'ordre des terres. */
-export const allBridges = (): BridgeSite[] => linkedLands(PLAN).map(bridgeSite);
+/** Les ponts d'un plan (au 6e, les quatre), dans l'ordre des terres. */
+export const allBridges = (plan: LevelPlan = PLAN_6E): BridgeSite[] => linkedLands(plan).map(bridgeSite);
 
 /** Le dessus de la culée de ce côté (`side` 0) ou d'en face (1) d'un pont, à `d` unités de `near` sur sa ligne : une rampe douce du sol à la hauteur du tablier. */
 function abutTop(s: BridgeSite, side: 0 | 1, d: number): number {
@@ -123,15 +170,22 @@ function abutTop(s: BridgeSite, side: 0 | 1, d: number): number {
  * Le dessus d'un pont où Kéo se tient en (`x`, `z`), ou rien hors de lui : ses culées, toujours ; son tablier, seulement
  * s'il est rebâti (sa terre n'est pas dans `closed`). Lu à chaque image : rien n'est créé.
  */
-export function bridgeFloor(x: number, z: number, closed: readonly LinkedLand[]): number | null {
+export function bridgeFloor(x: number, z: number, closed: readonly LinkedLand[], plan: LevelPlan = PLAN_6E): number | null {
   let top: number | null = null;
-  for (const land of linkedLands(PLAN)) {
+  for (const land of linkedLands(plan)) {
     const s = bridgeSite(land);
     const dx = x - s.near.x;
     const dz = z - s.near.z;
     const d = dx * s.dir.x + dz * s.dir.z;
     if (d < s.abut[0] || d > s.abut[1]) continue;
     const v = Math.abs(-dx * s.dir.z + dz * s.dir.x);
+    if (isCabin(land)) {
+      // La cabine reliée : Kéo monte sur son rail, en ligne droite de son pied à son haut, jamais sous le sol.
+      if (closed.includes(land) || v > CABIN.width / 2 + 0.2) continue;
+      const y = Math.max(cabinRail(s, d), standingHeight(worldOf(land).height({ x, z })));
+      top = top === null ? y : Math.max(top, y);
+      continue;
+    }
     if (v > BRIDGE.abutHalf) continue;
     let y: number | null = null;
     if (d <= s.water[0] + BRIDGE.over) y = abutTop(s, 0, d);
@@ -148,7 +202,7 @@ export function bridgeFloor(x: number, z: number, closed: readonly LinkedLand[])
  * lui-même. Les terres forment un arbre depuis le départ : un trajet entre deux terres ouvertes ne passe jamais par une
  * terre fermée.
  */
-export function clampToOpen(p: NetworkPoint, closed: readonly LinkedLand[]): NetworkPoint {
+export function clampToOpen(p: NetworkPoint, closed: readonly LinkedLand[], plan: LevelPlan = PLAN_6E): NetworkPoint {
   if (!closed.length) return p;
   for (const land of closed) {
     const s = bridgeSite(land);
@@ -158,7 +212,7 @@ export function clampToOpen(p: NetworkPoint, closed: readonly LinkedLand[]): Net
     const beyond = s.nearEnd === 0 ? p.t > s.stop.t : p.t < s.stop.t;
     return beyond ? s.stop : p;
   }
-  const land = nodeLands(PLAN).get(PATH_EDGES[p.edge][0]) ?? startLandOf(PLAN);
+  const land = nodeLands(plan).get(plan.pathEdges[p.edge][0]) ?? startLandOf(plan);
   return isLinkedLand(land) && closed.includes(land) ? bridgeSite(firstClosed(land, closed)).stop : p;
 }
 
@@ -334,7 +388,7 @@ function abutmentFacets(s: BridgeSite, arches: boolean): Facets {
  * Le pont pendant sa pose, sans ce qui se relève (GD-20, point 3, « La pose ») : les deux culées et les départs d'arche,
  * que le tablier vient couvrir ; les moignons ont laissé la place aux piles qui se relèvent.
  */
-export const bridgeLayRest = (land: LinkedLand): Facets => abutmentFacets(bridgeSite(land), true);
+export const bridgeLayRest = (land: LinkedLand): Facets => (isCabin(land) ? cabinStations(bridgeSite(land)) : abutmentFacets(bridgeSite(land), true));
 
 /**
  * Les morceaux d'un pont rebâti, sans ses culées : les piles maçonnées, de l'eau jusque sous le tablier (leurs assises,
@@ -343,6 +397,7 @@ export const bridgeLayRest = (land: LinkedLand): Facets => abutmentFacets(bridge
  */
 export function bridgeParts(land: LinkedLand): BridgeParts {
   const s = bridgeSite(land);
+  if (isCabin(land)) return cabinParts(s);
   const at = frame(s);
   const yaw = Math.atan2(s.dir.x, s.dir.z);
   const pileTop = BRIDGE.deck - BRIDGE.plank - 0.24;
@@ -415,6 +470,11 @@ export function bridgeParts(land: LinkedLand): BridgeParts {
  */
 export function bridgeFacets(land: LinkedLand, built: boolean): Facets {
   const s = bridgeSite(land);
+  if (isCabin(land)) {
+    if (!built) return fallenCabin(s);
+    const parts = cabinParts(s);
+    return mergeFacets([cabinStations(s), ...parts.piles, parts.deck, parts.rails]);
+  }
   if (built) {
     const parts = bridgeParts(land);
     return mergeFacets([abutmentFacets(s, false), ...parts.piles, parts.deck, parts.rails]);
@@ -451,13 +511,15 @@ export function bridgeMapMark(land: LinkedLand): Facets {
   const b = new FacetBuilder();
   const s = bridgeSite(land);
   const at = frame(s);
-  const y = BRIDGE.deck + 1.5;
+  // La cabine monte : son trait suit son rail, levé de même.
+  const cabin = isCabin(land);
+  const yAt = (d: number) => (cabin ? cabinRail(s, Math.min(s.abut[1], Math.max(s.abut[0], d))) : BRIDGE.deck) + 1.5;
   const strip = (v: number, half: number, lift: number, color: number) => {
     const d0 = s.abut[0] - half * 0.5;
     const d1 = s.abut[1] + half * 0.5;
     const p = (d: number, o: number) => {
       const q = at(d, v + o);
-      return [q.x, y + lift, q.z] as const;
+      return [q.x, yAt(d) + lift, q.z] as const;
     };
     b.quad(p(d0, half), p(d1, half), p(d1, -half), p(d0, -half), color);
   };
@@ -465,5 +527,104 @@ export function bridgeMapMark(land: LinkedLand): Facets {
     strip(v, 0.75, 0, 0x142b38);
     strip(v, 0.42, 0.05, 0xf2dfb4);
   }
+  return b.build();
+}
+
+// ---------- La cabine de la Montée (le 5e, GD-22, lot 2) ----------
+
+/**
+ * La cabine (artiste technique 3D) : l'écart de ses deux rails, leur section, l'écart des chevalets qui les portent,
+ * la taille de la cabine (largeur, hauteur, longueur), celle des deux gares.
+ */
+const CABIN = { width: 2.4, gauge: 0.9, rail: 0.22, trestle: 5, box: [2.2, 2, 2.6], station: [4.2, 0.5, 4] } as const;
+
+/** Les couleurs de la cabine : le bois des chevalets et des gares, le fer des rails (un gris chaud), la caisse de bronze et son toit. */
+const CABIN_COLORS = { wood: 0xa9784a, woodTop: 0xc6955f, rail: 0x7d7468, body: 0x9c8452, roof: 0x6f8089, broken: 0x8a8273 } as const;
+
+/** Le dessus du rail de la cabine à `d` unités de `near` : en ligne droite du pied (sur le sol) au haut (sur le plateau). */
+function cabinRail(s: BridgeSite, d: number): number {
+  const u = Math.min(1, Math.max(0, (d - s.abut[0]) / (s.abut[1] - s.abut[0])));
+  return s.base[0] + 0.1 + (s.base[1] - s.base[0]) * u;
+}
+
+/** Les deux gares : une dalle de bois au pied du rail, une autre en haut, sur le plateau. */
+function cabinStations(s: BridgeSite): Facets {
+  const b = new FacetBuilder();
+  const at = frame(s);
+  const yaw = Math.atan2(s.dir.x, s.dir.z);
+  const [w, h, l] = CABIN.station;
+  for (const [d, base] of [
+    [s.abut[0] - l / 2, s.base[0]],
+    [s.abut[1] + l / 2, s.base[1]],
+  ] as const) {
+    const p = at(d, 0);
+    b.box({ x: p.x, y: base - 0.6, z: p.z, yaw }, [w, h + 0.6, l], CABIN_COLORS.wood, CABIN_COLORS.woodTop);
+  }
+  return b.build();
+}
+
+/** Les rails de `from` à `to` (en unités depuis `near`), les chevalets dessous, du sol au rail. */
+function cabinTrack(rails: FacetBuilder, posts: FacetBuilder, s: BridgeSite, from: number, to: number): void {
+  const at = frame(s);
+  const ground = worldOf(s.land).height;
+  for (const v of [-CABIN.gauge, CABIN.gauge]) {
+    const a = at(from, v);
+    const c = at(to, v);
+    rails.beam({ x: a.x, y: cabinRail(s, from) + 0.1, z: a.z }, { x: c.x, y: cabinRail(s, to) + 0.1, z: c.z }, CABIN.rail, CABIN_COLORS.rail);
+  }
+  const n = Math.max(1, Math.floor((to - from) / CABIN.trestle));
+  for (let k = 0; k <= n; k++) {
+    const d = from + ((to - from) * k) / n;
+    const top = cabinRail(s, d);
+    const p = at(d, 0);
+    const low = ground(p);
+    if (top - low < 0.8) continue;
+    for (const v of [-CABIN.gauge, CABIN.gauge]) {
+      const q = at(d, v);
+      posts.beam({ x: q.x, y: low - 0.5, z: q.z }, { x: q.x, y: top, z: q.z }, 0.3, CABIN_COLORS.wood);
+    }
+  }
+}
+
+/** La caisse de la cabine, posée à `d` sur le rail, ou couchée à côté (`lying`). */
+function cabinBox(b: FacetBuilder, s: BridgeSite, d: number, lying: boolean): void {
+  const at = frame(s);
+  const yaw = Math.atan2(s.dir.x, s.dir.z);
+  const [w, h, l] = CABIN.box;
+  if (lying) {
+    const p = at(d, CABIN.width + 1.2);
+    const y = worldOf(s.land).height(p) - 0.3;
+    b.box({ x: p.x, y, z: p.z, yaw: yaw + 0.5, pitch: 0.25 }, [h, w, l], CABIN_COLORS.body, CABIN_COLORS.broken);
+    return;
+  }
+  const p = at(d, 0);
+  const y = cabinRail(s, d) + 0.25;
+  b.box({ x: p.x, y, z: p.z, yaw }, [w, h, l], CABIN_COLORS.body);
+  b.gableRoof({ x: p.x, y: y + h, z: p.z, yaw: yaw + Math.PI / 2 }, l + 0.3, w + 0.3, 0.7, CABIN_COLORS.roof, CABIN_COLORS.body);
+}
+
+/** La cabine reliée, sans ses gares : les chevalets (`piles`), les rails (`deck`), la caisse au pied (`rails`). */
+function cabinParts(s: BridgeSite): BridgeParts {
+  const rails = new FacetBuilder();
+  const posts = new FacetBuilder();
+  cabinTrack(rails, posts, s, s.abut[0], s.abut[1]);
+  const box = new FacetBuilder();
+  cabinBox(box, s, s.abut[0] + CABIN.box[2], false);
+  return { piles: [posts.build()], deck: rails.build(), rails: box.build() };
+}
+
+/**
+ * La cabine tombée : ses deux gares ; le rail cassé, son bas jusqu'aux deux cinquièmes de la montée, son haut depuis les
+ * trois quarts, le vide entre les deux ; la caisse couchée au pied, à côté du rail.
+ */
+function fallenCabin(s: BridgeSite): Facets {
+  const b = new FacetBuilder();
+  b.append(cabinStations(s));
+  const posts = new FacetBuilder();
+  const span = s.abut[1] - s.abut[0];
+  cabinTrack(b, posts, s, s.abut[0], s.abut[0] + span * 0.4);
+  cabinTrack(b, posts, s, s.abut[0] + span * 0.75, s.abut[1]);
+  b.append(posts.build());
+  cabinBox(b, s, s.abut[0] + 1, true);
   return b.build();
 }

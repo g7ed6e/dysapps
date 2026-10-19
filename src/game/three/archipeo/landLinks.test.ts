@@ -4,10 +4,10 @@ import { describe, expect, it } from 'vitest';
 import { EMPTY_STATE, type GameState } from '../../engine/state';
 import { getBridge, reachableIslands } from '../../world/archipelago';
 import { ensureLands, payLand } from '../../world/arrange';
-import { PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
+import { PLACES } from '../../world/continu/plan6e';
 import { landById, type LandId, landOf, startLandOf } from '../../world/continu/lands';
 import { gridLand, gridLands, openWorldLands } from './landLinks';
-import { planFor } from '../../world/continu/levelPlan';
+import { placeById, planFor, type PlaceId } from '../../world/continu/levelPlan';
 
 /** Le plan du 6e, le seul enregistré (GD-22). */
 const PLAN = planFor('6e');

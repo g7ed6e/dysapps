@@ -51,7 +51,7 @@ interface Props {
    */
   suggested?: LinkedLand | null;
   /** L'état de chaque lieu ouvert (GD-20, lot 1) : en chantier, achevé, ou rien encore (aucune partie posée). */
-  states: Readonly<Record<PlaceId, 'en-chantier' | 'restauree' | null>>;
+  states: Readonly<Partial<Record<PlaceId, 'en-chantier' | 'restauree' | null>>>;
   /** Les mots des états, ceux de l'univers (« En chantier »). */
   words: Readonly<Record<IslandStateId, string>>;
   /**
@@ -297,7 +297,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
             </button>
           );
         }
-        const word = mapStateWord(p, states[p.id], words);
+        const word = mapStateWord(p, states[p.id] ?? null, words);
         return (
           <button
             key={p.id}

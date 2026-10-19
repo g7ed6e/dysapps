@@ -6,6 +6,7 @@
 import { boundsOf, FacetBuilder, placeFacets, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { placeArt } from './northShore';
+import { sixthPlace, type PlaceId as AnyPlaceId } from './levelPlan';
 import { DOCK_EDGE, placeById, type PlaceId } from './plan6e';
 import type { ItemScene } from './questions';
 import { COMMONS, ENGINE, FILETS_RACK, OBSERVATORY, SHIPYARD, SLIP_N, SLIP_U, SLIP_YAW, STEAM_GAP, VALVE_PUFFS, drumFace, engineSteam, filetsRack, hullEdge, hullPoint, slipPoint } from './places';
@@ -221,7 +222,8 @@ function spotSamples(place: PlaceId): Vec2[] {
  * Le point de la scène d'un item dans un lieu : au sol, au plus haut de sa plate-forme (elle ne s'enfonce jamais dans
  * une pente ; elle descend jusqu'au sol sous elle, `sceneDepth`).
  */
-export function sceneSpot(place: PlaceId): Vec3 {
+export function sceneSpot(anyPlace: AnyPlaceId): Vec3 {
+  const place = sixthPlace(anyPlace);
   const p = placeById(place);
   const s = SCENE_SPOT[place];
   const at = { x: p.center.x + s.dx, z: p.center.z + s.dz };
@@ -464,7 +466,8 @@ const stepOf = (points: readonly Vec3[]): number => (points.length > 1 ? Math.hy
  * L'échelle des objets des réponses : leur hauteur `height` (en unités du monde, tirée de la hauteur à l'écran), sans
  * qu'un objet déborde sur la place de son voisin.
  */
-export function answerScale(place: PlaceId, points: readonly Vec3[], height: number): number {
+export function answerScale(anyPlace: AnyPlaceId, points: readonly Vec3[], height: number): number {
+  const place = sixthPlace(anyPlace);
   const kind = ANSWER_OBJECT[place];
   if (!kind) return 1;
   const size = kind === 'lieu' ? placeArt(place)?.answer?.size : OBJECT_SIZE[kind];
@@ -894,7 +897,8 @@ function groundBells(b: FacetBuilder, points: readonly Vec3[], s: number, ground
  * restent sur la rambarde, ronde autour de l'axe. `points` : les pieds des objets dans le monde, dans le plan tourné ;
  * `look.hanging.rail` : le point de la rambarde de face, que le tour emporte ; la main de l'habitant ne bouge pas.
  */
-export function facingAnswerObjects(place: PlaceId, points: readonly Vec3[], s: number, look: AnswerLook, pivot: Vec3, yaw: number): Facets {
+export function facingAnswerObjects(anyPlace: AnyPlaceId, points: readonly Vec3[], s: number, look: AnswerLook, pivot: Vec3, yaw: number): Facets {
+  const place = sixthPlace(anyPlace);
   if (!yaw) return answerObjects(place, points, s, look);
   const c = Math.cos(yaw), sn = Math.sin(yaw);
   // L'inverse du tour de `placeFacets` : du monde au repère de face, centré sur le pivot.
@@ -1257,7 +1261,8 @@ const ORIGIN: Vec3 = { x: 0, y: 0, z: 0 };
  * faux ; `right` : les points des objets des bonnes réponses (la pêche va au panier, les bonnes cloches s'allument),
  * `scale` : l'échelle de ces objets (`answerScale`).
  */
-export function itemScene(place: PlaceId, scene: ItemScene, answered: boolean, right: readonly Vec3[] = [], scale = 1, posed = true): ItemSceneFacets {
+export function itemScene(anyPlace: AnyPlaceId, scene: ItemScene, answered: boolean, right: readonly Vec3[] = [], scale = 1, posed = true): ItemSceneFacets {
+  const place = sixthPlace(anyPlace);
   const b = new FacetBuilder();
   const o = sceneSpot(place);
   const labels: SceneLabel[] = [];
@@ -1946,7 +1951,8 @@ function lockGate(b: FacetBuilder, x: number, y: number, z: number, open: boolea
  * par mission autour de la cale (`SHIPYARD_TRACES`, lot L6b).
  * Rien avant la première réussite, sauf la porte fermée des Écluses.
  */
-export function placeTrace(place: PlaceId, done: readonly string[]): Facets {
+export function placeTrace(anyPlace: AnyPlaceId, done: readonly string[]): Facets {
+  const place = sixthPlace(anyPlace);
   const b = new FacetBuilder();
   const p = placeById(place);
   const y0 = groundAt(p.center);

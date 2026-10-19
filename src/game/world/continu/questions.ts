@@ -7,6 +7,7 @@
 // a son gabarit (les deux sas), les autres missions gardent leurs items de référence (GD-20, point 8, lot L2). Code
 // pur : la vue dessine, le jeu commun compte les étoiles et le barème.
 import PLACE_ITEMS from './placeItems.json';
+import { sixthPlace, type PlaceId as AnyPlaceId } from './levelPlan';
 import type { PlaceId } from './plan6e';
 
 /** Un item d'exercice, vu d'ici : sa clé, et ses champs (ceux du jeu commun, sans en dépendre). */
@@ -174,7 +175,8 @@ export const ENCLOS_RULE_LINE = [
 ] as const;
 
 /** La ligne de règle d'une mission qui en a une (l'Enclos), au niveau donné ; `null` sinon. */
-export function placeRuleLine(place: PlaceId, exerciseId: string, level: number): string | null {
+export function placeRuleLine(anyPlace: AnyPlaceId, exerciseId: string, level: number): string | null {
+  const place = sixthPlace(anyPlace);
   return rangeGesture(place, exerciseId) ? ENCLOS_RULE_LINE[level >= 2 ? 1 : 0] : null;
 }
 
@@ -186,7 +188,8 @@ export function placeRuleLine(place: PlaceId, exerciseId: string, level: number)
  * parle de la jauge (niveau 1) ; les autres missions gardent leur consigne de référence. `scene` : la scène de l'item montré, quand il y en a un ; un item de Deux rives sans ses deux sas
  * (`pairScene` rend `null`, il se joue sur le sas au repos) garde la consigne de référence (contenu, relecture de L2).
  */
-export function placeInstruction(place: PlaceId, exerciseId: string, level: number, reference: string, scene?: ItemScene): string {
+export function placeInstruction(anyPlace: AnyPlaceId, exerciseId: string, level: number, reference: string, scene?: ItemScene): string {
+  const place = sixthPlace(anyPlace);
   // Au Phare, l'Abattage syllabique se répond en touchant une cloche : « tape » s'y lirait « frappe la cloche une fois
   // par syllabe » (relecture de L3, contenu). Sa première phrase change ; la fin des niveaux 2 et 3 reste.
   if (place === 'phare' && missionIs(exerciseId, 'syllables')) return PHARE_SYLLABLES + reference.slice(reference.indexOf('.') + 1);
@@ -412,7 +415,8 @@ function inInstructionOrder(exerciseId: string, it: QuestionItem): { choices?: s
  * référence, sur le bassin au repos. À la Turbine et au Chantier naval, tout se joue en C, en items de référence.
  * `reference` : les items de « Vue simple ».
  */
-export function placeItems(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction = written, reference = false): PlacedItem[] {
+export function placeItems(anyPlace: AnyPlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction = written, reference = false): PlacedItem[] {
+  const place = sixthPlace(anyPlace);
   const placed = placedInScene(place, exerciseId, items, say);
   // « Vue simple » (`reference`) joue l'item de référence en entier quand la scène remplace sa figure : sa consigne, sa
   // phrase, son indice, sa correction et sa figure d'origine (directeur du contenu pédagogique, 16 octobre 2026) ; la
@@ -661,7 +665,8 @@ export const RANGE_PER_GRAND_ROUND = 1;
  * Le geste d'une mission quand c'est « ranger » (GD-20, point 8, lot L4 : toucher l'objet, puis le panier ; glisser
  * n'est pas construit) : ses paniers ; `null` sinon. Aux Filets, l'Enclos.
  */
-export function rangeGesture(place: PlaceId, exerciseId: string): readonly RangeBin[] | null {
+export function rangeGesture(anyPlace: AnyPlaceId, exerciseId: string): readonly RangeBin[] | null {
+  const place = sixthPlace(anyPlace);
   return place === 'filets' && missionIs(exerciseId, 'word-classes') ? ENCLOS_BINS : null;
 }
 

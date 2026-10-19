@@ -486,16 +486,23 @@ const FAR_CLEAR = 0.03;
  * d'autant, sous le dessus du ruban ; de loin, l'écart ne se voit pas, et la jupe des tuiles de près bouche la marche.
  */
 function farHeights(f: HeightField): Float32Array {
+  return farHeightsOf(f, PATH_NODES, PATH_EDGES, (x, z) => heightOnMesh(f, x, z));
+}
+
+/**
+ * Le terrain de loin abaissé sous les chemins d'un réseau (`nodes`, `edges`), `fine` donnant le sol de près : le même
+ * calcul pour chaque niveau (le 5e, ./terrain5e.ts, GD-22).
+ */
+export function farHeightsOf(f: HeightField, pathNodes: readonly { id: string; at: Vec2 }[], pathEdges: readonly (readonly [string, string])[], fine: (x: number, z: number) => number): Float32Array {
   const out = new Float32Array(f.heights);
   const k = TERRAIN.coarse;
   const cs = f.step * k;
   const ci = Math.floor((f.nx - 1) / k);
   const cj = Math.floor((f.nz - 1) / k);
-  const nodes = new Map(PATH_NODES.map((n) => [n.id, n.at]));
+  const nodes = new Map(pathNodes.map((n) => [n.id, n.at]));
   // L'abaissement voulu à chaque sommet grossier (rang fin), le plus grand demandé.
   const drop = new Float32Array(out.length);
-  const fine = (x: number, z: number) => heightOnMesh(f, x, z);
-  for (const [ia, ib] of PATH_EDGES) {
+  for (const [ia, ib] of pathEdges) {
     const a = nodes.get(ia)!;
     const c = nodes.get(ib)!;
     const len = distance(a, c) || 1e-6;
@@ -599,7 +606,7 @@ export function standingHeight(ground: number): number {
 /** Sous ce niveau, une case est sous l'eau : la mer la cache, elle n'est pas dessinée. */
 const HIDDEN_BELOW = -0.12;
 
-type P3 = [number, number, number];
+export type P3 = [number, number, number];
 
 /**
  * La grève des Marais salants (relecture du lot L5, directeur artistique) : de la vase claire sous les bassins et autour,
@@ -783,6 +790,17 @@ function foam(a: P3, b: P3, c: P3, detail: TileDetail, out: FacetBuilder | null)
 /** Les deux niveaux de détail d'une tuile : chaque case (de près), ou une sur `TERRAIN.coarse` en chaque sens (de loin). */
 export type TileDetail = 'near' | 'far';
 
+/**
+ * La grille des tuiles d'un niveau : son coin nord-ouest et son nombre de tuiles (le pas et la taille d'une tuile sont les
+ * mêmes à chaque niveau ; ceux du 6e, `TERRAIN`, par défaut).
+ */
+export interface TileGrid {
+  readonly minX: number;
+  readonly minZ: number;
+  readonly tilesX: number;
+  readonly tilesZ: number;
+}
+
 /** Le côté d'une tuile, en unités. */
 export const TILE_SIZE = TERRAIN.step * TERRAIN.tileCells;
 
@@ -794,6 +812,20 @@ const SKIRT_DEPTH = 1.2;
  * `detail`, sans celles qui sont sous l'eau, et une jupe sur son pourtour.
  */
 export function drawTile(f: HeightField, tx: number, tz: number, detail: TileDetail, b: FacetBuilder | null): number {
+  return drawTileWith(f, tx, tz, detail, b, PAINT_6E);
+}
+
+/** Comment un niveau peint son sol : la couleur d'une facette, celle d'un sol à plat (la jupe), et son écume. */
+export interface GroundPaint {
+  facet(a: P3, b: P3, c: P3): number;
+  flat(x: number, z: number, h: number): number;
+  foam(a: P3, b: P3, c: P3, detail: TileDetail, out: FacetBuilder | null): number;
+}
+
+const PAINT_6E: GroundPaint = { facet: facetColor, flat: flatColor, foam };
+
+/** Les facettes d'une tuile peinte par `paint` (le même découpage pour chaque niveau : celui du 5e, ./terrain5e.ts). */
+export function drawTileWith(f: HeightField, tx: number, tz: number, detail: TileDetail, b: FacetBuilder | null, paint: GroundPaint): number {
   const k = detail === 'near' ? 1 : TERRAIN.coarse;
   const n = TERRAIN.tileCells;
   const i0 = tx * n, j0 = tz * n;
@@ -808,10 +840,10 @@ export function drawTile(f: HeightField, tx: number, tz: number, detail: TileDet
         : [[p00, p11, p10], [p00, p01, p11]];
       for (const [a, bb, c] of tris) {
         // L'écume au rivage (lot 3), même sous une facette noyée : là où le sol passe sous l'eau.
-        count += foam(a, bb, c, detail, b);
+        count += paint.foam(a, bb, c, detail, b);
         if (Math.max(a[1], bb[1], c[1]) < HIDDEN_BELOW) continue;
         count++;
-        b?.triangle(a, bb, c, facetColor(a, bb, c));
+        b?.triangle(a, bb, c, paint.facet(a, bb, c));
       }
     }
   // La jupe : le long des quatre bords, un pan vertical tourné vers le dehors.
@@ -833,7 +865,7 @@ export function drawTile(f: HeightField, tx: number, tz: number, detail: TileDet
       // Le pan (a, c, c bas, a bas) regarde vers (dz, 0, −dx) : on le retourne s'il regarde vers le dedans.
       const dx = c[0] - a[0], dz = c[2] - a[2];
       const outward = dz * e.out[0] - dx * e.out[1] > 0;
-      const color = flatColor((a[0] + c[0]) / 2, (a[2] + c[2]) / 2, (a[1] + c[1]) / 2);
+      const color = paint.flat((a[0] + c[0]) / 2, (a[2] + c[2]) / 2, (a[1] + c[1]) / 2);
       if (outward) b.quad(a, c, cd, ad, color);
       else b.quad(c, a, ad, cd, color);
     }
@@ -858,9 +890,9 @@ export function tileTriangleCounts(f: HeightField, detail: TileDetail): Int32Arr
 }
 
 /** La boîte d'une tuile au sol. */
-export function tileRect(tx: number, tz: number): { minX: number; minZ: number; maxX: number; maxZ: number } {
-  const minX = TERRAIN.minX + tx * TILE_SIZE;
-  const minZ = TERRAIN.minZ + tz * TILE_SIZE;
+export function tileRect(tx: number, tz: number, grid: TileGrid = TERRAIN): { minX: number; minZ: number; maxX: number; maxZ: number } {
+  const minX = grid.minX + tx * TILE_SIZE;
+  const minZ = grid.minZ + tz * TILE_SIZE;
   return { minX, minZ, maxX: minX + TILE_SIZE, maxZ: minZ + TILE_SIZE };
 }
 
@@ -875,21 +907,21 @@ export const RING = { near: 22, behind: 14 } as const;
  * Les tuiles de chaque anneau autour du point `focus` (des rangs, dans l'ordre de la grille), jusqu'à `far` unités ;
  * rien de plus de `RING.behind` derrière Kéo, la caméra tournée de `yaw` (0 : vers le nord, derrière est le sud).
  */
-export function tileRings(focus: Vec2, far: number, yaw = 0): { near: number[]; far: number[] } {
+export function tileRings(focus: Vec2, far: number, yaw = 0, grid: TileGrid = TERRAIN): { near: number[]; far: number[] } {
   const out = { near: [] as number[], far: [] as number[] };
   const bx = Math.sin(yaw);
   const bz = Math.cos(yaw);
-  for (let tz = 0; tz < TERRAIN.tilesZ; tz++)
-    for (let tx = 0; tx < TERRAIN.tilesX; tx++) {
-      const r = tileRect(tx, tz);
+  for (let tz = 0; tz < grid.tilesZ; tz++)
+    for (let tx = 0; tx < grid.tilesX; tx++) {
+      const r = tileRect(tx, tz, grid);
       // Le coin de la tuile le moins derrière Kéo : s'il l'est encore de plus de `RING.behind`, la tuile ne se voit pas.
       const behind = ((bx > 0 ? r.minX : r.maxX) - focus.x) * bx + ((bz > 0 ? r.minZ : r.maxZ) - focus.z) * bz;
       if (behind > RING.behind) continue;
       const dx = Math.max(r.minX - focus.x, 0, focus.x - r.maxX);
       const dz = Math.max(r.minZ - focus.z, 0, focus.z - r.maxZ);
       const d = Math.hypot(dx, dz);
-      if (d <= RING.near) out.near.push(tileIndex(tx, tz));
-      else if (d <= far) out.far.push(tileIndex(tx, tz));
+      if (d <= RING.near) out.near.push(tz * grid.tilesX + tx);
+      else if (d <= far) out.far.push(tz * grid.tilesX + tx);
     }
   return out;
 }
