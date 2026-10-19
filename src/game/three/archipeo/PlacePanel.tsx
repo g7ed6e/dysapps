@@ -12,7 +12,7 @@ import { MissionRows, type MissionRow } from '../../../components/MissionRows';
 import { getBiome } from '../../biomes';
 import { Stars } from '../../Stars';
 import { playsInPlace, type MissionMark } from '../../world/continu/mission';
-import { PLACES, placeOfIsland, type OpenPlace, type PlaceId } from '../../world/continu/plan6e';
+import { placeOfIsland, type LevelPlan, type OpenPlace, type PlaceId } from '../../world/continu/levelPlan';
 import { MissionSheet, useOpenPanel } from './PortPanels';
 
 /** Ce que dit le signe d'une ligne qui se joue dans le lieu (il ne porte jamais seul le sens : il est dit). */
@@ -24,9 +24,9 @@ export const IN_PLACE_LABEL = 'Scène';
  */
 export const placeReturn = (place: PlaceId, mission?: string) => `/adventure?lieu=${place}${mission ? `&mission=${encodeURIComponent(mission)}` : ''}`;
 
-/** Un lieu lu dans l'adresse de retour (`?lieu=quais`), s'il en est un ; rien d'autre n'est lu. */
-export function placeFromParam(value: string | null): PlaceId | null {
-  return PLACES.find((p) => p.id === value)?.id ?? null;
+/** Un lieu du plan lu dans l'adresse de retour (`?lieu=quais`), s'il en est un ; rien d'autre n'est lu. */
+export function placeFromParam(plan: LevelPlan, value: string | null): PlaceId | null {
+  return plan.places.find((p) => p.id === value)?.id ?? null;
 }
 
 /**

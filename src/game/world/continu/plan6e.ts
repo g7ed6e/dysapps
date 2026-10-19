@@ -6,6 +6,7 @@
 // (`fromPlan`). Piste 1, lot 1 (choix du mainteneur du 14 octobre 2026) : l'île agrandie autour de Kéo, environ 120 pas
 // du Phare aux Quais ; les lieux gardent leur taille, posés au bord de leur rivage. Code pur.
 import type { Vec2 } from './geometry';
+import type { Land } from './lands';
 
 /**
  * Un pas de Kéo, en unités du monde : un demi-mètre, Kéo (2,4 unités dans la scène) mesurant un mètre et demi. Les
@@ -622,10 +623,10 @@ export const PLACES: readonly OpenPlace[] = PLACE_SPECS.map((s) => ({
   touchRadius: s.touchRadius,
 }));
 
-/** Un lieu par son identifiant. */
+/** Un lieu du 6e seulement, par son identifiant (pour un lieu de tout niveau : `placeById` de ./levelPlan.ts). */
 export const placeById = (id: PlaceId): OpenPlace => PLACES.find((p) => p.id === id)!;
 
-/** Le lieu qui reprend les missions d'une île, s'il y en a un. */
+/** Le lieu du 6e seulement qui reprend les missions d'une île, s'il y en a un (tout niveau : ./levelPlan.ts). */
 export const placeOfIsland = (island: string): OpenPlace | undefined => PLACES.find((p) => p.island === island);
 
 /** Un nœud du réseau des chemins. */
@@ -897,3 +898,16 @@ export const TERRAIN = (() => {
 
 /** La hauteur du dessus de la digue et des pontons, au-dessus de l'eau (0). */
 export const DECK_HEIGHT = 0.45;
+
+/**
+ * Les cinq terres du 6e (GD-20, point 3, ./lands.ts), dans l'ordre où l'on peut les relier (chacune après la sienne) : la
+ * Pointe du Phare, le départ, ouverte dès le début avec l'Escale (ses quatre lieux se touchent, sans bras de mer), puis
+ * les quatre qu'on relie.
+ */
+export const LANDS_6E: readonly Land[] = [
+  { id: 'pointe', name: 'La Pointe du Phare', places: ['phare', 'quais', 'shipyard', 'commons'], after: null, bridgeName: null },
+  { id: 'couchant', name: 'Le Couchant', places: ['mangrove', 'ruins', 'observatory'], after: 'pointe', bridgeName: 'Le pont du Couchant' },
+  { id: 'large', name: 'Le Large', places: ['beacons', 'ferry'], after: 'couchant', bridgeName: 'Le pont du Large' },
+  { id: 'levant', name: 'Le Levant', places: ['ecluses', 'saltworks', 'engine'], after: 'pointe', bridgeName: 'Le pont du Levant' },
+  { id: 'cretes', name: 'Les Crêtes', places: ['filets', 'lookout', 'archives', 'printworks'], after: 'levant', bridgeName: 'Le pont des Crêtes' },
+];

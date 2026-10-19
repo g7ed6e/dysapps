@@ -35,6 +35,10 @@ import {
   suggestedAction,
   tokensOf,
 } from './remiseOf';
+import { planFor } from '../../world/continu/levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
 
 const COMMANDES_6E = COMMANDES.filter((c) => amenagementById(c.fixture));
 /** Le lieu où l'on assemble, dans sa forme « à », tel que l'écrit docs/contenu/assemblage.md (une seule source). */
@@ -167,7 +171,7 @@ describe('La ligne de l’habitant', () => {
   it('la liste « Commandes » : les commandes ouvertes, dans l’ordre d’arrivée', () => {
     const [a, b] = [byPlace('quais'), byPlace('phare')];
     const s = etat({ stock: { [b.block]: b.count }, world: { links: [], requests: [a.id, b.id] } });
-    expect(commandLines(s, ENTREPOT).map((l) => [l.place, l.line.kind])).toEqual([
+    expect(commandLines(PLAN, s, ENTREPOT).map((l) => [l.place, l.line.kind])).toEqual([
       ['quais', 'manque'],
       ['phare', 'livrer'],
     ]);
@@ -179,16 +183,16 @@ describe('La commande prête dans la suggestion', () => {
   const s = etat({ stock: { [quais.block]: 9, [phare.block]: 9 }, world: { links: [], requests: [quais.id, phare.id] } });
 
   it('celle de l’habitant chez qui se tient Kéo, sinon celle de la prochaine destination du jeu, sinon la première arrivée ; jamais dans un lieu fermé', () => {
-    expect(readyCommande(s, () => true)).toEqual({ commande: quais.id, place: 'quais', text: expect.stringMatching(/^Livre \d .+ aux Quais\.$/) });
-    expect(readyCommande(s, () => true, phare.id)).toEqual({ commande: phare.id, place: 'phare', text: 'Livre 3 blocs de terre au Phare.' });
-    expect(readyCommande(s, (p) => p !== 'quais')?.place).toBe('phare');
+    expect(readyCommande(PLAN, s, () => true)).toEqual({ commande: quais.id, place: 'quais', text: expect.stringMatching(/^Livre \d .+ aux Quais\.$/) });
+    expect(readyCommande(PLAN, s, () => true, phare.id)).toEqual({ commande: phare.id, place: 'phare', text: 'Livre 3 blocs de terre au Phare.' });
+    expect(readyCommande(PLAN, s, (p) => p !== 'quais')?.place).toBe('phare');
     // Chez un habitant dont la commande est prête, la sienne d'abord.
-    expect(readyCommande(s, () => true, quais.id, 'phare')?.commande).toBe(phare.id);
-    expect(readyCommande(etat({ stock: {}, world: { links: [], requests: [quais.id] } }), () => true)).toBeNull();
+    expect(readyCommande(PLAN, s, () => true, quais.id, 'phare')?.commande).toBe(phare.id);
+    expect(readyCommande(PLAN, etat({ stock: {}, world: { links: [], requests: [quais.id] } }), () => true)).toBeNull();
   });
 
   it('à son rang : après le lieu où se tient Kéo tant qu’il y reste une mission jamais jouée, avant la prochaine mission', () => {
-    const ready = readyCommande(s, () => true);
+    const ready = readyCommande(PLAN, s, () => true);
     expect(suggestedAction(ready, null, false)).toEqual({ kind: 'livrer', id: ready!.commande, place: ready!.place, text: ready!.text });
     expect(suggestedAction(ready, null, true)).toBeNull();
     expect(suggestedAction(null, null, false)).toBeNull();
@@ -201,7 +205,7 @@ describe('Les pastilles des habitants', () => {
   const s = etat({ stock, world: { links: [], requests: pretes.map((c) => c.id) } });
 
   it('la suggérée d’abord, puis les commandes prêtes, puis les révisions ; trois au plus, une par lieu', () => {
-    const signs = habitantSigns(s, { open: () => true, revisions: (p) => p === 'ecluses' || p === 'quais', suggested: pretes[1].id });
+    const signs = habitantSigns(PLAN, s, { open: () => true, revisions: (p) => p === 'ecluses' || p === 'quais', suggested: pretes[1].id });
     expect(signs.map((x) => [x.place, x.kind, x.suggested])).toEqual([
       ['phare', 'commande', true],
       ['quais', 'commande', false],
@@ -212,7 +216,7 @@ describe('Les pastilles des habitants', () => {
   });
 
   it('jamais dans un lieu fermé ; une révision due a sa pastille', () => {
-    const signs = habitantSigns(s, { open: (p) => p !== 'filets', revisions: (p) => p === 'ecluses' });
+    const signs = habitantSigns(PLAN, s, { open: (p) => p !== 'filets', revisions: (p) => p === 'ecluses' });
     expect(signs.map((x) => [x.place, x.kind])).toEqual([
       ['quais', 'commande'],
       ['phare', 'commande'],
@@ -249,7 +253,7 @@ describe('L’entraide du 6e dans le monde ouvert (lot L2)', () => {
     expect(STORIES_6E).toHaveLength(3);
     for (const story of STORIES_6E)
       for (const [i, step] of story.steps.entries()) {
-        const e = entraideOf(avecEntraide(story.id, i));
+        const e = entraideOf(PLAN, avecEntraide(story.id, i));
         expect(e, `${story.id} ${i}`).not.toBeNull();
         expect(stepPhrase(story, step)).toContain(PLACES.find((p) => p.id === e!.place)!.at);
       }
@@ -301,17 +305,17 @@ describe('L’entraide du 6e dans le monde ouvert (lot L2)', () => {
 
   it('la ligne de l’habitant : « Donner » avec assez de blocs, sinon ce qui manque (la forme « demande ») ; « Apporter » ; rien pour une mission', () => {
     const lanterne = STORIES_6E[0];
-    expect(entraideLineOf(avecEntraide(lanterne.id, 0), 'quais', ENTREPOT)).toBeNull();
-    expect(entraideLineOf(avecEntraide(lanterne.id, 1, { 'french-6e-phonology': 2 }), 'quais', ENTREPOT)).toMatchObject({ kind: 'donner', story: lanterne.id, text: 'Donne 2 blocs de bois aux Quais.' });
+    expect(entraideLineOf(PLAN, avecEntraide(lanterne.id, 0), 'quais', ENTREPOT)).toBeNull();
+    expect(entraideLineOf(PLAN, avecEntraide(lanterne.id, 1, { 'french-6e-phonology': 2 }), 'quais', ENTREPOT)).toMatchObject({ kind: 'donner', story: lanterne.id, text: 'Donne 2 blocs de bois aux Quais.' });
     // Ailleurs que chez l'habitant de l'étape : rien.
-    expect(entraideLineOf(avecEntraide(lanterne.id, 1, { 'french-6e-phonology': 2 }), 'phare', ENTREPOT)).toBeNull();
-    const manque = entraideLineOf(avecEntraide(lanterne.id, 1, { 'french-6e-phonology': 1 }), 'quais', ENTREPOT);
+    expect(entraideLineOf(PLAN, avecEntraide(lanterne.id, 1, { 'french-6e-phonology': 2 }), 'phare', ENTREPOT)).toBeNull();
+    const manque = entraideLineOf(PLAN, avecEntraide(lanterne.id, 1, { 'french-6e-phonology': 1 }), 'quais', ENTREPOT);
     expect(manque).toMatchObject({ kind: 'manque', text: 'Il me faut 2 blocs de bois. C’est pour la lanterne. Joue une mission au Phare.', go: { place: 'phare' } });
-    expect(entraideLineOf(avecEntraide(lanterne.id, 2), 'phare', ENTREPOT)).toMatchObject({ kind: 'apporter', text: 'Apporte la lanterne au Phare.' });
+    expect(entraideLineOf(PLAN, avecEntraide(lanterne.id, 2), 'phare', ENTREPOT)).toMatchObject({ kind: 'apporter', text: 'Apporte la lanterne au Phare.' });
     // En tête de la liste « Commandes » : l'étape à son lieu, ou ce qui manque, avec où mène « Y aller ».
-    expect(entraideListLine(avecEntraide(lanterne.id, 0), () => true, ENTREPOT)).toMatchObject({ index: 0, place: 'quais', text: 'Joue une mission aux Quais.', go: { place: 'quais' } });
-    expect(entraideListLine(avecEntraide(lanterne.id, 1), () => true, ENTREPOT)).toMatchObject({ go: { place: 'phare' } });
-    expect(entraideListLine(avecEntraide(lanterne.id, 0), (p) => p !== 'quais', ENTREPOT)).toBeNull();
+    expect(entraideListLine(PLAN, avecEntraide(lanterne.id, 0), () => true, ENTREPOT)).toMatchObject({ index: 0, place: 'quais', text: 'Joue une mission aux Quais.', go: { place: 'quais' } });
+    expect(entraideListLine(PLAN, avecEntraide(lanterne.id, 1), () => true, ENTREPOT)).toMatchObject({ go: { place: 'phare' } });
+    expect(entraideListLine(PLAN, avecEntraide(lanterne.id, 0), (p) => p !== 'quais', ENTREPOT)).toBeNull();
   });
 
   it('la remise de « Donner » : la caisse et un élément par bloc donné, la fin dit l’étape suivante ; celle d’« Apporter » : l’objet d’un seul bloc, depuis la main de Kéo, puis 50 XP', () => {
@@ -319,19 +323,19 @@ describe('L’entraide du 6e dans le monde ouvert (lot L2)', () => {
       const gi = story.steps.findIndex((st) => st.kind === 'give');
       const give = story.steps[gi];
       if (give.kind !== 'give') throw new Error(story.id);
-      expect(entraideRemiseOf(avecEntraide(story.id, gi, { [give.block]: give.count - 1 }), story.id)).toBeNull();
-      const d = entraideRemiseOf(avecEntraide(story.id, gi, { [give.block]: give.count }), story.id)!;
+      expect(entraideRemiseOf(PLAN, avecEntraide(story.id, gi, { [give.block]: give.count - 1 }), story.id)).toBeNull();
+      const d = entraideRemiseOf(PLAN, avecEntraide(story.id, gi, { [give.block]: give.count }), story.id)!;
       expect(d).toMatchObject({ kind: 'donner', elements: give.count, block: give.block, done: stepPhrase(story, story.steps[gi + 1]) });
       expect(d.play).toMatchObject({ place: d.place, caisse: { count: give.count } });
       expect(d.consigne).toBe(`Tu donnes ${blockCount(give.block, give.count)} pour ${story.name}.`);
       expect(d.xp).toBeUndefined();
       const last = story.steps.length - 1;
-      const a = entraideRemiseOf(avecEntraide(story.id, last), story.id)!;
+      const a = entraideRemiseOf(PLAN, avecEntraide(story.id, last), story.id)!;
       expect(a).toMatchObject({ kind: 'apporter', elements: 1, block: story.item, xp: STORY_XP, play: { place: a.place, amenagement: story.fixture, carry: true } });
       expect(amenagementById(story.fixture)!.place).toBe(a.place);
       expect(a.done).toMatch(/ est en place\.$/);
       // Une étape « mission » ne se fait pas d'un geste.
-      expect(entraideRemiseOf(avecEntraide(story.id, 0), story.id)).toBeNull();
+      expect(entraideRemiseOf(PLAN, avecEntraide(story.id, 0), story.id)).toBeNull();
       // Sans voix, la remise tient en 10 s au plus.
       for (const r of [d, a]) expect(voiceFallbackMs(frenchTypography(r.consigne)) / 1000 + remiseDuration(r.elements, r.kind === 'apporter' ? REMISE_TIMING.carry : undefined)).toBeLessThanOrEqual(REMISE_MAX_S);
     }
@@ -339,15 +343,15 @@ describe('L’entraide du 6e dans le monde ouvert (lot L2)', () => {
 
   it('la suggestion : l’étape juste après la commande prête, jamais ce qui manque ; jamais dans un lieu fermé', () => {
     const lanterne = STORIES_6E[0];
-    const step = entraideSuggestion(avecEntraide(lanterne.id, 2), () => true);
+    const step = entraideSuggestion(PLAN, avecEntraide(lanterne.id, 2), () => true);
     expect(step).toEqual({ kind: 'apporter', id: lanterne.id, place: 'phare', text: 'Apporte la lanterne au Phare.' });
-    expect(entraideSuggestion(avecEntraide(lanterne.id, 0), () => true)).toMatchObject({ kind: 'mission', place: 'quais' });
-    expect(entraideSuggestion(avecEntraide(lanterne.id, 1), () => true)).toBeNull();
-    expect(entraideSuggestion(avecEntraide(lanterne.id, 1, { 'french-6e-phonology': 2 }), () => true)).toMatchObject({ kind: 'donner' });
-    expect(entraideSuggestion(avecEntraide(lanterne.id, 2), (p) => p !== 'phare')).toBeNull();
+    expect(entraideSuggestion(PLAN, avecEntraide(lanterne.id, 0), () => true)).toMatchObject({ kind: 'mission', place: 'quais' });
+    expect(entraideSuggestion(PLAN, avecEntraide(lanterne.id, 1), () => true)).toBeNull();
+    expect(entraideSuggestion(PLAN, avecEntraide(lanterne.id, 1, { 'french-6e-phonology': 2 }), () => true)).toMatchObject({ kind: 'donner' });
+    expect(entraideSuggestion(PLAN, avecEntraide(lanterne.id, 2), (p) => p !== 'phare')).toBeNull();
     const potager = byPlace('phare');
     const s = avecEntraide(lanterne.id, 2, { [potager.block]: potager.count }, { requests: [potager.id] });
-    const ready = readyCommande(s, () => true);
+    const ready = readyCommande(PLAN, s, () => true);
     expect(suggestedAction(ready, step, false)?.kind).toBe('livrer');
     expect(suggestedAction(null, step, false)).toBe(step);
     expect(suggestedAction(null, step, true)).toBeNull();
@@ -357,18 +361,18 @@ describe('L’entraide du 6e dans le monde ouvert (lot L2)', () => {
     const lanterne = STORIES_6E[0];
     const quais = byPlace('quais');
     const s = avecEntraide(lanterne.id, 2, { [quais.block]: 9 }, { requests: [quais.id] });
-    const signs = habitantSigns(s, { open: () => true, revisions: (p) => p === 'ecluses', titre: 'Entraide' });
+    const signs = habitantSigns(PLAN, s, { open: () => true, revisions: (p) => p === 'ecluses', titre: 'Entraide' });
     expect(signs.map((x) => [x.place, x.kind, x.block])).toEqual([
       ['quais', 'commande', quais.block],
       ['phare', 'entraide', lanterne.item],
       ['ecluses', 'revision', undefined],
     ]);
     expect(signs[1].label).toBe('Entraide, la lanterne, au Phare');
-    const seule = habitantSigns(avecEntraide(lanterne.id, 2), { open: () => true, revisions: () => false, suggested: lanterne.id });
+    const seule = habitantSigns(PLAN, avecEntraide(lanterne.id, 2), { open: () => true, revisions: () => false, suggested: lanterne.id });
     expect(seule).toEqual([{ place: 'phare', kind: 'entraide', block: lanterne.item, suggested: true, label: 'Entraide, la lanterne, au Phare' }]);
     // Une étape « mission », ou des blocs qui manquent : pas de pastille (la marque porte la mission).
-    expect(habitantSigns(avecEntraide(lanterne.id, 0), { open: () => true, revisions: () => false })).toEqual([]);
-    expect(habitantSigns(avecEntraide(lanterne.id, 1), { open: () => true, revisions: () => false })).toEqual([]);
+    expect(habitantSigns(PLAN, avecEntraide(lanterne.id, 0), { open: () => true, revisions: () => false })).toEqual([]);
+    expect(habitantSigns(PLAN, avecEntraide(lanterne.id, 1), { open: () => true, revisions: () => false })).toEqual([]);
   });
 
   it('l’étape faite : celle de la grille (`tapStoryStep`), sans rien de neuf dans la sauvegarde ; à la dernière, l’objet posé à son lieu', () => {
@@ -387,7 +391,7 @@ describe('L’entraide du 6e dans le monde ouvert (lot L2)', () => {
       const f = tapStoryStep(last, story.id);
       expect(f.ok && f.finished).toBe(true);
       if (!f.ok) continue;
-      expect(posedAmenagements(f.state.world.parts)[entraideRemiseOf(last, story.id)!.place]).toContain(story.fixture);
+      expect(posedAmenagements(f.state.world.parts)[entraideRemiseOf(PLAN, last, story.id)!.place]).toContain(story.fixture);
       expect(sanitizeState(JSON.parse(JSON.stringify(f.state)))).toEqual(f.state);
       // Une seconde fois ne compte pas deux fois.
       expect(tapStoryStep(f.state, story.id).ok).toBe(false);

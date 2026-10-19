@@ -10,7 +10,7 @@ import { Icon } from '../../../components/Icon';
 import { BLOCKS, getBiome } from '../../biomes';
 import { BlockIcon } from '../../Voxel';
 import { keepClear, type Obstacle, type ScreenRect } from '../../world/continu/mission';
-import { placeById, type PlaceId } from '../../world/continu/plan6e';
+import { placeById, type PlaceId } from '../../world/continu/levelPlan';
 import { entraideIcon, type HabitantSign } from './remiseOf';
 import type { SignOnScreen } from './scene';
 

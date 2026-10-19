@@ -9,7 +9,8 @@ import { NEF_MODEL_TRIANGLES, nefSiteTriangles } from './nef';
 import { WORLD_FOG } from './camera';
 import { bridgeLay } from './bridgeLay';
 import { bridgeFacets, bridgeMapMark } from './bridges';
-import { LINKED_LANDS } from './lands';
+import { linkedLands } from './lands';
+import { planFor } from './levelPlan';
 import { networkSamples, pathRibbons } from './paths';
 import { PLACES, type PlaceId } from './plan6e';
 import { lanternLight, modelOfPlace } from './places';
@@ -23,6 +24,9 @@ import { landTileCounts } from './flora';
 import { buildHeightField, heightOnMesh, tileRings } from './terrain';
 import { skyDome } from './sky';
 import { veilFacets } from './veil';
+
+/** Les terres qu'on relie du 6e : le budget est celui du monde ouvert du 6e (GD-22, lot 1 : le plan par niveau). */
+const LINKED_LANDS_6E = linkedLands(planFor('6e'));
 
 /**
  * Kéo : le modèle importé de près (1 500 triangles environ) et son anneau clair au sol, comme le poste « bonhomme » du
@@ -187,7 +191,7 @@ function placesCost(): { triangles: number; calls: number } {
  * ou rebâti), dans le maillage des lieux : aucun appel de plus.
  */
 function bridgesCost(): number {
-  return LINKED_LANDS.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
+  return LINKED_LANDS_6E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
 }
 
 /**
@@ -213,7 +217,7 @@ export const PORT_BUDGET = 4500;
  */
 function poseCost(ground: (x: number, z: number) => number): { triangles: number; calls: number } {
   const places = Math.max(...PLACES.map((p) => constructionFacets(p.id, [WHOLE], ground).triangles));
-  const bridges = Math.max(...LINKED_LANDS.map((l) => bridgeLay(l).facets.triangles));
+  const bridges = Math.max(...LINKED_LANDS_6E.map((l) => bridgeLay(l).facets.triangles));
   return { triangles: Math.max(places, bridges), calls: 1 };
 }
 
@@ -267,7 +271,7 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
     { poste: 'détours', triangles: detourTrianglesAtMost(), calls: 0 },
     { poste: 'faune', ...FAUNA_COST },
     { poste: 'pose', ...poseCost(height) },
-    { poste: 'brume', triangles: veilFacets(LINKED_LANDS).triangles, calls: 1 },
+    { poste: 'brume', triangles: veilFacets(LINKED_LANDS_6E).triangles, calls: 1 },
     { poste: 'kéo', ...KEO },
     { poste: 'question', ...questionCost() },
     { poste: 'scénette', ...scenetteCost() },
@@ -287,8 +291,8 @@ export function mapCost(amenagements: number): { triangles: number; calls: numbe
   const far = landTileCounts(field, 'far').reduce((s, n) => s + n, 0);
   const paths = pathRibbons(height).triangles;
   const places = placesCost();
-  const veil = veilFacets(LINKED_LANDS).triangles;
-  const marks = LINKED_LANDS.reduce((s, l) => s + bridgeMapMark(l).triangles, 0);
+  const veil = veilFacets(LINKED_LANDS_6E).triangles;
+  const marks = LINKED_LANDS_6E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0);
   // Les Détours, leurs sentes tracées comprises, dans le maillage des lieux ; la baleine et les oiseaux, au bord d'eau.
   const detours = detourTrianglesAtMost();
   return {

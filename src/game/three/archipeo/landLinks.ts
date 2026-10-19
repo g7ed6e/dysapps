@@ -6,28 +6,28 @@
 import type { BiomeId } from '../../biomes';
 import { getBridge, reachableIslands } from '../../world/archipelago';
 import type { GridLand } from '../../world/arrange';
-import { LANDS, LINKED_LANDS, START_LAND, landById, landOf, landPrice, openLands, type LandId, type LinkedLand } from '../../world/continu/lands';
+import { isLinkedLand, landById, landOf, landPrice, linkedLands, openLands, type LandId, type LinkedLand } from '../../world/continu/lands';
+import { ALL_LANDS, placeById, placeOfIsland, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
 import { playedPlaces, type MissionMark } from '../../world/continu/mission';
-import { placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
 
 /** Les îles des lieux d'une terre. */
 const islandsOf = (land: LandId): BiomeId[] => landById(land).places.map((p) => placeById(p).island as BiomeId);
 
-/** Chaque terre en îles, pour la grille : la terre d'avant, le prix (rien pour la terre de départ). */
+/** Chaque terre en îles, de tous les plans, pour la grille : la terre d'avant, le prix (rien pour la terre de départ). */
 const GRID_LANDS: ReadonlyMap<LandId, GridLand> = (() => {
   const out = new Map<LandId, GridLand>();
-  for (const land of LANDS) out.set(land.id, { islands: islandsOf(land.id), after: land.after ? out.get(land.after)! : null, price: land.after ? landPrice(land.id) : 0 });
+  for (const land of ALL_LANDS) out.set(land.id, { islands: islandsOf(land.id), after: land.after ? out.get(land.after)! : null, price: land.after ? landPrice(land.id) : 0 });
   return out;
 })();
 
 /** Une terre, vue de la grille. */
 export const gridLand = (land: LandId): GridLand => GRID_LANDS.get(land)!;
 
-/** Les cinq terres, vues de la grille, dans l'ordre (chacune après la sienne). */
-export const gridLands = (): GridLand[] => LANDS.map((l) => gridLand(l.id));
+/** Les terres d'un plan, vues de la grille, dans l'ordre (chacune après la sienne). */
+export const gridLands = (plan: LevelPlan): GridLand[] => plan.lands.map((l) => gridLand(l.id));
 
 /** Les îles des lieux où l'élève a déjà joué (`ensureLands` les ouvre, et leur terre avec eux). */
-export const playedIslands = (bornes: readonly MissionMark[]): BiomeId[] => playedPlaces(bornes).map((id) => placeById(id).island as BiomeId);
+export const playedIslands = (plan: LevelPlan, bornes: readonly MissionMark[]): BiomeId[] => playedPlaces(plan, bornes).map((id) => placeById(id).island as BiomeId);
 
 /** Ce que le monde continu montre des terres. */
 export interface OpenWorldLands {
@@ -40,20 +40,20 @@ export interface OpenWorldLands {
 }
 
 /**
- * Les terres du monde continu : `links`, les liaisons posées de la grille ; `bornes`, les missions du monde ouvert (un
+ * Les terres du monde continu d'un plan : `links`, les liaisons posées de la grille ; `bornes`, les missions du monde ouvert (un
  * lieu où l'élève a déjà joué est ouvert) ; `ouvrage`, la liaison que propose la prochaine destination, s'il y en a une.
  */
-export function openWorldLands(links: readonly string[], bornes: readonly MissionMark[], ouvrage?: string): OpenWorldLands {
+export function openWorldLands(plan: LevelPlan, links: readonly string[], bornes: readonly MissionMark[], ouvrage?: string): OpenWorldLands {
   const islands: ReadonlySet<string> = reachableIslands([...links]);
-  const played = new Set(playedPlaces(bornes));
-  const open = openLands((id: PlaceId) => islands.has(placeById(id).island) || played.has(id));
-  const closed = LINKED_LANDS.filter((l) => !open.has(l));
+  const played = new Set(playedPlaces(plan, bornes));
+  const open = openLands(plan, (id: PlaceId) => islands.has(placeById(id).island) || played.has(id));
+  const closed = linkedLands(plan).filter((l) => !open.has(l));
   const waiting = closed.filter((l) => !open.has(landById(l).after!));
   const bridge = ouvrage ? getBridge(ouvrage) : undefined;
   // La liaison suggérée ouvre un lieu : un seul de ses bouts est ouvert.
   const end = bridge && islands.has(bridge.from) !== islands.has(bridge.to) ? (islands.has(bridge.from) ? bridge.to : bridge.from) : undefined;
   const place = end ? placeOfIsland(end)?.id : undefined;
   const land = place ? landOf(place) : undefined;
-  const suggested = land && land !== START_LAND && closed.includes(land) && !waiting.includes(land) ? land : null;
+  const suggested = land && isLinkedLand(land) && closed.includes(land) && !waiting.includes(land) ? land : null;
   return { closed, waiting, suggested };
 }

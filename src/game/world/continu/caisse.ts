@@ -10,7 +10,7 @@ import type { PlacedAmenagement, WorldBox } from './amenagements';
 import { remisePosed } from './amenagements';
 import { FacetBuilder, boundsOf, mergeFacets } from './facets';
 import type { Vec3 } from './geometry';
-import type { PlaceId } from './plan6e';
+import type { PlaceId } from './levelPlan';
 import { scenetteHabitant, scenetteKeo } from './scenette';
 
 /**

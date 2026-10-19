@@ -18,7 +18,7 @@ import { useTextes } from '../../../universes';
 import { getBiome } from '../../biomes';
 import { ReminderButtons, ReminderText, useResidentReminder } from '../../ResidentReminder';
 import { Sheet } from '../../Sheet';
-import { placeById, type PlaceId } from '../../world/continu/plan6e';
+import { placeById, type PlaceId } from '../../world/continu/levelPlan';
 import { REVISION_PHRASES } from '../../world/continu/remise';
 import { scenetteOf } from '../../world/continu/scenette';
 import { useOpenPanel } from './PortPanels';

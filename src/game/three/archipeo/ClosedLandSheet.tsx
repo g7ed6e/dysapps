@@ -13,7 +13,7 @@ import { useEffect, useRef } from 'react';
 import { Icon } from '../../../components/Icon';
 import { getBiome } from '../../biomes';
 import { landById, type LinkedLand } from '../../world/continu/lands';
-import { placeById } from '../../world/continu/plan6e';
+import { placeById } from '../../world/continu/levelPlan';
 import { MissionSheet, useOpenPanel } from './PortPanels';
 
 interface Props {

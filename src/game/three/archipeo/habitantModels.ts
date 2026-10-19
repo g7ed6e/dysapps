@@ -10,7 +10,7 @@ import * as THREE from 'three';
 import { loadHabitant, RELANCE_MS } from '../../importedCharacters';
 import type { ModeleTexture } from '../../world/characters/imported/glb';
 import { forgetHabitant, habitantFit, habitantModelName, registerHabitant, type HabitantFit } from '../../world/continu/habitants';
-import type { PlaceId } from '../../world/continu/plan6e';
+import type { PlaceId } from '../../world/continu/levelPlan';
 
 /** Combien de modèles prêts la vue garde (le lieu approché, et celui de la scénette ouverte). */
 const KEPT = 2;

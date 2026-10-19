@@ -11,11 +11,11 @@
 // Ce qu'il ouvre (la marche jusqu'au lieu, puis son panneau ; la fiche d'une terre fermée) reste à la scène. Code pur.
 import { BRIDGE_TOUCH } from './bridges';
 import { distance, type Vec2 } from './geometry';
-import { PLACES, type OpenPlace, type PlaceId } from './plan6e';
+import type { OpenPlace, PlaceId } from './levelPlan';
 import type { ScreenBox } from './questionScene';
 
-/** Le lieu dont le rayon de toucher prend `p` : le plus proche de son centre, s'il y en a plusieurs ; sinon rien. */
-export function nearestPlace(p: Vec2, places: readonly Pick<OpenPlace, 'id' | 'center' | 'touchRadius'>[] = PLACES): PlaceId | null {
+/** Le lieu, parmi `places` (ceux du plan), dont le rayon de toucher prend `p` : le plus proche de son centre, s'il y en a plusieurs ; sinon rien. */
+export function nearestPlace(p: Vec2, places: readonly Pick<OpenPlace, 'id' | 'center' | 'touchRadius'>[]): PlaceId | null {
   let best: PlaceId | null = null;
   let bestD = Infinity;
   for (const pl of places) {

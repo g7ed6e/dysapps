@@ -13,7 +13,7 @@ import { WHOLE, constructionFacets } from '../../world/continu/construction';
 import { boundsOf, type Facets } from '../../world/continu/facets';
 import { linearRgb, type Vec2 } from '../../world/continu/geometry';
 import { bridgeFacets } from '../../world/continu/bridges';
-import { LINKED_LANDS } from '../../world/continu/lands';
+import { linkedLands } from '../../world/continu/lands';
 import { networkSamples, pathNode } from '../../world/continu/paths';
 import { NEF_CHANNEL, PLACES, placeById, portFloor, toPlan, type PlaceId } from '../../world/continu/plan6e';
 import { PHARE_GARDEN } from '../../world/continu/places';
@@ -28,6 +28,11 @@ import { OBJECT_TOUCH_PIXELS, nearestPlace, touchedObject, type ObjectTarget } f
 import { casesDeLaPetiteConstruction } from '../../world/fixtures';
 import { COMMANDES } from '../../world/requests';
 import { LANTERNE_DE_QUAI, POTENCE, amenagementsCost, drawnObject, placedAmenagement, posedAmenagements } from './amenagements';
+import { planFor } from '../../world/continu/levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
+const LINKED_LANDS = linkedLands(PLAN);
 
 const field = buildHeightField();
 const ground = (x: number, z: number) => portFloor(x, z) ?? heightOnMesh(field, x, z);
@@ -163,7 +168,7 @@ describe('La place de chaque aménagement', () => {
         nef ||= px >= NEF_CHANNEL.x0 && px <= NEF_CHANNEL.x1 && py >= NEF_CHANNEL.y0 && py <= NEF_CHANNEL.y1;
       }
       const other = footprint(p.facets)
-        .map((q) => nearestPlace(q))
+        .map((q) => nearestPlace(q, PLACES))
         .find((id) => id !== null && id !== a.place);
       if (other) out.push(`${a.id} : dans le rayon de toucher de ${other}`);
       // Près de son habitant, ou dans le rayon de son lieu : jamais loin de ce qu'il dit.

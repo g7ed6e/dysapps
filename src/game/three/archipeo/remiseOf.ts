@@ -21,7 +21,7 @@ import { BIOMES, BLOCKS, blockCount, blockName, type BiomeId, type BlockId } fro
 import type { GameState } from '../../engine/state';
 import { recetteDe } from '../../world/assembly';
 import { MATTE_GLASS, amenagementById } from '../../world/continu/amenagements';
-import { PLACES, placeById, placeOfIsland, type PlaceId } from '../../world/continu/plan6e';
+import { placeById, placeOfIsland, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
 import { ENTRAIDE_PHRASES, HABITANT_PHRASES, filled, type PhraseTokens, type RemiseKind } from '../../world/continu/remise';
 import { scenetteOf } from '../../world/continu/scenette';
 import { commandeDeLIle, commandesArrivees, commandesOuvertes, estLivree, estPrete, getCommande, type Commande } from '../../world/requests';
@@ -110,7 +110,7 @@ export function remiseOf(id: string): RemiseRequest | null {
   };
 }
 
-/** L'entraide ouverte du 6e : sa quête, l'étape en cours, son rang, et le lieu du monde ouvert où elle se fait. */
+/** L'entraide ouverte d'un niveau : sa quête, l'étape en cours, son rang, et le lieu du monde ouvert où elle se fait. */
 export interface EntraideStep {
   story: Story;
   step: StoryStep;
@@ -118,9 +118,9 @@ export interface EntraideStep {
   place: PlaceId;
 }
 
-/** L'entraide ouverte du 6e, si son étape se fait dans un lieu du monde ouvert, sinon rien. */
-export function entraideOf(state: Pick<GameState, 'world'>): EntraideStep | null {
-  const o = openStoryOf(state.world, '6e');
+/** L'entraide ouverte du niveau du plan, si son étape se fait dans un lieu du monde ouvert, sinon rien. */
+export function entraideOf(plan: LevelPlan, state: Pick<GameState, 'world'>): EntraideStep | null {
+  const o = openStoryOf(state.world, plan.level);
   const place = o && placeOfIsland(o.step.place)?.id;
   return o && place ? { ...o, place } : null;
 }
@@ -145,8 +145,8 @@ export type EntraideLine =
  * l'objet de l'entraide). Rien pour une étape « mission » : la liste des missions du lieu est juste en dessous, et la
  * suggestion la porte.
  */
-export function entraideLineOf(state: Pick<GameState, 'stock' | 'world'>, place: PlaceId, assemblyAt: string): EntraideLine | null {
-  const e = entraideOf(state);
+export function entraideLineOf(plan: LevelPlan, state: Pick<GameState, 'stock' | 'world'>, place: PlaceId, assemblyAt: string): EntraideLine | null {
+  const e = entraideOf(plan, state);
   if (!e || e.place !== place || e.step.kind === 'mission') return null;
   const role = scenetteOf(place).role;
   if (canTapStep(state, e.step)) return { kind: e.step.kind === 'give' ? 'donner' : 'apporter', story: e.story.id, role, text: stepPhrase(e.story, e.step) };
@@ -166,8 +166,8 @@ const facesOf = (block: BlockId) => ({ dessus: parseInt(BLOCKS[block].top.slice(
  * ses blocs, la fin qui dit l'étape suivante ; « Apporter », l'objet qui passe de la main de Kéo à sa place, la fin
  * « posée », puis l'XP de l'entraide finie. Rien si l'étape ne peut pas se faire maintenant.
  */
-export function entraideRemiseOf(state: Pick<GameState, 'stock' | 'world'>, id: string): RemiseRequest | null {
-  const e = entraideOf(state);
+export function entraideRemiseOf(plan: LevelPlan, state: Pick<GameState, 'stock' | 'world'>, id: string): RemiseRequest | null {
+  const e = entraideOf(plan, state);
   if (!e || e.story.id !== id || !canTapStep(state, e.step)) return null;
   const role = scenetteOf(e.place).role;
   if (e.step.kind === 'give') {
@@ -233,12 +233,12 @@ export function entraideIcon(block: BlockId): { top: string; side: string } {
 export const MAX_SIGNS = 3;
 
 /**
- * Les commandes prêtes du 6e dans les lieux ouverts : celle du lieu où se tient Kéo (`here`) d'abord, puis `first`,
+ * Les commandes prêtes du niveau du plan dans les lieux ouverts : celle du lieu où se tient Kéo (`here`) d'abord, puis `first`,
  * puis dans l'ordre d'arrivée.
  */
-function readyInOpen(state: Pick<GameState, 'stock' | 'world'>, open: (place: PlaceId) => boolean, first?: string, here?: PlaceId | null): { c: Commande; place: PlaceId }[] {
+function readyInOpen(plan: LevelPlan, state: Pick<GameState, 'stock' | 'world'>, open: (place: PlaceId) => boolean, first?: string, here?: PlaceId | null): { c: Commande; place: PlaceId }[] {
   const rank = (c: Commande) => (here && placeOfCommande(c) === here ? 2 : c.id === first ? 1 : 0);
-  const ready = commandesOuvertes(state.world, '6e').filter((c) => estPrete(state, c));
+  const ready = commandesOuvertes(state.world, plan.level).filter((c) => estPrete(state, c));
   ready.sort((a, b) => rank(b) - rank(a));
   return ready.flatMap((c) => {
     const place = placeOfCommande(c);
@@ -259,8 +259,8 @@ export interface ReadyCommande {
  * sinon celle de la prochaine destination du jeu (`first`) si elle est prête, sinon la première arrivée ; rien s'il n'y
  * en a pas.
  */
-export function readyCommande(state: Pick<GameState, 'stock' | 'world'>, open: (place: PlaceId) => boolean, first?: string, here?: PlaceId | null): ReadyCommande | null {
-  const [r] = readyInOpen(state, open, first, here);
+export function readyCommande(plan: LevelPlan, state: Pick<GameState, 'stock' | 'world'>, open: (place: PlaceId) => boolean, first?: string, here?: PlaceId | null): ReadyCommande | null {
+  const [r] = readyInOpen(plan, state, open, first, here);
   return r ? { commande: r.c.id, place: r.place, text: filled(HABITANT_PHRASES.ready, tokensOf(r.c, placeById(r.place).at)) } : null;
 }
 
@@ -279,8 +279,8 @@ export interface SuggestedAction {
  * geste qui peut se faire maintenant. Pas ce qui manque pour donner : comme une commande pas prête, elle attend, et la
  * prochaine mission garde la suggestion.
  */
-export function entraideSuggestion(state: Pick<GameState, 'stock' | 'world'>, open: (place: PlaceId) => boolean): SuggestedAction | null {
-  const e = entraideOf(state);
+export function entraideSuggestion(plan: LevelPlan, state: Pick<GameState, 'stock' | 'world'>, open: (place: PlaceId) => boolean): SuggestedAction | null {
+  const e = entraideOf(plan, state);
   if (!e || !open(e.place)) return null;
   if (e.step.kind !== 'mission' && !canTapStep(state, e.step)) return null;
   const kind = e.step.kind === 'mission' ? 'mission' : e.step.kind === 'give' ? 'donner' : 'apporter';
@@ -307,31 +307,32 @@ export function suggestedAction(ready: ReadyCommande | null, step: SuggestedActi
  * l'univers (`quetes.titre`, jamais « quête »).
  */
 export function habitantSigns(
+  plan: LevelPlan,
   state: Pick<GameState, 'stock' | 'world'>,
   { open, revisions, suggested, titre = 'Entraide' }: { open: (place: PlaceId) => boolean; revisions: (place: PlaceId) => boolean; suggested?: string; titre?: string },
 ): HabitantSign[] {
   const out: HabitantSign[] = [];
-  const e = entraideOf(state);
+  const e = entraideOf(plan, state);
   const entraide: HabitantSign | null =
     e && e.step.kind !== 'mission' && open(e.place) && canTapStep(state, e.step)
       ? { place: e.place, kind: 'entraide', block: e.story.item, suggested: e.story.id === suggested, label: `${titre}, ${e.story.name}, ${placeById(e.place).at}` }
       : null;
   if (entraide?.suggested) out.push(entraide);
-  for (const { c, place } of readyInOpen(state, open, suggested)) {
+  for (const { c, place } of readyInOpen(plan, state, open, suggested)) {
     if (out.some((s) => s.place === place)) continue;
     out.push({ place, kind: 'commande', block: c.block, suggested: c.id === suggested, label: `Commande, ${blockName(c.block, c.count)}, ${placeById(place).at}` });
   }
   if (entraide && !entraide.suggested && !out.some((s) => s.place === entraide.place)) out.push(entraide);
-  for (const p of PLACES) {
+  for (const p of plan.places) {
     if (!open(p.id) || !revisions(p.id) || out.some((s) => s.place === p.id)) continue;
     out.push({ place: p.id, kind: 'revision', suggested: false, label: `Révisions, ${p.at}` });
   }
   return out.slice(0, MAX_SIGNS);
 }
 
-/** Les commandes ouvertes du 6e, dans l'ordre d'arrivée, chacune avec la ligne de son habitant (la liste « Commandes »). */
-export function commandLines(state: Pick<GameState, 'stock' | 'world'>, assemblyAt: string): { place: PlaceId; line: HabitantLine }[] {
-  return commandesOuvertes(state.world, '6e').flatMap((c) => {
+/** Les commandes ouvertes du niveau du plan, dans l'ordre d'arrivée, chacune avec la ligne de son habitant (la liste « Commandes »). */
+export function commandLines(plan: LevelPlan, state: Pick<GameState, 'stock' | 'world'>, assemblyAt: string): { place: PlaceId; line: HabitantLine }[] {
+  return commandesOuvertes(state.world, plan.level).flatMap((c) => {
     const place = placeOfCommande(c);
     const line = place && habitantLineOf(state, place, assemblyAt);
     return place && line ? [{ place, line }] : [];
@@ -343,13 +344,14 @@ export function commandLines(state: Pick<GameState, 'stock' | 'world'>, assembly
  * et où mène son « Y aller » ; rien sans entraide ouverte dans un lieu ouvert.
  */
 export function entraideListLine(
+  plan: LevelPlan,
   state: Pick<GameState, 'stock' | 'world'>,
   open: (place: PlaceId) => boolean,
   assemblyAt: string,
 ): { story: Story; index: number; place: PlaceId; role: string; text: string; go: HabitantGo } | null {
-  const e = entraideOf(state);
+  const e = entraideOf(plan, state);
   if (!e || !open(e.place)) return null;
-  const line = entraideLineOf(state, e.place, assemblyAt);
+  const line = entraideLineOf(plan, state, e.place, assemblyAt);
   const base = { story: e.story, index: e.index, place: e.place, role: scenetteOf(e.place).role };
   if (line?.kind === 'manque') return { ...base, text: line.text, go: line.go };
   return { ...base, text: stepPhrase(e.story, e.step), go: { place: e.place } };

@@ -6,7 +6,7 @@
 // de neuf dans la sauvegarde. C'est le seul fichier qui lise à la fois la grille et le monde continu pour eux. Sans
 // Three.js : testé sous jsdom.
 import { AMENAGEMENTS, ASSISE_TRIANGLES, MATTE_GLASS, QUAI_TRIANGLES, amenagementById, placeAmenagement, type DrawnObject, type PlacedAmenagement } from '../../world/continu/amenagements';
-import type { PlaceId } from '../../world/continu/plan6e';
+import type { PlaceId } from '../../world/continu/levelPlan';
 import { Pinceau, type V3 } from '../../world/decor/brush';
 import { estPosee } from '../../world/fixtures';
 import { ASSEMBLIES } from '../../world/objects/assemblies';
@@ -146,9 +146,11 @@ class MatteWorkshop extends Workshop {
 export function drawnObject(id: string): DrawnObject {
   const draw = DRAWINGS[id];
   const island = id.replace(/-fixture-\d+$/, '');
-  if (!draw || !BIOMES.some((b) => b.id === island)) throw new Error(`Aménagement sans dessin : ${id}`);
+  const biome = BIOMES.find((b) => b.id === island);
+  if (!draw || !biome) throw new Error(`Aménagement sans dessin : ${id}`);
   const at = new MatteWorkshop(new Pinceau(), null, (x, y, z) => [x, z, y]);
-  draw(at, paintFor('6e', island, false), false);
+  // La palette de la classe de son île (le niveau de son lieu).
+  draw(at, paintFor(biome.classe, island, false), false);
   const f = at.opaque.fin();
   return { positions: f.positions, normals: f.normals, colors: f.colors, marks: [...at.marks] };
 }

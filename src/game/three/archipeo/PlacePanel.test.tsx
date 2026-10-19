@@ -12,6 +12,10 @@ import { getBiome } from '../../biomes';
 import type { MissionMark } from '../../world/continu/mission';
 import { placeById, type PlaceId } from '../../world/continu/plan6e';
 import { IN_PLACE_LABEL, PlacePanel, placeFromParam, placeResume, placeReturn } from './PlacePanel';
+import { planFor } from '../../world/continu/levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
 
 function renderPanel(place: PlaceId, missions: MissionMark[], suggested: string | null, focus: string | null = null) {
   const onPlay = vi.fn();
@@ -79,8 +83,8 @@ it('Échap ferme le panneau, comme la croix', async () => {
 it('l’adresse de retour d’un lieu se lit sans rien inventer', () => {
   expect(placeReturn('quais', 'make-ten')).toBe('/adventure?lieu=quais&mission=make-ten');
   expect(placeReturn('phare')).toBe('/adventure?lieu=phare');
-  expect(placeFromParam('quais')).toBe('quais');
-  for (const v of [null, '', 'quai', 'Quais', 'vigie', '../quais']) expect(placeFromParam(v)).toBeNull();
+  expect(placeFromParam(PLAN, 'quais')).toBe('quais');
+  for (const v of [null, '', 'quai', 'Quais', 'vigie', '../quais']) expect(placeFromParam(PLAN, v)).toBeNull();
   expect(placeResume('/adventure/maths-6e-calculation/measures')).toBe('/adventure?lieu=quais&mission=measures');
   // Une île sans lieu, une mission qui n'est pas de l'île, une autre adresse : son retour habituel.
   for (const path of ['/adventure/history-6e-antiquity/dates', '/adventure/maths-6e-calculation/inventee', '/app/tables', '/adventure/maths-6e-calculation'])

@@ -3,10 +3,14 @@
 import { describe, expect, it } from 'vitest';
 import { markOffset, screenOf } from './camera';
 import type { Vec3 } from './geometry';
-import { ISLAND_BOX, MAP_BAR_ROOM, MAP_CAMERA, grown, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
+import { MAP_BAR_ROOM, islandBox, MAP_CAMERA, grown, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
 import { PLACES, placeById } from './plan6e';
 import { PORT_MAP_POINT } from './port';
 import { heightAt, standingHeight } from './terrain';
+import { planFor } from './levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
 
 const screens = [
   [1024, 768],
@@ -18,7 +22,7 @@ const screens = [
 describe('La Carte des lieux ouverts', () => {
   it('s’ouvre sur l’île entière : les six lieux et les bords de l’île à l’écran, nord en haut', () => {
     for (const [w, h] of screens) {
-      const pose = mapPose(mapStart(w / h));
+      const pose = mapPose(mapStart(PLAN, w / h));
       const at = `${w}×${h}`;
       for (const p of PLACES) {
         const s = screenOf(pose, { x: p.center.x, y: 0, z: p.center.z }, w, h);
@@ -27,7 +31,7 @@ describe('La Carte des lieux ouverts', () => {
         expect(s.y, at).toBeGreaterThan(0);
         expect(s.y, at).toBeLessThan(h);
       }
-      const { minX, maxX, minZ, maxZ } = ISLAND_BOX;
+      const { minX, maxX, minZ, maxZ } = islandBox(PLAN);
       const cx = (minX + maxX) / 2;
       const cz = (minZ + maxZ) / 2;
       const west = screenOf(pose, { x: minX, y: 0, z: cz }, w, h);
@@ -46,48 +50,48 @@ describe('La Carte des lieux ouverts', () => {
 
   it('se pince entre la plus proche et l’île entière, autour du point sous les doigts', () => {
     const aspect = 1024 / 768;
-    const start = mapStart(aspect);
+    const start = mapStart(PLAN, aspect);
     const toward = PLACES[0].center;
-    const near = zoomMap(start, 2, toward, aspect);
+    const near = zoomMap(PLAN, start, 2, toward, aspect);
     expect(near.distance).toBeCloseTo(start.distance / 2, 6);
     // Le point sous les doigts se rapproche du milieu, à la même part.
     expect(near.x - toward.x).toBeCloseTo((start.x - toward.x) / 2, 6);
-    expect(zoomMap(start, 1000, toward, aspect).distance).toBe(MAP_CAMERA.closest);
-    expect(zoomMap(start, 0.001, toward, aspect).distance).toBeCloseTo(fitDistance(aspect), 6);
+    expect(zoomMap(PLAN, start, 1000, toward, aspect).distance).toBe(MAP_CAMERA.closest);
+    expect(zoomMap(PLAN, start, 0.001, toward, aspect).distance).toBeCloseTo(fitDistance(PLAN, aspect), 6);
   });
 
   it('se glisse sans quitter l’île', () => {
     const aspect = 844 / 390;
-    const start = mapStart(aspect);
-    const moved = panMap(start, 10, -5, aspect);
+    const start = mapStart(PLAN, aspect);
+    const moved = panMap(PLAN, start, 10, -5, aspect);
     expect(moved.x).toBeCloseTo(start.x + 10, 6);
     expect(moved.z).toBeCloseTo(start.z - 5, 6);
-    const far = panMap(start, 1e4, -1e4, aspect);
-    expect(far.x).toBe(ISLAND_BOX.maxX);
-    expect(far.z).toBe(ISLAND_BOX.minZ);
-    expect(clampMap(far, aspect)).toEqual(far);
+    const far = panMap(PLAN, start, 1e4, -1e4, aspect);
+    expect(far.x).toBe(islandBox(PLAN).maxX);
+    expect(far.z).toBe(islandBox(PLAN).minZ);
+    expect(clampMap(PLAN, far, aspect)).toEqual(far);
   });
 
   it('au plus grand texte, la vue de départ change jusqu’à ce que chaque lieu ouvert ait son nom (GD-20, « La Carte au plus grand texte »)', () => {
     const aspect = 667 / 375;
-    const start = mapStart(aspect);
+    const start = mapStart(PLAN, aspect);
     const open = [PLACES[0].center, PLACES[1].center];
     // Rien ne manque : l'île entière, sans rien essayer d'autre (le texte normal ne change pas).
     let tried = 0;
-    expect(reframeMap(aspect, open, () => (tried++, 0))).toEqual(start);
+    expect(reframeMap(PLAN, aspect, open, () => (tried++, 0))).toEqual(start);
     expect(tried).toBe(1);
     // Il manque un nom à l'île entière, plus rien un peu plus loin : la vue la plus proche de l'île entière qui suffit.
-    const farther = reframeMap(aspect, open, (v) => (v.distance > start.distance * 1.15 ? 0 : 100));
+    const farther = reframeMap(PLAN, aspect, open, (v) => (v.distance > start.distance * 1.15 ? 0 : 100));
     expect(farther.distance).toBeGreaterThan(start.distance * 1.15);
     expect(farther.distance).toBeLessThan(start.distance * 1.15 * MAP_REFRAME.step + 1e-6);
     // Plus près, centrée sur les lieux ouverts.
-    const closer = reframeMap(aspect, open, (v) => (v.distance < start.distance / 1.3 ? 0 : 100));
+    const closer = reframeMap(PLAN, aspect, open, (v) => (v.distance < start.distance / 1.3 ? 0 : 100));
     expect(closer.distance).toBeLessThan(start.distance / 1.3);
     expect(closer.distance).toBeGreaterThanOrEqual(start.distance / MAP_REFRAME.most - 1e-6);
     expect(closer.x).toBeCloseTo((Math.min(open[0].x, open[1].x) + Math.max(open[0].x, open[1].x)) / 2, 6);
     // Rien ne suffit : celle à qui il manque le moins, la plus proche de l'île entière ; jamais au-delà de la portée.
     const seen: MapView[] = [];
-    const best = reframeMap(aspect, open, (v) => (seen.push(v), v.distance > start.distance * 1.5 ? 10 : 100));
+    const best = reframeMap(PLAN, aspect, open, (v) => (seen.push(v), v.distance > start.distance * 1.5 ? 10 : 100));
     expect(best.distance).toBeGreaterThan(start.distance * 1.5);
     expect(best.distance).toBeLessThan(start.distance * 1.5 * MAP_REFRAME.step + 1e-6);
     for (const v of seen) {
@@ -98,14 +102,14 @@ describe('La Carte des lieux ouverts', () => {
 
   it('reculée, la Carte garde sa distance la plus lointaine au glisser et au pincer', () => {
     const aspect = 844 / 390;
-    const fit = fitDistance(aspect);
-    const back = { ...mapStart(aspect), distance: fit * 1.4 };
-    expect(clampMap(back, aspect).distance).toBeCloseTo(fit, 6);
-    expect(clampMap(back, aspect, fit * 1.4).distance).toBeCloseTo(fit * 1.4, 6);
-    expect(panMap(back, 5, 0, aspect, fit * 1.4).distance).toBeCloseTo(fit * 1.4, 6);
-    expect(zoomMap(back, 0.5, back, aspect, fit * 1.4).distance).toBeCloseTo(fit * 1.4, 6);
+    const fit = fitDistance(PLAN, aspect);
+    const back = { ...mapStart(PLAN, aspect), distance: fit * 1.4 };
+    expect(clampMap(PLAN, back, aspect).distance).toBeCloseTo(fit, 6);
+    expect(clampMap(PLAN, back, aspect, fit * 1.4).distance).toBeCloseTo(fit * 1.4, 6);
+    expect(panMap(PLAN, back, 5, 0, aspect, fit * 1.4).distance).toBeCloseTo(fit * 1.4, 6);
+    expect(zoomMap(PLAN, back, 0.5, back, aspect, fit * 1.4).distance).toBeCloseTo(fit * 1.4, 6);
     // Une distance la plus lointaine plus proche que l'île entière ne l'empêche pas de se voir entière.
-    expect(clampMap(back, aspect, fit / 2).distance).toBeCloseTo(fit, 6);
+    expect(clampMap(PLAN, back, aspect, fit / 2).distance).toBeCloseTo(fit, 6);
   });
 });
 
@@ -491,7 +495,7 @@ describe('La Carte avec le rivage nord (lot L7)', () => {
     beacons: [140, 84], ferry: [150, 84],
   };
   const narrow = { w: 150, h: 84 };
-  const labelsOn = (w: number, h: number, view = mapStart(w / h)): MapLabel[] => {
+  const labelsOn = (w: number, h: number, view = mapStart(PLAN, w / h)): MapLabel[] => {
     const pose = mapPose(view);
     const at = (p: Vec3) => screenOf(pose, p, w, h);
     const archives = placeById('archives').center;
@@ -531,14 +535,14 @@ describe('La Carte avec le rivage nord (lot L7)', () => {
       // hors de la zone sur tablette (plus de 500 px de haut).
       const inside = (l: MapLabel) => l.x > 100 && l.x < w - 100 && l.y > 64 && l.y < h - 24;
       const ground = PLACES.filter((p) => open.has(p.id)).map((p) => p.center);
-      const chosen = reframeMap(w / h, [...ground, PORT_MAP_POINT], (v) => {
+      const chosen = reframeMap(PLAN, w / h, [...ground, PORT_MAP_POINT], (v) => {
         const all = labelsOn(w, h, v);
         const shown = all.filter(inside);
         const gone = all.filter((l) => l.kind !== 'keo' && !inside(l)).reduce((n, l) => n + (l.kind === 'open' ? 100 : h > 500 ? 1 : 0), 0);
         const spots = layoutMapLabels(shown, [], { width: w, height: h }, false);
         return gone + 100 * spots.filter((s, i) => shown[i].kind === 'open' && !s.name).length;
       });
-      const view = clampMap(chosen, w / h, chosen.distance);
+      const view = clampMap(PLAN, chosen, w / h, chosen.distance);
       const labels = labelsOn(w, h, view).filter((l) => l.kind !== 'closed' || inside(l));
       for (const l of labels) {
         expect(l.x, l.id).toBeGreaterThan(0);

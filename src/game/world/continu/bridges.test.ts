@@ -4,11 +4,17 @@
 import { describe, expect, it } from 'vitest';
 import { BRIDGE, BRIDGE_TOUCH, KEO_STOP, allBridges, bridgeFacets, bridgeFloor, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen } from './bridges';
 import { linearRgb } from './geometry';
-import { LINKED_LANDS, NODE_LANDS, bridgeEdge, landById } from './lands';
+import { bridgeEdge, landById, linkedLands, nodeLands } from './lands';
 import { atNode, pathNode, pathRibbons, snapToNetwork, type NetworkPoint } from './paths';
 import { BEACONS_FLAT, BRIDGE_ABUT, COMMONS_FLAT, ENGINE_FLAT, MANGROVE_FLAT, NORTH_FLATS, OBSERVATORY_FLAT, PATH_EDGES, RUINS_FLAT, SALT_FLAT, SHIPYARD_FLAT, placeById } from './plan6e';
 import { STRAIT_BANK, buildHeightField, heightAt, heightOnMesh, landDistance, straitClearance } from './terrain';
 import { shallowness } from './sea';
+import { planFor } from './levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
+const LINKED_LANDS = linkedLands(PLAN);
+const NODE_LANDS = nodeLands(PLAN);
 
 const field = buildHeightField();
 const ground = (x: number, z: number) => heightOnMesh(field, x, z);
@@ -46,7 +52,7 @@ describe('Les bras de mer', () => {
           break;
         }
     });
-    const bridges = LINKED_LANDS.map((l) => PATH_EDGES[bridgeEdge(l)].join('–'));
+    const bridges = LINKED_LANDS.map((l) => PATH_EDGES[bridgeEdge(PLAN, l)].join('–'));
     expect(wet.filter((e) => !bridges.includes(e)).sort()).toEqual(['digue–ponton', 'lar-4–lar-5', 'lar-5–ferry', 'phare–digue', 'phare–port-quai', 'ponton–quais', 'sel-1–sel-2', 'tur-1–tur-2'].sort());
     // Le ruban des chemins s'arrête au début des culées : aucun de ses sommets au-dessus d'un bras de mer.
     const f = pathRibbons(ground);

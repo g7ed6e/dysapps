@@ -5,19 +5,24 @@ import { EMPTY_STATE, type GameState } from '../../engine/state';
 import { getBridge, reachableIslands } from '../../world/archipelago';
 import { ensureLands, payLand } from '../../world/arrange';
 import { PLACES, placeById, type PlaceId } from '../../world/continu/plan6e';
-import { START_LAND, landById, landOf, type LandId } from '../../world/continu/lands';
+import { landById, type LandId, landOf, startLandOf } from '../../world/continu/lands';
 import { gridLand, gridLands, openWorldLands } from './landLinks';
+import { planFor } from '../../world/continu/levelPlan';
+
+/** Le plan du 6e, le seul enregistré (GD-22). */
+const PLAN = planFor('6e');
+const START_LAND = startLandOf(PLAN);
 
 const islandOf = (id: PlaceId) => placeById(id).island;
 const openIn = (state: GameState) => reachableIslands(state.world.links);
 const landOpen = (state: GameState, land: LandId) => landById(land).places.every((id) => [...openIn(state)].includes(islandOf(id) as never));
 const withStock = (n: number, links: string[] = []): GameState => ({ ...EMPTY_STATE, stock: { 'french-6e-letter-confusion': n }, world: { ...EMPTY_STATE.world, links } });
-const ensure = (state: GameState, played: readonly PlaceId[] = []) => ensureLands(state, gridLands(), played.map((id) => islandOf(id) as never));
+const ensure = (state: GameState, played: readonly PlaceId[] = []) => ensureLands(state, gridLands(PLAN), played.map((id) => islandOf(id) as never));
 const pay = (state: GameState, land: LandId) => payLand(state, gridLand(land));
 
 describe('Ce que le monde montre des terres', () => {
   it('ce que le monde montre : au départ, les quatre terres fermées, le Large et les Crêtes en attente', () => {
-    const lands = openWorldLands([], []);
+    const lands = openWorldLands(PLAN, [], []);
     expect(lands.closed).toEqual(['couchant', 'large', 'levant', 'cretes']);
     expect(lands.waiting).toEqual(['large', 'cretes']);
     expect(lands.suggested).toBeNull();
@@ -28,9 +33,9 @@ describe('Ce que le monde montre des terres', () => {
     const id = 'french-6e-phonology-life-earth-sciences-6e-living-world';
     const to = PLACES.find((p) => p.island === getBridge(id)!.to)!.id;
     expect(landOf(to)).toBe('couchant');
-    expect(openWorldLands([], [], id).suggested).toBe('couchant');
+    expect(openWorldLands(PLAN, [], [], id).suggested).toBe('couchant');
     // Une liaison entre deux lieux fermés n'ouvre rien : aucun pont suggéré.
-    expect(openWorldLands([], [], 'history-6e-antiquity-geography-6e-living').suggested).toBeNull();
+    expect(openWorldLands(PLAN, [], [], 'history-6e-antiquity-geography-6e-living').suggested).toBeNull();
   });
 
   it('la Pointe : le Phare et les Quais ouverts dans la grille, la Halle et le Chantier naval offerts à l’ouverture', () => {
