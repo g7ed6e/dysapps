@@ -170,7 +170,7 @@ const calmed = (p: Vec2, keo: Vec2): number => ease((distance(p, keo) - WILDLIFE
 const yawOf = (d: Vec2): number => Math.atan2(-d.z, d.x);
 
 /**
- * Le crocodile d'une place : dans l'eau, il flotte, seuls le dos et les yeux au-dessus, et dérive lentement le long du
+ * Le crocodile d'une place : dans l'eau, il flotte, le dos, la tête et les yeux au-dessus, et dérive lentement le long du
  * chenal ; sur la rive, il se dore, tourné vers l'eau, sans bouger. Immobile quand Kéo est près et avec « Réduire les
  * animations ».
  */
@@ -183,7 +183,7 @@ export function crocPose(spot: number, t: number, still: boolean, keo: Vec2, gro
     return { x, y: Math.max(0, ground({ x, z })), z, yaw: yawOf({ x: -s.toLand.x, z: -s.toLand.z }), pitch: 0, form: 'croc' };
   }
   const off = still ? 0 : WILDLIFE_5E.crocDrift * Math.sin((2 * Math.PI * t) / WILDLIFE_5E.crocTurn + phase(spot, 1) * 6) * calmed(s.at, keo);
-  return { x: s.at.x + s.along.x * off, y: -0.2, z: s.at.z + s.along.z * off, yaw: yawOf({ x: s.along.x * way, z: s.along.z * way }), pitch: 0, form: 'croc' };
+  return { x: s.at.x + s.along.x * off, y: -0.1, z: s.at.z + s.along.z * off, yaw: yawOf({ x: s.along.x * way, z: s.along.z * way }), pitch: 0, form: 'croc' };
 }
 
 /**
@@ -246,10 +246,14 @@ export function wildlifeGroups5e(ground: (p: Vec2) => number = heightAt5e): Crit
   const at = (i: number) => all[i].at;
   const S = WILDLIFE_5E.slots;
   const needles = jackdawNeedles();
+  // Les crocodiles : dans l'eau, ou sur une rive d'en face des chemins, une sur deux ; les crabes prennent les autres rives
+  // (à douze unités au moins : jamais deux bêtes l'une sur l'autre).
+  const crocSpots = where('frondaisons', null, (s) => s.water || pathDistance(s.at) >= WILDLIFE_5E.crocClearOfPaths).filter((i) => all[i].water || i % 2 === 0);
   return [
-    // Les Frondaisons : les crocodiles, dans l'eau ou sur la rive d'en face des chemins ; les crabes de palétuvier.
-    { form: 'croc', slots: S.crocs, perGroup: 1, spots: where('frondaisons', null, (s) => s.water || pathDistance(s.at) >= WILDLIFE_5E.crocClearOfPaths), at, pose: (spot, _s, t, still, keo) => [crocPose(spot, t, still, keo, ground)] },
-    { form: 'mangroveCrab', slots: S.crabs, perGroup: WILDLIFE.perGroup.crabs, spots: where('frondaisons', false), at, pose: (spot, _s, t, still, keo) => crabsOn(all[spot].at, all[spot].toLand, spot, t, still, keo, 'mangroveCrab', ground, WILDLIFE.perGroup.crabs) },
+    // Les Frondaisons : les crocodiles, dans l'eau ou sur la rive d'en face des chemins ; les crabes de palétuvier, sur
+    // les autres rives.
+    { form: 'croc', slots: S.crocs, perGroup: 1, spots: crocSpots, at, pose: (spot, _s, t, still, keo) => [crocPose(spot, t, still, keo, ground)] },
+    { form: 'mangroveCrab', slots: S.crabs, perGroup: WILDLIFE.perGroup.crabs, spots: where('frondaisons', false).filter((i) => !crocSpots.includes(i)), at, pose: (spot, _s, t, still, keo) => crabsOn(all[spot].at, all[spot].toLand, spot, t, still, keo, 'mangroveCrab', ground, WILDLIFE.perGroup.crabs) },
     // Les Roselières : les hérons au bord de l'eau, les poissons qui sautent.
     { form: 'heron', slots: S.herons, perGroup: 1, spots: where('roselieres', false), at, pose: (spot, _s, t, still, keo) => [waderPose(spot, 0, t, still, keo, 'heron', ground)] },
     { form: 'fish', slots: S.fish, perGroup: 1, spots: where('roselieres', true), at, pose: (spot, slot, t, still) => [fishOn(all[spot].at, all[spot].toLand, slot, t, still, S.fish)] },
@@ -326,10 +330,12 @@ export function allCritterForms(): Record<CritterForm, Facets> {
     croc: crocFacets(),
     mangroveCrab: crabFacets(...MANGROVE_CRAB),
     heron: waderFacets(0x9aa8b0, 0x7f8d96, 0xb7c2c7, 0xd9a441, 0x9a8a62, 1),
-    egret: waderFacets(0xf0efe6, 0xd8dad2, 0xf6f5ee, 0xe8c040, 0x8a8a70, 0.75),
-    // Le choucas : gris ardoise (jamais presque noir), la mouette pour forme.
-    jackdaw: birdFacets(false, 0x7d8796, 0x5e6878),
-    jackdawPerched: birdFacets(true, 0x7d8796, 0x5e6878),
+    // L'aigrette, d'un blanc crème chaud : un blanc pur se perdait dans la brume des terres fermées.
+    egret: waderFacets(0xe9dcbc, 0xcdbf9c, 0xf1e6ca, 0xe8b23c, 0x8a8a70, 0.75),
+    // Le choucas : gris ardoise clair, la mouette pour forme ; plus sombre, il se lisait presque noir à contre-jour sur le
+    // ciel (captures du 19 octobre 2026).
+    jackdaw: birdFacets(false, 0xaab3c0, 0x8e98a6),
+    jackdawPerched: birdFacets(true, 0xaab3c0, 0x8e98a6),
   };
   return forms;
 }

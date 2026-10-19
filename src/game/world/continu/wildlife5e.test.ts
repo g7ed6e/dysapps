@@ -15,6 +15,8 @@ describe('La vie animale du 5e (piste « Ambiance par terre »)', () => {
     for (const g of groups) expect(g.spots.length, g.form).toBeGreaterThan(4);
     const lands = { croc: 'frondaisons', mangroveCrab: 'frondaisons', heron: 'roselieres', fish: 'roselieres', egret: 'contreforts' } as const;
     for (const [form, land] of Object.entries(lands)) for (const i of group(form).spots) expect(spots[i].land).toBe(land);
+    // Jamais un crabe à la place d'un crocodile.
+    expect(group('mangroveCrab').spots.filter((i) => group('croc').spots.includes(i))).toEqual([]);
     for (const s of spots) {
       if (s.water) expect(landDistance5e(s.at)).toBeLessThan(-3.5);
       else {
