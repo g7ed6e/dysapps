@@ -9,7 +9,8 @@ import { boundsOf, placeFacets, type Facets } from './facets';
 import type { Vec3 } from './geometry';
 import { placeArt } from './northShore';
 import { pathNode } from './paths';
-import { isSixthPlace, placeById, type PlaceId } from './levelPlan';
+import { NETWORK_5E } from './paths5e';
+import { hasScenette, levelOfPlace, placeById, type PlaceId } from './levelPlan';
 import { drawPieces, modelOfPlace, ruinOf, type PlacePiece } from './places';
 import { scenetteExit } from './scenette';
 import { standingHeight } from './terrain';
@@ -87,7 +88,7 @@ export const WHOLE: PartShape = [
  * abords : sa trace d'Information est au bout du ponton) ; le platelage de la Mangrove (le corps, lot L8a), les abords
  * des Ruines (lot L8b), la terrasse de l'Observatoire (les abords, lot L8c), la toiture de la Halle (le haut, lot L8d).
  * Tant que cette étape n'est pas posée, la trace attend : rien ne flotte dans le vide. Les lieux du 5e n'ont pas encore
- * de trace (GD-22, lot 2).
+ * de trace, sauf la Montée (GD-22, lot 3).
  */
 const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   phare: 2,
@@ -109,6 +110,8 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   // Le large (lot L9) : les abords, dans le fichier de chaque lieu.
   beacons: placeArt('beacons')!.traceStage,
   ferry: placeArt('ferry')!.traceStage,
+  // Le 5e (GD-22, lot 3) : la Montée, son haut (./montee5e.ts).
+  montee: placeArt('montee')!.traceStage,
 };
 
 /**
@@ -148,10 +151,16 @@ export function poseFocus(place: PlaceId, ground: (x: number, z: number) => numb
  */
 const POSE_VIEW = { pitch: 0.4, aspect: 4 / 3, margin: 0.06, bottom: 0.14, min: 8, max: 40 } as const;
 
+/** La porte d'un lieu, sur le réseau des chemins de son niveau. */
+const doorOf = (place: PlaceId) => {
+  const id = placeById(place).door;
+  return levelOfPlace(place) === '5e' ? NETWORK_5E.pathNode(id).at : pathNode(id).at;
+};
+
 /** La direction (au sol, depuis le lieu) d'où la caméra de la pose le regarde : sa porte, ramenée vers le sud. */
 export function poseSide(place: PlaceId): { x: number; z: number } {
   const p = placeById(place);
-  const door = pathNode(p.door).at;
+  const door = doorOf(place);
   const dx = door.x - p.center.x,
     dz = door.z - p.center.z;
   const l = Math.hypot(dx, dz) || 1;
@@ -213,8 +222,8 @@ const KEO_HALF = 0.55;
  * l'image) : à la porte du lieu (on y arrive), ou là où sa scénette le laisse (scenette.ts, `scenetteExit`).
  */
 export function keoSpots(place: PlaceId, ground: (x: number, z: number) => number): number[] {
-  const spots = [pathNode(placeById(place).door).at];
-  const exit = isSixthPlace(place) ? scenetteExit(place) : null;
+  const spots = [doorOf(place)];
+  const exit = hasScenette(place) ? scenetteExit(place) : null;
   if (exit) spots.push(exit.at);
   const out: number[] = [];
   for (const s of spots) {

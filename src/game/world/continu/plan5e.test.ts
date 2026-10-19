@@ -13,7 +13,7 @@ import { modelOfPlace } from './places';
 import { NETWORK_5E, PATH_MAP_EDGE, pathMapEdges5e, pathRibbons5e, quayFacets } from './paths5e';
 import { COAST_5E, COLORS_5E, DEPARTURE_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, UPPER_PLACES_5E } from './plan5e';
 import { COLORS_6E } from './plan6e';
-import { MONTEE_HEIGHT } from './ruins5e';
+import { MONTEE_HEIGHT } from './montee5e';
 import { HEIGHT_LIGHT_5E, HORIZON_COLOR_5E, LIGHT_5E, SKY_OF, skyColorAt, skyDome } from './sky';
 import { SEA_TEXTURE, WATER_TONES_5E, seaPixels5e, waterTone5e } from './sea';
 import { FOREST_COLORS, buildHeightField5e, channelClearance, groundFar5e, groundOn5e, heightAt5e, landDistance5e, onPlateau, plateauShare, tileFacets5e, tileFlora5e, tileGround5e } from './terrain5e';
@@ -45,9 +45,10 @@ describe('Le plan du 5e', () => {
     expect(DEPARTURE_5E.at.z).toBeGreaterThan(0);
   });
 
-  it('le prix d’une terre : celui d’une liaison du 5e par lieu (10, 15, 25)', () => {
+  it('le prix d’une terre : celui d’une liaison du 5e par lieu, l’Oracle en option ne compte pas (10, 15, 20)', () => {
     expect(PLAN.pricePerPlace).toBe(LINK_PRICE['5e']);
-    expect(LINKED.map(landPrice)).toEqual([10, 15, 25]);
+    expect(PLAN.unpriced).toEqual(['oracle']);
+    expect(LINKED.map(landPrice)).toEqual([10, 15, 20]);
   });
 
   it('sans ses trois passages, le réseau fait exactement les quatre terres', () => {

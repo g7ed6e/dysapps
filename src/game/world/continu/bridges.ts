@@ -6,7 +6,7 @@
 // 1,9 au-dessus de l'eau, ses garde-corps, une lanterne de chaque côté de chaque culée ; Kéo marche sur la pierre et
 // sur le tablier (`bridgeFloor`). Tout entre dans le maillage des lieux, sans appel de plus ; sur la Carte, le pont se
 // dessine aussi en trait double, distinct d'un chemin. Code pur.
-import { FacetBuilder, mergeFacets, type Facets } from './facets';
+import { FacetBuilder, boundsOf, mergeFacets, placeFacets, type Facets } from './facets';
 import { distance, type Vec2 } from './geometry';
 import { bridgeEdge, firstClosed, isLinkedLand, linkedLands, nodeLands, planOfLand, startLandOf, type LinkedLand } from './lands';
 import { planFor, type LevelPlan } from './levelPlan';
@@ -177,15 +177,27 @@ export function bridgeFloor(x: number, z: number, closed: readonly LinkedLand[],
     const dx = x - s.near.x;
     const dz = z - s.near.z;
     const d = dx * s.dir.x + dz * s.dir.z;
-    if (d < s.abut[0] || d > s.abut[1]) continue;
     const v = Math.abs(-dx * s.dir.z + dz * s.dir.x);
     if (isCabin(land)) {
-      // La cabine reliée : Kéo monte sur son rail, en ligne droite de son pied à son haut, jamais sous le sol.
-      if (closed.includes(land) || v > CABIN.width / 2 + 0.2) continue;
-      const y = Math.max(cabinRail(s, d), standingHeight(worldOf(land).height({ x, z })));
+      // La cabine reliée : Kéo se tient sur le plancher de la caisse, de l'arrêt du pied à celui du haut, jamais sous
+      // le sol (GD-22, lot 3 : il y monte, la caisse roule).
+      const stops = cabinStops(s);
+      // Ses deux gares, cabine reliée ou non : leur dalle de bois (`cabinStations`), où Kéo se tient dessus.
+      const [, , sl] = CABIN.station;
+      if (v <= CABIN.station[0] / 2) {
+        const station = d >= s.abut[0] - sl && d < stops.bottom - CABIN_CAR.half ? s.base[0] : d > s.abut[1] && d <= s.abut[1] + sl ? s.base[1] : null;
+        if (station !== null) {
+          const y = station + CABIN.station[1];
+          top = top === null ? y : Math.max(top, y);
+          continue;
+        }
+      }
+      if (closed.includes(land) || d < stops.bottom - CABIN_CAR.half || d > stops.top + CABIN_CAR.half || v > CABIN.width / 2 + 0.2) continue;
+      const y = Math.max(cabinCarFloor(s, Math.min(stops.top, Math.max(stops.bottom, d))), standingHeight(worldOf(land).height({ x, z })));
       top = top === null ? y : Math.max(top, y);
       continue;
     }
+    if (d < s.abut[0] || d > s.abut[1]) continue;
     if (v > BRIDGE.abutHalf) continue;
     let y: number | null = null;
     if (d <= s.water[0] + BRIDGE.over) y = abutTop(s, 0, d);
@@ -462,18 +474,24 @@ export function bridgeParts(land: LinkedLand): BridgeParts {
   return { piles, deck: deck.build(), rails: b.build() };
 }
 
+/** Où attend la caisse de la cabine : au pied, en haut, ou nulle part (elle roule, dans le maillage de la pose). */
+export type CabinCar = 'bas' | 'haut' | null;
+
 /**
  * Un pont pas encore rebâti (`before`) : les deux culées ; de chaque côté, un départ d'arche brisé, plus court côté
  * terre fermée ; deux moignons debout, de la section des piles, à leur place, cassés en biais. Rebâti : les culées, les
  * piles maçonnées, le tablier de planches, les garde-corps et les quatre lanternes (`bridgeParts`). Un seul maillage,
  * réuni à celui des lieux.
  */
-export function bridgeFacets(land: LinkedLand, built: boolean): Facets {
+export function bridgeFacets(land: LinkedLand, built: boolean, car: CabinCar = 'bas', open = false): Facets {
   const s = bridgeSite(land);
   if (isCabin(land)) {
     if (!built) return fallenCabin(s);
     const parts = cabinParts(s);
-    return mergeFacets([cabinStations(s), ...parts.piles, parts.deck, parts.rails]);
+    // La caisse, à l'arrêt où elle attend (au pied, ou en haut), ou nulle part pendant un trajet (la vue la fait rouler) ;
+    // en haut, ouverte (sans poteaux ni toit) quand la caméra s'en approche (`open`, cabinRide.ts, `cabinCarOpen`).
+    const box = car === 'bas' ? parts.rails : car === 'haut' ? carAt(s, cabinStops(s).top, !open) : null;
+    return mergeFacets([cabinStations(s), ...parts.piles, parts.deck, ...(box ? [box] : [])]);
   }
   if (built) {
     const parts = bridgeParts(land);
@@ -538,8 +556,13 @@ export function bridgeMapMark(land: LinkedLand): Facets {
  */
 const CABIN = { width: 2.4, gauge: 0.9, rail: 0.22, trestle: 5, box: [2.2, 2, 2.6], station: [4.2, 0.5, 4] } as const;
 
-/** Les couleurs de la cabine : le bois des chevalets et des gares, le fer des rails (un gris chaud), la caisse de bronze et son toit. */
-const CABIN_COLORS = { wood: 0xa9784a, woodTop: 0xc6955f, rail: 0x7d7468, body: 0x9c8452, roof: 0x6f8089, broken: 0x8a8273 } as const;
+/**
+ * Les couleurs de la cabine : le bois des chevalets, des gares et du plancher de la caisse, le fer des rails (un gris
+ * chaud), la caisse de bronze et son toit. Le bois est celui du rail neuf de la Montée (montee5e.ts, `newWood` et
+ * `newShade`) : sous la lumière chaude du 5e, un brun désaturé autour de #A87A50 à l'écran (seconde relecture du lot 3 :
+ * #C6955F et #A9784A y donnaient un orange vif) ; l'orange reste aux lanternes et à la lueur.
+ */
+const CABIN_COLORS = { wood: 0x8c766a, woodTop: 0xa68672, rail: 0x7d7468, body: 0x9c8452, roof: 0x6f8089, broken: 0x8a8273 } as const;
 
 /** Le dessus du rail de la cabine à `d` unités de `near` : en ligne droite du pied (sur le sol) au haut (sur le plateau). */
 function cabinRail(s: BridgeSite, d: number): number {
@@ -586,21 +609,110 @@ function cabinTrack(rails: FacetBuilder, posts: FacetBuilder, s: BridgeSite, fro
   }
 }
 
-/** La caisse de la cabine, posée à `d` sur le rail, ou couchée à côté (`lying`). */
-function cabinBox(b: FacetBuilder, s: BridgeSite, d: number, lying: boolean): void {
+/**
+ * La caisse de la cabine (GD-22, lot 3 : une seule caisse, celle du passage) : un plancher toujours de niveau, ouvert aux
+ * deux bouts (Kéo y entre au pied, en ressort en haut), deux murets sur les côtés, quatre poteaux et un toit à deux pans ;
+ * dessous, son châssis en coin, qui épouse la pente du rail. `half` : sa demi-longueur le long du rail ; `floor` : le
+ * plancher au-dessus du rail, à son bout du haut ; `wall`, `posts` : la hauteur des murets et des poteaux, sous le toit
+ * (première relecture du lot 3 : la tête de Kéo, 2,4 unités debout, passait dans le toit ; il y tient avec une demi-unité
+ * de marge, `KEO_ROOM`).
+ */
+export const CABIN_CAR = { half: 0.8, width: 2, floor: 0.3, plank: 0.12, wall: 0.85, posts: 2.95 } as const;
+
+/** La hauteur de Kéo debout dans la caisse (ses cheveux compris) : le toit commence au moins une demi-unité plus haut. */
+export const KEO_ROOM = 2.45;
+
+/** Le haut d'un rail par unité de longueur : la pente de la cabine. */
+const cabinSlope = (s: BridgeSite): number => (s.base[1] - s.base[0]) / (s.abut[1] - s.abut[0]);
+
+/**
+ * Le plancher de la caisse dont le milieu est à `d` sur la ligne de la cabine : au-dessus du rail à son bout du haut
+ * (le rail ne la traverse jamais) ; au pied, posée sur la gare, au ras du sol.
+ */
+export function cabinCarFloor(s: BridgeSite, d: number): number {
+  return cabinRail(s, d + CABIN_CAR.half) + CABIN_CAR.floor;
+}
+
+/**
+ * Les deux arrêts de la caisse, sur la ligne de la cabine : au pied, son bout du haut au départ du rail (elle repose sur
+ * la gare) ; en haut, son bout du haut à la fin du rail, contre la gare du plateau.
+ */
+export function cabinStops(s: BridgeSite): { bottom: number; top: number } {
+  return { bottom: s.abut[0] - CABIN_CAR.half + 0.1, top: s.abut[1] - CABIN_CAR.half };
+}
+
+/** Le point de la ligne de la cabine à `d` (son axe). */
+export const cabinPoint = (s: BridgeSite, d: number): Vec2 => frame(s)(d, 0);
+
+/** Le cap de la caisse (son avant vers le haut du rail), comme celui d'un objet posé (`placeFacets`). */
+export const cabinYaw = (s: BridgeSite): number => Math.atan2(s.dir.x, s.dir.z);
+
+/**
+ * La caisse seule, dans son repère : le milieu de son plancher en 0, son avant (le haut du rail) vers +z. Son châssis
+ * descend jusqu'au rail, au bout du bas, selon la pente `slope`. Environ 150 triangles.
+ */
+function carFacets(slope: number, roof: boolean): Facets {
+  const b = new FacetBuilder();
+  const { half, width, plank, wall, posts } = CABIN_CAR;
+  const w = width / 2;
+  const col = CABIN_COLORS;
+  // Le plancher, de niveau.
+  b.box({ x: 0, y: -plank, z: 0 }, [width, plank, 2 * half], col.wood, col.woodTop);
+  // Le châssis : deux longerons en pente sous chaque rail, du bout du haut (au ras du rail) au bout du bas (plus bas), et
+  // les montants qui portent le plancher au bout du bas.
+  const drop = slope * 2 * half;
+  for (const v of [-CABIN.gauge, CABIN.gauge]) {
+    b.beam({ x: v, y: -plank - 0.02, z: half }, { x: v, y: -plank - drop, z: -half }, 0.16, col.rail);
+    b.beam({ x: v, y: -plank, z: -half + 0.08 }, { x: v, y: -plank - drop, z: -half + 0.08 }, 0.16, col.wood);
+  }
+  // Les murets des deux côtés : la porte est aux deux bouts.
+  for (const x of [-w + 0.06, w - 0.06]) b.box({ x, y: 0, z: 0 }, [0.12, wall, 2 * half], col.body, col.woodTop);
+  // Les quatre poteaux et le toit ; sans eux, la caisse ouverte de la gare du haut (`cabinCarOpen`).
+  if (!roof) return b.build();
+  for (const x of [-w + 0.06, w - 0.06]) for (const z of [-half + 0.06, half - 0.06]) b.box({ x, y: 0, z }, [0.12, posts, 0.12], col.wood);
+  b.gableRoof({ x: 0, y: posts, z: 0, yaw: Math.PI / 2 }, 2 * half + 0.3, width + 0.3, 0.55, col.roof, col.body);
+  return b.build();
+}
+
+const cars = new Map<string, Facets>();
+
+/** La caisse de la cabine d'une terre, dans son repère (faite une fois) : la vue la pose et la fait rouler. `roof` : avec ses poteaux et son toit. */
+export function cabinCarFacets(land: LinkedLand, roof = true): Facets {
+  const k = `${land}|${roof}`;
+  let f = cars.get(k);
+  if (!f) cars.set(k, (f = carFacets(cabinSlope(bridgeSite(land)), roof)));
+  return f;
+}
+
+/** La caisse posée à `d` sur la ligne de la cabine, dans le monde. */
+function carAt(s: BridgeSite, d: number, roof = true): Facets {
+  const p = cabinPoint(s, d);
+  return placeFacets(cabinCarFacets(s.land, roof), { x: p.x, y: cabinCarFloor(s, d), z: p.z, yaw: cabinYaw(s) });
+}
+
+/** La caisse qui attend à sa gare (`bas` ou `haut`), dans le monde, avec son toit ou ouverte. */
+export function cabinCarParked(land: LinkedLand, car: 'bas' | 'haut', roof = true): Facets {
+  const s = bridgeSite(land);
+  const stops = cabinStops(s);
+  return carAt(s, car === 'bas' ? stops.bottom : stops.top, roof);
+}
+
+/**
+ * La boîte de la caisse qui attend à sa gare (`bas` ou `haut`), dans le monde : la vue en fait la cible d'un toucher (la
+ * caisse touchée lance le trajet, comme le bouton ; première relecture du lot 3).
+ */
+export function cabinCarBox(land: LinkedLand, car: 'bas' | 'haut'): { min: [number, number, number]; max: [number, number, number] } {
+  return boundsOf(cabinCarParked(land, car));
+}
+
+/** La caisse de la ruine, couchée à côté du rail au pied. */
+function lyingBox(b: FacetBuilder, s: BridgeSite, d: number): void {
   const at = frame(s);
   const yaw = Math.atan2(s.dir.x, s.dir.z);
   const [w, h, l] = CABIN.box;
-  if (lying) {
-    const p = at(d, CABIN.width + 1.2);
-    const y = worldOf(s.land).height(p) - 0.3;
-    b.box({ x: p.x, y, z: p.z, yaw: yaw + 0.5, pitch: 0.25 }, [h, w, l], CABIN_COLORS.body, CABIN_COLORS.broken);
-    return;
-  }
-  const p = at(d, 0);
-  const y = cabinRail(s, d) + 0.25;
-  b.box({ x: p.x, y, z: p.z, yaw }, [w, h, l], CABIN_COLORS.body);
-  b.gableRoof({ x: p.x, y: y + h, z: p.z, yaw: yaw + Math.PI / 2 }, l + 0.3, w + 0.3, 0.7, CABIN_COLORS.roof, CABIN_COLORS.body);
+  const p = at(d, CABIN.width + 1.2);
+  const y = worldOf(s.land).height(p) - 0.3;
+  b.box({ x: p.x, y, z: p.z, yaw: yaw + 0.5, pitch: 0.25 }, [h, w, l], CABIN_COLORS.body, CABIN_COLORS.broken);
 }
 
 /** La cabine reliée, sans ses gares : les chevalets (`piles`), les rails (`deck`), la caisse au pied (`rails`). */
@@ -608,9 +720,7 @@ function cabinParts(s: BridgeSite): BridgeParts {
   const rails = new FacetBuilder();
   const posts = new FacetBuilder();
   cabinTrack(rails, posts, s, s.abut[0], s.abut[1]);
-  const box = new FacetBuilder();
-  cabinBox(box, s, s.abut[0] + CABIN.box[2], false);
-  return { piles: [posts.build()], deck: rails.build(), rails: box.build() };
+  return { piles: [posts.build()], deck: rails.build(), rails: carAt(s, cabinStops(s).bottom) };
 }
 
 /**
@@ -625,6 +735,6 @@ function fallenCabin(s: BridgeSite): Facets {
   cabinTrack(b, posts, s, s.abut[0], s.abut[0] + span * 0.4);
   cabinTrack(b, posts, s, s.abut[0] + span * 0.75, s.abut[1]);
   b.append(posts.build());
-  cabinBox(b, s, s.abut[0] + 1, true);
+  lyingBox(b, s, s.abut[0] + 1);
   return b.build();
 }
