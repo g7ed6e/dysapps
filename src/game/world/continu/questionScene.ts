@@ -143,10 +143,11 @@ const C = {
   pitFloor: 0xa48b62,
   tentCanvas: 0xe8e0cc,
   cord: 0xe0d3b0,
-  // L'Observatoire (lot L8c, directeur artistique) : l'enduit rose pâle du tambour et son ombre, la vitre pâle et unie,
-  // les volets Bleu lagon ; la pierre des Passeurs, `passeurStone` (plus haut, la même valeur de base que places.ts).
-  plaster: 0xe3b9a3,
-  plasterShade: 0xc99a84,
+  // L'Observatoire (lot L8c, directeur artistique) : l'enduit du tambour et son ombre (les mêmes que places.ts, ramenés
+  // vers le Sable du pack), la vitre pâle et unie, les volets Bleu lagon ; la pierre des Passeurs, `passeurStone` (plus
+  // haut, la même valeur de base que places.ts).
+  plaster: 0xe0bf94,
+  plasterShade: 0xc4a074,
   bayGlass: 0xd9e6e8,
   shutter: 0x178078,
   // La Halle (lot L8d, directeur artistique) : le bronze des Passeurs (le bec de la borne), l'eau du filet et de l'auge,

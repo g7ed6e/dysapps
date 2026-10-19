@@ -138,17 +138,18 @@ const C = {
   bronze: 0x9c7a3c,
   drownedStone: 0xa8d4c0,
   digSand: 0xcdb58a,
-  // L'Observatoire (lot L8c, directeur artistique) : l'enduit rose pâle du tambour et son ombre (ni le sable chaud ni la
-  // terre cuite), le zinc clair de la coupole et ses côtes, les volets Bleu lagon ; sa table d'orientation, de la pierre
-  // des Passeurs (`passeurStone`, plus haut). La ruine :
+  // L'Observatoire (lot L8c, directeur artistique) : l'enduit du tambour et son ombre, ramenés du rose pâle vers le Sable
+  // du pack (#DAA66A ; abords de l'Observatoire, deuxième passe du directeur artistique, 18 octobre 2026 : sous le soleil
+  // chaud, le rose virait à la terre cuite), le zinc clair de la coupole et ses côtes, les volets Bleu lagon ; sa table
+  // d'orientation, de la pierre des Passeurs (`passeurStone`, plus haut). La ruine :
   // l'enduit, le zinc et les volets délavés, d'un ton moyen, jamais sombres ; la corde coupée.
-  plaster: 0xe3b9a3,
-  plasterShade: 0xc99a84,
+  plaster: 0xe0bf94,
+  plasterShade: 0xc4a074,
   zinc: 0xb7c3c8,
   rib: 0x8e9da4,
   shutter: 0x178078,
-  wornPlaster: 0xbfaa9c,
-  wornPlasterTop: 0xb09d90,
+  wornPlaster: 0xc4ad8e,
+  wornPlasterTop: 0xb59f82,
   wornZinc: 0xa9b1b3,
   wornRib: 0x9aa3a6,
   wornShutter: 0x6f9e98,

@@ -1135,8 +1135,9 @@ describe('L’Observatoire (GD-20, point 8, lot L8c)', () => {
   };
 
   it('la photographe, en peu de triangles : le haut clair, le bas du corps sombre, sa chambre de bois sur trépied à côté d’elle', () => {
-    const decor = scenetteDecor('observatory');
-    // Les deux ombres au pied (lot commun des scénettes) comprises.
+    // Sans les abords du lieu (./observatorySurroundings.ts, leur propre compte) ; les deux ombres au pied (lot commun des
+    // scénettes) comprises.
+    const decor = scenetteCore('observatory');
     expect(decor.triangles).toBeLessThan(400 + FOOT_SHADOW_TRIANGLES);
     const at = scenetteHabitant('observatory');
     // La veste lavande en haut, le pantalon gris chaud en bas (relecture de L6b : jamais un prisme clair jusqu'au sol) ;

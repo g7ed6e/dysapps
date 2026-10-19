@@ -988,6 +988,13 @@ const C = {
   // Sable du pack (#DAA66A), à la place de la pierre grise qui faisait une estrade ; ses joints et sa tranche plus bruns.
   paving: 0xd6b98e,
   pavingSide: 0xb0926a,
+  /**
+   * Les dalles de l'Observatoire, la pierre chaude claire du kit des abords (`STONE.top`) : sous le soleil rasant, les
+   * dalles chaudes du lot commun se lisaient comme une estrade brune.
+   */
+  pavingLight: 0xdcd1bc,
+  /** Le talus d'herbe sous la dalle de l'Observatoire : le tertre monte jusqu'aux dalles (un vert du kit, `grassDeep`). */
+  pavingBank: 0x82cd95,
   /** L'eau du canal des Écluses : le Lagon du pack, turquoise (directeur artistique : le bleu saturé sortait de la palette). */
   canal: COLORS_6E.lagoon,
   // La berge du canal : l'herbe, le chemin et la roche des berges du monde (COLORS_6E).
@@ -1518,16 +1525,33 @@ const PHOTO_CAMERA = { dx: 0.72, dz: 0.12, height: 0.88, body: [0.34, 0.3, 0.32]
  */
 function observatoryPaving(b: FacetBuilder): void {
   const o = floorOf('observatory');
-  const depth = sceneDepth('observatory');
-  // Sans joints (relecture de L8c-d : de chaque côté des personnages, un trait en oblique se lisait comme un bâton).
-  b.box({ x: o.x, y: o.y - depth, z: o.z + OBSERVATORY_PAVING.dz }, [2 * OBSERVATORY_PAVING.half, depth, OBSERVATORY_PAVING.depth], C.pavingSide, C.paving);
+  const P = OBSERVATORY_PAVING;
+  // Sans joints (relecture de L8c-d : de chaque côté des personnages, un trait en oblique se lisait comme un bâton). Plus
+  // d'estrade qui flotte (directeur artistique, abords de l'Observatoire, 18 octobre 2026) : le dessus des dalles, puis,
+  // à l'est, au sud et à l'ouest, un talus d'herbe qui descend en pente jusque sous l'herbe du tertre ; au nord, contre
+  // le tambour, rien. Le sentier de la porte y arrive par une marche, et des dalles éparses la fondent dans l'herbe
+  // (./observatorySurroundings.ts).
+  const x0 = o.x - P.half,
+    x1 = o.x + P.half,
+    z0 = o.z + P.dz - P.depth / 2,
+    z1 = o.z + P.dz + P.depth / 2;
+  const foot = Math.min(...[x0, x1].flatMap((x) => [z0, z1].map((z) => standingHeight(heightAt({ x, z }))))) - 0.06;
+  const s = P.slope;
+  const y = o.y;
+  b.quad([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0], C.pavingLight);
+  b.quad([x0, y, z1], [x0 - s, foot, z1 + s], [x1 + s, foot, z1 + s], [x1, y, z1], C.pavingBank);
+  b.quad([x1, y, z1], [x1 + s, foot, z1 + s], [x1 + s, foot, z0], [x1, y, z0], C.pavingBank);
+  b.quad([x0, y, z0], [x0 - s, foot, z0], [x0 - s, foot, z1 + s], [x0, y, z1], C.pavingBank);
+  // Les deux bouts nord du talus, fermés (vus de dos, à l'est et à l'ouest du tambour).
+  b.triangle([x1, y, z0], [x1 + s, foot, z0], [x1, foot, z0], C.pavingBank);
+  b.triangle([x0, y, z0], [x0, foot, z0], [x0 - s, foot, z0], C.pavingBank);
 }
 
 /**
  * La dalle de l'Observatoire : sa demi-largeur, sa profondeur, son milieu un peu au sud du point de la scène (son bord
- * nord contre le tambour, jamais dedans).
+ * nord contre le tambour, jamais dedans), l'avancée de son talus.
  */
-const OBSERVATORY_PAVING = { half: 4.6, depth: 2.35, dz: 0.32 } as const;
+const OBSERVATORY_PAVING = { half: 4.6, depth: 2.35, dz: 0.32, slope: 0.55 } as const;
 
 /**
  * Le couvreur, immobile, l'artisan qui refait la toiture de la Halle (un métier, jamais un élu) : le haut clair, sa
