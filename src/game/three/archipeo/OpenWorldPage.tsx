@@ -917,7 +917,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         </div>
         {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
         {mapOpen && !asking && (
-          <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} portName={sixth ? textes.depart?.nom : undefined} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} />
+          <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nextPlace?.id ?? null} portName={sixth ? textes.depart?.nom : undefined} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} />
         )}
         {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
             le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à

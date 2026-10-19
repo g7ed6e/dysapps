@@ -908,6 +908,24 @@
   background: #142b38;
   color: #f2dfb4;
 }
+/* La marque « suggéré » sur la Carte (consultant UX UI, seconde relecture du lot 2 du 5e : la Montée, les Radeaux, le
+   Hameau et l'Auberge se ressemblaient) : un double contour, par la forme et pas seulement la couleur, autour de la
+   pastille du prochain lieu (`aria-current="step"`) et du cadenas de la terre suggérée. Un anneau du fond uni, puis un
+   anneau de la couleur du trait, dans l'écart de 8 px gardé entre deux étiquettes ; le contour du focus, lui, reste
+   dehors. Au 6e comme au 5e. */
+.open-world-map-place.suggested {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 5px var(--text);
+}
+.open-world-map-closed .open-world-lock.suggested {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 5px #142b38;
+}
+.open-world-map-place.suggested:focus-visible {
+  outline-offset: 7px;
+}
 /* La cible du cadenas sur la Carte (consultant UX UI, lot 1 « Relier ») : 48 px au moins, par une marge invisible de 6 px
    autour du rond de 40 px (52 px), sans rien changer à son dessin ; elle ne déborde que de 6 px, moins que l'écart de 8 px
    gardé entre deux étiquettes, et ne couvre donc jamais une pastille voisine. */
@@ -1036,6 +1054,18 @@
   }
   .open-world-map-place:not([data-nom='serre']):not([data-nom='non']) {
     padding-block: 0.1rem;
+  }
+  /* Le bloc du nom garde sinon l'interligne de la page autour de sa ligne (seconde relecture du lot 2 : la pastille
+     faisait encore 65 px, 85 px avant, au plus grand texte) ; un nom sur deux lignes reprend l'interligne choisi. La
+     pastille entière prend la largeur de son nom sur une ligne, sans retour possible. */
+  .open-world-map-place:not([data-nom='serre']):not([data-nom='non']) {
+    width: max-content;
+  }
+  .open-world-map-place:not([data-nom='serre']) .open-world-map-place-name {
+    line-height: 1.2;
+  }
+  .open-world-map-place:not([data-nom='serre']) .open-world-map-lines[data-lignes='2'] {
+    line-height: var(--line-height);
   }
 }
 /* Le nom d'une terre fermée sous le cadenas de son passage (GD-22, lot 2, au 5e), et l'icône de la cabine de la Montée

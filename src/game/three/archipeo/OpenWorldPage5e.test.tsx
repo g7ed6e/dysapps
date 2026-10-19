@@ -102,3 +102,14 @@ test('une mission d’un lieu du 5e se joue sur l’écran habituel, jamais dans
   await vi.waitFor(() => expect(document.querySelector('.world-question.ecran-habituel')).not.toBeNull());
   expect(scene.world!.question).not.toHaveBeenCalledWith(expect.objectContaining({ place: 'hameau' }));
 });
+
+test('sur la Carte, la pastille du lieu que désigne la marque porte seule la marque « suggéré » (seconde relecture du lot 2)', async () => {
+  renderPage();
+  const user = userEvent.setup();
+  await user.click(await screen.findByRole('button', { name: /Carte/ }));
+  const marked = vi.mocked(scene.world!.setMark).mock.calls.at(-1)?.[0];
+  expect(marked).toBeTruthy();
+  const suggested = [...document.querySelectorAll<HTMLElement>('.open-world-map-place.suggested')].map((b) => b.dataset.lieu);
+  expect(suggested).toEqual([marked]);
+  expect(document.querySelector(`[data-lieu="${marked}"]`)).toHaveAttribute('aria-current', 'step');
+});

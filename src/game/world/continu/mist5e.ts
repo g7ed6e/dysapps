@@ -157,9 +157,9 @@ export function cliffMapSegments(): [Vec2, Vec2][] {
 }
 
 /**
- * La ligne de la falaise sur la Carte (fiche, § 6 : « le plateau dessiné avec la ligne de sa falaise ») : deux traits, un
- * sombre et un clair dessus, le long du rebord, levés au-dessus du plateau pour se lire de haut ; d'une autre forme que
- * le tiret d'un chemin et que le trait double d'un pont. Seulement sur l'île (retouche du lot 2, directeur artistique :
+ * La ligne de la falaise sur la Carte (fiche, § 6 : « le plateau dessiné avec la ligne de sa falaise ») : un trait sombre
+ * entre deux clairs (un liseré dehors, un trait au milieu), le long du rebord, levés au-dessus du plateau pour se lire de
+ * haut ; d'une autre forme que le tiret d'un chemin et que le trait double d'un pont. Seulement sur l'île (retouche du lot 2, directeur artistique :
  * le trait débordait sur la mer, aux deux bouts du plateau). Dans le maillage des lieux : aucun appel de plus.
  */
 export function cliffMapLine(): Facets {
@@ -174,14 +174,24 @@ export function cliffMapLine(): Facets {
       b.quad([a.x + nx, y + lift, a.z + nz], [c.x + nx, y + lift, c.z + nz], [c.x - nx, y + lift, c.z - nz], [a.x - nx, y + lift, a.z - nz], color);
     }
   };
-  strip(1.1, 0, CLIFF_MAP_COLORS.dark);
-  strip(0.5, 0.05, CLIFF_MAP_COLORS.light);
+  strip(CLIFF_MAP_WIDTHS.edge, 0, CLIFF_MAP_COLORS.light);
+  strip(CLIFF_MAP_WIDTHS.dark, 0.05, CLIFF_MAP_COLORS.dark);
+  strip(CLIFF_MAP_WIDTHS.core, 0.1, CLIFF_MAP_COLORS.light);
   return b.build();
 }
 
 /**
- * Les deux traits de la falaise sur la Carte : le sombre, le clair dessus (référent dys, relecture du lot 2 : contraste
- * mesuré). Sous la lumière du 5e, vus de la Carte : le trait sombre contre la pierre du plateau, 4,4:1 (contre ses
- * dalles claires, 6,5:1 ; ses taches de mousse, 3,7:1) ; le trait clair contre le sombre, 10,9:1.
+ * Les demi-largeurs des trois traits de la falaise sur la Carte, du dehors au milieu : le liseré clair, le sombre, le
+ * clair du milieu (référent dys, seconde relecture du lot 2 : le sombre seul, d'un pixel à peine, tombait à 2,6:1 contre
+ * la mousse sombre et la forêt au pied du plateau). Le liseré clair borde le trait là où le fond est sombre, le sombre
+ * là où il est clair ; chacun d'au moins un pixel sur la Carte de la tablette.
+ */
+export const CLIFF_MAP_WIDTHS = { edge: 2.4, dark: 1.6, core: 0.6 } as const;
+
+/**
+ * Les couleurs des traits de la falaise sur la Carte : le sombre, le clair (liseré et milieu) ; le sombre est aussi le
+ * liseré des chemins sur la Carte (./paths5e.ts, `pathMapEdges5e`). Mesurés sur la capture de la Carte de la tablette
+ * (référent dys, seconde relecture du lot 2) : le sombre contre la pierre du plateau, 4,8:1 ; le liseré clair contre la
+ * mousse sombre du pied, 3,9:1, contre la forêt, 5,9:1 ; le clair contre le sombre, 10,9:1.
  */
 export const CLIFF_MAP_COLORS = { dark: 0x3a362c, light: 0xefe4c8 } as const;

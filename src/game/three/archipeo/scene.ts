@@ -26,7 +26,8 @@ import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type Bridge
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { isSixthPlace, placeById, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
 import { levelWorld, type LevelWorld } from '../../world/continu/levelWorld';
-import { cliffMapLine, riftMistFacets } from '../../world/continu/mist5e';
+import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from '../../world/continu/mist5e';
+import { pathMapEdges5e } from '../../world/continu/paths5e';
 import { COLORS_5E, DEPARTURE_5E } from '../../world/continu/plan5e';
 import { onPlateau } from '../../world/continu/terrain5e';
 import { freeRoute, isWalkable, nearestWalkable, onPathCell, walkGridSteps, type WalkGrid } from '../../world/continu/freeWalk';
@@ -1482,8 +1483,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     return f;
   };
   let placesKey = '';
-  // La ligne de la falaise du 5e sur la Carte, faite une fois (rien au 6e).
-  const cliffLine: Facets = sixth ? mergeFacets([]) : cliffMapLine();
+  // La ligne de la falaise du 5e sur la Carte, et la bande sombre de ses chemins, faites une fois (rien au 6e).
+  const cliffLine: Facets = sixth ? mergeFacets([]) : mergeFacets([cliffMapLine(), pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark)]);
   /**
    * Refait le maillage des lieux si ce qu'il montre a changé : le lieu suivi à part (sauf sur la Carte), la maquette des
    * Quais et les traces cachées pendant leur scénette (la scénette a les siennes), les parties retenues par une pose ;
@@ -1530,7 +1531,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       rest.push(bridgeOf(land, closed.includes(land) ? 'tombe' : laying?.lay.land === land && !laying.tapped ? 'pose' : 'rebati'));
       if (mapView) rest.push(bridgeOf(land, 'carte'));
     }
-    // Au 5e, sur la Carte, la ligne de la falaise (GD-22, lot 2) : le bord du plateau, dans le maillage des lieux.
+    // Au 5e, sur la Carte, la ligne de la falaise (GD-22, lot 2) : le bord du plateau, et la bande sombre des chemins, dans
+    // le maillage des lieux.
     if (!sixth) {
       if (mapView) rest.push(cliffLine);
       setGeometry(placesMesh, mergeFacets(rest));

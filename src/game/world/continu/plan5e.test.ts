@@ -8,10 +8,11 @@ import { bridgeFacets, bridgeFloor, bridgeSite, clampToOpen, isCabin } from './b
 import { distance, distanceToPolyline, linearRgb, signedDistance, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
 import { planFor } from './levelPlan';
-import { CLIFF_MAP_COLORS, cliffMapLine, cliffMapSegments, riftMistFacets, riftMistSpots, RIFT_MIST } from './mist5e';
+import { CLIFF_MAP_COLORS, CLIFF_MAP_WIDTHS, cliffMapLine, cliffMapSegments, riftMistFacets, riftMistSpots, RIFT_MIST } from './mist5e';
 import { modelOfPlace } from './places';
-import { NETWORK_5E, pathRibbons5e, quayFacets } from './paths5e';
+import { NETWORK_5E, PATH_MAP_EDGE, pathMapEdges5e, pathRibbons5e, quayFacets } from './paths5e';
 import { COAST_5E, COLORS_5E, DEPARTURE_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PLATEAU, QUAY_5E, UPPER_PLACES_5E } from './plan5e';
+import { COLORS_6E } from './plan6e';
 import { MONTEE_HEIGHT } from './ruins5e';
 import { HEIGHT_LIGHT_5E, HORIZON_COLOR_5E, LIGHT_5E, SKY_OF, skyColorAt, skyDome } from './sky';
 import { SEA_TEXTURE, WATER_TONES_5E, seaPixels5e, waterTone5e } from './sea';
@@ -194,7 +195,7 @@ describe('La Carte : le trait de la falaise', () => {
       expect(signedDistance(a, COAST_5E)).toBeGreaterThan(1.5);
       expect(signedDistance(b, COAST_5E)).toBeGreaterThan(1.5);
     }
-    expect(cliffMapLine().triangles).toBe(segments.length * 4);
+    expect(cliffMapLine().triangles).toBe(segments.length * 6);
   });
 
   it('se lit sur la pierre du plateau (3:1 au moins, sous la même lumière), son trait clair sur le sombre', () => {
@@ -205,6 +206,50 @@ describe('La Carte : le trait de la falaise', () => {
     for (const ground of [COLORS_5E.stone, COLORS_5E.stoneSun, COLORS_5E.plateauMoss]) expect(contrast(CLIFF_MAP_COLORS.dark, ground), ground.toString(16)).toBeGreaterThan(3);
     expect(contrast(CLIFF_MAP_COLORS.light, CLIFF_MAP_COLORS.dark)).toBeGreaterThan(7);
     expect(luminance(linearRgb(CLIFF_MAP_COLORS.dark))).toBeGreaterThan(NOT_BLACK);
+  });
+
+  it('un liseré clair dehors : il se lit sur la mousse sombre et la forêt du pied, le sombre sur la pierre (seconde relecture du lot 2)', () => {
+    const contrast = (a: number, b: number) => {
+      const [la, lb] = [luminance(linearRgb(a)), luminance(linearRgb(b))];
+      return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+    };
+    for (const ground of [COLORS_5E.moss, COLORS_5E.mossShade, COLORS_5E.mossSun, FOREST_COLORS.canopy, FOREST_COLORS.canopyTop]) expect(contrast(CLIFF_MAP_COLORS.light, ground), ground.toString(16)).toBeGreaterThan(3);
+    // Du dehors au milieu, trois traits d'au moins 0,6 unité chacun (un pixel sur la Carte de la tablette).
+    const { edge, dark, core } = CLIFF_MAP_WIDTHS;
+    expect(edge - dark).toBeGreaterThanOrEqual(0.6);
+    expect(dark - core).toBeGreaterThanOrEqual(0.6);
+    expect(core * 2).toBeGreaterThanOrEqual(0.6);
+  });
+});
+
+describe('La Carte : le liseré sombre des chemins', () => {
+  const field = buildHeightField5e();
+  const ground = (x: number, z: number) => groundOn5e(field, x, z);
+  const edges = pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark);
+
+  it('deux bandes par morceau du ruban, hors de son sable, jamais sur l’eau, au-dessus du sol', () => {
+    expect(edges.triangles % 4).toBe(0);
+    expect(edges.triangles).toBeGreaterThan(400);
+    // Le sable du ruban s'arrête à 0,66 unité de la ligne (./paths.ts : sa demi-largeur 0,8, moins son liseré de 0,14).
+    expect(PATH_MAP_EDGE.inner).toBeGreaterThanOrEqual(0.66);
+    expect(PATH_MAP_EDGE.outer - PATH_MAP_EDGE.inner).toBeGreaterThanOrEqual(0.6);
+    const p = edges.positions;
+    for (let i = 0; i < p.length; i += 9) {
+      const x = (p[i] + p[i + 3] + p[i + 6]) / 3;
+      const y = (p[i + 1] + p[i + 4] + p[i + 7]) / 3;
+      const z = (p[i + 2] + p[i + 5] + p[i + 8]) / 3;
+      expect(y).toBeGreaterThan(0);
+      expect(y - ground(x, z)).toBeGreaterThan(-1);
+    }
+  });
+
+  it('se lit sur la pierre du plateau, l’ocre des Contreforts, et sous le sable du chemin', () => {
+    const contrast = (a: number, b: number) => {
+      const [la, lb] = [luminance(linearRgb(a)), luminance(linearRgb(b))];
+      return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+    };
+    for (const ground of [COLORS_5E.stone, COLORS_5E.stoneSun, COLORS_5E.plateauMoss, COLORS_5E.ochre]) expect(contrast(CLIFF_MAP_COLORS.dark, ground), ground.toString(16)).toBeGreaterThan(3);
+    expect(contrast(COLORS_6E.path, CLIFF_MAP_COLORS.dark)).toBeGreaterThan(7);
   });
 });
 

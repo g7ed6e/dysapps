@@ -110,3 +110,20 @@ test('au 6e, aucun triangle « en haut »', () => {
   );
   expect(container.querySelector('.open-world-map-up')).toBeNull();
 });
+
+test('le prochain lieu suggéré : sa pastille seule porte la marque (double contour) et dit qu’elle est l’étape, au 5e comme au 6e', () => {
+  const plan5 = planFor('5e');
+  const five = render(
+    <MapLabels places={plan5.places} openPlaces={placesOfLands(plan5, ['frondaisons'])} closedLands={linkedLands(plan5)} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={{}} words={words} upper={plan5.upper} nextPlace="radeaux" landNames />,
+  );
+  expect([...five.container.querySelectorAll<HTMLElement>('.open-world-map-place.suggested')].map((b) => b.dataset.lieu)).toEqual(['radeaux']);
+  expect(five.container.querySelector('[data-lieu="radeaux"]')).toHaveAttribute('aria-current', 'step');
+  expect(five.container.querySelector('[data-lieu="montee"]')).not.toHaveAttribute('aria-current');
+  five.unmount();
+  const six = render(<MapLabels places={PLAN.places} openPlaces={placesOfLands(PLAN, ['pointe'])} closedLands={LINKED_LANDS} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={states} words={words} nextPlace="phare" />);
+  expect([...six.container.querySelectorAll<HTMLElement>('.open-world-map-place.suggested')].map((b) => b.dataset.lieu)).toEqual(['phare']);
+  six.unmount();
+  // Sans prochain lieu (la suggestion est derrière un pont), aucune pastille marquée.
+  const none = render(<MapLabels places={PLAN.places} openPlaces={placesOfLands(PLAN, ['pointe'])} closedLands={LINKED_LANDS} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={states} words={words} />);
+  expect(none.container.querySelector('.open-world-map-place.suggested')).toBeNull();
+});

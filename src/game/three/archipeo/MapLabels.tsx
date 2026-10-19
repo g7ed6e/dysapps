@@ -62,6 +62,12 @@ interface Props {
    * l'icône claire ; rien, aucun.
    */
   suggested?: LinkedLand | null;
+  /**
+   * Le prochain lieu suggéré (celui que désigne la marque dans le monde : la prochaine mission, ou l'habitant de la commande
+   * prête) : sa pastille porte un double contour (consultant UX UI, seconde relecture du lot 2 du 5e : rien ne le
+   * distinguait sur la Carte) ; rien, aucun.
+   */
+  nextPlace?: PlaceId | null;
   /** L'état de chaque lieu ouvert (GD-20, lot 1) : en chantier, achevé, ou rien encore (aucune partie posée). */
   states: Readonly<Partial<Record<PlaceId, 'en-chantier' | 'restauree' | null>>>;
   /** Les mots des états, ceux de l'univers (« En chantier »). */
@@ -133,7 +139,7 @@ const UP_WORDS = ', en haut';
 /** Ce que dit la pastille de Kéo. */
 const KEO_LABEL = 'Toi : Kéo est ici';
 
-export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, states, words, portName, upper = [], landNames = false, onCrowded }: Props) {
+export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, nextPlace = null, states, words, portName, upper = [], landNames = false, onCrowded }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number; narrow?: { w: number; h: number } }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
@@ -351,9 +357,10 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
           <button
             key={p.id}
             type="button"
-            className="open-world-map-place"
+            className={`open-world-map-place${p.id === nextPlace ? ' suggested' : ''}`}
             data-lieu={p.id}
             hidden
+            aria-current={p.id === nextPlace ? 'step' : undefined}
             aria-label={`Y aller : ${p.name}${upper.includes(p.id) ? UP_WORDS : ''}${word ? `, ${word.toLowerCase()}` : ''}`}
             onClick={() => onPick(p.id)}
           >

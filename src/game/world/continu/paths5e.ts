@@ -9,6 +9,7 @@ import type { LinkedLand } from './lands';
 import { BRIDGE_ABUT } from './plan6e';
 import { COLORS_5E, LINKS_5E, PATH_EDGES_5E, PATH_NODES_5E, QUAY_5E } from './plan5e';
 import { networkRibbons, type RibbonNet } from './paths';
+import { standingHeight } from './terrain';
 import { channelClearance, plateauShare } from './terrain5e';
 
 /** Le réseau du 5e. */
@@ -113,3 +114,51 @@ export function quayFacets(): Facets {
 
 /** Les chemins du 5e : un ruban par liaison, un octogone par nœud ; et le ponton de la Lisière. */
 export const pathRibbons5e = (ground: (x: number, z: number) => number): Facets => mergeFacets([networkRibbons(RIBBONS_5E, ground), quayFacets()]);
+
+/**
+ * Le liseré des chemins du 5e sur la Carte (référent dys, seconde relecture du lot 2) : de loin, le liseré brun du
+ * sentier (`PATH_EDGE`, ./paths.ts, 0,14 unité) n'a pas un pixel et ne se lit qu'en pointillé ; le sable seul, sur la
+ * pierre du plateau et sous la brume claire des terres fermées, tombait sous 3:1. Sur la Carte seulement, une bande
+ * sombre de chaque côté du ruban, juste hors de son sable (la couleur sombre de la falaise), un rien au-dessus de lui :
+ * elle ne couvre jamais le sable, et se lit d'au moins un pixel sur la Carte de la tablette. Ni sur l'eau (le bois des
+ * pontons), ni sur les passages (le trait double des ponts et de la cabine). Dans le maillage des lieux, comme la ligne
+ * de la falaise : aucun appel de plus.
+ */
+export function pathMapEdges5e(ground: (x: number, z: number) => number, color: number): Facets {
+  const b = new FacetBuilder();
+  const { inner, outer, lift, step } = PATH_MAP_EDGE;
+  PATH_EDGES_5E.forEach(([ia, ib], edge) => {
+    const a = NETWORK_5E.pathNode(ia).at;
+    const c = NETWORK_5E.pathNode(ib).at;
+    const len = distance(a, c);
+    const n = Math.max(1, Math.ceil(len / step));
+    const dx = (c.x - a.x) / len;
+    const dz = (c.z - a.z) / len;
+    const cut = RIBBONS_5E.cut(edge);
+    const point = (d: number) => ({ x: a.x + dx * d, z: a.z + dz * d });
+    const side = (v: Vec2, y: number, o: number) => [v.x + dz * o, y, v.z - dx * o] as const;
+    for (let k = 0; k < n; k++) {
+      const d0 = (len * k) / n;
+      const d1 = (len * (k + 1)) / n;
+      const mid = point((d0 + d1) / 2);
+      if (ground(mid.x, mid.z) < 0.05) continue;
+      const spans: [number, number][] = cut ? [[d0, Math.min(d1, cut[0])], [Math.max(d0, cut[1]), d1]] : [[d0, d1]];
+      for (const [s0, s1] of spans) {
+        if (s1 - s0 < 1e-3) continue;
+        const p = point(s0);
+        const q = point(s1);
+        const y = Math.max(standingHeight(ground(p.x, p.z)), standingHeight(ground(q.x, q.z))) + lift;
+        // Les deux bandes, du côté le plus à gauche au plus à droite : le même sens de tour que la ligne de la falaise (vers le haut).
+        for (const [o0, o1] of [[inner, outer], [-outer, -inner]] as const) b.quad(side(p, y, o0), side(q, y, o0), side(q, y, o1), side(p, y, o1), color);
+      }
+    }
+  });
+  return b.build();
+}
+
+/**
+ * La bande sombre des chemins sur la Carte : de `inner` (le bord du sable du ruban, ./paths.ts, `HALF_WIDTH.path` moins
+ * son liseré) à `outer` unités de la ligne, `lift` au-dessus du sol (le ruban est à 0,06 : la bande ne passe pas sous
+ * le terrain entre deux pas), par pas de `step` (celui du ruban).
+ */
+export const PATH_MAP_EDGE = { inner: 0.66, outer: 1.4, lift: 0.3, step: 1.25 } as const;

@@ -23,9 +23,9 @@ import { bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSetting
 import { landTileCounts } from './flora';
 import { buildHeightField, heightOnMesh, tileRings } from './terrain';
 import { buildHeightField5e, groundOn5e, tileCounts5e } from './terrain5e';
-import { NETWORK_5E, pathRibbons5e } from './paths5e';
+import { NETWORK_5E, pathMapEdges5e, pathRibbons5e } from './paths5e';
 import { TERRAIN_5E } from './plan5e';
-import { cliffMapLine, riftMistFacets } from './mist5e';
+import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from './mist5e';
 import { skyDome } from './sky';
 import { veilFacets } from './veil';
 
@@ -365,15 +365,16 @@ export function openWorldCost5e(): OpenWorldCost5e[] {
 
 /**
  * La Carte du 5e, en un seul plan : le ciel, toute l'île de loin, la mer, les chemins, les lieux (deux appels, le pire),
- * le trait double des ponts et de la cabine et la ligne de la falaise (dans le maillage des lieux), la brume des terres
- * fermées, Kéo ; jamais la brume des failles.
+ * le trait double des ponts et de la cabine, la ligne de la falaise et la bande sombre des chemins (dans le maillage des
+ * lieux), la brume des terres fermées, Kéo ; jamais la brume des failles.
  */
 export function mapCost5e(): { triangles: number; calls: number } {
   const field = buildHeightField5e();
   const far = tileCounts5e(field, 'far').reduce((s, n) => s + n, 0);
-  const paths = pathRibbons5e((x, z) => groundOn5e(field, x, z)).triangles;
+  const ground = (x: number, z: number) => groundOn5e(field, x, z);
+  const paths = pathRibbons5e(ground).triangles;
   const places = placesCost5e();
-  const marks = LINKED_LANDS_5E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + cliffMapLine().triangles;
+  const marks = LINKED_LANDS_5E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + cliffMapLine().triangles + pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark).triangles;
   const veil = veilFacets(LINKED_LANDS_5E).triangles;
   return {
     triangles: SKY.triangles + far + 2 + paths + places.triangles + marks + veil + KEO.triangles,
