@@ -113,3 +113,39 @@ test('sur la Carte, la pastille du lieu que désigne la marque porte seule la ma
   expect(suggested).toEqual([marked]);
   expect(document.querySelector(`[data-lieu="${marked}"]`)).toHaveAttribute('aria-current', 'step');
 });
+
+test('la cabine de la Montée : « Monter » à côté de « Y aller » à l’arrêt, « Passer le trajet » pendant le trajet, l’arrivée dite (première relecture du lot 3)', async () => {
+  renderPage();
+  const user = userEvent.setup();
+  await screen.findByRole('button', { name: /Carte/ });
+  // Kéo à l'arrêt à la gare du pied : « Y aller » reste le bouton principal, « Monter » s'ajoute à côté.
+  act(() => scene.options!.onCabin!({ side: 'bas', riding: null }));
+  const monter = screen.getByRole('button', { name: 'Monter' });
+  expect(screen.getByRole('button', { name: /Y aller/ })).toHaveClass('primary');
+  expect(monter).not.toHaveClass('primary');
+  expect(monter).not.toHaveAttribute('aria-disabled');
+  await user.click(monter);
+  expect(scene.world!.ride).toHaveBeenCalledTimes(1);
+  // Le trajet commence : plus de bouton de cabine ; « Passer le trajet », à contraste plein, saute jusqu'à l'arrivée.
+  act(() => {
+    scene.options!.onDepart();
+    scene.options!.onCabin!({ side: null, riding: 'haut' });
+  });
+  expect(screen.queryByRole('button', { name: 'Monter' })).toBeNull();
+  const passer = screen.getByRole('button', { name: /Passer le trajet/ });
+  expect(passer).not.toHaveAttribute('aria-disabled');
+  await user.click(passer);
+  expect(scene.world!.skip).toHaveBeenCalledTimes(1);
+  expect(scene.world!.ride).toHaveBeenCalledTimes(1);
+  // La caisse arrivée : une phrase courte pour le lecteur d'écran, jamais écrite à la vue.
+  act(() => scene.options!.onCabin!({ side: null, riding: null }));
+  const said = screen.getAllByRole('status').find((s) => s.textContent === 'Tu es en haut.');
+  expect(said).toBeDefined();
+  expect(said).toHaveClass('visually-hidden');
+  // En haut, à l'arrêt : « Descendre ».
+  act(() => {
+    scene.options!.onArrive(null);
+    scene.options!.onCabin!({ side: 'haut', riding: null });
+  });
+  expect(screen.getByRole('button', { name: 'Descendre' })).toBeInTheDocument();
+});

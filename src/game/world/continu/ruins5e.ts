@@ -1,15 +1,12 @@
-// Les quatorze lieux du 5e en ruines simples (GD-22, lot 2, « toute l'île en grandes masses ») : à leur place, une
+// Treize lieux du 5e en ruines simples (GD-22, lot 2, « toute l'île en grandes masses ») : à leur place, une
 // silhouette lisible pour chacun, sans les finir (leurs étapes de chantier viendront avec leur lot). Chaque ruine est
 // dessinée dans le repère de son lieu (y = 0 au sol, sous le centre), en quelques volumes de 4 à 6 aplats : la pierre
 // des aiguilles (gris chaud moussu), le bois gris de la ruine, l'ocre des Contreforts, la mousse, le bronze éteint ; rien
 // de presque noir, rien à lire. Retouche du lot 2 (directeur artistique : « des boîtes génériques ») : chaque ruine a sa
-// hauteur et son contour propres. La Montée est la plus haute aiguille de l'île, au centre, de la famille des aiguilles
-// (./spire5e.ts) : verticale, son rail de bois sur la face sud, cassé en haut, sa cabine tombée au pied, sa lanterne
-// éteinte au bout du rail ; le Donjon, une tour carrée sur son piton de roche ; les Radeaux, des plateformes sur pieux
+// hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts) ; le Donjon, une tour carrée sur son piton de roche ; les Radeaux, des plateformes sur pieux
 // posées sur l'eau du grand chenal. Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_5E, PLACES_5E, type PlaceId5e } from './plan5e';
-import { spire, spireRadiusAt } from './spire5e';
 import { heightAt5e } from './terrain5e';
 import { standingHeight } from './terrain';
 
@@ -25,25 +22,12 @@ const C = {
   // Le bois gris de la ruine et son ombre (comme au 6e : délavé, jamais sombre).
   wood: 0x9f9279,
   woodShade: 0x86775f,
-  // Le bronze éteint de la lanterne de la Montée, et le toit d'ardoise des maisons (un gris-bleu franc).
+  // Le bronze éteint, et le toit d'ardoise des maisons (un gris-bleu franc).
   bronze: 0x9c8452,
   slate: 0x6f8089,
   // L'enduit passé des murs du Hameau et de l'Auberge.
   wall: 0xb9ae98,
 } as const;
-
-/**
- * La hauteur de la Montée au-dessus de son pied : la plus haute aiguille, qui dépasse la canopée de toute l'île (retouche
- * du lot 2 : 46 ne suffisait pas depuis la Lisière).
- */
-export const MONTEE_HEIGHT = 60;
-
-/** Le rayon du pied de la Montée, et ses pans. */
-const MONTEE_RADIUS = 7.5;
-const MONTEE_SIDES = 7;
-
-/** Le haut du rail de la Montée, en part de sa hauteur, et la hauteur où il est cassé. */
-const RAIL = { top: 0.74, broken: 0.6, gap: 1.3 } as const;
 
 /** Un tas de blocs tombés, au pied d'un mur : trois pavés de travers. */
 function rubble(b: FacetBuilder, x: number, z: number, s: number, color: number, top: number): void {
@@ -63,34 +47,6 @@ function brokenWall(b: FacetBuilder, x: number, z: number, length: number, heigh
     const h = height * (1 - k * 0.3);
     b.box({ x: x + u * c, y: SINK, z: z - u * s, yaw }, [w, h - SINK, 0.8], color, top);
   }
-}
-
-/**
- * La Montée : l'aiguille (./spire5e.ts), la plus haute ; sur sa face sud, celle que l'on voit en arrivant, le rail de la
- * cabine (deux montants de bois qui suivent la pierre), cassé aux trois cinquièmes, son bout qui pend ; au bout du rail,
- * la lanterne éteinte ; au pied, la cabine tombée, de travers, et des blocs.
- */
-function montee(b: FacetBuilder): void {
-  const H = MONTEE_HEIGHT;
-  const s = { x: 0, y: SINK, z: 0, radius: MONTEE_RADIUS, height: H - SINK, sides: MONTEE_SIDES, turn: Math.PI / 2 + Math.PI / MONTEE_SIDES };
-  spire(b, s);
-  // Le rail : deux montants, contre la face sud (z positif : un pan du fût y est tourné), de leur pied à la cassure, puis
-  // de la cassure au haut ; ils suivent la pierre qui se resserre.
-  const face = (y: number) => spireRadiusAt(s, y - SINK) * Math.cos(Math.PI / MONTEE_SIDES) + 0.3;
-  for (const x of [-0.9, 0.9]) {
-    b.beam({ x, y: SINK, z: face(SINK) }, { x, y: H * RAIL.broken, z: face(H * RAIL.broken) }, 0.45, C.woodShade);
-    b.beam({ x, y: H * RAIL.broken + RAIL.gap, z: face(H * RAIL.broken + RAIL.gap) }, { x, y: H * RAIL.top, z: face(H * RAIL.top) }, 0.4, C.wood);
-  }
-  // Le bout cassé qui pend, de biais, sous la cassure.
-  b.beam({ x: 0.9, y: H * RAIL.broken + RAIL.gap, z: face(H * RAIL.broken) + 0.3 }, { x: 2.6, y: H * RAIL.broken - 3.5, z: face(H * RAIL.broken) + 1.2 }, 0.35, C.wood);
-  // La lanterne éteinte, au bout du rail : quatre montants de bronze, son toit pointu.
-  const ty = H * RAIL.top;
-  const tz = face(ty) + 0.6;
-  for (let k = 0; k < 4; k++) b.box({ x: k % 2 ? 0.7 : -0.7, y: ty, z: tz + (k < 2 ? 0.7 : -0.5) }, [0.25, 1.6, 0.25], C.bronze);
-  b.prism({ x: 0, y: ty + 1.6, z: tz + 0.1, yaw: Math.PI / 4 }, 1.3, 0, 1.2, 4, C.bronze);
-  // La cabine tombée, au pied du rail, de travers : sa caisse de bois, son toit d'ardoise.
-  b.box({ x: 3.6, y: SINK, z: MONTEE_RADIUS + 1.6, yaw: 0.35, pitch: 0.1 }, [3.2, 2.6 - SINK, 2.6], C.woodShade, C.slate);
-  rubble(b, -5.2, MONTEE_RADIUS + 0.8, 1.8, C.shade, C.moss);
 }
 
 /** La hauteur du sol sous un lieu du 5e (là où la vue pose sa ruine). */
@@ -244,9 +200,8 @@ function oracle(b: FacetBuilder): void {
   b.box({ x: 4, y: SINK, z: -4.5, yaw: 0.7 }, [4.5, 0.9 - SINK, 1.4], C.stone, C.moss);
 }
 
-/** La ruine de chaque lieu du 5e, dessinée dans son repère. */
-export const RUINS_5E: Readonly<Record<PlaceId5e, (b: FacetBuilder) => void>> = {
-  montee,
+/** La ruine de chaque lieu du 5e sauf la Montée, finie (./montee5e.ts, lot 3), dessinée dans son repère. */
+export const RUINS_5E: Readonly<Record<Exclude<PlaceId5e, 'montee'>, (b: FacetBuilder) => void>> = {
   radeaux,
   croisee,
   instants,

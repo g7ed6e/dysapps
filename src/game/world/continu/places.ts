@@ -12,6 +12,9 @@ import { FacetBuilder, boundsOf, placeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
 import { placeArt } from './northShore';
 import type { PlaceId } from './levelPlan';
+import { placeById as placeOfAnyLevel } from './levelPlan';
+import { heightFor } from './placeGround';
+import { PATH_NODES_5E } from './plan5e';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId as PlaceId6e } from './plan6e';
 import { RUINS_5E } from './ruins5e';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
@@ -180,13 +183,14 @@ const C = {
 type Add = (stage: Stage | 'ruine', row: number, draw: (b: FacetBuilder) => void, until?: PlacePiece['until']) => void;
 
 /** Le sol sous un point du lieu (dans son repère), depuis le sol du centre ; sur l'eau, le niveau de l'eau. */
-function siteGround(id: PlaceId6e): { at(lx: number, lz: number): number; foot(lx: number, lz: number, r: number): { top: number; low: number }; water: number } {
-  const p = placeById(id);
+function siteGround(id: PlaceId): { at(lx: number, lz: number): number; foot(lx: number, lz: number, r: number): { top: number; low: number }; water: number } {
+  const p = placeOfAnyLevel(id);
+  const height = heightFor(id);
   const c = Math.cos(p.yaw),
     s = Math.sin(p.yaw);
-  const h0 = standingHeight(heightAt(p.center));
+  const h0 = standingHeight(height(p.center));
   const world = (lx: number, lz: number): Vec2 => ({ x: p.center.x + lx * c + lz * s, z: p.center.z - lx * s + lz * c });
-  const at = (lx: number, lz: number) => standingHeight(heightAt(world(lx, lz))) - h0;
+  const at = (lx: number, lz: number) => standingHeight(height(world(lx, lz))) - h0;
   return {
     at,
     // Le plus haut du sol sous un volume (rien ne s'y enfonce) et le plus bas (sa base y descend).
@@ -1885,11 +1889,11 @@ const SALT_CONES: readonly (readonly [number, number, number])[] = [
 /**
  * Un lieu du rivage nord (lot L7) : dessiné dans son fichier (placeArt.ts), son sol et sa porte lus ici, dans son repère.
  */
-function northPlace(id: PlaceId6e): (add: Add) => void {
+function northPlace(id: PlaceId): (add: Add) => void {
   return (add) => {
     const art = placeArt(id)!;
-    const c = placeById(id).center;
-    const at = PATH_NODES.find((n) => n.id === id)!.at;
+    const c = placeOfAnyLevel(id).center;
+    const at = [...PATH_NODES, ...PATH_NODES_5E].find((n) => n.id === id)!.at;
     art.model(add, siteGround(id), { x: at.x - c.x, z: at.z - c.z });
   };
 }
@@ -2499,8 +2503,8 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   // Le large (lot L9) : dessinés dans leur fichier, comme le rivage nord.
   beacons: northPlace('beacons'),
   ferry: northPlace('ferry'),
-  // Le 5e (GD-22, lot 2) : des ruines simples.
-  montee: ruinOnly(RUINS_5E.montee),
+  // Le 5e : la Montée finie (lot 3), dessinée dans son fichier ; les autres, des ruines simples (lot 2).
+  montee: northPlace('montee'),
   radeaux: ruinOnly(RUINS_5E.radeaux),
   croisee: ruinOnly(RUINS_5E.croisee),
   instants: ruinOnly(RUINS_5E.instants),
