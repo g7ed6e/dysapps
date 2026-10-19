@@ -37,21 +37,24 @@ Le module `bpy` (Python 3.11) suffit, sans écran ; les messages « EGL Error »
 
 - **Garder le brut.** Ne pas repeindre, ne pas réduire fort : 20 000 triangles gardent un ado fidèle, 8 000 passent, 3 000 cassent la forme. Le brut regarde déjà −Y : ne pas le tourner, le script l'exporte devant −X comme les modèles du jeu.
 - **La doublure.** TRELLIS double les vêtements d'une peau intérieure qui perce au moindre geste. Le script retire chaque face dont aucun rayon ne sort du modèle. Il reste 7 000 à 10 000 triangles.
-- **Les réglages** se lisent sur la planche, en hauteurs du modèle. Ceux de l'équipage (16 octobre 2026) :
+- **Les réglages** se lisent sur la planche, en hauteurs du modèle. Ceux de l'équipage du monde ouvert (19 octobre 2026) :
 
 | Ado | Réglages |
 | --- | --- |
-| Kéo | `sh_z=0.735 sh_x=0.1 hip_z=0.46` |
-| Zia | `sh_z=0.72 sh_x=0.085 buste=0.095 tt_lib=0.15` |
-| Malo (manteau long) | `menton=0.8 sh_z=0.73 sh_x=0.09 buste=0.1 tt_lib=0.15 epaule_r=0.13 jupe=0.045` |
-| La radio | `sh_x=0.095` |
-| Le naturaliste | (défauts) |
+| Kéo | `menton=0.8 sh_z=0.74 sh_x=0.1 hip_z=0.47 buste=0.115` |
+| Zia | `menton=0.76 sh_z=0.71 sh_x=0.09 hip_z=0.44 buste=0.12` |
+| Malo (manteau long) | `menton=0.8 sh_z=0.74 sh_x=0.095 buste=0.11 tt_lib=0.15 epaule_r=0.13 jupe=0.045` |
+| La radio (manches bouffantes) | `menton=0.8 sh_z=0.745 sh_x=0.1 buste=0.1` |
+| Le naturaliste | `menton=0.78 sh_z=0.73 sh_x=0.1 buste=0.115` |
 
+- **Les mains** de TRELLIS, grandes et ouvertes, encombrent la silhouette : le script les resserre vers le poignet (`main=0.8`) et, à la marche et à la course, tourne la paume vers la cuisse.
 - **Les pièges des poids**, tous vus sur l'équipage :
   - avant-bras qui part seul quand le bras se lève : la peau du haut du bras est restée au buste ou au bassin. Abaisser `buste` et `sh_x`, mettre `tt_lib=0.15` ;
   - manche qui se déchire bras levé : le fondu buste → bras de l'épaule (`epaule_r`), plus large pour un manteau ;
   - manteau long qui se déchire entre les jambes : `jupe`, le pan suit à moitié le bassin, à moitié la cuisse ;
-  - toiles entre jambe et jambe ou entre bras et buste : le script les coupe en gardant les sommets (`FACES_ONLY`), sur lesquels les poids sont posés.
+  - toiles entre jambe et jambe, ou faces longues entre bras et buste : le script les coupe en gardant les sommets (`FACES_ONLY`), sur lesquels les poids sont posés ;
+  - trous dans les bras : couper aussi les faces courtes entre bras et buste trouait le bras au ras des manches. Le script les décolle plutôt : chaque face va au bras ou au buste selon la majorité de ses sommets, le maillage est fendu entre les deux, puis les petits éclats restés au buste, loin de lui, sont retirés ;
+  - manche qui reste en lambeaux au buste quand le bras bouge (manches larges) : abaisser `buste`.
 - **Les jambes se lisent sur le modèle.** Un sac, une radio ou un tube dans le dos décalent le milieu du modèle : la hanche, le genou et la cheville se prennent au milieu de la coupe de chaque jambe (entre ses bords, pas en moyenne : le bout d'une chaussure ou une poche la tireraient), une jambe debout restant presque droite ; le pied, sur sa semelle, jusqu'à la pointe. Un pied ouvert de plus de `pieds` degrés (6 ; TRELLIS en ouvre souvent dix ou douze) est tourné vers l'avant autour de sa cheville, fondu jusqu'au bas du tibia. Les os posés à des places fixes, loin des jambes du modèle, et les pieds ouverts faisaient marcher et courir les ados en canard (mainteneur, 19 octobre 2026).
 - **La marche et la course suivent un cycle réel**, image par image, et non deux poses qui s'échangent (`ALLURES`, `allure`) : les angles de la hanche, du genou et de la cheville au fil du cycle, d'après l'analyse de la marche (Perry et Burnfield) et de la course (Novacheck, 1998), l'autre jambe un demi-cycle plus tard ; la hanche diminuée de la bascule du bassin de ces données (10° à la marche, 15° à la course), sinon les deux jambes restent en avant et le corps penche en arrière ; le talon qui attaque pointe relevée, le pied qui pousse sur la pointe ; le bassin qui tourne avec la jambe qui avance et descend du côté de la jambe en l'air, les épaules à l'inverse, la tête face à la marche ; les bras rapprochés du corps depuis la pose A, balancés à l'opposé des jambes, coudes un peu pliés (à angle droit en course) ; le corps qui monte et descend pour que le pied le plus bas touche juste le sol (longueurs des os), et deux vols par cycle en course. Ce sont les principes des animateurs (contact, réception, passage, poussée ; Richard Williams) avec des valeurs mesurées.
 - **Les poses s'écrivent en axes du monde**, jamais sur les axes locaux des os, inversés d'un os à l'autre : c'est ce qui faisait rentrer les bras dans le buste. Devant −Y, gauche +X :

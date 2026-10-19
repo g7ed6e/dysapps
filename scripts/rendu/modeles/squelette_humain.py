@@ -17,6 +17,7 @@
 #   ce qui est près de son axe lui revient (0.15 pour un bras près du corps) ; epaule_r (0.09) : le rayon du fondu buste
 #   → bras à l'épaule (0.13 pour un manteau) ; jupe : le pan d'un manteau long sous les hanches suit à moitié le
 #   bassin, à moitié la cuisse, au-delà de cette distance à la cuisse (0.045 ; absent : pas de pan).
+#   main (0.8) : la taille des mains, resserrées vers le poignet (1 : celles de TRELLIS, grandes et ouvertes).
 
 import math
 import os
@@ -33,7 +34,7 @@ from mathutils.bvhtree import BVHTree
 
 args = sys.argv[sys.argv.index("--") + 1:]
 base, out, planche = args[0], args[1], args[2]
-S = {"pieds": 6, "menton": 0.79, "sh_z": 0.735, "sh_x": 0.1, "hip_z": 0.47, "buste": 0.118, "tt_lib": 0.4, "epaule_r": 0.09}
+S = {"pieds": 6, "menton": 0.79, "sh_z": 0.735, "sh_x": 0.1, "hip_z": 0.47, "buste": 0.118, "tt_lib": 0.4, "epaule_r": 0.09, "main": 0.8}
 VIDEO = None
 REGLAGES = set(S) | {"jupe"}
 for kv in args[3:]:
@@ -44,7 +45,7 @@ for kv in args[3:]:
         S[k] = float(v)
     else:
         sys.exit(f"réglage inconnu ou sans valeur : {kv!r} (attendus : {', '.join(sorted(REGLAGES))}, video=<dossier>)")
-SHZ, SHX, HIPZ = S["sh_z"], S["sh_x"], S["hip_z"]
+SHZ, SHX, HIPZ, MAIN = S["sh_z"], S["sh_x"], S["hip_z"], S["main"]
 NOM = os.path.splitext(os.path.basename(out))[0]
 
 # ------------------------------------------------ le maillage : normalisé, sans doublure
@@ -255,11 +256,18 @@ def membre(n):
     return "bras" if racine in ("upperarm", "forearm", "hand") else "jambe" if racine in ("thigh", "shin", "foot") else "tronc"
 
 
+# Les mains de TRELLIS, grandes et ouvertes, encombrent la silhouette : on les resserre vers le poignet.
+for cote in ("L", "R"):
+    w = POIGNETS[cote]
+    for i in np.nonzero(np.array(premier) == "hand." + cote)[0]:
+        v = mesh.data.vertices[int(i)]
+        v.co = w + (v.co - w) * MAIN
+
 # TRELLIS tend des toiles entre deux membres (jambe contre jambe, bras contre buste) : on les coupe. FACES_ONLY garde
 # les sommets, donc leurs indices, sur lesquels les poids sont posés.
 bm = bmesh.new()
 bm.from_mesh(mesh.data)
-toiles = []
+toiles, decoller = [], []
 for f in bm.faces:
     if all(doux[v.index] for v in f.verts):
         continue
@@ -267,30 +275,96 @@ for f in bm.faces:
     membres = {membre(premier[v.index]) for v in f.verts}
     long_ = max(e.calc_length() for e in f.edges)
     if (("L" in cotes and "R" in cotes and long_ > 0.03)
-            or ("bras" in membres and len(membres) > 1 and (long_ > 0.03 or f.calc_center_median().z < SHZ - 0.05))
+            or ("bras" in membres and len(membres) > 1 and long_ > 0.03)
             or {"bras", "jambe"} <= membres):
         toiles.append(f)
+    elif "bras" in membres and len(membres) > 1:
+        decoller.append(f)
+bords = {v.index for f in toiles for v in f.verts}
 bmesh.ops.delete(bm, geom=toiles, context="FACES_ONLY")
-bm.to_mesh(mesh.data)
-bm.free()
 print("toiles coupées :", len(toiles))
 
+# Les faces courtes qui collent le bras au buste (ou au manteau) : les supprimer trouait les bras,
+# les garder tendait des toiles bras levé. On les décolle : chaque face va tout entière au bras ou au buste, selon la
+# majorité de ses sommets, et le maillage est fendu entre les deux. Au repos rien ne bouge ; le bras part seul.
+origine = bm.verts.layers.int.new("origine")
+for v in bm.verts:
+    v[origine] = v.index
+au_bras = {}
+for f in decoller:
+    au_bras[f] = sum(membre(premier[v[origine]]) == "bras" for v in f.verts) * 2 > len(f.verts)
+
+
+def du_bras(f):
+    return au_bras[f] if f in au_bras else all(membre(premier[v[origine]]) == "bras" for v in f.verts)
+
+
+fentes = [e for e in {e for f in decoller for e in f.edges} if len({du_bras(f) for f in e.link_faces}) > 1]
+bords |= {v.index for e in fentes for v in e.verts}
+bmesh.ops.split_edges(bm, edges=fentes)
+bm.verts.index_update()
+origines = [v[origine] for v in bm.verts]
+force = {}
+for v in bm.verts:
+    cote_bras = {du_bras(f) for f in v.link_faces}
+    if len(cote_bras) == 1:
+        force[v.index] = cote_bras.pop()
+# là où la fente ne sépare pas tout (un sommet tenu des deux côtés), la face décollée tendrait encore une toile
+restes = [f for f in decoller if f.is_valid and any(v.index not in force for v in f.verts)]
+bmesh.ops.delete(bm, geom=restes, context="FACES_ONLY")
+# Les éclats restés au buste quand la main est partie (un bout de bâton tenu, un pan de manche) : petits îlots du
+# côté du buste, au bord de la fente et hors du buste, ou bien loin de lui.
+vus, eclats = set(), []
+for f in bm.faces:
+    if f in vus:
+        continue
+    ilot, pile = [], [f]
+    vus.add(f)
+    while pile:
+        g = pile.pop()
+        ilot.append(g)
+        for e in g.edges:
+            for h in e.link_faces:
+                if h not in vus:
+                    vus.add(h)
+                    pile.append(h)
+    sommets = {v for g in ilot for v in g.verts}
+    ecart = np.mean([abs(v.co.x) for v in sommets])
+    if len(ilot) < 120 and not any(du_bras(g) for g in ilot) and (
+            (any(v[origine] in bords for v in sommets) and ecart > S["buste"] - 0.03)
+            # ou un bout de main ou de manche resté au buste, là où pendait le bras en pose A
+            or ecart > SHX + 0.08):
+        eclats += ilot
+bmesh.ops.delete(bm, geom=eclats, context="FACES_ONLY")
+bm.to_mesh(mesh.data)
+bm.free()
+print("faces décollées :", len(decoller), "; arêtes fendues :", len(fentes), "; restes coupés :", len(restes), "; éclats :", len(eclats))
+BRAS = [k for k, n in enumerate(NOMS) if membre(n) == "bras"]
+HORS = [k for k, n in enumerate(NOMS) if membre(n) != "bras"]
+
 groupes = {n: mesh.vertex_groups.new(name=n) for n in NOMS}
-for i in range(len(Q)):
+for j, i in enumerate(origines):
+    cote_force = force.get(j)
+    if cote_force is not None and (membre(premier[i]) == "bras") != cote_force:
+        # sommet donné à l'autre côté de la fente : tout entier à l'os le plus proche de ce côté
+        ks = [k for k in BRAS if NOMS[k].endswith(".L" if Q[i, 0] > 0 else ".R")] if cote_force else HORS
+        dk = [M[i, k] if M[i, k] < 9 else D[NOMS[k]][i] + (0 if cote_force else 1) for k in ks]
+        groupes[NOMS[ks[int(np.argmin(dk))]]].add([j], 1.0, "REPLACE")
+        continue
     if pan[i]:
         cuisse = "thigh.L" if D["thigh.L"][i] < D["thigh.R"][i] else "thigh.R"
-        groupes["hips"].add([i], 0.55, "REPLACE")
-        groupes[cuisse].add([i], 0.45, "REPLACE")
+        groupes["hips"].add([j], 0.55, "REPLACE")
+        groupes[cuisse].add([j], 0.45, "REPLACE")
         continue
     cote = "L" if fondu["L"][i] else "R" if fondu["R"][i] else None
     if cote:
         a = float(part_du_bras[cote][i])
-        groupes["spine"].add([i], 1 - a, "REPLACE")
-        groupes["upperarm." + cote].add([i], a, "REPLACE")
+        groupes["spine"].add([j], 1 - a, "REPLACE")
+        groupes["upperarm." + cote].add([j], a, "REPLACE")
         continue
-    groupes[premier[i]].add([i], 1 - second[i], "REPLACE")
+    groupes[premier[i]].add([j], 1 - second[i], "REPLACE")
     if second[i] > 0 and M[i, rang[i, 1]] < 9:
-        groupes[NOMS[rang[i, 1]]].add([i], second[i], "REPLACE")
+        groupes[NOMS[rang[i, 1]]].add([j], second[i], "REPLACE")
 for p in mesh.data.polygons:
     p.use_smooth = False
 mesh.parent = rig
@@ -384,6 +458,8 @@ def allure(nom, pc):
         pose["upperarm." + cote] = [("Y", sx * A["rapproche"]), ("X", -avance)]
         coude = A["coude"][0] + A["coude"][1] * max(0.0, avance) / A["bras"]
         pose["forearm." + cote] = ("X", -coude)
+        # la paume se tourne vers la cuisse, comme quand on marche, au lieu de rester ouverte vers l'avant
+        pose["hand." + cote] = ("Z", -sx * 60)
     rot = A["bassin"] * math.cos(2 * math.pi * pc / 100)  # > 0 : la hanche gauche en avant
     pose["hips"] = [("Z", -rot), ("Y", -A["bascule"] * math.sin(2 * math.pi * pc / 100))]
     # le dos rattrape le bassin puis tourne les épaules à l'inverse ; la tête revient face à la marche
