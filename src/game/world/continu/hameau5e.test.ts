@@ -1,7 +1,7 @@
 // Le Hameau (GD-22, lot 5) : son modèle par étapes, la lanterne du boulanger allumée dès la ruine, une trace par étape,
 // sa scénette, ses abords, son plafond de 1 600 triangles et le budget du 5e. Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { PLACE_TRIANGLES_MAX_5E, openWorldCost5e, mapCost5e } from './budget';
+import { PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
 import { WHOLE, posedTraces, traceStagePosed, type PartShape, type Stage } from './construction';
 import { COLORS_5E } from './plan5e';
 import { linearRgb } from './geometry';
@@ -39,9 +39,9 @@ function countColor(f: Facets, color: number): number {
 }
 
 describe('Le Hameau, lieu complet', () => {
-  it('ses trois missions se jouent dans sa scénette ; seuls la Montée et le Hameau en ont une au 5e', () => {
+  it('ses trois missions se jouent dans sa scénette ; la Montée, le Hameau et les Radeaux en ont une au 5e', () => {
     expect(HAMEAU_PLACE.scenes).toEqual([...MISSIONS]);
-    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['hameau', 'montee']);
+    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['hameau', 'montee', 'radeaux']);
     for (const p of PLAN.places) if (!hasScenette(p.id)) expect(p.scenes, p.id).toEqual([]);
   });
 
@@ -156,31 +156,9 @@ describe('La scénette du Hameau', () => {
   });
 });
 
-/**
- * Le budget du 5e au lot 4, avant le Hameau (`npm run rendu:budget -- --archipel 6e,5e`, 20 octobre 2026), en
- * triangles : hors scénette, au départ et sur la Carte. Les appels n'y bougent pas.
- */
-const LOT4_5E = { world: { triangles: 83_175, calls: 16 }, departure: { triangles: 82_053, calls: 17 }, map: { triangles: 81_780, calls: 12 } } as const;
-
-/** Le pied des palétuviers de loin (./terrain5e.ts, trois triangles par arbre), ajouté après le lot 5 : 1 900 triangles au plus (la Carte, la plus chargée : 629 arbres de loin). */
-const FOREST_FEET_5E = 1_900;
-
 describe('Le budget du 5e, avec le Hameau (plafonds du lot 5, intention du directeur artistique du 20 octobre 2026)', () => {
-  const sum = (c: { triangles: number; calls: number }[]) => c.reduce((a, p) => ({ triangles: a.triangles + p.triangles, calls: a.calls + p.calls }), { triangles: 0, calls: 0 });
-
-  // Le plafond scénette ouverte et la réserve des lots suivants : ./plan5e.test.ts (« Le budget du 5e »).
-  it('hors scénette, au départ et sur la Carte : le lot 4 et un lieu de plus au plus, sans appel de plus', () => {
-    const views = [
-      [sum(openWorldCost5e('monde')), LOT4_5E.world],
-      [sum(openWorldCost5e('depart')), LOT4_5E.departure],
-      [mapCost5e(), LOT4_5E.map],
-    ] as const;
-    for (const [now, before] of views) {
-      expect(now.triangles).toBeLessThanOrEqual(before.triangles + PLACE_TRIANGLES_MAX_5E + FOREST_FEET_5E);
-      expect(now.calls).toBeLessThanOrEqual(before.calls);
-    }
-  });
-
+  // Les plafonds hors scénette, au départ et sur la Carte, lot par lot : ./radeaux5e.test.ts ; le plafond scénette
+  // ouverte et la réserve des lots suivants : ./plan5e.test.ts (« Le budget du 5e »).
   it('l’habitant en modèle 3D compte un appel de plus, et ses triangles au plus, à la place du pion', () => {
     // Le décor de la scénette (son plancher et ses abords), à côté du modèle : 1 900 triangles au plus.
     const SETTING_MAX = 1_900;

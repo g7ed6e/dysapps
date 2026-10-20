@@ -11,6 +11,7 @@ import { planFor } from './levelPlan';
 import { MONTEE, MONTEE_GLOW, MONTEE_HEIGHT, RAIL_SPANS } from './montee5e';
 import { lowRock } from './monteeSurroundings';
 import { NETWORK_5E } from './paths5e';
+import { isBuiltPlace5e } from './plan5e';
 import { placePieces } from './places';
 import { placeItems } from './questions';
 import { placeTrace, sceneSpot } from './questionScene';
@@ -29,7 +30,7 @@ const MISSIONS = ['thermometer', 'adding', 'fractions', 'order-of-operations', '
 describe('La Montée, lieu fini', () => {
   it('ses cinq missions se jouent dans sa scénette ; les autres lieux du 5e, sauf le Hameau (lot 5), restent sur l’écran habituel', () => {
     expect(MONTEE_PLACE.scenes).toEqual(MISSIONS);
-    for (const p of PLAN.places) if (p.id !== 'montee' && p.id !== 'hameau') expect(p.scenes, p.id).toEqual([]);
+    for (const p of PLAN.places) if (!isBuiltPlace5e(p.id)) expect(p.scenes, p.id).toEqual([]);
   });
 
   it('se rebâtit par étapes : le corps en trois travées, le haut et sa lanterne, les abords ; la ruine part à mesure', () => {

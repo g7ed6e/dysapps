@@ -16,18 +16,20 @@ import { nefParts } from '../../world/nefModels';
 import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, WORLD_FOG, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold } from '../../world/continu/camera';
-import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourFacets, faunaPose, spoutFacets, whaleFacets, type DetourId } from '../../world/continu/detours';
-import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
+import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, type DetourId } from '../../world/continu/detours';
+import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
 import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinPoint, cabinStops, cabinYaw, clampToOpen, type CabinCar } from '../../world/continu/bridges';
 import { cabinButtonRoute, cabinCarOpen, cabinOf, cabinSide, routeWithRide } from '../../world/continu/cabinRide';
+import { creuxFacets } from '../../world/continu/creux5e';
 import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/continu/montee5e';
 import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { hasScenette, placeById, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
 import { hasHabitantModel } from '../../world/continu/habitants';
+import { doorViewOf, placeArt } from '../../world/continu/northShore';
 import { levelWorld, type LevelWorld, type ThinFog } from '../../world/continu/levelWorld';
 import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from '../../world/continu/mist5e';
 import { pathMapEdges5e } from '../../world/continu/paths5e';
@@ -372,6 +374,13 @@ export interface MapSpotOnScreen {
    * côté de son nom. Jamais au 6e, qui est à plat.
    */
   up?: boolean;
+  /**
+   * Ce que les étiquettes laissent à découvert, en pixels : le repère du lieu de loin (aux Radeaux, les trois radeaux sur
+   * le chenal ; `PlaceArt.mapClear`). Rempli sur place à chaque pose.
+   */
+  clear?: { left: number; top: number; right: number; bottom: number };
+  /** Son nom reste au-dessus de son point, de son côté (`PlaceArt.nameAbove` : son repère de loin est au sud, sur l'eau). */
+  above?: true;
 }
 
 /** Un repère de la scène à l'écran, en pixels. */
@@ -1175,6 +1184,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (detourDecor?.key !== key) detourDecor = { key, facets: detourFacets(detoursFound, detoursLit.includes('braise-herons')) };
     return detourDecor.facets;
   };
+  // Le Creux du 5e (GD-22, lot 6) : ses deux formes, sans et avec sa sente, faites une fois.
+  const creuxDrawn: { found: boolean; facets: Facets }[] = [];
+  const creuxNow = (): Facets => {
+    const found = detoursFound.includes('creux');
+    let c = creuxDrawn.find((k) => k.found === found);
+    if (!c) creuxDrawn.push((c = { found, facets: creuxFacets(found) }));
+    return c.facets;
+  };
   // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son temps (la page le donne), le modèle de sa forme chargé à la
   // demande (sans lui, le ber seul), ses parties montrées réunies aux lieux, son obstacle (le banc du large, le mur de
   // nuages) avec eux. Le temps qui arrive descend à part (`nefDrop`, dans `nefMesh`) ; au départ (`nefTrip`), la Nef et
@@ -1352,8 +1369,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    * dès qu'il en repart, `null`. La vue monte tant qu'il y reste, et revient quand il repart.
    */
   const stepDetour = (now: number, moving: boolean, dt: number) => {
-    // Les Détours sont du 6e : au 5e, Kéo n'en trouve aucun.
-    const d = moving || walk || !sixth ? null : detourAtPoint(here);
+    // Chaque niveau a ses Détours : au 5e, le Creux des Frondaisons (GD-22, lot 6).
+    const d = moving || walk ? null : detourAtPoint(here, level);
     let arrived = false;
     if (!d) {
       detourStill = 0;
@@ -1366,6 +1383,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       else if (now - detourStill >= DETOUR_TIMING.settle * 1000) {
         detourHere = d.id;
         arrived = d.kind === 'rive';
+        // Au Creux, la caméra qui monte se tourne vers l'arche, derrière Kéo sur le seuil (GD-22, lot 6).
+        const cap = detourCap(d);
+        if (cap !== null) turnTo(cap);
         options.onDetour?.(d.id);
       }
     }
@@ -1546,10 +1566,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     back = 0;
     options.onYaw?.(yaw);
   };
-  /** La caméra d'un coup vers le nord (l'arrivée d'un « Y aller », l'Escale, une scénette). */
-  const faceNorth = () => {
+  /** La caméra d'un coup vers le nord (l'Escale, une scénette), ou vers `to`. */
+  const faceNorth = (to = 0) => {
     turning = null;
-    setYaw(0);
+    setYaw(to);
   };
   /** Un tour des boutons : vers `to`, par le plus court, en douceur ; d'un coup avec « Réduire les animations ». */
   const turnTo = (to: number) => {
@@ -1732,6 +1752,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Chaque trace avec l'étape qui la porte (au Hameau, celle de sa mission : GD-22, lot 5).
       if (!hidden && hasScenette(p.id) && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, posedTraces(p.id, parts, scenette === p.id ? scenetteTraces(p.id, done, scenetteMission, posed) : done)));
       if (p.id === 'phare' && lampShown) list.push(lampFacets);
+      // Sur la Carte, ce qui fait lire le repère du lieu de loin (aux Radeaux, le dessus des radeaux à flot, éclairci).
+      const mapMark = mapView ? placeArt(p.id)?.mapMark : undefined;
+      if (mapMark) list.push(mapMark({ x: p.center.x, y: foot.y, z: p.center.z }, (stage, row) => rowPosed(parts, stage, row)));
       // Les aménagements posés (GD-20, point 4, lot L0), dans le même maillage : cachés pendant toute question, comme les
       // traces (au rivage nord et au large, ceux des lieux du même cadre) ; montrés dans le cadrage de la remise.
       if (showsAmenagements(scenette, p.id, remise?.place ?? null)) for (const id of placesState?.amenagements?.[p.id] ?? []) list.push(placedAmenagement(id, ground).facets);
@@ -1758,6 +1781,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // le maillage des lieux.
     if (!sixth) {
       if (mapView) rest.push(cliffLine);
+      // Le Creux (GD-22, lot 6) : le fût creusé, son banc et sa lanterne, et la sente une fois trouvé.
+      rest.push(creuxNow());
       setGeometry(placesMesh, mergeFacets(rest));
       setGeometry(landmarkMesh, mergeFacets(mark));
       mapDirty = true;
@@ -2139,7 +2164,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const shut = stop !== door ? bridgeSite(firstClosed(landOf(place) as LinkedLand, closed)) : null;
     here = shut ? { ...stop.at } : pathNode(placeById(place).door).at;
     heading = shut ? Math.atan2(-shut.dir.x, -shut.dir.z) : FACING_CAMERA;
-    faceNorth();
+    // La caméra regarde le lieu depuis sa porte (le nord, sauf aux Radeaux, porte au nord-est : GD-22, lot 6).
+    faceNorth(shut ? 0 : doorViewOf(place));
     detourView = 0;
     exit = null;
     back = 0;
@@ -2392,7 +2418,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const mapCamera: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
   const allTiles = Array.from({ length: plan.terrain.tilesX * plan.terrain.tilesZ }, (_, i) => i);
   const mapSpots: MapSpotOnScreen[] = [
-    ...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false, ...(plan.upper.includes(p.id) ? { up: true } : {}) })),
+    ...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false, ...(plan.upper.includes(p.id) ? { up: true } : {}), ...(placeArt(p.id)?.mapClear ? { clear: { left: 0, top: 0, right: 0, bottom: 0 } } : {}), ...(placeArt(p.id)?.nameAbove ? { above: true as const } : {}) })),
     ...LINKED_LANDS.map((land) => ({ id: bridgeSpot(land), x: 0, y: 0, shown: false })),
     // Le lieu de départ (l'Escale, la Lisière).
     { id: 'port' as const, x: 0, y: 0, shown: false },
@@ -2427,6 +2453,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const mapMark = (id: MapSpotOnScreen['id']) => (id === 'keo' ? keoPoint.set(keoFeet.x, keoFeet.y, keoFeet.z) : id === 'port' ? portPoint : (bridgePoints.get(id) ?? marks.get(id as PlaceId)));
   // Le nom d'un lieu, centré au-dessus de lui, reste entier à l'écran : assez loin des bords gauche et droit.
   const mapShown = (x: number, y: number) => x > MAP_LABEL_SIDE && x < viewW - MAP_LABEL_SIDE && y > MAP_LABEL_TOP && y < viewH - LOCK_MARGIN;
+  // Les coins de ce que les étiquettes laissent à découvert, au niveau de l'eau, faits une fois (les trois radeaux).
+  const clearCorners = new Map<string, THREE.Vector3[]>(
+    PLACES.flatMap((p) => {
+      const corners = placeArt(p.id)?.mapClear;
+      return corners ? [[p.id, corners.map((c) => new THREE.Vector3(p.center.x + c.x, 0, p.center.z + c.z))] as const] : [];
+    }),
+  );
   const reportMapPlaces = () => {
     for (const l of mapSpots) {
       const mark = mapMark(l.id);
@@ -2435,6 +2468,20 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       l.x = ((projected.x + 1) / 2) * viewW;
       l.y = ((1 - projected.y) / 2) * viewH;
       l.shown = projected.z < 1 && mapShown(l.x, l.y);
+      const corners = l.clear ? clearCorners.get(l.id) : undefined;
+      if (l.clear && corners) {
+        l.clear.left = l.clear.top = Infinity;
+        l.clear.right = l.clear.bottom = -Infinity;
+        for (const c of corners) {
+          projected.copy(c).project(camera);
+          const x = ((projected.x + 1) / 2) * viewW,
+            y = ((1 - projected.y) / 2) * viewH;
+          l.clear.left = Math.min(l.clear.left, x);
+          l.clear.right = Math.max(l.clear.right, x);
+          l.clear.top = Math.min(l.clear.top, y);
+          l.clear.bottom = Math.max(l.clear.bottom, y);
+        }
+      }
     }
     if (plan.upper.length) keoSpot.up = onPlateau(keoFeet);
     mapMoving = fingers.size > 0 || wheelRest !== 0;
@@ -2459,7 +2506,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let mapSettling = 0;
   let mapOpen: readonly PlaceId[] = [];
   const probePose: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
-  const probeSpots: MapSpotOnScreen[] = mapSpots.map((l) => ({ ...l }));
+  // Sans ce que les étiquettes laissent à découvert : les vues essayées ne comptent que les noms des lieux ouverts.
+  const probeSpots: MapSpotOnScreen[] = mapSpots.map((l) => ({ id: l.id, x: l.x, y: l.y, shown: l.shown, ...(l.up !== undefined ? { up: l.up } : {}), ...(l.above ? { above: l.above } : {}) }));
   const reframeStart = (crowded: (spots: readonly MapSpotOnScreen[]) => number) => {
     if (!mapView) return;
     if (mapView !== mapFirst) {
@@ -3083,7 +3131,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
             ground: landBelow,
           },
           hang?.pivot ?? spot,
-          hang ? sceneYaw : 0,
+          // Face à la caméra, tournés avec elle : les cloches du Phare, et la rangée d'un lieu qui le demande (les Radeaux).
+          hang || placeArt(place)?.answer?.facing ? sceneYaw : 0,
         ),
       );
     setGeometry(itemMesh, merged.build());

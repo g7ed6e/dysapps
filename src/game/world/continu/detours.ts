@@ -5,21 +5,36 @@
 // fois ; au bord d'eau, la baleine fait surface et les oiseaux se lèvent ; au cairn de la Braise, un seul geste le
 // rallume. Après la première arrivée, une sente reste tracée pour de bon, du chemin le plus proche jusqu'au Détour, dans
 // le monde et sur la Carte. Ni compteur, ni liste, ni récompense. Les places et les noms : le consultant d'Archipéo ; la
-// forme : l'artiste technique 3D ; les durées : le référent dys. Code pur.
+// forme : l'artiste technique 3D ; les durées : le référent dys. Au 5e (GD-22, lot 6), le premier Détour, le Creux, a son
+// fichier (./creux5e.ts) ; ce fichier les connaît tous deux par leur identifiant et leur niveau. Code pur.
+import { CREUX } from './creux5e';
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, type Vec2 } from './geometry';
 import type { LandId } from './lands';
+import type { OpenWorldLevel } from './levelPlan';
 import { snapToNetwork } from './paths';
 import { LAMP_COLOR } from './places';
 import { COLORS_6E, DETOUR_HILL, DETOUR_HILLS } from './plan6e';
 import { detourFoot, detourReach, heightAt, landDistance, standingHeight } from './terrain';
 
-/** Les cinq Détours, un par terre (les mêmes, dans le même ordre, que engine/detours.ts, pour la sauvegarde). */
-export const DETOUR_IDS = ['butte-chantier', 'braise-herons', 'bout-large', 'colline-aube', 'haut-cretes'] as const;
+/**
+ * Les Détours, les mêmes, dans le même ordre, que engine/detours.ts, pour la sauvegarde : les cinq du 6e, un par terre,
+ * puis ceux du 5e (lot 6 : le Creux).
+ */
+export const DETOUR_IDS = ['butte-chantier', 'braise-herons', 'bout-large', 'colline-aube', 'haut-cretes', 'creux'] as const;
 export type DetourId = (typeof DETOUR_IDS)[number];
 
-/** Ce qu'est un Détour : un sommet, le sommet au cairn à rallumer, ou un bord d'eau. */
-type DetourKind = 'sommet' | 'cairn' | 'rive';
+/** Les Détours du 5e. */
+const DETOUR_IDS_5E = ['creux'] as const satisfies readonly DetourId[];
+
+/** Un Détour du 6e. */
+type DetourId6e = Exclude<DetourId, (typeof DETOUR_IDS_5E)[number]>;
+
+/** Les cinq Détours du 6e, un par terre. */
+export const DETOUR_IDS_6E = DETOUR_IDS.filter((id): id is DetourId6e => !(DETOUR_IDS_5E as readonly string[]).includes(id));
+
+/** Ce qu'est un Détour : un sommet, le sommet au cairn à rallumer, un bord d'eau, ou (au 5e) un arbre creux. */
+type DetourKind = 'sommet' | 'cairn' | 'rive' | 'creux';
 
 export interface Detour {
   id: DetourId;
@@ -47,7 +62,7 @@ export interface Detour {
 const SHORE = { at: { x: -165, z: 91 }, radius: 2.5 } as const;
 
 /** Les noms et les sortes, dans l'ordre de `DETOUR_IDS`. */
-const SPECS: Readonly<Record<DetourId, { land: LandId; name: string; kind: DetourKind; from?: Vec2 }>> = {
+const SPECS: Readonly<Record<DetourId6e, { land: LandId; name: string; kind: DetourKind; from?: Vec2 }>> = {
   'butte-chantier': { land: 'pointe', name: 'La Butte du Chantier', kind: 'sommet' },
   'braise-herons': { land: 'couchant', name: 'La Braise des Hérons', kind: 'cairn' },
   'bout-large': { land: 'large', name: 'Le Bout du Large', kind: 'rive' },
@@ -73,7 +88,7 @@ function senteOf(foot: Vec2, at: Vec2, from?: Vec2): Vec2[] {
   return line;
 }
 
-function detourOf(id: DetourId): Detour {
+function detourOf(id: DetourId6e): Detour {
   const { from, ...spec } = SPECS[id];
   const hill = DETOUR_HILLS.find((h) => h.id === id);
   if (hill) {
@@ -83,16 +98,33 @@ function detourOf(id: DetourId): Detour {
   return { id, ...spec, at: SHORE.at, radius: SHORE.radius, foot: SHORE.at, face: seaward(SHORE.at), sente: senteOf(SHORE.at, SHORE.at, from) };
 }
 
-/** Les cinq Détours, tirés une fois. */
-export const DETOURS: readonly Detour[] = DETOUR_IDS.map(detourOf);
+/** Les cinq Détours du 6e, tirés une fois. */
+export const DETOURS: readonly Detour[] = DETOUR_IDS_6E.map(detourOf);
 
-export const detourById = (id: DetourId): Detour => DETOURS.find((d) => d.id === id)!;
+/** Les Détours du 5e (lot 6 : le Creux). */
+export const DETOURS_5E: readonly Detour[] = [CREUX];
 
-/** Le Détour où se tient Kéo en `p`, ou rien. */
-export function detourAtPoint(p: Vec2): Detour | null {
-  for (const d of DETOURS) if (distance(p, d.at) <= d.radius) return d;
+/** Les Détours d'un niveau. */
+const detoursOf = (level: OpenWorldLevel): readonly Detour[] => (level === '5e' ? DETOURS_5E : DETOURS);
+
+/** Tous les Détours, par leur nom : la table se construit une fois. */
+const DETOUR_BY_ID: ReadonlyMap<DetourId, Detour> = new Map([...DETOURS, ...DETOURS_5E].map((d) => [d.id, d]));
+
+export const detourById = (id: DetourId): Detour => DETOUR_BY_ID.get(id)!;
+
+/** Le Détour du niveau `level` (le 6e, sans le dire) où se tient Kéo en `p`, ou rien. */
+export function detourAtPoint(p: Vec2, level: OpenWorldLevel = '6e'): Detour | null {
+  for (const d of detoursOf(level)) if (distance(p, d.at) <= d.radius) return d;
   return null;
 }
+
+/**
+ * Le cap de la caméra à l'arrivée sur un Détour (comme `yaw` de la caméra, scene.ts : elle regarde vers −(sin, cos)), ou
+ * rien : elle garde le sien. Au Creux, Kéo sur le seuil, la caméra se tourne vers l'arche, derrière lui, et montre le
+ * dedans éclairé (GD-22, lot 6, retouche : sans cela, la caméra qui monte montrait le fût de côté, l'arche cachée). `face`
+ * va du centre du fût vers l'arche : la caméra regarde à l'opposé.
+ */
+export const detourCap = (d: Detour): number | null => (d.kind === 'creux' ? Math.atan2(Math.cos(d.face), Math.sin(d.face)) : null);
 
 /** La place que la végétation laisse libre : la sente, de part et d'autre, et autour du bord d'eau. */
 const KEEP = { sente: 1.6, shore: 4 } as const;

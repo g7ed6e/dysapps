@@ -7,7 +7,7 @@
 // du 6e (./terrain.ts) : seuls la hauteur, la peinture et ce qui pousse changent. Code pur.
 import { FacetBuilder, type Facets } from './facets';
 import { distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { CHANNELS_5E, COAST_5E, COLORS_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, TERRAIN_5E, inLisiereClearing, type ChannelId, type Needle } from './plan5e';
+import { CHANNELS_5E, COAST_5E, COLORS_5E, CREUX_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, TERRAIN_5E, inLisiereClearing, type ChannelId, type Needle } from './plan5e';
 import { SHADOW_DIR_5E } from './sky';
 import { spire, spireTriangles } from './spire5e';
 import { drawTileWith, farHeightsOf, heightOnFar, heightOnMesh, tileRect, type GroundPaint, type HeightField, type P3, type TileDetail } from './terrain';
@@ -173,7 +173,7 @@ export const FOREST_COLORS = {
  * plateau ou sa falaise ; un tronc se tient à `dry` unités au moins de l'eau (retouche du lot 2, directeur artistique :
  * la canopée couvrait les chenaux, leur eau ne se voyait pas en 3D).
  */
-const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, monteeSouth: 30, hameau: 14.5, hameauSouth: 34, quay: 5, cliff: 2.5, dry: 2.2 } as const;
+const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, monteeSouth: 30, hameau: 14.5, hameauSouth: 34, radeaux: 13, quay: 5, cliff: 2.5, dry: 2.2, creux: 7.5, sente: 3.6 } as const;
 
 /** Les tronçons des chemins du 5e (pour garder la forêt à distance). */
 const SEGMENTS: readonly (readonly [Vec2, Vec2])[] = (() => {
@@ -192,10 +192,16 @@ const nearPlace = (p: Vec2): boolean =>
     // Le Hameau (lot 5) : ses maisons et ses barques jusqu'à 13 unités du four ; au sud, l'approche de la caméra et le recul
     // de celle de la scénette sur un écran en portrait, à 23 unités (retouche 1 : une canopée y passait devant les miches).
     if (pl.id === 'hameau') return d < FOREST_KEEP.hameau || (p.z > pl.center.z + 4 && d < FOREST_KEEP.hameauSouth);
+    // Les Radeaux (lot 6) : le quai et la cabane jusqu'à 12 unités du centre, et le recul de la caméra de la scénette, qui
+    // regarde la façade depuis l'est-sud-est.
+    if (pl.id === 'radeaux') return d < FOREST_KEEP.radeaux;
     return d < FOREST_KEEP.place;
   });
 
-/** Un palétuvier (ou un buisson des Contreforts) : sa place, son sol, sa taille, son quart de tour. */
+/**
+ * Un palétuvier (ou un buisson des Contreforts) : sa place, son sol, sa taille, son quart de tour ; `hollow` : celui du
+ * Creux, dont le pied creusé est dessiné avec le Détour (./creux5e.ts) : sa couronne seule, à la hauteur `hollow`.
+ */
 interface Tree {
   x: number;
   z: number;
@@ -203,7 +209,21 @@ interface Tree {
   size: number;
   yaw: number;
   shrub: boolean;
+  hollow?: number;
 }
+
+/**
+ * Le palétuvier du Creux (GD-22, lot 6) : un arbre de la forêt, élargi. Sa couronne est celle de la forêt (comptée avec
+ * elle, dans le sol), plus large que celle des voisins, et monte jusqu'au-dessus du haut de son fût (`CREUX_CROWN.base`,
+ * au-dessus du sol) ; aucun autre arbre à moins de `FOREST_KEEP.creux` de son pied, ni sur sa sente.
+ */
+export const CREUX_CROWN = { size: 1.4, base: 6.7, yaw: 0.9 } as const;
+
+/** Le palétuvier du Creux, dans sa tuile. */
+const CREUX_TREE: Tree = { x: CREUX_5E.center.x, z: CREUX_5E.center.z, y: heightAt5e(CREUX_5E.center), size: CREUX_CROWN.size, yaw: CREUX_CROWN.yaw, shrub: false, hollow: CREUX_CROWN.base };
+
+/** Près du Creux : son pied, et sa sente (la végétation la laisse libre). */
+const nearCreux = (p: Vec2): boolean => Math.hypot(p.x - CREUX_5E.center.x, p.z - CREUX_5E.center.z) < FOREST_KEEP.creux || distanceToPolyline(p, CREUX_5E.sente) < FOREST_KEEP.sente;
 
 const treesOf = new Map<number, readonly Tree[]>();
 
@@ -225,9 +245,11 @@ function treesIn(tx: number, tz: number): readonly Tree[] {
       if (nearPath(p, FOREST_KEEP.path) || nearPlace(p) || distanceToPolyline(p, [QUAY_5E.from, QUAY_5E.to]) < FOREST_KEEP.quay) continue;
       // La clairière de la Lisière (GD-22, lot 4) : sa place, sa rangée et leurs abords, sans un tronc.
       if (inLisiereClearing(p)) continue;
+      if (nearCreux(p)) continue;
       const shrub = contreforts(p) > 0.5;
       out.push({ x: p.x, z: p.z, y: heightAt5e(p), size: (shrub ? 0.62 : 0.85) + 0.4 * hash2(i + 7, j + 13), yaw: 6.283 * hash2(i + 31, j + 17), shrub });
     }
+  if (CREUX_TREE.x >= r.minX && CREUX_TREE.x < r.maxX && CREUX_TREE.z >= r.minZ && CREUX_TREE.z < r.maxZ) out.push(CREUX_TREE);
   treesOf.set(key, out);
   return out;
 }
@@ -244,7 +266,7 @@ function trunk(b: FacetBuilder, from: readonly [number, number, number], to: rea
 }
 
 /** Les triangles d'un arbre de près et de loin (comptés sans construire). */
-const TREE_TRIANGLES = { near: 8 + 4 * 2 * 12 + 2 * 18, far: 3 + 15, shrubNear: 18 + 6, shrubFar: 15 } as const;
+const TREE_TRIANGLES = { near: 8 + 4 * 2 * 12 + 2 * 18, far: 3 + 15, hollowNear: 2 * 18, shrubNear: 18 + 6, shrubFar: 15 } as const;
 
 /**
  * Un palétuvier de près : le tronc, quatre racines en arceaux (deux poutres chacune, du tronc au genou, du genou au
@@ -263,7 +285,7 @@ function drawTree(b: FacetBuilder, t: Tree, detail: TileDetail): number {
     b.prism({ x: t.x, y: t.y + 0.9 * s, z: t.z, yaw: t.yaw + 0.5 }, 1.2 * s, 0, 0.7 * s, 6, FOREST_COLORS.shrubTop);
     return TREE_TRIANGLES.shrubNear;
   }
-  const H = (3.8 + 1.6 * ((t.yaw * 7) % 1)) * s;
+  const H = t.hollow ?? (3.8 + 1.6 * ((t.yaw * 7) % 1)) * s;
   const R = 3.1 * s;
   if (detail === 'far') {
     b.prism({ x: t.x, y: t.y - 0.6, z: t.z, yaw: t.yaw }, 0.8 * s, 0, H + 0.4, 3, FOREST_COLORS.root);
@@ -271,6 +293,11 @@ function drawTree(b: FacetBuilder, t: Tree, detail: TileDetail): number {
     return TREE_TRIANGLES.far;
   }
   const y = t.y;
+  if (t.hollow !== undefined) {
+    // Le Creux : la couronne seule, son fût creusé est au Détour.
+    crown(b, t, y, H, R, s);
+    return TREE_TRIANGLES.hollowNear;
+  }
   trunk(b, [t.x, y + 1.2 * s, t.z], [t.x, y + H, t.z], 0.36 * s, 0.26 * s, FOREST_COLORS.trunk);
   for (let k = 0; k < 4; k++) {
     const a = t.yaw + (k * Math.PI) / 2;
@@ -282,9 +309,14 @@ function drawTree(b: FacetBuilder, t: Tree, detail: TileDetail): number {
     b.beam(start, knee, 0.24 * s, FOREST_COLORS.root);
     b.beam(knee, foot, 0.22 * s, FOREST_COLORS.root);
   }
+  crown(b, t, y, H, R, s);
+  return TREE_TRIANGLES.near;
+}
+
+/** La canopée basse d'un palétuvier de près : deux plateaux à pans. */
+function crown(b: FacetBuilder, t: Tree, y: number, H: number, R: number, s: number): void {
   b.prism({ x: t.x, y: y + H - 0.4, z: t.z, yaw: t.yaw }, R, R * 0.8, 1.1 * s, 6, FOREST_COLORS.canopy, FOREST_COLORS.canopyTop);
   b.prism({ x: t.x + 0.9 * s * Math.cos(t.yaw), y: y + H + 0.6 * s, z: t.z + 0.9 * s * Math.sin(t.yaw), yaw: t.yaw + 0.5 }, R * 0.7, R * 0.5, 0.9 * s, 6, FOREST_COLORS.canopy, FOREST_COLORS.canopyTop);
-  return TREE_TRIANGLES.near;
 }
 
 /** Les aiguilles dont le pied est dans une tuile. */
@@ -308,7 +340,7 @@ const needleTriangles = (n: Needle): number => spireTriangles(n.sides);
 function drawFlora5e(tx: number, tz: number, detail: TileDetail, b: FacetBuilder | null): number {
   let count = 0;
   for (const t of treesIn(tx, tz))
-    count += b ? drawTree(b, t, detail) : t.shrub ? (detail === 'near' ? TREE_TRIANGLES.shrubNear : TREE_TRIANGLES.shrubFar) : detail === 'near' ? TREE_TRIANGLES.near : TREE_TRIANGLES.far;
+    count += b ? drawTree(b, t, detail) : t.shrub ? (detail === 'near' ? TREE_TRIANGLES.shrubNear : TREE_TRIANGLES.shrubFar) : detail === 'near' ? (t.hollow !== undefined ? TREE_TRIANGLES.hollowNear : TREE_TRIANGLES.near) : TREE_TRIANGLES.far;
   for (const n of needlesIn(tx, tz)) count += b ? drawNeedle(b, n) : needleTriangles(n);
   return count;
 }
@@ -350,7 +382,8 @@ export function tileCounts5e(field: HeightField, detail: TileDetail): Int32Array
  * comprises (un buisson, son dôme), et chaque aiguille ; un disque chacun (son centre, son rayon).
  */
 export function obstaclesIn5e(tx: number, tz: number): { x: number; z: number; r: number }[] {
-  const out = treesIn(tx, tz).map((t) => ({ x: t.x, z: t.z, r: (t.shrub ? 1.6 : 2) * t.size }));
+  // Le fût du Creux : son rayon, moins de quoi laisser Kéo sur le seuil, sous l'arche.
+  const out = treesIn(tx, tz).map((t) => ({ x: t.x, z: t.z, r: t.hollow !== undefined ? CREUX_5E.radius - 0.65 : (t.shrub ? 1.6 : 2) * t.size }));
   for (const n of needlesIn(tx, tz)) out.push({ x: n.at.x, z: n.at.z, r: n.radius });
   return out;
 }

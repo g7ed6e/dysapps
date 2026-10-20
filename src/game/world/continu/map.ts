@@ -196,6 +196,12 @@ export interface MapLabel {
    */
   below?: boolean;
   /**
+   * Un lieu dont le repère de loin est au sud, sur l'eau (les Radeaux, GD-22, lot 6) : son nom reste de son côté, au-dessus
+   * de son point, plus haut, à droite ou à gauche, sinon à la place libre la plus proche au-dessus de son point (Kéo devant
+   * sa porte prend la place du dessus), et seulement en dernier recours ailleurs.
+   */
+  above?: boolean;
+  /**
    * La taille de sa forme serrée, son nom sur deux lignes (entre deux mots), plus étroit, prise quand la forme entière ne
    * trouve pas de place : pour un lieu ouvert, sa pastille, l'icône de l'état dessous (relecture de L6b, directeur
    * artistique : un lieu ouvert ne perd jamais son nom) ; pour un lieu fermé, son cadenas et son nom sur deux lignes
@@ -468,6 +474,15 @@ function attemptLayout(
     const places = (w: number, h: number) => {
       const above = rect(l.x - w / 2, l.y - h, w, h);
       const below = rect(l.x - w / 2, l.y + MAP_LABEL_GAP, w, h);
+      const sides = [rect(l.x + MAP_LABEL_GAP, l.y - h / 2, w, h), rect(l.x - MAP_LABEL_GAP - w, l.y - h / 2, w, h)];
+      if (l.above) {
+        // De son côté seulement : au-dessus, plus haut, à droite, à gauche ; sinon la place libre la plus proche au-dessus de
+        // son point, puis, en dernier, où que ce soit (`find`).
+        const list = [above];
+        for (let k = 1; k <= SHIFTS; k++) list.push(rect(above.left, above.top - (k * (h + MAP_LABEL_GAP)) / 2, w, h));
+        list.push(...sides);
+        return list;
+      }
       const list = l.below ? [below, above] : [above, below];
       // Décalé vers un côté libre, en haut puis en bas (en bas puis en haut pour un lieu du bas), d'une demi-hauteur à la fois.
       for (let k = 1; k <= SHIFTS; k++) {
@@ -476,7 +491,7 @@ function attemptLayout(
         const down = rect(below.left, below.top + dy, w, h);
         list.push(...(l.below ? [down, up] : [up, down]));
       }
-      list.push(rect(l.x + MAP_LABEL_GAP, l.y - h / 2, w, h), rect(l.x - MAP_LABEL_GAP - w, l.y - h / 2, w, h));
+      list.push(...sides);
       return list;
     };
     const full = places(l.w, l.h);
@@ -485,8 +500,12 @@ function attemptLayout(
     // fermé, même un peu plus loin de son point (sur la tablette, toutes les places simples de la Turbine touchaient
     // celle des Écluses, et le nom revenait sous leur cadenas). Une place simple trop loin de son lieu (un décalage d'une
     // grande étiquette) ne compte pas.
-    const find = (list: Rect[], ok: (c: Rect) => boolean) =>
-      list.length ? (list.find((c) => gapTo(l, c) <= NEAR.reach && ok(c)) ?? near(l, list[0].right - list[0].left, list[0].bottom - list[0].top, ok)) : undefined;
+    const find = (list: Rect[], ok: (c: Rect) => boolean) => {
+      if (!list.length) return undefined;
+      const w = list[0].right - list[0].left,
+        h = list[0].bottom - list[0].top;
+      return list.find((c) => gapTo(l, c) <= NEAR.reach && ok(c)) ?? (l.above ? near(l, w, h, (c) => c.bottom <= l.y && ok(c)) : undefined) ?? near(l, w, h, ok);
+    };
     let r = find(full, apart) ?? find(full, clear);
     let narrow = false;
     if (!r) {

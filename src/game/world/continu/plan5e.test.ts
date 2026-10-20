@@ -11,8 +11,9 @@ import { planFor } from './levelPlan';
 import { CLIFF_MAP_COLORS, CLIFF_MAP_SHAPE, cliffMapLine, cliffMapSegments, riftMistFacets, riftMistSpots, RIFT_MIST } from './mist5e';
 import { modelOfPlace } from './places';
 import { NETWORK_5E, PATH_MAP_EDGE, pathMapEdges5e, pathRibbons5e, quayFacets } from './paths5e';
-import { COAST_5E, COLORS_5E, DEPARTURE_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, UPPER_PLACES_5E } from './plan5e';
+import { BUILT_PLACES_5E, COAST_5E, COLORS_5E, DEPARTURE_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, UPPER_PLACES_5E } from './plan5e';
 import { COLORS_6E } from './plan6e';
+import { ILES } from '../../islands';
 import { MONTEE_HEIGHT } from './montee5e';
 import { HEIGHT_LIGHT_5E, HORIZON_COLOR_5E, LIGHT_5E, SKY_OF, skyColorAt, skyDome } from './sky';
 import { SEA_TEXTURE, WATER_TONES_5E, seaPixels5e, waterTone5e } from './sea';
@@ -36,6 +37,15 @@ describe('Le plan du 5e', () => {
     expect(new Set(all)).toEqual(new Set(PLAN.places.map((p) => p.id)));
     expect(all).toHaveLength(14);
     expect(PLAN.lands.map((l) => l.name)).toEqual(['Les Frondaisons', 'Les Roselières', 'Les Contreforts', 'Les Aiguilles']);
+  });
+
+  it('chaque lieu construit joue toutes les quêtes de son île, dans leur ordre, et rien d’autre (les Radeaux : maths-5e-proportionality)', () => {
+    for (const [id, missions] of Object.entries(BUILT_PLACES_5E)) {
+      const island = PLAN.places.find((p) => p.id === id)!.island;
+      const quests = ILES.find((i) => i.id === island)!.exercises.map((e) => e.id);
+      expect([...missions], `${id} (${island})`).toEqual(quests);
+    }
+    expect(PLAN.places.find((p) => p.id === 'radeaux')!.island).toBe('maths-5e-proportionality');
   });
 
   it('la Lisière, le départ, au sud-est, dans les Frondaisons, près du Hameau', () => {
@@ -463,8 +473,9 @@ describe('Le budget du 5e', () => {
     const triangles = cost.reduce((s, c) => s + c.triangles, 0);
     const calls = cost.reduce((s, c) => s + c.calls, 0);
     // Après le lot 5 (le Hameau), environ 23 000 triangles et 3 appels restent pour les douze autres lieux, les Détours, le
-    // Rafiot et les aménagements (intention du directeur artistique du 20 octobre 2026, « Le budget »).
-    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 23_000);
+    // Rafiot et les aménagements (intention du directeur artistique du 20 octobre 2026, « Le budget ») ; après le lot 6
+    // (les Radeaux et le Creux) et le pied des palétuviers de loin (#475), 22 784 triangles : la réserve passe à 22 000.
+    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 22_000);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
     // La Carte dans l'enveloppe (ses plafonds lot par lot : ./hameau5e.test.ts).
     const map = mapCost5e();

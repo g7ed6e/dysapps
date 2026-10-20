@@ -171,7 +171,7 @@ export interface Obstacle extends ScreenRect {
  * Garde la marque (`box`) hors des boutons posés sur la scène (`obstacles` : Réglages, « Y aller », la colonne des accès
  * directs) et dans l'écran (`width` × `height`, à `edge` pixels du bord) : pour chaque bouton qu'elle couvre, le plus
  * petit pas qui l'en sort sans sortir de l'écran (à gauche, à droite, au-dessus ou au-dessous, à `gap` pixels du
- * bouton ; seulement au-dessous pour une zone `below`).
+ * bouton ; seulement au-dessous pour une zone `below`), d'abord parmi ceux qui ne couvrent aucun autre bouton.
  */
 export function keepClear(box: ScreenRect, obstacles: readonly Obstacle[], width: number, height: number, edge: number, gap: number): ScreenRect {
   const fit = (r: ScreenRect): ScreenRect => ({
@@ -189,7 +189,12 @@ export function keepClear(box: ScreenRect, obstacles: readonly Obstacle[], width
     )
       .map(fit)
       .filter((m) => !overlaps(m, o))
-      .sort((a, b) => Math.hypot(a.left - r.left, a.top - r.top) - Math.hypot(b.left - r.left, b.top - r.top));
+      // D'abord les pas qui ne tombent sur aucun autre bouton : sous Réglages, la marque tombait sur la colonne de la
+      // caméra, qui la renvoyait sur Réglages (retouche 2 du lot 6 du 5e, consultant UX UI : « La Mon » à l'arrivée au
+      // Creux). Puis le plus petit pas.
+      .map((m) => ({ m, hits: obstacles.some((x) => x !== o && overlaps(m, x)) ? 1 : 0, step: Math.hypot(m.left - r.left, m.top - r.top) }))
+      .sort((a, b) => a.hits - b.hits || a.step - b.step)
+      .map(({ m }) => m);
     if (moves[0]) r = moves[0];
   }
   // La colonne d'abord : poussée vers le haut par un autre bouton, la marque repasse sous elle ; si elle n'y tient pas

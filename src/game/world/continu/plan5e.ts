@@ -8,7 +8,7 @@
 // contre l'image, et convertis en unités du monde (`fromPlan5e`). Les deux étages se font avec la hauteur du terrain
 // seule (./terrain5e.ts), jamais un sol posé au-dessus d'un autre. Les noms sont ceux choisis par le mainteneur le
 // 19 octobre 2026 (les terres, la Lisière, les Instants, le Gaillard). Code pur.
-import type { Vec2 } from './geometry';
+import { closestOnSegment, type Vec2 } from './geometry';
 import type { Land } from './lands';
 import type { PathNode } from './network';
 import { portNode, type OpenPlace } from './plan6e';
@@ -184,14 +184,26 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
 ];
 
 /**
- * Les missions qui se jouent dans la scénette d'un lieu du 5e (GD-22, lot 3) : à la Montée, les cinq, sous le rail
- * gradué ; au Hameau (lot 5), les trois, devant le four commun ; les autres lieux n'ont pas encore la leur (l'écran
- * habituel).
+ * Les lieux du 5e déjà construits (GD-22, « un lieu complet par lot ») et les missions qui se jouent dans leur scénette :
+ * la seule liste, que lisent la scénette (./levelPlan.ts, `hasScenette`), l'habitant en modèle 3D (./habitants.ts,
+ * `hasHabitantModel`) et les missions des lieux (`PLACES_5E`). La Montée (lot 3) : les cinq, sous le rail gradué ; le
+ * Hameau (lot 5) : les trois, devant le four commun ; les Radeaux (lot 6) : les cinq, sur le quai devant la cabane du
+ * marchand. Les autres lieux n'ont pas encore la leur (l'écran habituel). Un lieu construit s'ajoute ici, et seulement
+ * ici.
  */
-const SCENES_5E: Partial<Record<PlaceId5e, readonly string[]>> = {
+export const BUILT_PLACES_5E = {
   montee: ['thermometer', 'adding', 'fractions', 'order-of-operations', 'conversions-angles'],
   hameau: ['gender-equality', 'discrimination', 'solidarity'],
-};
+  radeaux: ['proportion-tables', 'percentages', 'ratios', 'formulas', 'statistics'],
+} as const satisfies Partial<Record<PlaceId5e, readonly string[]>>;
+
+/** Un lieu du 5e déjà construit. */
+export type BuiltPlace5e = keyof typeof BUILT_PLACES_5E;
+
+/** Ce lieu du 5e est-il construit ? */
+export const isBuiltPlace5e = (id: string): id is BuiltPlace5e => Object.hasOwn(BUILT_PLACES_5E, id);
+
+const SCENES_5E: Partial<Record<PlaceId5e, readonly string[]>> = BUILT_PLACES_5E;
 
 /** Le rayon de toucher d'un lieu du 5e : large, rien de précis à viser. */
 const TOUCH_RADIUS = 7;
@@ -398,6 +410,28 @@ export const PATH_NODES_5E: readonly PathNode[] = [
   node('aig-4', [1030, 360]),
   node('aig-5', [1210, 370]),
 ];
+
+/**
+ * Le Détour du Creux (GD-22, lot 6 ; intention du directeur artistique du 20 octobre 2026) : un palétuvier géant creusé
+ * à son pied comme une porte, une lanterne dedans, hors des chemins, dans les Frondaisons. Sa place : au coude du grand
+ * chenal, sur sa rive est, au nord du Hameau et au sud-est des Radeaux, à une quinzaine d'unités du chemin qui mène aux
+ * Radeaux (du point [1 280, 790] proposé par le directeur artistique, poussé de dix pixels vers ce chemin : à 19 unités, on
+ * ne le devinait plus entre les troncs). `center` : le pied du fût ; `radius` : son rayon au sol ; son arche s'ouvre vers
+ * le chemin (`face`, le cap du point du chemin le plus proche) ; Kéo s'arrête sur le seuil (`threshold`), au pied de
+ * l'arche, le creux et sa lanterne devant lui (le fût, obstacle de la marche, ne se traverse pas) ;
+ * la sente part du chemin (`start`) jusqu'au seuil. Les tests des Détours vérifient la place (loin des chemins, des lieux
+ * et de l'eau).
+ */
+export const CREUX_5E = (() => {
+  const center = fromPlan5e([1290, 780]);
+  const radius = 2.8;
+  const at = (id: string) => PATH_NODES_5E.find((n) => n.id === id)!.at;
+  const start = closestOnSegment(center, at('fro-2'), at('fro-3')).point;
+  const face = Math.atan2(start.z - center.z, start.x - center.x);
+  const r = radius + 0.5;
+  const threshold = { x: center.x + Math.cos(face) * r, z: center.z + Math.sin(face) * r };
+  return { center, radius, face, threshold, start, sente: [start, threshold] as readonly Vec2[] } as const;
+})();
 
 /** Les liaisons : sentiers, le pont de chaque terre et la cabine de la Montée. */
 export const PATH_EDGES_5E: readonly (readonly [string, string])[] = [

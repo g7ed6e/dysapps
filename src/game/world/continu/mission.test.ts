@@ -183,6 +183,19 @@ describe('La marque évite les boutons', () => {
     expect(enBas.top + enBas.height).toBeLessThanOrEqual(760);
   });
 
+  it('en haut à droite, la flèche passe à gauche de Réglages, jamais renvoyée de lui à la colonne de la caméra (retouche 2 du lot 6 du 5e)', () => {
+    // Réglages (56 px à 9,6 px du haut), la colonne de la caméra 16 px dessous : sous Réglages, la marque (57 px de haut)
+    // tombait sur la caméra, qui la renvoyait sur Réglages ; « La Montée » se coupait en « La Mon ».
+    const reglages56 = { left: 958, top: 10, width: 56, height: 56 };
+    const camera = { left: 958, top: 82, width: 56, height: 184 };
+    const fleche = keepClear({ left: 900, top: 20, width: 205, height: 57 }, [reglages56, camera, yAller], 1024, 768, 8, 8);
+    for (const o of [reglages56, camera, yAller]) {
+      const clear = fleche.left + fleche.width <= o.left || fleche.left >= o.left + o.width || fleche.top + fleche.height <= o.top || fleche.top >= o.top + o.height;
+      expect(clear).toBe(true);
+    }
+    expect(fleche.left + fleche.width).toBeLessThanOrEqual(reglages56.left - 8);
+  });
+
   it('la flèche du bord gauche passe sous la colonne des accès directs, au bord, jamais à côté (GD-20, lot 1)', () => {
     // La colonne : 72 px depuis le bord, jusqu'à 184 + 16 px depuis le haut (consultant UX UI).
     const colonne = { left: 0, top: 0, width: 72, height: 200, below: true };

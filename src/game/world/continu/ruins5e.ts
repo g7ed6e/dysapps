@@ -3,12 +3,10 @@
 // dessinée dans le repère de son lieu (y = 0 au sol, sous le centre), en quelques volumes de 4 à 6 aplats : la pierre
 // des aiguilles (gris chaud moussu), le bois gris de la ruine, l'ocre des Contreforts, la mousse, le bronze éteint ; rien
 // de presque noir, rien à lire. Retouche du lot 2 (directeur artistique : « des boîtes génériques ») : chaque ruine a sa
-// hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts), comme le Hameau (./hameau5e.ts, lot 5) ; le Donjon, une tour carrée sur son piton de roche ; les Radeaux, des plateformes sur pieux
-// posées sur l'eau du grand chenal. Code pur.
+// hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts), comme le Hameau (./hameau5e.ts, lot 5)
+// et les Radeaux (./radeaux5e.ts, lot 6) ; le Donjon, une tour carrée sur son piton de roche. Code pur.
 import type { FacetBuilder } from './facets';
-import { COLORS_5E, PLACES_5E, type PlaceId5e } from './plan5e';
-import { heightAt5e } from './terrain5e';
-import { standingHeight } from './terrain';
+import { COLORS_5E, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter sur une pente. */
 const SINK = -0.8;
@@ -49,30 +47,7 @@ function brokenWall(b: FacetBuilder, x: number, z: number, length: number, heigh
   }
 }
 
-/** La hauteur du sol sous un lieu du 5e (là où la vue pose sa ruine). */
-const siteY = (id: PlaceId5e): number => standingHeight(heightAt5e(PLACES_5E.find((p) => p.id === id)!.center));
-
-/** Le pont des plateformes des Radeaux au-dessus de l'eau, dans le monde. */
-const RAFT_DECK = 0.55;
-
-/**
- * Les Radeaux : sur l'eau du grand chenal, au sud de leur porte (retouche du lot 2, directeur artistique, « les
- * plateformes des Radeaux sur l'eau ») : trois plateformes de rondins sur pieux, l'une penchée, reliées à la rive par une
- * passerelle ; un mât de pieux plus haut, qui les signale de loin.
- */
-function radeaux(b: FacetBuilder): void {
-  // Le repère de la ruine est posé au sol du lieu : l'eau est `siteY` plus bas.
-  const deck = RAFT_DECK - siteY('radeaux');
-  const pile = (x: number, z: number, top: number) => b.prism({ x, y: deck - 2.4, z }, 0.35, 0.3, top - deck + 2.4, 5, C.woodShade);
-  b.box({ x: 0, y: SINK, z: 2.5 }, [1.8, 0.35 - SINK, 5], C.woodShade, C.wood);
-  b.box({ x: -1.5, y: deck - 0.4, z: 8 }, [6, 0.6, 4.5], C.woodShade, C.wood);
-  b.box({ x: 4, y: deck - 0.4, z: 10, yaw: -0.3, pitch: 0.1 }, [4.5, 0.6, 3.6], C.woodShade, C.wood);
-  b.box({ x: -2.5, y: deck - 0.4, z: 13, yaw: 0.5 }, [3.6, 0.5, 3], C.woodShade, C.wood);
-  for (const [x, z, top] of [[-4.5, 6, deck + 1.6], [1.5, 6, deck + 1.2], [-4.5, 10, deck + 1], [1.5, 10, deck + 1.4], [6, 12, deck + 1.1], [-4, 14.5, deck + 0.9]] as const) pile(x, z, top);
-  pile(-1.5, 8, deck + 6.5);
-}
-
-/** La Croisée :/** La Croisée : la borne de pierre du carrefour, cassée en biseau, sur son dallage en croix. */
+/** La Croisée : la borne de pierre du carrefour, cassée en biseau, sur son dallage en croix. */
 function croisee(b: FacetBuilder): void {
   b.box({ x: 0, y: SINK, z: 0 }, [10, 0.35 - SINK, 3], C.shade, C.stone);
   b.box({ x: 0, y: SINK, z: 0 }, [3, 0.35 - SINK, 10], C.shade, C.stone);
@@ -188,11 +163,10 @@ function oracle(b: FacetBuilder): void {
 }
 
 /**
- * La ruine de chaque lieu du 5e sauf la Montée (./montee5e.ts, lot 3) et le Hameau (./hameau5e.ts, lot 5), qui ont leur
- * fichier, dessinée dans son repère.
+ * La ruine de chaque lieu du 5e pas encore construit (les lieux construits ont leur fichier : ./montee5e.ts, lot 3 ;
+ * ./hameau5e.ts, lot 5 ; ./radeaux5e.ts, lot 6), dessinée dans son repère.
  */
-export const RUINS_5E: Readonly<Record<Exclude<PlaceId5e, 'montee' | 'hameau'>, (b: FacetBuilder) => void>> = {
-  radeaux,
+export const RUINS_5E: Readonly<Record<Exclude<PlaceId5e, BuiltPlace5e>, (b: FacetBuilder) => void>> = {
   croisee,
   instants,
   semaphore,

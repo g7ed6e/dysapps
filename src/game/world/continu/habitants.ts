@@ -5,6 +5,7 @@
 // près consulte (./scenette.ts : sans modèle, le pion dessiné en code ; avec, le décor sans son corps). Ce qui charge le
 // fichier et le dessine est dans la vue (../../importedCharacters.ts, `loadHabitant` ; ../../three/archipeo/habitantModels.ts).
 import { levelOfPlace, type PlaceId } from './levelPlan';
+import { isBuiltPlace5e } from './plan5e';
 import type { PlaceId as PlaceId6e } from './plan6e';
 
 /** La hauteur de l'habitant d'une scénette, en unités du monde (celle du pion dessiné en code, et de son modèle). */
@@ -38,15 +39,12 @@ export const HABITANT_HALVES: Readonly<Record<PlaceId6e, { x: number; z: number 
 export const habitantModelName = (place: PlaceId): string => `${levelOfPlace(place)}-habitant-${place}`;
 
 /**
- * Les lieux du 5e dont l'habitant se montre en modèle 3D dans sa scénette (choix du mainteneur, 19 octobre 2026 : les
- * quatorze fichiers sont là ; ils entrent lieu par lieu, avec leur scénette) : le boulanger du Hameau (GD-22, lot 5), et
- * la fontainière de la Montée, entrée au même lot (les deux scénettes ne s'ouvrent jamais ensemble : aucun triangle de
- * plus). Ailleurs au 5e, le pion dessiné en code. Au 6e, tous.
+ * L'habitant de ce lieu se montre-t-il en modèle 3D (sinon, son pion dessiné en code) ? Au 6e, tous ; au 5e, celui de
+ * chaque lieu construit (choix du mainteneur, 19 octobre 2026 : les quatorze fichiers sont là ; ils entrent lieu par
+ * lieu, avec leur scénette, ./plan5e.ts, `BUILT_PLACES_5E`) : la fontainière de la Montée et le boulanger du Hameau (lot
+ * 5), le marchand des Radeaux (lot 6). Deux scénettes ne s'ouvrent jamais ensemble : aucun triangle de plus.
  */
-const MODELLED_5E: ReadonlySet<PlaceId> = new Set<PlaceId>(['hameau', 'montee']);
-
-/** L'habitant de ce lieu se montre-t-il en modèle 3D (sinon, son pion dessiné en code) ? */
-export const hasHabitantModel = (place: PlaceId): boolean => levelOfPlace(place) === '6e' || MODELLED_5E.has(place);
+export const hasHabitantModel = (place: PlaceId): boolean => levelOfPlace(place) === '6e' || isBuiltPlace5e(place);
 
 /** Le fichier du modèle, dans son dossier : une seule version, l'habitant ne se voit que de près, dans sa scénette. */
 export const HABITANT_FILE = 'habitant.glb';

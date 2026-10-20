@@ -31,8 +31,14 @@ interface StageSlice {
 /** Une partie : les tranches qu'elle pose (une, ou deux quand le haut et les abords vont ensemble). */
 export type PartShape = readonly StageSlice[];
 
+/** La tranche `from`–`to` d'une étape prend-elle cette rangée de cette étape ? */
+const takesRow = (s: StageSlice, stage: Stage | 'ruine', row: number) => s.stage === stage && row >= s.from - 1e-9 && row < s.to - 1e-9;
+
 /** La tranche `from`–`to` d'une étape prend-elle ce volume ? Sa rangée y est. */
-const takes = (s: StageSlice, p: PlacePiece) => s.stage === p.stage && p.row >= s.from - 1e-9 && p.row < s.to - 1e-9;
+const takes = (s: StageSlice, p: PlacePiece) => takesRow(s, p.stage, p.row);
+
+/** La rangée `row` de l'étape `stage` est-elle posée par l'une de ces parties ? */
+export const rowPosed = (parts: readonly PartShape[], stage: Stage, row: number): boolean => parts.some((part) => part.some((s) => takesRow(s, stage, row)));
 
 /** Une étape est-elle entièrement posée par ces parties ? (Ses tranches couvrent de 0 à 1.) */
 export function stageComplete(parts: readonly PartShape[], stage: Stage): boolean {
@@ -69,7 +75,7 @@ export function constructionFacets(place: PlaceId, parts: readonly PartShape[], 
 export function fallenFacets(place: PlaceId, parts: readonly PartShape[], ground: (x: number, z: number) => number): Facets {
   const lying = (p: PlacePiece) => {
     const u = p.until;
-    return u !== undefined && !parts.some((part) => part.some((s) => s.stage === u.stage && u.row >= s.from - 1e-9 && u.row < s.to - 1e-9));
+    return u !== undefined && !rowPosed(parts, u.stage, u.row);
   };
   return placeFacets(drawPieces(place, lying), siteOf(place, ground));
 }
@@ -87,8 +93,8 @@ export const WHOLE: PartShape = [
  * d'amont des Écluses, le hangar à sel des Marais salants, la turbine (le haut) ; le ponton du Chantier naval (les
  * abords : sa trace d'Information est au bout du ponton) ; le platelage de la Mangrove (le corps, lot L8a), les abords
  * des Ruines (lot L8b), la terrasse de l'Observatoire (les abords, lot L8c), la toiture de la Halle (le haut, lot L8d).
- * Tant que cette étape n'est pas posée, la trace attend : rien ne flotte dans le vide. Au 5e, la Montée (GD-22, lot 3) et
- * le Hameau (lot 5) ont les leurs ; les autres lieux du 5e n'en ont pas encore.
+ * Tant que cette étape n'est pas posée, la trace attend : rien ne flotte dans le vide. Au 5e, la Montée (GD-22, lot 3), le
+ * Hameau (lot 5) et les Radeaux (lot 6) ont les leurs ; les autres lieux du 5e n'en ont pas encore.
  */
 const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   phare: 2,
@@ -113,39 +119,50 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   // Le 5e (GD-22, lot 3) : la Montée, son haut (./montee5e.ts) ; le Hameau (lot 5), son corps, et chaque trace la sienne.
   montee: placeArt('montee')!.traceStage,
   hameau: placeArt('hameau')!.traceStage,
+  // Les Radeaux (lot 6) : leur corps, et chaque trace sa partie (le corps en trois parties, puis le haut, les abords).
+  radeaux: placeArt('radeaux')!.traceStage,
 };
 
 /**
- * L'étape qui porte la trace d'une mission : la sienne si le lieu la donne (au Hameau, GD-22, lot 5 : la trace de la
- * mission n se montre avec l'étape n), sinon celle du lieu.
+ * Ce qui porte la trace d'une mission : son étape (la sienne si le lieu la donne, au Hameau, GD-22, lot 5 : la trace de
+ * la mission n se montre avec l'étape n ; sinon celle du lieu) et, si le lieu la donne, la rangée de sa partie dans cette
+ * étape (aux Radeaux, lot 6 : le corps en trois parties, chaque trace avec la sienne).
  */
-const missionTraceStage = (place: PlaceId, mission: string): Stage | undefined => {
+const missionTraceSupport = (place: PlaceId, mission: string): { stage: Stage; row?: number } | undefined => {
   const traces = placeArt(place)?.traces;
-  const own = traces && Object.hasOwn(traces, mission) ? traces[mission].stage : undefined;
-  return own ?? TRACE_STAGE[place];
+  const own = traces && Object.hasOwn(traces, mission) ? traces[mission] : undefined;
+  const stage = own?.stage ?? TRACE_STAGE[place];
+  return stage === undefined ? undefined : { stage, row: own?.row };
 };
+
+/** Ce support est-il posé ? Sa partie (sa rangée), ou, sans rangée, son étape entière. */
+const supportPosed = (parts: readonly PartShape[], s: { stage: Stage; row?: number }): boolean => (s.row === undefined ? stageComplete(parts, s.stage) : rowPosed(parts, s.stage, s.row));
 
 /**
  * L'étape qui porte la trace d'un lieu est-elle posée ? Sa scénette se joue alors sur elle (la galerie du Phare, le
  * séchoir des Filets, la grue des Quais, la porte d'amont des Écluses) ; sinon, avec ce qui est là, au sol ou sur l'eau :
- * une scénette se joue sur le lieu tel qu'il est bâti, rien d'achevé ne se montre avant d'être posé.
+ * une scénette se joue sur le lieu tel qu'il est bâti, rien d'achevé ne se montre avant d'être posé. Un lieu dont les
+ * traces vont par partie (`TraceArt.row`, aux Radeaux) : dès que la partie de l'une d'elles est posée dans cette étape.
  */
 export const traceStagePosed = (place: PlaceId, parts: readonly PartShape[]): boolean => {
   const stage = TRACE_STAGE[place];
-  return stage !== undefined && stageComplete(parts, stage);
+  if (stage === undefined) return false;
+  if (stageComplete(parts, stage)) return true;
+  const traces = placeArt(place)?.traces;
+  return traces !== undefined && Object.values(traces).some((t) => t.row !== undefined && (t.stage ?? stage) === stage && rowPosed(parts, stage, t.row));
 };
 
 /** La trace d'un lieu se montre-t-elle ? Sa scénette réussie (`done`), et l'étape qui la porte posée. */
 export const traceShown = (place: PlaceId, parts: readonly PartShape[], done: boolean): boolean => done && traceStagePosed(place, parts);
 
 /**
- * Les traces d'un lieu à montrer, parmi ses missions réussies (`done`) : celles dont l'étape est posée. Partout, l'étape du
- * lieu ; au Hameau, celle de chaque mission.
+ * Les traces d'un lieu à montrer, parmi ses missions réussies (`done`) : celles dont le support est posé. Partout,
+ * l'étape du lieu ; au Hameau, celle de chaque mission ; aux Radeaux, la partie de chaque mission (`TraceArt.row`).
  */
 export function posedTraces(place: PlaceId, parts: readonly PartShape[], done: readonly string[]): readonly string[] {
   return done.filter((m) => {
-    const stage = missionTraceStage(place, m);
-    return stage !== undefined && stageComplete(parts, stage);
+    const support = missionTraceSupport(place, m);
+    return support !== undefined && supportPosed(parts, support);
   });
 }
 

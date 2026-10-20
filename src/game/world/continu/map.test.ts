@@ -156,6 +156,22 @@ describe('Les étiquettes de la Carte', () => {
     expect(high.top + at.h).toBeLessThanOrEqual(at.y);
   });
 
+  it('un lieu dont le repère est au sud, sur l’eau (les Radeaux), garde son nom au-dessus, même Kéo devant sa porte', () => {
+    const screen = { width: 800, height: 360 };
+    const at = { x: 400, y: 200, w: 200, h: 48 };
+    // Les radeaux sous le point, que les étiquettes laissent à découvert, comme un bouton.
+    const rafts = { left: 380, top: 205, right: 440, bottom: 240 };
+    const [alone] = layoutMapLabels([{ id: 'radeaux', kind: 'open', ...at, above: true }], [rafts], screen);
+    expect(alone.top + at.h).toBeLessThanOrEqual(at.y);
+    // Kéo devant la porte, juste au-dessus du point : le nom reste au-dessus de lui, à côté, jamais au sud des radeaux.
+    const spots = layoutMapLabels([{ id: 'keo', kind: 'keo', x: 405, y: 190, w: MAP_KEO_DISC, h: 44 }, { id: 'radeaux', kind: 'open', ...at, above: true }], [rafts], screen);
+    const name = spots.find((s) => s.id === 'radeaux')!;
+    expect(name.name).toBe(true);
+    expect(name.top + at.h).toBeLessThanOrEqual(at.y);
+    const box = { left: name.left, top: name.top, right: name.left + at.w, bottom: name.top + at.h };
+    expect(box.right <= rafts.left || box.left >= rafts.right || box.bottom <= rafts.top || box.top >= rafts.bottom).toBe(true);
+  });
+
   it('aucune étiquette n’en recouvre une autre, même Kéo devant son lieu, dans l’écran et hors des boutons', () => {
     const screen = { width: 844, height: 390 };
     const retour = { left: 20, top: 286, right: 200, bottom: 366 };

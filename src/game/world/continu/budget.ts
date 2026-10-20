@@ -4,6 +4,7 @@
 // (GD-20, L6b : « Un iPad 9e génération doit pouvoir faire tourner le jeu, donc on est large en triangles pour
 // l'instant »), puis à 86 000 le 17 octobre 2026 (GD-20, point 3, lot 3), les appels inchangés, puis à 98 000 triangles et 21
 // appels le 18 octobre 2026 pour les habitants en 3D (« on peut augmenter le budget », mesure sur iPad avant la fusion). Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
+import { creuxTriangles } from './creux5e';
 import { FAUNA, birdFacets, detourTrianglesAtMost, spoutFacets, whaleFacets } from './detours';
 import { NEF_MODEL_TRIANGLES, nefSiteTriangles } from './nef';
 import { NEF_5E_MODEL_TRIANGLES, nef5eSiteTriangles } from './nef5e';
@@ -14,6 +15,7 @@ import { bridgeFacets, bridgeMapMark, cabinCarFacets, isCabin } from './bridges'
 import { monteeGlowBand } from './montee5e';
 import { linkedLands } from './lands';
 import { planFor, scenePlace, type OpenWorldLevel, type ScenePlaceId } from './levelPlan';
+import { placeArt } from './northShore';
 import { networkSamples, pathRibbons } from './paths';
 import { PLACES, type PlaceId } from './plan6e';
 import { lanternLight, modelOfPlace } from './places';
@@ -446,7 +448,8 @@ function scenetteCost5e(): { triangles: number; calls: number } {
  * (three/archipeo/scene.ts, `askQuestion`), et aucune pose ne commence pendant une question (`setPlaces`). Le dirigeable
  * (lot 4) et la Lisière vont dans le maillage des lieux ; pendant le départ (`depart`), la Nef et le mur de nuages
  * passent dans deux maillages à part, le maillage de la pose fermé (`startNefTrip`), ni question ni scénette ouverte.
- * La faune de chaque terre (./wildlife5e.ts), un maillage. Ni aménagements, ni Détours : ils viennent avec leurs lots.
+ * La faune de chaque terre (./wildlife5e.ts), un maillage. Le Creux (lot 6, ./creux5e.ts), seul Détour du 5e, sa sente
+ * tracée comprise, dans le maillage des lieux ; pas encore d'aménagements.
  */
 export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenette'): OpenWorldCost5e[] {
   const field = buildHeightField5e();
@@ -460,6 +463,7 @@ export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenett
     { poste: 'lieux', ...placesCost5e() },
     { poste: 'brume', triangles: veilFacets(LINKED_LANDS_5E).triangles, calls: 1 },
     { poste: 'failles', triangles: riftMistFacets().triangles, calls: 1 },
+    { poste: 'détours', triangles: creuxTriangles().withSente, calls: 0 },
     // La vie animale du 5e (piste « Ambiance par terre », 19 octobre 2026, ./wildlife5e.ts) : toutes les bêtes à la fois,
     // un maillage (celui de la baleine au 6e).
     { poste: 'faune', triangles: groupsTriangles(wildlifeGroups5e(), allCritterForms()), calls: 1 },
@@ -479,7 +483,7 @@ export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenett
 /**
  * La Carte du 5e, en un seul plan : le ciel, toute l'île de loin, la mer, les chemins, les lieux (deux appels, le pire),
  * le trait double des ponts et de la cabine, la ligne de la falaise et la bande sombre des chemins (dans le maillage des
- * lieux), la brume des terres fermées, Kéo ; jamais la brume des failles.
+ * lieux), le Creux et sa sente (dans le même maillage), la brume des terres fermées, Kéo ; jamais la brume des failles.
  */
 export function mapCost5e(): { triangles: number; calls: number } {
   const field = buildHeightField5e();
@@ -489,8 +493,14 @@ export function mapCost5e(): { triangles: number; calls: number } {
   const places = placesCost5e();
   const marks = LINKED_LANDS_5E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + cliffMapLine().triangles + pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark).triangles;
   const veil = veilFacets(LINKED_LANDS_5E).triangles;
+  // Le repère des lieux de loin, sur la Carte seulement (les Radeaux : le dessus des radeaux, éclairci), au plus chargé.
+  const origin = { x: 0, y: 0, z: 0 };
+  const placeMarks = PLAN_5E.places.reduce((s, p) => {
+    const mark = placeArt(p.id)?.mapMark;
+    return s + (mark ? Math.max(mark(origin, () => true).triangles, mark(origin, () => false).triangles) : 0);
+  }, 0);
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + marks + veil + KEO.triangles + nefCost5e().triangles,
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + creuxTriangles().withSente + marks + placeMarks + veil + KEO.triangles + nefCost5e().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
   };
 }
