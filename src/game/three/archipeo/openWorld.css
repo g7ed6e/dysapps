@@ -591,6 +591,17 @@
   font-size: max(18px, 1.15rem);
   padding-block: 0;
 }
+/* Sur tablette, dans une scénette dont l'item a son rappel sous la question : « Presque ! » et l'indice redit passent à
+   droite de la colonne, sous la barre du haut, sur leur fond uni ; dans la colonne, la carte du rappel n'avait plus sa
+   hauteur et le retour couvrait son titre (retouche 2 du lot 5 du 5e, référent dys et consultant UX UI). */
+.world-question .in-world.scenette.avec-rappel:not(.low):not(.simple) > .feedback {
+  position: absolute;
+  top: calc(var(--question-top) * 2 + 56px);
+  left: calc(var(--question-left) + var(--question-width) + 12px);
+  right: 16px;
+  max-width: 30rem;
+  margin: 0;
+}
 /* « Presque ! » sur un écran bas : une étiquette à droite de la colonne, sous la barre du haut ; l'indice reste
    derrière l'ampoule. */
 .world-question .in-world.low > .feedback {

@@ -302,9 +302,13 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
     const right = width - edge;
     const sideLeft = Math.max(S.low.left * width, base.panel.left + base.panel.width + edge);
     if (base.low && needs.aid && sideLeft < width / 2 + edge) return lowWithAid(n, width, height, base, sideLeft, share);
+    // La rangée à 16 px du bord droit ; à côté de la colonne, elle glisse vers elle, à 8 px d'elle au plus près, pour
+    // garder sa largeur (retouche 2 du lot 5 du 5e : plus étroites de 4 px, « Constitution » ne tenait plus dans son
+    // étiquette, et la rangée passait sous la colonne, qui coupait la phrase).
     const rowRight = width - Math.max(edge, S.rowEdge);
-    const beside = !needs.wideRow && (rowRight - sideLeft - (n - 1) * L.gap) / n >= (needs.words ? L.minLabelBells : L.minLabel);
-    const rowLeft = beside ? sideLeft : edge;
+    const besideLeft = Math.max(base.panel.left + base.panel.width + L.edgeLow, sideLeft - (Math.max(edge, S.rowEdge) - edge));
+    const beside = !needs.wideRow && (rowRight - besideLeft - (n - 1) * L.gap) / n >= (needs.words ? L.minLabelBells : L.minLabel);
+    const rowLeft = beside ? besideLeft : edge;
     const { slots, objectHeight } = rowSlots(n, rowLeft, rowRight, S.low.rowTop * height, S.low.rowBottom * height, lh, share, needs.wideRow ? S.wideLabel : L.maxWidth);
     const highest = Math.min(...slots.map((s) => s.hit.top));
     const panelBottom = beside ? height - edge : highest - edge;

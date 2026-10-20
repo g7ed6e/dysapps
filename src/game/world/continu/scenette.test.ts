@@ -82,6 +82,20 @@ describe('La place de la scénette à l’écran', () => {
         }
   });
 
+  it('à côté de la colonne, sur tablette, la rangée glisse vers elle et garde la largeur de ses étiquettes (retouche 2 du lot 5 du 5e)', () => {
+    for (const [w, h] of screens.filter(([, h]) => h >= ANSWER_LAYOUT.low)) {
+      const base = questionLayout({ count: 3 }, w, h);
+      const l = scenetteLayout({ count: 3, column: true }, w, h, base);
+      const panelRight = l.panel.left + l.panel.width;
+      // La largeur d'avant la marge de 16 px : de 12 px après la colonne à 12 px du bord.
+      const before = (w - ANSWER_LAYOUT.edge - (panelRight + ANSWER_LAYOUT.edge) - 2 * ANSWER_LAYOUT.gap) / 3;
+      for (const s of l.slots) {
+        expect(s.label.right - s.label.left, `${w}×${h}`).toBeGreaterThan(Math.min(ANSWER_LAYOUT.maxWidth, before) - 1e-6);
+        expect(s.hit.left - panelRight, `${w}×${h}`).toBeGreaterThanOrEqual(ANSWER_LAYOUT.edgeLow - 1e-6);
+      }
+    }
+  });
+
   it('sur un écran bas, la règle des Filets à droite au-dessus de la scène, la rangée sous la colonne', () => {
     for (const [w, h] of screens.filter(([, h]) => h < ANSWER_LAYOUT.low))
       for (const widen of [0, 1]) {

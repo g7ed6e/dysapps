@@ -70,6 +70,8 @@ const C = {
   potShade: 0x8d5434,
   // La pale des pelles à pain, plus claire que le bois neuf : elle se lit de loin contre l'enduit.
   peel: 0xd6bf94,
+  // Le dedans des barques, plus sombre que leur flanc : le bord se lit.
+  boatInside: 0x6e5a4a,
   log: 0x8a6a4e,
   logEnd: 0xb59a74,
   // Le boulanger, en pion (son modèle 3D prend sa place, ./habitants.ts) : chemise de lin, tablier clair, pantalon brun,
@@ -217,21 +219,26 @@ function lantern(b: FacetBuilder, at: Vec3, lit: boolean, s = 1): void {
   b.prism({ x: at.x, y: y + 0.42 * s, z: at.z, yaw: Math.PI / 6 }, 0.26 * s, 0, 0.18 * s, 6, C.bronze);
 }
 
-/** Une barque plate : sa coque en profil (la proue relevée), épaissie en travers, et un banc. `sunk` : à moitié coulée. */
+/**
+ * Une barque plate : sa coque en profil, la proue relevée haut au-dessus de l'eau, épaissie en travers ; son dessus,
+ * le dedans de la coque, d'un brun sombre, et le flanc clair : le bord se lit comme un bord (retouche 2), au même coût.
+ * Et un banc. `sunk` : à moitié coulée.
+ */
+const HULL: readonly (readonly [number, number])[] = [
+  [-1.05, 0],
+  [0.85, 0],
+  [1.55, 0.78],
+  [-1.3, 0.5],
+];
+
 function boat(b: FacetBuilder, at: { x: number; z: number; yaw: number }, water: number, sunk = false): void {
   const y = water - 0.2;
-  const hull: readonly (readonly [number, number])[] = [
-    [-1.1, 0],
-    [1.0, 0],
-    [1.45, 0.48],
-    [-1.3, 0.48],
-  ];
   if (sunk) {
-    b.extrude({ x: at.x, y: y - 0.25, z: at.z + 0.45, yaw: at.yaw, pitch: 0.12 }, hull, 0.9, C.wornShade, C.wornWood);
+    b.extrude({ x: at.x, y: y - 0.25, z: at.z + 0.45, yaw: at.yaw, pitch: 0.12 }, HULL, 0.9, C.boatInside, C.wornWood);
     return;
   }
-  b.extrude({ x: at.x, y, z: at.z + 0.45 * Math.cos(at.yaw), yaw: at.yaw }, hull, 0.9, C.newShade, C.newWood);
-  b.box({ x: at.x, y: y + 0.32, z: at.z, yaw: at.yaw }, [0.32, 0.18, 0.8], C.plank);
+  b.extrude({ x: at.x, y, z: at.z + 0.45 * Math.cos(at.yaw), yaw: at.yaw }, HULL, 0.9, C.boatInside, C.newWood);
+  b.box({ x: at.x, y: y + 0.36, z: at.z, yaw: at.yaw }, [0.32, 0.18, 0.8], C.plank);
 }
 
 /** Les quatre pieux d'un rectangle du ponton, du fond (l'eau ou le sol) au dessous des planches. */
@@ -318,27 +325,25 @@ function chimney(b: FacetBuilder): void {
 }
 
 /**
- * La fumée, immobile, courte et pâle : une seule silhouette qui monte du chapeau, s'élargit un peu, puis s'amincit vers
- * le haut sans pointe (retouche 1 : trois bouffées se lisaient comme trois prismes ; droite et pointue, comme une
- * flèche), en troncs de cône bout à bout, le bas de chacun du rayon du haut du précédent, chacun glissé vers l'ouest
- * (rayon du bas, rayon du haut, hauteur, glissement) : elle penche avec le vent.
+ * La fumée, immobile, courte et pâle : deux bouffées arrondies, presque droites au-dessus du chapeau, la plus large en
+ * bas (retouche 2 : le tronc de cône penché se lisait comme une corne). Chaque bouffée, deux troncs de cône à sept pans
+ * dos à dos, qui s'élargissent puis se referment (rayon au milieu, hauteur, léger glissement vers l'ouest).
  */
-const SMOKE = [
-  [0.3, 0.42, 0.55, 0.12],
-  [0.42, 0.36, 0.6, 0.28],
-  [0.36, 0.16, 0.55, 0.32],
+const PUFFS = [
+  [0.55, 0.6, 0.06],
+  [0.38, 0.45, 0.1],
 ] as const;
 
 function smoke(b: FacetBuilder): void {
   const K = CHIMNEY;
   let x = K.x,
-    y = K.h + 0.3;
-  SMOKE.forEach(([r0, r1, h, drift], i) => {
-    // Chaque tronc penche vers l'ouest de son glissement (tourné d'un quart de tour, basculé) : son bas reste sur le haut
-    // du précédent, son haut glisse de `drift` vers l'ouest et monte de `h`.
-    b.prism({ x, y, z: K.z, yaw: -Math.PI / 2, pitch: Math.atan2(drift, h) }, r0, r1, Math.hypot(h, drift), 7, i % 2 ? C.smokeShade : C.smoke, C.smoke);
+    y = K.h + 0.22;
+  PUFFS.forEach(([r, h, drift], i) => {
+    const color = i % 2 ? C.smokeShade : C.smoke;
+    b.prism({ x, y, z: K.z }, r * 0.6, r, h / 2, 7, color, C.smoke);
+    b.prism({ x, y: y + h / 2, z: K.z }, r, r * 0.45, h / 2, 7, color, C.smoke);
     x -= drift;
-    y += h;
+    y += h * 0.85;
   });
 }
 
@@ -608,12 +613,12 @@ function inWorld(b: FacetBuilder, c: Vec3, draw: (l: FacetBuilder) => void): voi
 
 /**
  * Les deux pelles à pain, identiques, debout côte à côte contre le mur à l'ouest de la bouche (jamais croisées) ; leur
- * pale large et claire se lit de loin (retouche 1).
+ * pale large et claire se lit de loin (retouches 1 et 2), un écart entre elles.
  */
-const PEELS = [-1.0, -1.65] as const;
+const PEELS = [-1.05, -2.0] as const;
 
-/** La pale d'une pelle : sa largeur, sa hauteur. */
-const PEEL_BLADE = { w: 0.55, h: 0.85 } as const;
+/** La pale d'une pelle : sa largeur, sa hauteur (retouche 2 : une fois et demie plus large, deux outils pareils d'un coup d'œil). */
+const PEEL_BLADE = { w: 0.8, h: 0.85 } as const;
 
 function peels(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
