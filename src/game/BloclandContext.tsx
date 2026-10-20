@@ -131,10 +131,7 @@ interface BloclandContextValue {
   batisseur: boolean;
   /** Ouvre le mode bâtisseur : la sauvegarde est gelée, la partie devient un bac à sable. */
   ouvrirBatisseur: () => void;
-  /**
-   * La mesure automatique (`?mesures=auto`), ou le niveau d'essai de la pré-version (`?niveau=5e`) : la sauvegarde
-   * gelée, le jeu sur cette partie en mémoire.
-   */
+  /** La mesure automatique (`?mesures=auto`) : la sauvegarde gelée, le jeu sur cette partie en mémoire. */
   chargerPourLesMesures: (etat: GameState) => void;
 }
 

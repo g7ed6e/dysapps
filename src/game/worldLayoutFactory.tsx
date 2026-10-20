@@ -7,6 +7,7 @@
 // ./world/continu/isolation.test.ts).
 import { lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
+import { BuilderBar } from '../components/BuilderBar';
 import { Loading } from '../components/Loading';
 import { useBlocland } from './BloclandContext';
 import { getBiome } from './biomes';
@@ -57,10 +58,20 @@ export function WorldEntry() {
     archipelago,
     route: biomeId,
   });
-  if (layout === 'grid' || !hasOpenWorld(archipelago)) return <WorldPage />;
+  // Le mode bâtisseur change de niveau d'un toucher (./components/BuilderBar.tsx) : le monde ouvert d'un autre niveau
+  // repart de zéro (`key`).
+  const monde =
+    layout === 'grid' || !hasOpenWorld(archipelago) ? (
+      <WorldPage />
+    ) : (
+      <Suspense fallback={<Loading className="world-loading" text="Chargement du monde…" />}>
+        <OpenWorldPage key={archipelago} level={archipelago} />
+      </Suspense>
+    );
   return (
-    <Suspense fallback={<Loading className="world-loading" text="Chargement du monde…" />}>
-      <OpenWorldPage level={archipelago} />
-    </Suspense>
+    <>
+      {monde}
+      <BuilderBar levels={layout === 'continuous'} />
+    </>
   );
 }

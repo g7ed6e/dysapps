@@ -5792,6 +5792,20 @@ details.island-fold-objectif {
 }
 
 
+/* Le mode bâtisseur, dans le monde : un bouton par niveau et la sortie, en haut au centre, au-dessus de la vue. */
+.builder-bar {
+  position: fixed;
+  top: calc(0.75rem + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  max-width: calc(100% - 2 * (52px + 1.5rem));
+}
+
 /* Une nouvelle version de l'application attend : une bande sous l'en-tête. */
 .update-banner {
   display: flex;
