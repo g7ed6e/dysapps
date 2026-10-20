@@ -8,7 +8,7 @@ import { useSettings, useUnivers } from '../core/SettingsContext';
 import { unlockSpeech } from '../core/speech';
 import { loadJSON, saveJSON } from '../core/storage';
 import { MESSAGE_UNIVERS, MESSAGE_UNIVERS_KEY, PRESENTER_ARCHIPEO, UNIVERS } from '../core/universe';
-import { BUILDER_BANNER } from './BuilderBanner';
+import { BUILDER_BANNER } from './BuilderBar';
 import { avancer, gesteDeGlissement, gesteDeTouche, gesteDeZone, LONGUEUR_SUITE, type Geste } from './secretCode';
 import { Icon } from './Icon';
 import { frenchTypography } from './math/RichText';
