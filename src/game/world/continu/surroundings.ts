@@ -6,7 +6,9 @@
  */
 import type { FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
-import type { PlaceId } from './plan6e';
+import type { ScenePlaceId as PlaceId } from './levelPlan';
+import { hameauSurroundings } from './hameauSurroundings';
+import { monteeSurroundings } from './monteeSurroundings';
 import { quaisSurroundings } from './quaisSurroundings';
 import { eclusesSurroundings } from './eclusesSurroundings';
 import { saltworksSurroundings } from './saltworksSurroundings';
@@ -40,13 +42,16 @@ export type Surroundings = (b: FacetBuilder, floor: Vec3, state: SurroundingsSta
 /**
  * Le plafond des abords d'un lieu, en triangles. Le poste de la scénette (./budget.ts) compte le lieu le plus chargé,
  * aux Filets au 18 octobre 2026 (1 876 triangles de décor de près au pire, moins le pion que son modèle remplace), pour
- * un monde à 99 960 triangles sur 100 000 : un lieu le garde sous l'enveloppe tant que son décor de près au pire, abords
+ * un monde à 99 960 triangles sur 100 000 (100 094 sur 100 140 depuis les bêtes des côtes, 19 octobre 2026) : un lieu le garde sous l'enveloppe tant que son décor de près au pire, abords
  * compris et pion retiré, ne passe pas 1 916 triangles. Le test de l'enveloppe (./continu.test.ts) et celui de chaque
  * lieu du registre (./surroundings.test.ts) le vérifient.
  */
 export const SURROUNDINGS_MAX = 1500;
 
 export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
+  // Le 5e (GD-22, lot 3) : la Montée ; lot 5 : le Hameau.
+  montee: monteeSurroundings,
+  hameau: hameauSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,

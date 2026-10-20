@@ -9,7 +9,7 @@
 import type { Vec2 } from './geometry';
 import type { Land, LinkedLand } from './lands';
 import { COAST, LANDS_6E, OFFSHORE, PATH_EDGES, PLACES, STRAITS, TERRAIN, type OpenPlace as OpenPlaceOf, type PlaceId as PlaceId6e } from './plan6e';
-import { COAST_5E, LANDS_5E, LINKS_5E, PATH_EDGES_5E, PLACES_5E, TERRAIN_5E, UPPER_PLACES_5E, type PlaceId5e } from './plan5e';
+import { COAST_5E, LANDS_5E, LINKS_5E, PATH_EDGES_5E, PLACES_5E, TERRAIN_5E, UNPRICED_PLACES_5E, UPPER_PLACES_5E, type PlaceId5e } from './plan5e';
 
 /** Un lieu, de tout niveau (ses identifiants sont uniques d'un niveau à l'autre). */
 export type PlaceId = PlaceId6e | PlaceId5e;
@@ -50,6 +50,8 @@ export interface LevelPlan {
   readonly terrain: TerrainGrid;
   /** Le prix d'une terre, par lieu : celui d'une liaison de la grille du même niveau (`LINK_PRICE`, un test le vérifie). */
   readonly pricePerPlace: number;
+  /** Les lieux qui ne comptent pas dans le prix de leur terre (au 5e, l’Oracle, en option). */
+  readonly unpriced: readonly PlaceId[];
   /**
    * Les lieux du haut (GD-22 : un plateau bordé de falaises) : la Carte met un triangle « en haut » à côté de leur nom ;
    * aucun au 6e, qui est à plat.
@@ -68,6 +70,7 @@ const PLAN_6E: LevelPlan = {
   offshore: OFFSHORE,
   terrain: TERRAIN,
   pricePerPlace: 4,
+  unpriced: [],
   upper: [],
 };
 
@@ -82,6 +85,7 @@ const PLAN_5E: LevelPlan = {
   offshore: [],
   terrain: TERRAIN_5E,
   pricePerPlace: 5,
+  unpriced: UNPRICED_PLACES_5E,
   upper: UPPER_PLACES_5E,
 };
 
@@ -129,6 +133,28 @@ export const isSixthPlace = (id: PlaceId): id is PlaceId6e => SIXTH.has(id);
 export function sixthPlace(id: PlaceId): PlaceId6e {
   if (!SIXTH.has(id)) throw new Error(`Lieu sans scénette (GD-22, lot 2) : ${id}`);
   return id as PlaceId6e;
+}
+
+/**
+ * Les lieux qui ont leur scénette (questions dans le lieu, étapes de chantier, traces) : ceux du 6e, et au 5e, lieu par
+ * lieu (GD-22, « un lieu complet par lot ») : la Montée, le lieu central, fini comme témoin de qualité (lot 3), puis le
+ * Hameau (lot 5), gabarit des douze autres. Les autres lieux du 5e restent des ruines.
+ */
+export type ScenePlaceId = PlaceId6e | 'montee' | 'hameau';
+
+/** Les lieux du 5e qui ont leur scénette. */
+const SCENES_5E: ReadonlySet<PlaceId> = new Set<PlaceId5e>(['montee', 'hameau']);
+
+/** Ce lieu a-t-il sa scénette ? */
+export const hasScenette = (id: PlaceId): id is ScenePlaceId => SIXTH.has(id) || SCENES_5E.has(id);
+
+/**
+ * Un lieu qui a sa scénette (scenette.ts, questionScene.ts, questions.ts) : un autre lieu du 5e qui arriverait ici est
+ * une erreur de la scène, dite tout de suite.
+ */
+export function scenePlace(id: PlaceId): ScenePlaceId {
+  if (!hasScenette(id)) throw new Error(`Lieu sans scénette (GD-22) : ${id}`);
+  return id;
 }
 
 /** Le niveau d'un lieu. */

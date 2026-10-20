@@ -80,18 +80,46 @@
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
-/* « Y aller » : toujours au même endroit, en bas au milieu ; « Passer le trajet » prend sa place pendant la marche. */
+/* « Y aller » : toujours au même endroit, en bas au milieu ; « Passer le trajet » prend sa place pendant la marche.
+   Centrée sur toute la largeur (jamais plus large que l'écran) : au plus grand texte, sur un téléphone, la rangée passe
+   sur deux lignes sans sortir de l'écran ; si elle déborde alors au-dessus de « Carte », la page la lève au-dessus de
+   lui (`data-go-leve`, `--open-world-carte-dessus` : la hauteur du haut de « Carte » depuis le bas). */
 .open-world-go {
   position: absolute;
-  left: 50%;
+  left: 0;
+  right: 0;
+  width: fit-content;
+  max-width: calc(100% - 1.2rem - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+  margin-inline: auto;
   bottom: calc(0.8rem + env(safe-area-inset-bottom, 0px));
   z-index: 3;
-  transform: translateX(-50%);
+}
+.world-stage[data-go-leve='oui'] .open-world-go {
+  bottom: calc(var(--open-world-carte-dessus, 4.5rem) + 8px);
 }
 .open-world-go .button {
   min-height: 56px;
-  min-width: 12rem;
+  min-width: min(12rem, 100vw - 2rem);
   justify-content: center;
+}
+/* Le bouton du monde et, près d'une gare de la cabine de la Montée (GD-22, lot 3), « Monter » ou « Descendre » à côté,
+   en bouton secondaire ; ils passent l'un sous l'autre s'il n'y a pas la place. */
+.open-world-go-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+.open-world-go .button.open-world-cabin {
+  min-width: 0;
+}
+/* Le voile de la brume (« Réduire les animations », le fondu de la cabine de la Montée) : sa couleur, jamais le noir ;
+   la scène n'en pose que l'opacité. Il ne prend aucun toucher. */
+.open-world-veil {
+  position: absolute;
+  inset: 0;
+  background: #e5ebe3;
+  pointer-events: none;
 }
 /* La raison d'un « Y aller » grisé, écrite au-dessus de lui (pas seulement dite aux lecteurs d'écran). */
 .open-world-go-reason {
@@ -120,7 +148,7 @@
   .open-world-go {
     left: calc(var(--open-world-carte, 5.5rem) + 8px);
     right: calc(0.6rem + env(safe-area-inset-right, 0px));
-    transform: none;
+    max-width: none;
   }
   .open-world-go .button {
     min-width: 0;
@@ -562,6 +590,17 @@
 .world-question .in-world.low .result-sheet .feedback-shout {
   font-size: max(18px, 1.15rem);
   padding-block: 0;
+}
+/* Sur tablette, dans une scénette dont l'item a son rappel sous la question : « Presque ! » et l'indice redit passent à
+   droite de la colonne, sous la barre du haut, sur leur fond uni ; dans la colonne, la carte du rappel n'avait plus sa
+   hauteur et le retour couvrait son titre (retouche 2 du lot 5 du 5e, référent dys et consultant UX UI). */
+.world-question .in-world.scenette.avec-rappel:not(.low):not(.simple) > .feedback {
+  position: absolute;
+  top: calc(var(--question-top) * 2 + 56px);
+  left: calc(var(--question-left) + var(--question-width) + 12px);
+  right: 16px;
+  max-width: 30rem;
+  margin: 0;
 }
 /* « Presque ! » sur un écran bas : une étiquette à droite de la colonne, sous la barre du haut ; l'indice reste
    derrière l'ampoule. */

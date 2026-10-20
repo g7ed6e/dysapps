@@ -12,6 +12,7 @@ import { bridgeEdge, linkedLands, nodeLands, startLandOf, type LandId, type Link
 import { planFor, type LevelPlan } from './levelPlan';
 import { pathNode } from './paths';
 import { NETWORK_5E } from './paths5e';
+import { LISIERE, LISIERE_BUILDINGS, lisiereFloor } from './plan5e';
 import { PORT, PORT_PAVING, TERRAIN, portFloor } from './plan6e';
 import { modelOfPlace } from './places';
 import { heightOnMesh, type HeightField } from './terrain';
@@ -56,8 +57,8 @@ const PLAN_6E = planFor('6e');
 
 /**
  * Ce que la marche libre lit d'un niveau (GD-22, lot 2) : un nœud de son réseau, le sol où l'on marche toujours (la
- * pierre de l'Escale, au 6e), ce qui bloque dans une tuile (la végétation, les aiguilles), et les boîtes en plus des
- * lieux (les bâtiments de l'Escale).
+ * pierre de l'Escale, au 6e ; de la Lisière, au 5e), ce qui bloque dans une tuile (la végétation, les aiguilles), et
+ * les boîtes en plus des lieux (les bâtiments du lieu de départ).
  */
 interface WalkWorld {
   node(id: string): Vec2;
@@ -75,9 +76,10 @@ const WALK_6E: WalkWorld = {
 
 const WALK_5E: WalkWorld = {
   node: (id) => NETWORK_5E.pathNode(id).at,
-  paved: () => false,
+  // La pierre de la Lisière, et ses bâtiments (GD-22, lot 4).
+  paved: (x, z) => lisiereFloor(x, z) !== null,
   obstacles: (_field, tx, tz) => obstaclesIn5e(tx, tz),
-  boxes: () => {},
+  boxes: (block) => block(LISIERE.toWorld((LISIERE_BUILDINGS.x0 + LISIERE_BUILDINGS.x1) / 2, (LISIERE_BUILDINGS.z0 + LISIERE_BUILDINGS.z1) / 2), 30, LISIERE.toLocal, LISIERE_BUILDINGS),
 };
 
 const walkWorldOf = (plan: LevelPlan): WalkWorld => (plan.level === '5e' ? WALK_5E : WALK_6E);

@@ -79,28 +79,28 @@ function renderPage() {
   );
 }
 
-test('la scène reçoit le plan du 5e ; ni l’Escale, ni la Nef, ni les Détours n’y sont donnés', async () => {
+test('la scène reçoit le plan du 5e, la Lisière et le dirigeable (lot 4) ; les Détours n’y sont pas donnés', async () => {
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });
   expect(scene.options!.plan.level).toBe('5e');
-  expect(scene.world!.setPort).not.toHaveBeenCalled();
-  expect(scene.world!.setNef).not.toHaveBeenCalled();
+  expect(scene.world!.setPort).toHaveBeenCalled();
+  expect(scene.world!.setNef).toHaveBeenCalled();
   expect(scene.world!.setDetours).not.toHaveBeenCalled();
   // Les trois terres qu'on relie sont fermées au départ.
   expect([...scene.closed].sort()).toEqual(['aiguilles', 'contreforts', 'roselieres']);
 });
 
-test('une mission d’un lieu du 5e se joue sur l’écran habituel, jamais dans une scénette', async () => {
+test('une mission d’un lieu du 5e sans scénette (l’Auberge) se joue sur l’écran habituel', async () => {
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });
-  act(() => scene.options!.onArrive('hameau'));
-  const sheet = await screen.findByRole('dialog', { name: 'Le Hameau' });
-  // Aucune ligne d'habitant au 5e : le panneau commence par ses missions.
+  act(() => scene.options!.onArrive('auberge'));
+  const sheet = await screen.findByRole('dialog', { name: 'L’Auberge' });
+  // Aucune ligne d'habitant dans un lieu du 5e sans scénette : le panneau commence par ses missions.
   expect(within(sheet).queryByRole('button', { name: /Reprendre|Livrer/ })).toBeNull();
-  const rows = within(sheet).getByRole('list', { name: 'Missions au Hameau' });
+  const rows = within(sheet).getByRole('list', { name: 'Missions à l’Auberge' });
   await userEvent.setup().click(within(rows).getAllByRole('button')[0]);
   await vi.waitFor(() => expect(document.querySelector('.world-question.ecran-habituel')).not.toBeNull());
-  expect(scene.world!.question).not.toHaveBeenCalledWith(expect.objectContaining({ place: 'hameau' }));
+  expect(scene.world!.question).not.toHaveBeenCalledWith(expect.objectContaining({ place: 'auberge' }));
 });
 
 test('sur la Carte, la pastille du lieu que désigne la marque porte seule la marque « suggéré » (seconde relecture du lot 2)', async () => {
@@ -112,4 +112,40 @@ test('sur la Carte, la pastille du lieu que désigne la marque porte seule la ma
   const suggested = [...document.querySelectorAll<HTMLElement>('.open-world-map-place.suggested')].map((b) => b.dataset.lieu);
   expect(suggested).toEqual([marked]);
   expect(document.querySelector(`[data-lieu="${marked}"]`)).toHaveAttribute('aria-current', 'step');
+});
+
+test('la cabine de la Montée : « Monter » à côté de « Y aller » à l’arrêt, « Passer le trajet » pendant le trajet, l’arrivée dite (première relecture du lot 3)', async () => {
+  renderPage();
+  const user = userEvent.setup();
+  await screen.findByRole('button', { name: /Carte/ });
+  // Kéo à l'arrêt à la gare du pied : « Y aller » reste le bouton principal, « Monter » s'ajoute à côté.
+  act(() => scene.options!.onCabin!({ side: 'bas', riding: null }));
+  const monter = screen.getByRole('button', { name: 'Monter' });
+  expect(screen.getByRole('button', { name: /Y aller/ })).toHaveClass('primary');
+  expect(monter).not.toHaveClass('primary');
+  expect(monter).not.toHaveAttribute('aria-disabled');
+  await user.click(monter);
+  expect(scene.world!.ride).toHaveBeenCalledTimes(1);
+  // Le trajet commence : plus de bouton de cabine ; « Passer le trajet », à contraste plein, saute jusqu'à l'arrivée.
+  act(() => {
+    scene.options!.onDepart();
+    scene.options!.onCabin!({ side: null, riding: 'haut' });
+  });
+  expect(screen.queryByRole('button', { name: 'Monter' })).toBeNull();
+  const passer = screen.getByRole('button', { name: /Passer le trajet/ });
+  expect(passer).not.toHaveAttribute('aria-disabled');
+  await user.click(passer);
+  expect(scene.world!.skip).toHaveBeenCalledTimes(1);
+  expect(scene.world!.ride).toHaveBeenCalledTimes(1);
+  // La caisse arrivée : une phrase courte pour le lecteur d'écran, jamais écrite à la vue.
+  act(() => scene.options!.onCabin!({ side: null, riding: null }));
+  const said = screen.getAllByRole('status').find((s) => s.textContent === 'Tu es en haut.');
+  expect(said).toBeDefined();
+  expect(said).toHaveClass('visually-hidden');
+  // En haut, à l'arrêt : « Descendre ».
+  act(() => {
+    scene.options!.onArrive(null);
+    scene.options!.onCabin!({ side: 'haut', riding: null });
+  });
+  expect(screen.getByRole('button', { name: 'Descendre' })).toBeInTheDocument();
 });

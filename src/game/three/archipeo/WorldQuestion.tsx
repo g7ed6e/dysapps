@@ -32,7 +32,7 @@ import { texteGrand } from '../../../core/settings';
 import { useRememberPlace } from '../../../core/lastPlace';
 import { useLoaded } from '../../../core/useLoaded';
 import { useBlocland } from '../../BloclandContext';
-import { getBiome } from '../../biomes';
+import { getBiome, type BiomeId } from '../../biomes';
 import { levelFor, type Completion } from '../../engine';
 import { ExerciseRunner, type RunnerRevision, type RunnerStage, type StageDoneProps } from '../../ExerciseRunner';
 import { loadExercise, pickExercise } from '../../exercises';
@@ -40,7 +40,8 @@ import { Aid } from '../../exercises/Aid';
 import { NoticeQuestion } from '../../exercises/CalculationScreen';
 import type { ScreenProps } from '../../exercises/registry';
 import { exercisesToReview } from '../../review';
-import { isSixthPlace, placeById, type PlaceId } from '../../world/continu/levelPlan';
+import { hasScenette, levelOfPlace, placeById, type PlaceId } from '../../world/continu/levelPlan';
+import { stagePoseWords } from './constructionParts';
 import { WIDEN_FULL, WIDEN_OFFER, WIDEN_SCENE, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
 import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
@@ -159,6 +160,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   useHoldCelebrations(true);
   const lieu = placeById(place);
   const biome = getBiome(lieu.island);
+  // Au 5e, le bilan nomme la partie posée par l'étape du lieu, jamais par le nom du plan ni sa réplique (directeur du
+  // contenu pédagogique, lot 5 du 5e) ; au 6e, comme la grille.
+  const poseWords = useMemo(() => (levelOfPlace(place) === '5e' ? stagePoseWords(lieu.island as BiomeId, lieu) : undefined), [place, lieu]);
   // « Ma dernière mission » (accès direct) y ramène, comme à une mission de la grille : la liste de son lieu s'ouvre.
   const missionTitle = biome?.exercises.find((e) => e.id === mission)?.title;
   // Une révision n'est pas « Ma dernière mission » : seule une partie y ramène.
@@ -219,7 +223,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   const [wideRow, setWideRow] = useState(false);
   // Un lieu du 5e n'a pas encore de scénette (GD-22, lot 2) : ses missions se jouent toujours sur l'écran habituel,
   // sans habitant ni phrase d'accueil.
-  const scenette = isSixthPlace(place) ? scenetteOf(place) : NO_SCENETTE;
+  const scenette = hasScenette(place) ? scenetteOf(place) : NO_SCENETTE;
   // La première rencontre de l'habitant depuis le lancement : sa phrase s'écrit au premier item seulement.
   const [meeting] = useState(() => scenette.greeting !== null && !greeted.has(place));
   const [greetItem, setGreetItem] = useState<string | null>(null);
@@ -267,6 +271,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     if (meeting && itemKey && greetItem === null) setGreetItem(itemKey);
   }, [meeting, itemKey, greetItem]);
   const offer = !simple && ((layout.low && widen >= WIDEN_OFFER) || (!layout.low && answersOut));
+  // Les réponses sorties de la scène (l'offre de « Vue simple ») : la scène ne dessine plus leurs objets, qui resteraient
+  // sans étiquette et sembleraient se toucher (retouche 3 du lot 5 du 5e, les miches du Hameau en portrait).
+  const objectsOut = answersOut || (layout.low && offer);
   // Sur un écran bas, la consigne s'affiche en entier une fois, au premier item, puis devient une icône.
   const [introDone, setIntroDone] = useState(false);
   // En C sur un écran bas, revenu de « Vue simple » à « Scène » (GD-20, point 8, L8) : la scène reprend sa place, à droite
@@ -556,7 +563,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   }, [inColumn, finished, simple, consigneOpen, itemKey]);
   useEffect(() => {
     if (plain || !size.w || !size.h || !item || finished) return;
-    const shown = world.question({ place, mission, layout, item });
+    const shown = world.question({ place, mission, layout, item, answersOut: objectsOut });
     // Un repère dont le point sort de la scène visible (sous le panneau, au bord de l'écran) ne se montre pas.
     const r = box.current?.querySelector('.quiz.in-world')?.getBoundingClientRect();
     const origin = box.current?.getBoundingClientRect();
@@ -568,7 +575,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // cachés jusqu'à la première réponse, lot L5).
     // La caméra tournée à deux doigts pendant la scénette (« caméra libre ») : les repères suivent le décor.
     return world.onSceneTurn((labels) => setLabels(visible(labels)));
-  }, [world, place, mission, plain, layout, item, size, finished, intro]);
+  }, [world, place, mission, plain, layout, item, size, finished, intro, objectsOut]);
   // Un repère de la scène ne passe jamais sous les boutons du haut (« Vue simple », la pause, à droite d'elle) : sur un
   // téléphone couché, l'entier du haut de la jauge les touchait (relecture du lot L5, consultant UX UI). Il descend alors
   // sous son point, ou se cache ; mesuré une fois par pose des repères, jamais à chaque image.
@@ -651,7 +658,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     if (!exerciseId) return null;
     // L'écran habituel (le temps de la transition) : l'écran de la grille, ses items, sa consigne, sur un panneau uni ;
     // le bilan et le retour du lieu. Ni rôle, ni scène, ni « Vue simple » : la même forme dans tous les lieux.
-    if (plain) return { instruction, back: { label: `Revenir ${lieu.at}`, onClick: onClose }, Done, revision: runnerRevision, className: `in-world ecran-habituel${finished ? ' finished' : ''}` };
+    if (plain) return { instruction, back: { label: `Revenir ${lieu.at}`, onClick: onClose }, Done, revision: runnerRevision, pose: poseWords, className: `in-world ecran-habituel${finished ? ' finished' : ''}` };
     const extra: ReactNode = (
       <>
         {intro && (
@@ -778,10 +785,11 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       extra,
       Done,
       revision: runnerRevision,
+      pose: poseWords,
       className:
         simple && !finished
           ? `in-world scenette simple${foldedSimple ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}${inColumn ? ' mode-c' : ''}`
-          : `in-world scenette${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut || (layout.low && offer) ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}${inColumn ? ' reponses-colonne mode-c' : ''}${keptScene ? ' scene-gardee simple-bas' : ''}`,
+          : `in-world scenette${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${objectsOut ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}${inColumn ? ' reponses-colonne mode-c' : ''}${keptScene ? ' scene-gardee simple-bas' : ''}${hasAid ? ' avec-rappel' : ''}`,
     };
   }, [
     exerciseId,
@@ -816,6 +824,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     tight,
     readyLevel,
     greeting,
+    poseWords,
+    hasAid,
   ]);
 
   // La ligne repliée se coupe après un mot entier, jamais au milieu : les mots qui passeraient à la ligne sont cachés,

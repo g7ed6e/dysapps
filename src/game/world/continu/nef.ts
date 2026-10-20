@@ -38,16 +38,19 @@ export const NEF_TEMPS_PARTS: Readonly<Record<1 | 2 | 3, readonly string[]>> = {
   3: ['voile'],
 };
 
+/** Les parties de chaque temps d'une forme. */
+type NefTemps = Readonly<Record<1 | 2 | 3, readonly string[]>>;
+
 /** Les parties montrées à un temps : toutes celles des temps faits ; aucune au ber vide ni après le départ. */
-export function nefShownParts(look: NefLook): string[] {
+export function nefShownParts(look: NefLook, temps: NefTemps = NEF_TEMPS_PARTS): string[] {
   if (look === 0 || look === 4) return [];
-  return ([1, 2, 3] as const).filter((t) => t <= look).flatMap((t) => NEF_TEMPS_PARTS[t]);
+  return ([1, 2, 3] as const).filter((t) => t <= look).flatMap((t) => temps[t]);
 }
 
 /** Les parties qui viennent d'arriver en passant d'un temps à l'autre (rien si l'on recule ou que la Nef part). */
-export function nefArrivingParts(from: NefLook, to: NefLook): string[] {
+export function nefArrivingParts(from: NefLook, to: NefLook, temps: NefTemps = NEF_TEMPS_PARTS): string[] {
   if (to === 4 || to <= from) return [];
-  return ([1, 2, 3] as const).filter((t) => t > from && t <= to).flatMap((t) => NEF_TEMPS_PARTS[t]);
+  return ([1, 2, 3] as const).filter((t) => t > from && t <= to).flatMap((t) => temps[t]);
 }
 
 /**
@@ -55,7 +58,13 @@ export function nefArrivingParts(from: NefLook, to: NefLook): string[] {
  * moitié du quai, le mât plus haut que l'avatar : environ 4,6 et 5,3 unités), et le milieu de sa coque dans son repère
  * (le fichier : x de 0,9 à 4,1, z de −1,5 à 5,6, la proue vers −z ; le pont vers y 0).
  */
-const NEF_MODEL = { scale: 0.65, center: { x: 2.5, z: 2.06 } } as const;
+const NEF_MODEL: NefModelFrame = { scale: 0.65, center: { x: 2.5, z: 2.06 } };
+
+/** Le modèle d'une forme dans le monde : une case du modèle vaut `scale` unités, et le milieu de sa coque. */
+export interface NefModelFrame {
+  scale: number;
+  center: { x: number; z: number };
+}
 
 /**
  * Le poste de la Nef, dans le repère du Port (plan6e.ts, `PORT`) : à l'ouest du quai, dans l'eau, le long de son bord
@@ -68,7 +77,7 @@ const NEF_BERTH = { x: PORT_PAVING.quay.x0 - 1.6, z: -4.5 } as const;
  * La hauteur de la Nef : sur son ber tant qu'elle est à quai (sa quille hors de l'eau), à flot dès qu'elle en glisse, au
  * début du départ (`slide`, la part du temps du départ).
  */
-export const NEF_LIFT = { ber: 0.85, afloat: 0.35, slide: 0.08 } as const;
+const NEF_LIFT = { ber: 0.85, afloat: 0.35, slide: 0.08 } as const;
 
 /** Le poste de la Nef dans le monde, et son cap (celui du Port : la proue au nord). */
 export function nefBerthWorld(): { x: number; z: number; yaw: number } {
@@ -86,9 +95,9 @@ export interface NefModelPart {
 }
 
 /** Des parties du modèle, ramenées à l'échelle du monde, la coque centrée sur l'origine (le repère de la Nef). */
-export function nefModelFacets(parts: readonly NefModelPart[], names: readonly string[]): Facets {
+export function nefModelFacets(parts: readonly NefModelPart[], names: readonly string[], frame: NefModelFrame = NEF_MODEL): Facets {
   const list = parts.filter((p) => names.includes(p.name));
-  const { scale: s, center: c } = NEF_MODEL;
+  const { scale: s, center: c } = frame;
   return mergeFacets(
     list.map((p) => {
       const positions = new Float32Array(p.positions.length);
@@ -103,9 +112,17 @@ export function nefModelFacets(parts: readonly NefModelPart[], names: readonly s
 }
 
 /** La Nef à son poste, sur son ber, dans le monde. */
-export function nefAtBerth(model: Facets): Facets {
-  const at = nefBerthWorld();
-  return placeFacets(model, { x: at.x, y: NEF_LIFT.ber, z: at.z, yaw: at.yaw });
+export function nefAtBerth(model: Facets, site: NefSite = NEF_6E): Facets {
+  const at = site.berth;
+  return placeFacets(model, { x: at.x, y: site.lift.ber, z: at.z, yaw: at.yaw });
+}
+
+/** Le bois du ber et la bouée d'un niveau. */
+export interface BerColors {
+  ber: number;
+  berDark: number;
+  buoy: number;
+  buoyTop: number;
 }
 
 const C = {
@@ -122,26 +139,26 @@ const C = {
  * Le ber, dans le repère du Port, sous le poste : deux longrines dans l'eau et trois couples en V qui portent la coque ;
  * vide après le départ, avec la bouée amarrée au bout du quai.
  */
-function berLocal(b: FacetBuilder, departed: boolean): void {
-  const { x, z } = NEF_BERTH;
-  for (const dx of [-0.55, 0.55]) b.box({ x: x + dx, y: -1.2, z }, [0.22, 1.25, 4.2], C.berDark, C.ber);
+export function berLocal(b: FacetBuilder, at: Vec2, departed: boolean, colors: BerColors = C, buoySide = -1): void {
+  const { x, z } = at;
+  for (const dx of [-0.55, 0.55]) b.box({ x: x + dx, y: -1.2, z }, [0.22, 1.25, 4.2], colors.berDark, colors.ber);
   for (const dz of [-1.4, 0, 1.4]) {
-    b.box({ x: x - 0.5, y: 0, z: z + dz }, [0.2, 0.75, 0.22], C.ber);
-    b.box({ x: x + 0.5, y: 0, z: z + dz }, [0.2, 0.75, 0.22], C.ber);
-    b.box({ x, y: 0.05, z: z + dz }, [1.3, 0.16, 0.24], C.berDark, C.ber);
+    b.box({ x: x - 0.5, y: 0, z: z + dz }, [0.2, 0.75, 0.22], colors.ber);
+    b.box({ x: x + 0.5, y: 0, z: z + dz }, [0.2, 0.75, 0.22], colors.ber);
+    b.box({ x, y: 0.05, z: z + dz }, [1.3, 0.16, 0.24], colors.berDark, colors.ber);
   }
   if (!departed) return;
-  // La bouée : un gros flotteur rond sur l'eau, au flanc ouest du ber, son dessus clair bien visible (le monde dit que la
-  // Nef est partie, sans texte ; relecture du directeur artistique et du consultant Archipéo).
-  const bx = x - 2.1;
-  b.prism({ x: bx, y: -0.25, z }, 0.66, 0.5, 0.7, 10, C.buoy, C.buoyTop);
-  b.prism({ x: bx, y: 0.45, z }, 0.12, 0.12, 0.9, 5, C.buoy);
+  // La bouée : un gros flotteur rond sur l'eau, au flanc du ber (`buoySide`, à l'ouest à l'Escale), son dessus clair bien
+  // visible (le monde dit que la Nef est partie, sans texte ; relecture du directeur artistique et du consultant Archipéo).
+  const bx = x + 2.1 * buoySide;
+  b.prism({ x: bx, y: -0.25, z }, 0.66, 0.5, 0.7, 10, colors.buoy, colors.buoyTop);
+  b.prism({ x: bx, y: 0.45, z }, 0.12, 0.12, 0.9, 5, colors.buoy);
 }
 
 /** Le ber (et la bouée après le départ), posé dans le monde. */
 export function berFacets(look: NefLook): Facets {
   const b = new FacetBuilder();
-  berLocal(b, look === 4);
+  berLocal(b, NEF_BERTH, look === 4);
   return placeFacets(b.build(), { x: PORT.origin.x, y: 0, z: PORT.origin.z, yaw: PORT.yaw });
 }
 
@@ -268,3 +285,85 @@ export function nefSiteTriangles(): { ber: number; banc: number } {
 
 /** Les triangles du voilier entier (le fichier `1-voilier/final-1264.glb`, toutes ses parties). */
 export const NEF_MODEL_TRIANGLES = 1264;
+
+/** Où est la Nef pendant son départ, à un instant : sa place, son cap, et le retrait de son obstacle (dans le monde). */
+export interface NefFlight {
+  x: number;
+  y: number;
+  z: number;
+  yaw: number;
+  /** Le déplacement de l'obstacle, à plat. */
+  shiftX: number;
+  shiftZ: number;
+  /** L'ouverture de la brèche : chaque sommet de l'obstacle glisse d'autant en `x`, dans son sens (`obstacleSides`). */
+  open: number;
+}
+
+/**
+ * La Nef d'un niveau (GD-21, puis GD-22, lot 4 : le dirigeable du 5e) : la forme de son modèle et ses trois temps, son
+ * poste et son ber, son obstacle, ce qu'on touche, et son départ. La vue n'en connaît que cela.
+ */
+export interface NefSite {
+  /** La forme du modèle (./nefModels.ts : 1, le voilier ; 2, le dirigeable). */
+  form: number;
+  temps: NefTemps;
+  model: NefModelFrame;
+  /** La hauteur de la coque sur son ber. */
+  lift: { ber: number };
+  berth: { x: number; z: number; yaw: number };
+  /** Le ber, et ce qui l'accompagne à ce temps (la bouée après le départ ; au 5e, le gréement déposé). */
+  ber(look: NefLook): Facets;
+  /** L'obstacle (le banc du large, le mur de nuages), tel qu'il se tient avant le départ. */
+  obstacle(): Facets;
+  /** Ce qui reste de l'obstacle après le départ (au 5e, le mur écarté ; au 6e, rien). */
+  after(): Facets | null;
+  /** Ce qui ne part jamais, avant, pendant et après le départ (au 5e, le panache du 4e ; au 6e, rien). */
+  stays(): Facets | null;
+  obstacleTouched(p: Vec2): boolean;
+  touched(p: Vec2): boolean;
+  /** Le départ : sa durée, le temps après la sortie de l'image où il finit, et la Nef à la fraction `u` (rempli dans `out`). */
+  seconds: number;
+  outOfView: number;
+  /**
+   * Le sens de glissement de chaque sommet de l'obstacle quand la brèche s'ouvre (−1, 0 ou 1 ; au 6e, aucun : le banc
+   * glisse d'un bloc).
+   */
+  obstacleSides?(): Float32Array;
+  /** La fraction du temps avant laquelle le départ ne finit pas (l'obstacle s'ouvre jusque-là ; au 6e, 0). */
+  obstacleDone: number;
+  /** Au-delà de cette distance à la caméra, la Nef n'est plus qu'un point : le départ finit comme si elle était sortie (au 6e, jamais). */
+  pointBeyond: number;
+  flight(u: number, out: NefFlight): NefFlight;
+}
+
+let banc: Facets | null = null;
+
+/** La Nef du 6e : le voilier à l'Escale, le banc de brume du large. */
+export const NEF_6E: NefSite = {
+  form: 1,
+  temps: NEF_TEMPS_PARTS,
+  model: NEF_MODEL,
+  lift: NEF_LIFT,
+  berth: nefBerthWorld(),
+  ber: berFacets,
+  obstacle: () => (banc ??= bancFacets()),
+  after: () => null,
+  stays: () => null,
+  obstacleTouched: bancTouched,
+  touched: nefTouched,
+  seconds: NEF_DEPARTURE.seconds,
+  outOfView: NEF_DEPARTURE.outOfView,
+  obstacleDone: 0,
+  pointBeyond: Infinity,
+  flight: (u, out) => {
+    const d = nefDeparture(u);
+    out.x = d.x;
+    out.y = d.y;
+    out.z = d.z;
+    out.yaw = d.yaw;
+    out.shiftX = -d.bancShift;
+    out.shiftZ = 0;
+    out.open = 0;
+    return out;
+  },
+};

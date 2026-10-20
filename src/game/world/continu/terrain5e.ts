@@ -7,7 +7,7 @@
 // du 6e (./terrain.ts) : seuls la hauteur, la peinture et ce qui pousse changent. Code pur.
 import { FacetBuilder, type Facets } from './facets';
 import { distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { CHANNELS_5E, COAST_5E, COLORS_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, TERRAIN_5E, type ChannelId, type Needle } from './plan5e';
+import { CHANNELS_5E, COAST_5E, COLORS_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, TERRAIN_5E, inLisiereClearing, type ChannelId, type Needle } from './plan5e';
 import { SHADOW_DIR_5E } from './sky';
 import { spire, spireTriangles } from './spire5e';
 import { drawTileWith, farHeightsOf, heightOnFar, heightOnMesh, tileRect, type GroundPaint, type HeightField, type P3, type TileDetail } from './terrain';
@@ -168,11 +168,12 @@ export const FOREST_COLORS = {
 
 /**
  * Où pousse la forêt : une place tous les `cell` unités au plus, gardée une fois sur `keep` ; jamais à moins de `path`
- * unités d'un chemin, de `place` du centre d'un lieu (la Montée : `montee`), de `quay` du ponton de la Lisière, ni sur le
+ * unités d'un chemin, de `place` du centre d'un lieu (la Montée : `montee`, et `monteeSouth` au sud, sa clairière d'approche ;
+ * le Hameau : `hameau`, et `hameauSouth` au sud), de `quay` du ponton de la Lisière, ni dans sa clairière, ni sur le
  * plateau ou sa falaise ; un tronc se tient à `dry` unités au moins de l'eau (retouche du lot 2, directeur artistique :
  * la canopée couvrait les chenaux, leur eau ne se voyait pas en 3D).
  */
-const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, quay: 5, cliff: 2.5, dry: 2.2 } as const;
+const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, monteeSouth: 30, hameau: 14.5, hameauSouth: 34, quay: 5, cliff: 2.5, dry: 2.2 } as const;
 
 /** Les tronçons des chemins du 5e (pour garder la forêt à distance). */
 const SEGMENTS: readonly (readonly [Vec2, Vec2])[] = (() => {
@@ -182,7 +183,17 @@ const SEGMENTS: readonly (readonly [Vec2, Vec2])[] = (() => {
 
 const nearPath = (p: Vec2, reach: number): boolean => SEGMENTS.some(([a, b]) => distanceToPolyline(p, [a, b]) < reach);
 
-const nearPlace = (p: Vec2): boolean => PLACES_5E.some((pl) => Math.hypot(p.x - pl.center.x, p.z - pl.center.z) < (pl.id === 'montee' ? FOREST_KEEP.montee : FOREST_KEEP.place));
+const nearPlace = (p: Vec2): boolean =>
+  PLACES_5E.some((pl) => {
+    const d = Math.hypot(p.x - pl.center.x, p.z - pl.center.z);
+    // Au sud de la Montée, la clairière de l'approche (GD-22, lot 3) : la caméra qui arrive dans l'axe du ponton ne passe
+    // jamais dans la canopée.
+    if (pl.id === 'montee') return d < FOREST_KEEP.montee || (p.z > pl.center.z - 4 && d < FOREST_KEEP.monteeSouth);
+    // Le Hameau (lot 5) : ses maisons et ses barques jusqu'à 13 unités du four ; au sud, l'approche de la caméra et le recul
+    // de celle de la scénette sur un écran en portrait, à 23 unités (retouche 1 : une canopée y passait devant les miches).
+    if (pl.id === 'hameau') return d < FOREST_KEEP.hameau || (p.z > pl.center.z + 4 && d < FOREST_KEEP.hameauSouth);
+    return d < FOREST_KEEP.place;
+  });
 
 /** Un palétuvier (ou un buisson des Contreforts) : sa place, son sol, sa taille, son quart de tour. */
 interface Tree {
@@ -212,6 +223,8 @@ function treesIn(tx: number, tz: number): readonly Tree[] {
       if (plateauEdge(p) > -FOREST_KEEP.cliff) continue;
       if (landDistance5e(p) < FOREST_KEEP.dry || signedDistance(p, COAST_5E) < 1) continue;
       if (nearPath(p, FOREST_KEEP.path) || nearPlace(p) || distanceToPolyline(p, [QUAY_5E.from, QUAY_5E.to]) < FOREST_KEEP.quay) continue;
+      // La clairière de la Lisière (GD-22, lot 4) : sa place, sa rangée et leurs abords, sans un tronc.
+      if (inLisiereClearing(p)) continue;
       const shrub = contreforts(p) > 0.5;
       out.push({ x: p.x, z: p.z, y: heightAt5e(p), size: (shrub ? 0.62 : 0.85) + 0.4 * hash2(i + 7, j + 13), yaw: 6.283 * hash2(i + 31, j + 17), shrub });
     }

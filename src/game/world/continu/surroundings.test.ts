@@ -1,7 +1,7 @@
 // Les abords des scénettes : chaque lieu du registre tient sous le plafond commun, quel que soit l'état du lieu, autour
 // du sol de sa scène tel que le décor de près le porte. Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { OPEN_WORLD_BUDGET, openWorldCost } from './budget';
+import { OPEN_WORLD_BUDGETS, openWorldCost } from './budget';
 import { HABITANT_TRIANGLES } from './habitants';
 import type { PlaceId } from './plan6e';
 import { scenetteSetting, scenetteSurroundings } from './scenette';
@@ -15,7 +15,7 @@ function allowance(): number {
   if (allowed === undefined) {
     const cost = openWorldCost(0);
     const total = cost.reduce((s, c) => s + c.triangles, 0);
-    allowed = cost.find((c) => c.poste === 'scénette')!.triangles + OPEN_WORLD_BUDGET.triangles - total;
+    allowed = cost.find((c) => c.poste === 'scénette')!.triangles + OPEN_WORLD_BUDGETS['6e'].triangles - total;
   }
   return allowed;
 }

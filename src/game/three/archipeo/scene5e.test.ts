@@ -1,13 +1,15 @@
 // La scène du monde ouvert du 5e (GD-22, lot 2) : la scène vraie, sans moteur WebGL sous jsdom (un `WebGLRenderer`
-// simulé, qui ne dessine rien). Elle lit le plan du 5e : rien de ce qui n'est qu'au 6e (l'Escale, la Nef, les Détours,
-// les scénettes) ne s'y appelle, aucune erreur `sixthPlace` ; la brume des failles s'y montre dans le monde, jamais sur
-// la Carte ; la Carte n'a pas de point « port », et met « en haut » aux lieux du plateau ; tout le décor prend le
+// simulé, qui ne dessine rien). Elle lit le plan du 5e : rien de ce qui n'est qu'au 6e (les Détours, les scénettes des
+// lieux) ne s'y appelle, aucune erreur `sixthPlace` ; la brume des failles s'y montre dans le monde, jamais sur la
+// Carte ; la Carte a le point « port » de la Lisière (lot 4), et met « en haut » aux lieux du plateau ; tout le décor prend le
 // brouillard, sauf le ciel, qui est le lointain lui-même, et la silhouette de Kéo, qui doit se lire au loin.
 import * as THREE from 'three';
+import { levelWorld } from '../../world/continu/levelWorld';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { linkedLands } from '../../world/continu/lands';
 import { placeRecord, planFor } from '../../world/continu/levelPlan';
 import { riftMistFacets } from '../../world/continu/mist5e';
+import { PORT_WORST } from '../../world/continu/port';
 import { questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout } from '../../world/continu/scenette';
 import { createOpenWorld, type MapSpotOnScreen, type OpenWorld, type OpenWorldOptions } from './scene';
@@ -88,9 +90,7 @@ beforeAll(() => {
     },
     onMapPick: noop,
     onClosed: noop,
-    onPort: () => {
-      throw new Error('Pas d’Escale au 5e');
-    },
+    onPort: noop,
     onAssembled: noop,
     onPosed: noop,
   } as OpenWorldOptions);
@@ -115,15 +115,29 @@ describe('La scène du 5e', () => {
     expect(world.portAt(W / 2, H / 2)).toBeNull();
   });
 
+  it('la Lisière et le dirigeable (lot 4) : la place pavoisée, la Nef sur son ber, le départ fini d’un coup en « Réduire les animations »', () => {
+    expect(() => {
+      world.setPort(PORT_WORST);
+      world.goToPort('french');
+      world.goToPort('quai');
+      world.setNef(1);
+      world.setNef(3);
+    }).not.toThrow();
+    const done = vi.fn();
+    world.departNef(done);
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(() => world.setNef(4)).not.toThrow();
+  });
+
   it('Kéo va devant un lieu du bas, et s’arrête au pied de la cabine pour un lieu du haut fermé', () => {
     world.goTo('hameau', true);
     expect(arrived.at(-1)).toBe('hameau');
     expect(() => world.goTo('semaphore', true)).not.toThrow();
   });
 
-  it('une question dans un lieu du 5e ne montre rien dans la scène (l’écran habituel la joue)', () => {
+  it('une question dans un lieu du 5e sans scénette ne montre rien dans la scène (l’écran habituel la joue)', () => {
     const layout = scenetteLayout({ count: 3, column: true }, W, H, questionLayout({ count: 3 }, W, H));
-    expect(world.question({ place: 'hameau', mission: 'essai', layout, item: { key: 'essai', scene: { kind: 'column' }, answered: false, right: [0], picked: [] } })).toEqual([]);
+    expect(world.question({ place: 'auberge', mission: 'essai', layout, item: { key: 'essai', scene: { kind: 'column' }, answered: false, right: [0], picked: [] } })).toEqual([]);
     world.question(null);
   });
 
@@ -137,12 +151,12 @@ describe('La scène du 5e', () => {
     expect(rift!.visible).toBe(true);
   });
 
-  it('la Carte : aucun point « port », un triangle « en haut » à chaque lieu du plateau', () => {
+  it('la Carte : le point « port » de la Lisière, un triangle « en haut » à chaque lieu du plateau', () => {
     // La Carte fermée donne ses points une dernière fois (cachés) : la liste entière.
     world.map(PLAN.places.map((p) => p.id));
     world.map(null);
     expect(spots.length).toBeGreaterThan(0);
-    expect(spots.some((s) => s.id === 'port')).toBe(false);
+    expect(spots.some((s) => s.id === 'port')).toBe(true);
     for (const s of spots) if (PLAN.places.some((p) => p.id === s.id)) expect(Boolean(s.up), s.id).toBe(PLAN.upper.includes(s.id as never));
     expect(spots.find((s) => s.id === 'keo')).toBeDefined();
   });
@@ -160,6 +174,14 @@ describe('La scène du 5e', () => {
     expect(shader.fragmentShader).toContain('mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) )');
     expect(shader.fragmentShader).not.toContain('#include <fog_fragment>');
     expect(shader.fragmentShader).toContain('lanternColor');
+    // Les couleurs peu voilées (lot 4, retouche) : la lumière du Phare et sa tour, le mur et le panache, une ligne chacune ;
+    // le panache, sans ombre (troisième passe), garde sa couleur.
+    const thin = levelWorld('5e').thinFog;
+    expect(shader.fragmentShader.match(/thinFogK = 0\.\d+;/g)).toHaveLength(thin.length);
+    expect(shader.fragmentShader).toContain('thinFogK = 0.12; }');
+    expect(shader.fragmentShader.match(/thinFogK = 0\.\d+; outgoingLight = vColor\.rgb; \}/g)).toHaveLength(thin.filter((t) => t.unlit).length);
+    expect(shader.fragmentShader).toContain('* thinFogK;');
+    expect(shader.fragmentShader.indexOf('float thinFogK')).toBeLessThan(shader.fragmentShader.indexOf('* thinFogK;'));
     // La lampe du 6e et la lanterne du 5e, puis le morceau de Three.js, une seule fois.
     expect(shader.fragmentShader.split('#include <opaque_fragment>')).toHaveLength(2);
     expect(Object.keys(shader.uniforms)).toEqual(expect.arrayContaining(['heightLow', 'heightHigh', 'heightSunLow', 'heightTintLow', 'heightFog', 'lanternColor', 'lampColor']));

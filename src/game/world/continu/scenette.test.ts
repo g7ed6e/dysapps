@@ -69,6 +69,33 @@ describe('La place de la scénette à l’écran', () => {
     expect(scenetteOf('commons')).toEqual({ role: 'Le couvreur', greeting: null, placement: 'rangee' });
   });
 
+  it('la rangée des réponses garde 16 px au moins au bord droit, sur chaque écran, de trois à cinq réponses (relecture UX UI du lot 5 du 5e)', () => {
+    expect(SCENETTE_LAYOUT.rowEdge).toBeGreaterThanOrEqual(16);
+    for (const [w, h] of screens)
+      for (const count of [3, 4, 5])
+        for (const widen of [0, 1]) {
+          for (const l of [layoutOf(count, w, h, widen), scenetteLayout({ count, widen, column: true }, w, h, questionLayout({ count, widen }, w, h))])
+            for (const s of l.slots) {
+              expect(w - s.label.right, `${w}×${h}, ${count}`).toBeGreaterThan(SCENETTE_LAYOUT.rowEdge - 1e-6);
+              expect(w - s.hit.right, `${w}×${h}, ${count}`).toBeGreaterThan(SCENETTE_LAYOUT.rowEdge - 1e-6);
+            }
+        }
+  });
+
+  it('à côté de la colonne, sur tablette, la rangée glisse vers elle et garde la largeur de ses étiquettes (retouche 2 du lot 5 du 5e)', () => {
+    for (const [w, h] of screens.filter(([, h]) => h >= ANSWER_LAYOUT.low)) {
+      const base = questionLayout({ count: 3 }, w, h);
+      const l = scenetteLayout({ count: 3, column: true }, w, h, base);
+      const panelRight = l.panel.left + l.panel.width;
+      // La largeur d'avant la marge de 16 px : de 12 px après la colonne à 12 px du bord.
+      const before = (w - ANSWER_LAYOUT.edge - (panelRight + ANSWER_LAYOUT.edge) - 2 * ANSWER_LAYOUT.gap) / 3;
+      for (const s of l.slots) {
+        expect(s.label.right - s.label.left, `${w}×${h}`).toBeGreaterThan(Math.min(ANSWER_LAYOUT.maxWidth, before) - 1e-6);
+        expect(s.hit.left - panelRight, `${w}×${h}`).toBeGreaterThanOrEqual(ANSWER_LAYOUT.edgeLow - 1e-6);
+      }
+    }
+  });
+
   it('sur un écran bas, la règle des Filets à droite au-dessus de la scène, la rangée sous la colonne', () => {
     for (const [w, h] of screens.filter(([, h]) => h < ANSWER_LAYOUT.low))
       for (const widen of [0, 1]) {

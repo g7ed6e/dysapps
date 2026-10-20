@@ -9,7 +9,8 @@ import type { PartShape, Stage } from '../../world/continu/construction';
 import type { OpenPlace } from '../../world/continu/levelPlan';
 import type { IslandStateId } from '../../world/islandState';
 import { partiePosee, partiesDe } from '../../world/parts';
-import { plansFor } from '../../world/plans';
+import { plansFor, type PlanDef } from '../../world/plans';
+import type { PoseLine, PoseWords } from '../../poseWords';
 
 /** La construction d'un lieu vue par le monde continu : ses parties dans l'ordre, et le nombre de celles qui sont posées. */
 export interface PlaceConstruction {
@@ -83,4 +84,53 @@ export function mapStateWord(place: OpenPlace, state: 'en-chantier' | 'restauree
   if (!state) return null;
   const site = state === 'restauree' ? SITE_DONE_WORDS[place.id] : undefined;
   return stateWord(state, site ? { ...words, restauree: site } : words, place.agree);
+}
+
+/** Les étapes d'un lieu, dans l'ordre où elles se posent (GD-20 : le corps, le haut, les abords). */
+const STAGE_WORDS: Readonly<Record<Stage, string>> = { 0: 'le corps', 1: 'le haut', 2: 'les abords' };
+
+/** « du Hameau », « de la Montée », « des Radeaux », « de l’Auberge » : le complément d'un lieu, depuis sa forme « à ». */
+export const ofOpenPlace = (place: Pick<OpenPlace, 'at'>): string => place.at.replace(/^aux /, 'des ').replace(/^au /, 'du ').replace(/^à /, 'de ');
+
+/** Les étapes que pose une partie (« le corps », « le haut et les abords »), sa part d'une étape coupée (1 sur 3) et si elle en pose plusieurs (l'accord : « Étapes finies »). */
+function partWords(shape: PartShape): { words: string; share: string; many: boolean } {
+  const stages = [...new Set(shape.map((s) => s.stage))];
+  const words = stages.map((st) => STAGE_WORDS[st]).join(' et ');
+  const only = shape.length === 1 ? shape[0] : null;
+  if (!only || only.to - only.from > 0.999) return { words, share: '', many: stages.length > 1 };
+  const total = Math.round(1 / (only.to - only.from));
+  return { words, share: `, ${Math.round(only.to * total)} sur ${total}`, many: false };
+}
+
+/**
+ * Les mots de la pose au bilan d'un lieu du monde ouvert du 5e (directeur du contenu pédagogique, lot 5 du 5e, puis
+ * retouche 2) : une phrase par partie posée, nommée par les étapes qu'elle pose, jamais par le nom d'un plan ni sa
+ * réplique. Une partie qui finit son plan (ou ses plans) : « Étape finie : le corps du Hameau. », et l'XP des plans finis,
+ * sans « Partie posée » en plus ; sinon « Partie posée : le corps de la Montée, 1 sur 2. » ; une partie de deux étapes
+ * (un lieu à deux parties) : « le haut et les abords de l’Imprimerie », et « Étapes finies » quand elle les finit toutes deux. Sans React : testé sous jsdom.
+ */
+export function stagePoseWords(island: BiomeId, place: Pick<OpenPlace, 'at'>): PoseWords {
+  const of = ofOpenPlace(place);
+  const plans = plansFor(island);
+  const stageOfPlan = (plan: PlanDef): Stage => Math.max(0, Math.min(2, plans.findIndex((p) => p.id === plan.id))) as Stage;
+  return {
+    lines(pose) {
+      const finished = new Map(pose.plansFinis.map((p) => [p.id, p]));
+      const told = new Set<string>();
+      const lines: PoseLine[] = pose.posees.map((partie) => {
+        const shape = partShapes(island)[partie.rang - 1] ?? [];
+        const own = [...new Set(partie.cases.map((c) => c.plan.id))];
+        const ends = own.filter((id) => finished.has(id));
+        const { words, share, many } = partWords(shape);
+        if (ends.length && ends.length === own.length) {
+          for (const id of ends) told.add(id);
+          return { text: `${many ? 'Étapes finies' : 'Étape finie'} : ${words} ${of}.`, xp: ends.reduce((sum, id) => sum + finished.get(id)!.reward.xp, 0) };
+        }
+        return { text: `Partie posée : ${words} ${of}${share}.` };
+      });
+      // Un plan fini qu'aucune phrase n'a dit (une partie qui en finit un et en commence un autre) : sa phrase à lui.
+      for (const plan of pose.plansFinis) if (!told.has(plan.id)) lines.push({ text: `Étape finie : ${STAGE_WORDS[stageOfPlan(plan)]} ${of}.`, xp: plan.reward.xp });
+      return lines;
+    },
+  };
 }
