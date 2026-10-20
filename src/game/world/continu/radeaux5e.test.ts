@@ -8,12 +8,15 @@ import { creuxTriangles } from './creux5e';
 import { linearRgb } from './geometry';
 import { hasHabitantModel } from './habitants';
 import { hasScenette, planFor } from './levelPlan';
-import { BUILT_PLACES_5E, COLORS_5E } from './plan5e';
+import { followPose, screenOf } from './camera';
+import { doorViewOf } from './northShore';
+import { BUILT_PLACES_5E, COLORS_5E, PATH_NODES_5E } from './plan5e';
+import { standingHeight } from './terrain';
 import { drawPieces, placePieces } from './places';
 import { placeItems } from './questions';
-import { answerObjects, placeTrace } from './questionScene';
+import { answerObjects, facingAnswerObjects, placeTrace } from './questionScene';
 import { RADEAUX, RADEAUX_HEIGHTS, RADEAUX_LAYOUT } from './radeaux5e';
-import { landDistance5e } from './terrain5e';
+import { heightAt5e, landDistance5e } from './terrain5e';
 import { scenetteHabitant, scenetteKeo, scenetteOf, scenetteSurroundings } from './scenette';
 import { SURROUNDINGS_MAX } from './surroundings';
 import type { Facets } from './facets';
@@ -88,6 +91,126 @@ describe('Les Radeaux, lieu complet', () => {
   });
 });
 
+/** Le sol du centre des Radeaux, où la vue pose le lieu (l'eau à 0 dans le monde). */
+const CENTER_Y = standingHeight(heightAt5e(PLACE.center));
+
+describe('Les Radeaux vus de la porte (retouche du lot 6)', () => {
+  // La caméra de « Y aller » : derrière Kéo devant la porte, au cap du lieu.
+  const door = PATH_NODES_5E.find((n) => n.id === 'radeaux')!.at;
+  const feet = { x: door.x, y: standingHeight(heightAt5e(door)), z: door.z };
+  const pose = followPose(feet, 0, undefined, doorViewOf('radeaux'));
+  const W = 1024,
+    H = 768;
+  const world = (p: { x: number; z: number }, y: number) => ({ x: PLACE.center.x + p.x, y, z: PLACE.center.z + p.z });
+  const on = (p: { x: number; z: number }, y: number) => screenOf(pose, world(p, y), W, H);
+  /** Le dessus d'un radeau à l'écran : ses quatre coins (le repère de la rive tourne de `angle`). */
+  const raftCorners = (k: number) => {
+    const c = RADEAUX_LAYOUT.rafts[k];
+    const h = RADEAUX_LAYOUT.raftHalf;
+    return [-1, 1].flatMap((a) => [-1, 1].map((b) => on({ x: c.x + h * (a * Math.cos(0.28) - b * Math.sin(0.28)), z: c.z + h * (a * Math.sin(0.28) + b * Math.cos(0.28)) }, 0.55)));
+  };
+
+  it('« Y aller » regarde le lieu depuis sa porte, au nord-est : le quai, les radeaux, puis le chenal', () => {
+    const look = { x: -Math.sin(doorViewOf('radeaux')), z: -Math.cos(doorViewOf('radeaux')) };
+    for (const r of RADEAUX_LAYOUT.rafts) {
+      const p = on(r, 0.55);
+      expect(p.x).toBeGreaterThan(0);
+      expect(p.x).toBeLessThan(W);
+      const d = { x: PLACE.center.x + r.x - door.x, z: PLACE.center.z + r.z - door.z };
+      expect(look.x * d.x + look.z * d.z).toBeGreaterThan(0);
+    }
+    // La cabane sur un côté du quai, à l'écran.
+    expect(on(RADEAUX_LAYOUT.cabin, 1.5).x).toBeGreaterThan(W * 0.7);
+    // Les autres lieux gardent le nord.
+    expect(doorViewOf('hameau')).toBe(0);
+    expect(doorViewOf('montee')).toBe(0);
+  });
+
+  it('les radeaux en échelon net : chacun plus loin que le précédent d’au moins vingt pixels', () => {
+    const near = [0, 1, 2].map((k) => Math.max(...raftCorners(k).map((c) => c.y)));
+    expect(near[0] - near[1]).toBeGreaterThan(20);
+    expect(near[1] - near[2]).toBeGreaterThan(20);
+  });
+
+  it('le portique, entre le quai et le radeau du milieu, ne le croise jamais à l’image', () => {
+    const middle = raftCorners(1).map((c) => c.x);
+    for (const post of RADEAUX_LAYOUT.posts)
+      for (const y of [0, RADEAUX_HEIGHTS.forks]) {
+        const x = on(post, y).x;
+        expect(x < Math.min(...middle) - 4 || x > Math.max(...middle) + 4, `${post.x} ${y}`).toBe(true);
+      }
+  });
+
+  it('les toiles des radeaux se voient de face depuis la porte, jamais par la tranche', () => {
+    // Le lieu se dessine dans son repère (le centre à son sol) : la vue le pose au centre.
+    const f = shown(4);
+    const [r, g, b] = linearRgb(0x7d97ad);
+    let seen = 0;
+    for (let i = 0; i < f.positions.length; i += 9) {
+      if (Math.abs(f.colors[i] - r) > 1e-4 || Math.abs(f.colors[i + 1] - g) > 1e-4 || Math.abs(f.colors[i + 2] - b) > 1e-4) continue;
+      // Les toiles des deux premiers radeaux (celle de la cabane regarde la façade, de côté).
+      if (!RADEAUX_LAYOUT.rafts.slice(0, 2).some((c) => Math.hypot(f.positions[i] - c.x, f.positions[i + 2] - c.z) < 3)) continue;
+      const to = { x: pose.position.x - (PLACE.center.x + f.positions[i]), y: pose.position.y - (CENTER_Y + f.positions[i + 1]), z: pose.position.z - (PLACE.center.z + f.positions[i + 2]) };
+      const l = Math.hypot(to.x, to.y, to.z);
+      const facing = (f.normals[i] * to.x + f.normals[i + 1] * to.y + f.normals[i + 2] * to.z) / l;
+      expect(facing).toBeGreaterThan(0.3);
+      seen++;
+    }
+    expect(seen).toBe(4);
+  });
+
+  it('les lanternes restaurées restent hors du premier plan : aucune à moins de six unités de la porte', () => {
+    const f = shown(PARTS.length);
+    const [r, g, b] = linearRgb(COLORS_5E.lantern);
+    for (let i = 0; i < f.positions.length; i += 3) {
+      if (Math.abs(f.colors[i] - r) > 1e-4 || Math.abs(f.colors[i + 1] - g) > 1e-4 || Math.abs(f.colors[i + 2] - b) > 1e-4) continue;
+      expect(Math.hypot(PLACE.center.x + f.positions[i] - door.x, PLACE.center.z + f.positions[i + 2] - door.z)).toBeGreaterThan(6);
+    }
+  });
+});
+
+describe('La ruine des Radeaux (retouche du lot 6)', () => {
+  it('ses trois poids partent avec le quai neuf, le corps 1 sur 3', () => {
+    const iron = (n: number) => countColor(shown(n), 0x6f6a60);
+    // Restaurés, seules les broches du portique sont de fer.
+    expect(iron(0)).toBeGreaterThan(iron(1));
+    expect(iron(1)).toBe(iron(PARTS.length));
+  });
+
+  it('son radeau penché se lit de biais : un bord sous l’eau, l’autre relevé d’un mètre au moins', () => {
+    const f = drawPieces('radeaux', (p) => p.stage === 'ruine' && p.until?.row === 1 / 3);
+    const [r, g, b] = linearRgb(0x8f8170);
+    const c = RADEAUX_LAYOUT.rafts[1];
+    let low = Infinity,
+      high = -Infinity;
+    for (let i = 0; i < f.positions.length; i += 3) {
+      if (Math.abs(f.colors[i] - r) > 1e-4 || Math.abs(f.colors[i + 1] - g) > 1e-4 || Math.abs(f.colors[i + 2] - b) > 1e-4) continue;
+      if (Math.hypot(f.positions[i] - c.x, f.positions[i + 2] - c.z) > 4) continue;
+      low = Math.min(low, f.positions[i + 1] + CENTER_Y);
+      high = Math.max(high, f.positions[i + 1] + CENTER_Y);
+    }
+    // L'eau est à 0 dans le monde.
+    expect(low).toBeLessThan(-0.5);
+    expect(high).toBeGreaterThan(1);
+  });
+});
+
+describe('Les Radeaux sur la Carte (retouche du lot 6)', () => {
+  it('le dessus des radeaux, éclairci, sur la Carte seulement : deux dans la ruine, trois posés ; leur boîte laissée à découvert', () => {
+    const c = { x: PLACE.center.x, y: 1, z: PLACE.center.z };
+    expect(RADEAUX.mapMark!(c, () => false).triangles).toBe(4);
+    expect(RADEAUX.mapMark!(c, () => true).triangles).toBe(6);
+    expect(RADEAUX.nameAbove).toBe(true);
+    const clear = RADEAUX.mapClear!;
+    for (const r of RADEAUX_LAYOUT.rafts) {
+      expect(r.x).toBeGreaterThan(Math.min(...clear.map((p) => p.x)));
+      expect(r.x).toBeLessThan(Math.max(...clear.map((p) => p.x)));
+      expect(r.z).toBeGreaterThan(Math.min(...clear.map((p) => p.z)));
+      expect(r.z).toBeLessThan(Math.max(...clear.map((p) => p.z)));
+    }
+  });
+});
+
 describe('Les traces des Radeaux : une par mission, chacune avec sa partie', () => {
   it('trois au corps (une par tiers), une au haut, une aux abords', () => {
     expect(MISSIONS.map((m) => [RADEAUX.traces[m].stage, RADEAUX.traces[m].row])).toEqual([
@@ -117,6 +240,25 @@ describe('La scénette des Radeaux', () => {
     expect(Math.abs(h.y - keo.y)).toBeLessThan(1e-6);
     const items = placeItems('radeaux', 'maths-5e-proportionality-percentages-1', [{ key: 'a', choices: ['25 %', '50 %'], answer: '25 %' }]);
     expect(items[0].placeScene).toEqual({ kind: 'rest' });
+  });
+
+  it('la planche des poids reste sous la rangée, la caméra de biais (tournée avec elle)', () => {
+    expect(RADEAUX.answer?.facing).toBe(true);
+    const yaw = RADEAUX.site.start!;
+    const right = { x: Math.cos(yaw), z: -Math.sin(yaw) };
+    const pivot = { x: 0, y: 0, z: 0 };
+    const points = [-1.5, -0.5, 0.5, 1.5].map((t) => ({ x: right.x * t, y: 0, z: right.z * t }));
+    const f = facingAnswerObjects('radeaux', points, 1, {}, pivot, yaw);
+    const [r, g, b] = linearRgb(0xa68672);
+    const along: number[] = [],
+      across: number[] = [];
+    for (let i = 0; i < f.positions.length; i += 3) {
+      if (Math.abs(f.colors[i] - r) > 1e-4 || Math.abs(f.colors[i + 1] - g) > 1e-4 || Math.abs(f.colors[i + 2] - b) > 1e-4) continue;
+      along.push(f.positions[i] * right.x + f.positions[i + 2] * right.z);
+      across.push(-f.positions[i] * right.z + f.positions[i + 2] * right.x);
+    }
+    expect(Math.max(...along) - Math.min(...along)).toBeGreaterThan(3);
+    expect(Math.max(...across) - Math.min(...across)).toBeLessThan(0.8);
   });
 
   it('un poids choisi se soulève d’un cran : sa forme ne change pas, sa place si', () => {

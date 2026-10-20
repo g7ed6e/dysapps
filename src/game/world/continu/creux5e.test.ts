@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { KEO_HEIGHT } from './camera';
 import { CREUX, CREUX_ARCH_HEIGHT, SENTE_5E, creuxFacets, creuxTriangles } from './creux5e';
-import { DETOURS_5E, detourAtPoint, detourById } from './detours';
+import { DETOURS, DETOURS_5E, detourAtPoint, detourById, detourCap } from './detours';
 import { buildWalkGrid, cellOf, freeRoute, isWalkable } from './freeWalk';
 import { distance, distanceToPolyline, linearRgb } from './geometry';
 import { planFor } from './levelPlan';
@@ -58,6 +58,26 @@ describe('Le Creux, premier Détour du 5e', () => {
     expect(contrast(SENTE_5E.color, COLORS_5E.moss)).toBeGreaterThanOrEqual(3);
     expect(contrast(SENTE_5E.color, COLORS_5E.mossShade)).toBeGreaterThanOrEqual(3);
     expect(creuxFacets(true).triangles).toBeGreaterThan(creuxFacets(false).triangles);
+  });
+
+  it('son creux a un plafond, vu d’en dessous : par l’arche, on ne voit jamais le ciel', () => {
+    const f = creuxFacets(false);
+    const [r, g, b] = linearRgb(0x5f5648);
+    let lid = 0;
+    for (let i = 0; i < f.normals.length; i += 9) {
+      const inside = Math.abs(f.colors[i] - r) < 1e-4 && Math.abs(f.colors[i + 1] - g) < 1e-4 && Math.abs(f.colors[i + 2] - b) < 1e-4;
+      if (inside && f.normals[i + 1] < -0.99) lid++;
+    }
+    expect(lid).toBe(6);
+  });
+
+  it('à l’arrivée, la caméra se tourne vers l’arche : elle regarde du seuil vers le fût', () => {
+    const cap = detourCap(CREUX)!;
+    const look = { x: -Math.sin(cap), z: -Math.cos(cap) };
+    const toCenter = { x: CREUX_5E.center.x - CREUX_5E.threshold.x, z: CREUX_5E.center.z - CREUX_5E.threshold.z };
+    const l = Math.hypot(toCenter.x, toCenter.z);
+    expect((look.x * toCenter.x + look.z * toCenter.z) / l).toBeGreaterThan(0.999);
+    for (const d of DETOURS) expect(detourCap(d), d.id).toBeNull();
   });
 
   it('son arche fait deux fois Kéo à peu près ; sa lanterne brille dès le départ ; 175 triangles au plus, sente comprise', () => {

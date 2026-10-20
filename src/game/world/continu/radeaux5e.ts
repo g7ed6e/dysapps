@@ -8,8 +8,8 @@
 // barques d'étal. Une seule rive bâtie : en face, la forêt des Roselières.
 //
 // La ruine : tout est là, tombé ou cassé, jamais un chantier. Le radeau du quai à plat, ses amarres rompues ; le deuxième
-// penché de 20°, un bord sous l'eau, sa balance glissée contre le bord bas ; du troisième, un coin de rondins hors de
-// l'eau. La cabane fendue, son toit de planches à demi effondré, un pan d'enduit tombé qui montre les lattes, son auvent
+// penché de côté (24°), son bord est sous l'eau, sa balance glissée contre le bord bas ; du troisième, un coin de rondins
+// hors de l'eau. La cabane fendue, son toit de planches à demi effondré, un pan d'enduit tombé qui montre les lattes, son auvent
 // de toile délavée tendu de travers sur une perche qui penche, et sa lanterne allumée sur une perche courte : la seule
 // lumière (le marchand vit là). Deux toiles couchées à plat, leurs perches cassées couchées parallèles ; deux plateaux sur
 // la vase ; deux lanternes éteintes (l'une penchée sur le radeau qui penche, l'autre à plat sur le quai) ; peu de débris.
@@ -21,7 +21,7 @@
 // posée avec SA partie (`TraceArt.row`, choix « Par partie » du mainteneur). Rien ne bouge : ni radeau ni toile ni eau.
 // Rien à lire dans la 3D. Code pur (placeArt.ts).
 import { type Stage } from './construction';
-import { FacetBuilder, type Placement } from './facets';
+import { FacetBuilder, type Facets, type Placement } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { rootArch } from './monteeSurroundings';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
@@ -125,18 +125,27 @@ function onFacade(t: number, n: number): Vec2 {
 }
 
 /**
- * Les trois radeaux, carrés (5 sur 5), en échelon devant le quai : leur centre dans le repère de la rive. Le premier, au
- * quai ; le deuxième, du milieu, derrière le portique ; le troisième, au fond, vers l'est.
+ * Les trois radeaux, carrés (5 sur 5), en échelon net devant le quai : leur centre dans le repère de la rive. Le premier,
+ * au quai, à l'ouest ; le deuxième, du milieu, derrière le portique ; le troisième, au fond, vers l'est. Chacun recule de
+ * 3,2 sur l'eau, les deux tiers d'un radeau (retouche du lot 6 : à 1,6, vus de la porte, ils se lisaient alignés), et
+ * s'écarte du suivant d'un pas de côté : ni ne se touchent, ni ne se cachent.
  */
 const RAFTS = [
-  { u: -3.6, v: 4.0 },
-  { u: 2.0, v: 5.6 },
-  { u: 7.6, v: 7.2 },
+  { u: -4.6, v: 3.7 },
+  { u: 1.9, v: 6.9 },
+  { u: 7.8, v: 10.1 },
 ] as const;
 const RAFT = { size: 5, thick: 0.42, float: 0.12 } as const;
 
-/** Le portique du grand fléau : ses deux poteaux (repère de la rive), la hauteur de leur fourche au-dessus du sol du lieu. */
-const PORTICO = { posts: [{ u: 0.7, v: 2.2 }, { u: 3.3, v: 2.2 }], top: 5, arm: 0.8, spread: 0.45 } as const;
+/**
+ * Le portique du grand fléau : ses deux poteaux (repère de la rive), entre le quai et le radeau du milieu, de part et
+ * d'autre de lui vu de la porte (la caméra du lieu le regarde entre eux : aucun poteau ne le croise à l'image, retouche du
+ * lot 6) : l'un dans le pas entre le premier radeau et celui du milieu, l'autre entre celui du milieu et celui du fond.
+ * Tous deux assez loin sur l'eau pour rester hors du cadre de la scénette, qui regarde la cabane depuis l'est, le long du
+ * quai (celui de l'est, au bord du quai, y coupait l'image comme un tronc). La hauteur de leur fourche au-dessus du sol du
+ * lieu.
+ */
+const PORTICO = { posts: [{ u: -1.1, v: 3.4 }, { u: 5.0, v: 4.0 }], top: 5, arm: 0.8, spread: 0.45 } as const;
 
 /** La rampe d'accès, de la rive au quai : son haut, son bas (repère de la rive), sa largeur. */
 const RAMP = { u: 5, top: -5.6, bottom: QUAY.v0 + 0.2, half: 0.9 } as const;
@@ -231,6 +240,49 @@ function raft(b: FacetBuilder, at: Placement, roll = 0, worn = false): void {
   }
 }
 
+/**
+ * Le radeau penché de la ruine, le deuxième : basculé de côté de `TILT.roll` autour de son axe en travers de la rive, son
+ * bord est sous l'eau, son bord ouest relevé haut (un peu penché vers le chenal aussi, `TILT.pitch`). Vu de la porte, il
+ * se lit de biais, jamais par la tranche (retouche du lot 6 : penché vers le chenal, il se lisait comme une planche). Sur
+ * lui, dessinés dans son repère et basculés avec lui : sa balance glissée contre le bord bas, sa toile couchée à plat, sa
+ * lanterne éteinte, debout sur lui, qui penche avec lui. `lift` : la hauteur de son centre au-dessus de l'eau.
+ */
+const TILT = { roll: (-24 * Math.PI) / 180, pitch: (5 * Math.PI) / 180, lift: 0.05 } as const;
+
+function tiltedRaft(b: FacetBuilder, water: number): void {
+  const c = raftAt(1);
+  const at: Placement = { x: c.x, y: water + TILT.lift, z: c.z, yaw: SHORE_YAW - 0.06, pitch: TILT.pitch };
+  raft(b, at, TILT.roll, true);
+  // Sur le radeau, dans son repère : `x` le long de la rive (vers l'est, le bord bas), `z` vers le chenal, le dessus en
+  // `y = RAFT.thick`.
+  const l = new FacetBuilder();
+  const T = RAFT.thick;
+  // La balance, glissée jusqu'au bord de l'eau (le dessus sort de l'eau jusqu'à x ≈ 1) : son fléau couché le long du bord,
+  // son pied tombé à côté, un plateau.
+  l.box({ x: 0.65, y: T, z: 0.2, yaw: Math.PI / 2 }, [SCALE.beam, 0.09, 0.1], C.wornWood);
+  l.box({ x: 0.45, y: T, z: -1.2, yaw: 0.3 }, [SCALE.foot, 0.14, 0.14], C.wornShade);
+  l.prism({ x: 0.5, y: T, z: 1.3 }, SCALE.pan * 0.75, SCALE.pan, 0.06, 6, C.pan);
+  // La toile couchée à plat sur les rondins, du côté relevé.
+  l.quad([-2.2, T + 0.02, -1.6], [-2.2, T + 0.02, 0.2], [-0.15, T + 0.02, 0.2], [-0.15, T + 0.02, -1.6], C.wornCloth);
+  // La lanterne éteinte, sur sa perche debout sur le radeau : elle penche avec lui.
+  pole(l, -1.5, 1.4, T, T + 1.5, 0.07, C.wornShade);
+  lanternOn(l, { x: -1.5, y: T + 1.5, z: 1.4 }, false);
+  const f = l.build();
+  const move = placer(at, TILT.roll);
+  const turn = placer({ ...at, x: 0, y: 0, z: 0 }, TILT.roll);
+  for (let i = 0; i < f.positions.length; i += 3) {
+    const [x, y, z] = move(f.positions[i], f.positions[i + 1], f.positions[i + 2]);
+    f.positions[i] = x;
+    f.positions[i + 1] = y;
+    f.positions[i + 2] = z;
+    const [nx, ny, nz] = turn(f.normals[i], f.normals[i + 1], f.normals[i + 2]);
+    f.normals[i] = nx;
+    f.normals[i + 1] = ny;
+    f.normals[i + 2] = nz;
+  }
+  b.append(f);
+}
+
 /** Le centre d'un radeau dans le repère du lieu. */
 const raftAt = (k: number): Vec2 => shore(RAFTS[k].u, RAFTS[k].v);
 
@@ -240,16 +292,23 @@ const COUNTER = { du: -0.6, dv: -1.1, len: 2.2, depth: 0.7, h: 0.85 } as const;
 /** Le milieu du comptoir du radeau `k`, dans le repère du lieu. */
 const counterAt = (k: number): Vec2 => shore(RAFTS[k].u + COUNTER.du, RAFTS[k].v + COUNTER.dv);
 
-/** Une balance : un pied droit (son chapeau de bronze), un fléau de bois horizontal, deux plateaux ronds égaux, de niveau, posés sur ses bouts. */
-const SCALE = { foot: 0.55, beam: 1.5, pan: 0.3 } as const;
+/**
+ * Une balance : un pied droit (son chapeau de bronze), un fléau de bois horizontal, et à chaque bout un plateau rond pendu
+ * à sa tige de bronze, les deux égaux et de niveau. Pendus sous le fléau, larges et épais, les plateaux se lisent de loin
+ * (retouche du lot 6 : posés à plat sur les bouts du fléau, la balance se lisait comme un « T »). `pan` : le rayon d'un
+ * plateau, `hang` : sa tige, `rim` : son épaisseur.
+ */
+const SCALE = { foot: 0.75, beam: 1.6, pan: 0.36, hang: 0.38, rim: 0.12 } as const;
 
 function scale(b: FacetBuilder, at: Vec3, yaw: number): void {
   b.box({ x: at.x, y: at.y, z: at.z, yaw }, [0.14, SCALE.foot, 0.14], C.newShade, C.bronze);
   b.box({ x: at.x, y: at.y + SCALE.foot, z: at.z, yaw }, [SCALE.beam, 0.09, 0.1], C.newWood);
   for (const s of [-1, 1]) {
-    const x = at.x + Math.cos(yaw) * s * (SCALE.beam / 2 - 0.12),
-      z = at.z - Math.sin(yaw) * s * (SCALE.beam / 2 - 0.12);
-    b.prism({ x, y: at.y + SCALE.foot + 0.09, z }, SCALE.pan * 0.82, SCALE.pan, 0.06, 5, C.pan);
+    const x = at.x + Math.cos(yaw) * s * (SCALE.beam / 2 - 0.06),
+      z = at.z - Math.sin(yaw) * s * (SCALE.beam / 2 - 0.06);
+    const pan = at.y + SCALE.foot - SCALE.hang;
+    pole(b, x, z, pan + SCALE.rim, at.y + SCALE.foot, 0.03, C.bronze);
+    b.prism({ x, y: pan, z }, SCALE.pan * 0.75, SCALE.pan, SCALE.rim, 6, C.pan);
   }
 }
 
@@ -340,15 +399,20 @@ function awning(b: FacetBuilder, hi: Vec2, lo: Vec2, along: Vec2, half: number, 
   b.quad(a, c, d, e, under);
 }
 
-/** L'auvent d'un radeau (le haut) au-dessus de son comptoir : deux perches hautes côté quai, deux basses côté eau. */
+/**
+ * L'auvent d'un radeau (le haut), juste derrière son comptoir : deux perches basses côté quai, deux hautes côté eau. Sa
+ * pente monte en s'éloignant de la porte : la toile s'y voit de face, et la balance se lit devant elle (retouche du lot 6 :
+ * penchée vers l'eau, la pente filait comme le regard et la toile ne se voyait que par la tranche).
+ */
 function raftAwning(b: FacetBuilder, k: number, deck: number): void {
   const R = RAFTS[k];
-  const hi = shore(R.u + COUNTER.du, R.v + COUNTER.dv - 0.9),
-    lo = shore(R.u + COUNTER.du, R.v + COUNTER.dv + 1.1);
-  const along = { x: SHORE_COS, z: SHORE_SIN };
+  const hi = shore(R.u + COUNTER.du, R.v + COUNTER.dv + 2.3),
+    lo = shore(R.u + COUNTER.du, R.v + COUNTER.dv + 0.2);
+  // Le long de la rive, vers l'ouest : le dessus de la toile regarde le ciel.
+  const along = { x: -SHORE_COS, z: -SHORE_SIN };
   const half = 1.45;
-  const yHi = deck + 2.1,
-    yLo = deck + 1.6;
+  const yHi = deck + 2.35,
+    yLo = deck + 1.75;
   for (const s of [-1, 1]) {
     pole(b, hi.x + along.x * s * half, hi.z + along.z * s * half, deck, yHi, 0.05, C.newShade);
     pole(b, lo.x + along.x * s * half, lo.z + along.z * s * half, deck, yLo, 0.05, C.newShade);
@@ -518,21 +582,18 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     haut,
   );
   // Les radeaux de la ruine : celui du quai à plat, ses amarres rompues qui pendent dans l'eau ; le deuxième penché de
-  // 20°, un bord sous l'eau, sa balance glissée contre le bord bas et sa lanterne éteinte qui penche ; du troisième, un
-  // coin de rondins. Sur eux, deux toiles couchées à plat et leurs perches cassées, couchées parallèles. Le corps les
-  // remet à flot.
+  // côté, de 24°, son bord est sous l'eau et son bord ouest relevé haut, sa balance glissée contre le bord bas, sa toile
+  // couchée et sa lanterne éteinte qui penche avec lui ; du troisième, un coin de rondins. Sur le premier, une toile
+  // couchée à plat et ses deux perches cassées, couchées parallèles à la rive, loin des poteaux. Le corps les remet à flot.
   add(
     'ruine',
     0,
     (b) => {
       const r0 = raftAt(0),
-        r1 = raftAt(1),
         r2 = raftAt(2);
       const y0 = W + RAFT.float - 0.08;
       raft(b, { x: r0.x, y: y0, z: r0.z, yaw: SHORE_YAW + 0.12 }, 0, true);
-      // Le deuxième : penché autour de son axe le long de la rive, le bord côté chenal sous l'eau.
-      const tilt = (20 * Math.PI) / 180;
-      raft(b, { x: r1.x, y: W - 0.15, z: r1.z, yaw: SHORE_YAW - 0.1, pitch: tilt }, 0, true);
+      tiltedRaft(b, W);
       // Le troisième : un coin seul hors de l'eau.
       b.box({ x: r2.x - 1.4, y: W - 1.2, z: r2.z - 1.2, yaw: SHORE_YAW + 0.785, pitch: 0.5 }, [1.6, 1.5, 1.6], C.wornLog, C.wornLogTop);
       // Les bouts d'amarre rompus, du radeau du quai dans l'eau.
@@ -541,43 +602,27 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
           c = shore(RAFTS[0].u + du + 0.2, RAFTS[0].v - RAFT.size / 2 - 0.9);
         b.beam({ x: a.x, y: y0 + RAFT.thick, z: a.z }, { x: c.x, y: W - 0.25, z: c.z }, 0.06, C.rope);
       }
-      // Les balances renversées : sur le radeau du quai, couchée, un plateau tombé ; sur le deuxième, glissée contre le
-      // bord bas.
+      // La balance renversée du radeau du quai : couchée, un plateau tombé.
       const top0 = y0 + RAFT.thick;
       const s0 = shore(RAFTS[0].u - 0.4, RAFTS[0].v - 0.6);
       b.box({ x: s0.x, y: top0, z: s0.z, yaw: SHORE_YAW + 0.5 }, [SCALE.foot, 0.14, 0.14], C.wornShade);
       b.box({ x: s0.x + 0.5, y: top0, z: s0.z + 0.4, yaw: SHORE_YAW + 0.4 }, [SCALE.beam, 0.09, 0.1], C.wornWood);
-      b.prism({ x: s0.x - 0.8, y: top0, z: s0.z + 0.9 }, SCALE.pan * 0.82, SCALE.pan, 0.06, 5, C.pan);
-      // Le dessus du radeau penché à `dv` de son axe (vers le chenal) : la balance glisse jusqu'au bord de l'eau.
-      const tiltTop = (dv: number) => W - 0.15 + RAFT.thick * Math.cos(tilt) - dv * Math.sin(tilt);
-      const s1 = shore(RAFTS[1].u + 0.3, RAFTS[1].v + 0.35);
-      b.box({ x: s1.x, y: tiltTop(0.35), z: s1.z, yaw: SHORE_YAW, pitch: tilt }, [SCALE.beam, 0.09, 0.1], C.wornWood);
-      const s2 = shore(RAFTS[1].u + 1.2, RAFTS[1].v - 0.1);
-      b.box({ x: s2.x, y: tiltTop(-0.1), z: s2.z, yaw: SHORE_YAW, pitch: tilt }, [0.14, 0.14, SCALE.foot], C.wornShade);
-      // La lanterne éteinte qui penche sur le radeau qui penche.
-      const lp = shore(RAFTS[1].u - 1.6, RAFTS[1].v - 1.2);
-      const ly = tiltTop(-1.2) - 0.05;
-      const lt = { x: lp.x + 0.35, y: ly + 1.5, z: lp.z + 0.35 };
-      b.beam({ x: lp.x, y: ly, z: lp.z }, lt, 0.1, C.wornShade);
-      lanternOn(b, lt, false);
-      // Les deux toiles couchées à plat (jamais dressées), et leurs perches cassées, couchées parallèles.
-      const cloth = (c: Vec2, y: number, du: number, dv: number, yaw: number, pitch = 0) => {
-        const t = placer({ x: c.x, y, z: c.z, yaw: SHORE_YAW + yaw, pitch });
-        b.quad(t(-du, 0, -dv), t(-du, 0, dv), t(du, 0, dv), t(du, 0, -dv), C.wornCloth);
-      };
-      cloth(shore(RAFTS[0].u + 0.9, RAFTS[0].v + 0.8), top0 + 0.02, 1.2, 0.9, 0.15);
-      cloth(shore(RAFTS[1].u - 0.6, RAFTS[1].v - 0.6), tiltTop(-0.6) + 0.02, 1.1, 0.8, 0, tilt);
+      b.prism({ x: s0.x - 0.8, y: top0, z: s0.z + 0.9 }, SCALE.pan * 0.75, SCALE.pan, 0.06, 6, C.pan);
+      // La toile couchée à plat (jamais dressée), et ses perches cassées, couchées parallèles à la rive.
+      const c = shore(RAFTS[0].u + 0.9, RAFTS[0].v + 0.8);
+      const t = placer({ x: c.x, y: top0 + 0.02, z: c.z, yaw: SHORE_YAW + 0.15 });
+      b.quad(t(-1.2, 0, -0.9), t(-1.2, 0, 0.9), t(1.2, 0, 0.9), t(1.2, 0, -0.9), C.wornCloth);
       for (const dv of [1.75, 2.05]) {
         const a = shore(RAFTS[0].u - 1.6, RAFTS[0].v + dv),
-          c = shore(RAFTS[0].u + 1.2, RAFTS[0].v + dv);
-        b.beam({ x: a.x, y: top0 + 0.04, z: a.z }, { x: c.x, y: top0 + 0.04, z: c.z }, 0.08, C.wornShade);
+          e = shore(RAFTS[0].u + 1.2, RAFTS[0].v + dv);
+        b.beam({ x: a.x, y: top0 + 0.04, z: a.z }, { x: e.x, y: top0 + 0.04, z: e.z }, 0.08, C.wornShade);
       }
     },
     corps2,
   );
-  // Les débris du quai : la lanterne éteinte tombée à plat, un panier renversé et ses fruits, une caisse éventrée (le
-  // corps les range) ; deux plateaux couchés sur la vase au ras de l'eau, au bord du quai (jamais posés sur l'eau) et
-  // trois poids (les balances les reprennent). Rien sur le chemin de la porte.
+  // Les débris du quai : la lanterne éteinte tombée à plat, un panier renversé et ses fruits, une caisse éventrée, trois
+  // poids (le quai neuf les range) ; deux plateaux couchés sur la vase au ras de l'eau, au bord du quai, jamais posés sur
+  // l'eau (les balances les reprennent). Rien sur le chemin de la porte.
   add(
     'ruine',
     0,
@@ -598,6 +643,16 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
       const crate = shore(-2.6, -2.0);
       b.box({ x: crate.x, y: deck, z: crate.z, yaw: SHORE_YAW + 0.4 }, [0.6, 0.45, 0.5], C.wornShade, C.wornWood);
       b.box({ x: crate.x + 0.6, y: deck, z: crate.z + 0.2, yaw: SHORE_YAW + 0.9 }, [0.65, 0.05, 0.22], C.wornWood);
+      // Les trois poids tombés sur le quai : ils partent avec le quai neuf (un débris part avec la partie qui pose ce qu'il
+      // encombre ; retouche du lot 6 : ils restaient sur le quai refait jusqu'aux balances).
+      for (const [u, v] of [
+        [1.4, -1.3],
+        [2.0, -1.6],
+        [1.7, -0.9],
+      ]) {
+        const p = shore(u, v);
+        weight(b, { x: p.x, y: deck, z: p.z }, 1, u);
+      }
     },
     corps1,
   );
@@ -608,14 +663,6 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
       for (const u of [-11.2, -12.1]) {
         const p = shore(u, 0.15);
         b.prism({ x: p.x, y: Math.max(at(p.x, p.z), W) - 0.02, z: p.z }, SCALE.pan * 0.82, SCALE.pan, 0.06, 5, C.pan);
-      }
-      for (const [u, v] of [
-        [1.4, -1.3],
-        [2.0, -1.6],
-        [1.7, -0.9],
-      ]) {
-        const p = shore(u, v);
-        weight(b, { x: p.x, y: deck, z: p.z }, 1, u);
       }
     },
     corps3,
@@ -690,7 +737,7 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     perchLantern(b, f.x, f.z, raftDeck, 1.9, true);
   });
   // Les abords : la rampe de la rive au quai et sa barrière basse ; deux barques d'étal à flot, la proue relevée ; un sac
-  // et un panier rangés ; une lanterne sur perche en tête de rampe.
+  // et un panier rangés ; une lanterne sur perche au pied de la rampe.
   add(2, 0, (b) => {
     const top = shore(RAMP.u, RAMP.top),
       bottom = shore(RAMP.u, RAMP.bottom);
@@ -713,8 +760,10 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     tiedSack(b, { x: s.x, y: deck, z: s.z }, 1.1);
     const k = shore(-3.1, -2.05);
     basket(b, { x: k.x, y: deck, z: k.z }, 1, C.olive);
-    const l = shore(RAMP.u + RAMP.half + 0.3, RAMP.top + 0.2);
-    perchLantern(b, l.x, l.z, at(l.x, l.z), 1.8, true);
+    // La lanterne de la rampe, au pied de la rampe, sur le quai : en tête de rampe, à trois pas de la porte, elle se
+    // voyait grosse au premier plan (retouche du lot 6) ; ici, à la distance du quai, de la taille des autres.
+    const l = shore(RAMP.u + RAMP.half + 0.4, QUAY.v0 + 0.3);
+    perchLantern(b, l.x, l.z, deck, 1.8, true);
   });
 }
 
@@ -910,6 +959,52 @@ const TRACE_SPOTS = {
   statistics: shore(BIG_SACK.u, BIG_SACK.v),
 } as const;
 
+/**
+ * Le cap de la caméra à la porte (« Y aller ») : en travers du chenal, vers l'eau (le `v` de la rive). Depuis la porte, au
+ * nord-est, elle montre le quai, puis les radeaux en échelon entre les deux poteaux du portique, puis le chenal et la
+ * forêt des Roselières en face ; la cabane sur le côté droit du quai (retouche du lot 6 : au nord, elle tournait le dos
+ * au lieu). La caméra regarde vers −(sin cap, cos cap).
+ */
+const DOOR_VIEW = Math.atan2(SHORE_SIN, -SHORE_COS);
+
+/** Sur la Carte, les coins de la boîte des trois radeaux (repère du lieu), que les étiquettes laissent à découvert. */
+const MAP_CLEAR: readonly Vec2[] = (() => {
+  const h = RAFT.size / 2 + 0.5;
+  const us = RAFTS.map((r) => r.u),
+    vs = RAFTS.map((r) => r.v);
+  const [u0, u1, v0, v1] = [Math.min(...us) - h, Math.max(...us) + h, Math.min(...vs) - h, Math.max(...vs) + h];
+  return [shore(u0, v0), shore(u1, v0), shore(u1, v1), shore(u0, v1)];
+})();
+
+/**
+ * Sur la Carte seulement : le dessus de chaque radeau à flot, d'un bois clair, pour que les trois radeaux carrés se lisent
+ * sur le chenal à l'échelle de l'île (retouche du lot 6 : bruns sur l'eau sombre, ils ne s'y voyaient pas). Dans la
+ * ruine, le radeau du quai et le radeau penché ; posés (le corps, 2 sur 3), les trois, en échelon. Deux triangles par
+ * radeau, dans le maillage des lieux.
+ */
+const MAP_TOP = 0xd8c49a;
+
+function mapMark(c: Vec3, posed: (stage: Stage, row: number) => boolean): Facets {
+  const b = new FacetBuilder();
+  inWorld(b, c, (l) => {
+    const W = -c.y;
+    const h = RAFT.size / 2;
+    const top = (t: (x: number, y: number, z: number) => [number, number, number], y: number) => l.quad(t(-h, y, -h), t(-h, y, h), t(h, y, h), t(h, y, -h), MAP_TOP);
+    if (posed(0, 1 / 3)) {
+      for (let k = 0; k < RAFTS.length; k++) {
+        const r = raftAt(k);
+        top(placer({ x: r.x, y: W + RAFT.float, z: r.z, yaw: SHORE_YAW }), RAFT.thick + 0.03);
+      }
+      return;
+    }
+    const r0 = raftAt(0),
+      r1 = raftAt(1);
+    top(placer({ x: r0.x, y: W + RAFT.float - 0.08, z: r0.z, yaw: SHORE_YAW + 0.12 }), RAFT.thick + 0.03);
+    top(placer({ x: r1.x, y: W + TILT.lift, z: r1.z, yaw: SHORE_YAW - 0.06, pitch: TILT.pitch }, TILT.roll), RAFT.thick + 0.03);
+  });
+  return b.build();
+}
+
 /** La place de Kéo et du marchand dans la scène, depuis son milieu : de part et d'autre, le long de la façade. */
 const keoSpot = { dx: -FACE_T.x * SCENE_HALF, dz: -FACE_T.z * SCENE_HALF } as const;
 const merchantSpot = { dx: FACE_T.x * SCENE_HALF, dz: FACE_T.z * SCENE_HALF } as const;
@@ -935,6 +1030,8 @@ export const RADEAUX: PlaceArt = {
   },
   answer: {
     size: { height: BOARD.height + BOARD.lift + 0.4, half: 0.3 },
+    // La caméra de la scénette regarde la façade en biais (`site.start`) : la planche se tourne avec elle, sous la rangée.
+    facing: true,
     // La longue planche de comptoir sur deux tréteaux, sous la rangée des poids (comme la planche à pain du Hameau).
     base(b, mid, y, z, span, s, ground) {
       const top = y + BOARD.height * s;
@@ -961,6 +1058,10 @@ export const RADEAUX: PlaceArt = {
   },
   // Kéo au retour : sur la rive, en haut de la rampe, face au quai.
   exit: shore(RAMP.u - 1.6, RAMP.top - 0.6),
+  doorView: DOOR_VIEW,
+  mapClear: MAP_CLEAR,
+  nameAbove: true,
+  mapMark,
 };
 
 /**

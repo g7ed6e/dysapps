@@ -179,8 +179,10 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       // Un cadenas de pont ; Kéo ; une pastille, celle d'un lieu ouvert ou pâle.
       const kind = s.id === 'keo' ? 'keo' : isBridgeSpot(s.id) ? 'closed' : 'open';
       // Au 5e (des lieux du haut), le nom d'un lieu du bas se pose d'abord sous lui : le plateau reste à découvert.
-      const below = kind === 'open' && upperRef.current.length > 0 && s.id !== 'port' && !upperRef.current.includes(s.id as PlaceId);
-      items.push({ id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port', ...(below ? { below } : {}), ...(size.narrow ? { narrow: size.narrow } : {}) });
+      // Sauf un lieu dont le repère de loin est au sud, sur l'eau (les Radeaux) : son nom reste de son côté, au-dessus.
+      const above = kind === 'open' && s.above === true;
+      const below = !above && kind === 'open' && upperRef.current.length > 0 && s.id !== 'port' && !upperRef.current.includes(s.id as PlaceId);
+      items.push({ id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port', ...(below ? { below } : {}), ...(above ? { above } : {}), ...(size.narrow ? { narrow: size.narrow } : {}) });
     }
     return items;
   }, []);
@@ -219,7 +221,9 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
     // `layoutMapLabels` ; sur tablette, la Carte à l'arrêt (le geste fini, une taille changée), la reprise des noms
     // fermés tus (sur téléphone, un lieu fermé peut rester à son cadenas ; pendant un glisser, elle coûterait à chaque
     // image : expert frontend).
-    const laid = layoutMapLabels(items, obstacles.current, screen.current, !moving && screen.current.height > LOW_SCREEN);
+    // Ce que les étiquettes laissent à découvert, comme les boutons : le repère d'un lieu de loin (les trois radeaux).
+    const keep = spots.some((s) => s.shown && s.clear) ? [...obstacles.current, ...spots.flatMap((s) => (s.shown && s.clear ? [s.clear] : []))] : obstacles.current;
+    const laid = layoutMapLabels(items, keep, screen.current, !moving && screen.current.height > LOW_SCREEN);
     // La vue de départ se choisit à chaque mesure qui change une taille (police, grand texte, taille de l'écran), une
     // fois : la plus proche de l'île entière où chaque lieu ouvert a son nom près de lui (GD-20, « La Carte au plus grand
     // texte »). Une Carte que l'élève a touchée ne bouge plus (la scène en juge). Les étiquettes restent cachées jusqu'à la

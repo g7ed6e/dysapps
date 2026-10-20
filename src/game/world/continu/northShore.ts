@@ -17,3 +17,9 @@ const ART: Partial<Record<PlaceId, PlaceArt>> = { lookout: LOOKOUT, archives: AR
 
 /** Ce qu'un lieu du rivage nord ou du large apporte au monde (son dessin, sa scénette, ses traces), ou rien pour les autres lieux. */
 export const placeArt = (place: PlaceId): PlaceArt | null => ART[place] ?? null;
+
+/**
+ * Le cap de la caméra devant la porte d'un lieu, à l'arrivée d'un « Y aller » (`PlaceArt.doorView`) : elle regarde le lieu
+ * depuis sa porte ; le nord, sans cap donné.
+ */
+export const doorViewOf = (place: PlaceId): number => ART[place]?.doorView ?? 0;

@@ -115,6 +115,14 @@ export function detourAtPoint(p: Vec2, level: OpenWorldLevel = '6e'): Detour | n
   return null;
 }
 
+/**
+ * Le cap de la caméra à l'arrivée sur un Détour (comme `yaw` de la caméra, scene.ts : elle regarde vers −(sin, cos)), ou
+ * rien : elle garde le sien. Au Creux, Kéo sur le seuil, la caméra se tourne vers l'arche, derrière lui, et montre le
+ * dedans éclairé (GD-22, lot 6, retouche : sans cela, la caméra qui monte montrait le fût de côté, l'arche cachée). `face`
+ * va du centre du fût vers l'arche : la caméra regarde à l'opposé.
+ */
+export const detourCap = (d: Detour): number | null => (d.kind === 'creux' ? Math.atan2(Math.cos(d.face), Math.sin(d.face)) : null);
+
 /** La place que la végétation laisse libre : la sente, de part et d'autre, et autour du bord d'eau. */
 const KEEP = { sente: 1.6, shore: 4 } as const;
 

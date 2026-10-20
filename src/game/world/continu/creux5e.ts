@@ -69,7 +69,7 @@ function ring(k: number, r: number, y: number): [number, number, number] {
 /**
  * Le fût creusé : la bande basse (sept pans dehors, sept pans dedans, de l'écorce et de son revers), le pan de l'arche
  * (ouvert jusqu'aux naissances, puis la voûte à facettes, en six triangles, jusqu'au haut de la bande), et la bande
- * haute, qui s'amincit jusque dans la couronne. Cinquante triangles.
+ * haute, qui s'amincit jusque dans la couronne ; le plafond du creux. Cinquante-six triangles.
  */
 function trunk(b: FacetBuilder, g: number): void {
   const T = CREUX_TRUNK;
@@ -113,6 +113,10 @@ function trunk(b: FacetBuilder, g: number): void {
   b.triangle(A3, A4, TR, C.bark);
   // La bande haute, jusque dans la couronne : huit pans.
   for (let k = 0; k < n; k++) b.quad(ring(k + 1, T.r1, y1), ring(k, T.r1, y1), ring(k, T.r2, y2), ring(k + 1, T.r2, y2), C.bark);
+  // Le plafond du creux, au haut de la bande basse, vu d'en dessous (du revers) : sans lui, la bande haute, qui n'a pas de
+  // dedans, laissait voir le ciel, un petit triangle clair au haut de l'arche (retouche du lot 6). Six triangles.
+  const lid = Array.from({ length: n }, (_, k) => ring(k, T.r1, y1));
+  for (let k = 1; k < n - 1; k++) b.triangle(lid[0], lid[k], lid[k + 1], C.barkInside);
 }
 
 /** Un point du creux : `d` depuis le centre vers l'arche (négatif vers le fond), `s` de côté. */

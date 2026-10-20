@@ -15,6 +15,7 @@ import { bridgeFacets, bridgeMapMark, cabinCarFacets, isCabin } from './bridges'
 import { monteeGlowBand } from './montee5e';
 import { linkedLands } from './lands';
 import { planFor, scenePlace, type OpenWorldLevel, type ScenePlaceId } from './levelPlan';
+import { placeArt } from './northShore';
 import { networkSamples, pathRibbons } from './paths';
 import { PLACES, type PlaceId } from './plan6e';
 import { lanternLight, modelOfPlace } from './places';
@@ -492,8 +493,14 @@ export function mapCost5e(): { triangles: number; calls: number } {
   const places = placesCost5e();
   const marks = LINKED_LANDS_5E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + cliffMapLine().triangles + pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark).triangles;
   const veil = veilFacets(LINKED_LANDS_5E).triangles;
+  // Le repère des lieux de loin, sur la Carte seulement (les Radeaux : le dessus des radeaux, éclairci), au plus chargé.
+  const origin = { x: 0, y: 0, z: 0 };
+  const placeMarks = PLAN_5E.places.reduce((s, p) => {
+    const mark = placeArt(p.id)?.mapMark;
+    return s + (mark ? Math.max(mark(origin, () => true).triangles, mark(origin, () => false).triangles) : 0);
+  }, 0);
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + creuxTriangles().withSente + marks + veil + KEO.triangles + nefCost5e().triangles,
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + creuxTriangles().withSente + marks + placeMarks + veil + KEO.triangles + nefCost5e().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
   };
 }
