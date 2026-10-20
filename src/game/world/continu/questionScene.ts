@@ -220,6 +220,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   instants: placeArt('instants')!.sceneSpot,
   // Les Fumerolles (lot 9) : la dalle de relevé, devant la cabane de la sondeuse.
   fumerolles: placeArt('fumerolles')!.sceneSpot,
+  // L'Étuve (lot 10) : le pavé devant l'établi, le four à gauche derrière, le chalet à droite.
+  etuve: placeArt('etuve')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -477,6 +479,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   instants: 'lieu',
   // Les Fumerolles (lot 9) : les galets sur la planche à relevés.
   fumerolles: 'lieu',
+  // L'Étuve (lot 10) : les gobelets dans la planche percée.
+  etuve: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

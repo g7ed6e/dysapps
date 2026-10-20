@@ -4,8 +4,8 @@
 // des aiguilles (gris chaud moussu), le bois gris de la ruine, l'ocre des Contreforts, la mousse, le bronze éteint ; rien
 // de presque noir, rien à lire. Retouche du lot 2 (directeur artistique : « des boîtes génériques ») : chaque ruine a sa
 // hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts), comme le Hameau (./hameau5e.ts, lot 5),
-// les Radeaux (./radeaux5e.ts, lot 6), la Croisée (./croisee5e.ts, lot 7), les Instants (./instants5e.ts, lot 8) et les
-// Fumerolles (./fumerolles5e.ts, lot 9) ; le Donjon, une tour carrée sur son piton de roche. Code pur.
+// les Radeaux (./radeaux5e.ts, lot 6), la Croisée (./croisee5e.ts, lot 7), les Instants (./instants5e.ts, lot 8), les
+// Fumerolles (./fumerolles5e.ts, lot 9) et l'Étuve (./etuve5e.ts, lot 10) ; le Donjon, une tour carrée sur son piton de roche. Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_5E, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
@@ -82,14 +82,6 @@ function terrasses(b: FacetBuilder): void {
   rubble(b, 4.5, 3.8, 1.4, C.ochre, C.moss);
 }
 
-/** L'Étuve : un tambour de pierre bas, sa coupole à pans à demi effondrée, la porte en arc. */
-function etuve(b: FacetBuilder): void {
-  b.prism({ x: 0, y: SINK, z: 0, yaw: 0.2 }, 5, 5, 4 - SINK, 8, C.stone, C.sun);
-  b.prism({ x: -0.6, y: 4, z: -0.4, yaw: 0.2 }, 4.6, 1.6, 3, 8, C.shade, C.sun);
-  b.box({ x: 0, y: SINK, z: 4.85 }, [2, 3 - SINK, 0.4], C.woodShade);
-  rubble(b, 4.5, -2.5, 1.6, C.shade, C.moss);
-}
-
 /** Les Nacelles : un portique de bois au bord du plateau, sa poutre cassée, une nacelle tombée. */
 function nacelles(b: FacetBuilder): void {
   b.box({ x: -4, y: SINK, z: 0 }, [1.2, 10 - SINK, 1.2], C.woodShade, C.wood);
@@ -131,7 +123,6 @@ export const RUINS_5E: Readonly<Record<Exclude<PlaceId5e, BuiltPlace5e>, (b: Fac
   gaillard,
   donjon,
   terrasses,
-  etuve,
   nacelles,
   auberge,
   oracle,

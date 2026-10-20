@@ -480,8 +480,9 @@ describe('Le budget du 5e', () => {
     // n'ajoute) puis le lot 9 (les Fumerolles, +1 163, le lieu restauré à la place de sa ruine), 96 963 triangles mesurés
     // scénette ouverte, et sa retouche 1 (la vapeur en bouffées, les têtes rondes des sondes, les goujons ronds, +15),
     // 96 978, 21 022 : la réserve reste à 21 000 ; sa retouche 2 (la vapeur en colonnes de quatre bouffées, +78), 97 056,
-    // 20 944 : la réserve passe à 20 900, de la seule hausse due au lot (l'enveloppe reste 118 000 et 22).
-    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 20_900);
+    // 20 944 : la réserve passe à 20 900, de la seule hausse due au lot (l'enveloppe reste 118 000 et 22) ; après le lot 10
+    // (l'Étuve, +1 259, le lieu restauré à la place de son tambour rond), 98 315, 19 685 : la réserve passe à 19 600.
+    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 19_600);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
     // La Carte dans l'enveloppe (ses plafonds lot par lot : ./hameau5e.test.ts, ./croisee5e.test.ts).
     const map = mapCost5e();

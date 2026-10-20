@@ -138,8 +138,8 @@ export function sixthPlace(id: PlaceId): PlaceId6e {
 /**
  * Les lieux qui ont leur scénette (questions dans le lieu, étapes de chantier, traces) : ceux du 6e, et au 5e, lieu par
  * lieu (GD-22, « un lieu complet par lot ») : ceux déjà construits (./plan5e.ts, `BUILT_PLACES_5E`, la seule liste : la
- * Montée au lot 3, le Hameau au lot 5, les Radeaux au lot 6, la Croisée au lot 7, les Instants au lot 8). Les autres lieux
- * du 5e restent des ruines.
+ * Montée au lot 3, le Hameau au lot 5, les Radeaux au lot 6, la Croisée au lot 7, les Instants au lot 8, l'Étuve au
+ * lot 10). Les autres lieux du 5e restent des ruines.
  */
 export type ScenePlaceId = PlaceId6e | BuiltPlace5e;
 

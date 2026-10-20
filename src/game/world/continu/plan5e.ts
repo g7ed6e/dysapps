@@ -189,7 +189,8 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
  * `hasHabitantModel`) et les missions des lieux (`PLACES_5E`). La Montée (lot 3) : les cinq, sous le rail gradué ; le
  * Hameau (lot 5) : les trois, devant le four commun ; les Radeaux (lot 6) : les cinq, sur le quai devant la cabane du
  * marchand ; la Croisée (lot 7) : les cinq, au pied du tronc ; les Instants (lot 8) : les cinq, sur le débarcadère ;
- * les Fumerolles (lot 9) : les trois, sur la dalle de relevé. Les autres lieux n'ont pas encore la leur (l'écran
+ * les Fumerolles (lot 9) : les trois, sur la dalle de relevé ; l'Étuve (lot 10) : les trois, sur le pavé devant
+ * l'établi. Les autres lieux n'ont pas encore la leur (l'écran
  * habituel). Un lieu construit s'ajoute ici, et seulement ici.
  */
 export const BUILT_PLACES_5E = {
@@ -199,6 +200,7 @@ export const BUILT_PLACES_5E = {
   croisee: ['pairs', 'choices', 'homophone-sentences', 'participles', 'word-meaning'],
   instants: ['past-tenses', 'future-tense', 'tense-recognition', 'tense-choice', 'sentence-grammar'],
   fumerolles: ['active-earth', 'weather-climate', 'human-impact'],
+  etuve: ['changes-of-state', 'mixtures-density', 'universe-atoms'],
 } as const satisfies Partial<Record<PlaceId5e, readonly string[]>>;
 
 /** Un lieu du 5e déjà construit. */

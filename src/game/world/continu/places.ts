@@ -2503,7 +2503,7 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   // Le large (lot L9) : dessinés dans leur fichier, comme le rivage nord.
   beacons: northPlace('beacons'),
   ferry: northPlace('ferry'),
-  // Le 5e : la Montée finie (lot 3), le Hameau (lot 5), les Radeaux (lot 6), la Croisée (lot 7) et les Instants (lot 8),
+  // Le 5e : la Montée finie (lot 3), le Hameau (lot 5), les Radeaux (lot 6), la Croisée (lot 7), les Instants (lot 8) et l'Étuve (lot 10),
   // dessinés dans leur fichier ; les autres, des ruines simples (lot 2).
   montee: northPlace('montee'),
   radeaux: northPlace('radeaux'),
@@ -2514,7 +2514,7 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   donjon: ruinOnly(RUINS_5E.donjon),
   terrasses: ruinOnly(RUINS_5E.terrasses),
   fumerolles: northPlace('fumerolles'),
-  etuve: ruinOnly(RUINS_5E.etuve),
+  etuve: northPlace('etuve'),
   nacelles: ruinOnly(RUINS_5E.nacelles),
   hameau: northPlace('hameau'),
   auberge: ruinOnly(RUINS_5E.auberge),
