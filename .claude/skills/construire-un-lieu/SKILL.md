@@ -11,10 +11,20 @@ Les fichiers de travail (propositions, prompts, concepts, intention, captures, n
 
 ## 1. Proposer, puis faire valider la planche
 
-1. **La proposition du consultant d'Archipéo** (`lot<N>/<lieu>-proposition.md`, gabarit `lot5/hameau-proposition.md`) : ce que le lieu doit dire en une phrase, la ruine de départ, les étapes et les parties, une trace par partie, l'habitant et sa scénette, le Détour s'il y en a un. Elle part de la fiche du niveau (`docs/univers/archipeo/intentions/`) et des missions de `docs/contenu/<île>.md`.
+1. **La proposition du consultant d'Archipéo** (`lot<N>/<lieu>-proposition.md`, gabarit `lot5/hameau-proposition.md`) : ce que le lieu doit dire en une phrase, la ruine de départ, les étapes et les parties, une trace par partie, l'habitant et sa scénette, le Détour s'il y en a un, et ce que le lieu devient dans Blocland (en général rien ; le `consultant-blocland` n'est sollicité que si un nom de plan commun bouge). Elle part de la fiche du niveau (`docs/univers/archipeo/intentions/`) et des missions de `docs/contenu/<île>.md`.
 2. **La relecture du directeur artistique**, qui la valide avec ses corrections, souvent pour plusieurs lieux d'un coup (`da-propositions-<a>-<b>-<c>.md`).
-3. **Les concepts** : prompts (`prompts-<lieu>.txt`, puis `-v2`, `-v3`) générés sur le Mac du mainteneur (skill `concepts-niveau`) ; quatre vues de près : la ruine de face et de dos, le lieu restauré de face et de dos. Z-Image ne sait dessiner ni un bâtiment inachevé ni une ruine forte : la ruine se construit d'après la fiche écrite, pas d'après l'image.
+3. **Les concepts** : prompts (`prompts-<lieu>.txt`, puis `-v2`, `-v3`) générés sur le Mac du mainteneur (skill `concepts-niveau`, sur `main`) ; quatre vues de près : la ruine de face et de dos, le lieu restauré de face et de dos. Z-Image ne sait dessiner ni un bâtiment inachevé ni une ruine forte : la ruine se construit d'après la fiche écrite, pas d'après l'image.
 4. **La planche validée par le mainteneur** (`concepts/selection-<lieu>-v<n>.jpg`) : c'est la référence du lot. Rien ne se code avant son mot écrit.
+
+### Les règles d'Archipéo, à chaque lieu
+
+- **Une ruine belle et lisible**, jamais un chantier : tout est là, tombé ou cassé ; peu de débris (cinq blocs au plus), rien sur le chemin de marche.
+- **La pièce de bronze** que les Ferrailleurs ont prise (la porte du four, le treuil, le cadran…) manque avant comme après : ce n'est jamais une étape. Le bronze ne sert qu'aux ferrures.
+- **Aucune figure** : le cœur du lieu est un mécanisme ou un ouvrage. **Rien à lire dans la 3D** : ni lettre, ni chiffre, ni mot, ni graduation ; une enseigne a au plus un pictogramme. Z-Image ajoute souvent des lettres et des symboles : les retirer.
+- **Une trace par mission**, posée avec sa partie : un objet du lieu, jamais la notion (un disque en quarts, un histogramme ont été refusés) ; à l'échelle de la caméra du lieu ; lisible par sa forme, jamais par sa couleur seule ; des outils debout, côte à côte, jamais croisés.
+- **La lumière** : l'ocre `#E0A84A` seule, fixe, sans clignotement ; une lanterne s'allume à la pose d'une partie, jamais à une réussite (vitre éteinte `#BFC4B8`) ; une seule lanterne allumée dans la ruine, celle de l'habitant.
+- **Le mouvement** : la fumée est immobile, distincte du panache du Rafiot par sa forme et sa taille ; une partie se pose d'un coup avec « Réduire les animations ».
+- **Les noms** : l'habitant se dit par son métier (« le boulanger », « le tailleur de pierre »), sans prénom ; le guide est une voix, jamais un second modèle en scène ; les noms du contenu (plans, Gardiens, créatures) restent dans `docs/contenu/` et ne s'affichent jamais dans le monde ouvert (le directeur du contenu en décide).
 
 ## 2. L'intention du directeur artistique
 
@@ -22,7 +32,7 @@ Les fichiers de travail (propositions, prompts, concepts, intention, captures, n
 - ses références : la proposition, la planche et ses vues une à une, la fiche du niveau, le modèle 3D de l'habitant ;
 - les décisions du mainteneur tenues (1 600 triangles par lieu, 1 200 en ruine, 175 par Détour ; une trace par mission, posée avec sa partie ; une seule lanterne allumée dans la ruine ; aucune figure, le cœur du lieu est un mécanisme ou un ouvrage) ;
 - « ce qui reprend le Hameau tel quel » : la construction par parties sans cubes ni fantômes, la scénette (Kéo à gauche, l'habitant à droite, « Reprendre » chez lui), l'ocre `#E0A84A` seule lumière, les matières des Passeurs ;
-- « ce qui change » : la phrase du lieu, le chemin, le motif, la ruine, le tableau des parties et des traces, et ce que les concepts ont de faux à corriger.
+- « ce qui change » : la phrase du lieu, le chemin, le motif, la ruine, le tableau des parties et des traces, et ce que les concepts ont de faux à corriger (une silhouette humaine, un dôme blanc lisse, des pierres trop régulières, des lettres).
 
 Le directeur du contenu valide les phrases de pose et la réplique de l'habitant ; aucun nom de plan, de Gardien ni de créature ne s'affiche dans le monde ouvert.
 
@@ -56,6 +66,12 @@ Le fil pousse le commit et écrit `lot<N>/a-relire.md` : le commit, la base, la 
 - `directeur-artistique` et `consultant-archipeo` sur la planche et les captures ;
 - `referent-dys`, `consultant-ux-ui`, `directeur-contenu-pedagogique` (répliques, phrases de pose, noms affichés) ;
 - `expert-frontend` sur le code.
+
+Ce que les premières relectures ont relevé à chaque lieu, à vérifier avant de figer :
+- la vue d'arrivée depuis le chemin (le cœur du lieu au centre, l'habitant visible, un repère du niveau au-delà, comme l'aiguille de la Montée) ;
+- l'étiquette du lieu, dans le monde et sur la Carte, qui ne couvre pas le cœur du lieu ;
+- la zone des réponses de la scénette, à 16 px du bord au moins, des cibles de 48 px, un ordre des réponses fixe, la réponse choisie marquée par sa forme ;
+- rien à lire dans la 3D, et les traces qui ne disent pas la notion.
 
 Les « À ajuster » se rassemblent en une retouche numérotée (`retouche-<n>.md`, gabarit `lot5/retouche-1.md`), confiée à un artiste neuf avec un brief court ; la seconde passe ne relit que ce qui a changé, chez le relecteur qui l'a demandé. Un désaccord entre relecteurs (le nom d'un Détour, par exemple) va au mainteneur, sans changer le choix en attendant.
 
