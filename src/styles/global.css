@@ -5804,6 +5804,11 @@ details.island-fold-objectif {
   justify-content: center;
   gap: 0.4rem;
   max-width: calc(100% - 2 * (52px + 1.5rem));
+  white-space: nowrap;
+}
+/* La sortie recharge la page : un peu à l'écart des niveaux, pour ne pas la toucher par mégarde. */
+.builder-bar-quit {
+  margin-left: 0.6rem;
 }
 
 /* Une nouvelle version de l'application attend : une bande sous l'en-tête. */

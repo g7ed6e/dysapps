@@ -40,8 +40,9 @@ export function BuilderBar({ levels = false }: { levels?: boolean }) {
             {a.classe}
           </button>
         ))}
-      <button type="button" className="button" onClick={quitter}>
-        <Icon name="back" /> Quitter le mode bâtisseur
+      {/* Le mot court tient sur un téléphone ; le nom entier reste pour la lecture d'écran. */}
+      <button type="button" className="button builder-bar-quit" onClick={quitter} aria-label="Quitter le mode bâtisseur">
+        <Icon name="back" /> Quitter
       </button>
     </nav>
   );
