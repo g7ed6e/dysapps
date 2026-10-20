@@ -33,3 +33,6 @@ Captures 1024 × 768 sauf mention, caméra posée à la main pour les vues de pr
 ![](08-scenette-portrait-800x1280.jpg)
 ![](08-scenette-telephone-paysage-844x390.jpg)
 ![](08-scenette-grand-texte-opendyslexic.jpg)
+
+## Au 6e aussi : les Filets en portrait, « Vue simple » proposée, paniers cachés (Kéo, la pêcheuse et le décor restent)
+![](09-scenette-6e-portrait.jpg)
