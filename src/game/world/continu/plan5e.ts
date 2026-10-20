@@ -190,7 +190,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
  * Hameau (lot 5) : les trois, devant le four commun ; les Radeaux (lot 6) : les cinq, sur le quai devant la cabane du
  * marchand ; la Croisée (lot 7) : les cinq, au pied du tronc ; les Instants (lot 8) : les cinq, sur le débarcadère ;
  * les Fumerolles (lot 9) : les trois, sur la dalle de relevé ; l'Étuve (lot 10) : les trois, sur le pavé devant
- * l'établi. Les autres lieux n'ont pas encore la leur (l'écran
+ * l'établi ; les Terrasses (lot 11) : les trois, devant le moulin. Les autres lieux n'ont pas encore la leur (l'écran
  * habituel). Un lieu construit s'ajoute ici, et seulement ici.
  */
 export const BUILT_PLACES_5E = {
@@ -201,6 +201,7 @@ export const BUILT_PLACES_5E = {
   instants: ['past-tenses', 'future-tense', 'tense-recognition', 'tense-choice', 'sentence-grammar'],
   fumerolles: ['active-earth', 'weather-climate', 'human-impact'],
   etuve: ['changes-of-state', 'mixtures-density', 'universe-atoms'],
+  terrasses: ['population', 'resources', 'risks'],
 } as const satisfies Partial<Record<PlaceId5e, readonly string[]>>;
 
 /** Un lieu du 5e déjà construit. */
@@ -434,6 +435,9 @@ export const PATH_NODES_5E: readonly PathNode[] = [
   node('con-2', [530, 560]),
   node('con-3', [460, 590]),
   node('con-4', [480, 690]),
+  // Au coin sud-est de la cour des Terrasses : le chemin longe le bord sud de la cour jusqu'à la porte, sans la traverser
+  // (retouche 1 du lot 11).
+  node('ter-1', [448, 799]),
   node('aig-1', [900, 400]),
   node('aig-2', [840, 330]),
   node('aig-3', [620, 300]),
@@ -461,6 +465,33 @@ export const CREUX_5E = (() => {
   const r = radius + 0.5;
   const threshold = { x: center.x + Math.cos(face) * r, z: center.z + Math.sin(face) * r };
   return { center, radius, face, threshold, start, sente: [start, threshold] as readonly Vec2[] } as const;
+})();
+
+/**
+ * Le Détour de la Faille (GD-22, lot 11 ; intention du directeur artistique du 20 octobre 2026, « Le Détour de la
+ * Faille ») : une fente d'où monte la vapeur, enjambée par un pont de racines qu'on ne traverse pas, aux Contreforts, entre
+ * les Fumerolles et les Terrasses. Sa place : [425, 645] sur le plan, à l'ouest du chemin des Fumerolles aux Terrasses,
+ * à une quinzaine d'unités de lui. `center` : le milieu de la fente, qui court du nord au sud (`half` : sa demi-largeur
+ * d'ouest en est, sa demi-longueur) ; la lèvre proche est à l'est, du côté du chemin, la paroi d'en face à l'ouest. Le vieil
+ * arbre de roche pousse sur la lèvre proche, au nord de la tête du pont (`tree`) ; les deux racines du pont sortent de son
+ * fût, parallèles, montent jusqu'au haut de leur arc, au-dessus de la fente (`arch`), et vont se loger dans une encoche de
+ * la paroi (`notch`) : leur ligne du milieu. Kéo s'arrête à la tête du pont (`head`), sur la lèvre, au sud du pied des
+ * racines ; `face` va du haut de l'arc vers lui (la caméra regarde à l'opposé, vers le pont) ; la sente part du chemin
+ * (`start`) jusqu'à lui. Les tests des Détours vérifient la place (loin des chemins, des lieux et de l'eau).
+ */
+export const FAILLE_5E = (() => {
+  const center = fromPlan5e([425, 645]);
+  const at = (id: string) => PATH_NODES_5E.find((n) => n.id === id)!.at;
+  const local = (u: number, v: number): Vec2 => ({ x: center.x + u, z: center.z + v });
+  const half = { u: 1.5, v: 4 } as const;
+  // L'arbre recule vers le nord (retouche 1) : sa couronne ne passe jamais entre la caméra et la tête du pont.
+  const tree = local(2.9, -3.5);
+  const arch = local(0.15, -1.45);
+  const notch = local(-half.u - 0.2, -0.95);
+  const head = local(2.3, -0.2);
+  const face = Math.atan2(head.z - arch.z, head.x - arch.x);
+  const start = closestOnSegment(head, at('con-3'), at('con-4')).point;
+  return { center, half, tree, arch, notch, head, face, start, sente: [start, head] as readonly Vec2[] } as const;
 })();
 
 /** Les liaisons : sentiers, le pont de chaque terre et la cabine de la Montée. */
@@ -500,7 +531,8 @@ export const PATH_EDGES_5E: readonly (readonly [string, string])[] = [
   ['con-3', 'fumerolles'],
   ['con-3', 'con-4'],
   ['con-4', 'etuve'],
-  ['con-4', 'terrasses'],
+  ['con-4', 'ter-1'],
+  ['ter-1', 'terrasses'],
   // La cabine de la Montée, du pied de la falaise au plateau, puis les Aiguilles.
   ['cab-bas', 'cab-haut'],
   ['cab-haut', 'aig-1'],

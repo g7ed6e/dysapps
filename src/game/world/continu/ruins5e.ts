@@ -5,7 +5,8 @@
 // de presque noir, rien à lire. Retouche du lot 2 (directeur artistique : « des boîtes génériques ») : chaque ruine a sa
 // hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts), comme le Hameau (./hameau5e.ts, lot 5),
 // les Radeaux (./radeaux5e.ts, lot 6), la Croisée (./croisee5e.ts, lot 7), les Instants (./instants5e.ts, lot 8), les
-// Fumerolles (./fumerolles5e.ts, lot 9) et l'Étuve (./etuve5e.ts, lot 10) ; le Donjon, une tour carrée sur son piton de roche. Code pur.
+// Fumerolles (./fumerolles5e.ts, lot 9), l'Étuve (./etuve5e.ts, lot 10) et les Terrasses (./terrasses5e.ts, lot 11) ;
+// le Donjon, une tour carrée sur son piton de roche. Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_5E, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
@@ -71,17 +72,6 @@ function donjon(b: FacetBuilder): void {
   rubble(b, 5.2, 3.2, 1.6, C.shade, C.moss);
 }
 
-/** Les Terrasses : trois gradins de murets de pierre ocre, le haut écroulé d'un côté. */
-function terrasses(b: FacetBuilder): void {
-  for (let k = 0; k < 3; k++) {
-    const w = 11 - k * 3;
-    const d = 9 - k * 2.6;
-    const top = (k + 1) * 1.3;
-    b.box({ x: 0, y: SINK, z: -k * 0.8 }, [w, top - SINK, d], C.ochre, C.moss);
-  }
-  rubble(b, 4.5, 3.8, 1.4, C.ochre, C.moss);
-}
-
 /** Les Nacelles : un portique de bois au bord du plateau, sa poutre cassée, une nacelle tombée. */
 function nacelles(b: FacetBuilder): void {
   b.box({ x: -4, y: SINK, z: 0 }, [1.2, 10 - SINK, 1.2], C.woodShade, C.wood);
@@ -116,13 +106,12 @@ function oracle(b: FacetBuilder): void {
 /**
  * La ruine de chaque lieu du 5e pas encore construit (les lieux construits ont leur fichier : ./montee5e.ts, lot 3 ;
  * ./hameau5e.ts, lot 5 ; ./radeaux5e.ts, lot 6 ; ./croisee5e.ts, lot 7 ; ./instants5e.ts, lot 8 ;
- * ./fumerolles5e.ts, lot 9), dessinée dans son repère.
+ * ./fumerolles5e.ts, lot 9 ; ./etuve5e.ts, lot 10 ; ./terrasses5e.ts, lot 11), dessinée dans son repère.
  */
 export const RUINS_5E: Readonly<Record<Exclude<PlaceId5e, BuiltPlace5e>, (b: FacetBuilder) => void>> = {
   semaphore,
   gaillard,
   donjon,
-  terrasses,
   nacelles,
   auberge,
   oracle,

@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { PLACE_TRIANGLES_MAX_5E, mapCost5e, openWorldCost5e } from './budget';
 import { WHOLE, posedTraces, rowPosed, traceStagePosed, type PartShape, type Stage } from './construction';
 import { creuxTriangles } from './creux5e';
+import { failleTriangles } from './faille5e';
 import { linearRgb } from './geometry';
 import { hasHabitantModel } from './habitants';
 import { hasScenette, planFor } from './levelPlan';
@@ -318,6 +319,9 @@ const LOT5_5E = { world: { triangles: 84_510, calls: 16 }, departure: { triangle
 /** Le plafond du Creux (intention du directeur artistique, lot 6). */
 const CREUX_MAX = 175;
 
+/** La Faille et sa sente tracée (lot 11, ./faille5e.test.ts) : 175 triangles au plus, comme le Creux. */
+const FAILLE_MAX = 175;
+
 /** La Hutte et sa sente tracée (lot 8, ./hutte5e.test.ts : 175 triangles sans la sente, moins de 120 pour elle). */
 const HUTTE_MAX = 175 + 120;
 
@@ -329,14 +333,16 @@ describe('Le budget du 5e, avec les Radeaux et le Creux (plafonds du lot 6)', ()
 
   it('le Creux, sa sente comprise, 175 triangles au plus, sans appel', () => {
     expect(creuxTriangles().withSente).toBeLessThanOrEqual(CREUX_MAX);
+    // Les Détours du 5e, le Creux, la Hutte et la Faille (lot 11), dans le maillage des lieux.
     const detours = openWorldCost5e().find((c) => c.poste === 'détours')!;
     expect(detours.calls).toBe(0);
-    expect(detours.triangles).toBeGreaterThanOrEqual(creuxTriangles().withSente);
+    expect(detours.triangles).toBeGreaterThanOrEqual(creuxTriangles().withSente + failleTriangles().withSente);
   });
 
   // Le plafond scénette ouverte et la réserve des lots suivants : ./plan5e.test.ts (« Le budget du 5e »).
-  it('hors scénette, au départ et sur la Carte : le lot 5, un lieu par lieu fini depuis, le Creux et le pied des palétuviers de plus au plus, sans appel de plus', () => {
-    // Les lieux finis depuis le lot 5 : les Radeaux (lot 6), la Croisée (lot 7), les Instants (lot 8), les Fumerolles (lot 9).
+  it('hors scénette, au départ et sur la Carte : le lot 5, un lieu par lieu fini depuis, les Détours et le pied des palétuviers de plus au plus, sans appel de plus', () => {
+    // Les lieux finis depuis le lot 5 : les Radeaux (lot 6), la Croisée (lot 7), les Instants (lot 8), les Fumerolles (lot
+    // 9), l'Étuve (lot 10), les Terrasses (lot 11) ; et la Faille (lot 11), comptée comme le Creux.
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => id !== 'montee' && id !== 'hameau').length;
     const views = [
       [sum(openWorldCost5e('monde')), LOT5_5E.world],
@@ -344,7 +350,7 @@ describe('Le budget du 5e, avec les Radeaux et le Creux (plafonds du lot 6)', ()
       [mapCost5e(), LOT5_5E.map],
     ] as const;
     for (const [now, before] of views) {
-      expect(now.triangles).toBeLessThanOrEqual(before.triangles + since * PLACE_TRIANGLES_MAX_5E + CREUX_MAX + HUTTE_MAX + FOREST_FEET_5E);
+      expect(now.triangles).toBeLessThanOrEqual(before.triangles + since * PLACE_TRIANGLES_MAX_5E + CREUX_MAX + FAILLE_MAX + HUTTE_MAX + FOREST_FEET_5E);
       expect(now.calls).toBeLessThanOrEqual(before.calls);
     }
   });

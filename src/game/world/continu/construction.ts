@@ -94,7 +94,7 @@ export const WHOLE: PartShape = [
  * abords : sa trace d'Information est au bout du ponton) ; le platelage de la Mangrove (le corps, lot L8a), les abords
  * des Ruines (lot L8b), la terrasse de l'Observatoire (les abords, lot L8c), la toiture de la Halle (le haut, lot L8d).
  * Tant que cette étape n'est pas posée, la trace attend : rien ne flotte dans le vide. Au 5e, la Montée (GD-22, lot 3), le
- * Hameau (lot 5), les Radeaux (lot 6) et la Croisée (lot 7) ont les leurs ; les autres lieux du 5e n'en ont pas encore.
+ * Hameau (lot 5), les Radeaux (lot 6), la Croisée (lot 7) et les Terrasses (lot 11) ont les leurs ; les autres lieux du 5e n'en ont pas encore.
  */
 const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   phare: 2,
@@ -129,6 +129,8 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   fumerolles: placeArt('fumerolles')!.traceStage,
   // L'Étuve (lot 10) : son corps, et chaque trace son étape, comme au Hameau.
   etuve: placeArt('etuve')!.traceStage,
+  // Les Terrasses (lot 11) : leur corps, et chaque trace son étape, comme au Hameau.
+  terrasses: placeArt('terrasses')!.traceStage,
 };
 
 /**

@@ -11,6 +11,7 @@ import { PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
 import { posedTraces, traceStagePosed, WHOLE, type PartShape, type Stage } from './construction';
 import { creuxTriangles } from './creux5e';
 import type { Facets } from './facets';
+import { failleTriangles } from './faille5e';
 import { distance, distanceToPolyline, linearRgb } from './geometry';
 import { hasHabitantModel } from './habitants';
 import { hutteFacets } from './hutte5e';
@@ -241,8 +242,8 @@ describe('Le budget du 5e, avec la Hutte (plafond du lot 8)', () => {
     expect(hutte).toBeLessThanOrEqual(HUTTE_MAX);
     const detours = openWorldCost5e().find((c) => c.poste === 'détours')!;
     expect(detours.calls).toBe(0);
-    // Le poste compte le Creux et la Hutte, leurs sentes tracées, et rien d'autre.
-    expect(detours.triangles).toBe(creuxTriangles().withSente + hutte);
+    // Le poste compte le Creux, la Hutte et la Faille (lot 11), leurs sentes tracées, et rien d'autre.
+    expect(detours.triangles).toBe(creuxTriangles().withSente + hutte + failleTriangles().withSente);
   });
 
 });

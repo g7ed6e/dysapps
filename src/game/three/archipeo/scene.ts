@@ -15,8 +15,8 @@ import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, WORLD_FOG, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold } from '../../world/continu/camera';
-import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, type DetourId } from '../../world/continu/detours';
+import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, WORLD_FOG, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
+import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
@@ -25,6 +25,7 @@ import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView 
 import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinPoint, cabinStops, cabinYaw, clampToOpen, type CabinCar } from '../../world/continu/bridges';
 import { cabinButtonRoute, cabinCarOpen, cabinOf, cabinSide, routeWithRide } from '../../world/continu/cabinRide';
 import { creuxFacets } from '../../world/continu/creux5e';
+import { failleFacets, failleTapTarget } from '../../world/continu/faille5e';
 import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/continu/montee5e';
 import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
@@ -1179,6 +1180,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let detourHere: DetourId | null = null;
   let detourStill = 0;
   let detourView = 0;
+  // La forme de la vue du dernier Détour atteint (la Faille a la sienne), gardée pendant que la vue redescend.
+  let detourShape: DetourView = COMMON_DETOUR_VIEW;
   let detourDecor: { key: string; facets: Facets } | null = null;
   const detourFacetsNow = (): Facets => {
     const key = `${detoursFound.join(',')}|${detoursLit.join(',')}`;
@@ -1192,6 +1195,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const found = detoursFound.includes('creux');
     let c = creuxDrawn.find((k) => k.found === found);
     if (!c) creuxDrawn.push((c = { found, facets: creuxFacets(found) }));
+    return c.facets;
+  };
+  // La Faille du 5e (GD-22, lot 11) : de même, sans et avec sa sente.
+  const failleDrawn: { found: boolean; facets: Facets }[] = [];
+  const failleNow = (): Facets => {
+    const found = detoursFound.includes('faille');
+    let c = failleDrawn.find((k) => k.found === found);
+    if (!c) failleDrawn.push((c = { found, facets: failleFacets(found) }));
     return c.facets;
   };
   // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son temps (la page le donne), le modèle de sa forme chargé à la
@@ -1388,6 +1399,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
         // Au Creux, la caméra qui monte se tourne vers l'arche, derrière Kéo sur le seuil (GD-22, lot 6).
         const cap = detourCap(d);
         if (cap !== null) turnTo(cap);
+        detourShape = detourViewOf(d);
         options.onDetour?.(d.id);
       }
     }
@@ -1548,7 +1560,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let manualView: CameraPose | null = null;
   const follow = () => {
     if (manualView) return applyPose(manualView);
-    followPose(focus, lift, pose, yaw, detourRise(detourView), sixth ? undefined : hold);
+    followPose(focus, lift, pose, yaw, detourRise(detourView), sixth ? undefined : hold, detourShape);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     applyPose(pose);
@@ -1614,7 +1626,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const reframe = () => {
     if (!frameRect || (!framed && !framedNef) || asked || remise || mapView) return;
-    followPose(focus, lift, pose, yaw, detourRise(detourView));
+    followPose(focus, lift, pose, yaw, detourRise(detourView), undefined, detourShape);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     const subject = framedNef ? nefFramed : framed && subjectOf(framed);
@@ -1784,8 +1796,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!sixth) {
       if (mapView) rest.push(cliffLine);
       // Les Détours du 5e (GD-22) : le Creux (lot 6), le fût creusé, son banc et sa lanterne ; la Hutte (lot 8), sa cabane ;
-      // et la sente de chacun une fois trouvé, dans le monde comme sur la Carte, sans appel de plus.
-      rest.push(creuxNow(), detourFacetsNow());
+      // la Faille (lot 11), la fente, son arbre, son pont de racines, sa lanterne et sa vapeur ; et la sente de chacun une
+      // fois trouvé, dans le monde comme sur la Carte, sans appel de plus.
+      rest.push(creuxNow(), detourFacetsNow(), failleNow());
       setGeometry(placesMesh, mergeFacets(rest));
       setGeometry(landmarkMesh, mergeFacets(mark));
       mapDirty = true;
@@ -2140,8 +2153,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    * fermée), par le trajet libre ; la marque au sol l'y attend. Sans grille utile (hors du terrain), le réseau, comme
    * avant.
    */
-  const startFreeWalk = (p: Vec2) => {
+  const startFreeWalk = (touched: Vec2) => {
     const g = grid();
+    // Au 5e, un toucher sur le pont de la Faille, dans sa fente ou sur sa paroi mène à la tête du pont (GD-22, lot 11).
+    const p = (level === '5e' ? failleTapTarget(touched) : null) ?? touched;
     const to = nearestWalkable(g, p, walkClosed);
     const route = to ? freeRoute(g, here, to, walkClosed) : null;
     if (!to || !route) return startWalkTo(snapToNetwork(p), null);

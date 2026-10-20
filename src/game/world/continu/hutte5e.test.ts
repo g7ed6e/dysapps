@@ -27,11 +27,11 @@ function countColor(f: Facets, color: number): number {
 describe('La Hutte, le deuxième Détour du 5e', () => {
   it('se nomme « La Hutte », dans la sauvegarde après les cinq du 6e et le Creux', () => {
     expect(detourById('hutte')).toBe(HUTTE);
-    expect(DETOURS_5E.map((d) => d.id)).toEqual(['creux', 'hutte']);
+    expect(DETOURS_5E.map((d) => d.id).slice(0, 2)).toEqual(['creux', 'hutte']);
     expect(HUTTE.name).toBe('La Hutte');
     expect(HUTTE.land).toBe('roselieres');
     expect(SAVED_IDS).toEqual(DETOUR_IDS);
-    expect(DETOUR_IDS.slice(-2)).toEqual(['creux', 'hutte']);
+    expect(DETOUR_IDS.slice(5, 7)).toEqual(['creux', 'hutte']);
     expect(sanitizeDetours(['hutte', 'creux', 'butte-chantier'])).toEqual(['butte-chantier', 'creux', 'hutte']);
     const state = findDetour({ world: { parts: {}, log: [], links: {} } } as never, 'hutte') as { world: { detours: string[] } };
     expect(state.world.detours).toEqual(['hutte']);

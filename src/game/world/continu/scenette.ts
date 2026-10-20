@@ -132,6 +132,9 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // L'Étuve (GD-22, lot 10) : « le souffleur de verre », sans prénom ; la phrase du métier de l'intention du directeur
   // artistique (§ 10), à relire par le directeur du contenu pédagogique (jamais « Perle » ni « le Flamant de sel »).
   etuve: { role: placeArt('etuve')!.role, greeting: 'Le souffleur de verre travaille le verre chaud.', placement: 'rangee' },
+  // Les Terrasses (GD-22, lot 11) : « le riziculteur », sans prénom ; sa réplique, la phrase du métier proposée par le
+  // directeur artistique, à relire par le directeur du contenu pédagogique (jamais « Sillon » ni la Libellule de jade).
+  terrasses: { role: placeArt('terrasses')!.role, greeting: 'Le riziculteur cultive le riz dans l’eau.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -543,6 +546,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   instants: northSite('instants'),
   fumerolles: northSite('fumerolles'),
   etuve: northSite('etuve'),
+  terrasses: northSite('terrasses'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -1991,6 +1995,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   fumerolles: 'stone',
   // L'Étuve (lot 10) : le pavé de dalles.
   etuve: 'paving',
+  // Les Terrasses (lot 11) : le pavé gris devant le moulin.
+  terrasses: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

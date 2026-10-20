@@ -222,6 +222,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   fumerolles: placeArt('fumerolles')!.sceneSpot,
   // L'Étuve (lot 10) : le pavé devant l'établi, le four à gauche derrière, le chalet à droite.
   etuve: placeArt('etuve')!.sceneSpot,
+  // Les Terrasses (lot 11) : le pavé gris devant le moulin, sa porte derrière, le bas du tertre à gauche.
+  terrasses: placeArt('terrasses')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -481,6 +483,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   fumerolles: 'lieu',
   // L'Étuve (lot 10) : les gobelets dans la planche percée.
   etuve: 'lieu',
+  // Les Terrasses (lot 11) : les bols de riz sur le long banc de pierre.
+  terrasses: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
