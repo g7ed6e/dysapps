@@ -266,7 +266,7 @@ function drawTree(b: FacetBuilder, t: Tree, detail: TileDetail): number {
   const H = (3.8 + 1.6 * ((t.yaw * 7) % 1)) * s;
   const R = 3.1 * s;
   if (detail === 'far') {
-    b.prism({ x: t.x, y: t.y - 0.6, z: t.z, yaw: t.yaw }, 1.1 * s, 0, H + 0.4, 3, FOREST_COLORS.root);
+    b.prism({ x: t.x, y: t.y - 0.6, z: t.z, yaw: t.yaw }, 0.8 * s, 0, H + 0.4, 3, FOREST_COLORS.root);
     b.prism({ x: t.x, y: t.y + H - 0.6, z: t.z, yaw: t.yaw }, R, R * 0.7, 1.5 * s, 5, FOREST_COLORS.canopy, FOREST_COLORS.canopyTop);
     return TREE_TRIANGLES.far;
   }
