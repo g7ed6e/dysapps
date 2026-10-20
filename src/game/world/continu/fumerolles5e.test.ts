@@ -2,10 +2,16 @@
 // étape, la vapeur fixe au-dessus de chaque bouche, le plan du lieu (le chemin loin des bouches, les sondes séparées, le
 // socle nu), la dalle plancher de la scénette, ses abords, son plafond de 1 600 triangles et le budget du 5e. Sans Three.js.
 import { describe, expect, it } from 'vitest';
+import type { BiomeId } from '../../biomes';
+import { stagePoseWords } from '../../three/archipeo/constructionParts';
+import { phraseDeLaPose } from '../../poseWords';
+import { partiesDe } from '../parts';
+import { plansFor } from '../plans';
 import { PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
 import { WHOLE, posedTraces, traceStagePosed, type PartShape, type Stage } from './construction';
 import type { Facets } from './facets';
-import { FUMEROLLES, FUMEROLLES_LAYOUT, FUMEROLLES_MAST_TOP, FUMEROLLES_PATH, FUMEROLLES_VENTS } from './fumerolles5e';
+import { FUMEROLLES, FUMEROLLES_LAYOUT, FUMEROLLES_MAST_TOP, FUMEROLLES_PATH, FUMEROLLES_STEAM, FUMEROLLES_VENTS } from './fumerolles5e';
+import { levelWorld } from './levelWorld';
 import { distance, distanceToPolyline, linearRgb, type Vec2 } from './geometry';
 import { HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
 import { hasScenette, planFor } from './levelPlan';
@@ -116,6 +122,18 @@ describe('La vapeur des Fumerolles, fixe', () => {
       expect(v.plume).toBeLessThan(2 * FUMEROLLES_MAST_TOP);
       expect(v.plume).toBeLessThan(PLATEAU.height);
     }
+  });
+
+  it('dessinée sans ombre, d’un gris chaud qui ne dépasse jamais #D6D2C9, ses couleurs à elle seule dans le lieu', () => {
+    const thin = levelWorld('5e').thinFog;
+    for (const color of FUMEROLLES_STEAM) {
+      expect(thin.find((t) => t.color === color)?.unlit, color.toString(16)).toBe(true);
+      expect(color & 0xff).toBeLessThanOrEqual(0xc9);
+      expect((color >> 16) & 0xff).toBeLessThanOrEqual(0xd6);
+      // Aucune autre pièce du lieu ne la prend (la vue la reconnaît à sa couleur exacte).
+      expect(Object.values(COLORS_5E)).not.toContain(color);
+    }
+    expect(new Set(FUMEROLLES_STEAM).size).toBe(FUMEROLLES_STEAM.length);
   });
 
   it('dans le maillage du lieu, avant comme après : la ruine et le lieu restauré portent les mêmes panaches', () => {
@@ -302,5 +320,22 @@ describe('Le budget du 5e, avec les Fumerolles (plafonds du lot 9, intention du 
     const scenette = cost.find((c) => c.poste === 'scénette')!;
     expect(scenette.calls).toBe(2);
     expect(scenette.triangles).toBeLessThanOrEqual(HABITANT_TRIANGLES_5E + 1_900);
+  });
+});
+
+describe('Le bilan des Fumerolles nomme l’étape, jamais un plan', () => {
+  it('« Étape finie : le corps des Fumerolles. », puis le haut et les abords, chacun une partie', () => {
+    const island = PLACE.island as BiomeId;
+    const parties = partiesDe(island);
+    const plans = plansFor(island);
+    expect(parties).toHaveLength(3);
+    const words = stagePoseWords(island, PLACE);
+    const lines = (k: number) => words.lines({ posees: [parties[k]], plansFinis: [plans[k]] });
+    expect(lines(0).map((l) => l.text)).toEqual(['Étape finie : le corps des Fumerolles.']);
+    expect(lines(1).map((l) => l.text)).toEqual(['Étape finie : le haut des Fumerolles.']);
+    expect(lines(2).map((l) => l.text)).toEqual(['Étape finie : les abords des Fumerolles.']);
+    const said = phraseDeLaPose({ posees: [parties[0]], plansFinis: [plans[0]] }, words);
+    expect(said).toBe(`Étape finie : le corps des Fumerolles. +${plans[0].reward.xp} XP.`);
+    for (const plan of plans) expect(said).not.toContain(plan.done);
   });
 });

@@ -4,6 +4,7 @@
 // que le 5e n'a pas encore (l'Escale, la Nef, les Détours, les scénettes) reste du 6e : la vue le coupe par `sixth` ; la
 // faune a celle de chaque niveau (./wildlife.ts, ./wildlife5e.ts). Code pur.
 import type { Facets } from './facets';
+import { FUMEROLLES_STEAM } from './fumerolles5e';
 import type { Vec2 } from './geometry';
 import { LISIERE_SITE, LISIERE_VIEW, PHARE_DARK, lisiereDecorFacets } from './lisiere';
 import { NEF_6E, type NefSite } from './nef';
@@ -146,6 +147,8 @@ const WORLD_5E: LevelWorld = {
     ...[COLORS_5E.lantern, PHARE_DARK].map((color) => ({ color, fog: THIN_FOG_5E.phare })),
     ...Object.values(WALL_COLORS).map((color) => ({ color, fog: THIN_FOG_5E.wall })),
     ...Object.values(PLUME_COLORS).map((color) => ({ color, fog: THIN_FOG_5E.plume, unlit: true })),
+    // La vapeur des Fumerolles, sans ombre, voilée comme tout le reste (retouche 2 du lot 9).
+    ...FUMEROLLES_STEAM.map((color) => ({ color, fog: 1, unlit: true })),
   ],
   departure: DEPARTURE_5E_SITE,
 };

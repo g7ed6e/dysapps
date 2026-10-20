@@ -126,9 +126,9 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // Les Instants (GD-22, lot 8) : « le tailleur de pierre », sans prénom (fiche du 5e, § 6) ; sa réplique, une idée, la
   // chaussée, à relire par le directeur du contenu pédagogique (sans nom propre, sans le mot du lieu).
   instants: { role: placeArt('instants')!.role, greeting: 'Le tailleur de pierre redresse la chaussée, une pierre après l’autre.', placement: 'rangee' },
-  // Les Fumerolles (GD-22, lot 9) : « la sondeuse », sans prénom ; sa réplique dit le lieu (« Ici, la terre se lit. ») et
-  // explique le mot rare, à relire par le directeur du contenu pédagogique (jamais « Fumerolles » et « Faille » ensemble).
-  fumerolles: { role: placeArt('fumerolles')!.role, greeting: 'Ici, la terre se lit. La sondeuse la mesure avec ses instruments.', placement: 'rangee' },
+  // Les Fumerolles (GD-22, lot 9) : « la sondeuse », sans prénom ; sa réplique, une idée, un verbe concret, explique le
+  // mot rare (directeur du contenu pédagogique et référent dys, retouche 2 ; jamais « Fumerolles » et « Faille » ensemble).
+  fumerolles: { role: placeArt('fumerolles')!.role, greeting: 'Ici, la sondeuse plante ses sondes dans le sol.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */

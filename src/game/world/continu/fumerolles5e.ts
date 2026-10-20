@@ -23,6 +23,7 @@ import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_5E, PLACES_5E } from './plan5e';
 import { rock, type RockTones } from './surroundingsKit';
+import { SHADOW_DIR_5E } from './sky';
 import { standingHeight } from './terrain';
 import { FOREST_COLORS, heightAt5e } from './terrain5e';
 
@@ -117,30 +118,40 @@ const VENT_TOP = 0.42;
 
 /**
  * La vapeur fixe : pour chaque bouche, le haut de son panache (sous deux fois le mât et sous le rebord de la falaise, 13)
- * et ses bouffées, comme la fumée du Hameau (`hameau5e.ts`, `smoke`) : chacune deux troncs de cône dos à dos, qui
- * s'élargissent puis se referment, empilées sans torsion, la plus large en bas ; leur rayon au ventre (la plus haute bouche),
- * leur glissement vers l'ouest d'une bouffée à l'autre (le même pour les trois, très peu) et leur léger décalage, de
- * côté et en profondeur (retouche 1 : les anneaux tournés d'un demi-pan se lisaient comme des colonnes vrillées).
+ * et ses quatre bouffées (retouche 2 : trois boules blanches de même taille, empilées avec un cou serré, se lisaient
+ * comme des cairns). Chacune deux troncs de cône dos à dos, qui s'élargissent puis se referment sans étranglement (le
+ * cou et le pied aux trois quarts du ventre), et recouvre la moitié de la précédente : une colonne continue. La première
+ * a la largeur du haut ouvert de la bouche (`grow`, en part de ce haut), les suivantes s'élargissent un peu en montant,
+ * la dernière est petite (`end`) ; le panache penche vers l'est (en scénette, loin du panneau de la consigne), d'autant plus qu'il monte (`drift`, au haut du
+ * panache, en part de sa hauteur), du même côté pour les trois.
  */
 const PLUMES = [
-  { top: 8, puffs: 3 },
-  { top: 6, puffs: 3 },
-  { top: 4.6, puffs: 2 },
+  { top: 7.2, puffs: 4 },
+  { top: 5.3, puffs: 4 },
+  { top: 4.1, puffs: 4 },
 ] as const;
-const PUFF = { belly: [1.08, 0.94, 0.76], foot: 0.6, neck: 0.45, overlap: 0.15, drift: -0.12, sway: [0, 0.16, -0.06], sides: 6 } as const;
+const PUFF = { grow: [1.15, 1.45, 1.7], end: 1, neck: 0.75, overlap: 0.5, drift: 0.35, sway: [0, -0.22, 0.12, -0.1], dome: 0.3, sides: 6 } as const;
 
 /**
- * Les gris de la vapeur, du bas vers le haut : le dessous de chaque bouffée, puis son dessus, plus clair en haut. Plus
- * clairs que les gris visés (#C2BDB1 en bas) : l'écran les rend plus sombres sur les flancs, à l'ombre, et ils doivent se
- * détacher en clair sur la falaise (retouche 1 : beige gris comme elle, ils se lisaient comme de la pierre).
+ * Les gris de la vapeur : ses deux bouffées du bas, puis celles du haut, un peu plus claires ; dans chacune, le dessus
+ * tourné vers le soleil (`cap`), le dessus à l'ombre et le dessous au soleil (`mid`), le dessous à l'ombre (`under`),
+ * d'un petit cran chacun, comme la fumée du Hameau : chaque bouffée se lit, ronde, dans la colonne. Puis le dessus de la
+ * dernière. La vue les dessine sans ombre (`FUMEROLLES_STEAM`, ./levelWorld.ts, `thinFog`) : une fumée, jamais une roche
+ * (retouche 2 : ombrés par la lumière, leurs flancs viraient au gris de pierre ; plus clairs, la vapeur était l'objet le
+ * plus clair de l'image). À l'écran (brume et exposition comprises), le gris chaud de la fumée du Hameau au bas du
+ * panache (#C2BDB1), au plus #D6D2C9 en haut.
  */
-const STEAM = { under: [0xd4d1ca, 0xe3e0da], over: [0xdedbd4, 0xebe9e3] } as const;
+const STEAM = {
+  low: { cap: 0xc6c1b5, mid: 0xbcb7ac, under: 0xb2aea3 },
+  high: { cap: 0xcbc6bc, mid: 0xc1bcb2, under: 0xb7b2a8 },
+  top: 0xd0ccc3,
+} as const;
 
-/** Le mélange de deux couleurs, de `a` (0) à `b` (1). */
-function mix(a: number, b: number, t: number): number {
-  const ch = (shift: number) => Math.round(((a >> shift) & 255) * (1 - t) + ((b >> shift) & 255) * t);
-  return (ch(16) << 16) | (ch(8) << 8) | ch(0);
-}
+/** Les couleurs de la vapeur, que la vue dessine sans ombre. */
+export const FUMEROLLES_STEAM: readonly number[] = [...Object.values(STEAM.low), ...Object.values(STEAM.high), STEAM.top];
+
+/** Le soleil, à plat : un pan de vapeur qui le regarde prend le gris clair. */
+const SUN = { x: -SHADOW_DIR_5E.x, z: -SHADOW_DIR_5E.z } as const;
 
 /**
  * Le socle de la grande sonde, au bord nord-ouest de la dalle : huit pans, à hauteur de genou, le trou et ses quatre goujons
@@ -173,10 +184,27 @@ const POLE = { x: 9.0, z: 3.7, h: 2.1, arm: 0.45 } as const;
 const CABIN_ROCK = { x: 9.85, z: 2.2, r: 1.05, h: 1.5 } as const;
 
 /**
- * La cabane de la ruine : penchée vers l'est, d'un angle franc (retouche 1 : à 7°, elle se lisait droite), son pied cassé,
- * son mur de l'est appuyé sur sa roche ; son bord bas de l'est posé au sol.
+ * La cabane de la ruine : penchée vers l'est de 13°, son pied cassé, son mur de l'est appuyé sur sa roche ; son bord bas
+ * de l'est posé au sol (retouche 1 : à 7°, elle se lisait droite ; retouche 2 : à 19°, en scénette, elle penchait
+ * au-dessus de la sondeuse).
  */
-const CABIN_LEAN = 0.34;
+const CABIN_LEAN = 0.23;
+
+/**
+ * La cabane de la ruine, glissée vers l'ouest de sa place : son mur de l'est touche encore sa roche, et en scénette le
+ * noir de sa porte reste à gauche de la sondeuse, jamais derrière sa tête.
+ */
+const CABIN_SLIDE = -0.8;
+
+/**
+ * Le toit tombé de la ruine, à plat au sud-est de la cabane, au pied de sa roche, et ses deux lames décrochées entre lui
+ * et la perche : vus de la porte, à droite de la cabane (retouche 2 : au nord-est, la cabane les cachait).
+ */
+const FALLEN_ROOF = { x: 11.3, z: 5.2, yaw: 0.45 } as const;
+const FALLEN_SLATS = [
+  [9.3, 5.6],
+  [9.45, 6.0],
+] as const;
 
 /** Le mât, juste au nord de la cabane : sa place, sa hauteur, le bras de la girouette, la lanterne fixée dessous. */
 const MAST = { x: 6.5, z: -0.6, h: 4.5, t: 0.16, arm: 4.3 } as const;
@@ -214,8 +242,12 @@ const HEDGE = [
   [10.1, -1.5, 0.8],
 ] as const;
 
-/** La pousse en pot, au bout ouest de la haie, visible de la porte entre la cabane et la margelle. */
-const POT = { x: 6.4, z: -4.6 } as const;
+/**
+ * La pousse en pot, entre le bout ouest de la haie et la margelle, visible de la porte entre la cabane et la margelle ;
+ * en scénette, à gauche du récipient de pluie (retouche 2 : posée juste au-dessus de lui à l'écran, les deux faisaient
+ * un totem).
+ */
+const POT = { x: 5.3, z: -3.4 } as const;
 
 /** Les croûtes jaune pâle, plates sur la roche ocre autour de la margelle (avant comme après) ; leur taille. */
 const CRUSTS = [
@@ -248,41 +280,58 @@ function vent(b: FacetBuilder, v: (typeof VENTS)[number], ground: SiteGround): v
 }
 
 /**
- * Un panache de vapeur, fixe : ses bouffées arrondies à six pans, empilées sans torsion, chacune un peu plus étroite que la
- * précédente, qui glissent très peu vers l'ouest ; le dessus fermé sur la dernière seulement (les autres sont dans la
- * suivante). Vingt-quatre triangles par bouffée, six pour le dessus.
+ * Un panache de vapeur, fixe : ses bouffées arrondies à six pans, en colonne sans torsion, chacune à moitié dans la
+ * précédente ; elles s'élargissent un peu en montant puis finissent sur une petite, et penchent de plus en plus vers
+ * l'est ; le dessus fermé sur la dernière seulement (les autres sont dans la suivante). Vingt-quatre triangles par
+ * bouffée, six pour le dessus.
  */
 function plume(b: FacetBuilder, v: (typeof VENTS)[number], p: (typeof PLUMES)[number], base: number): void {
   const n = PUFF.sides;
   const y0 = base + v.h + 0.04;
-  // Plus étroit au-dessus d'une petite bouche : le panache sort de son haut ouvert.
-  const scale = 0.6 + (0.4 * v.r) / VENTS[0].r;
-  const radii = PUFF.belly.slice(0, p.puffs).map((r) => r * scale);
+  const mouth = v.r * VENT_TOP;
+  const radii = [...PUFF.grow.slice(0, p.puffs - 1), PUFF.end].map((g) => g * mouth);
   // La hauteur de chaque bouffée, à proportion de son ventre, pour que la dernière finisse au haut du panache.
   const sum = radii.reduce((a, r, k) => a + r * (k + 1 < radii.length ? 1 - PUFF.overlap : 1), 0);
-  const unit = (p.top - y0) / sum;
-  const ring = (x: number, y: number, z: number, r: number) =>
+  const height = p.top - y0;
+  const unit = height / sum;
+  // Le pas vers l'est à la hauteur `y` : nul au pied, `drift` de la hauteur au haut, de plus en plus marqué.
+  const lean = (y: number) => PUFF.drift * height * Math.pow((y - y0) / height, 1.5);
+  const ring = (x: number, y: number, r: number) =>
     Array.from({ length: n }, (_, k): [number, number, number] => {
       const a = (2 * Math.PI * k) / n;
-      return [x + r * Math.cos(a), y, z + r * Math.sin(a)];
+      return [x + r * Math.cos(a), y, v.z + r * Math.sin(a)];
     });
-  const band = (lo: [number, number, number][], hi: [number, number, number][], color: number) => {
-    for (let k = 0; k < n; k++) b.quad(lo[(k + 1) % n], lo[k], hi[k], hi[(k + 1) % n], color);
+  const sunny = (k: number) => {
+    const a = (2 * Math.PI * (k + 0.5)) / n;
+    return Math.cos(a) * SUN.x + Math.sin(a) * SUN.z > 0;
+  };
+  type Tone = (typeof STEAM)['low' | 'high'];
+  const band = (lo: [number, number, number][], hi: [number, number, number][], tone: Tone, over: boolean) => {
+    for (let k = 0; k < n; k++) {
+      const lit = sunny(k);
+      const color = over && lit ? tone.cap : over || lit ? tone.mid : tone.under;
+      b.quad(lo[(k + 1) % n], lo[k], hi[k], hi[(k + 1) % n], color);
+    }
   };
   let y = y0;
   radii.forEach((r, k) => {
-    const t = radii.length > 1 ? k / (radii.length - 1) : 1;
+    const tone = 2 * k < radii.length ? STEAM.low : STEAM.high;
     const h = r * unit;
-    const x = v.x + PUFF.drift * k + PUFF.sway[k];
-    const z = v.z - PUFF.sway[k] * 0.6;
-    const foot = ring(x, y, z, r * PUFF.foot);
-    const belly = ring(x, y + h / 2, z, r);
-    const neck = ring(x, y + h, z, r * PUFF.neck);
-    band(foot, belly, mix(STEAM.under[0], STEAM.under[1], t));
-    band(belly, neck, mix(STEAM.over[0], STEAM.over[1], t));
-    if (k === radii.length - 1) {
-      const c: [number, number, number] = [x, y + h + 0.06, z];
-      for (let i = 0; i < n; i++) b.triangle(c, neck[(i + 1) % n], neck[i], STEAM.over[1]);
+    // Chaque bouffée d'un bloc, à la place de son ventre, et un peu de côté, d'un bord puis de l'autre (`sway`, en part du
+    // haut de la bouche) : le pas de l'une à l'autre se lit sur les deux bords du panache.
+    const x = v.x + lean(y + h / 2) + PUFF.sway[k] * mouth;
+    const foot = ring(x, y, r * PUFF.neck);
+    const belly = ring(x, y + h / 2, r);
+    const neck = ring(x, y + h, r * PUFF.neck);
+    // Une bouffée plus étroite que le cou de la précédente (la dernière) a son dessous dans celle-ci : il ne se dessine
+    // pas ; la précédente se ferme alors d'un dôme bas, comme la dernière.
+    const inside = k > 0 && r < radii[k - 1] * PUFF.neck;
+    const capped = k === radii.length - 1 || radii[k + 1] < r * PUFF.neck;
+    if (!inside) band(foot, belly, tone, false);
+    band(belly, neck, tone, true);
+    if (capped) {
+      const c: [number, number, number] = [x, y + h + PUFF.dome * r, v.z];
+      for (let i = 0; i < n; i++) b.triangle(c, neck[(i + 1) % n], neck[i], k === radii.length - 1 ? STEAM.top : tone.cap);
     }
     y += h * (1 - PUFF.overlap);
   });
@@ -424,10 +473,10 @@ function cabinBody(b: FacetBuilder, worn: boolean, broken: boolean): void {
 
 /**
  * Pose un dessin fait dans le repère de la cabane : à sa place, ou penché vers l'est (`roll`, autour de son bord bas de
- * l'ouest), contre sa roche, relevé d'autant que le bord bas de l'est de son plancher reste posé au sol (ses pieds de
- * l'ouest, qui descendent sous le sol, l'y portent). Normales comprises.
+ * l'ouest) et glissé de `shift` le long de x, contre sa roche, relevé d'autant que le bord bas de l'est de son plancher
+ * reste posé au sol (ses pieds de l'ouest, qui descendent sous le sol, l'y portent). Normales comprises.
  */
-function placeCabin(b: FacetBuilder, ground: SiteGround, draw: (l: FacetBuilder) => void, roll = 0): void {
+function placeCabin(b: FacetBuilder, ground: SiteGround, draw: (l: FacetBuilder) => void, roll = 0, shift = 0): void {
   const l = new FacetBuilder();
   draw(l);
   const f = l.build();
@@ -440,7 +489,7 @@ function placeCabin(b: FacetBuilder, ground: SiteGround, draw: (l: FacetBuilder)
   for (let i = 0; i < f.positions.length; i += 3) {
     const x = f.positions[i] - px,
       y = f.positions[i + 1] - py;
-    f.positions[i] = CABIN.x + px + x * c - y * s;
+    f.positions[i] = CABIN.x + shift + px + x * c - y * s;
     f.positions[i + 1] = g + py + x * s + y * c;
     f.positions[i + 2] += CABIN.z;
     const nx = f.normals[i],
@@ -612,7 +661,7 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     },
     corps,
   );
-  add('ruine', 0, (b) => placeCabin(b, ground, (l) => cabinBody(l, true, true), CABIN_LEAN), corps);
+  add('ruine', 0, (b) => placeCabin(b, ground, (l) => cabinBody(l, true, true), CABIN_LEAN, CABIN_SLIDE), corps);
 
   // La ruine du haut : le toit tombé à plat à côté de la cabane et ses deux lames décrochées, parallèles ; le mât couché sur
   // la roche ocre, vers le nord, la feuille de la girouette face au ciel.
@@ -621,12 +670,9 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     'ruine',
     0,
     (b) => {
-      const r = { x: 9.8, z: -2.4 };
-      b.gableRoof({ x: r.x, y: at(r.x, r.z) - 0.02, z: r.z, yaw: 0.3 }, CABIN.w + 0.4, CABIN.d + 0.6, 0.28, C.lauze, C.wornShade);
-      for (const [x, z] of [
-        [7.6, -0.5],
-        [7.75, -0.9],
-      ] as const)
+      const r = FALLEN_ROOF;
+      b.gableRoof({ x: r.x, y: at(r.x, r.z) - 0.02, z: r.z, yaw: r.yaw }, CABIN.w + 0.4, CABIN.d + 0.6, 0.28, C.lauze, C.wornShade);
+      for (const [x, z] of FALLEN_SLATS)
         b.box({ x, y: at(x, z) - 0.01, z, yaw: 0.25 }, [1.2, 0.05, 0.2], C.wornShade, C.wornWood);
       const foot = { x: 6.6, z: -0.9 };
       const tip = { x: 6.9, z: -0.9 - MAST.h };
@@ -740,7 +786,7 @@ function rainGauge(b: FacetBuilder, c: Vec3): void {
 
 /**
  * La pousse (Ressources et action humaine) : une jeune pousse tuteurée dans un pot de pierre ventru à deux anses, sur un
- * tabouret de pierre, au bout ouest de la haie. Le pot se distingue du récipient de pluie par sa forme.
+ * tabouret de pierre, entre le bout ouest de la haie et la margelle. Le pot se distingue du récipient de pluie par sa forme.
  */
 function sprout(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
