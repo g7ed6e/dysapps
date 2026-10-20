@@ -5,6 +5,7 @@
 // l'instant »), puis à 86 000 le 17 octobre 2026 (GD-20, point 3, lot 3), les appels inchangés, puis à 98 000 triangles et 21
 // appels le 18 octobre 2026 pour les habitants en 3D (« on peut augmenter le budget », mesure sur iPad avant la fusion). Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
 import { creuxTriangles } from './creux5e';
+import { failleTriangles } from './faille5e';
 import { FAUNA, birdFacets, detourTrianglesAtMost, spoutFacets, whaleFacets } from './detours';
 import { NEF_MODEL_TRIANGLES, nefSiteTriangles } from './nef';
 import { NEF_5E_MODEL_TRIANGLES, nef5eSiteTriangles } from './nef5e';
@@ -449,8 +450,9 @@ function scenetteCost5e(): { triangles: number; calls: number } {
  * (three/archipeo/scene.ts, `askQuestion`), et aucune pose ne commence pendant une question (`setPlaces`). Le dirigeable
  * (lot 4) et la Lisière vont dans le maillage des lieux ; pendant le départ (`depart`), la Nef et le mur de nuages
  * passent dans deux maillages à part, le maillage de la pose fermé (`startNefTrip`), ni question ni scénette ouverte.
- * La faune de chaque terre (./wildlife5e.ts), un maillage. Les Détours du 5e, le Creux (lot 6, ./creux5e.ts) et la Hutte
- * (lot 8, ./hutte5e.ts), leurs sentes tracées comprises, dans le maillage des lieux ; pas encore d'aménagements.
+ * La faune de chaque terre (./wildlife5e.ts), un maillage. Les Détours du 5e, le Creux (lot 6, ./creux5e.ts), la Hutte
+ * (lot 8, ./hutte5e.ts) et la Faille (lot 11, ./faille5e.ts), leurs sentes tracées comprises, dans le maillage des
+ * lieux ; pas encore d'aménagements.
  */
 export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenette'): OpenWorldCost5e[] {
   const field = buildHeightField5e();
@@ -464,8 +466,9 @@ export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenett
     { poste: 'lieux', ...placesCost5e() },
     { poste: 'brume', triangles: veilFacets(LINKED_LANDS_5E).triangles, calls: 1 },
     { poste: 'failles', triangles: riftMistFacets().triangles, calls: 1 },
-    // Le Creux (lot 6) et la Hutte (lot 8), leurs sentes tracées, dans le maillage des lieux : aucun appel de plus.
-    { poste: 'détours', triangles: creuxTriangles().withSente + hutteFacets(true, (x, z) => groundOn5e(field, x, z)).triangles, calls: 0 },
+    // Le Creux (lot 6), la Hutte (lot 8) et la Faille (lot 11), leurs sentes tracées, dans le maillage des lieux : aucun
+    // appel de plus.
+    { poste: 'détours', triangles: creuxTriangles().withSente + hutteFacets(true, (x, z) => groundOn5e(field, x, z)).triangles + failleTriangles().withSente, calls: 0 },
     // La vie animale du 5e (piste « Ambiance par terre », 19 octobre 2026, ./wildlife5e.ts) : toutes les bêtes à la fois,
     // un maillage (celui de la baleine au 6e).
     { poste: 'faune', triangles: groupsTriangles(wildlifeGroups5e(), allCritterForms()), calls: 1 },
@@ -504,7 +507,7 @@ export function mapCost5e(): { triangles: number; calls: number } {
   }, 0);
   const hutte = hutteFacets(true, ground).triangles;
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + creuxTriangles().withSente + hutte + marks + placeMarks + veil + KEO.triangles + nefCost5e().triangles,
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + creuxTriangles().withSente + hutte + failleTriangles().withSente + marks + placeMarks + veil + KEO.triangles + nefCost5e().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
   };
 }

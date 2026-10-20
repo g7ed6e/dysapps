@@ -7,8 +7,10 @@
 // le monde et sur la Carte. Ni compteur, ni liste, ni récompense. Les places et les noms : le consultant d'Archipéo ; la
 // forme : l'artiste technique 3D ; les durées : le référent dys. Au 5e (GD-22, lot 6), le premier Détour, le Creux, a son
 // fichier (./creux5e.ts) ; la Hutte (lot 8) aussi (./hutte5e.ts) ; ce fichier les connaît tous par leur identifiant et leur niveau. Code pur.
+import { COMMON_DETOUR_VIEW, type DetourView } from './camera';
 import { CREUX } from './creux5e';
 import { HUTTE } from './hutte5e';
+import { FAILLE } from './faille5e';
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, type Vec2 } from './geometry';
 import type { LandId } from './lands';
@@ -20,13 +22,13 @@ import { detourFoot, detourReach, heightAt, landDistance, standingHeight } from 
 
 /**
  * Les Détours, les mêmes, dans le même ordre, que engine/detours.ts, pour la sauvegarde : les cinq du 6e, un par terre,
- * puis ceux du 5e (lot 6 : le Creux ; lot 8 : la Hutte).
+ * puis ceux du 5e (lot 6 : le Creux ; lot 8 : la Hutte ; lot 11 : la Faille), chacun ajouté à la fin.
  */
-export const DETOUR_IDS = ['butte-chantier', 'braise-herons', 'bout-large', 'colline-aube', 'haut-cretes', 'creux', 'hutte'] as const;
+export const DETOUR_IDS = ['butte-chantier', 'braise-herons', 'bout-large', 'colline-aube', 'haut-cretes', 'creux', 'hutte', 'faille'] as const;
 export type DetourId = (typeof DETOUR_IDS)[number];
 
 /** Les Détours du 5e. */
-const DETOUR_IDS_5E = ['creux', 'hutte'] as const satisfies readonly DetourId[];
+const DETOUR_IDS_5E = ['creux', 'hutte', 'faille'] as const satisfies readonly DetourId[];
 
 /** Un Détour du 6e. */
 type DetourId6e = Exclude<DetourId, (typeof DETOUR_IDS_5E)[number]>;
@@ -34,8 +36,8 @@ type DetourId6e = Exclude<DetourId, (typeof DETOUR_IDS_5E)[number]>;
 /** Les cinq Détours du 6e, un par terre. */
 export const DETOUR_IDS_6E = DETOUR_IDS.filter((id): id is DetourId6e => !(DETOUR_IDS_5E as readonly string[]).includes(id));
 
-/** Ce qu'est un Détour : un sommet, le sommet au cairn à rallumer, un bord d'eau, ou (au 5e) un arbre creux, une cabane. */
-type DetourKind = 'sommet' | 'cairn' | 'rive' | 'creux' | 'cabane';
+/** Ce qu'est un Détour : un sommet, le sommet au cairn à rallumer, un bord d'eau, ou (au 5e) un arbre creux, une cabane, une fente. */
+type DetourKind = 'sommet' | 'cairn' | 'rive' | 'creux' | 'cabane' | 'faille';
 
 export interface Detour {
   id: DetourId;
@@ -54,6 +56,11 @@ export interface Detour {
   face: number;
   /** La sente, du point du chemin le plus proche jusqu'à `at`, en passant par le pied. */
   sente: readonly Vec2[];
+  /**
+   * La vue propre à ce Détour, à l'arrivée (la Faille, lot 11, retouche 1) : sa forme (`height`, `back`, comme
+   * `DetourView`, ./camera.ts) et `turn`, l'écart de son cap à celui de `detourCap` ; sans elle, la vue commune.
+   */
+  view?: DetourView & { readonly turn: number };
 }
 
 /**
@@ -102,8 +109,8 @@ function detourOf(id: DetourId6e): Detour {
 /** Les cinq Détours du 6e, tirés une fois. */
 export const DETOURS: readonly Detour[] = DETOUR_IDS_6E.map(detourOf);
 
-/** Les Détours du 5e (lot 6 : le Creux, aux Frondaisons ; lot 8 : la Hutte, aux Roselières). */
-export const DETOURS_5E: readonly Detour[] = [CREUX, HUTTE];
+/** Les Détours du 5e (lot 6 : le Creux, aux Frondaisons ; lot 8 : la Hutte, aux Roselières ; lot 11 : la Faille, aux Contreforts). */
+export const DETOURS_5E: readonly Detour[] = [CREUX, HUTTE, FAILLE];
 
 /** Les Détours d'un niveau. */
 const detoursOf = (level: OpenWorldLevel): readonly Detour[] => (level === '5e' ? DETOURS_5E : DETOURS);
@@ -123,9 +130,14 @@ export function detourAtPoint(p: Vec2, level: OpenWorldLevel = '6e'): Detour | n
  * Le cap de la caméra à l'arrivée sur un Détour (comme `yaw` de la caméra, scene.ts : elle regarde vers −(sin, cos)), ou
  * rien : elle garde le sien. Au Creux, Kéo sur le seuil, la caméra se tourne vers l'arche, derrière lui, et montre le
  * dedans éclairé (GD-22, lot 6, retouche : sans cela, la caméra qui monte montrait le fût de côté, l'arche cachée). `face`
- * va du centre du fût vers l'arche : la caméra regarde à l'opposé.
+ * va du centre du fût vers l'arche : la caméra regarde à l'opposé. À la Faille (lot 11), de même vers le pont, quel que
+ * soit le cap d'arrivée : `face` va du milieu du pont vers sa tête, où se tient Kéo ; tourné de `view.turn` (à la
+ * Faille, vers le sud, à l'opposé de l'arbre : la paroi d'en face se voit de profil).
  */
-export const detourCap = (d: Detour): number | null => (d.kind === 'creux' ? Math.atan2(Math.cos(d.face), Math.sin(d.face)) : null);
+export const detourCap = (d: Detour): number | null => (d.kind === 'creux' || d.kind === 'faille' ? Math.atan2(Math.cos(d.face), Math.sin(d.face)) + (d.view?.turn ?? 0) : null);
+
+/** La forme de la vue à l'arrivée sur `d` : la sienne, ou la vue commune des Détours. */
+export const detourViewOf = (d: Detour): DetourView => d.view ?? COMMON_DETOUR_VIEW;
 
 /** La place que la végétation laisse libre : la sente, de part et d'autre, et autour du bord d'eau. */
 const KEEP = { sente: 1.6, shore: 4 } as const;

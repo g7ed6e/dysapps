@@ -65,16 +65,28 @@ export const wrapAngle = (a: number): number => Math.atan2(Math.sin(a), Math.cos
 const DETOUR_VIEW = { height: 8, back: 1.6, up: 1.2, down: 0.8 } as const;
 
 /**
+ * La forme de la vue d'un Détour, toute montée : `height` ajouté à la hauteur de la poursuite, `back` le facteur de son
+ * recul. Celle de tous les Détours (`DETOUR_VIEW`), sauf un Détour qui donne la sienne (`Detour.view`, ./detours.ts).
+ */
+export interface DetourView {
+  readonly height: number;
+  readonly back: number;
+}
+
+/** La vue commune des Détours : la caméra monte de 8 et recule de 1,6 fois (environ 34° de plongée). */
+export const COMMON_DETOUR_VIEW: DetourView = { height: DETOUR_VIEW.height, back: DETOUR_VIEW.back };
+
+/**
  * La pose de la caméra qui suit le point `focus` (les pieds de Kéo, lissés), montée de `lift` au-dessus d'un relief,
  * tournée de `yaw` autour de lui (en radians, depuis le sud : 0 au sud, tournée vers le nord ; π/2 à l'est, tournée
- * vers l'ouest), et montée de la part `rise` de la vue d'un Détour (0 : la caméra qui suit, 1 : toute la vue) ; remplie
- * dans `out` s'il est donné (la vue la refait à chaque image sans rien créer).
+ * vers l'ouest), et montée de la part `rise` de la vue d'un Détour `view` (0 : la caméra qui suit, 1 : toute la vue) ;
+ * remplie dans `out` s'il est donné (la vue la refait à chaque image sans rien créer).
  */
-export function followPose(focus: Vec3, lift = 0, out?: CameraPose, yaw = 0, rise = 0, hold?: CliffHold): CameraPose {
+export function followPose(focus: Vec3, lift = 0, out?: CameraPose, yaw = 0, rise = 0, hold?: CliffHold, view: DetourView = COMMON_DETOUR_VIEW): CameraPose {
   // Au bord du plateau (GD-22, lot 3, `cliffHold`), la hauteur et le recul retenus remplacent ceux de la poursuite.
   const held = hold && hold.held > 0;
-  const height = held ? FOLLOW.height + lift + (hold.height - FOLLOW.height - lift) * hold.held : FOLLOW.height + lift + DETOUR_VIEW.height * rise;
-  const back = held ? FOLLOW.back + (hold.back - FOLLOW.back) * hold.held : FOLLOW.back * (1 + (DETOUR_VIEW.back - 1) * rise);
+  const height = held ? FOLLOW.height + lift + (hold.height - FOLLOW.height - lift) * hold.held : FOLLOW.height + lift + view.height * rise;
+  const back = held ? FOLLOW.back + (hold.back - FOLLOW.back) * hold.held : FOLLOW.back * (1 + (view.back - 1) * rise);
   const pitch = followPitch(height, back);
   const pose = out ?? { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: FOLLOW.fov, lens: 0 };
   const bx = Math.sin(yaw);

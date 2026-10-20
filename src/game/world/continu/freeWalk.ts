@@ -12,7 +12,8 @@ import { bridgeEdge, linkedLands, nodeLands, startLandOf, type LandId, type Link
 import { planFor, type LevelPlan } from './levelPlan';
 import { pathNode } from './paths';
 import { NETWORK_5E } from './paths5e';
-import { LISIERE, LISIERE_BUILDINGS, lisiereFloor } from './plan5e';
+import { FAILLE_BLOCKED } from './faille5e';
+import { FAILLE_5E, LISIERE, LISIERE_BUILDINGS, lisiereFloor } from './plan5e';
 import { PORT, PORT_PAVING, TERRAIN, portFloor } from './plan6e';
 import { modelOfPlace } from './places';
 import { heightOnMesh, type HeightField } from './terrain';
@@ -79,7 +80,12 @@ const WALK_5E: WalkWorld = {
   // La pierre de la Lisière, et ses bâtiments (GD-22, lot 4).
   paved: (x, z) => lisiereFloor(x, z) !== null,
   obstacles: (_field, tx, tz) => obstaclesIn5e(tx, tz),
-  boxes: (block) => block(LISIERE.toWorld((LISIERE_BUILDINGS.x0 + LISIERE_BUILDINGS.x1) / 2, (LISIERE_BUILDINGS.z0 + LISIERE_BUILDINGS.z1) / 2), 30, LISIERE.toLocal, LISIERE_BUILDINGS),
+  // Les bâtiments de la Lisière ; la fente et la paroi de la Faille, et le pied de son arbre (GD-22, lot 11).
+  boxes: (block) => {
+    block(LISIERE.toWorld((LISIERE_BUILDINGS.x0 + LISIERE_BUILDINGS.x1) / 2, (LISIERE_BUILDINGS.z0 + LISIERE_BUILDINGS.z1) / 2), 30, LISIERE.toLocal, LISIERE_BUILDINGS);
+    const toFaille = (p: Vec2): Vec2 => ({ x: p.x - FAILLE_5E.center.x, z: p.z - FAILLE_5E.center.z });
+    for (const box of [FAILLE_BLOCKED.rift, FAILLE_BLOCKED.tree]) block(FAILLE_5E.center, 8, toFaille, box);
+  },
 };
 
 const walkWorldOf = (plan: LevelPlan): WalkWorld => (plan.level === '5e' ? WALK_5E : WALK_6E);

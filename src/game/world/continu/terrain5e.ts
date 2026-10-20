@@ -7,7 +7,7 @@
 // du 6e (./terrain.ts) : seuls la hauteur, la peinture et ce qui pousse changent. Code pur.
 import { FacetBuilder, type Facets } from './facets';
 import { distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { CHANNELS_5E, COAST_5E, COLORS_5E, CREUX_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, TERRAIN_5E, HUTTE_5E, inHutteClearing, inLisiereClearing, type ChannelId, type Needle } from './plan5e';
+import { CHANNELS_5E, COAST_5E, COLORS_5E, CREUX_5E, FAILLE_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, TERRAIN_5E, HUTTE_5E, inHutteClearing, inLisiereClearing, type ChannelId, type Needle } from './plan5e';
 import { SHADOW_DIR_5E } from './sky';
 import { spire, spireTriangles } from './spire5e';
 import { drawTileWith, farHeightsOf, heightOnFar, heightOnMesh, tileRect, type GroundPaint, type HeightField, type P3, type TileDetail } from './terrain';
@@ -105,6 +105,9 @@ const TOP_FROM = PLATEAU.height * 0.7;
 /** Le sens d'où vient le soleil, à plat : un flanc qui le regarde est au soleil. */
 const SUN_FLAT = { x: -SHADOW_DIR_5E.x, z: -SHADOW_DIR_5E.z } as const;
 
+/** La bande d'herbe rase de part et d'autre de la sente de la Faille. */
+export const SENTE_GRASS = 2.2;
+
 /** Une tache du sol, par cases de cinq unités : des aplats d'un seul tenant, jamais une moucheture. */
 const patch = (x: number, z: number): number => hash2(Math.floor(x / 5) + 4000, Math.floor(z / 5) + 4000);
 
@@ -120,7 +123,11 @@ function flat5e(x: number, z: number, h: number): number {
   }
   if (h < 0.3) return COLORS_5E.mud;
   const p = { x, z };
-  if (contreforts(p) > 0.5) return patch(x, z) < 0.6 ? COLORS_5E.ochre : COLORS_5E.mossSun;
+  if (contreforts(p) > 0.5) {
+    // Le long de la sente de la Faille, l'herbe rase : sa sente claire s'y lit (3:1), ce qu'elle ne fait pas sur l'ocre.
+    if (distanceToPolyline(p, FAILLE_5E.sente) < SENTE_GRASS) return COLORS_5E.mossSun;
+    return patch(x, z) < 0.6 ? COLORS_5E.ochre : COLORS_5E.mossSun;
+  }
   return COLORS_5E.moss;
 }
 
@@ -170,12 +177,12 @@ export const FOREST_COLORS = {
  * Où pousse la forêt : une place tous les `cell` unités au plus, gardée une fois sur `keep` ; jamais à moins de `path`
  * unités d'un chemin, de `place` du centre d'un lieu (la Montée : `montee`, et `monteeSouth` au sud, sa clairière d'approche ;
  * le Hameau : `hameau`, et `hameauSouth` au sud ; la Croisée : le couloir `croiseeSouth` sur `croiseeSide` de part et
- * d'autre ; les Instants : `instants` de part et d'autre de leur chaussée, et `instantsSouth` au sud), de `quay` du ponton
- * de la Lisière, ni dans sa clairière, ni sur le
+ * d'autre ; les Instants : `instants` de part et d'autre de leur chaussée, et `instantsSouth` au sud ; les Terrasses :
+ * `terrasses`, et `terrassesSouth` au sud), de `quay` du ponton de la Lisière, ni dans sa clairière, ni sur le
  * plateau ou sa falaise ; un tronc se tient à `dry` unités au moins de l'eau (retouche du lot 2, directeur artistique :
  * la canopée couvrait les chenaux, leur eau ne se voyait pas en 3D).
  */
-const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, monteeSouth: 30, hameau: 14.5, hameauSouth: 34, radeaux: 13, croiseeSouth: 30, croiseeSide: 6, instants: 12.5, instantsSouth: 30, quay: 5, cliff: 2.5, dry: 2.2, creux: 7.5, sente: 3.6 } as const;
+const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, monteeSouth: 30, hameau: 14.5, hameauSouth: 34, radeaux: 13, croiseeSouth: 30, croiseeSide: 6, instants: 12.5, instantsSouth: 30, terrasses: 19, terrassesSouth: 32, quay: 5, cliff: 2.5, dry: 2.2, creux: 7.5, faille: 7.5, sente: 3.6 } as const;
 
 /** L'axe de la chaussée des Instants, depuis le centre du lieu (lot 8 ; un test le relit contre ./instants5e.ts). */
 export const INSTANTS_AXIS: readonly (readonly [number, number])[] = [
@@ -213,6 +220,9 @@ const nearPlace = (p: Vec2): boolean =>
       const [a, b] = INSTANTS_AXIS.map(([x, z]) => ({ x: pl.center.x + x, z: pl.center.z + z }));
       return d < FOREST_KEEP.place || distanceToPolyline(p, [a, b]) < FOREST_KEEP.instants || (p.z > pl.center.z + 3 && d < FOREST_KEEP.instantsSouth);
     }
+    // Les Terrasses (lot 11) : le tertre, le moulin, la cour et le buisson du canal haut jusqu'à 18 unités du centre ; au
+    // sud, l'approche de la caméra de la porte et le recul de celle de la scénette.
+    if (pl.id === 'terrasses') return d < FOREST_KEEP.terrasses || (p.z > pl.center.z + 4 && d < FOREST_KEEP.terrassesSouth);
     return d < FOREST_KEEP.place;
   });
 
@@ -243,6 +253,12 @@ const CREUX_TREE: Tree = { x: CREUX_5E.center.x, z: CREUX_5E.center.z, y: height
 /** Près du Creux : son pied, et sa sente (la végétation la laisse libre). */
 const nearCreux = (p: Vec2): boolean => Math.hypot(p.x - CREUX_5E.center.x, p.z - CREUX_5E.center.z) < FOREST_KEEP.creux || distanceToPolyline(p, CREUX_5E.sente) < FOREST_KEEP.sente;
 
+/**
+ * Près de la Faille (GD-22, lot 11) : sa fente, son arbre de roche et sa sente (aucun buisson ; on la devine du chemin
+ * entre les buissons plus loin).
+ */
+const nearFaille = (p: Vec2): boolean => Math.hypot(p.x - FAILLE_5E.center.x, p.z - FAILLE_5E.center.z) < FOREST_KEEP.faille || distanceToPolyline(p, FAILLE_5E.sente) < FOREST_KEEP.sente;
+
 const treesOf = new Map<number, readonly Tree[]>();
 
 /** Les arbres d'une tuile (calculés une fois). */
@@ -263,7 +279,7 @@ function treesIn(tx: number, tz: number): readonly Tree[] {
       if (nearPath(p, FOREST_KEEP.path) || nearPlace(p) || distanceToPolyline(p, [QUAY_5E.from, QUAY_5E.to]) < FOREST_KEEP.quay) continue;
       // La clairière de la Lisière (GD-22, lot 4) : sa place, sa rangée et leurs abords, sans un tronc.
       if (inLisiereClearing(p)) continue;
-      if (nearCreux(p)) continue;
+      if (nearCreux(p) || nearFaille(p)) continue;
       // La Hutte (lot 8) : sa cabane, sa barque, la place de Kéo et sa sente.
       if (inHutteClearing(p)) continue;
       const shrub = contreforts(p) > 0.5;
