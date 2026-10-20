@@ -107,7 +107,10 @@ export const DETOURS_5E: readonly Detour[] = [CREUX];
 /** Les Détours d'un niveau. */
 const detoursOf = (level: OpenWorldLevel): readonly Detour[] => (level === '5e' ? DETOURS_5E : DETOURS);
 
-export const detourById = (id: DetourId): Detour => [...DETOURS, ...DETOURS_5E].find((d) => d.id === id)!;
+/** Tous les Détours, par leur nom : la table se construit une fois. */
+const DETOUR_BY_ID: ReadonlyMap<DetourId, Detour> = new Map([...DETOURS, ...DETOURS_5E].map((d) => [d.id, d]));
+
+export const detourById = (id: DetourId): Detour => DETOUR_BY_ID.get(id)!;
 
 /** Le Détour du niveau `level` (le 6e, sans le dire) où se tient Kéo en `p`, ou rien. */
 export function detourAtPoint(p: Vec2, level: OpenWorldLevel = '6e'): Detour | null {

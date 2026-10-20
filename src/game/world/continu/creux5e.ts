@@ -189,7 +189,7 @@ function sente(b: FacetBuilder): void {
       c = line[i];
     // La sente s'arrête juste avant le seuil, au pied du fût (le sol du creux est en planches).
     const d = distance(a, c);
-    const len = d - 0.3;
+    const len = Math.max(0, d - 0.3);
     const dx = (c.x - a.x) / d,
       dz = (c.z - a.z) / d;
     let s = carry;

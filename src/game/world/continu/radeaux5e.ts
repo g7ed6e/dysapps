@@ -143,9 +143,11 @@ const RAFT = { size: 5, thick: 0.42, float: 0.12 } as const;
  * lot 6) : l'un dans le pas entre le premier radeau et celui du milieu, l'autre entre celui du milieu et celui du fond.
  * Tous deux assez loin sur l'eau pour rester hors du cadre de la scénette, qui regarde la cabane depuis l'est, le long du
  * quai (celui de l'est, au bord du quai, y coupait l'image comme un tronc). La hauteur de leur fourche au-dessus du sol du
- * lieu.
+ * lieu (elle ne descend pas : la lanterne de la grande perche, 4,86, reste sous elle), la longueur des bras, la section
+ * des poteaux et des bras : affinés à la retouche 2 du lot 6 (consultant d'Archipéo : vu de dos, le poteau de gauche
+ * dominait le cadre et dépassait les couronnes proches), 0,2 au lieu de 0,3, les bras de 0,5 au lieu de 0,8.
  */
-const PORTICO = { posts: [{ u: -1.1, v: 3.4 }, { u: 5.0, v: 4.0 }], top: 5, arm: 0.8, spread: 0.45 } as const;
+const PORTICO = { posts: [{ u: -1.1, v: 3.4 }, { u: 5.0, v: 4.0 }], top: 5, arm: 0.5, spread: 0.4, post: 0.2, branch: 0.12 } as const;
 
 /** La rampe d'accès, de la rive au quai : son haut, son bas (repère de la rive), sa largeur. */
 const RAMP = { u: 5, top: -5.6, bottom: QUAY.v0 + 0.2, half: 0.9 } as const;
@@ -182,6 +184,28 @@ function pole(b: FacetBuilder, x: number, z: number, y0: number, y1: number, w: 
     const [cx, cz] = p[(k + 1) % 3];
     b.quad([cx, y0, cz], [ax, y0, az], [ax, y1, az], [cx, y1, cz], color);
   }
+}
+
+/**
+ * Une planche tombée à plat sur la rive : un pavé de `len` (le long de son cap `yaw`) sur `wid`, épais de `thick`, dont
+ * chaque coin suit le sol (`at`). Couchée de biais sur la pente, une planche droite s'enfonçait à moitié et n'en montrait
+ * qu'un triangle pâle, qui se lisait comme un fanion (retouche 2 du lot 6, directeur artistique). Dix triangles.
+ */
+function groundPlank(b: FacetBuilder, c: Vec2, yaw: number, len: number, wid: number, thick: number, at: (x: number, z: number) => number, color: number, top: number): void {
+  const cy = Math.cos(yaw),
+    sy = Math.sin(yaw);
+  const corner = (lx: number, lz: number) => {
+    const x = c.x + lx * cy + lz * sy,
+      z = c.z - lx * sy + lz * cy;
+    const g = at(x, z);
+    return { lo: [x, g - 0.05, z] as const, hi: [x, g + thick, z] as const };
+  };
+  const [a, d, e, f] = [corner(-len / 2, -wid / 2), corner(-len / 2, wid / 2), corner(len / 2, wid / 2), corner(len / 2, -wid / 2)];
+  b.quad(a.hi, d.hi, e.hi, f.hi, top);
+  b.quad(d.lo, e.lo, e.hi, d.hi, color);
+  b.quad(f.lo, a.lo, a.hi, f.hi, color);
+  b.quad(e.lo, f.lo, f.hi, e.hi, color);
+  b.quad(a.lo, d.lo, d.hi, a.hi, color);
 }
 
 /** Une lanterne posée au sommet d'une perche (`top`) : sa vitre à six pans (allumée d'ocre, sans ombre, ou éteinte) et son chapeau de bronze. */
@@ -492,12 +516,12 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     for (const P of PORTICO.posts) {
       const p = shore(P.u, P.v);
       const foot = pileFoot(ground, p) - 0.6;
-      b.box({ x: p.x, y: foot, z: p.z, yaw: SHORE_YAW }, [0.3, PORTICO.top - foot, 0.3], C.wornShade, C.wornWood);
+      b.box({ x: p.x, y: foot, z: p.z, yaw: SHORE_YAW }, [PORTICO.post, PORTICO.top - foot, PORTICO.post], C.wornShade, C.wornWood);
       // La fourche : deux bras qui s'écartent en V dans le travers du chenal (`v`), la broche le long de la rive.
       const top = { x: p.x, y: PORTICO.top, z: p.z };
       for (const s of [-1, 1]) {
         const tip = shore(P.u, P.v + s * PORTICO.spread);
-        b.beam(top, { x: tip.x, y: PORTICO.top + PORTICO.arm, z: tip.z }, 0.16, C.wornWood);
+        b.beam(top, { x: tip.x, y: PORTICO.top + PORTICO.arm, z: tip.z }, PORTICO.branch, C.wornWood);
       }
       const inward = P.u < 2 ? 1 : -1;
       const pin = shore(P.u + inward * 0.45, P.v);
@@ -667,17 +691,19 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     },
     corps3,
   );
-  // La rampe cassée : deux planches tombées de travers et un poteau. Les abords la refont.
+  // La rampe cassée : deux planches tombées de travers (celle de la rive à plat sur l'herbe, chaque coin sur le sol) et un
+  // poteau cassé. Les abords la refont.
   add(
     'ruine',
     0,
     (b) => {
       const a = shore(RAMP.u - 0.3, RAMP.top + 0.6),
         c = shore(RAMP.u + 0.2, RAMP.bottom + 0.4);
-      b.box({ x: a.x, y: at(a.x, a.z) - 0.1, z: a.z, yaw: SHORE_YAW + 1.7, pitch: 0.1 }, [1.8, 0.1, 0.8], C.wornShade, C.wornWood);
+      groundPlank(b, a, SHORE_YAW + 1.7, 1.8, 0.8, 0.1, at, C.wornShade, C.wornWood);
       b.box({ x: c.x, y: deck - 0.35, z: c.z, yaw: SHORE_YAW + 1.3, pitch: -0.2 }, [1.6, 0.1, 0.7], C.wornShade, C.wornWood);
       const p = shore(RAMP.u + RAMP.half + 0.2, RAMP.top + 1.2);
-      pole(b, p.x, p.z, at(p.x, p.z) - 0.2, at(p.x, p.z) + 0.55, 0.08, C.wornShade);
+      // Le poteau, cassé ras : une souche, jamais un mât à côté de la planche.
+      pole(b, p.x, p.z, at(p.x, p.z) - 0.2, at(p.x, p.z) + 0.25, 0.08, C.wornShade);
     },
     abords,
   );
@@ -947,8 +973,13 @@ function merchant(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   for (const side of [-1, 1]) b.beam({ x: at.x + side * 0.3, y: at.y + 0.94, z: at.z }, { x: at.x + side * 0.36, y: at.y + 0.5, z: at.z + 0.05 }, 0.12, C.shirt);
 }
 
-/** La planche des réponses sur ses tréteaux : sa hauteur à l'échelle 1 ; un poids choisi se soulève d'un cran. */
-const BOARD = { height: 0.55, lift: 0.2 } as const;
+/**
+ * La planche des réponses sur ses tréteaux : sa hauteur à l'échelle 1 ; un poids choisi se soulève d'un cran. Basse, juste
+ * au-dessus des étiquettes : chaque poids se tient droit sur la sienne (retouche 2 du lot 6, consultant UX UI : à 0,55,
+ * comme la planche à pain du Hameau, le poids se voyait 80 px au-dessus de son étiquette, la planche entre les deux).
+ * `weight` : l'échelle d'un poids de réponse ; `weightTop` : son haut à l'échelle 1, anneau compris.
+ */
+const BOARD = { height: 0.1, lift: 0.2, weight: 1.6, weightTop: 0.4 * 1.6 } as const;
 
 /** Où se pose la trace de chaque mission, depuis le centre du lieu (la caméra du retour en garde la place). */
 const TRACE_SPOTS = {
@@ -1029,7 +1060,8 @@ export const RADEAUX: PlaceArt = {
     if (body) merchant(b, at, sphere);
   },
   answer: {
-    size: { height: BOARD.height + BOARD.lift + 0.4, half: 0.3 },
+    // Le poids soulevé compris : il reste dans la place de sa réponse (un toucher sur lui choisit son étiquette).
+    size: { height: BOARD.height + BOARD.lift + BOARD.weightTop, half: 0.3 },
     // La caméra de la scénette regarde la façade en biais (`site.start`) : la planche se tourne avec elle, sous la rangée.
     facing: true,
     // La longue planche de comptoir sur deux tréteaux, sous la rangée des poids (comme la planche à pain du Hameau).
@@ -1044,7 +1076,7 @@ export const RADEAUX: PlaceArt = {
     },
     // Un poids de fer posé sur la planche ; choisi, il se soulève d'un cran (sa place le dit, jamais sa couleur).
     object(b, at, s, _i, _count, picked) {
-      weight(b, { x: at.x, y: at.y + (BOARD.height + (picked ? BOARD.lift : 0)) * s, z: at.z }, s * 1.6);
+      weight(b, { x: at.x, y: at.y + (BOARD.height + (picked ? BOARD.lift : 0)) * s, z: at.z }, s * BOARD.weight);
     },
   },
   // Les cinq missions en R : le plancher seul, rien de l'item ; les poids portent les réponses.

@@ -270,6 +270,30 @@ describe('La scénette des Radeaux', () => {
     expect(top(picked) - top(still)).toBeGreaterThan(0.15);
   });
 
+  it('chaque poids se tient droit sur son étiquette, centré, et reste dans la place de sa réponse, soulevé compris (retouche 2 du lot 6)', () => {
+    // La place d'une réponse va de son étiquette (le pied, 0) à la hauteur de l'objet (`answer.size`) : un toucher sur le
+    // poids choisit la même réponse que l'étiquette (placeScreen.tsx), comme au Hameau.
+    const size = RADEAUX.answer!.size;
+    const at = [{ x: 0, y: 0, z: 0 }];
+    const [r, g, b] = linearRgb(0x6f6a60);
+    for (const picked of [[], [0]]) {
+      const f = answerObjects('radeaux', at, 1, { picked });
+      const xs: number[] = [],
+        ys: number[] = [];
+      for (let i = 0; i < f.positions.length; i += 3) {
+        if (Math.abs(f.colors[i] - r) > 1e-4 || Math.abs(f.colors[i + 1] - g) > 1e-4 || Math.abs(f.colors[i + 2] - b) > 1e-4) continue;
+        xs.push(f.positions[i]);
+        ys.push(f.positions[i + 1]);
+      }
+      expect(xs.length).toBeGreaterThan(0);
+      expect(Math.abs((Math.max(...xs) + Math.min(...xs)) / 2)).toBeLessThan(1e-6);
+      // Jamais sous l'étiquette, à peine au-dessus d'elle au repos, jamais plus haut que sa place.
+      expect(Math.min(...ys)).toBeGreaterThanOrEqual(0);
+      if (!picked.length) expect(Math.min(...ys)).toBeLessThan(0.2);
+      expect(Math.max(...ys)).toBeLessThanOrEqual(size.height + 1e-6);
+    }
+  });
+
   it('ses abords tiennent sous le plafond commun, dans chaque état', () => {
     for (const posed of [false, true])
       for (const open of [false, true]) {
