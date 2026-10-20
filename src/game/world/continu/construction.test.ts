@@ -3,7 +3,7 @@
 // attend l'étape qui la porte ; la caméra de la pose, du côté de la porte. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { CAMERA_FOV, FOLLOW, screenOf } from './camera';
-import { constructionFacets, createPoseRun, fallenFacets, keoSpots, lanternLit, poseFocus, poseSide, poseView, POSE_DROP, POSE_SECONDS, ruinFacets, stageComplete, traceShown, traceStagePosed, WHOLE, type PartShape, type Stage } from './construction';
+import { constructionFacets, createPoseRun, posedTraces, rowPosed, fallenFacets, keoSpots, lanternLit, poseFocus, poseSide, poseView, POSE_DROP, POSE_SECONDS, ruinFacets, stageComplete, traceShown, traceStagePosed, WHOLE, type PartShape, type Stage } from './construction';
 import { boundsOf, placeFacets, type Facets } from './facets';
 import { distance, linearRgb } from './geometry';
 import { networkSamples, pathNode } from './paths';
@@ -318,6 +318,23 @@ describe('La trace d’une scénette', () => {
     expect(traceShown('phare', [WHOLE], false)).toBe(false);
     // La porte d'amont des Écluses : avec le haut.
     expect(traceShown('ecluses', [slice(0, 0, 1), slice(1, 0, 1)], true)).toBe(true);
+  });
+
+  it('une trace d’une rangée (`row`) paraît dès que sa partie est posée, sans attendre l’étape entière (GD-22, lot 6)', () => {
+    const missions = ['proportion-tables', 'percentages', 'ratios', 'formulas', 'statistics'];
+    const third = (k: number) => slice(0, k / 3, (k + 1) / 3);
+    expect(rowPosed([third(0)], 0, 0)).toBe(true);
+    expect(rowPosed([third(0)], 0, 1 / 3)).toBe(false);
+    expect(posedTraces('radeaux', [], missions)).toEqual([]);
+    expect(posedTraces('radeaux', [third(0)], missions)).toEqual(['proportion-tables']);
+    // Dans le désordre : la deuxième partie posée montre sa trace, la première attend la sienne.
+    expect(posedTraces('radeaux', [third(1)], missions)).toEqual(['percentages']);
+    expect(posedTraces('radeaux', [third(0), third(1), third(2)], missions)).toEqual(['proportion-tables', 'percentages', 'ratios']);
+    expect(posedTraces('radeaux', [WHOLE], missions)).toEqual(missions);
+    // La scénette se joue dès qu'une trace de son étape est là ; le Hameau, sans rangées, attend toujours l'étape entière.
+    expect(traceStagePosed('radeaux', [])).toBe(false);
+    expect(traceStagePosed('radeaux', [third(0)])).toBe(true);
+    expect(traceStagePosed('hameau', [slice(0, 0, 0.5)])).toBe(false);
   });
 });
 

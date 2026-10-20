@@ -45,12 +45,15 @@ interface AnswerArt {
 /**
  * Une trace : sa place depuis le centre du lieu, la hauteur que la caméra garde au retour, son dessin ; `stage` : l'étape
  * qui la porte, si elle n'est pas celle du lieu (`PlaceArt.traceStage`) : au Hameau (GD-22, lot 5), chaque trace se montre
- * avec l'étape de sa mission.
+ * avec l'étape de sa mission ; `row` : la rangée de la partie qui la porte dans cette étape, de 0 à 1 comme celle d'un
+ * volume (`AddPiece`), quand l'étape se pose en plusieurs parties : la trace se montre dès que SA partie est posée, sans
+ * attendre l'étape entière (choix « Par partie » du mainteneur, lot 6 : aux Radeaux, le corps en trois parties, 3+1+1).
  */
 interface TraceArt {
   at: Vec2;
   lift: number;
   stage?: Stage;
+  row?: number;
   /** Dessinée dans le monde, `c` : le centre du lieu à son sol. */
   draw(b: FacetBuilder, c: Vec3): void;
 }

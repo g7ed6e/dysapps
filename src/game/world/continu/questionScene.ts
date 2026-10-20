@@ -212,6 +212,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   montee: placeArt('montee')!.sceneSpot,
   // Le Hameau (lot 5) : le ponton devant la bouche du four.
   hameau: placeArt('hameau')!.sceneSpot,
+  // Les Radeaux (lot 6) : le quai devant la façade de la cabane du marchand.
+  radeaux: placeArt('radeaux')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -461,6 +463,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   montee: 'lieu',
   // Le Hameau (lot 5) : les miches sur la planche à pain.
   hameau: 'lieu',
+  // Les Radeaux (lot 6) : les poids sur la planche de comptoir.
+  radeaux: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

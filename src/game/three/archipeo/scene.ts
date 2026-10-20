@@ -23,6 +23,7 @@ import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/g
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
 import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinPoint, cabinStops, cabinYaw, clampToOpen, type CabinCar } from '../../world/continu/bridges';
 import { cabinButtonRoute, cabinCarOpen, cabinOf, cabinSide, routeWithRide } from '../../world/continu/cabinRide';
+import { creuxFacets } from '../../world/continu/creux5e';
 import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/continu/montee5e';
 import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
@@ -1175,6 +1176,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (detourDecor?.key !== key) detourDecor = { key, facets: detourFacets(detoursFound, detoursLit.includes('braise-herons')) };
     return detourDecor.facets;
   };
+  // Le Creux du 5e (GD-22, lot 6) : ses deux formes, sans et avec sa sente, faites une fois.
+  const creuxDrawn: { found: boolean; facets: Facets }[] = [];
+  const creuxNow = (): Facets => {
+    const found = detoursFound.includes('creux');
+    let c = creuxDrawn.find((k) => k.found === found);
+    if (!c) creuxDrawn.push((c = { found, facets: creuxFacets(found) }));
+    return c.facets;
+  };
   // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son temps (la page le donne), le modèle de sa forme chargé à la
   // demande (sans lui, le ber seul), ses parties montrées réunies aux lieux, son obstacle (le banc du large, le mur de
   // nuages) avec eux. Le temps qui arrive descend à part (`nefDrop`, dans `nefMesh`) ; au départ (`nefTrip`), la Nef et
@@ -1352,8 +1361,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    * dès qu'il en repart, `null`. La vue monte tant qu'il y reste, et revient quand il repart.
    */
   const stepDetour = (now: number, moving: boolean, dt: number) => {
-    // Les Détours sont du 6e : au 5e, Kéo n'en trouve aucun.
-    const d = moving || walk || !sixth ? null : detourAtPoint(here);
+    // Chaque niveau a ses Détours : au 5e, le Creux des Frondaisons (GD-22, lot 6).
+    const d = moving || walk ? null : detourAtPoint(here, level);
     let arrived = false;
     if (!d) {
       detourStill = 0;
@@ -1758,6 +1767,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // le maillage des lieux.
     if (!sixth) {
       if (mapView) rest.push(cliffLine);
+      // Le Creux (GD-22, lot 6) : le fût creusé, son banc et sa lanterne, et la sente une fois trouvé.
+      rest.push(creuxNow());
       setGeometry(placesMesh, mergeFacets(rest));
       setGeometry(landmarkMesh, mergeFacets(mark));
       mapDirty = true;

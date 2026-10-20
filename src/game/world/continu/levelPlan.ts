@@ -9,7 +9,7 @@
 import type { Vec2 } from './geometry';
 import type { Land, LinkedLand } from './lands';
 import { COAST, LANDS_6E, OFFSHORE, PATH_EDGES, PLACES, STRAITS, TERRAIN, type OpenPlace as OpenPlaceOf, type PlaceId as PlaceId6e } from './plan6e';
-import { COAST_5E, LANDS_5E, LINKS_5E, PATH_EDGES_5E, PLACES_5E, TERRAIN_5E, UNPRICED_PLACES_5E, UPPER_PLACES_5E, type PlaceId5e } from './plan5e';
+import { COAST_5E, LANDS_5E, LINKS_5E, PATH_EDGES_5E, PLACES_5E, TERRAIN_5E, UNPRICED_PLACES_5E, UPPER_PLACES_5E, isBuiltPlace5e, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
 /** Un lieu, de tout niveau (ses identifiants sont uniques d'un niveau à l'autre). */
 export type PlaceId = PlaceId6e | PlaceId5e;
@@ -137,16 +137,13 @@ export function sixthPlace(id: PlaceId): PlaceId6e {
 
 /**
  * Les lieux qui ont leur scénette (questions dans le lieu, étapes de chantier, traces) : ceux du 6e, et au 5e, lieu par
- * lieu (GD-22, « un lieu complet par lot ») : la Montée, le lieu central, fini comme témoin de qualité (lot 3), puis le
- * Hameau (lot 5), gabarit des douze autres. Les autres lieux du 5e restent des ruines.
+ * lieu (GD-22, « un lieu complet par lot ») : ceux déjà construits (./plan5e.ts, `BUILT_PLACES_5E`, la seule liste : la
+ * Montée au lot 3, le Hameau au lot 5, les Radeaux au lot 6). Les autres lieux du 5e restent des ruines.
  */
-export type ScenePlaceId = PlaceId6e | 'montee' | 'hameau';
-
-/** Les lieux du 5e qui ont leur scénette. */
-const SCENES_5E: ReadonlySet<PlaceId> = new Set<PlaceId5e>(['montee', 'hameau']);
+export type ScenePlaceId = PlaceId6e | BuiltPlace5e;
 
 /** Ce lieu a-t-il sa scénette ? */
-export const hasScenette = (id: PlaceId): id is ScenePlaceId => SIXTH.has(id) || SCENES_5E.has(id);
+export const hasScenette = (id: PlaceId): id is ScenePlaceId => SIXTH.has(id) || isBuiltPlace5e(id);
 
 /**
  * Un lieu qui a sa scénette (scenette.ts, questionScene.ts, questions.ts) : un autre lieu du 5e qui arriverait ici est

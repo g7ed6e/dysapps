@@ -4,7 +4,7 @@ import { EMPTY_STATE } from '../../engine/state';
 import { DETOUR_IDS as SAVED_IDS, sanitizeDetours } from '../../engine/detours';
 import { DETOUR_CAIRNS, findDetour, lightDetour } from '../detoursSaved';
 import { followPose, detourRise, detourViewStep } from './camera';
-import { DETOURS, DETOUR_IDS, FAUNA, FAUNA_BLOW, FAUNA_END, SENTE, birdFacets, cairnSpot, detourAtPoint, detourFacets, faunaPose, keptClearForDetour } from './detours';
+import { DETOURS, DETOUR_IDS, DETOUR_IDS_6E, FAUNA, FAUNA_BLOW, FAUNA_END, SENTE, birdFacets, cairnSpot, detourAtPoint, detourFacets, faunaPose, keptClearForDetour } from './detours';
 import { buildWalkGrid, cellOf, freeRoute, isWalkable } from './freeWalk';
 import { distance, distanceToPolyline, linearRgb, type Vec2 } from './geometry';
 import { routeLength } from './paths';
@@ -25,7 +25,7 @@ const landAt = (p: Vec2) => LANDS[grid.land[cellOf(grid, p)]]?.id;
 
 describe('les Détours', () => {
   it('sont cinq, un par terre, chacun avec son nom', () => {
-    expect(DETOURS.map((d) => d.id)).toEqual([...DETOUR_IDS]);
+    expect(DETOURS.map((d) => d.id)).toEqual([...DETOUR_IDS_6E]);
     expect(new Set(DETOURS.map((d) => d.land)).size).toBe(LANDS.length);
     for (const d of DETOURS) {
       expect(landAt(d.at), d.id).toBe(d.land);

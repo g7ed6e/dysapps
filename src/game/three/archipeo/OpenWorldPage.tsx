@@ -477,8 +477,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     };
   }, [findDetour, settings.sounds]);
   useEffect(() => {
-    if (sixth) world.current?.setDetours(state.world.detours ?? [], state.world.detoursLit ?? []);
-  }, [sixth, state.world.detours, state.world.detoursLit, ready]);
+    world.current?.setDetours(state.world.detours ?? [], state.world.detoursLit ?? []);
+  }, [state.world.detours, state.world.detoursLit, ready]);
   // Le cairn éteint où se tient Kéo, à rallumer, ou rien.
   const cairnToLight = detourHere !== null && detourById(detourHere).kind === 'cairn' && !(state.world.detoursLit ?? []).includes(detourHere) ? detourHere : null;
   const relightHere = cairnToLight !== null;
