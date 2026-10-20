@@ -318,6 +318,9 @@ const LOT5_5E = { world: { triangles: 84_510, calls: 16 }, departure: { triangle
 /** Le plafond du Creux (intention du directeur artistique, lot 6). */
 const CREUX_MAX = 175;
 
+/** La Hutte et sa sente tracée (lot 8, ./hutte5e.test.ts : 175 triangles sans la sente, moins de 120 pour elle). */
+const HUTTE_MAX = 175 + 120;
+
 /** Le pied des palétuviers de loin (./terrain5e.ts, trois triangles par arbre, #475) : 1 900 triangles au plus (la Carte, la plus chargée). */
 const FOREST_FEET_5E = 1_900;
 
@@ -326,12 +329,14 @@ describe('Le budget du 5e, avec les Radeaux et le Creux (plafonds du lot 6)', ()
 
   it('le Creux, sa sente comprise, 175 triangles au plus, sans appel', () => {
     expect(creuxTriangles().withSente).toBeLessThanOrEqual(CREUX_MAX);
-    expect(openWorldCost5e().find((c) => c.poste === 'détours')).toEqual({ poste: 'détours', triangles: creuxTriangles().withSente, calls: 0 });
+    const detours = openWorldCost5e().find((c) => c.poste === 'détours')!;
+    expect(detours.calls).toBe(0);
+    expect(detours.triangles).toBeGreaterThanOrEqual(creuxTriangles().withSente);
   });
 
   // Le plafond scénette ouverte et la réserve des lots suivants : ./plan5e.test.ts (« Le budget du 5e »).
   it('hors scénette, au départ et sur la Carte : le lot 5, un lieu par lieu fini depuis, le Creux et le pied des palétuviers de plus au plus, sans appel de plus', () => {
-    // Les lieux finis depuis le lot 5 : les Radeaux (lot 6), la Croisée (lot 7).
+    // Les lieux finis depuis le lot 5 : les Radeaux (lot 6), la Croisée (lot 7), les Instants (lot 8).
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => id !== 'montee' && id !== 'hameau').length;
     const views = [
       [sum(openWorldCost5e('monde')), LOT5_5E.world],
@@ -339,7 +344,7 @@ describe('Le budget du 5e, avec les Radeaux et le Creux (plafonds du lot 6)', ()
       [mapCost5e(), LOT5_5E.map],
     ] as const;
     for (const [now, before] of views) {
-      expect(now.triangles).toBeLessThanOrEqual(before.triangles + since * PLACE_TRIANGLES_MAX_5E + CREUX_MAX + FOREST_FEET_5E);
+      expect(now.triangles).toBeLessThanOrEqual(before.triangles + since * PLACE_TRIANGLES_MAX_5E + CREUX_MAX + HUTTE_MAX + FOREST_FEET_5E);
       expect(now.calls).toBeLessThanOrEqual(before.calls);
     }
   });

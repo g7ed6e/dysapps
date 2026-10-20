@@ -2503,12 +2503,12 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   // Le large (lot L9) : dessinés dans leur fichier, comme le rivage nord.
   beacons: northPlace('beacons'),
   ferry: northPlace('ferry'),
-  // Le 5e : la Montée finie (lot 3), le Hameau (lot 5), les Radeaux (lot 6) et la Croisée (lot 7), dessinés dans leur
-  // fichier ; les autres, des ruines simples (lot 2).
+  // Le 5e : la Montée finie (lot 3), le Hameau (lot 5), les Radeaux (lot 6), la Croisée (lot 7) et les Instants (lot 8),
+  // dessinés dans leur fichier ; les autres, des ruines simples (lot 2).
   montee: northPlace('montee'),
   radeaux: northPlace('radeaux'),
   croisee: northPlace('croisee'),
-  instants: ruinOnly(RUINS_5E.instants),
+  instants: northPlace('instants'),
   semaphore: ruinOnly(RUINS_5E.semaphore),
   gaillard: ruinOnly(RUINS_5E.gaillard),
   donjon: ruinOnly(RUINS_5E.donjon),
@@ -2552,6 +2552,7 @@ export function ruinOf(id: PlaceId): Facets {
 }
 
 const cache = new Map<PlaceId, PlaceModel>();
+
 
 /**
  * Le lieu entier, dans son repère : sa ruine et toutes ses étapes (ce qui était tombé, relevé), la lanterne éteinte.

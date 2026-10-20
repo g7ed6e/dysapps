@@ -35,6 +35,7 @@ import { skyDome } from './sky';
 import { veilFacets } from './veil';
 import { groupsTriangles, wildlifeTriangles } from './wildlife';
 import { allCritterForms, wildlifeGroups5e } from './wildlife5e';
+import { hutteFacets } from './hutte5e';
 
 /** Les terres qu'on relie du 6e : le budget est celui du monde ouvert du 6e (GD-22, lot 1 : le plan par niveau). */
 const LINKED_LANDS_6E = linkedLands(planFor('6e'));
@@ -448,8 +449,8 @@ function scenetteCost5e(): { triangles: number; calls: number } {
  * (three/archipeo/scene.ts, `askQuestion`), et aucune pose ne commence pendant une question (`setPlaces`). Le dirigeable
  * (lot 4) et la Lisière vont dans le maillage des lieux ; pendant le départ (`depart`), la Nef et le mur de nuages
  * passent dans deux maillages à part, le maillage de la pose fermé (`startNefTrip`), ni question ni scénette ouverte.
- * La faune de chaque terre (./wildlife5e.ts), un maillage. Le Creux (lot 6, ./creux5e.ts), seul Détour du 5e, sa sente
- * tracée comprise, dans le maillage des lieux ; pas encore d'aménagements.
+ * La faune de chaque terre (./wildlife5e.ts), un maillage. Les Détours du 5e, le Creux (lot 6, ./creux5e.ts) et la Hutte
+ * (lot 8, ./hutte5e.ts), leurs sentes tracées comprises, dans le maillage des lieux ; pas encore d'aménagements.
  */
 export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenette'): OpenWorldCost5e[] {
   const field = buildHeightField5e();
@@ -463,7 +464,8 @@ export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenett
     { poste: 'lieux', ...placesCost5e() },
     { poste: 'brume', triangles: veilFacets(LINKED_LANDS_5E).triangles, calls: 1 },
     { poste: 'failles', triangles: riftMistFacets().triangles, calls: 1 },
-    { poste: 'détours', triangles: creuxTriangles().withSente, calls: 0 },
+    // Le Creux (lot 6) et la Hutte (lot 8), leurs sentes tracées, dans le maillage des lieux : aucun appel de plus.
+    { poste: 'détours', triangles: creuxTriangles().withSente + hutteFacets(true, (x, z) => groundOn5e(field, x, z)).triangles, calls: 0 },
     // La vie animale du 5e (piste « Ambiance par terre », 19 octobre 2026, ./wildlife5e.ts) : toutes les bêtes à la fois,
     // un maillage (celui de la baleine au 6e).
     { poste: 'faune', triangles: groupsTriangles(wildlifeGroups5e(), allCritterForms()), calls: 1 },
@@ -483,7 +485,8 @@ export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenett
 /**
  * La Carte du 5e, en un seul plan : le ciel, toute l'île de loin, la mer, les chemins, les lieux (deux appels, le pire),
  * le trait double des ponts et de la cabine, la ligne de la falaise et la bande sombre des chemins (dans le maillage des
- * lieux), le Creux et sa sente (dans le même maillage), la brume des terres fermées, Kéo ; jamais la brume des failles.
+ * lieux), le Creux, la Hutte et leurs sentes (dans le même maillage), la brume des terres fermées, Kéo ; jamais la brume
+ * des failles.
  */
 export function mapCost5e(): { triangles: number; calls: number } {
   const field = buildHeightField5e();
@@ -499,8 +502,9 @@ export function mapCost5e(): { triangles: number; calls: number } {
     const mark = placeArt(p.id)?.mapMark;
     return s + (mark ? Math.max(mark(origin, () => true).triangles, mark(origin, () => false).triangles) : 0);
   }, 0);
+  const hutte = hutteFacets(true, ground).triangles;
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + creuxTriangles().withSente + marks + placeMarks + veil + KEO.triangles + nefCost5e().triangles,
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + creuxTriangles().withSente + hutte + marks + placeMarks + veil + KEO.triangles + nefCost5e().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
   };
 }

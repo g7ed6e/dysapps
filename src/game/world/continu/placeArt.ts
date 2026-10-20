@@ -106,7 +106,8 @@ export interface PlaceArt {
   /**
    * Le cap de la caméra devant la porte, à l'arrivée d'un « Y aller » (comme `yaw` de la caméra, scene.ts) : elle regarde
    * le lieu depuis sa porte. Absent : le nord, qui est ce regard pour les lieux dont la porte est au sud (la Montée, le
-   * Hameau). Aux Radeaux, porte au nord-est : le quai, les radeaux, puis le chenal (retouche du lot 6 du 5e).
+   * Hameau). Aux Radeaux, porte au nord-est : le quai, les radeaux, puis le chenal (retouche du lot 6 du 5e) ; aux Instants, l'axe
+   * de la chaussée (lot 8).
    */
   doorView?: number;
   /**

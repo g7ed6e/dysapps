@@ -17,6 +17,7 @@ import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFl
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, WORLD_FOG, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, type DetourId } from '../../world/continu/detours';
+import { hutteFacets } from '../../world/continu/hutte5e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
@@ -1181,7 +1182,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let detourDecor: { key: string; facets: Facets } | null = null;
   const detourFacetsNow = (): Facets => {
     const key = `${detoursFound.join(',')}|${detoursLit.join(',')}`;
-    if (detourDecor?.key !== key) detourDecor = { key, facets: detourFacets(detoursFound, detoursLit.includes('braise-herons')) };
+    // Au 5e, la Hutte (GD-22, lot 8) : sa cabane, et sa sente une fois trouvée.
+    if (detourDecor?.key !== key) detourDecor = { key, facets: sixth ? detourFacets(detoursFound, detoursLit.includes('braise-herons')) : hutteFacets(detoursFound.includes('hutte'), ground) };
     return detourDecor.facets;
   };
   // Le Creux du 5e (GD-22, lot 6) : ses deux formes, sans et avec sa sente, faites une fois.
@@ -1781,8 +1783,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // le maillage des lieux.
     if (!sixth) {
       if (mapView) rest.push(cliffLine);
-      // Le Creux (GD-22, lot 6) : le fût creusé, son banc et sa lanterne, et la sente une fois trouvé.
-      rest.push(creuxNow());
+      // Les Détours du 5e (GD-22) : le Creux (lot 6), le fût creusé, son banc et sa lanterne ; la Hutte (lot 8), sa cabane ;
+      // et la sente de chacun une fois trouvé, dans le monde comme sur la Carte, sans appel de plus.
+      rest.push(creuxNow(), detourFacetsNow());
       setGeometry(placesMesh, mergeFacets(rest));
       setGeometry(landmarkMesh, mergeFacets(mark));
       mapDirty = true;
@@ -2163,9 +2166,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const stop = clampToOpen(door, closed, plan);
     const shut = stop !== door ? bridgeSite(firstClosed(landOf(place) as LinkedLand, closed)) : null;
     here = shut ? { ...stop.at } : pathNode(placeById(place).door).at;
-    heading = shut ? Math.atan2(-shut.dir.x, -shut.dir.z) : FACING_CAMERA;
-    // La caméra regarde le lieu depuis sa porte (le nord, sauf aux Radeaux, porte au nord-est : GD-22, lot 6).
-    faceNorth(shut ? 0 : doorViewOf(place));
+    // La caméra regarde le lieu depuis sa porte : le nord, sauf aux Radeaux, porte au nord-est (GD-22, lot 6), et aux
+    // Instants, le long de la chaussée (lot 8) ; jamais devant un pont fermé. Kéo tourné vers elle.
+    const view = shut ? 0 : doorViewOf(place);
+    heading = shut ? Math.atan2(-shut.dir.x, -shut.dir.z) : FACING_CAMERA + view;
+    faceNorth(view);
     detourView = 0;
     exit = null;
     back = 0;

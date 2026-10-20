@@ -42,7 +42,8 @@ export const habitantModelName = (place: PlaceId): string => `${levelOfPlace(pla
  * L'habitant de ce lieu se montre-t-il en modèle 3D (sinon, son pion dessiné en code) ? Au 6e, tous ; au 5e, celui de
  * chaque lieu construit (choix du mainteneur, 19 octobre 2026 : les quatorze fichiers sont là ; ils entrent lieu par
  * lieu, avec leur scénette, ./plan5e.ts, `BUILT_PLACES_5E`) : la fontainière de la Montée et le boulanger du Hameau (lot
- * 5), le marchand des Radeaux (lot 6), la cordière de la Croisée (lot 7). Deux scénettes ne s'ouvrent jamais ensemble : aucun triangle de plus.
+ * 5), le marchand des Radeaux (lot 6), la cordière de la Croisée (lot 7), le tailleur de pierre des Instants (lot 8). Deux
+ * scénettes ne s'ouvrent jamais ensemble : aucun triangle de plus.
  */
 export const hasHabitantModel = (place: PlaceId): boolean => levelOfPlace(place) === '6e' || isBuiltPlace5e(place);
 

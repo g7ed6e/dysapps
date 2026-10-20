@@ -7,7 +7,7 @@
 // du 6e (./terrain.ts) : seuls la hauteur, la peinture et ce qui pousse changent. Code pur.
 import { FacetBuilder, type Facets } from './facets';
 import { distanceToPolyline, hash2, signedDistance, smoothstep, type Vec2 } from './geometry';
-import { CHANNELS_5E, COAST_5E, COLORS_5E, CREUX_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, TERRAIN_5E, inLisiereClearing, type ChannelId, type Needle } from './plan5e';
+import { CHANNELS_5E, COAST_5E, COLORS_5E, CREUX_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, TERRAIN_5E, HUTTE_5E, inHutteClearing, inLisiereClearing, type ChannelId, type Needle } from './plan5e';
 import { SHADOW_DIR_5E } from './sky';
 import { spire, spireTriangles } from './spire5e';
 import { drawTileWith, farHeightsOf, heightOnFar, heightOnMesh, tileRect, type GroundPaint, type HeightField, type P3, type TileDetail } from './terrain';
@@ -169,11 +169,19 @@ export const FOREST_COLORS = {
 /**
  * Où pousse la forêt : une place tous les `cell` unités au plus, gardée une fois sur `keep` ; jamais à moins de `path`
  * unités d'un chemin, de `place` du centre d'un lieu (la Montée : `montee`, et `monteeSouth` au sud, sa clairière d'approche ;
- * le Hameau : `hameau`, et `hameauSouth` au sud ; la Croisée : le couloir `croiseeSouth` sur `croiseeSide` de part et d'autre), de `quay` du ponton de la Lisière, ni dans sa clairière, ni sur le
+ * le Hameau : `hameau`, et `hameauSouth` au sud ; la Croisée : le couloir `croiseeSouth` sur `croiseeSide` de part et
+ * d'autre ; les Instants : `instants` de part et d'autre de leur chaussée, et `instantsSouth` au sud), de `quay` du ponton
+ * de la Lisière, ni dans sa clairière, ni sur le
  * plateau ou sa falaise ; un tronc se tient à `dry` unités au moins de l'eau (retouche du lot 2, directeur artistique :
  * la canopée couvrait les chenaux, leur eau ne se voyait pas en 3D).
  */
-const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, monteeSouth: 30, hameau: 14.5, hameauSouth: 34, radeaux: 13, croiseeSouth: 30, croiseeSide: 6, quay: 5, cliff: 2.5, dry: 2.2, creux: 7.5, sente: 3.6 } as const;
+const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, monteeSouth: 30, hameau: 14.5, hameauSouth: 34, radeaux: 13, croiseeSouth: 30, croiseeSide: 6, instants: 12.5, instantsSouth: 30, quay: 5, cliff: 2.5, dry: 2.2, creux: 7.5, sente: 3.6 } as const;
+
+/** L'axe de la chaussée des Instants, depuis le centre du lieu (lot 8 ; un test le relit contre ./instants5e.ts). */
+export const INSTANTS_AXIS: readonly (readonly [number, number])[] = [
+  [3.8, 8.2],
+  [-18.4, -21.4],
+];
 
 /** Les tronçons des chemins du 5e (pour garder la forêt à distance). */
 const SEGMENTS: readonly (readonly [Vec2, Vec2])[] = (() => {
@@ -198,6 +206,13 @@ const nearPlace = (p: Vec2): boolean =>
     // La Croisée (lot 7) : au sud, un couloir dans l'axe du lieu, où passent la caméra de son arrivée et celle de sa
     // scénette ; ses palétuviers des côtés restent.
     if (pl.id === 'croisee') return d < FOREST_KEEP.place || (p.z > pl.center.z + 4 && p.z < pl.center.z + FOREST_KEEP.croiseeSouth && Math.abs(p.x - pl.center.x) < FOREST_KEEP.croiseeSide);
+    // Les Instants (lot 8) : le marais ouvert le long de la chaussée, du débarcadère jusqu'au bord du grand chenal
+    // (`INSTANTS_AXIS`, depuis le centre ; ./instants5e.ts, `onCauseway(-6, 0)` et `onCauseway(31, 0)`) ; au sud, le recul
+    // de la caméra de la scénette. Au-delà, la ligne des palétuviers fait le fond.
+    if (pl.id === 'instants') {
+      const [a, b] = INSTANTS_AXIS.map(([x, z]) => ({ x: pl.center.x + x, z: pl.center.z + z }));
+      return d < FOREST_KEEP.place || distanceToPolyline(p, [a, b]) < FOREST_KEEP.instants || (p.z > pl.center.z + 3 && d < FOREST_KEEP.instantsSouth);
+    }
     return d < FOREST_KEEP.place;
   });
 
@@ -249,6 +264,8 @@ function treesIn(tx: number, tz: number): readonly Tree[] {
       // La clairière de la Lisière (GD-22, lot 4) : sa place, sa rangée et leurs abords, sans un tronc.
       if (inLisiereClearing(p)) continue;
       if (nearCreux(p)) continue;
+      // La Hutte (lot 8) : sa cabane, sa barque, la place de Kéo et sa sente.
+      if (inHutteClearing(p)) continue;
       const shrub = contreforts(p) > 0.5;
       out.push({ x: p.x, z: p.z, y: heightAt5e(p), size: (shrub ? 0.62 : 0.85) + 0.4 * hash2(i + 7, j + 13), yaw: 6.283 * hash2(i + 31, j + 17), shrub });
     }
@@ -382,11 +399,15 @@ export function tileCounts5e(field: HeightField, detail: TileDetail): Int32Array
 
 /**
  * Ce qui bloque la marche libre dans une tuile du 5e (./freeWalk.ts) : le pied de chaque palétuvier, ses racines
- * comprises (un buisson, son dôme), et chaque aiguille ; un disque chacun (son centre, son rayon).
+ * comprises (un buisson, son dôme), chaque aiguille et la cabane de la Hutte ; un disque chacun (son centre, son rayon).
  */
 export function obstaclesIn5e(tx: number, tz: number): { x: number; z: number; r: number }[] {
   // Le fût du Creux : son rayon, moins de quoi laisser Kéo sur le seuil, sous l'arche.
   const out = treesIn(tx, tz).map((t) => ({ x: t.x, z: t.z, r: t.hollow !== undefined ? CREUX_5E.radius - 0.65 : (t.shrub ? 1.6 : 2) * t.size }));
   for (const n of needlesIn(tx, tz)) out.push({ x: n.at.x, z: n.at.z, r: n.radius });
+  // La cabane de la Hutte (lot 8), dans sa tuile.
+  const r = tileRect(tx, tz, TERRAIN_5E);
+  const h = HUTTE_5E.cabin;
+  if (h.x >= r.minX && h.x < r.maxX && h.z >= r.minZ && h.z < r.maxZ) out.push({ x: h.x, z: h.z, r: h.r });
   return out;
 }

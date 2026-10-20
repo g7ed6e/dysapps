@@ -22,8 +22,8 @@ const lum = (c: number) => {
 const contrast = (a: number, b: number) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
 
 describe('Le Creux, premier Détour du 5e', () => {
-  it('est le seul Détour du 5e, aux Frondaisons, avec son nom ; il se reconnaît sur son seuil, au 5e seulement', () => {
-    expect(DETOURS_5E).toEqual([CREUX]);
+  it('est le premier Détour du 5e, aux Frondaisons, avec son nom ; il se reconnaît sur son seuil, au 5e seulement', () => {
+    expect(DETOURS_5E[0]).toBe(CREUX);
     expect(detourById('creux')).toBe(CREUX);
     expect(CREUX.land).toBe('frondaisons');
     expect(CREUX.name).toBe('Le Creux');
