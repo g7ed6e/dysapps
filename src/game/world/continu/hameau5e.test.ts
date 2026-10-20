@@ -162,8 +162,8 @@ describe('La scénette du Hameau', () => {
  */
 const LOT4_5E = { world: { triangles: 83_175, calls: 16 }, departure: { triangles: 82_053, calls: 17 }, map: { triangles: 81_780, calls: 12 } } as const;
 
-/** Le pied des palétuviers de loin (./terrain5e.ts, trois triangles par arbre), ajouté après le lot 5 : 2 000 triangles au plus. */
-const FOREST_FEET_5E = 2_000;
+/** Le pied des palétuviers de loin (./terrain5e.ts, trois triangles par arbre), ajouté après le lot 5 : 1 900 triangles au plus (la Carte, la plus chargée : 629 arbres de loin). */
+const FOREST_FEET_5E = 1_900;
 
 describe('Le budget du 5e, avec le Hameau (plafonds du lot 5, intention du directeur artistique du 20 octobre 2026)', () => {
   const sum = (c: { triangles: number; calls: number }[]) => c.reduce((a, p) => ({ triangles: a.triangles + p.triangles, calls: a.calls + p.calls }), { triangles: 0, calls: 0 });
