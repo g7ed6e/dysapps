@@ -13,7 +13,7 @@ import { linearRgb, type Vec2, type Vec3 } from './geometry';
 import { HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
 import { hasScenette, planFor } from './levelPlan';
 import { MONTEE_HEIGHT } from './montee5e';
-import { COLORS_5E } from './plan5e';
+import { BUILT_PLACES_5E, COLORS_5E } from './plan5e';
 import { drawPieces, placePieces, type PlacePiece } from './places';
 import { placeItems } from './questions';
 import { answerObjects, placeTrace, sceneSpot } from './questionScene';
@@ -71,9 +71,9 @@ function cross(a: Vec2, b: Vec2, c: Vec2, d: Vec2): boolean {
 }
 
 describe('La Croisée, lieu complet', () => {
-  it('ses cinq missions se jouent dans sa scénette, comme à la Montée, au Hameau et aux Radeaux', () => {
+  it('ses cinq missions se jouent dans sa scénette, comme à la Montée, au Hameau, aux Radeaux et aux Fumerolles', () => {
     expect(PLACE.scenes).toEqual([...MISSIONS]);
-    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['croisee', 'hameau', 'montee', 'radeaux']);
+    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['croisee', 'fumerolles', 'hameau', 'montee', 'radeaux']);
   });
 
   it('cinq parties : le corps en trois rangées, puis le haut, puis les abords (3+1+1)', () => {
@@ -263,11 +263,13 @@ describe('La scénette de la Croisée', () => {
 const LOT6_OPEN_5E = { triangles: 95_276, calls: 19 } as const;
 
 describe('Le budget du 5e, avec la Croisée (plafonds du lot 7, intention du directeur artistique du 20 octobre 2026)', () => {
-  it('scénette ouverte : le lot 6 et un lieu de plus au plus, sans appel de plus ; la cordière en modèle 3D dans les deux appels de la scénette', () => {
+  it('scénette ouverte : le lot 6 et un lieu de plus au plus par lieu fini depuis, sans appel de plus ; la cordière en modèle 3D dans les deux appels de la scénette', () => {
     const cost = openWorldCost5e();
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
-    expect(triangles).toBeLessThanOrEqual(LOT6_OPEN_5E.triangles + PLACE_TRIANGLES_MAX_5E);
+    // Un lieu de plus au plus par lieu fini depuis le lot 6 : la Croisée (lot 7), puis les Fumerolles (lot 9).
+    const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux'].includes(id)).length;
+    expect(triangles).toBeLessThanOrEqual(LOT6_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E);
     expect(calls).toBeLessThanOrEqual(LOT6_OPEN_5E.calls);
     const scenette = cost.find((c) => c.poste === 'scénette')!;
     expect(scenette.calls).toBe(2);

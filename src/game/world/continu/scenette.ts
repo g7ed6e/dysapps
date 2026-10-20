@@ -123,6 +123,9 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // La Croisée (GD-22, lot 7) : « la cordière », sans prénom ; sa réplique, une idée, les passerelles, validée par le
   // directeur du contenu pédagogique (retouche 1, avec le directeur artistique, le consultant d'Archipéo et le référent dys).
   croisee: { role: placeArt('croisee')!.role, greeting: 'La cordière tresse les cordes qui tiennent les passerelles.', placement: 'rangee' },
+  // Les Fumerolles (GD-22, lot 9) : « la sondeuse », sans prénom ; sa réplique dit le lieu (« Ici, la terre se lit. ») et
+  // explique le mot rare, à relire par le directeur du contenu pédagogique (jamais « Fumerolles » et « Faille » ensemble).
+  fumerolles: { role: placeArt('fumerolles')!.role, greeting: 'Ici, la terre se lit. La sondeuse la mesure avec ses instruments.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -531,6 +534,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   hameau: northSite('hameau'),
   radeaux: northSite('radeaux'),
   croisee: northSite('croisee'),
+  fumerolles: northSite('fumerolles'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -1950,7 +1954,7 @@ export const FOOT_SHADOW_TRIANGLES = 2 * FOOT_SHADOW.sides;
  * La couleur de l'ombre selon le sol de la scène : les planches (le bois, assombri d'un tiers), les dalles, la terre
  * battue ; jamais transparente, jamais noire.
  */
-const FLOOR_SHADOWS = { planks: 0x7a5636, paving: 0xa58660, earth: 0xb98a55 } as const;
+const FLOOR_SHADOWS = { planks: 0x7a5636, paving: 0xa58660, earth: 0xb98a55, stone: 0x666b64 } as const;
 const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   phare: 'paving',
   quais: 'planks',
@@ -1972,6 +1976,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   hameau: 'planks',
   radeaux: 'planks',
   croisee: 'planks',
+  // Les Fumerolles (lot 9) : la dalle de pierre grise.
+  fumerolles: 'stone',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

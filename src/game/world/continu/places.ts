@@ -2513,7 +2513,7 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   gaillard: ruinOnly(RUINS_5E.gaillard),
   donjon: ruinOnly(RUINS_5E.donjon),
   terrasses: ruinOnly(RUINS_5E.terrasses),
-  fumerolles: ruinOnly(RUINS_5E.fumerolles),
+  fumerolles: northPlace('fumerolles'),
   etuve: ruinOnly(RUINS_5E.etuve),
   nacelles: ruinOnly(RUINS_5E.nacelles),
   hameau: northPlace('hameau'),
