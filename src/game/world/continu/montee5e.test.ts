@@ -28,7 +28,7 @@ const ground = (x: number, z: number) => groundOn5e(field, x, z);
 const MISSIONS = ['thermometer', 'adding', 'fractions', 'order-of-operations', 'conversions-angles'];
 
 describe('La Montée, lieu fini', () => {
-  it('ses cinq missions se jouent dans sa scénette ; les autres lieux du 5e, sauf le Hameau (lot 5) et la Croisée (lot 7), restent sur l’écran habituel', () => {
+  it('ses cinq missions se jouent dans sa scénette ; les autres lieux du 5e, sauf ceux déjà construits, restent sur l’écran habituel', () => {
     expect(MONTEE_PLACE.scenes).toEqual(MISSIONS);
     for (const p of PLAN.places) if (!isBuiltPlace5e(p.id)) expect(p.scenes, p.id).toEqual([]);
   });

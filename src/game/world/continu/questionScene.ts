@@ -216,6 +216,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   radeaux: placeArt('radeaux')!.sceneSpot,
   // La Croisée (lot 7) : le rond-point devant le pont, la cabane et le pied du tronc derrière.
   croisee: placeArt('croisee')!.sceneSpot,
+  // Les Instants (lot 8) : le débarcadère de la rive est.
+  instants: placeArt('instants')!.sceneSpot,
   // Les Fumerolles (lot 9) : la dalle de relevé, devant la cabane de la sondeuse.
   fumerolles: placeArt('fumerolles')!.sceneSpot,
 };
@@ -471,6 +473,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   radeaux: 'lieu',
   // La Croisée (lot 7) : les bobines sur la planche à cordes.
   croisee: 'lieu',
+  // Les Instants (lot 8) : les galets sur la planche de l'établi.
+  instants: 'lieu',
   // Les Fumerolles (lot 9) : les galets sur la planche à relevés.
   fumerolles: 'lieu',
 };

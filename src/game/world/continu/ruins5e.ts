@@ -4,7 +4,8 @@
 // des aiguilles (gris chaud moussu), le bois gris de la ruine, l'ocre des Contreforts, la mousse, le bronze éteint ; rien
 // de presque noir, rien à lire. Retouche du lot 2 (directeur artistique : « des boîtes génériques ») : chaque ruine a sa
 // hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts), comme le Hameau (./hameau5e.ts, lot 5),
-// les Radeaux (./radeaux5e.ts, lot 6), la Croisée (./croisee5e.ts, lot 7) et les Fumerolles (./fumerolles5e.ts, lot 9) ; le Donjon, une tour carrée sur son piton de roche. Code pur.
+// les Radeaux (./radeaux5e.ts, lot 6), la Croisée (./croisee5e.ts, lot 7), les Instants (./instants5e.ts, lot 8) et les
+// Fumerolles (./fumerolles5e.ts, lot 9) ; le Donjon, une tour carrée sur son piton de roche. Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_5E, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
@@ -32,18 +33,6 @@ function rubble(b: FacetBuilder, x: number, z: number, s: number, color: number,
   b.box({ x, y: SINK, z, yaw: 0.4 }, [s, s * 0.7 - SINK, s * 0.8], color, top);
   b.box({ x: x + s * 0.8, y: SINK, z: z + s * 0.3, yaw: 1.1 }, [s * 0.6, s * 0.45 - SINK, s * 0.6], color, top);
   b.box({ x: x - s * 0.5, y: SINK, z: z + s * 0.7, yaw: 2.3 }, [s * 0.5, s * 0.35 - SINK, s * 0.7], color, top);
-}
-
-/** Les Instants : un cercle de pierres levées (un cadran), son style cassé, couché au milieu. */
-function instants(b: FacetBuilder): void {
-  const n = 7;
-  for (let k = 0; k < n; k++) {
-    const a = (2 * Math.PI * k) / n;
-    const h = k % 3 === 1 ? 1.6 : 3.4 - (k % 2) * 0.8;
-    b.box({ x: 5 * Math.cos(a), y: SINK, z: 5 * Math.sin(a), yaw: -a }, [1, h - SINK, 1.6], C.stone, C.sun);
-  }
-  b.prism({ x: 0, y: SINK, z: 0 }, 1.6, 1.6, 0.6 - SINK, 8, C.shade, C.moss);
-  b.box({ x: 1.2, y: 0.6, z: 0.4, yaw: 0.5 }, [5, 0.8, 0.8], C.stone, C.sun);
 }
 
 /** Le Sémaphore : un mât de bois sur un socle de pierre, ses deux bras cassés, l'un tombé au pied. */
@@ -134,10 +123,10 @@ function oracle(b: FacetBuilder): void {
 
 /**
  * La ruine de chaque lieu du 5e pas encore construit (les lieux construits ont leur fichier : ./montee5e.ts, lot 3 ;
- * ./hameau5e.ts, lot 5 ; ./radeaux5e.ts, lot 6 ; ./croisee5e.ts, lot 7 ; ./fumerolles5e.ts, lot 9), dessinée dans son repère.
+ * ./hameau5e.ts, lot 5 ; ./radeaux5e.ts, lot 6 ; ./croisee5e.ts, lot 7 ; ./instants5e.ts, lot 8 ;
+ * ./fumerolles5e.ts, lot 9), dessinée dans son repère.
  */
 export const RUINS_5E: Readonly<Record<Exclude<PlaceId5e, BuiltPlace5e>, (b: FacetBuilder) => void>> = {
-  instants,
   semaphore,
   gaillard,
   donjon,

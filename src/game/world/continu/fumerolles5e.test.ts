@@ -50,9 +50,9 @@ const local = (id: string): Vec2 => {
 };
 
 describe('Les Fumerolles, lieu complet', () => {
-  it('leurs trois missions se jouent dans leur scénette, comme à la Montée, au Hameau, aux Radeaux et à la Croisée', () => {
+  it('leurs trois missions se jouent dans leur scénette, comme à la Montée, au Hameau, aux Radeaux, à la Croisée et aux Instants', () => {
     expect(PLACE.scenes).toEqual([...MISSIONS]);
-    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['croisee', 'fumerolles', 'hameau', 'montee', 'radeaux']);
+    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['croisee', 'fumerolles', 'hameau', 'instants', 'montee', 'radeaux']);
   });
 
   it('se rebâtissent en trois étapes, chacune en deux temps ; la ruine part avec l’étape qui la remplace', () => {
@@ -265,7 +265,7 @@ describe('Le budget du 5e, avec les Fumerolles (plafonds du lot 9, intention du 
     const cost = openWorldCost5e();
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
-    // Les lieux finis depuis le lot 7 : les Fumerolles (lot 9), et ceux des Contreforts qui les suivent.
+    // Les lieux finis depuis le lot 7 : les Instants (lot 8), les Fumerolles (lot 9), et ceux des Contreforts qui les suivent.
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux', 'croisee'].includes(id)).length;
     expect(triangles).toBeLessThanOrEqual(LOT7_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E);
     expect(calls).toBeLessThanOrEqual(LOT7_OPEN_5E.calls);

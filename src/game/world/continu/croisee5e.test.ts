@@ -73,7 +73,7 @@ function cross(a: Vec2, b: Vec2, c: Vec2, d: Vec2): boolean {
 describe('La Croisée, lieu complet', () => {
   it('ses cinq missions se jouent dans sa scénette, comme à la Montée, au Hameau, aux Radeaux et aux Fumerolles', () => {
     expect(PLACE.scenes).toEqual([...MISSIONS]);
-    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['croisee', 'fumerolles', 'hameau', 'montee', 'radeaux']);
+    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['croisee', 'fumerolles', 'hameau', 'instants', 'montee', 'radeaux']);
   });
 
   it('cinq parties : le corps en trois rangées, puis le haut, puis les abords (3+1+1)', () => {
@@ -242,7 +242,7 @@ describe('La scénette de la Croisée', () => {
 
   it('la cordière se montre en modèle 3D', () => {
     expect(hasHabitantModel('croisee')).toBe(true);
-    expect(hasHabitantModel('instants')).toBe(false);
+    expect(hasHabitantModel('oracle')).toBe(false);
   });
 
   it('ses abords tiennent sous le plafond commun, dans chaque état', () => {
@@ -267,7 +267,8 @@ describe('Le budget du 5e, avec la Croisée (plafonds du lot 7, intention du dir
     const cost = openWorldCost5e();
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
-    // Un lieu de plus au plus par lieu fini depuis le lot 6 : la Croisée (lot 7), puis les Fumerolles (lot 9).
+    // Un lieu de plus au plus par lieu fini depuis le lot 6 : la Croisée (lot 7), les Instants (lot 8), puis les
+    // Fumerolles (lot 9).
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux'].includes(id)).length;
     expect(triangles).toBeLessThanOrEqual(LOT6_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E);
     expect(calls).toBeLessThanOrEqual(LOT6_OPEN_5E.calls);
