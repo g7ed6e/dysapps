@@ -39,3 +39,6 @@ Vue du départ de sa sente, sur le chemin qui descend du pont des Roselières, a
 
 ## La nuit : pas de capture
 Le monde ouvert du 5e n'a pas encore de nuit (l'heure de la page ne change rien à sa lumière) : la ruine et la lanterne de l'abri seule, les Instants restaurés et leurs deux lanternes (l'abri, l'arche), la lanterne de la Hutte, se jugeront au lot du jour et de la nuit.
+
+## Retouche (commit b5754942)
+Refaites après la relecture du directeur artistique, mêmes noms de fichiers : 01-cap-de-y-aller-ruine (le cap d'arrivée suit la chaussée), 02-apres-le-corps-1-sur-2 (les outils sous le soleil gravé remonté), 03-apres-le-haut-1-sur-2 (la dalle dressée), 04-restaure-de-face, 05-restaure-de-dos, 05-restaure-trois-quarts (les pierres en blocs épais au sommet cassé d'un biais, l'auvent de roseaux), 07-hutte-* (deux touffes de roseaux le long de la sente). Les autres vues sont celles du commit 07a23ee9.
