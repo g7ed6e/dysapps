@@ -22,6 +22,7 @@ import { worksiteFor } from './world/worksite';
 import { retenirLaPose } from './poseToShow';
 import { retenirLesBlocs } from './blockFlight';
 import { minuscule } from './world/parts';
+import { phraseDeLaPose, type PoseWords } from './poseWords';
 import { voyageId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
@@ -83,21 +84,6 @@ export interface RunnerStage {
   pose?: PoseWords;
 }
 
-/** Une phrase de la pose au bilan, et l'XP qui la suit s'il y en a (« Étape finie : le corps du Hameau. +40 XP. »). */
-export interface PoseLine {
-  text: string;
-  xp?: number;
-}
-
-/**
- * Les phrases de la pose au bilan, écrites et lues. Dans la grille : « Partie posée : le toit de la cabane. » par partie,
- * puis la réplique et l'XP de chaque plan fini. Au monde ouvert du 5e, l'étape du lieu, jamais le nom d'un plan ni sa
- * réplique (directeur du contenu pédagogique, lot 5 du 5e : `stagePoseWords`).
- */
-export interface PoseWords {
-  lines(pose: NonNullable<Completion['pose']>): readonly PoseLine[];
-}
-
 /**
  * Un morceau d'une révision jouée dans la scène d'un lieu (GD-20, point 4, lot L3) : seuls les items dus de cette
  * mission, sous leur clé (`keys`) ; le repère compte les questions de tout le passage (« 2 sur 5 ») ; la fin du morceau
@@ -127,15 +113,6 @@ export interface StageDoneProps {
 
 /** Le carillon de fin (`playDone`) : deux notes, la seconde à 160 ms, de 450 ms ; la voix vient après. */
 const CARILLON_MS = 610;
-
-/**
- * La phrase de la pose, écrite et lue : « Partie posée : le toit de la cabane. », l’accord porté par « partie », quel que
- * soit le nom ; puis la réplique et l'XP de chaque plan fini.
- */
-export function phraseDeLaPose(pose: NonNullable<Completion['pose']>, words?: PoseWords): string {
-  if (words) return words.lines(pose).map((l) => (l.xp === undefined ? l.text : `${l.text} +${l.xp} XP.`)).join(' ');
-  return [...pose.posees.map((p) => `Partie posée : ${minuscule(p.nom)}.`), ...pose.plansFinis.map((p) => `${p.done} +${p.reward.xp} XP.`)].join(' ');
-}
 
 /** Découpe les items en écrans selon le type d'exercice. */
 function screensOf(def: ExerciseDef, seed = def.id, review: string[] = [], stage?: RunnerStage): ExerciseItem[][] {

@@ -10,7 +10,7 @@ import type { OpenPlace } from '../../world/continu/levelPlan';
 import type { IslandStateId } from '../../world/islandState';
 import { partiePosee, partiesDe } from '../../world/parts';
 import { plansFor, type PlanDef } from '../../world/plans';
-import type { PoseLine, PoseWords } from '../../ExerciseRunner';
+import type { PoseLine, PoseWords } from '../../poseWords';
 
 /** La construction d'un lieu vue par le monde continu : ses parties dans l'ordre, et le nombre de celles qui sont posées. */
 export interface PlaceConstruction {

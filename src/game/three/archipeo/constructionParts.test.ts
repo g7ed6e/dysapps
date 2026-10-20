@@ -8,7 +8,7 @@ import { buildHeightField, heightOnMesh } from '../../world/continu/terrain';
 import { partiesDe, poserLesParties } from '../../world/parts';
 import { textesDe } from '../../../universes';
 import { plansFor } from '../../world/plans';
-import { phraseDeLaPose } from '../../ExerciseRunner';
+import { phraseDeLaPose } from '../../poseWords';
 import type { OpenPlace } from '../../world/continu/levelPlan';
 import { planFor } from '../../world/continu/levelPlan';
 import { constructionState, mapStateWord, ofOpenPlace, partShapes, placeConstruction, posedShapes, stagePoseWords, stateWord } from './constructionParts';
