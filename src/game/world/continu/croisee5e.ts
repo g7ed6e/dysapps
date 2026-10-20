@@ -3,18 +3,22 @@
 // cœur, sans figure, est le tronc géant : droit et large, vivant, qui monte au-dessus de sa plateforme ronde et se perd
 // dans une couronne de canopée à pans ; à son pied, des racines en arceaux où se loge la cabane de la cordière, sur
 // pilotis, au bord d'une eau calme et de roseaux pâles. De la plateforme part la fourche en Y : deux passerelles jumelles
-// partent ensemble du bord avant, à un pas l'une de l'autre, et s'écartent à 45° vers deux palétuviers géants qui cadrent
-// le lieu ; la troisième part de derrière le tronc, en sens contraire, vers un tronc du fond. Chacune finit sur un petit
-// palier de planches accroché à son tronc. Rien ne se croise. Kéo marche en bas (le pont de planches, le rond-point) ;
+// partent ensemble du bord avant, à un pas l'une de l'autre, s'écartent à 45° de l'axe de la caméra et MONTENT de 2 vers
+// deux palétuviers géants qui cadrent le lieu (un Y de la porte comme de près) ; la troisième part de derrière le tronc,
+// en sens contraire, vers un tronc du fond. Chacune finit sur un petit palier de planches accroché à son tronc, sous sa
+// canopée. Rien ne se croise. Kéo marche en bas (le pont de planches, le rond-point) ;
 // la plateforme, l'escalier en spirale et les passerelles sont un décor haut, sur les côtés et derrière le tronc.
 //
-// La ruine : tout est là, tombé ou cassé, jamais un chantier. La moitié gauche de la plateforme est tombée (ses planches
-// et deux morceaux de garde-corps à plat dans l'eau, sous le vide) ; la moitié qui tient garde ses planches cassées
-// couchées sur leurs poutres et les deux ancrages vides du treuil (parti chez les Ferrailleurs), un bout de corde qui
-// pend. La passerelle gauche pend dans l'eau, la droite finit dans le vide, la troisième gît dans les roseaux. Les
-// premières marches de l'escalier gisent à côté du pont ; le haut de la spirale tient au tronc. La cabane, en bois gris,
-// a la moitié de son toit affaissée à plat, deux bottes de roseaux dessous ; sa lanterne reste allumée (la cordière vit
-// là : la seule lumière de la ruine), deux autres pendent éteintes dans les racines ; le poteau à deux flèches est couché.
+// La ruine : tout est là, tombé ou cassé, jamais un chantier, jamais un portique. La moitié gauche de la plateforme est
+// tombée (ses planches et deux morceaux de garde-corps à plat dans l'eau, sous le vide) ; la moitié qui tient s'affaisse
+// vers l'avant et montre ses planches couchées, deux planches cassées en travers, les deux ancrages vides du treuil
+// (parti chez les Ferrailleurs), un bout de corde qui pend. La passerelle gauche, coupée au ras du bord, pend le long de
+// ses cordes comme une échelle de corde molle jusqu'à l'eau, où gît son tablier ; la droite garde la moitié de ses
+// planches, qui plongent un peu, son bout pend ; la troisième gît dans les roseaux. Les premières marches de l'escalier
+// gisent à côté du pont, coupé d'un trou d'eau ; le haut de la spirale tient au tronc. La cabane penche vers la droite,
+// en bois usé, un pan de mur manque à côté de la porte ; la moitié de son toit est affaissée à plat, deux bottes de
+// roseaux dessous ; sa lanterne reste allumée (la cordière vit là : la seule lumière de la ruine), deux autres pendent
+// éteintes dans les racines ; le poteau à deux flèches est couché.
 // Cinq parties, une trace chacune, posée avec sa partie (3+1+1, `row`) : le poteau à deux flèches jumelles, une feuille
 // et un poisson (le corps, 1 sur 3) ; le gros nœud tressé pendu à une pile (2 sur 3) ; les deux portillons jumeaux, l'un
 // plein, l'autre à barreaux (3 sur 3) ; les trois fanions brique sur le mât (le haut) ; le séchoir et ses écheveaux au
@@ -47,6 +51,8 @@ const C = {
   newShade: 0x8c766a,
   wornWood: 0x9f9279,
   wornShade: 0x86775f,
+  /** Le joint des planches usées de la plateforme qui tient : un cran sous le bois usé, pour qu'elles se lisent couchées. */
+  wornSeam: 0x8f8269,
   plank: COLORS_5E.plank,
   plankShade: COLORS_5E.plankShade,
   door: 0x7d6650,
@@ -65,7 +71,8 @@ const C = {
   lantern: COLORS_5E.lantern,
   glassOff: 0xbfc4b8,
   flag: 0x9a5b4a,
-  picto: 0x5f4b3c,
+  // Les pictogrammes des flèches : un brun presque noir, un contraste de valeur fort avec le bois neuf du panneau.
+  picto: 0x2e241c,
   // La cordière, en pion (son modèle 3D prend sa place, ./habitants.ts) : chemise de lin, jupe brune, foulard, bottes.
   shirt: 0xcdbb94,
   skirt: 0x75604a,
@@ -109,15 +116,42 @@ function cord(b: FacetBuilder, a: Vec3, c: Vec3, t: number, color: number): void
   }
 }
 
-/** Un fût à `sides` pans, de `r0` en bas à `r1` en haut, sans dessus ni dessous (un tronc). `2 × sides` triangles. */
-function tube(b: FacetBuilder, x: number, z: number, y0: number, y1: number, r0: number, r1: number, sides: number, color: number, turn = 0): void {
+/**
+ * Un fût à `sides` pans, de `r0` en bas à `r1` en haut, sans dessus ni dessous (un tronc). `2 × sides` triangles ; sans
+ * le pan `skip` s'il est donné (un mur qui manque).
+ */
+function tube(b: FacetBuilder, x: number, z: number, y0: number, y1: number, r0: number, r1: number, sides: number, color: number, turn = 0, skip = -1): void {
   const ring = (r: number, y: number) => Array.from({ length: sides }, (_, k) => [x + r * Math.cos(turn + (2 * Math.PI * k) / sides), y, z + r * Math.sin(turn + (2 * Math.PI * k) / sides)] as const);
   const lo = ring(r0, y0),
     hi = ring(r1, y1);
   for (let k = 0; k < sides; k++) {
+    if (k === skip) continue;
     const n = (k + 1) % sides;
     b.quad(lo[n], lo[k], hi[k], hi[n], color);
   }
+}
+
+/**
+ * Dessine penché : `draw` dessine droit, puis le tout bascule de `angle` (en radians) autour de l'axe nord-sud qui passe
+ * par `pivot` (x, y), le haut vers l'est (+x) ; normales comprises. Pas un triangle de plus.
+ */
+function leaning(b: FacetBuilder, pivot: { x: number; y: number }, angle: number, draw: (l: FacetBuilder) => void): void {
+  const l = new FacetBuilder();
+  draw(l);
+  const f = l.build();
+  const c = Math.cos(angle),
+    s = Math.sin(angle);
+  for (let i = 0; i < f.positions.length; i += 3) {
+    const dx = f.positions[i] - pivot.x,
+      dy = f.positions[i + 1] - pivot.y;
+    f.positions[i] = pivot.x + dx * c + dy * s;
+    f.positions[i + 1] = pivot.y - dx * s + dy * c;
+    const nx = f.normals[i],
+      ny = f.normals[i + 1];
+    f.normals[i] = nx * c + ny * s;
+    f.normals[i + 1] = -nx * s + ny * c;
+  }
+  b.append(f);
 }
 
 /**
@@ -172,20 +206,22 @@ function reedTuft(b: FacetBuilder, at: Vec3, seed: number, s = 1): void {
 
 /**
  * Un palétuvier géant des abords, qui porte un palier (de la famille de ceux de la forêt, en moins de triangles) : son
- * fût à cinq pans, trois racines en arceaux, sa canopée basse en deux plateaux à pans. Quatre-vingt-deux triangles.
+ * fût à cinq pans, trois racines en arceaux (la première à `roots` radians, les autres à un tiers de tour), sa canopée
+ * en deux plateaux à pans, dont le dessous est à `crown` au-dessus du sol (6 × `s` d'ordinaire ; plus haut, l'arbre
+ * grandit pour couvrir un palier qui monte). Quatre-vingt-deux triangles.
  */
-function giantMangrove(b: FacetBuilder, x: number, z: number, s: number, yaw: number, ground: SiteGround): void {
+function giantMangrove(b: FacetBuilder, x: number, z: number, s: number, yaw: number, ground: SiteGround, roots = yaw + 0.5, crown = 6.0 * s): void {
   const y = ground.at(x, z);
-  tube(b, x, z, y + 0.6 * s, y + 6.4 * s, 0.5 * s, 0.34 * s, 5, FOREST_COLORS.trunk, yaw);
+  tube(b, x, z, y + 0.6 * s, y + crown + 0.4 * s, 0.5 * s, 0.34 * s, 5, FOREST_COLORS.trunk, yaw);
   for (let k = 0; k < 3; k++) {
-    const a = yaw + (k * 2 * Math.PI) / 3 + 0.5;
+    const a = roots + (k * 2 * Math.PI) / 3;
     const knee = { x: x + Math.cos(a) * 1.1 * s, y: y + 1.5 * s, z: z + Math.sin(a) * 1.1 * s };
     const foot = { x: x + Math.cos(a) * 2.0 * s, z: z + Math.sin(a) * 2.0 * s };
     cord(b, { x, y: y + 1.9 * s, z }, knee, 0.34 * s, C.root);
     cord(b, knee, { ...foot, y: ground.at(foot.x, foot.z) - 0.4 }, 0.3 * s, C.root);
   }
-  b.prism({ x, y: y + 6.0 * s, z, yaw }, 3.0 * s, 2.3 * s, 1.1 * s, 6, C.canopy, C.canopyTop);
-  b.prism({ x: x + 0.5 * s, y: y + 7.1 * s, z: z - 0.3 * s, yaw: yaw + 0.5 }, 2.0 * s, 0.8 * s, 0.9 * s, 6, C.canopy, C.canopyTop);
+  b.prism({ x, y: y + crown, z, yaw }, 3.0 * s, 2.3 * s, 1.1 * s, 6, C.canopy, C.canopyTop);
+  b.prism({ x: x + 0.5 * s, y: y + crown + 1.1 * s, z: z - 0.3 * s, yaw: yaw + 0.5 }, 2.0 * s, 0.8 * s, 0.9 * s, 6, C.canopy, C.canopyTop);
 }
 
 // ---------- Le plan du lieu ----------
@@ -226,6 +262,9 @@ const CABIN = { x: 0, z: -0.55, deck: 1.7, floor: 0.55, wall: 1.12, wallTop: 2.0
 /** Le pont de planches, de la rive avant (le rond-point) au plancher de la cabane : sa demi-largeur, ses deux bouts, sa hauteur. */
 const BRIDGE = { half: 0.55, from: 1.2, to: 4.8, y: 0.45 } as const;
 
+/** Dans la ruine, le trou d'eau du pont coupé, de 1 : de `from` à `to` (le long de z). */
+const BRIDGE_GAP = { from: 2.4, to: 3.4 } as const;
+
 /** Le rond-point des abords, au sol devant le pont, à la porte : son centre, son rayon, sa hauteur. */
 const ROUND = { x: 0, z: 6.4, r: 2.6, y: 0.3 } as const;
 
@@ -243,31 +282,73 @@ const PILE_R = 2.95;
 const STAIRS = { first: 135, step: 22, count: 9, fallen: 4, rise: 0.6, width: 1.0, depth: 0.5 } as const;
 
 /**
- * Les deux passerelles jumelles (l'angle de leur départ au bord avant, leur cap, à 50° de l'axe de la caméra de part et
- * d'autre : « environ 45° », ouvert de 5° pour que le palétuvier de droite garde ses racines hors du chemin) et la
- * troisième, de derrière le tronc, en sens contraire.
+ * Une passerelle : l'angle de son départ au bord de la plateforme, son cap, sa portée au sol, ce qu'elle monte jusqu'à
+ * son palier ; le palétuvier qui porte le palier (`along` plus loin dans son axe, `off` de côté, vers le fond), l'angle
+ * de sa première racine (en degrés) et le dessous de sa canopée au-dessus du sol (rien : celle d'un palétuvier
+ * ordinaire).
  */
-const SPAN = 8;
-const TWIN_TURN = deg(50);
-const TWINS = [
-  { start: 82, dir: { x: Math.sin(TWIN_TURN), z: Math.cos(TWIN_TURN) } },
-  { start: 98, dir: { x: -Math.sin(TWIN_TURN), z: Math.cos(TWIN_TURN) } },
-] as const;
-const THIRD = { start: 262, dir: { x: 0.17, z: -0.985 } } as const;
+interface Span {
+  start: number;
+  dir: Vec2;
+  span: number;
+  rise: number;
+  tree: { along: number; off: number; roots: number; crown?: number };
+}
+
+/**
+ * Les deux passerelles jumelles, retouche 1 du directeur artistique : à 45° de l'axe de la caméra de part et d'autre,
+ * portée 6, et leurs paliers MONTENT de 2 au-dessus de la plateforme : de la porte (caméra de marche) comme de près,
+ * chacune monte de son départ à son palier d'environ 20° à l'écran, les deux départs côte à côte au bord avant, et la
+ * fourche se lit en Y, plus en T. Leurs palétuviers grandissent (le dessous de la canopée à 8,7) pour couvrir le palier ;
+ * les deux s'écartent d'un pas vers le fond, et leurs racines se tournent : celles de droite restent hors du chemin de
+ * l'est et de la lanterne du rond-point ; celles de gauche, un peu plus loin dans son axe, hors du ponton, du séchoir et
+ * du plancher de la scénette.
+ */
+const TWIN_TURN = deg(45);
+const TWIN = { span: 6, rise: 2, crown: 8.7 } as const;
+const TWINS: readonly [Span, Span] = [
+  { start: 82, dir: { x: Math.sin(TWIN_TURN), z: Math.cos(TWIN_TURN) }, span: TWIN.span, rise: TWIN.rise, tree: { along: 1.5, off: 0.6, roots: 105, crown: TWIN.crown } },
+  { start: 98, dir: { x: -Math.sin(TWIN_TURN), z: Math.cos(TWIN_TURN) }, span: TWIN.span, rise: TWIN.rise, tree: { along: 2, off: 0.6, roots: 40, crown: TWIN.crown } },
+];
+/** La troisième, de derrière le tronc, en sens contraire, à plat jusqu'à son palier sur le tronc du fond. */
+const THIRD: Span = { start: 262, dir: { x: 0.17, z: -0.985 }, span: 8, rise: 0, tree: { along: 1.5, off: 0, roots: 213 } };
+
+/**
+ * Dans la ruine, la jumelle gauche : son bout qui tient (0,5 au plus), la hauteur du coude de ses cordes et leur dérive
+ * dans son axe (pour pendre hors de la cabane, par-dessus le bord du toit affaissé), ses quatre planches en travers (sur
+ * la volée du haut, puis celle du bas), son tablier couché dans l'eau.
+ */
+const LEFT_HANG = {
+  stub: 0.5,
+  kneeY: 1.6,
+  drift: 1.3,
+  rungs: [
+    ['top', 'knee', 0.22],
+    ['top', 'knee', 0.5],
+    ['top', 'knee', 0.78],
+    ['knee', 'foot', 0.55],
+  ] as const,
+  deck: 1.4,
+} as const;
+
+/** Dans la ruine, la jumelle droite : 4 de tablier qui plongent de 0,5, son bout qui pend sur 1. */
+const RIGHT_HANG = { deck: 4, dip: 0.5, hang: 1 } as const;
 
 /** Le départ d'une passerelle au bord de la plateforme. */
 const spanStart = (angle: number): Vec3 => ({ ...around(T, deg(angle), PLATFORM.r), y: PLATFORM.y });
 
-/** L'arrivée d'une passerelle (au palier), à `SPAN` de son départ. */
-const spanEnd = (s: { start: number; dir: Vec2 }): Vec3 => {
+/** L'arrivée d'une passerelle (au palier), à sa portée de son départ, montée de `rise`. */
+const spanEnd = (s: Span): Vec3 => {
   const a = spanStart(s.start);
-  return { x: a.x + s.dir.x * SPAN, y: PLATFORM.y, z: a.z + s.dir.z * SPAN };
+  return { x: a.x + s.dir.x * s.span, y: PLATFORM.y + s.rise, z: a.z + s.dir.z * s.span };
 };
 
-/** Le tronc qui porte le palier d'une passerelle : un peu plus loin dans son axe. */
-const spanTree = (s: { start: number; dir: Vec2 }): Vec2 => {
+/** Le tronc qui porte le palier d'une passerelle : plus loin dans son axe, et de côté vers le fond (`off`). */
+const spanTree = (s: Span): Vec2 => {
   const e = spanEnd(s);
-  return { x: e.x + s.dir.x * 1.5, z: e.z + s.dir.z * 1.5 };
+  // De côté, vers le fond : la perpendiculaire au cap qui s'éloigne de la caméra (z décroissant).
+  const side = s.dir.x >= 0 ? { x: s.dir.z, z: -s.dir.x } : { x: -s.dir.z, z: s.dir.x };
+  return { x: e.x + s.dir.x * s.tree.along + side.x * s.tree.off, z: e.z + s.dir.z * s.tree.along + side.z * s.tree.off };
 };
 
 /** Le mât de racine, sur la plateforme, au fond à droite vu de face (devant la couronne, jamais devant la fourche). */
@@ -342,22 +423,43 @@ function trunk(b: FacetBuilder, ground: SiteGround): void {
   }
 }
 
-/** Les pans de la plateforme (leur dessus, leur bord, leur dessous), ou certains seulement. */
-function platform(b: FacetBuilder, keep: readonly number[], color: number, top: number): void {
+/** Le bord intérieur de la plateforme, contre le tronc. */
+const INNER_R = TRUNK.mid - 0.05;
+
+/**
+ * Dans la ruine, la moitié de plateforme qui tient s'affaisse vers l'avant (la caméra) : son bord avant descend de
+ * `RUIN_SAG`, rien contre le tronc. Penchée vers la caméra, qui la voit d'un peu au-dessus, sa surface de planches se lit
+ * (à plat, elle ne montrait que sa tranche).
+ */
+const RUIN_SAG = 0.45;
+
+/** La hauteur du dessus de la plateforme en ruine, à l'angle `a` (radians) et au rayon `r` du tronc. */
+const ruinY = (a: number, r: number): number => PLATFORM.y - (RUIN_SAG * Math.max(0, Math.sin(a)) * Math.max(0, r - INNER_R)) / (PLATFORM.r - INNER_R);
+
+/** Un point du dessus de la plateforme en ruine, à l'angle `a` (degrés) et au rayon `r`. */
+const ruinAt = (a: number, r: number): Vec3 => ({ ...around(T, deg(a), r), y: ruinY(deg(a), r) });
+
+/**
+ * Les pans de la plateforme (leur dessus, leur bord, leur dessous), ou certains seulement. En ruine (`ruin`), affaissés
+ * vers l'avant, et leur dessus en trois rangs de planches couchées, d'un ton puis du ton du joint (`C.wornSeam`) : une
+ * surface de planches, pas des poutres en rayons.
+ */
+function platform(b: FacetBuilder, keep: readonly number[], color: number, top: number, ruin = false): void {
   const half = Math.PI / PLATFORM.sides;
-  const inR = TRUNK.mid - 0.05;
-  const y = PLATFORM.y,
-    yb = PLATFORM.y - PLATFORM.thick;
+  const rings = ruin ? [INNER_R, 1.85, 2.6, PLATFORM.r] : [INNER_R, PLATFORM.r];
+  const at = (a: number, r: number) => {
+    const p = around(T, a, r);
+    return [p.x, ruin ? ruinY(a, r) : PLATFORM.y, p.z] as const;
+  };
+  const below = (q: readonly [number, number, number]) => [q[0], q[1] - PLATFORM.thick, q[2]] as const;
   for (const k of keep) {
     const a0 = segmentMid(k) - half,
       a1 = segmentMid(k) + half;
-    const i0 = around(T, a0, inR),
-      i1 = around(T, a1, inR),
-      o0 = around(T, a0, PLATFORM.r),
-      o1 = around(T, a1, PLATFORM.r);
-    b.quad([i0.x, y, i0.z], [i1.x, y, i1.z], [o1.x, y, o1.z], [o0.x, y, o0.z], top);
-    b.quad([o0.x, y, o0.z], [o1.x, y, o1.z], [o1.x, yb, o1.z], [o0.x, yb, o0.z], color);
-    b.quad([i0.x, yb, i0.z], [o0.x, yb, o0.z], [o1.x, yb, o1.z], [i1.x, yb, i1.z], color);
+    for (let j = 0; j + 1 < rings.length; j++) b.quad(at(a0, rings[j]), at(a1, rings[j]), at(a1, rings[j + 1]), at(a0, rings[j + 1]), j % 2 ? C.wornSeam : top);
+    const o0 = at(a0, PLATFORM.r),
+      o1 = at(a1, PLATFORM.r);
+    b.quad(o0, o1, below(o1), below(o0), color);
+    b.quad(below(at(a0, INNER_R)), below(o0), below(o1), below(at(a1, INNER_R)), color);
   }
 }
 
@@ -390,9 +492,11 @@ function stair(b: FacetBuilder, k: number, color: number, top: number): void {
   b.box({ x: p.x, y, z: p.z, yaw: -a }, [S.width, 0.12, S.depth], color, top);
 }
 
-/** Une passerelle tendue : son tablier en deux longues facettes, un peu creusé au milieu, ses deux mains courantes. */
-function walkway(b: FacetBuilder, a: Vec3, c: Vec3): void {
-  const sag = 0.35;
+/**
+ * Une passerelle tendue : son tablier en deux longues facettes, un peu creusé au milieu (de `sag`), ses deux mains
+ * courantes.
+ */
+function walkway(b: FacetBuilder, a: Vec3, c: Vec3, sag: number): void {
   const mid = { x: (a.x + c.x) / 2, y: (a.y + c.y) / 2 - sag, z: (a.z + c.z) / 2 };
   strip(b, a, mid, 0.8, 0.08, C.plankShade, C.plank);
   strip(b, mid, c, 0.8, 0.08, C.plankShade, C.plank);
@@ -406,28 +510,47 @@ function walkway(b: FacetBuilder, a: Vec3, c: Vec3): void {
   }
 }
 
-/** Le palier d'une passerelle, accroché à son tronc : son plancher et sa jambe de force. */
-function landing(b: FacetBuilder, s: { start: number; dir: Vec2 }, ground: SiteGround): void {
+/** Le palier d'une passerelle, accroché à son tronc : son plancher, de l'arrivée au fût, et sa jambe de force. */
+function landing(b: FacetBuilder, s: Span, ground: SiteGround): void {
   const e = spanEnd(s);
   const tree = spanTree(s);
-  strip(b, e, { x: tree.x - s.dir.x * 0.3, y: e.y, z: tree.z - s.dir.z * 0.3 }, 1.3, 0.12, C.plankShade, C.plank);
+  const d = Math.hypot(tree.x - e.x, tree.z - e.z) || 1;
+  const stop = 0.35 / d;
+  strip(b, e, { x: tree.x - (tree.x - e.x) * stop, y: e.y, z: tree.z - (tree.z - e.z) * stop }, 1.3, 0.12, C.plankShade, C.plank);
   cord(b, { x: tree.x, y: Math.max(ground.at(tree.x, tree.z) + 3.4, e.y - 2), z: tree.z }, { x: e.x, y: e.y - 0.12, z: e.z }, 0.14, C.newShade);
 }
 
-/** La cabane : son plancher hexagonal sur trois pilotis, son mur de planches, sa porte ; neuve, ou en bois gris. */
+/**
+ * La cabane de la ruine penche de 8° vers la droite (vue de la porte), plancher, murs et porte ensemble, autour du milieu
+ * de son plancher ; ses pilotis suivent. Le pan de mur à gauche de la porte (entre les sommets à 120° et 180°) manque.
+ */
+const CABIN_LEAN = deg(8);
+const CABIN_MISSING_WALL = 2;
+
+/**
+ * La cabane : son plancher hexagonal sur trois pilotis, son mur de planches, sa porte ; neuve et droite, ou dans la
+ * ruine en bois usé, penchée, un pan de mur en moins (deux triangles de moins, rendus au pont coupé).
+ */
 function cabin(b: FacetBuilder, ground: SiteGround, worn: boolean): void {
   const K = CABIN;
   const wood = worn ? C.wornWood : C.newWood;
   const shade = worn ? C.wornShade : C.newShade;
-  b.prism({ x: K.x, y: K.floor - 0.15, z: K.z }, K.deck, K.deck, 0.15, 6, shade, worn ? C.wornWood : C.plank);
+  const pivot = { x: K.x, y: K.floor - 0.15 };
+  const lean = worn ? CABIN_LEAN : 0;
+  leaning(b, pivot, lean, (l) => {
+    l.prism({ x: K.x, y: K.floor - 0.15, z: K.z }, K.deck, K.deck, 0.15, 6, shade, worn ? C.wornWood : C.plank);
+    tube(l, K.x, K.z, K.floor, K.wallTop, K.wall, K.wall, 6, wood, 0, worn ? CABIN_MISSING_WALL : -1);
+    // La porte, sur le pan qui regarde le sud (entre les sommets à 60° et 120°).
+    const face = K.z + K.wall * Math.cos(Math.PI / 6) + 0.012;
+    l.plate({ x: K.x, y: K.floor, z: face }, [[-0.32, 0], [0.32, 0], [0.32, 1.0], [-0.32, 1.0]], C.door);
+  });
+  // Les pilotis, jusque sous le plancher, penché ou non.
   for (const a of [30, 150, 270]) {
     const p = around({ x: K.x, z: K.z }, deg(a), K.deck - 0.2);
-    cord(b, { ...p, y: pileFoot(ground, p) }, { ...p, y: K.floor - 0.15 }, 0.22, shade);
+    const dx = p.x - pivot.x;
+    const top = { x: pivot.x + dx * Math.cos(lean), y: pivot.y - dx * Math.sin(lean), z: p.z };
+    cord(b, { ...p, y: pileFoot(ground, p) }, top, 0.22, shade);
   }
-  tube(b, K.x, K.z, K.floor, K.wallTop, K.wall, K.wall, 6, wood);
-  // La porte, sur le pan qui regarde le sud (entre les sommets à 60° et 120°).
-  const face = K.z + K.wall * Math.cos(Math.PI / 6) + 0.012;
-  b.plate({ x: K.x, y: K.floor, z: face }, [[-0.32, 0], [0.32, 0], [0.32, 1.0], [-0.32, 1.0]], C.door);
 }
 
 /** Le toit de roseaux entier de la cabane : son cône à huit pans et sa pointe. */
@@ -459,7 +582,7 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
   add('ruine', 0, (b) => {
     for (const s of [...TWINS, THIRD]) {
       const t = spanTree(s);
-      giantMangrove(b, t.x, t.z, s === THIRD ? 1.2 : 1.12, 0.6 + s.start * 0.01, ground);
+      giantMangrove(b, t.x, t.z, s === THIRD ? 1.2 : 1.12, 0.6 + s.start * 0.01, ground, deg(s.tree.roots), s.tree.crown);
     }
   });
   add('ruine', 0, (b) => {
@@ -472,16 +595,20 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     lantern(b, tip, true);
   });
 
-  // Le corps, 1 sur 3, relève la cabane en bois neuf et refait le pont : la cabane grise, son pont usé, le poteau couché
-  // partent avec lui. Le toit affaissé reste jusqu'au haut.
+  // Le corps, 1 sur 3, relève la cabane en bois neuf et refait le pont : la cabane penchée en bois usé, son pont coupé,
+  // le poteau couché partent avec lui. Le toit affaissé reste jusqu'au haut.
   const part1 = { stage: 0 as const, row: 0 };
   add(
     'ruine',
     0,
     (b) => {
       cabin(b, ground, true);
-      strip(b, { x: -0.1, y: BRIDGE.y - 0.08, z: BRIDGE.from }, { x: 0.05, y: BRIDGE.y - 0.18, z: BRIDGE.to - 0.4 }, 2 * BRIDGE.half, 0.12, C.wornShade, C.wornWood);
-      for (const z of [2.3, 3.6]) cord(b, { x: -0.4, y: pileFoot(ground, { x: -0.4, z }), z }, { x: -0.4, y: BRIDGE.y - 0.2, z }, 0.18, C.wornShade);
+      // Le pont coupé : le bout de la cabane sur son pieu ; un trou d'eau de 1, qui se voit de la porte ; le bout de la
+      // rive, sans pieu, plonge dans l'eau. Deux tabliers et un pieu (le pieu de la rive, tombé, paie le second tablier).
+      const G = BRIDGE_GAP;
+      strip(b, { x: -0.1, y: BRIDGE.y - 0.08, z: BRIDGE.from }, { x: -0.05, y: BRIDGE.y - 0.16, z: G.from }, 2 * BRIDGE.half, 0.12, C.wornShade, C.wornWood);
+      strip(b, { x: 0.12, y: WATER_Y - 0.04, z: G.to }, { x: 0.05, y: BRIDGE.y - 0.14, z: BRIDGE.to - 0.4 }, 2 * BRIDGE.half, 0.12, C.wornShade, C.wornWood);
+      cord(b, { x: -0.4, y: pileFoot(ground, { x: -0.4, z: 2.0 }), z: 2.0 }, { x: -0.4, y: BRIDGE.y - 0.2, z: 2.0 }, 0.18, C.wornShade);
       // Le poteau à deux flèches, couché à plat sur la rive, panneaux face au ciel (sans leurs pictogrammes).
       const y = at(-1.6, 4.4) + 0.06;
       b.box({ x: -1.6, y, z: 4.4, yaw: 0 }, [2.3, 0.14, 0.14], C.wornShade);
@@ -525,28 +652,26 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     part2,
   );
 
-  // Le corps, 3 sur 3 : la plateforme entière ; dans la ruine, sa moitié qui tient, ses planches cassées couchées sur
-  // leurs poutres, les deux ancrages vides du treuil et le bout de corde ; dessous, ce qui est tombé (deux planches, deux
-  // morceaux de garde-corps) ; les passerelles qui pendent ou gisent.
+  // Le corps, 3 sur 3 : la plateforme entière ; dans la ruine, sa moitié qui tient, affaissée vers l'avant, ses planches
+  // couchées et deux planches cassées en travers, les deux ancrages vides du treuil et le bout de corde ; dessous, ce
+  // qui est tombé (deux planches, deux morceaux de garde-corps) ; les passerelles qui pendent ou gisent.
   const part3 = { stage: 0 as const, row: 2 / 3 };
   add(
     'ruine',
     0,
     (b) => {
-      platform(b, HOLDING, C.wornShade, C.wornWood);
-      for (const a of [108, 288]) {
-        const p = around(T, deg(a), PLATFORM.r);
-        cord(b, { ...around(T, deg(a), TRUNK.mid), y: PLATFORM.y - 0.22 }, { ...p, y: PLATFORM.y - 0.22 }, 0.2, C.wornShade);
+      platform(b, HOLDING, C.wornShade, C.wornWood, true);
+      // Les deux solives du bord cassé, sous la moitié qui tient.
+      for (const a of [108, 288]) cord(b, add3(ruinAt(a, TRUNK.mid), 0, -0.22, 0), add3(ruinAt(a, PLATFORM.r), 0, -0.22, 0), 0.2, C.wornShade);
+      // Deux planches cassées, couchées en travers (le long du bord), jamais en rayons.
+      for (const [a, r, len] of [
+        [48, 2.6, 1.4],
+        [-50, 2.1, 1.2],
+      ] as const) {
+        const p = ruinAt(a, r);
+        b.box({ ...p, yaw: -(deg(a) + Math.PI / 2) }, [len, 0.08, 0.3], C.wornShade, C.wornWood);
       }
-      for (const a of [-12, 52]) {
-        const p0 = around(T, deg(a), 1.5),
-          p1 = around(T, deg(a + 8), 3.0);
-        b.box({ x: (p0.x + p1.x) / 2, y: PLATFORM.y, z: (p0.z + p1.z) / 2, yaw: yawOf(p0, p1) }, [1.6, 0.08, 0.32], C.wornShade, C.wornWood);
-      }
-      for (const a of [18, -22]) {
-        const p = around(T, deg(a), 2.35);
-        b.box({ x: p.x, y: PLATFORM.y, z: p.z, yaw: -deg(a) }, [0.5, 0.42, 0.5], C.wornShade, C.wornWood);
-      }
+      for (const a of [18, -22]) b.box({ ...ruinAt(a, 2.35), yaw: -deg(a) }, [0.5, 0.42, 0.5], C.wornShade, C.wornWood);
       const edge = around(T, deg(0), PLATFORM.r - 0.1);
       cord(b, { ...edge, y: PLATFORM.y }, { ...edge, y: PLATFORM.y - 1.9 }, 0.05, C.rope);
     },
@@ -563,18 +688,37 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
         [-3.4, -6.8],
       ] as const)
         cord(b, { x, y: WATER_Y + 0.04, z }, { x: x - 1.3, y: WATER_Y + 0.04, z: z - 0.5 }, 0.12, C.wornShade);
-      // La jumelle gauche, coupée : un bout tient au bord avant, le reste pend tout droit dans l'eau.
+      // La jumelle gauche, coupée au ras du bord : un bout de 0,5, puis elle pend le long de ses deux cordes, molles,
+      // comme une échelle de corde (quatre planches en travers), par-dessus le bord du toit affaissé, jusqu'à l'eau où
+      // gît son tablier. Rien de raide : jamais un panneau plein, jamais un portique avec la droite.
       const [right, left] = TWINS;
-      const la = spanStart(left.start);
-      const lb = { x: la.x + left.dir.x * 1.6, y: PLATFORM.y - 0.2, z: la.z + left.dir.z * 1.6 };
+      const L = LEFT_HANG;
+      const la = ruinAt(left.start, PLATFORM.r);
+      const lb = { x: la.x + left.dir.x * L.stub, y: la.y - 0.12, z: la.z + left.dir.z * L.stub };
       strip(b, la, lb, 0.8, 0.08, C.wornShade, C.wornWood);
-      strip(b, lb, { x: lb.x - 0.1, y: WATER_Y - 0.1, z: lb.z + 0.15 }, 0.8, 0.08, C.wornShade, C.wornWood);
-      cord(b, add3(la, 0, 0.85, 0), { x: lb.x + 0.2, y: 1.2, z: lb.z + 0.3 }, 0.05, C.rope);
-      // La jumelle droite garde la moitié de ses planches, son bout pend dans le vide.
-      const ra = spanStart(right.start);
-      const rb = { x: ra.x + right.dir.x * (SPAN / 2), y: PLATFORM.y - 0.3, z: ra.z + right.dir.z * (SPAN / 2) };
+      const knee = { x: lb.x + left.dir.x * L.drift, y: L.kneeY, z: lb.z + left.dir.z * L.drift };
+      const foot = { x: knee.x + left.dir.x * 0.3, y: WATER_Y, z: knee.z + left.dir.z * 0.3 };
+      const across = { x: -left.dir.z * 0.38, z: left.dir.x * 0.38 };
+      const side = (p: Vec3, s: number): Vec3 => ({ x: p.x + s * across.x, y: p.y, z: p.z + s * across.z });
+      const lerp = (p: Vec3, q: Vec3, t: number): Vec3 => ({ x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t, z: p.z + (q.z - p.z) * t });
+      for (const s of [-1, 1]) {
+        cord(b, side(lb, s), side(knee, s), 0.06, C.rope);
+        cord(b, side(knee, s), side(foot, s), 0.06, C.rope);
+      }
+      // Les planches pendent debout entre les cordes, leurs deux faces vues (sans épaisseur : quatre triangles).
+      for (const [from, to, t] of L.rungs) {
+        const p = lerp(from === 'top' ? lb : knee, to === 'knee' ? knee : foot, t);
+        const [a0, a1] = [side(p, -1.1), side(p, 1.1)];
+        const q = (r: Vec3, dy: number) => [r.x, r.y + dy, r.z] as const;
+        b.quad(q(a0, -0.11), q(a1, -0.11), q(a1, 0.11), q(a0, 0.11), C.wornWood);
+        b.quad(q(a1, -0.11), q(a0, -0.11), q(a0, 0.11), q(a1, 0.11), C.wornShade);
+      }
+      strip(b, foot, { x: foot.x + left.dir.x * L.deck, y: WATER_Y - 0.02, z: foot.z + left.dir.z * L.deck }, 0.8, 0.08, C.wornShade, C.wornWood);
+      // La jumelle droite garde 4 de ses planches, qui plongent un peu ; seul son bout pend, sur 1.
+      const ra = ruinAt(right.start, PLATFORM.r);
+      const rb = { x: ra.x + right.dir.x * RIGHT_HANG.deck, y: ra.y - RIGHT_HANG.dip, z: ra.z + right.dir.z * RIGHT_HANG.deck };
       strip(b, ra, rb, 0.8, 0.08, C.wornShade, C.wornWood);
-      strip(b, rb, { x: rb.x + 0.1, y: rb.y - 1.6, z: rb.z + 0.1 }, 0.8, 0.08, C.wornShade, C.wornWood);
+      strip(b, rb, { x: rb.x + 0.1, y: rb.y - RIGHT_HANG.hang, z: rb.z + 0.1 }, 0.8, 0.08, C.wornShade, C.wornWood);
       cord(b, add3(ra, 0.3, 0.85, -0.3), add3(rb, 0.3, 0.2, -0.3), 0.05, C.rope);
       // La troisième, tombée tout entière dans l'eau et les roseaux, derrière le tronc.
       const ta = spanStart(THIRD.start);
@@ -610,7 +754,8 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     platform(b, Array.from({ length: PLATFORM.sides }, (_, k) => k), C.plankShade, C.plank);
     railing(b);
     for (const s of [...TWINS, THIRD]) {
-      walkway(b, spanStart(s.start), spanEnd(s));
+      // Les jumelles qui montent, moins creusées : une courbe tendue, qui monte dès son départ.
+      walkway(b, spanStart(s.start), spanEnd(s), s.rise > 0 ? 0.25 : 0.35);
       landing(b, s, ground);
     }
   });
@@ -694,23 +839,43 @@ const ARROW = [
 ] as const;
 const ARROW_LEFT = ARROW.map(([x, y]) => [-x, y] as const).reverse();
 
-/** Les deux pictogrammes : une feuille (un losange effilé et sa tige), un poisson (un losange et sa queue). */
+/**
+ * Les deux pictogrammes, hauts d'environ 60 % du panneau (0,22 sur 0,34), d'un brun presque noir sur le bois neuf (un
+ * contraste de valeur, jamais de teinte) ; ils se distinguent par la forme. La feuille : une amande pointue, sa pointe
+ * vers le bout de la flèche, et sa tige nette. Le poisson : un losange, et sa queue fourchue en deux lobes, longue de la
+ * moitié du corps (0,14 sur 0,28), son échancrure bien ouverte.
+ */
 const LEAF = [
-  [-0.2, 0],
-  [0, -0.08],
-  [0.2, 0],
-  [0, 0.08],
+  [-0.25, 0],
+  [-0.1, -0.08],
+  [0.04, -0.11],
+  [0.16, 0],
+  [0.04, 0.11],
+  [-0.1, 0.08],
+] as const;
+const LEAF_STEM = [
+  [0.14, -0.025],
+  [0.33, -0.025],
+  [0.33, 0.025],
+  [0.14, 0.025],
 ] as const;
 const FISH = [
-  [-0.12, 0],
-  [0.04, -0.09],
+  [-0.08, 0],
+  [0.05, -0.11],
   [0.2, 0],
-  [0.04, 0.09],
+  [0.05, 0.11],
 ] as const;
 const FISH_TAIL = [
-  [-0.12, 0],
-  [-0.24, 0.09],
-  [-0.24, -0.09],
+  [
+    [-0.05, 0],
+    [-0.22, 0.1],
+    [-0.13, 0],
+  ],
+  [
+    [-0.05, 0],
+    [-0.13, 0],
+    [-0.22, -0.1],
+  ],
 ] as const;
 
 /** Le poteau des deux flèches (Panneaux) : debout sur la rive, à gauche du pont, ses flèches au-dessus de la tête de Kéo. */
@@ -731,10 +896,10 @@ function signpost(b: FacetBuilder, c: Vec3): void {
       const fz = S.z - 0.08 + 0.075;
       if (east) {
         l.plate({ x: S.x + dx - 0.05, y: g + y, z: fz }, FISH, C.picto);
-        l.plate({ x: S.x + dx - 0.05, y: g + y, z: fz }, FISH_TAIL, C.picto);
+        for (const lobe of FISH_TAIL) l.plate({ x: S.x + dx - 0.05, y: g + y, z: fz }, lobe, C.picto);
       } else {
         l.plate({ x: S.x + dx + 0.05, y: g + y, z: fz }, LEAF, C.picto);
-        l.plate({ x: S.x + dx + 0.05, y: g + y + 0.005, z: fz }, [[0.2, -0.015], [0.34, -0.015], [0.34, 0.015], [0.2, 0.015]], C.picto);
+        l.plate({ x: S.x + dx + 0.05, y: g + y, z: fz }, LEAF_STEM, C.picto);
       }
     }
   });
@@ -758,7 +923,11 @@ function knot(b: FacetBuilder, c: Vec3): void {
   });
 }
 
-/** Les deux portillons (Bifurcation) au bord avant, au départ des jumelles : l'un plein, l'autre à trois barreaux. */
+/**
+ * Les deux portillons (Bifurcation) au bord avant, au départ des jumelles : l'un plein, en bois neuf clair sur toutes ses
+ * faces, épais, qui se détache du tronc sombre derrière lui ; l'autre à trois barreaux, plus épais que les poteaux du
+ * garde-corps (0,16 contre 0,1), espacés pour que le jour passe entre eux. La forme les distingue, jamais la couleur.
+ */
 function gates(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
     const half = Math.PI / PLATFORM.sides;
@@ -769,10 +938,10 @@ function gates(b: FacetBuilder, c: Vec3): void {
     // Le poteau du milieu, entre les deux.
     cord(l, { x: 0, y, z }, { x: 0, y: y + 0.94, z }, 0.1, C.newShade);
     // À droite (vu de face), le portillon plein.
-    l.box({ x: 0.5, y: y + 0.1, z }, [0.78, 0.76, 0.07], C.newShade, C.newWood);
+    l.box({ x: 0.5, y: y + 0.1, z }, [0.8, 0.78, 0.1], C.newWood, C.newWood);
     // À gauche, le portillon à trois barreaux, entre deux traverses.
-    for (const dy of [0.12, 0.84]) cord(l, { x: -0.1, y: y + dy, z }, { x: -0.9, y: y + dy, z }, 0.08, C.newWood);
-    for (const x of [-0.3, -0.5, -0.7]) cord(l, { x, y: y + 0.12, z }, { x, y: y + 0.84, z }, 0.06, C.newWood);
+    for (const dy of [0.12, 0.84]) cord(l, { x: -0.1, y: y + dy, z }, { x: -0.9, y: y + dy, z }, 0.1, C.newWood);
+    for (const x of [-0.25, -0.5, -0.75]) cord(l, { x, y: y + 0.12, z }, { x, y: y + 0.84, z }, 0.16, C.newWood);
   });
 }
 
@@ -923,9 +1092,11 @@ export const CROISEE_CROWN_BOTTOM = CROWN[0].y;
 /** La plateforme : sa hauteur au-dessus du sol du lieu (un décor, au-dessus de la tête de Kéo). */
 export const CROISEE_PLATFORM_Y = PLATFORM.y;
 
-/** Les départs et les arrivées des trois passerelles, au sol (pour vérifier qu'elles ne se croisent jamais). */
-export const CROISEE_SPANS: readonly { from: Vec2; to: Vec2 }[] = [...TWINS, THIRD].map((s) => {
-  const a = spanStart(s.start);
-  const e = spanEnd(s);
-  return { from: { x: a.x, z: a.z }, to: { x: e.x, z: e.z } };
-});
+/**
+ * Les départs et les arrivées des trois passerelles (la jumelle droite, la gauche, la troisième), dans le repère du
+ * lieu : pour vérifier qu'elles ne se croisent jamais, et que les jumelles montent à l'écran.
+ */
+export const CROISEE_SPANS: readonly { from: Vec3; to: Vec3 }[] = [...TWINS, THIRD].map((s) => ({ from: spanStart(s.start), to: spanEnd(s) }));
+
+/** Les palétuviers qui portent les paliers des jumelles (droite, gauche) : leur pied, et le dessous de leur canopée. */
+export const CROISEE_TWIN_TREES: readonly { at: Vec2; crown: number }[] = TWINS.map((s) => ({ at: spanTree(s), crown: s.tree.crown ?? 0 }));

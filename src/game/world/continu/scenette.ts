@@ -120,8 +120,9 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // Les Radeaux (GD-22, lot 6) : « le marchand », sans prénom (fiche du 5e, § 6) ; sa réplique, une idée, le marché sur
   // l'eau, à relire par le directeur du contenu pédagogique (jamais « Bazar » ni « le Colporteur »).
   radeaux: { role: placeArt('radeaux')!.role, greeting: 'Ici, le marchand pèse et compare.', placement: 'rangee' },
-  // La Croisée (GD-22, lot 7) : « la cordière », sans prénom ; sa réplique, une idée, le carrefour, à relire par le directeur du contenu pédagogique.
-  croisee: { role: placeArt('croisee')!.role, greeting: 'La cordière tresse les cordes du carrefour, là où les chemins se séparent.', placement: 'rangee' },
+  // La Croisée (GD-22, lot 7) : « la cordière », sans prénom ; sa réplique, une idée, les passerelles, validée par le
+  // directeur du contenu pédagogique (retouche 1, avec le directeur artistique, le consultant d'Archipéo et le référent dys).
+  croisee: { role: placeArt('croisee')!.role, greeting: 'La cordière tresse les cordes qui tiennent les passerelles.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */

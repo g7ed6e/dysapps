@@ -6,9 +6,10 @@ import type { BiomeId } from '../../biomes';
 import { partShapes } from '../../three/archipeo/constructionParts';
 import { PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
 import { WHOLE, posedTraces, traceStagePosed, type PartShape } from './construction';
-import { CROISEE, CROISEE_CROWN_BOTTOM, CROISEE_MAST_TOP, CROISEE_PLATFORM_Y, CROISEE_SPANS, CROISEE_TOP, ROSELIERES_REED } from './croisee5e';
+import { FOLLOW, followPose } from './camera';
+import { CROISEE, CROISEE_CROWN_BOTTOM, CROISEE_MAST_TOP, CROISEE_PLATFORM_Y, CROISEE_SPANS, CROISEE_TOP, CROISEE_TWIN_TREES, ROSELIERES_REED } from './croisee5e';
 import type { Facets } from './facets';
-import { linearRgb, type Vec2 } from './geometry';
+import { linearRgb, type Vec2, type Vec3 } from './geometry';
 import { HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
 import { hasScenette, planFor } from './levelPlan';
 import { MONTEE_HEIGHT } from './montee5e';
@@ -43,6 +44,24 @@ function countColor(f: Facets, color: number): number {
   let n = 0;
   for (let i = 0; i < f.colors.length; i += 3) if (Math.abs(f.colors[i] - r) < 1e-4 && Math.abs(f.colors[i + 1] - g) < 1e-4 && Math.abs(f.colors[i + 2] - b) < 1e-4) n++;
   return n;
+}
+
+/**
+ * Un point du lieu à l'écran d'une tablette (4:3), vu par la caméra de marche qui suit Kéo arrêté en `keo` (repère du
+ * lieu) : x vers la droite, y vers le haut, en part de la demi-hauteur de l'écran.
+ */
+function onScreen(keo: Vec2, p: Vec3): { x: number; y: number } {
+  const pose = followPose({ x: keo.x, y: 0, z: keo.z });
+  const c = pose.position;
+  const f = { x: pose.target.x - c.x, y: pose.target.y - c.y, z: pose.target.z - c.z };
+  const fl = Math.hypot(f.x, f.y, f.z);
+  const fw = { x: f.x / fl, y: f.y / fl, z: f.z / fl };
+  // La caméra regarde vers le nord, sans roulis : la droite est +x, le haut est perpendiculaire au regard.
+  const up = { y: -fw.z, z: fw.y };
+  const d = { x: p.x - c.x, y: p.y - c.y, z: p.z - c.z };
+  const depth = d.x * fw.x + d.y * fw.y + d.z * fw.z;
+  const t = Math.tan(((FOLLOW.fov / 2) * Math.PI) / 180);
+  return { x: d.x / (depth * t * (4 / 3)), y: (d.y * up.y + d.z * up.z) / (depth * t) };
 }
 
 /** Deux segments au sol se coupent-ils (hors de leurs bouts) ? */
@@ -121,12 +140,38 @@ describe('La Croisée, lieu complet', () => {
     const [right, left, third] = CROISEE_SPANS;
     expect(Math.hypot(right.from.x - left.from.x, right.from.z - left.from.z)).toBeLessThan(1.2);
     const turn = (s: { from: Vec2; to: Vec2 }) => Math.atan2(s.to.x - s.from.x, s.to.z - s.from.z);
-    // De part et d'autre de l'axe de la caméra (le sud), à environ 45°.
-    expect(turn(right) * (180 / Math.PI)).toBeGreaterThan(40);
-    expect(turn(right) * (180 / Math.PI)).toBeLessThan(55);
+    // De part et d'autre de l'axe de la caméra (le sud), à 45° (retouche 1 du directeur artistique).
+    expect(turn(right) * (180 / Math.PI)).toBeCloseTo(45, 6);
     expect(turn(left)).toBeCloseTo(-turn(right), 6);
     expect(third.to.z).toBeLessThan(third.from.z - 6);
     for (let i = 0; i < 3; i++) for (let j = i + 1; j < 3; j++) expect(cross(CROISEE_SPANS[i].from, CROISEE_SPANS[i].to, CROISEE_SPANS[j].from, CROISEE_SPANS[j].to), `${i}×${j}`).toBe(false);
+  });
+
+  it('les jumelles montent : leurs paliers à 1,5 à 2 au-dessus de la plateforme, sous la canopée de leur palétuvier ; la troisième reste à plat', () => {
+    const [right, left, third] = CROISEE_SPANS;
+    for (const s of [right, left]) {
+      expect(s.from.y).toBeCloseTo(CROISEE_PLATFORM_Y, 6);
+      expect(s.to.y - s.from.y).toBeGreaterThanOrEqual(1.5);
+      expect(s.to.y - s.from.y).toBeLessThanOrEqual(2);
+    }
+    expect(third.to.y).toBeCloseTo(third.from.y, 6);
+    // La canopée couvre le palier et les mains courantes (0,85 au-dessus du tablier), avec de la marge.
+    for (const [i, tree] of CROISEE_TWIN_TREES.entries()) expect(tree.crown, String(i)).toBeGreaterThan(CROISEE_SPANS[i].to.y + 1.1);
+  });
+
+  it('de la porte, la caméra de marche voit un Y : chaque jumelle monte d’au moins 15° à l’écran, ses deux bouts dans le cadre', () => {
+    const door = { x: 0, z: 7.5 };
+    for (const s of CROISEE_SPANS.slice(0, 2)) {
+      const a = onScreen(door, s.from);
+      const e = onScreen(door, s.to);
+      // L'écran fait 4 sur 3 : un pas en x vaut 4/3 d'un pas en y.
+      const climb = (Math.atan2(e.y - a.y, Math.abs(e.x - a.x) * (4 / 3)) * 180) / Math.PI;
+      expect(climb).toBeGreaterThanOrEqual(15);
+      for (const p of [a, e]) {
+        expect(Math.abs(p.x)).toBeLessThan(1);
+        expect(Math.abs(p.y)).toBeLessThan(1);
+      }
+    }
   });
 
   it('le roseau des Roselières : un paille pâle et chaud, loin du bleu-vert de l’eau', () => {
@@ -215,7 +260,7 @@ describe('La scénette de la Croisée', () => {
  * rendu:budget -- --archipel 6e,5e`, 20 octobre 2026), scénette ouverte. Hors scénette, au départ et sur la Carte :
  * ./radeaux5e.test.ts (un lieu de plus par lieu fini depuis le lot 5).
  */
-const LOT6_OPEN_5E = { triangles: 95_216, calls: 19 } as const;
+const LOT6_OPEN_5E = { triangles: 95_276, calls: 19 } as const;
 
 describe('Le budget du 5e, avec la Croisée (plafonds du lot 7, intention du directeur artistique du 20 octobre 2026)', () => {
   it('scénette ouverte : le lot 6 et un lieu de plus au plus, sans appel de plus ; la cordière en modèle 3D dans les deux appels de la scénette', () => {
