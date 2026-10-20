@@ -73,7 +73,7 @@ function cross(a: Vec2, b: Vec2, c: Vec2, d: Vec2): boolean {
 describe('La Croisée, lieu complet', () => {
   it('ses cinq missions se jouent dans sa scénette, comme à la Montée, au Hameau et aux Radeaux', () => {
     expect(PLACE.scenes).toEqual([...MISSIONS]);
-    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['croisee', 'hameau', 'montee', 'radeaux']);
+    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['croisee', 'hameau', 'instants', 'montee', 'radeaux']);
   });
 
   it('cinq parties : le corps en trois rangées, puis le haut, puis les abords (3+1+1)', () => {
@@ -242,7 +242,7 @@ describe('La scénette de la Croisée', () => {
 
   it('la cordière se montre en modèle 3D', () => {
     expect(hasHabitantModel('croisee')).toBe(true);
-    expect(hasHabitantModel('instants')).toBe(false);
+    expect(hasHabitantModel('oracle')).toBe(false);
   });
 
   it('ses abords tiennent sous le plafond commun, dans chaque état', () => {

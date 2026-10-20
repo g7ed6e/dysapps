@@ -6,8 +6,9 @@
 // rallume. Après la première arrivée, une sente reste tracée pour de bon, du chemin le plus proche jusqu'au Détour, dans
 // le monde et sur la Carte. Ni compteur, ni liste, ni récompense. Les places et les noms : le consultant d'Archipéo ; la
 // forme : l'artiste technique 3D ; les durées : le référent dys. Au 5e (GD-22, lot 6), le premier Détour, le Creux, a son
-// fichier (./creux5e.ts) ; ce fichier les connaît tous deux par leur identifiant et leur niveau. Code pur.
+// fichier (./creux5e.ts) ; la Hutte (lot 8) aussi (./hutte5e.ts) ; ce fichier les connaît tous par leur identifiant et leur niveau. Code pur.
 import { CREUX } from './creux5e';
+import { HUTTE } from './hutte5e';
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, type Vec2 } from './geometry';
 import type { LandId } from './lands';
@@ -19,13 +20,13 @@ import { detourFoot, detourReach, heightAt, landDistance, standingHeight } from 
 
 /**
  * Les Détours, les mêmes, dans le même ordre, que engine/detours.ts, pour la sauvegarde : les cinq du 6e, un par terre,
- * puis ceux du 5e (lot 6 : le Creux).
+ * puis ceux du 5e (lot 6 : le Creux ; lot 8 : la Hutte).
  */
-export const DETOUR_IDS = ['butte-chantier', 'braise-herons', 'bout-large', 'colline-aube', 'haut-cretes', 'creux'] as const;
+export const DETOUR_IDS = ['butte-chantier', 'braise-herons', 'bout-large', 'colline-aube', 'haut-cretes', 'creux', 'hutte'] as const;
 export type DetourId = (typeof DETOUR_IDS)[number];
 
 /** Les Détours du 5e. */
-const DETOUR_IDS_5E = ['creux'] as const satisfies readonly DetourId[];
+const DETOUR_IDS_5E = ['creux', 'hutte'] as const satisfies readonly DetourId[];
 
 /** Un Détour du 6e. */
 type DetourId6e = Exclude<DetourId, (typeof DETOUR_IDS_5E)[number]>;
@@ -33,8 +34,8 @@ type DetourId6e = Exclude<DetourId, (typeof DETOUR_IDS_5E)[number]>;
 /** Les cinq Détours du 6e, un par terre. */
 export const DETOUR_IDS_6E = DETOUR_IDS.filter((id): id is DetourId6e => !(DETOUR_IDS_5E as readonly string[]).includes(id));
 
-/** Ce qu'est un Détour : un sommet, le sommet au cairn à rallumer, un bord d'eau, ou (au 5e) un arbre creux. */
-type DetourKind = 'sommet' | 'cairn' | 'rive' | 'creux';
+/** Ce qu'est un Détour : un sommet, le sommet au cairn à rallumer, un bord d'eau, ou (au 5e) un arbre creux, une cabane. */
+type DetourKind = 'sommet' | 'cairn' | 'rive' | 'creux' | 'cabane';
 
 export interface Detour {
   id: DetourId;
@@ -101,8 +102,8 @@ function detourOf(id: DetourId6e): Detour {
 /** Les cinq Détours du 6e, tirés une fois. */
 export const DETOURS: readonly Detour[] = DETOUR_IDS_6E.map(detourOf);
 
-/** Les Détours du 5e (lot 6 : le Creux). */
-export const DETOURS_5E: readonly Detour[] = [CREUX];
+/** Les Détours du 5e (lot 6 : le Creux, aux Frondaisons ; lot 8 : la Hutte, aux Roselières). */
+export const DETOURS_5E: readonly Detour[] = [CREUX, HUTTE];
 
 /** Les Détours d'un niveau. */
 const detoursOf = (level: OpenWorldLevel): readonly Detour[] => (level === '5e' ? DETOURS_5E : DETOURS);

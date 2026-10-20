@@ -123,6 +123,8 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   radeaux: placeArt('radeaux')!.traceStage,
   // La Croisée (lot 7) : son corps, et chaque trace la rangée de sa partie.
   croisee: placeArt('croisee')!.traceStage,
+  // Les Instants (lot 8) : chaque trace sa partie (2+2+1).
+  instants: placeArt('instants')!.traceStage,
 };
 
 /**

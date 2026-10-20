@@ -7,6 +7,7 @@
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, linearRgb, type Vec2 } from './geometry';
 import { CHANNELS_5E, NEEDLES_5E, PATH_EDGES_5E, PATH_NODES_5E, PLACES_5E, PLATEAU, PLATEAU_5E } from './plan5e';
+import { INSTANTS_MIST } from './instants5e';
 import { heightAt5e, landDistance5e, plateauShare } from './terrain5e';
 import type { VeilMesh } from './veil';
 
@@ -96,6 +97,9 @@ export function riftMistSpots(): MistSpot[] {
   }
   // Au pied de chaque aiguille, du côté de la caméra (au sud).
   for (const n of NEEDLES_5E) keep({ x: n.at.x, z: n.at.z + n.radius * 0.6 });
+  // Au bout de la chaussée des Instants (GD-22, lot 8), sur le grand chenal : la brume qui garde les pierres en silhouette,
+  // au-delà des dernières pierres posées.
+  out.push(...INSTANTS_MIST);
   return out;
 }
 
@@ -115,7 +119,8 @@ export function riftMistFacets(): VeilMesh {
   };
   for (const { at: c, radius } of riftMistSpots())
     for (const layer of RIFT_MIST.layers) {
-      const y = heightAt5e(c) + layer.lift;
+      // Au-dessus du sol, ou de l'eau (la brume du bout des Instants est sur le chenal).
+      const y = Math.max(0, heightAt5e(c)) + layer.lift;
       const n = RIFT_MIST.sides;
       for (let k = 0; k < n; k++) {
         const a0 = (2 * Math.PI * k) / n;

@@ -4,7 +4,8 @@
 // des aiguilles (gris chaud moussu), le bois gris de la ruine, l'ocre des Contreforts, la mousse, le bronze éteint ; rien
 // de presque noir, rien à lire. Retouche du lot 2 (directeur artistique : « des boîtes génériques ») : chaque ruine a sa
 // hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts), comme le Hameau (./hameau5e.ts, lot 5),
-// les Radeaux (./radeaux5e.ts, lot 6) et la Croisée (./croisee5e.ts, lot 7) ; le Donjon, une tour carrée sur son piton de roche. Code pur.
+// les Radeaux (./radeaux5e.ts, lot 6), la Croisée (./croisee5e.ts, lot 7) et les Instants (./instants5e.ts, lot 8) ; le
+// Donjon, une tour carrée sur son piton de roche. Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_5E, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
@@ -45,18 +46,6 @@ function brokenWall(b: FacetBuilder, x: number, z: number, length: number, heigh
     const h = height * (1 - k * 0.3);
     b.box({ x: x + u * c, y: SINK, z: z - u * s, yaw }, [w, h - SINK, 0.8], color, top);
   }
-}
-
-/** Les Instants : un cercle de pierres levées (un cadran), son style cassé, couché au milieu. */
-function instants(b: FacetBuilder): void {
-  const n = 7;
-  for (let k = 0; k < n; k++) {
-    const a = (2 * Math.PI * k) / n;
-    const h = k % 3 === 1 ? 1.6 : 3.4 - (k % 2) * 0.8;
-    b.box({ x: 5 * Math.cos(a), y: SINK, z: 5 * Math.sin(a), yaw: -a }, [1, h - SINK, 1.6], C.stone, C.sun);
-  }
-  b.prism({ x: 0, y: SINK, z: 0 }, 1.6, 1.6, 0.6 - SINK, 8, C.shade, C.moss);
-  b.box({ x: 1.2, y: 0.6, z: 0.4, yaw: 0.5 }, [5, 0.8, 0.8], C.stone, C.sun);
 }
 
 /** Le Sémaphore : un mât de bois sur un socle de pierre, ses deux bras cassés, l'un tombé au pied. */
@@ -158,7 +147,6 @@ function oracle(b: FacetBuilder): void {
  * ./hameau5e.ts, lot 5 ; ./radeaux5e.ts, lot 6 ; ./croisee5e.ts, lot 7), dessinée dans son repère.
  */
 export const RUINS_5E: Readonly<Record<Exclude<PlaceId5e, BuiltPlace5e>, (b: FacetBuilder) => void>> = {
-  instants,
   semaphore,
   gaillard,
   donjon,

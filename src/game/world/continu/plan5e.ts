@@ -188,14 +188,15 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
  * la seule liste, que lisent la scénette (./levelPlan.ts, `hasScenette`), l'habitant en modèle 3D (./habitants.ts,
  * `hasHabitantModel`) et les missions des lieux (`PLACES_5E`). La Montée (lot 3) : les cinq, sous le rail gradué ; le
  * Hameau (lot 5) : les trois, devant le four commun ; les Radeaux (lot 6) : les cinq, sur le quai devant la cabane du
- * marchand ; la Croisée (lot 7) : les cinq, au pied du tronc. Les autres lieux n'ont pas encore la leur (l'écran habituel). Un lieu construit s'ajoute ici, et seulement
- * ici.
+ * marchand ; la Croisée (lot 7) : les cinq, au pied du tronc ; les Instants (lot 8) : les cinq, sur le débarcadère. Les
+ * autres lieux n'ont pas encore la leur (l'écran habituel). Un lieu construit s'ajoute ici, et seulement ici.
  */
 export const BUILT_PLACES_5E = {
   montee: ['thermometer', 'adding', 'fractions', 'order-of-operations', 'conversions-angles'],
   hameau: ['gender-equality', 'discrimination', 'solidarity'],
   radeaux: ['proportion-tables', 'percentages', 'ratios', 'formulas', 'statistics'],
   croisee: ['pairs', 'choices', 'homophone-sentences', 'participles', 'word-meaning'],
+  instants: ['past-tenses', 'future-tense', 'tense-recognition', 'tense-choice', 'sentence-grammar'],
 } as const satisfies Partial<Record<PlaceId5e, readonly string[]>>;
 
 /** Un lieu du 5e déjà construit. */
@@ -357,6 +358,30 @@ export function inLisiereClearing(p: Vec2): boolean {
     abz = b.z - a.z;
   const t = Math.max(0, Math.min(1, ((p.x - a.x) * abx + (p.z - a.z) * abz) / (abx * abx + abz * abz)));
   return Math.hypot(p.x - a.x - abx * t, p.z - a.z - abz * t) < clear;
+}
+
+/**
+ * Le Détour de la Hutte (GD-22, lot 8 ; son dessin : ./hutte5e.ts) : sur la rive sud du grand chenal, à l'ouest du pont
+ * des Roselières. Le centre de sa cabane (`cabin`, sur le sol sec à cinq unités de l'eau, et le rayon où elle bloque la
+ * marche), là où Kéo s'arrête (`at`, devant elle, face à l'eau), le départ de sa sente (`senteFrom`, sur le chemin qui
+ * descend du pont, passé son bout), et la place que la forêt lui laisse (`keep` : autour de la cabane, autour de Kéo, de
+ * part et d'autre de la sente, un palétuvier s'étendant jusqu'à 2,5 unités de son pied).
+ */
+export const HUTTE_5E = {
+  cabin: { x: 38.6, z: 49.6, r: 1.63 },
+  at: { x: 42.62, z: 48.32 },
+  senteFrom: { x: 60.7, z: 55 },
+  keep: { cabin: 7, at: 5, sente: 3.4 },
+} as const;
+
+/** Ce point du monde est-il dans la place de la Hutte (sa cabane, Kéo, sa sente) ? */
+export function inHutteClearing(p: Vec2): boolean {
+  const { cabin, at, senteFrom: a, keep } = HUTTE_5E;
+  if (Math.hypot(p.x - cabin.x, p.z - cabin.z) < keep.cabin || Math.hypot(p.x - at.x, p.z - at.z) < keep.at) return true;
+  const abx = at.x - a.x,
+    abz = at.z - a.z;
+  const t = Math.max(0, Math.min(1, ((p.x - a.x) * abx + (p.z - a.z) * abz) / (abx * abx + abz * abz)));
+  return Math.hypot(p.x - a.x - abx * t, p.z - a.z - abz * t) < keep.sente;
 }
 
 /** Les nœuds de la Lisière, dans son repère : le quai, le bout de la place, puis devant chaque façade, comme à l'Escale. */

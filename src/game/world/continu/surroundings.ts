@@ -9,6 +9,7 @@ import type { Vec3 } from './geometry';
 import type { ScenePlaceId as PlaceId } from './levelPlan';
 import { croiseeSurroundings } from './croiseeSurroundings';
 import { hameauSurroundings } from './hameauSurroundings';
+import { instantsSurroundings } from './instantsSurroundings';
 import { monteeSurroundings } from './monteeSurroundings';
 import { radeauxSurroundings } from './radeauxSurroundings';
 import { quaisSurroundings } from './quaisSurroundings';
@@ -51,11 +52,12 @@ export type Surroundings = (b: FacetBuilder, floor: Vec3, state: SurroundingsSta
 export const SURROUNDINGS_MAX = 1500;
 
 export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
-  // Le 5e (GD-22, lot 3) : la Montée ; lot 5 : le Hameau ; lot 6 : les Radeaux ; lot 7 : la Croisée.
+  // Le 5e (GD-22, lot 3) : la Montée ; lot 5 : le Hameau ; lot 6 : les Radeaux ; lot 7 : la Croisée ; lot 8 : les Instants.
   montee: monteeSurroundings,
   hameau: hameauSurroundings,
   radeaux: radeauxSurroundings,
   croisee: croiseeSurroundings,
+  instants: instantsSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,
