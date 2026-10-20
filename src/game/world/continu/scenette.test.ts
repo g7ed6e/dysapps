@@ -7,7 +7,9 @@ import { FOLLOW, KEO_HEIGHT, LOOK_UP, followPose, lookUp, lookUpStep, orbitAroun
 import { FacetBuilder, boundsOf, placeFacets } from './facets';
 import { distance, linearRgb } from './geometry';
 import { startOf } from './paths';
-import { placeById } from './plan6e';
+import { PLACES, placeById } from './plan6e';
+import { hasScenette } from './levelPlan';
+import { PLACES_5E } from './plan5e';
 import { COMMONS, OBSERVATORY, SHIPYARD, SHORES, SLIP_N, STEAM_GAP, commonsPillars, drumFace, hullEdge, modelOfPlace } from './places';
 import { ANSWER_LAYOUT, COMMONS_PAVING_RISE, ENGINE_PAVING_RISE, FOUNTAIN, JAUGE, LOCK, OBSERVATORY_BAY, OBSERVATORY_PAVING_RISE, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, facingAnswerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, swingTo, type ScreenBox } from './questionScene';
 import {
@@ -545,6 +547,10 @@ describe('Les Filets et les Écluses (lot 4), les Marais salants (lot L5), la Tu
     // À la Turbine et au Chantier naval, toutes leurs traces se cachent pendant une question en C (directeur artistique,
     // lot L6a).
     for (const place of ['quais', 'filets', 'ecluses', 'saltworks', 'engine', 'shipyard', 'mangrove', 'ruins', 'observatory', 'commons'] as const) expect(scenetteHidesPieces(place), place).toBe(true);
+    // Seuls le Phare et les Fumerolles (`keepsTracesInScenette` : les sondes, le récipient de pluie et la pousse restent
+    // dans le cadre) gardent leurs traces, de tous les lieux à scénette du 6e et du 5e (expert frontend, retouche 2 du lot 9).
+    const keep = [...PLACES, ...PLACES_5E].map((p) => p.id).filter((id) => hasScenette(id) && !scenetteHidesPieces(id));
+    expect(keep.sort()).toEqual(['fumerolles', 'phare']);
     // Une trace d'une autre mission dans le cadre se cache le temps de la scénette : les lanternes de la galerie
     // pendant l'Abattage syllabique et les Rimes-échelle ; elles restent pendant la Chasse au son, et au pied de la tour.
     const done = ['sound-hunt', 'syllables', 'rhymes'];

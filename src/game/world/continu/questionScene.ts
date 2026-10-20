@@ -218,6 +218,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   croisee: placeArt('croisee')!.sceneSpot,
   // Les Instants (lot 8) : le débarcadère de la rive est.
   instants: placeArt('instants')!.sceneSpot,
+  // Les Fumerolles (lot 9) : la dalle de relevé, devant la cabane de la sondeuse.
+  fumerolles: placeArt('fumerolles')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -473,6 +475,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   croisee: 'lieu',
   // Les Instants (lot 8) : les galets sur la planche de l'établi.
   instants: 'lieu',
+  // Les Fumerolles (lot 9) : les galets sur la planche à relevés.
+  fumerolles: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

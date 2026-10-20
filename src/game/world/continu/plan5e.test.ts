@@ -475,8 +475,13 @@ describe('Le budget du 5e', () => {
     // Après le lot 5 (le Hameau), environ 23 000 triangles et 3 appels restent pour les douze autres lieux, les Détours, le
     // Rafiot et les aménagements (intention du directeur artistique du 20 octobre 2026, « Le budget ») ; après le lot 6
     // (les Radeaux et le Creux) et le pied des palétuviers de loin (#475), 22 784 triangles ; après le lot 7 (la Croisée,
-    // 96 367 triangles mesurés scénette ouverte, retouches des Radeaux comprises), 21 633 : la réserve passe à 21 000.
-    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 21_000);
+    // 96 367 triangles mesurés scénette ouverte, retouches des Radeaux comprises), 21 633 : la réserve passe à 21 000 ;
+    // après le lot 8 (les Instants et la Hutte, 95 800 : la forêt dégagée le long de la chaussée retire plus que le lieu
+    // n'ajoute) puis le lot 9 (les Fumerolles, +1 163, le lieu restauré à la place de sa ruine), 96 963 triangles mesurés
+    // scénette ouverte, et sa retouche 1 (la vapeur en bouffées, les têtes rondes des sondes, les goujons ronds, +15),
+    // 96 978, 21 022 : la réserve reste à 21 000 ; sa retouche 2 (la vapeur en colonnes de quatre bouffées, +78), 97 056,
+    // 20 944 : la réserve passe à 20 900, de la seule hausse due au lot (l'enveloppe reste 118 000 et 22).
+    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 20_900);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
     // La Carte dans l'enveloppe (ses plafonds lot par lot : ./hameau5e.test.ts, ./croisee5e.test.ts).
     const map = mapCost5e();

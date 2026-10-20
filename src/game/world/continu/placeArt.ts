@@ -104,6 +104,12 @@ export interface PlaceArt {
   /** Le lieu s'efface le temps de sa scénette (la station des Balises serait entre la caméra et la cale, lot L9a). */
   hideInScenette?: true;
   /**
+   * Ses traces restent dans le monde le temps de sa scénette : elle ne dessine aucune réussite à leur place, et elles sont
+   * dans son cadre (les Fumerolles, retouche 1 du lot 9 : les sondes, le récipient de pluie et la pousse entre Kéo et la
+   * sondeuse). Absent : elles se cachent, comme partout ailleurs qu'au Phare.
+   */
+  keepsTracesInScenette?: true;
+  /**
    * Le cap de la caméra devant la porte, à l'arrivée d'un « Y aller » (comme `yaw` de la caméra, scene.ts) : elle regarde
    * le lieu depuis sa porte. Absent : le nord, qui est ce regard pour les lieux dont la porte est au sud (la Montée, le
    * Hameau). Aux Radeaux, porte au nord-est : le quai, les radeaux, puis le chenal (retouche du lot 6 du 5e) ; aux Instants, l'axe

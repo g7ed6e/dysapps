@@ -125,6 +125,8 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   croisee: placeArt('croisee')!.traceStage,
   // Les Instants (lot 8) : chaque trace sa partie (2+2+1).
   instants: placeArt('instants')!.traceStage,
+  // Les Fumerolles (lot 9) : leur corps, et chaque trace son étape, comme au Hameau.
+  fumerolles: placeArt('fumerolles')!.traceStage,
 };
 
 /**

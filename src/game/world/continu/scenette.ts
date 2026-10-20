@@ -126,6 +126,9 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // Les Instants (GD-22, lot 8) : « le tailleur de pierre », sans prénom (fiche du 5e, § 6) ; sa réplique, une idée, la
   // chaussée, à relire par le directeur du contenu pédagogique (sans nom propre, sans le mot du lieu).
   instants: { role: placeArt('instants')!.role, greeting: 'Le tailleur de pierre redresse la chaussée, une pierre après l’autre.', placement: 'rangee' },
+  // Les Fumerolles (GD-22, lot 9) : « la sondeuse », sans prénom ; sa réplique, une idée, un verbe concret, explique le
+  // mot rare (directeur du contenu pédagogique et référent dys, retouche 2 ; jamais « Fumerolles » et « Faille » ensemble).
+  fumerolles: { role: placeArt('fumerolles')!.role, greeting: 'Ici, la sondeuse plante ses sondes dans le sol.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -535,6 +538,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   radeaux: northSite('radeaux'),
   croisee: northSite('croisee'),
   instants: northSite('instants'),
+  fumerolles: northSite('fumerolles'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -1026,11 +1030,12 @@ function poseOfSubject(site: ScenetteSite, S: ScenetteSite['subject'], x: number
 export const scenetteHidesPlace = (place: AnyPlaceId): boolean => place === 'quais' || placeArt(scenePlace(place))?.hideInScenette === true;
 
 /**
- * Les pièces du lieu s'effacent-elles le temps de la scénette ? Partout sauf au Phare (ses lampes sont sur la galerie) :
- * la trace de la réussite que la scénette montre (la barque chargée, le panier plein, la porte ouverte) n'est pas
- * dessinée deux fois ; elle reste dans le monde au retour.
+ * Les pièces du lieu s'effacent-elles le temps de la scénette ? Partout sauf au Phare (ses lampes sont sur la galerie) et
+ * aux Fumerolles (`keepsTracesInScenette` : leurs traces sont dans le cadre) : la trace de la réussite que la scénette
+ * montre (la barque chargée, le panier plein, la porte ouverte) n'est pas dessinée deux fois ; elle reste dans le monde
+ * au retour.
  */
-export const scenetteHidesPieces = (place: AnyPlaceId): boolean => place !== 'phare';
+export const scenetteHidesPieces = (place: AnyPlaceId): boolean => place !== 'phare' && placeArt(scenePlace(place))?.keepsTracesInScenette !== true;
 
 /**
  * Les traces d'un lieu que montre sa scénette (décision du directeur artistique, relecture de L3) : une trace d'une autre
@@ -1954,7 +1959,7 @@ export const FOOT_SHADOW_TRIANGLES = 2 * FOOT_SHADOW.sides;
  * La couleur de l'ombre selon le sol de la scène : les planches (le bois, assombri d'un tiers), les dalles, la terre
  * battue ; jamais transparente, jamais noire.
  */
-const FLOOR_SHADOWS = { planks: 0x7a5636, paving: 0xa58660, earth: 0xb98a55 } as const;
+const FLOOR_SHADOWS = { planks: 0x7a5636, paving: 0xa58660, earth: 0xb98a55, stone: 0x666b64 } as const;
 const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   phare: 'paving',
   quais: 'planks',
@@ -1976,7 +1981,10 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   hameau: 'planks',
   radeaux: 'planks',
   croisee: 'planks',
+  // Les Instants (lot 8) : le plancher du débarcadère.
   instants: 'planks',
+  // Les Fumerolles (lot 9) : la dalle de pierre grise.
+  fumerolles: 'stone',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

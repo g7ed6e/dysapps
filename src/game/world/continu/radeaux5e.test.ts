@@ -336,7 +336,7 @@ describe('Le budget du 5e, avec les Radeaux et le Creux (plafonds du lot 6)', ()
 
   // Le plafond scénette ouverte et la réserve des lots suivants : ./plan5e.test.ts (« Le budget du 5e »).
   it('hors scénette, au départ et sur la Carte : le lot 5, un lieu par lieu fini depuis, le Creux et le pied des palétuviers de plus au plus, sans appel de plus', () => {
-    // Les lieux finis depuis le lot 5 : les Radeaux (lot 6), la Croisée (lot 7), les Instants (lot 8).
+    // Les lieux finis depuis le lot 5 : les Radeaux (lot 6), la Croisée (lot 7), les Instants (lot 8), les Fumerolles (lot 9).
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => id !== 'montee' && id !== 'hameau').length;
     const views = [
       [sum(openWorldCost5e('monde')), LOT5_5E.world],
