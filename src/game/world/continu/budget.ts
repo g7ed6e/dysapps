@@ -13,7 +13,7 @@ import { bridgeLay } from './bridgeLay';
 import { bridgeFacets, bridgeMapMark, cabinCarFacets, isCabin } from './bridges';
 import { monteeGlowBand } from './montee5e';
 import { linkedLands } from './lands';
-import { planFor, scenePlace } from './levelPlan';
+import { planFor, scenePlace, type OpenWorldLevel, type ScenePlaceId } from './levelPlan';
 import { networkSamples, pathRibbons } from './paths';
 import { PLACES, type PlaceId } from './plan6e';
 import { lanternLight, modelOfPlace } from './places';
@@ -21,7 +21,7 @@ import { constructionFacets, WHOLE } from './construction';
 import { PORT_WORST, assemblyScene, portFacets } from './port';
 import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
 import type { ItemScene } from './questions';
-import { HABITANT_TRIANGLES } from './habitants';
+import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
 import { bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
 import { landTileCounts } from './flora';
 import { buildHeightField, heightOnMesh, tileRings } from './terrain';
@@ -57,7 +57,7 @@ const FAUNA_COST = { triangles: whaleFacets().triangles + spoutFacets().triangle
 const SKY = { triangles: skyDome(1).triangles, calls: 1 };
 
 /**
- * L'enveloppe du monde ouvert : 100 140 triangles, 22 appels, relevée de 140 triangles pour les bêtes des côtes (piste
+ * L'enveloppe du monde ouvert du 6e : 100 140 triangles, 22 appels, relevée de 140 triangles pour les bêtes des côtes (piste
  * « Ambiance », choisie par le mainteneur le 19 octobre 2026 avec « environ +300 triangles, 0 appel » : 134 triangles
  * de plus, et les 40 de marge d'avant gardés). Avant : 100 000 triangles, 22 appels, relevée pour la Nef (GD-21, « on peut augmenter le budget si
  * besoin », mainteneur, 18 octobre 2026 ; 98 000 avant). Les 98 000 triangles et 22 appels (21, puis 22 avec les
@@ -68,7 +68,28 @@ const SKY = { triangles: skyDome(1).triangles, calls: 1 };
  * déplacement libre, la silhouette de Kéo et la marque au sol, 18 octobre 2026).
  * La Carte la touche presque (toute l'île de loin, sa végétation comprise).
  */
-export const OPEN_WORLD_BUDGET = { triangles: 100_140, calls: 22 } as const;
+const OPEN_WORLD_BUDGET_6E = { triangles: 100_140, calls: 22 } as const;
+
+/**
+ * L'enveloppe du monde ouvert du 5e : 118 000 triangles, 22 appels (choix du mainteneur, 20 octobre 2026, « Relever
+ * seulement » : ni la brume ni les racines ne s'allègent). Le chiffre vient de l'étude de l'artiste technique 3D du même
+ * jour (lot 5, `economies.md`, piste D) : 83 840 triangles le 20 octobre (scénette ouverte), plus ce qui reste à venir
+ * (treize lieux à 1 600 triangles au plus, l'habitant en modèle 3D, la question au niveau du 6e, les Détours, le Rafiot,
+ * les aménagements), environ 118 000 au centre ; les appels tiennent dans 22.
+ */
+const OPEN_WORLD_BUDGET_5E = { triangles: 118_000, calls: 22 } as const;
+
+/**
+ * Le plafond d'un lieu du 5e, ruine, étapes et traces montrées ensemble, en triangles (recommandation du directeur
+ * artistique du 20 octobre 2026, suivie en attendant le mainteneur : facile à défaire).
+ */
+export const PLACE_TRIANGLES_MAX_5E = 1_600;
+
+/** L'enveloppe du monde ouvert de chaque niveau, que seul le mainteneur relève. */
+export const OPEN_WORLD_BUDGETS: Readonly<Record<OpenWorldLevel, { readonly triangles: number; readonly calls: number }>> = {
+  '6e': OPEN_WORLD_BUDGET_6E,
+  '5e': OPEN_WORLD_BUDGET_5E,
+};
 
 export interface OpenWorldCost {
   poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette' | 'nef';
@@ -399,15 +420,21 @@ function questionCost5e(): { triangles: number; calls: number } {
 }
 
 /**
- * La scénette du 5e (lot 3, la Montée) : son décor de près, abords et ombres compris, avec la fontainière en pion dessiné
- * par le code, dans un seul maillage (un appel). Son modèle 3D, plus tard (≤ 8 000 triangles, choix du mainteneur du 19
- * octobre 2026 : un lot à part), prendra la place du pion avec un appel de plus.
+ * La scénette du 5e, la plus chargée (lot 3, la Montée ; lot 5, le Hameau) : son décor de près, abords et ombres compris,
+ * dans un maillage (un appel) ; l'habitant en modèle 3D (./habitants.ts, `hasHabitantModel` : le boulanger et la
+ * fontainière, lot 5) à la place de son pion, au plus `HABITANT_TRIANGLES_5E`, dans un maillage à part, de son matériau
+ * texturé : un appel de plus. Deux scénettes ne s'ouvrent jamais ensemble : la plus chargée compte seule.
  */
 function scenetteCost5e(): { triangles: number; calls: number } {
-  const montee = Math.max(...PLAN_5E.places.filter((p) => p.scenes.length).map((p) => Math.max(scenetteDecor(scenePlace(p.id)).triangles, scenetteDecor(scenePlace(p.id), true).triangles)));
-  // La scénette d'assemblage de la Lisière (lot 4), jamais en même temps que celle de la Montée : les pièces, puis le bloc.
+  const places = PLAN_5E.places.filter((p) => p.scenes.length).map((p) => scenePlace(p.id));
+  const decor = (place: ScenePlaceId, open: boolean) => {
+    const full = scenetteDecor(place, open).triangles;
+    return hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_5E : full;
+  };
+  const worst = Math.max(...places.map((p) => Math.max(decor(p, false), decor(p, true))));
+  // La scénette d'assemblage de la Lisière (lot 4), jamais en même temps qu'une autre : les pièces, puis le bloc.
   const assembly = assemblyScene(PORT_WORST, LISIERE_SITE);
-  return { triangles: Math.max(montee, assembly.pieces.triangles, assembly.made.triangles), calls: 1 };
+  return { triangles: Math.max(worst, assembly.pieces.triangles, assembly.made.triangles), calls: places.some(hasHabitantModel) ? 2 : 1 };
 }
 
 /**

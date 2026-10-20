@@ -185,10 +185,12 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
 
 /**
  * Les missions qui se jouent dans la scénette d'un lieu du 5e (GD-22, lot 3) : à la Montée, les cinq, sous le rail
- * gradué ; les autres lieux n'ont pas encore la leur (l'écran habituel).
+ * gradué ; au Hameau (lot 5), les trois, devant le four commun ; les autres lieux n'ont pas encore la leur (l'écran
+ * habituel).
  */
 const SCENES_5E: Partial<Record<PlaceId5e, readonly string[]>> = {
   montee: ['thermometer', 'adding', 'fractions', 'order-of-operations', 'conversions-angles'],
+  hameau: ['gender-equality', 'discrimination', 'solidarity'],
 };
 
 /** Le rayon de toucher d'un lieu du 5e : large, rien de précis à viser. */

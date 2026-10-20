@@ -114,6 +114,9 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // Le 5e, la Montée (GD-22, lot 3) : « la fontainière » (directeur artistique), son nom attend le mot du mainteneur ; sa
   // réplique, une idée, le sommet (consultant d'Archipéo et référent dys, première relecture du lot 3).
   montee: { role: placeArt('montee')!.role, greeting: 'La fontainière monte l’eau jusqu’au sommet, godet par godet.', placement: 'rangee' },
+  // Le Hameau (GD-22, lot 5) : « le boulanger », sans prénom (fiche du 5e, § 6) ; sa réplique, une idée, le four commun,
+  // à relire par le directeur du contenu pédagogique.
+  hameau: { role: placeArt('hameau')!.role, greeting: 'Le boulanger cuit le pain de tout le village, dans le four commun.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -129,6 +132,11 @@ export const scenetteOf = (place: AnyPlaceId): Scenette => SCENETTES[scenePlace(
  */
 export const SCENETTE_LAYOUT = {
   edge: 0.03,
+  /**
+   * La marge de la rangée des réponses au bord droit de l'écran (et au gauche sur tablette), en pixels : 16 au moins,
+   * hors de la zone sûre (relecture UX UI du lot 5 du 5e : l'étiquette de droite finissait à 12 px du bord).
+   */
+  rowEdge: 16,
   panelRight: 0.74,
   /** « Vue simple » et la pause, en haut à droite : la place gardée, en pixels. */
   topRight: 250,
@@ -294,9 +302,14 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
     const right = width - edge;
     const sideLeft = Math.max(S.low.left * width, base.panel.left + base.panel.width + edge);
     if (base.low && needs.aid && sideLeft < width / 2 + edge) return lowWithAid(n, width, height, base, sideLeft, share);
-    const beside = !needs.wideRow && (right - sideLeft - (n - 1) * L.gap) / n >= (needs.words ? L.minLabelBells : L.minLabel);
-    const rowLeft = beside ? sideLeft : edge;
-    const { slots, objectHeight } = rowSlots(n, rowLeft, right, S.low.rowTop * height, S.low.rowBottom * height, lh, share, needs.wideRow ? S.wideLabel : L.maxWidth);
+    // La rangée à 16 px du bord droit ; à côté de la colonne, elle glisse vers elle, à 8 px d'elle au plus près, pour
+    // garder sa largeur (retouche 2 du lot 5 du 5e : plus étroites de 4 px, « Constitution » ne tenait plus dans son
+    // étiquette, et la rangée passait sous la colonne, qui coupait la phrase).
+    const rowRight = width - Math.max(edge, S.rowEdge);
+    const besideLeft = Math.max(base.panel.left + base.panel.width + L.edgeLow, sideLeft - (Math.max(edge, S.rowEdge) - edge));
+    const beside = !needs.wideRow && (rowRight - besideLeft - (n - 1) * L.gap) / n >= (needs.words ? L.minLabelBells : L.minLabel);
+    const rowLeft = beside ? besideLeft : edge;
+    const { slots, objectHeight } = rowSlots(n, rowLeft, rowRight, S.low.rowTop * height, S.low.rowBottom * height, lh, share, needs.wideRow ? S.wideLabel : L.maxWidth);
     const highest = Math.min(...slots.map((s) => s.hit.top));
     const panelBottom = beside ? height - edge : highest - edge;
     const stage = { left: sideLeft, top: S.low.top * height, right, bottom: Math.min(S.low.bottom * height, highest - edge) };
@@ -319,9 +332,9 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   const above = Math.min(S.row.bottom * height, validate.top - S.validate.gap);
   const roomy = above - S.row.top * height >= 2 * lh + L.lift;
   const rowBottom = roomy ? above : S.row.bottom * height;
-  // La rangée prend toute la largeur, à 12 px des bords : les mots des cloches, leur image devant, y tiennent.
-  const rowRight = roomy ? width - L.edge : validate.left - S.validate.gap;
-  const { slots, objectHeight } = rowSlots(n, L.edge, rowRight, S.row.top * height, rowBottom, lh, share);
+  // La rangée prend toute la largeur, à 16 px des bords : les mots des cloches, leur image devant, y tiennent.
+  const rowRight = roomy ? width - S.rowEdge : validate.left - S.validate.gap;
+  const { slots, objectHeight } = rowSlots(n, S.rowEdge, rowRight, S.row.top * height, rowBottom, lh, share);
   const top = S.edge * height + (needs.grand ? S.grandTop : 0);
   const panelWidth = needs.grand ? width - 2 * edge : Math.max(0, Math.min(S.panelRight * width, width - S.topRight) - edge);
   const highest = Math.min(...slots.map((s) => s.hit.top));
@@ -509,6 +522,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   beacons: northSite('beacons'),
   ferry: northSite('ferry'),
   montee: northSite('montee'),
+  hameau: northSite('hameau'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -1947,6 +1961,7 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   beacons: 'paving',
   ferry: 'planks',
   montee: 'planks',
+  hameau: 'planks',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

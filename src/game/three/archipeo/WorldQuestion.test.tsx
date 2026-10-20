@@ -238,6 +238,29 @@ describe('Toutes les missions des Quais en scénette (GD-20, point 8)', () => {
     expect(panel.querySelector('.world-question-figure, .world-question-aid')).not.toBeNull();
   });
 
+  it('un mot coupé dans son étiquette : « Vue simple » proposé, la scène ne dessine plus les objets des réponses, la voix garde son nom (retouche 3 du lot 5 du 5e)', async () => {
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    vi.stubGlobal('speechSynthesis', { speak: vi.fn(), cancel: vi.fn(), getVoices: () => [] });
+    vi.stubGlobal('SpeechSynthesisUtterance', class {});
+    // Chaque étiquette de réponse plus étroite que son mot (la page, elle, a la taille d'une tablette).
+    vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockImplementation(function (this: HTMLElement) {
+      return this.classList.contains('world-answer-label') ? 2000 : 0;
+    });
+    renderPlace('quais', 'times-tables');
+    expect(await screen.findByText('Le docker')).toBeInTheDocument();
+    const start = screen.queryByRole('button', { name: /Commencer/ });
+    if (start) await user.click(start);
+    await vi.waitFor(() => expect(document.querySelector('.quiz.in-world.offer.answers-out')).not.toBeNull());
+    expect(vi.mocked(world.question).mock.calls[0]?.[0]).toMatchObject({ answersOut: false });
+    // Les objets sans étiquette ne se dessinent plus : rien ne semble se toucher dans la scène.
+    await vi.waitFor(() => expect(vi.mocked(world.question).mock.calls.at(-1)?.[0]).toMatchObject({ answersOut: true }));
+    // Seul sous « Vue simple », le haut-parleur de la question garde un nom (sa phrase écrite est cachée).
+    const voice = document.querySelector<HTMLButtonElement>('.quiz.in-world.offer .question-head .speak-button');
+    expect(voice?.getAttribute('aria-label')).toMatch(/^\S.* : \S/);
+    vi.unstubAllGlobals();
+  });
+
   it('une mission dont la scénette n’est pas faite se joue sur l’écran habituel : ni rôle, ni « Vue simple », ni scène', async () => {
     vi.mocked(world.question).mockClear();
     renderPlace('filets', 'e-er-ez', true);

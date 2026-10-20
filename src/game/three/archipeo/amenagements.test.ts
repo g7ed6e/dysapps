@@ -7,7 +7,7 @@
 // éteintes, le cadrage de la remise (entier dans la scène, avec une marge, aux trois formats), ce qu'ils coûtent. Sans
 // Three.js.
 import { describe, expect, it } from 'vitest';
-import { OPEN_WORLD_BUDGET, mapCost, openWorldCost } from '../../world/continu/budget';
+import { OPEN_WORLD_BUDGETS, mapCost, openWorldCost } from '../../world/continu/budget';
 import { screenOf } from '../../world/continu/camera';
 import { WHOLE, constructionFacets } from '../../world/continu/construction';
 import { boundsOf, type Facets } from '../../world/continu/facets';
@@ -665,10 +665,10 @@ describe('Ce qu’ils coûtent', () => {
     expect(cost.triangles).toBe(placed.reduce((s, o) => s + o.p.facets.triangles, 0));
     const world = openWorldCost(cost.triangles);
     expect(world.find((c) => c.poste === 'aménagements')).toEqual({ poste: 'aménagements', triangles: cost.triangles, calls: 0 });
-    expect(world.reduce((s, c) => s + c.triangles, 0)).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
-    expect(world.reduce((s, c) => s + c.calls, 0)).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
+    expect(world.reduce((s, c) => s + c.triangles, 0)).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['6e'].triangles);
+    expect(world.reduce((s, c) => s + c.calls, 0)).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['6e'].calls);
     const map = mapCost(cost.triangles);
     expect(map.triangles).toBe(mapCost(0).triangles + cost.triangles);
-    expect(map.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
+    expect(map.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['6e'].triangles);
   });
 });

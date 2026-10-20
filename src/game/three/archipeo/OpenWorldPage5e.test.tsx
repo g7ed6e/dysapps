@@ -90,17 +90,17 @@ test('la scène reçoit le plan du 5e, la Lisière et le dirigeable (lot 4) ; le
   expect([...scene.closed].sort()).toEqual(['aiguilles', 'contreforts', 'roselieres']);
 });
 
-test('une mission d’un lieu du 5e se joue sur l’écran habituel, jamais dans une scénette', async () => {
+test('une mission d’un lieu du 5e sans scénette (l’Auberge) se joue sur l’écran habituel', async () => {
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });
-  act(() => scene.options!.onArrive('hameau'));
-  const sheet = await screen.findByRole('dialog', { name: 'Le Hameau' });
-  // Aucune ligne d'habitant au 5e : le panneau commence par ses missions.
+  act(() => scene.options!.onArrive('auberge'));
+  const sheet = await screen.findByRole('dialog', { name: 'L’Auberge' });
+  // Aucune ligne d'habitant dans un lieu du 5e sans scénette : le panneau commence par ses missions.
   expect(within(sheet).queryByRole('button', { name: /Reprendre|Livrer/ })).toBeNull();
-  const rows = within(sheet).getByRole('list', { name: 'Missions au Hameau' });
+  const rows = within(sheet).getByRole('list', { name: 'Missions à l’Auberge' });
   await userEvent.setup().click(within(rows).getAllByRole('button')[0]);
   await vi.waitFor(() => expect(document.querySelector('.world-question.ecran-habituel')).not.toBeNull());
-  expect(scene.world!.question).not.toHaveBeenCalledWith(expect.objectContaining({ place: 'hameau' }));
+  expect(scene.world!.question).not.toHaveBeenCalledWith(expect.objectContaining({ place: 'auberge' }));
 });
 
 test('sur la Carte, la pastille du lieu que désigne la marque porte seule la marque « suggéré » (seconde relecture du lot 2)', async () => {

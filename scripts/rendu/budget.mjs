@@ -99,16 +99,17 @@ try {
   });
 
   // Le monde ouvert d'Archipéo (prototype du 6e, derrière le drapeau `?monde=ouvert`) : ses postes (`openWorldCost`) et
-  // la Carte de ses lieux (`mapCost`), sous leur enveloppe (`OPEN_WORLD_BUDGET`), que seul le mainteneur relève ; les
+  // la Carte de ses lieux (`mapCost`), sous leur enveloppe (`OPEN_WORLD_BUDGETS`), que seul le mainteneur relève ; les
   // aménagements posés (GD-20, point 4), dont la vue trace les dessins, y entrent par leurs triangles.
   const sixieme = !demandes || demandes.includes('6e');
   const amenagements = sixieme ? amenagementsCost().triangles : 0;
-  const mondeOuvert = sixieme ? { niveau: '6e', postes: ouvert.openWorldCost(amenagements), carte: ouvert.mapCost(amenagements), enveloppe: ouvert.OPEN_WORLD_BUDGET } : null;
-  // Le monde ouvert du 5e (GD-22, lot 2 : toute l'île en grandes masses), sous la même enveloppe.
+  const mondeOuvert = sixieme ? { niveau: '6e', postes: ouvert.openWorldCost(amenagements), carte: ouvert.mapCost(amenagements), enveloppe: ouvert.OPEN_WORLD_BUDGETS['6e'] } : null;
+  // Le monde ouvert du 5e (GD-22, lot 2 : toute l'île en grandes masses), sous son enveloppe (`OPEN_WORLD_BUDGETS`, 20
+  // octobre 2026 : chaque niveau a la sienne).
   const cinquieme = !demandes || demandes.includes('5e');
   // Au 5e (lot 3), deux cas qui ne se montrent jamais ensemble : la scénette de la Montée ouverte (le pire), puis le
   // monde hors scénette (la pose, la caisse de la cabine qui roule).
-  const mondeOuvert5e = cinquieme ? { niveau: '5e', postes: ouvert.openWorldCost5e(), carte: ouvert.mapCost5e(), enveloppe: ouvert.OPEN_WORLD_BUDGET, horsScenette: ouvert.openWorldCost5e('monde'), depart: ouvert.openWorldCost5e('depart') } : null;
+  const mondeOuvert5e = cinquieme ? { niveau: '5e', postes: ouvert.openWorldCost5e(), carte: ouvert.mapCost5e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['5e'], horsScenette: ouvert.openWorldCost5e('monde'), depart: ouvert.openWorldCost5e('depart') } : null;
 
   if (JSON_SEUL) console.log(JSON.stringify(resultats, null, 2));
   else {

@@ -37,6 +37,17 @@ export const HABITANT_HALVES: Readonly<Record<PlaceId6e, { x: number; z: number 
 /** Le dossier du modèle de l'habitant d'un lieu (docs/univers/archipeo/personnages/modeles/<nom>/), préfixé de son niveau. */
 export const habitantModelName = (place: PlaceId): string => `${levelOfPlace(place)}-habitant-${place}`;
 
+/**
+ * Les lieux du 5e dont l'habitant se montre en modèle 3D dans sa scénette (choix du mainteneur, 19 octobre 2026 : les
+ * quatorze fichiers sont là ; ils entrent lieu par lieu, avec leur scénette) : le boulanger du Hameau (GD-22, lot 5), et
+ * la fontainière de la Montée, entrée au même lot (les deux scénettes ne s'ouvrent jamais ensemble : aucun triangle de
+ * plus). Ailleurs au 5e, le pion dessiné en code. Au 6e, tous.
+ */
+const MODELLED_5E: ReadonlySet<PlaceId> = new Set<PlaceId>(['hameau', 'montee']);
+
+/** L'habitant de ce lieu se montre-t-il en modèle 3D (sinon, son pion dessiné en code) ? */
+export const hasHabitantModel = (place: PlaceId): boolean => levelOfPlace(place) === '6e' || MODELLED_5E.has(place);
+
 /** Le fichier du modèle, dans son dossier : une seule version, l'habitant ne se voit que de près, dans sa scénette. */
 export const HABITANT_FILE = 'habitant.glb';
 
@@ -46,6 +57,9 @@ export const HABITANT_FILE = 'habitant.glb';
  * fichiers.
  */
 export const HABITANT_TRIANGLES = 22_500;
+
+/** Les triangles d'un modèle d'habitant du 5e, au plus : 8 000 (le plafond du directeur artistique ; un test les relit). */
+export const HABITANT_TRIANGLES_5E = 8_000;
 
 /**
  * Les quarts de tour qui tournent un fichier face à la caméra de la scénette (vers +z, le sud), comme le pion : les

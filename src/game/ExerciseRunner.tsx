@@ -22,6 +22,7 @@ import { worksiteFor } from './world/worksite';
 import { retenirLaPose } from './poseToShow';
 import { retenirLesBlocs } from './blockFlight';
 import { minuscule } from './world/parts';
+import { phraseDeLaPose, type PoseWords } from './poseWords';
 import { voyageId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
@@ -76,6 +77,11 @@ export interface RunnerStage {
   Done?: ComponentType<StageDoneProps>;
   /** Un morceau d'une révision jouée dans la scène du lieu (GD-20, point 4, lot L3, `RunnerRevision`). */
   revision?: RunnerRevision;
+  /**
+   * Comment le bilan nomme une partie posée et un plan fini, écrits et lus (`PoseWords`) ; sans lui, par le nom du plan
+   * et sa réplique (la grille).
+   */
+  pose?: PoseWords;
 }
 
 /**
@@ -107,14 +113,6 @@ export interface StageDoneProps {
 
 /** Le carillon de fin (`playDone`) : deux notes, la seconde à 160 ms, de 450 ms ; la voix vient après. */
 const CARILLON_MS = 610;
-
-/**
- * La phrase de la pose, écrite et lue : « Partie posée : le toit de la cabane. », l'accord porté par « partie », quel que
- * soit le nom ; puis la réplique et l'XP de chaque plan fini.
- */
-function phraseDeLaPose(pose: NonNullable<Completion['pose']>): string {
-  return [...pose.posees.map((p) => `Partie posée : ${minuscule(p.nom)}.`), ...pose.plansFinis.map((p) => `${p.done} +${p.reward.xp} XP.`)].join(' ');
-}
 
 /** Découpe les items en écrans selon le type d'exercice. */
 function screensOf(def: ExerciseDef, seed = def.id, review: string[] = [], stage?: RunnerStage): ExerciseItem[][] {
@@ -215,7 +213,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
     if (!pose?.posees.length) return;
     const timers: number[] = [];
     const plusTard = (f: () => void, ms: number) => timers.push(window.setTimeout(f, ms));
-    const dire = () => settings.autoRead && speak(frenchTypography(phraseDeLaPose(pose)));
+    const dire = () => settings.autoRead && speak(frenchTypography(phraseDeLaPose(pose, inWorld?.pose)));
     if (!settings.sounds) dire();
     else if (habillageDuMonde().pose === 'geste') {
       sonDePose('geste')();
@@ -323,22 +321,41 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
             <Icon name="zap" size="1.6rem" />
             <strong>+{done.xp}</strong> XP{done.perfect ? ' (bonus sans aide)' : ''}
           </li>
-          {pose?.posees.map((partie, i, posees) => (
-            <li key={`pose-${partie.rang}`} className="reward-pose">
-              <Icon name="home" size="1.6rem" />
-              <span>
-                <strong>Partie posée : {minuscule(partie.nom)}.</strong>
-                {i === posees.length - 1 &&
-                  pose.plansFinis.map((plan) => (
-                    <span key={plan.id} className="reward-pose-fin">
-                      {' '}
-                      <Syllabified text={plan.done} /> <strong>+{plan.reward.xp}</strong> XP
-                    </span>
-                  ))}
-              </span>
-              {i === posees.length - 1 && <SpeakButton text={frenchTypography(phraseDeLaPose(pose))} label="Écouter" compact />}
-            </li>
-          ))}
+          {pose && inWorld?.pose
+            ? // Au monde ouvert du 5e : une phrase par partie, l'étape du lieu ; l'XP d'un plan fini après la sienne.
+              inWorld.pose.lines(pose).map((line, i, lines) => (
+                <li key={`pose-${i}`} className="reward-pose">
+                  <Icon name="home" size="1.6rem" />
+                  <span>
+                    <strong>
+                      <Syllabified text={line.text} />
+                    </strong>
+                    {line.xp !== undefined && (
+                      <>
+                        {' '}
+                        <strong>+{line.xp}</strong> XP
+                      </>
+                    )}
+                  </span>
+                  {i === lines.length - 1 && <SpeakButton text={frenchTypography(phraseDeLaPose(pose, inWorld.pose))} label="Écouter" compact />}
+                </li>
+              ))
+            : pose?.posees.map((partie, i, posees) => (
+                <li key={`pose-${partie.rang}`} className="reward-pose">
+                  <Icon name="home" size="1.6rem" />
+                  <span>
+                    <strong>Partie posée : {minuscule(partie.nom)}.</strong>
+                    {i === posees.length - 1 &&
+                      pose.plansFinis.map((plan) => (
+                        <span key={plan.id} className="reward-pose-fin">
+                          {' '}
+                          <Syllabified text={plan.done} /> <strong>+{plan.reward.xp}</strong> XP
+                        </span>
+                      ))}
+                  </span>
+                  {i === posees.length - 1 && <SpeakButton text={frenchTypography(phraseDeLaPose(pose))} label="Écouter" compact />}
+                </li>
+              ))}
           {done.chestBlock && (
             <li className="reward-chest">
               <BlockIcon top={BLOCKS[done.chestBlock].top} side={BLOCKS[done.chestBlock].side} size={44} />
