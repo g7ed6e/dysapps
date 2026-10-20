@@ -130,3 +130,30 @@ La planche validée par le mainteneur en 00, puis les vues du jeu.
 
 ![11-ruine-plan-vu-d-en-haut](11-ruine-plan-vu-d-en-haut.jpg)
 
+
+# Retouche 2 (commit 04fb71e3)
+
+## r2 · 01-ruine-vu-de-la-porte
+
+![01-ruine-vu-de-la-porte](r2/01-ruine-vu-de-la-porte.jpg)
+
+## r2 · 04-restaure-vu-de-la-porte
+
+![04-restaure-vu-de-la-porte](r2/04-restaure-vu-de-la-porte.jpg)
+
+## r2 · 05-restaure-trois-quarts
+
+![05-restaure-trois-quarts](r2/05-restaure-trois-quarts.jpg)
+
+## r2 · 06-scenette-sondeuse-restaure
+
+![06-scenette-sondeuse-restaure](r2/06-scenette-sondeuse-restaure.jpg)
+
+## r2 · 06-scenette-sondeuse-ruine
+
+![06-scenette-sondeuse-ruine](r2/06-scenette-sondeuse-ruine.jpg)
+
+## r2 · 07-de-loin-depuis-con-3-restaure-camera-du-jeu
+
+![07-de-loin-depuis-con-3-restaure-camera-du-jeu](r2/07-de-loin-depuis-con-3-restaure-camera-du-jeu.jpg)
+
