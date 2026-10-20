@@ -87,8 +87,8 @@ export const WHOLE: PartShape = [
  * d'amont des Écluses, le hangar à sel des Marais salants, la turbine (le haut) ; le ponton du Chantier naval (les
  * abords : sa trace d'Information est au bout du ponton) ; le platelage de la Mangrove (le corps, lot L8a), les abords
  * des Ruines (lot L8b), la terrasse de l'Observatoire (les abords, lot L8c), la toiture de la Halle (le haut, lot L8d).
- * Tant que cette étape n'est pas posée, la trace attend : rien ne flotte dans le vide. Les lieux du 5e n'ont pas encore
- * de trace, sauf la Montée (GD-22, lot 3).
+ * Tant que cette étape n'est pas posée, la trace attend : rien ne flotte dans le vide. Au 5e, la Montée (GD-22, lot 3) et
+ * le Hameau (lot 5) ont les leurs ; les autres lieux du 5e n'en ont pas encore.
  */
 const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   phare: 2,
@@ -110,8 +110,19 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   // Le large (lot L9) : les abords, dans le fichier de chaque lieu.
   beacons: placeArt('beacons')!.traceStage,
   ferry: placeArt('ferry')!.traceStage,
-  // Le 5e (GD-22, lot 3) : la Montée, son haut (./montee5e.ts).
+  // Le 5e (GD-22, lot 3) : la Montée, son haut (./montee5e.ts) ; le Hameau (lot 5), son corps, et chaque trace la sienne.
   montee: placeArt('montee')!.traceStage,
+  hameau: placeArt('hameau')!.traceStage,
+};
+
+/**
+ * L'étape qui porte la trace d'une mission : la sienne si le lieu la donne (au Hameau, GD-22, lot 5 : la trace de la
+ * mission n se montre avec l'étape n), sinon celle du lieu.
+ */
+const missionTraceStage = (place: PlaceId, mission: string): Stage | undefined => {
+  const traces = placeArt(place)?.traces;
+  const own = traces && Object.hasOwn(traces, mission) ? traces[mission].stage : undefined;
+  return own ?? TRACE_STAGE[place];
 };
 
 /**
@@ -126,6 +137,17 @@ export const traceStagePosed = (place: PlaceId, parts: readonly PartShape[]): bo
 
 /** La trace d'un lieu se montre-t-elle ? Sa scénette réussie (`done`), et l'étape qui la porte posée. */
 export const traceShown = (place: PlaceId, parts: readonly PartShape[], done: boolean): boolean => done && traceStagePosed(place, parts);
+
+/**
+ * Les traces d'un lieu à montrer, parmi ses missions réussies (`done`) : celles dont l'étape est posée. Partout, l'étape du
+ * lieu ; au Hameau, celle de chaque mission.
+ */
+export function posedTraces(place: PlaceId, parts: readonly PartShape[], done: readonly string[]): readonly string[] {
+  return done.filter((m) => {
+    const stage = missionTraceStage(place, m);
+    return stage !== undefined && stageComplete(parts, stage);
+  });
+}
 
 /** La lanterne du Phare est-elle allumée ? Dès que son haut est posé (directeur artistique, 15 octobre 2026). */
 export const lanternLit = (parts: readonly PartShape[]): boolean => stageComplete(parts, 1);

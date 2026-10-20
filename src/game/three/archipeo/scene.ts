@@ -17,7 +17,7 @@ import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFl
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, WORLD_FOG, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourFacets, faunaPose, spoutFacets, whaleFacets, type DetourId } from '../../world/continu/detours';
-import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, poseView, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
+import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
@@ -27,6 +27,7 @@ import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/contin
 import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { hasScenette, placeById, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
+import { hasHabitantModel } from '../../world/continu/habitants';
 import { levelWorld, type LevelWorld, type ThinFog } from '../../world/continu/levelWorld';
 import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from '../../world/continu/mist5e';
 import { pathMapEdges5e } from '../../world/continu/paths5e';
@@ -1598,7 +1599,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     framedNef = place === 'nef';
     if (place && place !== 'nef') framed = place;
     // Le panneau d'un lieu s'ouvre (Kéo y arrive) : le modèle de son habitant se prépare, avant sa scénette.
-    if (place && place !== 'nef' && sixth) habitants.prefetch(place);
+    if (place && place !== 'nef' && hasHabitantModel(place)) habitants.prefetch(place);
     if (free) return reframe();
     // Pendant une question ou une remise, la caméra garde son cadrage : le panneau se recadre à leur fin.
     if (asked || remise || mapView) return;
@@ -1722,7 +1723,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Au rivage nord (lot L7), les trois lieux sont dans le même cadre : les traces des trois se cachent pendant toute
       // question de l'un (directeur artistique).
       const hidden = hidesTraces(hiddenTrace, p.id);
-      if (!hidden && hasScenette(p.id) && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, scenette === p.id ? scenetteTraces(p.id, done, scenetteMission, posed) : done));
+      // Chaque trace avec l'étape qui la porte (au Hameau, celle de sa mission : GD-22, lot 5).
+      if (!hidden && hasScenette(p.id) && traceStagePosed(p.id, parts)) list.push(traceOf(p.id, posedTraces(p.id, parts, scenette === p.id ? scenetteTraces(p.id, done, scenetteMission, posed) : done)));
       if (p.id === 'phare' && lampShown) list.push(lampFacets);
       // Les aménagements posés (GD-20, point 4, lot L0), dans le même maillage : cachés pendant toute question, comme les
       // traces (au rivage nord et au large, ceux des lieux du même cadre) ; montrés dans le cadrage de la remise.
@@ -2093,7 +2095,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     showFreeMark(null);
     walkTarget = place;
     // Kéo part vers un lieu : le modèle de son habitant se prépare pendant la marche, avant « Livrer » ou une mission.
-    if (place && sixth) habitants.prefetch(place);
+    if (place && hasHabitantModel(place)) habitants.prefetch(place);
     if (route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05) return arrive(place);
     beginWalk(route);
     heldBridge = null;
@@ -2800,8 +2802,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     faceNorth();
     posed = site ?? traceStagePosed(place, posedOf(place));
     topped = stageComplete(posedOf(place), 1);
-    // Le modèle de l'habitant, s'il est prêt, avant le décor de près : celui-ci se fait alors sans le pion.
-    habitants.show(place, scenetteHabitant(place, posed));
+    // Le modèle de l'habitant, s'il est prêt, avant le décor de près : celui-ci se fait alors sans le pion. Un lieu du 5e
+    // sans modèle encore garde son pion (./habitants.ts, `hasHabitantModel`).
+    if (hasHabitantModel(place)) habitants.show(place, scenetteHabitant(place, posed));
+    else habitants.hide();
     setGeometry(decorMesh, scenetteDecor(place, false, posed, topped));
     // Aux Quais, la maquette du lieu (sa grue, son hangar) s'efface : le quai de la scénette a les siens. La trace de
     // la scénette aussi, sauf au Phare : la trace de la réussite (la barque chargée, le panier plein, la porte ouverte)

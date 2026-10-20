@@ -210,6 +210,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   ferry: placeArt('ferry')!.sceneSpot,
   // Le 5e (GD-22, lot 3) : le plancher de la Montée, devant le bassin, face au trait de zéro.
   montee: placeArt('montee')!.sceneSpot,
+  // Le Hameau (lot 5) : le ponton devant la bouche du four.
+  hameau: placeArt('hameau')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -457,6 +459,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   ferry: 'lieu',
   // Le 5e (GD-22, lot 3) : les godets pendus de la Montée.
   montee: 'lieu',
+  // Le Hameau (lot 5) : les miches sur la planche à pain.
+  hameau: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

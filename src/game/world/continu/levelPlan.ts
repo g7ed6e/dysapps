@@ -136,13 +136,17 @@ export function sixthPlace(id: PlaceId): PlaceId6e {
 }
 
 /**
- * Les lieux qui ont leur scénette (questions dans le lieu, étapes de chantier, traces) : ceux du 6e, et la Montée, le
- * lieu central du 5e, fini comme témoin de qualité (GD-22, lot 3). Les treize autres lieux du 5e restent des ruines.
+ * Les lieux qui ont leur scénette (questions dans le lieu, étapes de chantier, traces) : ceux du 6e, et au 5e, lieu par
+ * lieu (GD-22, « un lieu complet par lot ») : la Montée, le lieu central, fini comme témoin de qualité (lot 3), puis le
+ * Hameau (lot 5), gabarit des douze autres. Les autres lieux du 5e restent des ruines.
  */
-export type ScenePlaceId = PlaceId6e | 'montee';
+export type ScenePlaceId = PlaceId6e | 'montee' | 'hameau';
+
+/** Les lieux du 5e qui ont leur scénette. */
+const SCENES_5E: ReadonlySet<PlaceId> = new Set<PlaceId5e>(['montee', 'hameau']);
 
 /** Ce lieu a-t-il sa scénette ? */
-export const hasScenette = (id: PlaceId): id is ScenePlaceId => SIXTH.has(id) || id === 'montee';
+export const hasScenette = (id: PlaceId): id is ScenePlaceId => SIXTH.has(id) || SCENES_5E.has(id);
 
 /**
  * Un lieu qui a sa scénette (scenette.ts, questionScene.ts, questions.ts) : un autre lieu du 5e qui arriverait ici est

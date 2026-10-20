@@ -1,7 +1,6 @@
 // La Montée finie (GD-22, lot 3) : son modèle par étapes, sa scénette, ses traces, ses abords, la cabine à une seule
 // caisse, son trajet, la caméra au bord du plateau et le budget du 5e. Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { OPEN_WORLD_BUDGET, openWorldCost5e } from './budget';
 import { CABIN_CAR, KEO_ROOM, bridgeFacets, bridgeFloor, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinCarParked, cabinStops } from './bridges';
 import { cabinButtonRoute, cabinCarOpen, cabinOf, cabinSide, routeWithRide } from './cabinRide';
 import { CLIFF_HOLD, FOLLOW, cliffHold, followPose, type CliffHold } from './camera';
@@ -28,9 +27,9 @@ const ground = (x: number, z: number) => groundOn5e(field, x, z);
 const MISSIONS = ['thermometer', 'adding', 'fractions', 'order-of-operations', 'conversions-angles'];
 
 describe('La Montée, lieu fini', () => {
-  it('ses cinq missions se jouent dans sa scénette ; les autres lieux du 5e restent sur l’écran habituel', () => {
+  it('ses cinq missions se jouent dans sa scénette ; les autres lieux du 5e, sauf le Hameau (lot 5), restent sur l’écran habituel', () => {
     expect(MONTEE_PLACE.scenes).toEqual(MISSIONS);
-    for (const p of PLAN.places) if (p.id !== 'montee') expect(p.scenes, p.id).toEqual([]);
+    for (const p of PLAN.places) if (p.id !== 'montee' && p.id !== 'hameau') expect(p.scenes, p.id).toEqual([]);
   });
 
   it('se rebâtit par étapes : le corps en trois travées, le haut et sa lanterne, les abords ; la ruine part à mesure', () => {
@@ -409,23 +408,4 @@ describe('La caisse de la gare du haut et la caméra au bord (seconde relecture 
   });
 });
 
-describe('Le budget du 5e, avec la Montée', () => {
-  const sum = (c: { triangles: number; calls: number }[]) => c.reduce((a, p) => ({ triangles: a.triangles + p.triangles, calls: a.calls + p.calls }), { triangles: 0, calls: 0 });
-
-  // Les plafonds du lot 4 (la Lisière et le dirigeable, intention du directeur artistique du 19 octobre 2026), plus la
-  // faune (piste « Ambiance par terre ») : un appel de plus, sur « On peut augmenter le budget » du mainteneur (19 octobre 2026).
-  it('scénette ouverte : 84 600 triangles et 18 appels au plus ; hors scénette, 84 000 et 16 ; pendant le départ, 17 ; sous l’enveloppe', () => {
-    const open = sum(openWorldCost5e());
-    expect(open.triangles).toBeLessThanOrEqual(84_600);
-    expect(open.calls).toBeLessThanOrEqual(18);
-    const world = sum(openWorldCost5e('monde'));
-    expect(world.triangles).toBeLessThanOrEqual(84_000);
-    expect(world.calls).toBeLessThanOrEqual(16);
-    const departure = sum(openWorldCost5e('depart'));
-    expect(departure.triangles).toBeLessThanOrEqual(84_000);
-    expect(departure.calls).toBeLessThanOrEqual(17);
-    expect(world.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
-    expect(openWorldCost5e().some((c) => c.poste === 'pose')).toBe(false);
-    expect(openWorldCost5e('monde').some((c) => c.poste === 'scénette')).toBe(false);
-  });
-});
+// Le budget du 5e : ./hameau5e.test.ts (plafonds du lot 5).

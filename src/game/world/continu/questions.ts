@@ -482,7 +482,8 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
   if (place === 'phare') return items.map((it) => ({ ...it, placeScene: { kind: 'cloches' } }));
   // La Montée (GD-22, lot 3) : ses cinq missions en R, avec leurs items de référence ; les réponses portées par les
   // godets pendus, le lieu au repos ; les nombres, la droite et les figures restent dans le panneau.
-  if (place === 'montee') return items.map((it) => ({ ...it, placeScene: REST }));
+  // Le Hameau (lot 5) de même : ses trois missions en R, les réponses portées par les miches.
+  if (place === 'montee' || place === 'hameau') return items.map((it) => ({ ...it, placeScene: REST }));
   // La Turbine (GD-20, point 8, lot L6a) et le Chantier naval (lot L6b) : leurs quatre missions en C, aux deux niveaux,
   // avec leurs items de référence (consigne, phrase, document, rappel) ; la scène fait le décor, les réponses restent dans
   // la colonne.

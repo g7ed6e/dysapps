@@ -2,7 +2,7 @@
 // leur A*, la marche, la caméra qui suit Kéo, les maquettes, la brume et le budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { FacetBuilder, boundsOf } from './facets';
-import { groundCost, mapCost, openWorldCost, OPEN_WORLD_BUDGET } from './budget';
+import { groundCost, mapCost, openWorldCost, OPEN_WORLD_BUDGETS } from './budget';
 import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, markBeside, markOffset, occlusionLift, screenOf, wrapAngle } from './camera';
 import { distance, distanceToPolyline, insidePolygon, linearRgb, type Vec3 } from './geometry';
 import { START_DISTANCE, atNode, edgesNear, findRoute, networkSamples, pathNode, pathRibbons, pathTopAt, routeLength, snapToNetwork, startOf } from './paths';
@@ -542,13 +542,15 @@ describe('Le budget du monde continu', () => {
   });
 
   it('tient dans l’enveloppe relevée par le mainteneur (100 140 triangles et 22 appels, les bêtes des côtes, 19 octobre 2026)', () => {
-    expect(OPEN_WORLD_BUDGET).toEqual({ triangles: 100_140, calls: 22 });
+    expect(OPEN_WORLD_BUDGETS['6e']).toEqual({ triangles: 100_140, calls: 22 });
+    // Le 5e a la sienne (choix du mainteneur, 20 octobre 2026, « Relever seulement »).
+    expect(OPEN_WORLD_BUDGETS['5e']).toEqual({ triangles: 118_000, calls: 22 });
     // Sans les aménagements, dont la vue trace les dessins : le tout se compte dans three/archipeo/amenagements.test.ts.
     const cost = openWorldCost(0);
     const triangles = cost.reduce((s, c) => s + c.triangles, 0);
     const calls = cost.reduce((s, c) => s + c.calls, 0);
-    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
-    expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
+    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['6e'].triangles);
+    expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['6e'].calls);
   });
 
   it('les lieux, leurs constructions et leurs traces en deux appels, la pose d’une partie en un (GD-20, lot 1)', () => {
@@ -557,13 +559,13 @@ describe('Le budget du monde continu', () => {
     expect(cost.find((c) => c.poste === 'pose')?.calls).toBe(1);
     // Il reste de la place pour les lots suivants (la Nef) : 2 appels au moins (3 avant les Détours, dont la baleine et
     // les oiseaux prennent un appel ; 4 avant le lot 3 de GD-20, point 3, qui prend le ciel et l'ombre de Kéo).
-    expect(OPEN_WORLD_BUDGET.calls - cost.reduce((s, c) => s + c.calls, 0)).toBeGreaterThanOrEqual(2);
+    expect(OPEN_WORLD_BUDGETS['6e'].calls - cost.reduce((s, c) => s + c.calls, 0)).toBeGreaterThanOrEqual(2);
   });
 
   it('la Carte des lieux ouverts, toute l’île de loin, tient aussi dans l’enveloppe', () => {
     const map = mapCost(0);
-    expect(map.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
-    expect(map.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
+    expect(map.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['6e'].calls);
+    expect(map.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['6e'].triangles);
     expect(map.triangles).toBeGreaterThan(groundCost().far);
   });
 });

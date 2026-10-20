@@ -114,6 +114,9 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // Le 5e, la Montée (GD-22, lot 3) : « la fontainière » (directeur artistique), son nom attend le mot du mainteneur ; sa
   // réplique, une idée, le sommet (consultant d'Archipéo et référent dys, première relecture du lot 3).
   montee: { role: placeArt('montee')!.role, greeting: 'La fontainière monte l’eau jusqu’au sommet, godet par godet.', placement: 'rangee' },
+  // Le Hameau (GD-22, lot 5) : « le boulanger », sans prénom (fiche du 5e, § 6) ; sa réplique, une idée, le four commun,
+  // à relire par le directeur du contenu pédagogique.
+  hameau: { role: placeArt('hameau')!.role, greeting: 'Le boulanger cuit le pain de tout le village, dans le four commun.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -509,6 +512,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   beacons: northSite('beacons'),
   ferry: northSite('ferry'),
   montee: northSite('montee'),
+  hameau: northSite('hameau'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -1947,6 +1951,7 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   beacons: 'paving',
   ferry: 'planks',
   montee: 'planks',
+  hameau: 'planks',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

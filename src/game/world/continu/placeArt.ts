@@ -42,10 +42,15 @@ interface AnswerArt {
   replaces?: true;
 }
 
-/** Une trace : sa place depuis le centre du lieu, la hauteur que la caméra garde au retour, son dessin. */
+/**
+ * Une trace : sa place depuis le centre du lieu, la hauteur que la caméra garde au retour, son dessin ; `stage` : l'étape
+ * qui la porte, si elle n'est pas celle du lieu (`PlaceArt.traceStage`) : au Hameau (GD-22, lot 5), chaque trace se montre
+ * avec l'étape de sa mission.
+ */
 interface TraceArt {
   at: Vec2;
   lift: number;
+  stage?: Stage;
   /** Dessinée dans le monde, `c` : le centre du lieu à son sol. */
   draw(b: FacetBuilder, c: Vec3): void;
 }
@@ -55,7 +60,7 @@ export interface PlaceArt {
   role: string;
   /** Le lieu, dans son repère (le centre au sol en 0, le nord vers −z) ; `door` : sa porte, depuis le centre. */
   model(add: AddPiece, ground: SiteGround, door: Vec2): void;
-  /** L'étape qui porte les traces. */
+  /** L'étape qui porte les traces (celles qui n'ont pas la leur, `TraceArt.stage`), et sur laquelle se joue la scénette. */
   traceStage: Stage;
   /** La place de la scène depuis le centre du lieu, sa demi-largeur et sa demi-profondeur ; `fine` : un sol fin. */
   sceneSpot: { dx: number; dz: number; half: [number, number]; fine?: true };

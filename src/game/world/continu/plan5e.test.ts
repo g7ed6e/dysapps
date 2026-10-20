@@ -3,7 +3,7 @@
 // presque noires) et son budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { OPEN_WORLD_BUDGET, mapCost5e, openWorldCost5e } from './budget';
+import { OPEN_WORLD_BUDGETS, mapCost5e, openWorldCost5e } from './budget';
 import { bridgeFacets, bridgeFloor, bridgeSite, clampToOpen, isCabin } from './bridges';
 import { closestOnSegment, distance, distanceToPolyline, linearRgb, signedDistance, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
@@ -462,15 +462,17 @@ describe('Le budget du 5e', () => {
     const cost = openWorldCost5e();
     const triangles = cost.reduce((s, c) => s + c.triangles, 0);
     const calls = cost.reduce((s, c) => s + c.calls, 0);
-    // Après le lot 4 et la faune, environ 15 000 triangles et 4 appels restent pour les lieux, leurs scénettes et les Détours.
-    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles - 15_000);
-    expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls - 4);
+    // Après le lot 5 (le Hameau), environ 23 000 triangles et 3 appels restent pour les douze autres lieux, les Détours, le
+    // Rafiot et les aménagements (intention du directeur artistique du 20 octobre 2026, « Le budget »).
+    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 23_000);
+    expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
     const map = mapCost5e();
-    // La Carte du lot 4 : 82 600 triangles et 12 appels au plus (directeur artistique, 19 octobre 2026).
-    expect(map.triangles).toBeLessThanOrEqual(82_600);
+    // La Carte du lot 4 (82 600 triangles et 12 appels au plus, directeur artistique, 19 octobre 2026), plus le Hameau
+    // (lot 5 : 1 600 triangles au plus, sans appel).
+    expect(map.triangles).toBeLessThanOrEqual(82_600 + 1_600);
     expect(map.calls).toBeLessThanOrEqual(12);
-    expect(map.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
-    expect(map.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
+    expect(map.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles);
+    expect(map.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls);
     // Les chemins se dessinent sur le sol du 5e.
     const field = buildHeightField5e();
     expect(pathRibbons5e((px, pz) => groundOn5e(field, px, pz)).triangles).toBeGreaterThan(1000);
