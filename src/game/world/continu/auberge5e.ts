@@ -384,8 +384,10 @@ const OCTAGON = Array.from({ length: 8 }, (_, k) => [SIGN.r * Math.cos((Math.PI 
  * Le pichet gravé, une cruche (directeur artistique, retouche 1) : sa silhouette fait 1,3 de haut pour 1 de large, anse
  * comprise ; un pied plus étroit que la panse, la panse ventrue des deux côtés, l'épaule, le col resserré, la lèvre
  * évasée ; sans bec ni couvercle, jamais d'ocre. Les demi-largeurs de chaque hauteur, depuis l'axe du pichet (`cx`), et
- * les hauteurs depuis le milieu de l'enseigne. L'anse, d'un côté, un arc arrondi de quatre segments du col à la panse,
- * qui ne monte jamais au-dessus du col et ne fait aucun angle droit : il ne se lit ni « d » ni « D ».
+ * les hauteurs depuis le milieu de l'enseigne. L'anse, d'un côté (retouche 2) : un arc de cercle de six segments
+ * (centre 0,17 ; 0,075 depuis l'axe, rayon 0,155, de 135° à −90°), qui tourne de 37,5° à chaque jonction, part du col
+ * et rentre dans la panse au-dessus de son ventre, sans monter au-dessus du haut du col : il ne se lit ni « d » ni « D »,
+ * et le contour de la panse reste le même des deux côtés de l'axe.
  */
 const JUG = {
   cx: -0.06,
@@ -399,11 +401,13 @@ const JUG = {
   y: { bottom: -0.4, low: -0.31, belly: -0.17, high: -0.02, shoulder: 0.1, neck: 0.18, lip: 0.29, top: 0.38 },
   /** L'axe de l'anse, du col à la panse (x depuis `cx`), et son épaisseur. */
   handle: [
-    [0.07, 0.225],
-    [0.23, 0.195],
-    [0.325, 0.08],
-    [0.325, -0.06],
-    [0.215, -0.17],
+    [0.06, 0.185],
+    [0.15, 0.229],
+    [0.248, 0.209],
+    [0.313, 0.134],
+    [0.32, 0.035],
+    [0.264, -0.048],
+    [0.17, -0.08],
   ] as readonly (readonly [number, number])[],
   thick: 0.055,
 } as const;

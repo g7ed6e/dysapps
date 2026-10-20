@@ -150,20 +150,43 @@ describe('L’Auberge, lieu complet', () => {
         const [a, b, c] = [plate[k], plate[(k + 1) % plate.length], plate[(k + 2) % plate.length]];
         expect((b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0])).toBeGreaterThan(0);
       }
-    // L'anse : quatre segments au moins, du col à la panse, jamais au-dessus du haut du col, sans angle droit.
-    const H = J.handle;
-    expect(H.length - 1).toBeGreaterThanOrEqual(3);
-    expect(Math.max(...H.map(([, y]) => y)) + J.thick / 2).toBeLessThan(J.y.lip);
-    expect(H[0][1]).toBeGreaterThan(J.y.neck);
-    expect(H[H.length - 1][1]).toBeLessThan(J.y.high);
-    for (let k = 1; k < H.length - 1; k++) {
-      const u = [H[k][0] - H[k - 1][0], H[k][1] - H[k - 1][1]];
-      const v = [H[k + 1][0] - H[k][0], H[k + 1][1] - H[k][1]];
-      const turn = Math.acos((u[0] * v[0] + u[1] * v[1]) / (Math.hypot(u[0], u[1]) * Math.hypot(v[0], v[1])));
-      expect(turn, String(k)).toBeLessThan((60 * Math.PI) / 180);
-    }
+    // L'anse : son arc et la panse symétrique, au test suivant (retouche 2).
     // Sans ocre : le pichet a sa couleur pâle, l'ocre n'est qu'aux lanternes.
     expect(countColor(shown(5), 0xdccdb0)).toBe(3 * AUBERGE_LAYOUT.jugPlates.reduce((n, p) => n + p.length - 2, 0));
+  });
+
+  it('l’anse de la cruche, un arc d’au moins trois segments sans angle franc (moins de 60° à chaque jonction) ; la panse symétrique autour de l’axe du col (retouche 2)', () => {
+    const J = AUBERGE_LAYOUT.jug;
+    const H = J.handle;
+    expect(H.length - 1).toBeGreaterThanOrEqual(3);
+    // Du col (elle y part, dans sa largeur) à la panse, jamais au-dessus du haut du col, même son épaisseur comprise.
+    expect(H[0][1]).toBeGreaterThan(J.y.neck);
+    expect(H[0][1]).toBeLessThan(J.y.lip);
+    expect(H[0][0]).toBeLessThan(J.neck);
+    const handlePlates = AUBERGE_LAYOUT.jugPlates.slice(-(H.length - 1));
+    const handleSides = handlePlates.flat();
+    expect(Math.max(...handleSides.map(([, y]) => y))).toBeLessThan(J.y.lip);
+    // Aucun angle de l'anse au-delà de 60°, ni sur son axe ni sur ses deux bords.
+    const turns = (pts: readonly (readonly [number, number])[]) =>
+      pts.slice(1, -1).map((p, k) => {
+        const [a, c] = [pts[k], pts[k + 2]];
+        const u = [p[0] - a[0], p[1] - a[1]];
+        const v = [c[0] - p[0], c[1] - p[1]];
+        return (Math.acos((u[0] * v[0] + u[1] * v[1]) / (Math.hypot(u[0], u[1]) * Math.hypot(v[0], v[1]))) * 180) / Math.PI;
+      });
+    const outer = [handlePlates[0][0], ...handlePlates.map((q) => q[1])];
+    const inner = [handlePlates[0][3], ...handlePlates.map((q) => q[2])];
+    for (const line of [H, outer, inner]) for (const t of turns(line)) expect(t).toBeLessThan(60);
+    // La panse : chaque sommet a son reflet exact de l'autre côté de l'axe du col.
+    const body = AUBERGE_LAYOUT.jugPlates[0];
+    for (const [x, y] of body) expect(body.some(([x2, y2]) => Math.abs(x2 - (2 * J.cx - x)) < 1e-9 && Math.abs(y2 - y) < 1e-9)).toBe(true);
+    // L'anse rentre dans la panse au-dessus de son ventre : le contour de la panse, à sa plus grande largeur et
+    // au-dessous, reste le même des deux côtés ; son bout est dans la panse (entre l'épaule et le ventre).
+    expect(Math.min(...handleSides.map(([, y]) => y))).toBeGreaterThan(J.y.belly);
+    const [ex, ey] = H[H.length - 1];
+    expect(ey).toBeGreaterThan(J.y.belly);
+    expect(ey).toBeLessThan(J.y.high);
+    expect(ex + J.thick / 2).toBeLessThan(J.high);
   });
 
   it('la lanterne du pignon est fixée au mur, à l’angle ouest du pignon, à l’écart de la fenêtre et de l’enseigne', () => {

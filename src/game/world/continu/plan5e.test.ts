@@ -484,7 +484,8 @@ describe('Le budget du 5e', () => {
     // (l'Étuve, +1 259, le lieu restauré à la place de son tambour rond), 98 315, 19 685 : la réserve passe à 19 600 ; après le lot 11
     // (les Terrasses et la Faille, +1 958, le lieu restauré à la place de sa ruine, le Détour et le coude du chemin),
     // 100 273, 17 727 : la réserve passe à 17 700 ; après le lot 12 (l'Auberge, retouche 1 comprise, +1 138, le lieu
-    // restauré à la place de sa ruine), 101 411, 16 589 : la réserve passe à 16 500.
+    // restauré à la place de sa ruine), 101 411, 16 589 : la réserve passe à 16 500 ; sa retouche 2 (l'anse de la cruche
+    // en six segments, +4), 101 415, 16 585 : la réserve reste à 16 500.
     expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 16_500);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
     // La Carte dans l'enveloppe (ses plafonds lot par lot : ./hameau5e.test.ts, ./croisee5e.test.ts).
