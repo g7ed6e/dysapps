@@ -129,6 +129,9 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // Les Fumerolles (GD-22, lot 9) : « la sondeuse », sans prénom ; sa réplique, une idée, un verbe concret, explique le
   // mot rare (directeur du contenu pédagogique et référent dys, retouche 2 ; jamais « Fumerolles » et « Faille » ensemble).
   fumerolles: { role: placeArt('fumerolles')!.role, greeting: 'Ici, la sondeuse plante ses sondes dans le sol.', placement: 'rangee' },
+  // L'Étuve (GD-22, lot 10) : « le souffleur de verre », sans prénom ; la phrase du métier de l'intention du directeur
+  // artistique (§ 10), à relire par le directeur du contenu pédagogique (jamais « Perle » ni « le Flamant de sel »).
+  etuve: { role: placeArt('etuve')!.role, greeting: 'Le souffleur de verre travaille le verre chaud.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -539,6 +542,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   croisee: northSite('croisee'),
   instants: northSite('instants'),
   fumerolles: northSite('fumerolles'),
+  etuve: northSite('etuve'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -1985,6 +1989,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   instants: 'planks',
   // Les Fumerolles (lot 9) : la dalle de pierre grise.
   fumerolles: 'stone',
+  // L'Étuve (lot 10) : le pavé de dalles.
+  etuve: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

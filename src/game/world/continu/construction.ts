@@ -127,6 +127,8 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   instants: placeArt('instants')!.traceStage,
   // Les Fumerolles (lot 9) : leur corps, et chaque trace son étape, comme au Hameau.
   fumerolles: placeArt('fumerolles')!.traceStage,
+  // L'Étuve (lot 10) : son corps, et chaque trace son étape, comme au Hameau.
+  etuve: placeArt('etuve')!.traceStage,
 };
 
 /**

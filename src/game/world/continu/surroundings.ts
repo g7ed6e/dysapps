@@ -11,6 +11,7 @@ import { croiseeSurroundings } from './croiseeSurroundings';
 import { fumerollesSurroundings } from './fumerollesSurroundings';
 import { hameauSurroundings } from './hameauSurroundings';
 import { instantsSurroundings } from './instantsSurroundings';
+import { etuveSurroundings } from './etuveSurroundings';
 import { monteeSurroundings } from './monteeSurroundings';
 import { radeauxSurroundings } from './radeauxSurroundings';
 import { quaisSurroundings } from './quaisSurroundings';
@@ -61,6 +62,7 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   croisee: croiseeSurroundings,
   instants: instantsSurroundings,
   fumerolles: fumerollesSurroundings,
+  etuve: etuveSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,
