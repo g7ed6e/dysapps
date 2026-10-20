@@ -214,6 +214,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   hameau: placeArt('hameau')!.sceneSpot,
   // Les Radeaux (lot 6) : le quai devant la façade de la cabane du marchand.
   radeaux: placeArt('radeaux')!.sceneSpot,
+  // La Croisée (lot 7) : le rond-point devant le pont, la cabane et le pied du tronc derrière.
+  croisee: placeArt('croisee')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -465,6 +467,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   hameau: 'lieu',
   // Les Radeaux (lot 6) : les poids sur la planche de comptoir.
   radeaux: 'lieu',
+  // La Croisée (lot 7) : les bobines sur la planche à cordes.
+  croisee: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

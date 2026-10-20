@@ -3,8 +3,8 @@
 // dessinée dans le repère de son lieu (y = 0 au sol, sous le centre), en quelques volumes de 4 à 6 aplats : la pierre
 // des aiguilles (gris chaud moussu), le bois gris de la ruine, l'ocre des Contreforts, la mousse, le bronze éteint ; rien
 // de presque noir, rien à lire. Retouche du lot 2 (directeur artistique : « des boîtes génériques ») : chaque ruine a sa
-// hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts), comme le Hameau (./hameau5e.ts, lot 5)
-// et les Radeaux (./radeaux5e.ts, lot 6) ; le Donjon, une tour carrée sur son piton de roche. Code pur.
+// hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts), comme le Hameau (./hameau5e.ts, lot 5),
+// les Radeaux (./radeaux5e.ts, lot 6) et la Croisée (./croisee5e.ts, lot 7) ; le Donjon, une tour carrée sur son piton de roche. Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_5E, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
@@ -45,15 +45,6 @@ function brokenWall(b: FacetBuilder, x: number, z: number, length: number, heigh
     const h = height * (1 - k * 0.3);
     b.box({ x: x + u * c, y: SINK, z: z - u * s, yaw }, [w, h - SINK, 0.8], color, top);
   }
-}
-
-/** La Croisée : la borne de pierre du carrefour, cassée en biseau, sur son dallage en croix. */
-function croisee(b: FacetBuilder): void {
-  b.box({ x: 0, y: SINK, z: 0 }, [10, 0.35 - SINK, 3], C.shade, C.stone);
-  b.box({ x: 0, y: SINK, z: 0 }, [3, 0.35 - SINK, 10], C.shade, C.stone);
-  b.prism({ x: 0, y: 0.3, z: 0, yaw: Math.PI / 4 }, 1.6, 1.2, 6.5, 4, C.stone, C.sun);
-  b.prism({ x: 0, y: 6.8, z: 0, yaw: Math.PI / 4 }, 1.2, 0.5, 1.4, 4, C.sun);
-  b.box({ x: 2.6, y: SINK, z: 3.2, yaw: 0.6 }, [1.2, 0.9 - SINK, 3], C.shade, C.moss);
 }
 
 /** Les Instants : un cercle de pierres levées (un cadran), son style cassé, couché au milieu. */
@@ -164,10 +155,9 @@ function oracle(b: FacetBuilder): void {
 
 /**
  * La ruine de chaque lieu du 5e pas encore construit (les lieux construits ont leur fichier : ./montee5e.ts, lot 3 ;
- * ./hameau5e.ts, lot 5 ; ./radeaux5e.ts, lot 6), dessinée dans son repère.
+ * ./hameau5e.ts, lot 5 ; ./radeaux5e.ts, lot 6 ; ./croisee5e.ts, lot 7), dessinée dans son repère.
  */
 export const RUINS_5E: Readonly<Record<Exclude<PlaceId5e, BuiltPlace5e>, (b: FacetBuilder) => void>> = {
-  croisee,
   instants,
   semaphore,
   gaillard,
