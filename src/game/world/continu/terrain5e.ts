@@ -244,11 +244,13 @@ function trunk(b: FacetBuilder, from: readonly [number, number, number], to: rea
 }
 
 /** Les triangles d'un arbre de près et de loin (comptés sans construire). */
-const TREE_TRIANGLES = { near: 8 + 4 * 2 * 12 + 2 * 18, far: 15, shrubNear: 18 + 6, shrubFar: 15 } as const;
+const TREE_TRIANGLES = { near: 8 + 4 * 2 * 12 + 2 * 18, far: 3 + 15, shrubNear: 18 + 6, shrubFar: 15 } as const;
 
 /**
  * Un palétuvier de près : le tronc, quatre racines en arceaux (deux poutres chacune, du tronc au genou, du genou au
- * sol), la canopée basse en deux plateaux à pans ; de loin, la seule canopée. Un buisson des Contreforts : un dôme bas.
+ * sol), la canopée basse en deux plateaux à pans ; de loin, la canopée sur une pointe à trois pans, évasée au sol comme
+ * les racines, qui monte s'y perdre (trois triangles : sans elle, la canopée flottait au-dessus de la forêt). Un buisson
+ * des Contreforts : un dôme bas.
  */
 function drawTree(b: FacetBuilder, t: Tree, detail: TileDetail): number {
   const s = t.size;
@@ -264,6 +266,7 @@ function drawTree(b: FacetBuilder, t: Tree, detail: TileDetail): number {
   const H = (3.8 + 1.6 * ((t.yaw * 7) % 1)) * s;
   const R = 3.1 * s;
   if (detail === 'far') {
+    b.prism({ x: t.x, y: t.y - 0.6, z: t.z, yaw: t.yaw }, 0.8 * s, 0, H + 0.4, 3, FOREST_COLORS.root);
     b.prism({ x: t.x, y: t.y + H - 0.6, z: t.z, yaw: t.yaw }, R, R * 0.7, 1.5 * s, 5, FOREST_COLORS.canopy, FOREST_COLORS.canopyTop);
     return TREE_TRIANGLES.far;
   }
