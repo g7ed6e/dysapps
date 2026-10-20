@@ -162,6 +162,9 @@ describe('La scénette du Hameau', () => {
  */
 const LOT4_5E = { world: { triangles: 83_175, calls: 16 }, departure: { triangles: 82_053, calls: 17 }, map: { triangles: 81_780, calls: 12 } } as const;
 
+/** Le pied des palétuviers de loin (./terrain5e.ts, trois triangles par arbre), ajouté après le lot 5 : 2 000 triangles au plus. */
+const FOREST_FEET_5E = 2_000;
+
 describe('Le budget du 5e, avec le Hameau (plafonds du lot 5, intention du directeur artistique du 20 octobre 2026)', () => {
   const sum = (c: { triangles: number; calls: number }[]) => c.reduce((a, p) => ({ triangles: a.triangles + p.triangles, calls: a.calls + p.calls }), { triangles: 0, calls: 0 });
 
@@ -173,7 +176,7 @@ describe('Le budget du 5e, avec le Hameau (plafonds du lot 5, intention du direc
       [mapCost5e(), LOT4_5E.map],
     ] as const;
     for (const [now, before] of views) {
-      expect(now.triangles).toBeLessThanOrEqual(before.triangles + PLACE_TRIANGLES_MAX_5E);
+      expect(now.triangles).toBeLessThanOrEqual(before.triangles + PLACE_TRIANGLES_MAX_5E + FOREST_FEET_5E);
       expect(now.calls).toBeLessThanOrEqual(before.calls);
     }
   });
