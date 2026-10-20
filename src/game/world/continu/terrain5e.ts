@@ -169,11 +169,11 @@ export const FOREST_COLORS = {
 /**
  * Où pousse la forêt : une place tous les `cell` unités au plus, gardée une fois sur `keep` ; jamais à moins de `path`
  * unités d'un chemin, de `place` du centre d'un lieu (la Montée : `montee`, et `monteeSouth` au sud, sa clairière d'approche ;
- * le Hameau : `hameau`, et `hameauSouth` au sud), de `quay` du ponton de la Lisière, ni dans sa clairière, ni sur le
+ * le Hameau : `hameau`, et `hameauSouth` au sud ; la Croisée : le couloir `croiseeSouth` sur `croiseeSide` de part et d'autre), de `quay` du ponton de la Lisière, ni dans sa clairière, ni sur le
  * plateau ou sa falaise ; un tronc se tient à `dry` unités au moins de l'eau (retouche du lot 2, directeur artistique :
  * la canopée couvrait les chenaux, leur eau ne se voyait pas en 3D).
  */
-const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, monteeSouth: 30, hameau: 14.5, hameauSouth: 34, radeaux: 13, quay: 5, cliff: 2.5, dry: 2.2, creux: 7.5, sente: 3.6 } as const;
+const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, monteeSouth: 30, hameau: 14.5, hameauSouth: 34, radeaux: 13, croiseeSouth: 30, croiseeSide: 6, quay: 5, cliff: 2.5, dry: 2.2, creux: 7.5, sente: 3.6 } as const;
 
 /** Les tronçons des chemins du 5e (pour garder la forêt à distance). */
 const SEGMENTS: readonly (readonly [Vec2, Vec2])[] = (() => {
@@ -195,6 +195,9 @@ const nearPlace = (p: Vec2): boolean =>
     // Les Radeaux (lot 6) : le quai et la cabane jusqu'à 12 unités du centre, et le recul de la caméra de la scénette, qui
     // regarde la façade depuis l'est-sud-est.
     if (pl.id === 'radeaux') return d < FOREST_KEEP.radeaux;
+    // La Croisée (lot 7) : au sud, un couloir dans l'axe du lieu, où passent la caméra de son arrivée et celle de sa
+    // scénette ; ses palétuviers des côtés restent.
+    if (pl.id === 'croisee') return d < FOREST_KEEP.place || (p.z > pl.center.z + 4 && p.z < pl.center.z + FOREST_KEEP.croiseeSouth && Math.abs(p.x - pl.center.x) < FOREST_KEEP.croiseeSide);
     return d < FOREST_KEEP.place;
   });
 

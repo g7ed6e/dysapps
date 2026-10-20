@@ -2503,11 +2503,11 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   // Le large (lot L9) : dessinés dans leur fichier, comme le rivage nord.
   beacons: northPlace('beacons'),
   ferry: northPlace('ferry'),
-  // Le 5e : la Montée finie (lot 3), le Hameau (lot 5) et les Radeaux (lot 6), dessinés dans leur fichier ; les autres,
-  // des ruines simples (lot 2).
+  // Le 5e : la Montée finie (lot 3), le Hameau (lot 5), les Radeaux (lot 6) et la Croisée (lot 7), dessinés dans leur
+  // fichier ; les autres, des ruines simples (lot 2).
   montee: northPlace('montee'),
   radeaux: northPlace('radeaux'),
-  croisee: ruinOnly(RUINS_5E.croisee),
+  croisee: northPlace('croisee'),
   instants: ruinOnly(RUINS_5E.instants),
   semaphore: ruinOnly(RUINS_5E.semaphore),
   gaillard: ruinOnly(RUINS_5E.gaillard),

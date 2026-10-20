@@ -188,13 +188,14 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
  * la seule liste, que lisent la scénette (./levelPlan.ts, `hasScenette`), l'habitant en modèle 3D (./habitants.ts,
  * `hasHabitantModel`) et les missions des lieux (`PLACES_5E`). La Montée (lot 3) : les cinq, sous le rail gradué ; le
  * Hameau (lot 5) : les trois, devant le four commun ; les Radeaux (lot 6) : les cinq, sur le quai devant la cabane du
- * marchand. Les autres lieux n'ont pas encore la leur (l'écran habituel). Un lieu construit s'ajoute ici, et seulement
+ * marchand ; la Croisée (lot 7) : les cinq, au pied du tronc. Les autres lieux n'ont pas encore la leur (l'écran habituel). Un lieu construit s'ajoute ici, et seulement
  * ici.
  */
 export const BUILT_PLACES_5E = {
   montee: ['thermometer', 'adding', 'fractions', 'order-of-operations', 'conversions-angles'],
   hameau: ['gender-equality', 'discrimination', 'solidarity'],
   radeaux: ['proportion-tables', 'percentages', 'ratios', 'formulas', 'statistics'],
+  croisee: ['pairs', 'choices', 'homophone-sentences', 'participles', 'word-meaning'],
 } as const satisfies Partial<Record<PlaceId5e, readonly string[]>>;
 
 /** Un lieu du 5e déjà construit. */

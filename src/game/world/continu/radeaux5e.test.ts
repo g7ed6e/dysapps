@@ -330,14 +330,16 @@ describe('Le budget du 5e, avec les Radeaux et le Creux (plafonds du lot 6)', ()
   });
 
   // Le plafond scénette ouverte et la réserve des lots suivants : ./plan5e.test.ts (« Le budget du 5e »).
-  it('hors scénette, au départ et sur la Carte : le lot 5, un lieu, le Creux et le pied des palétuviers de plus au plus, sans appel de plus', () => {
+  it('hors scénette, au départ et sur la Carte : le lot 5, un lieu par lieu fini depuis, le Creux et le pied des palétuviers de plus au plus, sans appel de plus', () => {
+    // Les lieux finis depuis le lot 5 : les Radeaux (lot 6), la Croisée (lot 7).
+    const since = Object.keys(BUILT_PLACES_5E).filter((id) => id !== 'montee' && id !== 'hameau').length;
     const views = [
       [sum(openWorldCost5e('monde')), LOT5_5E.world],
       [sum(openWorldCost5e('depart')), LOT5_5E.departure],
       [mapCost5e(), LOT5_5E.map],
     ] as const;
     for (const [now, before] of views) {
-      expect(now.triangles).toBeLessThanOrEqual(before.triangles + PLACE_TRIANGLES_MAX_5E + CREUX_MAX + FOREST_FEET_5E);
+      expect(now.triangles).toBeLessThanOrEqual(before.triangles + since * PLACE_TRIANGLES_MAX_5E + CREUX_MAX + FOREST_FEET_5E);
       expect(now.calls).toBeLessThanOrEqual(before.calls);
     }
   });
