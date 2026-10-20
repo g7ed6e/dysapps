@@ -15,7 +15,7 @@ import { BUILT_PLACES_5E, COLORS_5E, PATH_NODES_5E, PLATEAU } from './plan5e';
 import { drawPieces, placePieces } from './places';
 import { placeItems } from './questions';
 import { answerObjects, placeTrace, sceneSpot } from './questionScene';
-import { scenetteHabitant, scenetteKeo, scenetteOf, scenetteSurroundings } from './scenette';
+import { scenetteHabitant, scenetteHidesPieces, scenetteKeo, scenetteOf, scenetteStartYaw, scenetteSurroundings } from './scenette';
 import { SURROUNDINGS_MAX } from './surroundings';
 import { standingHeight } from './terrain';
 import { heightAt5e } from './terrain5e';
@@ -164,6 +164,13 @@ describe('Le plan des Fumerolles', () => {
     expect(distanceToPolyline(L.socle, line)).toBeGreaterThan(width / 2 + L.socle.r);
   });
 
+  it('la lanterne du chemin, en tête du chemin, hors de la dalle : derrière la caméra de la vue vers l’est, au coin nord-ouest de la dalle', () => {
+    const l = L.pathLantern;
+    expect(l.x).toBeLessThan(L.dalle.x0 - 0.5);
+    expect(l.z).toBeGreaterThan(L.dalle.z0 + 1);
+    expect(distance(l, FUMEROLLES_PATH.line[0])).toBeLessThan(1.5);
+  });
+
   it('les deux sondes, à deux unités au moins l’une de l’autre, séparées en profondeur ; l’une près du socle, sur la dalle', () => {
     const [a, b] = L.probes;
     expect(distance(a, b)).toBeGreaterThanOrEqual(2);
@@ -225,6 +232,29 @@ describe('La scénette des Fumerolles', () => {
     expect(FUMEROLLES.sceneSpot.dz + hz).toBeLessThanOrEqual(L.dalle.z1);
     const items = placeItems('fumerolles', 'life-earth-sciences-5e-active-planet-active-earth-1', [{ key: 'a', choices: ['manteau', 'noyau', 'croûte'], answer: 'noyau' }]);
     expect(items[0].placeScene).toEqual({ kind: 'rest' });
+  });
+
+  it('vue un peu depuis le sud-ouest : la façade de la cabane derrière la sondeuse, les traces laissées dans le monde, la planche tournée avec la caméra', () => {
+    // Retouche 1 : de face, la caméra voyait par-dessus la dalle le lieu entier, les traces se cachaient.
+    const start = scenetteStartYaw('fumerolles');
+    expect(start).toBeLessThan(-0.3);
+    expect(start).toBeGreaterThan(-0.6);
+    expect(scenetteHidesPieces('fumerolles')).toBe(false);
+    expect(FUMEROLLES.answer?.facing).toBe(true);
+    // Kéo et la sondeuse de part et d'autre, le long de la droite de la caméra de départ, à la même distance qu'au Hameau.
+    const keo = scenetteKeo('fumerolles').at;
+    const h = scenetteHabitant('fumerolles');
+    const right = { x: Math.cos(start), z: -Math.sin(start) };
+    const along = (h.x - keo.x) * right.x + (h.z - keo.z) * right.z;
+    expect(along).toBeCloseTo(4.6, 6);
+    expect(Math.abs((h.x - keo.x) * right.z - (h.z - keo.z) * right.x)).toBeLessThan(1e-6);
+    // La façade de la cabane derrière la sondeuse, vue de la caméra de départ.
+    const L = FUMEROLLES_LAYOUT;
+    const back = { x: -Math.sin(start), z: -Math.cos(start) };
+    const local = { x: h.x - PLACE.center.x, z: h.z - PLACE.center.z };
+    const behind = { x: local.x + back.x * 1.5, z: local.z + back.z * 1.5 };
+    expect(Math.abs(behind.x - L.cabin.x)).toBeLessThan(L.cabin.w / 2);
+    expect(Math.abs(behind.z - L.cabin.z)).toBeLessThan(L.cabin.d / 2 + 0.5);
   });
 
   it('un galet choisi se soulève d’un cran : sa forme ne change pas, sa place si ; jamais l’ocre de la lanterne', () => {

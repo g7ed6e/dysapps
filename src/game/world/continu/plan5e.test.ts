@@ -478,7 +478,8 @@ describe('Le budget du 5e', () => {
     // 96 367 triangles mesurés scénette ouverte, retouches des Radeaux comprises), 21 633 : la réserve passe à 21 000 ;
     // après le lot 8 (les Instants et la Hutte, 95 800 : la forêt dégagée le long de la chaussée retire plus que le lieu
     // n'ajoute) puis le lot 9 (les Fumerolles, +1 163, le lieu restauré à la place de sa ruine), 96 963 triangles mesurés
-    // scénette ouverte, 21 037 : la réserve reste à 21 000.
+    // scénette ouverte, et sa retouche 1 (la vapeur en bouffées, les têtes rondes des sondes, les goujons ronds, +15),
+    // 96 978, 21 022 : la réserve reste à 21 000.
     expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 21_000);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
     // La Carte dans l'enveloppe (ses plafonds lot par lot : ./hameau5e.test.ts, ./croisee5e.test.ts).

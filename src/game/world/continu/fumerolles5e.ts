@@ -50,8 +50,9 @@ const C = {
   stone: COLORS_5E.stone,
   stoneSun: COLORS_5E.stoneSun,
   stoneShade: COLORS_5E.stoneShade,
-  // Le trou du socle : brun très sombre, jamais noir.
-  hole: 0x3a312c,
+  // Le trou du socle : brun très sombre, jamais noir. L'écran écrase les tons sombres (le rendu « neutre » de la lumière,
+  // scene.ts) : déclaré plus clair, il se rend vers #3A312C (retouche 1 : déclaré #3A312C, il se rendait presque noir).
+  hole: 0x5c5049,
   newWood: 0xa68672,
   newShade: 0x8c766a,
   wornWood: 0x9f9279,
@@ -60,13 +61,15 @@ const C = {
   lauze: COLORS_5E.stoneShade,
   iron: 0x6f6a60,
   ironHead: 0x5f5a52,
+  // Le fer des sondes et des goujons du socle, debout : le fer gris #6F6A60 tel que l'écran le rend sur leurs flancs, à
+  // l'ombre comme au soleil (retouche 1 : déclaré #6F6A60, il se rendait brun olive presque noir) ; la tête ronde, plus claire.
+  probe: 0x9a958c,
+  probeHead: 0xaaa69d,
   bronze: 0xb8954f,
   verdigris: 0x6f9a8a,
   rope: 0xd8c49a,
   lantern: COLORS_5E.lantern,
   unlit: 0xbfc4b8,
-  smoke: 0xc2bdb1,
-  smokeShade: 0xaba69b,
   shrub: FOREST_COLORS.shrub,
   shrubTop: FOREST_COLORS.shrubTop,
   // Le pot de la pousse et son tabouret : une pierre chaude, plus claire que la dalle ; la pousse.
@@ -114,23 +117,41 @@ const VENT_TOP = 0.42;
 
 /**
  * La vapeur fixe : pour chaque bouche, le haut de son panache (sous deux fois le mât et sous le rebord de la falaise, 13)
- * et son nombre de bouffées ; le rayon des bouffées (les gorges, puis les ventres), qui s'effilent vers le haut ; le
- * glissement vers l'ouest, très peu, le même pour les trois.
+ * et ses bouffées, comme la fumée du Hameau (`hameau5e.ts`, `smoke`) : chacune deux troncs de cône dos à dos, qui
+ * s'élargissent puis se referment, empilées sans torsion, la plus large en bas ; leur rayon au ventre (la plus haute bouche),
+ * leur glissement vers l'ouest d'une bouffée à l'autre (le même pour les trois, très peu) et leur léger décalage, de
+ * côté et en profondeur (retouche 1 : les anneaux tournés d'un demi-pan se lisaient comme des colonnes vrillées).
  */
 const PLUMES = [
-  { top: 8, puffs: 4 },
+  { top: 8, puffs: 3 },
   { top: 6, puffs: 3 },
-  { top: 4.6, puffs: 3 },
+  { top: 4.6, puffs: 2 },
 ] as const;
-const PUFF = { throat: [0.5, 0.58, 0.52, 0.42], belly: [0.86, 0.8, 0.7, 0.56], tip: 0.22, drift: -0.06, sides: 5 } as const;
+const PUFF = { belly: [1.08, 0.94, 0.76], foot: 0.6, neck: 0.45, overlap: 0.15, drift: -0.12, sway: [0, 0.16, -0.06], sides: 6 } as const;
 
-/** Le socle de la grande sonde, au bord nord-ouest de la dalle : huit pans, à hauteur de genou, le trou et ses quatre goujons. */
-const SOCLE = { x: -4.2, z: 0.1, r: 0.78, h: 0.6, hole: 0.34, pins: 0.56 } as const;
+/**
+ * Les gris de la vapeur, du bas vers le haut : le dessous de chaque bouffée, puis son dessus, plus clair en haut. Plus
+ * clairs que les gris visés (#C2BDB1 en bas) : l'écran les rend plus sombres sur les flancs, à l'ombre, et ils doivent se
+ * détacher en clair sur la falaise (retouche 1 : beige gris comme elle, ils se lisaient comme de la pierre).
+ */
+const STEAM = { under: [0xd4d1ca, 0xe3e0da], over: [0xdedbd4, 0xebe9e3] } as const;
+
+/** Le mélange de deux couleurs, de `a` (0) à `b` (1). */
+function mix(a: number, b: number, t: number): number {
+  const ch = (shift: number) => Math.round(((a >> shift) & 255) * (1 - t) + ((b >> shift) & 255) * t);
+  return (ch(16) << 16) | (ch(8) << 8) | ch(0);
+}
+
+/**
+ * Le socle de la grande sonde, au bord nord-ouest de la dalle : huit pans, à hauteur de genou, le trou et ses quatre goujons
+ * ronds, courts et fins (retouche 1 : gros et carrés, autour d'un trou presque noir, ils faisaient « bouche à dents »).
+ */
+const SOCLE = { x: -4.2, z: 0.1, r: 0.78, h: 0.6, hole: 0.34, pins: 0.56, pin: 0.045 } as const;
 
 /** Les deux sondes, séparées en profondeur : l'une sur la dalle au sud-est du socle, l'autre au bord sud-est de la margelle. */
 const PROBES = [
   { x: -3.0, z: 1.4 },
-  { x: 3.95, z: -1.6 },
+  { x: 3.1, z: -1.35 },
 ] as const;
 
 /** Une sonde : sa hauteur (tête comprise), l'épaisseur de sa tige, le rayon de sa tête. */
@@ -148,8 +169,14 @@ const CABIN_TOP = CABIN.feet + CABIN.floor + CABIN.wall + 2 * CABIN.band;
 /** La perche de la lanterne de la sondeuse, à côté de la porte : sa place, sa hauteur. */
 const POLE = { x: 9.0, z: 3.7, h: 2.1, arm: 0.45 } as const;
 
-/** La roche contre laquelle la cabane penche dans la ruine (toujours là). */
-const CABIN_ROCK = { x: 9.85, z: 1.2, r: 1.0, h: 1.3 } as const;
+/** La roche contre laquelle la cabane penche dans la ruine (toujours là), contre son mur de l'est. */
+const CABIN_ROCK = { x: 9.85, z: 2.2, r: 1.05, h: 1.5 } as const;
+
+/**
+ * La cabane de la ruine : penchée vers l'est, d'un angle franc (retouche 1 : à 7°, elle se lisait droite), son pied cassé,
+ * son mur de l'est appuyé sur sa roche ; son bord bas de l'est posé au sol.
+ */
+const CABIN_LEAN = 0.34;
 
 /** Le mât, juste au nord de la cabane : sa place, sa hauteur, le bras de la girouette, la lanterne fixée dessous. */
 const MAST = { x: 6.5, z: -0.6, h: 4.5, t: 0.16, arm: 4.3 } as const;
@@ -173,8 +200,12 @@ const PATH: readonly Vec2[] = [
 const PATH_WIDTH = 1.3;
 const PATH_TOP = 0.1;
 
-/** La lanterne sur piquet en tête du chemin, au coin ouest de la dalle (jamais une grosse lanterne de premier plan). */
-const PATH_LANTERN = { x: -5.25, z: -0.7, h: 1.35 } as const;
+/**
+ * La lanterne sur piquet en tête du chemin, dans l'alignement de sa barrière, au sud de son premier piquet, hors de la dalle
+ * (jamais une grosse lanterne de premier plan) : derrière la caméra de la vue vers l'est, au coin nord-ouest de la dalle
+ * (retouche 1 : au coin de la dalle, elle bouchait cette vue).
+ */
+const PATH_LANTERN = { x: -6.55, z: 0.9, h: 1.35 } as const;
 
 /** La haie, au nord-est, derrière la cabane : trois buissons secs en dômes à pans (place, taille). */
 const HEDGE = [
@@ -217,40 +248,44 @@ function vent(b: FacetBuilder, v: (typeof VENTS)[number], ground: SiteGround): v
 }
 
 /**
- * Un panache de vapeur, fixe : des bouffées arrondies à cinq pans empilées en une seule colonne (une gorge, un ventre, une
- * gorge…), qui s'effilent vers le haut et glissent très peu vers l'ouest, fermée en haut. Vingt triangles par bouffée,
- * cinq pour le dessus.
+ * Un panache de vapeur, fixe : ses bouffées arrondies à six pans, empilées sans torsion, chacune un peu plus étroite que la
+ * précédente, qui glissent très peu vers l'ouest ; le dessus fermé sur la dernière seulement (les autres sont dans la
+ * suivante). Vingt-quatre triangles par bouffée, six pour le dessus.
  */
 function plume(b: FacetBuilder, v: (typeof VENTS)[number], p: (typeof PLUMES)[number], base: number): void {
   const n = PUFF.sides;
   const y0 = base + v.h + 0.04;
-  const step = (p.top - y0) / (2 * p.puffs);
   // Plus étroit au-dessus d'une petite bouche : le panache sort de son haut ouvert.
   const scale = 0.6 + (0.4 * v.r) / VENTS[0].r;
-  const rings: { r: number; y: number }[] = [];
-  for (let k = 0; k < p.puffs; k++) {
-    rings.push({ r: PUFF.throat[k] * scale, y: y0 + 2 * k * step });
-    rings.push({ r: PUFF.belly[k] * scale, y: y0 + (2 * k + 1) * step });
-  }
-  rings.push({ r: PUFF.tip, y: p.top });
-  const ring = (i: number) => {
-    const { r, y } = rings[i];
-    const turn = (i % 2) * (Math.PI / n);
-    const x = v.x + PUFF.drift * i;
-    return Array.from({ length: n }, (_, k): [number, number, number] => {
-      const a = (2 * Math.PI * k) / n + turn;
-      return [x + r * Math.cos(a), y, v.z + r * Math.sin(a)];
+  const radii = PUFF.belly.slice(0, p.puffs).map((r) => r * scale);
+  // La hauteur de chaque bouffée, à proportion de son ventre, pour que la dernière finisse au haut du panache.
+  const sum = radii.reduce((a, r, k) => a + r * (k + 1 < radii.length ? 1 - PUFF.overlap : 1), 0);
+  const unit = (p.top - y0) / sum;
+  const ring = (x: number, y: number, z: number, r: number) =>
+    Array.from({ length: n }, (_, k): [number, number, number] => {
+      const a = (2 * Math.PI * k) / n;
+      return [x + r * Math.cos(a), y, z + r * Math.sin(a)];
     });
-  };
-  for (let i = 0; i + 1 < rings.length; i++) {
-    const lo = ring(i),
-      hi = ring(i + 1);
-    const color = i % 2 ? C.smokeShade : C.smoke;
+  const band = (lo: [number, number, number][], hi: [number, number, number][], color: number) => {
     for (let k = 0; k < n; k++) b.quad(lo[(k + 1) % n], lo[k], hi[k], hi[(k + 1) % n], color);
-  }
-  const top = ring(rings.length - 1);
-  const c: [number, number, number] = [v.x + PUFF.drift * (rings.length - 1), p.top + 0.08, v.z];
-  for (let k = 0; k < n; k++) b.triangle(c, top[(k + 1) % n], top[k], C.smoke);
+  };
+  let y = y0;
+  radii.forEach((r, k) => {
+    const t = radii.length > 1 ? k / (radii.length - 1) : 1;
+    const h = r * unit;
+    const x = v.x + PUFF.drift * k + PUFF.sway[k];
+    const z = v.z - PUFF.sway[k] * 0.6;
+    const foot = ring(x, y, z, r * PUFF.foot);
+    const belly = ring(x, y + h / 2, z, r);
+    const neck = ring(x, y + h, z, r * PUFF.neck);
+    band(foot, belly, mix(STEAM.under[0], STEAM.under[1], t));
+    band(belly, neck, mix(STEAM.over[0], STEAM.over[1], t));
+    if (k === radii.length - 1) {
+      const c: [number, number, number] = [x, y + h + 0.06, z];
+      for (let i = 0; i < n; i++) b.triangle(c, neck[(i + 1) % n], neck[i], STEAM.over[1]);
+    }
+    y += h * (1 - PUFF.overlap);
+  });
 }
 
 /**
@@ -340,7 +375,7 @@ function socle(b: FacetBuilder): void {
   b.plate({ x: S.x, y: top + 0.01, z: S.z, pitch: -Math.PI / 2 }, hole, C.hole);
   for (let k = 0; k < 4; k++) {
     const a = Math.PI / 4 + (Math.PI * k) / 2;
-    b.box({ x: S.x + S.pins * Math.cos(a), y: top - 0.02, z: S.z + S.pins * Math.sin(a), yaw: a }, [0.1, 0.16, 0.1], C.iron);
+    b.prism({ x: S.x + S.pins * Math.cos(a), y: top - 0.02, z: S.z + S.pins * Math.sin(a) }, S.pin, S.pin, 0.09, 5, C.probe);
   }
 }
 
@@ -389,13 +424,15 @@ function cabinBody(b: FacetBuilder, worn: boolean, broken: boolean): void {
 
 /**
  * Pose un dessin fait dans le repère de la cabane : à sa place, ou penché vers l'est (`roll`, autour de son bord bas de
- * l'ouest), contre sa roche. Normales comprises.
+ * l'ouest), contre sa roche, relevé d'autant que le bord bas de l'est de son plancher reste posé au sol (ses pieds de
+ * l'ouest, qui descendent sous le sol, l'y portent). Normales comprises.
  */
 function placeCabin(b: FacetBuilder, ground: SiteGround, draw: (l: FacetBuilder) => void, roll = 0): void {
   const l = new FacetBuilder();
   draw(l);
   const f = l.build();
-  const g = ground.at(CABIN.x, CABIN.z);
+  const lift = Math.max(0, (CABIN.w + 0.1) * Math.sin(roll) - CABIN.feet + 0.03);
+  const g = ground.at(CABIN.x, CABIN.z) + lift;
   const px = -CABIN.w / 2,
     py = CABIN.feet;
   const c = Math.cos(-roll),
@@ -569,13 +606,13 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     (b) => {
       // Les deux sondes couchées sur la dalle, parallèles, jamais croisées ; leur tête au même bout.
       for (const z of [3.0, 3.5]) {
-        b.beam({ x: -4.0, y: DALLE.top + PROBE.t / 2, z }, { x: -2.4, y: DALLE.top + PROBE.t / 2, z }, PROBE.t * 0.8, C.iron);
-        b.box({ x: -2.25, y: DALLE.top, z }, [0.34, 0.3, 0.34], C.ironHead);
+        b.beam({ x: -4.0, y: DALLE.top + PROBE.t / 2, z }, { x: -2.4, y: DALLE.top + PROBE.t / 2, z }, PROBE.t * 0.8, C.probe);
+        b.prism({ x: -2.25, y: DALLE.top, z }, PROBE.head, PROBE.head * 0.8, 0.3, 6, C.probeHead);
       }
     },
     corps,
   );
-  add('ruine', 0, (b) => placeCabin(b, ground, (l) => cabinBody(l, true, true), 0.12), corps);
+  add('ruine', 0, (b) => placeCabin(b, ground, (l) => cabinBody(l, true, true), CABIN_LEAN), corps);
 
   // La ruine du haut : le toit tombé à plat à côté de la cabane et ses deux lames décrochées, parallèles ; le mât couché sur
   // la roche ocre, vers le nord, la feuille de la girouette face au ciel.
@@ -675,9 +712,10 @@ function probes(b: FacetBuilder, c: Vec3): void {
     PROBES.forEach((p, i) => {
       const g = i === 0 ? DALLE.top : groundNear(c, p.x, p.z);
       const rod = g + PROBE.h - 0.3;
-      l.box({ x: p.x, y: g - 0.3, z: p.z }, [PROBE.t, rod - g + 0.3, PROBE.t], C.iron);
-      l.prism({ x: p.x, y: rod, z: p.z }, PROBE.head * 0.8, PROBE.head, 0.14, 6, C.ironHead, C.iron);
-      l.prism({ x: p.x, y: rod + 0.14, z: p.z, yaw: Math.PI / 6 }, PROBE.head, PROBE.head * 0.5, 0.16, 6, C.ironHead, C.iron);
+      l.box({ x: p.x, y: g - 0.3, z: p.z }, [PROBE.t, rod - g + 0.3, PROBE.t], C.probe);
+      // La tête ronde : deux troncs de cône à six pans dos à dos, qui s'élargissent puis se referment.
+      l.prism({ x: p.x, y: rod, z: p.z }, PROBE.head * 0.7, PROBE.head, 0.13, 6, C.probeHead);
+      l.prism({ x: p.x, y: rod + 0.13, z: p.z, yaw: Math.PI / 6 }, PROBE.head, PROBE.head * 0.45, 0.15, 6, C.probeHead);
     });
   });
 }
@@ -728,8 +766,46 @@ function sprout(b: FacetBuilder, c: Vec3): void {
 
 // ---------- La scénette ----------
 
-/** Le milieu de la scène, depuis le centre du lieu : sur la dalle, devant la cabane ; sa demi-largeur et sa demi-profondeur. */
-const SCENE_SPOT = { dx: 4, dz: 4.3, half: [3.5, 1.2] as [number, number] } as const;
+/**
+ * Le cap de départ de la caméra de la scénette (`site.start`) : un peu depuis le sud-ouest (retouche 1). De face, la
+ * caméra voyait par-dessus la dalle le lieu entier, les trois bouches au milieu de l'image ; de biais, derrière Kéo, à
+ * gauche, la bouche de l'est et son panache seuls (les deux autres passent sous le panneau de la consigne), derrière la
+ * sondeuse, la façade de la cabane, et entre eux, les traces.
+ */
+const SCENE_START = (-26 * Math.PI) / 180;
+
+/** La droite de la scène vue de la caméra (le long de la façade, en biais) et le côté de la caméra. */
+const SCENE_RIGHT = { x: Math.cos(SCENE_START), z: -Math.sin(SCENE_START) } as const;
+const SCENE_BACK = { x: Math.sin(SCENE_START), z: Math.cos(SCENE_START) } as const;
+
+/** La demi-largeur de Kéo et de la sondeuse l'un de l'autre, et leur avancée vers la caméra (celles du Hameau). */
+const SCENE_HALF = 2.3;
+const SCENE_FORWARD = 0.3;
+
+/** La sondeuse, sur la dalle, devant la cabane, à la gauche de sa porte. */
+const SURVEYOR_AT = { x: 7.1, z: 4.6 } as const;
+
+/**
+ * Le milieu de la scène, depuis le centre du lieu : sur la dalle, entre Kéo et la sondeuse ; la demi-largeur et la
+ * demi-profondeur du sol relevé sous elle (tout sur la dalle).
+ */
+const SCENE_SPOT = {
+  dx: SURVEYOR_AT.x - SCENE_RIGHT.x * SCENE_HALF - SCENE_BACK.x * SCENE_FORWARD,
+  dz: SURVEYOR_AT.z - SCENE_RIGHT.z * SCENE_HALF - SCENE_BACK.z * SCENE_FORWARD,
+  half: [2.3, 1.4] as [number, number],
+} as const;
+
+/** Les places de Kéo et de la sondeuse depuis le milieu de la scène : de part et d'autre, un peu vers la caméra. */
+const sceneSide = (side: -1 | 1) => ({ dx: SCENE_RIGHT.x * SCENE_HALF * side + SCENE_BACK.x * SCENE_FORWARD, dz: SCENE_RIGHT.z * SCENE_HALF * side + SCENE_BACK.z * SCENE_FORWARD });
+
+/**
+ * Le point de la scène depuis son milieu, `right` vers la droite de la caméra de départ et `back` vers elle : pour
+ * poser ses abords (./fumerollesSurroundings.ts).
+ */
+export const fumerollesSceneOffset = (right: number, back: number): { dx: number; dz: number } => ({
+  dx: SCENE_RIGHT.x * right + SCENE_BACK.x * (back + SCENE_FORWARD),
+  dz: SCENE_RIGHT.z * right + SCENE_BACK.z * (back + SCENE_FORWARD),
+});
 
 /**
  * La dalle est le plancher de la scénette : Kéo et la sondeuse se tiennent sur son dessus. La scène se pose au plus haut
@@ -787,10 +863,12 @@ export const FUMEROLLES: PlaceArt = {
   sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
   site: {
     rise: sceneRise(),
-    keo: { dx: -2.3, dz: 0.3, scale: 0.6, yaw: Math.PI - 0.4 },
-    habitant: { dx: 2.3, dz: 0.3 },
-    subject: { halfWidth: 3.4, bottom: -0.5, top: 3.2, depth: 0.3 },
+    keo: { ...sceneSide(-1), scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
+    habitant: sceneSide(1),
+    // Le point visé entre eux, un peu vers la caméra (le long de z : celui des Kéo et sondeuse avancés).
+    subject: { halfWidth: 3.4, bottom: -0.5, top: 3.2, depth: SCENE_BACK.z * SCENE_FORWARD },
     pitch: (14 * Math.PI) / 180,
+    start: SCENE_START,
   },
   // Le décor de près : la dalle du lieu est le plancher (rien à poser dessus) ; la sondeuse en pion, sans son modèle.
   decor(b, _floor, at, sphere, body = true) {
@@ -798,6 +876,8 @@ export const FUMEROLLES: PlaceArt = {
   },
   answer: {
     size: { height: BOARD.height + BOARD.lift + 0.2, half: 0.34 },
+    // La caméra de la scénette part en biais (`site.start`) : la planche se tourne avec elle, sous la rangée.
+    facing: true,
     // La planche à relevés sur deux tréteaux, sous la rangée des galets.
     base(b, mid, y, z, span, s, ground) {
       const top = y + BOARD.height * s;
@@ -822,6 +902,9 @@ export const FUMEROLLES: PlaceArt = {
   },
   // Kéo au retour : sur le chemin, à l'est de la porte, face aux bouches.
   exit: { x: 3.4, z: 8.6 },
+  // Les sondes, le récipient de pluie et la pousse restent dans le cadre de la scénette (intention, § 9) : elle ne dessine
+  // aucune réussite à leur place.
+  keepsTracesInScenette: true,
 };
 
 /** Le haut du mât, au-dessus du sol du lieu (sous les aiguilles, bien sous la Montée). */
@@ -843,4 +926,5 @@ export const FUMEROLLES_LAYOUT = {
   mast: { x: MAST.x, z: MAST.z },
   rain: RAIN,
   pot: POT,
+  pathLantern: PATH_LANTERN,
 } as const;

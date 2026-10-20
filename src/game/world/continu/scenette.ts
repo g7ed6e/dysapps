@@ -1030,11 +1030,12 @@ function poseOfSubject(site: ScenetteSite, S: ScenetteSite['subject'], x: number
 export const scenetteHidesPlace = (place: AnyPlaceId): boolean => place === 'quais' || placeArt(scenePlace(place))?.hideInScenette === true;
 
 /**
- * Les pièces du lieu s'effacent-elles le temps de la scénette ? Partout sauf au Phare (ses lampes sont sur la galerie) :
- * la trace de la réussite que la scénette montre (la barque chargée, le panier plein, la porte ouverte) n'est pas
- * dessinée deux fois ; elle reste dans le monde au retour.
+ * Les pièces du lieu s'effacent-elles le temps de la scénette ? Partout sauf au Phare (ses lampes sont sur la galerie) et
+ * aux Fumerolles (`keepsTracesInScenette` : leurs traces sont dans le cadre) : la trace de la réussite que la scénette
+ * montre (la barque chargée, le panier plein, la porte ouverte) n'est pas dessinée deux fois ; elle reste dans le monde
+ * au retour.
  */
-export const scenetteHidesPieces = (place: AnyPlaceId): boolean => place !== 'phare';
+export const scenetteHidesPieces = (place: AnyPlaceId): boolean => place !== 'phare' && placeArt(scenePlace(place))?.keepsTracesInScenette !== true;
 
 /**
  * Les traces d'un lieu que montre sa scénette (décision du directeur artistique, relecture de L3) : une trace d'une autre
