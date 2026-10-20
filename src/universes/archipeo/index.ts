@@ -643,7 +643,9 @@ export const ARCHIPEO = {
   // 2026 (L'Escale, la Maison des Savoirs), et celui de la salle des succès proposé par le consultant d'Archipéo. Le lieu
   // d'assemblage porte le même nom que dans la grille, « L’Entrepôt des matériaux » (choix du mainteneur du 16 octobre
   // 2026), lu dans docs/contenu/assemblage.md, sa seule source.
-  depart: { nom: 'L’Escale', ecole: 'La Maison des Savoirs', succes: 'La Galerie des Merveilles', assemblage: lieuDAssemblage('archipeo').titre },
+  // Le lieu de départ de chaque niveau, et ses bâtiments ; l'école, la galerie et l'Entrepôt gardent leur nom au 5e
+  // (décision du mainteneur, 19 octobre 2026 : « La Maison des Savoirs » à la Lisière comme à l'Escale).
+  depart: { nom: 'L’Escale', noms: { '5e': 'La Lisière' }, ecole: 'La Maison des Savoirs', succes: 'La Galerie des Merveilles', assemblage: lieuDAssemblage('archipeo').titre },
   // Les noms d'avant GD-1, ceux des données (world/archipelago.ts).
   archipels: { '6e': 'Premiers Rivages', '5e': 'Îles Brumeuses', '4e': 'Anciens Ateliers', '3e': 'Îles du Ciel' },
   // Les rôles d'avant GD-1, ceux de core/progress.ts (ROLES), et leurs succès inchangés.

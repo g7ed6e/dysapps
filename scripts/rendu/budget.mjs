@@ -108,7 +108,7 @@ try {
   const cinquieme = !demandes || demandes.includes('5e');
   // Au 5e (lot 3), deux cas qui ne se montrent jamais ensemble : la scénette de la Montée ouverte (le pire), puis le
   // monde hors scénette (la pose, la caisse de la cabine qui roule).
-  const mondeOuvert5e = cinquieme ? { niveau: '5e', postes: ouvert.openWorldCost5e(), carte: ouvert.mapCost5e(), enveloppe: ouvert.OPEN_WORLD_BUDGET, horsScenette: ouvert.openWorldCost5e('monde') } : null;
+  const mondeOuvert5e = cinquieme ? { niveau: '5e', postes: ouvert.openWorldCost5e(), carte: ouvert.mapCost5e(), enveloppe: ouvert.OPEN_WORLD_BUDGET, horsScenette: ouvert.openWorldCost5e('monde'), depart: ouvert.openWorldCost5e('depart') } : null;
 
   if (JSON_SEUL) console.log(JSON.stringify(resultats, null, 2));
   else {
@@ -159,6 +159,12 @@ try {
         const hc = h.reduce((s, p) => s + p.calls, 0);
         const pose = h.find((p) => p.poste === 'pose');
         console.log(`Hors scénette (la pose ou la caisse qui roule à la place de la question et de la scénette) : ${n(ht)} triangles, ${hc} appels${alerte(ht, hc)}${pose ? ` (pose : ${n(pose.triangles)} triangles, ${pose.calls} appel)` : ''}.`);
+      }
+      if (monde.depart) {
+        const d = monde.depart;
+        const dt = d.reduce((s, p) => s + p.triangles, 0);
+        const dc = d.reduce((s, p) => s + p.calls, 0);
+        console.log(`Pendant le départ (la Nef et le mur de nuages dans deux maillages, à la place de la pose) : ${n(dt)} triangles, ${dc} appels${alerte(dt, dc)}.`);
       }
     }
   }

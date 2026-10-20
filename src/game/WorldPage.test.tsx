@@ -511,15 +511,23 @@ it('les nouveaux noms des archipels, une fois, avant le mot des grandes étapes 
   // Un élève qui jouait déjà, arrivé en 5e : les nouveaux noms d'abord, le mot de Bazar ensuite.
   localStorage.setItem('dysapps:game', JSON.stringify({ progress: { 'foret:sons': { stars: 2 } }, world: { links: ['passage-5e'], place: 'maths-5e-proportionality' } }));
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
-  const user = userEvent.setup();
+  // L'horloge des tests : les deux attentes (1,2 s chacune) et le temps où rien d'autre ne s'ouvre, sans attendre pour de vrai.
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  onTestFinished(() => {
+    vi.useRealTimers();
+  });
+  const avancer = (ms: number) => act(() => vi.advanceTimersByTime(ms));
+  const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
   renderAt('/adventure');
-  const noms = await screen.findByRole('dialog', { name: /De nouveaux noms/ }, { timeout: 3000 });
+  avancer(1300);
+  const noms = screen.getByRole('dialog', { name: /De nouveaux noms/ });
   expect(noms).toHaveTextContent('Les Îles Brumeuses s’appellent maintenant les Collines du Large.');
-  await new Promise((r) => setTimeout(r, 1500));
+  avancer(1500);
   expect(screen.queryByRole('dialog', { name: 'Le mot de Bazar' })).not.toBeInTheDocument();
   await user.click(within(noms).getByRole('button', { name: 'D’accord' }));
   expect(screen.queryByRole('dialog', { name: /De nouveaux noms/ })).not.toBeInTheDocument();
-  expect(await screen.findByRole('dialog', { name: 'Le mot de Bazar' }, { timeout: 3000 })).toBeInTheDocument();
+  avancer(1300);
+  expect(screen.getByRole('dialog', { name: 'Le mot de Bazar' })).toBeInTheDocument();
   // Vu une fois : il ne revient pas.
   cleanup();
   renderAt('/adventure');
@@ -870,6 +878,28 @@ it('à la première arrivée au port, sa créature parle de la Nef, une seule fo
   premier.unmount();
   renderAt('/adventure/maths-6e-calculation');
   expect(ligne()).toBeUndefined();
+});
+
+describe('une seule fenêtre à la fois à l’arrivée (retouche du lot 4 du 5e)', () => {
+  beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: true }));
+  afterEach(() => vi.useRealTimers());
+
+  it('au port, le mot de la baleine d’abord, puis la phrase de la créature après « J’ai compris »', async () => {
+    localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+    // Le mot d'arrivée de la baleine pas encore dit (comme à l'arrivée par la Nef dans un nouvel archipel).
+    localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'map-reshaped': true }));
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const ligne = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line') && el.textContent?.includes('la Nef attend ses blocs'));
+    renderAt('/adventure/maths-6e-calculation');
+    expect(ligne()).toBeUndefined();
+    act(() => vi.advanceTimersByTime(1300));
+    const compris = screen.getByRole('button', { name: /J’ai compris/ });
+    expect(ligne()).toBeUndefined();
+    await user.click(compris);
+    expect(ligne()).toBeDefined();
+    // Un succès qui arrive ne tombe pas sur la phrase : les bandeaux attendent qu'elle soit fermée.
+    expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
+  });
 });
 
 it('le soleil et la lune ne sont plus dans la barre : le jour est forcé tant que le tutoriel n’est pas vu, puis le réglage décide', () => {

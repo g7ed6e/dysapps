@@ -6,6 +6,8 @@
 // appels le 18 octobre 2026 pour les habitants en 3D (« on peut augmenter le budget », mesure sur iPad avant la fusion). Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
 import { FAUNA, birdFacets, detourTrianglesAtMost, spoutFacets, whaleFacets } from './detours';
 import { NEF_MODEL_TRIANGLES, nefSiteTriangles } from './nef';
+import { NEF_5E_MODEL_TRIANGLES, nef5eSiteTriangles } from './nef5e';
+import { LISIERE_SITE, lisiereDecorFacets } from './lisiere';
 import { WORLD_FOG } from './camera';
 import { bridgeLay } from './bridgeLay';
 import { bridgeFacets, bridgeMapMark, cabinCarFacets, isCabin } from './bridges';
@@ -320,7 +322,7 @@ const PLAN_5E = planFor('5e');
 const LINKED_LANDS_5E = linkedLands(PLAN_5E);
 
 /** Le poste de la brume des failles du 5e (./mist5e.ts) : un maillage transparent, caché sur la Carte. */
-export type OpenWorldCost5e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'failles' };
+export type OpenWorldCost5e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'failles' | 'départ' };
 
 /** Le sol du 5e, compté comme celui du 6e (`groundCost`) : autour des points de son réseau, dans huit directions. */
 function groundCost5e(): { triangles: number; calls: number; near: number; far: number } {
@@ -345,7 +347,26 @@ function groundCost5e(): { triangles: number; calls: number; near: number; far: 
 function placesCost5e(): { triangles: number; calls: number } {
   const ruins = PLAN_5E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + (p.scenes.length ? placeTrace(p.id, p.scenes).triangles : 0), 0);
   const passages = LINKED_LANDS_5E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
-  return { triangles: ruins + passages, calls: 2 };
+  return { triangles: ruins + passages + lisiereCost(), calls: 2 };
+}
+
+/**
+ * La Lisière (lot 4), au plus chargée comme l'Escale (`PORT_WORST` : la galerie pleine, les portes pavoisées, la
+ * lanterne, les habitants, les barques, la pile pleine), avec son décor (la graine géante, la lumière du Phare), dans le
+ * maillage des lieux : aucun appel de plus.
+ */
+export function lisiereCost(): number {
+  return portFacets(PORT_WORST, { assembling: false }, LISIERE_SITE).triangles + lisiereDecorFacets().triangles;
+}
+
+/**
+ * Le dirigeable du 5e (lot 4) : le modèle entier, son ber et le gréement plié au plus, le mur de nuages et le panache,
+ * dans le maillage des lieux, aucun appel de plus ; pendant le départ, la Nef et le mur passent chacun dans un maillage
+ * à part (`departureCost5e`).
+ */
+function nefCost5e(): { triangles: number; calls: number } {
+  const site = nef5eSiteTriangles();
+  return { triangles: NEF_5E_MODEL_TRIANGLES + site.ber + site.wall + site.plume, calls: 0 };
 }
 
 /**
@@ -383,8 +404,10 @@ function questionCost5e(): { triangles: number; calls: number } {
  * octobre 2026 : un lot à part), prendra la place du pion avec un appel de plus.
  */
 function scenetteCost5e(): { triangles: number; calls: number } {
-  const triangles = Math.max(...PLAN_5E.places.filter((p) => p.scenes.length).map((p) => Math.max(scenetteDecor(scenePlace(p.id)).triangles, scenetteDecor(scenePlace(p.id), true).triangles)));
-  return { triangles, calls: 1 };
+  const montee = Math.max(...PLAN_5E.places.filter((p) => p.scenes.length).map((p) => Math.max(scenetteDecor(scenePlace(p.id)).triangles, scenetteDecor(scenePlace(p.id), true).triangles)));
+  // La scénette d'assemblage de la Lisière (lot 4), jamais en même temps que celle de la Montée : les pièces, puis le bloc.
+  const assembly = assemblyScene(PORT_WORST, LISIERE_SITE);
+  return { triangles: Math.max(montee, assembly.pieces.triangles, assembly.made.triangles), calls: 1 };
 }
 
 /**
@@ -393,10 +416,12 @@ function scenetteCost5e(): { triangles: number; calls: number } {
  * brume des failles, Kéo ; puis, selon `view` : la scénette ouverte (`scenette`, le pire : la question et le décor de
  * près de la Montée) ou le monde hors scénette (`monde` : le maillage de la pose, une partie qui descend, un passage qui
  * se relève, la caisse qui roule). Les deux ne se montrent jamais ensemble : une question finit toute pose
- * (three/archipeo/scene.ts, `askQuestion`), et aucune pose ne commence pendant une question (`setPlaces`). La faune de
- * chaque terre (./wildlife5e.ts), un maillage. Ni aménagements, ni Détours, ni Nef : ils viennent avec leurs lots.
+ * (three/archipeo/scene.ts, `askQuestion`), et aucune pose ne commence pendant une question (`setPlaces`). Le dirigeable
+ * (lot 4) et la Lisière vont dans le maillage des lieux ; pendant le départ (`depart`), la Nef et le mur de nuages
+ * passent dans deux maillages à part, le maillage de la pose fermé (`startNefTrip`), ni question ni scénette ouverte.
+ * La faune de chaque terre (./wildlife5e.ts), un maillage. Ni aménagements, ni Détours : ils viennent avec leurs lots.
  */
-export function openWorldCost5e(view: 'scenette' | 'monde' = 'scenette'): OpenWorldCost5e[] {
+export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenette'): OpenWorldCost5e[] {
   const field = buildHeightField5e();
   const ground = groundCost5e();
   const paths = pathRibbons5e((x, z) => groundOn5e(field, x, z));
@@ -412,7 +437,10 @@ export function openWorldCost5e(view: 'scenette' | 'monde' = 'scenette'): OpenWo
     // un maillage (celui de la baleine au 6e).
     { poste: 'faune', triangles: groupsTriangles(wildlifeGroups5e(), allCritterForms()), calls: 1 },
     { poste: 'kéo', ...KEO },
-    ...(view === 'monde'
+    { poste: 'nef', ...nefCost5e() },
+    ...(view === 'depart'
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }]
+      : view === 'monde'
       ? [{ poste: 'pose' as const, ...poseCost5e() }]
       : [
           { poste: 'question' as const, ...questionCost5e() },
@@ -435,7 +463,7 @@ export function mapCost5e(): { triangles: number; calls: number } {
   const marks = LINKED_LANDS_5E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + cliffMapLine().triangles + pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark).triangles;
   const veil = veilFacets(LINKED_LANDS_5E).triangles;
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + marks + veil + KEO.triangles,
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + marks + veil + KEO.triangles + nefCost5e().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
   };
 }

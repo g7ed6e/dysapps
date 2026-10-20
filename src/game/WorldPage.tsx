@@ -562,8 +562,8 @@ export function WorldPage() {
   function decouvrir(id: BiomeId): boolean {
     const text = decouverteDeLIle(state, id, { port: archipelago.port, navire: Boolean(ship.stage), textes });
     if (!text) return false;
+    // La voix la dit quand elle se montre (plus bas, `phraseDeCreature`) : après le mot de la baleine, s'il y en a un.
     setSaid({ id, text });
-    if (settings.autoRead) speak(frenchTypography(text));
     return true;
   }
 
@@ -993,9 +993,24 @@ export function WorldPage() {
   // la flèche jaune montre la suggestion. Seule une île pâle touchée dit le chemin d'ouvrages qui y mène. Une chose à la
   // fois : il attend que le mot de la baleine ou du rallumage soit fermé (DA-25).
   const panneauDeLaCarte = mapOpen && Boolean(mapTarget && remaining.length) && !whaleWord && !motRallume && !renommageOuvert;
-  // Une chose à la fois : la phrase d'une créature attend que la fiche ouverte soit fermée.
-  const phraseDeCreature = said && !ficheVue ? said : null;
+  // Une chose à la fois : la phrase d'une créature attend que la fiche ouverte soit fermée, et que le mot de la baleine
+  // (qui attend son instant, puis s'ouvre) soit fermé : à l'arrivée par la Nef, la baleine d'abord, la créature après
+  // « J'ai compris » (référent dys, consultant UX UI et consultant d'Archipéo, retouche du lot 4 du 5e).
+  const phraseDeCreature = said && !ficheVue && !whaleNext ? said : null;
+  // Les célébrations attendent aussi qu'elle soit fermée : un succès ne tombe jamais sur la phrase (référent dys et
+  // consultant UX UI, deuxième passe du lot 4 du 5e).
+  useHoldCelebrations(!!phraseDeCreature);
   const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || phraseDeCreature);
+  // La découverte dite par la voix (avec la lecture automatique) quand sa bulle se montre, une seule fois.
+  const decouverteDite = useRef<typeof said>(null);
+  useEffect(() => {
+    if (!phraseDeCreature || decouverteDite.current === phraseDeCreature) return;
+    decouverteDite.current = phraseDeCreature;
+    if (settings.autoRead) speak(frenchTypography(phraseDeCreature.text));
+    // Seulement quand la bulle se montre : ni le réglage qui change, ni `speak` (refait par le contexte des réglages) ne
+    // la font redire ; `decouverteDite` garde la phrase déjà dite.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phraseDeCreature]);
   // Un panneau en plein écran par-dessus le monde (l'île, un lieu, Blocs, le menu, le voyage sans animation).
   const pleinEcran = Boolean((island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' || (mapOpen && listeDAmenagement));
   // Le focus suit le plein écran : sur la croix du panneau qui s'ouvre (la barre du bas, dessous, devient inerte), puis

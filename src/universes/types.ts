@@ -208,6 +208,11 @@ export interface TextesUnivers {
 interface TextesDepart {
   /** Le lieu de départ, avec l'article (« L'Escale »). */
   nom: string;
+  /**
+   * Le lieu de départ d'un autre niveau, par niveau, avec l'article (GD-22, lot 4 : « La Lisière » au 5e) ; l'école, la
+   * galerie et le lieu d'assemblage gardent leur nom à chaque niveau (décision du mainteneur, 19 octobre 2026).
+   */
+  noms?: Readonly<Partial<Record<'5e' | '4e' | '3e', string>>>;
   /** L'école, avec l'article. */
   ecole: string;
   /** La salle des succès, avec l'article. */

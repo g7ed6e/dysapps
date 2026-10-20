@@ -13,6 +13,7 @@ import { getBiome } from '../../biomes';
 import { Stars } from '../../Stars';
 import { playsInPlace, type MissionMark } from '../../world/continu/mission';
 import { placeOfIsland, type LevelPlan, type OpenPlace, type PlaceId } from '../../world/continu/levelPlan';
+import type { EarnPlaceOf } from '../../PlanSection';
 import { MissionSheet, useOpenPanel } from './PortPanels';
 
 /** Ce que dit le signe d'une ligne qui se joue dans le lieu (il ne porte jamais seul le sens : il est dit). */
@@ -23,6 +24,17 @@ export const IN_PLACE_LABEL = 'Scène';
  * (comme `/adventure?porte=` pour une porte de l'école).
  */
 export const placeReturn = (place: PlaceId, mission?: string) => `/adventure?lieu=${place}${mission ? `&mission=${encodeURIComponent(mission)}` : ''}`;
+
+/**
+ * Au monde ouvert, le lieu du plan qui reprend les missions d'une île (`EarnLink`, la fiche de la Nef, l'Entrepôt) : son
+ * place en mots (« à la Montée ») et l'adresse qui y ramène ; rien pour une île qu'aucun lieu du plan ne reprend.
+ */
+export function earnPlacesOf(plan: LevelPlan): EarnPlaceOf {
+  return (island) => {
+    const p = plan.places.find((q) => q.island === island);
+    return p ? { at: p.at, to: placeReturn(p.id) } : null;
+  };
+}
 
 /** Un lieu du plan lu dans l'adresse de retour (`?lieu=quais`), s'il en est un ; rien d'autre n'est lu. */
 export function placeFromParam(plan: LevelPlan, value: string | null): PlaceId | null {

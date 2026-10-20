@@ -61,6 +61,8 @@ function saved(stage: VehicleStage, at: { x: number; y: number; z: number }) {
 export interface KitInstead {
   kit: boolean;
   waiting: string;
+  /** La phrase de la Nef prête, dite à la fin de la pose (la même que sa fiche : « Prête. Direction : … »). */
+  ready?: string;
 }
 
 export function useVehicleBuilder(island: BiomeId, instead?: KitInstead): VehicleBuilder {
@@ -109,7 +111,7 @@ export function useVehicleBuilder(island: BiomeId, instead?: KitInstead): Vehicl
   };
   const finished = (done: VehicleStage) => {
     const msg = kit
-      ? stageWords(done, textes.libelles.formesDeLaNef).fin(textes.archipels[done.to])
+      ? (instead?.ready ?? stageWords(done, textes.libelles.formesDeLaNef).fin(textes.archipels[done.to]))
       : (instead?.waiting ?? textes.libelles.navireAttend(done.guardians, stageWords(done, textes.libelles.formesDeLaNef).short));
     setNotice(msg);
     sound(playDone);

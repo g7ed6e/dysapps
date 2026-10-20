@@ -7,7 +7,7 @@ import { distance, type Vec2 } from './geometry';
 import { createNetwork } from './network';
 import type { LinkedLand } from './lands';
 import { BRIDGE_ABUT } from './plan6e';
-import { COLORS_5E, LINKS_5E, PATH_EDGES_5E, PATH_NODES_5E, QUAY_5E } from './plan5e';
+import { COLORS_5E, LINKS_5E, PATH_EDGES_5E, PATH_NODES_5E, QUAY_5E, lisiereFloor } from './plan5e';
 import { networkRibbons, type RibbonNet } from './paths';
 import { standingHeight } from './terrain';
 import { channelClearance, plateauShare } from './terrain5e';
@@ -73,7 +73,8 @@ export const RIBBONS_5E: RibbonNet = {
     }
     return cuts.get(edge)!;
   },
-  skip: () => false,
+  // La pierre de la Lisière (GD-22, lot 4) : Kéo y marche, aucun sentier n'y est dessiné, comme à l'Escale.
+  skip: (p) => lisiereFloor(p.x, p.z) !== null,
   planks: () => false,
 };
 
