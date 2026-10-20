@@ -152,6 +152,9 @@ const LOT5_5E = { world: { triangles: 84_510, calls: 16 }, departure: { triangle
 /** Le plafond du Creux (intention du directeur artistique, lot 6). */
 const CREUX_MAX = 175;
 
+/** Le pied des palétuviers de loin (./terrain5e.ts, trois triangles par arbre, #475) : 1 900 triangles au plus (la Carte, la plus chargée). */
+const FOREST_FEET_5E = 1_900;
+
 describe('Le budget du 5e, avec les Radeaux et le Creux (plafonds du lot 6)', () => {
   const sum = (c: { triangles: number; calls: number }[]) => c.reduce((a, p) => ({ triangles: a.triangles + p.triangles, calls: a.calls + p.calls }), { triangles: 0, calls: 0 });
 
@@ -161,14 +164,14 @@ describe('Le budget du 5e, avec les Radeaux et le Creux (plafonds du lot 6)', ()
   });
 
   // Le plafond scénette ouverte et la réserve des lots suivants : ./plan5e.test.ts (« Le budget du 5e »).
-  it('hors scénette, au départ et sur la Carte : le lot 5, un lieu et le Creux de plus au plus, sans appel de plus', () => {
+  it('hors scénette, au départ et sur la Carte : le lot 5, un lieu, le Creux et le pied des palétuviers de plus au plus, sans appel de plus', () => {
     const views = [
       [sum(openWorldCost5e('monde')), LOT5_5E.world],
       [sum(openWorldCost5e('depart')), LOT5_5E.departure],
       [mapCost5e(), LOT5_5E.map],
     ] as const;
     for (const [now, before] of views) {
-      expect(now.triangles).toBeLessThanOrEqual(before.triangles + PLACE_TRIANGLES_MAX_5E + CREUX_MAX);
+      expect(now.triangles).toBeLessThanOrEqual(before.triangles + PLACE_TRIANGLES_MAX_5E + CREUX_MAX + FOREST_FEET_5E);
       expect(now.calls).toBeLessThanOrEqual(before.calls);
     }
   });
