@@ -21,7 +21,7 @@
 // de blocs équarris, un petit débarcadère de pierre. Une trace par mission, chacune avec sa partie (`stage`, `row` :
 // 2+2+1). Rien ne bouge, rien à lire dans la 3D. Code pur (placeArt.ts).
 import type { Stage } from './construction';
-import { FacetBuilder, type Facets } from './facets';
+import { drawPosed, FacetBuilder } from './facets';
 import { insidePolygon, type Vec2, type Vec3 } from './geometry';
 import type { MistSpot } from './mist5e';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
@@ -106,39 +106,6 @@ export const onCauseway = (s: number, t: number): Vec2 => ({ x: E0.x + U.x * s +
  * débarcadère (−`U`), y en haut. Un point (s, t) de la chaussée y est en (x = t, z = −s).
  */
 const FACE_YAW = Math.atan2(-U.x, -U.z);
-
-/** Pose des facettes dessinées dans un repère (bascule autour de x, quart de tour, déplacement), normales comprises. */
-function posed(f: Facets, at: { x: number; y: number; z: number; yaw: number; pitch?: number }): Facets {
-  const cy = Math.cos(at.yaw),
-    sy = Math.sin(at.yaw),
-    cp = Math.cos(at.pitch ?? 0),
-    sp = Math.sin(at.pitch ?? 0);
-  const p = f.positions,
-    n = f.normals;
-  for (let i = 0; i < p.length; i += 3) {
-    for (const [arr, move] of [
-      [p, true],
-      [n, false],
-    ] as const) {
-      const px = arr[i],
-        py = arr[i + 1],
-        pz = arr[i + 2];
-      const y1 = py * cp - pz * sp;
-      const z1 = py * sp + pz * cp;
-      arr[i] = (move ? at.x : 0) + px * cy + z1 * sy;
-      arr[i + 1] = (move ? at.y : 0) + y1;
-      arr[i + 2] = (move ? at.z : 0) - px * sy + z1 * cy;
-    }
-  }
-  return f;
-}
-
-/** Dessine dans un repère tourné de `yaw` (et basculé de `pitch`) posé en `at`, puis l'ajoute. */
-function drawPosed(b: FacetBuilder, at: { x: number; y: number; z: number; yaw: number; pitch?: number }, draw: (l: FacetBuilder) => void): void {
-  const l = new FacetBuilder();
-  draw(l);
-  b.append(posed(l.build(), at));
-}
 
 /** Dessine dans le repère de la face de la chaussée (x = t, z = −s), posé à son départ ; `y0` : la hauteur de son zéro. */
 const inFace = (b: FacetBuilder, y0: number, draw: (l: FacetBuilder) => void): void => drawPosed(b, { x: E0.x, y: y0, z: E0.z, yaw: FACE_YAW }, draw);

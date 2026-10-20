@@ -178,11 +178,11 @@ export const FOREST_COLORS = {
  * unités d'un chemin, de `place` du centre d'un lieu (la Montée : `montee`, et `monteeSouth` au sud, sa clairière d'approche ;
  * le Hameau : `hameau`, et `hameauSouth` au sud ; la Croisée : le couloir `croiseeSouth` sur `croiseeSide` de part et
  * d'autre ; les Instants : `instants` de part et d'autre de leur chaussée, et `instantsSouth` au sud ; les Terrasses :
- * `terrasses`, et `terrassesSouth` au sud), de `quay` du ponton de la Lisière, ni dans sa clairière, ni sur le
- * plateau ou sa falaise ; un tronc se tient à `dry` unités au moins de l'eau (retouche du lot 2, directeur artistique :
- * la canopée couvrait les chenaux, leur eau ne se voyait pas en 3D).
+ * `terrasses`, et `terrassesSouth` au sud ; l'Auberge : `auberge`), de `quay` du ponton de la Lisière, ni dans sa
+ * clairière, ni sur le plateau ou sa falaise ; un tronc se tient à `dry` unités au moins de l'eau (retouche du lot 2,
+ * directeur artistique : la canopée couvrait les chenaux, leur eau ne se voyait pas en 3D).
  */
-const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, monteeSouth: 30, hameau: 14.5, hameauSouth: 34, radeaux: 13, croiseeSouth: 30, croiseeSide: 6, instants: 12.5, instantsSouth: 30, terrasses: 19, terrassesSouth: 32, quay: 5, cliff: 2.5, dry: 2.2, creux: 7.5, faille: 7.5, sente: 3.6 } as const;
+const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, monteeSouth: 30, hameau: 14.5, hameauSouth: 34, radeaux: 13, croiseeSouth: 30, croiseeSide: 6, instants: 12.5, instantsSouth: 30, terrasses: 19, terrassesSouth: 32, auberge: 13, quay: 5, cliff: 2.5, dry: 2.2, creux: 7.5, faille: 7.5, sente: 3.6 } as const;
 
 /** L'axe de la chaussée des Instants, depuis le centre du lieu (lot 8 ; un test le relit contre ./instants5e.ts). */
 export const INSTANTS_AXIS: readonly (readonly [number, number])[] = [
@@ -223,6 +223,8 @@ const nearPlace = (p: Vec2): boolean =>
     // Les Terrasses (lot 11) : le tertre, le moulin, la cour et le buisson du canal haut jusqu'à 18 unités du centre ; au
     // sud, l'approche de la caméra de la porte et le recul de celle de la scénette.
     if (pl.id === 'terrasses') return d < FOREST_KEEP.terrasses || (p.z > pl.center.z + 4 && d < FOREST_KEEP.terrassesSouth);
+    // L'Auberge (lot 12) : la maison, la table et les malles jusqu'à 13 unités du centre ; aucune couronne sur le toit.
+    if (pl.id === 'auberge') return d < FOREST_KEEP.auberge;
     return d < FOREST_KEEP.place;
   });
 

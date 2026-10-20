@@ -135,6 +135,9 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // Les Terrasses (GD-22, lot 11) : « le riziculteur », sans prénom ; sa réplique, la phrase du métier proposée par le
   // directeur artistique, à relire par le directeur du contenu pédagogique (jamais « Sillon » ni la Libellule de jade).
   terrasses: { role: placeArt('terrasses')!.role, greeting: 'Le riziculteur cultive le riz dans l’eau.', placement: 'rangee' },
+  // L'Auberge (GD-22, lot 12) : « l'aubergiste », sans prénom (fiche du 5e, § 6) ; sa réplique, écrite par le directeur du
+  // contenu pédagogique (« sert » et « prépare », au lieu d'« accueille »).
+  auberge: { role: placeArt('auberge')!.role, greeting: 'L’aubergiste sert les repas et prépare les lits des voyageurs.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -547,6 +550,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   fumerolles: northSite('fumerolles'),
   etuve: northSite('etuve'),
   terrasses: northSite('terrasses'),
+  auberge: northSite('auberge'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -1997,6 +2001,7 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   etuve: 'paving',
   // Les Terrasses (lot 11) : le pavé gris devant le moulin.
   terrasses: 'paving',
+  auberge: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

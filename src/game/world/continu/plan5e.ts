@@ -190,7 +190,8 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
  * Hameau (lot 5) : les trois, devant le four commun ; les Radeaux (lot 6) : les cinq, sur le quai devant la cabane du
  * marchand ; la Croisée (lot 7) : les cinq, au pied du tronc ; les Instants (lot 8) : les cinq, sur le débarcadère ;
  * les Fumerolles (lot 9) : les trois, sur la dalle de relevé ; l'Étuve (lot 10) : les trois, sur le pavé devant
- * l'établi ; les Terrasses (lot 11) : les trois, devant le moulin. Les autres lieux n'ont pas encore la leur (l'écran
+ * l'établi ; les Terrasses (lot 11) : les trois, devant le moulin ; l'Auberge (lot 12) : les dix, cinq par langue, sur le
+ * parvis. Les autres lieux n'ont pas encore la leur (l'écran
  * habituel). Un lieu construit s'ajoute ici, et seulement ici.
  */
 export const BUILT_PLACES_5E = {
@@ -202,6 +203,7 @@ export const BUILT_PLACES_5E = {
   fumerolles: ['active-earth', 'weather-climate', 'human-impact'],
   etuve: ['changes-of-state', 'mixtures-density', 'universe-atoms'],
   terrasses: ['population', 'resources', 'risks'],
+  auberge: ['es-greetings', 'es-numbers', 'es-family', 'es-articles', 'es-sentences', 'de-greetings', 'de-numbers', 'de-family', 'de-articles', 'de-sentences'],
 } as const satisfies Partial<Record<PlaceId5e, readonly string[]>>;
 
 /** Un lieu du 5e déjà construit. */

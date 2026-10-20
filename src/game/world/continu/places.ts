@@ -2504,8 +2504,8 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   beacons: northPlace('beacons'),
   ferry: northPlace('ferry'),
   // Le 5e : la Montée finie (lot 3), le Hameau (lot 5), les Radeaux (lot 6), la Croisée (lot 7), les Instants (lot 8),
-  // les Fumerolles (lot 9), l'Étuve (lot 10) et les Terrasses (lot 11), dessinés dans leur fichier ; les autres, des
-  // ruines simples (lot 2).
+  // les Fumerolles (lot 9), l'Étuve (lot 10), les Terrasses (lot 11) et l'Auberge (lot 12), dessinés dans leur fichier ;
+  // les autres, des ruines simples (lot 2).
   montee: northPlace('montee'),
   radeaux: northPlace('radeaux'),
   croisee: northPlace('croisee'),
@@ -2518,7 +2518,7 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   etuve: northPlace('etuve'),
   nacelles: ruinOnly(RUINS_5E.nacelles),
   hameau: northPlace('hameau'),
-  auberge: ruinOnly(RUINS_5E.auberge),
+  auberge: northPlace('auberge'),
   oracle: ruinOnly(RUINS_5E.oracle),
 };
 

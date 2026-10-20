@@ -43,8 +43,8 @@ export const habitantModelName = (place: PlaceId): string => `${levelOfPlace(pla
  * chaque lieu construit (choix du mainteneur, 19 octobre 2026 : les quatorze fichiers sont là ; ils entrent lieu par
  * lieu, avec leur scénette, ./plan5e.ts, `BUILT_PLACES_5E`) : la fontainière de la Montée et le boulanger du Hameau (lot
  * 5), le marchand des Radeaux (lot 6), la cordière de la Croisée (lot 7), le tailleur de pierre des Instants (lot 8),
- * le souffleur de verre de l'Étuve (lot 10), le riziculteur des Terrasses (lot 11). Deux scénettes ne s'ouvrent jamais
- * ensemble : aucun triangle de plus.
+ * le souffleur de verre de l'Étuve (lot 10), le riziculteur des Terrasses (lot 11), l'aubergiste de l'Auberge (lot 12).
+ * Deux scénettes ne s'ouvrent jamais ensemble : aucun triangle de plus.
  */
 export const hasHabitantModel = (place: PlaceId): boolean => levelOfPlace(place) === '6e' || isBuiltPlace5e(place);
 
