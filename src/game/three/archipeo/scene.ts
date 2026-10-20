@@ -336,6 +336,12 @@ interface QuestionRequest {
   layout: ScenetteLayout;
   /** `key` : la clé de l'item (un autre item ramène la caméra de la scénette de face). */
   item: { key?: string; scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[]; sort?: SortLook };
+  /**
+   * Les réponses sorties de la scène (un mot coupé dans son étiquette : l'offre de « Vue simple ») : les objets des
+   * réponses et leur support ne se dessinent pas, pour qu'aucun objet sans étiquette ne semble se toucher (retouche 3 du
+   * lot 5 du 5e : les miches du Hameau en portrait).
+   */
+  answersOut?: boolean;
 }
 
 /** Ce que la pose d'un pont dit à la page : le toc (toutes ses parties posées), puis sa fin (la brume levée : la phrase). */
@@ -3061,24 +3067,25 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // La scène de l'item et les objets des réponses : un seul maillage.
     const merged = new FacetBuilder();
     merged.append(facets.still);
-    merged.append(
-      facingAnswerObjects(
-        place,
-        points,
-        scale,
-        {
-          sort: sort ? { ...sort, moving } : undefined,
-          // Une cloche choisie se balance jusqu'à la réponse ; une caisse tentée reste penchée.
-          picked: hang && item.answered ? [] : item.picked,
-          // La bonne caisse est partie au crochet avec la réaction.
-          gone: answerLeaves(place) && item.answered ? item.right : [],
-          hanging: hang ? { hand: habitantHand(place, posed), rail: hang.rail } : undefined,
-          ground: landBelow,
-        },
-        hang?.pivot ?? spot,
-        hang ? sceneYaw : 0,
-      ),
-    );
+    if (!q.answersOut)
+      merged.append(
+        facingAnswerObjects(
+          place,
+          points,
+          scale,
+          {
+            sort: sort ? { ...sort, moving } : undefined,
+            // Une cloche choisie se balance jusqu'à la réponse ; une caisse tentée reste penchée.
+            picked: hang && item.answered ? [] : item.picked,
+            // La bonne caisse est partie au crochet avec la réaction.
+            gone: answerLeaves(place) && item.answered ? item.right : [],
+            hanging: hang ? { hand: habitantHand(place, posed), rail: hang.rail } : undefined,
+            ground: landBelow,
+          },
+          hang?.pivot ?? spot,
+          hang ? sceneYaw : 0,
+        ),
+      );
     setGeometry(itemMesh, merged.build());
     itemShown = itemMesh.visible;
     if (descent.active) itemMesh.visible = false;

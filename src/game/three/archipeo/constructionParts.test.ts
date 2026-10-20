@@ -162,7 +162,7 @@ describe('Le bilan d’un lieu du 5e nomme l’étape, jamais le plan (directeur
     const p = PLACES.find((q) => q.id === 'printworks')!;
     expect(partiesDe(p.island as BiomeId)).toHaveLength(2);
     expect(said(p, [1], [1])).toBe(`Étape finie : le corps de l’Imprimerie. +${xp(p, 1)} XP.`);
-    expect(said(p, [2], [2, 3])).toBe(`Étape finie : le haut et les abords de l’Imprimerie. +${xp(p, 2) + xp(p, 3)} XP.`);
+    expect(said(p, [2], [2, 3])).toBe(`Étapes finies : le haut et les abords de l’Imprimerie. +${xp(p, 2) + xp(p, 3)} XP.`);
     // Posée avant la première (une sauvegarde d'avant GD-6) : rien n'est fini, la partie se dit sans part.
     expect(said(p, [2], [])).toBe('Partie posée : le haut et les abords de l’Imprimerie.');
   });

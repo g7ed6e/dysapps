@@ -271,6 +271,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     if (meeting && itemKey && greetItem === null) setGreetItem(itemKey);
   }, [meeting, itemKey, greetItem]);
   const offer = !simple && ((layout.low && widen >= WIDEN_OFFER) || (!layout.low && answersOut));
+  // Les réponses sorties de la scène (l'offre de « Vue simple ») : la scène ne dessine plus leurs objets, qui resteraient
+  // sans étiquette et sembleraient se toucher (retouche 3 du lot 5 du 5e, les miches du Hameau en portrait).
+  const objectsOut = answersOut || (layout.low && offer);
   // Sur un écran bas, la consigne s'affiche en entier une fois, au premier item, puis devient une icône.
   const [introDone, setIntroDone] = useState(false);
   // En C sur un écran bas, revenu de « Vue simple » à « Scène » (GD-20, point 8, L8) : la scène reprend sa place, à droite
@@ -560,7 +563,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   }, [inColumn, finished, simple, consigneOpen, itemKey]);
   useEffect(() => {
     if (plain || !size.w || !size.h || !item || finished) return;
-    const shown = world.question({ place, mission, layout, item });
+    const shown = world.question({ place, mission, layout, item, answersOut: objectsOut });
     // Un repère dont le point sort de la scène visible (sous le panneau, au bord de l'écran) ne se montre pas.
     const r = box.current?.querySelector('.quiz.in-world')?.getBoundingClientRect();
     const origin = box.current?.getBoundingClientRect();
@@ -572,7 +575,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // cachés jusqu'à la première réponse, lot L5).
     // La caméra tournée à deux doigts pendant la scénette (« caméra libre ») : les repères suivent le décor.
     return world.onSceneTurn((labels) => setLabels(visible(labels)));
-  }, [world, place, mission, plain, layout, item, size, finished, intro]);
+  }, [world, place, mission, plain, layout, item, size, finished, intro, objectsOut]);
   // Un repère de la scène ne passe jamais sous les boutons du haut (« Vue simple », la pause, à droite d'elle) : sur un
   // téléphone couché, l'entier du haut de la jauge les touchait (relecture du lot L5, consultant UX UI). Il descend alors
   // sous son point, ou se cache ; mesuré une fois par pose des repères, jamais à chaque image.
@@ -786,7 +789,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       className:
         simple && !finished
           ? `in-world scenette simple${foldedSimple ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}${inColumn ? ' mode-c' : ''}`
-          : `in-world scenette${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${answersOut || (layout.low && offer) ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}${inColumn ? ' reponses-colonne mode-c' : ''}${keptScene ? ' scene-gardee simple-bas' : ''}${hasAid ? ' avec-rappel' : ''}`,
+          : `in-world scenette${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${objectsOut ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}${inColumn ? ' reponses-colonne mode-c' : ''}${keptScene ? ' scene-gardee simple-bas' : ''}${hasAid ? ' avec-rappel' : ''}`,
     };
   }, [
     exerciseId,
