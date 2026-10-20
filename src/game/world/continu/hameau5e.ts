@@ -2,20 +2,21 @@
 // mainteneur) : « un village sur pilotis dans les racines, et un four commun autour duquel on s'organise ». Le cœur, sans
 // figure, est le four commun : un tambour bas d'enduit pâle, coiffé d'un dôme de pierre gris-sable à grandes facettes,
 // ses blocs visibles (jamais blanc ni lisse), la bouche en arche, la cheminée carrée sur le côté ; le plus large volume
-// du lieu. Autour, trois maisons sur pilotis (l'ouest au bord de l'eau, le fond derrière le four, l'est, celle du
-// boulanger), deux passerelles de corde entre elles, le ponton devant la bouche et son aile sur l'eau.
+// du lieu. Autour, trois maisons sur pilotis (l'ouest au bord de l'eau, le fond derrière le four, celle du boulanger au
+// nord-est, à droite du dôme vue du chemin de la Lisière comme de la porte : retouche 1), deux passerelles de corde entre
+// elles, le ponton devant la bouche et son aile sur l'eau.
 //
-// La ruine : tout est là, tombé ou cassé, jamais un chantier. Le dôme ouvert sur sa moitié ouest, quelques blocs sur les
-// racines et dans l'eau, la bouche sombre aux gonds nus (la porte de bronze est partie, avant comme après), le moignon de
+// La ruine : tout est là, tombé ou cassé, jamais un chantier. Le dôme ouvert sur sa moitié ouest, son bord cassé qui
+// descend vers l'ouest, sans pointe ; quelques blocs sur les racines et dans l'eau, la bouche presque noire aux gonds nus (la porte de bronze est partie, avant comme après), le moignon de
 // cheminée qui penche ; la maison de l'est garde son toit et sa lanterne allumée (le boulanger y vit : la seule lumière
 // de la ruine, fixe), celle du fond n'a plus que trois chevrons et ses ardoises au sol, celle de l'ouest penche sur des
 // pilotis tordus ; les passerelles coupées pendent, le ponton est cassé, l'enseigne tombée, une barque à moitié coulée.
 // Le corps : le tambour fermé de son dôme, la cheminée droite, la braise d'ocre fixe dans la bouche, les trois maisons
 // redressées en bois neuf, l'enseigne debout (une miche ronde, sans mot). Le haut : les toits d'ardoise bleue, le mât de
-// racine et sa lanterne au-dessus du four, un filet de fumée pâle, court et immobile. Les abords : le ponton neuf et son
+// racine et sa lanterne au-dessus du four, un filet de fumée pâle, d'une seule silhouette qui s'amincit, immobile. Les abords : le ponton neuf et son
 // aile, les deux passerelles tendues, la seconde barque à flot, les deux lanternes de la cour. Une trace par mission,
 // chacune avec l'étape qu'elle pose (`stage`) : les deux pelles à pain debout (le corps), la guirlande de cinq lanternes
-// de trois formes (le haut), la longue table du ponton (les abords). Rien à lire dans la 3D. Code pur (placeArt.ts).
+// de trois formes entre ses deux mâts, haut au-dessus du linteau (le haut), la longue table du ponton (les abords). Rien à lire dans la 3D. Code pur (placeArt.ts).
 import type { Stage } from './construction';
 import { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
@@ -32,8 +33,9 @@ const SINK = -0.8;
 /**
  * Les couleurs du Hameau : l'enduit passé des murs (ruins5e.ts), la pierre gris-sable du dôme en blocs de deux tons, le
  * bois neuf brun désaturé de la Lisière et de la Montée (autour de #A87A50 à l'écran), le bois gris de la ruine,
- * l'ardoise bleue #5B7C99, le vert-de-gris du motif des racines ; la seule lumière, l'ocre de la lanterne. Rien de
- * presque noir : la bouche du four est un brun d'ombre.
+ * l'ardoise bleue #5B7C99, le vert-de-gris du motif des racines ; la seule lumière, l'ocre de la lanterne. La bouche du
+ * four est un brun très sombre (retouche 1 : elle se lisait comme une porte de bois fermée), juste au-dessus du seuil
+ * « jamais presque noir » du 5e.
  */
 const C = {
   wall: 0xb9ae98,
@@ -44,7 +46,7 @@ const C = {
   domeInside: 0x837b6b,
   stone: COLORS_5E.stone,
   stoneSun: COLORS_5E.stoneSun,
-  mouth: 0x5e4d42,
+  mouth: 0x3a312c,
   lantern: COLORS_5E.lantern,
   newWood: 0xa68672,
   newShade: 0x8c766a,
@@ -66,6 +68,8 @@ const C = {
   breadTop: 0xcf9a5e,
   pot: 0xa8643f,
   potShade: 0x8d5434,
+  // La pale des pelles à pain, plus claire que le bois neuf : elle se lit de loin contre l'enduit.
+  peel: 0xd6bf94,
   log: 0x8a6a4e,
   logEnd: 0xb59a74,
   // Le boulanger, en pion (son modèle 3D prend sa place, ./habitants.ts) : chemise de lin, tablier clair, pantalon brun,
@@ -91,11 +95,18 @@ const FRONT_Z = OVEN.z + OVEN.r * Math.cos(Math.PI / OVEN.sides);
 /** La bouche du four : sa demi-largeur, la hauteur de ses piédroits, celle de son arche. */
 const MOUTH = { half: 0.66, jamb: 0.95, top: 1.5 } as const;
 
-/** La cheminée carrée, sur le côté est du four : sa place, sa largeur, sa hauteur. */
-const CHIMNEY = { x: 3.95, z: -2.5, w: 0.8, h: 5.7 } as const;
+/**
+ * La cheminée carrée, contre le tambour, derrière le dôme à l'est (comme sur la planche) : sa place, sa largeur, sa
+ * hauteur ; son chapeau (0,3) finit sous le sommet du dôme (retouche 1 : au flanc est, devant le dôme vu du chemin de la
+ * Lisière, elle le coupait en deux). Dans la ruine, son moignon, court et nettement penché.
+ */
+const CHIMNEY = { x: 2.9, z: -6.6, w: 0.8, h: 4.75, stump: 1.9, lean: 0.32 } as const;
 
 /** Le mât de racine derrière le four, sa hauteur (sous la canopée), le bout de son bras au-dessus du dôme. */
 const MAST = { x: 0, z: -8, top: 7.4, arm: -5.6 } as const;
+
+/** L'échelle de la lanterne du mât : sa vitre plus grande que celle des maisons, la même ocre (retouche 1). */
+const MAST_LANTERN = 1.4;
 
 /** Une maison sur pilotis : sa place, son cap, sa largeur (le long du faîtage), sa profondeur, son plancher, son mur. */
 interface House {
@@ -108,11 +119,15 @@ interface House {
   wall: number;
 }
 
-/** L'ouest, au bord de l'eau (penchée dans la ruine) ; le fond, derrière le four (ses chevrons) ; l'est, le boulanger. */
+/**
+ * L'ouest, au bord de l'eau (penchée dans la ruine) ; le fond, derrière le four (ses chevrons) ; l'est, le boulanger, au
+ * nord-est du four, sa façade vers la cour : vue du chemin de la Lisière, elle se tient à droite du dôme, sans le cacher
+ * (retouche 1 ; à l'est de la porte, elle le couvrait).
+ */
 const HOUSES = {
   west: { x: -8, z: -1, yaw: 0.35, w: 3.2, d: 2.6, deck: 1, wall: 1.8 },
   back: { x: 0.5, z: -11, yaw: 0, w: 3.4, d: 2.6, deck: 1.1, wall: 1.9 },
-  east: { x: 7.4, z: 1, yaw: -0.35, w: 3.4, d: 2.8, deck: 1.2, wall: 2 },
+  east: { x: 7.6, z: -7, yaw: -0.6, w: 3.4, d: 2.8, deck: 1.2, wall: 2 },
 } as const satisfies Record<string, House>;
 
 /** Le ponton devant la bouche (sa demi-largeur, ses deux bouts), son aile vers l'eau de l'ouest, la hauteur de leurs planches. */
@@ -191,12 +206,15 @@ function cutWalkway(b: FacetBuilder, a: Vec3, c: Vec3, ground: SiteGround): void
   b.beam(c, { x: c.x + (a.x - c.x) * 0.14, y: c.y - 0.35, z: c.z + (a.z - c.z) * 0.14 }, 0.42, C.wornWood);
 }
 
-/** Une lanterne pendue : sa corde, sa vitre (éteinte, ou d'ocre, sans ombre), son chapeau de bronze. Vingt-quatre triangles. */
-function lantern(b: FacetBuilder, at: Vec3, lit: boolean): void {
-  const y = at.y - 0.8;
-  b.beam(at, { x: at.x, y: y + 0.42, z: at.z }, 0.04, C.rope);
-  b.prism({ x: at.x, y, z: at.z }, 0.18, 0.18, 0.42, 6, lit ? C.lantern : 0xbfc4b8);
-  b.prism({ x: at.x, y: y + 0.42, z: at.z, yaw: Math.PI / 6 }, 0.26, 0, 0.18, 6, C.bronze);
+/**
+ * Une lanterne pendue : sa corde, sa vitre (éteinte, ou d'ocre, sans ombre), son chapeau de bronze, à l'échelle `s`
+ * (celle du mât, plus grande : retouche 1). Vingt-quatre triangles.
+ */
+function lantern(b: FacetBuilder, at: Vec3, lit: boolean, s = 1): void {
+  const y = at.y - 0.38 - 0.42 * s;
+  b.beam(at, { x: at.x, y: y + 0.42 * s, z: at.z }, 0.04, C.rope);
+  b.prism({ x: at.x, y, z: at.z }, 0.18 * s, 0.18 * s, 0.42 * s, 6, lit ? C.lantern : 0xbfc4b8);
+  b.prism({ x: at.x, y: y + 0.42 * s, z: at.z, yaw: Math.PI / 6 }, 0.26 * s, 0, 0.18 * s, 6, C.bronze);
 }
 
 /** Une barque plate : sa coque en profil (la proue relevée), épaissie en travers, et un banc. `sunk` : à moitié coulée. */
@@ -242,17 +260,20 @@ function domeRing(k: number): [number, number, number][] {
 
 /**
  * Le dôme de pierre, en grandes facettes de deux tons (ses blocs) : deux bandes de triangles entre trois couronnes, puis
- * le sommet. `keep` : les facettes gardées (la ruine garde la moitié est, ses dessous montrés : on la voit par l'ouest).
+ * le sommet (bande 2). `keep` : les facettes gardées, selon leur milieu et leur bande (la ruine garde la moitié est, ses
+ * dessous montrés : on la voit par l'ouest).
  */
-function dome(b: FacetBuilder, keep: (x: number) => boolean = () => true, inside = false): void {
+function dome(b: FacetBuilder, keep: (x: number, band: number) => boolean = () => true, inside = false): void {
   const n = OVEN.sides;
   const rings = [0, 1, 2].map(domeRing);
+  let band = 0;
   const face = (p: [number, number, number], q: [number, number, number], s: [number, number, number], color: number) => {
-    if (!keep((p[0] + q[0] + s[0]) / 3)) return;
+    if (!keep((p[0] + q[0] + s[0]) / 3, band)) return;
     b.triangle(p, q, s, color);
     if (inside) b.triangle(p, s, q, C.domeInside);
   };
   for (let k = 0; k < 2; k++) {
+    band = k;
     const lo = rings[k],
       hi = rings[k + 1];
     for (let i = 0; i < n; i++) {
@@ -268,6 +289,7 @@ function dome(b: FacetBuilder, keep: (x: number) => boolean = () => true, inside
       }
     }
   }
+  band = 2;
   const top: [number, number, number] = [OVEN.x, DOME.top, OVEN.z];
   const last = rings[2];
   for (let i = 0; i < n; i++) face(last[(i + 1) % n], last[i], top, i % 2 ? C.dome : C.domeLight);
@@ -295,14 +317,29 @@ function chimney(b: FacetBuilder): void {
   b.box({ x: K.x, y: K.h, z: K.z }, [K.w + 0.25, 0.3, K.w + 0.25], C.stone, C.stoneSun);
 }
 
-/** La fumée, immobile, courte et pâle : trois bouffées qui s'amenuisent au-dessus de la cheminée. */
+/**
+ * La fumée, immobile, courte et pâle : une seule silhouette qui monte du chapeau, s'élargit un peu, puis s'amincit vers
+ * le haut sans pointe (retouche 1 : trois bouffées se lisaient comme trois prismes ; droite et pointue, comme une
+ * flèche), en troncs de cône bout à bout, le bas de chacun du rayon du haut du précédent, chacun glissé vers l'ouest
+ * (rayon du bas, rayon du haut, hauteur, glissement) : elle penche avec le vent.
+ */
+const SMOKE = [
+  [0.3, 0.42, 0.55, 0.12],
+  [0.42, 0.36, 0.6, 0.28],
+  [0.36, 0.16, 0.55, 0.32],
+] as const;
+
 function smoke(b: FacetBuilder): void {
   const K = CHIMNEY;
-  [
-    [0, 0.4, 0.36, 0.45],
-    [0.2, 1.05, 0.3, 0.4],
-    [0.42, 1.65, 0.21, 0.32],
-  ].forEach(([dx, dy, r, h], i) => b.prism({ x: K.x + dx, y: K.h + 0.3 + dy, z: K.z - dx * 0.4, yaw: i * 0.5 }, r, r * 1.2, h, 6, i % 2 ? C.smokeShade : C.smoke, C.smoke));
+  let x = K.x,
+    y = K.h + 0.3;
+  SMOKE.forEach(([r0, r1, h, drift], i) => {
+    // Chaque tronc penche vers l'ouest de son glissement (tourné d'un quart de tour, basculé) : son bas reste sur le haut
+    // du précédent, son haut glisse de `drift` vers l'ouest et monte de `h`.
+    b.prism({ x, y, z: K.z, yaw: -Math.PI / 2, pitch: Math.atan2(drift, h) }, r0, r1, Math.hypot(h, drift), 7, i % 2 ? C.smokeShade : C.smoke, C.smoke);
+    x -= drift;
+    y += h;
+  });
 }
 
 /** L'enseigne du four : son poteau, un disque de bois, et la miche ronde peinte dessus (sans mot). */
@@ -395,8 +432,15 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
   // La ruine du four : la moitié est du dôme (on voit son dessous par la brèche), le moignon de cheminée qui penche, les
   // blocs tombés, l'enseigne couchée face au ciel. Le corps les relève.
   const corps = { stage: 0 as Stage, row: 0 };
-  add('ruine', 0, (b) => dome(b, (x) => x > OVEN.x + 0.6, true), corps);
-  add('ruine', 0, (b) => b.box({ x: CHIMNEY.x + 0.2, y: SINK, z: CHIMNEY.z, pitch: 0.16, yaw: 0.2 }, [CHIMNEY.w, 2.9 - SINK, CHIMNEY.w], C.stone, C.stoneSun), corps);
+  // Le dôme ouvert, sans pointe (retouche 1 : la moitié est, coupée droit, se dressait comme une corne) : plus de sommet,
+  // la bande haute seulement à l'est, la bande basse qui va plus loin vers l'ouest ; le bord cassé descend en marches.
+  add('ruine', 0, (b) => dome(b, (x, band) => (band === 0 ? x > OVEN.x - 1.9 : band === 1 && x > OVEN.x + 1), true), corps);
+  add(
+    'ruine',
+    0,
+    (b) => b.box({ x: CHIMNEY.x + 0.25, y: SINK, z: CHIMNEY.z, pitch: CHIMNEY.lean, yaw: 0.2 }, [CHIMNEY.w, CHIMNEY.stump - SINK, CHIMNEY.w], C.stone, C.stoneSun),
+    corps,
+  );
   add(
     'ruine',
     0,
@@ -515,7 +559,7 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     b.beam(knee, { x: MAST.x, y: g + MAST.top, z: MAST.z }, 0.28, C.log);
     const tip = { x: MAST.x, y: g + MAST.top - 0.3, z: MAST.arm };
     b.beam({ x: MAST.x, y: g + MAST.top - 0.3, z: MAST.z }, tip, 0.14, C.log);
-    lantern(b, tip, true);
+    lantern(b, tip, true, MAST_LANTERN);
     smoke(b);
   });
   // Les abords : le ponton neuf devant la bouche et son aile sur l'eau ; puis les passerelles tendues, la seconde barque à
@@ -562,8 +606,14 @@ function inWorld(b: FacetBuilder, c: Vec3, draw: (l: FacetBuilder) => void): voi
   b.append(f);
 }
 
-/** Les deux pelles à pain, identiques, debout côte à côte contre le mur à l'ouest de la bouche (jamais croisées). */
-const PEELS = [-0.95, -1.4] as const;
+/**
+ * Les deux pelles à pain, identiques, debout côte à côte contre le mur à l'ouest de la bouche (jamais croisées) ; leur
+ * pale large et claire se lit de loin (retouche 1).
+ */
+const PEELS = [-1.0, -1.65] as const;
+
+/** La pale d'une pelle : sa largeur, sa hauteur. */
+const PEEL_BLADE = { w: 0.55, h: 0.85 } as const;
 
 function peels(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
@@ -573,35 +623,40 @@ function peels(b: FacetBuilder, c: Vec3): void {
       const g = groundNear(c, x, wall + 0.5);
       // La pelle : son manche, du sol au mur, et sa pale en haut.
       l.beam({ x, y: g - 0.05, z: wall + 0.5 }, { x, y: g + 1.5, z: wall + 0.2 }, 0.09, C.newShade);
-      l.box({ x, y: g + 1.45, z: wall + 0.12, pitch: -0.18 }, [0.4, 0.75, 0.06], C.newWood);
+      l.box({ x, y: g + 1.4, z: wall + 0.12, pitch: -0.18 }, [PEEL_BLADE.w, PEEL_BLADE.h, 0.06], C.peel);
     }
   });
 }
 
 /**
- * La guirlande (Contre les discriminations) : une seule corde, du coin de la maison de l'ouest à celui de l'est, devant le
- * four ; cinq lanternes de trois formes nettes, ronde, carrée, hexagonale, carrée, ronde, toutes de la même lumière
- * d'ocre (sans ombre) : elles se distinguent par la silhouette, jamais par la couleur.
+ * La guirlande (Contre les discriminations) : une seule corde tendue entre deux mâts minces, devant le four, assez haut
+ * pour que le linteau, la bouche et le motif des racines restent dégagés, de près comme en scénette (retouche 1) ; cinq
+ * lanternes de trois formes nettes, ronde, carrée, hexagonale, carrée, ronde, toutes de la même lumière d'ocre (sans
+ * ombre) : elles se distinguent par la silhouette, jamais par la couleur.
  */
 export const GARLAND_SHAPES = ['ronde', 'carree', 'hexagonale', 'carree', 'ronde'] as const;
 
 const ROUND = Array.from({ length: 12 }, (_, k) => [0.27 * Math.cos((Math.PI * k) / 6), 0.27 * Math.sin((Math.PI * k) / 6)] as const);
 const HEX = Array.from({ length: 6 }, (_, k) => [0.3 * Math.cos((Math.PI * k) / 3), 0.3 * Math.sin((Math.PI * k) / 3)] as const);
 
-/** Les deux bouts de la corde de la guirlande, dans le repère du lieu, et son creux au milieu. */
-function garlandEnds(): { from: Vec3; to: Vec3; sag: number } {
-  return { from: wallCorner(HOUSES.west, 1, 1), to: wallCorner(HOUSES.east, -1, 1), sag: 0.5 };
-}
+/**
+ * Les deux mâts de la guirlande, de part et d'autre du ponton, en avant de la façade (hors du dôme) : leur écart au
+ * milieu, leur place vers le sud, la hauteur de la corde au-dessus du sol, son creux au milieu, la longueur des fils.
+ */
+const GARLAND = { half: 4.6, z: 1.4, height: 4, sag: 0.3, hang: 0.35 } as const;
 
 function garland(b: FacetBuilder, c: Vec3): void {
-  const { from, to, sag } = garlandEnds();
-  const at = (t: number): Vec3 => ({ x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t - 4 * sag * t * (1 - t), z: from.z + (to.z - from.z) * t });
+  const G = GARLAND;
   inWorld(b, c, (l) => {
+    const ends = [-G.half, G.half].map((x) => ({ x, y: groundNear(c, x, G.z), z: G.z }));
+    for (const e of ends) l.box({ x: e.x, y: e.y - 0.3, z: e.z }, [0.14, G.height + 0.3, 0.14], C.newShade);
+    const [from, to] = ends.map((e) => ({ ...e, y: e.y + G.height - 0.05 }));
+    const at = (t: number): Vec3 => ({ x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t - 4 * G.sag * t * (1 - t), z: from.z });
     const knots = [0, 0.25, 0.5, 0.75, 1].map(at);
     for (let k = 0; k < 4; k++) l.beam(knots[k], knots[k + 1], 0.04, C.rope);
     GARLAND_SHAPES.forEach((shape, i) => {
       const p = at((i + 1) / 6);
-      const y = p.y - 0.72;
+      const y = p.y - G.hang - 0.22;
       const z = p.z - 0.07;
       if (shape === 'carree') l.box({ x: p.x, y, z: p.z }, [0.48, 0.48, 0.14], C.lantern);
       else l.extrude({ x: p.x, y: y + 0.27, z }, shape === 'ronde' ? ROUND : HEX, 0.14, C.lantern);
@@ -677,7 +732,7 @@ function loaf(b: FacetBuilder, at: Vec3, s: number): void {
 /** Où se pose la trace de chaque mission, depuis le centre du lieu (la caméra du retour en garde la place). */
 const TRACE_SPOTS = {
   'gender-equality': { x: -1.2, z: -0.2 },
-  discrimination: { x: 0, z: 0.8 },
+  discrimination: { x: 0, z: GARLAND.z },
   solidarity: { x: TABLE.x, z: TABLE.z },
 } as const;
 
@@ -720,7 +775,7 @@ export const HAMEAU: PlaceArt = {
   rest() {},
   traces: {
     'gender-equality': { at: TRACE_SPOTS['gender-equality'], lift: 1, stage: 0, draw: peels },
-    discrimination: { at: TRACE_SPOTS.discrimination, lift: 2.5, stage: 1, draw: garland },
+    discrimination: { at: TRACE_SPOTS.discrimination, lift: 3.5, stage: 1, draw: garland },
     solidarity: { at: TRACE_SPOTS.solidarity, lift: 1, stage: 2, draw: table },
   },
   // Kéo au retour : sur le chemin, à l'est de la porte, face au four.

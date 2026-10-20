@@ -79,6 +79,12 @@ const OPEN_WORLD_BUDGET_6E = { triangles: 100_140, calls: 22 } as const;
  */
 const OPEN_WORLD_BUDGET_5E = { triangles: 118_000, calls: 22 } as const;
 
+/**
+ * Le plafond d'un lieu du 5e, ruine, étapes et traces montrées ensemble, en triangles (recommandation du directeur
+ * artistique du 20 octobre 2026, suivie en attendant le mainteneur : facile à défaire).
+ */
+export const PLACE_TRIANGLES_MAX_5E = 1_600;
+
 /** L'enveloppe du monde ouvert de chaque niveau, que seul le mainteneur relève. */
 export const OPEN_WORLD_BUDGETS: Readonly<Record<OpenWorldLevel, { readonly triangles: number; readonly calls: number }>> = {
   '6e': OPEN_WORLD_BUDGET_6E,

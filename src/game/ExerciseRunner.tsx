@@ -21,7 +21,8 @@ import { stageAt } from './world/vehicle';
 import { worksiteFor } from './world/worksite';
 import { retenirLaPose } from './poseToShow';
 import { retenirLesBlocs } from './blockFlight';
-import { minuscule } from './world/parts';
+import { minuscule, type Partie } from './world/parts';
+import type { PlanDef } from './world/plans';
 import { voyageId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
@@ -76,7 +77,25 @@ export interface RunnerStage {
   Done?: ComponentType<StageDoneProps>;
   /** Un morceau d'une révision jouée dans la scène du lieu (GD-20, point 4, lot L3, `RunnerRevision`). */
   revision?: RunnerRevision;
+  /**
+   * Comment le bilan nomme une partie posée et un plan fini, écrits et lus (`PoseWords`) ; sans lui, par le nom du plan
+   * et sa réplique (la grille).
+   */
+  pose?: PoseWords;
 }
+
+/**
+ * Les mots de la pose au bilan : le nom d'une partie posée (« le toit de la cabane »), la phrase d'un plan fini (sa
+ * réplique). Au monde ouvert du 5e, l'étape du lieu (« le corps du Hameau »), jamais le nom d'un plan ni sa réplique,
+ * qui parlent d'un bâtiment et d'un habitant que le lieu ne montre pas (directeur du contenu pédagogique, lot 5 du 5e).
+ */
+export interface PoseWords {
+  part(partie: Partie): string;
+  planDone(plan: PlanDef): string;
+}
+
+/** Les mots de la grille : le nom du plan, sa réplique. */
+const PLAN_POSE_WORDS: PoseWords = { part: (p) => minuscule(p.nom), planDone: (plan) => plan.done };
 
 /**
  * Un morceau d'une révision jouée dans la scène d'un lieu (GD-20, point 4, lot L3) : seuls les items dus de cette
@@ -112,8 +131,8 @@ const CARILLON_MS = 610;
  * La phrase de la pose, écrite et lue : « Partie posée : le toit de la cabane. », l'accord porté par « partie », quel que
  * soit le nom ; puis la réplique et l'XP de chaque plan fini.
  */
-function phraseDeLaPose(pose: NonNullable<Completion['pose']>): string {
-  return [...pose.posees.map((p) => `Partie posée : ${minuscule(p.nom)}.`), ...pose.plansFinis.map((p) => `${p.done} +${p.reward.xp} XP.`)].join(' ');
+function phraseDeLaPose(pose: NonNullable<Completion['pose']>, words: PoseWords = PLAN_POSE_WORDS): string {
+  return [...pose.posees.map((p) => `Partie posée : ${words.part(p)}.`), ...pose.plansFinis.map((p) => `${words.planDone(p)} +${p.reward.xp} XP.`)].join(' ');
 }
 
 /** Découpe les items en écrans selon le type d'exercice. */
@@ -215,7 +234,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
     if (!pose?.posees.length) return;
     const timers: number[] = [];
     const plusTard = (f: () => void, ms: number) => timers.push(window.setTimeout(f, ms));
-    const dire = () => settings.autoRead && speak(frenchTypography(phraseDeLaPose(pose)));
+    const dire = () => settings.autoRead && speak(frenchTypography(phraseDeLaPose(pose, inWorld?.pose)));
     if (!settings.sounds) dire();
     else if (habillageDuMonde().pose === 'geste') {
       sonDePose('geste')();
@@ -327,16 +346,16 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
             <li key={`pose-${partie.rang}`} className="reward-pose">
               <Icon name="home" size="1.6rem" />
               <span>
-                <strong>Partie posée : {minuscule(partie.nom)}.</strong>
+                <strong>Partie posée : {(inWorld?.pose ?? PLAN_POSE_WORDS).part(partie)}.</strong>
                 {i === posees.length - 1 &&
                   pose.plansFinis.map((plan) => (
                     <span key={plan.id} className="reward-pose-fin">
                       {' '}
-                      <Syllabified text={plan.done} /> <strong>+{plan.reward.xp}</strong> XP
+                      <Syllabified text={(inWorld?.pose ?? PLAN_POSE_WORDS).planDone(plan)} /> <strong>+{plan.reward.xp}</strong> XP
                     </span>
                   ))}
               </span>
-              {i === posees.length - 1 && <SpeakButton text={frenchTypography(phraseDeLaPose(pose))} label="Écouter" compact />}
+              {i === posees.length - 1 && <SpeakButton text={frenchTypography(phraseDeLaPose(pose, inWorld?.pose))} label="Écouter" compact />}
             </li>
           ))}
           {done.chestBlock && (

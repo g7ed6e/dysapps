@@ -1,12 +1,12 @@
 // Le Hameau (GD-22, lot 5) : son modèle par étapes, la lanterne du boulanger allumée dès la ruine, une trace par étape,
 // sa scénette, ses abords, son plafond de 1 600 triangles et le budget du 5e. Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { OPEN_WORLD_BUDGETS, openWorldCost5e, mapCost5e } from './budget';
+import { PLACE_TRIANGLES_MAX_5E, openWorldCost5e, mapCost5e } from './budget';
 import { WHOLE, posedTraces, traceStagePosed, type PartShape, type Stage } from './construction';
 import { COLORS_5E } from './plan5e';
 import { linearRgb } from './geometry';
 import { GARLAND_SHAPES, HAMEAU, HAMEAU_MAST_TOP } from './hameau5e';
-import { hasHabitantModel } from './habitants';
+import { HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
 import { hasScenette, planFor } from './levelPlan';
 import { MONTEE, MONTEE_HEIGHT } from './montee5e';
 import { drawPieces, placePieces } from './places';
@@ -54,13 +54,13 @@ describe('Le Hameau, lieu complet', () => {
     expect(fallen).toEqual([0, 0, 0, 0, 1, 0, 0, 2]);
   });
 
-  it('coûte au plus 1 600 triangles à son état le plus chargé, ruine, étapes et traces montrées ensemble', () => {
+  it('coûte au plus le plafond d’un lieu du 5e à son état le plus chargé, ruine, étapes et traces montrées ensemble', () => {
     let worst = 0;
     for (let n = -1; n <= 2; n++) {
       const traces = placeTrace('hameau', posedTraces('hameau', upTo(n), [...MISSIONS])).triangles;
       worst = Math.max(worst, shown(n).triangles + traces);
     }
-    expect(worst).toBeLessThanOrEqual(1_600);
+    expect(worst).toBeLessThanOrEqual(PLACE_TRIANGLES_MAX_5E);
     // Le plus chargé est le lieu restauré : le budget le compte ainsi (`modelOfPlace` et toutes les traces).
     expect(shown(2).triangles + placeTrace('hameau', [...MISSIONS]).triangles).toBe(worst);
   });
@@ -156,30 +156,34 @@ describe('La scénette du Hameau', () => {
   });
 });
 
+/**
+ * Le budget du 5e au lot 4, avant le Hameau (`npm run rendu:budget -- --archipel 6e,5e`, 20 octobre 2026), en
+ * triangles : hors scénette, au départ et sur la Carte. Les appels n'y bougent pas.
+ */
+const LOT4_5E = { world: { triangles: 83_175, calls: 16 }, departure: { triangles: 82_053, calls: 17 }, map: { triangles: 81_780, calls: 12 } } as const;
+
 describe('Le budget du 5e, avec le Hameau (plafonds du lot 5, intention du directeur artistique du 20 octobre 2026)', () => {
   const sum = (c: { triangles: number; calls: number }[]) => c.reduce((a, p) => ({ triangles: a.triangles + p.triangles, calls: a.calls + p.calls }), { triangles: 0, calls: 0 });
 
-  it('scénette ouverte : 95 000 triangles et 19 appels au plus ; hors scénette et au départ, 1 600 de plus qu’au lot 4 ; la Carte aussi', () => {
-    const open = sum(openWorldCost5e());
-    expect(open.triangles).toBeLessThanOrEqual(95_000);
-    expect(open.calls).toBeLessThanOrEqual(19);
-    const world = sum(openWorldCost5e('monde'));
-    expect(world.triangles).toBeLessThanOrEqual(83_175 + 1_600);
-    expect(world.calls).toBeLessThanOrEqual(16);
-    const departure = sum(openWorldCost5e('depart'));
-    expect(departure.triangles).toBeLessThanOrEqual(82_053 + 1_600);
-    expect(departure.calls).toBeLessThanOrEqual(17);
-    const map = mapCost5e();
-    expect(map.triangles).toBeLessThanOrEqual(81_780 + 1_600);
-    expect(map.calls).toBeLessThanOrEqual(12);
-    expect(open.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles);
-    expect(open.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls);
+  // Le plafond scénette ouverte et la réserve des lots suivants : ./plan5e.test.ts (« Le budget du 5e »).
+  it('hors scénette, au départ et sur la Carte : le lot 4 et un lieu de plus au plus, sans appel de plus', () => {
+    const views = [
+      [sum(openWorldCost5e('monde')), LOT4_5E.world],
+      [sum(openWorldCost5e('depart')), LOT4_5E.departure],
+      [mapCost5e(), LOT4_5E.map],
+    ] as const;
+    for (const [now, before] of views) {
+      expect(now.triangles).toBeLessThanOrEqual(before.triangles + PLACE_TRIANGLES_MAX_5E);
+      expect(now.calls).toBeLessThanOrEqual(before.calls);
+    }
   });
 
   it('l’habitant en modèle 3D compte un appel de plus, et ses triangles au plus, à la place du pion', () => {
+    // Le décor de la scénette (son plancher et ses abords), à côté du modèle : 1 900 triangles au plus.
+    const SETTING_MAX = 1_900;
     const scenette = openWorldCost5e().find((c) => c.poste === 'scénette')!;
     expect(scenette.calls).toBe(2);
-    expect(scenette.triangles).toBeGreaterThan(8_000);
-    expect(scenette.triangles).toBeLessThanOrEqual(8_000 + 1_900);
+    expect(scenette.triangles).toBeGreaterThan(HABITANT_TRIANGLES_5E);
+    expect(scenette.triangles).toBeLessThanOrEqual(HABITANT_TRIANGLES_5E + SETTING_MAX);
   });
 });

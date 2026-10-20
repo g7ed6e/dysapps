@@ -32,7 +32,7 @@ import { texteGrand } from '../../../core/settings';
 import { useRememberPlace } from '../../../core/lastPlace';
 import { useLoaded } from '../../../core/useLoaded';
 import { useBlocland } from '../../BloclandContext';
-import { getBiome } from '../../biomes';
+import { getBiome, type BiomeId } from '../../biomes';
 import { levelFor, type Completion } from '../../engine';
 import { ExerciseRunner, type RunnerRevision, type RunnerStage, type StageDoneProps } from '../../ExerciseRunner';
 import { loadExercise, pickExercise } from '../../exercises';
@@ -40,7 +40,8 @@ import { Aid } from '../../exercises/Aid';
 import { NoticeQuestion } from '../../exercises/CalculationScreen';
 import type { ScreenProps } from '../../exercises/registry';
 import { exercisesToReview } from '../../review';
-import { hasScenette, placeById, type PlaceId } from '../../world/continu/levelPlan';
+import { hasScenette, levelOfPlace, placeById, type PlaceId } from '../../world/continu/levelPlan';
+import { stagePoseWords } from './constructionParts';
 import { WIDEN_FULL, WIDEN_OFFER, WIDEN_SCENE, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
 import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
@@ -159,6 +160,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   useHoldCelebrations(true);
   const lieu = placeById(place);
   const biome = getBiome(lieu.island);
+  // Au 5e, le bilan nomme la partie posée par l'étape du lieu, jamais par le nom du plan ni sa réplique (directeur du
+  // contenu pédagogique, lot 5 du 5e) ; au 6e, comme la grille.
+  const poseWords = useMemo(() => (levelOfPlace(place) === '5e' ? stagePoseWords(lieu.island as BiomeId, lieu) : undefined), [place, lieu]);
   // « Ma dernière mission » (accès direct) y ramène, comme à une mission de la grille : la liste de son lieu s'ouvre.
   const missionTitle = biome?.exercises.find((e) => e.id === mission)?.title;
   // Une révision n'est pas « Ma dernière mission » : seule une partie y ramène.
@@ -651,7 +655,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     if (!exerciseId) return null;
     // L'écran habituel (le temps de la transition) : l'écran de la grille, ses items, sa consigne, sur un panneau uni ;
     // le bilan et le retour du lieu. Ni rôle, ni scène, ni « Vue simple » : la même forme dans tous les lieux.
-    if (plain) return { instruction, back: { label: `Revenir ${lieu.at}`, onClick: onClose }, Done, revision: runnerRevision, className: `in-world ecran-habituel${finished ? ' finished' : ''}` };
+    if (plain) return { instruction, back: { label: `Revenir ${lieu.at}`, onClick: onClose }, Done, revision: runnerRevision, pose: poseWords, className: `in-world ecran-habituel${finished ? ' finished' : ''}` };
     const extra: ReactNode = (
       <>
         {intro && (
@@ -778,6 +782,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       extra,
       Done,
       revision: runnerRevision,
+      pose: poseWords,
       className:
         simple && !finished
           ? `in-world scenette simple${foldedSimple ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}${inColumn ? ' mode-c' : ''}`
@@ -816,6 +821,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     tight,
     readyLevel,
     greeting,
+    poseWords,
   ]);
 
   // La ligne repliée se coupe après un mot entier, jamais au milieu : les mots qui passeraient à la ligne sont cachés,

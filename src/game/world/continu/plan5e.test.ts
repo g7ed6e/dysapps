@@ -466,11 +466,8 @@ describe('Le budget du 5e', () => {
     // Rafiot et les aménagements (intention du directeur artistique du 20 octobre 2026, « Le budget »).
     expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 23_000);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
+    // La Carte dans l'enveloppe (ses plafonds lot par lot : ./hameau5e.test.ts).
     const map = mapCost5e();
-    // La Carte du lot 4 (82 600 triangles et 12 appels au plus, directeur artistique, 19 octobre 2026), plus le Hameau
-    // (lot 5 : 1 600 triangles au plus, sans appel).
-    expect(map.triangles).toBeLessThanOrEqual(82_600 + 1_600);
-    expect(map.calls).toBeLessThanOrEqual(12);
     expect(map.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles);
     expect(map.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls);
     // Les chemins se dessinent sur le sol du 5e.

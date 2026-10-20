@@ -69,6 +69,19 @@ describe('La place de la scénette à l’écran', () => {
     expect(scenetteOf('commons')).toEqual({ role: 'Le couvreur', greeting: null, placement: 'rangee' });
   });
 
+  it('la rangée des réponses garde 16 px au moins au bord droit, sur chaque écran, de trois à cinq réponses (relecture UX UI du lot 5 du 5e)', () => {
+    expect(SCENETTE_LAYOUT.rowEdge).toBeGreaterThanOrEqual(16);
+    for (const [w, h] of screens)
+      for (const count of [3, 4, 5])
+        for (const widen of [0, 1]) {
+          for (const l of [layoutOf(count, w, h, widen), scenetteLayout({ count, widen, column: true }, w, h, questionLayout({ count, widen }, w, h))])
+            for (const s of l.slots) {
+              expect(w - s.label.right, `${w}×${h}, ${count}`).toBeGreaterThan(SCENETTE_LAYOUT.rowEdge - 1e-6);
+              expect(w - s.hit.right, `${w}×${h}, ${count}`).toBeGreaterThan(SCENETTE_LAYOUT.rowEdge - 1e-6);
+            }
+        }
+  });
+
   it('sur un écran bas, la règle des Filets à droite au-dessus de la scène, la rangée sous la colonne', () => {
     for (const [w, h] of screens.filter(([, h]) => h < ANSWER_LAYOUT.low))
       for (const widen of [0, 1]) {

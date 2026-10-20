@@ -407,5 +407,3 @@ describe('La caisse de la gare du haut et la caméra au bord (seconde relecture 
     expect(checked).toBeGreaterThan(500);
   });
 });
-
-// Le budget du 5e : ./hameau5e.test.ts (plafonds du lot 5).

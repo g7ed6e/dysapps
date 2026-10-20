@@ -173,7 +173,7 @@ export const FOREST_COLORS = {
  * plateau ou sa falaise ; un tronc se tient à `dry` unités au moins de l'eau (retouche du lot 2, directeur artistique :
  * la canopée couvrait les chenaux, leur eau ne se voyait pas en 3D).
  */
-const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, monteeSouth: 30, hameau: 14.5, hameauSouth: 20, quay: 5, cliff: 2.5, dry: 2.2 } as const;
+const FOREST_KEEP = { cell: 6.5, keep: 0.68, path: 3.4, place: 11, montee: 15, monteeSouth: 30, hameau: 14.5, hameauSouth: 34, quay: 5, cliff: 2.5, dry: 2.2 } as const;
 
 /** Les tronçons des chemins du 5e (pour garder la forêt à distance). */
 const SEGMENTS: readonly (readonly [Vec2, Vec2])[] = (() => {
@@ -189,7 +189,8 @@ const nearPlace = (p: Vec2): boolean =>
     // Au sud de la Montée, la clairière de l'approche (GD-22, lot 3) : la caméra qui arrive dans l'axe du ponton ne passe
     // jamais dans la canopée.
     if (pl.id === 'montee') return d < FOREST_KEEP.montee || (p.z > pl.center.z - 4 && d < FOREST_KEEP.monteeSouth);
-    // Le Hameau (lot 5) : ses maisons et ses barques jusqu'à 13 unités du four ; au sud, l'approche de la caméra.
+    // Le Hameau (lot 5) : ses maisons et ses barques jusqu'à 13 unités du four ; au sud, l'approche de la caméra et le recul
+    // de celle de la scénette sur un écran en portrait, à 23 unités (retouche 1 : une canopée y passait devant les miches).
     if (pl.id === 'hameau') return d < FOREST_KEEP.hameau || (p.z > pl.center.z + 4 && d < FOREST_KEEP.hameauSouth);
     return d < FOREST_KEEP.place;
   });

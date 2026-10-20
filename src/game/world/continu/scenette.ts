@@ -132,6 +132,11 @@ export const scenetteOf = (place: AnyPlaceId): Scenette => SCENETTES[scenePlace(
  */
 export const SCENETTE_LAYOUT = {
   edge: 0.03,
+  /**
+   * La marge de la rangée des réponses au bord droit de l'écran (et au gauche sur tablette), en pixels : 16 au moins,
+   * hors de la zone sûre (relecture UX UI du lot 5 du 5e : l'étiquette de droite finissait à 12 px du bord).
+   */
+  rowEdge: 16,
   panelRight: 0.74,
   /** « Vue simple » et la pause, en haut à droite : la place gardée, en pixels. */
   topRight: 250,
@@ -297,9 +302,10 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
     const right = width - edge;
     const sideLeft = Math.max(S.low.left * width, base.panel.left + base.panel.width + edge);
     if (base.low && needs.aid && sideLeft < width / 2 + edge) return lowWithAid(n, width, height, base, sideLeft, share);
-    const beside = !needs.wideRow && (right - sideLeft - (n - 1) * L.gap) / n >= (needs.words ? L.minLabelBells : L.minLabel);
+    const rowRight = width - Math.max(edge, S.rowEdge);
+    const beside = !needs.wideRow && (rowRight - sideLeft - (n - 1) * L.gap) / n >= (needs.words ? L.minLabelBells : L.minLabel);
     const rowLeft = beside ? sideLeft : edge;
-    const { slots, objectHeight } = rowSlots(n, rowLeft, right, S.low.rowTop * height, S.low.rowBottom * height, lh, share, needs.wideRow ? S.wideLabel : L.maxWidth);
+    const { slots, objectHeight } = rowSlots(n, rowLeft, rowRight, S.low.rowTop * height, S.low.rowBottom * height, lh, share, needs.wideRow ? S.wideLabel : L.maxWidth);
     const highest = Math.min(...slots.map((s) => s.hit.top));
     const panelBottom = beside ? height - edge : highest - edge;
     const stage = { left: sideLeft, top: S.low.top * height, right, bottom: Math.min(S.low.bottom * height, highest - edge) };
@@ -322,9 +328,9 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   const above = Math.min(S.row.bottom * height, validate.top - S.validate.gap);
   const roomy = above - S.row.top * height >= 2 * lh + L.lift;
   const rowBottom = roomy ? above : S.row.bottom * height;
-  // La rangée prend toute la largeur, à 12 px des bords : les mots des cloches, leur image devant, y tiennent.
-  const rowRight = roomy ? width - L.edge : validate.left - S.validate.gap;
-  const { slots, objectHeight } = rowSlots(n, L.edge, rowRight, S.row.top * height, rowBottom, lh, share);
+  // La rangée prend toute la largeur, à 16 px des bords : les mots des cloches, leur image devant, y tiennent.
+  const rowRight = roomy ? width - S.rowEdge : validate.left - S.validate.gap;
+  const { slots, objectHeight } = rowSlots(n, S.rowEdge, rowRight, S.row.top * height, rowBottom, lh, share);
   const top = S.edge * height + (needs.grand ? S.grandTop : 0);
   const panelWidth = needs.grand ? width - 2 * edge : Math.max(0, Math.min(S.panelRight * width, width - S.topRight) - edge);
   const highest = Math.min(...slots.map((s) => s.hit.top));

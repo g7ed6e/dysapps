@@ -7,7 +7,9 @@ import { PLACES } from '../../world/continu/plan6e';
 import { buildHeightField, heightOnMesh } from '../../world/continu/terrain';
 import { partiesDe, poserLesParties } from '../../world/parts';
 import { textesDe } from '../../../universes';
-import { constructionState, mapStateWord, partShapes, placeConstruction, posedShapes, stateWord } from './constructionParts';
+import { plansFor } from '../../world/plans';
+import { planFor } from '../../world/continu/levelPlan';
+import { constructionState, mapStateWord, ofOpenPlace, partShapes, placeConstruction, posedShapes, stagePoseWords, stateWord } from './constructionParts';
 
 const field = buildHeightField();
 const ground = (x: number, z: number) => heightOnMesh(field, x, z);
@@ -92,5 +94,44 @@ describe('La Montée du 5e (GD-22, lot 3)', () => {
     expect(shapes).toHaveLength(5);
     for (const [i, shape] of shapes.entries()) expect(constructionFacets('montee', [shape], g5).triangles, String(i)).toBeGreaterThan(0);
     expect(constructionFacets('montee', shapes, g5).triangles).toBe(constructionFacets('montee', [WHOLE], g5).triangles);
+  });
+});
+
+describe('Le bilan d’un lieu du 5e nomme l’étape, jamais le plan (directeur du contenu pédagogique, lot 5 du 5e)', () => {
+  const places5e = planFor('5e').places;
+
+  it('« du Hameau », « de la Montée », « des Radeaux », « de l’Auberge »', () => {
+    const of = (id: string) => ofOpenPlace(places5e.find((p) => p.id === id)!);
+    expect(of('hameau')).toBe('du Hameau');
+    expect(of('montee')).toBe('de la Montée');
+    expect(of('radeaux')).toBe('des Radeaux');
+    expect(of('auberge')).toBe('de l’Auberge');
+  });
+
+  it('au Hameau : le corps, le haut, les abords ; ni le fournil, ni Mie, ni la réplique d’un plan', () => {
+    const hameau = places5e.find((p) => p.id === 'hameau')!;
+    const island = hameau.island as BiomeId;
+    const words = stagePoseWords(island, hameau);
+    const parts = partiesDe(island).map((p) => words.part(p));
+    expect(parts).toEqual(['le corps du Hameau', 'le haut du Hameau', 'les abords du Hameau']);
+    const done = plansFor(island).map((p) => words.planDone(p));
+    expect(done).toEqual(['Étape finie : le corps du Hameau.', 'Étape finie : le haut du Hameau.', 'Étape finie : les abords du Hameau.']);
+    for (const text of [...parts, ...done]) {
+      expect(text).not.toMatch(/fournil|Mie|bâtisseur/);
+      for (const plan of plansFor(island)) expect(text).not.toContain(plan.done);
+    }
+  });
+
+  it('chaque lieu du 5e : une étape par partie, jamais un nom de plan', () => {
+    for (const place of places5e) {
+      const island = place.island as BiomeId;
+      const words = stagePoseWords(island, place);
+      const names = plansFor(island).map((p) => p.name.toLowerCase());
+      for (const partie of partiesDe(island)) {
+        const said = words.part(partie);
+        expect(said, place.id).toMatch(/^(le corps|le haut|les abords) (du |de la |des |de l’)/);
+        for (const n of names) expect(said.toLowerCase(), place.id).not.toContain(n);
+      }
+    }
   });
 });
