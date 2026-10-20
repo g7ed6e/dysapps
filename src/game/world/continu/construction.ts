@@ -131,6 +131,8 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   etuve: placeArt('etuve')!.traceStage,
   // Les Terrasses (lot 11) : leur corps, et chaque trace son étape, comme au Hameau.
   terrasses: placeArt('terrasses')!.traceStage,
+  // L'Auberge (lot 12) : chaque trace sa partie (3+1+1), la même pour les deux langues.
+  auberge: placeArt('auberge')!.traceStage,
 };
 
 /**

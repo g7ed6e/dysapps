@@ -224,6 +224,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   etuve: placeArt('etuve')!.sceneSpot,
   // Les Terrasses (lot 11) : le pavé gris devant le moulin, sa porte derrière, le bas du tertre à gauche.
   terrasses: placeArt('terrasses')!.sceneSpot,
+  // L'Auberge (lot 12) : le parvis, la façade et sa porte derrière.
+  auberge: placeArt('auberge')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -485,6 +487,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   etuve: 'lieu',
   // Les Terrasses (lot 11) : les bols de riz sur le long banc de pierre.
   terrasses: 'lieu',
+  // L'Auberge (lot 12) : les malles bombées sur la planche à tréteaux.
+  auberge: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
@@ -2025,8 +2029,15 @@ export function placeTrace(anyPlace: AnyPlaceId, done: readonly string[]): Facet
     for (const mission of done) if (Object.hasOwn(COMMONS_TRACES, mission)) COMMONS_TRACES[mission](b, x, z);
   } else {
     // Le rivage nord (lot L7) : une chose par mission, dessinée dans le fichier du lieu.
+    // Une trace que portent deux missions (à l'Auberge, la mission de même rang des deux langues de la LV2) se dessine une
+    // fois : l'identité de l'objet est la clé (les deux missions pointent vers le même objet de `traces`, jamais une copie).
     const traces = placeArt(place)?.traces ?? {};
-    for (const mission of done) if (Object.hasOwn(traces, mission)) traces[mission].draw(b, { x, y: y0, z });
+    const drawn = new Set<object>();
+    for (const mission of done)
+      if (Object.hasOwn(traces, mission) && !drawn.has(traces[mission])) {
+        drawn.add(traces[mission]);
+        traces[mission].draw(b, { x, y: y0, z });
+      }
   }
   return b.build();
 }

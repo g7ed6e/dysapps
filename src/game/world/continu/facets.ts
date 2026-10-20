@@ -277,3 +277,36 @@ export function mergeFacets(list: readonly Facets[]): Facets {
   }
   return { positions, normals, colors, triangles: length / 9 };
 }
+
+/** Pose des facettes dessinées dans un repère (bascule autour de x, quart de tour, déplacement), normales comprises. */
+function posed(f: Facets, at: { x: number; y: number; z: number; yaw: number; pitch?: number }): Facets {
+  const cy = Math.cos(at.yaw),
+    sy = Math.sin(at.yaw),
+    cp = Math.cos(at.pitch ?? 0),
+    sp = Math.sin(at.pitch ?? 0);
+  const p = f.positions,
+    n = f.normals;
+  for (let i = 0; i < p.length; i += 3) {
+    for (const [arr, move] of [
+      [p, true],
+      [n, false],
+    ] as const) {
+      const px = arr[i],
+        py = arr[i + 1],
+        pz = arr[i + 2];
+      const y1 = py * cp - pz * sp;
+      const z1 = py * sp + pz * cp;
+      arr[i] = (move ? at.x : 0) + px * cy + z1 * sy;
+      arr[i + 1] = (move ? at.y : 0) + y1;
+      arr[i + 2] = (move ? at.z : 0) - px * sy + z1 * cy;
+    }
+  }
+  return f;
+}
+
+/** Dessine dans un repère tourné de `yaw` (et basculé de `pitch`) posé en `at`, puis l'ajoute (les Instants, ./instants5e.ts, et l'Auberge, ./auberge5e.ts). */
+export function drawPosed(b: FacetBuilder, at: { x: number; y: number; z: number; yaw: number; pitch?: number }, draw: (l: FacetBuilder) => void): void {
+  const l = new FacetBuilder();
+  draw(l);
+  b.append(posed(l.build(), at));
+}

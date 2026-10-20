@@ -5,8 +5,8 @@
 // de presque noir, rien à lire. Retouche du lot 2 (directeur artistique : « des boîtes génériques ») : chaque ruine a sa
 // hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts), comme le Hameau (./hameau5e.ts, lot 5),
 // les Radeaux (./radeaux5e.ts, lot 6), la Croisée (./croisee5e.ts, lot 7), les Instants (./instants5e.ts, lot 8), les
-// Fumerolles (./fumerolles5e.ts, lot 9), l'Étuve (./etuve5e.ts, lot 10) et les Terrasses (./terrasses5e.ts, lot 11) ;
-// le Donjon, une tour carrée sur son piton de roche. Code pur.
+// Fumerolles (./fumerolles5e.ts, lot 9), l'Étuve (./etuve5e.ts, lot 10), les Terrasses (./terrasses5e.ts, lot 11) et
+// l'Auberge (./auberge5e.ts, lot 12) ; le Donjon, une tour carrée sur son piton de roche. Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_5E, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
@@ -22,11 +22,8 @@ const C = {
   // Le bois gris de la ruine et son ombre (comme au 6e : délavé, jamais sombre).
   wood: 0x9f9279,
   woodShade: 0x86775f,
-  // Le bronze éteint, et le toit d'ardoise des maisons (un gris-bleu franc).
+  // Le bronze éteint.
   bronze: 0x9c8452,
-  slate: 0x6f8089,
-  // L'enduit passé des murs du Hameau et de l'Auberge.
-  wall: 0xb9ae98,
 } as const;
 
 /** Un tas de blocs tombés, au pied d'un mur : trois pavés de travers. */
@@ -82,15 +79,6 @@ function nacelles(b: FacetBuilder): void {
   b.box({ x: 0, y: SINK, z: 0 }, [10, 0.4 - SINK, 3], C.shade, C.stone);
 }
 
-/** L'Auberge : une grande maison à étage, son toit crevé d'un côté, l'enseigne tombée. */
-function auberge(b: FacetBuilder): void {
-  b.box({ x: 0, y: SINK, z: 0 }, [9, 6 - SINK, 6], C.wall, C.shade);
-  b.gableRoof({ x: -2.2, y: 6, z: 0 }, 4.6, 6.6, 3, C.slate, C.wall);
-  b.box({ x: 2.6, y: 6, z: 0 }, [3.6, 1.6, 6], C.wall, C.shade);
-  b.box({ x: 0, y: SINK, z: 3.05 }, [1.8, 2.8 - SINK, 0.2], C.woodShade);
-  b.box({ x: 5.4, y: SINK, z: 3.5, yaw: 0.4 }, [2.4, 0.4 - SINK, 1.2], C.woodShade, C.wood);
-}
-
 /** L'Oracle : un cercle de colonnes sur une estrade, trois debout, deux brisées, un fronton tombé. */
 function oracle(b: FacetBuilder): void {
   b.prism({ x: 0, y: SINK, z: 0, yaw: 0.1 }, 6, 6, 1 - SINK, 10, C.shade, C.stone);
@@ -106,13 +94,13 @@ function oracle(b: FacetBuilder): void {
 /**
  * La ruine de chaque lieu du 5e pas encore construit (les lieux construits ont leur fichier : ./montee5e.ts, lot 3 ;
  * ./hameau5e.ts, lot 5 ; ./radeaux5e.ts, lot 6 ; ./croisee5e.ts, lot 7 ; ./instants5e.ts, lot 8 ;
- * ./fumerolles5e.ts, lot 9 ; ./etuve5e.ts, lot 10 ; ./terrasses5e.ts, lot 11), dessinée dans son repère.
+ * ./fumerolles5e.ts, lot 9 ; ./etuve5e.ts, lot 10 ; ./terrasses5e.ts, lot 11 ; ./auberge5e.ts, lot 12), dessinée dans
+ * son repère.
  */
 export const RUINS_5E: Readonly<Record<Exclude<PlaceId5e, BuiltPlace5e>, (b: FacetBuilder) => void>> = {
   semaphore,
   gaillard,
   donjon,
   nacelles,
-  auberge,
   oracle,
 };

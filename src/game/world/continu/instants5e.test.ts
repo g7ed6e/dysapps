@@ -205,7 +205,7 @@ describe('« Y aller » aux Instants', () => {
     const door = { x: node.x - PLACE.center.x, z: node.z - PLACE.center.z };
     const across = (door.x - a.x) * -look.z + (door.z - a.z) * look.x;
     expect(Math.abs(across)).toBeLessThan(0.5);
-    // Les autres lieux du 5e gardent l'arrivée vers le nord.
+    // Les autres lieux du 5e gardent l'arrivée vers le nord (l'Auberge y revient à la retouche 1 du lot 12).
     for (const p of PLAN.places) if (p.id !== 'instants' && p.id !== 'radeaux') expect(doorViewOf(p.id), p.id).toBe(0);
   });
 });

@@ -137,7 +137,7 @@ describe('La scène du 5e', () => {
 
   it('une question dans un lieu du 5e sans scénette ne montre rien dans la scène (l’écran habituel la joue)', () => {
     const layout = scenetteLayout({ count: 3, column: true }, W, H, questionLayout({ count: 3 }, W, H));
-    expect(world.question({ place: 'auberge', mission: 'essai', layout, item: { key: 'essai', scene: { kind: 'column' }, answered: false, right: [0], picked: [] } })).toEqual([]);
+    expect(world.question({ place: 'oracle', mission: 'essai', layout, item: { key: 'essai', scene: { kind: 'column' }, answered: false, right: [0], picked: [] } })).toEqual([]);
     world.question(null);
   });
 
