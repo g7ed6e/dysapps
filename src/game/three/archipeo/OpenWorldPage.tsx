@@ -50,10 +50,11 @@ import { constructionState, placeConstruction, posedShapes } from './constructio
 import { posedAmenagements } from './amenagements';
 import { gridLand, gridLands, openWorldLands, playedIslands } from './landLinks';
 import { MapLabels } from './MapLabels';
-import { PlacePanel, placeFromParam, placeResume } from './PlacePanel';
+import { PlacePanel, earnPlacesOf, placeFromParam, placeResume } from './PlacePanel';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
-import { NefSheet, nefLookOf, nefSail } from './NefSheet';
+import { NEF_LEAVES, NefSheet, nefLookOf, nefSail, nefStageOf } from './NefSheet';
+import { EarnPlaces } from '../../PlanSection';
 import type { VehicleStage } from '../../world/vehicle';
 import { portState } from './portState';
 import { createOpenWorld, type BridgeLayEvents, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
@@ -98,12 +99,14 @@ const missionTitle = (island: string, mission: string) => getBiome(island)?.exer
  */
 export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const plan = planFor(level);
-  // Le 6e seul a l'Escale, la Nef, les Détours, les habitants (leurs commandes, l'entraide, leurs pastilles) et les
-  // scénettes (GD-22, lot 2) : au 5e, la page n'en montre rien, et ses missions se jouent sur l'écran habituel.
+  // Le 6e seul a les Détours, les habitants (leurs commandes, l'entraide, leurs pastilles) et les scénettes de tous ses
+  // lieux (GD-22, lot 2) ; chaque niveau a son lieu de départ et sa Nef (GD-22, lot 4 : la Lisière et le dirigeable).
   const sixth = level === '6e';
   const { biomeId } = useParams();
   const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour, launch } = useBlocland();
   const textes = useTextes();
+  // Les noms du lieu de départ du niveau : l'Escale au 6e, la Lisière au 5e ; ses bâtiments gardent leur nom.
+  const departNames = useMemo(() => (textes.depart ? { ...textes.depart, nom: textes.depart.noms?.[level as '5e'] ?? textes.depart.nom } : undefined), [textes.depart, level]);
   const { settings, speak } = useSettings();
   // La voix de l'arrivée, lue par la scène faite une fois (`onArrive`) : le réglage du moment.
   // Rend vrai si la voix l'a dit : lecture automatique coupée, le lieu reste à nommer.
@@ -489,8 +492,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
 
   // L'Escale (GD-20, lot 2) : ses portes, ses trophées, l'état de la région, la pile, tirés de la sauvegarde.
   useEffect(() => {
-    if (sixth) world.current?.setPort(port);
-  }, [sixth, port, ready]);
+    world.current?.setPort(port);
+  }, [port, ready]);
   // L'adresse d'un lieu (`?lieu=quais&mission=make-ten`, « Ma dernière mission ») : Kéo y est déposé, sa liste s'ouvre, le
   // focus sur la mission de l'adresse si elle est du lieu ; à chaque navigation, même vers la même adresse.
   const jumpTo = useCallback((place: PlaceId) => {
@@ -529,7 +532,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       const r = el.getBoundingClientRect();
       // En colonne à gauche (un écran bas) : la part à sa droite ; en bas : la part au-dessus.
       const column = r.top - s.top < 8 && r.width < s.width * 0.8;
-      w.frame(column ? { left: r.right - s.left, top: 0, width: s.right - r.right, height: s.height } : { left: 0, top: 0, width: s.width, height: Math.max(1, r.top - s.top) }, lieu?.place);
+      w.frame(column ? { left: r.right - s.left, top: 0, width: s.right - r.right, height: s.height } : { left: 0, top: 0, width: s.width, height: Math.max(1, r.top - s.top) }, panel === 'nef' ? 'nef' : lieu?.place);
     };
     const observer = new ResizeObserver(measure);
     observer.observe(stage);
@@ -785,14 +788,14 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // l'arrivée (référent dys).
   const pickFromList = useCallback(
     (id: PlaceId | 'port') => {
-      const name = id === 'port' ? textes.depart?.nom : placeById(id).name;
+      const name = id === 'port' ? departNames?.nom : placeById(id).name;
       if (settings.autoRead && name) {
         speak(frenchTypography(name));
         named.add(id);
       }
       pickOnMap(id);
     },
-    [pickOnMap, settings.autoRead, speak, textes.depart],
+    [pickOnMap, settings.autoRead, speak, departNames],
   );
   const listRef = useRef<HTMLDivElement>(null);
   // La liste ouverte : « Retour » et « Lieux » se tiennent à côté d'elle, jamais dessous (au-dessus du panneau du bas sur
@@ -827,14 +830,15 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     };
     return placeRecord(plan, of);
   }, [plan, state.world.parts]);
-  // La Nef de l'Escale (GD-21) : sa voile vient avec trois lieux achevés (le monde continu n'a pas de Gardiens) ; son
-  // temps, montré sur le ber.
+  // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son dernier temps (la voile au 6e, le gouvernail au 5e) vient avec
+  // autant de lieux achevés que la grille demande de Gardiens (le monde continu n'en a pas) ; son temps, montré sur le ber.
+  const nefStage = nefStageOf(level);
   const achieved = useMemo(() => Object.values(constructions).filter((c) => constructionState(c) === 'restauree').length, [constructions]);
-  const sail = useMemo(() => nefSail(state, achieved), [state, achieved]);
-  const nefLookNow = useMemo(() => nefLookOf(state, sail.kit), [state, sail.kit]);
+  const sail = useMemo(() => nefSail(state, achieved, nefStage), [state, achieved, nefStage]);
+  const nefLookNow = useMemo(() => nefLookOf(state, sail.kit, nefStage), [state, sail.kit, nefStage]);
   useEffect(() => {
-    if (sixth && !departing) world.current?.setNef(nefLookNow);
-  }, [sixth, nefLookNow, departing, ready]);
+    if (!departing) world.current?.setNef(nefLookNow);
+  }, [nefLookNow, departing, ready]);
   // « Partir » : la fiche se ferme, la Nef glisse vers la passe ; à la fin (ou au toucher), le voyage se fait et l'élève
   // arrive en 5e, dans la disposition que choisit la fabrique (le monde ouvert du 5e derrière `?monde=ouvert`, GD-22).
   const departNef = useCallback(
@@ -843,6 +847,9 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       if (!w) return;
       setPanel(null);
       setDeparting(true);
+      // L'annonce du départ (référent dys, retouche du lot 4) : courte, dans la zone du lecteur d'écran, et dite par la
+      // voix avec la lecture automatique.
+      if (settings.autoRead) speak(NEF_LEAVES);
       w.departNef(() => {
         const r = launch(stage, sail.kit);
         setDeparting(false);
@@ -851,7 +858,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         navigate(`/adventure/${r.to}`, { replace: true });
       });
     },
-    [launch, launchVoyage, navigate, sail.kit],
+    [launch, launchVoyage, navigate, sail.kit, settings.autoRead, speak],
   );
   // Les aménagements posés de chaque lieu (GD-20, point 4, lot L0) : les petites constructions livrées, la même sauvegarde.
   const amenagements = useMemo(() => posedAmenagements(state.world.parts), [state.world.parts]);
@@ -937,240 +944,250 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // « Livrer », « Donner » ou « Apporter » dans la bulle : le geste suggéré est celui de l'habitant où se tient Kéo.
   const deliverHere = Boolean(suggestedCmd && here === suggestedCmd.place);
 
+  // Les renvois à une île (« à gagner dans… », la fiche de la Nef, l'Entrepôt) disent le lieu du plan qui reprend ses
+  // missions, et y mènent (consultant d'Archipéo, retouche du lot 4 : chaque cadre nomme ce qu'il montre).
+  const earnPlaces = useMemo(() => earnPlacesOf(plan), [plan]);
+
   // Une question ou une remise : la scène seule, ni marque, ni accès directs, ni panneau.
   const playing = Boolean(asking) || Boolean(remise) || departing;
 
   return (
-    <div className="world-page open-world">
-      {/* `data-said` : la phrase du pont est écrite (sur un petit écran, la marque se masque le temps qu'elle l'est). */}
-      <div className="world-stage" data-scene data-said={saidShown && !playing ? 'oui' : undefined} ref={stageRef}>
-        <div ref={host} className="open-world-canvas" />
-        {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
-        {/* La marque se retire une fois Kéo arrivé au lieu suggéré (relecture du lot L1) : la bulle porte le geste. */}
-        {nextPlace && nextPlace.id !== here && !playing && !mapOpen && !sheetOpen && (
-          <button type="button" ref={markRef} className="open-world-mark" aria-label={markLabel} onClick={goNext}>
-            <span className="open-world-arrow-box" aria-hidden="true">
-              <span ref={arrowRef} className="open-world-arrow">
-                <Icon name="nord" />
-              </span>
-              {/* La distance en signe, jamais en texte (consultant UX UI) : un, deux ou trois points pleins, de près à loin. */}
-              <span className="open-world-distance">
-                <i />
-                <i />
-                <i />
-              </span>
-            </span>
-            {/* Le nom du lieu seul : aucune icône de lieu n'existe encore (le sapin de l'île d'aujourd'hui ne dit pas le Phare). */}
-            <span className="open-world-mark-word">{nextPlace.name}</span>
-          </button>
-        )}
-        {/* Un cadenas sur le pont de chaque terre fermée : une icône sans texte, dite aux lecteurs d'écran (référent dys). */}
-        {/* Les pastilles des habitants : jamais pendant une question, une remise, un panneau ni sur la Carte. */}
-        <HabitantSigns signs={signs} hidden={playing || mapOpen || sheetOpen} onPick={(place) => world.current?.goTo(place)} root={signsRef} />
-        <div ref={locksRef} className="open-world-locks" hidden={playing || mapOpen || sheetOpen}>
-          {lands.closed.map((land) => (
-            <span key={land} className="open-world-lock" data-terre={land} role="img" aria-label={closedLandLabel(land)} hidden>
-              <Icon name="lock" />
-            </span>
-          ))}
-        </div>
-        {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
-        {mapOpen && !asking && (
-          <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nextPlace?.id ?? null} portName={sixth ? textes.depart?.nom : undefined} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} />
-        )}
-        {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
-            le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à
-            gauche sur un écran bas. */}
-        {openList && !asking && (
-          <>
-            <div className="open-world-voile" aria-hidden="true" onClick={list.close} />
-            <div ref={listRef} className="open-world-panel open-world-panel-lieux-ouverts">
-              <PlacesSheet rows={placesRows(plan, openPlaces, states, textes.etatsDIle, suggestedCmd ? null : (next?.place.id ?? null), sixth ? textes.depart?.nom : undefined, amenagements)} onPick={pickFromList} onClose={list.close} />
-            </div>
-          </>
-        )}
-        {/* Les accès directs (décision « Sans Menu », GD-20, lot 1) : la colonne du monde en grille, telle quelle ; les
-            commandes ouvrent la liste du monde ouvert (lot L1), sans la quête d'entraide (lot L2). Masquée pendant une
-            question ou une remise. */}
-        {!playing && !sheetOpen && <WorldShortcuts a={level} requestsOpen={commandsOpen} onRequests={sixth ? openCommands : undefined} resumeFrom={portResume} resumeAt={placeResume} />}
-        {!playing && !sheetOpen && <SettingsButton />}
-        {commandsOpen && !playing && (
-          <div ref={panelRef} className="open-world-panel open-world-panel-commandes">
-            <CommandsSheet lines={commandLines(plan, state, assemblyAt)} entraide={entraideListLine(plan, vu, (p) => !isClosed(p), assemblyAt)} suggested={suggestedId} onGo={goHabitant} onClose={closeCommands} />
-          </div>
-        )}
-        {/* Le panneau ouvert de l'Escale (GD-20, lot 2) : comme une question, il masque les accès directs, Réglages, la
-            Carte et « Y aller » ; un seul panneau à la fois. */}
-        {sixth && panel && !playing && (panel === 'nef' || textes.depart) && (
-          <div ref={panelRef} className={`open-world-panel open-world-panel-${panel}`}>
-            {panel === 'nef' ? (
-              <NefSheet
-                kit={sail.kit}
-                missing={sail.missing}
-                onDepart={departNef}
-                onMap={() => {
-                  setPanel(null);
-                  setMapOpen(true);
-                }}
-                onClose={closePanel}
-              />
-            ) : (
-              <PortPanels panel={panel} names={textes.depart!} onGo={goPort} onNef={nefLookNow === 4 ? undefined : () => setPanel('nef')} onClose={closePanel} />
-            )}
-          </div>
-        )}
-        {/* Le panneau d'un lieu (GD-20, point 8) : comme celui d'une porte, il masque les accès directs, Réglages, la Carte
-            et « Y aller ». */}
-        {lieu && !playing && (
-          <div ref={panelRef} className="open-world-panel open-world-panel-lieu">
-            {closedLandOf(lieu.place) ? (
-              // Un lieu d'une terre fermée (GD-20, point 3) : la fiche de la terre, « Relier », aucune mission ; pas
-              // encore reliable, la terre à relier d'abord, dont le bouton ouvre la fiche.
-              <ClosedLandSheet
-                land={closedLandOf(lieu.place)!}
-                after={afterOf(closedLandOf(lieu.place)!)}
-                onAfter={(land) => setLieu({ place: landById(land).places[0], focus: null })}
-                price={landPrice(closedLandOf(lieu.place)!)}
-                have={payableBlocks(state.stock)}
-                suggested={lands.suggested === closedLandOf(lieu.place)}
-                onLink={() => relier(closedLandOf(lieu.place)!)}
-                onClose={closeLieu}
-              />
-            ) : (
-              <PlacePanel
-                place={placeById(lieu.place)}
-                missions={missionsOfPlace(placeById(lieu.place), bornes)}
-                suggested={!suggestedCmd && next?.place.id === lieu.place ? next.mission : null}
-                focus={lieu.focus}
-                onPlay={play}
-                onClose={closeLieu}
-                habitant={sixth && <HabitantLine place={lieu.place} line={habitantLineOf(state, lieu.place, assemblyAt)} entraide={entraideLineOf(plan, vu, lieu.place, assemblyAt)} suggested={suggestedId} onDeliver={deliverAt} onEntraide={entraideAt} onReprendre={() => void reprendreAt()} reprendreBusy={reprendreBusy} onGo={goHabitant} />}
-              />
-            )}
-          </div>
-        )}
-        {/* La phrase du pont rebâti, sur fond uni, un moment (GD-20, point 3) : jamais pendant une question. La
-            zone reste dans la page, vide le reste du temps, pour que les lecteurs d'écran annoncent la phrase ; le temps
-            qu'elle est écrite, un haut-parleur la fait réentendre, et le toucher la garde écrite (référent dys). Sur la Carte, elle se tient en haut,
-            hors des noms des lieux du sud. */}
-        <div className={`open-world-said${mapOpen ? ' on-map' : said?.top ? ' on-top' : ''}`} data-shown={saidShown && !playing ? 'oui' : 'non'} data-etape={saidStep} onPointerDown={holdSaid} onFocus={holdSaid}>
-          <p role="status">{saidShown && !playing && said ? said.lines.map((line, i) => (
-                // Sur un petit écran, l'autre phrase reste lue par le lecteur d'écran, cachée à la vue.
-                <span key={line} className={small && i !== saidStep ? 'visually-hidden' : undefined}>
-                  {i > 0 && ' '}
-                  {line}
+    <EarnPlaces.Provider value={earnPlaces}>
+      <div className="world-page open-world">
+        {/* `data-said` : la phrase du pont est écrite (sur un petit écran, la marque se masque le temps qu'elle l'est). */}
+        <div className="world-stage" data-scene data-said={saidShown && !playing ? 'oui' : undefined} ref={stageRef}>
+          <div ref={host} className="open-world-canvas" />
+          {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
+          {/* La marque se retire une fois Kéo arrivé au lieu suggéré (relecture du lot L1) : la bulle porte le geste. */}
+          {nextPlace && nextPlace.id !== here && !playing && !mapOpen && !sheetOpen && (
+            <button type="button" ref={markRef} className="open-world-mark" aria-label={markLabel} onClick={goNext}>
+              <span className="open-world-arrow-box" aria-hidden="true">
+                <span ref={arrowRef} className="open-world-arrow">
+                  <Icon name="nord" />
                 </span>
-              )) : ''}</p>
-          {saidShown && !playing && said && <SpeakButton text={said.lines.join(' ')} label="Réécouter" compact />}
-        </div>
-        {asking && world.current && (
-          asking.revision ? (
-            <WorldRevision key={`${asking.place}-revision`} plan={asking.revision} world={world.current} onClose={closeQuestion} />
-          ) : (
-            <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} plain={asking.plain} world={world.current} onClose={closeQuestion} />
-          )
-        )}
-        {remise && !asking && world.current && <Remise key={`${remise.kind}-${remise.id}`} world={world.current} request={remise} act={() => (remise.kind === 'livrer' ? deliver(remise.id) : tapStory(remise.id))} onClose={closeRemise} />}
-        {/* La Carte : le même bouton que dans le reste du jeu, dans la barre du bas, à gauche (« Y aller » tient le milieu). */}
-        {!playing && !sheetOpen && (
-          <nav className={`open-world-bar${openList ? ' avec-liste' : ''}`} aria-label="Monde">
-            {/* Un seul mot, toujours écrit sous l'icône, dans le bouton ; la Carte ouverte, il dit comment en sortir. */}
-            <button
-              type="button"
-              ref={mapButton}
-              className="button open-world-map-button"
-              data-tuto="carte"
-              onClick={() => setMapOpen(!mapOpen)}
-            >
-              <Icon name={mapOpen ? 'back' : 'map'} />
-              <span className="open-world-map-word">{mapOpen ? 'Retour' : 'Carte'}</span>
+                {/* La distance en signe, jamais en texte (consultant UX UI) : un, deux ou trois points pleins, de près à loin. */}
+                <span className="open-world-distance">
+                  <i />
+                  <i />
+                  <i />
+                </span>
+              </span>
+              {/* Le nom du lieu seul : aucune icône de lieu n'existe encore (le sapin de l'île d'aujourd'hui ne dit pas le Phare). */}
+              <span className="open-world-mark-word">{nextPlace.name}</span>
             </button>
-            {/* « Lieux », sur la Carte seulement, à droite de « Retour », un écart net entre eux : le mot toujours écrit sous
-                l'icône ; il ouvre et ferme la liste des lieux ouverts. */}
-            {mapOpen && (
+          )}
+          {/* Un cadenas sur le pont de chaque terre fermée : une icône sans texte, dite aux lecteurs d'écran (référent dys). */}
+          {/* Les pastilles des habitants : jamais pendant une question, une remise, un panneau ni sur la Carte. */}
+          <HabitantSigns signs={signs} hidden={playing || mapOpen || sheetOpen} onPick={(place) => world.current?.goTo(place)} root={signsRef} />
+          <div ref={locksRef} className="open-world-locks" hidden={playing || mapOpen || sheetOpen}>
+            {lands.closed.map((land) => (
+              <span key={land} className="open-world-lock" data-terre={land} role="img" aria-label={closedLandLabel(land)} hidden>
+                <Icon name="lock" />
+              </span>
+            ))}
+          </div>
+          {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
+          {mapOpen && !asking && (
+            <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nextPlace?.id ?? null} portName={departNames?.nom} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} />
+          )}
+          {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
+              le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à
+              gauche sur un écran bas. */}
+          {openList && !asking && (
+            <>
+              <div className="open-world-voile" aria-hidden="true" onClick={list.close} />
+              <div ref={listRef} className="open-world-panel open-world-panel-lieux-ouverts">
+                <PlacesSheet rows={placesRows(plan, openPlaces, states, textes.etatsDIle, suggestedCmd ? null : (next?.place.id ?? null), departNames?.nom, amenagements)} onPick={pickFromList} onClose={list.close} />
+              </div>
+            </>
+          )}
+          {/* Les accès directs (décision « Sans Menu », GD-20, lot 1) : la colonne du monde en grille, telle quelle ; les
+              commandes ouvrent la liste du monde ouvert (lot L1), sans la quête d'entraide (lot L2). Masquée pendant une
+              question ou une remise. */}
+          {!playing && !sheetOpen && <WorldShortcuts a={level} requestsOpen={commandsOpen} onRequests={sixth ? openCommands : undefined} resumeFrom={portResume} resumeAt={placeResume} />}
+          {!playing && !sheetOpen && <SettingsButton />}
+          {commandsOpen && !playing && (
+            <div ref={panelRef} className="open-world-panel open-world-panel-commandes">
+              <CommandsSheet lines={commandLines(plan, state, assemblyAt)} entraide={entraideListLine(plan, vu, (p) => !isClosed(p), assemblyAt)} suggested={suggestedId} onGo={goHabitant} onClose={closeCommands} />
+            </div>
+          )}
+          {/* Le panneau ouvert de l'Escale (GD-20, lot 2) : comme une question, il masque les accès directs, Réglages, la
+              Carte et « Y aller » ; un seul panneau à la fois. */}
+          {panel && !playing && (panel === 'nef' || departNames) && (
+            <div ref={panelRef} className={`open-world-panel open-world-panel-${panel}`}>
+              {panel === 'nef' ? (
+                <NefSheet
+                  stage={nefStage}
+                  kit={sail.kit}
+                  missing={sail.missing}
+                  onDepart={departNef}
+                  onMap={() => {
+                    setPanel(null);
+                    setMapOpen(true);
+                  }}
+                  onClose={closePanel}
+                />
+              ) : (
+                <PortPanels panel={panel} names={departNames!} onGo={goPort} onNef={nefLookNow === 4 ? undefined : () => setPanel('nef')} onClose={closePanel} />
+              )}
+            </div>
+          )}
+          {/* Le panneau d'un lieu (GD-20, point 8) : comme celui d'une porte, il masque les accès directs, Réglages, la Carte
+              et « Y aller ». */}
+          {lieu && !playing && (
+            <div ref={panelRef} className="open-world-panel open-world-panel-lieu">
+              {closedLandOf(lieu.place) ? (
+                // Un lieu d'une terre fermée (GD-20, point 3) : la fiche de la terre, « Relier », aucune mission ; pas
+                // encore reliable, la terre à relier d'abord, dont le bouton ouvre la fiche.
+                <ClosedLandSheet
+                  land={closedLandOf(lieu.place)!}
+                  after={afterOf(closedLandOf(lieu.place)!)}
+                  onAfter={(land) => setLieu({ place: landById(land).places[0], focus: null })}
+                  price={landPrice(closedLandOf(lieu.place)!)}
+                  have={payableBlocks(state.stock)}
+                  suggested={lands.suggested === closedLandOf(lieu.place)}
+                  onLink={() => relier(closedLandOf(lieu.place)!)}
+                  onClose={closeLieu}
+                />
+              ) : (
+                <PlacePanel
+                  place={placeById(lieu.place)}
+                  missions={missionsOfPlace(placeById(lieu.place), bornes)}
+                  suggested={!suggestedCmd && next?.place.id === lieu.place ? next.mission : null}
+                  focus={lieu.focus}
+                  onPlay={play}
+                  onClose={closeLieu}
+                  habitant={sixth && <HabitantLine place={lieu.place} line={habitantLineOf(state, lieu.place, assemblyAt)} entraide={entraideLineOf(plan, vu, lieu.place, assemblyAt)} suggested={suggestedId} onDeliver={deliverAt} onEntraide={entraideAt} onReprendre={() => void reprendreAt()} reprendreBusy={reprendreBusy} onGo={goHabitant} />}
+                />
+              )}
+            </div>
+          )}
+          {/* La phrase du pont rebâti, sur fond uni, un moment (GD-20, point 3) : jamais pendant une question. La
+              zone reste dans la page, vide le reste du temps, pour que les lecteurs d'écran annoncent la phrase ; le temps
+              qu'elle est écrite, un haut-parleur la fait réentendre, et le toucher la garde écrite (référent dys). Sur la Carte, elle se tient en haut,
+              hors des noms des lieux du sud. */}
+          <div className={`open-world-said${mapOpen ? ' on-map' : said?.top ? ' on-top' : ''}`} data-shown={saidShown && !playing ? 'oui' : 'non'} data-etape={saidStep} onPointerDown={holdSaid} onFocus={holdSaid}>
+            <p role="status">{saidShown && !playing && said ? said.lines.map((line, i) => (
+                  // Sur un petit écran, l'autre phrase reste lue par le lecteur d'écran, cachée à la vue.
+                  <span key={line} className={small && i !== saidStep ? 'visually-hidden' : undefined}>
+                    {i > 0 && ' '}
+                    {line}
+                  </span>
+                )) : ''}</p>
+            {saidShown && !playing && said && <SpeakButton text={said.lines.join(' ')} label="Réécouter" compact />}
+          </div>
+          {asking && world.current && (
+            asking.revision ? (
+              <WorldRevision key={`${asking.place}-revision`} plan={asking.revision} world={world.current} onClose={closeQuestion} />
+            ) : (
+              <WorldQuestion key={`${asking.place}-${asking.mission}`} place={asking.place} mission={asking.mission} plain={asking.plain} world={world.current} onClose={closeQuestion} />
+            )
+          )}
+          {remise && !asking && world.current && <Remise key={`${remise.kind}-${remise.id}`} world={world.current} request={remise} act={() => (remise.kind === 'livrer' ? deliver(remise.id) : tapStory(remise.id))} onClose={closeRemise} />}
+          {/* La Carte : le même bouton que dans le reste du jeu, dans la barre du bas, à gauche (« Y aller » tient le milieu). */}
+          {!playing && !sheetOpen && (
+            <nav className={`open-world-bar${openList ? ' avec-liste' : ''}`} aria-label="Monde">
+              {/* Un seul mot, toujours écrit sous l'icône, dans le bouton ; la Carte ouverte, il dit comment en sortir. */}
               <button
                 type="button"
-                ref={list.button}
-                className="button open-world-map-button open-world-lieux-button"
-                aria-label={PLACES_BUTTON_LABEL}
-                aria-expanded={openList}
-                aria-controls={PLACES_SHEET_ID}
-                onClick={toggleList}
+                ref={mapButton}
+                className="button open-world-map-button"
+                data-tuto="carte"
+                onClick={() => setMapOpen(!mapOpen)}
               >
-                <Icon name="liste" />
-                <span className="open-world-map-word">Lieux</span>
+                <Icon name={mapOpen ? 'back' : 'map'} />
+                <span className="open-world-map-word">{mapOpen ? 'Retour' : 'Carte'}</span>
               </button>
-            )}
-          </nav>
-        )}
-        {/* La caméra qui tourne autour de Kéo (GD-20, rotation libre) : deux doigts qui tournent, ou ces boutons, d'une
-            main ; la boussole montre le nord et y ramène. Sous Réglages, au bord droit, sans mot ; le doigt posé écrit leur
-            nom, comme tous les boutons du monde. Vers le nord, la boussole est délavée et son toucher le dit. */}
-        {!playing && !mapOpen && !sheetOpen && (
-          <div className="open-world-camera" role="group" aria-label="Caméra">
-            <WorldButton
-              icon={
-                <span ref={needle} className="open-world-needle" aria-hidden="true">
-                  <CompassNeedle />
-                </span>
-              }
-              name="Nord"
-              empty={turned ? undefined : 'déjà vers le nord'}
-              onClick={() => world.current?.turn(0)}
-            />
-            <WorldButton icon="tournerGauche" name="Tourner vers la gauche" onClick={() => world.current?.turn(-1)} />
-            <WorldButton icon="tournerDroite" name="Tourner vers la droite" onClick={() => world.current?.turn(1)} />
-          </div>
-        )}
-        {!playing && !mapOpen && !sheetOpen && (
-          <div className="open-world-go">
-            {/* La phrase de ce que porte la suggestion chez un habitant (sa commande, l'étape d'entraide) ; « Aucune
-                mission » seulement quand rien n'attend. */}
-            {!walking && !relightHere && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
-            {!next && !suggestedCmd && !walking && !relightHere && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
-            <div className="open-world-go-row">
-            {walking ? (
-              // Pendant tout trajet (la marche, la cabine, la marche) : « Passer le trajet », à contraste plein, saute
-              // jusqu'à l'arrivée.
-              <button type="button" className="button" onClick={() => world.current?.skip()}>
-                <Icon name="play" /> Passer le trajet
-              </button>
-            ) : relightHere ? (
-              // Au cairn éteint d'un Détour, un seul geste, à la place du bouton du monde (comme « Livrer ») ; ensuite,
-              // la flamme reste, sans phrase ni « bravo ».
-              <button type="button" className="button primary" onClick={() => cairnToLight && lightDetour(cairnToLight)}>
-                <Icon name="flame" /> Rallumer
-              </button>
-            ) : deliverHere ? (
-              <button type="button" className="button primary" onClick={goNext}>
-                <Icon name="paquet" /> {gestureWord(suggestedCmd?.kind, textes)}
-              </button>
-            ) : suggestedCmd ? (
-              <button type="button" className="button primary" aria-label={`Y aller : ${placeById(suggestedCmd.place).name}`} onClick={goNext}>
-                <Icon name="footprints" /> Y aller
-              </button>
-            ) : (
-              <button type="button" className="button primary" disabled={!next} aria-label={next ? `Y aller : ${label}` : undefined} onClick={goNext}>
-                <Icon name="footprints" /> Y aller
-              </button>
-            )}
-            {/* La cabine (GD-22, lot 3 ; arbitrage de la première relecture) : Kéo à l'arrêt près d'une gare, un bouton
-                secondaire à côté du bouton du monde, « Monter » au pied, « Descendre » en haut ; jamais pendant une
-                marche. */}
-            {!walking && cabin.side && (
-              <button type="button" className="button open-world-cabin" onClick={() => world.current?.ride()}>
-                <Icon name="cabine" /> {cabin.side === 'bas' ? 'Monter' : 'Descendre'}
-              </button>
-            )}
+              {/* « Lieux », sur la Carte seulement, à droite de « Retour », un écart net entre eux : le mot toujours écrit sous
+                  l'icône ; il ouvre et ferme la liste des lieux ouverts. */}
+              {mapOpen && (
+                <button
+                  type="button"
+                  ref={list.button}
+                  className="button open-world-map-button open-world-lieux-button"
+                  aria-label={PLACES_BUTTON_LABEL}
+                  aria-expanded={openList}
+                  aria-controls={PLACES_SHEET_ID}
+                  onClick={toggleList}
+                >
+                  <Icon name="liste" />
+                  <span className="open-world-map-word">Lieux</span>
+                </button>
+              )}
+            </nav>
+          )}
+          {/* La caméra qui tourne autour de Kéo (GD-20, rotation libre) : deux doigts qui tournent, ou ces boutons, d'une
+              main ; la boussole montre le nord et y ramène. Sous Réglages, au bord droit, sans mot ; le doigt posé écrit leur
+              nom, comme tous les boutons du monde. Vers le nord, la boussole est délavée et son toucher le dit. */}
+          {!playing && !mapOpen && !sheetOpen && (
+            <div className="open-world-camera" role="group" aria-label="Caméra">
+              <WorldButton
+                icon={
+                  <span ref={needle} className="open-world-needle" aria-hidden="true">
+                    <CompassNeedle />
+                  </span>
+                }
+                name="Nord"
+                empty={turned ? undefined : 'déjà vers le nord'}
+                onClick={() => world.current?.turn(0)}
+              />
+              <WorldButton icon="tournerGauche" name="Tourner vers la gauche" onClick={() => world.current?.turn(-1)} />
+              <WorldButton icon="tournerDroite" name="Tourner vers la droite" onClick={() => world.current?.turn(1)} />
             </div>
-          </div>
-        )}
-        {/* L'arrivée de la cabine : une phrase courte pour le lecteur d'écran, jamais écrite à l'écran. */}
-        <p role="status" className="visually-hidden">
-          {cabinSaid.text}
-        </p>
+          )}
+          {!playing && !mapOpen && !sheetOpen && (
+            <div className="open-world-go">
+              {/* La phrase de ce que porte la suggestion chez un habitant (sa commande, l'étape d'entraide) ; « Aucune
+                  mission » seulement quand rien n'attend. */}
+              {!walking && !relightHere && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
+              {!next && !suggestedCmd && !walking && !relightHere && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
+              <div className="open-world-go-row">
+              {walking ? (
+                // Pendant tout trajet (la marche, la cabine, la marche) : « Passer le trajet », à contraste plein, saute
+                // jusqu'à l'arrivée.
+                <button type="button" className="button" onClick={() => world.current?.skip()}>
+                  <Icon name="play" /> Passer le trajet
+                </button>
+              ) : relightHere ? (
+                // Au cairn éteint d'un Détour, un seul geste, à la place du bouton du monde (comme « Livrer ») ; ensuite,
+                // la flamme reste, sans phrase ni « bravo ».
+                <button type="button" className="button primary" onClick={() => cairnToLight && lightDetour(cairnToLight)}>
+                  <Icon name="flame" /> Rallumer
+                </button>
+              ) : deliverHere ? (
+                <button type="button" className="button primary" onClick={goNext}>
+                  <Icon name="paquet" /> {gestureWord(suggestedCmd?.kind, textes)}
+                </button>
+              ) : suggestedCmd ? (
+                <button type="button" className="button primary" aria-label={`Y aller : ${placeById(suggestedCmd.place).name}`} onClick={goNext}>
+                  <Icon name="footprints" /> Y aller
+                </button>
+              ) : (
+                <button type="button" className="button primary" disabled={!next} aria-label={next ? `Y aller : ${label}` : undefined} onClick={goNext}>
+                  <Icon name="footprints" /> Y aller
+                </button>
+              )}
+              {/* La cabine (GD-22, lot 3 ; arbitrage de la première relecture) : Kéo à l'arrêt près d'une gare, un bouton
+                  secondaire à côté du bouton du monde, « Monter » au pied, « Descendre » en haut ; jamais pendant une
+                  marche. */}
+              {!walking && cabin.side && (
+                <button type="button" className="button open-world-cabin" onClick={() => world.current?.ride()}>
+                  <Icon name="cabine" /> {cabin.side === 'bas' ? 'Monter' : 'Descendre'}
+                </button>
+              )}
+              </div>
+            </div>
+          )}
+          {/* L'arrivée de la cabine : une phrase courte pour le lecteur d'écran, jamais écrite à l'écran. */}
+          <p role="status" className="visually-hidden">
+            {cabinSaid.text}
+          </p>
+          <p role="status" className="visually-hidden">
+            {departing ? NEF_LEAVES : ''}
+          </p>
+        </div>
       </div>
-    </div>
+    </EarnPlaces.Provider>
   );
 }
 

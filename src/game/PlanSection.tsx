@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { createContext, useContext, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
@@ -29,9 +29,31 @@ interface Props {
   enCoursDePose?: Partie[] | null;
 }
 
+/** Le lieu qui reprend les missions d'une île, au monde ouvert : où il est, en mots (« à la Montée »), et son adresse ; ou rien. */
+export type EarnPlaceOf = (island: BiomeId) => { at: string; to: string } | null;
+
+/**
+ * Au monde ouvert, ce qu'un renvoi à une île montre : le lieu du plan (« La Montée »), pas l'île de la grille (consultant
+ * d'Archipéo, retouche du lot 4 : chaque cadre nomme ce qu'il montre). Sans lui (la grille), l'île.
+ */
+export const EarnPlaces = createContext<EarnPlaceOf | null>(null);
+
+/**
+ * Où gagner un bloc, en mots : au monde ouvert, le lieu du plan (« à la Montée ») ; sinon l'île, ou un coffre (« dans
+ * Forêt des sons », `whereToEarn`).
+ */
+export function useEarnWhere(): (block: BlockId) => string {
+  const placeOf = useContext(EarnPlaces);
+  return (block) => {
+    const island = earnIsland(block);
+    return (island && placeOf?.(island.id)?.at) ?? `dans ${whereToEarn(block)}`;
+  };
+}
+
 /** « à gagner dans Forêt des sons » (un lien vers l'île), « ici, dans les missions », ou un coffre (`whereToEarn`). */
 export function EarnLink({ block, here }: { block: BlockId; here?: BiomeId }) {
   const lieu = useTextes().assemblage;
+  const placeOf = useContext(EarnPlaces);
   if (BLOCKS[block].assemble)
     return (
       <>
@@ -41,9 +63,10 @@ export function EarnLink({ block, here }: { block: BlockId; here?: BiomeId }) {
   const island = earnIsland(block);
   if (!island) return <>à gagner dans {whereToEarn(block)}</>;
   if (island.id === here) return <>à gagner ici, dans les missions</>;
+  const place = placeOf?.(island.id);
   return (
     <>
-      à gagner dans <Link to={`/adventure/${island.id}`}>{island.name}</Link>
+      {place ? 'à gagner ' : 'à gagner dans '}<Link to={place?.to ?? `/adventure/${island.id}`}>{place?.at ?? island.name}</Link>
     </>
   );
 }

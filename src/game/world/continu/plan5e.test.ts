@@ -462,9 +462,13 @@ describe('Le budget du 5e', () => {
     const cost = openWorldCost5e();
     const triangles = cost.reduce((s, c) => s + c.triangles, 0);
     const calls = cost.reduce((s, c) => s + c.calls, 0);
-    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles * 0.8);
+    // Après le lot 4, environ 15 000 triangles et 5 appels restent pour les lieux, leurs scénettes, les Détours et la faune.
+    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles - 15_000);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls - 5);
     const map = mapCost5e();
+    // La Carte du lot 4 : 82 600 triangles et 12 appels au plus (directeur artistique, 19 octobre 2026).
+    expect(map.triangles).toBeLessThanOrEqual(82_600);
+    expect(map.calls).toBeLessThanOrEqual(12);
     expect(map.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.triangles);
     expect(map.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
     // Les chemins se dessinent sur le sol du 5e.

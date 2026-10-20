@@ -412,12 +412,17 @@ describe('La caisse de la gare du haut et la caméra au bord (seconde relecture 
 describe('Le budget du 5e, avec la Montée', () => {
   const sum = (c: { triangles: number; calls: number }[]) => c.reduce((a, p) => ({ triangles: a.triangles + p.triangles, calls: a.calls + p.calls }), { triangles: 0, calls: 0 });
 
-  it('scénette ouverte : 88 000 triangles et 17 appels au plus ; hors scénette, 78 000 au plus ; sous l’enveloppe', () => {
+  // Les plafonds du lot 4 (la Lisière et le dirigeable, intention du directeur artistique du 19 octobre 2026).
+  it('scénette ouverte : 84 300 triangles et 17 appels au plus ; hors scénette, 83 700 et 15 ; pendant le départ, 16 ; sous l’enveloppe', () => {
     const open = sum(openWorldCost5e());
-    expect(open.triangles).toBeLessThanOrEqual(88_000);
+    expect(open.triangles).toBeLessThanOrEqual(84_300);
     expect(open.calls).toBeLessThanOrEqual(17);
     const world = sum(openWorldCost5e('monde'));
-    expect(world.triangles).toBeLessThanOrEqual(78_000);
+    expect(world.triangles).toBeLessThanOrEqual(83_700);
+    expect(world.calls).toBeLessThanOrEqual(15);
+    const departure = sum(openWorldCost5e('depart'));
+    expect(departure.triangles).toBeLessThanOrEqual(83_700);
+    expect(departure.calls).toBeLessThanOrEqual(16);
     expect(world.calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGET.calls);
     expect(openWorldCost5e().some((c) => c.poste === 'pose')).toBe(false);
     expect(openWorldCost5e('monde').some((c) => c.poste === 'scénette')).toBe(false);
