@@ -395,6 +395,8 @@ describe('Le regard levé près du Phare', () => {
     expect(seconds).toBeLessThanOrEqual(1);
     expect(lookUpStep(0, 1, 0, true)).toBe(1);
     expect(lookUpStep(1, 0, 0, true)).toBe(0);
+    // Arrivé, le regard n'en bouge plus, même à huit images par seconde (il ne fait pas de va-et-vient).
+    for (const wanted of [0, 1] as const) for (const dt of [1 / 60, 1 / 8, 0.1]) expect(lookUpStep(wanted, wanted, dt, false)).toBe(wanted);
     expect(FOLLOW.fov).toBeGreaterThan(0);
   });
 });

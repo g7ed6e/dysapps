@@ -199,8 +199,8 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
  * les Fumerolles (lot 9) : les trois, sur la dalle de relevé ; l'Étuve (lot 10) : les trois, sur le pavé devant
  * l'établi ; les Terrasses (lot 11) : les trois, devant le moulin ; l'Auberge (lot 12) : les dix, cinq par langue, sur le
  * parvis ; le Donjon (lot 13a) : les trois, sur la cour devant le logis ; l'Oracle (lot 13b) : les six, trois par option, dans
- * l'abri devant le fond peint. Les autres lieux n'ont pas encore la leur (l'écran
- * habituel). Un lieu construit s'ajoute ici, et seulement ici.
+ * l'abri devant le fond peint ; le Sémaphore (lot 14) : les cinq, sur la cour au pied de la tour. Les autres lieux n'ont
+ * pas encore la leur (l'écran habituel). Un lieu construit s'ajoute ici, et seulement ici.
  */
 export const BUILT_PLACES_5E = {
   montee: ['thermometer', 'adding', 'fractions', 'order-of-operations', 'conversions-angles'],
@@ -214,6 +214,7 @@ export const BUILT_PLACES_5E = {
   auberge: ['es-greetings', 'es-numbers', 'es-family', 'es-articles', 'es-sentences', 'de-greetings', 'de-numbers', 'de-family', 'de-articles', 'de-sentences'],
   donjon: ['christendoms-islam', 'feudal-west', 'new-worlds'],
   oracle: ['la-founding', 'la-gods', 'la-cases', 'gr-founding', 'gr-gods', 'gr-alphabet'],
+  semaphore: ['shopping', 'routine', 'listening', 'notices', 'united-kingdom'],
 } as const satisfies Partial<Record<PlaceId5e, readonly string[]>>;
 
 /** Un lieu du 5e déjà construit. */

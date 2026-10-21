@@ -118,7 +118,7 @@ export interface PlaceArt {
   doorView?: number;
   /**
    * Le regard d'arrivée devant un lieu trop haut pour la caméra qui suit depuis sa porte (le Donjon, retouche 1 du lot 13a
-   * du 5e) : Kéo arrêté à sa porte, la caméra au cap de `doorView`, elle recule de `back` fois sa distance (comme la vue
+   * du 5e ; le Sémaphore, lot 14, sans recul) : Kéo arrêté à sa porte, la caméra au cap de `doorView`, elle recule de `back` fois sa distance (comme la vue
    * d'un Détour, 1,6 au plus, sans monter) et lève le regard (`lookUp`, ./camera.ts) jusqu'au haut du lieu tel qu'il est
    * bâti, au-dessus de `look` (depuis le centre du lieu : le bord du haut le plus près d'elle). Absent : la caméra qui suit.
    * `top` : une hauteur fixe à cadrer, depuis le pied du lieu, au lieu de son haut bâti : un repère au-delà de lui (à
@@ -135,6 +135,12 @@ export interface PlaceArt {
    * au sud, sur l'eau (les Radeaux, au bord du grand chenal), ou un lieu voisin est au sud (le Donjon, au-dessus de l'Oracle).
    */
   nameAbove?: true;
+  /**
+   * Sur la Carte, le point de son nom, depuis son pied (son centre au sol), le même en ruine et restauré : au Sémaphore,
+   * au-dessus de sa corniche (lot 14, retouche 1 : le nom suivait la marque, du haut de la ruine au chapeau du mât, et
+   * changeait de place). Absent : la marque de la prochaine mission, au-dessus du lieu tel qu'il est bâti.
+   */
+  mapPoint?: Vec3;
   /**
    * Sur la Carte seulement, ce qui fait lire son repère de loin (aux Radeaux, le dessus des radeaux à flot, éclairci),
    * dans le maillage des lieux ; `c` : le centre du lieu à son sol (l'eau en y = 0), `posed` : une rangée d'une étape posée.

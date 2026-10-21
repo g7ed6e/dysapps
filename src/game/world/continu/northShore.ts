@@ -4,7 +4,7 @@
 // les Radeaux (lot 6), dans ./radeaux5e.ts ; la Croisée (lot 7), dans ./croisee5e.ts ; les Instants (lot 8), dans
 // ./instants5e.ts ; les Fumerolles (lot 9), dans ./fumerolles5e.ts ; l'Étuve (lot 10), dans ./etuve5e.ts ; les
 // Terrasses (lot 11), dans ./terrasses5e.ts ; l'Auberge (lot 12), dans ./auberge5e.ts ; le Donjon (lot 13a), dans
-// ./donjon5e.ts ; l'Oracle (lot 13b), dans ./oracle5e.ts.
+// ./donjon5e.ts ; l'Oracle (lot 13b), dans ./oracle5e.ts ; le Sémaphore (lot 14), dans ./semaphore5e.ts.
 import { ARCHIVES } from './archives';
 import { AUBERGE } from './auberge5e';
 import { BEACONS } from './beacons';
@@ -22,9 +22,10 @@ import { ETUVE } from './etuve5e';
 import { MONTEE } from './montee5e';
 import { PRINTWORKS } from './printworks';
 import { RADEAUX } from './radeaux5e';
+import { SEMAPHORE } from './semaphore5e';
 import { TERRASSES } from './terrasses5e';
 
-const ART: Partial<Record<PlaceId, PlaceArt>> = { lookout: LOOKOUT, archives: ARCHIVES, printworks: PRINTWORKS, beacons: BEACONS, ferry: FERRY, montee: MONTEE, hameau: HAMEAU, radeaux: RADEAUX, croisee: CROISEE, instants: INSTANTS, fumerolles: FUMEROLLES, etuve: ETUVE, terrasses: TERRASSES, auberge: AUBERGE, donjon: DONJON, oracle: ORACLE };
+const ART: Partial<Record<PlaceId, PlaceArt>> = { lookout: LOOKOUT, archives: ARCHIVES, printworks: PRINTWORKS, beacons: BEACONS, ferry: FERRY, montee: MONTEE, hameau: HAMEAU, radeaux: RADEAUX, croisee: CROISEE, instants: INSTANTS, fumerolles: FUMEROLLES, etuve: ETUVE, terrasses: TERRASSES, auberge: AUBERGE, donjon: DONJON, oracle: ORACLE, semaphore: SEMAPHORE };
 
 /** Ce qu'un lieu du rivage nord ou du large apporte au monde (son dessin, sa scénette, ses traces), ou rien pour les autres lieux. */
 export const placeArt = (place: PlaceId): PlaceArt | null => ART[place] ?? null;

@@ -140,6 +140,8 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   // L'Oracle (lot 13b) : chaque trace son étape, la même pour le latin et le grec (en grec, à deux parties, le haut et les
   // abords se posent ensemble, leurs traces aussi).
   oracle: placeArt('oracle')!.traceStage,
+  // Le Sémaphore (lot 14) : chaque trace sa partie (3+1+1), comme aux Radeaux.
+  semaphore: placeArt('semaphore')!.traceStage,
 };
 
 /**
