@@ -64,6 +64,13 @@ export interface LevelPlan {
    * destination du jeu, comme au 6e et au 5e.
    */
   readonly firstPlace?: PlaceId;
+  /**
+   * Le port de la grille de ce niveau (l'île où la grille fait arriver) n'ouvre pas sa terre à lui seul, et l'élève
+   * arrive toujours au lieu de départ (au 4e, le Gabarit est au Bastion : décision du mainteneur, 21 octobre 2026,
+   * « Arrivée à la Crique, Bastion fermé », GD-24) ; un lieu de cette terre déjà joué l'ouvre toujours. Rien : le port
+   * compte comme toute île reliée, comme au 6e et au 5e (leur port est dans la terre de départ).
+   */
+  readonly shutPort?: true;
 }
 
 /** Le plan du 6e, tiré de ./plan6e.ts tel quel. */
@@ -110,6 +117,7 @@ const PLAN_4E: LevelPlan = {
   unpriced: UNPRICED_PLACES_4E,
   upper: [],
   firstPlace: 'forge',
+  shutPort: true,
 };
 
 /** Les plans enregistrés, par niveau. */

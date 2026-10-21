@@ -2,7 +2,7 @@
 // montre (`openWorldLands`), et ce que la grille en reçoit (`payLand`, `ensureLands`, ../../world/arrange.ts).
 import { describe, expect, it } from 'vitest';
 import { EMPTY_STATE, type GameState } from '../../engine/state';
-import { getBridge, reachableIslands } from '../../world/archipelago';
+import { BRIDGES, VOYAGES, archipelagoOf, getBridge, reachableIslands } from '../../world/archipelago';
 import { ensureLands, payLand } from '../../world/arrange';
 import { PLACES } from '../../world/continu/plan6e';
 import { landById, type LandId, landOf, startLandOf } from '../../world/continu/lands';
@@ -111,5 +111,37 @@ describe('Relier une terre (payLand) et l’ouverture du monde (ensureLands)', (
     const s = ensure(withStock(0), ['ferry']);
     for (const land of ['couchant', 'large'] as const) expect(landOpen(s, land)).toBe(true);
     expect(landOpen(s, 'levant')).toBe(false);
+  });
+});
+
+describe('Au 4e, arrivée à la Crique, Bastion fermé (décision du mainteneur, 21 octobre 2026, GD-24)', () => {
+  const PLAN_4E = planFor('4e');
+  // Ce qu'a l'élève qui arrive au 4e par la grille : tout le 6e et le 5e reliés, et les deux voyages, jusqu'au Gabarit.
+  const links = [...BRIDGES.filter((b) => ['6e', '5e'].includes(archipelagoOf(b.from).classe)).map((b) => b.id), ...VOYAGES.filter((v) => v.toClasse !== '3e').map((v) => v.id)];
+  const gabarit = placeById('gabarit').island;
+  const arrived: GameState = { ...EMPTY_STATE, stock: { 'french-6e-letter-confusion': 40 }, world: { ...EMPTY_STATE.world, links } };
+
+  it('le port de la grille (le Gabarit) est relié, mais n’ouvre pas le Bastion à lui seul', () => {
+    expect(reachableIslands(links).has(gabarit as never)).toBe(true);
+    expect(gridLand('bastion').shut).toBe(gabarit);
+    expect(openWorldLands(PLAN_4E, links, []).closed).toEqual(['bastion', 'coteaux', 'epaule']);
+    // L'ouverture du monde ne relie pas le Bastion ; « Relier » le paie comme toute terre fermée.
+    const ensured = ensureLands(arrived, gridLands(PLAN_4E));
+    const reach = reachableIslands(ensured.world.links);
+    for (const id of landById('bastion').places.filter((p) => p !== 'gabarit')) expect(reach.has(islandOf(id) as never), id).toBe(false);
+    expect(openWorldLands(PLAN_4E, ensured.world.links, []).closed).toContain('bastion');
+    expect(payLand(ensured, gridLand('bastion')).result).toMatchObject({ ok: true });
+  });
+
+  it('un lieu du Bastion déjà joué l’ouvre toujours : rien de gagné ne baisse', () => {
+    const played = [{ ile: gabarit, mission: 'm', etat: 2 as const }];
+    expect(openWorldLands(PLAN_4E, links, played).closed).toEqual(['coteaux', 'epaule']);
+    const opened = ensureLands(arrived, gridLands(PLAN_4E), [gabarit as never]);
+    expect(opened).not.toBe(arrived);
+    expect(payLand(opened, gridLand('bastion')).result).toEqual({ ok: false, reason: 'construit' });
+  });
+
+  it('le 6e et le 5e : leur port ne ferme rien', () => {
+    for (const level of ['6e', '5e'] as const) for (const land of planFor(level).lands) expect(gridLand(land.id).shut, land.id).toBeUndefined();
   });
 });

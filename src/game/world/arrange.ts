@@ -1004,13 +1004,18 @@ export interface GridLand {
   islands: readonly BiomeId[];
   after: GridLand | null;
   price: number;
+  /**
+   * L'île du port de la grille, quand elle est de cette terre et ne l'ouvre pas à elle seule (au 4e, le Gabarit au
+   * Bastion : décision du mainteneur, 21 octobre 2026, GD-24) : reliée, elle ne compte pas ; jouée, si.
+   */
+  shut?: BiomeId;
 }
 
-/** Une terre est-elle ouverte dans la grille (un de ses lieux relié) ? Celle de départ l'est toujours. */
+/** Une terre est-elle ouverte dans la grille (un de ses lieux relié, hors du port fermé) ? Celle de départ l'est toujours. */
 const landOpenIn = (links: readonly string[], land: GridLand): boolean => {
   if (!land.after) return true;
   const open = reachableIslands([...links]);
-  return land.islands.some((id) => open.has(id));
+  return land.islands.some((id) => id !== land.shut && open.has(id));
 };
 
 export type PayLandResult =
@@ -1045,7 +1050,7 @@ export function ensureLands(state: GameState, lands: readonly GridLand[], played
   const islands = reachableIslands(state.world.links);
   const open = new Set<GridLand>();
   for (const land of lands)
-    if (!land.after || land.islands.some((id) => islands.has(id) || played.includes(id))) for (let l: GridLand | null = land; l; l = l.after) open.add(l);
+    if (!land.after || land.islands.some((id) => (id !== land.shut && islands.has(id)) || played.includes(id))) for (let l: GridLand | null = land; l; l = l.after) open.add(l);
   const missing = [...open].flatMap((l) => l.islands.filter((id) => !islands.has(id)));
   if (!missing.length) return state;
   const world = writeLandLinks(state.world, missing);

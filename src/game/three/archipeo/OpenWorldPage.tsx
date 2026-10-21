@@ -48,7 +48,7 @@ import { SpeakButton } from '../../../components/SpeakButton';
 import { ClosedLandSheet, afterLabel, closedLandLabel, linkableLabel } from './ClosedLandSheet';
 import { constructionState, placeConstruction, posedShapes } from './constructionParts';
 import { posedAmenagements } from './amenagements';
-import { gridLand, gridLands, openWorldLands, playedIslands } from './landLinks';
+import { gridLand, gridLands, gridPortOf, openWorldLands, playedIslands } from './landLinks';
 import { MapLabels } from './MapLabels';
 import { PlacePanel, earnPlacesOf, placeFromParam, placeResume } from './PlacePanel';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
@@ -206,7 +206,9 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   }));
   const lieuParam = placeFromParam(plan, params.get('lieu'));
   const missionParam = params.get('mission');
-  const [start] = useState<PlaceId | PortSpot>(() => arrival.spot ?? lieuParam ?? placeOfIsland(biomeId ?? '')?.id ?? 'quai');
+  // Au 4e (`shutPort`), l'île du port de la grille ne fait pas partir Kéo de son lieu : il arrive à la Crique.
+  const fromIsland = biomeId && !(plan.shutPort && biomeId === gridPortOf(plan)) ? placeOfIsland(biomeId)?.id : undefined;
+  const [start] = useState<PlaceId | PortSpot>(() => arrival.spot ?? lieuParam ?? fromIsland ?? 'quai');
   // Le panneau ouvert de l'Escale : sa fiche, une porte, la galerie, le lieu d'assemblage, la Nef ; un à la fois.
   const [panel, setPanel] = useState<PortPanel | 'nef' | null>(null);
   // La Nef part (GD-21) : la scène seule, comme pendant une question, jusqu'à l'arrivée en 5e.
