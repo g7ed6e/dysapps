@@ -102,11 +102,11 @@ const C = {
   bristle: 0xd8c49a,
   stoneware: 0x8a7d6a,
   stonewareTop: 0x6f6456,
-  // La peintre, en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, jupe brune, blouse bleu-gris, foulard
-  // terre cuite (la seule terre cuite du premier plan).
+  // La peintre, en pion (son modèle 3D prend sa place, ./habitants.ts), dans les couleurs de son modèle : bottes, robe
+  // jaune (le bas d'un cran plus sombre), foulard terre cuite (la seule terre cuite du premier plan).
   boots: 0x55595a,
-  skirt: 0x6f5a48,
-  smock: 0x7d8b98,
+  skirt: 0xc8962e,
+  smock: 0xe0aa3a,
   head: 0xe3b48a,
   scarf: 0xb0674a,
 } as const;
@@ -1281,7 +1281,7 @@ const SCENE_RISE = (() => {
   return yardY(SCENE_SPOT.dx, SCENE_SPOT.dz) - top;
 })();
 
-/** La peintre en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, jupe brune, blouse bleu-gris, foulard. */
+/** La peintre en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, robe jaune, foulard. */
 function painter(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   for (const side of [-1, 1]) b.prism({ x: at.x + side * 0.11, y: at.y, z: at.z }, 0.12, 0.12, 0.18, 6, C.boots);
   b.prism({ x: at.x, y: at.y + 0.16, z: at.z }, 0.32, 0.24, 0.42, 8, C.skirt);

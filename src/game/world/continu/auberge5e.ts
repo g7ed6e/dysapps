@@ -91,12 +91,12 @@ const C = {
   blanket: 0xc4876c,
   blanketShade: 0xa9725b,
   heather: 0x9a8560,
-  // L'aubergiste, en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, jupe brune, corsage de lin, tablier
-  // clair, foulard.
+  // L'aubergiste, en pion (son modèle 3D prend sa place, ./habitants.ts), dans les couleurs de son modèle : bottes, robe
+  // rouge (corsage et jupe), tablier vert, foulard.
   boots: 0x55595a,
-  skirt: 0x6f5a48,
-  shirt: 0xd8c7a4,
-  apron: 0xe6dfcc,
+  skirt: 0x8e3438,
+  shirt: 0xa23c42,
+  apron: 0x5f8a58,
   head: 0xe3b48a,
   scarf: 0x7d8b74,
 } as const;
@@ -1138,7 +1138,7 @@ const SCENE_RISE = (() => {
   return PT - top;
 })();
 
-/** L'aubergiste en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, jupe brune, corsage, tablier, foulard. */
+/** L'aubergiste en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, robe rouge, tablier vert, foulard. */
 function innkeeper(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   for (const side of [-1, 1]) b.prism({ x: at.x + side * 0.11, y: at.y, z: at.z }, 0.12, 0.12, 0.18, 6, C.boots);
   b.prism({ x: at.x, y: at.y + 0.16, z: at.z }, 0.32, 0.24, 0.42, 8, C.skirt);

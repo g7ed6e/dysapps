@@ -91,6 +91,23 @@ test('au 5e (GD-22) : un triangle « en haut » dans la dernière ligne du nom d
   expect(keo.querySelector('.open-world-map-keo-disc .open-world-map-up-badge .open-world-map-up')).not.toBeNull();
 });
 
+test('la pastille de Kéo seule, sans le mot « Toi » à l’écran, garde son nom « Toi » pour la voix et le lecteur d’écran (directeur artistique, seconde passe des habitants du 5e)', () => {
+  const plan5 = planFor('5e');
+  const placer: { current: ((spots: readonly MapSpotOnScreen[]) => void) | null } = { current: null };
+  const { container, getByRole } = render(
+    <MapLabels places={plan5.places} openPlaces={placesOfLands(plan5, ['frondaisons'])} closedLands={linkedLands(plan5)} onPick={() => {}} placer={placer} onClosed={() => {}} states={{}} words={words} upper={plan5.upper} />,
+  );
+  placer.current!([{ id: 'keo', x: 10, y: 10, shown: true, up: false }]);
+  const keo = container.querySelector<HTMLElement>('[data-lieu="keo"]')!;
+  // Le mot et la pastille sont tus : le nom est celui de l'étiquette entière, que le mot se montre ou non (`data-nom`).
+  expect(keo.querySelector('.open-world-map-keo-word')!.getAttribute('aria-hidden')).toBe('true');
+  expect(keo.querySelector('.open-world-map-keo-disc')!.getAttribute('aria-hidden')).toBe('true');
+  for (const nom of ['non', 'oui']) {
+    keo.dataset.nom = nom;
+    expect(getByRole('img', { name: 'Toi : Kéo est ici' }), nom).toBe(keo);
+  }
+});
+
 test('au 5e : le nom de chaque terre fermée sous le cadenas de son passage, et la cabine devant celui des Aiguilles ; rien au 6e', () => {
   const plan5 = planFor('5e');
   const { container, unmount } = render(

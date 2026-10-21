@@ -74,12 +74,13 @@ const C = {
   boatInside: 0x6e5a4a,
   log: 0x8a6a4e,
   logEnd: 0xb59a74,
-  // Le boulanger, en pion (son modèle 3D prend sa place, ./habitants.ts) : chemise de lin, tablier clair, pantalon brun,
-  // bottes grises, béret brun.
-  shirt: 0xd8c7a4,
-  apron: 0xe6dfcc,
-  apronShade: 0xcfc6b0,
-  trousers: 0x6b4f3a,
+  // Le boulanger, en pion (son modèle 3D prend sa place, ./habitants.ts), dans les couleurs de son modèle : chemise
+  // jaune pâle, grand tablier orangé, pantalon bleu nuit, bottes grises, béret brun, et sa pelle à pain sur l'épaule.
+  shirt: 0xeadca4,
+  apron: 0xe0962e,
+  apronShade: 0xc27c22,
+  trousers: 0x2f3f5a,
+  bakerPeel: 0xb5793f,
   boots: 0x55595a,
   head: 0xe3b48a,
   cap: 0x6a5240,
@@ -711,7 +712,9 @@ function sceneFloor(b: FacetBuilder, floor: Vec3): void {
 
 /**
  * Le boulanger en pion (son modèle 3D prend sa place, ./habitants.ts), immobile, le visage nu : ses bottes, son pantalon
- * brun, sa chemise de lin, son grand tablier clair, son béret ; les bras le long du corps.
+ * bleu nuit, sa chemise jaune pâle, son grand tablier orangé, son béret ; les bras le long du corps ; sa pelle à pain dans
+ * le dos, la pale au-dessus de l'épaule gauche, comme son modèle (directeur artistique, seconde passe des
+ * habitants : le pion garde la couleur dominante et l'outil du modèle). Vingt-quatre triangles pour la pelle.
  */
 function baker(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   for (const side of [-1, 1]) {
@@ -723,6 +726,10 @@ function baker(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   sphere(b, { x: at.x, y: at.y + 1.12, z: at.z }, 0.2, 8, 6, C.head);
   b.prism({ x: at.x, y: at.y + 1.24, z: at.z - 0.02 }, 0.22, 0.17, 0.1, 8, C.cap);
   for (const side of [-1, 1]) b.beam({ x: at.x + side * 0.3, y: at.y + 0.94, z: at.z }, { x: at.x + side * 0.36, y: at.y + 0.5, z: at.z + 0.05 }, 0.12, C.shirt);
+  // La pelle : le manche de la hanche droite à l'épaule gauche, derrière le dos ; la pale à côté de la tête, jamais
+  // plus haut que le béret (les pastilles se posent au-dessus de la tête, `worldHabitantHeight`).
+  b.beam({ x: at.x + 0.32, y: at.y + 0.4, z: at.z - 0.28 }, { x: at.x - 0.34, y: at.y + 1.02, z: at.z - 0.28 }, 0.06, C.bakerPeel);
+  b.box({ x: at.x - 0.37, y: at.y + 0.98, z: at.z - 0.28 }, [0.22, 0.34, 0.04], C.bakerPeel);
 }
 
 /** La planche à pain des réponses : la hauteur de ses tréteaux, à l'échelle 1 ; une miche choisie se soulève d'un cran. */

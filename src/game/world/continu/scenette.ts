@@ -2005,8 +2005,21 @@ export function scenetteSetting(place: PlaceId, open = false, posed = true): Fac
  * scène ni ombre, ses pieds à l'origine, le visage vers +z. C'est lui qui se tient près de son lieu hors de la scénette
  * (./worldHabitants.ts) : le modèle 3D reste à la scénette. Le décor d'un tel lieu dessine son sol d'abord, puis le pion
  * (`decor`, `body`) : le pion est ce qui vient après le sol (un test le vérifie). `null` : le lieu n'a pas ce dessin.
+ * Fait une fois par lieu (il dessine deux fois le décor de près entier) : ses tableaux sont partagés, en lecture seule,
+ * comme les couleurs que `placeFacets` reprend.
  */
 export function habitantPawn(place: PlaceId): Facets | null {
+  let pawn = pawns.get(place);
+  if (pawn === undefined) {
+    pawn = drawPawn(place);
+    pawns.set(place, pawn);
+  }
+  return pawn;
+}
+
+const pawns = new Map<PlaceId, Facets | null>();
+
+function drawPawn(place: PlaceId): Facets | null {
   const art = placeArt(place);
   if (!art) return null;
   const origin = { x: 0, y: 0, z: 0 };

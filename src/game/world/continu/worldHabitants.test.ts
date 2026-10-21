@@ -160,25 +160,25 @@ describe('les habitants hors de leur scénette', () => {
     }
   });
 
-  it('hors de son lieu (sa ruine, toutes ses étapes, toutes ses traces) et de sa scène ; ses pieds sur ce qui est dessous', () => {
-    for (const p of PLACES) {
-      const id = p.id as PlaceId5e;
-      const at = worldHabitantAt(p.id, ground)!;
-      const { whole } = reachOf(id);
-      const top = worldHabitantHeight(id);
-      const traces = Object.keys(placeArt(p.id)!.traces);
-      for (const f of [ruinFacets(p.id, ground), constructionFacets(p.id, [WHOLE], ground), placeTrace(p.id, traces)])
-        for (const [x, y, z] of samples(f)) {
-          const r = Math.hypot(x - at.x, z - at.z);
-          // Un dallage du lieu qui déborde sous ses pieds : à leur hauteur, à un rien près (`lift`).
-          if (r < 0.6 && y < at.y + 0.12) expect(y, `${p.id} ${x.toFixed(2)} ${z.toFixed(2)}`).toBeLessThan(at.y + 0.03);
-          if (y < at.y + 0.12 || y > at.y + top) continue;
-          expect(r, `${p.id} ${x.toFixed(2)} ${y.toFixed(2)} ${z.toFixed(2)}`).toBeGreaterThan(whole + 0.2);
-        }
-      const s = sceneSpot(p.id);
-      const [hx, hz] = placeArt(p.id)!.sceneSpot.half;
-      expect(Math.abs(at.x - s.x) > hx + 0.4 || Math.abs(at.z - s.z) > hz + 0.4, p.id).toBe(true);
-    }
+  // Un test par lieu ; seuls les points en faute sont gardés, pour le message (pas un `expect` par point).
+  it.each(PLACES.map((p) => p.id as PlaceId5e))('hors de son lieu (sa ruine, toutes ses étapes, toutes ses traces) et de sa scène ; ses pieds sur ce qui est dessous (%s)', (id) => {
+    const at = worldHabitantAt(id, ground)!;
+    const { whole } = reachOf(id);
+    const top = worldHabitantHeight(id);
+    const traces = Object.keys(placeArt(id)!.traces);
+    const faults: string[] = [];
+    for (const f of [ruinFacets(id, ground), constructionFacets(id, [WHOLE], ground), placeTrace(id, traces)])
+      for (const [x, y, z] of samples(f)) {
+        const r = Math.hypot(x - at.x, z - at.z);
+        // Un dallage du lieu qui déborde sous ses pieds : à leur hauteur, à un rien près (`lift`).
+        if (r < 0.6 && y < at.y + 0.12 && y >= at.y + 0.03) faults.push(`sous ses pieds ${x.toFixed(2)} ${y.toFixed(2)} ${z.toFixed(2)}`);
+        if (y < at.y + 0.12 || y > at.y + top) continue;
+        if (r <= whole + 0.2) faults.push(`contre lui ${x.toFixed(2)} ${y.toFixed(2)} ${z.toFixed(2)}`);
+      }
+    expect(faults.slice(0, 5), id).toEqual([]);
+    const s = sceneSpot(id);
+    const [hx, hz] = placeArt(id)!.sceneSpot.half;
+    expect(Math.abs(at.x - s.x) > hx + 0.4 || Math.abs(at.z - s.z) > hz + 0.4, id).toBe(true);
   });
 
   it('entier dans le regard d’arrivée de « Y aller », hors de la bande de la bulle et du bouton, jamais dans son axe vers le cœur du lieu, tourné vers qui arrive', () => {
@@ -223,16 +223,23 @@ describe('les habitants hors de leur scénette', () => {
     }
   });
 
-  it('posé à sa place, tourné : son pion, tous ensemble sous leur plafond, sans appel de plus', () => {
-    for (const p of PLACES) {
-      const f = worldHabitantFacets(p.id, ground)!;
-      const at = worldHabitantAt(p.id, ground)!;
-      expect(f.triangles, p.id).toBe(habitantPawn(p.id as PlaceId5e)!.triangles);
-      for (const [x, y, z] of samples(f)) {
-        expect(Math.hypot(x - at.x, z - at.z), p.id).toBeLessThan(0.9 * worldHabitantScale(p.id as PlaceId5e));
-        expect(y, p.id).toBeGreaterThanOrEqual(at.y - 0.01);
-      }
+  // Un test par lieu, chaque point mesuré sans un `expect` par point (vingt-deux mille points en tout : un `expect` par
+  // point passait les 5 s de la CI, la suite entière en parallèle).
+  it.each(PLACES.map((p) => p.id as PlaceId5e))('posé à sa place, tourné : son pion (%s)', (id) => {
+    const f = worldHabitantFacets(id, ground)!;
+    const at = worldHabitantAt(id, ground)!;
+    expect(f.triangles, id).toBe(habitantPawn(id)!.triangles);
+    let reach = 0;
+    let low = Infinity;
+    for (const [x, y, z] of samples(f)) {
+      reach = Math.max(reach, Math.hypot(x - at.x, z - at.z));
+      low = Math.min(low, y);
     }
+    expect(reach, id).toBeLessThan(0.9 * worldHabitantScale(id));
+    expect(low, id).toBeGreaterThanOrEqual(at.y - 0.01);
+  });
+
+  it('tous ensemble sous leur plafond, sans appel de plus ; aucun hors du 5e', () => {
     expect(worldHabitantFacets('phare', ground)).toBeNull();
     const cost = worldHabitantsCost5e();
     expect(cost.calls).toBe(0);

@@ -83,12 +83,13 @@ const C = {
   blanket: 0x6f8aa0,
   blanketShade: 0x5f7889,
   cloth: 0xd9cfb8,
-  // Le signaleur, en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, pantalon, veste rouge orangé, bonnet.
+  // Le signaleur, en pion (son modèle 3D prend sa place, ./habitants.ts), dans les couleurs de son modèle : bottes,
+  // pantalon gris, veste orange, casquette bleue.
   boots: 0x55595a,
   trousers: 0x5d5a52,
-  jacket: 0xb85a3c,
+  jacket: 0xd0602e,
   head: 0xe3b48a,
-  cap: 0x4f5a5e,
+  cap: 0x2f4a78,
 } as const;
 
 // ---------- Le repère du lieu ----------
@@ -911,7 +912,7 @@ const SCENE_RISE = (() => {
   return PT - top;
 })();
 
-/** Le signaleur en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, pantalon, veste rouge orangé, bonnet. */
+/** Le signaleur en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, pantalon, veste orange, casquette. */
 function signaller(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   for (const side of [-1, 1]) b.prism({ x: at.x + side * 0.11, y: at.y, z: at.z }, 0.12, 0.12, 0.18, 6, C.boots);
   for (const side of [-1, 1]) b.prism({ x: at.x + side * 0.1, y: at.y + 0.16, z: at.z }, 0.11, 0.12, 0.4, 6, C.trousers);

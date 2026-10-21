@@ -122,7 +122,7 @@ export const FOREST_REWORK_MAX_5E = 5_800;
 
 /**
  * Les habitants du 5e près de leur porte, hors de la scénette (choix du mainteneur du 21 octobre 2026, « Garder au 5e » ;
- * `worldHabitantsCost5e`) : au plus tant de triangles, les quatorze pions ensemble (3 204 mesurés), dans le maillage des
+ * `worldHabitantsCost5e`) : au plus tant de triangles, les quatorze pions ensemble (3 226 mesurés), dans le maillage des
  * lieux, sans appel de plus ; le monde hors scénette et le départ seuls (la scénette ouverte ne bouge pas).
  */
 export const WORLD_HABITANTS_MAX_5E = 3_300;
