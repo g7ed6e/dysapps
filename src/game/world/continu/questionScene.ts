@@ -226,6 +226,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   terrasses: placeArt('terrasses')!.sceneSpot,
   // L'Auberge (lot 12) : le parvis, la façade et sa porte derrière.
   auberge: placeArt('auberge')!.sceneSpot,
+  // Le Donjon (lot 13a) : la cour devant le logis, sa porte derrière, le pied du piton à gauche.
+  donjon: placeArt('donjon')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -489,6 +491,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   terrasses: 'lieu',
   // L'Auberge (lot 12) : les malles bombées sur la planche à tréteaux.
   auberge: 'lieu',
+  // Le Donjon (lot 13a) : les claveaux sur le banc de bois.
+  donjon: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

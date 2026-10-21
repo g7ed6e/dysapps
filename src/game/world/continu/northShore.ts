@@ -3,10 +3,12 @@
 // questionScene.ts) les lisent ici. Au 5e, la Montée (GD-22, lot 3), dans ./montee5e.ts ; le Hameau (lot 5), dans ./hameau5e.ts ;
 // les Radeaux (lot 6), dans ./radeaux5e.ts ; la Croisée (lot 7), dans ./croisee5e.ts ; les Instants (lot 8), dans
 // ./instants5e.ts ; les Fumerolles (lot 9), dans ./fumerolles5e.ts ; l'Étuve (lot 10), dans ./etuve5e.ts ; les
-// Terrasses (lot 11), dans ./terrasses5e.ts ; l'Auberge (lot 12), dans ./auberge5e.ts.
+// Terrasses (lot 11), dans ./terrasses5e.ts ; l'Auberge (lot 12), dans ./auberge5e.ts ; le Donjon (lot 13a), dans
+// ./donjon5e.ts.
 import { ARCHIVES } from './archives';
 import { AUBERGE } from './auberge5e';
 import { BEACONS } from './beacons';
+import { DONJON } from './donjon5e';
 import { FERRY } from './ferry';
 import { LOOKOUT } from './lookout';
 import type { PlaceArt } from './placeArt';
@@ -21,7 +23,7 @@ import { PRINTWORKS } from './printworks';
 import { RADEAUX } from './radeaux5e';
 import { TERRASSES } from './terrasses5e';
 
-const ART: Partial<Record<PlaceId, PlaceArt>> = { lookout: LOOKOUT, archives: ARCHIVES, printworks: PRINTWORKS, beacons: BEACONS, ferry: FERRY, montee: MONTEE, hameau: HAMEAU, radeaux: RADEAUX, croisee: CROISEE, instants: INSTANTS, fumerolles: FUMEROLLES, etuve: ETUVE, terrasses: TERRASSES, auberge: AUBERGE };
+const ART: Partial<Record<PlaceId, PlaceArt>> = { lookout: LOOKOUT, archives: ARCHIVES, printworks: PRINTWORKS, beacons: BEACONS, ferry: FERRY, montee: MONTEE, hameau: HAMEAU, radeaux: RADEAUX, croisee: CROISEE, instants: INSTANTS, fumerolles: FUMEROLLES, etuve: ETUVE, terrasses: TERRASSES, auberge: AUBERGE, donjon: DONJON };
 
 /** Ce qu'un lieu du rivage nord ou du large apporte au monde (son dessin, sa scénette, ses traces), ou rien pour les autres lieux. */
 export const placeArt = (place: PlaceId): PlaceArt | null => ART[place] ?? null;

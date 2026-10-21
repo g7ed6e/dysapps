@@ -191,7 +191,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
  * marchand ; la Croisée (lot 7) : les cinq, au pied du tronc ; les Instants (lot 8) : les cinq, sur le débarcadère ;
  * les Fumerolles (lot 9) : les trois, sur la dalle de relevé ; l'Étuve (lot 10) : les trois, sur le pavé devant
  * l'établi ; les Terrasses (lot 11) : les trois, devant le moulin ; l'Auberge (lot 12) : les dix, cinq par langue, sur le
- * parvis. Les autres lieux n'ont pas encore la leur (l'écran
+ * parvis ; le Donjon (lot 13a) : les trois, sur la cour devant le logis. Les autres lieux n'ont pas encore la leur (l'écran
  * habituel). Un lieu construit s'ajoute ici, et seulement ici.
  */
 export const BUILT_PLACES_5E = {
@@ -204,6 +204,7 @@ export const BUILT_PLACES_5E = {
   etuve: ['changes-of-state', 'mixtures-density', 'universe-atoms'],
   terrasses: ['population', 'resources', 'risks'],
   auberge: ['es-greetings', 'es-numbers', 'es-family', 'es-articles', 'es-sentences', 'de-greetings', 'de-numbers', 'de-family', 'de-articles', 'de-sentences'],
+  donjon: ['christendoms-islam', 'feudal-west', 'new-worlds'],
 } as const satisfies Partial<Record<PlaceId5e, readonly string[]>>;
 
 /** Un lieu du 5e déjà construit. */

@@ -138,6 +138,10 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // L'Auberge (GD-22, lot 12) : « l'aubergiste », sans prénom (fiche du 5e, § 6) ; sa réplique, écrite par le directeur du
   // contenu pédagogique (« sert » et « prépare », au lieu d'« accueille »).
   auberge: { role: placeArt('auberge')!.role, greeting: 'L’aubergiste sert les repas et prépare les lits des voyageurs.', placement: 'rangee' },
+  // Le Donjon (GD-22, lot 13a) : « la maçonne », sans prénom (fiche du 5e, § 4) ; sa réplique, la phrase du métier
+  // proposée par le consultant d'Archipéo, à relire par le directeur du contenu pédagogique (jamais « Vélin » ni le
+  // Griffon d'émail).
+  donjon: { role: placeArt('donjon')!.role, greeting: 'La maçonne bâtit des murs de pierre.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -551,6 +555,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   etuve: northSite('etuve'),
   terrasses: northSite('terrasses'),
   auberge: northSite('auberge'),
+  donjon: northSite('donjon'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2002,6 +2007,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   // Les Terrasses (lot 11) : le pavé gris devant le moulin.
   terrasses: 'paving',
   auberge: 'paving',
+  // Le Donjon (lot 13a) : les dalles chaudes de la cour.
+  donjon: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

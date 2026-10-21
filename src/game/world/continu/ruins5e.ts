@@ -5,8 +5,8 @@
 // de presque noir, rien à lire. Retouche du lot 2 (directeur artistique : « des boîtes génériques ») : chaque ruine a sa
 // hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts), comme le Hameau (./hameau5e.ts, lot 5),
 // les Radeaux (./radeaux5e.ts, lot 6), la Croisée (./croisee5e.ts, lot 7), les Instants (./instants5e.ts, lot 8), les
-// Fumerolles (./fumerolles5e.ts, lot 9), l'Étuve (./etuve5e.ts, lot 10), les Terrasses (./terrasses5e.ts, lot 11) et
-// l'Auberge (./auberge5e.ts, lot 12) ; le Donjon, une tour carrée sur son piton de roche. Code pur.
+// Fumerolles (./fumerolles5e.ts, lot 9), l'Étuve (./etuve5e.ts, lot 10), les Terrasses (./terrasses5e.ts, lot 11),
+// l'Auberge (./auberge5e.ts, lot 12) et le Donjon (./donjon5e.ts, lot 13a). Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_5E, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
@@ -53,22 +53,6 @@ function gaillard(b: FacetBuilder): void {
   b.box({ x: -1, y: 4, z: 2.8 }, [7, 0.35, 0.35], C.wood);
 }
 
-/**
- * Le Donjon : sur son piton de roche à pans, moussu, une tour carrée, haute et étroite, son haut cassé en dents, une
- * brèche, sa porte au sud, des marches taillées qui montent au piton ; des blocs au pied.
- */
-function donjon(b: FacetBuilder): void {
-  const P = 5.5;
-  b.prism({ x: 0, y: SINK, z: 0, yaw: 0.25 }, 6.8, 4.6, P - SINK, 6, C.stone, C.moss);
-  b.prism({ x: -3.4, y: SINK, z: 2.4, yaw: 0.9 }, 3.2, 1.8, 3.2 - SINK, 5, C.shade, C.moss);
-  b.box({ x: 0, y: P - 0.3, z: 0 }, [5.2, 13.3, 5.2], C.stone, C.sun);
-  for (const [x, z, h] of [[-2, -2, 2.6], [2, -2, 1.2], [-2, 2, 1.8], [2, 2, 2.6]] as const) b.box({ x, y: P + 13, z }, [1.2, h, 1.2], C.stone, C.sun);
-  b.box({ x: 0, y: P, z: 2.65 }, [1.5, 2.6, 0.2], C.shade);
-  b.box({ x: 2.65, y: P + 8, z: 0.4 }, [0.2, 2.2, 1.1], C.shade);
-  for (let k = 0; k < 3; k++) b.box({ x: 0.8, y: SINK, z: 6.4 - k * 1.1 }, [2, (k + 1) * 1.6 - SINK, 1.2], C.shade, C.stone);
-  rubble(b, 5.2, 3.2, 1.6, C.shade, C.moss);
-}
-
 /** Les Nacelles : un portique de bois au bord du plateau, sa poutre cassée, une nacelle tombée. */
 function nacelles(b: FacetBuilder): void {
   b.box({ x: -4, y: SINK, z: 0 }, [1.2, 10 - SINK, 1.2], C.woodShade, C.wood);
@@ -94,13 +78,12 @@ function oracle(b: FacetBuilder): void {
 /**
  * La ruine de chaque lieu du 5e pas encore construit (les lieux construits ont leur fichier : ./montee5e.ts, lot 3 ;
  * ./hameau5e.ts, lot 5 ; ./radeaux5e.ts, lot 6 ; ./croisee5e.ts, lot 7 ; ./instants5e.ts, lot 8 ;
- * ./fumerolles5e.ts, lot 9 ; ./etuve5e.ts, lot 10 ; ./terrasses5e.ts, lot 11 ; ./auberge5e.ts, lot 12), dessinée dans
- * son repère.
+ * ./fumerolles5e.ts, lot 9 ; ./etuve5e.ts, lot 10 ; ./terrasses5e.ts, lot 11 ; ./auberge5e.ts, lot 12 ;
+ * ./donjon5e.ts, lot 13a), dessinée dans son repère.
  */
 export const RUINS_5E: Readonly<Record<Exclude<PlaceId5e, BuiltPlace5e>, (b: FacetBuilder) => void>> = {
   semaphore,
   gaillard,
-  donjon,
   nacelles,
   oracle,
 };

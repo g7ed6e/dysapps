@@ -474,8 +474,8 @@ describe('Le budget du 5e, avec l’Auberge (plafonds du lot 12)', () => {
     const cost = openWorldCost5e();
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
-    // Et les chaussées du plateau, venues après (lot 13a).
-    expect(triangles).toBeLessThanOrEqual(LOT11_OPEN_5E.triangles + PLACE_TRIANGLES_MAX_5E + CAUSEWAYS_ADDED_5E);
+    // Et les chaussées du plateau et le Donjon, venus après (lot 13a ; leur plafond : ./donjon5e.test.ts).
+    expect(triangles).toBeLessThanOrEqual(LOT11_OPEN_5E.triangles + 2 * PLACE_TRIANGLES_MAX_5E + CAUSEWAYS_ADDED_5E);
     expect(calls).toBeLessThanOrEqual(LOT11_OPEN_5E.calls);
     expect(cost.find((c) => c.poste === 'scénette')!.calls).toBe(2);
   });
