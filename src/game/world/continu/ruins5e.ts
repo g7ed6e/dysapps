@@ -6,7 +6,7 @@
 // hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts), comme le Hameau (./hameau5e.ts, lot 5),
 // les Radeaux (./radeaux5e.ts, lot 6), la Croisée (./croisee5e.ts, lot 7), les Instants (./instants5e.ts, lot 8), les
 // Fumerolles (./fumerolles5e.ts, lot 9), l'Étuve (./etuve5e.ts, lot 10), les Terrasses (./terrasses5e.ts, lot 11),
-// l'Auberge (./auberge5e.ts, lot 12) et le Donjon (./donjon5e.ts, lot 13a). Code pur.
+// l'Auberge (./auberge5e.ts, lot 12), le Donjon (./donjon5e.ts, lot 13a) et l'Oracle (./oracle5e.ts, lot 13b). Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_5E, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
@@ -89,27 +89,14 @@ function nacelles(b: FacetBuilder): void {
   b.box({ x: 0, y: SINK, z: 0 }, [10, 0.4 - SINK, 3], C.shade, C.stone);
 }
 
-/** L'Oracle : un cercle de colonnes sur une estrade, trois debout, deux brisées, un fronton tombé. */
-function oracle(b: FacetBuilder): void {
-  b.prism({ x: 0, y: SINK, z: 0, yaw: 0.1 }, 6, 6, 1 - SINK, 10, C.shade, C.stone);
-  const n = 6;
-  for (let k = 0; k < n; k++) {
-    const a = (2 * Math.PI * k) / n + 0.3;
-    const h = [7, 2.2, 7, 3.4, 7, 1.2][k];
-    b.prism({ x: 4.6 * Math.cos(a), y: 1, z: 4.6 * Math.sin(a) }, 0.75, 0.65, h, 6, C.stone, C.sun);
-  }
-  b.box({ x: 4, y: SINK, z: -4.5, yaw: 0.7 }, [4.5, 0.9 - SINK, 1.4], C.stone, C.moss);
-}
-
 /**
  * La ruine de chaque lieu du 5e pas encore construit (les lieux construits ont leur fichier : ./montee5e.ts, lot 3 ;
  * ./hameau5e.ts, lot 5 ; ./radeaux5e.ts, lot 6 ; ./croisee5e.ts, lot 7 ; ./instants5e.ts, lot 8 ;
  * ./fumerolles5e.ts, lot 9 ; ./etuve5e.ts, lot 10 ; ./terrasses5e.ts, lot 11 ; ./auberge5e.ts, lot 12 ;
- * ./donjon5e.ts, lot 13a), dessinée dans son repère.
+ * ./donjon5e.ts, lot 13a ; ./oracle5e.ts, lot 13b), dessinée dans son repère.
  */
 export const RUINS_5E: Readonly<Record<Exclude<PlaceId5e, BuiltPlace5e>, (b: FacetBuilder) => void>> = {
   semaphore,
   gaillard,
   nacelles,
-  oracle,
 };
