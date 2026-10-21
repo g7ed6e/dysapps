@@ -94,6 +94,18 @@ export const CAUSEWAY_5E = {
   edge: { reach: 10, r: 0.42, h: 0.3, out: 0.55, lean: 0.3, station: 4.5 },
 } as const;
 
+/** Les pans du nœud d'une chaussée : son liseré et son disque de dalle. */
+const NODE_SIDES = 12;
+
+/**
+ * Le morceau [`d0`, `d1`] d'une liaison est-il à moins de `edge.station` unités de sa coupe (`cut`, la part du rail de
+ * la cabine), d'un côté ou de l'autre ? Sous la gare haute, aucune pierre ; quel que soit le sens de la liaison (l'expert
+ * frontend, relecture du lot 13a : la coupe au début ou à la fin).
+ */
+export function besideStation(cut: readonly [number, number] | null, d0: number, d1: number): boolean {
+  return cut !== null && d1 > cut[0] - CAUSEWAY_5E.edge.station && d0 < cut[1] + CAUSEWAY_5E.edge.station;
+}
+
 /** Un point est-il sur le dessus du plateau, où le sable laisse la place aux chaussées ? */
 const upper = (p: Vec2): boolean => plateauShare(p) > 0.5;
 
@@ -200,12 +212,12 @@ export function causewayFacets(ground: (x: number, z: number) => number): Facets
       b.quad(side(p, yj(yp), j), side(p, yj(yp), -j), side(q, yj(yq), -j), side(q, yj(yq), j), W.line);
       const half = k % W.slabSteps === 0 ? 1 : -1;
       const p1 = along(a, c, Math.min(d1, d0 + W.joint));
+      const y1 = yj(standingHeight(ground(p1.x, p1.z)) + RIBBON_LIFT);
       const [o0, o1] = half > 0 ? [inner, j] : [-j, -inner];
-      b.quad(side(p, yj(yp), o0), side(p, yj(yp), o1), side(p1, yj(yp), o1), side(p1, yj(yp), o0), W.line);
+      b.quad(side(p, yj(yp), o0), side(p, yj(yp), o1), side(p1, y1, o1), side(p1, y1, o0), W.line);
       // Le rang de pierres du côté du vide, là où la chaussée passe près du rebord (et seulement d'un côté).
       const rim = plateauRim5e(mid);
-      const cut = cutOf(edge);
-      if (rim >= W.edge.reach || (cut && d0 < cut[1] + W.edge.station)) continue;
+      if (rim >= W.edge.reach || besideStation(cutOf(edge), d0, d1)) continue;
       const out = W.half + W.edge.out;
       const left = plateauRim5e({ x: mid.x + dz * out, z: mid.z - dx * out });
       const right = plateauRim5e({ x: mid.x - dz * out, z: mid.z + dx * out });
@@ -215,17 +227,18 @@ export function causewayFacets(ground: (x: number, z: number) => number): Facets
       lowRock(b, { x: at.x, y: standingHeight(ground(at.x, at.z)), z: at.z }, W.edge.r, W.edge.h, 31 + stones++);
     }
   });
-  // Les nœuds du plateau : l'octogone du liseré, et dessus le disque de dalle (les dalles se rejoignent au coude).
+  // Les nœuds du plateau : le liseré à douze pans, ses coins au bord même des chaussées (à leur demi-largeur : aucun coin
+  // ne dépasse au dehors d'un carrefour, retouche 1), et dessus le disque de dalle (les dalles se rejoignent au coude).
   const ids = new Set(PATH_EDGES_5E.flat());
   for (const id of ids) {
     const at = NETWORK_5E.pathNode(id).at;
     if (!upper(at)) continue;
     const y = standingHeight(ground(at.x, at.z)) + RIBBON_LIFT;
-    const w = W.half * 1.08;
-    b.prism({ x: at.x, y: y - drop * 2 - RIBBON_SIDE, z: at.z }, w, w, RIBBON_SIDE, 8, W.line);
-    const r = inner / Math.cos(Math.PI / 12);
-    const rim = (k: number) => [at.x + r * Math.cos((2 * Math.PI * k) / 12), y, at.z + r * Math.sin((2 * Math.PI * k) / 12)] as const;
-    for (let k = 0; k < 12; k++) b.triangle([at.x, y, at.z], rim(k + 1), rim(k), W.slab);
+    const w = W.half;
+    b.prism({ x: at.x, y: y - drop * 2 - RIBBON_SIDE, z: at.z }, w, w, RIBBON_SIDE, NODE_SIDES, W.line);
+    const r = inner / Math.cos(Math.PI / NODE_SIDES);
+    const discPoint = (k: number) => [at.x + r * Math.cos((2 * Math.PI * k) / NODE_SIDES), y, at.z + r * Math.sin((2 * Math.PI * k) / NODE_SIDES)] as const;
+    for (let k = 0; k < NODE_SIDES; k++) b.triangle([at.x, y, at.z], discPoint(k + 1), discPoint(k), W.slab);
   }
   return b.build();
 }

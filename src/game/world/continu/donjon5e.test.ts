@@ -1,8 +1,10 @@
 // Le Donjon (GD-22, lot 13a) : le lieu par parties (le corps, le haut, les abords), la ruine qui part avec l'étape qui
 // la remplace, une seule lanterne allumée dans la ruine et trois au plus, une trace par mission avec son étape, le signe
-// de l'absence (le trou du pilier et ses quatre goujons), la tour plus haute que tout le 5e sans passer 27, rien de la
-// ruine sur le chemin de marche, la scénette sur la cour, la maçonne en modèle 3D, ses abords dans le cadre, les claveaux
-// des réponses, les plafonds de 1 600 et 1 200 triangles et le budget du 5e. Sans Three.js.
+// de l'absence (l'empreinte du pilier, son trou et ses quatre goujons aux coins), la tour plus haute que tout le 5e sans
+// passer 27, le parapet, les marches, le pan de toit, la cour sans marche, rien de la ruine sur le chemin de marche, la
+// scénette sur la cour et l'auge dans son cadre, la maçonne en modèle 3D, ses abords dans le cadre, les claveaux des
+// réponses, le cap de « Y aller » (la tour entière), les plafonds de 1 600 et 1 200 triangles et le budget du 5e. Sans
+// Three.js.
 import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../../biomes';
 import { partShapes, stagePoseWords } from '../../three/archipeo/constructionParts';
@@ -10,7 +12,7 @@ import { phraseDeLaPose } from '../../poseWords';
 import { partiesDe } from '../parts';
 import { plansFor } from '../plans';
 import { CAUSEWAYS_ADDED_5E, PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
-import { screenOf } from './camera';
+import { followPose, lookUp, screenOf } from './camera';
 import { posedTraces, traceStagePosed, WHOLE, type PartShape, type Stage } from './construction';
 import { DONJON, DONJON_LAYOUT } from './donjon5e';
 import { DONJON_SURROUNDINGS } from './donjonSurroundings';
@@ -18,13 +20,16 @@ import type { Facets } from './facets';
 import { linearRgb, type Vec2 } from './geometry';
 import { hasHabitantModel } from './habitants';
 import { hasScenette, planFor } from './levelPlan';
-import { doorViewOf } from './northShore';
+import { arrivalViewOf, doorViewOf } from './northShore';
+import { RIBBON_LIFT } from './paths';
 import { BUILT_PLACES_5E, COLORS_5E, PATH_NODES_5E } from './plan5e';
 import { drawPieces, placePieces, ruinOf } from './places';
 import { placeItems } from './questions';
 import { answerObjects, placeTrace, questionLayout, sceneSpot } from './questionScene';
 import { scenetteHabitant, scenetteKeo, scenetteLayout, scenetteOf, scenettePose, scenetteSurroundings } from './scenette';
 import { SURROUNDINGS_MAX } from './surroundings';
+import { standingHeight } from './terrain';
+import { heightAt5e } from './terrain5e';
 
 const PLAN = planFor('5e');
 const PLACE = PLAN.places.find((p) => p.id === 'donjon')!;
@@ -100,16 +105,24 @@ describe('Le Donjon, lieu complet', () => {
     expect(lit(3)).toBe(90);
   });
 
-  it('le signe de l’absence ne change jamais : le trou du pilier, ses quatre goujons en diagonale, à hauteur d’enfant', () => {
-    // Parmi ce qui reste toujours, seul le trou du pilier a le brun très sombre : un aplat à huit pans, six triangles.
+  it('le signe de l’absence ne change jamais : l’empreinte du pilier, son trou dans son tiers haut, ses goujons aux quatre coins', () => {
+    // Parmi ce qui reste toujours, seul le trou du pilier a le brun très sombre : un aplat à huit pans, six triangles ;
+    // l'empreinte, un aplat de pierre moins passée (deux triangles).
     expect(countColor(ruinOf('donjon'), 0x3a312c)).toBe(18);
+    expect(countColor(ruinOf('donjon'), 0x9c9f95)).toBe(6);
     const Q = DONJON_LAYOUT.pillar;
-    expect(Q.hole).toBeGreaterThan(0.8);
-    expect(Q.hole).toBeLessThan(1.2);
-    // Les goujons hors du trou, dans la face du pilier.
-    expect(Q.stud * 0.75 * Math.SQRT2 - Q.size).toBeGreaterThan(Q.r);
-    expect(Q.stud * 0.75 + Q.size / 2).toBeLessThan(Q.w / 2);
-    expect(Q.hole + Q.stud * 0.75 + Q.size).toBeLessThan(Q.h);
+    // L'empreinte, environ 0,36 × 0,56, debout, dans la face du pilier, sous son dessus, à hauteur d'enfant.
+    expect(Q.mark).toBeCloseTo(0.36, 2);
+    expect(Q.markH).toBeCloseTo(0.56, 2);
+    expect(Q.mark).toBeLessThan(Q.w);
+    expect(Q.y + Q.markH / 2).toBeLessThan(Q.h);
+    expect(Q.y).toBeGreaterThan(0.8);
+    // Le trou dans le tiers haut de l'empreinte, jamais au milieu : pas la face 5 d'un dé.
+    expect(Q.hole - Q.r).toBeGreaterThan(Q.markH / 6 - 0.05);
+    expect(Q.hole + Q.r).toBeLessThan(Q.markH / 2);
+    // Les goujons aux quatre coins, à `inset` du bord, hors du trou.
+    const [dx, dy] = [Q.mark / 2 - Q.inset, Q.markH / 2 - Q.inset];
+    for (const sy of [-1, 1]) expect(Math.hypot(dx, sy * dy - Q.hole) - Q.stud).toBeGreaterThan(Q.r);
   });
 
   it('la tour, plus haute que tout le 5e, reste sous 27 : son sommet entre 18 et 27 au-dessus de la cour', () => {
@@ -118,6 +131,55 @@ describe('Le Donjon, lieu complet', () => {
     expect(above).toBeLessThan(27);
     // La ruine, coupée en biais, plus basse : le haut s'est écroulé.
     expect(topOf(shown(0))).toBeLessThan(topOf(shown(3)) - 3);
+  });
+
+  it('le parapet, un chemin de ronde : la brique en tout 1,8 au plus, en encorbellement de 0,12 au plus, trois blocs par côté', () => {
+    const T = DONJON_LAYOUT.tower;
+    expect(T.top - T.mid).toBeLessThanOrEqual(1.8 + 1e-9);
+    expect(T.over).toBeLessThanOrEqual(0.12);
+    expect(T.top).toBe(18.2);
+    expect(DONJON_LAYOUT.parapet.blocks).toBe(3);
+    // Le joint entre deux blocs, debout, sombre : jamais un vide (pas de créneau).
+    expect(DONJON_LAYOUT.parapet.joint).toBeCloseTo(0.06, 6);
+    // La brique ne passe jamais plus orangée que #A8664F : elle n'en a plus aucun sommet.
+    expect(countColor(shown(3), 0xa8664f)).toBe(0);
+    // Ses faces intérieures dans l'ombre, en #777D77, et le dessus des blocs en #88503D.
+    expect(countColor(drawPieces('donjon', (p) => p.stage === 1), 0x777d77)).toBe(24);
+  });
+
+  it('la ruine : le fond écroulé sous le plus bas de la coupe en biais', () => {
+    const T = DONJON_LAYOUT.tower;
+    const low = Math.min(...[-1, 1].flatMap((sx) => [-1, 1].map((sz) => DONJON_LAYOUT.cut(T.x + sx * T.half, T.z + sz * T.half))));
+    expect(DONJON_LAYOUT.cutFloor).toBeLessThan(low - 0.3);
+  });
+
+  it('quatre marches taillées : aucune contremarche plus haute que 0,8, la roche du piton dessous', () => {
+    const S = DONJON_LAYOUT.steps;
+    expect(S.count).toBe(4);
+    expect(S.riser).toBeLessThanOrEqual(0.8);
+    // Le dessus des marches au soleil, plus clair que la roche ; quatre dessus, deux triangles chacun.
+    expect(countColor(drawPieces('donjon', (p) => p.stage === 0), COLORS_5E.stoneSun)).toBeGreaterThanOrEqual(4 * 6);
+  });
+
+  it('le pan de toit glissé contre la façade sud, à l’est de la perche, son haut sous la fenêtre', () => {
+    const R = DONJON_LAYOUT.roofPan;
+    expect(R.x0).toBeGreaterThan(DONJON_LAYOUT.perch.x + 0.2);
+    expect(R.top).toBeLessThanOrEqual(1.1);
+    expect(R.z).toBeGreaterThan(DONJON_LAYOUT.logis.z1);
+  });
+
+  it('la cour, sans marche : à moins de 0,03 du disque de la chaussée à la porte, une tranche de 0,1 au plus à son bord sud', () => {
+    const c = PLACE.center;
+    const H0 = DONJON_LAYOUT.heightAtCenter;
+    const g = (x: number, z: number) => standingHeight(heightAt5e({ x: c.x + x, z: c.z + z })) - H0;
+    const door = DONJON_LAYOUT.door;
+    const node = g(door.x, door.z) + RIBBON_LIFT;
+    expect(Math.abs(DONJON_LAYOUT.courAt(door.x, DONJON_LAYOUT.cour.z1) - node)).toBeLessThanOrEqual(0.03);
+    const C = DONJON_LAYOUT.cour;
+    for (let x = C.x0; x <= C.x1 + 1e-6; x += 0.5) {
+      for (const z of [C.z0, (C.z0 + C.z1) / 2, C.z1]) expect(DONJON_LAYOUT.courAt(x, z) - g(x, z), `${x} ${z}`).toBeGreaterThan(0);
+      expect(DONJON_LAYOUT.courAt(x, C.z1) - g(x, C.z1), String(x)).toBeLessThanOrEqual(0.1);
+    }
   });
 
   it('rien de la ruine sur le chemin de marche, d’`aig-2` à la porte, hors des dalles de la cour', () => {
@@ -171,7 +233,7 @@ describe('La scénette du Donjon', () => {
     const s = sceneSpot('donjon');
     expect(s.z - PLACE.center.z).toBeCloseTo(DONJON_LAYOUT.scene.dz, 6);
     // Le sol de la scène est le dessus de la cour.
-    expect(keo.y).toBeCloseTo(DONJON_LAYOUT.heightAtCenter + DONJON_LAYOUT.courTop, 2);
+    expect(keo.y).toBeCloseTo(DONJON_LAYOUT.heightAtCenter + DONJON_LAYOUT.courAt(DONJON_LAYOUT.scene.dx, DONJON_LAYOUT.scene.dz), 2);
     const items = placeItems('donjon', 'history-5e-middle-ages-christendoms-islam-1', [{ key: 'a', choices: ['oui', 'non'], answer: 'oui' }]);
     expect(items[0].placeScene).toEqual({ kind: 'rest' });
     expect(DONJON.answer).toBeDefined();
@@ -193,6 +255,36 @@ describe('La scénette du Donjon', () => {
       expect(p.x - shift.x, `${dx} ${dz}`).toBeGreaterThan(stage.left);
       expect(p.x - shift.x, `${dx} ${dz}`).toBeLessThan(stage.right);
     }
+  });
+
+  it('l’auge reste dans le cadre de la scénette, entre Kéo et la maçonne, au pied du mur du logis, à 1024 × 768', () => {
+    expect(DONJON.keepsTracesInScenette).toBe(true);
+    const [w, h] = [1024, 768];
+    const stage = scenetteLayout({ count: 3 }, w, h, questionLayout({ count: 3 }, w, h)).scenette!.stage;
+    const { pose, shift } = scenettePose('donjon', stage, w, h);
+    const c = PLACE.center;
+    const H0 = DONJON_LAYOUT.heightAtCenter;
+    const at = DONJON.traces['christendoms-islam'].at;
+    const s = (x: number, y: number, z: number) => {
+      const p = screenOf(pose, { x, y, z }, w, h);
+      return { x: p.x - shift.x, y: p.y - shift.y };
+    };
+    const y = H0 + DONJON_LAYOUT.courAt(at.x, at.z);
+    const left = s(c.x + at.x - 0.58, y + 0.38, c.z + at.z);
+    const right = s(c.x + at.x + 0.58, y + 0.38, c.z + at.z);
+    const keo = scenetteKeo('donjon').at;
+    const mason = scenetteHabitant('donjon');
+    // Kéo et la maçonne, 0,4 de part et d'autre de leur axe : l'auge entre les deux, sans toucher ni l'un ni l'autre.
+    expect(left.x).toBeGreaterThan(s(keo.x + 0.4, keo.y + 0.8, keo.z).x);
+    expect(right.x).toBeLessThan(s(mason.x - 0.4, mason.y + 0.8, mason.z).x);
+    for (const p of [left, right]) {
+      expect(p.x).toBeGreaterThan(stage.left);
+      expect(p.x).toBeLessThan(stage.right);
+      expect(p.y).toBeGreaterThan(stage.top);
+      expect(p.y).toBeLessThan(stage.bottom);
+    }
+    // Au pied du mur du logis, entre sa porte et le bord ouest de sa façade.
+    expect(at.z - DONJON_LAYOUT.logis.z1).toBeLessThan(0.6);
   });
 
   it('un claveau choisi se soulève d’un cran : sa forme ne change pas, sa place si', () => {
@@ -218,7 +310,7 @@ describe('La scénette du Donjon', () => {
 
   it('ne dit aucun nom du contenu (ni château, ni seigneur, ni croisade)', () => {
     const said = `${scenetteOf('donjon').role} ${scenetteOf('donjon').greeting ?? ''}`;
-    expect(said).not.toMatch(/château|seigneur|croisade|chevalier|Passeurs/i);
+    expect(said).not.toMatch(/château|seigneur|croisade|chevalier|Passeurs|Vélin|Griffon/i);
   });
 });
 
@@ -229,12 +321,69 @@ describe('Le bilan du Donjon nomme la partie par son étape', () => {
     const words = stagePoseWords(ISLAND, PLACE);
     const said = (k: number) => phraseDeLaPose({ posees: [parties[k]], plansFinis: [] }, words);
     expect(said(0)).toMatch(/^Partie posée : le corps du Donjon/);
-    for (let k = 0; k < 3; k++) for (const plan of plansFor(ISLAND)) expect(said(k)).not.toContain(plan.done);
+    expect(said(1)).toMatch(/^Partie posée : le haut du Donjon/);
+    expect(said(2)).toMatch(/^Partie posée : les abords du Donjon/);
+    for (let k = 0; k < 3; k++)
+      for (const plan of plansFor(ISLAND)) {
+        expect(said(k)).not.toContain(plan.done);
+        expect(said(k)).not.toContain(plan.name);
+      }
+  });
+});
+
+describe('« Y aller » au Donjon (retouche 1)', () => {
+  const c = PLACE.center;
+  const H0 = DONJON_LAYOUT.heightAtCenter;
+  const view = arrivalViewOf('donjon')!;
+  const world = (x: number, y: number, z: number) => ({ x: c.x + x, y: H0 + y, z: c.z + z });
+  const door = { x: c.x + DONJON_LAYOUT.door.x, z: c.z + DONJON_LAYOUT.door.z };
+  const feet = { x: door.x, y: standingHeight(heightAt5e(door)), z: door.z };
+
+  it('Kéo à la porte, sur la chaussée ; la caméra au cap nord, sans cap propre, recule comme un Détour au plus, sans monter', () => {
+    expect(doorViewOf('donjon')).toBe(0);
+    expect(PATH_NODES_5E.find((n) => n.id === 'donjon')!.at).toEqual(door);
+    expect(view.back).toBeGreaterThan(1);
+    expect(view.back).toBeLessThanOrEqual(1.6);
   });
 
-  it('« Y aller » arrive au cap nord, de face', () => {
-    expect(doorViewOf('donjon')).toBe(0);
-  });
+  for (const [n, state] of [
+    [0, 'en ruine'],
+    [3, 'restauré'],
+  ] as const)
+    for (const [W, H] of [
+      [1024, 768],
+      [390, 844],
+    ])
+      it(`${state}, en ${W} × ${H} : la tour entière, 40 px de ciel au-dessus, Kéo haut de 70 px au moins${W > H ? ', le pilier et le logis' : ''}`, () => {
+        // Comme la vue : la caméra qui suit, reculée, puis le regard levé jusqu'au haut bâti, au-dessus du bord le plus près.
+        const pose = followPose(feet, 0, undefined, doorViewOf('donjon'), 1, undefined, { height: 0, back: view.back });
+        lookUp(pose, world(view.look.x, topOf(shown(n)), view.look.z), feet, 1, H);
+        const s = (p: { x: number; y: number; z: number }) => screenOf(pose, p, W, H);
+        const inFrame = (p: { x: number; y: number }, what: string, sky = 0) => {
+          expect(p.x, what).toBeGreaterThan(0);
+          expect(p.x, what).toBeLessThan(W);
+          expect(p.y, what).toBeGreaterThan(sky);
+          expect(p.y, what).toBeLessThan(H);
+        };
+        // Le haut de la tour, ses quatre coins (la coupe en biais, ou le haut du parapet), sous 40 px de ciel.
+        const T = DONJON_LAYOUT.tower;
+        const o = n ? T.half + T.over : T.half;
+        for (const sx of [-1, 1])
+          for (const sz of [-1, 1]) {
+            const [x, z] = [T.x + sx * o, T.z + sz * o];
+            inFrame(s(world(x, DONJON_LAYOUT.courTop + (n ? T.top : DONJON_LAYOUT.cut(x, z)), z)), `haut ${sx} ${sz}`, 40);
+          }
+        // Kéo, haut de 70 px au moins, ses pieds au-dessus de « Y aller ».
+        const foot = s(feet);
+        expect(foot.y - s({ ...feet, y: feet.y + 2.4 }).y).toBeGreaterThanOrEqual(70);
+        expect(foot.y).toBeLessThan(H - 72);
+        if (W < H) return;
+        // Le pilier du guet à gauche, le logis à droite.
+        const Q = DONJON_LAYOUT.pillar;
+        for (const dx of [-Q.w / 2, Q.w / 2]) inFrame(s(world(Q.x + dx, DONJON_LAYOUT.courAt(Q.x, Q.z) + Q.h, Q.z)), `pilier ${dx}`);
+        const L = DONJON_LAYOUT.logis;
+        for (const x of [L.x0, L.x1]) inFrame(s(world(x, DONJON_LAYOUT.courAt(x, L.z1) + L.wall, L.z1)), `logis ${x}`);
+      });
 });
 
 /**

@@ -10,7 +10,7 @@ import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
 import { planFor } from './levelPlan';
 import { CLIFF_MAP_COLORS, CLIFF_MAP_SHAPE, cliffMapLine, cliffMapSegments, riftMistFacets, riftMistSpots, RIFT_MIST } from './mist5e';
 import { modelOfPlace } from './places';
-import { CAUSEWAY_5E, NETWORK_5E, PATH_MAP_EDGE, RIBBONS_5E, causewayFacets, pathMapEdges5e, pathRibbons5e, quayFacets } from './paths5e';
+import { CAUSEWAY_5E, NETWORK_5E, PATH_MAP_EDGE, RIBBONS_5E, besideStation, causewayFacets, pathMapEdges5e, pathRibbons5e, quayFacets } from './paths5e';
 import { edgesNear, networkRibbons, pathTopAt } from './paths';
 import { BUILT_PLACES_5E, COAST_5E, COLORS_5E, DEPARTURE_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, UPPER_PLACES_5E } from './plan5e';
 import { COLORS_6E } from './plan6e';
@@ -489,8 +489,10 @@ describe('Le budget du 5e', () => {
     // restauré à la place de sa ruine), 101 411, 16 589 : la réserve passe à 16 500 ; sa retouche 2 (l'anse de la cruche
     // en six segments, +4), 101 415, 16 585 : la réserve reste à 16 500 ; les chaussées dallées du plateau (lot 13a, +1 454,
     // à la place du sable), 102 869, 15 131 : la réserve passe à 15 100 ; le Donjon (lot 13a, +862, le lieu restauré à la
-    // place de sa ruine), 103 731, 14 269 : la réserve passe à 14 200.
-    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 14_200);
+    // place de sa ruine), 103 731, 14 269 : la réserve passe à 14 200 ; sa retouche 1 (les nœuds des chaussées à douze
+    // pans, +132 ; le parapet, les marches, le logis de pierre et le signe de l'Auberge, +100 ; le Sémaphore et les
+    // Nacelles couchés, −14), 103 949, 14 051 : la réserve passe à 14 000.
+    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 14_000);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
     // La Carte dans l'enveloppe (ses plafonds lot par lot : ./hameau5e.test.ts, ./croisee5e.test.ts).
     const map = mapCost5e();
@@ -572,6 +574,41 @@ describe('Les chaussées du plateau (GD-22, lot 13a)', () => {
       // Hors de la chaussée : plus loin de toute ligne du plateau que sa demi-largeur.
       const d = Math.min(...upperEdges.map(({ a, b }) => distanceToPolyline(at, [a, b])));
       expect(d).toBeGreaterThan(CAUSEWAY_5E.half);
+    }
+  });
+
+  it('aucune pierre sous la gare haute, quel que soit le sens de la liaison : la coupe au début ou à la fin', () => {
+    const S = CAUSEWAY_5E.edge.station;
+    const len = 30;
+    const first: [number, number] = [0, 6];
+    const last: [number, number] = [len - 6, len];
+    // Un morceau contre la gare, d'un côté puis de l'autre : sans pierre ; un morceau plus loin : avec.
+    expect(besideStation(first, 6, 7.25)).toBe(true);
+    expect(besideStation(last, len - 7.25, len - 6)).toBe(true);
+    expect(besideStation(first, 6 + S + 0.1, 12)).toBe(false);
+    expect(besideStation(last, 12, len - 6 - S - 0.1)).toBe(false);
+    expect(besideStation(null, 0, 1.25)).toBe(false);
+    // La liaison de la cabine, sur le plateau : aucune pierre à moins de `station` de sa gare haute (le bout de son rail).
+    const cabin = upperEdges.find(({ edge }) => RIBBONS_5E.cut(edge))!;
+    const cut = RIBBONS_5E.cut(cabin.edge)!;
+    const len2 = distance(cabin.a, cabin.b);
+    const end = cut[0] < 1e-6 ? cut[1] : cut[0];
+    const station = { x: cabin.a.x + ((cabin.b.x - cabin.a.x) * end) / len2, z: cabin.a.z + ((cabin.b.z - cabin.a.z) * end) / len2 };
+    for (const { at, rgb } of triangles(causeways))
+      if (same(rgb, COLORS_5E.stone) && distanceToPolyline(at, [cabin.a, cabin.b]) < CAUSEWAY_5E.half + 1.5) expect(distance(at, station), `${at.x} ${at.z}`).toBeGreaterThan(S - 1.3);
+  });
+
+  it('aux carrefours, le liseré fait le tour sans coin qui dépasse : rien de lui plus loin d’une liaison que sa demi-largeur', () => {
+    const f = causeways;
+    // Autour des nœuds du plateau (les pierres du côté du vide, d'un gris voisin, sont plus loin d'eux).
+    const nodes = [...new Set(PATH_EDGES_5E.flat())].map(node).filter((n) => onPlateau(n));
+    for (let i = 0; i < f.positions.length; i += 3) {
+      const rgb = [f.colors[i], f.colors[i + 1], f.colors[i + 2]];
+      if (!same(rgb, CAUSEWAY_5E.line)) continue;
+      const at = { x: f.positions[i], z: f.positions[i + 2] };
+      if (!nodes.some((n) => distance(n, at) < 1.7)) continue;
+      const d = Math.min(...PATH_EDGES_5E.map(([a, b]) => distanceToPolyline(at, [node(a), node(b)])));
+      expect(d, `${at.x.toFixed(2)} ${at.z.toFixed(2)}`).toBeLessThanOrEqual(CAUSEWAY_5E.half + 1e-4);
     }
   });
 

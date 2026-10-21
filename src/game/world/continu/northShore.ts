@@ -33,3 +33,9 @@ export const placeArt = (place: PlaceId): PlaceArt | null => ART[place] ?? null;
  * depuis sa porte ; le nord, sans cap donné.
  */
 export const doorViewOf = (place: PlaceId): number => ART[place]?.doorView ?? 0;
+
+/**
+ * Le regard d'arrivée à la porte d'un lieu trop haut pour la caméra qui suit (`PlaceArt.arrivalView`) : le bord du haut
+ * qu'elle cadre, depuis le centre du lieu, et son recul ; rien : la caméra qui suit.
+ */
+export const arrivalViewOf = (place: PlaceId): NonNullable<PlaceArt['arrivalView']> | null => ART[place]?.arrivalView ?? null;

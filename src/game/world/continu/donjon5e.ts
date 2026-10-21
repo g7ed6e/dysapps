@@ -7,17 +7,22 @@
 // piton, à l'est, le logis de la maçonne, adossé à la roche ; au sud la cour de dalles chaudes, où la chaussée d'`aig-2`
 // devient la dalle du lieu ; au bord ouest de la cour, le pilier du guet. Le blason, un écu sculpté d'un seul trait
 // diagonal, est sur l'assise du milieu, face sud ; la lanterne du guet, à part, pend dans une niche sous le parapet.
-// Le signe de l'absence : sur la face sud du pilier du guet, un trou rond brun sombre et ses quatre goujons de fer, sans
-// anneau ; il ne change jamais.
+// Le signe de l'absence : sur la face sud du pilier du guet, l'empreinte de la pièce prise, un aplat de pierre moins
+// passée, son trou rond brun sombre dans son tiers haut et ses quatre goujons de fer aux quatre coins (la solution de
+// l'Auberge, jamais la face 5 d'un dé) ; il ne change jamais.
 //
 // La ruine : tout est là, tombé ou cassé, jamais un chantier. Le haut de la tour est écroulé, sa coupe plate en biais, un
 // coin plus haut que l'autre, ouverte au ciel, sans brique ni dent ; au pied du piton, trois blocs à facettes, les deux
-// moitiés du blason (le trait visible sur chacune) et la herse couchée à plat, ses six barreaux parallèles ; la porte de
-// la tour, son linteau sombre sans motif ; le logis aux murs debout, porte fermée, un volet qui pend, son toit de lauze à
-// demi glissé en un pan à plat contre son mur est ; la cour aux dalles fendues, son côté ouest affaissé. Une seule
-// lumière, celle de la maçonne, sur sa perche à côté de la porte du logis. Trois parties, une par mission (`stage`), et
-// une trace avec chacune : l'auge à chaux (le corps), la brouette (le haut), la pile de trois dalles neuves (les abords).
-// Rien ne bouge, rien à lire dans la 3D, rien de croisé. Code pur (placeArt.ts).
+// moitiés du blason en pierre claire (le trait visible sur chacune, l'une couchée, l'autre appuyée contre un bloc) et la
+// herse couchée à plat, ses six barreaux parallèles ; la porte de la tour, son linteau sombre sans motif ; le logis aux
+// murs debout, porte fermée, un volet qui pend, la moitié sud de son toit de lauze glissée d'un seul pan contre sa façade ;
+// la cour aux dalles fendues, son côté ouest affaissé. Une seule lumière, celle de la maçonne, sur sa perche à côté de la
+// porte du logis. Trois parties, une par mission (`stage`), et une trace avec chacune : l'auge à chaux (le corps), la
+// brouette (le haut), la pile de trois dalles neuves (les abords). Rien ne bouge, rien à lire dans la 3D, rien de croisé.
+// Retouche 1 (relectures du 21 octobre 2026, le directeur artistique fait foi) : la caméra de « Y aller » recule à la
+// porte (`arrivalView`), le parapet en trois blocs par côté, les marches taillées, le signe de l'Auberge, le logis de
+// pierre, le pan de toit devant le mur, les moitiés du blason claires, l'auge dans la scénette, la cour sans marche.
+// Code pur (placeArt.ts).
 import type { Stage } from './construction';
 import { drawPosed, FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
@@ -50,8 +55,10 @@ const C = {
   paleWorn: 0xaca28c,
   paleJoint: 0x978d79,
   brick: 0x9a5a44,
+  /** Le joint sombre de la brique, le dessus des blocs du parapet et le dessous de son débord. */
   brickDark: 0x88503d,
-  brickTop: 0xa8664f,
+  /** Les faces intérieures du parapet, dans l'ombre : on lit l'ouverture du chemin de ronde de trois quarts. */
+  parapetInside: COLORS_5E.stoneShade,
   slab: CAUSEWAY_5E.slab,
   slabShade: 0xb3ab9a,
   slabWorn: 0xbcb4a2,
@@ -63,6 +70,10 @@ const C = {
   darkWood: 0x5e5046,
   door: 0x7d6650,
   inside: 0x3a312c,
+  /** L'empreinte de la pièce prise, sur le pilier du guet : une pierre moins passée que le pilier. */
+  markStone: 0x9c9f95,
+  /** Le trait des moitiés du blason, plus sombre que la pierre claire où il est taillé. */
+  blasonLine: 0x5f635d,
   /** Le fond du haut écroulé, vu du ciel : la pierre tombée dedans, plus sombre que les murs. */
   rubbleFloor: 0x6b675e,
   glass: 0x4f5a5e,
@@ -96,16 +107,34 @@ const localGround = (lx: number, lz: number): number => standingHeight(heightAt5
 
 /**
  * La cour de dalles, au sud du piton et du logis : de `x0` à `x1`, de `z0` (sous le piton et le logis) à `z1`, son bord
- * sud, juste au nord de la porte du lieu (en z = 8) : la chaussée d'`aig-2` y arrive et devient sa dalle. Son dessus
- * (`PT`) est plat, au-dessus du plus haut du sol sous elle, sur le plateau qui ondule.
+ * sud, juste au nord de la porte du lieu (en z = 8) : la chaussée d'`aig-2` y arrive et devient sa dalle.
  */
 const COUR = { x0: -7.6, x1: 9.9, z0: 2.4, z1: 7.6 } as const;
 
-const PT = (() => {
-  let top = -Infinity;
-  for (let x = COUR.x0; x <= COUR.x1 + 1e-6; x += 0.875) for (let z = COUR.z0; z <= COUR.z1 + 1e-6; z += 0.65) top = Math.max(top, localGround(x, z));
-  return top + 0.04;
+/**
+ * Le dessus de la cour (retouche 1 : « dans une cour, la chaussée devient la dalle sans marche ») : un plan qui suit la
+ * pente douce du plateau sous elle (il monte vers l'est), ajusté au sol par moindres carrés puis levé pour passer `lift`
+ * au moins au-dessus de lui, comme le dessus d'une chaussée : au nœud de la porte, il est à moins de 0,03 du disque de
+ * dalle, et son bord sud ne montre qu'une tranche basse. `y` en x = z = 0, ses pentes `kx` et `kz`.
+ */
+const COUR_PLANE = (() => {
+  const lift = 0.05;
+  const pts: [number, number, number][] = [];
+  for (let x = COUR.x0; x <= COUR.x1 + 1e-6; x += 0.875) for (let z = COUR.z0; z <= COUR.z1 + 1e-6; z += 0.65) pts.push([x, z, localGround(x, z)]);
+  // Les moindres carrés d'un plan y = a + kx·x + kz·z, sur une grille régulière : les sommes centrées se séparent.
+  const n = pts.length;
+  const mx = pts.reduce((s, p) => s + p[0], 0) / n;
+  const mz = pts.reduce((s, p) => s + p[1], 0) / n;
+  const my = pts.reduce((s, p) => s + p[2], 0) / n;
+  const kx = pts.reduce((s, p) => s + (p[0] - mx) * (p[2] - my), 0) / pts.reduce((s, p) => s + (p[0] - mx) ** 2, 0);
+  const kz = pts.reduce((s, p) => s + (p[1] - mz) * (p[2] - my), 0) / pts.reduce((s, p) => s + (p[1] - mz) ** 2, 0);
+  const a = my - kx * mx - kz * mz;
+  const above = Math.max(...pts.map(([x, z, g]) => g - (a + kx * x + kz * z)));
+  return { y: a + above + lift, kx, kz };
 })();
+
+/** Le dessus de la cour en (`x`, `z`), depuis le sol du centre du lieu. */
+const courAt = (x: number, z: number): number => COUR_PLANE.y + COUR_PLANE.kx * x + COUR_PLANE.kz * z;
 
 /** Le piton de roche à six pans : son pied, son rayon au sol et en haut, sa hauteur au-dessus de la cour, son cap. */
 const PITON = { x: 0, z: -2.2, r0: 5.8, r1: 4.0, h: 5.5, yaw: 0.25 } as const;
@@ -114,9 +143,20 @@ const PITON = { x: 0, z: -2.2, r0: 5.8, r1: 4.0, h: 5.5, yaw: 0.25 } as const;
  * La tour carrée sur le piton (hauteurs depuis la cour) : son milieu, sa demi-largeur ; son pied, un peu dans le piton ;
  * le haut de l'assise des Passeurs (`low`), celui de l'assise claire, où court le chemin de ronde (`mid`) ; la bande de
  * brique, en encorbellement de `over`, jusqu'à `band` ; le haut du parapet (`top`, 18,5 au-dessus du plateau, sous les
- * aiguilles) ; l'épaisseur de ses murs, ouverts au ciel dans la ruine.
+ * aiguilles) ; l'épaisseur de ses murs, ouverts au ciel dans la ruine. Retouche 1 : la brique, de `mid` à `top`, fait
+ * 1,8 en tout, en encorbellement de 0,12 (un chemin de ronde, jamais un chapeau).
  */
-const TOWER = { x: 0, z: -2.2, half: 2.4, base: 5.3, low: 10, mid: 15, band: 16.8, top: 18.2, over: 0.25, wall: 0.55 } as const;
+const TOWER = { x: 0, z: -2.2, half: 2.4, base: 5.3, low: 10, mid: 16.4, band: 16.8, top: 18.2, over: 0.12, wall: 0.55 } as const;
+
+/** Le dessus de la cour au pied de la tour : le repère des hauteurs de la tour et du piton. */
+const PT = courAt(TOWER.x, TOWER.z);
+
+/**
+ * Le parapet : trois gros blocs plats par côté (`blocks`), d'un seul tenant, épais de `thick`, séparés par un joint
+ * sombre debout de `joint` (jamais un vide : pas de créneau). Le joint en long, entre la bande et le parapet (`joints`,
+ * hauteurs depuis la cour).
+ */
+const PARAPET = { thick: 0.5, blocks: 3, joint: 0.06, joints: [TOWER.band] } as const;
 
 /** La face sud de la tour. */
 const SOUTH = TOWER.z + TOWER.half;
@@ -124,9 +164,10 @@ const SOUTH = TOWER.z + TOWER.half;
 /**
  * La coupe plate en biais de la ruine : le haut des murs suit un plan, plus haut au nord-ouest (14,5) qu'au sud-est
  * (12,7) ; `y` au milieu, `u` sa pente vers l'est, `v` vers le sud (depuis le milieu de la tour). Toujours dans l'assise
- * claire : la brique est tombée avec le haut.
+ * claire : la brique est tombée avec le haut. Le fond écroulé (`floor`), plus bas que le plus bas de la coupe : la
+ * pierre tombée dedans.
  */
-const CUT = { y: 13.6, u: -0.25, v: -0.12 } as const;
+const CUT = { y: 13.6, u: -0.25, v: -0.12, floor: 12.2 } as const;
 const cutAt = (x: number, z: number): number => CUT.y + CUT.u * (x - TOWER.x) + CUT.v * (z - TOWER.z);
 
 /** La porte de la tour, au milieu de sa face sud, au haut du piton : sa demi-largeur, sa hauteur ; son linteau. */
@@ -155,9 +196,11 @@ const SLIT = { y0: 11.0, y1: 12.3, half: 0.11 } as const;
 
 /**
  * Les quatre marches taillées, frustes, sur le flanc ouest du piton : du pied, au sud-ouest, jusqu'au replat de la porte ;
- * leur largeur, leur giron.
+ * leur largeur, leur giron. Retouche 1 : des marches, pas des piliers ; chacune une dalle de `riser` de haut au plus (sa
+ * contremarche), le dessus clair au soleil, posée sur la roche du piton qui s'évase dessous (`flare` : son évasement par
+ * unité de hauteur), jamais une face debout sombre jusqu'au sol.
  */
-const STEPS = { from: { x: -6.4, z: 2.2 }, to: { x: -3.0, z: 0.4 }, count: 4, width: 1.3, tread: 1.15 } as const;
+const STEPS = { from: { x: -6.4, z: 2.2 }, to: { x: -3.0, z: 0.4 }, count: 4, width: 1.3, tread: 1.15, riser: 0.8, flare: 0.3 } as const;
 
 /**
  * Le logis de la maçonne, adossé au pied du piton à l'est : ses murs (de `x0` à `x1`, de `z0` à `z1`), leur hauteur ; son
@@ -167,11 +210,42 @@ const LOGIS = { x0: 4.4, x1: 9.6, z0: -1.6, z1: 2.4, wall: 2.6, high: 3.55, low:
 const LOGIS_DOOR = { x: 6.6, half: 0.45, h: 1.9 } as const;
 const LOGIS_WINDOW = { x: 8.6, y: 1.55, half: 0.32 } as const;
 
+/**
+ * Les pierres du logis (retouche 1 : de la pierre, pas un cube de sable) : une assise basse de pierre des Passeurs, haute
+ * de `base`, puis la pierre claire, ses deux rangs de joints (`rows`, depuis le sol du logis) et les joints debout de
+ * chaque rang (`cuts`, depuis le bord ouest de la façade sud, puis depuis son bord sud sur la face est), décalés d'un rang
+ * à l'autre, comme l'assise claire de la tour.
+ */
+const LOGIS_COURSES = {
+  base: 0.6,
+  rows: [1.27, 1.93],
+  cuts: [
+    [1.1, 3.0, 4.6],
+    [0.5, 1.6, 3.6],
+    [1.3, 2.9, 4.4],
+  ],
+} as const;
+
+/** Le sol du logis : le dessus de la cour devant sa porte. */
+const LY = courAt(LOGIS_DOOR.x, LOGIS.z1);
+
+/**
+ * La moitié sud du toit, glissée d'un seul pan contre la façade sud, à l'est de la perche (de `x0` à `x1`) : son haut à
+ * `top` sous la fenêtre, contre le mur, son bord bas sur la cour en `z`.
+ */
+const ROOF_PAN = { x0: 8.1, x1: 10.4, z: 3.4, top: 1.1 } as const;
+
 /** La perche de la maçonne, à droite de la porte du logis, et sa lanterne. */
 const PERCH = { x: 7.6, z: 2.95, h: 2.0, arm: 0.34 } as const;
 
-/** Le pilier du guet, au bord ouest de la cour, à hauteur de poitrine ; son trou sur la face sud, ses goujons en diagonale. */
-const PILLAR = { x: -6.6, z: 5.4, w: 0.7, h: 1.35, hole: 0.95, r: 0.14, stud: 0.24, size: 0.08 } as const;
+/**
+ * Le pilier du guet, au bord ouest de la cour, à hauteur de poitrine (`w`, `h`). Sur sa face sud, le signe de l'absence,
+ * comme le signe de la cloche à l'Auberge (`BELL_MARK`, ./auberge5e.ts) : l'empreinte de la pièce prise, un aplat debout
+ * (`mark` × `markH`, son milieu à `y`), le trou rond (rayon `r`) dans son tiers haut (son milieu à `hole` au-dessus du
+ * milieu de l'aplat), les quatre goujons de fer (`stud`) aux quatre coins, à `inset` du bord. Jamais le trou au milieu
+ * d'un carré de goujons (la face 5 d'un dé), jamais une croix ni un viseur.
+ */
+const PILLAR = { x: -6.6, z: 5.4, w: 0.7, h: 1.35, y: 0.92, mark: 0.36, markH: 0.56, r: 0.075, hole: 0.16, inset: 0.04, stud: 0.06 } as const;
 
 /** La lanterne sur piquet en tête de la cour, du côté de la chaussée (à l'ouest de son arrivée). */
 const COUR_LANTERN = { x: -2.0, z: 8.1, h: 1.45 } as const;
@@ -181,6 +255,9 @@ const DOOR_AT: Vec2 = (() => {
   const n = PATH_NODES_5E.find((p) => p.id === 'donjon')!.at;
   return { x: n.x - CENTER.x, z: n.z - CENTER.z };
 })();
+
+/** Le recul de la caméra à la porte, en part de sa distance à Kéo (`PlaceArt.arrivalView`) : comme un Détour, 1,6 au plus. */
+const ARRIVAL_BACK = 1.4;
 
 /** Le cap d'un pavé dont le grand côté (x) va de `a` vers `b`. */
 const yawOf = (a: Vec2, b: Vec2): number => Math.atan2(-(b.z - a.z), b.x - a.x);
@@ -238,11 +315,12 @@ function courseJoints(b: FacetBuilder, rows: readonly number[], cuts: readonly (
 /** Les rangs et les joints debout des deux assises : les grandes pierres des Passeurs, puis les plus petites, plus claires. */
 const LOW_COURSES = { rows: [TOWER.base, 8.4, TOWER.low], cuts: [[-1.6, 1.3], [-1.2, 1.0]] } as const;
 const MID_COURSES = {
-  rows: [TOWER.low, 11.6, 13.3, TOWER.mid],
+  rows: [TOWER.low, 11.6, 13.3, 14.9, TOWER.mid],
   cuts: [
     [-1.4, -0.2, 1.1],
     [-0.8, 0.5, 1.7],
     [-1.6, -0.3, 1.0],
+    [-1.0, 0.4, 1.6],
   ],
 } as const;
 
@@ -287,38 +365,69 @@ function towerDoor(b: FacetBuilder, worn: boolean): void {
   }
 }
 
-/** Les quatre marches taillées, d'un bloc chacune, de plus en plus hautes ; dans la ruine, l'une a glissé de travers. */
+/**
+ * Les quatre marches taillées dans le flanc du piton : chacune une dalle de pierre, sa contremarche de `riser` au plus, son
+ * dessus clair au soleil, sur la roche du piton qui s'évase jusqu'au sol (un tronc de pyramide à quatre pans, moussu) ;
+ * dans la ruine, une seule a glissé de travers.
+ */
 function steps(b: FacetBuilder, worn: boolean): void {
   const S = STEPS;
   const yaw = yawOf(S.from, S.to);
+  // Le haut de la roche dessous, à quatre pans tournés d'un huitième de tour : un carré du giron de la dalle.
+  const r1 = (S.tread / 2) * Math.SQRT2;
   for (let k = 0; k < S.count; k++) {
     const t = k / (S.count - 1);
     const x = S.from.x + (S.to.x - S.from.x) * t;
     const z = S.from.z + (S.to.z - S.from.z) * t;
     const h = ((k + 1) * PITON.h) / S.count;
+    const rock = h - S.riser;
+    b.prism({ x, y: PT + SINK, z, yaw: yaw + Math.PI / 4 }, r1 + (rock - SINK) * S.flare, r1, rock - SINK, 4, C.stone, C.moss);
     const slip = worn && k === 1 ? 0.18 : 0;
-    b.box({ x, y: PT + SINK, z, yaw: yaw + slip }, [S.tread, h - SINK - (worn && k === 1 ? 0.12 : 0), S.width], worn ? C.stoneShade : C.stone, worn ? C.stone : C.stoneSun);
+    b.box({ x, y: PT + rock - (slip ? 0.1 : 0), z, yaw: yaw + slip }, [S.tread, S.riser, S.width], C.stone, C.stoneSun);
   }
 }
 
-/** Un écu, ou l'une de ses moitiés (`side` −1 : l'ouest, 1 : l'est), son trait diagonal sur sa face (`+z` du repère). */
-function shield(l: FacetBuilder, side: -1 | 0 | 1): void {
+/**
+ * L'allure d'un écu : son échelle, son épaisseur, la couleur de ses faces et de ses côtés, celle de son trait et sa
+ * demi-largeur (dans le repère de l'écu, avant l'échelle). Le blason entier, sur la tour : la pierre des Passeurs, un
+ * trait fin. Ses deux moitiés tombées (retouche 1) : la pierre claire de l'assise du milieu, plus grandes, plus épaisses,
+ * le trait plus sombre et plus large, pour qu'elles se lisent à la distance de « Y aller ».
+ */
+interface ShieldLook {
+  scale: number;
+  depth: number;
+  face: number;
+  edge: number;
+  line: number;
+  half: number;
+}
+const WHOLE_SHIELD: ShieldLook = { scale: 1, depth: BLASON.depth, face: C.stoneSun, edge: C.stoneShade, line: C.line, half: STROKE.half };
+const HALF_SHIELD: ShieldLook = { scale: 1.5, depth: 0.25, face: C.pale, edge: C.paleWorn, line: C.blasonLine, half: 0.12 / 1.5 };
+
+/**
+ * Un écu, ou l'une de ses moitiés (`side` −1 : l'ouest, 1 : l'est), son trait diagonal sur sa face (`+z` du repère) ;
+ * `turn` : tourné dans son plan (une moitié posée sur sa coupe), en radians.
+ */
+function shield(l: FacetBuilder, side: -1 | 0 | 1, look: ShieldLook = WHOLE_SHIELD, turn = 0): void {
   const outline: readonly (readonly [number, number])[] =
     side === 0
       ? SHIELD
       : side < 0
         ? [SHIELD[0], SHIELD[1], SHIELD[2], [0, SHIELD[0][1]]]
         : [[0, SHIELD[4][1]], SHIELD[2], SHIELD[3], SHIELD[4]];
-  l.extrude({ x: 0, y: 0, z: 0 }, outline, BLASON.depth, C.stoneShade, C.stoneSun);
+  const [cs, sn] = [Math.cos(turn) * look.scale, Math.sin(turn) * look.scale];
+  const place = (x: number, y: number): [number, number] => [x * cs - y * sn, x * sn + y * cs];
+  l.extrude({ x: 0, y: 0, z: 0 }, outline.map(([x, y]) => place(x, y)), look.depth, look.edge, look.face);
   // Le trait, coupé au milieu pour une moitié : le même d'un bout à l'autre.
   const [ax, ay] = STROKE.from;
   const [cx, cy] = STROKE.to;
   const at = (x: number): [number, number] => [x, ay + ((cy - ay) * (x - ax)) / (cx - ax)];
   const [x0, x1] = side === 0 ? [ax, cx] : side < 0 ? [ax, 0] : [0, cx];
   const [p, q] = [at(x0), at(x1)];
-  const h = STROKE.half;
-  const z = BLASON.depth + 0.006;
-  l.quad([p[0], p[1] - h, z], [q[0], q[1] - h, z], [q[0], q[1] + h, z], [p[0], p[1] + h, z], C.line);
+  const h = look.half;
+  const z = look.depth + 0.006;
+  const [a, b2, c, d] = [place(p[0], p[1] - h), place(q[0], q[1] - h), place(q[0], q[1] + h), place(p[0], p[1] + h)];
+  l.quad([a[0], a[1], z], [b2[0], b2[1], z], [c[0], c[1], z], [d[0], d[1], z], look.line);
 }
 
 /** Une lanterne pendue (sa vitre, un pavé : dix triangles ; son chapeau de bronze en pointe), allumée. */
@@ -334,7 +443,7 @@ function logisRoof(b: FacetBuilder, z0: number, len: number): void {
   const hi = L.high + L.eave * slope;
   const lo = L.low - L.eave * slope;
   b.extrude(
-    { x: 0, y: PT, z: z0 },
+    { x: 0, y: LY, z: z0 },
     [
       [L.x0 - L.eave, hi],
       [L.x1 + L.eave, lo],
@@ -347,16 +456,60 @@ function logisRoof(b: FacetBuilder, z0: number, len: number): void {
   );
 }
 
-/** Les murs du logis (un pavé plein), sa porte fermée et sa fenêtre à vitre sombre unie, jamais éclairée. */
+/**
+ * Les joints des pierres du logis, sur sa façade sud et sa face est (la face nord et la face ouest sont contre la roche) :
+ * les deux rangs en long, puis les joints debout de chaque rang ; jamais sur la porte ni sur la fenêtre.
+ */
+function logisJoints(b: FacetBuilder): void {
+  const L = LOGIS;
+  const K = LOGIS_COURSES;
+  const W = LOGIS_WINDOW;
+  const D = LOGIS_DOOR;
+  // Les ouvertures de la façade sud (de gauche à droite, depuis son bord ouest) : leurs bords et leur bas, leur haut.
+  const holes = [
+    { u0: D.x - D.half - L.x0, u1: D.x + D.half - L.x0, y0: 0, y1: D.h },
+    { u0: W.x - W.half - L.x0, u1: W.x + W.half - L.x0, y0: W.y - W.half, y1: W.y + W.half },
+  ];
+  const faces = [
+    // La façade sud, d'ouest en est ; la face est, du sud au nord.
+    { len: L.x1 - L.x0, at: (u: number) => ({ x: L.x0 + u, z: L.z1 + 0.012 }), yaw: 0, holes },
+    { len: L.z1 - L.z0, at: (u: number) => ({ x: L.x1 + 0.012, z: L.z1 - u }), yaw: Math.PI / 2, holes: [] },
+  ];
+  const ys = [K.base, ...K.rows, L.wall];
+  for (const f of faces) {
+    // Un joint en long par rang, coupé aux ouvertures qu'il croise.
+    for (const y of K.rows) {
+      let u = 0;
+      for (const h of [...f.holes.filter((o) => y > o.y0 && y < o.y1 + 0.03), { u0: f.len, u1: f.len }]) {
+        if (h.u0 - u > 0.1) facePlate(b, { ...f.at((u + h.u0) / 2), y: LY + y - 0.03 }, f.yaw, h.u0 - u, 0.06, C.paleJoint);
+        u = h.u1;
+      }
+    }
+    // Les joints debout, décalés d'un rang à l'autre.
+    for (let r = 0; r < ys.length - 1; r++)
+      for (const u of K.cuts[r % K.cuts.length]) {
+        if (u >= f.len - 0.2 || f.holes.some((o) => u > o.u0 - 0.1 && u < o.u1 + 0.1 && ys[r] < o.y1 && ys[r + 1] > o.y0)) continue;
+        facePlate(b, { ...f.at(u), y: LY + ys[r] }, f.yaw, 0.06, ys[r + 1] - ys[r], C.paleJoint);
+      }
+  }
+}
+
+/**
+ * Les murs du logis : l'assise basse de pierre des Passeurs, puis la pierre claire et ses joints ; sa porte fermée et sa
+ * fenêtre à vitre sombre unie, jamais éclairée.
+ */
 function logisWalls(b: FacetBuilder, worn: boolean): void {
   const L = LOGIS;
-  b.box({ x: (L.x0 + L.x1) / 2, y: PT + SINK, z: (L.z0 + L.z1) / 2 }, [L.x1 - L.x0, L.wall - SINK, L.z1 - L.z0], worn ? C.paleWorn : C.pale, C.paleTop);
-  facePlate(b, { x: LOGIS_DOOR.x, y: PT, z: L.z1 + 0.012 }, 0, 2 * LOGIS_DOOR.half, LOGIS_DOOR.h, worn ? C.wornShade : C.door);
+  const [x, z, sx, sz] = [(L.x0 + L.x1) / 2, (L.z0 + L.z1) / 2, L.x1 - L.x0, L.z1 - L.z0];
+  b.box({ x, y: LY + SINK, z }, [sx, LOGIS_COURSES.base - SINK, sz], C.stone);
+  b.box({ x, y: LY + LOGIS_COURSES.base, z }, [sx, L.wall - LOGIS_COURSES.base, sz], worn ? C.paleWorn : C.pale, C.paleTop);
+  logisJoints(b);
+  facePlate(b, { x: LOGIS_DOOR.x, y: LY, z: L.z1 + 0.018 }, 0, 2 * LOGIS_DOOR.half, LOGIS_DOOR.h, worn ? C.wornShade : C.door);
   const W = LOGIS_WINDOW;
-  facePlate(b, { x: W.x, y: PT + W.y - W.half, z: L.z1 + 0.012 }, 0, 2 * W.half, 2 * W.half, C.glass);
+  facePlate(b, { x: W.x, y: LY + W.y - W.half, z: L.z1 + 0.018 }, 0, 2 * W.half, 2 * W.half, C.glass);
   if (worn) return;
   // La porte neuve : deux pentures de fer, parallèles.
-  for (const y of [0.45, 1.4]) facePlate(b, { x: LOGIS_DOOR.x, y: PT + y, z: L.z1 + 0.02 }, 0, 2 * LOGIS_DOOR.half - 0.12, 0.08, C.iron);
+  for (const y of [0.45, 1.4]) facePlate(b, { x: LOGIS_DOOR.x, y: LY + y, z: L.z1 + 0.026 }, 0, 2 * LOGIS_DOOR.half - 0.12, 0.08, C.iron);
 }
 
 /** La herse : six barreaux droits, parallèles, sans traverse ; `flat` : couchée au sol (la ruine), sinon relevée dans la porte. */
@@ -370,25 +523,114 @@ function herse(b: FacetBuilder, at: Vec3, flat: boolean): void {
   }
 }
 
-/** Le contour de la cour, couché (x, −z), dans le sens inverse des aiguilles d'une montre. */
-const COUR_OUTLINE: readonly (readonly [number, number])[] = [
-  [COUR.x0, -COUR.z1],
-  [COUR.x1, -COUR.z1],
-  [COUR.x1, -COUR.z0],
-  [COUR.x0, -COUR.z0],
-];
+/**
+ * Une dalle de la cour, de `x0` à `x1` et de `z0` à `z1` : son dessus suit le plan de la cour (`courAt`), `dy` plus haut,
+ * ses flancs descendent sous le sol. Dix triangles, comme un pavé.
+ */
+function courSlab(b: FacetBuilder, x0: number, x1: number, z0: number, z1: number, dy: number, side: number, top: number): void {
+  const v = (x: number, z: number, up: boolean) => [x, courAt(x, z) + (up ? dy : SINK), z] as const;
+  b.quad(v(x0, z1, true), v(x1, z1, true), v(x1, z0, true), v(x0, z0, true), top);
+  b.quad(v(x0, z1, false), v(x1, z1, false), v(x1, z1, true), v(x0, z1, true), side);
+  b.quad(v(x1, z0, false), v(x0, z0, false), v(x0, z0, true), v(x1, z0, true), side);
+  b.quad(v(x1, z1, false), v(x1, z0, false), v(x1, z0, true), v(x1, z1, true), side);
+  b.quad(v(x0, z0, false), v(x0, z1, false), v(x0, z1, true), v(x0, z0, true), side);
+}
+
+/** Un joint sur la cour, large de 0,06 : en long, de `x0` à `x1` (`z0` = `z1`), ou en travers, du sud (`z0`) au nord (`z1`). */
+function courJoint(b: FacetBuilder, x0: number, z0: number, x1: number, z1: number): void {
+  const v = (x: number, z: number) => [x, courAt(x, z) + 0.012, z] as const;
+  if (z0 === z1) b.quad(v(x0, z0 + 0.03), v(x1, z0 + 0.03), v(x1, z0 - 0.03), v(x0, z0 - 0.03), C.line);
+  else b.quad(v(x0 - 0.03, z0), v(x0 + 0.03, z0), v(x1 + 0.03, z1), v(x1 - 0.03, z1), C.line);
+}
 
 /** La cour entière : une grande dalle à facettes, ses dalles rectangulaires en long, en rangs décalés (jamais une grille). */
 function cour(b: FacetBuilder): void {
-  b.extrude({ x: 0, y: PT + SINK, z: 0, pitch: -Math.PI / 2 }, COUR_OUTLINE, -SINK, C.slabShade, C.slab);
-  const y = PT + 0.012;
+  courSlab(b, COUR.x0, COUR.x1, COUR.z0, COUR.z1, 0, C.slabShade, C.slab);
   const rows = [COUR.z0, 4.2, 5.9, COUR.z1];
-  for (const z of rows.slice(1, -1)) b.quad([COUR.x0, y, z + 0.03], [COUR.x1, y, z + 0.03], [COUR.x1, y, z - 0.03], [COUR.x0, y, z - 0.03], C.line);
-  for (let r = 0; r < rows.length - 1; r++)
-    for (let x = COUR.x0 + 1.5 + (r % 2) * 1.5; x < COUR.x1 - 0.5; x += 3) b.quad([x - 0.03, y, rows[r + 1]], [x + 0.03, y, rows[r + 1]], [x + 0.03, y, rows[r]], [x - 0.03, y, rows[r]], C.line);
+  for (const z of rows.slice(1, -1)) courJoint(b, COUR.x0, z, COUR.x1, z);
+  for (let r = 0; r < rows.length - 1; r++) for (let x = COUR.x0 + 1.5 + (r % 2) * 1.5; x < COUR.x1 - 0.5; x += 3) courJoint(b, x, rows[r + 1], x, rows[r]);
 }
 
 // ---------- Le modèle ----------
+
+/** Le signe de l'absence, sur la face sud du pilier du guet : l'empreinte, son trou dans son tiers haut, ses quatre goujons aux coins. */
+function pillarMark(b: FacetBuilder): void {
+  const Q = PILLAR;
+  const z = Q.z + Q.w / 2;
+  const y = courAt(Q.x, Q.z) + Q.y;
+  b.plate(
+    { x: Q.x, y, z: z + 0.004 },
+    [
+      [-Q.mark / 2, -Q.markH / 2],
+      [Q.mark / 2, -Q.markH / 2],
+      [Q.mark / 2, Q.markH / 2],
+      [-Q.mark / 2, Q.markH / 2],
+    ],
+    C.markStone,
+  );
+  const hole = Array.from({ length: 8 }, (_, k) => [Q.r * Math.cos((Math.PI * k) / 4), Q.hole + Q.r * Math.sin((Math.PI * k) / 4)] as const);
+  b.plate({ x: Q.x, y, z: z + 0.008 }, hole, C.inside);
+  const dx = Q.mark / 2 - Q.inset;
+  const dy = Q.markH / 2 - Q.inset;
+  for (const sx of [-1, 1]) for (const sy of [-1, 1]) b.box({ x: Q.x + sx * dx, y: y + sy * dy - Q.stud / 2, z: z + 0.04 }, [Q.stud, Q.stud, 0.08], C.iron);
+}
+
+/**
+ * La moitié sud du toit, glissée d'un seul pan contre la façade sud (`ROOF_PAN`) : une dalle de lauze penchée, son haut
+ * contre le mur sous la fenêtre, son bord bas sur la cour ; son dessus, son bord bas et ses deux bouts (huit triangles :
+ * le dessous et le haut sont contre le mur et la cour).
+ */
+function roofPan(b: FacetBuilder): void {
+  const R = ROOF_PAN;
+  const t = LOGIS.slab;
+  const zt = LOGIS.z1 + 0.03;
+  const yb = courAt((R.x0 + R.x1) / 2, R.z) - 0.02;
+  const yt = LY + R.top;
+  // La normale du dessus, vers le sud et le ciel (en z, y), et l'épaisseur portée dessous.
+  const len = Math.hypot(R.z - zt, yt - yb);
+  const [nz, ny] = [(yt - yb) / len, (R.z - zt) / len];
+  const top = (x: number, high: boolean) => [x, high ? yt : yb, high ? zt : R.z] as const;
+  const under = (x: number, high: boolean) => [x, (high ? yt : yb) - t * ny, (high ? zt : R.z) - t * nz] as const;
+  b.quad(top(R.x0, false), top(R.x1, false), top(R.x1, true), top(R.x0, true), C.lauze);
+  b.quad(under(R.x0, false), under(R.x1, false), top(R.x1, false), top(R.x0, false), C.lauzeEdge);
+  b.quad(under(R.x1, false), under(R.x1, true), top(R.x1, true), top(R.x1, false), C.lauzeEdge);
+  b.quad(under(R.x0, true), under(R.x0, false), top(R.x0, false), top(R.x0, true), C.lauzeEdge);
+}
+
+/**
+ * Le haut de la tour, restauré : la bande de brique en encorbellement, le dessous de son débord dans l'ombre (et un trait
+ * d'ombre sur le mur clair, juste dessous), le joint sombre en long entre la bande et le parapet ; puis le parapet, trois
+ * gros blocs plats par côté, d'un seul tenant, séparés par un joint sombre debout (jamais un vide), leur dessus sombre et
+ * leurs faces intérieures dans l'ombre.
+ */
+function parapet(b: FacetBuilder): void {
+  const T = TOWER;
+  const P = PARAPET;
+  const o = T.half + T.over;
+  const i = o - P.thick;
+  const [mid, y0, y1] = [PT + T.mid, PT + T.band, PT + T.top];
+  b.box({ x: T.x, y: mid, z: T.z }, [2 * o, T.band - T.mid, 2 * o], C.brick, C.brickDark);
+  for (const f of towerFaces(0.012)) facePlate(b, { x: f.at.x, y: mid - 0.1, z: f.at.z }, f.yaw, 2 * T.half, 0.1, C.paleJoint);
+  for (const f of towerFaces(T.over + 0.012)) for (const y of P.joints) facePlate(b, { x: f.at.x, y: PT + y - 0.03, z: f.at.z }, f.yaw, 2 * o, 0.06, C.brickDark);
+  // Chaque côté, dessiné comme le sud (`a` le long de la face, d'ouest en est, `c` vers le dehors), tourné comme la face.
+  const sides: readonly ((a: number, c: number) => [number, number])[] = [(a, c) => [a, c], (a, c) => [c, -a], (a, c) => [-a, -c], (a, c) => [-c, a]];
+  for (const turn of sides) {
+    const v = (a: number, y: number, c: number): [number, number, number] => {
+      const [u, w] = turn(a, c);
+      return [T.x + u, y, T.z + w];
+    };
+    // Le dessous du débord, entre le mur et le bord de la bande.
+    b.quad(v(-T.half, mid, T.half), v(T.half, mid, T.half), v(o, mid, o), v(-o, mid, o), C.brickDark);
+    b.quad(v(-o, y0, o), v(o, y0, o), v(o, y1, o), v(-o, y1, o), C.brick);
+    b.quad(v(i, y0, i), v(-i, y0, i), v(-i, y1, i), v(i, y1, i), C.parapetInside);
+    b.quad(v(-o, y1, o), v(o, y1, o), v(i, y1, i), v(-i, y1, i), C.brickDark);
+  }
+  for (const f of towerFaces(T.over + 0.012))
+    for (let k = 1; k < P.blocks; k++) {
+      const a = -o + (2 * o * k) / P.blocks;
+      facePlate(b, { x: f.at.x + f.right.x * a, y: y0, z: f.at.z + f.right.z * a }, f.yaw, P.joint, T.top - T.band, C.brickDark);
+    }
+}
 
 /**
  * Les volumes du Donjon, de la ruine aux abords (le modèle du lieu). `ground` : le sol sous un point du lieu ; sa porte
@@ -409,19 +651,11 @@ function model(add: AddPiece, ground: SiteGround): void {
     b.prism({ x: P.x, y: PT + SINK, z: P.z, yaw: P.yaw }, P.r0, P.r1, P.h - SINK, 6, C.stone, C.moss);
     lowCourse(b);
     const Q = PILLAR;
-    b.box({ x: Q.x, y: PT - 0.05, z: Q.z }, [Q.w, Q.h + 0.05, Q.w], C.stone, C.stoneSun);
-    const face = Q.z + Q.w / 2;
-    const disc = Array.from({ length: 8 }, (_, k) => [Q.r * Math.cos((Math.PI * k) / 4 + Math.PI / 8), Q.r * Math.sin((Math.PI * k) / 4 + Math.PI / 8)] as const);
-    b.plate({ x: Q.x, y: PT + Q.hole, z: face + 0.01 }, disc, C.inside);
-    for (const [sx, sy] of [
-      [-1, -1],
-      [1, -1],
-      [1, 1],
-      [-1, 1],
-    ])
-      b.box({ x: Q.x + sx * Q.stud * 0.75, y: PT + Q.hole + sy * Q.stud * 0.75 - Q.size / 2, z: face + 0.06 }, [Q.size, Q.size, 0.12], C.iron);
-    b.box({ x: PERCH.x, y: PT - 0.4, z: PERCH.z }, [0.1, PERCH.h + 0.4, 0.1], C.newShade);
-    const tip = { x: PERCH.x - PERCH.arm, y: PT + PERCH.h - 0.05, z: PERCH.z };
+    b.box({ x: Q.x, y: courAt(Q.x, Q.z) - 0.05, z: Q.z }, [Q.w, Q.h + 0.05, Q.w], C.stone, C.stoneSun);
+    pillarMark(b);
+    const py = courAt(PERCH.x, PERCH.z);
+    b.box({ x: PERCH.x, y: py - 0.4, z: PERCH.z }, [0.1, PERCH.h + 0.4, 0.1], C.newShade);
+    const tip = { x: PERCH.x - PERCH.arm, y: py + PERCH.h - 0.05, z: PERCH.z };
     b.beam({ x: PERCH.x, y: tip.y, z: PERCH.z }, tip, 0.08, C.newShade);
     lantern(b, { ...tip, y: tip.y - 0.04 });
     dryBush(b, -9.4, at(-9.4, 0.8), 0.8, 0.8, 0.4);
@@ -447,7 +681,7 @@ function model(add: AddPiece, ground: SiteGround): void {
       // Le fond, plus bas que la coupe : la pierre tombée dedans.
       const f = T.half - w;
       b.plate(
-        { x: T.x, y: PT + 12.2, z: T.z, pitch: -Math.PI / 2 },
+        { x: T.x, y: PT + CUT.floor, z: T.z, pitch: -Math.PI / 2 },
         [
           [-f, -f],
           [f, -f],
@@ -466,12 +700,13 @@ function model(add: AddPiece, ground: SiteGround): void {
         [-2.2, 3.4, 0.75, 0.6, 5],
         [3.6, 3.2, 0.7, 0.55, 7],
       ] as const)
-        lowRock(b, { x, y: PT, z }, r, h, seed);
-      // Les deux moitiés du blason, couchées face au ciel, le trait visible sur chacune.
-      drawPosed(b, { x: -0.9, y: PT + 0.01, z: 3.7, yaw: 0.35, pitch: -Math.PI / 2 }, (l) => shield(l, -1));
-      drawPosed(b, { x: 0.6, y: PT + 0.01, z: 3.9, yaw: -0.5, pitch: -Math.PI / 2 }, (l) => shield(l, 1));
+        lowRock(b, { x, y: courAt(x, z), z }, r, h, seed);
+      // Les deux moitiés du blason, en pierre claire : l'une couchée face au ciel, l'autre posée sur sa coupe, appuyée
+      // contre le bloc du milieu, tournée vers le sud ; le trait visible sur chacune.
+      drawPosed(b, { x: 0.2, y: courAt(0.2, 4.3) + 0.01, z: 4.3, yaw: 0.35, pitch: -Math.PI / 2 }, (l) => shield(l, 1, HALF_SHIELD));
+      drawPosed(b, { x: -2.2, y: courAt(-2.2, 4.25), z: 4.25, yaw: 0, pitch: -0.25 }, (l) => shield(l, -1, HALF_SHIELD, -Math.PI / 2));
       // La herse couchée à plat, ses six barreaux parallèles, entre les blocs, hors de la scène.
-      herse(b, { x: -4.3, y: PT, z: 5.5 }, true);
+      herse(b, { x: -4.3, y: courAt(-4.3, 5.5), z: 5.5 }, true);
       logisWalls(b, true);
       // Le volet qui pend de travers, à droite de la fenêtre.
       const W = LOGIS_WINDOW;
@@ -484,12 +719,12 @@ function model(add: AddPiece, ground: SiteGround): void {
           [-0.17, 0],
         ] as const
       ).map(([px, py]) => [px * Math.cos(a) - py * Math.sin(a), px * Math.sin(a) + py * Math.cos(a)] as const);
-      b.plate({ x: W.x + W.half + 0.2, y: PT + W.y + W.half, z: L.z1 + 0.03 }, hang, C.wornShade);
+      b.plate({ x: W.x + W.half + 0.2, y: LY + W.y + W.half, z: L.z1 + 0.03 }, hang, C.wornShade);
     },
     corps,
   );
-  // Le haut la relève : la moitié nord du toit de lauze, restée sur les murs ; l'autre moitié, glissée d'un seul pan à
-  // plat, couchée contre le mur est.
+  // Le haut la relève : la moitié nord du toit de lauze, restée sur les murs ; l'autre moitié, glissée d'un seul pan
+  // contre la façade sud, à l'est de la perche.
   add(
     'ruine',
     0,
@@ -497,44 +732,34 @@ function model(add: AddPiece, ground: SiteGround): void {
       const z0 = L.z0 - L.eave;
       const len = L.z1 - L.z0 + 2 * L.eave;
       logisRoof(b, z0, len / 2);
-      b.box({ x: L.x1 + 1.35, y: at(L.x1 + 1.35, 1.0) - 0.05, z: 1.0, yaw: Math.PI / 2, pitch: 0.12 }, [len / 2 + 0.2, L.slab, 2.3], C.lauzeEdge, C.lauze);
+      roofPan(b);
     },
     haut,
   );
   // Les abords la relèvent : la cour aux dalles fendues, un peu sous la dalle neuve, son côté ouest affaissé, trois
-  // dalles soulevées de travers à l'écart du chemin et de la scène.
+  // dalles soulevées de travers à l'écart du chemin, de la scène et du pan de toit.
   add(
     'ruine',
     0,
     (b) => {
       const split = -4.2;
-      b.extrude(
-        { x: 0, y: PT + SINK, z: 0, pitch: -Math.PI / 2 },
-        [
-          [split, -COUR.z1],
-          [COUR.x1, -COUR.z1],
-          [COUR.x1, -COUR.z0],
-          [split, -COUR.z0],
-        ],
-        -SINK - 0.04,
-        C.slabShade,
-        C.slabWorn,
-      );
+      courSlab(b, split, COUR.x1, COUR.z0, COUR.z1, -0.04, C.slabShade, C.slabWorn);
       // Le côté ouest, affaissé vers l'ouest (un pavé basculé autour de l'axe nord-sud).
-      b.box({ x: (COUR.x0 + split) / 2, y: PT + SINK + 0.05, z: (COUR.z0 + COUR.z1) / 2, yaw: Math.PI / 2, pitch: -0.06 }, [COUR.z1 - COUR.z0, -SINK - 0.2, split - COUR.x0], C.slabShade, C.slabWorn);
+      const [wx, wz] = [(COUR.x0 + split) / 2, (COUR.z0 + COUR.z1) / 2];
+      b.box({ x: wx, y: courAt(wx, wz) + SINK + 0.05, z: wz, yaw: Math.PI / 2, pitch: -0.06 }, [COUR.z1 - COUR.z0, -SINK - 0.2, split - COUR.x0], C.slabShade, C.slabWorn);
       for (const [x, z, yaw, pitch] of [
         [-2.6, 6.9, 0.3, 0.12],
         [8.4, 6.8, -0.2, -0.1],
-        [9.0, 3.4, 0.5, 0.09],
+        [9.4, 4.6, 0.5, 0.09],
       ] as const)
-        b.box({ x, y: PT - 0.1, z, yaw, pitch }, [1.2, 0.16, 0.8], C.slabShade, C.slabWorn);
+        b.box({ x, y: courAt(x, z) - 0.1, z, yaw, pitch }, [1.2, 0.16, 0.8], C.slabShade, C.slabWorn);
       // Deux fentes en long, d'un ton de joint, sur la dalle restée à plat.
-      const y = PT - 0.028;
+      const v = (x: number, z: number) => [x, courAt(x, z) - 0.028, z] as const;
       for (const [x, z, len] of [
         [1.4, 5.6, 2.6],
         [6.2, 7.1, 1.8],
       ] as const)
-        b.quad([x, y, z + 0.03], [x + len, y, z - 0.25], [x + len, y, z - 0.31], [x, y, z - 0.03], C.line);
+        b.quad(v(x, z + 0.03), v(x + len, z - 0.25), v(x + len, z - 0.31), v(x, z - 0.03), C.line);
     },
     abords,
   );
@@ -552,24 +777,10 @@ function model(add: AddPiece, ground: SiteGround): void {
     steps(b, false);
     logisWalls(b, false);
   });
-  // Le haut : la bande de brique en encorbellement et le parapet de gros blocs plats, d'un seul tenant, au dessus droit
-  // (jamais de créneaux) ; la niche et la lanterne du guet, sous le parapet, allumée dès qu'elle est posée ; le toit de
-  // lauze du logis, entier.
+  // Le haut : la bande de brique et le parapet de gros blocs plats, trois par côté (jamais de créneaux) ; la niche et la
+  // lanterne du guet, sous le chemin de ronde, allumée dès qu'elle est posée ; le toit de lauze du logis, entier.
   add(1, 0, (b) => {
-    const s = 2 * (T.half + T.over);
-    b.box({ x: T.x, y: PT + T.mid, z: T.z }, [s, T.band - T.mid, s], C.brick, C.brickTop);
-    for (const f of towerFaces(T.over + 0.012)) for (const y of [15.6, 16.2]) facePlate(b, { x: f.at.x, y: PT + y - 0.03, z: f.at.z }, f.yaw, s, 0.06, C.brickDark);
-    // Le parapet : deux blocs par côté, de deux tons, posés bout à bout.
-    const t = 0.5;
-    const h = T.top - T.band;
-    const long = s / 2;
-    const short = (s - 2 * t) / 2;
-    for (const side of [-1, 1])
-      for (const k of [0, 1]) {
-        const tone = (k + (side > 0 ? 1 : 0)) % 2 ? C.brickDark : C.brick;
-        b.box({ x: T.x - s / 2 + long * (k + 0.5), y: PT + T.band, z: T.z + side * (s / 2 - t / 2) }, [long, h, t], tone, C.brickTop);
-        b.box({ x: T.x + side * (s / 2 - t / 2), y: PT + T.band, z: T.z - s / 2 + t + short * (k + 0.5) }, [t, h, short], tone === C.brick ? C.brickDark : C.brick, C.brickTop);
-      }
+    parapet(b);
     const N = NICHE;
     facePlate(b, { x: T.x + N.x, y: PT + N.y0, z: SOUTH + 0.03 }, 0, 2 * N.half, N.y1 - N.y0, C.inside);
     b.box({ x: T.x + N.x, y: PT + N.y1 - 0.12, z: SOUTH + 0.15 }, [0.07, 0.07, 0.26], C.iron);
@@ -629,7 +840,7 @@ const TRACE_SPOTS = {
 function trough(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
     const S = TRACE_SPOTS.trough;
-    const y = PT;
+    const y = courAt(S.x, S.z);
     l.box({ x: S.x, y, z: S.z }, [1.15, 0.38, 0.62], C.newShade, C.newShade);
     l.plate({ x: S.x, y: y + 0.39, z: S.z, pitch: -Math.PI / 2 }, [
       [-0.5, -0.24],
@@ -649,7 +860,7 @@ function trough(b: FacetBuilder, c: Vec3): void {
  */
 function barrow(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) =>
-    drawPosed(l, { x: TRACE_SPOTS.barrow.x, y: PT, z: TRACE_SPOTS.barrow.z, yaw: TRACE_SPOTS.barrow.yaw }, (q) => {
+    drawPosed(l, { x: TRACE_SPOTS.barrow.x, y: courAt(TRACE_SPOTS.barrow.x, TRACE_SPOTS.barrow.z), z: TRACE_SPOTS.barrow.z, yaw: TRACE_SPOTS.barrow.yaw }, (q) => {
       q.box({ x: 0, y: 0.32, z: 0 }, [1.1, 0.12, 0.72], C.newShade, C.newWood);
       for (const dz of [-0.3, 0.3]) {
         q.box({ x: -0.4, y: 0, z: dz }, [0.08, 0.32, 0.08], C.newShade);
@@ -669,7 +880,7 @@ function barrow(b: FacetBuilder, c: Vec3): void {
 function pile(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
     const S = TRACE_SPOTS.pile;
-    const y = PT;
+    const y = courAt(S.x, S.z);
     for (const dx of [-0.38, 0.38]) l.box({ x: S.x + dx, y, z: S.z }, [0.16, 0.12, 0.95], C.newShade, C.newWood);
     for (let k = 0; k < 3; k++) l.box({ x: S.x + 0.12 * (k - 1), y: y + 0.12 + 0.13 * k, z: S.z + 0.1 * (k - 1) }, [1.3, 0.13, 0.85], C.slabShade, C.slab);
   });
@@ -687,7 +898,7 @@ const SCENE_RISE = (() => {
     nz = Math.ceil(hz);
   let top = localGround(SCENE_SPOT.dx, SCENE_SPOT.dz);
   for (let i = -nx; i <= nx; i++) for (let k = -nz; k <= nz; k++) top = Math.max(top, localGround(SCENE_SPOT.dx + (i / nx) * hx, SCENE_SPOT.dz + (k / nz) * hz));
-  return PT - top;
+  return courAt(SCENE_SPOT.dx, SCENE_SPOT.dz) - top;
 })();
 
 /** La maçonne en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, pantalon, veste brique, cheveux noirs. */
@@ -769,8 +980,16 @@ export const DONJON: PlaceArt = {
   },
   // Kéo au retour : sur la chaussée, à l'arrivée dans la cour, face à la tour.
   exit: { x: 0.6, z: 8.8 },
-  // « Y aller » arrive au cap nord, de face (la porte du lieu est au sud) : la cour, le piton et le bas de la tour, le
-  // logis à droite, le pilier du guet à gauche.
+  // « Y aller » arrive au cap nord, de face (la porte du lieu est au sud), sans `doorView`. De la porte, la caméra qui
+  // suit coupait la tour au-dessus de sa porte (retouche 1) : arrêté là, elle recule de 1,4 fois sa distance, sans
+  // monter, et lève le regard jusqu'au haut de la tour tel qu'il est bâti : la tour entière avec du ciel au-dessus, Kéo au
+  // premier plan sur la chaussée, le logis à droite et le pilier du guet à gauche (un test le vérifie).
+  arrivalView: { look: { x: TOWER.x, z: SOUTH + TOWER.over }, back: ARRIVAL_BACK },
+  // L'auge, la brouette et la pile restent dans le cadre de la scénette (retouche 1 : l'élève y voit ce qu'il a déjà
+  // fait) ; elle ne dessine aucune réussite à leur place.
+  keepsTracesInScenette: true,
+  // Sur la Carte, « Le Donjon » au nord de la tour, de son côté : il ne couvre pas le petit lieu de l'Oracle, au sud.
+  nameAbove: true,
 };
 
 /** Le plan du Donjon, pour les tests : la tour, le piton, la cour, le logis, le pilier, la porte, la scène. */
@@ -780,7 +999,11 @@ export const DONJON_LAYOUT = {
   cut: cutAt,
   cour: COUR,
   courTop: PT,
+  courAt,
   logis: LOGIS,
+  roofPan: ROOF_PAN,
+  parapet: PARAPET,
+  cutFloor: CUT.floor,
   perch: PERCH,
   pillar: PILLAR,
   niche: NICHE,

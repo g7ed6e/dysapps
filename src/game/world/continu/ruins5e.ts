@@ -33,13 +33,36 @@ function rubble(b: FacetBuilder, x: number, z: number, s: number, color: number,
   b.box({ x: x - s * 0.5, y: SINK, z: z + s * 0.7, yaw: 2.3 }, [s * 0.5, s * 0.35 - SINK, s * 0.7], color, top);
 }
 
-/** Le Sémaphore : un mât de bois sur un socle de pierre, ses deux bras cassés, l'un tombé au pied. */
+/**
+ * Un poteau cassé en biais : de section carrée `w`, posé en (`x`, `z`), du sol jusqu'à `low` d'un côté et `high` de
+ * l'autre (une coupe nette, jamais une dent ni une équerre).
+ */
+function brokenPost(b: FacetBuilder, x: number, z: number, w: number, low: number, high: number): void {
+  b.extrude(
+    { x, y: 0, z: z - w / 2 },
+    [
+      [-w / 2, SINK],
+      [w / 2, SINK],
+      [w / 2, low],
+      [-w / 2, high],
+    ],
+    w,
+    C.wood,
+    C.woodShade,
+  );
+}
+
+/**
+ * Le Sémaphore : un mât de bois sur un socle de pierre, cassé en biais à mi-hauteur ; son haut et ses deux bras tombés au
+ * sol, au pied du socle. Rien en équerre en haut d'un poteau, rien qui pende (directeur artistique, retouche 1 du lot
+ * 13a : les chaussées y mènent ; le lot 14 le remplace).
+ */
 function semaphore(b: FacetBuilder): void {
   b.box({ x: 0, y: SINK, z: 0 }, [4, 2 - SINK, 4], C.shade, C.stone);
-  b.box({ x: 0, y: 2, z: 0 }, [0.9, 13, 0.9], C.woodShade, C.wood);
-  b.beam({ x: 0, y: 12, z: 0 }, { x: 3.4, y: 13.6, z: 0 }, 0.6, C.wood);
-  b.beam({ x: 0, y: 9, z: 0 }, { x: -1.6, y: 8.2, z: 0 }, 0.6, C.wood);
+  brokenPost(b, 0, 0, 0.9, 7.2, 8.4);
+  b.box({ x: 3.6, y: SINK, z: -0.6, yaw: 1.3 }, [5.5, 0.6 - SINK, 0.8], C.woodShade, C.wood);
   b.box({ x: 2.8, y: SINK, z: 2.5, yaw: 0.9 }, [4, 0.5 - SINK, 0.6], C.woodShade, C.wood);
+  b.box({ x: -2.6, y: SINK, z: -2.6, yaw: 2.2 }, [3.2, 0.45 - SINK, 0.6], C.woodShade, C.wood);
   rubble(b, -3, 2.2, 1.2, C.shade, C.moss);
 }
 
@@ -53,12 +76,15 @@ function gaillard(b: FacetBuilder): void {
   b.box({ x: -1, y: 4, z: 2.8 }, [7, 0.35, 0.35], C.wood);
 }
 
-/** Les Nacelles : un portique de bois au bord du plateau, sa poutre cassée, une nacelle tombée. */
+/**
+ * Les Nacelles : un portique de bois tombé au bord du plateau : un seul poteau debout, cassé en biais ; l'autre poteau et
+ * la poutre couchés au sol ; une nacelle tombée. Rien en équerre en haut d'un poteau, rien qui pende (directeur
+ * artistique, retouche 1 du lot 13a : les chaussées passent dessous ; le lot 16 le remplace).
+ */
 function nacelles(b: FacetBuilder): void {
-  b.box({ x: -4, y: SINK, z: 0 }, [1.2, 10 - SINK, 1.2], C.woodShade, C.wood);
-  b.box({ x: 4, y: SINK, z: 0 }, [1.2, 7 - SINK, 1.2], C.woodShade, C.wood);
-  b.beam({ x: -4, y: 9.6, z: 0 }, { x: 1.5, y: 9.2, z: 0 }, 0.8, C.wood);
-  b.beam({ x: 1.5, y: 9.2, z: 0 }, { x: 1.5, y: 6.5, z: 0 }, 0.15, C.woodShade);
+  brokenPost(b, -4, 0, 1.2, 5.6, 7.2);
+  b.box({ x: 1.0, y: SINK, z: -2.5, yaw: 0.12 }, [7, 0.8 - SINK, 1.0], C.woodShade, C.wood);
+  b.box({ x: 3.4, y: 0.4, z: 0.2, yaw: -0.2 }, [5.5, 0.8, 1.0], C.woodShade, C.wood);
   b.box({ x: 2.5, y: SINK, z: 3, yaw: 0.5, pitch: 0.3 }, [2.6, 1.8 - SINK, 2], C.woodShade, C.bronze);
   b.box({ x: 0, y: SINK, z: 0 }, [10, 0.4 - SINK, 3], C.shade, C.stone);
 }

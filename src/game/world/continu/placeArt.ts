@@ -117,13 +117,20 @@ export interface PlaceArt {
    */
   doorView?: number;
   /**
+   * Le regard d'arrivée devant un lieu trop haut pour la caméra qui suit depuis sa porte (le Donjon, retouche 1 du lot 13a
+   * du 5e) : Kéo arrêté à sa porte, la caméra au cap de `doorView`, elle recule de `back` fois sa distance (comme la vue
+   * d'un Détour, 1,6 au plus, sans monter) et lève le regard (`lookUp`, ./camera.ts) jusqu'au haut du lieu tel qu'il est
+   * bâti, au-dessus de `look` (depuis le centre du lieu : le bord du haut le plus près d'elle). Absent : la caméra qui suit.
+   */
+  arrivalView?: { look: Vec2; back: number };
+  /**
    * Sur la Carte, ce que les étiquettes laissent à découvert, le repère du lieu de loin (les trois radeaux sur le chenal) :
    * les coins de sa boîte, depuis le centre du lieu, au niveau de l'eau. Absent : rien.
    */
   mapClear?: readonly Vec2[];
   /**
    * Sur la Carte, son nom reste de son côté, au-dessus de son point (au nord ; `MapLabel.above`) : son repère de loin est
-   * au sud, sur l'eau (les Radeaux, au bord du grand chenal).
+   * au sud, sur l'eau (les Radeaux, au bord du grand chenal), ou un lieu voisin est au sud (le Donjon, au-dessus de l'Oracle).
    */
   nameAbove?: true;
   /**

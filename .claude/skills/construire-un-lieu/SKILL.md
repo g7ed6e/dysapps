@@ -40,7 +40,7 @@ Le directeur du contenu valide les phrases de pose et la réplique de l'habitant
 
 Code en anglais, commentaires en français, dans `src/game/world/continu/`, pur (sans Three.js ni React). Copier la forme du lieu fini le plus récent :
 
-- **`<lieu>5e.ts`** : le `PlaceArt` du lieu (`placeArt.ts`) : la ruine et les volumes de chaque étape et rangée (`AddPiece`, `until` pour ce que l'étape remplace), `traceStage`, `traces` (avec leur `row`), `sceneSpot`, `role`, `doorView` (le cap d'arrivée de « Y aller »), l'objet des réponses.
+- **`<lieu>5e.ts`** : le `PlaceArt` du lieu (`placeArt.ts`) : la ruine et les volumes de chaque étape et rangée (`AddPiece`, `until` pour ce que l'étape remplace), `traceStage`, `traces` (avec leur `row`), `sceneSpot`, `role`, `doorView` (le cap d'arrivée de « Y aller »), `arrivalView` pour un lieu trop haut pour la caméra qui suit (elle recule et lève le regard à la porte ; le Donjon, avec son test de cadre), l'objet des réponses.
 - **`<lieu>Surroundings.ts`** : ses abords (1 500 triangles au plus, `SURROUNDINGS_MAX`), inscrits dans `surroundings.ts`.
 - **Les registres**, une ligne chacun : `northShore.ts` (`ART`), `construction.ts` (étape des traces), `questionScene.ts`, `questions.ts`, `scenette.ts` (rôle, accueil, site, sol), `plan5e.ts` (`BUILT_PLACES_5E`, seule liste des lieux finis), `ruins5e.ts` (le lieu quitte la ruine générique), `habitants.ts` ; `terrain5e.ts` (`FOREST_KEEP`) si la forêt doit s'écarter du lieu ou de la caméra.
 - **Un Détour** : son fichier (`hutte5e.ts`), dans le cadre `DETOURS_5E` de `detours.ts` ; un nouvel identifiant s'ajoute à la fin de `DETOUR_IDS` (et dans `DETOUR_IDS_5E`), pour que les sauvegardes restent lisibles.
