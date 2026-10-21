@@ -62,6 +62,7 @@ import { SHADOW_DIR } from './sky';
 import { SURROUNDINGS } from './surroundings';
 import { HABITANT_HEIGHT, habitantEastSide, habitantWestHand, loadedHabitant } from './habitants';
 import { MANGROVE, mangroveDeckTop } from './places';
+import { guideOf, type Equipier } from './equipage';
 
 /**
  * Ce que l'élève lit de l'habitant : son rôle en tête du panneau, sans prénom tant que le mainteneur n'a pas tranché
@@ -388,6 +389,11 @@ interface ScenetteSite {
   floor(): Vec3;
   keo: { dx: number; dz: number; scale: number; yaw: number };
   habitant: { dx: number; dz: number };
+  /**
+   * L'équipier qui guide le lieu (GD-23, lot 1, ./equipage.ts), depuis les pieds de Kéo : absent, la place commune
+   * (`GUIDE_BESIDE_KEO`) ; donné, celle d'un décor qui la prend.
+   */
+  guide?: { dx: number; dz: number; yaw: number };
   subject: { halfWidth: number; bottom: number; top: number; depth: number };
   pitch: number;
   /**
@@ -717,6 +723,26 @@ export function scenetteHabitant(anyPlace: AnyPlaceId, posed = true): Vec3 {
   const f = floorOf(place, posed);
   const h = siteOf(place, posed).habitant;
   return { x: f.x + h.dx, y: f.y, z: f.z + h.dz };
+}
+
+/**
+ * La place commune de l'équipier qui guide un lieu (GD-23, lot 1), depuis les pieds de Kéo : un pas derrière lui (au
+ * nord, plus loin de la caméra) et un demi-pas vers le milieu de la scène, tourné vers l'habitant. Il ne cache ni Kéo,
+ * ni l'habitant, ni la rangée des réponses, qui est devant eux, et ne barre aucun chemin : la scénette est un décor.
+ */
+const GUIDE_BESIDE_KEO = { dx: 0.6, dz: -0.8, yaw: 0.35 } as const;
+
+/**
+ * Où se tient l'équipier qui guide la scénette (ses pieds, au sol de Kéo) et son cap (le visage vers +z au cap nul), ou
+ * `null` : Kéo est seul (./equipage.ts, `guideOf`).
+ */
+export function scenetteGuide(anyPlace: AnyPlaceId, posed = true): { equipier: Equipier; at: Vec3; yaw: number } | null {
+  const equipier = guideOf(anyPlace);
+  if (!equipier) return null;
+  const place = scenePlace(anyPlace);
+  const k = scenetteKeo(place, posed).at;
+  const g = siteOf(place, posed).guide ?? GUIDE_BESIDE_KEO;
+  return { equipier, at: { x: k.x + g.dx, y: k.y, z: k.z + g.dz }, yaw: g.yaw };
 }
 
 /**

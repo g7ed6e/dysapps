@@ -230,6 +230,15 @@ Le dépôt garde le résultat, `modeles/6e-habitant-<lieu>/habitant.glb`, sans `
 
 Écarts connus, à reprendre si on rouvre un modèle (consultant Archipéo, 18 octobre 2026) : la longue-vue du guetteur garde son volume sur l’épaule (seule sa couleur passe au cuivre) ; la plume de la copiste fait encore deux pointes de face et de dos ; le chapeau de papier de l’imprimeur reste blanc, fondu dans ses cheveux ; la gardienne du Phare et le pilote des Balises se ressemblent (ciré jaune, bonnet rouge), comme leurs concepts. Les couleurs des concepts font foi, plus celles des anciens pions.
 
+## Les équipiers qui guident les scénettes (GD-23, 21 octobre 2026)
+
+Zia et Malo, à côté de Kéo dans la scénette des lieux qu’ils guident, viennent de leurs modèles à squelette du monde ouvert (Bibliothèque, `archipeo/personnages-3d/equipage/w-monde-ouvert/glb/<nom>-rig.glb`, 11 279 et 9 336 triangles). Leur chaîne tourne hors du dépôt (Bibliothèque, `archipeo/monde-habite/outils/`) :
+
+- `equipier.py` garde la pose de repos (sans squelette, sans normales), tourne le modèle le visage vers +z (le fichier regarde vers −x), ne garde que l’image de couleur, réduite à 1024 ; pour Malo, `eclaircir` relève les sombres vers le concept (le manteau marine, presque noir dans le brut ; les noirs des lunettes restent sombres) ;
+- compacté comme les habitants (`compacter.py quant=1`).
+
+Le dépôt garde `modeles/6e-equipage-<nom>/equipier.glb`. Le jeu le lit avec `lireGlbTexture`, le pose à la taille de Kéo dans la scénette (`src/game/world/continu/equipage.ts`, `scenette.ts` `scenetteGuide`) et le dessine dans la vue (`src/game/three/archipeo/equipierModels.ts`). Un fichier qui manque ou ne se lit pas laisse Kéo seul.
+
 ## Les habitants du monde ouvert du 5e (19 octobre 2026)
 
 Les quatorze habitants du 5e (un par lieu, nommés par leur métier : la fontainière de la Montée, le marchand des Radeaux, la cordière de la Croisée, le tailleur de pierre des Instants, le signaleur du Sémaphore, la peintre du Gaillard, la maçonne du Donjon, le riziculteur des Terrasses, la sondeuse des Fumerolles, le souffleur de verre de l’Étuve, la câbliste des Nacelles, le boulanger du Hameau, l’aubergiste de l’Auberge, le conteur de l’Oracle) entrent en modèles fixes (choix du mainteneur, 19 octobre 2026). Leur chaîne tourne hors du dépôt (Bibliothèque, `archipeo/univers-challenge/niveaux/5e/monde-ouvert/habitants-3d/`, outils dans `outils/`) :

@@ -25,6 +25,7 @@ import { PORT_WORST, assemblyScene, portFacets } from './port';
 import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
 import type { ItemScene } from './questions';
 import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
+import { EQUIPIER_TRIANGLES, guideOf } from './equipage';
 import { bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
 import { landTileCounts } from './flora';
 import { buildHeightField, heightOnMesh, tileRings } from './terrain';
@@ -61,7 +62,10 @@ const FAUNA_COST = { triangles: whaleFacets().triangles + spoutFacets().triangle
 const SKY = { triangles: skyDome(1).triangles, calls: 1 };
 
 /**
- * L'enveloppe du monde ouvert du 6e : 100 140 triangles, 22 appels, relevée de 140 triangles pour les bêtes des côtes (piste
+ * L'enveloppe du monde ouvert du 6e : 111 400 triangles, 22 appels, relevée de 11 260 triangles pour l'équipier qui guide
+ * la scénette (GD-23, lot 1, choix du mainteneur du 21 octobre 2026 : « Zia et Malo, 12 scénettes », la hausse de
+ * 11 300 triangles et d'un appel dite sur la carte ; les images par seconde à mesurer sur l'iPad avant la fusion).
+ * Avant : 100 140 triangles, 22 appels, relevée de 140 triangles pour les bêtes des côtes (piste
  * « Ambiance », choisie par le mainteneur le 19 octobre 2026 avec « environ +300 triangles, 0 appel » : 134 triangles
  * de plus, et les 40 de marge d'avant gardés). Avant : 100 000 triangles, 22 appels, relevée pour la Nef (GD-21, « on peut augmenter le budget si
  * besoin », mainteneur, 18 octobre 2026 ; 98 000 avant). Les 98 000 triangles et 22 appels (21, puis 22 avec les
@@ -72,7 +76,7 @@ const SKY = { triangles: skyDome(1).triangles, calls: 1 };
  * déplacement libre, la silhouette de Kéo et la marque au sol, 18 octobre 2026).
  * La Carte la touche presque (toute l'île de loin, sa végétation comprise).
  */
-const OPEN_WORLD_BUDGET_6E = { triangles: 100_140, calls: 22 } as const;
+const OPEN_WORLD_BUDGET_6E = { triangles: 111_400, calls: 22 } as const;
 
 /**
  * L'enveloppe du monde ouvert du 5e : 118 000 triangles, 22 appels (choix du mainteneur, 20 octobre 2026, « Relever
@@ -167,13 +171,15 @@ function questionCost(): { triangles: number; calls: number } {
  * lumière passent par le maillage de la réaction (la réaction de l'item cède sa place à l'objet qui va se poser, puis à
  * la lumière ; au Phare, rien : les cloches s'effacent) : leurs triangles comptent ici, pas leur appel. Kéo y reste,
  * sans son anneau (son appel est compté quand même : le pire cas). L'habitant est son modèle 3D (`pawnTriangles`), un
- * appel à lui.
+ * appel à lui. L'équipier qui guide le lieu (GD-23, lot 1, ./equipage.ts), à côté de Kéo, au plus `EQUIPIER_TRIANGLES`,
+ * dans son maillage à part, de son matériau texturé : un appel de plus, compté partout (le pire cas).
  */
 function scenetteCost(): { triangles: number; calls: number } {
   // La scénette d'assemblage de l'Escale (GD-20, lot 2) passe par le maillage de la réaction : les pièces, puis le bloc.
   const assembly = assemblyScene(PORT_WORST);
-  const triangles = Math.max(...SCENETTE_PLACES.map((p) => Math.max(scenetteDecor(p).triangles, successTriangles(p)) - pawnTriangles(p) + HABITANT_TRIANGLES), assembly.pieces.triangles, assembly.made.triangles);
-  return { triangles, calls: 2 };
+  const guide = (p: PlaceId) => (guideOf(p) ? EQUIPIER_TRIANGLES : 0);
+  const triangles = Math.max(...SCENETTE_PLACES.map((p) => Math.max(scenetteDecor(p).triangles, successTriangles(p)) - pawnTriangles(p) + HABITANT_TRIANGLES + guide(p)), assembly.pieces.triangles, assembly.made.triangles);
+  return { triangles, calls: 3 };
 }
 
 /**

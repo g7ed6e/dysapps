@@ -97,7 +97,7 @@ const HABITANTS = import.meta.glob('../../docs/univers/archipeo/personnages/mode
   eager: true,
 }) as Record<string, string>;
 
-/** Les chargements en cours des habitants, et s'ils ont manqué, quand. */
+/** Les chargements en cours des habitants et des équipiers, et s'ils ont manqué, quand. */
 const habitantLoads = new Map<string, { p: Promise<ModeleTexture | null>; manque?: number }>();
 
 /**
@@ -107,9 +107,28 @@ const habitantLoads = new Map<string, { p: Promise<ModeleTexture | null>; manque
  * worker garde à la première lecture (cache « dysapps-habitants-3d », vite.config.ts).
  */
 export function loadHabitant(nom: string): Promise<ModeleTexture | null> {
+  return loadTextured(nom, HABITANTS[`../../docs/univers/archipeo/personnages/modeles/${nom}/habitant.glb`]);
+}
+
+/**
+ * L'adresse du modèle de chaque équipier qui guide une scénette (GD-23, « 6e-equipage-<nom> »), texturé, déjà compacté
+ * par sa chaîne, comme les habitants (./world/continu/equipage.ts).
+ */
+const EQUIPIERS = import.meta.glob('../../docs/univers/archipeo/personnages/modeles/6e-equipage-*/equipier.glb', {
+  query: '?url',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
+/** Charge le modèle d'un équipier (son dossier, « 6e-equipage-<nom> ») : lu, ou rien, comme un habitant. */
+export function loadEquipier(nom: string): Promise<ModeleTexture | null> {
+  return loadTextured(nom, EQUIPIERS[`../../docs/univers/archipeo/personnages/modeles/${nom}/equipier.glb`]);
+}
+
+/** Lit un modèle texturé (un habitant, un équipier) à son adresse : lu, ou rien ; ne rejette jamais. */
+function loadTextured(nom: string, url: string | undefined): Promise<ModeleTexture | null> {
   const deja = habitantLoads.get(nom);
   if (deja && (deja.manque === undefined || performance.now() - deja.manque < RELANCE_MS)) return deja.p;
-  const url = HABITANTS[`../../docs/univers/archipeo/personnages/modeles/${nom}/habitant.glb`];
   const chargement: { p: Promise<ModeleTexture | null>; manque?: number } = { p: Promise.resolve(null) };
   chargement.p = (async () => {
     try {
@@ -118,7 +137,7 @@ export function loadHabitant(nom: string): Promise<ModeleTexture | null> {
       if (!r.ok) throw new Error(String(r.status));
       return lireGlbTexture(await r.arrayBuffer());
     } catch {
-      // Hors ligne sans le fichier, ou un fichier abîmé : le pion dessiné en code reste.
+      // Hors ligne sans le fichier, ou un fichier abîmé : le pion dessiné en code reste (l'équipier, rien).
       chargement.manque = performance.now();
       return null;
     } finally {

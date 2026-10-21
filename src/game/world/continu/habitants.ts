@@ -85,10 +85,10 @@ export interface HabitantModel {
 }
 
 /**
- * La mise en place d'un fichier (ses sommets, trois nombres chacun) : à la hauteur de l'habitant, ses pieds en 0, centré
- * sur ses jambes, le visage vers +z.
+ * La mise en place d'un fichier (ses sommets, trois nombres chacun) : à la hauteur de l'habitant (ou à `height`, celle
+ * d'un équipier, ./equipage.ts), ses pieds en 0, centré sur ses jambes, le visage vers +z.
  */
-export function habitantFit(positions: Float32Array): HabitantFit {
+export function habitantFit(positions: Float32Array, height = HABITANT_HEIGHT): HabitantFit {
   let [y0, y1] = [Infinity, -Infinity];
   for (let i = 1; i < positions.length; i += 3) [y0, y1] = [Math.min(y0, positions[i]), Math.max(y1, positions[i])];
   if (!(y1 > y0)) throw new Error('Modèle sans hauteur');
@@ -97,7 +97,7 @@ export function habitantFit(positions: Float32Array): HabitantFit {
     if (positions[i + 1] > y0 + FEET_SHARE * (y1 - y0)) continue;
     [x0, x1, z0, z1] = [Math.min(x0, positions[i]), Math.max(x1, positions[i]), Math.min(z0, positions[i + 2]), Math.max(z1, positions[i + 2])];
   }
-  return { center: { x: (x0 + x1) / 2, y: y0, z: (z0 + z1) / 2 }, scale: HABITANT_HEIGHT / (y1 - y0), yaw: (QUARTER_TURNS * Math.PI) / 2 };
+  return { center: { x: (x0 + x1) / 2, y: y0, z: (z0 + z1) / 2 }, scale: height / (y1 - y0), yaw: (QUARTER_TURNS * Math.PI) / 2 };
 }
 
 /** Les sommets d'un fichier mis en place (un nouveau tableau). */
