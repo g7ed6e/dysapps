@@ -604,16 +604,41 @@ function islandPage(b, d) {
     }
   }
   const parties = d.partiesDe(b.id);
+  const tableDesParties = (ps) =>
+    table(
+      ['Partie', 'Nom', 'Blocs posés'],
+      ps.map((p) => [String(p.rang), p.nom, String(p.cases.reduce((n, c) => n + c.keys.length, 0))]),
+    );
   lines.push('## Le bâtiment', '');
-  if (parties.length) {
+  // L'île du latin et du grec (GD-13, GD-14) : le bâtiment compte les missions jouables de l'option choisie.
+  if (parties.length && b.subject === 'lca') {
+    const latin = d.partiesDe(b.id, 'la');
+    const grec = d.partiesDe(b.id, 'gr');
+    const enAttente = (o) => b.exercises.filter((x) => x.option === o && x.waiting).length;
+    const attend = (o, langue) =>
+      enAttente(o) ? ` (${enAttente(o) > 1 ? `${enAttente(o)} missions de ${langue} attendent` : `une mission de ${langue} attend`} encore ; quand ${enAttente(o) > 1 ? 'elles arriveront' : 'elle arrivera'}, rien de posé ne se défait)` : '';
+    lines.push(
+      `Le bâtiment de l’île a une partie par mission de l’option choisie dans les Réglages : ${plural(latin.length, 'partie')} en latin${attend('la', 'latin')}, ${plural(grec.length, 'partie')} en grec${attend('gr', 'grec')}. La première fois que l’élève termine une mission de l’île, une partie se pose toute seule, sans prendre de blocs, quels que soient le niveau, les étoiles et les jokers. Les parties se posent dans cet ordre, quelle que soit la mission jouée.`,
+      '',
+      'En latin :',
+      '',
+      tableDesParties(latin),
+      '',
+      'En grec :',
+      '',
+      tableDesParties(grec),
+      '',
+    );
+  } else if (parties.length) {
     lines.push(
       `Le bâtiment de l’île a ${plural(parties.length, 'partie')}, une par mission. La première fois que l’élève termine une mission de l’île, une partie se pose toute seule, sans prendre de blocs, quels que soient le niveau, les étoiles et les jokers. Les parties se posent dans cet ordre, quelle que soit la mission jouée.`,
       '',
-      table(
-        ['Partie', 'Nom', 'Blocs posés'],
-        parties.map((p) => [String(p.rang), p.nom, String(p.cases.reduce((n, c) => n + c.keys.length, 0))]),
-      ),
+      tableDesParties(parties),
       '',
+    );
+  }
+  if (parties.length) {
+    lines.push(
       'Le dessin du bâtiment suit trois plans. Un plan fini rapporte son XP, et la créature le dit.',
       '',
       table(

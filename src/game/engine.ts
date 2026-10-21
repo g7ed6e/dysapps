@@ -10,6 +10,7 @@ import { missionsTerminees, type Partie, poserLesParties } from './world/parts';
 import { buildPiece, projectOf } from './world/projects';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { starsFor } from '../core/stars';
+import { lcaCourante } from '../core/settings';
 import { archipelagoOf, buildBridge as buildBridgePure, type BuildBridgeResult, getArchipelago, isBiomeUnlocked, reachableIslands, voyageId } from './world/archipelago';
 import { beatenGuardians, kitReady, VEHICLE_STAGES, type VehicleStage } from './world/vehicle';
 import type { DrawKey, GameState, SpacedItem } from './engine/state';
@@ -211,7 +212,8 @@ export interface PoseDUneMission {
  * ligne du journal par plan fini. Sans effet si le compte y est.
  */
 export function poserLesPartiesDues(state: GameState, biome: BiomeId, today = todayISO()): { state: GameState; pose: PoseDUneMission | null } {
-  const r = poserLesParties(biome, state.world.parts, missionsTerminees(state.progress, biome));
+  // Sur le lieu du latin et du grec, seules les missions de l'option choisie posent (GD-14).
+  const r = poserLesParties(biome, state.world.parts, missionsTerminees(state.progress, biome, lcaCourante()));
   if (!r.posees.length) return { state, pose: null };
   const log = [...state.world.log, ...r.plansFinis.map((p) => ({ day: today, part: p.id }))].slice(-100);
   return { state: { ...state, world: { ...state.world, parts: r.parts, log } }, pose: { posees: r.posees, plansFinis: r.plansFinis } };
