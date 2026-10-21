@@ -2,7 +2,7 @@
 // 2026) : elle choisit, pour la page du monde en 3D, la disposition en grille d'aujourd'hui (WorldPage, les deux
 // univers) ou la disposition continue (le monde ouvert, ./three/archipeo/), chargée à la demande. La disposition
 // continue ne vient qu'avec l'adresse `?monde=ouvert` (avant le `#`), dans l'univers Archipéo, à un archipel qui a son
-// monde ouvert (aujourd'hui le 6e), dont elle passe le niveau à la page (GD-22, le plan par niveau) ; sans elle, rien ne
+// monde ouvert (le 6e, le 5e et le 4e), dont elle passe le niveau à la page (GD-22, le plan par niveau) ; sans elle, rien ne
 // change, et Blocland ne la voit jamais. C'est le seul fichier qui mène au monde continu (un test le vérifie :
 // ./world/continu/isolation.test.ts).
 import { lazy, Suspense } from 'react';
@@ -22,7 +22,7 @@ export type WorldLayout = 'grid' | 'continuous';
  * Les archipels qui ont leur monde ouvert : ceux des plans du monde continu (./world/continu/levelPlan.ts,
  * `OPEN_WORLD_LEVELS`, que ce fichier ne lit pas ; un test vérifie que les deux listes sont les mêmes).
  */
-export const OPEN_WORLD_ARCHIPELAGOS = ['6e', '5e'] as const satisfies readonly ArchipelagoId[];
+export const OPEN_WORLD_ARCHIPELAGOS = ['6e', '5e', '4e'] as const satisfies readonly ArchipelagoId[];
 
 /** Un archipel qui a son monde ouvert. */
 type OpenWorldArchipelago = (typeof OPEN_WORLD_ARCHIPELAGOS)[number];

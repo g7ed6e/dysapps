@@ -4,11 +4,14 @@
 // le lien : chaque terre en îles, et ce que le monde montre des terres, tiré des liaisons posées de la grille et des
 // missions jouées. Rien de neuf dans la sauvegarde. Code pur.
 import type { BiomeId } from '../../biomes';
-import { getBridge, reachableIslands } from '../../world/archipelago';
+import { ARCHIPELAGOS, getBridge, reachableIslands } from '../../world/archipelago';
 import type { GridLand } from '../../world/arrange';
-import { isLinkedLand, landById, landOf, landPrice, linkedLands, openLands, type LandId, type LinkedLand } from '../../world/continu/lands';
+import { isLinkedLand, landById, landOf, landPrice, linkedLands, openLands, planOfLand, type LandId, type LinkedLand } from '../../world/continu/lands';
 import { ALL_LANDS, placeById, placeOfIsland, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
 import { playedPlaces, type MissionMark } from '../../world/continu/mission';
+
+/** L'île du port de la grille d'un plan (celle où la grille fait arriver dans sa classe). */
+const gridPortOf = (plan: LevelPlan): string | undefined => ARCHIPELAGOS.find((a) => a.classe === plan.level)?.port;
 
 /** Les îles des lieux d'une terre. */
 const islandsOf = (land: LandId): BiomeId[] => landById(land).places.map((p) => placeById(p).island as BiomeId);
@@ -16,7 +19,14 @@ const islandsOf = (land: LandId): BiomeId[] => landById(land).places.map((p) => 
 /** Chaque terre en îles, de tous les plans, pour la grille : la terre d'avant, le prix (rien pour la terre de départ). */
 const GRID_LANDS: ReadonlyMap<LandId, GridLand> = (() => {
   const out = new Map<LandId, GridLand>();
-  for (const land of ALL_LANDS) out.set(land.id, { islands: islandsOf(land.id), after: land.after ? out.get(land.after)! : null, price: land.after ? landPrice(land.id) : 0 });
+  for (const land of ALL_LANDS) {
+    const islands = islandsOf(land.id);
+    // Le port de la grille d'un plan qui le ferme (`shutPort`, au 4e), s'il est de cette terre.
+    const plan = planOfLand(land.id);
+    const port = plan.shutPort && land.after ? gridPortOf(plan) : undefined;
+    const shut = port && islands.includes(port as BiomeId) ? (port as BiomeId) : undefined;
+    out.set(land.id, { islands, after: land.after ? out.get(land.after)! : null, price: land.after ? landPrice(land.id) : 0, ...(shut ? { shut } : {}) });
+  }
   return out;
 })();
 
@@ -28,6 +38,18 @@ export const gridLands = (plan: LevelPlan): GridLand[] => plan.lands.map((l) => 
 
 /** Les îles des lieux où l'élève a déjà joué (`ensureLands` les ouvre, et leur terre avec eux). */
 export const playedIslands = (plan: LevelPlan, bornes: readonly MissionMark[]): BiomeId[] => playedPlaces(plan, bornes).map((id) => placeById(id).island as BiomeId);
+
+/**
+ * Le lieu d'où part Kéo quand l'adresse nomme une île (`/adventure/<île>`), ou rien (le quai du lieu de départ). Au 4e
+ * (`shutPort`), l'île du port de la grille, le Gabarit, fait arriver à la Crique tant que sa terre, le Bastion, est
+ * fermée (`closed` ; décision du mainteneur, 21 octobre 2026) ; ouverte, Kéo part du Gabarit. Ailleurs, rien ne change.
+ */
+export function arrivalPlace(plan: LevelPlan, island: string | undefined, closed: readonly LinkedLand[]): PlaceId | undefined {
+  const place = island ? placeOfIsland(island)?.id : undefined;
+  if (!place || !plan.shutPort || island !== gridPortOf(plan)) return place;
+  const land = landOf(place);
+  return isLinkedLand(land) && closed.includes(land) ? undefined : place;
+}
 
 /** Ce que le monde continu montre des terres. */
 export interface OpenWorldLands {
@@ -47,7 +69,9 @@ export interface OpenWorldLands {
 export function openWorldLands(plan: LevelPlan, links: readonly string[], bornes: readonly MissionMark[], ouvrage?: string, island?: string): OpenWorldLands {
   const islands: ReadonlySet<string> = reachableIslands([...links]);
   const played = new Set(playedPlaces(plan, bornes));
-  const open = openLands(plan, (id: PlaceId) => islands.has(placeById(id).island) || played.has(id));
+  // Le port de la grille d'un plan qui le ferme (`shutPort`, au 4e) n'ouvre pas sa terre à lui seul : il faut y avoir joué.
+  const port = plan.shutPort ? gridPortOf(plan) : undefined;
+  const open = openLands(plan, (id: PlaceId) => (islands.has(placeById(id).island) && placeById(id).island !== port) || played.has(id));
   const closed = linkedLands(plan).filter((l) => !open.has(l));
   const waiting = closed.filter((l) => !open.has(landById(l).after!));
   const bridge = ouvrage ? getBridge(ouvrage) : undefined;

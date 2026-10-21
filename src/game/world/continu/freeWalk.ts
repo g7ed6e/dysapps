@@ -11,12 +11,15 @@ import { distance, type Vec2 } from './geometry';
 import { bridgeEdge, linkedLands, nodeLands, startLandOf, type LandId, type LinkedLand } from './lands';
 import { planFor, type LevelPlan } from './levelPlan';
 import { pathNode } from './paths';
+import { NETWORK_4E } from './paths4e';
 import { NETWORK_5E } from './paths5e';
 import { FAILLE_BLOCKED } from './faille5e';
+import { CRIQUE, CRIQUE_BUILDINGS, criqueFloor } from './plan4e';
 import { FAILLE_5E, LISIERE, LISIERE_BUILDINGS, lisiereFloor } from './plan5e';
 import { PORT, PORT_PAVING, TERRAIN, portFloor } from './plan6e';
 import { modelOfPlace } from './places';
 import { heightOnMesh, type HeightField } from './terrain';
+import { obstaclesIn4e, walkBlocked4e } from './terrain4e';
 import { obstaclesIn5e } from './terrain5e';
 
 /**
@@ -66,6 +69,8 @@ interface WalkWorld {
   paved(x: number, z: number): boolean;
   obstacles(field: HeightField, tx: number, tz: number): readonly { x: number; z: number; r: number }[];
   boxes(block: (center: Vec2, reach: number, toLocal: (p: Vec2) => Vec2, box: { x0: number; x1: number; z0: number; z1: number }) => void): void;
+  /** Un sol où l'on ne marche jamais, quelle que soit sa pente (au 4e, le sommet du volcan et la coulée figée), ou rien. */
+  blocked?(p: Vec2): boolean;
 }
 
 const WALK_6E: WalkWorld = {
@@ -88,7 +93,19 @@ const WALK_5E: WalkWorld = {
   },
 };
 
-const walkWorldOf = (plan: LevelPlan): WalkWorld => (plan.level === '5e' ? WALK_5E : WALK_6E);
+const WALK_4E: WalkWorld = {
+  node: (id) => NETWORK_4E.pathNode(id).at,
+  // La pierre de la Crique, et ses bâtiments (lot 1 du 4e).
+  paved: (x, z) => criqueFloor(x, z) !== null,
+  obstacles: (_field, tx, tz) => obstaclesIn4e(tx, tz),
+  boxes: (block) => block(CRIQUE.toWorld((CRIQUE_BUILDINGS.x0 + CRIQUE_BUILDINGS.x1) / 2, (CRIQUE_BUILDINGS.z0 + CRIQUE_BUILDINGS.z1) / 2), 30, CRIQUE.toLocal, CRIQUE_BUILDINGS),
+  // Le sommet du volcan et la coulée figée, où l'on ne marche pas (le ravin, plus bas que la rive, l'est déjà).
+  blocked: walkBlocked4e,
+};
+
+const WALKS: Readonly<Record<LevelPlan['level'], WalkWorld>> = { '6e': WALK_6E, '5e': WALK_5E, '4e': WALK_4E };
+
+const walkWorldOf = (plan: LevelPlan): WalkWorld => WALKS[plan.level];
 
 /** Le rang d'une terre dans celles de la grille (toute terre y est ; sinon, une erreur plutôt qu'un rang faux). */
 function landIndex(lands: readonly LandId[], l: LandId): number {
@@ -158,6 +175,7 @@ export function* walkGridSteps(field: HeightField, plan: LevelPlan = PLAN_6E): G
         kind[j * nx + i] = GROUND;
         continue;
       }
+      if (world.blocked?.(p)) continue;
       const h = heightOnMesh(field, p.x, p.z);
       if (h < FREE_WALK.shore) continue;
       const gx = (heightOnMesh(field, p.x + e, p.z) - heightOnMesh(field, p.x - e, p.z)) / (2 * e);

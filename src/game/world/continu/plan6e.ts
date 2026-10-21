@@ -399,6 +399,11 @@ export interface OpenPlace<Id extends string = PlaceId> {
   door: string;
   /** Le rayon de toucher autour du centre : large (rien de précis à viser). */
   touchRadius: number;
+  /**
+   * Sur la Carte, le côté où son nom se pose d'abord (au 4e, celui du plan validé : retouche 1 du lot 1, consultant UX
+   * UI) : dessous, à gauche ou à droite de son point ; rien, au-dessus, comme au 6e et au 5e.
+   */
+  mapSide?: 'below' | 'left' | 'right';
 }
 
 /**

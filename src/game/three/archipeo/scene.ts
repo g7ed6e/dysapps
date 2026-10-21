@@ -17,7 +17,7 @@ import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, WORLD_FOG, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
+import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
@@ -31,12 +31,11 @@ import { failleFacets, failleTapTarget } from '../../world/continu/faille5e';
 import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/continu/montee5e';
 import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
-import { hasScenette, placeById, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
+import { hasScenette, placeById, type LevelPlan, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
 import { hasHabitantModel } from '../../world/continu/habitants';
 import { arrivalViewOf, doorViewOf, placeArt } from '../../world/continu/northShore';
 import { levelWorld, type LevelWorld, type ThinFog } from '../../world/continu/levelWorld';
-import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from '../../world/continu/mist5e';
-import { pathMapEdges5e } from '../../world/continu/paths5e';
+import { riftMistFacets } from '../../world/continu/mist5e';
 import { COLORS_5E } from '../../world/continu/plan5e';
 import { onPlateau, plateauShare } from '../../world/continu/terrain5e';
 import { freeRoute, isWalkable, nearestWalkable, onPathCell, walkGridSteps, type WalkGrid } from '../../world/continu/freeWalk';
@@ -85,6 +84,7 @@ import {
 import { SEA_TEXTURE } from '../../world/continu/sea';
 import { skyDome, type HeightLight } from '../../world/continu/sky';
 import { FOLLOW_FAR_5E } from '../../world/continu/nef5e';
+import { FOLLOW_FAR_4E } from '../../world/continu/crique4e';
 import { ringHeights, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
@@ -219,6 +219,11 @@ export interface OpenWorld {
    * fiche), sans bouger (un décalage de l'image).
    */
   frame(free: { left: number; top: number; width: number; height: number } | null, place?: PlaceId | 'nef'): void;
+  /**
+   * La hauteur, en pixels depuis le bas de la vue, de la rangée du bas (« Y aller ») et de son écart : au 4e, les pieds de
+   * Kéo restent au-dessus (`keepFeetAbove`) ; ailleurs, sans effet.
+   */
+  footRoom(px: number): void;
   /**
    * La scénette d'assemblage, au retour d'une question réussie : les pièces de l'établi se joignent en un bloc, que la
    * grue pose sur le râtelier ; un toucher la passe, d'un coup avec « Réduire les animations ». `onAssembled` dit sa fin.
@@ -386,6 +391,8 @@ export interface MapSpotOnScreen {
   clear?: { left: number; top: number; right: number; bottom: number };
   /** Son nom reste au-dessus de son point, de son côté (`PlaceArt.nameAbove` : son repère de loin est au sud, sur l'eau). */
   above?: true;
+  /** Le côté où son nom se pose d'abord (`OpenPlace.mapSide`, au 4e) ; rien : au-dessus. */
+  side?: 'below' | 'left' | 'right';
 }
 
 /** Un repère de la scène à l'écran, en pixels. */
@@ -486,6 +493,8 @@ const FRAMED_BRIDGE_NEAR = 12;
 /** Le bout de la caméra qui suit Kéo, et celui de la Carte (l'île entière, de haut), en unités. */
 const FOLLOW_FAR = 500;
 // Au 5e, `FOLLOW_FAR_5E` (./world/continu/nef5e.ts), pour le panache de la Nef, au-delà de 500 vu du quai.
+/** Le bout de la caméra qui suit Kéo, par niveau : 500 au 6e ; au 5e et au 4e, le leur (le panache de leur Nef, leur volcan). */
+const FOLLOW_FAR_OF: Readonly<Record<OpenWorldLevel, number>> = { '6e': FOLLOW_FAR, '5e': FOLLOW_FAR_5E, '4e': FOLLOW_FAR_4E };
 /**
  * Le regard levé au quai du lieu de départ, ou à la porte d'un lieu haut (`PlaceArt.arrivalView`), ne vaut que la caméra
  * tournée à moins de tant de son cap (en radians).
@@ -719,7 +728,7 @@ function thinFogLines(list: readonly ThinFog[]): string {
  * lampe du 6e. Quelques lignes de shader après celles de `unshadedLamp`, aucun appel de plus ; le programme a sa propre
  * clé (le 6e garde le sien, inchangé).
  */
-function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: readonly ThinFog[]): THREE.MeshLambertMaterial {
+function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: readonly ThinFog[], key: string): THREE.MeshLambertMaterial {
   const before = m.onBeforeCompile;
   const lantern = new THREE.Vector3(...linearRgb(COLORS_5E.lantern));
   m.onBeforeCompile = (shader, renderer) => {
@@ -749,12 +758,11 @@ function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: reado
         '#ifdef USE_FOG\nfloat fogFactor = smoothstep( fogNear, fogFar, vFogDepth ) * mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) ) * thinFogK;\ngl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n#endif',
       );
   };
-  // La clé du programme est fixe : Three.js réutilise le programme compilé de toute matière qui porte la même clé, sans
-  // relire `onBeforeCompile`. Elle ne vaut donc que tant qu'un seul niveau prend la lumière par la hauteur, avec une
-  // seule liste `thin` (le 5e) ; un autre niveau qui la prendrait avec d'autres couleurs peu voilées devrait mettre sa
-  // liste dans la clé. Les couleurs de `thin` (huit au 5e : huit comparaisons par fragment, à mesurer sur l'iPad) sont
+  // La clé du programme, une par niveau (`key` : celle du 5e reste « archipeo-hauteur », le 4e a la sienne) : Three.js
+  // réutilise le programme compilé de toute matière qui porte la même clé, sans relire `onBeforeCompile`, et chaque
+  // niveau a sa liste `thin` et ses réglages. Les couleurs de `thin` (huit au 5e : huit comparaisons par fragment, à mesurer sur l'iPad) sont
   // loin de toute autre couleur du 5e (world/continu/thinFog.test.ts).
-  m.customProgramCacheKey = () => 'archipeo-hauteur';
+  m.customProgramCacheKey = () => key;
   return m;
 }
 
@@ -804,7 +812,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // et rien ne s'y appelle, sauf la scénette et les traces de la Montée (GD-22, lot 3, `hasScenette`), et sa faune.
   const world = levelWorld(level);
   const { sixth, net } = world;
-  const followFar = sixth ? FOLLOW_FAR : FOLLOW_FAR_5E;
+  // Le brouillard du lointain du niveau (au 4e, repoussé : l'air net de la fin de journée).
+  const FOG = world.fog;
+  // Le 5e seul a sa falaise, sa brume des failles, ses Détours et sa faune par terre ; le 4e (lot 1) n'a encore rien de
+  // tout cela, et sur la Carte, les hachures de son sommet.
+  const fifth = level === '5e';
+  const followFar = FOLLOW_FAR_OF[level];
   // Le lieu de départ du niveau et sa Nef (GD-20, lot 2 ; GD-21 ; GD-22, lot 4) : l'Escale et le voilier au 6e, la
   // Lisière et le dirigeable au 5e.
   const departure = world.departure;
@@ -825,7 +838,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // point 3, lot 3 : la mer rejoint le ciel sans couture).
   const horizon = new THREE.Color(world.horizon);
   scene.background = horizon;
-  const fog = new THREE.Fog(horizon, WORLD_FOG.near, WORLD_FOG.far);
+  const fog = new THREE.Fog(horizon, FOG.near, FOG.far);
   scene.fog = fog;
   const camera = new THREE.PerspectiveCamera(40, host.clientWidth / Math.max(1, host.clientHeight), 0.5, followFar);
   // Elle voit le monde et Kéo, à part sur sa couche (sa silhouette, `drawWithSilhouette`).
@@ -877,7 +890,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const rotorAngle = { value: 0 };
   const landMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), vaneAngle, rotorAngle);
   // Au 5e, la lumière par la hauteur (ses deux étages) ; le 6e garde son matériau tel quel.
-  if (world.heightLight) heightLit(landMaterial, world.heightLight, world.thinFog);
+  if (world.heightLight) heightLit(landMaterial, world.heightLight, world.thinFog, fifth ? 'archipeo-hauteur' : `archipeo-hauteur-${level}`);
   const tiles = createTileStore(field, undefined, world.tiles);
   const nearRing = new RingMesh(landMaterial, 9000);
   const farRing = new RingMesh(landMaterial, 6000);
@@ -942,7 +955,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const lanternTop: Vec3 = { ...(tallTops.get('phare') ?? { x: 0, y: 0, z: 0 }) };
   // Le haut que le regard levé cadre au quai du lieu de départ (au 5e, le sommet de la Montée : la première image de la
   // Lisière la montre au fond ; GD-22, lot 4), et l'endroit du quai.
-  const quayLook: Vec3 | null = departure.lookAt ? { x: placeById(departure.lookAt).center.x, y: (feet.get(departure.lookAt)?.y ?? 0) + modelOfPlace(departure.lookAt).top, z: placeById(departure.lookAt).center.z } : null;
+  const quayLook: Vec3 | null = departure.lookTop ? { ...departure.lookTop } : departure.lookAt ? { x: placeById(departure.lookAt).center.x, y: (feet.get(departure.lookAt)?.y ?? 0) + modelOfPlace(departure.lookAt).top, z: placeById(departure.lookAt).center.z } : null;
   const quayPoint = net.pathNode(portNode('quai')).at;
   // Les lieux trop hauts pour la caméra qui suit à leur porte (`PlaceArt.arrivalView` ; au 5e, le Donjon, retouche 1 du
   // lot 13a) : leur porte, le bord du haut que le regard levé y cadre (à la hauteur de ce qui est bâti, `builtTop`) et le
@@ -1022,7 +1035,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const riftMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), veilMaterial));
   riftMesh.renderOrder = 1;
   riftMesh.visible = false;
-  if (!sixth) {
+  if (fifth) {
     setVeilGeometry(riftMesh, riftMistFacets());
     scene.add(riftMesh);
   }
@@ -1281,7 +1294,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // oiseaux du bord d'eau : chaque espèce à sa place fixe, chacune de ses bêtes à la taille de sa forme.
   const critters = allCritterForms();
   const groundAt = (p: Vec2) => ground(p.x, p.z);
-  const groups = (sixth ? wildlifeGroups6e() : wildlifeGroups5e(groundAt)).map((g) => ({ ...g, length: critters[g.form].positions.length, start: 0, held: [] as (number | null)[] }));
+  const groups = (sixth ? wildlifeGroups6e() : fifth ? wildlifeGroups5e(groundAt) : []).map((g) => ({ ...g, length: critters[g.form].positions.length, start: 0, held: [] as (number | null)[] }));
   // La baleine, son souffle et les oiseaux du bord d'eau sont du 6e : au 5e, le maillage ne tient que les bêtes.
   const whaleEnd = sixth ? birdsAt + FAUNA.birds * birdBase.positions.length : 0;
   let critterEnd = whaleEnd;
@@ -1592,11 +1605,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   // La caméra posée à la main (`view`, les captures seulement).
   let manualView: CameraPose | null = null;
+  // Au 4e, la place de la rangée du bas que les pieds de Kéo ne passent jamais (`footRoom`), en pixels ; 0 ailleurs.
+  let feetRoom = 0;
+  const guardFeet = level === '4e';
   const follow = () => {
     if (manualView) return applyPose(manualView);
-    followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : detourRise(detourView), sixth ? undefined : hold, arrivalBack > 0 ? arrivalShape : detourShape);
+    followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : detourRise(detourView), fifth ? hold : undefined, arrivalBack > 0 ? arrivalShape : detourShape);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
+    if (guardFeet) keepFeetAbove(pose, keoFeet, feetRoom, viewH);
     applyPose(pose);
   };
   follow();
@@ -1663,6 +1680,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : detourRise(detourView), undefined, arrivalBack > 0 ? arrivalShape : detourShape);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
+    if (guardFeet) keepFeetAbove(pose, keoFeet, feetRoom, viewH);
     const subject = framedNef ? nefFramed : framed && subjectOf(framed);
     const p = subject && screenOf(pose, subject, viewW, viewH);
     setShift(p ? { x: Math.round(p.x - (frameRect.left + frameRect.width / 2)), y: Math.round(p.y - (frameRect.top + frameRect.height / 2)) } : { x: 0, y: 0 });
@@ -1762,8 +1780,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     return f;
   };
   let placesKey = '';
-  // La ligne de la falaise du 5e sur la Carte, et la bande sombre de ses chemins, faites une fois (rien au 6e).
-  const cliffLine: Facets = sixth ? mergeFacets([]) : mergeFacets([cliffMapLine(), pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark)]);
+  // La ligne de la falaise du 5e sur la Carte, et la bande sombre de ses chemins ; au 4e, les hachures du sommet ; faites
+  // une fois (rien au 6e).
+  // Ce que la Carte ajoute au monde, par niveau (./world/continu/levelWorld.ts, `mapOverlay`) : la falaise du 5e, les
+  // hachures du sommet et les coupures du 4e.
+  const cliffLine: Facets = world.mapOverlay(ground);
   /**
    * Refait le maillage des lieux si ce qu'il montre a changé : le lieu suivi à part (sauf sur la Carte), la maquette des
    * Quais et les traces cachées pendant leur scénette (la scénette a les siennes), les parties retenues par une pose ;
@@ -1833,7 +1854,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Les Détours du 5e (GD-22) : le Creux (lot 6), le fût creusé, son banc et sa lanterne ; la Hutte (lot 8), sa cabane ;
       // la Faille (lot 11), la fente, son arbre, son pont de racines, sa lanterne et sa vapeur ; et la sente de chacun une
       // fois trouvé, dans le monde comme sur la Carte, sans appel de plus.
-      rest.push(creuxNow(), detourFacetsNow(), failleNow());
+      if (fifth) rest.push(creuxNow(), detourFacetsNow(), failleNow());
       setGeometry(placesMesh, mergeFacets(rest));
       setGeometry(landmarkMesh, mergeFacets(mark));
       mapDirty = true;
@@ -1861,7 +1882,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     ringCenter.x = focus.x;
     ringCenter.z = focus.z;
     ringYaw = look;
-    const rings = tileRings(ringCenter, WORLD_FOG.far, look, world.tiles.grid);
+    const rings = tileRings(ringCenter, FOG.far, look, world.tiles.grid);
     const k = `${rings.near.join(',')}|${rings.far.join(',')}`;
     if (k !== ringKey) {
       ringKey = k;
@@ -1912,7 +1933,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const bridgeOnScreen = (land: LinkedLand) => {
     const s = bridgeSite(land);
     const at = (d: number) => onScreen(s.near.x + s.dir.x * d, BRIDGE.deck, s.near.z + s.dir.z * d);
-    return distance(here, s.mid) < WORLD_FOG.far && (at(s.water[0]) || at((s.water[0] + s.water[1]) / 2) || at(s.water[1]));
+    return distance(here, s.mid) < FOG.far && (at(s.water[0]) || at((s.water[0] + s.water[1]) / 2) || at(s.water[1]));
   };
   /**
    * La pose d'un pont commence : son maillage à part, de ce qui se relève (une copie de ses sommets, que la pose
@@ -2080,7 +2101,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       l.y = ((1 - projected.y) / 2) * viewH;
       l.shown =
         projected.z < 1 &&
-        distance(here, bridgeSite(l.land).mid) < WORLD_FOG.far &&
+        distance(here, bridgeSite(l.land).mid) < FOG.far &&
         l.x > LOCK_LEFT &&
         l.x < viewW - LOCK_MARGIN &&
         l.y > LOCK_MARGIN &&
@@ -2112,7 +2133,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const y = sy(projected);
       sign.x = x;
       sign.y = y;
-      sign.shown = projected.z < 1 && distance(here, placeById(sign.place).center) < WORLD_FOG.far && x > LOCK_LEFT && x < viewW - LOCK_MARGIN && y > LOCK_MARGIN && y < viewH - LOCK_MARGIN;
+      sign.shown = projected.z < 1 && distance(here, placeById(sign.place).center) < FOG.far && x > LOCK_LEFT && x < viewW - LOCK_MARGIN && y > LOCK_MARGIN && y < viewH - LOCK_MARGIN;
     },
     onSigns: options.onSigns,
   });
@@ -2419,7 +2440,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!placesState?.amenagements) return null;
     const targets: ObjectTarget[] = [];
     for (const pl of PLACES) {
-      if (!showsAmenagements(scenette, pl.id, null) || distance(here, pl.center) > WORLD_FOG.far) continue;
+      if (!showsAmenagements(scenette, pl.id, null) || distance(here, pl.center) > FOG.far) continue;
       for (const id of placesState.amenagements[pl.id] ?? []) {
         const { box } = placedAmenagement(id, ground);
         const points: { x: number; y: number }[] = [];
@@ -2476,7 +2497,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const mapCamera: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
   const allTiles = Array.from({ length: plan.terrain.tilesX * plan.terrain.tilesZ }, (_, i) => i);
   const mapSpots: MapSpotOnScreen[] = [
-    ...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false, ...(plan.upper.includes(p.id) ? { up: true } : {}), ...(placeArt(p.id)?.mapClear ? { clear: { left: 0, top: 0, right: 0, bottom: 0 } } : {}), ...(placeArt(p.id)?.nameAbove ? { above: true as const } : {}) })),
+    ...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false, ...(plan.upper.includes(p.id) ? { up: true } : {}), ...(placeArt(p.id)?.mapClear ? { clear: { left: 0, top: 0, right: 0, bottom: 0 } } : {}), ...(placeArt(p.id)?.nameAbove ? { above: true as const } : {}), ...(p.mapSide ? { side: p.mapSide } : {}) })),
     ...LINKED_LANDS.map((land) => ({ id: bridgeSpot(land), x: 0, y: 0, shown: false })),
     // Le lieu de départ (l'Escale, la Lisière).
     { id: 'port' as const, x: 0, y: 0, shown: false },
@@ -2565,7 +2586,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let mapOpen: readonly PlaceId[] = [];
   const probePose: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
   // Sans ce que les étiquettes laissent à découvert : les vues essayées ne comptent que les noms des lieux ouverts.
-  const probeSpots: MapSpotOnScreen[] = mapSpots.map((l) => ({ id: l.id, x: l.x, y: l.y, shown: l.shown, ...(l.up !== undefined ? { up: l.up } : {}), ...(l.above ? { above: l.above } : {}) }));
+  const probeSpots: MapSpotOnScreen[] = mapSpots.map((l) => ({ id: l.id, x: l.x, y: l.y, shown: l.shown, ...(l.up !== undefined ? { up: l.up } : {}), ...(l.above ? { above: l.above } : {}), ...(l.side ? { side: l.side } : {}) }));
   const reframeStart = (crowded: (spots: readonly MapSpotOnScreen[]) => number) => {
     if (!mapView) return;
     if (mapView !== mapFirst) {
@@ -2645,11 +2666,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     pinch = null;
     for (const l of mapSpots) l.shown = false;
     options.onMapPlaces(mapSpots, false);
-    fog.near = WORLD_FOG.near;
-    fog.far = WORLD_FOG.far;
+    fog.near = FOG.near;
+    fog.far = FOG.far;
     camera.far = followFar;
     camera.updateProjectionMatrix();
-    riftMesh.visible = !sixth;
+    riftMesh.visible = fifth;
     updateRings(true, true);
     follow();
   };
@@ -3060,8 +3081,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       ring.visible = true;
       setShift({ x: 0, y: 0 });
       // La brume revient près de Kéo, la caméra derrière lui, sans passage.
-      fog.near = WORLD_FOG.near;
-      fog.far = WORLD_FOG.far;
+      fog.near = FOG.near;
+      fog.far = FOG.far;
       followStep(focus, aimed(), 0, true);
       follow();
       return [];
@@ -3110,8 +3131,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const to = scenetteStartYaw(place, posed);
       sceneYaw = startSceneReturn(sceneReturn, sceneYaw, to, performance.now() / 1000, entering || reduceMotion);
     }
-    fog.near = WORLD_FOG.near;
-    fog.far = WORLD_FOG.far;
+    fog.near = FOG.near;
+    fog.far = FOG.far;
     const qp = scenettePose(place, layout.scenette.stage, viewW, viewH, posed);
     turnScenePose(qp.pose);
     if (entering && !reduceMotion) {
@@ -3283,8 +3304,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     updateRings(true, true);
     remise = { place, pose: pose, extra, box };
     placeVisibility();
-    fog.near = WORLD_FOG.near;
-    fog.far = WORLD_FOG.far;
+    fog.near = FOG.near;
+    fog.far = FOG.far;
     refitRemise();
   };
   /**
@@ -3958,7 +3979,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     stepTurn(now);
     followStep(focus, aimed(), dt, reduceMotion);
     lift = liftStep(lift, occlusionLift(focus, ground, yaw), dt, reduceMotion);
-    if (!sixth) stepHold(dt);
+    if (fifth) stepHold(dt);
     stepGlow(t);
     look = lookUpStep(look, nearLantern() ? 1 : 0, dt, reduceMotion);
     arrivalBack = lookUpStep(arrivalBack, arrivalNow ? 1 : 0, dt, reduceMotion);
@@ -4030,6 +4051,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       mapDirty = true;
     },
     frame: setFrame,
+    footRoom: (px) => {
+      if (!guardFeet || px === feetRoom) return;
+      feetRoom = px;
+      // Comme `frame` : pendant une question, une remise ou sur la Carte, la caméra garde son cadrage.
+      if (asked || remise || mapView) return;
+      follow();
+    },
     assemble: startAssembly,
     setMark: (place) => {
       if (place === markPlace) return;

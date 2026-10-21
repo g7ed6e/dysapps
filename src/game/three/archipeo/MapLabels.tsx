@@ -12,7 +12,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, type MutableRefObject 
 import { Icon } from '../../../components/Icon';
 import { getBiome } from '../../biomes';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
-import { MAP_BAR_ROOM, grown, layoutMapLabels, nameLines, type MapLabel, type MapLabelSpot, type Rect } from '../../world/continu/map';
+import { MAP_BAR_ROOM, MAP_EDGE_4E, grown, layoutMapLabels, mapLeader, nameLines, type MapLabel, type MapLabelSpot, type Rect } from '../../world/continu/map';
 import { mapStateWord } from './constructionParts';
 import { bridgeSpot, isBridgeSpot, landById, landOf, type LinkedLand } from '../../world/continu/lands';
 import { isCabin } from '../../world/continu/bridges';
@@ -78,6 +78,12 @@ interface Props {
    * d'eux ou hors de l'écran. Demandé une fois par taille des étiquettes ou de l'écran, jamais à chaque image.
    */
   onCrowded?(crowded: (spots: readonly MapSpotOnScreen[]) => number): void;
+  /**
+   * Au 4e (consultant UX UI, deuxième relecture du lot 1) : le lieu suggéré (`nextPlace`) se pose le tout premier, contre
+   * son point ; les étiquettes restent à `MAP_EDGE_4E` des bords ; un nom de lieu ouvert loin de son point y est relié
+   * par un trait fin (`mapLeader`). Le 6e et le 5e ne le prennent pas.
+   */
+  snug?: boolean;
 }
 
 /**
@@ -145,7 +151,7 @@ const SUGGESTED_WORDS = ' Suggéré.';
 /** Ce que dit la pastille de Kéo. */
 const KEO_LABEL = 'Toi : Kéo est ici';
 
-export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, nextPlace = null, states, words, portName, upper = [], landNames = false, onCrowded }: Props) {
+export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, nextPlace = null, states, words, portName, upper = [], landNames = false, onCrowded, snug = false }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number; narrow?: { w: number; h: number } }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
@@ -163,11 +169,14 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
   const answered = useRef(false);
   const crowdedRef = useRef(onCrowded);
   const upperRef = useRef(upper);
+  const snugRef = useRef({ on: snug, next: nextPlace });
+  const leads = useRef<SVGSVGElement>(null);
   // Les props relues par les poses (appelées par la scène, hors du rendu de React), rangées après chaque rendu.
   useLayoutEffect(() => {
     crowdedRef.current = onCrowded;
     upperRef.current = upper;
-  }, [onCrowded, upper]);
+    snugRef.current = { on: snug, next: nextPlace };
+  }, [onCrowded, upper, snug, nextPlace]);
 
   // Les étiquettes à poser pour des points donnés, avec leurs tailles mesurées (les points cachés ou pas encore mesurés
   // n'en ont pas).
@@ -181,8 +190,14 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       // Au 5e (des lieux du haut), le nom d'un lieu du bas se pose d'abord sous lui : le plateau reste à découvert.
       // Sauf un lieu dont le repère de loin est au sud, sur l'eau (les Radeaux) : son nom reste de son côté, au-dessus.
       const above = kind === 'open' && s.above === true;
-      const below = !above && kind === 'open' && upperRef.current.length > 0 && s.id !== 'port' && !upperRef.current.includes(s.id as PlaceId);
-      items.push({ id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port', ...(below ? { below } : {}), ...(above ? { above } : {}), ...(size.narrow ? { narrow: size.narrow } : {}) });
+      // Au 4e, le côté du plan validé (`OpenPlace.mapSide`) : dessous, ou d'abord à gauche ou à droite.
+      const below = !above && kind === 'open' && ((upperRef.current.length > 0 && s.id !== 'port' && !upperRef.current.includes(s.id as PlaceId)) || s.side === 'below');
+      const side = kind === 'open' && (s.side === 'left' || s.side === 'right') ? s.side : undefined;
+      // Au 4e, le lieu suggéré passe le tout premier (`snug`).
+      const next = snugRef.current.on && kind === 'open' && s.id === snugRef.current.next;
+      const item: MapLabel = { id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port' || next, ...(below ? { below } : {}), ...(above ? { above } : {}), ...(side ? { side } : {}), ...(size.narrow ? { narrow: size.narrow } : {}) };
+      if (next) items.unshift(item);
+      else items.push(item);
     }
     return items;
   }, []);
@@ -196,7 +211,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       else if (s.id !== 'port') gone += MISSING.offscreen;
     }
     // Sans la reprise des noms fermés : seules les pastilles comptent ici.
-    return gone + missingOf(items, layoutMapLabels(items, obstacles.current, screen.current, false));
+    return gone + missingOf(items, layoutMapLabels(items, obstacles.current, screen.current, false, snugRef.current.on ? MAP_EDGE_4E : 0));
   }, [itemsOf, openPlaces]);
 
   const place = useCallback((spots: readonly MapSpotOnScreen[], moving = false) => {
@@ -223,7 +238,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
     // image : expert frontend).
     // Ce que les étiquettes laissent à découvert, comme les boutons : le repère d'un lieu de loin (les trois radeaux).
     const keep = spots.some((s) => s.shown && s.clear) ? [...obstacles.current, ...spots.flatMap((s) => (s.shown && s.clear ? [s.clear] : []))] : obstacles.current;
-    const laid = layoutMapLabels(items, keep, screen.current, !moving && screen.current.height > LOW_SCREEN);
+    const laid = layoutMapLabels(items, keep, screen.current, !moving && screen.current.height > LOW_SCREEN, snugRef.current.on ? MAP_EDGE_4E : 0);
     // La vue de départ se choisit à chaque mesure qui change une taille (police, grand texte, taille de l'écran), une
     // fois : la plus proche de l'île entière où chaque lieu ouvert a son nom près de lui (GD-20, « La Carte au plus grand
     // texte »). Une Carte que l'élève a touchée ne bouge plus (la scène en juge). Les étiquettes restent cachées jusqu'à la
@@ -248,6 +263,20 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       if (node.style.getPropertyValue('--nom-decale') !== shift) node.style.setProperty('--nom-decale', shift);
       const drop = `${Math.round(spot.drop ?? 0)}px`;
       if (node.style.getPropertyValue('--nom-baisse') !== drop) node.style.setProperty('--nom-baisse', drop);
+    }
+    // Au 4e, le trait fin d'un nom de lieu ouvert loin de son point (`mapLeader`) : des nombres seuls, jamais un texte.
+    const svg = leads.current;
+    if (svg) {
+      let lines = '';
+      if (snugRef.current.on)
+        laid.forEach((spot, i) => {
+          const item = items[i];
+          if (item.kind !== 'open' || !spot.name) return;
+          const size = spot.narrow && item.narrow ? item.narrow : item;
+          const lead = mapLeader(item, { left: spot.left, top: spot.top, right: spot.left + size.w, bottom: spot.top + size.h });
+          if (lead) lines += `<line x1="${Math.round(lead.x1)}" y1="${Math.round(lead.y1)}" x2="${Math.round(lead.x2)}" y2="${Math.round(lead.y2)}"/>`;
+        });
+      if (svg.innerHTML !== lines) svg.innerHTML = lines;
     }
   }, [itemsOf, crowded]);
 
@@ -317,6 +346,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
 
   return (
     <div ref={root} className="open-world-map-places">
+      {snug && <svg ref={leads} className="open-world-map-leads" aria-hidden="true" />}
       <span className="open-world-map-keo" data-lieu="keo" role="img" aria-label={KEO_LABEL} hidden>
         <span className="open-world-map-keo-disc" aria-hidden="true">
           <Icon name="toi" />

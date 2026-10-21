@@ -16,13 +16,16 @@ describe('La fabrique de disposition du monde', () => {
     expect(worldLayoutFor({ requested: true, rendu: 'archipeo', archipelago: '6e', route: 'maths-6e-fractions' })).toBe('continuous');
     expect(worldLayoutFor({ requested: true, rendu: 'archipeo', archipelago: '5e' })).toBe('continuous');
     expect(worldLayoutFor({ requested: true, rendu: 'archipeo', archipelago: '5e', route: 'maths-5e-proportionality' })).toBe('continuous');
+    expect(worldLayoutFor({ requested: true, rendu: 'archipeo', archipelago: '4e' })).toBe('continuous');
+    expect(worldLayoutFor({ requested: true, rendu: 'archipeo', archipelago: '4e', route: 'maths-4e-powers' })).toBe('continuous');
   });
 
   it('la grille partout ailleurs : sans drapeau, dans Blocland, dans un autre archipel, sur la Carte ou un panneau', () => {
     expect(worldLayoutFor({ requested: false, rendu: 'archipeo', archipelago: '6e' })).toBe('grid');
     expect(worldLayoutFor({ requested: true, rendu: 'blocs', archipelago: '6e' })).toBe('grid');
     expect(worldLayoutFor({ requested: true, rendu: 'blocs', archipelago: '5e' })).toBe('grid');
-    expect(worldLayoutFor({ requested: true, rendu: 'archipeo', archipelago: '4e' })).toBe('grid');
+    expect(worldLayoutFor({ requested: true, rendu: 'blocs', archipelago: '4e' })).toBe('grid');
+    expect(worldLayoutFor({ requested: true, rendu: 'archipeo', archipelago: '3e' })).toBe('grid');
     expect(worldLayoutFor({ requested: true, rendu: 'archipeo', archipelago: '5e', route: 'maths-6e-fractions' })).toBe('grid');
     for (const route of ['map', 'school', 'stock', 'world', 'maths-5e-proportionality']) expect(worldLayoutFor({ requested: true, rendu: 'archipeo', archipelago: '6e', route })).toBe('grid');
   });

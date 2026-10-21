@@ -1,24 +1,25 @@
 // Le plan par niveau du monde continu (GD-22, lot 1, choix du mainteneur du 18 octobre 2026) : le monde ouvert reçoit le
 // plan de son niveau, choisi par `planFor(level)`, au lieu de lire celui du 6e en dur. Un plan rassemble ce que la
 // logique commune lit d'un niveau : ses lieux, ses terres, les liaisons du réseau des chemins et le pont de chaque terre,
-// sa côte et son large (la Carte), l'étendue de son terrain. Deux plans sont enregistrés : celui du 6e (./plan6e.ts),
-// sans rien changer à ce qu'il contient, et celui du 5e (./plan5e.ts, GD-22, lot 2). Le plan d'un autre niveau s'ajoute
-// ici, avec son niveau dans `OpenWorldLevel`.
+// sa côte et son large (la Carte), l'étendue de son terrain. Trois plans sont enregistrés : celui du 6e (./plan6e.ts),
+// sans rien changer à ce qu'il contient, celui du 5e (./plan5e.ts, GD-22, lot 2) et celui du 4e (./plan4e.ts, lot 1 du
+// monde ouvert du 4e). Le plan d'un autre niveau s'ajoute ici, avec son niveau dans `OpenWorldLevel`.
 // Les identifiants des lieux et des terres sont uniques d'un niveau à l'autre : un lieu se retrouve par son seul
 // identifiant (`placeById`), sans dire son niveau. Code pur.
 import type { Vec2 } from './geometry';
 import type { Land, LinkedLand } from './lands';
 import { COAST, LANDS_6E, OFFSHORE, PATH_EDGES, PLACES, STRAITS, TERRAIN, type OpenPlace as OpenPlaceOf, type PlaceId as PlaceId6e } from './plan6e';
+import { COAST_4E, LANDS_4E, LINKS_4E, PATH_EDGES_4E, PLACES_4E, TERRAIN_4E, UNPRICED_PLACES_4E, type PlaceId4e } from './plan4e';
 import { COAST_5E, LANDS_5E, LINKS_5E, PATH_EDGES_5E, PLACES_5E, TERRAIN_5E, UNPRICED_PLACES_5E, UPPER_PLACES_5E, isBuiltPlace5e, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
 /** Un lieu, de tout niveau (ses identifiants sont uniques d'un niveau à l'autre). */
-export type PlaceId = PlaceId6e | PlaceId5e;
+export type PlaceId = PlaceId6e | PlaceId5e | PlaceId4e;
 
 /** Un lieu d'un plan, de tout niveau. */
 export type OpenPlace = OpenPlaceOf<PlaceId>;
 
 /** Un niveau qui a son monde ouvert (l'archipel de la grille du même nom). */
-export type OpenWorldLevel = '6e' | '5e';
+export type OpenWorldLevel = '6e' | '5e' | '4e';
 
 /** L'étendue de la carte de hauteurs d'un niveau, le pas de sa grille et ses tuiles (./plan6e.ts, `TERRAIN`). */
 interface TerrainGrid {
@@ -57,6 +58,19 @@ export interface LevelPlan {
    * aucun au 6e, qui est à plat.
    */
   readonly upper: readonly PlaceId[];
+  /**
+   * Le premier lieu suggéré, tant qu'aucune mission du niveau n'a été jouée (au 4e, la Forge : retouche 1 du lot 1,
+   * « Y aller » vise le grand lieu que montre l'arrivée, même quand le port de la grille est ailleurs) ; rien : la
+   * destination du jeu, comme au 6e et au 5e.
+   */
+  readonly firstPlace?: PlaceId;
+  /**
+   * Le port de la grille de ce niveau (l'île où la grille fait arriver) n'ouvre pas sa terre à lui seul, et l'élève
+   * arrive toujours au lieu de départ (au 4e, le Gabarit est au Bastion : décision du mainteneur, 21 octobre 2026,
+   * « Arrivée à la Crique, Bastion fermé », GD-24) ; un lieu de cette terre déjà joué l'ouvre toujours. Rien : le port
+   * compte comme toute île reliée, comme au 6e et au 5e (leur port est dans la terre de départ).
+   */
+  readonly shutPort?: true;
 }
 
 /** Le plan du 6e, tiré de ./plan6e.ts tel quel. */
@@ -89,8 +103,25 @@ const PLAN_5E: LevelPlan = {
   upper: UPPER_PLACES_5E,
 };
 
+/** Le plan du 4e, tiré de ./plan4e.ts (lot 1 du monde ouvert du 4e) : quatre terres, un seul sol en pente douce. */
+const PLAN_4E: LevelPlan = {
+  level: '4e',
+  places: PLACES_4E,
+  lands: LANDS_4E,
+  pathEdges: PATH_EDGES_4E,
+  bridges: { bastion: LINKS_4E.bastion.bridge, coteaux: LINKS_4E.coteaux.bridge, epaule: LINKS_4E.epaule.bridge },
+  coast: COAST_4E,
+  offshore: [],
+  terrain: TERRAIN_4E,
+  pricePerPlace: 5,
+  unpriced: UNPRICED_PLACES_4E,
+  upper: [],
+  firstPlace: 'forge',
+  shutPort: true,
+};
+
 /** Les plans enregistrés, par niveau. */
-const PLANS: Readonly<Record<OpenWorldLevel, LevelPlan>> = { '6e': PLAN_6E, '5e': PLAN_5E };
+const PLANS: Readonly<Record<OpenWorldLevel, LevelPlan>> = { '6e': PLAN_6E, '5e': PLAN_5E, '4e': PLAN_4E };
 
 /** Les niveaux qui ont leur monde ouvert (la fabrique de disposition tient la même liste, un test le vérifie). */
 export const OPEN_WORLD_LEVELS = Object.keys(PLANS) as readonly OpenWorldLevel[];

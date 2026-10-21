@@ -7,11 +7,13 @@
 // toc du pont (d'un coup avec « Réduire les animations ») : la vue n'en change que la transparence. Code pur.
 import { distance, distanceToPolyline, linearRgb, smoothstep, type Vec2 } from './geometry';
 import { nodeLands, planOfLand, type LandId, type LinkedLand } from './lands';
-import { placeById, planFor, type LevelPlan } from './levelPlan';
+import { placeById, planFor, type LevelPlan, type OpenWorldLevel } from './levelPlan';
 import type { PathNode } from './network';
 import { PATH_NODES } from './plan6e';
+import { PATH_NODES_4E, VOLCANO_4E } from './plan4e';
 import { PATH_EDGES_5E, PATH_NODES_5E } from './plan5e';
 import { heightAt, heightAt as heightAt6e, landDistance, standingHeight } from './terrain';
+import { heightAt4e, landDistance4e } from './terrain4e';
 import { heightAt5e, landDistance5e, plateauShare } from './terrain5e';
 
 /**
@@ -109,9 +111,6 @@ function veilWorld(plan: LevelPlan, nodes: readonly PathNode[], base: Pick<VeilW
   };
 }
 
-let world6e: VeilWorld | null = null;
-let world5e: VeilWorld | null = null;
-
 /** Les tronçons des chemins du 5e. */
 const PATH_SEGMENTS_5E: readonly (readonly [Vec2, Vec2])[] = PATH_EDGES_5E.map(([a, b]) => [PATH_NODES_5E.find((n) => n.id === a)!.at, PATH_NODES_5E.find((n) => n.id === b)!.at] as const);
 
@@ -127,16 +126,41 @@ function worldOf(land: LandId): VeilWorld {
   return w;
 }
 
-function levelWorld(land: LandId): VeilWorld {
-  if (planOfLand(land).level === '5e')
-    return (world5e ??= veilWorld(planFor('5e'), PATH_NODES_5E, {
+/**
+ * La brume de chaque niveau, faite à la première terre qui la demande (un niveau oublié ne compile pas). Au 4e, un seul
+ * sol, comme le 6e ; la brume s'arrête sur la mer et le bassin, pas sur le ravin ni la coulée (secs), et jamais sur le
+ * haut du volcan (retouche 1 du lot 1, directeur artistique : ni le haut du cône ni le panache sous la brume).
+ */
+const VEIL_WORLDS: Readonly<Record<OpenWorldLevel, () => VeilWorld>> = {
+  '6e': () => veilWorld(planFor('6e'), PATH_NODES, { landDistance, heightAt, level: () => 1, layers: VEIL_LAYERS, clear: () => 1 }),
+  '5e': () =>
+    veilWorld(planFor('5e'), PATH_NODES_5E, {
       landDistance: landDistance5e,
       heightAt: heightAt5e,
       level: (l, p) => (l === UPPER_LAND_5E ? smoothstep(0.35, 0.75, plateauShare(p)) : 1 - smoothstep(0.05, 0.4, plateauShare(p))),
       layers: VEIL_LAYERS_5E,
       clear: (p) => smoothstep(PATH_CLEAR_5E.clear, PATH_CLEAR_5E.full, Math.min(...PATH_SEGMENTS_5E.map(([a, b]) => distanceToPolyline(p, [a, b])))),
-    }));
-  return (world6e ??= veilWorld(planFor('6e'), PATH_NODES, { landDistance, heightAt, level: () => 1, layers: VEIL_LAYERS, clear: () => 1 }));
+    }),
+  '4e': () =>
+    veilWorld(planFor('4e'), PATH_NODES_4E, {
+      landDistance: landDistance4e,
+      heightAt: heightAt4e,
+      level: () => 1,
+      layers: VEIL_LAYERS,
+      clear: (p) => smoothstep(VOLCANO_4E.radius * VOLCANO_CLEAR_4E[0], VOLCANO_4E.radius * VOLCANO_CLEAR_4E[1], distance(p, VOLCANO_4E.crater)),
+    }),
+};
+
+/** Au 4e, la brume s'efface sur le cône du volcan : nulle à moins de tant de son rayon du cratère, pleine au-delà de tant. */
+const VOLCANO_CLEAR_4E = [0.5, 0.72] as const;
+
+const levelVeils = new Map<OpenWorldLevel, VeilWorld>();
+
+function levelWorld(land: LandId): VeilWorld {
+  const level = planOfLand(land).level;
+  let w = levelVeils.get(level);
+  if (!w) levelVeils.set(level, (w = VEIL_WORLDS[level]()));
+  return w;
 }
 
 const nearest = (p: Vec2, points: readonly Vec2[]): number => points.reduce((d, q) => Math.min(d, distance(p, q)), Infinity);

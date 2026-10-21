@@ -128,11 +128,66 @@ export const SHADOW_DIR_5E = (() => {
   return { x: -LIGHT_5E.sunFrom.x / l, z: -LIGHT_5E.sunFrom.z / l };
 })();
 
+/**
+ * Le ciel du 4e (lot 1 du monde ouvert du 4e ; fiche du niveau, § 2 : « une fin de journée claire et sèche, sans brume :
+ * l'air est net, l'horizon est ambré, jamais en contre-jour » ; palette chaude des références, ciel rose et ambre) :
+ * l'ambre à l'horizon, un rose chaud, puis un mauve pâle au zénith, jamais saturé.
+ */
+const SKY_STOPS_4E: readonly { at: number; color: number }[] = [
+  { at: 0, color: 0xeec698 },
+  { at: 6, color: 0xeec9a4 },
+  { at: 18, color: 0xe8bcaa },
+  { at: 40, color: 0xd2acb2 },
+  { at: 90, color: 0xb6a2b2 },
+];
+
+/** La couleur de l'horizon du 4e : le brouillard du lointain et le bas du dôme, un ambre clair (le rose reste au ciel). */
+export const HORIZON_COLOR_4E = SKY_STOPS_4E[0].color;
+
+/**
+ * La lumière du 4e (valeurs de l'artiste technique 3D, à valider sur captures par le directeur artistique) : un soleil
+ * de fin de journée doux (#FFE4C8), bas (environ 24°), venu du sud-sud-est, dans le dos de la caméra du départ qui
+ * regarde la Forge et le volcan au nord-ouest (jamais en contre-jour) ; le ciel renvoyé rose pâle, le sol renvoyé de la
+ * terre rouge ; l'ambiance assez haute et l'exposition relevée : le mappage des tons neutre assombrit et sature les
+ * couleurs sombres (un soleil plus orangé faisait virer la terre rouge à l'orange vif), la terre rouge se lit à l'écran
+ * autour de #BA6850, comme la vue globale.
+ */
+export const LIGHT_4E = {
+  sky: 0xe6dcd6,
+  ground: 0xb89080,
+  ambient: 2.2,
+  sun: 0xffe4c8,
+  sunIntensity: 2.8,
+  sunFrom: { x: 26, y: 26, z: 52 },
+  exposure: 1.2,
+} as const satisfies SceneLight;
+
+/**
+ * La lumière par la hauteur du 4e : un seul étage (toute la lumière partout : `low` et `high` sous le sol), mais le
+ * brouillard du lointain s'éclaircit en hauteur, si bien que le haut du volcan et son panache se voient de toute l'île
+ * (de la Crique, à plus de 300 unités), au-dessus de l'air ambré ; retouche 1 du lot 1 : dès 14 unités, il n'en reste que 15 %, pour que le cône garde son basalte sombre (#4A4240) vu de la Crique.
+ */
+export const HEIGHT_LIGHT_4E: HeightLight = { low: -60, high: -50, sunLow: 1, tintLow: [1, 1, 1], fogFrom: 2, fogTo: 14, fogTop: 0.15 };
+
+/**
+ * Le brouillard du lointain du 4e (retouche 1 du lot 1, directeur artistique : « une fin de journée claire, sans brume,
+ * l'air net ») : il commence plus loin qu'au 6e et au 5e (`WORLD_FOG`, 40 et 115) et ne couvre tout qu'à 240 unités ;
+ * les lieux à 150 unités se lisent encore, la Forge se voit du quai de la Crique (à 185 unités), la terre rouge se
+ * détache du ciel. Les tuiles de loin vont jusque-là : le sol passe de 11 864 à 19 033 triangles (+7 169), que les rails en bandes rattrapent en partie (−3 852).
+ */
+export const FOG_4E = { near: 90, far: 240 } as const;
+
+/** Le sens où tombent les ombres peintes du 4e (l'opposé de son soleil, à plat). */
+export const SHADOW_DIR_4E = (() => {
+  const l = Math.hypot(LIGHT_4E.sunFrom.x, LIGHT_4E.sunFrom.z);
+  return { x: -LIGHT_4E.sunFrom.x / l, z: -LIGHT_4E.sunFrom.z / l };
+})();
+
 /** Le ciel d'un niveau : ses couleurs, de l'horizon au zénith. */
 export type SkyStops = readonly { at: number; color: number }[];
 
-/** Les couleurs du ciel du 6e (le défaut) et du 5e. */
-export const SKY_OF = { '6e': SKY_STOPS, '5e': SKY_STOPS_5E } as const satisfies Record<string, SkyStops>;
+/** Les couleurs du ciel du 6e (le défaut), du 5e et du 4e. */
+export const SKY_OF = { '6e': SKY_STOPS, '5e': SKY_STOPS_5E, '4e': SKY_STOPS_4E } as const satisfies Record<string, SkyStops>;
 
 /** La couleur du ciel à une hauteur angulaire (degrés ; sous l'horizon, l'horizon), en rouge, vert, bleu linéaires. */
 export function skyColorAt(elevation: number, stops: SkyStops = SKY_STOPS): [number, number, number] {

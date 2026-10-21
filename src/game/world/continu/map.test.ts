@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { markOffset, screenOf } from './camera';
 import type { Vec3 } from './geometry';
-import { MAP_BAR_ROOM, islandBox, MAP_CAMERA, grown, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
+import { MAP_BAR_ROOM, MAP_EDGE_4E, MAP_LEAD_FROM, islandBox, mapLeader, MAP_CAMERA, grown, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
 import { PLACES, placeById } from './plan6e';
 import { PORT_MAP_POINT } from './port';
 import { heightAt, standingHeight } from './terrain';
@@ -653,5 +653,32 @@ describe('La reprise des noms fermés tus (relecture de L9)', () => {
     const spots = layoutMapLabels(last, walls, screen);
     expect(named(spots, 'ouvert')).toBe(true);
     expect(named(spots, 'dernier')).toBe(false);
+  });
+});
+
+describe('La Carte du 4e au plus grand texte (deuxième relecture du lot 1, consultant UX UI)', () => {
+  const screen = { width: 1280, height: 860 };
+  it('à `MAP_EDGE_4E` des bords : un nom collé au bord gauche s’en écarte', () => {
+    const labels: MapLabel[] = [{ id: 'roches', kind: 'open', x: 110, y: 300, w: 200, h: 60 }];
+    const [free] = layoutMapLabels(labels, [], screen);
+    const [snug] = layoutMapLabels(labels, [], screen, true, MAP_EDGE_4E);
+    expect(free.left).toBeLessThan(MAP_EDGE_4E);
+    expect(snug.left).toBeGreaterThanOrEqual(MAP_EDGE_4E);
+  });
+
+  it('le lieu suggéré, posé le premier, garde sa place contre son point', () => {
+    const forge: MapLabel = { id: 'forge', kind: 'open', x: 600, y: 400, w: 240, h: 70 };
+    const voisin: MapLabel = { id: 'etalon', kind: 'open', x: 620, y: 330, w: 240, h: 70 };
+    const after = layoutMapLabels([voisin, forge], [], screen);
+    const before = layoutMapLabels([{ ...forge, first: true }, voisin], [], screen);
+    const gap = (s: MapLabelSpot, l: MapLabel) => Math.hypot(Math.max(s.left - l.x, 0, l.x - (s.left + l.w)), Math.max(s.top - l.y, 0, l.y - (s.top + l.h)));
+    expect(gap(before[0], forge)).toBeLessThanOrEqual(gap(after[1], forge));
+    expect(gap(before[0], forge)).toBeLessThanOrEqual(MAP_LABEL_GAP + 1e-6);
+  });
+
+  it('un trait fin relie un nom loin de son point, jamais un nom contre lui', () => {
+    const r = { left: 100, top: 100, right: 200, bottom: 140 };
+    expect(mapLeader({ x: 150, y: 140 + MAP_LEAD_FROM }, r)).toBeNull();
+    expect(mapLeader({ x: 150, y: 140 + MAP_LEAD_FROM + 20 }, r)).toEqual({ x1: 150, y1: 140 + MAP_LEAD_FROM + 20, x2: 150, y2: 140 });
   });
 });
