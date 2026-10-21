@@ -30,8 +30,13 @@ const isPassage = (a: string, b: string) => Object.values(LINKS_4E).some(({ brid
 const luminance = ([r, g, b]: readonly number[]) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
 const NOT_BLACK = 0.03;
 
-/** Le plafond du lot 1 du 4e (mesuré le 21 octobre 2026, retouche 2 : 59 624 triangles et 14 appels dans le monde, 58 502 et 15 au départ, 56 570 et 12 sur la Carte), avec sa marge. */
-const LOT1_CEILING = { triangles: 64_000, calls: 16 } as const;
+/**
+ * Le plafond du 4e après son lot 2, la Forge (mesuré le 21 octobre 2026 : 67 656 triangles et 17 appels la scénette de la
+ * Forge ouverte, 60 560 et 14 hors scénette, 59 438 et 15 au départ, 57 289 et 12 sur la Carte ; au lot 1, 59 624 et 14
+ * dans le monde), avec sa marge : relevé de 64 000 et 16 appels pour la scénette et la chaudronnière en modèle (8 000
+ * triangles, un appel).
+ */
+const LOT2_CEILING = { triangles: 72_000, calls: 18 } as const;
 
 /** Les couleurs d'un maillage. */
 function colorsOf(f: { colors: Float32Array }): Set<string> {
@@ -223,13 +228,13 @@ describe('Les couleurs chaudes du 4e', () => {
 });
 
 describe('Le budget du 4e', () => {
-  it('le monde, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 1', () => {
+  it('le monde, la scénette, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 2', () => {
     const total = (list: { triangles: number; calls: number }[]) => list.reduce((s, p) => ({ triangles: s.triangles + p.triangles, calls: s.calls + p.calls }), { triangles: 0, calls: 0 });
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
-    for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('depart')), mapCost4e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT1_CEILING.triangles);
-      expect(cost.calls).toBeLessThanOrEqual(LOT1_CEILING.calls);
+    for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('scenette')), total(openWorldCost4e('depart')), mapCost4e()]) {
+      expect(cost.triangles).toBeLessThanOrEqual(LOT2_CEILING.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(LOT2_CEILING.calls);
     }
   });
 });

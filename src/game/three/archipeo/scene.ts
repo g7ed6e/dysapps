@@ -145,6 +145,11 @@ export interface OpenWorldOptions {
   /** La pose d'une partie est finie (posée, la caméra revenue à Kéo, ou passée) : les célébrations peuvent venir. */
   onPosed(): void;
   /**
+   * Un lieu qui s'anime à sa restauration (`PlaceArt.restoration`, la Forge du 4e) vient d'être achevé : son allumage
+   * commence (ou se pose d'un coup, avec « Réduire les animations ») ; la page dit son état, écrit et à voix haute.
+   */
+  onRestored?(place: PlaceId): void;
+  /**
    * La place à l'écran des pastilles des habitants (GD-20, point 4, lot L1), à chaque image, comme les cadenas (la même
    * liste, remplie sur place ; refaite quand `setSigns` change). Aucune pendant une question, une remise ou sur la Carte.
    */
@@ -1806,6 +1811,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!f) bridgeCache.set(k, (f = look === 'carte' ? bridgeMapMark(land) : look === 'pose' ? bridgeLayRest(land) : bridgeFacets(land, look === 'rebati', car, open)));
     return f;
   };
+  // L'allumage d'un lieu restauré (`startRestore`, plus bas) : le lieu qui l'attend, celui qui s'allume.
+  let restoreNext: PlaceId | null = null;
+  let restoring: { place: PlaceId; start: number; drawn: number } | null = null;
+  /** Les trois étapes d'un lieu posées : il est restauré. */
+  const isWhole = (parts: readonly PartShape[]) => [0, 1, 2].every((st) => stageComplete(parts, st as 0 | 1 | 2));
   let placesKey = '';
   // La ligne de la falaise du 5e sur la Carte, et la bande sombre de ses chemins ; au 4e, les hachures du sommet ; faites
   // une fois (rien au 6e).
@@ -1822,7 +1832,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}${nefParts(nefSite.form) ? 'm' : ''}|${carAt}${carOpen ? 'o' : ''}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}${nefParts(nefSite.form) ? 'm' : ''}|${carAt}${carOpen ? 'o' : ''}|${restoring?.place ?? ''}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -1857,6 +1867,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const reach = mapView ? undefined : placeArt(p.id)?.reach;
       const far = reach?.({ x: p.center.x, y: foot.y, z: p.center.z }, (stage, row) => rowPosed(parts, stage, row));
       if (far) reaches.push(far);
+      // Ce qui s'allume à la restauration (la Forge du 4e) : éteint avant, allumé après, comme `reach` hors du modèle et
+      // de la Carte ; pendant son allumage, dans le maillage de la pose (`startRestore`).
+      const restoration = mapView || restoring?.place === p.id ? undefined : placeArt(p.id)?.restoration;
+      if (restoration) reaches.push(restoration.draw({ x: p.center.x, y: foot.y, z: p.center.z }, isWhole(parts) ? Infinity : 0));
       // Les aménagements posés (GD-20, point 4, lot L0), dans le même maillage : cachés pendant toute question, comme les
       // traces (au rivage nord et au large, ceux des lieux du même cadre) ; montrés dans le cadrage de la remise.
       if (showsAmenagements(scenette, p.id, remise?.place ?? null)) for (const id of placesState?.amenagements?.[p.id] ?? []) list.push(placedAmenagement(id, ground).facets);
@@ -2441,6 +2455,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Un toucher pendant une pose la passe : la partie est à sa place, la caméra revient à Kéo ; de même la scénette
     // d'assemblage.
     if (poseRun.active) return finishPose();
+    // Un toucher pendant l'allumage d'un lieu restauré le passe : tout allumé d'un coup.
+    if (restoring) return endRestore();
     // Un toucher pendant le départ de la Nef le termine (GD-21).
     if (nefTrip) return finishNefTrip();
     if (assembly) return finishAssembly();
@@ -3534,6 +3550,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       follow();
       options.onPosed();
       if (glowNext) startGlow();
+      if (restoreNext) startRestore();
     },
   });
   /** Les parties qui arrivent dans un lieu : la pose commence. */
@@ -3546,6 +3563,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const all = placesState?.built[place] ?? [];
     const whole = (list: readonly PartShape[]) => [0, 1, 2].every((st) => stageComplete(list, st as 0 | 1 | 2));
     glowNext = place === 'montee' && whole(all) && !whole(all.filter((p) => !parts.includes(p)));
+    // De même, la pose qui achève un lieu qui s'anime à sa restauration (la Forge du 4e).
+    restoreNext = placeArt(place)?.restoration && whole(all) && !whole(all.filter((p) => !parts.includes(p))) ? place : null;
     holding = { place, parts };
     placeVisibility();
     setGeometry(poseMesh, constructionFacets(place, parts, ground));
@@ -3576,6 +3595,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     stepGlow(glowStart);
   };
   function endGlow() {
+    endRestore();
     if (glowStart === null) return;
     glowStart = null;
     poseMesh.visible = false;
@@ -3591,6 +3611,53 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!foot || u >= 1 || walk || asked || mapView) return endGlow();
     const y = MONTEE_GLOW.from + (MONTEE_GLOW.to - MONTEE_GLOW.from - MONTEE_GLOW.height) * Math.max(0, u);
     poseMesh.position.set(foot.x, foot.y + y, foot.z + monteeGlowFront(y + MONTEE_GLOW.height / 2));
+  }
+
+  // L'allumage d'un lieu restauré (`PlaceArt.restoration` : la Forge du 4e, lot 2 ; intention, § 6) : après la pose qui
+  // l'achève, une seule fois, au plus 4 s, dans le maillage de la pose (aucun appel de plus), refait une vingtaine de fois
+  // par seconde ; d'un coup avec « Réduire les animations », sur la Carte, en marche ou pendant une question ; un toucher
+  // le passe. La page dit l'état dès le début (`onRestored`) : la voix, la bulle et son icône.
+  /** Le centre du lieu à son sol, pour son allumage. */
+  const restoreAt = (place: PlaceId) => {
+    const foot = feet.get(place);
+    const center = PLACES.find((q) => q.id === place)?.center;
+    return foot && center ? { x: center.x, y: foot.y, z: center.z } : null;
+  };
+  const startRestore = () => {
+    const place = restoreNext;
+    restoreNext = null;
+    if (!place) return;
+    options.onRestored?.(place);
+    const art = placeArt(place)?.restoration;
+    const at = restoreAt(place);
+    if (!art || !at || reduceMotion || walk || asked || mapView || laying || carRolling) return;
+    restoring = { place, start: performance.now() / 1000, drawn: -1 };
+    placeVisibility();
+    poseMesh.material = landMaterial;
+    poseMesh.position.set(0, 0, 0);
+    poseMesh.visible = true;
+    stepRestore(restoring.start);
+  };
+  function endRestore() {
+    if (!restoring) return;
+    restoring = null;
+    poseMesh.visible = false;
+    poseMesh.geometry.dispose();
+    poseMesh.geometry = new THREE.BufferGeometry();
+    poseMesh.material = poseMaterial;
+    placeVisibility();
+  }
+  /** Le pas des images de l'allumage : vingt par seconde suffisent (chaque phase dure un demi-seconde au moins). */
+  const RESTORE_STEP = 0.05;
+  function stepRestore(t: number) {
+    if (!restoring) return;
+    const art = placeArt(restoring.place)?.restoration;
+    const at = restoreAt(restoring.place);
+    const u = t - restoring.start;
+    if (!art || !at || u >= art.seconds || walk || asked || mapView) return endRestore();
+    if (restoring.drawn >= 0 && u - restoring.drawn < RESTORE_STEP) return;
+    restoring.drawn = u;
+    setGeometry(poseMesh, art.draw(at, u));
   }
 
   // La caisse de la cabine qui roule (GD-22, lot 3) : à son départ, elle quitte les lieux pour le maillage de la pose (ses
@@ -4039,6 +4106,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     lift = liftStep(lift, occlusionLift(focus, ground, yaw), dt, reduceMotion);
     if (fifth) stepHold(dt);
     stepGlow(t);
+    stepRestore(t);
     look = lookUpStep(look, nearLantern() ? 1 : 0, dt, reduceMotion);
     arrivalBack = lookUpStep(arrivalBack, arrivalNow ? 1 : 0, dt, reduceMotion);
     if (back > 0 && !atExit()) back = reduceMotion ? 0 : Math.max(0, back - dt / EXIT_VIEW.down);

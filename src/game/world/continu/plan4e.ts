@@ -179,7 +179,8 @@ interface PlaceSpec extends Omit<OpenPlace<PlaceId4e>, 'center' | 'door' | 'scen
 /**
  * Les seize lieux (fiche, § 4), à leur place sur le plan. L'Étalon et la Jonction sont nouveaux : leurs missions
  * s'écrivent avec leur lot, dans un lieu du monde ouvert seulement (GD-24) : l'Étalon (`maths-4e-data`) a les siennes ;
- * la Jonction (`french-4e-sentence`) n'existe pas encore dans le contenu, et son panneau reste vide d'ici là. Aucune mission ne se joue encore en scénette : toutes passent par l'écran habituel.
+ * la Jonction (`french-4e-sentence`) n'existe pas encore dans le contenu, et son panneau reste vide d'ici là. Seules les
+ * missions des lieux construits (`BUILT_PLACES_4E`) se jouent en scénette ; les autres passent par l'écran habituel.
  */
 const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'forge', name: 'La Forge', at: 'à la Forge', agree: 'fs', island: 'maths-4e-powers', plan: [1000, 545], door: { x: 6, z: 11 } },
@@ -228,13 +229,31 @@ const MAP_SIDES_4E: Readonly<Record<PlaceId4e, 'below' | 'left' | 'right'>> = {
   dynamo: 'below',
 };
 
+/**
+ * Les lieux du 4e déjà construits, et les missions de chacun qui se jouent en scénette, dans l'ordre de leur île : la
+ * seule liste, que lisent la scénette (./levelPlan.ts, `hasScenette`), l'habitant en modèle 3D (./habitants.ts,
+ * `hasHabitantModel`) et les missions des lieux (`PLACES_4E`). La Forge (lot 2) : les cinq, sous l'appentis de la
+ * chaudronnière. Un lieu construit s'ajoute ici, et seulement ici.
+ */
+export const BUILT_PLACES_4E = {
+  forge: ['powers', 'square-roots', 'scientific-notation', 'subtracting', 'volumes'],
+} as const satisfies Partial<Record<PlaceId4e, readonly string[]>>;
+
+/** Un lieu du 4e déjà construit. */
+export type BuiltPlace4e = keyof typeof BUILT_PLACES_4E;
+
+/** Ce lieu du 4e est-il construit ? */
+export const isBuiltPlace4e = (id: string): id is BuiltPlace4e => Object.hasOwn(BUILT_PLACES_4E, id);
+
+const SCENES_4E: Partial<Record<PlaceId4e, readonly string[]>> = BUILT_PLACES_4E;
+
 export const PLACES_4E: readonly OpenPlace<PlaceId4e>[] = PLACE_SPECS.map((s) => ({
   id: s.id,
   name: s.name,
   at: s.at,
   agree: s.agree,
   island: s.island,
-  scenes: [],
+  scenes: SCENES_4E[s.id] ?? [],
   center: fromPlan4e(s.plan),
   yaw: 0,
   door: s.id,

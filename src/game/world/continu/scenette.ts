@@ -158,6 +158,7 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // l'intention du directeur artistique, sans « relier », à relire par le directeur du contenu pédagogique (jamais le nom
   // d'une créature ni d'un Gardien, jamais « nacelle » pour la Nef).
   nacelles: { role: placeArt('nacelles')!.role, greeting: 'Ici, on tend les câbles.', placement: 'rangee' },
+  forge: { role: placeArt('forge')!.role, greeting: 'La chaudronnière façonne le métal en grandes feuilles.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -583,6 +584,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   semaphore: northSite('semaphore'),
   gaillard: northSite('gaillard'),
   nacelles: northSite('nacelles'),
+  forge: northSite('forge'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2087,6 +2089,7 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   gaillard: 'paving',
   // Les Nacelles (lot 16) : les dalles chaudes de la cour.
   nacelles: 'paving',
+  forge: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

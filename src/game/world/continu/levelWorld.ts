@@ -6,6 +6,7 @@
 import { WORLD_FOG } from './camera';
 import { CRIQUE_LOOK, CRIQUE_SITE, CRIQUE_VIEW, NEF_4E, criqueDecorFacets } from './crique4e';
 import { mergeFacets, type Facets } from './facets';
+import { FORGE_GLOW, FORGE_GLOW_FADE } from './forge4e';
 import { FUMEROLLES_STEAM } from './fumerolles5e';
 import type { Vec2, Vec3 } from './geometry';
 import { LISIERE_SITE, LISIERE_VIEW, PHARE_DARK, lisiereDecorFacets } from './lisiere';
@@ -230,6 +231,8 @@ const WORLD_4E: LevelWorld = {
   heightLight: HEIGHT_LIGHT_4E,
   thinFog: [
     { color: COLORS_4E.lava, fog: 1, unlit: true },
+    // La Forge (lot 2) : la gueule allumée et les trois teintes de son allumage, sans ombre comme la lave.
+    ...[FORGE_GLOW, ...FORGE_GLOW_FADE].map((color) => ({ color, fog: 1, unlit: true })),
     ...[COLORS_4E.smoke, COLORS_4E.smokeShade].map((color) => ({ color, fog: THIN_FOG_4E.plume, unlit: true })),
   ],
   departure: DEPARTURE_4E_SITE,

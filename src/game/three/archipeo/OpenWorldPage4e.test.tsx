@@ -1,5 +1,6 @@
-// La page du monde ouvert du 4e (lot 1, « l'île entière en grandes masses ») : elle donne à la scène le plan du 4e, ses
-// trois terres fermées au départ, et ses missions passent par l'écran habituel. La scène 3D n'est pas là sous jsdom :
+// La page du monde ouvert du 4e (lot 1, « l'île entière en grandes masses » ; lot 2, la Forge) : elle donne à la scène le
+// plan du 4e, ses trois terres fermées au départ ; les missions de la Forge se jouent dans sa scénette, et son état restauré
+// s'écrit et se dit. La scène 3D n'est pas là sous jsdom :
 // une scène simulée.
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -89,13 +90,22 @@ test('la scène reçoit le plan du 4e, la Crique et l’aéronef ; ses trois ter
   expect([...scene.closed].sort()).toEqual(['bastion', 'coteaux', 'epaule']);
 });
 
-test('une mission de la Forge, dans les Fabriques ouvertes, se joue sur l’écran habituel', async () => {
+test('une mission de la Forge, construite au lot 2, se joue dans sa scénette ; celle d’un lieu encore en ruine, sur l’écran habituel', async () => {
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });
   act(() => scene.options!.onArrive('forge'));
   const sheet = await screen.findByRole('dialog', { name: 'La Forge' });
   const rows = within(sheet).getByRole('list', { name: 'Missions à la Forge' });
   await userEvent.setup().click(within(rows).getAllByRole('button')[0]);
-  await vi.waitFor(() => expect(document.querySelector('.world-question.ecran-habituel')).not.toBeNull());
-  expect(scene.world!.question).not.toHaveBeenCalledWith(expect.objectContaining({ place: 'forge' }));
+  await vi.waitFor(() => expect(document.querySelector('.world-question')).not.toBeNull());
+  expect(document.querySelector('.world-question.ecran-habituel')).toBeNull();
+});
+
+test('la Forge restaurée : son état écrit, avec l’icône de l’état, dès que son allumage commence', async () => {
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  act(() => scene.options!.onRestored!('forge'));
+  const status = await screen.findByText('La Forge est restaurée.', {}, { timeout: 2000 });
+  const box = status.closest('.open-world-said')!;
+  expect(box.querySelector('svg')).not.toBeNull();
 });

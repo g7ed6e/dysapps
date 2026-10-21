@@ -19,7 +19,8 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useHoldCelebrations } from '../../../components/Celebrations';
-import { Icon } from '../../../components/Icon';
+import { Icon, type AnyIconName } from '../../../components/Icon';
+import { islandStateIcon } from '../../world/islandState';
 import { WorldButton } from '../../WorldButton';
 import { Loading } from '../../../components/Loading';
 import { frenchTypography } from '../../../components/math/RichText';
@@ -46,7 +47,7 @@ import { bornesDesLieuxSeuls, modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { ClosedLandSheet, afterLabel, closedLandLabel, linkableLabel } from './ClosedLandSheet';
-import { constructionState, placeConstruction, posedShapes } from './constructionParts';
+import { constructionState, placeConstruction, posedShapes, restoredLine } from './constructionParts';
 import { posedAmenagements } from './amenagements';
 import { arrivalPlace, gridLand, gridLands, openWorldLands, playedIslands } from './landLinks';
 import { MapLabels } from './MapLabels';
@@ -282,7 +283,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // pont devenu reliable s'il y en a (« Le pont des Crêtes peut être rebâti. ») ; `n` : un autre pont ; `after` : dans
   // combien de millisecondes (jamais en même temps que le toc).
   // Le nom d'un Détour où Kéo s'est arrêté s'écrit de même, en haut (`top`), et part dès qu'il en repart (`detour`).
-  const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number; top?: boolean; detour?: DetourId } | null>(null);
+  // L'état d'un lieu qui s'anime à sa restauration (la Forge du 4e) s'écrit de même, avec l'icône de l'état (`icon`).
+  const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number; top?: boolean; detour?: DetourId; icon?: AnyIconName } | null>(null);
+  // Les mots d'état de l'univers, lus par la scène faite une fois (« La Forge est restaurée. »).
+  const stateWords = useRef(textes.etatsDIle);
+  stateWords.current = textes.etatsDIle;
   // Le Détour où Kéo s'est arrêté (GD-20, déplacement libre, lot 2), ou aucun : au cairn éteint, « Rallumer ».
   const [detourHere, setDetourHere] = useState<DetourId | null>(null);
   // Ce que fait la page à l'arrivée sur un Détour, lu par la scène faite une fois : le réglage et l'état du moment.
@@ -431,6 +436,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       onMapPlaces: (spots, moving) => mapPlacer.current?.(spots, moving),
       onMapPick: (placeId) => mapPick.current(placeId),
       onPosed: () => setPosePending(false),
+      // Un lieu qui s'anime à sa restauration (la Forge du 4e) : son état, écrit avec son icône et dit, pendant
+      // l'allumage (ou tout de suite, avec « Réduire les animations »).
+      onRestored: (placeId) => {
+        const line = restoredLine(placeById(placeId), stateWords.current);
+        setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [line], after: 0, icon: islandStateIcon('restauree') }));
+      },
       // La Nef, son ber ou le banc du large touché (GD-21) : sa fiche, Kéo reste où il est.
       onNef: () => {
         setLieu(null);
@@ -1092,6 +1103,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               qu'elle est écrite, un haut-parleur la fait réentendre, et le toucher la garde écrite (référent dys). Sur la Carte, elle se tient en haut,
               hors des noms des lieux du sud. */}
           <div className={`open-world-said${mapOpen ? ' on-map' : said?.top ? ' on-top' : ''}`} data-shown={saidShown && !playing ? 'oui' : 'non'} data-etape={saidStep} onPointerDown={holdSaid} onFocus={holdSaid}>
+            {saidShown && !playing && said?.icon && <Icon name={said.icon} />}
             <p role="status">{saidShown && !playing && said ? said.lines.map((line, i) => (
                   // Sur un petit écran, l'autre phrase reste lue par le lecteur d'écran, cachée à la vue.
                   <span key={line} className={small && i !== saidStep ? 'visually-hidden' : undefined}>

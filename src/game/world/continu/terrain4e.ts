@@ -449,25 +449,44 @@ export function lavaFacets(): Facets {
 }
 
 /**
- * Le panache (fiche, § 5 : « un panache mince et clair ») : cinq boules de fumée à pans, empilées et décalées vers le
- * sud-est au-dessus du cratère, immobiles (le mouvement lent viendra plus tard ; « Réduire les animations » le fige).
- * Dessiné sans ombre par la vue, peu voilé : il se voit de toute l'île.
+ * Le panache (fiche, § 5 : « un panache mince et clair » ; lot 2, intention du directeur artistique, § 7 : une colonne,
+ * jamais des boules) : quatre troncs de cône empilés au-dessus du cratère, chacun partant du cercle où finit le
+ * précédent (`rings` : le décalage de son centre depuis le cratère et son rayon, de 2 à 4), penchés vers le sud-est,
+ * immobiles. Le côté du soleil clair, l'autre à l'ombre, le dessus clair. Dessiné sans ombre par la vue, peu voilé : il se voit de toute l'île,
+ * et ne se confond pas avec la fumée du Rafiot (courte, basse, sombre).
  */
+export const PLUME_4E = {
+  sides: 7,
+  rings: [
+    [0, 1, 0, 2],
+    [1.4, 7, 1.2, 2.7],
+    [3.4, 13, 2.9, 3.3],
+    [6, 18.5, 5, 3.7],
+    [9, 23.5, 7.4, 4],
+  ],
+} as const;
+
 export function plumeFacets(): Facets {
   const b = new FacetBuilder();
   const { crater } = VOLCANO_4E;
   const top = landHeight(crater);
-  const puffs: readonly (readonly [number, number, number, number])[] = [
-    [0, 3, 0, 2.2],
-    [1.2, 8, 1, 2.6],
-    [3, 13, 2.6, 3],
-    [5.6, 18, 4.4, 3.2],
-    [8.6, 22.5, 6.2, 3],
-  ];
-  puffs.forEach(([dx, dy, dz, r], i) => {
-    b.prism({ x: crater.x + dx, y: top + dy - r * 0.6, z: crater.z + dz, yaw: i * 0.7 }, r * 0.75, r, r * 0.6, 7, COLORS_4E.smokeShade, COLORS_4E.smoke);
-    b.prism({ x: crater.x + dx, y: top + dy, z: crater.z + dz, yaw: i * 0.7 + 0.3 }, r, r * 0.55, r * 0.7, 7, COLORS_4E.smoke, COLORS_4E.smoke);
-  });
+  const { sides, rings } = PLUME_4E;
+  const at = (i: number, k: number): P3 => {
+    const [dx, dy, dz, r] = rings[i];
+    const a = (2 * Math.PI * k) / sides + i * 0.35;
+    return [crater.x + dx + r * Math.cos(a), top + dy, crater.z + dz + r * Math.sin(a)];
+  };
+  for (let i = 0; i + 1 < rings.length; i++)
+    for (let k = 0; k < sides; k++) {
+      // Le côté du soleil (le sud-ouest) clair, l'autre à l'ombre : deux aplats sur la hauteur, jamais des bandes.
+      const mid = (2 * Math.PI * (k + 0.5)) / sides + i * 0.35;
+      const sunny = Math.cos(mid) * -0.7 + Math.sin(mid) * 0.7 > 0;
+      b.quad(at(i, k + 1), at(i, k), at(i + 1, k), at(i + 1, k + 1), sunny ? COLORS_4E.smoke : COLORS_4E.smokeShade);
+    }
+  const last = rings.length - 1;
+  const [dx, dy, dz] = rings[last];
+  const c: P3 = [crater.x + dx, top + dy + 0.6, crater.z + dz];
+  for (let k = 0; k < sides; k++) b.triangle(c, at(last, k + 1), at(last, k), COLORS_4E.smoke);
   return b.build();
 }
 

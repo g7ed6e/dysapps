@@ -14,6 +14,7 @@ import { placeArt } from './northShore';
 import type { PlaceId } from './levelPlan';
 import { placeById as placeOfAnyLevel } from './levelPlan';
 import { heightFor } from './placeGround';
+import { PATH_NODES_4E } from './plan4e';
 import { PATH_NODES_5E } from './plan5e';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId as PlaceId6e } from './plan6e';
 import { RUINS_4E } from './ruins4e';
@@ -1893,7 +1894,7 @@ function northPlace(id: PlaceId): (add: Add) => void {
   return (add) => {
     const art = placeArt(id)!;
     const c = placeOfAnyLevel(id).center;
-    const at = [...PATH_NODES, ...PATH_NODES_5E].find((n) => n.id === id)!.at;
+    const at = [...PATH_NODES, ...PATH_NODES_5E, ...PATH_NODES_4E].find((n) => n.id === id)!.at;
     art.model(add, siteGround(id), { x: at.x - c.x, z: at.z - c.z });
   };
 }
@@ -2521,8 +2522,8 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   hameau: northPlace('hameau'),
   auberge: northPlace('auberge'),
   oracle: northPlace('oracle'),
-  // Le 4e (lot 1) : les seize lieux en ruines simples (./ruins4e.ts).
-  forge: ruinOnly(RUINS_4E.forge),
+  // Le 4e : la Forge (lot 2), dessinée dans son fichier ; les autres, des ruines simples (lot 1, ./ruins4e.ts).
+  forge: northPlace('forge'),
   soute: ruinOnly(RUINS_4E.soute),
   porte: ruinOnly(RUINS_4E.porte),
   etalon: ruinOnly(RUINS_4E.etalon),

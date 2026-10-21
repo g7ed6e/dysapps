@@ -161,8 +161,17 @@ export interface PlaceArt {
    * de 40 à 50 unités), dans le monde, ou rien : hors de son modèle (`model`), donc sans effet sur les bornes de marche, la
    * flore, la caméra ni la pose ; absent de la Carte ; sans réponse au toucher, et jamais un obstacle pour la caméra de
    * scénette (la scène les range en dernier dans le maillage des lieux et les écarte des rayons : `solid`, three/archipeo/
-   * scene.ts). Rien tant qu'aucune partie n'est posée (la ruine ne sort pas du lieu). `c` : le centre du lieu à son sol,
+   * scene.ts). Aux Nacelles, rien tant qu'aucune partie n'est posée ; à la Forge, la vanne et les regards de la rigole,
+   * rouillés en ruine, ferrés une fois les abords posés. `c` : le centre du lieu à son sol,
    * `posed` : une rangée d'une étape posée. Compté dans le budget du lieu (./budget.ts).
    */
   reach?(c: Vec3, posed: (stage: Stage, row: number) => boolean): Facets | null;
+  /**
+   * Ce qui s'anime une seule fois, à la dernière partie posée (à la Forge, lot 2 du 4e : la vanne s'ouvre, les regards
+   * de la rigole s'allument l'un après l'autre, puis la grille, puis la gueule) : `seconds` au plus 4, `draw(c, t)` ce
+   * qu'on voit à `t` secondes du début (`Infinity` : l'état final, gardé dans le maillage des lieux ; `0` : l'état
+   * avant). Hors du modèle, comme `reach` ; sautée d'un toucher, et posée d'un coup avec « Réduire les animations »
+   * (three/archipeo/scene.ts). Comptée à son état final dans le budget du lieu (./budget.ts).
+   */
+  restoration?: { readonly seconds: number; draw(c: Vec3, t: number): Facets };
 }

@@ -74,7 +74,7 @@ describe('les couleurs peu voilées du 5e : aucune autre couleur du 5e à moins 
 describe('les couleurs peu voilées du 4e : aucune autre couleur du 4e à moins de 0,004 de l’une d’elles', () => {
   it('dans tout ce que dessine le monde ouvert, dans ses deux vues, et sur la Carte', () => {
     const seen = colorsDrawn(() => {
-      for (const view of ['monde', 'depart'] as const) openWorldCost4e(view);
+      for (const view of ['monde', 'scenette', 'depart'] as const) openWorldCost4e(view);
       mapCost4e();
     });
     expect(tooClose(seen, '4e')).toEqual(none('4e'));

@@ -94,6 +94,12 @@ export function stateWord(state: 'en-chantier' | 'restauree', words: Readonly<Re
   return { ms: masculine, mp: `${masculine}s`, fs: word, fp: `${word}s` }[agree];
 }
 
+/** L'état d'un lieu restauré, accordé à son nom : « La Forge est restaurée. », « Les Orgues sont restaurées. ». */
+export function restoredLine(place: Pick<OpenPlace, 'name' | 'agree'>, words: Readonly<Record<IslandStateId, string>>): string {
+  const plural = place.agree === 'mp' || place.agree === 'fp';
+  return `${place.name} ${plural ? 'sont' : 'est'} ${stateWord('restauree', words, place.agree).toLocaleLowerCase('fr')}.`;
+}
+
 /**
  * Les lieux dont le nom est celui d'un site, jamais suivi du mot d'achèvement de l'univers sur la Carte (consultant
  * Archipéo, lot L8b : « Les Ruines », jamais « restaurées ») : leur bouton dit à la place le geste du lieu, accordé

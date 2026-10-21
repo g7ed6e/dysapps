@@ -236,6 +236,7 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   gaillard: placeArt('gaillard')!.sceneSpot,
   // Les Nacelles (lot 16) : la cour devant le quai, le pied du mât et un rouage à gauche, la halle derrière.
   nacelles: placeArt('nacelles')!.sceneSpot,
+  forge: placeArt('forge')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -509,6 +510,7 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   gaillard: 'lieu',
   // Les Nacelles (lot 16) : les moufles pendues à la poutre basse.
   nacelles: 'lieu',
+  forge: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
