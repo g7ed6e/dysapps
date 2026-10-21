@@ -1152,6 +1152,14 @@
 .open-world-map-closed[data-nom='serre'] .open-world-map-closed-name {
   flex-direction: column;
 }
+/* « Toi » à gauche de la pastille, ou dessous, quand la droite est prise (seconde passe du directeur artistique sur la
+   retouche 1 des restes du 5e) : la pastille reste sur le point de Kéo. */
+.open-world-map-keo[data-toi='gauche'] {
+  flex-direction: row-reverse;
+}
+.open-world-map-keo[data-toi='dessous'] {
+  flex-direction: column;
+}
 /* Trop serré : la pastille seule, « Toi » reste dit aux lecteurs d'écran. */
 .open-world-map-keo[data-nom='non'] .open-world-map-keo-word {
   visibility: hidden;

@@ -121,7 +121,7 @@ const OPEN_WORLD_BUDGET_4E = { triangles: 118_000, calls: 22 } as const;
 export const FOREST_REWORK_MAX_5E = 5_800;
 
 /**
- * Les habitants du 5e près de leur porte, hors de la scénette (choix du mainteneur du 21 octobre 2026, « Comme au 6e » ;
+ * Les habitants du 5e près de leur porte, hors de la scénette (choix du mainteneur du 21 octobre 2026, « Garder au 5e » ;
  * `worldHabitantsCost5e`) : au plus tant de triangles, les quatorze pions ensemble (3 204 mesurés), dans le maillage des
  * lieux, sans appel de plus ; le monde hors scénette et le départ seuls (la scénette ouverte ne bouge pas).
  */
@@ -394,7 +394,7 @@ const LINKED_LANDS_5E = linkedLands(PLAN_5E);
 export type OpenWorldCost5e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'failles' | 'départ' | 'habitants' };
 
 /**
- * Les habitants du 5e hors de leur scénette (choix du mainteneur du 21 octobre 2026, « Comme au 6e » ;
+ * Les habitants du 5e hors de leur scénette (choix du mainteneur du 21 octobre 2026, « Garder au 5e » ;
  * ./worldHabitants.ts) : le pion de chaque lieu fini près de sa porte, tous à la fois, dans le maillage des lieux (aucun
  * appel de plus). Ni sur la Carte, ni pendant une scénette : le monde hors scénette et le départ seuls les comptent.
  */

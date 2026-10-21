@@ -11,6 +11,7 @@ import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
 import { reachableIslands } from '../../world/archipelago';
+import { toutConstruit } from '../../world/budget';
 import { landById, type LinkedLand } from '../../world/continu/lands';
 import { placeById } from '../../world/continu/levelPlan';
 import { planCells } from '../../world/plans';
@@ -380,6 +381,21 @@ describe('« Reprendre » chez l’habitant (GD-20, point 4, lot L3)', () => {
     const sheet = await screen.findByRole('dialog', { name: 'Les Quais' });
     await userEvent.setup().click(within(sheet).getByRole('button', { name: /Reprendre/ }));
   }
+
+  test('Kéo chez un habitant qui a des révisions dues, plus rien à jouer : la bulle dit son rappel, jamais « Aucune mission » (relecture des habitants du 5e)', async () => {
+    const { progress, world } = toutConstruit();
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, progress, world: { ...world, links: [] }, spaced: due(['maths-6e-calculation-measures-1:maths-6e-calculation-measures-1-2']) }));
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    // Ailleurs qu'aux Quais : rien à faire ici.
+    expect(await screen.findByText(/Aucune mission/)).toBeInTheDocument();
+    act(() => scene.options!.onArrive('quais'));
+    const sheet = await screen.findByRole('dialog', { name: 'Les Quais' });
+    expect(within(sheet).getByRole('group')).toHaveTextContent('On revoit quelques questions ensemble.');
+    await userEvent.setup().keyboard('{Escape}');
+    expect(await screen.findByText('On revoit quelques questions ensemble.', { selector: '.open-world-go-reason' })).toBeInTheDocument();
+    expect(screen.queryByText(/Aucune mission/)).toBeNull();
+  });
 
   test('les questions dues qui se revoient ici : la révision se joue dans la scène des Quais, sans quitter le monde ; un calcul tiré au hasard n’y entre pas', async () => {
     localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, spaced: due(['maths-6e-calculation-times-tables-1:5x7', 'maths-6e-calculation-measures-1:maths-6e-calculation-measures-1-2']) }));

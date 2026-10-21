@@ -215,6 +215,8 @@ export interface MapLabel {
    * se taire).
    */
   narrow?: { w: number; h: number };
+  /** Kéo : sa taille « Toi » sous sa pastille (`toi: 'dessous'`), quand « Toi » ne tient ni à droite ni à gauche. */
+  stacked?: { w: number; h: number };
   /** Un lieu d'une terre fermée (sa pastille pâle) : Kéo peut couvrir son nom, jamais celui d'un lieu ouvert. */
   pale?: true;
 }
@@ -239,6 +241,8 @@ export interface MapLabelSpot {
   drop?: number;
   /** Dans sa forme serrée, son nom sur deux lignes, plus étroit (un lieu ouvert ou fermé). */
   narrow?: true;
+  /** Kéo : « Toi » à gauche de sa pastille, ou dessous ; à droite sans rien. */
+  toi?: 'gauche' | 'dessous';
 }
 
 /**
@@ -639,12 +643,14 @@ function attemptLayout(
     });
   };
   // Kéo en dernier, d'un côté fixe de son point (consultant UX UI et référent dys, relecture du lot 13a, chantier de la
-  // Carte) : sa pastille centrée sous lui, « Toi » à sa droite ; au-dessus seulement si le bas de l'écran l'empêche. Il
-  // ne déplace jamais un nom. Sa pastille reste près de son point, à sa taille (`MAP_KEO_DISC`), au plus à `NEAR.reach` :
-  // plus loin, elle se lisait au lieu voisin, ou passait une rive (relecture des restes du 5e : le disque à 160 px de
-  // l'Auberge, collé au Hameau ; aux Terrasses, de l'autre côté du canal). « Toi » reste tant qu'il a une place près du
-  // point, quitte à couvrir le nom pâle d'un lieu fermé (directeur artistique) ; sinon sa pastille seule, libre, ou sur
-  // le nom pâle d'un lieu fermé, puis à cheval sur le bord du nom de son propre lieu, puis dessus, jamais sur celui d'un
+  // Carte) : sa pastille centrée sous lui, « Toi » à sa droite, sinon à sa gauche, sinon sous la pastille (seconde passe
+  // du directeur artistique sur la retouche 1 des restes du 5e : « Toi » manquait aux Terrasses et aux Aiguilles en
+  // attente) ; au-dessus seulement si le bas de l'écran l'empêche. Il ne déplace jamais un nom. Sa pastille reste près
+  // de son point, à sa taille (`MAP_KEO_DISC`), au plus à `NEAR.reach` : plus loin, elle se lisait au lieu voisin, ou
+  // passait une rive (relecture des restes du 5e : le disque à 160 px de l'Auberge, collé au Hameau ; aux Terrasses, de
+  // l'autre côté du canal). « Toi » reste tant qu'il a une place près du point, quitte à couvrir le nom pâle d'un lieu
+  // fermé (directeur artistique), ou une place libre un peu plus loin ; sinon sa pastille seule, libre, ou sur le nom
+  // pâle d'un lieu fermé, puis à cheval sur le bord du nom de son propre lieu, puis dessus, jamais sur celui d'un
   // voisin ; au pire de son côté fixe.
   for (const l of labels) {
     if (l.kind !== 'keo') continue;
@@ -670,13 +676,49 @@ function attemptLayout(
       return mine(r) && !(ownBox && cx > ownBox.left && cx < ownBox.right && cy > ownBox.top && cy < ownBox.bottom);
     };
     // D'un côté fixe, puis de l'autre, puis la place la plus proche, la pastille à `reach` au plus de son point.
-    const find = (w: number, test: (r: Rect) => boolean, reach: number = MAP_KEO_DISC) =>
-      [at(w, side), at(w, other)].find(test) ?? near(l, w, l.h, (r) => gapTo(l, rect(r.left, r.top, MAP_KEO_DISC, l.h)) <= reach && test(r), reach);
-    const toi = find(l.w, ok) ?? find(l.w, over);
+    const fixed = (w: number) => [at(w, side), at(w, other)];
+    const nearBy = (w: number, test: (r: Rect) => boolean, reach: number = MAP_KEO_DISC) => near(l, w, l.h, (r) => gapTo(l, rect(r.left, r.top, MAP_KEO_DISC, l.h)) <= reach && test(r), reach);
+    const find = (w: number, test: (r: Rect) => boolean, reach: number = MAP_KEO_DISC) => fixed(w).find(test) ?? nearBy(w, test, reach);
+    // « Toi » à droite de la pastille, sinon à sa gauche (la pastille au bout droit), sinon dessous (l'étiquette centrée
+    // sur la pastille, en haut ; `stacked`, mesurée) : d'abord la pastille sur son point, puis à sa taille au plus de lui.
+    const st = l.stacked;
+    type Form = { toi?: 'gauche' | 'dessous'; fixed: Rect[]; near: (test: (r: Rect) => boolean, reach: number) => Rect | undefined };
+    const forms: Form[] = [
+      { fixed: fixed(l.w), near: (test, reach) => nearBy(l.w, test, reach) },
+      {
+        toi: 'gauche',
+        fixed: [side, other].map((top) => rect(l.x + MAP_KEO_DISC / 2 - l.w, top, l.w, l.h)),
+        near: (test, reach) => near(l, l.w, l.h, (r) => gapTo(l, rect(r.right - MAP_KEO_DISC, r.top, MAP_KEO_DISC, l.h)) <= reach && test(r), reach),
+      },
+      ...(st
+        ? [
+            {
+              toi: 'dessous' as const,
+              fixed: [l.y, l.y - st.h].map((top) => rect(l.x - st.w / 2, top, st.w, st.h)),
+              near: (test: (r: Rect) => boolean, reach: number) =>
+                near(l, st.w, st.h, (r) => gapTo(l, rect(r.left + st.w / 2 - MAP_KEO_DISC / 2, r.top, MAP_KEO_DISC, MAP_KEO_DISC)) <= reach && test(r), reach),
+            },
+          ]
+        : []),
+    ];
+    const findToi = (test: (r: Rect) => boolean, reach: number): { r: Rect; toi?: 'gauche' | 'dessous' } | undefined => {
+      for (const f of forms) {
+        const r = f.fixed.find(test);
+        if (r) return { r, toi: f.toi };
+      }
+      for (const f of forms) {
+        const r = f.near(test, reach);
+        if (r) return { r, toi: f.toi };
+      }
+      return undefined;
+    };
+    // Près du point d'abord (la pastille à sa taille au plus), puis, sur une place libre seulement, à `NEAR.reach` au plus,
+    // comme la pastille seule : plus loin, sur un nom pâle, Kéo se lisait au lieu fermé qu'il couvrait.
+    const toi = findToi(ok, MAP_KEO_DISC) ?? findToi(over, MAP_KEO_DISC) ?? findToi(ok, NEAR.reach);
     const disc = () => find(MAP_KEO_DISC, ok) ?? find(MAP_KEO_DISC, over) ?? find(MAP_KEO_DISC, ok, NEAR.reach) ?? find(MAP_KEO_DISC, over, NEAR.reach) ?? find(MAP_KEO_DISC, edge) ?? find(MAP_KEO_DISC, mine);
-    const spot = toi ? { r: toi, name: true } : { r: disc() ?? at(MAP_KEO_DISC, side), name: false };
+    const spot = toi ? { r: toi.r, name: true, toi: toi.toi } : { r: disc() ?? at(MAP_KEO_DISC, side), name: false, toi: undefined };
     placed.push({ id: l.id, r: spot.r });
-    out.set(l.id, { id: l.id, left: spot.r.left, top: spot.r.top, name: spot.name });
+    out.set(l.id, { id: l.id, left: spot.r.left, top: spot.r.top, name: spot.name, ...(spot.toi ? { toi: spot.toi } : {}) });
   }
   return { spots: labels.map((l) => out.get(l.id)!), mute, namedOpen, closedNamed, reserved, room };
 }

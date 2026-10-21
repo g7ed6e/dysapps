@@ -544,7 +544,7 @@ describe('Le budget du 5e', () => {
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux', 'croisee', 'instants', 'fumerolles', 'etuve', 'terrasses', 'auberge', 'donjon', 'oracle'].includes(id)).length;
     expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - RESERVE_LOT13B_5E + FOREST_REWORK_MAX_5E + since * PLACE_TRIANGLES_MAX_5E + PERCHOIR_TRIANGLES_MAX);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
-    // Les habitants près de leur porte (choix du mainteneur du 21 octobre 2026, « Comme au 6e ») se cachent pendant une
+    // Les habitants près de leur porte (choix du mainteneur du 21 octobre 2026, « Garder au 5e ») se cachent pendant une
     // scénette : ils ne prennent rien sur cette réserve. Hors scénette et au départ, ils sont comptés (au plus
     // `WORLD_HABITANTS_MAX_5E`), et ces deux vues restent sous l'enveloppe, la même réserve gardée pour les lots suivants.
     expect(cost.some((c) => c.poste === 'habitants')).toBe(false);

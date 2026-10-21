@@ -42,6 +42,7 @@ import { bornesDuMondeOuvert, firstToPlayAt, keepClear, missionsOfPlace, nextMis
 import { placeById, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
 import type { PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
+import { REVISION_PHRASES } from '../../world/continu/remise';
 import { hasWorldHabitant } from '../../world/continu/worldHabitants';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
@@ -105,7 +106,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const sixth = level === '6e';
   // Les habitants du niveau font signe dans le monde (leurs pastilles, leur ligne dans le panneau du lieu) : au 6e, au-
   // dessus de leur place dans la scénette ; au 5e, près de leur lieu, hors de la scénette (choix du mainteneur du 21
-  // octobre 2026, « Comme au 6e » ; ../../world/continu/worldHabitants.ts). Leurs commandes et leur entraide seulement
+  // octobre 2026, « Garder au 5e » ; ../../world/continu/worldHabitants.ts). Leurs commandes et leur entraide seulement
   // là où elles se livrent dans le monde ouvert (`hasOpenWorldErrands` : au 6e) ; ailleurs, leurs révisions dues.
   const habitantsShown = sixth || plan.places.some((p) => hasWorldHabitant(p.id));
   const errands = useMemo(() => hasOpenWorldErrands(plan), [plan]);
@@ -208,21 +209,29 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // dues sans « Plus tard » ; trois au plus ; jamais au lieu où se tient Kéo (la bulle et la ligne du panneau portent
   // déjà l'information, et la pastille ne recouvre jamais Kéo).
   const { remises } = usePlusTard();
+  const revisionDue = useCallback(
+    (p: PlaceId) => {
+      const island = placeById(p).island as BiomeId;
+      return !remises.has(island) && revisionsDeLIle(state.spaced, state.world.links, island, settings.lv2).length > 0;
+    },
+    [remises, state.spaced, state.world.links, settings.lv2],
+  );
   const signs = useMemo(
     () =>
       !habitantsShown
         ? []
         : habitantSigns(plan, vu, {
             open: (p) => !isClosed(p) && p !== here,
-            revisions: (p) => {
-              const island = placeById(p).island as BiomeId;
-              return !remises.has(island) && revisionsDeLIle(state.spaced, state.world.links, island, settings.lv2).length > 0;
-            },
+            revisions: revisionDue,
             suggested: suggestedId ?? undefined,
             titre: textes.quetes?.titre,
           }),
-    [habitantsShown, plan, vu, state.spaced, state.world.links, isClosed, here, remises, settings.lv2, suggestedId, textes.quetes?.titre],
+    [habitantsShown, plan, vu, isClosed, here, revisionDue, suggestedId, textes.quetes?.titre],
   );
+  // Kéo chez un habitant qui a des révisions dues (sa pastille s'éteint, Kéo est chez lui) : la bulle dit le rappel de la
+  // ligne de l'habitant plutôt que « Aucune mission à faire ici pour l'instant. » (référent dys et directeur artistique,
+  // relecture des habitants du 5e : l'élève lisait une contradiction). Aux deux niveaux.
+  const revisionHere = habitantsShown && here !== null && !isClosed(here) && revisionDue(here);
 
   // Kéo part de l'endroit de l'Escale de l'adresse (le retour d'une mission de l'école, `?porte=maths`, ou d'une question
   // d'assemblage), sinon devant le lieu de l'adresse (`?lieu=quais`, GD-20, point 8 ; ou une île, `/adventure/<île>`),
@@ -1199,7 +1208,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               {/* La phrase de ce que porte la suggestion chez un habitant (sa commande, l'étape d'entraide) ; « Aucune
                   mission » seulement quand rien n'attend. */}
               {!walking && !relightHere && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
-              {!next && !suggestedCmd && !nefFirst && !walking && !relightHere && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
+              {!next && !suggestedCmd && !nefFirst && !walking && !relightHere && <p className="open-world-go-reason">{revisionHere ? frenchTypography(REVISION_PHRASES.reminder) : 'Aucune mission à faire ici pour l’instant.'}</p>}
               <div className="open-world-go-row">
               {walking ? (
                 // Pendant tout trajet (la marche, la cabine, la marche) : « Passer le trajet », à contraste plein, saute

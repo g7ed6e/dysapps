@@ -131,6 +131,7 @@ describe('Les étiquettes de la Carte', () => {
   const boxOf = (l: MapLabel, s: MapLabelSpot) => {
     if (l.kind === 'closed' && !s.name) return { left: l.x - MAP_LOCK / 2, top: s.top, right: l.x + MAP_LOCK / 2, bottom: s.top + MAP_LOCK };
     if (l.kind === 'keo' && !s.name) return { left: s.left, top: s.top, right: s.left + MAP_KEO_DISC, bottom: s.top + l.h };
+    if (l.kind === 'keo' && s.toi === 'dessous') return { left: s.left, top: s.top, right: s.left + l.stacked!.w, bottom: s.top + l.stacked!.h };
     if (l.kind === 'open' && !s.name) return { left: s.left, top: s.top, right: s.left + MAP_COMPACT, bottom: s.top + MAP_COMPACT };
     if (l.kind === 'open' && s.narrow) return { left: s.left, top: s.top, right: s.left + l.narrow!.w, bottom: s.top + l.narrow!.h };
     if (l.kind === 'closed' && s.narrow) {
@@ -372,6 +373,43 @@ describe('Les étiquettes de la Carte', () => {
     expect(layoutMapLabels([labels[0]], [], { width: 844, height: 390 })[0]).toEqual({ id: 'keo', left: 570 - MAP_KEO_DISC / 2, top: 212, name: true });
   });
 
+  it('« Toi » à droite de la pastille, sinon à gauche, sinon dessous, avant la pastille seule ; jamais sur le nom d’un voisin (seconde passe du directeur artistique, les Terrasses)', () => {
+    const screen = { width: 1024, height: 768 };
+    const keoAt: MapLabel = { id: 'keo', kind: 'keo', x: 500, y: 300, w: 108, h: 44, stacked: { w: 44, h: 76 } };
+    const cross = (a: { left: number; top: number; right: number; bottom: number }, b: typeof a) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+    // Deux bandes interdites (des boutons, ou les noms des voisins), de part et d'autre du point.
+    const east = { left: 540, top: 180, right: 700, bottom: 420 };
+    const west = { left: 300, top: 180, right: 460, bottom: 420 };
+    const check = (l: MapLabel, zones: { left: number; top: number; right: number; bottom: number }[]) => {
+      const [k] = layoutMapLabels([l], zones, screen);
+      const box = boxOf(l, k);
+      for (const z of zones) expect(cross(box, z)).toBe(false);
+      // La pastille toujours centrée sous son point.
+      const disc = k.toi === 'gauche' ? k.left + l.w - MAP_KEO_DISC : k.toi === 'dessous' ? k.left + l.stacked!.w / 2 - MAP_KEO_DISC / 2 : k.left;
+      expect(disc + MAP_KEO_DISC / 2).toBe(500);
+      return k;
+    };
+    // La place à droite prise : « Toi » à gauche, la pastille au même endroit.
+    expect(check(keoAt, [east])).toEqual({ id: 'keo', left: 500 + MAP_KEO_DISC / 2 - 108, top: 300, name: true, toi: 'gauche' });
+    // Prise des deux côtés : « Toi » sous la pastille.
+    expect(check(keoAt, [east, west])).toEqual({ id: 'keo', left: 500 - 22, top: 300, name: true, toi: 'dessous' });
+    // Sans la taille empilée mesurée : la pastille seule.
+    expect(check({ ...keoAt, stacked: undefined }, [east, west]).name).toBe(false);
+    // Tout pris à la taille de la pastille autour du point, une place libre un peu plus loin : « Toi » y va, la pastille
+    // à `NEAR.reach` au plus de son point (80 px), comme la pastille seule.
+    const ring = { left: 380, top: 250, right: 620, bottom: 352 };
+    const [far] = layoutMapLabels([keoAt], [ring], screen);
+    expect(far.name).toBe(true);
+    const fb = boxOf(keoAt, far);
+    expect(cross(fb, ring)).toBe(false);
+    const fd = far.toi === 'gauche' ? fb.right - MAP_KEO_DISC : far.toi === 'dessous' ? fb.left + keoAt.stacked!.w / 2 - MAP_KEO_DISC / 2 : fb.left;
+    const gap = Math.hypot(Math.max(fd - 500, 0, 500 - (fd + MAP_KEO_DISC)), Math.max(fb.top - 300, 0, 300 - (fb.top + MAP_KEO_DISC)));
+    expect(gap).toBeGreaterThan(MAP_KEO_DISC);
+    expect(gap).toBeLessThanOrEqual(80);
+    // Rien autour : à droite, comme avant.
+    expect(layoutMapLabels([keoAt], [], screen)[0]).toEqual({ id: 'keo', left: 500 - MAP_KEO_DISC / 2, top: 300, name: true });
+  });
+
   it('Kéo cerné de noms (l’Auberge, relecture des restes du 5e) : sa pastille reste près de son point, jamais sur le nom d’un voisin, au pire sur le nom de son lieu', () => {
     const screen = { width: 1024, height: 768 };
     // Kéo à l'Auberge, entre la Lisière au-dessus, le Hameau dessous, et deux voisins de côté.
@@ -599,6 +637,7 @@ describe('La Carte avec le rivage nord (lot L7)', () => {
         ? { left: Math.min(name, l.x - MAP_LOCK / 2), top: s.top + (s.drop ?? 0), right: Math.max(name + l.w, l.x + MAP_LOCK / 2), bottom: s.top + (s.drop ?? 0) + l.h }
         : { left: l.x - MAP_LOCK / 2, top: s.top, right: l.x + MAP_LOCK / 2, bottom: s.top + MAP_LOCK };
     }
+    if (l.kind === 'keo' && s.toi === 'dessous') return { left: s.left, top: s.top, right: s.left + l.stacked!.w, bottom: s.top + l.stacked!.h };
     if (l.kind === 'keo') return { left: s.left, top: s.top, right: s.left + (s.name ? l.w : MAP_KEO_DISC), bottom: s.top + l.h };
     if (!s.name) return { left: s.left, top: s.top, right: s.left + MAP_COMPACT, bottom: s.top + MAP_COMPACT };
     const [bw, bh] = s.narrow ? [l.narrow!.w, l.narrow!.h] : [l.w, l.h];

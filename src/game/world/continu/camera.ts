@@ -27,6 +27,11 @@ export interface CameraPose {
 
 /** La hauteur de Kéo dans la scène (son corps à l'échelle de la vue, un peu de marge). */
 export const KEO_HEIGHT = 2.6;
+/**
+ * L'échelle de Kéo dans le monde ouvert, un peu plus grand que dans le monde en grille (directeur artistique, 14 octobre
+ * 2026) ; dans une scénette, la sienne (`scenetteKeo`). Les habitants hors de leur scénette s'en règlent (./worldHabitants.ts).
+ */
+export const KEO_WORLD_SCALE = 1.25;
 /** Au-dessus du sommet d'un lieu, en unités : là où se pose la marque (la vue lit la même valeur). */
 export const MARK_LIFT = 1.2;
 

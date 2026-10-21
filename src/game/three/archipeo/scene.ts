@@ -17,7 +17,7 @@ import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
+import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
@@ -33,7 +33,7 @@ import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/contin
 import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { hasScenette, placeById, type LevelPlan, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
-import { hasHabitantModel } from '../../world/continu/habitants';
+import { HABITANT_HEIGHT, hasHabitantModel } from '../../world/continu/habitants';
 import { arrivalViewOf, doorFrameOf, doorViewOf, placeArt } from '../../world/continu/northShore';
 import { levelWorld, type LevelWorld, type ThinFog } from '../../world/continu/levelWorld';
 import { riftMistFacets } from '../../world/continu/mist5e';
@@ -90,7 +90,7 @@ import { ringHeights, standingHeight, tileRings } from '../../world/continu/terr
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
-import { worldHabitantAt, worldHabitantFacets } from '../../world/continu/worldHabitants';
+import { hasWorldHabitant, worldHabitantAt, worldHabitantFacets, worldHabitantHeight } from '../../world/continu/worldHabitants';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
 import { placedAmenagement } from './amenagements';
@@ -421,7 +421,7 @@ const FACING_CAMERA = Math.PI;
  * Kéo un peu plus grand que dans le monde en grille, et un anneau clair au sol autour de ses pieds : on le trouve sans
  * chercher (directeur artistique, 14 octobre 2026).
  */
-const KEO_SCALE = 1.25;
+const KEO_SCALE = KEO_WORLD_SCALE;
 const KEO_RING = { inner: 0.85, outer: 1.3, color: 0xfff6dc };
 /**
  * L'ombre peinte de Kéo (lot 3) : un disque de `radius`, décalé de `shift` du côté opposé au soleil, dans le creux de
@@ -1873,7 +1873,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Les aménagements posés (GD-20, point 4, lot L0), dans le même maillage : cachés pendant toute question, comme les
       // traces (au rivage nord et au large, ceux des lieux du même cadre) ; montrés dans le cadrage de la remise.
       if (showsAmenagements(scenette, p.id, remise?.place ?? null)) for (const id of placesState?.amenagements?.[p.id] ?? []) list.push(placedAmenagement(id, ground).facets);
-      // L'habitant près de sa porte (choix du mainteneur, 21 octobre 2026, « Comme au 6e » ; au 5e, son pion), dans le même
+      // L'habitant près de sa porte (choix du mainteneur, 21 octobre 2026, « Garder au 5e » ; au 5e, son pion), dans le même
       // maillage (aucun appel de plus) : ni sur la Carte, ni pendant une scénette (la sienne a son modèle, les autres lieux
       // sont hors du cadre : le budget de la scénette ouverte ne bouge pas), ni dans une terre fermée.
       const land = landOf(p.id);
@@ -2185,8 +2185,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // et où l'aménagement se pose (au Phare, au pied de la tour), comme un cadenas au-dessus de son pont (./remiseRun.ts).
   const signsTracker = createSignsTracker({
     anchorOf: (place) => {
-      // Au-dessus de l'habitant près de sa porte (au 5e), sinon de sa place dans la scénette, là où se joue la remise.
-      const h = worldHabitantAt(place, ground) ?? scenetteHabitant(place, remisePosed(place));
+      // Au-dessus de l'habitant près de sa porte (au 5e, à sa taille dans le monde), sinon de sa place dans la scénette,
+      // là où se joue la remise ; autant au-dessus de sa tête que dans la scénette.
+      const w = worldHabitantAt(place, ground);
+      if (w && hasWorldHabitant(place)) return { x: w.x, y: w.y + worldHabitantHeight(place) + SIGN_LIFT - HABITANT_HEIGHT, z: w.z };
+      const h = scenetteHabitant(place, remisePosed(place));
       return { x: h.x, y: h.y + SIGN_LIFT, z: h.z };
     },
     place: (anchor, sign) => {

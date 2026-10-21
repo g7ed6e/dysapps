@@ -345,7 +345,7 @@ describe('Le budget du 5e, avec les Radeaux et le Creux (plafonds du lot 6)', ()
     // 9), l'Étuve (lot 10), les Terrasses (lot 11), l'Auberge (lot 12), le Donjon (lot 13a), l'Oracle (lot 13b), le
     // Sémaphore (lot 14) ; et la Faille (lot 11), comptée comme le Creux.
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => id !== 'montee' && id !== 'hameau').length;
-    // Les habitants près de leur porte (choix du mainteneur du 21 octobre 2026, « Comme au 6e ») : hors scénette et au
+    // Les habitants près de leur porte (choix du mainteneur du 21 octobre 2026, « Garder au 5e ») : hors scénette et au
     // départ seulement, jamais sur la Carte.
     const views = [
       [sum(openWorldCost5e('monde')), LOT5_5E.world, WORLD_HABITANTS_MAX_5E],

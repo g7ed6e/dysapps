@@ -227,7 +227,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       const next = snugRef.current.on && kind === 'open' && s.id === snugRef.current.next;
       // Un lieu d'une terre fermée : Kéo peut couvrir son nom pâle, jamais celui d'un lieu ouvert.
       const pale = kind === 'open' && s.id !== 'port' && !openPlaces.includes(s.id as PlaceId);
-      const item: MapLabel = { id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port' || next, ...(pale ? { pale: true as const } : {}), ...(below ? { below } : {}), ...(above ? { above } : {}), ...(side ? { side } : {}), ...(size.narrow ? { narrow: size.narrow } : {}) };
+      const item: MapLabel = { id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port' || next, ...(pale ? { pale: true as const } : {}), ...(below ? { below } : {}), ...(above ? { above } : {}), ...(side ? { side } : {}), ...(size.narrow ? (kind === 'keo' ? { stacked: size.narrow } : { narrow: size.narrow }) : {}) };
       if (next) items.unshift(item);
       else items.push(item);
     }
@@ -293,6 +293,11 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       // descend d'un pas s'il touche le nom du dessus (`shift`, `drop`, layoutMapLabels).
       const shift = `${Math.round(spot.shift ?? 0)}px`;
       if (node.style.getPropertyValue('--nom-decale') !== shift) node.style.setProperty('--nom-decale', shift);
+      // « Toi » à gauche de la pastille de Kéo, ou dessous (`toi`) ; à droite sans rien.
+      if (spot.id === 'keo' && node.dataset.toi !== spot.toi) {
+        if (spot.toi) node.dataset.toi = spot.toi;
+        else delete node.dataset.toi;
+      }
       const drop = `${Math.round(spot.drop ?? 0)}px`;
       if (node.style.getPropertyValue('--nom-baisse') !== drop) node.style.setProperty('--nom-baisse', drop);
     }
@@ -341,6 +346,17 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
     // Une pastille de lieu ouvert, ou un lieu fermé, se mesure entière et serrée, quelle que soit sa forme du moment (sa
     // forme est remise aussitôt, avant que la page se dessine).
     const measure = (node: HTMLElement): { w: number; h: number; narrow?: { w: number; h: number } } => {
+      // Kéo se mesure « Toi » à côté de sa pastille, et dessous (sa forme empilée, gardée dans `narrow`).
+      if (node.classList.contains('open-world-map-keo')) {
+        const was = node.dataset.toi;
+        delete node.dataset.toi;
+        const whole = { w: node.offsetWidth, h: node.offsetHeight };
+        node.dataset.toi = 'dessous';
+        const stacked = { w: node.offsetWidth, h: node.offsetHeight };
+        if (was === undefined) delete node.dataset.toi;
+        else node.dataset.toi = was;
+        return { ...whole, narrow: stacked };
+      }
       if (!node.classList.contains('open-world-map-place') && !node.classList.contains('open-world-map-closed')) return { w: node.offsetWidth, h: node.offsetHeight };
       const was = node.dataset.nom;
       node.dataset.nom = 'oui';
