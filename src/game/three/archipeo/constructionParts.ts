@@ -4,7 +4,7 @@
 // devient les tranches d'étapes qu'elle pose dans le lieu, qui se rebâtit lui-même (world/continu/construction.ts) : le plan `<lieu>-1`
 // est le corps, `-2` le haut, `-3` les abords ; un plan coupé en deux ou en trois rangées (GD-14) en tranches qui se
 // suivent, de bas en haut. Sans Three.js : testé sous jsdom.
-import type { BiomeId } from '../../biomes';
+import type { IleId } from '../../biomes';
 import type { PartShape, Stage } from '../../world/continu/construction';
 import type { OpenPlace } from '../../world/continu/levelPlan';
 import type { IslandStateId } from '../../world/islandState';
@@ -29,7 +29,7 @@ export interface PlaceConstruction {
 const SHAPES = new WeakMap<readonly Partie[], PartShape[]>();
 
 /** Les parties de la construction d'un lieu, en tranches d'étapes (calculées une fois par lieu et par compte). */
-export function partShapes(island: BiomeId): PartShape[] {
+export function partShapes(island: IleId): PartShape[] {
   const parties = partiesDe(island);
   const cached = SHAPES.get(parties);
   if (cached) return cached;
@@ -51,7 +51,7 @@ export function partShapes(island: BiomeId): PartShape[] {
 }
 
 /** La construction d'un lieu dans une sauvegarde : ses parties, celles qui sont posées et les tranches à dessiner. */
-export function placeConstruction(island: BiomeId, parts: Record<string, string[]>): PlaceConstruction {
+export function placeConstruction(island: IleId, parts: Record<string, string[]>): PlaceConstruction {
   const parties = partiesDe(island);
   const shapes = partShapes(island);
   const posed = parties.map((p) => partiePosee(p, parts));
@@ -132,10 +132,10 @@ function partWords(shape: PartShape): { words: string; share: string; many: bool
  * sans « Partie posée » en plus ; sinon « Partie posée : le corps de la Montée, 1 sur 2. » ; une partie de deux étapes
  * (un lieu à deux parties) : « le haut et les abords de l’Imprimerie », et « Étapes finies » quand elle les finit toutes deux. Sans React : testé sous jsdom.
  */
-export function stagePoseWords(island: BiomeId, place: Pick<OpenPlace, 'at'>): PoseWords {
+export function stagePoseWords(island: IleId, place: Pick<OpenPlace, 'at'>): PoseWords {
   const of = ofOpenPlace(place);
   const plans = plansFor(island);
-  const stageOfPlan = (plan: PlanDef): Stage => Math.max(0, Math.min(2, plans.findIndex((p) => p.id === plan.id))) as Stage;
+  const stageOfPlan = (plan: PlanDef<IleId>): Stage => Math.max(0, Math.min(2, plans.findIndex((p) => p.id === plan.id))) as Stage;
   return {
     lines(pose) {
       const finished = new Map(pose.plansFinis.map((p) => [p.id, p]));

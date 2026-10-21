@@ -4,7 +4,7 @@
 // l'île, « Plus tard » ne coûte rien et la fait taire jusqu'à la visite suivante. Ce « Plus tard » est retenu le temps
 // de la visite (`sessionStorage`, sinon le temps de la page), jamais dans la sauvegarde.
 import { useCallback, useSyncExternalStore } from 'react';
-import { getBiome, missionsJouables, type BiomeId } from './biomes';
+import { getBiome, getIle, missionsJouables, type BiomeId, type IleId } from './biomes';
 import { todayISO, type SpacedItem } from './engine';
 import { questsToReview, type ReviewQuest } from './review';
 import { islandsOf, type ArchipelagoId } from './world/archipelago';
@@ -18,15 +18,15 @@ import type { GameState } from './engine';
 export const PARAM_REVISION = 'revision';
 
 /** Parmi les révisions dues (`questsToReview`), celles d'une île, une par mission jouable (la LV2 des Réglages). */
-function revisionsDeLIleParmi(dues: readonly ReviewQuest[], biome: BiomeId, lv2?: Lv2Choice): ReviewQuest[] {
-  const b = getBiome(biome);
+function revisionsDeLIleParmi(dues: readonly ReviewQuest[], biome: IleId, lv2?: Lv2Choice): ReviewQuest[] {
+  const b = getIle(biome);
   if (!b) return [];
   const jouables = new Set(missionsJouables(b, lv2).map((m) => m.id));
   return dues.filter((q) => q.biome === biome && jouables.has(q.type));
 }
 
 /** Les révisions dues aujourd'hui sur une île ouverte, une par mission jouable (la LV2 des Réglages), dans l'ordre du catalogue. */
-export function revisionsDeLIle(spaced: SpacedItem[], links: string[], biome: BiomeId, lv2?: Lv2Choice, today = todayISO()): ReviewQuest[] {
+export function revisionsDeLIle(spaced: SpacedItem[], links: string[], biome: IleId, lv2?: Lv2Choice, today = todayISO()): ReviewQuest[] {
   return revisionsDeLIleParmi(questsToReview(spaced, links, today), biome, lv2);
 }
 

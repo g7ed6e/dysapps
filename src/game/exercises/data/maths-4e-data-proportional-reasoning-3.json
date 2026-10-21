@@ -1,0 +1,222 @@
+{
+  "id": "maths-4e-data-proportional-reasoning-3",
+  "biome": "maths-4e-data",
+  "type": "proportional-reasoning",
+  "level": 3,
+  "instruction": "Lis la phrase, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-4e-data-proportional-reasoning-3-0",
+      "prompt": "On partage 20 kg selon le ratio 1 : 3. La petite part est …",
+      "spoken": "On partage 20 kilos selon le ratio 1 pour 3. La petite part est (mot manquant).",
+      "choices": [
+        "5 kg",
+        "10 kg",
+        "15 kg"
+      ],
+      "answer": "5 kg",
+      "hint": "Combien de parts en tout ?",
+      "explanation": "1 + 3 = 4 parts ; une part = 20 ÷ 4 = 5 kg : la petite part a 1 part, 5 kg. 15 kg est la grande part, 3 parts. 10 kg partage en deux moitiés, sans le ratio.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ratio et partage",
+          "lines": [
+            "Le ratio 2 : 3, c’est 2 parts pour l’un et 3 parts pour l’autre.",
+            "Compte toutes les parts : 2 + 3 = 5 parts.",
+            "Une part = la quantité totale ÷ le nombre de parts.",
+            "Chacun reçoit son nombre de parts × une part."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-3-1",
+      "prompt": "On partage 35 € selon le ratio 2 : 5. La grande part est …",
+      "spoken": "On partage 35 euros selon le ratio 2 pour 5. La grande part est (mot manquant).",
+      "choices": [
+        "10 €",
+        "17,50 €",
+        "25 €"
+      ],
+      "answer": "25 €",
+      "hint": "Une part, c’est 35 ÷ 7.",
+      "explanation": "2 + 5 = 7 parts ; une part = 35 ÷ 7 = 5 € ; la grande part a 5 parts : 25 €. 10 € est la petite part. 17,50 € partage en deux moitiés.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ratio et partage",
+          "lines": [
+            "Le ratio 2 : 3, c’est 2 parts pour l’un et 3 parts pour l’autre.",
+            "Compte toutes les parts : 2 + 3 = 5 parts.",
+            "Une part = la quantité totale ÷ le nombre de parts.",
+            "Chacun reçoit son nombre de parts × une part."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-3-2",
+      "prompt": "Pour partager selon le ratio 3 : 4, on coupe la quantité en … parts égales.",
+      "spoken": "Pour partager selon le ratio 3 pour 4, on coupe la quantité en (mot manquant) parts égales.",
+      "choices": [
+        "3",
+        "4",
+        "7"
+      ],
+      "answer": "7",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "3 parts pour l’un, 4 pour l’autre : 3 + 4 = 7 parts égales. 3 et 4 ne comptent les parts que d’un seul côté.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ratio et partage",
+          "lines": [
+            "Le ratio 2 : 3, c’est 2 parts pour l’un et 3 parts pour l’autre.",
+            "Compte toutes les parts : 2 + 3 = 5 parts.",
+            "Une part = la quantité totale ÷ le nombre de parts.",
+            "Chacun reçoit son nombre de parts × une part."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-3-3",
+      "prompt": "Un mortier mélange ciment et sable selon le ratio 1 : 4. Avec 3 seaux de ciment, il faut … seaux de sable.",
+      "spoken": "Un mortier mélange ciment et sable selon le ratio 1 pour 4. Avec 3 seaux de ciment, il faut (mot manquant) seaux de sable.",
+      "choices": [
+        "7",
+        "12",
+        "15"
+      ],
+      "answer": "12",
+      "hint": "Pour 1 seau de ciment, 4 seaux de sable.",
+      "explanation": "1 seau de ciment pour 4 de sable : 3 seaux de ciment pour 3 × 4 = 12 seaux de sable. 7 ajoute au lieu de multiplier. 15 est le nombre de seaux en tout.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ratio et partage",
+          "lines": [
+            "Le ratio 2 : 3, c’est 2 parts pour l’un et 3 parts pour l’autre.",
+            "Compte toutes les parts : 2 + 3 = 5 parts.",
+            "Une part = la quantité totale ÷ le nombre de parts.",
+            "Chacun reçoit son nombre de parts × une part."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-3-4",
+      "prompt": "On partage 60 kg en trois parts selon le ratio 1 : 2 : 3. La plus grande part est …",
+      "spoken": "On partage 60 kilos en trois parts selon le ratio 1, 2 et 3. La plus grande part est (mot manquant).",
+      "choices": [
+        "10 kg",
+        "20 kg",
+        "30 kg"
+      ],
+      "answer": "30 kg",
+      "hint": "1 + 2 + 3 = 6 parts.",
+      "explanation": "6 parts ; une part = 60 ÷ 6 = 10 kg ; la plus grande a 3 parts : 30 kg. 10 kg est une seule part. 20 kg partage en trois parts égales, sans le ratio.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ratio et partage",
+          "lines": [
+            "Le ratio 2 : 3, c’est 2 parts pour l’un et 3 parts pour l’autre.",
+            "Compte toutes les parts : 2 + 3 = 5 parts.",
+            "Une part = la quantité totale ÷ le nombre de parts.",
+            "Chacun reçoit son nombre de parts × une part."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-3-5",
+      "prompt": "Dans une classe de 25 élèves, garçons et filles sont dans le ratio 2 : 3. Il y a … filles.",
+      "spoken": "Dans une classe de 25 élèves, garçons et filles sont dans le ratio 2 pour 3. Il y a (mot manquant) filles.",
+      "choices": [
+        "10",
+        "12,5",
+        "15"
+      ],
+      "answer": "15",
+      "hint": "Une part, c’est 25 ÷ 5.",
+      "explanation": "2 + 3 = 5 parts ; une part = 25 ÷ 5 = 5 élèves ; les filles ont 3 parts : 15. 10 est le nombre de garçons. 12,5 partage en deux moitiés, et on ne coupe pas un élève.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ratio et partage",
+          "lines": [
+            "Le ratio 2 : 3, c’est 2 parts pour l’un et 3 parts pour l’autre.",
+            "Compte toutes les parts : 2 + 3 = 5 parts.",
+            "Une part = la quantité totale ÷ le nombre de parts.",
+            "Chacun reçoit son nombre de parts × une part."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-3-6",
+      "prompt": "On prépare 12 L de boisson, sirop et eau selon le ratio 1 : 5. Il faut … d’eau.",
+      "spoken": "On prépare 12 litres de boisson, sirop et eau selon le ratio 1 pour 5. Il faut (mot manquant) d’eau.",
+      "choices": [
+        "2 L",
+        "10 L",
+        "60 L"
+      ],
+      "answer": "10 L",
+      "hint": "1 + 5 = 6 parts.",
+      "explanation": "6 parts ; une part = 12 ÷ 6 = 2 L ; l’eau a 5 parts : 10 L. 2 L est le sirop. 60 L, c’est 12 × 5 : 12 litres est le total, pas une part.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ratio et partage",
+          "lines": [
+            "Le ratio 2 : 3, c’est 2 parts pour l’un et 3 parts pour l’autre.",
+            "Compte toutes les parts : 2 + 3 = 5 parts.",
+            "Une part = la quantité totale ÷ le nombre de parts.",
+            "Chacun reçoit son nombre de parts × une part."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-3-7",
+      "prompt": "Deux sacs pèsent 4 kg et 6 kg. Leur ratio est le même que celui de 2 kg et …",
+      "spoken": "Deux sacs pèsent 4 kilos et 6 kilos. Leur ratio est le même que celui de 2 kilos et (mot manquant).",
+      "choices": [
+        "3 kg",
+        "4 kg",
+        "5 kg"
+      ],
+      "answer": "3 kg",
+      "hint": "4 kilos divisé par 2 donne 2 kilos. Fais pareil avec 6.",
+      "explanation": "4 ÷ 2 = 2 et 6 ÷ 2 = 3 : le ratio 4 : 6 est le même que 2 : 3. 4 kg enlève 2 aux deux nombres : un ratio se garde en multipliant ou en divisant, pas en enlevant. 5 kg enlève 1.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ratio et partage",
+          "lines": [
+            "Le ratio 2 : 3, c’est 2 parts pour l’un et 3 parts pour l’autre.",
+            "Compte toutes les parts : 2 + 3 = 5 parts.",
+            "Une part = la quantité totale ÷ le nombre de parts.",
+            "Chacun reçoit son nombre de parts × une part."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-4e-powers",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

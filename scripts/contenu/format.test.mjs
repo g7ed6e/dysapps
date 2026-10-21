@@ -59,6 +59,15 @@ describe('le format Markdown du contenu', () => {
     expect(() => lireIle(md, 'english-6e-vocabulary.md')).toThrow('« langue » est déjà donné pour toute la mission');
   });
 
+  it('lit « monde ouvert seulement » : le lieu garde le bloc gagné de ses niveaux, le même partout (GD-24)', () => {
+    const md = readFileSync('docs/contenu/maths-4e-data.md', 'utf8');
+    const lu = lireIle(md, 'maths-4e-data.md');
+    expect(lu.biome).toMatchObject({ id: 'maths-4e-data', openWorldOnly: true, block: 'maths-4e-powers' });
+    expect(lireIle(ecrireIle({ id: 'maths-4e-data', openWorldOnly: true }, lu.exercices), 'maths-4e-data.md').biome.openWorldOnly).toBe(true);
+    expect(() => lireIle(md.replace('monde ouvert seulement : oui', 'monde ouvert seulement : non'), 'maths-4e-data.md')).toThrow('vaut « oui »');
+    expect(() => lireIle(md.replace('bloc gagné : maths-4e-powers', 'bloc gagné : maths-4e-data'), 'maths-4e-data.md')).toThrow('le même « bloc gagné »');
+  });
+
   it('refuse un item mal numéroté', () => {
     const md = ['---', 'lieu : english-6e-vocabulary', '---', '## X · `x`', '### Niveau 1 · `english-6e-vocabulary-x-1`', '', '2. mot : chat', ''].join('\n');
     expect(() => lireIle(md, 'english-6e-vocabulary.md')).toThrow('item 1 attendu, lu 2');

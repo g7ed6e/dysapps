@@ -6,6 +6,7 @@ import { BRIDGES, NOMS_ARCHIPELS, getArchipelago, isBiomeUnlocked, islandsOf } f
 import { ARCHIPELAGO_IDS } from './archipelagos';
 import { toutConstruit } from './budget';
 import {
+  bornesDesLieuxSeuls,
   capVers,
   embarquer,
   etapeDuVoyage,
@@ -97,4 +98,13 @@ describe('la machine du voyage', () => {
     expect(etapeDuVoyage('6e', true, [])).toBe(1);
     expect(etapeDuVoyage('6e', true, toutConstruit().world.links)).toBe(3);
   });
+});
+
+it('un lieu du monde ouvert seulement garde ses bornes, hors de la grille (GD-24)', () => {
+  const bornes = bornesDesLieuxSeuls(vierge, '4e');
+  expect(bornes.map((b) => b.mission)).toEqual(['weighted-mean', 'events', 'proportional-reasoning', 'calculation-programs', 'translations']);
+  expect(bornes.every((b) => b.ile === 'maths-4e-data' && b.etat === 'new')).toBe(true);
+  // Ni la grille ni les autres archipels ne les voient.
+  expect(new Set<string>(modeleDuMonde(vierge, '4e', NOMS_ARCHIPELS, mots).bornes.map((b) => b.ile)).has('maths-4e-data')).toBe(false);
+  expect(bornesDesLieuxSeuls(vierge, '6e')).toEqual([]);
 });

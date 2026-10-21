@@ -32,7 +32,7 @@ import { texteGrand } from '../../../core/settings';
 import { useRememberPlace } from '../../../core/lastPlace';
 import { useLoaded } from '../../../core/useLoaded';
 import { useBlocland } from '../../BloclandContext';
-import { getBiome, type BiomeId } from '../../biomes';
+import { getIle, type BiomeId } from '../../biomes';
 import { levelFor, type Completion } from '../../engine';
 import { ExerciseRunner, type RunnerRevision, type RunnerStage, type StageDoneProps } from '../../ExerciseRunner';
 import { loadExercise, pickExercise } from '../../exercises';
@@ -159,7 +159,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   // pendant qu'on lit (monde ouvert seulement).
   useHoldCelebrations(true);
   const lieu = placeById(place);
-  const biome = getBiome(lieu.island);
+  const biome = getIle(lieu.island);
   // Au 5e, le bilan nomme la partie posée par l'étape du lieu, jamais par le nom du plan ni sa réplique (directeur du
   // contenu pédagogique, lot 5 du 5e) ; au 6e, comme la grille.
   const poseWords = useMemo(() => (levelOfPlace(place) === '5e' ? stagePoseWords(lieu.island as BiomeId, lieu) : undefined), [place, lieu]);

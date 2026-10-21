@@ -9,7 +9,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { Icon } from '../../../components/Icon';
 import { MissionRows, type MissionRow } from '../../../components/MissionRows';
-import { getBiome } from '../../biomes';
+import { getIle } from '../../biomes';
 import { Stars } from '../../Stars';
 import { playsInPlace, type MissionMark } from '../../world/continu/mission';
 import { placeOfIsland, type LevelPlan, type OpenPlace, type PlaceId } from '../../world/continu/levelPlan';
@@ -36,9 +36,12 @@ export function earnPlacesOf(plan: LevelPlan): EarnPlaceOf {
   };
 }
 
-/** Un lieu du plan lu dans l'adresse de retour (`?lieu=quais`), s'il en est un ; rien d'autre n'est lu. */
-export function placeFromParam(plan: LevelPlan, value: string | null): PlaceId | null {
-  return plan.places.find((p) => p.id === value)?.id ?? null;
+/**
+ * Un lieu du plan lu dans l'adresse de retour (`?lieu=quais`), s'il en est un ; ou, depuis l'écran d'une mission d'un
+ * lieu du monde ouvert seulement (`?ile=maths-4e-data`, GD-24), le lieu du plan qui reprend cette île. Rien d'autre n'est lu.
+ */
+export function placeFromParam(plan: LevelPlan, value: string | null, island: string | null = null): PlaceId | null {
+  return plan.places.find((p) => p.id === value)?.id ?? (island ? (plan.places.find((p) => p.island === island)?.id ?? null) : null);
 }
 
 /**
@@ -48,7 +51,7 @@ export function placeFromParam(plan: LevelPlan, value: string | null): PlaceId |
 export function placeResume(path: string): string | undefined {
   const [, island, mission] = /^\/adventure\/([^/?#]+)\/([^/?#]+)$/.exec(path) ?? [];
   const place = island ? placeOfIsland(island) : undefined;
-  return place && getBiome(island)?.exercises.some((e) => e.id === mission) ? placeReturn(place.id, mission) : undefined;
+  return place && getIle(island)?.exercises.some((e) => e.id === mission) ? placeReturn(place.id, mission) : undefined;
 }
 
 interface Props {
@@ -84,7 +87,7 @@ export function PlacePanel({ place, missions, suggested, focus, onPlay, onClose,
       if (el.classList.contains('open-world-panel')) break;
     }
   }, [place.id, focus]);
-  const biome = getBiome(place.island);
+  const biome = getIle(place.island);
   const rows: MissionRow[] = missions.map((m) => ({
     id: m.mission,
     icon: 'play',

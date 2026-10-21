@@ -100,11 +100,19 @@ describe('les commandes des habitants en Markdown', () => {
     expect(verifier([...tunel, '- après le plan : `french-6e-reading-2`'])).toThrow('n’est pas un plan de l’île');
   });
 
+  it('refuse une commande dans un lieu du monde ouvert seulement (GD-24)', () => {
+    const etalon = { id: 'maths-4e-data', subject: 'maths', classe: '4e', creature: { name: 'la peseuse' }, openWorldOnly: true };
+    const commande = { id: 'maths-4e-data-request-1', resident: 'la peseuse', block: 'maths-4e-algebra' };
+    expect(() => verifierDemandes([etalon], new Map([['maths-4e-data', [commande]]]), RECETTES, new Map())).toThrow('un lieu du monde ouvert seulement n’a pas de commande');
+    expect(verifierDemandes([etalon], new Map(), RECETTES, new Map())).toEqual([]);
+  });
+
   it('suit docs/contenu/ : une commande par île de français, de maths, d’anglais, d’histoire-géographie, de sciences et d’EMC, aucune dans un lieu d’option (LV2, latin-grec)', () => {
     const { sortie } = produire();
     const demandes = JSON.parse(sortie.get(DEMANDES));
     expect(readFileSync(DEMANDES, 'utf8')).toBe(sortie.get(DEMANDES));
-    const scolaires = ilesDuJeu().filter((b) => !estLieuDOption(b));
+    // Ni les lieux d'option ni les lieux du monde ouvert seulement (l'Étalon, GD-24) n'ont de commande.
+    const scolaires = ilesDuJeu().filter((b) => !estLieuDOption(b) && !b.openWorldOnly);
     // 50 depuis le Fournil des partages (EMC-2), 52 depuis la Porte des libertés et le Forum des débats ; la Grotte des
     // légendes, la Colonnade des cités et le Bosquet des sages (LCA-2), lieux d'option, n'ont pas de commande.
     expect(scolaires).toHaveLength(52);

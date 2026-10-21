@@ -1,6 +1,6 @@
 // Les révisions du jour : les items ratés reviennent à J+1, J+3, J+7, J+15 (répétition espacée, `engine.ts`). Ici, ce
 // que l'appli en fait : quels exercices et quelles missions ont des items à revoir aujourd'hui.
-import { getBiome, missionsJouables, type BiomeId } from './biomes';
+import { estUnBiome, getIle, missionsJouables, type IleId } from './biomes';
 import { dueItems, todayISO, type SpacedItem } from './engine';
 import { CATALOG } from './exercises';
 import { isBiomeUnlocked } from './world/archipelago';
@@ -30,12 +30,18 @@ export function dueCountOnOpenPlaces(spaced: SpacedItem[], bridges: string[], to
   const places = new Map(CATALOG.map((meta) => [meta.id, meta.biome]));
   return dueItems(spaced, today).filter((s) => {
     const place = places.get(exerciseOf(s.itemId));
-    return place !== undefined && isBiomeUnlocked(place, bridges);
+    return place !== undefined && lieuOuvert(place, bridges);
   }).length;
 }
 
+/**
+ * Un lieu où l'on peut revoir : une île de la grille ouverte par ses ponts, ou un lieu du monde ouvert seulement (GD-24),
+ * que la grille ne ferme jamais (il ne se joue que si sa terre du monde ouvert est ouverte).
+ */
+const lieuOuvert = (ile: IleId, bridges: string[]): boolean => !estUnBiome(ile) || isBiomeUnlocked(ile, bridges);
+
 export interface ReviewQuest {
-  biome: BiomeId;
+  biome: IleId;
   type: string;
   /** « Abattage syllabique · Forêt des sons ». */
   label: string;
@@ -50,9 +56,9 @@ export function questsToReview(spaced: SpacedItem[], bridges: string[], today = 
   for (const meta of CATALOG) {
     if (!ids.has(meta.id)) continue;
     const key = `${meta.biome}/${meta.type}`;
-    if (seen.has(key) || !isBiomeUnlocked(meta.biome, bridges)) continue;
+    if (seen.has(key) || !lieuOuvert(meta.biome, bridges)) continue;
     seen.add(key);
-    const biome = getBiome(meta.biome);
+    const biome = getIle(meta.biome);
     const title = biome && missionsJouables(biome).find((e) => e.id === meta.type)?.title;
     if (!biome || !title) continue;
     out.push({ biome: meta.biome, type: meta.type, label: `${title} · ${biome.name}`, path: `/adventure/${meta.biome}/${meta.type}` });

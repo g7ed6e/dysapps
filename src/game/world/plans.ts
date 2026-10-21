@@ -1,7 +1,7 @@
 // Les plans du village : un bâtiment par île, en trois plans (les murs, le toit, la cour), que les missions de l'île posent
 // partie par partie (GD-6, parts.ts). Chaque plan a sa fiche JSON (nom, phrase de fin, XP) ; son dessin vient de
 // l'architecte (architect.ts).
-import { BIOMES, type BiomeId, type BlockId } from '../biomes';
+import { estUnBiome, getIle, type BiomeId, type BlockId, type IleId } from '../biomes';
 import { buildingStages } from './architect';
 import carriereAbri from './plans/french-6e-word-spelling-2.json';
 import carriereCour from './plans/french-6e-word-spelling-3.json';
@@ -177,6 +177,9 @@ import tremplinPlan3 from './plans/physics-chemistry-3e-motion-energy-3.json';
 import ruchePlan1 from './plans/technology-3e-digital-1.json';
 import ruchePlan2 from './plans/technology-3e-digital-2.json';
 import ruchePlan3 from './plans/technology-3e-digital-3.json';
+import etalonHalle from './plans/maths-4e-data-1.json';
+import etalonToit from './plans/maths-4e-data-2.json';
+import etalonCour from './plans/maths-4e-data-3.json';
 
 export interface PlanCell {
   x: number;
@@ -191,9 +194,13 @@ export interface PlanCell {
   archipeo?: BlockId;
 }
 
-export interface PlanDef {
+/**
+ * Un plan. `I` : l'île du plan, de la grille par défaut ; les plans d'un lieu du monde ouvert seulement (GD-24) ne sont
+ * pas dans `PLANS` : ils ne se lisent que par `plansFor` (et `parts.ts`), avec `PlanDef<IleId>`.
+ */
+export interface PlanDef<I extends IleId = BiomeId> {
   id: string;
-  biome: BiomeId;
+  biome: I;
   name: string;
   /** Coin du bâtiment dans la zone des plans de l'île. */
   origin: { x: number; y: number };
@@ -244,7 +251,7 @@ const SANS_DECALAGE = Object.freeze({ x: 0, y: 0, z: 0 });
  * directeur artistique, 02/10/2026). Décalage de rendu seulement, sur le modèle de `decalageDuQuai` : les clés de
  * sauvegarde (`planCells`, depuis `PLAN_ZONE`) ne changent pas.
  */
-export const PLANS_AU_FOND: Readonly<Partial<Record<BiomeId, Readonly<{ x: number; y: number; z: number }>>>> = Object.freeze({
+export const PLANS_AU_FOND: Readonly<Partial<Record<IleId, Readonly<{ x: number; y: number; z: number }>>>> = Object.freeze({
   'maths-5e-proportionality': Object.freeze({ x: 0, y: 1, z: 0 }),
   'maths-4e-algebra': Object.freeze({ x: 0, y: 1, z: 0 }),
 });
@@ -254,12 +261,17 @@ export const PLANS_AU_FOND: Readonly<Partial<Record<BiomeId, Readonly<{ x: numbe
  * dessinée, pointée et posée : (0, 0, 0) partout, sauf au Marché et à l'Atelier (`PLANS_AU_FOND`). Les plans du port
  * et des monuments ont leur propre ancre (`ancreDuQuai`, `monumentAnchor`).
  */
-export function decalageDesPlans(plan: Pick<PlanDef, 'biome' | 'zone'>): Readonly<{ x: number; y: number; z: number }> {
+export function decalageDesPlans(plan: Pick<PlanDef<IleId>, 'biome' | 'zone'>): Readonly<{ x: number; y: number; z: number }> {
   if (plan.zone === 'port' || plan.zone === 'monument' || plan.zone === 'join') return SANS_DECALAGE;
   return PLANS_AU_FOND[plan.biome] ?? SANS_DECALAGE;
 }
 
-/** Les fiches des plans (nom, phrase de fin, XP ; produites par `npm run contenu` depuis la section « Les plans » de docs/contenu/<île>.md, dans le même ordre) : dans l'ordre du dessin. */
+/**
+ * Les fiches des plans (nom, phrase de fin, XP ; produites par `npm run contenu` depuis la section « Les plans » de
+ * docs/contenu/<île>.md, dans le même ordre) : dans l'ordre du dessin. Les trois derniers sont ceux de l'Étalon, lieu du
+ * monde ouvert seulement (GD-24) : ni la grille ni Blocland ne les dessinent ; leurs cases, dans une zone des plans que
+ * rien n'affiche, donnent ses parties au monde ouvert (../three/archipeo/constructionParts.ts).
+ */
 const PLAN_FILES = [
   foretCabane,
   foretToit,
@@ -435,18 +447,21 @@ const PLAN_FILES = [
   ruchePlan1,
   ruchePlan2,
   ruchePlan3,
-] as (Omit<PlanDef, 'cells' | 'origin' | 'reward'> & { reward: { xp: number } })[];
+  etalonHalle,
+  etalonToit,
+  etalonCour,
+] as (Omit<PlanDef<IleId>, 'cells' | 'origin' | 'reward'> & { reward: { xp: number } })[];
 
 /**
  * Les plans des îles : la fiche de chaque plan, et son dessin par l'architecte (world/architect.ts) selon la forme du
  * bâtiment de l'île et son rang (les murs, le toit, la cour). Un plan d'île n'a pas de coffre : ses blocs de finition se
  * posent avec sa partie (GD-6).
  */
-export const PLANS: PlanDef[] = (() => {
-  const out: PlanDef[] = [];
+const TOUS_LES_PLANS: PlanDef<IleId>[] = (() => {
+  const out: PlanDef<IleId>[] = [];
   for (const island of [...new Set(PLAN_FILES.map((p) => p.biome))]) {
     const files = PLAN_FILES.filter((p) => p.biome === island);
-    const block = BIOMES.find((b) => b.id === island)!.block;
+    const block = getIle(island)!.block;
     const stages = buildingStages(island, block);
     files.forEach((file, i) => {
       out.push({ ...file, origin: { x: 0, y: 0 }, cells: stages[i] ?? [], reward: { xp: file.reward.xp, chest: {} } });
@@ -456,12 +471,21 @@ export const PLANS: PlanDef[] = (() => {
   return PLAN_FILES.map((f) => out.find((p) => p.id === f.id)!);
 })();
 
-export function plansFor(biome: BiomeId): PlanDef[] {
-  return PLANS.filter((p) => p.biome === biome);
+const estDeLaGrille = (p: PlanDef<IleId>): p is PlanDef => estUnBiome(p.biome);
+
+/** Les plans des îles de la grille (et de Blocland) : ceux d'un lieu du monde ouvert seulement n'y sont pas (GD-24). */
+export const PLANS: PlanDef[] = TOUS_LES_PLANS.filter(estDeLaGrille);
+
+/** Les plans d'une île, dans l'ordre du dessin ; ceux d'un lieu du monde ouvert seulement aussi (ses parties, parts.ts). */
+export function plansFor(biome: BiomeId): PlanDef[];
+export function plansFor(biome: IleId): PlanDef<IleId>[];
+export function plansFor(biome: IleId): PlanDef<IleId>[] {
+  return TOUS_LES_PLANS.filter((p) => p.biome === biome);
 }
 
-export function getPlan(id: string): PlanDef | undefined {
-  return PLANS.find((p) => p.id === id);
+/** Un plan, de la grille ou d'un lieu du monde ouvert seulement (la sauvegarde garde les cases posées des deux). */
+export function getPlan(id: string): PlanDef<IleId> | undefined {
+  return TOUS_LES_PLANS.find((p) => p.id === id);
 }
 
 export const cellKey = (x: number, y: number, z: number) => `${x},${y},${z}`;
@@ -470,7 +494,7 @@ export const cellKey = (x: number, y: number, z: number) => `${x},${y},${z}`;
  * Cellules d'un plan en coordonnées relatives à l'île (z = 0 : premier bloc sur le sol). Un plan du port (la Nef)
  * est relatif au coin du navire sur le quai, devant l'île, plus bas que le sol quand l'île est en altitude.
  */
-export function planCells(plan: PlanDef, cells: PlanCell[] = plan.cells): (PlanCell & { key: string })[] {
+export function planCells(plan: PlanDef<IleId>, cells: PlanCell[] = plan.cells): (PlanCell & { key: string })[] {
   const o = planOrigin(plan);
   return cells.map((c) => {
     const x = o.x + c.x;
@@ -486,7 +510,7 @@ export function planCells(plan: PlanDef, cells: PlanCell[] = plan.cells): (PlanC
  * de l'îlot, que la disposition du monde peut changer. Ce sont les valeurs calculées jusqu'ici depuis le quai
  * (world/harbor.ts) et l'îlot de chaque monument (world/monuments.ts) ; plans.test.ts vérifie qu'elles y sont égales.
  */
-export const ORIGINE_DU_QUAI: Partial<Record<BiomeId, { x: number; y: number; z: number }>> = {
+export const ORIGINE_DU_QUAI: Partial<Record<IleId, { x: number; y: number; z: number }>> = {
   'maths-6e-calculation': { x: 15, y: -14, z: -1 },
   'maths-5e-proportionality': { x: 15, y: -12, z: -4 },
   'maths-4e-algebra': { x: 15, y: -14, z: -7 },
@@ -511,7 +535,7 @@ export const ORIGINE_DES_MONUMENTS: Record<string, { x: number; y: number; z: nu
 };
 
 /** Le coin d'un plan en coordonnées relatives à l'île (x, y, et z relatif au sol : 0 = premier bloc sur le sol). */
-export function planOrigin(plan: PlanDef): { x: number; y: number; z: number } {
+export function planOrigin(plan: PlanDef<IleId>): { x: number; y: number; z: number } {
   if (plan.zone === 'port') {
     const o = ORIGINE_DU_QUAI[plan.biome];
     if (!o) throw new Error(`Pas de quai sur ${plan.biome}`);
@@ -528,7 +552,7 @@ export function planOrigin(plan: PlanDef): { x: number; y: number; z: number } {
 }
 
 /** Un plan est terminé quand toutes ses cellules sont posées. */
-export function isPlanDone(plan: PlanDef, done: Record<string, string[]>): boolean {
+export function isPlanDone(plan: PlanDef<IleId>, done: Record<string, string[]>): boolean {
   const posees = done[plan.id];
   if (!posees || posees.length < plan.cells.length) return false;
   // Terminé quand toutes les cases DU plan sont posées (une réunion garde des clés dans le repère de sa paire, qu'une

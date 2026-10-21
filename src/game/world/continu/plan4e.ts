@@ -178,8 +178,8 @@ interface PlaceSpec extends Omit<OpenPlace<PlaceId4e>, 'center' | 'door' | 'scen
 
 /**
  * Les seize lieux (fiche, § 4), à leur place sur le plan. L'Étalon et la Jonction sont nouveaux : leurs missions
- * s'écrivent avec leur lot ; leur île (`maths-4e-data`, `french-4e-sentence`) n'existe pas encore dans le contenu, et
- * leur panneau reste vide d'ici là. Aucune mission ne se joue encore en scénette : toutes passent par l'écran habituel.
+ * s'écrivent avec leur lot, dans un lieu du monde ouvert seulement (GD-24) : l'Étalon (`maths-4e-data`) a les siennes ;
+ * la Jonction (`french-4e-sentence`) n'existe pas encore dans le contenu, et son panneau reste vide d'ici là. Aucune mission ne se joue encore en scénette : toutes passent par l'écran habituel.
  */
 const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'forge', name: 'La Forge', at: 'à la Forge', agree: 'fs', island: 'maths-4e-powers', plan: [1000, 545], door: { x: 6, z: 11 } },

@@ -28,7 +28,7 @@ import { useSettings } from '../../../core/SettingsContext';
 import { useMoinsDAnimations } from '../../../core/motion';
 import { useTextes } from '../../../universes';
 import { useBlocland } from '../../BloclandContext';
-import { getBiome, type BiomeId } from '../../biomes';
+import { getIle, type BiomeId, type IleId } from '../../biomes';
 import { cheminDeRevision, revisionsDeLIle, usePlusTard } from '../../reminders';
 import { exercisesOf, questProgress } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
@@ -42,7 +42,7 @@ import { bornesDuMondeOuvert, firstToPlayAt, keepClear, missionsOfPlace, nextMis
 import { placeById, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
 import type { PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
-import { modeleDuMonde } from '../../world/model';
+import { bornesDesLieuxSeuls, modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { ClosedLandSheet, afterLabel, closedLandLabel, linkableLabel } from './ClosedLandSheet';
@@ -51,6 +51,7 @@ import { posedAmenagements } from './amenagements';
 import { arrivalPlace, gridLand, gridLands, openWorldLands, playedIslands } from './landLinks';
 import { MapLabels } from './MapLabels';
 import { PlacePanel, earnPlacesOf, placeFromParam, placeResume } from './PlacePanel';
+import { PARAM_ILE } from '../../world/openWorldReturn';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
 import { NEF_LEAVES, NefSheet, nefLookOf, nefSail, nefStageOf } from './NefSheet';
@@ -91,7 +92,7 @@ const gestureWord = (kind: SuggestedAction['kind'] | undefined, textes: ReturnTy
   kind === 'donner' ? (textes.quetes?.donner ?? 'Donner') : kind === 'apporter' ? (textes.quetes?.apporter ?? 'Apporter') : (textes.commandes?.livrer ?? 'Livrer');
 
 /** Le titre d'une mission d'une île, pour la dire. */
-const missionTitle = (island: string, mission: string) => getBiome(island)?.exercises.find((x) => x.id === mission)?.title ?? '';
+const missionTitle = (island: string, mission: string) => getIle(island)?.exercises.find((x) => x.id === mission)?.title ?? '';
 
 /**
  * Le monde ouvert d'un niveau (`level`, choisi par la fabrique de disposition) : la page lit son plan (GD-22) et le
@@ -127,7 +128,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const modele = useMemo(() => modeleDuMonde(vu, level, textes.archipels, textes.libelles), [vu, level, textes, settings.lv2]);
   // Les bornes du monde ouvert : une mission réussie ici garde ses étoiles même si son île n'est pas encore reliée par
   // les ponts de la grille (sinon « Nouveau » au retour, la mission reproposée, la brume restée, jusqu'au rechargement).
-  const bornes = useMemo(() => bornesDuMondeOuvert(modele.bornes, (ile, m) => questProgress(ile, m, vu.progress)?.stars ?? null), [modele, vu.progress]);
+  // Avec celles des lieux du monde ouvert seulement (GD-24), que la grille n'a pas.
+  const bornes = useMemo(
+    () => [...bornesDuMondeOuvert(modele.bornes, (ile, m) => questProgress(ile, m, vu.progress)?.stars ?? null), ...bornesDesLieuxSeuls(vu, level)],
+    [modele, vu, level],
+  );
   // Les terres (GD-20, point 3, « vraies terres ») : les terres fermées (aucun de leurs lieux relié dans la grille ni
   // joué), celles pas encore reliables, et le pont suggéré par la prochaine destination.
   const lands = useMemo(() => openWorldLands(plan, state.world.links, bornes, modele.destination.ouvrage, modele.destination.island), [plan, state.world.links, bornes, modele.destination.ouvrage, modele.destination.island]);
@@ -204,7 +209,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     spot: portFromParam(params.get('porte')),
     assembled: Boolean((location.state as { assemble?: string } | null)?.assemble),
   }));
-  const lieuParam = placeFromParam(plan, params.get('lieu'));
+  const lieuParam = placeFromParam(plan, params.get('lieu'), params.get(PARAM_ILE));
   const missionParam = params.get('mission');
   // Au 4e, l'île du port de la grille (le Gabarit) fait arriver à la Crique tant que le Bastion est fermé (`arrivalPlace`).
   const fromIsland = arrivalPlace(plan, biomeId, lands.closed);
@@ -636,7 +641,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const reprendreAt = useCallback(async () => {
     if (!lieu || reprendreRef.current) return;
     const place = lieu.place;
-    const dues = () => revisionsDeLIle(state.spaced, state.world.links, placeById(place).island as BiomeId, settings.lv2);
+    const dues = () => revisionsDeLIle(state.spaced, state.world.links, placeById(place).island as IleId, settings.lv2);
     reprendreRef.current = true;
     setReprendreBusy(true);
     try {
@@ -844,7 +849,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // la change (le lieu du latin et du grec compte les missions de l'option, GD-14) ; la règle le croit inutile.
   const constructions = useMemo(() => {
     const of = (id: PlaceId) => {
-      const biome = getBiome(placeById(id).island);
+      const biome = getIle(placeById(id).island);
       return biome ? placeConstruction(biome.id, state.world.parts) : { shapes: [], posed: [], built: [] };
     };
     return placeRecord(plan, of);
@@ -887,7 +892,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const traces = useMemo(() => {
     const of = (id: PlaceId): string[] => {
       const p = placeById(id);
-      const biome = getBiome(p.island);
+      const biome = getIle(p.island);
       // Les missions restées sur l'écran habituel (lot L7 : Ascension, le Filon) laissent leur trace aussi.
       return biome ? [...p.scenes, ...(p.panels ?? [])].filter((m) => traceDone(exercisesOf(biome.id, m).map((e) => state.progress[e.id]?.stars ?? 0))) : [];
     };

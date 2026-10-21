@@ -3,7 +3,7 @@
 // Ce fichier garde les plans, l'assemblage, la fin d'exercice, l'école du village et la Nef ; à côté, dans
 // ./engine/ : l'état d'une partie (`state.ts`), les dates (`dates.ts`), la lecture d'une sauvegarde (`sanitize.ts`),
 // l'apprentissage (`learning.ts`). Il en réexporte les noms publics.
-import { type BiomeId, BIOMES, type BlockId, BLOCKS, getBiome } from './biomes';
+import { type BiomeId, BIOMES, type BlockId, BLOCKS, getBiome, type IleId, TOUTES_LES_ILES } from './biomes';
 import { cellKey, planCells, type PlanDef } from './world/plans';
 import { assemblables, noterQuestion, recetteDe, type TirageAssemblage, tirageNeuf } from './world/assembly';
 import { missionsTerminees, type Partie, poserLesParties } from './world/parts';
@@ -204,14 +204,14 @@ export interface Completion {
 /** Ce qu'une mission terminée a posé sur le bâtiment de son lieu : les parties et les plans qu'elles finissent. */
 export interface PoseDUneMission {
   posees: Partie[];
-  plansFinis: PlanDef[];
+  plansFinis: PlanDef<IleId>[];
 }
 
 /**
  * Pose sur le bâtiment d'un lieu les parties dues à ses missions terminées (GD-6), sans rien prendre au stock : une
  * ligne du journal par plan fini. Sans effet si le compte y est.
  */
-export function poserLesPartiesDues(state: GameState, biome: BiomeId, today = todayISO()): { state: GameState; pose: PoseDUneMission | null } {
+export function poserLesPartiesDues(state: GameState, biome: IleId, today = todayISO()): { state: GameState; pose: PoseDUneMission | null } {
   // Sur le lieu du latin et du grec, seules les missions de l'option choisie posent (GD-14).
   const r = poserLesParties(biome, state.world.parts, missionsTerminees(state.progress, biome, lcaCourante()));
   if (!r.posees.length) return { state, pose: null };
@@ -223,10 +223,10 @@ export function poserLesPartiesDues(state: GameState, biome: BiomeId, today = to
  * Le rattrapage d'une sauvegarde d'avant GD-6 : chaque lieu reçoit les parties de ses missions déjà terminées, posées
  * d'un coup. Les plans qu'elles finissent sont rendus pour leur XP.
  */
-export function rattraperLesParties(state: GameState, today = todayISO()): { state: GameState; plansFinis: PlanDef[] } {
+export function rattraperLesParties(state: GameState, today = todayISO()): { state: GameState; plansFinis: PlanDef<IleId>[] } {
   let next = state;
-  const plansFinis: PlanDef[] = [];
-  for (const b of BIOMES) {
+  const plansFinis: PlanDef<IleId>[] = [];
+  for (const b of TOUTES_LES_ILES) {
     const r = poserLesPartiesDues(next, b.id, today);
     next = r.state;
     if (r.pose) plansFinis.push(...r.pose.plansFinis);

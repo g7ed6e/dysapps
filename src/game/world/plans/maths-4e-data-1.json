@@ -1,0 +1,9 @@
+{
+  "id": "maths-4e-data-1",
+  "biome": "maths-4e-data",
+  "name": "La halle de la peseuse",
+  "reward": {
+    "xp": 40
+  },
+  "done": "La bascule est d’aplomb, le tonneau et les cuves aussi. Ici, on pèse juste."
+}

@@ -76,6 +76,16 @@ export const BIOME_IDS = [
 ] as const;
 export type BiomeId = (typeof BIOME_IDS)[number];
 
+/**
+ * Les lieux du monde ouvert seulement (en-tête « monde ouvert seulement : oui » de docs/contenu/<lieu>.md ; décision du
+ * mainteneur du 21 octobre 2026, GD-24) : leurs missions se jouent dans leur lieu du monde ouvert, jamais dans la grille
+ * ni dans Blocland. Hors de `BIOME_IDS`, donc hors des tables de la grille (créature, Gardien, décor, carte).
+ */
+export const OPEN_WORLD_ONLY_IDS = ['maths-4e-data'] as const;
+export type OpenWorldOnlyId = (typeof OPEN_WORLD_ONLY_IDS)[number];
+/** Une île du contenu : de la grille (`BiomeId`) ou du monde ouvert seulement. */
+export type IleId = BiomeId | OpenWorldOnlyId;
+
 const LES_BIOMES: ReadonlySet<string> = new Set(BIOME_IDS);
 
 /** Une chaîne lue des données (l'étiquette d'un cube, l'île d'une borne « île:mission ») est-elle une île du jeu ? */
@@ -569,7 +579,23 @@ export interface BiomeDef {
  * docs/contenu/<île>.md (en-tête et missions), dans l'ordre de docs/contenu/archipel.md ; `npm run contenu` en produit
  * islands.ts, que le compilateur vérifie (`satisfies BiomeDef[]`), avec les tests (biomes.test.ts).
  */
-export const BIOMES: BiomeDef[] = ILES;
+/** Une île du contenu, celles de la grille comme celles du monde ouvert seulement (`openWorldOnly`). */
+export interface IleDef extends Omit<BiomeDef, 'id'> {
+  id: IleId;
+  openWorldOnly?: true;
+}
+
+/** Toutes les îles du contenu, dans l'ordre de docs/contenu/archipel.md : la grille, puis le monde ouvert seulement. */
+export const TOUTES_LES_ILES: readonly IleDef[] = ILES;
+const estDeLaGrille = (ile: IleDef): ile is BiomeDef => !ile.openWorldOnly;
+
+/** Les îles de la grille (et de Blocland) : toutes, sauf celles du monde ouvert seulement. */
+export const BIOMES: BiomeDef[] = TOUTES_LES_ILES.filter(estDeLaGrille);
+
+/** Une île du contenu, de la grille ou du monde ouvert seulement : ses missions, pour les jouer. */
+export function getIle(id: string | undefined): IleDef | undefined {
+  return TOUTES_LES_ILES.find((b) => b.id === id);
+}
 
 /** Les matières des sciences (SVT, physique-chimie, technologie : SC-2 en 6e, SC-3 de la 5e à la 3e). */
 export const SCIENCE_SUBJECTS: readonly Subject[] = ['life-earth-sciences', 'physics-chemistry', 'technology'];

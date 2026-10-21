@@ -244,6 +244,12 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   'conversions-angles': { component: CalculationScreen, batch: 1 },
   coordinates: { component: CalculationScreen, batch: 1 },
   transformations: { component: CalculationScreen, batch: 1 },
+  // L'Étalon, lieu du monde ouvert seulement (GD-24, 21 octobre 2026) : maths écrites en Markdown.
+  'weighted-mean': { component: CalculationScreen, batch: 1 },
+  events: { component: CalculationScreen, batch: 1 },
+  'proportional-reasoning': { component: CalculationScreen, batch: 1 },
+  'calculation-programs': { component: CalculationScreen, batch: 1 },
+  translations: { component: CalculationScreen, batch: 1 },
   'de-sentences': { component: CalculationScreen, batch: 1 },
   'de-signs': { component: CalculationScreen, batch: 1 },
   'de-media': { component: CalculationScreen, batch: 1 },

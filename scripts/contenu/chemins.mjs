@@ -106,7 +106,7 @@ export function produire() {
   // Un module TypeScript plutôt qu'un JSON : `satisfies` fait vérifier chaque île par le compilateur (matière, bloc, icône,
   // compétences…), sans rien coûter à l'exécution.
   const entete = "// Produit par `npm run contenu` depuis docs/contenu/<île>.md, dans l'ordre de docs/contenu/archipel.md : ne pas éditer.\n";
-  sortie.set(ILES, `${entete}import type { BiomeDef } from './biomes';\n\nexport const ILES = ${JSON.stringify(ordre.map((id) => biomes.get(id)), null, 2)} satisfies BiomeDef[];\n`);
+  sortie.set(ILES, `${entete}import type { IleDef } from './biomes';\n\nexport const ILES = ${JSON.stringify(ordre.map((id) => biomes.get(id)), null, 2)} satisfies IleDef[];\n`);
   // L'assemblage des blocs (GD-2) : docs/contenu/assemblage.md → src/game/world/recipes.ts, et la question de chaque
   // bloc assemblé → src/game/exercises/data/assemblage-<bloc>.json.
   const mdAssemblage = readFileSync(join(CONTENU, FICHIER_ASSEMBLAGE), 'utf8');

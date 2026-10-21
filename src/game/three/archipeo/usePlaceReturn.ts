@@ -2,7 +2,7 @@
 // devant le lieu et ouvre sa liste, et le garde-fou d'une pose qui ne dirait jamais sa fin. Sortis de la page pour être
 // testés sans la scène 3D.
 import { useEffect, useRef } from 'react';
-import { getBiome } from '../../biomes';
+import { getIle } from '../../biomes';
 import { POSE_GUARD_SECONDS } from '../../world/continu/construction';
 import { placeById, type PlaceId } from '../../world/continu/levelPlan';
 
@@ -36,7 +36,7 @@ export function usePlaceAddress({ place, mission, navigation, ready, goTo, open 
     if (!place || key === handled.current) return;
     if (!actions.current.goTo(place)) return;
     handled.current = key;
-    const own = Boolean(mission && getBiome(placeById(place).island)?.exercises.some((e) => e.id === mission));
+    const own = Boolean(mission && getIle(placeById(place).island)?.exercises.some((e) => e.id === mission));
     actions.current.open(place, own ? mission : null);
   }, [place, mission, navigation, ready]);
 }
