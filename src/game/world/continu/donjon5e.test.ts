@@ -213,34 +213,40 @@ describe('Le Donjon, lieu complet', () => {
     expect(DONJON_LAYOUT.cutFloor).toBeLessThan(low - 0.3);
   });
 
-  it('sept marches taillées : aucune contremarche plus haute que 0,8, chacune un bloc de la roche du piton, sans face à elle', () => {
+  it('l’escalier taillé dans le piton : une seule masse de roche dessous, des dessus clairs, aucune face debout plus haute que 0,8', () => {
     const S = DONJON_LAYOUT.steps;
-    const P = DONJON_LAYOUT.piton;
-    expect(S.count).toBe(7);
+    expect(S.count).toBe(8);
     expect(S.riser).toBeLessThanOrEqual(0.8);
-    expect(S.riser * S.count).toBeCloseTo(P.h, 6);
-    // Les normales des pans du piton (ses six pans, inclinés de son évasement, pris au milieu du pan) et le dessus, à plat.
-    const tilt = Math.atan(S.flare * Math.cos(Math.PI / 6));
-    const pitonNormals = [...Array(6).keys()].map((k) => {
-      const a = (2 * k + 1) * (Math.PI / 6) - P.yaw;
-      return [Math.cos(tilt) * Math.cos(a), Math.sin(tilt), Math.cos(tilt) * Math.sin(a)];
-    });
+    expect(S.foot + S.riser * S.count).toBeCloseTo(DONJON_LAYOUT.piton.h, 6);
+    const len = Math.hypot(S.to.x - S.from.x, S.to.z - S.from.z);
+    const u = { x: (S.to.x - S.from.x) / len, z: (S.to.z - S.from.z) / len };
+    const stone = linearRgb(COLORS_5E.stone);
     for (const worn of [true, false]) {
       const f = drawPieces('donjon', (p) => (worn ? p.stage === 'ruine' : p.stage === 0));
-      let near = 0;
-      for (let i = 0; i < f.positions.length; i += 3) {
-        const p = { x: f.positions[i], z: f.positions[i + 2] };
-        // Les sommets des marches : près de leur ligne, hors du piton.
-        if (toSegment(p, S.from, S.to) > S.radius + 0.05 || Math.hypot(p.x - P.x, p.z - P.z) < P.r1 - 0.1) continue;
+      const flanks = new Set<string>();
+      let risers = 0;
+      for (let i = 0; i < f.positions.length; i += 9) {
+        const pts = [0, 3, 6].map((o) => ({ x: f.positions[i + o], y: f.positions[i + o + 1], z: f.positions[i + o + 2] }));
+        // Les triangles de l'escalier : ses trois sommets dans sa bande (le plus large de son pied), le long de sa ligne.
+        const along = (p: { x: number; z: number }) => (p.x - S.from.x) * u.x + (p.z - S.from.z) * u.z;
+        const across = (p: { x: number; z: number }) => Math.abs((p.x - S.from.x) * -u.z + (p.z - S.from.z) * u.x);
+        const half = S.width / 2 + S.flare * 7 + 1e-3;
+        if (!pts.every((p) => across(p) <= half && along(p) > -len / 12 - 1e-3 && along(p) < len + len / 12 + 1e-3)) continue;
+        if (![0, 1, 2].every((k) => Math.abs(f.colors[i + k] - stone[k]) < 1e-4)) continue;
         const n = [f.normals[i], f.normals[i + 1], f.normals[i + 2]];
-        const flat = n[1] > 0.999;
-        const likePiton = pitonNormals.some((m) => Math.abs(m[0] * n[0] + m[1] * n[1] + m[2] * n[2] - 1) < 1e-3);
-        expect(flat || likePiton, `${p.x.toFixed(2)}, ${p.z.toFixed(2)} : ${n.map((v) => v.toFixed(3))}`).toBe(true);
-        near++;
+        if (Math.abs(n[0] * u.x + n[2] * u.z) > 0.99) {
+          // Une contremarche : au-dessus de la cour, 0,8 au plus.
+          const top = Math.max(...pts.map((p) => p.y));
+          const bottom = Math.max(Math.min(...pts.map((p) => p.y)), Math.min(...pts.map((p) => DONJON_LAYOUT.courAt(p.x, p.z))));
+          expect(top - bottom, `${pts[0].x.toFixed(2)}, ${pts[0].z.toFixed(2)}`).toBeLessThanOrEqual(0.8 + 1e-4);
+          risers++;
+        } else flanks.add(n.map((c) => c.toFixed(3)).join(' '));
       }
-      expect(near).toBeGreaterThan(50);
+      // Les flancs : deux pans en tout, un de chaque côté, jamais une arête qui descend d'une marche au sol.
+      expect(flanks.size, [...flanks].join(' | ')).toBe(2);
+      expect(risers).toBe(2 * S.count);
       // Le dessus de chaque marche au soleil, #AEB0A3.
-      expect(countColor(f, COLORS_5E.stoneSun)).toBeGreaterThanOrEqual(7 * 6 * 3);
+      expect(countColor(f, COLORS_5E.stoneSun)).toBeGreaterThanOrEqual(S.count * 6);
     }
   });
 

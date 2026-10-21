@@ -2,7 +2,7 @@
 // `selection-donjon-oracle` validée par le mainteneur) : « une tour des Passeurs sur un piton, que chaque âge a
 // reprise ». Le cœur, sans figure : la tour carrée à trois assises, lisibles dès la ruine, en bas les grandes pierres
 // grises des Passeurs, au milieu des pierres plus petites et plus claires percées de hautes fentes de jour, en haut la
-// brique sourde du parapet. Elle se dresse sur un piton de roche (5,5), sa porte au haut du piton, au sud, sept marches
+// brique sourde du parapet. Elle se dresse sur un piton de roche (5,5), sa porte au haut du piton, au sud, huit marches
 // frustes taillées sur son flanc ouest ; son sommet reste sous les aiguilles (18,5 au-dessus du plateau). Au pied du
 // piton, à l'est, le logis de la maçonne, adossé à la roche ; au sud la cour de dalles chaudes, où la chaussée d'`aig-2`
 // devient la dalle du lieu ; au bord ouest de la cour, le pilier du guet. Le blason, un écu sculpté d'un seul trait
@@ -23,7 +23,8 @@
 // porte (`arrivalView`), le parapet en trois blocs par côté, les marches taillées, le signe de l'Auberge, le logis de
 // pierre, le pan de toit devant le mur, les moitiés du blason claires, l'auge dans la scénette, la cour sans marche.
 // Sa seconde passe (captures v2) : la brique sourde, mesurée telle qu'elle est rendue au soleil ; sept marches, chacune un
-// bloc de la roche du piton ; la moitié nord du toit tombée aussi.
+// bloc de la roche du piton ; la moitié nord du toit tombée aussi. Sa troisième passe : l'escalier taillé dans une seule
+// masse de la roche du piton, huit marches entaillées dessus.
 // Code pur (placeArt.ts).
 import type { Stage } from './construction';
 import { drawPosed, FacetBuilder } from './facets';
@@ -203,13 +204,14 @@ const SLIT = { y0: 11.0, y1: 12.3, half: 0.11 } as const;
 
 /**
  * Les marches taillées, frustes, sur le flanc ouest du piton : du pied, au sud-ouest, jusqu'au replat de la porte ; leur
- * nombre, le rayon de leur dessus. Retouche 1 : des marches, pas des piliers. Seconde passe (captures v2 : sous chaque
- * marche, une face debout gris sombre jusqu'au sol, des colonnes en gradins) : sept marches, chacune un bloc de la roche
- * du piton, à six pans tournés et inclinés comme les siens (`stepRock`) : chaque pan prend la lumière du pan du piton qui
- * lui est parallèle, sans face sombre propre à la marche ; le dessus clair au soleil ; la contremarche, la hauteur du
- * piton sur leur nombre (`STEP_RISE`, 0,8 au plus).
+ * nombre, la largeur de leur dessus. Retouche 1 : des marches, pas des piliers ; seconde passe : sept marches de 0,79 ; troisième passe : huit, de 0,70 (la cour
+ * descend un peu sous le pied).
+ * Troisième passe (directeur artistique et consultant d'Archipéo : sept blocs du sol à leur dessus, des tuyaux d'orgue) :
+ * une seule masse de la roche du piton sous l'escalier, en biais le long du flanc, ses deux flancs d'un seul pan chacun,
+ * qui s'évasent vers le bas (`flare`, par unité de hauteur) ; dessus, seulement les dessus clairs et les contremarches
+ * entaillées. Dans la ruine, le dessus de la troisième marche s'est affaissé vers l'avant (`drop`, à son nez).
  */
-const STEPS = { from: { x: -6.4, z: 2.2 }, to: { x: -3.0, z: 0.4 }, count: 7, radius: 0.62, sunk: 0.22 } as const;
+const STEPS = { from: { x: -6.4, z: 2.2 }, to: { x: -3.0, z: 0.4 }, count: 8, width: 1.3, flare: 0.06, drop: 0.2 } as const;
 
 /**
  * Le logis de la maçonne, adossé au pied du piton à l'est : ses murs (de `x0` à `x1`, de `z0` à `z1`), leur hauteur ; son
@@ -371,31 +373,70 @@ function towerDoor(b: FacetBuilder, worn: boolean): void {
   }
 }
 
-/** La contremarche des marches : la hauteur du piton sur leur nombre. */
-const STEP_RISE = PITON.h / STEPS.count;
-
-/** Les pans du piton s'évasent vers le bas : de combien leur rayon croît par unité de hauteur. */
-const PITON_FLARE = (PITON.r0 - PITON.r1) / (PITON.h - SINK);
+/** La ligne des marches : sa longueur, son sens (du pied vers la porte), son travers, le giron d'une marche. */
+const STEP_LINE = (() => {
+  const len = Math.hypot(STEPS.to.x - STEPS.from.x, STEPS.to.z - STEPS.from.z);
+  const u = { x: (STEPS.to.x - STEPS.from.x) / len, z: (STEPS.to.z - STEPS.from.z) / len };
+  return { len, u, v: { x: -u.z, z: u.x }, tread: len / (STEPS.count - 1) };
+})();
 
 /**
- * Le bloc de roche d'une marche, du sol (`SINK` sous la cour) à son dessus en `top` (depuis la cour) : six pans tournés
- * (`PITON.yaw`) et évasés comme ceux du piton, la pierre du piton, le dessus clair au soleil.
+ * Le pied de l'escalier, depuis la cour sous la tour : le plus bas de la cour sous les deux coins du nez de la première
+ * marche (la cour suit la pente du plateau) ; la contremarche, du pied au dessus du piton sur leur nombre.
  */
-function stepRock(b: FacetBuilder, x: number, z: number, top: number): void {
-  const h = top - SINK;
-  b.prism({ x, y: PT + SINK, z, yaw: PITON.yaw }, STEPS.radius + h * PITON_FLARE, STEPS.radius, h, 6, C.stone, C.stoneSun);
+const STEP_FOOT = (() => {
+  const { u, v, tread } = STEP_LINE;
+  const w = STEPS.width / 2 + STEPS.flare * PITON.h;
+  const [x, z] = [STEPS.from.x - (u.x * tread) / 2, STEPS.from.z - (u.z * tread) / 2];
+  return Math.min(...[-1, 1].map((side) => courAt(x + side * v.x * w, z + side * v.z * w))) - PT;
+})();
+const STEP_RISE = (PITON.h - STEP_FOOT) / STEPS.count;
+
+type Point = readonly [number, number, number];
+
+/**
+ * Un polygone convexe plan, en éventail depuis son premier sommet, tourné vers `out` (le culling garde les faces vues de
+ * devant) ; aucun triangle plat : le premier sommet n'est jamais aligné avec deux autres qui se suivent.
+ */
+function face(b: FacetBuilder, pts: readonly Point[], out: Point, color: number): void {
+  const [p, q, r] = pts;
+  const u = [q[0] - p[0], q[1] - p[1], q[2] - p[2]];
+  const v = [r[0] - p[0], r[1] - p[1], r[2] - p[2]];
+  const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+  const ring = n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0 ? pts : [pts[0], ...pts.slice(1).reverse()];
+  for (let k = 1; k < ring.length - 1; k++) b.triangle(ring[0], ring[k], ring[k + 1], color);
 }
 
 /**
- * Les marches taillées dans le flanc du piton, chacune un bloc de sa roche (`stepRock`), de la plus basse à la plus haute
- * ; dans la ruine, une seule s'est affaissée (`sunk`), sans tourner : ses pans gardent la lumière du piton.
+ * L'escalier taillé dans le flanc du piton : une seule masse de sa roche, du sol (`SINK` sous la cour) aux marches, le
+ * long de la ligne des marches (`s`, depuis le pied) ; ses deux flancs, chacun d'un seul pan (en bandes d'une marche, sans
+ * sommet en T), qui s'évasent vers le bas ; dessus, les dessus clairs au soleil et les contremarches de la pierre du
+ * piton, la plus basse jusqu'au sol. La dernière marche affleure le dessus du piton, un rien au-dessus de sa mousse.
  */
 function steps(b: FacetBuilder, worn: boolean): void {
   const S = STEPS;
+  const { u, v, tread: d } = STEP_LINE;
+  const at = (s: number, y: number, side: number): Point => {
+    const w = side * (S.width / 2 + S.flare * (PITON.h - y));
+    return [S.from.x + u.x * s + v.x * w, PT + y, S.from.z + u.z * s + v.z * w];
+  };
+  // Le nez de chaque marche (`a`), le dessus au fond (`back`) et au nez (`nose`).
+  const a = Array.from({ length: S.count + 1 }, (_, k) => (k - 0.5) * d);
+  const back = Array.from({ length: S.count }, (_, k) => STEP_FOOT + (k + 1) * STEP_RISE + (k === S.count - 1 ? 0.03 : 0));
+  const nose = back.map((y, k) => y - (worn && k === 2 ? S.drop : 0));
+  const outU: Point = [-u.x, 0, -u.z];
   for (let k = 0; k < S.count; k++) {
-    const t = k / (S.count - 1);
-    const sunk = worn && k === 2 ? S.sunk : 0;
-    stepRock(b, S.from.x + (S.to.x - S.from.x) * t, S.from.z + (S.to.z - S.from.z) * t, (k + 1) * STEP_RISE - sunk);
+    const low = k === 0 ? SINK : back[k - 1];
+    face(b, [at(a[k], nose[k], -1), at(a[k], nose[k], 1), at(a[k + 1], back[k], 1), at(a[k + 1], back[k], -1)], [0, 1, 0], C.stoneSun);
+    face(b, [at(a[k], low, -1), at(a[k], low, 1), at(a[k], nose[k], 1), at(a[k], nose[k], -1)], outU, C.stone);
+    for (const side of [-1, 1]) {
+      // La bande du flanc sous la marche : du coin bas du fond, en éventail ; le sommet du milieu de son bord avant, au
+      // haut de la marche d'avant, évite le sommet en T.
+      const strip: Point[] = [at(a[k + 1], SINK, side), at(a[k + 1], back[k], side), at(a[k], nose[k], side)];
+      if (k > 0) strip.push(at(a[k], back[k - 1], side));
+      strip.push(at(a[k], SINK, side));
+      face(b, strip, [side * v.x, 0, side * v.z], C.stone);
+    }
   }
 }
 
@@ -768,7 +809,7 @@ function model(add: AddPiece, ground: SiteGround): void {
   );
 
   // ---- Le corps : la tour jusqu'au chemin de ronde, l'assise claire refaite, joints nets, ses fentes ; le blason entier ;
-  // la porte et son linteau à la bande de racines ; la herse relevée à mi-hauteur ; les sept marches ; le logis, murs
+  // la porte et son linteau à la bande de racines ; la herse relevée à mi-hauteur ; les huit marches ; le logis, murs
   // refaits, sans toit.
   add(0, 0, (b) => {
     b.box({ x: T.x, y: PT + T.low, z: T.z }, [2 * T.half, T.mid - T.low, 2 * T.half], C.pale, C.paleTop);
@@ -1013,7 +1054,7 @@ export const DONJON_LAYOUT = {
   blason: BLASON,
   stroke: STROKE,
   herse: HERSE,
-  steps: { ...STEPS, riser: STEP_RISE, flare: PITON_FLARE },
+  steps: { ...STEPS, riser: STEP_RISE, foot: STEP_FOOT },
   brick: { face: C.brick, dark: C.brickDark },
   door: DOOR_AT,
   scene: SCENE_SPOT,
