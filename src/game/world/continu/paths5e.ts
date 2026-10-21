@@ -1,16 +1,18 @@
 // Le réseau des chemins du 5e (GD-22, lot 2) : ses nœuds et ses liaisons (./plan5e.ts), le plus court trajet, et son
 // dessin, un ruban par liaison comme au 6e (./paths.ts, `networkRibbons`). Le ruban s'arrête aux culées d'un pont, et
 // ne monte pas la falaise : la cabine de la Montée y passe (./bridges.ts la dessine). Le ponton de la Lisière, au bout
-// du quai, est dessiné avec eux (un décor du même maillage, aucun appel de plus). Code pur.
+// du quai, est dessiné avec eux (un décor du même maillage, aucun appel de plus). Sur le plateau, plus de sable : les
+// chaussées dallées des Aiguilles (lot 13a, `causewayFacets`), dans le même maillage. Code pur.
 import { FacetBuilder, mergeFacets, type Facets } from './facets';
 import { distance, type Vec2 } from './geometry';
 import { createNetwork } from './network';
 import type { LinkedLand } from './lands';
+import { lowRock } from './monteeSurroundings';
 import { BRIDGE_ABUT } from './plan6e';
 import { COLORS_5E, LINKS_5E, PATH_EDGES_5E, PATH_NODES_5E, QUAY_5E, lisiereFloor } from './plan5e';
-import { networkRibbons, type RibbonNet } from './paths';
+import { RIBBON_LIFT, RIBBON_SIDE, RIBBON_STEP, networkRibbons, type RibbonNet } from './paths';
 import { standingHeight } from './terrain';
-import { channelClearance, plateauShare } from './terrain5e';
+import { channelClearance, plateauRim5e, plateauShare } from './terrain5e';
 
 /** Le réseau du 5e. */
 export const NETWORK_5E = createNetwork(PATH_NODES_5E, PATH_EDGES_5E);
@@ -61,22 +63,172 @@ export const isLand5e = (land: LinkedLand): land is Link5e => land in LINKS_5E;
 
 const cuts = new Map<number, readonly [number, number] | null>();
 
+/** La part d'une liaison que prend un pont ou la cabine (ses culées, son rail), ou rien. */
+function cutOf(edge: number): readonly [number, number] | null {
+  if (!cuts.has(edge)) {
+    const [ia, ib] = PATH_EDGES_5E[edge];
+    const land = passageOfEdge(ia, ib);
+    cuts.set(edge, land ? passageCut(NETWORK_5E.pathNode(ia).at, NETWORK_5E.pathNode(ib).at, land) : null);
+  }
+  return cuts.get(edge)!;
+}
+
+/**
+ * Les chaussées du plateau (GD-22, lot 13a ; intention du directeur artistique du 20 octobre 2026, partie A, et « Communs
+ * des Aiguilles », point 2) : sur tout le plateau, de la gare haute de la cabine aux cinq lieux des Aiguilles, des dalles
+ * chaudes (`slab`), rectangulaires, en long, à joints nets (`joint`), un liseré continu des deux côtés (`rim` de large,
+ * de la couleur des joints) ; 3 unités de large (`half`). La chaussée se lit par ses joints et son liseré, jamais par sa
+ * seule couleur (le contraste avec la pierre au soleil est faible). Les dalles font deux pas du ruban de long (`slabSteps`),
+ * leurs joints en travers décalés d'un pas d'une moitié à l'autre. Là où elle passe à moins de `edge.reach` unités du
+ * rebord du plateau, un rang de pierres brutes basses du côté du vide (`edge` : leur rayon, leur hauteur, leur écart au
+ * bord de la chaussée ; aucune sous la gare haute de la cabine, longue de 4, au bout du rail), jamais un parapet. Ni
+ * lanterne, ni borne, ni passerelle.
+ */
+export const CAUSEWAY_5E = {
+  half: 1.5,
+  rim: 0.2,
+  joint: 0.06,
+  slabSteps: 2,
+  slab: 0xcfc6b4,
+  line: COLORS_5E.stoneShade,
+  edge: { reach: 10, r: 0.42, h: 0.3, out: 0.55, lean: 0.3, station: 4.5 },
+} as const;
+
+/** Un point est-il sur le dessus du plateau, où le sable laisse la place aux chaussées ? */
+const upper = (p: Vec2): boolean => plateauShare(p) > 0.5;
+
+/** Les pas du ruban d'une liaison où passe une chaussée : de `from` à `to` unités de son premier nœud, ou rien. */
+const causewaySpans = new Map<number, readonly [number, number] | null>();
+function causewaySpan(edge: number): readonly [number, number] | null {
+  if (!causewaySpans.has(edge)) {
+    const [ia, ib] = PATH_EDGES_5E[edge];
+    const a = NETWORK_5E.pathNode(ia).at;
+    const c = NETWORK_5E.pathNode(ib).at;
+    let span: [number, number] | null = null;
+    for (const [d0, d1] of ribbonPieces(edge)) {
+      if (!upper(along(a, c, (d0 + d1) / 2))) continue;
+      span = span ? [span[0], d1] : [d0, d1];
+    }
+    causewaySpans.set(edge, span);
+  }
+  return causewaySpans.get(edge)!;
+}
+
+/** Le point à `d` unités de `a`, vers `c`. */
+function along(a: Vec2, c: Vec2, d: number): Vec2 {
+  const len = distance(a, c);
+  return { x: a.x + ((c.x - a.x) * d) / len, z: a.z + ((c.z - a.z) * d) / len };
+}
+
+/** Les morceaux du ruban d'une liaison (comme ./paths.ts, `edgeRibbon`) : un par pas, sans la part d'un pont ou de la cabine. */
+function ribbonPieces(edge: number): [number, number][] {
+  const [ia, ib] = PATH_EDGES_5E[edge];
+  const len = distance(NETWORK_5E.pathNode(ia).at, NETWORK_5E.pathNode(ib).at);
+  const n = Math.max(1, Math.ceil(len / RIBBON_STEP));
+  const cut = cutOf(edge);
+  const out: [number, number][] = [];
+  for (let k = 0; k < n; k++) {
+    const d0 = (len * k) / n;
+    const d1 = (len * (k + 1)) / n;
+    const spans: [number, number][] = cut ? [[d0, Math.min(d1, cut[0])], [Math.max(d0, cut[1]), d1]] : [[d0, d1]];
+    for (const [s0, s1] of spans) if (s1 - s0 >= 1e-3) out.push([s0, s1]);
+  }
+  return out;
+}
+
 /** Le réseau du 5e, pour son dessin. */
 export const RIBBONS_5E: RibbonNet = {
   edges: PATH_EDGES_5E,
   node: (id) => NETWORK_5E.pathNode(id),
-  cut: (edge) => {
-    if (!cuts.has(edge)) {
-      const [ia, ib] = PATH_EDGES_5E[edge];
-      const land = passageOfEdge(ia, ib);
-      cuts.set(edge, land ? passageCut(NETWORK_5E.pathNode(ia).at, NETWORK_5E.pathNode(ib).at, land) : null);
-    }
-    return cuts.get(edge)!;
-  },
-  // La pierre de la Lisière (GD-22, lot 4) : Kéo y marche, aucun sentier n'y est dessiné, comme à l'Escale.
-  skip: (p) => lisiereFloor(p.x, p.z) !== null,
+  cut: cutOf,
+  // La pierre de la Lisière (GD-22, lot 4) : Kéo y marche, aucun sentier n'y est dessiné, comme à l'Escale. Le dessus du
+  // plateau : ses chaussées dallées remplacent le sable (lot 13a, `causewayFacets`).
+  skip: (p) => lisiereFloor(p.x, p.z) !== null || upper(p),
   planks: () => false,
+  width: (edge, d) => {
+    const span = causewaySpan(edge);
+    return span && d >= span[0] - 1e-6 && d <= span[1] + 1e-6 ? CAUSEWAY_5E.half : null;
+  },
+  widest: CAUSEWAY_5E.half,
 };
+
+/**
+ * Les chaussées du plateau (`CAUSEWAY_5E`), sur le sol `ground` : par liaison, un morceau par pas du ruban, posé comme
+ * lui (à plat en travers, à la hauteur du sol sur sa ligne, ses flancs qui descendent), ses dalles, son liseré et ses
+ * joints ; sur chaque nœud du plateau, un disque de dalle sur un octogone du liseré, comme le sable au coude d'un
+ * sentier ; le rang de pierres du côté du vide, près du rebord. Dans le maillage des chemins : aucun appel de plus.
+ */
+export function causewayFacets(ground: (x: number, z: number) => number): Facets {
+  const b = new FacetBuilder();
+  const W = CAUSEWAY_5E;
+  const inner = W.half - W.rim;
+  const drop = 0.004;
+  let stones = 0;
+  PATH_EDGES_5E.forEach(([ia, ib], edge) => {
+    const a = NETWORK_5E.pathNode(ia).at;
+    const c = NETWORK_5E.pathNode(ib).at;
+    const len = distance(a, c);
+    const dx = (c.x - a.x) / len;
+    const dz = (c.z - a.z) / len;
+    const n = Math.max(1, Math.ceil(len / RIBBON_STEP));
+    // À gauche du sens de marche : (dz, −dx), à `o` unités de la ligne, à la hauteur `y`.
+    const side = (v: Vec2, y: number, o: number) => [v.x + dz * o, y, v.z - dx * o] as const;
+    for (const [d0, d1] of ribbonPieces(edge)) {
+      const p = along(a, c, d0);
+      const q = along(a, c, d1);
+      const mid = along(a, c, (d0 + d1) / 2);
+      if (!upper(mid)) continue;
+      const yp = standingHeight(ground(p.x, p.z)) + RIBBON_LIFT;
+      const yq = standingHeight(ground(q.x, q.z)) + RIBBON_LIFT;
+      // Les dalles, puis le liseré de chaque côté, un rien plus bas (sous le disque d'un coude), et ses flancs.
+      b.quad(side(p, yp, inner), side(p, yp, -inner), side(q, yq, -inner), side(q, yq, inner), W.slab);
+      for (const s of [1, -1]) {
+        const o0 = s * inner;
+        const o1 = s * W.half;
+        const [l0, l1] = s > 0 ? [o1, o0] : [o0, o1];
+        b.quad(side(p, yp - drop, l0), side(p, yp - drop, l1), side(q, yq - drop, l1), side(q, yq - drop, l0), W.line);
+        const top0 = side(p, yp - drop, o1);
+        const top1 = side(q, yq - drop, o1);
+        const down = (v: readonly [number, number, number]) => [v[0], v[1] - RIBBON_SIDE, v[2]] as const;
+        if (s > 0) b.quad(down(top1), down(top0), top0, top1, W.line);
+        else b.quad(down(top0), down(top1), top1, top0, W.line);
+      }
+      // Les joints : le long du milieu, et en travers, d'une moitié puis de l'autre (des dalles en long, décalées).
+      const k = Math.round((d0 / len) * n);
+      const yj = (y: number) => y + drop;
+      const j = W.joint / 2;
+      b.quad(side(p, yj(yp), j), side(p, yj(yp), -j), side(q, yj(yq), -j), side(q, yj(yq), j), W.line);
+      const half = k % W.slabSteps === 0 ? 1 : -1;
+      const p1 = along(a, c, Math.min(d1, d0 + W.joint));
+      const [o0, o1] = half > 0 ? [inner, j] : [-j, -inner];
+      b.quad(side(p, yj(yp), o0), side(p, yj(yp), o1), side(p1, yj(yp), o1), side(p1, yj(yp), o0), W.line);
+      // Le rang de pierres du côté du vide, là où la chaussée passe près du rebord (et seulement d'un côté).
+      const rim = plateauRim5e(mid);
+      const cut = cutOf(edge);
+      if (rim >= W.edge.reach || (cut && d0 < cut[1] + W.edge.station)) continue;
+      const out = W.half + W.edge.out;
+      const left = plateauRim5e({ x: mid.x + dz * out, z: mid.z - dx * out });
+      const right = plateauRim5e({ x: mid.x - dz * out, z: mid.z + dx * out });
+      if (Math.abs(left - right) < W.edge.lean) continue;
+      const o = left < right ? out : -out;
+      const at = { x: mid.x + dz * o, z: mid.z - dx * o };
+      lowRock(b, { x: at.x, y: standingHeight(ground(at.x, at.z)), z: at.z }, W.edge.r, W.edge.h, 31 + stones++);
+    }
+  });
+  // Les nœuds du plateau : l'octogone du liseré, et dessus le disque de dalle (les dalles se rejoignent au coude).
+  const ids = new Set(PATH_EDGES_5E.flat());
+  for (const id of ids) {
+    const at = NETWORK_5E.pathNode(id).at;
+    if (!upper(at)) continue;
+    const y = standingHeight(ground(at.x, at.z)) + RIBBON_LIFT;
+    const w = W.half * 1.08;
+    b.prism({ x: at.x, y: y - drop * 2 - RIBBON_SIDE, z: at.z }, w, w, RIBBON_SIDE, 8, W.line);
+    const r = inner / Math.cos(Math.PI / 12);
+    const rim = (k: number) => [at.x + r * Math.cos((2 * Math.PI * k) / 12), y, at.z + r * Math.sin((2 * Math.PI * k) / 12)] as const;
+    for (let k = 0; k < 12; k++) b.triangle([at.x, y, at.z], rim(k + 1), rim(k), W.slab);
+  }
+  return b.build();
+}
 
 /** Le pas des pieux du ponton, le long de lui, et leur pied sous l'eau. */
 const QUAY_PILES = { step: 3, foot: -2.4 } as const;
@@ -113,8 +265,8 @@ export function quayFacets(): Facets {
   return b.build();
 }
 
-/** Les chemins du 5e : un ruban par liaison, un octogone par nœud ; et le ponton de la Lisière. */
-export const pathRibbons5e = (ground: (x: number, z: number) => number): Facets => mergeFacets([networkRibbons(RIBBONS_5E, ground), quayFacets()]);
+/** Les chemins du 5e : un ruban par liaison, un octogone par nœud ; les chaussées du plateau ; et le ponton de la Lisière. */
+export const pathRibbons5e = (ground: (x: number, z: number) => number): Facets => mergeFacets([networkRibbons(RIBBONS_5E, ground), causewayFacets(ground), quayFacets()]);
 
 /**
  * Le liseré des chemins du 5e sur la Carte (référent dys, seconde relecture du lot 2) : de loin, le liseré brun du

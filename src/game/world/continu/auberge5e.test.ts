@@ -10,7 +10,7 @@ import { phraseDeLaPose } from '../../poseWords';
 import { partiesDe } from '../parts';
 import { plansFor } from '../plans';
 import { AUBERGE, AUBERGE_LAYOUT, AUBERGE_RANKS } from './auberge5e';
-import { PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
+import { CAUSEWAYS_ADDED_5E, PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
 import { AUBERGE_SURROUNDINGS } from './aubergeSurroundings';
 import { FOLLOW, followPose, screenOf } from './camera';
 import { posedTraces, traceStagePosed, WHOLE, type PartShape, type Stage } from './construction';
@@ -474,7 +474,8 @@ describe('Le budget du 5e, avec l’Auberge (plafonds du lot 12)', () => {
     const cost = openWorldCost5e();
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
-    expect(triangles).toBeLessThanOrEqual(LOT11_OPEN_5E.triangles + PLACE_TRIANGLES_MAX_5E);
+    // Et les chaussées du plateau, venues après (lot 13a).
+    expect(triangles).toBeLessThanOrEqual(LOT11_OPEN_5E.triangles + PLACE_TRIANGLES_MAX_5E + CAUSEWAYS_ADDED_5E);
     expect(calls).toBeLessThanOrEqual(LOT11_OPEN_5E.calls);
     expect(cost.find((c) => c.poste === 'scénette')!.calls).toBe(2);
   });

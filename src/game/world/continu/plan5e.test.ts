@@ -10,14 +10,16 @@ import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
 import { planFor } from './levelPlan';
 import { CLIFF_MAP_COLORS, CLIFF_MAP_SHAPE, cliffMapLine, cliffMapSegments, riftMistFacets, riftMistSpots, RIFT_MIST } from './mist5e';
 import { modelOfPlace } from './places';
-import { NETWORK_5E, PATH_MAP_EDGE, pathMapEdges5e, pathRibbons5e, quayFacets } from './paths5e';
+import { CAUSEWAY_5E, NETWORK_5E, PATH_MAP_EDGE, RIBBONS_5E, causewayFacets, pathMapEdges5e, pathRibbons5e, quayFacets } from './paths5e';
+import { edgesNear, networkRibbons, pathTopAt } from './paths';
 import { BUILT_PLACES_5E, COAST_5E, COLORS_5E, DEPARTURE_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, UPPER_PLACES_5E } from './plan5e';
 import { COLORS_6E } from './plan6e';
 import { ILES } from '../../islands';
 import { MONTEE_HEIGHT } from './montee5e';
 import { HEIGHT_LIGHT_5E, HORIZON_COLOR_5E, LIGHT_5E, SKY_OF, skyColorAt, skyDome } from './sky';
 import { SEA_TEXTURE, WATER_TONES_5E, seaPixels5e, waterTone5e } from './sea';
-import { FOREST_COLORS, buildHeightField5e, channelClearance, groundFar5e, groundOn5e, heightAt5e, landDistance5e, onPlateau, plateauShare, tileFacets5e, tileFlora5e, tileGround5e } from './terrain5e';
+import { FOREST_COLORS, buildHeightField5e, channelClearance, groundFar5e, groundOn5e, heightAt5e, landDistance5e, onPlateau, plateauRim5e, plateauShare, tileFacets5e, tileFlora5e, tileGround5e } from './terrain5e';
+import { standingHeight } from './terrain';
 import { VEIL_LAYERS, VEIL_LAYERS_5E, veilFacets, veilShare } from './veil';
 
 const PLAN = planFor('5e');
@@ -485,8 +487,9 @@ describe('Le budget du 5e', () => {
     // (les Terrasses et la Faille, +1 958, le lieu restauré à la place de sa ruine, le Détour et le coude du chemin),
     // 100 273, 17 727 : la réserve passe à 17 700 ; après le lot 12 (l'Auberge, retouche 1 comprise, +1 138, le lieu
     // restauré à la place de sa ruine), 101 411, 16 589 : la réserve passe à 16 500 ; sa retouche 2 (l'anse de la cruche
-    // en six segments, +4), 101 415, 16 585 : la réserve reste à 16 500.
-    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 16_500);
+    // en six segments, +4), 101 415, 16 585 : la réserve reste à 16 500 ; les chaussées dallées du plateau (lot 13a, +1 454,
+    // à la place du sable), 102 869, 15 131 : la réserve passe à 15 100.
+    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 15_100);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
     // La Carte dans l'enveloppe (ses plafonds lot par lot : ./hameau5e.test.ts, ./croisee5e.test.ts).
     const map = mapCost5e();
@@ -495,5 +498,85 @@ describe('Le budget du 5e', () => {
     // Les chemins se dessinent sur le sol du 5e.
     const field = buildHeightField5e();
     expect(pathRibbons5e((px, pz) => groundOn5e(field, px, pz)).triangles).toBeGreaterThan(1000);
+  });
+});
+
+describe('Les chaussées du plateau (GD-22, lot 13a)', () => {
+  const field = buildHeightField5e();
+  const ground = (x: number, z: number) => groundOn5e(field, x, z);
+  const causeways = causewayFacets(ground);
+  const upperEdges = PATH_EDGES_5E.map(([a, b], edge) => ({ a: node(a), b: node(b), edge })).filter(({ b }) => onPlateau(b));
+
+  /** Les couleurs (rouge, vert, bleu linéaires) des triangles de `f`, avec leur centre. */
+  const triangles = (f: ReturnType<typeof causewayFacets>) =>
+    Array.from({ length: f.triangles }, (_, t) => {
+      const i = t * 9;
+      const at = { x: (f.positions[i] + f.positions[i + 3] + f.positions[i + 6]) / 3, z: (f.positions[i + 2] + f.positions[i + 5] + f.positions[i + 8]) / 3 };
+      return { at, rgb: [f.colors[i], f.colors[i + 1], f.colors[i + 2]] };
+    });
+  const same = (rgb: readonly number[], color: number) => linearRgb(color).every((v, k) => Math.abs(v - rgb[k]) < 1e-5);
+
+  it('plus aucun sable en haut : le sentier et son liseré brun s’arrêtent au rebord, la cabine passée', () => {
+    for (const { at, rgb } of triangles(networkRibbons(RIBBONS_5E, ground))) {
+      if (plateauShare(at) <= 0.6) continue;
+      expect(same(rgb, COLORS_6E.path) || same(rgb, COLORS_6E.pathEdge), `${at.x.toFixed(1)} ${at.z.toFixed(1)}`).toBe(false);
+    }
+  });
+
+  it('toutes les liaisons du plateau, de la gare haute aux cinq lieux, sont dallées : 3 de large, Kéo y marche dessus', () => {
+    // Les dix liaisons du plateau et la fin de celle de la cabine.
+    expect(upperEdges).toHaveLength(11);
+    for (const id of ['cab-haut', 'aig-1', 'aig-2', 'aig-3', 'aig-4', 'aig-5', ...UPPER_PLACES_5E]) expect(PATH_EDGES_5E.flat()).toContain(id);
+    expect(2 * CAUSEWAY_5E.half).toBe(3);
+    const near: number[] = [];
+    for (const { a, b, edge } of upperEdges) {
+      const len = distance(a, b);
+      const [dx, dz] = [(b.x - a.x) / len, (b.z - a.z) / len];
+      const cut = RIBBONS_5E.cut(edge);
+      for (let d = 0.5; d < len; d += 2) {
+        const p = { x: a.x + dx * d, z: a.z + dz * d };
+        // Le rail de la cabine n'est pas une chaussée : on y monte dans la caisse.
+        if (!onPlateau(p) || (cut && d < cut[1] + 1)) continue;
+        // Au bord de la chaussée, Kéo et son anneau sont encore dessus ; un pas plus loin, sur la pierre.
+        for (const o of [-1, 1]) {
+          const q = { x: p.x + dz * o * (CAUSEWAY_5E.half - 0.1), z: p.z - dx * o * (CAUSEWAY_5E.half - 0.1) };
+          edgesNear(q.x, q.z, 0.1, near, RIBBONS_5E);
+          expect(near, `${edge} ${d}`).toContain(edge);
+          expect(pathTopAt(q.x, q.z, ground, near, RIBBONS_5E), `${edge} ${d}`).toBeGreaterThan(standingHeight(ground(p.x, p.z)) - 0.5);
+        }
+      }
+    }
+  });
+
+  it('des dalles chaudes, des joints et un liseré gris : rien d’autre (ni lanterne, ni bois, ni sable)', () => {
+    const rocks = [COLORS_5E.stone, COLORS_5E.stoneSun, COLORS_5E.stoneShade];
+    let slab = 0;
+    let line = 0;
+    for (const { rgb } of triangles(causeways)) {
+      if (same(rgb, CAUSEWAY_5E.slab)) slab++;
+      else if (same(rgb, CAUSEWAY_5E.line)) line++;
+      else expect(rocks.some((c) => same(rgb, c))).toBe(true);
+    }
+    // Les joints et le liseré : plus de triangles que les dalles (deux joints et deux liserés par pas).
+    expect(line).toBeGreaterThan(slab);
+    expect(CAUSEWAY_5E.slab).toBe(0xcfc6b4);
+    expect(CAUSEWAY_5E.line).toBe(0x777d77);
+  });
+
+  it('un rang de pierres basses seulement à moins de 10 unités du rebord, du côté du vide, hors de la chaussée', () => {
+    const stones = triangles(causeways).filter(({ rgb }) => same(rgb, COLORS_5E.stone) || same(rgb, COLORS_5E.stoneSun));
+    expect(stones.length).toBeGreaterThan(0);
+    for (const { at } of stones) {
+      expect(plateauRim5e(at)).toBeLessThan(CAUSEWAY_5E.edge.reach + 2);
+      // Hors de la chaussée : plus loin de toute ligne du plateau que sa demi-largeur.
+      const d = Math.min(...upperEdges.map(({ a, b }) => distanceToPolyline(at, [a, b])));
+      expect(d).toBeGreaterThan(CAUSEWAY_5E.half);
+    }
+  });
+
+  it('leur coût : celui de la terre, dans le maillage des chemins, sans appel de plus', () => {
+    const paths = openWorldCost5e().find((c) => c.poste === 'chemins')!;
+    expect(paths.calls).toBe(1);
+    expect(causeways.triangles).toBeLessThan(paths.triangles);
   });
 });
