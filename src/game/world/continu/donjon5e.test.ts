@@ -18,6 +18,7 @@ import { DONJON, DONJON_LAYOUT } from './donjon5e';
 import { DONJON_SURROUNDINGS } from './donjonSurroundings';
 import type { Facets } from './facets';
 import { linearRgb, type Vec2 } from './geometry';
+import { hsl, rendered5e } from './rendered5e';
 import { hasHabitantModel } from './habitants';
 import { hasScenette, planFor } from './levelPlan';
 import { arrivalViewOf, doorViewOf } from './northShore';
@@ -68,39 +69,6 @@ function toSegment(p: Vec2, a: Vec2, b: Vec2): number {
     dz = b.z - a.z;
   const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.z - a.z) * dz) / (dx * dx + dz * dz)));
   return Math.hypot(p.x - a.x - dx * t, p.z - a.z - dz * t);
-}
-
-/** Une couleur en teinte, saturation et clarté (HSL, de 0 à 1). */
-function hsl(color: number): { s: number; l: number } {
-  const [r, g, b] = [(color >> 16) & 255, (color >> 8) & 255, color & 255].map((v) => v / 255);
-  const [hi, lo] = [Math.max(r, g, b), Math.min(r, g, b)];
-  const l = (hi + lo) / 2;
-  return { s: hi === lo ? 0 : (hi - lo) / (1 - Math.abs(2 * l - 1)), l };
-}
-
-/**
- * La couleur d'une face à l'écran, sous la lumière du 5e (`LIGHT_5E`), comme la rend Three.js : le Lambert du soleil et
- * du ciel renvoyé (hémisphère), l'exposition, le mappage des tons neutre (`NeutralToneMapping`), puis sRGB ; au-dessus de
- * la lumière par la hauteur, sans brouillard. `color` en rouge, vert, bleu linéaires ; `n`, la normale de la face.
- */
-function rendered5e(color: readonly number[], n: readonly number[]): number {
-  const L = LIGHT_5E;
-  const [sky, ground, sun] = [linearRgb(L.sky), linearRgb(L.ground), linearRgb(L.sun)];
-  const d = Math.hypot(L.sunFrom.x, L.sunFrom.y, L.sunFrom.z);
-  const ndl = Math.max(0, (n[0] * L.sunFrom.x + n[1] * L.sunFrom.y + n[2] * L.sunFrom.z) / d);
-  const w = 0.5 * n[1] + 0.5;
-  let c = color.map((v, i) => ((v / Math.PI) * (ndl * sun[i] * L.sunIntensity + (ground[i] + (sky[i] - ground[i]) * w) * L.ambient)) * L.exposure);
-  const x = Math.min(...c);
-  const offset = x < 0.08 ? x - 6.25 * x * x : 0.04;
-  c = c.map((v) => v - offset);
-  const peak = Math.max(...c);
-  if (peak >= 0.76) {
-    const np = 1 - 0.24 ** 2 / (peak + 0.24 - 0.76);
-    const g = 1 - 1 / (0.15 * (peak - np) + 1);
-    c = c.map((v) => (v * np) / peak * (1 - g) + np * g);
-  }
-  const srgb = c.map((v) => Math.round(255 * Math.min(1, v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055)));
-  return (srgb[0] << 16) | (srgb[1] << 8) | srgb[2];
 }
 
 describe('Le Donjon, lieu complet', () => {
@@ -486,7 +454,8 @@ describe('Le budget du 5e, avec les chaussées et le Donjon (plafonds du lot 13a
     const cost = openWorldCost5e();
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
-    expect(triangles).toBeLessThanOrEqual(LOT12_OPEN_5E.triangles + CAUSEWAYS_ADDED_5E + PLACE_TRIANGLES_MAX_5E);
+    // Et l'Oracle, venu après (lot 13b ; son plafond : ./oracle5e.test.ts).
+    expect(triangles).toBeLessThanOrEqual(LOT12_OPEN_5E.triangles + CAUSEWAYS_ADDED_5E + 2 * PLACE_TRIANGLES_MAX_5E);
     expect(calls).toBeLessThanOrEqual(LOT12_OPEN_5E.calls);
     expect(cost.find((c) => c.poste === 'scénette')!.calls).toBe(2);
   });

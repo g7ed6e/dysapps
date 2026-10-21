@@ -121,8 +121,10 @@ export interface PlaceArt {
    * du 5e) : Kéo arrêté à sa porte, la caméra au cap de `doorView`, elle recule de `back` fois sa distance (comme la vue
    * d'un Détour, 1,6 au plus, sans monter) et lève le regard (`lookUp`, ./camera.ts) jusqu'au haut du lieu tel qu'il est
    * bâti, au-dessus de `look` (depuis le centre du lieu : le bord du haut le plus près d'elle). Absent : la caméra qui suit.
+   * `top` : une hauteur fixe à cadrer, depuis le pied du lieu, au lieu de son haut bâti : un repère au-delà de lui (à
+   * l'Oracle, lot 13b, le haut de la tour du Donjon, au-dessus de sa paroi basse).
    */
-  arrivalView?: { look: Vec2; back: number };
+  arrivalView?: { look: Vec2; back: number; top?: number };
   /**
    * Sur la Carte, ce que les étiquettes laissent à découvert, le repère du lieu de loin (les trois radeaux sur le chenal) :
    * les coins de sa boîte, depuis le centre du lieu, au niveau de l'eau. Absent : rien.

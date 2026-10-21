@@ -27,6 +27,7 @@ import { filetsSurroundings } from './filetsSurroundings';
 import { archivesSurroundings } from './archivesSurroundings';
 import { shipyardSurroundings } from './shipyardSurroundings';
 import { printworksSurroundings } from './printworksSurroundings';
+import { oracleSurroundings } from './oracleSurroundings';
 import { mangroveSurroundings } from './mangroveSurroundings';
 import { ruinsSurroundings } from './ruinsSurroundings';
 import { beaconsSurroundings } from './beaconsSurroundings';
@@ -58,7 +59,7 @@ export const SURROUNDINGS_MAX = 1500;
 
 export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   // Le 5e (GD-22, lot 3) : la Montée ; lot 5 : le Hameau ; lot 6 : les Radeaux ; lot 7 : la Croisée ; lot 8 : les Instants ;
-  // lot 9 : les Fumerolles ; lot 10 : l'Étuve ; lot 11 : les Terrasses ; lot 12 : l'Auberge ; lot 13a : le Donjon.
+  // lot 9 : les Fumerolles ; lot 10 : l'Étuve ; lot 11 : les Terrasses ; lot 12 : l'Auberge ; lot 13a : le Donjon ; lot 13b : l'Oracle.
   montee: monteeSurroundings,
   hameau: hameauSurroundings,
   radeaux: radeauxSurroundings,
@@ -69,6 +70,7 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   terrasses: terrassesSurroundings,
   auberge: aubergeSurroundings,
   donjon: donjonSurroundings,
+  oracle: oracleSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,

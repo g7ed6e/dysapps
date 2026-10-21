@@ -491,8 +491,9 @@ describe('Le budget du 5e', () => {
     // à la place du sable), 102 869, 15 131 : la réserve passe à 15 100 ; le Donjon (lot 13a, +862, le lieu restauré à la
     // place de sa ruine), 103 731, 14 269 : la réserve passe à 14 200 ; sa retouche 1 (les nœuds des chaussées à douze
     // pans, +132 ; le parapet, les marches, le logis de pierre et le signe de l'Auberge, +100 ; le Sémaphore et les
-    // Nacelles couchés, −14), 103 949, 14 051 : la réserve passe à 14 000.
-    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 14_000);
+    // Nacelles couchés, −14), 103 949, 14 051 : la réserve passe à 14 000 ; l'Oracle (lot 13b, +767 sur le Donjon fini,
+    // 103 939, le lieu restauré à la place de sa ruine), 104 706, 13 294 : la réserve passe à 13 200, de la seule hausse.
+    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 13_200);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
     // La Carte dans l'enveloppe (ses plafonds lot par lot : ./hameau5e.test.ts, ./croisee5e.test.ts).
     const map = mapCost5e();

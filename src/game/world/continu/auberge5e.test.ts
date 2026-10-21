@@ -444,8 +444,8 @@ describe('« Y aller » à l’Auberge (C11)', () => {
     expect(pose.position.y).toBeGreaterThan(FOLLOW.height);
   });
 
-  it('les autres lieux du 5e gardent leur cap, sauf les Instants et les Radeaux', () => {
-    for (const p of PLAN.places) if (!['instants', 'radeaux'].includes(p.id)) expect(doorViewOf(p.id), p.id).toBe(0);
+  it('les autres lieux du 5e gardent leur cap, sauf les Instants, les Radeaux et l’Oracle', () => {
+    for (const p of PLAN.places) if (!['instants', 'radeaux', 'oracle'].includes(p.id)) expect(doorViewOf(p.id), p.id).toBe(0);
   });
 });
 

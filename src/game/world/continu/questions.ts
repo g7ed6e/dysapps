@@ -487,8 +487,9 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
   // les bobines ; les Instants (lot 8) : leurs cinq missions, par les galets ; les Fumerolles (lot 9) : leurs trois
   // missions, les réponses portées par les galets ; l'Étuve (lot 10) : ses trois missions, par les gobelets ; les
   // Terrasses (lot 11) : leurs trois missions, par les bols ; l'Auberge (lot 12) : ses dix missions, par les malles ; le
-  // Donjon (lot 13a) : ses trois missions, par les claveaux.
-  if (place === 'montee' || place === 'hameau' || place === 'radeaux' || place === 'croisee' || place === 'instants' || place === 'fumerolles' || place === 'etuve' || place === 'terrasses' || place === 'auberge' || place === 'donjon') return items.map((it) => ({ ...it, placeScene: REST }));
+  // Donjon (lot 13a) : ses trois missions, par les claveaux ; l'Oracle (lot 13b) : ses six missions, trois par option,
+  // par les lampes à huile.
+  if (place === 'montee' || place === 'hameau' || place === 'radeaux' || place === 'croisee' || place === 'instants' || place === 'fumerolles' || place === 'etuve' || place === 'terrasses' || place === 'auberge' || place === 'donjon' || place === 'oracle') return items.map((it) => ({ ...it, placeScene: REST }));
   // La Turbine (GD-20, point 8, lot L6a) et le Chantier naval (lot L6b) : leurs quatre missions en C, aux deux niveaux,
   // avec leurs items de référence (consigne, phrase, document, rappel) ; la scène fait le décor, les réponses restent dans
   // la colonne.

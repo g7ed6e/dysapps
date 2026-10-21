@@ -958,12 +958,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const quayLook: Vec3 | null = departure.lookTop ? { ...departure.lookTop } : departure.lookAt ? { x: placeById(departure.lookAt).center.x, y: (feet.get(departure.lookAt)?.y ?? 0) + modelOfPlace(departure.lookAt).top, z: placeById(departure.lookAt).center.z } : null;
   const quayPoint = net.pathNode(portNode('quai')).at;
   // Les lieux trop hauts pour la caméra qui suit à leur porte (`PlaceArt.arrivalView` ; au 5e, le Donjon, retouche 1 du
-  // lot 13a) : leur porte, le bord du haut que le regard levé y cadre (à la hauteur de ce qui est bâti, `builtTop`) et le
+  // lot 13a ; l'Oracle, lot 13b, dont le regard monte à la tour du Donjon) : leur porte, le bord du haut que le regard levé y cadre (à la hauteur de ce qui est bâti, `builtTop`) et le
   // recul de la caméra. `arrivalNow` : celui où Kéo se tient, tourné vers son cap ; `arrivalBack`, la part du recul, de 0
   // à 1, comme `look` ; `arrivalShape`, le recul du dernier, gardé pendant que la caméra revient.
   const arrivals = PLACES.flatMap((p) => {
     const a = arrivalViewOf(p.id);
-    return a ? [{ id: p.id, door: net.pathNode(p.door).at, look: { x: p.center.x + a.look.x, z: p.center.z + a.look.z }, view: { height: 0, back: a.back } }] : [];
+    return a ? [{ id: p.id, door: net.pathNode(p.door).at, look: { x: p.center.x + a.look.x, z: p.center.z + a.look.z }, top: a.top, view: { height: 0, back: a.back } }] : [];
   });
   let arrivalNow: (typeof arrivals)[number] | null = null;
   let arrivalBack = 0;
@@ -1561,7 +1561,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     for (const a of arrivals) {
       if (distance(here, a.door) > 0.5 || Math.abs(wrapAngle(yaw - doorViewOf(a.id))) > QUAY_LOOK_TURN) continue;
       lanternTop.x = a.look.x;
-      lanternTop.y = feet.get(a.id)!.y + (builtTop.get(a.id) ?? modelOfPlace(a.id).top);
+      // Le haut bâti du lieu, ou un repère au-delà de lui (à l'Oracle, la tour du Donjon au-dessus de sa paroi).
+      lanternTop.y = feet.get(a.id)!.y + (a.top ?? builtTop.get(a.id) ?? modelOfPlace(a.id).top);
       lanternTop.z = a.look.z;
       arrivalNow = a;
       arrivalShape = a.view;

@@ -137,6 +137,9 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   auberge: placeArt('auberge')!.traceStage,
   // Le Donjon (lot 13a) : son corps, et chaque trace son étape, comme aux Terrasses.
   donjon: placeArt('donjon')!.traceStage,
+  // L'Oracle (lot 13b) : chaque trace son étape, la même pour le latin et le grec (en grec, à deux parties, le haut et les
+  // abords se posent ensemble, leurs traces aussi).
+  oracle: placeArt('oracle')!.traceStage,
 };
 
 /**

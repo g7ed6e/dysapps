@@ -143,6 +143,10 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // proposée par le consultant d'Archipéo, à relire par le directeur du contenu pédagogique (jamais « Vélin » ni le
   // Griffon d'émail).
   donjon: { role: placeArt('donjon')!.role, greeting: 'La maçonne bâtit des murs de pierre.', placement: 'rangee' },
+  // L'Oracle (GD-22, lot 13b) : « le conteur », sans prénom (fiche du 5e, § 4) ; sa réplique, la phrase du métier tirée
+  // de la proposition du consultant d'Archipéo (« Ici, on raconte les légendes. »), à relire par le directeur du contenu
+  // pédagogique (jamais « Lyre » ni le Phénix d'argile, ni Rome ni la Grèce : la grotte ne dit pas l'option).
+  oracle: { role: placeArt('oracle')!.role, greeting: 'Le conteur raconte les légendes.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -564,6 +568,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   terrasses: northSite('terrasses'),
   auberge: northSite('auberge'),
   donjon: northSite('donjon'),
+  oracle: northSite('oracle'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2043,6 +2048,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   auberge: 'paving',
   // Le Donjon (lot 13a) : les dalles chaudes de la cour.
   donjon: 'paving',
+  // L'Oracle (lot 13b) : le sol clair de l'abri.
+  oracle: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 
