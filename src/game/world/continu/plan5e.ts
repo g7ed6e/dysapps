@@ -40,6 +40,13 @@ export const COLORS_5E = {
   /** La vase des rives, au ras de l'eau : un gris d'olive éteint. */
   mud: 0x6c6d58,
   /**
+   * La berge de l'eau profonde, chenaux et mer : une vase claire, continue, plus claire que l'eau basse de la forêt et
+   * plus sombre que les chemins (retouche du directeur artistique du 21 octobre 2026, demande du référent dys).
+   */
+  bank: 0xa09878,
+  /** L'eau basse de la forêt noyée, sous les racines des palétuviers : un vert d'eau, plus clair que l'eau des chenaux. */
+  pool: 0x4f8478,
+  /**
    * Le sol de la forêt, en bas, sous la canopée (retouche du lot 2, directeur artistique : « le vert est trop jaune ») :
    * une mousse sombre tirée vers le bleu-vert, discrète.
    */

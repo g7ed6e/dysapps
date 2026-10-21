@@ -12,13 +12,13 @@ import { CLIFF_MAP_COLORS, CLIFF_MAP_SHAPE, cliffMapLine, cliffMapSegments, rift
 import { modelOfPlace } from './places';
 import { CAUSEWAY_5E, NETWORK_5E, PATH_MAP_EDGE, RIBBONS_5E, besideStation, causewayFacets, pathMapEdges5e, pathRibbons5e, quayFacets } from './paths5e';
 import { edgesNear, networkRibbons, pathTopAt } from './paths';
-import { BUILT_PLACES_5E, COAST_5E, COLORS_5E, DEPARTURE_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, UPPER_PLACES_5E } from './plan5e';
+import { BUILT_PLACES_5E, COAST_5E, COLORS_5E, DEPARTURE_5E, LINKS_5E, NEEDLES_5E, PATH_EDGES_5E, PLATEAU, PLATEAU_5E, QUAY_5E, TERRAIN_5E, UPPER_PLACES_5E } from './plan5e';
 import { COLORS_6E } from './plan6e';
 import { ILES } from '../../islands';
 import { MONTEE_HEIGHT } from './montee5e';
 import { HEIGHT_LIGHT_5E, HORIZON_COLOR_5E, LIGHT_5E, SKY_OF, skyColorAt, skyDome } from './sky';
 import { SEA_TEXTURE, WATER_TONES_5E, seaPixels5e, waterTone5e } from './sea';
-import { FOREST_COLORS, buildHeightField5e, channelClearance, groundFar5e, groundOn5e, heightAt5e, landDistance5e, onPlateau, plateauRim5e, plateauShare, tileFacets5e, tileFlora5e, tileGround5e } from './terrain5e';
+import { FOREST_COLORS, buildHeightField5e, channelClearance, groundFar5e, groundOn5e, heightAt5e, landDistance5e, onPlateau, plateauRim5e, plateauShare, tileCounts5e, tileFacets5e, tileFlora5e, tileGround5e } from './terrain5e';
 import { standingHeight } from './terrain';
 import { VEIL_LAYERS, VEIL_LAYERS_5E, veilFacets, veilShare } from './veil';
 
@@ -285,7 +285,45 @@ describe('La Carte : le trait de la falaise', () => {
       const [la, lb] = [luminance(linearRgb(a)), luminance(linearRgb(b))];
       return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
     };
-    for (const ground of [COLORS_5E.moss, COLORS_5E.mossShade, COLORS_5E.mossSun, FOREST_COLORS.canopy, FOREST_COLORS.canopyTop]) expect(contrast(CLIFF_MAP_COLORS.light, ground), ground.toString(16)).toBeGreaterThan(3);
+    for (const ground of [COLORS_5E.moss, COLORS_5E.mossShade, COLORS_5E.mossSun, COLORS_5E.pool, FOREST_COLORS.canopy, FOREST_COLORS.canopyTop]) expect(contrast(CLIFF_MAP_COLORS.light, ground), ground.toString(16)).toBeGreaterThan(3);
+  });
+});
+
+describe('La forêt noyée (pistes B, C puis A du 21 octobre 2026)', () => {
+  it('l’eau basse sous les racines est plus claire que l’eau des chenaux, qu’on ne traverse jamais', () => {
+    const l = (c: number) => luminance(linearRgb(c));
+    expect(l(COLORS_5E.pool)).toBeGreaterThan(1.5 * l(COLORS_5E.waterShallow));
+    expect(l(COLORS_5E.pool)).toBeGreaterThan(1.5 * l(COLORS_5E.water));
+  });
+
+  it('aucun bord d’eau profonde sans sa berge claire : chaque facette du sol qui coupe le niveau de l’eau prend la vase claire', () => {
+    const field = buildHeightField5e();
+    const bank = linearRgb(COLORS_5E.bank);
+    let edges = 0;
+    for (let tz = 0; tz < TERRAIN_5E.tilesZ; tz++)
+      for (let tx = 0; tx < TERRAIN_5E.tilesX; tx++) {
+        const { positions, normals, colors, triangles } = tileGround5e(field, tx, tz, 'near');
+        for (let t = 0; t < triangles; t++) {
+          // La jupe des bords de tuile, verticale, sous le sol : jamais vue.
+          if (Math.abs(normals[9 * t + 1]) < 1e-6) continue;
+          const ys = [1, 4, 7].map((k) => positions[9 * t + k]);
+          if (Math.min(...ys) >= 0 || Math.max(...ys) <= 0) continue;
+          edges++;
+          for (let k = 0; k < 3; k++) expect(colors[9 * t + k], `${tx},${tz}`).toBeCloseTo(bank[k], 5);
+        }
+      }
+    expect(edges).toBeGreaterThan(1000);
+    const l = (c: number) => luminance(linearRgb(c));
+    expect(l(COLORS_5E.bank)).toBeGreaterThan(1.5 * l(COLORS_5E.pool));
+    expect(l(COLORS_5E.bank)).toBeLessThan(l(CLIFF_MAP_COLORS.light) / 1.5);
+  });
+
+  it('le compte sans construire de chaque tuile, de près et de loin, est celui des triangles construits', () => {
+    const field = buildHeightField5e();
+    for (const detail of ['near', 'far'] as const) {
+      const counts = tileCounts5e(field, detail);
+      for (let tz = 0; tz < TERRAIN_5E.tilesZ; tz++) for (let tx = 0; tx < TERRAIN_5E.tilesX; tx++) expect(tileFacets5e(field, tx, tz, detail).triangles, `${detail} ${tx},${tz}`).toBe(counts[tz * TERRAIN_5E.tilesX + tx]);
+    }
   });
 });
 
@@ -492,8 +530,8 @@ describe('Le budget du 5e', () => {
     // place de sa ruine), 103 731, 14 269 : la réserve passe à 14 200 ; sa retouche 1 (les nœuds des chaussées à douze
     // pans, +132 ; le parapet, les marches, le logis de pierre et le signe de l'Auberge, +100 ; le Sémaphore et les
     // Nacelles couchés, −14), 103 949, 14 051 : la réserve passe à 14 000 ; l'Oracle (lot 13b, +767 sur le Donjon fini,
-    // 103 939, le lieu restauré à la place de sa ruine), 104 706, 13 294 : la réserve passe à 13 200, de la seule hausse.
-    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 13_200);
+    // 103 939, le lieu restauré à la place de sa ruine), 104 706, 13 294 : la réserve passe à 13 200, de la seule hausse ; la forêt retaillée (pistes B, C puis A du 21 octobre 2026, dans le maillage du sol, +5 737), 110 443, 7 557 : la réserve passe à 7 500.
+    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 7_500);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
     // La Carte dans l'enveloppe (ses plafonds lot par lot : ./hameau5e.test.ts, ./croisee5e.test.ts).
     const map = mapCost5e();

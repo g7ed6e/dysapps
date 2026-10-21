@@ -7,7 +7,7 @@ import { stagePoseWords } from '../../three/archipeo/constructionParts';
 import { phraseDeLaPose } from '../../poseWords';
 import { partiesDe } from '../parts';
 import { plansFor } from '../plans';
-import { PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
+import { FOREST_REWORK_MAX_5E, PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
 import { WHOLE, posedTraces, traceStagePosed, type PartShape, type Stage } from './construction';
 import type { Facets } from './facets';
 import { FUMEROLLES, FUMEROLLES_LAYOUT, FUMEROLLES_MAST_TOP, FUMEROLLES_PATH, FUMEROLLES_STEAM, FUMEROLLES_VENTS } from './fumerolles5e';
@@ -315,7 +315,7 @@ describe('Le budget du 5e, avec les Fumerolles (plafonds du lot 9, intention du 
     const calls = cost.reduce((a, p) => a + p.calls, 0);
     // Les lieux finis depuis le lot 7 : les Instants (lot 8), les Fumerolles (lot 9), et ceux des Contreforts qui les suivent.
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux', 'croisee'].includes(id)).length;
-    expect(triangles).toBeLessThanOrEqual(LOT7_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E);
+    expect(triangles).toBeLessThanOrEqual(LOT7_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E + FOREST_REWORK_MAX_5E);
     expect(calls).toBeLessThanOrEqual(LOT7_OPEN_5E.calls);
     const scenette = cost.find((c) => c.poste === 'scénette')!;
     expect(scenette.calls).toBe(2);

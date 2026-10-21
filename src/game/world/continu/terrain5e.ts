@@ -103,6 +103,9 @@ export const groundFar5e = (f: HeightField, x: number, z: number): number => (in
 
 // ---------- La peinture du sol ----------
 
+/** Une facette touche la berge quand elle descend sous `top` et monte au-dessus de `under` (le niveau de l'eau : 0). */
+const BANK_EDGE = { top: 0.25, under: -0.6 } as const;
+
 /** Une facette moins droite que ça est de la roche (une falaise, la berge raide d'un chenal). */
 const ROCK_UP = 0.6;
 /** Une facette moins droite que ça prend son flanc (au soleil, ou à l'ombre). */
@@ -136,7 +139,49 @@ function flat5e(x: number, z: number, h: number): number {
     if (distanceToPolyline(p, FAILLE_5E.sente) < SENTE_GRASS) return COLORS_5E.mossSun;
     return patch(x, z) < 0.6 ? COLORS_5E.ochre : COLORS_5E.mossSun;
   }
-  return COLORS_5E.moss;
+  return forestFloor(p);
+}
+
+/**
+ * Le sol de la forêt noyée (piste B, choisie par le mainteneur le 21 octobre 2026 ; retouche du directeur artistique :
+ * « l'eau est le sol, la terre l'exception ») : sous un bosquet, une seule nappe d'eau basse, les nappes de ses arbres
+ * voisins se rejoignent ; autour, une bague de vase ; dans les clairières, la mousse, et çà et là une flaque d'un seul
+ * tenant (`patch`). Aucun triangle de plus : seule la couleur des facettes du sol change. L'eau basse reste plus claire
+ * que l'eau profonde des chenaux, qu'on ne traverse jamais.
+ */
+function forestFloor(p: Vec2): number {
+  let reach = Infinity;
+  for (const t of treesAround(p)) {
+    const dx = p.x - t.x, dz = p.z - t.z;
+    reach = Math.min(reach, (dx * dx + dz * dz) / (t.size * t.size));
+  }
+  if (reach < FLOOR_REACH.pool ** 2) return COLORS_5E.pool;
+  if (reach < FLOOR_REACH.mud ** 2) return COLORS_5E.mud;
+  return groveKeep(p) < FLOOR_REACH.clearing && patch(p.x, p.z) < FLOOR_REACH.puddle ? COLORS_5E.pool : COLORS_5E.moss;
+}
+
+/**
+ * L'eau basse jusqu'à tant de fois la taille d'un arbre depuis son pied (assez pour rejoindre celle des voisins d'un
+ * bosquet), la vase jusqu'à tant ; les flaques, dans les seules clairières.
+ */
+const FLOOR_REACH = { pool: 4.4, mud: 5.3, puddle: 0.14, clearing: 0.5 } as const;
+
+const aroundOf = new Map<number, readonly Tree[]>();
+
+/** Les palétuviers de la tuile d'un point et de ses huit voisines (une nappe déborde d'une tuile), une fois par tuile. */
+function treesAround(p: Vec2): readonly Tree[] {
+  const { minX, minZ, step, tileCells, tilesX, tilesZ } = TERRAIN_5E;
+  const size = step * tileCells;
+  const tx = Math.floor((p.x - minX) / size);
+  const tz = Math.floor((p.z - minZ) / size);
+  const key = tz * tilesX + tx;
+  const known = aroundOf.get(key);
+  if (known) return known;
+  const out: Tree[] = [];
+  for (let j = tz - 1; j <= tz + 1; j++)
+    for (let i = tx - 1; i <= tx + 1; i++) if (i >= 0 && j >= 0 && i < tilesX && j < tilesZ) for (const t of treesIn(i, j)) if (!t.shrub) out.push(t);
+  aroundOf.set(key, out);
+  return out;
 }
 
 /**
@@ -154,6 +199,10 @@ function facet5e(a: P3, b: P3, c: P3): number {
   const x = (a[0] + b[0] + c[0]) / 3;
   const z = (a[2] + b[2] + c[2]) / 3;
   const h = (a[1] + b[1] + c[1]) / 3;
+  // La berge (retouche du directeur artistique, sur la demande du référent dys) : toute facette qui touche le bord de
+  // l'eau profonde, chenal ou mer, prend la vase claire. Une bordure continue, plus claire que l'eau basse de la forêt :
+  // ce qu'on ne traverse jamais se lit par sa bordure, pas par sa seule teinte.
+  if (Math.min(a[1], b[1], c[1]) <= BANK_EDGE.top && Math.max(a[1], b[1], c[1]) >= BANK_EDGE.under) return COLORS_5E.bank;
   if (up < ROCK_UP) return h < 0.6 ? COLORS_5E.mud : sunny ? COLORS_5E.stone : COLORS_5E.stoneShade;
   const base = flat5e(x, z, h);
   if (up >= SLOPE_UP || base !== COLORS_5E.moss) return base;
@@ -173,9 +222,13 @@ const PAINT_5E: GroundPaint = { facet: facet5e, flat: flat5e, foam: noFoam };
  * sombre) ; aux Contreforts, des buissons d'olive sèche, vers l'ocre.
  */
 export const FOREST_COLORS = {
-  canopy: 0x56695a,
-  canopyTop: 0x6b7d62,
-  root: 0x7c7060,
+  canopy: 0x667c60,
+  canopyTop: 0x788856,
+  /** Le dessous des grappes de la couronne, qu'on voit à hauteur d'enfant : un cran plus sombre, jamais presque noir. */
+  canopyUnder: 0x70826c,
+  /** Les roseaux et les jeunes pousses au pied des palétuviers, dans l'eau basse. */
+  reed: 0x7f8c5e,
+  root: 0x6e5e4c,
   trunk: 0x6f6452,
   shrub: 0x8a8a5e,
   shrubTop: 0x9e9b6c,
@@ -269,6 +322,31 @@ const nearCreux = (p: Vec2): boolean => Math.hypot(p.x - CREUX_5E.center.x, p.z 
  */
 const nearFaille = (p: Vec2): boolean => Math.hypot(p.x - FAILLE_5E.center.x, p.z - FAILLE_5E.center.z) < FOREST_KEEP.faille || distanceToPolyline(p, FAILLE_5E.sente) < FOREST_KEEP.sente;
 
+/**
+ * Des bosquets et des clairières (piste C, choisie par le mainteneur le 21 octobre 2026) : une nappe lente, de 0 à 1, par
+ * cases de `GROVE.cell` unités, lissée entre leurs coins (aucun hasard d'une construction à l'autre) ; dans un bosquet, un
+ * arbre presque à chaque place, dans une clairière, un sur six : l'eau basse et la mousse s'y voient.
+ */
+const GROVE = { cell: 26, from: 0.36, to: 0.6, clearing: 0.16, grove: 0.96 } as const;
+
+function groveKeep(p: Vec2): number {
+  const u = p.x / GROVE.cell, v = p.z / GROVE.cell;
+  const i = Math.floor(u), j = Math.floor(v);
+  const fu = smoothstep(0, 1, u - i), fv = smoothstep(0, 1, v - j);
+  const at = (a: number, b: number) => hash2(a + 5003, b + 7001);
+  const n = (at(i, j) * (1 - fu) + at(i + 1, j) * fu) * (1 - fv) + (at(i, j + 1) * (1 - fu) + at(i + 1, j + 1) * fu) * fv;
+  return GROVE.clearing + (GROVE.grove - GROVE.clearing) * smoothstep(GROVE.from, GROVE.to, n);
+}
+
+/**
+ * Trois gabarits de palétuvier : un jeune sur quatre, de rares géants (jamais à moins de `giantPath` unités d'un chemin :
+ * leur couronne passerait devant la caméra), les autres adultes. Les jeunes ne se dessinent pas de loin (`farFrom`) ; le
+ * fût des adultes et des géants s'allonge (`tallTrunk`, retouche du directeur artistique : des colonnes, comme la planche).
+ */
+const GABARITS = { young: 0.25, giant: 0.93, giantPath: 11, giantSize: 1.5, farFrom: 0.8, tall: 0.85, tallTrunk: 1.3 } as const;
+
+const treeSize = (g: number, k: number, giantRoom: boolean): number => (g < GABARITS.young ? 0.6 + 0.15 * k : g > GABARITS.giant && giantRoom ? GABARITS.giantSize + 0.1 * k : 0.88 + 0.32 * k);
+
 const treesOf = new Map<number, readonly Tree[]>();
 
 /** Les arbres d'une tuile (calculés une fois). */
@@ -281,8 +359,8 @@ function treesIn(tx: number, tz: number): readonly Tree[] {
   const c = FOREST_KEEP.cell;
   for (let j = Math.floor(r.minZ / c); j * c < r.maxZ; j++)
     for (let i = Math.floor(r.minX / c); i * c < r.maxX; i++) {
-      if (hash2(i, j) > FOREST_KEEP.keep) continue;
       const p = { x: (i + 0.15 + 0.7 * hash2(i + 101, j)) * c, z: (j + 0.15 + 0.7 * hash2(i, j + 211)) * c };
+      if (hash2(i, j) > groveKeep(p)) continue;
       if (p.x < r.minX || p.x >= r.maxX || p.z < r.minZ || p.z >= r.maxZ) continue;
       if (plateauEdge(p) > -FOREST_KEEP.cliff) continue;
       if (landDistance5e(p) < FOREST_KEEP.dry || signedDistance(p, COAST_5E) < 1) continue;
@@ -293,32 +371,91 @@ function treesIn(tx: number, tz: number): readonly Tree[] {
       // La Hutte (lot 8) : sa cabane, sa barque, la place de Kéo et sa sente.
       if (inHutteClearing(p)) continue;
       const shrub = contreforts(p) > 0.5;
-      out.push({ x: p.x, z: p.z, y: heightAt5e(p), size: (shrub ? 0.62 : 0.85) + 0.4 * hash2(i + 7, j + 13), yaw: 6.283 * hash2(i + 31, j + 17), shrub });
+      const g = hash2(i + 7, j + 13);
+      const size = shrub ? 0.62 + 0.4 * g : treeSize(g, hash2(i + 59, j + 3), !nearPath(p, GABARITS.giantPath));
+      out.push({ x: p.x, z: p.z, y: heightAt5e(p), size, yaw: 6.283 * hash2(i + 31, j + 17), shrub });
     }
   if (CREUX_TREE.x >= r.minX && CREUX_TREE.x < r.maxX && CREUX_TREE.z >= r.minZ && CREUX_TREE.z < r.maxZ) out.push(CREUX_TREE);
   treesOf.set(key, out);
   return out;
 }
 
-/** Un tronçon de tronc à quatre côtés, sans dessus ni dessous. */
-function trunk(b: FacetBuilder, from: readonly [number, number, number], to: readonly [number, number, number], r0: number, r1: number, color: number): void {
-  const ring = (p: readonly [number, number, number], r: number) => [0, 1, 2, 3].map((k) => [p[0] + r * Math.cos((Math.PI * k) / 2 + Math.PI / 4), p[1], p[2] + r * Math.sin((Math.PI * k) / 2 + Math.PI / 4)] as const);
+/** Un tronçon à `sides` côtés, de rayon `r0` en `from` à `r1` en `to`, sans dessus ni dessous (un fût, une racine). */
+function tube(b: FacetBuilder, from: P3, to: P3, r0: number, r1: number, sides: number, color: number, turn = 0): void {
+  const dx = to[0] - from[0], dy = to[1] - from[1], dz = to[2] - from[2];
+  const len = Math.hypot(dx, dy, dz) || 1e-6;
+  const d = [dx / len, dy / len, dz / len];
+  const ref = Math.abs(d[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0];
+  const u0 = [d[1] * ref[2] - d[2] * ref[1], d[2] * ref[0] - d[0] * ref[2], d[0] * ref[1] - d[1] * ref[0]];
+  const ul = Math.hypot(u0[0], u0[1], u0[2]);
+  const u = u0.map((v) => v / ul);
+  const v = [d[1] * u[2] - d[2] * u[1], d[2] * u[0] - d[0] * u[2], d[0] * u[1] - d[1] * u[0]];
+  const ring = (p: P3, r: number) =>
+    Array.from({ length: sides }, (_, k) => {
+      const a = turn + (2 * Math.PI * k) / sides;
+      const c = r * Math.cos(a), s = r * Math.sin(a);
+      return [p[0] + c * u[0] + s * v[0], p[1] + c * u[1] + s * v[1], p[2] + c * u[2] + s * v[2]] as const;
+    });
   const lo = ring(from, r0);
   const hi = ring(to, r1);
-  for (let k = 0; k < 4; k++) {
-    const n = (k + 1) % 4;
-    b.quad(lo[n], lo[k], hi[k], hi[n], color);
+  for (let k = 0; k < sides; k++) {
+    const n = (k + 1) % sides;
+    b.quad(lo[k], lo[n], hi[n], hi[k], color);
   }
 }
 
+/**
+ * Une grappe de la couronne, à facettes (piste A, choisie par le mainteneur le 21 octobre 2026) : un anneau bas, un
+ * anneau large, une pointe au-dessus, décalée ; `under` : sa pointe de dessous, qu'on voit à hauteur d'enfant. Trois
+ * aplats : le dessous, les flancs, le dessus au soleil.
+ */
+function clump(b: FacetBuilder, x: number, y: number, z: number, R: number, H: number, yaw: number, under: boolean): void {
+  const sides = CROWN_SIDES;
+  const ring = (r: number, h: number, turn: number) => Array.from({ length: sides }, (_, k) => [x + r * Math.cos(yaw + turn + (2 * Math.PI * k) / sides), y + h, z + r * Math.sin(yaw + turn + (2 * Math.PI * k) / sides)] as const);
+  const low = ring(0.72 * R, 0, 0);
+  const wide = ring(R, 0.42 * H, Math.PI / sides);
+  const apex: P3 = [x + 0.12 * R * Math.cos(yaw), y + H, z + 0.12 * R * Math.sin(yaw)];
+  for (let k = 0; k < sides; k++) {
+    const n = (k + 1) % sides;
+    b.triangle(low[k], wide[k], low[n], FOREST_COLORS.canopy);
+    b.triangle(low[n], wide[k], wide[n], FOREST_COLORS.canopy);
+    b.triangle(wide[k], apex, wide[n], FOREST_COLORS.canopyTop);
+  }
+  if (!under) return;
+  const bottom: P3 = [x, y - 0.2 * H, z];
+  for (let k = 0; k < sides; k++) b.triangle(low[k], low[(k + 1) % sides], bottom, FOREST_COLORS.canopyUnder);
+}
+
+/** Les côtés d'une grappe, d'un fût et d'une racine. */
+const CROWN_SIDES = 5;
+const TRUNK_SIDES = 6;
+const ROOT_SIDES = 3;
+/** Les racines-échasses d'un palétuvier de près, chacune en trois tronçons qui s'arquent avant de plonger. */
+const ROOTS = 5;
+/** Les roseaux au pied d'un palétuvier de près, dans l'eau basse : deux pointes à trois pans. */
+const REEDS = 2;
+
 /** Les triangles d'un arbre de près et de loin (comptés sans construire). */
-const TREE_TRIANGLES = { near: 8 + 4 * 2 * 12 + 2 * 18, far: 3 + 15, hollowNear: 2 * 18, shrubNear: 18 + 6, shrubFar: 15 } as const;
+const TREE_TRIANGLES = {
+  near: 2 * 2 * TRUNK_SIDES + ROOTS * 3 * 2 * ROOT_SIDES + 3 * 4 * CROWN_SIDES + REEDS * 3,
+  far: 3 + 3 * CROWN_SIDES,
+  hollowNear: 3 * 4 * CROWN_SIDES,
+  shrubNear: 18 + 6,
+  shrubFar: 15,
+} as const;
+
+/** Les triangles d'un arbre (ou d'un buisson) à un niveau de détail ; de loin, un jeune palétuvier ne se dessine pas. */
+function treeTriangles(t: Tree, detail: TileDetail): number {
+  if (t.shrub) return detail === 'near' ? TREE_TRIANGLES.shrubNear : TREE_TRIANGLES.shrubFar;
+  if (detail === 'far') return t.hollow === undefined && t.size < GABARITS.farFrom ? 0 : TREE_TRIANGLES.far;
+  return t.hollow !== undefined ? TREE_TRIANGLES.hollowNear : TREE_TRIANGLES.near;
+}
 
 /**
- * Un palétuvier de près : le tronc, quatre racines en arceaux (deux poutres chacune, du tronc au genou, du genou au
- * sol), la canopée basse en deux plateaux à pans ; de loin, la canopée sur une pointe à trois pans, évasée au sol comme
- * les racines, qui monte s'y perdre (trois triangles : sans elle, la canopée flottait au-dessus de la forêt). Un buisson
- * des Contreforts : un dôme bas.
+ * Un palétuvier de près (piste A) : un fût à six pans, évasé au pied, en deux tronçons ; cinq racines-échasses en trois
+ * tronçons, qui partent du fût, s'arquent et plongent dans l'eau basse ; la couronne en trois grappes à facettes ; deux
+ * roseaux à son pied. De loin, une grappe sur une pointe à trois pans, évasée au sol comme les racines, qui monte s'y
+ * perdre (sans elle, la couronne flottait au-dessus de la forêt) ; un jeune, rien. Un buisson des Contreforts : un dôme bas.
  */
 function drawTree(b: FacetBuilder, t: Tree, detail: TileDetail): number {
   const s = t.size;
@@ -331,38 +468,55 @@ function drawTree(b: FacetBuilder, t: Tree, detail: TileDetail): number {
     b.prism({ x: t.x, y: t.y + 0.9 * s, z: t.z, yaw: t.yaw + 0.5 }, 1.2 * s, 0, 0.7 * s, 6, FOREST_COLORS.shrubTop);
     return TREE_TRIANGLES.shrubNear;
   }
-  const H = t.hollow ?? (3.8 + 1.6 * ((t.yaw * 7) % 1)) * s;
+  const H = t.hollow ?? (3.8 + 1.6 * ((t.yaw * 7) % 1)) * s * (s >= GABARITS.tall ? GABARITS.tallTrunk : 1);
   const R = 3.1 * s;
+  const y = t.y;
   if (detail === 'far') {
-    b.prism({ x: t.x, y: t.y - 0.6, z: t.z, yaw: t.yaw }, 0.8 * s, 0, H + 0.4, 3, FOREST_COLORS.root);
-    b.prism({ x: t.x, y: t.y + H - 0.6, z: t.z, yaw: t.yaw }, R, R * 0.7, 1.5 * s, 5, FOREST_COLORS.canopy, FOREST_COLORS.canopyTop);
+    if (treeTriangles(t, 'far') === 0) return 0;
+    b.prism({ x: t.x, y: y - 0.6, z: t.z, yaw: t.yaw }, 0.9 * s, 0, H + 0.4, 3, FOREST_COLORS.root);
+    clump(b, t.x, y + H - 0.7, t.z, R, 2 * s, t.yaw, false);
     return TREE_TRIANGLES.far;
   }
-  const y = t.y;
   if (t.hollow !== undefined) {
     // Le Creux : la couronne seule, son fût creusé est au Détour.
     crown(b, t, y, H, R, s);
     return TREE_TRIANGLES.hollowNear;
   }
-  trunk(b, [t.x, y + 1.2 * s, t.z], [t.x, y + H, t.z], 0.36 * s, 0.26 * s, FOREST_COLORS.trunk);
-  for (let k = 0; k < 4; k++) {
-    const a = t.yaw + (k * Math.PI) / 2;
-    const ca = Math.cos(a),
-      sa = Math.sin(a);
-    const start = { x: t.x, y: y + 1.7 * s, z: t.z };
-    const knee = { x: t.x + ca * 1.2 * s, y: y + 1.3 * s + 0.3, z: t.z + sa * 1.2 * s };
-    const foot = { x: t.x + ca * 2.4 * s, y: y - 0.6, z: t.z + sa * 2.4 * s };
-    b.beam(start, knee, 0.24 * s, FOREST_COLORS.root);
-    b.beam(knee, foot, 0.22 * s, FOREST_COLORS.root);
+  const knot = y + 1.5 * s;
+  tube(b, [t.x, y + 0.9 * s, t.z], [t.x, knot + 0.9 * s, t.z], 0.62 * s, 0.4 * s, TRUNK_SIDES, FOREST_COLORS.trunk, t.yaw);
+  tube(b, [t.x, knot + 0.9 * s, t.z], [t.x, y + H + 0.2, t.z], 0.4 * s, 0.3 * s, TRUNK_SIDES, FOREST_COLORS.trunk, t.yaw);
+  for (let k = 0; k < ROOTS; k++) {
+    const a = t.yaw + (2 * Math.PI * (k + 0.3 * Math.sin(k * 2.7 + t.yaw))) / ROOTS;
+    const ca = Math.cos(a), sa = Math.sin(a);
+    const reach = (1.9 + 0.25 * Math.sin(k * 1.9 + t.yaw * 3)) * s;
+    const at = (out: number, up: number): P3 => [t.x + ca * out, up, t.z + sa * out];
+    // Retouche du directeur artistique : moins de pattes, plus de souche (l'arche basse, la section plus forte, plus court).
+    const start = at(0.3 * s, y + 1.15 * s);
+    const arch = at(0.85 * s, y + 0.35 * H);
+    const bend = at(0.62 * reach, y + 0.8 * s);
+    const foot = at(reach, y - 0.5);
+    tube(b, start, arch, 0.4 * s, 0.33 * s, ROOT_SIDES, FOREST_COLORS.root, a);
+    tube(b, arch, bend, 0.33 * s, 0.27 * s, ROOT_SIDES, FOREST_COLORS.root, a);
+    tube(b, bend, foot, 0.27 * s, 0.22 * s, ROOT_SIDES, FOREST_COLORS.root, a);
+  }
+  for (let k = 0; k < REEDS; k++) {
+    const a = t.yaw + 1.1 + 2.4 * k;
+    const r = 1.6 * s + 0.3 * k;
+    b.prism({ x: t.x + r * Math.cos(a), y: y - 0.05, z: t.z + r * Math.sin(a), yaw: a }, 0.12, 0, 0.45 + 0.05 * k, 3, FOREST_COLORS.reed);
   }
   crown(b, t, y, H, R, s);
   return TREE_TRIANGLES.near;
 }
 
-/** La canopée basse d'un palétuvier de près : deux plateaux à pans. */
+/**
+ * La couronne d'un palétuvier de près : trois grappes à facettes, la grande au milieu, deux plus petites de part et
+ * d'autre, un peu plus bas et plus haut (la silhouette de la planche de rendu, jamais un plateau).
+ */
 function crown(b: FacetBuilder, t: Tree, y: number, H: number, R: number, s: number): void {
-  b.prism({ x: t.x, y: y + H - 0.4, z: t.z, yaw: t.yaw }, R, R * 0.8, 1.1 * s, 6, FOREST_COLORS.canopy, FOREST_COLORS.canopyTop);
-  b.prism({ x: t.x + 0.9 * s * Math.cos(t.yaw), y: y + H + 0.6 * s, z: t.z + 0.9 * s * Math.sin(t.yaw), yaw: t.yaw + 0.5 }, R * 0.7, R * 0.5, 0.9 * s, 6, FOREST_COLORS.canopy, FOREST_COLORS.canopyTop);
+  const c = Math.cos(t.yaw), n = Math.sin(t.yaw);
+  clump(b, t.x, y + H - 0.5, t.z, 0.86 * R, 2.3 * s, t.yaw, true);
+  clump(b, t.x + 1.5 * s * c, y + H - 0.1, t.z + 1.5 * s * n, 0.6 * R, 1.8 * s, t.yaw + 1, true);
+  clump(b, t.x - 1.3 * s * n - 0.6 * s * c, y + H + 0.7 * s, t.z + 1.3 * s * c - 0.6 * s * n, 0.55 * R, 1.6 * s, t.yaw + 2, true);
 }
 
 /** Les aiguilles dont le pied est dans une tuile. */
@@ -386,7 +540,7 @@ const needleTriangles = (n: Needle): number => spireTriangles(n.sides);
 function drawFlora5e(tx: number, tz: number, detail: TileDetail, b: FacetBuilder | null): number {
   let count = 0;
   for (const t of treesIn(tx, tz))
-    count += b ? drawTree(b, t, detail) : t.shrub ? (detail === 'near' ? TREE_TRIANGLES.shrubNear : TREE_TRIANGLES.shrubFar) : detail === 'near' ? (t.hollow !== undefined ? TREE_TRIANGLES.hollowNear : TREE_TRIANGLES.near) : TREE_TRIANGLES.far;
+    count += b ? drawTree(b, t, detail) : treeTriangles(t, detail);
   for (const n of needlesIn(tx, tz)) count += b ? drawNeedle(b, n) : needleTriangles(n);
   return count;
 }

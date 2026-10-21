@@ -2,7 +2,7 @@
 // le haut, puis les abords), une seule lanterne allumée dans la ruine, sa scénette, ses abords, son plafond de 1 600
 // triangles et le budget du 5e avec eux et le Creux. Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { PLACE_TRIANGLES_MAX_5E, mapCost5e, openWorldCost5e } from './budget';
+import { FOREST_REWORK_MAX_5E, PLACE_TRIANGLES_MAX_5E, mapCost5e, openWorldCost5e } from './budget';
 import { WHOLE, posedTraces, rowPosed, traceStagePosed, type PartShape, type Stage } from './construction';
 import { creuxTriangles } from './creux5e';
 import { failleTriangles } from './faille5e';
@@ -351,7 +351,7 @@ describe('Le budget du 5e, avec les Radeaux et le Creux (plafonds du lot 6)', ()
       [mapCost5e(), LOT5_5E.map],
     ] as const;
     for (const [now, before] of views) {
-      expect(now.triangles).toBeLessThanOrEqual(before.triangles + since * PLACE_TRIANGLES_MAX_5E + CREUX_MAX + FAILLE_MAX + HUTTE_MAX + FOREST_FEET_5E);
+      expect(now.triangles).toBeLessThanOrEqual(before.triangles + since * PLACE_TRIANGLES_MAX_5E + CREUX_MAX + FAILLE_MAX + HUTTE_MAX + FOREST_FEET_5E + FOREST_REWORK_MAX_5E);
       expect(now.calls).toBeLessThanOrEqual(before.calls);
     }
   });
