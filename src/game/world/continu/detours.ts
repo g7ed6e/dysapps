@@ -11,6 +11,7 @@ import { COMMON_DETOUR_VIEW, type DetourView } from './camera';
 import { CREUX } from './creux5e';
 import { HUTTE } from './hutte5e';
 import { FAILLE } from './faille5e';
+import { PERCHOIR } from './perchoir5e';
 import { FacetBuilder, type Facets } from './facets';
 import { distance, distanceToPolyline, type Vec2 } from './geometry';
 import type { LandId } from './lands';
@@ -22,13 +23,13 @@ import { detourFoot, detourReach, heightAt, landDistance, standingHeight } from 
 
 /**
  * Les Détours, les mêmes, dans le même ordre, que engine/detours.ts, pour la sauvegarde : les cinq du 6e, un par terre,
- * puis ceux du 5e (lot 6 : le Creux ; lot 8 : la Hutte ; lot 11 : la Faille), chacun ajouté à la fin.
+ * puis ceux du 5e (lot 6 : le Creux ; lot 8 : la Hutte ; lot 11 : la Faille ; lot 16 : le Perchoir), chacun ajouté à la fin.
  */
-export const DETOUR_IDS = ['butte-chantier', 'braise-herons', 'bout-large', 'colline-aube', 'haut-cretes', 'creux', 'hutte', 'faille'] as const;
+export const DETOUR_IDS = ['butte-chantier', 'braise-herons', 'bout-large', 'colline-aube', 'haut-cretes', 'creux', 'hutte', 'faille', 'perchoir'] as const;
 export type DetourId = (typeof DETOUR_IDS)[number];
 
 /** Les Détours du 5e. */
-const DETOUR_IDS_5E = ['creux', 'hutte', 'faille'] as const satisfies readonly DetourId[];
+const DETOUR_IDS_5E = ['creux', 'hutte', 'faille', 'perchoir'] as const satisfies readonly DetourId[];
 
 /** Un Détour du 6e. */
 type DetourId6e = Exclude<DetourId, (typeof DETOUR_IDS_5E)[number]>;
@@ -36,8 +37,8 @@ type DetourId6e = Exclude<DetourId, (typeof DETOUR_IDS_5E)[number]>;
 /** Les cinq Détours du 6e, un par terre. */
 export const DETOUR_IDS_6E = DETOUR_IDS.filter((id): id is DetourId6e => !(DETOUR_IDS_5E as readonly string[]).includes(id));
 
-/** Ce qu'est un Détour : un sommet, le sommet au cairn à rallumer, un bord d'eau, ou (au 5e) un arbre creux, une cabane, une fente. */
-type DetourKind = 'sommet' | 'cairn' | 'rive' | 'creux' | 'cabane' | 'faille';
+/** Ce qu'est un Détour : un sommet, le sommet au cairn à rallumer, un bord d'eau, ou (au 5e) un arbre creux, une cabane, une fente, une dalle au pied d'une aiguille. */
+type DetourKind = 'sommet' | 'cairn' | 'rive' | 'creux' | 'cabane' | 'faille' | 'perchoir';
 
 export interface Detour {
   id: DetourId;
@@ -109,8 +110,8 @@ function detourOf(id: DetourId6e): Detour {
 /** Les cinq Détours du 6e, tirés une fois. */
 export const DETOURS: readonly Detour[] = DETOUR_IDS_6E.map(detourOf);
 
-/** Les Détours du 5e (lot 6 : le Creux, aux Frondaisons ; lot 8 : la Hutte, aux Roselières ; lot 11 : la Faille, aux Contreforts). */
-export const DETOURS_5E: readonly Detour[] = [CREUX, HUTTE, FAILLE];
+/** Les Détours du 5e (lot 6 : le Creux, aux Frondaisons ; lot 8 : la Hutte, aux Roselières ; lot 11 : la Faille, aux Contreforts ; lot 16 : le Perchoir, aux Aiguilles). */
+export const DETOURS_5E: readonly Detour[] = [CREUX, HUTTE, FAILLE, PERCHOIR];
 
 /** Les Détours d'un niveau (le 4e n'en a pas encore : l'Épave, le Recoin, le Replat et la Dalle viennent avec leur lot). */
 const DETOURS_OF: Readonly<Record<OpenWorldLevel, readonly Detour[]>> = { '6e': DETOURS, '5e': DETOURS_5E, '4e': [] };
@@ -135,7 +136,7 @@ export function detourAtPoint(p: Vec2, level: OpenWorldLevel = '6e'): Detour | n
  * soit le cap d'arrivée : `face` va du milieu du pont vers sa tête, où se tient Kéo ; tourné de `view.turn` (à la
  * Faille, vers le sud, à l'opposé de l'arbre : la paroi d'en face se voit de profil).
  */
-export const detourCap = (d: Detour): number | null => (d.kind === 'creux' || d.kind === 'faille' ? Math.atan2(Math.cos(d.face), Math.sin(d.face)) + (d.view?.turn ?? 0) : null);
+export const detourCap = (d: Detour): number | null => (d.kind === 'creux' || d.kind === 'faille' || d.kind === 'perchoir' ? Math.atan2(Math.cos(d.face), Math.sin(d.face)) + (d.view?.turn ?? 0) : null);
 
 /** La forme de la vue à l'arrivée sur `d` : la sienne, ou la vue commune des Détours. */
 export const detourViewOf = (d: Detour): DetourView => d.view ?? COMMON_DETOUR_VIEW;

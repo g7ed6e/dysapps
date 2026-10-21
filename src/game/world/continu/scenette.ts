@@ -13,10 +13,10 @@
 // l'étape qui porte sa trace n'est pas posée (`posed`), avec ce qui est là (au Phare, au pied de la tour, la cloche
 // tombée sur le socle). Rien à lire n'est peint dans la 3D. Le décor de près est fait à l'arrivée et
 // libéré au départ par la vue. Code pur : la vue dessine.
-import { CAMERA_FOV, screenOf, wrapAngle, type CameraPose } from './camera';
+import { CAMERA_FOV, FOLLOW, screenOf, wrapAngle, type CameraPose, type DetourView } from './camera';
 import { FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import { placeArt } from './northShore';
+import { doorFrameOf, placeArt } from './northShore';
 import { placeById, scenePlace, type PlaceId as AnyPlaceId, type ScenePlaceId as PlaceId } from './levelPlan';
 import { heightFor } from './placeGround';
 import { COLORS_6E, DECK_HEIGHT } from './plan6e';
@@ -154,6 +154,10 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // Le Gaillard (GD-22, lot 15) : « la peintre », sans prénom (fiche du 5e, § 4) ; sa réplique, écrite par le directeur du
   // contenu pédagogique (« bateaux » et « sur ses toiles » ; ni « portrait » ni « galerie »).
   gaillard: { role: placeArt('gaillard')!.role, greeting: 'La peintre peint les bateaux des capitaines sur ses toiles.', placement: 'rangee' },
+  // Les Nacelles (GD-22, lot 16) : « la câbliste », sans prénom (fiche du 5e, § 6) ; sa réplique, la phrase du métier de
+  // l'intention du directeur artistique, sans « relier », à relire par le directeur du contenu pédagogique (jamais le nom
+  // d'une créature ni d'un Gardien, jamais « nacelle » pour la Nef).
+  nacelles: { role: placeArt('nacelles')!.role, greeting: 'Ici, on tend les câbles.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -578,6 +582,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   oracle: northSite('oracle'),
   semaphore: northSite('semaphore'),
   gaillard: northSite('gaillard'),
+  nacelles: northSite('nacelles'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -978,6 +983,23 @@ export const PLACE_VIEW: ExitView = { back: 20, height: 15, aim: 1.6 };
  * et ne laisse qu'une bande au-dessus d'elle ; la caméra recule assez pour que la trace y tienne entière avec ses abords.
  */
 export const TRACE_VIEW: ExitView = { back: 15, height: 11, aim: 1.6 };
+/**
+ * Le recul du retour d'une scénette quand le lieu a sa vue d'arrivée (`PlaceArt.doorFrame`, ./camera.ts `DetourView`) :
+ * la vue d'une trace (`TRACE_VIEW`) prend à la caméra qui suit ce que le lieu lui ajoute à l'arrivée, de la même façon (la
+ * hauteur de `frame` en plus, son facteur de recul sur celui de la poursuite), le regard toujours sur Kéo et la trace. Un
+ * lieu plus haut que les 7,7 que montre la caméra qui suit s'y revoit entier, comme à « Y aller » (directeur artistique du
+ * lot 15 : « la vue de retour lit le `doorFrame` du lieu »).
+ */
+export const frameTraceView = (frame: DetourView): ExitView => ({
+  back: TRACE_VIEW.back + FOLLOW.back * (frame.back - 1),
+  height: TRACE_VIEW.height + frame.height,
+  aim: TRACE_VIEW.aim,
+});
+/** Le recul du retour d'une scénette qui garde une trace au lieu `anyPlace` : `TRACE_VIEW`, élargie par sa vue d'arrivée s'il en a une. */
+export function traceViewOf(anyPlace: AnyPlaceId): ExitView {
+  const frame = doorFrameOf(scenePlace(anyPlace));
+  return frame ? frameTraceView(frame) : TRACE_VIEW;
+}
 /**
  * Le recul quand la caméra garde les lampes de la galerie du Phare : à la hauteur de la galerie (11,5 unités au-dessus
  * du sol), le regard presque à l'horizontale, assez près pour que les lampes se voient dans la bande au-dessus de la
@@ -2063,6 +2085,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   semaphore: 'paving',
   // Le Gaillard (lot 15) : les dalles chaudes de la cour.
   gaillard: 'paving',
+  // Les Nacelles (lot 16) : les dalles chaudes de la cour.
+  nacelles: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

@@ -31,7 +31,7 @@ import { heightAt5e } from './terrain5e';
 const SINK = -0.8;
 
 /**
- * Les couleurs du Hameau : l'enduit passé des murs (ruins5e.ts), la pierre gris-sable du dôme en blocs de deux tons, le
+ * Les couleurs du Hameau : l'enduit passé des murs (les ruines du lot 2, retirées au lot 16), la pierre gris-sable du dôme en blocs de deux tons, le
  * bois neuf brun désaturé de la Lisière et de la Montée (autour de #A87A50 à l'écran), le bois gris de la ruine,
  * l'ardoise bleue #5B7C99, le vert-de-gris du motif des racines ; la seule lumière, l'ocre de la lanterne. La bouche du
  * four est un brun très sombre (retouche 1 : elle se lisait comme une porte de bois fermée), juste au-dessus du seuil

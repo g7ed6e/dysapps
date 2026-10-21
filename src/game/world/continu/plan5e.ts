@@ -19,7 +19,7 @@ const PLAN_SCALE = 3.2;
 const PLAN_ORIGIN = { x: 900, y: 580 };
 
 /** Un point du plan du 5e (en pixels de l'image) en unités du monde. */
-const fromPlan5e = ([px, py]: readonly [number, number]): Vec2 => ({ x: (px - PLAN_ORIGIN.x) / PLAN_SCALE, z: (py - PLAN_ORIGIN.y) / PLAN_SCALE });
+export const fromPlan5e = ([px, py]: readonly [number, number]): Vec2 => ({ x: (px - PLAN_ORIGIN.x) / PLAN_SCALE, z: (py - PLAN_ORIGIN.y) / PLAN_SCALE });
 
 
 const poly = (points: readonly (readonly [number, number])[]): Vec2[] => points.map(fromPlan5e);
@@ -128,7 +128,7 @@ const needle = (p: [number, number], radius: number, height: number, sides: numb
  * Les aiguilles du plateau (fiche, § 5 : « les aiguilles en sont les piliers »), loin des chemins et des lieux (un test le
  * vérifie) : une seule famille, effilée et facettée (retouche du lot 2, directeur artistique : les chicots trapus des
  * Contreforts sont retirés), toutes plus hautes que la tour du Donjon. La Montée, la plus haute, est un lieu
- * (./ruins5e.ts) ; toutes se dessinent par `spire` (./spire5e.ts).
+ * (les ruines du lot 2, retirées au lot 16) ; toutes se dessinent par `spire` (./spire5e.ts).
  */
 export const NEEDLES_5E: readonly Needle[] = [
   needle([560, 190], 5, 34, 6, 0.3),
@@ -200,7 +200,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
  * l'établi ; les Terrasses (lot 11) : les trois, devant le moulin ; l'Auberge (lot 12) : les dix, cinq par langue, sur le
  * parvis ; le Donjon (lot 13a) : les trois, sur la cour devant le logis ; l'Oracle (lot 13b) : les six, trois par option, dans
  * l'abri devant le fond peint ; le Sémaphore (lot 14) : les cinq, sur la cour au pied de la tour ; le Gaillard (lot 15) :
- * les cinq, sur la cour devant le perron. Les autres lieux n'ont pas encore la leur (l'écran habituel). Un lieu construit
+ * les cinq, sur la cour devant le perron ; les Nacelles (lot 16) : les quatre, devant le quai. Les autres lieux n'ont pas encore la leur (l'écran habituel). Un lieu construit
  * s'ajoute ici, et seulement ici.
  */
 export const BUILT_PLACES_5E = {
@@ -212,6 +212,7 @@ export const BUILT_PLACES_5E = {
   fumerolles: ['active-earth', 'weather-climate', 'human-impact'],
   etuve: ['changes-of-state', 'mixtures-density', 'universe-atoms'],
   terrasses: ['population', 'resources', 'risks'],
+  nacelles: ['specifications', 'technical-solutions', 'life-cycle', 'project-management'],
   auberge: ['es-greetings', 'es-numbers', 'es-family', 'es-articles', 'es-sentences', 'de-greetings', 'de-numbers', 'de-family', 'de-articles', 'de-sentences'],
   donjon: ['christendoms-islam', 'feudal-west', 'new-worlds'],
   oracle: ['la-founding', 'la-gods', 'la-cases', 'gr-founding', 'gr-gods', 'gr-alphabet'],
@@ -507,6 +508,29 @@ export const FAILLE_5E = (() => {
   const face = Math.atan2(head.z - arch.z, head.x - arch.x);
   const start = closestOnSegment(head, at('con-3'), at('con-4')).point;
   return { center, half, tree, arch, notch, head, face, start, sente: [start, head] as readonly Vec2[] } as const;
+})();
+
+/**
+ * Le Détour du Perchoir (GD-22, lot 16 ; intention du directeur artistique du 21 octobre 2026, « Le Détour du Perchoir ») :
+ * une dalle bordée d'un muret bas, au pied nord-est de l'aiguille [1 110, 420], face au nord et au mur de nuages. Sa
+ * place, d'après l'intention : [1 130, 401] sur le plan, un peu plus à l'est que les [1 126, 404] de l'intention, pour que
+ * la caméra de l'arrivée (derrière Kéo, au sud) passe nettement à l'est de l'aiguille ; à onze unités environ de la liaison
+ * `aig-4`–`aig-5`, loin de tout lieu. `center` : le milieu de la dalle, `half` : sa demi-largeur (est-ouest) et sa
+ * demi-profondeur ; le muret (`wall`, son épaisseur et sa hauteur) borde ses côtés nord et est, ouvert à l'ouest et au sud ;
+ * `at` : là où Kéo s'arrête, sur la dalle ; `face` : de l'obstacle vers Kéo, vers le sud (la caméra regarde à l'opposé,
+ * vers le nord). La sente part de la liaison (`start`), contourne le muret par l'ouest (`bend`) et finit au bord ouest de la
+ * dalle (`edge`).
+ */
+export const PERCHOIR_5E = (() => {
+  const center = fromPlan5e([1130, 401]);
+  const nodeAt = (id: string) => PATH_NODES_5E.find((n) => n.id === id)!.at;
+  const half = { x: 2, z: 1.5 } as const;
+  const wall = { thick: 0.5, height: 0.6 } as const;
+  const at = { x: center.x, z: center.z + 0.3 };
+  const bend = { x: center.x - 3.4, z: center.z - 1.2 };
+  const edge = { x: center.x - half.x - 0.1, z: center.z + 0.5 };
+  const start = closestOnSegment(bend, nodeAt('aig-4'), nodeAt('aig-5')).point;
+  return { center, half, wall, at, face: Math.PI / 2, start, bend, edge, sente: [start, bend, edge] as readonly Vec2[] } as const;
 })();
 
 /** Les liaisons : sentiers, le pont de chaque terre et la cabine de la Montée. */

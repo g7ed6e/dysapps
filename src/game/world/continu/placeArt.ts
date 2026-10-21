@@ -156,4 +156,13 @@ export interface PlaceArt {
    * dans le maillage des lieux ; `c` : le centre du lieu à son sol (l'eau en y = 0), `posed` : une rangée d'une étape posée.
    */
   mapMark?(c: Vec3, posed: (stage: Stage, row: number) => boolean): Facets;
+  /**
+   * Ce que le lieu pose bien au-delà de son emprise (aux Nacelles, les deux câbles qui montent vers les aiguilles de décor,
+   * de 40 à 50 unités), dans le monde, ou rien : hors de son modèle (`model`), donc sans effet sur les bornes de marche, la
+   * flore, la caméra ni la pose ; absent de la Carte ; sans réponse au toucher, et jamais un obstacle pour la caméra de
+   * scénette (la scène les range en dernier dans le maillage des lieux et les écarte des rayons : `solid`, three/archipeo/
+   * scene.ts). Rien tant qu'aucune partie n'est posée (la ruine ne sort pas du lieu). `c` : le centre du lieu à son sol,
+   * `posed` : une rangée d'une étape posée. Compté dans le budget du lieu (./budget.ts).
+   */
+  reach?(c: Vec3, posed: (stage: Stage, row: number) => boolean): Facets | null;
 }

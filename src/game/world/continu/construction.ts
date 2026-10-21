@@ -144,6 +144,8 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   semaphore: placeArt('semaphore')!.traceStage,
   // Le Gaillard (lot 15) : chaque trace sa partie (3+1+1).
   gaillard: placeArt('gaillard')!.traceStage,
+  // Les Nacelles (lot 16) : chaque trace sa partie (le corps en deux, puis le haut, les abords).
+  nacelles: placeArt('nacelles')!.traceStage,
 };
 
 /**

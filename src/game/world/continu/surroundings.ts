@@ -8,6 +8,7 @@ import type { FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
 import type { ScenePlaceId as PlaceId } from './levelPlan';
 import { aubergeSurroundings } from './aubergeSurroundings';
+import { nacellesSurroundings } from './nacellesSurroundings';
 import { croiseeSurroundings } from './croiseeSurroundings';
 import { donjonSurroundings } from './donjonSurroundings';
 import { fumerollesSurroundings } from './fumerollesSurroundings';
@@ -62,7 +63,7 @@ export const SURROUNDINGS_MAX = 1500;
 export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   // Le 5e (GD-22, lot 3) : la Montée ; lot 5 : le Hameau ; lot 6 : les Radeaux ; lot 7 : la Croisée ; lot 8 : les Instants ;
   // lot 9 : les Fumerolles ; lot 10 : l'Étuve ; lot 11 : les Terrasses ; lot 12 : l'Auberge ; lot 13a : le Donjon ; lot 13b : l'Oracle ;
-  // lot 14 : le Sémaphore ; lot 15 : le Gaillard.
+  // lot 14 : le Sémaphore ; lot 15 : le Gaillard ; lot 16 : les Nacelles.
   montee: monteeSurroundings,
   hameau: hameauSurroundings,
   radeaux: radeauxSurroundings,
@@ -76,6 +77,7 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   oracle: oracleSurroundings,
   semaphore: semaphoreSurroundings,
   gaillard: gaillardSurroundings,
+  nacelles: nacellesSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,

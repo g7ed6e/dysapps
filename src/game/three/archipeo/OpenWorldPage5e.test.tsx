@@ -1,6 +1,6 @@
 // La page du monde ouvert du 5e (GD-22, lot 2) : elle donne à la scène le plan du 5e, rien de l'Escale, de la Nef ni des
 // Détours, et ses missions passent par l'écran habituel. La scène 3D n'est pas là sous jsdom : une scène simulée.
-import { act, render, screen, within } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, vi } from 'vitest';
@@ -88,23 +88,6 @@ test('la scène reçoit le plan du 5e, la Lisière et le dirigeable (lot 4), et 
   expect(scene.world!.setDetours).toHaveBeenCalled();
   // Les trois terres qu'on relie sont fermées au départ.
   expect([...scene.closed].sort()).toEqual(['aiguilles', 'contreforts', 'roselieres']);
-});
-
-test('une mission d’un lieu du 5e sans scénette (les Nacelles) se joue sur l’écran habituel', async () => {
-  // Les lieux des Frondaisons, des Roselières et des Contreforts sont tous construits (lot 12), le Donjon, l'Oracle, le
-  // Sémaphore et le Gaillard aussi (lots 13a, 13b, 14 et 15) : les Nacelles, aux Aiguilles, pas encore construites, une de
-  // leurs missions jouée, pour que leur terre soit ouverte.
-  localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, progress: { 'technology-5e-design-specifications-1': { stars: 1, attempts: 1, best: 0.5 } } }));
-  renderPage();
-  await screen.findByRole('button', { name: /Carte/ });
-  act(() => scene.options!.onArrive('nacelles'));
-  const sheet = await screen.findByRole('dialog', { name: 'Les Nacelles' });
-  // Aucune ligne d'habitant dans un lieu du 5e sans scénette : le panneau commence par ses missions.
-  expect(within(sheet).queryByRole('button', { name: /Reprendre|Livrer/ })).toBeNull();
-  const rows = within(sheet).getByRole('list', { name: 'Missions aux Nacelles' });
-  await userEvent.setup().click(within(rows).getAllByRole('button')[0]);
-  await vi.waitFor(() => expect(document.querySelector('.world-question.ecran-habituel')).not.toBeNull());
-  expect(scene.world!.question).not.toHaveBeenCalledWith(expect.objectContaining({ place: 'nacelles' }));
 });
 
 test('sur la Carte, la pastille du lieu que désigne la marque porte seule la marque « suggéré » (seconde relecture du lot 2)', async () => {

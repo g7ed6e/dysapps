@@ -58,7 +58,7 @@ const local = (id: string): Vec2 => {
 describe('Les Fumerolles, lieu complet', () => {
   it('leurs trois missions se jouent dans leur scénette, comme à la Montée, au Hameau, aux Radeaux, à la Croisée, aux Instants, à l’Étuve, aux Terrasses, à l’Auberge, au Sémaphore et au Gaillard', () => {
     expect(PLACE.scenes).toEqual([...MISSIONS]);
-    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['auberge', 'croisee', 'donjon', 'etuve', 'fumerolles', 'gaillard', 'hameau', 'instants', 'montee', 'oracle', 'radeaux', 'semaphore', 'terrasses']);
+    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['auberge', 'croisee', 'donjon', 'etuve', 'fumerolles', 'gaillard', 'hameau', 'instants', 'montee', 'nacelles', 'oracle', 'radeaux', 'semaphore', 'terrasses']);
   });
 
   it('se rebâtissent en trois étapes, chacune en deux temps ; la ruine part avec l’étape qui la remplace', () => {

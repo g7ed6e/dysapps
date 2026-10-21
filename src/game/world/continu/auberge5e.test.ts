@@ -11,6 +11,7 @@ import { partiesDe } from '../parts';
 import { plansFor } from '../plans';
 import { AUBERGE, AUBERGE_LAYOUT, AUBERGE_RANKS } from './auberge5e';
 import { CAUSEWAYS_ADDED_5E, FOREST_REWORK_MAX_5E, PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
+import { PERCHOIR_TRIANGLES_MAX } from './perchoir5e';
 import { AUBERGE_SURROUNDINGS } from './aubergeSurroundings';
 import { FOLLOW, followPose, screenOf } from './camera';
 import { posedTraces, traceStagePosed, WHOLE, type PartShape, type Stage } from './construction';
@@ -475,10 +476,10 @@ describe('Le budget du 5e, avec l’Auberge (plafonds du lot 12)', () => {
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
     // Les lieux finis depuis le lot 11 : l'Auberge (lot 12), le Donjon (lot 13a), le Sémaphore (lot 14), le Gaillard
-    // (lot 15) ; et les chaussées du plateau (lot 13a), la forêt retaillée (#490). Leurs plafonds : ./donjon5e.test.ts,
-    // ./semaphore5e.test.ts, ./gaillard5e.test.ts.
+    // (lot 15), les Nacelles (lot 16) ; et les chaussées du plateau (lot 13a), la forêt retaillée (#490). Leurs plafonds : ./donjon5e.test.ts,
+    // ./semaphore5e.test.ts, ./gaillard5e.test.ts, ./nacelles5e.test.ts ; le Perchoir, son plafond propre.
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux', 'croisee', 'instants', 'fumerolles', 'etuve', 'terrasses'].includes(id)).length;
-    expect(triangles).toBeLessThanOrEqual(LOT11_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E + CAUSEWAYS_ADDED_5E + FOREST_REWORK_MAX_5E);
+    expect(triangles).toBeLessThanOrEqual(LOT11_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E + CAUSEWAYS_ADDED_5E + FOREST_REWORK_MAX_5E + PERCHOIR_TRIANGLES_MAX);
     expect(calls).toBeLessThanOrEqual(LOT11_OPEN_5E.calls);
     expect(cost.find((c) => c.poste === 'scénette')!.calls).toBe(2);
   });

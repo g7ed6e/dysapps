@@ -16,6 +16,7 @@ import { BUILT_PLACES_5E, COAST_5E, COLORS_5E, DEPARTURE_5E, LINKS_5E, NEEDLES_5
 import { COLORS_6E } from './plan6e';
 import { ILES } from '../../islands';
 import { MONTEE_HEIGHT } from './montee5e';
+import { PERCHOIR_TRIANGLES_MAX } from './perchoir5e';
 import { HEIGHT_LIGHT_5E, HORIZON_COLOR_5E, LIGHT_5E, SKY_OF, skyColorAt, skyDome } from './sky';
 import { SEA_TEXTURE, WATER_TONES_5E, seaPixels5e, waterTone5e } from './sea';
 import { FOREST_COLORS, buildHeightField5e, channelClearance, groundFar5e, groundOn5e, heightAt5e, landDistance5e, onPlateau, plateauRim5e, plateauShare, tileCounts5e, tileFacets5e, tileFlora5e, tileGround5e } from './terrain5e';
@@ -537,11 +538,11 @@ describe('Le budget du 5e', () => {
     // restauré à la place de sa ruine), 104 706, 13 294 : la réserve passe à 13 200, de la seule hausse. Depuis, elle
     // baisse d'un lieu au plus par lieu fini (`PLACE_TRIANGLES_MAX_5E`), sans se réécrire à chaque lot : deux lots
     // parallèles n'ont plus à se rebaser pour elle ; le Sémaphore (lot 14) en est le premier, le Gaillard (lot 15) le
-    // deuxième. La forêt retaillée (pistes B,
-    // C puis A du 21 octobre 2026, dans le maillage du sol, +5 737 mesurés) la baisse de son plafond,
-    // `FOREST_REWORK_MAX_5E` : 13 200 − 5 800 = 7 400 avant le Sémaphore.
+    // deuxième, les Nacelles (lot 16) le troisième. La forêt retaillée (pistes B, C puis A du 21 octobre 2026, dans le
+    // maillage du sol, +5 737 mesurés) la baisse de son plafond, `FOREST_REWORK_MAX_5E` : 13 200 − 5 800 = 7 400 avant le
+    // Sémaphore. Le Détour du Perchoir (lot 16) s'y ajoute par son plafond propre, `PERCHOIR_TRIANGLES_MAX`.
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux', 'croisee', 'instants', 'fumerolles', 'etuve', 'terrasses', 'auberge', 'donjon', 'oracle'].includes(id)).length;
-    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - RESERVE_LOT13B_5E + FOREST_REWORK_MAX_5E + since * PLACE_TRIANGLES_MAX_5E);
+    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - RESERVE_LOT13B_5E + FOREST_REWORK_MAX_5E + since * PLACE_TRIANGLES_MAX_5E + PERCHOIR_TRIANGLES_MAX);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
     // La Carte dans l'enveloppe (ses plafonds lot par lot : ./hameau5e.test.ts, ./croisee5e.test.ts).
     const map = mapCost5e();
