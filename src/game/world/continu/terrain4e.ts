@@ -20,6 +20,7 @@ import {
   CRIQUE_PAVING,
   CUVETTE_4E,
   DETOUR_SPOTS_4E,
+  EPAVE_4E,
   PATH_EDGES_4E,
   PATH_NODES_4E,
   PLACES_4E,
@@ -30,6 +31,7 @@ import {
   TERRAIN_4E,
   VOLCANO_4E,
   fromPlan4e,
+  inEpaveClearing,
   nearRails4e,
 } from './plan4e';
 import { SHADOW_DIR_4E } from './sky';
@@ -289,6 +291,8 @@ function plantsIn(tx: number, tz: number): readonly Plant[] {
       if (couleeClearance(p) < FLORA_KEEP.cut || ravinClearance(p) < FLORA_KEEP.cut || insidePolygon(p, SUMMIT_4E)) continue;
       if (nearPath(p, FLORA_KEEP.path) || nearRails4e(p, FLORA_KEEP.path) || nearPlace(p) || nearCrique(p)) continue;
       if (SPOTS.some((s) => Math.hypot(p.x - s.x, p.z - s.z) < FLORA_KEEP.spot)) continue;
+      // L'Épave (lot 2) : sa coque, sa cale, Kéo devant elle et sa sente restent libres.
+      if (inEpaveClearing(p)) continue;
       if (Math.hypot(p.x - CUVETTE_4E.center.x, p.z - CUVETTE_4E.center.z) < 14) continue;
       // Le cône nu au-dessus de son pied (`ROCK_FROM`) : aucun buisson ni rocher sur le basalte sombre (directeur
       // artistique, deuxième relecture du lot 1 : les buissons olive y faisaient des taches jusqu'au sommet).
@@ -358,9 +362,22 @@ export function tileCounts4e(field: HeightField, detail: TileDetail): Int32Array
   return out;
 }
 
-/** Ce qui bloque la marche libre dans une tuile du 4e (./freeWalk.ts) : chaque buisson et chaque rocher, un disque. */
+/** La coque de l'Épave (lot 2), qu'on ne traverse pas : trois disques le long de son axe, d'ouest en est. */
+export const EPAVE_HULL_DISKS: readonly { x: number; z: number; r: number }[] = [-1, 0, 1].map((k) => ({
+  x: EPAVE_4E.hull.x + k * (EPAVE_4E.hull.half - 2.3),
+  z: EPAVE_4E.hull.z,
+  r: EPAVE_4E.hull.beam + 0.35,
+}));
+
+/**
+ * Ce qui bloque la marche libre dans une tuile du 4e (./freeWalk.ts) : chaque buisson et chaque rocher, et la coque de
+ * l'Épave ; un disque chacun.
+ */
 export function obstaclesIn4e(tx: number, tz: number): { x: number; z: number; r: number }[] {
-  return plantsIn(tx, tz).map((t) => ({ x: t.x, z: t.z, r: (t.shrub ? 1.6 : 1.3) * t.size }));
+  const out = plantsIn(tx, tz).map((t) => ({ x: t.x, z: t.z, r: (t.shrub ? 1.6 : 1.3) * t.size }));
+  const r = tileRect(tx, tz, TERRAIN_4E);
+  for (const d of EPAVE_HULL_DISKS) if (d.x >= r.minX && d.x < r.maxX && d.z >= r.minZ && d.z < r.maxZ) out.push(d);
+  return out;
 }
 
 // ---------- Le volcan de loin, la lave figée, le panache ----------

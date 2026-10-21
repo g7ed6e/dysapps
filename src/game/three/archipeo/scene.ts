@@ -20,6 +20,7 @@ import { loadedKeo } from '../../world/characters/imported/keo';
 import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
+import { epaveFacets } from '../../world/continu/epave4e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
@@ -1268,6 +1269,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!c) perchoirDrawn.push((c = { found, facets: perchoirFacets(found) }));
     return c.facets;
   };
+  // L'Épave du 4e (lot 2) : de même, sans et avec sa sente, sur le sol du 4e.
+  const epaveDrawn: { found: boolean; facets: Facets }[] = [];
+  const epaveNow = (): Facets => {
+    const found = detoursFound.includes('epave');
+    let c = epaveDrawn.find((k) => k.found === found);
+    if (!c) epaveDrawn.push((c = { found, facets: epaveFacets(found, ground) }));
+    return c.facets;
+  };
   // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son temps (la page le donne), le modèle de sa forme chargé à la
   // demande (sans lui, le ber seul), ses parties montrées réunies aux lieux, son obstacle (le banc du large, le mur de
   // nuages) avec eux. Le temps qui arrive descend à part (`nefDrop`, dans `nefMesh`) ; au départ (`nefTrip`), la Nef et
@@ -1905,6 +1914,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // la Faille (lot 11), la fente, son arbre, son pont de racines, sa lanterne et sa vapeur ; et la sente de chacun une
       // fois trouvé, dans le monde comme sur la Carte, sans appel de plus.
       if (fifth) rest.push(creuxNow(), detourFacetsNow(), failleNow(), perchoirNow());
+      // Le Détour du 4e (lot 2) : l'Épave, sa coque sur sa cale, sa lanterne, et sa sente une fois trouvée.
+      else rest.push(epaveNow());
       // `reaches` en dernier : `reachFrom` compte sur eux pour les rayons (`solid`), `mergeFacets` garde l'ordre (nacelles5e.test.ts).
       rest.push(...reaches);
       const placed = mergeFacets(rest);

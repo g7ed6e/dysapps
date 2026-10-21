@@ -480,7 +480,7 @@ export const nearRails4e = (p: Vec2, reach: number): boolean =>
 
 /**
  * La place des Détours du 4e (fiche, § 5), réservée dès le plan : l'Épave (Fabriques), le Recoin (Bastion), le Replat
- * (Coteaux), la Dalle (Épaule). Ils se construisent avec leur lot ; rien ne s'y dessine encore.
+ * (Coteaux), la Dalle (Épaule). Ils se construisent avec leur lot (lot 2 : l'Épave, `EPAVE_4E`).
  */
 export const DETOUR_SPOTS_4E = {
   epave: fromPlan4e([1060, 1060]),
@@ -488,6 +488,28 @@ export const DETOUR_SPOTS_4E = {
   replat: fromPlan4e([300, 470]),
   dalle: fromPlan4e([1075, 245]),
 } as const;
+
+/**
+ * Le Détour de l'Épave (lot 2 ; intention du directeur artistique du 21 octobre 2026, « Le Détour de l'Épave ») : sa
+ * place sur la grève sud, à l'ouest du quai du Rafiot, que lit aussi la végétation (elle s'en écarte, ./terrain4e.ts).
+ * `at` : là où Kéo s'arrête, sur le sable sec, au nord de la coque, face à la mer (la place réservée) ; `hull` : le
+ * milieu de la coque, son axe d'ouest en est, sa demi-longueur et sa demi-largeur ; `senteFrom` : le départ de sa sente,
+ * sur le chemin du port le plus proche ; `keep` : ce que la végétation laisse libre (autour de la coque, de Kéo, le long
+ * de la sente).
+ */
+export const EPAVE_4E = {
+  at: DETOUR_SPOTS_4E.epave,
+  hull: { x: 9.7, z: 131.4, half: 6.4, beam: 1.75 },
+  senteFrom: { x: 89.32, z: 126.82 },
+  keep: { hull: 9.5, at: 5, sente: 2.6 },
+} as const;
+
+/** Ce point du monde est-il dans la place de l'Épave (sa coque et sa cale, Kéo, sa sente) ? */
+export function inEpaveClearing(p: Vec2): boolean {
+  const { hull, at, senteFrom, keep } = EPAVE_4E;
+  if (Math.hypot(p.x - hull.x, p.z - hull.z) < keep.hull || Math.hypot(p.x - at.x, p.z - at.z) < keep.at) return true;
+  return distanceToPolyline(p, [senteFrom, at]) < keep.sente;
+}
 
 /** La place réservée des deux grands projets (GD-10) : le portique des docks, la tour des signaux (plan, en pointillé). */
 export const RESERVED_4E = {

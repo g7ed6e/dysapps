@@ -39,6 +39,7 @@ import { veilFacets } from './veil';
 import { groupsTriangles, wildlifeTriangles } from './wildlife';
 import { allCritterForms, wildlifeGroups5e } from './wildlife5e';
 import { hutteFacets } from './hutte5e';
+import { epaveFacets } from './epave4e';
 import { CRIQUE_SITE, NEF_4E_MODEL_TRIANGLES, criqueDecorFacets } from './crique4e';
 import { NETWORK_4E, pathRibbons4e } from './paths4e';
 import { TERRAIN_4E } from './plan4e';
@@ -683,7 +684,7 @@ function scenetteCost4e(): { triangles: number; calls: number } {
  * brume des terres fermées (au départ, les trois), Kéo, l'aéronef ; puis, selon `view` : le monde (`monde`, la pose : un
  * pont qui se relève, une partie qui descend ou l'allumage), la scénette ouverte (`scenette`, la question et le décor de
  * près de la Forge, sa chaudronnière en modèle) ou le départ (`depart`, la Nef et l'obstacle dans deux maillages à part).
- * Ni Détour ni faune encore.
+ * L'Épave (lot 2, ./epave4e.ts), le premier Détour du 4e, et sa sente tracée, dans le maillage des lieux. Pas de faune encore.
  */
 export function openWorldCost4e(view: 'monde' | 'scenette' | 'depart' = 'monde'): OpenWorldCost4e[] {
   const field = buildHeightField4e();
@@ -697,6 +698,7 @@ export function openWorldCost4e(view: 'monde' | 'scenette' | 'depart' = 'monde')
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
     { poste: 'lieux', ...places, triangles: places.triangles + reachCost4e() },
     { poste: 'brume', triangles: veilFacets(LINKED_LANDS_4E).triangles, calls: 1 },
+    { poste: 'détours', triangles: epaveFacets(true, (x, z) => groundOn4e(field, x, z)).triangles, calls: 0 },
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost4e() },
     ...(view === 'depart'
@@ -712,7 +714,8 @@ export function openWorldCost4e(view: 'monde' | 'scenette' | 'depart' = 'monde')
 
 /**
  * La Carte du 4e, en un seul plan : le ciel, toute l'île de loin, la mer, les chemins, les lieux (deux appels, le pire),
- * le trait double des ponts, les hachures du sommet et le dessin des coupures (dans le maillage des lieux), la brume des terres fermées, Kéo.
+ * le trait double des ponts, les hachures du sommet et le dessin des coupures (dans le maillage des lieux), l'Épave et sa
+ * sente, la brume des terres fermées, Kéo.
  */
 export function mapCost4e(): { triangles: number; calls: number } {
   const field = buildHeightField4e();
@@ -721,8 +724,9 @@ export function mapCost4e(): { triangles: number; calls: number } {
   const places = placesCost4e();
   const marks = LINKED_LANDS_4E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + mapOverlay4e().triangles;
   const veil = veilFacets(LINKED_LANDS_4E).triangles;
+  const epave = epaveFacets(true, (x, z) => groundOn4e(field, x, z)).triangles;
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + marks + veil + KEO.triangles + nefCost4e().triangles,
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + epave + marks + veil + KEO.triangles + nefCost4e().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
   };
 }
