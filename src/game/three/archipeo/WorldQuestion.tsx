@@ -1011,7 +1011,9 @@ export function PlaceText({ text }: { text: string }) {
       {text.split(FRACTION_STUCK).map((part, i) =>
         i % 2 ? (
           <span key={i} className="world-nobreak">
-            <RichText text={part} />
+            {/* Le point final contre le trou, sans l'espace de la source (« une …. ») : avec elle, au grand texte, un blanc
+                entier les séparait (référent dys et consultant UX UI, relecture des restes du 5e). */}
+            <RichText text={part.replace(/…[ \u00a0\u202f]+(?=[.,]$)/u, '…')} />
           </span>
         ) : (
           part && <RichText key={i} text={part} />

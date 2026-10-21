@@ -1030,6 +1030,9 @@
   align-items: center;
   gap: 4px;
   pointer-events: none;
+  /* Par-dessus les noms qu'il peut couvrir (le nom pâle d'un lieu fermé, le bord du nom de son lieu) : entier, jamais
+     dessous (relecture des restes du 5e). */
+  z-index: 1;
 }
 .open-world-map-keo-disc {
   display: inline-flex;
@@ -1199,14 +1202,15 @@
     align-items: flex-start;
   }
 }
-/* Le rôle, la phrase d'accueil, la phrase du lieu et le récit ne se coupent jamais au milieu d'un mot (restes du 5e,
-   téléphone au plus grand texte : un mot coupé ne se lit plus d'un trait) ; au plus grand texte, le rôle à la taille du
-   texte, sans le cran d'un titre, pour que « riziculteur » tienne sur la ligne. */
+/* Le rôle, la phrase d'accueil, la phrase du lieu et le récit ne se coupent pas au milieu d'un mot (restes du 5e,
+   téléphone au plus grand texte : un mot coupé ne se lit plus d'un trait) ; seul un mot plus large que toute la colonne
+   se coupe, en dernier recours, plutôt que d'être rogné par le panneau (référent dys, relecture des restes du 5e). Au
+   plus grand texte, le rôle à la taille du texte, sans le cran d'un titre, pour que « riziculteur » tienne sur la ligne. */
 .world-scenette-role,
 .world-scenette-greeting,
 .world-question .in-world.scenette .question-prompt,
 .world-question .world-document.recit {
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   hyphens: none;
 }
 :root[data-texte="grand"] .world-scenette-role {
@@ -1227,7 +1231,7 @@
   :root[data-texte="grand"] .world-question .quiz.in-world > .world-question-offer {
     flex-wrap: nowrap;
     font-size: max(18px, 1rem);
-    overflow-wrap: normal;
+    overflow-wrap: break-word;
   }
 }
 /* Sur tablette, le panneau prend la hauteur de son texte, en haut ; « Valider » en bas à droite, à 3 % du bord, sous

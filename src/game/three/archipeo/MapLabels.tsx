@@ -225,12 +225,14 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       const side = kind === 'open' && (s.side === 'left' || s.side === 'right') ? s.side : undefined;
       // Au 4e, le lieu suggéré passe le tout premier (`snug`).
       const next = snugRef.current.on && kind === 'open' && s.id === snugRef.current.next;
-      const item: MapLabel = { id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port' || next, ...(below ? { below } : {}), ...(above ? { above } : {}), ...(side ? { side } : {}), ...(size.narrow ? { narrow: size.narrow } : {}) };
+      // Un lieu d'une terre fermée : Kéo peut couvrir son nom pâle, jamais celui d'un lieu ouvert.
+      const pale = kind === 'open' && s.id !== 'port' && !openPlaces.includes(s.id as PlaceId);
+      const item: MapLabel = { id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port' || next, ...(pale ? { pale: true as const } : {}), ...(below ? { below } : {}), ...(above ? { above } : {}), ...(side ? { side } : {}), ...(size.narrow ? { narrow: size.narrow } : {}) };
       if (next) items.unshift(item);
       else items.push(item);
     }
     return items;
-  }, []);
+  }, [openPlaces]);
   // Pour une vue essayée : ce qui y manque (`missingOf`), un lieu hors de l'écran compté comme sans nom.
   const crowded = useCallback((spots: readonly MapSpotOnScreen[]) => {
     const items = itemsOf(spots);

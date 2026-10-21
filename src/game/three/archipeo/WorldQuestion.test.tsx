@@ -64,7 +64,8 @@ describe('La phrase d’un lieu', () => {
   it('garde le point final avec le trou, sans toucher au trou d’une fraction', () => {
     const { container } = render(<PlaceText text="Une expédition s’appelle une … ." />);
     const glued = [...container.querySelectorAll('.world-nobreak')];
-    expect(glued.map((n) => n.textContent?.replace(/\s/g, ''))).toEqual(['….']);
+    // Collé vraiment : aucune espace entre le trou et le point.
+    expect(glued.map((n) => n.textContent)).toEqual(['….']);
     const frac = render(<PlaceText text="Complète …/4 ." />).container;
     expect(frac.querySelector('.world-nobreak')).toBeNull();
   });

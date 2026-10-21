@@ -272,13 +272,22 @@ test('la Nef prête porte la suggestion, avant une commande prête (GD-21, « Pr
   expect(screen.queryByText('Livre 3 blocs de terre au Phare.')).toBeNull();
   expect(screen.queryByText(/Aucune mission/)).toBeNull();
   expect(document.querySelector('.open-world-sign.suggested')).toBeNull();
+  // Kéo au quai, devant la Nef : la marque s'y retire, comme celle d'un lieu (directeur artistique, relecture des restes
+  // du 5e) ; Kéo parti marcher ailleurs, elle revient, sans les points de la distance (consultant d'Archipéo).
+  expect(document.querySelector('.open-world-mark')).toBeNull();
+  act(() => {
+    scene.options!.onDepart();
+    scene.options!.onArrive(null);
+  });
   expect(document.querySelector('.open-world-mark-word')).toHaveTextContent('La Nef');
+  expect(document.querySelector('.open-world-mark .open-world-distance')).toBeNull();
   // Comme la scène : Kéo déposé au quai, qui ouvre d'abord la fiche du lieu de départ ; celle de la Nef la remplace.
   vi.mocked(w.goToPort).mockImplementation((spot) => scene.options!.onPort(spot));
   await userEvent.setup().click(screen.getByRole('button', { name: 'Y aller : La Nef' }));
   expect(w.goToPort).toHaveBeenLastCalledWith('quai');
   const sheet = await screen.findByRole('dialog', { name: 'La Nef' });
   expect(within(sheet).getByRole('button', { name: /^Partir/ })).toBeInTheDocument();
+  expect(document.querySelector('.open-world-mark')).toBeNull();
 });
 
 test('la Nef pas encore prête ne porte pas la marque', async () => {

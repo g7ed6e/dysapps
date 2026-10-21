@@ -240,6 +240,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const [start] = useState<PlaceId | PortSpot>(() => arrival.spot ?? lieuParam ?? fromIsland ?? 'quai');
   // Le panneau ouvert de l'Escale : sa fiche, une porte, la galerie, le lieu d'assemblage, la Nef ; un à la fois.
   const [panel, setPanel] = useState<PortPanel | 'nef' | null>(null);
+  // Kéo au quai de l'Escale, là où la Nef l'attend : la marque de la Nef prête s'y retire, comme celle d'un lieu.
+  const [atQuai, setAtQuai] = useState(start === 'quai');
   // La Nef part (GD-21) : la scène seule, comme pendant une question, jusqu'à l'arrivée en 5e.
   const [departing, setDeparting] = useState(false);
   // Le panneau ouvert d'un lieu (GD-20, point 8) : sa liste de missions, et la ligne qui y prend le focus (celle dont on
@@ -413,11 +415,13 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       onDepart: () => {
         setWalking(true);
         setHere(null);
+        setAtQuai(false);
         setPanel(null);
         setLieu(null);
         setCommandsOpen(false);
       },
       onPort: (spot) => {
+        if (spot !== 'fiche') setAtQuai(spot === 'quai');
         setLieu(null);
         setPanel(spot === 'quai' ? 'fiche' : spot);
       },
@@ -429,6 +433,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       onArrive: (placeId) => {
         setWalking(false);
         setHere(placeId);
+        if (placeId) setAtQuai(false);
         if (!placeId) return;
         if (!named.has(placeId) && arrivalVoice.current(placeById(placeId).name)) named.add(placeId);
         setPanel(null);
@@ -984,10 +989,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       ? frenchTypography(suggestedCmd.text.replace(/\.$/, '')) : next ? `${next.place.name}, ${missionTitle(next.place.island, next.mission)}` : '';
   // La marque dit aussi la distance, en mots, lue à la demande (jamais à chaque image).
   const markLabel = nefFirst || nextPlace ? `${label}, ${DISTANCE_WORDS[far]}` : '';
-  // Le mot de la marque : la Nef prête, sinon le lieu suggéré (la marque se retire une fois Kéo arrivé au lieu suggéré).
-  const markWord = nefFirst ? NEF_TITLE : nextPlace && nextPlace.id !== here ? nextPlace.name : null;
-  // Sur un Détour, « Y aller » repart vers le lieu de la marque : il porte sa flèche, sans mot de plus (consultant UX UI,
-  // relecture du lot 16 du 5e, point 4) ; ailleurs, les pas.
+  // Le mot de la marque : la Nef prête, sinon le lieu suggéré (la marque se retire une fois Kéo arrivé au lieu suggéré,
+  // ou au quai devant la Nef : directeur artistique, relecture des restes du 5e).
+  const markWord = nefFirst ? (atQuai ? null : NEF_TITLE) : nextPlace && nextPlace.id !== here ? nextPlace.name : null;
+  // Sur un Détour, « Y aller » repart vers le lieu de la marque : il porte l'icône de sa flèche, droite (elle ne tourne
+  // pas vers le lieu comme celle de la marque), sans mot de plus (consultant UX UI, relecture du lot 16 du 5e, point 4) ;
+  // ailleurs, les pas.
   const goIcon = detourHere ? 'nord' : 'footprints';
   // « Livrer », « Donner » ou « Apporter » dans la bulle : le geste suggéré est celui de l'habitant où se tient Kéo.
   const deliverHere = Boolean(suggestedCmd && here === suggestedCmd.place);
@@ -1013,12 +1020,16 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                 <span ref={arrowRef} className="open-world-arrow">
                   <Icon name="nord" />
                 </span>
-                {/* La distance en signe, jamais en texte (consultant UX UI) : un, deux ou trois points pleins, de près à loin. */}
-                <span className="open-world-distance">
-                  <i />
-                  <i />
-                  <i />
-                </span>
+                {/* La distance en signe, jamais en texte (consultant UX UI) : un, deux ou trois points pleins, de près à loin. Pas
+                    sur la Nef prête : trois points dont un vide s'y lisaient comme une étape qui manque, sous « Prête »
+                    (consultant d'Archipéo, relecture des restes du 5e) ; la voix dit toujours la distance. */}
+                {!nefFirst && (
+                  <span className="open-world-distance">
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                )}
               </span>
               {/* Le nom du lieu seul : aucune icône de lieu n'existe encore (le sapin de l'île d'aujourd'hui ne dit pas le Phare). */}
               <span className="open-world-mark-word">{markWord}</span>
@@ -1029,7 +1040,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           <HabitantSigns signs={signs} hidden={playing || mapOpen || sheetOpen} onPick={(place) => world.current?.goTo(place)} root={signsRef} />
           <div ref={locksRef} className="open-world-locks" hidden={playing || mapOpen || sheetOpen}>
             {lands.closed.map((land) => (
-              <span key={land} className="open-world-lock" data-terre={land} role="img" aria-label={closedLandLabel(land)} hidden>
+              <span key={land} className="open-world-lock" data-terre={land} role="img" aria-label={closedLandLabel(land, afterOf(land))} hidden>
                 <Icon name="lock" />
               </span>
             ))}
