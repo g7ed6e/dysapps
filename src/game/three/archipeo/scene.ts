@@ -17,7 +17,7 @@ import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
+import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
@@ -219,6 +219,11 @@ export interface OpenWorld {
    * fiche), sans bouger (un décalage de l'image).
    */
   frame(free: { left: number; top: number; width: number; height: number } | null, place?: PlaceId | 'nef'): void;
+  /**
+   * La hauteur, en pixels depuis le bas de la vue, de la rangée du bas (« Y aller ») et de son écart : au 4e, les pieds de
+   * Kéo restent au-dessus (`keepFeetAbove`) ; ailleurs, sans effet.
+   */
+  footRoom(px: number): void;
   /**
    * La scénette d'assemblage, au retour d'une question réussie : les pièces de l'établi se joignent en un bloc, que la
    * grue pose sur le râtelier ; un toucher la passe, d'un coup avec « Réduire les animations ». `onAssembled` dit sa fin.
@@ -1600,11 +1605,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   // La caméra posée à la main (`view`, les captures seulement).
   let manualView: CameraPose | null = null;
+  // Au 4e, la place de la rangée du bas que les pieds de Kéo ne passent jamais (`footRoom`), en pixels ; 0 ailleurs.
+  let feetRoom = 0;
+  const guardFeet = level === '4e';
   const follow = () => {
     if (manualView) return applyPose(manualView);
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : detourRise(detourView), fifth ? hold : undefined, arrivalBack > 0 ? arrivalShape : detourShape);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
+    if (guardFeet) keepFeetAbove(pose, keoFeet, feetRoom, viewH);
     applyPose(pose);
   };
   follow();
@@ -1671,6 +1680,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : detourRise(detourView), undefined, arrivalBack > 0 ? arrivalShape : detourShape);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
+    if (guardFeet) keepFeetAbove(pose, keoFeet, feetRoom, viewH);
     const subject = framedNef ? nefFramed : framed && subjectOf(framed);
     const p = subject && screenOf(pose, subject, viewW, viewH);
     setShift(p ? { x: Math.round(p.x - (frameRect.left + frameRect.width / 2)), y: Math.round(p.y - (frameRect.top + frameRect.height / 2)) } : { x: 0, y: 0 });
@@ -4041,6 +4051,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       mapDirty = true;
     },
     frame: setFrame,
+    footRoom: (px) => {
+      if (!guardFeet || px === feetRoom) return;
+      feetRoom = px;
+      // Comme `frame` : pendant une question, une remise ou sur la Carte, la caméra garde son cadrage.
+      if (asked || remise || mapView) return;
+      follow();
+    },
     assemble: startAssembly,
     setMark: (place) => {
       if (place === markPlace) return;

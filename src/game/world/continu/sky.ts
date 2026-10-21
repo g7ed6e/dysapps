@@ -173,7 +173,7 @@ export const HEIGHT_LIGHT_4E: HeightLight = { low: -60, high: -50, sunLow: 1, ti
  * Le brouillard du lointain du 4e (retouche 1 du lot 1, directeur artistique : « une fin de journée claire, sans brume,
  * l'air net ») : il commence plus loin qu'au 6e et au 5e (`WORLD_FOG`, 40 et 115) et ne couvre tout qu'à 240 unités ;
  * les lieux à 150 unités se lisent encore, la Forge se voit du quai de la Crique (à 185 unités), la terre rouge se
- * détache du ciel. Les tuiles de loin vont jusque-là (environ 4 000 triangles de plus qu'à 115).
+ * détache du ciel. Les tuiles de loin vont jusque-là : le sol passe de 11 864 à 19 033 triangles (+7 169), que les rails en bandes rattrapent en partie (−3 852).
  */
 export const FOG_4E = { near: 90, far: 240 } as const;
 

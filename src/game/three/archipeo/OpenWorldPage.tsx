@@ -304,6 +304,10 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // Les dimensions que la marque lit à chaque image, relues seulement quand la page, la marque ou un bouton change de
   // taille (jamais une mise en page forcée par image).
   const [layout] = useState(() => ({ width: 0, height: 0, markW: 0, markH: 0, obstacles: [] as Obstacle[], mark: { left: 0, top: 0, width: 0, height: 0, shown: false } }));
+  // La dernière place demandée par la scène : la marque s'y repose quand sa taille change (hors champ, sa flèche et ses
+  // points l'élargissent) sans attendre l'image suivante, qui ne vient pas si la scène est immobile (deuxième relecture
+  // du lot 1 du 4e, consultant UX UI : « La Forg », coupée au bord droit).
+  const lastMark = useRef<MarkOnScreen | null>(null);
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
@@ -326,8 +330,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       if (stage.style.getPropertyValue('--open-world-carte-dessus') !== carteTop) stage.style.setProperty('--open-world-carte-dessus', carteTop);
       layout.width = s.width;
       layout.height = s.height;
-      layout.markW = markRef.current?.offsetWidth ?? 0;
-      layout.markH = markRef.current?.offsetHeight ?? 0;
+      const markW = markRef.current?.offsetWidth ?? 0;
+      const markH = markRef.current?.offsetHeight ?? 0;
+      const resized = markW !== layout.markW || markH !== layout.markH;
+      layout.markW = markW;
+      layout.markH = markH;
       // La colonne des accès directs d'abord : une zone réservée du bord gauche jusqu'à elle et un peu dessous, d'où la
       // marque ne sort que par le bas (consultant UX UI : 72 px depuis le bord, jusqu'à 184 + 16 px depuis le haut).
       const column = stage.querySelector<HTMLElement>('.world-shortcuts')?.getBoundingClientRect();
@@ -348,14 +355,21 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           return { left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height };
         }),
       ];
+      if (resized && lastMark.current) placeMark(markRef.current, arrowRef.current, lastMark.current, layout);
+      // La place de la rangée du bas, que les pieds de Kéo ne passent pas (au 4e ; la scène l'ignore ailleurs) : depuis le
+      // bas de la scène jusqu'au haut de « Y aller », avec son écart.
+      if (goBox && goBox.height > 0) world.current?.footRoom(Math.round(s.bottom - goBox.top + GO_CLEAR));
     };
     const observer = new ResizeObserver(measure);
     observer.observe(stage);
     for (const el of stage.querySelectorAll('.open-world-mark, .world-settings, .open-world-camera, .open-world-go, .open-world-bar, .open-world-said')) observer.observe(el);
     measure();
     return () => observer.disconnect();
-    // La marque et « Y aller » changent d'élément avec la suggestion et la marche : on les observe de nouveau.
-  }, [layout, next, suggestedId, walking, asking, remise, sheetOpen]);
+    // La marque et « Y aller » changent d'élément avec la suggestion et la marche : on les observe de nouveau ; la scène
+    // prête (`ready`) reçoit la place de la rangée du bas ; la marque revient, un autre élément, au retour de la Carte
+    // (`mapOpen`) ou quand Kéo quitte le lieu suggéré (`here`) : sans quoi sa largeur restait l'ancienne et la marque
+    // passait sous le bord droit (deuxième relecture du lot 1 du 4e, consultant UX UI : « La Forg »).
+  }, [layout, next, suggestedId, walking, asking, remise, sheetOpen, ready, mapOpen, here]);
 
   useEffect(() => {
     const el = host.current;
@@ -417,6 +431,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         setPanel('nef');
       },
       onMark: (m) => {
+        lastMark.current = m;
         placeMark(markRef.current, arrowRef.current, m, layout);
         if (m && m.far !== farRef.current) {
           farRef.current = m.far;
@@ -991,7 +1006,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           </div>
           {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
           {mapOpen && !asking && (
-            <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nextPlace?.id ?? null} portName={departNames?.nom} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} />
+            <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nextPlace?.id ?? null} portName={departNames?.nom} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} snug={level === '4e'} />
           )}
           {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
               le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à

@@ -187,7 +187,8 @@ export interface MapLabel {
   h: number;
   /**
    * Posé avant les autres lieux ouverts (l'Escale, le lieu de départ, GD-20, lot 2 : elle garde sa pastille entière, les
-   * autres se serrent d'abord).
+   * autres se serrent d'abord ; au 4e, le lieu suggéré aussi, posé le tout premier, contre son point : consultant UX UI,
+   * deuxième relecture du lot 1).
    */
   first?: boolean;
   /**
@@ -281,6 +282,24 @@ const SHIFTS = 3;
  * leur lieu) ; il prend sa forme serrée, ou se tait pour un lieu fermé.
  */
 const NEAR = { step: 16, reach: 80 } as const;
+
+/**
+ * Au 4e, l'écart des étiquettes aux bords de l'écran (consultant UX UI, deuxième relecture du lot 1 : au plus grand
+ * texte, « Les Roches » et « La Veillée » touchaient le bord gauche).
+ */
+export const MAP_EDGE_4E = 16;
+
+/** Au 4e, un nom de lieu ouvert plus loin que tant de pixels de son point y est relié par un trait fin (`mapLeader`). */
+export const MAP_LEAD_FROM = 24;
+
+/**
+ * Le trait fin d'un nom loin de son lieu (au 4e) : du point du lieu au plus proche point de la pastille, ou rien si elle
+ * en est à `MAP_LEAD_FROM` au plus.
+ */
+export function mapLeader(p: { x: number; y: number }, r: Rect): { x1: number; y1: number; x2: number; y2: number } | null {
+  if (gapTo(p, r) <= MAP_LEAD_FROM) return null;
+  return { x1: p.x, y1: p.y, x2: Math.min(Math.max(p.x, r.left), r.right), y2: Math.min(Math.max(p.y, r.top), r.bottom) };
+}
 
 /** L'écart entre le nom d'un lieu fermé posé au-dessus de son cadenas et ce cadenas, en pixels. */
 const RISE_GAP = 4;
@@ -393,12 +412,13 @@ export function layoutMapLabels(
   obstacles: readonly Rect[] = [],
   screen = { width: Infinity, height: Infinity },
   repair = true,
+  edge = 0,
 ): MapLabelSpot[] {
   const run = (reserved: ReadonlyMap<string, ClosedPlace>) => {
-    const first = attemptLayout(labels, obstacles, screen, false, reserved);
+    const first = attemptLayout(labels, obstacles, screen, false, reserved, edge);
     // Trop serré (Kéo devant son lieu, au plus grand texte) : Kéo garde sa pastille seule, sans « Toi », plutôt qu'un nom
     // de lieu ne passe sur une autre étiquette.
-    return first.crowded ? attemptLayout(labels, obstacles, screen, true, reserved) : first;
+    return first.crowded ? attemptLayout(labels, obstacles, screen, true, reserved, edge) : first;
   };
   let best = run(new Map());
   if (!repair) return best.spots;
@@ -429,9 +449,11 @@ function attemptLayout(
   screen: { width: number; height: number },
   compactKeo: boolean,
   reserved: ReadonlyMap<string, ClosedPlace>,
+  border = 0,
 ) {
   let crowded = false;
-  const onScreen = (r: Rect) => r.left >= 0 && r.top >= 0 && r.right <= screen.width && r.bottom <= screen.height;
+  // À `border` pixels des bords au moins (au 4e, `MAP_EDGE_4E` ; 0 ailleurs, l'écran entier).
+  const onScreen = (r: Rect) => r.left >= border && r.top >= border && r.right <= screen.width - border && r.bottom <= screen.height - border;
   // Les boutons de la page (« Retour », les réglages) d'abord : aucune étiquette ne passe dessous.
   // Les boutons n'ont pas d'identifiant (`null`) : une étiquette ne s'en exclut jamais (avant, l'identifiant vide des
   // boutons était aussi celui de « personne », et les étiquettes passaient sous la colonne).
@@ -496,8 +518,10 @@ function attemptLayout(
         const down = rect(below.left, below.top + dy, w, h);
         list.push(...(l.below ? [down, up] : [up, down]));
       }
-      list.push(...sides);
-      if (l.side) list.unshift(sides[l.side === 'right' ? 0 : 1]);
+      // Le côté du plan validé d'abord (au 4e), essayé une seule fois : retiré des côtés de la fin.
+      const own = l.side ? sides[l.side === 'right' ? 0 : 1] : undefined;
+      if (own) list.unshift(own);
+      list.push(...sides.filter((c) => c !== own));
       return list;
     };
     const full = places(l.w, l.h);
@@ -558,8 +582,9 @@ function attemptLayout(
     const rises: ClosedPlace[] = [];
     forms.forEach(({ w, h }, form) => {
       const left = l.x - w / 2;
-      const over = left + w - (screen.width - MAP_LABEL_GAP);
-      const under = MAP_LABEL_GAP - left;
+      const margin = Math.max(MAP_LABEL_GAP, border);
+      const over = left + w - (screen.width - margin);
+      const under = margin - left;
       const edge = under > 0 ? under : over > 0 ? -over : 0;
       const shifts = [edge];
       for (let d = NEAR.step; d <= w; d += NEAR.step) shifts.push(edge - d, edge + d);

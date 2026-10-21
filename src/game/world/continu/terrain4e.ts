@@ -164,7 +164,7 @@ function northEdge(x: number): number {
 
 /**
  * La couleur d'un sol à plat en (x, z), à la hauteur `h` : le sable au bord de l'eau ; la croûte dans la coulée ; le fond
- * sec du ravin ; la roche brune du volcan (au-dessus de `ROCK_FROM` de son cône) ; l'Épaule, de roche plus claire ; les
+ * sec du ravin ; le basalte chaud du volcan (au-dessus de `ROCK_FROM` de son cône) ; l'Épaule, de roche plus claire ; les
  * Coteaux, verts brûlés ; la terre rouge partout ailleurs, en taches au soleil.
  */
 function flat4e(x: number, z: number, h: number): number {
@@ -290,6 +290,9 @@ function plantsIn(tx: number, tz: number): readonly Plant[] {
       if (nearPath(p, FLORA_KEEP.path) || nearRails4e(p, FLORA_KEEP.path) || nearPlace(p) || nearCrique(p)) continue;
       if (SPOTS.some((s) => Math.hypot(p.x - s.x, p.z - s.z) < FLORA_KEEP.spot)) continue;
       if (Math.hypot(p.x - CUVETTE_4E.center.x, p.z - CUVETTE_4E.center.z) < 14) continue;
+      // Le cône nu au-dessus de son pied (`ROCK_FROM`) : aucun buisson ni rocher sur le basalte sombre (directeur
+      // artistique, deuxième relecture du lot 1 : les buissons olive y faisaient des taches jusqu'au sommet).
+      if (volcanoHeight(p) > ROCK_FROM) continue;
       out.push({ x: p.x, z: p.z, y: heightAt4e(p), size: 0.7 + 0.5 * hash2(i + 7, j + 13), yaw: 6.283 * hash2(i + 31, j + 17), shrub: coteaux });
     }
   plantsOf.set(key, out);

@@ -880,6 +880,18 @@
 .open-world-map-places:not([data-pret='oui']) {
   visibility: hidden;
 }
+/* Au 4e, le trait fin d'un nom de lieu loin de son point (MapLabels.tsx, `mapLeader`), sous les étiquettes. */
+.open-world-map-leads {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  stroke: var(--text);
+  stroke-width: 2px;
+  stroke-linecap: round;
+}
 .open-world-map-place,
 .open-world-map-closed,
 .open-world-map-keo {

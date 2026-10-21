@@ -6,6 +6,7 @@ import { LINK_PRICE, islandsOf } from '../archipelago';
 import { OPEN_WORLD_BUDGETS, mapCost4e, openWorldCost4e } from './budget';
 import { BRIDGE, bridgeSite } from './bridges';
 import { CRIQUE_SITE, NEF_4E, criqueDecorFacets, nef4eFlight } from './crique4e';
+import { followPose, keepFeetAbove, screenOf } from './camera';
 import { distance, distanceToPolyline, insidePolygon, linearRgb, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
 import { levelWorld } from './levelWorld';
@@ -29,7 +30,7 @@ const isPassage = (a: string, b: string) => Object.values(LINKS_4E).some(({ brid
 const luminance = ([r, g, b]: readonly number[]) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
 const NOT_BLACK = 0.03;
 
-/** Le plafond du lot 1 du 4e (mesuré le 21 octobre 2026, retouche 1 : 60 105 triangles et 14 appels dans le monde, 58 983 et 15 au départ, 56 960 et 12 sur la Carte), avec sa marge. */
+/** Le plafond du lot 1 du 4e (mesuré le 21 octobre 2026, retouche 2 : 59 624 triangles et 14 appels dans le monde, 58 502 et 15 au départ, 56 570 et 12 sur la Carte), avec sa marge. */
 const LOT1_CEILING = { triangles: 64_000, calls: 16 } as const;
 
 /** Les couleurs d'un maillage. */
@@ -230,5 +231,21 @@ describe('Le budget du 4e', () => {
       expect(cost.triangles).toBeLessThanOrEqual(LOT1_CEILING.triangles);
       expect(cost.calls).toBeLessThanOrEqual(LOT1_CEILING.calls);
     }
+  });
+});
+
+describe('La caméra du 4e et « Y aller » (deuxième relecture du lot 1, consultant UX UI)', () => {
+  it('les pieds de Kéo restent au-dessus de la rangée du bas, quelle que soit sa hauteur', () => {
+    const feet = { x: 2, y: heightAt4e({ x: 2, z: -36 }), z: -36 };
+    for (const room of [96, 130, 200]) {
+      const pose = followPose(feet, 0, undefined, 0.4);
+      keepFeetAbove(pose, feet, room, 860);
+      expect(screenOf(pose, feet, 1280, 860).y).toBeLessThanOrEqual(860 - room + 1e-6);
+    }
+    // Déjà au-dessus : rien ne bouge.
+    const pose = followPose(feet, 0, undefined, 0.4);
+    const target = { ...pose.target };
+    keepFeetAbove(pose, feet, 20, 860);
+    expect(pose.target).toEqual(target);
   });
 });
