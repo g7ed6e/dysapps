@@ -88,10 +88,10 @@ export function loadKeo(archipel: ArchipelagoId): Promise<void> {
 }
 
 /**
- * L'adresse du modèle de chaque habitant des scénettes du monde ouvert (« 6e-habitant-<lieu> », « 5e-habitant-<lieu> »),
- * texturé, déjà compacté par sa chaîne : le build le publie tel quel (scripts/rendu/compacterGlb.mjs).
+ * L'adresse du modèle de chaque habitant des scénettes du monde ouvert (« 6e-habitant-<lieu> », « 5e-habitant-<lieu> »,
+ * « 4e-habitant-<lieu> »), texturé, déjà compacté par sa chaîne : le build le publie tel quel (scripts/rendu/compacterGlb.mjs).
  */
-const HABITANTS = import.meta.glob('../../docs/univers/archipeo/personnages/modeles/[56]e-habitant-*/habitant.glb', {
+const HABITANTS = import.meta.glob('../../docs/univers/archipeo/personnages/modeles/[4-6]e-habitant-*/habitant.glb', {
   query: '?url',
   import: 'default',
   eager: true,
@@ -101,7 +101,7 @@ const HABITANTS = import.meta.glob('../../docs/univers/archipeo/personnages/mode
 const habitantLoads = new Map<string, { p: Promise<ModeleTexture | null>; manque?: number }>();
 
 /**
- * Charge le modèle d'un habitant des scénettes (son dossier, « 6e-habitant-<lieu> » ou « 5e-habitant-<lieu> ») : lu, ou rien. Ne rejette jamais :
+ * Charge le modèle d'un habitant des scénettes (son dossier, « <niveau>-habitant-<lieu> ») : lu, ou rien. Ne rejette jamais :
  * un fichier qui manque ou ne se lit pas laisse le pion dessiné en code, et se redemande au plus tôt `RELANCE_MS` plus
  * tard. Rien n'est gardé une fois lu (la vue garde ce qu'elle montre) : un second appel relit le fichier, que le service
  * worker garde à la première lecture (cache « dysapps-habitants-3d », vite.config.ts).
