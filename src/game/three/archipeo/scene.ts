@@ -2268,6 +2268,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     followStep(focus, aimed(), 0, true);
     lift = occlusionLift(focus, ground, yaw);
     // Devant un lieu haut, la caméra a reculé et levé le regard dès la première image : « Y aller » est une coupe.
+    // « Y aller » est une coupe : le recul du lieu quitté ne déborde pas sur celui-ci (sinon il masquerait la vue d'arrivée du Gaillard).
+    arrivalBack = 0;
     if (nearLantern() && arrivalNow) look = arrivalBack = 1;
     updateRings(true, true);
     follow();
