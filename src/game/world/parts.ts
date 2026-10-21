@@ -11,9 +11,14 @@
  * - 5 missions (GD-14) : le premier plan en trois rangées entières (« Le bas du nid de Coco », « Le milieu… »,
  *   « Le haut… »), puis les deux autres ; un premier plan de deux rangées se coupe en deux, puis le deuxième plan aussi
  *   (« Le bas du toit de la hutte », « Le haut… »), puis le troisième.
- * Le lieu de la LV2 compte les missions d'une seule langue (les deux langues en ont autant).
+ * Le lieu de la LV2 compte les missions d'une seule langue (les deux langues en ont autant). Le lieu du latin et du grec
+ * compte les missions jouables de l'option choisie dans les Réglages (GD-13, GD-14), sans celles qui attendent
+ * (`waiting`) : en latin trois, en grec deux tant que « L'alphabet grec » attend sa police, puis trois sans rien perdre
+ * (à deux parties, les trois plans sont déjà posés). Avec « Pas d'option », l'option qui en a le plus. Une sauvegarde
+ * posée avec un autre compte s'y remet seule à l'ouverture (`rattraperLesParties`, `engine.ts`) : les cases restent.
  */
-import { BIOMES, type BiomeDef, type BiomeId } from '../biomes';
+import { BIOMES, type BiomeDef, type BiomeId, type Lca } from '../biomes';
+import { lcaCourante, type LcaChoice } from '../../core/settings';
 import { isPlanDone, planCells, plansFor, type PlanDef } from './plans';
 
 export interface Partie {
@@ -30,16 +35,27 @@ export interface Partie {
 /** Un lieu a au plus cinq parties, comme il a au plus cinq missions (GD-14). */
 const PARTIES_MAX = 5;
 
-/** Les missions d'un lieu qui comptent pour son bâtiment : sur le lieu de la LV2, celles d'une seule langue. */
-function missionsDuBatiment(biome: Pick<BiomeDef, 'exercises'>): number {
+/**
+ * Les missions d'un lieu qui comptent pour son bâtiment : sur le lieu de la LV2, celles d'une seule langue ; sur le lieu
+ * du latin et du grec, les missions jouables de l'option `lca` (avec « Pas d'option », de celle qui en a le plus).
+ */
+function missionsDuBatiment(biome: Pick<BiomeDef, 'exercises'>, lca: LcaChoice): number {
+  const options = [...new Set(biome.exercises.flatMap((x) => (x.option === undefined ? [] : [x.option])))];
+  if (options.length) {
+    const jouables = (o: Lca) => biome.exercises.filter((x) => x.option === o && x.waiting === undefined).length;
+    return lca === 'none' ? Math.max(...options.map(jouables)) : jouables(lca);
+  }
   const langue = biome.exercises.find((x) => x.lv2 !== undefined)?.lv2;
   return langue === undefined ? biome.exercises.length : biome.exercises.filter((x) => x.lv2 === langue).length;
 }
 
-/** Le nombre de parties du bâtiment d'un lieu : autant que de missions, de 2 à 5 (0 sans bâtiment). */
-export function nombreDeParties(biome: Pick<BiomeDef, 'id' | 'exercises'>): number {
+/**
+ * Le nombre de parties du bâtiment d'un lieu : autant que de missions, de 2 à 5 (0 sans bâtiment). `lca` : l'option
+ * latin ou grec, celle des Réglages par défaut (elle ne change que le lieu du latin et du grec).
+ */
+export function nombreDeParties(biome: Pick<BiomeDef, 'id' | 'exercises'>, lca: LcaChoice = lcaCourante()): number {
   if (plansFor(biome.id).length < 3) return 0;
-  return Math.max(2, Math.min(PARTIES_MAX, missionsDuBatiment(biome)));
+  return Math.max(2, Math.min(PARTIES_MAX, missionsDuBatiment(biome, lca)));
 }
 
 /** Un nom en milieu de phrase, après deux-points : sa minuscule (« Partie posée : le toit de la cabane »). */
@@ -118,15 +134,28 @@ function enRangees(plan: PlanDef, k: 2 | 3): string[][] | null {
   return limites.slice(1).map((haut, i) => cells.filter((c) => c.z >= limites[i] && c.z < haut).map((c) => c.key));
 }
 
-const CACHE = new Map<BiomeId, Partie[]>();
+/** Les parties, par lieu et par nombre de parties (le lieu du latin et du grec en a autant que l'option choisie). */
+const CACHE = new Map<string, Partie[]>();
+/** Les mêmes, par lieu et par option : `partiesDe` est lue à chaque rendu, sur tous les lieux. */
+const PAR_OPTION = new Map<string, Partie[]>();
 
-/** Les parties du bâtiment d'un lieu, dans l'ordre où elles se posent. */
-export function partiesDe(id: BiomeId): Partie[] {
-  const cached = CACHE.get(id);
-  if (cached) return cached;
+/**
+ * Les parties du bâtiment d'un lieu, dans l'ordre où elles se posent. `lca` : l'option latin ou grec, celle des
+ * Réglages par défaut. Le même tableau revient tant que le compte ne change pas (les vues s'en servent de clé).
+ */
+export function partiesDe(id: BiomeId, lca: LcaChoice = lcaCourante()): Partie[] {
+  const parOption = `${id}:${lca}`;
+  const deja = PAR_OPTION.get(parOption);
+  if (deja) return deja;
   const biome = BIOMES.find((b) => b.id === id);
+  const n = biome ? nombreDeParties(biome, lca) : 0;
+  const cle = `${id}:${n}`;
+  const cached = CACHE.get(cle);
+  if (cached) {
+    PAR_OPTION.set(parOption, cached);
+    return cached;
+  }
   const plans = plansFor(id);
-  const n = biome ? nombreDeParties(biome) : 0;
   const tout = (plan: PlanDef) => ({ plan, keys: planCells(plan).map((c) => c.key) });
   let parties: Omit<Partie, 'biome' | 'rang' | 'total'>[] = [];
   if (n === 2) {
@@ -171,7 +200,8 @@ export function partiesDe(id: BiomeId): Partie[] {
     }
   }
   const out = parties.map((p, i) => ({ ...p, biome: id, rang: i + 1, total: parties.length }));
-  CACHE.set(id, out);
+  CACHE.set(cle, out);
+  PAR_OPTION.set(parOption, out);
   return out;
 }
 

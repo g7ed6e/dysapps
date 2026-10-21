@@ -1,4 +1,6 @@
-import { BIOMES } from '../biomes';
+import { afterEach } from 'vitest';
+import { BIOMES, missionsJouables } from '../biomes';
+import { DEFAULT_SETTINGS, retenirReglages } from '../../core/settings';
 import { EMPTY_STATE, completeExercise, rattraperLesParties, type GameState } from '../engine';
 import { exercisesOf } from '../exercises';
 import type { ExerciseDef } from '../exercises/types';
@@ -17,16 +19,86 @@ it('donne une partie par mission, de 2 à 5, faite des cases des trois plans, sa
       continue;
     }
     expect(parties).toHaveLength(nombreDeParties(b));
-    // Le lieu de la LV2 compte les missions d'une seule langue.
+    // Le lieu de la LV2 compte les missions d'une seule langue (le lieu du latin et du grec : le test suivant).
     const langue = b.exercises.find((x) => x.lv2 !== undefined)?.lv2;
-    expect(parties.length).toBe(Math.max(2, Math.min(5, b.exercises.filter((x) => x.lv2 === langue).length)));
-    // Chaque case de chaque plan est dans une seule partie.
-    for (const plan of plans) {
-      const keys = parties.flatMap((p) => p.cases.filter((c) => c.plan.id === plan.id).flatMap((c) => c.keys));
-      expect(keys.sort()).toEqual(planCells(plan).map((c) => c.key).sort());
+    if (b.subject !== 'lca') expect(parties.length).toBe(Math.max(2, Math.min(5, b.exercises.filter((x) => x.lv2 === langue).length)));
+    // Chaque case de chaque plan est dans une seule partie, quelle que soit l'option latin ou grec.
+    for (const lca of ['la', 'gr', 'none'] as const) {
+      const deLOption = partiesDe(b.id, lca);
+      for (const plan of plans) {
+        const keys = deLOption.flatMap((p) => p.cases.filter((c) => c.plan.id === plan.id).flatMap((c) => c.keys));
+        expect(keys.sort()).toEqual(planCells(plan).map((c) => c.key).sort());
+      }
+      for (const p of deLOption) expect(p.cases.every((c) => c.keys.length > 0)).toBe(true);
     }
-    for (const p of parties) expect(p.cases.every((c) => c.keys.length > 0)).toBe(true);
   }
+});
+
+afterEach(() => retenirReglages(null));
+
+const LIEUX_LCA = ['lca-5e-legends', 'lca-4e-cities', 'lca-3e-ideas'] as const;
+
+it('le lieu du latin et du grec compte les missions jouables de l’option choisie (GD-13, GD-14), comme la LV2', () => {
+  expect(BIOMES.filter((b) => b.subject === 'lca').map((b) => b.id)).toEqual([...LIEUX_LCA]);
+  for (const id of LIEUX_LCA) {
+    const b = BIOMES.find((x) => x.id === id)!;
+    for (const lca of ['la', 'gr'] as const) expect(partiesDe(id, lca), `${id} ${lca}`).toHaveLength(Math.max(2, missionsJouables(b, 'none', lca).length));
+    // Latin : trois missions, trois parties, une par plan.
+    expect(partiesDe(id, 'la').map((p) => p.nom)).toEqual(plansFor(id).map((p) => p.name));
+    // Avec « Pas d'option » : l'option qui en a le plus.
+    expect(partiesDe(id, 'none')).toHaveLength(3);
+  }
+  // Le grec de la Grotte des légendes, tant que « L'alphabet grec » attend sa police : deux parties, le corps, puis le
+  // haut et les abords ensemble.
+  expect(partiesDe('lca-5e-legends', 'gr').map((p) => p.cases.map((c) => c.plan.id))).toEqual([
+    ['lca-5e-legends-1'],
+    ['lca-5e-legends-2', 'lca-5e-legends-3'],
+  ]);
+  expect(partiesDe('lca-4e-cities', 'gr')).toHaveLength(3);
+  expect(partiesDe('lca-3e-ideas', 'gr')).toHaveLength(3);
+  // Le réglage en mémoire décide, sans rien passer ; le même tableau revient tant que l'option ne change pas.
+  retenirReglages({ ...DEFAULT_SETTINGS, lca: 'gr' });
+  expect(partiesDe('lca-5e-legends')).toBe(partiesDe('lca-5e-legends', 'gr'));
+  retenirReglages({ ...DEFAULT_SETTINGS, lca: 'la' });
+  expect(partiesDe('lca-5e-legends')).toHaveLength(3);
+  // Les trois missions de chaque option finissent le bâtiment.
+  for (const id of LIEUX_LCA) {
+    const latin = BIOMES.find((x) => x.id === id)!.exercises.filter((x) => x.option === 'la');
+    const progress = Object.assign({}, ...latin.map((t) => joue(premierExercice(id, t.id))));
+    const r = poserLesParties(id, {}, missionsTerminees(progress, id));
+    expect(plansFor(id).every((p) => isPlanDone(p, r.parts)), id).toBe(true);
+    expect(prochainePartie(id, r.parts)).toBeNull();
+  }
+});
+
+it('remet au bon compte une sauvegarde posée quand le lieu d’option comptait cinq parties, sans rien perdre ni rien redonner', () => {
+  const id = 'lca-5e-legends';
+  const [abri, porche] = plansFor(id);
+  const toutes = (plan: typeof abri) => planCells(plan).map((c) => c.key);
+  const types = BIOMES.find((x) => x.id === id)!.exercises;
+  const jouees = (option: 'la' | 'gr') =>
+    Object.assign({}, ...types.filter((t) => t.option === option && t.waiting === undefined).map((t) => joue(premierExercice(id, t.id))));
+  // Latin, 3 parties sur 5 : l'abri (ses deux rangées), puis le bas du porche.
+  const zPorche = [...new Set(planCells(porche).map((c) => c.z))].sort((a, b) => a - b);
+  const basDuPorche = planCells(porche).filter((c) => c.z <= zPorche[1]).map((c) => c.key);
+  retenirReglages({ ...DEFAULT_SETTINGS, lca: 'la' });
+  const latin: GameState = { ...EMPTY_STATE, progress: jouees('la'), world: { ...EMPTY_STATE.world, parts: { [abri.id]: toutes(abri), [porche.id]: basDuPorche } } };
+  expect(partiesPosees(id, latin.world.parts)).toBe(1);
+  const r = rattraperLesParties(latin, '2026-10-21');
+  expect(partiesPosees(id, r.state.world.parts)).toBe(3);
+  expect(prochainePartie(id, r.state.world.parts)).toBeNull();
+  // Les cases déjà posées restent en tête ; l'XP n'est rendue que pour les plans finis à l'instant.
+  expect(r.state.world.parts[porche.id].slice(0, basDuPorche.length)).toEqual(basDuPorche);
+  expect(r.plansFinis.map((p) => p.id)).toEqual([`${id}-2`, `${id}-3`]);
+  expect(rattraperLesParties(r.state, '2026-10-22').state).toBe(r.state);
+  // Grec, 2 parties sur 5 (l'abri) : ses deux parties, le bâtiment fini.
+  retenirReglages({ ...DEFAULT_SETTINGS, lca: 'gr' });
+  const grec: GameState = { ...EMPTY_STATE, progress: jouees('gr'), world: { ...EMPTY_STATE.world, parts: { [abri.id]: toutes(abri) } } };
+  const g = rattraperLesParties(grec, '2026-10-21');
+  expect(partiesPosees(id, g.state.world.parts)).toBe(2);
+  expect(prochainePartie(id, g.state.world.parts)).toBeNull();
+  // Quand la police arrivera, le grec comptera trois parties : déjà posées, rien ne se perd.
+  expect(partiesDe(id, 'la').every((p) => partiePosee(p, g.state.world.parts))).toBe(true);
 });
 
 it('coupe les murs en deux par la hauteur pour quatre missions, en trois rangées pour cinq (ou le mur et le toit en deux), réunit le toit et la cour pour deux', () => {

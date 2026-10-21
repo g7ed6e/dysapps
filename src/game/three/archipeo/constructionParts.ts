@@ -8,7 +8,7 @@ import type { BiomeId } from '../../biomes';
 import type { PartShape, Stage } from '../../world/continu/construction';
 import type { OpenPlace } from '../../world/continu/levelPlan';
 import type { IslandStateId } from '../../world/islandState';
-import { partiePosee, partiesDe } from '../../world/parts';
+import { partiePosee, partiesDe, type Partie } from '../../world/parts';
 import { plansFor, type PlanDef } from '../../world/plans';
 import type { PoseLine, PoseWords } from '../../poseWords';
 
@@ -20,14 +20,15 @@ export interface PlaceConstruction {
   posed: boolean[];
 }
 
-const SHAPES = new Map<BiomeId, PartShape[]>();
+/** Par tableau de parties (`partiesDe` en rend un par lieu et par compte : le lieu d'option suit l'option choisie). */
+const SHAPES = new WeakMap<readonly Partie[], PartShape[]>();
 
-/** Les parties de la construction d'un lieu, en tranches d'étapes (calculées une fois par lieu). */
+/** Les parties de la construction d'un lieu, en tranches d'étapes (calculées une fois par lieu et par compte). */
 export function partShapes(island: BiomeId): PartShape[] {
-  const cached = SHAPES.get(island);
+  const parties = partiesDe(island);
+  const cached = SHAPES.get(parties);
   if (cached) return cached;
   const plans = plansFor(island);
-  const parties = partiesDe(island);
   // Combien de parties touchent chaque plan : un plan coupé en `m` rangées donne `m` tranches.
   const cuts = plans.map((plan) => parties.filter((p) => p.cases.some((c) => c.plan.id === plan.id)).length);
   const seen = plans.map(() => 0);
@@ -40,7 +41,7 @@ export function partShapes(island: BiomeId): PartShape[] {
       return [{ stage: i as Stage, from: k / m, to: (k + 1) / m }];
     }),
   );
-  SHAPES.set(island, shapes);
+  SHAPES.set(parties, shapes);
   return shapes;
 }
 
