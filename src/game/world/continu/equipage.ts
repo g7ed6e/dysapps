@@ -54,23 +54,11 @@ export const EQUIPIER_TRIANGLES = 11_300;
 
 /**
  * La demi-largeur et la demi-profondeur de chaque modèle à sa hauteur de scénette, depuis ses pieds, au centième près
- * (les bras un peu écartés ; la clé au dos de Zia, la sacoche de Malo) : sa boîte dans les tests de chevauchement. Un
+ * (les bras baissés ; la clé au dos de Zia, la sacoche de Malo) : sa boîte dans les tests de chevauchement. Un
  * test les relit dans les fichiers.
  */
 export const EQUIPIER_HALVES: Readonly<Record<Equipier, { x: number; z: number }>> = {
-  zia: { x: 0.3, z: 0.2 },
-  malo: { x: 0.32, z: 0.14 },
+  zia: { x: 0.25, z: 0.2 },
+  malo: { x: 0.23, z: 0.14 },
 };
 
-let shown = false;
-
-/**
- * L'équipier de la scénette est-il montré (son modèle prêt à l'entrée) ? Le décor de près lui donne alors son ombre au
- * pied ; sans modèle, ni équipier ni ombre. La vue le dit avant de faire le décor (../../three/archipeo/equipierModels.ts).
- */
-export const equipierShown = (): boolean => shown;
-
-/** La vue dit si l'équipier de la scénette qui s'ouvre est montré (faux à la sortie, et pour les tests). */
-export function setEquipierShown(on: boolean): void {
-  shown = on;
-}

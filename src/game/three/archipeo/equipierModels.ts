@@ -7,7 +7,7 @@
 import * as THREE from 'three';
 import { loadEquipier, RELANCE_MS } from '../../importedCharacters';
 import type { ModeleTexture } from '../../world/characters/imported/glb';
-import { EQUIPIER_HEIGHT, equipierModelName, setEquipierShown, type Equipier } from '../../world/continu/equipage';
+import { EQUIPIER_HEIGHT, equipierModelName, type Equipier } from '../../world/continu/equipage';
 import { habitantFit } from '../../world/continu/habitants';
 import type { Vec3 } from '../../world/continu/geometry';
 
@@ -22,11 +22,8 @@ interface Ready {
 export interface EquipierModels {
   /** Prépare le modèle d'un équipier (sans rien montrer). */
   prefetch(equipier: Equipier): void;
-  /**
-   * L'équipier posé en `at` (ses pieds), tourné de `yaw` : montré s'il est prêt (vrai ; le décor de près lui fait alors
-   * son ombre), sinon dès qu'il l'est, sans ombre.
-   */
-  show(equipier: Equipier, at: Vec3, yaw: number): boolean;
+  /** L'équipier posé en `at` (ses pieds), tourné de `yaw` : montré s'il est prêt, sinon dès qu'il l'est. */
+  show(equipier: Equipier, at: Vec3, yaw: number): void;
   /** La scénette se ferme : l'équipier s'efface (gardé, prêt pour un retour). */
   hide(): void;
   /** Le maillage de l'équipier (caché quand aucun n'est montré). */
@@ -127,20 +124,15 @@ export function createEquipierModels(scene: THREE.Scene, prepare: (t: THREE.Text
     show(equipier, at, yaw) {
       wanted = { equipier, at: { ...at }, yaw };
       place();
-      const now = ready.has(equipier);
-      setEquipierShown(now);
-      if (!now) prefetch(equipier);
-      return now;
+      if (!ready.has(equipier)) prefetch(equipier);
     },
     hide() {
       wanted = null;
-      setEquipierShown(false);
       mesh.visible = false;
     },
     dispose() {
       disposed = true;
       wanted = null;
-      setEquipierShown(false);
       scene.remove(mesh);
       mesh.geometry = empty;
       mesh.material = none;

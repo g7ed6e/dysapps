@@ -62,7 +62,7 @@ import { SHADOW_DIR } from './sky';
 import { SURROUNDINGS } from './surroundings';
 import { HABITANT_HEIGHT, habitantEastSide, habitantWestHand, loadedHabitant } from './habitants';
 import { MANGROVE, mangroveDeckTop } from './places';
-import { equipierShown, guideOf, type Equipier } from './equipage';
+import { guideOf, type Equipier } from './equipage';
 
 /**
  * Ce que l'élève lit de l'habitant : son rôle en tête du panneau, sans prénom tant que le mainteneur n'a pas tranché
@@ -1982,8 +1982,8 @@ function decorBuilder(place: PlaceId, open: boolean, posed: boolean, body: boole
   if (surroundings) SURROUNDINGS[place]?.(b, floorOf(place, posed), { open, posed, topped });
   footShadow(b, scenetteKeo(place, posed).at, FOOT_SHADOW.keo, floorShadow(place, posed));
   footShadow(b, scenetteHabitant(place, posed), FOOT_SHADOW.habitant, floorShadow(place, posed));
-  // L'équipier qui guide le lieu (GD-23), s'il est montré : son ombre, de la taille de celle de Kéo.
-  const guide = equipierShown() ? scenetteGuide(place, posed) : null;
+  // L'équipier qui guide le lieu (GD-23) : son ombre, de la taille de celle de Kéo, même si son modèle arrive après le décor.
+  const guide = scenetteGuide(place, posed);
   if (guide) footShadow(b, guide.at, FOOT_SHADOW.keo, floorShadow(place, posed));
   return b;
 }
@@ -1998,7 +1998,7 @@ const FOOT_SHADOW = { keo: { radius: 0.3, long: 0.55 }, habitant: { radius: 0.36
 /** Les triangles des deux ombres au pied, de Kéo et de l'habitant, dans le décor de près (et une de plus, de l'équipier qui guide le lieu, `GUIDE_SHADOW_TRIANGLES`). */
 export const FOOT_SHADOW_TRIANGLES = 2 * FOOT_SHADOW.sides;
 
-/** Les triangles de l'ombre au pied de l'équipier qui guide le lieu, quand il est montré (GD-23). */
+/** Les triangles de l'ombre au pied de l'équipier qui guide le lieu (GD-23). */
 export const GUIDE_SHADOW_TRIANGLES = FOOT_SHADOW.sides;
 
 /**

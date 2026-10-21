@@ -98,7 +98,7 @@ const HABITANTS = import.meta.glob('../../docs/univers/archipeo/personnages/mode
 }) as Record<string, string>;
 
 /** Les chargements en cours des habitants et des équipiers, et s'ils ont manqué, quand. */
-const habitantLoads = new Map<string, { p: Promise<ModeleTexture | null>; manque?: number }>();
+const texturedLoads = new Map<string, { p: Promise<ModeleTexture | null>; manque?: number }>();
 
 /**
  * Charge le modèle d'un habitant des scénettes (son dossier, « 6e-habitant-<lieu> » ou « 5e-habitant-<lieu> ») : lu, ou rien. Ne rejette jamais :
@@ -127,7 +127,7 @@ export function loadEquipier(nom: string): Promise<ModeleTexture | null> {
 
 /** Lit un modèle texturé (un habitant, un équipier) à son adresse : lu, ou rien ; ne rejette jamais. */
 function loadTextured(nom: string, url: string | undefined): Promise<ModeleTexture | null> {
-  const deja = habitantLoads.get(nom);
+  const deja = texturedLoads.get(nom);
   if (deja && (deja.manque === undefined || performance.now() - deja.manque < RELANCE_MS)) return deja.p;
   const chargement: { p: Promise<ModeleTexture | null>; manque?: number } = { p: Promise.resolve(null) };
   chargement.p = (async () => {
@@ -142,9 +142,9 @@ function loadTextured(nom: string, url: string | undefined): Promise<ModeleTextu
       return null;
     } finally {
       // Lu (ou manqué) : le prochain appel relit le fichier, ou attend la relance.
-      if (chargement.manque === undefined) habitantLoads.delete(nom);
+      if (chargement.manque === undefined) texturedLoads.delete(nom);
     }
   })();
-  habitantLoads.set(nom, chargement);
+  texturedLoads.set(nom, chargement);
   return chargement.p;
 }
