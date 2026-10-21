@@ -177,6 +177,8 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   },
   // La Soute (lot 2 du 4e) : la phrase du métier de la proposition, jamais « entrepôt ».
   soute: { role: placeArt('soute')!.role, greeting: 'Le magasinier range et compte tout ce qui part et tout ce qui arrive.', placement: 'rangee' },
+  // La Porte (lot 2 du 4e) : la phrase du métier de la proposition, jamais « loge ».
+  porte: { role: placeArt('porte')!.role, greeting: 'L’avocate aide chacun à défendre ses droits.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -604,6 +606,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   nacelles: northSite('nacelles'),
   forge: northSite('forge'),
   soute: northSite('soute'),
+  porte: northSite('porte'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2111,6 +2114,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   forge: 'paving',
   // La Soute (lot 2 du 4e) : les planches du quai.
   soute: 'planks',
+  // La Porte (lot 2 du 4e) : le pavé de la place.
+  porte: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

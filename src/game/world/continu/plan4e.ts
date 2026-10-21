@@ -238,6 +238,7 @@ const MAP_SIDES_4E: Readonly<Record<PlaceId4e, 'below' | 'left' | 'right'>> = {
 export const BUILT_PLACES_4E = {
   forge: ['powers', 'square-roots', 'scientific-notation', 'subtracting', 'volumes'],
   soute: ['urbanization', 'mobilities', 'globalization'],
+  porte: ['freedoms', 'justice', 'security-defence'],
 } as const satisfies Partial<Record<PlaceId4e, readonly string[]>>;
 
 /** Un lieu du 4e déjà construit. */

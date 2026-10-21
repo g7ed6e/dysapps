@@ -239,6 +239,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   forge: placeArt('forge')!.sceneSpot,
   // La Soute (lot 2 du 4e) : les planches du quai, devant la halle, au sud de la bitte.
   soute: placeArt('soute')!.sceneSpot,
+  // La Porte (lot 2 du 4e) : la place, au milieu du cercle des bancs, derrière le portail.
+  porte: placeArt('porte')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -515,6 +517,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   forge: 'lieu',
   // La Soute (lot 2 du 4e) : les petites caisses de bois clair, sans motif.
   soute: 'lieu',
+  // La Porte (lot 2 du 4e) : les planchettes de bois clair, debout sur un banc bas.
+  porte: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

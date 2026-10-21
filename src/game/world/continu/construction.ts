@@ -150,6 +150,8 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   forge: placeArt('forge')!.traceStage,
   // La Soute (lot 2 du 4e) : chaque trace sa partie (le corps, le haut, les abords).
   soute: placeArt('soute')!.traceStage,
+  // La Porte (lot 2 du 4e) : chaque trace sa partie (le corps, le haut, les abords).
+  porte: placeArt('porte')!.traceStage,
 };
 
 /**

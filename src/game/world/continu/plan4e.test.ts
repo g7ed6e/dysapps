@@ -38,6 +38,13 @@ const NOT_BLACK = 0.03;
  */
 const LOT2_CEILING = { triangles: 72_000, calls: 18 } as const;
 
+/**
+ * Le plafond du 4e après la Soute et la Porte (lot 2, mesuré le 21 octobre 2026 : 69 372 triangles et 17 appels scénette
+ * ouverte, 62 202 et 14 hors scénette, 61 080 et 15 au départ, 58 931 et 12 sur la Carte ; +1 716 sur la Forge seule, les
+ * deux lieux à la place de leurs ruines simples, leurs traces comprises), avec la même marge que `LOT2_CEILING`.
+ */
+const LOT2_SOUTE_PORTE_CEILING = { triangles: LOT2_CEILING.triangles + 2_000, calls: LOT2_CEILING.calls } as const;
+
 /** Les couleurs d'un maillage. */
 function colorsOf(f: { colors: Float32Array }): Set<string> {
   const out = new Set<string>();
@@ -233,8 +240,8 @@ describe('Le budget du 4e', () => {
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
     for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('scenette')), total(openWorldCost4e('depart')), mapCost4e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT2_CEILING.triangles);
-      expect(cost.calls).toBeLessThanOrEqual(LOT2_CEILING.calls);
+      expect(cost.triangles).toBeLessThanOrEqual(LOT2_SOUTE_PORTE_CEILING.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(LOT2_SOUTE_PORTE_CEILING.calls);
     }
   });
 });

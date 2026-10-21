@@ -1,6 +1,6 @@
 // Les lieux du 4e en ruines simples (lot 1 du monde ouvert du 4e, « l'île entière en grandes masses ») : à leur place,
 // une silhouette lisible pour chacun, sans les finir ; leurs étapes viennent avec leur lot, un lieu par lot, et un lieu
-// construit quitte ce fichier (la Forge et la Soute au lot 2, ./forge4e.ts, ./soute4e.ts).
+// construit quitte ce fichier (la Forge, la Soute et la Porte au lot 2, ./forge4e.ts, ./soute4e.ts, ./porte4e.ts).
 // Chaque ruine est dessinée dans le repère de son lieu (y = 0 au sol, sous le centre ; x vers l'est, z vers le sud), en
 // quelques volumes de 4 à 6 aplats de la palette chaude du 4e (./plan4e.ts, `COLORS_4E`) : la brique et la terre cuite
 // de l'usine, le fer rouillé et le cuivre, la pierre grise des Passeurs, le bois gris de la ruine, le basalte brun du
@@ -47,16 +47,6 @@ function wall(b: FacetBuilder, x: number, z: number, length: number, height: num
 
 /** Un poteau de bois, cassé ou non. */
 const post = (b: FacetBuilder, x: number, z: number, h: number, w = 0.5): void => b.box({ x, y: SINK, z }, [w, h - SINK, w], C.woodShade, C.wood);
-
-/** La Porte : un pan du mur d'usine, ses deux piliers ; un battant debout, l'autre couché ; la cloche tombée sous son auvent. */
-function porte(b: FacetBuilder): void {
-  wall(b, -5.5, 0, 5, 5.2);
-  wall(b, 5.5, 0, 5, 3.6);
-  for (const x of [-2.9, 2.9]) b.box({ x, y: SINK, z: 0 }, [1.3, 7 - SINK, 1.3], C.stoneShade, C.stone);
-  b.box({ x: -1.4, y: SINK, z: 0.5, yaw: 0.35 }, [2.8, 5.2 - SINK, 0.35], C.woodShade, C.wood);
-  b.box({ x: 1.6, y: SINK, z: 3.2, yaw: 0.2 }, [2.8, 0.35 - SINK, 4.4], C.woodShade, C.wood);
-  b.prism({ x: 5.5, y: SINK, z: -3 }, 0.9, 0.5, 1.2 - SINK, 7, C.copper, C.rust);
-}
 
 /** L'Étalon : une halle basse et ouverte, ses piliers, un pan de toit tombé ; le plateau de la bascule de travers ; des poids rangés. */
 function etalon(b: FacetBuilder): void {
@@ -188,10 +178,9 @@ function dynamo(b: FacetBuilder): void {
 
 /**
  * La ruine de chaque lieu du 4e pas encore construit, dessinée dans son repère : un lieu construit (./plan4e.ts,
- * `BUILT_PLACES_4E` ; la Forge et la Soute au lot 2) dessine sa ruine dans son fichier, avec ses étapes.
+ * `BUILT_PLACES_4E` ; la Forge, la Soute et la Porte au lot 2) dessine sa ruine dans son fichier, avec ses étapes.
  */
 export const RUINS_4E: Readonly<Record<Exclude<PlaceId4e, BuiltPlace4e>, (b: FacetBuilder) => void>> = {
-  porte,
   etalon,
   gabarit,
   manufacture,
