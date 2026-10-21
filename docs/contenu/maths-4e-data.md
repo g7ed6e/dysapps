@@ -730,13 +730,13 @@ Pour tous les items :
    - lu : Le centre du cercle circonscrit à un triangle rectangle est (mot manquant).
    - choix : le milieu de l’hypoténuse · le sommet de l’angle droit · le milieu du plus petit côté
    - réponse : le milieu de l’hypoténuse
-   - indice : Relis la dernière ligne du rappel.
+   - indice : Relis la ligne sur le centre.
    - explication : L’hypoténuse est un diamètre : le centre du cercle est son milieu. Le sommet de l’angle droit est sur le cercle, pas au centre.
 7. énoncé : Un triangle a ses trois sommets sur un cercle, et l’un de ses côtés est un diamètre. Ce triangle a toujours …
    - lu : Un triangle a ses trois sommets sur un cercle, et l’un de ses côtés est un diamètre. Ce triangle a toujours (mot manquant).
    - choix : un angle droit · deux côtés de même longueur · trois côtés de même longueur
    - réponse : un angle droit
-   - indice : Relis la ligne sur le diamètre.
+   - indice : Relis la dernière ligne du rappel.
    - explication : Un côté est un diamètre : l’angle opposé est droit, le triangle est rectangle. Il peut avoir deux côtés égaux, mais pas toujours. Trois côtés égaux ne donnent jamais d’angle droit.
 8. énoncé : Le triangle ABC est rectangle en A, et son hypoténuse BC mesure 13 cm. M est le milieu de [BC]. Alors AM mesure …
    - lu : Le triangle A B C est rectangle en A, et son hypoténuse B C mesure 13 centimètres. M est le milieu de B C. Alors A M mesure (mot manquant).

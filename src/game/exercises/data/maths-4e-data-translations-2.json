@@ -150,7 +150,7 @@
         "le milieu du plus petit côté"
       ],
       "answer": "le milieu de l’hypoténuse",
-      "hint": "Relis la dernière ligne du rappel.",
+      "hint": "Relis la ligne sur le centre.",
       "explanation": "L’hypoténuse est un diamètre : le centre du cercle est son milieu. Le sommet de l’angle droit est sur le cercle, pas au centre.",
       "aid": {
         "kind": "rule-card",
@@ -177,7 +177,7 @@
         "trois côtés de même longueur"
       ],
       "answer": "un angle droit",
-      "hint": "Relis la ligne sur le diamètre.",
+      "hint": "Relis la dernière ligne du rappel.",
       "explanation": "Un côté est un diamètre : l’angle opposé est droit, le triangle est rectangle. Il peut avoir deux côtés égaux, mais pas toujours. Trois côtés égaux ne donnent jamais d’angle droit.",
       "aid": {
         "kind": "rule-card",
