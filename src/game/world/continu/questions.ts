@@ -485,8 +485,8 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
   // leurs items de référence ; les réponses portées par l'objet du lieu (les godets de la Montée, les miches du Hameau,
   // les poids des Radeaux, les bobines de la Croisée, les galets des Instants et des Fumerolles, les gobelets de l'Étuve,
   // les bols des Terrasses, les malles de l'Auberge, les claveaux du Donjon, les lampes à huile de l'Oracle, les fanions
-  // du Sémaphore), le lieu au repos ; les nombres, la droite et les figures restent dans le panneau. Un lieu construit
-  // s'y ajoute de lui-même.
+  // du Sémaphore, les petites toiles du Gaillard), le lieu au repos ; les nombres, la droite et les figures restent dans
+  // le panneau. Un lieu construit s'y ajoute de lui-même.
   if (isBuiltPlace5e(place)) return items.map((it) => ({ ...it, placeScene: REST }));
   // La Turbine (GD-20, point 8, lot L6a) et le Chantier naval (lot L6b) : leurs quatre missions en C, aux deux niveaux,
   // avec leurs items de référence (consigne, phrase, document, rappel) ; la scène fait le décor, les réponses restent dans

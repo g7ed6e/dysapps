@@ -11,6 +11,7 @@ import { aubergeSurroundings } from './aubergeSurroundings';
 import { croiseeSurroundings } from './croiseeSurroundings';
 import { donjonSurroundings } from './donjonSurroundings';
 import { fumerollesSurroundings } from './fumerollesSurroundings';
+import { gaillardSurroundings } from './gaillardSurroundings';
 import { hameauSurroundings } from './hameauSurroundings';
 import { instantsSurroundings } from './instantsSurroundings';
 import { etuveSurroundings } from './etuveSurroundings';
@@ -61,7 +62,7 @@ export const SURROUNDINGS_MAX = 1500;
 export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   // Le 5e (GD-22, lot 3) : la Montée ; lot 5 : le Hameau ; lot 6 : les Radeaux ; lot 7 : la Croisée ; lot 8 : les Instants ;
   // lot 9 : les Fumerolles ; lot 10 : l'Étuve ; lot 11 : les Terrasses ; lot 12 : l'Auberge ; lot 13a : le Donjon ; lot 13b : l'Oracle ;
-  // lot 14 : le Sémaphore.
+  // lot 14 : le Sémaphore ; lot 15 : le Gaillard.
   montee: monteeSurroundings,
   hameau: hameauSurroundings,
   radeaux: radeauxSurroundings,
@@ -74,6 +75,7 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   donjon: donjonSurroundings,
   oracle: oracleSurroundings,
   semaphore: semaphoreSurroundings,
+  gaillard: gaillardSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,
