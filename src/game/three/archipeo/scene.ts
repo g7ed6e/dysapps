@@ -90,6 +90,7 @@ import { ringHeights, standingHeight, tileRings } from '../../world/continu/terr
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
+import { worldHabitantAt, worldHabitantFacets } from '../../world/continu/worldHabitants';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
 import { placedAmenagement } from './amenagements';
@@ -1793,6 +1794,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     builds.set(id, { parts, facets });
     return facets;
   };
+  // L'habitant hors de sa scénette, près de sa porte (au 5e, ./world/continu/worldHabitants.ts), fait une fois (il ne
+  // dépend que du sol) ; rien au 6e.
+  const worldHabitantCache = new Map<PlaceId, Facets | null>();
+  const worldHabitantOf = (id: PlaceId): Facets | null => {
+    if (!worldHabitantCache.has(id)) worldHabitantCache.set(id, worldHabitantFacets(id, ground));
+    return worldHabitantCache.get(id)!;
+  };
   const traceOf = (id: PlaceId, done: readonly string[]): Facets => {
     const k = `${id}|${done.join(',')}`;
     let f = traceFacets.get(k);
@@ -1865,6 +1873,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Les aménagements posés (GD-20, point 4, lot L0), dans le même maillage : cachés pendant toute question, comme les
       // traces (au rivage nord et au large, ceux des lieux du même cadre) ; montrés dans le cadrage de la remise.
       if (showsAmenagements(scenette, p.id, remise?.place ?? null)) for (const id of placesState?.amenagements?.[p.id] ?? []) list.push(placedAmenagement(id, ground).facets);
+      // L'habitant près de sa porte (choix du mainteneur, 21 octobre 2026, « Comme au 6e » ; au 5e, son pion), dans le même
+      // maillage (aucun appel de plus) : ni sur la Carte, ni pendant une scénette (la sienne a son modèle, les autres lieux
+      // sont hors du cadre : le budget de la scénette ouverte ne bouge pas), ni dans une terre fermée.
+      const land = landOf(p.id);
+      const habitant = mapView || scenette || (isLinkedLand(land) && closed.includes(land)) ? null : worldHabitantOf(p.id);
+      if (habitant) list.push(habitant);
     }
     // Les ponts (GD-20, point 3, « vraies terres ») : tombé pour une terre fermée, rebâti sinon, dans le maillage des
     // lieux (aucun appel de plus) ; sur la Carte, chacun aussi en trait double, d'une autre forme qu'un chemin.
@@ -2171,7 +2185,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // et où l'aménagement se pose (au Phare, au pied de la tour), comme un cadenas au-dessus de son pont (./remiseRun.ts).
   const signsTracker = createSignsTracker({
     anchorOf: (place) => {
-      const h = scenetteHabitant(place, remisePosed(place));
+      // Au-dessus de l'habitant près de sa porte (au 5e), sinon de sa place dans la scénette, là où se joue la remise.
+      const h = worldHabitantAt(place, ground) ?? scenetteHabitant(place, remisePosed(place));
       return { x: h.x, y: h.y + SIGN_LIFT, z: h.z };
     },
     place: (anchor, sign) => {

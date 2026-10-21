@@ -27,7 +27,8 @@ import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene
 import type { ItemScene } from './questions';
 import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
 import { EQUIPIER_TRIANGLES, guideOf } from './equipage';
-import { GUIDE_SHADOW_TRIANGLES, bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
+import { GUIDE_SHADOW_TRIANGLES, bellPlane, habitantHand, habitantPawn, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
+import { hasWorldHabitant } from './worldHabitants';
 import { landTileCounts } from './flora';
 import { buildHeightField, heightOnMesh, tileRings } from './terrain';
 import { buildHeightField5e, groundOn5e, tileCounts5e } from './terrain5e';
@@ -118,6 +119,13 @@ const OPEN_WORLD_BUDGET_4E = { triangles: 118_000, calls: 22 } as const;
  * plus, dans le maillage du sol, sans appel de plus. Mesurée : +5 733 scénette ouverte.
  */
 export const FOREST_REWORK_MAX_5E = 5_800;
+
+/**
+ * Les habitants du 5e près de leur porte, hors de la scénette (choix du mainteneur du 21 octobre 2026, « Comme au 6e » ;
+ * `worldHabitantsCost5e`) : au plus tant de triangles, les quatorze pions ensemble (3 204 mesurés), dans le maillage des
+ * lieux, sans appel de plus ; le monde hors scénette et le départ seuls (la scénette ouverte ne bouge pas).
+ */
+export const WORLD_HABITANTS_MAX_5E = 3_300;
 
 /** Le plafond de la ruine d'un lieu du 5e, en triangles (intention du directeur artistique du lot 16 : visée à 1 000). */
 export const PLACE_RUIN_TRIANGLES_MAX_5E = 1_200;
@@ -383,7 +391,17 @@ const PLAN_5E = planFor('5e');
 const LINKED_LANDS_5E = linkedLands(PLAN_5E);
 
 /** Le poste de la brume des failles du 5e (./mist5e.ts) : un maillage transparent, caché sur la Carte. */
-export type OpenWorldCost5e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'failles' | 'départ' };
+export type OpenWorldCost5e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'failles' | 'départ' | 'habitants' };
+
+/**
+ * Les habitants du 5e hors de leur scénette (choix du mainteneur du 21 octobre 2026, « Comme au 6e » ;
+ * ./worldHabitants.ts) : le pion de chaque lieu fini près de sa porte, tous à la fois, dans le maillage des lieux (aucun
+ * appel de plus). Ni sur la Carte, ni pendant une scénette : le monde hors scénette et le départ seuls les comptent.
+ */
+export function worldHabitantsCost5e(): { triangles: number; calls: number } {
+  const triangles = PLAN_5E.places.reduce((s, p) => s + (hasWorldHabitant(p.id) ? (habitantPawn(p.id)?.triangles ?? 0) : 0), 0);
+  return { triangles, calls: 0 };
+}
 
 /** Le sol du 5e, compté comme celui du 6e (`groundCost`) : autour des points de son réseau, dans huit directions. */
 function groundCost5e(): { triangles: number; calls: number; near: number; far: number } {
@@ -498,7 +516,8 @@ function scenetteCost5e(): { triangles: number; calls: number } {
  * La faune de chaque terre (./wildlife5e.ts), un maillage. Les Détours du 5e, le Creux (lot 6, ./creux5e.ts), la Hutte
  * (lot 8, ./hutte5e.ts), la Faille (lot 11, ./faille5e.ts) et le Perchoir (lot 16, ./perchoir5e.ts), leurs sentes tracées
  * comprises, dans le maillage des lieux ; pas encore d'aménagements. Les câbles des Nacelles (lot 16, `reachCost5e`) vont
- * avec les lieux.
+ * avec les lieux. Hors scénette et au départ, les habitants près de leur porte (`worldHabitantsCost5e`), dans le même
+ * maillage ; cachés pendant une scénette.
  */
 export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenette'): OpenWorldCost5e[] {
   const field = buildHeightField5e();
@@ -522,9 +541,9 @@ export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenett
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost5e() },
     ...(view === 'depart'
-      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }]
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost5e() }]
       : view === 'monde'
-      ? [{ poste: 'pose' as const, ...poseCost5e() }]
+      ? [{ poste: 'pose' as const, ...poseCost5e() }, { poste: 'habitants' as const, ...worldHabitantsCost5e() }]
       : [
           { poste: 'question' as const, ...questionCost5e() },
           { poste: 'scénette' as const, ...scenetteCost5e() },

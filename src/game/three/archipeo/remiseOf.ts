@@ -24,7 +24,7 @@ import { MATTE_GLASS, amenagementById } from '../../world/continu/amenagements';
 import { placeById, placeOfIsland, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
 import { ENTRAIDE_PHRASES, HABITANT_PHRASES, filled, type PhraseTokens, type RemiseKind } from '../../world/continu/remise';
 import { scenetteOf } from '../../world/continu/scenette';
-import { commandeDeLIle, commandesArrivees, commandesOuvertes, estLivree, estPrete, getCommande, type Commande } from '../../world/requests';
+import { COMMANDES, archipelDeLaCommande, commandeDeLIle, commandesArrivees, commandesOuvertes, estLivree, estPrete, getCommande, type Commande } from '../../world/requests';
 import { STORY_XP, canTapStep, openStoryOf, type Story, type StoryStep } from '../../world/stories';
 import type { RemisePlay } from './scene';
 
@@ -108,6 +108,16 @@ export function remiseOf(id: string): RemiseRequest | null {
     done: filled(HABITANT_PHRASES.done, t),
     block: c.block,
   };
+}
+
+/**
+ * Les commandes et l'entraide du niveau du plan se font-elles dans le monde ouvert (une de ses commandes au moins y a
+ * son aménagement, et sa remise dans la scénette de son lieu) ? Au 6e, oui. Au 5e, pas encore : ses commandes et ses
+ * quêtes sont écrites pour la grille (docs/contenu/, « Les demandes » ; docs/contenu/quetes.md), mais leurs aménagements
+ * et leur remise ne sont pas dessinés dans le monde ouvert ; ses habitants n'y ont que leurs révisions dues.
+ */
+export function hasOpenWorldErrands(plan: LevelPlan): boolean {
+  return COMMANDES.some((c) => archipelDeLaCommande(c) === plan.level && remiseOf(c.id) !== null);
 }
 
 /** L'entraide ouverte d'un niveau : sa quête, l'étape en cours, son rang, et le lieu du monde ouvert où elle se fait. */
@@ -304,7 +314,8 @@ export function suggestedAction(ready: ReadyCommande | null, step: SuggestedActi
  * puis les commandes prêtes dans l'ordre d'arrivée, puis l'étape d'entraide qui se fait d'un geste (« Donner » avec assez
  * de blocs, « Apporter » ; son icône, l'objet), puis les lieux qui ont des révisions dues (`revisions`, sans « Plus
  * tard ») dans l'ordre des lieux ; un lieu n'a qu'une pastille ; trois au plus. `titre` : le mot de l'entraide dans
- * l'univers (`quetes.titre`, jamais « quête »).
+ * l'univers (`quetes.titre`, jamais « quête »). Un niveau sans commande ni entraide dans le monde ouvert
+ * (`hasOpenWorldErrands`, le 5e) n'a que les pastilles des révisions.
  */
 export function habitantSigns(
   plan: LevelPlan,
@@ -312,13 +323,15 @@ export function habitantSigns(
   { open, revisions, suggested, titre = 'Entraide' }: { open: (place: PlaceId) => boolean; revisions: (place: PlaceId) => boolean; suggested?: string; titre?: string },
 ): HabitantSign[] {
   const out: HabitantSign[] = [];
-  const e = entraideOf(plan, state);
+  // Sans commande ni entraide dans le monde ouvert (le 5e), les révisions dues seules.
+  const errands = hasOpenWorldErrands(plan);
+  const e = errands ? entraideOf(plan, state) : null;
   const entraide: HabitantSign | null =
     e && e.step.kind !== 'mission' && open(e.place) && canTapStep(state, e.step)
       ? { place: e.place, kind: 'entraide', block: e.story.item, suggested: e.story.id === suggested, label: `${titre}, ${e.story.name}, ${placeById(e.place).at}` }
       : null;
   if (entraide?.suggested) out.push(entraide);
-  for (const { c, place } of readyInOpen(plan, state, open, suggested)) {
+  for (const { c, place } of errands ? readyInOpen(plan, state, open, suggested) : []) {
     if (out.some((s) => s.place === place)) continue;
     out.push({ place, kind: 'commande', block: c.block, suggested: c.id === suggested, label: `Commande, ${blockName(c.block, c.count)}, ${placeById(place).at}` });
   }

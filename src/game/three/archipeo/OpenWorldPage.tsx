@@ -42,6 +42,7 @@ import { bornesDuMondeOuvert, firstToPlayAt, keepClear, missionsOfPlace, nextMis
 import { placeById, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
 import type { PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
+import { hasWorldHabitant } from '../../world/continu/worldHabitants';
 import { modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
@@ -65,7 +66,7 @@ import { revisionPlanOf, type RevisionPlan } from './revisionOf';
 import { CommandsSheet, HabitantLine } from './HabitantLine';
 import { HabitantSigns, placeSigns } from './HabitantSigns';
 import { Remise } from './Remise';
-import { commandLines, entraideLineOf, entraideListLine, entraideRemiseOf, entraideSuggestion, habitantLineOf, habitantSigns, readyCommande, remiseOf, suggestedAction, type HabitantGo, type RemiseRequest, type SuggestedAction } from './remiseOf';
+import { commandLines, entraideLineOf, entraideListLine, entraideRemiseOf, entraideSuggestion, habitantLineOf, habitantSigns, hasOpenWorldErrands, readyCommande, remiseOf, suggestedAction, type HabitantGo, type RemiseRequest, type SuggestedAction } from './remiseOf';
 import './openWorld.css';
 
 declare global {
@@ -99,9 +100,15 @@ const missionTitle = (island: string, mission: string) => getBiome(island)?.exer
  */
 export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const plan = planFor(level);
-  // Le 6e seul a les Détours, les habitants (leurs commandes, l'entraide, leurs pastilles) et les scénettes de tous ses
-  // lieux (GD-22, lot 2) ; chaque niveau a son lieu de départ et sa Nef (GD-22, lot 4 : la Lisière et le dirigeable).
+  // Le 6e seul a les Détours, les commandes et l'entraide des habitants, et les scénettes de tous ses lieux (GD-22, lot
+  // 2) ; chaque niveau a son lieu de départ et sa Nef (GD-22, lot 4 : la Lisière et le dirigeable).
   const sixth = level === '6e';
+  // Les habitants du niveau font signe dans le monde (leurs pastilles, leur ligne dans le panneau du lieu) : au 6e, au-
+  // dessus de leur place dans la scénette ; au 5e, près de leur lieu, hors de la scénette (choix du mainteneur du 21
+  // octobre 2026, « Comme au 6e » ; ../../world/continu/worldHabitants.ts). Leurs commandes et leur entraide seulement
+  // là où elles se livrent dans le monde ouvert (`hasOpenWorldErrands` : au 6e) ; ailleurs, leurs révisions dues.
+  const habitantsShown = sixth || plan.places.some((p) => hasWorldHabitant(p.id));
+  const errands = useMemo(() => hasOpenWorldErrands(plan), [plan]);
   const { biomeId } = useParams();
   const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour, launch } = useBlocland();
   const textes = useTextes();
@@ -181,12 +188,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // où se tient Kéo tant qu'il y reste une mission jamais jouée, avant la prochaine mission d'un autre lieu. Quand elle la
   // porte, la bulle dit sa phrase, avec « Livrer » si Kéo est chez l'habitant, sinon « Y aller » ; la marque va à son
   // lieu ; sa pastille est la seule pleine ; aucune mission n'est mise en avant.
-  const readyCmd = useMemo(() => (sixth ? readyCommande(plan, state, (p) => !isClosed(p), modele.destination.commande, here) : null), [sixth, plan, state, isClosed, modele.destination.commande, here]);
+  const readyCmd = useMemo(() => (errands ? readyCommande(plan, state, (p) => !isClosed(p), modele.destination.commande, here) : null), [errands, plan, state, isClosed, modele.destination.commande, here]);
   const hereToPlay = Boolean(here && nextFree?.place.id === here && firstToPlayAt(nextFree.place, bornes));
   // L'étape d'entraide (lot L2), juste après la commande prête : un geste chez l'habitant (« Donner », « Apporter »),
   // porté comme une commande prête ; une mission à jouer chez lui, portée comme la prochaine mission, dans son lieu (la
   // première encore à jouer, sinon à reprendre, sinon la première), la bulle disant la phrase de l'étape.
-  const stepSuggestion = useMemo(() => (sixth ? entraideSuggestion(plan, vu, (p) => !isClosed(p)) : null), [sixth, plan, vu, isClosed]);
+  const stepSuggestion = useMemo(() => (errands ? entraideSuggestion(plan, vu, (p) => !isClosed(p)) : null), [errands, plan, vu, isClosed]);
   const suggestedAct = nefFirst ? null : suggestedAction(readyCmd, stepSuggestion, hereToPlay);
   const suggestedId = suggestedAct?.id ?? null;
   const suggestedCmd: SuggestedAction | null = suggestedAct && suggestedAct.kind !== 'mission' ? suggestedAct : null;
@@ -203,7 +210,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const { remises } = usePlusTard();
   const signs = useMemo(
     () =>
-      !sixth
+      !habitantsShown
         ? []
         : habitantSigns(plan, vu, {
             open: (p) => !isClosed(p) && p !== here,
@@ -214,7 +221,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
             suggested: suggestedId ?? undefined,
             titre: textes.quetes?.titre,
           }),
-    [sixth, plan, vu, state.spaced, state.world.links, isClosed, here, remises, settings.lv2, suggestedId, textes.quetes?.titre],
+    [habitantsShown, plan, vu, state.spaced, state.world.links, isClosed, here, remises, settings.lv2, suggestedId, textes.quetes?.titre],
   );
 
   // Kéo part de l'endroit de l'Escale de l'adresse (le retour d'une mission de l'école, `?porte=maths`, ou d'une question
@@ -1045,7 +1052,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           {/* Les accès directs (décision « Sans Menu », GD-20, lot 1) : la colonne du monde en grille, telle quelle ; les
               commandes ouvrent la liste du monde ouvert (lot L1), sans la quête d'entraide (lot L2). Masquée pendant une
               question ou une remise. */}
-          {!playing && !sheetOpen && <WorldShortcuts a={level} requestsOpen={commandsOpen} onRequests={sixth ? openCommands : undefined} resumeFrom={portResume} resumeAt={placeResume} />}
+          {!playing && !sheetOpen && <WorldShortcuts a={level} requestsOpen={commandsOpen} onRequests={errands ? openCommands : undefined} resumeFrom={portResume} resumeAt={placeResume} />}
           {!playing && !sheetOpen && <SettingsButton />}
           {commandsOpen && !playing && (
             <div ref={panelRef} className="open-world-panel open-world-panel-commandes">
@@ -1098,7 +1105,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                   focus={lieu.focus}
                   onPlay={play}
                   onClose={closeLieu}
-                  habitant={sixth && <HabitantLine place={lieu.place} line={habitantLineOf(state, lieu.place, assemblyAt)} entraide={entraideLineOf(plan, vu, lieu.place, assemblyAt)} suggested={suggestedId} onDeliver={deliverAt} onEntraide={entraideAt} onReprendre={() => void reprendreAt()} reprendreBusy={reprendreBusy} onGo={goHabitant} />}
+                  habitant={habitantsShown && <HabitantLine place={lieu.place} line={errands ? habitantLineOf(state, lieu.place, assemblyAt) : null} entraide={errands ? entraideLineOf(plan, vu, lieu.place, assemblyAt) : null} suggested={suggestedId} onDeliver={deliverAt} onEntraide={entraideAt} onReprendre={() => void reprendreAt()} reprendreBusy={reprendreBusy} onGo={goHabitant} />}
                 />
               )}
             </div>

@@ -2001,6 +2001,25 @@ export function scenetteSetting(place: PlaceId, open = false, posed = true): Fac
 }
 
 /**
+ * Le pion de l'habitant d'un lieu qui tient son dessin dans son fichier (le 5e, ./placeArt.ts), seul : sans le sol de sa
+ * scène ni ombre, ses pieds à l'origine, le visage vers +z. C'est lui qui se tient près de son lieu hors de la scénette
+ * (./worldHabitants.ts) : le modèle 3D reste à la scénette. Le décor d'un tel lieu dessine son sol d'abord, puis le pion
+ * (`decor`, `body`) : le pion est ce qui vient après le sol (un test le vérifie). `null` : le lieu n'a pas ce dessin.
+ */
+export function habitantPawn(place: PlaceId): Facets | null {
+  const art = placeArt(place);
+  if (!art) return null;
+  const origin = { x: 0, y: 0, z: 0 };
+  const floor = new FacetBuilder();
+  art.decor(floor, origin, origin, sphere, false);
+  const whole = new FacetBuilder();
+  art.decor(whole, origin, origin, sphere, true);
+  const f = whole.build();
+  const n = floor.build().positions.length;
+  return { positions: f.positions.slice(n), normals: f.normals.slice(n), colors: f.colors.slice(n), triangles: (f.positions.length - n) / 9 };
+}
+
+/**
  * Le décor de près sans les abords du lieu : le sol de la scène, l'habitant (son pion dessiné en code s'il n'a pas de
  * modèle) et les ombres au pied. Les tests y jugent l'habitant seul ; le décor montré y ajoute les abords.
  */
