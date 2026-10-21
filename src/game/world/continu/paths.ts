@@ -43,10 +43,10 @@ export function routeLength(route: readonly Vec2[]): number {
 /** Les demi-largeurs du ruban : un sentier sur la terre, une digue ou un ponton sur l'eau, plus larges. */
 const HALF_WIDTH = { path: 0.8, deck: 1.1 };
 /** Le pas des points du ruban, le long d'une liaison : celui de la grille du terrain, pour qu'il en suive les creux. */
-const RIBBON_STEP = 1.25;
+export const RIBBON_STEP = 1.25;
 /** Le dessus du ruban au-dessus du sol, et la profondeur de ses flancs. */
-const RIBBON_LIFT = 0.06;
-const RIBBON_SIDE = 0.7;
+export const RIBBON_LIFT = 0.06;
+export const RIBBON_SIDE = 0.7;
 /**
  * Le liseré de terre d'un sentier (GD-20, point 3, lot 3, décision du directeur artistique du 17 octobre 2026) : une
  * bande brune (`COLORS_6E.pathEdge`) de `width` unités de chaque côté, dans la largeur du ruban (au moins 2 px à
@@ -103,6 +103,14 @@ export interface RibbonNet {
   cut(edge: number): readonly [number, number] | null;
   skip(p: Vec2): boolean;
   planks(ia: string, ib: string): boolean;
+  /**
+   * La demi-largeur de ce qu'on marche sur la liaison `edge`, à `along` unités de son premier nœud, quand ce n'est pas
+   * un sentier (les chaussées du plateau du 5e, dessinées à part, ./paths5e.ts) : l'anneau sous Kéo passe dessus. Rien :
+   * le sentier, ou le bois sur l'eau.
+   */
+  width?(edge: number, along: number): number | null;
+  /** La plus grande de ces demi-largeurs (les liaisons proches d'un point, `edgesNear`). */
+  widest?: number;
 }
 
 /** Le réseau du 6e, pour son dessin. */
@@ -242,8 +250,8 @@ function nodeOctagon(b: FacetBuilder, ground: (x: number, z: number) => number, 
 const NODE_SAND_SIDES = 12;
 
 /** Le dessus de l'octogone d'un nœud (`node`) en (`x`, `z`), ou −∞ hors de lui. */
-function nodeTopAt(x: number, z: number, ground: (x: number, z: number) => number, node: Vec2): number {
-  const w = (deckAtXZ(ground, node.x, node.z) ? HALF_WIDTH.deck : HALF_WIDTH.path) * 1.08;
+function nodeTopAt(x: number, z: number, ground: (x: number, z: number) => number, node: Vec2, wide: number | null): number {
+  const w = (wide ?? (deckAtXZ(ground, node.x, node.z) ? HALF_WIDTH.deck : HALF_WIDTH.path)) * 1.08;
   return Math.hypot(x - node.x, z - node.z) <= w ? standingHeight(ground(node.x, node.z)) + RIBBON_LIFT + 0.005 : -Infinity;
 }
 
@@ -253,7 +261,7 @@ export function edgesNear(x: number, z: number, reach: number, out: number[], ne
   for (let edge = 0; edge < net.edges.length; edge++) {
     const a = net.node(net.edges[edge][0]).at;
     const c = net.node(net.edges[edge][1]).at;
-    if (segmentDistance(x, z, a.x, a.z, c.x, c.z) < reach + HALF_WIDTH.deck * 1.08) out.push(edge);
+    if (segmentDistance(x, z, a.x, a.z, c.x, c.z) < reach + Math.max(HALF_WIDTH.deck, net.widest ?? 0) * 1.08) out.push(edge);
   }
   return out;
 }
@@ -281,7 +289,7 @@ export function pathTopAt(x: number, z: number, ground: (x: number, z: number) =
     const len = Math.hypot(c.x - a.x, c.z - a.z) || 1e-9;
     const dx = (c.x - a.x) / len;
     const dz = (c.z - a.z) / len;
-    top = Math.max(top, nodeTopAt(x, z, ground, a), nodeTopAt(x, z, ground, c));
+    top = Math.max(top, nodeTopAt(x, z, ground, a, net.width?.(edge, 0) ?? null), nodeTopAt(x, z, ground, c, net.width?.(edge, len) ?? null));
     const d = (x - a.x) * dx + (z - a.z) * dz;
     if (d < 0 || d > len) continue;
     const across = Math.abs(-(x - a.x) * dz + (z - a.z) * dx);
@@ -292,7 +300,7 @@ export function pathTopAt(x: number, z: number, ground: (x: number, z: number) =
     const d1 = (len * (k + 1)) / n;
     const mx = a.x + dx * ((d0 + d1) / 2);
     const mz = a.z + dz * ((d0 + d1) / 2);
-    if (across > (deckAtXZ(ground, mx, mz) ? HALF_WIDTH.deck : HALF_WIDTH.path)) continue;
+    if (across > (net.width?.(edge, (d0 + d1) / 2) ?? (deckAtXZ(ground, mx, mz) ? HALF_WIDTH.deck : HALF_WIDTH.path))) continue;
     const y0 = standingHeight(ground(a.x + dx * d0, a.z + dz * d0));
     const y1 = standingHeight(ground(a.x + dx * d1, a.z + dz * d1));
     top = Math.max(top, y0 + ((y1 - y0) * (d - d0)) / (d1 - d0) + RIBBON_LIFT);

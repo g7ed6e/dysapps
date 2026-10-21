@@ -44,9 +44,17 @@ const plateauEdge = (p: Vec2): number => signedDistance(p, PLATEAU_5E) + 1.1 * M
  * pied ; la mer au nord et le chenal de l'ouest l'entaillent (leur eau la coupe, de même largeur).
  */
 export function plateauShare(p: Vec2): number {
-  const cut = Math.min(plateauEdge(p), signedDistance(p, COAST_5E), channelClearance(p, 'ouest'));
-  return smoothstep(0, PLATEAU.cliff, cut);
+  return smoothstep(0, PLATEAU.cliff, plateauCut(p));
 }
+
+/** La distance au pied de la falaise du plateau, la mer et le chenal de l'ouest compris (positive vers le haut). */
+const plateauCut = (p: Vec2): number => Math.min(plateauEdge(p), signedDistance(p, COAST_5E), channelClearance(p, 'ouest'));
+
+/**
+ * La distance au rebord du plateau, en haut de sa falaise (positive sur le dessus) : les chaussées posent un rang de
+ * pierres du côté du vide quand elles en passent près (./paths5e.ts, `causewayFacets`).
+ */
+export const plateauRim5e = (p: Vec2): number => plateauCut(p) - PLATEAU.cliff;
 
 /** Les Contreforts, à l'ouest du chenal de l'ouest : un sol un peu plus haut, ocre (de 0 à 1). */
 const contreforts = (p: Vec2): number => smoothstep(-82, -104, p.x);

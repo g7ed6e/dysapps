@@ -90,20 +90,20 @@ test('la scène reçoit le plan du 5e, la Lisière et le dirigeable (lot 4), et 
   expect([...scene.closed].sort()).toEqual(['aiguilles', 'contreforts', 'roselieres']);
 });
 
-test('une mission d’un lieu du 5e sans scénette (le Donjon) se joue sur l’écran habituel', async () => {
-  // Les lieux des Frondaisons, des Roselières et des Contreforts sont tous construits (lot 12) : le Donjon, aux Aiguilles,
-  // une de ses missions jouée, pour que sa terre soit ouverte.
-  localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, progress: { 'history-5e-middle-ages-christendoms-islam-1': { stars: 1, attempts: 1, best: 0.5 } } }));
+test('une mission d’un lieu du 5e sans scénette (le Sémaphore) se joue sur l’écran habituel', async () => {
+  // Les lieux des Frondaisons, des Roselières et des Contreforts sont tous construits (lot 12), le Donjon aussi (lot 13a) :
+  // le Sémaphore, aux Aiguilles, une de ses missions jouée, pour que sa terre soit ouverte.
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, progress: { 'english-5e-vocabulary-shopping-1': { stars: 1, attempts: 1, best: 0.5 } } }));
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });
-  act(() => scene.options!.onArrive('donjon'));
-  const sheet = await screen.findByRole('dialog', { name: 'Le Donjon' });
+  act(() => scene.options!.onArrive('semaphore'));
+  const sheet = await screen.findByRole('dialog', { name: 'Le Sémaphore' });
   // Aucune ligne d'habitant dans un lieu du 5e sans scénette : le panneau commence par ses missions.
   expect(within(sheet).queryByRole('button', { name: /Reprendre|Livrer/ })).toBeNull();
-  const rows = within(sheet).getByRole('list', { name: 'Missions au Donjon' });
+  const rows = within(sheet).getByRole('list', { name: 'Missions au Sémaphore' });
   await userEvent.setup().click(within(rows).getAllByRole('button')[0]);
   await vi.waitFor(() => expect(document.querySelector('.world-question.ecran-habituel')).not.toBeNull());
-  expect(scene.world!.question).not.toHaveBeenCalledWith(expect.objectContaining({ place: 'donjon' }));
+  expect(scene.world!.question).not.toHaveBeenCalledWith(expect.objectContaining({ place: 'semaphore' }));
 });
 
 test('sur la Carte, la pastille du lieu que désigne la marque porte seule la marque « suggéré » (seconde relecture du lot 2)', async () => {

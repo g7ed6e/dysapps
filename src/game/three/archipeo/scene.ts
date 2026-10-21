@@ -31,7 +31,7 @@ import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type Bridge
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { hasScenette, placeById, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
 import { hasHabitantModel } from '../../world/continu/habitants';
-import { doorViewOf, placeArt } from '../../world/continu/northShore';
+import { arrivalViewOf, doorViewOf, placeArt } from '../../world/continu/northShore';
 import { levelWorld, type LevelWorld, type ThinFog } from '../../world/continu/levelWorld';
 import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from '../../world/continu/mist5e';
 import { pathMapEdges5e } from '../../world/continu/paths5e';
@@ -483,7 +483,10 @@ const FRAMED_BRIDGE_NEAR = 12;
 /** Le bout de la caméra qui suit Kéo, et celui de la Carte (l'île entière, de haut), en unités. */
 const FOLLOW_FAR = 500;
 // Au 5e, `FOLLOW_FAR_5E` (./world/continu/nef5e.ts), pour le panache de la Nef, au-delà de 500 vu du quai.
-/** Le regard levé au quai du lieu de départ ne vaut que la caméra tournée à moins de tant de son cap (en radians). */
+/**
+ * Le regard levé au quai du lieu de départ, ou à la porte d'un lieu haut (`PlaceArt.arrivalView`), ne vaut que la caméra
+ * tournée à moins de tant de son cap (en radians).
+ */
 const QUAY_LOOK_TURN = 0.6;
 const MAP_FAR = 2000;
 /** Le rayon du dôme du ciel : en deçà du bout de la caméra qui suit Kéo (`FOLLOW_FAR`) ; dessiné sans profondeur, tout le reste passe devant. */
@@ -938,6 +941,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Lisière la montre au fond ; GD-22, lot 4), et l'endroit du quai.
   const quayLook: Vec3 | null = departure.lookAt ? { x: placeById(departure.lookAt).center.x, y: (feet.get(departure.lookAt)?.y ?? 0) + modelOfPlace(departure.lookAt).top, z: placeById(departure.lookAt).center.z } : null;
   const quayPoint = net.pathNode(portNode('quai')).at;
+  // Les lieux trop hauts pour la caméra qui suit à leur porte (`PlaceArt.arrivalView` ; au 5e, le Donjon, retouche 1 du
+  // lot 13a) : leur porte, le bord du haut que le regard levé y cadre (à la hauteur de ce qui est bâti, `builtTop`) et le
+  // recul de la caméra. `arrivalNow` : celui où Kéo se tient, tourné vers son cap ; `arrivalBack`, la part du recul, de 0
+  // à 1, comme `look` ; `arrivalShape`, le recul du dernier, gardé pendant que la caméra revient.
+  const arrivals = PLACES.flatMap((p) => {
+    const a = arrivalViewOf(p.id);
+    return a ? [{ id: p.id, door: net.pathNode(p.door).at, look: { x: p.center.x + a.look.x, z: p.center.z + a.look.z }, view: { height: 0, back: a.back } }] : [];
+  });
+  let arrivalNow: (typeof arrivals)[number] | null = null;
+  let arrivalBack = 0;
+  let arrivalShape: DetourView = COMMON_DETOUR_VIEW;
   /** La hauteur bâtie de chaque lieu, au-dessus de son pied (le lieu entier tant que la page n'a rien dit). */
   const builtTop = new Map<PlaceId, number>();
   const whole = (id: PlaceId) => (builtTop.get(id) ?? modelOfPlace(id).top) >= modelOfPlace(id).top - 0.5;
@@ -1516,10 +1530,21 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   // Le regard levé près du Phare (`lookUp`) : sa part, de 0 à 1 ; le haut de la lanterne.
   const nearLantern = () => {
+    arrivalNow = null;
     if (walk) return false;
     const near = TALL.find((id) => distance(here, placeById(id).center) < LOOK_UP.within);
     if (near) Object.assign(lanternTop, tallTops.get(near)!);
     if (near !== undefined) return true;
+    // À la porte d'un lieu haut, tourné vers son cap : la caméra recule et lève le regard jusqu'au haut tel qu'il est bâti.
+    for (const a of arrivals) {
+      if (distance(here, a.door) > 0.5 || Math.abs(wrapAngle(yaw - doorViewOf(a.id))) > QUAY_LOOK_TURN) continue;
+      lanternTop.x = a.look.x;
+      lanternTop.y = feet.get(a.id)!.y + (builtTop.get(a.id) ?? modelOfPlace(a.id).top);
+      lanternTop.z = a.look.z;
+      arrivalNow = a;
+      arrivalShape = a.view;
+      return true;
+    }
     // Au quai du lieu de départ du 5e, tourné vers son cap : le sommet de la Montée, au fond (directeur artistique, lot 4).
     if (!quayLook || distance(here, quayPoint) > 0.5 || Math.abs(wrapAngle(yaw - departure.viewYaw)) > QUAY_LOOK_TURN) return false;
     Object.assign(lanternTop, quayLook);
@@ -1560,7 +1585,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let manualView: CameraPose | null = null;
   const follow = () => {
     if (manualView) return applyPose(manualView);
-    followPose(focus, lift, pose, yaw, detourRise(detourView), sixth ? undefined : hold, detourShape);
+    followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : detourRise(detourView), sixth ? undefined : hold, arrivalBack > 0 ? arrivalShape : detourShape);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     applyPose(pose);
@@ -1626,7 +1651,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const reframe = () => {
     if (!frameRect || (!framed && !framedNef) || asked || remise || mapView) return;
-    followPose(focus, lift, pose, yaw, detourRise(detourView), undefined, detourShape);
+    followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : detourRise(detourView), undefined, arrivalBack > 0 ? arrivalShape : detourShape);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     const subject = framedNef ? nefFramed : framed && subjectOf(framed);
@@ -2193,6 +2218,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     placeKeo(here);
     followStep(focus, aimed(), 0, true);
     lift = occlusionLift(focus, ground, yaw);
+    // Devant un lieu haut, la caméra a reculé et levé le regard dès la première image : « Y aller » est une coupe.
+    if (nearLantern() && arrivalNow) look = arrivalBack = 1;
     updateRings(true, true);
     follow();
     arrive(place);
@@ -3918,6 +3945,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!sixth) stepHold(dt);
     stepGlow(t);
     look = lookUpStep(look, nearLantern() ? 1 : 0, dt, reduceMotion);
+    arrivalBack = lookUpStep(arrivalBack, arrivalNow ? 1 : 0, dt, reduceMotion);
     if (back > 0 && !atExit()) back = reduceMotion ? 0 : Math.max(0, back - dt / EXIT_VIEW.down);
     if (back === 0) exit = null;
     follow();

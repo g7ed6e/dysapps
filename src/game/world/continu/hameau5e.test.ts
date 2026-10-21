@@ -41,7 +41,7 @@ function countColor(f: Facets, color: number): number {
 describe('Le Hameau, lieu complet', () => {
   it('ses trois missions se jouent dans sa scénette ; la Montée, le Hameau, les Radeaux, la Croisée, les Instants, les Fumerolles, l’Étuve, les Terrasses et l’Auberge en ont une au 5e', () => {
     expect(HAMEAU_PLACE.scenes).toEqual([...MISSIONS]);
-    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['auberge', 'croisee', 'etuve', 'fumerolles', 'hameau', 'instants', 'montee', 'radeaux', 'terrasses']);
+    expect(PLAN.places.filter((p) => hasScenette(p.id)).map((p) => p.id).sort()).toEqual(['auberge', 'croisee', 'donjon', 'etuve', 'fumerolles', 'hameau', 'instants', 'montee', 'radeaux', 'terrasses']);
     for (const p of PLAN.places) if (!hasScenette(p.id)) expect(p.scenes, p.id).toEqual([]);
   });
 

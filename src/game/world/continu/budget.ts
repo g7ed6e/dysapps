@@ -89,6 +89,13 @@ const OPEN_WORLD_BUDGET_5E = { triangles: 118_000, calls: 22 } as const;
  */
 export const PLACE_TRIANGLES_MAX_5E = 1_600;
 
+/**
+ * Ce que les chaussées dallées du plateau ajoutent aux chemins du 5e, au plus, à la place du sable (GD-22, lot 13a :
+ * « le coût de la terre », mesuré le 21 octobre 2026, +1 454 triangles, aucun appel de plus ; +1 586 avec la retouche 1,
+ * le liseré des nœuds à douze pans) : un plafond des tests des lots, jamais une enveloppe.
+ */
+export const CAUSEWAYS_ADDED_5E = 1_600;
+
 /** L'enveloppe du monde ouvert de chaque niveau, que seul le mainteneur relève. */
 export const OPEN_WORLD_BUDGETS: Readonly<Record<OpenWorldLevel, { readonly triangles: number; readonly calls: number }>> = {
   '6e': OPEN_WORLD_BUDGET_6E,

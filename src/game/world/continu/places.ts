@@ -2504,15 +2504,15 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   beacons: northPlace('beacons'),
   ferry: northPlace('ferry'),
   // Le 5e : la Montée finie (lot 3), le Hameau (lot 5), les Radeaux (lot 6), la Croisée (lot 7), les Instants (lot 8),
-  // les Fumerolles (lot 9), l'Étuve (lot 10), les Terrasses (lot 11) et l'Auberge (lot 12), dessinés dans leur fichier ;
-  // les autres, des ruines simples (lot 2).
+  // les Fumerolles (lot 9), l'Étuve (lot 10), les Terrasses (lot 11), l'Auberge (lot 12) et le Donjon (lot 13a),
+  // dessinés dans leur fichier ; les autres, des ruines simples (lot 2).
   montee: northPlace('montee'),
   radeaux: northPlace('radeaux'),
   croisee: northPlace('croisee'),
   instants: northPlace('instants'),
   semaphore: ruinOnly(RUINS_5E.semaphore),
   gaillard: ruinOnly(RUINS_5E.gaillard),
-  donjon: ruinOnly(RUINS_5E.donjon),
+  donjon: northPlace('donjon'),
   terrasses: northPlace('terrasses'),
   fumerolles: northPlace('fumerolles'),
   etuve: northPlace('etuve'),

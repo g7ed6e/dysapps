@@ -5,8 +5,8 @@
 // de presque noir, rien à lire. Retouche du lot 2 (directeur artistique : « des boîtes génériques ») : chaque ruine a sa
 // hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts), comme le Hameau (./hameau5e.ts, lot 5),
 // les Radeaux (./radeaux5e.ts, lot 6), la Croisée (./croisee5e.ts, lot 7), les Instants (./instants5e.ts, lot 8), les
-// Fumerolles (./fumerolles5e.ts, lot 9), l'Étuve (./etuve5e.ts, lot 10), les Terrasses (./terrasses5e.ts, lot 11) et
-// l'Auberge (./auberge5e.ts, lot 12) ; le Donjon, une tour carrée sur son piton de roche. Code pur.
+// Fumerolles (./fumerolles5e.ts, lot 9), l'Étuve (./etuve5e.ts, lot 10), les Terrasses (./terrasses5e.ts, lot 11),
+// l'Auberge (./auberge5e.ts, lot 12) et le Donjon (./donjon5e.ts, lot 13a). Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_5E, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
@@ -33,13 +33,36 @@ function rubble(b: FacetBuilder, x: number, z: number, s: number, color: number,
   b.box({ x: x - s * 0.5, y: SINK, z: z + s * 0.7, yaw: 2.3 }, [s * 0.5, s * 0.35 - SINK, s * 0.7], color, top);
 }
 
-/** Le Sémaphore : un mât de bois sur un socle de pierre, ses deux bras cassés, l'un tombé au pied. */
+/**
+ * Un poteau cassé en biais : de section carrée `w`, posé en (`x`, `z`), du sol jusqu'à `low` d'un côté et `high` de
+ * l'autre (une coupe nette, jamais une dent ni une équerre).
+ */
+function brokenPost(b: FacetBuilder, x: number, z: number, w: number, low: number, high: number): void {
+  b.extrude(
+    { x, y: 0, z: z - w / 2 },
+    [
+      [-w / 2, SINK],
+      [w / 2, SINK],
+      [w / 2, low],
+      [-w / 2, high],
+    ],
+    w,
+    C.wood,
+    C.woodShade,
+  );
+}
+
+/**
+ * Le Sémaphore : un mât de bois sur un socle de pierre, cassé en biais à mi-hauteur ; son haut et ses deux bras tombés au
+ * sol, au pied du socle. Rien en équerre en haut d'un poteau, rien qui pende (directeur artistique, retouche 1 du lot
+ * 13a : les chaussées y mènent ; le lot 14 le remplace).
+ */
 function semaphore(b: FacetBuilder): void {
   b.box({ x: 0, y: SINK, z: 0 }, [4, 2 - SINK, 4], C.shade, C.stone);
-  b.box({ x: 0, y: 2, z: 0 }, [0.9, 13, 0.9], C.woodShade, C.wood);
-  b.beam({ x: 0, y: 12, z: 0 }, { x: 3.4, y: 13.6, z: 0 }, 0.6, C.wood);
-  b.beam({ x: 0, y: 9, z: 0 }, { x: -1.6, y: 8.2, z: 0 }, 0.6, C.wood);
+  brokenPost(b, 0, 0, 0.9, 7.2, 8.4);
+  b.box({ x: 3.6, y: SINK, z: -0.6, yaw: 1.3 }, [5.5, 0.6 - SINK, 0.8], C.woodShade, C.wood);
   b.box({ x: 2.8, y: SINK, z: 2.5, yaw: 0.9 }, [4, 0.5 - SINK, 0.6], C.woodShade, C.wood);
+  b.box({ x: -2.6, y: SINK, z: -2.6, yaw: 2.2 }, [3.2, 0.45 - SINK, 0.6], C.woodShade, C.wood);
   rubble(b, -3, 2.2, 1.2, C.shade, C.moss);
 }
 
@@ -54,27 +77,14 @@ function gaillard(b: FacetBuilder): void {
 }
 
 /**
- * Le Donjon : sur son piton de roche à pans, moussu, une tour carrée, haute et étroite, son haut cassé en dents, une
- * brèche, sa porte au sud, des marches taillées qui montent au piton ; des blocs au pied.
+ * Les Nacelles : un portique de bois tombé au bord du plateau : un seul poteau debout, cassé en biais ; l'autre poteau et
+ * la poutre couchés au sol ; une nacelle tombée. Rien en équerre en haut d'un poteau, rien qui pende (directeur
+ * artistique, retouche 1 du lot 13a : les chaussées passent dessous ; le lot 16 le remplace).
  */
-function donjon(b: FacetBuilder): void {
-  const P = 5.5;
-  b.prism({ x: 0, y: SINK, z: 0, yaw: 0.25 }, 6.8, 4.6, P - SINK, 6, C.stone, C.moss);
-  b.prism({ x: -3.4, y: SINK, z: 2.4, yaw: 0.9 }, 3.2, 1.8, 3.2 - SINK, 5, C.shade, C.moss);
-  b.box({ x: 0, y: P - 0.3, z: 0 }, [5.2, 13.3, 5.2], C.stone, C.sun);
-  for (const [x, z, h] of [[-2, -2, 2.6], [2, -2, 1.2], [-2, 2, 1.8], [2, 2, 2.6]] as const) b.box({ x, y: P + 13, z }, [1.2, h, 1.2], C.stone, C.sun);
-  b.box({ x: 0, y: P, z: 2.65 }, [1.5, 2.6, 0.2], C.shade);
-  b.box({ x: 2.65, y: P + 8, z: 0.4 }, [0.2, 2.2, 1.1], C.shade);
-  for (let k = 0; k < 3; k++) b.box({ x: 0.8, y: SINK, z: 6.4 - k * 1.1 }, [2, (k + 1) * 1.6 - SINK, 1.2], C.shade, C.stone);
-  rubble(b, 5.2, 3.2, 1.6, C.shade, C.moss);
-}
-
-/** Les Nacelles : un portique de bois au bord du plateau, sa poutre cassée, une nacelle tombée. */
 function nacelles(b: FacetBuilder): void {
-  b.box({ x: -4, y: SINK, z: 0 }, [1.2, 10 - SINK, 1.2], C.woodShade, C.wood);
-  b.box({ x: 4, y: SINK, z: 0 }, [1.2, 7 - SINK, 1.2], C.woodShade, C.wood);
-  b.beam({ x: -4, y: 9.6, z: 0 }, { x: 1.5, y: 9.2, z: 0 }, 0.8, C.wood);
-  b.beam({ x: 1.5, y: 9.2, z: 0 }, { x: 1.5, y: 6.5, z: 0 }, 0.15, C.woodShade);
+  brokenPost(b, -4, 0, 1.2, 5.6, 7.2);
+  b.box({ x: 1.0, y: SINK, z: -2.5, yaw: 0.12 }, [7, 0.8 - SINK, 1.0], C.woodShade, C.wood);
+  b.box({ x: 3.4, y: 0.4, z: 0.2, yaw: -0.2 }, [5.5, 0.8, 1.0], C.woodShade, C.wood);
   b.box({ x: 2.5, y: SINK, z: 3, yaw: 0.5, pitch: 0.3 }, [2.6, 1.8 - SINK, 2], C.woodShade, C.bronze);
   b.box({ x: 0, y: SINK, z: 0 }, [10, 0.4 - SINK, 3], C.shade, C.stone);
 }
@@ -94,13 +104,12 @@ function oracle(b: FacetBuilder): void {
 /**
  * La ruine de chaque lieu du 5e pas encore construit (les lieux construits ont leur fichier : ./montee5e.ts, lot 3 ;
  * ./hameau5e.ts, lot 5 ; ./radeaux5e.ts, lot 6 ; ./croisee5e.ts, lot 7 ; ./instants5e.ts, lot 8 ;
- * ./fumerolles5e.ts, lot 9 ; ./etuve5e.ts, lot 10 ; ./terrasses5e.ts, lot 11 ; ./auberge5e.ts, lot 12), dessinée dans
- * son repère.
+ * ./fumerolles5e.ts, lot 9 ; ./etuve5e.ts, lot 10 ; ./terrasses5e.ts, lot 11 ; ./auberge5e.ts, lot 12 ;
+ * ./donjon5e.ts, lot 13a), dessinée dans son repère.
  */
 export const RUINS_5E: Readonly<Record<Exclude<PlaceId5e, BuiltPlace5e>, (b: FacetBuilder) => void>> = {
   semaphore,
   gaillard,
-  donjon,
   nacelles,
   oracle,
 };
