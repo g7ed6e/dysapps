@@ -30,6 +30,7 @@ import { scenetteHabitant, scenetteKeo, scenetteLayout, scenetteOf, scenettePose
 import { SURROUNDINGS_MAX } from './surroundings';
 import { standingHeight } from './terrain';
 import { heightAt5e } from './terrain5e';
+import { LIGHT_5E } from './sky';
 
 const PLAN = planFor('5e');
 const PLACE = PLAN.places.find((p) => p.id === 'donjon')!;
@@ -67,6 +68,39 @@ function toSegment(p: Vec2, a: Vec2, b: Vec2): number {
     dz = b.z - a.z;
   const t = Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.z - a.z) * dz) / (dx * dx + dz * dz)));
   return Math.hypot(p.x - a.x - dx * t, p.z - a.z - dz * t);
+}
+
+/** Une couleur en teinte, saturation et clarté (HSL, de 0 à 1). */
+function hsl(color: number): { s: number; l: number } {
+  const [r, g, b] = [(color >> 16) & 255, (color >> 8) & 255, color & 255].map((v) => v / 255);
+  const [hi, lo] = [Math.max(r, g, b), Math.min(r, g, b)];
+  const l = (hi + lo) / 2;
+  return { s: hi === lo ? 0 : (hi - lo) / (1 - Math.abs(2 * l - 1)), l };
+}
+
+/**
+ * La couleur d'une face à l'écran, sous la lumière du 5e (`LIGHT_5E`), comme la rend Three.js : le Lambert du soleil et
+ * du ciel renvoyé (hémisphère), l'exposition, le mappage des tons neutre (`NeutralToneMapping`), puis sRGB ; au-dessus de
+ * la lumière par la hauteur, sans brouillard. `color` en rouge, vert, bleu linéaires ; `n`, la normale de la face.
+ */
+function rendered5e(color: readonly number[], n: readonly number[]): number {
+  const L = LIGHT_5E;
+  const [sky, ground, sun] = [linearRgb(L.sky), linearRgb(L.ground), linearRgb(L.sun)];
+  const d = Math.hypot(L.sunFrom.x, L.sunFrom.y, L.sunFrom.z);
+  const ndl = Math.max(0, (n[0] * L.sunFrom.x + n[1] * L.sunFrom.y + n[2] * L.sunFrom.z) / d);
+  const w = 0.5 * n[1] + 0.5;
+  let c = color.map((v, i) => ((v / Math.PI) * (ndl * sun[i] * L.sunIntensity + (ground[i] + (sky[i] - ground[i]) * w) * L.ambient)) * L.exposure);
+  const x = Math.min(...c);
+  const offset = x < 0.08 ? x - 6.25 * x * x : 0.04;
+  c = c.map((v) => v - offset);
+  const peak = Math.max(...c);
+  if (peak >= 0.76) {
+    const np = 1 - 0.24 ** 2 / (peak + 0.24 - 0.76);
+    const g = 1 - 1 / (0.15 * (peak - np) + 1);
+    c = c.map((v) => (v * np) / peak * (1 - g) + np * g);
+  }
+  const srgb = c.map((v) => Math.round(255 * Math.min(1, v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055)));
+  return (srgb[0] << 16) | (srgb[1] << 8) | srgb[2];
 }
 
 describe('Le Donjon, lieu complet', () => {
@@ -141,10 +175,36 @@ describe('Le Donjon, lieu complet', () => {
     expect(DONJON_LAYOUT.parapet.blocks).toBe(3);
     // Le joint entre deux blocs, debout, sombre : jamais un vide (pas de créneau).
     expect(DONJON_LAYOUT.parapet.joint).toBeCloseTo(0.06, 6);
-    // La brique ne passe jamais plus orangée que #A8664F : elle n'en a plus aucun sommet.
     expect(countColor(shown(3), 0xa8664f)).toBe(0);
-    // Ses faces intérieures dans l'ombre, en #777D77, et le dessus des blocs en #88503D.
+    // Ses faces intérieures dans l'ombre, en #777D77.
     expect(countColor(drawPieces('donjon', (p) => p.stage === 1), 0x777d77)).toBe(24);
+  });
+
+  it('la brique sourde, rendue sous le soleil du 5e : aucune face au soleil plus saturée ni plus claire que #A8664F', () => {
+    const bound = hsl(0xa8664f);
+    // Le calcul retrouve la mesure des captures v2 : l'ancienne brique (#9A5A44), face sud, rendue #9C4A1A.
+    expect(rendered5e(linearRgb(0x9a5a44), [0, 0, 1])).toBe(0x9c4a1a);
+    // La brique et son joint, chacune avec la normale de chacune de ses faces que le soleil prend, à l'écran.
+    const sun = LIGHT_5E.sunFrom;
+    const f = drawPieces('donjon', (p) => p.stage === 1);
+    const seen = new Map<string, number>();
+    const bricks = [DONJON_LAYOUT.brick.face, DONJON_LAYOUT.brick.dark].map((c) => linearRgb(c));
+    for (let i = 0; i < f.positions.length; i += 3) {
+      const color = [f.colors[i], f.colors[i + 1], f.colors[i + 2]];
+      const n = [f.normals[i], f.normals[i + 1], f.normals[i + 2]];
+      if (!bricks.some((c) => c.every((v, k) => Math.abs(v - color[k]) < 1e-4)) || n[0] * sun.x + n[1] * sun.y + n[2] * sun.z <= 0) continue;
+      const shown = rendered5e(color, n);
+      seen.set(shown.toString(16), shown);
+    }
+    expect(seen.size).toBeGreaterThan(2);
+    for (const shown of seen.values()) {
+      const { s, l } = hsl(shown);
+      expect(s, shown.toString(16)).toBeLessThanOrEqual(bound.s + 1e-3);
+      expect(l, shown.toString(16)).toBeLessThanOrEqual(bound.l + 1e-3);
+    }
+    // La face à l'ouest, en plein soleil : la plus claire, encore une brique (le rouge devant le bleu).
+    const west = rendered5e(linearRgb(DONJON_LAYOUT.brick.face), [-1, 0, 0]);
+    expect(west >> 16).toBeGreaterThan((west & 0xff) + 0x30);
   });
 
   it('la ruine : le fond écroulé sous le plus bas de la coupe en biais', () => {
@@ -153,12 +213,35 @@ describe('Le Donjon, lieu complet', () => {
     expect(DONJON_LAYOUT.cutFloor).toBeLessThan(low - 0.3);
   });
 
-  it('quatre marches taillées : aucune contremarche plus haute que 0,8, la roche du piton dessous', () => {
+  it('sept marches taillées : aucune contremarche plus haute que 0,8, chacune un bloc de la roche du piton, sans face à elle', () => {
     const S = DONJON_LAYOUT.steps;
-    expect(S.count).toBe(4);
+    const P = DONJON_LAYOUT.piton;
+    expect(S.count).toBe(7);
     expect(S.riser).toBeLessThanOrEqual(0.8);
-    // Le dessus des marches au soleil, plus clair que la roche ; quatre dessus, deux triangles chacun.
-    expect(countColor(drawPieces('donjon', (p) => p.stage === 0), COLORS_5E.stoneSun)).toBeGreaterThanOrEqual(4 * 6);
+    expect(S.riser * S.count).toBeCloseTo(P.h, 6);
+    // Les normales des pans du piton (ses six pans, inclinés de son évasement, pris au milieu du pan) et le dessus, à plat.
+    const tilt = Math.atan(S.flare * Math.cos(Math.PI / 6));
+    const pitonNormals = [...Array(6).keys()].map((k) => {
+      const a = (2 * k + 1) * (Math.PI / 6) - P.yaw;
+      return [Math.cos(tilt) * Math.cos(a), Math.sin(tilt), Math.cos(tilt) * Math.sin(a)];
+    });
+    for (const worn of [true, false]) {
+      const f = drawPieces('donjon', (p) => (worn ? p.stage === 'ruine' : p.stage === 0));
+      let near = 0;
+      for (let i = 0; i < f.positions.length; i += 3) {
+        const p = { x: f.positions[i], z: f.positions[i + 2] };
+        // Les sommets des marches : près de leur ligne, hors du piton.
+        if (toSegment(p, S.from, S.to) > S.radius + 0.05 || Math.hypot(p.x - P.x, p.z - P.z) < P.r1 - 0.1) continue;
+        const n = [f.normals[i], f.normals[i + 1], f.normals[i + 2]];
+        const flat = n[1] > 0.999;
+        const likePiton = pitonNormals.some((m) => Math.abs(m[0] * n[0] + m[1] * n[1] + m[2] * n[2] - 1) < 1e-3);
+        expect(flat || likePiton, `${p.x.toFixed(2)}, ${p.z.toFixed(2)} : ${n.map((v) => v.toFixed(3))}`).toBe(true);
+        near++;
+      }
+      expect(near).toBeGreaterThan(50);
+      // Le dessus de chaque marche au soleil, #AEB0A3.
+      expect(countColor(f, COLORS_5E.stoneSun)).toBeGreaterThanOrEqual(7 * 6 * 3);
+    }
   });
 
   it('le pan de toit glissé contre la façade sud, à l’est de la perche, son haut sous la fenêtre', () => {

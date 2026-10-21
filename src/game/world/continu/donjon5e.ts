@@ -2,7 +2,7 @@
 // `selection-donjon-oracle` validée par le mainteneur) : « une tour des Passeurs sur un piton, que chaque âge a
 // reprise ». Le cœur, sans figure : la tour carrée à trois assises, lisibles dès la ruine, en bas les grandes pierres
 // grises des Passeurs, au milieu des pierres plus petites et plus claires percées de hautes fentes de jour, en haut la
-// brique sourde du parapet. Elle se dresse sur un piton de roche (5,5), sa porte au haut du piton, au sud, quatre marches
+// brique sourde du parapet. Elle se dresse sur un piton de roche (5,5), sa porte au haut du piton, au sud, sept marches
 // frustes taillées sur son flanc ouest ; son sommet reste sous les aiguilles (18,5 au-dessus du plateau). Au pied du
 // piton, à l'est, le logis de la maçonne, adossé à la roche ; au sud la cour de dalles chaudes, où la chaussée d'`aig-2`
 // devient la dalle du lieu ; au bord ouest de la cour, le pilier du guet. Le blason, un écu sculpté d'un seul trait
@@ -15,13 +15,15 @@
 // coin plus haut que l'autre, ouverte au ciel, sans brique ni dent ; au pied du piton, trois blocs à facettes, les deux
 // moitiés du blason en pierre claire (le trait visible sur chacune, l'une couchée, l'autre appuyée contre un bloc) et la
 // herse couchée à plat, ses six barreaux parallèles ; la porte de la tour, son linteau sombre sans motif ; le logis aux
-// murs debout, porte fermée, un volet qui pend, la moitié sud de son toit de lauze glissée d'un seul pan contre sa façade ;
+// murs debout, porte fermée, un volet qui pend, son toit de lauze glissé d'un seul pan contre sa façade ;
 // la cour aux dalles fendues, son côté ouest affaissé. Une seule lumière, celle de la maçonne, sur sa perche à côté de la
 // porte du logis. Trois parties, une par mission (`stage`), et une trace avec chacune : l'auge à chaux (le corps), la
 // brouette (le haut), la pile de trois dalles neuves (les abords). Rien ne bouge, rien à lire dans la 3D, rien de croisé.
 // Retouche 1 (relectures du 21 octobre 2026, le directeur artistique fait foi) : la caméra de « Y aller » recule à la
 // porte (`arrivalView`), le parapet en trois blocs par côté, les marches taillées, le signe de l'Auberge, le logis de
 // pierre, le pan de toit devant le mur, les moitiés du blason claires, l'auge dans la scénette, la cour sans marche.
+// Sa seconde passe (captures v2) : la brique sourde, mesurée telle qu'elle est rendue au soleil ; sept marches, chacune un
+// bloc de la roche du piton ; la moitié nord du toit tombée aussi.
 // Code pur (placeArt.ts).
 import type { Stage } from './construction';
 import { drawPosed, FacetBuilder } from './facets';
@@ -54,9 +56,14 @@ const C = {
   paleTop: 0xc6bca6,
   paleWorn: 0xaca28c,
   paleJoint: 0x978d79,
-  brick: 0x9a5a44,
+  /**
+   * La brique sourde du parapet. Seconde passe (captures v2 : sa face au soleil rendue #9C4A1A, orange vif) : une brique
+   * grise, peu saturée ; sous le soleil du 5e, sa face à l'ouest rend #A47050 environ, au sud #7C543B, jamais plus
+   * saturée ni plus claire que #A8664F (un test le calcule).
+   */
+  brick: 0x806660,
   /** Le joint sombre de la brique, le dessus des blocs du parapet et le dessous de son débord. */
-  brickDark: 0x88503d,
+  brickDark: 0x6a5a56,
   /** Les faces intérieures du parapet, dans l'ombre : on lit l'ouverture du chemin de ronde de trois quarts. */
   parapetInside: COLORS_5E.stoneShade,
   slab: CAUSEWAY_5E.slab,
@@ -195,12 +202,14 @@ const NICHE = { x: 1.15, y0: 13.35, y1: 14.65, half: 0.36 } as const;
 const SLIT = { y0: 11.0, y1: 12.3, half: 0.11 } as const;
 
 /**
- * Les quatre marches taillées, frustes, sur le flanc ouest du piton : du pied, au sud-ouest, jusqu'au replat de la porte ;
- * leur largeur, leur giron. Retouche 1 : des marches, pas des piliers ; chacune une dalle de `riser` de haut au plus (sa
- * contremarche), le dessus clair au soleil, posée sur la roche du piton qui s'évase dessous (`flare` : son évasement par
- * unité de hauteur), jamais une face debout sombre jusqu'au sol.
+ * Les marches taillées, frustes, sur le flanc ouest du piton : du pied, au sud-ouest, jusqu'au replat de la porte ; leur
+ * nombre, le rayon de leur dessus. Retouche 1 : des marches, pas des piliers. Seconde passe (captures v2 : sous chaque
+ * marche, une face debout gris sombre jusqu'au sol, des colonnes en gradins) : sept marches, chacune un bloc de la roche
+ * du piton, à six pans tournés et inclinés comme les siens (`stepRock`) : chaque pan prend la lumière du pan du piton qui
+ * lui est parallèle, sans face sombre propre à la marche ; le dessus clair au soleil ; la contremarche, la hauteur du
+ * piton sur leur nombre (`STEP_RISE`, 0,8 au plus).
  */
-const STEPS = { from: { x: -6.4, z: 2.2 }, to: { x: -3.0, z: 0.4 }, count: 4, width: 1.3, tread: 1.15, riser: 0.8, flare: 0.3 } as const;
+const STEPS = { from: { x: -6.4, z: 2.2 }, to: { x: -3.0, z: 0.4 }, count: 7, radius: 0.62, sunk: 0.22 } as const;
 
 /**
  * Le logis de la maçonne, adossé au pied du piton à l'est : ses murs (de `x0` à `x1`, de `z0` à `z1`), leur hauteur ; son
@@ -258,9 +267,6 @@ const DOOR_AT: Vec2 = (() => {
 
 /** Le recul de la caméra à la porte, en part de sa distance à Kéo (`PlaceArt.arrivalView`) : comme un Détour, 1,6 au plus. */
 const ARRIVAL_BACK = 1.4;
-
-/** Le cap d'un pavé dont le grand côté (x) va de `a` vers `b`. */
-const yawOf = (a: Vec2, b: Vec2): number => Math.atan2(-(b.z - a.z), b.x - a.x);
 
 // ---------- Les petits volumes ----------
 
@@ -365,25 +371,31 @@ function towerDoor(b: FacetBuilder, worn: boolean): void {
   }
 }
 
+/** La contremarche des marches : la hauteur du piton sur leur nombre. */
+const STEP_RISE = PITON.h / STEPS.count;
+
+/** Les pans du piton s'évasent vers le bas : de combien leur rayon croît par unité de hauteur. */
+const PITON_FLARE = (PITON.r0 - PITON.r1) / (PITON.h - SINK);
+
 /**
- * Les quatre marches taillées dans le flanc du piton : chacune une dalle de pierre, sa contremarche de `riser` au plus, son
- * dessus clair au soleil, sur la roche du piton qui s'évase jusqu'au sol (un tronc de pyramide à quatre pans, moussu) ;
- * dans la ruine, une seule a glissé de travers.
+ * Le bloc de roche d'une marche, du sol (`SINK` sous la cour) à son dessus en `top` (depuis la cour) : six pans tournés
+ * (`PITON.yaw`) et évasés comme ceux du piton, la pierre du piton, le dessus clair au soleil.
+ */
+function stepRock(b: FacetBuilder, x: number, z: number, top: number): void {
+  const h = top - SINK;
+  b.prism({ x, y: PT + SINK, z, yaw: PITON.yaw }, STEPS.radius + h * PITON_FLARE, STEPS.radius, h, 6, C.stone, C.stoneSun);
+}
+
+/**
+ * Les marches taillées dans le flanc du piton, chacune un bloc de sa roche (`stepRock`), de la plus basse à la plus haute
+ * ; dans la ruine, une seule s'est affaissée (`sunk`), sans tourner : ses pans gardent la lumière du piton.
  */
 function steps(b: FacetBuilder, worn: boolean): void {
   const S = STEPS;
-  const yaw = yawOf(S.from, S.to);
-  // Le haut de la roche dessous, à quatre pans tournés d'un huitième de tour : un carré du giron de la dalle.
-  const r1 = (S.tread / 2) * Math.SQRT2;
   for (let k = 0; k < S.count; k++) {
     const t = k / (S.count - 1);
-    const x = S.from.x + (S.to.x - S.from.x) * t;
-    const z = S.from.z + (S.to.z - S.from.z) * t;
-    const h = ((k + 1) * PITON.h) / S.count;
-    const rock = h - S.riser;
-    b.prism({ x, y: PT + SINK, z, yaw: yaw + Math.PI / 4 }, r1 + (rock - SINK) * S.flare, r1, rock - SINK, 4, C.stone, C.moss);
-    const slip = worn && k === 1 ? 0.18 : 0;
-    b.box({ x, y: PT + rock - (slip ? 0.1 : 0), z, yaw: yaw + slip }, [S.tread, S.riser, S.width], C.stone, C.stoneSun);
+    const sunk = worn && k === 2 ? S.sunk : 0;
+    stepRock(b, S.from.x + (S.to.x - S.from.x) * t, S.from.z + (S.to.z - S.from.z) * t, (k + 1) * STEP_RISE - sunk);
   }
 }
 
@@ -723,19 +735,10 @@ function model(add: AddPiece, ground: SiteGround): void {
     },
     corps,
   );
-  // Le haut la relève : la moitié nord du toit de lauze, restée sur les murs ; l'autre moitié, glissée d'un seul pan
-  // contre la façade sud, à l'est de la perche.
-  add(
-    'ruine',
-    0,
-    (b) => {
-      const z0 = L.z0 - L.eave;
-      const len = L.z1 - L.z0 + 2 * L.eave;
-      logisRoof(b, z0, len / 2);
-      roofPan(b);
-    },
-    haut,
-  );
+  // Le haut la relève : le toit de lauze, glissé d'un seul pan contre la façade sud, à l'est de la perche. Seconde passe
+  // (captures v2) : la moitié nord, restée sur les murs, se lisait de face comme une longue poutre en pente au-dessus du
+  // logis ; elle est tombée aussi, le logis reste ouvert au ciel.
+  add('ruine', 0, roofPan, haut);
   // Les abords la relèvent : la cour aux dalles fendues, un peu sous la dalle neuve, son côté ouest affaissé, trois
   // dalles soulevées de travers à l'écart du chemin, de la scène et du pan de toit.
   add(
@@ -765,7 +768,7 @@ function model(add: AddPiece, ground: SiteGround): void {
   );
 
   // ---- Le corps : la tour jusqu'au chemin de ronde, l'assise claire refaite, joints nets, ses fentes ; le blason entier ;
-  // la porte et son linteau à la bande de racines ; la herse relevée à mi-hauteur ; les quatre marches ; le logis, murs
+  // la porte et son linteau à la bande de racines ; la herse relevée à mi-hauteur ; les sept marches ; le logis, murs
   // refaits, sans toit.
   add(0, 0, (b) => {
     b.box({ x: T.x, y: PT + T.low, z: T.z }, [2 * T.half, T.mid - T.low, 2 * T.half], C.pale, C.paleTop);
@@ -1010,7 +1013,8 @@ export const DONJON_LAYOUT = {
   blason: BLASON,
   stroke: STROKE,
   herse: HERSE,
-  steps: STEPS,
+  steps: { ...STEPS, riser: STEP_RISE, flare: PITON_FLARE },
+  brick: { face: C.brick, dark: C.brickDark },
   door: DOOR_AT,
   scene: SCENE_SPOT,
   heightAtCenter: H0,
