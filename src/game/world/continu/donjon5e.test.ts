@@ -454,7 +454,8 @@ describe('Le budget du 5e, avec les chaussées et le Donjon (plafonds du lot 13a
     const cost = openWorldCost5e();
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
-    // Et l'Oracle, venu après (lot 13b ; son plafond : ./oracle5e.test.ts).
+    // Et l'Oracle, venu après (lot 13b ; son plafond : ./oracle5e.test.ts). Ce plafond, un lieu entier de marge, ne
+    // voit plus qu'une dérive d'un lieu : le vrai garde-fou du 5e est la réserve de ./plan5e.test.ts.
     expect(triangles).toBeLessThanOrEqual(LOT12_OPEN_5E.triangles + CAUSEWAYS_ADDED_5E + 2 * PLACE_TRIANGLES_MAX_5E);
     expect(calls).toBeLessThanOrEqual(LOT12_OPEN_5E.calls);
     expect(cost.find((c) => c.poste === 'scénette')!.calls).toBe(2);

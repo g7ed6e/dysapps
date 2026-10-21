@@ -143,9 +143,10 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // proposée par le consultant d'Archipéo, à relire par le directeur du contenu pédagogique (jamais « Vélin » ni le
   // Griffon d'émail).
   donjon: { role: placeArt('donjon')!.role, greeting: 'La maçonne bâtit des murs de pierre.', placement: 'rangee' },
-  // L'Oracle (GD-22, lot 13b) : « le conteur », sans prénom (fiche du 5e, § 4) ; sa réplique, la phrase du métier tirée
-  // de la proposition du consultant d'Archipéo (« Ici, on raconte les légendes. »), à relire par le directeur du contenu
-  // pédagogique (jamais « Lyre » ni le Phénix d'argile, ni Rome ni la Grèce : la grotte ne dit pas l'option).
+  // L'Oracle (GD-22, lot 13b) : « le conteur », sans prénom (fiche du 5e, § 4) ; sa réplique, la phrase qui explique le
+  // métier dans la proposition du consultant d'Archipéo (§ 1), validée par le directeur du contenu pédagogique (jamais
+  // « Lyre » ni le Phénix d'argile, ni Rome ni la Grèce : la grotte ne dit pas l'option). La réplique de fin proposée
+  // (« Ici, on raconte les légendes. ») n'est pas utilisée.
   oracle: { role: placeArt('oracle')!.role, greeting: 'Le conteur raconte les légendes.', placement: 'rangee' },
 };
 

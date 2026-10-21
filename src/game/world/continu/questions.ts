@@ -8,6 +8,7 @@
 // pur : la vue dessine, le jeu commun compte les étoiles et le barème.
 import PLACE_ITEMS from './placeItems.json';
 import { isSixthPlace, scenePlace, sixthPlace, type PlaceId as AnyPlaceId, type ScenePlaceId as PlaceId } from './levelPlan';
+import { isBuiltPlace5e } from './plan5e';
 
 /** Un item d'exercice, vu d'ici : sa clé, et ses champs (ceux du jeu commun, sans en dépendre). */
 export interface QuestionItem {
@@ -480,16 +481,12 @@ function northItem(exerciseId: string, it: QuestionItem): Partial<PlacedItem> {
 /** Les items posés dans la scène d'un lieu (`placeItems`), avec ses textes. */
 function placedInScene(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction): PlacedItem[] {
   if (place === 'phare') return items.map((it) => ({ ...it, placeScene: { kind: 'cloches' } }));
-  // La Montée (GD-22, lot 3) : ses cinq missions en R, avec leurs items de référence ; les réponses portées par les
-  // godets pendus, le lieu au repos ; les nombres, la droite et les figures restent dans le panneau.
-  // Le Hameau (lot 5) de même : ses trois missions en R, les réponses portées par les miches ; les Radeaux (lot 6) : leurs
-  // cinq missions, les réponses portées par les poids ; la Croisée (lot 7) : ses cinq missions, les réponses portées par
-  // les bobines ; les Instants (lot 8) : leurs cinq missions, par les galets ; les Fumerolles (lot 9) : leurs trois
-  // missions, les réponses portées par les galets ; l'Étuve (lot 10) : ses trois missions, par les gobelets ; les
-  // Terrasses (lot 11) : leurs trois missions, par les bols ; l'Auberge (lot 12) : ses dix missions, par les malles ; le
-  // Donjon (lot 13a) : ses trois missions, par les claveaux ; l'Oracle (lot 13b) : ses six missions, trois par option,
-  // par les lampes à huile.
-  if (place === 'montee' || place === 'hameau' || place === 'radeaux' || place === 'croisee' || place === 'instants' || place === 'fumerolles' || place === 'etuve' || place === 'terrasses' || place === 'auberge' || place === 'donjon' || place === 'oracle') return items.map((it) => ({ ...it, placeScene: REST }));
+  // Les lieux construits du 5e (GD-22, ./plan5e.ts, `BUILT_PLACES_5E`, la seule liste) : toutes leurs missions en R, avec
+  // leurs items de référence ; les réponses portées par l'objet du lieu (les godets de la Montée, les miches du Hameau,
+  // les poids des Radeaux, les bobines de la Croisée, les galets des Instants et des Fumerolles, les gobelets de l'Étuve,
+  // les bols des Terrasses, les malles de l'Auberge, les claveaux du Donjon, les lampes à huile de l'Oracle), le lieu au
+  // repos ; les nombres, la droite et les figures restent dans le panneau. Un lieu construit s'y ajoute de lui-même.
+  if (isBuiltPlace5e(place)) return items.map((it) => ({ ...it, placeScene: REST }));
   // La Turbine (GD-20, point 8, lot L6a) et le Chantier naval (lot L6b) : leurs quatre missions en C, aux deux niveaux,
   // avec leurs items de référence (consigne, phrase, document, rappel) ; la scène fait le décor, les réponses restent dans
   // la colonne.

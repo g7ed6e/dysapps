@@ -138,11 +138,11 @@ describe('L’Oracle, lieu complet', () => {
 
   it('le signe de l’absence ne change jamais : l’empreinte du miroir, son trou dans son tiers haut, ses goujons aux quatre coins', () => {
     // Parmi ce qui reste toujours, seul le trou a le brun très sombre : un aplat à huit pans, six triangles ; l'empreinte,
-    // un aplat de pierre moins passée (deux triangles).
+    // un aplat de la teinte de la roche, à peine moins passée (deux triangles), étroit : de loin, seul le trou est sombre.
     expect(countColor(ruinOf('oracle'), 0x3a312c)).toBe(18);
-    expect(countColor(ruinOf('oracle'), 0x9c9f95)).toBe(6);
+    expect(countColor(ruinOf('oracle'), 0x939890)).toBe(6);
     const Q = ORACLE_LAYOUT.mark;
-    expect(Q.mark).toBeCloseTo(0.36, 2);
+    expect(Q.mark).toBeCloseTo(0.28, 2);
     expect(Q.markH).toBeCloseTo(0.56, 2);
     expect(Q.y - Q.markH / 2).toBeGreaterThan(0.8);
     // Le trou dans le tiers haut de l'empreinte, jamais au milieu.
