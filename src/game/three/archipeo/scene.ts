@@ -946,21 +946,22 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   }
   // Les lieux hauts dont le regard se lève pour cadrer le haut à l'arrivée : la lanterne du Phare ; le toit et le mât de
   // la Vigie (lot L7). `lanternTop` : le haut du plus proche, que `lookUp` cadre.
-  // Le 5e n'en a pas (ses lieux sont des ruines) : le regard ne s'y lève pas.
+  // Le 5e n'en a pas : ses lieux hauts (le Donjon, le Sémaphore) lèvent le regard à leur porte (`arrivals`, plus bas).
   const TALL: readonly PlaceId[] = sixth ? ['phare', 'lookout'] : [];
   const tallTops = new Map<PlaceId, Vec3>(TALL.map((id) => [id, { x: placeById(id).center.x, y: feet.get(id)!.y + modelOfPlace(id).top, z: placeById(id).center.z }]));
-  // Au 5e, aucun lieu haut : le regard ne se lève qu'au quai de la Lisière, tourné vers la Montée, pour que son sommet
-  // entre dans la première image (GD-22, lot 4, `quayLook`) ; ailleurs, `look` reste à 0 et `lookUp` ne bouge pas la
-  // caméra (`lanternTop` reste à l'origine tant qu'il n'est pas cadré).
+  // Au 5e, hors de la porte d'un lieu haut, le regard ne se lève qu'au quai de la Lisière, tourné vers la Montée, pour
+  // que son sommet entre dans la première image (GD-22, lot 4, `quayLook`) ; ailleurs, `look` reste à 0 et `lookUp` ne
+  // bouge pas la caméra (`lanternTop` reste à l'origine tant qu'il n'est pas cadré).
   const lanternTop: Vec3 = { ...(tallTops.get('phare') ?? { x: 0, y: 0, z: 0 }) };
   // Le haut que le regard levé cadre au quai du lieu de départ (au 5e, le sommet de la Montée : la première image de la
   // Lisière la montre au fond ; GD-22, lot 4), et l'endroit du quai.
   const quayLook: Vec3 | null = departure.lookTop ? { ...departure.lookTop } : departure.lookAt ? { x: placeById(departure.lookAt).center.x, y: (feet.get(departure.lookAt)?.y ?? 0) + modelOfPlace(departure.lookAt).top, z: placeById(departure.lookAt).center.z } : null;
   const quayPoint = net.pathNode(portNode('quai')).at;
   // Les lieux trop hauts pour la caméra qui suit à leur porte (`PlaceArt.arrivalView` ; au 5e, le Donjon, retouche 1 du
-  // lot 13a ; l'Oracle, lot 13b, dont le regard monte à la tour du Donjon) : leur porte, le bord du haut que le regard levé y cadre (à la hauteur de ce qui est bâti, `builtTop`) et le
-  // recul de la caméra. `arrivalNow` : celui où Kéo se tient, tourné vers son cap ; `arrivalBack`, la part du recul, de 0
-  // à 1, comme `look` ; `arrivalShape`, le recul du dernier, gardé pendant que la caméra revient.
+  // lot 13a ; l'Oracle, lot 13b, dont le regard monte à la tour du Donjon ; le Sémaphore, lot 14) : leur porte, le bord du
+  // haut que le regard levé y cadre (à la hauteur de ce qui est bâti, `builtTop`) et le recul de la caméra. `arrivalNow` :
+  // celui où Kéo se tient, tourné vers son cap ; `arrivalBack`, la part du recul, de 0 à 1, comme `look` ; `arrivalShape`,
+  // le recul du dernier, gardé pendant que la caméra revient.
   const arrivals = PLACES.flatMap((p) => {
     const a = arrivalViewOf(p.id);
     return a ? [{ id: p.id, door: net.pathNode(p.door).at, look: { x: p.center.x + a.look.x, z: p.center.z + a.look.z }, top: a.top, view: { height: 0, back: a.back } }] : [];
@@ -2530,7 +2531,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       return [bridgeSpot(land), new THREE.Vector3(mid.x, BRIDGE.deck, mid.z)];
     }),
   );
-  const mapMark = (id: MapSpotOnScreen['id']) => (id === 'keo' ? keoPoint.set(keoFeet.x, keoFeet.y, keoFeet.z) : id === 'port' ? portPoint : (bridgePoints.get(id) ?? marks.get(id as PlaceId)));
+  // Le point du nom d'un lieu qui le fixe (le Sémaphore, au-dessus de sa corniche : le même en ruine et restauré), fait
+  // une fois ; sinon, la marque de la prochaine mission.
+  const mapPoints = new Map<PlaceId, THREE.Vector3>(
+    PLACES.flatMap((p) => {
+      const o = placeArt(p.id)?.mapPoint;
+      const foot = feet.get(p.id)!;
+      return o ? [[p.id, new THREE.Vector3(foot.x + o.x, foot.y + o.y, foot.z + o.z)] as const] : [];
+    }),
+  );
+  const placeMapPoint = (id: PlaceId) => mapPoints.get(id) ?? marks.get(id);
+  const mapMark = (id: MapSpotOnScreen['id']) => (id === 'keo' ? keoPoint.set(keoFeet.x, keoFeet.y, keoFeet.z) : id === 'port' ? portPoint : (bridgePoints.get(id) ?? placeMapPoint(id as PlaceId)));
   // Le nom d'un lieu, centré au-dessus de lui, reste entier à l'écran : assez loin des bords gauche et droit.
   const mapShown = (x: number, y: number) => x > MAP_LABEL_SIDE && x < viewW - MAP_LABEL_SIDE && y > MAP_LABEL_TOP && y < viewH - LOCK_MARGIN;
   // Les coins de ce que les étiquettes laissent à découvert, au niveau de l'eau, faits une fois (les trois radeaux).
@@ -2599,7 +2610,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       return;
     }
     const a = aspect();
-    const open = [...mapOpen.map((id) => marks.get(id)), portPoint].filter((m): m is THREE.Vector3 => Boolean(m));
+    const open = [...mapOpen.map((id) => placeMapPoint(id)), portPoint].filter((m): m is THREE.Vector3 => Boolean(m));
     // Les points des lieux pour une vue essayée, sans toucher la caméra (`screenOf`, la même projection).
     const view = reframeMap(plan, a, open, (v) => {
       const pose = mapPose(v, probePose);

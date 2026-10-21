@@ -360,9 +360,13 @@ export function keepFeetAbove(pose: CameraPose, feet: Vec3, room: number, height
   pose.target.y = p.y - Math.tan(pitch) * flat;
 }
 
-/** La part du regard levé à l'image suivante, vers `wanted` (0 ou 1) ; d'un bloc avec « Réduire les animations ». */
+/**
+ * La part du regard levé à l'image suivante, vers `wanted` (0 ou 1) ; d'un bloc avec « Réduire les animations ». Arrivée,
+ * elle n'en bouge plus (lot 14 du 5e, retouche 1 : à 1, elle redescendait d'un pas à chaque image, et la caméra
+ * oscillait au pied du Sémaphore et du Phare, d'autant plus que les images étaient rares).
+ */
 export function lookUpStep(current: number, wanted: 0 | 1, dt: number, reduceMotion: boolean): number {
-  if (reduceMotion) return wanted;
+  if (reduceMotion || current === wanted) return wanted;
   const step = Math.max(0, dt) / (wanted > current ? LOOK_UP.seconds : LOOK_UP.down);
   return wanted > current ? Math.min(1, current + step) : Math.max(0, current - step);
 }

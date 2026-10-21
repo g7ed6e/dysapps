@@ -1174,6 +1174,16 @@
   gap: 0.4rem;
   margin: 0.2rem 0 0;
 }
+/* Au grand texte sur un téléphone, la phrase d'accueil prend toute la largeur du panneau et le haut-parleur passe
+   dessous, comme sous les phrases de Kéo : à côté de lui, un mot plus long que la colonne restante se coupait
+   (« signaleu / r » en OpenDyslexic 32, lot 14 du 5e ; « riziculteur », lot 11). Seul un mot plus long que toute la
+   ligne se coupe encore, en dernier recours (`body`, styles/global.css). */
+@media (max-width: 640px) {
+  :root[data-texte="grand"] .world-scenette-greeting {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 /* Sur tablette, le panneau prend la hauteur de son texte, en haut ; « Valider » en bas à droite, à 3 % du bord, sous
    la rangée des cloches (sa place est gardée par scenetteLayout). */
 .world-question .quiz.in-world.scenette:not(.low) {

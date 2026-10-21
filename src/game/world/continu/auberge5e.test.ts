@@ -444,8 +444,8 @@ describe('« Y aller » à l’Auberge (C11)', () => {
     expect(pose.position.y).toBeGreaterThan(FOLLOW.height);
   });
 
-  it('les autres lieux du 5e gardent leur cap, sauf les Instants, les Radeaux et l’Oracle', () => {
-    for (const p of PLAN.places) if (!['instants', 'radeaux', 'oracle'].includes(p.id)) expect(doorViewOf(p.id), p.id).toBe(0);
+  it('les autres lieux du 5e gardent leur cap, sauf les Instants, les Radeaux, l’Oracle et le Sémaphore (retouche 1 du lot 14)', () => {
+    for (const p of PLAN.places) if (!['instants', 'radeaux', 'oracle', 'semaphore'].includes(p.id)) expect(doorViewOf(p.id), p.id).toBe(0);
   });
 });
 
@@ -470,12 +470,14 @@ describe('La forêt s’écarte de l’Auberge', () => {
 const LOT11_OPEN_5E = { triangles: 100_273, calls: 19 } as const;
 
 describe('Le budget du 5e, avec l’Auberge (plafonds du lot 12)', () => {
-  it('scénette ouverte : le lot 11 et un lieu de plus au plus, sans appel de plus ; l’aubergiste dans les deux appels de la scénette', () => {
+  it('scénette ouverte : le lot 11 et un lieu de plus au plus par lieu fini depuis, sans appel de plus ; l’aubergiste dans les deux appels de la scénette', () => {
     const cost = openWorldCost5e();
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
-    // Et les chaussées du plateau et le Donjon, venus après (lot 13a ; leur plafond : ./donjon5e.test.ts).
-    expect(triangles).toBeLessThanOrEqual(LOT11_OPEN_5E.triangles + 2 * PLACE_TRIANGLES_MAX_5E + CAUSEWAYS_ADDED_5E + FOREST_REWORK_MAX_5E);
+    // Les lieux finis depuis le lot 11 : l'Auberge (lot 12), le Donjon (lot 13a), le Sémaphore (lot 14) ; et les
+    // chaussées du plateau (lot 13a), la forêt retaillée (#490). Leurs plafonds : ./donjon5e.test.ts, ./semaphore5e.test.ts.
+    const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux', 'croisee', 'instants', 'fumerolles', 'etuve', 'terrasses'].includes(id)).length;
+    expect(triangles).toBeLessThanOrEqual(LOT11_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E + CAUSEWAYS_ADDED_5E + FOREST_REWORK_MAX_5E);
     expect(calls).toBeLessThanOrEqual(LOT11_OPEN_5E.calls);
     expect(cost.find((c) => c.poste === 'scénette')!.calls).toBe(2);
   });

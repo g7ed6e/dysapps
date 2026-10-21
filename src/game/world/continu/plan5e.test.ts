@@ -3,7 +3,7 @@
 // presque noires) et son budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { OPEN_WORLD_BUDGETS, mapCost5e, openWorldCost5e } from './budget';
+import { FOREST_REWORK_MAX_5E, OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_5E, mapCost5e, openWorldCost5e } from './budget';
 import { bridgeFacets, bridgeFloor, bridgeSite, clampToOpen, isCabin } from './bridges';
 import { closestOnSegment, distance, distanceToPolyline, linearRgb, signedDistance, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
@@ -507,6 +507,9 @@ describe('Les couleurs et la lumière', () => {
   });
 });
 
+/** La réserve des lots suivants au lot 13b (l'Oracle), sous l'enveloppe du 5e, scénette ouverte. */
+const RESERVE_LOT13B_5E = 13_200;
+
 describe('Le budget du 5e', () => {
   it('le monde et la Carte tiennent dans l’enveloppe du monde ouvert, avec de la place pour les lots suivants', () => {
     const cost = openWorldCost5e();
@@ -529,9 +532,15 @@ describe('Le budget du 5e', () => {
     // à la place du sable), 102 869, 15 131 : la réserve passe à 15 100 ; le Donjon (lot 13a, +862, le lieu restauré à la
     // place de sa ruine), 103 731, 14 269 : la réserve passe à 14 200 ; sa retouche 1 (les nœuds des chaussées à douze
     // pans, +132 ; le parapet, les marches, le logis de pierre et le signe de l'Auberge, +100 ; le Sémaphore et les
-    // Nacelles couchés, −14), 103 949, 14 051 : la réserve passe à 14 000 ; l'Oracle (lot 13b, +767 sur le Donjon fini,
-    // 103 939, le lieu restauré à la place de sa ruine), 104 706, 13 294 : la réserve passe à 13 200, de la seule hausse ; la forêt retaillée (pistes B, C puis A du 21 octobre 2026, dans le maillage du sol, +5 737), 110 443, 7 557 : la réserve passe à 7 500.
-    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - 7_500);
+    // Nacelles couchés, −14), 103 949, 14 051 : la réserve passe à 14 000 ; ses deux passes suivantes (les marches, +38 ;
+    // l'escalier, −48), 103 939, 14 061 : elle reste à 14 000 ; l'Oracle (lot 13b, +767 sur le Donjon fini, le lieu
+    // restauré à la place de sa ruine), 104 706, 13 294 : la réserve passe à 13 200, de la seule hausse. Depuis, elle
+    // baisse d'un lieu au plus par lieu fini (`PLACE_TRIANGLES_MAX_5E`), sans se réécrire à chaque lot : deux lots
+    // parallèles n'ont plus à se rebaser pour elle ; le Sémaphore (lot 14) en est le premier. La forêt retaillée (pistes B,
+    // C puis A du 21 octobre 2026, dans le maillage du sol, +5 737 mesurés) la baisse de son plafond,
+    // `FOREST_REWORK_MAX_5E` : 13 200 − 5 800 = 7 400 avant le Sémaphore.
+    const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux', 'croisee', 'instants', 'fumerolles', 'etuve', 'terrasses', 'auberge', 'donjon', 'oracle'].includes(id)).length;
+    expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - RESERVE_LOT13B_5E + FOREST_REWORK_MAX_5E + since * PLACE_TRIANGLES_MAX_5E);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
     // La Carte dans l'enveloppe (ses plafonds lot par lot : ./hameau5e.test.ts, ./croisee5e.test.ts).
     const map = mapCost5e();

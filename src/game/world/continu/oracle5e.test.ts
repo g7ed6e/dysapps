@@ -444,11 +444,14 @@ describe('« Y aller » à l’Oracle', () => {
 const LOT13A_OPEN_5E = { triangles: 103_939, calls: 19 } as const;
 
 describe('Le budget du 5e, avec l’Oracle (plafonds du lot 13b)', () => {
-  it('scénette ouverte : le lot 13a et un lieu de plus au plus, sans appel de plus ; le conteur dans les deux appels de la scénette', () => {
+  it('scénette ouverte : le lot 13a et un lieu de plus au plus par lieu fini depuis, sans appel de plus ; le conteur dans les deux appels de la scénette', () => {
     const cost = openWorldCost5e();
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
-    expect(triangles).toBeLessThanOrEqual(LOT13A_OPEN_5E.triangles + PLACE_TRIANGLES_MAX_5E + FOREST_REWORK_MAX_5E);
+    // Les lieux finis depuis le lot 13a : l'Oracle (lot 13b), puis le Sémaphore (lot 14) ; et la forêt retaillée (#490).
+    const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux', 'croisee', 'instants', 'fumerolles', 'etuve', 'terrasses', 'auberge', 'donjon'].includes(id)).length;
+    expect(since).toBeGreaterThanOrEqual(1);
+    expect(triangles).toBeLessThanOrEqual(LOT13A_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E + FOREST_REWORK_MAX_5E);
     expect(calls).toBeLessThanOrEqual(LOT13A_OPEN_5E.calls);
     expect(cost.find((c) => c.poste === 'scénette')!.calls).toBe(2);
   });

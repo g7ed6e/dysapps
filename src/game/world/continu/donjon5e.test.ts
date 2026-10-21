@@ -450,13 +450,15 @@ describe('« Y aller » au Donjon (retouche 1)', () => {
 const LOT12_OPEN_5E = { triangles: 101_415, calls: 19 } as const;
 
 describe('Le budget du 5e, avec les chaussées et le Donjon (plafonds du lot 13a)', () => {
-  it('scénette ouverte : le lot 12, les chaussées et un lieu de plus au plus, sans appel de plus ; la maçonne dans les deux appels de la scénette', () => {
+  it('scénette ouverte : le lot 12, les chaussées et un lieu de plus au plus par lieu fini depuis, sans appel de plus ; la maçonne dans les deux appels de la scénette', () => {
     const cost = openWorldCost5e();
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
-    // Et l'Oracle, venu après (lot 13b ; son plafond : ./oracle5e.test.ts). Ce plafond, un lieu entier de marge, ne
-    // voit plus qu'une dérive d'un lieu : le vrai garde-fou du 5e est la réserve de ./plan5e.test.ts.
-    expect(triangles).toBeLessThanOrEqual(LOT12_OPEN_5E.triangles + CAUSEWAYS_ADDED_5E + 2 * PLACE_TRIANGLES_MAX_5E + FOREST_REWORK_MAX_5E);
+    // Les lieux finis depuis le lot 12 : le Donjon (lot 13a), l'Oracle (lot 13b ; son plafond : ./oracle5e.test.ts), le
+    // Sémaphore (lot 14 ; ./semaphore5e.test.ts) ; et la forêt retaillée (#490). Ce plafond, un lieu entier de marge, ne voit qu'une dérive d'un lieu :
+    // le vrai garde-fou du 5e est la réserve de ./plan5e.test.ts.
+    const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux', 'croisee', 'instants', 'fumerolles', 'etuve', 'terrasses', 'auberge'].includes(id)).length;
+    expect(triangles).toBeLessThanOrEqual(LOT12_OPEN_5E.triangles + CAUSEWAYS_ADDED_5E + since * PLACE_TRIANGLES_MAX_5E + FOREST_REWORK_MAX_5E);
     expect(calls).toBeLessThanOrEqual(LOT12_OPEN_5E.calls);
     expect(cost.find((c) => c.poste === 'scénette')!.calls).toBe(2);
   });

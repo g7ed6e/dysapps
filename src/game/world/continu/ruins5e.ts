@@ -6,7 +6,8 @@
 // hauteur et son contour propres. La Montée, finie au lot 3, a son fichier (./montee5e.ts), comme le Hameau (./hameau5e.ts, lot 5),
 // les Radeaux (./radeaux5e.ts, lot 6), la Croisée (./croisee5e.ts, lot 7), les Instants (./instants5e.ts, lot 8), les
 // Fumerolles (./fumerolles5e.ts, lot 9), l'Étuve (./etuve5e.ts, lot 10), les Terrasses (./terrasses5e.ts, lot 11),
-// l'Auberge (./auberge5e.ts, lot 12), le Donjon (./donjon5e.ts, lot 13a) et l'Oracle (./oracle5e.ts, lot 13b). Code pur.
+// l'Auberge (./auberge5e.ts, lot 12), le Donjon (./donjon5e.ts, lot 13a), l'Oracle (./oracle5e.ts, lot 13b) et le
+// Sémaphore (./semaphore5e.ts, lot 14). Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_5E, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
@@ -26,13 +27,6 @@ const C = {
   bronze: 0x9c8452,
 } as const;
 
-/** Un tas de blocs tombés, au pied d'un mur : trois pavés de travers. */
-function rubble(b: FacetBuilder, x: number, z: number, s: number, color: number, top: number): void {
-  b.box({ x, y: SINK, z, yaw: 0.4 }, [s, s * 0.7 - SINK, s * 0.8], color, top);
-  b.box({ x: x + s * 0.8, y: SINK, z: z + s * 0.3, yaw: 1.1 }, [s * 0.6, s * 0.45 - SINK, s * 0.6], color, top);
-  b.box({ x: x - s * 0.5, y: SINK, z: z + s * 0.7, yaw: 2.3 }, [s * 0.5, s * 0.35 - SINK, s * 0.7], color, top);
-}
-
 /**
  * Un poteau cassé en biais : de section carrée `w`, posé en (`x`, `z`), du sol jusqu'à `low` d'un côté et `high` de
  * l'autre (une coupe nette, jamais une dent ni une équerre).
@@ -50,20 +44,6 @@ function brokenPost(b: FacetBuilder, x: number, z: number, w: number, low: numbe
     C.wood,
     C.woodShade,
   );
-}
-
-/**
- * Le Sémaphore : un mât de bois sur un socle de pierre, cassé en biais à mi-hauteur ; son haut et ses deux bras tombés au
- * sol, au pied du socle. Rien en équerre en haut d'un poteau, rien qui pende (directeur artistique, retouche 1 du lot
- * 13a : les chaussées y mènent ; le lot 14 le remplace).
- */
-function semaphore(b: FacetBuilder): void {
-  b.box({ x: 0, y: SINK, z: 0 }, [4, 2 - SINK, 4], C.shade, C.stone);
-  brokenPost(b, 0, 0, 0.9, 7.2, 8.4);
-  b.box({ x: 3.6, y: SINK, z: -0.6, yaw: 1.3 }, [5.5, 0.6 - SINK, 0.8], C.woodShade, C.wood);
-  b.box({ x: 2.8, y: SINK, z: 2.5, yaw: 0.9 }, [4, 0.5 - SINK, 0.6], C.woodShade, C.wood);
-  b.box({ x: -2.6, y: SINK, z: -2.6, yaw: 2.2 }, [3.2, 0.45 - SINK, 0.6], C.woodShade, C.wood);
-  rubble(b, -3, 2.2, 1.2, C.shade, C.moss);
 }
 
 /** Le Gaillard : le pont haut d'un vieux navire échoué sur le plateau, sur ses étais de pierre, son garde-corps cassé. */
@@ -93,10 +73,9 @@ function nacelles(b: FacetBuilder): void {
  * La ruine de chaque lieu du 5e pas encore construit (les lieux construits ont leur fichier : ./montee5e.ts, lot 3 ;
  * ./hameau5e.ts, lot 5 ; ./radeaux5e.ts, lot 6 ; ./croisee5e.ts, lot 7 ; ./instants5e.ts, lot 8 ;
  * ./fumerolles5e.ts, lot 9 ; ./etuve5e.ts, lot 10 ; ./terrasses5e.ts, lot 11 ; ./auberge5e.ts, lot 12 ;
- * ./donjon5e.ts, lot 13a ; ./oracle5e.ts, lot 13b), dessinée dans son repère.
+ * ./donjon5e.ts, lot 13a ; ./oracle5e.ts, lot 13b ; ./semaphore5e.ts, lot 14), dessinée dans son repère.
  */
 export const RUINS_5E: Readonly<Record<Exclude<PlaceId5e, BuiltPlace5e>, (b: FacetBuilder) => void>> = {
-  semaphore,
   gaillard,
   nacelles,
 };

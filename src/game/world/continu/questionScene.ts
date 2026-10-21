@@ -230,6 +230,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   donjon: placeArt('donjon')!.sceneSpot,
   // L'Oracle (lot 13b) : dans l'abri, devant le fond peint, sous la voûte.
   oracle: placeArt('oracle')!.sceneSpot,
+  // Le Sémaphore (lot 14) : la cour, la façade sud et sa porte derrière, la corne à gauche.
+  semaphore: placeArt('semaphore')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -497,6 +499,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   donjon: 'lieu',
   // L'Oracle (lot 13b) : les lampes à huile éteintes sur la banquette de pierre.
   oracle: 'lieu',
+  // Le Sémaphore (lot 14) : les fanions unis, distingués par leur forme, sur la planche à encoches.
+  semaphore: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
