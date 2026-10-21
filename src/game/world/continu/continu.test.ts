@@ -541,8 +541,8 @@ describe('Le budget du monde continu', () => {
     expect(g.triangles).toBe(g.near + g.far);
   });
 
-  it('tient dans l’enveloppe relevée par le mainteneur (111 400 triangles et 22 appels, l’équipier de la scénette, 21 octobre 2026)', () => {
-    expect(OPEN_WORLD_BUDGETS['6e']).toEqual({ triangles: 111_400, calls: 22 });
+  it('tient dans l’enveloppe relevée par le mainteneur (111 500 triangles et 22 appels, l’équipier de la scénette, 21 octobre 2026)', () => {
+    expect(OPEN_WORLD_BUDGETS['6e']).toEqual({ triangles: 111_500, calls: 22 });
     // Le 5e a la sienne (choix du mainteneur, 20 octobre 2026, « Relever seulement »).
     expect(OPEN_WORLD_BUDGETS['5e']).toEqual({ triangles: 118_000, calls: 22 });
     // Sans les aménagements, dont la vue trace les dessins : le tout se compte dans three/archipeo/amenagements.test.ts.
