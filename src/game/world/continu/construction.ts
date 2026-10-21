@@ -152,6 +152,8 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   soute: placeArt('soute')!.traceStage,
   // La Porte (lot 2 du 4e) : chaque trace sa partie (le corps, le haut, les abords).
   porte: placeArt('porte')!.traceStage,
+  // L'Étalon (lot 2 du 4e) : de même, 3+1+1.
+  etalon: placeArt('etalon')!.traceStage,
 };
 
 /**

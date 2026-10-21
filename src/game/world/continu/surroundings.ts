@@ -12,6 +12,7 @@ import { nacellesSurroundings } from './nacellesSurroundings';
 import { forgeSurroundings } from './forgeSurroundings';
 import { souteSurroundings } from './souteSurroundings';
 import { porteSurroundings } from './porteSurroundings';
+import { etalonSurroundings } from './etalonSurroundings';
 import { croiseeSurroundings } from './croiseeSurroundings';
 import { donjonSurroundings } from './donjonSurroundings';
 import { fumerollesSurroundings } from './fumerollesSurroundings';
@@ -66,7 +67,7 @@ export const SURROUNDINGS_MAX = 1500;
 export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   // Le 5e (GD-22, lot 3) : la Montée ; lot 5 : le Hameau ; lot 6 : les Radeaux ; lot 7 : la Croisée ; lot 8 : les Instants ;
   // lot 9 : les Fumerolles ; lot 10 : l'Étuve ; lot 11 : les Terrasses ; lot 12 : l'Auberge ; lot 13a : le Donjon ; lot 13b : l'Oracle ;
-  // lot 14 : le Sémaphore ; lot 15 : le Gaillard ; lot 16 : les Nacelles. Le 4e : la Forge (lot 2).
+  // lot 14 : le Sémaphore ; lot 15 : le Gaillard ; lot 16 : les Nacelles. Le 4e : la Forge et l'Étalon (lot 2).
   montee: monteeSurroundings,
   hameau: hameauSurroundings,
   radeaux: radeauxSurroundings,
@@ -84,6 +85,7 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   forge: forgeSurroundings,
   soute: souteSurroundings,
   porte: porteSurroundings,
+  etalon: etalonSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,

@@ -233,12 +233,13 @@ const MAP_SIDES_4E: Readonly<Record<PlaceId4e, 'below' | 'left' | 'right'>> = {
  * Les lieux du 4e déjà construits, et les missions de chacun qui se jouent en scénette, dans l'ordre de leur île : la
  * seule liste, que lisent la scénette (./levelPlan.ts, `hasScenette`), l'habitant en modèle 3D (./habitants.ts,
  * `hasHabitantModel`) et les missions des lieux (`PLACES_4E`). La Forge (lot 2) : les cinq, sous l'appentis de la
- * chaudronnière. Un lieu construit s'ajoute ici, et seulement ici.
+ * chaudronnière ; l'Étalon (lot 2) : les cinq, dans la cour de la peseuse. Un lieu construit s'ajoute ici, et seulement ici.
  */
 export const BUILT_PLACES_4E = {
   forge: ['powers', 'square-roots', 'scientific-notation', 'subtracting', 'volumes'],
   soute: ['urbanization', 'mobilities', 'globalization'],
   porte: ['freedoms', 'justice', 'security-defence'],
+  etalon: ['weighted-mean', 'events', 'proportional-reasoning', 'calculation-programs', 'translations'],
 } as const satisfies Partial<Record<PlaceId4e, readonly string[]>>;
 
 /** Un lieu du 4e déjà construit. */

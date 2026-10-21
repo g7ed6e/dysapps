@@ -3,7 +3,7 @@
 // cuvette, les rails, ses couleurs (jamais presque noires), la marche libre, et son budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { OPEN_WORLD_BUDGETS, mapCost4e, openWorldCost4e } from './budget';
+import { OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_4E, mapCost4e, openWorldCost4e } from './budget';
 import { BRIDGE, bridgeSite } from './bridges';
 import { CRIQUE_SITE, NEF_4E, criqueDecorFacets, nef4eFlight } from './crique4e';
 import { followPose, keepFeetAbove, screenOf } from './camera';
@@ -39,11 +39,12 @@ const NOT_BLACK = 0.03;
 const LOT2_CEILING = { triangles: 72_000, calls: 18 } as const;
 
 /**
- * Le plafond du 4e après la Soute et la Porte (lot 2, mesuré le 21 octobre 2026 : 69 372 triangles et 17 appels scénette
- * ouverte, 62 202 et 14 hors scénette, 61 080 et 15 au départ, 58 931 et 12 sur la Carte ; +1 716 sur la Forge seule, les
- * deux lieux à la place de leurs ruines simples, leurs traces comprises), avec la même marge que `LOT2_CEILING`.
+ * Le plafond du 4e avec la Soute, la Porte et l'Étalon (lot 2) : celui de la Forge, relevé de 2 000 triangles pour
+ * la Soute et la Porte (à la place de leurs ruines simples, leurs traces comprises) et d'un lieu du 4e au plus chargé
+ * pour l'Étalon (`PLACE_TRIANGLES_MAX_4E`) ; aucun appel de plus (une seule scénette ouverte à la fois). Mesuré le
+ * 21 octobre 2026 : MESURE.
  */
-const LOT2_SOUTE_PORTE_CEILING = { triangles: LOT2_CEILING.triangles + 2_000, calls: LOT2_CEILING.calls } as const;
+const LOT2_FABRIQUES_CEILING = { triangles: LOT2_CEILING.triangles + 2_000 + PLACE_TRIANGLES_MAX_4E, calls: LOT2_CEILING.calls } as const;
 
 /** Les couleurs d'un maillage. */
 function colorsOf(f: { colors: Float32Array }): Set<string> {
@@ -240,8 +241,8 @@ describe('Le budget du 4e', () => {
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
     for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('scenette')), total(openWorldCost4e('depart')), mapCost4e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT2_SOUTE_PORTE_CEILING.triangles);
-      expect(cost.calls).toBeLessThanOrEqual(LOT2_SOUTE_PORTE_CEILING.calls);
+      expect(cost.triangles).toBeLessThanOrEqual(LOT2_FABRIQUES_CEILING.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(LOT2_FABRIQUES_CEILING.calls);
     }
   });
 });

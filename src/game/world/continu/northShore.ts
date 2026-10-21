@@ -5,12 +5,13 @@
 // ./instants5e.ts ; les Fumerolles (lot 9), dans ./fumerolles5e.ts ; l'Étuve (lot 10), dans ./etuve5e.ts ; les
 // Terrasses (lot 11), dans ./terrasses5e.ts ; l'Auberge (lot 12), dans ./auberge5e.ts ; le Donjon (lot 13a), dans
 // ./donjon5e.ts ; l'Oracle (lot 13b), dans ./oracle5e.ts ; le Sémaphore (lot 14), dans ./semaphore5e.ts ; le Gaillard
-// (lot 15), dans ./gaillard5e.ts ; les Nacelles (lot 16), dans ./nacelles5e.ts. Au 4e, la Forge (lot 2), dans ./forge4e.ts.
+// (lot 15), dans ./gaillard5e.ts ; les Nacelles (lot 16), dans ./nacelles5e.ts. Au 4e, la Forge (lot 2), dans ./forge4e.ts ; l'Étalon (lot 2), dans ./etalon4e.ts.
 import { ARCHIVES } from './archives';
 import { AUBERGE } from './auberge5e';
 import { BEACONS } from './beacons';
 import { DONJON } from './donjon5e';
 import { FERRY } from './ferry';
+import { ETALON } from './etalon4e';
 import { FORGE } from './forge4e';
 import { SOUTE } from './soute4e';
 import { PORTE } from './porte4e';
@@ -32,7 +33,7 @@ import { RADEAUX } from './radeaux5e';
 import { SEMAPHORE } from './semaphore5e';
 import { TERRASSES } from './terrasses5e';
 
-const ART: Partial<Record<PlaceId, PlaceArt>> = { lookout: LOOKOUT, archives: ARCHIVES, printworks: PRINTWORKS, beacons: BEACONS, ferry: FERRY, montee: MONTEE, hameau: HAMEAU, radeaux: RADEAUX, croisee: CROISEE, instants: INSTANTS, fumerolles: FUMEROLLES, etuve: ETUVE, terrasses: TERRASSES, auberge: AUBERGE, donjon: DONJON, oracle: ORACLE, semaphore: SEMAPHORE, gaillard: GAILLARD, nacelles: NACELLES, forge: FORGE, soute: SOUTE, porte: PORTE };
+const ART: Partial<Record<PlaceId, PlaceArt>> = { lookout: LOOKOUT, archives: ARCHIVES, printworks: PRINTWORKS, beacons: BEACONS, ferry: FERRY, montee: MONTEE, hameau: HAMEAU, radeaux: RADEAUX, croisee: CROISEE, instants: INSTANTS, fumerolles: FUMEROLLES, etuve: ETUVE, terrasses: TERRASSES, auberge: AUBERGE, donjon: DONJON, oracle: ORACLE, semaphore: SEMAPHORE, gaillard: GAILLARD, nacelles: NACELLES, forge: FORGE, soute: SOUTE, porte: PORTE, etalon: ETALON };
 
 /** Ce qu'un lieu du rivage nord ou du large apporte au monde (son dessin, sa scénette, ses traces), ou rien pour les autres lieux. */
 export const placeArt = (place: PlaceId): PlaceArt | null => ART[place] ?? null;

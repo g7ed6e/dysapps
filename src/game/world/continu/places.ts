@@ -2522,11 +2522,11 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   hameau: northPlace('hameau'),
   auberge: northPlace('auberge'),
   oracle: northPlace('oracle'),
-  // Le 4e : la Forge, la Soute et la Porte (lot 2), dessinées dans leur fichier ; les autres, des ruines simples (lot 1, ./ruins4e.ts).
+  // Le 4e : la Forge, la Soute, la Porte et l'Étalon (lot 2), dessinés dans leur fichier ; les autres, des ruines simples (lot 1, ./ruins4e.ts).
   forge: northPlace('forge'),
   soute: northPlace('soute'),
   porte: northPlace('porte'),
-  etalon: ruinOnly(RUINS_4E.etalon),
+  etalon: northPlace('etalon'),
   gabarit: ruinOnly(RUINS_4E.gabarit),
   manufacture: ruinOnly(RUINS_4E.manufacture),
   loge: ruinOnly(RUINS_4E.loge),
