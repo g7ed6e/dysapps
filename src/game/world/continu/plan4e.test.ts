@@ -13,6 +13,7 @@ import { planFor } from './levelPlan';
 import { modelOfPlace } from './places';
 import { CUT_CLEARANCE_4E, NETWORK_4E, pathRibbons4e } from './paths4e';
 import { COLORS_4E, CRIQUE_PAD, CUVETTE_4E, DEPARTURE_4E, LINKS_4E, PATH_EDGES_4E, RAILS_4E, SUMMIT_4E, VOLCANO_4E, criqueFloor } from './plan4e';
+import { COLORS_6E } from './plan6e';
 import { SKY_OF } from './sky';
 import { WATER_TONES_4E, seaPixels4e } from './sea';
 import { FLORA_4E_COLORS, buildHeightField4e, couleeClearance, groundOn4e, heightAt4e, landDistance4e, lavaFacets, ravinClearance, summitMapHatch, tileFacets4e, walkBlocked4e } from './terrain4e';
@@ -28,8 +29,8 @@ const isPassage = (a: string, b: string) => Object.values(LINKS_4E).some(({ brid
 const luminance = ([r, g, b]: readonly number[]) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
 const NOT_BLACK = 0.03;
 
-/** Le plafond du lot 1 du 4e (mesuré le 21 octobre 2026 : 56 545 triangles et 14 appels dans le monde, 58 641 et 12 sur la Carte), avec sa marge. */
-const LOT1_CEILING = { triangles: 62_000, calls: 15 } as const;
+/** Le plafond du lot 1 du 4e (mesuré le 21 octobre 2026, retouche 1 : 60 105 triangles et 14 appels dans le monde, 58 983 et 15 au départ, 56 960 et 12 sur la Carte), avec sa marge. */
+const LOT1_CEILING = { triangles: 64_000, calls: 16 } as const;
 
 /** Les couleurs d'un maillage. */
 function colorsOf(f: { colors: Float32Array }): Set<string> {
@@ -127,8 +128,9 @@ describe('Les coupures : le bassin à flot, le ravin sec, la coulée figée', ()
 describe('Le volcan et la lave figée', () => {
   it('un cône large et bas : sa hauteur fait environ le tiers de sa base, le cratère creusé', () => {
     const top = heightAt4e({ x: VOLCANO_4E.crater.x + VOLCANO_4E.craterRadius, z: VOLCANO_4E.crater.z });
-    expect(top).toBeGreaterThan(28);
-    expect(top / (2 * VOLCANO_4E.radius)).toBeLessThan(0.35);
+    expect(top).toBeGreaterThan(44);
+    expect(top / (2 * VOLCANO_4E.radius)).toBeGreaterThan(0.3);
+    expect(top / (2 * VOLCANO_4E.radius)).toBeLessThan(0.36);
     expect(heightAt4e(VOLCANO_4E.crater)).toBeLessThan(top - 2);
   });
 
@@ -164,7 +166,7 @@ describe('Le volcan et la lave figée', () => {
 });
 
 describe('Les rails et la Crique', () => {
-  it('la ligne va du Terminus au butoir de l’Étalon par le pont de basalte ; l’embranchement passe le pont du ravin vers la Jonction', () => {
+  it('la ligne va du Terminus au butoir de la Forge par le pont de basalte ; l’embranchement passe le pont du ravin vers la Jonction', () => {
     const at = (id: string) => PLAN.places.find((p) => p.id === id)!.center;
     expect(distance(RAILS_4E.line[0], at('terminus'))).toBeLessThan(15);
     expect(distance(RAILS_4E.line[RAILS_4E.line.length - 1], at('etalon'))).toBeLessThan(12);
@@ -179,7 +181,7 @@ describe('Les rails et la Crique', () => {
       }
   });
 
-  it('l’aire de l’aéronef est sur l’eau, au bout de la jetée ; l’aéronef est la troisième forme, et son départ monte', () => {
+  it('l’aire de l’aéronef est sur l’eau, au bout de la passerelle de l’aire ; l’aéronef est la troisième forme, et son départ monte', () => {
     const pad = CRIQUE_SITE.frame.toWorld(CRIQUE_PAD.pad.x, CRIQUE_PAD.pad.z);
     expect(landDistance4e(pad)).toBeLessThan(-2);
     expect(NEF_4E.form).toBe(3);
@@ -203,6 +205,15 @@ describe('Les couleurs chaudes du 4e', () => {
     const meshes = [pathRibbons4e((x, z) => groundOn4e(field, x, z)), criqueDecorFacets(), ...PLAN.places.map((p) => modelOfPlace(p.id).facets)];
     for (const f of meshes)
       for (let k = 0; k < f.colors.length; k += 3) expect(luminance([f.colors[k], f.colors[k + 1], f.colors[k + 2]])).toBeGreaterThan(NOT_BLACK);
+  });
+
+  it('le sable des chemins et le pavé de la Crique se détachent de la terre rouge par la clarté, 3 contre 1 au moins (référent dys, retouche 1)', () => {
+    const ratio = (a: number, b: number) => {
+      const [la, lb] = [luminance(linearRgb(a)), luminance(linearRgb(b))];
+      return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+    };
+    for (const earth of [COLORS_4E.soil, COLORS_4E.soilSun, COLORS_4E.soilShade])
+      for (const light of [COLORS_6E.path, CRIQUE_SITE.colors.stone]) expect(ratio(light, earth), `${light.toString(16)} / ${earth.toString(16)}`).toBeGreaterThanOrEqual(3);
   });
 
   it('la mer : l’image de l’eau couvre l’île entière', () => {

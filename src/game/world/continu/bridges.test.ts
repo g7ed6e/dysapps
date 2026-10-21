@@ -10,6 +10,7 @@ import { BEACONS_FLAT, BRIDGE_ABUT, COMMONS_FLAT, ENGINE_FLAT, MANGROVE_FLAT, NO
 import { STRAIT_BANK, buildHeightField, heightAt, heightOnMesh, landDistance, straitClearance } from './terrain';
 import { shallowness } from './sea';
 import { planFor } from './levelPlan';
+import { COLORS_4E, LINKS_4E } from './plan4e';
 
 /** Le plan du 6e, le seul enregistré (GD-22). */
 const PLAN = planFor('6e');
@@ -163,5 +164,31 @@ describe('Les ponts', () => {
   it('sur la Carte, chaque pont en trait double ; sa cible de toucher fait 48 px au moins', () => {
     for (const land of LINKED_LANDS) expect(bridgeMapMark(land).triangles).toBe(8);
     expect(2 * BRIDGE_TOUCH.pixels).toBeGreaterThanOrEqual(48);
+  });
+});
+
+describe('Les ponts tombés du 4e (retouche 1 du lot 1)', () => {
+  const has = (f: { colors: ArrayLike<number> }, hex: number) => {
+    const c = linearRgb(hex);
+    for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - c[k]) < 1e-6)) return true;
+    return false;
+  };
+  const lands = Object.keys(LINKS_4E) as (keyof typeof LINKS_4E)[];
+
+  it('la pierre grise du 4e, jamais la pierre claire du 6e', () => {
+    for (const land of lands) {
+      const f = bridgeFacets(land, false);
+      expect(f.colors.length, land).toBeGreaterThan(0);
+      for (const hex of [0xb9b2a3, 0xd8d1c2, 0xa39b8c]) expect(has(f, hex), `${land} ${hex.toString(16)}`).toBe(false);
+    }
+  });
+
+  it('l’arche de basalte de l’Épaule à demi tombée, pour la coulée (GD-24)', () => {
+    expect(LINKS_4E.epaule.cut).toBe('coulee');
+    const arch = bridgeFacets('epaule', false);
+    expect(has(arch, COLORS_4E.basaltSun)).toBe(true);
+    // Le basalte ne va qu'à la coulée : le pont du ravin et celui du bassin restent de pierre grise.
+    expect(has(bridgeFacets('coteaux', false), COLORS_4E.basaltSun)).toBe(false);
+    expect(has(bridgeFacets('coteaux', false), COLORS_4E.stone)).toBe(true);
   });
 });

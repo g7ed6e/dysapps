@@ -33,7 +33,7 @@ import { buildHeightField5e, groundOn5e, tileCounts5e } from './terrain5e';
 import { NETWORK_5E, pathMapEdges5e, pathRibbons5e } from './paths5e';
 import { TERRAIN_5E } from './plan5e';
 import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from './mist5e';
-import { skyDome } from './sky';
+import { FOG_4E, skyDome } from './sky';
 import { veilFacets } from './veil';
 import { groupsTriangles, wildlifeTriangles } from './wildlife';
 import { allCritterForms, wildlifeGroups5e } from './wildlife5e';
@@ -41,7 +41,7 @@ import { hutteFacets } from './hutte5e';
 import { CRIQUE_SITE, NEF_4E_MODEL_TRIANGLES, criqueDecorFacets } from './crique4e';
 import { NETWORK_4E, pathRibbons4e } from './paths4e';
 import { TERRAIN_4E } from './plan4e';
-import { buildHeightField4e, groundOn4e, summitMapHatch, tileCounts4e } from './terrain4e';
+import { buildHeightField4e, groundOn4e, mapOverlay4e, tileCounts4e } from './terrain4e';
 
 /** Les terres qu'on relie du 6e : le budget est celui du monde ouvert du 6e (GD-22, lot 1 : le plan par niveau). */
 const LINKED_LANDS_6E = linkedLands(planFor('6e'));
@@ -555,7 +555,7 @@ function groundCost4e(): { triangles: number; calls: number; near: number; far: 
   let worstFar = 0;
   for (const p of NETWORK_4E.networkSamples(SAMPLE_STEP))
     for (let y = 0; y < SAMPLE_YAWS; y++) {
-      const rings = tileRings(p, WORLD_FOG.far, (2 * Math.PI * y) / SAMPLE_YAWS, TERRAIN_4E);
+      const rings = tileRings(p, FOG_4E.far, (2 * Math.PI * y) / SAMPLE_YAWS, TERRAIN_4E);
       worstNear = Math.max(worstNear, rings.near.reduce((s, t) => s + near[t], 0));
       worstFar = Math.max(worstFar, rings.far.reduce((s, t) => s + far[t], 0));
     }
@@ -587,7 +587,7 @@ function poseCost4e(): { triangles: number; calls: number } {
 
 /**
  * Ce que coûte le monde ouvert du 4e (lot 1 : l'île entière en grandes masses) : le ciel, le sol et ses buissons, la
- * mer, les chemins (les rails, la rigole couverte et la jetée de la Crique compris), les lieux et leurs ponts, la Crique
+ * mer, les chemins (les rails, la rigole couverte et la passerelle de l'aire compris), les lieux et leurs ponts, la Crique
  * et son décor, la brume des terres fermées (au départ, les trois), Kéo, l'aéronef ; puis, selon `view` : le monde
  * (`monde`, un pont qui se relève) ou le départ (`depart`, la Nef et l'obstacle dans deux maillages à part). Ni Détour,
  * ni faune, ni scénette au lot 1.
@@ -611,14 +611,14 @@ export function openWorldCost4e(view: 'monde' | 'depart' = 'monde'): OpenWorldCo
 
 /**
  * La Carte du 4e, en un seul plan : le ciel, toute l'île de loin, la mer, les chemins, les lieux (deux appels, le pire),
- * le trait double des ponts et les hachures du sommet (dans le maillage des lieux), la brume des terres fermées, Kéo.
+ * le trait double des ponts, les hachures du sommet et le dessin des coupures (dans le maillage des lieux), la brume des terres fermées, Kéo.
  */
 export function mapCost4e(): { triangles: number; calls: number } {
   const field = buildHeightField4e();
   const far = tileCounts4e(field, 'far').reduce((s, n) => s + n, 0);
   const paths = pathRibbons4e((x, z) => groundOn4e(field, x, z)).triangles;
   const places = placesCost4e();
-  const marks = LINKED_LANDS_4E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + summitMapHatch().triangles;
+  const marks = LINKED_LANDS_4E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + mapOverlay4e().triangles;
   const veil = veilFacets(LINKED_LANDS_4E).triangles;
   return {
     triangles: SKY.triangles + far + 2 + paths + places.triangles + marks + veil + KEO.triangles + nefCost4e().triangles,

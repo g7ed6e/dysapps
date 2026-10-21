@@ -111,6 +111,20 @@ describe('Les lieux fermés et la distance', () => {
 });
 
 describe('La prochaine mission', () => {
+  it('au 4e, la Forge d’abord, tant que rien n’a été joué (retouche 1 du lot 1 : « Y aller » vise la Forge)', () => {
+    const plan4e = planFor('4e');
+    const forge = plan4e.places.find((p) => p.id === 'forge')!;
+    // Une mission neuve par île (le plan du 4e porte ses îles, pas encore ses scénettes).
+    const neuves: MissionMark[] = [...new Set(plan4e.places.map((p) => p.island))].map((ile) => ({ ile, mission: 'm', etat: 'new' as const }));
+    expect(nextMission(plan4e, neuves)).toMatchObject({ place: { id: 'forge' } });
+    // La Forge fermée, ou un lieu déjà joué : l’ordre du plan reprend la main.
+    expect(nextMission(plan4e, neuves, undefined, (p) => p !== 'forge')?.place.id).not.toBe('forge');
+    const autre = plan4e.places.find((p) => p.id !== 'forge' && p.island !== forge.island)!;
+    const jouees = neuves.map((b) => (b.ile === autre.island ? { ...b, etat: 1 as const } : b));
+    expect(playedPlaces(plan4e, jouees)).toContain(autre.id);
+    expect(nextMission(plan4e, jouees)?.place.id).toBe(plan4e.places.find((p) => missionsOfPlace(p, jouees).some((b) => b.etat === 'new'))!.id);
+  });
+
   it('d’abord la première encore à jouer du lieu où se tient Kéo, s’il est ouvert, avant la destination du jeu (le rang 2 de la suggestion)', () => {
     const ailleurs = { island: 'maths-6e-calculation', mission: 'times-tables' };
     expect(nextMission(PLAN, bornes, ailleurs, undefined, 'filets')).toMatchObject({ place: { id: 'filets' }, mission: 'word-classes' });

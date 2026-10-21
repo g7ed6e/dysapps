@@ -58,6 +58,12 @@ export interface LevelPlan {
    * aucun au 6e, qui est à plat.
    */
   readonly upper: readonly PlaceId[];
+  /**
+   * Le premier lieu suggéré, tant qu'aucune mission du niveau n'a été jouée (au 4e, la Forge : retouche 1 du lot 1,
+   * « Y aller » vise le grand lieu que montre l'arrivée, même quand le port de la grille est ailleurs) ; rien : la
+   * destination du jeu, comme au 6e et au 5e.
+   */
+  readonly firstPlace?: PlaceId;
 }
 
 /** Le plan du 6e, tiré de ./plan6e.ts tel quel. */
@@ -103,6 +109,7 @@ const PLAN_4E: LevelPlan = {
   pricePerPlace: 5,
   unpriced: UNPRICED_PLACES_4E,
   upper: [],
+  firstPlace: 'forge',
 };
 
 /** Les plans enregistrés, par niveau. */

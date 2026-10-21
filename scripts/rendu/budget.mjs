@@ -109,10 +109,10 @@ try {
   const cinquieme = !demandes || demandes.includes('5e');
   // Au 5e (lot 3), deux cas qui ne se montrent jamais ensemble : la scénette de la Montée ouverte (le pire), puis le
   // monde hors scénette (la pose, la caisse de la cabine qui roule).
-  const mondeOuvert5e = cinquieme ? { niveau: '5e', postes: ouvert.openWorldCost5e(), carte: ouvert.mapCost5e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['5e'], horsScenette: ouvert.openWorldCost5e('monde'), depart: ouvert.openWorldCost5e('depart') } : null;
+  const mondeOuvert5e = cinquieme ? { niveau: '5e', postes: ouvert.openWorldCost5e(), carte: ouvert.mapCost5e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['5e'], horsScenette: ouvert.openWorldCost5e('monde'), depart: ouvert.openWorldCost5e('depart'), departLibelle: 'la Nef et le mur de nuages dans deux maillages, à la place de la pose' } : null;
   // Le monde ouvert du 4e (lot 1 : l'île entière en grandes masses ; aucune scénette encore) : le monde, la Carte, le départ.
   const quatrieme = !demandes || demandes.includes('4e');
-  const mondeOuvert4e = quatrieme ? { niveau: '4e', postes: ouvert.openWorldCost4e(), carte: ouvert.mapCost4e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['4e'], depart: ouvert.openWorldCost4e('depart') } : null;
+  const mondeOuvert4e = quatrieme ? { niveau: '4e', postes: ouvert.openWorldCost4e(), carte: ouvert.mapCost4e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['4e'], depart: ouvert.openWorldCost4e('depart'), departLibelle: 'l’aéronef et son obstacle, vide au lot 1, dans deux maillages, à la place de la pose' } : null;
 
   if (JSON_SEUL) console.log(JSON.stringify(resultats, null, 2));
   else {
@@ -168,7 +168,7 @@ try {
         const d = monde.depart;
         const dt = d.reduce((s, p) => s + p.triangles, 0);
         const dc = d.reduce((s, p) => s + p.calls, 0);
-        console.log(`Pendant le départ (la Nef et le mur de nuages dans deux maillages, à la place de la pose) : ${n(dt)} triangles, ${dc} appels${alerte(dt, dc)}.`);
+        console.log(`Pendant le départ (${monde.departLibelle}) : ${n(dt)} triangles, ${dc} appels${alerte(dt, dc)}.`);
       }
     }
   }

@@ -1,7 +1,7 @@
 // La Crique, le lieu de départ du 4e, et son aéronef (lot 1 du monde ouvert du 4e, en grandes masses ; le lieu entier
 // vient avec son lot, le lot 4 de la fiche) : l'Escale du 6e servie dans les matières chaudes du 4e (./port.ts dessine
 // les mêmes bâtiments, à la même place de leur repère) : la pierre grise des Passeurs, des murs de terre cuite claire, le
-// bois brun, les ferrures de cuivre. Au bout du quai, la jetée et l'aire ronde de l'aéronef (./paths4e.ts les dessine).
+// bois brun, les ferrures de cuivre. Au bout du quai, la passerelle de l'aire et l'aire ronde de l'aéronef (./paths4e.ts les dessine).
 // Ce qui ne change jamais autour d'elle : le volcan vu de loin, sa lave figée et son panache (./terrain4e.ts), et le
 // Rafiot des Ferrailleurs au bout de son quai abandonné. L'aéronef se pose sur l'aire en trois temps (la coque et sa
 // lanterne, la cabine et le rotor, les hélices et la dérive : world/nefModels.ts, `NEF_SISTERS[3]`) ; au lot 1, son
@@ -9,16 +9,23 @@
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
 import type { NefFlight, NefSite } from './nef';
-import { COLORS_4E, CRIQUE, CRIQUE_LEVEL, CRIQUE_PAD, CRIQUE_PAVING, CRIQUE_QUAY_SPOT, RAFIOT_4E } from './plan4e';
+import { COLORS_4E, CRIQUE, CRIQUE_LEVEL, CRIQUE_PAD, CRIQUE_PAVING, CRIQUE_QUAY_SPOT, RAFIOT_4E, VOLCANO_4E } from './plan4e';
 import type { PortSite } from './port';
-import { lavaFacets, plumeFacets, volcanoFarFacets } from './terrain4e';
+import { heightAt4e, lavaFacets, plumeFacets, volcanoFarFacets } from './terrain4e';
 
 /**
- * Les matières de la Crique : la pierre grise (`COLORS_4E.stone`), les murs de terre cuite claire, le bois brun, le
+ * Le dallage de la Crique (retouche 1 du lot 1, référent dys : la pierre grise ne se détachait de la terre rouge que par
+ * sa teinte, rapport 1,04) : une pierre claire, qui s'en détache par sa clarté (au moins 3 contre 1 à l'écran) ; ses
+ * flancs dans la pierre grise des Passeurs, plus sombres, le bordent.
+ */
+const CRIQUE_PAVING_COLOR = 0xf8f2ea;
+
+/**
+ * Les matières de la Crique : le dallage clair, la pierre grise, les murs de terre cuite claire, le bois brun, le
  * cuivre des ferrures. Les ardoises gardent celles de l'Escale, repères d'un niveau à l'autre.
  */
 const CRIQUE_COLORS = {
-  stone: COLORS_4E.stone,
+  stone: CRIQUE_PAVING_COLOR,
   stoneSide: COLORS_4E.stoneShade,
   coping: COLORS_4E.stoneSun,
   plinth: COLORS_4E.stoneShade,
@@ -61,6 +68,25 @@ export const CRIQUE_SITE: PortSite = {
  * nord), vers le nord-ouest, la rangée à droite. Le changer ici.
  */
 export const CRIQUE_VIEW = { yaw: 0.7 } as const;
+
+/**
+ * Le haut que le regard levé cadre au quai de la Crique (retouche 1 du lot 1 : fiche, § 1 et § 5, « vue du quai, la
+ * Forge et le volcan ») : le rebord du cratère, un peu au-dessus (`above`, le pied du panache). La caméra qui suit Kéo
+ * plonge trop pour qu'on voie le cône à plus de 300 unités ; levée, elle garde Kéo au-dessus de « Y aller », le
+ * fourneau au milieu de l'image, le cône au fond, à gauche du milieu.
+ */
+export const CRIQUE_LOOK = (() => {
+  const { crater, craterRadius } = VOLCANO_4E;
+  const above = 4;
+  return { x: crater.x, y: heightAt4e({ x: crater.x + craterRadius, z: crater.z }) + above, z: crater.z };
+})();
+
+/**
+ * Le bout de la caméra qui suit Kéo au 4e (expert frontend, retouche 1 du lot 1 : explicite, plus celui du 5e pris sans
+ * le dire) : le volcan se voit de toute l'île, son côté le plus loin de la Crique à un peu plus de 410 unités ; son
+ * panache au-dessus. Au-delà, rien.
+ */
+export const FOLLOW_FAR_4E = 600;
 
 /** Les couleurs du Rafiot : sa coque de fer rouillé, sa cabine de bois, sa cheminée et sa fumée courte. */
 const RAFIOT_COLORS = { hull: COLORS_4E.rustShade, deck: COLORS_4E.wood, cabin: 0xa08a74, funnel: 0x8e6a5a } as const;

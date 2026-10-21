@@ -67,6 +67,12 @@ export function nextMission(
   const at = here ? plan.places.find((p) => p.id === here) : undefined;
   const mine = at && open(at.id) ? firstToPlayAt(at, bornes) : undefined;
   if (at && mine) return { place: at, mission: mine.mission };
+  // Le premier lieu du niveau (`LevelPlan.firstPlace`), tant que rien n'y a été joué.
+  const first = plan.firstPlace ? plan.places.find((p) => p.id === plan.firstPlace) : undefined;
+  if (first && open(first.id) && playedPlaces(plan, bornes).length === 0) {
+    const b = firstToPlayAt(first, bornes);
+    if (b) return { place: first, mission: b.mission };
+  }
   const fromGame = destination && plan.places.find((p) => p.island === destination.island);
   if (fromGame && open(fromGame.id) && destination.mission && bornes.some((b) => b.ile === fromGame.island && b.mission === destination.mission))
     return { place: fromGame, mission: destination.mission };

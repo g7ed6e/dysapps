@@ -202,6 +202,11 @@ export interface MapLabel {
    */
   above?: boolean;
   /**
+   * Un lieu dont le nom se pose d'abord à côté de son point, à gauche ou à droite (au 4e, le plan validé : l'Étalon, la
+   * Manufacture, le Terminus, le Chariot), puis comme les autres.
+   */
+  side?: 'left' | 'right';
+  /**
    * La taille de sa forme serrée, son nom sur deux lignes (entre deux mots), plus étroit, prise quand la forme entière ne
    * trouve pas de place : pour un lieu ouvert, sa pastille, l'icône de l'état dessous (relecture de L6b, directeur
    * artistique : un lieu ouvert ne perd jamais son nom) ; pour un lieu fermé, son cadenas et son nom sur deux lignes
@@ -492,6 +497,7 @@ function attemptLayout(
         list.push(...(l.below ? [down, up] : [up, down]));
       }
       list.push(...sides);
+      if (l.side) list.unshift(sides[l.side === 'right' ? 0 : 1]);
       return list;
     };
     const full = places(l.w, l.h);

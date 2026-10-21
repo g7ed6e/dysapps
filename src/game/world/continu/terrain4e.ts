@@ -1,14 +1,14 @@
 // Le terrain du 4e (lot 1 du monde ouvert du 4e, « l'île entière en grandes masses ») : les Anciens Ateliers, une île
 // longue, un seul sol en pente douce, jamais d'étage (fiche, § 5). Au sud-est, la terre rouge des Fabriques et du
 // Bastion, coupés par le bassin à flot, profond, entre deux quais droits ; à l'ouest, au-delà d'un ravin sec, les verts
-// brûlés des Coteaux, qui montent doucement ; au nord-ouest, le volcan endormi, un cône large et bas, son cratère creusé ;
+// brûlés des Coteaux, qui montent doucement ; au nord-ouest, le volcan calme, un cône large et bas, son cratère creusé ;
 // du cratère à la mer du nord-est, la coulée figée, une bande de croûte de basalte un peu creusée, qui ferme l'Épaule au
 // sud. Rien ne coule : la lave n'est qu'un liseré au bord du cratère et quelques fentes fixes dans la cuvette, au-dessus
 // de la Forge (`lavaFacets` ; références : aucune lave sous le cratère ni sur les flancs). Le sommet, du cratère à la mer
 // de l'ouest, ne se marche pas (`walkBlocked4e`), comme la coulée. Les tuiles, leurs deux niveaux de détail et leurs
 // anneaux sont ceux du 6e (./terrain.ts) : seuls la hauteur, la peinture et ce qui pousse changent. Le volcan se voit de
 // toute l'île : un cône grossier, sous le sol des tuiles, se dessine avec les lieux (`volcanoFarFacets`). Code pur.
-import { FacetBuilder, type Facets } from './facets';
+import { FacetBuilder, mergeFacets, type Facets } from './facets';
 import { distanceToPolyline, hash2, insidePolygon, signedDistance, smoothstep, type Vec2 } from './geometry';
 import {
   BASSIN_4E,
@@ -33,7 +33,7 @@ import {
   nearRails4e,
 } from './plan4e';
 import { SHADOW_DIR_4E } from './sky';
-import { drawTileWith, farHeightsOf, heightOnMesh, tileRect, type GroundPaint, type HeightField, type P3, type TileDetail } from './terrain';
+import { drawTileWith, farHeightsOf, heightOnFar, heightOnMesh, tileRect, type GroundPaint, type HeightField, type P3, type TileDetail } from './terrain';
 
 /** Le fond de la mer autour de l'île, et celui du bassin à flot : profonds, sans gué (fiche, § 5). */
 const SEA_FLOOR = -1.6;
@@ -126,8 +126,10 @@ export const groundOn4e = (f: HeightField, x: number, z: number): number => (inG
 const ROCK_UP = 0.6;
 /** Une facette moins droite que ça prend son flanc (au soleil, ou à l'ombre). */
 const SLOPE_UP = 0.97;
-/** Le haut du volcan : au-dessus de cette hauteur du cône, la roche brune. */
+/** Le haut du volcan : au-dessus de cette hauteur du cône, le basalte. */
 const ROCK_FROM = 5;
+/** Le haut du sommet, en part de la hauteur du cône : au-dessus, la croûte. */
+const SUMMIT_CRUST = 0.76;
 
 /** Le sens d'où vient le soleil, à plat : un flanc qui le regarde est au soleil. */
 const SUN_FLAT = { x: -SHADOW_DIR_4E.x, z: -SHADOW_DIR_4E.z } as const;
@@ -138,8 +140,13 @@ const SUN_FLAT = { x: -SHADOW_DIR_4E.x, z: -SHADOW_DIR_4E.z } as const;
  */
 const COTEAUX_AREA = [[0, 305], [370, 300], [450, 308], [560, 338], [680, 378], [800, 405], [828, 480], [812, 580], [775, 700], [735, 860], [695, 1030], [668, 1450], [0, 1450]].map((q) => fromPlan4e(q as [number, number]));
 
-/** Une tache du sol, par cases de douze unités : de grands aplats d'un seul tenant, jamais une moucheture ni un damier. */
-const patch = (x: number, z: number): number => hash2(Math.floor(x / 12) + 5000, Math.floor(z / 12) + 5000);
+/**
+ * Une tache du sol, de 0 à 1 : de grands aplats aux bords souples, d'une cinquantaine d'unités, qui ne suivent jamais la
+ * grille (retouche 1 du lot 1, directeur artistique : les cases de douze unités faisaient un damier sur la Carte). Des
+ * sinus en biais, sans hasard : le même sol à chaque construction.
+ */
+const patch = (x: number, z: number): number =>
+  0.5 + 0.3 * Math.sin(x * 0.043 + z * 0.029 + 1.3) * Math.cos(z * 0.037 - x * 0.021 + 0.4) + 0.2 * Math.sin((x * 0.6 + z) * 0.052 + 2.2);
 
 /** La part de terre de l'Épaule en un point (au nord de la coulée) : sa roche brune, plus claire que le volcan. */
 const northOfCoulee = (p: Vec2): boolean => p.z < -40 && !insidePolygon(p, COTEAUX_AREA) && signedDistance(p, COTEAUX_AREA) < -2 && p.x < 75 && p.z < northEdge(p.x);
@@ -163,14 +170,14 @@ function northEdge(x: number): number {
 function flat4e(x: number, z: number, h: number): number {
   const p = { x, z };
   if (h < 0.35 && couleeClearance(p) > 0.5 && ravinClearance(p) > 0.5) return COLORS_4E.sand;
-  if (couleeClearance(p) < 0.4 || insidePolygon(p, SUMMIT_4E)) return volcanoHeight(p) > 26 || couleeClearance(p) < 0.4 ? COLORS_4E.crust : COLORS_4E.rock;
+  if (couleeClearance(p) < 0.4 || insidePolygon(p, SUMMIT_4E)) return volcanoHeight(p) > SUMMIT_CRUST * VOLCANO_4E.height || couleeClearance(p) < 0.4 ? COLORS_4E.crust : COLORS_4E.basalt;
   if (ravinClearance(p) < 0.4) return COLORS_4E.gully;
   if (signedDistance(p, COAST_4E) < 2.5 && bassinClearance(p) > 2) return COLORS_4E.sand;
   const k = patch(x, z);
-  if (volcanoHeight(p) > ROCK_FROM) return k < 0.6 ? COLORS_4E.rock : COLORS_4E.rockSun;
+  if (volcanoHeight(p) > ROCK_FROM) return k < 0.62 ? COLORS_4E.basalt : COLORS_4E.basaltSun;
   if (insidePolygon(p, COTEAUX_AREA)) return k < 0.62 ? COLORS_4E.burnt : COLORS_4E.burntSun;
   if (northOfCoulee(p)) return k < 0.6 ? COLORS_4E.rockSun : COLORS_4E.burntShade;
-  return k < 0.66 ? COLORS_4E.soil : COLORS_4E.soilSun;
+  return k < 0.68 ? COLORS_4E.soil : COLORS_4E.soilSun;
 }
 
 /** La teinte à l'ombre de chaque aplat du sol (jamais presque noire). */
@@ -181,6 +188,8 @@ const SHADE_OF: Readonly<Record<number, number>> = {
   [COLORS_4E.burntSun]: COLORS_4E.burnt,
   [COLORS_4E.rock]: COLORS_4E.rockShade,
   [COLORS_4E.rockSun]: COLORS_4E.rock,
+  [COLORS_4E.basalt]: COLORS_4E.basaltShade,
+  [COLORS_4E.basaltSun]: COLORS_4E.basalt,
   [COLORS_4E.crust]: COLORS_4E.crustShade,
 };
 
@@ -205,6 +214,7 @@ function facet4e(a: P3, b: P3, c: P3): number {
     if (bassinClearance(p) < 2) return sunny ? COLORS_4E.stoneSun : COLORS_4E.stone;
     if (couleeClearance(p) < 2) return COLORS_4E.crustShade;
     if (h < 0.4) return COLORS_4E.sand;
+    if (volcanoHeight(p) > ROCK_FROM) return sunny ? COLORS_4E.basaltSun : COLORS_4E.basaltShade;
     return sunny ? COLORS_4E.rockSun : COLORS_4E.rockShade;
   }
   const base = flat4e(x, z, h);
@@ -242,7 +252,7 @@ const nearPlace = (p: Vec2): boolean => PLACES_4E.some((pl) => Math.hypot(p.x - 
 /** Les places gardées libres : les Détours, les grands projets, le Rafiot et son quai. */
 const SPOTS: readonly Vec2[] = [...Object.values(DETOUR_SPOTS_4E), RESERVED_4E.portique.center, RESERVED_4E.tour.center, RAFIOT_4E.at];
 
-/** La Crique et son aire : sa place, son quai, sa rangée, sa jetée. */
+/** La Crique et son aire : sa place, son quai, sa rangée, la passerelle de l'aire. */
 function nearCrique(p: Vec2): boolean {
   const l = CRIQUE.toLocal(p);
   const k = FLORA_KEEP.crique;
@@ -376,7 +386,7 @@ export function volcanoFarFacets(): Facets {
         c = at(ring, k + 1),
         d = at(ring + 1, k + 1),
         e = at(ring + 1, k);
-      const color = ring === rings.length - 2 ? COLORS_4E.crust : (ring + k) % 3 === 0 ? COLORS_4E.rockSun : COLORS_4E.rock;
+      const color = ring === rings.length - 2 ? COLORS_4E.crust : (ring + k) % 3 === 0 ? COLORS_4E.basaltSun : COLORS_4E.basalt;
       b.quad(a, e, d, c, color);
     }
   // Le fond du cratère : un éventail sombre (de la croûte, jamais presque noir).
@@ -385,8 +395,12 @@ export function volcanoFarFacets(): Facets {
   return b.build();
 }
 
-/** Le liseré de lave au bord du cratère : sa demi-largeur, sa hauteur au-dessus du sol, le nombre de ses pans. */
-const RIM = { half: 0.45, lift: 0.08, sides: 18 } as const;
+/**
+ * Le liseré de lave au bord du cratère : sa demi-largeur, sa hauteur au-dessus du sol, le nombre de ses pans, et ceux
+ * qui manquent (`gaps`) : un liseré coupé, jamais un anneau fermé (retouche 1 du lot 1, consultant d'Archipéo : sur la
+ * Carte, un anneau rouge net se lisait comme une cible).
+ */
+const RIM = { half: 0.3, lift: 0.08, sides: 18, gaps: [2, 3, 7, 11, 12, 16] } as const;
 
 /**
  * Les fentes de la cuvette (centre en unités depuis la cuvette, longueur, cap) : fines, plus rouges qu'orange, fixes ;
@@ -416,7 +430,7 @@ export function lavaFacets(): Facets {
     return [p.x, heightAt4e(p) + RIM.lift, p.z];
   };
   // Vue d'en haut, dans le sens inverse des aiguilles d'une montre : la face regarde le ciel.
-  for (let k = 0; k < RIM.sides; k++) b.quad(ring(k, craterRadius - RIM.half), ring(k + 1, craterRadius - RIM.half), ring(k + 1, craterRadius + RIM.half), ring(k, craterRadius + RIM.half), COLORS_4E.lava);
+  for (let k = 0; k < RIM.sides; k++) if (!(RIM.gaps as readonly number[]).includes(k)) b.quad(ring(k, craterRadius - RIM.half), ring(k + 1, craterRadius - RIM.half), ring(k + 1, craterRadius + RIM.half), ring(k, craterRadius + RIM.half), COLORS_4E.lava);
   const { center } = CUVETTE_4E;
   for (const [dx, dz, len, yaw] of CUVETTE_CRACKS) {
     const c = Math.cos(yaw) * len * 0.5,
@@ -457,12 +471,13 @@ export function plumeFacets(): Facets {
 // ---------- Le sommet sur la Carte ----------
 
 /**
- * Les hachures du sommet sur la Carte (fiche, § 5 : « le sommet, hachuré, ne se marche pas ») : des bandes claires en
- * biais, tous les `gap` unités, larges de `width`, posées `lift` au-dessus du sol, par pas de `step` le long d'elles,
- * dans le contour du sommet. Claires sur la roche brune et la croûte : elles se lisent de loin, sans texte. Sur la Carte
- * seulement, dans le maillage des lieux.
+ * Les hachures du sommet sur la Carte (fiche, § 5 : « le sommet, hachuré, ne se marche pas ») : des bandes en biais,
+ * tous les `gap` unités, larges de `width`, posées `lift` au-dessus du sol, par pas de `step` le long d'elles, dans le
+ * contour du sommet. Un gris chaud à peine plus clair que le basalte, espacées (retouche 1 du lot 1, référent dys : des
+ * rayures serrées et très contrastées gênent certains lecteurs) : elles se lisent, sans texte ni éblouissement. Sur la
+ * Carte seulement, dans le maillage des lieux.
  */
-const SUMMIT_HATCH_4E = { gap: 5, width: 1.1, lift: 0.6, step: 2, color: 0xe6d6c2 } as const;
+const SUMMIT_HATCH_4E = { gap: 9, width: 0.9, lift: 0.6, step: 2, color: 0x9a8a80 } as const;
 
 export function summitMapHatch(): Facets {
   const b = new FacetBuilder();
@@ -491,3 +506,80 @@ export function summitMapHatch(): Facets {
     }
   return b.build();
 }
+
+// ---------- Les coupures sur la Carte ----------
+
+/**
+ * Le dessin des coupures sur la Carte (retouche 1 du lot 1, directeur artistique : « des limites de couleur qui suivent
+ * la coupure, une ligne nette ») : vues de haut, les tuiles de loin font des marches de leurs cases le long du ravin et
+ * de la coulée. Par-dessus, une bande qui suit la ligne de la coupure : son fond (le fond sec du ravin, la croûte de la
+ * coulée), une berge sombre de chaque côté (le ravin se lit en creux à deux berges, jamais comme une marche), puis un
+ * peu de la terre de chaque rive, de sa couleur, qui couvre les marches ; au milieu de la coulée, son trait fin
+ * ocre-rouge, éteint (jamais la couleur de la lave). Levée au-dessus du sol de près et de loin (`lift`) : de haut, rien
+ * ne la perce. `step` : son pas le long de la ligne ; `bank`, `land` : la largeur de la berge et de la rive, au-delà du
+ * bord (`edge`, la part de la coupure peinte de son fond).
+ */
+const CUT_MAP_4E = { step: 2.5, edge: 0.4, bank: 1.2, land: 2.4, lift: 1, trace: 0.35, bankColor: 0x5e4a3e, traceColor: 0x8a4e3c } as const;
+
+/** Une ligne repassée à un pas régulier (les coudes gardés). */
+function resample(line: readonly Vec2[], step: number): Vec2[] {
+  const out: Vec2[] = [line[0]];
+  for (let i = 1; i < line.length; i++) {
+    const a = line[i - 1],
+      c = line[i];
+    const n = Math.max(1, Math.ceil(Math.hypot(c.x - a.x, c.z - a.z) / step));
+    for (let k = 1; k <= n; k++) out.push({ x: a.x + ((c.x - a.x) * k) / n, z: a.z + ((c.z - a.z) * k) / n });
+  }
+  return out;
+}
+
+/** La bande d'une coupure sur la Carte (son fond `fill`, sa demi-largeur `half`, son trait du milieu ou non). */
+function cutBand(b: FacetBuilder, field: HeightField, line: readonly Vec2[], half: number, fill: number, trace: boolean): void {
+  const C = CUT_MAP_4E;
+  const pts = resample(line, C.step);
+  const y = (p: Vec2) => Math.max(heightAt4e(p), heightOnMesh(field, p.x, p.z), heightOnFar(field, p.x, p.z)) + C.lift;
+  // La normale de la ligne en chaque point (la moyenne de ses deux tronçons).
+  const normal = (i: number): Vec2 => {
+    const a = pts[Math.max(0, i - 1)],
+      c = pts[Math.min(pts.length - 1, i + 1)];
+    const l = Math.hypot(c.x - a.x, c.z - a.z) || 1;
+    return { x: (c.z - a.z) / l, z: -(c.x - a.x) / l };
+  };
+  const at = (i: number, v: number): P3 => {
+    const n = normal(i);
+    const q = { x: pts[i].x + n.x * v, z: pts[i].z + n.z * v };
+    return [q.x, y(q), q.z];
+  };
+  const up = (a: P3, c: P3, d: P3, e: P3, color: number) => {
+    // Vue d'en haut, dans le sens inverse des aiguilles d'une montre : la face regarde le ciel.
+    const ny = (c[2] - a[2]) * (d[0] - a[0]) - (c[0] - a[0]) * (d[2] - a[2]);
+    if (ny >= 0) b.quad(a, c, d, e, color);
+    else b.quad(e, d, c, a, color);
+  };
+  const edge = half + C.edge;
+  for (let i = 1; i < pts.length; i++) {
+    const strip = (v0: number, v1: number, color: number) => up(at(i - 1, v0), at(i, v0), at(i, v1), at(i - 1, v1), color);
+    strip(-edge, edge, fill);
+    for (const s of [-1, 1]) {
+      strip(s * edge, s * (edge + C.bank), C.bankColor);
+      // La rive : la couleur de la terre de ce côté, prise un peu plus loin.
+      const n = normal(i);
+      const far = { x: pts[i].x + n.x * s * (edge + C.bank + C.land + 3), z: pts[i].z + n.z * s * (edge + C.bank + C.land + 3) };
+      strip(s * (edge + C.bank), s * (edge + C.bank + C.land), flat4e(far.x, far.z, heightAt4e(far)));
+    }
+    if (trace) strip(-C.trace, C.trace, C.traceColor);
+  }
+}
+
+/** Les coupures sur la Carte : le ravin, puis la coulée, hors du sommet (déjà hachuré) ; le bassin a ses quais droits. */
+function cutMapBands4e(): Facets {
+  const b = new FacetBuilder();
+  const field = buildHeightField4e();
+  cutBand(b, field, RAVIN_4E.line, RAVIN_4E.halfWidth, COLORS_4E.gully, false);
+  const coulee = COULEE_4E.line.filter((p, i) => i === 0 || !insidePolygon(p, SUMMIT_4E));
+  cutBand(b, field, coulee, COULEE_4E.halfWidth, COLORS_4E.crust, true);
+  return b.build();
+}
+
+/** Ce que la Carte du 4e ajoute au monde : les hachures du sommet et le dessin des coupures. */
+export const mapOverlay4e = (): Facets => mergeFacets([summitMapHatch(), cutMapBands4e()]);

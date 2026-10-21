@@ -13,7 +13,7 @@ import { planFor, type LevelPlan, type OpenWorldLevel } from './levelPlan';
 import { bridgeCut, pathNode, type NetworkPoint } from './paths';
 import { CUT_CLEARANCE_4E, NETWORK_4E, isLand4e, passageCut4e } from './paths4e';
 import { NETWORK_5E, isLand5e, passageCut } from './paths5e';
-import { LINKS_4E } from './plan4e';
+import { COLORS_4E, LINKS_4E } from './plan4e';
 import { LINKS_5E } from './plan5e';
 import type { StraitId } from './plan6e';
 import { heightAt, standingHeight, straitClearance } from './terrain';
@@ -45,6 +45,25 @@ const C = {
   iron: 0x3f4a50,
   glass: 0xdaa66a,
 } as const;
+
+/** La pierre d'un pont : ses flancs, son dessus, ses piles, leur pied mouillé, sa cassure. */
+interface BridgeStone {
+  stone: number;
+  stoneTop: number;
+  pile: number;
+  wet: number;
+  broken: number;
+}
+
+/** La pierre des ponts du 6e et du 5e : celle des quais de l'Escale. */
+const STONE_6E: BridgeStone = { stone: C.stone, stoneTop: C.stoneTop, pile: C.pile, wet: C.wet, broken: C.broken };
+
+/**
+ * La pierre des ponts du 4e (retouche 1 du lot 1, directeur artistique) : la pierre grise des Passeurs du 4e, jamais la
+ * pierre claire du 6e, qui faisait les points les plus clairs de l'image ; et le basalte de l'arche de la coulée.
+ */
+const STONE_4E: BridgeStone = { stone: COLORS_4E.stoneShade, stoneTop: COLORS_4E.stone, pile: 0x74695f, wet: 0x62574f, broken: 0x6c6058 };
+const BASALT_4E: BridgeStone = { stone: COLORS_4E.basaltShade, stoneTop: COLORS_4E.basaltSun, pile: COLORS_4E.basalt, wet: COLORS_4E.crustShade, broken: COLORS_4E.crust };
 
 /** Où Kéo s'arrête devant un pont pas encore rebâti : sur sa culée, à tant d'unités de l'eau (son rayon et un peu d'air). */
 export const KEO_STOP = 0.9;
@@ -78,6 +97,8 @@ const PLAN_6E = planFor('6e');
  * terre (les identifiants des terres sont uniques d'un niveau à l'autre).
  */
 interface BridgeWorld {
+  /** La pierre de ses ponts, par terre. */
+  stone(land: LinkedLand): BridgeStone;
   node(id: string): Vec2;
   clearance(p: Vec2, land: LinkedLand): number;
   cut(a: Vec2, c: Vec2, land: LinkedLand): readonly [number, number];
@@ -85,6 +106,7 @@ interface BridgeWorld {
 }
 
 const WORLD_6E: BridgeWorld = {
+  stone: () => STONE_6E,
   node: (id) => pathNode(id).at,
   clearance: (p, land) => straitClearance(p, land as StraitId),
   cut: (a, c, land) => bridgeCut(a, c, land as StraitId),
@@ -95,6 +117,7 @@ const WORLD_6E: BridgeWorld = {
 const DRY = 1e9;
 
 const WORLD_5E: BridgeWorld = {
+  stone: () => STONE_6E,
   node: (id) => NETWORK_5E.pathNode(id).at,
   clearance: (p, land) => {
     const channel = isLand5e(land) ? LINKS_5E[land].channel : null;
@@ -106,6 +129,7 @@ const WORLD_5E: BridgeWorld = {
 
 /** Le 4e : le bassin à flot, le ravin et la coulée, chacun sa coupure (le ravin et la coulée sont secs). */
 const WORLD_4E: BridgeWorld = {
+  stone: (land) => (isLand4e(land) && LINKS_4E[land].cut === 'coulee' ? BASALT_4E : STONE_4E),
   node: (id) => NETWORK_4E.pathNode(id).at,
   clearance: (p, land) => (isLand4e(land) ? CUT_CLEARANCE_4E[LINKS_4E[land].cut](p) : DRY),
   cut: (a, c, land) => (isLand4e(land) ? passageCut4e(a, c, land) : [0, 0]),
@@ -115,6 +139,9 @@ const WORLD_4E: BridgeWorld = {
 const BRIDGE_WORLDS: Readonly<Record<OpenWorldLevel, BridgeWorld>> = { '6e': WORLD_6E, '5e': WORLD_5E, '4e': WORLD_4E };
 
 const worldOf = (land: LinkedLand): BridgeWorld => BRIDGE_WORLDS[planOfLand(land).level];
+
+/** La pierre d'un pont. */
+const stoneOf = (s: BridgeSite): BridgeStone => worldOf(s.land).stone(s.land);
 
 /** Le passage d'une terre est-il la cabine de la Montée (au 5e), et non un pont ? */
 export const isCabin = (land: LinkedLand): boolean => isLand5e(land) && LINKS_5E[land].kind === 'cabine';
@@ -267,8 +294,9 @@ function slab(b: FacetBuilder, s: BridgeSite, d0: number, d1: number, half: numb
 
 /** Les deux culées, de part et d'autre de l'eau : une rampe de pierre du sol jusqu'à la hauteur du tablier. */
 function abutments(b: FacetBuilder, s: BridgeSite): void {
-  slab(b, s, s.abut[0], s.water[0] + BRIDGE.over, BRIDGE.abutHalf, abutTop(s, 0, s.abut[0]), BRIDGE.deck, C.stone, C.stoneTop);
-  slab(b, s, s.water[1] - BRIDGE.over, s.abut[1], BRIDGE.abutHalf, BRIDGE.deck, abutTop(s, 1, s.abut[1]), C.stone, C.stoneTop);
+  const S = stoneOf(s);
+  slab(b, s, s.abut[0], s.water[0] + BRIDGE.over, BRIDGE.abutHalf, abutTop(s, 0, s.abut[0]), BRIDGE.deck, S.stone, S.stoneTop);
+  slab(b, s, s.water[1] - BRIDGE.over, s.abut[1], BRIDGE.abutHalf, BRIDGE.deck, abutTop(s, 1, s.abut[1]), S.stone, S.stoneTop);
 }
 
 /**
@@ -321,10 +349,11 @@ function shaft(b: FacetBuilder, s: BridgeSite, d: number, half: number, corners:
     return [q.x, y, q.z] as const;
   };
   const wet = PILE.wet;
+  const S = stoneOf(s);
   for (let k = 0; k < 4; k++) {
     const n = (k + 1) % 4;
     // Les faces regardent vers le dehors : le tour se fait dans le sens qui les tourne vers l'extérieur.
-    b.quad(p(n, BRIDGE.foot), p(k, BRIDGE.foot), p(k, wet), p(n, wet), C.wet);
+    b.quad(p(n, BRIDGE.foot), p(k, BRIDGE.foot), p(k, wet), p(n, wet), S.wet);
     b.quad(p(n, wet), p(k, wet), p(k, corners[k]), p(n, corners[n]), color);
   }
   const c = at(d + peak[0] * half, peak[1] * half);
@@ -344,6 +373,7 @@ function shaft(b: FacetBuilder, s: BridgeSite, d: number, half: number, corners:
  */
 function archStart(b: FacetBuilder, s: BridgeSite, from: number, sign: 1 | -1, length: number, teeth: readonly [number, number, number]): void {
   const at = frame(s);
+  const S = stoneOf(s);
   const half = BRIDGE.width / 2;
   const top = (u: number) => BRIDGE.deck - 0.1 - ARCH.tilt * u;
   // L'intrados : un quart d'ellipse sur l'arc entier (`span`), de presque l'eau contre la culée jusque sous le dessus.
@@ -358,11 +388,11 @@ function archStart(b: FacetBuilder, s: BridgeSite, from: number, sign: 1 | -1, l
   const slice = (u0: number, u1: number, v0: number, v1: number, end: boolean, sides: readonly [boolean, boolean]) => {
     const [L, R] = sign > 0 ? [v1, v0] : [v0, v1];
     const [lOut, rOut] = sign > 0 ? [sides[1], sides[0]] : [sides[0], sides[1]];
-    b.quad(p(u0, L, top(u0)), p(u1, L, top(u1)), p(u1, R, top(u1)), p(u0, R, top(u0)), C.stoneTop);
-    b.quad(p(u0, R, under(u0)), p(u1, R, under(u1)), p(u1, L, under(u1)), p(u0, L, under(u0)), C.wet);
-    if (lOut) b.quad(p(u0, L, under(u0)), p(u1, L, under(u1)), p(u1, L, top(u1)), p(u0, L, top(u0)), C.stone);
-    if (rOut) b.quad(p(u1, R, under(u1)), p(u0, R, under(u0)), p(u0, R, top(u0)), p(u1, R, top(u1)), C.stone);
-    if (end) b.quad(p(u1, L, under(u1)), p(u1, R, under(u1)), p(u1, R, top(u1)), p(u1, L, top(u1)), C.broken);
+    b.quad(p(u0, L, top(u0)), p(u1, L, top(u1)), p(u1, R, top(u1)), p(u0, R, top(u0)), S.stoneTop);
+    b.quad(p(u0, R, under(u0)), p(u1, R, under(u1)), p(u1, L, under(u1)), p(u0, L, under(u0)), S.wet);
+    if (lOut) b.quad(p(u0, L, under(u0)), p(u1, L, under(u1)), p(u1, L, top(u1)), p(u0, L, top(u0)), S.stone);
+    if (rOut) b.quad(p(u1, R, under(u1)), p(u0, R, under(u0)), p(u0, R, top(u0)), p(u1, R, top(u1)), S.stone);
+    if (end) b.quad(p(u1, L, under(u1)), p(u1, R, under(u1)), p(u1, R, top(u1)), p(u1, L, top(u1)), S.broken);
   };
   // Le corps plein jusqu'au plus court des claveaux, en deux tranches (l'intrados s'y courbe), puis chaque rang à sa
   // longueur.
@@ -376,7 +406,7 @@ function archStart(b: FacetBuilder, s: BridgeSite, from: number, sign: 1 | -1, l
       // Le rang le plus court : sa face du bout, à travers sa seule largeur.
       const v0 = -half + i * w;
       const [L, R] = sign > 0 ? [v0 + w, v0] : [v0, v0 + w];
-      b.quad(p(solid, L, under(solid)), p(solid, R, under(solid)), p(solid, R, top(solid)), p(solid, L, top(solid)), C.broken);
+      b.quad(p(solid, L, under(solid)), p(solid, R, under(solid)), p(solid, R, top(solid)), p(solid, L, top(solid)), S.broken);
       return;
     }
     slice(solid, end, -half + i * w, -half + (i + 1) * w, true, [i === 0 || teeth[i - 1] < k, i === 2 || teeth[i + 1] < k]);
@@ -426,16 +456,17 @@ export function bridgeParts(land: LinkedLand): BridgeParts {
   const at = frame(s);
   const yaw = Math.atan2(s.dir.x, s.dir.z);
   const pileTop = BRIDGE.deck - BRIDGE.plank - 0.24;
+  const S = stoneOf(s);
   const piles = pilesOf(s).map((d) => {
     const b = new FacetBuilder();
     const p = at(d, 0);
-    b.box({ x: p.x, y: BRIDGE.foot, z: p.z, yaw }, [PILE.side, PILE.wet - BRIDGE.foot, PILE.side], C.wet);
+    b.box({ x: p.x, y: BRIDGE.foot, z: p.z, yaw }, [PILE.side, PILE.wet - BRIDGE.foot, PILE.side], S.wet);
     const course = (pileTop - 0.18 - PILE.wet) / PILE.courses;
     for (let k = 0; k < PILE.courses; k++) {
       const side = PILE.side - (k % 2 ? PILE.inset : 0);
-      b.box({ x: p.x, y: PILE.wet + k * course, z: p.z, yaw }, [side, course, side], k % 2 ? C.pile : C.stone);
+      b.box({ x: p.x, y: PILE.wet + k * course, z: p.z, yaw }, [side, course, side], k % 2 ? S.pile : S.stone);
     }
-    b.box({ x: p.x, y: pileTop - 0.18, z: p.z, yaw }, [PILE.side + 0.3, 0.18, PILE.side + 0.3], C.stone, C.stoneTop);
+    b.box({ x: p.x, y: pileTop - 0.18, z: p.z, yaw }, [PILE.side + 0.3, 0.18, PILE.side + 0.3], S.stone, S.stoneTop);
     return b.build();
   });
   // Le tablier : deux longerons sous cinq planches jointives, d'une culée à l'autre.
@@ -510,16 +541,65 @@ export function bridgeFacets(land: LinkedLand, built: boolean, car: CabinCar = '
     const parts = bridgeParts(land);
     return mergeFacets([abutmentFacets(s, false), ...parts.piles, parts.deck, parts.rails]);
   }
+  if (isBasaltArch(land)) return fallenArch(s);
   const b = new FacetBuilder();
   b.append(abutmentFacets(s, true));
   // Les deux moignons, de 0,7 à 1,2 au-dessus de l'eau, le dessus cassé en biais (la pierre brute, plus sombre que le
   // dessus des culées), sans dalle à plat.
   const h = PILE.side / 2;
   const [first, last] = stumpsOf(s);
-  shaft(b, s, first, h, STUMPS[0].corners, STUMPS[0].peak, C.pile, C.broken);
-  shaft(b, s, last, h, STUMPS[1].corners, STUMPS[1].peak, C.pile, C.broken);
+  const S = stoneOf(s);
+  shaft(b, s, first, h, STUMPS[0].corners, STUMPS[0].peak, S.pile, S.broken);
+  shaft(b, s, last, h, STUMPS[1].corners, STUMPS[1].peak, S.pile, S.broken);
   return b.build();
 }
+
+/** Le passage d'une terre est-il l'arche de basalte de la coulée (au 4e) ? */
+const isBasaltArch = (land: LinkedLand): boolean => isLand4e(land) && LINKS_4E[land].cut === 'coulee';
+
+/**
+ * L'arche de basalte tombée en partie, sur la coulée du 4e (GD-24, « Avant de relier » ; retouche 1 du lot 1, directeur
+ * artistique : sa ruine à elle, pas celle des deux autres ponts) : ses deux culées de basalte, chacune avec le départ de
+ * son arche, long du côté des Fabriques, court du côté de l'Épaule ; le parapet plein des deux côtés de chaque culée ;
+ * entre les deux, le tablier manque, et trois claveaux tombés gisent sur la croûte. Rien n'y est de la lave.
+ */
+function fallenArch(s: BridgeSite): Facets {
+  const b = new FacetBuilder();
+  abutments(b, s);
+  const span = s.water[1] - s.water[0];
+  archStart(b, s, s.water[0] + BRIDGE.over, 1, span * 0.36, [1, 0.8, 0.62]);
+  archStart(b, s, s.water[1] - BRIDGE.over, -1, span * 0.18, [0.7, 1, 0.85]);
+  const at = frame(s);
+  const S = stoneOf(s);
+  // Le parapet plein, sur chaque culée, des deux côtés : un mur bas qui suit la rampe.
+  for (const [d0, d1] of [
+    [s.abut[0] + 0.6, s.water[0] + BRIDGE.over + span * 0.3],
+    [s.water[1] - BRIDGE.over - span * 0.12, s.abut[1] - 0.6],
+  ] as const)
+    for (const v of [-(BRIDGE.abutHalf - 0.3), BRIDGE.abutHalf - 0.3]) {
+      const top = (d: number) => (d <= s.water[0] + BRIDGE.over ? abutTop(s, 0, d) : d >= s.water[1] - BRIDGE.over ? abutTop(s, 1, d) : BRIDGE.deck - 0.1 - ARCH.tilt * Math.abs(d - (d < (s.water[0] + s.water[1]) / 2 ? s.water[0] + BRIDGE.over : s.water[1] - BRIDGE.over)));
+      const a = at(d0, v),
+        c = at(d1, v);
+      b.beam({ x: a.x, y: top(d0) + ARCH_PARAPET.height / 2, z: a.z }, { x: c.x, y: top(d1) + ARCH_PARAPET.height / 2, z: c.z }, ARCH_PARAPET.height, S.stone);
+    }
+  // Les claveaux tombés, sur la croûte, au milieu de la coulée.
+  const yaw = Math.atan2(s.dir.x, s.dir.z);
+  ARCH_FALLEN.forEach(([u, v, size, turn, tilt]) => {
+    const p = at(s.water[0] + span * u, v);
+    b.box({ x: p.x, y: worldOf(s.land).height(p) - 0.35, z: p.z, yaw: yaw + turn, pitch: tilt }, [size * 1.4, size * 0.9, size], S.stone, S.stoneTop);
+  });
+  return b.build();
+}
+
+/** Le parapet de l'arche : sa hauteur (et son épaisseur) au-dessus du dessus de la culée. */
+const ARCH_PARAPET = { height: 0.7 } as const;
+
+/** Les claveaux tombés de l'arche : leur place (en part de la coulée, puis en travers), leur taille, leur cap, leur bascule. */
+const ARCH_FALLEN: readonly (readonly [number, number, number, number, number])[] = [
+  [0.45, -0.6, 1.1, 0.4, 0.3],
+  [0.58, 0.9, 0.9, 1.3, -0.25],
+  [0.7, -0.2, 0.8, 2.2, 0.15],
+];
 
 /** Les deux moignons d'un pont tombé : la hauteur de leurs quatre coins, et la pointe de leur cassure. */
 const STUMPS = [

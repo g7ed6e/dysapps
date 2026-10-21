@@ -134,14 +134,14 @@ export const SHADOW_DIR_5E = (() => {
  * l'ambre à l'horizon, un rose chaud, puis un mauve pâle au zénith, jamais saturé.
  */
 const SKY_STOPS_4E: readonly { at: number; color: number }[] = [
-  { at: 0, color: 0xe8b890 },
-  { at: 6, color: 0xeac0a0 },
-  { at: 18, color: 0xe4b8a8 },
-  { at: 40, color: 0xcfaab0 },
-  { at: 90, color: 0xb4a0b0 },
+  { at: 0, color: 0xeec698 },
+  { at: 6, color: 0xeec9a4 },
+  { at: 18, color: 0xe8bcaa },
+  { at: 40, color: 0xd2acb2 },
+  { at: 90, color: 0xb6a2b2 },
 ];
 
-/** La couleur de l'horizon du 4e : la brume du lointain et le bas du dôme, un ambre clair. */
+/** La couleur de l'horizon du 4e : le brouillard du lointain et le bas du dôme, un ambre clair (le rose reste au ciel). */
 export const HORIZON_COLOR_4E = SKY_STOPS_4E[0].color;
 
 /**
@@ -165,9 +165,17 @@ export const LIGHT_4E = {
 /**
  * La lumière par la hauteur du 4e : un seul étage (toute la lumière partout : `low` et `high` sous le sol), mais le
  * brouillard du lointain s'éclaircit en hauteur, si bien que le haut du volcan et son panache se voient de toute l'île
- * (de la Crique, à plus de 300 unités), au-dessus de l'air ambré.
+ * (de la Crique, à plus de 300 unités), au-dessus de l'air ambré ; retouche 1 du lot 1 : dès 14 unités, il n'en reste que 15 %, pour que le cône garde son basalte sombre (#4A4240) vu de la Crique.
  */
-export const HEIGHT_LIGHT_4E: HeightLight = { low: -60, high: -50, sunLow: 1, tintLow: [1, 1, 1], fogFrom: 3, fogTo: 24, fogTop: 0.3 };
+export const HEIGHT_LIGHT_4E: HeightLight = { low: -60, high: -50, sunLow: 1, tintLow: [1, 1, 1], fogFrom: 2, fogTo: 14, fogTop: 0.15 };
+
+/**
+ * Le brouillard du lointain du 4e (retouche 1 du lot 1, directeur artistique : « une fin de journée claire, sans brume,
+ * l'air net ») : il commence plus loin qu'au 6e et au 5e (`WORLD_FOG`, 40 et 115) et ne couvre tout qu'à 240 unités ;
+ * les lieux à 150 unités se lisent encore, la Forge se voit du quai de la Crique (à 185 unités), la terre rouge se
+ * détache du ciel. Les tuiles de loin vont jusque-là (environ 4 000 triangles de plus qu'à 115).
+ */
+export const FOG_4E = { near: 90, far: 240 } as const;
 
 /** Le sens où tombent les ombres peintes du 4e (l'opposé de son soleil, à plat). */
 export const SHADOW_DIR_4E = (() => {

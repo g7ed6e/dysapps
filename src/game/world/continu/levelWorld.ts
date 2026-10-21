@@ -3,10 +3,11 @@
 // mêmes fonctions, appelées de même) ; le 5e prend les siennes (./terrain5e.ts, ./paths5e.ts, ./sea.ts, ./sky.ts). Ce
 // que le 5e n'a pas encore (l'Escale, la Nef, les Détours, les scénettes) reste du 6e : la vue le coupe par `sixth` ; la
 // faune a celle de chaque niveau (./wildlife.ts, ./wildlife5e.ts). Code pur.
-import { CRIQUE_SITE, CRIQUE_VIEW, NEF_4E, criqueDecorFacets } from './crique4e';
-import type { Facets } from './facets';
+import { WORLD_FOG } from './camera';
+import { CRIQUE_LOOK, CRIQUE_SITE, CRIQUE_VIEW, NEF_4E, criqueDecorFacets } from './crique4e';
+import { mergeFacets, type Facets } from './facets';
 import { FUMEROLLES_STEAM } from './fumerolles5e';
-import type { Vec2 } from './geometry';
+import type { Vec2, Vec3 } from './geometry';
 import { LISIERE_SITE, LISIERE_VIEW, PHARE_DARK, lisiereDecorFacets } from './lisiere';
 import { NEF_6E, type NefSite } from './nef';
 import { NEF_5E, PLUME_COLORS, WALL_COLORS } from './nef5e';
@@ -14,13 +15,15 @@ import { ESCALE, type PortSite } from './port';
 import type { OpenWorldLevel, PlaceId } from './levelPlan';
 import type { Network } from './network';
 import { NETWORK_4E, RIBBONS_4E, pathRibbons4e } from './paths4e';
-import { NETWORK_5E, RIBBONS_5E, pathRibbons5e } from './paths5e';
+import { NETWORK_5E, RIBBONS_5E, pathMapEdges5e, pathRibbons5e } from './paths5e';
+import { CLIFF_MAP_COLORS, cliffMapLine } from './mist5e';
 import { NETWORK_6E, RIBBONS_6E, pathRibbons, type RibbonNet } from './paths';
 import { portFloor } from './plan6e';
 import { COLORS_4E, CRIQUE, TERRAIN_4E, criqueFloor } from './plan4e';
 import { COLORS_5E, TERRAIN_5E, lisiereFloor } from './plan5e';
 import { WATER_TONES, WATER_TONES_4E, WATER_TONES_5E, seaPixels, seaPixels4e, seaPixels5e } from './sea';
 import {
+  FOG_4E,
   HEIGHT_LIGHT_4E,
   HEIGHT_LIGHT_5E,
   HORIZON_COLOR,
@@ -38,7 +41,7 @@ import {
   type SkyStops,
 } from './sky';
 import { buildHeightField, heightOnMesh, type HeightField } from './terrain';
-import { buildHeightField4e, groundOn4e, tileFacets4e, tileFlora4e, tileGround4e } from './terrain4e';
+import { buildHeightField4e, groundOn4e, mapOverlay4e, tileFacets4e, tileFlora4e, tileGround4e } from './terrain4e';
 import { buildHeightField5e, groundOn5e, tileFacets5e, tileFlora5e, tileGround5e } from './terrain5e';
 import { TILES_6E, type TileSource } from './tiles';
 
@@ -76,6 +79,8 @@ interface Departure {
    * artistique, lot 4) ; rien au 6e.
    */
   lookAt: PlaceId | null;
+  /** Ou un haut fixe que le regard levé cadre au quai (au 4e, le cratère du volcan : ./crique4e.ts, `CRIQUE_LOOK`). */
+  lookTop?: Vec3;
   /** Ce qui ne change jamais autour du lieu de départ (au 5e, la graine géante et la lumière du Phare), ou rien. */
   decor(): Facets | null;
 }
@@ -114,6 +119,17 @@ export interface LevelWorld {
   readonly thinFog: readonly ThinFog[];
   /** Son lieu de départ et sa Nef. */
   readonly departure: Departure;
+  /**
+   * Le brouillard du lointain : où il commence et où il couvre tout (les tuiles de loin s'arrêtent là). Au 6e et au 5e,
+   * `WORLD_FOG` ; au 4e, plus loin (`FOG_4E`).
+   */
+  readonly fog: { readonly near: number; readonly far: number };
+  /**
+   * Ce que la Carte ajoute au monde, dans le maillage des lieux (expert frontend, retouche 1 du lot 1 : un choix du
+   * niveau, plus une branche de la vue) : rien au 6e ; au 5e, le trait de sa falaise et le bord des chemins du plateau ;
+   * au 4e, les hachures du sommet et le dessin de ses coupures. `ground` : le sol où l'on marche.
+   */
+  mapOverlay(ground: (x: number, z: number) => number): Facets;
 }
 
 const DEPARTURE_6E: Departure = { port: ESCALE, nef: NEF_6E, floor: portFloor, viewYaw: 0, facadeYaw: 0, lookAt: null, decor: () => null };
@@ -146,6 +162,8 @@ const WORLD_6E: LevelWorld = {
   heightLight: null,
   thinFog: [],
   departure: DEPARTURE_6E,
+  fog: WORLD_FOG,
+  mapOverlay: () => mergeFacets([]),
 };
 
 const WORLD_5E: LevelWorld = {
@@ -171,6 +189,8 @@ const WORLD_5E: LevelWorld = {
     ...FUMEROLLES_STEAM.map((color) => ({ color, fog: 1, unlit: true })),
   ],
   departure: DEPARTURE_5E_SITE,
+  fog: WORLD_FOG,
+  mapOverlay: (ground) => mergeFacets([cliffMapLine(), pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark)]),
 };
 
 let decor4e: Facets | null = null;
@@ -181,6 +201,7 @@ const DEPARTURE_4E_SITE: Departure = {
   viewYaw: CRIQUE_VIEW.yaw,
   facadeYaw: CRIQUE.yaw,
   lookAt: null,
+  lookTop: CRIQUE_LOOK,
   decor: () => (decor4e ??= criqueDecorFacets()),
 };
 
@@ -212,6 +233,8 @@ const WORLD_4E: LevelWorld = {
     ...[COLORS_4E.smoke, COLORS_4E.smokeShade].map((color) => ({ color, fog: THIN_FOG_4E.plume, unlit: true })),
   ],
   departure: DEPARTURE_4E_SITE,
+  fog: FOG_4E,
+  mapOverlay: () => mapOverlay4e(),
 };
 
 const WORLDS: Readonly<Record<OpenWorldLevel, LevelWorld>> = { '6e': WORLD_6E, '5e': WORLD_5E, '4e': WORLD_4E };

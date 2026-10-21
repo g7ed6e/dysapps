@@ -1,5 +1,5 @@
 // Le plan du 4e en données (lot 1 du monde ouvert du 4e, « l'île entière en grandes masses », références validées par le
-// mainteneur le 21 octobre 2026) : les Anciens Ateliers, une île longue entre une usine et un volcan endormi. Au
+// mainteneur le 21 octobre 2026) : les Anciens Ateliers, une île longue entre une usine et un volcan calme. Au
 // sud-est, sur la baie, les Fabriques (le départ) et la Crique ; à l'est, au-delà du bassin à flot, la pointe du
 // Bastion ; à l'ouest, au-delà d'un ravin sec, les pentes des Coteaux ; au nord, au-delà de la coulée figée, l'Épaule.
 // Au nord-ouest, le volcan : un cône large et bas, son sommet où l'on ne marche pas, de la mer au cratère ; la coulée
@@ -39,12 +39,12 @@ export const COLORS_4E = {
   dock: 0x24506a,
   /** Le sable des grèves. */
   sand: 0xc48c60,
-  /** La terre rouge des Fabriques et du Bastion. */
-  soil: 0xb8786a,
+  /** La terre rouge des Fabriques et du Bastion, assez sombre pour que le sable des chemins et le pavé de la Crique s'en détachent à 3 contre 1 en luminance au moins (référent dys, retouche 1 du lot 1). */
+  soil: 0xb06c5e,
   /** La même au soleil, un aplat plus clair. */
-  soilSun: 0xbe8270,
+  soilSun: 0xb46e60,
   /** La même à l'ombre (jamais presque noire). */
-  soilShade: 0x9c6658,
+  soilShade: 0x986052,
   /** Les verts brûlés des Coteaux. */
   burnt: 0x9a8862,
   burntSun: 0xa6966c,
@@ -53,9 +53,16 @@ export const COLORS_4E = {
   rock: 0x76544a,
   rockSun: 0x8c6658,
   rockShade: 0x654840,
-  /** La croûte de basalte de la coulée figée et du sommet, et son ombre (le basalte de la fiche, éclairci d'un cran). */
-  crust: 0x5c504c,
-  crustShade: 0x4e4442,
+  /**
+   * Le basalte du cône du volcan (fiche, § 2 : #4A4240, chaud et sombre, jamais presque noir ; retouche 1 du lot 1,
+   * directeur artistique : le fourneau se détache sur le flanc sombre), au soleil et à l'ombre.
+   */
+  basalt: 0x4a4240,
+  basaltSun: 0x574d48,
+  basaltShade: 0x423a38,
+  /** La croûte de basalte de la coulée figée et du sommet, et son ombre. */
+  crust: 0x544a46,
+  crustShade: 0x48403e,
   /** Le fond sec du ravin. */
   gully: 0x7e6450,
   /** La lave : le liseré du cratère et les fentes de la cuvette, une lueur fixe. */
@@ -97,10 +104,11 @@ export const COAST_4E = (() => {
 })();
 
 /**
- * Le volcan (fiche, § 5 : « un cône large et bas, sa hauteur fait environ le tiers de sa base ») : son cratère, le rayon
- * de son cône au sol, sa hauteur au rebord du cratère, le rayon du cratère et sa profondeur sous le rebord.
+ * Le volcan (fiche, § 5 : « un cône large et bas, sa hauteur fait environ le tiers de sa base » ; retouche 1 du lot 1,
+ * directeur artistique : 34 unités pour 148 de base faisaient 0,23, il en fait maintenant 0,32) : son cratère, le rayon
+ * de son cône au sol, sa hauteur au centre du cône, le rayon du cratère et sa profondeur sous le rebord.
  */
-export const VOLCANO_4E = { crater: fromPlan4e([370, 295]), radius: 74, height: 34, craterRadius: 7, craterDepth: 4 } as const;
+export const VOLCANO_4E = { crater: fromPlan4e([370, 295]), radius: 74, height: 49, craterRadius: 7, craterDepth: 5 } as const;
 
 /**
  * Le sommet, où l'on ne marche pas (hachuré sur la Carte) : du cratère à la mer de l'ouest, il ferme l'Épaule côté
@@ -163,7 +171,7 @@ export type PlaceId4e =
   | 'dynamo';
 
 /** Un lieu : son centre sur le plan (en pixels), et sa porte depuis lui (en unités). */
-interface PlaceSpec extends Omit<OpenPlace<PlaceId4e>, 'center' | 'door' | 'scenes' | 'yaw' | 'touchRadius'> {
+interface PlaceSpec extends Omit<OpenPlace<PlaceId4e>, 'center' | 'door' | 'scenes' | 'yaw' | 'touchRadius' | 'mapSide'> {
   plan: [number, number];
   door: Vec2;
 }
@@ -195,6 +203,31 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
 /** Le rayon de toucher d'un lieu du 4e : large, rien de précis à viser. */
 const TOUCH_RADIUS = 7;
 
+/**
+ * Sur la Carte, le côté où le nom de chaque lieu se pose d'abord, comme sur le plan validé (retouche 1 du lot 1,
+ * consultant UX UI) : sous son point le plus souvent ; à droite pour l'Étalon (« Toi », devant la Forge, reste libre) et
+ * la Manufacture (hors du bassin à flot) ; à gauche pour le Terminus (le bord nord reste libre) et le Chariot (la
+ * grappe du Bastion se desserre) ; la Dynamo sous elle, à l'est des Orgues, la Jonction sous elle, hors du pont du ravin.
+ */
+const MAP_SIDES_4E: Readonly<Record<PlaceId4e, 'below' | 'left' | 'right'>> = {
+  forge: 'below',
+  soute: 'below',
+  porte: 'below',
+  etalon: 'right',
+  gabarit: 'below',
+  manufacture: 'right',
+  loge: 'below',
+  chariot: 'left',
+  herbier: 'below',
+  roches: 'below',
+  jonction: 'below',
+  veillee: 'below',
+  basilique: 'below',
+  terminus: 'left',
+  orgues: 'below',
+  dynamo: 'below',
+};
+
 export const PLACES_4E: readonly OpenPlace<PlaceId4e>[] = PLACE_SPECS.map((s) => ({
   id: s.id,
   name: s.name,
@@ -206,6 +239,7 @@ export const PLACES_4E: readonly OpenPlace<PlaceId4e>[] = PLACE_SPECS.map((s) =>
   yaw: 0,
   door: s.id,
   touchRadius: TOUCH_RADIUS,
+  mapSide: MAP_SIDES_4E[s.id],
 }));
 
 /**
@@ -262,8 +296,8 @@ export const CRIQUE_PAVING = {
 export const CRIQUE_BUILDINGS = { x0: 3.6, x1: 38.4, z0: 1.1, z1: 6.4 } as const;
 
 /**
- * L'aire de la Nef (fiche, § 5 : l'aéronef posé sur son aire de bois cerclée de fer, au bout du quai) : une jetée de
- * bois du bout du quai à l'aire ronde, sur l'eau de la baie, dans le repère de la Crique (`z0`, `z1` : la jetée ;
+ * L'aire de la Nef (fiche, § 5 : l'aéronef posé sur son aire de bois cerclée de fer, au bout du quai) : une passerelle
+ * de bois du bout du quai à l'aire ronde, sur l'eau de la baie, dans le repère de la Crique (`z0`, `z1` : la passerelle de l'aire ;
  * `pad` : le centre de l'aire, son rayon) ; la hauteur de leurs planches. Un décor : on n'y marche pas.
  */
 export const CRIQUE_PAD = { z0: 27, z1: 41, width: 2.6, pad: { x: 0, z: 45.5 }, radius: 4.5, deck: CRIQUE_LEVEL - 0.02 } as const;
@@ -395,9 +429,8 @@ export const LINKS_4E = {
 
 /**
  * Les quatre terres du 4e (fiche, § 5), dans l'ordre : les Fabriques, le départ, puis le Bastion (suggéré d'abord), les
- * Coteaux et l'Épaule, chacune reliée depuis les Fabriques. La fiche veut l'Épaule en dernier, après les deux autres :
- * une terre n'a qu'une terre d'avant (./lands.ts), et son pont de basalte part des Fabriques ; la règle des deux terres
- * d'avant reste à écrire avec le lot du pont de l'Épaule.
+ * Coteaux et l'Épaule (suggérée en dernier, jamais imposée : GD-24, retouche 1 du lot 1), chacune reliée depuis les
+ * Fabriques ; la fin du niveau est la dernière terre reliée.
  */
 export const LANDS_4E: readonly Land[] = [
   { id: 'fabriques', name: 'Les Fabriques', places: ['forge', 'soute', 'porte', 'etalon'], after: null, bridgeName: null },

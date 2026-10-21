@@ -181,8 +181,10 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       // Au 5e (des lieux du haut), le nom d'un lieu du bas se pose d'abord sous lui : le plateau reste à découvert.
       // Sauf un lieu dont le repère de loin est au sud, sur l'eau (les Radeaux) : son nom reste de son côté, au-dessus.
       const above = kind === 'open' && s.above === true;
-      const below = !above && kind === 'open' && upperRef.current.length > 0 && s.id !== 'port' && !upperRef.current.includes(s.id as PlaceId);
-      items.push({ id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port', ...(below ? { below } : {}), ...(above ? { above } : {}), ...(size.narrow ? { narrow: size.narrow } : {}) });
+      // Au 4e, le côté du plan validé (`OpenPlace.mapSide`) : dessous, ou d'abord à gauche ou à droite.
+      const below = !above && kind === 'open' && ((upperRef.current.length > 0 && s.id !== 'port' && !upperRef.current.includes(s.id as PlaceId)) || s.side === 'below');
+      const side = kind === 'open' && (s.side === 'left' || s.side === 'right') ? s.side : undefined;
+      items.push({ id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port', ...(below ? { below } : {}), ...(above ? { above } : {}), ...(side ? { side } : {}), ...(size.narrow ? { narrow: size.narrow } : {}) });
     }
     return items;
   }, []);

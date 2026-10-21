@@ -8,10 +8,11 @@ import { FOLLOW, KEO_HEIGHT, screenOf, type CameraPose } from './camera';
 import { boundsOf, placeFacets, type Facets } from './facets';
 import type { Vec3 } from './geometry';
 import { placeArt } from './northShore';
-import { pathNode } from './paths';
+import type { Network } from './network';
+import { NETWORK_6E } from './paths';
 import { NETWORK_4E } from './paths4e';
 import { NETWORK_5E } from './paths5e';
-import { hasScenette, levelOfPlace, placeById, type PlaceId } from './levelPlan';
+import { hasScenette, levelOfPlace, placeById, type OpenWorldLevel, type PlaceId } from './levelPlan';
 import { drawPieces, modelOfPlace, ruinOf, type PlacePiece } from './places';
 import { scenetteExit } from './scenette';
 import { standingHeight } from './terrain';
@@ -205,12 +206,11 @@ export function poseFocus(place: PlaceId, ground: (x: number, z: number) => numb
  */
 const POSE_VIEW = { pitch: 0.4, aspect: 4 / 3, margin: 0.06, bottom: 0.14, min: 8, max: 40 } as const;
 
+/** Le réseau des chemins de chaque niveau (un niveau oublié ne compile pas). */
+const NETWORKS: Readonly<Record<OpenWorldLevel, Network>> = { '6e': NETWORK_6E, '5e': NETWORK_5E, '4e': NETWORK_4E };
+
 /** La porte d'un lieu, sur le réseau des chemins de son niveau. */
-const doorOf = (place: PlaceId) => {
-  const id = placeById(place).door;
-  const level = levelOfPlace(place);
-  return (level === '5e' ? NETWORK_5E : level === '4e' ? NETWORK_4E : null)?.pathNode(id).at ?? pathNode(id).at;
-};
+const doorOf = (place: PlaceId) => NETWORKS[levelOfPlace(place)].pathNode(placeById(place).door).at;
 
 /** La direction (au sol, depuis le lieu) d'où la caméra de la pose le regarde : sa porte, ramenée vers le sud. */
 export function poseSide(place: PlaceId): { x: number; z: number } {

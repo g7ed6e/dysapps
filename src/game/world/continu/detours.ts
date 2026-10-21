@@ -113,7 +113,8 @@ export const DETOURS: readonly Detour[] = DETOUR_IDS_6E.map(detourOf);
 export const DETOURS_5E: readonly Detour[] = [CREUX, HUTTE, FAILLE];
 
 /** Les Détours d'un niveau (le 4e n'en a pas encore : l'Épave, le Recoin, le Replat et la Dalle viennent avec leur lot). */
-const detoursOf = (level: OpenWorldLevel): readonly Detour[] => (level === '5e' ? DETOURS_5E : level === '4e' ? [] : DETOURS);
+const DETOURS_OF: Readonly<Record<OpenWorldLevel, readonly Detour[]>> = { '6e': DETOURS, '5e': DETOURS_5E, '4e': [] };
+const detoursOf = (level: OpenWorldLevel): readonly Detour[] => DETOURS_OF[level];
 
 /** Tous les Détours, par leur nom : la table se construit une fois. */
 const DETOUR_BY_ID: ReadonlyMap<DetourId, Detour> = new Map([...DETOURS, ...DETOURS_5E].map((d) => [d.id, d]));
