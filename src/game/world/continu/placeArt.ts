@@ -3,6 +3,7 @@
 // et son témoin, ses traces. Chaque lieu le tient dans son fichier (lookout.ts, archives.ts, printworks.ts, beacons.ts,
 // ferry.ts) ; places.ts, scenette.ts et questionScene.ts le lisent ici, au lieu d'en ajouter le dessin chez eux. Types
 // seulement.
+import type { DetourView } from './camera';
 import type { Stage } from './construction';
 import type { FacetBuilder, Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
@@ -126,6 +127,14 @@ export interface PlaceArt {
    */
   arrivalView?: { look: Vec2; back: number; top?: number };
   /**
+   * La vue d'arrivée d'un « Y aller » (comme la vue d'un Détour, `DetourView` : `height` ajouté à la hauteur de la caméra
+   * qui suit, `back` le facteur de son recul ; Kéo reste à sa place à l'écran, le regard moins plongeant quand elle
+   * recule) : un lieu plus haut que ce que la caméra qui suit voit de sa porte y tient entier (le Gaillard, retouche 1 du
+   * lot 15). Elle tient tant que Kéo reste à la porte, et rejoint la caméra qui suit, en douceur, quand il en part. Absent :
+   * la caméra qui suit.
+   */
+  doorFrame?: DetourView;
+  /**
    * Sur la Carte, ce que les étiquettes laissent à découvert, le repère du lieu de loin (les trois radeaux sur le chenal) :
    * les coins de sa boîte, depuis le centre du lieu, au niveau de l'eau. Absent : rien.
    */
@@ -138,7 +147,8 @@ export interface PlaceArt {
   /**
    * Sur la Carte, le point de son nom, depuis son pied (son centre au sol), le même en ruine et restauré : au Sémaphore,
    * au-dessus de sa corniche (lot 14, retouche 1 : le nom suivait la marque, du haut de la ruine au chapeau du mât, et
-   * changeait de place). Absent : la marque de la prochaine mission, au-dessus du lieu tel qu'il est bâti.
+   * changeait de place) ; au Gaillard, au-dessus de ses cheminées (lot 15). Absent : la marque de la prochaine mission,
+   * au-dessus du lieu tel qu'il est bâti.
    */
   mapPoint?: Vec3;
   /**

@@ -33,7 +33,7 @@ import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type Bridge
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { hasScenette, placeById, type LevelPlan, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
 import { hasHabitantModel } from '../../world/continu/habitants';
-import { arrivalViewOf, doorViewOf, placeArt } from '../../world/continu/northShore';
+import { arrivalViewOf, doorFrameOf, doorViewOf, placeArt } from '../../world/continu/northShore';
 import { levelWorld, type LevelWorld, type ThinFog } from '../../world/continu/levelWorld';
 import { riftMistFacets } from '../../world/continu/mist5e';
 import { COLORS_5E } from '../../world/continu/plan5e';
@@ -1219,6 +1219,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let detourView = 0;
   // La forme de la vue du dernier Détour atteint (la Faille a la sienne), gardée pendant que la vue redescend.
   let detourShape: DetourView = COMMON_DETOUR_VIEW;
+  // La vue d'arrivée d'un « Y aller » devant un lieu qui a la sienne (`doorFrameOf`, le Gaillard) : sa forme, la porte où
+  // Kéo se tient, et son avancée (1 à l'arrivée, d'un coup ; elle retombe en douceur quand il repart).
+  let doorArrival: { shape: DetourView; at: Vec2 } | null = null;
+  let doorArrivalView = 0;
   let detourDecor: { key: string; facets: Facets } | null = null;
   const detourFacetsNow = (): Facets => {
     const key = `${detoursFound.join(',')}|${detoursLit.join(',')}`;
@@ -1441,8 +1445,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       }
     }
     detourView = detourViewStep(detourView, detourHere ? 1 : 0, dt, reduceMotion);
+    if (doorArrival) {
+      doorArrivalView = detourViewStep(doorArrivalView, !walk && distance(here, doorArrival.at) < 0.05 ? 1 : 0, dt, reduceMotion);
+      if (doorArrivalView === 0) doorArrival = null;
+    }
     stepFauna(dt, arrived);
   };
+  /** La part de la vue qui monte (celle d'un Détour, ou celle de l'arrivée d'un lieu), et sa forme. */
+  const viewRise = (): number => Math.max(detourRise(detourView), doorArrival ? detourRise(doorArrivalView) : 0);
+  const viewShape = (): DetourView => (doorArrival && detourRise(doorArrivalView) > detourRise(detourView) ? doorArrival.shape : detourShape);
   let heading = startSpot ? portHeading(startSpot, site, departure.viewYaw) : FACING_CAMERA;
   keo.rotation.y = heading;
   const keoFeet: Vec3 = { x: here.x, y: 0, z: here.z };
@@ -1612,7 +1623,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const guardFeet = level === '4e';
   const follow = () => {
     if (manualView) return applyPose(manualView);
-    followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : detourRise(detourView), fifth ? hold : undefined, arrivalBack > 0 ? arrivalShape : detourShape);
+    followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : viewRise(), fifth ? hold : undefined, arrivalBack > 0 ? arrivalShape : viewShape());
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     if (guardFeet) keepFeetAbove(pose, keoFeet, feetRoom, viewH);
@@ -1679,7 +1690,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const reframe = () => {
     if (!frameRect || (!framed && !framedNef) || asked || remise || mapView) return;
-    followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : detourRise(detourView), undefined, arrivalBack > 0 ? arrivalShape : detourShape);
+    followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : viewRise(), undefined, arrivalBack > 0 ? arrivalShape : viewShape());
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     if (guardFeet) keepFeetAbove(pose, keoFeet, feetRoom, viewH);
@@ -2246,6 +2257,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     heading = shut ? Math.atan2(-shut.dir.x, -shut.dir.z) : FACING_CAMERA + view;
     faceNorth(view);
     detourView = 0;
+    // Un lieu plus haut que ce que la caméra qui suit voit de sa porte a sa vue d'arrivée (le Gaillard, lot 15).
+    const frame = shut ? null : doorFrameOf(place);
+    doorArrival = frame ? { shape: frame, at: { ...here } } : null;
+    doorArrivalView = doorArrival ? 1 : 0;
     exit = null;
     back = 0;
     keo.rotation.y = heading;
@@ -2253,6 +2268,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     followStep(focus, aimed(), 0, true);
     lift = occlusionLift(focus, ground, yaw);
     // Devant un lieu haut, la caméra a reculé et levé le regard dès la première image : « Y aller » est une coupe.
+    // « Y aller » est une coupe : le recul du lieu quitté ne déborde pas sur celui-ci (sinon il masquerait la vue d'arrivée du Gaillard).
+    arrivalBack = 0;
     if (nearLantern() && arrivalNow) look = arrivalBack = 1;
     updateRings(true, true);
     follow();
@@ -2267,6 +2284,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     turning = null;
     setYaw(spot === 'quai' ? departure.viewYaw : departure.facadeYaw);
     detourView = 0;
+    doorArrival = null;
+    doorArrivalView = 0;
     exit = null;
     back = 0;
     keo.rotation.y = heading;
@@ -2531,8 +2550,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       return [bridgeSpot(land), new THREE.Vector3(mid.x, BRIDGE.deck, mid.z)];
     }),
   );
-  // Le point du nom d'un lieu qui le fixe (le Sémaphore, au-dessus de sa corniche : le même en ruine et restauré), fait
-  // une fois ; sinon, la marque de la prochaine mission.
+  // Le point du nom d'un lieu qui le fixe (le Sémaphore, au-dessus de sa corniche ; le Gaillard, au-dessus de ses
+  // cheminées : le même en ruine et restauré), fait une fois ; sinon, la marque de la prochaine mission.
   const mapPoints = new Map<PlaceId, THREE.Vector3>(
     PLACES.flatMap((p) => {
       const o = placeArt(p.id)?.mapPoint;
@@ -4037,6 +4056,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (mapView || asked || cabinBusy() || !isWalkable(grid(), p, walkClosed)) return;
       manualView = null;
       walk = null;
+      doorArrival = null;
+      doorArrivalView = 0;
       here = { x: p.x, z: p.z };
       placeKeo(here);
       followStep(focus, aimed(), 0, true);

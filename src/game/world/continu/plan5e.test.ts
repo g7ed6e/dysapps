@@ -536,7 +536,8 @@ describe('Le budget du 5e', () => {
     // l'escalier, −48), 103 939, 14 061 : elle reste à 14 000 ; l'Oracle (lot 13b, +767 sur le Donjon fini, le lieu
     // restauré à la place de sa ruine), 104 706, 13 294 : la réserve passe à 13 200, de la seule hausse. Depuis, elle
     // baisse d'un lieu au plus par lieu fini (`PLACE_TRIANGLES_MAX_5E`), sans se réécrire à chaque lot : deux lots
-    // parallèles n'ont plus à se rebaser pour elle ; le Sémaphore (lot 14) en est le premier. La forêt retaillée (pistes B,
+    // parallèles n'ont plus à se rebaser pour elle ; le Sémaphore (lot 14) en est le premier, le Gaillard (lot 15) le
+    // deuxième. La forêt retaillée (pistes B,
     // C puis A du 21 octobre 2026, dans le maillage du sol, +5 737 mesurés) la baisse de son plafond,
     // `FOREST_REWORK_MAX_5E` : 13 200 − 5 800 = 7 400 avant le Sémaphore.
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux', 'croisee', 'instants', 'fumerolles', 'etuve', 'terrasses', 'auberge', 'donjon', 'oracle'].includes(id)).length;

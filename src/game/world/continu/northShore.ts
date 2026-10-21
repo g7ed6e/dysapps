@@ -4,7 +4,8 @@
 // les Radeaux (lot 6), dans ./radeaux5e.ts ; la Croisée (lot 7), dans ./croisee5e.ts ; les Instants (lot 8), dans
 // ./instants5e.ts ; les Fumerolles (lot 9), dans ./fumerolles5e.ts ; l'Étuve (lot 10), dans ./etuve5e.ts ; les
 // Terrasses (lot 11), dans ./terrasses5e.ts ; l'Auberge (lot 12), dans ./auberge5e.ts ; le Donjon (lot 13a), dans
-// ./donjon5e.ts ; l'Oracle (lot 13b), dans ./oracle5e.ts ; le Sémaphore (lot 14), dans ./semaphore5e.ts.
+// ./donjon5e.ts ; l'Oracle (lot 13b), dans ./oracle5e.ts ; le Sémaphore (lot 14), dans ./semaphore5e.ts ; le Gaillard
+// (lot 15), dans ./gaillard5e.ts.
 import { ARCHIVES } from './archives';
 import { AUBERGE } from './auberge5e';
 import { BEACONS } from './beacons';
@@ -12,10 +13,12 @@ import { DONJON } from './donjon5e';
 import { FERRY } from './ferry';
 import { LOOKOUT } from './lookout';
 import { ORACLE } from './oracle5e';
+import type { DetourView } from './camera';
 import type { PlaceArt } from './placeArt';
 import type { PlaceId } from './levelPlan';
 import { CROISEE } from './croisee5e';
 import { FUMEROLLES } from './fumerolles5e';
+import { GAILLARD } from './gaillard5e';
 import { HAMEAU } from './hameau5e';
 import { INSTANTS } from './instants5e';
 import { ETUVE } from './etuve5e';
@@ -25,7 +28,7 @@ import { RADEAUX } from './radeaux5e';
 import { SEMAPHORE } from './semaphore5e';
 import { TERRASSES } from './terrasses5e';
 
-const ART: Partial<Record<PlaceId, PlaceArt>> = { lookout: LOOKOUT, archives: ARCHIVES, printworks: PRINTWORKS, beacons: BEACONS, ferry: FERRY, montee: MONTEE, hameau: HAMEAU, radeaux: RADEAUX, croisee: CROISEE, instants: INSTANTS, fumerolles: FUMEROLLES, etuve: ETUVE, terrasses: TERRASSES, auberge: AUBERGE, donjon: DONJON, oracle: ORACLE, semaphore: SEMAPHORE };
+const ART: Partial<Record<PlaceId, PlaceArt>> = { lookout: LOOKOUT, archives: ARCHIVES, printworks: PRINTWORKS, beacons: BEACONS, ferry: FERRY, montee: MONTEE, hameau: HAMEAU, radeaux: RADEAUX, croisee: CROISEE, instants: INSTANTS, fumerolles: FUMEROLLES, etuve: ETUVE, terrasses: TERRASSES, auberge: AUBERGE, donjon: DONJON, oracle: ORACLE, semaphore: SEMAPHORE, gaillard: GAILLARD };
 
 /** Ce qu'un lieu du rivage nord ou du large apporte au monde (son dessin, sa scénette, ses traces), ou rien pour les autres lieux. */
 export const placeArt = (place: PlaceId): PlaceArt | null => ART[place] ?? null;
@@ -41,3 +44,5 @@ export const doorViewOf = (place: PlaceId): number => ART[place]?.doorView ?? 0;
  * qu'elle cadre, depuis le centre du lieu, et son recul ; rien : la caméra qui suit.
  */
 export const arrivalViewOf = (place: PlaceId): NonNullable<PlaceArt['arrivalView']> | null => ART[place]?.arrivalView ?? null;
+/** La vue d'arrivée d'un « Y aller » devant la porte d'un lieu (`PlaceArt.doorFrame`) ; rien : la caméra qui suit. */
+export const doorFrameOf = (place: PlaceId): DetourView | null => ART[place]?.doorFrame ?? null;

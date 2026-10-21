@@ -142,6 +142,8 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   oracle: placeArt('oracle')!.traceStage,
   // Le Sémaphore (lot 14) : chaque trace sa partie (3+1+1), comme aux Radeaux.
   semaphore: placeArt('semaphore')!.traceStage,
+  // Le Gaillard (lot 15) : chaque trace sa partie (3+1+1).
+  gaillard: placeArt('gaillard')!.traceStage,
 };
 
 /**

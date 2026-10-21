@@ -206,9 +206,9 @@ describe('« Y aller » aux Instants', () => {
     const across = (door.x - a.x) * -look.z + (door.z - a.z) * look.x;
     expect(Math.abs(across)).toBeLessThan(0.5);
     // Les autres lieux du 5e gardent l'arrivée vers le nord (l'Auberge y revient à la retouche 1 du lot 12), sauf l'Oracle,
-    // tourné de 0,2 vers sa bouche (lot 13b, ./oracle5e.test.ts), et le Sémaphore, un peu à gauche (retouche 1 du lot 14,
-    // ./semaphore5e.test.ts).
-    for (const p of PLAN.places) if (!['instants', 'radeaux', 'oracle', 'semaphore'].includes(p.id)) expect(doorViewOf(p.id), p.id).toBe(0);
+    // tourné de 0,2 vers sa bouche (lot 13b, ./oracle5e.test.ts), le Sémaphore, un peu à gauche (retouche 1 du lot 14,
+    // ./semaphore5e.test.ts), et le Gaillard (lot 15, ./gaillard5e.test.ts).
+    for (const p of PLAN.places) if (!['instants', 'radeaux', 'oracle', 'semaphore', 'gaillard'].includes(p.id)) expect(doorViewOf(p.id), p.id).toBe(0);
   });
 });
 

@@ -232,6 +232,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   oracle: placeArt('oracle')!.sceneSpot,
   // Le Sémaphore (lot 14) : la cour, la façade sud et sa porte derrière, la corne à gauche.
   semaphore: placeArt('semaphore')!.sceneSpot,
+  // Le Gaillard (lot 15) : la cour devant le perron, la porte et son linteau derrière.
+  gaillard: placeArt('gaillard')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -501,6 +503,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   oracle: 'lieu',
   // Le Sémaphore (lot 14) : les fanions unis, distingués par leur forme, sur la planche à encoches.
   semaphore: 'lieu',
+  // Le Gaillard (lot 15) : les petites toiles nues sur le rail bas à tréteaux.
+  gaillard: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

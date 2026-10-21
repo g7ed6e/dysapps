@@ -151,6 +151,9 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // Le Sémaphore (GD-22, lot 14) : « le signaleur », sans prénom, mot rare expliqué par une phrase concrète, écrite par le
   // directeur du contenu pédagogique (retouche 1 : « fait des signes » explique « signaleur »).
   semaphore: { role: placeArt('semaphore')!.role, greeting: 'Le signaleur fait des signes aux bateaux avec de grands bras de bois.', placement: 'rangee' },
+  // Le Gaillard (GD-22, lot 15) : « la peintre », sans prénom (fiche du 5e, § 4) ; sa réplique, écrite par le directeur du
+  // contenu pédagogique (« bateaux » et « sur ses toiles » ; ni « portrait » ni « galerie »).
+  gaillard: { role: placeArt('gaillard')!.role, greeting: 'La peintre peint les bateaux des capitaines sur ses toiles.', placement: 'rangee' },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -574,6 +577,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   donjon: northSite('donjon'),
   oracle: northSite('oracle'),
   semaphore: northSite('semaphore'),
+  gaillard: northSite('gaillard'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2057,6 +2061,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   oracle: 'paving',
   // Le Sémaphore (lot 14) : les dalles chaudes de la cour.
   semaphore: 'paving',
+  // Le Gaillard (lot 15) : les dalles chaudes de la cour.
+  gaillard: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

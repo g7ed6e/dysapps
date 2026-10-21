@@ -444,8 +444,8 @@ describe('« Y aller » à l’Auberge (C11)', () => {
     expect(pose.position.y).toBeGreaterThan(FOLLOW.height);
   });
 
-  it('les autres lieux du 5e gardent leur cap, sauf les Instants, les Radeaux, l’Oracle et le Sémaphore (retouche 1 du lot 14)', () => {
-    for (const p of PLAN.places) if (!['instants', 'radeaux', 'oracle', 'semaphore'].includes(p.id)) expect(doorViewOf(p.id), p.id).toBe(0);
+  it('les autres lieux du 5e gardent leur cap, sauf les Instants, les Radeaux, l’Oracle, le Sémaphore (retouche 1 du lot 14) et le Gaillard (lot 15)', () => {
+    for (const p of PLAN.places) if (!['instants', 'radeaux', 'oracle', 'semaphore', 'gaillard'].includes(p.id)) expect(doorViewOf(p.id), p.id).toBe(0);
   });
 });
 
@@ -474,8 +474,9 @@ describe('Le budget du 5e, avec l’Auberge (plafonds du lot 12)', () => {
     const cost = openWorldCost5e();
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
-    // Les lieux finis depuis le lot 11 : l'Auberge (lot 12), le Donjon (lot 13a), le Sémaphore (lot 14) ; et les
-    // chaussées du plateau (lot 13a), la forêt retaillée (#490). Leurs plafonds : ./donjon5e.test.ts, ./semaphore5e.test.ts.
+    // Les lieux finis depuis le lot 11 : l'Auberge (lot 12), le Donjon (lot 13a), le Sémaphore (lot 14), le Gaillard
+    // (lot 15) ; et les chaussées du plateau (lot 13a), la forêt retaillée (#490). Leurs plafonds : ./donjon5e.test.ts,
+    // ./semaphore5e.test.ts, ./gaillard5e.test.ts.
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux', 'croisee', 'instants', 'fumerolles', 'etuve', 'terrasses'].includes(id)).length;
     expect(triangles).toBeLessThanOrEqual(LOT11_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E + CAUSEWAYS_ADDED_5E + FOREST_REWORK_MAX_5E);
     expect(calls).toBeLessThanOrEqual(LOT11_OPEN_5E.calls);
