@@ -13,7 +13,6 @@ import { COLORS_5E } from './plan5e';
 import { drawPieces, placePieces } from './places';
 import { placeItems } from './questions';
 import { answerObjects, placeTrace, sceneSpot } from './questionScene';
-import { RUINS_5E } from './ruins5e';
 import { scenetteHabitant, scenetteKeo, scenetteOf, scenetteSurroundings } from './scenette';
 import { SURROUNDINGS_MAX } from './surroundings';
 
@@ -60,7 +59,6 @@ describe('L’Étuve, lieu complet', () => {
   it('ses trois missions se jouent dans sa scénette ; sa ruine d’hier, le tambour rond, est partie', () => {
     expect(PLACE.scenes).toEqual([...MISSIONS]);
     expect(hasScenette('etuve')).toBe(true);
-    expect(Object.keys(RUINS_5E)).not.toContain('etuve');
   });
 
   it('se rebâtit en trois étapes, chacune en deux temps ; la ruine part avec l’étape qui la remplace', () => {

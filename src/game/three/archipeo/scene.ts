@@ -28,6 +28,7 @@ import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeL
 import { cabinButtonRoute, cabinCarOpen, cabinOf, cabinSide, routeWithRide } from '../../world/continu/cabinRide';
 import { creuxFacets } from '../../world/continu/creux5e';
 import { failleFacets, failleTapTarget } from '../../world/continu/faille5e';
+import { perchoirFacets } from '../../world/continu/perchoir5e';
 import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/continu/montee5e';
 import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
@@ -61,7 +62,7 @@ import {
   scenetteExit,
   placeKeep,
   PLACE_VIEW,
-  TRACE_VIEW,
+  traceViewOf,
   type ExitView,
   scenetteFinale,
   scenetteHidesPieces,
@@ -986,6 +987,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   const placesMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
   placesMesh.name = 'lieux';
+  // Le premier triangle de ce que les lieux posent hors de leur emprise (`PlaceArt.reach`, aux Nacelles les deux câbles),
+  // rangé en dernier dans le maillage des lieux : un toucher qui le rencontre passe au travers (il ne répond pas).
+  let reachFrom = Infinity;
+  // Ce qu'un rayon (le toucher, la caméra de scénette) prend pour un volume : tout, sauf ce qui est posé hors de l'emprise.
+  const solid = (h: THREE.Intersection): boolean => !(h.object === placesMesh && (h.faceIndex ?? 0) >= reachFrom);
   // Le lieu suivi, à part, du même matériau, pris dans la brume comme le reste : sorti d'elle, il se détachait net du
   // lointain voilé (retour du mainteneur, 19 octobre 2026) ; de loin, c'est la marque qui le montre.
   const landmarkMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
@@ -1244,6 +1250,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const found = detoursFound.includes('faille');
     let c = failleDrawn.find((k) => k.found === found);
     if (!c) failleDrawn.push((c = { found, facets: failleFacets(found) }));
+    return c.facets;
+  };
+  // Le Perchoir du 5e (GD-22, lot 16) : de même, sans et avec sa sente.
+  const perchoirDrawn: { found: boolean; facets: Facets }[] = [];
+  const perchoirNow = (): Facets => {
+    const found = detoursFound.includes('perchoir');
+    let c = perchoirDrawn.find((k) => k.found === found);
+    if (!c) perchoirDrawn.push((c = { found, facets: perchoirFacets(found) }));
     return c.facets;
   };
   // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son temps (la page le donne), le modèle de sa forme chargé à la
@@ -1814,6 +1828,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
     const rest: Facets[] = portFacetsNow ? [portFacetsNow] : [];
     const mark: Facets[] = [];
+    // Ce que des lieux posent bien au-delà de leur emprise (GD-22, lot 16 : les câbles des Nacelles), dans le monde seulement.
+    const reaches: Facets[] = [];
     lampShown = sixth && lanternLit(posedOf('phare'));
     for (const p of PLACES) {
       const ruin = ruins.get(p.id);
@@ -1838,6 +1854,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Sur la Carte, ce qui fait lire le repère du lieu de loin (aux Radeaux, le dessus des radeaux à flot, éclairci).
       const mapMark = mapView ? placeArt(p.id)?.mapMark : undefined;
       if (mapMark) list.push(mapMark({ x: p.center.x, y: foot.y, z: p.center.z }, (stage, row) => rowPosed(parts, stage, row)));
+      const reach = mapView ? undefined : placeArt(p.id)?.reach;
+      const far = reach?.({ x: p.center.x, y: foot.y, z: p.center.z }, (stage, row) => rowPosed(parts, stage, row));
+      if (far) reaches.push(far);
       // Les aménagements posés (GD-20, point 4, lot L0), dans le même maillage : cachés pendant toute question, comme les
       // traces (au rivage nord et au large, ceux des lieux du même cadre) ; montrés dans le cadrage de la remise.
       if (showsAmenagements(scenette, p.id, remise?.place ?? null)) for (const id of placesState?.amenagements?.[p.id] ?? []) list.push(placedAmenagement(id, ground).facets);
@@ -1867,15 +1886,21 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Les Détours du 5e (GD-22) : le Creux (lot 6), le fût creusé, son banc et sa lanterne ; la Hutte (lot 8), sa cabane ;
       // la Faille (lot 11), la fente, son arbre, son pont de racines, sa lanterne et sa vapeur ; et la sente de chacun une
       // fois trouvé, dans le monde comme sur la Carte, sans appel de plus.
-      if (fifth) rest.push(creuxNow(), detourFacetsNow(), failleNow());
-      setGeometry(placesMesh, mergeFacets(rest));
+      if (fifth) rest.push(creuxNow(), detourFacetsNow(), failleNow(), perchoirNow());
+      // `reaches` en dernier : `reachFrom` compte sur eux pour les rayons (`solid`), `mergeFacets` garde l'ordre (nacelles5e.test.ts).
+      rest.push(...reaches);
+      const placed = mergeFacets(rest);
+      reachFrom = reaches.length ? placed.triangles - reaches.reduce((n, f) => n + f.triangles, 0) : Infinity;
+      setGeometry(placesMesh, placed);
       setGeometry(landmarkMesh, mergeFacets(mark));
       mapDirty = true;
       return;
     }
     // Les Détours : leurs pierres, le cairn, les sentes trouvées (dans le monde comme sur la Carte), sans appel de plus.
-    rest.push(detourFacetsNow());
-    setGeometry(placesMesh, mergeFacets(rest));
+    rest.push(detourFacetsNow(), ...reaches);
+    const placed = mergeFacets(rest);
+    reachFrom = reaches.length ? placed.triangles - reaches.reduce((n, f) => n + f.triangles, 0) : Infinity;
+    setGeometry(placesMesh, placed);
     setGeometry(landmarkMesh, mergeFacets(mark));
     mapDirty = true;
   };
@@ -2403,7 +2428,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const r = renderer.domElement.getBoundingClientRect();
     pointer.set(((clientX - r.left) / r.width) * 2 - 1, -((clientY - r.top) / r.height) * 2 + 1);
     raycaster.setFromCamera(pointer, camera);
-    const hit = raycaster.intersectObjects(touchables, false)[0];
+    // Un câble hors de l'emprise d'un lieu ne répond pas au toucher (GD-22, lot 16) : le toucher passe au travers.
+    const hit = raycaster.intersectObjects(touchables, false).find(solid);
     return hit ? { x: hit.point.x, z: hit.point.z } : null;
   };
   const onUp = (e: PointerEvent) => {
@@ -3017,7 +3043,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       here = { ...ex.at };
       heading = FACING_CAMERA;
     }
-    exit = ex ? { ...ex, view: ex.view ?? TRACE_VIEW } : { at: { ...here }, keep: placeKeep(left), view: PLACE_VIEW };
+    exit = ex ? { ...ex, view: ex.view ?? traceViewOf(left) } : { at: { ...here }, keep: placeKeep(left), view: PLACE_VIEW };
     back = 1;
     keo.rotation.y = heading;
     placeKeo(here);
@@ -3052,7 +3078,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const obstacle = () => {
       raycaster.set(turnFrom, turnDir);
       raycaster.far = dist + SCENE_TURN.clearance;
-      const h = raycaster.intersectObjects(shown, false).find((i) => i.distance > 0.5);
+      // Un câble hors de l'emprise d'un lieu n'arrête pas la caméra (`solid`).
+      const h = raycaster.intersectObjects(shown, false).find((i) => i.distance > 0.5 && solid(i));
       raycaster.far = Infinity;
       return h;
     };
@@ -3089,7 +3116,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
         const far = turnSight.length() - SCENE_TURN.margin;
         raycaster.set(turnFrom, turnSight.normalize());
         raycaster.far = far;
-        const blocked = raycaster.intersectObjects(blockers, false).length > 0;
+        const blocked = raycaster.intersectObjects(blockers, false).some(solid);
         raycaster.far = Infinity;
         return blocked;
       });

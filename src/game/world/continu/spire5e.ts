@@ -1,7 +1,7 @@
 // La forme des aiguilles du 5e (GD-22, lot 2, retouche : « une seule famille d'aiguilles, effilées et facettées ») : un
 // fût à pans qui se resserre, un second, tourné d'un demi-pan et un peu penché (une arête de plus au soleil, un replat
 // entre les deux), puis sa pointe. La même pour les aiguilles du plateau (./terrain5e.ts) et pour la Montée, la plus
-// haute (./ruins5e.ts) : les silhouettes de l'île sont d'une seule famille. Quatre à six aplats par aiguille : la pierre
+// haute (les ruines du lot 2, retirées au lot 16) : les silhouettes de l'île sont d'une seule famille. Quatre à six aplats par aiguille : la pierre
 // de ses pans (au soleil, à l'ombre, par la lumière), la mousse grise de son replat, la pierre claire de sa pointe, que le
 // soleil bas prend. Code pur.
 import type { FacetBuilder } from './facets';

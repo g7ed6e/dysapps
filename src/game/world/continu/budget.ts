@@ -6,6 +6,7 @@
 // appels le 18 octobre 2026 pour les habitants en 3D (« on peut augmenter le budget », mesure sur iPad avant la fusion). Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
 import { creuxTriangles } from './creux5e';
 import { failleTriangles } from './faille5e';
+import { perchoirTriangles } from './perchoir5e';
 import { FAUNA, birdFacets, detourTrianglesAtMost, spoutFacets, whaleFacets } from './detours';
 import { NEF_MODEL_TRIANGLES, nefSiteTriangles } from './nef';
 import { NEF_5E_MODEL_TRIANGLES, nef5eSiteTriangles } from './nef5e';
@@ -117,6 +118,9 @@ const OPEN_WORLD_BUDGET_4E = { triangles: 118_000, calls: 22 } as const;
  * plus, dans le maillage du sol, sans appel de plus. Mesurée : +5 733 scénette ouverte.
  */
 export const FOREST_REWORK_MAX_5E = 5_800;
+
+/** Le plafond de la ruine d'un lieu du 5e, en triangles (intention du directeur artistique du lot 16 : visée à 1 000). */
+export const PLACE_RUIN_TRIANGLES_MAX_5E = 1_200;
 
 /** L'enveloppe du monde ouvert de chaque niveau, que seul le mainteneur relève. */
 export const OPEN_WORLD_BUDGETS: Readonly<Record<OpenWorldLevel, { readonly triangles: number; readonly calls: number }>> = {
@@ -408,6 +412,15 @@ function placesCost5e(): { triangles: number; calls: number } {
 }
 
 /**
+ * Ce que les lieux du 5e posent hors de leur emprise (`PlaceArt.reach`, GD-22, lot 16 : les deux câbles des Nacelles, tout
+ * posé), dans le maillage des lieux du monde, sans appel de plus ; la Carte ne les dessine pas.
+ */
+export function reachCost5e(): number {
+  const origin = { x: 0, y: 0, z: 0 };
+  return PLAN_5E.places.reduce((s, p) => s + (placeArt(p.id)?.reach?.(origin, () => true)?.triangles ?? 0), 0);
+}
+
+/**
  * La Lisière (lot 4), au plus chargée comme l'Escale (`PORT_WORST` : la galerie pleine, les portes pavoisées, la
  * lanterne, les habitants, les barques, la pile pleine), avec son décor (la graine géante, la lumière du Phare), dans le
  * maillage des lieux : aucun appel de plus.
@@ -483,24 +496,26 @@ function scenetteCost5e(): { triangles: number; calls: number } {
  * (lot 4) et la Lisière vont dans le maillage des lieux ; pendant le départ (`depart`), la Nef et le mur de nuages
  * passent dans deux maillages à part, le maillage de la pose fermé (`startNefTrip`), ni question ni scénette ouverte.
  * La faune de chaque terre (./wildlife5e.ts), un maillage. Les Détours du 5e, le Creux (lot 6, ./creux5e.ts), la Hutte
- * (lot 8, ./hutte5e.ts) et la Faille (lot 11, ./faille5e.ts), leurs sentes tracées comprises, dans le maillage des
- * lieux ; pas encore d'aménagements.
+ * (lot 8, ./hutte5e.ts), la Faille (lot 11, ./faille5e.ts) et le Perchoir (lot 16, ./perchoir5e.ts), leurs sentes tracées
+ * comprises, dans le maillage des lieux ; pas encore d'aménagements. Les câbles des Nacelles (lot 16, `reachCost5e`) vont
+ * avec les lieux.
  */
 export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenette'): OpenWorldCost5e[] {
   const field = buildHeightField5e();
   const ground = groundCost5e();
   const paths = pathRibbons5e((x, z) => groundOn5e(field, x, z));
+  const places = placesCost5e();
   return [
     { poste: 'ciel', ...SKY },
     { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
     { poste: 'mer', triangles: 2, calls: 1 },
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
-    { poste: 'lieux', ...placesCost5e() },
+    { poste: 'lieux', triangles: places.triangles + reachCost5e(), calls: places.calls },
     { poste: 'brume', triangles: veilFacets(LINKED_LANDS_5E).triangles, calls: 1 },
     { poste: 'failles', triangles: riftMistFacets().triangles, calls: 1 },
-    // Le Creux (lot 6), la Hutte (lot 8) et la Faille (lot 11), leurs sentes tracées, dans le maillage des lieux : aucun
+    // Le Creux (lot 6), la Hutte (lot 8), la Faille (lot 11) et le Perchoir (lot 16), leurs sentes tracées, dans le maillage des lieux : aucun
     // appel de plus.
-    { poste: 'détours', triangles: creuxTriangles().withSente + hutteFacets(true, (x, z) => groundOn5e(field, x, z)).triangles + failleTriangles().withSente, calls: 0 },
+    { poste: 'détours', triangles: creuxTriangles().withSente + hutteFacets(true, (x, z) => groundOn5e(field, x, z)).triangles + failleTriangles().withSente + perchoirTriangles().withSente, calls: 0 },
     // La vie animale du 5e (piste « Ambiance par terre », 19 octobre 2026, ./wildlife5e.ts) : toutes les bêtes à la fois,
     // un maillage (celui de la baleine au 6e).
     { poste: 'faune', triangles: groupsTriangles(wildlifeGroups5e(), allCritterForms()), calls: 1 },
@@ -539,7 +554,7 @@ export function mapCost5e(): { triangles: number; calls: number } {
   }, 0);
   const hutte = hutteFacets(true, ground).triangles;
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + creuxTriangles().withSente + hutte + failleTriangles().withSente + marks + placeMarks + veil + KEO.triangles + nefCost5e().triangles,
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + creuxTriangles().withSente + hutte + failleTriangles().withSente + perchoirTriangles().withSente + marks + placeMarks + veil + KEO.triangles + nefCost5e().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
   };
 }

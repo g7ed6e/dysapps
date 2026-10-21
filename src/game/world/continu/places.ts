@@ -17,7 +17,6 @@ import { heightFor } from './placeGround';
 import { PATH_NODES_5E } from './plan5e';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId as PlaceId6e } from './plan6e';
 import { RUINS_4E } from './ruins4e';
-import { RUINS_5E } from './ruins5e';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 import { landDistance } from './terrain';
 
@@ -2480,7 +2479,7 @@ const RUINS_FALLEN_VOUSSOIRS = [
   [4.8, -4.9, -0.7],
 ] as const;
 
-/** Une ruine du 5e (./ruins5e.ts) ou du 4e (./ruins4e.ts), en une seule pièce : ses lieux n'ont pas encore d'étapes (GD-22, lot 2). */
+/** Une ruine du 4e (./ruins4e.ts), en une seule pièce : ses lieux n'ont pas encore d'étapes (GD-22, lot 2). */
 const ruinOnly =
   (draw: (b: FacetBuilder) => void) =>
   (add: Add): void =>
@@ -2506,8 +2505,8 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   ferry: northPlace('ferry'),
   // Le 5e : la Montée finie (lot 3), le Hameau (lot 5), les Radeaux (lot 6), la Croisée (lot 7), les Instants (lot 8),
   // les Fumerolles (lot 9), l'Étuve (lot 10), les Terrasses (lot 11), l'Auberge (lot 12), le Donjon (lot 13a), l'Oracle
-  // (lot 13b), le Sémaphore (lot 14) et le Gaillard (lot 15), dessinés dans leur fichier ; les autres, des ruines simples
-  // (lot 2).
+  // (lot 13b), le Sémaphore (lot 14), le Gaillard (lot 15) et les Nacelles (lot 16), dessinés dans leur fichier ; les autres, des
+  // ruines simples (lot 2).
   montee: northPlace('montee'),
   radeaux: northPlace('radeaux'),
   croisee: northPlace('croisee'),
@@ -2518,7 +2517,7 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   terrasses: northPlace('terrasses'),
   fumerolles: northPlace('fumerolles'),
   etuve: northPlace('etuve'),
-  nacelles: ruinOnly(RUINS_5E.nacelles),
+  nacelles: northPlace('nacelles'),
   hameau: northPlace('hameau'),
   auberge: northPlace('auberge'),
   oracle: northPlace('oracle'),

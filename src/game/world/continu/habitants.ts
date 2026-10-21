@@ -45,7 +45,7 @@ export const habitantModelName = (place: PlaceId): string => `${levelOfPlace(pla
  * 5), le marchand des Radeaux (lot 6), la cordière de la Croisée (lot 7), le tailleur de pierre des Instants (lot 8),
  * le souffleur de verre de l'Étuve (lot 10), le riziculteur des Terrasses (lot 11), l'aubergiste de l'Auberge (lot 12),
  * la maçonne du Donjon (lot 13a), le conteur de l'Oracle (lot 13b), le signaleur du Sémaphore (lot 14), la peintre du
- * Gaillard (lot 15). Deux scénettes ne s'ouvrent jamais ensemble : aucun triangle de plus.
+ * Gaillard (lot 15), la câbliste des Nacelles (lot 16). Deux scénettes ne s'ouvrent jamais ensemble : aucun triangle de plus.
  */
 export const hasHabitantModel = (place: PlaceId): boolean => levelOfPlace(place) === '6e' || isBuiltPlace5e(place);
 

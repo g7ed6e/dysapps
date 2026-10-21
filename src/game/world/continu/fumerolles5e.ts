@@ -104,7 +104,7 @@ const DALLE = { x0: -6, x1: 7.5, z0: -1, z1: 5.6, top: 0.14, row: 2.3, north: [-
 const MARGELLE = { x: 0.6, z: -5.6, r: 4.6, inner: 3.95, h: 0.55, sides: 12, water: 0.32 } as const;
 
 /**
- * Les trois bouches (celles de ruins5e.ts, resserrées dans la margelle) : leur axe, leur rayon au pied, leur hauteur ; la
+ * Les trois bouches (celles des ruines du lot 2, retirées au lot 16, resserrées dans la margelle) : leur axe, leur rayon au pied, leur hauteur ; la
  * plus haute au milieu, au fond. Elles ne changent pas, avant comme après.
  */
 const VENTS = [

@@ -35,6 +35,8 @@ import {
   GALLERY_VIEW,
   placeKeep,
   TRACE_VIEW,
+  frameTraceView,
+  traceViewOf,
   scenetteFinale,
   scenetteHidesPieces,
   scenetteTraces,
@@ -1478,5 +1480,18 @@ describe('La caméra libre des scénettes (lot commun)', () => {
     const half = orbitAround(south, pivot, Math.PI);
     expect(half.x).toBeCloseTo(10, 6);
     expect(half.z).toBeCloseTo(-10, 6);
+  });
+});
+
+describe('le retour d\u2019une scénette lit la vue d\u2019arrivée du lieu (`doorFrame`)', () => {
+  it('la vue d\u2019une trace prend à la caméra qui suit ce que la vue d\u2019arrivée lui ajoute, de la même façon ; sans elle, la vue commune', () => {
+    const v = frameTraceView({ height: 1, back: 1.6 });
+    expect(v.height).toBe(TRACE_VIEW.height + 1);
+    expect(v.back).toBeCloseTo(TRACE_VIEW.back + FOLLOW.back * 0.6, 6);
+    expect(v.aim).toBe(TRACE_VIEW.aim);
+    expect(frameTraceView({ height: 0, back: 1 })).toEqual(TRACE_VIEW);
+    expect(traceViewOf('gaillard')).toEqual(v);
+    expect(traceViewOf('nacelles')).toEqual(v);
+    for (const id of ['quais', 'phare', 'montee', 'hameau', 'oracle']) expect(traceViewOf(id as never), id).toBe(TRACE_VIEW);
   });
 });

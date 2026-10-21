@@ -20,12 +20,13 @@ import { linearRgb, type Vec2 } from './geometry';
 import { hasHabitantModel } from './habitants';
 import { hasScenette, planFor } from './levelPlan';
 import { riftMistSpots } from './mist5e';
+import { PERCHOIR_TRIANGLES_MAX } from './perchoir5e';
 import { doorFrameOf, doorViewOf } from './northShore';
 import { BUILT_PLACES_5E, COLORS_5E, NEEDLES_5E, PATH_NODES_5E } from './plan5e';
 import { drawPieces, placePieces, ruinOf } from './places';
 import { placeItems } from './questions';
 import { answerObjects, placeTrace, questionLayout, sceneSpot } from './questionScene';
-import { scenetteHabitant, scenetteKeo, scenetteLayout, scenetteOf, scenettePose, scenetteSurroundings } from './scenette';
+import { exitView, scenetteExit, traceViewOf, scenetteHabitant, scenetteKeo, scenetteLayout, scenetteOf, scenettePose, scenetteSurroundings } from './scenette';
 import { SURROUNDINGS_MAX } from './surroundings';
 import { standingHeight } from './terrain';
 import { heightAt5e, plateauShare } from './terrain5e';
@@ -393,6 +394,22 @@ describe('« Y aller » au Gaillard', () => {
     expect(Math.abs(at(1.7, Ho.z1, y + 4).x - W / 2)).toBeLessThan(W / 6);
   });
 
+  it('au retour d\u2019une scénette, la vue de retour lit la même vue d\u2019arrivée : la trace gagnée et Kéo dans le champ, la maison entière, cheminées comprises', () => {
+    for (const mission of BUILT_PLACES_5E.gaillard) {
+      const exit = scenetteExit('gaillard', true, mission)!;
+      const feetBack = { x: exit.at.x, y: standingHeight(heightAt5e(exit.at)), z: exit.at.z };
+      const back = followPose(feetBack);
+      exitView(back, exit.keep, feetBack, 1, traceViewOf('gaillard'));
+      const Ho = L.house;
+      const y = L.houseY;
+      for (const p of [feetBack, exit.keep]) inFrame(screenOf(back, p, W, H), `${mission} trace`);
+      for (const side of [-1, 1]) {
+        const top = screenOf(back, world(side * L.chimney.x, Ho.ridgeZ, y + Ho.ridge + L.chimney.above + 0.16), W, H);
+        expect(top.y, `${mission} cheminée ${side}`).toBeGreaterThan(0);
+      }
+    }
+  });
+
   it('aucun poteau de la galerie devant un cadre : chacun tombe entre deux cadres, vu de la caméra', () => {
     const y = L.houseY;
     const F = L.frame;
@@ -430,8 +447,8 @@ describe('« Y aller » au Gaillard', () => {
     expect(n.x).toBeLessThan(W);
   });
 
-  it('seul le Gaillard a sa vue d’arrivée : les autres lieux arrivent avec la caméra qui suit', () => {
-    for (const p of PLAN.places) if (p.id !== 'gaillard') expect(doorFrameOf(p.id), p.id).toBeNull();
+  it('seuls le Gaillard et les Nacelles (lot 16, leur mât) ont leur vue d’arrivée : les autres lieux arrivent avec la caméra qui suit', () => {
+    for (const p of PLAN.places) if (!['gaillard', 'nacelles'].includes(p.id)) expect(doorFrameOf(p.id), p.id).toBeNull();
     for (const p of planFor('6e').places) expect(doorFrameOf(p.id), p.id).toBeNull();
   });
 
@@ -460,10 +477,10 @@ describe('Le budget du 5e, avec le Gaillard (plafonds du lot 15)', () => {
     const cost = openWorldCost5e();
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
-    // Les lieux finis depuis le lot 14 : le Gaillard (lot 15).
+    // Les lieux finis depuis le lot 14 : le Gaillard (lot 15), les Nacelles (lot 16) ; le Perchoir (lot 16), son plafond propre.
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux', 'croisee', 'instants', 'fumerolles', 'etuve', 'terrasses', 'auberge', 'donjon', 'oracle', 'semaphore'].includes(id)).length;
     expect(since).toBeGreaterThanOrEqual(1);
-    expect(triangles).toBeLessThanOrEqual(LOT14_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E);
+    expect(triangles).toBeLessThanOrEqual(LOT14_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E + PERCHOIR_TRIANGLES_MAX);
     expect(calls).toBeLessThanOrEqual(LOT14_OPEN_5E.calls);
     expect(cost.find((c) => c.poste === 'scénette')!.calls).toBe(2);
   });

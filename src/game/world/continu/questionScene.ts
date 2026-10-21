@@ -234,6 +234,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   semaphore: placeArt('semaphore')!.sceneSpot,
   // Le Gaillard (lot 15) : la cour devant le perron, la porte et son linteau derrière.
   gaillard: placeArt('gaillard')!.sceneSpot,
+  // Les Nacelles (lot 16) : la cour devant le quai, le pied du mât et un rouage à gauche, la halle derrière.
+  nacelles: placeArt('nacelles')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -505,6 +507,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   semaphore: 'lieu',
   // Le Gaillard (lot 15) : les petites toiles nues sur le rail bas à tréteaux.
   gaillard: 'lieu',
+  // Les Nacelles (lot 16) : les moufles pendues à la poutre basse.
+  nacelles: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
