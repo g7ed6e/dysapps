@@ -24,7 +24,7 @@ import { BUILT_PLACES_4E, COLORS_4E, PATH_NODES_4E, PLACES_4E, VOLCANO_4E } from
 import { COLORS_5E } from './plan5e';
 import { drawPieces, placePieces } from './places';
 import { placeTrace } from './questionScene';
-import { toneMapped } from './rendered5e';
+import { rendered5e, toneMapped } from './rendered5e';
 import { RUINS_4E } from './ruins4e';
 import { LIGHT_4E } from './sky';
 import { scenetteOf } from './scenette';
@@ -85,6 +85,25 @@ describe('La Forge, lieu complet', () => {
     expect(new Set(fallen)).toEqual(new Set(['0/0.000', '0/0.333', '0/0.667', '2/0.000']));
     // La potence, sa chape vide et ses goujons nus (le signe de l'absence du 4e), l'enclume et l'appentis : une pièce, toujours là.
     expect(ruin.filter((p) => !p.until)).toHaveLength(1);
+  });
+
+  it('la potence, l’enclume et le marteau couché au fer bruni : rendus près de (94, 62, 44) au soleil, plus rien de rouille saturée contre la gueule', () => {
+    const [rust, iron] = [0x6a483e, 0x5c504c];
+    const ruin = placePieces('forge').filter((p) => p.stage === 'ruine');
+    // La potence, sa chape vide, l'enclume (la pièce toujours là) et le marteau tombé (relevé par le corps 2).
+    const always = drawPieces('forge', (p) => p.stage === 'ruine' && !p.until);
+    const hammer = drawPieces('forge', (p) => p.stage === 'ruine' && p.until?.stage === 0 && Math.abs(p.until.row - 1 / 3) < 1e-6);
+    expect(ruin.filter((p) => !p.until)).toHaveLength(1);
+    for (const f of [always, hammer]) {
+      expect(countColor(f, rust)).toBe(0);
+      expect(countColor(f, iron)).toBeGreaterThan(0);
+    }
+    // À l'écran, face au sud sous la lumière du 4e : le fer bruni (94, 63, 44), le brun des montants du marteau-pilon ;
+    // l'ancien brun, (115, 56, 27), la mesure des captures forge-v2 (115, 55, 27), de la famille de la gueule.
+    const channels = (c: number) => [(c >> 16) & 255, (c >> 8) & 255, c & 255];
+    const south = (c: number) => channels(rendered5e(linearRgb(c), [0, 0, 1], LIGHT_4E));
+    south(iron).forEach((v, k) => expect(Math.abs(v - [94, 62, 44][k]), String(k)).toBeLessThanOrEqual(2));
+    south(rust).forEach((v, k) => expect(Math.abs(v - [115, 55, 27][k]), String(k)).toBeLessThanOrEqual(2));
   });
 
   it('coûte au plus 1 600 triangles à son état le plus chargé, traces, vanne, regards et allumage compris ; la ruine, 1 200 au plus', () => {

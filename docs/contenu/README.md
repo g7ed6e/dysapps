@@ -235,6 +235,8 @@ Trois sections, dans cet ordre ; une forme ne s’écrit que dans la sienne. « 
 
 `scripts/contenu/mondeOuvert.mjs` lit le fichier et vérifie les jetons et la lecture ; `mondeOuvert.test.mjs` les teste. Le plafond de mots se compte sur le texte rempli, avec les seize commandes du 6e, les étapes des trois quêtes d’entraide du 6e (la lanterne, le portillon, l’escalier, `quetes.md`), les phrases de la révision remplies d’une et de huit questions, et chaque lieu : `src/game/three/archipeo/remiseOf.test.ts` le vérifie, avec l’absence de « à le », « de les » et d’accolade restée. Une phrase change avec le directeur du contenu pédagogique, le consultant d’Archipéo et le référent dys.
 
+**Les phrases des scénettes des lieux finis d’Archipéo (5e, 4e)** ne sont pas dans `docs/contenu/` : la phrase d’accueil de l’habitant (`greeting`, au 5e comme au 4e) et, au 4e, ses phrases de pose (une par partie, dites au bilan d’une pose) et sa réplique de fin (dite après la restauration du lieu ; le champ `words` : `pose` et `end`) vivent dans `src/game/world/continu/scenette.ts`, dans la scénette de chaque lieu (décision du fil des lots du monde ouvert). Elles sont propres à un univers et à un lieu dessiné, sans exercice. Elles suivent la même lecture que les phrases ci-dessus et changent avec le directeur du contenu pédagogique, le consultant d’Archipéo et le référent dys.
+
 ## Les quêtes
 
 Les quêtes des habitants ([GD-10](../gameplay/propositions/GD-10.md)), l’« Entraide » à l’écran, s’écrivent dans `quetes.md`, un titre `## <classe>` par région, puis une quête par titre `### \`story-<classe>-<n>\``, dans l’ordre où elles arrivent. `npm run contenu` les écrit dans `src/game/world/stories.json` :

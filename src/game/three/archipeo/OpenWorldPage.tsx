@@ -991,6 +991,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
 
   // Une question ou une remise : la scène seule, ni marque, ni accès directs, ni panneau.
   const playing = Boolean(asking) || Boolean(remise) || departing;
+  // La phrase du monde est à l'écran : la bulle sous « Y aller » se retire le temps qu'elle l'est.
+  const saidOver = saidShown && !playing;
 
   return (
     <EarnPlaces.Provider value={earnPlaces}>
@@ -1180,9 +1182,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           {!playing && !mapOpen && !sheetOpen && (
             <div className="open-world-go">
               {/* La phrase de ce que porte la suggestion chez un habitant (sa commande, l'étape d'entraide) ; « Aucune
-                  mission » seulement quand rien n'attend. */}
-              {!walking && !relightHere && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
-              {!next && !suggestedCmd && !walking && !relightHere && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
+                  mission » seulement quand rien n'attend. Jamais pendant qu'une phrase du monde est écrite (l'état d'un
+                  lieu restauré, un pont rebâti, le nom d'un Détour) : une seule bulle à la fois, la plus récente ; l'autre
+                  dépassait dessous (référent dys et consultant UX UI, relecture des Fabriques). Elle revient ensuite. */}
+              {!walking && !relightHere && !saidOver && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
+              {!next && !suggestedCmd && !walking && !relightHere && !saidOver && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
               <div className="open-world-go-row">
               {walking ? (
                 // Pendant tout trajet (la marche, la cabine, la marche) : « Passer le trajet », à contraste plein, saute

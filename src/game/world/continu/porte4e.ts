@@ -103,8 +103,27 @@ const HINGES = [
   { x: GATE.x + GATE.half, z: WALL.z - WALL.t / 2 },
 ] as const;
 
-/** La salle ronde, au nord-ouest : son centre, son rayon, son mur (épaisseur, hauteur), ses pans, son toit (sa pointe). */
-const HALL = { x: -3.2, z: -7.0, r: 3.4, t: 0.4, h: 2.4, sides: 10, apex: 5.2, eave: 0.45 } as const;
+/**
+ * La salle ronde, au nord-ouest : son centre, son rayon, son mur (épaisseur, hauteur), ses pans ; son toit : sa pente
+ * (30°), son débord sur le mur, la hauteur de sa rive, et le collier de fer bruni à sa pointe (rayon, hauteur). Un toit
+ * de salle d'usine, bas et large, et non le cône raide sans débord d'une case (directeur artistique, relecture des
+ * Fabriques, point 3) ; sa pointe reste sous la poutre des piliers.
+ */
+const HALL = {
+  x: -3.2,
+  z: -7.0,
+  r: 3.4,
+  t: 0.4,
+  h: 2.4,
+  sides: 10,
+  pitch: (30 * Math.PI) / 180,
+  eave: 0.85,
+  fascia: 0.2,
+  collar: { r: 0.42, h: 0.34 },
+} as const;
+
+/** Le haut du toit de la salle : le dessus de son collier (près de 4,9, sous la poutre des piliers, à 5,4). */
+const HALL_APEX = HALL.h + (HALL.r + HALL.eave - HALL.collar.r) * Math.tan(HALL.pitch) - 0.05 + HALL.collar.h;
 
 /** Les bancs en cercle, au nord-est du portail : le centre du cercle, son rayon, le cap de chacun (depuis l'est, vers le sud). */
 const BENCHES = { x: 5.0, z: -1.0, r: 3.3, at: [-1.55, -0.45, 0.65, 1.45, 2.95] as const, ruin: [-0.45, 1.45, 2.95] as const } as const;
@@ -212,6 +231,23 @@ function leaf(l: FacetBuilder, side: 1 | -1, knocker: boolean, iron: number): vo
 function hungLeaf(b: FacetBuilder, i: 0 | 1, yaw: number, droop: number, knocker: boolean, iron: number): void {
   const h = HINGES[i];
   drawPosed(b, { x: h.x, y: localGround(h.x, h.z) + 0.05, z: h.z, yaw, pitch: droop }, (l) => leaf(l, i === 0 ? 1 : -1, knocker, iron));
+}
+
+/**
+ * Le toit de la salle ronde : sa rive (un bandeau debout au bout du débord) et son dessous, du mur au bord ; le cône à
+ * 30°, coupé sous la pointe ; le collier de fer bruni qui le coiffe.
+ */
+function hallRoof(b: FacetBuilder): void {
+  const yaw = HALL_DOOR - Math.PI / HALL.sides;
+  const R = HALL.r + HALL.eave;
+  const foot = HALL.h - HALL.fascia;
+  const slope = Math.tan(HALL.pitch);
+  const at = (y: number) => ({ x: HALL.x, y, z: HALL.z, yaw });
+  b.prism(at(foot - 0.02), HALL.r - 0.05, R, 0.02, HALL.sides, C.woodShade);
+  b.band(at(foot), R, HALL.fascia, HALL.sides, C.woodShade);
+  b.prism(at(HALL.h), R, HALL.collar.r, (R - HALL.collar.r) * slope, HALL.sides, C.roof);
+  const top = HALL.h + (R - HALL.collar.r) * slope;
+  b.prism(at(top - 0.05), HALL.collar.r + 0.04, HALL.collar.r - 0.08, HALL.collar.h, HALL.sides, C.iron, C.ironTop);
 }
 
 /** Un coin du mur de la salle ronde : le pan `k`, au rayon `r`, à la hauteur `y`. */
@@ -361,7 +397,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // ---- Le haut : le toit conique de la salle (sous les piliers) ; la cloche remontée sous son auvent ; la lanterne de
   // la salle, à côté de sa baie, allumée dès qu'elle est posée (jamais à une réussite).
   add(1, 0, (b) => {
-    b.prism({ x: HALL.x, y: HALL.h, z: HALL.z, yaw: HALL_DOOR - Math.PI / HALL.sides }, HALL.r + HALL.eave, 0, HALL.apex - HALL.h, HALL.sides, C.roof);
+    hallRoof(b);
     bell(b, true);
     const a = HALL_DOOR + 0.55;
     const x = HALL.x + (HALL.r + 0.2) * Math.cos(a),
@@ -540,6 +576,7 @@ export const PORTE_LAYOUT = {
   pillars: PILLARS,
   hinges: HINGES,
   hall: HALL,
+  hallApex: HALL_APEX,
   benches: BENCHES,
   awning: AWNING,
   bell: BELL,

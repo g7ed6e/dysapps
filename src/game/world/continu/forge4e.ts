@@ -56,8 +56,10 @@ const C = {
   furnace: 0x8a8682,
   furnaceAlt: 0x7c7874,
   furnaceLedge: 0x9c9792,
-  // Le fer rouillé de la ruine (les roues, l'enclume, le marteau couché) et la potence, avant comme après : un brun éteint,
-  // jamais orange (la rouille claire `#AF6C55` se lisait orange contre la gueule : directeur artistique, point 3).
+  // Le fer rouillé de la ruine (les roues, les cerclages tombés, la grille) : un brun éteint, jamais orange (la rouille
+  // claire `#AF6C55` se lisait orange contre la gueule : directeur artistique, point 3). La potence, l'enclume et le
+  // marteau couché sont au fer bruni (`iron`) : au soleil bas, ce brun-ci sortait rouille saturé, (115, 56, 27) face au
+  // sud, de la famille de la gueule qu'il touche (directeur artistique, relecture des Fabriques, point 1).
   rustGear: 0x6a483e,
   rustGearTop: 0x74524a,
   iron: 0x5c504c,
@@ -620,25 +622,26 @@ const CHAPE = { y: 2.35, w: 0.72, h: 0.46, d: 0.3, pin: { gap: 0.22, t: 0.11, h:
 
 /**
  * La potence : son poteau de fer, son bras vers l'est ; la chaîne, et au bout la chape vide aux deux goujons nus (le signe
- * de l'absence du 4e) ; les grandes pinces pendues fermées, leurs deux branches parallèles. La même avant et après, d'un
- * brun éteint (`rustGear`, celui des roues de la ruine) : elle ne change jamais, et rien d'orangé ne touche la gueule
- * (directeur artistique, relecture du lot 2, point 3).
+ * de l'absence du 4e) ; les grandes pinces pendues fermées, leurs deux branches parallèles. La même avant et après, au
+ * fer bruni (`iron`, celui des montants du marteau-pilon, rendu (94, 63, 44) face au sud) : elle ne change jamais, et rien
+ * de rouille ne touche la gueule (directeur artistique, relecture des Fabriques, point 1). Les goujons nus, un ton plus
+ * clair (`ironTop`), se détachent de la chape.
  */
 function gibbet(b: FacetBuilder): void {
   const G = GIBBET;
   const g = yardY(G.x, G.z);
   const top = g + G.h;
-  b.box({ x: G.x, y: SINK, z: G.z }, [G.post, top - SINK, G.post], C.rustGear, C.rustGearTop);
-  b.box({ x: G.x + G.arm / 2, y: top - 0.3, z: G.z }, [G.arm + G.post, 0.26, 0.26], C.rustGear, C.rustGearTop);
+  b.box({ x: G.x, y: SINK, z: G.z }, [G.post, top - SINK, G.post], C.iron, C.ironTop);
+  b.box({ x: G.x + G.arm / 2, y: top - 0.3, z: G.z }, [G.arm + G.post, 0.26, 0.26], C.iron, C.ironTop);
   // La chaîne, du bout du bras, jusqu'à la chape vide et ses deux goujons nus.
   const end = G.x + G.arm - 0.1;
   const K = CHAPE;
-  b.box({ x: end, y: g + K.y + K.h, z: G.z }, [0.08, top - 0.3 - (g + K.y + K.h), 0.08], C.rustGear);
-  b.box({ x: end, y: g + K.y, z: G.z }, [K.w, K.h, K.d], C.rustGear, C.rustGearTop);
-  for (const dx of [-K.pin.gap, K.pin.gap]) b.box({ x: end + dx, y: g + K.y - K.pin.h, z: G.z }, [K.pin.t, K.pin.h, K.pin.t], C.iron);
+  b.box({ x: end, y: g + K.y + K.h, z: G.z }, [0.08, top - 0.3 - (g + K.y + K.h), 0.08], C.iron);
+  b.box({ x: end, y: g + K.y, z: G.z }, [K.w, K.h, K.d], C.iron, C.ironTop);
+  for (const dx of [-K.pin.gap, K.pin.gap]) b.box({ x: end + dx, y: g + K.y - K.pin.h, z: G.z }, [K.pin.t, K.pin.h, K.pin.t], C.ironTop);
   // Les pinces, pendues à un crochet au milieu du bras : deux branches droites, parallèles, jamais en X.
   const mid = G.x + G.arm * 0.45;
-  for (const dz of [-0.09, 0.09]) b.box({ x: mid, y: g + 1.55, z: G.z + dz }, [0.1, top - 0.3 - (g + 1.55), 0.07], C.rustGear);
+  for (const dz of [-0.09, 0.09]) b.box({ x: mid, y: g + 1.55, z: G.z + dz }, [0.1, top - 0.3 - (g + 1.55), 0.07], C.iron);
 }
 
 /** La lanterne de la potence (le haut), pendue sous le bras, près du poteau. */
@@ -648,13 +651,13 @@ function gibbetLantern(b: FacetBuilder): void {
   lantern(b, { x: G.x + 0.55, y: top - 0.02, z: G.z }, true);
 }
 
-/** L'enclume sur son billot de bois, à l'ouest, sous le marteau-pilon : elle tient dans la ruine, sans rien changer, d'un brun éteint. */
+/** L'enclume sur son billot de bois, à l'ouest, sous le marteau-pilon : elle tient dans la ruine, sans rien changer, au fer bruni. */
 function anvil(b: FacetBuilder): void {
   const g = yardY(ANVIL.x, ANVIL.z);
   b.prism({ x: ANVIL.x, y: SINK, z: ANVIL.z }, 0.6, 0.55, g + 0.55 - SINK, 7, C.woodShade, C.wood);
-  b.box({ x: ANVIL.x, y: g + 0.55, z: ANVIL.z }, [0.55, 0.32, 0.4], C.rustGear, C.rustGearTop);
-  b.box({ x: ANVIL.x + 0.1, y: g + 0.87, z: ANVIL.z }, [1.05, 0.24, 0.48], C.rustGear, C.rustGearTop);
-  b.prism({ x: ANVIL.x - 0.42, y: g + 1.0, z: ANVIL.z, pitch: Math.PI / 2, yaw: -Math.PI / 2 }, 0.17, 0, 0.55, 4, C.rustGear);
+  b.box({ x: ANVIL.x, y: g + 0.55, z: ANVIL.z }, [0.55, 0.32, 0.4], C.iron, C.ironTop);
+  b.box({ x: ANVIL.x + 0.1, y: g + 0.87, z: ANVIL.z }, [1.05, 0.24, 0.48], C.iron, C.ironTop);
+  b.prism({ x: ANVIL.x - 0.42, y: g + 1.0, z: ANVIL.z, pitch: Math.PI / 2, yaw: -Math.PI / 2 }, 0.17, 0, 0.55, 4, C.iron);
 }
 
 /** Les volumes de la Forge, de la ruine aux abords (le modèle du lieu). */
@@ -715,16 +718,16 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     corps1,
   );
   // Le corps 2 la relève : le marteau-pilon, un montant debout, l'autre couché ; la tête tombée, couchée à côté de
-  // l'enclume ; d'un brun éteint, comme les roues de la ruine.
+  // l'enclume ; au fer bruni, comme le marteau-pilon relevé (rien de rouille près de l'enclume et de la potence).
   add(
     'ruine',
     0,
     (b) => {
       const H = HAMMER;
       const g = yardY(H.x, H.z);
-      b.box({ x: H.x - H.gap / 2, y: SINK, z: H.z }, [H.post, g + H.h - SINK, H.post], C.rustGear, C.rustGearTop);
-      b.box({ x: H.x + 0.6, y: g - 0.1, z: H.z + 2.2, yaw: 0.35 }, [H.post, H.post, H.h - 0.6], C.rustGear, C.rustGearTop);
-      b.box({ x: H.x + 1.75, y: g - 0.15, z: H.z + 0.9, yaw: 0.5 }, [H.head.w, H.head.h, H.head.h], C.rustGear, C.rustGearTop);
+      b.box({ x: H.x - H.gap / 2, y: SINK, z: H.z }, [H.post, g + H.h - SINK, H.post], C.iron, C.ironTop);
+      b.box({ x: H.x + 0.6, y: g - 0.1, z: H.z + 2.2, yaw: 0.35 }, [H.post, H.post, H.h - 0.6], C.iron, C.ironTop);
+      b.box({ x: H.x + 1.75, y: g - 0.15, z: H.z + 0.9, yaw: 0.5 }, [H.head.w, H.head.h, H.head.h], C.iron, C.ironTop);
     },
     corps2,
   );

@@ -44,8 +44,9 @@ const LOT2_CEILING = { triangles: 72_000, calls: 18 } as const;
  * la Soute et la Porte (à la place de leurs ruines simples, leurs traces comprises) et d'un lieu du 4e au plus chargé
  * pour l'Étalon (`PLACE_TRIANGLES_MAX_4E`), et du budget du Détour de l'Épave et de sa sente (`EPAVE_BUDGET`) ; aucun appel
  * de plus (une seule scénette ouverte à la fois, l'Épave dans le maillage des lieux). Mesuré le
- * 21 octobre 2026 : 70 943 triangles et 17 appels la scénette ouverte, 63 521 et 14 hors scénette, 62 399 et 15 au départ,
- * 60 330 et 12 sur la Carte.
+ * 21 octobre 2026, après la retouche 2 (le toit de la salle de la Porte, la coque de l'Épave) : 71 045 triangles et 17
+ * appels la scénette ouverte, 63 623 et 14 hors scénette, 62 501 et 15 au départ, 60 432 et 12 sur la Carte (avant :
+ * 70 943, 63 521, 62 399 et 60 330).
  */
 const LOT2_FABRIQUES_CEILING = { triangles: LOT2_CEILING.triangles + 2_000 + PLACE_TRIANGLES_MAX_4E + EPAVE_BUDGET.triangles + EPAVE_BUDGET.sente, calls: LOT2_CEILING.calls } as const;
 

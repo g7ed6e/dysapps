@@ -6,11 +6,13 @@
  * mission.
  *
  * La place : la grève de la côte sud, à l'ouest du quai du Rafiot (./plan4e.ts, `EPAVE_4E`). Un grand navire que les
- * Passeurs ont bâti et jamais mis à l'eau : sa coque entière, droite, d'un bois gris d'argent, sans pont ni mât, la poupe à
- * tableau à l'est, l'étrave à l'ouest, quelques membrures à nu à l'avant du côté de la terre (un bordé jamais fini) ; elle
- * attend sur sa cale de lancement, deux longues poutres en pente douce vers la mer, tenue par un ber (une traverse sous la
- * quille, deux accores). Une lanterne d'ocre sur un poteau au pied de la cale, allumée dès le départ, et les trois pierres
- * plates autour de Kéo, comme aux autres Détours. Rien à lire. Le dessin reçoit son sol (`ground`). Code pur.
+ * Passeurs ont bâti et jamais mis à l'eau : sa coque entière, droite, d'un bois vieilli brun-gris aux lignes de bordé
+ * sombres, sans pont ni mât, la poupe à tableau à l'est, l'étrave en pointe à l'ouest, penchée vers l'avant, les deux bouts
+ * bien plus hauts que le milieu (la tonture), quelques membrures à nu à l'avant du côté de la terre (un bordé jamais
+ * fini) ; elle attend, levée, sur sa cale de lancement, deux longues poutres en pente douce vers la mer, tenue par un ber
+ * (une traverse sous la quille, deux accores) : un navire, et non un chaland (directeur artistique et consultant
+ * d'Archipéo, relecture des Fabriques, point 2). Une lanterne d'ocre sur un poteau au pied de la cale, allumée dès le
+ * départ, et les trois pierres plates autour de Kéo, comme aux autres Détours. Rien à lire. Le dessin reçoit son sol (`ground`). Code pur.
  */
 import { SENTE_5E as SENTE } from './creux5e';
 import type { Detour } from './detours';
@@ -57,16 +59,19 @@ export const EPAVE: Detour = {
 };
 
 /**
- * Les couleurs (directeur artistique) : le bois gris d'argent de la coque (#A8A49C au flanc, le dedans un cran plus
- * sombre), plus pâle que le bois brun du navire de la Soute ; le bois gris de la cale et du ber ; l'ocre de la lanterne.
+ * Les couleurs (directeur artistique, consultant d'Archipéo) : le bois vieilli de la coque, brun-gris, ses lignes de
+ * bordé bien plus sombres, le dedans un cran plus sombre ; le bois gris de la cale et du ber ; l'ocre de la lanterne. Le
+ * gris froid `#D4DCE0` du flanc de la terre se lisait béton (relecture des Fabriques, point 2) ; mais ce flanc est à
+ * l'ombre du soleil du soir, qui réchauffe tout : dessiné `#8C7E70`, il sortait brun foncé, (81, 57, 39) à l'écran. Il
+ * prend un gris à peine vert, qui se voit bois brun-gris (près de (116, 98, 82) à l’écran, mesuré sur `07-epave-arrivee`) ;
+ * le flanc de la mer, au soleil, `#8C7E70`.
  */
 const C = {
-  hull: 0xa8a49c,
-  // Le flanc de la terre, à l'ombre au soleil du soir : plus clair et un peu froid, pour rester d'argent sous la lumière
-  // chaude du 4e, jamais brun (la planche validée).
-  hullShade: 0xd4dce0,
-  hullInside: 0x8c887f,
-  rib: 0x7e7a72,
+  hull: 0x8c7e70,
+  hullShade: 0xc2c4be,
+  seam: 0x5a5249,
+  hullInside: 0x8a8478,
+  rib: 0x766e64,
   slip: 0x8a8076,
   slipShade: 0x746a61,
   ber: 0x7c7068,
@@ -86,39 +91,53 @@ type P3 = readonly [number, number, number];
  * La coque, en couples d'est (la poupe, son tableau) en ouest (l'étrave) : pour chacun, sa place le long de l'axe
  * (`x`, depuis le milieu), la hauteur de la quille (`keel`), le bouchain (`bilge` : demi-largeur, hauteur) et le
  * plat-bord (`sheer`), au-dessus du dessus du ber ; `rake` : de combien il penche vers l'avant en montant. Les flancs
- * s'évasent du bouchain au plat-bord. Le dernier, l'étrave, n'a plus de largeur et penche vers l'avant. Relevée aux deux
- * bouts, plus à l'avant.
+ * s'évasent du bouchain au plat-bord, la carène en V (le bouchain bien au-dessus de la quille). Le dernier, l'étrave,
+ * n'a plus de largeur : le plat-bord se resserre jusqu'à sa pointe, qui penche vers l'avant. La quille se relève aux deux
+ * bouts (on voit la cale dessous), le plat-bord plus encore (la tonture : la poupe et l'étrave bien plus hautes que le
+ * milieu).
  */
 const STATIONS: readonly { x: number; keel: number; bilge: readonly [number, number]; sheer: readonly [number, number]; rake?: number }[] = [
-  { x: 6.0, keel: 0.5, bilge: [1.0, 0.9], sheer: [1.45, 2.45] },
-  { x: 3.0, keel: 0.05, bilge: [1.35, 0.45], sheer: [1.75, 2.0] },
-  { x: -1.0, keel: 0, bilge: [1.35, 0.4], sheer: [1.75, 1.95] },
-  { x: -4.0, keel: 0.15, bilge: [0.9, 0.6], sheer: [1.35, 2.2] },
-  { x: -6.2, keel: 0.7, bilge: [0, 1.4], sheer: [0, 2.95], rake: -0.38 },
+  { x: 5.6, keel: 0.95, bilge: [0.8, 1.45], sheer: [1.1, 3.0] },
+  { x: 3.0, keel: 0.12, bilge: [1.2, 0.75], sheer: [1.6, 2.1] },
+  { x: -1.0, keel: 0, bilge: [1.3, 0.65], sheer: [1.7, 1.9] },
+  { x: -4.0, keel: 0.3, bilge: [0.8, 0.95], sheer: [1.2, 2.4] },
+  { x: -6.0, keel: 1.0, bilge: [0, 1.9], sheer: [0, 3.6], rake: -0.5 },
 ];
 
 /** L'intervalle de couples (de l'est) où le bordé n'est pas fini du côté de la terre, et ses membrures à nu. */
 const OPEN_BAY = 2;
-const RIBS = [0.22, 0.5, 0.78] as const;
+const RIBS = [0.3, 0.7] as const;
+
+/**
+ * Les lignes de bordé, sur le flanc de la terre (celui qu'on voit en arrivant ; dans les 175 triangles) : une sur les fonds
+ * (du bouchain à la quille, sauf sous l'étrave), deux sur les hauts (du bouchain au plat-bord), en part de chaque pan ;
+ * leur demi-largeur, et de combien elles sortent du flanc.
+ */
+const SEAMS = { low: [0.5], high: [0.36, 0.7], half: 0.035, out: 0.02 } as const;
 
 /** La cale : ses deux poutres (de part et d'autre du milieu, le long de l'axe), du nord de la coque jusqu'à la grève mouillée. */
-const SLIP = { offset: 3.2, from: -2.6, to: 9.2, wide: 0.36, headLift: 0.42, footLift: 0.12, sink: 0.4 } as const;
+const SLIP = { offset: 3.2, from: -2.6, to: 9.2, wide: 0.36, headLift: 0.8, footLift: 0.12, sink: 0.4 } as const;
 
 /** Le ber : la traverse sous la quille, posée sur les poutres ; ses deux accores, du sable au bouchain. */
-const BER = { thick: 0.16, wide: 0.4, length: 7.4, shore: 2.8 } as const;
+const BER = { thick: 0.3, wide: 0.4, length: 7.4, shore: 2.8 } as const;
 
 /** La lanterne : au pied de la cale, à l'ouest, du côté de la terre ; son poteau. */
 const LAMP = { west: -0.65, north: -0.5, pole: 1.35 } as const;
 
-/** Un quadrilatère aux deux faces : `out` vers `hint`, `inside` de l'autre côté. */
-function twoSided(b: FacetBuilder, q: readonly [P3, P3, P3, P3], hint: P3, out: number, inside: number): void {
+/** Un quadrilatère à une face, tournée vers `hint`. */
+function oneSided(b: FacetBuilder, q: readonly [P3, P3, P3, P3], hint: P3, color: number): void {
   const [a, c, d] = [q[0], q[1], q[2]];
   const u = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
   const v = [d[0] - a[0], d[1] - a[1], d[2] - a[2]];
   const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
   const front = n[0] * hint[0] + n[1] * hint[1] + n[2] * hint[2] >= 0 ? q : ([q[3], q[2], q[1], q[0]] as const);
-  b.quad(front[0], front[1], front[2], front[3], out);
-  b.quad(front[3], front[2], front[1], front[0], inside);
+  b.quad(front[0], front[1], front[2], front[3], color);
+}
+
+/** Un quadrilatère aux deux faces : `out` vers `hint`, `inside` de l'autre côté. */
+function twoSided(b: FacetBuilder, q: readonly [P3, P3, P3, P3], hint: P3, out: number, inside: number): void {
+  oneSided(b, q, hint, out);
+  oneSided(b, q, [-hint[0], -hint[1], -hint[2]], inside);
 }
 
 /** Un étai à trois pans, tendu entre deux points (les accores, le poteau) : six triangles, sans bouts. */
@@ -157,6 +176,20 @@ function slipTop(ground: Ground, along: number): number {
   return head + ((foot - head) * (along - SLIP.from)) / (SLIP.to - SLIP.from);
 }
 
+type Edge = (i: number, s: number) => P3;
+
+/**
+ * Une ligne de bordé sur le pan `i` du flanc `s`, entre ses bords `lo` et `hi` (la quille et le bouchain, ou le bouchain
+ * et le plat-bord), à la part `t` : une bande sombre, un peu hors du flanc, vue du dehors seulement.
+ */
+function seam(b: FacetBuilder, i: number, s: number, lo: Edge, hi: Edge, t: number, hint: P3): void {
+  const at = (k: number, u: number): P3 => {
+    const [p, q] = [lo(k, s), hi(k, s)];
+    return [p[0] + (q[0] - p[0]) * u, p[1] + (q[1] - p[1]) * u, p[2] + (q[2] - p[2]) * u + s * SEAMS.out];
+  };
+  oneSided(b, [at(i, t - SEAMS.half), at(i, t + SEAMS.half), at(i + 1, t + SEAMS.half), at(i + 1, t - SEAMS.half)], hint, C.seam);
+}
+
 /** La coque : ses pans dehors et dedans, son tableau, l'avant ouvert côté terre et ses membrures. */
 function hull(b: FacetBuilder, ground: Ground): void {
   const { hull: h } = EPAVE_4E;
@@ -169,9 +202,14 @@ function hull(b: FacetBuilder, ground: Ground): void {
   for (let i = 0; i + 1 < STATIONS.length; i++)
     for (const s of [-1, 1]) {
       const flank = s < 0 ? C.hullShade : C.hull;
-      twoSided(b, [keel(i), bilge(i, s), bilge(i + 1, s), keel(i + 1)], [0, -0.6, s], flank, C.hullInside);
+      // Les fonds : leur dedans ne se voit que par l'avant ouvert (le plat-bord le cache ailleurs).
+      const bottom = [keel(i), bilge(i, s), bilge(i + 1, s), keel(i + 1)] as const;
+      if (i === OPEN_BAY) twoSided(b, bottom, [0, -0.6, s], flank, C.hullInside);
+      else oneSided(b, bottom, [0, -0.6, s], flank);
+      if (s < 0 && i + 2 < STATIONS.length) for (const t of SEAMS.low) seam(b, i, s, keel, bilge, t, [0, -0.6, s]);
       if (i === OPEN_BAY && s === -1) continue;
       twoSided(b, [bilge(i, s), sheer(i, s), sheer(i + 1, s), bilge(i + 1, s)], [0, 0, s], flank, C.hullInside);
+      if (s < 0) for (const t of SEAMS.high) seam(b, i, s, bilge, sheer, t, [0, 0, s]);
     }
   // Le tableau de la poupe, à l'est.
   const T = [keel(0), bilge(0, 1), sheer(0, 1), sheer(0, -1), bilge(0, -1)];

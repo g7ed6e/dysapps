@@ -114,8 +114,17 @@ describe('La Porte, lieu complet', () => {
   });
 
   it('les piliers restent le repère : le toit de la salle est sous eux, le mur sans créneau sous la poutre', () => {
-    expect(PORTE_LAYOUT.hall.apex).toBeLessThan(PORTE_LAYOUT.gate.h);
+    expect(PORTE_LAYOUT.hallApex).toBeLessThan(PORTE_LAYOUT.gate.beam);
     expect(PORTE_LAYOUT.wall.h).toBeLessThan(PORTE_LAYOUT.gate.beam);
+  });
+
+  it('la salle ronde, une salle d’usine et non une case : un toit à 30° environ, un débord franc sur le mur, un collier de fer bruni', () => {
+    const H = PORTE_LAYOUT.hall;
+    expect((H.pitch * 180) / Math.PI).toBeGreaterThanOrEqual(25);
+    expect((H.pitch * 180) / Math.PI).toBeLessThanOrEqual(33);
+    expect(H.eave).toBeGreaterThanOrEqual(0.7);
+    // Plus large que haut : le toit déborde, il ne monte pas en pointe.
+    expect(PORTE_LAYOUT.hallApex - H.h).toBeLessThan((H.r + H.eave) * 0.75);
   });
 
   it('rien du lieu, en ruine comme restauré, sur le chemin qui passe le portail (à hauteur de Kéo)', () => {

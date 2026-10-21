@@ -1,7 +1,7 @@
 // La couleur d'une face telle qu'on la voit à l'écran, sous la lumière du 5e : pour vérifier qu'une teinte ne sort jamais
 // saturée au soleil (la brique du Donjon, lot 13a ; les panneaux peints de l'Oracle, lot 13b). Code pur, sans Three.js.
 import { linearRgb } from './geometry';
-import { LIGHT_5E } from './sky';
+import { LIGHT_5E, type SceneLight } from './sky';
 
 /** Une couleur en teinte, saturation et clarté (HSL, de 0 à 1). */
 export function hsl(color: number): { s: number; l: number } {
@@ -12,12 +12,13 @@ export function hsl(color: number): { s: number; l: number } {
 }
 
 /**
- * La couleur d'une face à l'écran, sous la lumière du 5e (`LIGHT_5E`), comme la rend Three.js : le Lambert du soleil et
- * du ciel renvoyé (hémisphère), l'exposition, le mappage des tons neutre (`NeutralToneMapping`), puis sRGB ; au-dessus de
- * la lumière par la hauteur, sans brouillard. `color` en rouge, vert, bleu linéaires ; `n`, la normale de la face.
+ * La couleur d'une face à l'écran, sous la lumière du 5e (`LIGHT_5E`, ou celle d'un autre niveau, `light` : le fer de la
+ * Forge sous celle du 4e), comme la rend Three.js : le Lambert du soleil et du ciel renvoyé (hémisphère), l'exposition, le
+ * mappage des tons neutre (`NeutralToneMapping`), puis sRGB ; au-dessus de la lumière par la hauteur, sans brouillard.
+ * `color` en rouge, vert, bleu linéaires ; `n`, la normale de la face.
  */
-export function rendered5e(color: readonly number[], n: readonly number[]): number {
-  const L = LIGHT_5E;
+export function rendered5e(color: readonly number[], n: readonly number[], light: SceneLight = LIGHT_5E): number {
+  const L = light;
   const [sky, ground, sun] = [linearRgb(L.sky), linearRgb(L.ground), linearRgb(L.sun)];
   const d = Math.hypot(L.sunFrom.x, L.sunFrom.y, L.sunFrom.z);
   const ndl = Math.max(0, (n[0] * L.sunFrom.x + n[1] * L.sunFrom.y + n[2] * L.sunFrom.z) / d);
