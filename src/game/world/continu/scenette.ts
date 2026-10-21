@@ -76,6 +76,13 @@ export interface Scenette {
   role: string;
   greeting: string | null;
   placement: 'rangee';
+  /**
+   * Au 4e, les phrases propres du lieu (directeur du contenu pédagogique, `forge-phrases.md`, lot 2) : `pose`, une par
+   * partie, dans l'ordre de la pose (`partShapes`), dite au bilan après la ligne d'étape (`stagePoseWords`) ; `end`, la
+   * réplique de l'habitant, dite une fois, après « La Forge est restaurée. ». Ni nom de contenu, ni chiffre, ni mot de
+   * chaleur.
+   */
+  words?: { readonly pose: readonly string[]; readonly end: string };
 }
 
 const SCENETTES: Record<PlaceId, Scenette> = {
@@ -158,7 +165,16 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // l'intention du directeur artistique, sans « relier », à relire par le directeur du contenu pédagogique (jamais le nom
   // d'une créature ni d'un Gardien, jamais « nacelle » pour la Nef).
   nacelles: { role: placeArt('nacelles')!.role, greeting: 'Ici, on tend les câbles.', placement: 'rangee' },
-  forge: { role: placeArt('forge')!.role, greeting: 'La chaudronnière façonne le métal en grandes feuilles.', placement: 'rangee' },
+  // La Forge (lot 2 du 4e) : la chaudronnière, sans prénom ; ses phrases de pose et sa réplique de fin (`forge-phrases.md`).
+  forge: {
+    role: placeArt('forge')!.role,
+    greeting: 'La chaudronnière façonne le métal en grandes feuilles.',
+    placement: 'rangee',
+    words: {
+      pose: ['La fente du fourneau est bouchée.', 'Le grand marteau est en place.', 'Les roues dentées sont debout.', 'Le fourneau a retrouvé sa hauteur.', 'La rigole est prête.'],
+      end: 'Le feu de la montagne est revenu.',
+    },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */

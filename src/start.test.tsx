@@ -8,7 +8,7 @@ import { TitleScreen } from './components/TitleScreen';
 import { rememberPlace } from './core/lastPlace';
 
 // Un appareil qui sait dessiner le monde, et un monde factice (le vrai est testé à part).
-vi.mock('./game/useImmersive', () => ({ useImmersive: () => true }));
+vi.mock('./game/useImmersive', () => ({ useImmersive: () => true, useLieuxSeuls: () => false }));
 vi.mock('./game/WorldPage', () => ({ WorldPage: () => <p>Le village</p> }));
 
 function Where() {

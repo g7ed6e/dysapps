@@ -1,7 +1,8 @@
 // La fabrique de disposition : le monde continu seulement avec `?monde=ouvert`, dans Archipéo, au 6e et au 5e (GD-22,
 // lot 2) ; la grille partout ailleurs, et toujours pour Blocland.
 import { describe, expect, it } from 'vitest';
-import { openWorldRequested, worldLayoutFor } from './worldLayoutFactory';
+import { openWorldRequested } from './rendering';
+import { worldLayoutFor } from './worldLayoutFactory';
 
 describe('La fabrique de disposition du monde', () => {
   it('lit le drapeau avant le #', () => {

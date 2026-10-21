@@ -5,23 +5,28 @@
 // panache du volcan en colonne, les plafonds de 1 600 et 1 200 triangles. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../../biomes';
-import { partShapes, stagePoseWords } from '../../three/archipeo/constructionParts';
+import { partShapes, placePoseWords } from '../../three/archipeo/constructionParts';
 import { phraseDeLaPose } from '../../poseWords';
+import { openWorldPlaceOfBlock } from '../openWorldReturn';
 import { partiesDe } from '../parts';
+import { plansFor } from '../plans';
 import { PLACE_RUIN_TRIANGLES_MAX_4E, PLACE_TRIANGLES_MAX_4E, reachCost4e } from './budget';
 import { posedTraces, type PartShape, type Stage } from './construction';
 import type { Facets } from './facets';
-import { FORGE, FORGE_GLOW, FORGE_GLOW_FADE, FORGE_LAYOUT } from './forge4e';
+import { FORGE, FORGE_GLOW, FORGE_GLOW_DRAWN, FORGE_GLOW_FADE, FORGE_LAYOUT } from './forge4e';
 import { FORGE_SURROUNDINGS } from './forgeSurroundings';
+import { followPose, occlusionLift } from './camera';
 import { distance, linearRgb } from './geometry';
 import { hasHabitantModel } from './habitants';
 import { hasScenette, planFor } from './levelPlan';
 import { doorFrameOf, doorViewOf } from './northShore';
-import { BUILT_PLACES_4E, COLORS_4E, PATH_NODES_4E } from './plan4e';
+import { BUILT_PLACES_4E, COLORS_4E, PATH_NODES_4E, PLACES_4E, VOLCANO_4E } from './plan4e';
 import { COLORS_5E } from './plan5e';
 import { drawPieces, placePieces } from './places';
 import { placeTrace } from './questionScene';
+import { toneMapped } from './rendered5e';
 import { RUINS_4E } from './ruins4e';
+import { LIGHT_4E } from './sky';
 import { scenetteOf } from './scenette';
 import { SURROUNDINGS } from './surroundings';
 import { standingHeight } from './terrain';
@@ -49,7 +54,7 @@ function countColor(f: Facets, color: number): number {
   return n;
 }
 
-const GLOWS = [COLORS_4E.lava, FORGE_GLOW, ...FORGE_GLOW_FADE];
+const GLOWS = [COLORS_4E.lava, ...FORGE_GLOW_DRAWN];
 const glowCount = (f: Facets) => GLOWS.reduce((s, c) => s + countColor(f, c), 0);
 
 const ground = (x: number, z: number) => standingHeight(heightAt4e({ x, z }));
@@ -164,28 +169,63 @@ describe('L’allumage de la Forge restaurée', () => {
   });
 
   it('la gueule passe par ses trois teintes, puis reste allumée de sa seule couleur', () => {
-    expect(mouth(R.grate, FORGE_GLOW)).toBe(0);
-    FORGE_GLOW_FADE.forEach((c, i) => expect(mouth(R.fade[i], c), String(i)).toBeGreaterThan(0));
-    expect(mouth(Infinity, FORGE_GLOW)).toBeGreaterThan(0);
-    for (const c of FORGE_GLOW_FADE) expect(mouth(Infinity, c)).toBe(0);
+    const [glow, ...fade] = FORGE_GLOW_DRAWN;
+    expect(mouth(R.grate, glow)).toBe(0);
+    fade.forEach((c, i) => expect(mouth(R.fade[i], c), String(i)).toBeGreaterThan(0));
+    expect(mouth(Infinity, glow)).toBeGreaterThan(0);
+    for (const c of fade) expect(mouth(Infinity, c)).toBe(0);
+  });
+
+  it('à l’écran, la gueule allumée se voit #DC5530 (rouge plus qu’orange), et non plus (234, 81, 24) : le mappage des tons est compensé', () => {
     expect(FORGE_GLOW).toBe(0xdc5530);
+    const channels = (c: number) => [(c >> 16) & 255, (c >> 8) & 255, c & 255];
+    [FORGE_GLOW, ...FORGE_GLOW_FADE].forEach((shown, i) => {
+      const seen = channels(toneMapped(linearRgb(FORGE_GLOW_DRAWN[i]), LIGHT_4E.exposure));
+      channels(shown).forEach((v, k) => expect(Math.abs(seen[k] - v), `${i}, ${k}`).toBeLessThanOrEqual(2));
+    });
+    // Dessinée telle quelle, elle sortait orange, à (234, 81, 24) près.
+    channels(toneMapped(linearRgb(FORGE_GLOW), LIGHT_4E.exposure)).forEach((v, k) => expect(Math.abs(v - [234, 81, 24][k])).toBeLessThanOrEqual(2));
   });
 });
 
 describe('Le bilan de la Forge', () => {
-  it('nomme la partie par son étape, jamais un nom du contenu', () => {
-    const island = PLACE.island as BiomeId;
-    const words = stagePoseWords(island, PLACE);
-    const parties = partiesDe(island);
+  // Le bilan d'une mission jouée à la Forge (relectures dys, UX UI et contenu du lot 2 : `WorldQuestion.tsx` ne donnait
+  // les mots d'étape qu'au 5e) : la ligne d'étape, puis la phrase propre de la partie (`forge-phrases.md`).
+  const island = PLACE.island as BiomeId;
+  const words = placePoseWords(PLACE)!;
+  const parties = partiesDe(island);
+  const plans = plansFor(island);
+  const said = (k: number, finis: number[] = []) => phraseDeLaPose({ posees: [parties[k]], plansFinis: finis.map((i) => plans[i]) }, words);
+
+  it('nomme la partie par son étape, puis dit ce qui se voit, jamais un nom du contenu', () => {
+    expect(words).toBeDefined();
     expect(parties).toHaveLength(5);
-    const said = (k: number) => phraseDeLaPose({ posees: [parties[k]], plansFinis: [] }, words);
-    expect([0, 1, 2, 3, 4].map(said)).toEqual([
-      'Partie posée : le corps de la Forge, 1 sur 3.',
-      'Partie posée : le corps de la Forge, 2 sur 3.',
-      'Partie posée : le corps de la Forge, 3 sur 3.',
-      'Partie posée : le haut de la Forge.',
-      'Partie posée : les abords de la Forge.',
+    expect([0, 1, 2, 3, 4].map((k) => said(k))).toEqual([
+      'Partie posée : le corps de la Forge, 1 sur 3. La fente du fourneau est bouchée.',
+      'Partie posée : le corps de la Forge, 2 sur 3. Le grand marteau est en place.',
+      'Partie posée : le corps de la Forge, 3 sur 3. Les roues dentées sont debout.',
+      'Partie posée : le haut de la Forge. Le fourneau a retrouvé sa hauteur.',
+      'Partie posée : les abords de la Forge. La rigole est prête.',
     ]);
+  });
+
+  it('une partie qui finit une étape : « Étape finie », la phrase de la partie, puis l’XP', () => {
+    expect(said(2, [0])).toBe(`Étape finie : le corps de la Forge. Les roues dentées sont debout. +${plans[0].reward.xp} XP.`);
+    expect(said(4, [2])).toBe(`Étape finie : les abords de la Forge. La rigole est prête. +${plans[2].reward.xp} XP.`);
+  });
+
+  it('aucun nom de plan, aucune réplique de plan, aucun exposant ni chiffre, aucun mot de chaleur', () => {
+    const all = [0, 1, 2, 3, 4].map((k) => said(k, [Math.min(2, Math.max(0, k - 2))])).join(' ');
+    for (const plan of plans) {
+      expect(all).not.toContain(plan.name);
+      expect(all).not.toContain(plan.done);
+    }
+    expect(all.replace(/\+\d+ XP\.|\d sur \d/g, '')).not.toMatch(/[0-9⁰¹²³⁴⁵⁶⁷⁸⁹]/);
+    expect(all).not.toMatch(/Braise|atelier|degré|chaleur|\bchaude?s?\b|brûl|gueule|regard|vanne|danger/i);
+  });
+
+  it('la réplique de fin de la chaudronnière : courte, sans mot de chaleur', () => {
+    expect(scenetteOf('forge').words?.end).toBe('Le feu de la montagne est revenu.');
   });
 });
 
@@ -196,14 +236,26 @@ describe('La scénette de la Forge', () => {
     for (const text of [scenetteOf('forge').role, scenetteOf('forge').greeting ?? '']) expect(text).not.toMatch(/gueule|gueulard|regard|vanne|chaleur|\bchaude?s?\b|brûl|danger/i);
   });
 
-  it('la caméra arrive par la porte, tournée vers le fourneau, dans sa vue d’arrivée', () => {
+  it('la caméra arrive par la porte : le fourneau dans le cadre, un peu à droite ; le cratère du volcan à gauche du centre, dans le cadre', () => {
     const door = nodes.get('forge')!;
     const yaw = doorViewOf('forge');
-    // Elle regarde vers −(sin, cos) : du côté du fourneau, depuis la porte.
+    // Elle regarde vers −(sin, cos) ; l'angle d'un point à droite (positif) ou à gauche du milieu de l'image.
     const look = { x: -Math.sin(yaw), z: -Math.cos(yaw) };
-    const toFurnace = { x: PLACE.center.x + FORGE_LAYOUT.furnace.x - door.x, z: PLACE.center.z + FORGE_LAYOUT.furnace.z - door.z };
-    expect((look.x * toFurnace.x + look.z * toFurnace.z) / Math.hypot(toFurnace.x, toFurnace.z)).toBeGreaterThan(0.99);
-    expect(doorFrameOf('forge')).toBeDefined();
+    const side = (p: { x: number; z: number }) => {
+      const d = { x: p.x - door.x, z: p.z - door.z };
+      // La droite de l'image : −z × regard (vers l'est quand on regarde le nord).
+      return Math.atan2(-look.z * d.x + look.x * d.z, look.x * d.x + look.z * d.z);
+    };
+    // La moitié du champ horizontal sur une tablette (1024 × 768, 56° en hauteur) : un peu plus de 35°.
+    const half = Math.atan(Math.tan((28 * Math.PI) / 180) * (1024 / 768));
+    const furnace = side({ x: PLACE.center.x + FORGE_LAYOUT.furnace.x, z: PLACE.center.z + FORGE_LAYOUT.furnace.z });
+    const crater = side(VOLCANO_4E.crater);
+    expect(furnace).toBeGreaterThan(0);
+    expect(furnace).toBeLessThan(half * 0.6);
+    expect(crater).toBeLessThan(-half / 4);
+    expect(crater).toBeGreaterThan(-half * 0.8);
+    // Plus basse que la caméra qui suit (à hauteur de Kéo) : le haut du cône et le panache entrent dans le cadre.
+    expect(doorFrameOf('forge')!.height).toBeLessThan(0);
   });
 
   it('elle se joue sur le plancher de l’appentis, hors du chemin ; ses abords sont enregistrés', () => {
@@ -216,6 +268,47 @@ describe('La scénette de la Forge', () => {
     expect(SURROUNDINGS.forge).toBeDefined();
     expect(FORGE_SURROUNDINGS.rocks.length).toBeGreaterThan(0);
     expect(distance({ x: PLACE.center.x + s.dx, z: PLACE.center.z + s.dz }, nodes.get('forge')!)).toBeGreaterThan(3);
+  });
+});
+
+describe('Rien de haut entre la caméra et Kéo, à la porte de la Forge', () => {
+  // La Forge restaurée, ses pièces dans le monde, en triangles.
+  const H0 = ground(PLACE.center.x, PLACE.center.z);
+  const P = drawPieces('forge', (p) => p.stage !== 'ruine' || !p.until).positions;
+  const tris: number[][] = [];
+  for (let i = 0; i < P.length; i += 9) tris.push(Array.from(P.slice(i, i + 9), (v, k) => v + (k % 3 === 0 ? PLACE.center.x : k % 3 === 1 ? H0 : PLACE.center.z)));
+  /** Le segment de `o` vers `t` traverse-t-il un triangle (Möller-Trumbore) ? */
+  const blocked = (o: readonly number[], t: readonly number[]) => {
+    const len = Math.hypot(t[0] - o[0], t[1] - o[1], t[2] - o[2]);
+    const d = [(t[0] - o[0]) / len, (t[1] - o[1]) / len, (t[2] - o[2]) / len];
+    return tris.some(([ax, ay, az, bx, by, bz, cx, cy, cz]) => {
+      const e1 = [bx - ax, by - ay, bz - az];
+      const e2 = [cx - ax, cy - ay, cz - az];
+      const p = [d[1] * e2[2] - d[2] * e2[1], d[2] * e2[0] - d[0] * e2[2], d[0] * e2[1] - d[1] * e2[0]];
+      const det = e1[0] * p[0] + e1[1] * p[1] + e1[2] * p[2];
+      if (Math.abs(det) < 1e-9) return false;
+      const s = [o[0] - ax, o[1] - ay, o[2] - az];
+      const u = (s[0] * p[0] + s[1] * p[1] + s[2] * p[2]) / det;
+      if (u < 0 || u > 1) return false;
+      const q = [s[1] * e1[2] - s[2] * e1[1], s[2] * e1[0] - s[0] * e1[2], s[0] * e1[1] - s[1] * e1[0]];
+      const v = (d[0] * q[0] + d[1] * q[1] + d[2] * q[2]) / det;
+      if (v < 0 || u + v > 1) return false;
+      const at = (e2[0] * q[0] + e2[1] * q[1] + e2[2] * q[2]) / det;
+      return at > 0.01 && at < len - 0.3;
+    });
+  };
+  const door = nodes.get('forge')!;
+  const focus = { x: door.x, y: ground(door.x, door.z), z: door.z };
+  const keo = [focus.x, focus.y + 1.2, focus.z];
+  const camera = (yaw: number, frame?: { height: number; back: number }) => {
+    const pose = frame ? followPose(focus, occlusionLift(focus, ground, yaw), undefined, yaw, 1, undefined, frame) : followPose(focus, occlusionLift(focus, ground, yaw), undefined, yaw);
+    return [pose.position.x, pose.position.y, pose.position.z];
+  };
+
+  it('à l’arrivée, dans la vue basse de « Y aller » ; puis la caméra qui suit, tournée de tous côtés (la vue basse ne tient qu’au cap d’arrivée)', () => {
+    expect(blocked(camera(doorViewOf('forge'), doorFrameOf('forge')!), keo)).toBe(false);
+    const hidden = Array.from({ length: 72 }, (_, k) => k * 5).filter((deg) => blocked(camera((deg * Math.PI) / 180), keo));
+    expect(hidden).toEqual([]);
   });
 });
 
@@ -235,3 +328,12 @@ describe('Le panache du volcan', () => {
   });
 });
 
+
+describe('Le nom de la Forge sur l’écran d’une mission de l’Étalon', () => {
+  it('est celui du plan du monde continu, avec son article en minuscule', () => {
+    const forge = PLACES_4E.find((p) => p.island === 'maths-4e-powers')!;
+    expect(forge.name).toBe('La Forge');
+    const nom = openWorldPlaceOfBlock('maths-4e-powers')!;
+    expect(nom.charAt(0).toUpperCase() + nom.slice(1)).toBe(forge.name);
+  });
+});

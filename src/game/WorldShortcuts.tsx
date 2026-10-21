@@ -13,6 +13,8 @@ import { Requests } from './Requests';
 import { Sheet } from './Sheet';
 import { MONUMENTS_PATH, MONUMENTS_TITLE } from './Monuments';
 import { questsToReview } from './review';
+import { todayISO } from './engine';
+import { useLieuxSeuls } from './useImmersive';
 import { SCHOOL_PATH, SCHOOL_TITLE } from './School';
 import { TROPHIES_PATH, TROPHIES_TITLE } from './trophies';
 import { WorldButton } from './WorldButton';
@@ -66,7 +68,7 @@ export function WorldShortcuts({
   const { state } = useBlocland();
   const textes = useTextes();
   const resume = lastPlace(state.world.links);
-  const reviews = questsToReview(state.spaced, state.world.links);
+  const reviews = questsToReview(state.spaced, state.world.links, todayISO(), useLieuxSeuls());
   const commandes = textes.commandes && !requestsLater ? requestCount(state.world, a, Boolean(textes.quetes)) : 0;
   return (
     <nav className="world-shortcuts" data-couvre="bouton" data-tuto="raccourcis" aria-label="Reprendre">

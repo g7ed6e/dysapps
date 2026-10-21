@@ -4,15 +4,13 @@ module : Données et proportions
 matière : maths
 classe : 4e
 description : Moyenne et médiane, probabilités, proportions et partages, programmes de calcul, puis translation, milieux et cercle.
-gardien : le Grand Peson
 icône : scale
-créature : la peseuse
 monde ouvert seulement : oui
 ---
 
 # Étalon
 
-> Lieu du monde ouvert seulement (décision du mainteneur du 21 octobre 2026, GD-24) : l’Étalon n’existe que dans le monde ouvert du 4e d’Archipéo, jamais dans la grille ni dans Blocland. Ses cinq missions sont celles de la carte des missions de 2027 (lieu `maths-4e-data`) ; elles citent le programme de 2020, en vigueur en 4e jusqu’à la bascule de l’été 2027 (le référentiel n’a pas encore les compétences de 4e du texte de 2026, M26). La droite des milieux et le cercle circonscrit (Figures de 4e, niveau 2) sont dans M26, « Quatrième, Triangles » ; dans les intitulés de 2020, ils relèvent de `c4.ma.d.angles-triangles` (médiatrices) et `c4.ma.d.thales` (la droite des milieux en est le cas du milieu). Le gardien et le nom de la créature sont provisoires : la grille ne les montre pas ; la créature est l’habitante du lieu, la peseuse. Les niveaux gagnent le bloc de la Forge (`maths-4e-powers`), à confirmer par le directeur artistique.
+> Lieu du monde ouvert seulement (décision du mainteneur du 21 octobre 2026, GD-24) : l’Étalon n’existe que dans le monde ouvert du 4e d’Archipéo, jamais dans la grille ni dans Blocland. Ses cinq missions sont celles de la carte des missions de 2027 (lieu `maths-4e-data`) ; elles citent le programme de 2020, en vigueur en 4e jusqu’à la bascule de l’été 2027 (le référentiel n’a pas encore les compétences de 4e du texte de 2026, M26). La droite des milieux et le cercle circonscrit (Figures de 4e, niveau 2) sont dans M26, « Quatrième, Triangles » ; dans les intitulés de 2020, ils relèvent de `c4.ma.d.angles-triangles` (médiatrices) et `c4.ma.d.thales` (la droite des milieux en est le cas du milieu). Le lieu n’a ni gardien ni créature (directeur artistique et consultant d’Archipéo, lot 2 du 4e) : aucun écran ne les montrerait ; son habitante est la peseuse, celle de sa scénette et de la réplique de fin des plans. Les niveaux gagnent le bloc de la Forge (`maths-4e-powers`), confirmé par le directeur artistique le 21 octobre 2026 : c’est à l’Étalon qu’on pèse le minerai qui part au fourneau.
 
 ## Moyenne et médiane · `weighted-mean`
 
@@ -613,7 +611,7 @@ Pour tous les items :
 ## Figures de 4e · `translations`
 
 - description : Ce que garde une translation et le parallélogramme, puis la droite des milieux et le cercle d’un triangle rectangle.
-- compétences : c4.ma.d.transformations · c4.ma.d.triangles-parallelogramme · c4.ma.d.angles-triangles
+- compétences : c4.ma.d.transformations · c4.ma.d.triangles-parallelogramme · c4.ma.d.angles-triangles · c4.ma.d.thales
 - consigne : Lis la phrase ou la figure, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -645,13 +643,13 @@ Pour tous les items :
    - figure : image translation / aire 12 · ?
 2. énoncé : Un angle de 50° glisse de 4 cm par une translation. Son image mesure …
    - lu : Un angle de 50 degrés glisse de 4 centimètres par une translation. Son image mesure (mot manquant).
-   - choix : 50° · 54° · 130°
+   - choix : 46° · 50° · 54°
    - réponse : 50°
    - indice : Une translation garde les angles, quelle que soit la longueur du glissement.
-   - explication : La figure glisse sans tourner ni se déformer : l’angle reste 50°. 54° ajoute les 4 cm du glissement à l’angle : un glissement ne change pas un angle. 130° est le supplément de 50°.
+   - explication : La figure glisse sans tourner ni se déformer : l’angle reste 50°. 54° ajoute les 4 cm du glissement à l’angle, 46° les enlève : un glissement ne change pas un angle.
    - figure : image translation / angle 50 · ?
-3. énoncé : Une translation envoie A sur B et C sur D. Le quadrilatère ABDC est toujours un …
-   - lu : Une translation envoie A sur B et C sur D. Le quadrilatère A B D C est toujours un (mot manquant).
+3. énoncé : Une translation envoie A sur B et C sur D. Le quadrilatère ABDC est un …
+   - lu : Une translation envoie A sur B et C sur D. Le quadrilatère A B D C est un (mot manquant).
    - choix : parallélogramme · rectangle · carré
    - réponse : parallélogramme
    - indice : Relis la troisième ligne du rappel.
@@ -695,6 +693,7 @@ Pour tous les items :
   - Le segment qui joint ces deux milieux mesure la moitié du troisième côté.
   - La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.
   - Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.
+  - Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle.
   - Son centre est le milieu de l’hypoténuse.
 
 1. énoncé : Dans le triangle ABC, I est le milieu de [AB], J celui de [AC], et BC = 8 cm. Alors IJ mesure …
@@ -733,12 +732,12 @@ Pour tous les items :
    - réponse : le milieu de l’hypoténuse
    - indice : Relis la dernière ligne du rappel.
    - explication : L’hypoténuse est un diamètre : le centre du cercle est son milieu. Le sommet de l’angle droit est sur le cercle, pas au centre.
-7. énoncé : Un triangle a ses trois sommets sur un cercle, et l’un de ses côtés est un diamètre de ce cercle. Ce triangle est …
-   - lu : Un triangle a ses trois sommets sur un cercle, et l’un de ses côtés est un diamètre de ce cercle. Ce triangle est (mot manquant).
-   - choix : rectangle · isocèle · équilatéral
-   - réponse : rectangle
-   - indice : Relis la quatrième ligne du rappel.
-   - explication : Un triangle dont un côté est un diamètre de son cercle circonscrit est rectangle : l’angle droit est au sommet opposé au diamètre. Il n’est pas forcément isocèle, et jamais équilatéral.
+7. énoncé : Un triangle a ses trois sommets sur un cercle, et l’un de ses côtés est un diamètre. Ce triangle a toujours …
+   - lu : Un triangle a ses trois sommets sur un cercle, et l’un de ses côtés est un diamètre. Ce triangle a toujours (mot manquant).
+   - choix : un angle droit · deux côtés de même longueur · trois côtés de même longueur
+   - réponse : un angle droit
+   - indice : Relis la ligne sur le diamètre.
+   - explication : Un côté est un diamètre : l’angle opposé est droit, le triangle est rectangle. Il peut avoir deux côtés égaux, mais pas toujours. Trois côtés égaux ne donnent jamais d’angle droit.
 8. énoncé : Le triangle ABC est rectangle en A, et son hypoténuse BC mesure 13 cm. M est le milieu de [BC]. Alors AM mesure …
    - lu : Le triangle A B C est rectangle en A, et son hypoténuse B C mesure 13 centimètres. M est le milieu de B C. Alors A M mesure (mot manquant).
    - choix : 6,5 cm · 13 cm · 26 cm

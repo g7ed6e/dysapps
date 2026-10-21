@@ -27,6 +27,8 @@ import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E, RIGOLE_4E } from './plan4e';
 import { COLORS_5E } from './plan5e';
+import { unlitSource } from './rendered5e';
+import { LIGHT_4E } from './sky';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
 
@@ -48,9 +50,14 @@ const C = {
   stone: COLORS_4E.stone,
   stoneSun: COLORS_4E.stoneSun,
   stoneShade: COLORS_4E.stoneShade,
-  rust: COLORS_4E.rust,
-  rustShade: COLORS_4E.rustShade,
-  // Le fer rouillé à l'ombre des roues de la ruine, comme au lot 1 : un brun éteint, jamais orange.
+  // Le fourneau : la pierre grise des Passeurs, un cran plus grise et plus sombre que celle du sol (au soleil bas, celle-ci
+  // se lisait crème, en tonneau : directeur artistique et consultant d'Archipéo, relecture du lot 2) ; ses assises
+  // alternent deux tons, le dessus de chaque retrait un ton plus clair (retouche 1).
+  furnace: 0x8a8682,
+  furnaceAlt: 0x7c7874,
+  furnaceLedge: 0x9c9792,
+  // Le fer rouillé de la ruine (les roues, l'enclume, le marteau couché) et la potence, avant comme après : un brun éteint,
+  // jamais orange (la rouille claire `#AF6C55` se lisait orange contre la gueule : directeur artistique, point 3).
   rustGear: 0x6a483e,
   rustGearTop: 0x74524a,
   iron: 0x5c504c,
@@ -89,11 +96,19 @@ const C = {
 } as const;
 
 /**
- * La gueule allumée et les trois teintes de son fondu, de la pierre froide à la lueur (un quart, la moitié, trois quarts) :
- * la vue les dessine toutes sans ombre ; la séquence passe de l'une à l'autre (jamais une teinte entre deux).
+ * La gueule allumée et les trois teintes de son fondu, de la pierre froide à la lueur (un quart, la moitié, trois quarts),
+ * telles qu'on les voit à l'écran : la vue les dessine toutes sans ombre ; la séquence passe de l'une à l'autre (jamais
+ * une teinte entre deux).
  */
 export const FORGE_GLOW = 0xdc5530;
 export const FORGE_GLOW_FADE = [0x865c4e, 0xa55944, 0xc1573a] as const;
+
+/**
+ * Les couleurs dessinées pour qu'elles se voient ainsi à l'écran, sous l'exposition du 4e : dessinée telle quelle, la
+ * gueule sortait (234, 81, 24), orange (relectures du directeur artistique et du référent dys, lot 2) ; le mappage des
+ * tons est compensé (./rendered5e.ts, `unlitSource`). Dans l'ordre : la gueule allumée, puis son fondu.
+ */
+export const FORGE_GLOW_DRAWN = [FORGE_GLOW, ...FORGE_GLOW_FADE].map((c) => unlitSource(c, LIGHT_4E.exposure));
 
 // ---------- Le repère du lieu ----------
 
@@ -154,8 +169,18 @@ const yardY = (x: number, z: number): number => YARD_PLANE.a + YARD_PLANE.b * x 
  */
 const FURNACE = { x: 0, z: -1, r0: 4.6, r1: 2.4, top: 9.5, ruin: 7, ruinLow: 5.9, ruinHigh: 7.2, sides: 10, bands: [2.1, 4.5, 6.6], band: 0.36, collar: 0.6 } as const;
 
-/** Le rayon du fourneau à la hauteur `y` au-dessus de son pied. */
-const furnaceR = (y: number): number => FURNACE.r0 - ((FURNACE.r0 - FURNACE.r1) * y) / FURNACE.top;
+/**
+ * Les assises du fourneau (retouche 1 : il se lisait comme un tonneau, lisse, à pans clairs et sombres) : leurs joints, du
+ * bas en haut (le dernier, 7, est le haut de la ruine relevée, où commence le haut), et le retrait de chaque assise sur
+ * celle d'en dessous (un rebord, son dessus plus clair). Les cerclages tombent chacun au milieu d'une assise.
+ */
+const COURSES = { joints: [3.3, 5.55, 7], inset: 0.09 } as const;
+
+/** L'assise d'une hauteur `y` au-dessus du pied du fourneau (0 en bas, 3 pour le haut). */
+const courseAt = (y: number): number => COURSES.joints.filter((j) => y >= j - 1e-6).length;
+
+/** Le rayon du fourneau à la hauteur `y` au-dessus de son pied, retraits des assises compris. */
+const furnaceR = (y: number): number => FURNACE.r0 - ((FURNACE.r0 - FURNACE.r1) * y) / FURNACE.top - COURSES.inset * courseAt(y);
 
 /** Le pied du fourneau (le dessus de la cour sous son axe) : le zéro de ses hauteurs. */
 const FY = yardY(FURNACE.x, FURNACE.z);
@@ -177,18 +202,22 @@ const ANVIL = { x: -8.2, z: 0.4 } as const;
 /**
  * Le train d'engrenages, à l'est du fourneau, dressé dans un plan face au sud (en `z`) : trois roues engrenées, le
  * diamètre doublant de l'une à l'autre (1,5, 3, 6 : correction 5 du directeur artistique), la grande à l'est ; le
- * milieu de chacune (`x`, `y` au-dessus de la cour), son rayon, ses dents.
+ * milieu de chacune (`x`, `y` au-dessus de la cour), son rayon, ses dents (carrées, à flancs raides : jamais en lame de
+ * scie). La grande est ajourée comme sur la planche (`open` : la largeur de sa jante, ses rayons), les deux petites
+ * pleines (retouche 1 : directeur artistique, point 5).
  */
 const GEARS = {
   z: -4.9,
   thick: 0.34,
-  tooth: 0.24,
+  tooth: 0.28,
   wheels: [
-    { x: 2.95, y: 3.25, r: 0.75, teeth: 7 },
-    { x: 5.05, y: 2.1, r: 1.5, teeth: 11 },
-    { x: 9.55, y: 3.25, r: 3.0, teeth: 15 },
+    { x: 2.95, y: 3.25, r: 0.75, teeth: 6 },
+    { x: 5.05, y: 2.1, r: 1.5, teeth: 8 },
+    { x: 9.55, y: 3.25, r: 3.0, teeth: 10, open: { rim: 0.5, spokes: 4, spoke: 0.3, hub: 0.75 } },
   ],
 } as const;
+
+type Wheel = (typeof GEARS.wheels)[number];
 
 /** La cuve de trempe à huit pans (la planche), au sud-est, entre les roues et l'appentis : son milieu, ses rayons, sa hauteur, son eau. */
 const TUB = { x: 8.1, z: 0.6, rIn: 0.95, rOut: 1.28, h: 0.9, water: 0.72 } as const;
@@ -272,15 +301,19 @@ const LAST = { width: 1.5, height: 0.35, slab: 0.14 } as const;
 
 /**
  * Le cap de la caméra de « Y aller » : de la porte vers le fourneau (cap sud-sud-est, regard vers le nord-nord-ouest), la
- * gueule face à elle, le volcan au fond. La caméra regarde vers −(sin cap, cos cap).
+ * gueule face à elle, tourné de `DOOR_TURN` vers l'ouest pour que le cratère du volcan entre dans le cadre, à gauche du
+ * centre (directeur artistique, relecture du lot 2, point 1 : « au pied du volcan » se lit en arrivant) ; le fourneau
+ * reste au milieu de l'image, un peu à droite. La caméra regarde vers −(sin cap, cos cap).
  */
-const DOOR_VIEW = Math.atan2(DOOR_AT.x - FURNACE.x, DOOR_AT.z - FURNACE.z);
+const DOOR_TURN = (18 * Math.PI) / 180;
+const DOOR_VIEW = Math.atan2(DOOR_AT.x - FURNACE.x, DOOR_AT.z - FURNACE.z) + DOOR_TURN;
 
 /**
- * La vue d'arrivée de « Y aller » (comme le Gaillard et les Nacelles) : le fourneau restauré (9,5) dépasse les 7,7 que
- * montre la caméra qui suit ; un peu plus reculée et moins plongeante, il y tient entier, gueulard compris.
+ * La vue d'arrivée de « Y aller » (comme le Gaillard et les Nacelles) : reculée, et plus basse que la caméra qui suit, à
+ * hauteur de Kéo (intention, « L'arrivée à la Forge ») : le fourneau restauré (9,5) y tient entier, gueulard compris, et
+ * au-delà, le cône sombre, son cratère et la colonne du panache (retouche 1 : la vue plongeait, le volcan sortait du cadre).
  */
-const DOOR_FRAME = { height: 1, back: 1.6 } as const;
+const DOOR_FRAME = { height: -2.2, back: 1.6 } as const;
 
 /**
  * Le point du nom sur la Carte, depuis le centre du lieu : au-dessus des roues, à droite du gueulard (directeur
@@ -310,28 +343,42 @@ function slab(b: FacetBuilder, top: readonly P3[], by: number, color: number, fa
   }
 }
 
-/** Un sommet du fourneau : le coin `k` de ses pans, à la hauteur `y` au-dessus de son pied, écarté de `out`. */
-function furnaceCorner(k: number, y: number, out = 0): P3 {
+/**
+ * Un sommet du fourneau : le coin `k` de ses pans, à la hauteur `y` au-dessus de son pied, écarté de `out` ; dans
+ * l'assise `course` (celle de `y`, sauf au haut d'une assise, qui garde son rayon jusqu'au joint).
+ */
+function furnaceCorner(k: number, y: number, out = 0, course = courseAt(y)): P3 {
   const a = (2 * Math.PI * k) / FURNACE.sides;
-  const r = furnaceR(y) + out;
+  const r = FURNACE.r0 - ((FURNACE.r0 - FURNACE.r1) * y) / FURNACE.top - COURSES.inset * course + out;
   return [FURNACE.x + r * Math.cos(a), FY + y, FURNACE.z + r * Math.sin(a)];
 }
 
 /**
  * Le cône du fourneau de `y0` à des hauteurs de haut qui peuvent changer d'un coin à l'autre (`top(k)` : le bord cassé
- * en biais de la ruine), ses pans de pierre grise, son dessus de `cap` (la pierre, ou l'ombre d'un dessus cassé).
+ * en biais de la ruine), assise par assise : chacune d'un seul ton de pierre grise (deux tons qui alternent, jamais des
+ * pans clairs et sombres en douves), en retrait sur celle d'en dessous, le dessus de son rebord plus clair ; le dessus
+ * du cône de `cap` (la pierre, ou l'ombre d'un dessus cassé).
  */
 function furnaceCone(b: FacetBuilder, y0: number, top: (k: number) => number, cap: number): void {
   const n = FURNACE.sides;
-  const lo = Array.from({ length: n }, (_, k) => furnaceCorner(k, y0));
-  const hi = Array.from({ length: n }, (_, k) => furnaceCorner(k, top(k)));
-  for (let k = 0; k < n; k++) {
-    const m = (k + 1) % n;
-    b.quad(lo[m], lo[k], hi[k], hi[m], k % 2 ? C.stone : C.stoneSun);
-  }
-  const mid = hi.reduce((s, p) => s + p[1], 0) / n;
-  const c: P3 = [FURNACE.x, mid, FURNACE.z];
-  for (let k = 0; k < n; k++) b.triangle(c, hi[(k + 1) % n], hi[k], cap);
+  const low = Math.min(...Array.from({ length: n }, (_, k) => top(k)));
+  const joints = COURSES.joints.filter((j) => j > y0 + 1e-6 && j < low - 1e-6);
+  const starts = [y0, ...joints];
+  starts.forEach((from, i) => {
+    const course = courseAt(from + 1e-3);
+    const last = i === starts.length - 1;
+    const to = (k: number) => (last ? top(k) : joints[i]);
+    const lo = Array.from({ length: n }, (_, k) => furnaceCorner(k, from, 0, course));
+    const hi = Array.from({ length: n }, (_, k) => furnaceCorner(k, to(k), 0, course));
+    const tone = course % 2 ? C.furnaceAlt : C.furnace;
+    for (let k = 0; k < n; k++) {
+      const m = (k + 1) % n;
+      b.quad(lo[m], lo[k], hi[k], hi[m], tone);
+    }
+    const mid = hi.reduce((s, p) => s + p[1], 0) / n;
+    const c: P3 = [FURNACE.x, mid, FURNACE.z];
+    for (let k = 0; k < n; k++) b.triangle(c, hi[(k + 1) % n], hi[k], last ? cap : C.furnaceLedge);
+  });
 }
 
 /** Un cerclage du fourneau autour de la hauteur `y` (son milieu), un rien écarté de ses pans, de `color`. */
@@ -385,41 +432,108 @@ function mouthGlow(b: FacetBuilder, color: number): void {
   onSouthFace(b, 0.045, (l) => l.plate({ x: 0, y: 0, z: 0 }, archOutline(MOUTH.half, MOUTH.spring), color));
 }
 
+/** Les flancs d'une dent, en part de son pas : le pied à 0, le haut de la dent de `TOOTH_TOP[0]` à `TOOTH_TOP[1]`. */
+const TOOTH_TOP = [0.2, 0.8] as const;
+
 /**
- * Une roue dentée : un disque épais aux dents en pointe (un contour en étoile, `teeth` dents), dressée dans son plan (x,
- * y), son épaisseur en z, et son moyeu sur ses deux faces. Couchée par `pitch`, à plat.
+ * Une roue dentée, dressée dans son plan (x, y), son épaisseur en z ; couchée par `pitch`, à plat. Ses dents sont carrées,
+ * le dessus plat et les flancs raides (trois sommets par pas : le pied, puis le haut de la dent), jamais en lame de scie.
+ * Pleine : un disque et son moyeu sur ses deux faces. Ajourée (`open`) : la jante dentée, ses rayons et son moyeu, le jour
+ * entre eux (la grande roue de la planche).
  */
-function gearWheel(b: FacetBuilder, at: { x: number; y: number; z: number; yaw: number; pitch?: number }, r: number, teeth: number, side: number, face: number, hub: number): void {
+function gearWheel(b: FacetBuilder, at: { x: number; y: number; z: number; yaw: number; pitch?: number }, w: Wheel, side: number, face: number, hub: number): void {
+  const { r, teeth } = w;
+  const open = 'open' in w ? w.open : null;
   drawPosed(b, at, (l) => {
-    const n = 2 * teeth;
     const T = GEARS.thick / 2;
-    const rim = Array.from({ length: n }, (_, i) => {
-      const a = (Math.PI * i) / teeth;
-      const rr = i % 2 ? r : r + GEARS.tooth;
-      return [rr * Math.cos(a), rr * Math.sin(a)] as const;
-    });
+    const pitchAngle = (2 * Math.PI) / teeth;
+    const point = (rr: number, a: number) => [rr * Math.cos(a), rr * Math.sin(a)] as const;
+    // Le contour, trois sommets par dent : le pied, le haut de la dent à ses deux bords.
+    const rim = Array.from({ length: teeth }, (_, j) => {
+      const a = j * pitchAngle;
+      return [point(r, a), point(r + GEARS.tooth, a + TOOTH_TOP[0] * pitchAngle), point(r + GEARS.tooth, a + TOOTH_TOP[1] * pitchAngle)];
+    }).flat();
+    const n = rim.length;
     const f = rim.map(([x, y]) => [x, y, T] as P3);
     const k = rim.map(([x, y]) => [x, y, -T] as P3);
     for (let i = 0; i < n; i++) {
       const m = (i + 1) % n;
-      l.triangle([0, 0, T], f[i], f[m], face);
-      l.triangle([0, 0, -T], k[m], k[i], face);
       l.quad(k[i], k[m], f[m], f[i], side);
     }
-    const hex = Array.from({ length: 6 }, (_, i) => [r * 0.24 * Math.cos((Math.PI * i) / 3), r * 0.24 * Math.sin((Math.PI * i) / 3)] as const);
-    l.plate({ x: 0, y: 0, z: T + 0.01 }, hex, hub);
-    l.plate({ x: 0, y: 0, z: -T - 0.01, yaw: Math.PI }, hex, hub);
+    if (!open) {
+      for (let i = 0; i < n; i++) {
+        const m = (i + 1) % n;
+        l.triangle([0, 0, T], f[i], f[m], face);
+        l.triangle([0, 0, -T], k[m], k[i], face);
+      }
+      const hex = Array.from({ length: 6 }, (_, i) => [r * 0.24 * Math.cos((Math.PI * i) / 3), r * 0.24 * Math.sin((Math.PI * i) / 3)] as const);
+      l.plate({ x: 0, y: 0, z: T + 0.01 }, hex, hub);
+      l.plate({ x: 0, y: 0, z: -T - 0.01, yaw: Math.PI }, hex, hub);
+      return;
+    }
+    // La jante : de l'anneau intérieur (un sommet au pied de chaque dent) au contour, sur ses deux faces ; son bord intérieur.
+    const ri = r - open.rim;
+    const inF = Array.from({ length: teeth }, (_, j) => [...point(ri, j * pitchAngle), T] as P3);
+    const inK = inF.map(([x, y]) => [x, y, -T] as P3);
+    for (let j = 0; j < teeth; j++) {
+      const q = (j + 1) % teeth;
+      const [a, c, d] = [3 * j, 3 * j + 1, 3 * j + 2];
+      const e = (3 * j + 3) % n;
+      // Face avant (vers +z), dans le sens inverse des aiguilles d'une montre : l'intérieur, le pied, la dent, le pied suivant.
+      l.triangle(inF[j], f[a], f[c], face);
+      l.triangle(inF[j], f[c], f[d], face);
+      l.triangle(inF[j], f[d], f[e], face);
+      l.triangle(inF[j], f[e], inF[q], face);
+      l.triangle(inK[j], k[c], k[a], face);
+      l.triangle(inK[j], k[d], k[c], face);
+      l.triangle(inK[j], k[e], k[d], face);
+      l.triangle(inK[j], inK[q], k[e], face);
+      l.quad(inF[j], inF[q], inK[q], inK[j], side);
+    }
+    // Les rayons, de la jante au moyeu (quatre pans, leurs bouts cachés dans la jante et le moyeu), et le moyeu.
+    for (let s = 0; s < open.spokes; s++) {
+      const a = (2 * Math.PI * (s + 0.5)) / open.spokes;
+      const ux = Math.cos(a),
+        uy = Math.sin(a);
+      const h = open.spoke / 2;
+      const c = [
+        [-uy * h, ux * h, T * 0.8],
+        [uy * h, -ux * h, T * 0.8],
+        [uy * h, -ux * h, -T * 0.8],
+        [-uy * h, ux * h, -T * 0.8],
+      ] as const;
+      const at0 = c.map(([x, y, z]) => [x, y, z] as P3);
+      const at1 = c.map(([x, y, z]) => [x + ux * (ri + 0.05), y + uy * (ri + 0.05), z] as P3);
+      for (let i = 0; i < 4; i++) {
+        const m = (i + 1) % 4;
+        l.quad(at0[i], at0[m], at1[m], at1[i], i % 2 ? side : face);
+      }
+    }
+    l.box({ x: 0, y: -open.hub / 2, z: 0 }, [open.hub, open.hub, GEARS.thick + 0.12], hub, hub);
   });
 }
 
-/** Un regard ou la grille : son fond (froid et gris), trois barreaux épais en travers de `bars` ; à plat, au cap `yaw`. */
+/**
+ * Un regard ou la grille : son fond (froid et gris, un aplat : ses bords de 5 cm ne se voient pas), trois barreaux épais
+ * en travers de `bars` (leur dessus et leurs deux longs côtés : leurs bouts, de 9 cm, ne se voient pas) ; à plat, au cap
+ * `yaw`. Vingt triangles (retouche 1 : la moitié, pour les roues ajourées et les assises du fourneau).
+ */
 function grate(b: FacetBuilder, at: Vec3, half: number, yaw: number, bars: number): void {
-  b.box({ x: at.x, y: at.y, z: at.z, yaw }, [2 * half, 0.05, 2 * half], C.coldPit, C.coldPit);
-  for (const t of [-0.55, 0, 0.55]) {
-    const c = Math.cos(yaw),
-      s = Math.sin(yaw);
-    // Les barreaux en travers de la rigole (le long du `x` du cap), de bord à bord.
-    b.box({ x: at.x + t * half * s, y: at.y + 0.05, z: at.z + t * half * c, yaw }, [2 * half + 0.1, 0.09, REGARDS.bar], bars, bars);
+  const c = Math.cos(yaw),
+    s = Math.sin(yaw);
+  // Un point du repère du regard (u en travers de la rigole, v le long), à la hauteur `y`.
+  const p = (u: number, v: number, y: number): P3 => [at.x + u * c + v * s, y, at.z - u * s + v * c];
+  const y0 = at.y + 0.05;
+  b.quad(p(-half, half, y0), p(half, half, y0), p(half, -half, y0), p(-half, -half, y0), C.coldPit);
+  const w = half + 0.05;
+  const t = REGARDS.bar / 2;
+  for (const k of [-0.55, 0, 0.55]) {
+    // Les barreaux en travers de la rigole (le long du `u` du cap), de bord à bord.
+    const v = k * half;
+    const y1 = y0 + 0.09;
+    b.quad(p(-w, v + t, y1), p(w, v + t, y1), p(w, v - t, y1), p(-w, v - t, y1), bars);
+    b.quad(p(-w, v + t, y0), p(w, v + t, y0), p(w, v + t, y1), p(-w, v + t, y1), bars);
+    b.quad(p(w, v - t, y0), p(-w, v - t, y0), p(-w, v - t, y1), p(w, v - t, y1), bars);
   }
 }
 
@@ -498,24 +612,33 @@ function shedLantern(b: FacetBuilder): void {
 }
 
 /**
+ * La chape vide au bout de la chaîne (le signe de l'absence du 4e) : sa hauteur au-dessus de la cour, sa largeur, sa
+ * hauteur et son épaisseur ; ses deux goujons nus dessous, leur écart, leur section, leur longueur. Assez grande pour se
+ * lire à la distance de la caméra du lieu, son contour sombre sur le ciel (consultant d'Archipéo, relecture du lot 2).
+ */
+const CHAPE = { y: 2.35, w: 0.72, h: 0.46, d: 0.3, pin: { gap: 0.22, t: 0.11, h: 0.4 } } as const;
+
+/**
  * La potence : son poteau de fer, son bras vers l'est ; la chaîne, et au bout la chape vide aux deux goujons nus (le signe
- * de l'absence du 4e) ; les grandes pinces pendues fermées, leurs deux branches parallèles. La même avant et après : de
- * fer rouillé (le fer bruni restauré n'y entre pas : elle ne change jamais).
+ * de l'absence du 4e) ; les grandes pinces pendues fermées, leurs deux branches parallèles. La même avant et après, d'un
+ * brun éteint (`rustGear`, celui des roues de la ruine) : elle ne change jamais, et rien d'orangé ne touche la gueule
+ * (directeur artistique, relecture du lot 2, point 3).
  */
 function gibbet(b: FacetBuilder): void {
   const G = GIBBET;
   const g = yardY(G.x, G.z);
   const top = g + G.h;
-  b.box({ x: G.x, y: SINK, z: G.z }, [G.post, top - SINK, G.post], C.rustShade, C.rust);
-  b.box({ x: G.x + G.arm / 2, y: top - 0.3, z: G.z }, [G.arm + G.post, 0.26, 0.26], C.rustShade, C.rust);
+  b.box({ x: G.x, y: SINK, z: G.z }, [G.post, top - SINK, G.post], C.rustGear, C.rustGearTop);
+  b.box({ x: G.x + G.arm / 2, y: top - 0.3, z: G.z }, [G.arm + G.post, 0.26, 0.26], C.rustGear, C.rustGearTop);
   // La chaîne, du bout du bras, jusqu'à la chape vide et ses deux goujons nus.
   const end = G.x + G.arm - 0.1;
-  b.box({ x: end, y: g + 2.75, z: G.z }, [0.07, top - 0.3 - (g + 2.75), 0.07], C.rustShade);
-  b.box({ x: end, y: g + 2.45, z: G.z }, [0.42, 0.3, 0.2], C.rustShade, C.rust);
-  for (const dx of [-0.12, 0.12]) b.box({ x: end + dx, y: g + 2.2, z: G.z }, [0.07, 0.25, 0.07], C.iron);
+  const K = CHAPE;
+  b.box({ x: end, y: g + K.y + K.h, z: G.z }, [0.08, top - 0.3 - (g + K.y + K.h), 0.08], C.rustGear);
+  b.box({ x: end, y: g + K.y, z: G.z }, [K.w, K.h, K.d], C.rustGear, C.rustGearTop);
+  for (const dx of [-K.pin.gap, K.pin.gap]) b.box({ x: end + dx, y: g + K.y - K.pin.h, z: G.z }, [K.pin.t, K.pin.h, K.pin.t], C.iron);
   // Les pinces, pendues à un crochet au milieu du bras : deux branches droites, parallèles, jamais en X.
   const mid = G.x + G.arm * 0.45;
-  for (const dz of [-0.09, 0.09]) b.box({ x: mid, y: g + 1.55, z: G.z + dz }, [0.1, top - 0.3 - (g + 1.55), 0.07], C.rustShade);
+  for (const dz of [-0.09, 0.09]) b.box({ x: mid, y: g + 1.55, z: G.z + dz }, [0.1, top - 0.3 - (g + 1.55), 0.07], C.rustGear);
 }
 
 /** La lanterne de la potence (le haut), pendue sous le bras, près du poteau. */
@@ -525,13 +648,13 @@ function gibbetLantern(b: FacetBuilder): void {
   lantern(b, { x: G.x + 0.55, y: top - 0.02, z: G.z }, true);
 }
 
-/** L'enclume sur son billot de bois, à l'ouest, sous le marteau-pilon : elle tient dans la ruine, sans rien changer. */
+/** L'enclume sur son billot de bois, à l'ouest, sous le marteau-pilon : elle tient dans la ruine, sans rien changer, d'un brun éteint. */
 function anvil(b: FacetBuilder): void {
   const g = yardY(ANVIL.x, ANVIL.z);
   b.prism({ x: ANVIL.x, y: SINK, z: ANVIL.z }, 0.6, 0.55, g + 0.55 - SINK, 7, C.woodShade, C.wood);
-  b.box({ x: ANVIL.x, y: g + 0.55, z: ANVIL.z }, [0.55, 0.32, 0.4], C.rustShade, C.rust);
-  b.box({ x: ANVIL.x + 0.1, y: g + 0.87, z: ANVIL.z }, [1.05, 0.24, 0.48], C.rustShade, C.rust);
-  b.prism({ x: ANVIL.x - 0.42, y: g + 1.0, z: ANVIL.z, pitch: Math.PI / 2, yaw: -Math.PI / 2 }, 0.17, 0, 0.55, 4, C.rust);
+  b.box({ x: ANVIL.x, y: g + 0.55, z: ANVIL.z }, [0.55, 0.32, 0.4], C.rustGear, C.rustGearTop);
+  b.box({ x: ANVIL.x + 0.1, y: g + 0.87, z: ANVIL.z }, [1.05, 0.24, 0.48], C.rustGear, C.rustGearTop);
+  b.prism({ x: ANVIL.x - 0.42, y: g + 1.0, z: ANVIL.z, pitch: Math.PI / 2, yaw: -Math.PI / 2 }, 0.17, 0, 0.55, 4, C.rustGear);
 }
 
 /** Les volumes de la Forge, de la ruine aux abords (le modèle du lieu). */
@@ -573,7 +696,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
           c = furnaceCorner(1, y, out);
         return [a[0] + (c[0] - a[0]) * t, a[1], a[2] + (c[2] - a[2]) * t];
       };
-      b.quad(p(0.46, 1.1, 0.02), p(0.52, 1.1, 0.02), p(0.62, cut(0.5) - 0.05, 0.02), p(0.36, cut(0.5) - 0.05, 0.02), C.crack);
+      b.quad(p(0.46, 1.1, 0.1), p(0.52, 1.1, 0.1), p(0.62, cut(0.5) - 0.05, 0.1), p(0.36, cut(0.5) - 0.05, 0.1), C.crack);
       // Le cerclage couché : un demi-anneau de fer à plat, au pied du fourneau, devant la gueule à l'est.
       const ring = { x: 2.4, z: 4.6, r: 1.05 };
       for (let i = 0; i < 6; i++) {
@@ -592,16 +715,16 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     corps1,
   );
   // Le corps 2 la relève : le marteau-pilon, un montant debout, l'autre couché ; la tête tombée, couchée à côté de
-  // l'enclume.
+  // l'enclume ; d'un brun éteint, comme les roues de la ruine.
   add(
     'ruine',
     0,
     (b) => {
       const H = HAMMER;
       const g = yardY(H.x, H.z);
-      b.box({ x: H.x - H.gap / 2, y: SINK, z: H.z }, [H.post, g + H.h - SINK, H.post], C.rustShade, C.rust);
-      b.box({ x: H.x + 0.6, y: g - 0.1, z: H.z + 2.2, yaw: 0.35 }, [H.post, H.post, H.h - 0.6], C.rustShade, C.rust);
-      b.box({ x: H.x + 1.75, y: g - 0.15, z: H.z + 0.9, yaw: 0.5 }, [H.head.w, H.head.h, H.head.h], C.rustShade, C.rust);
+      b.box({ x: H.x - H.gap / 2, y: SINK, z: H.z }, [H.post, g + H.h - SINK, H.post], C.rustGear, C.rustGearTop);
+      b.box({ x: H.x + 0.6, y: g - 0.1, z: H.z + 2.2, yaw: 0.35 }, [H.post, H.post, H.h - 0.6], C.rustGear, C.rustGearTop);
+      b.box({ x: H.x + 1.75, y: g - 0.15, z: H.z + 0.9, yaw: 0.5 }, [H.head.w, H.head.h, H.head.h], C.rustGear, C.rustGearTop);
     },
     corps2,
   );
@@ -612,8 +735,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     0,
     (b) => {
       const [small, , big] = GEARS.wheels;
-      gearWheel(b, { x: 8.6, y: yardY(8.6, -4.0) + GEARS.thick / 2 - 0.05, z: -4.0, yaw: 0.3, pitch: Math.PI / 2 }, big.r, big.teeth, C.rustGear, C.rustGearTop, C.rustShade);
-      gearWheel(b, { x: 4.1, y: yardY(4.1, -4.6) + small.r + GEARS.tooth - 0.05, z: -4.7, yaw: 0.9 }, small.r, small.teeth, C.rustGear, C.rustGearTop, C.rustShade);
+      gearWheel(b, { x: 8.6, y: yardY(8.6, -4.0) + GEARS.thick / 2 - 0.05, z: -4.0, yaw: 0.3, pitch: Math.PI / 2 }, big, C.rustGear, C.rustGearTop, C.crack);
+      gearWheel(b, { x: 4.1, y: yardY(4.1, -4.6) + small.r + GEARS.tooth - 0.05, z: -4.7, yaw: 0.9 }, small, C.rustGear, C.rustGearTop, C.crack);
       tub(b, false);
     },
     corps3,
@@ -634,7 +757,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // ---- Le corps 1 sur 3 : le fourneau refermé jusqu'à sa hauteur de ruine, la fente comblée, les trois cerclages de fer
   // bruni, la gueule voûtée nette dans son cadre de fer sombre (l'ombre froide, jusqu'à la restauration).
   add(0, 0, (b) => {
-    furnaceCone(b, SINK, () => F.ruin, C.stone);
+    furnaceCone(b, SINK, () => F.ruin, C.furnaceLedge);
     for (const y of F.bands) furnaceBand(b, y, C.iron);
     mouth(b, C.iron);
   });
@@ -655,13 +778,14 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     // Le bâti : une semelle de fer au sol, un poteau derrière chaque roue, jusqu'à son axe.
     b.box({ x: 6.2, y: g - 0.1, z: G.z - 0.45 }, [8.4, 0.3, 0.6], C.iron, C.ironTop);
     for (const w of G.wheels) b.box({ x: w.x, y: g, z: G.z - 0.4 }, [0.32, w.y + 0.15, 0.3], C.iron, C.ironTop);
-    G.wheels.forEach((w, i) => gearWheel(b, { x: w.x, y: g + w.y, z: G.z + (i % 2) * 0.02, yaw: 0, pitch: 0 }, w.r, w.teeth, C.iron, C.ironTop, C.rustShade));
+    // Les moyeux de fer bruni, comme les roues (jamais la rouille orange : directeur artistique, point 3).
+    G.wheels.forEach((w, i) => gearWheel(b, { x: w.x, y: g + w.y, z: G.z + (i % 2) * 0.02, yaw: 0, pitch: 0 }, w, C.iron, C.ironTop, C.iron));
     tub(b, true);
   });
   // Le haut : les dernières assises du fourneau jusqu'à 9,5, son gueulard (la bouche sombre) et son collier de fer ; la
   // lanterne de la potence, allumée dès qu'elle est posée (jamais à une réussite). Pas de fumée au gueulard (correction 2).
   add(1, 0, (b) => {
-    furnaceCone(b, F.ruin - 0.02, () => F.top, C.hollow);
+    furnaceCone(b, F.ruin, () => F.top, C.hollow);
     furnaceBand(b, F.top - F.collar / 2, C.iron, F.collar);
     gibbetLantern(b);
   });
@@ -788,7 +912,7 @@ function restorationFacets(c: Vec3, t: number): Facets {
   const b = new FacetBuilder();
   const R = RESTORATION;
   const V = VANNE;
-  const lift = Math.max(0, Math.min(1, t / R.vanne));
+  const lift = Math.round(Math.max(0, Math.min(1, t / R.vanne)) * VANNE_STEPS) / VANNE_STEPS;
   const v = alongRigole(V.s);
   const door = worldAt(c, v.at, -0.15 + lift * V.door.lift);
   b.box({ x: door.x, y: door.y, z: door.z, yaw: v.yaw }, [V.door.w, V.door.h, 0.16], C.iron, C.ironTop);
@@ -809,7 +933,7 @@ function restorationFacets(c: Vec3, t: number): Facets {
   const fade = R.fade.filter((at) => t >= at).length;
   if (fade > 0) {
     const l = new FacetBuilder();
-    mouthGlow(l, fade >= R.fade.length ? FORGE_GLOW : FORGE_GLOW_FADE[fade - 1]);
+    mouthGlow(l, FORGE_GLOW_DRAWN[fade >= R.fade.length ? 0 : fade]);
     const f = l.build();
     for (let i = 0; i < f.positions.length; i += 3) {
       f.positions[i] += c.x;
@@ -819,6 +943,20 @@ function restorationFacets(c: Vec3, t: number): Facets {
     b.append(f);
   }
   return b.build();
+}
+
+/** Les crans de la levée de la porte de la vanne (16 sur 0,8 s : une image sur trois à 60 images par seconde). */
+const VANNE_STEPS = 16;
+
+/**
+ * La clé de ce que montre l'allumage à `t` : le cran de la levée de la porte, puis le nombre de lueurs allumées (la prise,
+ * chaque regard, la grille, chaque teinte de la gueule). Deux instants de même clé se dessinent pareil
+ * (`restorationFacets` ne lit `t` qu'à travers eux).
+ */
+function restorationFrame(t: number): string {
+  const R = RESTORATION;
+  const lift = Math.round(Math.max(0, Math.min(1, t / R.vanne)) * VANNE_STEPS);
+  return `${lift}|${[R.vanne, ...R.regards, R.grate, ...R.fade].filter((at) => t >= at).length}`;
 }
 
 // ---------- Les traces ----------
@@ -1033,7 +1171,7 @@ export const FORGE: PlaceArt = {
   doorFrame: DOOR_FRAME,
   mapPoint: MAP_POINT,
   reach,
-  restoration: { seconds: RESTORATION.seconds, draw: restorationFacets },
+  restoration: { seconds: RESTORATION.seconds, draw: restorationFacets, frame: restorationFrame },
 };
 
 /** Le plan de la Forge, pour les tests et ses abords : la cour, le fourneau, ses machines, la rigole, la caméra. */

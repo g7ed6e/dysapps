@@ -5,7 +5,8 @@
 //   ---
 //   lieu : english-6e-vocabulary             ← en-tête : l'identifiant du lieu (matière, classe, thème), puis ce qu'il est
 //   module : Vocabulaire et écoute
-//   monde ouvert seulement : oui          ← (facultatif) un lieu du monde ouvert seulement, ni grille ni Blocland
+//   monde ouvert seulement : oui          ← (facultatif) un lieu du monde ouvert seulement, ni grille ni Blocland ;
+//                                            gardien et créature lui sont facultatifs (./chemins.mjs)
 //   ---
 //   # Baie des mots                          ← le nom de l'île
 //   > une note                               ← ignorée

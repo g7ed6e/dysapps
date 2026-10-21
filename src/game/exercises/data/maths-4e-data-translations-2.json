@@ -26,6 +26,7 @@
             "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
             "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
             "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle.",
             "Son centre est le milieu de l’hypoténuse."
           ]
         }
@@ -52,6 +53,7 @@
             "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
             "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
             "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle.",
             "Son centre est le milieu de l’hypoténuse."
           ]
         }
@@ -78,6 +80,7 @@
             "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
             "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
             "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle.",
             "Son centre est le milieu de l’hypoténuse."
           ]
         }
@@ -104,6 +107,7 @@
             "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
             "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
             "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle.",
             "Son centre est le milieu de l’hypoténuse."
           ]
         }
@@ -130,6 +134,7 @@
             "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
             "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
             "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle.",
             "Son centre est le milieu de l’hypoténuse."
           ]
         }
@@ -156,6 +161,7 @@
             "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
             "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
             "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle.",
             "Son centre est le milieu de l’hypoténuse."
           ]
         }
@@ -163,16 +169,16 @@
     },
     {
       "key": "maths-4e-data-translations-2-6",
-      "prompt": "Un triangle a ses trois sommets sur un cercle, et l’un de ses côtés est un diamètre de ce cercle. Ce triangle est …",
-      "spoken": "Un triangle a ses trois sommets sur un cercle, et l’un de ses côtés est un diamètre de ce cercle. Ce triangle est (mot manquant).",
+      "prompt": "Un triangle a ses trois sommets sur un cercle, et l’un de ses côtés est un diamètre. Ce triangle a toujours …",
+      "spoken": "Un triangle a ses trois sommets sur un cercle, et l’un de ses côtés est un diamètre. Ce triangle a toujours (mot manquant).",
       "choices": [
-        "rectangle",
-        "isocèle",
-        "équilatéral"
+        "un angle droit",
+        "deux côtés de même longueur",
+        "trois côtés de même longueur"
       ],
-      "answer": "rectangle",
-      "hint": "Relis la quatrième ligne du rappel.",
-      "explanation": "Un triangle dont un côté est un diamètre de son cercle circonscrit est rectangle : l’angle droit est au sommet opposé au diamètre. Il n’est pas forcément isocèle, et jamais équilatéral.",
+      "answer": "un angle droit",
+      "hint": "Relis la ligne sur le diamètre.",
+      "explanation": "Un côté est un diamètre : l’angle opposé est droit, le triangle est rectangle. Il peut avoir deux côtés égaux, mais pas toujours. Trois côtés égaux ne donnent jamais d’angle droit.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -182,6 +188,7 @@
             "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
             "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
             "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle.",
             "Son centre est le milieu de l’hypoténuse."
           ]
         }
@@ -208,6 +215,7 @@
             "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
             "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
             "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle.",
             "Son centre est le milieu de l’hypoténuse."
           ]
         }

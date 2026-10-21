@@ -31,6 +31,7 @@ import { useTextes } from '../../../universes';
 import { useBlocland } from '../../BloclandContext';
 import { getIle, type BiomeId, type IleId } from '../../biomes';
 import { cheminDeRevision, revisionsDeLIle, usePlusTard } from '../../reminders';
+import { todayISO } from '../../engine';
 import { exercisesOf, questProgress } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
 import { playDetourWind, playWhaleBlow, playWoodTap } from '../../sound';
@@ -40,7 +41,8 @@ import { payableBlocks } from '../../world/archipelago';
 import { isBridgeSpot, isLinkedLand, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import type { PartShape } from '../../world/continu/construction';
 import { bornesDuMondeOuvert, firstToPlayAt, keepClear, missionsOfPlace, nextMission, playsInPlace, type MarkOnScreen, type Obstacle, type ScreenRect } from '../../world/continu/mission';
-import { placeById, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
+import { hasScenette, placeById, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
+import { scenetteOf } from '../../world/continu/scenette';
 import type { PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
 import { bornesDesLieuxSeuls, modeleDuMonde } from '../../world/model';
@@ -193,7 +195,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
             open: (p) => !isClosed(p) && p !== here,
             revisions: (p) => {
               const island = placeById(p).island as BiomeId;
-              return !remises.has(island) && revisionsDeLIle(state.spaced, state.world.links, island, settings.lv2).length > 0;
+              return !remises.has(island) && revisionsDeLIle(state.spaced, state.world.links, island, settings.lv2, todayISO(), true).length > 0;
             },
             suggested: suggestedId ?? undefined,
             titre: textes.quetes?.titre,
@@ -436,11 +438,14 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       onMapPlaces: (spots, moving) => mapPlacer.current?.(spots, moving),
       onMapPick: (placeId) => mapPick.current(placeId),
       onPosed: () => setPosePending(false),
-      // Un lieu qui s'anime à sa restauration (la Forge du 4e) : son état, écrit avec son icône et dit, pendant
-      // l'allumage (ou tout de suite, avec « Réduire les animations »).
+      // Un lieu qui s'anime à sa restauration (la Forge du 4e) : son état, écrit avec son icône et dit, à la fin de
+      // l'allumage ou au toucher qui le passe (tout de suite, avec « Réduire les animations ») ; puis la réplique de
+      // l'habitant, s'il en a une (« Le feu de la montagne est revenu. »).
       onRestored: (placeId) => {
-        const line = restoredLine(placeById(placeId), stateWords.current);
-        setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [line], after: 0, icon: islandStateIcon('restauree') }));
+        const lines = [restoredLine(placeById(placeId), stateWords.current)];
+        const end = hasScenette(placeId) ? scenetteOf(placeId).words?.end : undefined;
+        if (end) lines.push(end);
+        setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines, after: 0, icon: islandStateIcon('restauree') }));
       },
       // La Nef, son ber ou le banc du large touché (GD-21) : sa fiche, Kéo reste où il est.
       onNef: () => {
@@ -652,7 +657,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const reprendreAt = useCallback(async () => {
     if (!lieu || reprendreRef.current) return;
     const place = lieu.place;
-    const dues = () => revisionsDeLIle(state.spaced, state.world.links, placeById(place).island as IleId, settings.lv2);
+    const dues = () => revisionsDeLIle(state.spaced, state.world.links, placeById(place).island as IleId, settings.lv2, todayISO(), true);
     reprendreRef.current = true;
     setReprendreBusy(true);
     try {

@@ -46,13 +46,13 @@
       "prompt": "Un angle de 50° glisse de 4 cm par une translation. Son image mesure …",
       "spoken": "Un angle de 50 degrés glisse de 4 centimètres par une translation. Son image mesure (mot manquant).",
       "choices": [
+        "46°",
         "50°",
-        "54°",
-        "130°"
+        "54°"
       ],
       "answer": "50°",
       "hint": "Une translation garde les angles, quelle que soit la longueur du glissement.",
-      "explanation": "La figure glisse sans tourner ni se déformer : l’angle reste 50°. 54° ajoute les 4 cm du glissement à l’angle : un glissement ne change pas un angle. 130° est le supplément de 50°.",
+      "explanation": "La figure glisse sans tourner ni se déformer : l’angle reste 50°. 54° ajoute les 4 cm du glissement à l’angle, 46° les enlève : un glissement ne change pas un angle.",
       "figure": {
         "kind": "transformation",
         "props": {
@@ -79,8 +79,8 @@
     },
     {
       "key": "maths-4e-data-translations-1-2",
-      "prompt": "Une translation envoie A sur B et C sur D. Le quadrilatère ABDC est toujours un …",
-      "spoken": "Une translation envoie A sur B et C sur D. Le quadrilatère A B D C est toujours un (mot manquant).",
+      "prompt": "Une translation envoie A sur B et C sur D. Le quadrilatère ABDC est un …",
+      "spoken": "Une translation envoie A sur B et C sur D. Le quadrilatère A B D C est un (mot manquant).",
       "choices": [
         "parallélogramme",
         "rectangle",

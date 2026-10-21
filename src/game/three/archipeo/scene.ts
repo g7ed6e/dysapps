@@ -1231,8 +1231,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // La forme de la vue du dernier Détour atteint (la Faille a la sienne), gardée pendant que la vue redescend.
   let detourShape: DetourView = COMMON_DETOUR_VIEW;
   // La vue d'arrivée d'un « Y aller » devant un lieu qui a la sienne (`doorFrameOf`, le Gaillard) : sa forme, la porte où
-  // Kéo se tient, et son avancée (1 à l'arrivée, d'un coup ; elle retombe en douceur quand il repart).
-  let doorArrival: { shape: DetourView; at: Vec2 } | null = null;
+  // Kéo se tient, le cap d'arrivée, et son avancée (1 à l'arrivée, d'un coup ; elle retombe en douceur quand il repart).
+  // Une vue plus basse que la caméra qui suit (la Forge du 4e, retouche 1 du lot 2 : le volcan dans le cadre) retombe
+  // aussi dès que la caméra tourne : basse et reculée, elle passerait derrière le fourneau ou sous le toit de
+  // l'appentis ; la caméra qui suit, elle, n'a rien de haut entre elle et Kéo.
+  let doorArrival: { shape: DetourView; at: Vec2; yaw: number } | null = null;
   let doorArrivalView = 0;
   let detourDecor: { key: string; facets: Facets } | null = null;
   const detourFacetsNow = (): Facets => {
@@ -1465,7 +1468,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     detourView = detourViewStep(detourView, detourHere ? 1 : 0, dt, reduceMotion);
     if (doorArrival) {
-      doorArrivalView = detourViewStep(doorArrivalView, !walk && distance(here, doorArrival.at) < 0.05 ? 1 : 0, dt, reduceMotion);
+      const held = !walk && distance(here, doorArrival.at) < 0.05 && (doorArrival.shape.height >= 0 || Math.abs(wrapAngle(yaw - doorArrival.yaw)) < 0.05);
+      doorArrivalView = detourViewStep(doorArrivalView, held ? 1 : 0, dt, reduceMotion);
       if (doorArrivalView === 0) doorArrival = null;
     }
     stepFauna(dt, arrived);
@@ -1813,7 +1817,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   // L'allumage d'un lieu restauré (`startRestore`, plus bas) : le lieu qui l'attend, celui qui s'allume.
   let restoreNext: PlaceId | null = null;
-  let restoring: { place: PlaceId; start: number; drawn: number } | null = null;
+  let restoring: { place: PlaceId; start: number; frame: string | null } | null = null;
   /** Les trois étapes d'un lieu posées : il est restauré. */
   const isWhole = (parts: readonly PartShape[]) => [0, 1, 2].every((st) => stageComplete(parts, st as 0 | 1 | 2));
   let placesKey = '';
@@ -2298,7 +2302,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     detourView = 0;
     // Un lieu plus haut que ce que la caméra qui suit voit de sa porte a sa vue d'arrivée (le Gaillard, lot 15).
     const frame = shut ? null : doorFrameOf(place);
-    doorArrival = frame ? { shape: frame, at: { ...here } } : null;
+    doorArrival = frame ? { shape: frame, at: { ...here }, yaw: view } : null;
     doorArrivalView = doorArrival ? 1 : 0;
     exit = null;
     back = 0;
@@ -3559,6 +3563,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     poseRun.handOver();
     finishLay();
     endGlow();
+    // Une pose qui achevait un lieu, passée la main avant sa fin (deux réussites rapprochées) : son allumage ne se jouera
+    // pas, son état se dit tout de suite (jamais perdu : expert frontend, lot 2 du 4e) ; le lieu se dessine restauré.
+    if (restoreNext) {
+      options.onRestored?.(restoreNext);
+      restoreNext = null;
+    }
     // La pose qui achève la Montée (ses trois étapes) : la lueur montera le long du rail, une fois, à la fin de la pose.
     const all = placesState?.built[place] ?? [];
     const whole = (list: readonly PartShape[]) => [0, 1, 2].every((st) => stageComplete(list, st as 0 | 1 | 2));
@@ -3616,7 +3626,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // L'allumage d'un lieu restauré (`PlaceArt.restoration` : la Forge du 4e, lot 2 ; intention, § 6) : après la pose qui
   // l'achève, une seule fois, au plus 4 s, dans le maillage de la pose (aucun appel de plus), refait une vingtaine de fois
   // par seconde ; d'un coup avec « Réduire les animations », sur la Carte, en marche ou pendant une question ; un toucher
-  // le passe. La page dit l'état dès le début (`onRestored`) : la voix, la bulle et son icône.
+  // le passe. La page dit l'état à la fin, ou au toucher qui le passe (`onRestored`, dans `endRestore`) : la voix, la
+  // bulle et son icône (référent dys et consultant UX UI, lot 2 du 4e : une chose à la fois) ; tout de suite quand
+  // l'allumage ne se joue pas.
   /** Le centre du lieu à son sol, pour son allumage. */
   const restoreAt = (place: PlaceId) => {
     const foot = feet.get(place);
@@ -3627,11 +3639,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const place = restoreNext;
     restoreNext = null;
     if (!place) return;
-    options.onRestored?.(place);
     const art = placeArt(place)?.restoration;
     const at = restoreAt(place);
-    if (!art || !at || reduceMotion || walk || asked || mapView || laying || carRolling) return;
-    restoring = { place, start: performance.now() / 1000, drawn: -1 };
+    if (!art || !at || reduceMotion || walk || asked || mapView || laying || carRolling) return options.onRestored?.(place);
+    restoring = { place, start: performance.now() / 1000, frame: null };
     placeVisibility();
     poseMesh.material = landMaterial;
     poseMesh.position.set(0, 0, 0);
@@ -3640,23 +3651,26 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   function endRestore() {
     if (!restoring) return;
+    const { place } = restoring;
     restoring = null;
     poseMesh.visible = false;
     poseMesh.geometry.dispose();
     poseMesh.geometry = new THREE.BufferGeometry();
     poseMesh.material = poseMaterial;
     placeVisibility();
+    options.onRestored?.(place);
   }
-  /** Le pas des images de l'allumage : vingt par seconde suffisent (chaque phase dure un demi-seconde au moins). */
-  const RESTORE_STEP = 0.05;
   function stepRestore(t: number) {
     if (!restoring) return;
     const art = placeArt(restoring.place)?.restoration;
     const at = restoreAt(restoring.place);
     const u = t - restoring.start;
-    if (!art || !at || u >= art.seconds || walk || asked || mapView) return endRestore();
-    if (restoring.drawn >= 0 && u - restoring.drawn < RESTORE_STEP) return;
-    restoring.drawn = u;
+    // Les mêmes arrêts que ceux qui empêchent l'allumage de commencer (`startRestore`) : tout allumé d'un coup.
+    if (!art || !at || u >= art.seconds || walk || asked || mapView || laying || carRolling) return endRestore();
+    // La géométrie ne se refait que si l'image change (une quinzaine de fois en 4 s), jamais à chaque image.
+    const frame = art.frame(u);
+    if (frame === restoring.frame) return;
+    restoring.frame = frame;
     setGeometry(poseMesh, art.draw(at, u));
   }
 

@@ -171,7 +171,9 @@ export interface PlaceArt {
    * de la rigole s'allument l'un après l'autre, puis la grille, puis la gueule) : `seconds` au plus 4, `draw(c, t)` ce
    * qu'on voit à `t` secondes du début (`Infinity` : l'état final, gardé dans le maillage des lieux ; `0` : l'état
    * avant). Hors du modèle, comme `reach` ; sautée d'un toucher, et posée d'un coup avec « Réduire les animations »
-   * (three/archipeo/scene.ts). Comptée à son état final dans le budget du lieu (./budget.ts).
+   * (three/archipeo/scene.ts). Comptée à son état final dans le budget du lieu (./budget.ts). `frame(t)` : la clé de ce
+   * qu'on voit à `t` (deux instants de même clé se dessinent pareil) ; la vue ne refait la géométrie que si elle change
+   * (expert frontend, lot 2 du 4e).
    */
-  restoration?: { readonly seconds: number; draw(c: Vec3, t: number): Facets };
+  restoration?: { readonly seconds: number; draw(c: Vec3, t: number): Facets; frame(t: number): string };
 }

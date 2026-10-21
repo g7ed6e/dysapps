@@ -579,10 +579,16 @@ export interface BiomeDef {
  * docs/contenu/<île>.md (en-tête et missions), dans l'ordre de docs/contenu/archipel.md ; `npm run contenu` en produit
  * islands.ts, que le compilateur vérifie (`satisfies BiomeDef[]`), avec les tests (biomes.test.ts).
  */
-/** Une île du contenu, celles de la grille comme celles du monde ouvert seulement (`openWorldOnly`). */
-export interface IleDef extends Omit<BiomeDef, 'id'> {
+/**
+ * Une île du contenu, celles de la grille comme celles du monde ouvert seulement (`openWorldOnly`). Un lieu du monde
+ * ouvert seulement n'a ni Gardien ni créature (directeur artistique et consultant d'Archipéo, lot 2 du 4e : aucun écran
+ * ne les montrerait, et un nom écrit finit par s'afficher) : son habitant est celui de sa scénette.
+ */
+export interface IleDef extends Omit<BiomeDef, 'id' | 'guardian' | 'creature'> {
   id: IleId;
   openWorldOnly?: true;
+  guardian?: string;
+  creature?: CreatureDef;
 }
 
 /** Toutes les îles du contenu, dans l'ordre de docs/contenu/archipel.md : la grille, puis le monde ouvert seulement. */

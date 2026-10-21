@@ -101,11 +101,12 @@ test('une mission de la Forge, construite au lot 2, se joue dans sa scénette ; 
   expect(document.querySelector('.world-question.ecran-habituel')).toBeNull();
 });
 
-test('la Forge restaurée : son état écrit, avec l’icône de l’état, dès que son allumage commence', async () => {
+test('la Forge restaurée, son allumage fini : son état écrit, avec l’icône de l’état, puis la réplique de la chaudronnière', async () => {
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });
   act(() => scene.options!.onRestored!('forge'));
   const status = await screen.findByText('La Forge est restaurée.', {}, { timeout: 2000 });
   const box = status.closest('.open-world-said')!;
   expect(box.querySelector('svg')).not.toBeNull();
+  expect(box.textContent).toMatch(/La Forge est restaurée\.[\s\S]*Le feu de la montagne est revenu\./);
 });

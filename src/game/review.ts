@@ -26,19 +26,21 @@ export function reviewKeys(spaced: SpacedItem[], exerciseId: string, today = tod
  * dans un lieu encore fermé (programmes de 2025-2026, core/movedIds.ts) attend l'ouverture du lieu. Seul le nombre
  * compte : aucune date ni aucun retard ne s'affiche.
  */
-export function dueCountOnOpenPlaces(spaced: SpacedItem[], bridges: string[], today = todayISO()): number {
+export function dueCountOnOpenPlaces(spaced: SpacedItem[], bridges: string[], today = todayISO(), lieuxSeuls = false): number {
   const places = new Map(CATALOG.map((meta) => [meta.id, meta.biome]));
   return dueItems(spaced, today).filter((s) => {
     const place = places.get(exerciseOf(s.itemId));
-    return place !== undefined && lieuOuvert(place, bridges);
+    return place !== undefined && lieuOuvert(place, bridges, lieuxSeuls);
   }).length;
 }
 
 /**
- * Un lieu où l'on peut revoir : une île de la grille ouverte par ses ponts, ou un lieu du monde ouvert seulement (GD-24),
- * que la grille ne ferme jamais (il ne se joue que si sa terre du monde ouvert est ouverte).
+ * Un lieu où l'on peut revoir : une île de la grille ouverte par ses ponts ; un lieu du monde ouvert seulement (GD-24,
+ * l'Étalon) dans le monde ouvert d'Archipéo seulement (`lieuxSeuls`, ./useImmersive.ts, `useLieuxSeuls`) : ailleurs
+ * (Blocland, la grille, la vue simple), on ne le trouve sur aucune île, ses révisions ne se comptent ni ne se listent
+ * (consultant UX UI et expert frontend, lot 2 du 4e).
  */
-const lieuOuvert = (ile: IleId, bridges: string[]): boolean => !estUnBiome(ile) || isBiomeUnlocked(ile, bridges);
+const lieuOuvert = (ile: IleId, bridges: string[], lieuxSeuls: boolean): boolean => (estUnBiome(ile) ? isBiomeUnlocked(ile, bridges) : lieuxSeuls);
 
 export interface ReviewQuest {
   biome: IleId;
@@ -48,15 +50,15 @@ export interface ReviewQuest {
   path: string;
 }
 
-/** Les missions à reprendre aujourd'hui (une par île et par mission), sur les îles ouvertes, dans l'ordre du catalogue. */
-export function questsToReview(spaced: SpacedItem[], bridges: string[], today = todayISO()): ReviewQuest[] {
+/** Les missions à reprendre aujourd'hui (une par île et par mission), sur les îles ouvertes, dans l'ordre du catalogue ; `lieuxSeuls` : voir `lieuOuvert`. */
+export function questsToReview(spaced: SpacedItem[], bridges: string[], today = todayISO(), lieuxSeuls = false): ReviewQuest[] {
   const ids = exercisesToReview(spaced, today);
   const seen = new Set<string>();
   const out: ReviewQuest[] = [];
   for (const meta of CATALOG) {
     if (!ids.has(meta.id)) continue;
     const key = `${meta.biome}/${meta.type}`;
-    if (seen.has(key) || !lieuOuvert(meta.biome, bridges)) continue;
+    if (seen.has(key) || !lieuOuvert(meta.biome, bridges, lieuxSeuls)) continue;
     seen.add(key);
     const biome = getIle(meta.biome);
     const title = biome && missionsJouables(biome).find((e) => e.id === meta.type)?.title;

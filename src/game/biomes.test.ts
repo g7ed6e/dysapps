@@ -68,4 +68,15 @@ describe('les lieux du monde ouvert seulement (GD-24)', () => {
       expect(estUnBiome(getIle(id)!.block), id).toBe(true);
     }
   });
+
+  it('n’ont ni Gardien ni créature (aucun écran ne les montrerait) ; les îles de la grille ont les deux', () => {
+    for (const id of OPEN_WORLD_ONLY_IDS) {
+      expect(getIle(id)?.guardian, id).toBeUndefined();
+      expect(getIle(id)?.creature, id).toBeUndefined();
+    }
+    for (const b of BIOMES) {
+      expect(b.guardian, b.id).toBeTruthy();
+      expect(b.creature?.name, b.id).toBeTruthy();
+    }
+  });
 });

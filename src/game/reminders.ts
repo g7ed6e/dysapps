@@ -25,9 +25,9 @@ function revisionsDeLIleParmi(dues: readonly ReviewQuest[], biome: IleId, lv2?: 
   return dues.filter((q) => q.biome === biome && jouables.has(q.type));
 }
 
-/** Les révisions dues aujourd'hui sur une île ouverte, une par mission jouable (la LV2 des Réglages), dans l'ordre du catalogue. */
-export function revisionsDeLIle(spaced: SpacedItem[], links: string[], biome: IleId, lv2?: Lv2Choice, today = todayISO()): ReviewQuest[] {
-  return revisionsDeLIleParmi(questsToReview(spaced, links, today), biome, lv2);
+/** Les révisions dues aujourd'hui sur une île ouverte, une par mission jouable (la LV2 des Réglages), dans l'ordre du catalogue ; `lieuxSeuls` : dans le monde ouvert d'Archipéo (review.ts). */
+export function revisionsDeLIle(spaced: SpacedItem[], links: string[], biome: IleId, lv2?: Lv2Choice, today = todayISO(), lieuxSeuls = false): ReviewQuest[] {
+  return revisionsDeLIleParmi(questsToReview(spaced, links, today, lieuxSeuls), biome, lv2);
 }
 
 /** L'adresse d'une révision lancée depuis la créature : la mission, qui met les questions dues en tête, puis l'île. */

@@ -22,7 +22,18 @@ export function rendered5e(color: readonly number[], n: readonly number[]): numb
   const d = Math.hypot(L.sunFrom.x, L.sunFrom.y, L.sunFrom.z);
   const ndl = Math.max(0, (n[0] * L.sunFrom.x + n[1] * L.sunFrom.y + n[2] * L.sunFrom.z) / d);
   const w = 0.5 * n[1] + 0.5;
-  let c = color.map((v, i) => ((v / Math.PI) * (ndl * sun[i] * L.sunIntensity + (ground[i] + (sky[i] - ground[i]) * w) * L.ambient)) * L.exposure);
+  return toneMapped(color.map((v, i) => (v / Math.PI) * (ndl * sun[i] * L.sunIntensity + (ground[i] + (sky[i] - ground[i]) * w) * L.ambient)), L.exposure);
+}
+
+/** Un rouge, vert, bleu linéaire en couleur sRGB sur 8 bits par canal. */
+const toSrgb = (c: readonly number[]): number => {
+  const srgb = c.map((v) => Math.round(255 * Math.min(1, Math.max(0, v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055))));
+  return (srgb[0] << 16) | (srgb[1] << 8) | srgb[2];
+};
+
+/** La couleur à l'écran d'une lumière linéaire `c` : l'exposition, le mappage des tons neutre (`NeutralToneMapping`), puis sRGB. */
+export function toneMapped(light: readonly number[], exposure: number): number {
+  let c = light.map((v) => v * exposure);
   const x = Math.min(...c);
   const offset = x < 0.08 ? x - 6.25 * x * x : 0.04;
   c = c.map((v) => v - offset);
@@ -32,6 +43,20 @@ export function rendered5e(color: readonly number[], n: readonly number[]): numb
     const g = 1 - 1 / (0.15 * (peak - np) + 1);
     c = c.map((v) => (v * np) / peak * (1 - g) + np * g);
   }
-  const srgb = c.map((v) => Math.round(255 * Math.min(1, v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055)));
-  return (srgb[0] << 16) | (srgb[1] << 8) | srgb[2];
+  return toSrgb(c);
+}
+
+/**
+ * La couleur à dessiner sans ombre (`unlit` : la vue garde la couleur du sommet, puis l'exposition et le mappage des tons
+ * s'appliquent) pour qu'elle se voie `shown` à l'écran, sous l'exposition `exposure` (la gueule allumée de la Forge :
+ * `#DC5530` à l'écran, et non la teinte plus orange que donnait la même couleur dessinée telle quelle). L'inverse de
+ * `toneMapped` pour une couleur dont le canal le plus fort reste sous 0,76 (le mappage n'y comprime rien).
+ */
+export function unlitSource(shown: number, exposure: number): number {
+  const target = linearRgb(shown);
+  const lo = Math.min(...target);
+  // Le décalage du mappage, retrouvé depuis le canal le plus faible : `lo` = x − décalage(x).
+  const x = lo < 0.04 ? Math.sqrt(lo / 6.25) : lo + 0.04;
+  const offset = x < 0.08 ? x - 6.25 * x * x : 0.04;
+  return toSrgb(target.map((v) => (v + offset) / exposure));
 }

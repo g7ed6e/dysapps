@@ -4175,11 +4175,7 @@ export const ILES = [
     "classe": "4e",
     "description": "Moyenne et médiane, probabilités, proportions et partages, programmes de calcul, puis translation, milieux et cercle.",
     "block": "maths-4e-powers",
-    "guardian": "le Grand Peson",
     "icon": "scale",
-    "creature": {
-      "name": "la peseuse"
-    },
     "openWorldOnly": true,
     "exercises": [
       {
@@ -4226,7 +4222,8 @@ export const ILES = [
         "programme": [
           "c4.ma.d.transformations",
           "c4.ma.d.triangles-parallelogramme",
-          "c4.ma.d.angles-triangles"
+          "c4.ma.d.angles-triangles",
+          "c4.ma.d.thales"
         ]
       }
     ]

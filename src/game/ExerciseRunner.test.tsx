@@ -15,6 +15,8 @@ import type { Progress } from '../core/progress';
 import { getBiome } from './biomes';
 import type { ScreenProps } from './exercises/registry';
 import { filledGap } from './three/archipeo/fit';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { Icon } from '../components/Icon';
 
 const ALL = await loadAllExercises();
 const getExercise = (id: string) => ALL.find((e) => e.id === id);
@@ -497,8 +499,14 @@ describe('Un lieu du monde ouvert seulement (GD-24, l’Étalon)', () => {
       await user.click(within(sheet).getByRole('button', { name: i < items.length - 1 ? /Suivant/ : /Voir mes blocs/ }));
     }
     // Ni l'île de la grille ni son bâtiment : le bouton principal ramène au lieu, mission ciblée.
-    expect(screen.getByRole('link', { name: /Revenir à l’Étalon/ })).toHaveAttribute('href', '/adventure?ile=maths-4e-data&mission=weighted-mean');
+    const revenir = screen.getByRole('link', { name: /Revenir à l’Étalon/ });
+    expect(revenir).toHaveAttribute('href', '/adventure?ile=maths-4e-data&mission=weighted-mean');
+    // L'icône des pas, comme « Revenir à … » du monde ouvert : une même destination, une même icône (consultant UX UI).
+    expect(revenir.querySelector('svg')?.outerHTML).toBe(renderToStaticMarkup(<Icon name="footprints" />));
     expect(screen.queryByRole('link', { name: /Voir le bâtiment/ })).not.toBeInTheDocument();
+    // À quoi servent les blocs : ceux de la Forge, nommée par son lieu, jamais une île de la grille.
+    expect(document.querySelector('.reward-site')?.textContent).toMatch(/Ce sont les blocs d’\S+ de la Forge : ils restent dans Mes blocs\./);
+    expect(screen.queryByText(/Forge des puissances/)).not.toBeInTheDocument();
     // Le lien du haut aussi : un lieu du monde ouvert seulement n'a pas de page d'île dans la grille.
     expect(screen.getAllByRole('link', { name: /Étalon/ })).toHaveLength(2);
     for (const lien of screen.getAllByRole('link', { name: /Étalon/ })) expect(lien).toHaveAttribute('href', '/adventure?ile=maths-4e-data&mission=weighted-mean');
@@ -506,7 +514,7 @@ describe('Un lieu du monde ouvert seulement (GD-24, l’Étalon)', () => {
     expect(saved.progress[mission.id]).toMatchObject({ stars: 3, attempts: 1 });
     // La première partie de la halle est posée, et survit au rechargement (le nettoyage de la sauvegarde la connaît).
     expect(saved.world.parts['maths-4e-data-1']?.length).toBeGreaterThan(0);
-    // Le bloc gagné est celui de la Forge (GD-24, à confirmer par le DA).
+    // Le bloc gagné est celui de la Forge (GD-24, confirmé par le directeur artistique le 21 octobre 2026).
     expect(saved.stock['maths-4e-powers']).toBeGreaterThan(0);
   });
 });

@@ -33,8 +33,12 @@ export const AU_LIEU = join(racine, 'src/game/world/continu/placeItems.json');
 /** Les phrases des habitants du monde ouvert (docs/contenu/monde-ouvert.md), lues par le seul monde ouvert. */
 export const MONDE_OUVERT = join(racine, 'src/game/world/continu/mondeOuvert.json');
 
-/** Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. */
+/**
+ * Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. Un lieu du monde ouvert seulement
+ * n'a ni Gardien ni créature (facultatifs : directeur artistique et consultant d'Archipéo, lot 2 du 4e).
+ */
 const CHAMPS_ILE = ['name', 'module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'];
+const FACULTATIFS_LIEU_SEUL = new Set(['guardian', 'creature']);
 const CHAMPS_MISSION = ['description', 'programme'];
 const MATIERES = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'civics', 'lv2', 'lca'];
 const CLASSES = ['6e', '5e', '4e', '3e'];
@@ -66,7 +70,7 @@ export function produire() {
     const fichier = join('docs/contenu', f);
     const { ile, biome, exercices, plans, demandes, auLieu } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
     if (f !== `${ile}.md`) throw new Error(`${fichier} : le fichier d'une île s'appelle <île>.md (${ile}.md)`);
-    for (const k of CHAMPS_ILE) if (biome[k] === undefined) throw new Error(`${fichier} : l'île n'a pas de « ${k} » (voir docs/contenu/README.md)`);
+    for (const k of CHAMPS_ILE) if (biome[k] === undefined && !(biome.openWorldOnly && FACULTATIFS_LIEU_SEUL.has(k))) throw new Error(`${fichier} : l'île n'a pas de « ${k} » (voir docs/contenu/README.md)`);
     if (!MATIERES.includes(biome.subject)) throw new Error(`${fichier} : matière « ${biome.subject} » inconnue (${MATIERES.join(', ')})`);
     if (!CLASSES.includes(biome.classe)) throw new Error(`${fichier} : classe « ${biome.classe} » inconnue (${CLASSES.join(', ')})`);
     for (const m of biome.exercises) {

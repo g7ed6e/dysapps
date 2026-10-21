@@ -4,7 +4,7 @@
 import { APPS } from '../apps/registry';
 import { PROGRAMME, byId, citable } from '../curriculum';
 import { EXCLUSIONS } from '../curriculum/exclusions';
-import { BIOMES } from './biomes';
+import { TOUTES_LES_ILES, type IleDef } from './biomes';
 import { loadAllExercises } from './exercises';
 
 /**
@@ -13,7 +13,7 @@ import { loadAllExercises } from './exercises';
  */
 const LV2_DISCIPLINE = { de: 'german', es: 'spanish' } as const;
 const OPTION_DISCIPLINE = { la: 'latin', gr: 'greek' } as const;
-function disciplineDe(b: (typeof BIOMES)[number], mission: string): string {
+function disciplineDe(b: IleDef, mission: string): string {
   const x = b.exercises.find((m) => m.id === mission);
   if (x?.lv2) return LV2_DISCIPLINE[x.lv2];
   if (x?.option) return OPTION_DISCIPLINE[x.option];
@@ -26,14 +26,15 @@ const EXERCISES = await loadAllExercises();
 function coverage(): Map<string, string[]> {
   const map = new Map<string, string[]>();
   const add = (id: string, by: string) => map.set(id, [...(map.get(id) ?? []), by]);
-  for (const b of BIOMES) for (const q of b.exercises) for (const id of q.programme) add(id, `${b.id}/${q.id}`);
+  // Toutes les îles, celles du monde ouvert seulement comprises (l'Étalon : expert frontend, lot 2 du 4e).
+  for (const b of TOUTES_LES_ILES) for (const q of b.exercises) for (const id of q.programme) add(id, `${b.id}/${q.id}`);
   for (const a of APPS) for (const id of a.programme ?? []) add(id, `portail/${a.id}`);
   for (const e of EXERCISES) for (const id of e.programme ?? []) add(id, e.id);
   return map;
 }
 
-it('chaque mission d’une île cite au moins une compétence, existante, sans doublon, de sa matière et de sa classe', () => {
-  for (const b of BIOMES) {
+it('chaque mission d’une île (celles du monde ouvert seulement comprises) cite au moins une compétence, existante, sans doublon, de sa matière et de sa classe', () => {
+  for (const b of TOUTES_LES_ILES) {
     for (const q of b.exercises) {
       const where = `${b.id}/${q.id}`;
       expect(q.programme.length, `${where} : aucune compétence du programme`).toBeGreaterThanOrEqual(1);
@@ -71,7 +72,7 @@ it('chaque mission du portail qui cite le programme cite des compétences exista
 it('un exercice qui précise son programme cite des compétences existantes, de la matière de son île', () => {
   for (const e of EXERCISES) {
     if (!e.programme) continue;
-    const b = BIOMES.find((x) => x.id === e.biome)!;
+    const b = TOUTES_LES_ILES.find((x) => x.id === e.biome)!;
     for (const id of e.programme) {
       const p = byId(id);
       expect(p, `${e.id} : compétence inconnue ${id}`).toBeTruthy();

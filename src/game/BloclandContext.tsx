@@ -37,6 +37,7 @@ import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { useTextes } from '../universes';
 import { dueCountOnOpenPlaces } from './review';
+import { useLieuxSeuls } from './useImmersive';
 import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
 import { STORY_XP, startStory, storyAfterMission, tapStoryStep, type StepResult } from './world/stories';
@@ -399,7 +400,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
 
   const pauseAfterNext = sessionCount + 1 >= SESSION_MAX_EXERCISES || Date.now() - sessionStart.current > SESSION_MAX_MINUTES * 60_000;
   // Les items des lieux ouverts seulement, comme les révisions proposées (review.ts).
-  const dueCount = useMemo(() => dueCountOnOpenPlaces(state.spaced, state.world.links, todayISO()), [state.spaced, state.world.links]);
+  const lieuxSeuls = useLieuxSeuls();
+  const dueCount = useMemo(() => dueCountOnOpenPlaces(state.spaced, state.world.links, todayISO(), lieuxSeuls), [state.spaced, state.world.links, lieuxSeuls]);
 
   const value = useMemo(
     () => ({

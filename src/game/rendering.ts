@@ -94,6 +94,18 @@ function reglages(): ChoixUnivers {
 /** Le rendu du monde de cette page. */
 export const renduDuMonde = (): Rendu => renduDepuis(here(), reglages());
 
+/** L'adresse demande-t-elle le monde ouvert (`?monde=ouvert`, avant le `#`) ? */
+export function openWorldRequested(href: string): boolean {
+  return params(href).get('monde') === 'ouvert';
+}
+
+/**
+ * Le monde ouvert d'Archipéo est-il celui de cette page (`?monde=ouvert`, dans le rendu d'Archipéo) ? Ses lieux seuls
+ * (GD-24, l'Étalon) n'existent qu'en lui : ailleurs (Blocland, la grille), leurs révisions ne se comptent ni ne se
+ * listent (./review.ts). La vue simple s'y ajoute à l'appel (`useLieuxSeuls`, ./useImmersive.ts).
+ */
+export const mondeOuvertDArchipeo = (): boolean => openWorldRequested(here()) && renduDuMonde() === 'archipeo';
+
 /** L'option de style de surface de cette page (lot R1), ou `null`. */
 export const styleDuMonde = (): StyleSurface | null => styleDepuis(here(), reglages());
 
