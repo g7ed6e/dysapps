@@ -48,9 +48,13 @@ const C = {
   stoneSun: COLORS_5E.stoneSun,
   stoneShade: COLORS_5E.stoneShade,
   moss: COLORS_5E.plateauMoss,
-  /** Le dedans de l'abri : le fond et les retours sous la peinture, le plafond, un cran plus sombre. */
+  /** Le dedans de l'abri : le fond et les retours sous la peinture. */
   inner: 0xc2bbab,
-  ceiling: 0xb4ae9f,
+  /**
+   * Le plafond, plus clair que le fond : tourné vers le bas, il ne reçoit que le ciel renvoyé et se rend un cran plus
+   * sombre que lui (#837B5A environ sous la lumière du 5e ; #B4AE9F se rendait en olive sombre, #625C3E, vu de dos).
+   */
+  ceiling: 0xe0d8c6,
   floor: 0xc4b9a2,
   floorSide: 0xa69c88,
   // Les panneaux ravivés : terre de sienne, vert-de-gris, bleu fumé, crème.
