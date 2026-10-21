@@ -714,7 +714,7 @@ function sceneFloor(b: FacetBuilder, floor: Vec3): void {
  * Le boulanger en pion (son modèle 3D prend sa place, ./habitants.ts), immobile, le visage nu : ses bottes, son pantalon
  * bleu nuit, sa chemise jaune pâle, son grand tablier orangé, son béret ; les bras le long du corps ; sa pelle à pain dans
  * le dos, la pale au-dessus de l'épaule gauche, comme son modèle (directeur artistique, seconde passe des
- * habitants : le pion garde la couleur dominante et l'outil du modèle). Vingt-quatre triangles pour la pelle.
+ * habitants : le pion garde la couleur dominante et l'outil du modèle). Vingt-deux triangles pour la pelle.
  */
 function baker(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   for (const side of [-1, 1]) {
