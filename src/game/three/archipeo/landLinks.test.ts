@@ -6,7 +6,7 @@ import { BRIDGES, VOYAGES, archipelagoOf, getBridge, reachableIslands } from '..
 import { ensureLands, payLand } from '../../world/arrange';
 import { PLACES } from '../../world/continu/plan6e';
 import { landById, type LandId, landOf, startLandOf } from '../../world/continu/lands';
-import { gridLand, gridLands, openWorldLands } from './landLinks';
+import { arrivalPlace, gridLand, gridLands, openWorldLands } from './landLinks';
 import { placeById, planFor, type PlaceId } from '../../world/continu/levelPlan';
 
 /** Le plan du 6e, le seul enregistré (GD-22). */
@@ -139,6 +139,13 @@ describe('Au 4e, arrivée à la Crique, Bastion fermé (décision du mainteneur,
     const opened = ensureLands(arrived, gridLands(PLAN_4E), [gabarit as never]);
     expect(opened).not.toBe(arrived);
     expect(payLand(opened, gridLand('bastion')).result).toEqual({ ok: false, reason: 'construit' });
+  });
+
+  it('l’adresse de l’île du Gabarit : à la Crique tant que le Bastion est fermé, au Gabarit une fois ouvert par une mission jouée', () => {
+    expect(arrivalPlace(PLAN_4E, gabarit, openWorldLands(PLAN_4E, links, []).closed)).toBeUndefined();
+    const played = [{ ile: gabarit, mission: 'm', etat: 2 as const }];
+    expect(arrivalPlace(PLAN_4E, gabarit, openWorldLands(PLAN_4E, links, played).closed)).toBe('gabarit');
+    expect(arrivalPlace(PLAN_4E, undefined, [])).toBeUndefined();
   });
 
   it('le 6e et le 5e : leur port ne ferme rien', () => {

@@ -11,7 +11,7 @@ import { ALL_LANDS, placeById, placeOfIsland, type LevelPlan, type PlaceId } fro
 import { playedPlaces, type MissionMark } from '../../world/continu/mission';
 
 /** L'île du port de la grille d'un plan (celle où la grille fait arriver dans sa classe). */
-export const gridPortOf = (plan: LevelPlan): string | undefined => ARCHIPELAGOS.find((a) => a.classe === plan.level)?.port;
+const gridPortOf = (plan: LevelPlan): string | undefined => ARCHIPELAGOS.find((a) => a.classe === plan.level)?.port;
 
 /** Les îles des lieux d'une terre. */
 const islandsOf = (land: LandId): BiomeId[] => landById(land).places.map((p) => placeById(p).island as BiomeId);
@@ -38,6 +38,18 @@ export const gridLands = (plan: LevelPlan): GridLand[] => plan.lands.map((l) => 
 
 /** Les îles des lieux où l'élève a déjà joué (`ensureLands` les ouvre, et leur terre avec eux). */
 export const playedIslands = (plan: LevelPlan, bornes: readonly MissionMark[]): BiomeId[] => playedPlaces(plan, bornes).map((id) => placeById(id).island as BiomeId);
+
+/**
+ * Le lieu d'où part Kéo quand l'adresse nomme une île (`/adventure/<île>`), ou rien (le quai du lieu de départ). Au 4e
+ * (`shutPort`), l'île du port de la grille, le Gabarit, fait arriver à la Crique tant que sa terre, le Bastion, est
+ * fermée (`closed` ; décision du mainteneur, 21 octobre 2026) ; ouverte, Kéo part du Gabarit. Ailleurs, rien ne change.
+ */
+export function arrivalPlace(plan: LevelPlan, island: string | undefined, closed: readonly LinkedLand[]): PlaceId | undefined {
+  const place = island ? placeOfIsland(island)?.id : undefined;
+  if (!place || !plan.shutPort || island !== gridPortOf(plan)) return place;
+  const land = landOf(place);
+  return isLinkedLand(land) && closed.includes(land) ? undefined : place;
+}
 
 /** Ce que le monde continu montre des terres. */
 export interface OpenWorldLands {

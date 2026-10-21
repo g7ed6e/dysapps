@@ -39,7 +39,7 @@ import { payableBlocks } from '../../world/archipelago';
 import { isBridgeSpot, isLinkedLand, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import type { PartShape } from '../../world/continu/construction';
 import { bornesDuMondeOuvert, firstToPlayAt, keepClear, missionsOfPlace, nextMission, playsInPlace, type MarkOnScreen, type Obstacle, type ScreenRect } from '../../world/continu/mission';
-import { placeById, placeOfIsland, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
+import { placeById, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
 import type { PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
 import { modeleDuMonde } from '../../world/model';
@@ -48,7 +48,7 @@ import { SpeakButton } from '../../../components/SpeakButton';
 import { ClosedLandSheet, afterLabel, closedLandLabel, linkableLabel } from './ClosedLandSheet';
 import { constructionState, placeConstruction, posedShapes } from './constructionParts';
 import { posedAmenagements } from './amenagements';
-import { gridLand, gridLands, gridPortOf, openWorldLands, playedIslands } from './landLinks';
+import { arrivalPlace, gridLand, gridLands, openWorldLands, playedIslands } from './landLinks';
 import { MapLabels } from './MapLabels';
 import { PlacePanel, earnPlacesOf, placeFromParam, placeResume } from './PlacePanel';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
@@ -206,8 +206,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   }));
   const lieuParam = placeFromParam(plan, params.get('lieu'));
   const missionParam = params.get('mission');
-  // Au 4e (`shutPort`), l'île du port de la grille ne fait pas partir Kéo de son lieu : il arrive à la Crique.
-  const fromIsland = biomeId && !(plan.shutPort && biomeId === gridPortOf(plan)) ? placeOfIsland(biomeId)?.id : undefined;
+  // Au 4e, l'île du port de la grille (le Gabarit) fait arriver à la Crique tant que le Bastion est fermé (`arrivalPlace`).
+  const fromIsland = arrivalPlace(plan, biomeId, lands.closed);
   const [start] = useState<PlaceId | PortSpot>(() => arrival.spot ?? lieuParam ?? fromIsland ?? 'quai');
   // Le panneau ouvert de l'Escale : sa fiche, une porte, la galerie, le lieu d'assemblage, la Nef ; un à la fois.
   const [panel, setPanel] = useState<PortPanel | 'nef' | null>(null);
