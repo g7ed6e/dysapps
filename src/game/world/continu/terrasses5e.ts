@@ -1004,6 +1004,8 @@ export const TERRASSES: PlaceArt = {
   },
   // Kéo au retour : dans la cour, à l'ouest de la porte, face au tertre.
   exit: { x: 1, z: 6 },
+  // Sur la Carte, le nom sous le pied du tertre, au bord de la cour : à côté du tertre et du moulin, jamais dessus.
+  mapPoint: { x: 1.5, y: 0, z: COURT.z0 },
 };
 
 /** Le plus haut des Terrasses : le haut du mât, au-dessus du sol (il reste bien sous les aiguilles). */

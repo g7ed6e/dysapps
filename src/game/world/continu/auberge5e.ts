@@ -1232,6 +1232,8 @@ export const AUBERGE: PlaceArt = {
   exit: { x: 1.4, z: 8.3 },
   // « Y aller » arrive au cap nord, de face (directeur artistique, retouche 1 : le cadre sûr avant le repère lointain) ;
   // la maison entière, le départ du ponton et la brouette dans le cadre (un test le vérifie).
+  // Sur la Carte, le nom sous la maison, devant son pignon : à côté d'elle, jamais sur son toit.
+  mapPoint: { x: 0, y: 0, z: HOUSE.z1 + 1.5 },
 };
 
 /** Le plan de l'Auberge, pour les tests : la maison, le parvis, le balcon, la perche, le ponton, le chemin, la caméra. */

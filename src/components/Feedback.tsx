@@ -32,7 +32,7 @@ export function Feedback({ shout, message, tone = 'info', autoSpeak = true, spea
     <div className={`feedback feedback-${tone}${compact ? ' feedback-compact' : ''}`} role="status" aria-live="polite">
       {shout && (
         <p className="feedback-shout" key={speakKey}>
-          {shout}
+          {frenchTypography(shout)}
         </p>
       )}
       <div className="feedback-body">

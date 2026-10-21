@@ -36,7 +36,7 @@ import { playDetourWind, playWhaleBlow, playWoodTap } from '../../sound';
 import { detourById, type DetourId } from '../../world/continu/detours';
 import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
 import { payableBlocks } from '../../world/archipelago';
-import { isBridgeSpot, isLinkedLand, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
+import { firstBefore, isBridgeSpot, isLinkedLand, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import type { PartShape } from '../../world/continu/construction';
 import { bornesDuMondeOuvert, firstToPlayAt, keepClear, missionsOfPlace, nextMission, playsInPlace, type MarkOnScreen, type Obstacle, type ScreenRect } from '../../world/continu/mission';
 import { placeById, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
@@ -53,7 +53,7 @@ import { MapLabels } from './MapLabels';
 import { PlacePanel, earnPlacesOf, placeFromParam, placeResume } from './PlacePanel';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
-import { NEF_LEAVES, NefSheet, nefLookOf, nefSail, nefStageOf } from './NefSheet';
+import { NEF_LEAVES, NEF_TITLE, NefSheet, nefLookOf, nefReady, nefReadyLabel, nefSail, nefStageOf } from './NefSheet';
 import { EarnPlaces } from '../../PlanSection';
 import type { VehicleStage } from '../../world/vehicle';
 import { portState } from './portState';
@@ -137,8 +137,9 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     return isLinkedLand(land) && lands.closed.includes(land) ? land : null;
   }, [lands]);
   const isClosed = useCallback((id: PlaceId): boolean => closedLandOf(id) !== null, [closedLandOf]);
-  // La terre à relier d'abord d'une terre pas encore reliable (le Couchant pour le Large, le Levant pour les Crêtes).
-  const afterOf = (land: LinkedLand): LinkedLand | null => (lands.waiting.includes(land) ? (landById(land).after as LinkedLand) : null);
+  // La terre à relier d'abord d'une terre pas encore reliable (le Couchant pour le Large, le Levant pour les Crêtes ; au
+  // 5e, les Roselières, puis les Contreforts, pour les Aiguilles).
+  const afterOf = (land: LinkedLand): LinkedLand | null => (lands.waiting.includes(land) ? firstBefore(land, lands.closed) : null);
   // Le cadenas d'une terre pas encore reliable, sur la Carte, dit la phrase d'ordre.
   const orderLabel = (land: LinkedLand): string | null => {
     const after = afterOf(land);
@@ -150,6 +151,27 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   useEffect(() => {
     ensureOpenWorldLands(gridLands(plan), playedIslands(plan, bornes));
   }, [plan, state.world.links, bornes, ensureOpenWorldLands]);
+  // La construction de chaque lieu (GD-20, lot 1) : les parties de la grille, mêmes identifiants, même sauvegarde.
+  // `partiesDe` lit l'option latin ou grec par `lcaCourante()` : `settings.lca` refait les constructions quand l'élève
+  // la change (le lieu du latin et du grec compte les missions de l'option, GD-14) ; la règle le croit inutile.
+  const constructions = useMemo(() => {
+    const of = (id: PlaceId) => {
+      const biome = getBiome(placeById(id).island);
+      return biome ? placeConstruction(biome.id, state.world.parts) : { shapes: [], posed: [], built: [] };
+    };
+    return placeRecord(plan, of);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plan, state.world.parts, settings.lca]);
+  // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son dernier temps (la voile au 6e, le gouvernail au 5e) vient avec
+  // autant de lieux achevés que la grille demande de Gardiens (le monde continu n'en a pas) ; son temps, montré sur le ber.
+  const nefStage = nefStageOf(level);
+  const achieved = useMemo(() => Object.values(constructions).filter((c) => constructionState(c) === 'restauree').length, [constructions]);
+  const sail = useMemo(() => nefSail(state, achieved, nefStage), [state, achieved, nefStage]);
+  const nefLookNow = useMemo(() => nefLookOf(state, sail.kit, nefStage), [state, sail.kit, nefStage]);
+  // La Nef prête (GD-21, « Prête ») : le passage prêt passe en tête de la suggestion, avant toute commande et toute
+  // mission, aux deux niveaux ; la marque se pose sur elle, « Y aller » mène au quai et ouvre sa fiche. Partie (le
+  // voyage fait), elle n'est plus prête.
+  const nefFirst = useMemo(() => nefReady(state, nefStage, sail.kit), [state, nefStage, sail.kit]);
   // Le lieu où se tient Kéo, arrivé (rien pendant la marche, ni à l'Escale) : la suggestion et les pastilles le lisent.
   const [here, setHere] = useState<PlaceId | null>(null);
   // La prochaine mission, jamais celle d'un lieu fermé : aucune ne s'y joue. Celle du lieu où se tient Kéo d'abord, tant
@@ -165,7 +187,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // porté comme une commande prête ; une mission à jouer chez lui, portée comme la prochaine mission, dans son lieu (la
   // première encore à jouer, sinon à reprendre, sinon la première), la bulle disant la phrase de l'étape.
   const stepSuggestion = useMemo(() => (sixth ? entraideSuggestion(plan, vu, (p) => !isClosed(p)) : null), [sixth, plan, vu, isClosed]);
-  const suggestedAct = suggestedAction(readyCmd, stepSuggestion, hereToPlay);
+  const suggestedAct = nefFirst ? null : suggestedAction(readyCmd, stepSuggestion, hereToPlay);
   const suggestedId = suggestedAct?.id ?? null;
   const suggestedCmd: SuggestedAction | null = suggestedAct && suggestedAct.kind !== 'mission' ? suggestedAct : null;
   const next = useMemo(() => {
@@ -501,8 +523,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const relightHere = cairnToLight !== null;
 
   useEffect(() => {
-    world.current?.setMark(nextPlace?.id ?? null);
-  }, [nextPlace, ready]);
+    world.current?.setMark(nefFirst ? 'nef' : (nextPlace?.id ?? null));
+  }, [nefFirst, nextPlace, ready]);
   useEffect(() => {
     world.current?.setSigns(signs.map((s) => s.place));
   }, [signs, ready]);
@@ -839,23 +861,6 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     };
   }, [openList]);
 
-  // La construction de chaque lieu (GD-20, lot 1) : les parties de la grille, mêmes identifiants, même sauvegarde.
-  // `partiesDe` lit l'option latin ou grec par `lcaCourante()` : `settings.lca` refait les constructions quand l'élève
-  // la change (le lieu du latin et du grec compte les missions de l'option, GD-14) ; la règle le croit inutile.
-  const constructions = useMemo(() => {
-    const of = (id: PlaceId) => {
-      const biome = getBiome(placeById(id).island);
-      return biome ? placeConstruction(biome.id, state.world.parts) : { shapes: [], posed: [], built: [] };
-    };
-    return placeRecord(plan, of);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plan, state.world.parts, settings.lca]);
-  // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son dernier temps (la voile au 6e, le gouvernail au 5e) vient avec
-  // autant de lieux achevés que la grille demande de Gardiens (le monde continu n'en a pas) ; son temps, montré sur le ber.
-  const nefStage = nefStageOf(level);
-  const achieved = useMemo(() => Object.values(constructions).filter((c) => constructionState(c) === 'restauree').length, [constructions]);
-  const sail = useMemo(() => nefSail(state, achieved, nefStage), [state, achieved, nefStage]);
-  const nefLookNow = useMemo(() => nefLookOf(state, sail.kit, nefStage), [state, sail.kit, nefStage]);
   useEffect(() => {
     if (!departing) world.current?.setNef(nefLookNow);
   }, [nefLookNow, departing, ready]);
@@ -939,6 +944,14 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     setBackTo(null);
   }, [backTo, asking, posePending]);
   const goNext = () => {
+    // La Nef prête : Kéo au quai, sa fiche ouverte (« Partir »).
+    if (nefFirst) {
+      if (settings.autoRead) speak(frenchTypography(NEF_TITLE));
+      world.current?.goToPort('quai');
+      setLieu(null);
+      setPanel('nef');
+      return;
+    }
     // La commande prête que porte la suggestion : « Livrer » chez l'habitant, sinon Kéo y va.
     if (suggestedCmd) {
       if (here === suggestedCmd.place) return actAt(suggestedCmd);
@@ -958,9 +971,17 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     world.current?.goTo(next.place.id, true);
   };
   // Court : le nom du lieu, puis la mission (consultant UX UI et référent dys) ; pour une commande, sa phrase « prête ».
-  const label = suggestedCmd ? frenchTypography(suggestedCmd.text.replace(/\.$/, '')) : next ? `${next.place.name}, ${missionTitle(next.place.island, next.mission)}` : '';
+  const label = nefFirst
+    ? frenchTypography(`${NEF_TITLE}. ${nefReadyLabel(textes.archipels[nefStage.to])}`.replace(/\.$/, ''))
+    : suggestedCmd
+      ? frenchTypography(suggestedCmd.text.replace(/\.$/, '')) : next ? `${next.place.name}, ${missionTitle(next.place.island, next.mission)}` : '';
   // La marque dit aussi la distance, en mots, lue à la demande (jamais à chaque image).
-  const markLabel = nextPlace ? `${label}, ${DISTANCE_WORDS[far]}` : '';
+  const markLabel = nefFirst || nextPlace ? `${label}, ${DISTANCE_WORDS[far]}` : '';
+  // Le mot de la marque : la Nef prête, sinon le lieu suggéré (la marque se retire une fois Kéo arrivé au lieu suggéré).
+  const markWord = nefFirst ? NEF_TITLE : nextPlace && nextPlace.id !== here ? nextPlace.name : null;
+  // Sur un Détour, « Y aller » repart vers le lieu de la marque : il porte sa flèche, sans mot de plus (consultant UX UI,
+  // relecture du lot 16 du 5e, point 4) ; ailleurs, les pas.
+  const goIcon = detourHere ? 'nord' : 'footprints';
   // « Livrer », « Donner » ou « Apporter » dans la bulle : le geste suggéré est celui de l'habitant où se tient Kéo.
   const deliverHere = Boolean(suggestedCmd && here === suggestedCmd.place);
 
@@ -979,7 +1000,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           <div ref={host} className="open-world-canvas" />
           {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
           {/* La marque se retire une fois Kéo arrivé au lieu suggéré (relecture du lot L1) : la bulle porte le geste. */}
-          {nextPlace && nextPlace.id !== here && !playing && !mapOpen && !sheetOpen && (
+          {markWord && !playing && !mapOpen && !sheetOpen && (
             <button type="button" ref={markRef} className="open-world-mark" aria-label={markLabel} onClick={goNext}>
               <span className="open-world-arrow-box" aria-hidden="true">
                 <span ref={arrowRef} className="open-world-arrow">
@@ -993,7 +1014,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                 </span>
               </span>
               {/* Le nom du lieu seul : aucune icône de lieu n'existe encore (le sapin de l'île d'aujourd'hui ne dit pas le Phare). */}
-              <span className="open-world-mark-word">{nextPlace.name}</span>
+              <span className="open-world-mark-word">{markWord}</span>
             </button>
           )}
           {/* Un cadenas sur le pont de chaque terre fermée : une icône sans texte, dite aux lecteurs d'écran (référent dys). */}
@@ -1008,7 +1029,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           </div>
           {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
           {mapOpen && !asking && (
-            <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nextPlace?.id ?? null} portName={departNames?.nom} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} snug={level === '4e'} />
+            <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nefFirst ? null : (nextPlace?.id ?? null)} portName={departNames?.nom} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} snug={level === '4e'} />
           )}
           {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
               le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à
@@ -1017,7 +1038,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
             <>
               <div className="open-world-voile" aria-hidden="true" onClick={list.close} />
               <div ref={listRef} className="open-world-panel open-world-panel-lieux-ouverts">
-                <PlacesSheet rows={placesRows(plan, openPlaces, states, textes.etatsDIle, suggestedCmd ? null : (next?.place.id ?? null), departNames?.nom, amenagements)} onPick={pickFromList} onClose={list.close} />
+                <PlacesSheet rows={placesRows(plan, openPlaces, states, textes.etatsDIle, suggestedCmd || nefFirst ? null : (next?.place.id ?? null), departNames?.nom, amenagements)} onPick={pickFromList} onClose={list.close} />
               </div>
             </>
           )}
@@ -1073,7 +1094,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                 <PlacePanel
                   place={placeById(lieu.place)}
                   missions={missionsOfPlace(placeById(lieu.place), bornes)}
-                  suggested={!suggestedCmd && next?.place.id === lieu.place ? next.mission : null}
+                  suggested={!suggestedCmd && !nefFirst && next?.place.id === lieu.place ? next.mission : null}
                   focus={lieu.focus}
                   onPlay={play}
                   onClose={closeLieu}
@@ -1160,7 +1181,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               {/* La phrase de ce que porte la suggestion chez un habitant (sa commande, l'étape d'entraide) ; « Aucune
                   mission » seulement quand rien n'attend. */}
               {!walking && !relightHere && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
-              {!next && !suggestedCmd && !walking && !relightHere && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
+              {!next && !suggestedCmd && !nefFirst && !walking && !relightHere && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
               <div className="open-world-go-row">
               {walking ? (
                 // Pendant tout trajet (la marche, la cabine, la marche) : « Passer le trajet », à contraste plein, saute
@@ -1178,13 +1199,13 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                 <button type="button" className="button primary" onClick={goNext}>
                   <Icon name="paquet" /> {gestureWord(suggestedCmd?.kind, textes)}
                 </button>
-              ) : suggestedCmd ? (
-                <button type="button" className="button primary" aria-label={`Y aller : ${placeById(suggestedCmd.place).name}`} onClick={goNext}>
-                  <Icon name="footprints" /> Y aller
+              ) : suggestedCmd || nefFirst ? (
+                <button type="button" className="button primary" aria-label={`Y aller : ${suggestedCmd ? placeById(suggestedCmd.place).name : NEF_TITLE}`} onClick={goNext}>
+                  <Icon name={goIcon} /> Y aller
                 </button>
               ) : (
                 <button type="button" className="button primary" disabled={!next} aria-label={next ? `Y aller : ${label}` : undefined} onClick={goNext}>
-                  <Icon name="footprints" /> Y aller
+                  <Icon name={goIcon} /> Y aller
                 </button>
               )}
               {/* La cabine (GD-22, lot 3 ; arbitrage de la première relecture) : Kéo à l'arrêt près d'une gare, un bouton

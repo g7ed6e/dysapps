@@ -47,7 +47,11 @@ export function afterLabel(land: LinkedLand, first: LinkedLand): string {
 }
 
 /** La phrase d'une terre qui devient reliable, celle d'avant reliée : « Le pont des Crêtes peut être rebâti. » */
-export const linkableLabel = (land: LinkedLand): string => `${landById(land).bridgeName} peut être rebâti.`;
+export const linkableLabel = (land: LinkedLand): string => {
+  const name = landById(land).bridgeName ?? '';
+  // « La cabine de la Montée peut être rebâtie. »
+  return `${name} peut être ${name.startsWith('La ') ? 'rebâtie' : 'rebâti'}.`;
+};
 
 /** Ce que dit la voix d'une terre fermée, de son cadenas ou d'un de ses lieux sur la Carte : « Le Couchant : fermé, le pont est à rebâtir. » */
 export const closedLandLabel = (land: LinkedLand): string => `${landById(land).name} : fermé, le pont est à rebâtir.`;

@@ -10,7 +10,7 @@
 // relues seulement quand une étiquette change de taille (police, grand texte), jamais à chaque image.
 import { useCallback, useEffect, useLayoutEffect, useRef, type MutableRefObject } from 'react';
 import { Icon } from '../../../components/Icon';
-import { getBiome } from '../../biomes';
+import { estLieuDOption, getBiome } from '../../biomes';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
 import { MAP_BAR_ROOM, MAP_EDGE_4E, grown, layoutMapLabels, mapLeader, nameLines, type MapLabel, type MapLabelSpot, type Rect } from '../../world/continu/map';
 import { mapStateWord } from './constructionParts';
@@ -109,19 +109,30 @@ const ONE_LINE = 12;
  * de 12 `ch` : au plus grand texte, l'espacement des lettres d'OpenDyslexic la débordait, et « Le Chantier naval » y
  * passait sur trois lignes) ; à la suite, sur une ligne, sinon (openWorld.css).
  */
-function Name({ text, wrap = false, up = false }: { text: string; wrap?: boolean; up?: boolean }) {
+function Name({ text, wrap = false, up = false, option = false }: { text: string; wrap?: boolean; up?: boolean; option?: boolean }) {
   const lines = nameLines(text);
   return (
     <span className="open-world-map-lines" data-lignes={wrap && text.length > ONE_LINE ? '2' : '1'}>
-      {lines.map((line, i) => (
-        <span key={i} className="open-world-map-line">
-          {i > 0 ? ' ' : ''}
-          {line}
-          {/* Le triangle « en haut » (GD-22) : dans la dernière ligne du nom, qui ne se coupe pas, toujours collé à lui
-              (référent dys : jamais seul ni sur une autre ligne). */}
-          {up && i === lines.length - 1 && <Up />}
-        </span>
-      ))}
+      {lines.map((line, i) => {
+        const last = i === lines.length - 1 && (up || option);
+        // Le dernier mot et ses signes, d'un bloc : aucun retour à la ligne entre eux.
+        const cut = last ? line.lastIndexOf(' ') + 1 : line.length;
+        return (
+          <span key={i} className="open-world-map-line">
+            {i > 0 ? ' ' : ''}
+            {line.slice(0, cut)}
+            {/* Le triangle « en haut » (GD-22) et le fanion d'un lieu d'option : dans la dernière ligne du nom, qui ne se
+                coupe pas, toujours collés à lui (référent dys : jamais seuls ni sur une autre ligne). */}
+            {last && (
+              <span className="open-world-map-glue">
+                {line.slice(cut)}
+                {up && <Up />}
+                {option && <OptionFlag />}
+              </span>
+            )}
+          </span>
+        );
+      })}
     </span>
   );
 }
@@ -138,6 +149,25 @@ const UpBadge = () => (
     <Up />
   </span>
 );
+
+/**
+ * Le fanion d'un lieu d'option (GD-13 : la LV2, le latin et le grec ; choix du mainteneur, 21 octobre 2026, « Fanion ») :
+ * collé à son nom, que l'option soit choisie ou non ; rien qui se lise « à faire » ni en retard (DP-09). Le bouton le dit.
+ */
+const OptionFlag = () => (
+  <span className="open-world-map-option" aria-hidden="true">
+    <Icon name="flag" />
+  </span>
+);
+
+/** Ce que dit un lieu d'option, juste après son nom. */
+const OPTION_WORDS = ', en option';
+
+/** Le lieu d'un plan est-il un lieu d'option (l'île de la LV2, ou celle du latin et du grec) ? */
+const isOption = (p: OpenPlace): boolean => {
+  const biome = getBiome(p.island);
+  return biome ? estLieuDOption(biome) : false;
+};
 
 /** Ce que dit un lieu du haut, après son nom. */
 const UP_WORDS = ', en haut';
@@ -379,11 +409,11 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
               className="open-world-map-place open-world-map-pale"
               data-lieu={p.id}
               hidden
-              aria-label={`${p.name}${upper.includes(p.id) ? UP_WORDS : ''}, ${orderLabel?.(land) ?? closedLandLabel(land)}`}
+              aria-label={`${p.name}${isOption(p) ? OPTION_WORDS : ''}${upper.includes(p.id) ? UP_WORDS : ''}, ${orderLabel?.(land) ?? closedLandLabel(land)}`}
               onClick={() => onClosed(land)}
             >
               <span className="open-world-map-place-name">
-                <Name text={p.name} wrap up={upper.includes(p.id)} />
+                <Name text={p.name} wrap up={upper.includes(p.id)} option={isOption(p)} />
               </span>
               <span className="open-world-map-icon" aria-hidden="true">
                 <Icon name={getBiome(p.island)?.icon ?? 'map'} />
@@ -401,11 +431,11 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
             data-lieu={p.id}
             hidden
             aria-current={p.id === nextPlace ? 'step' : undefined}
-            aria-label={`Y aller : ${p.name}${upper.includes(p.id) ? UP_WORDS : ''}${word ? `, ${word.toLowerCase()}` : ''}`}
+            aria-label={`Y aller : ${p.name}${isOption(p) ? OPTION_WORDS : ''}${upper.includes(p.id) ? UP_WORDS : ''}${word ? `, ${word.toLowerCase()}` : ''}`}
             onClick={() => onPick(p.id)}
           >
             <span className="open-world-map-place-name">
-              <Name text={p.name} wrap up={upper.includes(p.id)} />
+              <Name text={p.name} wrap up={upper.includes(p.id)} option={isOption(p)} />
             </span>
             {/* Dans la pastille réduite seulement, l'icône propre du lieu (celle de son île) : deux lieux ouverts réduits ne
                 se confondent pas ; l'état y passe en petit insigne, dans son coin (relecture du rivage sud). */}

@@ -72,8 +72,8 @@ test('au 5e (GD-22) : un triangle « en haut » dans la dernière ligne du nom d
     if (!up) continue;
     // Collé au nom : dans sa dernière ligne, qui ne se coupe pas.
     const lines = el.querySelectorAll('.open-world-map-line');
-    expect(up.parentElement).toBe(lines[lines.length - 1]);
-    expect(el.getAttribute('aria-label')).toContain(`${p.name}, en haut`);
+    expect(up.closest('.open-world-map-line')).toBe(lines[lines.length - 1]);
+    expect(el.getAttribute('aria-label')).toMatch(new RegExp(`${p.name}(, en option)?, en haut`));
   }
   const keo = container.querySelector<HTMLElement>('[data-lieu="keo"]')!;
   placer.current!([{ id: 'keo', x: 10, y: 10, shown: true, up: true }]);
@@ -128,4 +128,20 @@ test('le prochain lieu suggéré : sa pastille seule porte la marque (double con
   // Sans prochain lieu (la suggestion est derrière un pont), aucune pastille marquée.
   const none = render(<MapLabels places={PLAN.places} openPlaces={placesOfLands(PLAN, ['pointe'])} closedLands={LINKED_LANDS} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={states} words={words} />);
   expect(none.container.querySelector('.open-world-map-place.suggested')).toBeNull();
+});
+
+test('un lieu d’option (l’Oracle, l’Auberge) porte le fanion collé à son nom, dit « en option » ; les autres non (choix du mainteneur, « Fanion »)', () => {
+  const plan5 = planFor('5e');
+  const states5 = Object.fromEntries(plan5.places.map((p) => [p.id, null])) as never;
+  const { container } = render(
+    <MapLabels places={plan5.places} openPlaces={plan5.places.map((p) => p.id)} closedLands={[]} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={states5} words={words} upper={plan5.upper} />,
+  );
+  const flagged = [...container.querySelectorAll<HTMLElement>('.open-world-map-place')].filter((b) => b.querySelector('.open-world-map-option')).map((b) => b.dataset.lieu);
+  expect(flagged.sort()).toEqual(['auberge', 'oracle']);
+  const oracle = container.querySelector<HTMLElement>('[data-lieu="oracle"]')!;
+  expect(oracle.getAttribute('aria-label')).toMatch(/^Y aller : L’Oracle, en option/);
+  // Collé au nom : dans le même bloc que son dernier mot, jamais seul.
+  const glue = oracle.querySelector('.open-world-map-option')!.closest('.open-world-map-glue')!;
+  expect(glue).toHaveTextContent('L’Oracle');
+  expect(container.querySelector('[data-lieu="hameau"]')!.getAttribute('aria-label')).not.toMatch(/en option/);
 });

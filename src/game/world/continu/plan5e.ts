@@ -598,14 +598,15 @@ export const LINKS_5E = {
 
 /**
  * Les quatre terres du 5e (fiche, § 5, noms validés par le mainteneur le 19 octobre 2026), dans l'ordre : les Frondaisons,
- * le départ, puis les trois qu'on relie depuis elles (l'ordre entre elles reste à décider, fiche § 7, question 7 : aucune
- * n'attend l'autre).
+ * le départ, puis les trois qu'on relie depuis elles (GD-22, « Les terres ») : les Roselières et les Contreforts sont
+ * libres, dans l'ordre que l'élève choisit ; les Aiguilles, sur le plateau, viennent en dernier (`waitsFor`) ; le jeu
+ * suggère les Roselières d'abord (le premier dans l'ordre). La cabine part des Frondaisons (`after`), le chemin.
  */
 export const LANDS_5E: readonly Land[] = [
   { id: 'frondaisons', name: 'Les Frondaisons', places: ['montee', 'hameau', 'radeaux', 'auberge'], after: null, bridgeName: null },
   { id: 'roselieres', name: 'Les Roselières', places: ['croisee', 'instants'], after: 'frondaisons', bridgeName: 'Le pont des Roselières' },
   { id: 'contreforts', name: 'Les Contreforts', places: ['fumerolles', 'etuve', 'terrasses'], after: 'frondaisons', bridgeName: 'Le pont des Contreforts' },
-  { id: 'aiguilles', name: 'Les Aiguilles', places: ['donjon', 'oracle', 'semaphore', 'nacelles', 'gaillard'], after: 'frondaisons', bridgeName: 'La cabine de la Montée' },
+  { id: 'aiguilles', name: 'Les Aiguilles', places: ['donjon', 'oracle', 'semaphore', 'nacelles', 'gaillard'], after: 'frondaisons', bridgeName: 'La cabine de la Montée', waitsFor: ['roselieres', 'contreforts'] },
 ];
 
 /**

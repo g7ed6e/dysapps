@@ -230,8 +230,11 @@ export interface OpenWorld {
    * grue pose sur le râtelier ; un toucher la passe, d'un coup avec « Réduire les animations ». `onAssembled` dit sa fin.
    */
   assemble(): void;
-  /** Le lieu marqué (la prochaine mission), ou aucun : le seul lieu qui dépasse la brume. */
-  setMark(place: PlaceId | null): void;
+  /**
+   * Le lieu marqué (la prochaine mission), ou aucun : le seul lieu qui dépasse la brume ; ou `'nef'`, la Nef prête sur son
+   * ber (GD-21, « Prête » : le passage prêt passe en tête), sa marque au-dessus d'elle.
+   */
+  setMark(place: PlaceId | 'nef' | null): void;
   /**
    * Les terres (GD-20, point 3, « vraies terres, vrais ponts ») : les terres fermées (sous la brume, leur pont tombé, Kéo
    * s'arrête sur sa culée). Une terre qu'on vient de relier perd sa brume et voit son pont rebâti, d'un coup, ou par sa
@@ -1689,6 +1692,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   /** La fiche de la Nef ouverte : la caméra garde la Nef sur son ber, l'enveloppe comprise (artiste technique 3D, retouche du lot 4). */
   let framedNef = false;
   const nefFramed: Vec3 = { x: nefSite.berth.x, y: nefSite.lift.ber + NEF_FRAMED_HEIGHT, z: nefSite.berth.z };
+  /** La marque de la Nef prête (`setMark('nef')`) : au-dessus de son modèle, une fois chargé (avant, au-dessus du cadrage de sa fiche). */
+  const nefMark = new THREE.Vector3(nefSite.berth.x, nefFramed.y + MARK_LIFT, nefSite.berth.z);
   const subjectOf = (spot: PortSpot | PlaceId): Vec3 | null => {
     const place = PLACES.find((p) => p.id === spot);
     if (!place) return portSubject(spot as PortSpot, port?.trophies.length ?? 0, site);
@@ -1728,7 +1733,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
 
   // Les anneaux du terrain, et les lieux qu'on dessine : refaits quand le point suivi s'éloigne de leur centre.
-  let markPlace: PlaceId | null = null;
+  let markPlace: PlaceId | 'nef' | null = null;
   // La Carte ouverte : sa pose (plus bas, « La Carte des lieux ouverts »).
   let mapView: MapView | null = null;
   const ringCenter = { x: Number.NaN, z: Number.NaN };
@@ -1874,7 +1879,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const berLook: NefLook = nefTrip ? 3 : nefDrop ? nefDrop.from : nefLookNow;
     rest.push(nefBer(berLook));
     const nefNow = gone ? null : nefModel(nefShownParts(nefDrop ? nefDrop.from : nefLookNow, nefSite.temps));
-    if (nefNow) rest.push(nefAtBerth(nefNow, nefSite));
+    if (nefNow) {
+      rest.push(nefAtBerth(nefNow, nefSite));
+      nefMark.y = nefSite.lift.ber + topOf(nefNow) + MARK_LIFT;
+    }
     if (!gone) (mapView ? rest : mark).push(nefBanc);
     else if (nefLookNow === 4 && nefAfter) rest.push(nefAfter);
     if (nefStays) rest.push(nefStays);
@@ -2087,11 +2095,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const sx = (v: THREE.Vector3) => ((v.x + 1) / 2) * viewW;
   const sy = (v: THREE.Vector3) => ((1 - v.y) / 2) * viewH;
   const reportMark = () => {
-    const mark = markPlace ? marks.get(markPlace) : undefined;
-    if (!mark || !markPlace) return options.onMark(null);
+    const place = markPlace === 'nef' ? null : markPlace;
+    const mark = markPlace === 'nef' ? nefMark : place ? marks.get(place) : undefined;
+    if (!mark) return options.onMark(null);
     projected.copy(mark).project(camera);
-    const far = distanceSign(here, placeById(markPlace).center);
-    const m = markOnScreen({ x: sx(projected), y: sy(projected), behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far, markBeside(markPlace) && whole(markPlace));
+    const far = distanceSign(here, place ? placeById(place).center : nefSite.berth);
+    const m = markOnScreen({ x: sx(projected), y: sy(projected), behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far, place !== null && markBeside(place) && whole(place));
     if (m.inside && departure.floor(here.x, here.z) !== null) markAtPort(m);
     options.onMark(m);
   };

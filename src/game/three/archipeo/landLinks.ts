@@ -6,7 +6,7 @@
 import type { BiomeId } from '../../biomes';
 import { ARCHIPELAGOS, getBridge, reachableIslands } from '../../world/archipelago';
 import type { GridLand } from '../../world/arrange';
-import { isLinkedLand, landById, landOf, landPrice, linkedLands, openLands, planOfLand, type LandId, type LinkedLand } from '../../world/continu/lands';
+import { isLinkedLand, landById, landOf, landPrice, landsBefore, linkedLands, openLands, planOfLand, type LandId, type LinkedLand } from '../../world/continu/lands';
 import { ALL_LANDS, placeById, placeOfIsland, type LevelPlan, type PlaceId } from '../../world/continu/levelPlan';
 import { playedPlaces, type MissionMark } from '../../world/continu/mission';
 
@@ -25,7 +25,8 @@ const GRID_LANDS: ReadonlyMap<LandId, GridLand> = (() => {
     const plan = planOfLand(land.id);
     const port = plan.shutPort && land.after ? gridPortOf(plan) : undefined;
     const shut = port && islands.includes(port as BiomeId) ? (port as BiomeId) : undefined;
-    out.set(land.id, { islands, after: land.after ? out.get(land.after)! : null, price: land.after ? landPrice(land.id) : 0, ...(shut ? { shut } : {}) });
+    const waitsFor = land.waitsFor?.map((l) => out.get(l)!);
+    out.set(land.id, { islands, after: land.after ? out.get(land.after)! : null, price: land.after ? landPrice(land.id) : 0, ...(shut ? { shut } : {}), ...(waitsFor ? { waitsFor } : {}) });
   }
   return out;
 })();
@@ -55,7 +56,10 @@ export function arrivalPlace(plan: LevelPlan, island: string | undefined, closed
 export interface OpenWorldLands {
   /** Les terres fermées, dans l'ordre. */
   closed: LinkedLand[];
-  /** Les terres fermées pas encore reliables (leur terre d'avant est fermée) : leur fiche mène à elle. */
+  /**
+   * Les terres fermées pas encore reliables (leur terre d'avant est fermée, ou une terre qu'elles attendent : au 5e, les
+   * Aiguilles avant les Roselières et les Contreforts) : leur fiche mène à la première d'entre elles (`firstBefore`).
+   */
   waiting: LinkedLand[];
   /** La terre du pont suggéré (la prochaine destination ouvre l'un de ses lieux), jamais une terre pas encore reliable. */
   suggested: LinkedLand | null;
@@ -73,7 +77,7 @@ export function openWorldLands(plan: LevelPlan, links: readonly string[], bornes
   const port = plan.shutPort ? gridPortOf(plan) : undefined;
   const open = openLands(plan, (id: PlaceId) => (islands.has(placeById(id).island) && placeById(id).island !== port) || played.has(id));
   const closed = linkedLands(plan).filter((l) => !open.has(l));
-  const waiting = closed.filter((l) => !open.has(landById(l).after!));
+  const waiting = closed.filter((l) => !open.has(landById(l).after!) || landsBefore(l).some((b) => !open.has(b)));
   const bridge = ouvrage ? getBridge(ouvrage) : undefined;
   // La liaison suggérée ouvre un lieu : un seul de ses bouts est ouvert.
   const end = bridge && islands.has(bridge.from) !== islands.has(bridge.to) ? (islands.has(bridge.from) ? bridge.to : bridge.from) : undefined;

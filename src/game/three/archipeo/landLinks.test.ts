@@ -5,7 +5,7 @@ import { EMPTY_STATE, type GameState } from '../../engine/state';
 import { BRIDGES, VOYAGES, archipelagoOf, getBridge, reachableIslands } from '../../world/archipelago';
 import { ensureLands, payLand } from '../../world/arrange';
 import { PLACES } from '../../world/continu/plan6e';
-import { landById, type LandId, landOf, startLandOf } from '../../world/continu/lands';
+import { firstBefore, landById, type LandId, landOf, landsAfter, startLandOf } from '../../world/continu/lands';
 import { arrivalPlace, gridLand, gridLands, openWorldLands } from './landLinks';
 import { placeById, planFor, type PlaceId } from '../../world/continu/levelPlan';
 
@@ -111,6 +111,57 @@ describe('Relier une terre (payLand) et l’ouverture du monde (ensureLands)', (
     const s = ensure(withStock(0), ['ferry']);
     for (const land of ['couchant', 'large'] as const) expect(landOpen(s, land)).toBe(true);
     expect(landOpen(s, 'levant')).toBe(false);
+  });
+});
+
+describe('Au 5e, les Aiguilles en dernier (GD-22, « Les terres »)', () => {
+  const plan5 = planFor('5e');
+  // L'élève arrivé au 5e par la Nef : le voyage fait, le port du 5e atteint.
+  const voyage = VOYAGES.find((v) => v.toClasse === '5e')!.id;
+  const ensure5 = (state: GameState) => ensureLands({ ...state, world: { ...state.world, links: [...state.world.links, voyage] } }, gridLands(plan5));
+  const lands5 = (state: GameState) => openWorldLands(plan5, state.world.links, []);
+
+  it('au départ : les trois terres fermées, les Aiguilles seules en attente, des Roselières d’abord ; les Roselières suggérées', () => {
+    const lands = lands5(ensure5(withStock(0)));
+    expect(lands.closed).toEqual(['roselieres', 'contreforts', 'aiguilles']);
+    expect(lands.waiting).toEqual(['aiguilles']);
+    expect(firstBefore('aiguilles', lands.closed)).toBe('roselieres');
+    expect(openWorldLands(plan5, [], [], undefined, 'french-6e-letter-confusion').suggested).toBe('roselieres');
+  });
+
+  it('les Roselières et les Contreforts dans l’ordre que l’élève choisit ; les Aiguilles reliables une fois les deux reliées', () => {
+    let s = ensure5(withStock(100));
+    expect(pay(s, 'aiguilles').result).toEqual({ ok: false, reason: 'ordre' });
+    // Les Contreforts d'abord : permis ; les Aiguilles attendent encore les Roselières.
+    const c = pay(s, 'contreforts');
+    expect(c.result).toMatchObject({ ok: true });
+    expect(landsAfter('contreforts', lands5(s).closed)).toEqual([]);
+    s = c.state;
+    expect(lands5(s).waiting).toEqual(['aiguilles']);
+    expect(firstBefore('aiguilles', lands5(s).closed)).toBe('roselieres');
+    expect(pay(s, 'aiguilles').result).toEqual({ ok: false, reason: 'ordre' });
+    // Les Roselières ensuite : les Aiguilles deviennent reliables, et la phrase le dit.
+    expect(landsAfter('roselieres', lands5(s).closed)).toEqual(['aiguilles']);
+    s = pay(s, 'roselieres').state;
+    expect(lands5(s).waiting).toEqual([]);
+    expect(pay(s, 'aiguilles').result).toMatchObject({ ok: true });
+  });
+
+  it('une sauvegarde qui a déjà relié les Aiguilles les garde ouvertes (rien n’est repris)', () => {
+    let s = ensure5(withStock(100));
+    // Les Aiguilles reliées avant la règle : leurs liaisons de la grille, écrites comme « Relier » les écrit.
+    const all = pay(pay(pay(s, 'roselieres').state, 'contreforts').state, 'aiguilles').state;
+    const before = new Set([...pay(pay(s, 'roselieres').state, 'contreforts').state.world.links]);
+    const aiguilles = all.world.links.filter((l) => !before.has(l));
+    s = { ...s, world: { ...s.world, links: [...s.world.links, ...aiguilles] } };
+    const lands = lands5(ensure5(s));
+    expect(lands.closed).not.toContain('aiguilles');
+    expect(lands.closed).toContain('roselieres');
+    expect(lands.waiting).toEqual([]);
+  });
+
+  it('le 6e ne change pas : aucune terre n’y attend une autre que sa terre d’avant', () => {
+    for (const land of PLAN.lands) expect(land.waitsFor, land.id).toBeUndefined();
   });
 });
 

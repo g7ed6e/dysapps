@@ -136,3 +136,18 @@ test('la cabine de la Montée : « Monter » à côté de « Y aller » à l’a
   });
   expect(screen.getByRole('button', { name: 'Descendre' })).toBeInTheDocument();
 });
+
+test('sur un Détour (le Perchoir), « Y aller » repart vers le lieu de la marque : la marque reste, le bouton porte sa flèche, sans mot de plus (relecture du lot 16, consultant UX UI)', async () => {
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  const go = () => screen.getByRole('button', { name: /^Y aller/ });
+  const arrow = () => document.querySelector('.open-world-arrow svg')!.getAttribute('class');
+  expect(go().querySelector('svg')!.getAttribute('class')).not.toBe(arrow());
+  act(() => scene.options!.onDetour!('perchoir'));
+  expect(document.querySelector('.open-world-mark')).not.toBeNull();
+  expect(go().querySelector('svg')!.getAttribute('class')).toBe(arrow());
+  expect(go()).toHaveTextContent(/^\s*Y aller\s*$/);
+  // Reparti du Détour : les pas, comme ailleurs.
+  act(() => scene.options!.onDetour!(null));
+  expect(go().querySelector('svg')!.getAttribute('class')).not.toBe(arrow());
+});

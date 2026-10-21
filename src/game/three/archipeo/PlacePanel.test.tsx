@@ -4,7 +4,7 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { vi } from 'vitest';
+import { afterEach, describe, vi } from 'vitest';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
@@ -12,7 +12,7 @@ import { getBiome } from '../../biomes';
 import type { MissionMark } from '../../world/continu/mission';
 import { placeById, type PlaceId } from '../../world/continu/plan6e';
 import { IN_PLACE_LABEL, PlacePanel, placeFromParam, placeResume, placeReturn } from './PlacePanel';
-import { planFor } from '../../world/continu/levelPlan';
+import { placeById as placeById5, planFor } from '../../world/continu/levelPlan';
 
 /** Le plan du 6e, le seul enregistré (GD-22). */
 const PLAN = planFor('6e');
@@ -89,4 +89,39 @@ it('l’adresse de retour d’un lieu se lit sans rien inventer', () => {
   // Une île sans lieu, une mission qui n'est pas de l'île, une autre adresse : son retour habituel.
   for (const path of ['/adventure/history-6e-antiquity/dates', '/adventure/maths-6e-calculation/inventee', '/app/tables', '/adventure/maths-6e-calculation'])
     expect(placeResume(path)).toBeUndefined();
+});
+
+describe('un lieu d’option sans son option (GD-13 ; proposition du consultant UX UI)', () => {
+  afterEach(() => localStorage.removeItem('dysapps:settings'));
+  const oracle = () => {
+    const island = planFor('5e').places.find((p) => p.id === 'oracle')!.island;
+    render(
+      <SettingsProvider>
+        <ProgressProvider>
+          <BloclandProvider>
+            <MemoryRouter>
+              <PlacePanel place={placeById5('oracle')} missions={marks(island)} suggested={null} focus={null} onPlay={vi.fn()} onClose={vi.fn()} />
+            </MemoryRouter>
+          </BloclandProvider>
+        </ProgressProvider>
+      </SettingsProvider>,
+    );
+    return screen.getByRole('dialog', { name: 'L’Oracle' });
+  };
+
+  it('l’Oracle sans latin ni grec : la phrase de l’option, un seul bouton vers les Réglages, aucune mission ; jamais un panneau vide', () => {
+    const sheet = oracle();
+    expect(sheet).toHaveTextContent(/Tu n’as pas choisi l’option latin ou grec/);
+    const go = within(sheet).getByRole('link', { name: /Choisir l’option/ });
+    expect(go).toHaveAttribute('href', '/reglages');
+    expect(within(sheet).queryAllByRole('button').filter((b) => b.classList.contains('app-card'))).toHaveLength(0);
+  });
+
+  it('l’option choisie : les missions du lieu, sans la phrase', () => {
+    localStorage.setItem('dysapps:settings', JSON.stringify({ lca: 'la' }));
+    const sheet = oracle();
+    expect(sheet).not.toHaveTextContent(/Tu n’as pas choisi/);
+    expect(within(sheet).queryByRole('link', { name: /Choisir l’option/ })).toBeNull();
+    expect(within(sheet).getAllByRole('button').filter((b) => b.classList.contains('app-card')).length).toBeGreaterThan(0);
+  });
 });

@@ -13,7 +13,9 @@ import { BloclandProvider } from '../../BloclandContext';
 import { reachableIslands } from '../../world/archipelago';
 import { landById, type LinkedLand } from '../../world/continu/lands';
 import { placeById } from '../../world/continu/levelPlan';
+import { planCells } from '../../world/plans';
 import { COMMANDES } from '../../world/requests';
+import { VEHICLE_STAGES } from '../../world/vehicle';
 import type { BridgeLayEvents, OpenWorld, OpenWorldOptions } from './scene';
 import OpenWorldPage from './OpenWorldPage';
 
@@ -70,6 +72,13 @@ vi.mock('../../BloclandContext', async (original) => {
   };
 });
 
+// La voile arrivée (GD-21) sans lieux achevés : le kit donné d'office, pour une Nef prête.
+const nef = vi.hoisted(() => ({ kit: false }));
+vi.mock('./NefSheet', async (original) => {
+  const m = await original<typeof import('./NefSheet')>();
+  return { ...m, nefSail: (...args: Parameters<typeof m.nefSail>) => (nef.kit ? { kit: true, missing: 0 } : m.nefSail(...args)) };
+});
+
 // Les substitutions (matchMedia du petit écran, ResizeObserver) ne passent pas d'un test à l'autre (relecture du code).
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -77,6 +86,7 @@ afterEach(() => {
 
 beforeEach(() => {
   pay.refuse = false;
+  nef.kit = false;
   scene.instant = true;
   scene.lay = null;
   vi.stubGlobal(
@@ -247,6 +257,34 @@ test('une commande prête porte la suggestion (GD-20, point 4, lot L1) : sa phra
   expect(w.setSigns).toHaveBeenLastCalledWith([]);
   const sheet = await screen.findByRole('dialog', { name: 'Le Phare' });
   expect(within(sheet).getByRole('group')).toHaveTextContent('Livre 3 blocs de terre au Phare.');
+});
+
+test('la Nef prête porte la suggestion, avant une commande prête (GD-21, « Prête ») : la marque sur la Nef, « Y aller » mène au quai et ouvre sa fiche, « Partir »', async () => {
+  const potager = COMMANDES.find((c) => c.fixture === 'french-6e-phonology-fixture-1')!;
+  const stage = VEHICLE_STAGES[0];
+  nef.kit = true;
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { [potager.block]: potager.count }, world: { links: [], requests: [potager.id], parts: { [stage.id]: planCells(stage).map((c) => c.key) } } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  const w = scene.world!;
+  expect(w.setMark).toHaveBeenLastCalledWith('nef');
+  // Une seule suggestion : ni la phrase de la commande, ni sa pastille pleine, ni « Aucune mission ».
+  expect(screen.queryByText('Livre 3 blocs de terre au Phare.')).toBeNull();
+  expect(screen.queryByText(/Aucune mission/)).toBeNull();
+  expect(document.querySelector('.open-world-sign.suggested')).toBeNull();
+  expect(document.querySelector('.open-world-mark-word')).toHaveTextContent('La Nef');
+  // Comme la scène : Kéo déposé au quai, qui ouvre d'abord la fiche du lieu de départ ; celle de la Nef la remplace.
+  vi.mocked(w.goToPort).mockImplementation((spot) => scene.options!.onPort(spot));
+  await userEvent.setup().click(screen.getByRole('button', { name: 'Y aller : La Nef' }));
+  expect(w.goToPort).toHaveBeenLastCalledWith('quai');
+  const sheet = await screen.findByRole('dialog', { name: 'La Nef' });
+  expect(within(sheet).getByRole('button', { name: /^Partir/ })).toBeInTheDocument();
+});
+
+test('la Nef pas encore prête ne porte pas la marque', async () => {
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  expect(scene.world!.setMark).not.toHaveBeenCalledWith('nef');
 });
 
 test('Kéo au Phare, sa commande prête, une mission du Phare encore nouvelle, la destination du jeu ailleurs : la suggestion est la mission du Phare (le rang 2), jamais « Y aller » vers un autre lieu (avis du directeur artistique, deuxième passe du lot L1)', async () => {

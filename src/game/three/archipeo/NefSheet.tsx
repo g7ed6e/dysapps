@@ -10,7 +10,7 @@ import { frenchTypography } from '../../../components/math/RichText';
 import { useTextes } from '../../../universes';
 import { BLOCKS, blockCount, type BiomeId, type BlockId } from '../../biomes';
 import { useBlocland } from '../../BloclandContext';
-import { planStatus, type GameState } from '../../engine';
+import { canLaunch, planStatus, type GameState } from '../../engine';
 import { EarnLink, useEarnWhere } from '../../PlanSection';
 import { useVehicleBuilder } from '../../useVehicleBuilder';
 import { BlockIcon } from '../../Voxel';
@@ -66,6 +66,15 @@ function PastillesDesTemps({ look }: { look: NefLook }) {
 }
 
 /**
+ * La Nef prête à partir (la voile hissée, le voyage pas encore fait) : ce que la fiche montre avec « Partir », et ce qui
+ * met la Nef en tête de la suggestion (GD-21, « Prête » : le passage prêt passe en tête).
+ */
+export const nefReady = (state: GameState, stage: VehicleStage, kit: boolean): boolean => canLaunch(state, stage, kit).ok;
+
+/** Le titre de la fiche de la Nef, et le mot de sa marque. */
+export const NEF_TITLE = cap(VEHICLE_NAME);
+
+/**
  * Ce que dit la Nef qui a tous ses blocs et attend son dernier temps (la voile du voilier, le gouvernail du dirigeable) :
  * une seule idée, ce qu'il reste à faire, jamais un manque (référent dys, retouche du lot 4) ; la même à l'écran, au
  * lecteur d'écran et à la voix.
@@ -103,7 +112,7 @@ export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClo
   const ship = useVehicleBuilder(port, { kit, waiting: nefWaitLabel(missing), ready: nefReadyLabel(vers) });
   const earnWhere = useEarnWhere();
   const { stage, status, launch } = ship;
-  const titre = cap(VEHICLE_NAME);
+  const titre = NEF_TITLE;
   // Le focus va sur le bouton d'action à l'ouverture (consultant UX UI), « Poser » ou « Partir ».
   const action = useRef<HTMLButtonElement>(null);
   const ready = Boolean(launch?.ok);

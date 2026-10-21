@@ -7,9 +7,14 @@
 // panneau s'ouvre en haut, la ligne entière, rôle et icône compris (référent dys et consultant UX UI, relecture du lot
 // L1 : à 844 × 390, la première mission prenait le focus et faisait défiler le panneau).
 import { useEffect, useRef, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { Icon } from '../../../components/Icon';
 import { MissionRows, type MissionRow } from '../../../components/MissionRows';
-import { getBiome } from '../../biomes';
+import { SpeakButton } from '../../../components/SpeakButton';
+import { Syllabified } from '../../../components/Syllabified';
+import { frenchTypography } from '../../../components/math/RichText';
+import { useSettings } from '../../../core/SettingsContext';
+import { getBiome, sansSonOption } from '../../biomes';
 import { Stars } from '../../Stars';
 import { playsInPlace, type MissionMark } from '../../world/continu/mission';
 import { placeOfIsland, type LevelPlan, type OpenPlace, type PlaceId } from '../../world/continu/levelPlan';
@@ -68,7 +73,11 @@ interface Props {
   habitant?: ReactNode;
 }
 
-/** Le panneau d'un lieu : sa liste de missions. */
+/**
+ * Le panneau d'un lieu : sa liste de missions. Un lieu d'option dont l'élève n'a pas choisi l'option (l'Oracle sans
+ * latin ni grec, l'Auberge sans LV2 ; GD-13) : jamais un panneau vide, la phrase de l'option et « Réécouter », puis un
+ * seul bouton vers les Réglages, les mêmes mots que les écrans de l'archipel (proposition du consultant UX UI).
+ */
 export function PlacePanel({ place, missions, suggested, focus, onPlay, onClose, habitant }: Props) {
   useOpenPanel(onClose);
   // Après celui de la liste (l'effet d'un enfant passe avant celui du parent) : le bouton de la ligne de l'habitant prend
@@ -85,6 +94,8 @@ export function PlacePanel({ place, missions, suggested, focus, onPlay, onClose,
     }
   }, [place.id, focus]);
   const biome = getBiome(place.island);
+  const { settings } = useSettings();
+  const sansOption = sansSonOption(biome, settings);
   const rows: MissionRow[] = missions.map((m) => ({
     id: m.mission,
     icon: 'play',
@@ -109,7 +120,20 @@ export function PlacePanel({ place, missions, suggested, focus, onPlay, onClose,
       <div ref={head} className="place-sheet-habitant">
         {habitant}
       </div>
-      <MissionRows rows={rows} focus={focus ?? (missions.some((m) => m.mission === suggested) ? suggested : (missions[0]?.mission ?? null))} label={`Missions ${place.at}`} />
+      {sansOption ? (
+        <>
+          <p className="world-fiche-phrase">
+            <Syllabified text={frenchTypography(sansOption.lu)} /> <SpeakButton text={frenchTypography(sansOption.lu)} label="Réécouter" compact />
+          </p>
+          <p>
+            <Link to="/reglages" className="button">
+              <Icon name="settings" /> {sansOption.bouton}
+            </Link>
+          </p>
+        </>
+      ) : (
+        <MissionRows rows={rows} focus={focus ?? (missions.some((m) => m.mission === suggested) ? suggested : (missions[0]?.mission ?? null))} label={`Missions ${place.at}`} />
+      )}
     </MissionSheet>
   );
 }

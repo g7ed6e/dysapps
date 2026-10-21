@@ -1034,6 +1034,8 @@ export const DONJON: PlaceArt = {
   keepsTracesInScenette: true,
   // Sur la Carte, « Le Donjon » au nord de la tour, de son côté : il ne couvre pas le petit lieu de l'Oracle, au sud.
   nameAbove: true,
+  // Son point, le même en ruine et restauré (comme au Sémaphore) : au-dessus du haut de la tour.
+  mapPoint: { x: TOWER.x, y: PT + TOWER.top + 1.5, z: TOWER.z },
 };
 
 /** Le plan du Donjon, pour les tests : la tour, le piton, la cour, le logis, le pilier, la porte, la scène. */
