@@ -10,6 +10,7 @@ import type { ScenePlaceId as PlaceId } from './levelPlan';
 import { aubergeSurroundings } from './aubergeSurroundings';
 import { nacellesSurroundings } from './nacellesSurroundings';
 import { forgeSurroundings } from './forgeSurroundings';
+import { souteSurroundings } from './souteSurroundings';
 import { croiseeSurroundings } from './croiseeSurroundings';
 import { donjonSurroundings } from './donjonSurroundings';
 import { fumerollesSurroundings } from './fumerollesSurroundings';
@@ -80,6 +81,7 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   gaillard: gaillardSurroundings,
   nacelles: nacellesSurroundings,
   forge: forgeSurroundings,
+  soute: souteSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,

@@ -148,6 +148,8 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   nacelles: placeArt('nacelles')!.traceStage,
   // La Forge (lot 2 du 4e) : chaque trace sa partie (3+1+1), comme au Gaillard.
   forge: placeArt('forge')!.traceStage,
+  // La Soute (lot 2 du 4e) : chaque trace sa partie (le corps, le haut, les abords).
+  soute: placeArt('soute')!.traceStage,
 };
 
 /**
