@@ -9,12 +9,15 @@
 import { FacetBuilder, boundsOf, mergeFacets, placeFacets, type Facets } from './facets';
 import { distance, type Vec2 } from './geometry';
 import { bridgeEdge, firstClosed, isLinkedLand, linkedLands, nodeLands, planOfLand, startLandOf, type LinkedLand } from './lands';
-import { planFor, type LevelPlan } from './levelPlan';
+import { planFor, type LevelPlan, type OpenWorldLevel } from './levelPlan';
 import { bridgeCut, pathNode, type NetworkPoint } from './paths';
+import { CUT_CLEARANCE_4E, NETWORK_4E, isLand4e, passageCut4e } from './paths4e';
 import { NETWORK_5E, isLand5e, passageCut } from './paths5e';
+import { LINKS_4E } from './plan4e';
 import { LINKS_5E } from './plan5e';
 import type { StraitId } from './plan6e';
 import { heightAt, standingHeight, straitClearance } from './terrain';
+import { heightAt4e } from './terrain4e';
 import { channelClearance, heightAt5e } from './terrain5e';
 
 /**
@@ -101,7 +104,17 @@ const WORLD_5E: BridgeWorld = {
   height: heightAt5e,
 };
 
-const worldOf = (land: LinkedLand): BridgeWorld => (planOfLand(land).level === '5e' ? WORLD_5E : WORLD_6E);
+/** Le 4e : le bassin à flot, le ravin et la coulée, chacun sa coupure (le ravin et la coulée sont secs). */
+const WORLD_4E: BridgeWorld = {
+  node: (id) => NETWORK_4E.pathNode(id).at,
+  clearance: (p, land) => (isLand4e(land) ? CUT_CLEARANCE_4E[LINKS_4E[land].cut](p) : DRY),
+  cut: (a, c, land) => (isLand4e(land) ? passageCut4e(a, c, land) : [0, 0]),
+  height: heightAt4e,
+};
+
+const BRIDGE_WORLDS: Readonly<Record<OpenWorldLevel, BridgeWorld>> = { '6e': WORLD_6E, '5e': WORLD_5E, '4e': WORLD_4E };
+
+const worldOf = (land: LinkedLand): BridgeWorld => BRIDGE_WORLDS[planOfLand(land).level];
 
 /** Le passage d'une terre est-il la cabine de la Montée (au 5e), et non un pont ? */
 export const isCabin = (land: LinkedLand): boolean => isLand5e(land) && LINKS_5E[land].kind === 'cabine';

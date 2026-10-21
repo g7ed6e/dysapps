@@ -11,12 +11,13 @@ import { ALL_LANDS, ALL_PLANS, type LevelPlan, type PlaceId } from './levelPlan'
 
 /**
  * Une terre. Au 6e : la Pointe du Phare (le départ, avec l'Escale), puis les quatre qu'on relie ; au 5e (GD-22, lot 2) :
- * les Frondaisons (le départ, avec la Lisière), puis les Roselières, les Contreforts et les Aiguilles, sur le plateau.
+ * les Frondaisons (le départ, avec la Lisière), puis les Roselières, les Contreforts et les Aiguilles, sur le plateau ; au
+ * 4e (lot 1 du monde ouvert du 4e) : les Fabriques (le départ, avec la Crique), puis le Bastion, les Coteaux et l'Épaule.
  */
-export type LandId = 'pointe' | 'couchant' | 'large' | 'levant' | 'cretes' | 'frondaisons' | 'roselieres' | 'contreforts' | 'aiguilles';
+export type LandId = 'pointe' | 'couchant' | 'large' | 'levant' | 'cretes' | 'frondaisons' | 'roselieres' | 'contreforts' | 'aiguilles' | 'fabriques' | 'bastion' | 'coteaux' | 'epaule';
 
 /** Une terre qu'on relie : toutes, sauf celles du départ. */
-export type LinkedLand = Exclude<LandId, 'pointe' | 'frondaisons'>;
+export type LinkedLand = Exclude<LandId, 'pointe' | 'frondaisons' | 'fabriques'>;
 
 export interface Land {
   id: LandId;
@@ -57,7 +58,7 @@ export const PRICE_PER_PLACE = 4;
 /** Le plan d'une terre (ses identifiants sont uniques d'un niveau à l'autre). */
 export const planOfLand = (land: LandId): LevelPlan => ALL_PLANS.find((p) => p.lands.some((l) => l.id === land))!;
 
-/** Le prix d'une terre : le prix d'un lieu de son niveau (4 au 6e, 5 au 5e) par lieu, payé une fois. */
+/** Le prix d'une terre : le prix d'un lieu de son niveau (4 au 6e, 5 au 5e et au 4e) par lieu, payé une fois. */
 export const landPrice = (land: LandId): number => {
   const plan = planOfLand(land);
   return plan.pricePerPlace * landById(land).places.filter((p) => !plan.unpriced.includes(p)).length;

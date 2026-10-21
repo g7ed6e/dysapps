@@ -112,8 +112,8 @@ export const DETOURS: readonly Detour[] = DETOUR_IDS_6E.map(detourOf);
 /** Les Détours du 5e (lot 6 : le Creux, aux Frondaisons ; lot 8 : la Hutte, aux Roselières ; lot 11 : la Faille, aux Contreforts). */
 export const DETOURS_5E: readonly Detour[] = [CREUX, HUTTE, FAILLE];
 
-/** Les Détours d'un niveau. */
-const detoursOf = (level: OpenWorldLevel): readonly Detour[] => (level === '5e' ? DETOURS_5E : DETOURS);
+/** Les Détours d'un niveau (le 4e n'en a pas encore : l'Épave, le Recoin, le Replat et la Dalle viennent avec leur lot). */
+const detoursOf = (level: OpenWorldLevel): readonly Detour[] => (level === '5e' ? DETOURS_5E : level === '4e' ? [] : DETOURS);
 
 /** Tous les Détours, par leur nom : la table se construit une fois. */
 const DETOUR_BY_ID: ReadonlyMap<DetourId, Detour> = new Map([...DETOURS, ...DETOURS_5E].map((d) => [d.id, d]));

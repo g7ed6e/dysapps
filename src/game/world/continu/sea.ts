@@ -6,9 +6,11 @@
 // profonde, la Nuit océan du pack. L'écume du rivage est dans les tuiles du terrain (./terrain.ts, `FOAM`). Code pur.
 import { distance, insidePolygon, smoothstep, type Vec2 } from './geometry';
 import { BEACON_MASTS, COAST, COLORS_6E, FERRY_ISLET, PATH_NODES, STRAITS } from './plan6e';
+import { COAST_4E, COLORS_4E } from './plan4e';
 import { COAST_5E, COLORS_5E } from './plan5e';
 import { landDistance, straitClearance } from './terrain';
 import { channelClearance, landDistance5e } from './terrain5e';
+import { bassinClearance, landDistance4e } from './terrain4e';
 
 /**
  * L'image de l'eau : son côté en pixels, et le carré du monde qu'elle couvre, centré sur l'origine ; environ un pixel
@@ -159,4 +161,26 @@ export function waterTone5e(p: Vec2): number {
   const f = waterFields5e(p);
   const t = WATER_TONES_5E;
   return f.night > 0 ? t.night : f.clear > 0 ? t.clear : (f.shelf ?? -1) > 0 ? t.shelf : t.lagoon;
+}
+
+// ---------- L'eau du 4e (lot 1 du monde ouvert du 4e) ----------
+
+/**
+ * Les paliers de l'eau du 4e (vue globale validée : la mer bleu nuit, #1E3E58, jamais plus sombre) : le large ; une
+ * bande plus claire au bord de l'île ; le palier du milieu ; dans le bassin à flot, entre ses quais, une eau un cran plus
+ * claire que le large, son cœur profond. Mêmes champs, même shader que le 6e : seules les couleurs changent.
+ */
+export const WATER_TONES_4E = { clear: COLORS_4E.seaShallow, shelf: 0x264e68, lagoon: COLORS_4E.sea, night: COLORS_4E.dock, heart: 2.4 } as const;
+
+/** Les trois champs de l'eau du 4e en un point : le cœur du bassin, le bord des rives, le palier du milieu au large. */
+function waterFields4e(p: Vec2): SeaFields {
+  const dock = bassinClearance(p);
+  if (insidePolygon(p, COAST_4E)) return { night: -dock - WATER_TONES_4E.heart, clear: STRAIT_DEEP.clear + dock, shelf: -8 };
+  const coast = landDistance4e(p);
+  return { night: -8, clear: coast + 2.5, shelf: coast + 12 };
+}
+
+/** L'image de l'eau du 4e, codée comme celle du 6e (`seaPixels`). */
+export function seaPixels4e(): Uint8Array {
+  return pixelsOf(waterFields4e);
 }

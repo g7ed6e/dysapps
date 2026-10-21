@@ -10,8 +10,10 @@ import { nodeLands, planOfLand, type LandId, type LinkedLand } from './lands';
 import { placeById, planFor, type LevelPlan } from './levelPlan';
 import type { PathNode } from './network';
 import { PATH_NODES } from './plan6e';
+import { PATH_NODES_4E } from './plan4e';
 import { PATH_EDGES_5E, PATH_NODES_5E } from './plan5e';
 import { heightAt, heightAt as heightAt6e, landDistance, standingHeight } from './terrain';
+import { heightAt4e, landDistance4e } from './terrain4e';
 import { heightAt5e, landDistance5e, plateauShare } from './terrain5e';
 
 /**
@@ -111,6 +113,7 @@ function veilWorld(plan: LevelPlan, nodes: readonly PathNode[], base: Pick<VeilW
 
 let world6e: VeilWorld | null = null;
 let world5e: VeilWorld | null = null;
+let world4e: VeilWorld | null = null;
 
 /** Les tronçons des chemins du 5e. */
 const PATH_SEGMENTS_5E: readonly (readonly [Vec2, Vec2])[] = PATH_EDGES_5E.map(([a, b]) => [PATH_NODES_5E.find((n) => n.id === a)!.at, PATH_NODES_5E.find((n) => n.id === b)!.at] as const);
@@ -128,6 +131,8 @@ function worldOf(land: LandId): VeilWorld {
 }
 
 function levelWorld(land: LandId): VeilWorld {
+  // Le 4e : un seul sol, comme le 6e ; la brume s'arrête sur la mer et le bassin, pas sur le ravin ni la coulée (secs).
+  if (planOfLand(land).level === '4e') return (world4e ??= veilWorld(planFor('4e'), PATH_NODES_4E, { landDistance: landDistance4e, heightAt: heightAt4e, level: () => 1, layers: VEIL_LAYERS, clear: () => 1 }));
   if (planOfLand(land).level === '5e')
     return (world5e ??= veilWorld(planFor('5e'), PATH_NODES_5E, {
       landDistance: landDistance5e,

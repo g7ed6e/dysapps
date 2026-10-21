@@ -16,6 +16,7 @@ import { placeById as placeOfAnyLevel } from './levelPlan';
 import { heightFor } from './placeGround';
 import { PATH_NODES_5E } from './plan5e';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId as PlaceId6e } from './plan6e';
+import { RUINS_4E } from './ruins4e';
 import { RUINS_5E } from './ruins5e';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 import { landDistance } from './terrain';
@@ -2479,7 +2480,7 @@ const RUINS_FALLEN_VOUSSOIRS = [
   [4.8, -4.9, -0.7],
 ] as const;
 
-/** Une ruine du 5e (./ruins5e.ts), en une seule pièce : ses lieux n'ont pas encore d'étapes (GD-22, lot 2). */
+/** Une ruine du 5e (./ruins5e.ts) ou du 4e (./ruins4e.ts), en une seule pièce : ses lieux n'ont pas encore d'étapes (GD-22, lot 2). */
 const ruinOnly =
   (draw: (b: FacetBuilder) => void) =>
   (add: Add): void =>
@@ -2520,6 +2521,23 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   hameau: northPlace('hameau'),
   auberge: northPlace('auberge'),
   oracle: ruinOnly(RUINS_5E.oracle),
+  // Le 4e (lot 1) : les seize lieux en ruines simples (./ruins4e.ts).
+  forge: ruinOnly(RUINS_4E.forge),
+  soute: ruinOnly(RUINS_4E.soute),
+  porte: ruinOnly(RUINS_4E.porte),
+  etalon: ruinOnly(RUINS_4E.etalon),
+  gabarit: ruinOnly(RUINS_4E.gabarit),
+  manufacture: ruinOnly(RUINS_4E.manufacture),
+  loge: ruinOnly(RUINS_4E.loge),
+  chariot: ruinOnly(RUINS_4E.chariot),
+  herbier: ruinOnly(RUINS_4E.herbier),
+  roches: ruinOnly(RUINS_4E.roches),
+  jonction: ruinOnly(RUINS_4E.jonction),
+  veillee: ruinOnly(RUINS_4E.veillee),
+  basilique: ruinOnly(RUINS_4E.basilique),
+  terminus: ruinOnly(RUINS_4E.terminus),
+  orgues: ruinOnly(RUINS_4E.orgues),
+  dynamo: ruinOnly(RUINS_4E.dynamo),
 };
 
 const pieces = new Map<PlaceId, PlacePiece[]>();

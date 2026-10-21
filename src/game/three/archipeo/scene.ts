@@ -39,6 +39,7 @@ import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from '../../world/cont
 import { pathMapEdges5e } from '../../world/continu/paths5e';
 import { COLORS_5E } from '../../world/continu/plan5e';
 import { onPlateau, plateauShare } from '../../world/continu/terrain5e';
+import { summitMapHatch } from '../../world/continu/terrain4e';
 import { freeRoute, isWalkable, nearestWalkable, onPathCell, walkGridSteps, type WalkGrid } from '../../world/continu/freeWalk';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { edgesNear, pathTopAt, type NetworkPoint } from '../../world/continu/paths';
@@ -719,7 +720,7 @@ function thinFogLines(list: readonly ThinFog[]): string {
  * lampe du 6e. Quelques lignes de shader après celles de `unshadedLamp`, aucun appel de plus ; le programme a sa propre
  * clé (le 6e garde le sien, inchangé).
  */
-function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: readonly ThinFog[]): THREE.MeshLambertMaterial {
+function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: readonly ThinFog[], key: string): THREE.MeshLambertMaterial {
   const before = m.onBeforeCompile;
   const lantern = new THREE.Vector3(...linearRgb(COLORS_5E.lantern));
   m.onBeforeCompile = (shader, renderer) => {
@@ -749,12 +750,11 @@ function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: reado
         '#ifdef USE_FOG\nfloat fogFactor = smoothstep( fogNear, fogFar, vFogDepth ) * mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) ) * thinFogK;\ngl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n#endif',
       );
   };
-  // La clé du programme est fixe : Three.js réutilise le programme compilé de toute matière qui porte la même clé, sans
-  // relire `onBeforeCompile`. Elle ne vaut donc que tant qu'un seul niveau prend la lumière par la hauteur, avec une
-  // seule liste `thin` (le 5e) ; un autre niveau qui la prendrait avec d'autres couleurs peu voilées devrait mettre sa
-  // liste dans la clé. Les couleurs de `thin` (huit au 5e : huit comparaisons par fragment, à mesurer sur l'iPad) sont
+  // La clé du programme, une par niveau (`key` : celle du 5e reste « archipeo-hauteur », le 4e a la sienne) : Three.js
+  // réutilise le programme compilé de toute matière qui porte la même clé, sans relire `onBeforeCompile`, et chaque
+  // niveau a sa liste `thin` et ses réglages. Les couleurs de `thin` (huit au 5e : huit comparaisons par fragment, à mesurer sur l'iPad) sont
   // loin de toute autre couleur du 5e (world/continu/thinFog.test.ts).
-  m.customProgramCacheKey = () => 'archipeo-hauteur';
+  m.customProgramCacheKey = () => key;
   return m;
 }
 
@@ -804,6 +804,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // et rien ne s'y appelle, sauf la scénette et les traces de la Montée (GD-22, lot 3, `hasScenette`), et sa faune.
   const world = levelWorld(level);
   const { sixth, net } = world;
+  // Le 5e seul a sa falaise, sa brume des failles, ses Détours et sa faune par terre ; le 4e (lot 1) n'a encore rien de
+  // tout cela, et sur la Carte, les hachures de son sommet.
+  const fifth = level === '5e';
   const followFar = sixth ? FOLLOW_FAR : FOLLOW_FAR_5E;
   // Le lieu de départ du niveau et sa Nef (GD-20, lot 2 ; GD-21 ; GD-22, lot 4) : l'Escale et le voilier au 6e, la
   // Lisière et le dirigeable au 5e.
@@ -877,7 +880,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const rotorAngle = { value: 0 };
   const landMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), vaneAngle, rotorAngle);
   // Au 5e, la lumière par la hauteur (ses deux étages) ; le 6e garde son matériau tel quel.
-  if (world.heightLight) heightLit(landMaterial, world.heightLight, world.thinFog);
+  if (world.heightLight) heightLit(landMaterial, world.heightLight, world.thinFog, fifth ? 'archipeo-hauteur' : `archipeo-hauteur-${level}`);
   const tiles = createTileStore(field, undefined, world.tiles);
   const nearRing = new RingMesh(landMaterial, 9000);
   const farRing = new RingMesh(landMaterial, 6000);
@@ -1022,7 +1025,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const riftMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), veilMaterial));
   riftMesh.renderOrder = 1;
   riftMesh.visible = false;
-  if (!sixth) {
+  if (fifth) {
     setVeilGeometry(riftMesh, riftMistFacets());
     scene.add(riftMesh);
   }
@@ -1281,7 +1284,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // oiseaux du bord d'eau : chaque espèce à sa place fixe, chacune de ses bêtes à la taille de sa forme.
   const critters = allCritterForms();
   const groundAt = (p: Vec2) => ground(p.x, p.z);
-  const groups = (sixth ? wildlifeGroups6e() : wildlifeGroups5e(groundAt)).map((g) => ({ ...g, length: critters[g.form].positions.length, start: 0, held: [] as (number | null)[] }));
+  const groups = (sixth ? wildlifeGroups6e() : fifth ? wildlifeGroups5e(groundAt) : []).map((g) => ({ ...g, length: critters[g.form].positions.length, start: 0, held: [] as (number | null)[] }));
   // La baleine, son souffle et les oiseaux du bord d'eau sont du 6e : au 5e, le maillage ne tient que les bêtes.
   const whaleEnd = sixth ? birdsAt + FAUNA.birds * birdBase.positions.length : 0;
   let critterEnd = whaleEnd;
@@ -1594,7 +1597,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let manualView: CameraPose | null = null;
   const follow = () => {
     if (manualView) return applyPose(manualView);
-    followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : detourRise(detourView), sixth ? undefined : hold, arrivalBack > 0 ? arrivalShape : detourShape);
+    followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : detourRise(detourView), fifth ? hold : undefined, arrivalBack > 0 ? arrivalShape : detourShape);
     lookUp(pose, lanternTop, keoFeet, look, viewH);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     applyPose(pose);
@@ -1762,8 +1765,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     return f;
   };
   let placesKey = '';
-  // La ligne de la falaise du 5e sur la Carte, et la bande sombre de ses chemins, faites une fois (rien au 6e).
-  const cliffLine: Facets = sixth ? mergeFacets([]) : mergeFacets([cliffMapLine(), pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark)]);
+  // La ligne de la falaise du 5e sur la Carte, et la bande sombre de ses chemins ; au 4e, les hachures du sommet ; faites
+  // une fois (rien au 6e).
+  const cliffLine: Facets = sixth ? mergeFacets([]) : fifth ? mergeFacets([cliffMapLine(), pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark)]) : summitMapHatch();
   /**
    * Refait le maillage des lieux si ce qu'il montre a changé : le lieu suivi à part (sauf sur la Carte), la maquette des
    * Quais et les traces cachées pendant leur scénette (la scénette a les siennes), les parties retenues par une pose ;
@@ -1833,7 +1837,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Les Détours du 5e (GD-22) : le Creux (lot 6), le fût creusé, son banc et sa lanterne ; la Hutte (lot 8), sa cabane ;
       // la Faille (lot 11), la fente, son arbre, son pont de racines, sa lanterne et sa vapeur ; et la sente de chacun une
       // fois trouvé, dans le monde comme sur la Carte, sans appel de plus.
-      rest.push(creuxNow(), detourFacetsNow(), failleNow());
+      if (fifth) rest.push(creuxNow(), detourFacetsNow(), failleNow());
       setGeometry(placesMesh, mergeFacets(rest));
       setGeometry(landmarkMesh, mergeFacets(mark));
       mapDirty = true;
@@ -2649,7 +2653,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     fog.far = WORLD_FOG.far;
     camera.far = followFar;
     camera.updateProjectionMatrix();
-    riftMesh.visible = !sixth;
+    riftMesh.visible = fifth;
     updateRings(true, true);
     follow();
   };
@@ -3958,7 +3962,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     stepTurn(now);
     followStep(focus, aimed(), dt, reduceMotion);
     lift = liftStep(lift, occlusionLift(focus, ground, yaw), dt, reduceMotion);
-    if (!sixth) stepHold(dt);
+    if (fifth) stepHold(dt);
     stepGlow(t);
     look = lookUpStep(look, nearLantern() ? 1 : 0, dt, reduceMotion);
     arrivalBack = lookUpStep(arrivalBack, arrivalNow ? 1 : 0, dt, reduceMotion);
