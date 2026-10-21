@@ -18,6 +18,11 @@ export interface PlaceConstruction {
   shapes: PartShape[];
   /** Les parties posées (pas forcément les premières : une sauvegarde d'avant GD-6 peut en avoir posé d'autres). */
   posed: boolean[];
+  /**
+   * Ce que la scène dessine : les tranches dont toutes les cases sont enregistrées, partie posée ou non. Après un
+   * changement d'option (GD-14), le porche posé en latin reste debout en grec, où il n'est que la moitié d'une partie.
+   */
+  built: PartShape[];
 }
 
 /** Par tableau de parties (`partiesDe` en rend un par lieu et par compte : le lieu d'option suit l'option choisie). */
@@ -45,13 +50,30 @@ export function partShapes(island: BiomeId): PartShape[] {
   return shapes;
 }
 
-/** La construction d'un lieu dans une sauvegarde : ses parties et celles qui sont posées. */
+/** La construction d'un lieu dans une sauvegarde : ses parties, celles qui sont posées et les tranches à dessiner. */
 export function placeConstruction(island: BiomeId, parts: Record<string, string[]>): PlaceConstruction {
-  return { shapes: partShapes(island), posed: partiesDe(island).map((p) => partiePosee(p, parts)) };
+  const parties = partiesDe(island);
+  const shapes = partShapes(island);
+  const posed = parties.map((p) => partiePosee(p, parts));
+  const plans = plansFor(island);
+  const built = shapes.flatMap((shape, i) => {
+    if (posed[i]) return [shape];
+    // Une tranche par case de la partie (sur les trois plans, comme `partShapes`) : celles dont les cases sont posées.
+    const cases = parties[i].cases.filter(({ plan }) => {
+      const k = plans.findIndex((p) => p.id === plan.id);
+      return k >= 0 && k <= 2;
+    });
+    const faites = shape.filter((_, j) => {
+      const done = new Set(parts[cases[j].plan.id] ?? []);
+      return cases[j].keys.every((k) => done.has(k));
+    });
+    return faites.length ? [faites] : [];
+  });
+  return { shapes, posed, built };
 }
 
-/** Les parties posées d'une construction, en tranches (ce que la scène dessine). */
-export const posedShapes = (c: PlaceConstruction): PartShape[] => c.shapes.filter((_, i) => c.posed[i]);
+/** Ce que la scène dessine d'une construction, en tranches : les parties posées, et les tranches posées des autres. */
+export const posedShapes = (c: PlaceConstruction): PartShape[] => c.built;
 
 /** L'état d'un lieu sur la Carte, déduit de ses parties : en chantier (au moins une posée), achevé (toutes), ou rien. */
 export function constructionState(c: PlaceConstruction): 'en-chantier' | 'restauree' | null {

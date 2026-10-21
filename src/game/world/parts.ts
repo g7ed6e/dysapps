@@ -17,7 +17,7 @@
  * (à deux parties, les trois plans sont déjà posés). Avec « Pas d'option », l'option qui en a le plus. Une sauvegarde
  * posée avec un autre compte s'y remet seule à l'ouverture (`rattraperLesParties`, `engine.ts`) : les cases restent.
  */
-import { BIOMES, type BiomeDef, type BiomeId, type Lca } from '../biomes';
+import { BIOMES, missionsJouables, type BiomeDef, type BiomeId, type Lca } from '../biomes';
 import { lcaCourante, type LcaChoice } from '../../core/settings';
 import { isPlanDone, planCells, plansFor, type PlanDef } from './plans';
 
@@ -42,7 +42,8 @@ const PARTIES_MAX = 5;
 function missionsDuBatiment(biome: Pick<BiomeDef, 'exercises'>, lca: LcaChoice): number {
   const options = [...new Set(biome.exercises.flatMap((x) => (x.option === undefined ? [] : [x.option])))];
   if (options.length) {
-    const jouables = (o: Lca) => biome.exercises.filter((x) => x.option === o && x.waiting === undefined).length;
+    // Le lieu d'option n'a pas de mission de LV2 : seule l'option compte (`missionsJouables`, la règle de l'écran).
+    const jouables = (o: Lca) => missionsJouables(biome, 'none', o).length;
     return lca === 'none' ? Math.max(...options.map(jouables)) : jouables(lca);
   }
   const langue = biome.exercises.find((x) => x.lv2 !== undefined)?.lv2;
@@ -269,8 +270,11 @@ export function poserLesParties(id: BiomeId, parts: Record<string, string[]>, te
  * Les missions terminées d'un lieu, au moins une fois, quels que soient le niveau, les étoiles et les jokers : celles
  * dont un exercice a une partie enregistrée. Un exercice s'appelle `<lieu>-<mission>-<suite>` ; la mission la plus longue
  * qui convient gagne (`word` ne prend pas `word-classes`), comme le lieu le plus long.
+ *
+ * `lca` (le bâtiment, GD-14) : sur le lieu du latin et du grec, seules comptent les missions de cette option ; celles de
+ * l'autre option, jouées avant un changement dans les Réglages, ne posent rien de plus (leurs cases restent posées).
  */
-export function missionsTerminees(progress: Record<string, { attempts: number }>, id: BiomeId): number {
+export function missionsTerminees(progress: Record<string, { attempts: number }>, id: BiomeId, lca?: LcaChoice): number {
   const biome = BIOMES.find((b) => b.id === id);
   if (!biome) return 0;
   const longer = BIOMES.filter((b) => b.id.length > id.length && b.id.startsWith(`${id}-`)).map((b) => `${b.id}-`);
@@ -282,5 +286,7 @@ export function missionsTerminees(progress: Record<string, { attempts: number }>
     const type = types.find((t) => rest.startsWith(`${t}-`));
     if (type) done.add(type);
   }
-  return done.size;
+  if (lca === undefined) return done.size;
+  const horsOption = new Set(biome.exercises.filter((x) => x.option !== undefined && x.option !== lca).map((x) => x.id));
+  return [...done].filter((t) => !horsOption.has(t)).length;
 }

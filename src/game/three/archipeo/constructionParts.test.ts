@@ -1,13 +1,14 @@
 // Les parties de la construction des lieux du monde continu (GD-20, lot 1) : celles de la grille, mêmes identifiants,
 // même ordre, même sauvegarde ; chacune en tranches d'étapes, qui couvrent chaque étape une fois, de bas en haut.
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
+import { DEFAULT_SETTINGS, retenirReglages } from '../../../core/settings';
 import type { BiomeId } from '../../biomes';
 import { constructionFacets, WHOLE } from '../../world/continu/construction';
 import { PLACES } from '../../world/continu/plan6e';
 import { buildHeightField, heightOnMesh } from '../../world/continu/terrain';
 import { partiesDe, poserLesParties } from '../../world/parts';
 import { textesDe } from '../../../universes';
-import { plansFor } from '../../world/plans';
+import { planCells, plansFor } from '../../world/plans';
 import { phraseDeLaPose } from '../../poseWords';
 import type { OpenPlace } from '../../world/continu/levelPlan';
 import { planFor } from '../../world/continu/levelPlan';
@@ -179,4 +180,20 @@ describe('Le bilan d’un lieu du 5e nomme l’étape, jamais le plan (directeur
       });
     }
   });
+
+  it('après un changement d’option, le porche posé en latin reste debout en grec, sans finir la partie (GD-14)', () => {
+    const island = 'lca-5e-legends';
+    const [abri, porche] = plansFor(island);
+    const toutes = (plan: typeof abri) => planCells(plan).map((c) => c.key);
+    const parts = { [abri.id]: toutes(abri), [porche.id]: toutes(porche) };
+    retenirReglages({ ...DEFAULT_SETTINGS, lca: 'gr' });
+    const c = placeConstruction(island, parts);
+    expect(c.posed).toEqual([true, false]);
+    expect(constructionState(c)).toBe('en-chantier');
+    // L'abri entier, puis le porche seul de la deuxième partie (le cercle des conteurs reste en trace).
+    expect(posedShapes(c)).toEqual([partShapes(island)[0], [partShapes(island)[1][0]]]);
+    expect(posedShapes(c)[1][0].stage).toBe(1);
+  });
 });
+
+afterEach(() => retenirReglages(null));

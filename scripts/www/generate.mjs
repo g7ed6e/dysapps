@@ -614,8 +614,11 @@ function islandPage(b, d) {
   if (parties.length && b.subject === 'lca') {
     const latin = d.partiesDe(b.id, 'la');
     const grec = d.partiesDe(b.id, 'gr');
+    const enAttente = (o) => b.exercises.filter((x) => x.option === o && x.waiting).length;
+    const attend = (o, langue) =>
+      enAttente(o) ? ` (${enAttente(o) > 1 ? `${enAttente(o)} missions de ${langue} attendent` : `une mission de ${langue} attend`} encore ; quand ${enAttente(o) > 1 ? 'elles arriveront' : 'elle arrivera'}, rien de posé ne se défait)` : '';
     lines.push(
-      `Le bâtiment de l’île a une partie par mission de l’option choisie dans les Réglages : ${plural(latin.length, 'partie')} en latin, ${plural(grec.length, 'partie')} en grec${grec.length < latin.length ? ' (une mission de grec attend encore ; quand elle arrivera, rien de posé ne se défait)' : ''}. La première fois que l’élève termine une mission de l’île, une partie se pose toute seule, sans prendre de blocs, quels que soient le niveau, les étoiles et les jokers. Les parties se posent dans cet ordre, quelle que soit la mission jouée.`,
+      `Le bâtiment de l’île a une partie par mission de l’option choisie dans les Réglages : ${plural(latin.length, 'partie')} en latin${attend('la', 'latin')}, ${plural(grec.length, 'partie')} en grec${attend('gr', 'grec')}. La première fois que l’élève termine une mission de l’île, une partie se pose toute seule, sans prendre de blocs, quels que soient le niveau, les étoiles et les jokers. Les parties se posent dans cet ordre, quelle que soit la mission jouée.`,
       '',
       'En latin :',
       '',

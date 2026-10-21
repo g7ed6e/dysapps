@@ -1,4 +1,4 @@
-import { afterEach } from 'vitest';
+import { afterEach, describe } from 'vitest';
 import { BIOMES, missionsJouables } from '../biomes';
 import { DEFAULT_SETTINGS, retenirReglages } from '../../core/settings';
 import { EMPTY_STATE, completeExercise, rattraperLesParties, type GameState } from '../engine';
@@ -252,3 +252,53 @@ it('le lieu de la LV2 a cinq parties, posées par les missions des deux langues 
   expect(missionsTerminees(tout, id)).toBe(10);
   expect(poserLesParties(id, {}, missionsTerminees(tout, id)).posees).toHaveLength(5);
 });
+
+describe('Le changement d’option en cours de partie (GD-14)', () => {
+  const id = 'lca-5e-legends';
+  const [abri, porche, cercle] = plansFor(id);
+  const toutes = (plan: typeof abri) => planCells(plan).map((c) => c.key);
+  const types = BIOMES.find((x) => x.id === id)!.exercises;
+  const jouees = (option: 'la' | 'gr', n = 9) =>
+    Object.assign({}, ...types.filter((t) => t.option === option && t.waiting === undefined).slice(0, n).map((t) => joue(premierExercice(id, t.id))));
+
+  it('ne compte que les missions de l’option choisie pour le bâtiment', () => {
+    const progress = { ...jouees('la', 2), ...jouees('gr', 1) };
+    expect(missionsTerminees(progress, id)).toBe(3);
+    expect(missionsTerminees(progress, id, 'la')).toBe(2);
+    expect(missionsTerminees(progress, id, 'gr')).toBe(1);
+    expect(missionsTerminees(progress, id, 'none')).toBe(0);
+    // Un lieu sans option : l'option n'y change rien.
+    const sons = joue(premierExercice('french-6e-phonology', 'rhymes'));
+    expect(missionsTerminees(sons, 'french-6e-phonology', 'gr')).toBe(1);
+  });
+
+  it('latin 2/3 puis grec : rien de posé ni d’XP sans mission de grec, la suite vient des missions de grec', () => {
+    retenirReglages({ ...DEFAULT_SETTINGS, lca: 'gr' });
+    const state: GameState = { ...EMPTY_STATE, progress: jouees('la', 2), world: { ...EMPTY_STATE.world, parts: { [abri.id]: toutes(abri), [porche.id]: toutes(porche) } } };
+    const r = rattraperLesParties(state, '2026-10-21');
+    expect(r.state).toBe(state);
+    expect(r.plansFinis).toEqual([]);
+    expect(partiesPosees(id, state.world.parts)).toBe(1);
+    expect(isPlanDone(porche, state.world.parts)).toBe(true);
+    // Une mission de grec : son compte (une partie) y est déjà. Deux : le cercle se pose, seule XP rendue.
+    expect(rattraperLesParties({ ...state, progress: { ...state.progress, ...jouees('gr', 1) } }, '2026-10-21').state.world.parts).toBe(state.world.parts);
+    const deux = rattraperLesParties({ ...state, progress: { ...state.progress, ...jouees('gr', 2) } }, '2026-10-21');
+    expect(deux.plansFinis.map((p) => p.id)).toEqual([cercle.id]);
+    expect(prochainePartie(id, deux.state.world.parts)).toBeNull();
+  });
+
+  it('grec puis latin : ce qui est posé reste, et seules les missions de latin posent la suite', () => {
+    // Grec fini (2/2) : en latin, les trois parties sont déjà posées.
+    retenirReglages({ ...DEFAULT_SETTINGS, lca: 'la' });
+    const fini = { [abri.id]: toutes(abri), [porche.id]: toutes(porche), [cercle.id]: toutes(cercle) };
+    expect(partiesPosees(id, fini)).toBe(3);
+    // Grec 1/2 (l'abri) : en latin, 1/3 ; rien ne se pose sans mission de latin, puis une mission de latin de plus pose le porche.
+    const state: GameState = { ...EMPTY_STATE, progress: jouees('gr', 1), world: { ...EMPTY_STATE.world, parts: { [abri.id]: toutes(abri) } } };
+    expect(partiesPosees(id, state.world.parts)).toBe(1);
+    expect(rattraperLesParties(state, '2026-10-21').state).toBe(state);
+    const deux = rattraperLesParties({ ...state, progress: { ...state.progress, ...jouees('la', 2) } }, '2026-10-21');
+    expect(deux.plansFinis.map((p) => p.id)).toEqual([porche.id]);
+    expect(partiesPosees(id, deux.state.world.parts)).toBe(2);
+  });
+});
+

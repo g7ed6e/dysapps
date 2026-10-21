@@ -823,13 +823,16 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   }, [openList]);
 
   // La construction de chaque lieu (GD-20, lot 1) : les parties de la grille, mêmes identifiants, même sauvegarde.
+  // `partiesDe` lit l'option latin ou grec par `lcaCourante()` : `settings.lca` refait les constructions quand l'élève
+  // la change (le lieu du latin et du grec compte les missions de l'option, GD-14) ; la règle le croit inutile.
   const constructions = useMemo(() => {
     const of = (id: PlaceId) => {
       const biome = getBiome(placeById(id).island);
-      return biome ? placeConstruction(biome.id, state.world.parts) : { shapes: [], posed: [] };
+      return biome ? placeConstruction(biome.id, state.world.parts) : { shapes: [], posed: [], built: [] };
     };
     return placeRecord(plan, of);
-  }, [plan, state.world.parts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plan, state.world.parts, settings.lca]);
   // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son dernier temps (la voile au 6e, le gouvernail au 5e) vient avec
   // autant de lieux achevés que la grille demande de Gardiens (le monde continu n'en a pas) ; son temps, montré sur le ber.
   const nefStage = nefStageOf(level);
