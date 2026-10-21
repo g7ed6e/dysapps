@@ -82,7 +82,7 @@ export interface Scenette {
    * réplique de l'habitant, dite une fois, après « La Forge est restaurée. ». Ni nom de contenu, ni chiffre, ni mot de
    * chaleur.
    */
-  words?: { readonly pose: readonly string[]; readonly end: string };
+  words?: { readonly pose: readonly string[]; readonly end?: string };
 }
 
 const SCENETTES: Record<PlaceId, Scenette> = {
@@ -180,19 +180,28 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     role: placeArt('soute')!.role,
     greeting: 'Le magasinier range et compte tout ce qui part et tout ce qui arrive.',
     placement: 'rangee',
-    // Les phrases de l'intention (§ 7), une par partie (le corps, le haut, les abords).
-    words: { pose: ['La halle est debout.', 'La halle a son toit.', 'Le quai est prêt, le navire aussi.'], end: 'D’ici, on envoyait nos machines au bout du monde.' },
+    // Les phrases de l'intention (§ 7), reprises par le directeur du contenu pédagogique, une par partie (le corps, le haut,
+    // les abords).
+    words: { pose: ['La halle est debout.', 'La halle a son toit.', 'Le navire est de nouveau droit.'], end: 'D’ici, les machines partaient en bateau vers d’autres pays.' },
   },
   // La Porte (lot 2 du 4e) : la phrase du métier de la proposition, jamais « loge ».
   porte: {
     role: placeArt('porte')!.role,
     greeting: 'L’avocate aide chacun à défendre ses droits.',
     placement: 'rangee',
-    // Les phrases de l'intention (§ 7), une par partie (le corps, le haut, les abords).
-    words: { pose: ['La porte est ouverte.', 'La salle a son toit.', 'La place est prête.'], end: 'Ici, tout le monde peut entrer, et tout le monde peut parler.' },
+    // Les phrases de l'intention (§ 7), reprises par le directeur du contenu pédagogique, une par partie (le corps, le haut,
+    // les abords).
+    words: { pose: ['Les deux battants sont ouverts.', 'La salle a son toit.', 'Les bancs sont remis en cercle.'], end: 'Ici, chacun peut entrer et parler.' },
   },
   // L'Étalon (lot 2 du 4e) : la peseuse explique le mot une fois, sans le cheval (correction 5 du directeur artistique).
-  etalon: { role: placeArt('etalon')!.role, greeting: 'Ici, chaque poids avait son modèle : l’étalon.', placement: 'rangee' },
+  etalon: {
+    role: placeArt('etalon')!.role,
+    greeting: 'Ici, tous les poids suivaient un modèle : l’étalon.',
+    placement: 'rangee',
+    // Les phrases de pose du directeur du contenu pédagogique (relecture des Fabriques) ; pas de réplique de fin, l'Étalon
+    // n'a pas de restauration.
+    words: { pose: ['La bascule est remise à plat.', 'Le tonneau est sur ses chevalets.', 'Les cuves et la trieuse sont debout.', 'Le toit est de nouveau entier.', 'La cour est dallée.'] },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */

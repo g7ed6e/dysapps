@@ -175,7 +175,7 @@ describe('La scénette de l’Étalon', () => {
   it('la peseuse, sans prénom ; sa phrase explique le mot une fois, sans le cheval ni l’Épave', () => {
     const s = scenetteOf('etalon');
     expect(s.role).toBe('La peseuse');
-    expect(s.greeting).toBe('Ici, chaque poids avait son modèle : l’étalon.');
+    expect(s.greeting).toBe('Ici, tous les poids suivaient un modèle : l’étalon.');
     for (const text of [s.role, s.greeting ?? '']) expect(text).not.toMatch(/cheval|jument|poulain|Épave|naufrage/i);
   });
 

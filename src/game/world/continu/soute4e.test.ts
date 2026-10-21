@@ -146,7 +146,7 @@ describe('Le bilan de la Soute', () => {
     const parties = partiesDe(island);
     expect(parties).toHaveLength(3);
     const said = [0, 1, 2].map((k) => phraseDeLaPose({ posees: [parties[k]], plansFinis: [] }, words));
-    expect(said).toEqual(['Partie posée : le corps de la Soute. La halle est debout.', 'Partie posée : le haut de la Soute. La halle a son toit.', 'Partie posée : les abords de la Soute. Le quai est prêt, le navire aussi.']);
+    expect(said).toEqual(['Partie posée : le corps de la Soute. La halle est debout.', 'Partie posée : le haut de la Soute. La halle a son toit.', 'Partie posée : les abords de la Soute. Le navire est de nouveau droit.']);
     for (const s of said) expect(s).not.toMatch(/entrepôt/i);
   });
 });

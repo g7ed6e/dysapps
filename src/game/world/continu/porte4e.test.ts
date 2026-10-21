@@ -147,7 +147,7 @@ describe('Le bilan de la Porte', () => {
     const parties = partiesDe(island);
     expect(parties).toHaveLength(3);
     const said = [0, 1, 2].map((k) => phraseDeLaPose({ posees: [parties[k]], plansFinis: [] }, words));
-    expect(said).toEqual(['Partie posée : le corps de la Porte. La porte est ouverte.', 'Partie posée : le haut de la Porte. La salle a son toit.', 'Partie posée : les abords de la Porte. La place est prête.']);
+    expect(said).toEqual(['Partie posée : le corps de la Porte. Les deux battants sont ouverts.', 'Partie posée : le haut de la Porte. La salle a son toit.', 'Partie posée : les abords de la Porte. Les bancs sont remis en cercle.']);
     for (const s of said) expect(s).not.toMatch(/loge/i);
   });
 });

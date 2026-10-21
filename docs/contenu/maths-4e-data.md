@@ -693,8 +693,8 @@ Pour tous les items :
   - Le segment qui joint ces deux milieux mesure la moitié du troisième côté.
   - La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.
   - Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.
-  - Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle.
   - Son centre est le milieu de l’hypoténuse.
+  - Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle.
 
 1. énoncé : Dans le triangle ABC, I est le milieu de [AB], J celui de [AC], et BC = 8 cm. Alors IJ mesure …
    - lu : Dans le triangle A B C, I est le milieu de A B, J celui de A C, et B C mesure 8 centimètres. Alors I J mesure (mot manquant).
