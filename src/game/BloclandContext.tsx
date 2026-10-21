@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { gelerSauvegarde, loadJSON, removeKey, saveJSON, trySaveJSON } from '../core/storage';
 import { useProgress } from '../core/ProgressContext';
+import { useSettings } from '../core/SettingsContext';
 import { bacASable, remplir } from './builder';
 import {
   EMPTY_STATE,
@@ -161,6 +162,20 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     if (rattrapes.current.length && trySaveJSON(STORAGE_KEY, ouverture.state)) for (const plan of rattrapes.current) completePlan(plan.reward.xp);
     rattrapes.current = [];
   }, [completePlan, ouverture.state]);
+  // L'option latin ou grec changée dans les Réglages (GD-14) : le lieu du latin et du grec compte alors les missions de
+  // la nouvelle option ; ses parties dues se posent tout de suite, sans attendre la prochaine ouverture (`partiesDe` et
+  // `missionsTerminees` lisent l'option en mémoire, posée par `SettingsProvider` avant ce rendu). L'XP des plans finis.
+  const lca = useSettings().settings.lca;
+  const lcaVue = useRef(lca);
+  useEffect(() => {
+    if (lcaVue.current === lca) return;
+    lcaVue.current = lca;
+    const r = rattraperLesParties(stateRef.current, todayISO());
+    if (r.state === stateRef.current) return;
+    stateRef.current = r.state;
+    setState(r.state);
+    for (const plan of r.plansFinis) completePlan(plan.reward.xp);
+  }, [lca, completePlan]);
   const [sessionCount, setSessionCount] = useState(0);
   const sessionStart = useRef(Date.now());
   const [batisseur, setBatisseur] = useState(false);

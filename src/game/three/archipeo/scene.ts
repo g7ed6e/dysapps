@@ -11,6 +11,8 @@
 import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { createHabitantModels } from './habitantModels';
+import { createEquipierModels } from './equipierModels';
+import { guideOf } from '../../world/continu/equipage';
 import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
@@ -68,6 +70,7 @@ import {
   scenetteHidesPlace,
   scenetteKeo,
   scenetteHabitant,
+  scenetteGuide,
   scenettePose,
   scenetteStartYaw,
   scenetteArc,
@@ -1090,6 +1093,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       setGeometry(decorMesh, scenetteDecor(place, false, posed, topped));
     },
   );
+  // L'équipier qui guide le lieu (GD-23, lot 1, ./equipierModels.ts) : préparé avec l'habitant, montré dans la scénette.
+  const equipiers = createEquipierModels(scene, (t) => renderer.initTexture(t));
+  const prefetchGuide = (place: PlaceId) => {
+    const g = guideOf(place);
+    if (g) equipiers.prefetch(g);
+  };
   const ringGeometry = keep(new THREE.RingGeometry(KEO_RING.inner, KEO_RING.outer, 24).rotateX(-Math.PI / 2));
   // L'anneau épouse le sol (directeur artistique) : ses sommets suivent le sol dessiné, refaits quand Kéo bouge ; sa
   // sphère englobante tient les pentes.
@@ -1665,6 +1674,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (place && place !== 'nef') framed = place;
     // Le panneau d'un lieu s'ouvre (Kéo y arrive) : le modèle de son habitant se prépare, avant sa scénette.
     if (place && place !== 'nef' && hasHabitantModel(place)) habitants.prefetch(place);
+    if (place && place !== 'nef') prefetchGuide(place);
     if (free) return reframe();
     // Pendant une question ou une remise, la caméra garde son cadrage : le panneau se recadre à leur fin.
     if (asked || remise || mapView) return;
@@ -2168,6 +2178,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     walkTarget = place;
     // Kéo part vers un lieu : le modèle de son habitant se prépare pendant la marche, avant « Livrer » ou une mission.
     if (place && hasHabitantModel(place)) habitants.prefetch(place);
+    if (place) prefetchGuide(place);
     if (route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05) return arrive(place);
     beginWalk(route);
     heldBridge = null;
@@ -2907,6 +2918,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // sans modèle encore garde son pion (./habitants.ts, `hasHabitantModel`).
     if (hasHabitantModel(place)) habitants.show(place, scenetteHabitant(place, posed));
     else habitants.hide();
+    // L'équipier qui guide le lieu, à côté de Kéo, immobile (GD-23, lot 1) ; Kéo seul ailleurs.
+    const guide = scenetteGuide(place, posed);
+    if (guide) equipiers.show(guide.equipier, guide.at, guide.yaw);
+    else equipiers.hide();
     setGeometry(decorMesh, scenetteDecor(place, false, posed, topped));
     // Aux Quais, la maquette du lieu (sa grue, son hangar) s'efface : le quai de la scénette a les siens. La trace de
     // la scénette aussi, sauf au Phare : la trace de la réussite (la barque chargée, le panier plein, la porte ouverte)
@@ -2937,6 +2952,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     decorMesh.geometry = new THREE.BufferGeometry();
     decorMesh.visible = false;
     habitants.hide();
+    equipiers.hide();
     keo.scale.setScalar(KEO_SCALE);
     // Aux Quais, Kéo reste sur le bord du quai, face à la caméra, qui garde la barque chargée (d'un coup, comme tout
     // retour de question).
@@ -4090,6 +4106,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       renderer.domElement.removeEventListener('wheel', onWheel);
       body.dispose();
       habitants.dispose();
+      equipiers.dispose();
       for (const g of geometries) g.dispose();
       for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, remiseMesh, veilMesh, decorMesh, nefMesh, bancMesh]) m.geometry.dispose();
       lampMaterial.dispose();
