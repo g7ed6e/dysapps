@@ -129,17 +129,18 @@ export default defineConfig({
         // Les écrans de lancement (un par appareil) ne servent qu'au démarrage de l'appli installée sur iPhone et iPad :
         // les précharger ferait télécharger 1 Mo d'images à tous les élèves. Les trente habitants des scénettes du monde
         // ouvert (`habitant-*.glb`, seize au 6e et quatorze au 5e, 20 Mo, src/game/importedCharacters.ts) non plus : ils se gardent à la demande
-        // (`runtimeCaching`), hors ligne seuls les lieux déjà vus ont leur modèle, les autres leur pion.
-        globIgnores: ['splash/**', 'assets/habitant-*.glb'],
+        // (`runtimeCaching`), hors ligne seuls les lieux déjà vus ont leur modèle, les autres leur pion. Les deux équipiers
+        // qui guident les scénettes (`equipier-*.glb`, 0,9 Mo, GD-23) de même : hors ligne, Kéo seul tant qu'ils n'ont pas été vus.
+        globIgnores: ['splash/**', 'assets/habitant-*.glb', 'assets/equipier-*.glb'],
         // Un habitant chargé une fois (son lieu approché) reste servi du cache, sans réseau ; le nom de son fichier change
-        // à chaque nouvelle version, l'ancien sort par le nombre (les trente, et la marge d'une version) ou par l'âge.
+        // à chaque nouvelle version, l'ancien sort par le nombre (les trente-deux, habitants et équipiers, et la marge d'une version) ou par l'âge.
         runtimeCaching: [
           {
-            urlPattern: /\/assets\/habitant-[\w-]+\.glb$/,
+            urlPattern: /\/assets\/(?:habitant|equipier)-[\w-]+\.glb$/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'dysapps-habitants-3d',
-              expiration: { maxEntries: 40, maxAgeSeconds: 90 * 24 * 60 * 60 },
+              expiration: { maxEntries: 64, maxAgeSeconds: 90 * 24 * 60 * 60 },
               cacheableResponse: { statuses: [200] },
             },
           },
