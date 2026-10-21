@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../../biomes';
 import { partShapes } from '../../three/archipeo/constructionParts';
-import { PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
+import { FOREST_REWORK_MAX_5E, PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
 import { WHOLE, posedTraces, traceStagePosed, type PartShape } from './construction';
 import { FOLLOW, followPose } from './camera';
 import { CROISEE, CROISEE_CROWN_BOTTOM, CROISEE_MAST_TOP, CROISEE_PLATFORM_Y, CROISEE_SPANS, CROISEE_TOP, CROISEE_TWIN_TREES, ROSELIERES_REED } from './croisee5e';
@@ -271,7 +271,7 @@ describe('Le budget du 5e, avec la Croisée (plafonds du lot 7, intention du dir
     // Un lieu de plus au plus par lieu fini depuis le lot 6 : la Croisée (lot 7), les Instants (lot 8), les
     // Fumerolles (lot 9), l'Étuve (lot 10), les Terrasses (lot 11), l'Auberge (lot 12) ; la Faille (lot 11), 175 au plus.
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux'].includes(id)).length;
-    expect(triangles).toBeLessThanOrEqual(LOT6_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E + failleTriangles().withSente);
+    expect(triangles).toBeLessThanOrEqual(LOT6_OPEN_5E.triangles + since * PLACE_TRIANGLES_MAX_5E + failleTriangles().withSente + FOREST_REWORK_MAX_5E);
     expect(calls).toBeLessThanOrEqual(LOT6_OPEN_5E.calls);
     const scenette = cost.find((c) => c.poste === 'scénette')!;
     expect(scenette.calls).toBe(2);

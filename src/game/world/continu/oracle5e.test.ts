@@ -13,7 +13,7 @@ import { partShapes, stagePoseWords } from '../../three/archipeo/constructionPar
 import { phraseDeLaPose } from '../../poseWords';
 import { partiesDe } from '../parts';
 import { plansFor } from '../plans';
-import { PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
+import { FOREST_REWORK_MAX_5E, PLACE_TRIANGLES_MAX_5E, openWorldCost5e } from './budget';
 import { followPose, lookUp, screenOf } from './camera';
 import { posedTraces, traceStagePosed, WHOLE, type PartShape, type Stage } from './construction';
 import type { Facets } from './facets';
@@ -448,7 +448,7 @@ describe('Le budget du 5e, avec l’Oracle (plafonds du lot 13b)', () => {
     const cost = openWorldCost5e();
     const triangles = cost.reduce((a, p) => a + p.triangles, 0);
     const calls = cost.reduce((a, p) => a + p.calls, 0);
-    expect(triangles).toBeLessThanOrEqual(LOT13A_OPEN_5E.triangles + PLACE_TRIANGLES_MAX_5E);
+    expect(triangles).toBeLessThanOrEqual(LOT13A_OPEN_5E.triangles + PLACE_TRIANGLES_MAX_5E + FOREST_REWORK_MAX_5E);
     expect(calls).toBeLessThanOrEqual(LOT13A_OPEN_5E.calls);
     expect(cost.find((c) => c.poste === 'scénette')!.calls).toBe(2);
   });

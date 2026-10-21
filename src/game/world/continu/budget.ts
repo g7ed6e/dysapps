@@ -111,6 +111,13 @@ export const CAUSEWAYS_ADDED_5E = 1_600;
  */
 const OPEN_WORLD_BUDGET_4E = { triangles: 118_000, calls: 22 } as const;
 
+/**
+ * La forêt du 5e retaillée (pistes B, C puis A, choisies par le mainteneur le 21 octobre 2026 : la forêt noyée, les
+ * bosquets et les clairières, le palétuvier en trois grappes sur ses racines arquées) : au plus tant de triangles de
+ * plus, dans le maillage du sol, sans appel de plus. Mesurée : +5 733 scénette ouverte.
+ */
+export const FOREST_REWORK_MAX_5E = 5_800;
+
 /** L'enveloppe du monde ouvert de chaque niveau, que seul le mainteneur relève. */
 export const OPEN_WORLD_BUDGETS: Readonly<Record<OpenWorldLevel, { readonly triangles: number; readonly calls: number }>> = {
   '6e': OPEN_WORLD_BUDGET_6E,
