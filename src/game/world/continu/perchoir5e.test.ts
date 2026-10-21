@@ -27,12 +27,13 @@ const lum = (c: number) => {
 const contrast = (a: number, b: number) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
 
 describe('Le Perchoir, quatrième Détour du 5e', () => {
-  it('suit la Faille dans la liste, aux Aiguilles, avec son nom ; son identifiant est le dernier, dans les deux listes', () => {
+  it('suit la Faille dans la liste, aux Aiguilles, avec son nom ; son identifiant suit celui de la Faille, dans les deux listes', () => {
     expect(DETOURS_5E[3]).toBe(PERCHOIR);
     expect(detourById('perchoir')).toBe(PERCHOIR);
     expect(PERCHOIR.land).toBe('aiguilles');
     expect(PERCHOIR.name).toBe('Le Perchoir');
-    expect(DETOUR_IDS[DETOUR_IDS.length - 1]).toBe('perchoir');
+    // Le dernier du 5e ; ceux du 4e (lot 2 : l'Épave) viennent après lui.
+    expect(DETOUR_IDS[DETOUR_IDS.indexOf('faille') + 1]).toBe('perchoir');
     expect(ENGINE_DETOUR_IDS).toEqual(DETOUR_IDS);
     expect(detourAtPoint(PERCHOIR_5E.at, '5e')?.id).toBe('perchoir');
     expect(detourAtPoint(PERCHOIR_5E.at)).toBeNull();

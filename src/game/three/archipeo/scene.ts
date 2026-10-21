@@ -20,6 +20,7 @@ import { loadedKeo } from '../../world/characters/imported/keo';
 import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
+import { epaveFacets } from '../../world/continu/epave4e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
@@ -144,6 +145,11 @@ export interface OpenWorldOptions {
   meter: { show: boolean; expose: boolean };
   /** La pose d'une partie est finie (posée, la caméra revenue à Kéo, ou passée) : les célébrations peuvent venir. */
   onPosed(): void;
+  /**
+   * Un lieu qui s'anime à sa restauration (`PlaceArt.restoration`, la Forge du 4e) vient d'être achevé : son allumage
+   * commence (ou se pose d'un coup, avec « Réduire les animations ») ; la page dit son état, écrit et à voix haute.
+   */
+  onRestored?(place: PlaceId): void;
   /**
    * La place à l'écran des pastilles des habitants (GD-20, point 4, lot L1), à chaque image, comme les cadenas (la même
    * liste, remplie sur place ; refaite quand `setSigns` change). Aucune pendant une question, une remise ou sur la Carte.
@@ -1226,8 +1232,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // La forme de la vue du dernier Détour atteint (la Faille a la sienne), gardée pendant que la vue redescend.
   let detourShape: DetourView = COMMON_DETOUR_VIEW;
   // La vue d'arrivée d'un « Y aller » devant un lieu qui a la sienne (`doorFrameOf`, le Gaillard) : sa forme, la porte où
-  // Kéo se tient, et son avancée (1 à l'arrivée, d'un coup ; elle retombe en douceur quand il repart).
-  let doorArrival: { shape: DetourView; at: Vec2 } | null = null;
+  // Kéo se tient, le cap d'arrivée, et son avancée (1 à l'arrivée, d'un coup ; elle retombe en douceur quand il repart).
+  // Une vue plus basse que la caméra qui suit (la Forge du 4e, retouche 1 du lot 2 : le volcan dans le cadre) retombe
+  // aussi dès que la caméra tourne : basse et reculée, elle passerait derrière le fourneau ou sous le toit de
+  // l'appentis ; la caméra qui suit, elle, n'a rien de haut entre elle et Kéo.
+  let doorArrival: { shape: DetourView; at: Vec2; yaw: number } | null = null;
   let doorArrivalView = 0;
   let detourDecor: { key: string; facets: Facets } | null = null;
   const detourFacetsNow = (): Facets => {
@@ -1258,6 +1267,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const found = detoursFound.includes('perchoir');
     let c = perchoirDrawn.find((k) => k.found === found);
     if (!c) perchoirDrawn.push((c = { found, facets: perchoirFacets(found) }));
+    return c.facets;
+  };
+  // L'Épave du 4e (lot 2) : de même, sans et avec sa sente, sur le sol du 4e.
+  const epaveDrawn: { found: boolean; facets: Facets }[] = [];
+  const epaveNow = (): Facets => {
+    const found = detoursFound.includes('epave');
+    let c = epaveDrawn.find((k) => k.found === found);
+    if (!c) epaveDrawn.push((c = { found, facets: epaveFacets(found, ground) }));
     return c.facets;
   };
   // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son temps (la page le donne), le modèle de sa forme chargé à la
@@ -1460,7 +1477,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     detourView = detourViewStep(detourView, detourHere ? 1 : 0, dt, reduceMotion);
     if (doorArrival) {
-      doorArrivalView = detourViewStep(doorArrivalView, !walk && distance(here, doorArrival.at) < 0.05 ? 1 : 0, dt, reduceMotion);
+      const held = !walk && distance(here, doorArrival.at) < 0.05 && (doorArrival.shape.height >= 0 || Math.abs(wrapAngle(yaw - doorArrival.yaw)) < 0.05);
+      doorArrivalView = detourViewStep(doorArrivalView, held ? 1 : 0, dt, reduceMotion);
       if (doorArrivalView === 0) doorArrival = null;
     }
     stepFauna(dt, arrived);
@@ -1806,6 +1824,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!f) bridgeCache.set(k, (f = look === 'carte' ? bridgeMapMark(land) : look === 'pose' ? bridgeLayRest(land) : bridgeFacets(land, look === 'rebati', car, open)));
     return f;
   };
+  // L'allumage d'un lieu restauré (`startRestore`, plus bas) : le lieu qui l'attend, celui qui s'allume.
+  let restoreNext: PlaceId | null = null;
+  let restoring: { place: PlaceId; start: number; frame: string | null } | null = null;
+  /** Les trois étapes d'un lieu posées : il est restauré. */
+  const isWhole = (parts: readonly PartShape[]) => [0, 1, 2].every((st) => stageComplete(parts, st as 0 | 1 | 2));
   let placesKey = '';
   // La ligne de la falaise du 5e sur la Carte, et la bande sombre de ses chemins ; au 4e, les hachures du sommet ; faites
   // une fois (rien au 6e).
@@ -1822,7 +1845,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}${nefParts(nefSite.form) ? 'm' : ''}|${carAt}${carOpen ? 'o' : ''}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}${nefParts(nefSite.form) ? 'm' : ''}|${carAt}${carOpen ? 'o' : ''}|${restoring?.place ?? ''}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -1857,6 +1880,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const reach = mapView ? undefined : placeArt(p.id)?.reach;
       const far = reach?.({ x: p.center.x, y: foot.y, z: p.center.z }, (stage, row) => rowPosed(parts, stage, row));
       if (far) reaches.push(far);
+      // Ce qui s'allume à la restauration (la Forge du 4e) : éteint avant, allumé après, comme `reach` hors du modèle et
+      // de la Carte ; pendant son allumage, dans le maillage de la pose (`startRestore`).
+      const restoration = mapView || restoring?.place === p.id ? undefined : placeArt(p.id)?.restoration;
+      if (restoration) reaches.push(restoration.draw({ x: p.center.x, y: foot.y, z: p.center.z }, isWhole(parts) ? Infinity : 0));
       // Les aménagements posés (GD-20, point 4, lot L0), dans le même maillage : cachés pendant toute question, comme les
       // traces (au rivage nord et au large, ceux des lieux du même cadre) ; montrés dans le cadrage de la remise.
       if (showsAmenagements(scenette, p.id, remise?.place ?? null)) for (const id of placesState?.amenagements?.[p.id] ?? []) list.push(placedAmenagement(id, ground).facets);
@@ -1887,6 +1914,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // la Faille (lot 11), la fente, son arbre, son pont de racines, sa lanterne et sa vapeur ; et la sente de chacun une
       // fois trouvé, dans le monde comme sur la Carte, sans appel de plus.
       if (fifth) rest.push(creuxNow(), detourFacetsNow(), failleNow(), perchoirNow());
+      // Le Détour du 4e (lot 2) : l'Épave, sa coque sur sa cale, sa lanterne, et sa sente une fois trouvée.
+      else rest.push(epaveNow());
       // `reaches` en dernier : `reachFrom` compte sur eux pour les rayons (`solid`), `mergeFacets` garde l'ordre (nacelles5e.test.ts).
       rest.push(...reaches);
       const placed = mergeFacets(rest);
@@ -2284,7 +2313,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     detourView = 0;
     // Un lieu plus haut que ce que la caméra qui suit voit de sa porte a sa vue d'arrivée (le Gaillard, lot 15).
     const frame = shut ? null : doorFrameOf(place);
-    doorArrival = frame ? { shape: frame, at: { ...here } } : null;
+    doorArrival = frame ? { shape: frame, at: { ...here }, yaw: view } : null;
     doorArrivalView = doorArrival ? 1 : 0;
     exit = null;
     back = 0;
@@ -2441,6 +2470,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Un toucher pendant une pose la passe : la partie est à sa place, la caméra revient à Kéo ; de même la scénette
     // d'assemblage.
     if (poseRun.active) return finishPose();
+    // Un toucher pendant l'allumage d'un lieu restauré le passe : tout allumé d'un coup.
+    if (restoring) return endRestore();
     // Un toucher pendant le départ de la Nef le termine (GD-21).
     if (nefTrip) return finishNefTrip();
     if (assembly) return finishAssembly();
@@ -3534,6 +3565,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       follow();
       options.onPosed();
       if (glowNext) startGlow();
+      if (restoreNext) startRestore();
     },
   });
   /** Les parties qui arrivent dans un lieu : la pose commence. */
@@ -3542,10 +3574,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     poseRun.handOver();
     finishLay();
     endGlow();
+    // Une pose qui achevait un lieu, passée la main avant sa fin (deux réussites rapprochées) : son allumage ne se jouera
+    // pas, son état se dit tout de suite (jamais perdu : expert frontend, lot 2 du 4e) ; le lieu se dessine restauré.
+    if (restoreNext) {
+      options.onRestored?.(restoreNext);
+      restoreNext = null;
+    }
     // La pose qui achève la Montée (ses trois étapes) : la lueur montera le long du rail, une fois, à la fin de la pose.
     const all = placesState?.built[place] ?? [];
     const whole = (list: readonly PartShape[]) => [0, 1, 2].every((st) => stageComplete(list, st as 0 | 1 | 2));
     glowNext = place === 'montee' && whole(all) && !whole(all.filter((p) => !parts.includes(p)));
+    // De même, la pose qui achève un lieu qui s'anime à sa restauration (la Forge du 4e).
+    restoreNext = placeArt(place)?.restoration && whole(all) && !whole(all.filter((p) => !parts.includes(p))) ? place : null;
     holding = { place, parts };
     placeVisibility();
     setGeometry(poseMesh, constructionFacets(place, parts, ground));
@@ -3576,6 +3616,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     stepGlow(glowStart);
   };
   function endGlow() {
+    endRestore();
     if (glowStart === null) return;
     glowStart = null;
     poseMesh.visible = false;
@@ -3591,6 +3632,57 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!foot || u >= 1 || walk || asked || mapView) return endGlow();
     const y = MONTEE_GLOW.from + (MONTEE_GLOW.to - MONTEE_GLOW.from - MONTEE_GLOW.height) * Math.max(0, u);
     poseMesh.position.set(foot.x, foot.y + y, foot.z + monteeGlowFront(y + MONTEE_GLOW.height / 2));
+  }
+
+  // L'allumage d'un lieu restauré (`PlaceArt.restoration` : la Forge du 4e, lot 2 ; intention, § 6) : après la pose qui
+  // l'achève, une seule fois, au plus 4 s, dans le maillage de la pose (aucun appel de plus), refait une vingtaine de fois
+  // par seconde ; d'un coup avec « Réduire les animations », sur la Carte, en marche ou pendant une question ; un toucher
+  // le passe. La page dit l'état à la fin, ou au toucher qui le passe (`onRestored`, dans `endRestore`) : la voix, la
+  // bulle et son icône (référent dys et consultant UX UI, lot 2 du 4e : une chose à la fois) ; tout de suite quand
+  // l'allumage ne se joue pas.
+  /** Le centre du lieu à son sol, pour son allumage. */
+  const restoreAt = (place: PlaceId) => {
+    const foot = feet.get(place);
+    const center = PLACES.find((q) => q.id === place)?.center;
+    return foot && center ? { x: center.x, y: foot.y, z: center.z } : null;
+  };
+  const startRestore = () => {
+    const place = restoreNext;
+    restoreNext = null;
+    if (!place) return;
+    const art = placeArt(place)?.restoration;
+    const at = restoreAt(place);
+    if (!art || !at || reduceMotion || walk || asked || mapView || laying || carRolling) return options.onRestored?.(place);
+    restoring = { place, start: performance.now() / 1000, frame: null };
+    placeVisibility();
+    poseMesh.material = landMaterial;
+    poseMesh.position.set(0, 0, 0);
+    poseMesh.visible = true;
+    stepRestore(restoring.start);
+  };
+  function endRestore() {
+    if (!restoring) return;
+    const { place } = restoring;
+    restoring = null;
+    poseMesh.visible = false;
+    poseMesh.geometry.dispose();
+    poseMesh.geometry = new THREE.BufferGeometry();
+    poseMesh.material = poseMaterial;
+    placeVisibility();
+    options.onRestored?.(place);
+  }
+  function stepRestore(t: number) {
+    if (!restoring) return;
+    const art = placeArt(restoring.place)?.restoration;
+    const at = restoreAt(restoring.place);
+    const u = t - restoring.start;
+    // Les mêmes arrêts que ceux qui empêchent l'allumage de commencer (`startRestore`) : tout allumé d'un coup.
+    if (!art || !at || u >= art.seconds || walk || asked || mapView || laying || carRolling) return endRestore();
+    // La géométrie ne se refait que si l'image change (une quinzaine de fois en 4 s), jamais à chaque image.
+    const frame = art.frame(u);
+    if (frame === restoring.frame) return;
+    restoring.frame = frame;
+    setGeometry(poseMesh, art.draw(at, u));
   }
 
   // La caisse de la cabine qui roule (GD-22, lot 3) : à son départ, elle quitte les lieux pour le maillage de la pose (ses
@@ -4039,6 +4131,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     lift = liftStep(lift, occlusionLift(focus, ground, yaw), dt, reduceMotion);
     if (fifth) stepHold(dt);
     stepGlow(t);
+    stepRestore(t);
     look = lookUpStep(look, nearLantern() ? 1 : 0, dt, reduceMotion);
     arrivalBack = lookUpStep(arrivalBack, arrivalNow ? 1 : 0, dt, reduceMotion);
     if (back > 0 && !atExit()) back = reduceMotion ? 0 : Math.max(0, back - dt / EXIT_VIEW.down);

@@ -5,6 +5,8 @@
 //   ---
 //   lieu : english-6e-vocabulary             ← en-tête : l'identifiant du lieu (matière, classe, thème), puis ce qu'il est
 //   module : Vocabulaire et écoute
+//   monde ouvert seulement : oui          ← (facultatif) un lieu du monde ouvert seulement, ni grille ni Blocland ;
+//                                            gardien et créature lui sont facultatifs (./chemins.mjs)
 //   ---
 //   # Baie des mots                          ← le nom de l'île
 //   > une note                               ← ignorée
@@ -69,6 +71,13 @@ const ILE = [
   ['créature', 'creature.name'],
 ];
 const PAR_ETIQUETTE_ILE = new Map(ILE.map((c) => [c[0], c]));
+
+/**
+ * Un lieu du monde ouvert seulement (décision du mainteneur du 21 octobre 2026, GD-24) : « monde ouvert seulement : oui »
+ * dans l'en-tête. Ses missions se jouent dans son lieu du monde ouvert, jamais dans la grille ni dans Blocland ; il n'a
+ * pas de ressource à lui (sa ressource est celle que gagnent ses niveaux, la même pour tous) ni de commande.
+ */
+const MONDE_OUVERT_SEULEMENT = 'monde ouvert seulement';
 
 /** Champs d'une mission (sous son titre « ## … »), qui ne passent pas à ses niveaux : [étiquette, clé, type]. */
 const MISSION = [
@@ -626,8 +635,9 @@ function commune(valeurs) {
  * lecture du trou, mot troué) ne s'écrit pas ; les items courts s'écrivent en tableau.
  */
 export function ecrireIle(ile, exercices, plans = [], demandes = []) {
-  verifierCles(ile, new Set(['id', 'name', 'exercises', 'block', 'foreignWords', ...ILE.map((c) => c[1].split('.')[0])]), ile.id);
+  verifierCles(ile, new Set(['id', 'name', 'exercises', 'block', 'foreignWords', 'openWorldOnly', ...ILE.map((c) => c[1].split('.')[0])]), ile.id);
   const entete = ILE.filter(([, chemin]) => obtenir(ile, chemin) !== undefined).map(([etiquette, chemin]) => `${etiquette} : ${ecrireTexte(obtenir(ile, chemin))}`);
+  if (ile.openWorldOnly) entete.push(`${MONDE_OUVERT_SEULEMENT} : oui`);
   const lignes = ['---', `lieu : ${ile.id}`, ...entete, '---', '', `# ${ile.name ?? ile.id}`, ''];
   const missions = [...(ile.exercises ?? [])];
   for (const ex of exercices) {
@@ -722,6 +732,12 @@ export function lireIle(md, fichier = 'md') {
       if (ile) throw erreur('« lieu » écrit deux fois dans l’en-tête');
       if (!/^[a-z0-9-]+$/.test(m[2])) throw erreur(`identifiant de lieu mal écrit : ${m[2]}`);
       ile = m[2];
+      continue;
+    }
+    if (m[1] === MONDE_OUVERT_SEULEMENT) {
+      if (m[2] !== 'oui') throw erreur(`« ${MONDE_OUVERT_SEULEMENT} » vaut « oui » (ou ne s’écrit pas), lu « ${m[2]} »`);
+      if (biome.openWorldOnly) throw erreur(`« ${MONDE_OUVERT_SEULEMENT} » écrit deux fois`);
+      biome.openWorldOnly = true;
       continue;
     }
     const def = PAR_ETIQUETTE_ILE.get(m[1]);
@@ -919,9 +935,16 @@ export function lireIle(md, fichier = 'md') {
   finirExercice();
   const ordreMission = ['id', 'title', ...MISSION.map((c) => c[1])];
   const exercises = missions.map((d) => Object.fromEntries(ordreMission.filter((k) => d[k] !== undefined).map((k) => [k, d[k]])));
-  // La ressource d'un lieu porte l'identifiant du lieu : elle ne s'écrit pas.
-  biome.block = ile;
-  const champsIle = Object.fromEntries(['module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'].filter((k) => biome[k] !== undefined).map((k) => [k, biome[k]]));
+  // La ressource d'un lieu porte l'identifiant du lieu : elle ne s'écrit pas. Un lieu du monde ouvert seulement n'en a pas
+  // à lui (la grille seule les dessine) : la sienne est celle que gagnent ses niveaux, la même pour tous.
+  if (biome.openWorldOnly) {
+    const gagnes = [...new Set(exercices.map((ex) => ex.reward?.block))];
+    if (gagnes.length !== 1 || gagnes[0] === undefined) throw new Error(`${fichier} : un lieu du monde ouvert seulement donne le même « bloc gagné » à tous ses niveaux (lu : ${gagnes.join(', ') || 'aucun'})`);
+    biome.block = gagnes[0];
+  } else biome.block = ile;
+  const champsIle = Object.fromEntries(
+    ['module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature', 'openWorldOnly'].filter((k) => biome[k] !== undefined).map((k) => [k, biome[k]]),
+  );
   const foreignWords = debutVoix === -1 ? undefined : lireVoix(toutes.slice(debutVoix, finDe(debutVoix)), debutVoix, fichier);
   return {
     ile,

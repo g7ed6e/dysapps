@@ -29,7 +29,7 @@ import {
   type ReponseDonnee,
   type ReponseProjet,
 } from './engine';
-import type { BiomeId, BlockId } from './biomes';
+import { estUnBiome, getIle, type BiomeId, type BlockId } from './biomes';
 import type { PlanDef } from './world/plans';
 import { buildPiece, nextPiece, pieceIsFree, projectOf, type BuildPieceResult } from './world/projects';
 import type { VehicleStage } from './world/vehicle';
@@ -37,6 +37,7 @@ import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { useTextes } from '../universes';
 import { dueCountOnOpenPlaces } from './review';
+import { useLieuxSeuls } from './useImmersive';
 import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
 import { STORY_XP, startStory, storyAfterMission, tapStoryStep, type StepResult } from './world/stories';
@@ -209,8 +210,12 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     const terminee = completeExercise(stateRef.current, def, results, todayISO());
     // La mission finie : l'étape « mission » d'une quête chez son habitant est faite (GD-10) ; puis, jamais pendant sa
     // consigne, une commande ou une quête peut arriver dans l'archipel de son île.
-    const etape = avecQuetes.current ? storyAfterMission(terminee.state, def.biome) : terminee.state;
-    const completion = { ...terminee, state: commandeQuiArrive(etape, archipelagoOf(def.biome).classe) };
+    // Un lieu du monde ouvert seulement (GD-24) n'a pas d'habitant de la grille : pas d'étape de quête ; la commande peut
+    // arriver dans l'archipel de sa classe, comme après toute mission.
+    const grille = estUnBiome(def.biome) ? def.biome : null;
+    const etape = avecQuetes.current && grille ? storyAfterMission(terminee.state, grille) : terminee.state;
+    const classe = grille ? archipelagoOf(grille).classe : getIle(def.biome)?.classe;
+    const completion = { ...terminee, state: classe ? commandeQuiArrive(etape, classe) : etape };
     stateRef.current = completion.state;
     setState(completion.state);
     setSessionCount((n) => n + 1);
@@ -395,7 +400,8 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
 
   const pauseAfterNext = sessionCount + 1 >= SESSION_MAX_EXERCISES || Date.now() - sessionStart.current > SESSION_MAX_MINUTES * 60_000;
   // Les items des lieux ouverts seulement, comme les révisions proposées (review.ts).
-  const dueCount = useMemo(() => dueCountOnOpenPlaces(state.spaced, state.world.links, todayISO()), [state.spaced, state.world.links]);
+  const lieuxSeuls = useLieuxSeuls();
+  const dueCount = useMemo(() => dueCountOnOpenPlaces(state.spaced, state.world.links, todayISO(), lieuxSeuls), [state.spaced, state.world.links, lieuxSeuls]);
 
   const value = useMemo(
     () => ({

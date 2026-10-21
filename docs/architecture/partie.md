@@ -76,6 +76,8 @@ sequenceDiagram
   Note over W: au retour dans le monde, la vague pose la partie
 ```
 
+Dans un lieu du monde ouvert seulement ([GD-24](../gameplay/propositions/GD-24.md)), la partie se pose et se garde de même, mais l’écran de fin ne montre ni le bâtiment ni le chantier de la grille : son bouton principal ramène au lieu, mission ciblée, comme le lien du haut et le quitter du mode concentré : l’écran nomme l’île (`islandReturn`, `world/openWorldReturn.ts` : `/adventure?ile=maths-4e-data&mission=…`), sans rien charger du monde continu (`world/continu/isolation.test.ts`), et la page du monde continu trouve le lieu de son plan qui la reprend (`placeFromParam`). `ExerciseRunner.test.tsx` et `PlacePanel.test.tsx` le vérifient.
+
 ## L’ouverture et l’enregistrement
 
 ```mermaid

@@ -158,6 +158,11 @@ export function verifierDemandes(iles, demandesParIle, recettes, plans) {
       if (demandes.length) throw new Error(`${ou} : un lieu d’option (LV2, latin ou grec) n’a pas de commande (GD-7, GD-13)`);
       continue;
     }
+    // Un lieu du monde ouvert seulement (GD-24, 21 octobre 2026) : pas de créature de la grille, donc pas de commande.
+    if (ile.openWorldOnly) {
+      if (demandes.length) throw new Error(`${ou} : un lieu du monde ouvert seulement n’a pas de commande (GD-24)`);
+      continue;
+    }
     if (demandes.length === 0) throw new Error(`${ou} : l’île n’a pas de commande (« ${TITRE_DEMANDES} », une au moins)`);
     for (const d of demandes) {
       const err = (m) => new Error(`${ou}, commande ${d.id} : ${m}`);
@@ -168,6 +173,7 @@ export function verifierDemandes(iles, demandesParIle, recettes, plans) {
         if (autre.id === ile.id) throw err('une créature ne demande pas le bloc de sa propre île');
         if (autre.classe !== ile.classe) throw err(`le bloc « ${d.block} » vient d’un autre archipel (${autre.classe}, l’île est en ${ile.classe})`);
         if (estLieuDOption(autre)) throw err('jamais le bloc d’un lieu d’option (LV2, latin ou grec)');
+        if (autre.openWorldOnly) throw err('jamais un lieu du monde ouvert seulement : il n’a pas de bloc à lui');
       } else if (recette) {
         if (recette.archipelago !== ile.classe) throw err(`le bloc assemblé « ${d.block} » est celui de l’archipel ${recette.archipelago}, l’île est en ${ile.classe}`);
         if (recette.ingredients.some((x) => x.bloc === ile.id)) throw err(`la recette de « ${d.block} » prend le bloc de l’île : la créature demanderait son propre bloc`);

@@ -1,13 +1,13 @@
-// Les seize lieux du 4e en ruines simples (lot 1 du monde ouvert du 4e, « l'île entière en grandes masses ») : à leur
-// place, une silhouette lisible pour chacun, sans les finir (leurs étapes viendront avec leur lot, un lieu par lot).
+// Les lieux du 4e en ruines simples (lot 1 du monde ouvert du 4e, « l'île entière en grandes masses ») : à leur place,
+// une silhouette lisible pour chacun, sans les finir ; leurs étapes viennent avec leur lot, un lieu par lot, et un lieu
+// construit quitte ce fichier (la Forge, la Soute, la Porte et l'Étalon au lot 2, ./forge4e.ts, ./soute4e.ts, ./porte4e.ts, ./etalon4e.ts).
 // Chaque ruine est dessinée dans le repère de son lieu (y = 0 au sol, sous le centre ; x vers l'est, z vers le sud), en
 // quelques volumes de 4 à 6 aplats de la palette chaude du 4e (./plan4e.ts, `COLORS_4E`) : la brique et la terre cuite
 // de l'usine, le fer rouillé et le cuivre, la pierre grise des Passeurs, le bois gris de la ruine, le basalte brun du
 // volcan ; rien de presque noir, rien à lire (fiche, § 6 bis : ni chiffre, ni mot, ni cheminée d'usine). Les signatures
-// sont celles de la fiche (§ 7), à grands traits : le fourneau fendu et froid de la Forge, la grue du Gabarit, la halle
-// à verrière de la Manufacture, la trémie du Terminus, les colonnes de basalte des Orgues… Code pur.
-import { drawPosed, type FacetBuilder } from './facets';
-import { COLORS_4E, type PlaceId4e } from './plan4e';
+// sont celles de la fiche (§ 7), à grands traits : la grue du Gabarit, la halle à verrière de la Manufacture, la trémie du Terminus, les colonnes de basalte des Orgues… Code pur.
+import type { FacetBuilder } from './facets';
+import { COLORS_4E, type BuiltPlace4e, type PlaceId4e } from './plan4e';
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter sur une pente. */
 const SINK = -0.8;
@@ -24,11 +24,6 @@ const C = {
   rust: COLORS_4E.rust,
   rustShade: COLORS_4E.rustShade,
   copper: COLORS_4E.copper,
-  /** Le fer rouillé à l'ombre des roues, flanc et dessus : un brun éteint, jamais orange. */
-  ironSide: 0x6a483e,
-  ironTop: 0x74524a,
-  /** La gueule froide de la Forge : l'ombre d'une pierre froide, brun-gris. */
-  coldMouth: 0x6a5e58,
   basalt: COLORS_4E.crust,
   basaltSun: COLORS_4E.rock,
   // Le verre d'une verrière brisée : un gris-bleu clair, mat (jamais un reflet).
@@ -52,72 +47,6 @@ function wall(b: FacetBuilder, x: number, z: number, length: number, height: num
 
 /** Un poteau de bois, cassé ou non. */
 const post = (b: FacetBuilder, x: number, z: number, h: number, w = 0.5): void => b.box({ x, y: SINK, z }, [w, h - SINK, w], C.woodShade, C.wood);
-
-/**
- * Une roue dentée de fer rouillé à l'ombre (retouche 1 du lot 1 : jamais un disque de cuivre qu'on prendrait pour une
- * flaque de lave) : son moyeu, sa jante, et `teeth` dents qui dépassent, pour qu'on lise une roue. Dessinée couchée dans
- * son repère (son axe vertical), posée par `at` : basculée d'un quart de tour (`pitch`), elle est dressée sur sa tranche.
- */
-function gear(b: FacetBuilder, at: { x: number; y: number; z: number; yaw: number; pitch?: number }, r: number, thick: number, teeth: number): void {
-  drawPosed(b, at, (l) => {
-    l.prism({ x: 0, y: 0, z: 0 }, r, r, thick, teeth, C.ironSide, C.ironTop);
-    l.prism({ x: 0, y: thick, z: 0 }, r * 0.32, r * 0.32, 0.12, 6, C.ironSide, C.ironSide);
-    for (let k = 0; k < teeth; k++) {
-      const a = ((k + 0.5) * 2 * Math.PI) / teeth;
-      l.box({ x: Math.cos(a) * (r + 0.18), y: 0, z: Math.sin(a) * (r + 0.18), yaw: -a }, [0.42, thick, 0.38], C.ironSide, C.ironTop);
-    }
-  });
-}
-
-/**
- * La Forge : le fourneau tronconique de pierre cerclé de fer, fendu et froid, sa gueule voûtée au sud, dans l'ombre
- * d'une pierre froide (brun-gris, jamais rouge ni noire : retouche 1 du lot 1, directeur artistique) ; le bâti du
- * marteau-pilon, un montant debout et l'autre couché ; deux roues dentées de fer rouillé, l'une couchée, l'autre
- * dressée sur sa tranche contre le fourneau ; l'enclume. Aucun orange près d'elle avant sa restauration.
- */
-function forge(b: FacetBuilder): void {
-  b.prism({ x: 0, y: SINK, z: -1, yaw: 0.2 }, 4.6, 3, 8.6 - SINK, 9, C.stoneShade, C.stone);
-  for (const y of [2.2, 5.4]) b.band({ x: 0, y, z: -1, yaw: 0.2 }, 4.6 - (y - SINK) * 0.172 + 0.08, 0.4, 9, C.rustShade);
-  // La gueule : une ombre de pierre froide ; un coin de pierre tombé du fourneau.
-  b.box({ x: 0, y: SINK, z: 2.9 }, [2.4, 2.6 - SINK, 0.6], C.coldMouth);
-  b.box({ x: 4.6, y: SINK, z: 1.8, yaw: 0.7 }, [1.6, 1.3 - SINK, 1.2], C.stoneShade, C.stone);
-  // Le bâti du marteau-pilon.
-  b.box({ x: -6.5, y: SINK, z: 1, yaw: 0 }, [0.8, 6 - SINK, 0.8], C.rustShade, C.rust);
-  b.box({ x: -5.2, y: SINK, z: 3.6, yaw: 0.5 }, [0.8, 0.8 - SINK, 6], C.rustShade, C.rust);
-  b.box({ x: -6.5, y: SINK, z: 4 }, [2.2, 1.2 - SINK, 2.2], C.basalt, C.basaltSun);
-  // Les roues dentées : la grande couchée, la petite dressée sur sa tranche, appuyée au fourneau ; l'enclume.
-  gear(b, { x: 6.4, y: -0.1, z: -3.6, yaw: 0.3 }, 2, 0.45, 12);
-  gear(b, { x: 4.4, y: 1.55, z: -5.4, yaw: 0.9, pitch: Math.PI / 2 }, 1.3, 0.4, 9);
-  b.box({ x: -3.5, y: SINK, z: 6, yaw: 0.3 }, [1.6, 1.1 - SINK, 0.8], C.rustShade, C.rust);
-}
-
-/** La Soute : un quai de pierre et de bois ; des caisses empilées, de travers ; un chariot à bras renversé. */
-function soute(b: FacetBuilder): void {
-  b.box({ x: 0, y: SINK, z: -1 }, [14, 0.7 - SINK, 7], C.stoneShade, C.stone);
-  b.box({ x: 0, y: 0.7, z: -3.8 }, [14, 0.18, 1.4], C.woodShade, C.wood);
-  for (const [x, z, s, h, yaw] of [[-4.5, -1, 1.6, 0, 0.1], [-2.9, -1.2, 1.4, 0, 0.3], [-3.8, -1.1, 1.3, 1.6, 0.6], [3, 0.5, 1.6, 0, -0.2], [5.2, -2, 1.2, 0, 0.9]] as const)
-    b.box({ x, y: 0.7 + h, z, yaw }, [s, s, s], C.terracotta, C.wood);
-  b.box({ x: 1, y: 0.7, z: 2, yaw: 1.2 }, [1.2, 0.6, 2.2], C.woodShade, C.wood);
-}
-
-/** La Porte : un pan du mur d'usine, ses deux piliers ; un battant debout, l'autre couché ; la cloche tombée sous son auvent. */
-function porte(b: FacetBuilder): void {
-  wall(b, -5.5, 0, 5, 5.2);
-  wall(b, 5.5, 0, 5, 3.6);
-  for (const x of [-2.9, 2.9]) b.box({ x, y: SINK, z: 0 }, [1.3, 7 - SINK, 1.3], C.stoneShade, C.stone);
-  b.box({ x: -1.4, y: SINK, z: 0.5, yaw: 0.35 }, [2.8, 5.2 - SINK, 0.35], C.woodShade, C.wood);
-  b.box({ x: 1.6, y: SINK, z: 3.2, yaw: 0.2 }, [2.8, 0.35 - SINK, 4.4], C.woodShade, C.wood);
-  b.prism({ x: 5.5, y: SINK, z: -3 }, 0.9, 0.5, 1.2 - SINK, 7, C.copper, C.rust);
-}
-
-/** L'Étalon : une halle basse et ouverte, ses piliers, un pan de toit tombé ; le plateau de la bascule de travers ; des poids rangés. */
-function etalon(b: FacetBuilder): void {
-  for (const x of [-5, 0, 5]) for (const z of [-3, 3]) b.box({ x, y: SINK, z }, [0.7, (x === 5 && z === 3 ? 2 : 4) - SINK, 0.7], C.brickShade, C.brick);
-  b.box({ x: -2.5, y: 4, z: 0 }, [6, 0.3, 7], C.rustShade, C.terracotta);
-  b.box({ x: 4, y: SINK, z: 4.5, yaw: 0.25, pitch: 0.4 }, [5, 0.3 - SINK, 3], C.rustShade, C.terracotta);
-  b.box({ x: 0, y: SINK, z: 0, yaw: 0.15, pitch: 0.08 }, [3.4, 0.4 - SINK, 3], C.rustShade, C.rust);
-  [1.1, 0.9, 0.7, 0.5].forEach((r, k) => b.prism({ x: -4 + k * 1.4, y: SINK, z: -1.5 }, r, r * 0.8, r * 1.4 - SINK, 6, C.rustShade, C.rust));
-}
 
 /** Le Gabarit : l'atelier-forteresse de pierre, sa tour écrêtée ; la grue de bois, seule verticale fine, son bras rompu. */
 function gabarit(b: FacetBuilder): void {
@@ -238,12 +167,11 @@ function dynamo(b: FacetBuilder): void {
   b.beam({ x: 5, y: 0, z: -3 }, { x: 6.8, y: 4.6, z: -3.6 }, 0.35, C.wood);
 }
 
-/** La ruine de chaque lieu du 4e, dessinée dans son repère (aucun n'est encore construit). */
-export const RUINS_4E: Readonly<Record<PlaceId4e, (b: FacetBuilder) => void>> = {
-  forge,
-  soute,
-  porte,
-  etalon,
+/**
+ * La ruine de chaque lieu du 4e pas encore construit, dessinée dans son repère : un lieu construit (./plan4e.ts,
+ * `BUILT_PLACES_4E` ; la Forge, la Soute, la Porte et l’Étalon au lot 2) dessine sa ruine dans son fichier, avec ses étapes.
+ */
+export const RUINS_4E: Readonly<Record<Exclude<PlaceId4e, BuiltPlace4e>, (b: FacetBuilder) => void>> = {
   gabarit,
   manufacture,
   loge,

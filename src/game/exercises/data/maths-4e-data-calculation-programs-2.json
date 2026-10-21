@@ -1,0 +1,229 @@
+{
+  "id": "maths-4e-data-calculation-programs-2",
+  "biome": "maths-4e-data",
+  "type": "calculation-programs",
+  "level": 2,
+  "instruction": "Suis le programme, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-4e-data-calculation-programs-2-0",
+      "prompt": "Programme : ajouter 3, puis multiplier par 2. On obtient 20. Le nombre de départ est …",
+      "spoken": "Programme : ajouter 3, puis multiplier par 2. On obtient 20. Le nombre de départ est (mot manquant).",
+      "choices": [
+        "7",
+        "8,5",
+        "13"
+      ],
+      "answer": "7",
+      "hint": "Défais d’abord la dernière étape : 20 ÷ 2.",
+      "explanation": "20 ÷ 2 = 10, puis 10 − 3 = 7. Vérifie : (7 + 3) × 2 = 20. 8,5, c’est (20 − 3) ÷ 2 : les étapes défaites dans le mauvais ordre. 13 ajoute 3 au lieu de l’enlever.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remonter un programme",
+          "lines": [
+            "Pour retrouver le nombre de départ, pars de la fin.",
+            "Fais les étapes à l’envers, de la dernière à la première.",
+            "Chaque opération se défait par son contraire : + 3 par − 3, × 2 par ÷ 2.",
+            "Une formule dit comment une grandeur dépend d’une autre : prix = 3 × masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-2-1",
+      "prompt": "Programme : multiplier par 4, puis soustraire 1. On obtient 19. Le nombre de départ est …",
+      "spoken": "Programme : multiplier par 4, puis soustraire 1. On obtient 19. Le nombre de départ est (mot manquant).",
+      "choices": [
+        "4,5",
+        "5",
+        "75"
+      ],
+      "answer": "5",
+      "hint": "Défais d’abord « soustraire 1 » : 19 + 1.",
+      "explanation": "19 + 1 = 20, puis 20 ÷ 4 = 5. Vérifie : 5 × 4 − 1 = 19. 4,5, c’est 19 − 1 puis ÷ 4 : le contraire de − 1 est + 1. 75 refait le programme au lieu de le défaire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remonter un programme",
+          "lines": [
+            "Pour retrouver le nombre de départ, pars de la fin.",
+            "Fais les étapes à l’envers, de la dernière à la première.",
+            "Chaque opération se défait par son contraire : + 3 par − 3, × 2 par ÷ 2.",
+            "Une formule dit comment une grandeur dépend d’une autre : prix = 3 × masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-2-2",
+      "prompt": "Pour défaire « multiplier par 5 », on …",
+      "spoken": "Pour défaire « multiplier par 5 », on (mot manquant).",
+      "choices": [
+        "divise par 5",
+        "multiplie par 5",
+        "soustrait 5"
+      ],
+      "answer": "divise par 5",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Le contraire de × 5 est ÷ 5. Multiplier par 5 refait l’étape. Soustraire 5 défait « ajouter 5 », pas « multiplier par 5 ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remonter un programme",
+          "lines": [
+            "Pour retrouver le nombre de départ, pars de la fin.",
+            "Fais les étapes à l’envers, de la dernière à la première.",
+            "Chaque opération se défait par son contraire : + 3 par − 3, × 2 par ÷ 2.",
+            "Une formule dit comment une grandeur dépend d’une autre : prix = 3 × masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-2-3",
+      "prompt": "Programme : soustraire 6, puis diviser par 2. On obtient 4. Le nombre de départ est …",
+      "spoken": "Programme : soustraire 6, puis diviser par 2. On obtient 4. Le nombre de départ est (mot manquant).",
+      "choices": [
+        "2",
+        "14",
+        "20"
+      ],
+      "answer": "14",
+      "hint": "Défais d’abord « diviser par 2 » : 4 × 2.",
+      "explanation": "4 × 2 = 8, puis 8 + 6 = 14. Vérifie : (14 − 6) ÷ 2 = 4. 2, c’est 4 × 2 − 6 : on a soustrait au lieu d’ajouter. 20, c’est (4 + 6) × 2 : les étapes dans le mauvais ordre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remonter un programme",
+          "lines": [
+            "Pour retrouver le nombre de départ, pars de la fin.",
+            "Fais les étapes à l’envers, de la dernière à la première.",
+            "Chaque opération se défait par son contraire : + 3 par − 3, × 2 par ÷ 2.",
+            "Une formule dit comment une grandeur dépend d’une autre : prix = 3 × masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-2-4",
+      "prompt": "Le prix du minerai suit la formule : prix = 3 × masse (en euros et en kilos). Pour 4 kg, le prix est …",
+      "spoken": "Le prix du minerai suit la formule : prix égale 3 fois la masse, en euros et en kilos. Pour 4 kilos, le prix est (mot manquant).",
+      "choices": [
+        "0,75 €",
+        "7 €",
+        "12 €"
+      ],
+      "answer": "12 €",
+      "hint": "Remplace la masse par 4.",
+      "explanation": "prix = 3 × 4 = 12 €. 7 € ajoute au lieu de multiplier. 0,75 €, c’est 3 ÷ 4 : la formule multiplie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remonter un programme",
+          "lines": [
+            "Pour retrouver le nombre de départ, pars de la fin.",
+            "Fais les étapes à l’envers, de la dernière à la première.",
+            "Chaque opération se défait par son contraire : + 3 par − 3, × 2 par ÷ 2.",
+            "Une formule dit comment une grandeur dépend d’une autre : prix = 3 × masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-2-5",
+      "prompt": "Le périmètre d’un carré suit la formule P = 4 × c, où c est son côté. Pour c = 2,5 cm, P vaut …",
+      "spoken": "Le périmètre d’un carré suit la formule P égale 4 fois c, où c est son côté. Pour c égale 2,5 centimètres, P vaut (mot manquant).",
+      "choices": [
+        "6,25 cm",
+        "6,5 cm",
+        "10 cm"
+      ],
+      "answer": "10 cm",
+      "hint": "Remplace c par 2,5.",
+      "explanation": "P = 4 × 2,5 = 10 cm. 6,5 ajoute 4 au lieu de multiplier. 6,25, c’est 2,5 × 2,5 : la formule de l’aire, pas du périmètre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remonter un programme",
+          "lines": [
+            "Pour retrouver le nombre de départ, pars de la fin.",
+            "Fais les étapes à l’envers, de la dernière à la première.",
+            "Chaque opération se défait par son contraire : + 3 par − 3, × 2 par ÷ 2.",
+            "Une formule dit comment une grandeur dépend d’une autre : prix = 3 × masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-2-6",
+      "prompt": "Le graphique montre comment y dépend de x. Quand x vaut 2, y vaut …",
+      "spoken": "Le graphique montre comment y dépend de x. Quand x vaut 2, y vaut (mot manquant).",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "5",
+      "hint": "Pars de 2 sur l’axe du bas, monte jusqu’à la droite, puis lis à gauche.",
+      "explanation": "Le point de la droite au-dessus de x = 2 est à la hauteur 5 : y = 2 × 2 + 1 = 5. 4 oublie le + 1. 3, c’est 2 + 1.",
+      "figure": {
+        "kind": "graph",
+        "props": {
+          "a": 2,
+          "b": 1
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remonter un programme",
+          "lines": [
+            "Pour retrouver le nombre de départ, pars de la fin.",
+            "Fais les étapes à l’envers, de la dernière à la première.",
+            "Chaque opération se défait par son contraire : + 3 par − 3, × 2 par ÷ 2.",
+            "Une formule dit comment une grandeur dépend d’une autre : prix = 3 × masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-2-7",
+      "prompt": "Un taxi coûte 3 € plus 2 € par kilomètre : prix = 3 + 2 × distance. Pour 5 km, on paie …",
+      "spoken": "Un taxi coûte 3 euros plus 2 euros par kilomètre : prix égale 3 plus 2 fois la distance. Pour 5 kilomètres, on paie (mot manquant).",
+      "choices": [
+        "10 €",
+        "13 €",
+        "25 €"
+      ],
+      "answer": "13 €",
+      "hint": "Calcule d’abord 2 × 5, puis ajoute 3.",
+      "explanation": "3 + 2 × 5 = 3 + 10 = 13 €. 10 € oublie les 3 € du départ. 25 €, c’est (3 + 2) × 5 : la multiplication passe avant l’addition.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Remonter un programme",
+          "lines": [
+            "Pour retrouver le nombre de départ, pars de la fin.",
+            "Fais les étapes à l’envers, de la dernière à la première.",
+            "Chaque opération se défait par son contraire : + 3 par − 3, × 2 par ÷ 2.",
+            "Une formule dit comment une grandeur dépend d’une autre : prix = 3 × masse."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-4e-powers",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

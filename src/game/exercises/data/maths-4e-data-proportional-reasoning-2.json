@@ -1,0 +1,222 @@
+{
+  "id": "maths-4e-data-proportional-reasoning-2",
+  "biome": "maths-4e-data",
+  "type": "proportional-reasoning",
+  "level": 2,
+  "instruction": "Lis la phrase, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-4e-data-proportional-reasoning-2-0",
+      "prompt": "Augmenter un prix de 10 %, c’est le multiplier par …",
+      "spoken": "Augmenter un prix de 10 pour cent, c’est le multiplier par (mot manquant).",
+      "choices": [
+        "0,1",
+        "1,01",
+        "1,1"
+      ],
+      "answer": "1,1",
+      "hint": "On garde le prix entier, et on ajoute 10 pour cent.",
+      "explanation": "100 % + 10 % = 110 %, soit × 1,1. × 0,1 donne seulement les 10 %, sans le prix. × 1,01 ajoute 1 %, pas 10 % : 10 %, c’est 0,1.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Coefficient multiplicateur",
+          "lines": [
+            "Augmenter de 20 %, c’est multiplier par 1,2 (1 + 0,2).",
+            "Diminuer de 20 %, c’est multiplier par 0,8 (1 − 0,2).",
+            "Le coefficient d’une hausse est plus grand que 1, celui d’une baisse plus petit que 1.",
+            "Coefficient = nouvelle valeur ÷ ancienne valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-2-1",
+      "prompt": "Baisser une masse de 30 %, c’est la multiplier par …",
+      "spoken": "Baisser une masse de 30 pour cent, c’est la multiplier par (mot manquant).",
+      "choices": [
+        "0,3",
+        "0,7",
+        "1,3"
+      ],
+      "answer": "0,7",
+      "hint": "Que reste-t-il quand on enlève 30 pour cent ?",
+      "explanation": "100 % − 30 % = 70 %, soit × 0,7. × 0,3 donne ce qu’on enlève, pas ce qui reste. × 1,3 est une hausse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Coefficient multiplicateur",
+          "lines": [
+            "Augmenter de 20 %, c’est multiplier par 1,2 (1 + 0,2).",
+            "Diminuer de 20 %, c’est multiplier par 0,8 (1 − 0,2).",
+            "Le coefficient d’une hausse est plus grand que 1, celui d’une baisse plus petit que 1.",
+            "Coefficient = nouvelle valeur ÷ ancienne valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-2-2",
+      "prompt": "Un prix de 50 € augmente de 20 %. Le nouveau prix est …",
+      "spoken": "Un prix de 50 euros augmente de 20 pour cent. Le nouveau prix est (mot manquant).",
+      "choices": [
+        "10 €",
+        "40 €",
+        "60 €"
+      ],
+      "answer": "60 €",
+      "hint": "Multiplie 50 par 1,2.",
+      "explanation": "50 × 1,2 = 60 €. 10 € n’est que la hausse, 20 % de 50 € : il faut l’ajouter au prix. 40 € est une baisse de 20 %.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Coefficient multiplicateur",
+          "lines": [
+            "Augmenter de 20 %, c’est multiplier par 1,2 (1 + 0,2).",
+            "Diminuer de 20 %, c’est multiplier par 0,8 (1 − 0,2).",
+            "Le coefficient d’une hausse est plus grand que 1, celui d’une baisse plus petit que 1.",
+            "Coefficient = nouvelle valeur ÷ ancienne valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-2-3",
+      "prompt": "Un sac de 80 kg perd 25 % de sa masse. Il pèse maintenant …",
+      "spoken": "Un sac de 80 kilos perd 25 pour cent de sa masse. Il pèse maintenant (mot manquant).",
+      "choices": [
+        "20 kg",
+        "55 kg",
+        "60 kg"
+      ],
+      "answer": "60 kg",
+      "hint": "Multiplie 80 par 0,75.",
+      "explanation": "80 × 0,75 = 60 kg : le sac perd 20 kg, le quart de 80. 20 kg est ce qu’il perd, pas ce qui reste. 55 kg enlève 25 kilos au lieu de 25 pour cent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Coefficient multiplicateur",
+          "lines": [
+            "Augmenter de 20 %, c’est multiplier par 1,2 (1 + 0,2).",
+            "Diminuer de 20 %, c’est multiplier par 0,8 (1 − 0,2).",
+            "Le coefficient d’une hausse est plus grand que 1, celui d’une baisse plus petit que 1.",
+            "Coefficient = nouvelle valeur ÷ ancienne valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-2-4",
+      "prompt": "Multiplier par 1,05, c’est …",
+      "spoken": "Multiplier par 1,05, c’est (mot manquant).",
+      "choices": [
+        "une hausse de 5 %",
+        "une hausse de 105 %",
+        "une baisse de 5 %"
+      ],
+      "answer": "une hausse de 5 %",
+      "hint": "1,05, c’est 1 + 0,05.",
+      "explanation": "1,05 = 1 + 0,05 : on garde tout et on ajoute 5 %. Une hausse de 105 % serait × 2,05. Le coefficient est plus grand que 1 : ce n’est pas une baisse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Coefficient multiplicateur",
+          "lines": [
+            "Augmenter de 20 %, c’est multiplier par 1,2 (1 + 0,2).",
+            "Diminuer de 20 %, c’est multiplier par 0,8 (1 − 0,2).",
+            "Le coefficient d’une hausse est plus grand que 1, celui d’une baisse plus petit que 1.",
+            "Coefficient = nouvelle valeur ÷ ancienne valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-2-5",
+      "prompt": "Multiplier par 0,9, c’est …",
+      "spoken": "Multiplier par 0,9, c’est (mot manquant).",
+      "choices": [
+        "une baisse de 9 %",
+        "une baisse de 10 %",
+        "une hausse de 90 %"
+      ],
+      "answer": "une baisse de 10 %",
+      "hint": "0,9, c’est 1 − 0,1.",
+      "explanation": "0,9 = 1 − 0,1 : on enlève 10 %. Une baisse de 9 % serait × 0,91. Le coefficient est plus petit que 1 : ce n’est pas une hausse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Coefficient multiplicateur",
+          "lines": [
+            "Augmenter de 20 %, c’est multiplier par 1,2 (1 + 0,2).",
+            "Diminuer de 20 %, c’est multiplier par 0,8 (1 − 0,2).",
+            "Le coefficient d’une hausse est plus grand que 1, celui d’une baisse plus petit que 1.",
+            "Coefficient = nouvelle valeur ÷ ancienne valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-2-6",
+      "prompt": "Un prix passe de 40 € à 50 €. Le coefficient multiplicateur est …",
+      "spoken": "Un prix passe de 40 euros à 50 euros. Le coefficient multiplicateur est (mot manquant).",
+      "choices": [
+        "1,1",
+        "1,25",
+        "10"
+      ],
+      "answer": "1,25",
+      "hint": "Divise le nouveau prix par l’ancien.",
+      "explanation": "50 ÷ 40 = 1,25 : c’est une hausse de 25 %. 10 est la hausse en euros, pas le coefficient. 1,1 prend les 10 euros pour 10 pour cent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Coefficient multiplicateur",
+          "lines": [
+            "Augmenter de 20 %, c’est multiplier par 1,2 (1 + 0,2).",
+            "Diminuer de 20 %, c’est multiplier par 0,8 (1 − 0,2).",
+            "Le coefficient d’une hausse est plus grand que 1, celui d’une baisse plus petit que 1.",
+            "Coefficient = nouvelle valeur ÷ ancienne valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-2-7",
+      "prompt": "Un prix de 200 € baisse de 15 %. Le nouveau prix est …",
+      "spoken": "Un prix de 200 euros baisse de 15 pour cent. Le nouveau prix est (mot manquant).",
+      "choices": [
+        "170 €",
+        "185 €",
+        "230 €"
+      ],
+      "answer": "170 €",
+      "hint": "Multiplie 200 par 0,85.",
+      "explanation": "200 × 0,85 = 170 € : la baisse est de 30 €. 185 € enlève 15 euros au lieu de 15 pour cent. 230 € est une hausse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Coefficient multiplicateur",
+          "lines": [
+            "Augmenter de 20 %, c’est multiplier par 1,2 (1 + 0,2).",
+            "Diminuer de 20 %, c’est multiplier par 0,8 (1 − 0,2).",
+            "Le coefficient d’une hausse est plus grand que 1, celui d’une baisse plus petit que 1.",
+            "Coefficient = nouvelle valeur ÷ ancienne valeur."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-4e-powers",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

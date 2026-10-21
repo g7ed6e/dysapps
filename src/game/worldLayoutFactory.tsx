@@ -11,7 +11,7 @@ import { BuilderBar } from '../components/BuilderBar';
 import { Loading } from '../components/Loading';
 import { useBlocland } from './BloclandContext';
 import { getBiome } from './biomes';
-import { renduDuMonde, type Rendu } from './rendering';
+import { openWorldRequested, renduDuMonde, type Rendu } from './rendering';
 import { WorldPage } from './WorldPage';
 import { archipelagoOf, type ArchipelagoId } from './world/archipelago';
 
@@ -30,11 +30,6 @@ type OpenWorldArchipelago = (typeof OPEN_WORLD_ARCHIPELAGOS)[number];
 const hasOpenWorld = (a: ArchipelagoId): a is OpenWorldArchipelago => (OPEN_WORLD_ARCHIPELAGOS as readonly ArchipelagoId[]).includes(a);
 
 const OpenWorldPage = lazy(() => import('./three/archipeo/OpenWorldPage'));
-
-/** L'adresse demande-t-elle le monde ouvert (`?monde=ouvert`, avant le `#`) ? */
-export function openWorldRequested(href: string): boolean {
-  return new URL(href, 'http://localhost/').searchParams.get('monde') === 'ouvert';
-}
 
 /**
  * La disposition d'une page du monde : continue seulement si l'adresse la demande, dans le rendu d'Archipéo, à

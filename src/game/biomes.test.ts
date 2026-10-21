@@ -2,7 +2,8 @@
 // vérifient ce que les types ne disent pas (bloc et icône existants, compétences du référentiel, ordre).
 import { ICONS } from '../components/Icon';
 import { byId } from '../curriculum';
-import { BIOME_IDS, BIOMES, BLOCKS, missionsJouables } from './biomes';
+import { BIOME_IDS, BIOMES, BLOCKS, OPEN_WORLD_ONLY_IDS, TOUTES_LES_ILES, estUnBiome, getBiome, getIle, missionsJouables } from './biomes';
+import { islandsOf } from './world/archipelago';
 
 const MATIERES = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'lv2', 'civics', 'lca'];
 const CLASSES = ['6e', '5e', '4e', '3e'];
@@ -48,5 +49,34 @@ describe('les îles de docs/contenu/', () => {
     const ids = BIOMES.flatMap((b) => b.exercises.map((m) => m.id));
     expect(ids.filter((id, n) => ids.indexOf(id) !== n)).toEqual([]);
     for (const b of BIOMES) for (const lv2 of ['es', 'de'] as const) expect(missionsJouables(b, lv2).length, `${b.id} (${lv2})`).toBeLessThanOrEqual(5);
+  });
+});
+
+describe('les lieux du monde ouvert seulement (GD-24)', () => {
+  it('sont ceux de OPEN_WORLD_ONLY_IDS, après les îles de la grille', () => {
+    expect(TOUTES_LES_ILES.filter((b) => b.openWorldOnly).map((b) => b.id)).toEqual([...OPEN_WORLD_ONLY_IDS]);
+    expect(TOUTES_LES_ILES.map((b) => b.id)).toEqual([...BIOME_IDS, ...OPEN_WORLD_ONLY_IDS]);
+  });
+
+  it('ne sont ni dans la grille ni dans un archipel, mais se trouvent par getIle', () => {
+    for (const id of OPEN_WORLD_ONLY_IDS) {
+      expect(estUnBiome(id), id).toBe(false);
+      expect(getBiome(id), id).toBeUndefined();
+      expect(getIle(id)?.openWorldOnly, id).toBe(true);
+      expect(new Set<string>(islandsOf(getIle(id)!.classe).map((b) => b.id)).has(id), id).toBe(false);
+      // Le bloc gagné est celui d'une île de la grille (pas de ressource propre à dessiner).
+      expect(estUnBiome(getIle(id)!.block), id).toBe(true);
+    }
+  });
+
+  it('n’ont ni Gardien ni créature (aucun écran ne les montrerait) ; les îles de la grille ont les deux', () => {
+    for (const id of OPEN_WORLD_ONLY_IDS) {
+      expect(getIle(id)?.guardian, id).toBeUndefined();
+      expect(getIle(id)?.creature, id).toBeUndefined();
+    }
+    for (const b of BIOMES) {
+      expect(b.guardian, b.id).toBeTruthy();
+      expect(b.creature?.name, b.id).toBeTruthy();
+    }
   });
 });

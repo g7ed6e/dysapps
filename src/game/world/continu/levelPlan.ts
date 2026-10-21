@@ -9,7 +9,7 @@
 import type { Vec2 } from './geometry';
 import type { Land, LinkedLand } from './lands';
 import { COAST, LANDS_6E, OFFSHORE, PATH_EDGES, PLACES, STRAITS, TERRAIN, type OpenPlace as OpenPlaceOf, type PlaceId as PlaceId6e } from './plan6e';
-import { COAST_4E, LANDS_4E, LINKS_4E, PATH_EDGES_4E, PLACES_4E, TERRAIN_4E, UNPRICED_PLACES_4E, type PlaceId4e } from './plan4e';
+import { COAST_4E, LANDS_4E, LINKS_4E, PATH_EDGES_4E, PLACES_4E, TERRAIN_4E, UNPRICED_PLACES_4E, isBuiltPlace4e, type BuiltPlace4e, type PlaceId4e } from './plan4e';
 import { COAST_5E, LANDS_5E, LINKS_5E, PATH_EDGES_5E, PLACES_5E, TERRAIN_5E, UNPRICED_PLACES_5E, UPPER_PLACES_5E, isBuiltPlace5e, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
 /** Un lieu, de tout niveau (ses identifiants sont uniques d'un niveau à l'autre). */
@@ -171,12 +171,13 @@ export function sixthPlace(id: PlaceId): PlaceId6e {
  * lieu (GD-22, « un lieu complet par lot ») : ceux déjà construits (./plan5e.ts, `BUILT_PLACES_5E`, la seule liste : la
  * Montée au lot 3, le Hameau au lot 5, les Radeaux au lot 6, la Croisée au lot 7, les Instants au lot 8, l'Étuve au
  * lot 10, les Terrasses au lot 11, l'Auberge au lot 12, le Donjon au lot 13a, l'Oracle au lot 13b, le Sémaphore au lot
- * 14, le Gaillard au lot 15, les Nacelles au lot 16). Les autres lieux du 5e restent des ruines.
+ * 14, le Gaillard au lot 15, les Nacelles au lot 16) ; au 4e de même (./plan4e.ts, `BUILT_PLACES_4E` : la Forge au lot 2).
+ * Les autres lieux restent des ruines.
  */
-export type ScenePlaceId = PlaceId6e | BuiltPlace5e;
+export type ScenePlaceId = PlaceId6e | BuiltPlace5e | BuiltPlace4e;
 
 /** Ce lieu a-t-il sa scénette ? */
-export const hasScenette = (id: PlaceId): id is ScenePlaceId => SIXTH.has(id) || isBuiltPlace5e(id);
+export const hasScenette = (id: PlaceId): id is ScenePlaceId => SIXTH.has(id) || isBuiltPlace5e(id) || isBuiltPlace4e(id);
 
 /**
  * Un lieu qui a sa scénette (scenette.ts, questionScene.ts, questions.ts) : un autre lieu du 5e qui arriverait ici est

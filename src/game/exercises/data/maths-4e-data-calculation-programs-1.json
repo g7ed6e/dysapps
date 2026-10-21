@@ -1,0 +1,222 @@
+{
+  "id": "maths-4e-data-calculation-programs-1",
+  "biome": "maths-4e-data",
+  "type": "calculation-programs",
+  "level": 1,
+  "instruction": "Suis le programme, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-4e-data-calculation-programs-1-0",
+      "prompt": "Programme : choisir un nombre, ajouter 3, puis multiplier par 2. Avec 5, on obtient …",
+      "spoken": "Programme : choisir un nombre, ajouter 3, puis multiplier par 2. Avec 5, on obtient (mot manquant).",
+      "choices": [
+        "11",
+        "13",
+        "16"
+      ],
+      "answer": "16",
+      "hint": "D’abord 5 + 3, puis le résultat fois 2.",
+      "explanation": "5 + 3 = 8, puis 8 × 2 = 16. 13, c’est 5 × 2 + 3 : les étapes dans le mauvais ordre. 11, c’est 5 + 3 × 2 : le × 2 n’a porté que sur le 3.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programme de calcul",
+          "lines": [
+            "Fais les étapes dans l’ordre, une à la fois.",
+            "Chaque étape part du résultat de l’étape d’avant.",
+            "Avec x, écris le calcul entier, avec des parenthèses : (x + 3) × 2.",
+            "Puis développe : (x + 3) × 2 = 2x + 6."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-1-1",
+      "prompt": "Programme : choisir un nombre, multiplier par 4, puis soustraire 1. Avec 3, on obtient …",
+      "spoken": "Programme : choisir un nombre, multiplier par 4, puis soustraire 1. Avec 3, on obtient (mot manquant).",
+      "choices": [
+        "8",
+        "11",
+        "12"
+      ],
+      "answer": "11",
+      "hint": "D’abord 3 × 4, puis on enlève 1.",
+      "explanation": "3 × 4 = 12, puis 12 − 1 = 11. 12 oublie la dernière étape. 8, c’est (3 − 1) × 4 : les étapes dans le mauvais ordre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programme de calcul",
+          "lines": [
+            "Fais les étapes dans l’ordre, une à la fois.",
+            "Chaque étape part du résultat de l’étape d’avant.",
+            "Avec x, écris le calcul entier, avec des parenthèses : (x + 3) × 2.",
+            "Puis développe : (x + 3) × 2 = 2x + 6."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-1-2",
+      "prompt": "Programme : choisir x, ajouter 3, puis multiplier par 2. Le calcul entier s’écrit …",
+      "spoken": "Programme : choisir x, ajouter 3, puis multiplier par 2. Le calcul entier s’écrit (mot manquant).",
+      "choices": [
+        "x + 3 × 2",
+        "(x + 3) × 2",
+        "x × 2 + 3"
+      ],
+      "answer": "(x + 3) × 2",
+      "hint": "Tout le résultat de la première étape est multiplié par 2.",
+      "explanation": "On multiplie tout x + 3 par 2 : il faut des parenthèses, (x + 3) × 2. Sans parenthèses, x + 3 × 2 ne multiplie que le 3. x × 2 + 3 fait les étapes dans le mauvais ordre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programme de calcul",
+          "lines": [
+            "Fais les étapes dans l’ordre, une à la fois.",
+            "Chaque étape part du résultat de l’étape d’avant.",
+            "Avec x, écris le calcul entier, avec des parenthèses : (x + 3) × 2.",
+            "Puis développe : (x + 3) × 2 = 2x + 6."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-1-3",
+      "prompt": "Développé, (x + 3) × 2 s’écrit …",
+      "spoken": "Développé, x plus 3, le tout fois 2, s’écrit (mot manquant).",
+      "choices": [
+        "2x + 3",
+        "x + 6",
+        "2x + 6"
+      ],
+      "answer": "2x + 6",
+      "hint": "Multiplie x par 2, puis 3 par 2.",
+      "explanation": "(x + 3) × 2 = 2 × x + 2 × 3 = 2x + 6. 2x + 3 oublie de multiplier le 3. x + 6 oublie de multiplier le x.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programme de calcul",
+          "lines": [
+            "Fais les étapes dans l’ordre, une à la fois.",
+            "Chaque étape part du résultat de l’étape d’avant.",
+            "Avec x, écris le calcul entier, avec des parenthèses : (x + 3) × 2.",
+            "Puis développe : (x + 3) × 2 = 2x + 6."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-1-4",
+      "prompt": "Programme : choisir un nombre, multiplier par 3, puis ajouter 5. Avec −2, on obtient …",
+      "spoken": "Programme : choisir un nombre, multiplier par 3, puis ajouter 5. Avec moins 2, on obtient (mot manquant).",
+      "choices": [
+        "−1",
+        "1",
+        "9"
+      ],
+      "answer": "−1",
+      "hint": "−2 × 3 = −6. Puis ajoute 5.",
+      "explanation": "−2 × 3 = −6, puis −6 + 5 = −1. 9, c’est (−2 + 5) × 3 : les étapes dans le mauvais ordre. 1 oublie le signe moins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programme de calcul",
+          "lines": [
+            "Fais les étapes dans l’ordre, une à la fois.",
+            "Chaque étape part du résultat de l’étape d’avant.",
+            "Avec x, écris le calcul entier, avec des parenthèses : (x + 3) × 2.",
+            "Puis développe : (x + 3) × 2 = 2x + 6."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-1-5",
+      "prompt": "Programme : choisir x, ajouter 4, puis multiplier par 5. Développé, le résultat s’écrit …",
+      "spoken": "Programme : choisir x, ajouter 4, puis multiplier par 5. Développé, le résultat s’écrit (mot manquant).",
+      "choices": [
+        "5x + 4",
+        "5x + 9",
+        "5x + 20"
+      ],
+      "answer": "5x + 20",
+      "hint": "Écris d’abord (x + 4) × 5.",
+      "explanation": "(x + 4) × 5 = 5x + 20. 5x + 4 ne multiplie pas le 4. 5x + 9 ajoute 5 au lieu de multiplier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programme de calcul",
+          "lines": [
+            "Fais les étapes dans l’ordre, une à la fois.",
+            "Chaque étape part du résultat de l’étape d’avant.",
+            "Avec x, écris le calcul entier, avec des parenthèses : (x + 3) × 2.",
+            "Puis développe : (x + 3) × 2 = 2x + 6."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-1-6",
+      "prompt": "Programme : choisir x, multiplier par 2, puis ajouter 7. Le résultat s’écrit …",
+      "spoken": "Programme : choisir x, multiplier par 2, puis ajouter 7. Le résultat s’écrit (mot manquant).",
+      "choices": [
+        "2x + 7",
+        "2(x + 7)",
+        "9x"
+      ],
+      "answer": "2x + 7",
+      "hint": "Ici, on multiplie d’abord, puis on ajoute.",
+      "explanation": "x × 2 = 2x, puis 2x + 7. 2(x + 7) ajoute avant de multiplier. 9x mélange des x et des nombres seuls : 2x + 7 ne se réduit pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programme de calcul",
+          "lines": [
+            "Fais les étapes dans l’ordre, une à la fois.",
+            "Chaque étape part du résultat de l’étape d’avant.",
+            "Avec x, écris le calcul entier, avec des parenthèses : (x + 3) × 2.",
+            "Puis développe : (x + 3) × 2 = 2x + 6."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-calculation-programs-1-7",
+      "prompt": "Programme A : ajouter 1, puis multiplier par 3. Programme B : multiplier par 3, puis ajouter 3. Avec le même nombre de départ, ils donnent …",
+      "spoken": "Programme A : ajouter 1, puis multiplier par 3. Programme B : multiplier par 3, puis ajouter 3. Avec le même nombre de départ, ils donnent (mot manquant).",
+      "choices": [
+        "toujours le même résultat",
+        "des résultats différents",
+        "le même résultat seulement avec 0"
+      ],
+      "answer": "toujours le même résultat",
+      "hint": "Écris les deux programmes avec x, puis développe A.",
+      "explanation": "A donne (x + 1) × 3 = 3x + 3, et B donne x × 3 + 3 = 3x + 3 : c’est le même calcul, quel que soit x. Essaie avec 2 : A donne 9, B donne 9.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Programme de calcul",
+          "lines": [
+            "Fais les étapes dans l’ordre, une à la fois.",
+            "Chaque étape part du résultat de l’étape d’avant.",
+            "Avec x, écris le calcul entier, avec des parenthèses : (x + 3) × 2.",
+            "Puis développe : (x + 3) × 2 = 2x + 6."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-4e-powers",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

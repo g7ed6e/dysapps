@@ -19,7 +19,8 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useHoldCelebrations } from '../../../components/Celebrations';
-import { Icon } from '../../../components/Icon';
+import { Icon, type AnyIconName } from '../../../components/Icon';
+import { islandStateIcon } from '../../world/islandState';
 import { WorldButton } from '../../WorldButton';
 import { Loading } from '../../../components/Loading';
 import { frenchTypography } from '../../../components/math/RichText';
@@ -28,8 +29,9 @@ import { useSettings } from '../../../core/SettingsContext';
 import { useMoinsDAnimations } from '../../../core/motion';
 import { useTextes } from '../../../universes';
 import { useBlocland } from '../../BloclandContext';
-import { getBiome, type BiomeId } from '../../biomes';
+import { getIle, type BiomeId, type IleId } from '../../biomes';
 import { cheminDeRevision, revisionsDeLIle, usePlusTard } from '../../reminders';
+import { todayISO } from '../../engine';
 import { exercisesOf, questProgress } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
 import { playDetourWind, playWhaleBlow, playWoodTap } from '../../sound';
@@ -39,18 +41,20 @@ import { payableBlocks } from '../../world/archipelago';
 import { isBridgeSpot, isLinkedLand, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import type { PartShape } from '../../world/continu/construction';
 import { bornesDuMondeOuvert, firstToPlayAt, keepClear, missionsOfPlace, nextMission, playsInPlace, type MarkOnScreen, type Obstacle, type ScreenRect } from '../../world/continu/mission';
-import { placeById, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
+import { hasScenette, placeById, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
+import { scenetteOf } from '../../world/continu/scenette';
 import type { PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
-import { modeleDuMonde } from '../../world/model';
+import { bornesDesLieuxSeuls, modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { ClosedLandSheet, afterLabel, closedLandLabel, linkableLabel } from './ClosedLandSheet';
-import { constructionState, placeConstruction, posedShapes } from './constructionParts';
+import { constructionState, placeConstruction, posedShapes, restoredLine } from './constructionParts';
 import { posedAmenagements } from './amenagements';
 import { arrivalPlace, gridLand, gridLands, openWorldLands, playedIslands } from './landLinks';
 import { MapLabels } from './MapLabels';
 import { PlacePanel, earnPlacesOf, placeFromParam, placeResume } from './PlacePanel';
+import { PARAM_ILE } from '../../world/openWorldReturn';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
 import { NEF_LEAVES, NefSheet, nefLookOf, nefSail, nefStageOf } from './NefSheet';
@@ -91,7 +95,7 @@ const gestureWord = (kind: SuggestedAction['kind'] | undefined, textes: ReturnTy
   kind === 'donner' ? (textes.quetes?.donner ?? 'Donner') : kind === 'apporter' ? (textes.quetes?.apporter ?? 'Apporter') : (textes.commandes?.livrer ?? 'Livrer');
 
 /** Le titre d'une mission d'une île, pour la dire. */
-const missionTitle = (island: string, mission: string) => getBiome(island)?.exercises.find((x) => x.id === mission)?.title ?? '';
+const missionTitle = (island: string, mission: string) => getIle(island)?.exercises.find((x) => x.id === mission)?.title ?? '';
 
 /**
  * Le monde ouvert d'un niveau (`level`, choisi par la fabrique de disposition) : la page lit son plan (GD-22) et le
@@ -127,7 +131,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const modele = useMemo(() => modeleDuMonde(vu, level, textes.archipels, textes.libelles), [vu, level, textes, settings.lv2]);
   // Les bornes du monde ouvert : une mission réussie ici garde ses étoiles même si son île n'est pas encore reliée par
   // les ponts de la grille (sinon « Nouveau » au retour, la mission reproposée, la brume restée, jusqu'au rechargement).
-  const bornes = useMemo(() => bornesDuMondeOuvert(modele.bornes, (ile, m) => questProgress(ile, m, vu.progress)?.stars ?? null), [modele, vu.progress]);
+  // Avec celles des lieux du monde ouvert seulement (GD-24), que la grille n'a pas.
+  const bornes = useMemo(
+    () => [...bornesDuMondeOuvert(modele.bornes, (ile, m) => questProgress(ile, m, vu.progress)?.stars ?? null), ...bornesDesLieuxSeuls(vu, level)],
+    [modele, vu, level],
+  );
   // Les terres (GD-20, point 3, « vraies terres ») : les terres fermées (aucun de leurs lieux relié dans la grille ni
   // joué), celles pas encore reliables, et le pont suggéré par la prochaine destination.
   const lands = useMemo(() => openWorldLands(plan, state.world.links, bornes, modele.destination.ouvrage, modele.destination.island), [plan, state.world.links, bornes, modele.destination.ouvrage, modele.destination.island]);
@@ -187,7 +195,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
             open: (p) => !isClosed(p) && p !== here,
             revisions: (p) => {
               const island = placeById(p).island as BiomeId;
-              return !remises.has(island) && revisionsDeLIle(state.spaced, state.world.links, island, settings.lv2).length > 0;
+              return !remises.has(island) && revisionsDeLIle(state.spaced, state.world.links, island, settings.lv2, todayISO(), true).length > 0;
             },
             suggested: suggestedId ?? undefined,
             titre: textes.quetes?.titre,
@@ -204,7 +212,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     spot: portFromParam(params.get('porte')),
     assembled: Boolean((location.state as { assemble?: string } | null)?.assemble),
   }));
-  const lieuParam = placeFromParam(plan, params.get('lieu'));
+  const lieuParam = placeFromParam(plan, params.get('lieu'), params.get(PARAM_ILE));
   const missionParam = params.get('mission');
   // Au 4e, l'île du port de la grille (le Gabarit) fait arriver à la Crique tant que le Bastion est fermé (`arrivalPlace`).
   const fromIsland = arrivalPlace(plan, biomeId, lands.closed);
@@ -277,7 +285,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // pont devenu reliable s'il y en a (« Le pont des Crêtes peut être rebâti. ») ; `n` : un autre pont ; `after` : dans
   // combien de millisecondes (jamais en même temps que le toc).
   // Le nom d'un Détour où Kéo s'est arrêté s'écrit de même, en haut (`top`), et part dès qu'il en repart (`detour`).
-  const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number; top?: boolean; detour?: DetourId } | null>(null);
+  // L'état d'un lieu qui s'anime à sa restauration (la Forge du 4e) s'écrit de même, avec l'icône de l'état (`icon`).
+  const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number; top?: boolean; detour?: DetourId; icon?: AnyIconName } | null>(null);
+  // Les mots d'état de l'univers, lus par la scène faite une fois (« La Forge est restaurée. »).
+  const stateWords = useRef(textes.etatsDIle);
+  stateWords.current = textes.etatsDIle;
   // Le Détour où Kéo s'est arrêté (GD-20, déplacement libre, lot 2), ou aucun : au cairn éteint, « Rallumer ».
   const [detourHere, setDetourHere] = useState<DetourId | null>(null);
   // Ce que fait la page à l'arrivée sur un Détour, lu par la scène faite une fois : le réglage et l'état du moment.
@@ -426,6 +438,15 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       onMapPlaces: (spots, moving) => mapPlacer.current?.(spots, moving),
       onMapPick: (placeId) => mapPick.current(placeId),
       onPosed: () => setPosePending(false),
+      // Un lieu qui s'anime à sa restauration (la Forge du 4e) : son état, écrit avec son icône et dit, à la fin de
+      // l'allumage ou au toucher qui le passe (tout de suite, avec « Réduire les animations ») ; puis la réplique de
+      // l'habitant, s'il en a une (« Le feu de la montagne est revenu. »).
+      onRestored: (placeId) => {
+        const lines = [restoredLine(placeById(placeId), stateWords.current)];
+        const end = hasScenette(placeId) ? scenetteOf(placeId).words?.end : undefined;
+        if (end) lines.push(end);
+        setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines, after: 0, icon: islandStateIcon('restauree') }));
+      },
       // La Nef, son ber ou le banc du large touché (GD-21) : sa fiche, Kéo reste où il est.
       onNef: () => {
         setLieu(null);
@@ -636,7 +657,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const reprendreAt = useCallback(async () => {
     if (!lieu || reprendreRef.current) return;
     const place = lieu.place;
-    const dues = () => revisionsDeLIle(state.spaced, state.world.links, placeById(place).island as BiomeId, settings.lv2);
+    const dues = () => revisionsDeLIle(state.spaced, state.world.links, placeById(place).island as IleId, settings.lv2, todayISO(), true);
     reprendreRef.current = true;
     setReprendreBusy(true);
     try {
@@ -844,7 +865,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // la change (le lieu du latin et du grec compte les missions de l'option, GD-14) ; la règle le croit inutile.
   const constructions = useMemo(() => {
     const of = (id: PlaceId) => {
-      const biome = getBiome(placeById(id).island);
+      const biome = getIle(placeById(id).island);
       return biome ? placeConstruction(biome.id, state.world.parts) : { shapes: [], posed: [], built: [] };
     };
     return placeRecord(plan, of);
@@ -887,7 +908,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const traces = useMemo(() => {
     const of = (id: PlaceId): string[] => {
       const p = placeById(id);
-      const biome = getBiome(p.island);
+      const biome = getIle(p.island);
       // Les missions restées sur l'écran habituel (lot L7 : Ascension, le Filon) laissent leur trace aussi.
       return biome ? [...p.scenes, ...(p.panels ?? [])].filter((m) => traceDone(exercisesOf(biome.id, m).map((e) => state.progress[e.id]?.stars ?? 0))) : [];
     };
@@ -970,6 +991,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
 
   // Une question ou une remise : la scène seule, ni marque, ni accès directs, ni panneau.
   const playing = Boolean(asking) || Boolean(remise) || departing;
+  // La phrase du monde est à l'écran : la bulle sous « Y aller » se retire le temps qu'elle l'est.
+  const saidOver = saidShown && !playing;
 
   return (
     <EarnPlaces.Provider value={earnPlaces}>
@@ -1087,6 +1110,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               qu'elle est écrite, un haut-parleur la fait réentendre, et le toucher la garde écrite (référent dys). Sur la Carte, elle se tient en haut,
               hors des noms des lieux du sud. */}
           <div className={`open-world-said${mapOpen ? ' on-map' : said?.top ? ' on-top' : ''}`} data-shown={saidShown && !playing ? 'oui' : 'non'} data-etape={saidStep} onPointerDown={holdSaid} onFocus={holdSaid}>
+            {saidShown && !playing && said?.icon && <Icon name={said.icon} />}
             <p role="status">{saidShown && !playing && said ? said.lines.map((line, i) => (
                   // Sur un petit écran, l'autre phrase reste lue par le lecteur d'écran, cachée à la vue.
                   <span key={line} className={small && i !== saidStep ? 'visually-hidden' : undefined}>
@@ -1158,9 +1182,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           {!playing && !mapOpen && !sheetOpen && (
             <div className="open-world-go">
               {/* La phrase de ce que porte la suggestion chez un habitant (sa commande, l'étape d'entraide) ; « Aucune
-                  mission » seulement quand rien n'attend. */}
-              {!walking && !relightHere && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
-              {!next && !suggestedCmd && !walking && !relightHere && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
+                  mission » seulement quand rien n'attend. Jamais pendant qu'une phrase du monde est écrite (l'état d'un
+                  lieu restauré, un pont rebâti, le nom d'un Détour) : une seule bulle à la fois, la plus récente ; l'autre
+                  dépassait dessous (référent dys et consultant UX UI, relecture des Fabriques). Elle revient ensuite. */}
+              {!walking && !relightHere && !saidOver && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
+              {!next && !suggestedCmd && !walking && !relightHere && !saidOver && <p className="open-world-go-reason">Aucune mission à faire ici pour l’instant.</p>}
               <div className="open-world-go-row">
               {walking ? (
                 // Pendant tout trajet (la marche, la cabine, la marche) : « Passer le trajet », à contraste plein, saute

@@ -17,19 +17,19 @@
  * (à deux parties, les trois plans sont déjà posés). Avec « Pas d'option », l'option qui en a le plus. Une sauvegarde
  * posée avec un autre compte s'y remet seule à l'ouverture (`rattraperLesParties`, `engine.ts`) : les cases restent.
  */
-import { BIOMES, missionsJouables, type BiomeDef, type BiomeId, type Lca } from '../biomes';
+import { getIle, missionsJouables, TOUTES_LES_ILES, type IleDef, type IleId, type Lca } from '../biomes';
 import { lcaCourante, type LcaChoice } from '../../core/settings';
 import { isPlanDone, planCells, plansFor, type PlanDef } from './plans';
 
 export interface Partie {
-  biome: BiomeId;
+  biome: IleId;
   /** Son rang dans le bâtiment, de 1 à `total`. */
   rang: number;
   total: number;
   /** Son nom, tiré de ceux des plans (`docs/contenu/<lieu>.md`, « ## Les plans »). */
   nom: string;
   /** Les cases qu'elle pose, plan par plan (clés de `planCells`). */
-  cases: { plan: PlanDef; keys: string[] }[];
+  cases: { plan: PlanDef<IleId>; keys: string[] }[];
 }
 
 /** Un lieu a au plus cinq parties, comme il a au plus cinq missions (GD-14). */
@@ -39,7 +39,7 @@ const PARTIES_MAX = 5;
  * Les missions d'un lieu qui comptent pour son bâtiment : sur le lieu de la LV2, celles d'une seule langue ; sur le lieu
  * du latin et du grec, les missions jouables de l'option `lca` (avec « Pas d'option », de celle qui en a le plus).
  */
-function missionsDuBatiment(biome: Pick<BiomeDef, 'exercises'>, lca: LcaChoice): number {
+function missionsDuBatiment(biome: Pick<IleDef, 'exercises'>, lca: LcaChoice): number {
   const options = [...new Set(biome.exercises.flatMap((x) => (x.option === undefined ? [] : [x.option])))];
   if (options.length) {
     // Le lieu d'option n'a pas de mission de LV2 : seule l'option compte (`missionsJouables`, la règle de l'écran).
@@ -54,7 +54,7 @@ function missionsDuBatiment(biome: Pick<BiomeDef, 'exercises'>, lca: LcaChoice):
  * Le nombre de parties du bâtiment d'un lieu : autant que de missions, de 2 à 5 (0 sans bâtiment). `lca` : l'option
  * latin ou grec, celle des Réglages par défaut (elle ne change que le lieu du latin et du grec).
  */
-export function nombreDeParties(biome: Pick<BiomeDef, 'id' | 'exercises'>, lca: LcaChoice = lcaCourante()): number {
+export function nombreDeParties(biome: Pick<IleDef, 'id' | 'exercises'>, lca: LcaChoice = lcaCourante()): number {
   if (plansFor(biome.id).length < 3) return 0;
   return Math.max(2, Math.min(PARTIES_MAX, missionsDuBatiment(biome, lca)));
 }
@@ -88,7 +88,7 @@ function ensemble(a: string, b: string): string {
 }
 
 /** Un plan coupé en deux par la hauteur : les rangées du bas jusqu'à la moitié des cases au moins, puis le reste. */
-function enDeux(plan: PlanDef): [string[], string[]] {
+function enDeux(plan: PlanDef<IleId>): [string[], string[]] {
   const cells = planCells(plan);
   const hauteurs = [...new Set(cells.map((c) => c.z))].sort((a, b) => a - b);
   let seuil = hauteurs[hauteurs.length - 1];
@@ -114,7 +114,7 @@ function enDeux(plan: PlanDef): [string[], string[]] {
  * au plus près d'un `k`-ième des cases. `null` si le plan a moins de `k` rangées : une part serait une demi-rangée, et
  * son nom (« le milieu ») mentirait.
  */
-function enRangees(plan: PlanDef, k: 2 | 3): string[][] | null {
+function enRangees(plan: PlanDef<IleId>, k: 2 | 3): string[][] | null {
   const cells = planCells(plan);
   const hauteurs = [...new Set(cells.map((c) => c.z))].sort((a, b) => a - b);
   if (hauteurs.length < k) return null;
@@ -144,11 +144,11 @@ const PAR_OPTION = new Map<string, Partie[]>();
  * Les parties du bâtiment d'un lieu, dans l'ordre où elles se posent. `lca` : l'option latin ou grec, celle des
  * Réglages par défaut. Le même tableau revient tant que le compte ne change pas (les vues s'en servent de clé).
  */
-export function partiesDe(id: BiomeId, lca: LcaChoice = lcaCourante()): Partie[] {
+export function partiesDe(id: IleId, lca: LcaChoice = lcaCourante()): Partie[] {
   const parOption = `${id}:${lca}`;
   const deja = PAR_OPTION.get(parOption);
   if (deja) return deja;
-  const biome = BIOMES.find((b) => b.id === id);
+  const biome = getIle(id);
   const n = biome ? nombreDeParties(biome, lca) : 0;
   const cle = `${id}:${n}`;
   const cached = CACHE.get(cle);
@@ -157,7 +157,7 @@ export function partiesDe(id: BiomeId, lca: LcaChoice = lcaCourante()): Partie[]
     return cached;
   }
   const plans = plansFor(id);
-  const tout = (plan: PlanDef) => ({ plan, keys: planCells(plan).map((c) => c.key) });
+  const tout = (plan: PlanDef<IleId>) => ({ plan, keys: planCells(plan).map((c) => c.key) });
   let parties: Omit<Partie, 'biome' | 'rang' | 'total'>[] = [];
   if (n === 2) {
     parties = [
@@ -215,17 +215,17 @@ export function partiePosee(partie: Partie, parts: Record<string, string[]>): bo
 }
 
 /** Les parties posées d'un lieu. */
-export function partiesPosees(id: BiomeId, parts: Record<string, string[]>): number {
+export function partiesPosees(id: IleId, parts: Record<string, string[]>): number {
   return partiesDe(id).filter((p) => partiePosee(p, parts)).length;
 }
 
 /** La prochaine partie à poser d'un lieu, ou `null` si le bâtiment est fini. */
-export function prochainePartie(id: BiomeId, parts: Record<string, string[]>): Partie | null {
+export function prochainePartie(id: IleId, parts: Record<string, string[]>): Partie | null {
   return partiesDe(id).find((p) => !partiePosee(p, parts)) ?? null;
 }
 
 /** La première partie d'un lieu est-elle posée ? (la condition de l'escalier taillé) */
-export function premierePartiePosee(id: BiomeId, parts: Record<string, string[]>): boolean {
+export function premierePartiePosee(id: IleId, parts: Record<string, string[]>): boolean {
   const first = partiesDe(id)[0];
   return Boolean(first) && partiePosee(first, parts);
 }
@@ -235,14 +235,14 @@ export interface PoseDesParties {
   /** Les parties posées à l'instant, dans l'ordre. */
   posees: Partie[];
   /** Les plans que ces parties ont terminés (leur XP, leur réplique, une ligne du journal). */
-  plansFinis: PlanDef[];
+  plansFinis: PlanDef<IleId>[];
 }
 
 /**
  * Pose les parties qu'un lieu doit avoir : autant que de missions terminées (`terminees`), dans l'ordre du dessin, en
  * comptant celles déjà posées. Sans effet si le compte y est (une mission rejouée, une sauvegarde déjà à jour).
  */
-export function poserLesParties(id: BiomeId, parts: Record<string, string[]>, terminees: number): PoseDesParties {
+export function poserLesParties(id: IleId, parts: Record<string, string[]>, terminees: number): PoseDesParties {
   const parties = partiesDe(id);
   const voulues = Math.min(parties.length, terminees);
   let posees = parties.filter((p) => partiePosee(p, parts)).length;
@@ -274,10 +274,10 @@ export function poserLesParties(id: BiomeId, parts: Record<string, string[]>, te
  * `lca` (le bâtiment, GD-14) : sur le lieu du latin et du grec, seules comptent les missions de cette option ; celles de
  * l'autre option, jouées avant un changement dans les Réglages, ne posent rien de plus (leurs cases restent posées).
  */
-export function missionsTerminees(progress: Record<string, { attempts: number }>, id: BiomeId, lca?: LcaChoice): number {
-  const biome = BIOMES.find((b) => b.id === id);
+export function missionsTerminees(progress: Record<string, { attempts: number }>, id: IleId, lca?: LcaChoice): number {
+  const biome = getIle(id);
   if (!biome) return 0;
-  const longer = BIOMES.filter((b) => b.id.length > id.length && b.id.startsWith(`${id}-`)).map((b) => `${b.id}-`);
+  const longer = TOUTES_LES_ILES.filter((b) => b.id.length > id.length && b.id.startsWith(`${id}-`)).map((b) => `${b.id}-`);
   const types = biome.exercises.map((x) => x.id).sort((a, b) => b.length - a.length);
   const done = new Set<string>();
   for (const [ex, p] of Object.entries(progress)) {

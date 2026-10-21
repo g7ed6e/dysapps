@@ -81,7 +81,7 @@ export async function revisionPlanOf(
   load: (id: string) => Promise<ExerciseDef | undefined> = loadExercise,
 ): Promise<RevisionPlan | null> {
   const island = placeById(place).island as BiomeId;
-  const types = new Set(revisionsDeLIle(spaced, links, island, lv2, today).map((q) => q.type));
+  const types = new Set(revisionsDeLIle(spaced, links, island, lv2, today, true).map((q) => q.type));
   const metas = new Map(CATALOG.filter((m) => m.biome === island && types.has(m.type)).map((m) => [m.id, m]));
   const due = dueItems(spaced, today).flatMap((s) => {
     const d = splitItem(s.itemId);

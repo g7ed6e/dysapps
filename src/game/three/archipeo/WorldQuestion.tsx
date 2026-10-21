@@ -32,7 +32,7 @@ import { texteGrand } from '../../../core/settings';
 import { useRememberPlace } from '../../../core/lastPlace';
 import { useLoaded } from '../../../core/useLoaded';
 import { useBlocland } from '../../BloclandContext';
-import { getBiome, type BiomeId } from '../../biomes';
+import { getIle } from '../../biomes';
 import { levelFor, type Completion } from '../../engine';
 import { ExerciseRunner, type RunnerRevision, type RunnerStage, type StageDoneProps } from '../../ExerciseRunner';
 import { loadExercise, pickExercise } from '../../exercises';
@@ -40,8 +40,8 @@ import { Aid } from '../../exercises/Aid';
 import { NoticeQuestion } from '../../exercises/CalculationScreen';
 import type { ScreenProps } from '../../exercises/registry';
 import { exercisesToReview } from '../../review';
-import { hasScenette, levelOfPlace, placeById, type PlaceId } from '../../world/continu/levelPlan';
-import { stagePoseWords } from './constructionParts';
+import { hasScenette, placeById, type PlaceId } from '../../world/continu/levelPlan';
+import { placePoseWords } from './constructionParts';
 import { WIDEN_FULL, WIDEN_OFFER, WIDEN_SCENE, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
 import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
@@ -159,10 +159,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   // pendant qu'on lit (monde ouvert seulement).
   useHoldCelebrations(true);
   const lieu = placeById(place);
-  const biome = getBiome(lieu.island);
-  // Au 5e, le bilan nomme la partie posée par l'étape du lieu, jamais par le nom du plan ni sa réplique (directeur du
-  // contenu pédagogique, lot 5 du 5e) ; au 6e, comme la grille.
-  const poseWords = useMemo(() => (levelOfPlace(place) === '5e' ? stagePoseWords(lieu.island as BiomeId, lieu) : undefined), [place, lieu]);
+  const biome = getIle(lieu.island);
+  // Au 5e et dans les lieux construits du 4e, le bilan nomme la partie posée par l'étape du lieu, jamais par le nom du
+  // plan ni sa réplique (directeur du contenu pédagogique, lot 5 du 5e ; lot 2 du 4e) ; au 6e, comme la grille.
+  const poseWords = useMemo(() => placePoseWords(lieu), [lieu]);
   // « Ma dernière mission » (accès direct) y ramène, comme à une mission de la grille : la liste de son lieu s'ouvre.
   const missionTitle = biome?.exercises.find((e) => e.id === mission)?.title;
   // Une révision n'est pas « Ma dernière mission » : seule une partie y ramène.

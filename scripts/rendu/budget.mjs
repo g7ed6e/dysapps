@@ -110,9 +110,10 @@ try {
   // Au 5e (lot 3), deux cas qui ne se montrent jamais ensemble : la scénette de la Montée ouverte (le pire), puis le
   // monde hors scénette (la pose, la caisse de la cabine qui roule).
   const mondeOuvert5e = cinquieme ? { niveau: '5e', postes: ouvert.openWorldCost5e(), carte: ouvert.mapCost5e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['5e'], horsScenette: ouvert.openWorldCost5e('monde'), depart: ouvert.openWorldCost5e('depart'), departLibelle: 'la Nef et le mur de nuages dans deux maillages, à la place de la pose' } : null;
-  // Le monde ouvert du 4e (lot 1 : l'île entière en grandes masses ; aucune scénette encore) : le monde, la Carte, le départ.
+  // Le monde ouvert du 4e (lot 1 : l'île entière en grandes masses ; lot 2 : la Forge finie) : comme au 5e, la scénette de
+  // la Forge ouverte (le pire), puis le monde hors scénette (la pose ou l'allumage de la Forge), la Carte, le départ.
   const quatrieme = !demandes || demandes.includes('4e');
-  const mondeOuvert4e = quatrieme ? { niveau: '4e', postes: ouvert.openWorldCost4e(), carte: ouvert.mapCost4e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['4e'], depart: ouvert.openWorldCost4e('depart'), departLibelle: 'l’aéronef et son obstacle, vide au lot 1, dans deux maillages, à la place de la pose' } : null;
+  const mondeOuvert4e = quatrieme ? { niveau: '4e', postes: ouvert.openWorldCost4e('scenette'), carte: ouvert.mapCost4e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['4e'], horsScenette: ouvert.openWorldCost4e('monde'), depart: ouvert.openWorldCost4e('depart'), departLibelle: 'l’aéronef et son obstacle dans deux maillages, à la place de la pose' } : null;
 
   if (JSON_SEUL) console.log(JSON.stringify(resultats, null, 2));
   else {

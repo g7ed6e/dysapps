@@ -1,0 +1,317 @@
+{
+  "id": "maths-4e-data-weighted-mean-1",
+  "biome": "maths-4e-data",
+  "type": "weighted-mean",
+  "level": 1,
+  "instruction": "Lis la série ou le tableau, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-4e-data-weighted-mean-1-0",
+      "prompt": "On pèse 4 sacs : 3 sacs de 10 kg et 1 sac de 14 kg. La masse moyenne d’un sac est …",
+      "spoken": "On pèse 4 sacs : 3 sacs de 10 kilos et 1 sac de 14 kilos. La masse moyenne d’un sac est (mot manquant).",
+      "choices": [
+        "11 kg",
+        "12 kg",
+        "44 kg"
+      ],
+      "answer": "11 kg",
+      "hint": "Le sac de 10 kg compte 3 fois.",
+      "explanation": "3 × 10 + 1 × 14 = 44 kg pour 4 sacs : 44 ÷ 4 = 11 kg. 12 kg, c’est la moyenne de 10 et 14 comme s’il n’y avait qu’un sac de chaque. 44 kg, c’est la masse totale, pas encore divisée par 4.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "masse (kg)",
+            "sacs"
+          ],
+          "rows": [
+            [
+              10,
+              3
+            ],
+            [
+              14,
+              1
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La moyenne pondérée",
+          "lines": [
+            "Moyenne = somme de toutes les valeurs ÷ nombre de valeurs.",
+            "Une valeur qui revient plusieurs fois compte autant de fois : valeur × effectif.",
+            "On divise par l’effectif total, la somme des effectifs.",
+            "La moyenne est toujours entre la plus petite et la plus grande valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-1-1",
+      "prompt": "Léo a 10 à un contrôle de coefficient 1 et 16 à un contrôle de coefficient 2. Sa moyenne est …",
+      "spoken": "Léo a 10 à un contrôle de coefficient 1 et 16 à un contrôle de coefficient 2. Sa moyenne est (mot manquant).",
+      "choices": [
+        "13",
+        "14",
+        "42"
+      ],
+      "answer": "14",
+      "hint": "Le coefficient 2 fait compter la note 16 deux fois.",
+      "explanation": "10 × 1 + 16 × 2 = 42, et 1 + 2 = 3 : 42 ÷ 3 = 14. 13, c’est la moyenne sans les coefficients. 42 est la somme, pas encore divisée par 3.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La moyenne pondérée",
+          "lines": [
+            "Moyenne = somme de toutes les valeurs ÷ nombre de valeurs.",
+            "Une valeur qui revient plusieurs fois compte autant de fois : valeur × effectif.",
+            "On divise par l’effectif total, la somme des effectifs.",
+            "La moyenne est toujours entre la plus petite et la plus grande valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-1-2",
+      "prompt": "Une équipe a marqué 1 but dans 3 matchs, 2 buts dans 1 match et 6 buts dans 1 match. La moyenne de buts par match est …",
+      "spoken": "Une équipe a marqué 1 but dans 3 matchs, 2 buts dans 1 match et 6 buts dans 1 match. La moyenne de buts par match est (mot manquant).",
+      "choices": [
+        "2,2",
+        "3",
+        "11"
+      ],
+      "answer": "2,2",
+      "hint": "Compte d’abord tous les buts, puis tous les matchs.",
+      "explanation": "1 × 3 + 2 × 1 + 6 × 1 = 11 buts en 3 + 1 + 1 = 5 matchs : 11 ÷ 5 = 2,2. 3, c’est la moyenne de 1, 2 et 6 sans les effectifs. 11 est le total des buts.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "buts",
+            "matchs"
+          ],
+          "rows": [
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              6,
+              1
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La moyenne pondérée",
+          "lines": [
+            "Moyenne = somme de toutes les valeurs ÷ nombre de valeurs.",
+            "Une valeur qui revient plusieurs fois compte autant de fois : valeur × effectif.",
+            "On divise par l’effectif total, la somme des effectifs.",
+            "La moyenne est toujours entre la plus petite et la plus grande valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-1-3",
+      "prompt": "Le diagramme donne les pointures de 10 élèves. La pointure moyenne est …",
+      "spoken": "Le diagramme donne les pointures de 10 élèves : 2 élèves chaussent du 36, 5 du 38 et 3 du 40. La pointure moyenne est (mot manquant).",
+      "choices": [
+        "38",
+        "38,2",
+        "382"
+      ],
+      "answer": "38,2",
+      "hint": "Multiplie chaque pointure par son nombre d’élèves.",
+      "explanation": "36 × 2 + 38 × 5 + 40 × 3 = 72 + 190 + 120 = 382, et 382 ÷ 10 = 38,2. 38, c’est la moyenne de 36, 38 et 40 sans les effectifs. 382 n’est pas encore divisé par les 10 élèves.",
+      "figure": {
+        "kind": "bar-list",
+        "props": {
+          "values": [
+            2,
+            5,
+            3
+          ],
+          "labels": [
+            "36",
+            "38",
+            "40"
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La moyenne pondérée",
+          "lines": [
+            "Moyenne = somme de toutes les valeurs ÷ nombre de valeurs.",
+            "Une valeur qui revient plusieurs fois compte autant de fois : valeur × effectif.",
+            "On divise par l’effectif total, la somme des effectifs.",
+            "La moyenne est toujours entre la plus petite et la plus grande valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-1-4",
+      "prompt": "On a pesé 4 fois 2 kg et 6 fois 3 kg. Pour la masse moyenne, on divise la somme des masses par …",
+      "spoken": "On a pesé 4 fois 2 kilos et 6 fois 3 kilos. Pour la masse moyenne, on divise la somme des masses par (mot manquant).",
+      "choices": [
+        "2",
+        "5",
+        "10"
+      ],
+      "answer": "10",
+      "hint": "Combien de pesées en tout ?",
+      "explanation": "Il y a eu 4 + 6 = 10 pesées : on divise par l’effectif total, 10. 2, c’est le nombre de lignes du tableau. 5, c’est la moyenne de 4 et 6.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "masse (kg)",
+            "pesées"
+          ],
+          "rows": [
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              6
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La moyenne pondérée",
+          "lines": [
+            "Moyenne = somme de toutes les valeurs ÷ nombre de valeurs.",
+            "Une valeur qui revient plusieurs fois compte autant de fois : valeur × effectif.",
+            "On divise par l’effectif total, la somme des effectifs.",
+            "La moyenne est toujours entre la plus petite et la plus grande valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-1-5",
+      "prompt": "Des sacs pèsent entre 8 kg et 13 kg. Leur masse moyenne ne peut pas être …",
+      "spoken": "Des sacs pèsent entre 8 kilos et 13 kilos. Leur masse moyenne ne peut pas être (mot manquant).",
+      "choices": [
+        "9 kg",
+        "12 kg",
+        "15 kg"
+      ],
+      "answer": "15 kg",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "La moyenne est toujours entre la plus petite valeur, 8 kg, et la plus grande, 13 kg : 15 kg est impossible. 9 kg et 12 kg sont entre 8 et 13 : ils sont possibles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La moyenne pondérée",
+          "lines": [
+            "Moyenne = somme de toutes les valeurs ÷ nombre de valeurs.",
+            "Une valeur qui revient plusieurs fois compte autant de fois : valeur × effectif.",
+            "On divise par l’effectif total, la somme des effectifs.",
+            "La moyenne est toujours entre la plus petite et la plus grande valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-1-6",
+      "prompt": "Inès a 8 à un devoir de coefficient 1 et 14 à un devoir de coefficient 3. Sa moyenne est …",
+      "spoken": "Inès a 8 à un devoir de coefficient 1 et 14 à un devoir de coefficient 3. Sa moyenne est (mot manquant).",
+      "choices": [
+        "11",
+        "12,5",
+        "50"
+      ],
+      "answer": "12,5",
+      "hint": "La note 14 compte 3 fois : divise par 1 + 3.",
+      "explanation": "8 × 1 + 14 × 3 = 8 + 42 = 50, et 1 + 3 = 4 : 50 ÷ 4 = 12,5. 11, c’est la moyenne sans les coefficients. 50 n’est pas encore divisé par 4.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La moyenne pondérée",
+          "lines": [
+            "Moyenne = somme de toutes les valeurs ÷ nombre de valeurs.",
+            "Une valeur qui revient plusieurs fois compte autant de fois : valeur × effectif.",
+            "On divise par l’effectif total, la somme des effectifs.",
+            "La moyenne est toujours entre la plus petite et la plus grande valeur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-1-7",
+      "prompt": "Une classe achète 6 tickets à 2 € et 2 tickets à 6 €. Le prix moyen d’un ticket est …",
+      "spoken": "Une classe achète 6 tickets à 2 euros et 2 tickets à 6 euros. Le prix moyen d’un ticket est (mot manquant).",
+      "choices": [
+        "3 €",
+        "4 €",
+        "24 €"
+      ],
+      "answer": "3 €",
+      "hint": "Il y a 8 tickets en tout.",
+      "explanation": "6 × 2 + 2 × 6 = 24 € pour 8 tickets : 24 ÷ 8 = 3 €. 4 €, c’est la moyenne de 2 € et 6 € sans les effectifs. 24 € est le prix total.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "prix (€)",
+            "tickets"
+          ],
+          "rows": [
+            [
+              2,
+              6
+            ],
+            [
+              6,
+              2
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La moyenne pondérée",
+          "lines": [
+            "Moyenne = somme de toutes les valeurs ÷ nombre de valeurs.",
+            "Une valeur qui revient plusieurs fois compte autant de fois : valeur × effectif.",
+            "On divise par l’effectif total, la somme des effectifs.",
+            "La moyenne est toujours entre la plus petite et la plus grande valeur."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-4e-powers",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

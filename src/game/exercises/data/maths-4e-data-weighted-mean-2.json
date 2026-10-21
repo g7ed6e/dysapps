@@ -1,0 +1,230 @@
+{
+  "id": "maths-4e-data-weighted-mean-2",
+  "biome": "maths-4e-data",
+  "type": "weighted-mean",
+  "level": 2,
+  "instruction": "Lis la série ou le tableau, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-4e-data-weighted-mean-2-0",
+      "prompt": "La médiane de la série 7 ; 3 ; 9 ; 5 ; 4 est …",
+      "spoken": "La médiane de la série 7, 3, 9, 5, 4 est (mot manquant).",
+      "choices": [
+        "5",
+        "5,6",
+        "9"
+      ],
+      "answer": "5",
+      "hint": "Range d’abord les cinq valeurs.",
+      "explanation": "Rangées : 3 ; 4 ; 5 ; 7 ; 9. La valeur du milieu est 5. 9 est au milieu de la série pas rangée. 5,6 est la moyenne, 28 ÷ 5.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Médiane et étendue",
+          "lines": [
+            "Range d’abord les valeurs dans l’ordre croissant.",
+            "Médiane : la valeur du milieu. Avec un nombre pair de valeurs, la moyenne des deux du milieu.",
+            "Au moins la moitié des valeurs sont inférieures ou égales à la médiane.",
+            "Étendue = la plus grande valeur − la plus petite.",
+            "Une valeur extrême déplace beaucoup la moyenne, et presque pas la médiane."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-2-1",
+      "prompt": "La médiane de la série 2 ; 6 ; 8 ; 10 est …",
+      "spoken": "La médiane de la série 2, 6, 8, 10 est (mot manquant).",
+      "choices": [
+        "6",
+        "6,5",
+        "7"
+      ],
+      "answer": "7",
+      "hint": "Il y a 4 valeurs : deux sont au milieu.",
+      "explanation": "Les deux valeurs du milieu sont 6 et 8 : la médiane est leur moyenne, (6 + 8) ÷ 2 = 7. 6 n’est qu’une des deux. 6,5 est la moyenne de toute la série, 26 ÷ 4.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Médiane et étendue",
+          "lines": [
+            "Range d’abord les valeurs dans l’ordre croissant.",
+            "Médiane : la valeur du milieu. Avec un nombre pair de valeurs, la moyenne des deux du milieu.",
+            "Au moins la moitié des valeurs sont inférieures ou égales à la médiane.",
+            "Étendue = la plus grande valeur − la plus petite.",
+            "Une valeur extrême déplace beaucoup la moyenne, et presque pas la médiane."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-2-2",
+      "prompt": "L’étendue de la série 12 ; 15 ; 9 ; 20 est …",
+      "spoken": "L’étendue de la série 12, 15, 9, 20 est (mot manquant).",
+      "choices": [
+        "8",
+        "11",
+        "29"
+      ],
+      "answer": "11",
+      "hint": "Cherche la plus grande et la plus petite valeur.",
+      "explanation": "20 − 9 = 11. 8, c’est 20 − 12 : 12 est la première valeur, pas la plus petite. 29 ajoute au lieu de soustraire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Médiane et étendue",
+          "lines": [
+            "Range d’abord les valeurs dans l’ordre croissant.",
+            "Médiane : la valeur du milieu. Avec un nombre pair de valeurs, la moyenne des deux du milieu.",
+            "Au moins la moitié des valeurs sont inférieures ou égales à la médiane.",
+            "Étendue = la plus grande valeur − la plus petite.",
+            "Une valeur extrême déplace beaucoup la moyenne, et presque pas la médiane."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-2-3",
+      "prompt": "Cinq sacs pèsent 3 kg, 4 kg, 4 kg, 5 kg et 24 kg. La médiane de ces masses est …",
+      "spoken": "Cinq sacs pèsent 3 kilos, 4 kilos, 4 kilos, 5 kilos et 24 kilos. La médiane de ces masses est (mot manquant).",
+      "choices": [
+        "4 kg",
+        "8 kg",
+        "21 kg"
+      ],
+      "answer": "4 kg",
+      "hint": "Les masses sont déjà rangées : prends celle du milieu.",
+      "explanation": "La valeur du milieu, la troisième, est 4 kg. 8 kg est la moyenne, 40 ÷ 5, tirée vers le haut par le sac de 24 kg. 21 kg est l’étendue, 24 − 3.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Médiane et étendue",
+          "lines": [
+            "Range d’abord les valeurs dans l’ordre croissant.",
+            "Médiane : la valeur du milieu. Avec un nombre pair de valeurs, la moyenne des deux du milieu.",
+            "Au moins la moitié des valeurs sont inférieures ou égales à la médiane.",
+            "Étendue = la plus grande valeur − la plus petite.",
+            "Une valeur extrême déplace beaucoup la moyenne, et presque pas la médiane."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-2-4",
+      "prompt": "La série 4 ; 5 ; 6 reçoit une valeur de plus, 25. Ce qui change le plus, c’est …",
+      "spoken": "La série 4, 5, 6 reçoit une valeur de plus, 25. Ce qui change le plus, c’est (mot manquant).",
+      "choices": [
+        "la moyenne",
+        "la médiane",
+        "les deux autant"
+      ],
+      "answer": "la moyenne",
+      "hint": "Calcule la moyenne et la médiane avant, puis après.",
+      "explanation": "Avant, la moyenne et la médiane valent 5. Après, la moyenne vaut 40 ÷ 4 = 10, et la médiane (5 + 6) ÷ 2 = 5,5. Une valeur extrême tire la moyenne, presque pas la médiane.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Médiane et étendue",
+          "lines": [
+            "Range d’abord les valeurs dans l’ordre croissant.",
+            "Médiane : la valeur du milieu. Avec un nombre pair de valeurs, la moyenne des deux du milieu.",
+            "Au moins la moitié des valeurs sont inférieures ou égales à la médiane.",
+            "Étendue = la plus grande valeur − la plus petite.",
+            "Une valeur extrême déplace beaucoup la moyenne, et presque pas la médiane."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-2-5",
+      "prompt": "La médiane des tailles d’une classe est 155 cm. Cela veut dire que …",
+      "spoken": "La médiane des tailles d’une classe est 155 centimètres. Cela veut dire que (mot manquant).",
+      "choices": [
+        "au moins la moitié des élèves mesurent 155 cm ou moins",
+        "tous les élèves mesurent 155 cm",
+        "la moyenne des tailles est 155 cm"
+      ],
+      "answer": "au moins la moitié des élèves mesurent 155 cm ou moins",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "La médiane partage la série en deux : au moins la moitié des élèves mesurent 155 cm ou moins. Les élèves n’ont pas tous la même taille, et la moyenne peut être différente de la médiane.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Médiane et étendue",
+          "lines": [
+            "Range d’abord les valeurs dans l’ordre croissant.",
+            "Médiane : la valeur du milieu. Avec un nombre pair de valeurs, la moyenne des deux du milieu.",
+            "Au moins la moitié des valeurs sont inférieures ou égales à la médiane.",
+            "Étendue = la plus grande valeur − la plus petite.",
+            "Une valeur extrême déplace beaucoup la moyenne, et presque pas la médiane."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-2-6",
+      "prompt": "L’étendue des notes 8 ; 11 ; 11 ; 14 ; 17 est …",
+      "spoken": "L’étendue des notes 8, 11, 11, 14, 17 est (mot manquant).",
+      "choices": [
+        "3",
+        "9",
+        "25"
+      ],
+      "answer": "9",
+      "hint": "La plus grande note moins la plus petite.",
+      "explanation": "17 − 8 = 9. 3, c’est l’écart entre deux notes voisines, 14 − 11. 25 ajoute au lieu de soustraire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Médiane et étendue",
+          "lines": [
+            "Range d’abord les valeurs dans l’ordre croissant.",
+            "Médiane : la valeur du milieu. Avec un nombre pair de valeurs, la moyenne des deux du milieu.",
+            "Au moins la moitié des valeurs sont inférieures ou égales à la médiane.",
+            "Étendue = la plus grande valeur − la plus petite.",
+            "Une valeur extrême déplace beaucoup la moyenne, et presque pas la médiane."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-weighted-mean-2-7",
+      "prompt": "La médiane de la série 15 ; 10 ; 18 ; 12 ; 11 ; 14 est …",
+      "spoken": "La médiane de la série 15, 10, 18, 12, 11, 14 est (mot manquant).",
+      "choices": [
+        "12",
+        "13",
+        "15"
+      ],
+      "answer": "13",
+      "hint": "Range d’abord les six valeurs, puis prends les deux du milieu.",
+      "explanation": "Rangées : 10 ; 11 ; 12 ; 14 ; 15 ; 18. Les deux du milieu sont 12 et 14 : (12 + 14) ÷ 2 = 13. 15 vient des deux valeurs du milieu de la série pas rangée, 18 et 12. 12 n’est qu’une des deux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Médiane et étendue",
+          "lines": [
+            "Range d’abord les valeurs dans l’ordre croissant.",
+            "Médiane : la valeur du milieu. Avec un nombre pair de valeurs, la moyenne des deux du milieu.",
+            "Au moins la moitié des valeurs sont inférieures ou égales à la médiane.",
+            "Étendue = la plus grande valeur − la plus petite.",
+            "Une valeur extrême déplace beaucoup la moyenne, et presque pas la médiane."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-4e-powers",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

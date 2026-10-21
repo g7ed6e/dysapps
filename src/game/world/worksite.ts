@@ -108,3 +108,12 @@ export function worksiteFor(state: GameState, island: BiomeId, block: BlockId, f
   };
 }
 
+
+/**
+ * À quoi servent les blocs d'un lieu du monde ouvert seulement (GD-24, l'Étalon) : ceux du lieu dont il gagne le bloc
+ * (`place`, « la Forge »), nommé par lui, jamais par une île de la grille ni un ouvrage qu'on n'y trouve pas ; ils
+ * restent dans Mes blocs (directeur du contenu pédagogique, lot 2 du 4e).
+ */
+export function blocsDuLieu(block: BlockId, place: string, island: BiomeId): Worksite {
+  return { kind: 'aucun', text: `Ce sont les blocs ${ofBlock(block)} de ${place} : ils restent dans Mes blocs.`, have: 0, need: 0, ready: false, island, to: `/adventure/${island}` };
+}
