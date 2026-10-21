@@ -176,9 +176,21 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     },
   },
   // La Soute (lot 2 du 4e) : la phrase du métier de la proposition, jamais « entrepôt ».
-  soute: { role: placeArt('soute')!.role, greeting: 'Le magasinier range et compte tout ce qui part et tout ce qui arrive.', placement: 'rangee' },
+  soute: {
+    role: placeArt('soute')!.role,
+    greeting: 'Le magasinier range et compte tout ce qui part et tout ce qui arrive.',
+    placement: 'rangee',
+    // Les phrases de l'intention (§ 7), une par partie (le corps, le haut, les abords).
+    words: { pose: ['La halle est debout.', 'La halle a son toit.', 'Le quai est prêt, le navire aussi.'], end: 'D’ici, on envoyait nos machines au bout du monde.' },
+  },
   // La Porte (lot 2 du 4e) : la phrase du métier de la proposition, jamais « loge ».
-  porte: { role: placeArt('porte')!.role, greeting: 'L’avocate aide chacun à défendre ses droits.', placement: 'rangee' },
+  porte: {
+    role: placeArt('porte')!.role,
+    greeting: 'L’avocate aide chacun à défendre ses droits.',
+    placement: 'rangee',
+    // Les phrases de l'intention (§ 7), une par partie (le corps, le haut, les abords).
+    words: { pose: ['La porte est ouverte.', 'La salle a son toit.', 'La place est prête.'], end: 'Ici, tout le monde peut entrer, et tout le monde peut parler.' },
+  },
   // L'Étalon (lot 2 du 4e) : la peseuse explique le mot une fois, sans le cheval (correction 5 du directeur artistique).
   etalon: { role: placeArt('etalon')!.role, greeting: 'Ici, chaque poids avait son modèle : l’étalon.', placement: 'rangee' },
 };

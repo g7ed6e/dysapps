@@ -4,7 +4,7 @@
 // de 1 600 et 1 200 triangles, aucune rouille claire. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../../biomes';
-import { partShapes, stagePoseWords } from '../../three/archipeo/constructionParts';
+import { partShapes, placePoseWords } from '../../three/archipeo/constructionParts';
 import { phraseDeLaPose } from '../../poseWords';
 import { partiesDe } from '../parts';
 import { PLACE_RUIN_TRIANGLES_MAX_4E, PLACE_TRIANGLES_MAX_4E } from './budget';
@@ -140,13 +140,13 @@ describe('La Soute, lieu complet', () => {
 });
 
 describe('Le bilan de la Soute', () => {
-  it('nomme la partie par son étape, jamais « entrepôt »', () => {
+  it('nomme la partie par son étape, puis dit sa phrase, jamais « entrepôt »', () => {
     const island = PLACE.island as BiomeId;
-    const words = stagePoseWords(island, PLACE);
+    const words = placePoseWords(PLACE)!;
     const parties = partiesDe(island);
     expect(parties).toHaveLength(3);
     const said = [0, 1, 2].map((k) => phraseDeLaPose({ posees: [parties[k]], plansFinis: [] }, words));
-    expect(said).toEqual(['Partie posée : le corps de la Soute.', 'Partie posée : le haut de la Soute.', 'Partie posée : les abords de la Soute.']);
+    expect(said).toEqual(['Partie posée : le corps de la Soute. La halle est debout.', 'Partie posée : le haut de la Soute. La halle a son toit.', 'Partie posée : les abords de la Soute. Le quai est prêt, le navire aussi.']);
     for (const s of said) expect(s).not.toMatch(/entrepôt/i);
   });
 });

@@ -4,7 +4,7 @@
 // triangles, aucune rouille claire, jamais une balance ni « loge ». Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../../biomes';
-import { partShapes, stagePoseWords } from '../../three/archipeo/constructionParts';
+import { partShapes, placePoseWords } from '../../three/archipeo/constructionParts';
 import { phraseDeLaPose } from '../../poseWords';
 import { partiesDe } from '../parts';
 import { PLACE_RUIN_TRIANGLES_MAX_4E, PLACE_TRIANGLES_MAX_4E } from './budget';
@@ -141,13 +141,13 @@ describe('La Porte, lieu complet', () => {
 });
 
 describe('Le bilan de la Porte', () => {
-  it('nomme la partie par son étape, jamais « loge »', () => {
+  it('nomme la partie par son étape, puis dit sa phrase, jamais « loge »', () => {
     const island = PLACE.island as BiomeId;
-    const words = stagePoseWords(island, PLACE);
+    const words = placePoseWords(PLACE)!;
     const parties = partiesDe(island);
     expect(parties).toHaveLength(3);
     const said = [0, 1, 2].map((k) => phraseDeLaPose({ posees: [parties[k]], plansFinis: [] }, words));
-    expect(said).toEqual(['Partie posée : le corps de la Porte.', 'Partie posée : le haut de la Porte.', 'Partie posée : les abords de la Porte.']);
+    expect(said).toEqual(['Partie posée : le corps de la Porte. La porte est ouverte.', 'Partie posée : le haut de la Porte. La salle a son toit.', 'Partie posée : les abords de la Porte. La place est prête.']);
     for (const s of said) expect(s).not.toMatch(/loge/i);
   });
 });
