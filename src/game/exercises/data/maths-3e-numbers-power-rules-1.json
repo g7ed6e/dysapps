@@ -158,7 +158,7 @@
     {
       "key": "maths-3e-numbers-power-rules-1-6",
       "prompt": "1 ÷ 1 000 s’écrit …",
-      "spoken": "1 divisé par 1 000 s’écrit (mot manquant).",
+      "spoken": "1 divisé par 1000 s’écrit (mot manquant).",
       "choices": [
         "10⁻⁴",
         "10⁻³",

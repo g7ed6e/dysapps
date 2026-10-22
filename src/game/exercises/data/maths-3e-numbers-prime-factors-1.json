@@ -157,7 +157,7 @@
     {
       "key": "maths-3e-numbers-prime-factors-1-6",
       "prompt": "2 345 est divisible par …",
-      "spoken": "2 345 est divisible par (mot manquant).",
+      "spoken": "2345 est divisible par (mot manquant).",
       "choices": [
         "2",
         "5",

@@ -78,7 +78,7 @@ Pour tous les items :
    - indice : Écris chaque puissance en nombre décimal.
    - explication : 10⁻³ = 0,001 ; 10⁻² = 0,01 ; 10² = 100. Le plus petit est 0,001, soit 10⁻³.
 7. énoncé : 1 ÷ 1 000 s’écrit …
-   - lu : 1 divisé par 1 000 s’écrit (mot manquant).
+   - lu : 1 divisé par 1000 s’écrit (mot manquant).
    - choix : 10⁻⁴ · 10⁻³ · 10³
    - réponse : 10⁻³
    - indice : 1 000 = 10³. Diviser par 10³ s’écrit avec un exposant négatif.
@@ -98,7 +98,7 @@ Pour tous les items :
 - aide « Puissances d’un même nombre » :
   - a³ = a × a × a : trois facteurs a.
   - Multiplier : on compte tous les facteurs, donc on ajoute les exposants.
-  - Diviser : les facteurs du bas en enlèvent autant en haut, donc on soustrait les exposants.
+  - Diviser : on retire en haut autant de facteurs qu’il y en a en bas, donc on soustrait les exposants.
   - Le nombre a ne change pas, et les exposants ne se multiplient jamais.
 
 1. énoncé : 10⁵ × 10³ = …
@@ -162,7 +162,7 @@ Pour tous les items :
   - Vérifie : a × 10ⁿ doit redonner le nombre de départ.
 
 1. énoncé : La notation scientifique de 4 500 est …
-   - lu : La notation scientifique de 4 500 est (mot manquant).
+   - lu : La notation scientifique de 4500 est (mot manquant).
    - choix : 4,5 × 10² · 45 × 10² · 4,5 × 10³
    - réponse : 4,5 × 10³
    - indice : Place la virgule après le premier chiffre, puis compte les rangs.
@@ -198,7 +198,7 @@ Pour tous les items :
    - indice : Multiplier par 10³, c’est multiplier par 1 000.
    - explication : 2,5 × 1 000 = 2 500 : la virgule avance de 3 rangs. 25 000 ajoute trois zéros à 25. 250 n’avance que de 2 rangs.
 7. énoncé : La notation scientifique de 380 000 est …
-   - lu : La notation scientifique de 380 000 est (mot manquant).
+   - lu : La notation scientifique de 380000 est (mot manquant).
    - choix : 3,8 × 10⁴ · 38 × 10⁴ · 3,8 × 10⁵
    - réponse : 3,8 × 10⁵
    - indice : De 380 000 à 3,8, combien de rangs la virgule recule-t-elle ?
@@ -411,7 +411,7 @@ Pour tous les items :
    - indice : 13 est-il dans une table, à part celles de 1 et de 13 ?
    - explication : 13 n’est divisible que par 1 et par 13 : il a 2 diviseurs, il est premier. 13 est le nombre lui-même, pas le nombre de ses diviseurs.
 7. énoncé : 2 345 est divisible par …
-   - lu : 2 345 est divisible par (mot manquant).
+   - lu : 2345 est divisible par (mot manquant).
    - choix : 2 · 5 · 9
    - réponse : 5
    - indice : Regarde le chiffre des unités, puis la somme des chiffres.

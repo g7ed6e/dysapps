@@ -7,8 +7,8 @@
   "items": [
     {
       "key": "french-3e-language-connotation-2-0",
-      "prompt": "« Le vent passe sur la plaine, / Il emporte au loin ma peine. » Que forment « plaine » et « peine » ?",
-      "spoken": "Le vent passe sur la plaine, il emporte au loin ma peine. Que forment « plaine » et « peine » ?",
+      "prompt": "Deux vers d’un poème finissent par « plaine » et par « peine ». Que forment ces deux mots ?",
+      "spoken": "Deux vers d’un poème finissent par « plaine » et par « peine ». Que forment ces deux mots ?",
       "choices": [
         "une rime",
         "une strophe",

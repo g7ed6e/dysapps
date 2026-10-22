@@ -8,7 +8,7 @@
     {
       "key": "maths-3e-numbers-power-rules-3-0",
       "prompt": "La notation scientifique de 4 500 est …",
-      "spoken": "La notation scientifique de 4 500 est (mot manquant).",
+      "spoken": "La notation scientifique de 4500 est (mot manquant).",
       "choices": [
         "4,5 × 10²",
         "45 × 10²",
@@ -158,7 +158,7 @@
     {
       "key": "maths-3e-numbers-power-rules-3-6",
       "prompt": "La notation scientifique de 380 000 est …",
-      "spoken": "La notation scientifique de 380 000 est (mot manquant).",
+      "spoken": "La notation scientifique de 380000 est (mot manquant).",
       "choices": [
         "3,8 × 10⁴",
         "38 × 10⁴",

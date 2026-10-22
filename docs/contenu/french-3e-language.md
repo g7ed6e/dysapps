@@ -212,7 +212,7 @@ Pour tous les items :
 - aide « Le nom qui commande » :
   - L’adjectif s’accorde avec le nom qu’il précise, même s’il est loin de lui.
   - Épithète, à côté du nom ; attribut, après être, sembler, paraître ; apposé, entre virgules.
-  - Demande-toi qui ou qu’est-ce qui l’est : la réponse est le nom qui commande.
+  - Pose la question avec l’adjectif : qui est-ce qui est fermé ? les portes. La réponse est le nom qui commande.
   - Un nom masculin et un nom féminin ensemble : l’adjectif est au masculin pluriel.
 
 1. énoncé : Les fenêtres de la vieille maison semblent …
@@ -445,8 +445,8 @@ Pour tous les items :
   - Thèse : l’idée qu’on défend. Argument : une raison qui la soutient. Exemple : un fait qui l’illustre.
   - Concession : ce qu’on accorde à l’autre avant de répondre (certes, bien sûr).
 
-1. énoncé : « Le vent passe sur la plaine, / Il emporte au loin ma peine. » Que forment « plaine » et « peine » ?
-   - lu : Le vent passe sur la plaine, il emporte au loin ma peine. Que forment « plaine » et « peine » ?
+1. énoncé : Deux vers d’un poème finissent par « plaine » et par « peine ». Que forment ces deux mots ?
+   - lu : Deux vers d’un poème finissent par « plaine » et par « peine ». Que forment ces deux mots ?
    - choix : une rime · une strophe · un vers
    - réponse : une rime
    - indice : Écoute la fin des deux vers.
