@@ -217,7 +217,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'fanal', name: 'Le Fanal', at: 'au Fanal', agree: 'ms', island: 'maths-3e-functions', plan: [985, 175], door: { x: 0, z: 9 } },
   { id: 'rampe', name: 'La Rampe', at: 'à la Rampe', agree: 'fs', island: 'physics-chemistry-3e-motion-energy', plan: [1065, 225], door: { x: 7, z: 6 } },
   { id: 'standard', name: 'Le Standard', at: 'au Standard', agree: 'ms', island: 'technology-3e-digital', plan: [790, 190], door: { x: 8, z: 4 } },
-  { id: 'kiosque', name: 'Le Kiosque', at: 'au Kiosque', agree: 'ms', island: 'history-3e-twentieth-century', plan: [430, 480], door: { x: 0, z: 9 } },
+  { id: 'kiosque', name: 'Le Kiosque', at: 'au Kiosque', agree: 'ms', island: 'history-3e-twentieth-century', plan: [430, 480], door: { x: 7, z: 10 } },
   { id: 'maquette', name: 'La Maquette', at: 'à la Maquette', agree: 'fs', island: 'geography-3e-france', plan: [350, 650], door: { x: 7, z: -4 } },
   { id: 'tribune', name: 'La Tribune', at: 'à la Tribune', agree: 'fs', island: 'civics-3e-democratic-life', plan: [580, 400], door: { x: -6, z: 7 } },
   { id: 'douane', name: 'La Douane', at: 'à la Douane', agree: 'fs', island: 'lv2-3e-travel', plan: [200, 400], door: { x: 7, z: 5 } },
@@ -258,7 +258,7 @@ const MAP_SIDES_3E: Readonly<Record<PlaceId3e, 'below' | 'left' | 'right'>> = {
 /**
  * Les lieux du 3e déjà construits, et les missions de chacun qui se jouent en scénette, dans l'ordre de leur île : la
  * seule liste, comme `BUILT_PLACES_4E` (./plan4e.ts), que lisent la scénette (./levelPlan.ts, `hasScenette`) et les
- * missions des lieux (`PLACES_3E`). Le Versant (GD-25, lot 2) : le Belvédère, le Grenier, l'Abri, le Jardin. Aucun habitant du 3e n'a encore son modèle
+ * missions des lieux (`PLACES_3E`). Le Versant (GD-25, lot 2) : le Belvédère, le Grenier, l'Abri, le Jardin ; les Alpages (lot 3) : le Kiosque. Aucun habitant du 3e n'a encore son modèle
  * 3D (./habitants.ts) : il se dessine en pion. Un lieu construit s'ajoute ici, et seulement ici.
  */
 export const BUILT_PLACES_3E = {
@@ -266,6 +266,7 @@ export const BUILT_PLACES_3E = {
   grenier: ['power-rules', 'square-equations', 'prime-factors', 'identities', 'zero-product'],
   abri: ['mean', 'probability', 'data', 'ratio-sharing'],
   jardin: ['effort-brain', 'digestion-microbes', 'puberty-reproduction'],
+  kiosque: ['total-wars', 'world-since-1945', 'republic'],
 } as const satisfies Partial<Record<PlaceId3e, readonly string[]>>;
 
 /** Un lieu du 3e déjà construit. */

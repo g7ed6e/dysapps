@@ -175,6 +175,7 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   grenier: placeArt('grenier')!.traceStage,
   abri: placeArt('abri')!.traceStage,
   jardin: placeArt('jardin')!.traceStage,
+  kiosque: placeArt('kiosque')!.traceStage,
 };
 
 /**

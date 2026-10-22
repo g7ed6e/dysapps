@@ -363,6 +363,15 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     placement: 'rangee',
     words: { pose: ['Les carrés sont refaits.', 'Les arbres sont palissés.', 'La fontaine est pleine.'], end: 'Ici, on soignait avec les plantes qu’on cultivait.' },
   },
+  // Le Kiosque (les Alpages du 3e, GD-25) : la phrase de métier et la réplique de la proposition du consultant d'Archipéo
+  // (§ 3) ; une phrase par partie, sans nom de plan de l'île (« bibliothèque », « toit », « cour ») ni « kiosque » en nom
+  // commun (relecture des lieux, point 13) : « Les six poteaux sont debout. » à la place de « Le kiosque tient debout. ».
+  kiosque: {
+    role: placeArt('kiosque')!.role,
+    greeting: 'La journaliste raconte ce qui se passe dans le monde.',
+    placement: 'rangee',
+    words: { pose: ['Les six poteaux sont debout.', 'La coupole est remise.', 'Les nouvelles sont arrivées.'], end: 'Ici, les nouvelles du monde montaient jusqu’au sommet.' },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -816,6 +825,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   grenier: northSite('grenier'),
   abri: northSite('abri'),
   jardin: northSite('jardin'),
+  kiosque: northSite('kiosque'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2390,6 +2400,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   abri: 'earth',
   // Le Jardin : l'herbe entre les carrés.
   jardin: 'earth',
+  // Le Kiosque : l'herbe du pâturage.
+  kiosque: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

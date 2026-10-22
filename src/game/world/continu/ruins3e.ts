@@ -87,17 +87,6 @@ function standard(b: FacetBuilder): void {
   b.box({ x: 1, y: SINK, z: 3.5, yaw: 0.2 }, [2.4, 0.6 - SINK, 1.4], C.woodShade, C.wood);
 }
 
-/** Le Kiosque : le kiosque rond, ses poteaux debout, sa coupole basse tombée de travers ; la boîte aux lettres. */
-function kiosque(b: FacetBuilder): void {
-  b.prism({ x: 0, y: SINK, z: 0 }, 4.2, 4.2, 0.6 - SINK, 10, C.graniteShade, C.graniteSun);
-  for (let k = 0; k < 6; k++) {
-    const a = (2 * Math.PI * k) / 6;
-    post(b, Math.cos(a) * 3.6, Math.sin(a) * 3.6, k === 4 ? 1.4 : 3.4, 0.35);
-  }
-  b.prism({ x: 1, y: 0.6, z: 5.6, pitch: 0.35 }, 3.4, 0.6, 1.4, 10, C.slate, C.slateTop);
-  b.box({ x: -6, y: SINK, z: -2 }, [0.8, 1.4 - SINK, 0.6], C.cobalt);
-}
-
 /** La Maquette : la halle de bois ouverte, la moitié de son toit tombée ; dessous, le grand relief en masses ; la table. */
 function maquette(b: FacetBuilder): void {
   for (const [x, z] of [[-6, -4], [6, -4], [-6, 4], [6, 4]] as const) post(b, x, z, 4.4);
@@ -175,13 +164,12 @@ function palais(b: FacetBuilder): void {
 
 /**
  * La ruine de chaque lieu du 3e pas encore construit, dessinée dans son repère : un lieu construit (./plan3e.ts,
- * `BUILT_PLACES_3E`) dessine sa ruine dans son fichier, avec ses étapes (le Belvédère, ./belvedere3e.ts ; le Grenier, ./grenier3e.ts ; l'Abri, ./abri3e.ts ; le Jardin, ./jardin3e.ts).
+ * `BUILT_PLACES_3E`) dessine sa ruine dans son fichier, avec ses étapes (le Belvédère, ./belvedere3e.ts ; le Grenier, ./grenier3e.ts ; l'Abri, ./abri3e.ts ; le Jardin, ./jardin3e.ts ; le Kiosque, ./kiosque3e.ts).
  */
 export const RUINS_3E: Readonly<Record<Exclude<PlaceId3e, BuiltPlace3e>, (b: FacetBuilder) => void>> = {
   fanal,
   rampe,
   standard,
-  kiosque,
   maquette,
   tribune,
   douane,

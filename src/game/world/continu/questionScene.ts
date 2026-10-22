@@ -266,6 +266,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   abri: placeArt('abri')!.sceneSpot,
   // Le Jardin : entre les deux carrés du sud, la fontaine devant.
   jardin: placeArt('jardin')!.sceneSpot,
+  // Le Kiosque : au sud-ouest du socle, le comptoir devant, entre les poteaux.
+  kiosque: placeArt('kiosque')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -571,6 +573,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   abri: 'lieu',
   // Le Jardin : les pots de terre, sur une margelle.
   jardin: 'lieu',
+  // Le Kiosque : les rouleaux de papier, sur une planche.
+  kiosque: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

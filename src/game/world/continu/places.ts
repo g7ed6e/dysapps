@@ -2541,7 +2541,7 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   terminus: northPlace('terminus'),
   orgues: northPlace('orgues'),
   dynamo: northPlace('dynamo'),
-  // Le 3e : le Belvédère, le Grenier, l'Abri et le Jardin (le Versant, lot 2 du monde ouvert du 3e), dessinés dans leur fichier ; les autres, des ruines
+  // Le 3e : le Belvédère, le Grenier, l'Abri et le Jardin (le Versant, lot 2 du monde ouvert du 3e), puis les lieux des Alpages (lot 3), dessinés dans leur fichier ; les autres, des ruines
   // simples (lot 1, ./ruins3e.ts).
   belvedere: northPlace('belvedere'),
   grenier: northPlace('grenier'),
@@ -2550,7 +2550,7 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   fanal: ruinOnly(RUINS_3E.fanal),
   rampe: ruinOnly(RUINS_3E.rampe),
   standard: ruinOnly(RUINS_3E.standard),
-  kiosque: ruinOnly(RUINS_3E.kiosque),
+  kiosque: northPlace('kiosque'),
   maquette: ruinOnly(RUINS_3E.maquette),
   tribune: ruinOnly(RUINS_3E.tribune),
   douane: ruinOnly(RUINS_3E.douane),

@@ -39,6 +39,9 @@ export const C3E = {
   canvasShade: 0xaea38c,
   lantern: 0xe0a84a,
   lanternOff: 0xbfc4b8,
+  /** L'herbe sèche qui envahit une ruine (relecture du Versant, (b) 5) : d'un ton à part, jamais celui des plantes. */
+  dry: 0xb7aa78,
+  dryShade: 0x9d915f,
 } as const;
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter. */
@@ -97,6 +100,13 @@ export function wallSpan3e(b: FacetBuilder, a: Vec2, c: Vec2, y: number, h: numb
   const m = { x: (a.x + c.x) / 2, z: (a.z + c.z) / 2 };
   b.box({ x: m.x, y: y + SINK_3E, z: m.z, yaw }, [len + 0.05, h - SINK_3E, thick], C3E.graniteShade, C3E.granite);
   b.box({ x: m.x, y: y + h, z: m.z, yaw }, [len + 0.15, 0.14, thick + 0.14], C3E.slate, C3E.slateTop);
+}
+
+/** Une touffe d'herbe sèche de ruine, posée au sol `y` en (`x`, `z`) : trois pointes basses du ton sec, de taille `s`. */
+export function dryTuft3e(b: FacetBuilder, x: number, y: number, z: number, s = 1): void {
+  b.prism({ x, y: y - 0.05, z, yaw: x + z }, 0.32 * s, 0, 0.62 * s, 4, C3E.dry);
+  b.prism({ x: x + 0.28 * s, y: y - 0.05, z: z + 0.12 * s, yaw: x }, 0.22 * s, 0, 0.45 * s, 4, C3E.dryShade);
+  b.prism({ x: x - 0.22 * s, y: y - 0.05, z: z - 0.18 * s, yaw: z }, 0.2 * s, 0, 0.4 * s, 4, C3E.dry);
 }
 
 /** Un point d'un cercle de rayon `r` au cap `deg` (en degrés depuis le nord, dans le sens des aiguilles d'une montre). */
