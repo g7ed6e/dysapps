@@ -157,6 +157,7 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   gabarit: placeArt('gabarit')!.traceStage,
   chariot: placeArt('chariot')!.traceStage,
   manufacture: placeArt('manufacture')!.traceStage,
+  loge: placeArt('loge')!.traceStage,
 };
 
 /**

@@ -243,6 +243,7 @@ export const BUILT_PLACES_4E = {
   gabarit: ['simplifying', 'expanding', 'equations', 'rationals', 'pythagorean-theorem'],
   chariot: ['energy-chain', 'information-chain', 'simulation', 'troubleshooting'],
   manufacture: ['enlightenment', 'industrial-europe', 'french-society'],
+  loge: ['dialogues', 'quantities', 'irregular-past', 'stories'],
 } as const satisfies Partial<Record<PlaceId4e, readonly string[]>>;
 
 /** Un lieu du 4e déjà construit. */

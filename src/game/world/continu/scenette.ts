@@ -238,6 +238,18 @@ const SCENETTES: Record<PlaceId, Scenette> = {
       end: 'Sous cette verrière, les machines ont changé le monde.',
     },
   },
+  // La Loge (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition ; les phrases de pose (le corps en deux
+  // aujourd'hui, en trois à la bascule de 2027) et la réplique de l'intention, à valider par le directeur du contenu
+  // pédagogique ; aucune ne dit « loge ».
+  loge: {
+    role: placeArt('loge')!.role,
+    greeting: 'Le costumier coud les habits des comédiens.',
+    placement: 'rangee',
+    words: {
+      pose: ['Le plancher et la galerie sont refaits.', 'Les cintres sont remontés.', 'Le toit de la scène est posé.', 'La salle est prête.'],
+      end: 'Ici, après le travail, les ouvriers venaient écouter des histoires.',
+    },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -678,6 +690,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   gabarit: northSite('gabarit'),
   chariot: northSite('chariot'),
   manufacture: northSite('manufacture'),
+  loge: northSite('loge'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2226,6 +2239,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   chariot: 'paving',
   // La Manufacture (lot 3 du 4e) : le dallage de la halle, dans la travée ouest.
   manufacture: 'paving',
+  // La Loge (lot 3 du 4e) : la cour devant l'appentis du costumier.
+  loge: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

@@ -246,6 +246,7 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   gabarit: placeArt('gabarit')!.sceneSpot,
   chariot: placeArt('chariot')!.sceneSpot,
   manufacture: placeArt('manufacture')!.sceneSpot,
+  loge: placeArt('loge')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -529,6 +530,7 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   gabarit: 'lieu',
   chariot: 'lieu',
   manufacture: 'lieu',
+  loge: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

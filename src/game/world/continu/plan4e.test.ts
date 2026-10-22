@@ -78,6 +78,14 @@ const LOT3_MANUFACTURE_CEILING = {
   calls: LOT3_CHARIOT_CEILING.calls,
 } as const;
 
+/**
+ * Le plafond du 4e avec la Loge (lot 3, le Bastion fini) : celui de la Manufacture, relevé d'un lieu du 4e au plus chargé
+ * (`PLACE_TRIANGLES_MAX_4E`, la trace de 2027 comprise, à la place de sa ruine simple) ; aucun appel de plus. Mesuré
+ * le 22 octobre 2026 : 75 399 triangles et 17 appels la scénette ouverte, 68 061 et 14 hors scénette, 66 767 et 15 au
+ * départ, 64 698 et 12 sur la Carte.
+ */
+const LOT3_LOGE_CEILING = { triangles: LOT3_MANUFACTURE_CEILING.triangles + PLACE_TRIANGLES_MAX_4E, calls: LOT3_MANUFACTURE_CEILING.calls } as const;
+
 /** Les couleurs d'un maillage. */
 function colorsOf(f: { colors: Float32Array }): Set<string> {
   const out = new Set<string>();
@@ -273,8 +281,8 @@ describe('Le budget du 4e', () => {
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
     for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('scenette')), total(openWorldCost4e('depart')), mapCost4e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT3_MANUFACTURE_CEILING.triangles);
-      expect(cost.calls).toBeLessThanOrEqual(LOT3_MANUFACTURE_CEILING.calls);
+      expect(cost.triangles).toBeLessThanOrEqual(LOT3_LOGE_CEILING.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(LOT3_LOGE_CEILING.calls);
     }
   });
 });
