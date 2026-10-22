@@ -10,9 +10,11 @@ import { nodeLands, planOfLand, type LandId, type LinkedLand } from './lands';
 import { placeById, planFor, type LevelPlan, type OpenWorldLevel } from './levelPlan';
 import type { PathNode } from './network';
 import { PATH_NODES } from './plan6e';
+import { PATH_NODES_3E, PEAK_3E } from './plan3e';
 import { PATH_NODES_4E, VOLCANO_4E } from './plan4e';
 import { PATH_EDGES_5E, PATH_NODES_5E } from './plan5e';
 import { heightAt, heightAt as heightAt6e, landDistance, standingHeight } from './terrain';
+import { heightAt3e, landDistance3e } from './terrain3e';
 import { heightAt4e, landDistance4e } from './terrain4e';
 import { heightAt5e, landDistance5e, plateauShare } from './terrain5e';
 
@@ -149,7 +151,18 @@ const VEIL_WORLDS: Readonly<Record<OpenWorldLevel, () => VeilWorld>> = {
       layers: VEIL_LAYERS,
       clear: (p) => smoothstep(VOLCANO_4E.radius * VOLCANO_CLEAR_4E[0], VOLCANO_4E.radius * VOLCANO_CLEAR_4E[1], distance(p, VOLCANO_4E.crater)),
     }),
+  '3e': () =>
+    veilWorld(planFor('3e'), PATH_NODES_3E, {
+      landDistance: landDistance3e,
+      heightAt: heightAt3e,
+      level: () => 1,
+      layers: VEIL_LAYERS,
+      clear: (p) => smoothstep(PEAK_CLEAR_3E[0], PEAK_CLEAR_3E[1], distance(p, PEAK_3E.at)),
+    }),
 };
+
+/** Au 3e, la brume s'efface sur le pic et le haut du cône, qu'on voit de toutes les terres : nulle à moins de tant d'unités du pic, pleine au-delà de tant. */
+const PEAK_CLEAR_3E = [PEAK_3E.radius, PEAK_3E.granite] as const;
 
 /** Au 4e, la brume s'efface sur le cône du volcan : nulle à moins de tant de son rayon du cratère, pleine au-delà de tant. */
 const VOLCANO_CLEAR_4E = [0.5, 0.72] as const;

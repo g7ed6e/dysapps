@@ -17,6 +17,7 @@ import { heightFor } from './placeGround';
 import { PATH_NODES_4E } from './plan4e';
 import { PATH_NODES_5E } from './plan5e';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId as PlaceId6e } from './plan6e';
+import { RUINS_3E } from './ruins3e';
 import { RUINS_4E } from './ruins4e';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 import { landDistance } from './terrain';
@@ -2480,7 +2481,7 @@ const RUINS_FALLEN_VOUSSOIRS = [
   [4.8, -4.9, -0.7],
 ] as const;
 
-/** Une ruine du 4e (./ruins4e.ts), en une seule pièce : ses lieux n'ont pas encore d'étapes (GD-22, lot 2). */
+/** Une ruine du 4e (./ruins4e.ts) ou du 3e (./ruins3e.ts), en une seule pièce : ses lieux n'ont pas encore d'étapes (GD-22, lot 2). */
 const ruinOnly =
   (draw: (b: FacetBuilder) => void) =>
   (add: Add): void =>
@@ -2539,6 +2540,23 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   terminus: ruinOnly(RUINS_4E.terminus),
   orgues: ruinOnly(RUINS_4E.orgues),
   dynamo: ruinOnly(RUINS_4E.dynamo),
+  // Le 3e : seize ruines simples (lot 1 du monde ouvert du 3e, ./ruins3e.ts).
+  belvedere: ruinOnly(RUINS_3E.belvedere),
+  grenier: ruinOnly(RUINS_3E.grenier),
+  abri: ruinOnly(RUINS_3E.abri),
+  jardin: ruinOnly(RUINS_3E.jardin),
+  fanal: ruinOnly(RUINS_3E.fanal),
+  rampe: ruinOnly(RUINS_3E.rampe),
+  standard: ruinOnly(RUINS_3E.standard),
+  kiosque: ruinOnly(RUINS_3E.kiosque),
+  maquette: ruinOnly(RUINS_3E.maquette),
+  tribune: ruinOnly(RUINS_3E.tribune),
+  douane: ruinOnly(RUINS_3E.douane),
+  ermitage: ruinOnly(RUINS_3E.ermitage),
+  coupole: ruinOnly(RUINS_3E.coupole),
+  lutherie: ruinOnly(RUINS_3E.lutherie),
+  ondes: ruinOnly(RUINS_3E.ondes),
+  palais: ruinOnly(RUINS_3E.palais),
 };
 
 const pieces = new Map<PlaceId, PlacePiece[]>();

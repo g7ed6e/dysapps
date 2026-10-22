@@ -87,6 +87,7 @@ import { SEA_TEXTURE } from '../../world/continu/sea';
 import { skyDome, type HeightLight } from '../../world/continu/sky';
 import { FOLLOW_FAR_5E } from '../../world/continu/nef5e';
 import { FOLLOW_FAR_4E } from '../../world/continu/crique4e';
+import { FOLLOW_FAR_3E } from '../../world/continu/parvis3e';
 import { ringHeights, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
@@ -504,8 +505,8 @@ const FRAMED_BRIDGE_NEAR = 12;
 /** Le bout de la caméra qui suit Kéo, et celui de la Carte (l'île entière, de haut), en unités. */
 const FOLLOW_FAR = 500;
 // Au 5e, `FOLLOW_FAR_5E` (./world/continu/nef5e.ts), pour le panache de la Nef, au-delà de 500 vu du quai.
-/** Le bout de la caméra qui suit Kéo, par niveau : 500 au 6e ; au 5e et au 4e, le leur (le panache de leur Nef, leur volcan). */
-const FOLLOW_FAR_OF: Readonly<Record<OpenWorldLevel, number>> = { '6e': FOLLOW_FAR, '5e': FOLLOW_FAR_5E, '4e': FOLLOW_FAR_4E };
+/** Le bout de la caméra qui suit Kéo, par niveau : 500 au 6e ; au 5e, au 4e et au 3e, le leur (le panache de leur Nef, leur volcan, leur pic). */
+const FOLLOW_FAR_OF: Readonly<Record<OpenWorldLevel, number>> = { '6e': FOLLOW_FAR, '5e': FOLLOW_FAR_5E, '4e': FOLLOW_FAR_4E, '3e': FOLLOW_FAR_3E };
 /**
  * Le regard levé au quai du lieu de départ, ou à la porte d'un lieu haut (`PlaceArt.arrivalView`), ne vaut que la caméra
  * tournée à moins de tant de son cap (en radians).
@@ -909,7 +910,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const touchables: THREE.Object3D[] = [nearRing.mesh, farRing.mesh];
 
   // La mer et le lagon : un plan d'eau à 0, peint par l'image de l'eau ; au-delà, le bord de l'image (le large).
-  const seaTexture = new THREE.DataTexture(world.seaPixels(), SEA_TEXTURE.size, SEA_TEXTURE.size);
+  const seaSquare = world.seaTexture ?? SEA_TEXTURE;
+  const seaTexture = new THREE.DataTexture(world.seaPixels(), seaSquare.size, seaSquare.size);
   // Des champs, pas des couleurs : lus tels quels, interpolés.
   seaTexture.colorSpace = THREE.NoColorSpace;
   seaTexture.magFilter = THREE.LinearFilter;
@@ -920,7 +922,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Les coordonnées de l'image suivent x et z du monde : le carré de l'image au milieu, son bord étiré au-delà.
   const uv = seaGeometry.getAttribute('uv') as THREE.BufferAttribute;
   const pos = seaGeometry.getAttribute('position') as THREE.BufferAttribute;
-  for (let k = 0; k < uv.count; k++) uv.setXY(k, (pos.getX(k) + SEA_TEXTURE.half) / (2 * SEA_TEXTURE.half), (pos.getZ(k) + SEA_TEXTURE.half) / (2 * SEA_TEXTURE.half));
+  for (let k = 0; k < uv.count; k++) uv.setXY(k, (pos.getX(k) + seaSquare.half) / (2 * seaSquare.half), (pos.getZ(k) + seaSquare.half) / (2 * seaSquare.half));
   uv.needsUpdate = true;
   const seaMaterial = seaMaterialOf(seaTexture, world.water);
   const sea = still(new THREE.Mesh(seaGeometry, seaMaterial));
@@ -1654,9 +1656,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   // La caméra posée à la main (`view`, les captures seulement).
   let manualView: CameraPose | null = null;
-  // Au 4e, la place de la rangée du bas que les pieds de Kéo ne passent jamais (`footRoom`), en pixels ; 0 ailleurs.
+  // Au 4e et au 3e, la place de la rangée du bas que les pieds de Kéo ne passent jamais (`footRoom`), en pixels ; 0 ailleurs.
   let feetRoom = 0;
-  const guardFeet = level === '4e';
+  const guardFeet = level === '4e' || level === '3e';
   const follow = () => {
     if (manualView) return applyPose(manualView);
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : viewRise(), fifth ? hold : undefined, arrivalBack > 0 ? arrivalShape : viewShape());

@@ -79,9 +79,9 @@ interface Props {
    */
   onCrowded?(crowded: (spots: readonly MapSpotOnScreen[]) => number): void;
   /**
-   * Au 4e (consultant UX UI, deuxième relecture du lot 1) : le lieu suggéré (`nextPlace`) se pose le tout premier, contre
-   * son point ; les étiquettes restent à `MAP_EDGE_4E` des bords ; un nom de lieu ouvert loin de son point y est relié
-   * par un trait fin (`mapLeader`). Le 6e et le 5e ne le prennent pas.
+   * Au 4e (consultant UX UI, deuxième relecture du lot 1), et au 3e de même (lot 1) : le lieu suggéré (`nextPlace`) se
+   * pose le tout premier, contre son point ; les étiquettes restent à `MAP_EDGE_4E` des bords ; un nom de lieu ouvert loin
+   * de son point y est relié par un trait fin (`mapLeader`). Le 6e et le 5e ne le prennent pas.
    */
   snug?: boolean;
 }

@@ -183,11 +183,60 @@ export const SHADOW_DIR_4E = (() => {
   return { x: -LIGHT_4E.sunFrom.x / l, z: -LIGHT_4E.sunFrom.z / l };
 })();
 
+/**
+ * Le ciel du 3e (lot 1 du monde ouvert du 3e, GD-25 : un matin froid et clair au-dessus des nuages) : le bleu pâle de
+ * l'horizon, celui du ciel de la grille (#B4D2EC), monte vers le bleu franc du zénith (#3A86CC), jamais nuit.
+ */
+const SKY_STOPS_3E: readonly { at: number; color: number }[] = [
+  { at: 0, color: 0xb4d2ec },
+  { at: 8, color: 0xa6c9ea },
+  { at: 22, color: 0x86b4e0 },
+  { at: 48, color: 0x5e9cd6 },
+  { at: 90, color: 0x3a86cc },
+];
+
+/** La couleur de l'horizon du 3e : le brouillard du lointain et le bas du dôme, le bleu pâle du matin. */
+export const HORIZON_COLOR_3E = SKY_STOPS_3E[0].color;
+
+/**
+ * La lumière du 3e (valeurs de l'artiste technique 3D, à valider sur captures par le directeur artistique) : un soleil
+ * du matin, blanc à peine doré (#FFF2DC), assez bas (environ 30°), venu du sud-est, dans le dos de la caméra du départ
+ * qui regarde le pic au nord-est depuis le Parvis (jamais en contre-jour) ; le ciel renvoyé bleu pâle, le sol renvoyé
+ * du blanc des nuages : les ombres restent bleutées et claires, jamais sombres.
+ */
+export const LIGHT_3E = {
+  sky: 0xdce8f4,
+  ground: 0xc8ccd0,
+  ambient: 2.3,
+  sun: 0xfff2dc,
+  sunIntensity: 2.7,
+  sunFrom: { x: 40, y: 28, z: 40 },
+  exposure: 1.15,
+} as const satisfies SceneLight;
+
+/**
+ * La lumière par la hauteur du 3e : un seul étage (toute la lumière partout), mais le brouillard du lointain
+ * s'éclaircit en hauteur, si bien que le haut du pic se voit de toutes les terres, au-dessus de l'air du matin.
+ */
+export const HEIGHT_LIGHT_3E: HeightLight = { low: -60, high: -50, sunLow: 1, tintLow: [1, 1, 1], fogFrom: 4, fogTo: 30, fogTop: 0.2 };
+
+/**
+ * Le brouillard du lointain du 3e : l'air du matin est net, comme au 4e, mais les terres sont plus étendues (la Prairie
+ * du zeppelin est à près de 400 unités du Parvis) : il commence à 100 unités et couvre tout à 280.
+ */
+export const FOG_3E = { near: 100, far: 280 } as const;
+
+/** Le sens où tombent les ombres peintes du 3e (l'opposé de son soleil, à plat). */
+export const SHADOW_DIR_3E = (() => {
+  const l = Math.hypot(LIGHT_3E.sunFrom.x, LIGHT_3E.sunFrom.z);
+  return { x: -LIGHT_3E.sunFrom.x / l, z: -LIGHT_3E.sunFrom.z / l };
+})();
+
 /** Le ciel d'un niveau : ses couleurs, de l'horizon au zénith. */
 export type SkyStops = readonly { at: number; color: number }[];
 
-/** Les couleurs du ciel du 6e (le défaut), du 5e et du 4e. */
-export const SKY_OF = { '6e': SKY_STOPS, '5e': SKY_STOPS_5E, '4e': SKY_STOPS_4E } as const satisfies Record<string, SkyStops>;
+/** Les couleurs du ciel du 6e (le défaut), du 5e, du 4e et du 3e. */
+export const SKY_OF = { '6e': SKY_STOPS, '5e': SKY_STOPS_5E, '4e': SKY_STOPS_4E, '3e': SKY_STOPS_3E } as const satisfies Record<string, SkyStops>;
 
 /** La couleur du ciel à une hauteur angulaire (degrés ; sous l'horizon, l'horizon), en rouge, vert, bleu linéaires. */
 export function skyColorAt(elevation: number, stops: SkyStops = SKY_STOPS): [number, number, number] {

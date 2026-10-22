@@ -22,7 +22,7 @@ export type WorldLayout = 'grid' | 'continuous';
  * Les archipels qui ont leur monde ouvert : ceux des plans du monde continu (./world/continu/levelPlan.ts,
  * `OPEN_WORLD_LEVELS`, que ce fichier ne lit pas ; un test vérifie que les deux listes sont les mêmes).
  */
-export const OPEN_WORLD_ARCHIPELAGOS = ['6e', '5e', '4e'] as const satisfies readonly ArchipelagoId[];
+export const OPEN_WORLD_ARCHIPELAGOS = ['6e', '5e', '4e', '3e'] as const satisfies readonly ArchipelagoId[];
 
 /** Un archipel qui a son monde ouvert. */
 type OpenWorldArchipelago = (typeof OPEN_WORLD_ARCHIPELAGOS)[number];

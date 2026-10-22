@@ -11,12 +11,15 @@ import { distance, type Vec2 } from './geometry';
 import { bridgeEdge, firstClosed, isLinkedLand, linkedLands, nodeLands, planOfLand, startLandOf, type LinkedLand } from './lands';
 import { planFor, type LevelPlan, type OpenWorldLevel } from './levelPlan';
 import { bridgeCut, pathNode, type NetworkPoint } from './paths';
+import { CUT_CLEARANCE_3E, NETWORK_3E, isLand3e, passageCut3e } from './paths3e';
 import { CUT_CLEARANCE_4E, NETWORK_4E, isLand4e, passageCut4e } from './paths4e';
 import { NETWORK_5E, isLand5e, passageCut } from './paths5e';
+import { COLORS_3E, LINKS_3E } from './plan3e';
 import { COLORS_4E, LINKS_4E } from './plan4e';
 import { LINKS_5E } from './plan5e';
 import type { StraitId } from './plan6e';
 import { heightAt, standingHeight, straitClearance } from './terrain';
+import { causewayParts, heightAt3e, type Causeway } from './terrain3e';
 import { heightAt4e } from './terrain4e';
 import { channelClearance, heightAt5e } from './terrain5e';
 
@@ -64,6 +67,12 @@ const STONE_6E: BridgeStone = { stone: C.stone, stoneTop: C.stoneTop, pile: C.pi
  */
 const STONE_4E: BridgeStone = { stone: COLORS_4E.stoneShade, stoneTop: COLORS_4E.stone, pile: 0x74695f, wet: 0x62574f, broken: 0x6c6058 };
 const BASALT_4E: BridgeStone = { stone: COLORS_4E.basaltShade, stoneTop: COLORS_4E.basaltSun, pile: COLORS_4E.basalt, wet: COLORS_4E.crustShade, broken: COLORS_4E.crust };
+
+/**
+ * La pierre des trois passages du 3e (lot 1 du monde ouvert du 3e, GD-25) : le granit bleuté des Passeurs, pour le pont
+ * du glacier, la galerie du col et les arches basses ; sa cassure un cran plus sombre, jamais presque noire.
+ */
+const STONE_3E: BridgeStone = { stone: COLORS_3E.graniteShade, stoneTop: COLORS_3E.graniteSun, pile: COLORS_3E.granite, wet: COLORS_3E.graniteShade, broken: 0x66708a };
 
 /** Où Kéo s'arrête devant un pont pas encore rebâti : sur sa culée, à tant d'unités de l'eau (son rayon et un peu d'air). */
 export const KEO_STOP = 0.9;
@@ -136,7 +145,16 @@ const WORLD_4E: BridgeWorld = {
   height: heightAt4e,
 };
 
-const BRIDGE_WORLDS: Readonly<Record<OpenWorldLevel, BridgeWorld>> = { '6e': WORLD_6E, '5e': WORLD_5E, '4e': WORLD_4E };
+/** Le 3e : la langue de glace, l'arête du col et les nuages, chacun sa coupure ; tout en granit. */
+const WORLD_3E: BridgeWorld = {
+  stone: () => STONE_3E,
+  node: (id) => NETWORK_3E.pathNode(id).at,
+  clearance: (p, land) => (isLand3e(land) ? CUT_CLEARANCE_3E[LINKS_3E[land].cut](p) : DRY),
+  cut: (a, c, land) => (isLand3e(land) ? passageCut3e(a, c, land) : [0, 0]),
+  height: heightAt3e,
+};
+
+const BRIDGE_WORLDS: Readonly<Record<OpenWorldLevel, BridgeWorld>> = { '6e': WORLD_6E, '5e': WORLD_5E, '4e': WORLD_4E, '3e': WORLD_3E };
 
 const worldOf = (land: LinkedLand): BridgeWorld => BRIDGE_WORLDS[planOfLand(land).level];
 
@@ -443,7 +461,10 @@ function abutmentFacets(s: BridgeSite, arches: boolean): Facets {
  * Le pont pendant sa pose, sans ce qui se relève (GD-20, point 3, « La pose ») : les deux culées et les départs d'arche,
  * que le tablier vient couvrir ; les moignons ont laissé la place aux piles qui se relèvent.
  */
-export const bridgeLayRest = (land: LinkedLand): Facets => (isCabin(land) ? cabinStations(bridgeSite(land)) : abutmentFacets(bridgeSite(land), true));
+export const bridgeLayRest = (land: LinkedLand): Facets => (isCabin(land) ? cabinStations(bridgeSite(land)) : isCloudArches(land) ? NO_FACETS : abutmentFacets(bridgeSite(land), true));
+
+/** Rien : les arches basses du 3e n'ont pas de culée à part, la chaussée entière se relève. */
+const NO_FACETS: Facets = new FacetBuilder().build();
 
 /**
  * Les morceaux d'un pont rebâti, sans ses culées : les piles maçonnées, de l'eau jusque sous le tablier (leurs assises,
@@ -453,6 +474,10 @@ export const bridgeLayRest = (land: LinkedLand): Facets => (isCabin(land) ? cabi
 export function bridgeParts(land: LinkedLand): BridgeParts {
   const s = bridgeSite(land);
   if (isCabin(land)) return cabinParts(s);
+  if (isCloudArches(land)) {
+    const parts = archesParts(s, s.abut[0], s.abut[1]);
+    return { piles: parts.bays, deck: parts.deck, rails: parts.parapets };
+  }
   const at = frame(s);
   const yaw = Math.atan2(s.dir.x, s.dir.z);
   const pileTop = BRIDGE.deck - BRIDGE.plank - 0.24;
@@ -539,9 +564,11 @@ export function bridgeFacets(land: LinkedLand, built: boolean, car: CabinCar = '
   }
   if (built) {
     const parts = bridgeParts(land);
-    return mergeFacets([abutmentFacets(s, false), ...parts.piles, parts.deck, parts.rails]);
+    return mergeFacets([...(isCloudArches(land) ? [] : [abutmentFacets(s, false)]), ...parts.piles, parts.deck, parts.rails]);
   }
-  if (isBasaltArch(land)) return fallenArch(s);
+  if (isBasaltArch(land) || isGlacierArch(land)) return fallenArch(s);
+  if (isCloudArches(land)) return fallenArches(s);
+  if (isColGallery(land)) return blockedCol(s);
   const b = new FacetBuilder();
   b.append(abutmentFacets(s, true));
   // Les deux moignons, de 0,7 à 1,2 au-dessus de l'eau, le dessus cassé en biais (la pierre brute, plus sombre que le
@@ -556,6 +583,57 @@ export function bridgeFacets(land: LinkedLand, built: boolean, car: CabinCar = '
 
 /** Le passage d'une terre est-il l'arche de basalte de la coulée (au 4e) ? */
 const isBasaltArch = (land: LinkedLand): boolean => isLand4e(land) && LINKS_4E[land].cut === 'coulee';
+
+/** Le passage d'une terre est-il, au 3e, le pont du glacier, la galerie du col ou les arches basses sur les nuages ? */
+const isGlacierArch = (land: LinkedLand): boolean => isLand3e(land) && LINKS_3E[land].cut === 'glace';
+const isColGallery = (land: LinkedLand): boolean => isLand3e(land) && LINKS_3E[land].cut === 'col';
+const isCloudArches = (land: LinkedLand): boolean => isLand3e(land) && LINKS_3E[land].cut === 'nuages';
+
+/**
+ * Les arches basses du 3e (fiche, § 5 et § 7 ; GD-25) : la chaussée de granit des petites arches (./terrain3e.ts,
+ * `causewayParts`), de `d0` à `d1` sur la ligne du passage ; son dessus est celui où marche Kéo (`bridgeSurface`), ses
+ * murs pleins descendent dans les nuages (aucune pile ne se voit).
+ */
+function archesParts(s: BridgeSite, d0: number, d1: number) {
+  const causeway: Causeway = { a: s.near, dir: s.dir, length: s.length, water: s.water, base: s.base };
+  const S = stoneOf(s);
+  return causewayParts(causeway, d0, d1, { side: S.stone, top: S.stoneTop }, (d) => bridgeSurface(s, d));
+}
+
+/**
+ * Les arches basses pas encore rebâties : la chaussée de chaque rive, puis rien au milieu (les travées du milieu sont
+ * tombées dans les nuages) ; plus longue côté Versant. Aucun bloc ne flotte.
+ */
+function fallenArches(s: BridgeSite): Facets {
+  const span = s.water[1] - s.water[0];
+  const near = archesParts(s, s.abut[0], s.water[0] + span * 0.3);
+  const far = archesParts(s, s.water[1] - span * 0.2, s.abut[1]);
+  return mergeFacets([...near.bays, near.deck, near.parapets, ...far.bays, far.deck, far.parapets]);
+}
+
+/** Les éboulis qui bouchent la galerie du col : leur place (en part du passage, puis en travers), leur rayon, leur hauteur. */
+const COL_BOULDERS: readonly (readonly [number, number, number, number])[] = [
+  [0.3, -0.8, 1.3, 1.4],
+  [0.5, 0.7, 1.6, 1.9],
+  [0.68, -0.4, 1.2, 1.3],
+];
+
+/**
+ * La galerie du col pas encore rebâtie (GD-25) : ses deux culées de granit ; entre elles, dans l'entaille de l'arête,
+ * des éboulis ronds qui bouchent le passage. Rien n'y tombe ni ne bouge.
+ */
+function blockedCol(s: BridgeSite): Facets {
+  const b = new FacetBuilder();
+  abutments(b, s);
+  const at = frame(s);
+  const S = stoneOf(s);
+  const span = s.water[1] - s.water[0];
+  COL_BOULDERS.forEach(([u, v, r, h], k) => {
+    const p = at(s.water[0] + span * u, v);
+    b.prism({ x: p.x, y: worldOf(s.land).height(p) - 0.4, z: p.z, yaw: k * 0.9 }, r, r * 0.6, h + 0.4, 7, S.stone, S.stoneTop);
+  });
+  return b.build();
+}
 
 /**
  * L'arche de basalte tombée en partie, sur la coulée du 4e (GD-24, « Avant de relier » ; retouche 1 du lot 1, directeur
