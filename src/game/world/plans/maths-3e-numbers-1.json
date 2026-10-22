@@ -1,0 +1,9 @@
+{
+  "id": "maths-3e-numbers-1",
+  "biome": "maths-3e-numbers",
+  "name": "La réserve du meunier",
+  "reward": {
+    "xp": 40
+  },
+  "done": "La réserve tient sur ses pieds. Les sacs sont au sec."
+}

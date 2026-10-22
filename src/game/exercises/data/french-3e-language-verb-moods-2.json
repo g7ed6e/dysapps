@@ -1,0 +1,222 @@
+{
+  "id": "french-3e-language-verb-moods-2",
+  "biome": "french-3e-language",
+  "type": "verb-moods",
+  "level": 2,
+  "instruction": "Choisis l’auxiliaire du passé du subjonctif. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-3e-language-verb-moods-2-0",
+      "prompt": "Je suis contente que tu … ton exposé.",
+      "spoken": "Je suis contente que tu  (mot manquant)  ton exposé.",
+      "choices": [
+        "as fini",
+        "aies fini",
+        "aie fini"
+      ],
+      "answer": "aies fini",
+      "hint": "Avec « tu », le subjonctif d’avoir s’écrit avec un s.",
+      "explanation": "Après « je suis contente que », subjonctif : que tu aies fini. « As fini » est l’indicatif. « Aie » est la forme de « je ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passé du subjonctif",
+          "lines": [
+            "Avoir ou être au subjonctif présent, puis le participe passé.",
+            "Avec avoir : que j’aie, que tu aies, qu’il ait, que nous ayons, que vous ayez, qu’ils aient.",
+            "Avec être : que je sois, que tu sois, qu’il soit, que nous soyons, que vous soyez, qu’ils soient.",
+            "Il dit une action finie : je suis content que tu aies fini."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-2-1",
+      "prompt": "Il faut qu’elle … rentrée avant minuit.",
+      "spoken": "Il faut qu’elle  (mot manquant)  rentrée avant minuit.",
+      "choices": [
+        "est",
+        "soit",
+        "soient"
+      ],
+      "answer": "soit",
+      "hint": "« Il faut que » demande le subjonctif ; le sujet est « elle ».",
+      "explanation": "Subjonctif d’être avec « elle » : qu’elle soit rentrée. « Est » est l’indicatif. « Soient » va avec « ils » ou « elles ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passé du subjonctif",
+          "lines": [
+            "Avoir ou être au subjonctif présent, puis le participe passé.",
+            "Avec avoir : que j’aie, que tu aies, qu’il ait, que nous ayons, que vous ayez, qu’ils aient.",
+            "Avec être : que je sois, que tu sois, qu’il soit, que nous soyons, que vous soyez, qu’ils soient.",
+            "Il dit une action finie : je suis content que tu aies fini."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-2-2",
+      "prompt": "Bien qu’il … beaucoup marché, il n’est pas fatigué.",
+      "spoken": "Bien qu’il  (mot manquant)  beaucoup marché, il n’est pas fatigué.",
+      "choices": [
+        "a",
+        "ait",
+        "aie"
+      ],
+      "answer": "ait",
+      "hint": "Avec « il », le subjonctif d’avoir finit par t.",
+      "explanation": "Après « bien que », subjonctif : qu’il ait marché. « A » est l’indicatif. « Aie » est la forme de « je ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passé du subjonctif",
+          "lines": [
+            "Avoir ou être au subjonctif présent, puis le participe passé.",
+            "Avec avoir : que j’aie, que tu aies, qu’il ait, que nous ayons, que vous ayez, qu’ils aient.",
+            "Avec être : que je sois, que tu sois, qu’il soit, que nous soyons, que vous soyez, qu’ils soient.",
+            "Il dit une action finie : je suis content que tu aies fini."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-2-3",
+      "prompt": "Je regrette que vous … partis si tôt.",
+      "spoken": "Je regrette que vous  (mot manquant)  partis si tôt.",
+      "choices": [
+        "êtes",
+        "soyez",
+        "soyiez"
+      ],
+      "answer": "soyez",
+      "hint": "Relis la ligne d’« être » : la forme de « vous ».",
+      "explanation": "Que vous soyez, sans i après le y. « Êtes » est l’indicatif. « Soyiez » ajoute un i qui ne s’écrit pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passé du subjonctif",
+          "lines": [
+            "Avoir ou être au subjonctif présent, puis le participe passé.",
+            "Avec avoir : que j’aie, que tu aies, qu’il ait, que nous ayons, que vous ayez, qu’ils aient.",
+            "Avec être : que je sois, que tu sois, qu’il soit, que nous soyons, que vous soyez, qu’ils soient.",
+            "Il dit une action finie : je suis content que tu aies fini."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-2-4",
+      "prompt": "Nous attendrons que tout le monde … arrivé.",
+      "spoken": "Nous attendrons que tout le monde  (mot manquant)  arrivé.",
+      "choices": [
+        "soit",
+        "est",
+        "ait"
+      ],
+      "answer": "soit",
+      "hint": "« Arriver » se conjugue avec être : il est arrivé.",
+      "explanation": "On dit « il est arrivé » : au subjonctif, qu’il soit arrivé. « Est » est l’indicatif. « Ait » prend avoir, qui ne va pas avec « arriver ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passé du subjonctif",
+          "lines": [
+            "Avoir ou être au subjonctif présent, puis le participe passé.",
+            "Avec avoir : que j’aie, que tu aies, qu’il ait, que nous ayons, que vous ayez, qu’ils aient.",
+            "Avec être : que je sois, que tu sois, qu’il soit, que nous soyons, que vous soyez, qu’ils soient.",
+            "Il dit une action finie : je suis content que tu aies fini."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-2-5",
+      "prompt": "Il est possible que j’… oublié mon livre.",
+      "spoken": "Il est possible que j’ (mot manquant)  oublié mon livre.",
+      "choices": [
+        "ai",
+        "aie",
+        "ait"
+      ],
+      "answer": "aie",
+      "hint": "Avec « je », le subjonctif d’avoir finit par e.",
+      "explanation": "Subjonctif d’avoir avec « je » : que j’aie oublié. « Ai » est l’indicatif. « Ait » est la forme de « il ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passé du subjonctif",
+          "lines": [
+            "Avoir ou être au subjonctif présent, puis le participe passé.",
+            "Avec avoir : que j’aie, que tu aies, qu’il ait, que nous ayons, que vous ayez, qu’ils aient.",
+            "Avec être : que je sois, que tu sois, qu’il soit, que nous soyons, que vous soyez, qu’ils soient.",
+            "Il dit une action finie : je suis content que tu aies fini."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-2-6",
+      "prompt": "Je ne crois pas qu’ils … compris.",
+      "spoken": "Je ne crois pas qu’ils  (mot manquant)  compris.",
+      "choices": [
+        "ont",
+        "aient",
+        "aies"
+      ],
+      "answer": "aient",
+      "hint": "« Je ne crois pas que » : ce n’est pas sûr. Le sujet est « ils ».",
+      "explanation": "Après « je ne crois pas que », subjonctif : qu’ils aient compris. « Ont » est l’indicatif. « Aies » est la forme de « tu ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passé du subjonctif",
+          "lines": [
+            "Avoir ou être au subjonctif présent, puis le participe passé.",
+            "Avec avoir : que j’aie, que tu aies, qu’il ait, que nous ayons, que vous ayez, qu’ils aient.",
+            "Avec être : que je sois, que tu sois, qu’il soit, que nous soyons, que vous soyez, qu’ils soient.",
+            "Il dit une action finie : je suis content que tu aies fini."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-2-7",
+      "prompt": "Elle est triste que ses amis ne … pas venus.",
+      "spoken": "Elle est triste que ses amis ne  (mot manquant)  pas venus.",
+      "choices": [
+        "sont",
+        "soient",
+        "soit"
+      ],
+      "answer": "soient",
+      "hint": "Le sujet, « ses amis », est au pluriel.",
+      "explanation": "Après « elle est triste que », subjonctif : qu’ils soient venus. « Sont » est l’indicatif. « Soit » va avec un sujet au singulier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passé du subjonctif",
+          "lines": [
+            "Avoir ou être au subjonctif présent, puis le participe passé.",
+            "Avec avoir : que j’aie, que tu aies, qu’il ait, que nous ayons, que vous ayez, qu’ils aient.",
+            "Avec être : que je sois, que tu sois, qu’il soit, que nous soyons, que vous soyez, qu’ils soient.",
+            "Il dit une action finie : je suis content que tu aies fini."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien conjugué !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

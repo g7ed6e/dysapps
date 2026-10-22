@@ -1,0 +1,206 @@
+{
+  "id": "french-3e-language-verb-moods-1",
+  "biome": "french-3e-language",
+  "type": "verb-moods",
+  "level": 1,
+  "instruction": "Indicatif ou subjonctif ? Choisis la forme. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-3e-language-verb-moods-1-0",
+      "prompt": "Il faut que tu … tes affaires ce soir.",
+      "spoken": "Il faut que tu  (mot manquant)  tes affaires ce soir.",
+      "choices": [
+        "prends",
+        "prennes"
+      ],
+      "answer": "prennes",
+      "hint": "« Il faut que » : regarde la première ligne de la règle.",
+      "explanation": "Après « il faut que », le verbe est au subjonctif : que tu prennes. « Prends » est l’indicatif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou subjonctif ?",
+          "lines": [
+            "Subjonctif après : il faut que, je veux que, bien que, pour que, avant que, je doute que.",
+            "Indicatif après : je sais que, je pense que, il est sûr que, après que, parce que.",
+            "Pour entendre la différence, essaie avec « faire » : qu’il fasse (subjonctif), il fait (indicatif)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-1-1",
+      "prompt": "Je pense qu’il … raison.",
+      "spoken": "Je pense qu’il  (mot manquant)  raison.",
+      "choices": [
+        "a",
+        "ait"
+      ],
+      "answer": "a",
+      "hint": "« Je pense que » : on affirme ce qu’on croit vrai.",
+      "explanation": "Après « je pense que », le verbe est à l’indicatif : il a raison. « Ait » est le subjonctif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou subjonctif ?",
+          "lines": [
+            "Subjonctif après : il faut que, je veux que, bien que, pour que, avant que, je doute que.",
+            "Indicatif après : je sais que, je pense que, il est sûr que, après que, parce que.",
+            "Pour entendre la différence, essaie avec « faire » : qu’il fasse (subjonctif), il fait (indicatif)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-1-2",
+      "prompt": "Bien qu’elle … fatiguée, elle continue la course.",
+      "spoken": "Bien qu’elle  (mot manquant)  fatiguée, elle continue la course.",
+      "choices": [
+        "est",
+        "soit"
+      ],
+      "answer": "soit",
+      "hint": "« Bien que » : regarde la première ligne de la règle.",
+      "explanation": "Après « bien que », le verbe est au subjonctif : bien qu’elle soit fatiguée. « Est » est l’indicatif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou subjonctif ?",
+          "lines": [
+            "Subjonctif après : il faut que, je veux que, bien que, pour que, avant que, je doute que.",
+            "Indicatif après : je sais que, je pense que, il est sûr que, après que, parce que.",
+            "Pour entendre la différence, essaie avec « faire » : qu’il fasse (subjonctif), il fait (indicatif)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-1-3",
+      "prompt": "Rentre avant qu’il … nuit.",
+      "spoken": "Rentre avant qu’il  (mot manquant)  nuit.",
+      "choices": [
+        "fait",
+        "fasse"
+      ],
+      "answer": "fasse",
+      "hint": "« Avant que » : le moment n’est pas encore arrivé.",
+      "explanation": "Après « avant que », le verbe est au subjonctif : avant qu’il fasse nuit. « Fait » est l’indicatif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou subjonctif ?",
+          "lines": [
+            "Subjonctif après : il faut que, je veux que, bien que, pour que, avant que, je doute que.",
+            "Indicatif après : je sais que, je pense que, il est sûr que, après que, parce que.",
+            "Pour entendre la différence, essaie avec « faire » : qu’il fasse (subjonctif), il fait (indicatif)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-1-4",
+      "prompt": "Nous mangeons après que tout le monde … arrivé.",
+      "spoken": "Nous mangeons après que tout le monde  (mot manquant)  arrivé.",
+      "choices": [
+        "est",
+        "soit"
+      ],
+      "answer": "est",
+      "hint": "« Après que » : regarde la deuxième ligne de la règle.",
+      "explanation": "« Après que » se construit avec l’indicatif : après que tout le monde est arrivé. L’arrivée a eu lieu : c’est un fait. « Avant que », lui, prend le subjonctif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou subjonctif ?",
+          "lines": [
+            "Subjonctif après : il faut que, je veux que, bien que, pour que, avant que, je doute que.",
+            "Indicatif après : je sais que, je pense que, il est sûr que, après que, parce que.",
+            "Pour entendre la différence, essaie avec « faire » : qu’il fasse (subjonctif), il fait (indicatif)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-1-5",
+      "prompt": "Je doute qu’il … venir demain.",
+      "spoken": "Je doute qu’il  (mot manquant)  venir demain.",
+      "choices": [
+        "peut",
+        "puisse"
+      ],
+      "answer": "puisse",
+      "hint": "« Je doute que » : ce n’est pas sûr.",
+      "explanation": "Après « je doute que », le verbe est au subjonctif : qu’il puisse venir. « Peut » est l’indicatif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou subjonctif ?",
+          "lines": [
+            "Subjonctif après : il faut que, je veux que, bien que, pour que, avant que, je doute que.",
+            "Indicatif après : je sais que, je pense que, il est sûr que, après que, parce que.",
+            "Pour entendre la différence, essaie avec « faire » : qu’il fasse (subjonctif), il fait (indicatif)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-1-6",
+      "prompt": "Je sais que vous … la réponse.",
+      "spoken": "Je sais que vous  (mot manquant)  la réponse.",
+      "choices": [
+        "savez",
+        "sachiez"
+      ],
+      "answer": "savez",
+      "hint": "« Je sais que » : on affirme un fait.",
+      "explanation": "Après « je sais que », le verbe est à l’indicatif : vous savez. « Sachiez » est le subjonctif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou subjonctif ?",
+          "lines": [
+            "Subjonctif après : il faut que, je veux que, bien que, pour que, avant que, je doute que.",
+            "Indicatif après : je sais que, je pense que, il est sûr que, après que, parce que.",
+            "Pour entendre la différence, essaie avec « faire » : qu’il fasse (subjonctif), il fait (indicatif)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-1-7",
+      "prompt": "Le professeur répète la consigne pour que nous … bien.",
+      "spoken": "Le professeur répète la consigne pour que nous  (mot manquant)  bien.",
+      "choices": [
+        "comprenons",
+        "comprenions"
+      ],
+      "answer": "comprenions",
+      "hint": "« Pour que » dit un but.",
+      "explanation": "Après « pour que », le verbe est au subjonctif : pour que nous comprenions. « Comprenons » est l’indicatif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Indicatif ou subjonctif ?",
+          "lines": [
+            "Subjonctif après : il faut que, je veux que, bien que, pour que, avant que, je doute que.",
+            "Indicatif après : je sais que, je pense que, il est sûr que, après que, parce que.",
+            "Pour entendre la différence, essaie avec « faire » : qu’il fasse (subjonctif), il fait (indicatif)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien conjugué !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

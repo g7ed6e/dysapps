@@ -1,0 +1,222 @@
+{
+  "id": "maths-3e-numbers-identities-3",
+  "biome": "maths-3e-numbers",
+  "type": "identities",
+  "level": 3,
+  "instruction": "Factorise : écris un produit. Les identités sont affichées.",
+  "items": [
+    {
+      "key": "maths-3e-numbers-identities-3-0",
+      "prompt": "x² − 9 = …",
+      "spoken": "x au carré moins 9 égale (mot manquant).",
+      "choices": [
+        "(x − 3)²",
+        "(x − 3)(x + 3)",
+        "(x − 9)(x + 9)"
+      ],
+      "answer": "(x − 3)(x + 3)",
+      "hint": "9 = 3² : c’est a² − b².",
+      "explanation": "x² − 9 = x² − 3² = (x − 3)(x + 3). (x − 3)² = x² − 6x + 9. (x − 9)(x + 9) oublie que 9 est déjà le carré de 3.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Factoriser",
+          "lines": [
+            "Factoriser, c’est écrire l’expression comme un produit.",
+            "a² − b² = (a − b)(a + b).",
+            "a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)².",
+            "Avec un facteur commun : ka + kb = k(a + b)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-3-1",
+      "prompt": "x² + 10x + 25 = …",
+      "spoken": "x au carré plus 10 x plus 25 égale (mot manquant).",
+      "choices": [
+        "(x + 5)²",
+        "(x − 5)²",
+        "(x + 5)(x − 5)"
+      ],
+      "answer": "(x + 5)²",
+      "hint": "25 = 5², et 10x = 2 × x × 5, avec le signe plus.",
+      "explanation": "x² + 2 × x × 5 + 5² = (x + 5)². (x − 5)² donnerait − 10x. (x + 5)(x − 5) donnerait x² − 25.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Factoriser",
+          "lines": [
+            "Factoriser, c’est écrire l’expression comme un produit.",
+            "a² − b² = (a − b)(a + b).",
+            "a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)².",
+            "Avec un facteur commun : ka + kb = k(a + b)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-3-2",
+      "prompt": "x² − 6x + 9 = …",
+      "spoken": "x au carré moins 6 x plus 9 égale (mot manquant).",
+      "choices": [
+        "(x + 3)²",
+        "(x − 3)²",
+        "(x − 3)(x + 3)"
+      ],
+      "answer": "(x − 3)²",
+      "hint": "9 = 3², et le double produit, 6x, a le signe moins.",
+      "explanation": "x² − 2 × x × 3 + 3² = (x − 3)². (x + 3)² donnerait + 6x. (x − 3)(x + 3) donnerait x² − 9.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Factoriser",
+          "lines": [
+            "Factoriser, c’est écrire l’expression comme un produit.",
+            "a² − b² = (a − b)(a + b).",
+            "a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)².",
+            "Avec un facteur commun : ka + kb = k(a + b)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-3-3",
+      "prompt": "4x² − 1 = …",
+      "spoken": "4 x au carré moins 1 égale (mot manquant).",
+      "choices": [
+        "(4x − 1)(4x + 1)",
+        "(2x − 1)(2x + 1)",
+        "(2x − 1)²"
+      ],
+      "answer": "(2x − 1)(2x + 1)",
+      "hint": "4x² = (2x)², et 1 = 1².",
+      "explanation": "4x² − 1 = (2x)² − 1² = (2x − 1)(2x + 1). (4x − 1)(4x + 1) donnerait 16x² − 1. (2x − 1)² donnerait 4x² − 4x + 1.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Factoriser",
+          "lines": [
+            "Factoriser, c’est écrire l’expression comme un produit.",
+            "a² − b² = (a − b)(a + b).",
+            "a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)².",
+            "Avec un facteur commun : ka + kb = k(a + b)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-3-4",
+      "prompt": "5x + 10 = …",
+      "spoken": "5 x plus 10 égale (mot manquant).",
+      "choices": [
+        "5(x + 2)",
+        "5(x + 10)",
+        "5x(1 + 2)"
+      ],
+      "answer": "5(x + 2)",
+      "hint": "10 = 5 × 2 : 5 est un facteur commun.",
+      "explanation": "5x + 10 = 5 × x + 5 × 2 = 5(x + 2). 5(x + 10) redonnerait 5x + 50. 5x(1 + 2) redonnerait 15x.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Factoriser",
+          "lines": [
+            "Factoriser, c’est écrire l’expression comme un produit.",
+            "a² − b² = (a − b)(a + b).",
+            "a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)².",
+            "Avec un facteur commun : ka + kb = k(a + b)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-3-5",
+      "prompt": "x² − 100 = …",
+      "spoken": "x au carré moins 100 égale (mot manquant).",
+      "choices": [
+        "(x − 10)(x + 10)",
+        "(x − 50)(x + 50)",
+        "(x − 10)²"
+      ],
+      "answer": "(x − 10)(x + 10)",
+      "hint": "100 = 10².",
+      "explanation": "x² − 10² = (x − 10)(x + 10). 50 est la moitié de 100, pas sa racine. (x − 10)² donnerait x² − 20x + 100.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Factoriser",
+          "lines": [
+            "Factoriser, c’est écrire l’expression comme un produit.",
+            "a² − b² = (a − b)(a + b).",
+            "a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)².",
+            "Avec un facteur commun : ka + kb = k(a + b)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-3-6",
+      "prompt": "9x² + 6x + 1 = …",
+      "spoken": "9 x au carré plus 6 x plus 1 égale (mot manquant).",
+      "choices": [
+        "(3x + 1)²",
+        "(9x + 1)²",
+        "(3x − 1)²"
+      ],
+      "answer": "(3x + 1)²",
+      "hint": "9x² = (3x)², 1 = 1², et 6x = 2 × 3x × 1.",
+      "explanation": "(3x)² + 2 × 3x × 1 + 1² = (3x + 1)². (9x + 1)² donnerait 81x² au début. (3x − 1)² donnerait − 6x.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Factoriser",
+          "lines": [
+            "Factoriser, c’est écrire l’expression comme un produit.",
+            "a² − b² = (a − b)(a + b).",
+            "a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)².",
+            "Avec un facteur commun : ka + kb = k(a + b)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-3-7",
+      "prompt": "Quelle expression est factorisée ?",
+      "spoken": "Quelle expression est factorisée ?",
+      "choices": [
+        "x² − 16",
+        "(x − 4)(x + 4)",
+        "x² − 8x + 16"
+      ],
+      "answer": "(x − 4)(x + 4)",
+      "hint": "Une expression factorisée est un produit.",
+      "explanation": "(x − 4)(x + 4) est un produit de deux facteurs : elle est factorisée. x² − 16 et x² − 8x + 16 sont des sommes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Factoriser",
+          "lines": [
+            "Factoriser, c’est écrire l’expression comme un produit.",
+            "a² − b² = (a − b)(a + b).",
+            "a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)².",
+            "Avec un facteur commun : ka + kb = k(a + b)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,222 @@
+{
+  "id": "french-3e-language-connotation-2",
+  "biome": "french-3e-language",
+  "type": "connotation",
+  "level": 2,
+  "instruction": "Trouve le mot qui sert à analyser le texte. Les définitions sont affichées.",
+  "items": [
+    {
+      "key": "french-3e-language-connotation-2-0",
+      "prompt": "« Le vent passe sur la plaine, / Il emporte au loin ma peine. » Que forment « plaine » et « peine » ?",
+      "spoken": "Le vent passe sur la plaine, il emporte au loin ma peine. Que forment « plaine » et « peine » ?",
+      "choices": [
+        "une rime",
+        "une strophe",
+        "un vers"
+      ],
+      "answer": "une rime",
+      "hint": "Écoute la fin des deux vers.",
+      "explanation": "« Plaine » et « peine » finissent par le même son, à la fin de deux vers : c’est une rime.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots pour analyser",
+          "lines": [
+            "Vers : une ligne d’un poème. Strophe : un groupe de vers. Quatrain : une strophe de quatre vers.",
+            "Rime : le même son à la fin de deux vers. Alexandrin : un vers de douze syllabes.",
+            "Thèse : l’idée qu’on défend. Argument : une raison qui la soutient. Exemple : un fait qui l’illustre.",
+            "Concession : ce qu’on accorde à l’autre avant de répondre (certes, bien sûr)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-2-1",
+      "prompt": "Un poème a quatre groupes de vers séparés par une ligne blanche. Chaque groupe est …",
+      "spoken": "Un poème a quatre groupes de vers séparés par une ligne blanche. Chaque groupe est (mot manquant).",
+      "choices": [
+        "une strophe",
+        "une rime",
+        "un vers"
+      ],
+      "answer": "une strophe",
+      "hint": "Un vers est une seule ligne. Que forme un groupe de vers ?",
+      "explanation": "Un groupe de vers est une strophe. Un vers est une seule ligne ; une rime est un son.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots pour analyser",
+          "lines": [
+            "Vers : une ligne d’un poème. Strophe : un groupe de vers. Quatrain : une strophe de quatre vers.",
+            "Rime : le même son à la fin de deux vers. Alexandrin : un vers de douze syllabes.",
+            "Thèse : l’idée qu’on défend. Argument : une raison qui la soutient. Exemple : un fait qui l’illustre.",
+            "Concession : ce qu’on accorde à l’autre avant de répondre (certes, bien sûr)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-2-2",
+      "prompt": "« Il faut lire chaque jour, car la lecture enrichit le vocabulaire. » Que fait « la lecture enrichit le vocabulaire » ?",
+      "spoken": "Il faut lire chaque jour, car la lecture enrichit le vocabulaire. Que fait « la lecture enrichit le vocabulaire » ?",
+      "choices": [
+        "la thèse",
+        "un argument",
+        "un exemple"
+      ],
+      "answer": "un argument",
+      "hint": "Le mot « car » annonce une raison.",
+      "explanation": "« Car » annonce une raison qui soutient l’idée « il faut lire chaque jour » : c’est un argument. L’idée défendue, la thèse, est « il faut lire chaque jour ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots pour analyser",
+          "lines": [
+            "Vers : une ligne d’un poème. Strophe : un groupe de vers. Quatrain : une strophe de quatre vers.",
+            "Rime : le même son à la fin de deux vers. Alexandrin : un vers de douze syllabes.",
+            "Thèse : l’idée qu’on défend. Argument : une raison qui la soutient. Exemple : un fait qui l’illustre.",
+            "Concession : ce qu’on accorde à l’autre avant de répondre (certes, bien sûr)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-2-3",
+      "prompt": "« Les écrans fatiguent les yeux. Après deux heures de jeu, Tom avait les yeux rouges. » Que fait la deuxième phrase ?",
+      "spoken": "Les écrans fatiguent les yeux. Après deux heures de jeu, Tom avait les yeux rouges. Que fait la deuxième phrase ?",
+      "choices": [
+        "la thèse",
+        "un argument",
+        "un exemple"
+      ],
+      "answer": "un exemple",
+      "hint": "La deuxième phrase raconte un fait précis.",
+      "explanation": "La deuxième phrase raconte un fait précis, arrivé à Tom, qui illustre l’argument : c’est un exemple.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots pour analyser",
+          "lines": [
+            "Vers : une ligne d’un poème. Strophe : un groupe de vers. Quatrain : une strophe de quatre vers.",
+            "Rime : le même son à la fin de deux vers. Alexandrin : un vers de douze syllabes.",
+            "Thèse : l’idée qu’on défend. Argument : une raison qui la soutient. Exemple : un fait qui l’illustre.",
+            "Concession : ce qu’on accorde à l’autre avant de répondre (certes, bien sûr)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-2-4",
+      "prompt": "Un texte commence par : « Le collège devrait ouvrir une salle de musique. » Puis il donne des raisons. Que fait cette première phrase ?",
+      "spoken": "Un texte commence par : Le collège devrait ouvrir une salle de musique. Puis il donne des raisons. Que fait cette première phrase ?",
+      "choices": [
+        "la thèse",
+        "un argument",
+        "un exemple"
+      ],
+      "answer": "la thèse",
+      "hint": "Les raisons qui suivent soutiennent quelle idée ?",
+      "explanation": "C’est l’idée que tout le texte défend, avec ses raisons : la thèse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots pour analyser",
+          "lines": [
+            "Vers : une ligne d’un poème. Strophe : un groupe de vers. Quatrain : une strophe de quatre vers.",
+            "Rime : le même son à la fin de deux vers. Alexandrin : un vers de douze syllabes.",
+            "Thèse : l’idée qu’on défend. Argument : une raison qui la soutient. Exemple : un fait qui l’illustre.",
+            "Concession : ce qu’on accorde à l’autre avant de répondre (certes, bien sûr)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-2-5",
+      "prompt": "Un vers de douze syllabes s’appelle …",
+      "spoken": "Un vers de douze syllabes s’appelle (mot manquant).",
+      "choices": [
+        "un alexandrin",
+        "un quatrain",
+        "une rime"
+      ],
+      "answer": "un alexandrin",
+      "hint": "Relis la deuxième ligne.",
+      "explanation": "Un vers de douze syllabes est un alexandrin. Un quatrain est une strophe de quatre vers.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots pour analyser",
+          "lines": [
+            "Vers : une ligne d’un poème. Strophe : un groupe de vers. Quatrain : une strophe de quatre vers.",
+            "Rime : le même son à la fin de deux vers. Alexandrin : un vers de douze syllabes.",
+            "Thèse : l’idée qu’on défend. Argument : une raison qui la soutient. Exemple : un fait qui l’illustre.",
+            "Concession : ce qu’on accorde à l’autre avant de répondre (certes, bien sûr)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-2-6",
+      "prompt": "« Certes, les jeux vidéo amusent ; mais ils prennent beaucoup de temps. » Que fait « Certes, les jeux vidéo amusent » ?",
+      "spoken": "Certes, les jeux vidéo amusent ; mais ils prennent beaucoup de temps. Que fait « Certes, les jeux vidéo amusent » ?",
+      "choices": [
+        "une concession",
+        "un exemple",
+        "la thèse"
+      ],
+      "answer": "une concession",
+      "hint": "« Certes » accorde quelque chose, puis « mais » répond.",
+      "explanation": "« Certes » accorde une idée à l’autre, avant que « mais » ne réponde : c’est une concession.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots pour analyser",
+          "lines": [
+            "Vers : une ligne d’un poème. Strophe : un groupe de vers. Quatrain : une strophe de quatre vers.",
+            "Rime : le même son à la fin de deux vers. Alexandrin : un vers de douze syllabes.",
+            "Thèse : l’idée qu’on défend. Argument : une raison qui la soutient. Exemple : un fait qui l’illustre.",
+            "Concession : ce qu’on accorde à l’autre avant de répondre (certes, bien sûr)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-2-7",
+      "prompt": "Une strophe de quatre vers s’appelle …",
+      "spoken": "Une strophe de quatre vers s’appelle (mot manquant).",
+      "choices": [
+        "un quatrain",
+        "un alexandrin",
+        "une rime"
+      ],
+      "answer": "un quatrain",
+      "hint": "Relis la première ligne.",
+      "explanation": "Une strophe de quatre vers est un quatrain. Un alexandrin est un vers de douze syllabes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots pour analyser",
+          "lines": [
+            "Vers : une ligne d’un poème. Strophe : un groupe de vers. Quatrain : une strophe de quatre vers.",
+            "Rime : le même son à la fin de deux vers. Alexandrin : un vers de douze syllabes.",
+            "Thèse : l’idée qu’on défend. Argument : une raison qui la soutient. Exemple : un fait qui l’illustre.",
+            "Concession : ce qu’on accorde à l’autre avant de répondre (certes, bien sûr)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

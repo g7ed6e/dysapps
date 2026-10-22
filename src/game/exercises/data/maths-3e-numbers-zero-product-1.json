@@ -1,0 +1,214 @@
+{
+  "id": "maths-3e-numbers-zero-product-1",
+  "biome": "maths-3e-numbers",
+  "type": "zero-product",
+  "level": 1,
+  "instruction": "Résous l’équation produit. La règle est affichée.",
+  "items": [
+    {
+      "key": "maths-3e-numbers-zero-product-1-0",
+      "prompt": "(x − 4)(x + 1) = 0. Les solutions sont …",
+      "spoken": "Le produit de x moins 4 par x plus 1 égale 0. Les solutions sont (mot manquant).",
+      "choices": [
+        "4 et −1",
+        "−4 et 1",
+        "4 et 1"
+      ],
+      "answer": "4 et −1",
+      "hint": "Résous x − 4 = 0, puis x + 1 = 0.",
+      "explanation": "x − 4 = 0 donne x = 4 ; x + 1 = 0 donne x = −1. −4 et 1 recopient les nombres des parenthèses avec leur signe : on change de signe en passant de l’autre côté.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un produit égal à 0",
+          "lines": [
+            "Si un produit est égal à 0, l’un de ses facteurs est égal à 0.",
+            "Chaque facteur égal à 0 donne une solution.",
+            "Par exemple (x − 1)(x + 2) = 0 : x − 1 = 0 ou x + 2 = 0, donc x = 1 ou x = −2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-1-1",
+      "prompt": "x(x − 5) = 0. Les solutions sont …",
+      "spoken": "x fois x moins 5 égale 0. Les solutions sont (mot manquant).",
+      "choices": [
+        "5 seulement",
+        "0 et 5",
+        "0 et −5"
+      ],
+      "answer": "0 et 5",
+      "hint": "Le premier facteur est x tout seul.",
+      "explanation": "x = 0, ou x − 5 = 0 qui donne x = 5 : deux solutions, 0 et 5. « 5 seulement » oublie le facteur x. 0 et −5 se trompe de signe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un produit égal à 0",
+          "lines": [
+            "Si un produit est égal à 0, l’un de ses facteurs est égal à 0.",
+            "Chaque facteur égal à 0 donne une solution.",
+            "Par exemple (x − 1)(x + 2) = 0 : x − 1 = 0 ou x + 2 = 0, donc x = 1 ou x = −2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-1-2",
+      "prompt": "(x + 2)(x + 7) = 0. Les solutions sont …",
+      "spoken": "Le produit de x plus 2 par x plus 7 égale 0. Les solutions sont (mot manquant).",
+      "choices": [
+        "−2 et −7",
+        "2 et 7",
+        "−2 et 7"
+      ],
+      "answer": "−2 et −7",
+      "hint": "Résous x + 2 = 0, puis x + 7 = 0.",
+      "explanation": "x + 2 = 0 donne x = −2 ; x + 7 = 0 donne x = −7. 2 et 7 gardent les signes des parenthèses. −2 et 7 ne change qu’un des deux signes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un produit égal à 0",
+          "lines": [
+            "Si un produit est égal à 0, l’un de ses facteurs est égal à 0.",
+            "Chaque facteur égal à 0 donne une solution.",
+            "Par exemple (x − 1)(x + 2) = 0 : x − 1 = 0 ou x + 2 = 0, donc x = 1 ou x = −2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-1-3",
+      "prompt": "(2x − 6)(x + 1) = 0. Les solutions sont …",
+      "spoken": "Le produit de 2 x moins 6 par x plus 1 égale 0. Les solutions sont (mot manquant).",
+      "choices": [
+        "3 et −1",
+        "6 et −1",
+        "−3 et 1"
+      ],
+      "answer": "3 et −1",
+      "hint": "2x − 6 = 0 donne 2x = 6 : divise encore par 2.",
+      "explanation": "2x = 6 donne x = 3 ; x + 1 = 0 donne x = −1. 6 et −1 oublie de diviser par 2. −3 et 1 se trompe sur les deux signes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un produit égal à 0",
+          "lines": [
+            "Si un produit est égal à 0, l’un de ses facteurs est égal à 0.",
+            "Chaque facteur égal à 0 donne une solution.",
+            "Par exemple (x − 1)(x + 2) = 0 : x − 1 = 0 ou x + 2 = 0, donc x = 1 ou x = −2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-1-4",
+      "prompt": "Si A × B = 0, alors …",
+      "spoken": "Si A fois B égale 0, alors (mot manquant).",
+      "choices": [
+        "A = 0 et B = 0",
+        "A = 0 ou B = 0",
+        "A = B"
+      ],
+      "answer": "A = 0 ou B = 0",
+      "hint": "0 × 5 = 0 : faut-il que les deux soient nuls ?",
+      "explanation": "Il suffit qu’un des facteurs soit nul : A = 0 ou B = 0. 0 × 5 = 0, alors que 5 n’est pas nul : « et » est trop fort. A = B n’a pas de lien avec le produit nul.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un produit égal à 0",
+          "lines": [
+            "Si un produit est égal à 0, l’un de ses facteurs est égal à 0.",
+            "Chaque facteur égal à 0 donne une solution.",
+            "Par exemple (x − 1)(x + 2) = 0 : x − 1 = 0 ou x + 2 = 0, donc x = 1 ou x = −2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-1-5",
+      "prompt": "(x − 3)² = 0. Les solutions sont …",
+      "spoken": "x moins 3, le tout au carré, égale 0. Les solutions sont (mot manquant).",
+      "choices": [
+        "3 seulement",
+        "3 et −3",
+        "9 seulement"
+      ],
+      "answer": "3 seulement",
+      "hint": "(x − 3)² = (x − 3)(x − 3) : les deux facteurs sont les mêmes.",
+      "explanation": "Les deux facteurs sont x − 3 : une seule solution, x = 3. 3 et −3 confond avec x² = 9. 9 élève 3 au carré.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un produit égal à 0",
+          "lines": [
+            "Si un produit est égal à 0, l’un de ses facteurs est égal à 0.",
+            "Chaque facteur égal à 0 donne une solution.",
+            "Par exemple (x − 1)(x + 2) = 0 : x − 1 = 0 ou x + 2 = 0, donc x = 1 ou x = −2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-1-6",
+      "prompt": "(5 − x)(x + 4) = 0. Les solutions sont …",
+      "spoken": "Le produit de 5 moins x par x plus 4 égale 0. Les solutions sont (mot manquant).",
+      "choices": [
+        "5 et −4",
+        "−5 et 4",
+        "5 et 4"
+      ],
+      "answer": "5 et −4",
+      "hint": "5 − x = 0 : quel nombre enlevé à 5 donne 0 ?",
+      "explanation": "5 − x = 0 donne x = 5 ; x + 4 = 0 donne x = −4. −5 et 4 se trompe sur les deux signes. 5 et 4 oublie le signe de −4.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un produit égal à 0",
+          "lines": [
+            "Si un produit est égal à 0, l’un de ses facteurs est égal à 0.",
+            "Chaque facteur égal à 0 donne une solution.",
+            "Par exemple (x − 1)(x + 2) = 0 : x − 1 = 0 ou x + 2 = 0, donc x = 1 ou x = −2."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-1-7",
+      "prompt": "(x − 1)(x − 8) = 0. Les solutions sont …",
+      "spoken": "Le produit de x moins 1 par x moins 8 égale 0. Les solutions sont (mot manquant).",
+      "choices": [
+        "1 et 8",
+        "−1 et −8",
+        "1 et −8"
+      ],
+      "answer": "1 et 8",
+      "hint": "Résous x − 1 = 0, puis x − 8 = 0.",
+      "explanation": "x − 1 = 0 donne x = 1 ; x − 8 = 0 donne x = 8. −1 et −8 gardent les signes des parenthèses. 1 et −8 ne change qu’un des deux signes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un produit égal à 0",
+          "lines": [
+            "Si un produit est égal à 0, l’un de ses facteurs est égal à 0.",
+            "Chaque facteur égal à 0 donne une solution.",
+            "Par exemple (x − 1)(x + 2) = 0 : x − 1 = 0 ou x + 2 = 0, donc x = 1 ou x = −2."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien résolu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

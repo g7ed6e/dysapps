@@ -1,0 +1,220 @@
+{
+  "id": "maths-3e-numbers-zero-product-2",
+  "biome": "maths-3e-numbers",
+  "type": "zero-product",
+  "level": 2,
+  "instruction": "Résous l’inéquation. La règle est affichée.",
+  "items": [
+    {
+      "key": "maths-3e-numbers-zero-product-2-0",
+      "prompt": "3x ≥ 12 (3x supérieur ou égal à 12). Les solutions sont les nombres …",
+      "spoken": "3 x supérieur ou égal à 12. Les solutions sont les nombres (mot manquant).",
+      "choices": [
+        "supérieurs ou égaux à 4",
+        "inférieurs ou égaux à 4",
+        "supérieurs ou égaux à 9"
+      ],
+      "answer": "supérieurs ou égaux à 4",
+      "hint": "On divise par 3 : un nombre positif.",
+      "explanation": "12 ÷ 3 = 4, et 3 est positif : le sens ne change pas, x ≥ 4. « Inférieurs » change le sens sans raison. 9, c’est 12 − 3 : on divise, on ne soustrait pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre une inéquation",
+          "lines": [
+            "≥ se lit « supérieur ou égal à » ; ≤ se lit « inférieur ou égal à ».",
+            "On divise les deux côtés par le même nombre.",
+            "Par un nombre positif : le sens ne change pas.",
+            "Par un nombre négatif : le sens change, ≥ devient ≤."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-2-1",
+      "prompt": "−2x ≥ 6 (−2x supérieur ou égal à 6). Les solutions sont les nombres …",
+      "spoken": "moins 2 x supérieur ou égal à 6. Les solutions sont les nombres (mot manquant).",
+      "choices": [
+        "supérieurs ou égaux à −3",
+        "inférieurs ou égaux à −3",
+        "inférieurs ou égaux à 3"
+      ],
+      "answer": "inférieurs ou égaux à −3",
+      "hint": "On divise par −2 : un nombre négatif.",
+      "explanation": "6 ÷ (−2) = −3, et on divise par un nombre négatif : le sens change, x ≤ −3. « Supérieurs ou égaux à −3 » garde le sens. « Inférieurs ou égaux à 3 » oublie le signe moins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre une inéquation",
+          "lines": [
+            "≥ se lit « supérieur ou égal à » ; ≤ se lit « inférieur ou égal à ».",
+            "On divise les deux côtés par le même nombre.",
+            "Par un nombre positif : le sens ne change pas.",
+            "Par un nombre négatif : le sens change, ≥ devient ≤."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-2-2",
+      "prompt": "5x ≤ 20 (5x inférieur ou égal à 20). Les solutions sont les nombres …",
+      "spoken": "5 x inférieur ou égal à 20. Les solutions sont les nombres (mot manquant).",
+      "choices": [
+        "inférieurs ou égaux à 4",
+        "supérieurs ou égaux à 4",
+        "inférieurs ou égaux à 15"
+      ],
+      "answer": "inférieurs ou égaux à 4",
+      "hint": "On divise par 5 : un nombre positif.",
+      "explanation": "20 ÷ 5 = 4, et 5 est positif : le sens ne change pas, x ≤ 4. « Supérieurs » change le sens sans raison. 15, c’est 20 − 5.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre une inéquation",
+          "lines": [
+            "≥ se lit « supérieur ou égal à » ; ≤ se lit « inférieur ou égal à ».",
+            "On divise les deux côtés par le même nombre.",
+            "Par un nombre positif : le sens ne change pas.",
+            "Par un nombre négatif : le sens change, ≥ devient ≤."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-2-3",
+      "prompt": "−x ≥ 2 (−x supérieur ou égal à 2). Les solutions sont les nombres …",
+      "spoken": "moins x supérieur ou égal à 2. Les solutions sont les nombres (mot manquant).",
+      "choices": [
+        "supérieurs ou égaux à −2",
+        "inférieurs ou égaux à −2",
+        "inférieurs ou égaux à 2"
+      ],
+      "answer": "inférieurs ou égaux à −2",
+      "hint": "−x = −1 × x : on divise par −1.",
+      "explanation": "On divise par −1, un nombre négatif : le sens change, x ≤ −2. « Supérieurs ou égaux à −2 » garde le sens. « Inférieurs ou égaux à 2 » oublie de changer le signe de 2.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre une inéquation",
+          "lines": [
+            "≥ se lit « supérieur ou égal à » ; ≤ se lit « inférieur ou égal à ».",
+            "On divise les deux côtés par le même nombre.",
+            "Par un nombre positif : le sens ne change pas.",
+            "Par un nombre négatif : le sens change, ≥ devient ≤."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-2-4",
+      "prompt": "On divise les deux côtés de −4x ≥ 8 (−4x supérieur ou égal à 8) par −4. Le signe ≥ (supérieur ou égal) …",
+      "spoken": "On divise les deux côtés de moins 4 x supérieur ou égal à 8 par moins 4. Le signe supérieur ou égal (mot manquant).",
+      "choices": [
+        "reste « supérieur ou égal »",
+        "devient « inférieur ou égal »"
+      ],
+      "answer": "devient « inférieur ou égal »",
+      "hint": "−4 est-il positif ou négatif ?",
+      "explanation": "On divise par −4, un nombre négatif : le sens change. On obtient x ≤ −2.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre une inéquation",
+          "lines": [
+            "≥ se lit « supérieur ou égal à » ; ≤ se lit « inférieur ou égal à ».",
+            "On divise les deux côtés par le même nombre.",
+            "Par un nombre positif : le sens ne change pas.",
+            "Par un nombre négatif : le sens change, ≥ devient ≤."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-2-5",
+      "prompt": "2x ≥ −10 (2x supérieur ou égal à −10). Les solutions sont les nombres …",
+      "spoken": "2 x supérieur ou égal à moins 10. Les solutions sont les nombres (mot manquant).",
+      "choices": [
+        "supérieurs ou égaux à −5",
+        "inférieurs ou égaux à −5",
+        "supérieurs ou égaux à 5"
+      ],
+      "answer": "supérieurs ou égaux à −5",
+      "hint": "On divise par 2 : c’est le nombre qui divise qui compte, pas le −10.",
+      "explanation": "−10 ÷ 2 = −5, et 2 est positif : le sens ne change pas, x ≥ −5. Le −10 de droite ne change pas le sens. « Supérieurs ou égaux à 5 » oublie le signe moins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre une inéquation",
+          "lines": [
+            "≥ se lit « supérieur ou égal à » ; ≤ se lit « inférieur ou égal à ».",
+            "On divise les deux côtés par le même nombre.",
+            "Par un nombre positif : le sens ne change pas.",
+            "Par un nombre négatif : le sens change, ≥ devient ≤."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-2-6",
+      "prompt": "4 est-il une solution de 2x ≥ 8 (2x supérieur ou égal à 8) ?",
+      "spoken": "4 est-il une solution de 2 x supérieur ou égal à 8 ?",
+      "choices": [
+        "oui",
+        "non"
+      ],
+      "answer": "oui",
+      "hint": "Remplace x par 4 : 2 × 4 = 8.",
+      "explanation": "2 × 4 = 8, et 8 est supérieur ou égal à 8 : « ou égal » compte. 4 est une solution.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre une inéquation",
+          "lines": [
+            "≥ se lit « supérieur ou égal à » ; ≤ se lit « inférieur ou égal à ».",
+            "On divise les deux côtés par le même nombre.",
+            "Par un nombre positif : le sens ne change pas.",
+            "Par un nombre négatif : le sens change, ≥ devient ≤."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-2-7",
+      "prompt": "−3x ≤ 9 (−3x inférieur ou égal à 9). Les solutions sont les nombres …",
+      "spoken": "moins 3 x inférieur ou égal à 9. Les solutions sont les nombres (mot manquant).",
+      "choices": [
+        "inférieurs ou égaux à −3",
+        "supérieurs ou égaux à −3",
+        "supérieurs ou égaux à 3"
+      ],
+      "answer": "supérieurs ou égaux à −3",
+      "hint": "On divise par −3 : un nombre négatif.",
+      "explanation": "9 ÷ (−3) = −3, et on divise par un nombre négatif : le sens change, x ≥ −3. « Inférieurs ou égaux à −3 » garde le sens. « Supérieurs ou égaux à 3 » oublie le signe moins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre une inéquation",
+          "lines": [
+            "≥ se lit « supérieur ou égal à » ; ≤ se lit « inférieur ou égal à ».",
+            "On divise les deux côtés par le même nombre.",
+            "Par un nombre positif : le sens ne change pas.",
+            "Par un nombre négatif : le sens change, ≥ devient ≤."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien résolu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

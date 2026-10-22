@@ -1,0 +1,221 @@
+{
+  "id": "french-3e-language-complex-agreements-2",
+  "biome": "french-3e-language",
+  "type": "complex-agreements",
+  "level": 2,
+  "instruction": "Accorde le participe passé avec avoir. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-3e-language-complex-agreements-2-0",
+      "prompt": "Les lettres que tu as … sont arrivées.",
+      "spoken": "Les lettres que tu as  (mot manquant)  sont arrivées.",
+      "choices": [
+        "écrit",
+        "écrits",
+        "écrites"
+      ],
+      "answer": "écrites",
+      "hint": "« Que » remplace un nom placé juste avant : lequel ?",
+      "explanation": "Tu as écrit quoi ? « que », c’est-à-dire les lettres, placé avant : écrites, au féminin pluriel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Avoir et le COD placé avant",
+          "lines": [
+            "Avec avoir, le participe passé ne s’accorde jamais avec le sujet.",
+            "Il s’accorde avec le COD seulement si ce COD est placé avant le verbe.",
+            "Dans « les fleurs que j’ai cueillies », « que » remplace « les fleurs » : c’est le COD, placé avant.",
+            "« Que » n’est jamais le sujet : le sujet vient après lui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-2-1",
+      "prompt": "Les gâteaux que ma sœur a … sont délicieux.",
+      "spoken": "Les gâteaux que ma sœur a  (mot manquant)  sont délicieux.",
+      "choices": [
+        "préparé",
+        "préparés",
+        "préparée"
+      ],
+      "answer": "préparés",
+      "hint": "Avec avoir, le sujet ne commande jamais : cherche le COD.",
+      "explanation": "Ma sœur a préparé quoi ? « que », c’est-à-dire les gâteaux, placé avant : préparés. « Préparée » s’accorde avec le sujet, ce qu’avoir ne fait jamais.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Avoir et le COD placé avant",
+          "lines": [
+            "Avec avoir, le participe passé ne s’accorde jamais avec le sujet.",
+            "Il s’accorde avec le COD seulement si ce COD est placé avant le verbe.",
+            "Dans « les fleurs que j’ai cueillies », « que » remplace « les fleurs » : c’est le COD, placé avant.",
+            "« Que » n’est jamais le sujet : le sujet vient après lui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-2-2",
+      "prompt": "La chanson que nous avons … était triste.",
+      "spoken": "La chanson que nous avons  (mot manquant)  était triste.",
+      "choices": [
+        "chanté",
+        "chantée",
+        "chantés"
+      ],
+      "answer": "chantée",
+      "hint": "« Que » remplace un nom placé juste avant : lequel ?",
+      "explanation": "Nous avons chanté quoi ? « que », c’est-à-dire la chanson, placé avant : chantée. « Chantés » s’accorde avec « nous », le sujet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Avoir et le COD placé avant",
+          "lines": [
+            "Avec avoir, le participe passé ne s’accorde jamais avec le sujet.",
+            "Il s’accorde avec le COD seulement si ce COD est placé avant le verbe.",
+            "Dans « les fleurs que j’ai cueillies », « que » remplace « les fleurs » : c’est le COD, placé avant.",
+            "« Que » n’est jamais le sujet : le sujet vient après lui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-2-3",
+      "prompt": "Les élèves ont … leurs cahiers.",
+      "spoken": "Les élèves ont  (mot manquant)  leurs cahiers.",
+      "choices": [
+        "rangé",
+        "rangés"
+      ],
+      "answer": "rangé",
+      "hint": "Le COD, « leurs cahiers », est-il avant ou après le verbe ?",
+      "explanation": "Le COD, « leurs cahiers », est placé après : pas d’accord, rangé. « Les élèves » est le sujet : avec avoir, il ne commande pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Avoir et le COD placé avant",
+          "lines": [
+            "Avec avoir, le participe passé ne s’accorde jamais avec le sujet.",
+            "Il s’accorde avec le COD seulement si ce COD est placé avant le verbe.",
+            "Dans « les fleurs que j’ai cueillies », « que » remplace « les fleurs » : c’est le COD, placé avant.",
+            "« Que » n’est jamais le sujet : le sujet vient après lui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-2-4",
+      "prompt": "Les photos que Léo a … sont floues.",
+      "spoken": "Les photos que Léo a  (mot manquant)  sont floues.",
+      "choices": [
+        "pris",
+        "prise",
+        "prises"
+      ],
+      "answer": "prises",
+      "hint": "« Que » remplace un nom placé juste avant : lequel ?",
+      "explanation": "Léo a pris quoi ? « que », c’est-à-dire les photos, placé avant : prises. On entend le s : prises.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Avoir et le COD placé avant",
+          "lines": [
+            "Avec avoir, le participe passé ne s’accorde jamais avec le sujet.",
+            "Il s’accorde avec le COD seulement si ce COD est placé avant le verbe.",
+            "Dans « les fleurs que j’ai cueillies », « que » remplace « les fleurs » : c’est le COD, placé avant.",
+            "« Que » n’est jamais le sujet : le sujet vient après lui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-2-5",
+      "prompt": "La voiture qu’ils ont … est rouge.",
+      "spoken": "La voiture qu’ils ont  (mot manquant)  est rouge.",
+      "choices": [
+        "acheté",
+        "achetée",
+        "achetés"
+      ],
+      "answer": "achetée",
+      "hint": "Avec avoir, le sujet ne commande jamais : cherche le COD.",
+      "explanation": "Ils ont acheté quoi ? « que », c’est-à-dire la voiture, placé avant : achetée. « Achetés » s’accorde avec « ils », le sujet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Avoir et le COD placé avant",
+          "lines": [
+            "Avec avoir, le participe passé ne s’accorde jamais avec le sujet.",
+            "Il s’accorde avec le COD seulement si ce COD est placé avant le verbe.",
+            "Dans « les fleurs que j’ai cueillies », « que » remplace « les fleurs » : c’est le COD, placé avant.",
+            "« Que » n’est jamais le sujet : le sujet vient après lui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-2-6",
+      "prompt": "Les films que j’ai … m’ont plu.",
+      "spoken": "Les films que j’ai  (mot manquant)  m’ont plu.",
+      "choices": [
+        "vu",
+        "vus",
+        "vues"
+      ],
+      "answer": "vus",
+      "hint": "« Que » remplace un nom placé juste avant : lequel ?",
+      "explanation": "J’ai vu quoi ? « que », c’est-à-dire les films, placé avant : vus, au masculin pluriel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Avoir et le COD placé avant",
+          "lines": [
+            "Avec avoir, le participe passé ne s’accorde jamais avec le sujet.",
+            "Il s’accorde avec le COD seulement si ce COD est placé avant le verbe.",
+            "Dans « les fleurs que j’ai cueillies », « que » remplace « les fleurs » : c’est le COD, placé avant.",
+            "« Que » n’est jamais le sujet : le sujet vient après lui."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-2-7",
+      "prompt": "Elles ont … une belle cabane.",
+      "spoken": "Elles ont  (mot manquant)  une belle cabane.",
+      "choices": [
+        "construit",
+        "construite",
+        "construites"
+      ],
+      "answer": "construit",
+      "hint": "Le COD, « une belle cabane », est-il avant ou après le verbe ?",
+      "explanation": "Le COD est placé après le verbe : pas d’accord, construit. « Construites » s’accorde avec « elles », le sujet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Avoir et le COD placé avant",
+          "lines": [
+            "Avec avoir, le participe passé ne s’accorde jamais avec le sujet.",
+            "Il s’accorde avec le COD seulement si ce COD est placé avant le verbe.",
+            "Dans « les fleurs que j’ai cueillies », « que » remplace « les fleurs » : c’est le COD, placé avant.",
+            "« Que » n’est jamais le sujet : le sujet vient après lui."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien accordé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

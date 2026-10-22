@@ -1,0 +1,221 @@
+{
+  "id": "french-3e-language-verb-moods-3",
+  "biome": "french-3e-language",
+  "type": "verb-moods",
+  "level": 3,
+  "instruction": "Choisis la forme qui suit « si ». La règle est affichée.",
+  "items": [
+    {
+      "key": "french-3e-language-verb-moods-3-0",
+      "prompt": "Si tu m’avais appelé, je … venu.",
+      "spoken": "Si tu m’avais appelé, je  (mot manquant)  venu.",
+      "choices": [
+        "serais",
+        "serai",
+        "suis"
+      ],
+      "answer": "serais",
+      "hint": "« Si » + plus-que-parfait : regarde la deuxième ligne.",
+      "explanation": "Si + plus-que-parfait, puis conditionnel passé : je serais venu. « Serai » est le futur. « Suis » est le présent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Si et le conditionnel",
+          "lines": [
+            "Si + imparfait, puis conditionnel présent : si j’avais le temps, je lirais.",
+            "Si + plus-que-parfait, puis conditionnel passé : si j’avais su, je serais venu.",
+            "Conditionnel passé : avoir ou être au conditionnel, puis le participe passé.",
+            "Juste après « si », jamais de conditionnel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-3-1",
+      "prompt": "Si nous avions couru, nous … le bus.",
+      "spoken": "Si nous avions couru, nous  (mot manquant)  le bus.",
+      "choices": [
+        "aurions pris",
+        "avions pris",
+        "aurons pris"
+      ],
+      "answer": "aurions pris",
+      "hint": "« Avions couru » est au plus-que-parfait.",
+      "explanation": "Si + plus-que-parfait, puis conditionnel passé : nous aurions pris le bus. « Avions pris » est le plus-que-parfait. « Aurons pris » est le futur antérieur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Si et le conditionnel",
+          "lines": [
+            "Si + imparfait, puis conditionnel présent : si j’avais le temps, je lirais.",
+            "Si + plus-que-parfait, puis conditionnel passé : si j’avais su, je serais venu.",
+            "Conditionnel passé : avoir ou être au conditionnel, puis le participe passé.",
+            "Juste après « si », jamais de conditionnel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-3-2",
+      "prompt": "Si j’avais le temps, j’… la guitare.",
+      "spoken": "Si j’avais le temps, j’ (mot manquant)  la guitare.",
+      "choices": [
+        "apprendrais",
+        "aurais appris",
+        "apprendrai"
+      ],
+      "answer": "apprendrais",
+      "hint": "« Avais » est à l’imparfait : regarde la première ligne.",
+      "explanation": "Si + imparfait, puis conditionnel présent : j’apprendrais. « Aurais appris » va avec le plus-que-parfait. « Apprendrai » est le futur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Si et le conditionnel",
+          "lines": [
+            "Si + imparfait, puis conditionnel présent : si j’avais le temps, je lirais.",
+            "Si + plus-que-parfait, puis conditionnel passé : si j’avais su, je serais venu.",
+            "Conditionnel passé : avoir ou être au conditionnel, puis le participe passé.",
+            "Juste après « si », jamais de conditionnel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-3-3",
+      "prompt": "Si elle … su, elle serait restée.",
+      "spoken": "Si elle  (mot manquant)  su, elle serait restée.",
+      "choices": [
+        "avait",
+        "aurait"
+      ],
+      "answer": "avait",
+      "hint": "Relis la dernière ligne de la règle.",
+      "explanation": "Juste après « si », jamais de conditionnel : si elle avait su. Le conditionnel est dans l’autre partie de la phrase : elle serait restée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Si et le conditionnel",
+          "lines": [
+            "Si + imparfait, puis conditionnel présent : si j’avais le temps, je lirais.",
+            "Si + plus-que-parfait, puis conditionnel passé : si j’avais su, je serais venu.",
+            "Conditionnel passé : avoir ou être au conditionnel, puis le participe passé.",
+            "Juste après « si », jamais de conditionnel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-3-4",
+      "prompt": "Sans ton aide, je … perdu.",
+      "spoken": "Sans ton aide, je  (mot manquant)  perdu.",
+      "choices": [
+        "me serais",
+        "m’aurais",
+        "me serai"
+      ],
+      "answer": "me serais",
+      "hint": "« Se perdre » se conjugue avec être : je me suis perdu.",
+      "explanation": "On dit « je me suis perdu » : au conditionnel passé, je me serais perdu. « M’aurais » prend avoir, qui ne va pas avec « se perdre ». « Me serai » est le futur antérieur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Si et le conditionnel",
+          "lines": [
+            "Si + imparfait, puis conditionnel présent : si j’avais le temps, je lirais.",
+            "Si + plus-que-parfait, puis conditionnel passé : si j’avais su, je serais venu.",
+            "Conditionnel passé : avoir ou être au conditionnel, puis le participe passé.",
+            "Juste après « si », jamais de conditionnel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-3-5",
+      "prompt": "Ils … gagné s’ils avaient joué ensemble.",
+      "spoken": "Ils  (mot manquant)  gagné s’ils avaient joué ensemble.",
+      "choices": [
+        "auraient",
+        "auront",
+        "avaient"
+      ],
+      "answer": "auraient",
+      "hint": "La partie avec « si » est au plus-que-parfait.",
+      "explanation": "S’ils avaient joué, ils auraient gagné : conditionnel passé. « Auront » est le futur. « Avaient » est le plus-que-parfait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Si et le conditionnel",
+          "lines": [
+            "Si + imparfait, puis conditionnel présent : si j’avais le temps, je lirais.",
+            "Si + plus-que-parfait, puis conditionnel passé : si j’avais su, je serais venu.",
+            "Conditionnel passé : avoir ou être au conditionnel, puis le participe passé.",
+            "Juste après « si », jamais de conditionnel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-3-6",
+      "prompt": "Si vous étiez partis plus tôt, vous … à l’heure.",
+      "spoken": "Si vous étiez partis plus tôt, vous  (mot manquant)  à l’heure.",
+      "choices": [
+        "seriez arrivés",
+        "serez arrivés",
+        "étiez arrivés"
+      ],
+      "answer": "seriez arrivés",
+      "hint": "« Étiez partis » est au plus-que-parfait.",
+      "explanation": "Si + plus-que-parfait, puis conditionnel passé : vous seriez arrivés. « Serez arrivés » est le futur antérieur. « Étiez arrivés » est le plus-que-parfait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Si et le conditionnel",
+          "lines": [
+            "Si + imparfait, puis conditionnel présent : si j’avais le temps, je lirais.",
+            "Si + plus-que-parfait, puis conditionnel passé : si j’avais su, je serais venu.",
+            "Conditionnel passé : avoir ou être au conditionnel, puis le participe passé.",
+            "Juste après « si », jamais de conditionnel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-moods-3-7",
+      "prompt": "À ta place, j’… demandé de l’aide.",
+      "spoken": "À ta place, j’ (mot manquant)  demandé de l’aide.",
+      "choices": [
+        "aurais",
+        "aurai",
+        "avais"
+      ],
+      "answer": "aurais",
+      "hint": "« À ta place » veut dire « si j’avais été à ta place ».",
+      "explanation": "« À ta place » pose une condition, comme « si » : j’aurais demandé, au conditionnel passé. « Aurai » est le futur. « Avais » est l’imparfait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Si et le conditionnel",
+          "lines": [
+            "Si + imparfait, puis conditionnel présent : si j’avais le temps, je lirais.",
+            "Si + plus-que-parfait, puis conditionnel passé : si j’avais su, je serais venu.",
+            "Conditionnel passé : avoir ou être au conditionnel, puis le participe passé.",
+            "Juste après « si », jamais de conditionnel."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien conjugué !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

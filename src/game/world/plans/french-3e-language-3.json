@@ -1,0 +1,9 @@
+{
+  "id": "french-3e-language-3",
+  "biome": "french-3e-language",
+  "name": "La galerie de l’atelier",
+  "reward": {
+    "xp": 60
+  },
+  "done": "La galerie est prête. Ici, chaque instrument trouvait sa juste voix."
+}

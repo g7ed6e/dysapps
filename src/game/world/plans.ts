@@ -183,6 +183,12 @@ import etalonCour from './plans/maths-4e-data-3.json';
 import jonctionCabine from './plans/french-4e-sentence-1.json';
 import jonctionToit from './plans/french-4e-sentence-2.json';
 import jonctionAbords from './plans/french-4e-sentence-3.json';
+import grenierReserve from './plans/maths-3e-numbers-1.json';
+import grenierToit from './plans/maths-3e-numbers-2.json';
+import grenierAbords from './plans/maths-3e-numbers-3.json';
+import lutherieAtelier from './plans/french-3e-language-1.json';
+import lutherieToit from './plans/french-3e-language-2.json';
+import lutherieGalerie from './plans/french-3e-language-3.json';
 
 export interface PlanCell {
   x: number;
@@ -271,9 +277,10 @@ export function decalageDesPlans(plan: Pick<PlanDef<IleId>, 'biome' | 'zone'>): 
 
 /**
  * Les fiches des plans (nom, phrase de fin, XP ; produites par `npm run contenu` depuis la section « Les plans » de
- * docs/contenu/<île>.md, dans le même ordre) : dans l'ordre du dessin. Les six derniers sont ceux de l'Étalon et de la
- * Jonction, lieux du monde ouvert seulement (GD-24) : ni la grille ni Blocland ne les dessinent ; leurs cases, dans une
- * zone des plans que rien n'affiche, donnent leurs parties au monde ouvert (../three/archipeo/constructionParts.ts).
+ * docs/contenu/<île>.md, dans le même ordre) : dans l'ordre du dessin. Les douze derniers sont ceux de l'Étalon, de la
+ * Jonction, du Grenier et de la Lutherie, lieux du monde ouvert seulement (GD-24) : ni la grille ni Blocland ne les
+ * dessinent ; leurs cases, dans une zone des plans que rien n'affiche, donnent leurs parties au monde ouvert
+ * (../three/archipeo/constructionParts.ts).
  */
 const PLAN_FILES = [
   foretCabane,
@@ -456,6 +463,12 @@ const PLAN_FILES = [
   jonctionCabine,
   jonctionToit,
   jonctionAbords,
+  grenierReserve,
+  grenierToit,
+  grenierAbords,
+  lutherieAtelier,
+  lutherieToit,
+  lutherieGalerie,
 ] as (Omit<PlanDef<IleId>, 'cells' | 'origin' | 'reward'> & { reward: { xp: number } })[];
 
 /**

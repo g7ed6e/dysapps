@@ -201,9 +201,8 @@ interface PlaceSpec extends Omit<OpenPlace<PlaceId3e>, 'center' | 'door' | 'scen
 
 /**
  * Les seize lieux (fiche, § 4, noms validés le 22 octobre 2026), à leur place sur le plan. Le Grenier et la Lutherie
- * sont nouveaux : leurs missions s'écrivent avec leur lot (`maths-3e-numbers`, `french-3e-language`, identifiants de
- * travail), et leur panneau reste vide d'ici là. Aucun lieu n'a encore de scénette : leurs missions passent par l'écran
- * habituel.
+ * sont nouveaux, lieux du monde ouvert seulement (GD-24) : leurs missions sont écrites (`docs/contenu/maths-3e-numbers.md`,
+ * `french-3e-language.md`). Aucun lieu n'a encore de scénette : leurs missions passent par l'écran habituel.
  */
 const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'belvedere', name: 'Le Belvédère', at: 'au Belvédère', agree: 'ms', island: 'maths-3e-geometry', plan: [1290, 760], door: { x: 6, z: 8 } },

@@ -1,0 +1,221 @@
+{
+  "id": "french-3e-language-complex-agreements-1",
+  "biome": "french-3e-language",
+  "type": "complex-agreements",
+  "level": 1,
+  "instruction": "Accorde l’adjectif avec le nom qui le commande. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-3e-language-complex-agreements-1-0",
+      "prompt": "Les fenêtres de la vieille maison semblent …",
+      "spoken": "Les fenêtres de la vieille maison semblent  (mot manquant) ",
+      "choices": [
+        "propre",
+        "propres"
+      ],
+      "answer": "propres",
+      "hint": "Qu’est-ce qui semble propre : la maison, ou les fenêtres ?",
+      "explanation": "Ce sont les fenêtres qui semblent propres : attribut de « les fenêtres », au féminin pluriel. « La maison » est un complément du nom : elle ne commande pas l’accord.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le nom qui commande",
+          "lines": [
+            "L’adjectif s’accorde avec le nom qu’il précise, même s’il est loin de lui.",
+            "Épithète, à côté du nom ; attribut, après être, sembler, paraître ; apposé, entre virgules.",
+            "Demande-toi qui ou qu’est-ce qui l’est : la réponse est le nom qui commande.",
+            "Un nom masculin et un nom féminin ensemble : l’adjectif est au masculin pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-1-1",
+      "prompt": "Les joueuses, … par la course, boivent de l’eau.",
+      "spoken": "Les joueuses,  (mot manquant)  par la course, boivent de l’eau.",
+      "choices": [
+        "épuisé",
+        "épuisés",
+        "épuisées"
+      ],
+      "answer": "épuisées",
+      "hint": "Qui est épuisé ?",
+      "explanation": "Les joueuses sont épuisées : l’apposition s’accorde avec « les joueuses », au féminin pluriel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le nom qui commande",
+          "lines": [
+            "L’adjectif s’accorde avec le nom qu’il précise, même s’il est loin de lui.",
+            "Épithète, à côté du nom ; attribut, après être, sembler, paraître ; apposé, entre virgules.",
+            "Demande-toi qui ou qu’est-ce qui l’est : la réponse est le nom qui commande.",
+            "Un nom masculin et un nom féminin ensemble : l’adjectif est au masculin pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-1-2",
+      "prompt": "Une veste et un pantalon … sont posés sur le lit.",
+      "spoken": "Une veste et un pantalon  (mot manquant)  sont posés sur le lit.",
+      "choices": [
+        "noire",
+        "noirs",
+        "noires"
+      ],
+      "answer": "noirs",
+      "hint": "Un nom féminin et un nom masculin : relis la dernière ligne.",
+      "explanation": "Une veste (féminin) et un pantalon (masculin) : l’adjectif est au masculin pluriel, noirs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le nom qui commande",
+          "lines": [
+            "L’adjectif s’accorde avec le nom qu’il précise, même s’il est loin de lui.",
+            "Épithète, à côté du nom ; attribut, après être, sembler, paraître ; apposé, entre virgules.",
+            "Demande-toi qui ou qu’est-ce qui l’est : la réponse est le nom qui commande.",
+            "Un nom masculin et un nom féminin ensemble : l’adjectif est au masculin pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-1-3",
+      "prompt": "Ces histoires qu’on raconte le soir paraissent …",
+      "spoken": "Ces histoires qu’on raconte le soir paraissent  (mot manquant) ",
+      "choices": [
+        "effrayant",
+        "effrayants",
+        "effrayantes"
+      ],
+      "answer": "effrayantes",
+      "hint": "Qu’est-ce qui paraît effrayant ? Cherche le nom avant la relative.",
+      "explanation": "Ce sont les histoires qui paraissent effrayantes : féminin pluriel. La relative « qu’on raconte le soir » sépare le nom de l’adjectif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le nom qui commande",
+          "lines": [
+            "L’adjectif s’accorde avec le nom qu’il précise, même s’il est loin de lui.",
+            "Épithète, à côté du nom ; attribut, après être, sembler, paraître ; apposé, entre virgules.",
+            "Demande-toi qui ou qu’est-ce qui l’est : la réponse est le nom qui commande.",
+            "Un nom masculin et un nom féminin ensemble : l’adjectif est au masculin pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-1-4",
+      "prompt": "Les murs du château, … de lierre, sont très anciens.",
+      "spoken": "Les murs du château,  (mot manquant)  de lierre, sont très anciens.",
+      "choices": [
+        "couvert",
+        "couverts",
+        "couverte"
+      ],
+      "answer": "couverts",
+      "hint": "Qu’est-ce qui est couvert de lierre : le château, ou les murs ?",
+      "explanation": "Ce sont les murs qui sont couverts : masculin pluriel. « Du château » est un complément du nom, il ne commande pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le nom qui commande",
+          "lines": [
+            "L’adjectif s’accorde avec le nom qu’il précise, même s’il est loin de lui.",
+            "Épithète, à côté du nom ; attribut, après être, sembler, paraître ; apposé, entre virgules.",
+            "Demande-toi qui ou qu’est-ce qui l’est : la réponse est le nom qui commande.",
+            "Un nom masculin et un nom féminin ensemble : l’adjectif est au masculin pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-1-5",
+      "prompt": "Le ciel et la mer étaient … ce matin-là.",
+      "spoken": "Le ciel et la mer étaient  (mot manquant)  ce matin-là.",
+      "choices": [
+        "gris",
+        "grise",
+        "grises"
+      ],
+      "answer": "gris",
+      "hint": "Un nom masculin et un nom féminin : relis la dernière ligne.",
+      "explanation": "Le ciel (masculin) et la mer (féminin) : masculin pluriel, gris. « Grise » s’accorde avec le mot le plus proche seulement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le nom qui commande",
+          "lines": [
+            "L’adjectif s’accorde avec le nom qu’il précise, même s’il est loin de lui.",
+            "Épithète, à côté du nom ; attribut, après être, sembler, paraître ; apposé, entre virgules.",
+            "Demande-toi qui ou qu’est-ce qui l’est : la réponse est le nom qui commande.",
+            "Un nom masculin et un nom féminin ensemble : l’adjectif est au masculin pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-1-6",
+      "prompt": "Elle porte des chaussures … pour courir.",
+      "spoken": "Elle porte des chaussures  (mot manquant)  pour courir.",
+      "choices": [
+        "léger",
+        "légers",
+        "légères"
+      ],
+      "answer": "légères",
+      "hint": "L’adjectif est à côté du nom : quel est ce nom ?",
+      "explanation": "Des chaussures légères : épithète de « chaussures », au féminin pluriel. Le sujet « elle » ne commande pas cet adjectif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le nom qui commande",
+          "lines": [
+            "L’adjectif s’accorde avec le nom qu’il précise, même s’il est loin de lui.",
+            "Épithète, à côté du nom ; attribut, après être, sembler, paraître ; apposé, entre virgules.",
+            "Demande-toi qui ou qu’est-ce qui l’est : la réponse est le nom qui commande.",
+            "Un nom masculin et un nom féminin ensemble : l’adjectif est au masculin pluriel."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-1-7",
+      "prompt": "Mes cousines, très …, ont tout rangé.",
+      "spoken": "Mes cousines, très  (mot manquant) , ont tout rangé.",
+      "choices": [
+        "courageuse",
+        "courageuses",
+        "courageux"
+      ],
+      "answer": "courageuses",
+      "hint": "Qui est courageux ?",
+      "explanation": "Mes cousines sont courageuses : l’apposition s’accorde avec « mes cousines », au féminin pluriel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le nom qui commande",
+          "lines": [
+            "L’adjectif s’accorde avec le nom qu’il précise, même s’il est loin de lui.",
+            "Épithète, à côté du nom ; attribut, après être, sembler, paraître ; apposé, entre virgules.",
+            "Demande-toi qui ou qu’est-ce qui l’est : la réponse est le nom qui commande.",
+            "Un nom masculin et un nom féminin ensemble : l’adjectif est au masculin pluriel."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien accordé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

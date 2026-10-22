@@ -1,0 +1,215 @@
+{
+  "id": "french-3e-language-complex-agreements-3",
+  "biome": "french-3e-language",
+  "type": "complex-agreements",
+  "level": 3,
+  "instruction": "Trouve le mot qui commande, puis accorde le verbe. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-3e-language-complex-agreements-3-0",
+      "prompt": "La plupart des élèves … déjà partis.",
+      "spoken": "La plupart des élèves  (mot manquant)  déjà partis.",
+      "choices": [
+        "est",
+        "sont"
+      ],
+      "answer": "sont",
+      "hint": "Relis la troisième ligne de la règle.",
+      "explanation": "Après « la plupart des », le verbe est au pluriel : la plupart des élèves sont partis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sujet difficile",
+          "lines": [
+            "Le verbe s’accorde avec le mot principal du sujet : le chien des voisins aboie.",
+            "Le, la ou ce, puis un nom collectif (la foule, le groupe) : verbe au singulier.",
+            "Chacun, aucun : verbe au singulier. La plupart des, beaucoup de : verbe au pluriel.",
+            "« Qui » prend la personne du mot qu’il remplace : c’est moi qui chante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-3-1",
+      "prompt": "Chacun de mes amis … un vélo.",
+      "spoken": "Chacun de mes amis  (mot manquant)  un vélo.",
+      "choices": [
+        "a",
+        "ont"
+      ],
+      "answer": "a",
+      "hint": "Qui a un vélo ? Chacun : un par un.",
+      "explanation": "Le sujet est « chacun » : verbe au singulier, a. « Mes amis » est un complément : il ne commande pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sujet difficile",
+          "lines": [
+            "Le verbe s’accorde avec le mot principal du sujet : le chien des voisins aboie.",
+            "Le, la ou ce, puis un nom collectif (la foule, le groupe) : verbe au singulier.",
+            "Chacun, aucun : verbe au singulier. La plupart des, beaucoup de : verbe au pluriel.",
+            "« Qui » prend la personne du mot qu’il remplace : c’est moi qui chante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-3-2",
+      "prompt": "Le chien des voisins … toute la nuit.",
+      "spoken": "Le chien des voisins  (mot manquant)  toute la nuit.",
+      "choices": [
+        "aboie",
+        "aboient"
+      ],
+      "answer": "aboie",
+      "hint": "Qui aboie : le chien, ou les voisins ?",
+      "explanation": "C’est le chien qui aboie : le mot principal du sujet est « chien », au singulier. « Des voisins » est un complément du nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sujet difficile",
+          "lines": [
+            "Le verbe s’accorde avec le mot principal du sujet : le chien des voisins aboie.",
+            "Le, la ou ce, puis un nom collectif (la foule, le groupe) : verbe au singulier.",
+            "Chacun, aucun : verbe au singulier. La plupart des, beaucoup de : verbe au pluriel.",
+            "« Qui » prend la personne du mot qu’il remplace : c’est moi qui chante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-3-3",
+      "prompt": "La foule des supporters … le stade.",
+      "spoken": "La foule des supporters  (mot manquant)  le stade.",
+      "choices": [
+        "envahit",
+        "envahissent"
+      ],
+      "answer": "envahit",
+      "hint": "« La », puis un nom collectif : relis la deuxième ligne.",
+      "explanation": "Le sujet est « la foule », un nom collectif au singulier : envahit. « Des supporters » est un complément du nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sujet difficile",
+          "lines": [
+            "Le verbe s’accorde avec le mot principal du sujet : le chien des voisins aboie.",
+            "Le, la ou ce, puis un nom collectif (la foule, le groupe) : verbe au singulier.",
+            "Chacun, aucun : verbe au singulier. La plupart des, beaucoup de : verbe au pluriel.",
+            "« Qui » prend la personne du mot qu’il remplace : c’est moi qui chante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-3-4",
+      "prompt": "Aucun des joueurs ne … fatigué.",
+      "spoken": "Aucun des joueurs ne  (mot manquant)  fatigué.",
+      "choices": [
+        "semble",
+        "semblent"
+      ],
+      "answer": "semble",
+      "hint": "Le sujet est « aucun » : relis la troisième ligne.",
+      "explanation": "Avec « aucun », le verbe est au singulier : aucun ne semble fatigué. « Des joueurs » est un complément.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sujet difficile",
+          "lines": [
+            "Le verbe s’accorde avec le mot principal du sujet : le chien des voisins aboie.",
+            "Le, la ou ce, puis un nom collectif (la foule, le groupe) : verbe au singulier.",
+            "Chacun, aucun : verbe au singulier. La plupart des, beaucoup de : verbe au pluriel.",
+            "« Qui » prend la personne du mot qu’il remplace : c’est moi qui chante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-3-5",
+      "prompt": "C’est moi qui … la vaisselle ce soir.",
+      "spoken": "C’est moi qui  (mot manquant)  la vaisselle ce soir.",
+      "choices": [
+        "fais",
+        "fait",
+        "font"
+      ],
+      "answer": "fais",
+      "hint": "« Qui » remplace « moi » : le verbe est à la personne de « je ».",
+      "explanation": "« Qui » remplace « moi » : le verbe prend la personne de « je », je fais. « Fait » est la forme de « il ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sujet difficile",
+          "lines": [
+            "Le verbe s’accorde avec le mot principal du sujet : le chien des voisins aboie.",
+            "Le, la ou ce, puis un nom collectif (la foule, le groupe) : verbe au singulier.",
+            "Chacun, aucun : verbe au singulier. La plupart des, beaucoup de : verbe au pluriel.",
+            "« Qui » prend la personne du mot qu’il remplace : c’est moi qui chante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-3-6",
+      "prompt": "Les clés de la voiture … sur la table.",
+      "spoken": "Les clés de la voiture  (mot manquant)  sur la table.",
+      "choices": [
+        "est",
+        "sont"
+      ],
+      "answer": "sont",
+      "hint": "Qu’est-ce qui est sur la table : la voiture, ou les clés ?",
+      "explanation": "Ce sont les clés qui sont sur la table : le mot principal du sujet est « clés », au pluriel. « De la voiture » est un complément du nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sujet difficile",
+          "lines": [
+            "Le verbe s’accorde avec le mot principal du sujet : le chien des voisins aboie.",
+            "Le, la ou ce, puis un nom collectif (la foule, le groupe) : verbe au singulier.",
+            "Chacun, aucun : verbe au singulier. La plupart des, beaucoup de : verbe au pluriel.",
+            "« Qui » prend la personne du mot qu’il remplace : c’est moi qui chante."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-complex-agreements-3-7",
+      "prompt": "Le groupe d’enfants … dans le parc.",
+      "spoken": "Le groupe d’enfants  (mot manquant)  dans le parc.",
+      "choices": [
+        "joue",
+        "jouent"
+      ],
+      "answer": "joue",
+      "hint": "« Le », puis un nom collectif : relis la deuxième ligne.",
+      "explanation": "Le sujet est « le groupe », un nom collectif au singulier : joue. « D’enfants » est un complément du nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le sujet difficile",
+          "lines": [
+            "Le verbe s’accorde avec le mot principal du sujet : le chien des voisins aboie.",
+            "Le, la ou ce, puis un nom collectif (la foule, le groupe) : verbe au singulier.",
+            "Chacun, aucun : verbe au singulier. La plupart des, beaucoup de : verbe au pluriel.",
+            "« Qui » prend la personne du mot qu’il remplace : c’est moi qui chante."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien accordé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

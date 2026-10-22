@@ -1,0 +1,222 @@
+{
+  "id": "maths-3e-numbers-identities-2",
+  "biome": "maths-3e-numbers",
+  "type": "identities",
+  "level": 2,
+  "instruction": "Développe avec la bonne identité. Les trois identités sont affichées.",
+  "items": [
+    {
+      "key": "maths-3e-numbers-identities-2-0",
+      "prompt": "(x + 3)² = …",
+      "spoken": "x plus 3, le tout au carré, égale (mot manquant).",
+      "choices": [
+        "x² + 9",
+        "x² + 3x + 9",
+        "x² + 6x + 9"
+      ],
+      "answer": "x² + 6x + 9",
+      "hint": "Le double produit : 2 × x × 3.",
+      "explanation": "(x + 3)² = x² + 2 × x × 3 + 3² = x² + 6x + 9. x² + 9 oublie le double produit. x² + 3x + 9 oublie de le doubler.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les trois identités remarquables",
+          "lines": [
+            "(a + b)² = a² + 2ab + b².",
+            "(a − b)² = a² − 2ab + b².",
+            "(a − b)(a + b) = a² − b².",
+            "(a + b)² = (a + b)(a + b) : la double distributivité donne le double produit 2ab."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-2-1",
+      "prompt": "(x − 5)² = …",
+      "spoken": "x moins 5, le tout au carré, égale (mot manquant).",
+      "choices": [
+        "x² − 25",
+        "x² − 10x + 25",
+        "x² − 10x − 25"
+      ],
+      "answer": "x² − 10x + 25",
+      "hint": "C’est la deuxième identité : le dernier terme, b², est toujours positif.",
+      "explanation": "(x − 5)² = x² − 2 × x × 5 + 5² = x² − 10x + 25. x² − 25 oublie le double produit : c’est (x − 5)(x + 5). x² − 10x − 25 se trompe sur 5² = +25.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les trois identités remarquables",
+          "lines": [
+            "(a + b)² = a² + 2ab + b².",
+            "(a − b)² = a² − 2ab + b².",
+            "(a − b)(a + b) = a² − b².",
+            "(a + b)² = (a + b)(a + b) : la double distributivité donne le double produit 2ab."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-2-2",
+      "prompt": "(3x)² = …",
+      "spoken": "3 x, le tout au carré, égale (mot manquant).",
+      "choices": [
+        "3x²",
+        "6x²",
+        "9x²"
+      ],
+      "answer": "9x²",
+      "hint": "(3x)² = 3x × 3x.",
+      "explanation": "3x × 3x = 3 × 3 × x × x = 9x². 3x² n’élève que x au carré. 6x² double 3 au lieu de l’élever au carré.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les trois identités remarquables",
+          "lines": [
+            "(a + b)² = a² + 2ab + b².",
+            "(a − b)² = a² − 2ab + b².",
+            "(a − b)(a + b) = a² − b².",
+            "(a + b)² = (a + b)(a + b) : la double distributivité donne le double produit 2ab."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-2-3",
+      "prompt": "(x − 7)(x + 7) = …",
+      "spoken": "Le produit de x moins 7 par x plus 7 égale (mot manquant).",
+      "choices": [
+        "x² − 49",
+        "x² + 49",
+        "x² − 14x + 49"
+      ],
+      "answer": "x² − 49",
+      "hint": "C’est la troisième identité : a² − b².",
+      "explanation": "(x − 7)(x + 7) = x² − 7² = x² − 49. x² + 49 se trompe de signe. x² − 14x + 49, c’est (x − 7)².",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les trois identités remarquables",
+          "lines": [
+            "(a + b)² = a² + 2ab + b².",
+            "(a − b)² = a² − 2ab + b².",
+            "(a − b)(a + b) = a² − b².",
+            "(a + b)² = (a + b)(a + b) : la double distributivité donne le double produit 2ab."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-2-4",
+      "prompt": "(2x + 1)² = …",
+      "spoken": "2 x plus 1, le tout au carré, égale (mot manquant).",
+      "choices": [
+        "2x² + 4x + 1",
+        "4x² + 2x + 1",
+        "4x² + 4x + 1"
+      ],
+      "answer": "4x² + 4x + 1",
+      "hint": "a = 2x : a² = 4x², et 2ab = 2 × 2x × 1.",
+      "explanation": "(2x)² + 2 × 2x × 1 + 1² = 4x² + 4x + 1. 2x² + 4x + 1 n’élève pas le 2 au carré. 4x² + 2x + 1 oublie de doubler le produit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les trois identités remarquables",
+          "lines": [
+            "(a + b)² = a² + 2ab + b².",
+            "(a − b)² = a² − 2ab + b².",
+            "(a − b)(a + b) = a² − b².",
+            "(a + b)² = (a + b)(a + b) : la double distributivité donne le double produit 2ab."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-2-5",
+      "prompt": "101² = (100 + 1)² = …",
+      "spoken": "101 au carré, c’est 100 plus 1, le tout au carré, égale (mot manquant).",
+      "choices": [
+        "10 001",
+        "10 101",
+        "10 201"
+      ],
+      "answer": "10 201",
+      "hint": "100² + 2 × 100 × 1 + 1².",
+      "explanation": "10 000 + 200 + 1 = 10 201. 10 001 oublie le double produit, 200. 10 101 ne le double pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les trois identités remarquables",
+          "lines": [
+            "(a + b)² = a² + 2ab + b².",
+            "(a − b)² = a² − 2ab + b².",
+            "(a − b)(a + b) = a² − b².",
+            "(a + b)² = (a + b)(a + b) : la double distributivité donne le double produit 2ab."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-2-6",
+      "prompt": "(x − 1)² = …",
+      "spoken": "x moins 1, le tout au carré, égale (mot manquant).",
+      "choices": [
+        "x² − 1",
+        "x² − 2x + 1",
+        "x² + 2x + 1"
+      ],
+      "answer": "x² − 2x + 1",
+      "hint": "C’est la deuxième identité, avec a = x et b = 1.",
+      "explanation": "(x − 1)² = x² − 2 × x × 1 + 1² = x² − 2x + 1. x² − 1 oublie le double produit. x² + 2x + 1, c’est (x + 1)².",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les trois identités remarquables",
+          "lines": [
+            "(a + b)² = a² + 2ab + b².",
+            "(a − b)² = a² − 2ab + b².",
+            "(a − b)(a + b) = a² − b².",
+            "(a + b)² = (a + b)(a + b) : la double distributivité donne le double produit 2ab."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-2-7",
+      "prompt": "99 × 101 = (100 − 1)(100 + 1) = …",
+      "spoken": "99 fois 101, c’est le produit de 100 moins 1 par 100 plus 1, égale (mot manquant).",
+      "choices": [
+        "9 999",
+        "10 000",
+        "10 001"
+      ],
+      "answer": "9 999",
+      "hint": "C’est la troisième identité : 100² − 1².",
+      "explanation": "(100 − 1)(100 + 1) = 100² − 1² = 10 000 − 1 = 9 999. 10 000 oublie le 1². 10 001 se trompe de signe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les trois identités remarquables",
+          "lines": [
+            "(a + b)² = a² + 2ab + b².",
+            "(a − b)² = a² − 2ab + b².",
+            "(a − b)(a + b) = a² − b².",
+            "(a + b)² = (a + b)(a + b) : la double distributivité donne le double produit 2ab."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

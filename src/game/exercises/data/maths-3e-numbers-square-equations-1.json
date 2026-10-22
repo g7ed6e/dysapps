@@ -1,0 +1,222 @@
+{
+  "id": "maths-3e-numbers-square-equations-1",
+  "biome": "maths-3e-numbers",
+  "type": "square-equations",
+  "level": 1,
+  "instruction": "Calcule ou encadre la racine carrée. Les carrés sont affichés.",
+  "items": [
+    {
+      "key": "maths-3e-numbers-square-equations-1-0",
+      "prompt": "√0,09 = …",
+      "spoken": "racine carrée de 0,09 égale (mot manquant).",
+      "choices": [
+        "0,03",
+        "0,045",
+        "0,3"
+      ],
+      "answer": "0,3",
+      "hint": "Quel nombre, multiplié par lui-même, donne 0,09 ?",
+      "explanation": "0,3 × 0,3 = 0,09, donc √0,09 = 0,3. 0,03 × 0,03 = 0,0009 : trop petit. 0,045 est la moitié de 0,09.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La racine carrée",
+          "lines": [
+            "√a est le nombre positif dont le carré vaut a : √49 = 7, car 7² = 49.",
+            "Les carrés : 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144.",
+            "Pour encadrer √n, cherche les deux carrés qui entourent n.",
+            "√(a + b) n’est pas √a + √b."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-1-1",
+      "prompt": "√50 est entre …",
+      "spoken": "racine carrée de 50 est entre (mot manquant).",
+      "choices": [
+        "6 et 7",
+        "7 et 8",
+        "25 et 26"
+      ],
+      "answer": "7 et 8",
+      "hint": "Quels carrés de la liste entourent 50 ?",
+      "explanation": "49 < 50 < 64, donc √49 < √50 < √64 : √50 est entre 7 et 8. 25 et 26, c’est la moitié de 50. 6 et 7 donne 36 et 49 : 50 est au-dessus.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La racine carrée",
+          "lines": [
+            "√a est le nombre positif dont le carré vaut a : √49 = 7, car 7² = 49.",
+            "Les carrés : 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144.",
+            "Pour encadrer √n, cherche les deux carrés qui entourent n.",
+            "√(a + b) n’est pas √a + √b."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-1-2",
+      "prompt": "√(9 + 16) = …",
+      "spoken": "racine carrée de la somme 9 plus 16 égale (mot manquant).",
+      "choices": [
+        "5",
+        "7",
+        "25"
+      ],
+      "answer": "5",
+      "hint": "Calcule d’abord 9 + 16.",
+      "explanation": "9 + 16 = 25, et √25 = 5. 7, c’est √9 + √16 = 3 + 4 : la racine d’une somme n’est pas la somme des racines. 25 oublie la racine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La racine carrée",
+          "lines": [
+            "√a est le nombre positif dont le carré vaut a : √49 = 7, car 7² = 49.",
+            "Les carrés : 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144.",
+            "Pour encadrer √n, cherche les deux carrés qui entourent n.",
+            "√(a + b) n’est pas √a + √b."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-1-3",
+      "prompt": "√20 est entre …",
+      "spoken": "racine carrée de 20 est entre (mot manquant).",
+      "choices": [
+        "4 et 5",
+        "10 et 11",
+        "16 et 25"
+      ],
+      "answer": "4 et 5",
+      "hint": "20 est entre deux carrés : lesquels ? Puis prends leurs racines.",
+      "explanation": "16 < 20 < 25, donc √20 est entre √16 = 4 et √25 = 5. 16 et 25 sont les carrés, pas leurs racines. 10 et 11 entourent la moitié de 20.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La racine carrée",
+          "lines": [
+            "√a est le nombre positif dont le carré vaut a : √49 = 7, car 7² = 49.",
+            "Les carrés : 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144.",
+            "Pour encadrer √n, cherche les deux carrés qui entourent n.",
+            "√(a + b) n’est pas √a + √b."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-1-4",
+      "prompt": "Un carré a une aire de 64 cm². Son côté mesure …",
+      "spoken": "Un carré a une aire de 64 centimètres carrés. Son côté mesure (mot manquant).",
+      "choices": [
+        "8 cm",
+        "16 cm",
+        "32 cm"
+      ],
+      "answer": "8 cm",
+      "hint": "Aire du carré = côté × côté.",
+      "explanation": "côté × côté = 64, et 8 × 8 = 64 : le côté mesure √64 = 8 cm. 16 cm, c’est 64 ÷ 4, comme pour un périmètre. 32 cm, c’est la moitié de 64.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La racine carrée",
+          "lines": [
+            "√a est le nombre positif dont le carré vaut a : √49 = 7, car 7² = 49.",
+            "Les carrés : 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144.",
+            "Pour encadrer √n, cherche les deux carrés qui entourent n.",
+            "√(a + b) n’est pas √a + √b."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-1-5",
+      "prompt": "(√7)² = …",
+      "spoken": "racine carrée de 7, le tout au carré, égale (mot manquant).",
+      "choices": [
+        "7",
+        "14",
+        "49"
+      ],
+      "answer": "7",
+      "hint": "Relis la première ligne : que vaut le carré de √a ?",
+      "explanation": "√7 est le nombre dont le carré vaut 7 : (√7)² = 7. 14, c’est 7 × 2. 49, c’est 7².",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La racine carrée",
+          "lines": [
+            "√a est le nombre positif dont le carré vaut a : √49 = 7, car 7² = 49.",
+            "Les carrés : 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144.",
+            "Pour encadrer √n, cherche les deux carrés qui entourent n.",
+            "√(a + b) n’est pas √a + √b."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-1-6",
+      "prompt": "√36 + √64 = …",
+      "spoken": "racine carrée de 36 plus racine carrée de 64 égale (mot manquant).",
+      "choices": [
+        "10",
+        "14",
+        "100"
+      ],
+      "answer": "14",
+      "hint": "Calcule chaque racine, puis ajoute.",
+      "explanation": "√36 = 6 et √64 = 8 : 6 + 8 = 14. 10, c’est √(36 + 64) = √100 : la somme des racines n’est pas la racine de la somme. 100 oublie les racines.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La racine carrée",
+          "lines": [
+            "√a est le nombre positif dont le carré vaut a : √49 = 7, car 7² = 49.",
+            "Les carrés : 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144.",
+            "Pour encadrer √n, cherche les deux carrés qui entourent n.",
+            "√(a + b) n’est pas √a + √b."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-1-7",
+      "prompt": "Un carré a une aire de 30 m². Son côté mesure entre …",
+      "spoken": "Un carré a une aire de 30 mètres carrés. Son côté mesure entre (mot manquant).",
+      "choices": [
+        "5 m et 6 m",
+        "7 m et 8 m",
+        "15 m et 16 m"
+      ],
+      "answer": "5 m et 6 m",
+      "hint": "Cherche les deux carrés de la liste qui entourent 30.",
+      "explanation": "25 < 30 < 36 : le côté, √30, est entre 5 m et 6 m. 15 m et 16 m entourent la moitié de 30. 7 m et 8 m donnent des aires de 49 m² et 64 m² : trop grandes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La racine carrée",
+          "lines": [
+            "√a est le nombre positif dont le carré vaut a : √49 = 7, car 7² = 49.",
+            "Les carrés : 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144.",
+            "Pour encadrer √n, cherche les deux carrés qui entourent n.",
+            "√(a + b) n’est pas √a + √b."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

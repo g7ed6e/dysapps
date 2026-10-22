@@ -1,0 +1,218 @@
+{
+  "id": "french-3e-language-verb-stems-1",
+  "biome": "french-3e-language",
+  "type": "verb-stems",
+  "level": 1,
+  "instruction": "Choisis la bonne écriture du verbe. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-3e-language-verb-stems-1-0",
+      "prompt": "Demain, je … jusqu’au parc.",
+      "spoken": "Demain, je  (mot manquant)  jusqu’au parc.",
+      "choices": [
+        "courai",
+        "courrai",
+        "courrais"
+      ],
+      "answer": "courrai",
+      "hint": "« Demain » annonce le futur. Courir prend deux r.",
+      "explanation": "« Demain » : futur, je courrai, avec deux r et -rai. « Courrais » est le conditionnel. « Courai » n’a qu’un r.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Futur ou conditionnel ?",
+          "lines": [
+            "Futur : -rai, -ras, -ra. Conditionnel : -rais, -rais, -rait. On les entend pareil avec « je ».",
+            "Pour choisir, mets « nous » : nous courrons (futur), nous courrions (conditionnel).",
+            "Courir, mourir, voir, envoyer : deux r. Je courrai, il mourra, je verrai, j’enverrai.",
+            "Les verbes en -er gardent leur e, même muet : j’oublierai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-1-1",
+      "prompt": "Si j’avais le temps, je … plus souvent.",
+      "spoken": "Si j’avais le temps, je  (mot manquant)  plus souvent.",
+      "choices": [
+        "courrai",
+        "courrais"
+      ],
+      "answer": "courrais",
+      "hint": "« Si » + imparfait : c’est le conditionnel. Essaie avec « nous ».",
+      "explanation": "Si nous avions le temps, nous courrions : c’est le conditionnel, je courrais, avec -rais. « Courrai » est le futur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Futur ou conditionnel ?",
+          "lines": [
+            "Futur : -rai, -ras, -ra. Conditionnel : -rais, -rais, -rait. On les entend pareil avec « je ».",
+            "Pour choisir, mets « nous » : nous courrons (futur), nous courrions (conditionnel).",
+            "Courir, mourir, voir, envoyer : deux r. Je courrai, il mourra, je verrai, j’enverrai.",
+            "Les verbes en -er gardent leur e, même muet : j’oublierai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-1-2",
+      "prompt": "L’an prochain, nous … la mer.",
+      "spoken": "L’an prochain, nous  (mot manquant)  la mer.",
+      "choices": [
+        "verrons",
+        "voirons",
+        "verons"
+      ],
+      "answer": "verrons",
+      "hint": "Au futur, « voir » change de radical et prend deux r.",
+      "explanation": "Au futur, « voir » devient « verr- » : nous verrons. « Voirons » garde le radical de l’infinitif. « Verons » n’a qu’un r.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Futur ou conditionnel ?",
+          "lines": [
+            "Futur : -rai, -ras, -ra. Conditionnel : -rais, -rais, -rait. On les entend pareil avec « je ».",
+            "Pour choisir, mets « nous » : nous courrons (futur), nous courrions (conditionnel).",
+            "Courir, mourir, voir, envoyer : deux r. Je courrai, il mourra, je verrai, j’enverrai.",
+            "Les verbes en -er gardent leur e, même muet : j’oublierai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-1-3",
+      "prompt": "Demain, je t’… une carte postale.",
+      "spoken": "Demain, je t’ (mot manquant)  une carte postale.",
+      "choices": [
+        "enverrai",
+        "envoierai",
+        "envoyerai"
+      ],
+      "answer": "enverrai",
+      "hint": "Au futur, « envoyer » change de radical, comme « voir ».",
+      "explanation": "Au futur, « envoyer » devient « enverr- » : j’enverrai. « Envoierai » et « envoyerai » gardent le radical du présent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Futur ou conditionnel ?",
+          "lines": [
+            "Futur : -rai, -ras, -ra. Conditionnel : -rais, -rais, -rait. On les entend pareil avec « je ».",
+            "Pour choisir, mets « nous » : nous courrons (futur), nous courrions (conditionnel).",
+            "Courir, mourir, voir, envoyer : deux r. Je courrai, il mourra, je verrai, j’enverrai.",
+            "Les verbes en -er gardent leur e, même muet : j’oublierai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-1-4",
+      "prompt": "Je n’… jamais ce voyage, je te le promets.",
+      "spoken": "Je n’ (mot manquant)  jamais ce voyage, je te le promets.",
+      "choices": [
+        "oublirai",
+        "oublierai"
+      ],
+      "answer": "oublierai",
+      "hint": "Relis la dernière ligne de la règle.",
+      "explanation": "« Oublier » finit par -er : il garde son e au futur, même muet, j’oublierai. « Oublirai » perd ce e.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Futur ou conditionnel ?",
+          "lines": [
+            "Futur : -rai, -ras, -ra. Conditionnel : -rais, -rais, -rait. On les entend pareil avec « je ».",
+            "Pour choisir, mets « nous » : nous courrons (futur), nous courrions (conditionnel).",
+            "Courir, mourir, voir, envoyer : deux r. Je courrai, il mourra, je verrai, j’enverrai.",
+            "Les verbes en -er gardent leur e, même muet : j’oublierai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-1-5",
+      "prompt": "S’il faisait beau, ils … dehors.",
+      "spoken": "S’il faisait beau, ils  (mot manquant)  dehors.",
+      "choices": [
+        "mangeraient",
+        "mangeront"
+      ],
+      "answer": "mangeraient",
+      "hint": "« Si » + imparfait : c’est le conditionnel.",
+      "explanation": "Après « si » + imparfait, le verbe est au conditionnel : ils mangeraient. « Mangeront » est le futur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Futur ou conditionnel ?",
+          "lines": [
+            "Futur : -rai, -ras, -ra. Conditionnel : -rais, -rais, -rait. On les entend pareil avec « je ».",
+            "Pour choisir, mets « nous » : nous courrons (futur), nous courrions (conditionnel).",
+            "Courir, mourir, voir, envoyer : deux r. Je courrai, il mourra, je verrai, j’enverrai.",
+            "Les verbes en -er gardent leur e, même muet : j’oublierai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-1-6",
+      "prompt": "Si tu ne l’arroses pas, la plante …",
+      "spoken": "Si tu ne l’arroses pas, la plante  (mot manquant) ",
+      "choices": [
+        "mourra",
+        "moura",
+        "mourrait"
+      ],
+      "answer": "mourra",
+      "hint": "« Si » + présent : c’est le futur. Mourir prend deux r.",
+      "explanation": "Après « si » + présent, le verbe est au futur : elle mourra, avec deux r. « Mourrait » est le conditionnel. « Moura » n’a qu’un r.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Futur ou conditionnel ?",
+          "lines": [
+            "Futur : -rai, -ras, -ra. Conditionnel : -rais, -rais, -rait. On les entend pareil avec « je ».",
+            "Pour choisir, mets « nous » : nous courrons (futur), nous courrions (conditionnel).",
+            "Courir, mourir, voir, envoyer : deux r. Je courrai, il mourra, je verrai, j’enverrai.",
+            "Les verbes en -er gardent leur e, même muet : j’oublierai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-1-7",
+      "prompt": "Si j’avais un vélo, j’… au collège seul.",
+      "spoken": "Si j’avais un vélo, j’ (mot manquant)  au collège seul.",
+      "choices": [
+        "irai",
+        "irais"
+      ],
+      "answer": "irais",
+      "hint": "« Si » + imparfait : c’est le conditionnel. Essaie avec « nous ».",
+      "explanation": "Si nous avions un vélo, nous irions : c’est le conditionnel, j’irais, avec -rais. « Irai » est le futur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Futur ou conditionnel ?",
+          "lines": [
+            "Futur : -rai, -ras, -ra. Conditionnel : -rais, -rais, -rait. On les entend pareil avec « je ».",
+            "Pour choisir, mets « nous » : nous courrons (futur), nous courrions (conditionnel).",
+            "Courir, mourir, voir, envoyer : deux r. Je courrai, il mourra, je verrai, j’enverrai.",
+            "Les verbes en -er gardent leur e, même muet : j’oublierai."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien écrit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
