@@ -82,6 +82,7 @@ import {
   type SceneReturn,
   type ScenetteFinale,
   type ScenetteLayout,
+  saysRestored,
 } from '../../world/continu/scenette';
 import { SEA_TEXTURE } from '../../world/continu/sea';
 import { skyDome, type HeightLight } from '../../world/continu/sky';
@@ -3622,8 +3623,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const all = placesState?.built[place] ?? [];
     const whole = (list: readonly PartShape[]) => [0, 1, 2].every((st) => stageComplete(list, st as 0 | 1 | 2));
     glowNext = place === 'montee' && whole(all) && !whole(all.filter((p) => !parts.includes(p)));
-    // De même, la pose qui achève un lieu qui s'anime à sa restauration (la Forge du 4e).
-    restoreNext = placeArt(place)?.restoration && whole(all) && !whole(all.filter((p) => !parts.includes(p))) ? place : null;
+    // De même, la pose qui achève un lieu qui s'anime à sa restauration (la Forge du 4e), ou qui dit sa réplique de fin
+    // (la Soute, le Gabarit : son état et sa réplique, sans animation, `saysRestored`).
+    restoreNext = saysRestored(place) && whole(all) && !whole(all.filter((p) => !parts.includes(p))) ? place : null;
     holding = { place, parts };
     placeVisibility();
     setGeometry(poseMesh, constructionFacets(place, parts, ground));

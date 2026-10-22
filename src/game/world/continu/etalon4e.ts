@@ -28,6 +28,7 @@ import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
 import { COLORS_5E } from './plan5e';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
+import { inWorld, lantern, localGround4e, quadOut } from './place4eKit';
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter (places.ts). */
 const SINK = -0.8;
@@ -84,7 +85,7 @@ const CENTER: Vec2 = PLACES_4E.find((p) => p.id === 'etalon')!.center;
 const H0 = standingHeight(heightAt4e(CENTER));
 
 /** Le sol du 4e sous un point du repère du lieu, depuis le sol de son centre. */
-const localGround = (lx: number, lz: number): number => standingHeight(heightAt4e({ x: CENTER.x + lx, z: CENTER.z + lz })) - H0;
+const localGround = localGround4e(CENTER);
 
 const toLocal = (p: Vec2): Vec2 => ({ x: p.x - CENTER.x, z: p.z - CENTER.z });
 
@@ -200,19 +201,6 @@ const MAP_POINT: Vec3 = { x: -0.7, y: HALL.floor + HALL.ridge + 1.5, z: HALL.rid
 
 // ---------- Les petits volumes ----------
 
-/** Un quadrilatère tourné vers `out` (sa normale du même côté), quel que soit l'ordre de ses coins. */
-function quadOut(b: FacetBuilder, a: P3, c: P3, d: P3, e: P3, out: P3, color: number): void {
-  const ux = c[0] - a[0],
-    uy = c[1] - a[1],
-    uz = c[2] - a[2];
-  const vx = d[0] - a[0],
-    vy = d[1] - a[1],
-    vz = d[2] - a[2];
-  const n = [uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx];
-  if (n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0) b.quad(a, c, d, e, color);
-  else b.quad(e, d, c, a, color);
-}
-
 /**
  * Un pan de mur droit, d'ouest en est (`alongX`) ou du nord au sud, de `from` à `to` sur son axe, centré sur `at` en
  * travers, épais de `thick`, de `y0` jusqu'à `top0` à son début et `top1` à sa fin (un haut cassé en biais) : son dessus,
@@ -244,12 +232,6 @@ function sheet(b: FacetBuilder, q: readonly P3[], t: number, top: number, under:
     const m = (k + 1) % 4;
     quadOut(b, q[k], q[m], up[m], up[k], [(q[k][0] + q[m][0]) / 2 - cx, 0, (q[k][2] + q[m][2]) / 2 - cz], under);
   }
-}
-
-/** Une lanterne pendue (sa vitre, un pavé ; son chapeau de bronze en pointe), d'ocre ou éteinte. */
-function lantern(b: FacetBuilder, top: Vec3, lit: boolean, s = 1): void {
-  b.box({ x: top.x, y: top.y - 0.34 * s, z: top.z }, [0.24 * s, 0.3 * s, 0.24 * s], lit ? C.lantern : C.lanternOff);
-  b.prism({ x: top.x, y: top.y - 0.04 * s, z: top.z, yaw: Math.PI / 4 }, 0.21 * s, 0, 0.16 * s, 4, C.bronze);
 }
 
 /** Une lanterne sur un bras, devant un pilier de la façade, à `y` au-dessus du sol de la halle. */
@@ -638,19 +620,6 @@ function yard(b: FacetBuilder): void {
 }
 
 // ---------- Les traces ----------
-
-/** Dessine dans le repère du lieu, puis pose le dessin au centre du lieu (`c`), dans le monde. */
-function inWorld(b: FacetBuilder, c: Vec3, draw: (l: FacetBuilder) => void): void {
-  const l = new FacetBuilder();
-  draw(l);
-  const f = l.build();
-  for (let i = 0; i < f.positions.length; i += 3) {
-    f.positions[i] += c.x;
-    f.positions[i + 1] += c.y;
-    f.positions[i + 2] += c.z;
-  }
-  b.append(f);
-}
 
 /** Où se pose chaque trace, depuis le centre du lieu (intention, § 5) ; aucune sur le chemin. */
 const TRACE_SPOTS = {

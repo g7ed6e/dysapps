@@ -10,6 +10,7 @@ import { startOf } from './paths';
 import { PLACES, placeById } from './plan6e';
 import { hasScenette } from './levelPlan';
 import { PLACES_5E } from './plan5e';
+import { BUILT_PLACES_4E } from './plan4e';
 import { COMMONS, OBSERVATORY, SHIPYARD, SHORES, SLIP_N, STEAM_GAP, commonsPillars, drumFace, hullEdge, modelOfPlace } from './places';
 import { ANSWER_LAYOUT, COMMONS_PAVING_RISE, ENGINE_PAVING_RISE, FOUNTAIN, JAUGE, LOCK, OBSERVATORY_BAY, OBSERVATORY_PAVING_RISE, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, facingAnswerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, swingTo, type ScreenBox } from './questionScene';
 import {
@@ -28,6 +29,7 @@ import {
   scenetteHidesPlace,
   scenetteKeo,
   scenetteLayout,
+  saysRestored,
   scenetteOf,
   EXIT_VIEW,
   exitView,
@@ -1493,5 +1495,15 @@ describe('le retour d\u2019une scénette lit la vue d\u2019arrivée du lieu (`do
     expect(traceViewOf('gaillard')).toEqual(v);
     expect(traceViewOf('nacelles')).toEqual(v);
     for (const id of ['quais', 'phare', 'montee', 'hameau', 'oracle']) expect(traceViewOf(id as never), id).toBe(TRACE_VIEW);
+  });
+});
+
+describe('La réplique de fin à la dernière pose (reste des Fabriques)', () => {
+  it('un lieu qui a une réplique de fin la dit, restauration ou non ; sans réplique ni restauration, rien de plus', () => {
+    for (const id of Object.keys(BUILT_PLACES_4E) as (keyof typeof BUILT_PLACES_4E)[]) if (scenetteOf(id).words?.end) expect(saysRestored(id), id).toBe(true);
+    expect(saysRestored('forge')).toBe(true);
+    expect(saysRestored('soute')).toBe(true);
+    expect(saysRestored('etalon')).toBe(false);
+    expect(saysRestored('lookout')).toBe(false);
   });
 });

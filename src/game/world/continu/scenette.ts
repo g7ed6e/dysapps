@@ -17,7 +17,7 @@ import { CAMERA_FOV, FOLLOW, screenOf, wrapAngle, type CameraPose, type DetourVi
 import { FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { doorFrameOf, placeArt } from './northShore';
-import { placeById, scenePlace, type PlaceId as AnyPlaceId, type ScenePlaceId as PlaceId } from './levelPlan';
+import { hasScenette, placeById, scenePlace, type PlaceId as AnyPlaceId, type ScenePlaceId as PlaceId } from './levelPlan';
 import { heightFor } from './placeGround';
 import { COLORS_6E, DECK_HEIGHT } from './plan6e';
 import {
@@ -207,6 +207,14 @@ const SCENETTES: Record<PlaceId, Scenette> = {
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
 export const scenetteOf = (place: AnyPlaceId): Scenette => SCENETTES[scenePlace(place)];
+
+/**
+ * Le lieu dit-il son état (« La Soute est restaurée. ») à la pose qui l'achève, puis la réplique de fin de son habitant ?
+ * Un lieu qui s'anime à sa restauration (la Forge), et tout lieu qui a une réplique de fin (`words.end`) : les lieux sans
+ * restauration la disent dans la même bulle qu'à la Forge, sans animation (reste des Fabriques ; intention du Bastion du
+ * 22 octobre 2026, point 3). Une réplique de fin n'est jamais inerte.
+ */
+export const saysRestored = (place: AnyPlaceId): boolean => !!placeArt(place)?.restoration || (hasScenette(place) && !!scenetteOf(place).words?.end);
 
 // ---------- La place de la scénette à l'écran ----------
 
