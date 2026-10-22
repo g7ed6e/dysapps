@@ -70,9 +70,10 @@ describe('Le plan du 3e', () => {
     expect(DEPARTURE_3E.at.z).toBeGreaterThan(0);
     expect(parvisFloor(DEPARTURE_3E.at.x, DEPARTURE_3E.at.z)).not.toBeNull();
     // Sans pilotis : la pierre de la place est sur la terre, à moins d'une unité au-dessus du sol.
-    for (const [lx, lz] of [[0, 10], [20, 20], [40, 28]] as const) {
+    for (const [lx, lz] of [[0, 15], [20, 20], [38, 24], [18, 30]] as const) {
       const p = PARVIS.toWorld(lx, lz);
       expect(landDistance3e(p), `${lx}, ${lz}`).toBeGreaterThan(0);
+      expect(parvisFloor(p.x, p.z), `${lx}, ${lz}`).not.toBeNull();
       expect(parvisFloor(p.x, p.z)! - heightAt3e(p), `${lx}, ${lz}`).toBeLessThan(1);
     }
     // Le cap de la caméra (−sin, −cos) va vers le nord-est.

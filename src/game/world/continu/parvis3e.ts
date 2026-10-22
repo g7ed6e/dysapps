@@ -7,10 +7,11 @@
 // temps, comme au 4e (world/nefModels.ts, `NEF_SISTERS[3]`) ; au lot 1, son départ monte droit vers le ciel, sans
 // obstacle (le 3e est le dernier niveau : ce départ ne mène nulle part). Code pur.
 import type { DetourView } from './camera';
-import { drawPosed, FacetBuilder, type Facets } from './facets';
+import { drawPosed, FacetBuilder, placeFacets, type Facets } from './facets';
 import { distance, type Vec2 } from './geometry';
 import type { NefFlight, NefSite } from './nef';
-import { COLORS_3E, PARVIS, PARVIS_LEVEL, PARVIS_PAD, PARVIS_PAVING, PARVIS_QUAY_SPOT, PEAK_3E, ZEPPELIN_3E } from './plan3e';
+import { quadOut, triOut } from './place4eKit';
+import { COLORS_3E, PARVIS, PARVIS_CORNERS, PARVIS_LEVEL, PARVIS_PAD, PARVIS_PAVING, PARVIS_QUAY_SPOT, PARVIS_ROUND, PEAK_3E, ZEPPELIN_3E } from './plan3e';
 import type { PortSite } from './port';
 import { peakFacets } from './terrain3e';
 
@@ -41,6 +42,51 @@ const PARVIS_COLORS = {
   skin: 0xd9b38c,
 } as const;
 
+/**
+ * Le muret du Parvis et sa bordure (lot du Versant) : le muret plein, de granit, à hauteur de poitrine de Kéo au-dessus
+ * de la place (`height`), épais de `thick`, son chaperon d'ardoise (`coping`, qui déborde de `over`) ; la bordure d'ardoise
+ * basse du côté de la montagne (`border` : sa largeur, sa hauteur au-dessus de la place) ; le pied de la pierre, sous le
+ * sol.
+ */
+const PARVIS_WALL = { height: 1.15, thick: 0.6, coping: 0.16, over: 0.1, border: { width: 0.55, rise: 0.05 }, foot: -0.8 } as const;
+
+/** Un pan de la place ronde porte-t-il le muret (côté des rives) ? Sinon, la bordure d'ardoise. */
+const parvisWalled = (k: number): boolean => k >= PARVIS_ROUND.wall.from && k < PARVIS_ROUND.wall.to;
+
+/**
+ * La place ronde du Parvis, dans son repère : la pierre claire à plat, ses flancs de granit jusque sous le sol, puis, pan
+ * par pan, le muret plein côté rives ou la bordure d'ardoise basse côté montagne (./plan3e.ts, `PARVIS_ROUND`). Le muret
+ * ne s'ouvre nulle part ; chaque pan déborde un peu sur le suivant, sans jour aux angles.
+ */
+function parvisGround(b: FacetBuilder): void {
+  const y = PARVIS_LEVEL;
+  const W = PARVIS_WALL;
+  const n = PARVIS_CORNERS.length;
+  const c = PARVIS_ROUND.center;
+  for (let k = 0; k < n; k++) {
+    const a = PARVIS_CORNERS[k],
+      e = PARVIS_CORNERS[(k + 1) % n];
+    triOut(b, [c.x, y, c.z], [a.x, y, a.z], [e.x, y, e.z], [0, 1, 0], PARVIS_COLORS.stone);
+    const out: [number, number, number] = [(a.x + e.x) / 2 - c.x, 0, (a.z + e.z) / 2 - c.z];
+    quadOut(b, [a.x, W.foot, a.z], [e.x, W.foot, e.z], [e.x, y, e.z], [a.x, y, a.z], out, PARVIS_COLORS.stoneSide);
+    // Le long du pan, la normale vers le dehors, le cap du pavé.
+    const len = Math.hypot(e.x - a.x, e.z - a.z);
+    const ox = out[0] / Math.hypot(out[0], out[2]),
+      oz = out[2] / Math.hypot(out[0], out[2]);
+    const yaw = Math.atan2(-(e.z - a.z), e.x - a.x);
+    const mx = (a.x + e.x) / 2,
+      mz = (a.z + e.z) / 2;
+    if (parvisWalled(k)) {
+      const w = { x: mx - (ox * W.thick) / 2, z: mz - (oz * W.thick) / 2 };
+      b.box({ x: w.x, y: W.foot, z: w.z, yaw }, [len + W.thick * 0.6, y + W.height - W.foot, W.thick], COLORS_3E.graniteShade, COLORS_3E.granite);
+      b.box({ x: w.x, y: y + W.height, z: w.z, yaw }, [len + W.thick * 0.6 + 2 * W.over, W.coping, W.thick + 2 * W.over], COLORS_3E.slate, COLORS_3E.slateTop);
+    } else {
+      const w = { x: mx + (ox * W.border.width) / 2 - ox * 0.1, z: mz + (oz * W.border.width) / 2 - oz * 0.1 };
+      b.box({ x: w.x, y: W.foot, z: w.z, yaw }, [len + 0.3, y + W.border.rise - W.foot, W.border.width], COLORS_3E.slate, COLORS_3E.slateTop);
+    }
+  }
+}
+
 /** Le Parvis : son repère, son pavage, sa pierre posée au sol, le bout où l'on arrive (la lanterne, la ligne des habitants ; ni barque ni bitte). */
 export const PARVIS_SITE: PortSite = {
   frame: PARVIS,
@@ -55,13 +101,16 @@ export const PARVIS_SITE: PortSite = {
     habitants: { z: 14.5, xs: [6, 34, 40] },
     boats: [],
   },
+  ground: parvisGround,
 };
 
 /**
  * La caméra à l'arrivée au Parvis (fiche, § 5 : « vue du Parvis, le Belvédère et le pic ») : le cap (0 : le nord), vers
- * le nord-est, le soleil dans le dos. Le changer ici.
+ * le nord-est (53°), le soleil dans le dos. Le pic à gauche, le Belvédère à droite du milieu, et dans le quart droit,
+ * l'anse de nuages à l'est du Parvis (lot du Versant ; directeur artistique, point 8 : un quart de l'image au moins). Le
+ * changer ici.
  */
-export const PARVIS_VIEW = { yaw: -0.9 } as const;
+export const PARVIS_VIEW = { yaw: (-53 * Math.PI) / 180 } as const;
 
 /**
  * La vue d'arrivée au Parvis (retouche 1 du lot 1, directeur artistique et consultant d'Archipéo : à hauteur de Kéo,
@@ -191,3 +240,66 @@ export const NEF_3E: NefSite = {
   pointBeyond: NEF_3E_DEPARTURE.pointBeyond,
   flight: nef3eFlight,
 };
+
+// ---------- Les trois parures de l'aéronef ----------
+
+/**
+ * Les trois parures de l'aéronef au repos (fiche du 3e, § 5 ; proposition du Versant, § 2 ; directeur artistique,
+ * corrections 7 à 9), dans le repère de la Nef (la proue vers −z, le pont vers y = 0 ; le modèle `3-aeronef` à l'échelle
+ * du monde : son bastingage à 0,87 au-dessus de son origine, sa coque large de 1,45 de chaque côté de 2,5 à 5,5 unités
+ * de la proue) : la figure de proue, une tête de baleine de bronze, lisse, sans yeux peints ; le pavois, une rangée de
+ * plaques carrées d'émail cobalt, rigides et unies, debout le long du bastingage, de chaque côté ; les deux feux de
+ * position, deux lanternes d'ocre identiques, fixes, une de chaque côté, près de la proue (jamais une rouge et une
+ * verte). Elles se posent dans l'ordre, la troisième en dernier ; leurs plans et leur fiche se règlent dans GD-25.
+ */
+export const NEF_PARURES = ['proue', 'pavois', 'feux'] as const;
+export type NefParure = (typeof NEF_PARURES)[number];
+
+/** Les mesures des parures, dans le repère de la Nef. */
+const PARURES_LOOK = {
+  /** La tête de baleine : le bout de la proue, sa hauteur, sa longueur, son rayon. */
+  head: { z: -2.35, y: 0.62, length: 0.95, radius: 0.36 },
+  /** Le pavois : le bord du bastingage, le bas et le haut des plaques, de quelle part de la proue à quelle part de la poupe, combien de plaques. */
+  pavois: { x: 1.47, y0: 0.5, y1: 1.02, z0: -1.05, z1: 1.45, plates: 5, gap: 0.05, thick: 0.05 },
+  /** Les feux : leur écart à l'axe, leur hauteur, leur place le long de la coque. */
+  feux: { x: 1.3, y: 1.0, z: -1.2 },
+} as const;
+
+/** L'ocre des lanternes, seule lumière (`#E0A84A`), et le fer de leur potence. */
+const PARURE_COLORS = { bronze: COLORS_3E.bronze, bronzeSun: 0xb98c4c, cobalt: COLORS_3E.cobalt, cobaltEdge: 0x264f92, lantern: 0xe0a84a, iron: 0x6b7690 } as const;
+
+/** Les parures posées, dans le repère de la Nef. */
+function nefParuresLocal(posed: readonly NefParure[]): Facets {
+  const b = new FacetBuilder();
+  const L = PARURES_LOOK;
+  if (posed.includes('proue')) {
+    // La tête : un fuseau à huit pans couché le long de l'axe, arrondi aux deux bouts (le museau devant), lisse.
+    const H = L.head;
+    drawPosed(b, { x: 0, y: H.y, z: H.z, yaw: Math.PI, pitch: Math.PI / 2 }, (l) => {
+      l.prism({ x: 0, y: 0, z: 0 }, H.radius * 0.8, H.radius, H.length * 0.45, 8, PARURE_COLORS.bronze, PARURE_COLORS.bronzeSun);
+      l.prism({ x: 0, y: H.length * 0.45, z: 0 }, H.radius, H.radius * 0.55, H.length * 0.4, 8, PARURE_COLORS.bronze, PARURE_COLORS.bronzeSun);
+      l.prism({ x: 0, y: H.length * 0.85, z: 0 }, H.radius * 0.55, 0, H.length * 0.15, 8, PARURE_COLORS.bronzeSun);
+    });
+  }
+  if (posed.includes('pavois')) {
+    const P = L.pavois;
+    const w = (P.z1 - P.z0 - (P.plates - 1) * P.gap) / P.plates;
+    for (const s of [-1, 1])
+      for (let i = 0; i < P.plates; i++) {
+        const z = P.z0 + i * (w + P.gap) + w / 2;
+        b.box({ x: s * (P.x + P.thick / 2), y: P.y0, z }, [P.thick, P.y1 - P.y0, w], PARURE_COLORS.cobalt, PARURE_COLORS.cobaltEdge);
+      }
+  }
+  if (posed.includes('feux')) {
+    const F = L.feux;
+    for (const s of [-1, 1]) {
+      b.beam({ x: s * (F.x - 0.18), y: F.y - 0.1, z: F.z }, { x: s * F.x, y: F.y - 0.1, z: F.z }, 0.06, PARURE_COLORS.iron);
+      b.box({ x: s * F.x, y: F.y - 0.12, z: F.z }, [0.2, 0.24, 0.2], PARURE_COLORS.lantern);
+      b.prism({ x: s * F.x, y: F.y + 0.12, z: F.z, yaw: Math.PI / 4 }, 0.17, 0, 0.13, 4, PARURE_COLORS.bronze);
+    }
+  }
+  return b.build();
+}
+
+/** Les parures posées de l'aéronef, sur son aire, dans le monde (au poste et à la hauteur de la Nef). */
+export const nefParuresFacets = (posed: readonly NefParure[]): Facets => placeFacets(nefParuresLocal(posed), { x: BERTH.x, y: LIFT.ber, z: BERTH.z, yaw: BERTH.yaw });

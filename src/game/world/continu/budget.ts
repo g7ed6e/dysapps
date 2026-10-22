@@ -48,7 +48,7 @@ import { CRIQUE_SITE, NEF_4E_MODEL_TRIANGLES, criqueDecorFacets } from './crique
 import { NETWORK_4E, pathRibbons4e } from './paths4e';
 import { TERRAIN_4E } from './plan4e';
 import { buildHeightField4e, groundOn4e, mapOverlay4e, tileCounts4e } from './terrain4e';
-import { PARVIS_SITE, parvisDecorFacets, zeppelinFacets } from './parvis3e';
+import { NEF_PARURES, PARVIS_SITE, nefParuresFacets, parvisDecorFacets, zeppelinFacets } from './parvis3e';
 import { NETWORK_3E, pathRibbons3e } from './paths3e';
 import { TERRAIN_3E } from './plan3e';
 import { buildHeightField3e, ground3e, mapOverlay3e, tileCounts3e } from './terrain3e';
@@ -811,11 +811,12 @@ function groundCost3e(): { triangles: number; calls: number; near: number; far: 
 }
 
 /**
- * Le Parvis au plus chargé (comme l'Escale, `PORT_WORST`) et son décor (le pic ; dans le monde, pas sur la Carte, le
- * zeppelin des Ferrailleurs sur son rocher), dans le maillage des lieux : aucun appel de plus.
+ * Le Parvis au plus chargé (comme l'Escale, `PORT_WORST` ; sa place ronde et son muret, lot du Versant) et son décor (le
+ * pic ; dans le monde, pas sur la Carte, le zeppelin des Ferrailleurs sur son rocher), les trois parures de l'aéronef
+ * posées (le pire, avant que leur fiche ne les montre : GD-25), dans le maillage des lieux : aucun appel de plus.
  */
 function parvisCost(onMap: boolean): number {
-  return portFacets(PORT_WORST, { assembling: false }, PARVIS_SITE).triangles + parvisDecorFacets().triangles + (onMap ? 0 : zeppelinFacets().triangles);
+  return portFacets(PORT_WORST, { assembling: false }, PARVIS_SITE).triangles + parvisDecorFacets().triangles + nefParuresFacets(NEF_PARURES).triangles + (onMap ? 0 : zeppelinFacets().triangles);
 }
 
 /**

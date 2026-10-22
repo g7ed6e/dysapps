@@ -79,7 +79,11 @@ export const COLORS_3E = {
 export const MOUNTAIN_3E = poly([
   [130, 430], [180, 260], [300, 130], [470, 60], [720, 30], [1000, 30], [1220, 80], [1360, 160], [1450, 260], [1430, 420],
   [1380, 560], [1350, 650], [1385, 700], [1400, 760], [1385, 820], [1320, 855], [1240, 905], [1170, 1020], [1030, 1100],
-  [860, 1130], [720, 1110], [660, 1135], [520, 1115], [440, 1045], [440, 955], [400, 885], [300, 810], [190, 710], [120, 570],
+  // L'anse de nuages à l'est du Parvis (lot du Versant, directeur artistique, point 8, et consultant, point 2 : « rapprocher
+  // le bord est du Parvis de sa rive sud-est ») : le Parvis devient un promontoire, et la mer de nuages entre dans le
+  // quart droit de l'arrivée.
+  [900, 1100], [830, 1030], [770, 995], [715, 990], [688, 1010], [668, 1062], [650, 1135], [520, 1115], [440, 1045], [440, 955],
+  [400, 885], [300, 810], [190, 710], [120, 570],
 ]);
 
 /** Les écarts du bord d'une table de roche, autour de son ellipse (plan, `blob`) : aucune pointe étroite. */
@@ -310,17 +314,41 @@ export const PARVIS = frameOf(fromPlan3e([487, 961]), 0);
 /** Où Kéo se tient à l'arrivée, dans le repère du Parvis : à l'est de l'aire de la Nef. */
 export const PARVIS_QUAY_SPOT: readonly [number, number] = [27, 20];
 
-/** Le pavage du Parvis, dans son repère : la grande place (tout le promontoire), et le bout où l'on arrive, à côté de l'aire. */
+/**
+ * La place ronde du Parvis (lot du Versant ; directeur artistique, lot 1, point 8, et relecture des lieux, point 21) : une
+ * table de pierre claire presque ronde, à `sides` pans, dans son repère (son milieu, ses demi-axes). Un muret plein la
+ * borde du côté des rives (`wall` : les pans, comptés depuis l'est dans le sens des aiguilles d'une montre vu d'en haut,
+ * du sud-est au nord-ouest, jusqu'aux bâtiments), à hauteur de poitrine de Kéo, son chaperon d'ardoise ; il ne s'ouvre
+ * nulle part. Côté montagne (au nord-est et à l'est) et face à l'anse (au sud-est, où l'herbe et une grève séparent la place
+ * des nuages : la caméra d'arrivée y voit la bande de nuages sans regarder par-dessus le muret, point 21), la place rejoint
+ * l'herbe par une bordure d'ardoise basse, sans marche.
+ */
+export const PARVIS_ROUND = { center: { x: 18, z: 18.5 }, rx: 26, rz: 13.5, sides: 12, wall: { from: 2, to: 8 } } as const;
+
+/** Les coins de la place ronde, dans son repère, depuis l'est, dans le sens des aiguilles d'une montre vu d'en haut. */
+export const PARVIS_CORNERS: readonly Vec2[] = Array.from({ length: PARVIS_ROUND.sides }, (_, k) => {
+  const a = (2 * Math.PI * k) / PARVIS_ROUND.sides;
+  return { x: PARVIS_ROUND.center.x + PARVIS_ROUND.rx * Math.cos(a), z: PARVIS_ROUND.center.z + PARVIS_ROUND.rz * Math.sin(a) };
+});
+
+/**
+ * Le pavage du Parvis, dans son repère : le bout où l'on arrive, à côté de l'aire, et la boîte de la place ronde
+ * (`PARVIS_ROUND`, que lisent la flore et le toucher du lieu de départ).
+ */
 export const PARVIS_PAVING = {
   quay: { x0: 24, x1: 30, z0: 18, z1: 22 },
-  square: { x0: -8, x1: 44, z0: 6.5, z1: 30 },
+  square: { x0: PARVIS_ROUND.center.x - PARVIS_ROUND.rx, x1: PARVIS_ROUND.center.x + PARVIS_ROUND.rx, z0: PARVIS_ROUND.center.z - PARVIS_ROUND.rz, z1: PARVIS_ROUND.center.z + PARVIS_ROUND.rz },
 } as const;
 
 /** Les bâtiments du Parvis dans son repère : la marche libre les contourne. */
 export const PARVIS_BUILDINGS = { x0: 3.6, x1: 38.4, z0: 1.1, z1: 6.4 } as const;
 
-/** L'aire de la Nef, dans le repère du Parvis : son centre, son rayon, la hauteur de sa pierre (posée sur la place). */
-export const PARVIS_PAD = { center: { x: 15, z: 21 }, radius: 4.5, deck: PARVIS_LEVEL + 0.08 } as const;
+/**
+ * L'aire de la Nef, dans le repère du Parvis : son centre, son rayon, la hauteur de sa pierre (posée sur la place) ; à
+ * près de huit unités du muret (proposition du Versant, § 2) et des façades ; à l'ouest du milieu de la place, pour que la
+ * caméra d'arrivée, au téléphone en paysage, ne coupe pas l'aéronef (relecture des lieux, point 21).
+ */
+export const PARVIS_PAD = { center: { x: 10, z: 18.8 }, radius: 4.5, deck: PARVIS_LEVEL + 0.08 } as const;
 
 const PARVIS_COS = Math.cos(PARVIS.yaw);
 const PARVIS_SIN = Math.sin(PARVIS.yaw);
@@ -334,9 +362,21 @@ export function parvisFloor(x: number, z: number): number | null {
     dz = z - PARVIS.origin.z;
   const lx = dx * PARVIS_COS - dz * PARVIS_SIN;
   const lz = dx * PARVIS_SIN + dz * PARVIS_COS;
-  const { quay: q, square: s } = PARVIS_PAVING;
-  const inside = (lx >= q.x0 && lx <= q.x1 && lz >= q.z0 && lz <= q.z1) || (lx >= s.x0 && lx <= s.x1 && lz >= s.z0 && lz <= s.z1);
+  const { quay: q } = PARVIS_PAVING;
+  const inside = (lx >= q.x0 && lx <= q.x1 && lz >= q.z0 && lz <= q.z1) || insideParvisRound(lx, lz);
   return inside ? PARVIS_LEVEL : null;
+}
+
+/** Un point du repère du Parvis est-il sur la place ronde (le polygone convexe de ses coins) ? Sans rien allouer. */
+function insideParvisRound(lx: number, lz: number): boolean {
+  const n = PARVIS_CORNERS.length;
+  for (let k = 0; k < n; k++) {
+    const a = PARVIS_CORNERS[k],
+      c = PARVIS_CORNERS[(k + 1) % n];
+    // Les coins tournent dans le sens des aiguilles d'une montre vu d'en haut (x à l'est, z au sud) : le dedans est à droite.
+    if ((c.x - a.x) * (lz - a.z) - (c.z - a.z) * (lx - a.x) < 0) return false;
+  }
+  return true;
 }
 
 /** Le lieu de départ du 3e : à côté de l'aire du Parvis (le nœud a le nom du quai de l'Escale, que la page connaît). */
@@ -371,7 +411,8 @@ export const PATH_NODES_3E: readonly PathNode[] = [
   { id: DEPARTURE_3E.node, at: DEPARTURE_3E.at },
   ...PARVIS_NODES.map(({ id, at }) => ({ id, at: PARVIS.toWorld(at[0], at[1]) })),
   // Le Versant.
-  node('ve-1', [760, 945]),
+  // Un peu au nord de l'anse de nuages (lot du Versant).
+  node('ve-1', [760, 925]),
   node('ve-2', [900, 905]),
   node('ve-3', [1075, 870]),
   node('ve-4', [1225, 860]),

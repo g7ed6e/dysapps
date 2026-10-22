@@ -101,6 +101,11 @@ export interface PortSite {
     boats: readonly (readonly [number, number])[];
     boatYaw?: number;
   };
+  /**
+   * La pierre du site, quand elle n'est pas les deux rectangles du pavage (au 3e, la place ronde du Parvis, son muret et
+   * sa bordure d'ardoise : ./parvis3e.ts), dans son repère ; rien : le quai et la place en rectangles.
+   */
+  ground?(b: FacetBuilder): void;
 }
 
 const C: PortColors = {
@@ -227,8 +232,11 @@ function paving(b: FacetBuilder, s: PortSite, r: Rect, bottom: number): void {
 function quayAndSquare(b: FacetBuilder, s: PortSite): void {
   const { quay, square } = s.paving;
   const C = s.colors;
-  paving(b, s, quay, DEEP);
-  paving(b, s, square, SINK);
+  if (s.ground) s.ground(b);
+  else {
+    paving(b, s, quay, DEEP);
+    paving(b, s, square, SINK);
+  }
   const top = s.level(quay.z0);
   if (s.quay.coping) b.box({ x: (quay.x0 + quay.x1) / 2, y: top, z: quay.z0 + 0.15 }, [quay.x1 - quay.x0, 0.12, 0.3], C.coping);
   for (const [x, z] of s.quay.bollards) b.prism({ x, y: s.level(z), z }, 0.2, 0.17, 0.45, 6, C.bollard);
