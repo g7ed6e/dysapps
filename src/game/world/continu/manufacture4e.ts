@@ -131,14 +131,15 @@ const MACHINE = { x: 7.6, z: MID_Z, h: 4.3, beam: 2.1, wheel: { z: -1.7, axle: 1
  * d'ouest en est) ; leur largeur, profondeur et hauteur. Le rang nord est contre le mur nord, et s'écarte du milieu de la
  * halle : la caméra de la scénette regarde vers l'ouest le long de la halle, au nord des colonnes, et les bobines des
  * réponses se posent dans cette allée, entre x = −5 et −1 ; un métier au milieu de l'allée cachait les bobines et barrait
- * le premier plan (captures du 22 octobre 2026).
+ * le premier plan, et le métier nord de la travée ouest masquait le tisserand (captures du 22 octobre 2026) : le rang nord
+ * est tout entier à l'est des bobines, derrière la caméra ou au bord du cadre.
  */
 const LOOMS: readonly Vec2[] = [
-  { x: -5.6, z: -8.0 },
-  { x: -3.6, z: -2.3 },
   { x: 1.4, z: -8.0 },
+  { x: -3.6, z: -2.3 },
+  { x: 3.7, z: -8.0 },
   { x: 0, z: -2.3 },
-  { x: 4.6, z: -8.0 },
+  { x: 6.0, z: -8.0 },
   { x: 3.6, z: -2.3 },
 ];
 const LOOM = { w: 1.3, d: 1.1, h: 1.35 } as const;
@@ -475,7 +476,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
       const lx = COLUMNS[FALLEN_COLUMN] - COLUMN.top + 1.6;
       b.beam({ x: lx, y: planeY(lx, lz) + 0.13, z: lz }, { x: lx + COLUMN.top - 0.6, y: planeY(lx + COLUMN.top - 0.6, lz) + 0.13, z: lz - 0.15 }, 0.24, C.rust);
       machine(b, C.rustShade, C.rust);
-      walkingBeam(b, { x: MACHINE.x, y: planeY(MACHINE.x, MACHINE.z - 2.6) + 0.02, z: MACHINE.z - 2.6, yaw: 0.12, pitch: -Math.PI / 2 }, C.rustShade, C.rust);
+      walkingBeam(b, { x: MACHINE.x, y: planeY(MACHINE.x, MACHINE.z - 2.0) + 0.02, z: MACHINE.z - 2.0, yaw: 0.12, pitch: -Math.PI / 2 }, C.rustShade, C.rust);
       LOOMS.forEach((p, k) => {
         const y = planeY(p.x, p.z);
         loom(b, { x: p.x, y, z: p.z }, Math.PI / 2 + [0.25, -0.3, 0.35, 0, -0.2, 0.3][k], C.loom, C.loomShade, k === 4, k === 3);
