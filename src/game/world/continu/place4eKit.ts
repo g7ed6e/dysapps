@@ -316,8 +316,7 @@ export function brickCourses(b: FacetBuilder, alongX: boolean, at: number, from:
   const hi = Math.max(top0, top1);
   if (ruin && hi <= RUIN_COURSES_FROM) return;
   const margin = ruin ? 0.35 : 0.2;
-  for (let k = 1; k * BRICK_COURSE_STEP <= hi - margin + 1e-9; k++) {
-    const y = k * BRICK_COURSE_STEP;
+  for (const y of brickCourseHeights(hi, margin)) {
     if (y <= low) continue;
     // Le long du pan, là où son haut reste à `margin` au-dessus du joint.
     const t = (s: number) => from + (to - from) * s;
@@ -325,6 +324,25 @@ export function brickCourses(b: FacetBuilder, alongX: boolean, at: number, from:
     const [s0, s1] = top0 >= top1 ? [0, Math.min(1, reach)] : [Math.max(0, reach), 1];
     if (s1 - s0 > 1e-6) courses(b, alongX, at, t(s0), t(s1), [base + y], out, BRICK_JOINT);
   }
+}
+
+/**
+ * Les hauteurs des assises d'un pan de brique du 4e haut de `top` au-dessus de son pied : une tous les 0,9, jamais à moins
+ * de `margin` de son haut (celles de `brickCourses`).
+ */
+export function brickCourseHeights(top: number, margin = 0.2): number[] {
+  const ys: number[] = [];
+  for (let k = 1; k * BRICK_COURSE_STEP <= top - margin + 1e-9; k++) ys.push(k * BRICK_COURSE_STEP);
+  return ys;
+}
+
+/**
+ * Une assise de brique du 4e (le joint de `brickCourses`), à la hauteur `y`, sur la face à `at` en travers, tournée vers
+ * `out`, de `from` à `to` le long du mur (`alongX` : d'ouest en est, sinon du nord au sud) : la Crique en pose entre les
+ * ouvertures de sa façade (./crique4e.ts).
+ */
+export function brickCourse(b: FacetBuilder, alongX: boolean, at: number, from: number, to: number, y: number, out: -1 | 1): void {
+  courses(b, alongX, at, from, to, [y], out, BRICK_JOINT);
 }
 
 /**

@@ -75,9 +75,27 @@ interface PortColors {
   inside: number;
   socle: number;
   bollard: number;
+  /** Le dessus des bittes, au soleil (sinon `bollard`). */
+  bollardTop?: number;
   lamp: number;
   habitant: readonly number[];
   skin: number;
+}
+
+/**
+ * La brique d'un site (au 4e, la Crique ; intention du directeur artistique du 22 octobre 2026, § 1) : les assises de
+ * ses grands pans debout (la façade et les flancs de l'école, le mur du fond de la galerie), entre leurs ouvertures, les
+ * chaînes d'angle de pierre (trois blocs alternés, en léger relief, sous l'égout de l'école et aux deux bouts de la
+ * galerie) et la pierre des arcades de la galerie. Le pas et le joint viennent du site (au 4e, ceux de toute sa brique,
+ * ./place4eKit.ts) : ce fichier ne les connaît pas. Un site sans brique (l'Escale, la Lisière) n'en a rien.
+ */
+interface PortMasonry {
+  /** Les hauteurs des assises d'un pan haut de `top`, au-dessus de son pied. */
+  courseHeights(top: number): readonly number[];
+  /** Une assise à la hauteur `y`, sur la face à `at` en travers (tournée vers `out`), de `from` à `to` le long du mur. */
+  course(b: FacetBuilder, alongX: boolean, at: number, from: number, to: number, y: number, out: -1 | 1): void;
+  /** La pierre des chaînes d'angle et des arcades de la galerie. */
+  stone: number;
 }
 
 /**
@@ -101,6 +119,8 @@ export interface PortSite {
     boats: readonly (readonly [number, number])[];
     boatYaw?: number;
   };
+  /** Ses murs de brique, s'il en a (au 4e, la Crique). */
+  masonry?: PortMasonry;
 }
 
 const C: PortColors = {
@@ -231,7 +251,7 @@ function quayAndSquare(b: FacetBuilder, s: PortSite): void {
   paving(b, s, square, SINK);
   const top = s.level(quay.z0);
   if (s.quay.coping) b.box({ x: (quay.x0 + quay.x1) / 2, y: top, z: quay.z0 + 0.15 }, [quay.x1 - quay.x0, 0.12, 0.3], C.coping);
-  for (const [x, z] of s.quay.bollards) b.prism({ x, y: s.level(z), z }, 0.2, 0.17, 0.45, 6, C.bollard);
+  for (const [x, z] of s.quay.bollards) b.prism({ x, y: s.level(z), z }, 0.2, 0.17, 0.45, 6, C.bollard, C.bollardTop ?? C.bollard);
 }
 
 /** Le socle d'un bâtiment, du dessous du sol au niveau de la place devant sa façade. */
@@ -264,9 +284,13 @@ function gallery(b: FacetBuilder, s: PortSite, trophies: readonly TrophyAccent[]
   const x0 = x1 - n * GALLERY.arcade;
   plinth(b, s, x0 - 0.2, x1 + 0.2);
   const top = PLINTH + 2.2;
-  b.box({ x: (x0 + x1) / 2, y: PLINTH, z: BACK_Z + 0.45 }, [x1 - x0, 3.0, 0.4], C.wall);
-  for (let k = 0; k <= n; k++) b.box({ x: x1 - k * GALLERY.arcade, y: PLINTH, z: FACADE_Z - 0.3 }, [0.45, 2.2, 0.45], C.white);
-  for (let k = 0; k < n; k++) arch(b, x1 - (k + 1) * GALLERY.arcade + 0.2, x1 - k * GALLERY.arcade - 0.2, top - 0.1, FACADE_Z - 0.3, 0.45, 0.3, C.white);
+  const m = s.masonry;
+  // Les arcades : du blanc des murs, ou de la pierre d'un site de brique.
+  const arcade = m ? m.stone : C.white;
+  b.box({ x: (x0 + x1) / 2, y: PLINTH, z: BACK_Z + 0.45 }, [x1 - x0, GALLERY_WALL, 0.4], C.wall);
+  if (m) galleryMasonry(b, m, x0, x1, PLINTH);
+  for (let k = 0; k <= n; k++) b.box({ x: x1 - k * GALLERY.arcade, y: PLINTH, z: FACADE_Z - 0.3 }, [0.45, 2.2, 0.45], arcade);
+  for (let k = 0; k < n; k++) arch(b, x1 - (k + 1) * GALLERY.arcade + 0.2, x1 - k * GALLERY.arcade - 0.2, top - 0.1, FACADE_Z - 0.3, 0.45, 0.3, arcade);
   b.box({ x: (x0 + x1) / 2, y: top + 0.45, z: FACADE_Z - 0.3 }, [x1 - x0 + 0.45, 0.4, 0.5], C.frame);
   b.box({ x: (x0 + x1) / 2, y: PLINTH + 3.0, z: (BACK_Z + FACADE_Z) / 2 }, [x1 - x0 + 0.7, 0.28, FACADE_Z - BACK_Z + 0.5], C.paleSlate, C.paleSlate);
   // Les socles : trois devant, trois sur le gradin du fond, par arcade.
@@ -279,6 +303,102 @@ function gallery(b: FacetBuilder, s: PortSite, trophies: readonly TrophyAccent[]
     b.box({ x: t.x, y: t.y, z: t.z }, [0.46, 0.05, 0.46], TROPHY_ACCENT[accent]);
     b.append(placeFacets(trophyShape(i % TROPHY_SHAPES), { x: t.x, y: t.y + 0.05, z: t.z }));
   });
+}
+
+/** La hauteur du mur du fond de la galerie (sous son toit). */
+const GALLERY_WALL = 3.0;
+
+/** Une chaîne d'angle : trois blocs de pierre empilés sous l'égout, longs et courts tour à tour, en léger relief. */
+const QUOIN = { blocks: 3, height: 0.55, long: 0.9, short: 0.5, out: 0.06, below: 0.15 } as const;
+
+/**
+ * Une chaîne d'angle de pierre à l'angle (`x`, `z`) d'un mur haut de `wall` posé à `y` : trois blocs empilés jusqu'à
+ * `QUOIN.below` sous son haut, en relief de `QUOIN.out` sur ses deux faces ; chacun long sur une face et court sur l'autre,
+ * tour à tour. `sx`, `sz` : le sens du mur depuis l'angle (vers l'intérieur), le long de x et de z ; `thick` : sa
+ * profondeur en z quand le mur est mince (un bout de la galerie), sinon le bloc court en z.
+ */
+function quoin(b: FacetBuilder, stone: number, x: number, z: number, y: number, wall: number, sx: -1 | 1, sz: -1 | 1, thick?: number): void {
+  const Q = QUOIN;
+  for (let k = 0; k < Q.blocks; k++) {
+    const y0 = y + wall - Q.below - (Q.blocks - k) * Q.height;
+    const long = k % 2 === 0;
+    const ax = long ? Q.long : Q.short;
+    // Le bloc, de l'angle (relief compris) vers l'intérieur du mur ; sur un bout mince, toute son épaisseur.
+    const x0 = x - sx * Q.out,
+      x1 = x + sx * ax;
+    const z0 = z - sz * Q.out,
+      z1 = z + sz * (thick === undefined ? (long ? Q.short : Q.long) : thick + Q.out);
+    b.box({ x: (x0 + x1) / 2, y: y0, z: (z0 + z1) / 2 }, [Math.abs(x1 - x0), Q.height - 0.04, Math.abs(z1 - z0)], stone);
+  }
+}
+
+/** Les parts de [`from`, `to`] hors des ouvertures (`[x0, x1]`) : là où une assise passe. */
+function spans(from: number, to: number, holes: readonly (readonly [number, number])[]): [number, number][] {
+  let out: [number, number][] = [[from, to]];
+  for (const [h0, h1] of holes)
+    out = out.flatMap(([a, c]): [number, number][] => {
+      if (h1 <= a || h0 >= c) return [[a, c]];
+      const kept: [number, number][] = [];
+      if (h0 > a) kept.push([a, h0]);
+      if (h1 < c) kept.push([h1, c]);
+      return kept;
+    });
+  return out.filter(([a, c]) => c - a > 0.05);
+}
+
+/** La demi-épaisseur d'une assise : une ouverture qui la touche la coupe. */
+const COURSE_HALF = 0.04;
+
+/** Les assises du mur du fond de la galerie, sur ses deux faces, et ses deux bouts en chaînes d'angle. */
+function galleryMasonry(b: FacetBuilder, m: PortMasonry, x0: number, x1: number, y: number): void {
+  const z0 = BACK_Z + 0.25,
+    z1 = BACK_Z + 0.65;
+  for (const h of m.courseHeights(GALLERY_WALL)) {
+    m.course(b, true, z1, x0, x1, y + h, 1);
+    m.course(b, true, z0, x1, x0, y + h, -1);
+  }
+  quoin(b, m.stone, x0, z0, y, GALLERY_WALL, 1, 1, z1 - z0);
+  quoin(b, m.stone, x1, z0, y, GALLERY_WALL, -1, 1, z1 - z0);
+}
+
+/**
+ * Les murs de brique de l'école : la façade et le dos de brique, les flancs à l'ombre (`wall`), ses assises entre les
+ * ouvertures de la façade (les encadrements des portes, les cartouches, les fenêtres) et sur ses flancs, ses quatre
+ * chaînes d'angle. À la place du pavé de l'école, autant de triangles.
+ */
+function schoolMasonry(b: FacetBuilder, site: PortSite, m: PortMasonry, z0: number, z1: number, y: number): void {
+  const C = site.colors;
+  const x0 = SCHOOL.x - SCHOOL.width / 2,
+    x1 = SCHOOL.x + SCHOOL.width / 2;
+  const top = y + SCHOOL.wall;
+  const p = (x: number, yy: number, z: number): [number, number, number] => [x, yy, z];
+  // Le pavé, face par face (comme `box`) : le dessus, la façade et le dos de brique, les flancs à l'ombre.
+  b.quad(p(x0, top, z0), p(x0, top, z1), p(x1, top, z1), p(x1, top, z0), C.wall);
+  b.quad(p(x0, y, z1), p(x1, y, z1), p(x1, top, z1), p(x0, top, z1), C.white);
+  b.quad(p(x1, y, z0), p(x0, y, z0), p(x0, top, z0), p(x1, top, z0), C.white);
+  b.quad(p(x1, y, z1), p(x1, y, z0), p(x1, top, z0), p(x1, top, z1), C.wall);
+  b.quad(p(x0, y, z0), p(x0, y, z1), p(x0, top, z1), p(x0, top, z0), C.wall);
+  // Les ouvertures de la façade, à leur hauteur au-dessus du pied : chaque porte et son encadrement, chaque cartouche,
+  // chaque fenêtre et son cadre.
+  const w = DOOR.width / 2 + 0.3;
+  const doorTop = DOOR.height + DOOR.arch + 0.15;
+  const mark = DOOR.height + DOOR.arch + 1.15;
+  const holes = [
+    ...SCHOOL.doors.map((x) => ({ x0: x - w, x1: x + w, y0: 0, y1: doorTop })),
+    ...SCHOOL.doors.map((x) => ({ x0: x - 0.6, x1: x + 0.6, y0: mark - 0.6, y1: mark + 0.6 })),
+    ...SCHOOL.windows.map((x) => ({ x0: x - WINDOW.width / 2 - 0.1, x1: x + WINDOW.width / 2 + 0.1, y0: mark - WINDOW.height / 2 - 0.08, y1: mark + WINDOW.height / 2 + 0.08 })),
+  ];
+  for (const h of m.courseHeights(SCHOOL.wall)) {
+    const cut = holes.filter((o) => o.y0 < h + COURSE_HALF && o.y1 > h - COURSE_HALF).map((o) => [o.x0, o.x1] as const);
+    for (const [a, c] of spans(x0, x1, cut)) m.course(b, true, z1, a, c, y + h, 1);
+    m.course(b, false, x0, z0, z1, y + h, -1);
+    m.course(b, false, x1, z1, z0, y + h, 1);
+  }
+  // Les quatre chaînes d'angle.
+  quoin(b, m.stone, x0, z1, y, SCHOOL.wall, 1, -1);
+  quoin(b, m.stone, x1, z1, y, SCHOOL.wall, -1, -1);
+  quoin(b, m.stone, x0, z0, y, SCHOOL.wall, 1, 1);
+  quoin(b, m.stone, x1, z0, y, SCHOOL.wall, -1, 1);
 }
 
 /** Les huit formes de trophées (consultant d'Archipéo), à répéter dans l'ordre de la liste des succès. */
@@ -397,7 +517,10 @@ function school(b: FacetBuilder, site: PortSite, doors: PortState['doors'], degr
   const x0 = SCHOOL.x - SCHOOL.width / 2,
     x1 = SCHOOL.x + SCHOOL.width / 2;
   plinth(b, site, x0 - 0.2, x1 + 0.2);
-  b.box({ x: SCHOOL.x, y: PLINTH, z: (BACK_Z + FACADE_Z - 0.2) / 2 + 0.05 }, [SCHOOL.width, SCHOOL.wall, FACADE_Z - BACK_Z - 0.2], C.white, C.wall);
+  const depth = FACADE_Z - BACK_Z - 0.2;
+  const mid = (BACK_Z + FACADE_Z - 0.2) / 2 + 0.05;
+  if (site.masonry) schoolMasonry(b, site, site.masonry, mid - depth / 2, mid + depth / 2, PLINTH);
+  else b.box({ x: SCHOOL.x, y: PLINTH, z: mid }, [SCHOOL.width, SCHOOL.wall, depth], C.white, C.wall);
   b.gableRoof({ x: SCHOOL.x, y: PLINTH + SCHOOL.wall, z: (BACK_Z + FACADE_Z) / 2 }, SCHOOL.width + 0.8, FACADE_Z - BACK_Z + 1, 2.6, C.slate, C.white);
   const front = FACADE_Z - 0.2;
   for (const s of PORT_SUBJECTS) {

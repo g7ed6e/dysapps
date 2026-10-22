@@ -666,8 +666,40 @@ export const RESERVED_4E = {
   tour: { center: fromPlan4e([452, 582]), half: { x: 6, z: 6 } },
 } as const;
 
-/** Le Rafiot des Ferrailleurs, amarré au bout d'un quai abandonné, entre la Crique et l'Épave (plan) : sa place et son cap. */
-export const RAFIOT_4E = { quay: [fromPlan4e([1180, 1120]), fromPlan4e([1180, 1192])], at: fromPlan4e([1182, 1212]), yaw: 0 } as const;
+/**
+ * Le Rafiot des Ferrailleurs, amarré au bout d'un quai abandonné, entre la Crique et l'Épave (plan) : sa place, et son
+ * cap (lot 4, intention du directeur artistique du 22 octobre 2026, § 5, la seule idée gardée de la piste C) : son axe
+ * en travers du regard du quai de la Crique, la proue au large, loin du bout de son quai ; on le voit de flanc, de l'autre
+ * côté de la baie. Il ne se déplace pas.
+ */
+export const RAFIOT_4E = (() => {
+  const at = fromPlan4e([1182, 1212]);
+  const quay = DEPARTURE_4E.at;
+  // Le sens du quai de la Crique vu du Rafiot ; un quart de tour plus loin, son axe (la proue vers −z de son repère).
+  const toQuay = Math.atan2(quay.x - at.x, quay.z - at.z);
+  return { quay: [fromPlan4e([1180, 1120]), fromPlan4e([1180, 1192])], at, yaw: toQuay + Math.PI / 2 } as const;
+})();
+
+/**
+ * La digue de la Crique (lot 4, intention du directeur artistique du 22 octobre 2026, § 2) : un bras bas de pierre grise,
+ * sans parapet ni rail, du coin sud-est de la place dans l'eau, vers le sud-est, puis en retour derrière l'aire, à l'est
+ * d'elle : il ferme l'anse (l'aire est dans une eau abritée). Dans le repère de la Crique, les coudes de sa ligne brisée
+ * (un bloc de l'un à l'autre), sa largeur, et son dessus au-dessus de l'eau, sous le niveau du quai. Un décor : on n'y
+ * marche pas, loin du chemin de la Soute.
+ */
+export const CRIQUE_DIGUE = {
+  points: [
+    [40.5, 17.5],
+    [43, 27],
+    [42.5, 36.5],
+    [38, 45.5],
+    [30.5, 53],
+    [21.5, 59],
+    [12.5, 62.5],
+  ],
+  width: 2.8,
+  top: 0.6,
+} as const satisfies { points: readonly (readonly [number, number])[]; width: number; top: number };
 
 /**
  * Le terrain : l'étendue de la carte de hauteurs (le plan de 110 à 1 950 pixels d'ouest en est, de 40 à 1 190 du nord au

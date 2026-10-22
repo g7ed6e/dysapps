@@ -112,6 +112,13 @@ const COTEAUX_CEILING = {
   triangles: LOT3_EPAULE_CEILING.triangles + RAVIN_BRIDGE_TRIANGLES_MAX_4E + COTEAUX_BUILT * PLACE_TRIANGLES_MAX_4E + REPLAT_BUDGET.triangles + REPLAT_BUDGET.sente,
   calls: LOT3_EPAULE_CEILING.calls,
 } as const;
+/**
+ * Le plafond du 4e avec la Crique (intention du directeur artistique, § 6) : celui des Coteaux (`COTEAUX_CEILING`),
+ * relevé de 2 000 triangles pour la maçonnerie de la rangée, la digue, l'aire, les pièces déposées, le Rafiot, les îles
+ * du ciel et les Aiguilles ; aucun appel de plus (tout entre dans les maillages déjà comptés).
+ */
+const CRIQUE_LOT_TRIANGLES = 2_000;
+const CRIQUE_CEILING = { triangles: COTEAUX_CEILING.triangles + CRIQUE_LOT_TRIANGLES, calls: COTEAUX_CEILING.calls } as const;
 /** Les couleurs d'un maillage. */
 function colorsOf(f: { colors: Float32Array }): Set<string> {
   const out = new Set<string>();
@@ -268,7 +275,8 @@ describe('Les rails et la Crique', () => {
     expect(distance(NEF_4E.berth, pad)).toBeLessThan(0.01);
     const out = { x: 0, y: 0, z: 0, yaw: 0, shiftX: 0, shiftZ: 0, open: 0 };
     const start = nef4eFlight(0, { ...out }).y;
-    expect(nef4eFlight(1, out).y).toBeGreaterThan(start + 50);
+    // Il monte droit de 18, puis encore en filant entre les îles du ciel (crique4e.test.ts).
+    expect(nef4eFlight(1, out).y).toBeGreaterThan(start + 20);
   });
 });
 
@@ -302,13 +310,13 @@ describe('Les couleurs chaudes du 4e', () => {
 });
 
 describe('Le budget du 4e', () => {
-  it('le monde, la scénette, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 3 (le Bastion et l’Épaule) et des Coteaux', () => {
+  it('le monde, la scénette, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 3 (le Bastion et l’Épaule), des Coteaux et de la Crique', () => {
     const total = (list: { triangles: number; calls: number }[]) => list.reduce((s, p) => ({ triangles: s.triangles + p.triangles, calls: s.calls + p.calls }), { triangles: 0, calls: 0 });
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
     for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('scenette')), total(openWorldCost4e('depart')), mapCost4e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(COTEAUX_CEILING.triangles);
-      expect(cost.calls).toBeLessThanOrEqual(COTEAUX_CEILING.calls);
+      expect(cost.triangles).toBeLessThanOrEqual(CRIQUE_CEILING.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(CRIQUE_CEILING.calls);
     }
   });
 });

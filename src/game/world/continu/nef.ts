@@ -148,12 +148,25 @@ export function berLocal(b: FacetBuilder, at: Vec2, departed: boolean, colors: B
     b.box({ x, y: 0.05, z: z + dz }, [1.3, 0.16, 0.24], colors.berDark, colors.ber);
   }
   if (!departed) return;
-  // La bouée : un gros flotteur rond sur l'eau, au flanc du ber (`buoySide`, à l'ouest à l'Escale), son dessus clair bien
-  // visible (le monde dit que la Nef est partie, sans texte ; relecture du directeur artistique et du consultant Archipéo).
-  const bx = x + 2.1 * buoySide;
-  b.prism({ x: bx, y: -0.25, z }, 0.66, 0.5, 0.7, 10, colors.buoy, colors.buoyTop);
-  b.prism({ x: bx, y: 0.45, z }, 0.12, 0.12, 0.9, 5, colors.buoy);
+  // La bouée, au flanc du ber (`buoySide`, à l'ouest à l'Escale).
+  buoyAt(b, x + 2.1 * buoySide, z, colors);
 }
+
+/**
+ * La bouée de la Nef partie : un gros flotteur rond sur l'eau, en (`x`, `z`), son dessus clair bien visible (le monde dit
+ * que la Nef est partie, sans texte ; relecture du directeur artistique et du consultant Archipéo). Au 4e, à côté de
+ * l'aire, sans ber (./crique4e.ts).
+ */
+export function buoyAt(b: FacetBuilder, x: number, z: number, colors: Pick<BerColors, 'buoy' | 'buoyTop'>): void {
+  b.prism({ x, y: -0.25, z }, 0.66, 0.5, 0.7, 10, colors.buoy, colors.buoyTop);
+  b.prism({ x, y: 0.45, z }, 0.12, 0.12, 0.9, 5, colors.buoy);
+}
+
+/**
+ * Le vert île de la bande de la Nef (consultant d'Archipéo, retouche du lot 4 du 5e : la bouée et la bande accordées),
+ * repris par la bouée et par la bande de la toile pliée, au 5e et au 4e.
+ */
+export const NEF_BAND = 0x438b82;
 
 /** Le ber (et la bouée après le départ), posé dans le monde. */
 export function berFacets(look: NefLook): Facets {

@@ -11,6 +11,7 @@ import { createNetwork } from './network';
 import { BRIDGE_ABUT } from './plan6e';
 import { COLORS_4E, CRIQUE, CRIQUE_PAD, JONCTION_TRACK_4E, LINKS_4E, PATH_EDGES_4E, PATH_NODES_4E, RAILS_4E, RIGOLE_4E, criqueFloor, type Cut4e } from './plan4e';
 import { networkRibbons, type RibbonNet } from './paths';
+import { C4E, postLantern } from './place4eKit';
 import { standingHeight } from './terrain';
 import { bassinClearance, couleeClearance, ravinClearance } from './terrain4e';
 
@@ -251,22 +252,63 @@ const PLANKS_4E = { top: 0xecd8b6, side: COLORS_4E.woodShade } as const;
 const WALKWAY_PILES = { step: 3, foot: -2.4 } as const;
 
 /**
- * La passerelle de l'aire et l'aire de la Nef (fiche, § 5) : du bout du quai de la Crique, une passerelle de planches
- * sur pieux, puis l'aire ronde de bois cerclée de fer, sur l'eau de la baie. Un décor : on n'y marche pas au lot 1.
+ * Le cerclage de l'aire (lot 4, intention du directeur artistique du 22 octobre 2026, § 3 : la planche posait la coque
+ * sur la terre battue ; l'aire doit se lire comme une plate-forme ronde de bois cerclée de fer, posée sur l'eau) : un
+ * anneau plat de fer bruni sombre, large de `width`, en relief de `rise` sur le bord du dessus, en `sides` pans (l'aire
+ * reste ronde à l'œil) ; sous lui, la bande du bord, du même fer, de `drop` sous les planches jusqu'au haut de l'anneau.
  */
-function criqueWalkwayFacets(): Facets {
+const PAD_RING = { width: 0.45, rise: 0.08, drop: 0.32, sides: 16, out: 0.06 } as const;
+
+/**
+ * Sur l'anneau, les quatre bornes de fer bruni (à 60° et 120° de chaque côté de l'arrivée de la passerelle : aucune entre
+ * elle et la coque) et les deux lanternes sur poteaux de fer, de part et d'autre de l'arrivée (à 25°), allumées dès
+ * l'arrivée (l'aire est en service ; l'ocre fixe, sans ombre) : leurs angles depuis l'arrivée de la passerelle, leur rayon.
+ */
+const PAD_POSTS = { bollards: [60, 120, -60, -120], lanterns: [25, -25], radius: 4.25, lanternHeight: 1.9 } as const;
+
+/** Un point de l'anneau de l'aire, à `deg` degrés de l'arrivée de la passerelle (vers −z du repère de la Crique). */
+function onPad(deg: number, r: number = PAD_POSTS.radius): { x: number; z: number } {
+  const a = (deg * Math.PI) / 180;
+  return { x: CRIQUE_PAD.pad.x + r * Math.sin(a), z: CRIQUE_PAD.pad.z - r * Math.cos(a) };
+}
+
+/**
+ * La passerelle de l'aire et l'aire de la Nef (fiche, § 5) : du bout du quai de la Crique, une passerelle de planches
+ * sur pieux, puis l'aire ronde de bois cerclée de fer, sur l'eau de la baie ; sur son anneau, quatre bornes et deux
+ * lanternes. Les pieux, posés sous les planches, sans chapeau (on ne le voit jamais). Rien de rouillé : le fer est bruni
+ * (la rouille est aux ruines). Un décor : on n'y marche pas.
+ */
+export function criqueWalkwayFacets(): Facets {
   const b = new FacetBuilder();
   const { z0, z1, width, pad, radius, deck } = CRIQUE_PAD;
   const len = z1 - z0;
   b.box({ x: 0, y: deck - 0.25, z: (z0 + z1) / 2 }, [width, 0.25, len], PLANKS_4E.side, PLANKS_4E.top);
   for (let z = z0 + 0.6; z < z1; z += WALKWAY_PILES.step)
-    for (const side of [-1, 1]) b.prism({ x: side * (width / 2 - 0.2), y: WALKWAY_PILES.foot, z }, 0.24, 0.22, deck - WALKWAY_PILES.foot - 0.2, 5, COLORS_4E.woodShade);
-  // L'aire : un disque de planches, son cerclage de fer, ses pieux tout autour.
-  b.prism({ x: pad.x, y: deck - 0.3, z: pad.z }, radius, radius, 0.3, 16, PLANKS_4E.side, PLANKS_4E.top);
-  b.band({ x: pad.x, y: deck - 0.32, z: pad.z }, radius + 0.06, 0.36, 16, COLORS_4E.rust);
+    for (const side of [-1, 1]) b.band({ x: side * (width / 2 - 0.2), y: WALKWAY_PILES.foot, z }, 0.23, deck - WALKWAY_PILES.foot - 0.2, 5, COLORS_4E.woodShade);
+  // L'aire : un disque de planches, son cerclage de fer bruni (la bande du bord, l'anneau en relief), ses pieux tout autour.
+  const R = PAD_RING;
+  b.prism({ x: pad.x, y: deck - 0.3, z: pad.z }, radius, radius, 0.3, R.sides, PLANKS_4E.side, PLANKS_4E.top);
+  b.band({ x: pad.x, y: deck - R.drop, z: pad.z }, radius + R.out, R.drop + R.rise, R.sides, C4E.iron);
+  const inner = radius + R.out - R.width;
+  const top = deck + R.rise;
+  b.annulus({ x: pad.x, y: deck, z: pad.z }, inner, radius + R.out, R.rise, R.sides, C4E.iron, C4E.ironTop, false);
+  // Le bord intérieur de l'anneau, tourné vers le milieu de l'aire (le relief, vu de l'autre côté de l'aire).
+  const at = (k: number, y: number): [number, number, number] => {
+    const a = (2 * Math.PI * k) / R.sides;
+    return [pad.x + inner * Math.cos(a), y, pad.z + inner * Math.sin(a)];
+  };
+  for (let k = 0; k < R.sides; k++) b.quad(at(k, deck), at(k + 1, deck), at(k + 1, top), at(k, top), C4E.iron);
   for (let k = 0; k < 6; k++) {
     const a = (2 * Math.PI * k) / 6 + 0.26;
-    b.prism({ x: pad.x + Math.cos(a) * (radius - 0.5), y: WALKWAY_PILES.foot, z: pad.z + Math.sin(a) * (radius - 0.5) }, 0.26, 0.24, deck - WALKWAY_PILES.foot - 0.3, 5, COLORS_4E.woodShade);
+    b.band({ x: pad.x + Math.cos(a) * (radius - 0.5), y: WALKWAY_PILES.foot, z: pad.z + Math.sin(a) * (radius - 0.5) }, 0.25, deck - WALKWAY_PILES.foot - 0.3, 5, COLORS_4E.woodShade);
+  }
+  for (const deg of PAD_POSTS.bollards) {
+    const p = onPad(deg);
+    b.prism({ x: p.x, y: top, z: p.z }, 0.18, 0.15, 0.42, 6, C4E.iron, C4E.ironTop);
+  }
+  for (const deg of PAD_POSTS.lanterns) {
+    const p = onPad(deg);
+    postLantern(b, p.x, top, p.z, PAD_POSTS.lanternHeight, true);
   }
   return placeFacets(b.build(), { x: CRIQUE.origin.x, y: 0, z: CRIQUE.origin.z, yaw: CRIQUE.yaw });
 }
