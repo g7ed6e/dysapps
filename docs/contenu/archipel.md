@@ -61,3 +61,4 @@ Les îles, dans l’ordre du jeu : `npm run contenu` en produit `src/game/island
 57. `lca-4e-cities`
 58. `lca-3e-ideas`
 59. `maths-4e-data`
+60. `french-4e-sentence`

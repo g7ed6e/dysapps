@@ -1335,3 +1335,48 @@ describe('Le large (GD-20, point 8, lot L9)', () => {
     expect(document.querySelector('.world-document .notice-line')).not.toBeNull();
   });
 });
+
+describe('Le rôle de l’habitant trop large pour sa ligne (retouche 1 des Coteaux du 4e)', () => {
+  it('il peut passer à la ligne après l’apostrophe d’une élision, jamais au milieu du mot ; son texte ne change pas', async () => {
+    renderPlace('ecluses', 'equivalence');
+    const role = await screen.findByText((_, el) => el?.classList.contains('world-scenette-role') === true && el.textContent === 'L’éclusier');
+    expect(role.innerHTML).toBe('L’<wbr>éclusier');
+  });
+
+  it('au plus grand texte sur un écran bas, le rôle sur sa ligne et plus large qu’elle passe à la ligne au lieu d’être rogné', async () => {
+    localStorage.setItem('dysapps:settings', JSON.stringify({ fontSize: 32, univers: 'archipeo' }));
+    // Le rôle sur sa ligne (la feuille de style, que jsdom ne charge pas) ; les rectangles d'un téléphone en portrait.
+    const style = document.createElement('style');
+    style.textContent = '.world-consigne-fold.role-seul .world-scenette-role { display: block; }';
+    document.head.append(style);
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(390);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(844);
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+      const fold = this.closest('.world-consigne-fold');
+      const [left, right, top, bottom] = this.matches('.world-scenette-role')
+        ? [41, 240, 110, 137]
+        : this.matches('.world-consigne-fold')
+          ? [41, 215, 110, 178]
+          : fold && this.matches('.world-consigne-word, .world-consigne-ellipsis')
+            ? [41, 120, fold.classList.contains('role-seul') ? 140 : 200, fold.classList.contains('role-seul') ? 175 : 235]
+            : [0, 390, 0, 844];
+      return { top, bottom, height: bottom - top, left, right, width: right - left, x: left, y: top, toJSON: () => ({}) };
+    });
+    const user = userEvent.setup();
+    renderPlace('ecluses', 'equivalence');
+    const go = await screen.findByRole('button', { name: /Commencer/ }).catch(() => null);
+    if (go) await user.click(go);
+    const simple = screen.queryByRole('button', { name: /Vue simple/ });
+    if (simple) await user.click(simple);
+    await vi.waitFor(() => expect(document.querySelector('.world-consigne-fold .world-scenette-role')).not.toBeNull());
+    const fold = document.querySelector<HTMLElement>('.world-consigne-fold')!;
+    await vi.waitFor(() => expect(fold.classList.contains('role-large')).toBe(true));
+    expect(fold.classList.contains('role-seul')).toBe(true);
+    // La feuille de style : sa ligne s'agrandit, le rôle passe à la ligne dans son cadre.
+    const css = readFileSync(join(__dirname, 'openWorld.css'), 'utf8');
+    expect(css).toMatch(/\.world-consigne-fold\.role-large \{\s*max-height: none;/);
+    expect(css).toMatch(/\.world-consigne-fold\.role-large \.world-scenette-role \{\s*max-width: 100%;\s*white-space: normal;/);
+    style.remove();
+    localStorage.removeItem('dysapps:settings');
+  });
+});

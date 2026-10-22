@@ -1,0 +1,9 @@
+{
+  "id": "french-4e-sentence-3",
+  "biome": "french-4e-sentence",
+  "name": "Les abords de la cabine",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Tout est net autour de la cabine. La ligne se partage de nouveau."
+}

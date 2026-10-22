@@ -28,6 +28,8 @@ import {
   RAFIOT_4E,
   RAVIN_4E,
   RESERVED_4E,
+  REPLAT_4E,
+  ROCHES_TERRACE_4E,
   SUMMIT_4E,
   TERRAIN_4E,
   VOLCANO_4E,
@@ -35,6 +37,7 @@ import {
   inDalleClearing,
   inEpaveClearing,
   inRecoinClearing,
+  inReplatClearing,
   nearRails4e,
 } from './plan4e';
 import { SHADOW_DIR_4E } from './sky';
@@ -62,6 +65,17 @@ export const couleeClearance = (p: Vec2): number => distanceToPolyline(p, COULEE
 /** La distance au bord du ravin sec : négative dedans. */
 export const ravinClearance = (p: Vec2): number => distanceToPolyline(p, RAVIN_4E.line) - RAVIN_4E.halfWidth;
 
+/** La distance à la terrasse des Roches (au plus proche de ses rectangles) : négative dedans. */
+function terraceClearance(p: Vec2): number {
+  let best = Infinity;
+  for (const R of ROCHES_TERRACE_4E.rects) {
+    const dx = Math.max(R.x0 - p.x, p.x - R.x1);
+    const dz = Math.max(R.z0 - p.z, p.z - R.z1);
+    best = Math.min(best, dx > 0 && dz > 0 ? Math.hypot(dx, dz) : Math.max(dx, dz));
+  }
+  return best;
+}
+
 /** La distance signée à la terre ferme : positive sur la terre, négative dans la mer et le bassin. */
 export function landDistance4e(p: Vec2): number {
   return Math.min(signedDistance(p, COAST_4E), bassinClearance(p));
@@ -87,6 +101,17 @@ function volcanoHeight(p: Vec2): number {
 /** La hauteur du sol hors des coupures : le sol des Fabriques, la montée des Coteaux et de l'Épaule, le volcan. */
 const landHeight = (p: Vec2): number => 0.6 + 0.55 * wave(p) + 1.6 * westRise(p) + 1.5 * northRise(p) + volcanoHeight(p);
 
+/**
+ * Le Replat (les Coteaux, ./replat4e.ts) : le sol de l'épaule du cône, ramené vers le niveau de Kéo (`REPLAT_LEVEL`) de
+ * tant en un point à `d` de lui. Au-dedans de `flat`, la pente n'est plus que `keep` fois celle d'avant ; au-delà, elle
+ * rattrape le sol d'avant sans jamais être plus raide que `steep` fois la sienne (sur une pente de 0,67, 0,8 au plus :
+ * on y marche, `FREE_WALK.slope`), jusqu'à `REPLAT_REACH`, où plus rien ne change.
+ */
+const { flat: EASE_FLAT, keep: EASE_KEEP, steep: EASE_STEEP } = REPLAT_4E.ease;
+const REPLAT_REACH = (EASE_FLAT * (EASE_STEEP - EASE_KEEP)) / (EASE_STEEP - 1);
+const REPLAT_LEVEL = landHeight(REPLAT_4E.at);
+const replatEase = (d: number): number => (d <= EASE_FLAT ? EASE_KEEP : (EASE_KEEP * EASE_FLAT + EASE_STEEP * (d - EASE_FLAT)) / d);
+
 /** La hauteur du sol, avant la grille : la mer, le bassin et ses quais, le sol, la coulée et le ravin creusés. */
 export function heightAt4e(p: Vec2): number {
   const coast = signedDistance(p, COAST_4E);
@@ -97,6 +122,12 @@ export function heightAt4e(p: Vec2): number {
     const k = 1 - smoothstep(0, cut.bank, clear);
     if (k > 0) h += (Math.max(Math.min(h, cut.floor), h - cut.depth) - h) * k;
   }
+  // La terrasse des Roches : le flanc entaillé jusqu'au niveau de la plaine, jamais remblayé.
+  const t = 1 - smoothstep(0, ROCHES_TERRACE_4E.bank, terraceClearance(p));
+  if (t > 0) h += (Math.min(h, ROCHES_TERRACE_4E.floor) - h) * t;
+  // Le Replat : la pente adoucie autour de Kéo, sur l'épaule du cône.
+  const d = Math.hypot(p.x - REPLAT_4E.at.x, p.z - REPLAT_4E.at.z);
+  if (d < REPLAT_REACH) h = REPLAT_LEVEL + (h - REPLAT_LEVEL) * replatEase(d);
   return h;
 }
 
@@ -104,6 +135,12 @@ export function heightAt4e(p: Vec2): number {
 export const walkBlocked4e = (p: Vec2): boolean => insidePolygon(p, SUMMIT_4E) || couleeClearance(p) < 0.6 || ravinClearance(p) < 0.4;
 
 let fieldCache: HeightField | null = null;
+
+/**
+ * Le plus bas où le terrain de loin du 4e abaisse une terre, au-dessus du plan de la mer : sous le pont du ravin, il
+ * passait dessous, et la mer se voyait en flaque bleue dans le lit sec (retouche 1 des Coteaux).
+ */
+const FAR_LAND_FLOOR_4E = 0.05;
 
 /** La carte de hauteurs du 4e (une fois), son terrain de loin abaissé sous les chemins, comme au 6e. */
 export function buildHeightField4e(): HeightField {
@@ -114,7 +151,7 @@ export function buildHeightField4e(): HeightField {
   const heights = new Float32Array(nx * nz);
   for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) heights[j * nx + i] = heightAt4e({ x: minX + i * step, z: minZ + j * step });
   const field: HeightField = { minX, minZ, step, nx, nz, heights, far: heights };
-  fieldCache = { ...field, far: farHeightsOf(field, PATH_NODES_4E, PATH_EDGES_4E, (x, z) => groundOn4e(field, x, z)) };
+  fieldCache = { ...field, far: farHeightsOf(field, PATH_NODES_4E, PATH_EDGES_4E, (x, z) => groundOn4e(field, x, z), FAR_LAND_FLOOR_4E) };
   return fieldCache;
 }
 
@@ -326,6 +363,8 @@ function plantsIn(tx: number, tz: number): readonly Plant[] {
       if (inRecoinClearing(p)) continue;
       // La Dalle (lot 3) : la dalle et son muret, Kéo devant eux et sa sente restent libres.
       if (inDalleClearing(p)) continue;
+      // Le Replat (les Coteaux) : Kéo et sa sente restent libres.
+      if (inReplatClearing(p)) continue;
       if (Math.hypot(p.x - CUVETTE_4E.center.x, p.z - CUVETTE_4E.center.z) < 14) continue;
       // Le cône nu au-dessus de son pied (`ROCK_FROM`) : aucun buisson ni rocher sur le basalte sombre (directeur
       // artistique, deuxième relecture du lot 1 : les buissons olive y faisaient des taches jusqu'au sommet).

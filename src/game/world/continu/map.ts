@@ -220,11 +220,31 @@ export interface MapLabel {
    * (GD-20, « La Carte au plus grand texte » : sur tablette, le nom d'un lieu fermé passe sur deux lignes plutôt que de
    * se taire).
    */
-  narrow?: { w: number; h: number };
+  narrow?: { w: number; h: number; pad?: number };
+  /**
+   * La marge du cadre d'un nom, à gauche comme à droite, en pixels (son bord et son retrait, mesurés) : avant la première
+   * lettre et après la dernière icône, la seule part du cadre que la pastille de Kéo peut couvrir au 4e (`keepNames`).
+   */
+  pad?: number;
   /** Kéo : sa taille « Toi » sous sa pastille (`toi: 'dessous'`), quand « Toi » ne tient ni à droite ni à gauche. */
   stacked?: { w: number; h: number };
   /** Un lieu d'une terre fermée (sa pastille pâle) : Kéo peut couvrir son nom, jamais celui d'un lieu ouvert. */
   pale?: true;
+  /**
+   * Kéo, au 4e : il ne couvre aucune lettre d'un nom, même pâle, ni celui d'un lieu fermé (retouche 1 des Coteaux, « Toi »
+   * sur « Les Coteaux » fermés ; retouche 2, consultant UX UI : sa pastille cachait « Fo » de « La Forge »). Sans place
+   * libre près de son point, sa pastille seule, libre jusqu'à `NEAR.reach` ; sinon à cheval sur le bord du cadre de son
+   * propre nom, dans sa marge (`pad`), avant la première lettre ou après la dernière icône ; sinon de même sur le cadre
+   * d'un nom pâle ; sinon libre un peu plus loin (deux fois `NEAR.reach`) ; sinon, aussi loin, sur aucune lettre, quitte à
+   * toucher un cadre ; au pire, de son côté fixe, seulement sur un écran plein de noms (retouche 3).
+   */
+  keepNames?: true;
+  /**
+   * Au 4e, un nom de lieu ouvert relié à son point par un trait fin quand il en est loin (`mapLeader`) : ce trait ne
+   * passe sous aucune autre étiquette, ni aucune étiquette sur lui, si une autre place le permet (retouche 3 des Coteaux,
+   * consultant UX UI : le trait de la Basilique passait sous le cadre de « La Veillée »).
+   */
+  leader?: true;
 }
 
 /** Sa place : le coin haut gauche, et si son nom se montre (un lieu fermé peut n'en garder que le cadenas). */
@@ -319,6 +339,39 @@ export function mapLeader(p: { x: number; y: number }, r: Rect): { x1: number; y
   return { x1: p.x, y1: p.y, x2: Math.min(Math.max(p.x, r.left), r.right), y2: Math.min(Math.max(p.y, r.top), r.bottom) };
 }
 
+/**
+ * Un trait (`mapLeader`) qui passe dans un rectangle, au-delà de son bord (un demi-pixel) : un trait qui ne fait que
+ * toucher le cadre de son propre nom n'y passe pas.
+ */
+function leaderCrosses(s: { x1: number; y1: number; x2: number; y2: number }, r: Rect): boolean {
+  const left = r.left + 0.5,
+    right = r.right - 0.5,
+    top = r.top + 0.5,
+    bottom = r.bottom - 0.5;
+  if (left >= right || top >= bottom) return false;
+  // Liang-Barsky : la part du trait dans le rectangle, de `t0` à `t1`.
+  const dx = s.x2 - s.x1,
+    dy = s.y2 - s.y1;
+  let t0 = 0,
+    t1 = 1;
+  for (const [p, q] of [
+    [-dx, s.x1 - left],
+    [dx, right - s.x1],
+    [-dy, s.y1 - top],
+    [dy, bottom - s.y1],
+  ]) {
+    if (p === 0) {
+      if (q < 0) return false;
+    } else {
+      const t = q / p;
+      if (p < 0) t0 = Math.max(t0, t);
+      else t1 = Math.min(t1, t);
+      if (t0 > t1) return false;
+    }
+  }
+  return t0 < t1;
+}
+
 /** L'écart entre le nom d'un lieu fermé posé au-dessus de son cadenas et ce cadenas, en pixels. */
 const RISE_GAP = 4;
 /**
@@ -406,6 +459,13 @@ interface ClosedPlace {
 const REPAIR_TRIES = 12;
 
 /**
+ * Au 4e, le nombre de poses refaites, au plus, pour qu'aucun trait (`leader`) ne passe sous le nom d'un lieu ouvert posé
+ * avant le sien : le nom au trait passe alors juste avant lui (retouche 3 des Coteaux : le trait de la Basilique passait
+ * sous « La Veillée »).
+ */
+const LEAD_TRIES = 6;
+
+/**
  * Pose les étiquettes de la Carte sans qu'aucune en recouvre une autre (au moins `MAP_LABEL_GAP` entre elles), ni les
  * boutons de la page (`obstacles`) : d'abord les cadenas, à leur place ; puis le nom de chaque lieu ouvert (celui
  * qui passe en premier, `first`, d'abord), au-dessus de son point, sinon dessous, sinon décalé vers le haut ou vers le
@@ -423,7 +483,9 @@ const REPAIR_TRIES = 12;
  * fermé (directeur artistique) ; mais si les noms ouverts peuvent se poser autrement, tous près de leur lieu, en laissant
  * au lieu fermé une place, la pose est refaite avec cette place gardée (`repair`, la reprise ; sur la tablette, en texte
  * normal, le nom de l'Imprimerie prenait la place de celui des Filets). Sans `repair` (les vues essayées de
- * `reframeMap`, qui ne comptent que les lieux ouverts), pas de reprise. Kéo vient en dernier, d'un côté fixe de son
+ * `reframeMap`, qui ne comptent que les lieux ouverts), pas de reprise. Au 4e (`leader`), avant cette reprise, un nom dont
+ * le trait passe sous le nom d'un lieu ouvert posé avant lui, ou posé sur le trait d'un autre, passe avant celui-ci, si
+ * aucun nom ouvert ne s'y perd et si moins de traits passent sous un nom (`LEAD_TRIES` poses refaites au plus). Kéo vient en dernier, d'un côté fixe de son
  * point (dessous), sans jamais déplacer un nom, sa pastille à sa taille au plus de son point : « Toi » quitte à couvrir
  * le nom pâle d'un lieu fermé, sinon sa pastille seule, jamais sur le nom d'un voisin.
  */
@@ -434,9 +496,29 @@ export function layoutMapLabels(
   repair = true,
   edge = 0,
 ): MapLabelSpot[] {
-  const run = (reserved: ReadonlyMap<string, ClosedPlace>) => attemptLayout(labels, obstacles, screen, reserved, edge);
+  let order = labels;
+  const run = (reserved: ReadonlyMap<string, ClosedPlace>) => attemptLayout(labels, obstacles, screen, reserved, edge, order);
   let best = run(new Map());
   if (!repair) return best.spots;
+  // Au 4e, un trait sous le nom d'un lieu ouvert posé avant le sien : la pose refaite, ce nom au trait posé juste avant
+  // l'autre, gardée si aucun nom de lieu ouvert ne se perd et si moins de traits passent sous un nom.
+  let leadTries = LEAD_TRIES;
+  for (let i = 0; i < best.crossed.length && leadTries-- > 0; i++) {
+    const [id, under] = best.crossed[i];
+    const moved = order.filter((x) => x.id !== id);
+    moved.splice(
+      moved.findIndex((x) => x.id === under),
+      0,
+      labels.find((x) => x.id === id)!,
+    );
+    const was = order;
+    order = moved;
+    const next = run(new Map());
+    if ([...best.namedOpen].every((named) => next.namedOpen.has(named)) && next.crossed.length < best.crossed.length) {
+      best = next;
+      i = -1;
+    } else order = was;
+  }
   let tries = REPAIR_TRIES;
   // Chaque nom tu a sa part des essais : les premiers (en haut de l'écran) ne les prennent pas tous (relecture de L9 : la
   // Vigie et l'Imprimerie, tues au nord, épuisaient les essais avant la Mangrove, qui avait une place).
@@ -464,6 +546,7 @@ function attemptLayout(
   screen: { width: number; height: number },
   reserved: ReadonlyMap<string, ClosedPlace>,
   border = 0,
+  order: readonly MapLabel[] = labels,
 ) {
   // À `border` pixels des bords au moins (au 4e, `MAP_EDGE_4E` ; 0 ailleurs, l'écran entier).
   const onScreen = (r: Rect) => r.left >= border && r.top >= border && r.right <= screen.width - border && r.bottom <= screen.height - border;
@@ -501,13 +584,18 @@ function attemptLayout(
   const apart = (c: Rect) => clear(c) && !closedNames.some((n) => clash(n, c));
   // Avec des places gardées, les lieux ouverts les plus proches d'elles d'abord : ils ont le moins de places autour.
   const pressed = (l: MapLabel) => Math.min(Infinity, ...[...reserved.values()].map((p) => gapTo(l, p.r)));
-  // Les lieux épinglés d'abord, dans leur ordre, quelle que soit la sélection ; puis le lieu suggéré et l'Escale ; puis
-  // les autres.
-  const open = labels
+  // Dans l'ordre donné (`order`, celui des étiquettes, ou refait pour un trait : `layoutMapLabels`) : les lieux épinglés
+  // d'abord, dans leur ordre, quelle que soit la sélection ; puis le lieu suggéré et l'Escale ; puis les autres.
+  const open = order
     .filter((l) => l.kind === 'open' && l.pinned)
-    .concat(labels.filter((l) => l.kind === 'open' && !l.pinned && l.first))
-    .concat(labels.filter((l) => l.kind === 'open' && !l.pinned && !l.first).sort((a, b) => (reserved.size ? pressed(a) - pressed(b) : 0)));
+    .concat(order.filter((l) => l.kind === 'open' && !l.pinned && l.first))
+    .concat(order.filter((l) => l.kind === 'open' && !l.pinned && !l.first).sort((a, b) => (reserved.size ? pressed(a) - pressed(b) : 0)));
   const namedOpen = new Set<string>();
+  // Au 4e, les traits posés des noms loin de leur point (`leader`, `mapLeader`), et ceux qui passent sous le nom d'un lieu
+  // ouvert posé avant (son nom, puis celui de l'autre).
+  const leads: { id: string; x1: number; y1: number; x2: number; y2: number }[] = [];
+  // Pour la pose refaite : une paire d'étiquettes, la première à poser juste avant la seconde.
+  const crossed: [string, string][] = [];
   for (const l of open) {
     const places = (w: number, h: number) => {
       const above = rect(l.x - w / 2, l.y - h, w, h);
@@ -549,11 +637,19 @@ function attemptLayout(
     };
     const pinApart = (c: Rect) => apart(c) && uncovered(c, l.id);
     const pinClear = (c: Rect) => clear(c) && uncovered(c, l.id);
-    let r = find(full, pinApart) ?? find(full, pinClear);
+    // Au 4e (`leader`), d'abord une place dont le trait ne passe sous aucune étiquette posée (ni bouton), et qui ne couvre
+    // aucun trait posé (retouche 3 des Coteaux : le trait de la Basilique passait sous « La Veillée ») ; sinon comme avant.
+    const unled = (c: Rect) => {
+      const lead = mapLeader(l, c);
+      if (lead && placed.some((p) => p.id !== l.id && leaderCrosses(lead, p.r))) return false;
+      return !leads.some((s) => leaderCrosses(s, c));
+    };
+    const pick = (list: Rect[]) => (l.leader ? (find(list, (c) => pinApart(c) && unled(c)) ?? find(list, (c) => pinClear(c) && unled(c))) : undefined) ?? find(list, pinApart) ?? find(list, pinClear);
+    let r = pick(full);
     let narrow = false;
     if (!r) {
       // La pastille serrée : son nom sur deux lignes, plus étroit, aux mêmes places.
-      r = find(tight, pinApart) ?? find(tight, pinClear);
+      r = pick(tight);
       narrow = Boolean(r);
     }
     let name = true;
@@ -571,7 +667,20 @@ function attemptLayout(
         const off = (c: Rect) => onScreen(c) && !obstacles.some((o) => clash(o, c));
         r = small.find(off) ?? near(l, MAP_COMPACT, MAP_COMPACT, off) ?? small[0];
       }
-    } else namedOpen.add(l.id);
+    } else {
+      namedOpen.add(l.id);
+      // Son nom sur le trait d'un nom posé avant : celui-ci passera après lui.
+      const box = r;
+      const over = leads.find((s) => leaderCrosses(s, box));
+      if (over) crossed.push([l.id, over.id]);
+      const lead = l.leader ? mapLeader(l, r) : null;
+      if (lead) {
+        leads.push({ ...lead, id: l.id });
+        // Son trait sous le nom d'un lieu ouvert posé avant : il passera avant lui.
+        const under = placed.find((p) => p.id !== null && p.id !== l.id && labels.some((x) => x.id === p.id && x.kind === 'open') && leaderCrosses(lead, p.r));
+        if (under?.id) crossed.push([l.id, under.id]);
+      }
+    }
     placed.push({ id: l.id, r });
     out.set(l.id, { id: l.id, left: r.left, top: r.top, name, ...(narrow ? { narrow: true as const } : {}) });
   }
@@ -628,7 +737,9 @@ function attemptLayout(
   let closedNamed = 0;
   for (const l of closed) {
     const kept = reserved.get(l.id);
-    const spot = kept && fits(l, kept, placed) ? kept : closedPlaces(l).find((c) => fits(l, c, placed));
+    // Au 4e, d'abord hors des traits des noms ouverts (`leader`).
+    const places = closedPlaces(l);
+    const spot = kept && fits(l, kept, placed) ? kept : ((leads.length ? places.find((c) => fits(l, c, placed) && !leads.some((s) => leaderCrosses(s, c.r))) : undefined) ?? places.find((c) => fits(l, c, placed)));
     // Ni entier ni sur deux lignes : il se tait (le cadenas reste ; son toucher ouvre la fiche du lieu fermé).
     if (!spot) {
       mute.push(l.id);
@@ -679,15 +790,15 @@ function attemptLayout(
     const [side, other] = below ? [l.y, l.y - l.h] : [l.y - l.h, l.y];
     // Les noms pâles (un lieu d'une terre fermée, le nom d'une terre sous son cadenas), que Kéo peut couvrir ; et le nom
     // de son lieu, le lieu ouvert le plus proche de son point.
-    const pale = new Set(labels.filter((x) => x.kind === 'closed' || x.pale).map((x) => x.id));
+    const pale = new Set(l.keepNames ? [] : labels.filter((x) => x.kind === 'closed' || x.pale).map((x) => x.id));
     const own = labels
       .filter((x) => x.kind === 'open' && !x.pale && Math.hypot(x.x - l.x, x.y - l.y) <= NEAR.reach)
       .sort((a, b) => Math.hypot(a.x - l.x, a.y - l.y) - Math.hypot(b.x - l.x, b.y - l.y))[0]?.id;
     const ownBox = placed.find((p) => own !== undefined && p.id === own)?.r;
     // Hors des boutons et des cadenas toujours (les `hard` premiers), hors des autres étiquettes sauf celles que `spare` épargne.
-    // Ni sur le point d'un lieu épinglé, sauf celui de son lieu (Kéo s'y tient) : le trait d'un nom y finit, visible.
     const avoid = (spare: (id: string) => boolean) => (r: Rect) => onScreen(r) && uncovered(r, own ?? l.id) && !placed.some((p, i) => (i < hard || p.id === null || !spare(p.id)) && clash(p.r, r));
-    const ok = avoid(() => false);
+    // Au 4e, une place libre ne couvre non plus aucun trait (`leader`, retouche 3 : « Toi » sur le bout du trait de la Forge).
+    const ok = l.keepNames ? (r: Rect) => avoid(() => false)(r) && !leads.some((s) => leaderCrosses(s, r)) : avoid(() => false);
     const over = avoid((id) => pale.has(id));
     // Sur le nom de son lieu : à cheval sur son bord d'abord (le centre de la pastille hors de lui), puis où que ce soit.
     const mine = avoid((id) => pale.has(id) || id === own);
@@ -736,10 +847,51 @@ function attemptLayout(
     // Près du point d'abord (la pastille à sa taille au plus), puis, sur une place libre seulement, à `NEAR.reach` au plus,
     // comme la pastille seule : plus loin, sur un nom pâle, Kéo se lisait au lieu fermé qu'il couvrait.
     const toi = findToi(ok, MAP_KEO_DISC) ?? findToi(over, MAP_KEO_DISC) ?? findToi(ok, NEAR.reach);
-    const disc = () => find(MAP_KEO_DISC, ok) ?? find(MAP_KEO_DISC, over) ?? find(MAP_KEO_DISC, ok, NEAR.reach) ?? find(MAP_KEO_DISC, over, NEAR.reach) ?? find(MAP_KEO_DISC, edge) ?? find(MAP_KEO_DISC, mine);
+    // Au 4e (`keepNames`), à cheval sur le bord d'un cadre posé, dans sa marge seulement : sa pastille ne passe pas la
+    // marge vers les lettres, ni ne touche une autre étiquette ; la plus proche du point, à `NEAR.reach` au plus. Sinon
+    // libre un peu plus loin (deux fois `NEAR.reach`), puis sur aucune lettre (`unlettered`).
+    const margin = (id: string): Rect | undefined => {
+      const box = placed.find((p) => p.id === id)?.r;
+      const label = labels.find((x) => x.id === id);
+      if (!box || !label) return undefined;
+      const pad = (out.get(id)?.narrow ? label.narrow?.pad : label.pad) ?? 0;
+      const fits = avoid((x) => x === id);
+      let best: { r: Rect; d: number } | undefined;
+      for (const left of [box.left + pad - MAP_KEO_DISC, box.right - pad])
+        for (let top = box.top - MAP_KEO_DISC + NEAR.step / 2; top < box.bottom; top += NEAR.step / 2) {
+          const r = rect(left, top, MAP_KEO_DISC, l.h);
+          const d = gapTo(l, r);
+          if (d <= NEAR.reach && (!best || d < best.d) && fits(r)) best = { r, d };
+        }
+      return best?.r;
+    };
+    const paleNames = () =>
+      labels
+        .filter((x) => x.kind === 'open' && x.pale && out.get(x.id)?.name)
+        .sort((a, b) => Math.hypot(a.x - l.x, a.y - l.y) - Math.hypot(b.x - l.x, b.y - l.y));
+    const kept = () => (own !== undefined ? margin(own) : undefined) ?? paleNames().reduce<Rect | undefined>((r, x) => r ?? margin(x.id), undefined);
+    // Au 4e, en dernier : à deux fois `NEAR.reach` au plus, une place qui ne couvre aucune lettre, quitte à toucher un cadre
+    // (hors des boutons et des cadenas ; le dedans d'un nom posé, moins sa marge, à découvert ; tout un nom fermé ou une
+    // pastille réduite à découvert).
+    const unlettered = (r: Rect) =>
+      onScreen(r) &&
+      !placed.some((p, i) => {
+        if (i < hard || p.id === null) return clash(p.r, r);
+        const x = labels.find((y) => y.id === p.id);
+        const spot = out.get(p.id);
+        if (x?.kind !== 'open' || !spot?.name) return cross(p.r, r);
+        const pad = (spot.narrow ? x.narrow?.pad : x.pad) ?? 0;
+        return cross({ left: p.r.left + pad, top: p.r.top, right: p.r.right - pad, bottom: p.r.bottom }, r);
+      });
+    const disc = () =>
+      l.keepNames
+        ? (find(MAP_KEO_DISC, ok) ?? find(MAP_KEO_DISC, ok, NEAR.reach) ?? kept() ?? find(MAP_KEO_DISC, ok, 2 * NEAR.reach) ?? find(MAP_KEO_DISC, unlettered, 2 * NEAR.reach))
+        : (find(MAP_KEO_DISC, ok) ?? find(MAP_KEO_DISC, over) ?? find(MAP_KEO_DISC, ok, NEAR.reach) ?? find(MAP_KEO_DISC, over, NEAR.reach) ?? find(MAP_KEO_DISC, edge) ?? find(MAP_KEO_DISC, mine));
+    // Au pire, de son côté fixe, sans rien éviter : au 4e, seulement si toute place à deux fois `NEAR.reach` de son point
+    // couvre une lettre ou un bouton (un écran plein de noms) ; elle peut alors couvrir une lettre (testé dans map.test.ts).
     const spot = toi ? { r: toi.r, name: true, toi: toi.toi } : { r: disc() ?? at(MAP_KEO_DISC, side), name: false, toi: undefined };
     placed.push({ id: l.id, r: spot.r });
     out.set(l.id, { id: l.id, left: spot.r.left, top: spot.r.top, name: spot.name, ...(spot.toi ? { toi: spot.toi } : {}) });
   }
-  return { spots: labels.map((l) => out.get(l.id)!), mute, namedOpen, closedNamed, reserved, room };
+  return { spots: labels.map((l) => out.get(l.id)!), mute, namedOpen, closedNamed, reserved, room, crossed };
 }

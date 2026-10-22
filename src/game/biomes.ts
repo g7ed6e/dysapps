@@ -81,7 +81,7 @@ export type BiomeId = (typeof BIOME_IDS)[number];
  * mainteneur du 21 octobre 2026, GD-24) : leurs missions se jouent dans leur lieu du monde ouvert, jamais dans la grille
  * ni dans Blocland. Hors de `BIOME_IDS`, donc hors des tables de la grille (créature, Gardien, décor, carte).
  */
-export const OPEN_WORLD_ONLY_IDS = ['maths-4e-data'] as const;
+export const OPEN_WORLD_ONLY_IDS = ['maths-4e-data', 'french-4e-sentence'] as const;
 export type OpenWorldOnlyId = (typeof OPEN_WORLD_ONLY_IDS)[number];
 /** Une île du contenu : de la grille (`BiomeId`) ou du monde ouvert seulement. */
 export type IleId = BiomeId | OpenWorldOnlyId;

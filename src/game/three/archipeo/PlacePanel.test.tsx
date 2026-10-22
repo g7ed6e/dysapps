@@ -87,6 +87,7 @@ it('l’adresse de retour d’un lieu se lit sans rien inventer', () => {
   for (const v of [null, '', 'quai', 'Quais', 'vigie', '../quais']) expect(placeFromParam(PLAN, v)).toBeNull();
   // Depuis l'écran d'une mission d'un lieu du monde ouvert seulement (GD-24, `islandReturn`) : le lieu qui reprend l'île.
   expect(placeFromParam(planFor('4e'), null, 'maths-4e-data')).toBe('etalon');
+  expect(placeFromParam(planFor('4e'), null, 'french-4e-sentence')).toBe('jonction');
   expect(placeFromParam(PLAN, null, 'maths-4e-data')).toBeNull();
   expect(placeResume('/adventure/maths-6e-calculation/measures')).toBe('/adventure?lieu=quais&mission=measures');
   // Une île sans lieu, une mission qui n'est pas de l'île, une autre adresse : son retour habituel.

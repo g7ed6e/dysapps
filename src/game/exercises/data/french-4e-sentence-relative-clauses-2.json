@@ -1,0 +1,222 @@
+{
+  "id": "french-4e-sentence-relative-clauses-2",
+  "biome": "french-4e-sentence",
+  "type": "relative-clauses",
+  "level": 2,
+  "instruction": "Choisis le pronom relatif qui complète la phrase. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-4e-sentence-relative-clauses-2-0",
+      "prompt": "Le film … nous avons vu hier était drôle.",
+      "spoken": "Le film  (mot manquant)  nous avons vu hier était drôle.",
+      "choices": [
+        "qui",
+        "que",
+        "dont"
+      ],
+      "answer": "que",
+      "hint": "Le verbe « avons vu » a-t-il déjà un sujet ?",
+      "explanation": "« Nous » est le sujet de « avons vu » : il faut « que ». Nous avons vu le film.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui, que, dont, où",
+          "lines": [
+            "qui : sujet du verbe qui suit (l’ami qui arrive).",
+            "que : complément, le verbe a déjà son sujet (l’ami que je retrouve).",
+            "dont : remplace « de » + le nom (l’ami dont je me souviens : je me souviens de l’ami).",
+            "où : un lieu ou un moment (la rue où j’habite, l’heure où il part)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-2-1",
+      "prompt": "La fille … chante sur scène est ma cousine.",
+      "spoken": "La fille  (mot manquant)  chante sur scène est ma cousine.",
+      "choices": [
+        "qui",
+        "que",
+        "où"
+      ],
+      "answer": "qui",
+      "hint": "Qui chante ? Le verbe « chante » a-t-il un autre sujet ?",
+      "explanation": "« Chante » n’a pas d’autre sujet : le pronom est sujet, c’est « qui ». La fille chante sur scène.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui, que, dont, où",
+          "lines": [
+            "qui : sujet du verbe qui suit (l’ami qui arrive).",
+            "que : complément, le verbe a déjà son sujet (l’ami que je retrouve).",
+            "dont : remplace « de » + le nom (l’ami dont je me souviens : je me souviens de l’ami).",
+            "où : un lieu ou un moment (la rue où j’habite, l’heure où il part)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-2-2",
+      "prompt": "C’est le livre … j’ai besoin pour mon exposé.",
+      "spoken": "C’est le livre  (mot manquant)  j’ai besoin pour mon exposé.",
+      "choices": [
+        "que",
+        "où",
+        "dont"
+      ],
+      "answer": "dont",
+      "hint": "On dit « avoir besoin de quelque chose ».",
+      "explanation": "J’ai besoin du livre : « de » + le nom, c’est « dont ». On ne dit pas « j’ai besoin le livre » : « que » ne va pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui, que, dont, où",
+          "lines": [
+            "qui : sujet du verbe qui suit (l’ami qui arrive).",
+            "que : complément, le verbe a déjà son sujet (l’ami que je retrouve).",
+            "dont : remplace « de » + le nom (l’ami dont je me souviens : je me souviens de l’ami).",
+            "où : un lieu ou un moment (la rue où j’habite, l’heure où il part)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-2-3",
+      "prompt": "La salle … nous mangeons est au rez-de-chaussée.",
+      "spoken": "La salle  (mot manquant)  nous mangeons est au rez-de-chaussée.",
+      "choices": [
+        "où",
+        "que",
+        "dont"
+      ],
+      "answer": "où",
+      "hint": "La relative dit-elle un lieu ?",
+      "explanation": "Nous mangeons dans la salle : la relative dit un lieu, c’est « où ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui, que, dont, où",
+          "lines": [
+            "qui : sujet du verbe qui suit (l’ami qui arrive).",
+            "que : complément, le verbe a déjà son sujet (l’ami que je retrouve).",
+            "dont : remplace « de » + le nom (l’ami dont je me souviens : je me souviens de l’ami).",
+            "où : un lieu ou un moment (la rue où j’habite, l’heure où il part)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-2-4",
+      "prompt": "Voici le chien … j’ai peur.",
+      "spoken": "Voici le chien  (mot manquant)  j’ai peur.",
+      "choices": [
+        "qui",
+        "dont",
+        "que"
+      ],
+      "answer": "dont",
+      "hint": "On dit « avoir peur de quelqu’un ».",
+      "explanation": "J’ai peur du chien : « de » + le nom, c’est « dont ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui, que, dont, où",
+          "lines": [
+            "qui : sujet du verbe qui suit (l’ami qui arrive).",
+            "que : complément, le verbe a déjà son sujet (l’ami que je retrouve).",
+            "dont : remplace « de » + le nom (l’ami dont je me souviens : je me souviens de l’ami).",
+            "où : un lieu ou un moment (la rue où j’habite, l’heure où il part)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-2-5",
+      "prompt": "Le bus … passe devant le collège est en retard.",
+      "spoken": "Le bus  (mot manquant)  passe devant le collège est en retard.",
+      "choices": [
+        "que",
+        "dont",
+        "qui"
+      ],
+      "answer": "qui",
+      "hint": "Qui passe devant le collège ?",
+      "explanation": "Le bus passe devant le collège : le pronom est sujet de « passe », c’est « qui ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui, que, dont, où",
+          "lines": [
+            "qui : sujet du verbe qui suit (l’ami qui arrive).",
+            "que : complément, le verbe a déjà son sujet (l’ami que je retrouve).",
+            "dont : remplace « de » + le nom (l’ami dont je me souviens : je me souviens de l’ami).",
+            "où : un lieu ou un moment (la rue où j’habite, l’heure où il part)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-2-6",
+      "prompt": "L’été … nous sommes partis en Bretagne, il a fait très chaud.",
+      "spoken": "L’été  (mot manquant)  nous sommes partis en Bretagne, il a fait très chaud.",
+      "choices": [
+        "que",
+        "où",
+        "dont"
+      ],
+      "answer": "où",
+      "hint": "La relative dit un moment : quand sommes-nous partis ?",
+      "explanation": "Nous sommes partis cet été-là : la relative dit un moment, c’est « où ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui, que, dont, où",
+          "lines": [
+            "qui : sujet du verbe qui suit (l’ami qui arrive).",
+            "que : complément, le verbe a déjà son sujet (l’ami que je retrouve).",
+            "dont : remplace « de » + le nom (l’ami dont je me souviens : je me souviens de l’ami).",
+            "où : un lieu ou un moment (la rue où j’habite, l’heure où il part)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-2-7",
+      "prompt": "Le gâteau … mon frère a préparé est délicieux.",
+      "spoken": "Le gâteau  (mot manquant)  mon frère a préparé est délicieux.",
+      "choices": [
+        "dont",
+        "qui",
+        "que"
+      ],
+      "answer": "que",
+      "hint": "Le verbe « a préparé » a déjà un sujet : lequel ?",
+      "explanation": "« Mon frère » est le sujet de « a préparé » : il faut « que ». Mon frère a préparé le gâteau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui, que, dont, où",
+          "lines": [
+            "qui : sujet du verbe qui suit (l’ami qui arrive).",
+            "que : complément, le verbe a déjà son sujet (l’ami que je retrouve).",
+            "dont : remplace « de » + le nom (l’ami dont je me souviens : je me souviens de l’ami).",
+            "où : un lieu ou un moment (la rue où j’habite, l’heure où il part)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

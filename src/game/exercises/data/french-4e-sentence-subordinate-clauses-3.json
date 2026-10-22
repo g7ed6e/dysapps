@@ -1,0 +1,218 @@
+{
+  "id": "french-4e-sentence-subordinate-clauses-3",
+  "biome": "french-4e-sentence",
+  "type": "subordinate-clauses",
+  "level": 3,
+  "instruction": "Question rapportée : dis si elle est totale ou partielle, ou choisis la bonne fin. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-4e-sentence-subordinate-clauses-3-0",
+      "prompt": "« Je me demande si le car est arrivé. » Totale ou partielle ?",
+      "spoken": "Je me demande si le car est arrivé. Totale ou partielle ?",
+      "choices": [
+        "totale",
+        "partielle"
+      ],
+      "answer": "totale",
+      "hint": "Peut-on répondre par oui ou par non ?",
+      "explanation": "Le car est-il arrivé ? On répond oui ou non : la question est totale. Elle commence par « si ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’interrogative indirecte",
+          "lines": [
+            "C’est une question rapportée après un verbe comme demander, se demander, savoir.",
+            "Totale : on y répond par oui ou non. Elle commence par « si » (je ne sais pas si le magasin est ouvert).",
+            "Partielle : elle porte sur une seule chose. Elle commence par qui, où, quand, comment, pourquoi ou ce que.",
+            "Ni point d’interrogation, ni sujet inversé, ni « est-ce que »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-3-1",
+      "prompt": "« Dis-moi pourquoi tu ris. » Totale ou partielle ?",
+      "spoken": "Dis-moi pourquoi tu ris. Totale ou partielle ?",
+      "choices": [
+        "totale",
+        "partielle"
+      ],
+      "answer": "partielle",
+      "hint": "Peut-on répondre par oui ou par non ?",
+      "explanation": "Pourquoi ris-tu ? On ne répond pas par oui ou non, mais par une raison : la question est partielle, et porte sur la cause.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’interrogative indirecte",
+          "lines": [
+            "C’est une question rapportée après un verbe comme demander, se demander, savoir.",
+            "Totale : on y répond par oui ou non. Elle commence par « si » (je ne sais pas si le magasin est ouvert).",
+            "Partielle : elle porte sur une seule chose. Elle commence par qui, où, quand, comment, pourquoi ou ce que.",
+            "Ni point d’interrogation, ni sujet inversé, ni « est-ce que »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-3-2",
+      "prompt": "« Il ne sait pas quand le cours commence. » Totale ou partielle ?",
+      "spoken": "Il ne sait pas quand le cours commence. Totale ou partielle ?",
+      "choices": [
+        "partielle",
+        "totale"
+      ],
+      "answer": "partielle",
+      "hint": "La question porte-t-elle sur une seule chose ?",
+      "explanation": "Quand le cours commence-t-il ? On répond par un moment : la question est partielle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’interrogative indirecte",
+          "lines": [
+            "C’est une question rapportée après un verbe comme demander, se demander, savoir.",
+            "Totale : on y répond par oui ou non. Elle commence par « si » (je ne sais pas si le magasin est ouvert).",
+            "Partielle : elle porte sur une seule chose. Elle commence par qui, où, quand, comment, pourquoi ou ce que.",
+            "Ni point d’interrogation, ni sujet inversé, ni « est-ce que »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-3-3",
+      "prompt": "« La professeure demande si tout le monde a compris. » Totale ou partielle ?",
+      "spoken": "La professeure demande si tout le monde a compris. Totale ou partielle ?",
+      "choices": [
+        "partielle",
+        "totale"
+      ],
+      "answer": "totale",
+      "hint": "Par quel mot la question commence-t-elle ?",
+      "explanation": "Tout le monde a-t-il compris ? On répond oui ou non : la question est totale, et commence par « si ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’interrogative indirecte",
+          "lines": [
+            "C’est une question rapportée après un verbe comme demander, se demander, savoir.",
+            "Totale : on y répond par oui ou non. Elle commence par « si » (je ne sais pas si le magasin est ouvert).",
+            "Partielle : elle porte sur une seule chose. Elle commence par qui, où, quand, comment, pourquoi ou ce que.",
+            "Ni point d’interrogation, ni sujet inversé, ni « est-ce que »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-3-4",
+      "prompt": "Question : « Est-ce que tu as faim ? » Rapportée : Je te demande …",
+      "spoken": "Question : « Est-ce que tu as faim ? » Rapportée : Je te demande  (mots manquants) ",
+      "choices": [
+        "est-ce que tu as faim",
+        "si tu as faim",
+        "que tu as faim"
+      ],
+      "answer": "si tu as faim",
+      "hint": "On répond par oui ou non. Quel mot commence la question rapportée ?",
+      "explanation": "Une question totale rapportée commence par « si » : je te demande si tu as faim. « Est-ce que » disparaît, comme le point d’interrogation.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’interrogative indirecte",
+          "lines": [
+            "C’est une question rapportée après un verbe comme demander, se demander, savoir.",
+            "Totale : on y répond par oui ou non. Elle commence par « si » (je ne sais pas si le magasin est ouvert).",
+            "Partielle : elle porte sur une seule chose. Elle commence par qui, où, quand, comment, pourquoi ou ce que.",
+            "Ni point d’interrogation, ni sujet inversé, ni « est-ce que »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-3-5",
+      "prompt": "Question : « Où as-tu rangé ton sac ? » Rapportée : Elle me demande …",
+      "spoken": "Question : « Où as-tu rangé ton sac ? » Rapportée : Elle me demande  (mots manquants) ",
+      "choices": [
+        "où as-tu rangé ton sac",
+        "si j’ai rangé mon sac",
+        "où j’ai rangé mon sac"
+      ],
+      "answer": "où j’ai rangé mon sac",
+      "hint": "La question porte sur le lieu. Et le sujet reste-t-il après le verbe ?",
+      "explanation": "Elle me demande où j’ai rangé mon sac : « où » reste, le sujet repasse devant le verbe, et « tu » devient « je », puisque la question m’est posée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’interrogative indirecte",
+          "lines": [
+            "C’est une question rapportée après un verbe comme demander, se demander, savoir.",
+            "Totale : on y répond par oui ou non. Elle commence par « si » (je ne sais pas si le magasin est ouvert).",
+            "Partielle : elle porte sur une seule chose. Elle commence par qui, où, quand, comment, pourquoi ou ce que.",
+            "Ni point d’interrogation, ni sujet inversé, ni « est-ce que »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-3-6",
+      "prompt": "Question : « Qu’est-ce que tu veux ? » Rapportée : Je te demande …",
+      "spoken": "Question : « Qu’est-ce que tu veux ? » Rapportée : Je te demande  (mots manquants) ",
+      "choices": [
+        "ce que tu veux",
+        "qu’est-ce que tu veux",
+        "si tu veux"
+      ],
+      "answer": "ce que tu veux",
+      "hint": "La question porte sur une seule chose. Relis la troisième ligne de la règle.",
+      "explanation": "Une question partielle rapportée peut commencer par « ce que » : je te demande ce que tu veux. « Est-ce que » disparaît, comme le dit la dernière ligne. « Si tu veux » changerait la question.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’interrogative indirecte",
+          "lines": [
+            "C’est une question rapportée après un verbe comme demander, se demander, savoir.",
+            "Totale : on y répond par oui ou non. Elle commence par « si » (je ne sais pas si le magasin est ouvert).",
+            "Partielle : elle porte sur une seule chose. Elle commence par qui, où, quand, comment, pourquoi ou ce que.",
+            "Ni point d’interrogation, ni sujet inversé, ni « est-ce que »."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-3-7",
+      "prompt": "Question : « Viendras-tu samedi ? » Rapportée : Il me demande …",
+      "spoken": "Question : « Viendras-tu samedi ? » Rapportée : Il me demande  (mots manquants) ",
+      "choices": [
+        "quand je viendrai",
+        "si je viendrai samedi",
+        "viendras-tu samedi"
+      ],
+      "answer": "si je viendrai samedi",
+      "hint": "On répond par oui ou non. Et qui viendra ?",
+      "explanation": "Une question totale : « si ». Il me la pose, donc « tu » devient « je » : il me demande si je viendrai samedi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’interrogative indirecte",
+          "lines": [
+            "C’est une question rapportée après un verbe comme demander, se demander, savoir.",
+            "Totale : on y répond par oui ou non. Elle commence par « si » (je ne sais pas si le magasin est ouvert).",
+            "Partielle : elle porte sur une seule chose. Elle commence par qui, où, quand, comment, pourquoi ou ce que.",
+            "Ni point d’interrogation, ni sujet inversé, ni « est-ce que »."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,219 @@
+{
+  "id": "french-4e-sentence-relative-clauses-3",
+  "biome": "french-4e-sentence",
+  "type": "relative-clauses",
+  "level": 3,
+  "instruction": "Lis la phrase : que fait la relative ? La règle est affichée.",
+  "items": [
+    {
+      "key": "french-4e-sentence-relative-clauses-3-0",
+      "prompt": "« un exercice que l’on ne peut pas faire » : par quel adjectif remplacer la relative ?",
+      "spoken": "un exercice que l’on ne peut pas faire : par quel adjectif remplacer la relative ?",
+      "choices": [
+        "difficile",
+        "impossible",
+        "inutile"
+      ],
+      "answer": "impossible",
+      "hint": "Un exercice qu’on ne peut pas faire du tout : quel mot le dit exactement ?",
+      "explanation": "Ce qu’on ne peut pas faire est impossible. Un exercice difficile, on peut le faire, avec du mal.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que fait la relative",
+          "lines": [
+            "La relative complète son antécédent, comme un adjectif : elle est complément de l’antécédent.",
+            "On peut souvent la remplacer par un adjectif : un chemin qu’on ne voit pas → un chemin invisible.",
+            "On peut l’enlever : la phrase reste juste, mais elle dit moins de choses.",
+            "Une conjonctive avec « que » complète un verbe, pas un nom (je crois qu’il viendra)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-3-1",
+      "prompt": "« une eau que l’on peut boire » : par quel adjectif remplacer la relative ?",
+      "spoken": "une eau que l’on peut boire : par quel adjectif remplacer la relative ?",
+      "choices": [
+        "potable",
+        "fraîche",
+        "claire"
+      ],
+      "answer": "potable",
+      "hint": "Quel adjectif veut dire « qu’on peut boire » ?",
+      "explanation": "Une eau potable est une eau que l’on peut boire. Une eau claire ou fraîche n’est pas forcément bonne à boire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que fait la relative",
+          "lines": [
+            "La relative complète son antécédent, comme un adjectif : elle est complément de l’antécédent.",
+            "On peut souvent la remplacer par un adjectif : un chemin qu’on ne voit pas → un chemin invisible.",
+            "On peut l’enlever : la phrase reste juste, mais elle dit moins de choses.",
+            "Une conjonctive avec « que » complète un verbe, pas un nom (je crois qu’il viendra)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-3-2",
+      "prompt": "« un objet qui ne sert à rien » : par quel adjectif remplacer la relative ?",
+      "spoken": "un objet qui ne sert à rien : par quel adjectif remplacer la relative ?",
+      "choices": [
+        "cassé",
+        "ancien",
+        "inutile"
+      ],
+      "answer": "inutile",
+      "hint": "Le préfixe in- veut dire « pas ».",
+      "explanation": "Un objet inutile ne sert à rien. Un objet cassé ou ancien peut encore servir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que fait la relative",
+          "lines": [
+            "La relative complète son antécédent, comme un adjectif : elle est complément de l’antécédent.",
+            "On peut souvent la remplacer par un adjectif : un chemin qu’on ne voit pas → un chemin invisible.",
+            "On peut l’enlever : la phrase reste juste, mais elle dit moins de choses.",
+            "Une conjonctive avec « que » complète un verbe, pas un nom (je crois qu’il viendra)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-3-3",
+      "prompt": "« Le vélo que j’ai réparé roule bien. » Si on enlève la relative, que reste-t-il ?",
+      "spoken": "Le vélo que j’ai réparé roule bien. Si on enlève la relative, que reste-t-il ?",
+      "choices": [
+        "Le vélo roule bien.",
+        "J’ai réparé le vélo.",
+        "Le vélo que j’ai réparé."
+      ],
+      "answer": "Le vélo roule bien.",
+      "hint": "Enlève tout, de « que » jusqu’à « réparé ».",
+      "explanation": "Sans la relative, il reste la principale : « Le vélo roule bien. » La phrase est juste, mais on ne sait plus de quel vélo on parle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que fait la relative",
+          "lines": [
+            "La relative complète son antécédent, comme un adjectif : elle est complément de l’antécédent.",
+            "On peut souvent la remplacer par un adjectif : un chemin qu’on ne voit pas → un chemin invisible.",
+            "On peut l’enlever : la phrase reste juste, mais elle dit moins de choses.",
+            "Une conjonctive avec « que » complète un verbe, pas un nom (je crois qu’il viendra)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-3-4",
+      "prompt": "« Je sais que tu dis vrai. » Cette subordonnée est-elle une relative ou une conjonctive ?",
+      "spoken": "Je sais que tu dis vrai. Cette subordonnée est-elle une relative ou une conjonctive ?",
+      "choices": [
+        "une relative",
+        "une conjonctive"
+      ],
+      "answer": "une conjonctive",
+      "hint": "« Que » suit-il un nom, ou un verbe ?",
+      "explanation": "« Que » suit le verbe « sais » et ne remplace aucun nom : c’est une conjonctive, qui complète le verbe. Je sais quoi ? Que tu dis vrai.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que fait la relative",
+          "lines": [
+            "La relative complète son antécédent, comme un adjectif : elle est complément de l’antécédent.",
+            "On peut souvent la remplacer par un adjectif : un chemin qu’on ne voit pas → un chemin invisible.",
+            "On peut l’enlever : la phrase reste juste, mais elle dit moins de choses.",
+            "Une conjonctive avec « que » complète un verbe, pas un nom (je crois qu’il viendra)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-3-5",
+      "prompt": "« L’histoire que tu racontes est vraie. » Cette subordonnée est-elle une relative ou une conjonctive ?",
+      "spoken": "L’histoire que tu racontes est vraie. Cette subordonnée est-elle une relative ou une conjonctive ?",
+      "choices": [
+        "une relative",
+        "une conjonctive"
+      ],
+      "answer": "une relative",
+      "hint": "« Que » suit-il un nom ? Remets ce nom à sa place.",
+      "explanation": "« Que » suit le nom « histoire » et le remplace : tu racontes l’histoire. C’est une relative, qui complète ce nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que fait la relative",
+          "lines": [
+            "La relative complète son antécédent, comme un adjectif : elle est complément de l’antécédent.",
+            "On peut souvent la remplacer par un adjectif : un chemin qu’on ne voit pas → un chemin invisible.",
+            "On peut l’enlever : la phrase reste juste, mais elle dit moins de choses.",
+            "Une conjonctive avec « que » complète un verbe, pas un nom (je crois qu’il viendra)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-3-6",
+      "prompt": "« Le chien de ma voisine qui aboie toute la nuit m’empêche de dormir. » Quel nom la relative complète-t-elle ?",
+      "spoken": "Le chien de ma voisine qui aboie toute la nuit m’empêche de dormir. Quel nom la relative complète-t-elle ?",
+      "choices": [
+        "ma voisine",
+        "le chien"
+      ],
+      "answer": "le chien",
+      "hint": "Remplace « qui » par chacun des deux noms : lequel aboie ?",
+      "explanation": "C’est le chien qui aboie : « qui » remplace « le chien ». La relative complète ce nom, même si « ma voisine » est plus près d’elle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que fait la relative",
+          "lines": [
+            "La relative complète son antécédent, comme un adjectif : elle est complément de l’antécédent.",
+            "On peut souvent la remplacer par un adjectif : un chemin qu’on ne voit pas → un chemin invisible.",
+            "On peut l’enlever : la phrase reste juste, mais elle dit moins de choses.",
+            "Une conjonctive avec « que » complète un verbe, pas un nom (je crois qu’il viendra)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-3-7",
+      "prompt": "« Prends les fruits qui sont mûrs. » Que dit la relative ?",
+      "spoken": "Prends les fruits qui sont mûrs. Que dit la relative ?",
+      "choices": [
+        "pourquoi les prendre",
+        "quels fruits prendre",
+        "quand les prendre"
+      ],
+      "answer": "quels fruits prendre",
+      "hint": "La relative complète un nom. Lequel, et que dit-elle de lui ?",
+      "explanation": "La relative complète « les fruits » : elle dit lesquels prendre, ceux qui sont mûrs. Elle fait le travail d’un adjectif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que fait la relative",
+          "lines": [
+            "La relative complète son antécédent, comme un adjectif : elle est complément de l’antécédent.",
+            "On peut souvent la remplacer par un adjectif : un chemin qu’on ne voit pas → un chemin invisible.",
+            "On peut l’enlever : la phrase reste juste, mais elle dit moins de choses.",
+            "Une conjonctive avec « que » complète un verbe, pas un nom (je crois qu’il viendra)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

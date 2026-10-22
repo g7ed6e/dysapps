@@ -23,11 +23,12 @@ import { hutteFacets } from '../../world/continu/hutte5e';
 import { dalleFacets } from '../../world/continu/dalle4e';
 import { epaveFacets } from '../../world/continu/epave4e';
 import { recoinFacets } from '../../world/continu/recoin4e';
+import { replatFacets } from '../../world/continu/replat4e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
-import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinPoint, cabinStops, cabinYaw, clampToOpen, type CabinCar } from '../../world/continu/bridges';
+import { BRIDGE_TOUCH, bridgeDeck, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinPoint, cabinStops, cabinYaw, clampToOpen, type CabinCar } from '../../world/continu/bridges';
 import { cabinButtonRoute, cabinCarOpen, cabinOf, cabinSide, routeWithRide } from '../../world/continu/cabinRide';
 import { creuxFacets } from '../../world/continu/creux5e';
 import { failleFacets, failleTapTarget } from '../../world/continu/faille5e';
@@ -1300,6 +1301,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!c) dalleDrawn.push((c = { found, facets: dalleFacets(found, ground) }));
     return c.facets;
   };
+  // Le Replat du 4e (les Coteaux) : de même, sans et avec sa sente.
+  const replatDrawn: { found: boolean; facets: Facets }[] = [];
+  const replatNow = (): Facets => {
+    const found = detoursFound.includes('replat');
+    let c = replatDrawn.find((k) => k.found === found);
+    if (!c) replatDrawn.push((c = { found, facets: replatFacets(found, ground) }));
+    return c.facets;
+  };
   // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son temps (la page le donne), le modèle de sa forme chargé à la
   // demande (sans lui, le ber seul), ses parties montrées réunies aux lieux, son obstacle (le banc du large, le mur de
   // nuages) avec eux. Le temps qui arrive descend à part (`nefDrop`, dans `nefMesh`) ; au départ (`nefTrip`), la Nef et
@@ -1740,8 +1749,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // La fiche d'une terre fermée : le pont à rebâtir d'abord, si Kéo se tient devant (de loin, la caméra reste où elle est).
     const land = landOf(place.id);
     if (isLinkedLand(land) && closed.includes(land)) {
-      const s = bridgeSite(firstClosed(land, closed));
-      return distance(here, s.mid) < FRAMED_BRIDGE_NEAR ? { x: s.mid.x, y: BRIDGE.deck, z: s.mid.z } : null;
+      const first = firstClosed(land, closed);
+      const s = bridgeSite(first);
+      return distance(here, s.mid) < FRAMED_BRIDGE_NEAR ? { x: s.mid.x, y: bridgeDeck(first), z: s.mid.z } : null;
     }
     if (exit && atExit()) return exit.keep;
     const foot = feet.get(place.id);
@@ -1958,8 +1968,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // fois trouvé, dans le monde comme sur la Carte, sans appel de plus.
       if (fifth) rest.push(creuxNow(), detourFacetsNow(), failleNow(), perchoirNow());
       // Les Détours du 4e : l'Épave (lot 2), sa coque sur sa cale ; le Recoin (lot 3), ses murets, sa chaudière et son
-      // figuier ; la Dalle (lot 3), sur ses colonnes, son muret ; leur lanterne, et la sente de chacun une fois trouvé.
-      else rest.push(epaveNow(), recoinNow(), dalleNow());
+      // figuier ; la Dalle (lot 3), sur ses colonnes, son muret ; le Replat (les Coteaux), sa terrasse et son muret ; leur
+      // lanterne, et la sente de chacun une fois trouvé.
+      else rest.push(epaveNow(), recoinNow(), dalleNow(), replatNow());
       // `reaches` en dernier : `reachFrom` compte sur eux pour les rayons (`solid`), `mergeFacets` garde l'ordre (nacelles5e.test.ts).
       rest.push(...reaches);
       const placed = mergeFacets(rest);
@@ -2043,7 +2054,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   /** Le pont d'une terre est-il à l'écran ? Son milieu ou l'un de ses bouts suffit : il est long. Hors de l'écran, il est posé d'un coup. */
   const bridgeOnScreen = (land: LinkedLand) => {
     const s = bridgeSite(land);
-    const at = (d: number) => onScreen(s.near.x + s.dir.x * d, BRIDGE.deck, s.near.z + s.dir.z * d);
+    const at = (d: number) => onScreen(s.near.x + s.dir.x * d, bridgeDeck(land, d), s.near.z + s.dir.z * d);
     return distance(here, s.mid) < FOG.far && (at(s.water[0]) || at((s.water[0] + s.water[1]) / 2) || at(s.water[1]));
   };
   /**
@@ -2217,7 +2228,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     lockPoints.length = 0;
     for (const land of lands) {
       const at = bridgeLockPoint(land);
-      lockPoints.push(new THREE.Vector3(at.x, BRIDGE.deck + LOCK_LIFT, at.z));
+      lockPoints.push(new THREE.Vector3(at.x, bridgeDeck(land) + LOCK_LIFT, at.z));
     }
   };
   const reportLocks = () => {
@@ -2618,7 +2629,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     let bestD = Infinity;
     for (const land of closed) {
       const { mid } = bridgeSite(land);
-      projected.set(mid.x, BRIDGE.deck, mid.z).project(camera);
+      projected.set(mid.x, bridgeDeck(land), mid.z).project(camera);
       const px = Math.hypot(sx(projected) - x, sy(projected) - y);
       const d = distance(p, mid);
       if (projected.z < 1 && (d <= BRIDGE_TOUCH.radius || px <= BRIDGE_TOUCH.pixels) && px < bestD) {
@@ -2668,7 +2679,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const bridgePoints = new Map<string, THREE.Vector3>(
     LINKED_LANDS.map((land) => {
       const { mid } = bridgeSite(land);
-      return [bridgeSpot(land), new THREE.Vector3(mid.x, BRIDGE.deck, mid.z)];
+      return [bridgeSpot(land), new THREE.Vector3(mid.x, bridgeDeck(land), mid.z)];
     }),
   );
   // Le point du nom d'un lieu qui le fixe (le Sémaphore, au-dessus de sa corniche ; le Gaillard, au-dessus de ses

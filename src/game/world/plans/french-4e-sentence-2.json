@@ -1,0 +1,9 @@
+{
+  "id": "french-4e-sentence-2",
+  "biome": "french-4e-sentence",
+  "name": "Le toit de la cabine",
+  "reward": {
+    "xp": 50
+  },
+  "done": "Un toit de fer sur la cabine. La pluie peut tomber."
+}

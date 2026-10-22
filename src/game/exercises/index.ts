@@ -111,6 +111,10 @@ const ORDER: (string | ExerciseDef[])[] = [
   'maths-4e-data-weighted-mean-1', 'maths-4e-data-weighted-mean-2', 'maths-4e-data-events-1', 'maths-4e-data-events-2', 'maths-4e-data-proportional-reasoning-1',
   'maths-4e-data-proportional-reasoning-2', 'maths-4e-data-proportional-reasoning-3', 'maths-4e-data-calculation-programs-1', 'maths-4e-data-calculation-programs-2',
   'maths-4e-data-translations-1', 'maths-4e-data-translations-2',
+  // La Jonction (4e), lieu du monde ouvert seulement (GD-24, 21 octobre 2026).
+  'french-4e-sentence-relative-clauses-1', 'french-4e-sentence-relative-clauses-2', 'french-4e-sentence-relative-clauses-3', 'french-4e-sentence-subordinate-clauses-1',
+  'french-4e-sentence-subordinate-clauses-2', 'french-4e-sentence-subordinate-clauses-3', 'french-4e-sentence-passive-reported-1', 'french-4e-sentence-passive-reported-2',
+  'french-4e-sentence-compound-tenses-1', 'french-4e-sentence-compound-tenses-2', 'french-4e-sentence-moods-1', 'french-4e-sentence-moods-2',
   // Histoire et géographie (Fouille des siècles, Pointe des paysages, 6e).
   'history-6e-antiquity-early-humans-1', 'history-6e-antiquity-early-humans-2', 'history-6e-antiquity-ancient-peoples-1', 'history-6e-antiquity-ancient-peoples-2', 'history-6e-antiquity-roman-empire-1', 'history-6e-antiquity-roman-empire-2', 'history-6e-antiquity-viewpoints-1', 'history-6e-antiquity-viewpoints-2',
   'geography-6e-living-metropolises-1', 'geography-6e-living-metropolises-2', 'geography-6e-living-low-density-1', 'geography-6e-living-low-density-2', 'geography-6e-living-inhabited-world-1', 'geography-6e-living-inhabited-world-2',

@@ -29,8 +29,9 @@ function countColor(f: Facets, color: number): number {
 }
 
 describe('L’Épave, le premier Détour du 4e', () => {
-  it('se nomme « L’Épave », aux Fabriques, dans la sauvegarde après ceux du 6e et du 5e, avant le Recoin', () => {
+  it('se nomme « L’Épave », aux Fabriques, dans la sauvegarde après ceux du 6e et du 5e, avant le Recoin et le Replat', () => {
     expect(detourById('epave')).toBe(EPAVE);
+    // Le premier du 4e ; le Recoin (le Bastion) puis le Replat (les Coteaux) viennent après lui.
     expect(DETOURS_4E[0]).toBe(EPAVE);
     expect(EPAVE.name).toBe('L’Épave');
     expect(EPAVE.land).toBe('fabriques');

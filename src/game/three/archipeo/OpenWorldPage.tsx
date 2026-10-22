@@ -556,8 +556,9 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       if (settings.sounds) playDetourWind();
       const d = detourById(id);
       // La Dalle (lot 3 du 4e) : Kéo dit sa phrase sous le nom. La voix marque une pause entre les deux, au premier
-      // passage comme sur « Réécouter » (`voice` ; retouche 1 de l'Épaule, point 3).
-      setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: d.says ? [d.name, d.says] : [d.name], after: 0, top: true, detour: id, voice: d.says ? `${d.name}. ${d.says}` : undefined }));
+      // passage comme sur « Réécouter » (`voice` ; retouche 1 de l'Épaule, point 3). Au Replat (les Coteaux), la phrase
+      // est seulement lue, jamais écrite (`saysAloudOnly`).
+      setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: d.says && !d.saysAloudOnly ? [d.name, d.says] : [d.name], after: 0, top: true, detour: id, voice: d.says ? `${d.name}. ${d.says}` : undefined }));
     };
   }, [findDetour, settings.sounds]);
   useEffect(() => {
@@ -1237,9 +1238,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               {/* La phrase de ce que porte la suggestion chez un habitant (sa commande, l'étape d'entraide) ; « Aucune
                   mission » seulement quand rien n'attend. Jamais pendant qu'une phrase du monde est écrite (l'état d'un
                   lieu restauré, un pont rebâti, le nom d'un Détour) : une seule bulle à la fois, la plus récente ; l'autre
-                  dépassait dessous (référent dys et consultant UX UI, relecture des Fabriques). Elle revient ensuite. */}
+                  dépassait dessous (référent dys et consultant UX UI, relecture des Fabriques). Elle revient ensuite.
+                  Jamais sur un Détour, où il n'y a jamais de mission (retouche 1 des Coteaux : au Replat, tout fini,
+                  elle venait après le nom). */}
               {!walking && !relightHere && !saidOn && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
-              {!next && !suggestedCmd && !nefFirst && !walking && !relightHere && !saidOn && <p className="open-world-go-reason">{revisionHere ? frenchTypography(REVISION_PHRASES.reminder) : 'Aucune mission à faire ici pour l’instant.'}</p>}
+              {!next && !suggestedCmd && !nefFirst && !walking && !relightHere && !saidOn && detourHere === null && <p className="open-world-go-reason">{revisionHere ? frenchTypography(REVISION_PHRASES.reminder) : 'Aucune mission à faire ici pour l’instant.'}</p>}
               <div className="open-world-go-row">
               {walking ? (
                 // Pendant tout trajet (la marche, la cabine, la marche) : « Passer le trajet », à contraste plein, saute

@@ -17,7 +17,6 @@ import { heightFor } from './placeGround';
 import { PATH_NODES_4E } from './plan4e';
 import { PATH_NODES_5E } from './plan5e';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId as PlaceId6e } from './plan6e';
-import { RUINS_4E } from './ruins4e';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 import { landDistance } from './terrain';
 
@@ -2480,12 +2479,6 @@ const RUINS_FALLEN_VOUSSOIRS = [
   [4.8, -4.9, -0.7],
 ] as const;
 
-/** Une ruine du 4e (./ruins4e.ts), en une seule pièce : ses lieux n'ont pas encore d'étapes (GD-22, lot 2). */
-const ruinOnly =
-  (draw: (b: FacetBuilder) => void) =>
-  (add: Add): void =>
-    add('ruine', 0, draw);
-
 const DRAWN: Record<PlaceId, (add: Add) => void> = {
   phare,
   quais,
@@ -2532,11 +2525,11 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   chariot: northPlace('chariot'),
   manufacture: northPlace('manufacture'),
   loge: northPlace('loge'),
-  herbier: ruinOnly(RUINS_4E.herbier),
-  roches: ruinOnly(RUINS_4E.roches),
-  jonction: ruinOnly(RUINS_4E.jonction),
-  veillee: ruinOnly(RUINS_4E.veillee),
-  basilique: ruinOnly(RUINS_4E.basilique),
+  herbier: northPlace('herbier'),
+  roches: northPlace('roches'),
+  jonction: northPlace('jonction'),
+  veillee: northPlace('veillee'),
+  basilique: northPlace('basilique'),
   terminus: northPlace('terminus'),
   orgues: northPlace('orgues'),
   dynamo: northPlace('dynamo'),

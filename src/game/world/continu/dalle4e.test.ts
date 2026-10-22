@@ -29,13 +29,14 @@ function countColor(f: Facets, color: number): number {
 describe('La Dalle, le Détour de l’Épaule', () => {
   it('se nomme « La Dalle », à l’Épaule, dans la sauvegarde après l’Épave et le Recoin ; Kéo y dit sa phrase', () => {
     expect(detourById('dalle')).toBe(DALLE);
-    expect(DETOURS_4E.map((d) => d.id)).toEqual(['epave', 'recoin', 'dalle']);
+    expect(DETOURS_4E.map((d) => d.id)).toEqual(['epave', 'recoin', 'dalle', 'replat']);
     expect(DALLE.name).toBe('La Dalle');
     expect(DALLE.land).toBe('epaule');
     expect(DALLE.says).toBe('D’ici, on voit toute la mer.');
     expect(SAVED_IDS).toEqual(DETOUR_IDS);
-    expect(DETOUR_IDS.at(-1)).toBe('dalle');
-    expect(DETOUR_IDS.at(-2)).toBe('recoin');
+    // Le Replat (les Coteaux) vient après elle.
+    expect(DETOUR_IDS.at(-2)).toBe('dalle');
+    expect(DETOUR_IDS.at(-3)).toBe('recoin');
     expect(sanitizeDetours(['dalle', 'epave'])).toEqual(['epave', 'dalle']);
     const state = findDetour({ world: { parts: {}, log: [], links: {} } } as never, 'dalle') as { world: { detours: string[] } };
     expect(state.world.detours).toEqual(['dalle']);

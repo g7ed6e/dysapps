@@ -3,22 +3,79 @@
 // chacun, et que les lieux du Bastion importent au lieu de le recopier encore : la lanterne pendue des Passeurs (d'ocre ou
 // éteinte), une dalle épaisse sous un contour, le dessin d'une trace posé au centre du lieu, le sol du 4e dans le repère
 // d'un lieu, le quadrilatère tourné vers le dehors, le pan de mur droit et le pan de tôle ; depuis la retouche 1 du Bastion, le plan
-// du sol d'un lieu (calculé au premier usage), le triangle tourné vers le dehors et la ferrure vide. Code pur.
+// du sol d'un lieu (calculé au premier usage), le triangle tourné vers le dehors et la ferrure vide. Les Coteaux
+// (intention du directeur artistique du 22 octobre 2026) y ajoutent le repère d'un lieu (son centre, le sol sous lui, sa
+// porte), les matières des Passeurs au 4e, la lanterne sur son poteau ou sur son bras, le support vide, la hauteur et le
+// sens d'une scène, le cap d'un regard ; ils posent leur sol par `groundPlane4e` et `once`, jamais à l'import. Code pur.
 import { FacetBuilder, drawPosed } from './facets';
 import type { Vec2, Vec3 } from './geometry';
+import { COLORS_4E, PATH_NODES_4E, PLACES_4E, type PlaceId4e } from './plan4e';
 import { COLORS_5E } from './plan5e';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
 
-type P3 = readonly [number, number, number];
+/** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter (places.ts). */
+export const SINK = -0.8;
 
-/** Les couleurs de la lanterne : l'ocre, seule lumière ; la vitre éteinte ; le chapeau de bronze (une ferrure). */
-const LANTERN_4E = { lit: COLORS_5E.lantern, off: 0xbfc4b8, bronze: 0x9c8452 } as const;
+export type P3 = readonly [number, number, number];
+
+/**
+ * Les matières des Passeurs au 4e (intention des Coteaux, « Ce qui reprend l'Étalon tel quel ») : la pierre grise à
+ * assises, au soleil et à l'ombre, jamais crème ; le basalte chaud, jamais presque noir ; le bois gris de la ruine, le
+ * bois neuf un cran plus chaud ; le fer de la ruine d'un brun éteint (jamais la rouille claire, qui se lit orange) ; le
+ * fer restauré bruni sombre ; la tôle neuve et son dessous ; la terre noire des bacs et des seuils, jamais sous le
+ * basalte ; la toile ; le dallage et ses joints ; le joint des assises de la pierre ; le grès des pots ; le bronze des ferrures ; l'ocre des lanternes, seule lumière, et la
+ * vitre éteinte.
+ */
+export const C4E = {
+  stone: COLORS_4E.stone,
+  stoneSun: COLORS_4E.stoneSun,
+  stoneShade: COLORS_4E.stoneShade,
+  basalt: COLORS_4E.basalt,
+  basaltSun: COLORS_4E.basaltSun,
+  basaltShade: COLORS_4E.basaltShade,
+  wood: COLORS_4E.wood,
+  woodShade: COLORS_4E.woodShade,
+  newWood: 0xa68672,
+  newShade: 0x8c766a,
+  rustDull: 0x6a483e,
+  rustDullTop: 0x74524a,
+  iron: 0x5c504c,
+  ironTop: 0x6c5e58,
+  sheet: 0x7a6e68,
+  sheetUnder: 0x6a5e58,
+  earth: 0x5a4e46,
+  earthTop: 0x625448,
+  canvas: 0xc8b89a,
+  canvasShade: 0xa8987c,
+  paving: 0xb0a598,
+  joint: 0x8a8078,
+  // Le joint des assises de la pierre grise (un cran sous son ombre, de la même teinte) ; le grès gris des pots et son dessus.
+  stoneJoint: 0x6b6865,
+  stoneware: 0x8a8580,
+  stonewareTop: 0x99948e,
+  bronze: 0x9c8452,
+  lantern: COLORS_5E.lantern,
+  lanternOff: 0xbfc4b8,
+} as const;
+
 
 /** Une lanterne pendue (sa vitre, un pavé ; son chapeau de bronze en pointe), d'ocre ou éteinte. */
 export function lantern(b: FacetBuilder, top: Vec3, lit: boolean, s = 1): void {
-  b.box({ x: top.x, y: top.y - 0.34 * s, z: top.z }, [0.24 * s, 0.3 * s, 0.24 * s], lit ? LANTERN_4E.lit : LANTERN_4E.off);
-  b.prism({ x: top.x, y: top.y - 0.04 * s, z: top.z, yaw: Math.PI / 4 }, 0.21 * s, 0, 0.16 * s, 4, LANTERN_4E.bronze);
+  b.box({ x: top.x, y: top.y - 0.34 * s, z: top.z }, [0.24 * s, 0.3 * s, 0.24 * s], lit ? C4E.lantern : C4E.lanternOff);
+  b.prism({ x: top.x, y: top.y - 0.04 * s, z: top.z, yaw: Math.PI / 4 }, 0.21 * s, 0, 0.16 * s, 4, C4E.bronze);
+}
+
+/** Une lanterne sur son poteau de fer bruni, posé au sol `y` en (`x`, `z`), haut de `h`. */
+export function postLantern(b: FacetBuilder, x: number, y: number, z: number, h: number, lit: boolean, s = 0.85): void {
+  b.box({ x, y: y - 0.3, z }, [0.12, h + 0.3, 0.12], C4E.iron);
+  lantern(b, { x, y: y + h + 0.02, z }, lit, s);
+}
+
+/** Une lanterne sur un bras de bois, sortie d'un poteau ou d'un mur en (`x`, `z`) vers (`dx`, `dz`), à `y`. */
+export function armLantern(b: FacetBuilder, x: number, y: number, z: number, dx: number, dz: number, lit: boolean): void {
+  b.beam({ x, y, z }, { x: x + dx * 0.45, y, z: z + dz * 0.45 }, 0.08, C4E.woodShade);
+  lantern(b, { x: x + dx * 0.45, y: y - 0.02, z: z + dz * 0.45 }, lit);
 }
 
 /** Une dalle épaisse de `by` sous un contour (son dessus, dans le sens inverse des aiguilles d'une montre vu d'en haut). */
@@ -41,6 +98,29 @@ export function inWorld(b: FacetBuilder, c: Vec3, draw: (l: FacetBuilder) => voi
 export function localGround4e(center: Vec2): (lx: number, lz: number) => number {
   const h0 = standingHeight(heightAt4e(center));
   return (lx, lz) => standingHeight(heightAt4e({ x: center.x + lx, z: center.z + lz })) - h0;
+}
+
+/** Le repère d'un lieu du 4e : son centre, le sol de son centre, le sol sous un point du repère, sa porte. */
+export interface Site4e {
+  center: Vec2;
+  h0: number;
+  /** Le sol du 4e sous un point du repère du lieu, depuis le sol de son centre. */
+  ground(lx: number, lz: number): number;
+  toLocal(p: Vec2): Vec2;
+  /** Le pas de la porte, au bout de ses chemins, depuis le centre. */
+  door: Vec2;
+}
+
+export function site4e(id: PlaceId4e): Site4e {
+  const center = PLACES_4E.find((p) => p.id === id)!.center;
+  const toLocal = (p: Vec2): Vec2 => ({ x: p.x - center.x, z: p.z - center.z });
+  return {
+    center,
+    h0: standingHeight(heightAt4e(center)),
+    ground: localGround4e(center),
+    toLocal,
+    door: toLocal(PATH_NODES_4E.find((n) => n.id === id)!.at),
+  };
 }
 
 /** Un quadrilatère tourné vers `out` (sa normale du même côté), quel que soit l'ordre de ses coins. */
@@ -93,9 +173,10 @@ export function sheet(b: FacetBuilder, q: readonly P3[], t: number, top: number,
  * Le plan du sol d'un lieu (relecture du code du Bastion, point 5, et retouche 1, point 18) : ajusté aux moindres carrés
  * sur le sol du 4e (`localGround`, dans le repère du lieu) dans le rectangle `xs` × `zs`, relevé juste assez pour ne
  * jamais passer sous le sol. Calculé au premier usage, jamais à l'import : `northShore.ts` importe les lieux du 4e pour
- * tous les niveaux, et le 6e comme le 5e ne paient plus ce calcul. Rend la hauteur du plan en un point du repère.
+ * tous les niveaux, et le 6e comme le 5e ne paient plus ce calcul. Rend la hauteur du plan en un point du repère. `lift` :
+ * de combien il passe au-dessus du plus haut du sol (les Roches, la salle des échantillons, le serrent à 0,02).
  */
-export function groundPlane4e(localGround: (lx: number, lz: number) => number, xs: readonly [number, number], zs: readonly [number, number]): (x: number, z: number) => number {
+export function groundPlane4e(localGround: (lx: number, lz: number) => number, xs: readonly [number, number], zs: readonly [number, number], lift = 0.04): (x: number, z: number) => number {
   let fit: { a: number; b: number; c: number } | undefined;
   const solve = () => {
     const pts: [number, number, number][] = [];
@@ -121,7 +202,7 @@ export function groundPlane4e(localGround: (lx: number, lz: number) => number, x
     const c = (szy * sxx - sxy * sxz) / det;
     let hi = -Infinity;
     for (const [x, z, y] of pts) hi = Math.max(hi, y - b * x - c * z);
-    return { a: hi + 0.04, b, c };
+    return { a: hi + lift, b, c };
   };
   return (x, z) => {
     fit ??= solve();
@@ -150,7 +231,7 @@ export function triOut(b: FacetBuilder, a: P3, c: P3, d: P3, out: P3, color: num
 }
 
 /** La couleur de la ferrure vide du 4e (un fer éteint, jamais la rouille claire) et de ses chevilles nues. */
-const BRACKET_4E = { plate: 0x6a483e, plateTop: 0x74524a, peg: 0x5c504c } as const;
+const BRACKET_4E = { plate: C4E.rustDull, plateTop: C4E.rustDullTop, peg: C4E.iron } as const;
 
 /**
  * La ferrure vide du 4e, le signe de l'absence : une petite plaque de fer éteint, deux chevilles nues, tournée vers `n`
@@ -210,3 +291,36 @@ export function courses(b: FacetBuilder, alongX: boolean, at: number, from: numb
   const n: P3 = alongX ? [0, 0, out] : [out, 0, 0];
   for (const y of ys) quadOut(b, p(from, y - 0.035), p(to, y - 0.035), p(to, y + 0.035), p(from, y + 0.035), n, color);
 }
+
+/**
+ * Le signe de l'absence du 4e (intention, « Ce qui reprend l'Étalon ») : là où était la pièce de bronze que les
+ * Ferrailleurs ont prise, un support de fer vide et deux goujons nus, à l'échelle de la chape de la Forge (0,72 × 0,46,
+ * goujons de 0,4) ; `yaw` : le sens de sa longueur. Avant comme après, jamais une étape.
+ */
+export function emptyMount(b: FacetBuilder, at: Vec3, yaw = 0): void {
+  b.box({ x: at.x, y: at.y, z: at.z, yaw }, [0.72, 0.12, 0.46], C4E.rustDull, C4E.rustDullTop);
+  const c = Math.cos(yaw),
+    s = Math.sin(yaw);
+  for (const d of [-0.2, 0.2]) b.box({ x: at.x + d * c, y: at.y + 0.12, z: at.z - d * s }, [0.08, 0.4, 0.08], C4E.iron);
+}
+
+/**
+ * La hauteur du sol d'une scène au-dessus de son point (le plus haut du sol sous elle) : `top`, le dessus de ce qui la
+ * porte (un dallage, un plancher), au milieu de la scène.
+ */
+export function sceneRise(ground: (x: number, z: number) => number, spot: { dx: number; dz: number; half: readonly [number, number] }, top: number): number {
+  const [hx, hz] = spot.half;
+  let hi = -Infinity;
+  for (let i = -3; i <= 3; i++) for (let k = -2; k <= 2; k++) hi = Math.max(hi, ground(spot.dx + (i / 3) * hx, spot.dz + (k / 2) * hz));
+  return Math.max(0, top + 0.02 - hi);
+}
+
+/** Le sens de la droite de l'écran au départ d'une scénette de cap `start` (de Kéo vers l'habitant). */
+export const sceneRight = (start: number): Vec2 => ({ x: Math.cos(start), z: -Math.sin(start) });
+
+/**
+ * Un cap de regard donné en degrés depuis le nord, dans le sens des aiguilles d'une montre (celui de l'intention), en
+ * `doorView` ou `site.start` : la caméra regarde vers −(sin, cos) de sa valeur (convention de ./etalon4e.ts), soit
+ * l'opposé du cap.
+ */
+export const capOf = (degrees: number): number => (((360 - degrees) % 360) * Math.PI) / 180;

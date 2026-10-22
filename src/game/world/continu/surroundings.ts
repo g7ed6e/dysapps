@@ -20,6 +20,11 @@ import { chariotSurroundings } from './chariotSurroundings';
 import { gabaritSurroundings } from './gabaritSurroundings';
 import { manufactureSurroundings } from './manufactureSurroundings';
 import { logeSurroundings } from './logeSurroundings';
+import { herbierSurroundings } from './herbierSurroundings';
+import { jonctionSurroundings } from './jonctionSurroundings';
+import { veilleeSurroundings } from './veilleeSurroundings';
+import { basiliqueSurroundings } from './basiliqueSurroundings';
+import { rochesSurroundings } from './rochesSurroundings';
 import { croiseeSurroundings } from './croiseeSurroundings';
 import { donjonSurroundings } from './donjonSurroundings';
 import { fumerollesSurroundings } from './fumerollesSurroundings';
@@ -101,6 +106,11 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   terminus: terminusSurroundings,
   orgues: orguesSurroundings,
   dynamo: dynamoSurroundings,
+  herbier: herbierSurroundings,
+  roches: rochesSurroundings,
+  jonction: jonctionSurroundings,
+  veillee: veilleeSurroundings,
+  basilique: basiliqueSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,
