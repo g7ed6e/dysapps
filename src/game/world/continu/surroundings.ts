@@ -23,6 +23,7 @@ import { logeSurroundings } from './logeSurroundings';
 import { herbierSurroundings } from './herbierSurroundings';
 import { belvedereSurroundings } from './belvedereSurroundings';
 import { grenierSurroundings } from './grenierSurroundings';
+import { abriSurroundings } from './abriSurroundings';
 import { jonctionSurroundings } from './jonctionSurroundings';
 import { veilleeSurroundings } from './veilleeSurroundings';
 import { basiliqueSurroundings } from './basiliqueSurroundings';
@@ -115,6 +116,7 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   basilique: basiliqueSurroundings,
   belvedere: belvedereSurroundings,
   grenier: grenierSurroundings,
+  abri: abriSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,

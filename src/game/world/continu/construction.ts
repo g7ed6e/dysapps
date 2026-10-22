@@ -173,6 +173,7 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   // Le Belvédère (le Versant du 3e) : chaque trace sa partie (3+1+1).
   belvedere: placeArt('belvedere')!.traceStage,
   grenier: placeArt('grenier')!.traceStage,
+  abri: placeArt('abri')!.traceStage,
 };
 
 /**

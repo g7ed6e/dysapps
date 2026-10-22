@@ -19,6 +19,7 @@ import { LOGE } from './loge4e';
 import { HERBIER } from './herbier4e';
 import { BELVEDERE } from './belvedere3e';
 import { GRENIER } from './grenier3e';
+import { ABRI } from './abri3e';
 import { JONCTION } from './jonction4e';
 import { VEILLEE } from './veillee4e';
 import { BASILIQUE } from './basilique4e';
@@ -47,7 +48,7 @@ import { RADEAUX } from './radeaux5e';
 import { SEMAPHORE } from './semaphore5e';
 import { TERRASSES } from './terrasses5e';
 
-const ART: Partial<Record<PlaceId, PlaceArt>> = { lookout: LOOKOUT, archives: ARCHIVES, printworks: PRINTWORKS, beacons: BEACONS, ferry: FERRY, montee: MONTEE, hameau: HAMEAU, radeaux: RADEAUX, croisee: CROISEE, instants: INSTANTS, fumerolles: FUMEROLLES, etuve: ETUVE, terrasses: TERRASSES, auberge: AUBERGE, donjon: DONJON, oracle: ORACLE, semaphore: SEMAPHORE, gaillard: GAILLARD, nacelles: NACELLES, forge: FORGE, soute: SOUTE, porte: PORTE, etalon: ETALON, gabarit: GABARIT, chariot: CHARIOT, manufacture: MANUFACTURE, loge: LOGE, terminus: TERMINUS, orgues: ORGUES, dynamo: DYNAMO_PLACE, herbier: HERBIER, roches: ROCHES, jonction: JONCTION, veillee: VEILLEE, basilique: BASILIQUE, belvedere: BELVEDERE, grenier: GRENIER };
+const ART: Partial<Record<PlaceId, PlaceArt>> = { lookout: LOOKOUT, archives: ARCHIVES, printworks: PRINTWORKS, beacons: BEACONS, ferry: FERRY, montee: MONTEE, hameau: HAMEAU, radeaux: RADEAUX, croisee: CROISEE, instants: INSTANTS, fumerolles: FUMEROLLES, etuve: ETUVE, terrasses: TERRASSES, auberge: AUBERGE, donjon: DONJON, oracle: ORACLE, semaphore: SEMAPHORE, gaillard: GAILLARD, nacelles: NACELLES, forge: FORGE, soute: SOUTE, porte: PORTE, etalon: ETALON, gabarit: GABARIT, chariot: CHARIOT, manufacture: MANUFACTURE, loge: LOGE, terminus: TERMINUS, orgues: ORGUES, dynamo: DYNAMO_PLACE, herbier: HERBIER, roches: ROCHES, jonction: JONCTION, veillee: VEILLEE, basilique: BASILIQUE, belvedere: BELVEDERE, grenier: GRENIER, abri: ABRI };
 
 /** Ce qu'un lieu du rivage nord ou du large apporte au monde (son dessin, sa scénette, ses traces), ou rien pour les autres lieux. */
 export const placeArt = (place: PlaceId): PlaceArt | null => ART[place] ?? null;

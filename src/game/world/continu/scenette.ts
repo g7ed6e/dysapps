@@ -345,6 +345,15 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     placement: 'rangee',
     words: { pose: ['Le plancher est calé.', 'Les sacs sont rangés.', 'Les mesures sont en ordre.', 'Les ardoises sont remises.', 'La meule est prête.'], end: 'Ici, chacun avait sa part des provisions.' },
   },
+  // L'Abri (le Versant du 3e, GD-25) : la phrase de métier et la réplique de la proposition du consultant d'Archipéo (§ 5) ;
+  // une phrase par partie (le corps en deux, le haut, les abords), sans nom de plan de l'île (« dôme », « Stat », « toit »,
+  // « terrasse ») ni « abri » en nom commun (relecture des lieux, point 13).
+  abri: {
+    role: placeArt('abri')!.role,
+    greeting: 'La météorologue observe le temps qu’il fait.',
+    placement: 'rangee',
+    words: { pose: ['Les persiennes sont remises.', 'Les instruments sont en rang.', 'Le mât est relevé.', 'Le muret est refait.'], end: 'Ici, matin et soir, on regardait le ciel pour savoir le temps du lendemain.' },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -796,6 +805,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   basilique: northSite('basilique'),
   belvedere: northSite('belvedere'),
   grenier: northSite('grenier'),
+  abri: northSite('abri'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2366,6 +2376,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   belvedere: 'paving',
   // Le Grenier : la terre de la cour.
   grenier: 'earth',
+  // L'Abri : l'herbe rase du jardin d'instruments.
+  abri: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

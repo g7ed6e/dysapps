@@ -262,6 +262,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   belvedere: placeArt('belvedere')!.sceneSpot,
   // Le Grenier : devant la porte, sous l'avant-toit.
   grenier: placeArt('grenier')!.sceneSpot,
+  // L'Abri : devant l'abri à persiennes, la table de relevés à droite.
+  abri: placeArt('abri')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -563,6 +565,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   belvedere: 'lieu',
   // Le Grenier : les écuelles de bois, sur une planche.
   grenier: 'lieu',
+  // L'Abri : les gobelets de fer, sur une planche.
+  abri: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

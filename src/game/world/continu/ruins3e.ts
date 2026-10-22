@@ -49,15 +49,6 @@ function wall(b: FacetBuilder, x: number, z: number, length: number, height: num
 /** Un poteau de bois, cassé ou non. */
 const post = (b: FacetBuilder, x: number, z: number, h: number, w = 0.5): void => b.box({ x, y: SINK, z }, [w, h - SINK, w], C.woodShade, C.wood);
 
-/** L'Abri : l'abri à persiennes blanches sur ses pieds, penché ; deux pluviomètres ; le mât des manches à air. */
-function abri(b: FacetBuilder): void {
-  for (const [x, z] of [[-1.2, -1], [1.2, -1], [-1.2, 1], [1.2, 1]] as const) post(b, x, z, 1.6, 0.3);
-  b.box({ x: 0, y: 1.6, z: 0, yaw: 0.15 }, [3.2, 2.2, 2.6], C.white, C.slateTop);
-  for (const x of [4, 5.4]) b.prism({ x, y: SINK, z: 2 }, 0.3, 0.3, 1.4 - SINK, 6, C.bronze);
-  post(b, -5, -2, 7, 0.3);
-  b.box({ x: -4.2, y: 6.2, z: -2 }, [1.6, 0.5, 0.5], C.cobalt);
-}
-
 /** Le Jardin : des carrés bordés de pierre ; le mur des espaliers, écroulé à moitié ; le séchoir de bois ; la petite fontaine. */
 function jardin(b: FacetBuilder): void {
   for (const [x, z] of [[-4, 2], [0, 2], [4, 2]] as const) b.box({ x, y: SINK, z }, [3, 0.5 - SINK, 3], C.graniteShade, C.leaf);
@@ -183,10 +174,9 @@ function palais(b: FacetBuilder): void {
 
 /**
  * La ruine de chaque lieu du 3e pas encore construit, dessinée dans son repère : un lieu construit (./plan3e.ts,
- * `BUILT_PLACES_3E`) dessine sa ruine dans son fichier, avec ses étapes (le Belvédère, ./belvedere3e.ts ; le Grenier, ./grenier3e.ts).
+ * `BUILT_PLACES_3E`) dessine sa ruine dans son fichier, avec ses étapes (le Belvédère, ./belvedere3e.ts ; le Grenier, ./grenier3e.ts ; l'Abri, ./abri3e.ts).
  */
 export const RUINS_3E: Readonly<Record<Exclude<PlaceId3e, BuiltPlace3e>, (b: FacetBuilder) => void>> = {
-  abri,
   jardin,
   fanal,
   rampe,
