@@ -1961,7 +1961,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     // La Nef (GD-21 ; GD-22, lot 4) : son ber (vide, et la bouée, une fois partie ; au 5e, le gréement déposé), ses
     // parties posées (sans celles qui descendent), et son obstacle tant qu'elle n'est pas partie, avec le lieu suivi (sur
-    // la Carte, avec les lieux) ; au 5e, le mur écarté après le départ, et le panache du 4e, toujours.
+    // la Carte, avec les lieux, sauf au 4e : `offMap`) ; au 5e, le mur écarté après le départ, et le panache du 4e, toujours.
     const gone = nefLookNow === 4 || Boolean(nefTrip);
     const berLook: NefLook = nefTrip ? 3 : nefDrop ? nefDrop.from : nefLookNow;
     rest.push(nefBer(berLook));
@@ -1970,8 +1970,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       rest.push(nefAtBerth(nefNow, nefSite));
       nefMark.y = nefSite.lift.ber + topOf(nefNow) + MARK_LIFT;
     }
-    if (!gone) (mapView ? rest : mark).push(nefBanc);
-    else if (nefLookNow === 4 && nefAfter) rest.push(nefAfter);
+    const obstacleShown = !(mapView && nefSite.offMap);
+    if (!gone && obstacleShown) (mapView ? rest : mark).push(nefBanc);
+    else if (gone && nefLookNow === 4 && nefAfter && obstacleShown) rest.push(nefAfter);
     if (nefStays) rest.push(nefStays);
     if (siteDecor) rest.push(siteDecor);
     if (offMapDecor && !mapView) rest.push(offMapDecor);

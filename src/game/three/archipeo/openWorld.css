@@ -3064,13 +3064,18 @@
   word-break: normal;
   hyphens: manual;
 }
+/* Le nom d'un Détour, écrit en haut : la marque du lieu suggéré se masque le temps qu'il l'est, sur tous les écrans (un
+   seul nom à la fois : au Détour de l'Épave, « L'Étalon » s'écrivait sous « L'Épave ») ; elle revient ensuite. */
+.world-stage[data-said='detour'] .open-world-mark {
+  visibility: hidden;
+}
 /* Sur un téléphone (étroit ou couché), Kéo se tient juste au-dessus de « Y aller » : la boîte monte en haut, comme sur
    la Carte, pour ne cacher ni Kéo ni « Y aller » (référent dys, consultant UX UI) ; étroit, le haut-parleur passe sous
    les phrases, qui ont toute la largeur. */
 /* Une phrase à la fois (`SMALL_SCREEN`, OpenWorldPage.tsx), et la marque du lieu masquée tant que la boîte est écrite :
    repoussée dessous, elle couvrait Kéo (référent dys, consultant UX UI) ; elle revient ensuite. */
 @media (max-width: 600px), (max-height: 500px) {
-  .world-stage[data-said='oui'] .open-world-mark {
+  .world-stage[data-said] .open-world-mark {
     visibility: hidden;
   }
   .open-world-said {

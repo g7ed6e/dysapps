@@ -12,7 +12,7 @@
 import { FacetBuilder, placeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
 import { LISIERE_PONTON } from './lisiere';
-import { berLocal, type BerColors, type NefFlight, type NefLook, type NefSite } from './nef';
+import { NEF_BAND, berLocal, type BerColors, type NefFlight, type NefLook, type NefSite } from './nef';
 import { ANSE_5E, QUAY_5E } from './plan5e';
 import { SHADOW_DIR_5E } from './sky';
 
@@ -39,12 +39,6 @@ const BERTH = (() => {
   const p = ANSE_5E.toWorld(BERTH_LOCAL.x, BERTH_LOCAL.z);
   return { x: p.x, z: p.z, yaw: Math.atan2(Math.sin(ANSE_5E.yaw + Math.PI), Math.cos(ANSE_5E.yaw + Math.PI)) };
 })();
-
-/**
- * Le vert île de la bande de la Nef (consultant d'Archipéo, retouche du lot 4 : la bouée et la bande accordées), repris
- * par la bouée et par la bande de la voile pliée.
- */
-const NEF_BAND = 0x438b82;
 
 /** Le bois du ber, celui du ponton de la Lisière ; la bouée, à la couleur de la bande de la Nef. */
 const BER_COLORS: BerColors = { ber: 0xa68672, berDark: 0x8c766a, buoy: NEF_BAND, buoyTop: 0xf2eee4 };

@@ -1,7 +1,21 @@
 // Le kit commun des lieux du 4e : le plan du sol d'un lieu, calculé au premier usage et jamais à l'import (retouche 1
 // du Bastion, point 18), juste au-dessus du sol ; une valeur gardée après son premier calcul. Sans Three.js.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { groundPlane4e, once } from './place4eKit';
+
+// Le sol du 4e, compté : un lieu des Fabriques ou du Bastion ne le lit jamais à l'import (restes des Fabriques et du
+// Bastion, 22 octobre 2026 : la Forge, la Soute et la Porte calculaient encore leur cour, leur quai, leur place à l'import).
+const ground4e = vi.hoisted(() => ({ calls: 0 }));
+vi.mock('./terrain4e', async (importOriginal) => {
+  const m = await importOriginal<typeof import('./terrain4e')>();
+  return {
+    ...m,
+    heightAt4e: (p: Parameters<typeof m.heightAt4e>[0]) => {
+      ground4e.calls++;
+      return m.heightAt4e(p);
+    },
+  };
+});
 
 describe('Le kit des lieux du 4e', () => {
   it('le plan du sol ne se calcule qu’au premier usage, une seule fois, et ne passe jamais sous le sol', () => {
@@ -26,5 +40,14 @@ describe('Le kit des lieux du 4e', () => {
     expect(v()).toBe(1);
     expect(v()).toBe(1);
     expect(n).toBe(1);
+  });
+
+  it('les lieux des Fabriques et du Bastion ne lisent jamais le sol à l’import', async () => {
+    const before = ground4e.calls;
+    await Promise.all([import('./forge4e'), import('./soute4e'), import('./porte4e'), import('./etalon4e'), import('./gabarit4e'), import('./manufacture4e'), import('./loge4e'), import('./chariot4e'), import('./recoin4e')]);
+    expect(ground4e.calls).toBe(before);
+    const { FORGE } = await import('./forge4e');
+    expect(FORGE.site.rise).toBeGreaterThan(0);
+    expect(ground4e.calls).toBeGreaterThan(before);
   });
 });
