@@ -14,7 +14,7 @@ import { bridgeCut, pathNode, type NetworkPoint } from './paths';
 import { CUT_CLEARANCE_4E, NETWORK_4E, isLand4e, passageCut4e } from './paths4e';
 import { NETWORK_5E, isLand5e, passageCut } from './paths5e';
 import { COLORS_4E, LINKS_4E } from './plan4e';
-import { LINKS_5E } from './plan5e';
+import { COLORS_5E, LINKS_5E } from './plan5e';
 import type { StraitId } from './plan6e';
 import { heightAt, standingHeight, straitClearance } from './terrain';
 import { heightAt4e } from './terrain4e';
@@ -44,6 +44,8 @@ const C = {
   broken: 0x8a8273,
   iron: 0x3f4a50,
   glass: 0xdaa66a,
+  /** Le verre d'une lanterne allumée, l'ocre des lieux du 4e, fixe (règle commune des ponts du 4e). */
+  lit: COLORS_5E.lantern,
 } as const;
 
 /** La pierre d'un pont : ses flancs, son dessus, ses piles, leur pied mouillé, sa cassure. */
@@ -473,9 +475,12 @@ function railings(b: FacetBuilder, s: BridgeSite, step: number, t: number, color
 /**
  * Les quatre lanternes d'un pont, de chaque côté de chaque culée, au début du garde-corps : un mât de fer, puis une tête
  * qu'on lit (directeur artistique) : son socle, le verre Sable dans sa cage de fer (deux barreaux en croix sur chaque
- * face), son chapeau en pointe. Éteintes : aucune lumière ne s'y allume.
+ * face), son chapeau en pointe. Au 6e et au 5e, le verre Sable : aucune lumière ne s'y allume. Au 4e (règle commune des
+ * ponts du 4e, convenue entre les fils le 22 octobre 2026), `lit` : le pont relié a ses lanternes allumées, le verre
+ * d'ocre des lieux du 4e, fixe, sans clignotement ni halo ; le pont pas encore relié n'en a pas (elles montent du
+ * tablier à la pose, déjà de leur couleur).
  */
-function lanterns(b: FacetBuilder, s: BridgeSite, iron: number): void {
+function lanterns(b: FacetBuilder, s: BridgeSite, iron: number, lit: boolean): void {
   const at = frame(s);
   const yaw = Math.atan2(s.dir.x, s.dir.z);
   for (const d of [s.abut[0] + 0.5, s.abut[1] - 0.5])
@@ -484,7 +489,7 @@ function lanterns(b: FacetBuilder, s: BridgeSite, iron: number): void {
       const y = bridgeSurface(s, d);
       b.box({ x: p.x, y, z: p.z, yaw }, [0.14, 1.6, 0.14], iron);
       b.box({ x: p.x, y: y + 1.6, z: p.z, yaw }, [0.46, 0.08, 0.46], iron);
-      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.36, 0.44, 0.36], C.glass);
+      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.36, 0.44, 0.36], lit ? C.lit : C.glass);
       b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.42, 0.44, 0.07], iron);
       b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.07, 0.44, 0.42], iron);
       b.prism({ x: p.x, y: y + 2.12, z: p.z, yaw: yaw + Math.PI / 4 }, 0.36, 0, 0.32, 4, iron);
@@ -534,7 +539,7 @@ export function bridgeParts(land: LinkedLand): BridgeParts {
   // Les garde-corps : des poteaux d'une culée à l'autre, une main courante qui suit la rampe des culées.
   const b = new FacetBuilder();
   railings(b, s, BRIDGE.post, 0.16, C.rail);
-  lanterns(b, s, C.iron);
+  lanterns(b, s, C.iron, isLand4e(land));
   return { piles, deck: deck.build(), rails: b.build() };
 }
 
@@ -685,7 +690,7 @@ export const swingRustDeck = (land: LinkedLand): Facets => swingDeck(bridgeSite(
 function swingParts(s: BridgeSite): BridgeParts {
   const b = new FacetBuilder();
   railings(b, s, SWING.post, 0.12, SWING_IRON.iron);
-  lanterns(b, s, SWING_IRON.iron);
+  lanterns(b, s, SWING_IRON.iron, true);
   return { piles: [], deck: swingDeck(s, false), rails: b.build() };
 }
 

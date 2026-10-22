@@ -2,7 +2,7 @@
 // terres, aucun chemin dessus, Kéo arrêté sur la culée d'un pont tombé et porté par le tablier d'un pont rebâti, le
 // dessin des deux états et sur la Carte. Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { BRIDGE, BRIDGE_TOUCH, KEO_STOP, SWING, allBridges, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen, isSwing, swingPivot, swingRuin } from './bridges';
+import { BRIDGE, BRIDGE_TOUCH, KEO_STOP, SWING, allBridges, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen, isCabin, isSwing, swingPivot, swingRuin } from './bridges';
 import { CUT_CLEARANCE_4E } from './paths4e';
 import { linearRgb } from './geometry';
 import { bridgeEdge, landById, linkedLands, nodeLands } from './lands';
@@ -267,13 +267,10 @@ describe('Le pont tournant des docks, au bassin à flot (intention du Bastion, 2
     expect(bridgeLayRest('bastion').triangles).toBe(bridgeFacets('bastion', false).triangles - swingRuin(s).triangles);
   });
 
-  it('les quatre lanternes, verre Sable, comme les autres ponts', () => {
-    const glass = linearRgb(0xdaa66a);
-    const f = bridgeFacets('bastion', true);
-    let n = 0;
-    for (let i = 0; i < f.colors.length; i += 9) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - glass[k]) < 1e-6)) n++;
+  it('les quatre lanternes, allumées une fois relié (le verre d’ocre des ponts du 4e)', () => {
     // Un verre en pavé (10 triangles, posé : sans dessous) par lanterne.
-    expect(n).toBe(4 * 10);
+    expect(glassTriangles(bridgeFacets('bastion', true), 0xe0a84a)).toBe(4 * 10);
+    expect(glassTriangles(bridgeFacets('bastion', true), 0xdaa66a)).toBe(0);
   });
 
   it('Kéo marche sur le tablier rebâti, à sa hauteur ; pas sur la volée ouverte', () => {
@@ -286,3 +283,35 @@ describe('Le pont tournant des docks, au bassin à flot (intention du Bastion, 2
 
 /** Le point à `d` sur la ligne d'un pont. */
 const frameAt = (s: { near: { x: number; z: number }; dir: { x: number; z: number } }, d: number) => ({ x: s.near.x + s.dir.x * d, z: s.near.z + s.dir.z * d });
+
+/** Les triangles d'une couleur exacte (le verre d'une lanterne). */
+function glassTriangles(f: { colors: Float32Array }, color: number): number {
+  const c = linearRgb(color);
+  let n = 0;
+  for (let i = 0; i < f.colors.length; i += 9) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - c[k]) < 1e-6)) n++;
+  return n;
+}
+
+describe('les lanternes des ponts (règle commune des ponts du 4e)', () => {
+  const LIT = 0xe0a84a;
+  const SABLE = 0xdaa66a;
+
+  it('au 4e, les trois ponts reliés (bassin, ravin, coulée) ont leurs quatre lanternes allumées, d’ocre, et aucune avant', () => {
+    for (const land of Object.keys(LINKS_4E) as (keyof typeof LINKS_4E)[]) {
+      expect(glassTriangles(bridgeFacets(land, true), LIT)).toBe(4 * 10);
+      expect(glassTriangles(bridgeFacets(land, true), SABLE)).toBe(0);
+      // Pas encore relié : ni lanterne allumée, ni verre éteint.
+      expect(glassTriangles(bridgeFacets(land, false), LIT)).toBe(0);
+      expect(glassTriangles(bridgeFacets(land, false), SABLE)).toBe(0);
+    }
+  });
+
+  it('au 6e et au 5e, rien ne change : le verre Sable, jamais l’ocre', () => {
+    const others = [...linkedLands(planFor('6e')), ...linkedLands(planFor('5e'))].filter((l) => !(l in LINKS_4E) && !isCabin(l));
+    expect(others.length).toBeGreaterThan(0);
+    for (const land of others) {
+      expect(glassTriangles(bridgeFacets(land, true), SABLE)).toBe(4 * 10);
+      expect(glassTriangles(bridgeFacets(land, true), LIT)).toBe(0);
+    }
+  });
+});
