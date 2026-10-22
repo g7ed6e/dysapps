@@ -1,8 +1,9 @@
 // La pose d'un pont (GD-20, point 3, « La pose ») : les piles se relèvent, puis le tablier s'avance, puis les
 // garde-corps et les lanternes montent, environ 3 s jusqu'au toc ; la brume se lève ensuite. Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { BRIDGE_LAY, bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLayState } from './bridgeLay';
-import { bridgeFacets, bridgeLayRest, bridgeParts, bridgeSite } from './bridges';
+import { BRIDGE_LAY, SWING_LAY, bridgeLay, bridgeLayAt, bridgeLayColors, bridgeLayDrawn, bridgeLayPositions, type BridgeLayState } from './bridgeLay';
+import { bridgeFacets, bridgeLayRest, bridgeParts, bridgeSite, swingRuin } from './bridges';
+import { linearRgb } from './geometry';
 import { linkedLands } from './lands';
 import { veilFacets } from './veil';
 import { planFor } from './levelPlan';
@@ -99,5 +100,77 @@ describe('La pose d’un pont', () => {
     expect(v.positions.length / 3 - v.fadingFrom).toBe(alone.triangles * 3);
     expect(Array.from(v.positions.slice(v.fadingFrom * 3))).toEqual(Array.from(alone.positions));
     expect(veilFacets(['large']).fadingFrom).toBe(veilFacets(['large']).triangles * 3);
+  });
+});
+
+describe('La pose du pont tournant des docks (le bassin à flot du 4e)', () => {
+  const lay = bridgeLay('bastion');
+  const deckEnd = lay.ends[1];
+
+  it('le toc à 3 s au plus, un seul ; la volée seule d’abord, puis les garde-corps et les lanternes', () => {
+    expect(lay.landed).toBeLessThanOrEqual(3);
+    expect(lay.swing).not.toBeNull();
+    expect(bridgeLayDrawn(lay, 0)).toBe(deckEnd);
+    expect(bridgeLayDrawn(lay, SWING_LAY.raise + SWING_LAY.turn - 0.01)).toBe(deckEnd);
+    expect(bridgeLayDrawn(lay, SWING_LAY.raise + SWING_LAY.turn + 0.01)).toBe(lay.facets.positions.length / 3);
+    const out = state();
+    let taps = 0;
+    let was = false;
+    for (let u = 0; u <= lay.landed + BRIDGE_LAY.fade + 0.2; u += 1 / 60) {
+      bridgeLayAt(lay, u, out);
+      if (out.landed && !was) taps++;
+      was = out.landed;
+    }
+    expect(taps).toBe(1);
+  });
+
+  it('elle part de la ruine (ouverte, affaissée, rouillée) et finit à sa place, au fer bruni', () => {
+    const s = bridgeSite('bastion');
+    const ruin = swingRuin(s);
+    const out = new Float32Array(lay.facets.positions.length);
+    const normals = new Float32Array(lay.facets.normals.length);
+    bridgeLayPositions(lay, 0, out, normals);
+    for (let i = 0; i < deckEnd * 3; i++) expect(out[i]).toBeCloseTo(ruin.positions[i], 4);
+    for (let i = 0; i < deckEnd * 3; i++) expect(normals[i]).toBeCloseTo(ruin.normals[i], 4);
+    bridgeLayPositions(lay, lay.landed, out, normals);
+    for (let i = 0; i < out.length; i++) expect(out[i]).toBeCloseTo(lay.facets.positions[i], 4);
+    for (let i = 0; i < deckEnd * 3; i++) expect(normals[i]).toBeCloseTo(lay.facets.normals[i], 4);
+    const colors = new Float32Array(lay.facets.colors.length);
+    expect(bridgeLayColors(lay, 0, colors)).toBe(true);
+    const rust = linearRgb(0xaf6c55);
+    expect(Array.from({ length: deckEnd }, (_, i) => i).some((i) => [0, 1, 2].every((k) => Math.abs(colors[i * 3 + k] - rust[k]) < 1e-6))).toBe(true);
+    bridgeLayColors(lay, SWING_LAY.raise, colors);
+    for (let i = 0; i < colors.length; i++) expect(colors[i]).toBeCloseTo(lay.facets.colors[i], 6);
+    // Un pont à piles n'a pas de fondu.
+    expect(bridgeLayColors(bridgeLay('coteaux'), 0, colors)).toBe(false);
+  });
+
+  it('un seul quart de tour, sans rebond : le bout libre se rapproche toujours de la culée d’en face ; tout reste dans la boîte', () => {
+    const s = bridgeSite('bastion');
+    const out = new Float32Array(lay.facets.positions.length);
+    // Le sommet de la volée le plus loin du tambour.
+    let far = 0;
+    let best = -Infinity;
+    for (let i = 0; i < deckEnd; i++) {
+      const d = (lay.facets.positions[i * 3] - s.near.x) * s.dir.x + (lay.facets.positions[i * 3 + 2] - s.near.z) * s.dir.z;
+      if (d > best) [best, far] = [d, i];
+    }
+    const target = { x: lay.facets.positions[far * 3], z: lay.facets.positions[far * 3 + 2] };
+    let last = Infinity;
+    const { min, max } = lay.swing!.bounds;
+    for (let u = 0; u <= lay.landed + 1e-6; u += 1 / 30) {
+      bridgeLayPositions(lay, u, out);
+      // Le quart de tour, après le redressement (qui ne tourne pas).
+      const gap = Math.hypot(out[far * 3] - target.x, out[far * 3 + 2] - target.z);
+      if (u >= SWING_LAY.raise) {
+        expect(gap).toBeLessThanOrEqual(last + 1e-4);
+        last = gap;
+      }
+      for (let i = 0; i < deckEnd; i++)
+        for (let k = 0; k < 3; k++) {
+          expect(out[i * 3 + k]).toBeGreaterThanOrEqual(min[k] - 1e-3);
+          expect(out[i * 3 + k]).toBeLessThanOrEqual(max[k] + 1e-3);
+        }
+    }
   });
 });

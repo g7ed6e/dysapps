@@ -443,7 +443,53 @@ function abutmentFacets(s: BridgeSite, arches: boolean): Facets {
  * Le pont pendant sa pose, sans ce qui se relève (GD-20, point 3, « La pose ») : les deux culées et les départs d'arche,
  * que le tablier vient couvrir ; les moignons ont laissé la place aux piles qui se relèvent.
  */
-export const bridgeLayRest = (land: LinkedLand): Facets => (isCabin(land) ? cabinStations(bridgeSite(land)) : abutmentFacets(bridgeSite(land), true));
+export const bridgeLayRest = (land: LinkedLand): Facets =>
+  isCabin(land) ? cabinStations(bridgeSite(land)) : isSwing(land) ? mergeFacets([abutmentFacets(bridgeSite(land), false), swingDrum(bridgeSite(land))]) : abutmentFacets(bridgeSite(land), true);
+
+/**
+ * Les garde-corps d'un pont, d'une culée à l'autre : des poteaux de section `t` tous les `step` au plus, une main courante
+ * qui suit la rampe des culées.
+ */
+function railings(b: FacetBuilder, s: BridgeSite, step: number, t: number, color: number): void {
+  const at = frame(s);
+  const yaw = Math.atan2(s.dir.x, s.dir.z);
+  const from = s.abut[0] + 0.5;
+  const to = s.abut[1] - 0.5;
+  const n = Math.max(2, Math.ceil((to - from) / step) + 1);
+  for (const v of [-BRIDGE.railOut, BRIDGE.railOut]) {
+    let last: { x: number; y: number; z: number } | null = null;
+    for (let k = 0; k < n; k++) {
+      const d = from + ((to - from) * k) / (n - 1);
+      const p = at(d, v);
+      const y = bridgeSurface(s, d);
+      b.box({ x: p.x, y, z: p.z, yaw }, [t, BRIDGE.rail, t], color);
+      const head = { x: p.x, y: y + BRIDGE.rail - 0.06, z: p.z };
+      if (last) b.beam(last, head, t * 0.75, color);
+      last = head;
+    }
+  }
+}
+
+/**
+ * Les quatre lanternes d'un pont, de chaque côté de chaque culée, au début du garde-corps : un mât de fer, puis une tête
+ * qu'on lit (directeur artistique) : son socle, le verre Sable dans sa cage de fer (deux barreaux en croix sur chaque
+ * face), son chapeau en pointe. Éteintes : aucune lumière ne s'y allume.
+ */
+function lanterns(b: FacetBuilder, s: BridgeSite, iron: number): void {
+  const at = frame(s);
+  const yaw = Math.atan2(s.dir.x, s.dir.z);
+  for (const d of [s.abut[0] + 0.5, s.abut[1] - 0.5])
+    for (const v of [-(BRIDGE.railOut + 0.35), BRIDGE.railOut + 0.35]) {
+      const p = at(d, v);
+      const y = bridgeSurface(s, d);
+      b.box({ x: p.x, y, z: p.z, yaw }, [0.14, 1.6, 0.14], iron);
+      b.box({ x: p.x, y: y + 1.6, z: p.z, yaw }, [0.46, 0.08, 0.46], iron);
+      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.36, 0.44, 0.36], C.glass);
+      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.42, 0.44, 0.07], iron);
+      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.07, 0.44, 0.42], iron);
+      b.prism({ x: p.x, y: y + 2.12, z: p.z, yaw: yaw + Math.PI / 4 }, 0.36, 0, 0.32, 4, iron);
+    }
+}
 
 /**
  * Les morceaux d'un pont rebâti, sans ses culées : les piles maçonnées, de l'eau jusque sous le tablier (leurs assises,
@@ -453,6 +499,7 @@ export const bridgeLayRest = (land: LinkedLand): Facets => (isCabin(land) ? cabi
 export function bridgeParts(land: LinkedLand): BridgeParts {
   const s = bridgeSite(land);
   if (isCabin(land)) return cabinParts(s);
+  if (isSwing(land)) return swingParts(s);
   const at = frame(s);
   const yaw = Math.atan2(s.dir.x, s.dir.z);
   const pileTop = BRIDGE.deck - BRIDGE.plank - 0.24;
@@ -486,35 +533,8 @@ export function bridgeParts(land: LinkedLand): BridgeParts {
   }
   // Les garde-corps : des poteaux d'une culée à l'autre, une main courante qui suit la rampe des culées.
   const b = new FacetBuilder();
-  const from = s.abut[0] + 0.5;
-  const to = s.abut[1] - 0.5;
-  const n = Math.max(2, Math.ceil((to - from) / BRIDGE.post) + 1);
-  for (const v of [-BRIDGE.railOut, BRIDGE.railOut]) {
-    let last: { x: number; y: number; z: number } | null = null;
-    for (let k = 0; k < n; k++) {
-      const d = from + ((to - from) * k) / (n - 1);
-      const p = at(d, v);
-      const y = bridgeSurface(s, d);
-      b.box({ x: p.x, y, z: p.z, yaw }, [0.16, BRIDGE.rail, 0.16], C.rail);
-      const head = { x: p.x, y: y + BRIDGE.rail - 0.06, z: p.z };
-      if (last) b.beam(last, head, 0.12, C.rail);
-      last = head;
-    }
-  }
-  // Les lanternes, de chaque côté de chaque culée, au début du garde-corps : un mât de fer, puis une tête qu'on lit
-  // (directeur artistique) : son socle, le verre Sable dans sa cage de fer (deux barreaux en croix sur chaque face), son
-  // chapeau en pointe.
-  for (const d of [s.abut[0] + 0.5, s.abut[1] - 0.5])
-    for (const v of [-(BRIDGE.railOut + 0.35), BRIDGE.railOut + 0.35]) {
-      const p = at(d, v);
-      const y = bridgeSurface(s, d);
-      b.box({ x: p.x, y, z: p.z, yaw }, [0.14, 1.6, 0.14], C.iron);
-      b.box({ x: p.x, y: y + 1.6, z: p.z, yaw }, [0.46, 0.08, 0.46], C.iron);
-      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.36, 0.44, 0.36], C.glass);
-      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.42, 0.44, 0.07], C.iron);
-      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.07, 0.44, 0.42], C.iron);
-      b.prism({ x: p.x, y: y + 2.12, z: p.z, yaw: yaw + Math.PI / 4 }, 0.36, 0, 0.32, 4, C.iron);
-    }
+  railings(b, s, BRIDGE.post, 0.16, C.rail);
+  lanterns(b, s, C.iron);
   return { piles, deck: deck.build(), rails: b.build() };
 }
 
@@ -537,6 +557,11 @@ export function bridgeFacets(land: LinkedLand, built: boolean, car: CabinCar = '
     const box = car === 'bas' ? parts.rails : car === 'haut' ? carAt(s, cabinStops(s).top, !open) : null;
     return mergeFacets([cabinStations(s), ...parts.piles, parts.deck, ...(box ? [box] : [])]);
   }
+  if (isSwing(land)) {
+    if (!built) return mergeFacets([abutmentFacets(s, false), swingDrum(s), swingRuin(s)]);
+    const parts = bridgeParts(land);
+    return mergeFacets([abutmentFacets(s, false), swingDrum(s), parts.deck, parts.rails]);
+  }
   if (built) {
     const parts = bridgeParts(land);
     return mergeFacets([abutmentFacets(s, false), ...parts.piles, parts.deck, parts.rails]);
@@ -552,6 +577,116 @@ export function bridgeFacets(land: LinkedLand, built: boolean, car: CabinCar = '
   shaft(b, s, first, h, STUMPS[0].corners, STUMPS[0].peak, S.pile, S.broken);
   shaft(b, s, last, h, STUMPS[1].corners, STUMPS[1].peak, S.pile, S.broken);
   return b.build();
+}
+
+/** Le passage d'une terre est-il le pont tournant des docks, sur le bassin à flot (au 4e) ? */
+export const isSwing = (land: LinkedLand): boolean => isLand4e(land) && LINKS_4E[land].cut === 'bassin';
+
+/**
+ * Le pont tournant des docks (artiste technique 3D ; intention du directeur artistique du 22 octobre 2026, « Le pont du
+ * bassin », piste C, choix du mainteneur) : le pivot, au milieu du tambour, à tant d'unités de l'eau de ce côté (le
+ * tambour sous le bout côté Fabriques, au ras du quai) ; le rayon du tambour, son nombre de côtés ; la hauteur des deux
+ * poutres pleines sous le tablier et leur épaisseur ; l'écart des poteaux de ses garde-corps de fer. En ruine, la volée
+ * est restée ouverte : tournée de `open` (un quart de tour, un peu moins, pour que son bout reste au-dessus de l'eau du
+ * bassin, loin du quai), vers le nord, et son bout libre affaissé dans l'eau, basculée de `sag` sur son tambour.
+ */
+export const SWING = { pivot: 2.4, drum: 1.6, sides: 8, girder: 0.9, girderWidth: 0.3, post: 2.4, open: Math.PI / 2 - 0.05, sag: 0.19 } as const;
+
+/** Le fer du pont tournant : rouillé dans la ruine (seulement là), bruni sombre une fois rebâti (fiche du 4e, les matières des Passeurs). */
+const SWING_IRON = { rust: COLORS_4E.rust, rustShade: COLORS_4E.rustShade, iron: 0x5c504c, ironTop: 0x6c5e58 } as const;
+
+/** Le pivot du pont tournant sur sa ligne (`d` depuis `near`), et la hauteur du dessus de son tambour, où portent les poutres. */
+export function swingPivot(s: BridgeSite): { d: number; y: number } {
+  return { d: s.water[0] + SWING.pivot, y: BRIDGE.deck - BRIDGE.plank - SWING.girder };
+}
+
+/** Le tablier de la volée, d'une culée à l'autre (sur la ligne du pont), comme celui des autres ponts. */
+const swingSpan = (s: BridgeSite): readonly [number, number] => [s.water[0] + BRIDGE.over - 0.3, s.water[1] - BRIDGE.over + 0.3];
+
+/**
+ * La volée fermée (à sa place de pont rebâti) : un tablier de tôle sur deux poutres pleines et profondes, sans treillis,
+ * sans pile ni pied dans l'eau ; `rust` : rouillée, comme dans la ruine.
+ */
+function swingDeck(s: BridgeSite, rust: boolean): Facets {
+  const b = new FacetBuilder();
+  const at = frame(s);
+  const yaw = Math.atan2(s.dir.x, s.dir.z);
+  const [d0, d1] = swingSpan(s);
+  const side = rust ? SWING_IRON.rustShade : SWING_IRON.iron;
+  const top = rust ? SWING_IRON.rust : SWING_IRON.ironTop;
+  const mid = at((d0 + d1) / 2, 0);
+  b.box({ x: mid.x, y: BRIDGE.deck - BRIDGE.plank, z: mid.z, yaw }, [BRIDGE.width, BRIDGE.plank, d1 - d0], side, top);
+  const low = swingPivot(s).y;
+  for (const v of [-1, 1]) {
+    const p = at((d0 + d1) / 2, v * (BRIDGE.width / 2 - SWING.girderWidth / 2 - 0.05));
+    b.box({ x: p.x, y: low, z: p.z, yaw }, [SWING.girderWidth, SWING.girder, d1 - d0], side, top);
+  }
+  return b.build();
+}
+
+/** Le tambour, le pivot : un cylindre bas de pierre grise cerclé de fer, sous le bout côté Fabriques, du fond jusque sous les poutres. */
+function swingDrum(s: BridgeSite): Facets {
+  const b = new FacetBuilder();
+  const S = stoneOf(s);
+  const pivot = swingPivot(s);
+  const p = frame(s)(pivot.d, 0);
+  b.prism({ x: p.x, y: BRIDGE.foot, z: p.z, yaw: Math.PI / SWING.sides }, SWING.drum, SWING.drum, pivot.y - BRIDGE.foot, SWING.sides, S.stone, S.stoneTop);
+  b.band({ x: p.x, y: pivot.y - 0.4, z: p.z, yaw: Math.PI / SWING.sides }, SWING.drum + 0.05, 0.22, SWING.sides, SWING_IRON.iron);
+  return b.build();
+}
+
+/**
+ * Un sommet de la volée fermée (`x`, `y`, `z`, dans le monde) basculé de `sag` sur son tambour (son bout libre vers le
+ * bas) puis tourné de `turn` autour du pivot (vers le nord, la mer du nord), écrit dans `out` à `o` ; `normal` : un vecteur
+ * (sans déplacement). Rien n'est créé.
+ */
+export function swingMove(s: BridgeSite, x: number, y: number, z: number, sag: number, turn: number, out: Float32Array, o: number, normal = false): void {
+  const pivot = swingPivot(s);
+  const dx = normal ? x : x - s.near.x;
+  const dz = normal ? z : z - s.near.z;
+  const u = dx * s.dir.x + dz * s.dir.z - (normal ? 0 : pivot.d);
+  const w = -dx * s.dir.z + dz * s.dir.x;
+  const h = normal ? y : y - pivot.y;
+  const cs = Math.cos(sag),
+    ss = Math.sin(sag);
+  const u1 = u * cs + h * ss;
+  const h1 = h * cs - u * ss;
+  const ct = Math.cos(turn),
+    st = Math.sin(turn);
+  const d = (normal ? 0 : pivot.d) + u1 * ct + w * st;
+  const v = -u1 * st + w * ct;
+  out[o] = (normal ? 0 : s.near.x) + s.dir.x * d - s.dir.z * v;
+  out[o + 1] = (normal ? 0 : pivot.y) + h1;
+  out[o + 2] = (normal ? 0 : s.near.z) + s.dir.z * d + s.dir.x * v;
+}
+
+/** La volée basculée de `sag` et tournée de `turn` (normales comprises), depuis la volée fermée `f`. */
+function swingPosed(s: BridgeSite, f: Facets, sag: number, turn: number): Facets {
+  const positions = new Float32Array(f.positions.length);
+  const normals = new Float32Array(f.normals.length);
+  for (let i = 0; i < f.positions.length; i += 3) {
+    swingMove(s, f.positions[i], f.positions[i + 1], f.positions[i + 2], sag, turn, positions, i);
+    swingMove(s, f.normals[i], f.normals[i + 1], f.normals[i + 2], sag, turn, normals, i, true);
+  }
+  return { positions, normals, colors: f.colors, triangles: f.triangles };
+}
+
+/**
+ * La volée de la ruine : entière, rouillée, restée ouverte d'un quart de tour sur son tambour, couchée le long du quai des
+ * Fabriques au-dessus de l'eau, son bout libre affaissé dans l'eau ; ni garde-corps ni lanternes (ils montent du tablier
+ * à la pose). L'eau reste libre entre les culées, sous le cadenas.
+ */
+export const swingRuin = (s: BridgeSite): Facets => swingPosed(s, swingDeck(s, true), SWING.sag, SWING.open);
+
+/** La volée rouillée, fermée : ses couleurs sont celles d'où part le fondu de la pose (./bridgeLay.ts). */
+export const swingRustDeck = (land: LinkedLand): Facets => swingDeck(bridgeSite(land), true);
+
+/** Le pont tournant rebâti, sans ses culées ni son tambour : la volée (`deck`), ses garde-corps de fer et ses quatre lanternes (`rails`). */
+function swingParts(s: BridgeSite): BridgeParts {
+  const b = new FacetBuilder();
+  railings(b, s, SWING.post, 0.12, SWING_IRON.iron);
+  lanterns(b, s, SWING_IRON.iron);
+  return { piles: [], deck: swingDeck(s, false), rails: b.build() };
 }
 
 /** Le passage d'une terre est-il l'arche de basalte de la coulée (au 4e) ? */

@@ -31,7 +31,7 @@ import { creuxFacets } from '../../world/continu/creux5e';
 import { failleFacets, failleTapTarget } from '../../world/continu/faille5e';
 import { perchoirFacets } from '../../world/continu/perchoir5e';
 import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/continu/montee5e';
-import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
+import { bridgeLay, bridgeLayAt, bridgeLayColors, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { hasScenette, placeById, type LevelPlan, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
 import { HABITANT_HEIGHT, hasHabitantModel } from '../../world/continu/habitants';
@@ -2046,11 +2046,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     walkClosed = [...closed, land];
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(lay.facets.positions), 3));
-    g.setAttribute('normal', new THREE.BufferAttribute(lay.facets.normals, 3));
-    g.setAttribute('color', new THREE.BufferAttribute(lay.facets.colors, 3));
-    g.computeBoundingBox();
-    // `computeBoundingBox` vient de la calculer : elle n'est pas nulle.
-    g.boundingBox!.min.y -= lay.sink;
+    // Le pont tournant réécrit aussi ses normales (la volée tourne) et ses couleurs (le fondu de la rouille) : des copies.
+    g.setAttribute('normal', new THREE.BufferAttribute(lay.swing ? new Float32Array(lay.facets.normals) : lay.facets.normals, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(lay.swing ? new Float32Array(lay.facets.colors) : lay.facets.colors, 3));
+    if (lay.swing) {
+      // La boîte de la volée ouverte et du pont fermé, qui l'encadre à tout instant.
+      const { min, max } = lay.swing.bounds;
+      g.boundingBox = new THREE.Box3(new THREE.Vector3(...min), new THREE.Vector3(...max));
+    } else {
+      g.computeBoundingBox();
+      // `computeBoundingBox` vient de la calculer : elle n'est pas nulle.
+      g.boundingBox!.min.y -= lay.sink;
+    }
     g.boundingSphere = g.boundingBox!.getBoundingSphere(new THREE.Sphere());
     poseMesh.geometry.dispose();
     poseMesh.geometry = g;
@@ -2068,8 +2075,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const s = bridgeLayAt(laying.lay, u, layState);
     if (!laying.tapped) {
       const position = poseMesh.geometry.getAttribute('position') as THREE.BufferAttribute;
-      bridgeLayPositions(laying.lay, u, position.array as Float32Array);
+      const normal = poseMesh.geometry.getAttribute('normal') as THREE.BufferAttribute;
+      bridgeLayPositions(laying.lay, u, position.array as Float32Array, laying.lay.swing ? (normal.array as Float32Array) : undefined);
       position.needsUpdate = true;
+      if (laying.lay.swing) normal.needsUpdate = true;
+      const color = poseMesh.geometry.getAttribute('color') as THREE.BufferAttribute;
+      if (bridgeLayColors(laying.lay, u, color.array as Float32Array)) color.needsUpdate = true;
       const drawn = bridgeLayDrawn(laying.lay, u);
       if (drawn !== laying.drawn) poseMesh.geometry.setDrawRange(0, drawn);
       laying.drawn = drawn;
