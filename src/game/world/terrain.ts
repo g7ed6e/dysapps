@@ -4,7 +4,7 @@
 // ce fichier réexporte : on importe le terrain d'ici. Le décor (arbres, repères, cascades, habillage de la mer) est
 // dessiné par ./decor.ts, et posé ici.
 
-import { type BiomeId, BIOMES, BLOC, BLOCKS, SCIENCE_SUBJECTS } from '../biomes';
+import { type BiomeId, BIOMES, BLOC, BLOCKS, estUnBiome, type IleId, SCIENCE_SUBJECTS } from '../biomes';
 import type { World } from '../engine';
 import type { VoxelCube } from './cube';
 import { type ArchipelagoId, archipelagoOfIsland, type Decor, inCoeurDOrigine, inCore, islandDef, type IslandDef, landCells, landscape, margesDuCoeur, noise, coreCornerGround, tirage, turnInWorld } from './map';
@@ -437,9 +437,11 @@ function poserLIle(
  * Les cases du monde où se posent des cases de plans d'île (une partie du bâtiment, GD-6), en clés « x,y,z » : là où
  * `poserLIle` dessine chacune (le coin du cœur, le décalage des plans du fond, un cran au-dessus du sol).
  */
-export function casesDesPlansDansLeMonde(cases: readonly { plan: PlanDef; keys: readonly string[] }[]): Set<string> {
+export function casesDesPlansDansLeMonde(cases: readonly { plan: PlanDef<IleId>; keys: readonly string[] }[]): Set<string> {
   const out = new Set<string>();
   for (const { plan, keys } of cases) {
+    // Un lieu du monde ouvert seulement (GD-24) n'a pas de place dans la grille.
+    if (!estUnBiome(plan.biome)) continue;
     const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === plan.biome));
     const d = decalageDesPlans(plan);
     const voulues = new Set(keys);

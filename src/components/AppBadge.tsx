@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useBlocland } from '../game/BloclandContext';
+import { todayISO } from '../game/engine';
 import { questsToReview } from '../game/review';
+import { useLieuxSeuls } from '../game/useImmersive';
 import { useSettings } from '../core/SettingsContext';
 
 type BadgeNavigator = Navigator & { setAppBadge?: (n?: number) => Promise<void>; clearAppBadge?: () => Promise<void> };
@@ -13,7 +15,8 @@ type BadgeNavigator = Navigator & { setAppBadge?: (n?: number) => Promise<void>;
 export function AppBadge() {
   const { state } = useBlocland();
   const { settings } = useSettings();
-  const due = questsToReview(state.spaced, state.world.links).length > 0;
+  const lieuxSeuls = useLieuxSeuls();
+  const due = questsToReview(state.spaced, state.world.links, todayISO(), lieuxSeuls).length > 0;
   const on = settings.appBadge && due;
   useEffect(() => {
     const nav = (typeof navigator !== 'undefined' ? navigator : undefined) as BadgeNavigator | undefined;

@@ -25,7 +25,7 @@ import { constructionFacets, WHOLE } from './construction';
 import { PORT_WORST, assemblyScene, portFacets } from './port';
 import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
 import type { ItemScene } from './questions';
-import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
+import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_4E, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
 import { EQUIPIER_TRIANGLES, guideOf } from './equipage';
 import { GUIDE_SHADOW_TRIANGLES, bellPlane, habitantHand, habitantPawn, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
 import { hasWorldHabitant } from './worldHabitants';
@@ -40,6 +40,7 @@ import { veilFacets } from './veil';
 import { groupsTriangles, wildlifeTriangles } from './wildlife';
 import { allCritterForms, wildlifeGroups5e } from './wildlife5e';
 import { hutteFacets } from './hutte5e';
+import { epaveFacets } from './epave4e';
 import { CRIQUE_SITE, NEF_4E_MODEL_TRIANGLES, criqueDecorFacets } from './crique4e';
 import { NETWORK_4E, pathRibbons4e } from './paths4e';
 import { TERRAIN_4E } from './plan4e';
@@ -129,6 +130,14 @@ export const WORLD_HABITANTS_MAX_5E = 3_300;
 
 /** Le plafond de la ruine d'un lieu du 5e, en triangles (intention du directeur artistique du lot 16 : visée à 1 000). */
 export const PLACE_RUIN_TRIANGLES_MAX_5E = 1_200;
+
+/**
+ * Le plafond d'un lieu du 4e, ruine, étapes, traces et ce qu'il pose hors de son emprise (`reach`, son allumage final)
+ * montrés ensemble, en triangles, et celui de sa ruine : ceux du 5e (intention du directeur artistique du lot 2 du 4e, la
+ * Forge).
+ */
+export const PLACE_TRIANGLES_MAX_4E = 1_600;
+export const PLACE_RUIN_TRIANGLES_MAX_4E = 1_200;
 
 /** L'enveloppe du monde ouvert de chaque niveau, que seul le mainteneur relève. */
 export const OPEN_WORLD_BUDGETS: Readonly<Record<OpenWorldLevel, { readonly triangles: number; readonly calls: number }>> = {
@@ -578,7 +587,7 @@ export function mapCost5e(): { triangles: number; calls: number } {
   };
 }
 
-// ---------- Le 4e (lot 1 du monde ouvert du 4e) ----------
+// ---------- Le 4e (lot 1 du monde ouvert du 4e ; lot 2 : la Forge) ----------
 
 /** Le plan du 4e et ses terres qu'on relie (trois ponts). */
 const PLAN_4E = planFor('4e');
@@ -611,9 +620,12 @@ function criqueCost(): number {
   return portFacets(PORT_WORST, { assembling: false }, CRIQUE_SITE).triangles + criqueDecorFacets().triangles;
 }
 
-/** Les lieux du 4e : les seize ruines, leurs trois ponts au plus chargé de leurs deux états, la Crique ; deux maillages. */
+/**
+ * Les lieux du 4e : les ruines, la Forge entière (sa ruine et ses trois étapes, lot 2) et les traces de ses cinq
+ * missions, leurs trois ponts au plus chargé de leurs deux états, la Crique ; deux maillages.
+ */
 function placesCost4e(): { triangles: number; calls: number } {
-  const ruins = PLAN_4E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles, 0);
+  const ruins = PLAN_4E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + (p.scenes.length ? placeTrace(p.id, p.scenes).triangles : 0), 0);
   const passages = LINKED_LANDS_4E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
   return { triangles: ruins + passages + criqueCost(), calls: 2 };
 }
@@ -621,38 +633,108 @@ function placesCost4e(): { triangles: number; calls: number } {
 /** L'aéronef du 4e, entier, sur son aire (dessinée avec les chemins) : dans le maillage des lieux. */
 const nefCost4e = (): { triangles: number; calls: number } => ({ triangles: NEF_4E_MODEL_TRIANGLES, calls: 0 });
 
-/** La pose au 4e : un pont qui se relève (aucun lieu n'a encore d'étapes). Un appel. */
-function poseCost4e(): { triangles: number; calls: number } {
-  return { triangles: Math.max(...LINKED_LANDS_4E.map((l) => bridgeLay(l).facets.triangles)), calls: 1 };
+/**
+ * Ce que les lieux du 4e posent hors de leur emprise (`PlaceArt.reach` : la vanne et les regards de la rigole de la
+ * Forge, lot 2) et leur allumage à son état final (`PlaceArt.restoration` : les laves, la gueule), dans le maillage des
+ * lieux du monde, sans appel de plus ; la Carte ne les dessine pas.
+ */
+export function reachCost4e(): number {
+  const origin = { x: 0, y: 0, z: 0 };
+  return PLAN_4E.places.reduce((s, p) => {
+    const art = placeArt(p.id);
+    return s + (art?.reach?.(origin, () => true)?.triangles ?? 0) + (art?.restoration?.draw(origin, Infinity).triangles ?? 0);
+  }, 0);
+}
+
+/** L'allumage d'un lieu du 4e, au plus chargé de ses instants (pris tous les vingtièmes de seconde, comme la vue). */
+function restorationCost4e(): number {
+  const origin = { x: 0, y: 0, z: 0 };
+  let worst = 0;
+  for (const p of PLAN_4E.places) {
+    const r = placeArt(p.id)?.restoration;
+    if (r) for (let t = 0; t <= r.seconds + 1e-9; t += 0.05) worst = Math.max(worst, r.draw(origin, t).triangles);
+  }
+  return worst;
 }
 
 /**
- * Ce que coûte le monde ouvert du 4e (lot 1 : l'île entière en grandes masses) : le ciel, le sol et ses buissons, la
- * mer, les chemins (les rails, la rigole couverte et la passerelle de l'aire compris), les lieux et leurs ponts, la Crique
- * et son décor, la brume des terres fermées (au départ, les trois), Kéo, l'aéronef ; puis, selon `view` : le monde
- * (`monde`, un pont qui se relève) ou le départ (`depart`, la Nef et l'obstacle dans deux maillages à part). Ni Détour,
- * ni faune, ni scénette au lot 1.
+ * La pose au 4e, au plus chargée : un pont qui se relève, une partie de la Forge qui descend (lot 2), ou son allumage
+ * (dans le même maillage, après la pose). Un appel.
  */
-export function openWorldCost4e(view: 'monde' | 'depart' = 'monde'): OpenWorldCost4e[] {
+function poseCost4e(): { triangles: number; calls: number } {
+  const field = buildHeightField4e();
+  const ground = (x: number, z: number) => groundOn4e(field, x, z);
+  const lays = Math.max(...LINKED_LANDS_4E.map((l) => bridgeLay(l).facets.triangles));
+  const parts = Math.max(0, ...PLAN_4E.places.filter((p) => p.scenes.length).map((p) => constructionFacets(p.id, [WHOLE], ground).triangles));
+  return { triangles: Math.max(lays, parts, restorationCost4e()), calls: 1 };
+}
+
+/**
+ * Une question du 4e, au pire (lot 2, la Forge) : le lieu au repos et six lingots choisis, dans un maillage, et la
+ * réaction dans un autre ; deux appels.
+ */
+function questionCost4e(): { triangles: number; calls: number } {
+  let triangles = 0;
+  for (const p of PLAN_4E.places.filter((q) => q.scenes.length)) {
+    const s = sceneSpot(p.id);
+    const points = Array.from({ length: 6 }, (_, i) => ({ x: s.x - 5 + 2 * i, y: s.y, z: s.z + 6 }));
+    const item = itemScene(p.id, { kind: 'rest' }, true, points, 1);
+    const objects = answerObjects(scenePlace(p.id), points, 1, { picked: [0, 1, 2, 3, 4, 5] });
+    triangles = Math.max(triangles, item.still.triangles + objects.triangles + (item.reaction?.facets.triangles ?? 0));
+  }
+  return { triangles, calls: 2 };
+}
+
+/**
+ * La scénette du 4e, la plus chargée (lot 2, la Forge) : son décor de près, abords compris, dans un maillage ;
+ * l'habitante en modèle 3D, au plus `HABITANT_TRIANGLES_4E`, dans un maillage à part : un appel de plus.
+ */
+function scenetteCost4e(): { triangles: number; calls: number } {
+  const places = PLAN_4E.places.filter((p) => p.scenes.length).map((p) => scenePlace(p.id));
+  const decor = (place: ScenePlaceId, open: boolean) => (hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_4E : scenetteDecor(place, open).triangles);
+  const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true))));
+  return { triangles: worst, calls: places.some(hasHabitantModel) ? 2 : 1 };
+}
+
+/**
+ * Ce que coûte le monde ouvert du 4e (lot 1 : l'île entière en grandes masses ; lot 2 : la Forge finie) : le ciel, le
+ * sol et ses buissons, la mer, les chemins (les rails, la rigole couverte et la passerelle de l'aire compris), les lieux
+ * et leurs ponts, la vanne et les regards de la Forge et son allumage final (`reachCost4e`), la Crique et son décor, la
+ * brume des terres fermées (au départ, les trois), Kéo, l'aéronef ; puis, selon `view` : le monde (`monde`, la pose : un
+ * pont qui se relève, une partie qui descend ou l'allumage), la scénette ouverte (`scenette`, la question et le décor de
+ * près de la Forge, sa chaudronnière en modèle) ou le départ (`depart`, la Nef et l'obstacle dans deux maillages à part).
+ * L'Épave (lot 2, ./epave4e.ts), le premier Détour du 4e, et sa sente tracée, dans le maillage des lieux. Pas de faune encore.
+ */
+export function openWorldCost4e(view: 'monde' | 'scenette' | 'depart' = 'monde'): OpenWorldCost4e[] {
   const field = buildHeightField4e();
   const ground = groundCost4e();
   const paths = pathRibbons4e((x, z) => groundOn4e(field, x, z));
+  const places = placesCost4e();
   return [
     { poste: 'ciel', ...SKY },
     { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
     { poste: 'mer', triangles: 2, calls: 1 },
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
-    { poste: 'lieux', ...placesCost4e() },
+    { poste: 'lieux', ...places, triangles: places.triangles + reachCost4e() },
     { poste: 'brume', triangles: veilFacets(LINKED_LANDS_4E).triangles, calls: 1 },
+    { poste: 'détours', triangles: epaveFacets(true, (x, z) => groundOn4e(field, x, z)).triangles, calls: 0 },
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost4e() },
-    ...(view === 'depart' ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }] : [{ poste: 'pose' as const, ...poseCost4e() }]),
+    ...(view === 'depart'
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }]
+      : view === 'scenette'
+      ? [
+          { poste: 'question' as const, ...questionCost4e() },
+          { poste: 'scénette' as const, ...scenetteCost4e() },
+        ]
+      : [{ poste: 'pose' as const, ...poseCost4e() }]),
   ];
 }
 
 /**
  * La Carte du 4e, en un seul plan : le ciel, toute l'île de loin, la mer, les chemins, les lieux (deux appels, le pire),
- * le trait double des ponts, les hachures du sommet et le dessin des coupures (dans le maillage des lieux), la brume des terres fermées, Kéo.
+ * le trait double des ponts, les hachures du sommet et le dessin des coupures (dans le maillage des lieux), l'Épave et sa
+ * sente, la brume des terres fermées, Kéo.
  */
 export function mapCost4e(): { triangles: number; calls: number } {
   const field = buildHeightField4e();
@@ -661,8 +743,9 @@ export function mapCost4e(): { triangles: number; calls: number } {
   const places = placesCost4e();
   const marks = LINKED_LANDS_4E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + mapOverlay4e().triangles;
   const veil = veilFacets(LINKED_LANDS_4E).triangles;
+  const epave = epaveFacets(true, (x, z) => groundOn4e(field, x, z)).triangles;
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + marks + veil + KEO.triangles + nefCost4e().triangles,
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + epave + marks + veil + KEO.triangles + nefCost4e().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
   };
 }

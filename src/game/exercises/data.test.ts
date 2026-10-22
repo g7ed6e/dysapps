@@ -1,4 +1,4 @@
-import { BIOMES, BLOCKS } from '../biomes';
+import { BIOMES, BLOCKS, getIle } from '../biomes';
 import { CATALOG, UNORDERED, exercisesOf, loadAllExercises, pickExercise, questProgress } from './index';
 import { SCREEN_TYPES } from './registry';
 import { CalculationScreen } from './CalculationScreen';
@@ -21,7 +21,7 @@ it('l’index du catalogue dit la même chose que le contenu chargé à la deman
 
 describe.each(EXERCISES.map((e) => [e.id, e] as const))('exercice %s', (_, def) => {
   it('est complet et cohérent', () => {
-    const biome = BIOMES.find((b) => b.id === def.biome)!;
+    const biome = getIle(def.biome)!;
     expect(biome).toBeTruthy();
     expect(biome.exercises.map((x) => x.id)).toContain(def.type);
     expect(SCREEN_TYPES[def.type]).toBeTruthy();
@@ -286,8 +286,8 @@ it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle a
 });
 
 it('anglais : tout le contenu en anglais (lang: en), la réponse parmi les choix, une correction en français', () => {
-  const islands = BIOMES.filter((b) => b.subject === 'english').map((b) => b.id);
-  const defs = EXERCISES.filter((e) => islands.includes(e.biome));
+  const islands = new Set<string>(BIOMES.filter((b) => b.subject === 'english').map((b) => b.id));
+  const defs = EXERCISES.filter((e) => islands.has(e.biome));
   expect(defs.length).toBeGreaterThan(0);
   for (const def of defs) {
     expect(def.lang, def.id).toBe('en');

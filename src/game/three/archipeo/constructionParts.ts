@@ -4,9 +4,10 @@
 // devient les tranches d'étapes qu'elle pose dans le lieu, qui se rebâtit lui-même (world/continu/construction.ts) : le plan `<lieu>-1`
 // est le corps, `-2` le haut, `-3` les abords ; un plan coupé en deux ou en trois rangées (GD-14) en tranches qui se
 // suivent, de bas en haut. Sans Three.js : testé sous jsdom.
-import type { BiomeId } from '../../biomes';
+import type { IleId } from '../../biomes';
 import type { PartShape, Stage } from '../../world/continu/construction';
-import type { OpenPlace } from '../../world/continu/levelPlan';
+import { hasScenette, levelOfPlace, type OpenPlace } from '../../world/continu/levelPlan';
+import { scenetteOf } from '../../world/continu/scenette';
 import type { IslandStateId } from '../../world/islandState';
 import { partiePosee, partiesDe, type Partie } from '../../world/parts';
 import { plansFor, type PlanDef } from '../../world/plans';
@@ -29,7 +30,7 @@ export interface PlaceConstruction {
 const SHAPES = new WeakMap<readonly Partie[], PartShape[]>();
 
 /** Les parties de la construction d'un lieu, en tranches d'étapes (calculées une fois par lieu et par compte). */
-export function partShapes(island: BiomeId): PartShape[] {
+export function partShapes(island: IleId): PartShape[] {
   const parties = partiesDe(island);
   const cached = SHAPES.get(parties);
   if (cached) return cached;
@@ -51,7 +52,7 @@ export function partShapes(island: BiomeId): PartShape[] {
 }
 
 /** La construction d'un lieu dans une sauvegarde : ses parties, celles qui sont posées et les tranches à dessiner. */
-export function placeConstruction(island: BiomeId, parts: Record<string, string[]>): PlaceConstruction {
+export function placeConstruction(island: IleId, parts: Record<string, string[]>): PlaceConstruction {
   const parties = partiesDe(island);
   const shapes = partShapes(island);
   const posed = parties.map((p) => partiePosee(p, parts));
@@ -94,6 +95,12 @@ export function stateWord(state: 'en-chantier' | 'restauree', words: Readonly<Re
   return { ms: masculine, mp: `${masculine}s`, fs: word, fp: `${word}s` }[agree];
 }
 
+/** L'état d'un lieu restauré, accordé à son nom : « La Forge est restaurée. », « Les Orgues sont restaurées. ». */
+export function restoredLine(place: Pick<OpenPlace, 'name' | 'agree'>, words: Readonly<Record<IslandStateId, string>>): string {
+  const plural = place.agree === 'mp' || place.agree === 'fp';
+  return `${place.name} ${plural ? 'sont' : 'est'} ${stateWord('restauree', words, place.agree).toLocaleLowerCase('fr')}.`;
+}
+
 /**
  * Les lieux dont le nom est celui d'un site, jamais suivi du mot d'achèvement de l'univers sur la Carte (consultant
  * Archipéo, lot L8b : « Les Ruines », jamais « restaurées ») : leur bouton dit à la place le geste du lieu, accordé
@@ -132,28 +139,44 @@ function partWords(shape: PartShape): { words: string; share: string; many: bool
  * sans « Partie posée » en plus ; sinon « Partie posée : le corps de la Montée, 1 sur 2. » ; une partie de deux étapes
  * (un lieu à deux parties) : « le haut et les abords de l’Imprimerie », et « Étapes finies » quand elle les finit toutes deux. Sans React : testé sous jsdom.
  */
-export function stagePoseWords(island: BiomeId, place: Pick<OpenPlace, 'at'>): PoseWords {
+export function stagePoseWords(island: IleId, place: Pick<OpenPlace, 'at'>, own?: readonly string[]): PoseWords {
   const of = ofOpenPlace(place);
+  // La phrase propre du lieu pour la partie de rang `rang` (au 4e, la Forge), après la ligne d'étape : « … 1 sur 3. La
+  // fente du fourneau est bouchée. »
+  const told = (text: string, rang: number) => (own?.[rang - 1] ? `${text} ${own[rang - 1]}` : text);
   const plans = plansFor(island);
-  const stageOfPlan = (plan: PlanDef): Stage => Math.max(0, Math.min(2, plans.findIndex((p) => p.id === plan.id))) as Stage;
+  const stageOfPlan = (plan: PlanDef<IleId>): Stage => Math.max(0, Math.min(2, plans.findIndex((p) => p.id === plan.id))) as Stage;
   return {
     lines(pose) {
       const finished = new Map(pose.plansFinis.map((p) => [p.id, p]));
-      const told = new Set<string>();
+      const said = new Set<string>();
       const lines: PoseLine[] = pose.posees.map((partie) => {
         const shape = partShapes(island)[partie.rang - 1] ?? [];
         const own = [...new Set(partie.cases.map((c) => c.plan.id))];
         const ends = own.filter((id) => finished.has(id));
         const { words, share, many } = partWords(shape);
         if (ends.length && ends.length === own.length) {
-          for (const id of ends) told.add(id);
-          return { text: `${many ? 'Étapes finies' : 'Étape finie'} : ${words} ${of}.`, xp: ends.reduce((sum, id) => sum + finished.get(id)!.reward.xp, 0) };
+          for (const id of ends) said.add(id);
+          return { text: told(`${many ? 'Étapes finies' : 'Étape finie'} : ${words} ${of}.`, partie.rang), xp: ends.reduce((sum, id) => sum + finished.get(id)!.reward.xp, 0) };
         }
-        return { text: `Partie posée : ${words} ${of}${share}.` };
+        return { text: told(`Partie posée : ${words} ${of}${share}.`, partie.rang) };
       });
       // Un plan fini qu'aucune phrase n'a dit (une partie qui en finit un et en commence un autre) : sa phrase à lui.
-      for (const plan of pose.plansFinis) if (!told.has(plan.id)) lines.push({ text: `Étape finie : ${STAGE_WORDS[stageOfPlan(plan)]} ${of}.`, xp: plan.reward.xp });
+      for (const plan of pose.plansFinis) if (!said.has(plan.id)) lines.push({ text: `Étape finie : ${STAGE_WORDS[stageOfPlan(plan)]} ${of}.`, xp: plan.reward.xp });
       return lines;
     },
   };
+}
+
+/**
+ * Les mots de la pose au bilan d'une mission jouée dans un lieu du monde ouvert : au 5e et dans les lieux construits du
+ * 4e (la Forge, lot 2 : relectures dys, UX UI et contenu), l'étape du lieu, jamais le nom d'un plan ni sa réplique, puis
+ * la phrase propre de la partie quand le lieu en a (`Scenette.words`) ; au 6e, ceux de la grille (`undefined`).
+ */
+export function placePoseWords(place: OpenPlace): PoseWords | undefined {
+  const level = levelOfPlace(place.id);
+  const island = place.island as IleId;
+  if (level === '5e') return stagePoseWords(island, place);
+  if (level === '4e' && hasScenette(place.id)) return stagePoseWords(island, place, scenetteOf(place.id).words?.pose);
+  return undefined;
 }

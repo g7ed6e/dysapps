@@ -1,0 +1,268 @@
+{
+  "id": "maths-4e-data-proportional-reasoning-1",
+  "biome": "maths-4e-data",
+  "type": "proportional-reasoning",
+  "level": 1,
+  "instruction": "Lis la phrase, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-4e-data-proportional-reasoning-1-0",
+      "prompt": "Un train parcourt 150 km en 2 h. Sa vitesse moyenne est …",
+      "spoken": "Un train parcourt 150 kilomètres en 2 heures. Sa vitesse moyenne est (mot manquant).",
+      "choices": [
+        "75 km/h",
+        "148 km/h",
+        "300 km/h"
+      ],
+      "answer": "75 km/h",
+      "hint": "Combien de kilomètres en une heure ?",
+      "explanation": "Vitesse = distance ÷ durée = 150 ÷ 2 = 75 km/h. 148 soustrait les heures aux kilomètres. 300 multiplie au lieu de diviser.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandeurs quotients",
+          "lines": [
+            "Proportionnel : d’une ligne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "Vitesse = distance ÷ durée, en km/h : des kilomètres par heure.",
+            "Débit = volume ÷ durée, en L/min : des litres par minute.",
+            "Prix au kilo = prix ÷ masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-1-1",
+      "prompt": "Un robinet remplit une cuve de 60 L en 5 min. Son débit est …",
+      "spoken": "Un robinet remplit une cuve de 60 litres en 5 minutes. Son débit est (mot manquant).",
+      "choices": [
+        "12 L/min",
+        "55 L/min",
+        "300 L/min"
+      ],
+      "answer": "12 L/min",
+      "hint": "Combien de litres en une minute ?",
+      "explanation": "Débit = volume ÷ durée = 60 ÷ 5 = 12 L/min. 55 soustrait au lieu de diviser. 300 multiplie au lieu de diviser.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandeurs quotients",
+          "lines": [
+            "Proportionnel : d’une ligne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "Vitesse = distance ÷ durée, en km/h : des kilomètres par heure.",
+            "Débit = volume ÷ durée, en L/min : des litres par minute.",
+            "Prix au kilo = prix ÷ masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-1-2",
+      "prompt": "3 kg de minerai coûtent 12 €. Le prix au kilo est …",
+      "spoken": "3 kilos de minerai coûtent 12 euros. Le prix au kilo est (mot manquant).",
+      "choices": [
+        "4 €/kg",
+        "9 €/kg",
+        "36 €/kg"
+      ],
+      "answer": "4 €/kg",
+      "hint": "Divise le prix par la masse.",
+      "explanation": "12 ÷ 3 = 4 € par kilo. 9 soustrait au lieu de diviser. 36 multiplie au lieu de diviser.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandeurs quotients",
+          "lines": [
+            "Proportionnel : d’une ligne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "Vitesse = distance ÷ durée, en km/h : des kilomètres par heure.",
+            "Débit = volume ÷ durée, en L/min : des litres par minute.",
+            "Prix au kilo = prix ÷ masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-1-3",
+      "prompt": "4 sacs pèsent 30 kg. 10 sacs pareils pèsent …",
+      "spoken": "4 sacs pèsent 30 kilos. 10 sacs pareils pèsent (mot manquant).",
+      "choices": [
+        "36 kg",
+        "75 kg",
+        "120 kg"
+      ],
+      "answer": "75 kg",
+      "hint": "Cherche d’abord la masse d’un seul sac.",
+      "explanation": "Un sac pèse 30 ÷ 4 = 7,5 kg ; 10 sacs pèsent 7,5 × 10 = 75 kg. 36 ajoute 6 comme aux sacs : on multiplie, on n’ajoute pas. 120, c’est 30 × 4.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "sacs",
+            "masse (kg)"
+          ],
+          "rows": [
+            [
+              4,
+              30
+            ],
+            [
+              10,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandeurs quotients",
+          "lines": [
+            "Proportionnel : d’une ligne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "Vitesse = distance ÷ durée, en km/h : des kilomètres par heure.",
+            "Débit = volume ÷ durée, en L/min : des litres par minute.",
+            "Prix au kilo = prix ÷ masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-1-4",
+      "prompt": "Un camion roule à 60 km/h pendant 30 min. Il parcourt …",
+      "spoken": "Un camion roule à 60 kilomètres par heure pendant 30 minutes. Il parcourt (mot manquant).",
+      "choices": [
+        "2 km",
+        "30 km",
+        "1 800 km"
+      ],
+      "answer": "30 km",
+      "hint": "30 minutes, c’est une demi-heure.",
+      "explanation": "En une heure, 60 km ; en une demi-heure, la moitié : 30 km. 2, c’est 60 ÷ 30 : les minutes ne sont pas des heures. 1 800, c’est 60 × 30.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandeurs quotients",
+          "lines": [
+            "Proportionnel : d’une ligne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "Vitesse = distance ÷ durée, en km/h : des kilomètres par heure.",
+            "Débit = volume ÷ durée, en L/min : des litres par minute.",
+            "Prix au kilo = prix ÷ masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-1-5",
+      "prompt": "Un sac de 5 kg coûte 8 €, un sac de 2 kg coûte 3 €. Le moins cher au kilo est …",
+      "spoken": "Un sac de 5 kilos coûte 8 euros, un sac de 2 kilos coûte 3 euros. Le moins cher au kilo est (mot manquant).",
+      "choices": [
+        "le sac de 2 kg",
+        "le sac de 5 kg",
+        "aucun, ils coûtent pareil au kilo"
+      ],
+      "answer": "le sac de 2 kg",
+      "hint": "Calcule le prix d’un kilo pour chaque sac.",
+      "explanation": "8 ÷ 5 = 1,60 € le kilo ; 3 ÷ 2 = 1,50 € le kilo : le sac de 2 kg est moins cher au kilo. Le sac de 5 kg coûte plus cher en tout, mais on compare le prix d’un kilo.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandeurs quotients",
+          "lines": [
+            "Proportionnel : d’une ligne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "Vitesse = distance ÷ durée, en km/h : des kilomètres par heure.",
+            "Débit = volume ÷ durée, en L/min : des litres par minute.",
+            "Prix au kilo = prix ÷ masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-1-6",
+      "prompt": "Le prix est proportionnel à la masse : 2 kg coûtent 6 €. 5 kg coûtent …",
+      "spoken": "Le prix est proportionnel à la masse : 2 kilos coûtent 6 euros. 5 kilos coûtent (mot manquant).",
+      "choices": [
+        "9 €",
+        "15 €",
+        "30 €"
+      ],
+      "answer": "15 €",
+      "hint": "Un kilo coûte combien ?",
+      "explanation": "Un kilo coûte 6 ÷ 2 = 3 €, donc 5 kg coûtent 5 × 3 = 15 €. 9 ajoute 3 comme aux kilos. 30, c’est 6 × 5 : 6 € est le prix de 2 kg, pas d’un seul.",
+      "figure": {
+        "kind": "ratio-table",
+        "props": {
+          "cols": [
+            "masse (kg)",
+            "prix (€)"
+          ],
+          "rows": [
+            [
+              2,
+              6
+            ],
+            [
+              5,
+              "?"
+            ]
+          ]
+        }
+      },
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandeurs quotients",
+          "lines": [
+            "Proportionnel : d’une ligne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "Vitesse = distance ÷ durée, en km/h : des kilomètres par heure.",
+            "Débit = volume ÷ durée, en L/min : des litres par minute.",
+            "Prix au kilo = prix ÷ masse."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-proportional-reasoning-1-7",
+      "prompt": "Une pompe a un débit de 4 L/min. Pour pomper 36 L, il lui faut …",
+      "spoken": "Une pompe a un débit de 4 litres par minute. Pour pomper 36 litres, il lui faut (mot manquant).",
+      "choices": [
+        "9 min",
+        "32 min",
+        "144 min"
+      ],
+      "answer": "9 min",
+      "hint": "Combien de fois 4 litres dans 36 litres ?",
+      "explanation": "36 ÷ 4 = 9 minutes. 32 soustrait au lieu de diviser. 144 multiplie au lieu de diviser.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandeurs quotients",
+          "lines": [
+            "Proportionnel : d’une ligne à l’autre, on multiplie toujours par le même nombre.",
+            "Quatrième proportionnelle : trouve par combien on multiplie, puis fais pareil.",
+            "Vitesse = distance ÷ durée, en km/h : des kilomètres par heure.",
+            "Débit = volume ÷ durée, en L/min : des litres par minute.",
+            "Prix au kilo = prix ÷ masse."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-4e-powers",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

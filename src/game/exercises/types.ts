@@ -1,5 +1,5 @@
 // Format d'un exercice Blocland : un objet JSON chargé statiquement (pas de serveur).
-import type { BiomeId, BlockId } from '../biomes';
+import type { IleId, BlockId } from '../biomes';
 import type { Lang } from '../../core/speech';
 
 export interface ExerciseItem {
@@ -10,7 +10,7 @@ export interface ExerciseItem {
 
 export interface ExerciseDef {
   id: string;
-  biome: BiomeId;
+  biome: IleId;
   /** Type d'exercice (qcm, chasse-son, filon…) : détermine le composant qui l'affiche. */
   type: string;
   level: number;

@@ -1,5 +1,5 @@
 // Produit par `npm run contenu` depuis docs/contenu/<île>.md, dans l'ordre de docs/contenu/archipel.md : ne pas éditer.
-import type { BiomeDef } from './biomes';
+import type { IleDef } from './biomes';
 
 export const ILES = [
   {
@@ -4166,5 +4166,66 @@ export const ILES = [
         "lang": "es"
       }
     ]
+  },
+  {
+    "id": "maths-4e-data",
+    "name": "Étalon",
+    "module": "Données et proportions",
+    "subject": "maths",
+    "classe": "4e",
+    "description": "Moyenne et médiane, probabilités, proportions et partages, programmes de calcul, puis translation, milieux et cercle.",
+    "block": "maths-4e-powers",
+    "icon": "scale",
+    "openWorldOnly": true,
+    "exercises": [
+      {
+        "id": "weighted-mean",
+        "title": "Moyenne et médiane",
+        "description": "La moyenne pondérée d’une série, puis la médiane, l’étendue et ce que change une valeur extrême.",
+        "programme": [
+          "c4.ma.b.indicateurs",
+          "c4.ma.b.lire-donnees"
+        ]
+      },
+      {
+        "id": "events",
+        "title": "Évènements",
+        "description": "La probabilité d’un évènement et de l’évènement contraire, puis des expériences à deux épreuves.",
+        "programme": [
+          "c4.ma.b.probabilites"
+        ]
+      },
+      {
+        "id": "proportional-reasoning",
+        "title": "Proportions",
+        "description": "Grandeurs quotients et quatrième proportionnelle, puis coefficient multiplicateur d’une hausse ou d’une baisse, puis ratio et partage.",
+        "programme": [
+          "c4.ma.b.proportionnalite",
+          "c4.ma.c.grandeurs-composees",
+          "c4.ma.b.pourcentages-echelles",
+          "c4.ma.b.ratio"
+        ]
+      },
+      {
+        "id": "calculation-programs",
+        "title": "Programmes de calcul",
+        "description": "Appliquer un programme de calcul à un nombre puis à x, puis le remonter, et lire comment une grandeur dépend d’une autre.",
+        "programme": [
+          "c4.ma.b.image-antecedent",
+          "c4.ma.a.reduire-developper"
+        ]
+      },
+      {
+        "id": "translations",
+        "title": "Figures de 4e",
+        "description": "Ce que garde une translation et le parallélogramme, puis la droite des milieux et le cercle d’un triangle rectangle.",
+        "programme": [
+          "c4.ma.d.transformations",
+          "c4.ma.d.triangles-parallelogramme",
+          "c4.ma.d.angles-triangles",
+          "c4.ma.d.thales"
+        ]
+      }
+    ]
   }
-] satisfies BiomeDef[];
+] satisfies IleDef[];

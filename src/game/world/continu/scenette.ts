@@ -76,6 +76,13 @@ export interface Scenette {
   role: string;
   greeting: string | null;
   placement: 'rangee';
+  /**
+   * Au 4e, les phrases propres du lieu (directeur du contenu pédagogique, `forge-phrases.md`, lot 2) : `pose`, une par
+   * partie, dans l'ordre de la pose (`partShapes`), dite au bilan après la ligne d'étape (`stagePoseWords`) ; `end`, la
+   * réplique de l'habitant, dite une fois, après « La Forge est restaurée. ». Ni nom de contenu, ni chiffre, ni mot de
+   * chaleur.
+   */
+  words?: { readonly pose: readonly string[]; readonly end?: string };
 }
 
 const SCENETTES: Record<PlaceId, Scenette> = {
@@ -159,6 +166,43 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // l'intention du directeur artistique, sans « relier », à relire par le directeur du contenu pédagogique (jamais le nom
   // d'une créature ni d'un Gardien, jamais « nacelle » pour la Nef).
   nacelles: { role: placeArt('nacelles')!.role, greeting: 'Ici, on tend les câbles.', placement: 'rangee' },
+  // La Forge (lot 2 du 4e) : la chaudronnière, sans prénom ; ses phrases de pose et sa réplique de fin (`forge-phrases.md`).
+  forge: {
+    role: placeArt('forge')!.role,
+    greeting: 'La chaudronnière façonne le métal en grandes feuilles.',
+    placement: 'rangee',
+    words: {
+      pose: ['La fente du fourneau est bouchée.', 'Le grand marteau est en place.', 'Les roues dentées sont debout.', 'Le fourneau a retrouvé sa hauteur.', 'La rigole est prête.'],
+      end: 'Le feu de la montagne est revenu.',
+    },
+  },
+  // La Soute (lot 2 du 4e) : la phrase du métier de la proposition, jamais « entrepôt ».
+  soute: {
+    role: placeArt('soute')!.role,
+    greeting: 'Le magasinier range et compte tout ce qui part et tout ce qui arrive.',
+    placement: 'rangee',
+    // Les phrases de l'intention (§ 7), reprises par le directeur du contenu pédagogique, une par partie (le corps, le haut,
+    // les abords).
+    words: { pose: ['La halle est debout.', 'La halle a son toit.', 'Le navire est de nouveau droit.'], end: 'D’ici, les machines partaient en bateau vers d’autres pays.' },
+  },
+  // La Porte (lot 2 du 4e) : la phrase du métier de la proposition, jamais « loge ».
+  porte: {
+    role: placeArt('porte')!.role,
+    greeting: 'L’avocate aide chacun à défendre ses droits.',
+    placement: 'rangee',
+    // Les phrases de l'intention (§ 7), reprises par le directeur du contenu pédagogique, une par partie (le corps, le haut,
+    // les abords).
+    words: { pose: ['Les deux battants sont ouverts.', 'La salle a son toit.', 'Les bancs sont remis en cercle.'], end: 'Ici, chacun peut entrer et parler.' },
+  },
+  // L'Étalon (lot 2 du 4e) : la peseuse explique le mot une fois, sans le cheval (correction 5 du directeur artistique).
+  etalon: {
+    role: placeArt('etalon')!.role,
+    greeting: 'Ici, tous les poids suivaient un modèle : l’étalon.',
+    placement: 'rangee',
+    // Les phrases de pose du directeur du contenu pédagogique (relecture des Fabriques) ; pas de réplique de fin, l'Étalon
+    // n'a pas de restauration.
+    words: { pose: ['La bascule est remise à plat.', 'Le tonneau est sur ses chevalets.', 'Les cuves et la trieuse sont debout.', 'Le toit est de nouveau entier.', 'La cour est dallée.'] },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -584,6 +628,10 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   semaphore: northSite('semaphore'),
   gaillard: northSite('gaillard'),
   nacelles: northSite('nacelles'),
+  forge: northSite('forge'),
+  soute: northSite('soute'),
+  porte: northSite('porte'),
+  etalon: northSite('etalon'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2120,6 +2168,12 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   gaillard: 'paving',
   // Les Nacelles (lot 16) : les dalles chaudes de la cour.
   nacelles: 'paving',
+  forge: 'paving',
+  // La Soute (lot 2 du 4e) : les planches du quai.
+  soute: 'planks',
+  // La Porte (lot 2 du 4e) : le pavé de la place.
+  porte: 'paving',
+  etalon: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

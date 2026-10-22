@@ -1,6 +1,6 @@
 # L’archipel
 
-Les îles, dans l’ordre du jeu : `npm run contenu` en produit `src/game/islands.ts` dans cet ordre, chacune depuis `<lieu>.md`. Une île nouvelle s’ajoute ici et dans `BIOME_IDS` (`src/game/biomes.ts`).
+Les îles, dans l’ordre du jeu : `npm run contenu` en produit `src/game/islands.ts` dans cet ordre, chacune depuis `<lieu>.md`. Une île nouvelle s’ajoute ici et dans `BIOME_IDS` (`src/game/biomes.ts`) ; un lieu du monde ouvert seulement (en-tête `monde ouvert seulement : oui`, GD-24), ici et dans `OPEN_WORLD_ONLY_IDS`, à la fin de la liste.
 
 1. `french-6e-phonology`
 2. `french-6e-letter-confusion`
@@ -60,3 +60,4 @@ Les îles, dans l’ordre du jeu : `npm run contenu` en produit `src/game/island
 56. `lca-5e-legends`
 57. `lca-4e-cities`
 58. `lca-3e-ideas`
+59. `maths-4e-data`

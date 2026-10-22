@@ -3,9 +3,10 @@
 // cuvette, les rails, ses couleurs (jamais presque noires), la marche libre, et son budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { OPEN_WORLD_BUDGETS, mapCost4e, openWorldCost4e } from './budget';
+import { OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_4E, mapCost4e, openWorldCost4e } from './budget';
 import { BRIDGE, bridgeSite } from './bridges';
 import { CRIQUE_SITE, NEF_4E, criqueDecorFacets, nef4eFlight } from './crique4e';
+import { EPAVE_BUDGET } from './epave4e';
 import { followPose, keepFeetAbove, screenOf } from './camera';
 import { distance, distanceToPolyline, insidePolygon, linearRgb, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
@@ -30,8 +31,24 @@ const isPassage = (a: string, b: string) => Object.values(LINKS_4E).some(({ brid
 const luminance = ([r, g, b]: readonly number[]) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
 const NOT_BLACK = 0.03;
 
-/** Le plafond du lot 1 du 4e (mesuré le 21 octobre 2026, retouche 2 : 59 624 triangles et 14 appels dans le monde, 58 502 et 15 au départ, 56 570 et 12 sur la Carte), avec sa marge. */
-const LOT1_CEILING = { triangles: 64_000, calls: 16 } as const;
+/**
+ * Le plafond du 4e après son lot 2, la Forge (mesuré le 21 octobre 2026 : 67 656 triangles et 17 appels la scénette de la
+ * Forge ouverte, 60 560 et 14 hors scénette, 59 438 et 15 au départ, 57 289 et 12 sur la Carte ; au lot 1, 59 624 et 14
+ * dans le monde), avec sa marge : relevé de 64 000 et 16 appels pour la scénette et la chaudronnière en modèle (8 000
+ * triangles, un appel).
+ */
+const LOT2_CEILING = { triangles: 72_000, calls: 18 } as const;
+
+/**
+ * Le plafond du 4e avec la Soute, la Porte et l'Étalon (lot 2) : celui de la Forge, relevé de 2 000 triangles pour
+ * la Soute et la Porte (à la place de leurs ruines simples, leurs traces comprises) et d'un lieu du 4e au plus chargé
+ * pour l'Étalon (`PLACE_TRIANGLES_MAX_4E`), et du budget du Détour de l'Épave et de sa sente (`EPAVE_BUDGET`) ; aucun appel
+ * de plus (une seule scénette ouverte à la fois, l'Épave dans le maillage des lieux). Mesuré le
+ * 21 octobre 2026, après la retouche 2 (le toit de la salle de la Porte, la coque de l'Épave) : 71 045 triangles et 17
+ * appels la scénette ouverte, 63 623 et 14 hors scénette, 62 501 et 15 au départ, 60 432 et 12 sur la Carte (avant :
+ * 70 943, 63 521, 62 399 et 60 330).
+ */
+const LOT2_FABRIQUES_CEILING = { triangles: LOT2_CEILING.triangles + 2_000 + PLACE_TRIANGLES_MAX_4E + EPAVE_BUDGET.triangles + EPAVE_BUDGET.sente, calls: LOT2_CEILING.calls } as const;
 
 /** Les couleurs d'un maillage. */
 function colorsOf(f: { colors: Float32Array }): Set<string> {
@@ -223,13 +240,13 @@ describe('Les couleurs chaudes du 4e', () => {
 });
 
 describe('Le budget du 4e', () => {
-  it('le monde, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 1', () => {
+  it('le monde, la scénette, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 2', () => {
     const total = (list: { triangles: number; calls: number }[]) => list.reduce((s, p) => ({ triangles: s.triangles + p.triangles, calls: s.calls + p.calls }), { triangles: 0, calls: 0 });
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
-    for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('depart')), mapCost4e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT1_CEILING.triangles);
-      expect(cost.calls).toBeLessThanOrEqual(LOT1_CEILING.calls);
+    for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('scenette')), total(openWorldCost4e('depart')), mapCost4e()]) {
+      expect(cost.triangles).toBeLessThanOrEqual(LOT2_FABRIQUES_CEILING.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(LOT2_FABRIQUES_CEILING.calls);
     }
   });
 });

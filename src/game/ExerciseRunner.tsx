@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
-import { thePlace } from './world/placeArticle';
+import { thePlace, toPlace } from './world/placeArticle';
 import { Link, useNavigate } from 'react-router-dom';
 import { Feedback } from '../components/Feedback';
 import { Icon } from '../components/Icon';
@@ -14,11 +14,13 @@ import { useProgress } from '../core/ProgressContext';
 import { useSettings } from '../core/SettingsContext';
 import { useTextes } from '../universes';
 import { useHaptics } from '../core/haptics';
-import { BLOCKS, getBiome, ofBlock, type BiomeDef } from './biomes';
+import { BLOCKS, estUnBiome, getBiome, ofBlock, type IleDef } from './biomes';
 import { planStatus } from './engine';
-import { archipelagoOf } from './world/archipelago';
+import { archipelagoOf, getArchipelago } from './world/archipelago';
 import { stageAt } from './world/vehicle';
-import { worksiteFor } from './world/worksite';
+import { blocsDuLieu, worksiteFor } from './world/worksite';
+import { islandReturn, openWorldPlaceOfBlock } from './world/openWorldReturn';
+import { useLieuxSeuls } from './useImmersive';
 import { retenirLaPose } from './poseToShow';
 import { retenirLesBlocs } from './blockFlight';
 import { minuscule } from './world/parts';
@@ -26,7 +28,7 @@ import { phraseDeLaPose, type PoseWords } from './poseWords';
 import { voyageId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
-import { levelFor } from './engine';
+import { levelFor, todayISO } from './engine';
 import { reviewKeys } from './review';
 import { cheminDeRevision, revisionsDeLIle } from './reminders';
 import { SCREEN_TYPES, retryAllowed, type ScreenAnswer, type ScreenProps } from './exercises/registry';
@@ -40,7 +42,7 @@ import { habillageDuMonde } from './skin';
 import { playDone, sonDePose } from './sound';
 
 interface Props {
-  biome: BiomeDef;
+  biome: IleDef;
   def: ExerciseDef;
   onReplay: () => void;
   /** Appelé une fois l'exercice terminé (le Gardien s'en sert pour les succès). */
@@ -236,7 +238,13 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   useAnswerKeys(sectionRef);
   // Mode concentration pendant la partie ; « Quitter » ramène au panneau de l'île.
   const navigate = useNavigate();
-  useFocusMode(!done, () => (inWorld ? inWorld.back.onClick() : navigate(`/adventure/${biome.id}`)), 'L’XP des réponses déjà données est gardée ; les blocs se gagnent en finissant la mission.');
+  // L'île de la grille de la mission, ou rien pour un lieu du monde ouvert seulement (GD-24), qui n'en a pas : on revient
+  // alors à son lieu, sa liste ouverte, la mission ciblée.
+  const grille = estUnBiome(biome.id) ? biome.id : null;
+  const lieuSeul = grille === null;
+  const retour = grille ? `/adventure/${grille}` : islandReturn(biome.id, def.type);
+  const lieuxSeuls = useLieuxSeuls();
+  useFocusMode(!done, () => (inWorld ? inWorld.back.onClick() : navigate(retour)), 'L’XP des réponses déjà données est gardée ; les blocs se gagnent en finissant la mission.');
 
   if (!type) {
     return <p className="intro">Ce type d’exercice ({def.type}) n’est pas encore disponible.</p>;
@@ -278,7 +286,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
     const completion = revision ? revision.complete(def, all) : complete(def, all);
     // Les blocs gagnés (la mission et ses coffres) : au retour sur l'île, ils volent jusqu'au compteur (blockFlight.ts).
     const total = (stock: typeof state.stock) => Object.values(stock).reduce((n, v) => n + (v ?? 0), 0);
-    retenirLesBlocs({ biome: biome.id, mission: def.type, bloc: completion.block, nombre: total(completion.state.stock) - total(state.stock), quand: Date.now() });
+    if (grille) retenirLesBlocs({ biome: grille, mission: def.type, bloc: completion.block, nombre: total(completion.state.stock) - total(state.stock), quand: Date.now() });
     if (!revision) completeSession(`blocland:${def.id}`, Math.round(completion.score * 100));
     setDone(completion);
     onComplete?.(completion);
@@ -287,8 +295,11 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
 
   if (done) {
     const block = BLOCKS[done.block];
+    // L'île de la grille d'où l'on parle des blocs : celle de la mission, ou, pour un lieu du monde ouvert seulement (GD-24),
+    // celle du bloc qu'il fait gagner (la Forge pour l'Étalon) : le bilan dit à quoi servent ces blocs-là.
+    const ancre = grille ?? (estUnBiome(done.block) ? done.block : getArchipelago(biome.classe).port);
     // Avec les blocs gagnés, l'étape de la Nef de cet archipel a tout ce qu'il lui faut : on le dit.
-    const port = archipelagoOf(biome.id).port;
+    const port = archipelagoOf(ancre).port;
     const stage = stageAt(port);
     const shipReady =
       stage && !done.state.world.links.includes(voyageId(stage.to)) && (stage.stage === 1 || done.state.world.links.includes(voyageId(stage.from)))
@@ -299,10 +310,13 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
           })()
         : null;
     // À quoi servent les blocs gagnés : le chantier qu'ils font avancer, et « Voir le chantier » qui y mène.
-    const site = worksiteFor(done.state, biome.id, done.block, textes.libelles.formesDeLaNef);
+    // Pour un lieu seul, le chantier se dit par le lieu du monde ouvert du bloc (« la Forge »), jamais par une île de la
+    // grille ni un ouvrage qu'on n'y trouve pas (directeur du contenu pédagogique, lot 2 du 4e).
+    const lieuDuBloc = lieuSeul ? openWorldPlaceOfBlock(done.block) : undefined;
+    const site = lieuDuBloc ? blocsDuLieu(done.block, lieuDuBloc, ancre) : worksiteFor(done.state, ancre, done.block, textes.libelles.formesDeLaNef);
     const pose = done.pose;
     // « Reprendre » chez la créature : la révision suivante de l'île, ou le retour sur l'île.
-    const revisionSuivante = revisionDeLIle ? revisionsDeLIle(done.state.spaced, done.state.world.links, biome.id, settings.lv2).find((q) => q.type !== def.type) : undefined;
+    const revisionSuivante = revisionDeLIle ? revisionsDeLIle(done.state.spaced, done.state.world.links, biome.id, settings.lv2, todayISO(), lieuxSeuls).find((q) => q.type !== def.type) : undefined;
     const detail = (
       <>
         <ul className="reward-list">
@@ -427,9 +441,15 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
                 <button type="button" ref={backRef} className="button primary" onClick={inWorld.back.onClick}>
                   <Icon name="footprints" /> {inWorld.back.label}
                 </button>
-              ) : pose ? (
+              ) : lieuSeul && !revisionSuivante ? (
+                // Un lieu du monde ouvert seulement : sa partie se voit dans son lieu, où l'on revient.
+                // L'icône des pas, comme le retour du monde ouvert : une même destination, une même icône (consultant UX UI).
+                <Link ref={suiteRef} to={retour} className="button primary">
+                  <Icon name="footprints" /> Revenir {toPlace(biome.name)}
+                </Link>
+              ) : pose && grille ? (
                 // Une partie vient d'être posée : on va la voir se poser, sur l'île de la mission (GD-6, la vague).
-                <Link ref={suiteRef} to={`/adventure/${biome.id}?worksite=part`} className="button primary" onClick={() => retenirLaPose(biome.id, pose.posees)}>
+                <Link ref={suiteRef} to={`/adventure/${grille}?worksite=part`} className="button primary" onClick={() => retenirLaPose(grille, pose.posees)}>
                   <Icon name="home" /> Voir le bâtiment
                 </Link>
               ) : revisionSuivante ? (
@@ -437,7 +457,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
                   <Icon name="chevronRight" /> Révision suivante
                 </Link>
               ) : revisionDeLIle || site.kind === 'aucun' ? (
-                <Link ref={suiteRef} to={`/adventure/${biome.id}`} className="button primary">
+                <Link ref={suiteRef} to={retour} className="button primary">
                   <Icon name="map" /> Revenir sur {thePlace(biome.name)}
                 </Link>
               ) : (

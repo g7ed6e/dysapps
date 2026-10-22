@@ -1,0 +1,238 @@
+{
+  "id": "maths-4e-data-translations-2",
+  "biome": "maths-4e-data",
+  "type": "translations",
+  "level": 2,
+  "instruction": "Lis la phrase ou la figure, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "maths-4e-data-translations-2-0",
+      "prompt": "Dans le triangle ABC, I est le milieu de [AB], J celui de [AC], et BC = 8 cm. Alors IJ mesure …",
+      "spoken": "Dans le triangle A B C, I est le milieu de A B, J celui de A C, et B C mesure 8 centimètres. Alors I J mesure (mot manquant).",
+      "choices": [
+        "4 cm",
+        "8 cm",
+        "16 cm"
+      ],
+      "answer": "4 cm",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Le segment qui joint les milieux de deux côtés mesure la moitié du troisième : 8 ÷ 2 = 4 cm. 8 cm oublie la moitié ; 16 cm double au lieu de diviser.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Milieux et cercle",
+          "lines": [
+            "Dans un triangle, la droite qui passe par les milieux de deux côtés est parallèle au troisième côté.",
+            "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
+            "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
+            "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Son centre est le milieu de l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-translations-2-1",
+      "prompt": "Dans le triangle ABC, I est le milieu de [AB] et J celui de [AC]. Les droites (IJ) et (BC) sont …",
+      "spoken": "Dans le triangle A B C, I est le milieu de A B et J celui de A C. Les droites I J et B C sont (mot manquant).",
+      "choices": [
+        "parallèles",
+        "perpendiculaires",
+        "sécantes en B"
+      ],
+      "answer": "parallèles",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "La droite des milieux de deux côtés est parallèle au troisième côté : (IJ) est parallèle à (BC). Rien n’oblige un angle droit, et (IJ) ne passe pas par B.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Milieux et cercle",
+          "lines": [
+            "Dans un triangle, la droite qui passe par les milieux de deux côtés est parallèle au troisième côté.",
+            "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
+            "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
+            "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Son centre est le milieu de l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-translations-2-2",
+      "prompt": "Dans le triangle ABC, I et J sont les milieux de [AB] et [AC], et IJ = 5 cm. Alors BC mesure …",
+      "spoken": "Dans le triangle A B C, I et J sont les milieux de A B et A C, et I J mesure 5 centimètres. Alors B C mesure (mot manquant).",
+      "choices": [
+        "2,5 cm",
+        "5 cm",
+        "10 cm"
+      ],
+      "answer": "10 cm",
+      "hint": "IJ est la moitié de BC : BC en est le double.",
+      "explanation": "IJ est la moitié de BC : BC = 5 × 2 = 10 cm. 2,5 cm divise au lieu de multiplier ; 5 cm oublie que IJ n’est que la moitié.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Milieux et cercle",
+          "lines": [
+            "Dans un triangle, la droite qui passe par les milieux de deux côtés est parallèle au troisième côté.",
+            "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
+            "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
+            "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Son centre est le milieu de l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-translations-2-3",
+      "prompt": "Dans le triangle ABC, une droite passe par le milieu de [AB] et est parallèle à (BC). Elle coupe [AC] …",
+      "spoken": "Dans le triangle A B C, une droite passe par le milieu de A B et est parallèle à B C. Elle coupe A C (mot manquant).",
+      "choices": [
+        "en son milieu",
+        "au tiers de sa longueur",
+        "au point C"
+      ],
+      "answer": "en son milieu",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Une droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu. Parallèle à (BC), elle ne peut pas passer par C, qui est sur (BC).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Milieux et cercle",
+          "lines": [
+            "Dans un triangle, la droite qui passe par les milieux de deux côtés est parallèle au troisième côté.",
+            "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
+            "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
+            "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Son centre est le milieu de l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-translations-2-4",
+      "prompt": "Le triangle ABC est rectangle en A, et son hypoténuse BC mesure 10 cm. Le rayon de son cercle circonscrit est …",
+      "spoken": "Le triangle A B C est rectangle en A, et son hypoténuse B C mesure 10 centimètres. Le rayon de son cercle circonscrit est (mot manquant).",
+      "choices": [
+        "5 cm",
+        "10 cm",
+        "20 cm"
+      ],
+      "answer": "5 cm",
+      "hint": "L’hypoténuse est un diamètre. Le rayon en est la moitié.",
+      "explanation": "L’hypoténuse, 10 cm, est le diamètre du cercle : le rayon mesure 10 ÷ 2 = 5 cm. 10 cm est le diamètre, pas le rayon ; 20 cm double encore.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Milieux et cercle",
+          "lines": [
+            "Dans un triangle, la droite qui passe par les milieux de deux côtés est parallèle au troisième côté.",
+            "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
+            "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
+            "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Son centre est le milieu de l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-translations-2-5",
+      "prompt": "Le centre du cercle circonscrit à un triangle rectangle est …",
+      "spoken": "Le centre du cercle circonscrit à un triangle rectangle est (mot manquant).",
+      "choices": [
+        "le milieu de l’hypoténuse",
+        "le sommet de l’angle droit",
+        "le milieu du plus petit côté"
+      ],
+      "answer": "le milieu de l’hypoténuse",
+      "hint": "Relis la ligne sur le centre.",
+      "explanation": "L’hypoténuse est un diamètre : le centre du cercle est son milieu. Le sommet de l’angle droit est sur le cercle, pas au centre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Milieux et cercle",
+          "lines": [
+            "Dans un triangle, la droite qui passe par les milieux de deux côtés est parallèle au troisième côté.",
+            "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
+            "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
+            "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Son centre est le milieu de l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-translations-2-6",
+      "prompt": "Un triangle a ses trois sommets sur un cercle, et l’un de ses côtés est un diamètre. Ce triangle a toujours …",
+      "spoken": "Un triangle a ses trois sommets sur un cercle, et l’un de ses côtés est un diamètre. Ce triangle a toujours (mot manquant).",
+      "choices": [
+        "un angle droit",
+        "deux côtés de même longueur",
+        "trois côtés de même longueur"
+      ],
+      "answer": "un angle droit",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Un côté est un diamètre : l’angle opposé est droit, le triangle est rectangle. Il peut avoir deux côtés égaux, mais pas toujours. Trois côtés égaux ne donnent jamais d’angle droit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Milieux et cercle",
+          "lines": [
+            "Dans un triangle, la droite qui passe par les milieux de deux côtés est parallèle au troisième côté.",
+            "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
+            "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
+            "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Son centre est le milieu de l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-4e-data-translations-2-7",
+      "prompt": "Le triangle ABC est rectangle en A, et son hypoténuse BC mesure 13 cm. M est le milieu de [BC]. Alors AM mesure …",
+      "spoken": "Le triangle A B C est rectangle en A, et son hypoténuse B C mesure 13 centimètres. M est le milieu de B C. Alors A M mesure (mot manquant).",
+      "choices": [
+        "6,5 cm",
+        "13 cm",
+        "26 cm"
+      ],
+      "answer": "6,5 cm",
+      "hint": "M est le centre du cercle circonscrit, et A est sur ce cercle.",
+      "explanation": "M est le centre du cercle circonscrit ; A est sur le cercle : AM est un rayon, la moitié de l’hypoténuse, 13 ÷ 2 = 6,5 cm. 13 cm est le diamètre ; 26 cm le double.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Milieux et cercle",
+          "lines": [
+            "Dans un triangle, la droite qui passe par les milieux de deux côtés est parallèle au troisième côté.",
+            "Le segment qui joint ces deux milieux mesure la moitié du troisième côté.",
+            "La droite qui passe par le milieu d’un côté, parallèle à un deuxième côté, coupe le troisième en son milieu.",
+            "Dans un triangle rectangle, le cercle circonscrit a pour diamètre l’hypoténuse.",
+            "Son centre est le milieu de l’hypoténuse.",
+            "Si un côté d’un triangle est un diamètre de son cercle, le triangle est rectangle."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-4e-powers",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

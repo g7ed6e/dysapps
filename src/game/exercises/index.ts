@@ -3,7 +3,7 @@
 // scripts/exerciseMeta.mjs) ; leur contenu est chargé à la demande, au lancement d'une partie ou d'un Gardien.
 // Le service worker met ces fichiers en cache à l'installation : ils restent disponibles hors ligne.
 import { SETS } from '../../apps/homophones/data';
-import type { BiomeId } from '../biomes';
+import type { IleId } from '../biomes';
 import type { DrawKey } from '../engine/state';
 import type { AssemblageDef, ExerciseDef } from './types';
 import { MATHS_EXERCISES } from './maths';
@@ -107,6 +107,10 @@ const ORDER: (string | ExerciseDef[])[] = [
   'maths-6e-decimals-rounding-products-1', 'maths-6e-decimals-rounding-products-2', 'maths-6e-fractions-fraction-sums-1', 'maths-6e-fractions-fraction-sums-2', 'maths-6e-calculation-measures-1', 'maths-6e-calculation-measures-2',
   'maths-5e-signed-numbers-order-of-operations-1', 'maths-5e-signed-numbers-order-of-operations-2', 'maths-5e-proportionality-formulas-1', 'maths-5e-proportionality-formulas-2', 'maths-5e-signed-numbers-conversions-angles-1', 'maths-5e-signed-numbers-conversions-angles-2', 'maths-5e-proportionality-statistics-1', 'maths-5e-proportionality-statistics-2',
   'maths-4e-algebra-rationals-1', 'maths-4e-algebra-rationals-2', 'maths-4e-powers-volumes-1', 'maths-4e-powers-volumes-2', 'maths-3e-functions-proportions-1', 'maths-3e-functions-proportions-2', 'maths-3e-geometry-scaling-1', 'maths-3e-geometry-scaling-2', 'maths-3e-functions-coordinates-1', 'maths-3e-functions-coordinates-2', 'maths-3e-geometry-transformations-1', 'maths-3e-geometry-transformations-2',
+  // L'Étalon (4e), lieu du monde ouvert seulement (GD-24, 21 octobre 2026).
+  'maths-4e-data-weighted-mean-1', 'maths-4e-data-weighted-mean-2', 'maths-4e-data-events-1', 'maths-4e-data-events-2', 'maths-4e-data-proportional-reasoning-1',
+  'maths-4e-data-proportional-reasoning-2', 'maths-4e-data-proportional-reasoning-3', 'maths-4e-data-calculation-programs-1', 'maths-4e-data-calculation-programs-2',
+  'maths-4e-data-translations-1', 'maths-4e-data-translations-2',
   // Histoire et géographie (Fouille des siècles, Pointe des paysages, 6e).
   'history-6e-antiquity-early-humans-1', 'history-6e-antiquity-early-humans-2', 'history-6e-antiquity-ancient-peoples-1', 'history-6e-antiquity-ancient-peoples-2', 'history-6e-antiquity-roman-empire-1', 'history-6e-antiquity-roman-empire-2', 'history-6e-antiquity-viewpoints-1', 'history-6e-antiquity-viewpoints-2',
   'geography-6e-living-metropolises-1', 'geography-6e-living-metropolises-2', 'geography-6e-living-low-density-1', 'geography-6e-living-low-density-2', 'geography-6e-living-inhabited-world-1', 'geography-6e-living-inhabited-world-2',
@@ -228,7 +232,7 @@ export async function loadAllExercises(): Promise<ExerciseDef[]> {
 }
 
 /** Exercices d'un type dans un biome, par niveau croissant. */
-export function exercisesOf(biome: BiomeId, type: string): ExerciseMeta[] {
+export function exercisesOf(biome: IleId, type: string): ExerciseMeta[] {
   return CATALOG.filter((e) => e.biome === biome && e.type === type).sort((a, b) => a.level - b.level);
 }
 
@@ -237,7 +241,7 @@ export function exercisesOf(biome: BiomeId, type: string): ExerciseMeta[] {
  * le moins joué, pour varier les contenus.
  */
 export function pickExercise(
-  biome: BiomeId,
+  biome: IleId,
   type: string,
   level: number,
   progress: Record<string, { attempts: number }> = {},
@@ -260,7 +264,7 @@ export function pickExercise(
  * parce que la prochaine partie tombe sur une variante ou un niveau pas encore joué.)
  */
 export function questProgress(
-  biome: BiomeId,
+  biome: IleId,
   type: string,
   progress: Record<string, { stars: number; attempts: number; best: number }>,
 ): { stars: number; attempts: number; best: number } | undefined {

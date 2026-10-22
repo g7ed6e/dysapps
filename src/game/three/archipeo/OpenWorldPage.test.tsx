@@ -297,6 +297,21 @@ test('la Nef pas encore prête ne porte pas la marque', async () => {
   expect(scene.world!.setMark).not.toHaveBeenCalledWith('nef');
 });
 
+test('une seule bulle à la fois : une phrase du monde (l’état d’un lieu restauré) retire la bulle sous « Y aller », qui revient ensuite (relecture des Fabriques)', async () => {
+  const potager = COMMANDES.find((c) => c.fixture === 'french-6e-phonology-fixture-1')!;
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { [potager.block]: potager.count }, world: { links: [], requests: [potager.id] } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  expect(await screen.findByText('Livre 3 blocs de terre au Phare.')).toBeInTheDocument();
+  act(() => scene.options!.onRestored!('phare'));
+  const status = await screen.findByText(/est restauré/, {}, { timeout: 2000 });
+  expect(status.closest('.open-world-said')).not.toBeNull();
+  expect(document.querySelectorAll('.open-world-go-reason')).toHaveLength(0);
+  expect(screen.queryByText('Livre 3 blocs de terre au Phare.')).toBeNull();
+  // La phrase partie, la bulle de la commande revient.
+  expect(await screen.findByText('Livre 3 blocs de terre au Phare.', {}, { timeout: 10_000 })).toBeInTheDocument();
+}, 15_000);
+
 test('Kéo au Phare, sa commande prête, une mission du Phare encore nouvelle, la destination du jeu ailleurs : la suggestion est la mission du Phare (le rang 2), jamais « Y aller » vers un autre lieu (avis du directeur artistique, deuxième passe du lot L1)', async () => {
   const potager = COMMANDES.find((c) => c.fixture === 'french-6e-phonology-fixture-1')!;
   // Dans la grille, l'élève se tient aux Quais, où une mission n'a jamais été jouée : la destination du jeu est là.

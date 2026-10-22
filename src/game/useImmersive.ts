@@ -1,6 +1,7 @@
 import { MENU_PATH } from '../core/paths';
 import { useSettings } from '../core/SettingsContext';
 import type { WorldViewChoice } from '../core/settings';
+import { mondeOuvertDArchipeo } from './rendering';
 import { hasWebGL } from './three';
 
 /**
@@ -24,4 +25,12 @@ export function useImmersive(): boolean {
  */
 export function useHomeLink(): { to: string; label: string } {
   return useImmersive() ? { to: '/adventure', label: 'Monde' } : { to: MENU_PATH, label: 'Menu' };
+}
+
+/**
+ * Les lieux du monde ouvert seulement (GD-24, l'Étalon) se voient-ils ici ? Seulement dans le monde ouvert d'Archipéo, en
+ * 3D : ailleurs (Blocland, la grille, la vue simple), leurs révisions ne se comptent ni ne se listent (./review.ts).
+ */
+export function useLieuxSeuls(): boolean {
+  return useImmersive() && mondeOuvertDArchipeo();
 }

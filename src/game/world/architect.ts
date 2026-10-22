@@ -6,7 +6,7 @@
 // plans de l'île (6 × 5 cases, z = 0 : premier bloc sur le sol) ; la façade et la porte sont devant (y bas), la cour aussi.
 // Les blocs de finition (toit, porte, lanterne, barrière, escalier) viennent des coffres des étapes précédentes : un coffre
 // donne exactement ceux de l'étape suivante (voir plans.ts).
-import type { BiomeId, BlockId } from '../biomes';
+import type { BlockId, IleId } from '../biomes';
 import { BLOC } from '../biomes';
 
 interface ArchCell {
@@ -63,8 +63,8 @@ type BuildingStyle =
   | { kind: 'gymnase' }
   | { kind: 'poste' };
 
-/** La forme du bâtiment de chaque île (son nom, sa récompense et sa réplique sont dans docs/contenu/<île>.md, section « Les plans »). */
-const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
+/** La forme du bâtiment de chaque île, de la grille ou du monde ouvert seulement (son nom, sa récompense et sa réplique sont dans docs/contenu/<île>.md, section « Les plans »). */
+const BUILDING_OF: Record<IleId, BuildingStyle> = {
   // Premiers Rivages (6e)
   'french-6e-phonology': { kind: 'maison' },
   'french-6e-letter-confusion': { kind: 'maison', chimney: 2 },
@@ -133,6 +133,9 @@ const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   'life-earth-sciences-3e-human-body': { kind: 'infirmerie' },
   'physics-chemistry-3e-motion-energy': { kind: 'gymnase' },
   'technology-3e-digital': { kind: 'poste' },
+  // L'Étalon, lieu du monde ouvert seulement (GD-24) : la forme de la Forge, jamais dessinée (ni grille ni Blocland). Ses
+  // cases donnent les clés de ses parties ; le monde ouvert rebâtit le lieu avec ses propres volumes, en 3 + 1 + 1.
+  'maths-4e-data': { kind: 'maison', chimney: 2 },
 };
 
 // ---------- Outils ----------
@@ -1177,7 +1180,7 @@ function outpost(b: BlockId): Stages {
 }
 
 /** Les trois étapes du bâtiment d'une île. */
-export function buildingStages(biome: BiomeId, block: BlockId): Stages {
+export function buildingStages(biome: IleId, block: BlockId): Stages {
   const style = BUILDING_OF[biome];
   switch (style.kind) {
     case 'maison':

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { getBiome, missionsJouables } from './biomes';
+import { estUnBiome, getIle, missionsJouables } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { useSettings } from '../core/SettingsContext';
 import { levelFor } from './engine';
@@ -14,6 +14,7 @@ import { useRememberPlace } from '../core/lastPlace';
 import { Loading } from '../components/Loading';
 import { ForeignWordsProvider } from '../components/ForeignWords';
 import { PARAM_REVISION } from './reminders';
+import { islandReturn } from './world/openWorldReturn';
 
 /** Lance l'exercice d'un type dans un biome, au niveau adapté à l'élève. */
 export function ExercisePage() {
@@ -23,7 +24,7 @@ export function ExercisePage() {
   const [run, setRun] = useState(0);
   // Une révision lancée par la créature de l'île (GD-4, étape 1) : à la fin, la suivante de l'île, puis l'île.
   const depuisLaCreature = useSearchParams()[0].get(PARAM_REVISION) === '1';
-  const biome = getBiome(biomeId);
+  const biome = getIle(biomeId);
   // Une mission d'une autre LV2, ou d'une autre option, que celle des Réglages ne se joue pas (adresse tapée, ancien lien).
   const type = biome && missionsJouables(biome, settings.lv2, settings.lca).find((e) => e.id === typeId);
   // « Ma dernière mission » (écran titre, menus) ramène ici.
@@ -41,7 +42,8 @@ export function ExercisePage() {
 
   return (
     <>
-      <Link to={`/adventure/${biome.id}`} className="back-link">
+      {/* Un lieu du monde ouvert seulement (GD-24) n'a pas de page d'île : le lien ramène à son lieu. */}
+      <Link to={estUnBiome(biome.id) ? `/adventure/${biome.id}` : islandReturn(biome.id, type.id)} className="back-link">
         <Icon name="back" /> {biome.name}
       </Link>
       <h1 className={`page-title biome-title biome-${biome.id}`}>

@@ -41,3 +41,13 @@ it('le compteur des révisions ne compte que les items des lieux ouverts, comme 
   expect(dueCountOnOpenPlaces(spaced, EMPTY_STATE.world.links, TODAY)).toBe(1);
   expect(dueCountOnOpenPlaces(spaced, grantAccess([], ['maths-4e-powers']), TODAY)).toBe(2);
 });
+
+it('les révisions d’un lieu du monde ouvert seulement (l’Étalon) ne comptent et ne se listent que dans le monde ouvert d’Archipéo', () => {
+  // Hors du monde ouvert (Blocland, la grille, la vue simple), on ne trouve l'Étalon sur aucune île : rien ne l'annonce.
+  const key = ALL.find((e) => e.id === 'maths-4e-data-weighted-mean-1')!.items[0].key;
+  const spaced = [due('french-6e-phonology-syllables-warmup-002:parapluie'), due(`maths-4e-data-weighted-mean-1:${key}`)];
+  expect(dueCountOnOpenPlaces(spaced, EMPTY_STATE.world.links, TODAY)).toBe(1);
+  expect(questsToReview(spaced, EMPTY_STATE.world.links, TODAY).map((q) => q.biome)).toEqual(['french-6e-phonology']);
+  expect(dueCountOnOpenPlaces(spaced, EMPTY_STATE.world.links, TODAY, true)).toBe(2);
+  expect(questsToReview(spaced, EMPTY_STATE.world.links, TODAY, true).map((q) => q.biome)).toEqual(['french-6e-phonology', 'maths-4e-data']);
+});

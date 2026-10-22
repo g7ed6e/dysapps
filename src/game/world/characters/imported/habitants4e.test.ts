@@ -1,11 +1,13 @@
 // Les seize habitants du 4e en modèles fixes (concepts validés par le mainteneur le 21 octobre 2026) : un fichier par
 // lieu du plan du 4e (`planFor('4e')`), lu comme la vue le lit, au plus 8 000 triangles (le plafond du directeur
 // artistique, comme au 5e), texturé d'un JPEG, positions quantifiées, à la hauteur d'un habitant une fois mis en place.
-// Ils restent éteints dans le monde (`hasHabitantModel`) tant que les scénettes du 4e ne sont pas là.
+// Ils entrent dans le monde lieu par lieu, avec leur scénette (`hasHabitantModel`, ./plan4e.ts `BUILT_PLACES_4E` : la
+// chaudronnière de la Forge au lot 2) ; les autres restent éteints.
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { HABITANT_FILE, habitantFit, habitantModelName, hasHabitantModel } from '../../continu/habitants';
+import { HABITANT_FILE, HABITANT_TRIANGLES_4E, habitantFit, habitantModelName, hasHabitantModel } from '../../continu/habitants';
+import { isBuiltPlace4e } from '../../continu/plan4e';
 import { planFor } from '../../continu/levelPlan';
 import { lireGlbTexture } from './glb';
 
@@ -18,11 +20,11 @@ describe('Les habitants du 4e', () => {
     for (const { id } of places) {
       const nom = habitantModelName(id);
       expect(nom, id).toBe(`4e-habitant-${id}`);
-      expect(hasHabitantModel(id), id).toBe(false);
+      expect(hasHabitantModel(id), id).toBe(isBuiltPlace4e(id));
       const b = readFileSync(resolve(DOSSIER, nom, HABITANT_FILE));
       const m = lireGlbTexture(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
       const triangles = m.indices.length / 3;
-      expect(triangles, id).toBeLessThanOrEqual(8_000);
+      expect(triangles, id).toBeLessThanOrEqual(HABITANT_TRIANGLES_4E);
       expect(triangles, id).toBeGreaterThan(7_500);
       expect(m.image.mimeType, id).toBe('image/jpeg');
       expect([m.image.bytes[0], m.image.bytes[1]], id).toEqual([0xff, 0xd8]);

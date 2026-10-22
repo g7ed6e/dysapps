@@ -11,8 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useBlocland } from './BloclandContext';
 import { BIOMES, type BiomeId } from './biomes';
 import { toutConstruitAvecLesCommandes } from './world/budget';
-import { adresseSansMesure, renduDuMonde } from './rendering';
-import { openWorldRequested } from './worldLayoutFactory';
+import { adresseSansMesure, mondeOuvertDArchipeo } from './rendering';
 import { type LigneDeMesure, partieDeLaPose, partieDeMesure, resumerLesImages, tableauDesMesures } from './autoMeasure';
 import { MODIFIER_LE_PLAN } from './ArrangeBar';
 import { Icon } from '../components/Icon';
@@ -141,7 +140,7 @@ export default function AutoMeasure() {
       const { progress, world } = toutConstruitAvecLesCommandes();
       chargerPourLesMesures(partieDeMesure(progress, world, ile));
       navigate(`/adventure/${ile}`);
-      if (openWorldRequested(window.location.href) && renduDuMonde() === 'archipeo') {
+      if (mondeOuvertDArchipeo()) {
         // Le monde ouvert : tous les lieux reconstruits (la partie toute construite), Kéo devant le lieu de l'île.
         if (!(await attendreLeMondeOuvert())) return setEtape('Pas de monde ouvert en 3D : rien à mesurer.');
         await ligne('monde ouvert, à l’arrivée');

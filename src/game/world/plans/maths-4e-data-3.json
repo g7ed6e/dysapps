@@ -1,0 +1,9 @@
+{
+  "id": "maths-4e-data-3",
+  "biome": "maths-4e-data",
+  "name": "La cour de la halle",
+  "reward": {
+    "xp": 60
+  },
+  "done": "La cour est prête. Avant de forger, on mesure."
+}

@@ -2,7 +2,7 @@
 // en identifiants, sans une seule case. WorldPage le lit au lieu de décider lui-même ; une disposition (la grille
 // aujourd'hui, le réseau d'Archipéo demain) dit ensuite où dessiner chaque chose. Et les décisions que prend le jeu
 // quand l'élève touche le monde : jouer une borne, ouvrir l'île d'un ouvrage, aller vers une île, voyager.
-import { BIOMES, missionsJouables, type BiomeId } from '../biomes';
+import { BIOMES, missionsJouables, TOUTES_LES_ILES, type BiomeId, type IleId } from '../biomes';
 import { guardianStatus } from '../boss';
 import type { GameState } from '../engine';
 import { canLaunch, levelFor, nextFillable } from '../engine';
@@ -86,6 +86,30 @@ export function modeleDuMonde(state: GameState, a: ArchipelagoId, noms: NomsArch
     bornes: iles.flatMap((b) => missionsDe(b.id).map((mission) => ({ id: `${b.id}:${mission}`, ile: b.id, mission, etat: etatDeBorne(state, b.id, mission) }))),
     destination: nextDestination(state, noms, mots),
   };
+}
+
+/** La borne d'une mission d'un lieu du monde ouvert seulement (GD-24) : à faire, ses étoiles, ou sans exercice. */
+interface BorneDuLieuSeul {
+  id: string;
+  ile: IleId;
+  mission: string;
+  etat: 'new' | 'locked' | number;
+}
+
+/**
+ * Les bornes des lieux du monde ouvert seulement d'un archipel (GD-24) : la grille ne les a pas (ni `islandsOf`, ni
+ * `modeleDuMonde`) ; le monde ouvert les ajoute aux siennes. La grille ne les ferme jamais : c'est la terre de leur lieu
+ * qui s'ouvre (world/continu/lands.ts).
+ */
+export function bornesDesLieuxSeuls(state: GameState, a: ArchipelagoId): BorneDuLieuSeul[] {
+  return TOUTES_LES_ILES.filter((b) => b.openWorldOnly && b.classe === a).flatMap((b) =>
+    missionsJouables(b).map((x) => {
+      const etat: BorneDuLieuSeul['etat'] = pickExercise(b.id, x.id, levelFor(state, x.id), state.progress)
+        ? (questProgress(b.id, x.id, state.progress)?.stars ?? 'new')
+        : 'locked';
+      return { id: `${b.id}:${x.id}`, ile: b.id, mission: x.id, etat };
+    }),
+  );
 }
 
 /**
