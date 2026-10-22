@@ -194,6 +194,15 @@ describe('La Loge, lieu complet', () => {
     expect(placeTrace('loge', []).triangles).toBe(0);
   });
 
+  it('son nom se pose au-dessus du mur ouest, debout dans la ruine : jamais au droit de l’arche ni de la porte des décors', () => {
+    const m = L.mapPoint;
+    expect(LOGE.mapPoint).toEqual(m);
+    expect(Math.abs(m.x)).toBeGreaterThan(L.arch.half + 1);
+    expect(Math.abs(m.x)).toBeGreaterThan(L.door.half + 1);
+    expect(m.x).toBeLessThan(L.cage.x0 + 1);
+    expect(m.y - L.base).toBeGreaterThan(L.cage.ridge);
+  });
+
   it('la cage restaurée ne dépasse pas 10,5 ; plus basse en ruine ; sous la tour du Gabarit (12)', () => {
     expect(L.cage.ridge).toBeLessThanOrEqual(10.5);
     expect(topOf(SHOWN[4]) - L.base).toBeLessThanOrEqual(L.cage.ridge + 1e-3);

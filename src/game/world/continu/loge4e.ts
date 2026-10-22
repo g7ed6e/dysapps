@@ -207,8 +207,12 @@ const DOOR_VIEW = Math.PI;
 /** La vue d'arrivée (`doorFrame`) : plus basse et plus reculée que la caméra qui suit, la cage entière et son toit dans le cadre. */
 const DOOR_FRAME = { height: -3, back: 2.0 } as const;
 
-/** Le point du nom sur la Carte : au-dessus du toit, jamais dans l'arche ni sur le rideau. */
-const MAP_POINT: Vec3 = { x: 0, y: G + CAGE.ridge + 1.2, z: (CAGE.z0 + CAGE.z1) / 2 - 1 };
+/**
+ * Le point du nom sur la Carte et au-dessus du lieu : au-dessus du mur ouest, celui qui reste debout dans la ruine, jamais
+ * dans l'arche ni sur le rideau. Au milieu de la cage, il tombait, vu de dos dans la ruine (sans toit), au milieu de
+ * l'arche, sur la scène et le rideau tombé (captures du 22 octobre 2026), comme le Chariot pose le sien sur le treuil.
+ */
+const MAP_POINT: Vec3 = { x: CAGE.x0 + 0.5, y: G + CAGE.ridge + 1.2, z: (CAGE.z0 + CAGE.z1) / 2 };
 
 // ---------- Les murs ----------
 
