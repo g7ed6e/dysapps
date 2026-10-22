@@ -23,7 +23,7 @@
 import type { Stage } from './construction';
 import { FacetBuilder, drawPosed } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import { emptyBracket, groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, triOut, wallRun } from './place4eKit';
+import { courses, emptyBracket, groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, triOut, wallRun } from './place4eKit';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
 
@@ -42,6 +42,9 @@ type P3 = readonly [number, number, number];
 const C = {
   brick: COLORS_4E.brick,
   brickShade: COLORS_4E.brickShade,
+  brickJoint: COLORS_4E.brickJoint,
+  // L'imposte cintrée des baies : la fonte sombre de son vitrage, comme l'ombre du dedans par la baie.
+  fanlight: 0x4e3e3a,
   stone: COLORS_4E.stone,
   stoneSun: COLORS_4E.stoneSun,
   stoneShade: COLORS_4E.stoneShade,
@@ -97,16 +100,19 @@ const HALL = { x0: -10, x1: 10, z0: -9, z1: 0, wall: 0.45, eaves: 5.0, roofTop: 
 /** Le milieu de la halle en travers (la rangée des colonnes, le faîte). */
 const MID_Z = (HALL.z0 + HALL.z1) / 2;
 
-/** Les baies (leur milieu le long du mur, leur demi-largeur) ; l'appui, la naissance et le haut de leur cintre. */
-const BAY = { half: 0.62, sill: 1.0, spring: 3.5, crown: 4.2 } as const;
+/**
+ * Les baies (leur milieu le long du mur, leur demi-largeur) ; l'appui, la naissance et le haut de leur cintre : en plein
+ * cintre (retouche 1 du Bastion, point 5 : plus d'ogive à pans), le haut à la naissance plus la demi-largeur.
+ */
+const BAY = { half: 0.62, sill: 1.0, spring: 3.4, crown: 4.02 } as const;
 const NORTH_BAYS = [-8.75, -6.25, -3.75, -1.25, 1.25, 3.75, 6.25, 8.75] as const;
 const SOUTH_BAYS = [-8.75, -6.25, -3.75, 3.75, 6.25, 8.75] as const;
 
-/** La grande porte, au milieu du mur sud : sa demi-largeur, la naissance et le haut de son cintre. */
-const DOOR = { half: 1.3, spring: 3.4, crown: 4.0 } as const;
+/** La grande porte, au milieu du mur sud : sa demi-largeur, la naissance et le haut de son cintre (surbaissé). */
+const DOOR = { half: 1.3, spring: BAY.spring, crown: 4.0 } as const;
 
 /** La grande baie de l'est, au pignon : son milieu en travers, sa demi-largeur, son appui, la naissance et le haut de son cintre. */
-const EAST_BAY = { z: MID_Z, half: 2.0, sill: 0.6, spring: 3.4, crown: 4.4 } as const;
+const EAST_BAY = { z: MID_Z, half: 2.0, sill: 0.6, spring: BAY.spring, crown: 4.4 } as const;
 
 /**
  * Les six colonnes de fonte, sur l'axe ; la cinquième (à l'est) est celle qui est couchée dans la ruine. La première est
@@ -122,9 +128,11 @@ const COLUMN = { r: 0.13, top: HALL.roofTop - 0.1 } as const;
 /**
  * La machine à balancier, dans la travée est : sa colonne cannelée (son pied, sa hauteur) ; son balancier (le long de
  * l'axe nord-sud, de niveau en haut de la colonne, sa demi-longueur) ; son volant debout dans sa fosse, au sud (son
- * milieu en travers, la hauteur de son axe, son rayon) ; le support du régulateur au flanc ouest de la colonne.
+ * milieu en travers, la hauteur de son axe, son rayon) ; le support du régulateur au flanc ouest de la colonne, assez bas
+ * pour tenir aussi au tronçon de la ruine (`stump` : la colonne cassée bas, jamais un reste de cheminée ; retouche 1 du
+ * Bastion, point 5).
  */
-const MACHINE = { x: 7.6, z: MID_Z, h: 4.3, beam: 2.1, wheel: { z: -1.7, axle: 1.05, r: 1.3 }, governor: 2.9 } as const;
+const MACHINE = { x: 7.6, z: MID_Z, h: 4.3, stump: 1.7, beam: 2.1, wheel: { z: -1.7, axle: 1.05, r: 1.3 }, governor: 1.2 } as const;
 
 /**
  * Les six métiers, en deux rangs de trois, tous de la même taille : leur milieu (le rang nord, le rang sud, en alternance
@@ -210,61 +218,69 @@ interface Bay {
 
 /**
  * Un mur de brique droit percé de baies cintrées (d'ouest en est si `alongX`, sinon du nord au sud), centré sur `at` en
- * travers, de `from` à `to`, de `y0` jusqu'au haut `topAt(u)` (u le long du mur) : un bandeau sous les appuis (sauf sous
- * une porte), des trumeaux entre les baies, un bandeau au-dessus des cintres, coupé en morceaux là où le haut casse
- * (`breaks`) ; chaque cintre, deux coins pleins en biais (aux deux faces) et leurs dessous. Le dessus du mur est le
- * chaperon de pierre grise. Les baies ont toutes le même appui, sauf une porte (appui au pied).
+ * travers (sa face du dehors du côté `side`), de `from` à `to`, de `y0` jusqu'au haut `topAt(u)` (u le long du mur) : un bandeau sous les appuis (sauf sous
+ * une porte), des trumeaux entre les baies jusqu'à la naissance des cintres, un bandeau au-dessus, coupé en morceaux là où
+ * le haut casse (`breaks`) ; chaque baie, son dessous plat à la naissance et, sur la face du dehors, son imposte en plein
+ * cintre (ou surbaissée), d'une fonte sombre comme l'ombre du dedans : la baie se lit cintrée, jamais en ogive (retouche 1
+ * du Bastion, point 5). Le dessus du mur est le chaperon de pierre grise ; deux assises d'ombre, sous les appuis et
+ * au-dessus des cintres. Les baies ont toutes le même appui (sauf une porte, appui au pied) et la même naissance.
  */
-function bayWall(b: FacetBuilder, alongX: boolean, at: number, from: number, to: number, y0: number, topAt: (u: number) => number, bays: readonly Bay[], breaks: readonly number[] = []): void {
+function bayWall(b: FacetBuilder, alongX: boolean, at: number, side: -1 | 1, from: number, to: number, y0: number, topAt: (u: number) => number, bays: readonly Bay[], breaks: readonly number[] = []): void {
   const t = HALL.wall;
   const sill = Math.max(...bays.map((k) => k.sill));
-  const crown = Math.max(...bays.map((k) => k.crown));
+  const head = Math.min(...bays.map((k) => k.spring));
   const p = (u: number, v: number, y: number): P3 => (alongX ? [u, y, at + v] : [at + v, y, u]);
   const out: P3 = alongX ? [0, 0, 1] : [1, 0, 0];
   const back: P3 = [-out[0], 0, -out[2]];
-  // Le bandeau du bas, sous les appuis, coupé sous chaque porte.
+  // Le bandeau du bas, sous les appuis, coupé sous chaque porte, et son assise.
   let u = from;
+  const low = (a: number, c: number) => {
+    wallRun(b, alongX, at, a, c, t, y0, sill, sill, C.brick, C.brick);
+    if (sill - G() > 0.8) courses(b, alongX, at + (side * t) / 2, a, c, [G() + 0.5], side, C.brickJoint);
+  };
   for (const k of [...bays].filter((k) => k.sill <= y0 + 1e-6).sort((a, c) => a.c - c.c)) {
-    wallRun(b, alongX, at, u, k.c - k.half, t, y0, sill, sill, C.brickShade, C.brick);
+    low(u, k.c - k.half);
     u = k.c + k.half;
   }
-  wallRun(b, alongX, at, u, to, t, y0, sill, sill, C.brickShade, C.brick);
-  // Les trumeaux, de l'appui au haut des cintres : leurs deux faces et leurs deux tableaux (le dessus et le dessous sont
+  low(u, to);
+  // Les trumeaux, de l'appui à la naissance : leurs deux faces et leurs deux tableaux (le dessus et le dessous sont
   // cachés par les bandeaux). Le long d'une porte, le tableau descend jusqu'au pied.
   const edges = [from, ...bays.flatMap((k) => [k.c - k.half, k.c + k.half]), to].sort((a, c) => a - c);
   for (let k = 0; k < edges.length; k += 2) {
     const [a, c] = [edges[k], edges[k + 1]];
     const lo = sill;
-    quadOut(b, p(a, t / 2, lo), p(c, t / 2, lo), p(c, t / 2, crown), p(a, t / 2, crown), out, C.brick);
-    quadOut(b, p(a, -t / 2, lo), p(c, -t / 2, lo), p(c, -t / 2, crown), p(a, -t / 2, crown), back, C.brick);
-    if (a > from + 1e-6) quadOut(b, p(a, -t / 2, lo), p(a, t / 2, lo), p(a, t / 2, crown), p(a, -t / 2, crown), alongX ? [-1, 0, 0] : [0, 0, -1], C.brickShade);
-    if (c < to - 1e-6) quadOut(b, p(c, -t / 2, lo), p(c, t / 2, lo), p(c, t / 2, crown), p(c, -t / 2, crown), alongX ? [1, 0, 0] : [0, 0, 1], C.brickShade);
+    quadOut(b, p(a, t / 2, lo), p(c, t / 2, lo), p(c, t / 2, head), p(a, t / 2, head), out, C.brick);
+    quadOut(b, p(a, -t / 2, lo), p(c, -t / 2, lo), p(c, -t / 2, head), p(a, -t / 2, head), back, C.brick);
+    if (a > from + 1e-6) quadOut(b, p(a, -t / 2, lo), p(a, t / 2, lo), p(a, t / 2, head), p(a, -t / 2, head), alongX ? [-1, 0, 0] : [0, 0, -1], C.brickShade);
+    if (c < to - 1e-6) quadOut(b, p(c, -t / 2, lo), p(c, t / 2, lo), p(c, t / 2, head), p(c, -t / 2, head), alongX ? [1, 0, 0] : [0, 0, 1], C.brickShade);
   }
-  // Les cintres : deux coins pleins en biais, aux deux faces, et leurs dessous en biais ; le dessous plat du haut de la
-  // baie ; au-dessus d'une baie plus basse que les autres (la porte), le mur plein jusqu'au bandeau.
+  // Chaque baie : le dessous plat du bandeau, à la naissance ; l'imposte cintrée, en éventail, sur la face du dehors.
   for (const k of bays) {
     const [l, r] = [k.c - k.half, k.c + k.half];
-    const a = k.half * 0.55;
-    for (const [v, n] of [
-      [t / 2, out],
-      [-t / 2, back],
-    ] as const) {
-      triOut(b, p(l, v, k.spring), p(l, v, k.crown), p(l + a, v, k.crown), n, C.brick);
-      triOut(b, p(r, v, k.spring), p(r - a, v, k.crown), p(r, v, k.crown), n, C.brick);
-    }
-    const along = (s: number): P3 => (alongX ? [s, -1, 0] : [0, -1, s]);
-    quadOut(b, p(l, -t / 2, k.spring), p(l, t / 2, k.spring), p(l + a, t / 2, k.crown), p(l + a, -t / 2, k.crown), along(1), C.brickShade);
-    quadOut(b, p(r, -t / 2, k.spring), p(r, t / 2, k.spring), p(r - a, t / 2, k.crown), p(r - a, -t / 2, k.crown), along(-1), C.brickShade);
-    quadOut(b, p(l + a, -t / 2, k.crown), p(l + a, t / 2, k.crown), p(r - a, t / 2, k.crown), p(r - a, -t / 2, k.crown), [0, -1, 0], C.brickShade);
-    if (k.crown < crown - 1e-6) {
-      quadOut(b, p(l, t / 2, k.crown), p(r, t / 2, k.crown), p(r, t / 2, crown), p(l, t / 2, crown), out, C.brick);
-      quadOut(b, p(l, -t / 2, k.crown), p(r, -t / 2, k.crown), p(r, -t / 2, crown), p(l, -t / 2, crown), back, C.brick);
-    }
+    quadOut(b, p(l, -t / 2, head), p(l, t / 2, head), p(r, t / 2, head), p(r, -t / 2, head), [0, -1, 0], C.brickShade);
+    const v = side * (t / 2 + 0.014);
+    const face: P3 = [out[0] * side, 0, out[2] * side];
+    const rise = k.crown - k.spring;
+    const arc = Array.from({ length: FANLIGHT_SEGMENTS + 1 }, (_, i) => {
+      const a = (Math.PI * i) / FANLIGHT_SEGMENTS;
+      return p(k.c + Math.cos(a) * k.half, v, head + Math.sin(a) * rise);
+    });
+    const mid = p(k.c, v, head);
+    for (let i = 0; i < FANLIGHT_SEGMENTS; i++) triOut(b, mid, arc[i], arc[i + 1], face, C.fanlight);
   }
-  // Le bandeau du haut, du haut des cintres au chaperon, coupé là où le haut casse.
+  // Le bandeau du haut, de la naissance au chaperon, coupé là où le haut casse ; son assise, au-dessus des cintres.
+  const crown = Math.max(...bays.map((k) => k.crown));
   const cuts = [from, ...breaks, to];
-  for (let k = 0; k < cuts.length - 1; k++) wallRun(b, alongX, at, cuts[k], cuts[k + 1], t, crown, topAt(cuts[k]), topAt(cuts[k + 1]), C.brickShade, C.stoneSun);
+  for (let k = 0; k < cuts.length - 1; k++) {
+    wallRun(b, alongX, at, cuts[k], cuts[k + 1], t, head, topAt(cuts[k]), topAt(cuts[k + 1]), C.brick, C.stoneSun);
+    const y = G() + COURSE_HIGH;
+    if (y > crown + 0.1 && y < Math.min(topAt(cuts[k]), topAt(cuts[k + 1])) - 0.15) courses(b, alongX, at + (side * t) / 2, cuts[k], cuts[k + 1], [y], side, C.brickJoint);
+  }
 }
+
+/** Les pans de l'imposte cintrée d'une baie ; la hauteur de l'assise au-dessus des cintres. */
+const FANLIGHT_SEGMENTS = 6;
+const COURSE_HIGH = 4.6;
 
 /** Un pignon (ouest ou est) au-dessus du haut des murs : le triangle de brique sous la tôle, puis le bout du lanterneau, de fer sombre. */
 function gableTop(b: FacetBuilder, x: number, outward: number): void {
@@ -301,8 +317,15 @@ function plateBoth(b: FacetBuilder, x: number, outline: readonly (readonly [numb
 
 /** Le mur plein d'un pignon, du pied au haut des murs, le long de z, sur `x`. */
 function gableWall(b: FacetBuilder, x: number, top0: number, top1: number): void {
-  wallRun(b, false, x, HALL.z0 - HALL.wall / 2, HALL.z1 + HALL.wall / 2, HALL.wall, G() + SINK, top0, top1, C.brickShade, C.stoneSun);
+  const [z0, z1] = [HALL.z0 - HALL.wall / 2, HALL.z1 + HALL.wall / 2];
+  wallRun(b, false, x, z0, z1, HALL.wall, G() + SINK, top0, top1, C.brick, C.stoneSun);
+  // Les assises du pignon plein, sur sa face du dehors (à l'ouest), jusque sous son haut.
+  const top = Math.min(top0, top1) - G();
+  courses(b, false, x - HALL.wall / 2, z0, z1, GABLE_COURSES.filter((y) => y < top - 0.2).map((y) => G() + y), -1, C.brickJoint);
 }
+
+/** Les assises du pignon ouest, au-dessus du pied. */
+const GABLE_COURSES = [0.9, 1.8, 2.7, 3.6, 4.5] as const;
 
 // ---------- Le toit et la verrière ----------
 
@@ -431,18 +454,18 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     'ruine',
     0,
     (b) => {
-      bayWall(b, true, zN, west, 2.5, wallFoot, (u) => G() + 4.55 + 0.2 * Math.sin(u * 0.9), bays(NORTH_BAYS.filter((x) => x < 2.5)), [-6, -2]);
+      bayWall(b, true, zN, -1, west, 2.5, wallFoot, (u) => G() + 4.55 + 0.2 * Math.sin(u * 0.9), bays(NORTH_BAYS.filter((x) => x < 2.5)), [-6, -2]);
       brokenWall(b, zN, 2.5, east, wallFoot, NORTH_BAYS.filter((x) => x > 2.5), (u) => G() + 3.9 - (u - 2.5) * 0.17);
-      bayWall(b, true, zS, west, -2.4, wallFoot, (u) => G() + 4.7 - (u - west) * 0.04, bays(SOUTH_BAYS.filter((x) => x < 0)), [-5]);
-      wallRun(b, true, zS, -2.4, east, H.wall, wallFoot, G() + 1.6, G() + 1.1, C.brickShade, C.stoneSun);
-      wallRun(b, false, H.x1, zN - H.wall / 2, EAST_BAY.z - EAST_BAY.half, H.wall, wallFoot, G() + 3.4, G() + 2.0, C.brickShade, C.stoneSun);
-      wallRun(b, false, H.x1, EAST_BAY.z + EAST_BAY.half, zS + H.wall / 2, H.wall, wallFoot, G() + 1.4, G() + 2.6, C.brickShade, C.stoneSun);
+      bayWall(b, true, zS, 1, west, -2.4, wallFoot, (u) => G() + 4.7 - (u - west) * 0.04, bays(SOUTH_BAYS.filter((x) => x < 0)), [-5]);
+      wallRun(b, true, zS, -2.4, east, H.wall, wallFoot, G() + 1.6, G() + 1.1, C.brick, C.stoneSun);
+      wallRun(b, false, H.x1, zN - H.wall / 2, EAST_BAY.z - EAST_BAY.half, H.wall, wallFoot, G() + 3.4, G() + 2.0, C.brick, C.stoneSun);
+      wallRun(b, false, H.x1, EAST_BAY.z + EAST_BAY.half, zS + H.wall / 2, H.wall, wallFoot, G() + 1.4, G() + 2.6, C.brick, C.stoneSun);
       for (const [k, x] of COLUMNS.entries()) if (k !== FALLEN_COLUMN) column(b, x, MID_Z, G() + COLUMN.top, C.rustShade, C.rust);
       // La colonne couchée, au pied de la sienne, entre le rang nord et l'axe (le rang nord est contre le mur).
       const lz = MID_Z - 1.0;
       const lx = COLUMNS[FALLEN_COLUMN] - COLUMN.top + 1.6;
       b.beam({ x: lx, y: planeY(lx, lz) + 0.13, z: lz }, { x: lx + COLUMN.top - 0.6, y: planeY(lx + COLUMN.top - 0.6, lz) + 0.13, z: lz - 0.15 }, 0.24, C.rust);
-      machine(b, C.rustShade, C.rust);
+      machine(b, C.rustShade, C.rust, true);
       walkingBeam(b, { x: MACHINE.x, y: planeY(MACHINE.x, MACHINE.z - 2.0) + 0.02, z: MACHINE.z - 2.0, yaw: 0.12, pitch: -Math.PI / 2 }, C.rustShade, C.rust);
       LOOMS.forEach((p, k) => {
         const y = planeY(p.x, p.z);
@@ -502,9 +525,9 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // colonne, la bielle jusqu'au volant.
   add(0, 0, (b) => {
     const top = () => G() + H.eaves;
-    bayWall(b, true, zN, west, east, wallFoot, top, bays(NORTH_BAYS));
-    bayWall(b, true, zS, west, east, wallFoot, top, [...bays(SOUTH_BAYS), { c: 0, half: DOOR.half, sill: wallFoot, spring: G() + DOOR.spring, crown: G() + DOOR.crown }]);
-    bayWall(b, false, H.x1, zN - H.wall / 2, zS + H.wall / 2, wallFoot, top, [{ c: EAST_BAY.z, half: EAST_BAY.half, sill: G() + EAST_BAY.sill, spring: G() + EAST_BAY.spring, crown: G() + EAST_BAY.crown }]);
+    bayWall(b, true, zN, -1, west, east, wallFoot, top, bays(NORTH_BAYS));
+    bayWall(b, true, zS, 1, west, east, wallFoot, top, [...bays(SOUTH_BAYS), { c: 0, half: DOOR.half, sill: wallFoot, spring: G() + DOOR.spring, crown: G() + DOOR.crown }]);
+    bayWall(b, false, H.x1, 1, zN - H.wall / 2, zS + H.wall / 2, wallFoot, top, [{ c: EAST_BAY.z, half: EAST_BAY.half, sill: G() + EAST_BAY.sill, spring: G() + EAST_BAY.spring, crown: G() + EAST_BAY.crown }]);
     gableTop(b, east, 1);
     for (const x of COLUMNS) column(b, x, MID_Z, G() + COLUMN.top, C.iron, C.ironTop);
     for (const p of LOOMS) loom(b, { x: p.x, y: planeY(p.x, p.z), z: p.z }, Math.PI / 2, C.loom, C.loomShade);
@@ -561,9 +584,9 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
  */
 function brokenWall(b: FacetBuilder, at: number, from: number, to: number, y0: number, bays: readonly number[], topAt: (u: number) => number): void {
   const t = HALL.wall;
-  wallRun(b, true, at, from, to, t, y0, G() + BAY.sill, G() + BAY.sill, C.brickShade, C.brick);
+  wallRun(b, true, at, from, to, t, y0, G() + BAY.sill, G() + BAY.sill, C.brick, C.brick);
   const edges = [from, ...bays.flatMap((c) => [c - BAY.half, c + BAY.half]), to];
-  for (let k = 0; k < edges.length; k += 2) wallRun(b, true, at, edges[k], edges[k + 1], t, G() + BAY.sill - 0.02, topAt(edges[k]), topAt(edges[k + 1]), C.brickShade, C.brick);
+  for (let k = 0; k < edges.length; k += 2) wallRun(b, true, at, edges[k], edges[k + 1], t, G() + BAY.sill - 0.02, topAt(edges[k]), topAt(edges[k + 1]), C.brick, C.brick);
 }
 
 /** Les deux montants du lanterneau, de `x0` à `x1`, à leurs deux faces. */
@@ -610,12 +633,16 @@ function glazingSlopes(b: FacetBuilder, x0: number, x1: number, panes: number, t
  * son chapiteau plat ; le petit support du régulateur au flanc ouest ; le volant debout dans sa fosse (son axe nord-sud, sa
  * face vers la cour), la margelle de pierre de part et d'autre et le palier de son axe. Rien ne tourne.
  */
-function machine(b: FacetBuilder, metal: number, metalTop: number): void {
+function machine(b: FacetBuilder, metal: number, metalTop: number, broken = false): void {
   const M = MACHINE;
   const g = planeY(M.x, M.z);
   b.box({ x: M.x, y: g - 0.2, z: M.z }, [0.9, 0.5, 0.9], C.stoneShade, C.stoneSun);
-  b.prism({ x: M.x, y: G() + 0.3, z: M.z }, 0.3, 0.24, M.h - 0.3, 8, metal, metalTop);
-  b.box({ x: M.x, y: G() + M.h - 0.05, z: M.z }, [0.62, 0.18, 0.62], metal, metalTop);
+  // Restaurée, la colonne entière et son chapiteau plat ; dans la ruine, un tronçon bas et large (jamais un reste de
+  // cheminée), son chapiteau tombé à plat au pied, du côté du balancier.
+  const h = broken ? M.stump : M.h;
+  b.prism({ x: M.x, y: G() + 0.3, z: M.z }, 0.3, broken ? 0.27 : 0.24, h - 0.3, 8, metal, metalTop);
+  if (broken) b.box({ x: M.x + 0.75, y: planeY(M.x + 0.75, M.z + 0.6) - 0.02, z: M.z + 0.6, yaw: 0.5, pitch: 0.12 }, [0.62, 0.18, 0.62], metal, metalTop);
+  else b.box({ x: M.x, y: G() + M.h - 0.05, z: M.z }, [0.62, 0.18, 0.62], metal, metalTop);
   b.box({ x: M.x - 0.42, y: G() + M.governor - 0.1, z: M.z }, [0.36, 0.1, 0.3], metal, metalTop);
   const W = M.wheel;
   const wg = planeY(M.x, W.z);

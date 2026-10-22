@@ -57,15 +57,18 @@ export const RECOIN: Detour = {
 
 /**
  * Les couleurs : la brique du 4e et la seule pierre grise `#8F8B88` (intention, « La cohérence du Bastion », point 2) ;
- * le fer rouillé du 4e, ses bouts un cran plus sombres, l'ombre du trou d'homme ; l'écorce grise du figuier, sa couronne
- * vert olive sec (`#8A8A4C`) et son dessous ; le bois de la caisse ; les pierres des Détours.
+ * le fer rouillé sombre et brun de la chaudière, ses bouts et ses deux cerclages plus sombres encore (retouche 1 du
+ * Bastion, point 6 : la rouille claire du 4e avait la teinte de la brique, on lisait un banc de brique), l'ombre du trou
+ * d'homme ; l'écorce grise du figuier, sa couronne vert olive sec (`#8A8A4C`) et son dessous ; le bois de la caisse ; les
+ * pierres des Détours.
  */
 const C = {
   brick: COLORS_4E.brick,
   brickShade: COLORS_4E.brickShade,
-  stone: 0x8f8b88,
-  iron: COLORS_4E.rust,
-  ironEnd: COLORS_4E.rustShade,
+  stone: COLORS_4E.stone,
+  iron: 0x5a4640,
+  ironEnd: 0x4a3834,
+  hoop: 0x3e302c,
   hole: 0x3a2c28,
   bark: 0x8a8076,
   barkShade: 0x746a60,
@@ -105,13 +108,27 @@ const MANHOLE = { along: -0.35, r: 0.32 } as const;
 const TRUNK = { knee: [-0.55, 1.15, 0.35] as P3, crown: [-0.2, 2.25, 0.15] as P3, r: [0.17, 0.13] } as const;
 
 /**
- * Les deux masses de la couronne, depuis le pied du tronc : leur milieu, leur rayon, leur haut et leur bas (deux cônes à
- * six pans, base contre base), et leur tour : large, elle couvre l'angle des murets.
+ * Les deux masses de la couronne, depuis le pied du tronc : leur milieu, leur rayon, leur haut et leur bas, et leur tour
+ * (retouche 1 du Bastion, point 6 : deux masses rondes et basses, irrégulières, à la place de deux cônes plats qui se
+ * lisaient en parasol) ; elles couvrent l'angle des murets.
  */
 const CROWN = [
-  { at: [-0.5, 2.55, 0.25] as P3, r: 1.55, up: 0.95, down: 0.55, yaw: 0.2 },
-  { at: [0.95, 2.3, -0.15] as P3, r: 1.15, up: 0.75, down: 0.45, yaw: 0.7 },
+  { at: [-0.45, 2.3, 0.2] as P3, r: 1.3, up: 1.0, down: 0.75, yaw: 0.2, lean: [0.2, 0.1] as const },
+  { at: [0.85, 2.0, -0.1] as P3, r: 1.0, up: 0.8, down: 0.6, yaw: 0.9, lean: [0.15, -0.1] as const },
 ] as const;
+
+/** Les écarts de la couronne, pan après pan : le rayon (une part de `r`) et la hauteur (une part de `up`) de chaque coin. */
+const CROWN_RIM = [
+  [1.0, 0.12],
+  [0.8, -0.1],
+  [0.96, 0.18],
+  [0.76, -0.04],
+  [1.06, 0.1],
+  [0.86, -0.14],
+] as const;
+
+/** Les deux cerclages de la chaudière : leur place le long de son axe, depuis son milieu, et leur largeur. */
+const HOOPS = { at: [-0.55, 0.55], wide: 0.12, out: 0.03 } as const;
 
 /** La caisse de bois, debout contre le muret ouest : sa place depuis l'angle (`corner`), sa taille. */
 const CRATE = { x: -1.95, z: 0.35, size: [0.52, 0.5, 0.56] as P3 } as const;
@@ -186,6 +203,10 @@ function boilerAxis(ground: Ground): number {
   return lo + CRADLE.size[1] + k.r - CRADLE.seat;
 }
 
+/** Le pan du dessous de la chaudière (tourné vers le sol, entre les berceaux) ; les pans cerclés (au sud et dessus). */
+const BOILER_UNDER = 5;
+const HOOP_FACES = [7, 0, 1, 2] as const;
+
 /**
  * La chaudière : un corps rond couché d'ouest en est, fermé à ses deux bouts (huit pans, un à plat dessus), sur ses deux
  * berceaux de pierre ; son trou d'homme ouvert sur le dessus, une ombre ronde.
@@ -196,25 +217,42 @@ function boiler(b: FacetBuilder, ground: Ground): void {
   for (const s of [-1, 1]) {
     const x = k.x + s * CRADLE.offset;
     const [lo] = groundSpan(ground, x - CRADLE.size[0] / 2, x + CRADLE.size[0] / 2, k.z - CRADLE.size[2] / 2, k.z + CRADLE.size[2] / 2);
-    b.box({ x, y: lo - 0.1, z: k.z }, [CRADLE.size[0], y - k.r + CRADLE.seat - lo + 0.1, CRADLE.size[2]], C.stone);
+    // Un berceau : ses quatre faces, sans dessus (sous la chaudière) ni dessous.
+    const [hx, hz] = [CRADLE.size[0] / 2, CRADLE.size[2] / 2];
+    const [y0, y1] = [lo - 0.1, y - k.r + CRADLE.seat];
+    const c: P3[] = [
+      [x - hx, 0, k.z - hz],
+      [x + hx, 0, k.z - hz],
+      [x + hx, 0, k.z + hz],
+      [x - hx, 0, k.z + hz],
+    ];
+    for (let i = 0; i < 4; i++) {
+      const [a, d] = [c[i], c[(i + 1) % 4]];
+      b.quad([d[0], y0, d[2]], [a[0], y0, a[2]], [a[0], y1, a[2]], [d[0], y1, d[2]], C.stone);
+    }
   }
-  // Le corps, à huit pans, son axe le long de x, un pan à plat sur le dessus ; ses deux bouts pleins.
-  const ring = (x: number): P3[] =>
+  // Le corps, à huit pans, son axe le long de x, un pan à plat sur le dessus (le pan du dessous, posé dans les berceaux, ne
+  // se voit pas) ; ses deux bouts pleins, en éventail depuis un coin.
+  const ring = (x: number, r: number = k.r): P3[] =>
     Array.from({ length: 8 }, (_, i) => {
       const t = Math.PI / 8 + (Math.PI * i) / 4;
-      return [x, y + Math.sin(t) * k.r, k.z + Math.cos(t) * k.r] as const;
+      return [x, y + Math.sin(t) * r, k.z + Math.cos(t) * r] as const;
     });
   const W = ring(k.x - k.half),
     E = ring(k.x + k.half);
   for (let i = 0; i < 8; i++) {
     const n = (i + 1) % 8;
-    b.quad(W[i], W[n], E[n], E[i], C.iron);
+    if (i !== BOILER_UNDER) b.quad(W[i], W[n], E[n], E[i], C.iron);
   }
-  const mid = (x: number): P3 => [x, y, k.z];
-  for (let i = 0; i < 8; i++) {
-    const n = (i + 1) % 8;
-    b.triangle(mid(k.x + k.half), E[i], E[n], C.ironEnd);
-    b.triangle(mid(k.x - k.half), W[n], W[i], C.ironEnd);
+  for (let i = 1; i < 7; i++) {
+    b.triangle(E[0], E[i], E[i + 1], C.ironEnd);
+    b.triangle(W[0], W[i + 1], W[i], C.ironEnd);
+  }
+  // Les deux cerclages, un peu en saillie, sur les pans qui se voient de la sente (au sud et dessus).
+  for (const at of HOOPS.at) {
+    const A = ring(k.x + at - HOOPS.wide / 2, k.r + HOOPS.out),
+      B = ring(k.x + at + HOOPS.wide / 2, k.r + HOOPS.out);
+    for (const i of HOOP_FACES) b.quad(A[i], A[(i + 1) % 8], B[(i + 1) % 8], B[i], C.hoop);
   }
   // L'ombre du trou d'homme, sur le pan du dessus (un hexagone plat, à peine au-dessus).
   const top = y + k.r * Math.cos(Math.PI / 8) + 0.02;
@@ -231,16 +269,17 @@ function figTree(b: FacetBuilder, ground: Ground): void {
   const { boiler: k } = RECOIN_4E;
   const base: P3 = [k.x + MANHOLE.along, boilerAxis(ground) + k.r * 0.6, k.z];
   const off = (p: P3): P3 => [base[0] + p[0], base[1] + p[1], base[2] + p[2]];
-  limb(b, base, off(TRUNK.knee), TRUNK.r[0], TRUNK.r[1], 4, C.bark, C.barkShade);
-  limb(b, off(TRUNK.knee), off(TRUNK.crown), TRUNK.r[1], TRUNK.r[1] * 0.8, 4, C.bark, C.barkShade);
+  limb(b, base, off(TRUNK.knee), TRUNK.r[0], TRUNK.r[1], 3, C.bark, C.barkShade);
+  limb(b, off(TRUNK.knee), off(TRUNK.crown), TRUNK.r[1], TRUNK.r[1] * 0.8, 3, C.bark, C.barkShade);
   for (const m of CROWN) {
     const c = off(m.at);
-    const ring: P3[] = Array.from({ length: 6 }, (_, i) => {
+    const ring: P3[] = CROWN_RIM.map(([kr, ky], i) => {
       const t = m.yaw + (2 * Math.PI * i) / 6;
-      return [c[0] + Math.cos(t) * m.r, c[1], c[2] + Math.sin(t) * m.r] as const;
+      return [c[0] + Math.cos(t) * m.r * kr, c[1] + ky * m.up, c[2] + Math.sin(t) * m.r * kr] as const;
     });
-    const up: P3 = [c[0], c[1] + m.up, c[2]];
-    const down: P3 = [c[0], c[1] - m.down, c[2]];
+    // Le haut, un peu de travers ; le dessous, plus bas que le tour : une masse ronde, jamais un disque.
+    const up: P3 = [c[0] + m.lean[0], c[1] + m.up, c[2] + m.lean[1]];
+    const down: P3 = [c[0] - m.lean[0] * 0.5, c[1] - m.down, c[2]];
     for (let i = 0; i < 6; i++) {
       const n = (i + 1) % 6;
       b.triangle(up, ring[n], ring[i], C.leaf);
@@ -272,7 +311,11 @@ export const recoinStoneAt = (k: number): Vec2 => ({ x: CORNER.x + RECOIN_STONES
 function stones(b: FacetBuilder, ground: Ground): void {
   RECOIN_STONES.forEach((s, k) => {
     const p = recoinStoneAt(k);
-    b.prism({ x: p.x, y: Math.max(0, ground(p.x, p.z)) - 0.05, z: p.z, yaw: 0.4 + k }, s.r, s.r * 0.85, 0.22, 4, C.rockSide, C.rock);
+    // Une pierre plate à quatre pans, son dessus d'un seul quadrilatère.
+    const [y0, y1] = [Math.max(0, ground(p.x, p.z)) - 0.05, Math.max(0, ground(p.x, p.z)) + 0.17];
+    const at = (r: number, i: number, y: number): P3 => [p.x + Math.cos(0.4 + k + (Math.PI * i) / 2) * r, y, p.z + Math.sin(0.4 + k + (Math.PI * i) / 2) * r];
+    for (let i = 0; i < 4; i++) b.quad(at(s.r, i + 1, y0), at(s.r, i, y0), at(s.r * 0.85, i, y1), at(s.r * 0.85, i + 1, y1), C.rockSide);
+    b.quad(at(s.r * 0.85, 0, y1), at(s.r * 0.85, 3, y1), at(s.r * 0.85, 2, y1), at(s.r * 0.85, 1, y1), C.rock);
   });
 }
 

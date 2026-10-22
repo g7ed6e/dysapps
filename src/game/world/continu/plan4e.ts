@@ -70,18 +70,27 @@ export const COLORS_4E = {
   /** La fumée du panache, et son ombre. */
   smoke: 0xded8ce,
   smokeShade: 0xc9c1b6,
-  /** La brique et la terre cuite de l'usine. */
-  brick: 0xa4553e,
-  brickShade: 0x8a4634,
+  /**
+   * La brique du 4e et son ombre, la terre cuite de l'usine (retouche 1 du Bastion, point 3 ; intention du Bastion, « Les
+   * restes des Fabriques », point 2) : un cran plus rouge et moins saturée, rendue près de (165, 80, 60) au soleil (la
+   * face sud, sous la lumière du 4e et le mappage des tons neutre : #A4553E sortait orange vif, (186, 74, 27)) ; le joint
+   * de ses assises, un aplat d'ombre, plus sombre encore.
+   */
+  brick: 0x945c58,
+  brickShade: 0x7e4e4a,
+  brickJoint: 0x6a3e3a,
   terracotta: 0xc0704a,
   /** Le cuivre et le fer rouillé (les rails, les cerclages, les charpentes). */
   copper: 0xb87333,
   rust: 0xaf6c55,
   rustShade: 0x8c5444,
-  /** La pierre grise des Passeurs, et son ombre. */
-  stone: 0x9a8e84,
-  stoneShade: 0x7e746c,
-  stoneSun: 0xb3a89c,
+  /**
+   * La pierre grise des Passeurs, une seule (`#8F8B88`, intention du Bastion, « Les restes des Fabriques », point 2 ;
+   * retouche 1 du Bastion : l'ancienne rendait brun-taupe au soleil), son ombre et son dessus au soleil, de la même teinte.
+   */
+  stone: 0x8f8b88,
+  stoneShade: 0x7f7b78,
+  stoneSun: 0x9a9693,
   /** Le bois gris de la ruine, et son ombre. */
   wood: 0x9a826a,
   woodShade: 0x7e6a56,

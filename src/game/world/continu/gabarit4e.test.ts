@@ -122,42 +122,61 @@ describe('Le Gabarit, lieu complet', () => {
       const f = shown(n);
       const crane = topNear(f, C.x, C.z, C.side);
       expect(crane, String(n)).toBeGreaterThan(L.base + 15.5);
-      // La tour, plus basse que la grue ; l'atelier, plus bas que la tour.
+      // La tour, plus basse que le poteau de la grue ; l'atelier, plus bas que la tour.
       const T = L.tower;
-      expect(topNear(f, (T.x0 + T.x1) / 2, (T.z0 + T.z1) / 2, 1.0)).toBeLessThan(crane - 4);
+      expect(topNear(f, (T.x0 + T.x1) / 2, (T.z0 + T.z1) / 2, 1.0)).toBeLessThan(crane - 2.5);
     }
-    // Restaurée : la tour à environ 12 avec son pavillon, la grue à environ 17 avec sa flèche.
+    // Restaurée : la tour à environ 13 avec son pavillon (elle dépasse le toit de l'atelier, vue de la porte), le bout de
+    // la flèche de la grue, le plus haut du lieu, vers 17,5.
     const whole = shown(5);
     let top = -Infinity;
     for (let i = 1; i < whole.positions.length; i += 3) top = Math.max(top, whole.positions[i]);
-    expect(top - L.base).toBeGreaterThan(16.5);
-    expect(top - L.base).toBeLessThan(17.5);
-    expect(topNear(whole, (L.tower.x0 + L.tower.x1) / 2, (L.tower.z0 + L.tower.z1) / 2, 0.3) - L.base).toBeCloseTo(12, 0);
+    expect(top - L.base).toBeGreaterThan(17);
+    expect(top - L.base).toBeLessThan(18.5);
+    expect(topNear(whole, (L.tower.x0 + L.tower.x1) / 2, (L.tower.z0 + L.tower.z1) / 2, 0.3) - L.base).toBeCloseTo(13.3, 0);
+    expect(L.tower.top).toBeGreaterThan(L.atelier.ridge + 2);
   });
 
-  it('la flèche de la grue d’un seul côté, au-dessus du plancher : jamais une croix ni un T ; le crochet au-dessus du plancher', () => {
+  it('la flèche de la grue relevée d’un seul côté, au-dessus du plancher ; une contre-flèche courte ; un câble court : jamais un gibet', () => {
     const C = L.crane;
     const F = L.floor;
-    // Le bout de la flèche, vu d'en haut, est au-dessus du plancher, et rien de la grue ne dépasse de l'autre côté du poteau.
+    // Le bout de la flèche, vu d'en haut, est au-dessus du plancher.
     expect(C.tip.x).toBeGreaterThan(F.x0);
     expect(C.tip.x).toBeLessThan(F.x1);
     expect(C.tip.z).toBeGreaterThan(F.z0);
     expect(C.tip.z).toBeLessThan(F.z1);
+    // La flèche monte nettement (entre 35 et 45°), longue ; le câble fait 2 au plus.
+    const run = Math.hypot(C.tip.x - C.x, C.tip.z - C.z);
+    const angle = (Math.atan2(C.tip.y - C.pivot, run) * 180) / Math.PI;
+    expect(angle).toBeGreaterThanOrEqual(35);
+    expect(angle).toBeLessThanOrEqual(45);
+    expect(C.boom).toBeGreaterThan(8);
+    expect(C.rope).toBeLessThanOrEqual(2);
+    // De l'autre côté du poteau, au-dessus de 12 : seule la contre-flèche courte et son contrepoids, jamais un bras.
     const away = { x: C.x - C.tip.x, z: C.z - C.tip.z };
+    const len = Math.hypot(away.x, away.z);
     const f = shown(5);
+    let far = 0;
     for (let i = 0; i < f.positions.length; i += 3) {
       if (f.positions[i + 1] < L.base + 12) continue;
       const d = { x: f.positions[i] - C.x, z: f.positions[i + 2] - C.z };
-      // Au-dessus de 12, rien au-delà du poteau, du côté opposé à la flèche.
-      expect(d.x * away.x + d.z * away.z).toBeLessThan(0.6 * Math.hypot(away.x, away.z));
+      far = Math.max(far, (d.x * away.x + d.z * away.z) / len);
     }
+    expect(far).toBeGreaterThan(C.jib - 0.5);
+    expect(far).toBeLessThan(C.jib + 0.8);
+    expect(C.jib).toBeLessThan(C.boom / 3);
   });
 
-  it('la tour jamais couronnée : son haut en ruine cassé en biais, restaurée d’aplomb', () => {
+  it('la tour jamais couronnée : son haut en ruine cassé en biais, sans pointe ; restaurée d’aplomb', () => {
     const r = L.tower.ruin;
     expect(Math.max(...r) - Math.min(...r)).toBeGreaterThan(2);
     expect(Math.max(...r)).toBeLessThanOrEqual(10);
+    expect(Math.min(...r)).toBeGreaterThan(L.tower.stump);
     expect(L.tower.top).toBeGreaterThan(Math.max(...r));
+    // Le plus haut de la ruine de la tour est sur son pan est, à son coin : jamais au milieu (ni pointe ni pyramide).
+    const T = L.tower;
+    const ruin = shown(0);
+    expect(topNear(ruin, (T.x0 + T.x1) / 2, (T.z0 + T.z1) / 2, 0.8) - L.base).toBeLessThan(T.stump + 0.01);
   });
 
   it('rien du lieu, en ruine comme restauré, sur le chemin de marche, de la porte à son chemin (à hauteur de Kéo)', () => {

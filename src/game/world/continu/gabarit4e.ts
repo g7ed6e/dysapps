@@ -4,16 +4,18 @@
 // lieu fini du Bastion, sur le gabarit de la Forge et de l'Étalon (./forge4e.ts, ./etalon4e.ts) : « forteresse » dit la
 // masse, jamais la guerre (ni créneau, ni meurtrière, ni canon). L'atelier de pierre grise des Passeurs, 12 sur 9, son
 // arcade de deux arches au sud, son étage de brique à petites fenêtres carrées, sa galerie de bois sur corbeaux ; la tour
-// carrée à l'angle nord-est ; la grue, à l'est, au bord de la cour : un seul poteau carré plein, une flèche pleine d'un
-// seul côté, au-dessus du plancher de traçage, le contrepoids au pied, le crochet immobile ; jamais une croix ni un
-// treillis. Devant l'arcade, la balance à fléau ; au sud-est, le plancher de traçage et ses gabarits courbes ; contre le
+// carrée à l'angle nord-est, qui dépasse le toit ; la grue, à l'est, au bord de la cour : un seul poteau carré plein, une
+// flèche pleine relevée à 40° d'un seul côté, au-dessus du plancher de traçage, son hauban, une contre-flèche courte et
+// son contrepoids en haut, le gros contrepoids au pied, une moufle au bout d'un câble court, immobile ; jamais une croix,
+// un treillis ni un gibet (retouche 1 du Bastion). Devant l'arcade, la balance à fléau ; au sud-est, le plancher de traçage et ses gabarits courbes ; contre le
 // mur ouest, l'abri du géomètre. À droite de l'arcade, à hauteur d'homme, le signe de l'absence du 4e : la ferrure vide à
 // deux chevilles nues (le grand compas de traçage, pris par les Ferrailleurs), la même avant et après, jamais une étape.
 //
 // La ruine, plus forte que la planche (intention, « La ruine ») : le rez-de-chaussée debout, l'arcade de droite à moitié
 // tombée, son arc ouvert en biais ; l'étage de brique à moitié tombé, ses fenêtres vides ; les corbeaux nus et une poutre
-// de la galerie couchée au pied ; plus de toit ; la tour écrêtée en biais, deux blocs à son pied ; la grue debout, entière,
-// un tronçon de flèche en haut, le reste couché en travers du haut des murs ; la balance, son pied debout, le fléau dans
+// de la galerie couchée au pied ; plus de toit ; la tour écrêtée, ses pans nord et est cassés en biais, deux blocs à son
+// pied ; la grue debout, entière, un tronçon de flèche à son articulation, le reste couché en travers du haut des murs ;
+// la balance, son pied debout, le fléau dans
 // l'herbe, les plateaux à plat ; le plancher disjoint, un coin affaissé, deux gabarits couchés. Une seule lumière, la
 // lanterne de l'abri. Cinq parties (3 + 1 + 1) : le corps en trois (le rez-de-chaussée et la balance ; l'étage et la
 // galerie ; la tour), le haut (les toits de terre cuite, la flèche de la grue, la lanterne de l'angle), les abords (le
@@ -22,7 +24,7 @@
 import type { Stage } from './construction';
 import { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import { groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, wallRun } from './place4eKit';
+import { archSpandrel, courses, groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, wallRun } from './place4eKit';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
 
@@ -39,7 +41,7 @@ type P3 = readonly [number, number, number];
  */
 const C = {
   brick: COLORS_4E.brick,
-  brickShade: COLORS_4E.brickShade,
+  brickJoint: COLORS_4E.brickJoint,
   stone: COLORS_4E.stone,
   stoneSun: COLORS_4E.stoneSun,
   stoneShade: COLORS_4E.stoneShade,
@@ -90,14 +92,43 @@ const ARCHES = [
 ] as const;
 const ARCH = { spring: 2.4, sill: 0.9 } as const;
 
-/** La tour, à l'angle nord-est : ses bords (un peu hors des murs), le haut de sa ruine à ses quatre coins, son haut, son pavillon. */
-const TOWER = { x0: 2.7, x1: 6.15, z0: -4.65, z1: -1.2, ruin: [7.4, 10.0, 8.6, 7.0], top: 10.5, roof: 12.0 } as const;
+/**
+ * La tour, à l'angle nord-est : ses bords (un peu hors des murs) ; dans la ruine, le haut de son corps écrêté (`stump`) et
+ * celui de ses deux pans restés debout, au nord et à l'est, à leurs coins nord-ouest, nord-est, sud-est (`ruin`, cassés en
+ * biais, jamais une pointe : retouche 1 du Bastion, point 4) ; restaurée, son haut et son pavillon, qui dépassent du toit
+ * de l'atelier vus de la porte (« une masse et sa tour »).
+ */
+const TOWER = { x0: 2.7, x1: 6.15, z0: -4.65, z1: -1.2, stump: 7.0, ruin: [8.2, 10.0, 7.6], wall: 0.7, top: 12.0, roof: 13.3 } as const;
 
 /**
- * La grue (intention : x 9, z 0) : son pied, le côté de son poteau carré plein, sa hauteur ; la flèche, du haut du
- * poteau vers le plancher, son bout (la poulie) ; le bas du crochet ; le contrepoids de pierre au pied.
+ * La grue (intention : x 9, z 0 ; retouche 1 du Bastion, point 1, Bloquant du directeur artistique : jamais un gibet) :
+ * son pied, le côté de son poteau carré plein, sa hauteur ; la flèche, articulée au poteau à `pivot` et tendue vers le
+ * plancher, longue (`boom`) et nettement relevée (`rise`, 40°), retenue par un hauban du haut du poteau ; la contre-flèche,
+ * courte, en haut, de l'autre côté, son contrepoids de pierre pendu à son bout ; au bout de la flèche, la poulie, un câble
+ * court (`rope`) et une moufle épaisse, le crochet dessous ; le gros contrepoids de pierre au pied. Le bout de la flèche
+ * reste dans la vue d'arrivée (articulée plus haut, elle sortait du cadre).
  */
-const CRANE = { x: 9, z: 0, side: 0.6, h: 16, tip: { x: 6.0, y: 17.0, z: 6.6 }, hook: 9.4 } as const;
+const CRANE_BOOM = { length: 9.5, rise: (40 * Math.PI) / 180, pivot: 11.4, toward: { x: -3, z: 6.6 } } as const;
+const CRANE_DIR = (() => {
+  const l = Math.hypot(CRANE_BOOM.toward.x, CRANE_BOOM.toward.z);
+  return { x: CRANE_BOOM.toward.x / l, z: CRANE_BOOM.toward.z / l };
+})();
+const CRANE = {
+  x: 9,
+  z: 0,
+  side: 0.6,
+  h: 16,
+  boom: CRANE_BOOM.length,
+  rise: CRANE_BOOM.rise,
+  pivot: CRANE_BOOM.pivot,
+  tip: {
+    x: 9 + CRANE_DIR.x * CRANE_BOOM.length * Math.cos(CRANE_BOOM.rise),
+    y: CRANE_BOOM.pivot + CRANE_BOOM.length * Math.sin(CRANE_BOOM.rise),
+    z: 0 + CRANE_DIR.z * CRANE_BOOM.length * Math.cos(CRANE_BOOM.rise),
+  },
+  jib: 2.6,
+  rope: 1.4,
+} as const;
 
 /** La balance à fléau, devant l'arcade, à droite de la porte : son pied, sa hauteur, la longueur du fléau, ses plateaux. */
 const BALANCE = { x: 1.9, z: 6.4, h: 1.8, beam: 2.4, pan: 0.42, hang: 0.9 } as const;
@@ -197,7 +228,22 @@ function stoneRun(b: FacetBuilder, alongX: boolean, at: number, from: number, to
   wallRun(b, alongX, at, from, to, ATELIER.wall, G() + y0, G() + top0, G() + top1, C.stoneShade, C.stoneSun);
 }
 function brickRun(b: FacetBuilder, alongX: boolean, at: number, from: number, to: number, top0: number, top1: number): void {
-  wallRun(b, alongX, at, from, to, ATELIER.wall - 0.06, G() + ATELIER.ground - 0.02, G() + top0, G() + top1, C.brickShade, C.brick);
+  wallRun(b, alongX, at, from, to, ATELIER.wall - 0.06, G() + ATELIER.ground - 0.02, G() + top0, G() + top1, C.brick, C.brick);
+}
+
+/**
+ * Les assises de l'étage de brique restauré (retouche 1 du Bastion, point 3) : trois joints d'ombre sur ses quatre faces
+ * du dehors, sous et au-dessus des petites fenêtres (jamais sur elles) ; le mur est, de la tour au sud.
+ */
+const BRICK_COURSES = [5.55, 7.2, 7.7] as const;
+function brickCourses(b: FacetBuilder): void {
+  const A = ATELIER;
+  const face = (A.wall - 0.06) / 2;
+  const ys = BRICK_COURSES.map((y) => G() + y);
+  courses(b, true, SOUTH + face, A.x0, A.x1, ys, 1, C.brickJoint);
+  courses(b, true, NORTH - face, A.x0, TOWER.x0, ys, -1, C.brickJoint);
+  courses(b, false, WEST - face, A.z0, A.z1, ys, -1, C.brickJoint);
+  courses(b, false, EAST + face, TOWER.z1, A.z1, ys, 1, C.brickJoint);
 }
 
 const SOUTH = ATELIER.z1 - ATELIER.wall / 2;
@@ -207,28 +253,13 @@ const EAST = ATELIER.x1 - ATELIER.wall / 2;
 
 /**
  * Le haut d'une arche (son écoinçon, de chaque côté) : le mur plein entre la naissance et le sommet de l'arc, du côté
- * gauche (`side` −1) ou droit (+1), l'intrados en deux pans. Dans le plan de la façade sud.
+ * gauche (`side` −1) ou droit (+1), l'intrados en arc rond (retouche 1 du Bastion, point 4 : plus de pans pâles en
+ * triangle). Dans le plan de la façade sud, de la teinte du mur.
  */
 function haunch(b: FacetBuilder, a: { x0: number; x1: number }, side: -1 | 1): void {
   const r = (a.x1 - a.x0) / 2;
-  const cx = (a.x0 + a.x1) / 2;
-  const ys = ARCH.spring;
-  const yc = ys + r;
-  const edge = side < 0 ? a.x0 : a.x1;
-  const mid = cx + side * r * Math.SQRT1_2;
-  let outline: [number, number][] = [
-    [edge, yc],
-    [edge, ys],
-    [mid, ys + r * Math.SQRT1_2],
-    [cx, yc],
-  ];
-  // Dans le sens inverse des aiguilles d'une montre vu du sud, le coin d'abord (le dessin part de lui en éventail).
-  const area = outline.reduce((s, [x, y], k) => {
-    const [nx, ny] = outline[(k + 1) % outline.length];
-    return s + x * ny - nx * y;
-  }, 0);
-  if (area < 0) outline = [outline[0], ...outline.slice(1).reverse()];
-  b.extrude({ x: 0, y: G(), z: ATELIER.z1 - ATELIER.wall }, outline, ATELIER.wall, C.stoneShade, C.stoneSun);
+  const ys = G() + ARCH.spring;
+  archSpandrel(b, ATELIER.z1 - ATELIER.wall, ATELIER.wall, (a.x0 + a.x1) / 2, r, ys, ys + r, side, C.stoneShade, C.stone);
 }
 
 /** Le linteau plein au-dessus d'une arche, de son sommet au haut du rez-de-chaussée. */
@@ -344,13 +375,17 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     },
     corps2,
   );
-  // Le corps 3 la relève : la tour écrêtée en biais vers 10, jamais couronnée ; deux blocs tombés à son pied.
+  // Le corps 3 la relève : la tour écrêtée, son corps à plat, ses deux pans du nord et de l'est restés debout et cassés en
+  // biais vers 10 (jamais une pointe ni une pyramide) ; deux blocs tombés à son pied.
   add(
     'ruine',
     0,
     (b) => {
       const T = TOWER;
-      block(b, T.x0, T.x1, T.z0, T.z1, G() + SINK, [G() + T.ruin[0], G() + T.ruin[1], G() + T.ruin[2], G() + T.ruin[3]], C.stoneShade, C.stone);
+      const [nw, ne, se] = T.ruin.map((y) => G() + y);
+      block(b, T.x0, T.x1, T.z0, T.z1, G() + SINK, [G() + T.stump, G() + T.stump, G() + T.stump, G() + T.stump], C.stoneShade, C.stone);
+      wallRun(b, true, T.z0 + T.wall / 2, T.x0, T.x1 - T.wall, T.wall, G() + T.stump - 0.05, nw, ne - 0.6, C.stoneShade, C.stone);
+      wallRun(b, false, T.x1 - T.wall / 2, T.z0, T.z1, T.wall, G() + T.stump - 0.05, ne, se, C.stoneShade, C.stone);
       for (const [x, z, s, yaw] of [
         [7.2, -3.4, 0.9, 0.5],
         [7.6, -1.6, 0.7, 1.3],
@@ -368,7 +403,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     0,
     (b) => {
       const cg = planeY(CRANE.x, CRANE.z);
-      b.beam({ x: CRANE.x, y: cg + CRANE.h - 0.4, z: CRANE.z }, { x: CRANE.x - 0.9, y: cg + CRANE.h + 0.1, z: CRANE.z + 1.9 }, 0.36, C.wood);
+      const l = 2.2 * Math.cos(CRANE.rise);
+      b.beam({ x: CRANE.x + CRANE_DIR.x * 0.35, y: cg + CRANE.pivot, z: CRANE.z + CRANE_DIR.z * 0.35 }, { x: CRANE.x + CRANE_DIR.x * (0.35 + l), y: cg + CRANE.pivot + 2.2 * Math.sin(CRANE.rise), z: CRANE.z + CRANE_DIR.z * (0.35 + l) }, 0.36, C.wood);
     },
     haut,
   );
@@ -418,6 +454,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     brickRun(b, true, SOUTH, A.x0 + A.wall, A.x1 - A.wall, A.upper, A.upper);
     brickRun(b, false, EAST, TOWER.z1, A.z1, A.upper, A.upper);
     for (const w of WINDOWS) windowAt(b, w.x, w.z, w.out);
+    brickCourses(b);
     const y = G() + CORBELS.top;
     b.box({ x: 0, y, z: A.z1 + CORBELS.out / 2 - 0.02 }, [A.x1 - A.x0 - 0.4, 0.14, CORBELS.out + 0.08], C.newShade, C.newWood);
     const rail = A.z1 + CORBELS.out - 0.06;
@@ -494,17 +531,33 @@ function shelter(b: FacetBuilder): void {
   lantern(b, { x: L.x - 0.38, y: G() + L.y, z: L.z }, true);
 }
 
-/** La grue restaurée, sans son poteau (toujours là) : la flèche, sa poulie, sa corde, son crochet ; le contrepoids au pied. */
+/**
+ * La grue restaurée, sans son poteau (toujours là) : la flèche, longue et nettement relevée ; la contre-flèche courte de
+ * l'autre côté, son contrepoids de pierre pendu à son bout ; au bout de la flèche, la poulie, un câble court, une moufle
+ * épaisse et son crochet, hauts sous la poulie ; le gros contrepoids de pierre au pied (retouche 1 du Bastion, point 1 :
+ * ni potence, ni bras à plat, ni corde longue).
+ */
 function crane(b: FacetBuilder): void {
   const cg = planeY(CRANE.x, CRANE.z);
   const head = { x: CRANE.x, y: cg + CRANE.h - 0.3, z: CRANE.z };
+  const foot = { x: CRANE.x + CRANE_DIR.x * 0.35, y: cg + CRANE.pivot, z: CRANE.z + CRANE_DIR.z * 0.35 };
   const tip = { x: CRANE.tip.x, y: cg + CRANE.tip.y, z: CRANE.tip.z };
-  b.beam(head, tip, 0.4, C.newShade);
-  b.drum({ x: tip.x, y: tip.y - 0.2, z: tip.z, yaw: Math.atan2(tip.x - head.x, tip.z - head.z) + Math.PI / 2, pitch: Math.PI / 2 }, 0.32, 0.18, 6, C.iron, C.ironTop);
-  b.beam({ x: tip.x, y: tip.y - 0.5, z: tip.z }, { x: tip.x, y: cg + CRANE.hook + 0.35, z: tip.z }, 0.05, C.hemp);
-  b.box({ x: tip.x, y: cg + CRANE.hook, z: tip.z }, [0.16, 0.36, 0.16], C.iron, C.ironTop);
-  b.box({ x: tip.x + 0.1, y: cg + CRANE.hook - 0.06, z: tip.z }, [0.36, 0.1, 0.12], C.iron);
-  b.box({ x: CRANE.x + 0.9, y: cg - 0.1, z: CRANE.z - 0.2 }, [1.2, 1.0, 1.2], C.stoneShade, C.stoneSun);
+  const yaw = Math.atan2(CRANE_DIR.x, CRANE_DIR.z);
+  b.beam(foot, tip, 0.42, C.newShade);
+  // Le hauban, du haut du poteau au bout de la flèche.
+  b.beam({ x: head.x, y: head.y + 0.2, z: head.z }, { x: tip.x, y: tip.y - 0.1, z: tip.z }, 0.06, C.hemp);
+  // La contre-flèche, à peine penchée, et son contrepoids de pierre pendu à son bout.
+  const back = { x: head.x - CRANE_DIR.x * CRANE.jib, y: head.y - 0.35, z: head.z - CRANE_DIR.z * CRANE.jib };
+  b.beam({ x: head.x, y: head.y + 0.05, z: head.z }, back, 0.32, C.newShade);
+  b.box({ x: back.x + CRANE_DIR.x * 0.35, y: back.y - 1.05, z: back.z + CRANE_DIR.z * 0.35, yaw }, [0.9, 0.95, 0.75], C.stoneShade, C.stoneSun);
+  // La poulie, le câble court, la moufle épaisse, le crochet.
+  b.drum({ x: tip.x, y: tip.y - 0.22, z: tip.z, yaw: yaw + Math.PI / 2, pitch: Math.PI / 2 }, 0.34, 0.2, 6, C.iron, C.ironTop);
+  const block = tip.y - 0.45 - CRANE.rope;
+  b.beam({ x: tip.x, y: tip.y - 0.45, z: tip.z }, { x: tip.x, y: block + 0.5, z: tip.z }, 0.06, C.hemp);
+  b.box({ x: tip.x, y: block, z: tip.z, yaw }, [0.42, 0.55, 0.32], C.iron, C.ironTop);
+  b.box({ x: tip.x, y: block - 0.3, z: tip.z, yaw }, [0.1, 0.32, 0.1], C.iron);
+  b.box({ x: tip.x + CRANE_DIR.x * 0.1, y: block - 0.36, z: tip.z + CRANE_DIR.z * 0.1, yaw }, [0.1, 0.1, 0.3], C.iron);
+  b.box({ x: CRANE.x + 0.9, y: cg - 0.1, z: CRANE.z - 0.2 }, [1.4, 1.2, 1.4], C.stoneShade, C.stoneSun);
 }
 
 /** La cour : la dalle qui suit le plan, son bord, et ses joints en rangs (jamais sur le chemin). */

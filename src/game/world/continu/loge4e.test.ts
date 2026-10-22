@@ -34,6 +34,8 @@ import { SURROUNDINGS, SURROUNDINGS_MAX } from './surroundings';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
 
+/** L'ancienne brique du 4e, orange vif au soleil (avant la retouche 1 du Bastion) : jamais à la Loge. */
+const OLD_ORANGE_BRICK = 0xa4553e;
 const PLAN = planFor('4e');
 const PLACE = PLAN.places.find((p) => p.id === 'loge')!;
 const ISLAND = PLACE.island as BiomeId;
@@ -175,7 +177,7 @@ describe('La Loge, lieu complet', () => {
   it('aucun orange, ni lueur, ni cuivre, ni terre cuite ; la rouille dans la ruine seulement : restaurée, le fer est bruni sombre', () => {
     for (let n = 0; n <= 4; n++)
       for (const f of [SHOWN[n], traces(n, [...MISSIONS, MISSION_2027])])
-        for (const c of [COLORS_4E.lava, FORGE_GLOW, ...FORGE_GLOW_FADE, COLORS_4E.copper, COLORS_4E.terracotta, COLORS_4E.brick]) expect(countColor(f, c), `${n} ${c.toString(16)}`).toBe(0);
+        for (const c of [COLORS_4E.lava, FORGE_GLOW, ...FORGE_GLOW_FADE, COLORS_4E.copper, COLORS_4E.terracotta, OLD_ORANGE_BRICK]) expect(countColor(f, c), `${n} ${c.toString(16)}`).toBe(0);
     expect(countColor(SHOWN[0], COLORS_4E.rust)).toBeGreaterThan(0);
     for (const c of [COLORS_4E.rust, COLORS_4E.rustShade]) expect(countColor(SHOWN[4], c)).toBe(0);
   });
@@ -363,7 +365,9 @@ describe('La vue d’arrivée de la Loge, des coulisses', () => {
 
   it('la caméra au nord regarde vers le sud, à travers la porte des décors : l’arche au milieu, le faîte dans le cadre, l’appentis à gauche', () => {
     const yaw = doorViewOf('loge');
-    expect(yaw).toBe(Math.PI);
+    // Tournée d'un rien vers le sud-ouest (retouche 1 du Bastion, point 8).
+    expect(yaw).toBeLessThan(Math.PI - 0.1);
+    expect(yaw).toBeGreaterThan(Math.PI - 0.35);
     const frame = doorFrameOf('loge')!;
     const pose = followPose(focus, occlusionLift(focus, ground, yaw), undefined, yaw, 1, undefined, frame);
     expect(pose.position.z).toBeLessThan(focus.z);
@@ -374,9 +378,14 @@ describe('La vue d’arrivée de la Loge, des coulisses', () => {
     const arch = s(0, L.cage.z1, L.arch.crown);
     const leanto = s((L.leanto.x0 + L.leanto.x1) / 2, L.leanto.z0, 2);
     for (const p of [ridgeW, ridgeE, arch, leanto]) expect(inFrame(p), JSON.stringify(p)).toBe(true);
-    expect(Math.abs(arch.x - W / 2)).toBeLessThan(W * 0.12);
+    expect(Math.abs(arch.x - W / 2)).toBeLessThan(W * 0.2);
     // Vue des coulisses, la caméra au nord : l'est (l'appentis) est à gauche.
     expect(leanto.x).toBeLessThan(arch.x);
+    // Kéo (au milieu de l'écran) se tient hors de l'ouverture de la porte des décors, devant le mur nord.
+    const keo = screenOf(pose, { x: focus.x, y: focus.y + 1, z: focus.z }, W, H);
+    const doorW = s(-L.door.half, L.cage.z0, 1);
+    const doorE = s(L.door.half, L.cage.z0, 1);
+    expect(keo.x < Math.min(doorW.x, doorE.x) || keo.x > Math.max(doorW.x, doorE.x), JSON.stringify({ keo, doorW, doorE })).toBe(true);
   });
 });
 

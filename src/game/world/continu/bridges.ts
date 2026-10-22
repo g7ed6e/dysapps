@@ -563,7 +563,7 @@ export function bridgeFacets(land: LinkedLand, built: boolean, car: CabinCar = '
     return mergeFacets([cabinStations(s), ...parts.piles, parts.deck, ...(box ? [box] : [])]);
   }
   if (isSwing(land)) {
-    if (!built) return mergeFacets([abutmentFacets(s, false), swingDrum(s), swingRuin(s)]);
+    if (!built) return mergeFacets([abutmentFacets(s, false), swingDrum(s), swingRuin(s), swingRuinRails(s)]);
     const parts = bridgeParts(land);
     return mergeFacets([abutmentFacets(s, false), swingDrum(s), parts.deck, parts.rails]);
   }
@@ -602,8 +602,12 @@ export const isSwing = (land: LinkedLand): boolean => isLand4e(land) && LINKS_4E
  */
 export const SWING = { pivot: 2.4, drum: 1.6, sides: 8, girder: 0.9, girderWidth: 0.3, post: 2.4, open: (60 * Math.PI) / 180, sag: 0.08 } as const;
 
-/** Le fer du pont tournant : rouillé dans la ruine (seulement là), bruni sombre une fois rebâti (fiche du 4e, les matières des Passeurs). */
-const SWING_IRON = { rust: COLORS_4E.rust, rustShade: COLORS_4E.rustShade, iron: 0x5c504c, ironTop: 0x6c5e58 } as const;
+/**
+ * Le fer du pont tournant : rouillé dans la ruine (seulement là), bruni sombre une fois rebâti (fiche du 4e, les matières
+ * des Passeurs). Retouche 1 du Bastion, point 7 : la rouille de la ruine un cran sous la terre rouge (la rouille claire
+ * du 4e se lisait en planche orange), ses poutres plus sombres encore, et ses garde-corps tombés, d'un fer sombre.
+ */
+const SWING_IRON = { rust: 0x8a5a4a, rustShade: 0x5e3e36, fallen: 0x4e3a34, iron: 0x5c504c, ironTop: 0x6c5e58 } as const;
 
 /** Le pivot du pont tournant sur sa ligne (`d` depuis `near`), et la hauteur du dessus de son tambour, où portent les poutres. */
 export function swingPivot(s: BridgeSite): { d: number; y: number } {
@@ -629,9 +633,69 @@ function swingDeck(s: BridgeSite, rust: boolean): Facets {
   const low = swingPivot(s).y;
   for (const v of [-1, 1]) {
     const p = at((d0 + d1) / 2, v * (BRIDGE.width / 2 - SWING.girderWidth / 2 - 0.05));
-    b.box({ x: p.x, y: low, z: p.z, yaw }, [SWING.girderWidth, SWING.girder, d1 - d0], side, top);
+    b.box({ x: p.x, y: low, z: p.z, yaw }, [SWING.girderWidth, SWING.girder, d1 - d0], side, rust ? side : top);
   }
   return b.build();
+}
+
+/**
+ * Les garde-corps de la volée de la ruine, dans la volée fermée (`swingPosed` les couche avec elle) : celui du sud rabattu
+ * à plat sur le tablier, sa main courante et cinq montants ; celui du nord debout près du pivot, puis plié vers le bout
+ * libre, sa main courante en deux pans (retouche 1 du Bastion, point 7 : on lit un pont de fer resté ouvert, pas une
+ * planche). Ils ne sont pas dans la pose : le pont rebâti a les siens, qui montent du tablier.
+ */
+function swingFallenRails(s: BridgeSite): Facets {
+  const b = new FacetBuilder();
+  const at = frame(s);
+  const [d0, d1] = swingSpan(s);
+  const half = BRIDGE.railOut;
+  const P = (d: number, v: number, h: number) => {
+    const p = at(d, v);
+    return { x: p.x, y: BRIDGE.deck + h, z: p.z };
+  };
+  const t = 0.1;
+  const c = SWING_IRON.fallen;
+  // Le sud, couché vers le milieu du tablier : sa main courante et trois montants.
+  const [a, e] = [d0 + 0.6, d1 - 1.2];
+  rod(b, P(a, -half + BRIDGE.rail * 0.9, 0.06), P(e, -half + BRIDGE.rail * 0.85, 0.06), t, c);
+  for (let k = 0; k < 3; k++) {
+    const d = a + ((e - a) * k) / 2;
+    rod(b, P(d, -half, 0.05), P(d + 0.1, -half + BRIDGE.rail * 0.9, 0.06), t * 0.8, c);
+  }
+  // Le nord, debout près du pivot, puis plié vers le bout libre.
+  const bend = d0 + (d1 - d0) * 0.42;
+  for (const d of [a, bend]) rod(b, P(d, half, 0), P(d, half, BRIDGE.rail), t * 0.8, c);
+  rod(b, P(a, half, BRIDGE.rail), P(bend, half, BRIDGE.rail), t, c);
+  rod(b, P(bend, half, BRIDGE.rail), P(e, half + 0.5, 0.15), t, c);
+  rod(b, P(bend + 1.2, half, 0), P(bend + 1.5, half + 0.35, 0.55), t * 0.8, c);
+  return b.build();
+}
+
+/**
+ * Une barre de fer fine tendue de `a` à `c` : trois faces (section en triangle, de côté `t`), sans bouts (on ne les voit
+ * pas à cette épaisseur), soit six triangles au lieu des douze d'un pavé.
+ */
+function rod(b: FacetBuilder, a: { x: number; y: number; z: number }, c: { x: number; y: number; z: number }, t: number, color: number): void {
+  const dx = c.x - a.x, dy = c.y - a.y, dz = c.z - a.z;
+  const len = Math.hypot(dx, dy, dz) || 1e-6;
+  const d = [dx / len, dy / len, dz / len];
+  const ref = Math.abs(d[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0];
+  const u0 = [d[1] * ref[2] - d[2] * ref[1], d[2] * ref[0] - d[0] * ref[2], d[0] * ref[1] - d[1] * ref[0]];
+  const ul = Math.hypot(u0[0], u0[1], u0[2]);
+  const u = u0.map((x) => x / ul);
+  const v = [d[1] * u[2] - d[2] * u[1], d[2] * u[0] - d[0] * u[2], d[0] * u[1] - d[1] * u[0]];
+  const r = t * 0.58;
+  const ring = (p: { x: number; y: number; z: number }) =>
+    [0, 1, 2].map((k) => {
+      const ang = (k * 2 * Math.PI) / 3;
+      const cu = Math.cos(ang) * r, cv = Math.sin(ang) * r;
+      return [p.x + cu * u[0] + cv * v[0], p.y + cu * u[1] + cv * v[1], p.z + cu * u[2] + cv * v[2]] as const;
+    });
+  const [A, B] = [ring(a), ring(c)];
+  for (let k = 0; k < 3; k++) {
+    const n = (k + 1) % 3;
+    b.quad(A[k], A[n], B[n], B[k], color);
+  }
 }
 
 /** Le tambour, le pivot : un cylindre bas de pierre grise cerclé de fer, sous le bout côté Fabriques, du fond jusque sous les poutres. */
@@ -697,10 +761,14 @@ function swingPosed(s: BridgeSite, f: Facets, sag: number, turn: number): Facets
 
 /**
  * La volée de la ruine : entière, rouillée, restée ouverte en biais sur son tambour (`SWING.open`), couchée au-dessus de
- * l'eau du bassin, au nord du pont, son bout libre affaissé, le bas de ses poutres dans l'eau ; ni garde-corps ni lanternes (ils montent du tablier
- * à la pose). L'eau reste libre entre les culées, sous le cadenas.
+ * l'eau du bassin, au nord du pont, son bout libre affaissé, le bas de ses poutres dans l'eau ; ses garde-corps tombés
+ * à part (`swingRuinRails`), ni lanternes : ceux du pont rebâti montent du tablier à la pose. L'eau reste libre entre les
+ * culées, sous le cadenas.
  */
 export const swingRuin = (s: BridgeSite): Facets => swingPosed(s, swingDeck(s, true), SWING.sag, SWING.open);
+
+/** Les garde-corps tombés de la volée de la ruine, couchés avec elle (hors de la pose). */
+const swingRuinRails = (s: BridgeSite): Facets => swingPosed(s, swingFallenRails(s), SWING.sag, SWING.open);
 
 /** La volée rouillée, fermée : ses couleurs sont celles d'où part le fondu de la pose (./bridgeLay.ts). */
 export const swingRustDeck = (land: LinkedLand): Facets => swingDeck(bridgeSite(land), true);

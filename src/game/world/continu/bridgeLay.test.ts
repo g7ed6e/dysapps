@@ -137,7 +137,7 @@ describe('La pose du pont tournant des docks (le bassin à flot du 4e)', () => {
     for (let i = 0; i < deckEnd * 3; i++) expect(normals[i]).toBeCloseTo(lay.facets.normals[i], 4);
     const colors = new Float32Array(lay.facets.colors.length);
     expect(bridgeLayColors(lay, 0, colors)).toBe(0);
-    const rust = linearRgb(0xaf6c55);
+    const rust = linearRgb(0x8a5a4a);
     expect(Array.from({ length: deckEnd }, (_, i) => i).some((i) => [0, 1, 2].every((k) => Math.abs(colors[i * 3 + k] - rust[k]) < 1e-6))).toBe(true);
     expect(bridgeLayColors(lay, SWING_LAY.raise, colors, 0)).toBe(1);
     for (let i = 0; i < colors.length; i++) expect(colors[i]).toBeCloseTo(lay.facets.colors[i], 6);

@@ -181,6 +181,18 @@ describe("La Manufacture, lieu complet", () => {
       expect(countColor(SHOWN[3], c)).toBe(0);
   });
 
+  it("la brique sombre des murs, en ruine comme restaurée ; une imposte sombre en éventail au-dessus de chaque baie (retouche 1)", () => {
+    for (const n of [0, 3]) {
+      expect(countColor(SHOWN[n], COLORS_4E.brick), `${n}`).toBeGreaterThan(0);
+      // L'ancienne brique orange ne revient pas.
+      expect(countColor(SHOWN[n], 0xa4553e), `${n}`).toBe(0);
+    }
+    // Restaurée, les impostes : des éventails de six triangles (trois sommets chacun), un par baie au moins.
+    const fanlight = countColor(SHOWN[3], 0x4e3e3a);
+    expect(fanlight % (6 * 3)).toBe(0);
+    expect(fanlight / (6 * 3)).toBeGreaterThanOrEqual(6);
+  });
+
   it("une trace par mission, posée avec sa partie : une de plus à chaque partie", () => {
     const count = (n: number) =>
       posedTraces("manufacture", upTo(n), MISSIONS).length;

@@ -161,3 +161,52 @@ export function emptyBracket(b: FacetBuilder, x: number, y: number, z: number, n
   b.box({ x, y: y - 0.12, z, yaw: Math.atan2(nx, nz) }, [w, 0.24, 0.06 * k], BRACKET_4E.plate, BRACKET_4E.plateTop);
   for (const s of [-0.09 * k, 0.09 * k]) b.box({ x: x + nx * 0.09 * k + nz * s, y: y - 0.04, z: z + nz * 0.09 * k - nx * s, yaw: Math.atan2(nx, nz) }, [0.06, 0.06, 0.12 * k], BRACKET_4E.peg);
 }
+/**
+ * Le haut plein d'un arc rond (retouche 1 du Bastion, points 2 et 4 : « en plein cintre, plus de pans coupés ») : de
+ * chaque côté (`side` −1 à gauche, +1 à droite), le mur entre la naissance (`spring`) et le haut de l'arc (`crown`), dans un
+ * mur parallèle à x, de `z0` à `z0 + thick` ; l'intrados en `segs` pans le long du quart de cercle (d'un rayon `r` en
+ * largeur et `crown − spring` en hauteur : un arc surbaissé si la hauteur est moindre). `inner` arrête le haut plein à
+ * cette distance du milieu (un arc cassé en haut, dans une ruine). Ses deux faces de `face`, l'intrados de `soffit`.
+ */
+export function archSpandrel(b: FacetBuilder, z0: number, thick: number, cx: number, r: number, spring: number, crown: number, side: -1 | 1, face: number, soffit: number, inner = 0, segs = 3): void {
+  const rise = crown - spring;
+  const end = Math.acos(Math.min(1, inner / r));
+  const arc: [number, number][] = [];
+  for (let k = 0; k <= segs; k++) {
+    const t = (end * k) / segs;
+    arc.push([cx + side * r * Math.cos(t), spring + rise * Math.sin(t)]);
+  }
+  const corner: [number, number] = [cx + side * r, crown];
+  let outline: [number, number][] = [corner, ...arc];
+  if (inner > 1e-6) outline.push([cx + side * inner, crown]);
+  // Dans le sens inverse des aiguilles d'une montre vu de +z, le coin d'abord (le dessin part de lui en éventail).
+  const area = outline.reduce((s, [x, y], k) => {
+    const [nx, ny] = outline[(k + 1) % outline.length];
+    return s + x * ny - nx * y;
+  }, 0);
+  if (area < 0) outline = [outline[0], ...outline.slice(1).reverse()];
+  const z1 = z0 + thick;
+  for (let k = 1; k < outline.length - 1; k++) {
+    const [a, c, d] = [outline[0], outline[k], outline[k + 1]];
+    triOut(b, [a[0], a[1], z1], [c[0], c[1], z1], [d[0], d[1], z1], [0, 0, 1], face);
+    triOut(b, [a[0], a[1], z0], [c[0], c[1], z0], [d[0], d[1], z0], [0, 0, -1], face);
+  }
+  for (let k = 0; k < arc.length - 1; k++) {
+    const [p, q] = [arc[k], arc[k + 1]];
+    const mx = (p[0] + q[0]) / 2,
+      my = (p[1] + q[1]) / 2;
+    quadOut(b, [p[0], p[1], z0], [q[0], q[1], z0], [q[0], q[1], z1], [p[0], p[1], z1], [cx - mx, spring - my, 0], soffit);
+  }
+}
+
+/**
+ * Les assises d'un pan de brique (retouche 1 du Bastion, point 3 : « des assises lisibles, un aplat d'ombre de joint ») :
+ * des bandes sombres et fines à la hauteur `ys`, posées un rien devant une face de mur (`out`, la normale de la face),
+ * de `a` à `b` le long du mur (`alongX` : d'ouest en est, sinon du nord au sud), sur la face à `at` en travers.
+ */
+export function courses(b: FacetBuilder, alongX: boolean, at: number, from: number, to: number, ys: readonly number[], out: -1 | 1, color: number): void {
+  const v = at + out * 0.012;
+  const p = (u: number, y: number): P3 => (alongX ? [u, y, v] : [v, y, u]);
+  const n: P3 = alongX ? [0, 0, out] : [out, 0, 0];
+  for (const y of ys) quadOut(b, p(from, y - 0.035), p(to, y - 0.035), p(to, y + 0.035), p(from, y + 0.035), n, color);
+}

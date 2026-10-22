@@ -205,7 +205,8 @@ describe('Le pont tournant des docks, au bassin à flot (intention du Bastion, 2
    * mesuré le 22 octobre 2026 sur `cd17fff1`) : le pont tournant ne coûte pas plus, en ruine, rebâti et pendant sa pose
    * (décision du mainteneur, « dans ce qu'il coûte aujourd'hui, ou moins »).
    */
-  const BASSIN_BRIDGE_BEFORE = { ruin: 132, built: 1_142, lay: 1_122 } as const;
+  // La ruine : 132 avant la retouche 1, plus les garde-corps tombés de sa volée (neuf barres de six triangles, point 7).
+  const BASSIN_BRIDGE_BEFORE = { ruin: 144, built: 1_142, lay: 1_122 } as const;
   const s = bridgeSite('bastion');
   const clearance = CUT_CLEARANCE_4E.bassin;
   const verts = (f: { positions: ArrayLike<number> }) => Array.from({ length: f.positions.length / 3 }, (_, i) => ({ x: f.positions[i * 3], y: f.positions[i * 3 + 1], z: f.positions[i * 3 + 2] }));
@@ -278,11 +279,15 @@ describe('Le pont tournant des docks, au bassin à flot (intention du Bastion, 2
       return d > s.water[0] + BRIDGE.over + 0.01 && d < s.water[1] - BRIDGE.over - 0.01;
     };
     for (const p of verts(built)) if (p.y < 0 && inWater(p)) expect(Math.hypot(p.x - drum.x, p.z - drum.z)).toBeLessThan(SWING.drum + 0.2);
-    expect(has(built, COLORS_4E.rust)).toBe(false);
-    expect(has(bridgeFacets('bastion', false), COLORS_4E.rust)).toBe(true);
+    // La rouille de la volée, assombrie à la retouche 1 (point 7 : du fer, pas une planche orange).
+    expect(has(built, 0x8a5a4a)).toBe(false);
+    expect(has(bridgeFacets('bastion', false), 0x8a5a4a)).toBe(true);
+    expect(has(bridgeFacets('bastion', false), COLORS_4E.rust)).toBe(false);
     expect(has(built, 0x5c504c)).toBe(true);
-    // Les culées et le tambour restent pendant la pose : la ruine sans sa volée.
-    expect(bridgeLayRest('bastion').triangles).toBe(bridgeFacets('bastion', false).triangles - swingRuin(s).triangles);
+    // Les culées et le tambour restent pendant la pose : la ruine sans sa volée ni ses garde-corps tombés (neuf barres de six triangles).
+    expect(bridgeLayRest('bastion').triangles).toBe(bridgeFacets('bastion', false).triangles - swingRuin(s).triangles - 9 * 6);
+    // Les garde-corps tombés, couchés avec la volée : du fer sombre.
+    expect(has(bridgeFacets('bastion', false), 0x4e3a34)).toBe(true);
   });
 
   it('les quatre lanternes, allumées une fois relié (le verre d’ocre des ponts du 4e)', () => {

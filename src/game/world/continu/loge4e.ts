@@ -26,7 +26,7 @@
 import type { Stage } from './construction';
 import { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import { emptyBracket, groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, triOut, wallRun } from './place4eKit';
+import { archSpandrel, courses, emptyBracket, groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, wallRun } from './place4eKit';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
 
@@ -43,7 +43,11 @@ type P3 = readonly [number, number, number];
  * ni cuivre, ni terre cuite.
  */
 const C = {
-  brick: COLORS_4E.brickShade,
+  // La brique du 4e, la même qu'à la Manufacture (retouche 1 du Bastion, points 2 et 3 : la cage moins sombre, jamais
+  // orange) ; le joint de ses assises.
+  brick: COLORS_4E.brick,
+  brickShade: COLORS_4E.brickShade,
+  brickJoint: COLORS_4E.brickJoint,
   stone: COLORS_4E.stone,
   stoneSun: COLORS_4E.stoneSun,
   stoneShade: COLORS_4E.stoneShade,
@@ -110,8 +114,11 @@ const FLOOR = 0.35;
 /** La grande porte des décors, au milieu du mur nord : sa demi-largeur, sa hauteur (le haut du milieu des murs). */
 const DOOR = { half: 2.0, top: CAGE.mid } as const;
 
-/** La grande arche du cadre de scène, au milieu du mur sud : sa demi-largeur, la naissance et le haut de son cintre. */
-const ARCH = { half: 3.2, spring: 4.4, crown: 6.0 } as const;
+/**
+ * La grande arche du cadre de scène, au milieu du mur sud, en plein cintre (retouche 1 du Bastion, point 2 : plus de pans
+ * coupés) : sa demi-largeur, la naissance et le haut de son cintre (la naissance plus la demi-largeur).
+ */
+const ARCH = { half: 3.2, spring: 2.8, crown: 6.0 } as const;
 
 /** Le mur bas de l'est, dans la ruine : il se relève à l'angle du cadre, à partir de `corner`, jusqu'à `cornerTop`. */
 const EAST_RUIN = { top0: 1.6, top1: 2.2, corner: 7.3, cornerTop: 6.6 } as const;
@@ -125,8 +132,12 @@ const GALLERY = { wide: 1.0, y: 4.9, z0: 3.3, z1: 7.8, consoles: [3.7, 4.9, 6.3,
 /** Les cintres : trois poutres en travers, tout en haut, leur hauteur ; une poulie sur chacune, au-dessus de la galerie. */
 const FLIES = { y: 7.7, z: [3.7, 5.6, 7.5], pulley: -4.3 } as const;
 
-/** Le rideau, posé ouvert en deux pans contre le mur du cadre, de part et d'autre de l'arche : sa largeur repliée, ses plis. */
-const CURTAIN = { gathered: 1.1, folds: 4, depth: 0.16, z: CAGE.z1 - CAGE.wall / 2 - 0.16 } as const;
+/**
+ * Le rideau, posé ouvert en deux pans juste derrière le mur du cadre, dans l'arche, de part et d'autre (retouche 1 du
+ * Bastion, point 2 : on les voit de la salle comme des coulisses) : sa largeur repliée, ses plis ; son lambrequin, sous
+ * le haut du cintre.
+ */
+const CURTAIN = { gathered: 1.15, folds: 4, depth: 0.16, z: CAGE.z1 - CAGE.wall / 2 - 0.16, valance: 0.5 } as const;
 
 /**
  * L'appentis du costumier, dehors, contre le mur est : de `x0` à `x1`, de `z0` (ouvert au nord) à `z1` ; son toit de tôle
@@ -155,8 +166,11 @@ const YARD: readonly Vec2[] = [
   { x: -5.2, z: -5.8 },
 ];
 
-/** La salle en plein air, au sud : la terrasse de pierre, ses deux marches jusqu'au plancher, ses trois rangs de bancs. */
-const HOUSE = { x: 4.2, z0: CAGE.z1 + CAGE.wall / 2 + 0.02, z1: 11.6, rows: [10.0, 10.6, 11.2], bench: 2.4 } as const;
+/**
+ * La salle en plein air, au sud : la terrasse de pierre, ses deux marches jusqu'au plancher, ses trois rangs de bancs à
+ * dossier, espacés (retouche 1 du Bastion, point 2 : de dos, on lit trois rangs).
+ */
+const HOUSE = { x: 4.2, z0: CAGE.z1 + CAGE.wall / 2 + 0.02, z1: 12.6, rows: [10.1, 11.0, 11.9], bench: 2.4 } as const;
 
 /**
  * Le plan du sol, ajusté sous la cage, l'appentis et la cour (aux moindres carrés), relevé juste assez pour ne jamais
@@ -176,10 +190,15 @@ const G = once(() => planeY(0, (CAGE.z0 + CAGE.z1) / 2));
  * chemin et la vue d'arrivée ») : la grande porte des décors, dedans les rails, la galerie et les cintres ; au fond, l'arche
  * et le dos du rideau, la baie ; l'appentis du costumier et sa lanterne à gauche. Elle regarde vers −(sin cap, cos cap).
  */
-const DOOR_VIEW = Math.PI;
+const DOOR_VIEW = Math.PI - 0.22;
 
-/** La vue d'arrivée (`doorFrame`) : plus basse et plus reculée que la caméra qui suit, la cage entière et son toit dans le cadre. */
-const DOOR_FRAME = { height: -3, back: 2.0 } as const;
+/**
+ * La vue d'arrivée (`doorFrame`) : plus basse que la caméra qui suit, la cage entière et son toit dans le cadre ; tournée
+ * d'un rien vers le sud-ouest et un peu plus près (retouche 1 du Bastion, point 8, consultant UX UI) : Kéo se tient
+ * devant le mur nord, à droite de la porte des décors, jamais dans son ouverture, et le regard passe par la porte jusqu'aux
+ * rails et à la galerie du mur ouest.
+ */
+const DOOR_FRAME = { height: -3, back: 1.5 } as const;
 
 /**
  * Le point du nom sur la Carte et au-dessus du lieu : au-dessus du mur ouest, celui qui reste debout dans la ruine, jamais
@@ -205,21 +224,41 @@ function run(b: FacetBuilder, alongX: boolean, at: number, from: number, to: num
 const sideTop = (z: number): number => G() + CAGE.north + ((CAGE.south - CAGE.north) * (z - (CAGE.z0 - CAGE.wall / 2))) / (CAGE.z1 - CAGE.z0 + CAGE.wall);
 
 /**
- * Le cintre de l'arche du cadre : de chaque côté, un coin plein en biais, de la naissance au haut du cintre, à ses deux
- * faces, et son dessous ; puis, si `closed`, le dessous plat de la bande qui la referme en haut.
+ * Le haut plein de l'arche du cadre, en plein cintre : de chaque côté, le mur entre la naissance et le haut du cintre, à
+ * ses deux faces, son intrados en trois pans ; `inner`, dans la ruine, l'arrête à cette distance du milieu (l'arche
+ * ouverte en haut), à gauche puis à droite.
  */
-function archHaunches(b: FacetBuilder, closed: boolean): void {
-  const z = CAGE.z1,
-    t = CAGE.wall / 2;
-  const [spring, crown] = [G() + ARCH.spring, G() + ARCH.crown];
-  const a = ARCH.half * 0.42;
-  for (const s of [-1, 1]) {
-    const xe = s * ARCH.half,
-      xi = s * (ARCH.half - a);
-    for (const v of [-t, t]) triOut(b, [xe, spring, z + v], [xe, crown, z + v], [xi, crown, z + v], [0, 0, Math.sign(v)], C.brick);
-    quadOut(b, [xe, spring, z - t], [xi, crown, z - t], [xi, crown, z + t], [xe, spring, z + t], [-s, -1, 0], C.brick);
+function archHaunches(b: FacetBuilder, inner: readonly [number, number] = [0, 0]): void {
+  const t = CAGE.wall / 2;
+  for (const [k, s] of [-1, 1].entries()) archSpandrel(b, CAGE.z1 - t, CAGE.wall, 0, ARCH.half, G() + ARCH.spring, G() + ARCH.crown, s as -1 | 1, C.brick, C.brickShade, inner[k]);
+}
+
+/** Les hauteurs des assises de la cage, au-dessus de son pied (un joint d'ombre tous les 0,9). */
+const COURSES = [0.9, 1.8, 2.7, 3.6, 4.5, 6.3, 7.2, 8.1] as const;
+
+/**
+ * Les assises de la cage restaurée (retouche 1 du Bastion, point 3), sur les faces du dehors, pour les hauteurs de `lo` à
+ * `hi` : au nord, de part et d'autre de la porte des décors sous son haut ; au sud, de part et d'autre de l'arche sous son
+ * cintre ; à l'est et à l'ouest, de `eastFrom` (et `westFrom`) au mur du cadre ; jamais au-dessus du haut des murs.
+ */
+function cageCourses(b: FacetBuilder, lo: number, hi: number, faces: { north?: boolean; south?: boolean; east?: number; west?: boolean }): void {
+  const K = CAGE;
+  const t = K.wall / 2;
+  const [west, east, north, south] = [K.x0 - t, K.x1 + t, K.z0 - t, K.z1 + t];
+  const ys = COURSES.filter((y) => y >= lo && y < hi);
+  const at = (list: readonly number[]) => list.map((y) => G() + y);
+  if (faces.north) {
+    courses(b, true, north, west, -DOOR.half, at(ys.filter((y) => y < DOOR.top)), -1, C.brickJoint);
+    courses(b, true, north, DOOR.half, east, at(ys.filter((y) => y < DOOR.top)), -1, C.brickJoint);
+    courses(b, true, north, west, east, at(ys.filter((y) => y > DOOR.top && y < K.north)), -1, C.brickJoint);
   }
-  if (closed) quadOut(b, [-(ARCH.half - a), crown, z - t], [ARCH.half - a, crown, z - t], [ARCH.half - a, crown, z + t], [-(ARCH.half - a), crown, z + t], [0, -1, 0], C.brick);
+  if (faces.south) {
+    courses(b, true, south, west, -ARCH.half, at(ys.filter((y) => y < ARCH.crown)), 1, C.brickJoint);
+    courses(b, true, south, ARCH.half, east, at(ys.filter((y) => y < ARCH.crown)), 1, C.brickJoint);
+    courses(b, true, south, west, east, at(ys.filter((y) => y > ARCH.crown && y < K.south)), 1, C.brickJoint);
+  }
+  if (faces.east !== undefined) courses(b, false, east, faces.east, south, at(ys.filter((y) => y < K.north)), 1, C.brickJoint);
+  if (faces.west) courses(b, false, west, north, south, at(ys.filter((y) => y < K.north)), -1, C.brickJoint);
 }
 
 /** Le plancher de scène : son plateau, son bord, et les joints de ses planches (de travers dans la ruine : un peu disjoint). */
@@ -252,8 +291,9 @@ function drum(b: FacetBuilder, x: number, y: number, z: number, r: number, len: 
 }
 
 /**
- * Un pan du rideau, posé ouvert contre le mur du cadre, de `x0` à `x0 + s · gathered` : ses plis en zigzag, du plancher
- * au-dessus du cintre ; sa face vers la salle et son revers vers les coulisses ; l'embrasse qui le retient.
+ * Un pan du rideau, posé ouvert juste derrière le mur du cadre, du bord de l'arche (`x0`) vers son milieu, jusqu'à
+ * `x0 + s · gathered` : ses plis en zigzag, du plancher au-dessus du cintre ; sa face vers la salle et son revers vers les
+ * coulisses ; l'embrasse qui le retient.
  */
 function curtainPanel(b: FacetBuilder, x0: number, s: -1 | 1): void {
   const K = CURTAIN;
@@ -345,6 +385,8 @@ function house(b: FacetBuilder): void {
   for (const z of H.rows) {
     b.box({ x: 0, y: top - 0.02, z }, [2 * H.bench, 0.42, 0.12], C.woodShade);
     b.box({ x: 0, y: top + 0.4, z }, [2 * H.bench + 0.3, 0.07, 0.34], C.woodShade, C.wood);
+    // Le dossier, au sud du banc (la salle regarde la scène, au nord).
+    b.box({ x: 0, y: top + 0.62, z: z + 0.2 }, [2 * H.bench + 0.3, 0.3, 0.06], C.wood, C.woodShade);
   }
 }
 
@@ -417,7 +459,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
       run(b, true, K.z1, ARCH.half, east, foot, G() + 8.0, G() + 7.4);
       run(b, true, K.z1, -ARCH.half, -1.1, G() + ARCH.crown, G() + 7.6, G() + 6.3);
       run(b, true, K.z1, 1.6, ARCH.half, G() + ARCH.crown, G() + 6.2, G() + 7.2);
-      archHaunches(b, false);
+      archHaunches(b, [1.1, 1.6]);
+      cageCourses(b, 0, ARCH.crown, { south: true });
       run(b, false, K.x0, north, K.z1 - t, foot, G() + 4.8, G() + 6.4);
       run(b, false, K.x1, EAST_RUIN.corner, K.z1 - t, foot, G() + EAST_RUIN.cornerTop - 0.3, G() + EAST_RUIN.cornerTop);
       b.box({ x: 0, y: G() + 6.0, z: K.z1 - t - 0.25 }, [K.x1 - K.x0 - 0.3, 0.3, 0.3], C.woodShade, C.grey);
@@ -435,6 +478,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     run(b, true, K.z0, west, -DOOR.half, foot, G() + K.low, G() + K.low);
     run(b, true, K.z0, DOOR.half, east, foot, G() + K.low, G() + K.low);
     run(b, false, K.x1, north, EAST_RUIN.corner, foot, G() + K.low, G() + K.low);
+    cageCourses(b, 0, K.low, { north: true });
+    courses(b, false, K.x1 + t, north, EAST_RUIN.corner, COURSES.filter((y) => y < K.low).map((y) => G() + y), 1, C.brickJoint);
     rails(b, C.iron);
     b.box({ x: K.x0 + t + 0.3, y: G() + 1.5, z: (RAILS.z[0] + RAILS.z[1]) / 2 }, [0.42, 1.0, RAILS.z[1] - RAILS.z[0] - 0.12], C.iron, C.greyShade);
   });
@@ -444,6 +489,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     run(b, true, K.z0, west, -DOOR.half, G() + K.low, G() + K.mid, G() + K.mid);
     run(b, true, K.z0, DOOR.half, east, G() + K.low, G() + K.mid, G() + K.mid);
     run(b, false, K.x1, north, EAST_RUIN.corner, G() + K.low, G() + K.mid, G() + K.mid);
+    cageCourses(b, K.low, K.mid, { north: true });
+    courses(b, false, K.x1 + t, north, EAST_RUIN.corner, COURSES.filter((y) => y >= K.low && y < K.mid).map((y) => G() + y), 1, C.brickJoint);
     consoles(b, C.iron, C.ironTop);
     const gx = K.x0 + t + GALLERY.wide / 2;
     b.box({ x: gx, y: G() + GALLERY.y - 0.02, z: (GALLERY.z0 + GALLERY.z1) / 2 }, [GALLERY.wide, 0.12, GALLERY.z1 - GALLERY.z0], C.woodShade, C.grey);
@@ -462,16 +509,18 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     run(b, true, K.z1, west, -ARCH.half, foot, G() + K.south, G() + K.south);
     run(b, true, K.z1, ARCH.half, east, foot, G() + K.south, G() + K.south);
     run(b, true, K.z1, -ARCH.half, ARCH.half, G() + ARCH.crown, G() + K.south, G() + K.south);
-    archHaunches(b, true);
+    archHaunches(b);
     for (const [k, z] of FLIES.z.entries()) {
       b.box({ x: 0, y: G() + FLIES.y, z }, [K.x1 - K.x0 - 0.2, 0.3, 0.28], C.woodShade, C.grey);
       b.drum({ x: FLIES.pulley, y: G() + FLIES.y - 0.24, z: z - 0.06, pitch: Math.PI / 2 }, 0.24, 0.12, 6, C.woodShade, C.wood);
       const dz = GALLERY.drums[k === 2 ? 1 : 0];
       b.beam({ x: FLIES.pulley, y: G() + FLIES.y - 0.45, z }, { x: K.x0 + t + GALLERY.wide / 2 - 0.12, y: G() + GALLERY.y + 0.1 + 2 * GALLERY.drumR, z: dz + (k === 1 ? 0.25 : -0.1) }, 0.05, C.sackShade);
     }
-    curtainPanel(b, -ARCH.half + 0.05, -1);
-    curtainPanel(b, ARCH.half - 0.05, 1);
-    b.box({ x: 0, y: G() + ARCH.crown - 0.1, z: CURTAIN.z - 0.04 }, [2 * ARCH.half + 0.6, 0.45, 0.1], C.curtainBack, C.curtain);
+    curtainPanel(b, -ARCH.half + 0.05, 1);
+    curtainPanel(b, ARCH.half - 0.05, -1);
+    b.box({ x: 0, y: G() + ARCH.crown - 0.1 - CURTAIN.valance, z: CURTAIN.z - 0.04 }, [2 * ARCH.half + 0.6, CURTAIN.valance, 0.1], C.curtain, C.curtainBack);
+    cageCourses(b, K.mid, 9, { north: true, south: true, east: north, west: true });
+    cageCourses(b, 0, K.mid, { south: true, east: EAST_RUIN.corner, west: true });
   });
   // ---- Le haut : le toit de la cage, un pan bas presque plat de tôle rouge sombre (son faîte à 9,3, sur le mur du
   // cadre) ; la grande porte des décors, ses deux battants ouverts repliés contre le mur ; la lanterne de la porte.

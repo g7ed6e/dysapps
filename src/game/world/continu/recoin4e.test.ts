@@ -87,15 +87,15 @@ describe('Le Recoin, le Détour du Bastion', () => {
   it('la chaudière est couchée le long du muret nord, fermée à ses deux bouts, ouverte par le dessus, et ne se traverse pas', () => {
     const { boiler: k } = RECOIN_4E;
     const f = recoinFacets(false, ground);
-    // Ses bouts : deux faces pleines (deux éventails de huit triangles), de la couleur des bouts.
-    const ends = points(f, 0x8c5444);
-    expect(ends.length).toBe(2 * 8 * 3);
+    // Ses bouts : deux faces pleines (deux éventails de six triangles, depuis un coin), de la couleur des bouts.
+    const ends = points(f, 0x4a3834);
+    expect(ends.length).toBe(2 * 6 * 3);
     const west = ends.filter((p) => Math.abs(p.x - (k.x - k.half)) < 1e-3);
     const east = ends.filter((p) => Math.abs(p.x - (k.x + k.half)) < 1e-3);
     expect(west.length + east.length).toBe(ends.length);
     expect(west.length).toBe(east.length);
     // Son corps, le long de x, entre les deux bouts, près du muret nord, au nord de Kéo.
-    const body = points(f, 0xaf6c55);
+    const body = points(f, 0x5a4640);
     for (const p of body) {
       expect(p.x).toBeGreaterThanOrEqual(k.x - k.half - 1e-3);
       expect(p.x).toBeLessThanOrEqual(k.x + k.half + 1e-3);
@@ -113,6 +113,17 @@ describe('Le Recoin, le Détour du Bastion', () => {
       for (let tz = 0; tz < TERRAIN_4E.tilesZ; tz++) found += obstaclesIn4e(tx, tz).filter((o) => RECOIN_BOILER_DISKS.includes(o)).length;
     expect(found).toBe(RECOIN_BOILER_DISKS.length);
     for (const d of RECOIN_BOILER_DISKS) expect(distance(d, RECOIN.at) - d.r).toBeGreaterThan(0.6);
+  });
+
+  it('la chaudière est de fer sombre cerclé, distincte de la brique des murets coiffés de pierre grise (retouche 1)', () => {
+    const f = recoinFacets(false, ground);
+    const { boiler: k } = RECOIN_4E;
+    // La brique sombre, dans les murets seulement : aucun de ses sommets dans la chaudière.
+    for (const p of points(f, 0x945c58)) expect(Math.abs(p.x - k.x) < k.half - 0.05 && Math.abs(p.z - k.z) < k.r - 0.05).toBe(false);
+    expect(countColor(f, 0xa4553e)).toBe(0);
+    expect(countColor(f, 0x5a4640)).toBeGreaterThan(0);
+    expect(countColor(f, 0x3e302c)).toBeGreaterThan(0);
+    expect(countColor(f, 0x8f8b88)).toBeGreaterThan(0);
   });
 
   it('le figuier sort du trou d’homme et couvre l’angle, en deux masses vert olive sec', () => {
