@@ -96,9 +96,16 @@ afterAll(() => {
   vi.unstubAllGlobals();
 });
 
-describe('La marque sur la Nef prête', () => {
-  it.each(['6e', '5e'] as const)('au %s : depuis le quai, la marque est à l’écran, au-dessus de la Nef, tout près ; retirée, plus de marque', (level) => {
-    const world = make(level);
+// Le monde se bâtit une fois par niveau, avant ses tests (comme scene5e.test.ts) : sa construction sous jsdom
+// est le plus long, et un test ne garde que ce qu'il vérifie.
+describe.each(['6e', '5e'] as const)('La marque sur la Nef prête, au %s', (level) => {
+  let world: OpenWorld;
+  beforeAll(() => {
+    stubs();
+    world = make(level);
+  });
+
+  it('depuis le quai, la marque est à l’écran, au-dessus de la Nef, tout près ; retirée, plus de marque', () => {
     world.setNef(3);
     world.setMark('nef');
     frame();
