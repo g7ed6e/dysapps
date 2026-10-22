@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { FacetBuilder, boundsOf } from './facets';
 import { groundCost, mapCost, openWorldCost, OPEN_WORLD_BUDGETS } from './budget';
-import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, markBeside, markOffset, occlusionLift, screenOf, wrapAngle } from './camera';
+import { FOLLOW, FOLLOW_SMOOTHING, KEO_HEIGHT, LOOK_UP, MARK_LIFT, WORLD_FOG, followPose, followStep, liftStep, lookUp, markBeside, markOffset, markPoint, markShift, occlusionLift, screenOf, wrapAngle } from './camera';
 import { distance, distanceToPolyline, insidePolygon, linearRgb, type Vec3 } from './geometry';
 import { START_DISTANCE, atNode, edgesNear, findRoute, networkSamples, pathNode, pathRibbons, pathTopAt, routeLength, snapToNetwork, startOf } from './paths';
 import { COAST, COLORS_6E, DECK_HEIGHT, DOCK, ISLET, KEO_STEP, LAGOON, LOOKOUT_RAMP, NORTH_FLATS, NORTH_SHORE, PATH_EDGES, PATH_NODES, PLACES, TERRAIN, fromPlan, hidesTraces, placeOfIsland } from './plan6e';
@@ -458,6 +458,17 @@ describe('La caméra qui suit Kéo', () => {
     expect(markBeside('phare')).toBe(true);
     expect(phare.x).toBeGreaterThan(1.35);
     expect(phare.y).toBeLessThan(modelOfPlace('phare').top);
+  });
+
+  it('un lieu pas encore entier : sa marque au-dessus de ce qui est bâti, sans le décalage du Phare entier (le 6e ne bouge pas)', () => {
+    // Le Phare en ruine ou en chantier : la marque reste sur son axe, jamais à côté d'une lanterne qui n'est pas là.
+    expect(markPoint('phare', 4, false)).toEqual({ x: 0, y: 4 + MARK_LIFT, z: 0 });
+    expect(markPoint('phare', modelOfPlace('phare').top, true)).toEqual(markOffset('phare'));
+    // Seul `markShift` déplace la marque d'un lieu pas encore entier (la Loge du 4e, au-dessus de son mur ouest).
+    for (const id of ['loge', 'gabarit', 'phare'] as const) {
+      const m = markPoint(id, 3, false);
+      expect({ x: m.x, z: m.z }, id).toEqual(markShift(id));
+    }
   });
 });
 

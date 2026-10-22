@@ -24,9 +24,9 @@ import { drawPosed, FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
-import { COLORS_5E } from './plan5e';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
+import { inWorld, lantern, localGround4e, slab } from './place4eKit';
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter (places.ts). */
 const SINK = -0.8;
@@ -62,9 +62,6 @@ const C = {
   // Les planchettes des réponses : un bois clair, sans rien d'écrit.
   answer: 0xc8ae8e,
   answerTop: 0xd4bc9c,
-  lantern: COLORS_5E.lantern,
-  lanternOff: 0xbfc4b8,
-  bronze: 0x9c8452,
   // L'avocate, en pion (son modèle 3D prend sa place, ./habitants.ts) : chaussures, robe sombre, rabat clair.
   shoes: 0x4f4a48,
   robe: 0x4e4a5a,
@@ -78,7 +75,7 @@ const CENTER: Vec2 = PLACES_4E.find((p) => p.id === 'porte')!.center;
 const H0 = standingHeight(heightAt4e(CENTER));
 
 /** Le sol du 4e sous un point du repère du lieu, depuis le sol de son centre. */
-const localGround = (lx: number, lz: number): number => standingHeight(heightAt4e({ x: CENTER.x + lx, z: CENTER.z + lz })) - H0;
+const localGround = localGround4e(CENTER);
 
 /** Le pas de la porte du lieu, depuis le centre. */
 const DOOR_AT: Vec2 = (() => {
@@ -169,22 +166,6 @@ const DOOR_FRAME = { height: -3, back: 1.2 } as const;
 const MAP_POINT: Vec3 = { x: GATE.x, y: GATE.h + 1.5, z: WALL.z };
 
 // ---------- Les petits volumes ----------
-
-function lantern(b: FacetBuilder, top: Vec3, lit: boolean, s = 1): void {
-  b.box({ x: top.x, y: top.y - 0.34 * s, z: top.z }, [0.24 * s, 0.3 * s, 0.24 * s], lit ? C.lantern : C.lanternOff);
-  b.prism({ x: top.x, y: top.y - 0.04 * s, z: top.z, yaw: Math.PI / 4 }, 0.21 * s, 0, 0.16 * s, 4, C.bronze);
-}
-
-/** Un volume à dessus libre : `top` dans l'ordre du dessus d'un pavé, son dessous `by` sous lui ; ses côtés et son dessus. */
-function slab(b: FacetBuilder, top: readonly P3[], by: number, color: number, face: number): void {
-  const bot = top.map(([x, y, z]) => [x, y - by, z] as const);
-  const n = top.length;
-  for (let k = 1; k < n - 1; k++) b.triangle(top[0], top[k], top[k + 1], face);
-  for (let k = 0; k < n; k++) {
-    const m = (k + 1) % n;
-    b.quad(bot[k], bot[m], top[m], top[k], color);
-  }
-}
 
 /** Un pan du mur de l'usine, de `x0` à `x1`, à la hauteur `h` ; son chaperon de pierre grise s'il est entier. */
 function wall(b: FacetBuilder, x0: number, x1: number, h: number, coping: boolean): void {
@@ -423,11 +404,6 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
 }
 
 // ---------- Les traces ----------
-
-/** Dessine dans le repère du lieu, puis pose le dessin au centre du lieu (`c`), dans le monde. */
-function inWorld(b: FacetBuilder, c: Vec3, draw: (l: FacetBuilder) => void): void {
-  drawPosed(b, { x: c.x, y: c.y, z: c.z, yaw: 0 }, draw);
-}
 
 /** Où se pose chaque trace, depuis le centre du lieu ; aucune sur le chemin. */
 const TRACE_SPOTS = {

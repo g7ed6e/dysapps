@@ -70,18 +70,27 @@ export const COLORS_4E = {
   /** La fumée du panache, et son ombre. */
   smoke: 0xded8ce,
   smokeShade: 0xc9c1b6,
-  /** La brique et la terre cuite de l'usine. */
-  brick: 0xa4553e,
-  brickShade: 0x8a4634,
+  /**
+   * La brique du 4e et son ombre, la terre cuite de l'usine (retouche 1 du Bastion, point 3 ; intention du Bastion, « Les
+   * restes des Fabriques », point 2) : un cran plus rouge et moins saturée, rendue près de (165, 80, 60) au soleil (la
+   * face sud, sous la lumière du 4e et le mappage des tons neutre : #A4553E sortait orange vif, (186, 74, 27)) ; le joint
+   * de ses assises, un aplat d'ombre, plus sombre encore.
+   */
+  brick: 0x945c58,
+  brickShade: 0x7e4e4a,
+  brickJoint: 0x6a3e3a,
   terracotta: 0xc0704a,
   /** Le cuivre et le fer rouillé (les rails, les cerclages, les charpentes). */
   copper: 0xb87333,
   rust: 0xaf6c55,
   rustShade: 0x8c5444,
-  /** La pierre grise des Passeurs, et son ombre. */
-  stone: 0x9a8e84,
-  stoneShade: 0x7e746c,
-  stoneSun: 0xb3a89c,
+  /**
+   * La pierre grise des Passeurs, une seule (`#8F8B88`, intention du Bastion, « Les restes des Fabriques », point 2 ;
+   * retouche 1 du Bastion : l'ancienne rendait brun-taupe au soleil), son ombre et son dessus au soleil, de la même teinte.
+   */
+  stone: 0x8f8b88,
+  stoneShade: 0x7f7b78,
+  stoneSun: 0x9a9693,
   /** Le bois gris de la ruine, et son ombre. */
   wood: 0x9a826a,
   woodShade: 0x7e6a56,
@@ -187,7 +196,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'soute', name: 'La Soute', at: 'à la Soute', agree: 'fs', island: 'geography-4e-globalization', plan: [1400, 860], door: { x: 0, z: 8 } },
   { id: 'porte', name: 'La Porte', at: 'à la Porte', agree: 'fs', island: 'civics-4e-rights-freedoms', plan: [1250, 700], door: { x: 0, z: 8 } },
   { id: 'etalon', name: 'L’Étalon', at: 'à l’Étalon', agree: 'ms', island: 'maths-4e-data', plan: [1118, 512], door: { x: 2, z: 9 } },
-  { id: 'gabarit', name: 'Le Gabarit', at: 'au Gabarit', agree: 'ms', island: 'maths-4e-algebra', plan: [1830, 680], door: { x: -3, z: 8 } },
+  { id: 'gabarit', name: 'Le Gabarit', at: 'au Gabarit', agree: 'ms', island: 'maths-4e-algebra', plan: [1830, 680], door: { x: -6, z: 17 } },
   { id: 'manufacture', name: 'La Manufacture', at: 'à la Manufacture', agree: 'fs', island: 'history-4e-revolutions', plan: [1640, 610], door: { x: 0, z: 8 } },
   { id: 'loge', name: 'La Loge', at: 'à la Loge', agree: 'fs', island: 'english-4e-comprehension', plan: [1740, 790], door: { x: 0, z: -8 } },
   { id: 'chariot', name: 'Le Chariot', at: 'au Chariot', agree: 'ms', island: 'technology-4e-modeling', plan: [1610, 735], door: { x: 3, z: 7 } },
@@ -240,6 +249,10 @@ export const BUILT_PLACES_4E = {
   soute: ['urbanization', 'mobilities', 'globalization'],
   porte: ['freedoms', 'justice', 'security-defence'],
   etalon: ['weighted-mean', 'events', 'proportional-reasoning', 'calculation-programs', 'translations'],
+  gabarit: ['simplifying', 'expanding', 'equations', 'rationals', 'pythagorean-theorem'],
+  chariot: ['energy-chain', 'information-chain', 'simulation', 'troubleshooting'],
+  manufacture: ['enlightenment', 'industrial-europe', 'french-society'],
+  loge: ['dialogues', 'quantities', 'irregular-past', 'stories'],
 } as const satisfies Partial<Record<PlaceId4e, readonly string[]>>;
 
 /** Un lieu du 4e déjà construit. */
@@ -366,6 +379,11 @@ const doorNode = (s: PlaceSpec): PathNode => {
   return { id: s.id, at: { x: c.x + s.door.x, z: c.z + s.door.z } };
 };
 
+/** La porte d'un lieu du 4e, dans le monde. */
+function doorAt(id: PlaceId4e): Vec2 {
+  return doorNode(PLACE_SPECS.find((s) => s.id === id)!).at;
+}
+
 /**
  * Les nœuds : les portes des lieux, puis les coudes des chemins, terre par terre. Les Fabriques : du quai de la Crique
  * à la Soute, à la Porte, à l'Étalon et à la Forge, puis aux trois ponts. Le Bastion, au-delà du bassin à flot ; les
@@ -480,7 +498,7 @@ export const nearRails4e = (p: Vec2, reach: number): boolean =>
 
 /**
  * La place des Détours du 4e (fiche, § 5), réservée dès le plan : l'Épave (Fabriques), le Recoin (Bastion), le Replat
- * (Coteaux), la Dalle (Épaule). Ils se construisent avec leur lot (lot 2 : l'Épave, `EPAVE_4E`).
+ * (Coteaux), la Dalle (Épaule). Ils se construisent avec leur lot (lot 2 : l'Épave, `EPAVE_4E` ; lot 3 : le Recoin, `RECOIN_4E`).
  */
 export const DETOUR_SPOTS_4E = {
   epave: fromPlan4e([1060, 1060]),
@@ -509,6 +527,33 @@ export function inEpaveClearing(p: Vec2): boolean {
   const { hull, at, senteFrom, keep } = EPAVE_4E;
   if (Math.hypot(p.x - hull.x, p.z - hull.z) < keep.hull || Math.hypot(p.x - at.x, p.z - at.z) < keep.at) return true;
   return distanceToPolyline(p, [senteFrom, at]) < keep.sente;
+}
+
+/**
+ * Le Détour du Recoin (lot 3, avec la Manufacture ; intention du directeur artistique du 22 octobre 2026, « Le Recoin ») :
+ * sa place sur la côte nord du Bastion, hors des chemins, à l'est de la Manufacture. `corner` : la place réservée, le
+ * repère de l'angle des deux murets ; `at` : là où Kéo s'arrête, face au nord, à l'est de la chaudière et non devant elle
+ * (captures du 22 octobre 2026 : dans l'angle, il la cachait) ; `boiler` : le milieu de la chaudière couchée le long du
+ * muret nord, son axe d'ouest en est, sa demi-longueur et son rayon ; `senteFrom` : le départ de sa sente, la porte de
+ * la Manufacture (le chemin le plus proche) ; `bend` : le coude de la sente, au sud-est de la cour de la Manufacture
+ * (elle la contourne sans la traverser), puis `foot`, au sud de l'angle, où sont ses pierres ; `keep` : ce que la
+ * végétation laisse libre (autour de l'angle et le long de la sente).
+ */
+export const RECOIN_4E = {
+  corner: DETOUR_SPOTS_4E.recoin,
+  at: { x: DETOUR_SPOTS_4E.recoin.x + 3.0, z: DETOUR_SPOTS_4E.recoin.z - 0.4 },
+  boiler: { x: DETOUR_SPOTS_4E.recoin.x + 0.5, z: DETOUR_SPOTS_4E.recoin.z - 1.75, half: 1.5, r: 0.66 },
+  senteFrom: doorAt('manufacture'),
+  bend: { x: fromPlan4e([1640, 610]).x + 13, z: fromPlan4e([1640, 610]).z + 8.6 },
+  foot: { x: DETOUR_SPOTS_4E.recoin.x + 0.9, z: DETOUR_SPOTS_4E.recoin.z + 3.4 },
+  keep: { at: 5.5, sente: 2.6 },
+} as const;
+
+/** Ce point du monde est-il dans la place du Recoin (l'angle de ses murets, Kéo, sa sente) ? */
+export function inRecoinClearing(p: Vec2): boolean {
+  const { corner, at, senteFrom, bend, foot, keep } = RECOIN_4E;
+  if (Math.hypot(p.x - corner.x, p.z - corner.z) < keep.at || Math.hypot(p.x - at.x, p.z - at.z) < keep.at) return true;
+  return distanceToPolyline(p, [senteFrom, bend, foot, at]) < keep.sente;
 }
 
 /** La place réservée des deux grands projets (GD-10) : le portique des docks, la tour des signaux (plan, en pointillé). */

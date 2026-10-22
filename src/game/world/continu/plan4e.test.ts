@@ -7,6 +7,7 @@ import { OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_4E, mapCost4e, openWorldCost4e 
 import { BRIDGE, bridgeSite } from './bridges';
 import { CRIQUE_SITE, NEF_4E, criqueDecorFacets, nef4eFlight } from './crique4e';
 import { EPAVE_BUDGET } from './epave4e';
+import { RECOIN_BUDGET } from './recoin4e';
 import { followPose, keepFeetAbove, screenOf } from './camera';
 import { distance, distanceToPolyline, insidePolygon, linearRgb, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
@@ -49,6 +50,41 @@ const LOT2_CEILING = { triangles: 72_000, calls: 18 } as const;
  * 70 943, 63 521, 62 399 et 60 330).
  */
 const LOT2_FABRIQUES_CEILING = { triangles: LOT2_CEILING.triangles + 2_000 + PLACE_TRIANGLES_MAX_4E + EPAVE_BUDGET.triangles + EPAVE_BUDGET.sente, calls: LOT2_CEILING.calls } as const;
+
+/**
+ * Le plafond du 4e avec le Gabarit (lot 3, le Bastion) : celui des Fabriques, relevé d'un lieu du 4e au plus chargé
+ * (`PLACE_TRIANGLES_MAX_4E`, à la place de sa ruine simple) ; aucun appel de plus. Le pont tournant du bassin coûte moins
+ * que le pont sur pieds qu'il remplace. Mesuré le 22 octobre 2026 : 71 680 triangles et 17 appels la scénette ouverte,
+ * 64 066 et 14 hors scénette, 63 136 et 15 au départ, 61 067 et 12 sur la Carte.
+ */
+const LOT3_GABARIT_CEILING = { triangles: LOT2_FABRIQUES_CEILING.triangles + PLACE_TRIANGLES_MAX_4E, calls: LOT2_FABRIQUES_CEILING.calls } as const;
+
+/**
+ * Le plafond du 4e avec le Chariot (lot 3, le Bastion) : celui du Gabarit, relevé d'un lieu du 4e au plus chargé
+ * (`PLACE_TRIANGLES_MAX_4E`, l'eau du bassin d'essai comprise, à la place de sa ruine simple) ; aucun appel de plus.
+ * Mesuré le 22 octobre 2026 : 72 774 triangles et 17 appels la scénette ouverte, 65 072 et 14 hors scénette, 64 142 et 15
+ * au départ, 62 073 et 12 sur la Carte.
+ */
+const LOT3_CHARIOT_CEILING = { triangles: LOT3_GABARIT_CEILING.triangles + PLACE_TRIANGLES_MAX_4E, calls: LOT3_GABARIT_CEILING.calls } as const;
+
+/**
+ * Le plafond du 4e avec la Manufacture et le Recoin (lot 3, le Bastion) : celui du Chariot, relevé d'un lieu du 4e au
+ * plus chargé (`PLACE_TRIANGLES_MAX_4E`, à la place de sa ruine simple), et du budget du Détour du Recoin et de sa sente
+ * (`RECOIN_BUDGET`) ; aucun appel de plus. Mesuré le 22 octobre 2026 : 74 446 triangles et 17 appels la scénette
+ * ouverte, 67 108 et 14 hors scénette, 65 814 et 15 au départ, 63 745 et 12 sur la Carte.
+ */
+const LOT3_MANUFACTURE_CEILING = {
+  triangles: LOT3_CHARIOT_CEILING.triangles + PLACE_TRIANGLES_MAX_4E + RECOIN_BUDGET.triangles + RECOIN_BUDGET.sente,
+  calls: LOT3_CHARIOT_CEILING.calls,
+} as const;
+
+/**
+ * Le plafond du 4e avec la Loge (lot 3, le Bastion fini) : celui de la Manufacture, relevé d'un lieu du 4e au plus chargé
+ * (`PLACE_TRIANGLES_MAX_4E`, la trace de 2027 comprise, à la place de sa ruine simple) ; aucun appel de plus. Mesuré
+ * le 22 octobre 2026 : 75 399 triangles et 17 appels la scénette ouverte, 68 061 et 14 hors scénette, 66 767 et 15 au
+ * départ, 64 698 et 12 sur la Carte.
+ */
+const LOT3_LOGE_CEILING = { triangles: LOT3_MANUFACTURE_CEILING.triangles + PLACE_TRIANGLES_MAX_4E, calls: LOT3_MANUFACTURE_CEILING.calls } as const;
 
 /** Les couleurs d'un maillage. */
 function colorsOf(f: { colors: Float32Array }): Set<string> {
@@ -240,13 +276,13 @@ describe('Les couleurs chaudes du 4e', () => {
 });
 
 describe('Le budget du 4e', () => {
-  it('le monde, la scénette, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 2', () => {
+  it('le monde, la scénette, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 3', () => {
     const total = (list: { triangles: number; calls: number }[]) => list.reduce((s, p) => ({ triangles: s.triangles + p.triangles, calls: s.calls + p.calls }), { triangles: 0, calls: 0 });
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
     for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('scenette')), total(openWorldCost4e('depart')), mapCost4e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT2_FABRIQUES_CEILING.triangles);
-      expect(cost.calls).toBeLessThanOrEqual(LOT2_FABRIQUES_CEILING.calls);
+      expect(cost.triangles).toBeLessThanOrEqual(LOT3_LOGE_CEILING.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(LOT3_LOGE_CEILING.calls);
     }
   });
 });

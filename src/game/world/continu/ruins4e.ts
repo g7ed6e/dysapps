@@ -1,11 +1,13 @@
 // Les lieux du 4e en ruines simples (lot 1 du monde ouvert du 4e, « l'île entière en grandes masses ») : à leur place,
 // une silhouette lisible pour chacun, sans les finir ; leurs étapes viennent avec leur lot, un lieu par lot, et un lieu
-// construit quitte ce fichier (la Forge, la Soute, la Porte et l'Étalon au lot 2, ./forge4e.ts, ./soute4e.ts, ./porte4e.ts, ./etalon4e.ts).
+// construit quitte ce fichier (la Forge, la Soute, la Porte et l'Étalon au lot 2, ./forge4e.ts, ./soute4e.ts, ./porte4e.ts,
+// ./etalon4e.ts ; le Gabarit, le Chariot, la Manufacture et la Loge au lot 3, ./gabarit4e.ts, ./chariot4e.ts,
+// ./manufacture4e.ts, ./loge4e.ts).
 // Chaque ruine est dessinée dans le repère de son lieu (y = 0 au sol, sous le centre ; x vers l'est, z vers le sud), en
 // quelques volumes de 4 à 6 aplats de la palette chaude du 4e (./plan4e.ts, `COLORS_4E`) : la brique et la terre cuite
 // de l'usine, le fer rouillé et le cuivre, la pierre grise des Passeurs, le bois gris de la ruine, le basalte brun du
 // volcan ; rien de presque noir, rien à lire (fiche, § 6 bis : ni chiffre, ni mot, ni cheminée d'usine). Les signatures
-// sont celles de la fiche (§ 7), à grands traits : la grue du Gabarit, la halle à verrière de la Manufacture, la trémie du Terminus, les colonnes de basalte des Orgues… Code pur.
+// sont celles de la fiche (§ 7), à grands traits : la halle à verrière de la Manufacture, la trémie du Terminus, les colonnes de basalte des Orgues… Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_4E, type BuiltPlace4e, type PlaceId4e } from './plan4e';
 
@@ -47,49 +49,6 @@ function wall(b: FacetBuilder, x: number, z: number, length: number, height: num
 
 /** Un poteau de bois, cassé ou non. */
 const post = (b: FacetBuilder, x: number, z: number, h: number, w = 0.5): void => b.box({ x, y: SINK, z }, [w, h - SINK, w], C.woodShade, C.wood);
-
-/** Le Gabarit : l'atelier-forteresse de pierre, sa tour écrêtée ; la grue de bois, seule verticale fine, son bras rompu. */
-function gabarit(b: FacetBuilder): void {
-  b.box({ x: 0, y: SINK, z: 0 }, [12, 5 - SINK, 9], C.stoneShade, C.stone);
-  b.box({ x: -2, y: 5, z: -1 }, [7, 2.6, 6], C.brickShade, C.brick);
-  b.box({ x: 4.5, y: SINK, z: -2.5 }, [3.4, 10 - SINK, 3.4], C.stoneShade, C.stoneSun);
-  rubble(b, 6.5, 2.5, 1.4, C.stoneShade, C.stone);
-  // La grue : son mât debout, haut et fin ; son bras rompu, couché sur le toit.
-  b.box({ x: -6.8, y: SINK, z: 3 }, [0.6, 16 - SINK, 0.6], C.woodShade, C.wood);
-  b.beam({ x: -6.8, y: 15.5, z: 3 }, { x: -2, y: 13.5, z: 4 }, 0.45, C.wood);
-  b.beam({ x: -1, y: 7.7, z: 1.5 }, { x: 4, y: 5.1, z: 3.8 }, 0.45, C.woodShade);
-}
-
-/** La Manufacture : une longue halle de brique ouverte, sa charpente de fonte et sa verrière au faîte, à moitié tombée ; aucune cheminée. */
-function manufacture(b: FacetBuilder): void {
-  wall(b, 0, -4.5, 18, 4.2);
-  wall(b, -4, 4.5, 10, 4.2);
-  b.box({ x: 6.5, y: SINK, z: 4.5 }, [5, 1.6 - SINK, 0.7], C.brickShade, C.brick);
-  for (const x of [-8, -4, 0, 4]) b.beam({ x, y: 4.2, z: -4.5 }, { x, y: 7, z: 0 }, 0.3, C.rust);
-  for (const x of [-8, -4]) b.beam({ x, y: 7, z: 0 }, { x, y: 4.2, z: 4.5 }, 0.3, C.rust);
-  b.box({ x: -6, y: 6.9, z: -2.2, pitch: -0.55 }, [4, 0.12, 5.2], C.glass);
-  b.box({ x: 5, y: SINK, z: 1, yaw: 0.6 }, [3, 1.2 - SINK, 1.6], C.rustShade, C.rust);
-}
-
-/** La Loge : le mur du théâtre, haut et sans toit ; les cintres, deux poutres en travers ; un tambour couché ; le rideau tombé. */
-function loge(b: FacetBuilder): void {
-  wall(b, 0, 3, 11, 8);
-  wall(b, -5.2, 0, 6, 6, Math.PI / 2);
-  b.box({ x: 1, y: 6.5, z: 0.5 }, [10, 0.4, 0.4], C.woodShade, C.wood);
-  b.beam({ x: 4.5, y: 6.5, z: 0.5 }, { x: 5.5, y: 0, z: -2.5 }, 0.4, C.wood);
-  b.drum({ x: 2, y: SINK, z: -2.5, pitch: Math.PI / 2 }, 1.3, 0.6, 10, C.wood, C.woodShade);
-  b.box({ x: -1.5, y: SINK, z: 0, yaw: 0.1 }, [5, 0.6 - SINK, 2.2], C.brickShade, C.terracotta);
-}
-
-/** Le Chariot : le long bassin d'essai, vide et sec ; ses rails sur ses bords ; le chariot de fer basculé ; une coque de maquette sur tréteaux. */
-function chariot(b: FacetBuilder): void {
-  b.box({ x: 0, y: SINK, z: 0 }, [16, 0.5 - SINK, 4.4], C.stoneShade, C.stone);
-  b.box({ x: 0, y: 0.05, z: 0 }, [15, 0.5, 2.8], C.stoneShade);
-  for (const z of [-2, 2]) b.box({ x: 0, y: 0.5, z }, [16, 0.14, 0.18], C.rust);
-  b.box({ x: 4, y: 0.5, z: 0, yaw: 0.2, pitch: 0.25 }, [1.6, 1.4, 4.8], C.rustShade, C.rust);
-  for (const x of [-5.5, -3.5]) b.box({ x, y: SINK, z: 4.2 }, [0.3, 1.4 - SINK, 1.4], C.woodShade);
-  b.prism({ x: -4.5, y: 1.4, z: 4.2, yaw: Math.PI / 2 }, 1, 0.3, 0.9, 6, C.terracotta, C.wood);
-}
 
 /** L'Herbier : la serre de fonte, sa charpente debout, son verre presque tout tombé ; des bacs ; la pompe. */
 function herbier(b: FacetBuilder): void {
@@ -169,13 +128,9 @@ function dynamo(b: FacetBuilder): void {
 
 /**
  * La ruine de chaque lieu du 4e pas encore construit, dessinée dans son repère : un lieu construit (./plan4e.ts,
- * `BUILT_PLACES_4E` ; la Forge, la Soute, la Porte et l’Étalon au lot 2) dessine sa ruine dans son fichier, avec ses étapes.
+ * `BUILT_PLACES_4E` ; la Forge, la Soute, la Porte et l’Étalon au lot 2, le Gabarit, le Chariot, la Manufacture et la Loge au lot 3) dessine sa ruine dans son fichier, avec ses étapes.
  */
 export const RUINS_4E: Readonly<Record<Exclude<PlaceId4e, BuiltPlace4e>, (b: FacetBuilder) => void>> = {
-  gabarit,
-  manufacture,
-  loge,
-  chariot,
   herbier,
   roches,
   jonction,

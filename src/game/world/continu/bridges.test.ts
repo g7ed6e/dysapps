@@ -2,7 +2,8 @@
 // terres, aucun chemin dessus, Kéo arrêté sur la culée d'un pont tombé et porté par le tablier d'un pont rebâti, le
 // dessin des deux états et sur la Carte. Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { BRIDGE, BRIDGE_TOUCH, KEO_STOP, allBridges, bridgeFacets, bridgeFloor, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen } from './bridges';
+import { BRIDGE, BRIDGE_TOUCH, KEO_STOP, SWING, allBridges, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen, isCabin, isSwing, swingPivot, swingRuin } from './bridges';
+import { CUT_CLEARANCE_4E } from './paths4e';
 import { linearRgb } from './geometry';
 import { bridgeEdge, landById, linkedLands, nodeLands } from './lands';
 import { atNode, pathNode, pathRibbons, snapToNetwork, type NetworkPoint } from './paths';
@@ -190,5 +191,149 @@ describe('Les ponts tombés du 4e (retouche 1 du lot 1)', () => {
     // Le basalte ne va qu'à la coulée : le pont du ravin et celui du bassin restent de pierre grise.
     expect(has(bridgeFacets('coteaux', false), COLORS_4E.basaltSun)).toBe(false);
     expect(has(bridgeFacets('coteaux', false), COLORS_4E.stone)).toBe(true);
+  });
+});
+
+describe('Le pont tournant des docks, au bassin à flot (intention du Bastion, 22 octobre 2026)', () => {
+  const has = (f: { colors: ArrayLike<number> }, hex: number) => {
+    const c = linearRgb(hex);
+    for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - c[k]) < 1e-6)) return true;
+    return false;
+  };
+  /**
+   * Ce que le pont du bassin coûtait avant le pont tournant (le pont tombé générique, ses piles et son tablier de bois,
+   * mesuré le 22 octobre 2026 sur `cd17fff1`) : le pont tournant ne coûte pas plus, en ruine, rebâti et pendant sa pose
+   * (décision du mainteneur, « dans ce qu'il coûte aujourd'hui, ou moins »).
+   */
+  const BASSIN_BRIDGE_BEFORE = { ruin: 132, built: 1_142, lay: 1_122 } as const;
+  const s = bridgeSite('bastion');
+  const clearance = CUT_CLEARANCE_4E.bassin;
+  const verts = (f: { positions: ArrayLike<number> }) => Array.from({ length: f.positions.length / 3 }, (_, i) => ({ x: f.positions[i * 3], y: f.positions[i * 3 + 1], z: f.positions[i * 3 + 2] }));
+
+  it('seul le passage du bassin tourne', () => {
+    expect(isSwing('bastion')).toBe(true);
+    expect(isSwing('coteaux')).toBe(false);
+    expect(isSwing('epaule')).toBe(false);
+  });
+
+  it('dans ce qu’il coûtait, en ruine comme rebâti, et sous 1 300 rebâti', () => {
+    expect(bridgeFacets('bastion', false).triangles).toBeLessThanOrEqual(BASSIN_BRIDGE_BEFORE.ruin);
+    expect(bridgeFacets('bastion', true).triangles).toBeLessThanOrEqual(BASSIN_BRIDGE_BEFORE.built);
+    expect(bridgeFacets('bastion', true).triangles).toBeLessThan(1_300);
+  });
+
+  it('la ruine : la volée ouverte au-dessus de l’eau du bassin, en biais, au nord, le bas de son bout libre dans l’eau', () => {
+    const ruin = verts(swingRuin(s));
+    // Rien de la volée sur le quai : chacun de ses sommets au-dessus de l'eau.
+    for (const p of ruin) expect(clearance(p)).toBeLessThan(0);
+    // Couchée vers le nord (la mer du nord), loin du navire de la Soute, au sud.
+    const across = ruin.reduce((n, p) => n + (p.x - s.near.x) * -s.dir.z + (p.z - s.near.z) * s.dir.x, 0) / ruin.length;
+    expect(across).toBeLessThan(-4);
+    for (const p of ruin) expect(p.z).toBeLessThan(s.mid.z + 3);
+    // Le bout libre affaissé, le bas de ses poutres dans l'eau, le bout du tambour à hauteur du tablier ; le tablier hors
+    // de l'eau sur toute sa longueur : la volée se lit entière (captures du 22 octobre 2026).
+    expect(Math.min(...ruin.map((p) => p.y))).toBeLessThan(0);
+    expect(Math.max(...ruin.map((p) => p.y))).toBeGreaterThan(BRIDGE.deck - 0.3);
+    const deck = verts(swingRuin(s)).filter((p) => p.y > BRIDGE.deck - BRIDGE.plank - SWING.girder * 0.5);
+    expect(Math.min(...deck.map((p) => p.y))).toBeGreaterThan(0.3);
+  });
+
+  it('la ruine montre son flanc au quai des Fabriques : couchée en biais, pas dans l’axe du regard', () => {
+    // Vue du quai des Fabriques, au sud du pont (comme les captures du lot) : l'axe de la volée fait un angle franc avec le
+    // regard vers son milieu (quatre degrés et demi seulement quand elle filait le long du quai : captures du 22 octobre 2026).
+    const eye = { d: s.water[0] - 2, v: 24 };
+    const pivot = swingPivot(s);
+    const axis = { d: Math.cos(SWING.open), v: -Math.sin(SWING.open) };
+    // Le milieu de la volée, à mi-chemin des deux culées quand elle est fermée, tourné avec elle.
+    const u = (s.water[0] + s.water[1]) / 2 - pivot.d;
+    const mid = { d: pivot.d + axis.d * u, v: axis.v * u };
+    const sight = { d: mid.d - eye.d, v: mid.v - eye.v };
+    const cos = Math.abs(sight.d * axis.d + sight.v * axis.v) / Math.hypot(sight.d, sight.v);
+    expect((Math.acos(cos) * 180) / Math.PI).toBeGreaterThan(12);
+  });
+
+  it('le cadenas au-dessus de l’eau libre : rien de la ruine sous lui ni devant lui', () => {
+    const lock = bridgeLockPoint('bastion');
+    expect(clearance(lock)).toBeLessThan(0);
+    const fallen = verts(bridgeFacets('bastion', false));
+    // Les culées et le tambour restent au bord ; la volée, ouverte, est loin de la ligne du pont.
+    for (const p of fallen) expect(Math.hypot(p.x - lock.x, p.z - lock.z)).toBeGreaterThan(3);
+    // L'eau libre sur la ligne du pont, du pied de la volée (le tambour, et le coin de la volée tournée en biais, à moins
+    // d'une unité de lui) jusqu'à la culée d'en face.
+    const pivot = swingPivot(s);
+    for (const p of fallen) {
+      const d = (p.x - s.near.x) * s.dir.x + (p.z - s.near.z) * s.dir.z;
+      const v = (p.x - s.near.x) * -s.dir.z + (p.z - s.near.z) * s.dir.x;
+      if (Math.abs(v) < BRIDGE.width / 2) expect(d < pivot.d + SWING.drum + 0.6 || d > s.water[1] - BRIDGE.over - 0.1).toBe(true);
+    }
+  });
+
+  it('rebâti : une volée sans pile ni pied dans l’eau, sur son tambour ; le fer bruni, la rouille seulement dans la ruine', () => {
+    const built = bridgeFacets('bastion', true);
+    const pivot = swingPivot(s);
+    const drum = frameAt(s, pivot.d);
+    // Sous l'eau, le tambour seul.
+    const inWater = (p: { x: number; z: number }) => {
+      const d = (p.x - s.near.x) * s.dir.x + (p.z - s.near.z) * s.dir.z;
+      return d > s.water[0] + BRIDGE.over + 0.01 && d < s.water[1] - BRIDGE.over - 0.01;
+    };
+    for (const p of verts(built)) if (p.y < 0 && inWater(p)) expect(Math.hypot(p.x - drum.x, p.z - drum.z)).toBeLessThan(SWING.drum + 0.2);
+    // La rouille de la volée, assombrie à la retouche 1 (point 7 : du fer, pas une planche orange).
+    expect(has(built, 0x8a5a4a)).toBe(false);
+    expect(has(bridgeFacets('bastion', false), 0x8a5a4a)).toBe(true);
+    expect(has(bridgeFacets('bastion', false), COLORS_4E.rust)).toBe(false);
+    expect(has(built, 0x5c504c)).toBe(true);
+    // Les culées et le tambour restent pendant la pose : la ruine sans sa volée ni ses garde-corps tombés (sept barres de six triangles).
+    expect(bridgeLayRest('bastion').triangles).toBe(bridgeFacets('bastion', false).triangles - swingRuin(s).triangles - 7 * 6);
+    // Les garde-corps tombés, couchés avec la volée : du fer sombre.
+    expect(has(bridgeFacets('bastion', false), 0x4e3a34)).toBe(true);
+  });
+
+  it('les quatre lanternes, allumées une fois relié (le verre d’ocre des ponts du 4e)', () => {
+    // Un verre en pavé (10 triangles, posé : sans dessous) par lanterne.
+    expect(glassTriangles(bridgeFacets('bastion', true), 0xe0a84a)).toBe(4 * 10);
+    expect(glassTriangles(bridgeFacets('bastion', true), 0xdaa66a)).toBe(0);
+  });
+
+  it('Kéo marche sur le tablier rebâti, à sa hauteur ; pas sur la volée ouverte', () => {
+    const plan = planFor('4e');
+    const mid = s.mid;
+    expect(bridgeFloor(mid.x, mid.z, [], plan)).toBeCloseTo(BRIDGE.deck, 5);
+    expect(bridgeFloor(mid.x, mid.z, ['bastion'], plan)).toBeNull();
+  });
+});
+
+/** Le point à `d` sur la ligne d'un pont. */
+const frameAt = (s: { near: { x: number; z: number }; dir: { x: number; z: number } }, d: number) => ({ x: s.near.x + s.dir.x * d, z: s.near.z + s.dir.z * d });
+
+/** Les triangles d'une couleur exacte (le verre d'une lanterne). */
+function glassTriangles(f: { colors: Float32Array }, color: number): number {
+  const c = linearRgb(color);
+  let n = 0;
+  for (let i = 0; i < f.colors.length; i += 9) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - c[k]) < 1e-6)) n++;
+  return n;
+}
+
+describe('les lanternes des ponts (règle commune des ponts du 4e)', () => {
+  const LIT = 0xe0a84a;
+  const SABLE = 0xdaa66a;
+
+  it('au 4e, les trois ponts reliés (bassin, ravin, coulée) ont leurs quatre lanternes allumées, d’ocre, et aucune avant', () => {
+    for (const land of Object.keys(LINKS_4E) as (keyof typeof LINKS_4E)[]) {
+      expect(glassTriangles(bridgeFacets(land, true), LIT)).toBe(4 * 10);
+      expect(glassTriangles(bridgeFacets(land, true), SABLE)).toBe(0);
+      // Pas encore relié : ni lanterne allumée, ni verre éteint.
+      expect(glassTriangles(bridgeFacets(land, false), LIT)).toBe(0);
+      expect(glassTriangles(bridgeFacets(land, false), SABLE)).toBe(0);
+    }
+  });
+
+  it('au 6e et au 5e, rien ne change : le verre Sable, jamais l’ocre', () => {
+    const others = [...linkedLands(planFor('6e')), ...linkedLands(planFor('5e'))].filter((l) => !(l in LINKS_4E) && !isCabin(l));
+    expect(others.length).toBeGreaterThan(0);
+    for (const land of others) {
+      expect(glassTriangles(bridgeFacets(land, true), SABLE)).toBe(4 * 10);
+      expect(glassTriangles(bridgeFacets(land, true), LIT)).toBe(0);
+    }
   });
 });

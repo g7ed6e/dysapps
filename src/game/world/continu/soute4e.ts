@@ -23,9 +23,9 @@ import { drawPosed, FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { BASSIN_4E, COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
-import { COLORS_5E } from './plan5e';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
+import { inWorld, lantern, localGround4e, slab } from './place4eKit';
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter (places.ts). */
 const SINK = -0.8;
@@ -66,9 +66,6 @@ const C = {
   // Les caisses des réponses : un bois clair, sans motif (jamais confondues avec les caisses peintes de la ruine).
   answer: 0xc8ae8e,
   answerTop: 0xd4bc9c,
-  lantern: COLORS_5E.lantern,
-  lanternOff: 0xbfc4b8,
-  bronze: 0x9c8452,
   // Le magasinier, en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, pantalon bleu gris, veste moutarde.
   boots: 0x55595a,
   trousers: 0x5c6670,
@@ -83,7 +80,7 @@ const CENTER: Vec2 = PLACES_4E.find((p) => p.id === 'soute')!.center;
 const H0 = standingHeight(heightAt4e(CENTER));
 
 /** Le sol du 4e sous un point du repère du lieu, depuis le sol de son centre. */
-const localGround = (lx: number, lz: number): number => standingHeight(heightAt4e({ x: CENTER.x + lx, z: CENTER.z + lz })) - H0;
+const localGround = localGround4e(CENTER);
 
 /** L'eau du bassin, dans le repère du lieu (la mer est à 0). */
 const WATER = -H0;
@@ -175,26 +172,6 @@ const MAP_POINT: Vec3 = (() => {
 })();
 
 // ---------- Les petits volumes ----------
-
-/** Une lanterne pendue (sa vitre, un pavé ; son chapeau de bronze en pointe), d'ocre ou éteinte. */
-function lantern(b: FacetBuilder, top: Vec3, lit: boolean, s = 1): void {
-  b.box({ x: top.x, y: top.y - 0.34 * s, z: top.z }, [0.24 * s, 0.3 * s, 0.24 * s], lit ? C.lantern : C.lanternOff);
-  b.prism({ x: top.x, y: top.y - 0.04 * s, z: top.z, yaw: Math.PI / 4 }, 0.21 * s, 0, 0.16 * s, 4, C.bronze);
-}
-
-/**
- * Un volume à dessus libre : `top` dans l'ordre du dessus d'un pavé (vu d'en haut, `+z` d'abord, puis `+x`), et son
- * dessous `by` sous lui ; ses côtés et son dessus.
- */
-function slab(b: FacetBuilder, top: readonly P3[], by: number, color: number, face: number): void {
-  const bot = top.map(([x, y, z]) => [x, y - by, z] as const);
-  const n = top.length;
-  for (let k = 1; k < n - 1; k++) b.triangle(top[0], top[k], top[k + 1], face);
-  for (let k = 0; k < n; k++) {
-    const m = (k + 1) % n;
-    b.quad(bot[k], bot[m], top[m], top[k], color);
-  }
-}
 
 /** Les motifs des caisses : des formes nettes et grosses, qui se distinguent par la forme (directeur artistique, 4). */
 type Motif = 'stripes' | 'chevrons' | 'diamond' | 'circle';
@@ -617,9 +594,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
 // ---------- Les traces ----------
 
 /** Dessine dans le repère du quai, puis pose le dessin au centre du lieu (`c`), dans le monde. */
-function inWorld(b: FacetBuilder, c: Vec3, draw: (l: FacetBuilder) => void): void {
-  drawPosed(b, { x: c.x, y: c.y, z: c.z, yaw: QUAY_YAW }, draw);
-}
+const traceInQuay = (b: FacetBuilder, c: Vec3, draw: (l: FacetBuilder) => void): void => inWorld(b, c, draw, QUAY_YAW);
 
 /** Où se pose chaque trace, dans le repère du quai ; aucune sur un chemin. */
 const TRACE_SPOTS = {
@@ -630,7 +605,7 @@ const TRACE_SPOTS = {
 
 /** Un diable de bois à deux roues, debout contre le mur de la halle, au coin sud-est (L'urbanisation du monde). */
 function handTruck(b: FacetBuilder, c: Vec3): void {
-  inWorld(b, c, (l) => {
+  traceInQuay(b, c, (l) => {
     const { u, v } = TRACE_SPOTS.urbanization;
     const y = DECK_TOP;
     for (const dv of [-0.24, 0.24]) l.beam({ x: u + 0.35, y: y + 0.2, z: v + dv }, { x: u - 0.05, y: y + 1.45, z: v + dv }, 0.08, C.newShade);
@@ -645,7 +620,7 @@ function handTruck(b: FacetBuilder, c: Vec3): void {
  * un sac de toile, une malle bombée, une valise plate (Les mobilités humaines).
  */
 function luggage(b: FacetBuilder, c: Vec3): void {
-  inWorld(b, c, (l) => {
+  traceInQuay(b, c, (l) => {
     const { u, v } = TRACE_SPOTS.mobilities;
     const y = DECK_TOP;
     l.prism({ x: u - 0.85, y, z: v, yaw: 0.3 }, 0.3, 0.2, 0.55, 6, C.canvas, C.canvas);
@@ -660,7 +635,7 @@ function luggage(b: FacetBuilder, c: Vec3): void {
 
 /** Un filet de chargement plein de caisses à motifs, posé sur le quai au bord du navire (Mers, ports et mondialisation). */
 function cargoNet(b: FacetBuilder, c: Vec3): void {
-  inWorld(b, c, (l) => {
+  traceInQuay(b, c, (l) => {
     const { u, v } = TRACE_SPOTS.globalization;
     const y = DECK_TOP;
     l.prism({ x: u, y: y - 0.02, z: v, yaw: 0.2 }, 1.05, 0.95, 0.12, 6, C.rope, C.rope);
