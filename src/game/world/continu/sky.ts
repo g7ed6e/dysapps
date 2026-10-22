@@ -185,7 +185,7 @@ export const SHADOW_DIR_4E = (() => {
 
 /**
  * Le ciel du 3e (lot 1 du monde ouvert du 3e, GD-25 : un matin froid et clair au-dessus des nuages) : le bleu pâle de
- * l'horizon, celui du ciel de la grille (#B4D2EC), monte vers le bleu franc du zénith (#3A86CC), jamais nuit.
+ * l'horizon, de la teinte des nuages (#E4EAF1), monte vers le bleu franc du zénith (#3A86CC), jamais nuit.
  */
 const SKY_STOPS_3E: readonly { at: number; color: number }[] = [
   { at: 0, color: 0xe4eaf1 },
@@ -196,7 +196,7 @@ const SKY_STOPS_3E: readonly { at: number; color: number }[] = [
   { at: 90, color: 0x3a86cc },
 ];
 
-/** La couleur de l'horizon du 3e : le brouillard du lointain et le bas du dôme, le bleu pâle du matin. */
+/** La couleur de l'horizon du 3e : le brouillard du lointain et le bas du dôme, la teinte des nuages (#E4EAF1). */
 export const HORIZON_COLOR_3E = SKY_STOPS_3E[0].color;
 
 /**
@@ -223,7 +223,7 @@ export const HEIGHT_LIGHT_3E: HeightLight = { low: -60, high: -50, sunLow: 1, ti
 
 /**
  * Le brouillard du lointain du 3e : l'air du matin est net, comme au 4e, mais les terres sont plus étendues (la Prairie
- * du zeppelin est à près de 400 unités du Parvis) : il commence à 100 unités et couvre tout à 280.
+ * du zeppelin est à près de 400 unités du Parvis) : il commence à 160 unités et couvre tout à 520.
  */
 export const FOG_3E = { near: 160, far: 520 } as const;
 

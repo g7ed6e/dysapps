@@ -165,19 +165,10 @@ const VEIL_WORLDS: Readonly<Record<OpenWorldLevel, () => VeilWorld>> = {
 };
 
 /**
- * Les deux voiles essayés au 3e (retouche 1 du lot 1) : la fiche du 3e (§ 2) veut une terre fermée qui garde la lumière
- * du jour, « ni brume ni nappes » (consultant d'Archipéo) : pas de voile (`aucun`), le cadenas et le liseré disent la
- * terre fermée ; le directeur artistique propose un voile gris-bleu froid, vers le granit (`grisBleu`, #A9B3C6), plutôt
- * que le blanc de la brume du 6e, qui se lisait au 3e comme des nuages posés sur l'herbe. Le directeur artistique tranche
- * sur captures ; d'ici là, aucun voile.
+ * Le voile du 3e : aucun (décision du directeur artistique, 22 octobre 2026, sur captures) ; la fiche du 3e (§ 2) veut
+ * une terre fermée qui garde la lumière du jour, « ni brume ni nappes » : le cadenas et le liseré disent la terre fermée.
  */
-const VEIL_CHOICES_3E = {
-  aucun: { layers: [], color: MIST_COLOR },
-  grisBleu: { layers: VEIL_LAYERS, color: 0xa9b3c6 },
-} as const satisfies Record<string, Pick<VeilWorld, 'layers' | 'color'>>;
-
-/** Le voile du 3e retenu. */
-const VEIL_3E: Pick<VeilWorld, 'layers' | 'color'> = VEIL_CHOICES_3E.aucun;
+const VEIL_3E: Pick<VeilWorld, 'layers' | 'color'> = { layers: [], color: MIST_COLOR };
 
 /** Au 3e, la brume s'efface sur le pic et le haut du cône, qu'on voit de toutes les terres : nulle à moins de tant d'unités du pic, pleine au-delà de tant. */
 const PEAK_CLEAR_3E = [PEAK_3E.radius, PEAK_3E.granite] as const;

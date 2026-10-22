@@ -1624,7 +1624,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       arrivalShape = a.view;
       return true;
     }
-    // Au quai du lieu de départ du 5e, tourné vers son cap : le sommet de la Montée, au fond (directeur artistique, lot 4).
+    // Au quai du lieu de départ (5e, 4e, 3e), tourné vers son cap : le sommet de la Montée au 5e, au fond (directeur artistique, lot 4).
     if (!quayLook || distance(here, quayPoint) > 0.5 || Math.abs(wrapAngle(yaw - departure.viewYaw)) > QUAY_LOOK_TURN) return false;
     Object.assign(lanternTop, quayLook);
     if (departure.quayView) {
