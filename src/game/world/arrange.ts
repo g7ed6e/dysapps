@@ -1009,6 +1009,8 @@ export interface GridLand {
    * Bastion : décision du mainteneur, 21 octobre 2026, GD-24) : reliée, elle ne compte pas ; jouée, si.
    */
   shut?: BiomeId;
+  /** Les terres à relier aussi avant elle, sans être sur son chemin (au 5e, les Aiguilles : GD-22, « Les terres »). */
+  waitsFor?: readonly GridLand[];
 }
 
 /** Une terre est-elle ouverte dans la grille (un de ses lieux relié, hors du port fermé) ? Celle de départ l'est toujours. */
@@ -1033,7 +1035,7 @@ export type PayLandResult =
 export function payLand(state: GameState, land: GridLand): { state: GameState; result: PayLandResult } {
   if (!land.after) return { state, result: { ok: false, reason: 'inconnu' } };
   if (landOpenIn(state.world.links, land)) return { state, result: { ok: false, reason: 'construit' } };
-  if (!landOpenIn(state.world.links, land.after)) return { state, result: { ok: false, reason: 'ordre' } };
+  if (!landOpenIn(state.world.links, land.after) || land.waitsFor?.some((l) => !landOpenIn(state.world.links, l))) return { state, result: { ok: false, reason: 'ordre' } };
   const paid = payBlocks(land.price, state.stock);
   if (!paid.ok) return { state, result: { ok: false, reason: 'blocs', missing: paid.missing } };
   return { state: { ...state, stock: paid.inventory, world: writeLandLinks(state.world, land.islands) }, result: { ok: true, used: paid.used } };

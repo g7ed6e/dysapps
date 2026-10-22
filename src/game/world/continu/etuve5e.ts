@@ -81,12 +81,12 @@ const C = {
   steamShade: 0xd3d9d1,
   // Le sable du polissoir, plus clair que le sol ocre.
   sand: 0xd8c49a,
-  // Le souffleur de verre, en pion (son modèle 3D prend sa place, ./habitants.ts) : chemise de lin, tablier de cuir,
-  // pantalon brun, bottes grises, bonnet.
-  shirt: 0xd8c7a4,
-  apron: 0x8a6a4e,
-  apronShade: 0x765a42,
-  trousers: 0x6b4f3a,
+  // Le souffleur de verre, en pion (son modèle 3D prend sa place, ./habitants.ts), dans les couleurs de son modèle :
+  // chemise corail, tablier de cuir brun, pantalon bleu nuit, bottes grises, bonnet.
+  shirt: 0xe0705a,
+  apron: 0x74482e,
+  apronShade: 0x5e3a26,
+  trousers: 0x2f3f5a,
   boots: 0x55595a,
   head: 0xe3b48a,
   cap: 0x7a4a4a,
@@ -756,7 +756,7 @@ function sceneFloor(b: FacetBuilder, floor: Vec3): void {
 
 /**
  * Le souffleur de verre en pion (son modèle 3D prend sa place, ./habitants.ts), immobile, le visage nu : ses bottes, son
- * pantalon brun, sa chemise de lin, son tablier de cuir, son bonnet ; les bras le long du corps.
+ * pantalon bleu nuit, sa chemise corail, son tablier de cuir, son bonnet ; les bras le long du corps.
  */
 function blower(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   for (const side of [-1, 1]) {

@@ -91,9 +91,12 @@ it('une terre pas encore reliable : ni « Relier », ni prix, ni « 8 / 12 » ; 
   expect(onLink).not.toHaveBeenCalled();
 });
 
-test('les phrases des ponts : « peut être rebâti », « fermé, le pont est à rebâtir »', () => {
+test('les phrases des ponts : « peut être rebâti », « fermé, le pont du Couchant est à rebâtir »', () => {
   expect(linkableLabel('cretes')).toBe('Le pont des Crêtes peut être rebâti.');
   expect(linkableLabel('large')).toBe('Le pont du Large peut être rebâti.');
   expect(afterLabel('cretes', 'levant')).toBe("Les Crêtes : relie d'abord le Levant.");
-  expect(closedLandLabel('couchant')).toBe('Le Couchant : fermé, le pont est à rebâtir.');
+  expect(closedLandLabel('couchant')).toBe('Le Couchant : fermé, le pont du Couchant est à rebâtir.');
+  // Au 5e, la cabine de la Montée ; les Aiguilles qui attendent disent l'ordre, jamais « à rebâtir ».
+  expect(closedLandLabel('aiguilles')).toBe('Les Aiguilles : fermé, la cabine de la Montée est à rebâtir.');
+  expect(closedLandLabel('aiguilles', 'roselieres')).toBe("Les Aiguilles : relie d'abord les Roselières.");
 });

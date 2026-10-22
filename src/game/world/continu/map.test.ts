@@ -131,6 +131,7 @@ describe('Les étiquettes de la Carte', () => {
   const boxOf = (l: MapLabel, s: MapLabelSpot) => {
     if (l.kind === 'closed' && !s.name) return { left: l.x - MAP_LOCK / 2, top: s.top, right: l.x + MAP_LOCK / 2, bottom: s.top + MAP_LOCK };
     if (l.kind === 'keo' && !s.name) return { left: s.left, top: s.top, right: s.left + MAP_KEO_DISC, bottom: s.top + l.h };
+    if (l.kind === 'keo' && s.toi === 'dessous') return { left: s.left, top: s.top, right: s.left + l.stacked!.w, bottom: s.top + l.stacked!.h };
     if (l.kind === 'open' && !s.name) return { left: s.left, top: s.top, right: s.left + MAP_COMPACT, bottom: s.top + MAP_COMPACT };
     if (l.kind === 'open' && s.narrow) return { left: s.left, top: s.top, right: s.left + l.narrow!.w, bottom: s.top + l.narrow!.h };
     if (l.kind === 'closed' && s.narrow) {
@@ -172,7 +173,7 @@ describe('Les étiquettes de la Carte', () => {
     expect(box.right <= rafts.left || box.left >= rafts.right || box.bottom <= rafts.top || box.top >= rafts.bottom).toBe(true);
   });
 
-  it('aucune étiquette n’en recouvre une autre, même Kéo devant son lieu, dans l’écran et hors des boutons', () => {
+  it('aucun nom de lieu n’en recouvre un autre, dans l’écran et hors des boutons ; Kéo devant son lieu ne déplace aucun nom', () => {
     const screen = { width: 844, height: 390 };
     const retour = { left: 20, top: 286, right: 200, bottom: 366 };
     // Au plus grand texte sur téléphone : Kéo devant le Phare, trois lieux fermés serrés.
@@ -185,10 +186,17 @@ describe('Les étiquettes de la Carte', () => {
     ];
     const spots = layoutMapLabels(labels, [retour], screen);
     const boxes = labels.map((l, i) => boxOf(l, spots[i]));
-    for (let i = 0; i < boxes.length; i++) {
-      expect(apart(boxes[i], retour), labels[i].id).toBe(true);
-      for (let j = i + 1; j < boxes.length; j++) expect(apart(boxes[i], boxes[j]), `${labels[i].id} ${labels[j].id}`).toBe(true);
-    }
+    // Les noms, posés sans tenir compte de Kéo (une place fixe par étiquette, chantier de la Carte).
+    expect(layoutMapLabels(labels.slice(1), [retour], screen)).toEqual(spots.slice(1));
+    for (let i = 1; i < boxes.length; i++) expect(apart(boxes[i], retour), labels[i].id).toBe(true);
+    // Le nom du Phare ne touche aucune autre étiquette (les noms des lieux fermés, posés en dernier, l'évitent).
+    for (let j = 2; j < boxes.length; j++) expect(apart(boxes[1], boxes[j]), `phare ${labels[j].id}`).toBe(true);
+    // « Toi » reste, quitte à couvrir le nom pâle d'un lieu fermé (relecture des restes du 5e) : dans l'écran, hors des
+    // boutons, des cadenas et du nom du Phare.
+    expect(spots[0].name).toBe(true);
+    expect(apart(boxes[0], retour)).toBe(true);
+    expect(apart(boxes[0], boxes[1])).toBe(true);
+    for (const l of labels.slice(2)) expect(apart(boxes[0], { left: l.x - MAP_LOCK / 2, top: l.y - MAP_LOCK, right: l.x + MAP_LOCK / 2, bottom: l.y }), l.id).toBe(true);
     const phare = boxes[1];
     expect(phare.left).toBeGreaterThanOrEqual(0);
     expect(phare.top).toBeGreaterThanOrEqual(0);
@@ -325,24 +333,108 @@ describe('Les étiquettes de la Carte', () => {
       { id: 'quais', kind: 'closed', x: 800, y: 500, w: 130, h: 84 },
     ];
     const [keo, phare, quais] = layoutMapLabels(labels, [], { width: 1024, height: 768 });
-    expect(keo).toEqual({ id: 'keo', left: 46, top: 256, name: true });
+    // Kéo d'un côté fixe : sa pastille centrée sous son point, « Toi » à sa droite.
+    expect(keo).toEqual({ id: 'keo', left: 100 - MAP_KEO_DISC / 2, top: 300, name: true });
     expect(phare).toEqual({ id: 'phare', left: 430, top: 250, name: true });
     expect(quais.name).toBe(true);
     expect(quais.top).toBe(500 - MAP_LOCK);
   });
 
-  it('« Toi » ne touche jamais un cadenas : Kéo garde alors sa pastille seule, à un écart du cadenas (relecture de L6a)', () => {
+  it('Kéo devant un lieu : le nom du lieu garde sa place, « Toi » se pose sous Kéo, d’un côté fixe, sans jamais le couvrir (chantier de la Carte, lot 13a)', () => {
+    const screen = { width: 1024, height: 768 };
+    const place: MapLabel = { id: 'donjon', kind: 'open', x: 500, y: 300, w: 160, h: 48 };
+    const [alone] = layoutMapLabels([place], [], screen);
+    // Kéo à la porte, au sud du lieu, puis juste au nord : le nom ne bouge jamais.
+    for (const dy of [12, 30, -20]) {
+      const keoAt: MapLabel = { id: 'keo', kind: 'keo', x: 505, y: 300 + dy, w: 108, h: 44 };
+      const [keo, name] = layoutMapLabels([keoAt, place], [], screen);
+      expect(name, String(dy)).toEqual(alone);
+      const k = boxOf(keoAt, keo);
+      expect(apart(k, boxOf(place, name)), String(dy)).toBe(true);
+    }
+    // Loin de tout, « Toi » sous son point, la pastille centrée sur lui.
+    const [far] = layoutMapLabels([{ id: 'keo', kind: 'keo', x: 200, y: 600, w: 108, h: 44 }, place], [], screen);
+    expect(far).toEqual({ id: 'keo', left: 200 - MAP_KEO_DISC / 2, top: 600, name: true });
+  });
+
+  it('« Toi » ne touche jamais un cadenas : Kéo se pose à un écart du cadenas, « Toi » gardé près de son point (relecture de L6a, des restes du 5e)', () => {
     // Le téléphone couché (tel844-carte) : Kéo devant la Turbine, le cadenas des Marais salants juste à droite.
     const labels: MapLabel[] = [
       { id: 'keo', kind: 'keo', x: 570, y: 212, w: 108, h: 44 },
       { id: 'saltworks', kind: 'closed', x: 627, y: 227, w: 200, h: 84 },
     ];
     const [keo] = layoutMapLabels(labels, [], { width: 844, height: 390 });
-    expect(keo.name).toBe(false);
-    const right = keo.left + MAP_KEO_DISC;
-    expect(right + MAP_LABEL_GAP).toBeLessThanOrEqual(627 - MAP_LOCK / 2);
-    // Loin de tout cadenas, « Toi » reste.
-    expect(layoutMapLabels([labels[0]], [], { width: 844, height: 390 })[0].name).toBe(true);
+    expect(keo.name).toBe(true);
+    const box = boxOf(labels[0], keo);
+    expect(apart(box, { left: 627 - MAP_LOCK / 2, top: 227 - MAP_LOCK, right: 627 + MAP_LOCK / 2, bottom: 227 })).toBe(true);
+    // Sa pastille à sa taille au plus de son point.
+    expect(Math.max(box.left - 570, 0, 570 - (box.left + MAP_KEO_DISC)) + Math.max(box.top - 212, 0, 212 - box.bottom)).toBeLessThanOrEqual(MAP_KEO_DISC);
+    // Loin de tout cadenas, « Toi » reste à son côté fixe.
+    expect(layoutMapLabels([labels[0]], [], { width: 844, height: 390 })[0]).toEqual({ id: 'keo', left: 570 - MAP_KEO_DISC / 2, top: 212, name: true });
+  });
+
+  it('« Toi » à droite de la pastille, sinon à gauche, sinon dessous, avant la pastille seule ; jamais sur le nom d’un voisin (seconde passe du directeur artistique, les Terrasses)', () => {
+    const screen = { width: 1024, height: 768 };
+    const keoAt: MapLabel = { id: 'keo', kind: 'keo', x: 500, y: 300, w: 108, h: 44, stacked: { w: 44, h: 76 } };
+    const cross = (a: { left: number; top: number; right: number; bottom: number }, b: typeof a) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+    // Deux bandes interdites (des boutons, ou les noms des voisins), de part et d'autre du point.
+    const east = { left: 540, top: 180, right: 700, bottom: 420 };
+    const west = { left: 300, top: 180, right: 460, bottom: 420 };
+    const check = (l: MapLabel, zones: { left: number; top: number; right: number; bottom: number }[]) => {
+      const [k] = layoutMapLabels([l], zones, screen);
+      const box = boxOf(l, k);
+      for (const z of zones) expect(cross(box, z)).toBe(false);
+      // La pastille toujours centrée sous son point.
+      const disc = k.toi === 'gauche' ? k.left + l.w - MAP_KEO_DISC : k.toi === 'dessous' ? k.left + l.stacked!.w / 2 - MAP_KEO_DISC / 2 : k.left;
+      expect(disc + MAP_KEO_DISC / 2).toBe(500);
+      return k;
+    };
+    // La place à droite prise : « Toi » à gauche, la pastille au même endroit.
+    expect(check(keoAt, [east])).toEqual({ id: 'keo', left: 500 + MAP_KEO_DISC / 2 - 108, top: 300, name: true, toi: 'gauche' });
+    // Prise des deux côtés : « Toi » sous la pastille.
+    expect(check(keoAt, [east, west])).toEqual({ id: 'keo', left: 500 - 22, top: 300, name: true, toi: 'dessous' });
+    // Sans la taille empilée mesurée : la pastille seule.
+    expect(check({ ...keoAt, stacked: undefined }, [east, west]).name).toBe(false);
+    // Tout pris à la taille de la pastille autour du point, une place libre un peu plus loin : « Toi » y va, la pastille
+    // à `NEAR.reach` au plus de son point (80 px), comme la pastille seule.
+    const ring = { left: 380, top: 250, right: 620, bottom: 352 };
+    const [far] = layoutMapLabels([keoAt], [ring], screen);
+    expect(far.name).toBe(true);
+    const fb = boxOf(keoAt, far);
+    expect(cross(fb, ring)).toBe(false);
+    const fd = far.toi === 'gauche' ? fb.right - MAP_KEO_DISC : far.toi === 'dessous' ? fb.left + keoAt.stacked!.w / 2 - MAP_KEO_DISC / 2 : fb.left;
+    const gap = Math.hypot(Math.max(fd - 500, 0, 500 - (fd + MAP_KEO_DISC)), Math.max(fb.top - 300, 0, 300 - (fb.top + MAP_KEO_DISC)));
+    expect(gap).toBeGreaterThan(MAP_KEO_DISC);
+    expect(gap).toBeLessThanOrEqual(80);
+    // Rien autour : à droite, comme avant.
+    expect(layoutMapLabels([keoAt], [], screen)[0]).toEqual({ id: 'keo', left: 500 - MAP_KEO_DISC / 2, top: 300, name: true });
+  });
+
+  it('Kéo cerné de noms (l’Auberge, relecture des restes du 5e) : sa pastille reste près de son point, jamais sur le nom d’un voisin, au pire sur le nom de son lieu', () => {
+    const screen = { width: 1024, height: 768 };
+    // Kéo à l'Auberge, entre la Lisière au-dessus, le Hameau dessous, et deux voisins de côté.
+    const labels: MapLabel[] = [
+      { id: 'keo', kind: 'keo', x: 500, y: 300, w: 108, h: 44 },
+      { id: 'auberge', kind: 'open', x: 505, y: 296, w: 200, h: 48 },
+      { id: 'lisiere', kind: 'open', x: 500, y: 236, w: 200, h: 48 },
+      { id: 'hameau', kind: 'open', x: 500, y: 364, w: 200, h: 48 },
+      { id: 'radeaux', kind: 'open', x: 350, y: 320, w: 200, h: 48 },
+      { id: 'croisee', kind: 'open', x: 650, y: 320, w: 200, h: 48 },
+    ];
+    const spots = layoutMapLabels(labels, [], screen);
+    const boxes = labels.map((l, i) => boxOf(l, spots[i]));
+    const keo = boxes[0];
+    const disc = { ...keo, right: keo.left + MAP_KEO_DISC };
+    const gap = Math.hypot(Math.max(disc.left - 500, 0, 500 - disc.right), Math.max(disc.top - 300, 0, 300 - disc.bottom));
+    expect(gap).toBeLessThanOrEqual(80);
+    const cross = (a: typeof keo, b: typeof keo) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+    // Jamais sur le nom d'un voisin : sur le sien plutôt.
+    expect(spots[0].name).toBe(false);
+    for (let i = 2; i < labels.length; i++) expect(cross(keo, boxes[i]), labels[i].id).toBe(false);
+    expect(cross(keo, boxes[1])).toBe(true);
+    // Un lieu fermé (pâle) au lieu du Hameau : « Toi » peut couvrir son nom.
+    const pale = layoutMapLabels(labels.map((l) => (l.id === 'hameau' ? { ...l, pale: true as const } : l)), [], screen);
+    expect(pale[0].name).toBe(true);
   });
 
   it('le nom d’un lieu fermé près du bord glisse sous son cadenas et reste entier dans l’écran, le cadenas sur son lieu (relecture de L6a)', () => {
@@ -545,6 +637,7 @@ describe('La Carte avec le rivage nord (lot L7)', () => {
         ? { left: Math.min(name, l.x - MAP_LOCK / 2), top: s.top + (s.drop ?? 0), right: Math.max(name + l.w, l.x + MAP_LOCK / 2), bottom: s.top + (s.drop ?? 0) + l.h }
         : { left: l.x - MAP_LOCK / 2, top: s.top, right: l.x + MAP_LOCK / 2, bottom: s.top + MAP_LOCK };
     }
+    if (l.kind === 'keo' && s.toi === 'dessous') return { left: s.left, top: s.top, right: s.left + l.stacked!.w, bottom: s.top + l.stacked!.h };
     if (l.kind === 'keo') return { left: s.left, top: s.top, right: s.left + (s.name ? l.w : MAP_KEO_DISC), bottom: s.top + l.h };
     if (!s.name) return { left: s.left, top: s.top, right: s.left + MAP_COMPACT, bottom: s.top + MAP_COMPACT };
     const [bw, bh] = s.narrow ? [l.narrow!.w, l.narrow!.h] : [l.w, l.h];

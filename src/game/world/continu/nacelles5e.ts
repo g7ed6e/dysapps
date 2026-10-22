@@ -96,11 +96,12 @@ const C = {
   cork: 0x6e5a48,
   sack: 0xc8b48a,
   sackShade: 0xb09c74,
-  // La câbliste, en pion (son modèle 3D prend sa place, ./habitants.ts) : chemise de lin, pantalon brun, tablier de toile.
-  shirt: 0xd3c4a2,
-  trousers: 0x6b5a46,
+  // La câbliste, en pion (son modèle 3D prend sa place, ./habitants.ts), dans les couleurs de son modèle : combinaison
+  // bleu ciel, cheveux noirs.
+  shirt: 0x3a8cc4,
+  trousers: 0x3480b4,
   skin: 0xd9a77f,
-  cap: 0x8c766a,
+  cap: 0x2e2a28,
   /** Le bois des moufles de la question : un brun chaud, plus sombre que la poutre. */
   block: 0x6f5238,
 } as const;
@@ -1095,8 +1096,8 @@ function sceneFloor(b: FacetBuilder, floor: Vec3): void {
 }
 
 /**
- * La câbliste en pion (son modèle 3D prend sa place, ./habitants.ts), immobile, le visage nu : ses jambes, son pantalon, sa
- * chemise de lin, sa casquette ; les bras le long du corps.
+ * La câbliste en pion (son modèle 3D prend sa place, ./habitants.ts), immobile, le visage nu : sa combinaison bleu ciel (ses
+ * jambes et son buste), ses cheveux noirs ; les bras le long du corps.
  */
 function cabler(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   for (const side of [-1, 1]) {

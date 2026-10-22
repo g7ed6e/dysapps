@@ -17,7 +17,7 @@ import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { KEO_HEIGHT, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
+import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
 import { epaveFacets } from '../../world/continu/epave4e';
@@ -34,7 +34,7 @@ import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/contin
 import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { hasScenette, placeById, type LevelPlan, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
-import { hasHabitantModel } from '../../world/continu/habitants';
+import { HABITANT_HEIGHT, hasHabitantModel } from '../../world/continu/habitants';
 import { arrivalViewOf, doorFrameOf, doorViewOf, placeArt } from '../../world/continu/northShore';
 import { levelWorld, type LevelWorld, type ThinFog } from '../../world/continu/levelWorld';
 import { riftMistFacets } from '../../world/continu/mist5e';
@@ -91,6 +91,7 @@ import { ringHeights, standingHeight, tileRings } from '../../world/continu/terr
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
+import { hasWorldHabitant, worldHabitantAt, worldHabitantFacets, worldHabitantHeight } from '../../world/continu/worldHabitants';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
 import { placedAmenagement } from './amenagements';
@@ -236,8 +237,11 @@ export interface OpenWorld {
    * grue pose sur le râtelier ; un toucher la passe, d'un coup avec « Réduire les animations ». `onAssembled` dit sa fin.
    */
   assemble(): void;
-  /** Le lieu marqué (la prochaine mission), ou aucun : le seul lieu qui dépasse la brume. */
-  setMark(place: PlaceId | null): void;
+  /**
+   * Le lieu marqué (la prochaine mission), ou aucun : le seul lieu qui dépasse la brume ; ou `'nef'`, la Nef prête sur son
+   * ber (GD-21, « Prête » : le passage prêt passe en tête), sa marque au-dessus d'elle.
+   */
+  setMark(place: PlaceId | 'nef' | null): void;
   /**
    * Les terres (GD-20, point 3, « vraies terres, vrais ponts ») : les terres fermées (sous la brume, leur pont tombé, Kéo
    * s'arrête sur sa culée). Une terre qu'on vient de relier perd sa brume et voit son pont rebâti, d'un coup, ou par sa
@@ -423,7 +427,7 @@ const FACING_CAMERA = Math.PI;
  * Kéo un peu plus grand que dans le monde en grille, et un anneau clair au sol autour de ses pieds : on le trouve sans
  * chercher (directeur artistique, 14 octobre 2026).
  */
-const KEO_SCALE = 1.25;
+const KEO_SCALE = KEO_WORLD_SCALE;
 const KEO_RING = { inner: 0.85, outer: 1.3, color: 0xfff6dc };
 /**
  * L'ombre peinte de Kéo (lot 3) : un disque de `radius`, décalé de `shift` du côté opposé au soleil, dans le creux de
@@ -1707,6 +1711,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   /** La fiche de la Nef ouverte : la caméra garde la Nef sur son ber, l'enveloppe comprise (artiste technique 3D, retouche du lot 4). */
   let framedNef = false;
   const nefFramed: Vec3 = { x: nefSite.berth.x, y: nefSite.lift.ber + NEF_FRAMED_HEIGHT, z: nefSite.berth.z };
+  /** La marque de la Nef prête (`setMark('nef')`) : au-dessus de son modèle, une fois chargé (avant, au-dessus du cadrage de sa fiche). */
+  const nefMark = new THREE.Vector3(nefSite.berth.x, nefFramed.y + MARK_LIFT, nefSite.berth.z);
   const subjectOf = (spot: PortSpot | PlaceId): Vec3 | null => {
     const place = PLACES.find((p) => p.id === spot);
     if (!place) return portSubject(spot as PortSpot, port?.trophies.length ?? 0, site);
@@ -1746,7 +1752,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
 
   // Les anneaux du terrain, et les lieux qu'on dessine : refaits quand le point suivi s'éloigne de leur centre.
-  let markPlace: PlaceId | null = null;
+  let markPlace: PlaceId | 'nef' | null = null;
   // La Carte ouverte : sa pose (plus bas, « La Carte des lieux ouverts »).
   let mapView: MapView | null = null;
   const ringCenter = { x: Number.NaN, z: Number.NaN };
@@ -1805,6 +1811,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const facets = mergeFacets([constructionFacets(id, parts, ground), fallenFacets(id, parts, ground)]);
     builds.set(id, { parts, facets });
     return facets;
+  };
+  // L'habitant hors de sa scénette, près de sa porte (au 5e, ./world/continu/worldHabitants.ts), fait une fois (il ne
+  // dépend que du sol) ; rien au 6e.
+  const worldHabitantCache = new Map<PlaceId, Facets | null>();
+  const worldHabitantOf = (id: PlaceId): Facets | null => {
+    if (!worldHabitantCache.has(id)) worldHabitantCache.set(id, worldHabitantFacets(id, ground));
+    return worldHabitantCache.get(id)!;
   };
   const traceOf = (id: PlaceId, done: readonly string[]): Facets => {
     const k = `${id}|${done.join(',')}`;
@@ -1887,6 +1900,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Les aménagements posés (GD-20, point 4, lot L0), dans le même maillage : cachés pendant toute question, comme les
       // traces (au rivage nord et au large, ceux des lieux du même cadre) ; montrés dans le cadrage de la remise.
       if (showsAmenagements(scenette, p.id, remise?.place ?? null)) for (const id of placesState?.amenagements?.[p.id] ?? []) list.push(placedAmenagement(id, ground).facets);
+      // L'habitant près de sa porte (choix du mainteneur, 21 octobre 2026, « Garder au 5e » ; au 5e, son pion), dans le même
+      // maillage (aucun appel de plus) : ni sur la Carte, ni pendant une scénette (la sienne a son modèle, les autres lieux
+      // sont hors du cadre : le budget de la scénette ouverte ne bouge pas), ni dans une terre fermée.
+      const land = landOf(p.id);
+      const habitant = mapView || scenette || (isLinkedLand(land) && closed.includes(land)) ? null : worldHabitantOf(p.id);
+      if (habitant) list.push(habitant);
     }
     // Les ponts (GD-20, point 3, « vraies terres ») : tombé pour une terre fermée, rebâti sinon, dans le maillage des
     // lieux (aucun appel de plus) ; sur la Carte, chacun aussi en trait double, d'une autre forme qu'un chemin.
@@ -1901,7 +1920,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const berLook: NefLook = nefTrip ? 3 : nefDrop ? nefDrop.from : nefLookNow;
     rest.push(nefBer(berLook));
     const nefNow = gone ? null : nefModel(nefShownParts(nefDrop ? nefDrop.from : nefLookNow, nefSite.temps));
-    if (nefNow) rest.push(nefAtBerth(nefNow, nefSite));
+    if (nefNow) {
+      rest.push(nefAtBerth(nefNow, nefSite));
+      nefMark.y = nefSite.lift.ber + topOf(nefNow) + MARK_LIFT;
+    }
     if (!gone) (mapView ? rest : mark).push(nefBanc);
     else if (nefLookNow === 4 && nefAfter) rest.push(nefAfter);
     if (nefStays) rest.push(nefStays);
@@ -2116,11 +2138,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const sx = (v: THREE.Vector3) => ((v.x + 1) / 2) * viewW;
   const sy = (v: THREE.Vector3) => ((1 - v.y) / 2) * viewH;
   const reportMark = () => {
-    const mark = markPlace ? marks.get(markPlace) : undefined;
-    if (!mark || !markPlace) return options.onMark(null);
+    const place = markPlace === 'nef' ? null : markPlace;
+    const mark = markPlace === 'nef' ? nefMark : place ? marks.get(place) : undefined;
+    if (!mark) return options.onMark(null);
     projected.copy(mark).project(camera);
-    const far = distanceSign(here, placeById(markPlace).center);
-    const m = markOnScreen({ x: sx(projected), y: sy(projected), behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far, markBeside(markPlace) && whole(markPlace));
+    const far = distanceSign(here, place ? placeById(place).center : nefSite.berth);
+    const m = markOnScreen({ x: sx(projected), y: sy(projected), behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far, place !== null && markBeside(place) && whole(place));
     if (m.inside && departure.floor(here.x, here.z) !== null) markAtPort(m);
     options.onMark(m);
   };
@@ -2191,6 +2214,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // et où l'aménagement se pose (au Phare, au pied de la tour), comme un cadenas au-dessus de son pont (./remiseRun.ts).
   const signsTracker = createSignsTracker({
     anchorOf: (place) => {
+      // Au-dessus de l'habitant près de sa porte (au 5e, à sa taille dans le monde), sinon de sa place dans la scénette,
+      // là où se joue la remise ; autant au-dessus de sa tête que dans la scénette.
+      const w = worldHabitantAt(place, ground);
+      if (w && hasWorldHabitant(place)) return { x: w.x, y: w.y + worldHabitantHeight(place) + SIGN_LIFT - HABITANT_HEIGHT, z: w.z };
       const h = scenetteHabitant(place, remisePosed(place));
       return { x: h.x, y: h.y + SIGN_LIFT, z: h.z };
     },

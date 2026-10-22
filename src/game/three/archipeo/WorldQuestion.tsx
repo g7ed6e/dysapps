@@ -977,9 +977,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
  * se séparent pas en fin de ligne. Deux fractions comparées (« 3/5 et 3/10. », Deux rives) restent sur une seule ligne,
  * leur signe avec elles : les deux fractions en colonne ne prennent qu'une ligne haute (GD-20, point 8, lot L3 : une
  * ligne de la phrase de moins au plus grand texte sur téléphone). Un mot composé (« sont-elles », « a-t-on ») ne se
- * coupe pas à son trait d'union : RichText le garde entier (`keepTogether`).
+ * coupe pas à son trait d'union : RichText le garde entier (`keepTogether`). De même, le trou d'une phrase (« … ») garde
+ * son point final (« s'appelle une … . » : le point passait seul à la ligne au plus grand texte sur téléphone).
  */
-const FRACTION_STUCK = /(\d+\/\d+ (?:ou|et) \d+\/\d+(?:[ \u00a0\u202f]?[.,;:!?])?|\d+\/\d+[ \u00a0\u202f]?[.,;:!?])/u;
+const FRACTION_STUCK = /(\d+\/\d+ (?:ou|et) \d+\/\d+(?:[ \u00a0\u202f]?[.,;:!?])?|\d+\/\d+[ \u00a0\u202f]?[.,;:!?]|(?<!\/)…[ \u00a0\u202f]?[.,;:!?])/u;
 
 /**
  * La phrase complétée par la réponse : la réponse reste avec le mot qui lui est collé avant ou après (« l'» + « air »),
@@ -1004,13 +1005,15 @@ function FilledText({ before, answer, after, lang = 'fr' }: { before: string; an
  * La phrase d'un lieu (Deux rives : « Compare 3/5 et 3/10. ») : le texte enrichi, sans que le point passe seul à la ligne
  * après une fraction en colonne. Propre au monde ouvert : RichText, commun aux deux univers, ne change pas.
  */
-function PlaceText({ text }: { text: string }) {
+export function PlaceText({ text }: { text: string }) {
   return (
     <>
       {text.split(FRACTION_STUCK).map((part, i) =>
         i % 2 ? (
           <span key={i} className="world-nobreak">
-            <RichText text={part} />
+            {/* Le point final contre le trou, sans l'espace de la source (« une …. ») : avec elle, au grand texte, un blanc
+                entier les séparait (référent dys et consultant UX UI, relecture des restes du 5e). */}
+            <RichText text={part.replace(/…[ \u00a0\u202f]+(?=[.,]$)/u, '…')} />
           </span>
         ) : (
           part && <RichText key={i} text={part} />

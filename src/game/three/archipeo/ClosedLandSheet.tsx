@@ -47,10 +47,20 @@ export function afterLabel(land: LinkedLand, first: LinkedLand): string {
 }
 
 /** La phrase d'une terre qui devient reliable, celle d'avant reliée : « Le pont des Crêtes peut être rebâti. » */
-export const linkableLabel = (land: LinkedLand): string => `${landById(land).bridgeName} peut être rebâti.`;
+export const linkableLabel = (land: LinkedLand): string => {
+  const name = landById(land).bridgeName ?? '';
+  // « La cabine de la Montée peut être rebâtie. »
+  return `${name} peut être ${name.startsWith('La ') ? 'rebâtie' : 'rebâti'}.`;
+};
 
-/** Ce que dit la voix d'une terre fermée, de son cadenas ou d'un de ses lieux sur la Carte : « Le Couchant : fermé, le pont est à rebâtir. » */
-export const closedLandLabel = (land: LinkedLand): string => `${landById(land).name} : fermé, le pont est à rebâtir.`;
+/**
+ * Ce que dit la voix d'une terre fermée, de son cadenas ou d'un de ses lieux : son passage, par son nom (« Le Couchant :
+ * fermé, le pont du Couchant est à rebâtir. », « Les Aiguilles : fermé, la cabine de la Montée est à rebâtir. ») ; une
+ * terre qui attend une autre terre (`after`), la phrase d'ordre (`afterLabel`), jamais un passage qu'on ne peut pas
+ * encore rebâtir (référent dys, relecture des restes du 5e).
+ */
+export const closedLandLabel = (land: LinkedLand, after: LinkedLand | null = null): string =>
+  after ? afterLabel(land, after) : `${landById(land).name} : fermé, ${inSentence(landById(land).bridgeName ?? 'Le pont')} est à rebâtir.`;
 
 export function ClosedLandSheet({ land, after, onAfter, price, have, suggested, onLink, onClose }: Props) {
   useOpenPanel(onClose);

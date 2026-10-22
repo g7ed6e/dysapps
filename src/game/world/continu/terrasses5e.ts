@@ -88,10 +88,11 @@ const C = {
   /** Le bois des bols de la scénette : un brun chaud et sombre, nettement distinct du banc de pierre. */
   bowl: 0x5c3b22,
   riceGrain: 0xe6dfcc,
-  // Le riziculteur, en pion (son modèle 3D prend sa place, ./habitants.ts) : chemise de lin, pantalon brun retroussé,
+  // Le riziculteur, en pion (son modèle 3D prend sa place, ./habitants.ts), dans les couleurs de son modèle : chemise
+  // vert tendre, pantalon bleu nuit retroussé,
   // jambes nues, chapeau de paille conique.
-  shirt: 0xd3c4a2,
-  trousers: 0x6b5a46,
+  shirt: 0xa6c48a,
+  trousers: 0x2f4468,
   skin: 0xd9a77f,
   hat: 0xc9b47c,
 } as const;
@@ -938,7 +939,7 @@ function sceneFloor(b: FacetBuilder, floor: Vec3): void {
 
 /**
  * Le riziculteur en pion (son modèle 3D prend sa place, ./habitants.ts), immobile, le visage nu : ses jambes nues, son
- * pantalon retroussé, sa chemise de lin, son chapeau de paille conique ; les bras le long du corps.
+ * pantalon retroussé, sa chemise vert tendre, son chapeau de paille conique ; les bras le long du corps.
  */
 function riceFarmer(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   for (const side of [-1, 1]) {
@@ -1004,6 +1005,8 @@ export const TERRASSES: PlaceArt = {
   },
   // Kéo au retour : dans la cour, à l'ouest de la porte, face au tertre.
   exit: { x: 1, z: 6 },
+  // Sur la Carte, le nom sous le pied du tertre, au bord de la cour : à côté du tertre et du moulin, jamais dessus.
+  mapPoint: { x: 1.5, y: 0, z: COURT.z0 },
 };
 
 /** Le plus haut des Terrasses : le haut du mât, au-dessus du sol (il reste bien sous les aiguilles). */

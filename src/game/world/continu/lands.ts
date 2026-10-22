@@ -29,6 +29,12 @@ export interface Land {
   after: LandId | null;
   /** Le nom de son pont, pour les phrases (« Le pont du Couchant ») ; rien pour le départ. */
   bridgeName: string | null;
+  /**
+   * Les terres à relier aussi avant elle, sans être sur son chemin, dans l'ordre où le jeu les suggère : au 5e, les
+   * Aiguilles, sur le plateau, viennent en dernier, après les Roselières et les Contreforts (GD-22, « Les terres »).
+   * Une terre déjà reliée le reste (rien n'est repris).
+   */
+  waitsFor?: readonly LinkedLand[];
 }
 
 /** Une terre par son identifiant, quel que soit son niveau. */
@@ -124,11 +130,26 @@ export function firstClosed(land: LinkedLand, closed: readonly LinkedLand[]): Li
 }
 
 /**
- * Les terres que relier `land` rend reliables : celles qui l'attendaient (la terre d'après), encore fermées (« Le pont des
- * Crêtes peut être rebâti. »).
+ * Les terres à relier avant `land`, dans l'ordre : sa terre d'avant (si on la relie), puis celles qu'elle attend aussi
+ * (`waitsFor`).
+ */
+export function landsBefore(land: LinkedLand): LinkedLand[] {
+  const def = landById(land);
+  const after = def.after;
+  return [...(after && isLinkedLand(after) ? [after] : []), ...(def.waitsFor ?? [])];
+}
+
+/** La première terre encore fermée à relier avant `land`, ou rien : `land` est reliable. */
+export const firstBefore = (land: LinkedLand, closed: readonly LinkedLand[]): LinkedLand | null => landsBefore(land).find((l) => closed.includes(l)) ?? null;
+
+/**
+ * Les terres que relier `land` rend reliables : celles qui l'attendaient (la terre d'après, ou une terre qui attend
+ * aussi `land`, `waitsFor`), encore fermées, sans autre terre à attendre (« Le pont des Crêtes peut être rebâti. »).
  */
 export const landsAfter = (land: LinkedLand, closed: readonly LinkedLand[]): LinkedLand[] =>
-  ALL_LANDS.map((l) => l.id).filter((l): l is LinkedLand => isLinkedLand(l) && l !== land && landById(l).after === land && closed.includes(l));
+  ALL_LANDS.map((l) => l.id).filter(
+    (l): l is LinkedLand => isLinkedLand(l) && l !== land && closed.includes(l) && landsBefore(l).includes(land) && landsBefore(l).every((b) => b === land || !closed.includes(b)),
+  );
 
 /** Le point du pont d'une terre sur la Carte, parmi ceux des lieux (`pont-couchant`). */
 export type BridgeSpot = `pont-${LinkedLand}`;

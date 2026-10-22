@@ -72,10 +72,11 @@ const C = {
   // Les galets de la question : ronds, d'un gris beige plus clair que la pierre taillée.
   pebble: 0xbab3a4,
   pebbleTop: 0xcbc5b7,
-  // Le tailleur, en pion (son modèle 3D prend sa place, ./habitants.ts) : blouse grise, tablier de cuir, pantalon brun.
-  smock: 0xa9a496,
-  leather: 0x8a6446,
-  trousers: 0x6b4f3a,
+  // Le tailleur, en pion (son modèle 3D prend sa place, ./habitants.ts), dans les couleurs de son modèle : chemise crème,
+  // salopette bleu nuit (sa bavette et son pantalon).
+  smock: 0xe0d2a6,
+  leather: 0x2f4468,
+  trousers: 0x2f4468,
   boots: 0x55595a,
   head: 0xe3b48a,
 } as const;
@@ -941,7 +942,7 @@ const SCENE_RISE = (() => {
   return DECK_TOP - top;
 })();
 
-/** Le tailleur en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, pantalon brun, blouse grise, tablier de cuir. */
+/** Le tailleur en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, chemise crème, salopette bleu nuit. */
 function mason(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   for (const side of [-1, 1]) {
     b.prism({ x: at.x + side * 0.12, y: at.y, z: at.z }, 0.13, 0.13, 0.2, 6, C.boots);

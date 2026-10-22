@@ -40,9 +40,9 @@ test('un cadenas par pont ; celui du pont suggéré, et lui seul, est plein', ()
   const { locks } = renderMap('levant');
   expect(locks.map((l) => l.id)).toEqual(['pont-couchant', 'pont-large', 'pont-levant', 'pont-cretes']);
   expect(locks.filter((l) => l.full).map((l) => l.id)).toEqual(['pont-levant']);
-  expect(locks[0].el.getAttribute('aria-label')).toBe('Le Couchant : fermé, le pont est à rebâtir.');
+  expect(locks[0].el.getAttribute('aria-label')).toBe('Le Couchant : fermé, le pont du Couchant est à rebâtir.');
   // La voix dit le suggéré, que le cadenas plein montre.
-  expect(locks[2].el.getAttribute('aria-label')).toBe('Le Levant : fermé, le pont est à rebâtir. Suggéré.');
+  expect(locks[2].el.getAttribute('aria-label')).toBe('Le Levant : fermé, le pont du Levant est à rebâtir. Suggéré.');
 });
 
 test('sans pont suggéré, aucun cadenas plein', () => {
@@ -72,8 +72,8 @@ test('au 5e (GD-22) : un triangle « en haut » dans la dernière ligne du nom d
     if (!up) continue;
     // Collé au nom : dans sa dernière ligne, qui ne se coupe pas.
     const lines = el.querySelectorAll('.open-world-map-line');
-    expect(up.parentElement).toBe(lines[lines.length - 1]);
-    expect(el.getAttribute('aria-label')).toContain(`${p.name}, en haut`);
+    expect(up.closest('.open-world-map-line')).toBe(lines[lines.length - 1]);
+    expect(el.getAttribute('aria-label')).toMatch(new RegExp(`${p.name}(, en option)?, en haut`));
   }
   const keo = container.querySelector<HTMLElement>('[data-lieu="keo"]')!;
   placer.current!([{ id: 'keo', x: 10, y: 10, shown: true, up: true }]);
@@ -89,6 +89,23 @@ test('au 5e (GD-22) : un triangle « en haut » dans la dernière ligne du nom d
     expect(Boolean(badge), p.id).toBe(plan5.upper.includes(p.id));
   }
   expect(keo.querySelector('.open-world-map-keo-disc .open-world-map-up-badge .open-world-map-up')).not.toBeNull();
+});
+
+test('la pastille de Kéo seule, sans le mot « Toi » à l’écran, garde son nom « Toi » pour la voix et le lecteur d’écran (directeur artistique, seconde passe des habitants du 5e)', () => {
+  const plan5 = planFor('5e');
+  const placer: { current: ((spots: readonly MapSpotOnScreen[]) => void) | null } = { current: null };
+  const { container, getByRole } = render(
+    <MapLabels places={plan5.places} openPlaces={placesOfLands(plan5, ['frondaisons'])} closedLands={linkedLands(plan5)} onPick={() => {}} placer={placer} onClosed={() => {}} states={{}} words={words} upper={plan5.upper} />,
+  );
+  placer.current!([{ id: 'keo', x: 10, y: 10, shown: true, up: false }]);
+  const keo = container.querySelector<HTMLElement>('[data-lieu="keo"]')!;
+  // Le mot et la pastille sont tus : le nom est celui de l'étiquette entière, que le mot se montre ou non (`data-nom`).
+  expect(keo.querySelector('.open-world-map-keo-word')!.getAttribute('aria-hidden')).toBe('true');
+  expect(keo.querySelector('.open-world-map-keo-disc')!.getAttribute('aria-hidden')).toBe('true');
+  for (const nom of ['non', 'oui']) {
+    keo.dataset.nom = nom;
+    expect(getByRole('img', { name: 'Toi : Kéo est ici' }), nom).toBe(keo);
+  }
 });
 
 test('au 5e : le nom de chaque terre fermée sous le cadenas de son passage, et la cabine devant celui des Aiguilles ; rien au 6e', () => {
@@ -128,4 +145,20 @@ test('le prochain lieu suggéré : sa pastille seule porte la marque (double con
   // Sans prochain lieu (la suggestion est derrière un pont), aucune pastille marquée.
   const none = render(<MapLabels places={PLAN.places} openPlaces={placesOfLands(PLAN, ['pointe'])} closedLands={LINKED_LANDS} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={states} words={words} />);
   expect(none.container.querySelector('.open-world-map-place.suggested')).toBeNull();
+});
+
+test('un lieu d’option (l’Oracle, l’Auberge) porte le fanion collé à son nom, dit « en option » ; les autres non (choix du mainteneur, « Fanion »)', () => {
+  const plan5 = planFor('5e');
+  const states5 = Object.fromEntries(plan5.places.map((p) => [p.id, null])) as never;
+  const { container } = render(
+    <MapLabels places={plan5.places} openPlaces={plan5.places.map((p) => p.id)} closedLands={[]} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={states5} words={words} upper={plan5.upper} />,
+  );
+  const flagged = [...container.querySelectorAll<HTMLElement>('.open-world-map-place')].filter((b) => b.querySelector('.open-world-map-option')).map((b) => b.dataset.lieu);
+  expect(flagged.sort()).toEqual(['auberge', 'oracle']);
+  const oracle = container.querySelector<HTMLElement>('[data-lieu="oracle"]')!;
+  expect(oracle.getAttribute('aria-label')).toMatch(/^Y aller : L’Oracle, en option/);
+  // Collé au nom : dans le même bloc que son dernier mot, jamais seul.
+  const glue = oracle.querySelector('.open-world-map-option')!.closest('.open-world-map-glue')!;
+  expect(glue).toHaveTextContent('L’Oracle');
+  expect(container.querySelector('[data-lieu="hameau"]')!.getAttribute('aria-label')).not.toMatch(/en option/);
 });

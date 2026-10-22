@@ -80,10 +80,10 @@ const C = {
   // Les galets de la question : un ocre sourd, jamais celui de la lanterne.
   pebble: 0x9c8558,
   pebbleTop: 0xab9466,
-  // La sondeuse, en pion (son modèle 3D prend sa place, ./habitants.ts) : manteau de terrain brun, chemise de lin,
-  // pantalon brun, bottes grises, chapeau.
-  coat: 0x7a6a52,
-  shirt: 0xd8c7a4,
+  // La sondeuse, en pion (son modèle 3D prend sa place, ./habitants.ts), dans les couleurs de son modèle : veste de
+  // terrain sarcelle, foulard orange au cou, pantalon brun, bottes grises, chapeau.
+  coat: 0x2f7a74,
+  shirt: 0xe0902e,
   trousers: 0x6b4f3a,
   boots: 0x55595a,
   head: 0xe3b48a,

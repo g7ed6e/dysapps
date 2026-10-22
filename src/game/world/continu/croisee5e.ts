@@ -73,9 +73,11 @@ const C = {
   flag: 0x9a5b4a,
   // Les pictogrammes des flèches : un brun presque noir, un contraste de valeur fort avec le bois neuf du panneau.
   picto: 0x2e241c,
-  // La cordière, en pion (son modèle 3D prend sa place, ./habitants.ts) : chemise de lin, jupe brune, foulard, bottes.
-  shirt: 0xcdbb94,
-  skirt: 0x75604a,
+  // La cordière, en pion (son modèle 3D prend sa place, ./habitants.ts), dans les couleurs de son modèle : tunique verte,
+  // manches orangées, pantalon bleu nuit, foulard, bottes.
+  shirt: 0x6f9a3e,
+  sleeves: 0xc8703c,
+  skirt: 0x2f3f5a,
   scarf: 0x8a6a52,
   boots: 0x55595a,
   head: 0xe3b48a,
@@ -1010,7 +1012,7 @@ function cordiere(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   b.prism({ x: at.x, y: at.y + 0.56, z: at.z }, 0.25, 0.24, 0.42, 8, C.shirt);
   sphere(b, { x: at.x, y: at.y + 1.12, z: at.z }, 0.2, 8, 6, C.head);
   b.prism({ x: at.x, y: at.y + 0.92, z: at.z }, 0.26, 0.2, 0.08, 8, C.scarf);
-  for (const side of [-1, 1]) cord(b, { x: at.x + side * 0.29, y: at.y + 0.94, z: at.z }, { x: at.x + side * 0.35, y: at.y + 0.52, z: at.z + 0.05 }, 0.12, C.shirt);
+  for (const side of [-1, 1]) cord(b, { x: at.x + side * 0.29, y: at.y + 0.94, z: at.z }, { x: at.x + side * 0.35, y: at.y + 0.52, z: at.z + 0.05 }, 0.12, C.sleeves);
 }
 
 /** La planche à cordes des réponses : la hauteur de ses tréteaux, à l'échelle 1 ; une bobine choisie se soulève d'un cran. */

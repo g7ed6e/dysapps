@@ -3,7 +3,7 @@
 // presque noires) et son budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { FOREST_REWORK_MAX_5E, OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_5E, mapCost5e, openWorldCost5e } from './budget';
+import { FOREST_REWORK_MAX_5E, OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_5E, WORLD_HABITANTS_MAX_5E, mapCost5e, openWorldCost5e } from './budget';
 import { bridgeFacets, bridgeFloor, bridgeSite, clampToOpen, isCabin } from './bridges';
 import { closestOnSegment, distance, distanceToPolyline, linearRgb, signedDistance, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
@@ -544,6 +544,18 @@ describe('Le budget du 5e', () => {
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => !['montee', 'hameau', 'radeaux', 'croisee', 'instants', 'fumerolles', 'etuve', 'terrasses', 'auberge', 'donjon', 'oracle'].includes(id)).length;
     expect(triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - RESERVE_LOT13B_5E + FOREST_REWORK_MAX_5E + since * PLACE_TRIANGLES_MAX_5E + PERCHOIR_TRIANGLES_MAX);
     expect(calls).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
+    // Les habitants près de leur porte (choix du mainteneur du 21 octobre 2026, « Garder au 5e ») se cachent pendant une
+    // scénette : ils ne prennent rien sur cette réserve. Hors scénette et au départ, ils sont comptés (au plus
+    // `WORLD_HABITANTS_MAX_5E`), et ces deux vues restent sous l'enveloppe, la même réserve gardée pour les lots suivants.
+    expect(cost.some((c) => c.poste === 'habitants')).toBe(false);
+    for (const view of ['monde', 'depart'] as const) {
+      const v = openWorldCost5e(view);
+      const habitants = v.find((c) => c.poste === 'habitants')!;
+      expect(habitants.calls).toBe(0);
+      expect(habitants.triangles).toBeLessThanOrEqual(WORLD_HABITANTS_MAX_5E);
+      expect(v.reduce((s, c) => s + c.triangles, 0)).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles - RESERVE_LOT13B_5E + FOREST_REWORK_MAX_5E + since * PLACE_TRIANGLES_MAX_5E + PERCHOIR_TRIANGLES_MAX);
+      expect(v.reduce((s, c) => s + c.calls, 0)).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
+    }
     // La Carte dans l'enveloppe (ses plafonds lot par lot : ./hameau5e.test.ts, ./croisee5e.test.ts).
     const map = mapCost5e();
     expect(map.triangles).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles);

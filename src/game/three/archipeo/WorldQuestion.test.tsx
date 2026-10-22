@@ -8,7 +8,7 @@ import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
 import type { OpenWorld } from './scene';
 import { JAUGE_INSTRUCTION, JAUGE_PROMPT } from '../../world/continu/questions';
-import { PIN_MAX, WorldQuestion, afterAnswer, foldReserve, onResult } from './WorldQuestion';
+import { PIN_MAX, PlaceText, WorldQuestion, afterAnswer, foldReserve, onResult } from './WorldQuestion';
 import { belowFold } from './fit';
 import { PlaceDocument } from './placeScreen';
 import { exercisesOf, loadExercise } from '../../exercises';
@@ -59,6 +59,17 @@ function renderPlace(place: 'phare' | 'quais' | 'filets' | 'ecluses' | 'saltwork
 }
 
 const renderPhare = () => renderPlace('phare', 'sound-hunt');
+
+describe('La phrase d’un lieu', () => {
+  it('garde le point final avec le trou, sans toucher au trou d’une fraction', () => {
+    const { container } = render(<PlaceText text="Une expédition s’appelle une … ." />);
+    const glued = [...container.querySelectorAll('.world-nobreak')];
+    // Collé vraiment : aucune espace entre le trou et le point.
+    expect(glued.map((n) => n.textContent)).toEqual(['….']);
+    const frac = render(<PlaceText text="Complète …/4 ." />).container;
+    expect(frac.querySelector('.world-nobreak')).toBeNull();
+  });
+});
 
 describe('La scénette du Phare', () => {
   it('« Vue simple » puis « Scène » gardent la cloche choisie', async () => {

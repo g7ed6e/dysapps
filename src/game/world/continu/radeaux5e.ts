@@ -73,13 +73,14 @@ const C = {
   token: 0xd6bf94,
   niche: 0x5e5048,
   boatInside: 0x6e5a4a,
-  // Le marchand, en pion (son modèle 3D prend sa place, ./habitants.ts) : gilet brun, chemise claire, pantalon gris-brun.
+  // Le marchand, en pion (son modèle 3D prend sa place, ./habitants.ts), dans les couleurs de son modèle : gilet rouge
+  // sombre, chemise claire, pantalon ocre, chapeau de paille.
   shirt: 0xd8c7a4,
-  vest: 0x7a5c44,
-  trousers: 0x6b5a4a,
+  vest: 0x8a3a34,
+  trousers: 0xb08a40,
   boots: 0x55595a,
   head: 0xe3b48a,
-  cap: 0x5f6f7a,
+  cap: 0xc9a868,
 } as const;
 
 /**

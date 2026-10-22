@@ -92,11 +92,12 @@ const C = {
   bronze: 0xb8954f,
   lantern: COLORS_5E.lantern,
   lime: 0xe6e0d2,
-  // La maçonne, en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, pantalon brun, veste brique, cheveux
+  // La maçonne, en pion (son modèle 3D prend sa place, ./habitants.ts), dans les couleurs de son modèle : bottes, pantalon
+  // gris, veste orange brique, cheveux
   // noirs (intention, E : le bonnet gris se perdrait dans la pierre).
   boots: 0x55595a,
-  trousers: 0x6b5a46,
-  vest: 0x9a5a44,
+  trousers: 0x6e6a66,
+  vest: 0xc65a38,
   skin: 0xd9a77f,
   hair: 0x3b3430,
   // Les claveaux des réponses : la pierre claire au soleil, leurs flancs un cran plus sombres.
@@ -945,7 +946,7 @@ const SCENE_RISE = (() => {
   return courAt(SCENE_SPOT.dx, SCENE_SPOT.dz) - top;
 })();
 
-/** La maçonne en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, pantalon, veste brique, cheveux noirs. */
+/** La maçonne en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, pantalon, veste orange, cheveux noirs. */
 function mason(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
   for (const side of [-1, 1]) {
     b.prism({ x: at.x + side * 0.12, y: at.y, z: at.z }, 0.11, 0.11, 0.18, 6, C.boots);
@@ -1034,6 +1035,8 @@ export const DONJON: PlaceArt = {
   keepsTracesInScenette: true,
   // Sur la Carte, « Le Donjon » au nord de la tour, de son côté : il ne couvre pas le petit lieu de l'Oracle, au sud.
   nameAbove: true,
+  // Son point, le même en ruine et restauré (comme au Sémaphore) : au-dessus du haut de la tour.
+  mapPoint: { x: TOWER.x, y: PT + TOWER.top + 1.5, z: TOWER.z },
 };
 
 /** Le plan du Donjon, pour les tests : la tour, le piton, la cour, le logis, le pilier, la porte, la scène. */

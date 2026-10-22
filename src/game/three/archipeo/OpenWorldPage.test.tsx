@@ -11,9 +11,12 @@ import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
 import { reachableIslands } from '../../world/archipelago';
+import { toutConstruit } from '../../world/budget';
 import { landById, type LinkedLand } from '../../world/continu/lands';
 import { placeById } from '../../world/continu/levelPlan';
+import { planCells } from '../../world/plans';
 import { COMMANDES } from '../../world/requests';
+import { VEHICLE_STAGES } from '../../world/vehicle';
 import type { BridgeLayEvents, OpenWorld, OpenWorldOptions } from './scene';
 import OpenWorldPage from './OpenWorldPage';
 
@@ -70,6 +73,13 @@ vi.mock('../../BloclandContext', async (original) => {
   };
 });
 
+// La voile arrivée (GD-21) sans lieux achevés : le kit donné d'office, pour une Nef prête.
+const nef = vi.hoisted(() => ({ kit: false }));
+vi.mock('./NefSheet', async (original) => {
+  const m = await original<typeof import('./NefSheet')>();
+  return { ...m, nefSail: (...args: Parameters<typeof m.nefSail>) => (nef.kit ? { kit: true, missing: 0 } : m.nefSail(...args)) };
+});
+
 // Les substitutions (matchMedia du petit écran, ResizeObserver) ne passent pas d'un test à l'autre (relecture du code).
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -77,6 +87,7 @@ afterEach(() => {
 
 beforeEach(() => {
   pay.refuse = false;
+  nef.kit = false;
   scene.instant = true;
   scene.lay = null;
   vi.stubGlobal(
@@ -249,6 +260,43 @@ test('une commande prête porte la suggestion (GD-20, point 4, lot L1) : sa phra
   expect(within(sheet).getByRole('group')).toHaveTextContent('Livre 3 blocs de terre au Phare.');
 });
 
+test('la Nef prête porte la suggestion, avant une commande prête (GD-21, « Prête ») : la marque sur la Nef, « Y aller » mène au quai et ouvre sa fiche, « Partir »', async () => {
+  const potager = COMMANDES.find((c) => c.fixture === 'french-6e-phonology-fixture-1')!;
+  const stage = VEHICLE_STAGES[0];
+  nef.kit = true;
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { [potager.block]: potager.count }, world: { links: [], requests: [potager.id], parts: { [stage.id]: planCells(stage).map((c) => c.key) } } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  const w = scene.world!;
+  expect(w.setMark).toHaveBeenLastCalledWith('nef');
+  // Une seule suggestion : ni la phrase de la commande, ni sa pastille pleine, ni « Aucune mission ».
+  expect(screen.queryByText('Livre 3 blocs de terre au Phare.')).toBeNull();
+  expect(screen.queryByText(/Aucune mission/)).toBeNull();
+  expect(document.querySelector('.open-world-sign.suggested')).toBeNull();
+  // Kéo au quai, devant la Nef : la marque s'y retire, comme celle d'un lieu (directeur artistique, relecture des restes
+  // du 5e) ; Kéo parti marcher ailleurs, elle revient, sans les points de la distance (consultant d'Archipéo).
+  expect(document.querySelector('.open-world-mark')).toBeNull();
+  act(() => {
+    scene.options!.onDepart();
+    scene.options!.onArrive(null);
+  });
+  expect(document.querySelector('.open-world-mark-word')).toHaveTextContent('La Nef');
+  expect(document.querySelector('.open-world-mark .open-world-distance')).toBeNull();
+  // Comme la scène : Kéo déposé au quai, qui ouvre d'abord la fiche du lieu de départ ; celle de la Nef la remplace.
+  vi.mocked(w.goToPort).mockImplementation((spot) => scene.options!.onPort(spot));
+  await userEvent.setup().click(screen.getByRole('button', { name: 'Y aller : La Nef' }));
+  expect(w.goToPort).toHaveBeenLastCalledWith('quai');
+  const sheet = await screen.findByRole('dialog', { name: 'La Nef' });
+  expect(within(sheet).getByRole('button', { name: /^Partir/ })).toBeInTheDocument();
+  expect(document.querySelector('.open-world-mark')).toBeNull();
+});
+
+test('la Nef pas encore prête ne porte pas la marque', async () => {
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  expect(scene.world!.setMark).not.toHaveBeenCalledWith('nef');
+});
+
 test('une seule bulle à la fois : une phrase du monde (l’état d’un lieu restauré) retire la bulle sous « Y aller », qui revient ensuite (relecture des Fabriques)', async () => {
   const potager = COMMANDES.find((c) => c.fixture === 'french-6e-phonology-fixture-1')!;
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: { [potager.block]: potager.count }, world: { links: [], requests: [potager.id] } }));
@@ -348,6 +396,21 @@ describe('« Reprendre » chez l’habitant (GD-20, point 4, lot L3)', () => {
     const sheet = await screen.findByRole('dialog', { name: 'Les Quais' });
     await userEvent.setup().click(within(sheet).getByRole('button', { name: /Reprendre/ }));
   }
+
+  test('Kéo chez un habitant qui a des révisions dues, plus rien à jouer : la bulle dit son rappel, jamais « Aucune mission » (relecture des habitants du 5e)', async () => {
+    const { progress, world } = toutConstruit();
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, progress, world: { ...world, links: [] }, spaced: due(['maths-6e-calculation-measures-1:maths-6e-calculation-measures-1-2']) }));
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    // Ailleurs qu'aux Quais : rien à faire ici.
+    expect(await screen.findByText(/Aucune mission/)).toBeInTheDocument();
+    act(() => scene.options!.onArrive('quais'));
+    const sheet = await screen.findByRole('dialog', { name: 'Les Quais' });
+    expect(within(sheet).getByRole('group')).toHaveTextContent('On revoit quelques questions ensemble.');
+    await userEvent.setup().keyboard('{Escape}');
+    expect(await screen.findByText('On revoit quelques questions ensemble.', { selector: '.open-world-go-reason' })).toBeInTheDocument();
+    expect(screen.queryByText(/Aucune mission/)).toBeNull();
+  });
 
   test('les questions dues qui se revoient ici : la révision se joue dans la scène des Quais, sans quitter le monde ; un calcul tiré au hasard n’y entre pas', async () => {
     localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, spaced: due(['maths-6e-calculation-times-tables-1:5x7', 'maths-6e-calculation-measures-1:maths-6e-calculation-measures-1-2']) }));

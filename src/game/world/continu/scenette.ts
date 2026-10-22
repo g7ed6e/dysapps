@@ -119,7 +119,8 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // « Chenal » expliqué aussi, pas seulement « pilote » (directeur artistique).
   beacons: { role: placeArt('beacons')!.role, greeting: 'Le pilote guide les bateaux dans le chenal, le passage sûr dans l’eau.', placement: 'rangee' },
   ferry: { role: placeArt('ferry')!.role, greeting: null, placement: 'rangee' },
-  // Le 5e, la Montée (GD-22, lot 3) : « la fontainière » (directeur artistique), son nom attend le mot du mainteneur ; sa
+  // Le 5e, la Montée (GD-22, lot 3) : « la fontainière » (directeur artistique), en modèle 3D depuis le lot 5
+  // (./habitants.ts ; son pion dessiné par le code ne reste qu'en secours, le modèle absent ou pas encore prêt) ; sa
   // réplique, une idée, le sommet (consultant d'Archipéo et référent dys, première relecture du lot 3).
   montee: { role: placeArt('montee')!.role, greeting: 'La fontainière monte l’eau jusqu’au sommet, godet par godet.', placement: 'rangee' },
   // Le Hameau (GD-22, lot 5) : « le boulanger », sans prénom (fiche du 5e, § 6) ; sa réplique, une idée, le four commun,
@@ -2045,6 +2046,38 @@ export function scenetteDecor(anyPlace: AnyPlaceId, open = false, posed = true, 
  */
 export function scenetteSetting(place: PlaceId, open = false, posed = true): Facets {
   return decorBuilder(place, open, posed, false).build();
+}
+
+/**
+ * Le pion de l'habitant d'un lieu qui tient son dessin dans son fichier (le 5e, ./placeArt.ts), seul : sans le sol de sa
+ * scène ni ombre, ses pieds à l'origine, le visage vers +z. C'est lui qui se tient près de son lieu hors de la scénette
+ * (./worldHabitants.ts) : le modèle 3D reste à la scénette. Le décor d'un tel lieu dessine son sol d'abord, puis le pion
+ * (`decor`, `body`) : le pion est ce qui vient après le sol (un test le vérifie). `null` : le lieu n'a pas ce dessin.
+ * Fait une fois par lieu (il dessine deux fois le décor de près entier) : ses tableaux sont partagés, en lecture seule,
+ * comme les couleurs que `placeFacets` reprend.
+ */
+export function habitantPawn(place: PlaceId): Facets | null {
+  let pawn = pawns.get(place);
+  if (pawn === undefined) {
+    pawn = drawPawn(place);
+    pawns.set(place, pawn);
+  }
+  return pawn;
+}
+
+const pawns = new Map<PlaceId, Facets | null>();
+
+function drawPawn(place: PlaceId): Facets | null {
+  const art = placeArt(place);
+  if (!art) return null;
+  const origin = { x: 0, y: 0, z: 0 };
+  const floor = new FacetBuilder();
+  art.decor(floor, origin, origin, sphere, false);
+  const whole = new FacetBuilder();
+  art.decor(whole, origin, origin, sphere, true);
+  const f = whole.build();
+  const n = floor.build().positions.length;
+  return { positions: f.positions.slice(n), normals: f.normals.slice(n), colors: f.colors.slice(n), triangles: (f.positions.length - n) / 9 };
 }
 
 /**
