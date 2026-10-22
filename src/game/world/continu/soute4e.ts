@@ -25,7 +25,7 @@ import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { BASSIN_4E, COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
-import { inWorld, lantern, localGround4e, slab } from './place4eKit';
+import { brickCourses, inWorld, lantern, localGround4e, once, slab } from './place4eKit';
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter (places.ts). */
 const SINK = -0.8;
@@ -75,15 +75,15 @@ const C = {
 
 // ---------- Le repère ----------
 
-/** Le centre du lieu et le sol sous lui. */
+/** Le centre du lieu et le sol sous lui (pris au premier usage, jamais à l'import : ./place4eKit.ts). */
 const CENTER: Vec2 = PLACES_4E.find((p) => p.id === 'soute')!.center;
-const H0 = standingHeight(heightAt4e(CENTER));
+const h0 = once(() => standingHeight(heightAt4e(CENTER)));
 
 /** Le sol du 4e sous un point du repère du lieu, depuis le sol de son centre. */
 const localGround = localGround4e(CENTER);
 
 /** L'eau du bassin, dans le repère du lieu (la mer est à 0). */
-const WATER = -H0;
+const water = (): number => -h0();
 
 /** Le cap du quai : l'axe du bassin à flot au droit de la Soute (de son coude à la baie), son `v` vers le sud. */
 const BASSIN_A = BASSIN_4E.line[1];
@@ -116,15 +116,15 @@ const inQuay = (b: FacetBuilder, draw: (l: FacetBuilder) => void): void => drawP
 
 /** Le quai : de la halle au bord de l'eau, du nord au sud ; son dessus, au-dessus du sol plus haut que lui. */
 const QUAY = { u0: 10.45, u1: EDGE - 0.05, v0: -14, v1: 6 } as const;
-const QUAY_TOP = (() => {
+const quayTop = once(() => {
   let hi = -Infinity;
   for (let u = QUAY.u0; u <= QUAY.u1; u += 0.5) for (let v = QUAY.v0; v <= QUAY.v1; v += 0.5) hi = Math.max(hi, qGround(u, v));
   return hi + 0.08;
-})();
+});
 /** La bande de planches du quai : sa largeur (en `u`), son épaisseur ; dans la ruine, ses trois morceaux (deux trous). */
 const PLANKS = { u0: 12.0, u1: 16.4, t: 0.08, whole: [-13.5, 5.6] as const, ruin: [[-13.5, -8.2], [-6.6, -0.8], [1.0, 5.6]] as const } as const;
 /** Le dessus des planches. */
-const DECK_TOP = QUAY_TOP + PLANKS.t;
+const deckTop = (): number => quayTop() + PLANKS.t;
 
 /** La halle : ses bords, ses murs, leur hauteur ; ses deux baies sur le quai (en `v`), leur hauteur ; le faîte du toit. */
 const HALL = { u0: 4.5, u1: 10.5, v0: -13, v1: 0.5, wall: 0.5, h: 3.2, ridge: 1.6, doors: [[-10.3, -7.7], [-5.0, -2.4]] as const, doorH: 2.6 } as const;
@@ -238,11 +238,27 @@ function hallWall(l: FacetBuilder, alongV: boolean, at: number, from: number, to
   else l.box({ x: mid, y: SINK, z: at }, [len, h - SINK, t], C.brickShade, C.brick);
 }
 
-/** La halle restaurée (le corps) : ses quatre murs à 3,2, ses deux baies, leurs portes ouvertes contre la façade. */
+/**
+ * Les assises d'un long mur de la halle, sur sa face du dehors (en `u`, tournée vers `out`), de `from` à `to` le long du
+ * quai, sous `top` et au-dessus de `low` : le joint et le pas de la brique du Bastion (./place4eKit.ts) ; jamais sur les
+ * murs des pignons.
+ */
+function hallCourses(l: FacetBuilder, u: number, out: -1 | 1, from: number, to: number, top: number, ruin = false, low = 0): void {
+  brickCourses(l, false, u, from, to, top, top, out, ruin, low);
+}
+
+/**
+ * La halle restaurée (le corps) : ses quatre murs à 3,2, ses deux baies, leurs portes ouvertes contre la façade ; les
+ * assises de ses deux longs murs, sur la façade coupées aux baies sous leur linteau (entre les baies, les portes ouvertes
+ * les cachent : seul le pan au sud des baies les porte).
+ */
 function hallStanding(l: FacetBuilder): void {
   const H = HALL;
   const ue = H.u1 - H.wall / 2;
   hallWall(l, true, H.u0 + H.wall / 2, H.v0, H.v1, H.h);
+  hallCourses(l, H.u0, -1, H.v0, H.v1, H.h);
+  hallCourses(l, H.u1, 1, H.v0, H.v1, H.h, false, H.doorH);
+  hallCourses(l, H.u1, 1, H.doors[1][1], H.v1, H.doorH + 0.2);
   hallWall(l, false, H.v0 + H.wall / 2, H.u0, H.u1, H.h);
   hallWall(l, false, H.v1 - H.wall / 2, H.u0, H.u1, H.h);
   // La façade sur le quai : trois pans pleins entre les baies, et le linteau au-dessus des deux.
@@ -257,13 +273,13 @@ function hallStanding(l: FacetBuilder): void {
   for (const [from, to] of H.doors) {
     // L'ombre de la baie, un peu en retrait ; la porte, ouverte à plat contre la façade, au nord de sa baie.
     l.plate({ x: ue - 0.05, y: 0, z: (from + to) / 2, yaw: Math.PI / 2 }, [
-      [-(to - from) / 2, QUAY_TOP],
-      [(to - from) / 2, QUAY_TOP],
+      [-(to - from) / 2, quayTop()],
+      [(to - from) / 2, quayTop()],
       [(to - from) / 2, H.doorH],
       [-(to - from) / 2, H.doorH],
     ], C.hollow);
-    l.box({ x: H.u1 + 0.1, y: QUAY_TOP - 0.02, z: from - (to - from) / 2 - 0.05 }, [0.16, H.doorH - QUAY_TOP - 0.05, to - from - 0.1], C.newShade, C.newWood);
-    l.box({ x: H.u1 + 0.19, y: QUAY_TOP + 0.5, z: from - (to - from) / 2 - 0.05 }, [0.04, 0.14, to - from - 0.2], C.iron);
+    l.box({ x: H.u1 + 0.1, y: quayTop() - 0.02, z: from - (to - from) / 2 - 0.05 }, [0.16, H.doorH - quayTop() - 0.05, to - from - 0.1], C.newShade, C.newWood);
+    l.box({ x: H.u1 + 0.19, y: quayTop() + 0.5, z: from - (to - from) / 2 - 0.05 }, [0.04, 0.14, to - from - 0.2], C.iron);
   }
 }
 
@@ -283,7 +299,8 @@ function hallRoof(l: FacetBuilder): void {
 
 /**
  * La halle en ruine : ses murs debout à des hauteurs inégales (1,3 à 2,3), le pignon sud bas ; un pan de toit couché en
- * biais à l'intérieur ; ses deux grandes portes couchées sur le quai, devant leurs baies.
+ * biais à l'intérieur ; ses deux grandes portes couchées sur le quai, devant leurs baies. Les assises de ses longs murs,
+ * seulement sur les pans qui dépassent 1,2.
  */
 function hallRuin(l: FacetBuilder): void {
   const H = HALL;
@@ -293,8 +310,10 @@ function hallRuin(l: FacetBuilder): void {
     [H.v0, -8.5, 1.6],
     [-8.5, -3.5, 2.3],
     [-3.5, H.v1, 1.3],
-  ] as const)
+  ] as const) {
     hallWall(l, true, uw, from, to, h);
+    hallCourses(l, H.u0, -1, from, to, h, true);
+  }
   hallWall(l, false, H.v0 + H.wall / 2, H.u0, H.u1, 2.0);
   hallWall(l, false, H.v1 - H.wall / 2, H.u0, 7.6, 1.0);
   hallWall(l, false, H.v1 - H.wall / 2, 7.6, H.u1, 0.6);
@@ -303,8 +322,10 @@ function hallRuin(l: FacetBuilder): void {
     [H.v0, a0, 2.2],
     [a1, b0, 1.7],
     [b1, H.v1, 1.4],
-  ] as const)
+  ] as const) {
     hallWall(l, true, ue, from, to, h);
+    hallCourses(l, H.u1, 1, from, to, h, true);
+  }
   // Les têtes de mur cassées en gradins : un dernier rang de brique au bout de trois pans.
   for (const [u, v, len, h] of [
     [uw, -10.2, 2.4, 1.6],
@@ -319,7 +340,7 @@ function hallRuin(l: FacetBuilder): void {
     [H.doors[0], 0.12],
     [H.doors[1], -0.18],
   ] as const)
-    l.box({ x: H.u1 + 1.6, y: QUAY_TOP - 0.02, z: (from + to) / 2, yaw }, [2.4, 0.16, to - from], C.woodShade, C.wood);
+    l.box({ x: H.u1 + 1.6, y: quayTop() - 0.02, z: (from + to) / 2, yaw }, [2.4, 0.16, to - from], C.woodShade, C.wood);
 }
 
 // ---------- Le quai ----------
@@ -329,19 +350,19 @@ function quay(l: FacetBuilder): void {
   const Q = QUAY;
   const len = Q.v1 - Q.v0,
     vm = (Q.v0 + Q.v1) / 2;
-  l.box({ x: (Q.u0 + Q.u1) / 2, y: WATER - 0.5, z: vm }, [Q.u1 - Q.u0, QUAY_TOP - WATER + 0.5, len], C.stone, C.stoneSun);
+  l.box({ x: (Q.u0 + Q.u1) / 2, y: water() - 0.5, z: vm }, [Q.u1 - Q.u0, quayTop() - water() + 0.5, len], C.stone, C.stoneSun);
   // Les assises du parement, sur l'eau : deux joints sombres, en long.
-  for (const y of [QUAY_TOP - 0.42, WATER + 0.3])
+  for (const y of [quayTop() - 0.42, water() + 0.3])
     l.quad([Q.u1 + 0.006, y, Q.v1], [Q.u1 + 0.006, y, Q.v0], [Q.u1 + 0.006, y + 0.07, Q.v0], [Q.u1 + 0.006, y + 0.07, Q.v1], C.joint);
   // La margelle, au bord de l'eau, un cran plus haute.
-  l.box({ x: Q.u1 - 0.35, y: QUAY_TOP - 0.05, z: vm }, [0.75, 0.15, len + 0.02], C.stoneShade, C.stoneSun);
+  l.box({ x: Q.u1 - 0.35, y: quayTop() - 0.05, z: vm }, [0.75, 0.15, len + 0.02], C.stoneShade, C.stoneSun);
 }
 
 /** Les planches du quai : entières (`whole`), ou dans la ruine, en trois morceaux. */
 function planks(l: FacetBuilder, whole: boolean): void {
   const P = PLANKS;
   const parts = whole ? [P.whole] : P.ruin;
-  for (const [a, c] of parts) l.box({ x: (P.u0 + P.u1) / 2, y: QUAY_TOP - 0.02, z: (a + c) / 2 }, [P.u1 - P.u0, P.t + 0.02, c - a], whole ? C.newShade : C.woodShade, whole ? C.newWood : C.wood);
+  for (const [a, c] of parts) l.box({ x: (P.u0 + P.u1) / 2, y: quayTop() - 0.02, z: (a + c) / 2 }, [P.u1 - P.u0, P.t + 0.02, c - a], whole ? C.newShade : C.woodShade, whole ? C.newWood : C.wood);
 }
 
 /**
@@ -350,23 +371,23 @@ function planks(l: FacetBuilder, whole: boolean): void {
  */
 function bollard(l: FacetBuilder): void {
   const B = BOLLARD;
-  l.prism({ x: B.u, y: QUAY_TOP - 0.3, z: B.v }, B.r, B.r * 0.9, B.h + 0.3, 8, C.rust, C.rustTop);
-  l.prism({ x: B.u, y: QUAY_TOP + B.h, z: B.v }, B.r + 0.12, B.r + 0.12, 0.14, 8, C.rust, C.rustTop);
-  l.box({ x: B.u - B.r - 0.02, y: QUAY_TOP + 0.24, z: B.v }, [0.1, 0.46, 0.46], C.rust, C.rustTop);
-  for (const dv of [-0.12, 0.12]) l.box({ x: B.u - B.r - 0.2, y: QUAY_TOP + 0.43, z: B.v + dv }, [0.28, 0.08, 0.08], C.ironTop);
+  l.prism({ x: B.u, y: quayTop() - 0.3, z: B.v }, B.r, B.r * 0.9, B.h + 0.3, 8, C.rust, C.rustTop);
+  l.prism({ x: B.u, y: quayTop() + B.h, z: B.v }, B.r + 0.12, B.r + 0.12, 0.14, 8, C.rust, C.rustTop);
+  l.box({ x: B.u - B.r - 0.02, y: quayTop() + 0.24, z: B.v }, [0.1, 0.46, 0.46], C.rust, C.rustTop);
+  for (const dv of [-0.12, 0.12]) l.box({ x: B.u - B.r - 0.2, y: quayTop() + 0.43, z: B.v + dv }, [0.28, 0.08, 0.08], C.ironTop);
 }
 
 /** Une bitte neuve, de fer bruni (les abords). */
 function smallBollard(l: FacetBuilder, u: number, v: number): void {
-  l.prism({ x: u, y: QUAY_TOP - 0.3, z: v }, 0.26, 0.24, 0.85, 6, C.iron, C.ironTop);
+  l.prism({ x: u, y: quayTop() - 0.3, z: v }, 0.26, 0.24, 0.85, 6, C.iron, C.ironTop);
 }
 
 /** La lanterne du magasinier, sur son poteau, au coin sud-est de la halle : la seule allumée de la ruine. */
 function keeperLantern(l: FacetBuilder): void {
   const L = KEEPER_LANTERN;
-  l.box({ x: L.u, y: SINK, z: L.v }, [0.2, QUAY_TOP + L.h - SINK, 0.2], C.woodShade, C.wood);
-  l.beam({ x: L.u, y: QUAY_TOP + L.h - 0.1, z: L.v }, { x: L.u + 0.5, y: QUAY_TOP + L.h - 0.1, z: L.v }, 0.08, C.woodShade);
-  lantern(l, { x: L.u + 0.5, y: QUAY_TOP + L.h - 0.14, z: L.v }, true);
+  l.box({ x: L.u, y: SINK, z: L.v }, [0.2, quayTop() + L.h - SINK, 0.2], C.woodShade, C.wood);
+  l.beam({ x: L.u, y: quayTop() + L.h - 0.1, z: L.v }, { x: L.u + 0.5, y: quayTop() + L.h - 0.1, z: L.v }, 0.08, C.woodShade);
+  lantern(l, { x: L.u + 0.5, y: quayTop() + L.h - 0.14, z: L.v }, true);
 }
 
 // ---------- Le navire ----------
@@ -456,13 +477,13 @@ function cargo(l: FacetBuilder, restored: boolean): void {
 /** Le navire posé le long du quai : redressé, ou gîtant vers le bassin (la ruine), sans jamais couler. */
 function ship(l: FacetBuilder, restored: boolean): void {
   // Dans son repère, `x` vers la proue : un quart de tour l'aligne sur le quai (la proue au nord) ; la gîte, autour de `x`.
-  drawPosed(l, { x: SHIP.u, y: WATER, z: SHIP.v, yaw: Math.PI / 2, pitch: restored ? 0 : SHIP.list }, (q) => cargo(q, restored));
+  drawPosed(l, { x: SHIP.u, y: water(), z: SHIP.v, yaw: Math.PI / 2, pitch: restored ? 0 : SHIP.list }, (q) => cargo(q, restored));
 }
 
 /** Le bord du pont du navire côté quai, au point `v` (pour les amarres), selon sa gîte. */
 const shipRail = (v: number, restored: boolean): P3 => {
   const lift = restored ? 0 : SHIP.beam * Math.sin(SHIP.list);
-  return [SHIP.u - SHIP.beam + 0.2, WATER + SHIP.freeboard + lift - 0.05, v];
+  return [SHIP.u - SHIP.beam + 0.2, water() + SHIP.freeboard + lift - 0.05, v];
 };
 
 // ---------- La ruine : les débris ----------
@@ -493,7 +514,7 @@ function cart(l: FacetBuilder): void {
 
 /** Le filet de chargement en tas, sur le quai. */
 function netHeap(l: FacetBuilder): void {
-  l.prism({ x: 16.0, y: DECK_TOP - 0.05, z: -5.4, yaw: 0.3 }, 0.8, 0.35, 0.35, 6, C.rope, C.rope);
+  l.prism({ x: 16.0, y: deckTop() - 0.05, z: -5.4, yaw: 0.3 }, 0.8, 0.35, 0.35, 6, C.rope, C.rope);
 }
 
 // ---------- Le modèle ----------
@@ -532,10 +553,10 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
         planks(l, false);
         ship(l, false);
         const rope = shipRail(BOLLARD.v + 0.4, false);
-        l.beam({ x: rope[0], y: rope[1], z: rope[2] }, { x: BOLLARD.u + 0.1, y: QUAY_TOP + BOLLARD.h - 0.2, z: BOLLARD.v }, 0.06, C.rope);
+        l.beam({ x: rope[0], y: rope[1], z: rope[2] }, { x: BOLLARD.u + 0.1, y: quayTop() + BOLLARD.h - 0.2, z: BOLLARD.v }, 0.06, C.rope);
         for (const c of RUIN_CRATES) {
           const onQuay = c.v <= QUAY.v1;
-          const y = c.on ? DECK_TOP + 0.97 : onQuay ? DECK_TOP - 0.03 : qGround(c.u, c.v) - 0.03;
+          const y = c.on ? deckTop() + 0.97 : onQuay ? deckTop() - 0.03 : qGround(c.u, c.v) - 0.03;
           crate(l, { x: c.u, y, z: c.v }, c.s, c.yaw, c.motif);
         }
         netHeap(l);
@@ -551,13 +572,13 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     inQuay(b, (l) => {
       hallRoof(l);
       const B = BEAM;
-      for (const u of [B.u0, B.u1]) l.box({ x: u, y: QUAY_TOP - 0.3, z: B.v }, [0.3, B.h + 0.3, 0.3], C.newShade, C.newWood);
-      l.box({ x: (B.u0 + B.u1) / 2, y: QUAY_TOP + B.h, z: B.v }, [B.u1 - B.u0 + 0.6, 0.34, 0.34], C.newShade, C.newWood);
-      l.drum({ x: B.pulley, y: QUAY_TOP + B.h - 0.3, z: B.v - 0.08, yaw: 0, pitch: Math.PI / 2 }, 0.24, 0.16, 6, C.iron, C.ironTop);
-      l.box({ x: B.pulley + 0.24, y: QUAY_TOP + 2.3, z: B.v }, [0.05, B.h - 2.6, 0.05], C.rope);
-      l.box({ x: B.pulley + 0.24, y: QUAY_TOP + 2.05, z: B.v }, [0.18, 0.26, 0.08], C.iron);
-      l.box({ x: HALL.u1 + 0.25, y: QUAY_TOP + 2.95, z: -6.35 }, [0.5, 0.07, 0.07], C.iron);
-      lantern(l, { x: HALL.u1 + 0.45, y: QUAY_TOP + 2.95, z: -6.35 }, true);
+      for (const u of [B.u0, B.u1]) l.box({ x: u, y: quayTop() - 0.3, z: B.v }, [0.3, B.h + 0.3, 0.3], C.newShade, C.newWood);
+      l.box({ x: (B.u0 + B.u1) / 2, y: quayTop() + B.h, z: B.v }, [B.u1 - B.u0 + 0.6, 0.34, 0.34], C.newShade, C.newWood);
+      l.drum({ x: B.pulley, y: quayTop() + B.h - 0.3, z: B.v - 0.08, yaw: 0, pitch: Math.PI / 2 }, 0.24, 0.16, 6, C.iron, C.ironTop);
+      l.box({ x: B.pulley + 0.24, y: quayTop() + 2.3, z: B.v }, [0.05, B.h - 2.6, 0.05], C.rope);
+      l.box({ x: B.pulley + 0.24, y: quayTop() + 2.05, z: B.v }, [0.18, 0.26, 0.08], C.iron);
+      l.box({ x: HALL.u1 + 0.25, y: quayTop() + 2.95, z: -6.35 }, [0.5, 0.07, 0.07], C.iron);
+      lantern(l, { x: HALL.u1 + 0.45, y: quayTop() + 2.95, z: -6.35 }, true);
     }),
   );
   // ---- Les abords : le quai refait ; le navire redressé, couvert ; les bittes neuves et les amarres ; deux filets pendus
@@ -569,10 +590,10 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
       for (const p of SMALL_BOLLARDS) {
         smallBollard(l, p.u, p.v);
         const r = shipRail(p.v + (p.v < 0 ? 1.2 : -1.2), true);
-        l.beam({ x: r[0], y: r[1], z: r[2] }, { x: p.u, y: QUAY_TOP + 0.45, z: p.v }, 0.06, C.rope);
+        l.beam({ x: r[0], y: r[1], z: r[2] }, { x: p.u, y: quayTop() + 0.45, z: p.v }, 0.06, C.rope);
       }
       const r = shipRail(BOLLARD.v + 0.4, true);
-      l.beam({ x: r[0], y: r[1], z: r[2] }, { x: BOLLARD.u + 0.1, y: QUAY_TOP + BOLLARD.h - 0.2, z: BOLLARD.v }, 0.06, C.rope);
+      l.beam({ x: r[0], y: r[1], z: r[2] }, { x: BOLLARD.u + 0.1, y: quayTop() + BOLLARD.h - 0.2, z: BOLLARD.v }, 0.06, C.rope);
       for (const u of [6.0, 8.8]) {
         const v = HALL.v1 + 0.02;
         l.plate({ x: u, y: 0, z: v }, [
@@ -607,7 +628,7 @@ const TRACE_SPOTS = {
 function handTruck(b: FacetBuilder, c: Vec3): void {
   traceInQuay(b, c, (l) => {
     const { u, v } = TRACE_SPOTS.urbanization;
-    const y = DECK_TOP;
+    const y = deckTop();
     for (const dv of [-0.24, 0.24]) l.beam({ x: u + 0.35, y: y + 0.2, z: v + dv }, { x: u - 0.05, y: y + 1.45, z: v + dv }, 0.08, C.newShade);
     l.beam({ x: u + 0.2, y: y + 0.85, z: v - 0.26 }, { x: u + 0.2, y: y + 0.85, z: v + 0.26 }, 0.06, C.newShade);
     l.box({ x: u + 0.5, y, z: v }, [0.32, 0.05, 0.56], C.iron);
@@ -622,7 +643,7 @@ function handTruck(b: FacetBuilder, c: Vec3): void {
 function luggage(b: FacetBuilder, c: Vec3): void {
   traceInQuay(b, c, (l) => {
     const { u, v } = TRACE_SPOTS.mobilities;
-    const y = DECK_TOP;
+    const y = deckTop();
     l.prism({ x: u - 0.85, y, z: v, yaw: 0.3 }, 0.3, 0.2, 0.55, 6, C.canvas, C.canvas);
     l.beam({ x: u - 0.85, y: y + 0.55, z: v }, { x: u - 0.85, y: y + 0.66, z: v + 0.02 }, 0.08, C.rope);
     l.box({ x: u, y, z: v, yaw: 0.05 }, [0.62, 0.45, 0.9], C.trunk, C.trunk);
@@ -637,7 +658,7 @@ function luggage(b: FacetBuilder, c: Vec3): void {
 function cargoNet(b: FacetBuilder, c: Vec3): void {
   traceInQuay(b, c, (l) => {
     const { u, v } = TRACE_SPOTS.globalization;
-    const y = DECK_TOP;
+    const y = deckTop();
     l.prism({ x: u, y: y - 0.02, z: v, yaw: 0.2 }, 1.05, 0.95, 0.12, 6, C.rope, C.rope);
     crate(l, { x: u - 0.35, y: y + 0.08, z: v - 0.3 }, 0.62, 0.15, 'stripes');
     crate(l, { x: u + 0.38, y: y + 0.08, z: v + 0.15 }, 0.62, -0.25, 'circle');
@@ -673,12 +694,12 @@ const SCENE_SPOT = { dx: SCENE_AT.x, dz: SCENE_AT.z, half: [2.3, 1.1] as [number
 const SCENE_HALF = 2.0;
 
 /** La hauteur du sol de la scène (les planches du quai) au-dessus du plus haut du sol sous elle (questionScene.ts). */
-const SCENE_RISE = (() => {
+const sceneRise = once(() => {
   const [hx, hz] = SCENE_SPOT.half;
   let top = -Infinity;
   for (let i = -3; i <= 3; i++) for (let k = -2; k <= 2; k++) top = Math.max(top, localGround(SCENE_SPOT.dx + (i / 3) * hx, SCENE_SPOT.dz + (k / 2) * hz));
-  return DECK_TOP - top;
-})();
+  return deckTop() - top;
+});
 
 /** Le magasinier en pion (son modèle 3D prend sa place) : bottes, pantalon, veste moutarde. */
 function keeper(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
@@ -698,7 +719,9 @@ export const SOUTE: PlaceArt = {
   traceStage: 0,
   sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
   site: {
-    rise: SCENE_RISE,
+    get rise() {
+      return sceneRise();
+    },
     keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
     habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
     subject: { halfWidth: 3.0, bottom: -0.5, top: 2.9, depth: 0.3 },
@@ -745,11 +768,17 @@ export const SOUTE_LAYOUT = {
   localToQuay,
   edge: EDGE,
   quay: QUAY,
-  quayTop: QUAY_TOP,
-  deckTop: DECK_TOP,
+  get quayTop() {
+    return quayTop();
+  },
+  get deckTop() {
+    return deckTop();
+  },
   hall: HALL,
   ship: SHIP,
-  water: WATER,
+  get water() {
+    return water();
+  },
   bollard: BOLLARD,
   beam: BEAM,
   keeperLantern: KEEPER_LANTERN,

@@ -26,7 +26,7 @@ import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
-import { inWorld, lantern, localGround4e, slab } from './place4eKit';
+import { brickCourses, inWorld, lantern, localGround4e, once, slab } from './place4eKit';
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter (places.ts). */
 const SINK = -0.8;
@@ -72,7 +72,8 @@ const C = {
 // ---------- Le repère du lieu ----------
 
 const CENTER: Vec2 = PLACES_4E.find((p) => p.id === 'porte')!.center;
-const H0 = standingHeight(heightAt4e(CENTER));
+/** Le sol sous le centre, pris au premier usage, jamais à l'import (./place4eKit.ts). */
+const h0 = once(() => standingHeight(heightAt4e(CENTER)));
 
 /** Le sol du 4e sous un point du repère du lieu, depuis le sol de son centre. */
 const localGround = localGround4e(CENTER);
@@ -139,12 +140,12 @@ const PAVING: readonly Vec2[] = [
   { x: 9.8, z: WALL.z - WALL.t / 2 - 0.05 },
   { x: 9.8, z: -4.8 },
 ];
-/** Le dessus de la place, au-dessus du sol plus haut qu'elle. */
-const PAVING_TOP = (() => {
+/** Le dessus de la place, au-dessus du sol plus haut qu'elle ; calculé au premier usage. */
+const pavingTop = once(() => {
   let hi = -Infinity;
   for (let x = -1.6; x <= 9.8; x += 0.5) for (let z = -4.8; z <= 6.3; z += 0.5) hi = Math.max(hi, localGround(x, z));
   return hi + 0.04;
-})();
+});
 
 /** La lanterne de l'avocate (au pilier est, côté chemin), celle de la salle, celle du chemin. */
 const KEEPER_LANTERN = { x: PILLARS[1], z: WALL.z + GATE.pillar / 2 + 0.4, y: 3.0 } as const;
@@ -167,10 +168,15 @@ const MAP_POINT: Vec3 = { x: GATE.x, y: GATE.h + 1.5, z: WALL.z };
 
 // ---------- Les petits volumes ----------
 
-/** Un pan du mur de l'usine, de `x0` à `x1`, à la hauteur `h` ; son chaperon de pierre grise s'il est entier. */
-function wall(b: FacetBuilder, x0: number, x1: number, h: number, coping: boolean): void {
+/**
+ * Un pan du mur de l'usine, de `x0` à `x1`, à la hauteur `h` ; son chaperon de pierre grise s'il est entier. Ses assises
+ * sur ses deux faces (le joint et le pas du Bastion : restes des Fabriques, décision du directeur artistique du 22 octobre
+ * 2026), coupées au portail avec lui ; dans la ruine (`ruin`), seulement sur un pan qui dépasse 1,2.
+ */
+function wall(b: FacetBuilder, x0: number, x1: number, h: number, coping: boolean, ruin = false): void {
   b.box({ x: (x0 + x1) / 2, y: SINK, z: WALL.z }, [x1 - x0, h - SINK, WALL.t], C.brickShade, C.brick);
   if (coping) b.box({ x: (x0 + x1) / 2, y: h, z: WALL.z }, [x1 - x0 + 0.1, 0.22, WALL.t + 0.2], C.stoneShade, C.stoneSun);
+  for (const out of [-1, 1] as const) brickCourses(b, true, WALL.z + (out * WALL.t) / 2, x0, x1, h, h, out, ruin);
 }
 
 /**
@@ -272,7 +278,7 @@ function bench(b: FacetBuilder, a: number, upset: boolean): void {
   const g = localGround(x, z);
   const wood = upset ? C.wood : C.newWood,
     shade = upset ? C.woodShade : C.newShade;
-  drawPosed(b, { x, y: upset ? g : Math.max(g, PAVING_TOP), z, yaw }, (l) => {
+  drawPosed(b, { x, y: upset ? g : Math.max(g, pavingTop()), z, yaw }, (l) => {
     if (upset) {
       l.box({ x: 0, y: -0.04, z: 0 }, [1.8, 0.12, 0.42], shade, wood);
       for (const s of [-1, 1]) l.box({ x: s * 0.7, y: 0.08, z: 0 }, [0.12, 0.42, 0.38], shade, wood);
@@ -324,10 +330,10 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     'ruine',
     0,
     (b) => {
-      wall(b, WALL.west[0], -9.5, 1.4, false);
-      wall(b, -9.5, WALL.west[1], 2.6, true);
-      wall(b, WALL.east[0], 7.5, WALL.h, true);
-      wall(b, 7.5, WALL.east[1], 1.9, false);
+      wall(b, WALL.west[0], -9.5, 1.4, false, true);
+      wall(b, -9.5, WALL.west[1], 2.6, true, true);
+      wall(b, WALL.east[0], 7.5, WALL.h, true, true);
+      wall(b, 7.5, WALL.east[1], 1.9, false, true);
       pillar(b, PILLARS[1], 4.6);
       b.box({ x: PILLARS[1], y: 4.3, z: WALL.z, yaw: 0.25, pitch: 0.15 }, [1.3, 0.5, 1.3], C.stone, C.stoneSun);
       for (const [x, z, s, yaw] of [
@@ -387,12 +393,12 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   });
   // ---- Les abords : la place pavée et ses joints ; les cinq bancs en cercle ; la lanterne du chemin.
   add(2, 0, (b) => {
-    slab(b, PAVING.map((p) => [p.x, PAVING_TOP, p.z] as const), 0.5, C.stoneShade, C.paving);
+    slab(b, PAVING.map((p) => [p.x, pavingTop(), p.z] as const), 0.5, C.stoneShade, C.paving);
     const [w0, w1] = PAVING;
     for (const z of [3.2, 0.2, -2.6]) {
       // Du bord ouest de la place (qui suit le chemin, en biais) au bord est.
       const x0 = w0.x + ((w1.x - w0.x) * (z - w0.z)) / (w1.z - w0.z) + 0.3;
-      const y = PAVING_TOP + 0.01;
+      const y = pavingTop() + 0.01;
       b.quad([x0, y, z - 0.04], [x0, y, z + 0.04], [9.5, y, z + 0.04], [9.5, y, z - 0.04], C.joint);
     }
     for (const a of BENCHES.at) bench(b, a, false);
@@ -429,7 +435,7 @@ function dais(b: FacetBuilder, c: Vec3): void {
 function bar(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
     const { x, z } = TRACE_SPOTS.justice;
-    const g = Math.max(localGround(x, z), PAVING_TOP);
+    const g = Math.max(localGround(x, z), pavingTop());
     const yaw = -HALL_DOOR - Math.PI / 2;
     drawPosed(l, { x, y: g, z, yaw }, (q) => {
       q.box({ x: 0, y: 0.82, z: 0 }, [2.2, 0.12, 0.16], C.newShade, C.newWood);
@@ -478,12 +484,12 @@ const SCENE_RIGHT = { x: Math.cos(SCENE_START), z: -Math.sin(SCENE_START) } as c
 const SCENE_HALF = 2.0;
 
 /** La hauteur du sol de la scène (la place) au-dessus du plus haut du sol sous elle. */
-const SCENE_RISE = (() => {
+const sceneRise = once(() => {
   const [hx, hz] = SCENE_SPOT.half;
   let top = -Infinity;
   for (let i = -3; i <= 3; i++) for (let k = -2; k <= 2; k++) top = Math.max(top, localGround(SCENE_SPOT.dx + (i / 3) * hx, SCENE_SPOT.dz + (k / 2) * hz));
-  return PAVING_TOP - top;
-})();
+  return pavingTop() - top;
+});
 
 /** L'avocate en pion (son modèle 3D prend sa place) : chaussures, robe sombre, rabat clair. */
 function lawyer(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
@@ -504,7 +510,9 @@ export const PORTE: PlaceArt = {
   traceStage: 0,
   sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
   site: {
-    rise: SCENE_RISE,
+    get rise() {
+      return sceneRise();
+    },
     keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
     habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
     subject: { halfWidth: 3.0, bottom: -0.5, top: 2.9, depth: 0.3 },
@@ -557,7 +565,9 @@ export const PORTE_LAYOUT = {
   awning: AWNING,
   bell: BELL,
   paving: PAVING,
-  pavingTop: PAVING_TOP,
+  get pavingTop() {
+    return pavingTop();
+  },
   keeperLantern: KEEPER_LANTERN,
   pathLantern: PATH_LANTERN,
   door: DOOR_AT,
@@ -567,7 +577,9 @@ export const PORTE_LAYOUT = {
   scene: SCENE_SPOT,
   sceneStart: SCENE_START,
   traceSpots: TRACE_SPOTS,
-  heightAtCenter: H0,
+  get heightAtCenter() {
+    return h0();
+  },
   /** La pierre grise (ses abords en posent). */
   stone: { light: C.stone, shade: C.stoneShade, top: C.stoneSun },
   wood: { side: C.woodShade, top: C.wood },

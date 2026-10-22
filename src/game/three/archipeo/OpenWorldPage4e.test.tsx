@@ -143,3 +143,15 @@ test('au Replat, la voix dit le nom puis la phrase du Replat, que l’écran n�
   expect(screen.queryByText(/Aucune mission/)).toBeNull();
   expect(screen.queryByText(/endroit plat dans une pente/)).toBeNull();
 }, 10000);
+
+test('au Détour de l’Épave, un seul nom à la fois : la marque du lieu suggéré se masque tant que « L’Épave » est écrite (restes des Fabriques)', async () => {
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  const stage = document.querySelector('.world-stage')!;
+  expect(stage.getAttribute('data-said')).toBeNull();
+  act(() => scene.options!.onDetour!('epave'));
+  expect(await screen.findByText('L’Épave')).toBeInTheDocument();
+  expect(stage.getAttribute('data-said')).toBe('detour');
+  await vi.waitFor(() => expect(screen.queryByText('L’Épave')).toBeNull(), { timeout: 6000 });
+  expect(stage.getAttribute('data-said')).toBeNull();
+}, 10000);

@@ -94,10 +94,13 @@ export function inWorld(b: FacetBuilder, c: Vec3, draw: (l: FacetBuilder) => voi
   drawPosed(b, { x: c.x, y: c.y, z: c.z, yaw }, draw);
 }
 
-/** Le sol du 4e sous un point du repère d'un lieu (centré en `center`), depuis le sol de son centre. */
+/**
+ * Le sol du 4e sous un point du repère d'un lieu (centré en `center`), depuis le sol de son centre ; le sol du centre est
+ * pris au premier usage, jamais à l'import.
+ */
 export function localGround4e(center: Vec2): (lx: number, lz: number) => number {
-  const h0 = standingHeight(heightAt4e(center));
-  return (lx, lz) => standingHeight(heightAt4e({ x: center.x + lx, z: center.z + lz })) - h0;
+  const h0 = once(() => standingHeight(heightAt4e(center)));
+  return (lx, lz) => standingHeight(heightAt4e({ x: center.x + lx, z: center.z + lz })) - h0();
 }
 
 /** Le repère d'un lieu du 4e : son centre, le sol de son centre, le sol sous un point du repère, sa porte. */
@@ -290,6 +293,38 @@ export function courses(b: FacetBuilder, alongX: boolean, at: number, from: numb
   const p = (u: number, y: number): P3 => (alongX ? [u, y, v] : [v, y, u]);
   const n: P3 = alongX ? [0, 0, out] : [out, 0, 0];
   for (const y of ys) quadOut(b, p(from, y - 0.035), p(to, y - 0.035), p(to, y + 0.035), p(from, y + 0.035), n, color);
+}
+
+/** Le pas des assises de la brique du 4e : un joint d'ombre tous les 0,9 au-dessus du pied d'un mur (./loge4e.ts). */
+const BRICK_COURSE_STEP = 0.9;
+
+/** Un pan de brique en ruine ne porte ses assises qu'au-dessus de cette hauteur (directeur artistique, 22 octobre 2026). */
+const RUIN_COURSES_FROM = 1.2;
+
+/** Le joint de la brique du 4e (`COLORS_4E.brickJoint`, celui du Bastion). */
+const BRICK_JOINT = COLORS_4E.brickJoint;
+
+/**
+ * Les assises d'un pan de brique du 4e (restes des Fabriques, décision du directeur artistique du 22 octobre 2026 : le
+ * même pas et le même joint qu'au Bastion, une seule règle pour toute la brique du 4e), sur sa face à `at` en travers,
+ * tournée vers `out`, de `from` à `to` le long du mur (`alongX` : d'ouest en est, sinon du nord au sud) : un joint tous
+ * les 0,9 au-dessus de son pied `base`, au-dessus de `low` (un soubassement), jamais à moins de 0,2 de son haut, qui va de
+ * `top0` à `top1` au-dessus du pied (un haut cassé en biais : chaque joint s'arrête avant lui). En ruine (`ruin`), rien
+ * sur un pan qui ne dépasse pas `RUIN_COURSES_FROM`, et 0,35 au moins sous son haut cassé.
+ */
+export function brickCourses(b: FacetBuilder, alongX: boolean, at: number, from: number, to: number, top0: number, top1: number, out: -1 | 1, ruin = false, low = 0, base = 0): void {
+  const hi = Math.max(top0, top1);
+  if (ruin && hi <= RUIN_COURSES_FROM) return;
+  const margin = ruin ? 0.35 : 0.2;
+  for (let k = 1; k * BRICK_COURSE_STEP <= hi - margin + 1e-9; k++) {
+    const y = k * BRICK_COURSE_STEP;
+    if (y <= low) continue;
+    // Le long du pan, là où son haut reste à `margin` au-dessus du joint.
+    const t = (s: number) => from + (to - from) * s;
+    const reach = top0 === top1 ? 1 : (top0 - (y + margin)) / (top0 - top1);
+    const [s0, s1] = top0 >= top1 ? [0, Math.min(1, reach)] : [Math.max(0, reach), 1];
+    if (s1 - s0 > 1e-6) courses(b, alongX, at, t(s0), t(s1), [base + y], out, BRICK_JOINT);
+  }
 }
 
 /**
