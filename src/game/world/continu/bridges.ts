@@ -655,11 +655,11 @@ function swingFallenRails(s: BridgeSite): Facets {
   };
   const t = 0.1;
   const c = SWING_IRON.fallen;
-  // Le sud, couché vers le milieu du tablier : sa main courante et trois montants.
+  // Le sud, couché vers le milieu du tablier : sa main courante et deux montants, à ses bouts.
   const [a, e] = [d0 + 0.6, d1 - 1.2];
   rod(b, P(a, -half + BRIDGE.rail * 0.9, 0.06), P(e, -half + BRIDGE.rail * 0.85, 0.06), t, c);
-  for (let k = 0; k < 3; k++) {
-    const d = a + ((e - a) * k) / 2;
+  for (let k = 0; k < 2; k++) {
+    const d = a + (e - a) * k;
     rod(b, P(d, -half, 0.05), P(d + 0.1, -half + BRIDGE.rail * 0.9, 0.06), t * 0.8, c);
   }
   // Le nord, debout près du pivot, puis plié vers le bout libre.
@@ -667,7 +667,6 @@ function swingFallenRails(s: BridgeSite): Facets {
   for (const d of [a, bend]) rod(b, P(d, half, 0), P(d, half, BRIDGE.rail), t * 0.8, c);
   rod(b, P(a, half, BRIDGE.rail), P(bend, half, BRIDGE.rail), t, c);
   rod(b, P(bend, half, BRIDGE.rail), P(e, half + 0.5, 0.15), t, c);
-  rod(b, P(bend + 1.2, half, 0), P(bend + 1.5, half + 0.35, 0.55), t * 0.8, c);
   return b.build();
 }
 
