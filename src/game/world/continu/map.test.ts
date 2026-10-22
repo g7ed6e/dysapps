@@ -804,6 +804,43 @@ describe('La Carte du 4e au plus grand texte (deuxième relecture du lot 1, cons
   });
 });
 
+describe('La Carte serrée : Kéo ne cache aucun nom (retouche 1 du lot 1 du 3e, consultant UX UI et référent dys)', () => {
+  const screen = { width: 844, height: 390 };
+  const cross = (a: { left: number; top: number; right: number; bottom: number }, b: typeof a) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+
+  it('la pastille de Kéo garde sa place avant les noms : le nom pâle d’un voisin ne passe pas dessous, « Toi » ne le couvre pas', () => {
+    // Le téléphone couché au plus grand texte : Kéo au Parvis, « Le Kiosque » (une terre fermée) juste à sa gauche.
+    const keo: MapLabel = { id: 'keo', kind: 'keo', x: 320, y: 210, w: 130, h: 52, stacked: { w: 60, h: 90 } };
+    const kiosque: MapLabel = { id: 'kiosque', kind: 'open', pale: true, x: 250, y: 236, w: 200, h: 52 };
+    const [k, name] = layoutMapLabels([keo, kiosque], [], screen, true, MAP_EDGE_4E, true);
+    const disc = { left: k.left, top: k.top, right: k.left + MAP_KEO_DISC, bottom: k.top + keo.h };
+    const toi = k.name ? { left: k.left, top: k.top, right: k.left + (k.toi === 'dessous' ? keo.stacked!.w : keo.w), bottom: k.top + (k.toi === 'dessous' ? keo.stacked!.h : keo.h) } : disc;
+    const box = name.name ? { left: name.left, top: name.top, right: name.left + kiosque.w, bottom: name.top + kiosque.h } : { left: name.left, top: name.top, right: name.left + MAP_COMPACT, bottom: name.top + MAP_COMPACT };
+    expect(cross(toi, box)).toBe(false);
+    expect(cross(disc, box)).toBe(false);
+  });
+
+  it('sans place pour « Toi », la pastille seule, à sa place gardée', () => {
+    // Des boutons tout autour de la pastille : aucune place pour le mot.
+    const keo: MapLabel = { id: 'keo', kind: 'keo', x: 400, y: 200, w: 130, h: 52, stacked: { w: 60, h: 90 } };
+    const walls = [
+      { left: 0, top: 0, right: 844, bottom: 190 },
+      { left: 0, top: 260, right: 844, bottom: 390 },
+      { left: 0, top: 190, right: 370, bottom: 260 },
+      { left: 432, top: 190, right: 844, bottom: 260 },
+    ];
+    const [k] = layoutMapLabels([keo], walls, screen, true, MAP_EDGE_4E, true);
+    expect(k.name).toBe(false);
+  });
+
+  it('le lieu suggéré garde son nom sur une ligne', () => {
+    const next: MapLabel = { id: 'belvedere', kind: 'open', first: true, x: 420, y: 200, w: 220, h: 52, narrow: { w: 120, h: 96 } };
+    const [s] = layoutMapLabels([next], [], screen, true, MAP_EDGE_4E, true);
+    expect(s.narrow).toBeUndefined();
+    expect(s.name).toBe(true);
+  });
+});
+
 describe('La Carte du 4e, les Coteaux (retouche 1)', () => {
   // Les points et les tailles mesurés sur la tablette (1024 × 768), tout construit : la Carte ouverte à la Jonction.
   const BUTTONS = [

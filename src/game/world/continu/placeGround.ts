@@ -4,11 +4,12 @@
 import type { Vec2 } from './geometry';
 import { levelOfPlace, type OpenWorldLevel, type PlaceId } from './levelPlan';
 import { heightAt } from './terrain';
+import { heightAt3e } from './terrain3e';
 import { heightAt4e } from './terrain4e';
 import { heightAt5e } from './terrain5e';
 
 /** La hauteur du sol de chaque niveau. */
-const HEIGHT_OF: Readonly<Record<OpenWorldLevel, (p: Vec2) => number>> = { '6e': heightAt, '5e': heightAt5e, '4e': heightAt4e };
+const HEIGHT_OF: Readonly<Record<OpenWorldLevel, (p: Vec2) => number>> = { '6e': heightAt, '5e': heightAt5e, '4e': heightAt4e, '3e': heightAt3e };
 
 const known = new Map<PlaceId, (p: Vec2) => number>();
 

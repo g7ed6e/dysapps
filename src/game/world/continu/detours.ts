@@ -132,8 +132,8 @@ export const DETOURS_5E: readonly Detour[] = [CREUX, HUTTE, FAILLE, PERCHOIR];
 /** Les Détours du 4e (lot 2 : l'Épave, aux Fabriques ; lot 3 : le Recoin, au Bastion, et la Dalle, à l'Épaule ; les Coteaux : le Replat, rattaché à la Veillée). */
 export const DETOURS_4E: readonly Detour[] = [EPAVE, RECOIN, DALLE, REPLAT];
 
-/** Les Détours d'un niveau. */
-const DETOURS_OF: Readonly<Record<OpenWorldLevel, readonly Detour[]>> = { '6e': DETOURS, '5e': DETOURS_5E, '4e': DETOURS_4E };
+/** Les Détours d'un niveau (au 3e, aucun encore : le Cadran, la Bergerie, le Lac et le Cèdre viennent avec leur lot). */
+const DETOURS_OF: Readonly<Record<OpenWorldLevel, readonly Detour[]>> = { '6e': DETOURS, '5e': DETOURS_5E, '4e': DETOURS_4E, '3e': [] };
 const detoursOf = (level: OpenWorldLevel): readonly Detour[] => DETOURS_OF[level];
 
 /** Tous les Détours, par leur nom : la table se construit une fois. */

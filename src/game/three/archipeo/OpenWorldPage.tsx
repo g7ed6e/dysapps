@@ -59,7 +59,7 @@ import { PlacePanel, earnPlacesOf, placeFromParam, placeResume } from './PlacePa
 import { PARAM_ILE } from '../../world/openWorldReturn';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
-import { NEF_LEAVES, NEF_TITLE, NefSheet, nefLookOf, nefReady, nefReadyLabel, nefSail, nefStageOf } from './NefSheet';
+import { NEF_LEAVES, NEF_TITLE, NefSheet, nefAtRest, nefLookOf, nefReady, nefReadyLabel, nefSail, nefStageOf } from './NefSheet';
 import { EarnPlaces } from '../../PlanSection';
 import type { VehicleStage } from '../../world/vehicle';
 import { portState } from './portState';
@@ -183,11 +183,13 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const nefStage = nefStageOf(level);
   const achieved = useMemo(() => Object.values(constructions).filter((c) => constructionState(c) === 'restauree').length, [constructions]);
   const sail = useMemo(() => nefSail(state, achieved, nefStage), [state, achieved, nefStage]);
-  const nefLookNow = useMemo(() => nefLookOf(state, sail.kit, nefStage), [state, sail.kit, nefStage]);
+  // Au 3e (`nefAtRest`), la Nef est au repos, entière : ni temps à construire, ni fiche, ni départ.
+  const nefResting = nefAtRest(level);
+  const nefLookNow = useMemo(() => (nefResting ? 3 : nefLookOf(state, sail.kit, nefStage)), [nefResting, state, sail.kit, nefStage]);
   // La Nef prête (GD-21, « Prête ») : le passage prêt passe en tête de la suggestion, avant toute commande et toute
   // mission, aux deux niveaux ; la marque se pose sur elle, « Y aller » mène au quai et ouvre sa fiche. Partie (le
   // voyage fait), elle n'est plus prête.
-  const nefFirst = useMemo(() => nefReady(state, nefStage, sail.kit), [state, nefStage, sail.kit]);
+  const nefFirst = useMemo(() => !nefResting && nefReady(state, nefStage, sail.kit), [nefResting, state, nefStage, sail.kit]);
   // Le lieu où se tient Kéo, arrivé (rien pendant la marche, ni à l'Escale) : la suggestion et les pastilles le lisent.
   const [here, setHere] = useState<PlaceId | null>(null);
   // La prochaine mission, jamais celle d'un lieu fermé : aucune ne s'y joue. Celle du lieu où se tient Kéo d'abord, tant
@@ -490,12 +492,14 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         if (end) lines.push(end);
         setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines, after: 0, icon: islandStateIcon('restauree') }));
       },
-      // La Nef, son ber ou le banc du large touché (GD-21) : sa fiche, Kéo reste où il est.
-      onNef: () => {
-        setLieu(null);
-        setCommandsOpen(false);
-        setPanel('nef');
-      },
+      // La Nef, son ber ou le banc du large touché (GD-21) : sa fiche, Kéo reste où il est ; au repos (le 3e), rien.
+      onNef: nefAtRest(plan.level)
+        ? undefined
+        : () => {
+            setLieu(null);
+            setCommandsOpen(false);
+            setPanel('nef');
+          },
       onMark: (m) => {
         lastMark.current = m;
         placeMark(markRef.current, arrowRef.current, m, layout);
@@ -1085,7 +1089,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           </div>
           {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
           {mapOpen && !asking && (
-            <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nefFirst ? null : (nextPlace?.id ?? null)} portName={departNames?.nom} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} snug={level === '4e'} />
+            <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nefFirst ? null : (nextPlace?.id ?? null)} portName={departNames?.nom} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} snug={plan.snugMap === true} keoFirst={plan.keoFirstMap === true} />
           )}
           {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
               le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à
@@ -1125,7 +1129,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                   onClose={closePanel}
                 />
               ) : (
-                <PortPanels panel={panel} names={departNames!} onGo={goPort} onNef={nefLookNow === 4 ? undefined : () => setPanel('nef')} onClose={closePanel} />
+                <PortPanels panel={panel} names={departNames!} onGo={goPort} onNef={nefLookNow === 4 || nefResting ? undefined : () => setPanel('nef')} onClose={closePanel} />
               )}
             </div>
           )}

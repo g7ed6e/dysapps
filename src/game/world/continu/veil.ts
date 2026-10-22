@@ -10,9 +10,11 @@ import { nodeLands, planOfLand, type LandId, type LinkedLand } from './lands';
 import { placeById, planFor, type LevelPlan, type OpenWorldLevel } from './levelPlan';
 import type { PathNode } from './network';
 import { PATH_NODES } from './plan6e';
+import { PATH_NODES_3E, PEAK_3E } from './plan3e';
 import { PATH_NODES_4E, VOLCANO_4E } from './plan4e';
 import { PATH_EDGES_5E, PATH_NODES_5E } from './plan5e';
 import { heightAt, heightAt as heightAt6e, landDistance, standingHeight } from './terrain';
+import { heightAt3e, landDistance3e } from './terrain3e';
 import { heightAt4e, landDistance4e } from './terrain4e';
 import { heightAt5e, landDistance5e, plateauShare } from './terrain5e';
 
@@ -92,13 +94,14 @@ interface VeilWorld {
   landDistance(p: Vec2): number;
   heightAt(p: Vec2): number;
   level(land: LandId, p: Vec2): number;
-  /** Ses voiles. */
+  /** Ses voiles, et leur couleur. */
   layers: readonly { lift: number; alpha: number }[];
+  color: number;
   /** La part de brume qu'un chemin laisse en `p` (de 0 sur lui à 1 loin de lui) ; au 6e, partout 1. */
   clear(p: Vec2): number;
 }
 
-function veilWorld(plan: LevelPlan, nodes: readonly PathNode[], base: Pick<VeilWorld, 'landDistance' | 'heightAt' | 'level' | 'layers' | 'clear'>): VeilWorld {
+function veilWorld(plan: LevelPlan, nodes: readonly PathNode[], base: Pick<VeilWorld, 'landDistance' | 'heightAt' | 'level' | 'layers' | 'color' | 'clear'>): VeilWorld {
   const nodeLand = nodeLands(plan);
   const featuresOf = (land: LandId): Vec2[] => [
     ...nodes.filter((n) => nodeLand.get(n.id) === land).map((n) => n.at),
@@ -132,13 +135,14 @@ function worldOf(land: LandId): VeilWorld {
  * haut du volcan (retouche 1 du lot 1, directeur artistique : ni le haut du cône ni le panache sous la brume).
  */
 const VEIL_WORLDS: Readonly<Record<OpenWorldLevel, () => VeilWorld>> = {
-  '6e': () => veilWorld(planFor('6e'), PATH_NODES, { landDistance, heightAt, level: () => 1, layers: VEIL_LAYERS, clear: () => 1 }),
+  '6e': () => veilWorld(planFor('6e'), PATH_NODES, { landDistance, heightAt, level: () => 1, layers: VEIL_LAYERS, color: MIST_COLOR, clear: () => 1 }),
   '5e': () =>
     veilWorld(planFor('5e'), PATH_NODES_5E, {
       landDistance: landDistance5e,
       heightAt: heightAt5e,
       level: (l, p) => (l === UPPER_LAND_5E ? smoothstep(0.35, 0.75, plateauShare(p)) : 1 - smoothstep(0.05, 0.4, plateauShare(p))),
       layers: VEIL_LAYERS_5E,
+      color: MIST_COLOR,
       clear: (p) => smoothstep(PATH_CLEAR_5E.clear, PATH_CLEAR_5E.full, Math.min(...PATH_SEGMENTS_5E.map(([a, b]) => distanceToPolyline(p, [a, b])))),
     }),
   '4e': () =>
@@ -147,9 +151,27 @@ const VEIL_WORLDS: Readonly<Record<OpenWorldLevel, () => VeilWorld>> = {
       heightAt: heightAt4e,
       level: () => 1,
       layers: VEIL_LAYERS,
+      color: MIST_COLOR,
       clear: (p) => smoothstep(VOLCANO_4E.radius * VOLCANO_CLEAR_4E[0], VOLCANO_4E.radius * VOLCANO_CLEAR_4E[1], distance(p, VOLCANO_4E.crater)),
     }),
+  '3e': () =>
+    veilWorld(planFor('3e'), PATH_NODES_3E, {
+      landDistance: landDistance3e,
+      heightAt: heightAt3e,
+      level: () => 1,
+      ...VEIL_3E,
+      clear: (p) => smoothstep(PEAK_CLEAR_3E[0], PEAK_CLEAR_3E[1], distance(p, PEAK_3E.at)),
+    }),
 };
+
+/**
+ * Le voile du 3e : aucun (décision du directeur artistique, 22 octobre 2026, sur captures) ; la fiche du 3e (§ 2) veut
+ * une terre fermée qui garde la lumière du jour, « ni brume ni nappes » : le cadenas et le liseré disent la terre fermée.
+ */
+const VEIL_3E: Pick<VeilWorld, 'layers' | 'color'> = { layers: [], color: MIST_COLOR };
+
+/** Au 3e, la brume s'efface sur le pic et le haut du cône, qu'on voit de toutes les terres : nulle à moins de tant d'unités du pic, pleine au-delà de tant. */
+const PEAK_CLEAR_3E = [PEAK_3E.radius, PEAK_3E.granite] as const;
 
 /** Au 4e, la brume s'efface sur le cône du volcan : nulle à moins de tant de son rayon du cratère, pleine au-delà de tant. */
 const VOLCANO_CLEAR_4E = [0.5, 0.72] as const;
@@ -222,8 +244,10 @@ function toShore(w: VeilWorld, p: Vec2, most: number): Vec2 | null {
  * si la rive est celle d'une autre terre).
  */
 function veilOf(pos: number[], nor: number[], col: number[], land: LinkedLand): void {
-  const [r, g, b] = linearRgb(MIST_COLOR);
   const w = worldOf(land);
+  // Sans voile (le 3e), rien à calculer.
+  if (!w.layers.length) return;
+  const [r, g, b] = linearRgb(w.color);
   const points = w.features.get(land)!;
   const minX = Math.min(...points.map((q) => q.x)) - GRID.reach;
   const maxX = Math.max(...points.map((q) => q.x)) + GRID.reach;

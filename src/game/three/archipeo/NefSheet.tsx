@@ -29,6 +29,13 @@ const cap = (s: string) => `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
 export const nefStageOf = (level: ArchipelagoId): VehicleStage => VEHICLE_STAGES.find((s) => s.from === level) ?? VEHICLE_STAGES[0];
 
 /**
+ * Le niveau d'où aucune forme de la Nef ne part (le 3e, le dernier) : la Nef y est au repos, entière, sur son aire (fiche
+ * du 3e : l'aéronef au repos ; retouche 1 du lot 1, directeur artistique : on ne la voyait sur aucune capture), sans
+ * fiche ni départ ; ses trois parures viennent avec le lot du Versant.
+ */
+export const nefAtRest = (level: ArchipelagoId): boolean => !VEHICLE_STAGES.some((s) => s.from === level);
+
+/**
  * Le dernier temps de la Nef du monde continu, qui n'a pas de Gardiens : il arrive avec autant de lieux achevés que la
  * grille demande de Gardiens rallumés (trois en 6e pour la voile, deux en 5e pour le gouvernail : règle de GD-21,
  * décision du mainteneur du 19 octobre 2026), ou avec les Gardiens rallumés dans la grille. `missing` : les lieux qu'il

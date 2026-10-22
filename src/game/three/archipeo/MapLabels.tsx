@@ -79,11 +79,17 @@ interface Props {
    */
   onCrowded?(crowded: (spots: readonly MapSpotOnScreen[]) => number): void;
   /**
-   * Au 4e (consultant UX UI, deuxième relecture du lot 1) : le lieu suggéré (`nextPlace`) se pose le tout premier, contre
-   * son point ; les étiquettes restent à `MAP_EDGE_4E` des bords ; un nom de lieu ouvert loin de son point y est relié
-   * par un trait fin (`mapLeader`). Le 6e et le 5e ne le prennent pas.
+   * La Carte serrée (`LevelPlan.snugMap` : au 4e, consultant UX UI, deuxième relecture du lot 1 ; au 3e de même) : le lieu
+   * suggéré (`nextPlace`) se pose le tout premier, contre son point, sur une ligne ; les étiquettes restent à
+   * `MAP_EDGE_4E` des bords ; un nom de lieu ouvert loin de son point y est relié par un trait fin (`mapLeader`) ; le nom
+   * d'une terre fermée passe avant ceux de ses lieux. Le 6e et le 5e ne le prennent pas.
    */
   snug?: boolean;
+  /**
+   * Sur la Carte serrée du 3e (`LevelPlan.keoFirstMap`, retouche 1 du lot 1 du 3e) : la pastille de Kéo garde sa place
+   * avant les noms pâles et ceux des terres, et « Toi » ne couvre jamais une étiquette (`layoutMapLabels`, `snug`).
+   */
+  keoFirst?: boolean;
 }
 
 /**
@@ -194,7 +200,7 @@ const SUGGESTED_WORDS = ' Suggéré.';
 /** Ce que dit la pastille de Kéo. */
 const KEO_LABEL = 'Toi : Kéo est ici';
 
-export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, nextPlace = null, states, words, portName, upper = [], landNames = false, onCrowded, snug = false }: Props) {
+export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, nextPlace = null, states, words, portName, upper = [], landNames = false, onCrowded, snug = false, keoFirst = false }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const sizes = useRef(new Map<string, { w: number; h: number; pad?: number; narrow?: { w: number; h: number; pad?: number } }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
@@ -212,14 +218,14 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
   const answered = useRef(false);
   const crowdedRef = useRef(onCrowded);
   const upperRef = useRef(upper);
-  const snugRef = useRef({ on: snug, next: nextPlace });
+  const snugRef = useRef({ on: snug, next: nextPlace, keoFirst });
   const leads = useRef<SVGSVGElement>(null);
   // Les props relues par les poses (appelées par la scène, hors du rendu de React), rangées après chaque rendu.
   useLayoutEffect(() => {
     crowdedRef.current = onCrowded;
     upperRef.current = upper;
-    snugRef.current = { on: snug, next: nextPlace };
-  }, [onCrowded, upper, snug, nextPlace]);
+    snugRef.current = { on: snug, next: nextPlace, keoFirst };
+  }, [onCrowded, upper, snug, nextPlace, keoFirst]);
 
   // Les étiquettes à poser pour des points donnés, avec leurs tailles mesurées (les points cachés ou pas encore mesurés
   // n'en ont pas).
@@ -258,7 +264,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       else if (s.id !== 'port') gone += MISSING.offscreen;
     }
     // Sans la reprise des noms fermés : seules les pastilles comptent ici.
-    return gone + missingOf(items, layoutMapLabels(items, obstacles.current, screen.current, false, snugRef.current.on ? MAP_EDGE_4E : 0));
+    return gone + missingOf(items, layoutMapLabels(items, obstacles.current, screen.current, false, snugRef.current.on ? MAP_EDGE_4E : 0, snugRef.current.on && snugRef.current.keoFirst));
   }, [itemsOf, openPlaces]);
 
   const place = useCallback((spots: readonly MapSpotOnScreen[], moving = false) => {
@@ -285,7 +291,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
     // image : expert frontend).
     // Ce que les étiquettes laissent à découvert, comme les boutons : le repère d'un lieu de loin (les trois radeaux).
     const keep = spots.some((s) => s.shown && s.clear) ? [...obstacles.current, ...spots.flatMap((s) => (s.shown && s.clear ? [s.clear] : []))] : obstacles.current;
-    const laid = layoutMapLabels(items, keep, screen.current, !moving && screen.current.height > LOW_SCREEN, snugRef.current.on ? MAP_EDGE_4E : 0);
+    const laid = layoutMapLabels(items, keep, screen.current, !moving && screen.current.height > LOW_SCREEN, snugRef.current.on ? MAP_EDGE_4E : 0, snugRef.current.on && snugRef.current.keoFirst);
     // La vue de départ se choisit à chaque mesure qui change une taille (police, grand texte, taille de l'écran), une
     // fois : la plus proche de l'île entière où chaque lieu ouvert a son nom près de lui (GD-20, « La Carte au plus grand
     // texte »). Une Carte que l'élève a touchée ne bouge plus (la scène en juge). Les étiquettes restent cachées jusqu'à la
