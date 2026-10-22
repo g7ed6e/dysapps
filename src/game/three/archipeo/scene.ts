@@ -25,6 +25,7 @@ import { epaveFacets } from '../../world/continu/epave4e';
 import { recoinFacets } from '../../world/continu/recoin4e';
 import { replatFacets } from '../../world/continu/replat4e';
 import { cadranFacets } from '../../world/continu/cadran3e';
+import { bergerieFacets } from '../../world/continu/bergerie3e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
@@ -1323,6 +1324,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!c) cadranDrawn.push((c = { found, facets: cadranFacets(found, ground) }));
     return c.facets;
   };
+  // La Bergerie du 3e (les Alpages) : de même.
+  const bergerieDrawn: { found: boolean; facets: Facets }[] = [];
+  const bergerieNow = (): Facets => {
+    const found = detoursFound.includes('bergerie');
+    let c = bergerieDrawn.find((k) => k.found === found);
+    if (!c) bergerieDrawn.push((c = { found, facets: bergerieFacets(found, ground) }));
+    return c.facets;
+  };
   // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son temps (la page le donne), le modèle de sa forme chargé à la
   // demande (sans lui, le ber seul), ses parties montrées réunies aux lieux, son obstacle (le banc du large, le mur de
   // nuages) avec eux. Le temps qui arrive descend à part (`nefDrop`, dans `nefMesh`) ; au départ (`nefTrip`), la Nef et
@@ -1996,8 +2005,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // figuier ; la Dalle (lot 3), sur ses colonnes, son muret ; le Replat (les Coteaux), sa terrasse et son muret ; leur
       // lanterne, et la sente de chacun une fois trouvé.
       else if (level === '4e') rest.push(epaveNow(), recoinNow(), dalleNow(), replatNow());
-      // Les Détours du 3e : le Cadran (le Versant), son rocher, son disque et son style ; sa sente une fois trouvé.
-      else rest.push(cadranNow());
+      // Les Détours du 3e : le Cadran (le Versant), son rocher, son disque et son style ; la Bergerie (les Alpages), son
+      // enclos et ses moutons ; la sente de chacun une fois trouvé.
+      else rest.push(cadranNow(), bergerieNow());
       // `reaches` en dernier : `reachFrom` compte sur eux pour les rayons (`solid`), `mergeFacets` garde l'ordre (nacelles5e.test.ts).
       rest.push(...reaches);
       const placed = mergeFacets(rest);

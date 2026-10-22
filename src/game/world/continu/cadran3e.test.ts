@@ -29,12 +29,12 @@ function countColor(f: Facets, color: number): number {
 describe('Le Cadran, le Détour du Versant', () => {
   it('se nomme « Le Cadran », au Versant, dans la sauvegarde à la fin ; Kéo dit sa phrase, écrite sous le nom', () => {
     expect(detourById('cadran')).toBe(CADRAN);
-    expect(DETOURS_3E).toEqual([CADRAN]);
+    expect(DETOURS_3E[0]).toBe(CADRAN);
     expect(CADRAN.name).toBe('Le Cadran');
     expect(CADRAN.land).toBe('versant');
     expect(SAVED_IDS).toEqual(DETOUR_IDS);
-    expect(DETOUR_IDS.at(-1)).toBe('cadran');
-    expect(DETOUR_IDS.at(-2)).toBe('replat');
+    // Le premier du 3e, juste après le Replat du 4e (la Bergerie des Alpages vient après lui).
+    expect(DETOUR_IDS.indexOf('cadran')).toBe(DETOUR_IDS.indexOf('replat') + 1);
     expect(sanitizeDetours(['cadran', 'replat'])).toEqual(['replat', 'cadran']);
     expect(CADRAN.says).toBe('Ici, l’ombre disait l’heure.');
     expect(CADRAN.saysAloudOnly).toBeUndefined();
