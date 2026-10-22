@@ -225,13 +225,17 @@ const sideTop = (z: number): number => G() + CAGE.north + ((CAGE.south - CAGE.no
 
 /**
  * Le haut plein de l'arche du cadre, en plein cintre : de chaque côté, le mur entre la naissance et le haut du cintre, à
- * ses deux faces, son intrados en trois pans ; `inner`, dans la ruine, l'arrête à cette distance du milieu (l'arche
+ * ses deux faces, son intrados en `ARCH_SEGMENTS` pans (trois pans se lisaient comme des pans coupés sur une arche de
+ * cette taille : captures de la retouche 1) ; `inner`, dans la ruine, l'arrête à cette distance du milieu (l'arche
  * ouverte en haut), à gauche puis à droite.
  */
 function archHaunches(b: FacetBuilder, inner: readonly [number, number] = [0, 0]): void {
   const t = CAGE.wall / 2;
-  for (const [k, s] of [-1, 1].entries()) archSpandrel(b, CAGE.z1 - t, CAGE.wall, 0, ARCH.half, G() + ARCH.spring, G() + ARCH.crown, s as -1 | 1, C.brick, C.brickShade, inner[k]);
+  for (const [k, s] of [-1, 1].entries()) archSpandrel(b, CAGE.z1 - t, CAGE.wall, 0, ARCH.half, G() + ARCH.spring, G() + ARCH.crown, s as -1 | 1, C.brick, C.brickShade, inner[k], ARCH_SEGMENTS);
 }
+
+/** Les pans de l'intrados de l'arche, par quart de cercle. */
+const ARCH_SEGMENTS = 6;
 
 /** Les hauteurs des assises de la cage, au-dessus de son pied (un joint d'ombre tous les 0,9). */
 const COURSES = [0.9, 1.8, 2.7, 3.6, 4.5, 6.3, 7.2, 8.1] as const;
