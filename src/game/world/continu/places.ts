@@ -2541,10 +2541,10 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   terminus: northPlace('terminus'),
   orgues: northPlace('orgues'),
   dynamo: northPlace('dynamo'),
-  // Le 3e : le Belvédère (le Versant, lot 2 du monde ouvert du 3e), dessiné dans son fichier ; les autres, des ruines
+  // Le 3e : le Belvédère et le Grenier (le Versant, lot 2 du monde ouvert du 3e), dessinés dans leur fichier ; les autres, des ruines
   // simples (lot 1, ./ruins3e.ts).
   belvedere: northPlace('belvedere'),
-  grenier: ruinOnly(RUINS_3E.grenier),
+  grenier: northPlace('grenier'),
   abri: ruinOnly(RUINS_3E.abri),
   jardin: ruinOnly(RUINS_3E.jardin),
   fanal: ruinOnly(RUINS_3E.fanal),

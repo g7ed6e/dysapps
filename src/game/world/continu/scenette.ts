@@ -335,6 +335,16 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     placement: 'rangee',
     words: { pose: ['Le dallage est remis.', 'Le gnomon est debout.', 'Les pierres sont à leur place.', 'La visée est prête.', 'Les flèches sont posées.'], end: 'D’ici, on mesurait la montagne sans la gravir.' },
   },
+  // Le Grenier (le Versant du 3e, lieu du monde ouvert seulement) : le métier est connu, sans phrase de métier (proposition,
+  // § 4) ; une phrase par partie, sans nom de plan (« réserve », « meunier », « toit », « abords ») ni « grenier » en nom
+  // commun (relecture des lieux, point 13) : « Le plancher est calé. » et « Les ardoises sont remises. » à la place de
+  // « Le grenier tient debout. » et « Le toit est refait. ».
+  grenier: {
+    role: placeArt('grenier')!.role,
+    greeting: null,
+    placement: 'rangee',
+    words: { pose: ['Le plancher est calé.', 'Les sacs sont rangés.', 'Les mesures sont en ordre.', 'Les ardoises sont remises.', 'La meule est prête.'], end: 'Ici, chacun avait sa part des provisions.' },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -785,6 +795,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   veillee: northSite('veillee'),
   basilique: northSite('basilique'),
   belvedere: northSite('belvedere'),
+  grenier: northSite('grenier'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2353,6 +2364,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   basilique: 'paving',
   // Le Belvédère : le dallage de la terrasse.
   belvedere: 'paving',
+  // Le Grenier : la terre de la cour.
+  grenier: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

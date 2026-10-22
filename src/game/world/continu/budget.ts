@@ -158,10 +158,11 @@ export const PLACE_RUIN_TRIANGLES_MAX_5E = 1_200;
 export const PLACE_TRIANGLES_MAX_4E = 1_600;
 export const PLACE_RUIN_TRIANGLES_MAX_4E = 1_200;
 /**
- * Le plafond de la ruine d'un lieu du 3e, en triangles, celui du 4e (proposition du Versant, § 0, décision du
- * mainteneur) ; le grand lieu du 3e, le Belvédère, a son plafond restauré (fiche du 3e, § 8 : 1 600 et le surcoût du
- * grand lieu, environ 800).
+ * Le plafond d'un lieu du 3e, ruine, étapes et traces montrées ensemble, en triangles, et celui de sa ruine : ceux du 4e
+ * (proposition du Versant, § 0, décision du mainteneur) ; le grand lieu du 3e, le Belvédère, a le sien (fiche du 3e, § 8 :
+ * 1 600 et le surcoût du grand lieu, environ 800).
  */
+export const PLACE_TRIANGLES_MAX_3E = 1_600;
 export const PLACE_RUIN_TRIANGLES_MAX_3E = 1_200;
 export const GRAND_PLACE_TRIANGLES_MAX_3E = 2_400;
 
