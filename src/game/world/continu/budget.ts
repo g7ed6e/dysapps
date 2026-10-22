@@ -174,6 +174,12 @@ export const GRAND_PLACE_TRIANGLES_MAX_3E = 2_400;
 export const EPAULE_BRIDGE_TRIANGLES = 1_300;
 
 /**
+ * Le plafond du pont du glacier relié, au 3e (proposition des Alpages, § 2 : « environ 1 200, comme un pont du 4e ») :
+ * l'arche de granit en dos d'âne, ses culées, son chemin de pierre claire, ses deux parapets et leurs chaperons d'ardoise.
+ */
+export const GLACIER_BRIDGE_TRIANGLES_3E = 1_200;
+
+/**
  * Le plafond du pont du ravin en arche, tombé ou relié (les Coteaux du 4e ; intention du directeur artistique du 22
  * octobre 2026, § 12 : « environ 1 200 triangles », à la place du pont générique, 132 tombé et 906 relié).
  */

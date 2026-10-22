@@ -266,11 +266,12 @@ export function bridgeFloor(x: number, z: number, closed: readonly LinkedLand[],
       continue;
     }
     if (d < s.abut[0] || d > s.abut[1]) continue;
-    // L'arche de l'Épaule reliée : tout le tablier entre ses parapets, la voie comme le chemin, culées comprises.
-    const arch = isBasaltArch(land) && !closed.includes(land);
+    // L'arche de l'Épaule ou du glacier reliée : tout le tablier entre ses parapets, culées comprises.
+    const arch = isStoneArch(land) && !closed.includes(land);
     if (v > (arch ? ARCH_BRIDGE.walk : BRIDGE.abutHalf)) continue;
     let y: number | null = null;
-    if (d <= s.water[0] + BRIDGE.over) y = abutTop(s, 0, d);
+    if (arch && isGlacierArch(land)) y = glacierDeckAt(s, d);
+    else if (d <= s.water[0] + BRIDGE.over) y = abutTop(s, 0, d);
     else if (d >= s.water[1] - BRIDGE.over) y = abutTop(s, 1, d);
     else if (v <= (arch ? ARCH_BRIDGE.walk : BRIDGE.width / 2 + 0.2) && !closed.includes(land)) y = BRIDGE.deck;
     if (y !== null) top = top === null ? y : Math.max(top, y);
@@ -456,6 +457,7 @@ export interface BridgeParts {
  */
 export function bridgeSurface(s: BridgeSite, d: number): number {
   if (isRavinArch(s.land)) return ravinDeckAt(s, d);
+  if (isGlacierArch(s.land)) return glacierDeckAt(s, d);
   return d <= s.water[0] + BRIDGE.over ? abutTop(s, 0, d) : d >= s.water[1] - BRIDGE.over ? abutTop(s, 1, d) : BRIDGE.deck;
 }
 
@@ -483,7 +485,7 @@ export const bridgeLayRest = (land: LinkedLand): Facets =>
         ? ravinRest(bridgeSite(land))
         : isSwing(land)
           ? mergeFacets([abutmentFacets(bridgeSite(land), false), swingDrum(bridgeSite(land))])
-          : isBasaltArch(land)
+          : isStoneArch(land)
             ? archAbutments(bridgeSite(land))
             : abutmentFacets(bridgeSite(land), true);
 
@@ -564,7 +566,7 @@ export function bridgeParts(land: LinkedLand): BridgeParts {
     return { piles: parts.bays, deck: parts.deck, rails: parts.parapets };
   }
   if (isSwing(land)) return swingParts(s);
-  if (isBasaltArch(land)) return archParts(s);
+  if (isStoneArch(land)) return archParts(s);
   if (isRavinArch(land)) {
     // Le pont du ravin : son arche, son tablier et ses parapets (./ravinBridge4e.ts), puis les lanternes communes des ponts.
     const parts = ravinParts(s);
@@ -641,7 +643,7 @@ export function bridgeFacets(land: LinkedLand, built: boolean, car: CabinCar = '
   }
   if (built) {
     const parts = bridgeParts(land);
-    return mergeFacets([...(isCloudArches(land) ? [] : [isBasaltArch(land) ? archAbutments(s) : abutmentFacets(s, false)]), ...parts.piles, parts.deck, parts.rails]);
+    return mergeFacets([...(isCloudArches(land) ? [] : [isStoneArch(land) ? archAbutments(s) : abutmentFacets(s, false)]), ...parts.piles, parts.deck, parts.rails]);
   }
   if (isBasaltArch(land) || isGlacierArch(land)) return fallenArch(s);
   if (isCloudArches(land)) return fallenArches(s);
@@ -870,6 +872,24 @@ export function bridgeDeck(land: LinkedLand, d?: number): number {
 /** Le passage d'une terre est-il l'arche de basalte de la coulée (au 4e) ? */
 const isBasaltArch = (land: LinkedLand): boolean => isLand4e(land) && LINKS_4E[land].cut === 'coulee';
 
+/**
+ * Le passage d'une terre est-il, relié, une arche de pierre pleine (`ARCH_BRIDGE`) : l'arche de basalte de l'Épaule au
+ * 4e, ou le pont du glacier au 3e (proposition des Alpages, § 2 : « le pont de l'Épaule du 4e, en froid ») ?
+ */
+const isStoneArch = (land: LinkedLand): boolean => isBasaltArch(land) || isGlacierArch(land);
+
+/**
+ * Le pont du glacier relié : la glace est au niveau des prés (fiche du 3e, § 5), si bien que l'arche ne se lit, de côté,
+ * que si le tablier monte au-dessus d'elle : un dos d'âne doux, d'une culée à l'autre, qui monte de `rise` au milieu.
+ */
+export const GLACIER_BRIDGE = { rise: 1.3 } as const;
+
+/** Le dessus du pont du glacier relié à `d` sur sa ligne : de la culée de ce côté à celle d'en face, en dos d'âne doux. */
+function glacierDeckAt(s: BridgeSite, d: number): number {
+  const t = Math.min(1, Math.max(0, (d - s.abut[0]) / (s.abut[1] - s.abut[0])));
+  return s.base[0] + 0.08 + (s.base[1] - s.base[0]) * t + GLACIER_BRIDGE.rise * Math.sin(Math.PI * t);
+}
+
 /** Le passage d'une terre est-il, au 3e, le pont du glacier, la galerie du col ou les arches basses sur les nuages ? */
 const isGlacierArch = (land: LinkedLand): boolean => isLand3e(land) && LINKS_3E[land].cut === 'glace';
 const isColGallery = (land: LinkedLand): boolean => isLand3e(land) && LINKS_3E[land].cut === 'col';
@@ -988,10 +1008,62 @@ export const ARCH_BRIDGE = {
  */
 const ARCH_COLORS = { flank: 0x6c605a, sun: 0x786b64, vault: 0x5a504c, dalle: COLORS_4E.stone, dalleSun: COLORS_4E.stoneSun } as const;
 
+/**
+ * L'habillage d'une arche reliée : les flancs, l'anneau et le dessus au soleil, la voûte ; le parapet et son chaperon
+ * (côtés, dessus) ; les dalles du chemin ; les rails et les lanternes, ou non.
+ */
+interface ArchLook {
+  flank: number;
+  sun: number;
+  vault: number;
+  cap: number;
+  capTop: number;
+  dalle: number;
+  dalleSun: number;
+  rails: boolean;
+  lanterns: boolean;
+}
+
+const EPAULE_ARCH: ArchLook = { ...ARCH_COLORS, cap: ARCH_COLORS.sun, capTop: ARCH_COLORS.sun, rails: true, lanterns: true };
+
+/**
+ * Le pont du glacier relié (le 3e, proposition des Alpages, § 2) : une seule arche large et basse de granit bleuté au-dessus
+ * de la langue de glace, l'anneau des claveaux un cran plus clair, la voûte un cran plus sombre, jamais presque noire ; un
+ * parapet plein des deux côtés, à hauteur de poitrine de Kéo, coiffé de son chaperon d'ardoise ; sur le tablier, le
+ * chemin de pierre claire d'un parapet à l'autre. Ni rails, ni lanterne, ni garde-corps à barreaux.
+ */
+const GLACIER_ARCH: ArchLook = {
+  flank: COLORS_3E.granite,
+  sun: COLORS_3E.graniteSun,
+  vault: COLORS_3E.graniteShade,
+  cap: COLORS_3E.slate,
+  capTop: COLORS_3E.slateTop,
+  dalle: COLORS_3E.parvis,
+  dalleSun: 0xcbc5b7,
+  rails: false,
+  lanterns: false,
+};
+
+const archLook = (s: BridgeSite): ArchLook => (isGlacierArch(s.land) ? GLACIER_ARCH : EPAULE_ARCH);
+
 /** Les deux culées larges de l'arche reliée, de basalte : une rampe du sol jusqu'au tablier, sans marche. */
 function archAbutments(s: BridgeSite): Facets {
   const b = new FacetBuilder();
   const S = stoneOf(s);
+  if (isGlacierArch(s.land)) {
+    // Le pont du glacier : ses culées suivent la montée du dos d'âne, en trois tranches de chaque côté.
+    const st = archStations(s, s.abut[0], s.abut[1]);
+    for (const [i0, i1] of [
+      [0, 1],
+      [1, 2],
+      [2, 3],
+      [st.length - 4, st.length - 3],
+      [st.length - 3, st.length - 2],
+      [st.length - 2, st.length - 1],
+    ] as const)
+      slab(b, s, st[i0], st[i1], ARCH_BRIDGE.half, bridgeSurface(s, st[i0]), bridgeSurface(s, st[i1]), S.stone, S.stoneTop);
+    return b.build();
+  }
   slab(b, s, s.abut[0], s.water[0] + BRIDGE.over, ARCH_BRIDGE.half, abutTop(s, 0, s.abut[0]), BRIDGE.deck, S.stone, S.stoneTop);
   slab(b, s, s.water[1] - BRIDGE.over, s.abut[1], ARCH_BRIDGE.half, BRIDGE.deck, abutTop(s, 1, s.abut[1]), S.stone, S.stoneTop);
   return b.build();
@@ -1011,14 +1083,17 @@ function railShift(s: BridgeSite, d: number): number {
  */
 function archBody(s: BridgeSite): Facets {
   const b = new FacetBuilder();
+  const L = archLook(s);
   const at = frame(s);
   const A = ARCH_BRIDGE;
   const da = s.water[0] + BRIDGE.over,
     db = s.water[1] - BRIDGE.over;
   const base = worldOf(s.land).height(s.mid);
-  const top = BRIDGE.deck - 0.02;
-  const intr = (u: number) => base + A.spring + A.rise * Math.sqrt(Math.max(0, 1 - (2 * u - 1) ** 2));
-  const ringTop = (u: number) => Math.min(top - 0.06, intr(u) + A.ring);
+  const top = (u: number) => bridgeSurface(s, da + (db - da) * u) - 0.02;
+  // Au pont du glacier, la glace est presque au niveau du tablier aux culées : l'intrados ne monte que sous le dos d'âne.
+  const rise = isGlacierArch(s.land) ? Math.min(A.rise, top(0.5) - base - A.spring - A.ring - 0.12) : A.rise;
+  const intr = (u: number) => base + A.spring + rise * Math.sqrt(Math.max(0, 1 - (2 * u - 1) ** 2));
+  const ringTop = (u: number) => Math.min(top(u) - 0.06, intr(u) + A.ring);
   const p = (u: number, v: number, y: number) => {
     const q = at(da + (db - da) * u, v);
     return [q.x, y, q.z] as const;
@@ -1033,18 +1108,24 @@ function archBody(s: BridgeSite): Facets {
       u1 = (k + 1) / A.slices;
     for (const side of [-1, 1]) {
       const v = side * A.half;
-      quadToward(b, [p(u0, v, intr(u0)), p(u1, v, intr(u1)), p(u1, v, ringTop(u1)), p(u0, v, ringTop(u0))], out(side), ARCH_COLORS.sun);
-      quadToward(b, [p(u0, v, ringTop(u0)), p(u1, v, ringTop(u1)), p(u1, v, top), p(u0, v, top)], out(side), ARCH_COLORS.flank);
+      quadToward(b, [p(u0, v, intr(u0)), p(u1, v, intr(u1)), p(u1, v, ringTop(u1)), p(u0, v, ringTop(u0))], out(side), L.sun);
+      quadToward(b, [p(u0, v, ringTop(u0)), p(u1, v, ringTop(u1)), p(u1, v, top(u1)), p(u0, v, top(u0))], out(side), L.flank);
       // Le joint rayonnant entre deux claveaux, à peine hors du flanc.
       if (k > 0) {
         const w = side * (A.half + 0.012);
         const e = 0.05 / (db - da);
-        quadToward(b, [p(u0 - e, w, intr(u0)), p(u0 + e, w, intr(u0)), p(u0 + e, w, ringTop(u0)), p(u0 - e, w, ringTop(u0))], out(side), ARCH_COLORS.vault);
+        quadToward(b, [p(u0 - e, w, intr(u0)), p(u0 + e, w, intr(u0)), p(u0 + e, w, ringTop(u0)), p(u0 - e, w, ringTop(u0))], out(side), L.vault);
       }
     }
-    quadToward(b, [p(u0, -A.half, intr(u0)), p(u1, -A.half, intr(u1)), p(u1, A.half, intr(u1)), p(u0, A.half, intr(u0))], [0, -1, 0], ARCH_COLORS.vault);
+    quadToward(b, [p(u0, -A.half, intr(u0)), p(u1, -A.half, intr(u1)), p(u1, A.half, intr(u1)), p(u0, A.half, intr(u0))], [0, -1, 0], L.vault);
   }
-  quadToward(b, [p(0, -A.half, top), p(1, -A.half, top), p(1, A.half, top), p(0, A.half, top)], [0, 1, 0], ARCH_COLORS.sun);
+  // Le dessus, sous le tablier : d'un seul tenant à plat, en tranches sous le dos d'âne du glacier.
+  const n = isGlacierArch(s.land) ? A.slices : 1;
+  for (let k = 0; k < n; k++) {
+    const u0 = k / n,
+      u1 = (k + 1) / n;
+    quadToward(b, [p(u0, -A.half, top(u0)), p(u1, -A.half, top(u1)), p(u1, A.half, top(u1)), p(u0, A.half, top(u0))], [0, 1, 0], L.sun);
+  }
   return b.build();
 }
 
@@ -1063,11 +1144,15 @@ function band(b: FacetBuilder, s: BridgeSite, d0: number, d1: number, v: (d: num
   quadToward(b, [p(d0, -half, foot), p(d1, -half, foot), p(d1, -half, top), p(d0, -half, top)], [-n[0], 0, -n[2]], side);
 }
 
-/** Les `d` où se coupent les bandes qui suivent les culées : trois tranches sur chaque rampe, une sur le tablier. */
+/**
+ * Les `d` où se coupent les bandes qui suivent les culées : trois tranches sur chaque rampe, une sur le tablier (six sous
+ * le dos d'âne du pont du glacier).
+ */
 function archStations(s: BridgeSite, from: number, to: number): number[] {
   const r0 = s.water[0] + BRIDGE.over,
     r1 = s.water[1] - BRIDGE.over;
-  return [from, from + (r0 - from) / 3, from + ((r0 - from) * 2) / 3, r0, r1, r1 + (to - r1) / 3, r1 + ((to - r1) * 2) / 3, to];
+  const span = isGlacierArch(s.land) ? Array.from({ length: 5 }, (_, k) => r0 + ((r1 - r0) * (k + 1)) / 6) : [];
+  return [from, from + (r0 - from) / 3, from + ((r0 - from) * 2) / 3, r0, ...span, r1, r1 + (to - r1) / 3, r1 + ((to - r1) * 2) / 3, to];
 }
 
 /**
@@ -1075,6 +1160,7 @@ function archStations(s: BridgeSite, from: number, to: number): number[] {
  * (`RAILS_LOOK_4E`), d'une culée à l'autre (la ligne se lit d'un seul tenant) ; côté aval, le chemin de dalles claires.
  */
 function archDeck(s: BridgeSite): Facets {
+  if (!archLook(s).rails) return archPath(s);
   const b = new FacetBuilder();
   const R = RAILS_LOOK_4E;
   const at = frame(s);
@@ -1109,24 +1195,51 @@ function archDeck(s: BridgeSite): Facets {
 }
 
 /**
+ * Le tablier du pont du glacier : le chemin de pierre claire d'un parapet à l'autre, en dalles d'un pas, deux tons qui
+ * alternent, d'une culée à l'autre (le chemin du 3e passe d'un seul tenant).
+ */
+function archPath(s: BridgeSite): Facets {
+  const b = new FacetBuilder();
+  const L = archLook(s);
+  const at = frame(s);
+  const half = ARCH_BRIDGE.walk - 0.02;
+  const step = ARCH_BRIDGE.path.step;
+  const m = Math.max(1, Math.round((s.abut[1] - s.abut[0] - 0.6) / step));
+  const len = (s.abut[1] - s.abut[0] - 0.6) / m;
+  const q = (d: number, v: number) => {
+    const w = at(d, v);
+    return [w.x, bridgeSurface(s, d) + 0.03, w.z] as const;
+  };
+  for (let k = 0; k < m; k++) {
+    const d0 = s.abut[0] + 0.3 + k * len + 0.04,
+      d1 = d0 + len - 0.08;
+    quadToward(b, [q(d0, -half), q(d1, -half), q(d1, half), q(d0, half)], [0, 1, 0], k % 2 ? L.dalleSun : L.dalle);
+  }
+  return b.build();
+}
+
+/**
  * Les deux parapets pleins de basalte, d'un bout à l'autre, culées comprises, 1,2 au-dessus du tablier, coiffés de leur
  * chaperon un cran plus clair ; les quatre lanternes de tous les ponts, allumées, une à chaque bout de chaque parapet,
  * sur les culées, hors de la coulée.
  */
 function archParapets(s: BridgeSite): Facets {
   const b = new FacetBuilder();
+  const L = archLook(s);
   const A = ARCH_BRIDGE;
   const P = A.parapet;
   const at = frame(s);
   const from = s.abut[0] + 0.3,
     to = s.abut[1] - 0.3;
-  const st = archStations(s, from, to).filter((_, i) => i === 0 || i === 3 || i === 4 || i === 7);
+  // À plat sur l'arche de l'Épaule, le parapet ne se coupe qu'aux bouts des rampes ; il suit le dos d'âne du glacier.
+  const all = archStations(s, from, to);
+  const st = isGlacierArch(s.land) ? all : all.filter((_, i) => i === 0 || i === 3 || i === 4 || i === 7);
   for (const side of [-1, 1]) {
     const mid = side * (A.half - P.thick / 2);
     const v = () => mid;
     for (let i = 1; i < st.length; i++) {
-      band(b, s, st[i - 1], st[i], v, P.thick / 2, P.height, -0.3, ARCH_COLORS.flank, ARCH_COLORS.flank);
-      band(b, s, st[i - 1], st[i], v, P.thick / 2 + P.cap, P.height + P.capT, P.height, ARCH_COLORS.sun, ARCH_COLORS.sun);
+      band(b, s, st[i - 1], st[i], v, P.thick / 2, P.height, -0.3, L.flank, L.flank);
+      band(b, s, st[i - 1], st[i], v, P.thick / 2 + P.cap, P.height + P.capT, P.height, L.cap, L.capTop);
     }
     // Les deux bouts du parapet.
     for (const [d, sign] of [
@@ -1138,11 +1251,12 @@ function archParapets(s: BridgeSite): Facets {
         return [w.x, bridgeSurface(s, d) + h, w.z] as const;
       };
       const hP = P.thick / 2 + P.cap;
-      quadToward(b, [q(-hP, -0.3), q(hP, -0.3), q(hP, P.height + P.capT), q(-hP, P.height + P.capT)], [s.dir.x * sign, 0, s.dir.z * sign], ARCH_COLORS.flank);
+      quadToward(b, [q(-hP, -0.3), q(hP, -0.3), q(hP, P.height + P.capT), q(-hP, P.height + P.capT)], [s.dir.x * sign, 0, s.dir.z * sign], L.flank);
     }
   }
-  // Les quatre lanternes de tous les ponts (la fonction commune), allumées, sur le chaperon, au bout de chaque parapet.
-  lanterns(b, s, C.iron, true, { v: A.half - P.thick / 2, d: [from + 0.35, to - 0.35], foot: P.height + P.capT });
+  // Les quatre lanternes de tous les ponts (la fonction commune), allumées, sur le chaperon, au bout de chaque parapet ;
+  // le pont du glacier n'en a pas.
+  if (L.lanterns) lanterns(b, s, C.iron, true, { v: A.half - P.thick / 2, d: [from + 0.35, to - 0.35], foot: P.height + P.capT });
   return b.build();
 }
 
@@ -1171,7 +1285,7 @@ const STUMPS = [
 export const STUMP_TOP = (STUMPS[0].corners.reduce((a, c) => a + c, 0) + STUMPS[1].corners.reduce((a, c) => a + c, 0)) / 8;
 
 /** Les piles d'un pont qui prennent la place d'un moignon : la première et la dernière. */
-export const stumpPile = (land: LinkedLand, k: number): boolean => !isBasaltArch(land) && !isRavinArch(land) && (k === 0 || k === pilesOf(bridgeSite(land)).length - 1);
+export const stumpPile = (land: LinkedLand, k: number): boolean => !isStoneArch(land) && !isRavinArch(land) && (k === 0 || k === pilesOf(bridgeSite(land)).length - 1);
 
 /**
  * Le pont sur la Carte (référent dys : la coupure bleue nette, et le pont en trait double, d'une autre forme que le
