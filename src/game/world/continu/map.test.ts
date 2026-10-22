@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { markOffset, screenOf } from './camera';
 import type { Vec3 } from './geometry';
-import { MAP_BAR_ROOM, MAP_EDGE_4E, MAP_LEAD_FROM, islandBox, mapLeader, MAP_CAMERA, grown, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
+import { MAP_BAR_ROOM, MAP_EDGE_4E, MAP_LEAD_FROM, MAP_PIN_CLEAR, islandBox, mapLeader, MAP_CAMERA, grown, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
 import { PLACES, placeById } from './plan6e';
 import { PORT_MAP_POINT } from './port';
 import { heightAt, standingHeight } from './terrain';
@@ -767,6 +767,34 @@ describe('La Carte du 4e au plus grand texte (deuxième relecture du lot 1, cons
     const gap = (s: MapLabelSpot, l: MapLabel) => Math.hypot(Math.max(s.left - l.x, 0, l.x - (s.left + l.w)), Math.max(s.top - l.y, 0, l.y - (s.top + l.h)));
     expect(gap(before[0], forge)).toBeLessThanOrEqual(gap(after[1], forge));
     expect(gap(before[0], forge)).toBeLessThanOrEqual(MAP_LABEL_GAP + 1e-6);
+  });
+
+  it('les lieux épinglés (l’Épaule) gardent la même disposition quelle que soit la sélection, et aucun nom ne couvre leur point', () => {
+    // Trois lieux serrés, comme le Terminus, les Orgues et la Dynamo au pied du volcan.
+    const group: MapLabel[] = [
+      { id: 'terminus', kind: 'open', x: 300, y: 210, w: 210, h: 50, side: 'left', pinned: true },
+      { id: 'orgues', kind: 'open', x: 393, y: 200, w: 190, h: 50, side: 'left', pinned: true },
+      { id: 'dynamo', kind: 'open', x: 440, y: 225, w: 200, h: 50, side: 'right', pinned: true },
+    ];
+    const etalon: MapLabel = { id: 'etalon', kind: 'open', x: 520, y: 300, w: 170, h: 50 };
+    const at = (spots: MapLabelSpot[]) => Object.fromEntries(spots.filter((s) => s.id !== 'etalon').map((s) => [s.id, [s.left, s.top]]));
+    const none = layoutMapLabels([...group, etalon], [], screen, true, MAP_EDGE_4E);
+    for (const chosen of group) {
+      const picked = layoutMapLabels([{ ...chosen, first: true }, ...group.filter((g) => g !== chosen), etalon], [], screen, true, MAP_EDGE_4E);
+      expect(at(picked), chosen.id).toEqual(at(none));
+    }
+    const etalonFirst = layoutMapLabels([{ ...etalon, first: true }, ...group], [], screen, true, MAP_EDGE_4E);
+    expect(at(etalonFirst)).toEqual(at(none));
+    // Aucune étiquette ne couvre le point d'un lieu épinglé qui n'est pas le sien.
+    const all = [...group, etalon];
+    for (const s of none) {
+      const own = all.find((l) => l.id === s.id)!;
+      for (const g of group) {
+        if (g.id === s.id) continue;
+        const inside = g.x > s.left - MAP_PIN_CLEAR && g.x < s.left + own.w + MAP_PIN_CLEAR && g.y > s.top - MAP_PIN_CLEAR && g.y < s.top + own.h + MAP_PIN_CLEAR;
+        expect(inside, `${s.id} sur ${g.id}`).toBe(false);
+      }
+    }
   });
 
   it('un trait fin relie un nom loin de son point, jamais un nom contre lui', () => {

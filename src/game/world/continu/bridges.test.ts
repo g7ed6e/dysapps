@@ -1,9 +1,11 @@
 // Les bras de mer et les ponts des terres (GD-20, point 3, « vraies terres, vrais ponts ») : l'eau profonde entre les
 // terres, aucun chemin dessus, Kéo arrêté sur la culée d'un pont tombé et porté par le tablier d'un pont rebâti, le
-// dessin des deux états et sur la Carte. Sans Three.js.
+// dessin des deux états et sur la Carte ; l'arche reliée de l'Épaule, sous son plafond, et aucune fente de lave dans le
+// cadre de la marche sur elle (intention du pont de l'Épaule, « La lave et la marche »). Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { BRIDGE, BRIDGE_TOUCH, KEO_STOP, SWING, allBridges, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen, isCabin, isSwing, swingPivot, swingRuin } from './bridges';
+import { ARCH_BRIDGE, BRIDGE, BRIDGE_TOUCH, KEO_STOP, SWING, allBridges, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen, isCabin, isSwing, swingPivot, swingRuin } from './bridges';
 import { CUT_CLEARANCE_4E } from './paths4e';
+import { EPAULE_BRIDGE_TRIANGLES } from './budget';
 import { linearRgb } from './geometry';
 import { bridgeEdge, landById, linkedLands, nodeLands } from './lands';
 import { atNode, pathNode, pathRibbons, snapToNetwork, type NetworkPoint } from './paths';
@@ -11,7 +13,10 @@ import { BEACONS_FLAT, BRIDGE_ABUT, COMMONS_FLAT, ENGINE_FLAT, MANGROVE_FLAT, NO
 import { STRAIT_BANK, buildHeightField, heightAt, heightOnMesh, landDistance, straitClearance } from './terrain';
 import { shallowness } from './sea';
 import { planFor } from './levelPlan';
-import { COLORS_4E, LINKS_4E } from './plan4e';
+import { COLORS_4E, CUVETTE_4E, LINKS_4E } from './plan4e';
+import { followPose, screenOf } from './camera';
+import { lavaFacets } from './terrain4e';
+import { COLORS_5E } from './plan5e';
 
 /** Le plan du 6e, le seul enregistré (GD-22). */
 const PLAN = planFor('6e');
@@ -191,6 +196,54 @@ describe('Les ponts tombés du 4e (retouche 1 du lot 1)', () => {
     // Le basalte ne va qu'à la coulée : le pont du ravin et celui du bassin restent de pierre grise.
     expect(has(bridgeFacets('coteaux', false), COLORS_4E.basaltSun)).toBe(false);
     expect(has(bridgeFacets('coteaux', false), COLORS_4E.stone)).toBe(true);
+  });
+
+  it('relié, l’arche de basalte de l’Épaule : ses parapets, ses lanternes allumées, sous son plafond nommé', () => {
+    const built = bridgeFacets('epaule', true);
+    expect(built.triangles).toBeGreaterThan(bridgeFacets('epaule', false).triangles);
+    expect(built.triangles).toBeLessThanOrEqual(EPAULE_BRIDGE_TRIANGLES);
+    expect(has(built, COLORS_4E.basaltSun)).toBe(true);
+    expect(has(built, COLORS_5E.lantern)).toBe(true);
+    // Kéo marche sur le tablier, entre les parapets, plus étroit que le pont de bois.
+    expect(ARCH_BRIDGE.walk).toBeLessThan(2 * ARCH_BRIDGE.half);
+    const s = bridgeSite('epaule');
+    expect(bridgeFloor(s.mid.x, s.mid.z, [], planFor('4e'))).not.toBeNull();
+  });
+
+  it('aucune fente de lave de la cuvette dans le cadre de la marche sur le pont de l’Épaule, aller comme retour, en 4:3 et en portrait', () => {
+    const s = bridgeSite('epaule');
+    // Le pont va de `fab-4` à `epa-1`, au cap de 331° (vers l'Épaule) ; le retour à 151°.
+    const compass = ((Math.atan2(s.dir.x, -s.dir.z) * 180) / Math.PI + 360) % 360;
+    expect(Math.abs(compass - 331)).toBeLessThan(2);
+    const lava = lavaFacets().positions;
+    const slits: { x: number; y: number; z: number }[] = [];
+    for (let i = 0; i < lava.length; i += 3) {
+      const p = { x: lava[i], y: lava[i + 1], z: lava[i + 2] };
+      if (Math.hypot(p.x - CUVETTE_4E.center.x, p.z - CUVETTE_4E.center.z) < CUVETTE_4E.rx + 6) slits.push(p);
+    }
+    expect(slits.length).toBeGreaterThan(0);
+    const plan = planFor('4e');
+    const seen: string[] = [];
+    for (let d = s.abut[0]; d <= s.abut[1]; d += 0.5) {
+      const at = { x: s.near.x + s.dir.x * d, z: s.near.z + s.dir.z * d };
+      const y = bridgeFloor(at.x, at.z, [], plan) ?? 0;
+      for (const sign of [1, -1]) {
+        // La caméra qui suit, derrière Kéo, tournée dans le sens de la marche.
+        const yaw = Math.atan2(-sign * s.dir.x, -sign * s.dir.z);
+        const pose = followPose({ x: at.x, y, z: at.z }, 0, undefined, yaw);
+        const f = { x: pose.target.x - pose.position.x, y: pose.target.y - pose.position.y, z: pose.target.z - pose.position.z };
+        for (const [w, h] of [
+          [1024, 768],
+          [390, 844],
+        ])
+          for (const p of slits) {
+            if ((p.x - pose.position.x) * f.x + (p.y - pose.position.y) * f.y + (p.z - pose.position.z) * f.z <= 0) continue;
+            const q = screenOf(pose, p, w, h);
+            if (q.x >= 0 && q.x <= w && q.y >= 0 && q.y <= h) seen.push(`${d.toFixed(1)} ${sign > 0 ? 331 : 151} ${w}×${h}`);
+          }
+      }
+    }
+    expect([...new Set(seen)]).toEqual([]);
   });
 });
 

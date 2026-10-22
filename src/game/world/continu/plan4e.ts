@@ -217,7 +217,8 @@ const TOUCH_RADIUS = 7;
  * Sur la Carte, le côté où le nom de chaque lieu se pose d'abord, comme sur le plan validé (retouche 1 du lot 1,
  * consultant UX UI) : sous son point le plus souvent ; à droite pour l'Étalon (« Toi », devant la Forge, reste libre) et
  * la Manufacture (hors du bassin à flot) ; à gauche pour le Terminus (le bord nord reste libre) et le Chariot (la
- * grappe du Bastion se desserre) ; la Dynamo sous elle, à l'est des Orgues, la Jonction sous elle, hors du pont du ravin.
+ * grappe du Bastion se desserre) ; les Orgues d'abord à gauche, la Dynamo à droite, vers la mer (chaque étiquette laisse voir le cœur et le
+ * trait de l'autre, retouche 1 de l'Épaule) ; la Jonction sous son point, hors du pont du ravin.
  */
 const MAP_SIDES_4E: Readonly<Record<PlaceId4e, 'below' | 'left' | 'right'>> = {
   forge: 'below',
@@ -234,8 +235,8 @@ const MAP_SIDES_4E: Readonly<Record<PlaceId4e, 'below' | 'left' | 'right'>> = {
   veillee: 'below',
   basilique: 'below',
   terminus: 'left',
-  orgues: 'below',
-  dynamo: 'below',
+  orgues: 'left',
+  dynamo: 'right',
 };
 
 /**
@@ -253,6 +254,9 @@ export const BUILT_PLACES_4E = {
   chariot: ['energy-chain', 'information-chain', 'simulation', 'troubleshooting'],
   manufacture: ['enlightenment', 'industrial-europe', 'french-society'],
   loge: ['dialogues', 'quantities', 'irregular-past', 'stories'],
+  terminus: ['future', 'modals', 'present-perfect', 'traditions', 'forms'],
+  orgues: ['past-participle', 'adjectives', 'subject-verb', 'reflexive-verbs', 'tense-meaning'],
+  dynamo: ['light-sound', 'electric-circuits', 'chemical-reactions'],
 } as const satisfies Partial<Record<PlaceId4e, readonly string[]>>;
 
 /** Un lieu du 4e déjà construit. */
@@ -260,6 +264,13 @@ export type BuiltPlace4e = keyof typeof BUILT_PLACES_4E;
 
 /** Ce lieu du 4e est-il construit ? */
 export const isBuiltPlace4e = (id: string): id is BuiltPlace4e => Object.hasOwn(BUILT_PLACES_4E, id);
+
+/**
+ * Sur la Carte, les lieux à disposition fixe (relecture UX UI de la retouche 1 de l'Épaule) : les trois lieux de
+ * l'Épaule, serrés au pied du volcan, se posent avant les autres, toujours dans cet ordre, quelle que soit la sélection ;
+ * aucune étiquette ne couvre leur point.
+ */
+const MAP_PINNED_4E: readonly PlaceId4e[] = ['terminus', 'orgues', 'dynamo'];
 
 const SCENES_4E: Partial<Record<PlaceId4e, readonly string[]>> = BUILT_PLACES_4E;
 
@@ -275,6 +286,7 @@ export const PLACES_4E: readonly OpenPlace<PlaceId4e>[] = PLACE_SPECS.map((s) =>
   door: s.id,
   touchRadius: TOUCH_RADIUS,
   mapSide: MAP_SIDES_4E[s.id],
+  ...(MAP_PINNED_4E.includes(s.id) ? { mapPinned: true as const } : {}),
 }));
 
 /**
@@ -498,7 +510,7 @@ export const nearRails4e = (p: Vec2, reach: number): boolean =>
 
 /**
  * La place des Détours du 4e (fiche, § 5), réservée dès le plan : l'Épave (Fabriques), le Recoin (Bastion), le Replat
- * (Coteaux), la Dalle (Épaule). Ils se construisent avec leur lot (lot 2 : l'Épave, `EPAVE_4E` ; lot 3 : le Recoin, `RECOIN_4E`).
+ * (Coteaux), la Dalle (Épaule). Ils se construisent avec leur lot (lot 2 : l'Épave, `EPAVE_4E` ; lot 3 : le Recoin, `RECOIN_4E`, et la Dalle, `DALLE_4E`).
  */
 export const DETOUR_SPOTS_4E = {
   epave: fromPlan4e([1060, 1060]),
@@ -554,6 +566,33 @@ export function inRecoinClearing(p: Vec2): boolean {
   const { corner, at, senteFrom, bend, foot, keep } = RECOIN_4E;
   if (Math.hypot(p.x - corner.x, p.z - corner.z) < keep.at || Math.hypot(p.x - at.x, p.z - at.z) < keep.at) return true;
   return distanceToPolyline(p, [senteFrom, bend, foot, at]) < keep.sente;
+}
+
+/**
+ * Le Détour de la Dalle (lot 3, l'Épaule ; intention du directeur artistique du 22 octobre 2026, « Le Détour de la
+ * Dalle ») : sa place au bord de l'épaule, que lit aussi la végétation (elle s'en écarte, ./terrain4e.ts). `at` : là où
+ * Kéo s'arrête, sur la roche, au sud de la dalle, face à la mer (la place réservée) ; `senteFrom` : le départ de la sente,
+ * au cinquième du chemin du pont à la Dynamo depuis la tête du pont ; `look` : le cap de la vue vers la mer, depuis Kéo
+ * (vingt degrés à l'est du nord ; ./dalle4e.ts le lit) ; `ahead` : le milieu de la place de la dalle et du muret, à tant
+ * de Kéo vers la mer ; `keep` : ce qui reste libre autour de ce milieu (la dalle et le muret), de Kéo, et de part et
+ * d'autre de la sente (relecture du code, point 3.1 : une seule source pour les deux fichiers).
+ */
+export const DALLE_4E = {
+  at: DETOUR_SPOTS_4E.dalle,
+  senteFrom: { x: -19.61, z: -73.51 },
+  look: (20 * Math.PI) / 180,
+  ahead: 4,
+  keep: { slab: 7, at: 4, sente: 2.6 },
+} as const;
+
+/** Le milieu de la place de la dalle et du muret, à `ahead` de Kéo vers la mer. */
+export const DALLE_SLAB_AT: Vec2 = { x: DALLE_4E.at.x + DALLE_4E.ahead * Math.sin(DALLE_4E.look), z: DALLE_4E.at.z - DALLE_4E.ahead * Math.cos(DALLE_4E.look) };
+
+/** Ce point du monde est-il dans la place de la Dalle (la dalle et son muret, Kéo, sa sente) ? */
+export function inDalleClearing(p: Vec2): boolean {
+  const { at, senteFrom, keep } = DALLE_4E;
+  if (Math.hypot(p.x - DALLE_SLAB_AT.x, p.z - DALLE_SLAB_AT.z) < keep.slab || Math.hypot(p.x - at.x, p.z - at.z) < keep.at) return true;
+  return distanceToPolyline(p, [senteFrom, at]) < keep.sente;
 }
 
 /** La place réservée des deux grands projets (GD-10) : le portique des docks, la tour des signaux (plan, en pointillé). */

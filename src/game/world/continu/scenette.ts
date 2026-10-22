@@ -252,6 +252,35 @@ const SCENETTES: Record<PlaceId, Scenette> = {
       end: 'Ici, après le travail, les ouvriers venaient écouter des histoires.',
     },
   },
+  // Le Terminus (lot 3 du 4e, l'Épaule) : le cheminot, sans prénom ; ses phrases de pose et sa réplique de fin
+  // (`contenu-epaule.md`) : ni « benne », ni « trémie », ni « galerie ».
+  terminus: {
+    role: placeArt('terminus')!.role,
+    greeting: 'Le cheminot envoie le minerai vers la Forge, sur les rails.',
+    placement: 'rangee',
+    words: {
+      pose: ['Le quai est réparé.', 'La caisse à minerai est debout.', 'La remise a ses murs.', 'La remise a son toit.', 'Les entrées de la mine sont prêtes.'],
+      end: 'Ici, le minerai part de la montagne vers la Forge.',
+    },
+  },
+  // Les Orgues (lot 3 du 4e) : le carrier, sans prénom (`contenu-epaule.md`) : ni « carrière », ni « palan », ni « grue ».
+  orgues: {
+    role: placeArt('orgues')!.role,
+    greeting: 'Le carrier taille la pierre dans la montagne.',
+    placement: 'rangee',
+    words: {
+      pose: ['La cour est dégagée.', 'Les colonnes sont taillées.', 'Le mât est debout.', 'La chaîne est en place.', 'La cour est pavée.'],
+      end: 'Ici, chaque pierre trouve sa place à côté des autres.',
+    },
+  },
+  // La Dynamo (lot 3 du 4e) : l'électricienne, sans prénom (`contenu-epaule.md`) ; jamais deux des mots « poste »,
+  // « poteau », « pose » dans une même phrase.
+  dynamo: {
+    role: placeArt('dynamo')!.role,
+    greeting: 'L’électricienne tend les fils d’un poteau à l’autre.',
+    placement: 'rangee',
+    words: { pose: ['La dynamo est sur son socle.', 'La cloche est en haut du poste.', 'Les fils sont tendus.'], end: 'Ici, on parle à l’usine avec une lampe et une cloche.' },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -693,6 +722,9 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   chariot: northSite('chariot'),
   manufacture: northSite('manufacture'),
   loge: northSite('loge'),
+  terminus: northSite('terminus'),
+  orgues: northSite('orgues'),
+  dynamo: northSite('dynamo'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2243,6 +2275,12 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   manufacture: 'paving',
   // La Loge (lot 3 du 4e) : la cour devant l'appentis du costumier.
   loge: 'paving',
+  // Le Terminus (lot 3 du 4e) : la terre du replat.
+  terminus: 'earth',
+  // Les Orgues (lot 3 du 4e) : les dalles hexagonales de la cour.
+  orgues: 'paving',
+  // La Dynamo (lot 3 du 4e) : la terre devant le poste.
+  dynamo: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

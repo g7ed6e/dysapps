@@ -32,6 +32,7 @@ import {
   TERRAIN_4E,
   VOLCANO_4E,
   fromPlan4e,
+  inDalleClearing,
   inEpaveClearing,
   inRecoinClearing,
   nearRails4e,
@@ -253,6 +254,32 @@ const SEGMENTS: readonly (readonly [Vec2, Vec2])[] = (() => {
 const nearPath = (p: Vec2, reach: number): boolean => SEGMENTS.some(([a, b]) => distanceToPolyline(p, [a, b]) < reach);
 const nearPlace = (p: Vec2): boolean => PLACES_4E.some((pl) => Math.hypot(p.x - pl.center.x, p.z - pl.center.z) < FLORA_KEEP.place);
 
+/**
+ * Ce que les lieux de l'Épaule (lot 3) posent au-delà de `FLORA_KEEP.place`, un disque chacun, depuis le centre du lieu
+ * (`dx`, `dz`, son rayon `r`) : rien n'y pousse (relecture du code, point 3.2 : chaque champ nommé, et la pièce qu'il
+ * garde). Les pièces sont dans ./terminus4e.ts, ./dynamo4e.ts et ./orgues4e.ts ; ce fichier ne peut pas les lire (elles
+ * lisent le sol d'ici) : un test vérifie que chaque pièce reste dans son disque.
+ */
+export const EPAULE_KEEP = [
+  // La remise du Terminus, sa voie de garage et sa benne, sur le replat (`TERMINUS_LAYOUT.remise`, `.siding`).
+  { id: 'terminus', covers: 'remise', dx: 10, dz: -7, r: 7.5 },
+  // La scénette du Terminus, sur le replat, à l'est de la remise (`TERMINUS_LAYOUT.scene`, retouche 1).
+  { id: 'terminus', covers: 'scene', dx: 19, dz: -3.5, r: 5.5 },
+  // La tête de terre et les joues de la galerie basse, dans le flanc (`TERMINUS_LAYOUT.galleries`, retouche 1).
+  { id: 'terminus', covers: 'galleries', dx: -2, dz: -11.5, r: 3.5 },
+  // Les trois poteaux de la Dynamo et le pied du miroir, au bout de la ligne (`DYNAMO_LAYOUT.poles`, `.mirror`).
+  { id: 'dynamo', covers: 'poles', dx: 10, dz: 9, r: 10.5 },
+  // Le tertre des Orgues, derrière le front, monté et élargi à la retouche 1 (`ORGUES_LAYOUT.tertre`).
+  { id: 'orgues', covers: 'tertre', dx: -1, dz: -9.5, r: 10.5 },
+] as const;
+
+/** Les disques de `EPAULE_KEEP`, dans le monde. */
+const EPAULE_KEEP_AT: readonly { x: number; z: number; r: number }[] = EPAULE_KEEP.map(({ id, dx, dz, r }) => {
+  const c = PLACES_4E.find((pl) => pl.id === id)!.center;
+  return { x: c.x + dx, z: c.z + dz, r };
+});
+const nearEpaule = (p: Vec2): boolean => EPAULE_KEEP_AT.some((k) => Math.hypot(p.x - k.x, p.z - k.z) < k.r);
+
 /** Les places gardées libres : les Détours, les grands projets, le Rafiot et son quai. */
 const SPOTS: readonly Vec2[] = [...Object.values(DETOUR_SPOTS_4E), RESERVED_4E.portique.center, RESERVED_4E.tour.center, RAFIOT_4E.at];
 
@@ -291,12 +318,14 @@ function plantsIn(tx: number, tz: number): readonly Plant[] {
       if (hash2(i + 17, j + 23) > (coteaux ? FLORA_KEEP.keepCoteaux : FLORA_KEEP.keep)) continue;
       if (signedDistance(p, COAST_4E) < FLORA_KEEP.coast || bassinClearance(p) < FLORA_KEEP.cut) continue;
       if (couleeClearance(p) < FLORA_KEEP.cut || ravinClearance(p) < FLORA_KEEP.cut || insidePolygon(p, SUMMIT_4E)) continue;
-      if (nearPath(p, FLORA_KEEP.path) || nearRails4e(p, FLORA_KEEP.path) || nearPlace(p) || nearCrique(p)) continue;
+      if (nearPath(p, FLORA_KEEP.path) || nearRails4e(p, FLORA_KEEP.path) || nearPlace(p) || nearEpaule(p) || nearCrique(p)) continue;
       if (SPOTS.some((s) => Math.hypot(p.x - s.x, p.z - s.z) < FLORA_KEEP.spot)) continue;
       // L'Épave (lot 2) : sa coque, sa cale, Kéo devant elle et sa sente restent libres.
       if (inEpaveClearing(p)) continue;
       // Le Recoin (lot 3) : l'angle de ses murets, Kéo et sa sente restent libres.
       if (inRecoinClearing(p)) continue;
+      // La Dalle (lot 3) : la dalle et son muret, Kéo devant eux et sa sente restent libres.
+      if (inDalleClearing(p)) continue;
       if (Math.hypot(p.x - CUVETTE_4E.center.x, p.z - CUVETTE_4E.center.z) < 14) continue;
       // Le cône nu au-dessus de son pied (`ROCK_FROM`) : aucun buisson ni rocher sur le basalte sombre (directeur
       // artistique, deuxième relecture du lot 1 : les buissons olive y faisaient des taches jusqu'au sommet).

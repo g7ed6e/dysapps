@@ -46,12 +46,12 @@ function points(f: Facets, color?: number): { x: number; y: number; z: number }[
 describe('Le Recoin, le Détour du Bastion', () => {
   it('se nomme « Le Recoin », au Bastion, dans la sauvegarde après l’Épave', () => {
     expect(detourById('recoin')).toBe(RECOIN);
-    expect(DETOURS_4E).toEqual([EPAVE, RECOIN]);
+    expect(DETOURS_4E.map((d) => d.id)).toEqual(['epave', 'recoin', 'dalle']);
+    expect(DETOURS_4E.slice(0, 2)).toEqual([EPAVE, RECOIN]);
     expect(RECOIN.name).toBe('Le Recoin');
     expect(RECOIN.land).toBe('bastion');
     expect(SAVED_IDS).toEqual(DETOUR_IDS);
-    expect(DETOUR_IDS.at(-1)).toBe('recoin');
-    expect(DETOUR_IDS.at(-2)).toBe('epave');
+    expect(DETOUR_IDS.indexOf('recoin')).toBe(DETOUR_IDS.indexOf('epave') + 1);
     expect(sanitizeDetours(['recoin', 'epave', 'creux'])).toEqual(['creux', 'epave', 'recoin']);
     const state = findDetour({ world: { parts: {}, log: [], links: {} } } as never, 'recoin') as { world: { detours: string[] } };
     expect(state.world.detours).toEqual(['recoin']);

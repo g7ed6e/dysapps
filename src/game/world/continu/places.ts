@@ -2537,9 +2537,9 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   jonction: ruinOnly(RUINS_4E.jonction),
   veillee: ruinOnly(RUINS_4E.veillee),
   basilique: ruinOnly(RUINS_4E.basilique),
-  terminus: ruinOnly(RUINS_4E.terminus),
-  orgues: ruinOnly(RUINS_4E.orgues),
-  dynamo: ruinOnly(RUINS_4E.dynamo),
+  terminus: northPlace('terminus'),
+  orgues: northPlace('orgues'),
+  dynamo: northPlace('dynamo'),
 };
 
 const pieces = new Map<PlaceId, PlacePiece[]>();

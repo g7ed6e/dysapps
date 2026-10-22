@@ -208,6 +208,12 @@ export interface MapLabel {
    */
   side?: 'left' | 'right';
   /**
+   * Un lieu d'un groupe à disposition fixe (au 4e, les trois lieux de l'Épaule : relecture UX UI de sa retouche 1) :
+   * posé avant tous les autres lieux ouverts, dans l'ordre donné, que le lieu suggéré soit l'un d'eux ou non ; son point
+   * reste à découvert (`MAP_PIN_CLEAR`) : aucune autre étiquette ne le couvre, et son trait finit sur lui, visible.
+   */
+  pinned?: true;
+  /**
    * La taille de sa forme serrée, son nom sur deux lignes (entre deux mots), plus étroit, prise quand la forme entière ne
    * trouve pas de place : pour un lieu ouvert, sa pastille, l'icône de l'état dessous (relecture de L6b, directeur
    * artistique : un lieu ouvert ne perd jamais son nom) ; pour un lieu fermé, son cadenas et son nom sur deux lignes
@@ -297,6 +303,12 @@ export const MAP_EDGE_4E = 16;
 
 /** Au 4e, un nom de lieu ouvert plus loin que tant de pixels de son point y est relié par un trait fin (`mapLeader`). */
 export const MAP_LEAD_FROM = 24;
+
+/**
+ * L'écart, en pixels, qu'une étiquette garde au point d'un lieu épinglé (`MapLabel.pinned`) qui n'est pas le sien : le
+ * cœur reste visible, et le trait qui y mène finit sur lui (relecture UX UI de la retouche 1 de l'Épaule).
+ */
+export const MAP_PIN_CLEAR = 10;
 
 /**
  * Le trait fin d'un nom loin de son lieu (au 4e) : du point du lieu au plus proche point de la pastille, ou rien si elle
@@ -483,12 +495,18 @@ function attemptLayout(
   const closedNames = labels
     .filter((l) => l.kind === 'closed')
     .map((l) => reserved.get(l.id)?.r ?? rect(l.x - Math.max(MAP_LOCK, l.w) / 2, l.y, Math.max(MAP_LOCK, l.w), Math.max(MAP_LOCK, l.h - MAP_LOCK)));
+  // Les points des lieux épinglés : aucune étiquette d'un autre lieu ne les couvre (`MAP_PIN_CLEAR`).
+  const pins = labels.filter((l) => l.kind === 'open' && l.pinned).map((l) => ({ id: l.id, r: rect(l.x - MAP_PIN_CLEAR, l.y - MAP_PIN_CLEAR, 2 * MAP_PIN_CLEAR, 2 * MAP_PIN_CLEAR) }));
+  const uncovered = (c: Rect, self: string) => !pins.some((p) => p.id !== self && clash(p.r, c));
   const apart = (c: Rect) => clear(c) && !closedNames.some((n) => clash(n, c));
   // Avec des places gardées, les lieux ouverts les plus proches d'elles d'abord : ils ont le moins de places autour.
   const pressed = (l: MapLabel) => Math.min(Infinity, ...[...reserved.values()].map((p) => gapTo(l, p.r)));
+  // Les lieux épinglés d'abord, dans leur ordre, quelle que soit la sélection ; puis le lieu suggéré et l'Escale ; puis
+  // les autres.
   const open = labels
-    .filter((l) => l.kind === 'open' && l.first)
-    .concat(labels.filter((l) => l.kind === 'open' && !l.first).sort((a, b) => (reserved.size ? pressed(a) - pressed(b) : 0)));
+    .filter((l) => l.kind === 'open' && l.pinned)
+    .concat(labels.filter((l) => l.kind === 'open' && !l.pinned && l.first))
+    .concat(labels.filter((l) => l.kind === 'open' && !l.pinned && !l.first).sort((a, b) => (reserved.size ? pressed(a) - pressed(b) : 0)));
   const namedOpen = new Set<string>();
   for (const l of open) {
     const places = (w: number, h: number) => {
@@ -529,11 +547,13 @@ function attemptLayout(
         h = list[0].bottom - list[0].top;
       return list.find((c) => gapTo(l, c) <= NEAR.reach && ok(c)) ?? (l.above ? near(l, w, h, (c) => c.bottom <= l.y && ok(c)) : undefined) ?? near(l, w, h, ok);
     };
-    let r = find(full, apart) ?? find(full, clear);
+    const pinApart = (c: Rect) => apart(c) && uncovered(c, l.id);
+    const pinClear = (c: Rect) => clear(c) && uncovered(c, l.id);
+    let r = find(full, pinApart) ?? find(full, pinClear);
     let narrow = false;
     if (!r) {
       // La pastille serrée : son nom sur deux lignes, plus étroit, aux mêmes places.
-      r = find(tight, apart) ?? find(tight, clear);
+      r = find(tight, pinApart) ?? find(tight, pinClear);
       narrow = Boolean(r);
     }
     let name = true;
@@ -665,7 +685,8 @@ function attemptLayout(
       .sort((a, b) => Math.hypot(a.x - l.x, a.y - l.y) - Math.hypot(b.x - l.x, b.y - l.y))[0]?.id;
     const ownBox = placed.find((p) => own !== undefined && p.id === own)?.r;
     // Hors des boutons et des cadenas toujours (les `hard` premiers), hors des autres étiquettes sauf celles que `spare` épargne.
-    const avoid = (spare: (id: string) => boolean) => (r: Rect) => onScreen(r) && !placed.some((p, i) => (i < hard || p.id === null || !spare(p.id)) && clash(p.r, r));
+    // Ni sur le point d'un lieu épinglé, sauf celui de son lieu (Kéo s'y tient) : le trait d'un nom y finit, visible.
+    const avoid = (spare: (id: string) => boolean) => (r: Rect) => onScreen(r) && uncovered(r, own ?? l.id) && !placed.some((p, i) => (i < hard || p.id === null || !spare(p.id)) && clash(p.r, r));
     const ok = avoid(() => false);
     const over = avoid((id) => pale.has(id));
     // Sur le nom de son lieu : à cheval sur son bord d'abord (le centre de la pastille hors de lui), puis où que ce soit.

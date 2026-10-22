@@ -3047,14 +3047,16 @@
   }
 }
 /* En haut du monde (le nom d'un Détour, et toute phrase sur un téléphone) : entre les deux colonnes de boutons des coins,
-   jamais dessus (0,6rem du bord, 56 px de bouton, 8 px d'écart), le nom passé sur deux lignes s'il le faut. */
+   jamais dessus (0,6rem du bord, 56 px de bouton, 16 px d'écart), le nom passé sur deux lignes s'il le faut. La largeur
+   se compte sur la scène (`100%`), jamais sur la fenêtre (`100vw`) : au téléphone, la page a ses marges, et la boîte
+   touchait les boutons de droite (retouche 2 de l'Épaule, la bulle de la Dalle au plus grand texte). */
 .open-world-said.on-top {
   top: calc(8px + env(safe-area-inset-top, 0px));
   bottom: auto;
 }
 .open-world-said.on-top,
 .world-stage .open-world-said:not(.on-map) {
-  max-width: min(30rem, calc(100vw - 2 * (0.6rem + 64px) - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
+  max-width: min(30rem, calc(100% - 2 * (0.6rem + 72px) - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
 }
 .open-world-said[data-shown='non'] {
   padding: 0;

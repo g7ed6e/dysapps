@@ -77,11 +77,12 @@ export const RIBBONS_4E: RibbonNet = {
  * La ligne de rails en masses (fiche, § 5 ; lot 1) : un ballast brun, deux rails de fer rouillé, une traverse de bois
  * tous les `sleeper` unités ; au bout de la ligne, contre la halle de l'Étalon, le butoir de la Forge (un bloc de bois
  * cerclé de cuivre) ; au bout des deux voies de service de la Jonction, un heurtoir. Ni benne ni aiguillage au lot 1.
- * Les rails s'arrêtent aux culées des ponts (`railCut`) : le pont, posé, les porte de rive à rive. Le ballast et les
- * rails sont des bandes continues, par pans de `piece` unités qui suivent le sol (retouche 1 du lot 1, expert
- * frontend : un pavé par traverse coûtait deux fois plus) ; seules les traverses se répètent.
+ * Les rails s'arrêtent au bout des culées des ponts (`railCut`) : le pont, posé, les porte de rive à rive (l'arche de
+ * l'Épaule, lot 3). Le ballast et les rails sont des bandes continues, par pans de `piece` unités qui suivent le sol
+ * (retouche 1 du lot 1, expert frontend : un pavé par traverse coûtait deux fois plus) ; seules les traverses se
+ * répètent. Exportés pour les rails de l'arche de l'Épaule (./bridges.ts), du même dessin.
  */
-const RAILS_LOOK_4E = { gauge: 0.7, rail: 0.12, ballast: 1.15, ballastTop: 0.1, ballastFoot: 0.25, sleeper: 1.6, sleeperLength: 1.5, lift: 0.07, piece: 3.2 } as const;
+export const RAILS_LOOK_4E = { gauge: 0.7, rail: 0.12, ballast: 1.15, ballastTop: 0.1, ballastFoot: 0.25, sleeper: 1.6, sleeperLength: 1.5, lift: 0.07, piece: 3.2 } as const;
 
 /** Un point est-il sous un pont (dans la part que prennent ses culées) ? Les rails s'y arrêtent. */
 const railCut = (p: Vec2): boolean => (Object.keys(LINKS_4E) as Link4e[]).some((land) => CUT_CLEARANCE_4E[LINKS_4E[land].cut](p) < BRIDGE_ABUT);
@@ -120,12 +121,29 @@ function railLine(b: FacetBuilder, line: readonly Vec2[], ground: (x: number, z:
     const len = distance(a, c);
     const yaw = Math.atan2(c.x - a.x, c.z - a.z);
     const along = (d: number): Vec2 => ({ x: a.x + ((c.x - a.x) * d) / len, z: a.z + ((c.z - a.z) * d) / len });
-    // Le ballast et les rails, par pans : un pan seulement si ses deux bouts sont hors d'un pont.
+    // Le ballast et les rails, par pans : un pan hors d'un pont ; celui qui y entre, coupé au bout de la culée (lot 3,
+    // l'Épaule : les rails de l'arche reliée en repartent, la ligne se lit d'un seul tenant).
     const n = Math.max(1, Math.ceil(len / R.piece));
     for (let k = 0; k < n; k++) {
-      const p = along((len * k) / n),
-        q = along((len * (k + 1)) / n);
-      if (railCut(p) || railCut(q)) continue;
+      let s0 = (len * k) / n,
+        s1 = (len * (k + 1)) / n;
+      const cut0 = railCut(along(s0)),
+        cut1 = railCut(along(s1));
+      if (cut0 && cut1) continue;
+      if (cut0 || cut1) {
+        // Le bout de la culée, par dichotomie : `free` hors du pont, `held` dessous.
+        let free = cut0 ? s1 : s0,
+          held = cut0 ? s0 : s1;
+        for (let i = 0; i < 14; i++) {
+          const m = (free + held) / 2;
+          if (railCut(along(m))) held = m;
+          else free = m;
+        }
+        if (cut0) s0 = free;
+        else s1 = free;
+      }
+      const p = along(s0),
+        q = along(s1);
       const yp = yOf(p),
         yq = yOf(q);
       strip(b, p, q, yp, yq, 0, R.ballast, R.ballastTop, R.ballastFoot, COLORS_4E.ballast, COLORS_4E.ballast);
