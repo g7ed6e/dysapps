@@ -684,8 +684,9 @@ export const RAFIOT_4E = (() => {
  * La digue de la Crique (lot 4, intention du directeur artistique du 22 octobre 2026, § 2) : un bras bas de pierre grise,
  * sans parapet ni rail, du coin sud-est de la place dans l'eau, vers le sud-est, puis en retour derrière l'aire, à l'est
  * d'elle : il ferme l'anse (l'aire est dans une eau abritée). Dans le repère de la Crique, les coudes de sa ligne brisée
- * (un bloc de l'un à l'autre), sa largeur, et son dessus au-dessus de l'eau, sous le niveau du quai. Un décor : on n'y
- * marche pas, loin du chemin de la Soute.
+ * (un bloc de l'un à l'autre), sa largeur, le dessus de chaque bloc au-dessus de l'eau, sous le niveau du quai, et le vide
+ * entre deux blocs (retouche 1 du directeur artistique : une ligne brisée de blocs bas, l'eau visible entre eux, jamais
+ * un ruban continu qu'on croirait une route). Un décor : on n'y marche pas, loin du chemin de la Soute.
  */
 export const CRIQUE_DIGUE = {
   points: [
@@ -698,8 +699,9 @@ export const CRIQUE_DIGUE = {
     [12.5, 62.5],
   ],
   width: 2.8,
-  top: 0.6,
-} as const satisfies { points: readonly (readonly [number, number])[]; width: number; top: number };
+  tops: [0.6, 0.47, 0.72, 0.53, 0.75, 0.5],
+  gap: 0.8,
+} as const satisfies { points: readonly (readonly [number, number])[]; width: number; tops: readonly number[]; gap: number };
 
 /**
  * Le terrain : l'étendue de la carte de hauteurs (le plan de 110 à 1 950 pixels d'ouest en est, de 40 à 1 190 du nord au

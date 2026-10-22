@@ -330,6 +330,11 @@ export interface NefSite {
   obstacle(): Facets;
   /** Ce qui reste de l'obstacle après le départ (au 5e, le mur écarté ; au 6e, rien). */
   after(): Facets | null;
+  /**
+   * L'obstacle, et ce qu'il en reste, jamais sur la Carte (au 4e, les îles du ciel : sans nom, elles s'y lisaient comme
+   * des îles en mer, des lieux où aller ; retouche 1 de la Crique). Absent : sur la Carte aussi.
+   */
+  offMap?: boolean;
   /** Ce qui ne part jamais, avant, pendant et après le départ (au 5e, le panache du 4e ; au 6e, rien). */
   stays(): Facets | null;
   obstacleTouched(p: Vec2): boolean;

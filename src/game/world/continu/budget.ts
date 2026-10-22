@@ -763,7 +763,8 @@ function detourCost4e(field: ReturnType<typeof buildHeightField4e>): number {
 /**
  * La Carte du 4e, en un seul plan : le ciel, toute l'île de loin, la mer, les chemins, les lieux (deux appels, le pire),
  * le trait double des ponts, les hachures du sommet et le dessin des coupures (dans le maillage des lieux), l'Épave, le
- * Recoin, la Dalle, le Replat et leurs sentes, la brume des terres fermées, Kéo.
+ * Recoin, la Dalle, le Replat et leurs sentes, la brume des terres fermées, Kéo, l'aéronef sur son aire (sans les îles
+ * du ciel).
  */
 export function mapCost4e(): { triangles: number; calls: number } {
   const field = buildHeightField4e();
@@ -774,7 +775,8 @@ export function mapCost4e(): { triangles: number; calls: number } {
   const veil = veilFacets(LINKED_LANDS_4E).triangles;
   const epave = detourCost4e(field);
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + epave + marks + veil + KEO.triangles + nefCost4e().triangles,
+    // L'aéronef et ses pièces, sans les îles du ciel : la Carte ne les dessine pas (`NefSite.offMap`).
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + epave + marks + veil + KEO.triangles + nefCost4e().triangles - nef4eSiteTriangles().islands,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
   };
 }

@@ -111,38 +111,54 @@ const SUN_4E = { x: -SHADOW_DIR_4E.x, z: -SHADOW_DIR_4E.z } as const;
 
 // ---------- La digue ----------
 
-/** Les couleurs de la digue : le dessus au soleil, son biseau, ses flancs à l'ombre (la pierre grise des Passeurs). */
-const DIGUE_COLORS = { top: COLORS_4E.stoneSun, bevel: COLORS_4E.stone, side: COLORS_4E.stoneShade } as const;
-
-/** Le profil d'un bloc de la digue : sa largeur au pied, à l'épaule (sous le biseau) et au dessus ; son pied sous l'eau. */
-const DIGUE_PROFILE = { foot: 1.5, shoulder: 0.5, crown: 0.36, bottom: -1.8, bevel: 0.25 } as const;
+/**
+ * Les couleurs de la digue : le dessus dans la pierre grise (retouche 1 du directeur artistique : au soleil, la pierre
+ * claire faisait une ligne qui se lisait comme une planche), son biseau, ses flancs à l'ombre (la pierre des Passeurs).
+ */
+const DIGUE_COLORS = { top: COLORS_4E.stone, bevel: COLORS_4E.stone, side: COLORS_4E.stoneShade } as const;
 
 /**
- * La digue de la Crique (intention, § 2) : un bras bas de pierre grise dans l'eau, six blocs en ligne brisée (un par
- * coude de `CRIQUE_DIGUE`), en grandes facettes : le dessus plat, un biseau de chaque côté, des flancs qui s'évasent
- * jusque sous l'eau ; ni parapet ni rail. Leur dessus à 0,6 au-dessus de l'eau, un bloc sur deux un rien plus bas.
+ * Le profil d'un bloc de la digue : sa largeur au pied, à l'épaule (sous le biseau) et au dessus ; son pied sous l'eau.
+ * Le pied s'évase (retouche 1 : la digue se pose dans l'eau, elle ne flotte pas au-dessus).
+ */
+const DIGUE_PROFILE = { foot: 2.2, shoulder: 0.5, crown: 0.36, bottom: -1.8, bevel: 0.25 } as const;
+
+/**
+ * La digue de la Crique (intention, § 2 ; retouche 1 du directeur artistique) : un bras bas de pierre grise dans l'eau,
+ * six blocs séparés en ligne brisée (un par coude de `CRIQUE_DIGUE`), chacun son haut, l'eau visible entre eux, en
+ * grandes facettes : le dessus plat, un biseau de chaque côté, des flancs qui s'évasent jusque sous l'eau ; ni parapet
+ * ni rail. Le vide entre deux blocs se mesure au bord intérieur du dessus, là où le coude le resserre.
  */
 export function digueFacets(): Facets {
   const b = new FacetBuilder();
-  const { points, width, top } = CRIQUE_DIGUE;
+  const { points, width, tops, gap } = CRIQUE_DIGUE;
   const P = DIGUE_PROFILE;
+  const dirs = points.slice(1).map(([x, z], i) => {
+    const len = Math.hypot(x - points[i][0], z - points[i][1]);
+    return { x: (x - points[i][0]) / len, z: (z - points[i][1]) / len };
+  });
+  // Ce qu'un bloc perd à un coude : la moitié du vide, plus ce que le coude resserre au bord du dessus.
+  const trim = (i: number) => {
+    const turn = Math.acos(Math.min(1, dirs[i - 1].x * dirs[i].x + dirs[i - 1].z * dirs[i].z));
+    return gap / 2 + (width / 2 - P.crown) * Math.tan(turn / 2);
+  };
   for (let i = 0; i + 1 < points.length; i++) {
     const [ax, az] = points[i];
     const [cx, cz] = points[i + 1];
-    const len = Math.hypot(cx - ax, cz - az);
-    const u = { x: (cx - ax) / len, z: (cz - az) / len };
-    // La droite du bloc (vue de son début), et ses deux bouts, prolongés d'un rien pour que les blocs se touchent.
+    const u = dirs[i];
+    // La droite du bloc (vue de son début), et ses deux bouts, reculés du vide aux coudes.
     const r = { x: -u.z, z: u.x };
-    const over = 0.25;
-    const y = top - (i % 2) * 0.08;
+    const back0 = i > 0 ? trim(i) : 0;
+    const back1 = i + 2 < points.length ? trim(i + 1) : 0;
+    const y = tops[i];
     const section = (px: number, pz: number): P3[] => {
       const at = (w: number, h: number): P3 => [px + r.x * w, h, pz + r.z * w];
       const half = width / 2;
       // De gauche à droite : le pied, l'épaule, le dessus, le dessus, l'épaule, le pied.
       return [at(-half - P.foot, P.bottom), at(-half - P.shoulder, y - P.bevel), at(-half + P.crown, y), at(half - P.crown, y), at(half + P.shoulder, y - P.bevel), at(half + P.foot, P.bottom)];
     };
-    const s0 = section(ax - u.x * over, az - u.z * over);
-    const s1 = section(cx + u.x * over, cz + u.z * over);
+    const s0 = section(ax + u.x * back0, az + u.z * back0);
+    const s1 = section(cx - u.x * back1, cz - u.z * back1);
     const colors = [DIGUE_COLORS.side, DIGUE_COLORS.bevel, DIGUE_COLORS.top, DIGUE_COLORS.bevel, DIGUE_COLORS.side];
     for (let k = 0; k < 5; k++) b.quad(s0[k], s0[k + 1], s1[k + 1], s1[k], colors[k]);
     // Les deux bouts : un hexagone de quatre triangles chacun.
@@ -173,9 +189,15 @@ export function digueFacets(): Facets {
 /** La fumée du Rafiot, sans ombre comme le panache (sinon, éclairée, elle se lisait comme des pierres en l'air). */
 export const RAFIOT_SMOKE_COLORS = { smoke: 0xb3aca5, smokeShade: 0xa7a099 } as const;
 
+/**
+ * La coque du Rafiot et sa ligne de flottaison, sans ombre (retouche 1 du consultant d'Archipéo : éclairée, la lumière
+ * chaude du 4e la tirait vers l'orange ; elle se lit vers #8C5444 au soleil, un fer rouillé qui ne claque pas) : chaque
+ * pan au soleil ou à l'ombre, comme les Aiguilles. Des couleurs à elles (la rouille des ruines reste éclairée).
+ */
+export const RAFIOT_HULL_COLORS = { hull: 0x8a5446, hullShade: 0x6c4238, waterline: 0x5c3c35, waterlineShade: 0x4a302b } as const;
+
 const RAFIOT_COLORS = {
-  hull: COLORS_4E.rustShade,
-  waterline: 0x5f3e36,
+  ...RAFIOT_HULL_COLORS,
   rail: COLORS_4E.wood,
   deck: COLORS_4E.wood,
   cabin: 0xa08a74,
@@ -264,11 +286,25 @@ function rafiotFacets(): Facets {
   // La coque, en quatre bandes de bordé : la flottaison (de sous l'eau à 0,3), la coque, le liston qui déborde, le plat-bord.
   const ring = (y: (top: number) => number, scale: number) => HULL.map(([x, z, top]): P3 => [x * scale, y(top), z * scale]);
   const rings = [ring(() => -0.3, 0.92), ring(() => 0.3, 0.97), ring((t) => t - 0.2, 1), ring((t) => t - 0.06, 1.04), ring((t) => t, 1)];
-  const bands = [C.waterline, C.hull, C.rail, C.rail];
+  // Un pan de bordé est au soleil si le milieu de son bord, vu du milieu de la coque, regarde le soleil (dans le monde).
+  const yc = Math.cos(RAFIOT_4E.yaw),
+    ys = Math.sin(RAFIOT_4E.yaw);
+  const sunny = HULL.map(([x, z], j) => {
+    const [nx, nz] = HULL[(j + 1) % HULL.length];
+    const mx = (x + nx) / 2,
+      mz = (z + nz) / 2;
+    return (mx * yc + mz * ys) * SUN_4E.x + (-mx * ys + mz * yc) * SUN_4E.z > 0;
+  });
+  const bands = [
+    [C.waterline, C.waterlineShade],
+    [C.hull, C.hullShade],
+    [C.rail, C.rail],
+    [C.rail, C.rail],
+  ] as const;
   for (let k = 0; k < bands.length; k++)
     for (let j = 0; j < HULL.length; j++) {
       const n = (j + 1) % HULL.length;
-      b.quad(rings[k][n], rings[k][j], rings[k + 1][j], rings[k + 1][n], bands[k]);
+      b.quad(rings[k][n], rings[k][j], rings[k + 1][j], rings[k + 1][n], bands[k][sunny[j] ? 0 : 1]);
     }
   const deck = rings[rings.length - 1];
   const middle: P3 = [0, RAFIOT_DECK, 0];
@@ -295,15 +331,12 @@ function rafiotFacets(): Facets {
   b.band({ x: 0, y: funnel.y + 0.6, z: funnel.z }, funnel.r + 0.03, 0.18, 8, C4E.iron);
   bronzes(b);
   const boat = placeFacets(b.build(), { x: RAFIOT_4E.at.x, y: 0, z: RAFIOT_4E.at.z, yaw: RAFIOT_4E.yaw });
-  // La fumée : trois bouffées aplaties, couchées vers le sud-est (dans le monde), de plus en plus larges.
+  // La fumée, un panache court (retouche 1 du directeur artistique et du consultant d'Archipéo : trois prismes posés en
+  // l'air se lisaient comme des pierres) : la première bouffée posée sur le haut de la cheminée, plus large en bas qu'en
+  // haut ; les suivantes plus plates, qui se chevauchent, traînent vers le sud-est (dans le monde) et montent peu.
   const s = new FacetBuilder();
-  const c = Math.cos(RAFIOT_4E.yaw),
-    sn = Math.sin(RAFIOT_4E.yaw);
-  const top = { x: RAFIOT_4E.at.x + funnel.z * sn, y: funnel.y + funnel.h, z: RAFIOT_4E.at.z + funnel.z * c };
-  for (let k = 0; k < 3; k++) {
-    const d = 0.55 + 0.85 * k;
-    s.prism({ x: top.x + d * Math.SQRT1_2, y: top.y + 0.2 + 0.3 * k, z: top.z + d * Math.SQRT1_2, yaw: k * 0.6 }, 0.42 + 0.08 * k, 0.32 + 0.06 * k, 0.4, 6, C.smokeShade, C.smoke);
-  }
+  const top = { x: RAFIOT_4E.at.x + funnel.z * ys, y: funnel.y + funnel.h, z: RAFIOT_4E.at.z + funnel.z * yc };
+  for (const [d, y, r0, r1, h] of RAFIOT_SMOKE) s.prism({ x: top.x + d * Math.SQRT1_2, y: top.y + y, z: top.z + d * Math.SQRT1_2, yaw: d }, r0, r1, h, 6, C.smokeShade, C.smoke);
   // Le quai abandonné : un tablier de planches, quelques pieux (sans chapeau : on ne le voit pas sous le tablier).
   const q = new FacetBuilder();
   const [from, to] = RAFIOT_4E.quay;
@@ -318,6 +351,16 @@ function rafiotFacets(): Facets {
   return mergeFacets([boat, s.build(), q.build()]);
 }
 
+/**
+ * Les bouffées du panache du Rafiot : leur décalage vers le sud-est depuis le haut de la cheminée, leur pied au-dessus
+ * de lui, leur rayon en bas et en haut, leur hauteur.
+ */
+const RAFIOT_SMOKE: readonly (readonly [number, number, number, number, number])[] = [
+  [0, 0, 0.42, 0.3, 0.42],
+  [0.7, 0.3, 0.5, 0.36, 0.25],
+  [1.45, 0.42, 0.56, 0.38, 0.25],
+];
+
 /** Le haut de la cheminée du Rafiot, dans son repère : la fumée ne monte jamais à plus de deux fois sa hauteur au-dessus. */
 export const RAFIOT_FUNNEL = { top: RAFIOT_DECK - 0.05 + 1.45 + 0.14 + 1.05, height: 1.05 } as const;
 
@@ -325,24 +368,25 @@ export const RAFIOT_FUNNEL = { top: RAFIOT_DECK - 0.05 + 1.45 + 0.14 + 1.05, hei
 
 /**
  * Les Aiguilles, vers le 5e (fiche, § 5 ; intention, § 5) : au sud de la Crique, sur l'horizon, quatre aiguilles de roche
- * grise, plates (larges en travers du regard du quai, minces de face), au-dessus d'une bande de brume pâle ; dessinées
- * sans ombre et peu voilées (levelWorld.ts, `thinFog`) : le pendant de la lumière du Phare de la Lisière. Le cap où elles
- * sont depuis le quai (0 : le nord ; π : le sud), leur distance, et chacune : son décalage en travers, sa hauteur, sa
- * demi-largeur.
+ * grise, plates (larges en travers du regard du quai, minces de face), basses et voilées, posées sur l'horizon (retouche 1
+ * du directeur artistique : plus basses, au milieu de la moitié droite de l'image du demi-tour, loin des boutons, sans la
+ * bande de brume à leur pied, qui se lisait comme une étagère) ; dessinées sans ombre et peu voilées (levelWorld.ts,
+ * `thinFog`) : le pendant de la lumière du Phare de la Lisière. Le cap où elles sont depuis le quai (0 : le nord ; π : le
+ * sud), leur distance, et chacune : son décalage en travers, sa hauteur, sa demi-largeur.
  */
 export const AIGUILLES_4E = {
-  yaw: 3.4,
+  yaw: 3.51,
   distance: 228,
   needles: [
-    [-13, 15, 2.6],
-    [-6, 21, 2.2],
-    [3, 12, 2.4],
-    [10, 18, 2.0],
+    [-13, 9, 2.6],
+    [-6, 13, 2.2],
+    [3, 7, 2.4],
+    [10, 11, 2.0],
   ],
 } as const satisfies { yaw: number; distance: number; needles: readonly (readonly [number, number, number])[] };
 
-/** Les couleurs des Aiguilles : la roche grise, côté soleil et côté ombre ; la brume pâle à leur pied. */
-export const AIGUILLES_COLORS = { lit: 0x8a878f, shade: 0x77747c, mist: 0xddd3c7 } as const;
+/** Les couleurs des Aiguilles : la roche grise, côté soleil et côté ombre. */
+export const AIGUILLES_COLORS = { lit: 0x8a878f, shade: 0x77747c } as const;
 
 /** Où sont les Aiguilles, dans le monde (leur milieu, au niveau de la mer). */
 export const AIGUILLES_AT: Vec2 = (() => {
@@ -388,10 +432,6 @@ export function aiguillesFacets(): Facets {
       b.triangle(at(n, 0.55, h * 0.55), at(k, 0.55, h * 0.55), tip, color(k));
     }
   });
-  // La bande de brume pâle, basse, en travers du regard, devant leur pied.
-  const span = Math.max(...needles.map(([off, , w]) => Math.abs(off) + w)) + 8;
-  const front = { x: AIGUILLES_AT.x - fwd.x * 3, z: AIGUILLES_AT.z - fwd.z * 3 };
-  b.box({ x: front.x, y: -0.5, z: front.z, yaw: Math.atan2(right.x, right.z) }, [3, 2.0, 2 * span], C.mist);
   return b.build();
 }
 
@@ -452,13 +492,14 @@ export function envelopeShown(look: NefLook): Deposit[] {
  * Où sont les pièces déposées, dans le repère de la Crique (intention, § 3) : la toile sur l'aire, du côté de la
  * passerelle, entre l'arrivée de la passerelle et la coque, couchée le long d'elle (à sa droite vue du quai) ; les
  * cordes lovées sur la toile ; le gouvernail de l'autre côté de la coque, ses deux plans côte à côte, jamais en croix ;
- * la bouée, après le départ, dans l'eau à côté de l'aire, du côté du large.
+ * la bouée, après le départ, dans l'eau sur le flanc de l'aire, à 1,5 environ hors de l'anneau (retouche 1 du directeur
+ * artistique : derrière le bord, elle se perdait) : on la voit de la passerelle et du demi-tour du quai.
  */
 export const DEPOSIT_SPOTS = {
   toile: { x: 2.4, z0: 42.8, z1: 45.6, width: 1.0 },
   coil: { x: 2.4, z: 44.55, r: 0.36 },
   gouvernail: { x: -2.45, zs: [43.95, 45.25], size: [0.85, 1.15] },
-  buoy: { x: 1.6, z: 52.2 },
+  buoy: { x: -6.1, z: 45 },
 } as const;
 
 /** Les couleurs des pièces déposées : la toile crème et sa bande vert île, ses cordes ; le gouvernail (sa toile, son cadre). */
@@ -529,7 +570,7 @@ export const SKY_ISLANDS_4E: readonly SkyIsland[] = [
   { x: 258, z: -104, top: 23, r: 11, depth: 12, sides: 9, gate: -1 },
   { x: 298, z: -86, top: 26, r: 13, depth: 13, sides: 10, gate: 1 },
   { x: 249, z: -158, top: 27, r: 12, depth: 13, sides: 9 },
-  { x: 356, z: -87, top: 28, r: 10, depth: 11, sides: 8 },
+  { x: 356, z: -87, top: 24, r: 10, depth: 11, sides: 8 },
 ];
 
 /**
@@ -650,8 +691,8 @@ function nef4eTouched(p: Vec2): boolean {
 
 /**
  * L'aéronef du 4e (lot 4) : sur son aire, ses pièces déposées et, après le départ, la bouée (`ber`) ; les îles du ciel,
- * son obstacle, les mêmes avant et après le départ (`obstacle`, `after` : elles ne changent pas) ; le départ entre deux
- * d'entre elles.
+ * son obstacle, les mêmes avant et après le départ (`obstacle`, `after` : elles ne changent pas), jamais sur la Carte
+ * (`offMap` : sans nom, elles s'y lisaient comme des îles en mer, des lieux où aller) ; le départ entre deux d'entre elles.
  */
 export const NEF_4E: NefSite = {
   form: 3,
@@ -662,6 +703,7 @@ export const NEF_4E: NefSite = {
   ber: depositOnce,
   obstacle: skyIslandsFacets,
   after: skyIslandsFacets,
+  offMap: true,
   stays: () => null,
   obstacleTouched: skyIslandTouched,
   touched: nef4eTouched,
@@ -674,5 +716,5 @@ export const NEF_4E: NefSite = {
 
 /** Ce que coûtent les pièces déposées au plus (ou la bouée), et les îles du ciel (le modèle se compte à part : la vue le charge). */
 export function nef4eSiteTriangles(): { ber: number; islands: number } {
-  return { ber: Math.max(...([0, 1, 2, 3, 4] as const).map((look) => depositFacets(look).triangles)), islands: skyIslandsFacets().triangles };
+  return { ber: Math.max(...([0, 1, 2, 3, 4] as const).map((look) => depositOnce(look).triangles)), islands: skyIslandsFacets().triangles };
 }

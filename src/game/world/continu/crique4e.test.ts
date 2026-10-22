@@ -23,6 +23,7 @@ import {
   NEF_4E_DEPARTURE,
   NEF_4E_TEMPS,
   RAFIOT_FUNNEL,
+  RAFIOT_HULL_COLORS,
   SKY_GATE_4E,
   SKY_ISLANDS_4E,
   SKY_ISLAND_COLORS,
@@ -104,6 +105,9 @@ describe('La place et la rangée de la Crique', () => {
     const aire = colorsOf(criqueWalkwayFacets());
     for (const c of [COLORS_4E.rust, COLORS_4E.rustShade, COLORS_4E.copper]) expect(aire.has(key(c)), c.toString(16)).toBe(false);
     expect(aire.has(key(C4E.iron))).toBe(true);
+    // L'anneau en fer froid, plus clair sur le dessus : jamais le brun des bittes, qu'on lisait comme du bois.
+    expect(aire.has(key(0x4e4a4c))).toBe(true);
+    expect(aire.has(key(0x6e6a6c))).toBe(true);
   });
 
   it('le dallage se détache de la terre rouge (3 pour 1), les encadrements de la brique et du vantail (1,5 pour 1)', () => {
@@ -132,7 +136,7 @@ describe('La place et la rangée de la Crique', () => {
 });
 
 describe('La digue', () => {
-  it('six blocs au plus 200 triangles, dans l’eau (passé son pied), loin des chemins et du chemin de la Soute', () => {
+  it('six blocs séparés au plus 200 triangles, dans l’eau (passé son pied), loin des chemins et du chemin de la Soute', () => {
     expect(digueFacets().triangles).toBeLessThanOrEqual(CEILINGS.digue);
     const points = CRIQUE_DIGUE.points.map(([x, z]) => CRIQUE.toWorld(x, z));
     expect(points.length - 1).toBe(6);
@@ -140,14 +144,43 @@ describe('La digue', () => {
     const node = (id: string) => PATH_NODES_4E.find((n) => n.id === id)!.at;
     for (const p of points)
       for (const [a, b] of PATH_EDGES_4E) expect(distanceToPolyline(p, [node(a), node(b)]), `${a}–${b}`).toBeGreaterThan(5);
-    // Son dessus à 0,6 au-dessus de l'eau, sous le quai ; à l'est de l'aire et jusqu'à sa hauteur (elle ferme l'anse).
+    // Chaque bloc son haut, de 0,45 à 0,75 au-dessus de l'eau, sous le quai ; à l'est de l'aire et jusqu'à sa hauteur (elle
+    // ferme l'anse).
+    expect(CRIQUE_DIGUE.tops).toHaveLength(6);
+    expect(new Set(CRIQUE_DIGUE.tops).size).toBe(6);
+    for (const t of CRIQUE_DIGUE.tops) {
+      expect(t).toBeGreaterThanOrEqual(0.45);
+      expect(t).toBeLessThanOrEqual(0.75);
+    }
     let top = -Infinity;
     for (const v of vertices(digueFacets())) top = Math.max(top, v.y);
-    expect(top).toBeCloseTo(CRIQUE_DIGUE.top);
+    expect(top).toBeCloseTo(Math.max(...CRIQUE_DIGUE.tops));
     expect(top).toBeLessThan(CRIQUE_LEVEL);
     const end = points[points.length - 1];
     expect(end.x).toBeGreaterThan(NEF_4E.berth.x + CRIQUE_PAD.radius);
     expect(end.z).toBeGreaterThan(NEF_4E.berth.z);
+  });
+
+  it('l’eau entre deux blocs : un vide d’environ 0,8 au moins au bord du dessus, jamais un ruban continu ; le dessus en pierre grise', () => {
+    const f = digueFacets();
+    // Les dessus (normale vers le ciel), bloc par bloc : deux coins de deux blocs voisins jamais à moins du vide.
+    const tops: Vec3[][] = [];
+    for (let k = 0; k < f.positions.length; k += 9) {
+      if (f.normals[k + 1] < 0.99) continue;
+      const tri = [0, 3, 6].map((o) => ({ x: f.positions[k + o], y: f.positions[k + o + 1], z: f.positions[k + o + 2] }));
+      const block = tops.find((t) => Math.abs(t[0].y - tri[0].y) < 1e-4);
+      if (block) block.push(...tri);
+      else tops.push(tri);
+    }
+    expect(tops).toHaveLength(6);
+    for (let i = 1; i < tops.length; i++) {
+      let near = Infinity;
+      for (const a of tops[i - 1]) for (const c of tops[i]) near = Math.min(near, distance(a, c));
+      expect(near, `${i}`).toBeGreaterThanOrEqual(CRIQUE_DIGUE.gap - 0.05);
+    }
+    const seen = colorsOf(f);
+    expect(seen.has(key(COLORS_4E.stone))).toBe(true);
+    expect(seen.has(key(COLORS_4E.stoneSun))).toBe(false);
   });
 
   it('ses facettes regardent dehors : le dessus vers le ciel', () => {
@@ -210,11 +243,19 @@ describe('L’aire et l’aéronef au repos', () => {
     expect(NEF_4E.ber(2).triangles).toBeLessThan(NEF_4E.ber(1).triangles);
     // Un seul modèle par niveau, chacun de sa forme : le 4e n'a que l'aéronef.
     expect((['6e', '5e', '4e'] as const).map((l) => levelWorld(l).departure.nef.form)).toEqual([1, 2, 3]);
-    // La bouée, dans l'eau, à côté de l'aire, du côté du large.
+    // La bouée, dans l'eau, sur le flanc de l'aire, à 1,5 environ hors de l'anneau, entre la passerelle et le bout de l'aire.
     const buoy = CRIQUE.toWorld(DEPOSIT_SPOTS.buoy.x, DEPOSIT_SPOTS.buoy.z);
     expect(heightAt4e(buoy)).toBeLessThan(0);
-    expect(distance(buoy, NEF_4E.berth)).toBeGreaterThan(CRIQUE_PAD.radius + 1);
-    expect(CRIQUE.toLocal(buoy).z).toBeGreaterThan(CRIQUE_PAD.pad.z);
+    expect(distance(buoy, NEF_4E.berth) - CRIQUE_PAD.radius).toBeGreaterThan(1.3);
+    expect(distance(buoy, NEF_4E.berth) - CRIQUE_PAD.radius).toBeLessThan(2);
+    expect(DEPOSIT_SPOTS.buoy.z).toBeGreaterThan(CRIQUE_PAD.z1);
+    expect(DEPOSIT_SPOTS.buoy.z).toBeLessThan(CRIQUE_PAD.pad.z + CRIQUE_PAD.radius);
+    // Vue du demi-tour du quai, dans l'image, à côté de l'aire (pas derrière elle).
+    const turned = followPose(KEO, 0, undefined, CRIQUE_VIEW.yaw + Math.PI);
+    const at = screenOf(turned, { x: buoy.x, y: 0.5, z: buoy.z }, 1024, 768);
+    const pad = screenOf(turned, { x: NEF_4E.berth.x, y: CRIQUE_PAD.deck, z: NEF_4E.berth.z }, 1024, 768);
+    expect(inFrame(turned, { x: buoy.x, y: 0.5, z: buoy.z })).toBe(true);
+    expect(Math.abs(at.x - pad.x)).toBeGreaterThan(100);
   });
 
   it('la toile et le gouvernail sur l’aire, hors de la coque, jamais entre la caméra du quai et Kéo', () => {
@@ -266,6 +307,9 @@ describe('Les îles du ciel et le départ', () => {
     for (let i = 1; i < far.length; i++) expect(far[i] - far[i - 1]).toBeGreaterThan(8);
     expect(skyIslandTouched(NEF_4E.berth)).toBe(false);
     expect(NEF_4E.obstacle()).toBe(NEF_4E.after());
+    // Jamais sur la Carte : elles s'y lisaient comme des îles en mer.
+    expect(NEF_4E.offMap).toBe(true);
+    expect(levelWorld('5e').departure.nef.offMap).toBeUndefined();
     // Sans ombre, peu voilées, leurs couleurs à elles.
     const thin = levelWorld('4e').thinFog;
     for (const c of Object.values(SKY_ISLAND_COLORS)) expect(thin.find((t) => t.color === c)?.unlit, c.toString(16)).toBe(true);
@@ -346,8 +390,19 @@ describe('La vue d’arrivée, le Rafiot et les Aiguilles', () => {
     const decor = criqueDecorFacets();
     for (const v of vertices(decor)) if (Math.hypot(v.x - RAFIOT_4E.at.x, v.z - RAFIOT_4E.at.z) < 8) top = Math.max(top, v.y);
     expect(top).toBeLessThanOrEqual(RAFIOT_FUNNEL.top + 2 * RAFIOT_FUNNEL.height);
-    // Sa coque de fer rouillé sombre, jamais presque noire ; aucune lanterne allumée.
-    expect(lum(COLORS_4E.rustShade)).toBeGreaterThan(0.03);
+    // Sa coque de fer rouillé sombre, jamais presque noire, sans ombre (vers #8C5444 au soleil), de couleurs à elle : la
+    // rouille des ruines reste éclairée ; aucune lanterne allumée.
+    for (const c of Object.values(RAFIOT_HULL_COLORS)) {
+      expect(lum(c)).toBeGreaterThan(0.02);
+      expect(levelWorld('4e').thinFog.find((t) => t.color === c)?.unlit, c.toString(16)).toBe(true);
+      for (const other of [...Object.values(COLORS_4E), ...Object.values(C4E)] as number[]) {
+        const near = linearRgb(c).every((v, i) => Math.abs(v - linearRgb(other)[i]) < 0.004);
+        expect(near, `${c.toString(16)} ${other.toString(16)}`).toBe(false);
+      }
+    }
+    const hullSeen = colorsOf(decor);
+    expect(hullSeen.has(key(RAFIOT_HULL_COLORS.hull))).toBe(true);
+    expect(hullSeen.has(key(RAFIOT_HULL_COLORS.hullShade))).toBe(true);
     let lamp = 0;
     for (let k = 0; k < decor.colors.length; k += 3) if (`${decor.colors[k].toFixed(4)},${decor.colors[k + 1].toFixed(4)},${decor.colors[k + 2].toFixed(4)}` === key(C4E.lantern)) lamp++;
     expect(lamp).toBe(0);
@@ -360,6 +415,10 @@ describe('La vue d’arrivée, le Rafiot et les Aiguilles', () => {
     for (const v of vertices(aiguillesFacets())) expect(inFrame(arrival(), v)).toBe(false);
     const turned = followPose(KEO, 0, undefined, CRIQUE_VIEW.yaw + Math.PI);
     for (const [, h] of AIGUILLES_4E.needles) expect(inFrame(turned, { x: AIGUILLES_AT.x, y: h, z: AIGUILLES_AT.z })).toBe(true);
+    // Basses, au milieu de la moitié droite de l'image, loin de la colonne de boutons de droite.
+    for (const [, h] of AIGUILLES_4E.needles) expect(h).toBeLessThanOrEqual(13);
+    const at = screenOf(turned, { x: AIGUILLES_AT.x, y: 0, z: AIGUILLES_AT.z }, 1024, 768);
+    expect(Math.abs(at.x - 768)).toBeLessThan(60);
     const thin = levelWorld('4e').thinFog;
     for (const c of Object.values(AIGUILLES_COLORS)) expect(thin.find((t) => t.color === c)?.unlit, c.toString(16)).toBe(true);
   });
@@ -371,7 +430,7 @@ describe('La vue d’arrivée, le Rafiot et les Aiguilles', () => {
     expect(pad.x).toBeGreaterThan(256);
     const end = CRIQUE_DIGUE.points[CRIQUE_DIGUE.points.length - 1];
     const w = CRIQUE.toWorld(end[0], end[1]);
-    expect(inFrame(turned, { x: w.x, y: CRIQUE_DIGUE.top, z: w.z })).toBe(true);
+    expect(inFrame(turned, { x: w.x, y: CRIQUE_DIGUE.tops[CRIQUE_DIGUE.tops.length - 1], z: w.z })).toBe(true);
     expect(distance(w, turned.position)).toBeGreaterThan(distance(NEF_4E.berth, turned.position));
     for (let k = -8; k <= 8; k++) {
       const pose = followPose(KEO, 0, undefined, CRIQUE_VIEW.yaw + (k * Math.PI) / 8);

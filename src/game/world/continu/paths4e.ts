@@ -256,8 +256,10 @@ const WALKWAY_PILES = { step: 3, foot: -2.4 } as const;
  * sur la terre battue ; l'aire doit se lire comme une plate-forme ronde de bois cerclée de fer, posée sur l'eau) : un
  * anneau plat de fer bruni sombre, large de `width`, en relief de `rise` sur le bord du dessus, en `sides` pans (l'aire
  * reste ronde à l'œil) ; sous lui, la bande du bord, du même fer, de `drop` sous les planches jusqu'au haut de l'anneau.
+ * Un fer froid (retouche 1 du consultant d'Archipéo et du directeur artistique : le fer bruni des bittes, brun, s'y lisait
+ * comme du bois sombre), plus clair sur le dessus ; les bittes gardent le leur.
  */
-const PAD_RING = { width: 0.45, rise: 0.08, drop: 0.32, sides: 16, out: 0.06 } as const;
+const PAD_RING = { width: 0.45, rise: 0.08, drop: 0.32, sides: 16, out: 0.06, iron: 0x4e4a4c, ironTop: 0x6e6a6c } as const;
 
 /**
  * Sur l'anneau, les quatre bornes de fer bruni (à 60° et 120° de chaque côté de l'arrivée de la passerelle : aucune entre
@@ -288,16 +290,16 @@ export function criqueWalkwayFacets(): Facets {
   // L'aire : un disque de planches, son cerclage de fer bruni (la bande du bord, l'anneau en relief), ses pieux tout autour.
   const R = PAD_RING;
   b.prism({ x: pad.x, y: deck - 0.3, z: pad.z }, radius, radius, 0.3, R.sides, PLANKS_4E.side, PLANKS_4E.top);
-  b.band({ x: pad.x, y: deck - R.drop, z: pad.z }, radius + R.out, R.drop + R.rise, R.sides, C4E.iron);
+  b.band({ x: pad.x, y: deck - R.drop, z: pad.z }, radius + R.out, R.drop + R.rise, R.sides, R.iron);
   const inner = radius + R.out - R.width;
   const top = deck + R.rise;
-  b.annulus({ x: pad.x, y: deck, z: pad.z }, inner, radius + R.out, R.rise, R.sides, C4E.iron, C4E.ironTop, false);
+  b.annulus({ x: pad.x, y: deck, z: pad.z }, inner, radius + R.out, R.rise, R.sides, R.iron, R.ironTop, false);
   // Le bord intérieur de l'anneau, tourné vers le milieu de l'aire (le relief, vu de l'autre côté de l'aire).
   const at = (k: number, y: number): [number, number, number] => {
     const a = (2 * Math.PI * k) / R.sides;
     return [pad.x + inner * Math.cos(a), y, pad.z + inner * Math.sin(a)];
   };
-  for (let k = 0; k < R.sides; k++) b.quad(at(k, deck), at(k + 1, deck), at(k + 1, top), at(k, top), C4E.iron);
+  for (let k = 0; k < R.sides; k++) b.quad(at(k, deck), at(k + 1, deck), at(k + 1, top), at(k, top), R.iron);
   for (let k = 0; k < 6; k++) {
     const a = (2 * Math.PI * k) / 6 + 0.26;
     b.band({ x: pad.x + Math.cos(a) * (radius - 0.5), y: WALKWAY_PILES.foot, z: pad.z + Math.sin(a) * (radius - 0.5) }, 0.25, deck - WALKWAY_PILES.foot - 0.3, 5, COLORS_4E.woodShade);
