@@ -372,6 +372,15 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     placement: 'rangee',
     words: { pose: ['Les six poteaux sont debout.', 'La coupole est remise.', 'Les nouvelles sont arrivées.'], end: 'Ici, les nouvelles du monde montaient jusqu’au sommet.' },
   },
+  // La Maquette (les Alpages du 3e, GD-25) : la phrase de métier et la réplique de la proposition du consultant d'Archipéo
+  // (§ 4) ; une phrase par partie, sans nom de plan de l'île (« mairie », « toit », « place ») ni « maquette » en nom
+  // commun : « La halle est couverte. » à la place de « La halle a son toit. ».
+  maquette: {
+    role: placeArt('maquette')!.role,
+    greeting: 'L’urbaniste dessine les villes et leurs routes.',
+    placement: 'rangee',
+    words: { pose: ['La halle est couverte.', 'Le relief est remis.', 'Les routes sont tendues.'], end: 'Ici, on voyait tout le pays d’un seul regard.' },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -826,6 +835,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   abri: northSite('abri'),
   jardin: northSite('jardin'),
   kiosque: northSite('kiosque'),
+  maquette: northSite('maquette'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2402,6 +2412,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   jardin: 'earth',
   // Le Kiosque : l'herbe du pâturage.
   kiosque: 'earth',
+  // La Maquette : l'herbe près de la rive ouest.
+  maquette: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 
