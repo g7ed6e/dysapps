@@ -4,7 +4,7 @@
 // vers l'est, z vers le sud), en quelques volumes de 4 à 6 aplats de la palette froide du 3e (./plan3e.ts,
 // `COLORS_3E`) : le granit bleuté des Passeurs, l'ardoise, le bois gris, le bronze des ferrures, l'émail cobalt de la
 // Coupole ; rien de presque noir, rien à lire (fiche, § 6 bis : ni chiffre, ni mot, ni légende). Les signatures sont
-// celles de la fiche (§ 7), à grands traits : le phare éteint du Fanal, la coupole
+// celles de la fiche (§ 7), à grands traits : la tour éteinte du Fanal, de pierre claire à deux bandes d'ardoise, la coupole
 // cobalt, le grand mât des Ondes… Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_3E, type BuiltPlace3e, type PlaceId3e } from './plan3e';
@@ -25,6 +25,8 @@ const C = {
   snow: COLORS_3E.snow,
   pine: COLORS_3E.pine,
   pineShade: COLORS_3E.pineShade,
+  // La pierre claire du Fanal, celle du Parvis.
+  stone: COLORS_3E.parvis,
   // La pierre blanche des murs (l'Abri, la Coupole) : claire, un peu grise, jamais éblouissante.
   white: 0xdcd8cc,
   // Le verre d'une lanterne ou d'une fenêtre brisée : un gris-bleu clair, mat (jamais un reflet).
@@ -43,11 +45,25 @@ function rubble(b: FacetBuilder, x: number, z: number, s: number, color: number 
 /** Un poteau de bois, cassé ou non. */
 const post = (b: FacetBuilder, x: number, z: number, h: number, w = 0.5): void => b.box({ x, y: SINK, z }, [w, h - SINK, w], C.woodShade, C.wood);
 
-/** Le Fanal : le phare de granit éteint, sur son socle fendu en deux gradins ; sa lanterne aux vitres manquantes. */
+/**
+ * La tour du Fanal (relecture des lieux, correction 10, et relecture du Versant, (a) 2) : de pierre claire, du haut du socle
+ * (`y0`, rayon `r0`) au pied de la lanterne (`y1`, rayon `r1`), ceinte de deux larges bandes d'ardoise (`bands`, leur bas
+ * et leur haut) : elle se lit par sa forme autant que par sa valeur, de partout, même dans le thème Contraste élevé ;
+ * jamais de rayures rouges et blanches, jamais de cobalt.
+ */
+export const FANAL_TOWER_3E = { y0: 4.6, y1: 17.6, r0: 2.6, r1: 2.0, bands: [[8.0, 10.2], [12.6, 14.8]] as const } as const;
+
+/** Le Fanal : sa tour de pierre claire à deux bandes d'ardoise, éteinte, sur son socle de granit fendu en deux gradins ; sa lanterne aux vitres manquantes, sous son toit d'ardoise. */
 function fanal(b: FacetBuilder): void {
   b.box({ x: 0, y: SINK, z: 0 }, [14, 2.4 - SINK, 11], C.graniteShade, C.granite);
   b.box({ x: 0, y: 2.4, z: -0.5 }, [9, 2.2, 7.5], C.graniteShade, C.graniteSun);
-  b.prism({ x: 0, y: 4.6, z: -0.5 }, 2.6, 2, 13, 8, C.granite, C.graniteSun);
+  const T = FANAL_TOWER_3E;
+  const r = (y: number) => T.r0 + ((T.r1 - T.r0) * (y - T.y0)) / (T.y1 - T.y0);
+  const cuts = [T.y0, ...T.bands.flat(), T.y1];
+  for (let k = 1; k < cuts.length; k++) {
+    const band = k % 2 === 0;
+    b.prism({ x: 0, y: cuts[k - 1], z: -0.5 }, r(cuts[k - 1]), r(cuts[k]), cuts[k] - cuts[k - 1], 8, band ? C.slate : C.stone, band ? C.slateTop : C.stone);
+  }
   b.prism({ x: 0, y: 17.6, z: -0.5 }, 1.9, 1.9, 2, 8, C.glass, C.slate);
   b.prism({ x: 0, y: 19.6, z: -0.5 }, 2.1, 0.4, 1.4, 8, C.slate, C.slateTop);
   rubble(b, 6, 4, 1.3);

@@ -11,6 +11,7 @@ import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
 import { levelWorld } from './levelWorld';
 import { planFor } from './levelPlan';
 import { modelOfPlace } from './places';
+import { FANAL_TOWER_3E } from './ruins3e';
 import { CUT_CLEARANCE_3E, NETWORK_3E, pathRibbons3e } from './paths3e';
 import { NEF_3E, PARVIS_SITE, PARVIS_VIEW, nef3eFlight, parvisDecorFacets, zeppelinFacets } from './parvis3e';
 import { veilFacets } from './veil';
@@ -252,5 +253,26 @@ describe('Le budget du 3e', () => {
       expect(cost.triangles).toBeLessThanOrEqual(LOT1_CEILING.triangles);
       expect(cost.calls).toBeLessThanOrEqual(LOT1_CEILING.calls);
     }
+  });
+});
+
+describe('Le Fanal, second repère du niveau (relecture des lieux, correction 10 ; relecture du Versant, (a) 2)', () => {
+  it('une tour de pierre claire à deux larges bandes d’ardoise, jamais de cobalt ni de rouge, plus haute que son socle', () => {
+    const f = modelOfPlace('fanal').facets;
+    const has = (hex: number) => {
+      const c = linearRgb(hex);
+      for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - c[k]) < 1e-6)) return true;
+      return false;
+    };
+    expect(has(COLORS_3E.parvis)).toBe(true);
+    expect(has(COLORS_3E.slate)).toBe(true);
+    expect(has(COLORS_3E.cobalt)).toBe(false);
+    const T = FANAL_TOWER_3E;
+    expect(T.bands).toHaveLength(2);
+    for (const [lo, hi] of T.bands) {
+      expect(hi - lo).toBeGreaterThanOrEqual(2);
+      expect(lo > T.y0 && hi < T.y1).toBe(true);
+    }
+    expect(T.bands[1][0] - T.bands[0][1]).toBeGreaterThanOrEqual(2);
   });
 });
