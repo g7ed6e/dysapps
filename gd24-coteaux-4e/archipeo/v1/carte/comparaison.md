@@ -1,0 +1,15 @@
+# La Carte des Coteaux
+
+Intention : § 10.
+
+| Capture | Ce qu'on voit | Face à l'intention |
+| --- | --- | --- |
+| `08-carte-ruine` | Les cinq lieux en ruine, « Toi » à la Jonction. L'Herbier, les Roches, la Veillée (avec fanion) et la Basilique (avec fanion) n'ont pas de coche. Le nom de la Jonction est encadré : c'est le lieu choisi. | Les fanions sont collés au nom de la Veillée et de la Basilique. Le pont est sur le ravin. |
+| `08-carte-restauree` | Les cinq lieux cochés. | **Écart** : « La Jonction » est **au-dessus** de son point, au milieu des Roches, et non dessous. « La Basilique » tient sur trois lignes (nom, fanion et coche). |
+| `08-carte-terre-fermee` | Les Coteaux, non reliés, sont voilés et leurs noms grisés. | **Écart** : « Toi » et son pion couvrent un nom (« Les C… »), sur le bord est des Coteaux. |
+
+## Comment elles sont faites
+
+Captures prises le 22 octobre 2026 sur une copie figée du commit `9df4c78c` (branche `claude/project-thread-6fnudk`, `git archive`, `node_modules` en lien), et non sur l'arbre de `/home/user/dysapps` : le `git checkout 6bff2340` fait par erreur vers 07 h 20 n'a donc touché aucune image. Format 1024 × 768 (le téléphone en 390 × 844, OpenDyslexic 32), de jour, horloge pilotée et hasard fixe (`scripts/prise-de-vue.mjs`). L'état de sauvegarde est « tout construit et relié », sauf le lieu montré, qui a 0, 1, … n missions jouées, LV2 espagnol et option latin. Les vues de face, de dos et de trois quarts sont des caméras posées (`view`) au cap indiqué, Kéo étant mis hors du cadre sur un nœud du chemin. Le cap de « Y aller » et la scénette sont ceux du jeu. Le scénario est dans `../outils/` (`captures.mjs`, `lib.mjs`).
+
+**Pas de nuit** : le monde ouvert n'a pas encore de nuit. La lumière est fixe, et l'intention, § 10, dit « quand elle viendra, GD-20, point 7 ». Une prise à 22 h 30 donne la même image que de jour, donc aucune vue de nuit n'est livrée.

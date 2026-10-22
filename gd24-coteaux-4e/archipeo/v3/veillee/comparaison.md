@@ -1,0 +1,13 @@
+# La Veillée, retouche 2 (points 3, 4, 7, et la réponse choisie)
+
+| Capture | Ce qu'on voit | Face à la retouche |
+| --- | --- | --- |
+| `01-ruine-de-face`, `05-ruine-de-dos` | Le pan de treillage tombé à claire-voie : quatre lattes dans la pente, deux en travers ; on voit le sol à travers. | Conforme : plus de bâche. |
+| `04-restaure-de-face`, `05-restaure-de-dos` | La vigne en touffes de feuilles à facettes, vertes au soleil, plus sombres dessous, des trous où le treillage se voit ; les grappes du bord pendent en pointes ; rien au-dessus de 2,6. | Conforme : plus de plan vert uni. |
+| `05-restaure-de-dos` | Plus de figure claire au-dessus de la tonnelle. C'était Kéo : l'ancien scénario le posait sur le nœud `cot-3`, le seul à 70 de la caméra, qui était devant elle, au-delà de la tonnelle (vérifié : Kéo déplacé, la figure part avec lui). L'épicier ne se montre jamais hors de sa scénette ; aucun habitant du 4e n'a de place hors d'elle (`hasWorldHabitant`, testé pour les seize lieux). | Point 4 : rien à corriger dans le jeu. La mer derrière la tonnelle, dans les deux vues de dos, est le sol pas encore chargé loin de Kéo (il se tient hors du champ) : un effet de la prise de vue. |
+| `06-scenette-epicier-avant-la-derniere-partie` | La scène au même site, hors de la tonnelle (225°), le lieu presque restauré derrière : poteaux, vigne, garde-manger restent derrière Kéo et l'épicier ; rien ne passe devant eux ni devant les trois bols. | Conforme (directeur artistique, écart 1, point 2). |
+| `11-reponse-choisie-fausse`, `-panneau` | Une réponse fausse choisie au premier essai (« Desayuno a las nueve. ») : son bouton change de fond et de bord, « Presque ! » et l'indice s'affichent, et le bol au-dessus d'elle se soulève d'un cran (la marque par la forme, pas par la couleur seule). | À relire par le consultant UX UI (ux.md, point 7). Le bol choisi est en partie sous le panneau en vue de panneau ; en vue Scène, il se voit. |
+
+Triangles : 562 en ruine, 1 080 restaurée, 1 239 traces comprises (494 et 1 023 avant).
+
+Captures prises le 22 octobre 2026 sur des copies figées des commits `d527747e` (retouche 2) et `507855f8` (les cases des casiers creuses ; Roches et Veillée refaites dessus), `git archive`, `node_modules` en lien, avec le scénario de `../outils/` (repris de `captures-v2/outils/` : Kéo se tient hors du champ, sur le nœud le plus proche du lieu à plus de 40° de l'axe ; une réponse choisie dans la scénette). Format 1024 × 768 ; de jour, horloge pilotée, hasard fixe. Seules les vues qui changent sont refaites ; les autres restent dans `../../captures/<lieu>/` et `../../captures-v2/<lieu>/`.

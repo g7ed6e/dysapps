@@ -1,0 +1,10 @@
+# La Carte, retouche 2 (points 11, 12, 13)
+
+| Capture | Ce qu'on voit | Face à la retouche |
+| --- | --- | --- |
+| `08-carte-terre-fermee` | Kéo à la Forge, les Coteaux fermés : sa pastille à cheval sur le bord droit du cadre de « La Forge », après « ✓ », dans la marge ; aucune lettre cachée, aucune autre étiquette touchée. | Conforme (point 11, étape b ; testé dans `map.test.ts`). |
+| `08-carte-ruine`, `08-carte-restauree` | « La / Basilique ⚑ ✓ » sur deux lignes, « ✓ » collé au dernier mot (point 13). En ruine, le nom de la Basilique est sous son point ; restauré, il passe au-dessus de la Veillée. | **Écart, point 12** : restauré, le nom de « L'Herbier ✓ » grandit lui aussi et prend la place sous le point de la Basilique ; dessous, la Basilique déborderait l'écart au bord. « Les Roches » reste au-dessus de son point en ruine comme restauré : dessous, il toucherait « Les Coteaux » et la pastille de Kéo (terre fermée), « La Jonction » (restaurée). Réserver la place de « ✓ » dès la ruine (proposition de ux.md, point 2) tiendrait la place : à trancher par le consultant UX UI. |
+
+Les étiquettes des autres lieux bougent un peu entre `captures-v2` et ici (l'Étalon, le Chariot, le Gabarit) : la forme serrée, mesurée avec « ✓ » sur sa dernière ligne, change de taille, et la vue de départ se choisit sur ces tailles. Le 5e et le 6e : la place de Kéo n'y change pas (testé ; `keepNames` seulement au 4e) ; « ✓ » collé au dernier mot vaut sur toutes les Cartes dans la forme serrée.
+
+Captures prises le 22 octobre 2026 sur des copies figées des commits `d527747e` (retouche 2) et `507855f8` (les cases des casiers creuses ; Roches et Veillée refaites dessus), `git archive`, `node_modules` en lien, avec le scénario de `../outils/` (repris de `captures-v2/outils/` : Kéo se tient hors du champ, sur le nœud le plus proche du lieu à plus de 40° de l'axe ; une réponse choisie dans la scénette). Format 1024 × 768 ; de jour, horloge pilotée, hasard fixe. Seules les vues qui changent sont refaites ; les autres restent dans `../../captures/<lieu>/` et `../../captures-v2/<lieu>/`.
