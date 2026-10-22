@@ -44,6 +44,7 @@ import { dalleFacets } from './dalle4e';
 import { epaveFacets } from './epave4e';
 import { recoinFacets } from './recoin4e';
 import { replatFacets } from './replat4e';
+import { cadranFacets } from './cadran3e';
 import { CRIQUE_SITE, NEF_4E_MODEL_TRIANGLES, criqueDecorFacets } from './crique4e';
 import { NETWORK_4E, pathRibbons4e } from './paths4e';
 import { TERRAIN_4E } from './plan4e';
@@ -903,6 +904,7 @@ export function openWorldCost3e(view: 'monde' | 'scenette' | 'depart' = 'monde')
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
     { poste: 'lieux', ...placesCost3e() },
     { poste: 'brume', ...veilCost3e() },
+    { poste: 'détours', triangles: detourCost3e(field), calls: 0 },
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost3e() },
     ...(view === 'depart'
@@ -916,10 +918,13 @@ export function openWorldCost3e(view: 'monde' | 'scenette' | 'depart' = 'monde')
   ];
 }
 
+/** Les Détours du 3e, leur sente tracée : le Cadran (le Versant). */
+const detourCost3e = (field: ReturnType<typeof buildHeightField3e>): number => cadranFacets(true, ground3e(field)).triangles;
+
 /**
  * La Carte du 3e, en un seul plan : le ciel, toutes les terres de loin, la mer de nuages, les chemins, les lieux (deux
  * appels, le pire), le trait double des passages, les hachures du pic et des arêtes et la bande de la langue de glace
- * (dans le maillage des lieux), la brume des terres fermées, Kéo.
+ * (dans le maillage des lieux), le Cadran et sa sente, la brume des terres fermées, Kéo.
  */
 export function mapCost3e(): { triangles: number; calls: number } {
   const field = buildHeightField3e();
@@ -929,7 +934,7 @@ export function mapCost3e(): { triangles: number; calls: number } {
   const marks = LINKED_LANDS_3E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + mapOverlay3e().triangles;
   const veil = veilCost3e();
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + marks + veil.triangles + KEO.triangles + nefCost3e().triangles,
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + detourCost3e(field) + marks + veil.triangles + KEO.triangles + nefCost3e().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + veil.calls + KEO.calls,
   };
 }

@@ -24,6 +24,7 @@ import { dalleFacets } from '../../world/continu/dalle4e';
 import { epaveFacets } from '../../world/continu/epave4e';
 import { recoinFacets } from '../../world/continu/recoin4e';
 import { replatFacets } from '../../world/continu/replat4e';
+import { cadranFacets } from '../../world/continu/cadran3e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
@@ -1314,6 +1315,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!c) replatDrawn.push((c = { found, facets: replatFacets(found, ground) }));
     return c.facets;
   };
+  // Le Cadran du 3e (le Versant) : de même, sans et avec sa sente, sur le sol du 3e.
+  const cadranDrawn: { found: boolean; facets: Facets }[] = [];
+  const cadranNow = (): Facets => {
+    const found = detoursFound.includes('cadran');
+    let c = cadranDrawn.find((k) => k.found === found);
+    if (!c) cadranDrawn.push((c = { found, facets: cadranFacets(found, ground) }));
+    return c.facets;
+  };
   // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son temps (la page le donne), le modèle de sa forme chargé à la
   // demande (sans lui, le ber seul), ses parties montrées réunies aux lieux, son obstacle (le banc du large, le mur de
   // nuages) avec eux. Le temps qui arrive descend à part (`nefDrop`, dans `nefMesh`) ; au départ (`nefTrip`), la Nef et
@@ -1986,7 +1995,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Les Détours du 4e : l'Épave (lot 2), sa coque sur sa cale ; le Recoin (lot 3), ses murets, sa chaudière et son
       // figuier ; la Dalle (lot 3), sur ses colonnes, son muret ; le Replat (les Coteaux), sa terrasse et son muret ; leur
       // lanterne, et la sente de chacun une fois trouvé.
-      else rest.push(epaveNow(), recoinNow(), dalleNow(), replatNow());
+      else if (level === '4e') rest.push(epaveNow(), recoinNow(), dalleNow(), replatNow());
+      // Les Détours du 3e : le Cadran (le Versant), son rocher, son disque et son style ; sa sente une fois trouvé.
+      else rest.push(cadranNow());
       // `reaches` en dernier : `reachFrom` compte sur eux pour les rayons (`solid`), `mergeFacets` garde l'ordre (nacelles5e.test.ts).
       rest.push(...reaches);
       const placed = mergeFacets(rest);
