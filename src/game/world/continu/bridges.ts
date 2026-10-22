@@ -11,7 +11,8 @@ import { distance, type Vec2 } from './geometry';
 import { bridgeEdge, firstClosed, isLinkedLand, linkedLands, nodeLands, planOfLand, startLandOf, type LinkedLand } from './lands';
 import { planFor, type LevelPlan, type OpenWorldLevel } from './levelPlan';
 import { bridgeCut, pathNode, type NetworkPoint } from './paths';
-import { CUT_CLEARANCE_4E, NETWORK_4E, isLand4e, passageCut4e } from './paths4e';
+import { quadToward } from './epauleKit';
+import { CUT_CLEARANCE_4E, NETWORK_4E, RAILS_LOOK_4E, isLand4e, passageCut4e } from './paths4e';
 import { NETWORK_5E, isLand5e, passageCut } from './paths5e';
 import { COLORS_4E, LINKS_4E } from './plan4e';
 import { COLORS_5E, LINKS_5E } from './plan5e';
@@ -240,11 +241,13 @@ export function bridgeFloor(x: number, z: number, closed: readonly LinkedLand[],
       continue;
     }
     if (d < s.abut[0] || d > s.abut[1]) continue;
-    if (v > BRIDGE.abutHalf) continue;
+    // L'arche de l'Épaule reliée : tout le tablier entre ses parapets, la voie comme le chemin, culées comprises.
+    const arch = isBasaltArch(land) && !closed.includes(land);
+    if (v > (arch ? ARCH_BRIDGE.walk : BRIDGE.abutHalf)) continue;
     let y: number | null = null;
     if (d <= s.water[0] + BRIDGE.over) y = abutTop(s, 0, d);
     else if (d >= s.water[1] - BRIDGE.over) y = abutTop(s, 1, d);
-    else if (v <= BRIDGE.width / 2 + 0.2 && !closed.includes(land)) y = BRIDGE.deck;
+    else if (v <= (arch ? ARCH_BRIDGE.walk : BRIDGE.width / 2 + 0.2) && !closed.includes(land)) y = BRIDGE.deck;
     if (y !== null) top = top === null ? y : Math.max(top, y);
   }
   return top;
@@ -446,7 +449,13 @@ function abutmentFacets(s: BridgeSite, arches: boolean): Facets {
  * que le tablier vient couvrir ; les moignons ont laissé la place aux piles qui se relèvent.
  */
 export const bridgeLayRest = (land: LinkedLand): Facets =>
-  isCabin(land) ? cabinStations(bridgeSite(land)) : isSwing(land) ? mergeFacets([abutmentFacets(bridgeSite(land), false), swingDrum(bridgeSite(land))]) : abutmentFacets(bridgeSite(land), true);
+  isCabin(land)
+    ? cabinStations(bridgeSite(land))
+    : isSwing(land)
+    ? mergeFacets([abutmentFacets(bridgeSite(land), false), swingDrum(bridgeSite(land))])
+    : isBasaltArch(land)
+    ? archAbutments(bridgeSite(land))
+    : abutmentFacets(bridgeSite(land), true);
 
 /**
  * Les garde-corps d'un pont, d'une culée à l'autre : des poteaux de section `t` tous les `step` au plus, une main courante
@@ -478,15 +487,17 @@ function railings(b: FacetBuilder, s: BridgeSite, step: number, t: number, color
  * face), son chapeau en pointe. Au 6e et au 5e, le verre Sable : aucune lumière ne s'y allume. Au 4e (règle commune des
  * ponts du 4e, convenue entre les fils le 22 octobre 2026), `lit` : le pont relié a ses lanternes allumées, le verre
  * d'ocre des lieux du 4e, fixe, sans clignotement ni halo ; le pont pas encore relié n'en a pas (elles montent du
- * tablier à la pose, déjà de leur couleur).
+ * tablier à la pose, déjà de leur couleur). `place`, quand le pont n'a pas de garde-corps : le mât à `v` de chaque côté de
+ * la ligne, aux deux `d`, son pied `foot` au-dessus du dessus du pont (l'arche de l'Épaule : sur le chaperon des parapets).
  */
-function lanterns(b: FacetBuilder, s: BridgeSite, iron: number, lit: boolean): void {
+function lanterns(b: FacetBuilder, s: BridgeSite, iron: number, lit: boolean, place?: { v: number; d: readonly [number, number]; foot: number }): void {
   const at = frame(s);
   const yaw = Math.atan2(s.dir.x, s.dir.z);
-  for (const d of [s.abut[0] + 0.5, s.abut[1] - 0.5])
-    for (const v of [-(BRIDGE.railOut + 0.35), BRIDGE.railOut + 0.35]) {
+  const side = place?.v ?? BRIDGE.railOut + 0.35;
+  for (const d of place?.d ?? [s.abut[0] + 0.5, s.abut[1] - 0.5])
+    for (const v of [-side, side]) {
       const p = at(d, v);
-      const y = bridgeSurface(s, d);
+      const y = bridgeSurface(s, d) + (place?.foot ?? 0);
       b.box({ x: p.x, y, z: p.z, yaw }, [0.14, 1.6, 0.14], iron);
       b.box({ x: p.x, y: y + 1.6, z: p.z, yaw }, [0.46, 0.08, 0.46], iron);
       b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.36, 0.44, 0.36], lit ? C.lit : C.glass);
@@ -505,6 +516,7 @@ export function bridgeParts(land: LinkedLand): BridgeParts {
   const s = bridgeSite(land);
   if (isCabin(land)) return cabinParts(s);
   if (isSwing(land)) return swingParts(s);
+  if (isBasaltArch(land)) return archParts(s);
   const at = frame(s);
   const yaw = Math.atan2(s.dir.x, s.dir.z);
   const pileTop = BRIDGE.deck - BRIDGE.plank - 0.24;
@@ -569,7 +581,7 @@ export function bridgeFacets(land: LinkedLand, built: boolean, car: CabinCar = '
   }
   if (built) {
     const parts = bridgeParts(land);
-    return mergeFacets([abutmentFacets(s, false), ...parts.piles, parts.deck, parts.rails]);
+    return mergeFacets([isBasaltArch(land) ? archAbutments(s) : abutmentFacets(s, false), ...parts.piles, parts.deck, parts.rails]);
   }
   if (isBasaltArch(land)) return fallenArch(s);
   const b = new FacetBuilder();
@@ -806,7 +818,7 @@ function fallenArch(s: BridgeSite): Facets {
       const top = (d: number) => (d <= s.water[0] + BRIDGE.over ? abutTop(s, 0, d) : d >= s.water[1] - BRIDGE.over ? abutTop(s, 1, d) : BRIDGE.deck - 0.1 - ARCH.tilt * Math.abs(d - (d < (s.water[0] + s.water[1]) / 2 ? s.water[0] + BRIDGE.over : s.water[1] - BRIDGE.over)));
       const a = at(d0, v),
         c = at(d1, v);
-      b.beam({ x: a.x, y: top(d0) + ARCH_PARAPET.height / 2, z: a.z }, { x: c.x, y: top(d1) + ARCH_PARAPET.height / 2, z: c.z }, ARCH_PARAPET.height, S.stone);
+      b.beam({ x: a.x, y: top(d0) + FALLEN_ARCH_PARAPET.height / 2, z: a.z }, { x: c.x, y: top(d1) + FALLEN_ARCH_PARAPET.height / 2, z: c.z }, FALLEN_ARCH_PARAPET.height, S.stone);
     }
   // Les claveaux tombés, sur la croûte, au milieu de la coulée.
   const yaw = Math.atan2(s.dir.x, s.dir.z);
@@ -817,8 +829,204 @@ function fallenArch(s: BridgeSite): Facets {
   return b.build();
 }
 
-/** Le parapet de l'arche : sa hauteur (et son épaisseur) au-dessus du dessus de la culée. */
-const ARCH_PARAPET = { height: 0.7 } as const;
+/** Le parapet de l'arche tombée seulement (`fallenArch`) : sa hauteur (et son épaisseur) au-dessus du dessus de la culée ; celui de l'arche reliée est `ARCH_BRIDGE.parapet`. */
+const FALLEN_ARCH_PARAPET = { height: 0.7 } as const;
+
+/**
+ * Le pont de l'Épaule relié (lot 3 du 4e ; intention du directeur artistique du 22 octobre 2026, « le pont de l'Épaule,
+ * relié ») : une seule arche de basalte, surbaissée, d'une culée à l'autre, au-dessus de la croûte ; un tablier d'environ
+ * 5 de large, les rails côté amont (vers la cuvette), le chemin de dalles claires côté aval ; deux parapets pleins et
+ * leur chaperon ; les quatre lanternes de tous les ponts, allumées, sur les culées. Ses réglages : la demi-largeur des
+ * culées et de l'arche (parapets compris) ; celle où l'on marche (le tablier entre les parapets) ; le parapet (sa hauteur
+ * au-dessus du tablier, son épaisseur, le débord et l'épaisseur de son chaperon) ; l'intrados (au-dessus de la croûte
+ * contre les culées, sa montée à la clé), l'épaisseur des claveaux, les tranches de l'arche ; le décalage des rails vers
+ * l'amont sur le tablier, de 0 au bout des culées (les rails du lot 1 y arrivent sur la ligne du chemin) ; le chemin de
+ * dalles (de son bord côté rails à son bord côté parapet, le pas d'une dalle).
+ */
+export const ARCH_BRIDGE = {
+  half: 3.0,
+  walk: 2.5,
+  parapet: { height: 1.2, thick: 0.5, cap: 0.08, capT: 0.14 },
+  spring: 0.25,
+  rise: 1.1,
+  ring: 0.5,
+  slices: 10,
+  railShift: -1.25,
+  path: { from: 0.05, to: 2.35, step: 1.25 },
+} as const;
+
+/**
+ * Les couleurs de l'arche (intention) : les flancs, les faces au soleil et l'extrados, la voûte dessous ; jamais presque
+ * noir. Deux crans au-dessus du basalte de la coulée (`COLORS_4E.basalt`, `.basaltSun`, `.basaltShade`) : sous le soleil bas,
+ * de côté, l'arche se lisait presque noire contre la croûte (retouche 1 de l'Épaule, relecture du directeur artistique, 14).
+ */
+const ARCH_COLORS = { flank: 0x6c605a, sun: 0x786b64, vault: 0x5a504c, dalle: COLORS_4E.stone, dalleSun: COLORS_4E.stoneSun } as const;
+
+/** Les deux culées larges de l'arche reliée, de basalte : une rampe du sol jusqu'au tablier, sans marche. */
+function archAbutments(s: BridgeSite): Facets {
+  const b = new FacetBuilder();
+  const S = stoneOf(s);
+  slab(b, s, s.abut[0], s.water[0] + BRIDGE.over, ARCH_BRIDGE.half, abutTop(s, 0, s.abut[0]), BRIDGE.deck, S.stone, S.stoneTop);
+  slab(b, s, s.water[1] - BRIDGE.over, s.abut[1], ARCH_BRIDGE.half, BRIDGE.deck, abutTop(s, 1, s.abut[1]), S.stone, S.stoneTop);
+  return b.build();
+}
+
+/** Le décalage des rails vers l'amont à `d` sur la ligne du pont : nul au bout des culées, plein sur le tablier, en S doux. */
+function railShift(s: BridgeSite, d: number): number {
+  const u = d < s.water[0] + BRIDGE.over ? (d - s.abut[0]) / (s.water[0] + BRIDGE.over - s.abut[0]) : d > s.water[1] - BRIDGE.over ? (s.abut[1] - d) / (s.abut[1] - (s.water[1] - BRIDGE.over)) : 1;
+  const k = Math.min(1, Math.max(0, u));
+  return ARCH_BRIDGE.railShift * k * k * (3 - 2 * k);
+}
+
+/**
+ * L'arche de basalte, d'une culée à l'autre, en tranches : l'intrados en anse de panier très basse, de presque la croûte
+ * contre chaque culée à 1,1 plus haut à la clé ; sur chaque flanc, l'anneau des claveaux (un cran plus clair, ses joints
+ * rayonnants, sans dents) et le tympan au-dessus ; la voûte dessous ; le dessus, sous le tablier.
+ */
+function archBody(s: BridgeSite): Facets {
+  const b = new FacetBuilder();
+  const at = frame(s);
+  const A = ARCH_BRIDGE;
+  const da = s.water[0] + BRIDGE.over,
+    db = s.water[1] - BRIDGE.over;
+  const base = worldOf(s.land).height(s.mid);
+  const top = BRIDGE.deck - 0.02;
+  const intr = (u: number) => base + A.spring + A.rise * Math.sqrt(Math.max(0, 1 - (2 * u - 1) ** 2));
+  const ringTop = (u: number) => Math.min(top - 0.06, intr(u) + A.ring);
+  const p = (u: number, v: number, y: number) => {
+    const q = at(da + (db - da) * u, v);
+    return [q.x, y, q.z] as const;
+  };
+  const out = (v: number) => {
+    const q = at(0, v);
+    const o = at(0, 0);
+    return [q.x - o.x, 0, q.z - o.z] as const;
+  };
+  for (let k = 0; k < A.slices; k++) {
+    const u0 = k / A.slices,
+      u1 = (k + 1) / A.slices;
+    for (const side of [-1, 1]) {
+      const v = side * A.half;
+      quadToward(b, [p(u0, v, intr(u0)), p(u1, v, intr(u1)), p(u1, v, ringTop(u1)), p(u0, v, ringTop(u0))], out(side), ARCH_COLORS.sun);
+      quadToward(b, [p(u0, v, ringTop(u0)), p(u1, v, ringTop(u1)), p(u1, v, top), p(u0, v, top)], out(side), ARCH_COLORS.flank);
+      // Le joint rayonnant entre deux claveaux, à peine hors du flanc.
+      if (k > 0) {
+        const w = side * (A.half + 0.012);
+        const e = 0.05 / (db - da);
+        quadToward(b, [p(u0 - e, w, intr(u0)), p(u0 + e, w, intr(u0)), p(u0 + e, w, ringTop(u0)), p(u0 - e, w, ringTop(u0))], out(side), ARCH_COLORS.vault);
+      }
+    }
+    quadToward(b, [p(u0, -A.half, intr(u0)), p(u1, -A.half, intr(u1)), p(u1, A.half, intr(u1)), p(u0, A.half, intr(u0))], [0, -1, 0], ARCH_COLORS.vault);
+  }
+  quadToward(b, [p(0, -A.half, top), p(1, -A.half, top), p(1, A.half, top), p(0, A.half, top)], [0, 1, 0], ARCH_COLORS.sun);
+  return b.build();
+}
+
+/** Une bande le long de la ligne du pont, entre deux `d`, autour de `v(d)`, large de `2 × half`, de `foot` à `top` au-dessus du dessus du pont. */
+function band(b: FacetBuilder, s: BridgeSite, d0: number, d1: number, v: (d: number) => number, half: number, top: number, foot: number, side: number, face: number): void {
+  const at = frame(s);
+  const p = (d: number, o: number, h: number) => {
+    const q = at(d, v(d) + o);
+    return [q.x, bridgeSurface(s, d) + h, q.z] as const;
+  };
+  const right = at(0, 1),
+    o0 = at(0, 0);
+  const n = [right.x - o0.x, 0, right.z - o0.z] as const;
+  quadToward(b, [p(d0, -half, top), p(d1, -half, top), p(d1, half, top), p(d0, half, top)], [0, 1, 0], face);
+  quadToward(b, [p(d0, half, foot), p(d1, half, foot), p(d1, half, top), p(d0, half, top)], n, side);
+  quadToward(b, [p(d0, -half, foot), p(d1, -half, foot), p(d1, -half, top), p(d0, -half, top)], [-n[0], 0, -n[2]], side);
+}
+
+/** Les `d` où se coupent les bandes qui suivent les culées : trois tranches sur chaque rampe, une sur le tablier. */
+function archStations(s: BridgeSite, from: number, to: number): number[] {
+  const r0 = s.water[0] + BRIDGE.over,
+    r1 = s.water[1] - BRIDGE.over;
+  return [from, from + (r0 - from) / 3, from + ((r0 - from) * 2) / 3, r0, r1, r1 + (to - r1) / 3, r1 + ((to - r1) * 2) / 3, to];
+}
+
+/**
+ * Le tablier de l'arche : côté amont, le ballast, les traverses et les deux rails, du dessin de la ligne du lot 1
+ * (`RAILS_LOOK_4E`), d'une culée à l'autre (la ligne se lit d'un seul tenant) ; côté aval, le chemin de dalles claires.
+ */
+function archDeck(s: BridgeSite): Facets {
+  const b = new FacetBuilder();
+  const R = RAILS_LOOK_4E;
+  const at = frame(s);
+  const yaw = Math.atan2(s.dir.x, s.dir.z);
+  const st = archStations(s, s.abut[0], s.abut[1]);
+  const shift = (d: number) => railShift(s, d);
+  for (let i = 1; i < st.length; i++) {
+    band(b, s, st[i - 1], st[i], shift, R.ballast, R.ballastTop + 0.04, -0.2, COLORS_4E.ballast, COLORS_4E.ballast);
+    for (const g of [-1, 1]) band(b, s, st[i - 1], st[i], (d) => shift(d) + (g * R.gauge) / 2, R.rail / 2, R.ballastTop + 0.12 + R.rail, R.ballastTop + 0.1, COLORS_4E.rustShade, COLORS_4E.rust);
+  }
+  const n = Math.max(1, Math.round((s.abut[1] - s.abut[0]) / R.sleeper));
+  for (let k = 0; k < n; k++) {
+    const d = s.abut[0] + ((s.abut[1] - s.abut[0]) * (k + 0.5)) / n;
+    const q = at(d, shift(d));
+    b.box({ x: q.x, y: bridgeSurface(s, d) + R.ballastTop, z: q.z, yaw }, [R.sleeperLength, 0.08, 0.32], COLORS_4E.woodShade, COLORS_4E.wood);
+  }
+  // Le chemin de dalles claires, côté aval, du bord du ballast au parapet.
+  const P = ARCH_BRIDGE.path;
+  const m = Math.max(1, Math.round((s.abut[1] - s.abut[0] - 0.6) / P.step));
+  const len = (s.abut[1] - s.abut[0] - 0.6) / m;
+  for (let k = 0; k < m; k++) {
+    const d0 = s.abut[0] + 0.3 + k * len + 0.04,
+      d1 = d0 + len - 0.08;
+    const v0 = (d: number) => Math.max(P.from, shift(d) + R.ballast + 0.05);
+    const q = (d: number, v: number) => {
+      const w = at(d, v);
+      return [w.x, bridgeSurface(s, d) + 0.03, w.z] as const;
+    };
+    quadToward(b, [q(d0, v0(d0)), q(d1, v0(d1)), q(d1, P.to), q(d0, P.to)], [0, 1, 0], k % 2 ? ARCH_COLORS.dalleSun : ARCH_COLORS.dalle);
+  }
+  return b.build();
+}
+
+/**
+ * Les deux parapets pleins de basalte, d'un bout à l'autre, culées comprises, 1,2 au-dessus du tablier, coiffés de leur
+ * chaperon un cran plus clair ; les quatre lanternes de tous les ponts, allumées, une à chaque bout de chaque parapet,
+ * sur les culées, hors de la coulée.
+ */
+function archParapets(s: BridgeSite): Facets {
+  const b = new FacetBuilder();
+  const A = ARCH_BRIDGE;
+  const P = A.parapet;
+  const at = frame(s);
+  const from = s.abut[0] + 0.3,
+    to = s.abut[1] - 0.3;
+  const st = archStations(s, from, to).filter((_, i) => i === 0 || i === 3 || i === 4 || i === 7);
+  for (const side of [-1, 1]) {
+    const mid = side * (A.half - P.thick / 2);
+    const v = () => mid;
+    for (let i = 1; i < st.length; i++) {
+      band(b, s, st[i - 1], st[i], v, P.thick / 2, P.height, -0.3, ARCH_COLORS.flank, ARCH_COLORS.flank);
+      band(b, s, st[i - 1], st[i], v, P.thick / 2 + P.cap, P.height + P.capT, P.height, ARCH_COLORS.sun, ARCH_COLORS.sun);
+    }
+    // Les deux bouts du parapet.
+    for (const [d, sign] of [
+      [from, -1],
+      [to, 1],
+    ] as const) {
+      const q = (o: number, h: number) => {
+        const w = at(d, mid + o);
+        return [w.x, bridgeSurface(s, d) + h, w.z] as const;
+      };
+      const hP = P.thick / 2 + P.cap;
+      quadToward(b, [q(-hP, -0.3), q(hP, -0.3), q(hP, P.height + P.capT), q(-hP, P.height + P.capT)], [s.dir.x * sign, 0, s.dir.z * sign], ARCH_COLORS.flank);
+    }
+  }
+  // Les quatre lanternes de tous les ponts (la fonction commune), allumées, sur le chaperon, au bout de chaque parapet.
+  lanterns(b, s, C.iron, true, { v: A.half - P.thick / 2, d: [from + 0.35, to - 0.35], foot: P.height + P.capT });
+  return b.build();
+}
+
+/**
+ * Les morceaux du pont de l'Épaule relié, dans l'ordre de sa pose : l'arche (un seul morceau, qui monte de la croûte : les
+ * deux départs et la clé ensemble) ; le tablier, ses rails et son chemin ; les parapets et les lanternes.
+ */
+function archParts(s: BridgeSite): BridgeParts {
+  return { piles: [archBody(s)], deck: archDeck(s), rails: archParapets(s) };
+}
 
 /** Les claveaux tombés de l'arche : leur place (en part de la coulée, puis en travers), leur taille, leur cap, leur bascule. */
 const ARCH_FALLEN: readonly (readonly [number, number, number, number, number])[] = [
@@ -837,7 +1045,7 @@ const STUMPS = [
 export const STUMP_TOP = (STUMPS[0].corners.reduce((a, c) => a + c, 0) + STUMPS[1].corners.reduce((a, c) => a + c, 0)) / 8;
 
 /** Les piles d'un pont qui prennent la place d'un moignon : la première et la dernière. */
-export const stumpPile = (land: LinkedLand, k: number): boolean => k === 0 || k === pilesOf(bridgeSite(land)).length - 1;
+export const stumpPile = (land: LinkedLand, k: number): boolean => !isBasaltArch(land) && (k === 0 || k === pilesOf(bridgeSite(land)).length - 1);
 
 /**
  * Le pont sur la Carte (référent dys : la coupure bleue nette, et le pont en trait double, d'une autre forme que le

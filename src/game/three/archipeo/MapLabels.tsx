@@ -227,7 +227,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       const next = snugRef.current.on && kind === 'open' && s.id === snugRef.current.next;
       // Un lieu d'une terre fermée : Kéo peut couvrir son nom pâle, jamais celui d'un lieu ouvert.
       const pale = kind === 'open' && s.id !== 'port' && !openPlaces.includes(s.id as PlaceId);
-      const item: MapLabel = { id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port' || next, ...(pale ? { pale: true as const } : {}), ...(below ? { below } : {}), ...(above ? { above } : {}), ...(side ? { side } : {}), ...(size.narrow ? (kind === 'keo' ? { stacked: size.narrow } : { narrow: size.narrow }) : {}) };
+      const item: MapLabel = { id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port' || next, ...(pale ? { pale: true as const } : {}), ...(below ? { below } : {}), ...(above ? { above } : {}), ...(side ? { side } : {}), ...(kind === 'open' && s.pinned ? { pinned: true as const } : {}), ...(size.narrow ? (kind === 'keo' ? { stacked: size.narrow } : { narrow: size.narrow }) : {}) };
       if (next) items.unshift(item);
       else items.push(item);
     }

@@ -20,6 +20,7 @@ import { loadedKeo } from '../../world/characters/imported/keo';
 import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markPoint, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
+import { dalleFacets } from '../../world/continu/dalle4e';
 import { epaveFacets } from '../../world/continu/epave4e';
 import { recoinFacets } from '../../world/continu/recoin4e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
@@ -406,6 +407,8 @@ export interface MapSpotOnScreen {
   above?: true;
   /** Le côté où son nom se pose d'abord (`OpenPlace.mapSide`, au 4e) ; rien : au-dessus. */
   side?: 'below' | 'left' | 'right';
+  /** Un lieu à disposition fixe (`OpenPlace.mapPinned`, au 4e) : son nom posé avant les autres, son point à découvert. */
+  pinned?: true;
 }
 
 /** Un repère de la scène à l'écran, en pixels. */
@@ -1289,6 +1292,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!c) recoinDrawn.push((c = { found, facets: recoinFacets(found, ground) }));
     return c.facets;
   };
+  // La Dalle du 4e (lot 3, l'Épaule) : de même, sans et avec sa sente.
+  const dalleDrawn: { found: boolean; facets: Facets }[] = [];
+  const dalleNow = (): Facets => {
+    const found = detoursFound.includes('dalle');
+    let c = dalleDrawn.find((k) => k.found === found);
+    if (!c) dalleDrawn.push((c = { found, facets: dalleFacets(found, ground) }));
+    return c.facets;
+  };
   // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son temps (la page le donne), le modèle de sa forme chargé à la
   // demande (sans lui, le ber seul), ses parties montrées réunies aux lieux, son obstacle (le banc du large, le mur de
   // nuages) avec eux. Le temps qui arrive descend à part (`nefDrop`, dans `nefMesh`) ; au départ (`nefTrip`), la Nef et
@@ -1483,6 +1494,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
         // Au Creux, la caméra qui monte se tourne vers l'arche, derrière Kéo sur le seuil (GD-22, lot 6).
         const cap = detourCap(d);
         if (cap !== null) turnTo(cap);
+        // À la Dalle, Kéo se tourne aussi vers la mer, de dos, comme la caméra (retouche 1 de l'Épaule, DA 13).
+        if (cap !== null && d.kind === 'dalle') heading = cap;
         detourShape = detourViewOf(d);
         options.onDetour?.(d.id);
       }
@@ -1945,8 +1958,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // fois trouvé, dans le monde comme sur la Carte, sans appel de plus.
       if (fifth) rest.push(creuxNow(), detourFacetsNow(), failleNow(), perchoirNow());
       // Les Détours du 4e : l'Épave (lot 2), sa coque sur sa cale ; le Recoin (lot 3), ses murets, sa chaudière et son
-      // figuier ; leur lanterne, et leur sente une fois trouvés.
-      else rest.push(epaveNow(), recoinNow());
+      // figuier ; la Dalle (lot 3), sur ses colonnes, son muret ; leur lanterne, et la sente de chacun une fois trouvé.
+      else rest.push(epaveNow(), recoinNow(), dalleNow());
       // `reaches` en dernier : `reachFrom` compte sur eux pour les rayons (`solid`), `mergeFacets` garde l'ordre (nacelles5e.test.ts).
       rest.push(...reaches);
       const placed = mergeFacets(rest);
@@ -2626,7 +2639,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const mapCamera: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
   const allTiles = Array.from({ length: plan.terrain.tilesX * plan.terrain.tilesZ }, (_, i) => i);
   const mapSpots: MapSpotOnScreen[] = [
-    ...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false, ...(plan.upper.includes(p.id) ? { up: true } : {}), ...(placeArt(p.id)?.mapClear ? { clear: { left: 0, top: 0, right: 0, bottom: 0 } } : {}), ...(placeArt(p.id)?.nameAbove ? { above: true as const } : {}), ...(p.mapSide ? { side: p.mapSide } : {}) })),
+    ...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false, ...(plan.upper.includes(p.id) ? { up: true } : {}), ...(placeArt(p.id)?.mapClear ? { clear: { left: 0, top: 0, right: 0, bottom: 0 } } : {}), ...(placeArt(p.id)?.nameAbove ? { above: true as const } : {}), ...(p.mapSide ? { side: p.mapSide } : {}), ...(p.mapPinned ? { pinned: true as const } : {}) })),
     ...LINKED_LANDS.map((land) => ({ id: bridgeSpot(land), x: 0, y: 0, shown: false })),
     // Le lieu de départ (l'Escale, la Lisière).
     { id: 'port' as const, x: 0, y: 0, shown: false },

@@ -40,6 +40,7 @@ import { veilFacets } from './veil';
 import { groupsTriangles, wildlifeTriangles } from './wildlife';
 import { allCritterForms, wildlifeGroups5e } from './wildlife5e';
 import { hutteFacets } from './hutte5e';
+import { dalleFacets } from './dalle4e';
 import { epaveFacets } from './epave4e';
 import { recoinFacets } from './recoin4e';
 import { CRIQUE_SITE, NEF_4E_MODEL_TRIANGLES, criqueDecorFacets } from './crique4e';
@@ -139,6 +140,11 @@ export const PLACE_RUIN_TRIANGLES_MAX_5E = 1_200;
  */
 export const PLACE_TRIANGLES_MAX_4E = 1_600;
 export const PLACE_RUIN_TRIANGLES_MAX_4E = 1_200;
+/**
+ * Le plafond du pont de l'Épaule relié, en triangles (intention, « Le budget ») : l'arche, le tablier, les rails et leurs
+ * traverses, les deux parapets et leurs chaperons, les quatre lanternes, culées comprises (./bridges.test.ts le vérifie).
+ */
+export const EPAULE_BRIDGE_TRIANGLES = 1_300;
 
 /** L'enveloppe du monde ouvert de chaque niveau, que seul le mainteneur relève. */
 export const OPEN_WORLD_BUDGETS: Readonly<Record<OpenWorldLevel, { readonly triangles: number; readonly calls: number }>> = {
@@ -704,8 +710,8 @@ function scenetteCost4e(): { triangles: number; calls: number } {
  * brume des terres fermées (au départ, les trois), Kéo, l'aéronef ; puis, selon `view` : le monde (`monde`, la pose : un
  * pont qui se relève, une partie qui descend ou l'allumage), la scénette ouverte (`scenette`, la question et le décor de
  * près de la Forge, sa chaudronnière en modèle) ou le départ (`depart`, la Nef et l'obstacle dans deux maillages à part).
- * L'Épave (lot 2, ./epave4e.ts) et le Recoin (lot 3, ./recoin4e.ts), les Détours du 4e, et leur sente tracée, dans le
- * maillage des lieux. Pas de faune encore.
+ * L'Épave (lot 2, ./epave4e.ts), le Recoin et la Dalle (lot 3, ./recoin4e.ts, ./dalle4e.ts), les Détours du 4e, et leurs
+ * sentes tracées, dans le maillage des lieux. Pas de faune encore.
  */
 export function openWorldCost4e(view: 'monde' | 'scenette' | 'depart' = 'monde'): OpenWorldCost4e[] {
   const field = buildHeightField4e();
@@ -733,16 +739,16 @@ export function openWorldCost4e(view: 'monde' | 'scenette' | 'depart' = 'monde')
   ];
 }
 
-/** Les Détours du 4e, leur sente tracée : l'Épave et le Recoin. */
+/** Les Détours du 4e, leur sente tracée : l'Épave, le Recoin et la Dalle. */
 function detourCost4e(field: ReturnType<typeof buildHeightField4e>): number {
   const ground = (x: number, z: number) => groundOn4e(field, x, z);
-  return epaveFacets(true, ground).triangles + recoinFacets(true, ground).triangles;
+  return epaveFacets(true, ground).triangles + recoinFacets(true, ground).triangles + dalleFacets(true, ground).triangles;
 }
 
 /**
  * La Carte du 4e, en un seul plan : le ciel, toute l'île de loin, la mer, les chemins, les lieux (deux appels, le pire),
- * le trait double des ponts, les hachures du sommet et le dessin des coupures (dans le maillage des lieux), l'Épave et le
- * Recoin et leur sente, la brume des terres fermées, Kéo.
+ * le trait double des ponts, les hachures du sommet et le dessin des coupures (dans le maillage des lieux), l'Épave, le
+ * Recoin, la Dalle et leurs sentes, la brume des terres fermées, Kéo.
  */
 export function mapCost4e(): { triangles: number; calls: number } {
   const field = buildHeightField4e();

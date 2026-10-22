@@ -3,9 +3,10 @@
 // cuvette, les rails, ses couleurs (jamais presque noires), la marche libre, et son budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_4E, mapCost4e, openWorldCost4e } from './budget';
+import { EPAULE_BRIDGE_TRIANGLES, OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_4E, mapCost4e, openWorldCost4e } from './budget';
 import { BRIDGE, bridgeSite } from './bridges';
 import { CRIQUE_SITE, NEF_4E, criqueDecorFacets, nef4eFlight } from './crique4e';
+import { DALLE_BUDGET } from './dalle4e';
 import { EPAVE_BUDGET } from './epave4e';
 import { RECOIN_BUDGET } from './recoin4e';
 import { followPose, keepFeetAbove, screenOf } from './camera';
@@ -85,6 +86,17 @@ const LOT3_MANUFACTURE_CEILING = {
  * départ, 64 698 et 12 sur la Carte.
  */
 const LOT3_LOGE_CEILING = { triangles: LOT3_MANUFACTURE_CEILING.triangles + PLACE_TRIANGLES_MAX_4E, calls: LOT3_MANUFACTURE_CEILING.calls } as const;
+
+/**
+ * Le plafond du 4e avec l'Épaule (lot 3, après le Bastion) : celui de la Loge, relevé de trois lieux du 4e au plus chargé
+ * (`PLACE_TRIANGLES_MAX_4E` : le Terminus, les Orgues et la Dynamo, à la place de leurs ruines simples), du budget du
+ * Détour de la Dalle et de sa sente (`DALLE_BUDGET`) et du plafond du pont de l'Épaule relié (`EPAULE_BRIDGE_TRIANGLES`) ;
+ * aucun appel de plus (l'arche dans le maillage des ponts, la Dalle dans celui des lieux).
+ */
+const LOT3_EPAULE_CEILING = {
+  triangles: LOT3_LOGE_CEILING.triangles + 3 * PLACE_TRIANGLES_MAX_4E + DALLE_BUDGET.triangles + DALLE_BUDGET.sente + EPAULE_BRIDGE_TRIANGLES,
+  calls: LOT3_LOGE_CEILING.calls,
+} as const;
 
 /** Les couleurs d'un maillage. */
 function colorsOf(f: { colors: Float32Array }): Set<string> {
@@ -276,13 +288,13 @@ describe('Les couleurs chaudes du 4e', () => {
 });
 
 describe('Le budget du 4e', () => {
-  it('le monde, la scénette, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 3', () => {
+  it('le monde, la scénette, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 3 (le Bastion et l’Épaule)', () => {
     const total = (list: { triangles: number; calls: number }[]) => list.reduce((s, p) => ({ triangles: s.triangles + p.triangles, calls: s.calls + p.calls }), { triangles: 0, calls: 0 });
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
     for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('scenette')), total(openWorldCost4e('depart')), mapCost4e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT3_LOGE_CEILING.triangles);
-      expect(cost.calls).toBeLessThanOrEqual(LOT3_LOGE_CEILING.calls);
+      expect(cost.triangles).toBeLessThanOrEqual(LOT3_EPAULE_CEILING.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(LOT3_EPAULE_CEILING.calls);
     }
   });
 });

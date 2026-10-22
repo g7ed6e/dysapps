@@ -158,6 +158,12 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   chariot: placeArt('chariot')!.traceStage,
   manufacture: placeArt('manufacture')!.traceStage,
   loge: placeArt('loge')!.traceStage,
+  // Le Terminus (lot 3 du 4e, l'Épaule) : chaque trace sa partie (3+1+1).
+  terminus: placeArt('terminus')!.traceStage,
+  // Les Orgues (lot 3 du 4e) : chaque trace sa partie (2+2+1, comme leurs plans).
+  orgues: placeArt('orgues')!.traceStage,
+  // La Dynamo (lot 3 du 4e) : chaque trace sa partie (le corps, le haut, les abords).
+  dynamo: placeArt('dynamo')!.traceStage,
 };
 
 /**

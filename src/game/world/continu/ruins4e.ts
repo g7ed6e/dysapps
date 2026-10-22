@@ -2,12 +2,13 @@
 // une silhouette lisible pour chacun, sans les finir ; leurs étapes viennent avec leur lot, un lieu par lot, et un lieu
 // construit quitte ce fichier (la Forge, la Soute, la Porte et l'Étalon au lot 2, ./forge4e.ts, ./soute4e.ts, ./porte4e.ts,
 // ./etalon4e.ts ; le Gabarit, le Chariot, la Manufacture et la Loge au lot 3, ./gabarit4e.ts, ./chariot4e.ts,
-// ./manufacture4e.ts, ./loge4e.ts).
+// ./manufacture4e.ts, ./loge4e.ts ; le Terminus, les Orgues et la Dynamo au lot 3, ./terminus4e.ts, ./orgues4e.ts,
+// ./dynamo4e.ts).
 // Chaque ruine est dessinée dans le repère de son lieu (y = 0 au sol, sous le centre ; x vers l'est, z vers le sud), en
 // quelques volumes de 4 à 6 aplats de la palette chaude du 4e (./plan4e.ts, `COLORS_4E`) : la brique et la terre cuite
 // de l'usine, le fer rouillé et le cuivre, la pierre grise des Passeurs, le bois gris de la ruine, le basalte brun du
 // volcan ; rien de presque noir, rien à lire (fiche, § 6 bis : ni chiffre, ni mot, ni cheminée d'usine). Les signatures
-// sont celles de la fiche (§ 7), à grands traits : la halle à verrière de la Manufacture, la trémie du Terminus, les colonnes de basalte des Orgues… Code pur.
+// sont celles de la fiche (§ 7), à grands traits : la halle à verrière de la Manufacture, les colonnes de la Basilique… Code pur.
 import type { FacetBuilder } from './facets';
 import { COLORS_4E, type BuiltPlace4e, type PlaceId4e } from './plan4e';
 
@@ -100,35 +101,9 @@ function basilique(b: FacetBuilder): void {
   b.prism({ x: 0, y: 0.5, z: 0.5 }, 1.4, 1.6, 0.8, 8, C.stone, C.stoneShade);
 }
 
-/** Le Terminus : le quai de chargement ; la trémie de bois, haute, sur ses pieds ; la remise sans toit ; une benne couchée. */
-function terminus(b: FacetBuilder): void {
-  b.box({ x: 0, y: SINK, z: 2 }, [12, 1.2 - SINK, 3], C.stoneShade, C.stone);
-  for (const [x, z] of [[-2, -3], [2, -3], [-2, 0], [2, 0]] as const) post(b, x, z, 5);
-  b.prism({ x: 0, y: 5, z: -1.5, yaw: Math.PI / 4 }, 1.2, 3.4, 3, 4, C.woodShade, C.wood);
-  wall(b, 6, -2, 4, 3.2, Math.PI / 2);
-  b.box({ x: -5, y: SINK, z: -2, yaw: 0.6, pitch: 0.4 }, [1.8, 1.3 - SINK, 2.6], C.rustShade, C.rust);
-}
-
-/** Les Orgues : un front de taille en colonnes de basalte hexagonales, de hauteurs inégales ; des blocs emboîtés ; le palan tombé. */
-function orgues(b: FacetBuilder): void {
-  const heights = [6, 8.5, 7.2, 9.4, 5.6, 8, 6.8];
-  heights.forEach((h, k) => b.prism({ x: -6 + k * 1.9, y: SINK, z: -2.5 + (k % 2) * 0.8 }, 1.1, 1.1, h - SINK, 6, k % 2 ? C.basalt : C.basaltSun, C.basaltSun));
-  for (const [x, z, h] of [[-3, 2.5, 1], [0.5, 3, 1.4], [3.5, 2.2, 0.8]] as const) b.prism({ x, y: SINK, z }, 1, 1, h - SINK, 6, C.basalt, C.basaltSun);
-  b.beam({ x: 6, y: 0, z: 2 }, { x: 8, y: 0.3, z: -2 }, 0.4, C.wood);
-}
-
-/** La Dynamo : un petit poste de pierre, son toit tombé ; la dynamo, un tambour de cuivre ; deux poteaux, l'un debout, l'autre penché. */
-function dynamo(b: FacetBuilder): void {
-  b.box({ x: 0, y: SINK, z: -1 }, [6, 3.6 - SINK, 5], C.stoneShade, C.stone);
-  b.box({ x: 3.6, y: SINK, z: 2, yaw: 0.4, pitch: 0.5 }, [4, 0.3 - SINK, 3], C.rustShade, C.terracotta);
-  b.drum({ x: -1, y: 3.6, z: -1, pitch: Math.PI / 2 }, 1.1, 1.6, 10, C.copper, C.rust);
-  post(b, -5, 3, 6, 0.35);
-  b.beam({ x: 5, y: 0, z: -3 }, { x: 6.8, y: 4.6, z: -3.6 }, 0.35, C.wood);
-}
-
 /**
  * La ruine de chaque lieu du 4e pas encore construit, dessinée dans son repère : un lieu construit (./plan4e.ts,
- * `BUILT_PLACES_4E` ; la Forge, la Soute, la Porte et l’Étalon au lot 2, le Gabarit, le Chariot, la Manufacture et la Loge au lot 3) dessine sa ruine dans son fichier, avec ses étapes.
+ * `BUILT_PLACES_4E` ; la Forge, la Soute, la Porte et l’Étalon au lot 2, le Gabarit, le Chariot, la Manufacture et la Loge au lot 3 ; le Terminus, les Orgues et la Dynamo au lot 3) dessine sa ruine dans son fichier, avec ses étapes.
  */
 export const RUINS_4E: Readonly<Record<Exclude<PlaceId4e, BuiltPlace4e>, (b: FacetBuilder) => void>> = {
   herbier,
@@ -136,7 +111,4 @@ export const RUINS_4E: Readonly<Record<Exclude<PlaceId4e, BuiltPlace4e>, (b: Fac
   jonction,
   veillee,
   basilique,
-  terminus,
-  orgues,
-  dynamo,
 };
