@@ -14,7 +14,7 @@
 // La halle est posée au nord de sa cour, assez loin de la porte (au bout de `bas-1`) pour que la caméra qui suit, tournée
 // de tous côtés autour de Kéo, reste toujours hors d'elle, au-dessus de son toit. La ruine (intention, « La ruine ») : le
 // mur nord debout à mi-hauteur, ses baies ouvertes ; le mur sud debout à l'ouest et tombé bas à l'est, là où la machine se
-// voit ; cinq colonnes debout, la sixième couchée le long du mur nord ; les fermes rouillées au nord, deux seulement au
+// voit ; cinq colonnes debout, la cinquième couchée au nord de l'axe ; les fermes rouillées au nord, deux seulement au
 // sud, à l'ouest ; la tôle tombée, sauf sur la dernière travée ouest ; le faîte entier, la bande de verre en place sur sa
 // moitié ouest, trois cadres vides sur sa moitié est ; le balancier couché à plat au pied de sa colonne, du côté opposé au
 // volant ; les métiers de travers, un couché, un sans son ensouple du haut ; les courroies à plat au sol ; l'arbre pendu
@@ -108,8 +108,12 @@ const DOOR = { half: 1.3, spring: 3.4, crown: 4.0 } as const;
 /** La grande baie de l'est, au pignon : son milieu en travers, sa demi-largeur, son appui, la naissance et le haut de son cintre. */
 const EAST_BAY = { z: MID_Z, half: 2.0, sill: 0.6, spring: 3.4, crown: 4.4 } as const;
 
-/** Les six colonnes de fonte, sur l'axe ; la cinquième (à l'est) est celle qui est couchée dans la ruine. */
-const COLUMNS = [-7.5, -5, -2.5, 0, 2.5, 5] as const;
+/**
+ * Les six colonnes de fonte, sur l'axe ; la cinquième (à l'est) est celle qui est couchée dans la ruine. La première est
+ * à plus de deux unités du mur ouest : vue de la caméra de la scénette, elle passe derrière la colonne de texte et ne
+ * coupe plus la scène (captures du 22 octobre 2026).
+ */
+const COLUMNS = [-6.3, -3.8, -1.3, 1.2, 3.7, 6.2] as const;
 const FALLEN_COLUMN = 4;
 
 /** Le haut des colonnes, sous le faîte, et leur rayon. */
@@ -122,8 +126,21 @@ const COLUMN = { r: 0.13, top: HALL.roofTop - 0.1 } as const;
  */
 const MACHINE = { x: 7.6, z: MID_Z, h: 4.3, beam: 2.1, wheel: { z: -1.7, axle: 1.05, r: 1.3 }, governor: 2.9 } as const;
 
-/** Les six métiers, en deux rangs de trois, tous de la même taille : leur milieu ; leur largeur, profondeur et hauteur. */
-const LOOMS = [-3.6, 0, 3.6].flatMap((x) => [-6.7, -2.3].map((z) => ({ x, z })));
+/**
+ * Les six métiers, en deux rangs de trois, tous de la même taille : leur milieu (le rang nord, le rang sud, en alternance
+ * d'ouest en est) ; leur largeur, profondeur et hauteur. Le rang nord est contre le mur nord, et s'écarte du milieu de la
+ * halle : la caméra de la scénette regarde vers l'ouest le long de la halle, au nord des colonnes, et les bobines des
+ * réponses se posent dans cette allée, entre x = −5 et −1 ; un métier au milieu de l'allée cachait les bobines et barrait
+ * le premier plan (captures du 22 octobre 2026).
+ */
+const LOOMS: readonly Vec2[] = [
+  { x: -5.6, z: -8.0 },
+  { x: -3.6, z: -2.3 },
+  { x: 1.4, z: -8.0 },
+  { x: 0, z: -2.3 },
+  { x: 4.6, z: -8.0 },
+  { x: 3.6, z: -2.3 },
+];
 const LOOM = { w: 1.3, d: 1.1, h: 1.35 } as const;
 
 /** Le coin du tisserand, contre le pignon ouest : son métier à bras, son banc, son panier. */
@@ -439,7 +456,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // ---- La ruine ----
   // Le corps la relève : le mur nord à mi-hauteur, ses baies ouvertes (les cintres tiennent à l'ouest ; à l'est, le mur
   // est cassé sous eux) ; le mur sud debout à l'ouest, tombé bas à l'est ; le pignon est cassé en biais ; les colonnes
-  // rouillées (cinq debout, la sixième couchée le long du mur nord) ; la machine rouillée, son balancier couché à plat au
+  // rouillées (cinq debout, la cinquième couchée au nord de l'axe) ; la machine rouillée, son balancier couché à plat au
   // pied de la colonne, du côté opposé au volant ; les métiers de travers, un couché, un sans son ensouple (couchée à ses
   // pieds) ; trois blocs de brique au pied du mur sud.
   add(
@@ -453,8 +470,10 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
       wallRun(b, false, H.x1, zN - H.wall / 2, EAST_BAY.z - EAST_BAY.half, H.wall, wallFoot, G + 3.4, G + 2.0, C.brickShade, C.stoneSun);
       wallRun(b, false, H.x1, EAST_BAY.z + EAST_BAY.half, zS + H.wall / 2, H.wall, wallFoot, G + 1.4, G + 2.6, C.brickShade, C.stoneSun);
       for (const [k, x] of COLUMNS.entries()) if (k !== FALLEN_COLUMN) column(b, x, MID_Z, G + COLUMN.top, C.rustShade, C.rust);
-      const lz = zN + 0.95;
-      b.beam({ x: -1.6, y: planeY(-1.6, lz) + 0.13, z: lz }, { x: -1.6 + COLUMN.top - 0.6, y: planeY(4.9, lz) + 0.13, z: lz + 0.15 }, 0.24, C.rust);
+      // La colonne couchée, au pied de la sienne, entre le rang nord et l'axe (le rang nord est contre le mur).
+      const lz = MID_Z - 1.0;
+      const lx = COLUMNS[FALLEN_COLUMN] - COLUMN.top + 1.6;
+      b.beam({ x: lx, y: planeY(lx, lz) + 0.13, z: lz }, { x: lx + COLUMN.top - 0.6, y: planeY(lx + COLUMN.top - 0.6, lz) + 0.13, z: lz - 0.15 }, 0.24, C.rust);
       machine(b, C.rustShade, C.rust);
       walkingBeam(b, { x: MACHINE.x, y: planeY(MACHINE.x, MACHINE.z - 2.6) + 0.02, z: MACHINE.z - 2.6, yaw: 0.12, pitch: -Math.PI / 2 }, C.rustShade, C.rust);
       LOOMS.forEach((p, k) => {
@@ -539,7 +558,16 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     const y = G + 6.0;
     b.beam({ x: H.x0 + 1.6, y, z: MID_Z }, { x: MACHINE.x - 1.0, y, z: MID_Z }, 0.12, C.iron);
     for (const x of [-6.2, 1.2]) b.box({ x, y: y + 0.05, z: MID_Z }, [0.26, 0.6, 0.26], C.iron, C.ironTop);
-    for (const p of LOOMS) b.beam({ x: p.x, y: y - 0.05, z: MID_Z + Math.sign(p.z - MID_Z) * 0.08 }, { x: p.x, y: planeY(p.x, p.z) + LOOM.h - 0.05, z: p.z - Math.sign(p.z - MID_Z) * 0.35 }, 0.07, C.leather);
+    // Le rang sud prend sa courroie à l'arbre du faîte ; le rang nord, contre le mur, à un second arbre porté par le mur nord
+    // sur deux consoles, ses courroies droites derrière les métiers : rien ne traverse l'allée de la scénette.
+    const north = { y: G + 4.6, z: H.z0 + H.wall / 2 + 0.3 };
+    b.beam({ x: LOOMS[0].x - 0.8, y: north.y, z: north.z }, { x: MACHINE.x - 1.0, y: north.y, z: north.z }, 0.1, C.iron);
+    for (const x of [LOOMS[0].x - 0.5, MACHINE.x - 1.3]) b.box({ x, y: north.y - 0.2, z: north.z - 0.15 }, [0.2, 0.3, 0.3], C.iron, C.ironTop);
+    for (const p of LOOMS) {
+      const top = planeY(p.x, p.z) + LOOM.h - 0.05;
+      if (p.z < MID_Z) b.beam({ x: p.x, y: north.y - 0.05, z: north.z }, { x: p.x, y: top, z: p.z - 0.35 }, 0.07, C.leather);
+      else b.beam({ x: p.x, y: y - 0.05, z: MID_Z + 0.08 }, { x: p.x, y: top, z: p.z - 0.35 }, 0.07, C.leather);
+    }
     const L = LANTERN_DOOR;
     b.box({ x: L.x, y: G + L.y + 0.02, z: L.z - 0.1 }, [0.07, 0.07, 0.4], C.iron);
     lantern(b, { x: L.x, y: G + L.y, z: L.z + 0.1 }, true);

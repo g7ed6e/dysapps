@@ -11,7 +11,7 @@ import { partShapes, stagePoseWords } from '../../three/archipeo/constructionPar
 import { phraseDeLaPose } from '../../poseWords';
 import { partiesDe } from '../parts';
 import { PLACE_RUIN_TRIANGLES_MAX_4E, PLACE_TRIANGLES_MAX_4E } from './budget';
-import { followPose, occlusionLift, orbitAround, screenOf } from './camera';
+import { followPose, occlusionLift, orbitAround, screenOf, type CameraPose } from './camera';
 import { posedTraces, type PartShape, type Stage } from './construction';
 import type { Facets } from './facets';
 import { FacetBuilder } from './facets';
@@ -27,7 +27,7 @@ import { COLORS_5E } from './plan5e';
 import { drawPieces, placePieces } from './places';
 import { placeTrace, questionLayout } from './questionScene';
 import { RUINS_4E } from './ruins4e';
-import { saysRestored, scenetteHabitant, scenetteKeo, scenetteLayout, scenetteOf, scenettePose } from './scenette';
+import { saysRestored, scenetteDeck, scenetteHabitant, scenetteKeo, scenetteLayout, scenetteOf, scenettePose } from './scenette';
 import { SURROUNDINGS, SURROUNDINGS_MAX } from './surroundings';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
@@ -262,6 +262,59 @@ describe('La scénette de la Manufacture', () => {
       ])
         expect(blockedBy(tris, o, t), `${posed} ${t}`).toBe(false);
     }
+  });
+});
+
+
+describe('Le cadre de la scénette de la Manufacture (captures du 22 octobre 2026)', () => {
+  const [w, h] = [1024, 768];
+  // La rangée sur toute la largeur, et la colonne de texte à gauche (l'item a sa règle) : les deux cadres d'une tablette.
+  const layouts = [
+    { name: 'pleine largeur', base: { count: 3 }, needs: { count: 3 } },
+    { name: 'colonne', base: { count: 3, aid: true }, needs: { count: 3, column: true, aid: true } },
+  ];
+  /** Le point du sol (hauteur `y`) sous un pixel de l'écran, pour la caméra tournée de son cap de départ. */
+  const under = (pose: CameraPose, shift: { x: number; y: number }, px: number, py: number, y: number) => {
+    const f = { x: pose.target.x - pose.position.x, y: pose.target.y - pose.position.y, z: pose.target.z - pose.position.z };
+    const fl = Math.hypot(f.x, f.y, f.z);
+    f.x /= fl;
+    f.y /= fl;
+    f.z /= fl;
+    const rl = Math.hypot(f.z, f.x);
+    const right = { x: -f.z / rl, y: 0, z: f.x / rl };
+    const u = { x: -f.y * f.x, y: 1 - f.y * f.y, z: -f.y * f.z };
+    const ul = Math.hypot(u.x, u.y, u.z);
+    const half = Math.tan((pose.fov * Math.PI) / 360);
+    const sx = (2 * (px + shift.x)) / w - 1;
+    const sy = 1 - (2 * (py + shift.y)) / h;
+    const d = { x: f.x + sx * half * (w / h) * right.x + (sy * half * u.x) / ul, y: f.y + (sy * half * u.y) / ul, z: f.z + sx * half * (w / h) * right.z + (sy * half * u.z) / ul };
+    const k = (y - pose.position.y) / d.y;
+    return { x: pose.position.x + k * d.x, y, z: pose.position.z + k * d.z };
+  };
+
+  it('rien du lieu entre la caméra et les bobines des réponses, ni sous elles ; aucune colonne dans la scène à côté du texte', () => {
+    for (const { name, base, needs } of layouts)
+      for (const posed of [false, true]) {
+        const q = questionLayout(base, w, h);
+        const lay = scenetteLayout(needs, w, h, q);
+        const stage = lay.scenette!.stage;
+        const { pose, shift } = scenettePose('manufacture', stage, w, h, posed);
+        const turned = { ...pose, position: orbitAround(pose.position, pose.target, L.sceneStart) };
+        const o = [turned.position.x, turned.position.y, turned.position.z];
+        const tris = trianglesOf(posed ? SHOWN[3] : SHOWN[0]);
+        const deck = scenetteDeck('manufacture', posed).y;
+        for (const slot of lay.slots ?? q.slots) {
+          const p = under(turned, shift, slot.foot.x, slot.foot.y, deck);
+          for (const dy of [0.25, 0.6]) expect(blockedBy(tris, o, [p.x, p.y + dy, p.z]), `${name} ${posed} ${p.x - PLACE.center.x}, ${p.z - PLACE.center.z}`).toBe(false);
+          // Aucun métier sous une bobine.
+          for (const m of L.looms) expect(Math.max(Math.abs(p.x - PLACE.center.x - m.x), Math.abs(p.z - PLACE.center.z - m.z)), `${name} ${posed}`).toBeGreaterThan(0.95);
+        }
+        if (needs.column) {
+          // La première colonne passe derrière le texte, à gauche de la scène.
+          const c = screenOf(turned, { x: PLACE.center.x + L.columns[0], y: H0 + L.base + 2, z: PLACE.center.z + L.midZ }, w, h);
+          expect(c.x - shift.x).toBeLessThan(stage.left);
+        }
+      }
   });
 });
 
