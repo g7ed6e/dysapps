@@ -118,7 +118,7 @@ try {
   // Le monde ouvert du 3e (lot 1 : les Îles du Ciel en grandes masses) : comme le 4e à son lot 1, le monde (la pose d'un
   // passage, le pire), la Carte, le départ ; pas encore de scénette.
   const troisieme = !demandes || demandes.includes('3e');
-  const mondeOuvert3e = troisieme ? { niveau: '3e', postes: ouvert.openWorldCost3e('monde'), carte: ouvert.mapCost3e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['3e'], depart: ouvert.openWorldCost3e('depart'), departLibelle: 'l’aéronef dans deux maillages, à la place de la pose' } : null;
+  const mondeOuvert3e = troisieme ? { niveau: '3e', postes: ouvert.openWorldCost3e('scenette'), carte: ouvert.mapCost3e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['3e'], horsScenette: ouvert.openWorldCost3e('monde'), depart: ouvert.openWorldCost3e('depart'), departLibelle: 'l’aéronef dans deux maillages, à la place de la pose' } : null;
 
   if (JSON_SEUL) console.log(JSON.stringify(resultats, null, 2));
   else {

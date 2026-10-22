@@ -206,7 +206,8 @@ interface PlaceSpec extends Omit<OpenPlace<PlaceId3e>, 'center' | 'door' | 'scen
 /**
  * Les seize lieux (fiche, § 4, noms validés le 22 octobre 2026), à leur place sur le plan. Le Grenier et la Lutherie
  * sont nouveaux, lieux du monde ouvert seulement (GD-24) : leurs missions sont écrites (`docs/contenu/maths-3e-numbers.md`,
- * `french-3e-language.md`). Aucun lieu n'a encore de scénette : leurs missions passent par l'écran habituel.
+ * `french-3e-language.md`). Seuls les lieux construits (`BUILT_PLACES_3E`) ont leur scénette ; les missions des autres
+ * passent par l'écran habituel.
  */
 const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'belvedere', name: 'Le Belvédère', at: 'au Belvédère', agree: 'ms', island: 'maths-3e-geometry', plan: [1290, 760], door: { x: 6, z: 8 } },
@@ -254,13 +255,31 @@ const MAP_SIDES_3E: Readonly<Record<PlaceId3e, 'below' | 'left' | 'right'>> = {
   palais: 'below',
 };
 
+/**
+ * Les lieux du 3e déjà construits, et les missions de chacun qui se jouent en scénette, dans l'ordre de leur île : la
+ * seule liste, comme `BUILT_PLACES_4E` (./plan4e.ts), que lisent la scénette (./levelPlan.ts, `hasScenette`) et les
+ * missions des lieux (`PLACES_3E`). Le Versant (GD-25, lot 2) : le Belvédère. Aucun habitant du 3e n'a encore son modèle
+ * 3D (./habitants.ts) : il se dessine en pion. Un lieu construit s'ajoute ici, et seulement ici.
+ */
+export const BUILT_PLACES_3E = {
+  belvedere: ['pythagoras', 'thales', 'trigonometry', 'scaling', 'transformations'],
+} as const satisfies Partial<Record<PlaceId3e, readonly string[]>>;
+
+/** Un lieu du 3e déjà construit. */
+export type BuiltPlace3e = keyof typeof BUILT_PLACES_3E;
+
+/** Ce lieu du 3e est-il construit ? */
+export const isBuiltPlace3e = (id: string): id is BuiltPlace3e => Object.hasOwn(BUILT_PLACES_3E, id);
+
+const SCENES_3E: Partial<Record<PlaceId3e, readonly string[]>> = BUILT_PLACES_3E;
+
 export const PLACES_3E: readonly OpenPlace<PlaceId3e>[] = PLACE_SPECS.map((s) => ({
   id: s.id,
   name: s.name,
   at: s.at,
   agree: s.agree,
   island: s.island,
-  scenes: [],
+  scenes: SCENES_3E[s.id] ?? [],
   center: fromPlan3e(s.plan),
   yaw: 0,
   door: s.id,

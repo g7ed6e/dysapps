@@ -258,6 +258,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   jonction: placeArt('jonction')!.sceneSpot,
   veillee: placeArt('veillee')!.sceneSpot,
   basilique: placeArt('basilique')!.sceneSpot,
+  // Le Belvédère (le Versant du 3e) : au pied du gnomon, côté est de la terrasse.
+  belvedere: placeArt('belvedere')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -555,6 +557,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   veillee: 'lieu',
   // La Basilique : les blocs taillés, sur l'établi.
   basilique: 'lieu',
+  // Le Belvédère : les galets plats de granit, sur un madrier.
+  belvedere: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

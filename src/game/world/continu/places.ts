@@ -15,6 +15,7 @@ import type { PlaceId } from './levelPlan';
 import { placeById as placeOfAnyLevel } from './levelPlan';
 import { heightFor } from './placeGround';
 import { PATH_NODES_4E } from './plan4e';
+import { PATH_NODES_3E } from './plan3e';
 import { PATH_NODES_5E } from './plan5e';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId as PlaceId6e } from './plan6e';
 import { RUINS_3E } from './ruins3e';
@@ -1894,7 +1895,7 @@ function northPlace(id: PlaceId): (add: Add) => void {
   return (add) => {
     const art = placeArt(id)!;
     const c = placeOfAnyLevel(id).center;
-    const at = [...PATH_NODES, ...PATH_NODES_5E, ...PATH_NODES_4E].find((n) => n.id === id)!.at;
+    const at = [...PATH_NODES, ...PATH_NODES_5E, ...PATH_NODES_4E, ...PATH_NODES_3E].find((n) => n.id === id)!.at;
     art.model(add, siteGround(id), { x: at.x - c.x, z: at.z - c.z });
   };
 }
@@ -2540,8 +2541,9 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   terminus: northPlace('terminus'),
   orgues: northPlace('orgues'),
   dynamo: northPlace('dynamo'),
-  // Le 3e : seize ruines simples (lot 1 du monde ouvert du 3e, ./ruins3e.ts).
-  belvedere: ruinOnly(RUINS_3E.belvedere),
+  // Le 3e : le Belvédère (le Versant, lot 2 du monde ouvert du 3e), dessiné dans son fichier ; les autres, des ruines
+  // simples (lot 1, ./ruins3e.ts).
+  belvedere: northPlace('belvedere'),
   grenier: ruinOnly(RUINS_3E.grenier),
   abri: ruinOnly(RUINS_3E.abri),
   jardin: ruinOnly(RUINS_3E.jardin),

@@ -1,5 +1,6 @@
 // La page du monde ouvert du 3e (lot 1, « les Îles du Ciel en grandes masses ») : elle donne à la scène le plan du 3e,
-// ses trois terres fermées au départ, et ses missions passent par l'écran habituel. La scène 3D n'est pas là sous jsdom :
+// ses trois terres fermées au départ ; les missions d'un lieu construit (le Belvédère, au lot du Versant) se jouent dans sa
+// scénette. La scène 3D n'est pas là sous jsdom :
 // une scène simulée.
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -91,13 +92,13 @@ test('la scène reçoit le plan du 3e, le Parvis et l’aéronef ; ses trois ter
   expect([...scene.closed].sort()).toEqual(['alpages', 'cirque', 'prairies']);
 });
 
-test('une mission du Belvédère, dans le Versant ouvert, se joue sur l’écran habituel', async () => {
+test('une mission du Belvédère, construit au lot du Versant, se joue dans sa scénette', async () => {
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });
   act(() => scene.options!.onArrive('belvedere'));
   const sheet = await screen.findByRole('dialog', { name: 'Le Belvédère' });
   const rows = within(sheet).getByRole('list', { name: 'Missions au Belvédère' });
   await userEvent.setup().click(within(rows).getAllByRole('button')[0]);
-  await vi.waitFor(() => expect(document.querySelector('.world-question.ecran-habituel')).not.toBeNull());
-  expect(scene.world!.question).not.toHaveBeenCalledWith(expect.objectContaining({ place: 'belvedere' }));
+  await vi.waitFor(() => expect(document.querySelector('.world-question')).not.toBeNull());
+  expect(document.querySelector('.world-question.ecran-habituel')).toBeNull();
 });

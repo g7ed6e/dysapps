@@ -32,7 +32,8 @@ const NOT_BLACK = 0.03;
 
 /**
  * Le plafond du lot 1 du 3e (mesuré le 22 octobre 2026 : 58 136 triangles et 14 appels dans le monde, 57 206 et 15 au
- * départ, 54 443 et 12 sur la Carte ; après la retouche 1, 46 021 et 13, 45 091 et 14, 42 215 et 11), avec sa marge.
+ * départ, 54 443 et 12 sur la Carte ; après la retouche 1, 46 021 et 13, 45 091 et 14, 42 215 et 11), avec sa marge ; le
+ * Versant (lot 2) y tient encore, scénette ouverte comprise.
  */
 const LOT1_CEILING = { triangles: 62_000, calls: 16 } as const;
 
@@ -247,7 +248,7 @@ describe('Le budget du 3e', () => {
     const total = (list: { triangles: number; calls: number }[]) => list.reduce((s, p) => ({ triangles: s.triangles + p.triangles, calls: s.calls + p.calls }), { triangles: 0, calls: 0 });
     const env = OPEN_WORLD_BUDGETS['3e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
-    for (const cost of [total(openWorldCost3e('monde')), total(openWorldCost3e('depart')), mapCost3e()]) {
+    for (const cost of [total(openWorldCost3e('monde')), total(openWorldCost3e('scenette')), total(openWorldCost3e('depart')), mapCost3e()]) {
       expect(cost.triangles).toBeLessThanOrEqual(LOT1_CEILING.triangles);
       expect(cost.calls).toBeLessThanOrEqual(LOT1_CEILING.calls);
     }

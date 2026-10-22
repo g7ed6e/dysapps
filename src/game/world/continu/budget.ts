@@ -158,6 +158,14 @@ export const PLACE_RUIN_TRIANGLES_MAX_5E = 1_200;
 export const PLACE_TRIANGLES_MAX_4E = 1_600;
 export const PLACE_RUIN_TRIANGLES_MAX_4E = 1_200;
 /**
+ * Le plafond de la ruine d'un lieu du 3e, en triangles, celui du 4e (proposition du Versant, § 0, décision du
+ * mainteneur) ; le grand lieu du 3e, le Belvédère, a son plafond restauré (fiche du 3e, § 8 : 1 600 et le surcoût du
+ * grand lieu, environ 800).
+ */
+export const PLACE_RUIN_TRIANGLES_MAX_3E = 1_200;
+export const GRAND_PLACE_TRIANGLES_MAX_3E = 2_400;
+
+/**
  * Le plafond du pont de l'Épaule relié, en triangles (intention, « Le budget ») : l'arche, le tablier, les rails et leurs
  * traverses, les deux parapets et leurs chaperons, les quatre lanternes, culées comprises (./bridges.test.ts le vérifie).
  */
@@ -820,11 +828,12 @@ function parvisCost(onMap: boolean): number {
 }
 
 /**
- * Les lieux du 3e : les seize ruines, leurs trois passages au plus chargé de leurs deux états, le Parvis (sur la Carte,
+ * Les lieux du 3e : les seize ruines (un lieu construit, sa ruine et ses étapes, et les traces de ses missions : le
+ * Belvédère, au lot du Versant), leurs trois passages au plus chargé de leurs deux états, le Parvis (sur la Carte,
  * `onMap`, sans le zeppelin) ; deux maillages.
  */
 function placesCost3e(onMap = false): { triangles: number; calls: number } {
-  const ruins = PLAN_3E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles, 0);
+  const ruins = PLAN_3E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + (p.scenes.length ? placeTrace(p.id, p.scenes).triangles : 0), 0);
   const passages = LINKED_LANDS_3E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
   return { triangles: ruins + passages + parvisCost(onMap), calls: 2 };
 }
@@ -838,19 +847,51 @@ function veilCost3e(): { triangles: number; calls: number } {
 /** L'aéronef du 3e, le modèle du 4e entier (`3-aeronef/final-1464.glb`), sur son aire (dessinée avec les chemins) : dans le maillage des lieux. */
 const nefCost3e = (): { triangles: number; calls: number } => ({ triangles: NEF_4E_MODEL_TRIANGLES, calls: 0 });
 
-/** La pose au 3e : un passage qui se relève (aucun lieu n'a encore d'étapes). Un appel. */
+/** La pose au 3e : un passage qui se relève, ou une partie d'un lieu construit qui descend (le Versant). Un appel. */
 function poseCost3e(): { triangles: number; calls: number } {
-  return { triangles: Math.max(...LINKED_LANDS_3E.map((l) => bridgeLay(l).facets.triangles)), calls: 1 };
+  const field = buildHeightField3e();
+  const ground = ground3e(field);
+  const lays = Math.max(...LINKED_LANDS_3E.map((l) => bridgeLay(l).facets.triangles));
+  const parts = Math.max(0, ...PLAN_3E.places.filter((p) => p.scenes.length).map((p) => constructionFacets(p.id, [WHOLE], ground).triangles));
+  return { triangles: Math.max(lays, parts), calls: 1 };
+}
+
+/**
+ * Une question du 3e, au pire (le Versant) : le lieu au repos et six objets choisis, dans un maillage, et la réaction
+ * dans un autre ; deux appels.
+ */
+function questionCost3e(): { triangles: number; calls: number } {
+  let triangles = 0;
+  for (const p of PLAN_3E.places.filter((q) => q.scenes.length)) {
+    const s = sceneSpot(p.id);
+    const points = Array.from({ length: 6 }, (_, i) => ({ x: s.x - 5 + 2 * i, y: s.y, z: s.z + 6 }));
+    const item = itemScene(p.id, { kind: 'rest' }, true, points, 1);
+    const objects = answerObjects(scenePlace(p.id), points, 1, { picked: [0, 1, 2, 3, 4, 5] });
+    triangles = Math.max(triangles, item.still.triangles + objects.triangles + (item.reaction?.facets.triangles ?? 0));
+  }
+  return { triangles, calls: 2 };
+}
+
+/**
+ * La scénette du 3e, la plus chargée (le Versant) : son décor de près, abords compris, l'habitant en pion (aucun modèle
+ * `3e-habitant-<lieu>` n'existe encore), dans un maillage.
+ */
+function scenetteCost3e(): { triangles: number; calls: number } {
+  const places = PLAN_3E.places.filter((p) => p.scenes.length).map((p) => scenePlace(p.id));
+  const decor = (place: ScenePlaceId, open: boolean) => (hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_4E : scenetteDecor(place, open).triangles);
+  const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true))));
+  return { triangles: worst, calls: places.some(hasHabitantModel) ? 2 : 1 };
 }
 
 /**
  * Ce que coûte le monde ouvert du 3e (lot 1 : les Îles du Ciel en grandes masses) : le ciel, le sol et ses pins, la mer
  * de nuages (le plan de l'eau), les chemins (le liseré d'ardoise des rives, les deux petites arches et l'aire de la Nef
  * compris), les lieux et leurs passages, le Parvis et son décor, la brume des terres fermées (au départ, les trois),
- * Kéo, l'aéronef ; puis, selon `view` : le monde (`monde`, un passage qui se relève) ou le départ (`depart`, la Nef et
- * l'obstacle dans deux maillages à part). Ni Détour, ni faune, ni scénette au lot 1.
+ * Kéo, l'aéronef ; puis, selon `view` : le monde (`monde`, un passage qui se relève ou une partie qui descend), la
+ * scénette ouverte (`scenette`, la question et le décor de près d'un lieu construit, l'habitant en pion) ou le départ
+ * (`depart`, la Nef et l'obstacle dans deux maillages à part). Pas de faune.
  */
-export function openWorldCost3e(view: 'monde' | 'depart' = 'monde'): OpenWorldCost4e[] {
+export function openWorldCost3e(view: 'monde' | 'scenette' | 'depart' = 'monde'): OpenWorldCost4e[] {
   const field = buildHeightField3e();
   const ground = groundCost3e();
   const paths = pathRibbons3e(ground3e(field));
@@ -863,7 +904,14 @@ export function openWorldCost3e(view: 'monde' | 'depart' = 'monde'): OpenWorldCo
     { poste: 'brume', ...veilCost3e() },
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost3e() },
-    ...(view === 'depart' ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }] : [{ poste: 'pose' as const, ...poseCost3e() }]),
+    ...(view === 'depart'
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }]
+      : view === 'scenette'
+      ? [
+          { poste: 'question' as const, ...questionCost3e() },
+          { poste: 'scénette' as const, ...scenetteCost3e() },
+        ]
+      : [{ poste: 'pose' as const, ...poseCost3e() }]),
   ];
 }
 

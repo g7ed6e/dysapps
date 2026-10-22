@@ -9,6 +9,7 @@
 import PLACE_ITEMS from './placeItems.json';
 import { isSixthPlace, scenePlace, sixthPlace, type PlaceId as AnyPlaceId, type ScenePlaceId as PlaceId } from './levelPlan';
 import { isBuiltPlace4e } from './plan4e';
+import { isBuiltPlace3e } from './plan3e';
 import { isBuiltPlace5e } from './plan5e';
 
 /** Un item d'exercice, vu d'ici : sa clé, et ses champs (ceux du jeu commun, sans en dépendre). */
@@ -488,8 +489,9 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
   // les bols des Terrasses, les malles de l'Auberge, les claveaux du Donjon, les lampes à huile de l'Oracle, les fanions
   // du Sémaphore, les petites toiles du Gaillard, les moufles des Nacelles), le lieu au repos ; les nombres, la droite et les figures restent dans
   // le panneau. Un lieu construit s'y ajoute de lui-même.
-  // Au 4e de même (./plan4e.ts, `BUILT_PLACES_4E`) : les lingots de fer de la Forge.
-  if (isBuiltPlace5e(place) || isBuiltPlace4e(place)) return items.map((it) => ({ ...it, placeScene: REST }));
+  // Au 4e de même (./plan4e.ts, `BUILT_PLACES_4E`) : les lingots de fer de la Forge ; au 3e (./plan3e.ts,
+  // `BUILT_PLACES_3E`) : les galets du Belvédère.
+  if (isBuiltPlace5e(place) || isBuiltPlace4e(place) || isBuiltPlace3e(place)) return items.map((it) => ({ ...it, placeScene: REST }));
   // La Turbine (GD-20, point 8, lot L6a) et le Chantier naval (lot L6b) : leurs quatre missions en C, aux deux niveaux,
   // avec leurs items de référence (consigne, phrase, document, rappel) ; la scène fait le décor, les réponses restent dans
   // la colonne.

@@ -4,10 +4,10 @@
 // vers l'est, z vers le sud), en quelques volumes de 4 à 6 aplats de la palette froide du 3e (./plan3e.ts,
 // `COLORS_3E`) : le granit bleuté des Passeurs, l'ardoise, le bois gris, le bronze des ferrures, l'émail cobalt de la
 // Coupole ; rien de presque noir, rien à lire (fiche, § 6 bis : ni chiffre, ni mot, ni légende). Les signatures sont
-// celles de la fiche (§ 7), à grands traits : le gnomon couché du Belvédère, le phare éteint du Fanal, la coupole
+// celles de la fiche (§ 7), à grands traits : le phare éteint du Fanal, la coupole
 // cobalt, le grand mât des Ondes… Code pur.
 import type { FacetBuilder } from './facets';
-import { COLORS_3E, type PlaceId3e } from './plan3e';
+import { COLORS_3E, type BuiltPlace3e, type PlaceId3e } from './plan3e';
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter sur une pente. */
 const SINK = -0.8;
@@ -48,19 +48,6 @@ function wall(b: FacetBuilder, x: number, z: number, length: number, height: num
 
 /** Un poteau de bois, cassé ou non. */
 const post = (b: FacetBuilder, x: number, z: number, h: number, w = 0.5): void => b.box({ x, y: SINK, z }, [w, h - SINK, w], C.woodShade, C.wood);
-
-/** Un dallage de granit, à peine au-dessus du sol. */
-const slab = (b: FacetBuilder, x: number, z: number, sx: number, sz: number, h = 0.5): void => b.box({ x, y: SINK, z }, [sx, h - SINK, sz], C.graniteShade, C.graniteSun);
-
-/** Le Belvédère : la terrasse de granit et son muret plein ; le gnomon couché ; le cercle de visée de travers ; des solides renversés. */
-function belvedere(b: FacetBuilder): void {
-  slab(b, 0, 0, 16, 11);
-  wall(b, 0, -5.4, 16, 1.6);
-  b.box({ x: -2, y: 0.5, z: 1, yaw: 0.5, pitch: Math.PI / 2 }, [1, 6, 1], C.graniteShade, C.graniteSun);
-  b.annulus({ x: 4, y: 0.5, z: -1, pitch: 1.1 }, 1.6, 2, 0.3, 12, C.bronze);
-  b.prism({ x: 5.5, y: 0.5, z: 3, yaw: 0.6 }, 1.1, 0, 1.8, 4, C.granite, C.graniteSun);
-  b.box({ x: -6, y: 0.5, z: 3, yaw: 0.9 }, [1.4, 1.4, 1.4], C.graniteShade, C.granite);
-}
 
 /** Le Grenier : le grenier de pierre, son toit d'ardoise ouvert ; la petite meule ; les sacs éboulés. */
 function grenier(b: FacetBuilder): void {
@@ -202,9 +189,11 @@ function palais(b: FacetBuilder): void {
   b.drum({ x: 7, y: SINK, z: 3, pitch: 1.3 }, 1.2, 0.25, 10, C.bronze);
 }
 
-/** La ruine de chaque lieu du 3e, dessinée dans son repère (aucun lieu n'est encore construit). */
-export const RUINS_3E: Readonly<Record<PlaceId3e, (b: FacetBuilder) => void>> = {
-  belvedere,
+/**
+ * La ruine de chaque lieu du 3e pas encore construit, dessinée dans son repère : un lieu construit (./plan3e.ts,
+ * `BUILT_PLACES_3E`) dessine sa ruine dans son fichier, avec ses étapes (le Belvédère, ./belvedere3e.ts).
+ */
+export const RUINS_3E: Readonly<Record<Exclude<PlaceId3e, BuiltPlace3e>, (b: FacetBuilder) => void>> = {
   grenier,
   abri,
   jardin,

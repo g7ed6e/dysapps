@@ -325,6 +325,16 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     placement: 'rangee',
     words: { pose: ['Les colonnes sont relevées.', 'La halle est couverte.', 'Le bassin est plein.'], end: 'Ici, on a relevé les colonnes d’un vieux temple.' },
   },
+  // Le Belvédère (le Versant du 3e, GD-25) : la phrase de métier et la réplique de la proposition du consultant d'Archipéo
+  // (§ 3) ; une phrase par partie (le corps en trois, le haut, les abords), proposées au directeur du contenu, sans nom de
+  // plan de l'île (« terrasse », « kiosque », « toit » : jamais) ; « Les flèches sont posées. » à la place de « La
+  // terrasse est finie. » (relecture des lieux, point 13).
+  belvedere: {
+    role: placeArt('belvedere')!.role,
+    greeting: 'La topographe mesure le terrain et le dessine.',
+    placement: 'rangee',
+    words: { pose: ['Le dallage est remis.', 'Le gnomon est debout.', 'Les pierres sont à leur place.', 'La visée est prête.', 'Les flèches sont posées.'], end: 'D’ici, on mesurait la montagne sans la gravir.' },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -774,6 +784,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   jonction: northSite('jonction'),
   veillee: northSite('veillee'),
   basilique: northSite('basilique'),
+  belvedere: northSite('belvedere'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2340,6 +2351,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   veillee: 'earth',
   // La Basilique : le pavement de la nef.
   basilique: 'paving',
+  // Le Belvédère : le dallage de la terrasse.
+  belvedere: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 
