@@ -244,6 +244,7 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   // L'Étalon (lot 2 du 4e) : la cour devant la façade, la bascule à gauche, le mur des niches derrière.
   etalon: placeArt('etalon')!.sceneSpot,
   gabarit: placeArt('gabarit')!.sceneSpot,
+  chariot: placeArt('chariot')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -525,6 +526,7 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   // L'Étalon : les poids de fonte ronds, sur leur planche.
   etalon: 'lieu',
   gabarit: 'lieu',
+  chariot: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

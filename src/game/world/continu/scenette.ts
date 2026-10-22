@@ -215,6 +215,18 @@ const SCENETTES: Record<PlaceId, Scenette> = {
       end: 'Ici, on traçait chaque pièce en grand avant de la tailler.',
     },
   },
+  // Le Chariot (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition ; les phrases de pose et la réplique de
+  // l'intention du directeur artistique, à valider par le directeur du contenu pédagogique (« le chariot de fer » au
+  // corps 2, si la voix l'entend mieux).
+  chariot: {
+    role: placeArt('chariot')!.role,
+    greeting: 'L’ingénieure invente les machines et les essaie.',
+    placement: 'rangee',
+    words: {
+      pose: ['Le bassin d’essai est en eau.', 'Le chariot est remis sur ses rails.', 'L’auvent couvre le treuil.', 'La cale d’essai est prête.'],
+      end: 'Ici, on essayait les bateaux en petit avant de les construire en grand.',
+    },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -653,6 +665,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   porte: northSite('porte'),
   etalon: northSite('etalon'),
   gabarit: northSite('gabarit'),
+  chariot: northSite('chariot'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2197,6 +2210,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   etalon: 'paving',
   // Le Gabarit (lot 3 du 4e) : la cour dallée devant l'abri du géomètre.
   gabarit: 'paving',
+  // Le Chariot (lot 3 du 4e) : la cour dallée devant l'appentis de l'ingénieure.
+  chariot: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

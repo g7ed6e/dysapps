@@ -1,7 +1,7 @@
 // Les lieux du 4e en ruines simples (lot 1 du monde ouvert du 4e, « l'île entière en grandes masses ») : à leur place,
 // une silhouette lisible pour chacun, sans les finir ; leurs étapes viennent avec leur lot, un lieu par lot, et un lieu
 // construit quitte ce fichier (la Forge, la Soute, la Porte et l'Étalon au lot 2, ./forge4e.ts, ./soute4e.ts, ./porte4e.ts,
-// ./etalon4e.ts ; le Gabarit au lot 3, ./gabarit4e.ts).
+// ./etalon4e.ts ; le Gabarit et le Chariot au lot 3, ./gabarit4e.ts, ./chariot4e.ts).
 // Chaque ruine est dessinée dans le repère de son lieu (y = 0 au sol, sous le centre ; x vers l'est, z vers le sud), en
 // quelques volumes de 4 à 6 aplats de la palette chaude du 4e (./plan4e.ts, `COLORS_4E`) : la brique et la terre cuite
 // de l'usine, le fer rouillé et le cuivre, la pierre grise des Passeurs, le bois gris de la ruine, le basalte brun du
@@ -68,16 +68,6 @@ function loge(b: FacetBuilder): void {
   b.beam({ x: 4.5, y: 6.5, z: 0.5 }, { x: 5.5, y: 0, z: -2.5 }, 0.4, C.wood);
   b.drum({ x: 2, y: SINK, z: -2.5, pitch: Math.PI / 2 }, 1.3, 0.6, 10, C.wood, C.woodShade);
   b.box({ x: -1.5, y: SINK, z: 0, yaw: 0.1 }, [5, 0.6 - SINK, 2.2], C.brickShade, C.terracotta);
-}
-
-/** Le Chariot : le long bassin d'essai, vide et sec ; ses rails sur ses bords ; le chariot de fer basculé ; une coque de maquette sur tréteaux. */
-function chariot(b: FacetBuilder): void {
-  b.box({ x: 0, y: SINK, z: 0 }, [16, 0.5 - SINK, 4.4], C.stoneShade, C.stone);
-  b.box({ x: 0, y: 0.05, z: 0 }, [15, 0.5, 2.8], C.stoneShade);
-  for (const z of [-2, 2]) b.box({ x: 0, y: 0.5, z }, [16, 0.14, 0.18], C.rust);
-  b.box({ x: 4, y: 0.5, z: 0, yaw: 0.2, pitch: 0.25 }, [1.6, 1.4, 4.8], C.rustShade, C.rust);
-  for (const x of [-5.5, -3.5]) b.box({ x, y: SINK, z: 4.2 }, [0.3, 1.4 - SINK, 1.4], C.woodShade);
-  b.prism({ x: -4.5, y: 1.4, z: 4.2, yaw: Math.PI / 2 }, 1, 0.3, 0.9, 6, C.terracotta, C.wood);
 }
 
 /** L'Herbier : la serre de fonte, sa charpente debout, son verre presque tout tombé ; des bacs ; la pompe. */
@@ -158,12 +148,11 @@ function dynamo(b: FacetBuilder): void {
 
 /**
  * La ruine de chaque lieu du 4e pas encore construit, dessinée dans son repère : un lieu construit (./plan4e.ts,
- * `BUILT_PLACES_4E` ; la Forge, la Soute, la Porte et l’Étalon au lot 2, le Gabarit au lot 3) dessine sa ruine dans son fichier, avec ses étapes.
+ * `BUILT_PLACES_4E` ; la Forge, la Soute, la Porte et l’Étalon au lot 2, le Gabarit et le Chariot au lot 3) dessine sa ruine dans son fichier, avec ses étapes.
  */
 export const RUINS_4E: Readonly<Record<Exclude<PlaceId4e, BuiltPlace4e>, (b: FacetBuilder) => void>> = {
   manufacture,
   loge,
-  chariot,
   herbier,
   roches,
   jonction,

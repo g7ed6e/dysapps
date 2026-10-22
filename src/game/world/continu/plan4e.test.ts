@@ -58,6 +58,14 @@ const LOT2_FABRIQUES_CEILING = { triangles: LOT2_CEILING.triangles + 2_000 + PLA
  */
 const LOT3_GABARIT_CEILING = { triangles: LOT2_FABRIQUES_CEILING.triangles + PLACE_TRIANGLES_MAX_4E, calls: LOT2_FABRIQUES_CEILING.calls } as const;
 
+/**
+ * Le plafond du 4e avec le Chariot (lot 3, le Bastion) : celui du Gabarit, relevé d'un lieu du 4e au plus chargé
+ * (`PLACE_TRIANGLES_MAX_4E`, l'eau du bassin d'essai comprise, à la place de sa ruine simple) ; aucun appel de plus.
+ * Mesuré le 22 octobre 2026 : 72 774 triangles et 17 appels la scénette ouverte, 65 072 et 14 hors scénette, 64 142 et 15
+ * au départ, 62 073 et 12 sur la Carte.
+ */
+const LOT3_CHARIOT_CEILING = { triangles: LOT3_GABARIT_CEILING.triangles + PLACE_TRIANGLES_MAX_4E, calls: LOT3_GABARIT_CEILING.calls } as const;
+
 /** Les couleurs d'un maillage. */
 function colorsOf(f: { colors: Float32Array }): Set<string> {
   const out = new Set<string>();
@@ -253,8 +261,8 @@ describe('Le budget du 4e', () => {
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
     for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('scenette')), total(openWorldCost4e('depart')), mapCost4e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT3_GABARIT_CEILING.triangles);
-      expect(cost.calls).toBeLessThanOrEqual(LOT3_GABARIT_CEILING.calls);
+      expect(cost.triangles).toBeLessThanOrEqual(LOT3_CHARIOT_CEILING.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(LOT3_CHARIOT_CEILING.calls);
     }
   });
 });

@@ -241,6 +241,7 @@ export const BUILT_PLACES_4E = {
   porte: ['freedoms', 'justice', 'security-defence'],
   etalon: ['weighted-mean', 'events', 'proportional-reasoning', 'calculation-programs', 'translations'],
   gabarit: ['simplifying', 'expanding', 'equations', 'rationals', 'pythagorean-theorem'],
+  chariot: ['energy-chain', 'information-chain', 'simulation', 'troubleshooting'],
 } as const satisfies Partial<Record<PlaceId4e, readonly string[]>>;
 
 /** Un lieu du 4e déjà construit. */

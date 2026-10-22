@@ -155,6 +155,7 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   // L'Étalon (lot 2 du 4e) : de même, 3+1+1.
   etalon: placeArt('etalon')!.traceStage,
   gabarit: placeArt('gabarit')!.traceStage,
+  chariot: placeArt('chariot')!.traceStage,
 };
 
 /**
