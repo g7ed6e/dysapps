@@ -164,6 +164,11 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   orgues: placeArt('orgues')!.traceStage,
   // La Dynamo (lot 3 du 4e) : chaque trace sa partie (le corps, le haut, les abords).
   dynamo: placeArt('dynamo')!.traceStage,
+  herbier: placeArt('herbier')!.traceStage,
+  roches: placeArt('roches')!.traceStage,
+  jonction: placeArt('jonction')!.traceStage,
+  veillee: placeArt('veillee')!.traceStage,
+  basilique: placeArt('basilique')!.traceStage,
 };
 
 /**

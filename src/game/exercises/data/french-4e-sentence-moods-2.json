@@ -1,0 +1,228 @@
+{
+  "id": "french-4e-sentence-moods-2",
+  "biome": "french-4e-sentence",
+  "type": "moods",
+  "level": 2,
+  "instruction": "Que dit le subjonctif dans cette phrase ? La règle est affichée.",
+  "items": [
+    {
+      "key": "french-4e-sentence-moods-2-0",
+      "prompt": "« Il faut que tu dormes davantage. » Que dit le subjonctif « dormes » ?",
+      "spoken": "Il faut que tu dormes davantage. Que dit le subjonctif « dormes » ?",
+      "choices": [
+        "volonté",
+        "obligation",
+        "but"
+      ],
+      "answer": "obligation",
+      "hint": "« Il faut que » : est-ce une envie, ou ce qu’on doit faire ?",
+      "explanation": "« Il faut que » dit une obligation : tu dois dormir davantage. Le subjonctif présente ce qui doit se faire, pas un fait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le subjonctif",
+          "lines": [
+            "Le subjonctif présente une action envisagée, pas un fait sûr.",
+            "Volonté : je veux que, je souhaite que. Obligation : il faut que.",
+            "Sentiment : je suis content que, j’ai peur que. But : pour que, afin que.",
+            "Opposition : bien que. Moment pas encore arrivé : avant que, jusqu’à ce que.",
+            "Après je sais que, je pense que, on affirme un fait : c’est l’indicatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-2-1",
+      "prompt": "« Je mets un réveil pour que tu sois à l’heure. » Que dit le subjonctif « sois » ?",
+      "spoken": "Je mets un réveil pour que tu sois à l’heure. Que dit le subjonctif « sois » ?",
+      "choices": [
+        "but",
+        "obligation",
+        "opposition"
+      ],
+      "answer": "but",
+      "hint": "Pourquoi mets-je un réveil ? Dans quel but ?",
+      "explanation": "« Pour que » dit le but : le réveil sert à ce que tu sois à l’heure. Ce n’est pas encore fait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le subjonctif",
+          "lines": [
+            "Le subjonctif présente une action envisagée, pas un fait sûr.",
+            "Volonté : je veux que, je souhaite que. Obligation : il faut que.",
+            "Sentiment : je suis content que, j’ai peur que. But : pour que, afin que.",
+            "Opposition : bien que. Moment pas encore arrivé : avant que, jusqu’à ce que.",
+            "Après je sais que, je pense que, on affirme un fait : c’est l’indicatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-2-2",
+      "prompt": "« Bien qu’il pleuve, nous jouons dehors. » Que dit le subjonctif « pleuve » ?",
+      "spoken": "Bien qu’il pleuve, nous jouons dehors. Que dit le subjonctif « pleuve » ?",
+      "choices": [
+        "sentiment",
+        "but",
+        "opposition"
+      ],
+      "answer": "opposition",
+      "hint": "Avec la pluie, s’attend-on à jouer dehors ?",
+      "explanation": "Il pleut, et pourtant nous jouons dehors : « bien que » dit l’opposition. Il est toujours suivi du subjonctif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le subjonctif",
+          "lines": [
+            "Le subjonctif présente une action envisagée, pas un fait sûr.",
+            "Volonté : je veux que, je souhaite que. Obligation : il faut que.",
+            "Sentiment : je suis content que, j’ai peur que. But : pour que, afin que.",
+            "Opposition : bien que. Moment pas encore arrivé : avant que, jusqu’à ce que.",
+            "Après je sais que, je pense que, on affirme un fait : c’est l’indicatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-2-3",
+      "prompt": "« Mes parents veulent que je fasse du sport. » Que dit le subjonctif « fasse » ?",
+      "spoken": "Mes parents veulent que je fasse du sport. Que dit le subjonctif « fasse » ?",
+      "choices": [
+        "volonté",
+        "sentiment",
+        "moment pas encore arrivé"
+      ],
+      "answer": "volonté",
+      "hint": "Regarde le verbe avant « que » : « veulent ».",
+      "explanation": "« Veulent que » dit la volonté de mes parents : faire du sport est ce qu’ils veulent, pas un fait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le subjonctif",
+          "lines": [
+            "Le subjonctif présente une action envisagée, pas un fait sûr.",
+            "Volonté : je veux que, je souhaite que. Obligation : il faut que.",
+            "Sentiment : je suis content que, j’ai peur que. But : pour que, afin que.",
+            "Opposition : bien que. Moment pas encore arrivé : avant que, jusqu’à ce que.",
+            "Après je sais que, je pense que, on affirme un fait : c’est l’indicatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-2-4",
+      "prompt": "« Je suis triste que tu partes. » Que dit le subjonctif « partes » ?",
+      "spoken": "Je suis triste que tu partes. Que dit le subjonctif « partes » ?",
+      "choices": [
+        "volonté",
+        "sentiment",
+        "but"
+      ],
+      "answer": "sentiment",
+      "hint": "« Je suis triste » : que dit-on ici ?",
+      "explanation": "« Je suis triste que » dit un sentiment : le subjonctif suit les mots qui disent ce qu’on ressent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le subjonctif",
+          "lines": [
+            "Le subjonctif présente une action envisagée, pas un fait sûr.",
+            "Volonté : je veux que, je souhaite que. Obligation : il faut que.",
+            "Sentiment : je suis content que, j’ai peur que. But : pour que, afin que.",
+            "Opposition : bien que. Moment pas encore arrivé : avant que, jusqu’à ce que.",
+            "Après je sais que, je pense que, on affirme un fait : c’est l’indicatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-2-5",
+      "prompt": "« Range tes affaires avant que nous partions. » Que dit le subjonctif « partions » ?",
+      "spoken": "Range tes affaires avant que nous partions. Que dit le subjonctif « partions » ?",
+      "choices": [
+        "opposition",
+        "moment pas encore arrivé",
+        "but"
+      ],
+      "answer": "moment pas encore arrivé",
+      "hint": "Sommes-nous déjà partis ?",
+      "explanation": "« Avant que » dit un moment qui n’est pas encore arrivé : nous ne sommes pas encore partis. « Partions » est au subjonctif ; à l’indicatif, on dirait « partons ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le subjonctif",
+          "lines": [
+            "Le subjonctif présente une action envisagée, pas un fait sûr.",
+            "Volonté : je veux que, je souhaite que. Obligation : il faut que.",
+            "Sentiment : je suis content que, j’ai peur que. But : pour que, afin que.",
+            "Opposition : bien que. Moment pas encore arrivé : avant que, jusqu’à ce que.",
+            "Après je sais que, je pense que, on affirme un fait : c’est l’indicatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-2-6",
+      "prompt": "« Je pense que tu as raison. » Le verbe « as » est-il au subjonctif ?",
+      "spoken": "Je pense que tu as raison. Le verbe « as » est-il au subjonctif ?",
+      "choices": [
+        "oui",
+        "non"
+      ],
+      "answer": "non",
+      "hint": "Relis la dernière ligne de la règle.",
+      "explanation": "Après « je pense que », on affirme un fait : « as » est à l’indicatif. Au subjonctif, ce serait « que tu aies ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le subjonctif",
+          "lines": [
+            "Le subjonctif présente une action envisagée, pas un fait sûr.",
+            "Volonté : je veux que, je souhaite que. Obligation : il faut que.",
+            "Sentiment : je suis content que, j’ai peur que. But : pour que, afin que.",
+            "Opposition : bien que. Moment pas encore arrivé : avant que, jusqu’à ce que.",
+            "Après je sais que, je pense que, on affirme un fait : c’est l’indicatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-2-7",
+      "prompt": "« Il faut que nous allions au gymnase. » Quel verbe est au subjonctif ?",
+      "spoken": "Il faut que nous allions au gymnase. Quel verbe est au subjonctif ?",
+      "choices": [
+        "faut",
+        "allions"
+      ],
+      "answer": "allions",
+      "hint": "Quel verbe vient après « il faut que » ?",
+      "explanation": "Après « il faut que », le verbe est au subjonctif : « allions ». À l’indicatif, on dirait « nous allons ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit le subjonctif",
+          "lines": [
+            "Le subjonctif présente une action envisagée, pas un fait sûr.",
+            "Volonté : je veux que, je souhaite que. Obligation : il faut que.",
+            "Sentiment : je suis content que, j’ai peur que. But : pour que, afin que.",
+            "Opposition : bien que. Moment pas encore arrivé : avant que, jusqu’à ce que.",
+            "Après je sais que, je pense que, on affirme un fait : c’est l’indicatif."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

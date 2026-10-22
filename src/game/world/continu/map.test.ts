@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { markOffset, screenOf } from './camera';
 import type { Vec3 } from './geometry';
-import { MAP_BAR_ROOM, MAP_EDGE_4E, MAP_LEAD_FROM, MAP_PIN_CLEAR, islandBox, mapLeader, MAP_CAMERA, grown, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView } from './map';
+import { MAP_BAR_ROOM, MAP_EDGE_4E, MAP_LEAD_FROM, MAP_PIN_CLEAR, islandBox, mapLeader, MAP_CAMERA, grown, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView, type Rect } from './map';
 import { PLACES, placeById } from './plan6e';
 import { PORT_MAP_POINT } from './port';
 import { heightAt, standingHeight } from './terrain';
@@ -803,3 +803,308 @@ describe('La Carte du 4e au plus grand texte (deuxième relecture du lot 1, cons
     expect(mapLeader({ x: 150, y: 140 + MAP_LEAD_FROM + 20 }, r)).toEqual({ x1: 150, y1: 140 + MAP_LEAD_FROM + 20, x2: 150, y2: 140 });
   });
 });
+
+describe('La Carte du 4e, les Coteaux (retouche 1)', () => {
+  // Les points et les tailles mesurés sur la tablette (1024 × 768), tout construit : la Carte ouverte à la Jonction.
+  const BUTTONS = [
+    { left: 4, top: 678, right: 220, bottom: 760 },
+    { left: 12, top: 12, right: 68, bottom: 196 },
+    { left: 956, top: 12, right: 1012, bottom: 68 },
+  ];
+  const SCREEN = { width: 1024, height: 768 };
+  const two = (w: number, h: number) => ({ w, h });
+  const OUTSIDE: MapLabel[] = [
+    { id: 'forge', kind: 'open', x: 511.9, y: 343.4, w: 170, h: 50, below: true, narrow: two(86, 105) },
+    { id: 'soute', kind: 'open', x: 718.8, y: 485.3, w: 172, h: 50, below: true, narrow: two(88, 105) },
+    { id: 'porte', kind: 'open', x: 624.1, y: 430, w: 168, h: 50, below: true, narrow: two(85, 105) },
+    { id: 'etalon', kind: 'open', x: 555.7, y: 329.7, w: 161, h: 50, side: 'right', narrow: two(114, 71) },
+    { id: 'gabarit', kind: 'open', x: 916.7, y: 402.9, w: 191, h: 50, below: true, narrow: two(108, 105) },
+    { id: 'manufacture', kind: 'open', x: 813.4, y: 377.5, w: 215, h: 84, side: 'right', narrow: two(168, 105) },
+    { id: 'loge', kind: 'open', x: 875.6, y: 459.4, w: 159, h: 50, below: true, narrow: two(76, 105) },
+    { id: 'chariot', kind: 'open', x: 803.7, y: 437.7, w: 190, h: 50, side: 'left', narrow: two(107, 105) },
+  ];
+  const NORTH: MapLabel[] = [
+    { id: 'terminus', kind: 'open', x: 302.6, y: 185.9, w: 209, h: 50, side: 'left', narrow: two(126, 105) },
+    { id: 'orgues', kind: 'open', x: 393.2, y: 200.1, w: 197, h: 50, below: true, narrow: two(103, 105) },
+    { id: 'dynamo', kind: 'open', x: 455.9, y: 232.3, w: 197, h: 50, below: true, narrow: two(114, 105) },
+  ];
+  const PORT: MapLabel = { id: 'port', kind: 'open', x: 698.2, y: 553.7, w: 180, h: 50, first: true, narrow: two(97, 105) };
+  const KEO: MapLabel = { id: 'keo', kind: 'keo', x: 359.6, y: 363.1, w: 108, h: 44, stacked: two(60, 90), keepNames: true };
+  const COTEAUX = ['herbier', 'roches', 'jonction', 'veillee', 'basilique'];
+  const hits = (a: Rect, b: Rect) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+  const box = (l: MapLabel, s: MapLabelSpot): Rect => {
+    if (l.kind === 'keo') return { left: s.left, top: s.top, right: s.left + (s.name ? l.w : MAP_KEO_DISC), bottom: s.top + l.h };
+    if (l.kind === 'closed') {
+      const f = s.narrow ? l.narrow! : l;
+      const left = s.left + (s.shift ?? 0);
+      return { left, top: l.y + (s.drop ?? 0), right: left + Math.max(MAP_LOCK, f.w), bottom: l.y + (s.drop ?? 0) + f.h - MAP_LOCK };
+    }
+    const f = s.narrow ? l.narrow! : l;
+    return { left: s.left, top: s.top, right: s.left + f.w, bottom: s.top + f.h };
+  };
+
+  it('restaurée, « La Jonction » se pose sous son point (épinglée, `MAP_PINNED_4E`), pas au-dessus, dans les Roches', () => {
+    const coteaux: MapLabel[] = [
+      { id: 'herbier', kind: 'open', x: 257, y: 460.4, w: 173, h: 50, below: true, narrow: two(126, 71) },
+      { id: 'roches', kind: 'open', x: 298.2, y: 320.3, w: 195, h: 50, below: true, narrow: two(101, 105) },
+      { id: 'jonction', kind: 'open', x: 354.6, y: 372.3, w: 205, h: 50, below: true, first: true, narrow: two(121, 105) },
+      { id: 'veillee', kind: 'open', x: 128.5, y: 367.4, w: 207, h: 50, below: true, narrow: two(124, 105) },
+      { id: 'basilique', kind: 'open', x: 168.8, y: 417.4, w: 235, h: 50, below: true, narrow: two(151, 105) },
+    ];
+    const labels = [...OUTSIDE, ...coteaux, ...NORTH, PORT, KEO];
+    const spots = layoutMapLabels(labels, BUTTONS, SCREEN, true, MAP_EDGE_4E);
+    const j = spots.find((s) => s.id === 'jonction')!;
+    expect(j).toMatchObject({ left: 354.6 - 205 / 2, top: 372.3 + MAP_LABEL_GAP, name: true });
+    // Chaque lieu des Coteaux garde son nom.
+    for (const id of COTEAUX) expect(spots.find((s) => s.id === id)!.name, id).toBe(true);
+    // Sans `first`, le nom de la Forge, posé avant, prenait sa place dessous.
+    const before = layoutMapLabels(
+      labels.map((l) => (l.id === 'jonction' ? { ...l, first: false } : l)),
+      BUTTONS,
+      SCREEN,
+      true,
+      MAP_EDGE_4E,
+    ).find((s) => s.id === 'jonction')!;
+    expect(before.top).toBeLessThan(372.3);
+  });
+
+  it('terre fermée, « Toi » (Kéo à la Forge) ne couvre aucun nom des Coteaux, ni celui de leur pont fermé', () => {
+    const coteaux: MapLabel[] = [
+      { id: 'herbier', kind: 'open', x: 257, y: 460.4, w: 142, h: 50, below: true, pale: true, narrow: two(126, 48) },
+      { id: 'roches', kind: 'open', x: 298.2, y: 320.3, w: 164, h: 50, below: true, pale: true, narrow: two(101, 80) },
+      { id: 'jonction', kind: 'open', x: 354.6, y: 372.3, w: 174, h: 50, below: true, pale: true, narrow: two(121, 80) },
+      { id: 'veillee', kind: 'open', x: 128.5, y: 367.4, w: 176, h: 50, below: true, pale: true, narrow: two(124, 80) },
+      { id: 'basilique', kind: 'open', x: 168.8, y: 417.4, w: 204, h: 50, below: true, pale: true, narrow: two(151, 80) },
+    ];
+    const bridge: MapLabel = { id: 'pont-coteaux', kind: 'closed', x: 417.1, y: 341.8, w: 155, h: 84, narrow: two(111, 118) };
+    const keo: MapLabel = { ...KEO, x: 514.3, y: 374.7 };
+    const covered = (k: MapLabel) => {
+      const labels = [...OUTSIDE, ...coteaux, ...NORTH, bridge, PORT, k];
+      const spots = layoutMapLabels(labels, BUTTONS, SCREEN, true, MAP_EDGE_4E);
+      const at = (id: string) => box(labels.find((l) => l.id === id)!, spots.find((s) => s.id === id)!);
+      const named = (id: string) => spots.find((s) => s.id === id)!.name;
+      return [...COTEAUX, 'pont-coteaux'].filter((id) => named(id) && hits(at('keo'), at(id)));
+    };
+    expect(covered(keo)).toEqual([]);
+    // Sans `keepNames` (au 5e, au 6e), Kéo peut couvrir un nom pâle : ici, celui du pont des Coteaux.
+    expect(covered({ ...keo, keepNames: undefined })).not.toEqual([]);
+  });
+
+  it('terre fermée, la pastille de Kéo (à la Forge) ne cache aucune lettre : à cheval sur le bord de « La Forge », dans sa marge (retouche 2)', () => {
+    // La marge des cadres mesurée sur la tablette : 0,9 rem de retrait et 2 px de bord.
+    const PAD = 16.4;
+    const coteaux: MapLabel[] = [
+      { id: 'herbier', kind: 'open', x: 257, y: 460.4, w: 142, h: 50, below: true, pale: true, narrow: two(126, 48) },
+      { id: 'roches', kind: 'open', x: 298.2, y: 320.3, w: 164, h: 50, below: true, pale: true, narrow: two(101, 80) },
+      { id: 'jonction', kind: 'open', x: 354.6, y: 372.3, w: 174, h: 50, below: true, pale: true, narrow: two(121, 80) },
+      { id: 'veillee', kind: 'open', x: 128.5, y: 367.4, w: 176, h: 50, below: true, pale: true, narrow: two(124, 80) },
+      { id: 'basilique', kind: 'open', x: 168.8, y: 417.4, w: 204, h: 50, below: true, pale: true, narrow: two(151, 80) },
+    ];
+    const bridge: MapLabel = { id: 'pont-coteaux', kind: 'closed', x: 417.1, y: 341.8, w: 155, h: 84, narrow: two(111, 118) };
+    const keo: MapLabel = { ...KEO, x: 514.3, y: 374.7 };
+    const withPad = (l: MapLabel): MapLabel => (l.kind === 'open' ? { ...l, pad: PAD } : l);
+    const labels = [...OUTSIDE, ...coteaux, ...NORTH, bridge, PORT, keo].map(withPad);
+    const spots = layoutMapLabels(labels, BUTTONS, SCREEN, true, MAP_EDGE_4E);
+    const at = (id: string) => box(labels.find((l) => l.id === id)!, spots.find((s) => s.id === id)!);
+    const disc = at('keo');
+    // Ni place libre près d'elle, ni « Toi » : sa pastille seule, à `NEAR.reach` (80 px) au plus de son point.
+    expect(spots.find((s) => s.id === 'keo')!.name).toBe(false);
+    expect(Math.hypot(Math.max(disc.left - keo.x, 0, keo.x - disc.right), Math.max(disc.top - keo.y, 0, keo.y - disc.bottom))).toBeLessThanOrEqual(80);
+    // Aucune lettre couverte : le dedans de chaque cadre nommé (moins sa marge) reste hors de la pastille.
+    for (const l of labels) {
+      if (l.kind !== 'open' || !spots.find((s) => s.id === l.id)!.name) continue;
+      const r = at(l.id);
+      expect(hits(disc, { left: r.left + PAD, top: r.top, right: r.right - PAD, bottom: r.bottom }), l.id).toBe(false);
+    }
+    // À cheval sur le bord du cadre de « La Forge », son lieu, dans sa marge.
+    const forge = at('forge');
+    expect(hits(disc, forge)).toBe(true);
+    // Aucune autre étiquette touchée.
+    for (const l of labels) if (l.id !== 'keo' && l.id !== 'forge' && spots.find((s) => s.id === l.id)!.name) expect(hits(disc, at(l.id)), l.id).toBe(false);
+  });
+
+  it('au 5e et au 6e (sans `keepNames`), la marge des cadres ne change rien à la place de Kéo', () => {
+    const labels: MapLabel[] = [
+      { id: 'a', kind: 'open', x: 300, y: 300, w: 170, h: 50 },
+      { id: 'b', kind: 'open', x: 300, y: 380, w: 170, h: 50, pale: true },
+      { id: 'keo', kind: 'keo', x: 300, y: 330, w: 108, h: 44 },
+    ];
+    const plain = layoutMapLabels(labels, [], SCREEN);
+    const padded = layoutMapLabels(labels.map((l) => (l.kind === 'open' ? { ...l, pad: 16.4 } : l)), [], SCREEN);
+    expect(padded).toEqual(plain);
+  });
+});
+
+describe('La Carte du 4e, les Coteaux (retouche 3)', () => {
+  // Les points et les tailles mesurés sur la tablette (1024 × 768), la Carte ouverte à la Jonction : la place de l'icône
+  // de l'état gardée dès la ruine (openWorld.css), chaque nom a la même taille en ruine et restauré.
+  const BUTTONS = [
+    { left: 4, top: 678, right: 220.1, bottom: 760 },
+    { left: 12, top: 12, right: 68, bottom: 196 },
+    { left: 956, top: 12, right: 1012, bottom: 68 },
+  ];
+  const SCREEN = { width: 1024, height: 768 };
+  const at = (id: string, x: number, y: number, w: number, h: number, nw: number, nh: number, more: Partial<MapLabel> = {}): MapLabel => ({
+    id,
+    kind: 'open',
+    x,
+    y,
+    w,
+    h,
+    pad: 20,
+    narrow: { w: nw, h: nh, pad: 12 },
+    leader: true,
+    ...more,
+  });
+  const COTEAUX = ['herbier', 'roches', 'jonction', 'veillee', 'basilique'];
+  // Restaurée : dans l'ordre de la page ; la Jonction posée avant les autres (épinglée, `MAP_PINNED_4E`).
+  const RESTORED: MapLabel[] = [
+    at('forge', 511.9, 347.1, 170, 50, 115, 80, { below: true }),
+    at('soute', 699, 475.5, 172, 50, 117, 80, { below: true }),
+    at('porte', 613.6, 425.7, 168, 50, 114, 80, { below: true }),
+    at('etalon', 551.8, 334.6, 161, 50, 143, 48, { side: 'right' }),
+    at('gabarit', 873.1, 405.1, 191, 50, 137, 80, { below: true }),
+    at('manufacture', 790.5, 375.6, 215, 84, 197, 80, { side: 'right' }),
+    at('loge', 834.4, 460, 159, 50, 105, 80, { below: true }),
+    at('chariot', 784.6, 428, 190, 50, 136, 80, { side: 'left' }),
+    at('herbier', 281.3, 453.1, 173, 50, 155, 48, { below: true }),
+    at('roches', 317.3, 326, 195, 50, 130, 80, { below: true }),
+    at('jonction', 369, 373.3, 205, 50, 150, 80, { below: true, first: true }),
+    at('veillee', 163.5, 368.9, 207, 50, 153, 80, { below: true }),
+    at('basilique', 201, 414.3, 235, 50, 180, 80, { below: true }),
+    at('terminus', 320.6, 202.9, 209, 50, 155, 80, { side: 'left' }),
+    at('orgues', 403.4, 215.9, 197, 50, 132, 80, { below: true }),
+    at('dynamo', 460.7, 245.4, 197, 50, 143, 80, { below: true }),
+    at('port', 679.7, 536.9, 180, 50, 97, 80, { first: true }),
+    { id: 'keo', kind: 'keo', x: 373.4, y: 365, w: 108, h: 44, stacked: { w: 60, h: 90 }, keepNames: true },
+  ];
+  // En ruine : les mêmes tailles ; la Jonction, lieu suggéré, en tête (`nextPlace`).
+  const RUIN = [RESTORED.find((l) => l.id === 'jonction')!, ...RESTORED.filter((l) => l.id !== 'jonction')];
+  const boxOf = (l: MapLabel, s: MapLabelSpot): Rect => {
+    const f = s.narrow && l.narrow ? l.narrow : l;
+    return { left: s.left, top: s.top, right: s.left + f.w, bottom: s.top + f.h };
+  };
+  // Le côté d'un nom par rapport à son point, et sa forme.
+  const sides = (labels: readonly MapLabel[]) => {
+    const spots = layoutMapLabels(labels, BUTTONS, SCREEN, true, MAP_EDGE_4E);
+    return Object.fromEntries(
+      labels
+        .filter((l) => l.kind === 'open')
+        .map((l) => {
+          const s = spots.find((x) => x.id === l.id)!;
+          const r = boxOf(l, s);
+          const side = r.bottom <= l.y ? 'dessus' : r.top >= l.y ? 'dessous' : r.left >= l.x ? 'droite' : r.right <= l.x ? 'gauche' : 'sur';
+          return [l.id, `${side}${s.narrow ? ', serré' : ''}${s.name ? '' : ', sans nom'}`];
+        }),
+    );
+  };
+
+  it('en ruine puis restaurée, chaque nom garde son côté : aucun ne grandit, « La Basilique » ne change plus de place', () => {
+    const ruin = sides(RUIN);
+    expect(sides(RESTORED)).toEqual(ruin);
+    for (const id of COTEAUX) expect(ruin[id], id).not.toContain('sans nom');
+    // Sans la place gardée (retouche 2), un nom des Coteaux en ruine était plus étroit, de la largeur de son icône : 31 px
+    // dans sa pastille entière, 29 px dans la serrée ; un nom au moins y changeait de côté.
+    const before = RUIN.map((l) => (COTEAUX.includes(l.id) ? { ...l, w: l.w - 31, narrow: { ...l.narrow!, w: l.narrow!.w - 29 } } : l));
+    expect(sides(before)).not.toEqual(ruin);
+  });
+
+  it('aucun trait de nom ne passe sous le cadre d’un lieu des Coteaux (celui de la Basilique sous « La Veillée »), ni sous Kéo', () => {
+    for (const labels of [RUIN, RESTORED]) {
+      const spots = layoutMapLabels(labels, BUTTONS, SCREEN, true, MAP_EDGE_4E);
+      const named = labels.filter((l) => l.kind === 'open' && spots.find((s) => s.id === l.id)!.name);
+      const boxes = new Map(named.map((l) => [l.id, boxOf(l, spots.find((s) => s.id === l.id)!)]));
+      for (const l of named) {
+        const lead = mapLeader(l, boxes.get(l.id)!);
+        if (!lead) continue;
+        // Le trait, pas à pas d'un pixel : aucun de ses points dans le cadre d'un autre nom des Coteaux (au-delà d'un
+        // demi-pixel de son bord).
+        const n = Math.ceil(Math.hypot(lead.x2 - lead.x1, lead.y2 - lead.y1));
+        for (const id of COTEAUX) {
+          if (id === l.id) continue;
+          const r = boxes.get(id)!;
+          for (let i = 0; i <= n; i++) {
+            const x = lead.x1 + ((lead.x2 - lead.x1) * i) / n,
+              y = lead.y1 + ((lead.y2 - lead.y1) * i) / n;
+            expect(x > r.left + 0.5 && x < r.right - 0.5 && y > r.top + 0.5 && y < r.bottom - 0.5, `${l.id} sous ${id}`).toBe(false);
+          }
+        }
+        // Ni sous la pastille de Kéo, ni sous « Toi » (avant, « Toi » couvrait le bout du trait de la Forge).
+        const keo = labels.find((x) => x.kind === 'keo')!;
+        const k = spots.find((x) => x.id === 'keo')!;
+        const r = { left: k.left, top: k.top, right: k.left + (k.name ? keo.w : MAP_KEO_DISC), bottom: k.top + keo.h };
+        const n2 = Math.ceil(Math.hypot(lead.x2 - lead.x1, lead.y2 - lead.y1));
+        for (let i = 0; i <= n2; i++) {
+          const x = lead.x1 + ((lead.x2 - lead.x1) * i) / n2,
+            y = lead.y1 + ((lead.y2 - lead.y1) * i) / n2;
+          expect(x > r.left + 0.5 && x < r.right - 0.5 && y > r.top + 0.5 && y < r.bottom - 0.5, `${l.id} sous Kéo`).toBe(false);
+        }
+      }
+    }
+  });
+
+  it('sans `leader` (au 5e, au 6e, et avant la retouche 3), le trait de la Basilique passait sous « La Veillée »', () => {
+    const plain = RESTORED.map((l) => (l.kind === 'open' ? { ...l, leader: undefined } : { ...l, keepNames: undefined }));
+    const spots = layoutMapLabels(plain, BUTTONS, SCREEN, true, MAP_EDGE_4E);
+    // La pose d'avant la retouche 3 : le trait de la Basilique passait sous « La Veillée ».
+    const basilique = plain.find((l) => l.id === 'basilique')!;
+    const veillee = plain.find((l) => l.id === 'veillee')!;
+    const lead = mapLeader(basilique, boxOf(basilique, spots.find((s) => s.id === 'basilique')!))!;
+    const r = boxOf(veillee, spots.find((s) => s.id === 'veillee')!);
+    expect(lead.x1 > r.left && lead.x1 < r.right && Math.min(lead.y1, lead.y2) < r.top && Math.max(lead.y1, lead.y2) > r.bottom).toBe(true);
+  });
+});
+
+describe('La pastille de Kéo au 4e, sans place libre près de son point (retouche 3)', () => {
+  // Une bande libre de 270 à 330 px de haut, le reste de l'écran couvert de boutons ; Kéo à (300, 300).
+  const KEO: MapLabel = { id: 'keo', kind: 'keo', x: 300, y: 300, w: 108, h: 44, keepNames: true };
+  const SCREEN = { width: 600, height: 600 };
+  const BAND = [
+    { left: 0, top: 0, right: 600, bottom: 262 },
+    { left: 0, top: 338, right: 600, bottom: 600 },
+  ];
+  const hits = (a: Rect, b: Rect) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+  const discOf = (s: MapLabelSpot): Rect => ({ left: s.left, top: s.top, right: s.left + MAP_KEO_DISC, bottom: s.top + KEO.h });
+  const gap = (r: Rect) => Math.hypot(Math.max(r.left - KEO.x, 0, KEO.x - r.right), Math.max(r.top - KEO.y, 0, KEO.y - r.bottom));
+  const letters = (r: Rect, pad: number): Rect => ({ left: r.left + pad, top: r.top, right: r.right - pad, bottom: r.bottom });
+
+  it('ni son nom à elle tout près : à cheval sur le bord du cadre d’un nom pâle, dans sa marge seulement', () => {
+    const pale: MapLabel = { id: 'pale', kind: 'open', x: 340, y: 300, w: 200, h: 60, pad: 16, side: 'right', pale: true };
+    const spots = layoutMapLabels([pale, KEO], [{ left: 0, top: 0, right: 312, bottom: 600 }, ...BAND], SCREEN);
+    const box = { left: spots[0].left, top: spots[0].top, right: spots[0].left + pale.w, bottom: spots[0].top + pale.h };
+    const disc = discOf(spots[1]);
+    expect(spots[0].name).toBe(true);
+    expect(spots[1].name).toBe(false);
+    expect(gap(disc)).toBeLessThanOrEqual(80);
+    expect(hits(disc, box)).toBe(true);
+    expect(hits(disc, letters(box, pale.pad!))).toBe(false);
+  });
+
+  it('rien à 80 px : libre un peu plus loin, à 160 px au plus', () => {
+    const [spot] = layoutMapLabels([KEO], [{ left: 0, top: 0, right: 400, bottom: 600 }, ...BAND], SCREEN);
+    const disc = discOf(spot);
+    expect(gap(disc)).toBeGreaterThan(80);
+    expect(gap(disc)).toBeLessThanOrEqual(160);
+  });
+
+  it('rien de libre à 160 px : sur aucune lettre, quitte à toucher un cadre', () => {
+    // « Un nom » est à 160 px de Kéo : ce n'est pas le sien, et il n'est pas pâle.
+    const name: MapLabel = { id: 'nom', kind: 'open', x: 460, y: 300, w: 92, h: 60, pad: 16, side: 'left' };
+    const spots = layoutMapLabels([name, KEO], [{ left: 0, top: 0, right: 312, bottom: 600 }, ...BAND, { left: 470, top: 0, right: 600, bottom: 600 }], SCREEN);
+    const box = { left: spots[0].left, top: spots[0].top, right: spots[0].left + name.w, bottom: spots[0].top + name.h };
+    const disc = discOf(spots[1]);
+    expect(spots[0].name).toBe(true);
+    expect(gap(disc)).toBeLessThanOrEqual(160);
+    expect(hits(disc, letters(box, name.pad!))).toBe(false);
+  });
+
+  it('au pire, un écran plein de noms : de son côté fixe, sous son point, et elle peut alors couvrir une lettre (documenté)', () => {
+    const full: MapLabel = { id: 'nom', kind: 'open', x: 150, y: 200, w: 300, h: 200, pad: 16 };
+    const keo = { ...KEO, x: 150, y: 100 };
+    const spots = layoutMapLabels([full, keo], [], { width: 300, height: 200 });
+    expect(spots[0]).toMatchObject({ left: 0, top: 0, name: true });
+    expect(spots[1]).toMatchObject({ left: keo.x - MAP_KEO_DISC / 2, top: keo.y, name: false });
+    expect(hits(discOf(spots[1]), letters({ left: 0, top: 0, right: 300, bottom: 200 }, full.pad!))).toBe(true);
+  });
+});
+

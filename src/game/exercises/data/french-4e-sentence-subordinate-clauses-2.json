@@ -1,0 +1,222 @@
+{
+  "id": "french-4e-sentence-subordinate-clauses-2",
+  "biome": "french-4e-sentence",
+  "type": "subordinate-clauses",
+  "level": 2,
+  "instruction": "Que dit la subordonnée : complément du verbe, ou une circonstance ? La règle est affichée.",
+  "items": [
+    {
+      "key": "french-4e-sentence-subordinate-clauses-2-0",
+      "prompt": "« Je sais que tu as fait de ton mieux. » Que dit la subordonnée ?",
+      "spoken": "Je sais que tu as fait de ton mieux. Que dit la subordonnée ?",
+      "choices": [
+        "complément du verbe",
+        "cause",
+        "temps"
+      ],
+      "answer": "complément du verbe",
+      "hint": "Pose la question : je sais quoi ?",
+      "explanation": "Je sais quoi ? Que tu as fait de ton mieux : la subordonnée complète le verbe « sais ». On ne peut pas la déplacer en tête de phrase.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit la conjonctive",
+          "lines": [
+            "Complément du verbe : elle répond à « quoi ? » après le verbe (j’espère que tu viendras).",
+            "Cause : parce que, puisque, comme. Temps : quand, lorsque, pendant que.",
+            "Opposition : bien que, alors que, même si. Condition : si, à condition que.",
+            "Une circonstance peut souvent se déplacer dans la phrase ; un complément du verbe, non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-2-1",
+      "prompt": "« Comme il pleuvait, le match a été annulé. » Que dit la subordonnée ?",
+      "spoken": "Comme il pleuvait, le match a été annulé. Que dit la subordonnée ?",
+      "choices": [
+        "temps",
+        "cause",
+        "condition"
+      ],
+      "answer": "cause",
+      "hint": "Pourquoi le match a-t-il été annulé ?",
+      "explanation": "Le match a été annulé parce qu’il pleuvait : « comme » dit ici la cause. Remplace-le par « parce que » pour vérifier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit la conjonctive",
+          "lines": [
+            "Complément du verbe : elle répond à « quoi ? » après le verbe (j’espère que tu viendras).",
+            "Cause : parce que, puisque, comme. Temps : quand, lorsque, pendant que.",
+            "Opposition : bien que, alors que, même si. Condition : si, à condition que.",
+            "Une circonstance peut souvent se déplacer dans la phrase ; un complément du verbe, non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-2-2",
+      "prompt": "« Je lis pendant que le gâteau cuit. » Que dit la subordonnée ?",
+      "spoken": "Je lis pendant que le gâteau cuit. Que dit la subordonnée ?",
+      "choices": [
+        "cause",
+        "opposition",
+        "temps"
+      ],
+      "answer": "temps",
+      "hint": "À quel moment est-ce que je lis ?",
+      "explanation": "« Pendant que » dit le moment : je lis au même moment que le gâteau cuit. C’est une circonstance de temps.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit la conjonctive",
+          "lines": [
+            "Complément du verbe : elle répond à « quoi ? » après le verbe (j’espère que tu viendras).",
+            "Cause : parce que, puisque, comme. Temps : quand, lorsque, pendant que.",
+            "Opposition : bien que, alors que, même si. Condition : si, à condition que.",
+            "Une circonstance peut souvent se déplacer dans la phrase ; un complément du verbe, non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-2-3",
+      "prompt": "« Bien qu’elle ait couru, Léa a raté son train. » Que dit la subordonnée ?",
+      "spoken": "Bien qu’elle ait couru, Léa a raté son train. Que dit la subordonnée ?",
+      "choices": [
+        "opposition",
+        "cause",
+        "temps"
+      ],
+      "answer": "opposition",
+      "hint": "En courant, on s’attend à attraper son train. Est-ce ce qui arrive ?",
+      "explanation": "Léa a couru, et pourtant elle a raté son train : « bien que » dit l’opposition entre ce qu’on attend et ce qui arrive.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit la conjonctive",
+          "lines": [
+            "Complément du verbe : elle répond à « quoi ? » après le verbe (j’espère que tu viendras).",
+            "Cause : parce que, puisque, comme. Temps : quand, lorsque, pendant que.",
+            "Opposition : bien que, alors que, même si. Condition : si, à condition que.",
+            "Une circonstance peut souvent se déplacer dans la phrase ; un complément du verbe, non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-2-4",
+      "prompt": "« Si tu révises, tu réussiras. » Que dit la subordonnée ?",
+      "spoken": "Si tu révises, tu réussiras. Que dit la subordonnée ?",
+      "choices": [
+        "temps",
+        "condition",
+        "cause"
+      ],
+      "answer": "condition",
+      "hint": "Réussiras-tu dans tous les cas ?",
+      "explanation": "Tu réussiras à une condition : réviser. « Si » dit ici la condition.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit la conjonctive",
+          "lines": [
+            "Complément du verbe : elle répond à « quoi ? » après le verbe (j’espère que tu viendras).",
+            "Cause : parce que, puisque, comme. Temps : quand, lorsque, pendant que.",
+            "Opposition : bien que, alors que, même si. Condition : si, à condition que.",
+            "Une circonstance peut souvent se déplacer dans la phrase ; un complément du verbe, non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-2-5",
+      "prompt": "« Je me demande si tu réussiras. » Que dit la subordonnée ?",
+      "spoken": "Je me demande si tu réussiras. Que dit la subordonnée ?",
+      "choices": [
+        "condition",
+        "complément du verbe",
+        "opposition"
+      ],
+      "answer": "complément du verbe",
+      "hint": "Pose la question : je me demande quoi ?",
+      "explanation": "Je me demande quoi ? Si tu réussiras : c’est une question rapportée, complément du verbe. Ce « si » ne dit pas une condition.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit la conjonctive",
+          "lines": [
+            "Complément du verbe : elle répond à « quoi ? » après le verbe (j’espère que tu viendras).",
+            "Cause : parce que, puisque, comme. Temps : quand, lorsque, pendant que.",
+            "Opposition : bien que, alors que, même si. Condition : si, à condition que.",
+            "Une circonstance peut souvent se déplacer dans la phrase ; un complément du verbe, non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-2-6",
+      "prompt": "« Il est sorti alors qu’on lui avait dit de rester. » Que dit la subordonnée ?",
+      "spoken": "Il est sorti alors qu’on lui avait dit de rester. Que dit la subordonnée ?",
+      "choices": [
+        "temps",
+        "cause",
+        "opposition"
+      ],
+      "answer": "opposition",
+      "hint": "Lui avait-on dit de sortir, ou de rester ?",
+      "explanation": "On lui avait dit de rester, et pourtant il est sorti : « alors que » dit ici l’opposition, pas le moment.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit la conjonctive",
+          "lines": [
+            "Complément du verbe : elle répond à « quoi ? » après le verbe (j’espère que tu viendras).",
+            "Cause : parce que, puisque, comme. Temps : quand, lorsque, pendant que.",
+            "Opposition : bien que, alors que, même si. Condition : si, à condition que.",
+            "Une circonstance peut souvent se déplacer dans la phrase ; un complément du verbe, non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-subordinate-clauses-2-7",
+      "prompt": "« Tout le monde espère qu’il fera beau. » Que dit la subordonnée ?",
+      "spoken": "Tout le monde espère qu’il fera beau. Que dit la subordonnée ?",
+      "choices": [
+        "condition",
+        "complément du verbe",
+        "cause"
+      ],
+      "answer": "complément du verbe",
+      "hint": "Pose la question : tout le monde espère quoi ?",
+      "explanation": "Tout le monde espère quoi ? Qu’il fera beau : la subordonnée complète le verbe « espère ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce que dit la conjonctive",
+          "lines": [
+            "Complément du verbe : elle répond à « quoi ? » après le verbe (j’espère que tu viendras).",
+            "Cause : parce que, puisque, comme. Temps : quand, lorsque, pendant que.",
+            "Opposition : bien que, alors que, même si. Condition : si, à condition que.",
+            "Une circonstance peut souvent se déplacer dans la phrase ; un complément du verbe, non."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

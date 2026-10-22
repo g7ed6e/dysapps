@@ -4227,5 +4227,67 @@ export const ILES = [
         ]
       }
     ]
+  },
+  {
+    "id": "french-4e-sentence",
+    "name": "Jonction",
+    "module": "La phrase et le verbe",
+    "subject": "french",
+    "classe": "4e",
+    "description": "Relatives et conjonctives, voix passive et paroles rapportées, temps composés, conditionnel et subjonctif : la règle sous les yeux.",
+    "block": "french-4e-vocabulary",
+    "icon": "route",
+    "openWorldOnly": true,
+    "exercises": [
+      {
+        "id": "relative-clauses",
+        "title": "Les relatives",
+        "description": "Le pronom relatif et son antécédent, le bon pronom (qui, que, dont, où), puis ce que fait la relative dans la phrase.",
+        "programme": [
+          "c4.fr.langue.subordonnees",
+          "c4.fr.langue.phrase-complexe"
+        ]
+      },
+      {
+        "id": "subordinate-clauses",
+        "title": "Les conjonctives",
+        "description": "La conjonction de subordination et sa proposition, ce que dit la conjonctive (complément du verbe, cause, temps, opposition, condition), puis la question rapportée.",
+        "programme": [
+          "c4.fr.langue.subordonnees",
+          "c4.fr.langue.phrase-complexe",
+          "c4.fr.langue.sujet-complements"
+        ]
+      },
+      {
+        "id": "passive-reported",
+        "title": "Voix et paroles",
+        "description": "Voix active ou passive et le complément d’agent, puis les paroles rapportées au discours indirect, à côté du discours direct.",
+        "programme": [
+          "c4.fr.langue.passif",
+          "c4.fr.langue.types-formes",
+          "c4.fr.langue.discours-rapporte",
+          "c4.fr.langue.enonciation"
+        ]
+      },
+      {
+        "id": "compound-tenses",
+        "title": "Les temps composés",
+        "description": "Reconnaître le plus-que-parfait, le passé antérieur, le futur antérieur et le conditionnel passé, puis conjuguer les verbes dont le radical change.",
+        "programme": [
+          "c4.fr.langue.morphologie-verbale",
+          "c4.fr.langue.temps-a-memoriser",
+          "c4.fr.langue.valeurs-des-temps"
+        ]
+      },
+      {
+        "id": "moods",
+        "title": "Les modes",
+        "description": "Ce que dit le conditionnel (futur vu du passé, hypothèse, souhait, politesse, information pas sûre), puis ce que dit le subjonctif.",
+        "programme": [
+          "c4.fr.langue.valeurs-des-temps",
+          "c4.fr.langue.morphologie-verbale"
+        ]
+      }
+    ]
   }
 ] satisfies IleDef[];

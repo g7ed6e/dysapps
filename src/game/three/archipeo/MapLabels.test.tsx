@@ -162,3 +162,38 @@ test('un lieu d’option (l’Oracle, l’Auberge) porte le fanion collé à son
   expect(glue).toHaveTextContent('L’Oracle');
   expect(container.querySelector('[data-lieu="hameau"]')!.getAttribute('aria-label')).not.toMatch(/en option/);
 });
+
+test('au 4e seulement (`snug`), l’icône de l’état de la forme serrée collée au dernier mot du nom, sa place gardée dès la ruine ; au 5e et au 6e, rien ne change (retouche 3 des Coteaux)', () => {
+  const plan4 = planFor('4e');
+  const open = plan4.places.map((p) => p.id);
+  // Un lieu restauré, un en chantier, les autres à explorer.
+  const states4 = { ...Object.fromEntries(open.map((id) => [id, null])), [open[0]]: 'restauree', [open[1]]: 'en-chantier' } as never;
+  const four = render(<MapLabels places={plan4.places} openPlaces={open} closedLands={[]} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={states4} words={words} snug />);
+  expect(four.container.querySelector('.open-world-map-places')).toHaveClass('snug');
+  for (const p of plan4.places) {
+    const el = four.container.querySelector<HTMLElement>(`[data-lieu="${p.id}"]`)!;
+    const glued = el.querySelector<HTMLElement>('.open-world-map-state-glued')!;
+    // Dans le bloc du dernier mot, après lui, jamais seul sur sa ligne ; « à explorer » aussi (sa place, invisible).
+    const glue = glued.closest('.open-world-map-glue')!;
+    const lines = el.querySelectorAll('.open-world-map-line');
+    expect(glue.closest('.open-world-map-line'), p.id).toBe(lines[lines.length - 1]);
+    expect(glue.lastElementChild, p.id).toBe(glued);
+    expect(glue.textContent!.trim(), p.id).toBe(p.name.slice(p.name.lastIndexOf(' ') + 1));
+    expect(glued.dataset.etat, p.id).toBe(p.id === open[0] ? 'restauree' : p.id === open[1] ? 'en-chantier' : 'a-explorer');
+    // L'icône d'à côté reste, la même : la forme entière la montre.
+    expect(el.querySelector(':scope > .open-world-map-state')!.getAttribute('data-etat'), p.id).toBe(glued.dataset.etat);
+  }
+  four.unmount();
+  // Au 5e et au 6e : l'étiquette de preview, l'icône de l'état seulement à côté du nom (dessous dans la forme serrée).
+  const plan5 = planFor('5e');
+  for (const [plan, opened] of [
+    [PLAN, placesOfLands(PLAN, ['pointe'])],
+    [plan5, plan5.places.map((p) => p.id)],
+  ] as const) {
+    const { container, unmount } = render(<MapLabels places={plan.places} openPlaces={opened} closedLands={[]} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={Object.fromEntries(opened.map((id) => [id, 'restauree']))} words={words} upper={plan.upper} />);
+    expect(container.querySelector('.open-world-map-places')).not.toHaveClass('snug');
+    expect(container.querySelector('.open-world-map-state-glued')).toBeNull();
+    for (const id of opened) expect(container.querySelector(`[data-lieu="${id}"] .open-world-map-place-name .open-world-map-state`), id).toBeNull();
+    unmount();
+  }
+});

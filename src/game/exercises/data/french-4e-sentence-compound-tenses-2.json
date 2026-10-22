@@ -1,0 +1,229 @@
+{
+  "id": "french-4e-sentence-compound-tenses-2",
+  "biome": "french-4e-sentence",
+  "type": "compound-tenses",
+  "level": 2,
+  "instruction": "Choisis la bonne forme du verbe : son radical change. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-4e-sentence-compound-tenses-2-0",
+      "prompt": "Ils … leur chien pour rentrer.",
+      "spoken": "Ils  (mot manquant)  leur chien pour rentrer.",
+      "choices": [
+        "appelent",
+        "appellent",
+        "apellent"
+      ],
+      "answer": "appellent",
+      "hint": "Le e de la fin est muet : appeler double alors son l.",
+      "explanation": "Devant un e muet, appeler double le l : ils appellent. Avec nous, le e se prononce : nous appelons, un seul l.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes dont le radical change",
+          "lines": [
+            "appeler, jeter : deux l ou deux t devant un e muet (je jette, nous jetons).",
+            "acheter, geler : è devant un e muet (il gèle, nous gelons).",
+            "nettoyer, envoyer : y devient i devant un e muet (j’envoie, nous envoyons).",
+            "venir, prendre, pouvoir : le radical change avec la personne (je tiens, ils tiennent).",
+            "Impératif : va, mais vas-y ; aie et sois (avoir, être)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-2-1",
+      "prompt": "Elle … une nouvelle trousse.",
+      "spoken": "Elle  (mot manquant)  une nouvelle trousse.",
+      "choices": [
+        "achete",
+        "achette",
+        "achète"
+      ],
+      "answer": "achète",
+      "hint": "Acheter ne double pas sa consonne : il prend un accent.",
+      "explanation": "Devant un e muet, acheter prend un accent grave : elle achète. Il ne double pas le t.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes dont le radical change",
+          "lines": [
+            "appeler, jeter : deux l ou deux t devant un e muet (je jette, nous jetons).",
+            "acheter, geler : è devant un e muet (il gèle, nous gelons).",
+            "nettoyer, envoyer : y devient i devant un e muet (j’envoie, nous envoyons).",
+            "venir, prendre, pouvoir : le radical change avec la personne (je tiens, ils tiennent).",
+            "Impératif : va, mais vas-y ; aie et sois (avoir, être)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-2-2",
+      "prompt": "Ils … le gymnase après le match.",
+      "spoken": "Ils  (mot manquant)  le gymnase après le match.",
+      "choices": [
+        "nettoient",
+        "nettoyent",
+        "nettoie"
+      ],
+      "answer": "nettoient",
+      "hint": "Devant un e muet, le y devient i.",
+      "explanation": "Nettoyer change son y en i devant un e muet : ils nettoient. « Nettoie » est au singulier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes dont le radical change",
+          "lines": [
+            "appeler, jeter : deux l ou deux t devant un e muet (je jette, nous jetons).",
+            "acheter, geler : è devant un e muet (il gèle, nous gelons).",
+            "nettoyer, envoyer : y devient i devant un e muet (j’envoie, nous envoyons).",
+            "venir, prendre, pouvoir : le radical change avec la personne (je tiens, ils tiennent).",
+            "Impératif : va, mais vas-y ; aie et sois (avoir, être)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-2-3",
+      "prompt": "Mes cousins … nous voir dimanche.",
+      "spoken": "Mes cousins  (mot manquant)  nous voir dimanche.",
+      "choices": [
+        "venent",
+        "viennent",
+        "vienent"
+      ],
+      "answer": "viennent",
+      "hint": "Venir, comme tenir : ils tiennent.",
+      "explanation": "Au présent, venir change de radical : nous venons, mais ils viennent, avec deux n.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes dont le radical change",
+          "lines": [
+            "appeler, jeter : deux l ou deux t devant un e muet (je jette, nous jetons).",
+            "acheter, geler : è devant un e muet (il gèle, nous gelons).",
+            "nettoyer, envoyer : y devient i devant un e muet (j’envoie, nous envoyons).",
+            "venir, prendre, pouvoir : le radical change avec la personne (je tiens, ils tiennent).",
+            "Impératif : va, mais vas-y ; aie et sois (avoir, être)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-2-4",
+      "prompt": "Ils … le bus tous les matins.",
+      "spoken": "Ils  (mot manquant)  le bus tous les matins.",
+      "choices": [
+        "prennent",
+        "prenent",
+        "prendent"
+      ],
+      "answer": "prennent",
+      "hint": "Prendre perd son d au pluriel et double son n avec ils.",
+      "explanation": "Au présent : nous prenons, mais ils prennent, avec deux n et sans d.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes dont le radical change",
+          "lines": [
+            "appeler, jeter : deux l ou deux t devant un e muet (je jette, nous jetons).",
+            "acheter, geler : è devant un e muet (il gèle, nous gelons).",
+            "nettoyer, envoyer : y devient i devant un e muet (j’envoie, nous envoyons).",
+            "venir, prendre, pouvoir : le radical change avec la personne (je tiens, ils tiennent).",
+            "Impératif : va, mais vas-y ; aie et sois (avoir, être)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-2-5",
+      "prompt": "Les élèves ne … pas sortir avant la sonnerie.",
+      "spoken": "Les élèves ne  (mot manquant)  pas sortir avant la sonnerie.",
+      "choices": [
+        "peut",
+        "pouvent",
+        "peuvent"
+      ],
+      "answer": "peuvent",
+      "hint": "Le sujet est au pluriel. Pouvoir change de radical : je peux, ils …",
+      "explanation": "Pouvoir : je peux, nous pouvons, ils peuvent. « Peut » est au singulier, « pouvent » n’existe pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes dont le radical change",
+          "lines": [
+            "appeler, jeter : deux l ou deux t devant un e muet (je jette, nous jetons).",
+            "acheter, geler : è devant un e muet (il gèle, nous gelons).",
+            "nettoyer, envoyer : y devient i devant un e muet (j’envoie, nous envoyons).",
+            "venir, prendre, pouvoir : le radical change avec la personne (je tiens, ils tiennent).",
+            "Impératif : va, mais vas-y ; aie et sois (avoir, être)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-2-6",
+      "prompt": "La porte est ouverte : …-y tout de suite !",
+      "spoken": "La porte est ouverte : (mot manquant) y tout de suite !",
+      "choices": [
+        "va",
+        "vas"
+      ],
+      "answer": "vas",
+      "hint": "Devant « y », l’impératif d’aller reprend un s.",
+      "explanation": "L’impératif d’aller est « va », mais devant « y », on ajoute un s qui s’entend : vas-y.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes dont le radical change",
+          "lines": [
+            "appeler, jeter : deux l ou deux t devant un e muet (je jette, nous jetons).",
+            "acheter, geler : è devant un e muet (il gèle, nous gelons).",
+            "nettoyer, envoyer : y devient i devant un e muet (j’envoie, nous envoyons).",
+            "venir, prendre, pouvoir : le radical change avec la personne (je tiens, ils tiennent).",
+            "Impératif : va, mais vas-y ; aie et sois (avoir, être)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-2-7",
+      "prompt": "… confiance en toi.",
+      "spoken": " (mot manquant)  confiance en toi.",
+      "choices": [
+        "Aies",
+        "Aie",
+        "Ai"
+      ],
+      "answer": "Aie",
+      "hint": "Impératif d’avoir : on parle à toi, sans s.",
+      "explanation": "L’impératif d’avoir est « aie », sans s. « Ai » est le présent, j’ai ; « aies » est le subjonctif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les verbes dont le radical change",
+          "lines": [
+            "appeler, jeter : deux l ou deux t devant un e muet (je jette, nous jetons).",
+            "acheter, geler : è devant un e muet (il gèle, nous gelons).",
+            "nettoyer, envoyer : y devient i devant un e muet (j’envoie, nous envoyons).",
+            "venir, prendre, pouvoir : le radical change avec la personne (je tiens, ils tiennent).",
+            "Impératif : va, mais vas-y ; aie et sois (avoir, être)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

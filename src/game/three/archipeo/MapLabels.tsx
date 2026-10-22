@@ -8,7 +8,7 @@
 // sur la colonne des accès directs ou un bouton (`layoutMapLabels`, world/continu/map.ts) ; trop serrée, une pastille
 // se serre, son nom sur deux lignes ; sans aucune place près de son lieu, elle se réduit à son icône. Les tailles sont
 // relues seulement quand une étiquette change de taille (police, grand texte), jamais à chaque image.
-import { useCallback, useEffect, useLayoutEffect, useRef, type MutableRefObject } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, type MutableRefObject, type ReactNode } from 'react';
 import { Icon } from '../../../components/Icon';
 import { estLieuDOption, getBiome } from '../../biomes';
 import { islandStateIcon, type IslandStateId } from '../../world/islandState';
@@ -109,12 +109,12 @@ const ONE_LINE = 12;
  * de 12 `ch` : au plus grand texte, l'espacement des lettres d'OpenDyslexic la débordait, et « Le Chantier naval » y
  * passait sur trois lignes) ; à la suite, sur une ligne, sinon (openWorld.css).
  */
-function Name({ text, wrap = false, up = false, option = false }: { text: string; wrap?: boolean; up?: boolean; option?: boolean }) {
+function Name({ text, wrap = false, up = false, option = false, mark }: { text: string; wrap?: boolean; up?: boolean; option?: boolean; mark?: ReactNode }) {
   const lines = nameLines(text);
   return (
     <span className="open-world-map-lines" data-lignes={wrap && text.length > ONE_LINE ? '2' : '1'}>
       {lines.map((line, i) => {
-        const last = i === lines.length - 1 && (up || option);
+        const last = i === lines.length - 1 && (up || option || mark !== undefined);
         // Le dernier mot et ses signes, d'un bloc : aucun retour à la ligne entre eux.
         const cut = last ? line.lastIndexOf(' ') + 1 : line.length;
         return (
@@ -128,6 +128,7 @@ function Name({ text, wrap = false, up = false, option = false }: { text: string
                 {line.slice(cut)}
                 {up && <Up />}
                 {option && <OptionFlag />}
+                {mark}
               </span>
             )}
           </span>
@@ -136,6 +137,18 @@ function Name({ text, wrap = false, up = false, option = false }: { text: string
     </span>
   );
 }
+
+/**
+ * L'icône de l'état d'un lieu ouvert : à côté de son nom (dans son coin, dans la pastille réduite), ou collée à son
+ * dernier mot (`glued`), celle que montre la forme serrée au 4e (openWorld.css). Au 4e, sa place est gardée dès la ruine,
+ * l'icône « à explorer » invisible : aucun nom ne grandit quand son lieu passe en chantier ou est restauré, et son côté
+ * reste le même (retouche 3 des Coteaux, consultant UX UI : « La Basilique » passait de dessous à au-dessus).
+ */
+const StateIcon = ({ state, glued = false }: { state: IslandStateId | null; glued?: boolean }) => (
+  <span className={`open-world-map-state${glued ? ' open-world-map-state-glued' : ''}`} data-etat={state ?? 'a-explorer'} aria-hidden="true">
+    <Icon name={islandStateIcon(state ?? 'a-explorer')} />
+  </span>
+);
 
 /** Le triangle « en haut », dessiné en CSS (openWorld.css), jamais une couleur seule : sa forme le dit, le bouton le lit. */
 const Up = () => <span className="open-world-map-up" aria-hidden="true" />;
@@ -183,7 +196,7 @@ const KEO_LABEL = 'Toi : Kéo est ici';
 
 export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onClosed, orderLabel, suggested = null, nextPlace = null, states, words, portName, upper = [], landNames = false, onCrowded, snug = false }: Props) {
   const root = useRef<HTMLDivElement>(null);
-  const sizes = useRef(new Map<string, { w: number; h: number; narrow?: { w: number; h: number } }>());
+  const sizes = useRef(new Map<string, { w: number; h: number; pad?: number; narrow?: { w: number; h: number; pad?: number } }>());
   const last = useRef<readonly MapSpotOnScreen[]>([]);
   // La Carte glisse-t-elle (la dernière pose demandée par la scène) : une étiquette qui se montre ou se cache pendant un
   // glisser ne relance pas la reprise.
@@ -227,7 +240,9 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       const next = snugRef.current.on && kind === 'open' && s.id === snugRef.current.next;
       // Un lieu d'une terre fermée : Kéo peut couvrir son nom pâle, jamais celui d'un lieu ouvert.
       const pale = kind === 'open' && s.id !== 'port' && !openPlaces.includes(s.id as PlaceId);
-      const item: MapLabel = { id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, first: s.id === 'port' || next, ...(pale ? { pale: true as const } : {}), ...(below ? { below } : {}), ...(above ? { above } : {}), ...(side ? { side } : {}), ...(kind === 'open' && s.pinned ? { pinned: true as const } : {}), ...(size.narrow ? (kind === 'keo' ? { stacked: size.narrow } : { narrow: size.narrow }) : {}) };
+      // Au 4e, Kéo ne couvre aucun nom, même pâle (retouche 1 des Coteaux : « Toi » cachait « Les Coteaux » fermés).
+      const bare = kind === 'keo' && snugRef.current.on;
+      const item: MapLabel = { id: s.id, kind, x: s.x, y: s.y, w: size.w, h: size.h, ...(size.pad ? { pad: size.pad } : {}), first: s.id === 'port' || next, ...(bare ? { keepNames: true as const } : {}), ...(snugRef.current.on && kind === 'open' ? { leader: true as const } : {}), ...(pale ? { pale: true as const } : {}), ...(below ? { below } : {}), ...(above ? { above } : {}), ...(side ? { side } : {}), ...(kind === 'open' && s.pinned ? { pinned: true as const } : {}), ...(size.narrow ? (kind === 'keo' ? { stacked: size.narrow } : { narrow: size.narrow }) : {}) };
       if (next) items.unshift(item);
       else items.push(item);
     }
@@ -345,7 +360,12 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
     };
     // Une pastille de lieu ouvert, ou un lieu fermé, se mesure entière et serrée, quelle que soit sa forme du moment (sa
     // forme est remise aussitôt, avant que la page se dessine).
-    const measure = (node: HTMLElement): { w: number; h: number; narrow?: { w: number; h: number } } => {
+    // La marge du cadre d'un nom (son bord et son retrait, à gauche) : la seule part que la pastille de Kéo peut couvrir au 4e.
+    const padOf = (node: HTMLElement): number => {
+      const style = getComputedStyle(node);
+      return parseFloat(style.paddingLeft) + parseFloat(style.borderLeftWidth) || 0;
+    };
+    const measure = (node: HTMLElement): { w: number; h: number; pad?: number; narrow?: { w: number; h: number; pad?: number } } => {
       // Kéo se mesure « Toi » à côté de sa pastille, et dessous (sa forme empilée, gardée dans `narrow`).
       if (node.classList.contains('open-world-map-keo')) {
         const was = node.dataset.toi;
@@ -360,9 +380,9 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
       if (!node.classList.contains('open-world-map-place') && !node.classList.contains('open-world-map-closed')) return { w: node.offsetWidth, h: node.offsetHeight };
       const was = node.dataset.nom;
       node.dataset.nom = 'oui';
-      const whole = { w: node.offsetWidth, h: node.offsetHeight };
+      const whole = { w: node.offsetWidth, h: node.offsetHeight, pad: padOf(node) };
       node.dataset.nom = 'serre';
-      const narrow = { w: node.offsetWidth, h: node.offsetHeight };
+      const narrow = { w: node.offsetWidth, h: node.offsetHeight, pad: padOf(node) };
       if (was === undefined) delete node.dataset.nom;
       else node.dataset.nom = was;
       return { ...whole, narrow };
@@ -393,7 +413,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
 
 
   return (
-    <div ref={root} className="open-world-map-places">
+    <div ref={root} className={`open-world-map-places${snug ? ' snug' : ''}`}>
       {snug && <svg ref={leads} className="open-world-map-leads" aria-hidden="true" />}
       <span className="open-world-map-keo" data-lieu="keo" role="img" aria-label={KEO_LABEL} hidden>
         <span className="open-world-map-keo-disc" aria-hidden="true">
@@ -453,7 +473,10 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
             onClick={() => onPick(p.id)}
           >
             <span className="open-world-map-place-name">
-              <Name text={p.name} wrap up={upper.includes(p.id)} option={isOption(p)} />
+              {/* Au 4e (`snug`), dans la forme serrée, l'icône de l'état collée au dernier mot (retouche 2 des Coteaux, consultant
+                  UX UI : « ✓ » restait seul sur la troisième ligne de « La Basilique ») ; ailleurs, celle d'à côté, et au 5e et
+                  au 6e, dessous, comme avant (retouche 3 : leurs étiquettes ne changent pas ; openWorld.css). */}
+              <Name text={p.name} wrap up={upper.includes(p.id)} option={isOption(p)} mark={snug ? <StateIcon state={states[p.id] ?? null} glued /> : undefined} />
             </span>
             {/* Dans la pastille réduite seulement, l'icône propre du lieu (celle de son île) : deux lieux ouverts réduits ne
                 se confondent pas ; l'état y passe en petit insigne, dans son coin (relecture du rivage sud). */}
@@ -464,9 +487,7 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
             {/* L'état de sa construction, à côté de son nom (dessous dans la pastille serrée) : une icône, jamais la couleur
                 seule ; son mot, accordé, est dit par le bouton. Sans état, l'icône « à explorer » ne se montre que dans la pastille
                 réduite. */}
-            <span className="open-world-map-state" data-etat={states[p.id] ?? 'a-explorer'} aria-hidden="true">
-              <Icon name={islandStateIcon(states[p.id] ?? 'a-explorer')} />
-            </span>
+            <StateIcon state={states[p.id] ?? null} />
           </button>
         );
       })}

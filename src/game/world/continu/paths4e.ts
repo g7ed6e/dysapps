@@ -9,7 +9,7 @@ import { distance, type Vec2 } from './geometry';
 import type { LinkedLand } from './lands';
 import { createNetwork } from './network';
 import { BRIDGE_ABUT } from './plan6e';
-import { COLORS_4E, CRIQUE, CRIQUE_PAD, LINKS_4E, PATH_EDGES_4E, PATH_NODES_4E, RAILS_4E, RIGOLE_4E, criqueFloor, type Cut4e } from './plan4e';
+import { COLORS_4E, CRIQUE, CRIQUE_PAD, JONCTION_TRACK_4E, LINKS_4E, PATH_EDGES_4E, PATH_NODES_4E, RAILS_4E, RIGOLE_4E, criqueFloor, type Cut4e } from './plan4e';
 import { networkRibbons, type RibbonNet } from './paths';
 import { standingHeight } from './terrain';
 import { bassinClearance, couleeClearance, ravinClearance } from './terrain4e';
@@ -76,7 +76,8 @@ export const RIBBONS_4E: RibbonNet = {
 /**
  * La ligne de rails en masses (fiche, § 5 ; lot 1) : un ballast brun, deux rails de fer rouillé, une traverse de bois
  * tous les `sleeper` unités ; au bout de la ligne, contre la halle de l'Étalon, le butoir de la Forge (un bloc de bois
- * cerclé de cuivre) ; au bout des deux voies de service de la Jonction, un heurtoir. Ni benne ni aiguillage au lot 1.
+ * cerclé de cuivre). Les heurtoirs des deux voies de service, la plaque tournante et le tronçon du rail tordu sont à la
+ * Jonction (./jonction4e.ts, `JONCTION_TRACK_4E`), pour que sa ruine et ses étapes les changent. Ni benne au lot 1.
  * Les rails s'arrêtent au bout des culées des ponts (`railCut`) : le pont, posé, les porte de rive à rive (l'arche de
  * l'Épaule, lot 3). Le ballast et les rails sont des bandes continues, par pans de `piece` unités qui suivent le sol
  * (retouche 1 du lot 1, expert frontend : un pavé par traverse coûtait deux fois plus) ; seules les traverses se
@@ -111,8 +112,24 @@ function strip(b: FacetBuilder, p: Vec2, q: Vec2, yp: number, yq: number, off: n
   for (const s of [-1, 1]) quadFacing(b, at(p, yp, s * half, -foot), at(q, yq, s * half, -foot), at(q, yq, s * half, top), at(p, yp, s * half, top), [nx * s, 0, nz * s], side);
 }
 
-/** Les rails d'une ligne, sur le sol `ground` : le ballast et deux rails par pans, une traverse par pas ; rien sous un pont. */
-function railLine(b: FacetBuilder, line: readonly Vec2[], ground: (x: number, z: number) => number): void {
+/**
+ * Ce que le dessin des rails laisse au lieu, à `d` unités du début d'une ligne : tout (`tout` : ni ballast, ni rails, ni
+ * traverses), les rails et les traverses seulement (`rails`), ou rien.
+ */
+type RailSkip = (d: number) => 'tout' | 'rails' | null;
+
+/** Ce que la Jonction dessine elle-même sur une de ses voies de service (`JONCTION_TRACK_4E`). */
+function sidingSkip(siding: number): RailSkip {
+  const { plaque, twisted } = JONCTION_TRACK_4E;
+  return (d) => {
+    if (plaque.siding === siding && Math.abs(d - plaque.d) < plaque.pit) return 'tout';
+    if (twisted.siding === siding && d > twisted.from && d < twisted.to) return 'rails';
+    return null;
+  };
+}
+
+/** Les rails d'une ligne, sur le sol `ground` : le ballast et deux rails par pans, une traverse par pas ; rien sous un pont, ni où le lieu dessine (`skip`). */
+function railLine(b: FacetBuilder, line: readonly Vec2[], ground: (x: number, z: number) => number, skip: RailSkip = () => null): void {
   const R = RAILS_LOOK_4E;
   const yOf = (p: Vec2) => standingHeight(ground(p.x, p.z)) + R.lift;
   for (let i = 1; i < line.length; i++) {
@@ -122,11 +139,18 @@ function railLine(b: FacetBuilder, line: readonly Vec2[], ground: (x: number, z:
     const yaw = Math.atan2(c.x - a.x, c.z - a.z);
     const along = (d: number): Vec2 => ({ x: a.x + ((c.x - a.x) * d) / len, z: a.z + ((c.z - a.z) * d) / len });
     // Le ballast et les rails, par pans : un pan hors d'un pont ; celui qui y entre, coupé au bout de la culée (lot 3,
-    // l'Épaule : les rails de l'arche reliée en repartent, la ligne se lit d'un seul tenant).
+    // l'Épaule : les rails de l'arche reliée en repartent, la ligne se lit d'un seul tenant) ; coupé aussi aux bords de ce
+    // que le lieu dessine.
     const n = Math.max(1, Math.ceil(len / R.piece));
-    for (let k = 0; k < n; k++) {
-      let s0 = (len * k) / n,
-        s1 = (len * (k + 1)) / n;
+    const cutsAt = [...Array.from({ length: n + 1 }, (_, k) => (len * k) / n)];
+    if (i === 1) {
+      const { plaque, twisted } = JONCTION_TRACK_4E;
+      for (const d of [plaque.d - plaque.pit, plaque.d + plaque.pit, twisted.from, twisted.to]) if (d > 0 && d < len && skip(d - 1e-3) !== skip(d + 1e-3)) cutsAt.push(d);
+    }
+    cutsAt.sort((u, v) => u - v);
+    for (let k = 0; k < cutsAt.length - 1; k++) {
+      let s0 = cutsAt[k],
+        s1 = cutsAt[k + 1];
       const cut0 = railCut(along(s0)),
         cut1 = railCut(along(s1));
       if (cut0 && cut1) continue;
@@ -134,7 +158,7 @@ function railLine(b: FacetBuilder, line: readonly Vec2[], ground: (x: number, z:
         // Le bout de la culée, par dichotomie : `free` hors du pont, `held` dessous.
         let free = cut0 ? s1 : s0,
           held = cut0 ? s0 : s1;
-        for (let i = 0; i < 14; i++) {
+        for (let t = 0; t < 14; t++) {
           const m = (free + held) / 2;
           if (railCut(along(m))) held = m;
           else free = m;
@@ -144,42 +168,42 @@ function railLine(b: FacetBuilder, line: readonly Vec2[], ground: (x: number, z:
       }
       const p = along(s0),
         q = along(s1);
+      const left = i === 1 ? skip((s0 + s1) / 2) : null;
+      if (left === 'tout') continue;
       const yp = yOf(p),
         yq = yOf(q);
       strip(b, p, q, yp, yq, 0, R.ballast, R.ballastTop, R.ballastFoot, COLORS_4E.ballast, COLORS_4E.ballast);
+      if (left === 'rails') continue;
       for (const side of [-1, 1]) strip(b, p, q, yp + R.ballastTop + 0.08, yq + R.ballastTop + 0.08, (side * R.gauge) / 2, R.rail / 2, R.rail, 0, COLORS_4E.rustShade, COLORS_4E.rust);
     }
     // Les traverses, une par pas.
     const m = Math.max(1, Math.ceil(len / R.sleeper));
     for (let k = 0; k < m; k++) {
       const p = along((len * (k + 0.5)) / m);
-      if (railCut(p)) continue;
+      if (railCut(p) || (i === 1 && skip((len * (k + 0.5)) / m))) continue;
       b.box({ x: p.x, y: yOf(p) + R.ballastTop, z: p.z, yaw }, [R.sleeperLength, 0.08, 0.32], COLORS_4E.woodShade, COLORS_4E.wood);
     }
   }
 }
 
-/** Un bloc d'arrêt au bout d'une voie (`end`, la voie venant de `from`) : le butoir de la Forge, un heurtoir de la Jonction. */
-function stopBlock(b: FacetBuilder, from: Vec2, end: Vec2, ground: (x: number, z: number) => number, big: boolean): void {
+/** Le butoir de la Forge, au bout de la ligne (`end`, la voie venant de `from`). */
+function stopBlock(b: FacetBuilder, from: Vec2, end: Vec2, ground: (x: number, z: number) => number): void {
   const yaw = Math.atan2(end.x - from.x, end.z - from.z);
   const y = standingHeight(ground(end.x, end.z)) + RAILS_LOOK_4E.lift + RAILS_LOOK_4E.ballastTop;
-  const w = big ? 1.6 : 1.2;
-  const h = big ? 1.1 : 0.75;
+  const w = 1.6;
+  const h = 1.1;
   b.box({ x: end.x, y, z: end.z, yaw }, [w, h, 0.7], COLORS_4E.woodShade, COLORS_4E.wood);
   b.box({ x: end.x, y: y + h * 0.55, z: end.z, yaw }, [w + 0.06, 0.16, 0.76], COLORS_4E.rustShade);
 }
 
-/** Les rails du 4e : la ligne, son embranchement, ses deux voies de service, le butoir et les heurtoirs. */
+/** Les rails du 4e : la ligne, son embranchement, ses deux voies de service (sauf ce que la Jonction dessine), le butoir. */
 function railFacets4e(ground: (x: number, z: number) => number): Facets {
   const b = new FacetBuilder();
   railLine(b, RAILS_4E.line, ground);
   railLine(b, RAILS_4E.branch, ground);
   const line = RAILS_4E.line;
-  stopBlock(b, line[line.length - 2], line[line.length - 1], ground, true);
-  for (const siding of RAILS_4E.sidings) {
-    railLine(b, siding, ground);
-    stopBlock(b, siding[0], siding[siding.length - 1], ground, false);
-  }
+  stopBlock(b, line[line.length - 2], line[line.length - 1], ground);
+  RAILS_4E.sidings.forEach((siding, k) => railLine(b, siding, ground, sidingSkip(k)));
   return b.build();
 }
 

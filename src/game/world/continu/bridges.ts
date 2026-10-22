@@ -19,6 +19,7 @@ import { COLORS_5E, LINKS_5E } from './plan5e';
 import type { StraitId } from './plan6e';
 import { heightAt, standingHeight, straitClearance } from './terrain';
 import { heightAt4e } from './terrain4e';
+import { ravinDeckAt, ravinFallen, ravinFloor, ravinLanternPlace, ravinParts, ravinRest } from './ravinBridge4e';
 import { channelClearance, heightAt5e } from './terrain5e';
 
 /**
@@ -240,6 +241,12 @@ export function bridgeFloor(x: number, z: number, closed: readonly LinkedLand[],
       top = top === null ? y : Math.max(top, y);
       continue;
     }
+    if (isRavinArch(land)) {
+      // Le pont du ravin (les Coteaux du 4e) : son tablier se règle sur les berges, son dallage au sud de la ligne.
+      const y = ravinFloor(s, d, -dx * s.dir.z + dz * s.dir.x, !closed.includes(land));
+      if (y !== null) top = top === null ? y : Math.max(top, y);
+      continue;
+    }
     if (d < s.abut[0] || d > s.abut[1]) continue;
     // L'arche de l'Épaule reliée : tout le tablier entre ses parapets, la voie comme le chemin, culées comprises.
     const arch = isBasaltArch(land) && !closed.includes(land);
@@ -430,6 +437,7 @@ export interface BridgeParts {
  * et les lanternes y sont posés.
  */
 export function bridgeSurface(s: BridgeSite, d: number): number {
+  if (isRavinArch(s.land)) return ravinDeckAt(s, d);
   return d <= s.water[0] + BRIDGE.over ? abutTop(s, 0, d) : d >= s.water[1] - BRIDGE.over ? abutTop(s, 1, d) : BRIDGE.deck;
 }
 
@@ -451,11 +459,13 @@ function abutmentFacets(s: BridgeSite, arches: boolean): Facets {
 export const bridgeLayRest = (land: LinkedLand): Facets =>
   isCabin(land)
     ? cabinStations(bridgeSite(land))
-    : isSwing(land)
-    ? mergeFacets([abutmentFacets(bridgeSite(land), false), swingDrum(bridgeSite(land))])
-    : isBasaltArch(land)
-    ? archAbutments(bridgeSite(land))
-    : abutmentFacets(bridgeSite(land), true);
+    : isRavinArch(land)
+      ? ravinRest(bridgeSite(land))
+      : isSwing(land)
+        ? mergeFacets([abutmentFacets(bridgeSite(land), false), swingDrum(bridgeSite(land))])
+        : isBasaltArch(land)
+          ? archAbutments(bridgeSite(land))
+          : abutmentFacets(bridgeSite(land), true);
 
 /**
  * Les garde-corps d'un pont, d'une culée à l'autre : des poteaux de section `t` tous les `step` au plus, une main courante
@@ -488,22 +498,33 @@ function railings(b: FacetBuilder, s: BridgeSite, step: number, t: number, color
  * ponts du 4e, convenue entre les fils le 22 octobre 2026), `lit` : le pont relié a ses lanternes allumées, le verre
  * d'ocre des lieux du 4e, fixe, sans clignotement ni halo ; le pont pas encore relié n'en a pas (elles montent du
  * tablier à la pose, déjà de leur couleur). `place`, quand le pont n'a pas de garde-corps : le mât à `v` de chaque côté de
- * la ligne, aux deux `d`, son pied `foot` au-dessus du dessus du pont (l'arche de l'Épaule : sur le chaperon des parapets).
+ * la ligne (ou aux deux `v` donnés), aux deux `d`, son pied `foot` au-dessus du dessus du pont, haut de `mast` (1,6 sinon) :
+ * l'arche de l'Épaule, sur le chaperon des parapets ; le pont du ravin (les Coteaux, ./ravinBridge4e.ts), sur un mât
+ * court, sur le dé de pierre d'un bout de parapet (`ravinLanternPlace`).
  */
-function lanterns(b: FacetBuilder, s: BridgeSite, iron: number, lit: boolean, place?: { v: number; d: readonly [number, number]; foot: number }): void {
+/** Où se dressent les lanternes d'un pont sans garde-corps (voir `lanterns`). */
+export interface LanternPlace {
+  readonly v: number | readonly [number, number];
+  readonly d: readonly [number, number];
+  readonly foot: number;
+  readonly mast?: number;
+}
+
+function lanterns(b: FacetBuilder, s: BridgeSite, iron: number, lit: boolean, place?: LanternPlace): void {
   const at = frame(s);
   const yaw = Math.atan2(s.dir.x, s.dir.z);
   const side = place?.v ?? BRIDGE.railOut + 0.35;
+  const m = place?.mast ?? 1.6;
   for (const d of place?.d ?? [s.abut[0] + 0.5, s.abut[1] - 0.5])
-    for (const v of [-side, side]) {
+    for (const v of typeof side === 'number' ? [-side, side] : side) {
       const p = at(d, v);
       const y = bridgeSurface(s, d) + (place?.foot ?? 0);
-      b.box({ x: p.x, y, z: p.z, yaw }, [0.14, 1.6, 0.14], iron);
-      b.box({ x: p.x, y: y + 1.6, z: p.z, yaw }, [0.46, 0.08, 0.46], iron);
-      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.36, 0.44, 0.36], lit ? C.lit : C.glass);
-      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.42, 0.44, 0.07], iron);
-      b.box({ x: p.x, y: y + 1.68, z: p.z, yaw }, [0.07, 0.44, 0.42], iron);
-      b.prism({ x: p.x, y: y + 2.12, z: p.z, yaw: yaw + Math.PI / 4 }, 0.36, 0, 0.32, 4, iron);
+      b.box({ x: p.x, y, z: p.z, yaw }, [0.14, m, 0.14], iron);
+      b.box({ x: p.x, y: y + m, z: p.z, yaw }, [0.46, 0.08, 0.46], iron);
+      b.box({ x: p.x, y: y + m + 0.08, z: p.z, yaw }, [0.36, 0.44, 0.36], lit ? C.lit : C.glass);
+      b.box({ x: p.x, y: y + m + 0.08, z: p.z, yaw }, [0.42, 0.44, 0.07], iron);
+      b.box({ x: p.x, y: y + m + 0.08, z: p.z, yaw }, [0.07, 0.44, 0.42], iron);
+      b.prism({ x: p.x, y: y + m + 0.52, z: p.z, yaw: yaw + Math.PI / 4 }, 0.36, 0, 0.32, 4, iron);
     }
 }
 
@@ -517,6 +538,13 @@ export function bridgeParts(land: LinkedLand): BridgeParts {
   if (isCabin(land)) return cabinParts(s);
   if (isSwing(land)) return swingParts(s);
   if (isBasaltArch(land)) return archParts(s);
+  if (isRavinArch(land)) {
+    // Le pont du ravin : son arche, son tablier et ses parapets (./ravinBridge4e.ts), puis les lanternes communes des ponts.
+    const parts = ravinParts(s);
+    const b = new FacetBuilder();
+    lanterns(b, s, C.iron, isLand4e(land), ravinLanternPlace(s));
+    return { ...parts, rails: mergeFacets([parts.rails, b.build()]) };
+  }
   const at = frame(s);
   const yaw = Math.atan2(s.dir.x, s.dir.z);
   const pileTop = BRIDGE.deck - BRIDGE.plank - 0.24;
@@ -578,6 +606,11 @@ export function bridgeFacets(land: LinkedLand, built: boolean, car: CabinCar = '
     if (!built) return mergeFacets([abutmentFacets(s, false), swingDrum(s), swingRuin(s), swingRuinRails(s)]);
     const parts = bridgeParts(land);
     return mergeFacets([abutmentFacets(s, false), swingDrum(s), parts.deck, parts.rails]);
+  }
+  if (isRavinArch(land)) {
+    if (!built) return ravinFallen(s);
+    const parts = bridgeParts(land);
+    return mergeFacets([ravinRest(s), ...parts.piles, parts.deck, parts.rails]);
   }
   if (built) {
     const parts = bridgeParts(land);
@@ -790,6 +823,19 @@ function swingParts(s: BridgeSite): BridgeParts {
   railings(b, s, SWING.post, 0.12, SWING_IRON.iron);
   lanterns(b, s, SWING_IRON.iron, true);
   return { piles: [], deck: swingDeck(s, false), rails: b.build() };
+}
+
+/** Le passage d'une terre est-il le pont de pierre en arche du ravin (au 4e, les Coteaux : ./ravinBridge4e.ts) ? */
+const isRavinArch = (land: LinkedLand): boolean => isLand4e(land) && LINKS_4E[land].cut === 'ravin';
+
+/**
+ * La hauteur du tablier d'un pont à `d` unités de `near` sur sa ligne (son milieu, sans `d`) : `BRIDGE.deck`, ou, au
+ * pont du ravin, le dessus réglé sur ses berges. Le cadenas, la cible de toucher et le cadre de la caméra s'y posent.
+ */
+export function bridgeDeck(land: LinkedLand, d?: number): number {
+  if (!isRavinArch(land)) return BRIDGE.deck;
+  const s = bridgeSite(land);
+  return ravinDeckAt(s, d ?? (s.water[0] + s.water[1]) / 2);
 }
 
 /** Le passage d'une terre est-il l'arche de basalte de la coulée (au 4e) ? */
@@ -1045,7 +1091,7 @@ const STUMPS = [
 export const STUMP_TOP = (STUMPS[0].corners.reduce((a, c) => a + c, 0) + STUMPS[1].corners.reduce((a, c) => a + c, 0)) / 8;
 
 /** Les piles d'un pont qui prennent la place d'un moignon : la première et la dernière. */
-export const stumpPile = (land: LinkedLand, k: number): boolean => !isBasaltArch(land) && (k === 0 || k === pilesOf(bridgeSite(land)).length - 1);
+export const stumpPile = (land: LinkedLand, k: number): boolean => !isBasaltArch(land) && !isRavinArch(land) && (k === 0 || k === pilesOf(bridgeSite(land)).length - 1);
 
 /**
  * Le pont sur la Carte (référent dys : la coupure bleue nette, et le pont en trait double, d'une autre forme que le
@@ -1058,7 +1104,7 @@ export function bridgeMapMark(land: LinkedLand): Facets {
   const at = frame(s);
   // La cabine monte : son trait suit son rail, levé de même.
   const cabin = isCabin(land);
-  const yAt = (d: number) => (cabin ? cabinRail(s, Math.min(s.abut[1], Math.max(s.abut[0], d))) : BRIDGE.deck) + 1.5;
+  const yAt = (d: number) => (cabin ? cabinRail(s, Math.min(s.abut[1], Math.max(s.abut[0], d))) : bridgeDeck(land, d)) + 1.5;
   const strip = (v: number, half: number, lift: number, color: number) => {
     const d0 = s.abut[0] - half * 0.5;
     const d1 = s.abut[1] + half * 0.5;

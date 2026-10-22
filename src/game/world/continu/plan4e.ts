@@ -187,9 +187,9 @@ interface PlaceSpec extends Omit<OpenPlace<PlaceId4e>, 'center' | 'door' | 'scen
 
 /**
  * Les seize lieux (fiche, § 4), à leur place sur le plan. L'Étalon et la Jonction sont nouveaux : leurs missions
- * s'écrivent avec leur lot, dans un lieu du monde ouvert seulement (GD-24) : l'Étalon (`maths-4e-data`) a les siennes ;
- * la Jonction (`french-4e-sentence`) n'existe pas encore dans le contenu, et son panneau reste vide d'ici là. Seules les
- * missions des lieux construits (`BUILT_PLACES_4E`) se jouent en scénette ; les autres passent par l'écran habituel.
+ * s'écrivent avec leur lot, dans un lieu du monde ouvert seulement (GD-24) : l'Étalon (`maths-4e-data`) et la Jonction
+ * (`french-4e-sentence`) ont les leurs. Seules les missions des lieux construits (`BUILT_PLACES_4E`) se jouent en
+ * scénette ; les autres passent par l'écran habituel.
  */
 const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'forge', name: 'La Forge', at: 'à la Forge', agree: 'fs', island: 'maths-4e-powers', plan: [1000, 545], door: { x: 6, z: 11 } },
@@ -200,7 +200,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'manufacture', name: 'La Manufacture', at: 'à la Manufacture', agree: 'fs', island: 'history-4e-revolutions', plan: [1640, 610], door: { x: 0, z: 8 } },
   { id: 'loge', name: 'La Loge', at: 'à la Loge', agree: 'fs', island: 'english-4e-comprehension', plan: [1740, 790], door: { x: 0, z: -8 } },
   { id: 'chariot', name: 'Le Chariot', at: 'au Chariot', agree: 'ms', island: 'technology-4e-modeling', plan: [1610, 735], door: { x: 3, z: 7 } },
-  { id: 'herbier', name: 'L’Herbier', at: 'à l’Herbier', agree: 'ms', island: 'life-earth-sciences-4e-cells-evolution', plan: [520, 790], door: { x: 0, z: -8 } },
+  { id: 'herbier', name: 'L’Herbier', at: 'à l’Herbier', agree: 'ms', island: 'life-earth-sciences-4e-cells-evolution', plan: [520, 790], door: { x: 6, z: -6 } },
   { id: 'roches', name: 'Les Roches', at: 'aux Roches', agree: 'fp', island: 'french-4e-vocabulary', plan: [560, 460], door: { x: 7, z: 4 } },
   { id: 'jonction', name: 'La Jonction', at: 'à la Jonction', agree: 'fs', island: 'french-4e-sentence', plan: [690, 585], door: { x: 4, z: -7 } },
   { id: 'veillee', name: 'La Veillée', at: 'à la Veillée', agree: 'fs', island: 'lv2-4e-daily-life', plan: [230, 580], door: { x: 6, z: 5 } },
@@ -218,7 +218,8 @@ const TOUCH_RADIUS = 7;
  * consultant UX UI) : sous son point le plus souvent ; à droite pour l'Étalon (« Toi », devant la Forge, reste libre) et
  * la Manufacture (hors du bassin à flot) ; à gauche pour le Terminus (le bord nord reste libre) et le Chariot (la
  * grappe du Bastion se desserre) ; les Orgues d'abord à gauche, la Dynamo à droite, vers la mer (chaque étiquette laisse voir le cœur et le
- * trait de l'autre, retouche 1 de l'Épaule) ; la Jonction sous son point, hors du pont du ravin.
+ * trait de l'autre, retouche 1 de l'Épaule) ; la Jonction sous son point, hors du pont du ravin (épinglée, `MAP_PINNED_4E` :
+ * retouche 1 des Coteaux).
  */
 const MAP_SIDES_4E: Readonly<Record<PlaceId4e, 'below' | 'left' | 'right'>> = {
   forge: 'below',
@@ -257,6 +258,13 @@ export const BUILT_PLACES_4E = {
   terminus: ['future', 'modals', 'present-perfect', 'traditions', 'forms'],
   orgues: ['past-participle', 'adjectives', 'subject-verb', 'reflexive-verbs', 'tense-meaning'],
   dynamo: ['light-sound', 'electric-circuits', 'chemical-reactions'],
+  herbier: ['cells-nutrition', 'heredity', 'species-evolution'],
+  roches: ['word-roots', 'meaning', 'nuances', 'conjunctions'],
+  jonction: ['relative-clauses', 'subordinate-clauses', 'passive-reported', 'compound-tenses', 'moods'],
+  // La Veillée, lieu d'option (comme l'Auberge au 5e) : les missions des deux langues ; chaque élève n'en compte qu'une.
+  veillee: ['es-time', 'es-my-day', 'es-timetable', 'es-ser-estar', 'es-signs', 'de-time', 'de-my-day', 'de-timetable', 'de-modals', 'de-signs'],
+  // La Basilique, lieu d'option (comme l'Oracle au 5e) : les missions du latin et du grec.
+  basilique: ['la-home', 'la-forum', 'la-mediterranean', 'gr-home', 'gr-agora', 'gr-mediterranean'],
 } as const satisfies Partial<Record<PlaceId4e, readonly string[]>>;
 
 /** Un lieu du 4e déjà construit. */
@@ -268,9 +276,10 @@ export const isBuiltPlace4e = (id: string): id is BuiltPlace4e => Object.hasOwn(
 /**
  * Sur la Carte, les lieux à disposition fixe (relecture UX UI de la retouche 1 de l'Épaule) : les trois lieux de
  * l'Épaule, serrés au pied du volcan, se posent avant les autres, toujours dans cet ordre, quelle que soit la sélection ;
- * aucune étiquette ne couvre leur point.
+ * aucune étiquette ne couvre leur point. Puis la Jonction (retouche 1 des Coteaux) : son nom se pose avant ceux des
+ * lieux d'alentour, hors du pont du ravin.
  */
-const MAP_PINNED_4E: readonly PlaceId4e[] = ['terminus', 'orgues', 'dynamo'];
+const MAP_PINNED_4E: readonly PlaceId4e[] = ['terminus', 'orgues', 'dynamo', 'jonction'];
 
 const SCENES_4E: Partial<Record<PlaceId4e, readonly string[]>> = BUILT_PLACES_4E;
 
@@ -504,13 +513,25 @@ export const RAILS_4E = {
   sidings: [poly([[700, 568], [640, 548]]), poly([[700, 568], [648, 628]])],
 } as const;
 
+/**
+ * Ce que la Jonction (./jonction4e.ts ; intention du directeur artistique du 22 octobre 2026, § 5) dessine elle-même sur
+ * ses voies de service, à la place du dessin des rails (./paths4e.ts) : la plaque tournante sur la première voie (son
+ * milieu, à `d` unités de l'aiguillage, le rayon de son tablier, celui de sa fosse ; ni ballast, ni rails, ni traverses
+ * du lot 1 sur elle) ; le tronçon du rail tordu de la ruine, sur la même voie, de `from` à `to` (le ballast reste, les
+ * rails et les traverses sont au lieu) ; les heurtoirs des deux voies. Les rails ne bougent pas.
+ */
+export const JONCTION_TRACK_4E = {
+  plaque: { siding: 0, d: 5.6, r: 1.45, pit: 1.75 },
+  twisted: { siding: 0, from: 9.0, to: 12.2 },
+} as const;
+
 /** Un point est-il à moins de `reach` unités d'un rail ? */
 export const nearRails4e = (p: Vec2, reach: number): boolean =>
   distanceToPolyline(p, RAILS_4E.line) < reach || distanceToPolyline(p, RAILS_4E.branch) < reach || RAILS_4E.sidings.some((s) => distanceToPolyline(p, s) < reach);
 
 /**
  * La place des Détours du 4e (fiche, § 5), réservée dès le plan : l'Épave (Fabriques), le Recoin (Bastion), le Replat
- * (Coteaux), la Dalle (Épaule). Ils se construisent avec leur lot (lot 2 : l'Épave, `EPAVE_4E` ; lot 3 : le Recoin, `RECOIN_4E`, et la Dalle, `DALLE_4E`).
+ * (Coteaux), la Dalle (Épaule). Ils se construisent avec leur lot (lot 2 : l'Épave, `EPAVE_4E` ; lot 3 : le Recoin, `RECOIN_4E`, et la Dalle, `DALLE_4E` ; les Coteaux : le Replat, `REPLAT_4E`).
  */
 export const DETOUR_SPOTS_4E = {
   epave: fromPlan4e([1060, 1060]),
@@ -594,6 +615,50 @@ export function inDalleClearing(p: Vec2): boolean {
   if (Math.hypot(p.x - DALLE_SLAB_AT.x, p.z - DALLE_SLAB_AT.z) < keep.slab || Math.hypot(p.x - at.x, p.z - at.z) < keep.at) return true;
   return distanceToPolyline(p, [senteFrom, at]) < keep.sente;
 }
+
+/**
+ * Le Détour du Replat (les Coteaux ; intention du directeur artistique du 22 octobre 2026, § 8), rattaché à la Veillée :
+ * `at`, là où Kéo s'arrête, sur l'épaule ouest du cône. La place réservée (`DETOUR_SPOTS_4E.replat`) cachait presque
+ * toute la Forge derrière le bas du flanc (mesuré : 1 % de sa hauteur au-dessus du flanc) ; l'intention le prévoyait (« le
+ * Replat descend le long de l'épaule vers le sud, de 8 u au plus ») : il descend de 7,2 u au sud-sud-est, d'où la Forge se
+ * voit entière, la Soute et la Porte aussi, l'Étalon à moitié. `senteFrom` : le départ de sa sente, sur le chemin de
+ * `cot-3` à la Veillée, aux trois quarts ; `ease` : le replat lui-même, plat autour de Kéo (./terrain4e.ts : la pente
+ * n'y est plus que `keep` fois celle d'avant jusqu'à `flat`, au-delà du muret, retouche 1 : à moitié, elle restait aussi
+ * raide à l'œil que le flanc ; puis jamais plus raide que `steep` fois la pente d'avant, pour rester marchable) ; `keep` :
+ * ce que la végétation laisse libre (autour de Kéo, le long de la sente).
+ */
+export const REPLAT_4E = (() => {
+  const node = (id: string) => PATH_NODES_4E.find((n) => n.id === id)!.at;
+  const [a, b] = [node('cot-3'), node('veillee')];
+  return {
+    at: { x: DETOUR_SPOTS_4E.replat.x + 4, z: DETOUR_SPOTS_4E.replat.z + 6 },
+    senteFrom: { x: a.x + (b.x - a.x) * 0.75, z: a.z + (b.z - a.z) * 0.75 },
+    ease: { flat: 4.6, keep: 0.06, steep: 1.2 },
+    keep: { at: 6, sente: 2.6 },
+  } as const;
+})();
+
+/** Ce point du monde est-il dans la place du Replat (Kéo, sa sente) ? */
+export function inReplatClearing(p: Vec2): boolean {
+  const { at, senteFrom, keep } = REPLAT_4E;
+  return Math.hypot(p.x - at.x, p.z - at.z) < keep.at || distanceToPolyline(p, [senteFrom, at]) < keep.sente;
+}
+
+/**
+ * La terrasse des Roches (les Coteaux, intention du directeur artistique du 22 octobre 2026, § 4 : « une salle basse
+ * adossée à la pente du cône ») : la salle est au pied du cône, sa porte sur la plaine ; le flanc, raide là (une pente
+ * d'environ 0,5), est entaillé jusqu'au niveau de la plaine sous la salle et son seuil, ses murs du fond et de l'ouest
+ * retenant la pente (./roches4e.ts). Deux rectangles (x d'ouest en est, z du nord au sud) : sous la salle, débordant
+ * ses murs d'une maille de la grille du sol et plus (pour que rien du flanc ne remonte dans la salle, le talus de la
+ * salle couvrant l'entaille derrière ses murs) ; sous son seuil, jusqu'au pied du muret. Le niveau du fond (`floor`, la
+ * plaine au pied du cône) et sur combien d'unités le bord remonte (`bank`). Elle ne fait que creuser (terrain4e.ts) : là
+ * où la plaine est déjà plus bas, rien ne change.
+ */
+export const ROCHES_TERRACE_4E = (() => {
+  const c = fromPlan4e(PLACE_SPECS.find((s) => s.id === 'roches')!.plan);
+  const rect = (x0: number, x1: number, z0: number, z1: number) => ({ x0: c.x + x0, x1: c.x + x1, z0: c.z + z0, z1: c.z + z1 });
+  return { rects: [rect(-2.0, 7.5, -2.0, 4.6), rect(-0.2, 7.5, 4.6, 6.5)], floor: 1.87, bank: 0.4 } as const;
+})();
 
 /** La place réservée des deux grands projets (GD-10) : le portique des docks, la tour des signaux (plan, en pointillé). */
 export const RESERVED_4E = {

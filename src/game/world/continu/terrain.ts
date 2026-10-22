@@ -491,9 +491,15 @@ function farHeights(f: HeightField): Float32Array {
 
 /**
  * Le terrain de loin abaissé sous les chemins d'un réseau (`nodes`, `edges`), `fine` donnant le sol de près : le même
- * calcul pour chaque niveau (le 5e, ./terrain5e.ts, GD-22).
+ * calcul pour chaque niveau (le 5e, ./terrain5e.ts, GD-22) ; `landFloor`, le plus bas où il abaisse une terre.
  */
-export function farHeightsOf(f: HeightField, pathNodes: readonly { id: string; at: Vec2 }[], pathEdges: readonly (readonly [string, string])[], fine: (x: number, z: number) => number): Float32Array {
+export function farHeightsOf(
+  f: HeightField,
+  pathNodes: readonly { id: string; at: Vec2 }[],
+  pathEdges: readonly (readonly [string, string])[],
+  fine: (x: number, z: number) => number,
+  landFloor?: number,
+): Float32Array {
   const out = new Float32Array(f.heights);
   const k = TERRAIN.coarse;
   const cs = f.step * k;
@@ -532,7 +538,9 @@ export function farHeightsOf(f: HeightField, pathNodes: readonly { id: string; a
       }
     }
   }
-  for (let r = 0; r < out.length; r++) out[r] -= drop[r];
+  // Avec `landFloor` (au 4e), jamais une terre plus bas : sous le pont du ravin, le sol de près du chemin est le lit (à
+  // 0,15), et le sommet grossier descendait sous le plan de la mer, qui se voyait en flaque bleue (retouche 1 des Coteaux).
+  for (let r = 0; r < out.length; r++) out[r] = landFloor !== undefined && f.heights[r] > landFloor ? Math.max(out[r] - drop[r], landFloor) : out[r] - drop[r];
   return out;
 }
 

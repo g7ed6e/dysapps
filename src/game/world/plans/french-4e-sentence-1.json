@@ -1,0 +1,9 @@
+{
+  "id": "french-4e-sentence-1",
+  "biome": "french-4e-sentence",
+  "name": "La cabine d’aiguillage",
+  "reward": {
+    "xp": 40
+  },
+  "done": "La cabine tient debout. D’ici, on surveille toute la ligne."
+}

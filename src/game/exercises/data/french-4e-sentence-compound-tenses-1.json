@@ -1,0 +1,222 @@
+{
+  "id": "french-4e-sentence-compound-tenses-1",
+  "biome": "french-4e-sentence",
+  "type": "compound-tenses",
+  "level": 1,
+  "instruction": "Quel est le temps du verbe ? Regarde d’abord l’auxiliaire. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-4e-sentence-compound-tenses-1-0",
+      "prompt": "« Quand nous arrivâmes, le train était parti. » À quel temps est « était parti » ?",
+      "spoken": "Quand nous arrivâmes, le train était parti. À quel temps est « était parti » ?",
+      "choices": [
+        "passé composé",
+        "plus-que-parfait",
+        "passé antérieur"
+      ],
+      "answer": "plus-que-parfait",
+      "hint": "« Était » : à quel temps est l’auxiliaire ?",
+      "explanation": "L’auxiliaire « était » est à l’imparfait : « était parti » est au plus-que-parfait. Le train est parti avant notre arrivée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps composés",
+          "lines": [
+            "Un temps composé : l’auxiliaire avoir ou être, puis le participe passé.",
+            "Le temps de l’auxiliaire donne le nom du temps composé.",
+            "Imparfait → plus-que-parfait (il avait mangé). Passé simple → passé antérieur (il eut mangé).",
+            "Futur → futur antérieur (il aura mangé). Conditionnel → conditionnel passé (il aurait mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-1-1",
+      "prompt": "« Dès qu’il eut fini, il sortit. » À quel temps est « eut fini » ?",
+      "spoken": "Dès qu’il eut fini, il sortit. À quel temps est « eut fini » ?",
+      "choices": [
+        "passé antérieur",
+        "plus-que-parfait",
+        "passé simple"
+      ],
+      "answer": "passé antérieur",
+      "hint": "« Eut » : à quel temps est l’auxiliaire avoir ?",
+      "explanation": "« Eut » est le passé simple d’avoir : « eut fini » est au passé antérieur. « Eut » seul serait au passé simple, mais ici il y a un participe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps composés",
+          "lines": [
+            "Un temps composé : l’auxiliaire avoir ou être, puis le participe passé.",
+            "Le temps de l’auxiliaire donne le nom du temps composé.",
+            "Imparfait → plus-que-parfait (il avait mangé). Passé simple → passé antérieur (il eut mangé).",
+            "Futur → futur antérieur (il aura mangé). Conditionnel → conditionnel passé (il aurait mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-1-2",
+      "prompt": "« Demain soir, j’aurai terminé mon exposé. » À quel temps est « aurai terminé » ?",
+      "spoken": "Demain soir, j’aurai terminé mon exposé. À quel temps est « aurai terminé » ?",
+      "choices": [
+        "conditionnel passé",
+        "futur simple",
+        "futur antérieur"
+      ],
+      "answer": "futur antérieur",
+      "hint": "« Aurai », sans s : futur ou conditionnel ?",
+      "explanation": "« Aurai » est le futur d’avoir : « aurai terminé » est au futur antérieur. Avec un s, « aurais », ce serait le conditionnel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps composés",
+          "lines": [
+            "Un temps composé : l’auxiliaire avoir ou être, puis le participe passé.",
+            "Le temps de l’auxiliaire donne le nom du temps composé.",
+            "Imparfait → plus-que-parfait (il avait mangé). Passé simple → passé antérieur (il eut mangé).",
+            "Futur → futur antérieur (il aura mangé). Conditionnel → conditionnel passé (il aurait mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-1-3",
+      "prompt": "« Sans ton aide, j’aurais raté le bus. » À quel temps est « aurais raté » ?",
+      "spoken": "Sans ton aide, j’aurais raté le bus. À quel temps est « aurais raté » ?",
+      "choices": [
+        "futur antérieur",
+        "conditionnel passé",
+        "plus-que-parfait"
+      ],
+      "answer": "conditionnel passé",
+      "hint": "« Aurais », avec un s : futur ou conditionnel ?",
+      "explanation": "« Aurais » est le conditionnel d’avoir : « aurais raté » est au conditionnel passé. Je n’ai pas raté le bus : c’est ce qui serait arrivé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps composés",
+          "lines": [
+            "Un temps composé : l’auxiliaire avoir ou être, puis le participe passé.",
+            "Le temps de l’auxiliaire donne le nom du temps composé.",
+            "Imparfait → plus-que-parfait (il avait mangé). Passé simple → passé antérieur (il eut mangé).",
+            "Futur → futur antérieur (il aura mangé). Conditionnel → conditionnel passé (il aurait mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-1-4",
+      "prompt": "« Elle avait oublié ses clés. » À quel temps est « avait oublié » ?",
+      "spoken": "Elle avait oublié ses clés. À quel temps est « avait oublié » ?",
+      "choices": [
+        "imparfait",
+        "passé composé",
+        "plus-que-parfait"
+      ],
+      "answer": "plus-que-parfait",
+      "hint": "Il y a un auxiliaire et un participe : c’est un temps composé.",
+      "explanation": "« Avait » est à l’imparfait, suivi du participe « oublié » : plus-que-parfait. L’imparfait seul serait « elle oubliait ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps composés",
+          "lines": [
+            "Un temps composé : l’auxiliaire avoir ou être, puis le participe passé.",
+            "Le temps de l’auxiliaire donne le nom du temps composé.",
+            "Imparfait → plus-que-parfait (il avait mangé). Passé simple → passé antérieur (il eut mangé).",
+            "Futur → futur antérieur (il aura mangé). Conditionnel → conditionnel passé (il aurait mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-1-5",
+      "prompt": "« Quand vous aurez rangé, vous pourrez jouer. » À quel temps est « aurez rangé » ?",
+      "spoken": "Quand vous aurez rangé, vous pourrez jouer. À quel temps est « aurez rangé » ?",
+      "choices": [
+        "futur antérieur",
+        "passé composé",
+        "conditionnel passé"
+      ],
+      "answer": "futur antérieur",
+      "hint": "« Aurez » : à quel temps est l’auxiliaire ?",
+      "explanation": "« Aurez » est le futur d’avoir : « aurez rangé » est au futur antérieur. Ranger se fera avant de jouer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps composés",
+          "lines": [
+            "Un temps composé : l’auxiliaire avoir ou être, puis le participe passé.",
+            "Le temps de l’auxiliaire donne le nom du temps composé.",
+            "Imparfait → plus-que-parfait (il avait mangé). Passé simple → passé antérieur (il eut mangé).",
+            "Futur → futur antérieur (il aura mangé). Conditionnel → conditionnel passé (il aurait mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-1-6",
+      "prompt": "« Lorsqu’elles furent arrivées, la fête commença. » À quel temps est « furent arrivées » ?",
+      "spoken": "Lorsqu’elles furent arrivées, la fête commença. À quel temps est « furent arrivées » ?",
+      "choices": [
+        "plus-que-parfait",
+        "passé simple",
+        "passé antérieur"
+      ],
+      "answer": "passé antérieur",
+      "hint": "« Furent » : à quel temps est l’auxiliaire être ?",
+      "explanation": "« Furent » est le passé simple d’être : « furent arrivées » est au passé antérieur. Elles sont arrivées juste avant que la fête commence.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps composés",
+          "lines": [
+            "Un temps composé : l’auxiliaire avoir ou être, puis le participe passé.",
+            "Le temps de l’auxiliaire donne le nom du temps composé.",
+            "Imparfait → plus-que-parfait (il avait mangé). Passé simple → passé antérieur (il eut mangé).",
+            "Futur → futur antérieur (il aura mangé). Conditionnel → conditionnel passé (il aurait mangé)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-compound-tenses-1-7",
+      "prompt": "« Nous serions venus plus tôt. » À quel temps est « serions venus » ?",
+      "spoken": "Nous serions venus plus tôt. À quel temps est « serions venus » ?",
+      "choices": [
+        "conditionnel passé",
+        "futur antérieur",
+        "plus-que-parfait"
+      ],
+      "answer": "conditionnel passé",
+      "hint": "« Serions » : futur ou conditionnel ?",
+      "explanation": "« Serions » est le conditionnel d’être : « serions venus » est au conditionnel passé. Au futur antérieur, on dirait « serons venus ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les temps composés",
+          "lines": [
+            "Un temps composé : l’auxiliaire avoir ou être, puis le participe passé.",
+            "Le temps de l’auxiliaire donne le nom du temps composé.",
+            "Imparfait → plus-que-parfait (il avait mangé). Passé simple → passé antérieur (il eut mangé).",
+            "Futur → futur antérieur (il aura mangé). Conditionnel → conditionnel passé (il aurait mangé)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -250,6 +250,12 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   'proportional-reasoning': { component: CalculationScreen, batch: 1 },
   'calculation-programs': { component: CalculationScreen, batch: 1 },
   translations: { component: CalculationScreen, batch: 1 },
+  // La Jonction, lieu du monde ouvert seulement (GD-24, 21 octobre 2026) : français du collège en Markdown.
+  'relative-clauses': { component: CalculationScreen, batch: 1 },
+  'subordinate-clauses': { component: CalculationScreen, batch: 1 },
+  'passive-reported': { component: CalculationScreen, batch: 1 },
+  'compound-tenses': { component: CalculationScreen, batch: 1 },
+  moods: { component: CalculationScreen, batch: 1 },
   'de-sentences': { component: CalculationScreen, batch: 1 },
   'de-signs': { component: CalculationScreen, batch: 1 },
   'de-media': { component: CalculationScreen, batch: 1 },

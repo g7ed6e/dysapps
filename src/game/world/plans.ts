@@ -180,6 +180,9 @@ import ruchePlan3 from './plans/technology-3e-digital-3.json';
 import etalonHalle from './plans/maths-4e-data-1.json';
 import etalonToit from './plans/maths-4e-data-2.json';
 import etalonCour from './plans/maths-4e-data-3.json';
+import jonctionCabine from './plans/french-4e-sentence-1.json';
+import jonctionToit from './plans/french-4e-sentence-2.json';
+import jonctionAbords from './plans/french-4e-sentence-3.json';
 
 export interface PlanCell {
   x: number;
@@ -268,9 +271,9 @@ export function decalageDesPlans(plan: Pick<PlanDef<IleId>, 'biome' | 'zone'>): 
 
 /**
  * Les fiches des plans (nom, phrase de fin, XP ; produites par `npm run contenu` depuis la section « Les plans » de
- * docs/contenu/<île>.md, dans le même ordre) : dans l'ordre du dessin. Les trois derniers sont ceux de l'Étalon, lieu du
- * monde ouvert seulement (GD-24) : ni la grille ni Blocland ne les dessinent ; leurs cases, dans une zone des plans que
- * rien n'affiche, donnent ses parties au monde ouvert (../three/archipeo/constructionParts.ts).
+ * docs/contenu/<île>.md, dans le même ordre) : dans l'ordre du dessin. Les six derniers sont ceux de l'Étalon et de la
+ * Jonction, lieux du monde ouvert seulement (GD-24) : ni la grille ni Blocland ne les dessinent ; leurs cases, dans une
+ * zone des plans que rien n'affiche, donnent leurs parties au monde ouvert (../three/archipeo/constructionParts.ts).
  */
 const PLAN_FILES = [
   foretCabane,
@@ -450,6 +453,9 @@ const PLAN_FILES = [
   etalonHalle,
   etalonToit,
   etalonCour,
+  jonctionCabine,
+  jonctionToit,
+  jonctionAbords,
 ] as (Omit<PlanDef<IleId>, 'cells' | 'origin' | 'reward'> & { reward: { xp: number } })[];
 
 /**

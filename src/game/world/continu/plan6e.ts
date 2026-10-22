@@ -405,8 +405,8 @@ export interface OpenPlace<Id extends string = PlaceId> {
    */
   mapSide?: 'below' | 'left' | 'right';
   /**
-   * Sur la Carte, un lieu d'un groupe à disposition fixe (au 4e, les trois lieux de l'Épaule) : son nom se pose avant
-   * les autres, quelle que soit la sélection, et son point reste à découvert (`MapLabel.pinned`).
+   * Sur la Carte, un lieu d'un groupe à disposition fixe (au 4e, les trois lieux de l'Épaule, puis la Jonction) : son nom
+   * se pose avant les autres, quelle que soit la sélection, et son point reste à découvert (`MapLabel.pinned`).
    */
   mapPinned?: true;
 }

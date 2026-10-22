@@ -281,6 +281,50 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     placement: 'rangee',
     words: { pose: ['La dynamo est sur son socle.', 'La cloche est en haut du poste.', 'Les fils sont tendus.'], end: 'Ici, on parle à l’usine avec une lampe et une cloche.' },
   },
+  // L'Herbier (les Coteaux du 4e) : les phrases validées par le directeur du contenu pédagogique (intention, § 9), une par
+  // partie (le corps, le haut, les abords), et la réplique de fin.
+  herbier: {
+    role: placeArt('herbier')!.role,
+    greeting: 'L’horticultrice fait pousser les plantes de la serre.',
+    placement: 'rangee',
+    words: { pose: ['Les bacs sont replantés.', 'La serre a retrouvé son verre.', 'La citerne est pleine.'], end: 'Ici, chaque plante avait sa place sur la terre noire.' },
+  },
+  // Les Roches (les Coteaux du 4e) : une phrase par partie d'aujourd'hui (le corps en deux, le haut, les abords).
+  roches: {
+    role: placeArt('roches')!.role,
+    greeting: 'La géologue connaît chaque pierre de la montagne.',
+    placement: 'rangee',
+    words: { pose: ['Les murs sont remontés.', 'Chaque pierre a retrouvé sa case.', 'La salle est à l’abri de la pluie.', 'Le seuil est dégagé.'], end: 'Ici, on rangeait toutes les pierres de la montagne.' },
+  },
+  // La Jonction (les Coteaux du 4e, monde ouvert seulement) : une phrase par partie (le corps en trois, le haut, les abords).
+  jonction: {
+    role: placeArt('jonction')!.role,
+    greeting: 'Le cantonnier entretient la voie.',
+    placement: 'rangee',
+    words: {
+      pose: ['Le poste est rebâti.', 'Les leviers sont en place.', 'La plaque tournante est réparée.', 'Le poste est couvert.', 'Les voies de service sont refaites.'],
+      end: 'Ici, chaque voie de service partait de la voie principale.',
+    },
+  },
+  // La Veillée (les Coteaux du 4e, lieu d'option) : sans phrase de métier (la guide est la radio) ; une phrase par partie
+  // (le corps en trois, le haut, les abords).
+  veillee: {
+    role: placeArt('veillee')!.role,
+    greeting: null,
+    placement: 'rangee',
+    words: {
+      pose: ['La table et les bancs sont réparés.', 'Les six poteaux sont debout.', 'Le garde-manger est rangé.', 'La vigne couvre de nouveau la table.', 'L’enseigne est raccrochée.'],
+      end: 'Le soir, les mineurs mangeaient ici, tous ensemble.',
+    },
+  },
+  // La Basilique (les Coteaux du 4e, lieu d'option) : sans phrase de métier (le guide est Malo) ; une phrase par partie
+  // (le corps, le haut, les abords).
+  basilique: {
+    role: placeArt('basilique')!.role,
+    greeting: null,
+    placement: 'rangee',
+    words: { pose: ['Les colonnes sont relevées.', 'La halle est couverte.', 'Le bassin est plein.'], end: 'Ici, on a relevé les colonnes d’un vieux temple.' },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -725,6 +769,11 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   terminus: northSite('terminus'),
   orgues: northSite('orgues'),
   dynamo: northSite('dynamo'),
+  herbier: northSite('herbier'),
+  roches: northSite('roches'),
+  jonction: northSite('jonction'),
+  veillee: northSite('veillee'),
+  basilique: northSite('basilique'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2281,6 +2330,16 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   orgues: 'paving',
   // La Dynamo (lot 3 du 4e) : la terre devant le poste.
   dynamo: 'earth',
+  // L'Herbier (les Coteaux du 4e) : la terre noire devant la paillasse.
+  herbier: 'earth',
+  // Les Roches : la terre battue de la salle.
+  roches: 'earth',
+  // La Jonction : la terre au bout des voies de service.
+  jonction: 'earth',
+  // La Veillée : la terre battue sous la tonnelle.
+  veillee: 'earth',
+  // La Basilique : le pavement de la nef.
+  basilique: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 
