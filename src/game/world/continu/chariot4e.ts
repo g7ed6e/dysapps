@@ -21,7 +21,7 @@
 import type { Stage } from './construction';
 import { FacetBuilder, drawPosed } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import { inWorld, lantern, localGround4e, quadOut, sheet, wallRun } from './place4eKit';
+import { groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, wallRun } from './place4eKit';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
 
@@ -134,39 +134,13 @@ const YARD: readonly Vec2[] = [
 /**
  * Le plan du sol, ajusté sous le bassin, la cale, les maquettes, l'appentis et la cour (aux moindres carrés), relevé juste
  * assez pour ne jamais passer sous le sol.
+ * Calculé au premier usage (./place4eKit.ts).
  */
-const PLANE = (() => {
-  const pts: [number, number, number][] = [];
-  for (let x = -18; x <= 7 + 1e-6; x += 0.5) for (let z = -6; z <= 6 + 1e-6; z += 0.5) pts.push([x, z, localGround(x, z)]);
-  const n = pts.length;
-  const mx = pts.reduce((s, p) => s + p[0], 0) / n;
-  const mz = pts.reduce((s, p) => s + p[1], 0) / n;
-  const my = pts.reduce((s, p) => s + p[2], 0) / n;
-  let sxx = 0,
-    szz = 0,
-    sxz = 0,
-    sxy = 0,
-    szy = 0;
-  for (const [x, z, y] of pts) {
-    sxx += (x - mx) ** 2;
-    szz += (z - mz) ** 2;
-    sxz += (x - mx) * (z - mz);
-    sxy += (x - mx) * (y - my);
-    szy += (z - mz) * (y - my);
-  }
-  const det = sxx * szz - sxz * sxz;
-  const b = (sxy * szz - szy * sxz) / det;
-  const c = (szy * sxx - sxy * sxz) / det;
-  let hi = -Infinity;
-  for (const [x, z, y] of pts) hi = Math.max(hi, y - b * x - c * z);
-  return { a: hi + 0.04, b, c };
-})();
+const planeY = groundPlane4e(localGround, [-18, 7], [-6, 6]);
 
-/** Le dessus du plan du sol en un point du repère. */
-const planeY = (x: number, z: number): number => PLANE.a + PLANE.b * x + PLANE.c * z;
 
 /** Le pied du lieu : le plan sous son centre. */
-const G = planeY(0, 0);
+const G = once(() => planeY(0, 0));
 
 // ---------- La vue ----------
 
@@ -186,7 +160,13 @@ const DOOR_VIEW = Math.PI / 4;
 const DOOR_FRAME = { height: -1, back: 1.3 } as const;
 
 /** Le point du nom sur la Carte, depuis le centre du lieu : au-dessus du treuil, jamais sur le bassin. */
-const MAP_POINT: Vec3 = { x: WINCH.x + 0.3, y: G + AWNING.high + 1.4, z: WINCH.z };
+const MAP_POINT: Vec3 = {
+  x: WINCH.x + 0.3,
+  get y() {
+    return G() + AWNING.high + 1.4;
+  },
+  z: WINCH.z,
+};
 
 // ---------- Les petits volumes ----------
 
@@ -288,8 +268,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // seule allumée.
   add('ruine', 0, (b) => {
     const rimTop = (x: number, z: number) => planeY(x, z) + B.top;
-    b.box({ x: (B.x0 + B.x1) / 2, y: G + SINK, z: MID_Z }, [B.x1 - B.x0 - 2 * B.rim + 0.02, B.floor - SINK, B.z1 - B.z0 - 2 * B.rim + 0.02], C.stoneShade, C.floor);
-    const run = (alongX: boolean, at: number, from: number, to: number) => wallRun(b, alongX, at, from, to, B.rim, G + SINK, alongX ? rimTop(from, at) : rimTop(at, from), alongX ? rimTop(to, at) : rimTop(at, to), C.stoneShade, C.stoneSun);
+    b.box({ x: (B.x0 + B.x1) / 2, y: G() + SINK, z: MID_Z }, [B.x1 - B.x0 - 2 * B.rim + 0.02, B.floor - SINK, B.z1 - B.z0 - 2 * B.rim + 0.02], C.stoneShade, C.floor);
+    const run = (alongX: boolean, at: number, from: number, to: number) => wallRun(b, alongX, at, from, to, B.rim, G() + SINK, alongX ? rimTop(from, at) : rimTop(at, from), alongX ? rimTop(to, at) : rimTop(at, to), C.stoneShade, C.stoneSun);
     run(true, RAILS[0], B.x0, B.x1);
     run(true, RAILS[1], B.x0, B.gap[0]);
     run(true, RAILS[1], B.gap[1], B.x1);
@@ -299,7 +279,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     for (const x of [AWNING.x0, AWNING.x1])
       for (const z of [AWNING.z0, AWNING.z1]) {
         const top = x === AWNING.x0 ? AWNING.low : AWNING.high;
-        b.box({ x, y: planeY(x, z) + SINK, z }, [0.18, G + top - planeY(x, z) - SINK, 0.18], C.woodShade, C.wood);
+        b.box({ x, y: planeY(x, z) + SINK, z }, [0.18, G() + top - planeY(x, z) - SINK, 0.18], C.woodShade, C.wood);
       }
     bigModel(b);
     shed(b);
@@ -312,7 +292,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     'ruine',
     0,
     (b) => {
-      const f = G + B.floor + 0.012;
+      const f = G() + B.floor + 0.012;
       const crack: Vec2[] = [
         { x: -11.6, z: -3.6 },
         { x: -9.4, z: -2.6 },
@@ -330,13 +310,13 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
         [-1.2, -4.0],
         [1.4, -2.2],
       ] as const)
-        b.prism({ x, y: G + B.floor, z }, 0.22, 0, 0.32, 5, C.leaf);
+        b.prism({ x, y: G() + B.floor, z }, 0.22, 0, 0.32, 5, C.leaf);
       for (const [x, z, yaw, tilt] of [
         [-8.3, -1.7, 0.4, 0.3],
         [-7.2, -2.5, 1.2, -0.2],
       ] as const)
-        b.box({ x, y: G + B.floor - 0.05, z, yaw, pitch: tilt }, [1.1, 0.5, 0.5], C.stoneShade, C.stone);
-      const y = G + B.top;
+        b.box({ x, y: G() + B.floor - 0.05, z, yaw, pitch: tilt }, [1.1, 0.5, 0.5], C.stoneShade, C.stone);
+      const y = G() + B.top;
       b.box({ x: (B.x0 + B.x1) / 2, y, z: RAILS[0] }, [B.x1 - B.x0, 0.1, 0.12], C.rustShade, C.rust);
       b.box({ x: (B.x0 - 1) / 2, y, z: RAILS[1] }, [-1 - B.x0, 0.1, 0.12], C.rustShade, C.rust);
       b.beam({ x: -1, y: y + 0.05, z: RAILS[1] }, { x: B.x1 + 0.2, y: y + 0.7, z: RAILS[1] + 0.6 }, 0.11, C.rust);
@@ -351,7 +331,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     (b) => {
       const tilt = -0.2;
       const w = (RAILS[1] - RAILS[0]) / 2;
-      drawPosed(b, { x: -1.6, y: G + B.floor + w * Math.sin(-tilt) - 0.08, z: (RAILS[1] + 0.25 + B.z0 + B.rim + 0.1) / 2, yaw: 0.1, pitch: tilt }, (l) => gantry(l, C.rustShade, C.rust, false));
+      drawPosed(b, { x: -1.6, y: G() + B.floor + w * Math.sin(-tilt) - 0.08, z: (RAILS[1] + 0.25 + B.z0 + B.rim + 0.1) / 2, yaw: 0.1, pitch: tilt }, (l) => gantry(l, C.rustShade, C.rust, false));
       const g = planeY(WINCH.x, WINCH.z);
       winchDrum(b, WINCH.x + 0.8, g + WINCH.r - 0.04, WINCH.z + 0.9, Math.PI / 2 + 0.4, C.woodShade, C.wood);
       for (const [dx, dz, yaw] of [
@@ -396,7 +376,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     0,
     (b) => {
       const S = SLIP;
-      b.beam({ x: S.x0 - 0.2, y: G + 0.25, z: S.rails[0] }, { x: S.x1 + 0.4, y: planeY(S.x1, S.rails[0]) + 1.0, z: S.rails[0] + 0.2 }, 0.18, C.woodShade);
+      b.beam({ x: S.x0 - 0.2, y: G() + 0.25, z: S.rails[0] }, { x: S.x1 + 0.4, y: planeY(S.x1, S.rails[0]) + 1.0, z: S.rails[0] + 0.2 }, 0.18, C.woodShade);
       b.beam({ x: S.x0 - 0.5, y: planeY(S.x0, S.rails[1]) + 0.08, z: S.rails[1] + 0.2 }, { x: S.x1 + 0.2, y: planeY(S.x1, S.rails[1]) + 0.08, z: S.rails[1] + 1.1 }, 0.18, C.woodShade);
       const M = MODELS.small;
       const y = planeY(M.x, M.z);
@@ -410,19 +390,19 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // d'un coup, une eau plate, sombre, immobile.
   add(0, 0, (b) => {
     const top = (x: number) => planeY(x, RAILS[1]) + B.top;
-    wallRun(b, true, RAILS[1], B.gap[0], B.gap[1], B.rim, G + SINK, top(B.gap[0]), top(B.gap[1]), C.stoneShade, C.stoneSun);
-    for (const z of RAILS) b.box({ x: (B.x0 + B.x1) / 2, y: G + B.top, z }, [B.x1 - B.x0, 0.1, 0.12], C.iron, C.ironTop);
-    const y = G + B.water;
+    wallRun(b, true, RAILS[1], B.gap[0], B.gap[1], B.rim, G() + SINK, top(B.gap[0]), top(B.gap[1]), C.stoneShade, C.stoneSun);
+    for (const z of RAILS) b.box({ x: (B.x0 + B.x1) / 2, y: G() + B.top, z }, [B.x1 - B.x0, 0.1, 0.12], C.iron, C.ironTop);
+    const y = G() + B.water;
     const [x0, x1, z0, z1] = [B.x0 + B.rim, B.x1 - B.rim, B.z0 + B.rim, B.z1 - B.rim];
     quadOut(b, [x0, y, z0], [x1, y, z0], [x1, y, z1], [x0, y, z1], [0, 1, 0], C.water);
   });
   // ---- Le corps 2 sur 2 : le chariot remis sur ses rails, sa passerelle et sa main courante ; son bras court qui tient
   // une petite maquette nue, immobile sur l'eau ; le treuil redressé sur son socle, le câble tendu jusqu'au chariot.
   add(0, 0.5, (b) => {
-    drawPosed(b, { x: GANTRY.x, y: G + B.top + 0.1, z: MID_Z, yaw: 0 }, (l) => gantry(l, C.iron, C.ironTop, true));
-    const deck = G + B.top + 0.1 + GANTRY.deck;
-    b.box({ x: GANTRY.x - 0.2, y: G + B.water + 0.1, z: MID_Z }, [0.08, deck - 0.3 - (G + B.water + 0.1), 0.08], C.iron);
-    hull(b, { x: GANTRY.x - 0.2, y: G + B.water + 0.12, z: MID_Z }, 1.2, 0.4, 0.22, Math.PI / 2, C.hull, C.hullShade);
+    drawPosed(b, { x: GANTRY.x, y: G() + B.top + 0.1, z: MID_Z, yaw: 0 }, (l) => gantry(l, C.iron, C.ironTop, true));
+    const deck = G() + B.top + 0.1 + GANTRY.deck;
+    b.box({ x: GANTRY.x - 0.2, y: G() + B.water + 0.1, z: MID_Z }, [0.08, deck - 0.3 - (G() + B.water + 0.1), 0.08], C.iron);
+    hull(b, { x: GANTRY.x - 0.2, y: G() + B.water + 0.12, z: MID_Z }, 1.2, 0.4, 0.22, Math.PI / 2, C.hull, C.hullShade);
     const g = planeY(WINCH.x, WINCH.z);
     b.box({ x: WINCH.x, y: g - 0.2, z: WINCH.z }, [1.0, 0.36, 1.4], C.stoneShade, C.stoneSun);
     for (const s of [-1, 1]) b.box({ x: WINCH.x, y: g + 0.1, z: WINCH.z + s * (WINCH.length / 2 + 0.1) }, [0.7, WINCH.axle + 0.3, 0.14], C.newShade, C.newWood);
@@ -435,24 +415,24 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     sheet(
       b,
       [
-        [A.x0 - A.over, G + A.low - 0.03, A.z1 + A.over],
-        [A.x1 + A.over, G + A.high + 0.03, A.z1 + A.over],
-        [A.x1 + A.over, G + A.high + 0.03, A.z0 - A.over],
-        [A.x0 - A.over, G + A.low - 0.03, A.z0 - A.over],
+        [A.x0 - A.over, G() + A.low - 0.03, A.z1 + A.over],
+        [A.x1 + A.over, G() + A.high + 0.03, A.z1 + A.over],
+        [A.x1 + A.over, G() + A.high + 0.03, A.z0 - A.over],
+        [A.x0 - A.over, G() + A.low - 0.03, A.z0 - A.over],
       ],
       0.07,
       C.ironTop,
       C.iron,
     );
     const L = LANTERN_AWNING;
-    b.box({ x: L.x - 0.2, y: G + A.low - 0.45, z: L.z }, [0.4, 0.07, 0.07], C.iron);
-    lantern(b, { x: L.x - 0.38, y: G + A.low - 0.45, z: L.z }, true);
+    b.box({ x: L.x - 0.2, y: G() + A.low - 0.45, z: L.z }, [0.4, 0.07, 0.07], C.iron);
+    lantern(b, { x: L.x - 0.38, y: G() + A.low - 0.45, z: L.z }, true);
   });
   // ---- Les abords : la cale refaite (deux rails de bois droits sur trois traverses) ; les tréteaux relevés et les deux
   // petites maquettes dessus (la grande toujours sans hélice) ; la cour dallée ; la lanterne du chemin.
   add(2, 0, (b) => {
     const S = SLIP;
-    const yAt = (x: number) => G + S.top + ((x - S.x0) / (S.x1 - S.x0)) * (S.foot - S.top);
+    const yAt = (x: number) => G() + S.top + ((x - S.x0) / (S.x1 - S.x0)) * (S.foot - S.top);
     for (const z of S.rails) b.beam({ x: S.x0, y: yAt(S.x0), z }, { x: S.x1, y: yAt(S.x1), z }, 0.18, C.newShade);
     for (const x of [-14.0, -15.6, -17.1]) b.box({ x, y: yAt(x) - 0.2, z: (S.rails[0] + S.rails[1]) / 2 }, [0.2, 0.12, 2.4], C.newShade, C.newWood);
     const M = MODELS.small;
@@ -489,22 +469,22 @@ function bigModel(b: FacetBuilder): void {
 function shed(b: FacetBuilder): void {
   const S = SHED;
   const g = planeY(S.x1, (S.z0 + S.z1) / 2);
-  b.box({ x: S.x1 - 0.06, y: g + SINK, z: (S.z0 + S.z1) / 2 }, [0.12, G + S.wall - g - SINK, S.z1 - S.z0], C.woodShade, C.wood);
+  b.box({ x: S.x1 - 0.06, y: g + SINK, z: (S.z0 + S.z1) / 2 }, [0.12, G() + S.wall - g - SINK, S.z1 - S.z0], C.woodShade, C.wood);
   for (const [x, top] of [
     [S.x0, S.front],
     [S.x1, S.back],
   ] as const)
     for (const z of [S.z0, S.z1]) {
       const h = planeY(x, z);
-      b.box({ x, y: h + SINK, z }, [0.16, G + top - h - SINK, 0.16], C.woodShade, C.wood);
+      b.box({ x, y: h + SINK, z }, [0.16, G() + top - h - SINK, 0.16], C.woodShade, C.wood);
     }
   sheet(
     b,
     [
-      [S.x0 - 0.3, G + S.front, S.z1 + 0.3],
-      [S.x1 + 0.1, G + S.back, S.z1 + 0.3],
-      [S.x1 + 0.1, G + S.back, S.z0 - 0.3],
-      [S.x0 - 0.3, G + S.front, S.z0 - 0.3],
+      [S.x0 - 0.3, G() + S.front, S.z1 + 0.3],
+      [S.x1 + 0.1, G() + S.back, S.z1 + 0.3],
+      [S.x1 + 0.1, G() + S.back, S.z0 - 0.3],
+      [S.x0 - 0.3, G() + S.front, S.z0 - 0.3],
     ],
     0.08,
     C.wood,
@@ -515,8 +495,8 @@ function shed(b: FacetBuilder): void {
   b.box({ x: K.x, y: by - 0.1, z: K.z }, [0.6, K.h + 0.1, K.length], C.woodShade, C.wood);
   b.box({ x: K.x - 0.05, y: by + K.h, z: K.z + 0.5, yaw: 0.2 }, [0.12, 0.1, 0.36], C.newShade, C.newWood);
   const L = LANTERN_SHED;
-  b.box({ x: L.x - 0.2, y: G + L.y + 0.02, z: L.z }, [0.4, 0.07, 0.07], C.woodShade);
-  lantern(b, { x: L.x - 0.38, y: G + L.y, z: L.z }, true);
+  b.box({ x: L.x - 0.2, y: G() + L.y + 0.02, z: L.z }, [0.4, 0.07, 0.07], C.woodShade);
+  lantern(b, { x: L.x - 0.38, y: G() + L.y, z: L.z }, true);
 }
 
 /** La cour : la dalle qui suit le plan, son bord, et ses joints en rangs (jamais sur le chemin). */
@@ -565,7 +545,7 @@ function belt(b: FacetBuilder, c: Vec3): void {
 function horn(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
     const { x, z } = TRACE_SPOTS.horn;
-    const y = G + BASIN.top + 0.1 + GANTRY.deck - 0.36;
+    const y = G() + BASIN.top + 0.1 + GANTRY.deck - 0.36;
     l.box({ x, y: y - 0.16, z }, [0.04, 0.16, 0.04], C.iron);
     l.prism({ x, y: y - 0.62, z, yaw: Math.PI / 2, pitch: 0.35 }, 0.16, 0.04, 0.46, 6, C.iron, C.ironTop);
   });
@@ -578,7 +558,7 @@ function horn(b: FacetBuilder, c: Vec3): void {
 function shelfModels(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
     const { x, z } = TRACE_SPOTS.shelf;
-    const y = G + 1.1;
+    const y = G() + 1.1;
     l.box({ x: x - 0.3, y, z }, [1.0, 0.06, 0.3], C.newShade, C.newWood);
     l.box({ x: x - 0.3, y: y - 0.3, z: z - 0.08 }, [0.06, 0.3, 0.12], C.newShade);
     const forms = [
@@ -634,12 +614,12 @@ const SCENE_SPOT = { dx: -2.2, dz: 2.4, half: [2.6, 1.2] as [number, number] } a
 const SCENE_HALF = 2.1;
 
 /** La hauteur du sol de la scène au-dessus de son point (le plus haut du sol sous elle) : le dessus du plan du sol. */
-const SCENE_RISE = (() => {
+const sceneRise = once(() => {
   const [hx, hz] = SCENE_SPOT.half;
   let top = -Infinity;
   for (let i = -3; i <= 3; i++) for (let k = -2; k <= 2; k++) top = Math.max(top, localGround(SCENE_SPOT.dx + (i / 3) * hx, SCENE_SPOT.dz + (k / 2) * hz));
   return Math.max(0, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz) + 0.02 - top);
-})();
+});
 
 /** L'ingénieure en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, tablier, chemise. */
 function engineer(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
@@ -660,7 +640,9 @@ export const CHARIOT: PlaceArt = {
   traceStage: 0,
   sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
   site: {
-    rise: SCENE_RISE,
+    get rise() {
+      return sceneRise();
+    },
     keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
     habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
     subject: { halfWidth: 3.0, bottom: -0.5, top: 2.9, depth: 0.3 },
@@ -713,7 +695,9 @@ export const CHARIOT_LAYOUT = {
   shed: SHED,
   yard: YARD,
   planeY,
-  base: G,
+  get base() {
+    return G();
+  },
   pathLantern: PATH_LANTERN,
   door: DOOR_AT,
   doorFrame: DOOR_FRAME,

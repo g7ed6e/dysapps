@@ -25,10 +25,9 @@ import { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
-import { COLORS_5E } from './plan5e';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
-import { inWorld, lantern, localGround4e, quadOut, sheet, wallRun } from './place4eKit';
+import { groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, wallRun } from './place4eKit';
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter (places.ts). */
 const SINK = -0.8;
@@ -66,9 +65,6 @@ const C = {
   floor: 0xa89c90,
   paving: 0xb0a598,
   joint: 0x8a8078,
-  lantern: COLORS_5E.lantern,
-  lanternOff: 0xbfc4b8,
-  bronze: 0x9c8452,
   // Les poids des réponses : une fonte gris chaud, plus claire que le fer bruni, sans marque.
   weight: 0x8e8580,
   weightTop: 0x9e958e,
@@ -148,36 +144,11 @@ const YARD: readonly Vec2[] = [
 /**
  * Le plan du sol, ajusté sous la halle et la cour (aux moindres carrés), relevé juste assez pour ne jamais passer sous le
  * sol : la plaine des Fabriques est presque plate ici (à 0,1 près).
+ * Calculé au premier usage (./place4eKit.ts).
  */
-const PLANE = (() => {
-  const pts: [number, number, number][] = [];
-  for (let x = -8; x <= 7 + 1e-6; x += 0.5) for (let z = -9; z <= 4 + 1e-6; z += 0.5) pts.push([x, z, localGround(x, z)]);
-  const n = pts.length;
-  const mx = pts.reduce((s, p) => s + p[0], 0) / n;
-  const mz = pts.reduce((s, p) => s + p[1], 0) / n;
-  const my = pts.reduce((s, p) => s + p[2], 0) / n;
-  let sxx = 0,
-    szz = 0,
-    sxz = 0,
-    sxy = 0,
-    szy = 0;
-  for (const [x, z, y] of pts) {
-    sxx += (x - mx) ** 2;
-    szz += (z - mz) ** 2;
-    sxz += (x - mx) * (z - mz);
-    sxy += (x - mx) * (y - my);
-    szy += (z - mz) * (y - my);
-  }
-  const det = sxx * szz - sxz * sxz;
-  const b = (sxy * szz - szy * sxz) / det;
-  const c = (szy * sxx - sxy * sxz) / det;
-  let hi = -Infinity;
-  for (const [x, z, y] of pts) hi = Math.max(hi, y - b * x - c * z);
-  return { a: hi + 0.04, b, c };
-})();
+const planeY = groundPlane4e(localGround, [-8, 7], [-9, 4]);
 
 /** Le dessus du plan du sol en un point du repère (la cour s'y pose ; la halle un cran plus haut). */
-const planeY = (x: number, z: number): number => PLANE.a + PLANE.b * x + PLANE.c * z;
 /** Le dessus du sol dallé de la halle. */
 const hallY = (x: number, z: number): number => planeY(x, z) + HALL.floor;
 
@@ -197,7 +168,13 @@ const DOOR_VIEW = (40 * Math.PI) / 180;
 const DOOR_FRAME = { height: -3, back: 1.5 } as const;
 
 /** Le point du nom sur la Carte, depuis le centre du lieu : au-dessus du faîtage, au milieu, le même en ruine et restauré. */
-const MAP_POINT: Vec3 = { x: -0.7, y: HALL.floor + HALL.ridge + 1.5, z: HALL.ridgeZ };
+const MAP_POINT: Vec3 = {
+  x: -0.7,
+  get y() {
+    return HALL.floor + HALL.ridge + 1.5;
+  },
+  z: HALL.ridgeZ,
+};
 
 // ---------- Les petits volumes ----------
 
@@ -682,12 +659,12 @@ const SCENE_SPOT = { dx: -0.4, dz: 0.4, half: [2.6, 1.2] as [number, number] } a
 const SCENE_HALF = 2.1;
 
 /** La hauteur du sol de la scène au-dessus de son point (le plus haut du sol sous elle) : le dessus de la cour. */
-const SCENE_RISE = (() => {
+const sceneRise = once(() => {
   const [hx, hz] = SCENE_SPOT.half;
   let top = -Infinity;
   for (let i = -3; i <= 3; i++) for (let k = -2; k <= 2; k++) top = Math.max(top, localGround(SCENE_SPOT.dx + (i / 3) * hx, SCENE_SPOT.dz + (k / 2) * hz));
   return Math.max(0, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz) + 0.02 - top);
-})();
+});
 
 /** La peseuse en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, tablier de toile, chemise. */
 function weigher(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
@@ -708,7 +685,9 @@ export const ETALON: PlaceArt = {
   traceStage: 0,
   sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
   site: {
-    rise: SCENE_RISE,
+    get rise() {
+      return sceneRise();
+    },
     keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
     habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
     subject: { halfWidth: 3.0, bottom: -0.5, top: 2.9, depth: 0.3 },

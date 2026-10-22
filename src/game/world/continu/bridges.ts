@@ -645,26 +645,38 @@ function swingDrum(s: BridgeSite): Facets {
   return b.build();
 }
 
+/** La bascule et le tour de la volée, leurs cosinus et sinus (calculés une fois par image, jamais par sommet). */
+export interface SwingTurn {
+  cs: number;
+  ss: number;
+  ct: number;
+  st: number;
+}
+
+/** Écrit dans `out` les cosinus et sinus de la bascule `sag` et du tour `turn` de la volée (rien n'est créé). */
+export function swingTurn(sag: number, turn: number, out: SwingTurn): SwingTurn {
+  out.cs = Math.cos(sag);
+  out.ss = Math.sin(sag);
+  out.ct = Math.cos(turn);
+  out.st = Math.sin(turn);
+  return out;
+}
+
 /**
- * Un sommet de la volée fermée (`x`, `y`, `z`, dans le monde) basculé de `sag` sur son tambour (son bout libre vers le
- * bas) puis tourné de `turn` autour du pivot (vers le nord, la mer du nord), écrit dans `out` à `o` ; `normal` : un vecteur
- * (sans déplacement). Rien n'est créé.
+ * Un sommet de la volée fermée (`x`, `y`, `z`, dans le monde) basculé sur son tambour (`pivot`, son bout libre vers le
+ * bas) puis tourné autour du pivot (vers le nord, la mer du nord), selon `r` (./bridgeLay.ts le calcule une fois par
+ * image), écrit dans `out` à `o` ; `normal` : un vecteur (sans déplacement). Rien n'est créé.
  */
-export function swingMove(s: BridgeSite, x: number, y: number, z: number, sag: number, turn: number, out: Float32Array, o: number, normal = false): void {
-  const pivot = swingPivot(s);
+export function swingMove(s: BridgeSite, pivot: { readonly d: number; readonly y: number }, r: SwingTurn, x: number, y: number, z: number, out: Float32Array, o: number, normal = false): void {
   const dx = normal ? x : x - s.near.x;
   const dz = normal ? z : z - s.near.z;
   const u = dx * s.dir.x + dz * s.dir.z - (normal ? 0 : pivot.d);
   const w = -dx * s.dir.z + dz * s.dir.x;
   const h = normal ? y : y - pivot.y;
-  const cs = Math.cos(sag),
-    ss = Math.sin(sag);
-  const u1 = u * cs + h * ss;
-  const h1 = h * cs - u * ss;
-  const ct = Math.cos(turn),
-    st = Math.sin(turn);
-  const d = (normal ? 0 : pivot.d) + u1 * ct + w * st;
-  const v = -u1 * st + w * ct;
+  const u1 = u * r.cs + h * r.ss;
+  const h1 = h * r.cs - u * r.ss;
+  const d = (normal ? 0 : pivot.d) + u1 * r.ct + w * r.st;
+  const v = -u1 * r.st + w * r.ct;
   out[o] = (normal ? 0 : s.near.x) + s.dir.x * d - s.dir.z * v;
   out[o + 1] = (normal ? 0 : pivot.y) + h1;
   out[o + 2] = (normal ? 0 : s.near.z) + s.dir.z * d + s.dir.x * v;
@@ -674,9 +686,11 @@ export function swingMove(s: BridgeSite, x: number, y: number, z: number, sag: n
 function swingPosed(s: BridgeSite, f: Facets, sag: number, turn: number): Facets {
   const positions = new Float32Array(f.positions.length);
   const normals = new Float32Array(f.normals.length);
+  const pivot = swingPivot(s);
+  const r = swingTurn(sag, turn, { cs: 1, ss: 0, ct: 1, st: 0 });
   for (let i = 0; i < f.positions.length; i += 3) {
-    swingMove(s, f.positions[i], f.positions[i + 1], f.positions[i + 2], sag, turn, positions, i);
-    swingMove(s, f.normals[i], f.normals[i + 1], f.normals[i + 2], sag, turn, normals, i, true);
+    swingMove(s, pivot, r, f.positions[i], f.positions[i + 1], f.positions[i + 2], positions, i);
+    swingMove(s, pivot, r, f.normals[i], f.normals[i + 1], f.normals[i + 2], normals, i, true);
   }
   return { positions, normals, colors: f.colors, triangles: f.triangles };
 }

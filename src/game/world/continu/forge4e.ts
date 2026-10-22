@@ -26,7 +26,6 @@ import { drawPosed, FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E, RIGOLE_4E } from './plan4e';
-import { COLORS_5E } from './plan5e';
 import { unlitSource } from './rendered5e';
 import { LIGHT_4E } from './sky';
 import { standingHeight } from './terrain';
@@ -84,9 +83,6 @@ const C = {
   joint: 0x8a8078,
   // Le fond des regards et de la grille, froid et gris (lot 1 : la rigole vide).
   coldPit: 0x5a524e,
-  lantern: COLORS_5E.lantern,
-  lanternOff: 0xbfc4b8,
-  bronze: 0x9c8452,
   lava: COLORS_4E.lava,
   // Les lingots des réponses : un fer gris chaud, plus clair que le fer bruni (jamais le cuivre : correction 4).
   ingot: 0x9a918a,

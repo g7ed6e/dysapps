@@ -2,7 +2,8 @@
 // octobre 2026, « Les restes des Fabriques », point 1) : ce que la Forge, la Soute, la Porte et l'Étalon recopiaient
 // chacun, et que les lieux du Bastion importent au lieu de le recopier encore : la lanterne pendue des Passeurs (d'ocre ou
 // éteinte), une dalle épaisse sous un contour, le dessin d'une trace posé au centre du lieu, le sol du 4e dans le repère
-// d'un lieu, le quadrilatère tourné vers le dehors, le pan de mur droit et le pan de tôle. Code pur.
+// d'un lieu, le quadrilatère tourné vers le dehors, le pan de mur droit et le pan de tôle ; depuis la retouche 1 du Bastion, le plan
+// du sol d'un lieu (calculé au premier usage), le triangle tourné vers le dehors et la ferrure vide. Code pur.
 import { FacetBuilder, drawPosed } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { COLORS_5E } from './plan5e';
@@ -86,4 +87,77 @@ export function sheet(b: FacetBuilder, q: readonly P3[], t: number, top: number,
     const m = (k + 1) % 4;
     quadOut(b, q[k], q[m], up[m], up[k], [(q[k][0] + q[m][0]) / 2 - cx, 0, (q[k][2] + q[m][2]) / 2 - cz], under);
   }
+}
+
+/**
+ * Le plan du sol d'un lieu (relecture du code du Bastion, point 5, et retouche 1, point 18) : ajusté aux moindres carrés
+ * sur le sol du 4e (`localGround`, dans le repère du lieu) dans le rectangle `xs` × `zs`, relevé juste assez pour ne
+ * jamais passer sous le sol. Calculé au premier usage, jamais à l'import : `northShore.ts` importe les lieux du 4e pour
+ * tous les niveaux, et le 6e comme le 5e ne paient plus ce calcul. Rend la hauteur du plan en un point du repère.
+ */
+export function groundPlane4e(localGround: (lx: number, lz: number) => number, xs: readonly [number, number], zs: readonly [number, number]): (x: number, z: number) => number {
+  let fit: { a: number; b: number; c: number } | undefined;
+  const solve = () => {
+    const pts: [number, number, number][] = [];
+    for (let x = xs[0]; x <= xs[1] + 1e-6; x += 0.5) for (let z = zs[0]; z <= zs[1] + 1e-6; z += 0.5) pts.push([x, z, localGround(x, z)]);
+    const n = pts.length;
+    const mx = pts.reduce((s, p) => s + p[0], 0) / n;
+    const mz = pts.reduce((s, p) => s + p[1], 0) / n;
+    const my = pts.reduce((s, p) => s + p[2], 0) / n;
+    let sxx = 0,
+      szz = 0,
+      sxz = 0,
+      sxy = 0,
+      szy = 0;
+    for (const [x, z, y] of pts) {
+      sxx += (x - mx) ** 2;
+      szz += (z - mz) ** 2;
+      sxz += (x - mx) * (z - mz);
+      sxy += (x - mx) * (y - my);
+      szy += (z - mz) * (y - my);
+    }
+    const det = sxx * szz - sxz * sxz;
+    const b = (sxy * szz - szy * sxz) / det;
+    const c = (szy * sxx - sxy * sxz) / det;
+    let hi = -Infinity;
+    for (const [x, z, y] of pts) hi = Math.max(hi, y - b * x - c * z);
+    return { a: hi + 0.04, b, c };
+  };
+  return (x, z) => {
+    fit ??= solve();
+    return fit.a + fit.b * x + fit.c * z;
+  };
+}
+
+/** Une valeur calculée au premier usage, puis gardée (le pied d'un lieu, la hauteur de sa scène : jamais à l'import). */
+export function once<T>(make: () => T): () => T {
+  let done = false;
+  let value: T;
+  return () => {
+    if (!done) {
+      value = make();
+      done = true;
+    }
+    return value;
+  };
+}
+
+/** Un triangle tourné vers `out` (sa normale du même côté), quel que soit l'ordre de ses coins. */
+export function triOut(b: FacetBuilder, a: P3, c: P3, d: P3, out: P3, color: number): void {
+  const n = [(c[1] - a[1]) * (d[2] - a[2]) - (c[2] - a[2]) * (d[1] - a[1]), (c[2] - a[2]) * (d[0] - a[0]) - (c[0] - a[0]) * (d[2] - a[2]), (c[0] - a[0]) * (d[1] - a[1]) - (c[1] - a[1]) * (d[0] - a[0])];
+  if (n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0) b.triangle(a, c, d, color);
+  else b.triangle(a, d, c, color);
+}
+
+/** La couleur de la ferrure vide du 4e (un fer éteint, jamais la rouille claire) et de ses chevilles nues. */
+const BRACKET_4E = { plate: 0x6a483e, plateTop: 0x74524a, peg: 0x5c504c } as const;
+
+/**
+ * La ferrure vide du 4e, le signe de l'absence : une petite plaque de fer éteint, deux chevilles nues, tournée vers `n`
+ * (x ou z) ; `w` la largeur de la plaque (la Loge 0,34, la Manufacture 0,4).
+ */
+export function emptyBracket(b: FacetBuilder, x: number, y: number, z: number, nx: number, nz: number, w = 0.34): void {
+  const k = w / 0.34;
+  b.box({ x, y: y - 0.12, z, yaw: Math.atan2(nx, nz) }, [w, 0.24, 0.06 * k], BRACKET_4E.plate, BRACKET_4E.plateTop);
+  for (const s of [-0.09 * k, 0.09 * k]) b.box({ x: x + nx * 0.09 * k + nz * s, y: y - 0.04, z: z + nz * 0.09 * k - nx * s, yaw: Math.atan2(nx, nz) }, [0.06, 0.06, 0.12 * k], BRACKET_4E.peg);
 }

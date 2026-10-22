@@ -6,7 +6,7 @@
 // d'arche : `bridgeLayRest`) dans le maillage des lieux, et pose le reste dans son maillage de pose, à part le temps de
 // la pose : aucun appel de plus. Ici, les sommets de chaque instant, écrits dans un tableau que la vue donne à Three.js
 // (rien n'est créé à chaque image). Code pur.
-import { BRIDGE, STUMP_TOP, SWING, bridgeParts, bridgeSite, bridgeSurface, isSwing, stumpPile, swingMove, swingRuin, swingRustDeck, type BridgeSite } from './bridges';
+import { BRIDGE, STUMP_TOP, SWING, bridgeParts, bridgeSite, bridgeSurface, isSwing, stumpPile, swingMove, swingPivot, swingRuin, swingRustDeck, swingTurn, type BridgeSite, type SwingTurn } from './bridges';
 import { boundsOf, mergeFacets, type Facets } from './facets';
 import type { LinkedLand } from './lands';
 
@@ -61,7 +61,14 @@ export interface BridgeLay {
    * boîte de tout ce que la pose dessine (la volée ouverte comprise : l'élimination hors champ reste allumée). Absent :
    * un pont à piles.
    */
-  swing: { site: BridgeSite; rust: Float32Array; bounds: { min: [number, number, number]; max: [number, number, number] } } | null;
+  swing: {
+    site: BridgeSite;
+    rust: Float32Array;
+    bounds: { min: [number, number, number]; max: [number, number, number] };
+    /** Le pivot de la volée (calculé une fois) ; la bascule et le tour de l'image en cours (réécrits, jamais recréés). */
+    pivot: { readonly d: number; readonly y: number };
+    turn: SwingTurn;
+  } | null;
 }
 
 /** La pose d'un instant : toutes les parties posées (le toc), la brume levée (0 à 1), le fondu fini (la phrase peut venir). */
@@ -184,7 +191,7 @@ function swingLay(land: LinkedLand): BridgeLay {
     ends: [0, deckCount],
     drawAt: [0, turned],
     railsAt: turned,
-    swing: { site: s, rust, bounds },
+    swing: { site: s, rust, bounds, pivot: swingPivot(s), turn: { cs: 1, ss: 0, ct: 1, st: 0 } },
   };
 }
 
@@ -202,6 +209,7 @@ export function bridgeLayPositions(lay: BridgeLay, u: number, out: Float32Array,
   // La volée du pont tournant : redressée, puis tournée jusqu'à sa place (`swingAt`).
   const sag = SWING.sag * (1 - ease(u / SWING_LAY.raise));
   const turn = SWING.open * (1 - ease((u - SWING_LAY.raise) / SWING_LAY.turn));
+  const r = lay.swing ? swingTurn(sag, turn, lay.swing.turn) : null;
   const n = rest.length / 3;
   for (let i = 0; i < n; i++) {
     const x = rest[i * 3];
@@ -210,11 +218,11 @@ export function bridgeLayPositions(lay: BridgeLay, u: number, out: Float32Array,
     out[i * 3] = x;
     out[i * 3 + 2] = z;
     const st = lay.stage[i];
-    if (st === STAGE_SWING && lay.swing) {
-      swingMove(lay.swing.site, x, y, z, sag, turn, out, i * 3);
+    if (st === STAGE_SWING && lay.swing && r) {
+      swingMove(lay.swing.site, lay.swing.pivot, r, x, y, z, out, i * 3);
       if (normals) {
         const nr = lay.facets.normals;
-        swingMove(lay.swing.site, nr[i * 3], nr[i * 3 + 1], nr[i * 3 + 2], sag, turn, normals, i * 3, true);
+        swingMove(lay.swing.site, lay.swing.pivot, r, nr[i * 3], nr[i * 3 + 1], nr[i * 3 + 2], normals, i * 3, true);
       }
     } else if (st === STAGE_PILES) {
       out[i * 3 + 1] = y - lay.param[i] * (1 - ease((u - lay.delay[i]) / BRIDGE_LAY.pile));
@@ -244,15 +252,18 @@ export function bridgeLayDrawn(lay: BridgeLay, u: number): number {
 
 /**
  * Les couleurs de la pose du pont tournant, `u` secondes après son début, écrites dans `out` : la volée passe de la
- * rouille au fer bruni par un fondu court, le temps qu'elle se redresse. Faux pour un pont à piles (rien à écrire).
+ * rouille au fer bruni par un fondu court, le temps qu'elle se redresse. Rend la part du fondu écrite, ou `null` quand il
+ * n'y a rien à écrire : un pont à piles, ou la même part que `written`, la dernière écrite (relecture du code du Bastion,
+ * point 3 : passé la fin du fondu, la vue ne téléverse plus les couleurs jusqu'à la fin de la pose).
  */
-export function bridgeLayColors(lay: BridgeLay, u: number, out: Float32Array): boolean {
-  if (!lay.swing) return false;
+export function bridgeLayColors(lay: BridgeLay, u: number, out: Float32Array, written = -1): number | null {
+  if (!lay.swing) return null;
   const k = Math.min(1, Math.max(0, u / SWING_LAY.raise));
+  if (k === written) return null;
   const from = lay.swing.rust;
   const to = lay.facets.colors;
   for (let i = 0; i < from.length; i++) out[i] = from[i] + (to[i] - from[i]) * k;
-  return true;
+  return k;
 }
 
 /** La pose `u` secondes après son début, écrite dans `out` (la vue l'appelle à chaque image, sans rien créer). */

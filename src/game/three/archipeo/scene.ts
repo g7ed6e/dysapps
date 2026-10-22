@@ -17,7 +17,7 @@ import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
+import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markPoint, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
 import { epaveFacets } from '../../world/continu/epave4e';
@@ -990,10 +990,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (builtTop.get(id) === top) return;
     builtTop.set(id, top);
     const foot = feet.get(id)!;
-    const o = markOffset(id);
-    const mark = marks.get(id)!;
-    if (whole(id)) mark.set(foot.x + o.x, foot.y + o.y, foot.z + o.z);
-    else mark.set(foot.x + o.x, foot.y + top + MARK_LIFT, foot.z + o.z);
+    const o = markPoint(id, top, whole(id));
+    marks.get(id)!.set(foot.x + o.x, foot.y + o.y, foot.z + o.z);
     const tallTop = tallTops.get(id);
     if (tallTop) tallTop.y = foot.y + top;
   };
@@ -1064,7 +1062,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let veilKey = '';
   // La pose d'un pont (GD-20, point 3, « La pose ») : ce qui se relève (`lay`, ses sommets à part dans le maillage de
   // pose), son début, ce que la page attend ; le toc dit. `pendingLay` : annoncée, en attente des terres.
-  let laying: { lay: BridgeLay; start: number; events: BridgeLayEvents; tapped: boolean; drawn: number } | null = null;
+  let laying: { lay: BridgeLay; start: number; events: BridgeLayEvents; tapped: boolean; drawn: number; fade: number } | null = null;
   let pendingLay: { land: LinkedLand; events: BridgeLayEvents } | null = null;
   const layState: BridgeLayState = { landed: false, fade: 0, done: false };
   // Les terres où Kéo ne passe pas : les fermées, et celle dont le pont se pose (il ne passe qu'à la fin).
@@ -2053,7 +2051,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       return;
     }
     const lay = bridgeLay(land);
-    laying = { lay, start: performance.now() / 1000, events, tapped: false, drawn: -1 };
+    laying = { lay, start: performance.now() / 1000, events, tapped: false, drawn: -1, fade: -1 };
     walkClosed = [...closed, land];
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(lay.facets.positions), 3));
@@ -2091,7 +2089,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       position.needsUpdate = true;
       if (laying.lay.swing) normal.needsUpdate = true;
       const color = poseMesh.geometry.getAttribute('color') as THREE.BufferAttribute;
-      if (bridgeLayColors(laying.lay, u, color.array as Float32Array)) color.needsUpdate = true;
+      const fade = bridgeLayColors(laying.lay, u, color.array as Float32Array, laying.fade);
+      if (fade !== null) {
+        laying.fade = fade;
+        color.needsUpdate = true;
+      }
       const drawn = bridgeLayDrawn(laying.lay, u);
       if (drawn !== laying.drawn) poseMesh.geometry.setDrawRange(0, drawn);
       laying.drawn = drawn;

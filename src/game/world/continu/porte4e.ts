@@ -24,7 +24,6 @@ import { drawPosed, FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
-import { COLORS_5E } from './plan5e';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
 import { inWorld, lantern, localGround4e, slab } from './place4eKit';
@@ -63,9 +62,6 @@ const C = {
   // Les planchettes des réponses : un bois clair, sans rien d'écrit.
   answer: 0xc8ae8e,
   answerTop: 0xd4bc9c,
-  lantern: COLORS_5E.lantern,
-  lanternOff: 0xbfc4b8,
-  bronze: 0x9c8452,
   // L'avocate, en pion (son modèle 3D prend sa place, ./habitants.ts) : chaussures, robe sombre, rabat clair.
   shoes: 0x4f4a48,
   robe: 0x4e4a5a,

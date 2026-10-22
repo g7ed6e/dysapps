@@ -23,7 +23,7 @@
 import type { Stage } from './construction';
 import { FacetBuilder, drawPosed } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import { inWorld, lantern, localGround4e, quadOut, sheet, wallRun } from './place4eKit';
+import { emptyBracket, groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, triOut, wallRun } from './place4eKit';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
 
@@ -168,39 +168,13 @@ const YARD: readonly Vec2[] = [
 /**
  * Le plan du sol, ajusté sous la halle, le quai et la cour (aux moindres carrés), relevé juste assez pour ne jamais
  * passer sous le sol.
+ * Calculé au premier usage (./place4eKit.ts).
  */
-const PLANE = (() => {
-  const pts: [number, number, number][] = [];
-  for (let x = -13; x <= 10.5 + 1e-6; x += 0.5) for (let z = -9.5; z <= 7 + 1e-6; z += 0.5) pts.push([x, z, localGround(x, z)]);
-  const n = pts.length;
-  const mx = pts.reduce((s, p) => s + p[0], 0) / n;
-  const mz = pts.reduce((s, p) => s + p[1], 0) / n;
-  const my = pts.reduce((s, p) => s + p[2], 0) / n;
-  let sxx = 0,
-    szz = 0,
-    sxz = 0,
-    sxy = 0,
-    szy = 0;
-  for (const [x, z, y] of pts) {
-    sxx += (x - mx) ** 2;
-    szz += (z - mz) ** 2;
-    sxz += (x - mx) * (z - mz);
-    sxy += (x - mx) * (y - my);
-    szy += (z - mz) * (y - my);
-  }
-  const det = sxx * szz - sxz * sxz;
-  const b = (sxy * szz - szy * sxz) / det;
-  const c = (szy * sxx - sxy * sxz) / det;
-  let hi = -Infinity;
-  for (const [x, z, y] of pts) hi = Math.max(hi, y - b * x - c * z);
-  return { a: hi + 0.04, b, c };
-})();
+const planeY = groundPlane4e(localGround, [-13, 10.5], [-9.5, 7]);
 
-/** Le dessus du plan du sol en un point du repère. */
-const planeY = (x: number, z: number): number => PLANE.a + PLANE.b * x + PLANE.c * z;
 
 /** Le pied du lieu : le plan sous son centre ; toutes les hauteurs de la halle partent de lui. */
-const G = planeY(0, 0);
+const G = once(() => planeY(0, 0));
 
 // ---------- La vue ----------
 
@@ -215,16 +189,15 @@ const DOOR_VIEW = -Math.PI / 8;
 const DOOR_FRAME = { height: -3, back: 1.5 } as const;
 
 /** Le point du nom sur la Carte : au-dessus du toit, à l'est, sur la tôle sombre, ni sur la bande de verre ni sur la machine. */
-const MAP_POINT: Vec3 = { x: 3.2, y: G + HALL.ridge + 1.2, z: HALL.z1 - 1.6 };
+const MAP_POINT: Vec3 = {
+  x: 3.2,
+  get y() {
+    return G() + HALL.ridge + 1.2;
+  },
+  z: HALL.z1 - 1.6,
+};
 
 // ---------- Les murs ----------
-
-/** Un triangle tourné vers `out` (sa normale du même côté), quel que soit l'ordre de ses coins. */
-function triOut(b: FacetBuilder, a: P3, c: P3, d: P3, out: P3, color: number): void {
-  const n = [(c[1] - a[1]) * (d[2] - a[2]) - (c[2] - a[2]) * (d[1] - a[1]), (c[2] - a[2]) * (d[0] - a[0]) - (c[0] - a[0]) * (d[2] - a[2]), (c[0] - a[0]) * (d[1] - a[1]) - (c[1] - a[1]) * (d[0] - a[0])];
-  if (n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0) b.triangle(a, c, d, color);
-  else b.triangle(a, d, c, color);
-}
 
 /** Une baie : son milieu le long du mur, sa demi-largeur, son appui, la naissance et le haut de son cintre. */
 interface Bay {
@@ -297,7 +270,7 @@ function bayWall(b: FacetBuilder, alongX: boolean, at: number, from: number, to:
 function gableTop(b: FacetBuilder, x: number, outward: number): void {
   const H = HALL;
   const zs = [H.z0 - H.wall / 2, MID_Z + H.band, MID_Z - H.band, H.z1 + H.wall / 2] as const;
-  const y = (v: number) => G + v;
+  const y = (v: number) => G() + v;
   // Le triangle de brique (en trapèze jusqu'au pied du lanterneau).
   const brick: [number, number][] = [
     [zs[3], y(H.eaves)],
@@ -328,7 +301,7 @@ function plateBoth(b: FacetBuilder, x: number, outline: readonly (readonly [numb
 
 /** Le mur plein d'un pignon, du pied au haut des murs, le long de z, sur `x`. */
 function gableWall(b: FacetBuilder, x: number, top0: number, top1: number): void {
-  wallRun(b, false, x, HALL.z0 - HALL.wall / 2, HALL.z1 + HALL.wall / 2, HALL.wall, G + SINK, top0, top1, C.brickShade, C.stoneSun);
+  wallRun(b, false, x, HALL.z0 - HALL.wall / 2, HALL.z1 + HALL.wall / 2, HALL.wall, G() + SINK, top0, top1, C.brickShade, C.stoneSun);
 }
 
 // ---------- Le toit et la verrière ----------
@@ -344,14 +317,14 @@ const roofAt = (z: number): number => {
 function roofSlope(b: FacetBuilder, x0: number, x1: number, side: -1 | 1, top: number, under: number): void {
   const zEave = MID_Z + side * ((HALL.z1 - HALL.z0) / 2 + HALL.over);
   const zTop = MID_Z + side * HALL.band;
-  const yEave = G + roofAt(MID_Z + side * (HALL.z1 - HALL.z0) / 2) - (HALL.over * (HALL.roofTop - HALL.eaves)) / ((HALL.z1 - HALL.z0) / 2 - HALL.band);
+  const yEave = G() + roofAt(MID_Z + side * (HALL.z1 - HALL.z0) / 2) - (HALL.over * (HALL.roofTop - HALL.eaves)) / ((HALL.z1 - HALL.z0) / 2 - HALL.band);
   sheet(
     b,
     [
       [x0, yEave, zEave],
       [x1, yEave, zEave],
-      [x1, G + HALL.roofTop, zTop],
-      [x0, G + HALL.roofTop, zTop],
+      [x1, G() + HALL.roofTop, zTop],
+      [x0, G() + HALL.roofTop, zTop],
     ],
     0.07,
     top,
@@ -362,9 +335,9 @@ function roofSlope(b: FacetBuilder, x0: number, x1: number, side: -1 | 1, top: n
 /** Un cadre vide de la verrière (sur la pente `side`), de `x0` à `x1` : un anneau plat de fer rouillé, dessus et dessous. */
 function emptyFrame(b: FacetBuilder, x0: number, x1: number, side: -1 | 1): void {
   const H = HALL;
-  const y1 = G + H.roofTop + H.riser;
+  const y1 = G() + H.roofTop + H.riser;
   const z = MID_Z + side * H.band;
-  const at = (x: number, s: number): P3 => [x, y1 + (G + H.ridge - y1) * s + 0.02, z + (MID_Z - z) * s];
+  const at = (x: number, s: number): P3 => [x, y1 + (G() + H.ridge - y1) * s + 0.02, z + (MID_Z - z) * s];
   const w = 0.28 / (x1 - x0);
   const ring: [number, number, number, number][] = [
     [0, 1, 0.04, 0.24],
@@ -402,12 +375,6 @@ function loom(b: FacetBuilder, at: Vec3, yaw: number, color: number, shade: numb
   });
 }
 
-/** La ferrure vide du 4e : une petite plaque de fer éteint, deux chevilles nues, tournée vers `n` (x ou z). */
-function emptyBracket(b: FacetBuilder, x: number, y: number, z: number, nx: number, nz: number): void {
-  b.box({ x, y: y - 0.12, z, yaw: Math.atan2(nx, nz) }, [0.4, 0.24, 0.08], C.rustDull, C.rustDullTop);
-  for (const s of [-0.1, 0.1]) b.box({ x: x + nx * 0.1 + nz * s, y: y - 0.04, z: z + nz * 0.1 - nx * s, yaw: Math.atan2(nx, nz) }, [0.06, 0.06, 0.14], C.iron);
-}
-
 /**
  * Le balancier : une plaque de fonte en ovale pointu (jamais un tube), dans son repère (son long le long de x, sa face
  * vers z), posée en `at`.
@@ -436,8 +403,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   const H = HALL;
   const corps = { stage: 0 as Stage, row: 0 };
   const haut = { stage: 1 as Stage, row: 0 };
-  const wallFoot = G + SINK;
-  const bays = (list: readonly number[]): Bay[] => list.map((c) => ({ c, half: BAY.half, sill: G + BAY.sill, spring: G + BAY.spring, crown: G + BAY.crown }));
+  const wallFoot = G() + SINK;
+  const bays = (list: readonly number[]): Bay[] => list.map((c) => ({ c, half: BAY.half, sill: G() + BAY.sill, spring: G() + BAY.spring, crown: G() + BAY.crown }));
   const [zN, zS] = [H.z0, H.z1];
   const [west, east] = [H.x0 - H.wall / 2, H.x1 + H.wall / 2];
 
@@ -445,12 +412,12 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // restaurée) ; le dallage de la halle ; la ferrure vide au support du régulateur ; le coin du tisserand (son métier à
   // bras, son banc, son panier) et sa lanterne, la seule allumée.
   add('ruine', 0, (b) => {
-    gableWall(b, H.x0, G + H.eaves, G + H.eaves);
+    gableWall(b, H.x0, G() + H.eaves, G() + H.eaves);
     gableTop(b, west, -1);
     const f = (x: number, z: number): P3 => [x, planeY(x, z) + 0.03, z];
     const [x0, x1, z0, z1] = [H.x0 + H.wall / 2, H.x1 - H.wall / 2, H.z0 + H.wall / 2, H.z1 - H.wall / 2];
     quadOut(b, f(x0, z0), f(x1, z0), f(x1, z1), f(x0, z1), [0, 1, 0], C.floor);
-    emptyBracket(b, MACHINE.x - 0.62, G + MACHINE.governor + 0.3, MACHINE.z, -1, 0);
+    emptyBracket(b, MACHINE.x - 0.62, G() + MACHINE.governor + 0.3, MACHINE.z, -1, 0, 0.4);
     weaverCorner(b);
   });
 
@@ -464,13 +431,13 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     'ruine',
     0,
     (b) => {
-      bayWall(b, true, zN, west, 2.5, wallFoot, (u) => G + 4.55 + 0.2 * Math.sin(u * 0.9), bays(NORTH_BAYS.filter((x) => x < 2.5)), [-6, -2]);
-      brokenWall(b, zN, 2.5, east, wallFoot, NORTH_BAYS.filter((x) => x > 2.5), (u) => G + 3.9 - (u - 2.5) * 0.17);
-      bayWall(b, true, zS, west, -2.4, wallFoot, (u) => G + 4.7 - (u - west) * 0.04, bays(SOUTH_BAYS.filter((x) => x < 0)), [-5]);
-      wallRun(b, true, zS, -2.4, east, H.wall, wallFoot, G + 1.6, G + 1.1, C.brickShade, C.stoneSun);
-      wallRun(b, false, H.x1, zN - H.wall / 2, EAST_BAY.z - EAST_BAY.half, H.wall, wallFoot, G + 3.4, G + 2.0, C.brickShade, C.stoneSun);
-      wallRun(b, false, H.x1, EAST_BAY.z + EAST_BAY.half, zS + H.wall / 2, H.wall, wallFoot, G + 1.4, G + 2.6, C.brickShade, C.stoneSun);
-      for (const [k, x] of COLUMNS.entries()) if (k !== FALLEN_COLUMN) column(b, x, MID_Z, G + COLUMN.top, C.rustShade, C.rust);
+      bayWall(b, true, zN, west, 2.5, wallFoot, (u) => G() + 4.55 + 0.2 * Math.sin(u * 0.9), bays(NORTH_BAYS.filter((x) => x < 2.5)), [-6, -2]);
+      brokenWall(b, zN, 2.5, east, wallFoot, NORTH_BAYS.filter((x) => x > 2.5), (u) => G() + 3.9 - (u - 2.5) * 0.17);
+      bayWall(b, true, zS, west, -2.4, wallFoot, (u) => G() + 4.7 - (u - west) * 0.04, bays(SOUTH_BAYS.filter((x) => x < 0)), [-5]);
+      wallRun(b, true, zS, -2.4, east, H.wall, wallFoot, G() + 1.6, G() + 1.1, C.brickShade, C.stoneSun);
+      wallRun(b, false, H.x1, zN - H.wall / 2, EAST_BAY.z - EAST_BAY.half, H.wall, wallFoot, G() + 3.4, G() + 2.0, C.brickShade, C.stoneSun);
+      wallRun(b, false, H.x1, EAST_BAY.z + EAST_BAY.half, zS + H.wall / 2, H.wall, wallFoot, G() + 1.4, G() + 2.6, C.brickShade, C.stoneSun);
+      for (const [k, x] of COLUMNS.entries()) if (k !== FALLEN_COLUMN) column(b, x, MID_Z, G() + COLUMN.top, C.rustShade, C.rust);
       // La colonne couchée, au pied de la sienne, entre le rang nord et l'axe (le rang nord est contre le mur).
       const lz = MID_Z - 1.0;
       const lx = COLUMNS[FALLEN_COLUMN] - COLUMN.top + 1.6;
@@ -501,19 +468,19 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     0,
     (b) => {
       const end = 6.7;
-      b.box({ x: (H.x0 + end) / 2, y: G + H.ridge - 0.18, z: MID_Z }, [end - H.x0, 0.18, 0.2], C.rustShade, C.rust);
+      b.box({ x: (H.x0 + end) / 2, y: G() + H.ridge - 0.18, z: MID_Z }, [end - H.x0, 0.18, 0.2], C.rustShade, C.rust);
       lanternRisers(b, H.x0, end, C.rustShade);
       glazingSlopes(b, H.x0, 0, 4, C.rust, C.rustShade);
       emptyFrame(b, 0.3, 2.4, -1);
       emptyFrame(b, 2.6, 4.5, 1);
       emptyFrame(b, 4.7, 6.6, -1);
-      const rafter = (x: number, side: -1 | 1) => b.beam({ x, y: G + 4.5, z: MID_Z + side * ((H.z1 - H.z0) / 2 - 0.1) }, { x, y: G + H.roofTop, z: MID_Z + side * H.band * 0.6 }, 0.14, C.rust);
+      const rafter = (x: number, side: -1 | 1) => b.beam({ x, y: G() + 4.5, z: MID_Z + side * ((H.z1 - H.z0) / 2 - 0.1) }, { x, y: G() + H.roofTop, z: MID_Z + side * H.band * 0.6 }, 0.14, C.rust);
       for (const x of COLUMNS) rafter(x, -1);
       for (const x of [COLUMNS[0], COLUMNS[1]]) rafter(x, 1);
       for (const side of [-1, 1] as const) roofSlope(b, H.x0 - H.over, COLUMNS[0] + 0.3, side, C.rust, C.rustShade);
       // L'arbre, de sa chaise à l'ouest jusqu'à son bout tombé ; sa chaise.
-      b.box({ x: -6.2, y: G + 6.3, z: MID_Z }, [0.3, 0.5, 0.3], C.rustShade, C.rust);
-      b.beam({ x: -6.2, y: G + 6.25, z: MID_Z }, { x: 1.5, y: G + 3.4, z: MID_Z + 0.4 }, 0.13, C.rust);
+      b.box({ x: -6.2, y: G() + 6.3, z: MID_Z }, [0.3, 0.5, 0.3], C.rustShade, C.rust);
+      b.beam({ x: -6.2, y: G() + 6.25, z: MID_Z }, { x: 1.5, y: G() + 3.4, z: MID_Z + 0.4 }, 0.13, C.rust);
       for (const [x, z, len, yaw] of [
         [-2.2, -3.9, 2.4, 0.3],
         [1.6, -5.3, 2.0, -0.4],
@@ -534,34 +501,34 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // six colonnes ; les six métiers debout en deux rangs ; la machine redressée, le balancier de niveau en haut de sa
   // colonne, la bielle jusqu'au volant.
   add(0, 0, (b) => {
-    const top = () => G + H.eaves;
+    const top = () => G() + H.eaves;
     bayWall(b, true, zN, west, east, wallFoot, top, bays(NORTH_BAYS));
-    bayWall(b, true, zS, west, east, wallFoot, top, [...bays(SOUTH_BAYS), { c: 0, half: DOOR.half, sill: wallFoot, spring: G + DOOR.spring, crown: G + DOOR.crown }]);
-    bayWall(b, false, H.x1, zN - H.wall / 2, zS + H.wall / 2, wallFoot, top, [{ c: EAST_BAY.z, half: EAST_BAY.half, sill: G + EAST_BAY.sill, spring: G + EAST_BAY.spring, crown: G + EAST_BAY.crown }]);
+    bayWall(b, true, zS, west, east, wallFoot, top, [...bays(SOUTH_BAYS), { c: 0, half: DOOR.half, sill: wallFoot, spring: G() + DOOR.spring, crown: G() + DOOR.crown }]);
+    bayWall(b, false, H.x1, zN - H.wall / 2, zS + H.wall / 2, wallFoot, top, [{ c: EAST_BAY.z, half: EAST_BAY.half, sill: G() + EAST_BAY.sill, spring: G() + EAST_BAY.spring, crown: G() + EAST_BAY.crown }]);
     gableTop(b, east, 1);
-    for (const x of COLUMNS) column(b, x, MID_Z, G + COLUMN.top, C.iron, C.ironTop);
+    for (const x of COLUMNS) column(b, x, MID_Z, G() + COLUMN.top, C.iron, C.ironTop);
     for (const p of LOOMS) loom(b, { x: p.x, y: planeY(p.x, p.z), z: p.z }, Math.PI / 2, C.loom, C.loomShade);
     machine(b, C.iron, C.ironTop);
-    const top0 = G + MACHINE.h;
+    const top0 = G() + MACHINE.h;
     walkingBeam(b, { x: MACHINE.x - 0.08, y: top0 + 0.4, z: MACHINE.z, yaw: Math.PI / 2, pitch: 0 }, C.iron, C.ironTop);
     const W = MACHINE.wheel;
-    b.beam({ x: MACHINE.x - 0.25, y: top0 + 0.25, z: MACHINE.z + MACHINE.beam - 0.3 }, { x: MACHINE.x - 0.25, y: G + W.axle + 0.55, z: W.z - 0.2 }, 0.14, C.iron);
+    b.beam({ x: MACHINE.x - 0.25, y: top0 + 0.25, z: MACHINE.z + MACHINE.beam - 0.3 }, { x: MACHINE.x - 0.25, y: G() + W.axle + 0.55, z: W.z - 0.2 }, 0.14, C.iron);
   });
   // ---- Le haut : les fermes, la tôle rouge sombre et la verrière en bande surélevée au faîte, une seule ligne de toit
   // continue ; l'arbre de transmission et ses courroies tendues, immobiles ; la lanterne de la porte.
   add(1, 0, (b) => {
-    b.box({ x: 0, y: G + H.ridge - 0.12, z: MID_Z }, [H.x1 - H.x0 + 2 * H.over, 0.12, 0.26], C.iron, C.ironTop);
+    b.box({ x: 0, y: G() + H.ridge - 0.12, z: MID_Z }, [H.x1 - H.x0 + 2 * H.over, 0.12, 0.26], C.iron, C.ironTop);
     for (const side of [-1, 1] as const) roofSlope(b, H.x0 - H.over, H.x1 + H.over, side, C.roof, C.roofUnder);
     lanternRisers(b, west, east, C.iron);
     glazingSlopes(b, west, east, 8, C.ironTop, C.iron);
-    for (const x of COLUMNS) for (const side of [-1, 1] as const) b.beam({ x, y: G + H.eaves - 0.1, z: MID_Z + side * ((H.z1 - H.z0) / 2 - 0.15) }, { x, y: G + H.roofTop - 0.12, z: MID_Z + side * H.band }, 0.12, C.iron);
+    for (const x of COLUMNS) for (const side of [-1, 1] as const) b.beam({ x, y: G() + H.eaves - 0.1, z: MID_Z + side * ((H.z1 - H.z0) / 2 - 0.15) }, { x, y: G() + H.roofTop - 0.12, z: MID_Z + side * H.band }, 0.12, C.iron);
     // L'arbre de transmission sous le faîte, sur ses deux chaises, et une courroie tendue jusqu'à chaque métier.
-    const y = G + 6.0;
+    const y = G() + 6.0;
     b.beam({ x: H.x0 + 1.6, y, z: MID_Z }, { x: MACHINE.x - 1.0, y, z: MID_Z }, 0.12, C.iron);
     for (const x of [-6.2, 1.2]) b.box({ x, y: y + 0.05, z: MID_Z }, [0.26, 0.6, 0.26], C.iron, C.ironTop);
     // Le rang sud prend sa courroie à l'arbre du faîte ; le rang nord, contre le mur, à un second arbre porté par le mur nord
     // sur deux consoles, ses courroies droites derrière les métiers : rien ne traverse l'allée de la scénette.
-    const north = { y: G + 4.6, z: H.z0 + H.wall / 2 + 0.3 };
+    const north = { y: G() + 4.6, z: H.z0 + H.wall / 2 + 0.3 };
     b.beam({ x: LOOMS[0].x - 0.8, y: north.y, z: north.z }, { x: MACHINE.x - 1.0, y: north.y, z: north.z }, 0.1, C.iron);
     for (const x of [LOOMS[0].x - 0.5, MACHINE.x - 1.3]) b.box({ x, y: north.y - 0.2, z: north.z - 0.15 }, [0.2, 0.3, 0.3], C.iron, C.ironTop);
     for (const p of LOOMS) {
@@ -570,8 +537,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
       else b.beam({ x: p.x, y: y - 0.05, z: MID_Z + 0.08 }, { x: p.x, y: top, z: p.z - 0.35 }, 0.07, C.leather);
     }
     const L = LANTERN_DOOR;
-    b.box({ x: L.x, y: G + L.y + 0.02, z: L.z - 0.1 }, [0.07, 0.07, 0.4], C.iron);
-    lantern(b, { x: L.x, y: G + L.y, z: L.z + 0.1 }, true);
+    b.box({ x: L.x, y: G() + L.y + 0.02, z: L.z - 0.1 }, [0.07, 0.07, 0.4], C.iron);
+    lantern(b, { x: L.x, y: G() + L.y, z: L.z + 0.1 }, true);
   });
   // ---- Les abords : la cour dallée ; la grande porte à deux battants ouverts, repliés contre le mur ; le quai de
   // chargement bas contre le pignon ouest ; la lanterne du chemin.
@@ -594,14 +561,14 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
  */
 function brokenWall(b: FacetBuilder, at: number, from: number, to: number, y0: number, bays: readonly number[], topAt: (u: number) => number): void {
   const t = HALL.wall;
-  wallRun(b, true, at, from, to, t, y0, G + BAY.sill, G + BAY.sill, C.brickShade, C.brick);
+  wallRun(b, true, at, from, to, t, y0, G() + BAY.sill, G() + BAY.sill, C.brickShade, C.brick);
   const edges = [from, ...bays.flatMap((c) => [c - BAY.half, c + BAY.half]), to];
-  for (let k = 0; k < edges.length; k += 2) wallRun(b, true, at, edges[k], edges[k + 1], t, G + BAY.sill - 0.02, topAt(edges[k]), topAt(edges[k + 1]), C.brickShade, C.brick);
+  for (let k = 0; k < edges.length; k += 2) wallRun(b, true, at, edges[k], edges[k + 1], t, G() + BAY.sill - 0.02, topAt(edges[k]), topAt(edges[k + 1]), C.brickShade, C.brick);
 }
 
 /** Les deux montants du lanterneau, de `x0` à `x1`, à leurs deux faces. */
 function lanternRisers(b: FacetBuilder, x0: number, x1: number, color: number): void {
-  const [y0, y1] = [G + HALL.roofTop, G + HALL.roofTop + HALL.riser];
+  const [y0, y1] = [G() + HALL.roofTop, G() + HALL.roofTop + HALL.riser];
   for (const side of [-1, 1] as const) {
     const z = MID_Z + side * HALL.band;
     quadOut(b, [x0, y0, z], [x1, y0, z], [x1, y1, z], [x0, y1, z], [0, 0, side], color);
@@ -616,8 +583,8 @@ function lanternRisers(b: FacetBuilder, x0: number, x1: number, color: number): 
  */
 function glazingSlopes(b: FacetBuilder, x0: number, x1: number, panes: number, top: number, under: number): void {
   const H = HALL;
-  const y1 = G + H.roofTop + H.riser;
-  const yr = G + H.ridge;
+  const y1 = G() + H.roofTop + H.riser;
+  const yr = G() + H.ridge;
   for (const side of [-1, 1] as const) {
     const z = MID_Z + side * H.band;
     const q: [P3, P3, P3, P3] = [
@@ -647,14 +614,14 @@ function machine(b: FacetBuilder, metal: number, metalTop: number): void {
   const M = MACHINE;
   const g = planeY(M.x, M.z);
   b.box({ x: M.x, y: g - 0.2, z: M.z }, [0.9, 0.5, 0.9], C.stoneShade, C.stoneSun);
-  b.prism({ x: M.x, y: G + 0.3, z: M.z }, 0.3, 0.24, M.h - 0.3, 8, metal, metalTop);
-  b.box({ x: M.x, y: G + M.h - 0.05, z: M.z }, [0.62, 0.18, 0.62], metal, metalTop);
-  b.box({ x: M.x - 0.42, y: G + M.governor - 0.1, z: M.z }, [0.36, 0.1, 0.3], metal, metalTop);
+  b.prism({ x: M.x, y: G() + 0.3, z: M.z }, 0.3, 0.24, M.h - 0.3, 8, metal, metalTop);
+  b.box({ x: M.x, y: G() + M.h - 0.05, z: M.z }, [0.62, 0.18, 0.62], metal, metalTop);
+  b.box({ x: M.x - 0.42, y: G() + M.governor - 0.1, z: M.z }, [0.36, 0.1, 0.3], metal, metalTop);
   const W = M.wheel;
   const wg = planeY(M.x, W.z);
-  b.drum({ x: M.x, y: G + W.axle, z: W.z - 0.14, pitch: Math.PI / 2 }, W.r, 0.28, 10, metal, metalTop);
+  b.drum({ x: M.x, y: G() + W.axle, z: W.z - 0.14, pitch: Math.PI / 2 }, W.r, 0.28, 10, metal, metalTop);
   for (const s of [-1, 1]) b.box({ x: M.x, y: wg - 0.2, z: W.z + s * 0.42 }, [W.r * 2 + 0.6, 0.62, 0.32], C.stoneShade, C.stoneSun);
-  b.box({ x: M.x, y: wg - 0.1, z: W.z - 0.62 }, [0.4, G + W.axle - wg + 0.2, 0.3], C.stoneShade, C.stoneSun);
+  b.box({ x: M.x, y: wg - 0.1, z: W.z - 0.62 }, [0.4, G() + W.axle - wg + 0.2, 0.3], C.stoneShade, C.stoneSun);
 }
 
 /**
@@ -668,8 +635,8 @@ function weaverCorner(b: FacetBuilder): void {
   b.box({ x: K.bench.x, y: planeY(K.bench.x, K.bench.z) - 0.1, z: K.bench.z }, [0.4, 0.55, 1.5], C.woodShade, C.wood);
   b.prism({ x: K.basket.x, y: planeY(K.basket.x, K.basket.z) - 0.05, z: K.basket.z }, 0.26, 0.32, 0.36, 6, C.wickerShade, C.thread);
   const L = LANTERN_WEAVER;
-  b.box({ x: L.x, y: G + L.y + 0.02, z: L.z + 0.16 }, [0.07, 0.07, 0.36], C.iron);
-  lantern(b, { x: L.x, y: G + L.y, z: L.z }, true);
+  b.box({ x: L.x, y: G() + L.y + 0.02, z: L.z + 0.16 }, [0.07, 0.07, 0.36], C.iron);
+  lantern(b, { x: L.x, y: G() + L.y, z: L.z }, true);
 }
 
 /** La cour : la dalle qui suit le plan, son bord, et ses joints en rangs (jamais sur le chemin). */
@@ -762,12 +729,12 @@ const SCENE_SPOT = { dx: -7.9, dz: -6.75, half: [1.1, 1.75] as [number, number] 
 const SCENE_HALF = 1.4;
 
 /** La hauteur du sol de la scène au-dessus de son point (le plus haut du sol sous elle) : le dessus du dallage. */
-const SCENE_RISE = (() => {
+const sceneRise = once(() => {
   const [hx, hz] = SCENE_SPOT.half;
   let top = -Infinity;
   for (let i = -3; i <= 3; i++) for (let k = -2; k <= 2; k++) top = Math.max(top, localGround(SCENE_SPOT.dx + (i / 3) * hx, SCENE_SPOT.dz + (k / 2) * hz));
   return Math.max(0, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz) + 0.03 - top);
-})();
+});
 
 /** Le tisserand en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, tablier, chemise. */
 function weaver(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
@@ -788,7 +755,9 @@ export const MANUFACTURE: PlaceArt = {
   traceStage: 0,
   sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
   site: {
-    rise: SCENE_RISE,
+    get rise() {
+      return sceneRise();
+    },
     keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
     habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
     subject: { halfWidth: 2.0, bottom: -0.4, top: 2.5, depth: 0.3 },
@@ -840,7 +809,9 @@ export const MANUFACTURE_LAYOUT = {
   quay: QUAY,
   yard: YARD,
   planeY,
-  base: G,
+  get base() {
+    return G();
+  },
   pathLantern: PATH_LANTERN,
   door: DOOR_AT,
   doorFrame: DOOR_FRAME,

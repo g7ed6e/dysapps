@@ -136,13 +136,16 @@ describe('La pose du pont tournant des docks (le bassin à flot du 4e)', () => {
     for (let i = 0; i < out.length; i++) expect(out[i]).toBeCloseTo(lay.facets.positions[i], 4);
     for (let i = 0; i < deckEnd * 3; i++) expect(normals[i]).toBeCloseTo(lay.facets.normals[i], 4);
     const colors = new Float32Array(lay.facets.colors.length);
-    expect(bridgeLayColors(lay, 0, colors)).toBe(true);
+    expect(bridgeLayColors(lay, 0, colors)).toBe(0);
     const rust = linearRgb(0xaf6c55);
     expect(Array.from({ length: deckEnd }, (_, i) => i).some((i) => [0, 1, 2].every((k) => Math.abs(colors[i * 3 + k] - rust[k]) < 1e-6))).toBe(true);
-    bridgeLayColors(lay, SWING_LAY.raise, colors);
+    expect(bridgeLayColors(lay, SWING_LAY.raise, colors, 0)).toBe(1);
     for (let i = 0; i < colors.length; i++) expect(colors[i]).toBeCloseTo(lay.facets.colors[i], 6);
+    // Le fondu fini et écrit, rien n'est plus à téléverser jusqu'à la fin de la pose.
+    expect(bridgeLayColors(lay, SWING_LAY.raise + 0.5, colors, 1)).toBeNull();
+    expect(bridgeLayColors(lay, lay.landed, colors, 1)).toBeNull();
     // Un pont à piles n'a pas de fondu.
-    expect(bridgeLayColors(bridgeLay('coteaux'), 0, colors)).toBe(false);
+    expect(bridgeLayColors(bridgeLay('coteaux'), 0, colors)).toBeNull();
   });
 
   it('un seul quart de tour, sans rebond : le bout libre se rapproche toujours de la culée d’en face ; tout reste dans la boîte', () => {

@@ -26,7 +26,7 @@
 import type { Stage } from './construction';
 import { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import { inWorld, lantern, localGround4e, quadOut, sheet, wallRun } from './place4eKit';
+import { emptyBracket, groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, triOut, wallRun } from './place4eKit';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
 
@@ -161,39 +161,13 @@ const HOUSE = { x: 4.2, z0: CAGE.z1 + CAGE.wall / 2 + 0.02, z1: 11.6, rows: [10.
 /**
  * Le plan du sol, ajusté sous la cage, l'appentis et la cour (aux moindres carrés), relevé juste assez pour ne jamais
  * passer sous le sol.
+ * Calculé au premier usage (./place4eKit.ts).
  */
-const PLANE = (() => {
-  const pts: [number, number, number][] = [];
-  for (let x = -6; x <= 9.5 + 1e-6; x += 0.5) for (let z = -6; z <= 9 + 1e-6; z += 0.5) pts.push([x, z, localGround(x, z)]);
-  const n = pts.length;
-  const mx = pts.reduce((s, p) => s + p[0], 0) / n;
-  const mz = pts.reduce((s, p) => s + p[1], 0) / n;
-  const my = pts.reduce((s, p) => s + p[2], 0) / n;
-  let sxx = 0,
-    szz = 0,
-    sxz = 0,
-    sxy = 0,
-    szy = 0;
-  for (const [x, z, y] of pts) {
-    sxx += (x - mx) ** 2;
-    szz += (z - mz) ** 2;
-    sxz += (x - mx) * (z - mz);
-    sxy += (x - mx) * (y - my);
-    szy += (z - mz) * (y - my);
-  }
-  const det = sxx * szz - sxz * sxz;
-  const b = (sxy * szz - szy * sxz) / det;
-  const c = (szy * sxx - sxy * sxz) / det;
-  let hi = -Infinity;
-  for (const [x, z, y] of pts) hi = Math.max(hi, y - b * x - c * z);
-  return { a: hi + 0.04, b, c };
-})();
+const planeY = groundPlane4e(localGround, [-6, 9.5], [-6, 9]);
 
-/** Le dessus du plan du sol en un point du repère. */
-const planeY = (x: number, z: number): number => PLANE.a + PLANE.b * x + PLANE.c * z;
 
 /** Le pied du lieu : le plan sous le milieu de la cage ; toutes les hauteurs de la cage partent de lui. */
-const G = planeY(0, (CAGE.z0 + CAGE.z1) / 2);
+const G = once(() => planeY(0, (CAGE.z0 + CAGE.z1) / 2));
 
 // ---------- La vue ----------
 
@@ -212,16 +186,15 @@ const DOOR_FRAME = { height: -3, back: 2.0 } as const;
  * dans l'arche ni sur le rideau. Au milieu de la cage, il tombait, vu de dos dans la ruine (sans toit), au milieu de
  * l'arche, sur la scène et le rideau tombé (captures du 22 octobre 2026), comme le Chariot pose le sien sur le treuil.
  */
-const MAP_POINT: Vec3 = { x: CAGE.x0 + 0.5, y: G + CAGE.ridge + 1.2, z: (CAGE.z0 + CAGE.z1) / 2 };
+const MAP_POINT: Vec3 = {
+  x: CAGE.x0 + 0.5,
+  get y() {
+    return G() + CAGE.ridge + 1.2;
+  },
+  z: (CAGE.z0 + CAGE.z1) / 2,
+};
 
 // ---------- Les murs ----------
-
-/** Un triangle tourné vers `out` (sa normale du même côté), quel que soit l'ordre de ses coins. */
-function triOut(b: FacetBuilder, a: P3, c: P3, d: P3, out: P3, color: number): void {
-  const n = [(c[1] - a[1]) * (d[2] - a[2]) - (c[2] - a[2]) * (d[1] - a[1]), (c[2] - a[2]) * (d[0] - a[0]) - (c[0] - a[0]) * (d[2] - a[2]), (c[0] - a[0]) * (d[1] - a[1]) - (c[1] - a[1]) * (d[0] - a[0])];
-  if (n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0) b.triangle(a, c, d, color);
-  else b.triangle(a, d, c, color);
-}
 
 /** Un pan de mur de brique de la cage (d'ouest en est si `alongX`, sinon du nord au sud), son dessus en pierre grise. */
 function run(b: FacetBuilder, alongX: boolean, at: number, from: number, to: number, y0: number, top0: number, top1: number, thick: number = CAGE.wall): void {
@@ -229,7 +202,7 @@ function run(b: FacetBuilder, alongX: boolean, at: number, from: number, to: num
 }
 
 /** Le haut des murs est et ouest restaurés, du nord au sud : en pente douce du mur nord au mur du cadre. */
-const sideTop = (z: number): number => G + CAGE.north + ((CAGE.south - CAGE.north) * (z - (CAGE.z0 - CAGE.wall / 2))) / (CAGE.z1 - CAGE.z0 + CAGE.wall);
+const sideTop = (z: number): number => G() + CAGE.north + ((CAGE.south - CAGE.north) * (z - (CAGE.z0 - CAGE.wall / 2))) / (CAGE.z1 - CAGE.z0 + CAGE.wall);
 
 /**
  * Le cintre de l'arche du cadre : de chaque côté, un coin plein en biais, de la naissance au haut du cintre, à ses deux
@@ -238,7 +211,7 @@ const sideTop = (z: number): number => G + CAGE.north + ((CAGE.south - CAGE.nort
 function archHaunches(b: FacetBuilder, closed: boolean): void {
   const z = CAGE.z1,
     t = CAGE.wall / 2;
-  const [spring, crown] = [G + ARCH.spring, G + ARCH.crown];
+  const [spring, crown] = [G() + ARCH.spring, G() + ARCH.crown];
   const a = ARCH.half * 0.42;
   for (const s of [-1, 1]) {
     const xe = s * ARCH.half,
@@ -253,8 +226,8 @@ function archHaunches(b: FacetBuilder, closed: boolean): void {
 function stageFloor(b: FacetBuilder, color: number, joint: number, skew: number): void {
   const t = CAGE.wall / 2;
   const [x0, x1, z0, z1] = [CAGE.x0 + t, CAGE.x1 - t, CAGE.z0 + t, CAGE.z1 - t];
-  b.box({ x: (x0 + x1) / 2, y: G + SINK, z: (z0 + z1) / 2 }, [x1 - x0, FLOOR - SINK, z1 - z0], color);
-  const y = G + FLOOR + 0.012;
+  b.box({ x: (x0 + x1) / 2, y: G() + SINK, z: (z0 + z1) / 2 }, [x1 - x0, FLOOR - SINK, z1 - z0], color);
+  const y = G() + FLOOR + 0.012;
   for (const [k, x] of [-3.3, -1.1, 1.1, 3.3].entries()) {
     const d = skew * (k % 2 ? 1 : -1);
     quadOut(b, [x - 0.035 + d, y, z0 + 0.05], [x + 0.035 + d, y, z0 + 0.05], [x + 0.035 - d, y, z1 - 0.05], [x - 0.035 - d, y, z1 - 0.05], [0, 1, 0], joint);
@@ -264,13 +237,13 @@ function stageFloor(b: FacetBuilder, color: number, joint: number, skew: number)
 /** Les deux rails des contrepoids, debout sur la face intérieure du mur ouest. */
 function rails(b: FacetBuilder, color: number): void {
   const x = CAGE.x0 + CAGE.wall / 2 + 0.06;
-  for (const z of RAILS.z) b.box({ x, y: G + FLOOR - 0.05, z }, [0.12, RAILS.top - FLOOR, 0.1], color);
+  for (const z of RAILS.z) b.box({ x, y: G() + FLOOR - 0.05, z }, [0.12, RAILS.top - FLOOR, 0.1], color);
 }
 
 /** Les consoles de fer de la galerie, en ligne sur le mur ouest. */
 function consoles(b: FacetBuilder, color: number, top: number): void {
   const x = CAGE.x0 + CAGE.wall / 2 + GALLERY.wide / 2 - 0.05;
-  for (const z of GALLERY.consoles) b.box({ x, y: G + GALLERY.y - 0.32, z }, [GALLERY.wide - 0.1, 0.3, 0.12], color, top);
+  for (const z of GALLERY.consoles) b.box({ x, y: G() + GALLERY.y - 0.32, z }, [GALLERY.wide - 0.1, 0.3, 0.12], color, top);
 }
 
 /** Un tambour de treuil de bois, son axe du nord au sud, posé sur son pied `y`. */
@@ -284,7 +257,7 @@ function drum(b: FacetBuilder, x: number, y: number, z: number, r: number, len: 
  */
 function curtainPanel(b: FacetBuilder, x0: number, s: -1 | 1): void {
   const K = CURTAIN;
-  const [y0, y1] = [G + FLOOR + 0.02, G + ARCH.crown + 0.5];
+  const [y0, y1] = [G() + FLOOR + 0.02, G() + ARCH.crown + 0.5];
   const step = K.gathered / K.folds;
   for (let k = 0; k < K.folds; k++) {
     const xa = x0 + s * k * step,
@@ -300,13 +273,7 @@ function curtainPanel(b: FacetBuilder, x0: number, s: -1 | 1): void {
     quadOut(b, ...q, [0, 0, 1], C.curtain);
     quadOut(b, ...q, [0, 0, -1], C.curtainBack);
   }
-  b.box({ x: x0 + (s * K.gathered) / 2, y: G + 1.6, z: K.z - K.depth / 2 }, [K.gathered + 0.06, 0.12, K.depth + 0.1], C.curtainBack);
-}
-
-/** La ferrure vide du 4e : une petite plaque de fer éteint, deux chevilles nues, tournée vers `n` (x ou z). */
-function emptyBracket(b: FacetBuilder, x: number, y: number, z: number, nx: number, nz: number): void {
-  b.box({ x, y: y - 0.12, z, yaw: Math.atan2(nx, nz) }, [0.34, 0.24, 0.06], C.rustDull, C.rustDullTop);
-  for (const s of [-0.09, 0.09]) b.box({ x: x + nx * 0.09 + nz * s, y: y - 0.04, z: z + nz * 0.09 - nx * s, yaw: Math.atan2(nx, nz) }, [0.06, 0.06, 0.12], C.iron);
+  b.box({ x: x0 + (s * K.gathered) / 2, y: G() + 1.6, z: K.z - K.depth / 2 }, [K.gathered + 0.06, 0.12, K.depth + 0.1], C.curtainBack);
 }
 
 /**
@@ -317,9 +284,9 @@ function emptyBracket(b: FacetBuilder, x: number, y: number, z: number, nx: numb
 function atelier(b: FacetBuilder): void {
   const A = LEANTO;
   const t = A.wall / 2;
-  const foot = G + SINK;
-  const roofAt = (x: number) => G + A.hi + ((A.lo - A.hi) * (x - A.x0)) / (A.x1 - A.x0);
-  wallRun(b, false, A.x1, A.z0, A.z1 + t, A.wall, foot, G + A.lo - 0.05, G + A.lo - 0.05, C.brick, C.stoneSun);
+  const foot = G() + SINK;
+  const roofAt = (x: number) => G() + A.hi + ((A.lo - A.hi) * (x - A.x0)) / (A.x1 - A.x0);
+  wallRun(b, false, A.x1, A.z0, A.z1 + t, A.wall, foot, G() + A.lo - 0.05, G() + A.lo - 0.05, C.brick, C.stoneSun);
   wallRun(b, true, A.z1, A.x0 - t, A.x1 - t, A.wall, foot, roofAt(A.x0) - 0.05, roofAt(A.x1) - 0.05, C.brick, C.stoneSun);
   b.box({ x: A.x0 + 0.12, y: foot, z: A.z0 + 0.12 }, [0.2, roofAt(A.x0) - foot - 0.05, 0.2], C.woodShade, C.wood);
   b.beam({ x: A.x0 + 0.12, y: roofAt(A.x0) - 0.12, z: A.z0 + 0.12 }, { x: A.x0 + 0.12, y: roofAt(A.x0) - 0.12, z: A.z1 - t }, 0.16, C.woodShade);
@@ -341,8 +308,8 @@ function atelier(b: FacetBuilder): void {
   for (const s of [-1, 1]) b.box({ x: T.x, y: ty - 0.1, z: T.z + s * (T.size[2] / 2 - 0.2) }, [T.size[0] - 0.1, T.size[1] - 0.08 + 0.1, 0.08], C.woodShade);
   for (const r of ROLLS) b.prism({ x: r.x, y: planeY(r.x, r.z) - 0.05, z: r.z }, 0.16, 0.16, 1.25, 5, r.color, C.clothShade);
   const L = LANTERN_TAILOR;
-  b.box({ x: L.x - 0.15, y: G + L.y + 0.02, z: L.z }, [0.36, 0.07, 0.07], C.iron);
-  lantern(b, { x: L.x, y: G + L.y, z: L.z }, true);
+  b.box({ x: L.x - 0.15, y: G() + L.y + 0.02, z: L.z }, [0.36, 0.07, 0.07], C.iron);
+  lantern(b, { x: L.x, y: G() + L.y, z: L.z }, true);
 }
 
 /** La cour des décors : la dalle qui suit le plan, son bord, et ses joints en rangs (jamais sur le chemin). */
@@ -371,8 +338,8 @@ function yard(b: FacetBuilder): void {
 function house(b: FacetBuilder): void {
   const H = HOUSE;
   const mid = (H.z0 + H.z1) / 2;
-  const top = G + 0.06;
-  b.box({ x: 0, y: G - 1.4, z: mid }, [2 * H.x, top - (G - 1.4), H.z1 - H.z0], C.stoneShade, C.stoneSun);
+  const top = G() + 0.06;
+  b.box({ x: 0, y: G() - 1.4, z: mid }, [2 * H.x, top - (G() - 1.4), H.z1 - H.z0], C.stoneShade, C.stoneSun);
   b.box({ x: 0, y: top - 0.1, z: H.z0 + 0.25 }, [2 * ARCH.half - 0.4, 0.21, 0.5], C.stoneShade, C.stoneSun);
   b.box({ x: 0, y: top - 0.1, z: H.z0 + 0.125 }, [2 * ARCH.half - 0.4, 0.31, 0.25], C.stoneShade, C.stoneSun);
   for (const z of H.rows) {
@@ -386,7 +353,7 @@ function house(b: FacetBuilder): void {
 function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   const K = CAGE;
   const t = K.wall / 2;
-  const foot = G + SINK;
+  const foot = G() + SINK;
   const [west, east] = [K.x0 - t, K.x1 + t];
   const [north, south] = [K.z0 - t, K.z1 + t];
   const bas = { stage: 0 as Stage, row: 0 };
@@ -396,7 +363,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // Toujours là : la ferrure vide, sur la face intérieure du pilier gauche (à l'est) de la porte des décors ; l'appentis du
   // costumier et sa lanterne, la seule allumée.
   add('ruine', 0, (b) => {
-    emptyBracket(b, DOOR.half - 0.03, G + FLOOR + 1.55, K.z0, -1, 0);
+    emptyBracket(b, DOOR.half - 0.03, G() + FLOOR + 1.55, K.z0, -1, 0);
     atelier(b);
   });
 
@@ -409,11 +376,11 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     0,
     (b) => {
       stageFloor(b, C.floor, C.floorJoint, 0.06);
-      run(b, true, K.z0, -DOOR.half - 1.0, -DOOR.half, foot, G + 2.3, G + 2.0);
-      run(b, true, K.z0, DOOR.half, DOOR.half + 1.0, foot, G + 2.1, G + 2.4);
-      run(b, false, K.x1, north, EAST_RUIN.corner, foot, G + EAST_RUIN.top0, G + EAST_RUIN.top1);
+      run(b, true, K.z0, -DOOR.half - 1.0, -DOOR.half, foot, G() + 2.3, G() + 2.0);
+      run(b, true, K.z0, DOOR.half, DOOR.half + 1.0, foot, G() + 2.1, G() + 2.4);
+      run(b, false, K.x1, north, EAST_RUIN.corner, foot, G() + EAST_RUIN.top0, G() + EAST_RUIN.top1);
       rails(b, C.rust);
-      b.box({ x: -4.3, y: G + FLOOR - 0.02, z: 6.2, yaw: 0.35 }, [1.0, 0.46, 0.7], C.rustShade, C.greyShade);
+      b.box({ x: -4.3, y: G() + FLOOR - 0.02, z: 6.2, yaw: 0.35 }, [1.0, 0.46, 0.7], C.rustShade, C.greyShade);
       for (const [x, z, yaw] of [
         [-3.9, 0.6, 0.4],
         [3.6, 0.9, -0.3],
@@ -434,8 +401,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
         [-4.6, 0],
         [-4.25, 0.1],
       ] as const)
-        b.box({ x, y: G + FLOOR + lift, z: 5.5 }, [0.32, 0.1, 4.2], C.woodShade, C.grey);
-      b.prism({ x: 1.8, y: G + FLOOR - 0.02, z: 4.6 }, 0.7, 0.7, 0.9, 8, C.woodShade, C.wood);
+        b.box({ x, y: G() + FLOOR + lift, z: 5.5 }, [0.32, 0.1, 4.2], C.woodShade, C.grey);
+      b.prism({ x: 1.8, y: G() + FLOOR - 0.02, z: 4.6 }, 0.7, 0.7, 0.9, 8, C.woodShade, C.wood);
     },
     milieu,
   );
@@ -446,17 +413,17 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     'ruine',
     0,
     (b) => {
-      run(b, true, K.z1, west, -ARCH.half, foot, G + 7.8, G + 8.1);
-      run(b, true, K.z1, ARCH.half, east, foot, G + 8.0, G + 7.4);
-      run(b, true, K.z1, -ARCH.half, -1.1, G + ARCH.crown, G + 7.6, G + 6.3);
-      run(b, true, K.z1, 1.6, ARCH.half, G + ARCH.crown, G + 6.2, G + 7.2);
+      run(b, true, K.z1, west, -ARCH.half, foot, G() + 7.8, G() + 8.1);
+      run(b, true, K.z1, ARCH.half, east, foot, G() + 8.0, G() + 7.4);
+      run(b, true, K.z1, -ARCH.half, -1.1, G() + ARCH.crown, G() + 7.6, G() + 6.3);
+      run(b, true, K.z1, 1.6, ARCH.half, G() + ARCH.crown, G() + 6.2, G() + 7.2);
       archHaunches(b, false);
-      run(b, false, K.x0, north, K.z1 - t, foot, G + 4.8, G + 6.4);
-      run(b, false, K.x1, EAST_RUIN.corner, K.z1 - t, foot, G + EAST_RUIN.cornerTop - 0.3, G + EAST_RUIN.cornerTop);
-      b.box({ x: 0, y: G + 6.0, z: K.z1 - t - 0.25 }, [K.x1 - K.x0 - 0.3, 0.3, 0.3], C.woodShade, C.grey);
-      b.beam({ x: -4.9, y: G + 5.5, z: 3.7 }, { x: -1.4, y: G + FLOOR + 0.12, z: 4.9 }, 0.3, C.grey);
-      b.prism({ x: -0.5, y: G + FLOOR - 0.05, z: K.z1 - 0.75, yaw: 0.2 }, 1.6, 0.55, 0.62, 7, C.curtain, C.curtainBack);
-      b.prism({ x: 1.3, y: G + FLOOR - 0.05, z: K.z1 - 0.65, yaw: 0.6 }, 1.0, 0.3, 0.42, 7, C.curtain, C.curtainBack);
+      run(b, false, K.x0, north, K.z1 - t, foot, G() + 4.8, G() + 6.4);
+      run(b, false, K.x1, EAST_RUIN.corner, K.z1 - t, foot, G() + EAST_RUIN.cornerTop - 0.3, G() + EAST_RUIN.cornerTop);
+      b.box({ x: 0, y: G() + 6.0, z: K.z1 - t - 0.25 }, [K.x1 - K.x0 - 0.3, 0.3, 0.3], C.woodShade, C.grey);
+      b.beam({ x: -4.9, y: G() + 5.5, z: 3.7 }, { x: -1.4, y: G() + FLOOR + 0.12, z: 4.9 }, 0.3, C.grey);
+      b.prism({ x: -0.5, y: G() + FLOOR - 0.05, z: K.z1 - 0.75, yaw: 0.2 }, 1.6, 0.55, 0.62, 7, C.curtain, C.curtainBack);
+      b.prism({ x: 1.3, y: G() + FLOOR - 0.05, z: K.z1 - 0.65, yaw: 0.6 }, 1.0, 0.3, 0.42, 7, C.curtain, C.curtainBack);
     },
     hautCorps,
   );
@@ -465,52 +432,52 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // les rails de fer bruni et le chariot des contrepoids relevé entre eux, plein de ses pains de fonte.
   add(0, 0, (b) => {
     stageFloor(b, C.boards, C.boardsJoint, 0);
-    run(b, true, K.z0, west, -DOOR.half, foot, G + K.low, G + K.low);
-    run(b, true, K.z0, DOOR.half, east, foot, G + K.low, G + K.low);
-    run(b, false, K.x1, north, EAST_RUIN.corner, foot, G + K.low, G + K.low);
+    run(b, true, K.z0, west, -DOOR.half, foot, G() + K.low, G() + K.low);
+    run(b, true, K.z0, DOOR.half, east, foot, G() + K.low, G() + K.low);
+    run(b, false, K.x1, north, EAST_RUIN.corner, foot, G() + K.low, G() + K.low);
     rails(b, C.iron);
-    b.box({ x: K.x0 + t + 0.3, y: G + 1.5, z: (RAILS.z[0] + RAILS.z[1]) / 2 }, [0.42, 1.0, RAILS.z[1] - RAILS.z[0] - 0.12], C.iron, C.greyShade);
+    b.box({ x: K.x0 + t + 0.3, y: G() + 1.5, z: (RAILS.z[0] + RAILS.z[1]) / 2 }, [0.42, 1.0, RAILS.z[1] - RAILS.z[0] - 0.12], C.iron, C.greyShade);
   });
   // ---- Le corps, le milieu : les murs nord et est jusqu'à la galerie ; la galerie de bois sur ses consoles de fer, son
   // garde-corps plein ; ses deux tambours.
   add(0, 0.4, (b) => {
-    run(b, true, K.z0, west, -DOOR.half, G + K.low, G + K.mid, G + K.mid);
-    run(b, true, K.z0, DOOR.half, east, G + K.low, G + K.mid, G + K.mid);
-    run(b, false, K.x1, north, EAST_RUIN.corner, G + K.low, G + K.mid, G + K.mid);
+    run(b, true, K.z0, west, -DOOR.half, G() + K.low, G() + K.mid, G() + K.mid);
+    run(b, true, K.z0, DOOR.half, east, G() + K.low, G() + K.mid, G() + K.mid);
+    run(b, false, K.x1, north, EAST_RUIN.corner, G() + K.low, G() + K.mid, G() + K.mid);
     consoles(b, C.iron, C.ironTop);
     const gx = K.x0 + t + GALLERY.wide / 2;
-    b.box({ x: gx, y: G + GALLERY.y - 0.02, z: (GALLERY.z0 + GALLERY.z1) / 2 }, [GALLERY.wide, 0.12, GALLERY.z1 - GALLERY.z0], C.woodShade, C.grey);
-    b.box({ x: K.x0 + t + GALLERY.wide - 0.04, y: G + GALLERY.y + 0.1, z: (GALLERY.z0 + GALLERY.z1) / 2 }, [0.07, 0.62, GALLERY.z1 - GALLERY.z0], C.woodShade, C.grey);
-    for (const z of GALLERY.drums) drum(b, gx - 0.12, G + GALLERY.y + 0.1, z, GALLERY.drumR, 0.7);
+    b.box({ x: gx, y: G() + GALLERY.y - 0.02, z: (GALLERY.z0 + GALLERY.z1) / 2 }, [GALLERY.wide, 0.12, GALLERY.z1 - GALLERY.z0], C.woodShade, C.grey);
+    b.box({ x: K.x0 + t + GALLERY.wide - 0.04, y: G() + GALLERY.y + 0.1, z: (GALLERY.z0 + GALLERY.z1) / 2 }, [0.07, 0.62, GALLERY.z1 - GALLERY.z0], C.woodShade, C.grey);
+    for (const z of GALLERY.drums) drum(b, gx - 0.12, G() + GALLERY.y + 0.1, z, GALLERY.drumR, 0.7);
   });
   // ---- Le corps, le haut : le haut des murs nord et est ; le mur des contrepoids entier ; le mur du cadre entier, son
   // arche refermée en haut ; les cintres (trois poutres, une poulie chacune, leurs cordages jusqu'aux tambours) ; le rideau
   // raccroché, posé ouvert en deux pans de part et d'autre de l'arche.
   add(0, 0.8, (b) => {
-    run(b, true, K.z0, west, east, G + K.mid, G + K.north, G + K.north);
-    quadOut(b, [-DOOR.half, G + K.mid, K.z0 - t], [DOOR.half, G + K.mid, K.z0 - t], [DOOR.half, G + K.mid, K.z0 + t], [-DOOR.half, G + K.mid, K.z0 + t], [0, -1, 0], C.brick);
-    run(b, false, K.x1, north, EAST_RUIN.corner, G + K.mid, sideTop(north), sideTop(EAST_RUIN.corner));
+    run(b, true, K.z0, west, east, G() + K.mid, G() + K.north, G() + K.north);
+    quadOut(b, [-DOOR.half, G() + K.mid, K.z0 - t], [DOOR.half, G() + K.mid, K.z0 - t], [DOOR.half, G() + K.mid, K.z0 + t], [-DOOR.half, G() + K.mid, K.z0 + t], [0, -1, 0], C.brick);
+    run(b, false, K.x1, north, EAST_RUIN.corner, G() + K.mid, sideTop(north), sideTop(EAST_RUIN.corner));
     run(b, false, K.x1, EAST_RUIN.corner, K.z1 - t, foot, sideTop(EAST_RUIN.corner), sideTop(K.z1 - t));
     run(b, false, K.x0, north, K.z1 - t, foot, sideTop(north), sideTop(K.z1 - t));
-    run(b, true, K.z1, west, -ARCH.half, foot, G + K.south, G + K.south);
-    run(b, true, K.z1, ARCH.half, east, foot, G + K.south, G + K.south);
-    run(b, true, K.z1, -ARCH.half, ARCH.half, G + ARCH.crown, G + K.south, G + K.south);
+    run(b, true, K.z1, west, -ARCH.half, foot, G() + K.south, G() + K.south);
+    run(b, true, K.z1, ARCH.half, east, foot, G() + K.south, G() + K.south);
+    run(b, true, K.z1, -ARCH.half, ARCH.half, G() + ARCH.crown, G() + K.south, G() + K.south);
     archHaunches(b, true);
     for (const [k, z] of FLIES.z.entries()) {
-      b.box({ x: 0, y: G + FLIES.y, z }, [K.x1 - K.x0 - 0.2, 0.3, 0.28], C.woodShade, C.grey);
-      b.drum({ x: FLIES.pulley, y: G + FLIES.y - 0.24, z: z - 0.06, pitch: Math.PI / 2 }, 0.24, 0.12, 6, C.woodShade, C.wood);
+      b.box({ x: 0, y: G() + FLIES.y, z }, [K.x1 - K.x0 - 0.2, 0.3, 0.28], C.woodShade, C.grey);
+      b.drum({ x: FLIES.pulley, y: G() + FLIES.y - 0.24, z: z - 0.06, pitch: Math.PI / 2 }, 0.24, 0.12, 6, C.woodShade, C.wood);
       const dz = GALLERY.drums[k === 2 ? 1 : 0];
-      b.beam({ x: FLIES.pulley, y: G + FLIES.y - 0.45, z }, { x: K.x0 + t + GALLERY.wide / 2 - 0.12, y: G + GALLERY.y + 0.1 + 2 * GALLERY.drumR, z: dz + (k === 1 ? 0.25 : -0.1) }, 0.05, C.sackShade);
+      b.beam({ x: FLIES.pulley, y: G() + FLIES.y - 0.45, z }, { x: K.x0 + t + GALLERY.wide / 2 - 0.12, y: G() + GALLERY.y + 0.1 + 2 * GALLERY.drumR, z: dz + (k === 1 ? 0.25 : -0.1) }, 0.05, C.sackShade);
     }
     curtainPanel(b, -ARCH.half + 0.05, -1);
     curtainPanel(b, ARCH.half - 0.05, 1);
-    b.box({ x: 0, y: G + ARCH.crown - 0.1, z: CURTAIN.z - 0.04 }, [2 * ARCH.half + 0.6, 0.45, 0.1], C.curtainBack, C.curtain);
+    b.box({ x: 0, y: G() + ARCH.crown - 0.1, z: CURTAIN.z - 0.04 }, [2 * ARCH.half + 0.6, 0.45, 0.1], C.curtainBack, C.curtain);
   });
   // ---- Le haut : le toit de la cage, un pan bas presque plat de tôle rouge sombre (son faîte à 9,3, sur le mur du
   // cadre) ; la grande porte des décors, ses deux battants ouverts repliés contre le mur ; la lanterne de la porte.
   add(1, 0, (b) => {
     const [n, s] = [north - 0.05, south + K.over];
-    const yAt = (z: number) => G + K.north + 0.02 + ((K.ridge - K.roof - K.north - 0.02) * (z - n)) / (s - n);
+    const yAt = (z: number) => G() + K.north + 0.02 + ((K.ridge - K.roof - K.north - 0.02) * (z - n)) / (s - n);
     sheet(
       b,
       [
@@ -525,8 +492,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     );
     for (const sgn of [-1, 1]) b.box({ x: sgn * (DOOR.half + 1.05), y: planeY(sgn * 3, K.z0 - 0.4) - 0.05, z: north - 0.06 }, [2.0, DOOR.top - 0.15, 0.1], C.woodShade, C.wood);
     const L = LANTERN_DOOR;
-    b.box({ x: L.x, y: G + L.y + 0.02, z: L.z + 0.12 }, [0.07, 0.07, 0.3], C.iron);
-    lantern(b, { x: L.x, y: G + L.y, z: L.z }, true);
+    b.box({ x: L.x, y: G() + L.y + 0.02, z: L.z + 0.12 }, [0.07, 0.07, 0.3], C.iron);
+    lantern(b, { x: L.x, y: G() + L.y, z: L.z }, true);
   });
   // ---- Les abords : au nord, la cour des décors dallée et la lanterne du chemin ; au sud, la salle en plein air.
   add(2, 0, (b) => {
@@ -554,7 +521,7 @@ const TRACE_SPOTS = {
 function stools(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
     const { x, z } = TRACE_SPOTS.stools;
-    for (const dx of [-0.32, 0.32]) l.prism({ x: x + dx, y: G + FLOOR - 0.02, z }, 0.19, 0.17, 0.48, 6, C.woodShade, C.wood);
+    for (const dx of [-0.32, 0.32]) l.prism({ x: x + dx, y: G() + FLOOR - 0.02, z }, 0.19, 0.17, 0.48, 6, C.woodShade, C.wood);
   });
 }
 
@@ -565,7 +532,7 @@ function stools(b: FacetBuilder, c: Vec3): void {
 function horn(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
     const { x, z } = TRACE_SPOTS.horn;
-    const y = G + FLOOR;
+    const y = G() + FLOOR;
     l.box({ x, y: y - 0.02, z }, [0.14, 1.1, 0.14], C.iron, C.ironTop);
     l.beam({ x, y: y + 1.05, z }, { x: x + 0.45, y: y + 2.4, z: z - 0.2 }, 0.07, C.iron);
     l.prism({ x: x - 0.02, y: y + 1.05, z: z + 0.04, yaw: 0.3 }, 0.05, 0.17, 0.26, 6, C.iron, C.greyShade);
@@ -576,7 +543,7 @@ function horn(b: FacetBuilder, c: Vec3): void {
 function sacks(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
     const { x, z } = TRACE_SPOTS.sacks;
-    for (const dz of [-0.42, 0, 0.42]) l.prism({ x, y: G + FLOOR - 0.02, z: z + dz, yaw: dz }, 0.18, 0.14, 0.55, 6, C.sackShade, C.sack);
+    for (const dz of [-0.42, 0, 0.42]) l.prism({ x, y: G() + FLOOR - 0.02, z: z + dz, yaw: dz }, 0.18, 0.14, 0.55, 6, C.sackShade, C.sack);
   });
 }
 
@@ -584,7 +551,7 @@ function sacks(b: FacetBuilder, c: Vec3): void {
 function chair(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
     const { x, z } = TRACE_SPOTS.chair;
-    const y = G + FLOOR - 0.02;
+    const y = G() + FLOOR - 0.02;
     l.box({ x, y, z }, [0.62, 0.48, 0.62], C.woodShade, C.clothBlue);
     l.box({ x: x + 0.27, y, z }, [0.1, 1.35, 0.62], C.woodShade, C.clothBlue);
     for (const s of [-1, 1]) l.box({ x: x - 0.02, y: y + 0.48, z: z + s * 0.28 }, [0.56, 0.24, 0.07], C.woodShade, C.wood);
@@ -631,12 +598,12 @@ const SCENE_SPOT = { dx: 7.7, dz: 1.4, half: [1.2, 1.2] as [number, number] } as
 const SCENE_HALF = 1.4;
 
 /** La hauteur du sol de la scène au-dessus de son point (le plus haut du sol sous elle). */
-const SCENE_RISE = (() => {
+const sceneRise = once(() => {
   const [hx, hz] = SCENE_SPOT.half;
   let top = -Infinity;
   for (let i = -3; i <= 3; i++) for (let k = -3; k <= 3; k++) top = Math.max(top, localGround(SCENE_SPOT.dx + (i / 3) * hx, SCENE_SPOT.dz + (k / 3) * hz));
   return Math.max(0, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz) + 0.03 - top);
-})();
+});
 
 /** Le costumier en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, tablier, chemise. */
 function tailor(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
@@ -657,7 +624,9 @@ export const LOGE: PlaceArt = {
   traceStage: 0,
   sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
   site: {
-    rise: SCENE_RISE,
+    get rise() {
+      return sceneRise();
+    },
     keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
     habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
     subject: { halfWidth: 2.0, bottom: -0.4, top: 2.5, depth: 0.3 },
@@ -708,7 +677,9 @@ export const LOGE_LAYOUT = {
   yard: YARD,
   house: HOUSE,
   planeY,
-  base: G,
+  get base() {
+    return G();
+  },
   pathLantern: PATH_LANTERN,
   doorAt: DOOR_AT,
   doorFrame: DOOR_FRAME,

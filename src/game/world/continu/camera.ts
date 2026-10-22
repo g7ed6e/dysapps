@@ -410,6 +410,17 @@ export function markOffset(id: PlaceId): Vec3 {
   return { x: shift.x, y: modelOfPlace(id).top + MARK_LIFT, z: shift.z };
 }
 
+/**
+ * Le point de la marque d'un lieu, depuis son pied, selon ce qui en est bâti (`top`, au-dessus du pied) : le lieu entier
+ * prend `markOffset` ; un lieu pas encore entier, au-dessus de ce qui est bâti, décalé du seul `markShift` (relecture du
+ * code du Bastion, point 1 : le décalage du Phare entier, à côté de sa lanterne, ne vaut pas pour sa ruine).
+ */
+export function markPoint(id: PlaceId, top: number, whole: boolean): Vec3 {
+  if (whole) return markOffset(id);
+  const s = markShift(id);
+  return { x: s.x, y: top + MARK_LIFT, z: s.z };
+}
+
 /** La place d'un point à l'écran, en pixels depuis le coin haut gauche, pour une pose et un écran donnés. */
 export function screenOf(pose: CameraPose, p: Vec3, width: number, height: number): { x: number; y: number } {
   const fx = pose.target.x - pose.position.x, fy = pose.target.y - pose.position.y, fz = pose.target.z - pose.position.z;
