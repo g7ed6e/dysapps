@@ -592,10 +592,15 @@ export const isSwing = (land: LinkedLand): boolean => isLand4e(land) && LINKS_4E
  * bassin », piste C, choix du mainteneur) : le pivot, au milieu du tambour, à tant d'unités de l'eau de ce côté (le
  * tambour sous le bout côté Fabriques, au ras du quai) ; le rayon du tambour, son nombre de côtés ; la hauteur des deux
  * poutres pleines sous le tablier et leur épaisseur ; l'écart des poteaux de ses garde-corps de fer. En ruine, la volée
- * est restée ouverte : tournée de `open` (un quart de tour, un peu moins, pour que son bout reste au-dessus de l'eau du
- * bassin, loin du quai), vers le nord, et son bout libre affaissé dans l'eau, basculée de `sag` sur son tambour.
+ * est restée ouverte : tournée de `open` vers le nord, et son bout libre affaissé, le bas de ses poutres dans l'eau,
+ * basculée de `sag` sur son tambour. Retouche des captures du 22 octobre 2026 : tournée d'un quart de tour presque
+ * entier et basculée de 0,19, elle filait droit dans l'axe du regard depuis le quai des Fabriques et la Soute, son tablier
+ * sous l'eau dès son milieu, et ne se lisait que par son bout ; tournée de 60° (en biais, son flanc se présente au quai
+ * des Fabriques et à la Soute, au sud-ouest ; son bout reste au-dessus de l'eau du bassin, au nord, loin du quai d'en
+ * face ; le cadenas garde son eau libre à plus de trois unités) et à peine basculée, son tablier reste hors de l'eau sur
+ * toute sa longueur : une volée entière, couchée en travers du bassin, au nord du pont.
  */
-export const SWING = { pivot: 2.4, drum: 1.6, sides: 8, girder: 0.9, girderWidth: 0.3, post: 2.4, open: Math.PI / 2 - 0.05, sag: 0.19 } as const;
+export const SWING = { pivot: 2.4, drum: 1.6, sides: 8, girder: 0.9, girderWidth: 0.3, post: 2.4, open: (60 * Math.PI) / 180, sag: 0.08 } as const;
 
 /** Le fer du pont tournant : rouillé dans la ruine (seulement là), bruni sombre une fois rebâti (fiche du 4e, les matières des Passeurs). */
 const SWING_IRON = { rust: COLORS_4E.rust, rustShade: COLORS_4E.rustShade, iron: 0x5c504c, ironTop: 0x6c5e58 } as const;
@@ -677,8 +682,8 @@ function swingPosed(s: BridgeSite, f: Facets, sag: number, turn: number): Facets
 }
 
 /**
- * La volée de la ruine : entière, rouillée, restée ouverte d'un quart de tour sur son tambour, couchée le long du quai des
- * Fabriques au-dessus de l'eau, son bout libre affaissé dans l'eau ; ni garde-corps ni lanternes (ils montent du tablier
+ * La volée de la ruine : entière, rouillée, restée ouverte en biais sur son tambour (`SWING.open`), couchée au-dessus de
+ * l'eau du bassin, au nord du pont, son bout libre affaissé, le bas de ses poutres dans l'eau ; ni garde-corps ni lanternes (ils montent du tablier
  * à la pose). L'eau reste libre entre les culées, sous le cadenas.
  */
 export const swingRuin = (s: BridgeSite): Facets => swingPosed(s, swingDeck(s, true), SWING.sag, SWING.open);

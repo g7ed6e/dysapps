@@ -222,7 +222,7 @@ describe('Le pont tournant des docks, au bassin à flot (intention du Bastion, 2
     expect(bridgeFacets('bastion', true).triangles).toBeLessThan(1_300);
   });
 
-  it('la ruine : la volée ouverte au-dessus de l’eau du bassin, le long du quai, au nord, son bout libre dans l’eau', () => {
+  it('la ruine : la volée ouverte au-dessus de l’eau du bassin, en biais, au nord, le bas de son bout libre dans l’eau', () => {
     const ruin = verts(swingRuin(s));
     // Rien de la volée sur le quai : chacun de ses sommets au-dessus de l'eau.
     for (const p of ruin) expect(clearance(p)).toBeLessThan(0);
@@ -230,9 +230,26 @@ describe('Le pont tournant des docks, au bassin à flot (intention du Bastion, 2
     const across = ruin.reduce((n, p) => n + (p.x - s.near.x) * -s.dir.z + (p.z - s.near.z) * s.dir.x, 0) / ruin.length;
     expect(across).toBeLessThan(-4);
     for (const p of ruin) expect(p.z).toBeLessThan(s.mid.z + 3);
-    // Le bout libre affaissé dans l'eau, le bout du tambour à hauteur du tablier.
-    expect(Math.min(...ruin.map((p) => p.y))).toBeLessThan(-0.6);
+    // Le bout libre affaissé, le bas de ses poutres dans l'eau, le bout du tambour à hauteur du tablier ; le tablier hors
+    // de l'eau sur toute sa longueur : la volée se lit entière (captures du 22 octobre 2026).
+    expect(Math.min(...ruin.map((p) => p.y))).toBeLessThan(0);
     expect(Math.max(...ruin.map((p) => p.y))).toBeGreaterThan(BRIDGE.deck - 0.3);
+    const deck = verts(swingRuin(s)).filter((p) => p.y > BRIDGE.deck - BRIDGE.plank - SWING.girder * 0.5);
+    expect(Math.min(...deck.map((p) => p.y))).toBeGreaterThan(0.3);
+  });
+
+  it('la ruine montre son flanc au quai des Fabriques : couchée en biais, pas dans l’axe du regard', () => {
+    // Vue du quai des Fabriques, au sud du pont (comme les captures du lot) : l'axe de la volée fait un angle franc avec le
+    // regard vers son milieu (quatre degrés et demi seulement quand elle filait le long du quai : captures du 22 octobre 2026).
+    const eye = { d: s.water[0] - 2, v: 24 };
+    const pivot = swingPivot(s);
+    const axis = { d: Math.cos(SWING.open), v: -Math.sin(SWING.open) };
+    // Le milieu de la volée, à mi-chemin des deux culées quand elle est fermée, tourné avec elle.
+    const u = (s.water[0] + s.water[1]) / 2 - pivot.d;
+    const mid = { d: pivot.d + axis.d * u, v: axis.v * u };
+    const sight = { d: mid.d - eye.d, v: mid.v - eye.v };
+    const cos = Math.abs(sight.d * axis.d + sight.v * axis.v) / Math.hypot(sight.d, sight.v);
+    expect((Math.acos(cos) * 180) / Math.PI).toBeGreaterThan(12);
   });
 
   it('le cadenas au-dessus de l’eau libre : rien de la ruine sous lui ni devant lui', () => {
@@ -241,12 +258,13 @@ describe('Le pont tournant des docks, au bassin à flot (intention du Bastion, 2
     const fallen = verts(bridgeFacets('bastion', false));
     // Les culées et le tambour restent au bord ; la volée, ouverte, est loin de la ligne du pont.
     for (const p of fallen) expect(Math.hypot(p.x - lock.x, p.z - lock.z)).toBeGreaterThan(3);
-    // L'eau libre entre le tambour et la culée d'en face, sur la ligne du pont.
+    // L'eau libre sur la ligne du pont, du pied de la volée (le tambour, et le coin de la volée tournée en biais, à moins
+    // d'une unité de lui) jusqu'à la culée d'en face.
     const pivot = swingPivot(s);
     for (const p of fallen) {
       const d = (p.x - s.near.x) * s.dir.x + (p.z - s.near.z) * s.dir.z;
       const v = (p.x - s.near.x) * -s.dir.z + (p.z - s.near.z) * s.dir.x;
-      if (Math.abs(v) < BRIDGE.width / 2) expect(d < pivot.d + SWING.drum + 0.1 || d > s.water[1] - BRIDGE.over - 0.1).toBe(true);
+      if (Math.abs(v) < BRIDGE.width / 2) expect(d < pivot.d + SWING.drum + 0.6 || d > s.water[1] - BRIDGE.over - 0.1).toBe(true);
     }
   });
 
