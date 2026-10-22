@@ -188,7 +188,8 @@ export const SHADOW_DIR_4E = (() => {
  * l'horizon, celui du ciel de la grille (#B4D2EC), monte vers le bleu franc du zénith (#3A86CC), jamais nuit.
  */
 const SKY_STOPS_3E: readonly { at: number; color: number }[] = [
-  { at: 0, color: 0xb4d2ec },
+  { at: 0, color: 0xe4eaf1 },
+  { at: 3, color: 0xc6dbef },
   { at: 8, color: 0xa6c9ea },
   { at: 22, color: 0x86b4e0 },
   { at: 48, color: 0x5e9cd6 },
@@ -224,7 +225,7 @@ export const HEIGHT_LIGHT_3E: HeightLight = { low: -60, high: -50, sunLow: 1, ti
  * Le brouillard du lointain du 3e : l'air du matin est net, comme au 4e, mais les terres sont plus étendues (la Prairie
  * du zeppelin est à près de 400 unités du Parvis) : il commence à 100 unités et couvre tout à 280.
  */
-export const FOG_3E = { near: 100, far: 280 } as const;
+export const FOG_3E = { near: 160, far: 520 } as const;
 
 /** Le sens où tombent les ombres peintes du 3e (l'opposé de son soleil, à plat). */
 export const SHADOW_DIR_3E = (() => {

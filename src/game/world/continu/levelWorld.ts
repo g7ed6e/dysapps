@@ -3,7 +3,7 @@
 // mêmes fonctions, appelées de même) ; le 5e prend les siennes (./terrain5e.ts, ./paths5e.ts, ./sea.ts, ./sky.ts). Ce
 // que le 5e n'a pas encore (l'Escale, la Nef, les Détours, les scénettes) reste du 6e : la vue le coupe par `sixth` ; la
 // faune a celle de chaque niveau (./wildlife.ts, ./wildlife5e.ts). Code pur.
-import { WORLD_FOG } from './camera';
+import { WORLD_FOG, type DetourView } from './camera';
 import { CRIQUE_LOOK, CRIQUE_SITE, CRIQUE_VIEW, NEF_4E, criqueDecorFacets } from './crique4e';
 import { mergeFacets, type Facets } from './facets';
 import { FORGE_GLOW_DRAWN } from './forge4e';
@@ -12,7 +12,7 @@ import type { Vec2, Vec3 } from './geometry';
 import { LISIERE_SITE, LISIERE_VIEW, PHARE_DARK, lisiereDecorFacets } from './lisiere';
 import { NEF_6E, type NefSite } from './nef';
 import { NEF_5E, PLUME_COLORS, WALL_COLORS } from './nef5e';
-import { NEF_3E, PARVIS_LOOK, PARVIS_SITE, PARVIS_VIEW, parvisDecorFacets } from './parvis3e';
+import { NEF_3E, PARVIS_ARRIVAL, PARVIS_LOOK, PARVIS_SITE, PARVIS_VIEW, parvisDecorFacets, zeppelinFacets } from './parvis3e';
 import { ESCALE, type PortSite } from './port';
 import type { OpenWorldLevel, PlaceId } from './levelPlan';
 import type { Network } from './network';
@@ -50,7 +50,7 @@ import {
   type SkyStops,
 } from './sky';
 import { buildHeightField, heightOnMesh, type HeightField } from './terrain';
-import { buildHeightField3e, groundOn3e, mapOverlay3e, smallArchFloor, tileFacets3e, tileFlora3e, tileGround3e } from './terrain3e';
+import { buildHeightField3e, ground3e, mapOverlay3e, tileFacets3e, tileFlora3e, tileGround3e } from './terrain3e';
 import { buildHeightField4e, groundOn4e, mapOverlay4e, tileFacets4e, tileFlora4e, tileGround4e } from './terrain4e';
 import { buildHeightField5e, groundOn5e, tileFacets5e, tileFlora5e, tileGround5e } from './terrain5e';
 import { TILES_6E, type TileSource } from './tiles';
@@ -93,6 +93,16 @@ interface Departure {
   lookTop?: Vec3;
   /** Ce qui ne change jamais autour du lieu de départ (au 5e, la graine géante et la lumière du Phare), ou rien. */
   decor(): Facets | null;
+  /**
+   * Un décor du monde qui n'est pas sur la Carte (au 3e, le zeppelin des Ferrailleurs : un décor, pas un repère ; fiche du
+   * 3e, § 5 bis), dessiné avec `decor` hors de la Carte ; rien ailleurs.
+   */
+  offMap?(): Facets;
+  /**
+   * La vue d'arrivée au quai, tourné vers son cap (au 3e, `PARVIS_ARRIVAL` : la caméra monte et recule pour que la mer de
+   * nuages se lise entre la terre et l'horizon) ; rien : la caméra qui suit, le regard levé seulement.
+   */
+  readonly quayView?: DetourView;
 }
 
 /** Ce que la vue lit d'un niveau. */
@@ -251,6 +261,7 @@ const WORLD_4E: LevelWorld = {
 };
 
 let decor3e: Facets | null = null;
+let zeppelin3e: Facets | null = null;
 const DEPARTURE_3E_SITE: Departure = {
   port: PARVIS_SITE,
   nef: NEF_3E,
@@ -260,6 +271,8 @@ const DEPARTURE_3E_SITE: Departure = {
   lookAt: null,
   lookTop: PARVIS_LOOK,
   decor: () => (decor3e ??= parvisDecorFacets()),
+  offMap: () => (zeppelin3e ??= zeppelinFacets()),
+  quayView: PARVIS_ARRIVAL,
 };
 
 /**
@@ -271,7 +284,7 @@ const DEPARTURE_3E_SITE: Departure = {
 const WORLD_3E: LevelWorld = {
   sixth: false,
   field: buildHeightField3e,
-  ground: (field) => (x, z) => parvisFloor(x, z) ?? smallArchFloor(x, z) ?? groundOn3e(field, x, z),
+  ground: ground3e,
   net: NETWORK_3E,
   ribbons: RIBBONS_3E,
   pathFacets: pathRibbons3e,

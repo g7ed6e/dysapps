@@ -12,7 +12,8 @@ import { levelWorld } from './levelWorld';
 import { planFor } from './levelPlan';
 import { modelOfPlace } from './places';
 import { CUT_CLEARANCE_3E, NETWORK_3E, pathRibbons3e } from './paths3e';
-import { NEF_3E, PARVIS_SITE, PARVIS_VIEW, nef3eFlight, parvisDecorFacets } from './parvis3e';
+import { NEF_3E, PARVIS_SITE, PARVIS_VIEW, nef3eFlight, parvisDecorFacets, zeppelinFacets } from './parvis3e';
+import { veilFacets } from './veil';
 import { COLORS_3E, DEPARTURE_3E, LINKS_3E, PARVIS, PARVIS_PAD, PATH_EDGES_3E, PEAK_3E, SMALL_ARCHES_3E, TERRAIN_3E, ZEPPELIN_3E, parvisFloor } from './plan3e';
 import { SKY_OF } from './sky';
 import { SEA_TEXTURE_3E, WATER_TONES_3E, seaPixels3e } from './sea';
@@ -29,7 +30,10 @@ const isSmallArch = (a: string, b: string) => SMALL_ARCHES_3E.some(([u, v]) => (
 const luminance = ([r, g, b]: readonly number[]) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
 const NOT_BLACK = 0.03;
 
-/** Le plafond du lot 1 du 3e (mesuré le 22 octobre 2026 : 58 136 triangles et 14 appels dans le monde, 57 206 et 15 au départ, 54 443 et 12 sur la Carte), avec sa marge. */
+/**
+ * Le plafond du lot 1 du 3e (mesuré le 22 octobre 2026 : 58 136 triangles et 14 appels dans le monde, 57 206 et 15 au
+ * départ, 54 443 et 12 sur la Carte ; après la retouche 1, 46 021 et 13, 45 091 et 14, 42 215 et 11), avec sa marge.
+ */
 const LOT1_CEILING = { triangles: 62_000, calls: 16 } as const;
 
 describe('Le plan du 3e', () => {
@@ -176,11 +180,34 @@ describe('Le pic, les arêtes et la mer de nuages', () => {
     expect([...new Set(Array.from({ length: rim.colors.length / 3 }, (_, k) => rim.colors.slice(k * 3, k * 3 + 3).join()))].length).toBe(2);
   });
 
-  it('le zeppelin est amarré sur un rocher à part, dans les nuages, au nord-est de la grande Prairie ; immobile (dans le décor fixe)', () => {
+  it('le zeppelin est amarré sur un rocher à part, dans les nuages, au nord-est de la grande Prairie ; immobile, dans le monde et jamais sur la Carte (retouche 1)', () => {
     expect(landDistance3e(ZEPPELIN_3E.rock)).toBeLessThan(-10);
     expect(ZEPPELIN_3E.rock.x).toBeGreaterThan(0);
     expect(ZEPPELIN_3E.rock.z).toBeLessThan(0);
-    expect(parvisDecorFacets().triangles).toBeLessThan(600);
+    const departure = levelWorld('3e').departure;
+    // Le décor de la Carte et du monde (le pic) n'a pas le zeppelin ; il est dans le décor hors de la Carte seulement.
+    expect(departure.decor()).toBe(departure.decor());
+    expect(departure.decor()!.triangles).toBe(parvisDecorFacets().triangles);
+    expect(departure.offMap!().triangles).toBe(zeppelinFacets().triangles);
+    expect(zeppelinFacets().triangles).toBeLessThan(600);
+  });
+
+  it('la neige n’est jamais plus blanche que les nuages, de la teinte choisie (#E4EAF1, retouche 1)', () => {
+    expect(COLORS_3E.cloud).toBe(0xe4eaf1);
+    expect('cloudBright' in COLORS_3E).toBe(false);
+    expect(luminance(linearRgb(COLORS_3E.snow))).toBeLessThanOrEqual(luminance(linearRgb(COLORS_3E.cloud)));
+  });
+
+  it('les terres fermées gardent la lumière du jour : aucun voile (fiche, § 2 ; retouche 1)', () => {
+    expect(veilFacets(LINKED).triangles).toBe(0);
+  });
+
+  it('sur la Carte, un trait d’ardoise plein autour de chaque rive (retouche 1)', () => {
+    const overlay = mapOverlay3e();
+    const slate = linearRgb(COLORS_3E.slate);
+    let slateTriangles = 0;
+    for (let k = 0; k < overlay.colors.length; k += 9) if (Math.abs(overlay.colors[k] - slate[0]) < 1e-6 && Math.abs(overlay.colors[k + 2] - slate[2]) < 1e-6) slateTriangles++;
+    expect(slateTriangles).toBeGreaterThan(800);
   });
 
   it('la mer de nuages : son image couvre toutes les terres', () => {

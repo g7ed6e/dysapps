@@ -33,6 +33,7 @@ import {
   SMALL_ARCHES_3E,
   TERRAIN_3E,
   alongPolyline,
+  parvisFloor,
 } from './plan3e';
 import { SHADOW_DIR_3E } from './sky';
 import { drawTileWith, farHeightsOf, heightOnFar, heightOnMesh, tileRect, type GroundPaint, type HeightField, type P3, type TileDetail } from './terrain';
@@ -141,6 +142,15 @@ const inGrid = (f: HeightField, x: number, z: number): boolean => x >= f.minX &&
 
 /** Le sol dessiné de près du 3e en (x, z) : sur la grille, comme la tuile ; au-delà, la hauteur du plan. */
 export const groundOn3e = (f: HeightField, x: number, z: number): number => (inGrid(f, x, z) ? heightOnMesh(f, x, z) : heightAt3e({ x, z }));
+
+/**
+ * Le sol où l'on marche au 3e : la pierre du Parvis, la chaussée des deux petites arches des Prairies, puis la carte de
+ * hauteurs. La scène (./levelWorld.ts) et le budget (./budget.ts) lisent la même (expert frontend, relecture du lot 1).
+ */
+export const ground3e =
+  (field: HeightField) =>
+  (x: number, z: number): number =>
+    parvisFloor(x, z) ?? smallArchFloor(x, z) ?? groundOn3e(field, x, z);
 
 // ---------- La peinture du sol ----------
 
@@ -709,5 +719,48 @@ function langueMapBand(): Facets {
   return b.build();
 }
 
-/** Ce que la Carte du 3e ajoute au monde : les hachures du haut du cône et des arêtes, la bande de la langue de glace. */
-export const mapOverlay3e = (): Facets => mergeFacets([peakMapHatch(), langueMapBand()]);
+/**
+ * Le liseré d'ardoise des rives sur la Carte (retouche 1 du lot 1, directeur artistique : sur la Carte, le bourrelet du
+ * monde, large de 0,9 unité, ne laissait qu'un halo pâle ; fiche, § 5 bis : « chaque terre a son liseré d'ardoise ») : un
+ * trait plein d'ardoise, continu, autour de la montagne et de chaque Prairie, à cheval sur la rive (`out` unités sur les
+ * nuages, `in` sur la terre), assez large pour se lire au téléphone ; levé au-dessus du sol de près et de loin (`lift`),
+ * à plat. `step` : son pas le long de la rive.
+ */
+const SHORE_MAP_3E = { out: 1.2, in: 2.4, lift: 0.8, step: 3 } as const;
+
+function shoreMapLine(): Facets {
+  const b = new FacetBuilder();
+  const field = buildHeightField3e();
+  const y = (p: Vec2) => Math.max(heightAt3e(p), heightOnMesh(field, p.x, p.z), heightOnFar(field, p.x, p.z), 0) + SHORE_MAP_3E.lift;
+  for (const loop of [MOUNTAIN_3E, PRAIRIES_3E.grande, PRAIRIES_3E.deuxieme, PRAIRIES_3E.petite]) {
+    const pts = resampleLoop(loop, SHORE_MAP_3E.step);
+    const n = pts.length;
+    // Le côté de la terre, pour chaque point : la normale qui entre dans la rive.
+    const ring = pts.map((p, i) => {
+      const a = pts[(i - 1 + n) % n],
+        c = pts[(i + 1) % n];
+      const l = Math.hypot(c.x - a.x, c.z - a.z) || 1;
+      let m = { x: (c.z - a.z) / l, z: -(c.x - a.x) / l };
+      if (!insidePolygon({ x: p.x + m.x * 0.5, z: p.z + m.z * 0.5 }, loop)) m = { x: -m.x, z: -m.z };
+      const o = { x: p.x - m.x * SHORE_MAP_3E.out, z: p.z - m.z * SHORE_MAP_3E.out };
+      const e = { x: p.x + m.x * SHORE_MAP_3E.in, z: p.z + m.z * SHORE_MAP_3E.in };
+      const h = Math.max(y(o), y(e));
+      return { o: [o.x, h, o.z] as P3, e: [e.x, h, e.z] as P3 };
+    });
+    for (let i = 0; i < n; i++) {
+      const p = ring[i],
+        q = ring[(i + 1) % n];
+      // Vu d'en haut : la face regarde le ciel, quel que soit le sens de la rive.
+      const ny = (q.o[2] - p.o[2]) * (q.e[0] - p.o[0]) - (q.o[0] - p.o[0]) * (q.e[2] - p.o[2]);
+      if (ny >= 0) b.quad(p.o, q.o, q.e, p.e, COLORS_3E.slate);
+      else b.quad(p.e, q.e, q.o, p.o, COLORS_3E.slate);
+    }
+  }
+  return b.build();
+}
+
+/**
+ * Ce que la Carte du 3e ajoute au monde : les hachures du haut du cône et des arêtes, la bande de la langue de glace, le
+ * liseré d'ardoise des rives.
+ */
+export const mapOverlay3e = (): Facets => mergeFacets([peakMapHatch(), langueMapBand(), shoreMapLine()]);

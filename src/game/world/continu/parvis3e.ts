@@ -3,10 +3,11 @@
 // dessine les mêmes bâtiments, à la même place de leur repère) : la pierre claire, posée au sol sans pilotis, le granit
 // bleuté des Passeurs, les toits d'ardoise, le bois gris. Au milieu de la place, l'aire ronde de l'aéronef (./paths3e.ts
 // la dessine). Ce qui ne change jamais autour de lui : le pic, vu de toute la montagne (./terrain3e.ts), et le zeppelin
-// des Ferrailleurs, amarré par le nez à son mât sur un rocher à part, immobile. L'aéronef se pose sur l'aire en trois
+// des Ferrailleurs, amarré par le nez à son mât sur un rocher à part, immobile, qui n'est pas sur la Carte. L'aéronef se pose sur l'aire en trois
 // temps, comme au 4e (world/nefModels.ts, `NEF_SISTERS[3]`) ; au lot 1, son départ monte droit vers le ciel, sans
 // obstacle (le 3e est le dernier niveau : ce départ ne mène nulle part). Code pur.
-import { drawPosed, FacetBuilder, mergeFacets, type Facets } from './facets';
+import type { DetourView } from './camera';
+import { drawPosed, FacetBuilder, type Facets } from './facets';
 import { distance, type Vec2 } from './geometry';
 import type { NefFlight, NefSite } from './nef';
 import { COLORS_3E, PARVIS, PARVIS_LEVEL, PARVIS_PAD, PARVIS_PAVING, PARVIS_QUAY_SPOT, PEAK_3E, ZEPPELIN_3E } from './plan3e';
@@ -60,7 +61,15 @@ export const PARVIS_SITE: PortSite = {
  * La caméra à l'arrivée au Parvis (fiche, § 5 : « vue du Parvis, le Belvédère et le pic ») : le cap (0 : le nord), vers
  * le nord-est, le soleil dans le dos. Le changer ici.
  */
-export const PARVIS_VIEW = { yaw: -0.7 } as const;
+export const PARVIS_VIEW = { yaw: -0.9 } as const;
+
+/**
+ * La vue d'arrivée au Parvis (retouche 1 du lot 1, directeur artistique et consultant d'Archipéo : à hauteur de Kéo,
+ * l'herbe filait jusqu'à l'horizon, rien ne disait « au-dessus des nuages ») : la caméra monte de `height` et recule de
+ * `back` fois, au même cap, pour voir par-dessus le replat la mer de nuages entre la terre et l'horizon, à droite, et les
+ * Prairies posées dessus. Elle reprend la poursuite au premier pas.
+ */
+export const PARVIS_ARRIVAL: DetourView = { height: 12, back: 1.6 };
 
 /** Le haut que le regard levé cadre au Parvis : le sommet du pic. */
 export const PARVIS_LOOK = { x: PEAK_3E.at.x, y: PEAK_3E.base + PEAK_3E.height, z: PEAK_3E.at.z } as const;
@@ -80,7 +89,8 @@ export const FOLLOW_FAR_3E = 600;
  */
 const ZEPPELIN = { rockTop: 2.6, mast: 9, radius: 4.2, nose: 3.5, tail: 6, fin: 3.2, sides: 8 } as const;
 
-function zeppelinFacets(): Facets {
+/** Le zeppelin sur son rocher : un décor du monde, jamais sur la Carte (fiche, § 5 bis ; `Departure.offMap`). */
+export function zeppelinFacets(): Facets {
   const b = new FacetBuilder();
   const Z = ZEPPELIN;
   const { rock, rockRadius, tail } = ZEPPELIN_3E;
@@ -115,8 +125,8 @@ function zeppelinFacets(): Facets {
   return b.build();
 }
 
-/** Le décor du Parvis qui ne change pas : le pic, le zeppelin des Ferrailleurs. */
-export const parvisDecorFacets = (): Facets => mergeFacets([peakFacets(), zeppelinFacets()]);
+/** Le décor du Parvis qui ne change pas, sur la Carte comme dans le monde : le pic. */
+export const parvisDecorFacets = (): Facets => peakFacets();
 
 // ---------- L'aéronef ----------
 

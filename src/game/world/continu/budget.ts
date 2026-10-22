@@ -45,10 +45,10 @@ import { CRIQUE_SITE, NEF_4E_MODEL_TRIANGLES, criqueDecorFacets } from './crique
 import { NETWORK_4E, pathRibbons4e } from './paths4e';
 import { TERRAIN_4E } from './plan4e';
 import { buildHeightField4e, groundOn4e, mapOverlay4e, tileCounts4e } from './terrain4e';
-import { PARVIS_SITE, parvisDecorFacets } from './parvis3e';
+import { PARVIS_SITE, parvisDecorFacets, zeppelinFacets } from './parvis3e';
 import { NETWORK_3E, pathRibbons3e } from './paths3e';
-import { TERRAIN_3E, parvisFloor } from './plan3e';
-import { buildHeightField3e, groundOn3e, mapOverlay3e, smallArchFloor, tileCounts3e } from './terrain3e';
+import { TERRAIN_3E } from './plan3e';
+import { buildHeightField3e, ground3e, mapOverlay3e, tileCounts3e } from './terrain3e';
 
 /** Les terres qu'on relie du 6e : le budget est celui du monde ouvert du 6e (GD-22, lot 1 : le plan par niveau). */
 const LINKED_LANDS_6E = linkedLands(planFor('6e'));
@@ -112,18 +112,23 @@ export const PLACE_TRIANGLES_MAX_5E = 1_600;
 export const CAUSEWAYS_ADDED_5E = 1_600;
 
 /**
- * L'enveloppe du monde ouvert du 4e : 118 000 triangles, 22 appels, cible 110 000 (fiche du 4e, § 8 : « l'enveloppe
- * décidée tient »). Au lot 1 (l'île entière en grandes masses), le monde en est loin : chaque lieu, la Crique, l'aéronef
- * et les habitants viennent avec leur lot.
+ * L'enveloppe que les fiches du 4e et du 3e donnent au monde ouvert (§ 8 de chacune) : 118 000 triangles, 22 appels,
+ * cible 110 000. Une seule constante : quand une fiche change, on ne pense pas à deux endroits (expert frontend, relecture
+ * du lot 1 du 3e). Seul le mainteneur la relève.
  */
-const OPEN_WORLD_BUDGET_4E = { triangles: 118_000, calls: 22 } as const;
+const FICHE_ENVELOPE = { triangles: 118_000, calls: 22 } as const;
 
 /**
- * L'enveloppe du monde ouvert du 3e : 118 000 triangles, 22 appels, cible 110 000 (fiche du 3e, § 8, comme le 4e). Au
- * lot 1 (les Îles du Ciel en grandes masses), le monde en est loin : chaque lieu, le Parvis, les habitants et les
- * Détours viennent avec leur lot.
+ * L'enveloppe du monde ouvert du 4e (fiche du 4e, § 8 : « l'enveloppe décidée tient »). Au lot 1 (l'île entière en
+ * grandes masses), le monde en est loin : chaque lieu, la Crique, l'aéronef et les habitants viennent avec leur lot.
  */
-const OPEN_WORLD_BUDGET_3E = { triangles: 118_000, calls: 22 } as const;
+const OPEN_WORLD_BUDGET_4E = FICHE_ENVELOPE;
+
+/**
+ * L'enveloppe du monde ouvert du 3e (fiche du 3e, § 8, comme le 4e). Au lot 1 (les Îles du Ciel en grandes masses), le
+ * monde en est loin : chaque lieu, le Parvis, les habitants et les Détours viennent avec leur lot.
+ */
+const OPEN_WORLD_BUDGET_3E = FICHE_ENVELOPE;
 
 /**
  * La forêt du 5e retaillée (pistes B, C puis A, choisies par le mainteneur le 21 octobre 2026 : la forêt noyée, les
@@ -768,9 +773,6 @@ export function mapCost4e(): { triangles: number; calls: number } {
 const PLAN_3E = planFor('3e');
 const LINKED_LANDS_3E = linkedLands(PLAN_3E);
 
-/** Le sol où l'on marche au 3e : la pierre du Parvis, la chaussée des petites arches, puis la carte de hauteurs. */
-const ground3e = (field: ReturnType<typeof buildHeightField3e>) => (x: number, z: number) => parvisFloor(x, z) ?? smallArchFloor(x, z) ?? groundOn3e(field, x, z);
-
 /** Le sol du 3e, compté comme celui des autres niveaux : autour des points de son réseau, dans huit directions. */
 function groundCost3e(): { triangles: number; calls: number; near: number; far: number } {
   const field = buildHeightField3e();
@@ -788,18 +790,27 @@ function groundCost3e(): { triangles: number; calls: number; near: number; far: 
 }
 
 /**
- * Le Parvis au plus chargé (comme l'Escale, `PORT_WORST`) et son décor (le pic, le zeppelin des Ferrailleurs sur son
- * rocher), dans le maillage des lieux : aucun appel de plus.
+ * Le Parvis au plus chargé (comme l'Escale, `PORT_WORST`) et son décor (le pic ; dans le monde, pas sur la Carte, le
+ * zeppelin des Ferrailleurs sur son rocher), dans le maillage des lieux : aucun appel de plus.
  */
-function parvisCost(): number {
-  return portFacets(PORT_WORST, { assembling: false }, PARVIS_SITE).triangles + parvisDecorFacets().triangles;
+function parvisCost(onMap: boolean): number {
+  return portFacets(PORT_WORST, { assembling: false }, PARVIS_SITE).triangles + parvisDecorFacets().triangles + (onMap ? 0 : zeppelinFacets().triangles);
 }
 
-/** Les lieux du 3e : les seize ruines, leurs trois passages au plus chargé de leurs deux états, le Parvis ; deux maillages. */
-function placesCost3e(): { triangles: number; calls: number } {
+/**
+ * Les lieux du 3e : les seize ruines, leurs trois passages au plus chargé de leurs deux états, le Parvis (sur la Carte,
+ * `onMap`, sans le zeppelin) ; deux maillages.
+ */
+function placesCost3e(onMap = false): { triangles: number; calls: number } {
   const ruins = PLAN_3E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles, 0);
   const passages = LINKED_LANDS_3E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
-  return { triangles: ruins + passages + parvisCost(), calls: 2 };
+  return { triangles: ruins + passages + parvisCost(onMap), calls: 2 };
+}
+
+/** La brume des terres fermées du 3e (au départ, les trois) : aucun voile retenu (retouche 1 du lot 1), aucun appel alors. */
+function veilCost3e(): { triangles: number; calls: number } {
+  const triangles = veilFacets(LINKED_LANDS_3E).triangles;
+  return { triangles, calls: triangles ? 1 : 0 };
 }
 
 /** L'aéronef du 3e, le modèle du 4e entier (`3-aeronef/final-1464.glb`), sur son aire (dessinée avec les chemins) : dans le maillage des lieux. */
@@ -827,7 +838,7 @@ export function openWorldCost3e(view: 'monde' | 'depart' = 'monde'): OpenWorldCo
     { poste: 'mer', triangles: 2, calls: 1 },
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
     { poste: 'lieux', ...placesCost3e() },
-    { poste: 'brume', triangles: veilFacets(LINKED_LANDS_3E).triangles, calls: 1 },
+    { poste: 'brume', ...veilCost3e() },
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost3e() },
     ...(view === 'depart' ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }] : [{ poste: 'pose' as const, ...poseCost3e() }]),
@@ -843,11 +854,11 @@ export function mapCost3e(): { triangles: number; calls: number } {
   const field = buildHeightField3e();
   const far = tileCounts3e(field, 'far').reduce((s, n) => s + n, 0);
   const paths = pathRibbons3e(ground3e(field)).triangles;
-  const places = placesCost3e();
+  const places = placesCost3e(true);
   const marks = LINKED_LANDS_3E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + mapOverlay3e().triangles;
-  const veil = veilFacets(LINKED_LANDS_3E).triangles;
+  const veil = veilCost3e();
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + marks + veil + KEO.triangles + nefCost3e().triangles,
-    calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + marks + veil.triangles + KEO.triangles + nefCost3e().triangles,
+    calls: SKY.calls + 1 + 1 + 1 + places.calls + veil.calls + KEO.calls,
   };
 }

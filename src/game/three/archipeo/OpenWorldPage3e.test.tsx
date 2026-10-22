@@ -85,7 +85,9 @@ test('la scène reçoit le plan du 3e, le Parvis et l’aéronef ; ses trois ter
   await screen.findByRole('button', { name: /Carte/ });
   expect(scene.options!.plan.level).toBe('3e');
   expect(scene.world!.setPort).toHaveBeenCalled();
-  expect(scene.world!.setNef).toHaveBeenCalled();
+  // L'aéronef au repos, entier, sur son aire (retouche 1) : ni fiche ni départ au toucher.
+  expect(scene.world!.setNef).toHaveBeenCalledWith(3);
+  expect(scene.options!.onNef).toBeUndefined();
   expect([...scene.closed].sort()).toEqual(['alpages', 'cirque', 'prairies']);
 });
 

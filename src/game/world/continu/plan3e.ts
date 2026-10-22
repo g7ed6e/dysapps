@@ -27,14 +27,12 @@ const poly = (points: readonly (readonly [number, number])[]): Vec2[] => points.
 /**
  * Les couleurs du 3e (fiche, § 2) : un monde froid et clair, le blanc des nuages, le granit bleuté, l'ardoise des rives,
  * l'herbe rase pâle, une seule couleur vive (l'émail cobalt) ; jamais de lavande, jamais de presque-noir. La mer de
- * nuages prend la teinte proposée contre l'éblouissement (`cloud`, #E4EAF1 ; le blanc franc #F1F4F8 reste à trancher sur
- * captures par le directeur artistique) ; la neige du pic garde le même ton.
+ * nuages est teintée contre l'éblouissement (`cloud`, #E4EAF1, choisie par le directeur artistique à la relecture du lot
+ * 1, plutôt que le blanc franc) ; la neige du pic et des toits n'est jamais plus blanche qu'elle.
  */
 export const COLORS_3E = {
   /** La mer de nuages, le sol du ciel : teintée (avis dys, point 3). */
   cloud: 0xe4eaf1,
-  /** Le blanc franc des nuages au soleil, l'autre teinte à montrer sur captures. */
-  cloudBright: 0xf1f4f8,
   /** L'ombre des nuages au pied des rives. */
   cloudShade: 0xc3d0e0,
   /** Le granit des Passeurs (arches, murets, socles, le haut du cône), au soleil et à l'ombre. */
@@ -51,8 +49,8 @@ export const COLORS_3E = {
   /** L'herbe du Cirque, plus grise : le creux sous le pic, entre les éboulis. */
   cirque: 0x93a283,
   cirqueSun: 0x9dac8c,
-  /** La neige du pic, au soleil et à l'ombre (le ton des nuages, jamais plus blanc). */
-  snow: 0xe8eef4,
+  /** La neige du pic et des toits, au soleil et à l'ombre : au soleil, le ton des nuages, jamais plus blanc. */
+  snow: 0xe4eaf1,
   snowShade: 0xc6d2e2,
   /** La langue de glace : mate, pâle, sans reflet. */
   ice: 0xd2e0ec,
