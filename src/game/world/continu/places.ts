@@ -2554,7 +2554,7 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   maquette: northPlace('maquette'),
   tribune: northPlace('tribune'),
   douane: northPlace('douane'),
-  ermitage: ruinOnly(RUINS_3E.ermitage),
+  ermitage: northPlace('ermitage'),
   coupole: ruinOnly(RUINS_3E.coupole),
   lutherie: ruinOnly(RUINS_3E.lutherie),
   ondes: ruinOnly(RUINS_3E.ondes),

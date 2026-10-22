@@ -402,6 +402,15 @@ const SCENETTES: Record<PlaceId, Scenette> = {
       end: 'Ici passaient tous les voyageurs venus d’ailleurs.',
     },
   },
+  // L'Ermitage (les Alpages du 3e, GD-25, lieu d'option) : la phrase de métier et la réplique de la proposition du
+  // consultant d'Archipéo (§ 7) ; une phrase par partie, sans dire l'option, sans nom de plan de l'île (« bibliothèque »,
+  // « gradins », « bosquet », « allée », « lauriers ») ni « ermitage » en nom commun.
+  ermitage: {
+    role: placeArt('ermitage')!.role,
+    greeting: 'La traductrice fait passer les mots d’une langue à une autre.',
+    placement: 'rangee',
+    words: { pose: ['La colonnade est debout.', 'Le banc est réparé.', 'La fontaine est pleine.'], end: 'Ici, on venait réfléchir, à l’ombre des pins.' },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -859,6 +868,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   maquette: northSite('maquette'),
   tribune: northSite('tribune'),
   douane: northSite('douane'),
+  ermitage: northSite('ermitage'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2441,6 +2451,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   tribune: 'earth',
   // La Douane : l'herbe devant le guichet.
   douane: 'earth',
+  // L'Ermitage : les aiguilles de la clairière.
+  ermitage: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

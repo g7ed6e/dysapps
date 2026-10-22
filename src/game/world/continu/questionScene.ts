@@ -274,6 +274,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   tribune: placeArt('tribune')!.sceneSpot,
   // La Douane : au sud-est du guichet, dehors, le comptoir devant.
   douane: placeArt('douane')!.sceneSpot,
+  // L'Ermitage : à l'est de la colonnade, sur les aiguilles.
+  ermitage: placeArt('ermitage')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -587,6 +589,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   tribune: 'lieu',
   // La Douane : les clés de fer, pendues à un râtelier.
   douane: 'lieu',
+  // L'Ermitage : les pommes de pin, sur un rebord de pierre.
+  ermitage: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
