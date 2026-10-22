@@ -206,11 +206,17 @@ function gnomonUp(b: FacetBuilder): void {
   b.triangle([s0.x + side.x * 0.45, yy, s0.z + side.z * 0.45], [tip.x, yy, tip.z], [s0.x - side.x * 0.45, yy, s0.z - side.z * 0.45], C.shadow);
 }
 
-/** Le gnomon couché le long du muret, à l'est, en deux tronçons (la ruine). */
+/**
+ * Le gnomon couché le long du muret, à l'est, en deux tronçons (la ruine) : couchés du nord au sud, en dedans du muret,
+ * sans le traverser (relecture du Versant par le directeur artistique, (a) 6).
+ */
+export const GNOMON_FALLEN = [
+  { x: 4.9, z: -3.0, len: 2.6, r0: 0.5, r1: 0.36, lift: 0.42, yaw: 0.06 },
+  { x: 4.8, z: 0.4, len: 1.9, r0: 0.33, r1: 0.12, lift: 0.3, yaw: -0.08 },
+] as const;
+
 function gnomonFallen(b: FacetBuilder): void {
-  const x = 5.15;
-  b.prism({ x, y: planeY(x, -1.8) + 0.42, z: -1.8, yaw: Math.PI / 2 + 0.08, pitch: Math.PI / 2 }, 0.5, 0.36, 2.6, 4, C3E.granite, C3E.graniteSun);
-  b.prism({ x: x - 0.1, y: planeY(x, 1.2) + 0.3, z: 1.2, yaw: Math.PI / 2 - 0.1, pitch: Math.PI / 2 }, 0.33, 0.12, 1.9, 4, C3E.granite, C3E.graniteSun);
+  for (const g of GNOMON_FALLEN) b.prism({ x: g.x, y: planeY(g.x, g.z) + g.lift, z: g.z, yaw: g.yaw, pitch: Math.PI / 2 }, g.r0, g.r1, g.len, 4, C3E.granite, C3E.graniteSun);
 }
 
 /**

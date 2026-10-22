@@ -1,12 +1,14 @@
 /**
  * Le Détour du Cadran (le Versant du 3e, GD-25, lot 2 ; proposition du consultant d'Archipéo, § 7, et planche
  * `selection-versant-v1`, graine 42), sur le mécanisme des autres Détours (./detours.ts, ./replat4e.ts) : « un grand
- * cadran solaire sur un rocher rond, face au pic ». Kéo s'y arrête, la vue se tourne au cap de 8°, vers le pic et, à sa
+ * cadran solaire sur un rocher rond, face au pic ». Kéo s'y arrête, la vue se tourne au cap de 335°, vers le pic et, à sa
  * droite, le Fanal, le soleil dans le dos ; « Le Cadran » s'écrit une fois et se dit, et Kéo ajoute une phrase, écrite
- * dessous. Une sente reste tracée pour de bon après la première arrivée, depuis le chemin de `ve-1` à `ve-2`. Ni
+ * dessous. Une sente reste tracée pour de bon après la première arrivée, depuis le chemin de `ve-3` à `ve-5`. Ni
  * compteur, ni récompense, ni mission, ni étape.
  *
- * La place : `DETOUR_SPOTS_3E.cadran`, à l'ouest du Jardin, loin de la langue de glace et des rives, sur l'herbe à plat.
+ * La place : `DETOUR_SPOTS_3E.cadran`, au nord-est du Versant, entre l'Abri et le Grenier, loin de la langue de glace et
+ * des rives, sur l'herbe à plat. Elle était à l'ouest du Jardin : le pic y cachait le Fanal, juste derrière lui ; d'ici,
+ * le Fanal se tient à droite du pic, dégagé (relecture du Versant par le directeur artistique, (a) 3).
  * Un gros rocher rond de granit ; dessus, un disque de pierre claire uni et un style de fer bruni penché vers le nord, son
  * ombre fine sur le disque ; les trois pierres plates des Détours, de part et d'autre de la sente, jamais dessus. Ni
  * chiffre, ni trait, ni banc ; rien à lire. Le dessin reçoit son sol (`ground`). Code pur.
@@ -19,8 +21,8 @@ import { C3E } from './place3eKit';
 import type { P3 } from './place4eKit';
 import { DETOUR_SPOTS_3E, PATH_NODES_3E } from './plan3e';
 
-/** Le cap de l'arrivée (proposition, § 7) : 8°, le pic un peu à droite du milieu, le Fanal juste à sa droite. */
-const CAP = (8 * Math.PI) / 180;
+/** Le cap de l'arrivée (proposition, § 7) : 335°, le pic un peu à droite du milieu, le Fanal à sa droite. */
+const CAP = (335 * Math.PI) / 180;
 const LOOK: Vec2 = { x: Math.sin(CAP), z: -Math.cos(CAP) };
 
 /** La vue du Cadran à l'arrivée : la caméra monte un peu, assez pour voir le dessus du disque. */
@@ -43,10 +45,10 @@ const STYLE = { base: 0.4, len: 1.25, rise: 0.8, shadow: 1.1, shadowTurn: -0.45 
  */
 const AT: Vec2 = { x: ROCK.at.x - LOOK.x * 3.2 + LOOK.z * 2.0, z: ROCK.at.z - LOOK.z * 3.2 - LOOK.x * 2.0 };
 
-/** Le point du chemin de `ve-1` à `ve-2` le plus proche de Kéo, d'où part la sente. */
+/** Le point du chemin de `ve-3` à `ve-5` le plus proche de Kéo, d'où part la sente. */
 const SENTE_FROM: Vec2 = (() => {
-  const a = PATH_NODES_3E.find((n) => n.id === 've-1')!.at;
-  const c = PATH_NODES_3E.find((n) => n.id === 've-2')!.at;
+  const a = PATH_NODES_3E.find((n) => n.id === 've-3')!.at;
+  const c = PATH_NODES_3E.find((n) => n.id === 've-5')!.at;
   const dx = c.x - a.x,
     dz = c.z - a.z;
   const t = Math.min(1, Math.max(0, ((AT.x - a.x) * dx + (AT.z - a.z) * dz) / (dx * dx + dz * dz)));
@@ -109,7 +111,7 @@ type Ground = (x: number, z: number) => number;
 export const CADRAN_STONES = [
   { deg: -40, r: 2.0, size: 0.5 },
   { deg: 38, r: 2.1, size: 0.45 },
-  { deg: 120, r: 1.9, size: 0.4 },
+  { deg: -125, r: 1.9, size: 0.4 },
 ] as const;
 
 /** Le pied d'une pierre de `CADRAN_STONES`, dans le monde. */

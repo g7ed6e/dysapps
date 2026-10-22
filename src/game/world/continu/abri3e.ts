@@ -56,7 +56,7 @@ const GAUGES = {
   h: 0.42,
 } as const;
 
-/** Le mât et ses trois manches à air, au nord-est ; toutes vers l'est, raides et immobiles. */
+/** Le mât et ses trois manches à air, au nord-est ; toutes vers l'est-sud-est, raides et immobiles. */
 const MAST = {
   x: 2.0,
   z: -3.4,
@@ -228,15 +228,46 @@ function mast(b: FacetBuilder): void {
   b.box({ x: MAST.x, y: g, z: MAST.z }, [0.12, MAST.h, 0.12], C3E.iron, C3E.ironTop);
 }
 
-/** Une manche à air, un tronc de cône de toile unie, raide, vers l'est ; posée à `y`, son anneau au mât. */
+/**
+ * Une manche à air (relecture du Versant par le directeur artistique, (a) 7 : « des cônes creux, plus épais, ouverts au
+ * bout, raides, tous tournés du même côté ») : un tronc de cône de toile unie, creux, sans fond ni bout, son dedans à
+ * l'ombre ; son cerceau de fer à la bouche, au mât. Elles filent toutes du même côté, raides, immobiles ; rien d'une
+ * latte, d'un bras ni d'une flèche.
+ */
+export const SOCK = { mouth: 0.3, tail: 0.18, len: 1.1, sides: 8, hoop: 0.06, cap: 115 } as const;
+
+/** Le sens des manches : au cap `SOCK.cap`, à l'est-sud-est, un peu vers la porte, pour qu'elle voie leur bout ouvert. */
+const SOCK_DIR: Vec2 = { x: Math.sin((SOCK.cap * Math.PI) / 180), z: -Math.cos((SOCK.cap * Math.PI) / 180) };
+
+/** Un tronc de cône creux, de `base` le long de `dir` (horizontal, unitaire) : ses faces dehors et dedans, sans bout. */
+function hollowCone(b: FacetBuilder, base: Vec3, dir: Vec2, r0: number, r1: number, len: number, sides: number, out: number, inside: number): void {
+  // Le repère du tronc : x vers le haut, y le long de `dir`, z le troisième (sens direct, comme `prism`).
+  const at = (lx: number, ly: number, lz: number): [number, number, number] => [base.x + ly * dir.x + lz * dir.z, base.y + lx, base.z + ly * dir.z - lz * dir.x];
+  const ring = (r: number, y: number) => Array.from({ length: sides }, (_, k) => at(r * Math.cos((2 * Math.PI * k) / sides), y, r * Math.sin((2 * Math.PI * k) / sides)));
+  const lo = ring(r0, 0),
+    hi = ring(r1, len);
+  const loIn = ring(r0 - 0.03, 0),
+    hiIn = ring(r1 - 0.03, len);
+  for (let k = 0; k < sides; k++) {
+    const n = (k + 1) % sides;
+    b.quad(lo[n], lo[k], hi[k], hi[n], out);
+    b.quad(loIn[k], loIn[n], hiIn[n], hiIn[k], inside);
+  }
+}
+
+/** Une manche à air, creuse et raide, vers l'est-sud-est ; posée à `y`, son cerceau au mât ; ou tombée au pied du mât. */
 function sock(b: FacetBuilder, y: number, fallen = false, k = 0): void {
+  const S = SOCK;
   if (fallen) {
-    const x = MAST.x + 0.5 + 0.35 * k,
-      z = MAST.z + 0.6 - 0.25 * k;
-    b.prism({ x, y: planeY(x, z) + 0.12, z, yaw: 1.1 + k, pitch: Math.PI / 2 }, 0.16, 0.08, 0.7, 6, C.sock, C3E.canvasShade);
+    const x = MAST.x + 0.5 + 0.45 * k,
+      z = MAST.z + 0.7 - 0.35 * k;
+    const h = 1.1 + k;
+    hollowCone(b, { x, y: planeY(x, z) + S.mouth - 0.06, z }, { x: Math.cos(h), z: -Math.sin(h) }, S.mouth, S.tail, S.len, S.sides, C.sock, C3E.canvasShade);
     return;
   }
-  b.prism({ x: MAST.x + 0.06, y, z: MAST.z, yaw: -Math.PI / 2, pitch: Math.PI / 2 }, 0.17, 0.08, 0.75, 6, C.sock, C3E.canvasShade);
+  const base = { x: MAST.x + SOCK_DIR.x * 0.08, y, z: MAST.z + SOCK_DIR.z * 0.08 };
+  hollowCone(b, base, SOCK_DIR, S.mouth, S.tail, S.len, S.sides, C.sock, C3E.canvasShade);
+  b.band({ x: base.x, y, z: base.z, pitch: Math.PI / 2, yaw: Math.atan2(SOCK_DIR.x, SOCK_DIR.z) }, S.mouth + 0.02, S.hoop, S.sides, C3E.iron);
 }
 
 /** La roue de tirage : son socle de pierre ; le tambour de bois, sa manivelle, et trois boules toutes pareilles dans son auget. */

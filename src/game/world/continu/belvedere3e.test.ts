@@ -9,7 +9,7 @@ import { partShapes, stagePoseWords } from '../../three/archipeo/constructionPar
 import { phraseDeLaPose } from '../../poseWords';
 import { partiesDe } from '../parts';
 import { plansFor } from '../plans';
-import { BELVEDERE, BELVEDERE_LAYOUT } from './belvedere3e';
+import { BELVEDERE, BELVEDERE_LAYOUT, GNOMON_FALLEN } from './belvedere3e';
 import { BELVEDERE_SURROUNDINGS } from './belvedereSurroundings';
 import { GRAND_PLACE_TRIANGLES_MAX_3E, PLACE_RUIN_TRIANGLES_MAX_3E } from './budget';
 import { posedTraces, type PartShape, type Stage } from './construction';
@@ -117,6 +117,15 @@ describe('Le Belvédère, lieu complet', () => {
     for (const m of MISSIONS) expect(BELVEDERE.traces[m], m).toBeDefined();
   });
 
+  it('le gnomon couché reste en dedans du muret, le long de lui, sans le traverser', () => {
+    for (const g of GNOMON_FALLEN)
+      for (const d of [0, g.len]) {
+        const p = { x: g.x + Math.sin(g.yaw) * d, z: g.z + Math.cos(g.yaw) * d };
+        expect(Math.hypot(p.x, p.z) + g.r0).toBeLessThan(6.6 - 0.45 / 2);
+        expect(Math.hypot(p.x, p.z)).toBeGreaterThan(4);
+      }
+  });
+
   it('un lieu bas : seul le gnomon monte (5,5 au plus au-dessus du sol)', () => {
     expect(boundsOf(shown(5)).max[1]).toBeLessThanOrEqual(5.6);
   });
@@ -170,15 +179,17 @@ describe('La scénette du Belvédère', () => {
     expect(s.greeting).toBe('La topographe mesure le terrain et le dessine.');
   });
 
-  it('la caméra arrive par la porte, basse, au nord-ouest (323°, le soleil dans le dos) : la terrasse au milieu du cadre', () => {
+  it('la caméra arrive par la porte, basse, au nord-ouest (323°, le soleil dans le dos) : la terrasse à gauche de Kéo, dans le cadre', () => {
     const door = nodes.get('belvedere')!;
     const yaw = doorViewOf('belvedere');
     const look = { x: -Math.sin(yaw), z: -Math.cos(yaw) };
     const cap = ((Math.atan2(look.x, -look.z) * 180) / Math.PI + 360) % 360;
     expect(cap).toBeCloseTo(323, 6);
     const d = { x: PLACE.center.x - door.x, z: PLACE.center.z - door.z };
-    const off = Math.atan2(look.x * d.z - look.z * d.x, look.x * d.x + look.z * d.z);
-    expect(Math.abs((off * 180) / Math.PI)).toBeLessThan(15);
+    const off = (Math.atan2(look.x * d.z - look.z * d.x, look.x * d.x + look.z * d.z) * 180) / Math.PI;
+    // Le cœur à côté de Kéo, à sa gauche, jamais derrière lui (relecture du Versant, (a) 5).
+    expect(off).toBeLessThan(-12);
+    expect(off).toBeGreaterThan(-30);
     const frame = doorFrameOf('belvedere')!;
     expect(frame.height).toBeLessThan(0);
     expect(frame.back).toBeLessThanOrEqual(1.6);

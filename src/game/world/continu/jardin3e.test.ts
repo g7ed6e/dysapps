@@ -110,7 +110,10 @@ describe('Le Jardin, lieu complet', () => {
     expect(L.trees.z).toBeGreaterThan(L.wall.z);
     expect(L.squares.at).toHaveLength(4);
     expect(Math.hypot(L.fountain.x, L.fountain.z)).toBeLessThan(1);
-    expect(L.door).toEqual({ x: 0, z: 9 });
+    // Kéo s'arrête à gauche de l'entrée, la fontaine à côté de lui (relecture du Versant, (a) 5).
+    expect(L.door.x).toBeCloseTo(-3, 6);
+    expect(L.door.z).toBeCloseTo(9.3, 6);
+    expect(L.door.x).toBeLessThan(-L.sides.gate / 2);
     expect(L.door.z).toBeGreaterThan(L.sides.z1);
     expect(L.dryer.x).toBeGreaterThan(0);
     expect(L.mortar.x).toBeLessThan(0);
@@ -134,7 +137,7 @@ describe('Le Jardin, lieu complet', () => {
 
   it('rien du lieu, en ruine comme restauré, sur le chemin de marche, de part et d’autre de la porte (à hauteur de Kéo)', () => {
     const door = nodes.get('jardin')!;
-    const ways = [nodes.get('ve-7')!];
+    const ways = [nodes.get('ve-8')!];
     const h0 = ground(PLACE.center.x, PLACE.center.z);
     const sets: [Facets, boolean][] = [
       [shown(0), true],
@@ -185,15 +188,17 @@ describe('La scénette du Jardin', () => {
     expect(s.greeting).toBe('Le greffeur marie deux arbres pour n’en faire qu’un.');
   });
 
-  it('la caméra arrive par la porte, basse, au nord (0°, le soleil dans le dos) : le mur des espaliers au milieu du cadre', () => {
+  it('la caméra arrive par la porte, basse, au nord (0°, le soleil dans le dos) : la fontaine à droite de Kéo, dans le cadre', () => {
     const door = nodes.get('jardin')!;
     const yaw = doorViewOf('jardin');
     const look = { x: -Math.sin(yaw), z: -Math.cos(yaw) };
     const cap = ((Math.atan2(look.x, -look.z) * 180) / Math.PI + 360) % 360;
     expect(cap).toBeCloseTo(0, 6);
     const d = { x: PLACE.center.x - door.x, z: PLACE.center.z - door.z };
-    const off = Math.atan2(look.x * d.z - look.z * d.x, look.x * d.x + look.z * d.z);
-    expect(Math.abs((off * 180) / Math.PI)).toBeLessThan(15);
+    const off = (Math.atan2(look.x * d.z - look.z * d.x, look.x * d.x + look.z * d.z) * 180) / Math.PI;
+    // Le cœur (la fontaine) à côté de Kéo, à droite, jamais derrière lui (relecture du Versant, (a) 5).
+    expect(off).toBeGreaterThan(12);
+    expect(off).toBeLessThan(30);
     const frame = doorFrameOf('jardin')!;
     expect(frame.height).toBeLessThan(0);
     expect(frame.back).toBeLessThanOrEqual(1.6);
@@ -212,7 +217,7 @@ describe('La scénette du Jardin', () => {
         x: PLACE.center.x + s.dx + sx * s.half[0],
         z: PLACE.center.z + s.dz + sz * s.half[1],
       };
-      for (const way of ['ve-7']) expect(distanceToPolyline(p, [door, nodes.get(way)!])).toBeGreaterThan(1.5);
+      for (const way of ['ve-8']) expect(distanceToPolyline(p, [door, nodes.get(way)!])).toBeGreaterThan(1.5);
     }
     expect(distance({ x: PLACE.center.x + s.dx, z: PLACE.center.z + s.dz }, door)).toBeGreaterThan(3);
     expect(SURROUNDINGS.jardin).toBeDefined();

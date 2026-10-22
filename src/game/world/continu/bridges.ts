@@ -355,10 +355,20 @@ const stumpsOf = (s: BridgeSite): number[] => {
   return [piles[0], piles[piles.length - 1]];
 };
 
-/** Le cadenas d'un pont (le même sur les quatre) : au-dessus de l'eau, passé son milieu, du côté de la terre fermée. */
+/**
+ * Le cadenas de la galerie du col du 3e se pose à côté d'elle, à l'est, de tant d'unités : la galerie file droit vers le
+ * Fanal vu depuis la porte du Belvédère, et le cadenas, posé dans sa ligne, couvrait la tour (relecture du Versant par
+ * le directeur artistique, (a) 2 : « le Fanal entier, sans rien devant »).
+ */
+const LOCK_ASIDE: Partial<Record<LinkedLand, number>> = { cirque: 9 };
+
+/**
+ * Le cadenas d'un pont (le même sur les quatre) : au-dessus de l'eau, passé son milieu, du côté de la terre fermée ; à
+ * côté de la galerie du col (`LOCK_ASIDE`).
+ */
 export function bridgeLockPoint(land: LinkedLand): Vec2 {
   const s = bridgeSite(land);
-  return frame(s)(s.water[0] + (s.water[1] - s.water[0]) * 0.6, 0);
+  return frame(s)(s.water[0] + (s.water[1] - s.water[0]) * 0.6, LOCK_ASIDE[land] ?? 0);
 }
 
 /**

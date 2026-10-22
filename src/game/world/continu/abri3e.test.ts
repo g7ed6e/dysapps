@@ -9,7 +9,7 @@ import { phraseDeLaPose } from '../../poseWords';
 import { partiesDe } from '../parts';
 import { plansFor } from '../plans';
 import { PLACE_RUIN_TRIANGLES_MAX_3E, PLACE_TRIANGLES_MAX_3E } from './budget';
-import { ABRI, ABRI_LAYOUT } from './abri3e';
+import { ABRI, ABRI_LAYOUT, SOCK } from './abri3e';
 import { ABRI_SURROUNDINGS } from './abriSurroundings';
 import { posedTraces, type PartShape, type Stage } from './construction';
 import { FacetBuilder, boundsOf, type Facets } from './facets';
@@ -105,6 +105,11 @@ describe('L’Abri, lieu complet', () => {
   it('cinq pluviomètres en rang ; trois manches à air au mât, sans bras ; la roue à l’ouest, la table de relevés à l’est', () => {
     expect(ABRI_LAYOUT.gauges.xs).toHaveLength(5);
     expect(ABRI_LAYOUT.mast.socks).toHaveLength(3);
+    // Des cônes creux, plus larges à la bouche qu'au bout, épais, ouverts : jamais une latte (relecture du Versant, (a) 7).
+    expect(SOCK.mouth).toBeGreaterThan(SOCK.tail);
+    expect(SOCK.tail).toBeGreaterThan(0.12);
+    expect(SOCK.len / SOCK.mouth).toBeLessThan(4.5);
+    for (let k = 1; k < ABRI_LAYOUT.mast.socks.length; k++) expect(ABRI_LAYOUT.mast.socks[k] - ABRI_LAYOUT.mast.socks[k - 1]).toBeGreaterThan(2 * SOCK.mouth);
     expect(ABRI_LAYOUT.drum.x).toBeLessThan(0);
     expect(ABRI_LAYOUT.table.x).toBeGreaterThan(0);
     // L'ouverture du muret au sud, du côté de la porte ; la porte hors du muret.
@@ -182,15 +187,17 @@ describe('La scénette de l’Abri', () => {
     expect(s.greeting).toBe('La météorologue observe le temps qu’il fait.');
   });
 
-  it('la caméra arrive par la porte, basse, au nord-nord-ouest (342°) : l’abri à persiennes au milieu du cadre', () => {
+  it('la caméra arrive par la porte, basse, au nord-nord-ouest (342°) : l’abri à persiennes à droite de Kéo, dans le cadre', () => {
     const door = nodes.get('abri')!;
     const yaw = doorViewOf('abri');
     const look = { x: -Math.sin(yaw), z: -Math.cos(yaw) };
     const cap = ((Math.atan2(look.x, -look.z) * 180) / Math.PI + 360) % 360;
     expect(cap).toBeCloseTo(342, 6);
     const d = { x: PLACE.center.x - door.x, z: PLACE.center.z - door.z };
-    const off = Math.atan2(look.x * d.z - look.z * d.x, look.x * d.x + look.z * d.z);
-    expect(Math.abs((off * 180) / Math.PI)).toBeLessThan(15);
+    const off = (Math.atan2(look.x * d.z - look.z * d.x, look.x * d.x + look.z * d.z) * 180) / Math.PI;
+    // Le cœur à côté de Kéo, à sa droite, jamais derrière lui (relecture du Versant, (a) 5).
+    expect(off).toBeGreaterThan(12);
+    expect(off).toBeLessThan(30);
     const frame = doorFrameOf('abri')!;
     expect(frame.height).toBeLessThan(0);
     expect(frame.back).toBeLessThanOrEqual(1.6);

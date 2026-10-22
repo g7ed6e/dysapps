@@ -86,13 +86,16 @@ const PAD_RING = 0x6b7690;
 
 /**
  * L'aire de la Nef (fiche, § 5) : au milieu de la place du Parvis, un disque de pierre claire, à peine plus haut que la
- * place, cerclé de métal. Un décor : on y marche comme sur la place.
+ * place, cerclé de métal : le cercle se lit aussi sur le dessus, un anneau de fer incrusté au bord de la pierre, entier
+ * de partout (relecture du Versant par le directeur artistique, (a) 9 : on n'en voyait que la moitié). Un décor : on y
+ * marche comme sur la place.
  */
 function parvisPadFacets(): Facets {
   const b = new FacetBuilder();
   const { center, radius, deck } = PARVIS_PAD;
   b.prism({ x: center.x, y: deck - 0.2, z: center.z }, radius, radius, 0.2, 16, COLORS_3E.graniteSun, COLORS_3E.parvis);
   b.band({ x: center.x, y: deck - 0.22, z: center.z }, radius + 0.06, 0.28, 16, PAD_RING);
+  b.annulus({ x: center.x, y: deck + 0.012, z: center.z }, radius - 0.45, radius + 0.06, 0, 16, PAD_RING, PAD_RING, false);
   return placeFacets(b.build(), { x: PARVIS.origin.x, y: 0, z: PARVIS.origin.z, yaw: PARVIS.yaw });
 }
 

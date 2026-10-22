@@ -5,11 +5,13 @@
 // au soleil, ses trois arbres palissés à plat en éventail ; quatre carrés bordés de granit, leurs touffes basses de
 // plusieurs verts et quelques fleurs pâles ; la petite fontaine au bassin rond au milieu, l'eau sombre et immobile ; à
 // l'est, le séchoir, un bâti à claies empilées sous un petit toit d'ardoise ; à l'ouest, le mortier de pierre sur son
-// billot ; un muret bas sur les côtés, le jardin grand ouvert au sud, vers la porte (correction 1 : la porte au sud, le
-// regard au nord, jamais à contre-jour).
+// billot ; un muret bas qui clôt les côtés et le sud, ouvert d'une seule entrée de 3,5 dans l'axe de la vue (relecture
+// du Versant par le directeur artistique, (a) 8 : « le jardin clos ») ; la porte au sud, le regard au nord, jamais à
+// contre-jour (correction 1), Kéo un peu à droite de l'entrée, la fontaine à côté de lui, jamais derrière ((a) 5).
 //
-// La ruine, d'après le texte : la moitié est du mur écroulée (un tronçon bas, trois pierres), ses deux arbres sans appui
-// penchés ; les carrés envahis d'herbe haute, leurs bordures déchaussées ; le séchoir couché, ses claies en pile ; la
+// La ruine, d'après le texte : la moitié est du mur écroulée (un tronçon bas, ses pierres couchées devant lui, du côté de
+// la porte), ses deux arbres sans appui penchés ; les carrés envahis d'une herbe sèche haute, d'un ton à part, qui déborde
+// des bordures déchaussées ((a) 6) ; le séchoir couché, ses claies en pile ; la
 // fontaine sèche, son bec bouché ; le mortier debout. Une seule lumière, la lanterne du greffeur, sur la partie du mur
 // restée debout. Trois parties (1 + 1 + 1) : le corps (les carrés) ; le haut (le mur, les arbres, le séchoir et sa
 // lanterne) ; les abords (la fontaine pleine, le banc, le chemin de pierre claire, la lanterne du chemin). Une trace par
@@ -18,12 +20,12 @@ import type { Stage } from './construction';
 import type { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, armLantern3e, habitant3e, postLantern3e, site3e, wallSpan3e } from './place3eKit';
+import { C3E, armLantern3e, dryTuft3e, habitant3e, postLantern3e, site3e, wallSpan3e } from './place3eKit';
 import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise } from './place4eKit';
 
 /**
  * Les couleurs propres au Jardin, en plus des matières des Passeurs (`C3E`) : la terre des carrés ; trois verts des
- * touffes et le vert gris des herbes sur les claies ; l'herbe haute de la ruine ; deux fleurs pâles ; le feuillage des
+ * touffes et le vert gris des herbes sur les claies ; l'herbe des carrés envahis (sous l'herbe sèche du kit) ; deux fleurs pâles ; le feuillage des
  * arbres et leur écorce ; l'eau sombre de la fontaine (jamais presque noire) et le fond sec ; la terre cuite des pots ;
  * l'osier ; la veste du greffeur (un vert de mousse éteint).
  */
@@ -31,7 +33,6 @@ const C = {
   soil: 0x8a7560,
   greens: [0x6f8f55, 0x7f9a5c, 0x8aa36a] as const,
   herbs: 0x93a07a,
-  tall: 0x9fae72,
   grass: 0x7c9856,
   flowers: [0xd9cfe0, 0xe6dcb8] as const,
   leaf: 0x6a8a52,
@@ -54,8 +55,11 @@ const planeY = groundPlane4e(SITE.ground, [-7, 7], [-6.5, 10]);
 /** Le mur des espaliers, au nord : ses bouts, sa ligne, sa hauteur, son épaisseur ; où il s'est écroulé (la ruine). */
 const WALL = { x0: -6.2, x1: 6.2, z: -5.6, h: 2.2, thick: 0.5, breach: 0.4 } as const;
 
-/** Le muret bas des côtés, et ses deux bouts au sud, de part et d'autre de la grande ouverture. */
-const SIDES = { z1: 6.0, h: 0.55, thick: 0.4, stub: 1.6 } as const;
+/**
+ * Le muret bas des côtés, et ses deux retours au sud, de part et d'autre de la seule entrée : `stub`, la longueur d'un
+ * retour ; l'entrée, `gate` de large, au milieu, dans l'axe de la vue.
+ */
+const SIDES = { z1: 6.0, h: 0.55, thick: 0.4, stub: (WALL.x1 - WALL.x0 - 3.5) / 2, gate: 3.5 } as const;
 
 /** Les trois arbres en espalier, contre la face sud du mur ; le premier, sur la partie restée debout. */
 const TREES = { xs: [-3.6, 1.6, 4.4] as const, z: WALL.z + WALL.thick / 2 + 0.12, trunk: 0.9, span: 1.3, top: 1.9 } as const;
@@ -173,18 +177,25 @@ function squareUp(b: FacetBuilder, at: Vec2, k: number): void {
   for (const [i, dx] of [-0.4, 0.4].entries()) b.box({ x: at.x + dx, y: top + 0.25, z: at.z + (i ? -0.55 : 0.55) }, [0.12, 0.08, 0.12], C.flowers[(i + k) % 2]);
 }
 
-/** Un carré envahi (la ruine) : la terre basse sous l'herbe, deux pierres de bordure déchaussées, deux touffes d'herbe haute. */
+/**
+ * Un carré envahi (la ruine) : la terre basse sous l'herbe, deux pierres de bordure déchaussées ; une herbe sèche haute,
+ * du ton sec du kit (jamais celui des plantes refaites), dont deux touffes débordent de la bordure, vers la porte et sur le
+ * côté.
+ */
 function squareOvergrown(b: FacetBuilder, at: Vec2, k: number): void {
   const g = planeY(at.x, at.z);
   b.box({ x: at.x, y: g - 0.2, z: at.z }, [SQUARES.side - 0.3, 0.32, SQUARES.side - 0.3], C3E.graniteShade, C.grass);
   const s = SQUARES.side / 2;
   b.box({ x: at.x - s + 0.2, y: g - 0.1, z: at.z + (k % 2 ? 0.4 : -0.4), yaw: 0.3, pitch: 0.5 }, [0.25, 0.3, 1.0], C3E.graniteShade, C3E.granite);
   b.box({ x: at.x + 0.3, y: g - 0.1, z: at.z + s - 0.1, yaw: 1.3 + k, pitch: 0.4 }, [0.25, 0.3, 0.9], C3E.graniteShade, C3E.granite);
-  for (const [dx, dz] of [
-    [-0.5, -0.3],
-    [0.5, 0.4],
+  const side = at.x < 0 ? -1 : 1;
+  for (const [dx, dz, size] of [
+    [-0.45, -0.35, 1.5],
+    [0.5, 0.3, 1.4],
+    [-0.1, s + 0.15, 1.2],
+    [side * (s + 0.1), -0.2, 1.1],
   ] as const)
-    b.prism({ x: at.x + dx, y: g + 0.05, z: at.z + dz, yaw: k }, 0.38, 0, 0.75, 4, C.tall);
+    dryTuft3e(b, at.x + dx, planeY(at.x + dx, at.z + dz) + 0.1, at.z + dz, size);
 }
 
 /** La fontaine : son bassin rond de granit, son pilier et son bec ; toujours là. */
@@ -231,15 +242,25 @@ function mortar(b: FacetBuilder): void {
   b.beam({ x: MORTAR.x, y: g + 0.7, z: MORTAR.z }, { x: MORTAR.x + 0.16, y: g + 1.05, z: MORTAR.z + 0.08 }, 0.07, C3E.stoneShade);
 }
 
-/** La moitié est du mur, écroulée : un tronçon bas et trois pierres dans l'herbe (la ruine). */
+/**
+ * La moitié est du mur, écroulée : un tronçon bas, et ses pierres couchées devant lui, du côté de la porte (relecture du
+ * Versant, (a) 6), entre le mur et les carrés du nord, hors du chemin ; deux sur le tronçon.
+ */
 function breach(b: FacetBuilder): void {
   espalierWall(b, WALL.breach, WALL.x1, 0.5);
-  for (const [x, dz, yaw] of [
-    [1.4, 0.9, 0.3],
-    [3.2, 1.2, 1.1],
-    [5.0, 0.8, 2.0],
+  for (const [x, dz, yaw, s] of [
+    [0.9, 0.9, 0.3, 1.0],
+    [2.0, 1.6, 0.9, 1.2],
+    [3.1, 1.0, 1.4, 1.1],
+    [4.3, 1.7, 2.1, 1.0],
+    [5.4, 1.1, 0.6, 1.2],
   ] as const)
-    b.box({ x, y: planeY(x, WALL.z + dz) - 0.12, z: WALL.z + dz, yaw }, [0.55, 0.35, 0.4], C3E.graniteShade, C3E.granite);
+    b.box({ x, y: planeY(x, WALL.z + dz) - 0.12, z: WALL.z + dz, yaw }, [0.75 * s, 0.42 * s, 0.5 * s], C3E.graniteShade, C3E.granite);
+  for (const [x, yaw] of [
+    [1.8, 0.2],
+    [4.0, -0.3],
+  ] as const)
+    b.box({ x, y: wallBase() + 0.5 + 0.14, z: WALL.z, yaw }, [0.6, 0.32, 0.42], C3E.graniteShade, C3E.granite);
 }
 
 /** Le banc du greffeur (les abords). */

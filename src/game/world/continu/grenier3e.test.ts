@@ -9,7 +9,7 @@ import { phraseDeLaPose } from '../../poseWords';
 import { partiesDe } from '../parts';
 import { plansFor } from '../plans';
 import { PLACE_RUIN_TRIANGLES_MAX_3E, PLACE_TRIANGLES_MAX_3E } from './budget';
-import { GRENIER, GRENIER_LAYOUT } from './grenier3e';
+import { FALLEN_SLATES, GRENIER, GRENIER_LAYOUT } from './grenier3e';
 import { GRENIER_SURROUNDINGS } from './grenierSurroundings';
 import { posedTraces, type PartShape, type Stage } from './construction';
 import { FacetBuilder, boundsOf, type Facets } from './facets';
@@ -171,15 +171,25 @@ describe('La scénette du Grenier', () => {
     expect(s.greeting).toBeNull();
   });
 
-  it('la caméra arrive par la porte, basse, au nord-nord-est (21°, le soleil de côté) : le grenier au milieu du cadre', () => {
+  it('la ruine ouvre le pan ouest, celui que voit la porte : ses lauzes au pied du mur ouest, entre lui et la table', () => {
+    const tableEdge = GRENIER_LAYOUT.table.x + GRENIER_LAYOUT.table.w / 2;
+    for (const s of FALLEN_SLATES) {
+      expect(s.x).toBeLessThan(-2.1 - 0.15);
+      expect(s.x).toBeGreaterThan(tableEdge + 0.3);
+    }
+  });
+
+  it('la caméra arrive par la porte, basse, au nord-nord-est (21°, le soleil de côté) : le grenier à droite de Kéo, dans le cadre', () => {
     const door = nodes.get('grenier')!;
     const yaw = doorViewOf('grenier');
     const look = { x: -Math.sin(yaw), z: -Math.cos(yaw) };
     const cap = ((Math.atan2(look.x, -look.z) * 180) / Math.PI + 360) % 360;
     expect(cap).toBeCloseTo(21, 6);
     const d = { x: PLACE.center.x - door.x, z: PLACE.center.z - door.z };
-    const off = Math.atan2(look.x * d.z - look.z * d.x, look.x * d.x + look.z * d.z);
-    expect(Math.abs((off * 180) / Math.PI)).toBeLessThan(15);
+    const off = (Math.atan2(look.x * d.z - look.z * d.x, look.x * d.x + look.z * d.z) * 180) / Math.PI;
+    // Le cœur à côté de Kéo, à sa droite, jamais derrière lui (relecture du Versant, (a) 5).
+    expect(off).toBeGreaterThan(12);
+    expect(off).toBeLessThan(30);
     const frame = doorFrameOf('grenier')!;
     expect(frame.height).toBeLessThan(0);
     expect(frame.back).toBeLessThanOrEqual(1.6);

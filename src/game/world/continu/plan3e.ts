@@ -82,7 +82,7 @@ export const MOUNTAIN_3E = poly([
   // L'anse de nuages à l'est du Parvis (lot du Versant, directeur artistique, point 8, et consultant, point 2 : « rapprocher
   // le bord est du Parvis de sa rive sud-est ») : le Parvis devient un promontoire, et la mer de nuages entre dans le
   // quart droit de l'arrivée.
-  [900, 1100], [830, 1030], [770, 995], [715, 990], [688, 1010], [668, 1062], [650, 1135], [520, 1115], [440, 1045], [440, 955],
+  [975, 1090], [900, 1050], [800, 1000], [715, 990], [688, 1010], [668, 1062], [650, 1135], [520, 1115], [440, 1045], [440, 955],
   [400, 885], [300, 810], [190, 710], [120, 570],
 ]);
 
@@ -210,10 +210,10 @@ interface PlaceSpec extends Omit<OpenPlace<PlaceId3e>, 'center' | 'door' | 'scen
  * passent par l'écran habituel.
  */
 const PLACE_SPECS: readonly PlaceSpec[] = [
-  { id: 'belvedere', name: 'Le Belvédère', at: 'au Belvédère', agree: 'ms', island: 'maths-3e-geometry', plan: [1290, 760], door: { x: 6, z: 8 } },
-  { id: 'grenier', name: 'Le Grenier', at: 'au Grenier', agree: 'ms', island: 'maths-3e-numbers', plan: [1150, 830], door: { x: -3, z: 8 } },
-  { id: 'abri', name: 'L’Abri', at: 'à l’Abri', agree: 'ms', island: 'maths-3e-statistics', plan: [900, 620], door: { x: 3, z: 9 } },
-  { id: 'jardin', name: 'Le Jardin', at: 'au Jardin', agree: 'ms', island: 'life-earth-sciences-3e-human-body', plan: [1010, 960], door: { x: 0, z: 9 } },
+  { id: 'belvedere', name: 'Le Belvédère', at: 'au Belvédère', agree: 'ms', island: 'maths-3e-geometry', plan: [1290, 760], door: { x: 8.8, z: 5.9 } },
+  { id: 'grenier', name: 'Le Grenier', at: 'au Grenier', agree: 'ms', island: 'maths-3e-numbers', plan: [1150, 830], door: { x: -6.3, z: 6.8 } },
+  { id: 'abri', name: 'L’Abri', at: 'à l’Abri', agree: 'ms', island: 'maths-3e-statistics', plan: [900, 620], door: { x: -0.3, z: 10.1 } },
+  { id: 'jardin', name: 'Le Jardin', at: 'au Jardin', agree: 'ms', island: 'life-earth-sciences-3e-human-body', plan: [1010, 960], door: { x: -3, z: 9.3 } },
   { id: 'fanal', name: 'Le Fanal', at: 'au Fanal', agree: 'ms', island: 'maths-3e-functions', plan: [985, 175], door: { x: 0, z: 9 } },
   { id: 'rampe', name: 'La Rampe', at: 'à la Rampe', agree: 'fs', island: 'physics-chemistry-3e-motion-energy', plan: [1065, 225], door: { x: 7, z: 6 } },
   { id: 'standard', name: 'Le Standard', at: 'au Standard', agree: 'ms', island: 'technology-3e-digital', plan: [790, 190], door: { x: 8, z: 4 } },
@@ -339,7 +339,7 @@ function frameOf(origin: Vec2, yaw: number): Frame3e {
 export const PARVIS = frameOf(fromPlan3e([487, 961]), 0);
 
 /** Où Kéo se tient à l'arrivée, dans le repère du Parvis : à l'est de l'aire de la Nef. */
-export const PARVIS_QUAY_SPOT: readonly [number, number] = [27, 20];
+export const PARVIS_QUAY_SPOT: readonly [number, number] = [12, 27];
 
 /**
  * La place ronde du Parvis (lot du Versant ; directeur artistique, lot 1, point 8, et relecture des lieux, point 21) : une
@@ -363,7 +363,7 @@ export const PARVIS_CORNERS: readonly Vec2[] = Array.from({ length: PARVIS_ROUND
  * (`PARVIS_ROUND`, que lisent la flore et le toucher du lieu de départ).
  */
 export const PARVIS_PAVING = {
-  quay: { x0: 24, x1: 30, z0: 18, z1: 22 },
+  quay: { x0: PARVIS_QUAY_SPOT[0] - 3, x1: PARVIS_QUAY_SPOT[0] + 3, z0: PARVIS_QUAY_SPOT[1] - 2, z1: PARVIS_QUAY_SPOT[1] + 2 },
   square: { x0: PARVIS_ROUND.center.x - PARVIS_ROUND.rx, x1: PARVIS_ROUND.center.x + PARVIS_ROUND.rx, z0: PARVIS_ROUND.center.z - PARVIS_ROUND.rz, z1: PARVIS_ROUND.center.z + PARVIS_ROUND.rz },
 } as const;
 
@@ -445,8 +445,10 @@ export const PATH_NODES_3E: readonly PathNode[] = [
   node('ve-4', [1225, 860]),
   node('ve-5', [985, 760]),
   node('ve-6', [1060, 560]),
-  // Le coude du Jardin, au sud-ouest de ses carrés : le chemin arrive à sa porte par le sud (relecture des lieux, correction 1).
-  node('ve-7', [970, 992]),
+  // Le coude du Jardin, au sud-ouest de ses carrés : le chemin arrive à sa porte par le sud (relecture des lieux, correction 1),
+  // en deux angles ouverts, à plus de deux unités du muret (relecture du Versant par le directeur artistique, (a) 8).
+  node('ve-7', [965.7, 983.4]),
+  node('ve-8', [984.8, 993.5]),
   node('gla-v', [565, 790]),
   node('col-v', [1105, 425]),
   node('arc-v', [1372, 766]),
@@ -489,7 +491,8 @@ export const PATH_EDGES_3E: readonly (readonly [string, string])[] = [
   ['par-1', 've-1'],
   ['ve-1', 've-2'],
   ['ve-2', 've-7'],
-  ['ve-7', 'jardin'],
+  ['ve-7', 've-8'],
+  ['ve-8', 'jardin'],
   ['ve-2', 've-3'],
   ['ve-3', 'grenier'],
   ['grenier', 've-4'],
@@ -556,7 +559,7 @@ export const LANDS_3E: readonly Land[] = [
  * (Cirque), le Cèdre (Prairies). Ils se construisent avec leur lot.
  */
 export const DETOUR_SPOTS_3E = {
-  cadran: fromPlan3e([800, 860]),
+  cadran: fromPlan3e([1060, 760]),
   bergerie: fromPlan3e([330, 270]),
   lac: fromPlan3e([720, 105]),
   cedre: fromPlan3e([1640, 1000]),

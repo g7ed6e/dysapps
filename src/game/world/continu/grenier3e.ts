@@ -5,10 +5,13 @@
 // granit en champignon, son pignon au sud, face au chemin, sa porte et ses trois marches ; son toit d'ardoise raide sous
 // un peu de neige ; la poutre de levage et sa poulie sous le faîte du pignon ; les sacs en carré au pied du mur et en cube
 // sur une plate-forme ; les mesures de bois rondes emboîtables, de la plus grande à la plus petite, sur la longue table ;
-// les casiers de partage, tous pareils ; la meule debout sous son petit toit sur quatre poteaux, à droite.
+// les casiers de partage, tous pareils ; la meule debout sous son petit toit sur quatre poteaux, à droite. Des sacs ronds,
+// au col noué, jamais des caisses ((a) 9). Kéo s'arrête à gauche du grenier, qu'il voit de trois quarts, sa porte et ses
+// marches à côté de lui, jamais derrière ((a) 5).
 //
-// La ruine, d'après le texte : le grenier debout sur ses pieds, la moitié est de son toit ouverte (deux lauzes tombées au
-// pied), la porte qui pend ; les sacs éboulés en un tas mou ; les mesures renversées dans l'herbe ; les casiers penchés
+// La ruine, d'après le texte : le grenier debout sur ses pieds, le pan de son toit vu depuis la porte (à l'ouest) ouvert,
+// ses chevrons à nu, trois lauzes tombées au pied (relecture du Versant par le directeur artistique, (a) 6), la porte qui
+// pend ; les sacs éboulés en un tas mou ; les mesures renversées dans l'herbe ; les casiers penchés
 // contre le mur ; la meule couchée à plat à côté de son bâti, le petit toit tombé. Une seule lumière, la lanterne du
 // meunier, au crochet de la porte. Cinq parties (3 + 1 + 1) : le plancher, la porte et les marches ; les sacs rangés ;
 // les mesures et les casiers ; le haut (le toit refait, la poutre et sa poulie, une lanterne) ; les abords (la meule
@@ -19,7 +22,7 @@ import type { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
 import { C3E, SINK_3E, armLantern3e, habitant3e, postLantern3e, site3e } from './place3eKit';
-import { capOf, groundPlane4e, inWorld, once, quadOut, sceneRight, sceneRise, sheet, type P3 } from './place4eKit';
+import { capOf, groundPlane4e, inWorld, once, quadOut, sceneRight, sceneRise, sheet } from './place4eKit';
 
 /**
  * Les couleurs propres au Grenier, en plus des matières des Passeurs (`C3E`) : la toile des sacs, au soleil et à l'ombre
@@ -63,8 +66,11 @@ const FRONT = G.cz + G.d / 2;
 /** Les six pieds en champignon, sous les angles et le milieu des longs côtés. */
 const FEET: readonly Vec2[] = [-1, 0, 1].flatMap((i) => [-1, 1].map((sx) => ({ x: G.cx + (sx * (G.w / 2 - 0.3)), z: G.cz + i * (G.d / 2 - 0.3) })));
 
-/** Les sacs : le carré au pied du mur, à gauche de la porte ; la plate-forme du cube, à droite. Un sac, sa taille. */
-const SACKS = { square: { x: -1.5, z: FRONT + 0.75 }, cube: { x: 3.4, z: 0.9 }, size: [0.62, 0.42, 0.44] as P3 } as const;
+/**
+ * Les sacs : le carré au pied du mur, à gauche de la porte ; la plate-forme du cube, à droite. Un sac : son rayon (un
+ * tronc à six pans, les angles arrondis), sa hauteur, et son col noué ; `step`, l'écart de deux sacs rangés.
+ */
+const SACKS = { square: { x: -1.5, z: FRONT + 0.75 }, cube: { x: 3.4, z: 0.9 }, r: 0.29, h: 0.42, neck: 0.1, step: 0.58 } as const;
 
 /** La longue table des mesures, à l'ouest du grenier, du nord au sud ; ses mesures, de la plus grande à la plus petite. */
 const TABLE = { x: -3.6, z: -0.6, len: 3.0, w: 0.8, h: 0.8, measures: [0.34, 0.27, 0.21, 0.15] as const } as const;
@@ -140,6 +146,34 @@ function roofPan(b: FacetBuilder, side: -1 | 1): void {
   sheet(b, [[0, top + 0.12, z0], [0, top + 0.12, z1], [ex * k, top + 0.12 - (top - ey) * k, z1], [ex * k, top + 0.12 - (top - ey) * k, z0]], 0.05, C3E.snow, C3E.slateTop);
 }
 
+/**
+ * Le pan ouest ouvert (la ruine) : le faîtage, six chevrons à nu du faîte à l'avant-toit, une latte cassée ; on voit le
+ * ciel entre eux depuis la porte.
+ */
+function bareRafters(b: FacetBuilder): void {
+  const y = floorY() + G.wall;
+  const top = y + G.ridge;
+  const z0 = G.cz - G.d / 2 - G.eave + 0.1,
+    z1 = FRONT + G.eave - 0.1;
+  const out = G.eave * 0.6;
+  const ex = -(G.w / 2 + out);
+  const ey = y - (out * G.ridge) / (G.w / 2);
+  b.beam({ x: 0, y: top, z: z0 }, { x: 0, y: top, z: z1 }, 0.16, C3E.woodShade);
+  for (let k = 0; k < 6; k++) {
+    const z = z0 + ((z1 - z0) * k) / 5;
+    b.beam({ x: 0, y: top - 0.04, z }, { x: ex, y: ey, z }, 0.12, C3E.woodShade);
+  }
+  const mid = { x: ex * 0.55, y: top - (top - ey) * 0.55 + 0.08 };
+  b.beam({ x: mid.x, y: mid.y, z: z0 }, { x: mid.x, y: mid.y - 0.05, z: z0 + (z1 - z0) * 0.45 }, 0.07, C3E.wood);
+}
+
+/** Les lauzes tombées du pan ouvert, au pied du mur ouest, entre lui et la table (la ruine). */
+export const FALLEN_SLATES = [
+  { x: -2.55, z: -1.0, yaw: 0.5, pitch: 0.12 },
+  { x: -2.65, z: 0.4, yaw: 1.7, pitch: -0.1 },
+  { x: -2.5, z: 1.25, yaw: 2.6, pitch: 0.18 },
+] as const;
+
 /** La poutre de levage sous le faîte du pignon sud, sa poulie et sa corde (le haut). */
 function hoist(b: FacetBuilder): void {
   const y = floorY() + G.wall + G.ridge - 0.45;
@@ -162,30 +196,41 @@ function hangingDoor(b: FacetBuilder): void {
   b.box({ x: -G.door - 0.2, y: floorY() - 0.25, z: FRONT + 0.45, yaw: -1.1, pitch: 0.12 }, [2 * G.door, G.doorH, 0.06], C3E.woodShade, C3E.wood);
 }
 
-/** Un sac de toile, posé en (`x`, `y`, `z`), tourné de `yaw`, penché de `pitch`. */
-function sack(b: FacetBuilder, x: number, y: number, z: number, yaw = 0, pitch = 0): void {
-  b.box({ x, y, z, yaw, pitch }, SACKS.size, C.sackShade, C.sack);
+/**
+ * Un sac de toile, posé en (`x`, `y`, `z`), tourné de `yaw`, penché de `pitch` : un tronc à six pans, un peu plus étroit
+ * en haut ; `neck` : son col noué au-dessus (la toile resserrée, le lien, le bout qui dépasse), sauf sous un autre sac.
+ */
+function sack(b: FacetBuilder, x: number, y: number, z: number, yaw = 0, pitch = 0, neck = true): void {
+  const S = SACKS;
+  b.prism({ x, y, z, yaw, pitch }, S.r, S.r * 0.86, S.h, 6, C.sackShade, C.sack);
+  if (!neck) return;
+  // Le col suit le sac : au bout de son axe (un quart de tour de `pitch` le couche).
+  const up = { x: Math.sin(pitch) * Math.sin(yaw), y: Math.cos(pitch), z: Math.sin(pitch) * Math.cos(yaw) };
+  const at = (d: number) => ({ x: x + up.x * d, y: y + up.y * d, z: z + up.z * d });
+  b.prism({ ...at(S.h - 0.02), yaw, pitch }, S.r * 0.42, S.r * 0.26, S.neck, 5, C.sackShade, C.sack);
+  b.prism({ ...at(S.h + S.neck - 0.03), yaw, pitch }, S.r * 0.32, S.r * 0.32, 0.04, 5, C3E.woodShade);
+  b.prism({ ...at(S.h + S.neck + 0.01), yaw: yaw + 0.4, pitch }, S.r * 0.4, 0, 0.12, 5, C.sack);
 }
 
 /** Les sacs rangés : quatre en carré au pied du mur ; huit en cube sur une plate-forme de planches (le corps 2). */
 function sacksStacked(b: FacetBuilder): void {
-  const [sx, sy, sz] = SACKS.size;
+  const s = SACKS.step;
   const q = SACKS.square;
-  for (const i of [-0.5, 0.5]) for (const k of [-0.5, 0.5]) sack(b, q.x + i * sx, planeY(q.x, q.z), q.z + k * sz);
+  for (const i of [-0.5, 0.5]) for (const k of [-0.5, 0.5]) sack(b, q.x + i * s, planeY(q.x, q.z), q.z + k * s);
   const c = SACKS.cube;
   const top = planeY(c.x, c.z) + 0.25;
-  b.box({ x: c.x, y: top - 0.25, z: c.z }, [1.5, 0.25, 1.1], C3E.woodShade, C3E.wood);
-  for (const i of [-0.5, 0.5]) for (const k of [-0.5, 0.5]) for (const j of [0, 1]) sack(b, c.x + i * sx, top + j * sy, c.z + k * sz);
+  b.box({ x: c.x, y: top - 0.25, z: c.z }, [1.5, 0.25, 1.25], C3E.woodShade, C3E.wood);
+  for (const i of [-0.5, 0.5]) for (const k of [-0.5, 0.5]) for (const j of [0, 1]) sack(b, c.x + i * s, top + j * (SACKS.h - 0.01), c.z + k * s, 0, 0, j === 1);
 }
 
 /** Le tas mou des sacs éboulés au pied du mur (la ruine). */
 function sacksFallen(b: FacetBuilder): void {
   const q = SACKS.square;
   for (const [dx, dz, yaw, pitch, lift] of [
-    [0, 0, 0.3, 0.2, 0],
-    [0.55, 0.3, 1.2, -0.25, 0],
-    [-0.4, 0.5, 2.1, 0.3, 0],
-    [0.15, 0.1, 0.8, 0.15, 0.32],
+    [0, 0, 0.3, 1.35, 0.22],
+    [0.6, 0.35, 1.2, 1.4, 0.22],
+    [-0.45, 0.55, 2.1, 0.3, 0],
+    [0.2, 0.15, 0.8, 1.3, 0.5],
   ] as const)
     sack(b, q.x + dx, planeY(q.x, q.z) + lift - 0.05, q.z + dz, yaw, pitch);
 }
@@ -291,13 +336,13 @@ function model(add: AddPiece): void {
   const haut = { stage: 1 as Stage, row: 0 };
   const abords = { stage: 2 as Stage, row: 0 };
 
-  // Toujours là : les six pieds, le grenier debout, ses pignons, la moitié ouest de son toit ; la longue table ; le bâti
+  // Toujours là : les six pieds, le grenier debout, ses pignons, la moitié est de son toit ; la longue table ; le bâti
   // de la meule ; la lanterne du meunier, la seule allumée de la ruine.
   add('ruine', 0, (b) => {
     for (const f of FEET) mushroom(b, f);
     body(b);
     gables(b);
-    roofPan(b, -1);
+    roofPan(b, 1);
     table(b);
     millFrame(b);
     millerLantern(b);
@@ -316,16 +361,13 @@ function model(add: AddPiece): void {
     },
     corps3,
   );
-  // Le haut relève les deux lauzes tombées au pied du mur est.
+  // Le haut relève les chevrons à nu du pan ouest et ses trois lauzes tombées au pied du mur.
   add(
     'ruine',
     0,
     (b) => {
-      for (const [dz, yaw] of [
-        [-1.4, 0.5],
-        [0.2, 1.7],
-      ] as const)
-        b.box({ x: G.w / 2 + 0.9, y: planeY(G.w / 2 + 0.9, dz) - 0.04, z: dz, yaw, pitch: 0.1 }, [0.7, 0.08, 0.5], C3E.slate, C3E.slateTop);
+      bareRafters(b);
+      for (const s of FALLEN_SLATES) b.box({ x: s.x, y: planeY(s.x, s.z) - 0.04, z: s.z, yaw: s.yaw, pitch: s.pitch }, [0.6, 0.08, 0.45], C3E.slate, C3E.slateTop);
     },
     haut,
   );
@@ -341,9 +383,9 @@ function model(add: AddPiece): void {
     measuresInRow(b);
     bins(b, true);
   });
-  // ---- Le haut : le pan est du toit refait sous la neige, la poutre de levage et sa poulie ; une lanterne au coin.
+  // ---- Le haut : le pan ouest du toit refait sous la neige, la poutre de levage et sa poulie ; une lanterne au coin.
   add(1, 0, (b) => {
-    roofPan(b, 1);
+    roofPan(b, -1);
     hoist(b);
     armLantern3e(b, G.w / 2, floorY() + G.wall - 0.3, FRONT, 0.7, 0.7, true);
   });
