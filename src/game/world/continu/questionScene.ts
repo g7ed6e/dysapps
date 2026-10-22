@@ -264,6 +264,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   grenier: placeArt('grenier')!.sceneSpot,
   // L'Abri : devant l'abri à persiennes, la table de relevés à droite.
   abri: placeArt('abri')!.sceneSpot,
+  // Le Jardin : entre les deux carrés du sud, la fontaine devant.
+  jardin: placeArt('jardin')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -567,6 +569,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   grenier: 'lieu',
   // L'Abri : les gobelets de fer, sur une planche.
   abri: 'lieu',
+  // Le Jardin : les pots de terre, sur une margelle.
+  jardin: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

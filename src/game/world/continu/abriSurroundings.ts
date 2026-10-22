@@ -15,11 +15,7 @@ import { standingHeight } from './terrain';
 import { heightAt3e } from './terrain3e';
 
 /** Le granit bleuté des Passeurs, au 3e. */
-const GRANITE_3E: RockTones = {
-  light: COLORS_3E.granite,
-  shade: COLORS_3E.graniteShade,
-  top: COLORS_3E.graniteSun,
-};
+const GRANITE_3E: RockTones = { light: COLORS_3E.granite, shade: COLORS_3E.graniteShade, top: COLORS_3E.graniteSun };
 
 /** Le sol du 3e en un point du monde. */
 const ground = (x: number, z: number): number => standingHeight(heightAt3e({ x, z }));

@@ -40,23 +40,8 @@ function rubble(b: FacetBuilder, x: number, z: number, s: number, color: number 
   b.box({ x: x - s * 0.5, y: SINK, z: z + s * 0.7, yaw: 2.3 }, [s * 0.5, s * 0.35 - SINK, s * 0.7], color, top);
 }
 
-/** Un pan de mur de granit : son milieu, sa longueur, sa hauteur, son cap ; son chaperon d'ardoise. */
-function wall(b: FacetBuilder, x: number, z: number, length: number, height: number, yaw = 0, thick = 0.8): void {
-  b.box({ x, y: SINK, z, yaw }, [length, height - SINK, thick], C.graniteShade, C.granite);
-  b.box({ x, y: height, z, yaw }, [length + 0.1, 0.25, thick + 0.15], C.slate, C.slateTop);
-}
-
 /** Un poteau de bois, cassé ou non. */
 const post = (b: FacetBuilder, x: number, z: number, h: number, w = 0.5): void => b.box({ x, y: SINK, z }, [w, h - SINK, w], C.woodShade, C.wood);
-
-/** Le Jardin : des carrés bordés de pierre ; le mur des espaliers, écroulé à moitié ; le séchoir de bois ; la petite fontaine. */
-function jardin(b: FacetBuilder): void {
-  for (const [x, z] of [[-4, 2], [0, 2], [4, 2]] as const) b.box({ x, y: SINK, z }, [3, 0.5 - SINK, 3], C.graniteShade, C.leaf);
-  wall(b, -2, -3.5, 9, 3);
-  b.box({ x: 4.5, y: SINK, z: -3.5 }, [3, 1.2 - SINK, 0.8], C.graniteShade, C.granite);
-  b.box({ x: 6.5, y: SINK, z: 1 }, [0.3, 2.6 - SINK, 3], C.woodShade, C.wood);
-  b.prism({ x: -7, y: SINK, z: -0.5 }, 1.2, 1.3, 0.8 - SINK, 8, C.graniteSun, C.glass);
-}
 
 /** Le Fanal : le phare de granit éteint, sur son socle fendu en deux gradins ; sa lanterne aux vitres manquantes. */
 function fanal(b: FacetBuilder): void {
@@ -174,10 +159,9 @@ function palais(b: FacetBuilder): void {
 
 /**
  * La ruine de chaque lieu du 3e pas encore construit, dessinée dans son repère : un lieu construit (./plan3e.ts,
- * `BUILT_PLACES_3E`) dessine sa ruine dans son fichier, avec ses étapes (le Belvédère, ./belvedere3e.ts ; le Grenier, ./grenier3e.ts ; l'Abri, ./abri3e.ts).
+ * `BUILT_PLACES_3E`) dessine sa ruine dans son fichier, avec ses étapes (le Belvédère, ./belvedere3e.ts ; le Grenier, ./grenier3e.ts ; l'Abri, ./abri3e.ts ; le Jardin, ./jardin3e.ts).
  */
 export const RUINS_3E: Readonly<Record<Exclude<PlaceId3e, BuiltPlace3e>, (b: FacetBuilder) => void>> = {
-  jardin,
   fanal,
   rampe,
   standard,

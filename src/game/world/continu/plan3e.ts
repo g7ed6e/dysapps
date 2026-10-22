@@ -213,7 +213,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'belvedere', name: 'Le Belvédère', at: 'au Belvédère', agree: 'ms', island: 'maths-3e-geometry', plan: [1290, 760], door: { x: 6, z: 8 } },
   { id: 'grenier', name: 'Le Grenier', at: 'au Grenier', agree: 'ms', island: 'maths-3e-numbers', plan: [1150, 830], door: { x: -3, z: 8 } },
   { id: 'abri', name: 'L’Abri', at: 'à l’Abri', agree: 'ms', island: 'maths-3e-statistics', plan: [900, 620], door: { x: 3, z: 9 } },
-  { id: 'jardin', name: 'Le Jardin', at: 'au Jardin', agree: 'ms', island: 'life-earth-sciences-3e-human-body', plan: [1010, 960], door: { x: -7, z: -5 } },
+  { id: 'jardin', name: 'Le Jardin', at: 'au Jardin', agree: 'ms', island: 'life-earth-sciences-3e-human-body', plan: [1010, 960], door: { x: 0, z: 9 } },
   { id: 'fanal', name: 'Le Fanal', at: 'au Fanal', agree: 'ms', island: 'maths-3e-functions', plan: [985, 175], door: { x: 0, z: 9 } },
   { id: 'rampe', name: 'La Rampe', at: 'à la Rampe', agree: 'fs', island: 'physics-chemistry-3e-motion-energy', plan: [1065, 225], door: { x: 7, z: 6 } },
   { id: 'standard', name: 'Le Standard', at: 'au Standard', agree: 'ms', island: 'technology-3e-digital', plan: [790, 190], door: { x: 8, z: 4 } },
@@ -258,13 +258,14 @@ const MAP_SIDES_3E: Readonly<Record<PlaceId3e, 'below' | 'left' | 'right'>> = {
 /**
  * Les lieux du 3e déjà construits, et les missions de chacun qui se jouent en scénette, dans l'ordre de leur île : la
  * seule liste, comme `BUILT_PLACES_4E` (./plan4e.ts), que lisent la scénette (./levelPlan.ts, `hasScenette`) et les
- * missions des lieux (`PLACES_3E`). Le Versant (GD-25, lot 2) : le Belvédère, le Grenier, l'Abri. Aucun habitant du 3e n'a encore son modèle
+ * missions des lieux (`PLACES_3E`). Le Versant (GD-25, lot 2) : le Belvédère, le Grenier, l'Abri, le Jardin. Aucun habitant du 3e n'a encore son modèle
  * 3D (./habitants.ts) : il se dessine en pion. Un lieu construit s'ajoute ici, et seulement ici.
  */
 export const BUILT_PLACES_3E = {
   belvedere: ['pythagoras', 'thales', 'trigonometry', 'scaling', 'transformations'],
   grenier: ['power-rules', 'square-equations', 'prime-factors', 'identities', 'zero-product'],
   abri: ['mean', 'probability', 'data', 'ratio-sharing'],
+  jardin: ['effort-brain', 'digestion-microbes', 'puberty-reproduction'],
 } as const satisfies Partial<Record<PlaceId3e, readonly string[]>>;
 
 /** Un lieu du 3e déjà construit. */
@@ -439,6 +440,8 @@ export const PATH_NODES_3E: readonly PathNode[] = [
   node('ve-4', [1225, 860]),
   node('ve-5', [985, 760]),
   node('ve-6', [1060, 560]),
+  // Le coude du Jardin, au sud-ouest de ses carrés : le chemin arrive à sa porte par le sud (relecture des lieux, correction 1).
+  node('ve-7', [970, 992]),
   node('gla-v', [565, 790]),
   node('col-v', [1105, 425]),
   node('arc-v', [1372, 766]),
@@ -480,7 +483,8 @@ export const PATH_EDGES_3E: readonly (readonly [string, string])[] = [
   [portNode('chantier'), 'par-1'],
   ['par-1', 've-1'],
   ['ve-1', 've-2'],
-  ['ve-2', 'jardin'],
+  ['ve-2', 've-7'],
+  ['ve-7', 'jardin'],
   ['ve-2', 've-3'],
   ['ve-3', 'grenier'],
   ['grenier', 've-4'],

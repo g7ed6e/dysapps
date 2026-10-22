@@ -354,6 +354,15 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     placement: 'rangee',
     words: { pose: ['Les persiennes sont remises.', 'Les instruments sont en rang.', 'Le mât est relevé.', 'Le muret est refait.'], end: 'Ici, matin et soir, on regardait le ciel pour savoir le temps du lendemain.' },
   },
+  // Le Jardin (le Versant du 3e, GD-25) : la phrase de métier et les phrases de pose de la proposition du consultant
+  // d'Archipéo (§ 6) ; sa réplique sans « jardin », nom d'un plan de l'île (« Le jardin de l'infirmerie ») : « les plantes
+  // qu'on cultivait ici » à la place de « les plantes du jardin ».
+  jardin: {
+    role: placeArt('jardin')!.role,
+    greeting: 'Le greffeur marie deux arbres pour n’en faire qu’un.',
+    placement: 'rangee',
+    words: { pose: ['Les carrés sont refaits.', 'Les arbres sont palissés.', 'La fontaine est pleine.'], end: 'Ici, on soignait avec les plantes qu’on cultivait.' },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -806,6 +815,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   belvedere: northSite('belvedere'),
   grenier: northSite('grenier'),
   abri: northSite('abri'),
+  jardin: northSite('jardin'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2378,6 +2388,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   grenier: 'earth',
   // L'Abri : l'herbe rase du jardin d'instruments.
   abri: 'earth',
+  // Le Jardin : l'herbe entre les carrés.
+  jardin: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 
