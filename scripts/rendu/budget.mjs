@@ -5,8 +5,8 @@
 // balises) ne se compte que dans le navigateur : `npm run rendu:mesures` mesure la scène entière. En dessous, le monde en
 // blocs de Blocland (`sceneCost`), avec et sans les petites constructions des commandes, et les bulles
 // (`signesCost`, le même coût quel que soit l'état du jeu), sous son plafond ; enfin le monde ouvert du 6e et sa Carte
-// (`openWorldCost`, `mapCost`, world/continu/budget.ts), puis celui du 5e (`openWorldCost5e`, `mapCost5e`) et du 4e
-// (`openWorldCost4e`, `mapCost4e`), hors de la sortie JSON.
+// (`openWorldCost`, `mapCost`, world/continu/budget.ts), puis celui du 5e (`openWorldCost5e`, `mapCost5e`), du 4e
+// (`openWorldCost4e`, `mapCost4e`) et du 3e (`openWorldCost3e`, `mapCost3e`), hors de la sortie JSON.
 // `--archipel 6e,3e` : seulement ces archipels ; `--json` : les chiffres en JSON, pour un script.
 import { createServer } from 'vite';
 import { fileURLToPath } from 'node:url';
@@ -115,6 +115,10 @@ try {
   // hors scénette (la pose ou l'allumage de la Forge), la Carte, le départ.
   const quatrieme = !demandes || demandes.includes('4e');
   const mondeOuvert4e = quatrieme ? { niveau: '4e', postes: ouvert.openWorldCost4e('scenette'), carte: ouvert.mapCost4e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['4e'], horsScenette: ouvert.openWorldCost4e('monde'), depart: ouvert.openWorldCost4e('depart'), departLibelle: 'l’aéronef et son obstacle dans deux maillages, à la place de la pose' } : null;
+  // Le monde ouvert du 3e (lot 1 : les Îles du Ciel en grandes masses) : comme le 4e à son lot 1, le monde (la pose d'un
+  // passage, le pire), la Carte, le départ ; pas encore de scénette.
+  const troisieme = !demandes || demandes.includes('3e');
+  const mondeOuvert3e = troisieme ? { niveau: '3e', postes: ouvert.openWorldCost3e('monde'), carte: ouvert.mapCost3e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['3e'], depart: ouvert.openWorldCost3e('depart'), departLibelle: 'l’aéronef dans deux maillages, à la place de la pose' } : null;
 
   if (JSON_SEUL) console.log(JSON.stringify(resultats, null, 2));
   else {
@@ -147,7 +151,7 @@ try {
       const pireDepasse = p.triangles > b.plafond.triangles || p.drawCalls > b.plafond.drawCalls ? ' ⚠' : '';
       console.log(`Au pire, la région aménagée (GD-9, \`worstCaseOfRegion\`) : ${n(p.triangles)} triangles (${n(p.base)} sans liaisons, dont ${n(p.choix)} pour le lieu soulevé face par face, ${n(p.liaisons)} de liaisons au plus long, ${n(p.reunions)} de réunions), ${p.drawCalls} appels${pireDepasse}.`);
     }
-    for (const monde of [mondeOuvert, mondeOuvert5e, mondeOuvert4e]) {
+    for (const monde of [mondeOuvert, mondeOuvert5e, mondeOuvert4e, mondeOuvert3e]) {
       if (!monde) continue;
       const { niveau, postes, carte, enveloppe } = monde;
       console.log(`\n## Le monde ouvert du ${niveau} (prototype, \`?monde=ouvert\`)\n`);

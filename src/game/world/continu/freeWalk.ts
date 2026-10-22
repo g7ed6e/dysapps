@@ -11,15 +11,18 @@ import { distance, type Vec2 } from './geometry';
 import { bridgeEdge, linkedLands, nodeLands, startLandOf, type LandId, type LinkedLand } from './lands';
 import { planFor, type LevelPlan } from './levelPlan';
 import { pathNode } from './paths';
+import { NETWORK_3E } from './paths3e';
 import { NETWORK_4E } from './paths4e';
 import { NETWORK_5E } from './paths5e';
 import { FAILLE_BLOCKED } from './faille5e';
+import { PARVIS, PARVIS_BUILDINGS, parvisFloor } from './plan3e';
 import { CRIQUE, CRIQUE_BUILDINGS, criqueFloor } from './plan4e';
 import { PERCHOIR_BLOCKED } from './perchoir5e';
 import { FAILLE_5E, PERCHOIR_5E, LISIERE, LISIERE_BUILDINGS, lisiereFloor } from './plan5e';
 import { PORT, PORT_PAVING, TERRAIN, portFloor } from './plan6e';
 import { modelOfPlace } from './places';
 import { heightOnMesh, type HeightField } from './terrain';
+import { obstaclesIn3e, smallArchFloor, walkBlocked3e } from './terrain3e';
 import { obstaclesIn4e, walkBlocked4e } from './terrain4e';
 import { obstaclesIn5e } from './terrain5e';
 
@@ -107,7 +110,17 @@ const WALK_4E: WalkWorld = {
   blocked: walkBlocked4e,
 };
 
-const WALKS: Readonly<Record<LevelPlan['level'], WalkWorld>> = { '6e': WALK_6E, '5e': WALK_5E, '4e': WALK_4E };
+const WALK_3E: WalkWorld = {
+  node: (id) => NETWORK_3E.pathNode(id).at,
+  // La pierre du Parvis, et ses bâtiments ; la chaussée des deux petites arches des Prairies, toujours ouvertes (lot 1 du 3e).
+  paved: (x, z) => parvisFloor(x, z) !== null || smallArchFloor(x, z) !== null,
+  obstacles: (_field, tx, tz) => obstaclesIn3e(tx, tz),
+  boxes: (block) => block(PARVIS.toWorld((PARVIS_BUILDINGS.x0 + PARVIS_BUILDINGS.x1) / 2, (PARVIS_BUILDINGS.z0 + PARVIS_BUILDINGS.z1) / 2), 30, PARVIS.toLocal, PARVIS_BUILDINGS),
+  // Le pic et le haut du cône, les deux arêtes et la langue de glace, où l'on ne marche pas (les nuages, plus bas que la rive, le sont déjà).
+  blocked: walkBlocked3e,
+};
+
+const WALKS: Readonly<Record<LevelPlan['level'], WalkWorld>> = { '6e': WALK_6E, '5e': WALK_5E, '4e': WALK_4E, '3e': WALK_3E };
 
 const walkWorldOf = (plan: LevelPlan): WalkWorld => WALKS[plan.level];
 

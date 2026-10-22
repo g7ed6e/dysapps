@@ -10,6 +10,7 @@ import type { Vec3 } from './geometry';
 import { placeArt } from './northShore';
 import type { Network } from './network';
 import { NETWORK_6E } from './paths';
+import { NETWORK_3E } from './paths3e';
 import { NETWORK_4E } from './paths4e';
 import { NETWORK_5E } from './paths5e';
 import { hasScenette, levelOfPlace, placeById, type OpenWorldLevel, type PlaceId } from './levelPlan';
@@ -239,7 +240,7 @@ export function poseFocus(place: PlaceId, ground: (x: number, z: number) => numb
 const POSE_VIEW = { pitch: 0.4, aspect: 4 / 3, margin: 0.06, bottom: 0.14, min: 8, max: 40 } as const;
 
 /** Le réseau des chemins de chaque niveau (un niveau oublié ne compile pas). */
-const NETWORKS: Readonly<Record<OpenWorldLevel, Network>> = { '6e': NETWORK_6E, '5e': NETWORK_5E, '4e': NETWORK_4E };
+const NETWORKS: Readonly<Record<OpenWorldLevel, Network>> = { '6e': NETWORK_6E, '5e': NETWORK_5E, '4e': NETWORK_4E, '3e': NETWORK_3E };
 
 /** La porte d'un lieu, sur le réseau des chemins de son niveau. */
 const doorOf = (place: PlaceId) => NETWORKS[levelOfPlace(place)].pathNode(placeById(place).door).at;

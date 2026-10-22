@@ -1,25 +1,26 @@
 // Le plan par niveau du monde continu (GD-22, lot 1, choix du mainteneur du 18 octobre 2026) : le monde ouvert reçoit le
 // plan de son niveau, choisi par `planFor(level)`, au lieu de lire celui du 6e en dur. Un plan rassemble ce que la
 // logique commune lit d'un niveau : ses lieux, ses terres, les liaisons du réseau des chemins et le pont de chaque terre,
-// sa côte et son large (la Carte), l'étendue de son terrain. Trois plans sont enregistrés : celui du 6e (./plan6e.ts),
-// sans rien changer à ce qu'il contient, celui du 5e (./plan5e.ts, GD-22, lot 2) et celui du 4e (./plan4e.ts, lot 1 du
-// monde ouvert du 4e). Le plan d'un autre niveau s'ajoute ici, avec son niveau dans `OpenWorldLevel`.
+// sa côte et son large (la Carte), l'étendue de son terrain. Quatre plans sont enregistrés : celui du 6e (./plan6e.ts),
+// sans rien changer à ce qu'il contient, celui du 5e (./plan5e.ts, GD-22, lot 2), celui du 4e (./plan4e.ts, lot 1 du
+// monde ouvert du 4e) et celui du 3e (./plan3e.ts, lot 1 du monde ouvert du 3e, GD-25). Le plan d'un autre niveau s'ajoute ici, avec son niveau dans `OpenWorldLevel`.
 // Les identifiants des lieux et des terres sont uniques d'un niveau à l'autre : un lieu se retrouve par son seul
 // identifiant (`placeById`), sans dire son niveau. Code pur.
 import type { Vec2 } from './geometry';
 import type { Land, LinkedLand } from './lands';
 import { COAST, LANDS_6E, OFFSHORE, PATH_EDGES, PLACES, STRAITS, TERRAIN, type OpenPlace as OpenPlaceOf, type PlaceId as PlaceId6e } from './plan6e';
+import { COAST_3E, LANDS_3E, LINKS_3E, PATH_EDGES_3E, PLACES_3E, TERRAIN_3E, UNPRICED_PLACES_3E, type PlaceId3e } from './plan3e';
 import { COAST_4E, LANDS_4E, LINKS_4E, PATH_EDGES_4E, PLACES_4E, TERRAIN_4E, UNPRICED_PLACES_4E, isBuiltPlace4e, type BuiltPlace4e, type PlaceId4e } from './plan4e';
 import { COAST_5E, LANDS_5E, LINKS_5E, PATH_EDGES_5E, PLACES_5E, TERRAIN_5E, UNPRICED_PLACES_5E, UPPER_PLACES_5E, isBuiltPlace5e, type BuiltPlace5e, type PlaceId5e } from './plan5e';
 
 /** Un lieu, de tout niveau (ses identifiants sont uniques d'un niveau à l'autre). */
-export type PlaceId = PlaceId6e | PlaceId5e | PlaceId4e;
+export type PlaceId = PlaceId6e | PlaceId5e | PlaceId4e | PlaceId3e;
 
 /** Un lieu d'un plan, de tout niveau. */
 export type OpenPlace = OpenPlaceOf<PlaceId>;
 
 /** Un niveau qui a son monde ouvert (l'archipel de la grille du même nom). */
-export type OpenWorldLevel = '6e' | '5e' | '4e';
+export type OpenWorldLevel = '6e' | '5e' | '4e' | '3e';
 
 /** L'étendue de la carte de hauteurs d'un niveau, le pas de sa grille et ses tuiles (./plan6e.ts, `TERRAIN`). */
 interface TerrainGrid {
@@ -71,6 +72,24 @@ export interface LevelPlan {
    * compte comme toute île reliée, comme au 6e et au 5e (leur port est dans la terre de départ).
    */
   readonly shutPort?: true;
+  /**
+   * La Carte serrée (au 4e, consultant UX UI, deuxième relecture du lot 1 ; au 3e de même) : le lieu suggéré posé le tout
+   * premier, contre son point, jamais sur deux lignes ; les étiquettes à un écart des bords ; un trait fin vers un nom loin
+   * de son lieu ; le nom d'une terre fermée avant ceux de ses lieux (`MapLabels`, `snug`). Rien : la Carte du 6e et du 5e.
+   */
+  readonly snugMap?: true;
+  /**
+   * Sur la Carte serrée du 3e (retouche 1 du lot 1 du 3e) : la place de Kéo gardée avant les noms pâles et ceux des
+   * terres, « Toi » sans jamais couvrir une étiquette, le lieu suggéré sur une ligne, les noms pâles après le nom de leur
+   * terre (`layoutMapLabels`, `snug`). Rien : au 4e, la pastille de Kéo garde les lettres de chaque nom à sa façon
+   * (`MapLabel.keepNames`, retouches 2 et 3 des Coteaux) ; au 6e et au 5e, pas de Carte serrée.
+   */
+  readonly keoFirstMap?: true;
+  /**
+   * Les pieds de Kéo jamais sous la rangée du bas de l'écran (au 4e et au 3e : la caméra qui suit Kéo, `footRoom` de la
+   * scène). Rien : la caméra du 6e et du 5e.
+   */
+  readonly guardFeet?: true;
 }
 
 /** Le plan du 6e, tiré de ./plan6e.ts tel quel. */
@@ -118,10 +137,36 @@ const PLAN_4E: LevelPlan = {
   upper: [],
   firstPlace: 'forge',
   shutPort: true,
+  snugMap: true,
+  guardFeet: true,
+};
+
+/**
+ * Le plan du 3e, tiré de ./plan3e.ts (lot 1 du monde ouvert du 3e, GD-25) : quatre terres, la montagne et trois îles
+ * plates sur une mer de nuages. Le port de la grille (les fonctions, le Fanal) est au Cirque, la dernière terre
+ * suggérée : l'élève arrive toujours au Parvis, et « Y aller » vise d'abord le Belvédère, que montre l'arrivée.
+ */
+const PLAN_3E: LevelPlan = {
+  level: '3e',
+  places: PLACES_3E,
+  lands: LANDS_3E,
+  pathEdges: PATH_EDGES_3E,
+  bridges: { alpages: LINKS_3E.alpages.bridge, prairies: LINKS_3E.prairies.bridge, cirque: LINKS_3E.cirque.bridge },
+  coast: COAST_3E,
+  offshore: [],
+  terrain: TERRAIN_3E,
+  pricePerPlace: 5,
+  unpriced: UNPRICED_PLACES_3E,
+  upper: [],
+  firstPlace: 'belvedere',
+  shutPort: true,
+  snugMap: true,
+  keoFirstMap: true,
+  guardFeet: true,
 };
 
 /** Les plans enregistrés, par niveau. */
-const PLANS: Readonly<Record<OpenWorldLevel, LevelPlan>> = { '6e': PLAN_6E, '5e': PLAN_5E, '4e': PLAN_4E };
+const PLANS: Readonly<Record<OpenWorldLevel, LevelPlan>> = { '6e': PLAN_6E, '5e': PLAN_5E, '4e': PLAN_4E, '3e': PLAN_3E };
 
 /** Les niveaux qui ont leur monde ouvert (la fabrique de disposition tient la même liste, un test le vérifie). */
 export const OPEN_WORLD_LEVELS = Object.keys(PLANS) as readonly OpenWorldLevel[];

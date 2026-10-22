@@ -6,10 +6,12 @@
 // profonde, la Nuit océan du pack. L'écume du rivage est dans les tuiles du terrain (./terrain.ts, `FOAM`). Code pur.
 import { distance, insidePolygon, smoothstep, type Vec2 } from './geometry';
 import { BEACON_MASTS, COAST, COLORS_6E, FERRY_ISLET, PATH_NODES, STRAITS } from './plan6e';
+import { COLORS_3E } from './plan3e';
 import { COAST_4E, COLORS_4E } from './plan4e';
 import { COAST_5E, COLORS_5E } from './plan5e';
 import { landDistance, straitClearance } from './terrain';
 import { channelClearance, landDistance5e } from './terrain5e';
+import { landDistance3e } from './terrain3e';
 import { bassinClearance, landDistance4e } from './terrain4e';
 
 /**
@@ -115,9 +117,9 @@ export function seaPixels(): Uint8Array {
   return pixelsOf(waterFields);
 }
 
-/** L'image des champs `fields`, ligne après ligne du nord au sud, son bord au large. */
-function pixelsOf(fields: (p: Vec2) => SeaFields): Uint8Array {
-  const { size, half } = SEA_TEXTURE;
+/** L'image des champs `fields`, ligne après ligne du nord au sud, son bord au large, sur le carré `texture`. */
+function pixelsOf(fields: (p: Vec2) => SeaFields, texture: { size: number; half: number } = SEA_TEXTURE): Uint8Array {
+  const { size, half } = texture;
   const out = new Uint8Array(size * size * 4);
   for (let j = 0; j < size; j++)
     for (let i = 0; i < size; i++) {
@@ -183,4 +185,31 @@ function waterFields4e(p: Vec2): SeaFields {
 /** L'image de l'eau du 4e, codée comme celle du 6e (`seaPixels`). */
 export function seaPixels4e(): Uint8Array {
   return pixelsOf(waterFields4e);
+}
+
+// ---------- La mer de nuages du 3e (lot 1 du monde ouvert du 3e) ----------
+
+/**
+ * Les paliers de la mer de nuages du 3e (GD-25 : des nuages plats et mats, immobiles, qui montent contre le liseré
+ * d'ardoise des rives) : le même plan, le même shader que l'eau, d'autres couleurs. Au pied des rives, une bande à
+ * l'ombre (`clear`), puis un palier à peine plus sombre (`shelf`), puis le blanc teinté des nuages (`lagoon`) jusqu'à
+ * l'horizon. Pas de cœur profond (`night` ne sert pas) : rien ne se lit comme un trou.
+ */
+export const WATER_TONES_3E = { clear: COLORS_3E.cloudShade, shelf: 0xd4dde9, lagoon: COLORS_3E.cloud, night: COLORS_3E.cloudShade, heart: 0 } as const;
+
+/** Les champs de la mer de nuages du 3e en un point : la bande à l'ombre au pied des rives, puis le palier du milieu. */
+function cloudFields3e(p: Vec2): SeaFields {
+  const coast = landDistance3e(p);
+  return { night: -8, clear: coast + 2.2, shelf: coast + 7 };
+}
+
+/**
+ * Le carré de l'image du 3e : ses terres vont plus loin d'ouest en est (de −272 à 276 unités) que le carré des autres
+ * niveaux ; le même nombre de pixels, un peu plus grands (l'ombre au pied des rives, large de deux unités, s'y lit).
+ */
+export const SEA_TEXTURE_3E = { size: SEA_TEXTURE.size, half: 290 } as const;
+
+/** L'image de la mer de nuages du 3e, codée comme l'eau du 6e (`seaPixels`), sur son carré (`SEA_TEXTURE_3E`). */
+export function seaPixels3e(): Uint8Array {
+  return pixelsOf(cloudFields3e, SEA_TEXTURE_3E);
 }

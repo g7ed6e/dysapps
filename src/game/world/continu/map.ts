@@ -488,6 +488,9 @@ const LEAD_TRIES = 6;
  * aucun nom ouvert ne s'y perd et si moins de traits passent sous un nom (`LEAD_TRIES` poses refaites au plus). Kéo vient en dernier, d'un côté fixe de son
  * point (dessous), sans jamais déplacer un nom, sa pastille à sa taille au plus de son point : « Toi » quitte à couvrir
  * le nom pâle d'un lieu fermé, sinon sa pastille seule, jamais sur le nom d'un voisin.
+ * Sur la Carte serrée du 3e (`snug`, `LevelPlan.keoFirstMap` ; retouche 1 du lot 1 du 3e) : la pastille de Kéo prend sa place après les
+ * noms des lieux ouverts et avant les autres, qui l'évitent comme un obstacle ; « Toi » ne couvre jamais une étiquette, pas même un nom pâle, sinon la pastille seule ; le
+ * lieu suggéré garde son nom sur une ligne ; les noms pâles se posent après le nom de leur terre, sous son cadenas.
  */
 export function layoutMapLabels(
   labels: readonly MapLabel[],
@@ -495,9 +498,10 @@ export function layoutMapLabels(
   screen = { width: Infinity, height: Infinity },
   repair = true,
   edge = 0,
+  snug = false,
 ): MapLabelSpot[] {
   let order = labels;
-  const run = (reserved: ReadonlyMap<string, ClosedPlace>) => attemptLayout(labels, obstacles, screen, reserved, edge, order);
+  const run = (reserved: ReadonlyMap<string, ClosedPlace>) => attemptLayout(labels, obstacles, screen, reserved, edge, snug, order);
   let best = run(new Map());
   if (!repair) return best.spots;
   // Au 4e, un trait sous le nom d'un lieu ouvert posé avant le sien : la pose refaite, ce nom au trait posé juste avant
@@ -546,6 +550,7 @@ function attemptLayout(
   screen: { width: number; height: number },
   reserved: ReadonlyMap<string, ClosedPlace>,
   border = 0,
+  snug = false,
   order: readonly MapLabel[] = labels,
 ) {
   // À `border` pixels des bords au moins (au 4e, `MAP_EDGE_4E` ; 0 ailleurs, l'écran entier).
@@ -596,7 +601,7 @@ function attemptLayout(
   const leads: { id: string; x1: number; y1: number; x2: number; y2: number }[] = [];
   // Pour la pose refaite : une paire d'étiquettes, la première à poser juste avant la seconde.
   const crossed: [string, string][] = [];
-  for (const l of open) {
+  const layOpen = (l: MapLabel) => {
     const places = (w: number, h: number) => {
       const above = rect(l.x - w / 2, l.y - h, w, h);
       const below = rect(l.x - w / 2, l.y + MAP_LABEL_GAP, w, h);
@@ -624,7 +629,9 @@ function attemptLayout(
       return list;
     };
     const full = places(l.w, l.h);
-    const tight = l.narrow ? places(l.narrow.w, l.narrow.h) : [];
+    // Le lieu suggéré de la Carte serrée garde son nom sur une ligne (consultant UX UI, relecture du lot 1 du 3e : deux
+    // lignes, jamais sur le prochain lieu).
+    const tight = l.narrow && !(snug && l.first && l.id !== 'port') ? places(l.narrow.w, l.narrow.h) : [];
     // Sinon, la place libre la plus proche du lieu, à `NEAR.reach` au plus ; d'abord hors de la place du nom d'un lieu
     // fermé, même un peu plus loin de son point (sur la tablette, toutes les places simples de la Turbine touchaient
     // celle des Écluses, et le nom revenait sous leur cadenas). Une place simple trop loin de son lieu (un décalage d'une
@@ -683,7 +690,24 @@ function attemptLayout(
     }
     placed.push({ id: l.id, r });
     out.set(l.id, { id: l.id, left: r.left, top: r.top, name, ...(narrow ? { narrow: true as const } : {}) });
-  }
+  };
+  // Sur la Carte serrée, les noms pâles (les lieux d'une terre fermée) après le nom de leur terre, sous son cadenas
+  // (consultant d'Archipéo, relecture du lot 1 du 3e : « Les Alpages » se taisait derrière les noms de ses lieux).
+  for (const l of open) if (!snug || !l.pale) layOpen(l);
+  // La Carte serrée du 3e (`snug`, `LevelPlan.keoFirstMap` ; retouche 1 du lot 1 du 3e, consultant UX UI et référent dys : au téléphone,
+  // au plus grand texte, « Toi » cachait « Le Kiosque ») : la pastille de Kéo prend sa place après les noms des lieux
+  // ouverts (elle s'efface devant eux), sans rien couvrir, et avant les noms des terres fermées et des lieux pâles, qui
+  // l'évitent comme un obstacle de plus.
+  const keoDisc = new Map<string, Rect>();
+  if (snug)
+    for (const l of labels) {
+      if (l.kind !== 'keo') continue;
+      const at = (top: number) => rect(l.x - MAP_KEO_DISC / 2, top, MAP_KEO_DISC, l.h);
+      const ok = (r: Rect) => onScreen(r) && free(r);
+      const r = [at(l.y), at(l.y - l.h)].find(ok) ?? near(l, MAP_KEO_DISC, l.h, ok, MAP_KEO_DISC) ?? near(l, MAP_KEO_DISC, l.h, ok) ?? at(l.y);
+      keoDisc.set(l.id, r);
+      placed.push({ id: l.id, r });
+    }
   /**
    * Les places du nom d'un lieu fermé, dans l'ordre : sa forme entière, son nom sur une ligne, puis sa forme serrée, son
    * nom sur deux lignes (GD-20, « La Carte au plus grand texte » : sur tablette, « Les Marais salants » fermés se taisaient
@@ -756,6 +780,7 @@ function attemptLayout(
       o.left = l.x - Math.max(MAP_LOCK, l.narrow!.w) / 2;
     }
   }
+  if (snug) for (const l of open) if (l.pale) layOpen(l);
   /**
    * Pour la reprise, les places du nom d'un lieu fermé tu que seuls d'autres noms occupent (libres des boutons, des
    * cadenas et des places déjà gardées) : la première de chaque descente de `NEAR.step`, dans chaque forme.
@@ -846,6 +871,17 @@ function attemptLayout(
     };
     // Près du point d'abord (la pastille à sa taille au plus), puis, sur une place libre seulement, à `NEAR.reach` au plus,
     // comme la pastille seule : plus loin, sur un nom pâle, Kéo se lisait au lieu fermé qu'il couvrait.
+    // Sur la Carte serrée, sa pastille a déjà sa place (`keoDisc`) : « Toi » seulement s'il ne couvre rien, pas même un
+    // nom pâle ; sinon la pastille seule, à sa place gardée (son icône et son nom dit suffisent).
+    const reservedDisc = keoDisc.get(l.id);
+    if (reservedDisc) {
+      const self = avoid((id) => id === l.id);
+      const toi = findToi(self, MAP_KEO_DISC) ?? findToi(self, NEAR.reach);
+      const spot = toi ? { r: toi.r, name: true, toi: toi.toi } : { r: reservedDisc, name: false, toi: undefined };
+      placed.push({ id: l.id, r: spot.r });
+      out.set(l.id, { id: l.id, left: spot.r.left, top: spot.r.top, name: spot.name, ...(spot.toi ? { toi: spot.toi } : {}) });
+      continue;
+    }
     const toi = findToi(ok, MAP_KEO_DISC) ?? findToi(over, MAP_KEO_DISC) ?? findToi(ok, NEAR.reach);
     // Au 4e (`keepNames`), à cheval sur le bord d'un cadre posé, dans sa marge seulement : sa pastille ne passe pas la
     // marge vers les lettres, ni ne touche une autre étiquette ; la plus proche du point, à `NEAR.reach` au plus. Sinon

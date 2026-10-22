@@ -1,10 +1,11 @@
-// Le plan par niveau (GD-22, lots 1 et 2 ; lot 1 du 4e) : trois plans enregistrés, celui du 6e, tiré de ./plan6e.ts tel
-// quel, celui du 5e et celui du 4e ; la fabrique de disposition n'ouvre le monde ouvert qu'à des niveaux qui ont leur plan ; un lieu se retrouve
+// Le plan par niveau (GD-22, lots 1 et 2 ; lot 1 du 4e ; lot 1 du 3e) : quatre plans enregistrés, celui du 6e, tiré de
+// ./plan6e.ts tel quel, celui du 5e, celui du 4e et celui du 3e ; la fabrique de disposition n'ouvre le monde ouvert qu'à des niveaux qui ont leur plan ; un lieu se retrouve
 // par son seul identifiant.
 import { describe, expect, it } from 'vitest';
 import { OPEN_WORLD_ARCHIPELAGOS } from '../../worldLayoutFactory';
 import { ALL_LANDS, ALL_PLANS, OPEN_WORLD_LEVELS, levelOfPlace, placeById, placeOfIsland, placeRecord, planFor } from './levelPlan';
 import { COAST, LANDS_6E, OFFSHORE, PATH_EDGES, PLACES, STRAITS, TERRAIN } from './plan6e';
+import { LANDS_3E, PLACES_3E } from './plan3e';
 import { LANDS_4E, PLACES_4E } from './plan4e';
 import { LANDS_5E, PLACES_5E } from './plan5e';
 
@@ -18,10 +19,15 @@ describe('Le plan par niveau', () => {
     }
   });
 
-  it('trois plans, le 6e, le 5e et le 4e ; la fabrique de disposition n’ouvre que des niveaux qui ont leur plan', () => {
-    expect(OPEN_WORLD_LEVELS).toEqual(['6e', '5e', '4e']);
+  it('quatre plans, le 6e, le 5e, le 4e et le 3e ; la fabrique de disposition n’ouvre que des niveaux qui ont leur plan', () => {
+    expect(OPEN_WORLD_LEVELS).toEqual(['6e', '5e', '4e', '3e']);
     // Les mêmes listes : chaque niveau qui a son plan a son monde ouvert, et seulement lui.
     expect([...OPEN_WORLD_ARCHIPELAGOS]).toEqual([...OPEN_WORLD_LEVELS]);
+  });
+
+  it('la Carte serrée et les pieds de Kéo gardés : au 4e et au 3e seulement (expert frontend, relecture du lot 1 du 3e)', () => {
+    expect(OPEN_WORLD_LEVELS.filter((l) => planFor(l).snugMap)).toEqual(['4e', '3e']);
+    expect(OPEN_WORLD_LEVELS.filter((l) => planFor(l).guardFeet)).toEqual(['4e', '3e']);
   });
 
   it('le plan du 6e est celui de plan6e.ts, sans rien changer', () => {
@@ -52,7 +58,12 @@ describe('Le plan par niveau', () => {
       expect(placeOfIsland(p.island)).toBe(p);
       expect(levelOfPlace(p.id)).toBe('4e');
     }
-    expect(ALL_LANDS).toEqual([...LANDS_6E, ...LANDS_5E, ...LANDS_4E]);
+    for (const p of PLACES_3E) {
+      expect(placeById(p.id)).toBe(p);
+      expect(placeOfIsland(p.island)).toBe(p);
+      expect(levelOfPlace(p.id)).toBe('3e');
+    }
+    expect(ALL_LANDS).toEqual([...LANDS_6E, ...LANDS_5E, ...LANDS_4E, ...LANDS_3E]);
   });
 
   it('les identifiants des lieux, des îles et des terres sont uniques entre tous les plans, et chaque plan a une seule terre de départ', () => {

@@ -12,12 +12,30 @@ import { ALL_LANDS, ALL_PLANS, type LevelPlan, type PlaceId } from './levelPlan'
 /**
  * Une terre. Au 6e : la Pointe du Phare (le départ, avec l'Escale), puis les quatre qu'on relie ; au 5e (GD-22, lot 2) :
  * les Frondaisons (le départ, avec la Lisière), puis les Roselières, les Contreforts et les Aiguilles, sur le plateau ; au
- * 4e (lot 1 du monde ouvert du 4e) : les Fabriques (le départ, avec la Crique), puis le Bastion, les Coteaux et l'Épaule.
+ * 4e (lot 1 du monde ouvert du 4e) : les Fabriques (le départ, avec la Crique), puis le Bastion, les Coteaux et l'Épaule ;
+ * au 3e (lot 1 du monde ouvert du 3e, GD-25) : le Versant (le départ, avec le Parvis), puis les Alpages, les Prairies et le Cirque.
  */
-export type LandId = 'pointe' | 'couchant' | 'large' | 'levant' | 'cretes' | 'frondaisons' | 'roselieres' | 'contreforts' | 'aiguilles' | 'fabriques' | 'bastion' | 'coteaux' | 'epaule';
+export type LandId =
+  | 'pointe'
+  | 'couchant'
+  | 'large'
+  | 'levant'
+  | 'cretes'
+  | 'frondaisons'
+  | 'roselieres'
+  | 'contreforts'
+  | 'aiguilles'
+  | 'fabriques'
+  | 'bastion'
+  | 'coteaux'
+  | 'epaule'
+  | 'versant'
+  | 'alpages'
+  | 'prairies'
+  | 'cirque';
 
 /** Une terre qu'on relie : toutes, sauf celles du départ. */
-export type LinkedLand = Exclude<LandId, 'pointe' | 'frondaisons' | 'fabriques'>;
+export type LinkedLand = Exclude<LandId, 'pointe' | 'frondaisons' | 'fabriques' | 'versant'>;
 
 export interface Land {
   id: LandId;

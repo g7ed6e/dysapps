@@ -91,6 +91,7 @@ import { SEA_TEXTURE } from '../../world/continu/sea';
 import { skyDome, type HeightLight } from '../../world/continu/sky';
 import { FOLLOW_FAR_5E } from '../../world/continu/nef5e';
 import { FOLLOW_FAR_4E } from '../../world/continu/crique4e';
+import { FOLLOW_FAR_3E } from '../../world/continu/parvis3e';
 import { ringHeights, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
@@ -510,8 +511,8 @@ const FRAMED_BRIDGE_NEAR = 12;
 /** Le bout de la caméra qui suit Kéo, et celui de la Carte (l'île entière, de haut), en unités. */
 const FOLLOW_FAR = 500;
 // Au 5e, `FOLLOW_FAR_5E` (./world/continu/nef5e.ts), pour le panache de la Nef, au-delà de 500 vu du quai.
-/** Le bout de la caméra qui suit Kéo, par niveau : 500 au 6e ; au 5e et au 4e, le leur (le panache de leur Nef, leur volcan). */
-const FOLLOW_FAR_OF: Readonly<Record<OpenWorldLevel, number>> = { '6e': FOLLOW_FAR, '5e': FOLLOW_FAR_5E, '4e': FOLLOW_FAR_4E };
+/** Le bout de la caméra qui suit Kéo, par niveau : 500 au 6e ; au 5e, au 4e et au 3e, le leur (le panache de leur Nef, leur volcan, leur pic). */
+const FOLLOW_FAR_OF: Readonly<Record<OpenWorldLevel, number>> = { '6e': FOLLOW_FAR, '5e': FOLLOW_FAR_5E, '4e': FOLLOW_FAR_4E, '3e': FOLLOW_FAR_3E };
 /**
  * Le regard levé au quai du lieu de départ, ou à la porte d'un lieu haut (`PlaceArt.arrivalView`), ne vaut que la caméra
  * tournée à moins de tant de son cap (en radians).
@@ -915,7 +916,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const touchables: THREE.Object3D[] = [nearRing.mesh, farRing.mesh];
 
   // La mer et le lagon : un plan d'eau à 0, peint par l'image de l'eau ; au-delà, le bord de l'image (le large).
-  const seaTexture = new THREE.DataTexture(world.seaPixels(), SEA_TEXTURE.size, SEA_TEXTURE.size);
+  const seaSquare = world.seaTexture ?? SEA_TEXTURE;
+  const seaTexture = new THREE.DataTexture(world.seaPixels(), seaSquare.size, seaSquare.size);
   // Des champs, pas des couleurs : lus tels quels, interpolés.
   seaTexture.colorSpace = THREE.NoColorSpace;
   seaTexture.magFilter = THREE.LinearFilter;
@@ -926,7 +928,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Les coordonnées de l'image suivent x et z du monde : le carré de l'image au milieu, son bord étiré au-delà.
   const uv = seaGeometry.getAttribute('uv') as THREE.BufferAttribute;
   const pos = seaGeometry.getAttribute('position') as THREE.BufferAttribute;
-  for (let k = 0; k < uv.count; k++) uv.setXY(k, (pos.getX(k) + SEA_TEXTURE.half) / (2 * SEA_TEXTURE.half), (pos.getZ(k) + SEA_TEXTURE.half) / (2 * SEA_TEXTURE.half));
+  for (let k = 0; k < uv.count; k++) uv.setXY(k, (pos.getX(k) + seaSquare.half) / (2 * seaSquare.half), (pos.getZ(k) + seaSquare.half) / (2 * seaSquare.half));
   uv.needsUpdate = true;
   const seaMaterial = seaMaterialOf(seaTexture, world.water);
   const sea = still(new THREE.Mesh(seaGeometry, seaMaterial));
@@ -984,6 +986,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     return a ? [{ id: p.id, door: net.pathNode(p.door).at, look: { x: p.center.x + a.look.x, z: p.center.z + a.look.z }, top: a.top, view: { height: 0, back: a.back } }] : [];
   });
   let arrivalNow: (typeof arrivals)[number] | null = null;
+  // Au quai du lieu de départ, tourné vers son cap, quand le niveau a une vue d'arrivée (`Departure.quayView`, au 3e) : la
+  // caméra recule et monte de cette vue, comme à la porte d'un lieu haut.
+  let quayArrival = false;
   let arrivalBack = 0;
   let arrivalShape: DetourView = COMMON_DETOUR_VIEW;
   /** La hauteur bâtie de chaque lieu, au-dessus de son pied (le lieu entier tant que la page n'a rien dit). */
@@ -1345,6 +1350,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const nefStays = nefSite.stays();
   const nefAfter = nefSite.after();
   const siteDecor = departure.decor();
+  // Le décor hors de la Carte (au 3e, le zeppelin), dans le même maillage.
+  const offMapDecor = departure.offMap?.() ?? null;
   /** Le temps que les parties nouvelles de la Nef mettent à descendre sur le ber. */
   const NEF_DROP_SECONDS = 0.8;
   // La baleine et les oiseaux du bord d'eau : un seul maillage, dont les sommets sont réécrits sur place pendant leur
@@ -1631,6 +1638,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Le regard levé près du Phare (`lookUp`) : sa part, de 0 à 1 ; le haut de la lanterne.
   const nearLantern = () => {
     arrivalNow = null;
+    quayArrival = false;
     if (walk) return false;
     const near = TALL.find((id) => distance(here, placeById(id).center) < LOOK_UP.within);
     if (near) Object.assign(lanternTop, tallTops.get(near)!);
@@ -1646,12 +1654,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       arrivalShape = a.view;
       return true;
     }
-    // Au quai du lieu de départ du 5e, tourné vers son cap : le sommet de la Montée, au fond (directeur artistique, lot 4).
+    // Au quai du lieu de départ (5e, 4e, 3e), tourné vers son cap : le sommet de la Montée au 5e, au fond (directeur artistique, lot 4).
     if (!quayLook || distance(here, quayPoint) > 0.5 || Math.abs(wrapAngle(yaw - departure.viewYaw)) > QUAY_LOOK_TURN) return false;
     Object.assign(lanternTop, quayLook);
+    if (departure.quayView) {
+      arrivalShape = departure.quayView;
+      quayArrival = true;
+    }
     return true;
   };
   let look = nearLantern() ? 1 : 0;
+  // Au 3e, la vue d'arrivée du quai dès la première image.
+  if (look && quayArrival) arrivalBack = 1;
   // Le retour d'une scénette (aux Quais) : Kéo reste sur le bord du quai, la caméra garde la barque chargée dans le
   // champ (`back`, de 0 à 1) tant qu'il ne repart pas ; elle rejoint alors la caméra qui suit.
   let exit: (NonNullable<ReturnType<typeof scenetteExit>> & { view?: ExitView }) | null = null;
@@ -1684,9 +1698,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   // La caméra posée à la main (`view`, les captures seulement).
   let manualView: CameraPose | null = null;
-  // Au 4e, la place de la rangée du bas que les pieds de Kéo ne passent jamais (`footRoom`), en pixels ; 0 ailleurs.
+  // Au 4e et au 3e (`LevelPlan.guardFeet`), la place de la rangée du bas que les pieds de Kéo ne passent jamais
+  // (`footRoom`), en pixels ; 0 ailleurs.
   let feetRoom = 0;
-  const guardFeet = level === '4e';
+  const guardFeet = plan.guardFeet === true;
   const follow = () => {
     if (manualView) return applyPose(manualView);
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : viewRise(), fifth ? hold : undefined, arrivalBack > 0 ? arrivalShape : viewShape());
@@ -1960,6 +1975,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     else if (gone && nefLookNow === 4 && nefAfter && obstacleShown) rest.push(nefAfter);
     if (nefStays) rest.push(nefStays);
     if (siteDecor) rest.push(siteDecor);
+    if (offMapDecor && !mapView) rest.push(offMapDecor);
     // Au 5e, sur la Carte, la ligne de la falaise (GD-22, lot 2) : le bord du plateau, et la bande sombre des chemins, dans
     // le maillage des lieux.
     if (!sixth) {
@@ -2031,7 +2047,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     setVeilGeometry(veilMesh, v);
     veilFadeFrom = v.fadingFrom;
     veilAlphas = null;
-    if (!fading) return;
+    // Rien à lever sans brume (au 3e, aucun voile : retouche 1 du lot 1).
+    if (!fading || !v.triangles) return;
     const n = v.positions.length / 3 - v.fadingFrom;
     veilAlphas = new Float32Array(n);
     for (let i = 0; i < n; i++) veilAlphas[i] = v.colors[(v.fadingFrom + i) * 4 + 3];
@@ -2400,7 +2417,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Devant un lieu haut, la caméra a reculé et levé le regard dès la première image : « Y aller » est une coupe.
     // « Y aller » est une coupe : le recul du lieu quitté ne déborde pas sur celui-ci (sinon il masquerait la vue d'arrivée du Gaillard).
     arrivalBack = 0;
-    if (nearLantern() && arrivalNow) look = arrivalBack = 1;
+    if (nearLantern() && (arrivalNow || quayArrival)) look = arrivalBack = 1;
     updateRings(true, true);
     follow();
     arrive(place);
@@ -4210,7 +4227,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     stepGlow(t);
     stepRestore(t);
     look = lookUpStep(look, nearLantern() ? 1 : 0, dt, reduceMotion);
-    arrivalBack = lookUpStep(arrivalBack, arrivalNow ? 1 : 0, dt, reduceMotion);
+    arrivalBack = lookUpStep(arrivalBack, arrivalNow || quayArrival ? 1 : 0, dt, reduceMotion);
     if (back > 0 && !atExit()) back = reduceMotion ? 0 : Math.max(0, back - dt / EXIT_VIEW.down);
     if (back === 0) exit = null;
     follow();

@@ -35,7 +35,7 @@ import { buildHeightField5e, groundOn5e, tileCounts5e } from './terrain5e';
 import { NETWORK_5E, pathMapEdges5e, pathRibbons5e } from './paths5e';
 import { TERRAIN_5E } from './plan5e';
 import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from './mist5e';
-import { FOG_4E, skyDome } from './sky';
+import { FOG_3E, FOG_4E, skyDome } from './sky';
 import { veilFacets } from './veil';
 import { groupsTriangles, wildlifeTriangles } from './wildlife';
 import { allCritterForms, wildlifeGroups5e } from './wildlife5e';
@@ -48,6 +48,10 @@ import { CRIQUE_SITE, NEF_4E_MODEL_TRIANGLES, criqueDecorFacets, nef4eSiteTriang
 import { NETWORK_4E, pathRibbons4e } from './paths4e';
 import { TERRAIN_4E } from './plan4e';
 import { buildHeightField4e, groundOn4e, mapOverlay4e, tileCounts4e } from './terrain4e';
+import { PARVIS_SITE, parvisDecorFacets, zeppelinFacets } from './parvis3e';
+import { NETWORK_3E, pathRibbons3e } from './paths3e';
+import { TERRAIN_3E } from './plan3e';
+import { buildHeightField3e, ground3e, mapOverlay3e, tileCounts3e } from './terrain3e';
 
 /** Les terres qu'on relie du 6e : le budget est celui du monde ouvert du 6e (GD-22, lot 1 : le plan par niveau). */
 const LINKED_LANDS_6E = linkedLands(planFor('6e'));
@@ -111,11 +115,23 @@ export const PLACE_TRIANGLES_MAX_5E = 1_600;
 export const CAUSEWAYS_ADDED_5E = 1_600;
 
 /**
- * L'enveloppe du monde ouvert du 4e : 118 000 triangles, 22 appels, cible 110 000 (fiche du 4e, § 8 : « l'enveloppe
- * décidée tient »). Au lot 1 (l'île entière en grandes masses), le monde en est loin : chaque lieu, la Crique, l'aéronef
- * et les habitants viennent avec leur lot.
+ * L'enveloppe que les fiches du 4e et du 3e donnent au monde ouvert (§ 8 de chacune) : 118 000 triangles, 22 appels,
+ * cible 110 000. Une seule constante : quand une fiche change, on ne pense pas à deux endroits (expert frontend, relecture
+ * du lot 1 du 3e). Seul le mainteneur la relève.
  */
-const OPEN_WORLD_BUDGET_4E = { triangles: 118_000, calls: 22 } as const;
+const FICHE_ENVELOPE = { triangles: 118_000, calls: 22 } as const;
+
+/**
+ * L'enveloppe du monde ouvert du 4e (fiche du 4e, § 8 : « l'enveloppe décidée tient »). Au lot 1 (l'île entière en
+ * grandes masses), le monde en est loin : chaque lieu, la Crique, l'aéronef et les habitants viennent avec leur lot.
+ */
+const OPEN_WORLD_BUDGET_4E = FICHE_ENVELOPE;
+
+/**
+ * L'enveloppe du monde ouvert du 3e (fiche du 3e, § 8, comme le 4e). Au lot 1 (les Îles du Ciel en grandes masses), le
+ * monde en est loin : chaque lieu, le Parvis, les habitants et les Détours viennent avec leur lot.
+ */
+const OPEN_WORLD_BUDGET_3E = FICHE_ENVELOPE;
 
 /**
  * La forêt du 5e retaillée (pistes B, C puis A, choisies par le mainteneur le 21 octobre 2026 : la forêt noyée, les
@@ -158,6 +174,7 @@ export const OPEN_WORLD_BUDGETS: Readonly<Record<OpenWorldLevel, { readonly tria
   '6e': OPEN_WORLD_BUDGET_6E,
   '5e': OPEN_WORLD_BUDGET_5E,
   '4e': OPEN_WORLD_BUDGET_4E,
+  '3e': OPEN_WORLD_BUDGET_3E,
 };
 
 export interface OpenWorldCost {
@@ -778,5 +795,101 @@ export function mapCost4e(): { triangles: number; calls: number } {
     // L'aéronef et ses pièces, sans les îles du ciel : la Carte ne les dessine pas (`NefSite.offMap`).
     triangles: SKY.triangles + far + 2 + paths + places.triangles + epave + marks + veil + KEO.triangles + nefCost4e().triangles - nef4eSiteTriangles().islands,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
+  };
+}
+
+// ---------- Le 3e (lot 1 du monde ouvert du 3e, GD-25) ----------
+
+/** Le plan du 3e et ses terres qu'on relie (trois passages). */
+const PLAN_3E = planFor('3e');
+const LINKED_LANDS_3E = linkedLands(PLAN_3E);
+
+/** Le sol du 3e, compté comme celui des autres niveaux : autour des points de son réseau, dans huit directions. */
+function groundCost3e(): { triangles: number; calls: number; near: number; far: number } {
+  const field = buildHeightField3e();
+  const near = tileCounts3e(field, 'near');
+  const far = tileCounts3e(field, 'far');
+  let worstNear = 0;
+  let worstFar = 0;
+  for (const p of NETWORK_3E.networkSamples(SAMPLE_STEP))
+    for (let y = 0; y < SAMPLE_YAWS; y++) {
+      const rings = tileRings(p, FOG_3E.far, (2 * Math.PI * y) / SAMPLE_YAWS, TERRAIN_3E);
+      worstNear = Math.max(worstNear, rings.near.reduce((s, t) => s + near[t], 0));
+      worstFar = Math.max(worstFar, rings.far.reduce((s, t) => s + far[t], 0));
+    }
+  return { triangles: worstNear + worstFar, calls: 2, near: worstNear, far: worstFar };
+}
+
+/**
+ * Le Parvis au plus chargé (comme l'Escale, `PORT_WORST`) et son décor (le pic ; dans le monde, pas sur la Carte, le
+ * zeppelin des Ferrailleurs sur son rocher), dans le maillage des lieux : aucun appel de plus.
+ */
+function parvisCost(onMap: boolean): number {
+  return portFacets(PORT_WORST, { assembling: false }, PARVIS_SITE).triangles + parvisDecorFacets().triangles + (onMap ? 0 : zeppelinFacets().triangles);
+}
+
+/**
+ * Les lieux du 3e : les seize ruines, leurs trois passages au plus chargé de leurs deux états, le Parvis (sur la Carte,
+ * `onMap`, sans le zeppelin) ; deux maillages.
+ */
+function placesCost3e(onMap = false): { triangles: number; calls: number } {
+  const ruins = PLAN_3E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles, 0);
+  const passages = LINKED_LANDS_3E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
+  return { triangles: ruins + passages + parvisCost(onMap), calls: 2 };
+}
+
+/** La brume des terres fermées du 3e (au départ, les trois) : aucun voile retenu (retouche 1 du lot 1), aucun appel alors. */
+function veilCost3e(): { triangles: number; calls: number } {
+  const triangles = veilFacets(LINKED_LANDS_3E).triangles;
+  return { triangles, calls: triangles ? 1 : 0 };
+}
+
+/** L'aéronef du 3e, le modèle du 4e entier (`3-aeronef/final-1464.glb`), sur son aire (dessinée avec les chemins) : dans le maillage des lieux. */
+const nefCost3e = (): { triangles: number; calls: number } => ({ triangles: NEF_4E_MODEL_TRIANGLES, calls: 0 });
+
+/** La pose au 3e : un passage qui se relève (aucun lieu n'a encore d'étapes). Un appel. */
+function poseCost3e(): { triangles: number; calls: number } {
+  return { triangles: Math.max(...LINKED_LANDS_3E.map((l) => bridgeLay(l).facets.triangles)), calls: 1 };
+}
+
+/**
+ * Ce que coûte le monde ouvert du 3e (lot 1 : les Îles du Ciel en grandes masses) : le ciel, le sol et ses pins, la mer
+ * de nuages (le plan de l'eau), les chemins (le liseré d'ardoise des rives, les deux petites arches et l'aire de la Nef
+ * compris), les lieux et leurs passages, le Parvis et son décor, la brume des terres fermées (au départ, les trois),
+ * Kéo, l'aéronef ; puis, selon `view` : le monde (`monde`, un passage qui se relève) ou le départ (`depart`, la Nef et
+ * l'obstacle dans deux maillages à part). Ni Détour, ni faune, ni scénette au lot 1.
+ */
+export function openWorldCost3e(view: 'monde' | 'depart' = 'monde'): OpenWorldCost4e[] {
+  const field = buildHeightField3e();
+  const ground = groundCost3e();
+  const paths = pathRibbons3e(ground3e(field));
+  return [
+    { poste: 'ciel', ...SKY },
+    { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
+    { poste: 'mer', triangles: 2, calls: 1 },
+    { poste: 'chemins', triangles: paths.triangles, calls: 1 },
+    { poste: 'lieux', ...placesCost3e() },
+    { poste: 'brume', ...veilCost3e() },
+    { poste: 'kéo', ...KEO },
+    { poste: 'nef', ...nefCost3e() },
+    ...(view === 'depart' ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }] : [{ poste: 'pose' as const, ...poseCost3e() }]),
+  ];
+}
+
+/**
+ * La Carte du 3e, en un seul plan : le ciel, toutes les terres de loin, la mer de nuages, les chemins, les lieux (deux
+ * appels, le pire), le trait double des passages, les hachures du pic et des arêtes et la bande de la langue de glace
+ * (dans le maillage des lieux), la brume des terres fermées, Kéo.
+ */
+export function mapCost3e(): { triangles: number; calls: number } {
+  const field = buildHeightField3e();
+  const far = tileCounts3e(field, 'far').reduce((s, n) => s + n, 0);
+  const paths = pathRibbons3e(ground3e(field)).triangles;
+  const places = placesCost3e(true);
+  const marks = LINKED_LANDS_3E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + mapOverlay3e().triangles;
+  const veil = veilCost3e();
+  return {
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + marks + veil.triangles + KEO.triangles + nefCost3e().triangles,
+    calls: SKY.calls + 1 + 1 + 1 + places.calls + veil.calls + KEO.calls,
   };
 }
