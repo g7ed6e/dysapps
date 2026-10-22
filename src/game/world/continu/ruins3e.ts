@@ -87,21 +87,6 @@ function standard(b: FacetBuilder): void {
   b.box({ x: 1, y: SINK, z: 3.5, yaw: 0.2 }, [2.4, 0.6 - SINK, 1.4], C.woodShade, C.wood);
 }
 
-/** La Tribune : des gradins de pierre en demi-cercle, deux tombés ; l'auvent de la cloche, la cloche au sol. */
-function tribune(b: FacetBuilder): void {
-  // Les gradins : trois rangs de blocs en demi-cercle, ouverts vers le nord ; deux blocs du haut manquent.
-  for (let k = 0; k < 3; k++)
-    for (let j = 0; j < 5; j++) {
-      if (k === 2 && (j === 1 || j === 4)) continue;
-      const a = (Math.PI * (j + 0.5)) / 5;
-      const r = 5 + k * 2;
-      b.box({ x: Math.cos(a) * r, y: SINK, z: 1 + Math.sin(a) * r, yaw: Math.PI / 2 - a }, [2, 0.6 + k * 0.7 - SINK, 3.2 + k * 1.2], C.graniteShade, C.granite);
-    }
-  for (const x of [-1.5, 1.5]) post(b, x, -1, 3.6, 0.4);
-  b.gableRoof({ x: 0, y: 3.6, z: -1 }, 4, 2, 1, C.slateTop, C.wood);
-  b.prism({ x: 2.6, y: SINK, z: 1, pitch: 1.4 }, 0.9, 0.5, 1.4, 8, C.bronze);
-}
-
 /** La Douane : la maison de pierre basse ; la barrière de bois rompue ; une pile de malles. */
 function douane(b: FacetBuilder): void {
   b.box({ x: 0, y: SINK, z: -1.5 }, [7, 2.8 - SINK, 5], C.graniteShade, C.granite);
@@ -155,13 +140,12 @@ function palais(b: FacetBuilder): void {
 
 /**
  * La ruine de chaque lieu du 3e pas encore construit, dessinée dans son repère : un lieu construit (./plan3e.ts,
- * `BUILT_PLACES_3E`) dessine sa ruine dans son fichier, avec ses étapes (le Belvédère, ./belvedere3e.ts ; le Grenier, ./grenier3e.ts ; l'Abri, ./abri3e.ts ; le Jardin, ./jardin3e.ts ; le Kiosque, ./kiosque3e.ts ; la Maquette, ./maquette3e.ts).
+ * `BUILT_PLACES_3E`) dessine sa ruine dans son fichier, avec ses étapes (le Belvédère, ./belvedere3e.ts ; le Grenier, ./grenier3e.ts ; l'Abri, ./abri3e.ts ; le Jardin, ./jardin3e.ts ; le Kiosque, ./kiosque3e.ts ; la Maquette, ./maquette3e.ts ; la Tribune, ./tribune3e.ts).
  */
 export const RUINS_3E: Readonly<Record<Exclude<PlaceId3e, BuiltPlace3e>, (b: FacetBuilder) => void>> = {
   fanal,
   rampe,
   standard,
-  tribune,
   douane,
   ermitage,
   coupole,

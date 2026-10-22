@@ -270,6 +270,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   kiosque: placeArt('kiosque')!.sceneSpot,
   // La Maquette : au bord du relief, côté sud-est, dehors, entre deux poteaux.
   maquette: placeArt('maquette')!.sceneSpot,
+  // La Tribune : dans l'arène, au pied du premier gradin, l'estrade devant.
+  tribune: placeArt('tribune')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -579,6 +581,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   kiosque: 'lieu',
   // La Maquette : les pions de bois en forme de maison, sur un rebord de table.
   maquette: 'lieu',
+  // La Tribune : les galets ronds, sur un rebord de granit.
+  tribune: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
