@@ -993,7 +993,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const o = markOffset(id);
     const mark = marks.get(id)!;
     if (whole(id)) mark.set(foot.x + o.x, foot.y + o.y, foot.z + o.z);
-    else mark.set(foot.x, foot.y + top + MARK_LIFT, foot.z);
+    else mark.set(foot.x + o.x, foot.y + top + MARK_LIFT, foot.z + o.z);
     const tallTop = tallTops.get(id);
     if (tallTop) tallTop.y = foot.y + top;
   };

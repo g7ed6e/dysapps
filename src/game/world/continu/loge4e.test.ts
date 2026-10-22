@@ -12,7 +12,7 @@ import { phraseDeLaPose } from '../../poseWords';
 import { partiesDe } from '../parts';
 import { planCells, plansFor } from '../plans';
 import { PLACE_RUIN_TRIANGLES_MAX_4E, PLACE_TRIANGLES_MAX_4E } from './budget';
-import { FOLLOW, followPose, occlusionLift, orbitAround, screenOf } from './camera';
+import { FOLLOW, followPose, markShift, occlusionLift, orbitAround, screenOf } from './camera';
 import { posedTraces, type PartShape, type Stage } from './construction';
 import type { Facets } from './facets';
 import { FacetBuilder } from './facets';
@@ -201,6 +201,9 @@ describe('La Loge, lieu complet', () => {
     expect(Math.abs(m.x)).toBeGreaterThan(L.door.half + 1);
     expect(m.x).toBeLessThan(L.cage.x0 + 1);
     expect(m.y - L.base).toBeGreaterThan(L.cage.ridge);
+    // La marque du monde, en ruine comme entière, se pose au même droit que le nom sur la Carte.
+    expect(markShift('loge').x).toBeCloseTo(m.x, 6);
+    expect(markShift('loge').z).toBeCloseTo(m.z, 6);
   });
 
   it('la cage restaurée ne dépasse pas 10,5 ; plus basse en ruine ; sous la tour du Gabarit (12)', () => {

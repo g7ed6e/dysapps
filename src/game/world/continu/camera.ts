@@ -391,11 +391,23 @@ const MARK_BESIDE: Partial<Record<PlaceId, { x: number; drop: number }>> = { pha
 /** La marque d'un lieu se pose-t-elle à côté de son sommet (à droite du point) ? */
 export const markBeside = (id: PlaceId): boolean => id in MARK_BESIDE;
 
+/**
+ * Les lieux dont la marque se pose au-dessus d'une de leurs parties plutôt qu'au-dessus de leur centre, en ruine comme
+ * entiers (depuis le centre, au sol) : la Loge du 4e, au-dessus de son mur ouest, celui qui reste debout (captures du
+ * 22 octobre 2026 : au milieu de la cage, vue de dos dans la ruine, elle tombait dans l'arche, sur la scène et le rideau
+ * tombé) ; le même point que son nom sur la Carte (`PlaceArt.mapPoint`, ./loge4e.ts).
+ */
+const MARK_SHIFT: Partial<Record<PlaceId, { x: number; z: number }>> = { loge: { x: -5, z: 5.6 } };
+
+/** Le décalage de la marque d'un lieu au-dessus de son centre, au sol (rien : au-dessus du centre). */
+export const markShift = (id: PlaceId): { x: number; z: number } => MARK_SHIFT[id] ?? { x: 0, z: 0 };
+
 /** Le point de la marque d'un lieu, depuis son pied (son centre au sol) : au-dessus de son sommet, ou à côté. */
 export function markOffset(id: PlaceId): Vec3 {
   const beside = MARK_BESIDE[id];
   if (beside) return { x: beside.x, y: modelOfPlace(id).top - beside.drop, z: 0 };
-  return { x: 0, y: modelOfPlace(id).top + MARK_LIFT, z: 0 };
+  const shift = markShift(id);
+  return { x: shift.x, y: modelOfPlace(id).top + MARK_LIFT, z: shift.z };
 }
 
 /** La place d'un point à l'écran, en pixels depuis le coin haut gauche, pour une pose et un écran donnés. */
