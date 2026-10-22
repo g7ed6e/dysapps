@@ -7,6 +7,7 @@ import { OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_4E, mapCost4e, openWorldCost4e 
 import { BRIDGE, bridgeSite } from './bridges';
 import { CRIQUE_SITE, NEF_4E, criqueDecorFacets, nef4eFlight } from './crique4e';
 import { EPAVE_BUDGET } from './epave4e';
+import { RECOIN_BUDGET } from './recoin4e';
 import { followPose, keepFeetAbove, screenOf } from './camera';
 import { distance, distanceToPolyline, insidePolygon, linearRgb, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
@@ -65,6 +66,17 @@ const LOT3_GABARIT_CEILING = { triangles: LOT2_FABRIQUES_CEILING.triangles + PLA
  * au départ, 62 073 et 12 sur la Carte.
  */
 const LOT3_CHARIOT_CEILING = { triangles: LOT3_GABARIT_CEILING.triangles + PLACE_TRIANGLES_MAX_4E, calls: LOT3_GABARIT_CEILING.calls } as const;
+
+/**
+ * Le plafond du 4e avec la Manufacture et le Recoin (lot 3, le Bastion) : celui du Chariot, relevé d'un lieu du 4e au
+ * plus chargé (`PLACE_TRIANGLES_MAX_4E`, à la place de sa ruine simple), et du budget du Détour du Recoin et de sa sente
+ * (`RECOIN_BUDGET`) ; aucun appel de plus. Mesuré le 22 octobre 2026 : 74 446 triangles et 17 appels la scénette
+ * ouverte, 67 108 et 14 hors scénette, 65 814 et 15 au départ, 63 745 et 12 sur la Carte.
+ */
+const LOT3_MANUFACTURE_CEILING = {
+  triangles: LOT3_CHARIOT_CEILING.triangles + PLACE_TRIANGLES_MAX_4E + RECOIN_BUDGET.triangles + RECOIN_BUDGET.sente,
+  calls: LOT3_CHARIOT_CEILING.calls,
+} as const;
 
 /** Les couleurs d'un maillage. */
 function colorsOf(f: { colors: Float32Array }): Set<string> {
@@ -261,8 +273,8 @@ describe('Le budget du 4e', () => {
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
     for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('scenette')), total(openWorldCost4e('depart')), mapCost4e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT3_CHARIOT_CEILING.triangles);
-      expect(cost.calls).toBeLessThanOrEqual(LOT3_CHARIOT_CEILING.calls);
+      expect(cost.triangles).toBeLessThanOrEqual(LOT3_MANUFACTURE_CEILING.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(LOT3_MANUFACTURE_CEILING.calls);
     }
   });
 });

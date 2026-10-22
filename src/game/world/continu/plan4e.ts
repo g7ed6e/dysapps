@@ -242,6 +242,7 @@ export const BUILT_PLACES_4E = {
   etalon: ['weighted-mean', 'events', 'proportional-reasoning', 'calculation-programs', 'translations'],
   gabarit: ['simplifying', 'expanding', 'equations', 'rationals', 'pythagorean-theorem'],
   chariot: ['energy-chain', 'information-chain', 'simulation', 'troubleshooting'],
+  manufacture: ['enlightenment', 'industrial-europe', 'french-society'],
 } as const satisfies Partial<Record<PlaceId4e, readonly string[]>>;
 
 /** Un lieu du 4e déjà construit. */
@@ -368,6 +369,11 @@ const doorNode = (s: PlaceSpec): PathNode => {
   return { id: s.id, at: { x: c.x + s.door.x, z: c.z + s.door.z } };
 };
 
+/** La porte d'un lieu du 4e, dans le monde. */
+function doorAt(id: PlaceId4e): Vec2 {
+  return doorNode(PLACE_SPECS.find((s) => s.id === id)!).at;
+}
+
 /**
  * Les nœuds : les portes des lieux, puis les coudes des chemins, terre par terre. Les Fabriques : du quai de la Crique
  * à la Soute, à la Porte, à l'Étalon et à la Forge, puis aux trois ponts. Le Bastion, au-delà du bassin à flot ; les
@@ -482,7 +488,7 @@ export const nearRails4e = (p: Vec2, reach: number): boolean =>
 
 /**
  * La place des Détours du 4e (fiche, § 5), réservée dès le plan : l'Épave (Fabriques), le Recoin (Bastion), le Replat
- * (Coteaux), la Dalle (Épaule). Ils se construisent avec leur lot (lot 2 : l'Épave, `EPAVE_4E`).
+ * (Coteaux), la Dalle (Épaule). Ils se construisent avec leur lot (lot 2 : l'Épave, `EPAVE_4E` ; lot 3 : le Recoin, `RECOIN_4E`).
  */
 export const DETOUR_SPOTS_4E = {
   epave: fromPlan4e([1060, 1060]),
@@ -511,6 +517,31 @@ export function inEpaveClearing(p: Vec2): boolean {
   const { hull, at, senteFrom, keep } = EPAVE_4E;
   if (Math.hypot(p.x - hull.x, p.z - hull.z) < keep.hull || Math.hypot(p.x - at.x, p.z - at.z) < keep.at) return true;
   return distanceToPolyline(p, [senteFrom, at]) < keep.sente;
+}
+
+/**
+ * Le Détour du Recoin (lot 3, avec la Manufacture ; intention du directeur artistique du 22 octobre 2026, « Le Recoin ») :
+ * sa place sur la côte nord du Bastion, hors des chemins, à l'est de la Manufacture. `at` : là où Kéo s'arrête, dans
+ * l'angle des deux murets, face au nord (la place réservée) ; `boiler` : le milieu de la chaudière couchée le long du
+ * muret nord, son axe d'ouest en est, sa demi-longueur et son rayon ; `senteFrom` : le départ de sa sente, la porte de
+ * la Manufacture (le chemin le plus proche) ; `bend` : le coude de la sente, au sud-est de la cour de la Manufacture
+ * (elle la contourne sans la traverser), puis `foot`, au sud de l'angle, où sont ses pierres ; `keep` : ce que la
+ * végétation laisse libre (autour de l'angle et le long de la sente).
+ */
+export const RECOIN_4E = {
+  at: DETOUR_SPOTS_4E.recoin,
+  boiler: { x: DETOUR_SPOTS_4E.recoin.x + 0.5, z: DETOUR_SPOTS_4E.recoin.z - 1.75, half: 1.5, r: 0.66 },
+  senteFrom: doorAt('manufacture'),
+  bend: { x: fromPlan4e([1640, 610]).x + 13, z: fromPlan4e([1640, 610]).z + 8.6 },
+  foot: { x: DETOUR_SPOTS_4E.recoin.x + 0.9, z: DETOUR_SPOTS_4E.recoin.z + 3.4 },
+  keep: { at: 5.5, sente: 2.6 },
+} as const;
+
+/** Ce point du monde est-il dans la place du Recoin (l'angle de ses murets, Kéo, sa sente) ? */
+export function inRecoinClearing(p: Vec2): boolean {
+  const { at, senteFrom, bend, foot, keep } = RECOIN_4E;
+  if (Math.hypot(p.x - at.x, p.z - at.z) < keep.at) return true;
+  return distanceToPolyline(p, [senteFrom, bend, foot, at]) < keep.sente;
 }
 
 /** La place réservée des deux grands projets (GD-10) : le portique des docks, la tour des signaux (plan, en pointillé). */

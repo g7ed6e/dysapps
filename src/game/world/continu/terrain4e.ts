@@ -21,6 +21,7 @@ import {
   CUVETTE_4E,
   DETOUR_SPOTS_4E,
   EPAVE_4E,
+  RECOIN_4E,
   PATH_EDGES_4E,
   PATH_NODES_4E,
   PLACES_4E,
@@ -32,6 +33,7 @@ import {
   VOLCANO_4E,
   fromPlan4e,
   inEpaveClearing,
+  inRecoinClearing,
   nearRails4e,
 } from './plan4e';
 import { SHADOW_DIR_4E } from './sky';
@@ -293,6 +295,8 @@ function plantsIn(tx: number, tz: number): readonly Plant[] {
       if (SPOTS.some((s) => Math.hypot(p.x - s.x, p.z - s.z) < FLORA_KEEP.spot)) continue;
       // L'Épave (lot 2) : sa coque, sa cale, Kéo devant elle et sa sente restent libres.
       if (inEpaveClearing(p)) continue;
+      // Le Recoin (lot 3) : l'angle de ses murets, Kéo et sa sente restent libres.
+      if (inRecoinClearing(p)) continue;
       if (Math.hypot(p.x - CUVETTE_4E.center.x, p.z - CUVETTE_4E.center.z) < 14) continue;
       // Le cône nu au-dessus de son pied (`ROCK_FROM`) : aucun buisson ni rocher sur le basalte sombre (directeur
       // artistique, deuxième relecture du lot 1 : les buissons olive y faisaient des taches jusqu'au sommet).
@@ -369,14 +373,21 @@ export const EPAVE_HULL_DISKS: readonly { x: number; z: number; r: number }[] = 
   r: EPAVE_4E.hull.beam + 0.35,
 }));
 
+/** La chaudière du Recoin (lot 3), qu'on ne traverse pas : deux disques le long de son axe, d'ouest en est. */
+export const RECOIN_BOILER_DISKS: readonly { x: number; z: number; r: number }[] = [-1, 1].map((k) => ({
+  x: RECOIN_4E.boiler.x + k * (RECOIN_4E.boiler.half - RECOIN_4E.boiler.r),
+  z: RECOIN_4E.boiler.z,
+  r: RECOIN_4E.boiler.r + 0.2,
+}));
+
 /**
- * Ce qui bloque la marche libre dans une tuile du 4e (./freeWalk.ts) : chaque buisson et chaque rocher, et la coque de
- * l'Épave ; un disque chacun.
+ * Ce qui bloque la marche libre dans une tuile du 4e (./freeWalk.ts) : chaque buisson et chaque rocher, la coque de
+ * l'Épave et la chaudière du Recoin ; un disque chacun.
  */
 export function obstaclesIn4e(tx: number, tz: number): { x: number; z: number; r: number }[] {
   const out = plantsIn(tx, tz).map((t) => ({ x: t.x, z: t.z, r: (t.shrub ? 1.6 : 1.3) * t.size }));
   const r = tileRect(tx, tz, TERRAIN_4E);
-  for (const d of EPAVE_HULL_DISKS) if (d.x >= r.minX && d.x < r.maxX && d.z >= r.minZ && d.z < r.maxZ) out.push(d);
+  for (const d of [...EPAVE_HULL_DISKS, ...RECOIN_BOILER_DISKS]) if (d.x >= r.minX && d.x < r.maxX && d.z >= r.minZ && d.z < r.maxZ) out.push(d);
   return out;
 }
 

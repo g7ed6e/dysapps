@@ -15,6 +15,7 @@ import { porteSurroundings } from './porteSurroundings';
 import { etalonSurroundings } from './etalonSurroundings';
 import { chariotSurroundings } from './chariotSurroundings';
 import { gabaritSurroundings } from './gabaritSurroundings';
+import { manufactureSurroundings } from './manufactureSurroundings';
 import { croiseeSurroundings } from './croiseeSurroundings';
 import { donjonSurroundings } from './donjonSurroundings';
 import { fumerollesSurroundings } from './fumerollesSurroundings';
@@ -90,6 +91,7 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   etalon: etalonSurroundings,
   gabarit: gabaritSurroundings,
   chariot: chariotSurroundings,
+  manufacture: manufactureSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,

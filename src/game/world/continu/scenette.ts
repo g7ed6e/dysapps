@@ -227,6 +227,17 @@ const SCENETTES: Record<PlaceId, Scenette> = {
       end: 'Ici, on essayait les bateaux en petit avant de les construire en grand.',
     },
   },
+  // La Manufacture (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition ; les phrases de pose et la réplique
+  // de l'intention du directeur artistique, à valider par le directeur du contenu pédagogique.
+  manufacture: {
+    role: placeArt('manufacture')!.role,
+    greeting: 'Le tisserand fait la toile, fil après fil.',
+    placement: 'rangee',
+    words: {
+      pose: ['La halle est relevée.', 'La verrière est posée.', 'La cour est prête.'],
+      end: 'Sous cette verrière, les machines ont changé le monde.',
+    },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -666,6 +677,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   etalon: northSite('etalon'),
   gabarit: northSite('gabarit'),
   chariot: northSite('chariot'),
+  manufacture: northSite('manufacture'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2212,6 +2224,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   gabarit: 'paving',
   // Le Chariot (lot 3 du 4e) : la cour dallée devant l'appentis de l'ingénieure.
   chariot: 'paving',
+  // La Manufacture (lot 3 du 4e) : le dallage de la halle, dans la travée ouest.
+  manufacture: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 
