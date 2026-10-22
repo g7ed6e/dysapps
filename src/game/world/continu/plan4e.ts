@@ -187,7 +187,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'soute', name: 'La Soute', at: 'à la Soute', agree: 'fs', island: 'geography-4e-globalization', plan: [1400, 860], door: { x: 0, z: 8 } },
   { id: 'porte', name: 'La Porte', at: 'à la Porte', agree: 'fs', island: 'civics-4e-rights-freedoms', plan: [1250, 700], door: { x: 0, z: 8 } },
   { id: 'etalon', name: 'L’Étalon', at: 'à l’Étalon', agree: 'ms', island: 'maths-4e-data', plan: [1118, 512], door: { x: 2, z: 9 } },
-  { id: 'gabarit', name: 'Le Gabarit', at: 'au Gabarit', agree: 'ms', island: 'maths-4e-algebra', plan: [1830, 680], door: { x: -3, z: 8 } },
+  { id: 'gabarit', name: 'Le Gabarit', at: 'au Gabarit', agree: 'ms', island: 'maths-4e-algebra', plan: [1830, 680], door: { x: -6, z: 17 } },
   { id: 'manufacture', name: 'La Manufacture', at: 'à la Manufacture', agree: 'fs', island: 'history-4e-revolutions', plan: [1640, 610], door: { x: 0, z: 8 } },
   { id: 'loge', name: 'La Loge', at: 'à la Loge', agree: 'fs', island: 'english-4e-comprehension', plan: [1740, 790], door: { x: 0, z: -8 } },
   { id: 'chariot', name: 'Le Chariot', at: 'au Chariot', agree: 'ms', island: 'technology-4e-modeling', plan: [1610, 735], door: { x: 3, z: 7 } },
@@ -240,6 +240,7 @@ export const BUILT_PLACES_4E = {
   soute: ['urbanization', 'mobilities', 'globalization'],
   porte: ['freedoms', 'justice', 'security-defence'],
   etalon: ['weighted-mean', 'events', 'proportional-reasoning', 'calculation-programs', 'translations'],
+  gabarit: ['simplifying', 'expanding', 'equations', 'rationals', 'pythagorean-theorem'],
 } as const satisfies Partial<Record<PlaceId4e, readonly string[]>>;
 
 /** Un lieu du 4e déjà construit. */

@@ -12,6 +12,7 @@ import { BEACONS } from './beacons';
 import { DONJON } from './donjon5e';
 import { FERRY } from './ferry';
 import { ETALON } from './etalon4e';
+import { GABARIT } from './gabarit4e';
 import { FORGE } from './forge4e';
 import { SOUTE } from './soute4e';
 import { PORTE } from './porte4e';
@@ -33,7 +34,7 @@ import { RADEAUX } from './radeaux5e';
 import { SEMAPHORE } from './semaphore5e';
 import { TERRASSES } from './terrasses5e';
 
-const ART: Partial<Record<PlaceId, PlaceArt>> = { lookout: LOOKOUT, archives: ARCHIVES, printworks: PRINTWORKS, beacons: BEACONS, ferry: FERRY, montee: MONTEE, hameau: HAMEAU, radeaux: RADEAUX, croisee: CROISEE, instants: INSTANTS, fumerolles: FUMEROLLES, etuve: ETUVE, terrasses: TERRASSES, auberge: AUBERGE, donjon: DONJON, oracle: ORACLE, semaphore: SEMAPHORE, gaillard: GAILLARD, nacelles: NACELLES, forge: FORGE, soute: SOUTE, porte: PORTE, etalon: ETALON };
+const ART: Partial<Record<PlaceId, PlaceArt>> = { lookout: LOOKOUT, archives: ARCHIVES, printworks: PRINTWORKS, beacons: BEACONS, ferry: FERRY, montee: MONTEE, hameau: HAMEAU, radeaux: RADEAUX, croisee: CROISEE, instants: INSTANTS, fumerolles: FUMEROLLES, etuve: ETUVE, terrasses: TERRASSES, auberge: AUBERGE, donjon: DONJON, oracle: ORACLE, semaphore: SEMAPHORE, gaillard: GAILLARD, nacelles: NACELLES, forge: FORGE, soute: SOUTE, porte: PORTE, etalon: ETALON, gabarit: GABARIT };
 
 /** Ce qu'un lieu du rivage nord ou du large apporte au monde (son dessin, sa scénette, ses traces), ou rien pour les autres lieux. */
 export const placeArt = (place: PlaceId): PlaceArt | null => ART[place] ?? null;

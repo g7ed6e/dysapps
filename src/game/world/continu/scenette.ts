@@ -203,6 +203,18 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     // n'a pas de restauration.
     words: { pose: ['La bascule est remise à plat.', 'Le tonneau est sur ses chevalets.', 'Les cuves et la trieuse sont debout.', 'Le toit est de nouveau entier.', 'La cour est dallée.'] },
   },
+  // Le Gabarit (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition, jamais dans la même phrase que le
+  // géologue ; les phrases de pose et la réplique de l'intention du directeur artistique (le corps 1 et le corps 3 avec la
+  // balance), à valider par le directeur du contenu pédagogique.
+  gabarit: {
+    role: placeArt('gabarit')!.role,
+    greeting: 'Le géomètre mesure et trace avant qu’on construise.',
+    placement: 'rangee',
+    words: {
+      pose: ['L’atelier est refermé.', 'La galerie est reposée.', 'La tour est remontée.', 'La grue a retrouvé son bras.', 'Le plancher de traçage est prêt.'],
+      end: 'Ici, on traçait chaque pièce en grand avant de la tailler.',
+    },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -640,6 +652,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   soute: northSite('soute'),
   porte: northSite('porte'),
   etalon: northSite('etalon'),
+  gabarit: northSite('gabarit'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2182,6 +2195,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   // La Porte (lot 2 du 4e) : le pavé de la place.
   porte: 'paving',
   etalon: 'paving',
+  // Le Gabarit (lot 3 du 4e) : la cour dallée devant l'abri du géomètre.
+  gabarit: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

@@ -2,7 +2,7 @@
 // octobre 2026, « Les restes des Fabriques », point 1) : ce que la Forge, la Soute, la Porte et l'Étalon recopiaient
 // chacun, et que les lieux du Bastion importent au lieu de le recopier encore : la lanterne pendue des Passeurs (d'ocre ou
 // éteinte), une dalle épaisse sous un contour, le dessin d'une trace posé au centre du lieu, le sol du 4e dans le repère
-// d'un lieu, et le quadrilatère tourné vers le dehors. Code pur.
+// d'un lieu, le quadrilatère tourné vers le dehors, le pan de mur droit et le pan de tôle. Code pur.
 import { FacetBuilder, drawPosed } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { COLORS_5E } from './plan5e';
@@ -53,4 +53,37 @@ export function quadOut(b: FacetBuilder, a: P3, c: P3, d: P3, e: P3, out: P3, co
   const n = [uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx];
   if (n[0] * out[0] + n[1] * out[1] + n[2] * out[2] >= 0) b.quad(a, c, d, e, color);
   else b.quad(e, d, c, a, color);
+}
+
+/**
+ * Un pan de mur droit, d'ouest en est (`alongX`) ou du nord au sud, de `from` à `to` sur son axe, centré sur `at` en
+ * travers, épais de `thick`, de `y0` jusqu'à `top0` à son début et `top1` à sa fin (un haut cassé en biais) : son dessus,
+ * ses deux faces, ses deux bouts (le dessous ne se voit pas).
+ */
+export function wallRun(b: FacetBuilder, alongX: boolean, at: number, from: number, to: number, thick: number, y0: number, top0: number, top1: number, side: number, top: number): void {
+  const t = thick / 2;
+  const p = (u: number, v: number, y: number): P3 => (alongX ? [u, y, at + v] : [at + v, y, u]);
+  const corners = [p(from, -t, 0), p(to, -t, 0), p(to, t, 0), p(from, t, 0)];
+  const lo = corners.map(([x, , z]) => [x, y0, z] as P3);
+  const hi = corners.map(([x, , z], k) => [x, k === 0 || k === 3 ? top0 : top1, z] as P3);
+  const mid: P3 = [(lo[0][0] + lo[2][0]) / 2, (y0 + Math.max(top0, top1)) / 2, (lo[0][2] + lo[2][2]) / 2];
+  for (let k = 0; k < 4; k++) {
+    const m = (k + 1) % 4;
+    const fc: P3 = [(lo[k][0] + lo[m][0]) / 2 - mid[0], 0, (lo[k][2] + lo[m][2]) / 2 - mid[2]];
+    quadOut(b, lo[k], lo[m], hi[m], hi[k], fc, side);
+  }
+  quadOut(b, hi[0], hi[1], hi[2], hi[3], [0, 1, 0], top);
+}
+
+/** Un pan de tôle épais de `t` (dessus et dessous), entre quatre coins dans l'ordre du tour : le dessus de `top`, le dessous de `under`. */
+export function sheet(b: FacetBuilder, q: readonly P3[], t: number, top: number, under: number): void {
+  const up = q.map(([x, y, z]) => [x, y + t, z] as P3);
+  quadOut(b, up[0], up[1], up[2], up[3], [0, 1, 0], top);
+  quadOut(b, q[0], q[1], q[2], q[3], [0, -1, 0], under);
+  const cx = q.reduce((s, p) => s + p[0], 0) / 4,
+    cz = q.reduce((s, p) => s + p[2], 0) / 4;
+  for (let k = 0; k < 4; k++) {
+    const m = (k + 1) % 4;
+    quadOut(b, q[k], q[m], up[m], up[k], [(q[k][0] + q[m][0]) / 2 - cx, 0, (q[k][2] + q[m][2]) / 2 - cz], under);
+  }
 }

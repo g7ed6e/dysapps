@@ -28,7 +28,7 @@ import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
 import { COLORS_5E } from './plan5e';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
-import { inWorld, lantern, localGround4e, quadOut } from './place4eKit';
+import { inWorld, lantern, localGround4e, quadOut, sheet, wallRun } from './place4eKit';
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter (places.ts). */
 const SINK = -0.8;
@@ -200,39 +200,6 @@ const DOOR_FRAME = { height: -3, back: 1.5 } as const;
 const MAP_POINT: Vec3 = { x: -0.7, y: HALL.floor + HALL.ridge + 1.5, z: HALL.ridgeZ };
 
 // ---------- Les petits volumes ----------
-
-/**
- * Un pan de mur droit, d'ouest en est (`alongX`) ou du nord au sud, de `from` à `to` sur son axe, centré sur `at` en
- * travers, épais de `thick`, de `y0` jusqu'à `top0` à son début et `top1` à sa fin (un haut cassé en biais) : son dessus,
- * ses deux faces, ses deux bouts (le dessous ne se voit pas).
- */
-function wallRun(b: FacetBuilder, alongX: boolean, at: number, from: number, to: number, thick: number, y0: number, top0: number, top1: number, side: number, top: number): void {
-  const t = thick / 2;
-  const p = (u: number, v: number, y: number): P3 => (alongX ? [u, y, at + v] : [at + v, y, u]);
-  const corners = [p(from, -t, 0), p(to, -t, 0), p(to, t, 0), p(from, t, 0)];
-  const lo = corners.map(([x, , z]) => [x, y0, z] as P3);
-  const hi = corners.map(([x, , z], k) => [x, k === 0 || k === 3 ? top0 : top1, z] as P3);
-  const mid: P3 = [(lo[0][0] + lo[2][0]) / 2, (y0 + Math.max(top0, top1)) / 2, (lo[0][2] + lo[2][2]) / 2];
-  for (let k = 0; k < 4; k++) {
-    const m = (k + 1) % 4;
-    const fc: P3 = [(lo[k][0] + lo[m][0]) / 2 - mid[0], 0, (lo[k][2] + lo[m][2]) / 2 - mid[2]];
-    quadOut(b, lo[k], lo[m], hi[m], hi[k], fc, side);
-  }
-  quadOut(b, hi[0], hi[1], hi[2], hi[3], [0, 1, 0], top);
-}
-
-/** Un pan de tôle épais de `t` (dessus et dessous), entre quatre coins dans l'ordre du tour : le dessus de `top`, le dessous de `under`. */
-function sheet(b: FacetBuilder, q: readonly P3[], t: number, top: number, under: number): void {
-  const up = q.map(([x, y, z]) => [x, y + t, z] as P3);
-  quadOut(b, up[0], up[1], up[2], up[3], [0, 1, 0], top);
-  quadOut(b, q[0], q[1], q[2], q[3], [0, -1, 0], under);
-  const cx = q.reduce((s, p) => s + p[0], 0) / 4,
-    cz = q.reduce((s, p) => s + p[2], 0) / 4;
-  for (let k = 0; k < 4; k++) {
-    const m = (k + 1) % 4;
-    quadOut(b, q[k], q[m], up[m], up[k], [(q[k][0] + q[m][0]) / 2 - cx, 0, (q[k][2] + q[m][2]) / 2 - cz], under);
-  }
-}
 
 /** Une lanterne sur un bras, devant un pilier de la façade, à `y` au-dessus du sol de la halle. */
 function pillarLantern(b: FacetBuilder, x: number, y: number): void {

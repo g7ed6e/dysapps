@@ -50,6 +50,14 @@ const LOT2_CEILING = { triangles: 72_000, calls: 18 } as const;
  */
 const LOT2_FABRIQUES_CEILING = { triangles: LOT2_CEILING.triangles + 2_000 + PLACE_TRIANGLES_MAX_4E + EPAVE_BUDGET.triangles + EPAVE_BUDGET.sente, calls: LOT2_CEILING.calls } as const;
 
+/**
+ * Le plafond du 4e avec le Gabarit (lot 3, le Bastion) : celui des Fabriques, relevé d'un lieu du 4e au plus chargé
+ * (`PLACE_TRIANGLES_MAX_4E`, à la place de sa ruine simple) ; aucun appel de plus. Le pont tournant du bassin coûte moins
+ * que le pont sur pieds qu'il remplace. Mesuré le 22 octobre 2026 : 71 680 triangles et 17 appels la scénette ouverte,
+ * 64 066 et 14 hors scénette, 63 136 et 15 au départ, 61 067 et 12 sur la Carte.
+ */
+const LOT3_GABARIT_CEILING = { triangles: LOT2_FABRIQUES_CEILING.triangles + PLACE_TRIANGLES_MAX_4E, calls: LOT2_FABRIQUES_CEILING.calls } as const;
+
 /** Les couleurs d'un maillage. */
 function colorsOf(f: { colors: Float32Array }): Set<string> {
   const out = new Set<string>();
@@ -240,13 +248,13 @@ describe('Les couleurs chaudes du 4e', () => {
 });
 
 describe('Le budget du 4e', () => {
-  it('le monde, la scénette, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 2', () => {
+  it('le monde, la scénette, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 3', () => {
     const total = (list: { triangles: number; calls: number }[]) => list.reduce((s, p) => ({ triangles: s.triangles + p.triangles, calls: s.calls + p.calls }), { triangles: 0, calls: 0 });
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
     for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('scenette')), total(openWorldCost4e('depart')), mapCost4e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT2_FABRIQUES_CEILING.triangles);
-      expect(cost.calls).toBeLessThanOrEqual(LOT2_FABRIQUES_CEILING.calls);
+      expect(cost.triangles).toBeLessThanOrEqual(LOT3_GABARIT_CEILING.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(LOT3_GABARIT_CEILING.calls);
     }
   });
 });

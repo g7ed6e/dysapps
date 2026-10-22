@@ -13,6 +13,7 @@ import { forgeSurroundings } from './forgeSurroundings';
 import { souteSurroundings } from './souteSurroundings';
 import { porteSurroundings } from './porteSurroundings';
 import { etalonSurroundings } from './etalonSurroundings';
+import { gabaritSurroundings } from './gabaritSurroundings';
 import { croiseeSurroundings } from './croiseeSurroundings';
 import { donjonSurroundings } from './donjonSurroundings';
 import { fumerollesSurroundings } from './fumerollesSurroundings';
@@ -86,6 +87,7 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   soute: souteSurroundings,
   porte: porteSurroundings,
   etalon: etalonSurroundings,
+  gabarit: gabaritSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,
