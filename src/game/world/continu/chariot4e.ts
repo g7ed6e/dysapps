@@ -527,7 +527,7 @@ function yard(b: FacetBuilder): void {
 const TRACE_SPOTS = {
   belt: { x: BENCH.x, z: BENCH.z - BENCH.length / 2 + 0.25 },
   horn: { x: GANTRY.x + GANTRY.half + 0.12, z: RAILS[1] - 0.5 },
-  shelf: { x: AWNING.x1, z: AWNING.z1 + 0.2 },
+  bucket: { x: AWNING.x1, z: AWNING.z1 + 0.2 },
   toolbox: { x: -0.4, z: 4.9 },
 } as const;
 
@@ -552,21 +552,19 @@ function horn(b: FacetBuilder, c: Vec3): void {
 }
 
 /**
- * Trois petites maquettes de la même longueur et de formes différentes (large, fine, creuse), debout côte à côte sur une
- * étagère contre un poteau de l'auvent (Lire une simulation).
+ * Un seau de bois cerclé de fer et son écope, posés au pied d'un poteau de l'auvent (Lire une simulation ; relecture du
+ * contenu du Bastion, retouche 1, point 13 : les trois petites maquettes rappelaient la créature de l'île). Rien à lire.
  */
-function shelfModels(b: FacetBuilder, c: Vec3): void {
+function bucket(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
-    const { x, z } = TRACE_SPOTS.shelf;
-    const y = G() + 1.1;
-    l.box({ x: x - 0.3, y, z }, [1.0, 0.06, 0.3], C.newShade, C.newWood);
-    l.box({ x: x - 0.3, y: y - 0.3, z: z - 0.08 }, [0.06, 0.3, 0.12], C.newShade);
-    const forms = [
-      [0.26, 0.12],
-      [0.14, 0.1],
-      [0.2, 0.2],
-    ] as const;
-    forms.forEach(([beam, depth], k) => hull(l, { x: x - 0.62 + k * 0.32, y: y + 0.06 + depth, z }, 0.6, beam, depth, 0, C.hull, C.hullShade));
+    const { x, z } = TRACE_SPOTS.bucket;
+    const y = planeY(x, z);
+    const bx = x - 0.45;
+    l.prism({ x: bx, y: y - 0.04, z }, 0.22, 0.27, 0.5, 8, C.newShade, C.newWood);
+    l.band({ x: bx, y: y + 0.3, z }, 0.265, 0.05, 8, C.iron);
+    // L'écope : une petite pelle creuse de bois, son manche appuyé contre le seau.
+    l.box({ x: bx - 0.42, y: y - 0.02, z: z + 0.12, yaw: 0.4 }, [0.26, 0.08, 0.2], C.newShade, C.newWood);
+    l.beam({ x: bx - 0.3, y: y + 0.04, z: z + 0.06 }, { x: bx - 0.2, y: y + 0.42, z }, 0.05, C.newShade);
   });
 }
 
@@ -592,7 +590,7 @@ function toolbox(b: FacetBuilder, c: Vec3): void {
 const TRACES = {
   'energy-chain': { at: TRACE_SPOTS.belt, lift: 1, stage: 0, row: 0, draw: belt },
   'information-chain': { at: TRACE_SPOTS.horn, lift: 1, stage: 0, row: 0.5, draw: horn },
-  simulation: { at: TRACE_SPOTS.shelf, lift: 1, stage: 1, row: 0, draw: shelfModels },
+  simulation: { at: TRACE_SPOTS.bucket, lift: 1, stage: 1, row: 0, draw: bucket },
   troubleshooting: { at: TRACE_SPOTS.toolbox, lift: 1, stage: 2, row: 0, draw: toolbox },
 } as const satisfies Record<string, PlaceArt['traces'][string]>;
 

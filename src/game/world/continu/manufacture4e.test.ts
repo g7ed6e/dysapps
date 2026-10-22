@@ -296,6 +296,11 @@ describe("Le bilan de la Manufacture", () => {
       "Partie posée : les abords de la Manufacture.",
     ]);
     for (const k of [0, 1, 2]) expect(said(k)).not.toMatch(/Typo|halle|Paon/i);
+    // Les phrases propres du lieu aussi (relecture du contenu du Bastion, retouche 1) : une par partie, aucune avec un nom
+    // du contenu.
+    const own = scenetteOf("manufacture").words!;
+    expect(own.pose).toHaveLength(parties.length);
+    for (const text of [...(own.pose ?? []), own.end ?? ""]) expect(text).not.toMatch(/Typo|halle|Paon/i);
   });
 });
 
@@ -305,12 +310,12 @@ describe("La scénette de la Manufacture", () => {
     expect(s.role).toBe("Le tisserand");
     expect(s.greeting).toBe("Le tisserand fait la toile, fil après fil.");
     expect(s.words?.pose).toEqual([
-      "La halle est relevée.",
+      "Les murs et les machines sont debout.",
       "La verrière est posée.",
-      "La cour est prête.",
+      "La grande porte est ouverte.",
     ]);
     expect(s.words?.end).toBe(
-      "Sous cette verrière, les machines ont changé le monde.",
+      "Sous cette verrière, les machines ont changé le travail.",
     );
     expect(saysRestored("manufacture")).toBe(true);
   });

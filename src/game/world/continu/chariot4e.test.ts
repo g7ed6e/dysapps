@@ -160,6 +160,11 @@ describe('Le bilan du Chariot', () => {
     const said = (k: number) => phraseDeLaPose({ posees: [parties[k]], plansFinis: [] }, words);
     expect([0, 1, 2, 3].map(said)).toEqual(['Partie posée : le corps du Chariot, 1 sur 2.', 'Partie posée : le corps du Chariot, 2 sur 2.', 'Partie posée : le haut du Chariot.', 'Partie posée : les abords du Chariot.']);
     for (const k of [0, 1, 2, 3]) expect(said(k)).not.toMatch(/Manivelle|Grand-bi|érable/i);
+    // Les phrases propres du lieu aussi (relecture du contenu du Bastion, retouche 1) : une par partie, aucune avec un nom
+    // du contenu.
+    const own = scenetteOf('chariot').words!;
+    expect(own.pose).toHaveLength(parties.length);
+    for (const text of [...(own.pose ?? []), own.end ?? '']) expect(text).not.toMatch(/Manivelle|Grand-bi|érable/i);
   });
 });
 
@@ -168,7 +173,7 @@ describe('La scénette du Chariot', () => {
     const s = scenetteOf('chariot');
     expect(s.role).toBe('L’ingénieure');
     expect(s.greeting).toBe('L’ingénieure invente les machines et les essaie.');
-    expect(s.words?.pose).toEqual(['Le bassin d’essai est en eau.', 'Le chariot est remis sur ses rails.', 'L’auvent couvre le treuil.', 'La cale d’essai est prête.']);
+    expect(s.words?.pose).toEqual(['Le bassin d’essai est rempli.', 'Le chariot de fer est remis sur ses rails.', 'Le toit protège le treuil.', 'La cale d’essai est refaite.']);
     expect(s.words?.end).toBe('Ici, on essayait les bateaux en petit avant de les construire en grand.');
     expect(saysRestored('chariot')).toBe(true);
   });

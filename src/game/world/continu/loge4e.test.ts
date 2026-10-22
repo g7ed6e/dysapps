@@ -187,7 +187,7 @@ describe('La Loge, lieu complet', () => {
     expect(Object.keys(LOGE.traces).sort()).toEqual([...MISSIONS, MISSION_2027].sort());
     // Aujourd'hui, la mission de 2027 n'existe pas : rien ne la pose, même le lieu restauré.
     expect(posedTraces('loge', SHAPES, MISSIONS)).not.toContain(MISSION_2027);
-    // En 2027 : une trace par partie, celle du cornet avec le milieu.
+    // En 2027 : une trace par partie, celle du balai avec le milieu.
     const all = [...MISSIONS.slice(0, 1), MISSION_2027, ...MISSIONS.slice(1)];
     expect([0, 1, 2, 3, 4, 5].map((m) => posedTraces('loge', SHAPES_2027.slice(0, m), all).length)).toEqual([0, 1, 2, 3, 4, 5]);
     expect(posedTraces('loge', SHAPES_2027.slice(0, 2), all)).toEqual(['dialogues', MISSION_2027]);
@@ -269,6 +269,11 @@ describe('Le bilan de la Loge', () => {
     const said = (k: number) => phraseDeLaPose({ posees: [parties[k]], plansFinis: [] }, words);
     expect([0, 1, 2, 3].map(said)).toEqual(['Partie posée : le corps de la Loge, 1 sur 2.', 'Partie posée : le corps de la Loge, 2 sur 2.', 'Partie posée : le haut de la Loge.', 'Partie posée : les abords de la Loge.']);
     for (const k of [0, 1, 2, 3]) expect(said(k)).not.toMatch(/Puck|Masque|théâtre|loge de/i);
+    // Les phrases propres du lieu aussi (relecture du contenu du Bastion, retouche 1) : une par partie, aucune avec un nom
+    // du contenu.
+    const own = scenetteOf('loge').words!;
+    expect(own.pose).toHaveLength(parties.length);
+    for (const text of [...(own.pose ?? []), own.end ?? '']) expect(text).not.toMatch(/Puck|Masque|théâtre|loge de/i);
   });
 });
 
@@ -277,7 +282,7 @@ describe('La scénette de la Loge', () => {
     const s = scenetteOf('loge');
     expect(s.role).toBe('Le costumier');
     expect(s.greeting).toBe('Le costumier coud les habits des comédiens.');
-    expect(s.words?.pose).toEqual(['Le plancher et la galerie sont refaits.', 'Les cintres sont remontés.', 'Le toit de la scène est posé.', 'La salle est prête.']);
+    expect(s.words?.pose).toEqual(['Le plancher et la galerie sont refaits.', 'Le rideau est raccroché.', 'Le toit de la scène est posé.', 'Les bancs sont remis en rangs.']);
     expect(s.words?.end).toBe('Ici, après le travail, les ouvriers venaient écouter des histoires.');
     for (const text of [s.role, s.greeting ?? '', ...(s.words?.pose ?? []), s.words?.end ?? '']) expect(text).not.toMatch(/loge/i);
     expect(saysRestored('loge')).toBe(true);

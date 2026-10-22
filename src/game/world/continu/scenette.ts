@@ -204,49 +204,51 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     words: { pose: ['La bascule est remise à plat.', 'Le tonneau est sur ses chevalets.', 'Les cuves et la trieuse sont debout.', 'Le toit est de nouveau entier.', 'La cour est dallée.'] },
   },
   // Le Gabarit (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition, jamais dans la même phrase que le
-  // géologue ; les phrases de pose et la réplique de l'intention du directeur artistique (le corps 1 et le corps 3 avec la
-  // balance), à valider par le directeur du contenu pédagogique.
+  // géologue ; les phrases de pose du directeur du contenu pédagogique (relecture du Bastion, retouche 1 : ce que l'élève
+  // voit changer, ni « prêt » ni « balance ») et la réplique de l'intention.
   gabarit: {
     role: placeArt('gabarit')!.role,
     greeting: 'Le géomètre mesure et trace avant qu’on construise.',
     placement: 'rangee',
     words: {
-      pose: ['L’atelier est refermé.', 'La galerie est reposée.', 'La tour est remontée.', 'La grue a retrouvé son bras.', 'Le plancher de traçage est prêt.'],
+      pose: ['Le bas de l’atelier est relevé.', 'L’étage et sa galerie sont refaits.', 'La tour est remontée.', 'La grue a retrouvé son bras.', 'Le grand plancher est remis à plat.'],
       end: 'Ici, on traçait chaque pièce en grand avant de la tailler.',
     },
   },
-  // Le Chariot (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition ; les phrases de pose et la réplique de
-  // l'intention du directeur artistique, à valider par le directeur du contenu pédagogique (« le chariot de fer » au
-  // corps 2, si la voix l'entend mieux).
+  // Le Chariot (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition ; les phrases de pose du directeur du
+  // contenu pédagogique et du référent dys (relecture du Bastion, retouche 1 : « le chariot de fer », qu'on ne confond pas
+  // avec le lieu à la voix ; des mots courants) et la réplique de l'intention.
   chariot: {
     role: placeArt('chariot')!.role,
     greeting: 'L’ingénieure invente les machines et les essaie.',
     placement: 'rangee',
     words: {
-      pose: ['Le bassin d’essai est en eau.', 'Le chariot est remis sur ses rails.', 'L’auvent couvre le treuil.', 'La cale d’essai est prête.'],
+      pose: ['Le bassin d’essai est rempli.', 'Le chariot de fer est remis sur ses rails.', 'Le toit protège le treuil.', 'La cale d’essai est refaite.'],
       end: 'Ici, on essayait les bateaux en petit avant de les construire en grand.',
     },
   },
   // La Manufacture (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition ; les phrases de pose et la réplique
-  // de l'intention du directeur artistique, à valider par le directeur du contenu pédagogique.
+  // du directeur du contenu pédagogique (relecture du Bastion, retouche 1 : jamais « halle », le mot des plans de l'île ;
+  // les machines ont changé le travail, comme le dit le programme).
   manufacture: {
     role: placeArt('manufacture')!.role,
     greeting: 'Le tisserand fait la toile, fil après fil.',
     placement: 'rangee',
     words: {
-      pose: ['La halle est relevée.', 'La verrière est posée.', 'La cour est prête.'],
-      end: 'Sous cette verrière, les machines ont changé le monde.',
+      pose: ['Les murs et les machines sont debout.', 'La verrière est posée.', 'La grande porte est ouverte.'],
+      end: 'Sous cette verrière, les machines ont changé le travail.',
     },
   },
-  // La Loge (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition ; les phrases de pose (le corps en deux
-  // aujourd'hui, en trois à la bascule de 2027) et la réplique de l'intention, à valider par le directeur du contenu
-  // pédagogique ; aucune ne dit « loge ».
+  // La Loge (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition ; les phrases de pose du directeur du
+  // contenu pédagogique (relecture du Bastion, retouche 1 : le rideau raccroché, les bancs remis en rangs ; le corps en
+  // deux aujourd'hui) et la réplique de l'intention ; aucune ne dit « loge ». À la bascule de 2027 (cinq parties), la
+  // liste entière est remplacée par celle de docs/pilotage/chantiers.md (« La Loge à cinq parties »).
   loge: {
     role: placeArt('loge')!.role,
     greeting: 'Le costumier coud les habits des comédiens.',
     placement: 'rangee',
     words: {
-      pose: ['Le plancher et la galerie sont refaits.', 'Les cintres sont remontés.', 'Le toit de la scène est posé.', 'La salle est prête.'],
+      pose: ['Le plancher et la galerie sont refaits.', 'Le rideau est raccroché.', 'Le toit de la scène est posé.', 'Les bancs sont remis en rangs.'],
       end: 'Ici, après le travail, les ouvriers venaient écouter des histoires.',
     },
   },

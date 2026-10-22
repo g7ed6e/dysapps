@@ -21,7 +21,7 @@
 // Les parties : aujourd'hui quatre missions (le corps en deux, le haut, les abords), cinq à la bascule de 2027 (le corps
 // en trois). Le corps est dessiné en trois groupes : le bas (`row` 0), le milieu (`row` 0,4), le haut du corps (`row`
 // 0,8) ; chaque groupe tombe dans une seule partie, en moitiés comme en tiers. Une trace par mission, avec sa partie ; celle
-// de 2027 (le cornet, au milieu) est modelée, sa place gardée dans le budget, jamais posée avant sa mission. Rien à lire,
+// de 2027 (le balai, au milieu) est modelée, sa place gardée dans le budget, jamais posée avant sa mission. Rien à lire,
 // rien de croisé, rien qui bouge. Code pur (placeArt.ts).
 import type { Stage } from './construction';
 import { FacetBuilder } from './facets';
@@ -511,7 +511,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
 /** Où se pose chaque trace, depuis le centre du lieu (intention, « Les parties et les traces ») ; aucune sur le chemin. */
 const TRACE_SPOTS = {
   stools: { x: -4.2, z: 7.3 },
-  horn: { x: 4.6, z: 3.4 },
+  broom: { x: 4.6, z: 3.4 },
   sacks: { x: -4.85, z: 4.05 },
   chair: { x: 4.75, z: 6.4 },
   backdrop: { x: -3.4, z: -2.8 },
@@ -526,16 +526,18 @@ function stools(b: FacetBuilder, c: Vec3): void {
 }
 
 /**
- * Le cornet d'un tuyau acoustique de fer bruni, sur un court poteau près de la régie, à l'écart de la ferrure vide (la
- * mission de 2027, `relatives-reported` ; une proposition, correction 20) : modelé dès ce lot, posé seulement avec sa mission.
+ * Un balai de bois appuyé contre le mur est, près de la régie, à l'écart de la ferrure vide (la mission de 2027,
+ * `relatives-reported` ; relecture du contenu du Bastion, retouche 1, point 13 : le cornet d'un tuyau acoustique
+ * rappelait le souffleur de l'île) : modelé dès ce lot, posé seulement avec sa mission. Rien à lire.
  */
-function horn(b: FacetBuilder, c: Vec3): void {
+function broom(b: FacetBuilder, c: Vec3): void {
   inWorld(b, c, (l) => {
-    const { x, z } = TRACE_SPOTS.horn;
+    const { x, z } = TRACE_SPOTS.broom;
     const y = G() + FLOOR;
-    l.box({ x, y: y - 0.02, z }, [0.14, 1.1, 0.14], C.iron, C.ironTop);
-    l.beam({ x, y: y + 1.05, z }, { x: x + 0.45, y: y + 2.4, z: z - 0.2 }, 0.07, C.iron);
-    l.prism({ x: x - 0.02, y: y + 1.05, z: z + 0.04, yaw: 0.3 }, 0.05, 0.17, 0.26, 6, C.iron, C.greyShade);
+    // Le manche penché contre le mur (à l'est), la brosse au sol, ses fibres d'un chanvre uni.
+    l.beam({ x: x - 0.35, y: y + 0.18, z }, { x: x + 0.12, y: y + 1.55, z }, 0.06, C.woodShade);
+    l.box({ x: x - 0.4, y: y - 0.02, z, yaw: Math.PI / 2 }, [0.42, 0.2, 0.14], C.woodShade, C.wood);
+    l.prism({ x: x - 0.4, y: y - 0.02, z, yaw: Math.PI / 4 }, 0.2, 0.24, 0.1, 4, C.sackShade, C.sack);
   });
 }
 
@@ -574,7 +576,7 @@ function backdrop(b: FacetBuilder, c: Vec3): void {
  */
 const TRACES = {
   dialogues: { at: TRACE_SPOTS.stools, lift: 1, stage: 0, row: 0, draw: stools },
-  'relatives-reported': { at: TRACE_SPOTS.horn, lift: 1, stage: 0, row: 0.4, draw: horn },
+  'relatives-reported': { at: TRACE_SPOTS.broom, lift: 1, stage: 0, row: 0.4, draw: broom },
   quantities: { at: TRACE_SPOTS.sacks, lift: 1, stage: 0, row: 0.8, draw: sacks },
   'irregular-past': { at: TRACE_SPOTS.chair, lift: 1, stage: 1, row: 0, draw: chair },
   stories: { at: TRACE_SPOTS.backdrop, lift: 1, stage: 2, row: 0, draw: backdrop },

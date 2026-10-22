@@ -195,6 +195,11 @@ describe('Le bilan du Gabarit', () => {
       'Partie posée : les abords du Gabarit.',
     ]);
     for (const k of [0, 1, 2, 3, 4]) expect(said(k)).not.toMatch(/Ixe|bureau|Golem/);
+    // Les phrases propres du lieu aussi (relecture du contenu du Bastion, retouche 1) : une par partie, aucune avec un nom
+    // du contenu.
+    const own = scenetteOf('gabarit').words!;
+    expect(own.pose).toHaveLength(parties.length);
+    for (const text of [...(own.pose ?? []), own.end ?? '']) expect(text).not.toMatch(/Ixe|bureau|Golem/);
   });
 });
 
