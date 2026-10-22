@@ -1,7 +1,7 @@
 /**
  * Le Détour du Recoin (lot 3 du monde ouvert du 4e, avec la Manufacture ; intention du directeur artistique du 22 octobre
  * 2026, « Le Recoin ») : le Détour du Bastion, sur le mécanisme de l'Épave (./epave4e.ts) : un endroit hors des chemins,
- * que l'élève trouve en marchant ; Kéo s'y arrête, la vue monte comme aux autres Détours, tournée vers la mer du nord,
+ * que l'élève trouve en marchant ; Kéo s'y arrête, la vue se pose, basse, tournée vers l'angle et la mer du nord,
  * « Le Recoin » s'écrit une fois, et une sente reste tracée pour de bon après la première arrivée. Ni compteur, ni
  * récompense, ni mission.
  *
@@ -26,13 +26,21 @@ import { COLORS_4E, RECOIN_4E } from './plan4e';
  */
 export const RECOIN_BUDGET = { triangles: 175, sente: 170 } as const;
 
-/** Là où Kéo s'arrête : dans l'angle des murets, face au nord. */
+/** Là où Kéo s'arrête : à l'est de la chaudière, face au nord ; et le repère de l'angle des murets, d'où tout se dessine. */
 const AT: Vec2 = { x: RECOIN_4E.at.x, z: RECOIN_4E.at.z };
+const CORNER: Vec2 = { x: RECOIN_4E.corner.x, z: RECOIN_4E.corner.z };
+
+/**
+ * La vue du Recoin à l'arrivée (captures du 22 octobre 2026 : la vue commune des Détours plongeait presque à la verticale
+ * et Kéo, dans l'angle, cachait la chaudière juste derrière lui) : basse et un peu reculée, comme à l'Épave, un cran plus
+ * haute pour voir par-dessus les murets ; à peine tournée vers le nord-ouest (`turn`) : Kéo au premier plan, à l'est de
+ * la chaudière, elle et le figuier à côté de lui, à gauche, l'angle des murets au fond, la mer du nord derrière.
+ */
+const RECOIN_VIEW = { height: -2, back: 1.2, turn: 0.15 } as const;
 
 /**
  * Le Recoin, un Détour comme les autres (son nom : le consultant d'Archipéo, « le Recoin », sans élision). `face` va de
- * la mer (au nord) vers Kéo : la caméra regarde à l'opposé, vers le nord (`detourCap`), et monte comme aux autres
- * Détours (la vue commune).
+ * la mer (au nord) vers Kéo : la caméra regarde à l'opposé, vers le nord (`detourCap`), tournée de `RECOIN_VIEW.turn`.
  */
 export const RECOIN: Detour = {
   id: 'recoin',
@@ -40,10 +48,11 @@ export const RECOIN: Detour = {
   name: 'Le Recoin',
   kind: 'recoin',
   at: AT,
-  radius: 2.5,
+  radius: 3.2,
   foot: { x: RECOIN_4E.foot.x, z: RECOIN_4E.foot.z },
   face: Math.PI / 2,
   sente: [RECOIN_4E.senteFrom, RECOIN_4E.bend, RECOIN_4E.foot, AT].map((p) => ({ x: p.x, z: p.z })),
+  view: RECOIN_VIEW,
 };
 
 /**
@@ -74,7 +83,7 @@ type Ground = (x: number, z: number) => number;
 type P3 = readonly [number, number, number];
 
 /**
- * Les deux murets, depuis `at` (x vers l'est, z vers le sud) : le nord, de la face intérieure du muret ouest jusqu'à son
+ * Les deux murets, depuis l'angle (`corner`, x vers l'est, z vers le sud) : le nord, de la face intérieure du muret ouest jusqu'à son
  * bout est ; l'ouest, de la face extérieure du muret nord jusqu'à son bout sud. Leur épaisseur, leur hauteur au-dessus du
  * sol le plus haut de leur pied, et de combien ils s'enfoncent sous le plus bas.
  */
@@ -104,7 +113,7 @@ const CROWN = [
   { at: [0.95, 2.3, -0.15] as P3, r: 1.15, up: 0.75, down: 0.45, yaw: 0.7 },
 ] as const;
 
-/** La caisse de bois, debout contre le muret ouest : sa place depuis `at`, sa taille. */
+/** La caisse de bois, debout contre le muret ouest : sa place depuis l'angle (`corner`), sa taille. */
 const CRATE = { x: -1.95, z: 0.35, size: [0.52, 0.5, 0.56] as P3 } as const;
 
 /** Un fût à `sides` pans, tendu entre deux points (le tronc) : 2 × `sides` triangles, sans bouts. */
@@ -158,15 +167,15 @@ function walls(b: FacetBuilder, ground: Ground): void {
     if (west) b.quad([x0, y0, z0], [x0, y0, z1], [x0, y1, z1], [x0, y1, z0], C.brickShade);
   };
   // Le muret nord : son bout ouest est dans le muret ouest.
-  run(AT.x + W.north.x0, AT.x + W.north.x1, AT.z + W.north.z - t, AT.z + W.north.z + t, true, false);
+  run(CORNER.x + W.north.x0, CORNER.x + W.north.x1, CORNER.z + W.north.z - t, CORNER.z + W.north.z + t, true, false);
   // Le muret ouest, le long de z : ses deux bouts (nord, sud) et ses deux faces (est, ouest) se voient.
-  run(AT.x + W.west.x - t, AT.x + W.west.x + t, AT.z + W.west.z0, AT.z + W.west.z1, true, true);
+  run(CORNER.x + W.west.x - t, CORNER.x + W.west.x + t, CORNER.z + W.west.z0, CORNER.z + W.west.z1, true, true);
 }
 
 /** Le haut des murets à l'angle (pour la lanterne). */
 function cornerTop(ground: Ground): number {
   const W = RECOIN_WALLS;
-  const [, hi] = groundSpan(ground, AT.x + W.west.x - W.thick / 2, AT.x + W.west.x + W.thick / 2, AT.z + W.west.z0, AT.z + W.west.z1);
+  const [, hi] = groundSpan(ground, CORNER.x + W.west.x - W.thick / 2, CORNER.x + W.west.x + W.thick / 2, CORNER.z + W.west.z0, CORNER.z + W.west.z1);
   return hi + W.high;
 }
 
@@ -242,23 +251,23 @@ function figTree(b: FacetBuilder, ground: Ground): void {
 
 /** La caisse de bois, debout contre le muret ouest, et la lanterne d'ocre sur l'angle des murets, allumée. */
 function crateAndLantern(b: FacetBuilder, ground: Ground): void {
-  const x = AT.x + CRATE.x,
-    z = AT.z + CRATE.z;
+  const x = CORNER.x + CRATE.x,
+    z = CORNER.z + CRATE.z;
   const [lo] = groundSpan(ground, x - CRATE.size[0] / 2, x + CRATE.size[0] / 2, z - CRATE.size[2] / 2, z + CRATE.size[2] / 2);
   b.box({ x, y: lo - 0.05, z, yaw: 0.12 }, [CRATE.size[0], CRATE.size[1] + 0.05, CRATE.size[2]], C.wood, C.woodTop);
   const W = RECOIN_WALLS;
-  lantern(b, { x: AT.x + W.west.x, y: cornerTop(ground) + 0.36, z: AT.z + W.north.z }, true);
+  lantern(b, { x: CORNER.x + W.west.x, y: cornerTop(ground) + 0.36, z: CORNER.z + W.north.z }, true);
 }
 
-/** Les trois pierres plates, autour de Kéo, de part et d'autre de la sente (jamais dessus), depuis `at`. */
+/** Les trois pierres plates, autour de Kéo, de part et d'autre de la sente (jamais dessus), depuis l'angle (`corner`). */
 export const RECOIN_STONES = [
-  { x: -1.0, z: 2.6, r: 0.5 },
-  { x: 2.6, z: 2.4, r: 0.52 },
-  { x: 2.2, z: 0.2, r: 0.42 },
+  { x: 0.3, z: 2.2, r: 0.5 },
+  { x: 2.9, z: 2.6, r: 0.52 },
+  { x: 3.9, z: 0.9, r: 0.42 },
 ] as const;
 
 /** Le pied d'une pierre de `RECOIN_STONES`, dans le monde. */
-export const recoinStoneAt = (k: number): Vec2 => ({ x: AT.x + RECOIN_STONES[k].x, z: AT.z + RECOIN_STONES[k].z });
+export const recoinStoneAt = (k: number): Vec2 => ({ x: CORNER.x + RECOIN_STONES[k].x, z: CORNER.z + RECOIN_STONES[k].z });
 
 function stones(b: FacetBuilder, ground: Ground): void {
   RECOIN_STONES.forEach((s, k) => {

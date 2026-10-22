@@ -10,6 +10,7 @@ import { findDetour } from '../detoursSaved';
 import { DETOURS_4E, DETOUR_IDS, detourAtPoint, detourById, detourCap, detourViewOf } from './detours';
 import { EPAVE } from './epave4e';
 import type { Facets } from './facets';
+import { followPose, screenOf } from './camera';
 import { distance, distanceToPolyline, linearRgb } from './geometry';
 import { MANUFACTURE_LAYOUT } from './manufacture4e';
 import { NETWORK_4E } from './paths4e';
@@ -77,7 +78,7 @@ describe('Le Recoin, le Détour du Bastion', () => {
     // Le muret nord court vers l'est, le muret ouest vers le sud : rien ne ferme le sud ni l'est (jamais en U).
     expect(W.north.x1).toBeGreaterThan(2);
     expect(W.west.z1).toBeGreaterThan(1);
-    const top = (x: number, z: number) => W.high + ground(RECOIN.at.x + x, RECOIN.at.z + z);
+    const top = (x: number, z: number) => W.high + ground(RECOIN_4E.corner.x + x, RECOIN_4E.corner.z + z);
     expect(W.high).toBeGreaterThan(0.75);
     expect(W.high).toBeLessThan(1.05);
     expect(top(0, W.north.z)).toBeGreaterThan(0);
@@ -99,7 +100,7 @@ describe('Le Recoin, le Détour du Bastion', () => {
       expect(p.x).toBeGreaterThanOrEqual(k.x - k.half - 1e-3);
       expect(p.x).toBeLessThanOrEqual(k.x + k.half + 1e-3);
     }
-    expect(RECOIN.at.z + RECOIN_WALLS.north.z + RECOIN_WALLS.thick / 2).toBeLessThan(k.z - k.r);
+    expect(RECOIN_4E.corner.z + RECOIN_WALLS.north.z + RECOIN_WALLS.thick / 2).toBeLessThan(k.z - k.r);
     expect(k.z + k.r).toBeLessThan(RECOIN.at.z - 0.5);
     // Le trou d'homme : une ombre sur le dessus (plus haut que tout le corps), jamais tournée vers la caméra.
     const hole = points(f, 0x3a2c28);
@@ -127,12 +128,34 @@ describe('Le Recoin, le Détour du Bastion', () => {
     expect(Math.abs(foot.z - RECOIN_4E.boiler.z)).toBeLessThan(0.3);
   });
 
-  it('à l’arrivée, la caméra se tourne vers la mer du nord et monte comme aux autres Détours', () => {
+  it('à l’arrivée, la caméra se tourne vers l’angle et la mer du nord, basse : la chaudière à côté de Kéo, jamais derrière lui', () => {
     const cap = detourCap(RECOIN)!;
-    // La caméra regarde vers −(sin cap, cos cap) : au nord (−z).
+    // La caméra regarde vers −(sin cap, cos cap) : vers le nord, à peine vers l'ouest et l'angle des murets.
     const look = { x: -Math.sin(cap), z: -Math.cos(cap) };
-    expect(look.z).toBeLessThan(-0.99);
-    expect(detourViewOf(RECOIN).height).toBeGreaterThan(0);
+    expect(look.z).toBeLessThan(-0.9);
+    expect(look.x).toBeLessThan(0);
+    // Plus basse que la vue commune des Détours, qui plongeait presque à la verticale (captures du 22 octobre 2026).
+    const view = detourViewOf(RECOIN);
+    expect(view.height).toBeLessThan(0);
+    const g = ground;
+    const feet = { x: RECOIN.at.x, y: g(RECOIN.at.x, RECOIN.at.z), z: RECOIN.at.z };
+    const pose = followPose(feet, 0, undefined, cap, 1, undefined, view);
+    expect(pose.position.y - feet.y).toBeLessThan(6);
+    const [W, H] = [1024, 768];
+    const keo = screenOf(pose, { x: feet.x, y: feet.y + 1.2, z: feet.z }, W, H);
+    const k = RECOIN_4E.boiler;
+    const axis = g(k.x, k.z) + 0.9;
+    const boiler = screenOf(pose, { x: k.x, y: axis, z: k.z }, W, H);
+    // Kéo s'arrête à l'est de la chaudière : elle est toute à sa gauche, son bout est hors de sa silhouette ; ses deux
+    // bouts et l'angle des murets dans l'image.
+    expect(keo.x - boiler.x).toBeGreaterThan(80);
+    for (const dx of [-k.half, k.half]) {
+      const end = screenOf(pose, { x: k.x + dx, y: axis, z: k.z }, W, H);
+      expect(end.x).toBeGreaterThan(16);
+      expect(keo.x - end.x).toBeGreaterThan(40);
+    }
+    const corner = screenOf(pose, { x: RECOIN_4E.corner.x + RECOIN_WALLS.west.x, y: g(RECOIN_4E.corner.x, RECOIN_4E.corner.z) + 0.9, z: RECOIN_4E.corner.z + RECOIN_WALLS.north.z }, W, H);
+    expect(corner.x).toBeGreaterThan(16);
   });
 
   it('sa sente part de la porte de la Manufacture, contourne sa cour, et reste sur le sol sec, sans un buisson ni un rocher', () => {
@@ -174,10 +197,10 @@ describe('Le Recoin, le Détour du Bastion', () => {
       const p = recoinStoneAt(k);
       expect(distanceToPolyline(p, RECOIN.sente), String(k)).toBeGreaterThan(1);
       expect(distance(p, RECOIN.at), String(k)).toBeLessThan(4);
-      expect(p.z - RECOIN.at.z, String(k)).toBeGreaterThan(RECOIN_WALLS.north.z + 1);
-      expect(p.x - RECOIN.at.x, String(k)).toBeGreaterThan(RECOIN_WALLS.west.x + 1);
+      expect(p.z - RECOIN_4E.corner.z, String(k)).toBeGreaterThan(RECOIN_WALLS.north.z + 1);
+      expect(p.x - RECOIN_4E.corner.x, String(k)).toBeGreaterThan(RECOIN_WALLS.west.x + 1);
     }
-    const sides = RECOIN_STONES.map((s) => Math.sign(s.x - RECOIN_4E.foot.x + RECOIN.at.x));
+    const sides = RECOIN_STONES.map((s) => Math.sign(s.x - RECOIN_4E.foot.x + RECOIN_4E.corner.x));
     expect(new Set(sides).size).toBe(2);
   });
 

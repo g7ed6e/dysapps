@@ -522,15 +522,17 @@ export function inEpaveClearing(p: Vec2): boolean {
 
 /**
  * Le Détour du Recoin (lot 3, avec la Manufacture ; intention du directeur artistique du 22 octobre 2026, « Le Recoin ») :
- * sa place sur la côte nord du Bastion, hors des chemins, à l'est de la Manufacture. `at` : là où Kéo s'arrête, dans
- * l'angle des deux murets, face au nord (la place réservée) ; `boiler` : le milieu de la chaudière couchée le long du
+ * sa place sur la côte nord du Bastion, hors des chemins, à l'est de la Manufacture. `corner` : la place réservée, le
+ * repère de l'angle des deux murets ; `at` : là où Kéo s'arrête, face au nord, à l'est de la chaudière et non devant elle
+ * (captures du 22 octobre 2026 : dans l'angle, il la cachait) ; `boiler` : le milieu de la chaudière couchée le long du
  * muret nord, son axe d'ouest en est, sa demi-longueur et son rayon ; `senteFrom` : le départ de sa sente, la porte de
  * la Manufacture (le chemin le plus proche) ; `bend` : le coude de la sente, au sud-est de la cour de la Manufacture
  * (elle la contourne sans la traverser), puis `foot`, au sud de l'angle, où sont ses pierres ; `keep` : ce que la
  * végétation laisse libre (autour de l'angle et le long de la sente).
  */
 export const RECOIN_4E = {
-  at: DETOUR_SPOTS_4E.recoin,
+  corner: DETOUR_SPOTS_4E.recoin,
+  at: { x: DETOUR_SPOTS_4E.recoin.x + 3.0, z: DETOUR_SPOTS_4E.recoin.z - 0.4 },
   boiler: { x: DETOUR_SPOTS_4E.recoin.x + 0.5, z: DETOUR_SPOTS_4E.recoin.z - 1.75, half: 1.5, r: 0.66 },
   senteFrom: doorAt('manufacture'),
   bend: { x: fromPlan4e([1640, 610]).x + 13, z: fromPlan4e([1640, 610]).z + 8.6 },
@@ -540,8 +542,8 @@ export const RECOIN_4E = {
 
 /** Ce point du monde est-il dans la place du Recoin (l'angle de ses murets, Kéo, sa sente) ? */
 export function inRecoinClearing(p: Vec2): boolean {
-  const { at, senteFrom, bend, foot, keep } = RECOIN_4E;
-  if (Math.hypot(p.x - at.x, p.z - at.z) < keep.at) return true;
+  const { corner, at, senteFrom, bend, foot, keep } = RECOIN_4E;
+  if (Math.hypot(p.x - corner.x, p.z - corner.z) < keep.at || Math.hypot(p.x - at.x, p.z - at.z) < keep.at) return true;
   return distanceToPolyline(p, [senteFrom, bend, foot, at]) < keep.sente;
 }
 
