@@ -107,14 +107,19 @@ const SLIP = { x0: BASIN.x0 - 0.1, x1: -17.6, rails: [-3.7, -1.9], top: 0.6, foo
 /** Les maquettes, au sud-ouest : la grande sur ses deux tréteaux (toujours là), les deux petites des abords. */
 const MODELS = { big: { x: -7.6, z: 2.8, length: 3.0, beam: 0.9, depth: 0.5, rest: 0.75 }, small: { x: -10.6, z: 3.4, length: 2.0, beam: 0.62, depth: 0.36, rest: 0.6 } } as const;
 
-/** L'appentis de l'ingénieure, au sud-est du bassin, près de la porte : ses bords, le haut de son mur du fond et de son devant. */
-const SHED = { x0: 1.0, x1: 3.4, z0: 0.4, z1: 3.0, back: 2.45, front: 2.0 } as const;
+/**
+ * L'appentis de l'ingénieure, au sud-est du bassin, près de la porte : ses bords, le haut de ses poteaux du fond et de son
+ * devant, le haut de son mur de planches du fond. Un auvent ouvert et bas, comme sur la planche (correction des captures du
+ * 22 octobre 2026 : son mur du fond, haut et plein, cachait le chariot et l'eau depuis la porte) : un mur à mi-hauteur,
+ * quatre poteaux, et le lieu se voit au travers.
+ */
+const SHED = { x0: 1.4, x1: 3.4, z0: 2.6, z1: 4.6, back: 1.9, front: 1.6, wall: 0.9 } as const;
 
 /** L'établi, contre le mur du fond de l'appentis : son milieu, sa longueur (le long du mur), sa hauteur. */
-const BENCH = { x: SHED.x1 - 0.45, z: 1.6, length: 1.8, h: 0.85 } as const;
+const BENCH = { x: SHED.x1 - 0.45, z: (SHED.z0 + SHED.z1) / 2, length: 1.8, h: 0.85 } as const;
 
 /** La lanterne de l'appentis (la seule allumée de la ruine) ; celle de l'auvent (le haut) ; celle du chemin (les abords). */
-const LANTERN_SHED = { x: SHED.x0, z: SHED.z1, y: 1.85 } as const;
+const LANTERN_SHED = { x: SHED.x0, z: SHED.z1, y: SHED.front - 0.15 } as const;
 const LANTERN_AWNING = { x: AWNING.x0, z: AWNING.z1 } as const;
 const PATH_LANTERN = { x: 1.4, z: 6.0, h: 1.35 } as const;
 
@@ -174,10 +179,11 @@ const G = planeY(0, 0);
 const DOOR_VIEW = Math.PI / 4;
 
 /**
- * La vue d'arrivée (`doorFrame`, basse comme la Soute) : le lieu est bas, elle ne cadre aucune hauteur ; seulement la
- * caméra à hauteur de Kéo (la correction du mainteneur aux Fabriques).
+ * La vue d'arrivée (`doorFrame`) : le lieu est bas et à plat, la caméra des Fabriques (−3, à hauteur de Kéo) le voyait
+ * en rasant et le bassin ne se lisait plus (captures du 22 octobre 2026). Elle reste plus basse que la caméra qui suit,
+ * d'un cran seulement, un peu reculée : le regard plonge assez pour que l'eau et le chariot se lisent.
  */
-const DOOR_FRAME = { height: -3, back: 1.2 } as const;
+const DOOR_FRAME = { height: -1, back: 1.3 } as const;
 
 /** Le point du nom sur la Carte, depuis le centre du lieu : au-dessus du treuil, jamais sur le bassin. */
 const MAP_POINT: Vec3 = { x: WINCH.x + 0.3, y: G + AWNING.high + 1.4, z: WINCH.z };
@@ -476,18 +482,22 @@ function bigModel(b: FacetBuilder): void {
 }
 
 /**
- * L'appentis de l'ingénieure, au sud-est du bassin : un mur de planches au fond (à l'est), deux poteaux devant, un toit
- * de planches à un pan ; l'établi contre le fond, un rabot dessus ; sa lanterne au poteau du sud, la seule allumée de la
+ * L'appentis de l'ingénieure, au sud-est du bassin : un mur de planches à mi-hauteur au fond (à l'est), quatre poteaux,
+ * un toit de planches à un pan ; l'établi contre le fond, un rabot dessus ; sa lanterne au poteau du sud, la seule allumée de la
  * ruine.
  */
 function shed(b: FacetBuilder): void {
   const S = SHED;
   const g = planeY(S.x1, (S.z0 + S.z1) / 2);
-  b.box({ x: S.x1 - 0.06, y: g + SINK, z: (S.z0 + S.z1) / 2 }, [0.12, G + S.back - g - SINK, S.z1 - S.z0], C.woodShade, C.wood);
-  for (const z of [S.z0, S.z1]) {
-    const h = planeY(S.x0, z);
-    b.box({ x: S.x0, y: h + SINK, z }, [0.16, G + S.front - h - SINK, 0.16], C.woodShade, C.wood);
-  }
+  b.box({ x: S.x1 - 0.06, y: g + SINK, z: (S.z0 + S.z1) / 2 }, [0.12, G + S.wall - g - SINK, S.z1 - S.z0], C.woodShade, C.wood);
+  for (const [x, top] of [
+    [S.x0, S.front],
+    [S.x1, S.back],
+  ] as const)
+    for (const z of [S.z0, S.z1]) {
+      const h = planeY(x, z);
+      b.box({ x, y: h + SINK, z }, [0.16, G + top - h - SINK, 0.16], C.woodShade, C.wood);
+    }
   sheet(
     b,
     [

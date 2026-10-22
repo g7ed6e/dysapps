@@ -212,7 +212,7 @@ describe('La vue d’arrivée du Chariot', () => {
   it('basse, vers le nord-ouest : le chariot au milieu, le treuil à droite, la cale et les maquettes à gauche, l’appentis à droite devant', () => {
     const yaw = doorViewOf('chariot');
     const frame = doorFrameOf('chariot')!;
-    expect(frame).toEqual({ height: -3, back: 1.2 });
+    expect(frame).toEqual({ height: -1, back: 1.3 });
     const pose = followPose(focus, occlusionLift(focus, ground, yaw), undefined, yaw, 1, undefined, frame);
     const s = (x: number, z: number, y = 0.8) => screenOf(pose, world(x, L.base + y, z), W, H);
     const inFrame = (p: { x: number; y: number }) => p.x > 16 && p.x < W - 16 && p.y > 8 && p.y < H;
@@ -272,5 +272,14 @@ describe('La caméra qui suit, au Chariot', () => {
     expect(blocked(camera(doorViewOf('chariot'), doorFrameOf('chariot')!), keo)).toBe(false);
     const hidden = Array.from({ length: 72 }, (_, k) => k * 5).filter((deg) => blocked(camera((deg * Math.PI) / 180), keo));
     expect(hidden).toEqual([]);
+  });
+
+  it('à l’arrivée, rien de l’appentis ni de la cour entre la caméra et l’eau ou le chariot (captures du 22 octobre 2026)', () => {
+    const eye = camera(doorViewOf('chariot'), doorFrameOf('chariot')!);
+    const y = H0 + L.base + L.basin.water + 0.02;
+    const mid = (L.basin.z0 + L.basin.z1) / 2;
+    const water = [-11, -8, -2, 0, 2].map((x) => [PLACE.center.x + x, y, PLACE.center.z + mid]);
+    const deck = [PLACE.center.x + L.gantry.x, H0 + L.base + L.basin.top + 0.5 + L.gantry.deck, PLACE.center.z + mid];
+    for (const t of [...water, deck]) expect(blocked(eye, t), JSON.stringify(t)).toBe(false);
   });
 });
