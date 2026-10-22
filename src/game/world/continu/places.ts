@@ -18,7 +18,6 @@ import { PATH_NODES_4E } from './plan4e';
 import { PATH_NODES_5E } from './plan5e';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId as PlaceId6e } from './plan6e';
 import { RUINS_3E } from './ruins3e';
-import { RUINS_4E } from './ruins4e';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 import { landDistance } from './terrain';
 
@@ -2481,7 +2480,7 @@ const RUINS_FALLEN_VOUSSOIRS = [
   [4.8, -4.9, -0.7],
 ] as const;
 
-/** Une ruine du 4e (./ruins4e.ts) ou du 3e (./ruins3e.ts), en une seule pièce : ses lieux n'ont pas encore d'étapes (GD-22, lot 2). */
+/** Une ruine du 3e (./ruins3e.ts), en une seule pièce : ses lieux n'ont pas encore d'étapes (GD-22, lot 2). */
 const ruinOnly =
   (draw: (b: FacetBuilder) => void) =>
   (add: Add): void =>
@@ -2523,23 +2522,24 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   hameau: northPlace('hameau'),
   auberge: northPlace('auberge'),
   oracle: northPlace('oracle'),
-  // Le 4e : la Forge, la Soute, la Porte et l'Étalon (lot 2), dessinés dans leur fichier ; les autres, des ruines simples (lot 1, ./ruins4e.ts).
+  // Le 4e : la Forge, la Soute, la Porte et l'Étalon (lot 2), le Gabarit, le Chariot, la Manufacture et la Loge (lot 3), dessinés dans leur fichier ; les autres,
+  // des ruines simples (lot 1, ./ruins4e.ts).
   forge: northPlace('forge'),
   soute: northPlace('soute'),
   porte: northPlace('porte'),
   etalon: northPlace('etalon'),
-  gabarit: ruinOnly(RUINS_4E.gabarit),
-  manufacture: ruinOnly(RUINS_4E.manufacture),
-  loge: ruinOnly(RUINS_4E.loge),
-  chariot: ruinOnly(RUINS_4E.chariot),
-  herbier: ruinOnly(RUINS_4E.herbier),
-  roches: ruinOnly(RUINS_4E.roches),
-  jonction: ruinOnly(RUINS_4E.jonction),
-  veillee: ruinOnly(RUINS_4E.veillee),
-  basilique: ruinOnly(RUINS_4E.basilique),
-  terminus: ruinOnly(RUINS_4E.terminus),
-  orgues: ruinOnly(RUINS_4E.orgues),
-  dynamo: ruinOnly(RUINS_4E.dynamo),
+  gabarit: northPlace('gabarit'),
+  chariot: northPlace('chariot'),
+  manufacture: northPlace('manufacture'),
+  loge: northPlace('loge'),
+  herbier: northPlace('herbier'),
+  roches: northPlace('roches'),
+  jonction: northPlace('jonction'),
+  veillee: northPlace('veillee'),
+  basilique: northPlace('basilique'),
+  terminus: northPlace('terminus'),
+  orgues: northPlace('orgues'),
+  dynamo: northPlace('dynamo'),
   // Le 3e : seize ruines simples (lot 1 du monde ouvert du 3e, ./ruins3e.ts).
   belvedere: ruinOnly(RUINS_3E.belvedere),
   grenier: ruinOnly(RUINS_3E.grenier),

@@ -75,10 +75,16 @@ export interface LevelPlan {
   /**
    * La Carte serrée (au 4e, consultant UX UI, deuxième relecture du lot 1 ; au 3e de même) : le lieu suggéré posé le tout
    * premier, contre son point, jamais sur deux lignes ; les étiquettes à un écart des bords ; un trait fin vers un nom loin
-   * de son lieu ; la place de Kéo gardée avant les noms pâles, « Toi » sans jamais couvrir une étiquette (retouche 1 du lot 1 du
-   * 3e) ; le nom d'une terre fermée avant ceux de ses lieux (`MapLabels`, `snug`). Rien : la Carte du 6e et du 5e.
+   * de son lieu ; le nom d'une terre fermée avant ceux de ses lieux (`MapLabels`, `snug`). Rien : la Carte du 6e et du 5e.
    */
   readonly snugMap?: true;
+  /**
+   * Sur la Carte serrée du 3e (retouche 1 du lot 1 du 3e) : la place de Kéo gardée avant les noms pâles et ceux des
+   * terres, « Toi » sans jamais couvrir une étiquette, le lieu suggéré sur une ligne, les noms pâles après le nom de leur
+   * terre (`layoutMapLabels`, `snug`). Rien : au 4e, la pastille de Kéo garde les lettres de chaque nom à sa façon
+   * (`MapLabel.keepNames`, retouches 2 et 3 des Coteaux) ; au 6e et au 5e, pas de Carte serrée.
+   */
+  readonly keoFirstMap?: true;
   /**
    * Les pieds de Kéo jamais sous la rangée du bas de l'écran (au 4e et au 3e : la caméra qui suit Kéo, `footRoom` de la
    * scène). Rien : la caméra du 6e et du 5e.
@@ -155,6 +161,7 @@ const PLAN_3E: LevelPlan = {
   firstPlace: 'belvedere',
   shutPort: true,
   snugMap: true,
+  keoFirstMap: true,
   guardFeet: true,
 };
 

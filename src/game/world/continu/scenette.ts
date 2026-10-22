@@ -17,7 +17,7 @@ import { CAMERA_FOV, FOLLOW, screenOf, wrapAngle, type CameraPose, type DetourVi
 import { FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { doorFrameOf, placeArt } from './northShore';
-import { placeById, scenePlace, type PlaceId as AnyPlaceId, type ScenePlaceId as PlaceId } from './levelPlan';
+import { hasScenette, placeById, scenePlace, type PlaceId as AnyPlaceId, type ScenePlaceId as PlaceId } from './levelPlan';
 import { heightFor } from './placeGround';
 import { COLORS_6E, DECK_HEIGHT } from './plan6e';
 import {
@@ -203,10 +203,140 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     // n'a pas de restauration.
     words: { pose: ['La bascule est remise à plat.', 'Le tonneau est sur ses chevalets.', 'Les cuves et la trieuse sont debout.', 'Le toit est de nouveau entier.', 'La cour est dallée.'] },
   },
+  // Le Gabarit (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition, jamais dans la même phrase que le
+  // géologue ; les phrases de pose du directeur du contenu pédagogique (relecture du Bastion, retouche 1 : ce que l'élève
+  // voit changer, ni « prêt » ni « balance ») et la réplique de l'intention.
+  gabarit: {
+    role: placeArt('gabarit')!.role,
+    greeting: 'Le géomètre mesure et trace avant qu’on construise.',
+    placement: 'rangee',
+    words: {
+      pose: ['Le bas de l’atelier est relevé.', 'L’étage et sa galerie sont refaits.', 'La tour est remontée.', 'La grue a retrouvé son bras.', 'Le grand plancher est remis à plat.'],
+      end: 'Ici, on traçait chaque pièce en grand avant de la tailler.',
+    },
+  },
+  // Le Chariot (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition ; les phrases de pose du directeur du
+  // contenu pédagogique et du référent dys (relecture du Bastion, retouche 1 : « le chariot de fer », qu'on ne confond pas
+  // avec le lieu à la voix ; des mots courants) et la réplique de l'intention.
+  chariot: {
+    role: placeArt('chariot')!.role,
+    greeting: 'L’ingénieure invente les machines et les essaie.',
+    placement: 'rangee',
+    words: {
+      pose: ['Le bassin d’essai est rempli.', 'Le chariot de fer est remis sur ses rails.', 'Le toit protège le treuil.', 'La cale d’essai est refaite.'],
+      end: 'Ici, on essayait les bateaux en petit avant de les construire en grand.',
+    },
+  },
+  // La Manufacture (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition ; les phrases de pose et la réplique
+  // du directeur du contenu pédagogique (relecture du Bastion, retouche 1 : jamais « halle », le mot des plans de l'île ;
+  // les machines ont changé le travail, comme le dit le programme).
+  manufacture: {
+    role: placeArt('manufacture')!.role,
+    greeting: 'Le tisserand fait la toile, fil après fil.',
+    placement: 'rangee',
+    words: {
+      pose: ['Les murs et les machines sont debout.', 'La verrière est posée.', 'La grande porte est ouverte.'],
+      end: 'Sous cette verrière, les machines ont changé le travail.',
+    },
+  },
+  // La Loge (lot 3 du 4e, le Bastion) : la phrase du métier de la proposition ; les phrases de pose du directeur du
+  // contenu pédagogique (relecture du Bastion, retouche 1 : le rideau raccroché, les bancs remis en rangs ; le corps en
+  // deux aujourd'hui) et la réplique de l'intention ; aucune ne dit « loge ». À la bascule de 2027 (cinq parties), la
+  // liste entière est remplacée par celle de docs/pilotage/chantiers.md (« La Loge à cinq parties »).
+  loge: {
+    role: placeArt('loge')!.role,
+    greeting: 'Le costumier coud les habits des comédiens.',
+    placement: 'rangee',
+    words: {
+      pose: ['Le plancher et la galerie sont refaits.', 'Le rideau est raccroché.', 'Le toit de la scène est posé.', 'Les bancs sont remis en rangs.'],
+      end: 'Ici, après le travail, les ouvriers venaient écouter des histoires.',
+    },
+  },
+  // Le Terminus (lot 3 du 4e, l'Épaule) : le cheminot, sans prénom ; ses phrases de pose et sa réplique de fin
+  // (`contenu-epaule.md`) : ni « benne », ni « trémie », ni « galerie ».
+  terminus: {
+    role: placeArt('terminus')!.role,
+    greeting: 'Le cheminot envoie le minerai vers la Forge, sur les rails.',
+    placement: 'rangee',
+    words: {
+      pose: ['Le quai est réparé.', 'La caisse à minerai est debout.', 'La remise a ses murs.', 'La remise a son toit.', 'Les entrées de la mine sont prêtes.'],
+      end: 'Ici, le minerai part de la montagne vers la Forge.',
+    },
+  },
+  // Les Orgues (lot 3 du 4e) : le carrier, sans prénom (`contenu-epaule.md`) : ni « carrière », ni « palan », ni « grue ».
+  orgues: {
+    role: placeArt('orgues')!.role,
+    greeting: 'Le carrier taille la pierre dans la montagne.',
+    placement: 'rangee',
+    words: {
+      pose: ['La cour est dégagée.', 'Les colonnes sont taillées.', 'Le mât est debout.', 'La chaîne est en place.', 'La cour est pavée.'],
+      end: 'Ici, chaque pierre trouve sa place à côté des autres.',
+    },
+  },
+  // La Dynamo (lot 3 du 4e) : l'électricienne, sans prénom (`contenu-epaule.md`) ; jamais deux des mots « poste »,
+  // « poteau », « pose » dans une même phrase.
+  dynamo: {
+    role: placeArt('dynamo')!.role,
+    greeting: 'L’électricienne tend les fils d’un poteau à l’autre.',
+    placement: 'rangee',
+    words: { pose: ['La dynamo est sur son socle.', 'La cloche est en haut du poste.', 'Les fils sont tendus.'], end: 'Ici, on parle à l’usine avec une lampe et une cloche.' },
+  },
+  // L'Herbier (les Coteaux du 4e) : les phrases validées par le directeur du contenu pédagogique (intention, § 9), une par
+  // partie (le corps, le haut, les abords), et la réplique de fin.
+  herbier: {
+    role: placeArt('herbier')!.role,
+    greeting: 'L’horticultrice fait pousser les plantes de la serre.',
+    placement: 'rangee',
+    words: { pose: ['Les bacs sont replantés.', 'La serre a retrouvé son verre.', 'La citerne est pleine.'], end: 'Ici, chaque plante avait sa place sur la terre noire.' },
+  },
+  // Les Roches (les Coteaux du 4e) : une phrase par partie d'aujourd'hui (le corps en deux, le haut, les abords).
+  roches: {
+    role: placeArt('roches')!.role,
+    greeting: 'La géologue connaît chaque pierre de la montagne.',
+    placement: 'rangee',
+    words: { pose: ['Les murs sont remontés.', 'Chaque pierre a retrouvé sa case.', 'La salle est à l’abri de la pluie.', 'Le seuil est dégagé.'], end: 'Ici, on rangeait toutes les pierres de la montagne.' },
+  },
+  // La Jonction (les Coteaux du 4e, monde ouvert seulement) : une phrase par partie (le corps en trois, le haut, les abords).
+  jonction: {
+    role: placeArt('jonction')!.role,
+    greeting: 'Le cantonnier entretient la voie.',
+    placement: 'rangee',
+    words: {
+      pose: ['Le poste est rebâti.', 'Les leviers sont en place.', 'La plaque tournante est réparée.', 'Le poste est couvert.', 'Les voies de service sont refaites.'],
+      end: 'Ici, chaque voie de service partait de la voie principale.',
+    },
+  },
+  // La Veillée (les Coteaux du 4e, lieu d'option) : sans phrase de métier (la guide est la radio) ; une phrase par partie
+  // (le corps en trois, le haut, les abords).
+  veillee: {
+    role: placeArt('veillee')!.role,
+    greeting: null,
+    placement: 'rangee',
+    words: {
+      pose: ['La table et les bancs sont réparés.', 'Les six poteaux sont debout.', 'Le garde-manger est rangé.', 'La vigne couvre de nouveau la table.', 'L’enseigne est raccrochée.'],
+      end: 'Le soir, les mineurs mangeaient ici, tous ensemble.',
+    },
+  },
+  // La Basilique (les Coteaux du 4e, lieu d'option) : sans phrase de métier (le guide est Malo) ; une phrase par partie
+  // (le corps, le haut, les abords).
+  basilique: {
+    role: placeArt('basilique')!.role,
+    greeting: null,
+    placement: 'rangee',
+    words: { pose: ['Les colonnes sont relevées.', 'La halle est couverte.', 'Le bassin est plein.'], end: 'Ici, on a relevé les colonnes d’un vieux temple.' },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
 export const scenetteOf = (place: AnyPlaceId): Scenette => SCENETTES[scenePlace(place)];
+
+/**
+ * Le lieu dit-il son état (« La Soute est restaurée. ») à la pose qui l'achève, puis la réplique de fin de son habitant ?
+ * Un lieu qui s'anime à sa restauration (la Forge), et tout lieu qui a une réplique de fin (`words.end`) : les lieux sans
+ * restauration la disent dans la même bulle qu'à la Forge, sans animation (reste des Fabriques ; intention du Bastion du
+ * 22 octobre 2026, point 3). Une réplique de fin n'est jamais inerte.
+ */
+export const saysRestored = (place: AnyPlaceId): boolean => !!placeArt(place)?.restoration || (hasScenette(place) && !!scenetteOf(place).words?.end);
 
 // ---------- La place de la scénette à l'écran ----------
 
@@ -632,6 +762,18 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   soute: northSite('soute'),
   porte: northSite('porte'),
   etalon: northSite('etalon'),
+  gabarit: northSite('gabarit'),
+  chariot: northSite('chariot'),
+  manufacture: northSite('manufacture'),
+  loge: northSite('loge'),
+  terminus: northSite('terminus'),
+  orgues: northSite('orgues'),
+  dynamo: northSite('dynamo'),
+  herbier: northSite('herbier'),
+  roches: northSite('roches'),
+  jonction: northSite('jonction'),
+  veillee: northSite('veillee'),
+  basilique: northSite('basilique'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2174,6 +2316,30 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   // La Porte (lot 2 du 4e) : le pavé de la place.
   porte: 'paving',
   etalon: 'paving',
+  // Le Gabarit (lot 3 du 4e) : la cour dallée devant l'abri du géomètre.
+  gabarit: 'paving',
+  // Le Chariot (lot 3 du 4e) : la cour dallée devant l'appentis de l'ingénieure.
+  chariot: 'paving',
+  // La Manufacture (lot 3 du 4e) : le dallage de la halle, dans la travée ouest.
+  manufacture: 'paving',
+  // La Loge (lot 3 du 4e) : la cour devant l'appentis du costumier.
+  loge: 'paving',
+  // Le Terminus (lot 3 du 4e) : la terre du replat.
+  terminus: 'earth',
+  // Les Orgues (lot 3 du 4e) : les dalles hexagonales de la cour.
+  orgues: 'paving',
+  // La Dynamo (lot 3 du 4e) : la terre devant le poste.
+  dynamo: 'earth',
+  // L'Herbier (les Coteaux du 4e) : la terre noire devant la paillasse.
+  herbier: 'earth',
+  // Les Roches : la terre battue de la salle.
+  roches: 'earth',
+  // La Jonction : la terre au bout des voies de service.
+  jonction: 'earth',
+  // La Veillée : la terre battue sous la tonnelle.
+  veillee: 'earth',
+  // La Basilique : le pavement de la nef.
+  basilique: 'paving',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

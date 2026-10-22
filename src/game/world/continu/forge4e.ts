@@ -26,11 +26,11 @@ import { drawPosed, FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E, RIGOLE_4E } from './plan4e';
-import { COLORS_5E } from './plan5e';
 import { unlitSource } from './rendered5e';
 import { LIGHT_4E } from './sky';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
+import { inWorld, lantern, localGround4e, slab } from './place4eKit';
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter sur une pente (places.ts). */
 const SINK = -0.8;
@@ -83,9 +83,6 @@ const C = {
   joint: 0x8a8078,
   // Le fond des regards et de la grille, froid et gris (lot 1 : la rigole vide).
   coldPit: 0x5a524e,
-  lantern: COLORS_5E.lantern,
-  lanternOff: 0xbfc4b8,
-  bronze: 0x9c8452,
   lava: COLORS_4E.lava,
   // Les lingots des réponses : un fer gris chaud, plus clair que le fer bruni (jamais le cuivre : correction 4).
   ingot: 0x9a918a,
@@ -119,7 +116,7 @@ const CENTER: Vec2 = PLACES_4E.find((p) => p.id === 'forge')!.center;
 const H0 = standingHeight(heightAt4e(CENTER));
 
 /** Le sol du 4e sous un point du repère du lieu, depuis le sol de son centre (comme `SiteGround.at`). */
-const localGround = (lx: number, lz: number): number => standingHeight(heightAt4e({ x: CENTER.x + lx, z: CENTER.z + lz })) - H0;
+const localGround = localGround4e(CENTER);
 
 /** Un point du monde dans le repère du lieu. */
 const toLocal = (p: Vec2): Vec2 => ({ x: p.x - CENTER.x, z: p.z - CENTER.z });
@@ -324,26 +321,6 @@ const DOOR_FRAME = { height: -2.2, back: 1.6 } as const;
 const MAP_POINT: Vec3 = { x: 6.5, y: FY + FURNACE.top + 1.5, z: -3 };
 
 // ---------- Les petits volumes ----------
-
-/** Une lanterne pendue (sa vitre, un pavé : dix triangles ; son chapeau de bronze en pointe), d'ocre ou éteinte. */
-function lantern(b: FacetBuilder, top: Vec3, lit: boolean, s = 1): void {
-  b.box({ x: top.x, y: top.y - 0.34 * s, z: top.z }, [0.24 * s, 0.3 * s, 0.24 * s], lit ? C.lantern : C.lanternOff);
-  b.prism({ x: top.x, y: top.y - 0.04 * s, z: top.z, yaw: Math.PI / 4 }, 0.21 * s, 0, 0.16 * s, 4, C.bronze);
-}
-
-/**
- * Un volume à dessus libre : `top` (dans le sens inverse des aiguilles d'une montre vu d'en haut) et son dessous `by` sous
- * lui ; ses côtés et son dessus (le dessous ne se voit pas).
- */
-function slab(b: FacetBuilder, top: readonly P3[], by: number, color: number, face: number): void {
-  const bot = top.map(([x, y, z]) => [x, y - by, z] as const);
-  const n = top.length;
-  for (let k = 1; k < n - 1; k++) b.triangle(top[0], top[k], top[k + 1], face);
-  for (let k = 0; k < n; k++) {
-    const m = (k + 1) % n;
-    b.quad(bot[k], bot[m], top[m], top[k], color);
-  }
-}
 
 /**
  * Un sommet du fourneau : le coin `k` de ses pans, à la hauteur `y` au-dessus de son pied, écarté de `out` ; dans
@@ -963,19 +940,6 @@ function restorationFrame(t: number): string {
 }
 
 // ---------- Les traces ----------
-
-/** Dessine dans le repère du lieu, puis pose le dessin au centre du lieu (`c`), dans le monde. */
-function inWorld(b: FacetBuilder, c: Vec3, draw: (l: FacetBuilder) => void): void {
-  const l = new FacetBuilder();
-  draw(l);
-  const f = l.build();
-  for (let i = 0; i < f.positions.length; i += 3) {
-    f.positions[i] += c.x;
-    f.positions[i + 1] += c.y;
-    f.positions[i + 2] += c.z;
-  }
-  b.append(f);
-}
 
 /** Où se pose chaque trace, depuis le centre du lieu (intention, § 5) ; aucune sur le chemin. */
 const TRACE_SPOTS = {

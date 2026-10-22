@@ -1,7 +1,7 @@
-// La page du monde ouvert du 4e (lot 1, « l'île entière en grandes masses » ; lot 2, la Forge) : elle donne à la scène le
-// plan du 4e, ses trois terres fermées au départ ; les missions de la Forge se jouent dans sa scénette, et son état restauré
-// s'écrit et se dit. La scène 3D n'est pas là sous jsdom :
-// une scène simulée.
+// La page du monde ouvert du 4e (lot 1, « l'île entière en grandes masses » ; lot 2, la Forge ; les Coteaux) : elle donne
+// à la scène le plan du 4e, ses trois terres fermées au départ ; les missions de la Forge se jouent dans sa scénette, et
+// son état restauré s'écrit et se dit ; au Replat, la voix ajoute sa phrase sans l'écrire, et jamais « Aucune mission ».
+// La scène 3D n'est pas là sous jsdom : une scène simulée.
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { afterEach, beforeEach, vi } from 'vitest';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
+import { toutConstruit } from '../../world/budget';
 import type { LinkedLand } from '../../world/continu/lands';
 import type { BridgeLayEvents, OpenWorld, OpenWorldOptions } from './scene';
 import OpenWorldPage from './OpenWorldPage';
@@ -110,3 +111,35 @@ test('la Forge restaurée, son allumage fini : son état écrit, avec l’icône
   expect(box.querySelector('svg')).not.toBeNull();
   expect(box.textContent).toMatch(/La Forge est restaurée\.[\s\S]*Le feu de la montagne est revenu\./);
 });
+
+test('au Replat, la voix dit le nom puis la phrase du Replat, que l’écran n’écrit jamais ; ni là ni après, « Aucune mission » (retouche 1 des Coteaux)', async () => {
+  const said: string[] = [];
+  vi.stubGlobal(
+    'SpeechSynthesisUtterance',
+    class {
+      lang = '';
+      rate = 1;
+      voice: unknown = null;
+      onend: unknown = null;
+      constructor(public text: string) {}
+    },
+  );
+  vi.stubGlobal('speechSynthesis', { cancel: () => {}, getVoices: () => [], speak: (u: { text: string }) => said.push(u.text) });
+  localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: '3d', univers: 'archipeo', autoRead: true, sounds: false }));
+  // Tout est construit : ailleurs, rien à faire, la bulle « Aucune mission » est là.
+  const { progress, world } = toutConstruit();
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, progress, world }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  expect(await screen.findByText(/Aucune mission/)).toBeInTheDocument();
+  act(() => scene.options!.onDetour!('replat'));
+  expect(await screen.findByText('Le Replat')).toBeInTheDocument();
+  await vi.waitFor(() => expect(said.join(' ')).toMatch(/endroit plat dans une pente/));
+  expect(said.join(' ')).toMatch(/Le Replat\. Un replat/);
+  expect(screen.queryByText(/endroit plat dans une pente/)).toBeNull();
+  expect(screen.queryByText(/Aucune mission/)).toBeNull();
+  // Le nom parti, la bulle ne revient pas sur un Détour.
+  await vi.waitFor(() => expect(screen.queryByText('Le Replat')).toBeNull(), { timeout: 6000 });
+  expect(screen.queryByText(/Aucune mission/)).toBeNull();
+  expect(screen.queryByText(/endroit plat dans une pente/)).toBeNull();
+}, 10000);

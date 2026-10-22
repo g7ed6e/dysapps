@@ -102,9 +102,13 @@ describe('la machine du voyage', () => {
 
 it('un lieu du monde ouvert seulement garde ses bornes, hors de la grille (GD-24)', () => {
   const bornes = bornesDesLieuxSeuls(vierge, '4e');
-  expect(bornes.map((b) => b.mission)).toEqual(['weighted-mean', 'events', 'proportional-reasoning', 'calculation-programs', 'translations']);
-  expect(bornes.every((b) => b.ile === 'maths-4e-data' && b.etat === 'new')).toBe(true);
+  expect(bornes.map((b) => b.id)).toEqual([
+    ...['weighted-mean', 'events', 'proportional-reasoning', 'calculation-programs', 'translations'].map((m) => `maths-4e-data:${m}`),
+    ...['relative-clauses', 'subordinate-clauses', 'passive-reported', 'compound-tenses', 'moods'].map((m) => `french-4e-sentence:${m}`),
+  ]);
+  expect(bornes.every((b) => b.etat === 'new')).toBe(true);
   // Ni la grille ni les autres archipels ne les voient.
-  expect(new Set<string>(modeleDuMonde(vierge, '4e', NOMS_ARCHIPELS, mots).bornes.map((b) => b.ile)).has('maths-4e-data')).toBe(false);
+  const grille = new Set<string>(modeleDuMonde(vierge, '4e', NOMS_ARCHIPELS, mots).bornes.map((b) => b.ile));
+  expect(grille.has('maths-4e-data') || grille.has('french-4e-sentence')).toBe(false);
   expect(bornesDesLieuxSeuls(vierge, '6e')).toEqual([]);
 });

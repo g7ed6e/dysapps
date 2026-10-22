@@ -3,10 +3,13 @@
 // cuvette, les rails, ses couleurs (jamais presque noires), la marche libre, et son budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_4E, mapCost4e, openWorldCost4e } from './budget';
+import { EPAULE_BRIDGE_TRIANGLES, OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_4E, RAVIN_BRIDGE_TRIANGLES_MAX_4E, mapCost4e, openWorldCost4e } from './budget';
 import { BRIDGE, bridgeSite } from './bridges';
 import { CRIQUE_SITE, NEF_4E, criqueDecorFacets, nef4eFlight } from './crique4e';
+import { DALLE_BUDGET } from './dalle4e';
 import { EPAVE_BUDGET } from './epave4e';
+import { RECOIN_BUDGET } from './recoin4e';
+import { REPLAT_BUDGET } from './replat4e';
 import { followPose, keepFeetAbove, screenOf } from './camera';
 import { distance, distanceToPolyline, insidePolygon, linearRgb, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
@@ -14,7 +17,7 @@ import { levelWorld } from './levelWorld';
 import { planFor } from './levelPlan';
 import { modelOfPlace } from './places';
 import { CUT_CLEARANCE_4E, NETWORK_4E, pathRibbons4e } from './paths4e';
-import { COLORS_4E, CRIQUE_PAD, CUVETTE_4E, DEPARTURE_4E, LINKS_4E, PATH_EDGES_4E, RAILS_4E, SUMMIT_4E, VOLCANO_4E, criqueFloor } from './plan4e';
+import { COLORS_4E, CRIQUE_PAD, CUVETTE_4E, DEPARTURE_4E, LINKS_4E, PATH_EDGES_4E, LANDS_4E, RAILS_4E, SUMMIT_4E, VOLCANO_4E, criqueFloor, isBuiltPlace4e } from './plan4e';
 import { COLORS_6E } from './plan6e';
 import { SKY_OF } from './sky';
 import { WATER_TONES_4E, seaPixels4e } from './sea';
@@ -50,6 +53,65 @@ const LOT2_CEILING = { triangles: 72_000, calls: 18 } as const;
  */
 const LOT2_FABRIQUES_CEILING = { triangles: LOT2_CEILING.triangles + 2_000 + PLACE_TRIANGLES_MAX_4E + EPAVE_BUDGET.triangles + EPAVE_BUDGET.sente, calls: LOT2_CEILING.calls } as const;
 
+/**
+ * Le plafond du 4e avec le Gabarit (lot 3, le Bastion) : celui des Fabriques, relevé d'un lieu du 4e au plus chargé
+ * (`PLACE_TRIANGLES_MAX_4E`, à la place de sa ruine simple) ; aucun appel de plus. Le pont tournant du bassin coûte moins
+ * que le pont sur pieds qu'il remplace. Mesuré le 22 octobre 2026 : 71 680 triangles et 17 appels la scénette ouverte,
+ * 64 066 et 14 hors scénette, 63 136 et 15 au départ, 61 067 et 12 sur la Carte.
+ */
+const LOT3_GABARIT_CEILING = { triangles: LOT2_FABRIQUES_CEILING.triangles + PLACE_TRIANGLES_MAX_4E, calls: LOT2_FABRIQUES_CEILING.calls } as const;
+
+/**
+ * Le plafond du 4e avec le Chariot (lot 3, le Bastion) : celui du Gabarit, relevé d'un lieu du 4e au plus chargé
+ * (`PLACE_TRIANGLES_MAX_4E`, l'eau du bassin d'essai comprise, à la place de sa ruine simple) ; aucun appel de plus.
+ * Mesuré le 22 octobre 2026 : 72 774 triangles et 17 appels la scénette ouverte, 65 072 et 14 hors scénette, 64 142 et 15
+ * au départ, 62 073 et 12 sur la Carte.
+ */
+const LOT3_CHARIOT_CEILING = { triangles: LOT3_GABARIT_CEILING.triangles + PLACE_TRIANGLES_MAX_4E, calls: LOT3_GABARIT_CEILING.calls } as const;
+
+/**
+ * Le plafond du 4e avec la Manufacture et le Recoin (lot 3, le Bastion) : celui du Chariot, relevé d'un lieu du 4e au
+ * plus chargé (`PLACE_TRIANGLES_MAX_4E`, à la place de sa ruine simple), et du budget du Détour du Recoin et de sa sente
+ * (`RECOIN_BUDGET`) ; aucun appel de plus. Mesuré le 22 octobre 2026 : 74 446 triangles et 17 appels la scénette
+ * ouverte, 67 108 et 14 hors scénette, 65 814 et 15 au départ, 63 745 et 12 sur la Carte.
+ */
+const LOT3_MANUFACTURE_CEILING = {
+  triangles: LOT3_CHARIOT_CEILING.triangles + PLACE_TRIANGLES_MAX_4E + RECOIN_BUDGET.triangles + RECOIN_BUDGET.sente,
+  calls: LOT3_CHARIOT_CEILING.calls,
+} as const;
+
+/**
+ * Le plafond du 4e avec la Loge (lot 3, le Bastion fini) : celui de la Manufacture, relevé d'un lieu du 4e au plus chargé
+ * (`PLACE_TRIANGLES_MAX_4E`, la trace de 2027 comprise, à la place de sa ruine simple) ; aucun appel de plus. Mesuré
+ * le 22 octobre 2026 : 75 399 triangles et 17 appels la scénette ouverte, 68 061 et 14 hors scénette, 66 767 et 15 au
+ * départ, 64 698 et 12 sur la Carte.
+ */
+const LOT3_LOGE_CEILING = { triangles: LOT3_MANUFACTURE_CEILING.triangles + PLACE_TRIANGLES_MAX_4E, calls: LOT3_MANUFACTURE_CEILING.calls } as const;
+
+/**
+ * Le plafond du 4e avec l'Épaule (lot 3, après le Bastion) : celui de la Loge, relevé de trois lieux du 4e au plus chargé
+ * (`PLACE_TRIANGLES_MAX_4E` : le Terminus, les Orgues et la Dynamo, à la place de leurs ruines simples), du budget du
+ * Détour de la Dalle et de sa sente (`DALLE_BUDGET`) et du plafond du pont de l'Épaule relié (`EPAULE_BRIDGE_TRIANGLES`) ;
+ * aucun appel de plus (l'arche dans le maillage des ponts, la Dalle dans celui des lieux).
+ */
+const LOT3_EPAULE_CEILING = {
+  triangles: LOT3_LOGE_CEILING.triangles + 3 * PLACE_TRIANGLES_MAX_4E + DALLE_BUDGET.triangles + DALLE_BUDGET.sente + EPAULE_BRIDGE_TRIANGLES,
+  calls: LOT3_LOGE_CEILING.calls,
+} as const;
+
+/**
+ * Le plafond du 4e avec les Coteaux (intention du directeur artistique du 22 octobre 2026, § 12) : celui de l'Épaule
+ * (`LOT3_EPAULE_CEILING`), relevé du pont du ravin en arche (`RAVIN_BRIDGE_TRIANGLES_MAX_4E`, le pont générique qu'il
+ * remplace restant compté dans le plafond d'avant) et d'un lieu du 4e au plus chargé par lieu des Coteaux construit
+ * (`PLACE_TRIANGLES_MAX_4E`, leurs ruines simples restant comptées dans le plafond d'avant), puis du Détour du Replat et
+ * de sa sente (`REPLAT_BUDGET`) ; aucun appel de plus (le pont, les lieux et le Replat dans le maillage des lieux, une
+ * seule scénette ouverte à la fois).
+ */
+const COTEAUX_BUILT = LANDS_4E.find((l) => l.id === 'coteaux')!.places.filter(isBuiltPlace4e).length;
+const COTEAUX_CEILING = {
+  triangles: LOT3_EPAULE_CEILING.triangles + RAVIN_BRIDGE_TRIANGLES_MAX_4E + COTEAUX_BUILT * PLACE_TRIANGLES_MAX_4E + REPLAT_BUDGET.triangles + REPLAT_BUDGET.sente,
+  calls: LOT3_EPAULE_CEILING.calls,
+} as const;
 /** Les couleurs d'un maillage. */
 function colorsOf(f: { colors: Float32Array }): Set<string> {
   const out = new Set<string>();
@@ -240,13 +302,13 @@ describe('Les couleurs chaudes du 4e', () => {
 });
 
 describe('Le budget du 4e', () => {
-  it('le monde, la scénette, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 2', () => {
+  it('le monde, la scénette, le départ et la Carte tiennent dans l’enveloppe du 4e, et sous le plafond du lot 3 (le Bastion et l’Épaule) et des Coteaux', () => {
     const total = (list: { triangles: number; calls: number }[]) => list.reduce((s, p) => ({ triangles: s.triangles + p.triangles, calls: s.calls + p.calls }), { triangles: 0, calls: 0 });
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
     for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('scenette')), total(openWorldCost4e('depart')), mapCost4e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT2_FABRIQUES_CEILING.triangles);
-      expect(cost.calls).toBeLessThanOrEqual(LOT2_FABRIQUES_CEILING.calls);
+      expect(cost.triangles).toBeLessThanOrEqual(COTEAUX_CEILING.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(COTEAUX_CEILING.calls);
     }
   });
 });

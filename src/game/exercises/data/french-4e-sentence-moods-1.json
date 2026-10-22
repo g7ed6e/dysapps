@@ -1,0 +1,222 @@
+{
+  "id": "french-4e-sentence-moods-1",
+  "biome": "french-4e-sentence",
+  "type": "moods",
+  "level": 1,
+  "instruction": "Que dit le conditionnel dans cette phrase ? La règle est affichée.",
+  "items": [
+    {
+      "key": "french-4e-sentence-moods-1-0",
+      "prompt": "« Elle m’a promis qu’elle rangerait sa chambre. » Que dit le conditionnel « rangerait » ?",
+      "spoken": "Elle m’a promis qu’elle rangerait sa chambre. Que dit le conditionnel « rangerait » ?",
+      "choices": [
+        "hypothèse",
+        "futur vu du passé",
+        "politesse"
+      ],
+      "answer": "futur vu du passé",
+      "hint": "« A promis » est au passé. Ranger, c’était avant ou après la promesse ?",
+      "explanation": "Elle a promis, puis elle rangera : le conditionnel dit un futur vu depuis le passé. Au présent, on dirait : elle promet qu’elle rangera.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les emplois du conditionnel",
+          "lines": [
+            "Un temps : le futur vu depuis le passé (il disait qu’il partirait).",
+            "Une hypothèse : ce qui arriverait si (si j’avais le temps, je dessinerais).",
+            "Un souhait (j’aimerais partir) ou une demande polie (voudrais-tu venir ?).",
+            "Une information pas sûre (le voleur serait en fuite)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-1-1",
+      "prompt": "« Si j’avais un vélo, j’irais au collège seul. » Que dit le conditionnel « irais » ?",
+      "spoken": "Si j’avais un vélo, j’irais au collège seul. Que dit le conditionnel « irais » ?",
+      "choices": [
+        "hypothèse",
+        "futur vu du passé",
+        "information pas sûre"
+      ],
+      "answer": "hypothèse",
+      "hint": "Ai-je un vélo aujourd’hui ?",
+      "explanation": "Je n’ai pas de vélo : « irais » dit ce qui arriverait si j’en avais un. C’est une hypothèse, avec « si » et l’imparfait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les emplois du conditionnel",
+          "lines": [
+            "Un temps : le futur vu depuis le passé (il disait qu’il partirait).",
+            "Une hypothèse : ce qui arriverait si (si j’avais le temps, je dessinerais).",
+            "Un souhait (j’aimerais partir) ou une demande polie (voudrais-tu venir ?).",
+            "Une information pas sûre (le voleur serait en fuite)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-1-2",
+      "prompt": "« Auriez-vous un stylo à me prêter ? » Pourquoi le conditionnel « auriez » ?",
+      "spoken": "Auriez-vous un stylo à me prêter ? Pourquoi le conditionnel « auriez » ?",
+      "choices": [
+        "information pas sûre",
+        "hypothèse",
+        "politesse"
+      ],
+      "answer": "politesse",
+      "hint": "Compare avec « Avez-vous un stylo ? » : laquelle est la plus douce ?",
+      "explanation": "Le conditionnel adoucit la demande : « Auriez-vous » est plus poli que « Avez-vous ». C’est une demande polie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les emplois du conditionnel",
+          "lines": [
+            "Un temps : le futur vu depuis le passé (il disait qu’il partirait).",
+            "Une hypothèse : ce qui arriverait si (si j’avais le temps, je dessinerais).",
+            "Un souhait (j’aimerais partir) ou une demande polie (voudrais-tu venir ?).",
+            "Une information pas sûre (le voleur serait en fuite)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-1-3",
+      "prompt": "« Selon la radio, l’orage serait passé sur la ville. » Que dit le conditionnel « serait passé » ?",
+      "spoken": "Selon la radio, l’orage serait passé sur la ville. Que dit le conditionnel « serait passé » ?",
+      "choices": [
+        "information pas sûre",
+        "hypothèse",
+        "souhait"
+      ],
+      "answer": "information pas sûre",
+      "hint": "Qui donne l’information ? Est-elle vérifiée ?",
+      "explanation": "« Selon la radio » : on rapporte une information sans la garantir. Le conditionnel dit qu’elle n’est pas sûre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les emplois du conditionnel",
+          "lines": [
+            "Un temps : le futur vu depuis le passé (il disait qu’il partirait).",
+            "Une hypothèse : ce qui arriverait si (si j’avais le temps, je dessinerais).",
+            "Un souhait (j’aimerais partir) ou une demande polie (voudrais-tu venir ?).",
+            "Une information pas sûre (le voleur serait en fuite)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-1-4",
+      "prompt": "« J’aimerais tant voir la mer. » Que dit le conditionnel « aimerais » ?",
+      "spoken": "J’aimerais tant voir la mer. Que dit le conditionnel « aimerais » ?",
+      "choices": [
+        "futur vu du passé",
+        "souhait",
+        "information pas sûre"
+      ],
+      "answer": "souhait",
+      "hint": "Voir la mer, est-ce un fait, ou une envie ?",
+      "explanation": "« J’aimerais » dit une envie : c’est un souhait. Le conditionnel montre ce qu’on désire, pas ce qui est.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les emplois du conditionnel",
+          "lines": [
+            "Un temps : le futur vu depuis le passé (il disait qu’il partirait).",
+            "Une hypothèse : ce qui arriverait si (si j’avais le temps, je dessinerais).",
+            "Un souhait (j’aimerais partir) ou une demande polie (voudrais-tu venir ?).",
+            "Une information pas sûre (le voleur serait en fuite)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-1-5",
+      "prompt": "« Tom pensait que le cours finirait tôt. » Que dit le conditionnel « finirait » ?",
+      "spoken": "Tom pensait que le cours finirait tôt. Que dit le conditionnel « finirait » ?",
+      "choices": [
+        "souhait",
+        "hypothèse",
+        "futur vu du passé"
+      ],
+      "answer": "futur vu du passé",
+      "hint": "« Pensait » est au passé. La fin du cours vient-elle après ?",
+      "explanation": "Tom pensait, et la fin du cours venait après : « finirait » est un futur vu depuis le passé. Au présent : Tom pense que le cours finira tôt.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les emplois du conditionnel",
+          "lines": [
+            "Un temps : le futur vu depuis le passé (il disait qu’il partirait).",
+            "Une hypothèse : ce qui arriverait si (si j’avais le temps, je dessinerais).",
+            "Un souhait (j’aimerais partir) ou une demande polie (voudrais-tu venir ?).",
+            "Une information pas sûre (le voleur serait en fuite)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-1-6",
+      "prompt": "« Si tu partais maintenant, tu arriverais à l’heure. » Que dit le conditionnel « arriverais » ?",
+      "spoken": "Si tu partais maintenant, tu arriverais à l’heure. Que dit le conditionnel « arriverais » ?",
+      "choices": [
+        "politesse",
+        "hypothèse",
+        "futur vu du passé"
+      ],
+      "answer": "hypothèse",
+      "hint": "Cherche le petit mot qui pose une condition.",
+      "explanation": "« Si tu partais » pose une condition : « arriverais » dit ce qui arriverait alors. C’est une hypothèse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les emplois du conditionnel",
+          "lines": [
+            "Un temps : le futur vu depuis le passé (il disait qu’il partirait).",
+            "Une hypothèse : ce qui arriverait si (si j’avais le temps, je dessinerais).",
+            "Un souhait (j’aimerais partir) ou une demande polie (voudrais-tu venir ?).",
+            "Une information pas sûre (le voleur serait en fuite)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-moods-1-7",
+      "prompt": "« D’après le journal, le musée fermerait l’été prochain. » Que dit le conditionnel « fermerait » ?",
+      "spoken": "D’après le journal, le musée fermerait l’été prochain. Que dit le conditionnel « fermerait » ?",
+      "choices": [
+        "souhait",
+        "information pas sûre",
+        "futur vu du passé"
+      ],
+      "answer": "information pas sûre",
+      "hint": "« D’après le journal » : l’information est-elle vérifiée ?",
+      "explanation": "« D’après le journal » : on rapporte une information sans la garantir. Ce n’est pas un futur vu du passé : aucun verbe au passé ne l’annonce.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les emplois du conditionnel",
+          "lines": [
+            "Un temps : le futur vu depuis le passé (il disait qu’il partirait).",
+            "Une hypothèse : ce qui arriverait si (si j’avais le temps, je dessinerais).",
+            "Un souhait (j’aimerais partir) ou une demande polie (voudrais-tu venir ?).",
+            "Une information pas sûre (le voleur serait en fuite)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

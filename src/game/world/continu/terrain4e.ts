@@ -21,17 +21,23 @@ import {
   CUVETTE_4E,
   DETOUR_SPOTS_4E,
   EPAVE_4E,
+  RECOIN_4E,
   PATH_EDGES_4E,
   PATH_NODES_4E,
   PLACES_4E,
   RAFIOT_4E,
   RAVIN_4E,
   RESERVED_4E,
+  REPLAT_4E,
+  ROCHES_TERRACE_4E,
   SUMMIT_4E,
   TERRAIN_4E,
   VOLCANO_4E,
   fromPlan4e,
+  inDalleClearing,
   inEpaveClearing,
+  inRecoinClearing,
+  inReplatClearing,
   nearRails4e,
 } from './plan4e';
 import { SHADOW_DIR_4E } from './sky';
@@ -59,6 +65,17 @@ export const couleeClearance = (p: Vec2): number => distanceToPolyline(p, COULEE
 /** La distance au bord du ravin sec : négative dedans. */
 export const ravinClearance = (p: Vec2): number => distanceToPolyline(p, RAVIN_4E.line) - RAVIN_4E.halfWidth;
 
+/** La distance à la terrasse des Roches (au plus proche de ses rectangles) : négative dedans. */
+function terraceClearance(p: Vec2): number {
+  let best = Infinity;
+  for (const R of ROCHES_TERRACE_4E.rects) {
+    const dx = Math.max(R.x0 - p.x, p.x - R.x1);
+    const dz = Math.max(R.z0 - p.z, p.z - R.z1);
+    best = Math.min(best, dx > 0 && dz > 0 ? Math.hypot(dx, dz) : Math.max(dx, dz));
+  }
+  return best;
+}
+
 /** La distance signée à la terre ferme : positive sur la terre, négative dans la mer et le bassin. */
 export function landDistance4e(p: Vec2): number {
   return Math.min(signedDistance(p, COAST_4E), bassinClearance(p));
@@ -84,6 +101,17 @@ function volcanoHeight(p: Vec2): number {
 /** La hauteur du sol hors des coupures : le sol des Fabriques, la montée des Coteaux et de l'Épaule, le volcan. */
 const landHeight = (p: Vec2): number => 0.6 + 0.55 * wave(p) + 1.6 * westRise(p) + 1.5 * northRise(p) + volcanoHeight(p);
 
+/**
+ * Le Replat (les Coteaux, ./replat4e.ts) : le sol de l'épaule du cône, ramené vers le niveau de Kéo (`REPLAT_LEVEL`) de
+ * tant en un point à `d` de lui. Au-dedans de `flat`, la pente n'est plus que `keep` fois celle d'avant ; au-delà, elle
+ * rattrape le sol d'avant sans jamais être plus raide que `steep` fois la sienne (sur une pente de 0,67, 0,8 au plus :
+ * on y marche, `FREE_WALK.slope`), jusqu'à `REPLAT_REACH`, où plus rien ne change.
+ */
+const { flat: EASE_FLAT, keep: EASE_KEEP, steep: EASE_STEEP } = REPLAT_4E.ease;
+const REPLAT_REACH = (EASE_FLAT * (EASE_STEEP - EASE_KEEP)) / (EASE_STEEP - 1);
+const REPLAT_LEVEL = landHeight(REPLAT_4E.at);
+const replatEase = (d: number): number => (d <= EASE_FLAT ? EASE_KEEP : (EASE_KEEP * EASE_FLAT + EASE_STEEP * (d - EASE_FLAT)) / d);
+
 /** La hauteur du sol, avant la grille : la mer, le bassin et ses quais, le sol, la coulée et le ravin creusés. */
 export function heightAt4e(p: Vec2): number {
   const coast = signedDistance(p, COAST_4E);
@@ -94,6 +122,12 @@ export function heightAt4e(p: Vec2): number {
     const k = 1 - smoothstep(0, cut.bank, clear);
     if (k > 0) h += (Math.max(Math.min(h, cut.floor), h - cut.depth) - h) * k;
   }
+  // La terrasse des Roches : le flanc entaillé jusqu'au niveau de la plaine, jamais remblayé.
+  const t = 1 - smoothstep(0, ROCHES_TERRACE_4E.bank, terraceClearance(p));
+  if (t > 0) h += (Math.min(h, ROCHES_TERRACE_4E.floor) - h) * t;
+  // Le Replat : la pente adoucie autour de Kéo, sur l'épaule du cône.
+  const d = Math.hypot(p.x - REPLAT_4E.at.x, p.z - REPLAT_4E.at.z);
+  if (d < REPLAT_REACH) h = REPLAT_LEVEL + (h - REPLAT_LEVEL) * replatEase(d);
   return h;
 }
 
@@ -101,6 +135,12 @@ export function heightAt4e(p: Vec2): number {
 export const walkBlocked4e = (p: Vec2): boolean => insidePolygon(p, SUMMIT_4E) || couleeClearance(p) < 0.6 || ravinClearance(p) < 0.4;
 
 let fieldCache: HeightField | null = null;
+
+/**
+ * Le plus bas où le terrain de loin du 4e abaisse une terre, au-dessus du plan de la mer : sous le pont du ravin, il
+ * passait dessous, et la mer se voyait en flaque bleue dans le lit sec (retouche 1 des Coteaux).
+ */
+const FAR_LAND_FLOOR_4E = 0.05;
 
 /** La carte de hauteurs du 4e (une fois), son terrain de loin abaissé sous les chemins, comme au 6e. */
 export function buildHeightField4e(): HeightField {
@@ -111,7 +151,7 @@ export function buildHeightField4e(): HeightField {
   const heights = new Float32Array(nx * nz);
   for (let j = 0; j < nz; j++) for (let i = 0; i < nx; i++) heights[j * nx + i] = heightAt4e({ x: minX + i * step, z: minZ + j * step });
   const field: HeightField = { minX, minZ, step, nx, nz, heights, far: heights };
-  fieldCache = { ...field, far: farHeightsOf(field, PATH_NODES_4E, PATH_EDGES_4E, (x, z) => groundOn4e(field, x, z)) };
+  fieldCache = { ...field, far: farHeightsOf(field, PATH_NODES_4E, PATH_EDGES_4E, (x, z) => groundOn4e(field, x, z), FAR_LAND_FLOOR_4E) };
   return fieldCache;
 }
 
@@ -251,6 +291,32 @@ const SEGMENTS: readonly (readonly [Vec2, Vec2])[] = (() => {
 const nearPath = (p: Vec2, reach: number): boolean => SEGMENTS.some(([a, b]) => distanceToPolyline(p, [a, b]) < reach);
 const nearPlace = (p: Vec2): boolean => PLACES_4E.some((pl) => Math.hypot(p.x - pl.center.x, p.z - pl.center.z) < FLORA_KEEP.place);
 
+/**
+ * Ce que les lieux de l'Épaule (lot 3) posent au-delà de `FLORA_KEEP.place`, un disque chacun, depuis le centre du lieu
+ * (`dx`, `dz`, son rayon `r`) : rien n'y pousse (relecture du code, point 3.2 : chaque champ nommé, et la pièce qu'il
+ * garde). Les pièces sont dans ./terminus4e.ts, ./dynamo4e.ts et ./orgues4e.ts ; ce fichier ne peut pas les lire (elles
+ * lisent le sol d'ici) : un test vérifie que chaque pièce reste dans son disque.
+ */
+export const EPAULE_KEEP = [
+  // La remise du Terminus, sa voie de garage et sa benne, sur le replat (`TERMINUS_LAYOUT.remise`, `.siding`).
+  { id: 'terminus', covers: 'remise', dx: 10, dz: -7, r: 7.5 },
+  // La scénette du Terminus, sur le replat, à l'est de la remise (`TERMINUS_LAYOUT.scene`, retouche 1).
+  { id: 'terminus', covers: 'scene', dx: 19, dz: -3.5, r: 5.5 },
+  // La tête de terre et les joues de la galerie basse, dans le flanc (`TERMINUS_LAYOUT.galleries`, retouche 1).
+  { id: 'terminus', covers: 'galleries', dx: -2, dz: -11.5, r: 3.5 },
+  // Les trois poteaux de la Dynamo et le pied du miroir, au bout de la ligne (`DYNAMO_LAYOUT.poles`, `.mirror`).
+  { id: 'dynamo', covers: 'poles', dx: 10, dz: 9, r: 10.5 },
+  // Le tertre des Orgues, derrière le front, monté et élargi à la retouche 1 (`ORGUES_LAYOUT.tertre`).
+  { id: 'orgues', covers: 'tertre', dx: -1, dz: -9.5, r: 10.5 },
+] as const;
+
+/** Les disques de `EPAULE_KEEP`, dans le monde. */
+const EPAULE_KEEP_AT: readonly { x: number; z: number; r: number }[] = EPAULE_KEEP.map(({ id, dx, dz, r }) => {
+  const c = PLACES_4E.find((pl) => pl.id === id)!.center;
+  return { x: c.x + dx, z: c.z + dz, r };
+});
+const nearEpaule = (p: Vec2): boolean => EPAULE_KEEP_AT.some((k) => Math.hypot(p.x - k.x, p.z - k.z) < k.r);
+
 /** Les places gardées libres : les Détours, les grands projets, le Rafiot et son quai. */
 const SPOTS: readonly Vec2[] = [...Object.values(DETOUR_SPOTS_4E), RESERVED_4E.portique.center, RESERVED_4E.tour.center, RAFIOT_4E.at];
 
@@ -289,10 +355,16 @@ function plantsIn(tx: number, tz: number): readonly Plant[] {
       if (hash2(i + 17, j + 23) > (coteaux ? FLORA_KEEP.keepCoteaux : FLORA_KEEP.keep)) continue;
       if (signedDistance(p, COAST_4E) < FLORA_KEEP.coast || bassinClearance(p) < FLORA_KEEP.cut) continue;
       if (couleeClearance(p) < FLORA_KEEP.cut || ravinClearance(p) < FLORA_KEEP.cut || insidePolygon(p, SUMMIT_4E)) continue;
-      if (nearPath(p, FLORA_KEEP.path) || nearRails4e(p, FLORA_KEEP.path) || nearPlace(p) || nearCrique(p)) continue;
+      if (nearPath(p, FLORA_KEEP.path) || nearRails4e(p, FLORA_KEEP.path) || nearPlace(p) || nearEpaule(p) || nearCrique(p)) continue;
       if (SPOTS.some((s) => Math.hypot(p.x - s.x, p.z - s.z) < FLORA_KEEP.spot)) continue;
       // L'Épave (lot 2) : sa coque, sa cale, Kéo devant elle et sa sente restent libres.
       if (inEpaveClearing(p)) continue;
+      // Le Recoin (lot 3) : l'angle de ses murets, Kéo et sa sente restent libres.
+      if (inRecoinClearing(p)) continue;
+      // La Dalle (lot 3) : la dalle et son muret, Kéo devant eux et sa sente restent libres.
+      if (inDalleClearing(p)) continue;
+      // Le Replat (les Coteaux) : Kéo et sa sente restent libres.
+      if (inReplatClearing(p)) continue;
       if (Math.hypot(p.x - CUVETTE_4E.center.x, p.z - CUVETTE_4E.center.z) < 14) continue;
       // Le cône nu au-dessus de son pied (`ROCK_FROM`) : aucun buisson ni rocher sur le basalte sombre (directeur
       // artistique, deuxième relecture du lot 1 : les buissons olive y faisaient des taches jusqu'au sommet).
@@ -369,14 +441,21 @@ export const EPAVE_HULL_DISKS: readonly { x: number; z: number; r: number }[] = 
   r: EPAVE_4E.hull.beam + 0.35,
 }));
 
+/** La chaudière du Recoin (lot 3), qu'on ne traverse pas : deux disques le long de son axe, d'ouest en est. */
+export const RECOIN_BOILER_DISKS: readonly { x: number; z: number; r: number }[] = [-1, 1].map((k) => ({
+  x: RECOIN_4E.boiler.x + k * (RECOIN_4E.boiler.half - RECOIN_4E.boiler.r),
+  z: RECOIN_4E.boiler.z,
+  r: RECOIN_4E.boiler.r + 0.2,
+}));
+
 /**
- * Ce qui bloque la marche libre dans une tuile du 4e (./freeWalk.ts) : chaque buisson et chaque rocher, et la coque de
- * l'Épave ; un disque chacun.
+ * Ce qui bloque la marche libre dans une tuile du 4e (./freeWalk.ts) : chaque buisson et chaque rocher, la coque de
+ * l'Épave et la chaudière du Recoin ; un disque chacun.
  */
 export function obstaclesIn4e(tx: number, tz: number): { x: number; z: number; r: number }[] {
   const out = plantsIn(tx, tz).map((t) => ({ x: t.x, z: t.z, r: (t.shrub ? 1.6 : 1.3) * t.size }));
   const r = tileRect(tx, tz, TERRAIN_4E);
-  for (const d of EPAVE_HULL_DISKS) if (d.x >= r.minX && d.x < r.maxX && d.z >= r.minZ && d.z < r.maxZ) out.push(d);
+  for (const d of [...EPAVE_HULL_DISKS, ...RECOIN_BOILER_DISKS]) if (d.x >= r.minX && d.x < r.maxX && d.z >= r.minZ && d.z < r.maxZ) out.push(d);
   return out;
 }
 

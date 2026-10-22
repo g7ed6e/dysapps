@@ -136,6 +136,9 @@ const BUILDING_OF: Record<IleId, BuildingStyle> = {
   // L'Étalon, lieu du monde ouvert seulement (GD-24) : la forme de la Forge, jamais dessinée (ni grille ni Blocland). Ses
   // cases donnent les clés de ses parties ; le monde ouvert rebâtit le lieu avec ses propres volumes, en 3 + 1 + 1.
   'maths-4e-data': { kind: 'maison', chimney: 2 },
+  // La Jonction, lieu du monde ouvert seulement (GD-24) : de même, une maison jamais dessinée, dont les cases donnent
+  // ses parties au monde ouvert, en 3 + 1 + 1.
+  'french-4e-sentence': { kind: 'maison' },
 };
 
 // ---------- Outils ----------

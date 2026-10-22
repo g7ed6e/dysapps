@@ -243,6 +243,21 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   porte: placeArt('porte')!.sceneSpot,
   // L'Étalon (lot 2 du 4e) : la cour devant la façade, la bascule à gauche, le mur des niches derrière.
   etalon: placeArt('etalon')!.sceneSpot,
+  gabarit: placeArt('gabarit')!.sceneSpot,
+  chariot: placeArt('chariot')!.sceneSpot,
+  manufacture: placeArt('manufacture')!.sceneSpot,
+  loge: placeArt('loge')!.sceneSpot,
+  // Le Terminus (lot 3 du 4e) : le replat au sud de la remise, la voie de garage et sa benne à gauche.
+  terminus: placeArt('terminus')!.sceneSpot,
+  // Les Orgues (lot 3 du 4e) : la cour devant l'abri, le front et la chèvre au fond.
+  orgues: placeArt('orgues')!.sceneSpot,
+  // La Dynamo (lot 3 du 4e) : devant la porte du poste, à côté de la dynamo.
+  dynamo: placeArt('dynamo')!.sceneSpot,
+  herbier: placeArt('herbier')!.sceneSpot,
+  roches: placeArt('roches')!.sceneSpot,
+  jonction: placeArt('jonction')!.sceneSpot,
+  veillee: placeArt('veillee')!.sceneSpot,
+  basilique: placeArt('basilique')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -523,6 +538,23 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   porte: 'lieu',
   // L'Étalon : les poids de fonte ronds, sur leur planche.
   etalon: 'lieu',
+  gabarit: 'lieu',
+  chariot: 'lieu',
+  manufacture: 'lieu',
+  loge: 'lieu',
+  // Le Terminus (lot 3 du 4e) : les sacs de toile pleins de minerai, sur une planche basse.
+  terminus: 'lieu',
+  // Les Orgues (lot 3 du 4e) : les pavés hexagonaux clairs, sur un madrier bas.
+  orgues: 'lieu',
+  // La Dynamo (lot 3 du 4e) : les isolateurs gris-bleu, mats, sur une planche.
+  dynamo: 'lieu',
+  herbier: 'lieu',
+  roches: 'lieu',
+  jonction: 'lieu',
+  // La Veillée : les bols de bois, sur le bout de table.
+  veillee: 'lieu',
+  // La Basilique : les blocs taillés, sur l'établi.
+  basilique: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

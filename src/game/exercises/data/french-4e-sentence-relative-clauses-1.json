@@ -1,0 +1,221 @@
+{
+  "id": "french-4e-sentence-relative-clauses-1",
+  "biome": "french-4e-sentence",
+  "type": "relative-clauses",
+  "level": 1,
+  "instruction": "Trouve le pronom relatif, le nom qu’il remplace ou la relative. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-4e-sentence-relative-clauses-1-0",
+      "prompt": "« J’ai lu le livre que Léa m’a prêté. » Quel est le pronom relatif ?",
+      "spoken": "J’ai lu le livre que Léa m’a prêté. Quel est le pronom relatif ?",
+      "choices": [
+        "le",
+        "que",
+        "m’"
+      ],
+      "answer": "que",
+      "hint": "Cherche le petit mot qui suit un nom et commence une nouvelle proposition.",
+      "explanation": "« Que » commence la relative « que Léa m’a prêté » et remplace « le livre » : Léa m’a prêté le livre. « Le » est un déterminant, « m’ » un pronom personnel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom relatif",
+          "lines": [
+            "Une relative commence par un pronom relatif : qui, que, dont, où.",
+            "Le pronom relatif remplace un nom placé juste avant lui : l’antécédent.",
+            "Pour vérifier, remets le nom à la place du pronom : la lampe qui brille → la lampe brille.",
+            "La relative va du pronom relatif jusqu’au bout de son verbe et de ses compléments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-1-1",
+      "prompt": "« La ville où j’ai grandi est au bord de la mer. » Quel est l’antécédent de « où » ?",
+      "spoken": "La ville où j’ai grandi est au bord de la mer. Quel est l’antécédent de « où » ?",
+      "choices": [
+        "la ville",
+        "la mer",
+        "le bord"
+      ],
+      "answer": "la ville",
+      "hint": "L’antécédent est le nom placé juste avant le pronom.",
+      "explanation": "« Où » remplace « la ville » : j’ai grandi dans la ville. La mer vient après la relative : ce n’est pas l’antécédent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom relatif",
+          "lines": [
+            "Une relative commence par un pronom relatif : qui, que, dont, où.",
+            "Le pronom relatif remplace un nom placé juste avant lui : l’antécédent.",
+            "Pour vérifier, remets le nom à la place du pronom : la lampe qui brille → la lampe brille.",
+            "La relative va du pronom relatif jusqu’au bout de son verbe et de ses compléments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-1-2",
+      "prompt": "« Le garçon qui court devant nous s’appelle Hugo. » Quel est l’antécédent de « qui » ?",
+      "spoken": "Le garçon qui court devant nous s’appelle Hugo. Quel est l’antécédent de « qui » ?",
+      "choices": [
+        "Hugo",
+        "nous",
+        "le garçon"
+      ],
+      "answer": "le garçon",
+      "hint": "Remets un nom à la place de « qui » : qui court devant nous ?",
+      "explanation": "Le garçon court devant nous : « qui » remplace « le garçon ». Hugo est son prénom, il vient après la relative.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom relatif",
+          "lines": [
+            "Une relative commence par un pronom relatif : qui, que, dont, où.",
+            "Le pronom relatif remplace un nom placé juste avant lui : l’antécédent.",
+            "Pour vérifier, remets le nom à la place du pronom : la lampe qui brille → la lampe brille.",
+            "La relative va du pronom relatif jusqu’au bout de son verbe et de ses compléments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-1-3",
+      "prompt": "« Voici le copain dont je t’ai parlé. » Quel est le pronom relatif ?",
+      "spoken": "Voici le copain dont je t’ai parlé. Quel est le pronom relatif ?",
+      "choices": [
+        "dont",
+        "voici",
+        "je"
+      ],
+      "answer": "dont",
+      "hint": "Le pronom relatif suit le nom « copain ».",
+      "explanation": "« Dont » commence la relative « dont je t’ai parlé » et remplace « le copain » : je t’ai parlé du copain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom relatif",
+          "lines": [
+            "Une relative commence par un pronom relatif : qui, que, dont, où.",
+            "Le pronom relatif remplace un nom placé juste avant lui : l’antécédent.",
+            "Pour vérifier, remets le nom à la place du pronom : la lampe qui brille → la lampe brille.",
+            "La relative va du pronom relatif jusqu’au bout de son verbe et de ses compléments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-1-4",
+      "prompt": "« Je cherche le stylo que tu m’as donné hier. » Quel est l’antécédent de « que » ?",
+      "spoken": "Je cherche le stylo que tu m’as donné hier. Quel est l’antécédent de « que » ?",
+      "choices": [
+        "tu",
+        "le stylo",
+        "hier"
+      ],
+      "answer": "le stylo",
+      "hint": "Quel nom est placé juste avant « que » ?",
+      "explanation": "Tu m’as donné le stylo hier : « que » remplace « le stylo ». « Tu » est le sujet du verbe de la relative.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom relatif",
+          "lines": [
+            "Une relative commence par un pronom relatif : qui, que, dont, où.",
+            "Le pronom relatif remplace un nom placé juste avant lui : l’antécédent.",
+            "Pour vérifier, remets le nom à la place du pronom : la lampe qui brille → la lampe brille.",
+            "La relative va du pronom relatif jusqu’au bout de son verbe et de ses compléments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-1-5",
+      "prompt": "« Je pense que le car arrivera en retard. » Ce « que » est-il un pronom relatif ?",
+      "spoken": "Je pense que le car arrivera en retard. Ce « que » est-il un pronom relatif ?",
+      "choices": [
+        "oui",
+        "non"
+      ],
+      "answer": "non",
+      "hint": "Y a-t-il, juste avant « que », un nom que ce mot remplace ?",
+      "explanation": "Ici, « que » suit le verbe « pense » et ne remplace aucun nom : c’est une conjonction de subordination. Un pronom relatif remplace toujours un nom placé avant lui.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom relatif",
+          "lines": [
+            "Une relative commence par un pronom relatif : qui, que, dont, où.",
+            "Le pronom relatif remplace un nom placé juste avant lui : l’antécédent.",
+            "Pour vérifier, remets le nom à la place du pronom : la lampe qui brille → la lampe brille.",
+            "La relative va du pronom relatif jusqu’au bout de son verbe et de ses compléments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-1-6",
+      "prompt": "« Le jour où il a neigé, le collège était fermé. » Quel est l’antécédent de « où » ?",
+      "spoken": "Le jour où il a neigé, le collège était fermé. Quel est l’antécédent de « où » ?",
+      "choices": [
+        "le collège",
+        "il",
+        "le jour"
+      ],
+      "answer": "le jour",
+      "hint": "« Où » peut aussi dire un moment. Quel nom est juste avant lui ?",
+      "explanation": "Il a neigé ce jour-là : « où » remplace « le jour ». Ici, « où » dit un moment, pas un lieu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom relatif",
+          "lines": [
+            "Une relative commence par un pronom relatif : qui, que, dont, où.",
+            "Le pronom relatif remplace un nom placé juste avant lui : l’antécédent.",
+            "Pour vérifier, remets le nom à la place du pronom : la lampe qui brille → la lampe brille.",
+            "La relative va du pronom relatif jusqu’au bout de son verbe et de ses compléments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-relative-clauses-1-7",
+      "prompt": "« Les élèves que tu vois là-bas sont en quatrième. » Quelle est la relative ?",
+      "spoken": "Les élèves que tu vois là-bas sont en quatrième. Quelle est la relative ?",
+      "choices": [
+        "les élèves que tu vois",
+        "que tu vois là-bas",
+        "sont en quatrième"
+      ],
+      "answer": "que tu vois là-bas",
+      "hint": "La relative commence par le pronom relatif. Le nom qu’il remplace n’en fait pas partie.",
+      "explanation": "La relative va de « que » jusqu’à « là-bas ». « Les élèves » est l’antécédent, hors de la relative ; « sont en quatrième » est la suite de la principale.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom relatif",
+          "lines": [
+            "Une relative commence par un pronom relatif : qui, que, dont, où.",
+            "Le pronom relatif remplace un nom placé juste avant lui : l’antécédent.",
+            "Pour vérifier, remets le nom à la place du pronom : la lampe qui brille → la lampe brille.",
+            "La relative va du pronom relatif jusqu’au bout de son verbe et de ses compléments."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

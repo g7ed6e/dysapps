@@ -155,6 +155,21 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   porte: placeArt('porte')!.traceStage,
   // L'Étalon (lot 2 du 4e) : de même, 3+1+1.
   etalon: placeArt('etalon')!.traceStage,
+  gabarit: placeArt('gabarit')!.traceStage,
+  chariot: placeArt('chariot')!.traceStage,
+  manufacture: placeArt('manufacture')!.traceStage,
+  loge: placeArt('loge')!.traceStage,
+  // Le Terminus (lot 3 du 4e, l'Épaule) : chaque trace sa partie (3+1+1).
+  terminus: placeArt('terminus')!.traceStage,
+  // Les Orgues (lot 3 du 4e) : chaque trace sa partie (2+2+1, comme leurs plans).
+  orgues: placeArt('orgues')!.traceStage,
+  // La Dynamo (lot 3 du 4e) : chaque trace sa partie (le corps, le haut, les abords).
+  dynamo: placeArt('dynamo')!.traceStage,
+  herbier: placeArt('herbier')!.traceStage,
+  roches: placeArt('roches')!.traceStage,
+  jonction: placeArt('jonction')!.traceStage,
+  veillee: placeArt('veillee')!.traceStage,
+  basilique: placeArt('basilique')!.traceStage,
 };
 
 /**

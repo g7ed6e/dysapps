@@ -1661,6 +1661,20 @@
   display: block;
   width: fit-content;
 }
+/* Le rôle sur sa ligne, plus large qu'elle (WorldQuestion, `role-large` : « L’horticultrice », « La sculptrice » au
+   téléphone, OpenDyslexic 32) : il passe à la ligne entre ses mots (et après l'apostrophe d'une élision), dans son cadre,
+   jamais au milieu d'un mot, au lieu d'être rogné ; la ligne repliée s'agrandit d'autant (retouche 1 des Coteaux du 4e). */
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold.role-large {
+  max-height: none;
+}
+:root[data-texte="grand"] .world-question .in-world.simple-bas .world-consigne-fold.role-large .world-scenette-role {
+  max-width: 100%;
+  white-space: normal;
+}
+/* Ses haut-parleurs plus près de lui : la place d'un nom entier (« horticultrice ») sur sa ligne. */
+:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas > .world-consigne-line:has(.role-large) {
+  gap: 4px;
+}
 /* Au plus grand texte sur un écran bas, la ligne de la consigne repliée et la rangée ne prennent que la place d'une
    cible : les boutons de la ligne à 48 px, les réponses à la taille du texte choisie (sans le cran de plus d'un titre),
    48 px de haut au moins (GD-20, point 8, lot L2 : la rangée visible dès l'ouverture). */
@@ -1906,6 +1920,30 @@
 .open-world-map-state[data-etat='a-explorer'] {
   display: none;
 }
+/* Au 4e (`snug`, MapLabels.tsx), l'icône de l'état collée au dernier mot du nom (`StateIcon`) : seulement dans la forme
+   serrée, où l'icône d'à côté passerait seule sur sa ligne (retouche 2 des Coteaux, consultant UX UI : « ✓ » seul sous
+   « La Basilique ») ; l'autre s'y cache. Au 5e et au 6e, l'icône reste dessous (retouche 3). */
+.open-world-map-state-glued {
+  display: none;
+  margin-left: 0.3em;
+  vertical-align: -0.15em;
+}
+.open-world-map-place[data-nom='serre'] .open-world-map-state-glued {
+  display: inline-flex;
+}
+.open-world-map-places.snug .open-world-map-place[data-nom='serre'] > .open-world-map-state {
+  display: none;
+}
+/* Au 4e, la place de l'icône de l'état gardée dès la ruine, l'icône « à explorer » invisible (pas dans la pastille
+   réduite, où elle se montre) : aucun nom ne grandit quand son lieu passe en chantier ou est restauré, et son côté reste
+   le même (retouche 3 des Coteaux, consultant UX UI : « La Basilique » passait de dessous à au-dessus). */
+.open-world-map-places.snug .open-world-map-place:not([data-nom='non'], [data-nom='serre']) > .open-world-map-state[data-etat='a-explorer'] {
+  display: inline-flex;
+  visibility: hidden;
+}
+.open-world-map-state-glued[data-etat='a-explorer'] {
+  visibility: hidden;
+}
 .open-world-map-state svg {
   width: 1.15em;
   height: 1.15em;
@@ -1960,7 +1998,8 @@
   width: 26px;
   height: 26px;
 }
-/* Trop serrée près d'une autre : la pastille serrée, son nom sur deux lignes, plus étroit, l'icône de l'état dessous ;
+/* Trop serrée près d'une autre : la pastille serrée, son nom sur deux lignes, plus étroit, l'icône de l'état dessous,
+   ou au 4e collée à son dernier mot (retouches 2 et 3 des Coteaux) ;
    un lieu ouvert ne perd jamais son nom (relecture de L6b, directeur artistique ; MapLabels.tsx, `layoutMapLabels`). */
 .open-world-map-place[data-nom='serre'] {
   flex-direction: column;
@@ -3047,14 +3086,16 @@
   }
 }
 /* En haut du monde (le nom d'un Détour, et toute phrase sur un téléphone) : entre les deux colonnes de boutons des coins,
-   jamais dessus (0,6rem du bord, 56 px de bouton, 8 px d'écart), le nom passé sur deux lignes s'il le faut. */
+   jamais dessus (0,6rem du bord, 56 px de bouton, 16 px d'écart), le nom passé sur deux lignes s'il le faut. La largeur
+   se compte sur la scène (`100%`), jamais sur la fenêtre (`100vw`) : au téléphone, la page a ses marges, et la boîte
+   touchait les boutons de droite (retouche 2 de l'Épaule, la bulle de la Dalle au plus grand texte). */
 .open-world-said.on-top {
   top: calc(8px + env(safe-area-inset-top, 0px));
   bottom: auto;
 }
 .open-world-said.on-top,
 .world-stage .open-world-said:not(.on-map) {
-  max-width: min(30rem, calc(100vw - 2 * (0.6rem + 64px) - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
+  max-width: min(30rem, calc(100% - 2 * (0.6rem + 72px) - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
 }
 .open-world-said[data-shown='non'] {
   padding: 0;

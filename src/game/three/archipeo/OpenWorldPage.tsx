@@ -328,7 +328,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // combien de millisecondes (jamais en même temps que le toc).
   // Le nom d'un Détour où Kéo s'est arrêté s'écrit de même, en haut (`top`), et part dès qu'il en repart (`detour`).
   // L'état d'un lieu qui s'anime à sa restauration (la Forge du 4e) s'écrit de même, avec l'icône de l'état (`icon`).
-  const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number; top?: boolean; detour?: DetourId; icon?: AnyIconName } | null>(null);
+  const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number; top?: boolean; detour?: DetourId; icon?: AnyIconName; voice?: string } | null>(null);
   // Les mots d'état de l'univers, lus par la scène faite une fois (« La Forge est restaurée. »).
   const stateWords = useRef(textes.etatsDIle);
   stateWords.current = textes.etatsDIle;
@@ -558,7 +558,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       if (!id) return;
       findDetour(id);
       if (settings.sounds) playDetourWind();
-      setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [detourById(id).name], after: 0, top: true, detour: id }));
+      const d = detourById(id);
+      // La Dalle (lot 3 du 4e) : Kéo dit sa phrase sous le nom. La voix marque une pause entre les deux, au premier
+      // passage comme sur « Réécouter » (`voice` ; retouche 1 de l'Épaule, point 3). Au Replat (les Coteaux), la phrase
+      // est seulement lue, jamais écrite (`saysAloudOnly`).
+      setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: d.says && !d.saysAloudOnly ? [d.name, d.says] : [d.name], after: 0, top: true, detour: id, voice: d.says ? `${d.name}. ${d.says}` : undefined }));
     };
   }, [findDetour, settings.sounds]);
   useEffect(() => {
@@ -856,7 +860,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     if (!said) return;
     const show = window.setTimeout(() => {
       setSaidShown(true);
-      if (settings.autoRead) speak(said.lines.join(' '));
+      if (settings.autoRead) speak(said.voice ?? said.lines.join(' '));
     }, said.after);
     saidAt.current = { step: 0, lines: said.lines.length };
     setSaidStep(0);
@@ -1040,13 +1044,15 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // Une question ou une remise : la scène seule, ni marque, ni accès directs, ni panneau.
   const playing = Boolean(asking) || Boolean(remise) || departing;
   // La phrase du monde est à l'écran : la bulle sous « Y aller » se retire le temps qu'elle l'est.
-  const saidOver = saidShown && !playing;
+  // La phrase d'un Détour ne reste pas posée sur la Carte : elle se rapporte à la vue de Kéo (retouche 1 de l'Épaule,
+  // point 5).
+  const saidOn = saidShown && !playing && !(mapOpen && said?.detour);
 
   return (
     <EarnPlaces.Provider value={earnPlaces}>
       <div className="world-page open-world">
         {/* `data-said` : la phrase du pont est écrite (sur un petit écran, la marque se masque le temps qu'elle l'est). */}
-        <div className="world-stage" data-scene data-said={saidShown && !playing ? 'oui' : undefined} ref={stageRef}>
+        <div className="world-stage" data-scene data-said={saidOn ? 'oui' : undefined} ref={stageRef}>
           <div ref={host} className="open-world-canvas" />
           {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
           {/* La marque se retire une fois Kéo arrivé au lieu suggéré (relecture du lot L1) : la bulle porte le geste. */}
@@ -1083,7 +1089,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           </div>
           {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
           {mapOpen && !asking && (
-            <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nefFirst ? null : (nextPlace?.id ?? null)} portName={departNames?.nom} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} snug={plan.snugMap === true} />
+            <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nefFirst ? null : (nextPlace?.id ?? null)} portName={departNames?.nom} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} snug={plan.snugMap === true} keoFirst={plan.keoFirstMap === true} />
           )}
           {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
               le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à
@@ -1161,16 +1167,16 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               zone reste dans la page, vide le reste du temps, pour que les lecteurs d'écran annoncent la phrase ; le temps
               qu'elle est écrite, un haut-parleur la fait réentendre, et le toucher la garde écrite (référent dys). Sur la Carte, elle se tient en haut,
               hors des noms des lieux du sud. */}
-          <div className={`open-world-said${mapOpen ? ' on-map' : said?.top ? ' on-top' : ''}`} data-shown={saidShown && !playing ? 'oui' : 'non'} data-etape={saidStep} onPointerDown={holdSaid} onFocus={holdSaid}>
-            {saidShown && !playing && said?.icon && <Icon name={said.icon} />}
-            <p role="status">{saidShown && !playing && said ? said.lines.map((line, i) => (
+          <div className={`open-world-said${mapOpen ? ' on-map' : said?.top ? ' on-top' : ''}`} data-shown={saidOn ? 'oui' : 'non'} data-etape={saidStep} onPointerDown={holdSaid} onFocus={holdSaid}>
+            {saidOn && said?.icon && <Icon name={said.icon} />}
+            <p role="status">{saidOn && said ? said.lines.map((line, i) => (
                   // Sur un petit écran, l'autre phrase reste lue par le lecteur d'écran, cachée à la vue.
                   <span key={line} className={small && i !== saidStep ? 'visually-hidden' : undefined}>
                     {i > 0 && ' '}
                     {line}
                   </span>
                 )) : ''}</p>
-            {saidShown && !playing && said && <SpeakButton text={said.lines.join(' ')} label="Réécouter" compact />}
+            {saidOn && said && <SpeakButton text={said.voice ?? said.lines.join(' ')} label="Réécouter" compact />}
           </div>
           {asking && world.current && (
             asking.revision ? (
@@ -1236,9 +1242,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               {/* La phrase de ce que porte la suggestion chez un habitant (sa commande, l'étape d'entraide) ; « Aucune
                   mission » seulement quand rien n'attend. Jamais pendant qu'une phrase du monde est écrite (l'état d'un
                   lieu restauré, un pont rebâti, le nom d'un Détour) : une seule bulle à la fois, la plus récente ; l'autre
-                  dépassait dessous (référent dys et consultant UX UI, relecture des Fabriques). Elle revient ensuite. */}
-              {!walking && !relightHere && !saidOver && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
-              {!next && !suggestedCmd && !nefFirst && !walking && !relightHere && !saidOver && <p className="open-world-go-reason">{revisionHere ? frenchTypography(REVISION_PHRASES.reminder) : 'Aucune mission à faire ici pour l’instant.'}</p>}
+                  dépassait dessous (référent dys et consultant UX UI, relecture des Fabriques). Elle revient ensuite.
+                  Jamais sur un Détour, où il n'y a jamais de mission (retouche 1 des Coteaux : au Replat, tout fini,
+                  elle venait après le nom). */}
+              {!walking && !relightHere && !saidOn && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
+              {!next && !suggestedCmd && !nefFirst && !walking && !relightHere && !saidOn && detourHere === null && <p className="open-world-go-reason">{revisionHere ? frenchTypography(REVISION_PHRASES.reminder) : 'Aucune mission à faire ici pour l’instant.'}</p>}
               <div className="open-world-go-row">
               {walking ? (
                 // Pendant tout trajet (la marche, la cabine, la marche) : « Passer le trajet », à contraste plein, saute

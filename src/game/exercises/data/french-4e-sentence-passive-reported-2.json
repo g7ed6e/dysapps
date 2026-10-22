@@ -1,0 +1,221 @@
+{
+  "id": "french-4e-sentence-passive-reported-2",
+  "biome": "french-4e-sentence",
+  "type": "passive-reported",
+  "level": 2,
+  "instruction": "Paroles rapportées : choisis la phrase au discours indirect, ou trouve-la. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-4e-sentence-passive-reported-2-0",
+      "prompt": "Nora dit : « Je suis en retard. » Au discours indirect : Nora dit …",
+      "spoken": "Nora dit : Je suis en retard. Au discours indirect : Nora dit (mots manquants)",
+      "choices": [
+        "que je suis en retard",
+        "qu’elle était en retard",
+        "qu’elle est en retard"
+      ],
+      "answer": "qu’elle est en retard",
+      "hint": "« Dit » est au présent : le temps change-t-il ?",
+      "explanation": "Nora parle d’elle : « je » devient « elle ». « Dit » est au présent : le verbe reste au présent, qu’elle est en retard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du direct à l’indirect",
+          "lines": [
+            "Discours direct : les mots exacts, entre guillemets. Indirect : après un verbe de parole, sans guillemets.",
+            "Je, tu, mon, ton changent selon qui parle et à qui (il, je, son, mon).",
+            "Après un verbe de parole au passé (il a dit), le présent devient imparfait et le futur devient conditionnel.",
+            "Un ordre devient « de » et l’infinitif (elle me dit de ranger)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-passive-reported-2-1",
+      "prompt": "Nora a dit : « Je suis en retard. » Au discours indirect : Nora a dit …",
+      "spoken": "Nora a dit : Je suis en retard. Au discours indirect : Nora a dit (mots manquants)",
+      "choices": [
+        "qu’elle était en retard",
+        "qu’elle sera en retard",
+        "que j’étais en retard"
+      ],
+      "answer": "qu’elle était en retard",
+      "hint": "« A dit » est au passé : relis la troisième ligne de la règle.",
+      "explanation": "Après « a dit », le présent devient imparfait : « suis » devient « était ». Et « je » devient « elle » : qu’elle était en retard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du direct à l’indirect",
+          "lines": [
+            "Discours direct : les mots exacts, entre guillemets. Indirect : après un verbe de parole, sans guillemets.",
+            "Je, tu, mon, ton changent selon qui parle et à qui (il, je, son, mon).",
+            "Après un verbe de parole au passé (il a dit), le présent devient imparfait et le futur devient conditionnel.",
+            "Un ordre devient « de » et l’infinitif (elle me dit de ranger)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-passive-reported-2-2",
+      "prompt": "Hugo a dit : « Je viendrai. » Au discours indirect : Hugo a dit …",
+      "spoken": "Hugo a dit : Je viendrai. Au discours indirect : Hugo a dit (mots manquants)",
+      "choices": [
+        "qu’il venait",
+        "que je viendrais",
+        "qu’il viendrait"
+      ],
+      "answer": "qu’il viendrait",
+      "hint": "Après un verbe au passé, que devient le futur ?",
+      "explanation": "Après « a dit », le futur « viendrai » devient le conditionnel « viendrait », et « je » devient « il ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du direct à l’indirect",
+          "lines": [
+            "Discours direct : les mots exacts, entre guillemets. Indirect : après un verbe de parole, sans guillemets.",
+            "Je, tu, mon, ton changent selon qui parle et à qui (il, je, son, mon).",
+            "Après un verbe de parole au passé (il a dit), le présent devient imparfait et le futur devient conditionnel.",
+            "Un ordre devient « de » et l’infinitif (elle me dit de ranger)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-passive-reported-2-3",
+      "prompt": "L’entraîneur crie : « Courez plus vite ! » Au discours indirect : L’entraîneur nous crie …",
+      "spoken": "L’entraîneur crie : Courez plus vite ! Au discours indirect : L’entraîneur nous crie (mots manquants)",
+      "choices": [
+        "de courir plus vite",
+        "qu’on court plus vite",
+        "courez plus vite"
+      ],
+      "answer": "de courir plus vite",
+      "hint": "C’est un ordre. Relis la dernière ligne de la règle.",
+      "explanation": "Un ordre rapporté devient « de » et l’infinitif : l’entraîneur nous crie de courir plus vite. « Qu’on court » en ferait un simple fait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du direct à l’indirect",
+          "lines": [
+            "Discours direct : les mots exacts, entre guillemets. Indirect : après un verbe de parole, sans guillemets.",
+            "Je, tu, mon, ton changent selon qui parle et à qui (il, je, son, mon).",
+            "Après un verbe de parole au passé (il a dit), le présent devient imparfait et le futur devient conditionnel.",
+            "Un ordre devient « de » et l’infinitif (elle me dit de ranger)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-passive-reported-2-4",
+      "prompt": "Ma mère m’a demandé : « As-tu fini tes devoirs ? » Au discours indirect : Ma mère m’a demandé …",
+      "spoken": "Ma mère m’a demandé : As-tu fini tes devoirs ? Au discours indirect : Ma mère m’a demandé (mots manquants)",
+      "choices": [
+        "si tu avais fini tes devoirs",
+        "si j’avais fini mes devoirs",
+        "as-tu fini tes devoirs"
+      ],
+      "answer": "si j’avais fini mes devoirs",
+      "hint": "C’est à moi qu’elle parle : que deviennent « tu » et « tes » ?",
+      "explanation": "La question m’est posée : « tu » devient « je », « tes » devient « mes ». Une question totale rapportée commence par « si », et après « a demandé », « as fini » devient « avais fini ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du direct à l’indirect",
+          "lines": [
+            "Discours direct : les mots exacts, entre guillemets. Indirect : après un verbe de parole, sans guillemets.",
+            "Je, tu, mon, ton changent selon qui parle et à qui (il, je, son, mon).",
+            "Après un verbe de parole au passé (il a dit), le présent devient imparfait et le futur devient conditionnel.",
+            "Un ordre devient « de » et l’infinitif (elle me dit de ranger)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-passive-reported-2-5",
+      "prompt": "Tom m’a dit : « Ton vélo est crevé. » Au discours indirect : Tom m’a dit …",
+      "spoken": "Tom m’a dit : Ton vélo est crevé. Au discours indirect : Tom m’a dit (mots manquants)",
+      "choices": [
+        "que son vélo était crevé",
+        "que mon vélo était crevé",
+        "que ton vélo était crevé"
+      ],
+      "answer": "que mon vélo était crevé",
+      "hint": "Tom parle de quel vélo : le sien, ou le mien ?",
+      "explanation": "Tom me parle de mon vélo : « ton » devient « mon ». « Son vélo » serait celui de Tom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du direct à l’indirect",
+          "lines": [
+            "Discours direct : les mots exacts, entre guillemets. Indirect : après un verbe de parole, sans guillemets.",
+            "Je, tu, mon, ton changent selon qui parle et à qui (il, je, son, mon).",
+            "Après un verbe de parole au passé (il a dit), le présent devient imparfait et le futur devient conditionnel.",
+            "Un ordre devient « de » et l’infinitif (elle me dit de ranger)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-passive-reported-2-6",
+      "prompt": "Léa a dit qu’elle avait froid. Puis elle a crié : « Ferme la fenêtre ! » Quelle phrase est au discours indirect ?",
+      "spoken": "Léa a dit qu’elle avait froid. Puis elle a crié, entre guillemets : Ferme la fenêtre ! Quelle phrase est au discours indirect ?",
+      "choices": [
+        "la première",
+        "la deuxième"
+      ],
+      "answer": "la première",
+      "hint": "Où sont les guillemets ?",
+      "explanation": "La première phrase rapporte les paroles de Léa après « a dit que », sans guillemets : discours indirect. La deuxième donne ses mots exacts, entre guillemets : discours direct.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du direct à l’indirect",
+          "lines": [
+            "Discours direct : les mots exacts, entre guillemets. Indirect : après un verbe de parole, sans guillemets.",
+            "Je, tu, mon, ton changent selon qui parle et à qui (il, je, son, mon).",
+            "Après un verbe de parole au passé (il a dit), le présent devient imparfait et le futur devient conditionnel.",
+            "Un ordre devient « de » et l’infinitif (elle me dit de ranger)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-sentence-passive-reported-2-7",
+      "prompt": "Le directeur annonce : « La cantine sera fermée lundi. » Au discours indirect : Le directeur annonce …",
+      "spoken": "Le directeur annonce : La cantine sera fermée lundi. Au discours indirect : Le directeur annonce (mots manquants)",
+      "choices": [
+        "que la cantine serait fermée lundi",
+        "que la cantine sera fermée lundi",
+        "la cantine sera fermée lundi"
+      ],
+      "answer": "que la cantine sera fermée lundi",
+      "hint": "« Annonce » est au présent : le futur change-t-il ?",
+      "explanation": "« Annonce » est au présent : le futur reste au futur, « sera fermée ». Le conditionnel ne vient qu’après un verbe au passé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Du direct à l’indirect",
+          "lines": [
+            "Discours direct : les mots exacts, entre guillemets. Indirect : après un verbe de parole, sans guillemets.",
+            "Je, tu, mon, ton changent selon qui parle et à qui (il, je, son, mon).",
+            "Après un verbe de parole au passé (il a dit), le présent devient imparfait et le futur devient conditionnel.",
+            "Un ordre devient « de » et l’infinitif (elle me dit de ranger)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

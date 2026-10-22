@@ -29,13 +29,14 @@ function countColor(f: Facets, color: number): number {
 }
 
 describe('L’Épave, le premier Détour du 4e', () => {
-  it('se nomme « L’Épave », aux Fabriques, dans la sauvegarde après ceux du 6e et du 5e', () => {
+  it('se nomme « L’Épave », aux Fabriques, dans la sauvegarde après ceux du 6e et du 5e, avant le Recoin et le Replat', () => {
     expect(detourById('epave')).toBe(EPAVE);
-    expect(DETOURS_4E).toEqual([EPAVE]);
+    // Le premier du 4e ; le Recoin (le Bastion) puis le Replat (les Coteaux) viennent après lui.
+    expect(DETOURS_4E[0]).toBe(EPAVE);
     expect(EPAVE.name).toBe('L’Épave');
     expect(EPAVE.land).toBe('fabriques');
     expect(SAVED_IDS).toEqual(DETOUR_IDS);
-    expect(DETOUR_IDS.at(-1)).toBe('epave');
+    expect(DETOUR_IDS.indexOf('epave')).toBe(DETOUR_IDS.indexOf('perchoir') + 1);
     expect(sanitizeDetours(['epave', 'perchoir', 'butte-chantier'])).toEqual(['butte-chantier', 'perchoir', 'epave']);
     const state = findDetour({ world: { parts: {}, log: [], links: {} } } as never, 'epave') as { world: { detours: string[] } };
     expect(state.world.detours).toEqual(['epave']);

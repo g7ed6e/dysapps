@@ -727,7 +727,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
                 consultant UX UI, piste 1). */}
             {!inColumn && (
               <>
-                <strong className="world-scenette-role">{scenette.role}</strong>{' '}
+                <strong className="world-scenette-role">
+                  <RoleName role={scenette.role} />
+                </strong>{' '}
               </>
             )}
             {rule && (
@@ -763,7 +765,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
         </div>
       ) : (
         <div className="world-scenette-head">
-          <p className="world-scenette-role">{scenette.role}</p>
+          <p className="world-scenette-role">
+            <RoleName role={scenette.role} />
+          </p>
           {greeting && (
             <p className="world-scenette-greeting">
               <Syllabified text={frenchTypography(greeting)} />
@@ -837,7 +841,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       const words = [...line.querySelectorAll<HTMLElement>('.world-consigne-word')];
       const ellipsis = line.querySelector<HTMLElement>('.world-consigne-ellipsis');
       for (const w of words) w.hidden = false;
-      line.classList.remove('role-seul', 'premier-mot');
+      line.classList.remove('role-seul', 'premier-mot', 'role-large');
       const panel = line.closest<HTMLElement>('.quiz.in-world');
       if (panel) delete panel.dataset.livre;
       if (!ellipsis) return;
@@ -864,6 +868,12 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       // reprend sa ligne, jamais une consigne réduite à « … ».
       if (cutLine() === 0 && words.length > 0 && role && !ownLine()) {
         line.classList.add('role-seul');
+        cutLine();
+      }
+      // Le rôle sur sa ligne, plus large qu'elle (« L’horticultrice », « La sculptrice » au téléphone, au plus grand
+      // texte) : il passe à la ligne entre ses mots, au lieu d'être rogné par la ligne (retouche 1 des Coteaux du 4e).
+      if (role && ownLine() && role.getBoundingClientRect().right > line.getBoundingClientRect().right + 0.5) {
+        line.classList.add('role-large');
         cutLine();
       }
       // La ligne garde toujours au moins le premier mot de la consigne (« Lis … », « Choisis … »), jamais « … » seul
@@ -981,6 +991,29 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
  * son point final (« s'appelle une … . » : le point passait seul à la ligne au plus grand texte sur téléphone).
  */
 const FRACTION_STUCK = /(\d+\/\d+ (?:ou|et) \d+\/\d+(?:[ \u00a0\u202f]?[.,;:!?])?|\d+\/\d+[ \u00a0\u202f]?[.,;:!?]|(?<!\/)…[ \u00a0\u202f]?[.,;:!?])/u;
+
+/**
+ * Le rôle de l'habitant, une coupure permise après l'apostrophe d'une élision (« L’ » de « L’horticultrice ») : trop
+ * large pour sa ligne (au téléphone, au plus grand texte), il passe à la ligne entre l'article et le nom, jamais au
+ * milieu du mot (retouche 1 des Coteaux du 4e : « L’horticultri » rogné). Rien ne change quand il tient.
+ */
+function RoleName({ role }: { role: string }) {
+  const parts = role.split('’');
+  return (
+    <>
+      {parts.map((part, i) => (
+        <Fragment key={i}>
+          {i > 0 && (
+            <>
+              ’<wbr />
+            </>
+          )}
+          {part}
+        </Fragment>
+      ))}
+    </>
+  );
+}
 
 /**
  * La phrase complétée par la réponse : la réponse reste avec le mot qui lui est collé avant ou après (« l'» + « air »),

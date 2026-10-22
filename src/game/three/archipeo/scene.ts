@@ -17,21 +17,24 @@ import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
+import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markPoint, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
+import { dalleFacets } from '../../world/continu/dalle4e';
 import { epaveFacets } from '../../world/continu/epave4e';
+import { recoinFacets } from '../../world/continu/recoin4e';
+import { replatFacets } from '../../world/continu/replat4e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
 import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
-import { BRIDGE, BRIDGE_TOUCH, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinPoint, cabinStops, cabinYaw, clampToOpen, type CabinCar } from '../../world/continu/bridges';
+import { BRIDGE_TOUCH, bridgeDeck, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinPoint, cabinStops, cabinYaw, clampToOpen, type CabinCar } from '../../world/continu/bridges';
 import { cabinButtonRoute, cabinCarOpen, cabinOf, cabinSide, routeWithRide } from '../../world/continu/cabinRide';
 import { creuxFacets } from '../../world/continu/creux5e';
 import { failleFacets, failleTapTarget } from '../../world/continu/faille5e';
 import { perchoirFacets } from '../../world/continu/perchoir5e';
 import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/continu/montee5e';
-import { bridgeLay, bridgeLayAt, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
+import { bridgeLay, bridgeLayAt, bridgeLayColors, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import { hasScenette, placeById, type LevelPlan, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
 import { HABITANT_HEIGHT, hasHabitantModel } from '../../world/continu/habitants';
@@ -82,6 +85,7 @@ import {
   type SceneReturn,
   type ScenetteFinale,
   type ScenetteLayout,
+  saysRestored,
 } from '../../world/continu/scenette';
 import { SEA_TEXTURE } from '../../world/continu/sea';
 import { skyDome, type HeightLight } from '../../world/continu/sky';
@@ -405,6 +409,8 @@ export interface MapSpotOnScreen {
   above?: true;
   /** Le côté où son nom se pose d'abord (`OpenPlace.mapSide`, au 4e) ; rien : au-dessus. */
   side?: 'below' | 'left' | 'right';
+  /** Un lieu à disposition fixe (`OpenPlace.mapPinned`, au 4e) : son nom posé avant les autres, son point à découvert. */
+  pinned?: true;
 }
 
 /** Un repère de la scène à l'écran, en pixels. */
@@ -993,10 +999,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (builtTop.get(id) === top) return;
     builtTop.set(id, top);
     const foot = feet.get(id)!;
-    const o = markOffset(id);
-    const mark = marks.get(id)!;
-    if (whole(id)) mark.set(foot.x + o.x, foot.y + o.y, foot.z + o.z);
-    else mark.set(foot.x, foot.y + top + MARK_LIFT, foot.z);
+    const o = markPoint(id, top, whole(id));
+    marks.get(id)!.set(foot.x + o.x, foot.y + o.y, foot.z + o.z);
     const tallTop = tallTops.get(id);
     if (tallTop) tallTop.y = foot.y + top;
   };
@@ -1067,7 +1071,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let veilKey = '';
   // La pose d'un pont (GD-20, point 3, « La pose ») : ce qui se relève (`lay`, ses sommets à part dans le maillage de
   // pose), son début, ce que la page attend ; le toc dit. `pendingLay` : annoncée, en attente des terres.
-  let laying: { lay: BridgeLay; start: number; events: BridgeLayEvents; tapped: boolean; drawn: number } | null = null;
+  let laying: { lay: BridgeLay; start: number; events: BridgeLayEvents; tapped: boolean; drawn: number; fade: number } | null = null;
   let pendingLay: { land: LinkedLand; events: BridgeLayEvents } | null = null;
   const layState: BridgeLayState = { landed: false, fade: 0, done: false };
   // Les terres où Kéo ne passe pas : les fermées, et celle dont le pont se pose (il ne passe qu'à la fin).
@@ -1286,6 +1290,30 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!c) epaveDrawn.push((c = { found, facets: epaveFacets(found, ground) }));
     return c.facets;
   };
+  // Le Recoin du 4e (lot 3) : de même.
+  const recoinDrawn: { found: boolean; facets: Facets }[] = [];
+  const recoinNow = (): Facets => {
+    const found = detoursFound.includes('recoin');
+    let c = recoinDrawn.find((k) => k.found === found);
+    if (!c) recoinDrawn.push((c = { found, facets: recoinFacets(found, ground) }));
+    return c.facets;
+  };
+  // La Dalle du 4e (lot 3, l'Épaule) : de même, sans et avec sa sente.
+  const dalleDrawn: { found: boolean; facets: Facets }[] = [];
+  const dalleNow = (): Facets => {
+    const found = detoursFound.includes('dalle');
+    let c = dalleDrawn.find((k) => k.found === found);
+    if (!c) dalleDrawn.push((c = { found, facets: dalleFacets(found, ground) }));
+    return c.facets;
+  };
+  // Le Replat du 4e (les Coteaux) : de même, sans et avec sa sente.
+  const replatDrawn: { found: boolean; facets: Facets }[] = [];
+  const replatNow = (): Facets => {
+    const found = detoursFound.includes('replat');
+    let c = replatDrawn.find((k) => k.found === found);
+    if (!c) replatDrawn.push((c = { found, facets: replatFacets(found, ground) }));
+    return c.facets;
+  };
   // La Nef du lieu de départ (GD-21 ; GD-22, lot 4) : son temps (la page le donne), le modèle de sa forme chargé à la
   // demande (sans lui, le ber seul), ses parties montrées réunies aux lieux, son obstacle (le banc du large, le mur de
   // nuages) avec eux. Le temps qui arrive descend à part (`nefDrop`, dans `nefMesh`) ; au départ (`nefTrip`), la Nef et
@@ -1482,6 +1510,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
         // Au Creux, la caméra qui monte se tourne vers l'arche, derrière Kéo sur le seuil (GD-22, lot 6).
         const cap = detourCap(d);
         if (cap !== null) turnTo(cap);
+        // À la Dalle, Kéo se tourne aussi vers la mer, de dos, comme la caméra (retouche 1 de l'Épaule, DA 13).
+        if (cap !== null && d.kind === 'dalle') heading = cap;
         detourShape = detourViewOf(d);
         options.onDetour?.(d.id);
       }
@@ -1734,8 +1764,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // La fiche d'une terre fermée : le pont à rebâtir d'abord, si Kéo se tient devant (de loin, la caméra reste où elle est).
     const land = landOf(place.id);
     if (isLinkedLand(land) && closed.includes(land)) {
-      const s = bridgeSite(firstClosed(land, closed));
-      return distance(here, s.mid) < FRAMED_BRIDGE_NEAR ? { x: s.mid.x, y: BRIDGE.deck, z: s.mid.z } : null;
+      const first = firstClosed(land, closed);
+      const s = bridgeSite(first);
+      return distance(here, s.mid) < FRAMED_BRIDGE_NEAR ? { x: s.mid.x, y: bridgeDeck(first), z: s.mid.z } : null;
     }
     if (exit && atExit()) return exit.keep;
     const foot = feet.get(place.id);
@@ -1952,8 +1983,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // la Faille (lot 11), la fente, son arbre, son pont de racines, sa lanterne et sa vapeur ; et la sente de chacun une
       // fois trouvé, dans le monde comme sur la Carte, sans appel de plus.
       if (fifth) rest.push(creuxNow(), detourFacetsNow(), failleNow(), perchoirNow());
-      // Le Détour du 4e (lot 2) : l'Épave, sa coque sur sa cale, sa lanterne, et sa sente une fois trouvée.
-      else rest.push(epaveNow());
+      // Les Détours du 4e : l'Épave (lot 2), sa coque sur sa cale ; le Recoin (lot 3), ses murets, sa chaudière et son
+      // figuier ; la Dalle (lot 3), sur ses colonnes, son muret ; le Replat (les Coteaux), sa terrasse et son muret ; leur
+      // lanterne, et la sente de chacun une fois trouvé.
+      else rest.push(epaveNow(), recoinNow(), dalleNow(), replatNow());
       // `reaches` en dernier : `reachFrom` compte sur eux pour les rayons (`solid`), `mergeFacets` garde l'ordre (nacelles5e.test.ts).
       rest.push(...reaches);
       const placed = mergeFacets(rest);
@@ -2038,7 +2071,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   /** Le pont d'une terre est-il à l'écran ? Son milieu ou l'un de ses bouts suffit : il est long. Hors de l'écran, il est posé d'un coup. */
   const bridgeOnScreen = (land: LinkedLand) => {
     const s = bridgeSite(land);
-    const at = (d: number) => onScreen(s.near.x + s.dir.x * d, BRIDGE.deck, s.near.z + s.dir.z * d);
+    const at = (d: number) => onScreen(s.near.x + s.dir.x * d, bridgeDeck(land, d), s.near.z + s.dir.z * d);
     return distance(here, s.mid) < FOG.far && (at(s.water[0]) || at((s.water[0] + s.water[1]) / 2) || at(s.water[1]));
   };
   /**
@@ -2059,15 +2092,22 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       return;
     }
     const lay = bridgeLay(land);
-    laying = { lay, start: performance.now() / 1000, events, tapped: false, drawn: -1 };
+    laying = { lay, start: performance.now() / 1000, events, tapped: false, drawn: -1, fade: -1 };
     walkClosed = [...closed, land];
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(lay.facets.positions), 3));
-    g.setAttribute('normal', new THREE.BufferAttribute(lay.facets.normals, 3));
-    g.setAttribute('color', new THREE.BufferAttribute(lay.facets.colors, 3));
-    g.computeBoundingBox();
-    // `computeBoundingBox` vient de la calculer : elle n'est pas nulle.
-    g.boundingBox!.min.y -= lay.sink;
+    // Le pont tournant réécrit aussi ses normales (la volée tourne) et ses couleurs (le fondu de la rouille) : des copies.
+    g.setAttribute('normal', new THREE.BufferAttribute(lay.swing ? new Float32Array(lay.facets.normals) : lay.facets.normals, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(lay.swing ? new Float32Array(lay.facets.colors) : lay.facets.colors, 3));
+    if (lay.swing) {
+      // La boîte de la volée ouverte et du pont fermé, qui l'encadre à tout instant.
+      const { min, max } = lay.swing.bounds;
+      g.boundingBox = new THREE.Box3(new THREE.Vector3(...min), new THREE.Vector3(...max));
+    } else {
+      g.computeBoundingBox();
+      // `computeBoundingBox` vient de la calculer : elle n'est pas nulle.
+      g.boundingBox!.min.y -= lay.sink;
+    }
     g.boundingSphere = g.boundingBox!.getBoundingSphere(new THREE.Sphere());
     poseMesh.geometry.dispose();
     poseMesh.geometry = g;
@@ -2085,8 +2125,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const s = bridgeLayAt(laying.lay, u, layState);
     if (!laying.tapped) {
       const position = poseMesh.geometry.getAttribute('position') as THREE.BufferAttribute;
-      bridgeLayPositions(laying.lay, u, position.array as Float32Array);
+      const normal = poseMesh.geometry.getAttribute('normal') as THREE.BufferAttribute;
+      bridgeLayPositions(laying.lay, u, position.array as Float32Array, laying.lay.swing ? (normal.array as Float32Array) : undefined);
       position.needsUpdate = true;
+      if (laying.lay.swing) normal.needsUpdate = true;
+      const color = poseMesh.geometry.getAttribute('color') as THREE.BufferAttribute;
+      const fade = bridgeLayColors(laying.lay, u, color.array as Float32Array, laying.fade);
+      if (fade !== null) {
+        laying.fade = fade;
+        color.needsUpdate = true;
+      }
       const drawn = bridgeLayDrawn(laying.lay, u);
       if (drawn !== laying.drawn) poseMesh.geometry.setDrawRange(0, drawn);
       laying.drawn = drawn;
@@ -2197,7 +2245,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     lockPoints.length = 0;
     for (const land of lands) {
       const at = bridgeLockPoint(land);
-      lockPoints.push(new THREE.Vector3(at.x, BRIDGE.deck + LOCK_LIFT, at.z));
+      lockPoints.push(new THREE.Vector3(at.x, bridgeDeck(land) + LOCK_LIFT, at.z));
     }
   };
   const reportLocks = () => {
@@ -2598,7 +2646,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     let bestD = Infinity;
     for (const land of closed) {
       const { mid } = bridgeSite(land);
-      projected.set(mid.x, BRIDGE.deck, mid.z).project(camera);
+      projected.set(mid.x, bridgeDeck(land), mid.z).project(camera);
       const px = Math.hypot(sx(projected) - x, sy(projected) - y);
       const d = distance(p, mid);
       if (projected.z < 1 && (d <= BRIDGE_TOUCH.radius || px <= BRIDGE_TOUCH.pixels) && px < bestD) {
@@ -2619,7 +2667,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const mapCamera: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
   const allTiles = Array.from({ length: plan.terrain.tilesX * plan.terrain.tilesZ }, (_, i) => i);
   const mapSpots: MapSpotOnScreen[] = [
-    ...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false, ...(plan.upper.includes(p.id) ? { up: true } : {}), ...(placeArt(p.id)?.mapClear ? { clear: { left: 0, top: 0, right: 0, bottom: 0 } } : {}), ...(placeArt(p.id)?.nameAbove ? { above: true as const } : {}), ...(p.mapSide ? { side: p.mapSide } : {}) })),
+    ...PLACES.map((p) => ({ id: p.id, x: 0, y: 0, shown: false, ...(plan.upper.includes(p.id) ? { up: true } : {}), ...(placeArt(p.id)?.mapClear ? { clear: { left: 0, top: 0, right: 0, bottom: 0 } } : {}), ...(placeArt(p.id)?.nameAbove ? { above: true as const } : {}), ...(p.mapSide ? { side: p.mapSide } : {}), ...(p.mapPinned ? { pinned: true as const } : {}) })),
     ...LINKED_LANDS.map((land) => ({ id: bridgeSpot(land), x: 0, y: 0, shown: false })),
     // Le lieu de départ (l'Escale, la Lisière).
     { id: 'port' as const, x: 0, y: 0, shown: false },
@@ -2648,7 +2696,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const bridgePoints = new Map<string, THREE.Vector3>(
     LINKED_LANDS.map((land) => {
       const { mid } = bridgeSite(land);
-      return [bridgeSpot(land), new THREE.Vector3(mid.x, BRIDGE.deck, mid.z)];
+      return [bridgeSpot(land), new THREE.Vector3(mid.x, bridgeDeck(land), mid.z)];
     }),
   );
   // Le point du nom d'un lieu qui le fixe (le Sémaphore, au-dessus de sa corniche ; le Gaillard, au-dessus de ses
@@ -3628,8 +3676,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const all = placesState?.built[place] ?? [];
     const whole = (list: readonly PartShape[]) => [0, 1, 2].every((st) => stageComplete(list, st as 0 | 1 | 2));
     glowNext = place === 'montee' && whole(all) && !whole(all.filter((p) => !parts.includes(p)));
-    // De même, la pose qui achève un lieu qui s'anime à sa restauration (la Forge du 4e).
-    restoreNext = placeArt(place)?.restoration && whole(all) && !whole(all.filter((p) => !parts.includes(p))) ? place : null;
+    // De même, la pose qui achève un lieu qui s'anime à sa restauration (la Forge du 4e), ou qui dit sa réplique de fin
+    // (la Soute, le Gabarit : son état et sa réplique, sans animation, `saysRestored`).
+    restoreNext = saysRestored(place) && whole(all) && !whole(all.filter((p) => !parts.includes(p))) ? place : null;
     holding = { place, parts };
     placeVisibility();
     setGeometry(poseMesh, constructionFacets(place, parts, ground));
