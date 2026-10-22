@@ -390,6 +390,18 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     placement: 'rangee',
     words: { pose: ['Les gradins sont remontés.', 'La cloche est pendue.', 'Le tableau des votes est debout.'], end: 'Ici, chacun pouvait parler, et tout le village écoutait.' },
   },
+  // La Douane (les Alpages du 3e, GD-25, lieu d'option) : la phrase de métier et la réplique de la proposition du consultant
+  // d'Archipéo (§ 6) ; une phrase par partie (le corps en trois, le haut, les abords), sans dire la langue, sans nom de
+  // plan de l'île (« poste », « salle commune », « pigeonnier », « refuge ») ni « douane » en nom commun.
+  douane: {
+    role: placeArt('douane')!.role,
+    greeting: 'Le porteur porte les bagages des voyageurs.',
+    placement: 'rangee',
+    words: {
+      pose: ['La maison est rouverte.', 'Le comptoir est refait.', 'La barrière se lève.', 'Le toit est refait.', 'Les bagages sont rangés.'],
+      end: 'Ici passaient tous les voyageurs venus d’ailleurs.',
+    },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -846,6 +858,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   kiosque: northSite('kiosque'),
   maquette: northSite('maquette'),
   tribune: northSite('tribune'),
+  douane: northSite('douane'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2426,6 +2439,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   maquette: 'earth',
   // La Tribune : l'herbe de l'arène.
   tribune: 'earth',
+  // La Douane : l'herbe devant le guichet.
+  douane: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

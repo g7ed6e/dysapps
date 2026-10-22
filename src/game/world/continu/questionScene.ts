@@ -272,6 +272,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   maquette: placeArt('maquette')!.sceneSpot,
   // La Tribune : dans l'arène, au pied du premier gradin, l'estrade devant.
   tribune: placeArt('tribune')!.sceneSpot,
+  // La Douane : au sud-est du guichet, dehors, le comptoir devant.
+  douane: placeArt('douane')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -583,6 +585,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   maquette: 'lieu',
   // La Tribune : les galets ronds, sur un rebord de granit.
   tribune: 'lieu',
+  // La Douane : les clés de fer, pendues à un râtelier.
+  douane: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

@@ -220,7 +220,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'kiosque', name: 'Le Kiosque', at: 'au Kiosque', agree: 'ms', island: 'history-3e-twentieth-century', plan: [430, 480], door: { x: 7, z: 10 } },
   { id: 'maquette', name: 'La Maquette', at: 'à la Maquette', agree: 'fs', island: 'geography-3e-france', plan: [350, 650], door: { x: 6.5, z: -10 } },
   { id: 'tribune', name: 'La Tribune', at: 'à la Tribune', agree: 'fs', island: 'civics-3e-democratic-life', plan: [580, 400], door: { x: -10, z: 8.4 } },
-  { id: 'douane', name: 'La Douane', at: 'à la Douane', agree: 'fs', island: 'lv2-3e-travel', plan: [200, 400], door: { x: 7, z: 5 } },
+  { id: 'douane', name: 'La Douane', at: 'à la Douane', agree: 'fs', island: 'lv2-3e-travel', plan: [200, 400], door: { x: 5.3, z: 9.6 } },
   { id: 'ermitage', name: 'L’Ermitage', at: 'à l’Ermitage', agree: 'ms', island: 'lca-3e-ideas', plan: [215, 580], door: { x: 8, z: 0 } },
   { id: 'coupole', name: 'La Coupole', at: 'à la Coupole', agree: 'fs', island: 'french-3e-close-reading', plan: [1870, 945], door: { x: 0, z: -8 } },
   { id: 'lutherie', name: 'La Lutherie', at: 'à la Lutherie', agree: 'fs', island: 'french-3e-language', plan: [2000, 1000], door: { x: -8, z: -4 } },
@@ -258,7 +258,7 @@ const MAP_SIDES_3E: Readonly<Record<PlaceId3e, 'below' | 'left' | 'right'>> = {
 /**
  * Les lieux du 3e déjà construits, et les missions de chacun qui se jouent en scénette, dans l'ordre de leur île : la
  * seule liste, comme `BUILT_PLACES_4E` (./plan4e.ts), que lisent la scénette (./levelPlan.ts, `hasScenette`) et les
- * missions des lieux (`PLACES_3E`). Le Versant (GD-25, lot 2) : le Belvédère, le Grenier, l'Abri, le Jardin ; les Alpages (lot 3) : le Kiosque, la Maquette, la Tribune. Aucun habitant du 3e n'a encore son modèle
+ * missions des lieux (`PLACES_3E`). Le Versant (GD-25, lot 2) : le Belvédère, le Grenier, l'Abri, le Jardin ; les Alpages (lot 3) : le Kiosque, la Maquette, la Tribune, la Douane. Aucun habitant du 3e n'a encore son modèle
  * 3D (./habitants.ts) : il se dessine en pion. Un lieu construit s'ajoute ici, et seulement ici.
  */
 export const BUILT_PLACES_3E = {
@@ -269,6 +269,7 @@ export const BUILT_PLACES_3E = {
   kiosque: ['total-wars', 'world-since-1945', 'republic'],
   maquette: ['territories', 'planning', 'france-eu'],
   tribune: ['constitution', 'information', 'civic-engagement'],
+  douane: ['es-past', 'es-stories', 'es-countries', 'es-connectives', 'es-media', 'de-past', 'de-stories', 'de-on-the-road', 'de-connectives', 'de-media'],
 } as const satisfies Partial<Record<PlaceId3e, readonly string[]>>;
 
 /** Un lieu du 3e déjà construit. */
