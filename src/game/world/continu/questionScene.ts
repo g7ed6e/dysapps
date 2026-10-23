@@ -282,6 +282,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   coupole: placeArt('coupole')!.sceneSpot,
   // La Lutherie : sur l'herbe au nord de l'atelier, devant son pignon, la Coupole au loin.
   lutherie: placeArt('lutherie')!.sceneSpot,
+  // Les Ondes : sur l'herbe au pied du grand mât, devant le pavillon d'écoute, la mer de nuages au loin.
+  ondes: placeArt('ondes')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -603,6 +605,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   coupole: 'lieu',
   // La Lutherie : les chevilles de bois, en rang sur un petit établi.
   lutherie: 'lieu',
+  // Les Ondes : les boutons ronds des postes, en rang sur une petite table.
+  ondes: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

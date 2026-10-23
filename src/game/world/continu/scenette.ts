@@ -445,6 +445,18 @@ const SCENETTES: Record<PlaceId, Scenette> = {
       end: 'Ici, chaque instrument trouvait sa juste voix.',
     },
   },
+  // Les Ondes (les Prairies du 3e, GD-25) : la phrase de métier et la réplique d'après la proposition du consultant
+  // d'Archipéo (§ 6), à valider par le directeur du contenu ; une phrase par partie, sans nom de plan de l'île
+  // (« régie », « écho », « toit », « terrasse », « studio »).
+  ondes: {
+    role: placeArt('ondes')!.role,
+    greeting: 'L’annonceur lit les nouvelles à la radio.',
+    placement: 'rangee',
+    words: {
+      pose: ['La station est refaite.', 'Les postes sont en rang.', 'Le pavillon écoute le large.', 'Le chemin est prêt.'],
+      end: 'Ici, on entendait les voix des autres archipels.',
+    },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -903,6 +915,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   tribune: northSite('tribune'),
   douane: northSite('douane'),
   ermitage: northSite('ermitage'),
+  ondes: northSite('ondes'),
   lutherie: northSite('lutherie'),
   coupole: northSite('coupole'),
   palais: northSite('palais'),
@@ -2496,6 +2509,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   coupole: 'earth',
   // La Lutherie : l'herbe de la Prairie.
   lutherie: 'earth',
+  // Les Ondes : l'herbe de la Prairie.
+  ondes: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

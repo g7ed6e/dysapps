@@ -3,7 +3,7 @@
 // un dôme de ciel en dégradé, crème à l'horizon, bleu en haut ; la brume du lointain prend la couleur de l'horizon, où
 // la mer et le ciel se rejoignent. Rien n'y bouge. Code pur : la vue (three/archipeo/scene.ts) donne ces nombres à
 // Three.js.
-import { linearRgb } from './geometry';
+import { linearRgb } from "./geometry";
 
 /**
  * Les couleurs du ciel (sRGB), de l'horizon au zénith, à leur hauteur angulaire (degrés au-dessus de l'horizon) : la
@@ -44,7 +44,11 @@ export interface SceneLight {
   readonly ambient: number;
   readonly sun: number;
   readonly sunIntensity: number;
-  readonly sunFrom: { readonly x: number; readonly y: number; readonly z: number };
+  readonly sunFrom: {
+    readonly x: number;
+    readonly y: number;
+    readonly z: number;
+  };
   readonly exposure: number;
 }
 
@@ -120,7 +124,15 @@ export interface HeightLight {
   readonly fogTop: number;
 }
 
-export const HEIGHT_LIGHT_5E: HeightLight = { low: 2.5, high: 12, sunLow: 0.2, tintLow: [0.86, 0.97, 1.04], fogFrom: 14, fogTo: 40, fogTop: 0.45 };
+export const HEIGHT_LIGHT_5E: HeightLight = {
+  low: 2.5,
+  high: 12,
+  sunLow: 0.2,
+  tintLow: [0.86, 0.97, 1.04],
+  fogFrom: 14,
+  fogTo: 40,
+  fogTop: 0.45,
+};
 
 /** Le sens où tombent les ombres peintes du 5e (l'opposé de son soleil, à plat). */
 export const SHADOW_DIR_5E = (() => {
@@ -167,7 +179,15 @@ export const LIGHT_4E = {
  * brouillard du lointain s'éclaircit en hauteur, si bien que le haut du volcan et son panache se voient de toute l'île
  * (de la Crique, à plus de 300 unités), au-dessus de l'air ambré ; retouche 1 du lot 1 : dès 14 unités, il n'en reste que 15 %, pour que le cône garde son basalte sombre (#4A4240) vu de la Crique.
  */
-export const HEIGHT_LIGHT_4E: HeightLight = { low: -60, high: -50, sunLow: 1, tintLow: [1, 1, 1], fogFrom: 2, fogTo: 14, fogTop: 0.15 };
+export const HEIGHT_LIGHT_4E: HeightLight = {
+  low: -60,
+  high: -50,
+  sunLow: 1,
+  tintLow: [1, 1, 1],
+  fogFrom: 2,
+  fogTo: 14,
+  fogTop: 0.15,
+};
 
 /**
  * Le brouillard du lointain du 4e (retouche 1 du lot 1, directeur artistique : « une fin de journée claire, sans brume,
@@ -185,19 +205,21 @@ export const SHADOW_DIR_4E = (() => {
 
 /**
  * Le ciel du 3e (lot 1 du monde ouvert du 3e, GD-25 : un matin froid et clair au-dessus des nuages) : le bleu pâle de
- * l'horizon, de la teinte des nuages (#E4EAF1), monte vers le bleu franc du zénith (#3A86CC), jamais nuit.
+ * l'horizon (#C8DBEE) monte vers le bleu franc du zénith (#3A86CC), jamais nuit. Les Ondes (lot 4, relecture des
+ * Alpages, (b) 4) : l'horizon du ciel est un cran plus bleu que les nuages (#E4EAF1, le brouillard du lointain) ; la mer
+ * de nuages, blanchie au loin par le brouillard, s'arrête sur le ciel d'un bord net, au lieu de s'y fondre.
  */
 const SKY_STOPS_3E: readonly { at: number; color: number }[] = [
-  { at: 0, color: 0xe4eaf1 },
-  { at: 3, color: 0xc6dbef },
+  { at: 0, color: 0xc8dbee },
+  { at: 3, color: 0xbad3ec },
   { at: 8, color: 0xa6c9ea },
   { at: 22, color: 0x86b4e0 },
   { at: 48, color: 0x5e9cd6 },
   { at: 90, color: 0x3a86cc },
 ];
 
-/** La couleur de l'horizon du 3e : le brouillard du lointain et le bas du dôme, la teinte des nuages (#E4EAF1). */
-export const HORIZON_COLOR_3E = SKY_STOPS_3E[0].color;
+/** La couleur du brouillard du lointain du 3e : la teinte des nuages (#E4EAF1), un cran plus claire que le bas du ciel. */
+export const HORIZON_COLOR_3E = 0xe4eaf1;
 
 /**
  * La lumière du 3e (valeurs de l'artiste technique 3D, à valider sur captures par le directeur artistique) : un soleil
@@ -219,7 +241,15 @@ export const LIGHT_3E = {
  * La lumière par la hauteur du 3e : un seul étage (toute la lumière partout), mais le brouillard du lointain
  * s'éclaircit en hauteur, si bien que le haut du pic se voit de toutes les terres, au-dessus de l'air du matin.
  */
-export const HEIGHT_LIGHT_3E: HeightLight = { low: -60, high: -50, sunLow: 1, tintLow: [1, 1, 1], fogFrom: 4, fogTo: 30, fogTop: 0.2 };
+export const HEIGHT_LIGHT_3E: HeightLight = {
+  low: -60,
+  high: -50,
+  sunLow: 1,
+  tintLow: [1, 1, 1],
+  fogFrom: 4,
+  fogTo: 30,
+  fogTop: 0.2,
+};
 
 /**
  * Le brouillard du lointain du 3e : l'air du matin est net, comme au 4e, mais les terres sont plus étendues (la Prairie
@@ -237,10 +267,18 @@ export const SHADOW_DIR_3E = (() => {
 export type SkyStops = readonly { at: number; color: number }[];
 
 /** Les couleurs du ciel du 6e (le défaut), du 5e, du 4e et du 3e. */
-export const SKY_OF = { '6e': SKY_STOPS, '5e': SKY_STOPS_5E, '4e': SKY_STOPS_4E, '3e': SKY_STOPS_3E } as const satisfies Record<string, SkyStops>;
+export const SKY_OF = {
+  "6e": SKY_STOPS,
+  "5e": SKY_STOPS_5E,
+  "4e": SKY_STOPS_4E,
+  "3e": SKY_STOPS_3E,
+} as const satisfies Record<string, SkyStops>;
 
 /** La couleur du ciel à une hauteur angulaire (degrés ; sous l'horizon, l'horizon), en rouge, vert, bleu linéaires. */
-export function skyColorAt(elevation: number, stops: SkyStops = SKY_STOPS): [number, number, number] {
+export function skyColorAt(
+  elevation: number,
+  stops: SkyStops = SKY_STOPS,
+): [number, number, number] {
   const e = Math.max(0, Math.min(90, elevation));
   let k = 0;
   while (k < stops.length - 2 && e > stops[k + 1].at) k++;
@@ -249,11 +287,18 @@ export function skyColorAt(elevation: number, stops: SkyStops = SKY_STOPS): [num
   const t = (e - a.at) / (b.at - a.at);
   const ca = linearRgb(a.color);
   const cb = linearRgb(b.color);
-  return [ca[0] + (cb[0] - ca[0]) * t, ca[1] + (cb[1] - ca[1]) * t, ca[2] + (cb[2] - ca[2]) * t];
+  return [
+    ca[0] + (cb[0] - ca[0]) * t,
+    ca[1] + (cb[1] - ca[1]) * t,
+    ca[2] + (cb[2] - ca[2]) * t,
+  ];
 }
 
 /** Le dôme du ciel : ses côtés, et les hauteurs angulaires de ses rangs (un rang à chaque couleur, un sous l'horizon). */
-export const SKY_DOME = { sides: 16, rows: [-30, 0, 6, 18, 40, 65, 90] } as const;
+export const SKY_DOME = {
+  sides: 16,
+  rows: [-30, 0, 6, 18, 40, 65, 90],
+} as const;
 
 /** Un dôme : trois sommets par triangle, et leurs couleurs (linéaires). */
 export interface SkyDome {
@@ -273,7 +318,11 @@ export function skyDome(radius: number, stops: SkyStops = SKY_STOPS): SkyDome {
   const vertex = (row: number, k: number) => {
     const e = (rows[row] * Math.PI) / 180;
     const a = (2 * Math.PI * k) / sides;
-    return [radius * Math.cos(e) * Math.cos(a), radius * Math.sin(e), radius * Math.cos(e) * Math.sin(a)] as const;
+    return [
+      radius * Math.cos(e) * Math.cos(a),
+      radius * Math.sin(e),
+      radius * Math.cos(e) * Math.sin(a),
+    ] as const;
   };
   const push = (row: number, k: number) => {
     pos.push(...vertex(row, k));
@@ -297,5 +346,9 @@ export function skyDome(radius: number, stops: SkyStops = SKY_STOPS): SkyDome {
       push(r, n);
     }
   const positions = new Float32Array(pos);
-  return { positions, colors: new Float32Array(col), triangles: positions.length / 9 };
+  return {
+    positions,
+    colors: new Float32Array(col),
+    triangles: positions.length / 9,
+  };
 }
