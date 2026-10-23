@@ -272,9 +272,9 @@ export function liftStep(current: number, target: number, dt: number, reduceMoti
 /**
  * Le regard levé (lot 2, choix du directeur artistique) : Kéo arrêté à moins de `within` unités du Phare, la caméra
  * lève le regard pour faire entrer la lanterne avec un peu d'air au-dessus (`air`, en part de la hauteur de l'écran),
- * sans reculer ; Kéo reste entier au-dessus de « Y aller » (ses pieds à `footRoom` pixels au moins du bas de l'écran : le
- * bouton, 72 px avec sa marge, et un peu d'air ; sur la capture de la tablette, une dizaine de pixels entre les
- * semelles et le haut du bouton). Si les deux ne tiennent pas, la caméra descend un peu, jusqu'à `lowest` unités au-dessus des
+ * sans reculer ; Kéo reste entier au-dessus du bas de l'écran (ses pieds à `footRoom` pixels au moins : la place de
+ * « Y aller » au texte normal, 72 px avec sa marge, et un peu d'air ; au plus grand texte, c'est « Y aller » qui
+ * s'écarte, `keoZone` dans ./mission.ts). Si les deux ne tiennent pas, la caméra descend un peu, jusqu'à `lowest` unités au-dessus des
  * pieds de Kéo (le regard moins plongeant : retour du directeur artistique), puis l'air de la lanterne se réduit
  * jusqu'à `minAir` ; Kéo passe toujours avant la lanterne. Jamais pendant la marche ; le passage dure `seconds` à la
  * montée, `down` au retour (d'un bloc avec « Réduire les animations »).

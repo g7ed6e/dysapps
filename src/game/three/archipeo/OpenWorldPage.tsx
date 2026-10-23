@@ -1445,10 +1445,9 @@ function setStageVar(stage: HTMLElement, name: string, px: number | null): void 
 }
 
 /**
- * « Y aller » : au milieu ; en bas à droite s'il monte dans la colonne de Kéo, à gauche de la colonne de la caméra s'il
- * la mordrait encore posé au plus près du bas (`data-go-bas`) (un téléphone couché au plus grand texte :
- * `--open-world-go-droite`). Renvoie sa place et la colonne de
- * Kéo, la même aux quatre niveaux (la caméra ne la garde plus nulle part : choix du mainteneur, 23 octobre 2026).
+ * « Y aller » : au milieu ; en bas à droite s'il monte dans la colonne de Kéo. S'il y mord la colonne de la caméra (un
+ * téléphone couché au plus grand texte), il descend au plus près du bas (`data-go-bas`), puis, s'il la mord encore,
+ * passe à sa gauche (`--open-world-go-droite`). Renvoie sa place et la colonne de Kéo, la même aux quatre niveaux (la caméra ne la garde plus nulle part : choix du mainteneur, 23 octobre 2026).
  */
 function placeGo(stage: HTMLElement, go: HTMLElement, s: DOMRect, carte: DOMRect | undefined) {
   // Levée au-dessus de « Carte » quand elle déborde sur lui (un écran étroit), lu à l'horizontale seulement.

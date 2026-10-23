@@ -1731,7 +1731,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     return true;
   };
   // Le recul d'arrivée devant un lieu haut qui s'ajuste (`maxBack`) : le haut du lieu entier avec Kéo au-dessus de la
-  // rangée du bas ; refait à l'arrivée, quand la rangée change (la phrase « Aucune mission ») et quand l'écran change.
+  // rangée du bas ; refait à l'arrivée et quand l'écran change.
   // `nearLantern` le lit à chaque image : il n'est refait que si le lieu, son haut bâti, la rangée ou l'écran ont changé.
   const arrivalFit = { place: null as PlaceId | null, top: 0, w: 0, h: 0, shape: COMMON_DETOUR_VIEW };
   function fittedArrival(a: (typeof arrivals)[number]): DetourView {
