@@ -9,7 +9,7 @@ import { CRIQUE_SITE, NEF_4E, criqueDecorFacets, nef4eFlight } from './crique4e'
 import { DALLE_BUDGET } from './dalle4e';
 import { EPAVE_BUDGET } from './epave4e';
 import { RECOIN_BUDGET } from './recoin4e';
-import { REPLAT_BUDGET } from './replat4e';
+import { REPLAT_BUDGET, REPLAT_GRASS } from './replat4e';
 import { distance, distanceToPolyline, insidePolygon, linearRgb, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
 import { levelWorld } from './levelWorld';
@@ -301,6 +301,9 @@ describe('Les couleurs chaudes du 4e', () => {
     };
     for (const earth of [COLORS_4E.soil, COLORS_4E.soilSun, COLORS_4E.soilShade])
       for (const light of [COLORS_6E.path, CRIQUE_SITE.colors.stone]) expect(ratio(light, earth), `${light.toString(16)} / ${earth.toString(16)}`).toBeGreaterThanOrEqual(3);
+    // L'olive des Coteaux, l'ocre rosé de l'Épaule, la terre noire et l'herbe du Replat (restes du monde ouvert, point 1).
+    const others = [COLORS_4E.burnt, COLORS_4E.burntSun, COLORS_4E.burntShade, COLORS_4E.shoulder, COLORS_4E.blackEarth, REPLAT_GRASS.grass, REPLAT_GRASS.grassEdge];
+    for (const earth of others) expect(ratio(COLORS_6E.path, earth), earth.toString(16)).toBeGreaterThanOrEqual(3);
   });
 
   it('la mer : l’image de l’eau couvre l’île entière', () => {

@@ -71,13 +71,13 @@ export const REPLAT: Detour = {
 };
 
 /**
- * Les couleurs : l'herbe de la terrasse, un cran plus franche que les verts brûlés des Coteaux (`COLORS_4E.burnt`),
+ * Les couleurs : l'herbe de la terrasse, un cran plus verte que l'olive des Coteaux (`COLORS_4E.burnt`),
  * jamais vive, et son bord ; la pierre sèche du muret (la pierre grise des Passeurs) ; le bois gris du vieux poteau ; les
  * trois pierres des Détours (celles du 6e, ./detours.ts).
  */
 const C = {
-  grass: 0x8a9858,
-  grassEdge: 0x76844c,
+  grass: 0x64884a,
+  grassEdge: 0x56763e,
   stone: C4E.stone,
   stoneSun: C4E.stoneSun,
   stoneShade: C4E.stoneShade,
@@ -86,6 +86,9 @@ const C = {
   flat: 0xc9c0ae,
   flatSide: 0xa9a08f,
 } as const;
+
+/** L'herbe de la terrasse et son bord (pour le contrôle des chemins à 3 contre 1). */
+export const REPLAT_GRASS = { grass: C.grass, grassEdge: C.grassEdge } as const;
 
 /** Le sol sous un point. */
 type Ground = (x: number, z: number) => number;

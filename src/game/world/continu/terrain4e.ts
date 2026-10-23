@@ -178,7 +178,7 @@ const SUN_FLAT = { x: -SHADOW_DIR_4E.x, z: -SHADOW_DIR_4E.z } as const;
 
 /**
  * Les Coteaux, en plan (fiche, § 5, et le plan des terres : à l'ouest du ravin, au sud du sommet et de la coulée) : là,
- * les verts brûlés ; ailleurs en bas, la terre rouge.
+ * le vert olive ; ailleurs en bas, la terre rouge.
  */
 const COTEAUX_AREA = [[0, 305], [370, 300], [450, 308], [560, 338], [680, 378], [800, 405], [828, 480], [812, 580], [775, 700], [735, 860], [695, 1030], [668, 1450], [0, 1450]].map((q) => fromPlan4e(q as [number, number]));
 
@@ -206,8 +206,8 @@ function northEdge(x: number): number {
 
 /**
  * La couleur d'un sol à plat en (x, z), à la hauteur `h` : le sable au bord de l'eau ; la croûte dans la coulée ; le fond
- * sec du ravin ; le basalte chaud du volcan (au-dessus de `ROCK_FROM` de son cône) ; l'Épaule, de roche plus claire ; les
- * Coteaux, verts brûlés ; la terre rouge partout ailleurs, en taches au soleil.
+ * sec du ravin ; le basalte chaud du volcan (au-dessus de `ROCK_FROM` de son cône) ; l'Épaule, de roche ocre rosé ; les
+ * Coteaux, vert olive ; la terre rouge partout ailleurs, en taches au soleil.
  */
 function flat4e(x: number, z: number, h: number): number {
   const p = { x, z };
@@ -218,7 +218,7 @@ function flat4e(x: number, z: number, h: number): number {
   const k = patch(x, z);
   if (volcanoHeight(p) > ROCK_FROM) return k < 0.62 ? COLORS_4E.basalt : COLORS_4E.basaltSun;
   if (insidePolygon(p, COTEAUX_AREA)) return k < 0.62 ? COLORS_4E.burnt : COLORS_4E.burntSun;
-  if (northOfCoulee(p)) return k < 0.6 ? COLORS_4E.rockSun : COLORS_4E.burntShade;
+  if (northOfCoulee(p)) return k < 0.6 ? COLORS_4E.rockSun : COLORS_4E.shoulder;
   return k < 0.68 ? COLORS_4E.soil : COLORS_4E.soilSun;
 }
 
@@ -230,7 +230,8 @@ const SHADE_OF: Readonly<Record<number, number>> = {
   [COLORS_4E.burntSun]: COLORS_4E.burnt,
   [COLORS_4E.rock]: COLORS_4E.rockShade,
   [COLORS_4E.rockSun]: COLORS_4E.rock,
-  [COLORS_4E.basalt]: COLORS_4E.basaltShade,
+  [COLORS_4E.shoulder]: COLORS_4E.rockSun,
+  [COLORS_4E.basalt]: COLORS_4E.coneShade,
   [COLORS_4E.basaltSun]: COLORS_4E.basalt,
   [COLORS_4E.crust]: COLORS_4E.crustShade,
 };
@@ -256,7 +257,10 @@ function facet4e(a: P3, b: P3, c: P3): number {
     if (bassinClearance(p) < 2) return sunny ? COLORS_4E.stoneSun : COLORS_4E.stone;
     if (couleeClearance(p) < 2) return COLORS_4E.crustShade;
     if (h < 0.4) return COLORS_4E.sand;
-    if (volcanoHeight(p) > ROCK_FROM) return sunny ? COLORS_4E.basaltSun : COLORS_4E.basaltShade;
+    if (volcanoHeight(p) > ROCK_FROM) return sunny ? COLORS_4E.basaltSun : COLORS_4E.coneShade;
+    // Les talus des Coteaux montrent la terre noire sous l'herbe, au soleil ; à l'ombre, l'olive sombre (la terre noire
+    // y tomberait presque noire à l'écran).
+    if (insidePolygon(p, COTEAUX_AREA) && ravinClearance(p) > 0.4) return sunny ? COLORS_4E.blackEarth : COLORS_4E.burntShade;
     return sunny ? COLORS_4E.rockSun : COLORS_4E.rockShade;
   }
   const base = flat4e(x, z, h);
@@ -271,8 +275,8 @@ const PAINT_4E: GroundPaint = { facet: facet4e, flat: flat4e, foam: noFoam };
 
 // ---------- Ce qui pousse, et les rochers ----------
 
-/** Les couleurs de ce qui pousse : des buissons d'olive sèche sur les Coteaux, des rochers de basalte brun ailleurs. */
-export const FLORA_4E_COLORS = { shrub: 0x7e7a44, shrubTop: 0x948e52, boulder: 0x6c5048, boulderTop: 0x82625a } as const;
+/** Les couleurs de ce qui pousse : des buissons d'olive sèche sur les Coteaux, un cran sous leur sol (des masses, plus des taches jaunes), des rochers de basalte brun ailleurs. */
+export const FLORA_4E_COLORS = { shrub: 0x5e6a3a, shrubTop: 0x6c7842, boulder: 0x6c5048, boulderTop: 0x82625a } as const;
 
 /**
  * Où pousse un buisson ou se couche un rocher : une place tous les `cell` unités au plus, gardée une fois sur `keep`
