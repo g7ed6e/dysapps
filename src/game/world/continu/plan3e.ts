@@ -77,8 +77,10 @@ export const COLORS_3E = {
 
 /** Le bord de la montagne, l'unique île où l'on marche à pied (plan, `MOUNTAIN`), dans le sens des aiguilles d'une montre. */
 export const MOUNTAIN_3E = poly([
-  [130, 430], [180, 260], [300, 130], [470, 60], [720, 30], [1000, 30], [1220, 80], [1360, 160], [1450, 260], [1430, 420],
-  [1380, 560], [1350, 650], [1385, 700], [1400, 760], [1385, 820], [1320, 855], [1240, 905], [1170, 1020], [1030, 1100],
+  [130, 430], [180, 260], [300, 130], [470, 60], [720, 30], [1000, 30], [1220, 80], [1360, 160], [1450, 260],
+  // La rive du départ des arches basses (lot des Prairies ; directeur artistique, lot 1, point 11) : une seule courbe
+  // douce, sans l'anse au nord de la chaussée dont les liserés s'empilaient en gradins vus des arches.
+  [1442, 420], [1422, 560], [1404, 660], [1404, 712], [1406, 766], [1385, 820], [1320, 855], [1240, 905], [1170, 1020], [1030, 1100],
   // L'anse de nuages à l'est du Parvis (lot du Versant, directeur artistique, point 8, et consultant, point 2 : « rapprocher
   // le bord est du Parvis de sa rive sud-est ») : le Parvis devient un promontoire, et la mer de nuages entre dans le
   // quart droit de l'arrivée.

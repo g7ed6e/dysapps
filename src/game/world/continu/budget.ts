@@ -181,6 +181,13 @@ export const EPAULE_BRIDGE_TRIANGLES = 1_300;
 export const GLACIER_BRIDGE_TRIANGLES_3E = 1_200;
 
 /**
+ * Le plafond des arches basses reliées et des deux petites arches des Prairies, au 3e (proposition des Prairies, § 2 :
+ * « environ 2 400 avec les deux petites arches ») : leurs chaussées, leurs voûtes et leurs claveaux, leurs parapets à
+ * chaperon d'ardoise, le chemin de pierre claire.
+ */
+export const ARCHES_TRIANGLES_3E = 2_400;
+
+/**
  * Le plafond du pont du ravin en arche, tombé ou relié (les Coteaux du 4e ; intention du directeur artistique du 22
  * octobre 2026, § 12 : « environ 1 200 triangles », à la place du pont générique, 132 tombé et 906 relié).
  */

@@ -4,8 +4,9 @@
 // (jamais presque noires), la marche libre, et son budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { OPEN_WORLD_BUDGETS, mapCost3e, openWorldCost3e } from './budget';
-import { BRIDGE, bridgeFacets, bridgeFloor, bridgeSite } from './bridges';
+import { ARCHES_TRIANGLES_3E, OPEN_WORLD_BUDGETS, mapCost3e, openWorldCost3e } from './budget';
+import { BRIDGE, bridgeFacets, bridgeFloor, bridgeParts, bridgeSite } from './bridges';
+import { boundsOf } from './facets';
 import { distance, linearRgb, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
 import { levelWorld } from './levelWorld';
@@ -18,7 +19,7 @@ import { veilFacets } from './veil';
 import { COLORS_3E, DEPARTURE_3E, LINKS_3E, PARVIS, PARVIS_PAD, PATH_EDGES_3E, PEAK_3E, SMALL_ARCHES_3E, TERRAIN_3E, ZEPPELIN_3E, parvisFloor } from './plan3e';
 import { SKY_OF } from './sky';
 import { SEA_TEXTURE_3E, WATER_TONES_3E, seaPixels3e } from './sea';
-import { FLORA_3E_COLORS, buildHeightField3e, groundOn3e, heightAt3e, landDistance3e, mapOverlay3e, shoreRimFacets, smallArchFloor, walkBlocked3e } from './terrain3e';
+import { FLORA_3E_COLORS, buildHeightField3e, groundOn3e, heightAt3e, landDistance3e, mapOverlay3e, shoreRimFacets, smallArchFacets, smallArchFloor, walkBlocked3e } from './terrain3e';
 import { buildWalkGrid } from './freeWalk';
 
 const PLAN = planFor('3e');
@@ -149,6 +150,26 @@ describe('Les coupures : la langue de glace, l’arête du col, les nuages', () 
         if (landDistance3e(at) < 0) expect(smallArchFloor(at.x, at.z), `${a}–${b} ${t}`).toBeGreaterThan(1.5);
       }
     }
+  });
+
+  it('les arches basses reliées : leurs murs et leurs voûtes regardent le dehors, une arche par travée ; le parapet plein à hauteur de poitrine, son chaperon d’ardoise ; 2 400 triangles au plus avec les deux petites', () => {
+    const s = bridgeSite('prairies');
+    const across = { x: -s.dir.z, z: s.dir.x };
+    const parts = bridgeParts('prairies');
+    const slate = linearRgb(COLORS_3E.slate);
+    let vaults = 0;
+    for (const f of parts.piles)
+      for (let i = 0; i < f.positions.length; i += 9) {
+        if (Math.abs(f.normals[i + 1]) > 0.5) continue;
+        const v = ((f.positions[i] + f.positions[i + 3] + f.positions[i + 6]) / 3 - s.near.x) * across.x + ((f.positions[i + 2] + f.positions[i + 5] + f.positions[i + 8]) / 3 - s.near.z) * across.z;
+        if (Math.abs(v) < 2) continue;
+        // Vue de côté, on lit le mur et ses voûtes, jamais le dedans du mur d'en face (lot 1).
+        expect(Math.sign(f.normals[i] * across.x + f.normals[i + 2] * across.z), v.toFixed(2)).toBe(Math.sign(v));
+        if (Math.abs(f.colors[i] - slate[0]) < 1e-4 && Math.abs(f.colors[i + 1] - slate[1]) < 1e-4) vaults++;
+      }
+    expect(vaults).toBeGreaterThanOrEqual(2 * 5 * 6);
+    expect(boundsOf(parts.rails).max[1] - BRIDGE.deck).toBeGreaterThanOrEqual(1.1);
+    expect(bridgeFacets('prairies', true).triangles + smallArchFacets().triangles).toBeLessThanOrEqual(ARCHES_TRIANGLES_3E);
   });
 
   it('les lieux sont sur la terre, hors du pic, des arêtes et de la langue de glace', () => {
