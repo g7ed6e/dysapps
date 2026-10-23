@@ -469,6 +469,18 @@ const SCENETTES: Record<PlaceId, Scenette> = {
       end: 'Ici, la lumière répondait aux trois autres archipels.',
     },
   },
+  // La Rampe (le Cirque du 3e, GD-25) : la phrase de métier et la réplique d'après la proposition du consultant
+  // d'Archipéo (§ 8), à valider par le directeur du contenu ; une phrase par partie, sans nom de plan de l'île
+  // (« gymnase », « toit », « piste »).
+  rampe: {
+    role: placeArt('rampe')!.role,
+    greeting: 'La charretière mène les pierres jusqu’au Fanal.',
+    placement: 'rangee',
+    words: {
+      pose: ['La rampe est refaite.', 'Le cabestan est prêt.', 'Le traîneau est chargé.'],
+      end: 'Ici, on a hissé toutes les pierres du Fanal.',
+    },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -927,6 +939,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   tribune: northSite('tribune'),
   douane: northSite('douane'),
   ermitage: northSite('ermitage'),
+  rampe: northSite('rampe'),
   fanal: northSite('fanal'),
   ondes: northSite('ondes'),
   lutherie: northSite('lutherie'),
@@ -2526,6 +2539,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   ondes: 'earth',
   // Le Fanal : l'herbe grise du Cirque.
   fanal: 'earth',
+  // La Rampe : l'herbe grise du Cirque.
+  rampe: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

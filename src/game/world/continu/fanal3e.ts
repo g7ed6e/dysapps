@@ -589,8 +589,8 @@ function prismGlass(b: FacetBuilder, at: Vec3, s: number): void {
 
 /**
  * La fin des Ferrailleurs (proposition du Cirque ; ./ferrailleurs3e.ts), jouée une fois, après le bilan de la dernière
- * partie : les pièces quittent la gondole du zeppelin, le râtelier paraît au pied du Fanal, côté Rampe (à l'est du socle,
- * sa face vers la Rampe), les pièces s'y rangent l'une après l'autre, puis Grappin, et la lumière du port, au nord. Les
+ * partie : les pièces quittent la gondole du zeppelin, le râtelier paraît au pied du Fanal, côté Rampe (au sud-est du socle,
+ * sa face vers la Rampe, au sud de la rampe et de son cabestan), les pièces s'y rangent l'une après l'autre, puis Grappin, et la lumière du port, au nord. Les
  * instants (en secondes) ; le râtelier et Grappin, dans le repère du lieu.
  */
 const RETURN = {
@@ -600,8 +600,8 @@ const RETURN = {
   pieces: [1.2, 1.6, 2.0, 2.4, 2.8] as const,
   grappin: 3.0,
   port: 3.4,
-  rackAt: { x: 8.9, z: 0.6 },
-  grappinAt: { x: 10.0, z: 3.4 },
+  rackAt: { x: 9.6, z: 6.6 },
+  grappinAt: { x: 10.7, z: 9.3 },
 } as const;
 
 /** Les pièces sur la gondole, dessinées une fois. */

@@ -286,6 +286,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   ondes: placeArt('ondes')!.sceneSpot,
   // Le Fanal : sur l'herbe grise du creux, devant la porte des salles du socle, la mer de nuages au nord-ouest.
   fanal: placeArt('fanal')!.sceneSpot,
+  // La Rampe : sur l'herbe au sud de la rampe, à l'ouest de la porte, la rampe de trois quarts et le Fanal au fond.
+  rampe: placeArt('rampe')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -611,6 +613,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   ondes: 'lieu',
   // Le Fanal : les verres taillés, en rang sur une banquette de velours.
   fanal: 'lieu',
+  // La Rampe : les poulies de fer bruni, en rang sur un établi.
+  rampe: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

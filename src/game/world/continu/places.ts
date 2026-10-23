@@ -2548,7 +2548,7 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   abri: northPlace('abri'),
   jardin: northPlace('jardin'),
   fanal: northPlace('fanal'),
-  rampe: ruinOnly(RUINS_3E.rampe),
+  rampe: northPlace('rampe'),
   standard: ruinOnly(RUINS_3E.standard),
   kiosque: northPlace('kiosque'),
   maquette: northPlace('maquette'),
