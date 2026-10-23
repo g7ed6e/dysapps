@@ -14,7 +14,7 @@ import { COMMON_DETOUR_VIEW, KEO_WORLD_SCALE, followPose, lookUp, occlusionLift,
 import { WHOLE, constructionFacets, doorOf, ruinFacets } from './construction';
 import type { Facets } from './facets';
 import { floraOf } from './flora';
-import { habitantModelName } from './habitants';
+import { HABITANT_STATURES, habitantModelName } from './habitants';
 import { OPEN_WORLD_LEVELS, hasScenette, levelOfPlace, planFor, type OpenWorldLevel, type PlaceId, type ScenePlaceId } from './levelPlan';
 import { levelWorld } from './levelWorld';
 import { arrivalViewOf, doorViewOf, placeArt } from './northShore';
@@ -162,9 +162,23 @@ describe('les habitants hors de leur scénette', () => {
         expect(worldHabitantScale(id), p.id).toBeCloseTo(KEO_WORLD_SCALE / scenetteKeo(id).scale, 9);
         // Kéo mesure deux unités à l'échelle 1 (`TAILLE_DU_BONHOMME`).
         const keo = 2 * KEO_WORLD_SCALE;
-        expect(worldHabitantHeight(id) / keo, p.id).toBeGreaterThan(1);
-        expect(worldHabitantHeight(id) / keo, p.id).toBeLessThan(1.3);
+        // Son corps, sans ce qui dépasse de sa tête : ses épaules ramenées à la hauteur d'un corps aux épaules typiques.
+        const body = (worldHabitantHeight(id) * HABITANT_STATURES[id]!.shoulders) / 0.795;
+        expect(body / keo, p.id).toBeGreaterThan(1);
+        expect(body / keo, p.id).toBeLessThan(1.3);
       }
+  });
+
+  it('des tailles cohérentes : les épaules de chacun à 3 % de celles des autres de son sexe, les femmes un peu plus petites en moyenne', () => {
+    const shoulders = (id: ScenePlaceId) => worldHabitantHeight(id) * HABITANT_STATURES[id]!.shoulders;
+    const all = OPEN_WORLD_LEVELS.flatMap((l) => planFor(l).places.map((p) => p.id as ScenePlaceId));
+    const mean = (ids: ScenePlaceId[]) => ids.reduce((s, id) => s + shoulders(id), 0) / ids.length;
+    const women = all.filter((id) => HABITANT_STATURES[id]!.woman);
+    const men = all.filter((id) => !HABITANT_STATURES[id]!.woman);
+    expect(women.length).toBeGreaterThan(20);
+    expect(men.length).toBeGreaterThan(20);
+    for (const [group, m] of [[women, mean(women)], [men, mean(men)]] as const) for (const id of group) expect(Math.abs(shoulders(id) / m - 1), id).toBeLessThan(0.035);
+    expect(mean(women) / mean(men)).toBeCloseTo(0.94, 2);
   });
 
   it('au plus seize par niveau : autant de cases dans la texture qui réunit leurs images', () => {

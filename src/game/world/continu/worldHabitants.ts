@@ -14,7 +14,7 @@
 import { KEO_WORLD_SCALE } from './camera';
 import { doorOf } from './construction';
 import type { Vec3 } from './geometry';
-import { HABITANT_HEIGHT, habitantFit } from './habitants';
+import { habitantFit, habitantHeight } from './habitants';
 import { hasScenette, placeById, type PlaceId, type ScenePlaceId } from './levelPlan';
 import { doorViewOf } from './northShore';
 import { scenetteHabitant, scenetteKeo } from './scenette';
@@ -165,7 +165,7 @@ export function worldHabitantYaw(place: ScenePlaceId): number {
 export const worldHabitantScale = (place: ScenePlaceId): number => KEO_WORLD_SCALE / scenetteKeo(place).scale;
 
 /** La hauteur de l'habitant hors de la scénette, ses pieds à sa tête (pour poser ses pastilles au-dessus de lui). */
-export const worldHabitantHeight = (place: ScenePlaceId): number => HABITANT_HEIGHT * worldHabitantScale(place);
+export const worldHabitantHeight = (place: ScenePlaceId): number => habitantHeight(place) * worldHabitantScale(place);
 
 /**
  * Les sommets de la version de loin d'un habitant (ceux de son fichier, trois nombres chacun) mis à sa place près de sa
@@ -174,7 +174,7 @@ export const worldHabitantHeight = (place: ScenePlaceId): number => HABITANT_HEI
 export function placeWorldHabitant(place: PlaceId, positions: Float32Array, ground: (x: number, z: number) => number): Float32Array | null {
   const at = worldHabitantAt(place, ground);
   if (!at || !hasWorldHabitant(place)) return null;
-  const fit = habitantFit(positions);
+  const fit = habitantFit(positions, habitantHeight(place));
   const k = fit.scale * worldHabitantScale(place);
   const yaw = worldHabitantYaw(place) + fit.yaw;
   const [c, s] = [Math.cos(yaw), Math.sin(yaw)];

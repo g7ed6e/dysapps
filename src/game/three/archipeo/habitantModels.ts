@@ -10,7 +10,7 @@
 import * as THREE from 'three';
 import { loadHabitant, RELANCE_MS } from '../../importedCharacters';
 import type { ModeleTexture } from '../../world/characters/imported/glb';
-import { forgetHabitant, habitantFit, habitantModelName, registerHabitant, type HabitantFit } from '../../world/continu/habitants';
+import { forgetHabitant, habitantFit, habitantHeight, habitantModelName, registerHabitant, type HabitantFit } from '../../world/continu/habitants';
 import type { PlaceId } from '../../world/continu/levelPlan';
 
 /** Combien de modèles prêts la vue garde (le lieu approché, et celui de la scénette ouverte). */
@@ -75,7 +75,7 @@ export function createHabitantModels(scene: THREE.Scene, prepare: (t: THREE.Text
     geometry.setAttribute('position', new THREE.BufferAttribute(m.positions, 3));
     geometry.setAttribute('uv', new THREE.BufferAttribute(m.uvs, 2));
     geometry.setIndex(new THREE.BufferAttribute(m.positions.length / 3 <= 65536 ? Uint16Array.from(m.indices) : m.indices, 1));
-    const fit = habitantFit(m.positions);
+    const fit = habitantFit(m.positions, habitantHeight(place));
     // Les pieds à l'origine, centré sur ses jambes : la mise en place du registre, sans l'échelle ni le cap (ceux du maillage).
     geometry.translate(-fit.center.x, -fit.center.y, -fit.center.z);
     geometry.computeBoundingSphere();
