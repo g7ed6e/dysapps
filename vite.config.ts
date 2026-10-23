@@ -133,14 +133,16 @@ export default defineConfig({
         // qui guident les scénettes (`equipier-*.glb`, 0,9 Mo, GD-23) de même : hors ligne, Kéo seul tant qu'ils n'ont pas été vus.
         globIgnores: ['splash/**', 'assets/habitant-*.glb', 'assets/equipier-*.glb'],
         // Un habitant chargé une fois (son lieu approché) reste servi du cache, sans réseau ; le nom de son fichier change
-        // à chaque nouvelle version, l'ancien sort par le nombre (les soixante-quatre, habitants et équipiers, et la marge d'une version) ou par l'âge.
+        // à chaque nouvelle version, l'ancien sort par le nombre (les soixante-quatre, habitants et équipiers, et la marge d'une version) ou par l'âge ;
+        // sur une tablette au quota serré, le cache se vide plutôt que d'échouer (`purgeOnQuotaError`) : les modèles reviennent
+        // du réseau, et hors ligne les pions les remplacent.
         runtimeCaching: [
           {
             urlPattern: /\/assets\/(?:habitant|equipier)-[\w-]+\.glb$/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'dysapps-habitants-3d',
-              expiration: { maxEntries: 128, maxAgeSeconds: 90 * 24 * 60 * 60 },
+              expiration: { maxEntries: 128, maxAgeSeconds: 90 * 24 * 60 * 60, purgeOnQuotaError: true },
               cacheableResponse: { statuses: [200] },
             },
           },

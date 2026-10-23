@@ -118,6 +118,11 @@ export interface OpenWorldOptions {
   plan: LevelPlan;
   /** Le lieu où Kéo se tient au départ, ou l'endroit de l'Escale (son quai, une porte de l'école…). */
   start: PlaceId | PortSpot;
+  /**
+   * Les pièces du Rafiot rendues au Fanal du 3e (la fin des Ferrailleurs jouée) : au 4e, le pont du Rafiot est vide
+   * (`Departure.decor`). Lu à la création : le Fanal ne se restaure pas pendant qu'on est au 4e.
+   */
+  piecesReturned?: boolean;
   /** « Réduire les animations » : Kéo arrive tout de suite, la caméra le suit d'un bloc. */
   reduceMotion: boolean;
   /** Kéo est arrivé : devant un lieu qu'on lui a demandé (`place`), ou sur un point du chemin (`null`). */
@@ -1406,7 +1411,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const nefBanc = nefSite.obstacle();
   const nefStays = nefSite.stays();
   const nefAfter = nefSite.after();
-  const siteDecor = departure.decor();
+  const siteDecor = departure.decor(options.piecesReturned);
   // Le décor hors de la Carte (au 3e, le zeppelin), dans le même maillage.
   const offMapDecor = departure.offMap?.() ?? null;
   /** Le temps que les parties nouvelles de la Nef mettent à descendre sur le ber. */

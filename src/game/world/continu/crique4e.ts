@@ -312,7 +312,7 @@ const RAFIOT_PIECE_AT: Readonly<Record<RafiotPiece, readonly [number, number]>> 
 
 /**
  * Les six pièces de bronze du Rafiot, boulonnées sur le pont arrière, en décor, sans texte ; leurs faces debout
- * regardent les flancs (on voit le Rafiot de flanc). Elles ne changent pas avec les lieux.
+ * regardent les flancs (on voit le Rafiot de flanc). Elles ne changent pas avec les lieux du 4e.
  */
 function bronzes(b: FacetBuilder): void {
   for (const id of RAFIOT_PIECES) rafiotPiece(b, id, RAFIOT_PIECE_AT[id][0], RAFIOT_DECK, RAFIOT_PIECE_AT[id][1], RAFIOT_COLORS);
@@ -323,10 +323,11 @@ function bronzes(b: FacetBuilder): void {
  * fer rouillé sombre, la proue relevée, sa ligne de flottaison sombre, son liston de bois ; sa cabine de bois, ses
  * fenêtres en aplats sombres, sans lanterne ; une cheminée courte ceinte de fer bruni et sa fumée courte et basse, plus
  * sombre que le panache, couchée vers le sud-est, jamais plus haute que deux fois la cheminée ; ses six pièces de bronze
- * sur le pont arrière. De flanc, vu du quai de la Crique (`RAFIOT_4E.yaw`). Et le quai abandonné, de planches, où il est
- * amarré.
+ * sur le pont arrière, tant que la bande ne les a pas rendues au Fanal du 3e (`returned` : le pont vide, consultant
+ * d'Archipéo, relecture de la PR du 3e). De flanc, vu du quai de la Crique (`RAFIOT_4E.yaw`). Et le quai abandonné, de
+ * planches, où il est amarré.
  */
-function rafiotFacets(): Facets {
+function rafiotFacets(returned: boolean): Facets {
   const b = new FacetBuilder();
   const C = RAFIOT_COLORS;
   // La coque, en quatre bandes de bordé : la flottaison (de sous l'eau à 0,3), la coque, le liston qui déborde, le plat-bord.
@@ -375,7 +376,7 @@ function rafiotFacets(): Facets {
   const funnel = { z: 1.5, y: roof + 0.14, h: 1.05, r: 0.36 } as const;
   b.prism({ x: 0, y: funnel.y, z: funnel.z }, funnel.r, funnel.r - 0.02, funnel.h, 8, C.funnel, C.roof);
   b.band({ x: 0, y: funnel.y + 0.6, z: funnel.z }, funnel.r + 0.03, 0.18, 8, C4E.iron);
-  bronzes(b);
+  if (!returned) bronzes(b);
   const boat = placeFacets(b.build(), { x: RAFIOT_4E.at.x, y: 0, z: RAFIOT_4E.at.z, yaw: RAFIOT_4E.yaw });
   // La fumée, un panache court (retouche 1 du directeur artistique et du consultant d'Archipéo : trois prismes posés en
   // l'air se lisaient comme des pierres) : la première bouffée posée sur le haut de la cheminée, plus large en bas qu'en
@@ -481,8 +482,11 @@ export function aiguillesFacets(): Facets {
   return b.build();
 }
 
-/** Le décor de la Crique qui ne change pas : le volcan vu de loin, sa lave figée et son panache ; la digue, le Rafiot, les Aiguilles. */
-export const criqueDecorFacets = (): Facets => mergeFacets([volcanoFarFacets(), lavaFacets(), plumeFacets(), digueFacets(), rafiotFacets(), aiguillesFacets()]);
+/**
+ * Le décor de la Crique : le volcan vu de loin, sa lave figée et son panache ; la digue, le Rafiot, les Aiguilles ;
+ * `returned` : les six pièces du Rafiot rendues au Fanal du 3e, son pont vide.
+ */
+export const criqueDecorFacets = (returned = false): Facets => mergeFacets([volcanoFarFacets(), lavaFacets(), plumeFacets(), digueFacets(), rafiotFacets(returned), aiguillesFacets()]);
 
 // ---------- L'aéronef ----------
 

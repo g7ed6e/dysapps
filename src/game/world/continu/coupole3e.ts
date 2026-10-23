@@ -19,9 +19,9 @@ import type { Stage } from './construction';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, armLantern3e, dryTuft3e, habitant3e, lantern3e, onCircle, postLantern3e, site3e } from './place3eKit';
+import { C3E, armLantern3e, dryTufts3e, habitant3e, lantern3e, onCircle, pathLantern3e, scene3e, site3e } from './place3eKit';
 import { COLORS_3E } from './plan3e';
-import { capOf, groundPlane4e, inWorld, once, quadOut, sceneRight, sceneRise, sheet } from './place4eKit';
+import { capOf, groundPlane4e, inWorld, once, quadOut, sheet } from './place4eKit';
 
 type P3 = [number, number, number];
 
@@ -431,7 +431,7 @@ function model(add: AddPiece): void {
     haut,
   );
   // Les abords effacent l'herbe sèche.
-  add('ruine', 0, (b) => DRY.forEach((d) => dryTuft3e(b, d.x, planeY(d.x, d.z), d.z, d.s)), abords);
+  add('ruine', 0, (b) => dryTufts3e(b, DRY, planeY), abords);
 
   // ---- Les murs : les deux pans refaits, les six hautes fenêtres vitrées, les deux battants de la porte, ouverts.
   add(0, 0, (b) => {
@@ -456,8 +456,7 @@ function model(add: AddPiece): void {
   add(2, 0, (b) => {
     threshold(b);
     for (const s of BENCHES) bench(b, s.x, s.z, s.yaw);
-    const p = PATH_LANTERN;
-    postLantern3e(b, p.x, planeY(p.x, p.z), p.z, p.h, true);
+    pathLantern3e(b, PATH_LANTERN, planeY);
   });
 }
 
@@ -553,17 +552,8 @@ const TRACES = {
 /** Le cap de départ de la scénette (proposition, § 4) : au nord-ouest, la Coupole à droite, la Prairie au loin. */
 const SCENE_START = capOf(315);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers le libraire). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : au seuil, à l'est des bancs, la porte à droite. */
 const SCENE_SPOT = { dx: 1.9, dz: 7.6, half: [2.4, 1.2] as [number, number] } as const;
-
-/** L'écart de Kéo et du libraire au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : l'herbe de la Prairie. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** La table des livres : sa hauteur à l'échelle 1 ; un livre choisi se soulève d'un cran. */
 const DESK = { height: 0.62, lift: 0.28, book: 0.24 } as const;
@@ -578,17 +568,8 @@ export const COUPOLE: PlaceArt = {
   role: 'Le libraire',
   model,
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 3.2, depth: 0.3 },
-    pitch: (10 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et le libraire de part et d'autre de son milieu ; son sol, l'herbe de la Prairie.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 3.2, pitch: 10 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x8a7a6a);
   },

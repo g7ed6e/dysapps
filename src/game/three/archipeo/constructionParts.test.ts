@@ -12,7 +12,7 @@ import { planCells, plansFor } from '../../world/plans';
 import { phraseDeLaPose } from '../../poseWords';
 import type { OpenPlace } from '../../world/continu/levelPlan';
 import { planFor } from '../../world/continu/levelPlan';
-import { constructionState, mapStateWord, ofOpenPlace, partShapes, placeConstruction, posedShapes, stagePoseWords, stateWord } from './constructionParts';
+import { constructionState, fanalRestored, mapStateWord, ofOpenPlace, partShapes, placeConstruction, posedShapes, stagePoseWords, stateWord } from './constructionParts';
 
 const field = buildHeightField();
 const ground = (x: number, z: number) => heightOnMesh(field, x, z);
@@ -197,3 +197,13 @@ describe('Le bilan d’un lieu du 5e nomme l’étape, jamais le plan (directeur
 });
 
 afterEach(() => retenirReglages(null));
+
+describe('La fin des Ferrailleurs, lue au 4e (le pont du Rafiot vide)', () => {
+  it('vraie seulement quand toutes les parties du Fanal du 3e sont posées', () => {
+    const island = planFor('3e').places.find((p) => p.id === 'fanal')!.island as BiomeId;
+    expect(fanalRestored({})).toBe(false);
+    const one = poserLesParties(island, {}, 1).parts;
+    expect(fanalRestored(one)).toBe(false);
+    expect(fanalRestored(poserLesParties(island, one, 99).parts)).toBe(true);
+  });
+});

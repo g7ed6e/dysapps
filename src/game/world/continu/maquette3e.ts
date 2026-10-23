@@ -19,8 +19,8 @@ import type { Stage } from './construction';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, SINK_3E, armLantern3e, dryTuft3e, habitant3e, lantern3e, onCircle, postLantern3e, site3e } from './place3eKit';
-import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise } from './place4eKit';
+import { C3E, SINK_3E, armLantern3e, dryTuft3e, habitant3e, lantern3e, onCircle, pathLantern3e, scene3e, site3e } from './place3eKit';
+import { capOf, groundPlane4e, inWorld, once } from './place4eKit';
 
 /**
  * Les couleurs propres à la Maquette, en plus des matières des Passeurs (`C3E`) : le bois peint du relief (la plaine,
@@ -395,8 +395,7 @@ function model(add: AddPiece): void {
       stool(l, DESK.a - 0.5, DESK.c + 0.75, true);
       stool(l, DESK.a + 0.5, DESK.c + 0.75, true);
     });
-    const p = PATH_LANTERN;
-    postLantern3e(b, p.x, planeY(p.x, p.z), p.z, p.h, true);
+    pathLantern3e(b, PATH_LANTERN, planeY);
   });
 }
 
@@ -466,17 +465,8 @@ const TRACES = {
 /** Le cap de départ de la scénette (proposition, § 4) : à l'ouest-nord-ouest, vers le relief, la halle de biais, la mer de nuages au-delà. */
 const SCENE_START = capOf(300);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers l'urbaniste). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : au bord du relief, côté est, dehors, en face de deux poteaux. */
 const SCENE_SPOT = { dx: 5.8, dz: 1.5, half: [2.4, 1.2] as [number, number] } as const;
-
-/** L'écart de Kéo et de l'urbaniste au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : l'herbe. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** Le rebord de table des pions : sa hauteur à l'échelle 1 ; un pion choisi se soulève d'un cran. */
 const LEDGE = { height: 0.55, lift: 0.3, pawn: 0.36 } as const;
@@ -491,17 +481,8 @@ export const MAQUETTE: PlaceArt = {
   role: 'L’urbaniste',
   model,
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 3.2, depth: 0.3 },
-    pitch: (10 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et l'urbaniste de part et d'autre de son milieu ; son sol, l'herbe.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 3.2, pitch: 10 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x4f4339);
   },

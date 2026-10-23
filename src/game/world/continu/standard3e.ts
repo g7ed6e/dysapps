@@ -21,138 +21,17 @@
 //
 // Les poteaux portent loin (de 9 à 45 unités) : hors du premier, ils sont hors du modèle du lieu (`PlaceArt.reach`, comme
 // les câbles des Nacelles du 5e), sans effet sur la marche, la flore, la caméra ni le toucher, absents de la Carte. Code pur.
+//
+// Le Standard se lit en trois fichiers : son repère et son plan (./standardFrame3e.ts), la ligne des poteaux
+// (./standardLine3e.ts), et ici la salle, sa ruine, ses traces et sa scénette.
 import type { Stage } from './construction';
-import { drawPosed, FacetBuilder, type Facets } from './facets';
-import { FANAL_LAYOUT } from './fanal3e';
-import type { Vec2, Vec3 } from './geometry';
+import { drawPosed, type FacetBuilder } from './facets';
+import type { Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, SINK_3E, armLantern3e, dryTuft3e, habitant3e, postLantern3e, site3e } from './place3eKit';
-import { capOf, inWorld, once, sceneRight, sceneRise, sheet, type P3 } from './place4eKit';
-import { PLACES_3E } from './plan3e';
-
-/**
- * Les couleurs propres au Standard : le creux d'une douille, un brun d'ombre (jamais presque noir) ; les trois cordons ;
- * le fil des poteaux, un gris fer froid ; le verre des isolateurs ; la veste de la télégraphiste.
- */
-const C = {
-  hollow: 0x5c5650,
-  cords: [0x9a5a48, 0xb8a582, 0x6f8a8a] as const,
-  wire: 0x585b5a,
-  glass: 0xa9bccc,
-  coat: 0x5f7f86,
-} as const;
-
-// ---------- Le repère du lieu ----------
-
-const SITE = site3e('standard');
-const FANAL_SITE = site3e('fanal');
-
-/** Le cap où regarde la façade (en degrés depuis le nord) : l'est-sud-est, vers la porte ; la vue d'arrivée regarde à 297°. */
-const FACING = 117;
-const TURN = ((FACING - 180) * Math.PI) / 180;
-/** Le lacet du repère de la salle (`drawPosed`) : son `x` vers la droite de qui regarde la façade, son `z` vers le devant. */
-const YAW = -TURN;
-
-/** Un point du repère de la salle dans le repère du lieu. */
-const local = (x: number, z: number): Vec2 => ({
-  x: x * Math.cos(TURN) - z * Math.sin(TURN),
-  z: x * Math.sin(TURN) + z * Math.cos(TURN),
-});
-
-/** Le sol sous un point du repère de la salle. */
-const groundAt = (x: number, z: number): number => {
-  const p = local(x, z);
-  return SITE.ground(p.x, p.z);
-};
-
-/** Dessine dans le repère de la salle. */
-const posed = (b: FacetBuilder, draw: (l: FacetBuilder) => void): void => drawPosed(b, { x: 0, y: 0, z: 0, yaw: YAW }, draw);
-
-/**
- * La salle : de `x0` à `x1` le long de la façade, de `z0` (le dos) à `z1` (la façade) ; l'épaisseur et la hauteur de ses
- * murs ; son socle ; son toit (débord, hauteur du faîte, part enneigée) ; la grande baie de la façade, ouverte.
- */
-const ROOM = {
-  x0: -4.0,
-  x1: 4.0,
-  z0: -3.8,
-  z1: -0.5,
-  wall: 0.35,
-  h: 3.3,
-  plinth: 0.3,
-  eave: 0.3,
-  ridge: 1.6,
-  snow: 0.3,
-  bay: { x0: -2.8, x1: 2.8, h: 3.0 },
-} as const;
-
-/** L'auvent contre la façade : son bord, la hauteur de son toit au mur et au bord, ses deux poteaux. */
-const AWNING = { x0: -4.2, x1: 4.2, z1: 0.5, wallY: 3.3, edgeY: 3.15, posts: [-3.9, 3.9] as const, post: 0.18 } as const;
-
-/** Le tableau à fiches, contre le mur du fond : son milieu, sa largeur, son bas et son haut ; ses rangs de douilles. */
-const BOARD = { x: 0, w: 3.4, y0: 0.55, y1: 1.85, rows: [0.95, 1.28, 1.6] as const, cols: 9 } as const;
-
-/** La rangée des lampes témoins, au-dessus du tableau : leur hauteur, leur taille, leurs places. */
-const LAMPS = { y: 1.9, s: 0.28, xs: [-1.5, -1.0, -0.5, 0, 0.5, 1.0, 1.5] as const } as const;
-
-/** Le bureau devant le tableau : son milieu, sa largeur, sa profondeur, sa hauteur. */
-const DESK = { x: 0, w: 2.8, d: 0.6, h: 0.78 } as const;
-
-/** Le premier poteau, à droite de la salle, d'où les fils partent vers le Fanal ; sa hauteur et sa traverse. */
-const POLE = { x: 6.6, z: -2.4, h: 5.0, arm: 1.2 } as const;
-
-/** Le tableau couché (la ruine), devant la salle, à droite ; la moitié gauche du pan avant tombée, à gauche. */
-const FALLEN_BOARD = { x: 2.0, z: 2.4 } as const;
-/**
- * Le pan avant tombé, en deux morceaux : l'un couché devant la salle, à gauche, l'ardoise vers la porte (`flat`) ; l'autre
- * debout contre le trumeau gauche, son dessous de bois et ses trois chevrons tournés vers la porte (`leaning`).
- */
-const FALLEN_PAN = {
-  flat: { x0: -4.6, x1: -1.4, back: 1.3, front: 3.1, lift: 0.55 },
-  leaning: { x0: -4.9, x1: -3.0, foot: 1.2, top: 2.3 },
-} as const;
-
-/** Le chemin de pierre claire, du devant de l'auvent vers la porte du lieu ; la lanterne du chemin, à sa droite. */
-const ALLEY = { x: 0, half: 0.85, end: 7.6 } as const;
-const PATH_LANTERN = { x: 2.0, z: 5.4, h: 1.4 } as const;
-
-/** L'herbe sèche de la ruine, au pied de la salle. */
-const DRY = [
-  { x: -4.6, z: 2.8, s: 1 },
-  { x: 5.0, z: -0.4, s: 0.9 },
-  { x: -5.0, z: -2.8, s: 0.85 },
-  { x: 2.0, z: 6.4, s: 0.8 },
-] as const;
-
-// ---------- La ligne des poteaux, dans le repère du lieu ----------
-
-/** Le centre du Fanal, depuis le centre du Standard. */
-const FANAL_AT: Vec2 = (() => {
-  const f = PLACES_3E.find((p) => p.id === 'fanal')!.center;
-  return { x: f.x - SITE.center.x, z: f.z - SITE.center.z };
-})();
-
-/** Les six poteaux, du premier, à droite de la salle, au dernier, à l'ouest du Fanal, en ligne droite, à pas égaux. */
-const LINE: readonly Vec2[] = (() => {
-  const a = local(POLE.x, POLE.z);
-  const b = { x: FANAL_AT.x - 9.5, z: FANAL_AT.z - 1.0 };
-  return [0, 1, 2, 3, 4, 5].map((k) => ({ x: a.x + ((b.x - a.x) * k) / 5, z: a.z + ((b.z - a.z) * k) / 5 }));
-})();
-
-/** La ferrure du Fanal, où les fils s'attachent : sur la façade ouest de son second gradin, sous la tour. */
-const FANAL_HOOK = (() => {
-  const S = FANAL_LAYOUT.socle.high;
-  return {
-    x: FANAL_AT.x - S.x - 0.12,
-    z: FANAL_AT.z - 1.0,
-    get y() {
-      return FANAL_SITE.h0 + FANAL_LAYOUT.base() + S.top - 0.9 - SITE.h0;
-    },
-  };
-})();
-
-/** Le lacet des traverses : en travers de la ligne. */
-const LINE_YAW = Math.atan2(-(LINE[5].z - LINE[0].z), LINE[5].x - LINE[0].x) + Math.PI / 2;
+import { C3E, SINK_3E, armLantern3e, dryTufts3e, habitant3e, pathLantern3e, scene3e } from './place3eKit';
+import { capOf, inWorld, sheet, type P3 } from './place4eKit';
+import { ALLEY, AWNING, BOARD, C, DESK, DRY, FACING, FALLEN_BOARD, FALLEN_PAN, LAMPS, PATH_LANTERN, POLE, ROOM, SITE, YAW, base, floor, groundAt, local, posed } from './standardFrame3e';
+import { FANAL_AT, FANAL_HOOK, LINE, firstPole, firstWires, firstWiresDown, poleLine } from './standardLine3e';
 
 // ---------- La vue ----------
 
@@ -163,12 +42,6 @@ const DOOR_VIEW = capOf(FACING + 180);
 const DOOR_FRAME = { height: -1.0, back: 0.9 } as const;
 
 // ---------- Les volumes ----------
-
-/** Le pied de la salle : le plus bas du sol sous ses coins et le bord de son auvent. */
-const base = once(() => Math.min(...[ROOM.x0, ROOM.x1].flatMap((x) => [ROOM.z0, AWNING.z1].map((z) => groundAt(x, z)))) - 0.05);
-
-/** Le plancher : le dessus du socle, sous la salle et son auvent. */
-const floor = (): number => base() + ROOM.plinth;
 
 /** Le point du nom sur la Carte, au-dessus de la salle, le même en ruine et restauré. */
 const MAP_POINT: Vec3 = {
@@ -383,102 +256,6 @@ function headset(l: FacetBuilder): void {
   l.beam({ x, y: y + 0.24, z }, { x: x + 0.13, y: y + 0.08, z }, 0.035, C3E.iron);
 }
 
-/** Un poteau de bois sur l'herbe en (`x`, `z`) (repère du lieu), au sol `y`, sa traverse en travers de la ligne et ses deux isolateurs de verre ; penché de `lean`. */
-function pole(b: FacetBuilder, x: number, y: number, z: number, lean = 0): void {
-  drawPosed(b, { x, y: y - 0.3, z, yaw: LINE_YAW, pitch: lean }, (k) => {
-    k.prism({ x: 0, y: 0, z: 0 }, 0.13, 0.1, POLE.h + 0.3, 6, C3E.woodShade, C3E.wood);
-    k.box({ x: 0, y: POLE.h - 0.1, z: 0 }, [POLE.arm, 0.12, 0.14], C3E.woodShade, C3E.wood);
-    for (const s of [-1, 1]) k.box({ x: s * (POLE.arm / 2 - 0.1), y: POLE.h + 0.02, z: 0 }, [0.09, 0.14, 0.09], C.glass);
-  });
-}
-
-/** Les deux points d'attache d'un poteau debout (repère du lieu, au sol `y`). */
-function hooks(x: number, y: number, z: number): [Vec3, Vec3] {
-  const c = Math.cos(LINE_YAW),
-    s = Math.sin(LINE_YAW);
-  const d = POLE.arm / 2 - 0.1;
-  const top = y + POLE.h - 0.3 + 0.3 + 0.16;
-  return [
-    { x: x + d * c, y: top, z: z - d * s },
-    { x: x - d * c, y: top, z: z + d * s },
-  ];
-}
-
-/** Un fil tendu d'un point à l'autre, un peu creusé au milieu. */
-function wire(b: FacetBuilder, a: Vec3, c: Vec3, sag = 0.35): void {
-  const m = { x: (a.x + c.x) / 2, y: (a.y + c.y) / 2 - sag, z: (a.z + c.z) / 2 };
-  b.beam(a, m, 0.05, C.wire);
-  b.beam(m, c, 0.05, C.wire);
-}
-
-/** Un fil tombé : du point `a` jusqu'à l'herbe, puis une boucle lâche couchée dans l'herbe vers `c`. */
-function wireDown(b: FacetBuilder, a: Vec3, c: Vec2, ground: (x: number, z: number) => number): void {
-  const m = { x: a.x + (c.x - a.x) * 0.35, z: a.z + (c.z - a.z) * 0.35 + 0.6 };
-  const e = { x: c.x, z: c.z - 0.5 };
-  b.beam(a, { x: m.x, y: ground(m.x, m.z) + 0.04, z: m.z }, 0.05, C.wire);
-  b.beam({ x: m.x, y: ground(m.x, m.z) + 0.04, z: m.z }, { x: e.x, y: ground(e.x, e.z) + 0.04, z: e.z }, 0.05, C.wire);
-}
-
-/** La ferrure de la salle, au haut de son pignon droit, d'où partent les deux fils. */
-const ROOM_HOOK = (): Vec3 => {
-  const p = local(ROOM.x1 + 0.1, (ROOM.z0 + ROOM.z1) / 2);
-  return { x: p.x, y: floor() + ROOM.h + ROOM.ridge * 0.55, z: p.z };
-};
-
-/** Le premier poteau, toujours debout, dans le repère du lieu. */
-function firstPole(b: FacetBuilder): void {
-  const p = LINE[0];
-  pole(b, p.x, SITE.ground(p.x, p.z), p.z);
-}
-
-/** Les fils du premier poteau : de la ferrure du pignon au poteau (les abords). */
-function firstWires(b: FacetBuilder): void {
-  const p = LINE[0];
-  const h = ROOM_HOOK();
-  for (const [k, q] of hooks(p.x, SITE.ground(p.x, p.z), p.z).entries()) wire(b, { ...h, y: h.y - 0.2 * k }, q, 0.25);
-}
-
-/** Les fils tombés du premier poteau (la ruine), en boucle lâche dans l'herbe, vers le deuxième. */
-function firstWiresDown(b: FacetBuilder): void {
-  const p = LINE[0];
-  const [q] = hooks(p.x, SITE.ground(p.x, p.z), p.z);
-  wireDown(b, q, { x: (LINE[0].x + LINE[1].x) / 2, z: (LINE[0].z + LINE[1].z) / 2 }, SITE.ground);
-}
-
-/**
- * Ce que le Standard pose au-delà de son emprise (`reach`) : en ruine, le deuxième poteau penché, le troisième debout, un
- * fil qui pend jusqu'à l'herbe ; les abords posés, les cinq autres poteaux debout, et leurs fils tendus de poteau en poteau
- * jusqu'à la ferrure du Fanal. `c` : le centre du lieu à son sol.
- */
-function poleLine(c: Vec3, done: boolean): Facets {
-  const b = new FacetBuilder();
-  const g = (x: number, z: number) => c.y + SITE.ground(x, z);
-  inWorld(b, { x: c.x, y: 0, z: c.z }, (l) => {
-    if (!done) {
-      const [p1, p2] = [LINE[1], LINE[2]];
-      pole(l, p1.x, g(p1.x, p1.z), p1.z, 0.42);
-      pole(l, p2.x, g(p2.x, p2.z), p2.z);
-      const [q] = hooks(p2.x, g(p2.x, p2.z), p2.z);
-      wireDown(l, q, { x: p2.x - 2.6, z: p2.z + 0.4 }, g);
-      return;
-    }
-    for (const p of LINE.slice(1)) pole(l, p.x, g(p.x, p.z), p.z);
-    for (let k = 0; k < LINE.length - 1; k++) {
-      const a = hooks(LINE[k].x, g(LINE[k].x, LINE[k].z), LINE[k].z);
-      const e = hooks(LINE[k + 1].x, g(LINE[k + 1].x, LINE[k + 1].z), LINE[k + 1].z);
-      for (const i of [0, 1]) wire(l, a[i], e[i]);
-    }
-    // La ferrure du Fanal, et les deux derniers fils.
-    const H = FANAL_HOOK;
-    const hy = c.y + H.y;
-    l.box({ x: H.x, y: hy - 0.15, z: H.z }, [0.24, 0.3, 0.7], C3E.iron, C3E.ironTop);
-    const last = LINE[LINE.length - 1];
-    const e = hooks(last.x, g(last.x, last.z), last.z);
-    for (const [i, dz] of [-0.25, 0.25].entries()) wire(l, e[i], { x: H.x - 0.1, y: hy, z: H.z + dz }, 0.3);
-  });
-  return b.build();
-}
-
 /** Le chemin de pierre claire, du devant de l'auvent vers la porte du lieu, en dalles. */
 function alley(l: FacetBuilder): void {
   const n = 4;
@@ -527,7 +304,7 @@ function model(add: AddPiece): void {
     0,
     (b) => {
       firstWiresDown(b);
-      posed(b, (l) => DRY.forEach((d) => dryTuft3e(l, d.x, groundAt(d.x, d.z), d.z, d.s)));
+      posed(b, (l) => dryTufts3e(l, DRY, groundAt));
     },
     abords,
   );
@@ -558,8 +335,7 @@ function model(add: AddPiece): void {
     firstWires(b);
     posed(b, (l) => {
       alley(l);
-      const p = PATH_LANTERN;
-      postLantern3e(l, p.x, groundAt(p.x, p.z), p.z, p.h, true);
+      pathLantern3e(l, PATH_LANTERN, groundAt);
     });
   });
 }
@@ -652,20 +428,11 @@ const TRACES = {
 /** Le cap de départ de la scénette : à l'ouest-nord-ouest, vers la salle et le Lac au-delà, dos au pic. */
 const SCENE_START = capOf(290);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers la télégraphiste). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : sur l'herbe devant la salle, à gauche du chemin. */
 const SCENE_SPOT = (() => {
   const p = local(-3.4, 4.6);
   return { dx: p.x, dz: p.z, half: [2.4, 1.2] as [number, number] } as const;
 })();
-
-/** L'écart de Kéo et de la télégraphiste au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : l'herbe du creux. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, SITE.ground(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** Le rang des fiches : sa hauteur à l'échelle 1 ; une fiche choisie se soulève d'un cran. */
 const PLUGS = { height: 0.62, lift: 0.28, plug: 0.34 } as const;
@@ -680,17 +447,8 @@ export const STANDARD: PlaceArt = {
   role: 'La télégraphiste',
   model,
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 3.2, depth: 0.3 },
-    pitch: (4 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et la télégraphiste de part et d'autre de son milieu ; son sol, l'herbe du creux.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: SITE.ground, top: 3.2, pitch: 4 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x6a5444);
   },

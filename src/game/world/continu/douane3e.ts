@@ -22,8 +22,8 @@ import type { Stage } from './construction';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, SINK_3E, armLantern3e, dryTuft3e, habitant3e, lantern3e, onCircle, postLantern3e, site3e } from './place3eKit';
-import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise } from './place4eKit';
+import { C3E, SINK_3E, armLantern3e, dryTufts3e, habitant3e, lantern3e, onCircle, pathLantern3e, scene3e, site3e } from './place3eKit';
+import { capOf, groundPlane4e, inWorld, once } from './place4eKit';
 
 /**
  * Les couleurs propres à la Douane, en plus des matières des Passeurs (`C3E`) : la vitre éteinte des fenêtres (un gris
@@ -373,7 +373,7 @@ function model(add: AddPiece): void {
       house(b, (l) => {
         drawPosed(l, { x: -0.9, y: g(-0.9, 3.0), z: 3.0, yaw: 0.5 }, trunk);
         drawPosed(l, { x: -0.5, y: g(-0.5, 3.1) + 0.2, z: 3.1, yaw: -0.3, pitch: 1.3 }, trunk);
-        for (const d of DRY) dryTuft3e(l, d.x, g(d.x, d.z), d.z, d.s);
+        dryTufts3e(l, DRY, g);
       }),
     abords,
   );
@@ -414,8 +414,7 @@ function model(add: AddPiece): void {
       drawPosed(l, { x: BENCH.x - 0.3, y: 0.53, z: BENCH.z, yaw: 0 }, (s) => s.box({ x: 0, y: 0, z: 0 }, [0.55, 0.36, 0.3], C3E.leather));
       drawPosed(l, { x: BENCH.x + 1.25, y: g(BENCH.x + 1.25, BENCH.z + 0.2), z: BENCH.z + 0.2, yaw: 0.1 }, trunk);
     });
-    const p = PATH_LANTERN;
-    postLantern3e(b, p.x, planeY(p.x, p.z), p.z, p.h, true);
+    pathLantern3e(b, PATH_LANTERN, planeY);
   });
 }
 
@@ -504,17 +503,8 @@ export const DOUANE_RANKS = [
 /** Le cap de départ de la scénette (proposition, § 6) : au nord-ouest, vers le comptoir, la barrière au bord gauche. */
 const SCENE_START = capOf(300);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers le porteur). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, au repère du lieu : au sud-est du guichet, dehors, le comptoir devant, à gauche. */
 const SCENE_SPOT = { dx: 7.4, dz: 2.3, half: [2.4, 1.2] as [number, number] } as const;
-
-/** L'écart de Kéo et du porteur au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : l'herbe. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** Le râtelier des clés : la hauteur de sa barre à l'échelle 1 ; une clé choisie se soulève d'un cran. */
 const RACK = { height: 1.0, lift: 0.25, key: 0.42 } as const;
@@ -531,17 +521,8 @@ export const DOUANE: PlaceArt = {
   model,
   // L'étape la plus basse qui porte une trace ; chaque trace a sa partie (`stage`, `row` : 3 + 1 + 1).
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 3.2, depth: 0.3 },
-    pitch: (10 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et le porteur de part et d'autre de son milieu ; son sol, l'herbe.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 3.2, pitch: 10 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x6a5444);
   },
