@@ -27,7 +27,7 @@ import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
-import { groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, wallRun } from './place4eKit';
+import { brickCourses, groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, wallRun } from './place4eKit';
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter (places.ts). */
 const SINK = -0.8;
@@ -78,7 +78,8 @@ const C = {
 // ---------- Le repère du lieu ----------
 
 const CENTER: Vec2 = PLACES_4E.find((p) => p.id === 'etalon')!.center;
-const H0 = standingHeight(heightAt4e(CENTER));
+/** Le sol sous le centre, pris au premier usage, jamais à l'import (./place4eKit.ts). */
+const h0 = once(() => standingHeight(heightAt4e(CENTER)));
 
 /** Le sol du 4e sous un point du repère du lieu, depuis le sol de son centre. */
 const localGround = localGround4e(CENTER);
@@ -202,10 +203,16 @@ function hallBase(b: FacetBuilder): void {
   quadOut(b, [q[0][0], q[0][1] - 0.5, q[0][2]], [q[1][0], q[1][1] - 0.5, q[1][2]], q[1], q[0], [0, 0, 1], C.stoneShade);
 }
 
-/** Le haut de brique d'un mur, au-dessus du soubassement, de `top0` à `top1` au-dessus du sol (un haut cassé en biais). */
-function brickRun(b: FacetBuilder, alongX: boolean, at: number, from: number, to: number, top0: number, top1: number): void {
+/**
+ * Le haut de brique d'un mur, au-dessus du soubassement, de `top0` à `top1` au-dessus du sol (un haut cassé en biais) ; ses
+ * assises sur sa face du dehors, tournée vers `out` (le joint et le pas du Bastion : restes des Fabriques, décision du
+ * directeur artistique du 22 octobre 2026 ; jamais sur les pignons ni les piliers) ; en ruine (`ruin`), seulement
+ * au-dessus de 1,2.
+ */
+function brickRun(b: FacetBuilder, alongX: boolean, at: number, from: number, to: number, top0: number, top1: number, out: -1 | 1, ruin = false): void {
   const g = planeY(0, HALL.z0);
   wallRun(b, alongX, at, from, to, HALL.wall, g + HALL.plinth - 0.02, g + top0, g + top1, C.brickShade, C.brick);
+  brickCourses(b, alongX, at + (out * HALL.wall) / 2, from, to, top0, top1, out, ruin, HALL.plinth, g);
 }
 
 /** Un pignon de brique au-dessus d'un mur de flanc, du haut du mur au faîtage. */
@@ -370,9 +377,9 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // l'absence ; la potence de la bascule.
   add('ruine', 0, (b) => {
     hallBase(b);
-    brickRun(b, false, H.x0 + H.wall / 2, H.z0, H.z1, H.h, H.h);
+    brickRun(b, false, H.x0 + H.wall / 2, H.z0, H.z1, H.h, H.h, -1);
     gable(b, H.x0 + H.wall / 2);
-    brickRun(b, true, H.z0 + H.wall / 2, H.x0, 0, H.h, H.h);
+    brickRun(b, true, H.z0 + H.wall / 2, H.x0, 0, H.h, H.h, -1);
     pillar(b, PILLARS[0], H.h);
     pillarLantern(b, LANTERN_PESEUSE.x, LANTERN_PESEUSE.y);
     niches(b);
@@ -429,8 +436,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     'ruine',
     0,
     (b) => {
-      brickRun(b, true, H.z0 + H.wall / 2, 0, H.x1, H.h, 2.3);
-      brickRun(b, false, H.x1 - H.wall / 2, H.z0, H.z1, 2.6, 1.5);
+      brickRun(b, true, H.z0 + H.wall / 2, 0, H.x1, H.h, 2.3, -1, true);
+      brickRun(b, false, H.x1 - H.wall / 2, H.z0, H.z1, 2.6, 1.5, 1, true);
       pillar(b, PILLARS[1], 1.9);
       const g = planeY(3.3, -0.7);
       b.box({ x: 3.3, y: g - 0.25, z: -0.7, yaw: 1.1, pitch: Math.PI / 2 }, [PILLAR, 1.7, PILLAR], C.brickShade, C.brick);
@@ -517,8 +524,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // ---- Le haut : le mur du fond et le mur est relevés, le pignon est ; le pilier est refait ; le toit entier ; la pile
   // des étalons sur sa table ; les deux petites niches garnies d'un poids ; la lanterne de la halle, allumée dès sa pose.
   add(1, 0, (b) => {
-    brickRun(b, true, H.z0 + H.wall / 2, 0, H.x1, H.h, H.h);
-    brickRun(b, false, H.x1 - H.wall / 2, H.z0, H.z1, H.h, H.h);
+    brickRun(b, true, H.z0 + H.wall / 2, 0, H.x1, H.h, H.h, -1);
+    brickRun(b, false, H.x1 - H.wall / 2, H.z0, H.z1, H.h, H.h, 1);
     gable(b, H.x1 - H.wall / 2);
     pillar(b, PILLARS[1], H.h);
     fullRoof(b);
@@ -749,5 +756,7 @@ export const ETALON_LAYOUT = {
   scene: SCENE_SPOT,
   sceneStart: SCENE_START,
   traceSpots: TRACE_SPOTS,
-  heightAtCenter: H0,
+  get heightAtCenter() {
+    return h0();
+  },
 } as const;

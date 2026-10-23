@@ -49,7 +49,7 @@ import { cadranFacets } from './cadran3e';
 import { bergerieFacets } from './bergerie3e';
 import { cedreFacets } from './cedre3e';
 import { lacFacets } from './lac3e';
-import { CRIQUE_SITE, NEF_4E_MODEL_TRIANGLES, criqueDecorFacets } from './crique4e';
+import { CRIQUE_SITE, NEF_4E_MODEL_TRIANGLES, criqueDecorFacets, nef4eSiteTriangles } from './crique4e';
 import { NETWORK_4E, pathRibbons4e } from './paths4e';
 import { TERRAIN_4E } from './plan4e';
 import { buildHeightField4e, groundOn4e, mapOverlay4e, tileCounts4e } from './terrain4e';
@@ -677,8 +677,9 @@ function groundCost4e(): { triangles: number; calls: number; near: number; far: 
 }
 
 /**
- * La Crique au plus chargée (comme l'Escale, `PORT_WORST`) et son décor (le volcan de loin, sa lave figée, son panache,
- * le Rafiot), dans le maillage des lieux : aucun appel de plus.
+ * La Crique au plus chargée (comme l'Escale, `PORT_WORST` ; lot 4 : sa brique, ses joints, ses chaînes d'angle et ses
+ * bittes) et son décor (le volcan de loin, sa lave figée, son panache ; la digue, le Rafiot et ses bronzes, les
+ * Aiguilles), dans le maillage des lieux : aucun appel de plus.
  */
 function criqueCost(): number {
   return portFacets(PORT_WORST, { assembling: false }, CRIQUE_SITE).triangles + criqueDecorFacets().triangles;
@@ -694,8 +695,15 @@ function placesCost4e(): { triangles: number; calls: number } {
   return { triangles: ruins + passages + criqueCost(), calls: 2 };
 }
 
-/** L'aéronef du 4e, entier, sur son aire (dessinée avec les chemins) : dans le maillage des lieux. */
-const nefCost4e = (): { triangles: number; calls: number } => ({ triangles: NEF_4E_MODEL_TRIANGLES, calls: 0 });
+/**
+ * L'aéronef du 4e (lot 4), comme le dirigeable du 5e : le modèle entier sur son aire (dessinée avec les chemins), ses
+ * pièces déposées au plus (ou la bouée), les îles du ciel, dans le maillage des lieux, aucun appel de plus ; pendant le
+ * départ, l'aéronef et les îles passent chacun dans un maillage à part (le poste « départ »).
+ */
+function nefCost4e(): { triangles: number; calls: number } {
+  const site = nef4eSiteTriangles();
+  return { triangles: NEF_4E_MODEL_TRIANGLES + site.ber + site.islands, calls: 0 };
+}
 
 /**
  * Ce que les lieux du 4e posent hors de leur emprise (`PlaceArt.reach` : la vanne et les regards de la rigole de la
@@ -805,7 +813,8 @@ function detourCost4e(field: ReturnType<typeof buildHeightField4e>): number {
 /**
  * La Carte du 4e, en un seul plan : le ciel, toute l'île de loin, la mer, les chemins, les lieux (deux appels, le pire),
  * le trait double des ponts, les hachures du sommet et le dessin des coupures (dans le maillage des lieux), l'Épave, le
- * Recoin, la Dalle, le Replat et leurs sentes, la brume des terres fermées, Kéo.
+ * Recoin, la Dalle, le Replat et leurs sentes, la brume des terres fermées, Kéo, l'aéronef sur son aire (sans les îles
+ * du ciel).
  */
 export function mapCost4e(): { triangles: number; calls: number } {
   const field = buildHeightField4e();
@@ -816,7 +825,8 @@ export function mapCost4e(): { triangles: number; calls: number } {
   const veil = veilFacets(LINKED_LANDS_4E).triangles;
   const epave = detourCost4e(field);
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + epave + marks + veil + KEO.triangles + nefCost4e().triangles,
+    // L'aéronef et ses pièces, sans les îles du ciel : la Carte ne les dessine pas (`NefSite.offMap`).
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + epave + marks + veil + KEO.triangles + nefCost4e().triangles - nef4eSiteTriangles().islands,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
   };
 }

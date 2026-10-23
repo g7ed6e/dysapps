@@ -30,7 +30,7 @@ import { unlitSource } from './rendered5e';
 import { LIGHT_4E } from './sky';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
-import { inWorld, lantern, localGround4e, slab } from './place4eKit';
+import { groundPlane4e, inWorld, lantern, localGround4e, once, slab } from './place4eKit';
 
 /** Sous le sol : les pieds des volumes s'enfoncent d'autant, pour ne jamais flotter sur une pente (places.ts). */
 const SINK = -0.8;
@@ -111,9 +111,9 @@ export const FORGE_GLOW_DRAWN = [FORGE_GLOW, ...FORGE_GLOW_FADE].map((c) => unli
 
 // ---------- Le repère du lieu ----------
 
-/** Le centre du lieu et le sol sous lui, dans le monde. */
+/** Le centre du lieu et le sol sous lui, dans le monde (pris au premier usage, jamais à l'import : ./place4eKit.ts). */
 const CENTER: Vec2 = PLACES_4E.find((p) => p.id === 'forge')!.center;
-const H0 = standingHeight(heightAt4e(CENTER));
+const h0 = once(() => standingHeight(heightAt4e(CENTER)));
 
 /** Le sol du 4e sous un point du repère du lieu, depuis le sol de son centre (comme `SiteGround.at`). */
 const localGround = localGround4e(CENTER);
@@ -129,37 +129,10 @@ const YARD = { x0: -10.5, x1: 12.2, z0: -7.4, z1: 8.4 } as const;
 
 /**
  * Le dessus de la cour : un plan ajusté au sol sous elle (aux moindres carrés), relevé juste assez pour ne jamais passer
- * sous le sol, plus 0,04 : le pied de la Volcan est presque plat ici (à 0,3 près), la cour paraît à plat.
+ * sous le sol, plus 0,04 : le pied de la Volcan est presque plat ici (à 0,3 près), la cour paraît à plat. Calculé au
+ * premier usage (./place4eKit.ts).
  */
-const YARD_PLANE = (() => {
-  const pts: [number, number, number][] = [];
-  for (let x = YARD.x0; x <= YARD.x1 + 1e-6; x += 0.5) for (let z = YARD.z0; z <= YARD.z1 + 1e-6; z += 0.5) pts.push([x, z, localGround(x, z)]);
-  const n = pts.length;
-  const mx = pts.reduce((s, p) => s + p[0], 0) / n;
-  const mz = pts.reduce((s, p) => s + p[1], 0) / n;
-  const my = pts.reduce((s, p) => s + p[2], 0) / n;
-  let sxx = 0,
-    szz = 0,
-    sxz = 0,
-    sxy = 0,
-    szy = 0;
-  for (const [x, z, y] of pts) {
-    sxx += (x - mx) ** 2;
-    szz += (z - mz) ** 2;
-    sxz += (x - mx) * (z - mz);
-    sxy += (x - mx) * (y - my);
-    szy += (z - mz) * (y - my);
-  }
-  const det = sxx * szz - sxz * sxz;
-  const b = (sxy * szz - szy * sxz) / det;
-  const c = (szy * sxx - sxy * sxz) / det;
-  let hi = -Infinity;
-  for (const [x, z, y] of pts) hi = Math.max(hi, y - b * x - c * z);
-  return { a: hi + 0.04, b, c };
-})();
-
-/** Le dessus des dalles de la cour, en un point du repère. */
-const yardY = (x: number, z: number): number => YARD_PLANE.a + YARD_PLANE.b * x + YARD_PLANE.c * z;
+const yardY = groundPlane4e(localGround, [YARD.x0, YARD.x1], [YARD.z0, YARD.z1]);
 
 /**
  * Le fourneau : son axe, son rayon au pied et en haut (un cône tronqué : la planche), sa hauteur restauré (9,5) et en
@@ -182,7 +155,7 @@ const courseAt = (y: number): number => COURSES.joints.filter((j) => y >= j - 1e
 const furnaceR = (y: number): number => FURNACE.r0 - ((FURNACE.r0 - FURNACE.r1) * y) / FURNACE.top - COURSES.inset * courseAt(y);
 
 /** Le pied du fourneau (le dessus de la cour sous son axe) : le zéro de ses hauteurs. */
-const FY = yardY(FURNACE.x, FURNACE.z);
+const FY = once(() => yardY(FURNACE.x, FURNACE.z));
 
 /** Le demi-angle d'un pan (dix pans), et la pente du cône (son recul par unité de hauteur, sur le pan). */
 const HALF_SIDE = Math.PI / FURNACE.sides;
@@ -318,7 +291,13 @@ const DOOR_FRAME = { height: -2.2, back: 1.6 } as const;
  * Le point du nom sur la Carte, depuis le centre du lieu : au-dessus des roues, à droite du gueulard (directeur
  * artistique, correction 8), le même en ruine et restauré.
  */
-const MAP_POINT: Vec3 = { x: 6.5, y: FY + FURNACE.top + 1.5, z: -3 };
+const MAP_POINT: Vec3 = {
+  x: 6.5,
+  get y() {
+    return FY() + FURNACE.top + 1.5;
+  },
+  z: -3,
+};
 
 // ---------- Les petits volumes ----------
 
@@ -329,7 +308,7 @@ const MAP_POINT: Vec3 = { x: 6.5, y: FY + FURNACE.top + 1.5, z: -3 };
 function furnaceCorner(k: number, y: number, out = 0, course = courseAt(y)): P3 {
   const a = (2 * Math.PI * k) / FURNACE.sides;
   const r = FURNACE.r0 - ((FURNACE.r0 - FURNACE.r1) * y) / FURNACE.top - COURSES.inset * course + out;
-  return [FURNACE.x + r * Math.cos(a), FY + y, FURNACE.z + r * Math.sin(a)];
+  return [FURNACE.x + r * Math.cos(a), FY() + y, FURNACE.z + r * Math.sin(a)];
 }
 
 /**
@@ -392,7 +371,7 @@ function onSouthFace(b: FacetBuilder, lift: number, draw: (l: FacetBuilder) => v
   const tilt = Math.atan(SLOPE);
   const y = MOUTH.sill;
   const apothem = furnaceR(y) * Math.cos(HALF_SIDE);
-  drawPosed(b, { x: FURNACE.x, y: FY + y, z: FURNACE.z + apothem + lift, yaw: 0, pitch: -tilt }, draw);
+  drawPosed(b, { x: FURNACE.x, y: FY() + y, z: FURNACE.z + apothem + lift, yaw: 0, pitch: -tilt }, draw);
 }
 
 /**
@@ -1063,14 +1042,14 @@ const SCENE_HALF = 2.1;
  * La hauteur du sol de la scène au-dessus de son point (le plus haut du sol sous sa plate-forme, comme questionScene.ts,
  * `sceneSpot`) : le dessus du plancher de l'appentis.
  */
-const SCENE_RISE = (() => {
+const sceneRise = once(() => {
   const [hx, hz] = SCENE_SPOT.half;
   const nx = Math.ceil(hx),
     nz = Math.ceil(hz);
   let top = localGround(SCENE_SPOT.dx, SCENE_SPOT.dz);
   for (let i = -nx; i <= nx; i++) for (let k = -nz; k <= nz; k++) top = Math.max(top, localGround(SCENE_SPOT.dx + (i / nx) * hx, SCENE_SPOT.dz + (k / nz) * hz));
   return yardY(SCENE_SPOT.dx, SCENE_SPOT.dz) + SHED_FLOOR.rise - top;
-})();
+});
 
 /** La chaudronnière en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, tablier de cuir, chemise grise. */
 function smith(b: FacetBuilder, at: Vec3, sphere: Sphere): void {
@@ -1097,7 +1076,9 @@ export const FORGE: PlaceArt = {
   traceStage: 0,
   sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
   site: {
-    rise: SCENE_RISE,
+    get rise() {
+      return sceneRise();
+    },
     keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
     habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
     subject: { halfWidth: 3.0, bottom: -0.5, top: 2.9, depth: 0.3 },
@@ -1147,7 +1128,9 @@ export const FORGE_LAYOUT = {
   yardY,
   furnace: FURNACE,
   furnaceR,
-  furnaceFoot: FY,
+  get furnaceFoot() {
+    return FY();
+  },
   mouth: MOUTH,
   hammer: HAMMER,
   anvil: ANVIL,
@@ -1171,7 +1154,9 @@ export const FORGE_LAYOUT = {
   scene: SCENE_SPOT,
   sceneStart: SCENE_START,
   traceSpots: TRACE_SPOTS,
-  heightAtCenter: H0,
+  get heightAtCenter() {
+    return h0();
+  },
   /** La tôle du toit de l'appentis, flanc et dessus (ses abords en empilent). */
   sheet: { shade: C.sheetShade, top: C.sheet },
 } as const;

@@ -4,7 +4,7 @@
 // que le 5e n'a pas encore (l'Escale, la Nef, les Détours, les scénettes) reste du 6e : la vue le coupe par `sixth` ; la
 // faune a celle de chaque niveau (./wildlife.ts, ./wildlife5e.ts). Code pur.
 import { WORLD_FOG, type CameraPose, type DetourView } from './camera';
-import { CRIQUE_LOOK, CRIQUE_SITE, CRIQUE_VIEW, NEF_4E, criqueDecorFacets } from './crique4e';
+import { AIGUILLES_COLORS, CRIQUE_LOOK, CRIQUE_SITE, CRIQUE_VIEW, NEF_4E, RAFIOT_HULL_COLORS, RAFIOT_SMOKE_COLORS, SKY_ISLAND_COLORS, criqueDecorFacets } from './crique4e';
 import { mergeFacets, type Facets } from './facets';
 import { FANAL_TOWER_3E } from './fanal3e';
 import { FAR_ISLES_3E, FAR_ISLES_FOG_3E, FINAL_VIEW_3E, FINAL_VIEW_SECONDS_3E, farArchipelagos3e, finalViewPose3e } from './finalView3e';
@@ -261,8 +261,12 @@ const DEPARTURE_4E_SITE: Departure = {
   decor: () => (decor4e ??= criqueDecorFacets()),
 };
 
-/** La part du brouillard du lointain que garde le panache du volcan (comme celui du 5e). */
-const THIN_FOG_4E = { plume: 0.45 } as const;
+/**
+ * La part du brouillard du lointain que garde le panache du volcan (comme celui du 5e) ; au lot 4, les îles du ciel et
+ * les Aiguilles, au loin (sans ombre, comme la lumière du Phare du 5e) ; la coque du Rafiot, sans ombre, voilée comme
+ * tout le reste (retouche 1 : éclairée, elle tirait sur l'orange).
+ */
+const THIN_FOG_4E = { plume: 0.45, islands: 0.7, aiguilles: 0.8, hull: 1 } as const;
 
 /**
  * Le 4e (lot 1 du monde ouvert du 4e) : sa lumière chaude, à plat (aucun étage : la lumière par la hauteur n'y sert qu'à
@@ -288,7 +292,11 @@ const WORLD_4E: LevelWorld = {
     { color: COLORS_4E.lava, fog: 1, unlit: true },
     // La Forge (lot 2) : la gueule allumée et les trois teintes de son allumage, sans ombre comme la lave.
     ...FORGE_GLOW_DRAWN.map((color) => ({ color, fog: 1, unlit: true })),
-    ...[COLORS_4E.smoke, COLORS_4E.smokeShade].map((color) => ({ color, fog: THIN_FOG_4E.plume, unlit: true })),
+    ...[COLORS_4E.smoke, COLORS_4E.smokeShade, ...Object.values(RAFIOT_SMOKE_COLORS)].map((color) => ({ color, fog: THIN_FOG_4E.plume, unlit: true })),
+    // La Crique, lot 4 : les îles du ciel et les Aiguilles, au loin, sans ombre ; la coque du Rafiot, sans ombre.
+    ...Object.values(SKY_ISLAND_COLORS).map((color) => ({ color, fog: THIN_FOG_4E.islands, unlit: true })),
+    ...Object.values(AIGUILLES_COLORS).map((color) => ({ color, fog: THIN_FOG_4E.aiguilles, unlit: true })),
+    ...Object.values(RAFIOT_HULL_COLORS).map((color) => ({ color, fog: THIN_FOG_4E.hull, unlit: true })),
   ],
   departure: DEPARTURE_4E_SITE,
   fog: FOG_4E,

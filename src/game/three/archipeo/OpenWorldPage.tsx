@@ -1062,8 +1062,10 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   return (
     <EarnPlaces.Provider value={earnPlaces}>
       <div className="world-page open-world">
-        {/* `data-said` : la phrase du pont est écrite (sur un petit écran, la marque se masque le temps qu'elle l'est). */}
-        <div className="world-stage" data-scene data-said={saidOn ? 'oui' : undefined} ref={stageRef}>
+        {/* `data-said` : la phrase du pont est écrite (sur un petit écran, la marque se masque le temps qu'elle l'est) ; le
+            nom d'un Détour (`detour`) : la marque se masque partout le temps qu'il l'est, un seul nom à la fois à l'écran
+            (au Détour de l'Épave, « L'Étalon » s'écrivait sous « L'Épave » : consultants d'Archipéo et UX UI). */}
+        <div className="world-stage" data-scene data-said={saidOn ? (said?.detour ? 'detour' : 'oui') : undefined} ref={stageRef}>
           <div ref={host} className="open-world-canvas" />
           {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
           {/* La marque se retire une fois Kéo arrivé au lieu suggéré (relecture du lot L1) : la bulle porte le geste. */}
