@@ -45,12 +45,12 @@ export const HABITANT_STATURES: Readonly<Partial<Record<PlaceId, { shoulders: nu
 };
 
 /** La hauteur des épaules d'un habitant, sans son écart à lui : celle d'un homme de `HABITANT_HEIGHT` aux épaules typiques. */
-export const HABITANT_SHOULDERS = 0.795 * HABITANT_HEIGHT;
+const HABITANT_SHOULDERS = 0.795 * HABITANT_HEIGHT;
 /** L'écart moyen de taille d'une femme. */
 const WOMAN_STATURE = 0.94;
 
 /** L'écart à lui d'un habitant, de −3 % à +3 %, tiré de l'identifiant de son lieu (le même d'une partie à l'autre). */
-export function statureOffset(place: PlaceId): number {
+function statureOffset(place: PlaceId): number {
   let h = 0;
   for (const c of place) h = (h * 31 + c.charCodeAt(0)) % 1009;
   return ((h % 61) - 30) / 1000;
