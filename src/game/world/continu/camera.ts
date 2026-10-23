@@ -367,8 +367,16 @@ export function detourViewStep(current: number, wanted: 0 | 1, dt: number, reduc
 export const detourRise = (t: number): number => t * (2 - t);
 
 /**
+ * La plus grande part de l'écran, depuis le bas, que la rangée du bas garde sous les pieds de Kéo : 0,45 au 4e d'abord ;
+ * 0,6 depuis que la bulle au-dessus de « Y aller » en fait partie (au plus grand texte sur tablette, en OpenDyslexic
+ * 32 px, interligne et espacements au plus grand, la bulle monte à 54 % de l'écran).
+ */
+const FEET_ROOM_MAX = 0.6;
+
+/**
  * Garde les pieds de Kéo (`feet`) au-dessus de la rangée du bas (« Y aller »), à `room` pixels au moins du bas d'un
- * écran de `height` pixels, quelle que soit la taille du texte (au 4e : consultant UX UI, deuxième relecture du lot 1) :
+ * écran de `height` pixels, quelle que soit la taille du texte (au 4e : consultant UX UI, deuxième relecture du lot 1 ; à
+ * tous les niveaux depuis la bulle d'arrivée au plus grand texte) :
  * si la caméra qui suit les y met dessous, son regard plonge un peu plus, sans qu'elle bouge (`pose`, remplie sur place).
  */
 export function keepFeetAbove(pose: CameraPose, feet: Vec3, room: number, height: number): void {
@@ -381,7 +389,7 @@ export function keepFeetAbove(pose: CameraPose, feet: Vec3, room: number, height
   const dFeet = Math.max(0.1, (feet.x - p.x) * fx + (feet.z - p.z) * fz);
   // L'angle des pieds sous l'axe du regard, et le plus grand qui les laisse au-dessus de la rangée.
   const below = Math.atan2(p.y - feet.y, dFeet) - pitch0;
-  const most = Math.atan((1 - 2 * Math.min(0.45, room / height)) * tanHalf(pose.fov));
+  const most = Math.atan((1 - 2 * Math.min(FEET_ROOM_MAX, room / height)) * tanHalf(pose.fov));
   if (below <= most) return;
   const pitch = Math.min(1.4, pitch0 + below - most);
   pose.target.y = p.y - Math.tan(pitch) * flat;

@@ -159,6 +159,18 @@
     min-width: 0;
     max-width: 100%;
   }
+  /* La bulle au-dessus de « Y aller » monte en haut de l'écran, entre la colonne des accès directs et celle des Réglages
+     et de la caméra, jamais dessus : en bas, au plus grand texte, elle ne laissait aucune place à Kéo, que la caméra
+     garde au-dessus de « Y aller » (piste « Remonter Kéo dans l'image », consultant UX UI). */
+  .open-world-go-reason {
+    position: fixed;
+    top: calc(0.6rem + env(safe-area-inset-top, 0px));
+    left: calc(0.6rem + 56px + 12px + env(safe-area-inset-left, 0px));
+    right: calc(0.6rem + 56px + 12px + env(safe-area-inset-right, 0px));
+    width: fit-content;
+    max-width: none;
+    margin: 0 auto;
+  }
 }
 .open-world-go .button:disabled {
   border-style: dashed;
