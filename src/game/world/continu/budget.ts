@@ -28,8 +28,8 @@ import type { ItemScene } from './questions';
 import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_3E, HABITANT_TRIANGLES_4E, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
 import { EQUIPIER_TRIANGLES, guideOf } from './equipage';
 import { farArchipelagos3e } from './finalView3e';
-import { GUIDE_SHADOW_TRIANGLES, bellPlane, habitantHand, habitantPawn, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
-import { hasWorldHabitant } from './worldHabitants';
+import { GUIDE_SHADOW_TRIANGLES, bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
+import { WORLD_HABITANT_TRIANGLES, hasWorldHabitant } from './worldHabitants';
 import { landTileCounts } from './flora';
 import { buildHeightField, heightOnMesh, tileRings } from './terrain';
 import { buildHeightField5e, groundOn5e, tileCounts5e } from './terrain5e';
@@ -98,13 +98,16 @@ const SKY = { triangles: skyDome(1).triangles, calls: 1 };
 const OPEN_WORLD_BUDGET_6E = { triangles: 111_500, calls: 22 } as const;
 
 /**
- * L'enveloppe du monde ouvert du 5e : 118 000 triangles, 22 appels (choix du mainteneur, 20 octobre 2026, « Relever
+ * L'enveloppe du monde ouvert du 5e : 128 000 triangles, 22 appels, relevée de 10 000 triangles pour les habitants près
+ * de leur porte en modèle 3D (choix du mainteneur, 23 octobre 2026, « 1 500 triangles », la hausse à environ 128 000 dite
+ * sur la carte ; hors scénette seulement, la scénette ouverte n'en prend rien ; les images par seconde à mesurer sur
+ * l'iPad). Avant : 118 000 triangles, 22 appels (choix du mainteneur, 20 octobre 2026, « Relever
  * seulement » : ni la brume ni les racines ne s'allègent). Le chiffre vient de l'étude de l'artiste technique 3D du même
  * jour (lot 5, `economies.md`, piste D) : 83 840 triangles le 20 octobre (scénette ouverte), plus ce qui reste à venir
  * (treize lieux à 1 600 triangles au plus, l'habitant en modèle 3D, la question au niveau du 6e, les Détours, le Rafiot,
  * les aménagements), environ 118 000 au centre ; les appels tiennent dans 22.
  */
-const OPEN_WORLD_BUDGET_5E = { triangles: 118_000, calls: 22 } as const;
+const OPEN_WORLD_BUDGET_5E = { triangles: 128_000, calls: 22 } as const;
 
 /**
  * Le plafond d'un lieu du 5e, ruine, étapes et traces montrées ensemble, en triangles (recommandation du directeur
@@ -145,12 +148,6 @@ const OPEN_WORLD_BUDGET_3E = FICHE_ENVELOPE;
  */
 export const FOREST_REWORK_MAX_5E = 5_800;
 
-/**
- * Les habitants du 5e près de leur porte, hors de la scénette (choix du mainteneur du 21 octobre 2026, « Garder au 5e » ;
- * `worldHabitantsCost5e`) : au plus tant de triangles, les quatorze pions ensemble (3 226 mesurés), dans le maillage des
- * lieux, sans appel de plus ; le monde hors scénette et le départ seuls (la scénette ouverte ne bouge pas).
- */
-export const WORLD_HABITANTS_MAX_5E = 3_300;
 
 /** Le plafond de la ruine d'un lieu du 5e, en triangles (intention du directeur artistique du lot 16 : visée à 1 000). */
 export const PLACE_RUIN_TRIANGLES_MAX_5E = 1_200;
@@ -211,7 +208,7 @@ export const OPEN_WORLD_BUDGETS: Readonly<Record<OpenWorldLevel, { readonly tria
 };
 
 export interface OpenWorldCost {
-  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette' | 'nef';
+  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette' | 'nef' | 'habitants';
   triangles: number;
   calls: number;
 }
@@ -405,9 +402,11 @@ export function groundCost(): { triangles: number; calls: number; near: number; 
 /**
  * Ce que coûte le monde continu, environ (avec les triangles des aménagements posés, que la vue compte) : le sol autour de Kéo, tout le reste visible à la fois ; la brume des terres
  * fermées, au pire (au départ, les quatre), en un maillage : quand on relie une terre, la sienne se lève en fondu après
- * la pose de son pont (sa transparence seule change : aucun triangle de plus).
+ * la pose de son pont (sa transparence seule change : aucun triangle de plus). `scenette` : le pire, une scénette ouverte
+ * et une pose ensemble ; `monde` : hors scénette, les habitants près de leur porte à la place de la question et du décor
+ * de près.
  */
-export function openWorldCost(amenagements: number): OpenWorldCost[] {
+export function openWorldCost(amenagements: number, view: 'scenette' | 'monde' = 'scenette'): OpenWorldCost[] {
   const field = buildHeightField();
   const height = (x: number, z: number) => heightOnMesh(field, x, z);
   const paths = pathRibbons(height);
@@ -429,8 +428,14 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
     { poste: 'pose', ...poseCost(height) },
     { poste: 'brume', triangles: veilFacets(LINKED_LANDS_6E).triangles, calls: 1 },
     { poste: 'kéo', ...KEO },
-    { poste: 'question', ...questionCost() },
-    { poste: 'scénette', ...scenetteCost() },
+    // Pendant une scénette, la question et le décor de près ; hors scénette (`monde`), les habitants près de leur porte
+    // à leur place (choix du mainteneur, 23 octobre 2026), cachés pendant une scénette.
+    ...(view === 'monde'
+      ? [{ poste: 'habitants' as const, ...worldHabitantsCost('6e') }]
+      : [
+          { poste: 'question' as const, ...questionCost() },
+          { poste: 'scénette' as const, ...scenetteCost() },
+        ]),
     { poste: 'nef', ...nefCost() },
   ];
 }
@@ -464,16 +469,17 @@ const PLAN_5E = planFor('5e');
 const LINKED_LANDS_5E = linkedLands(PLAN_5E);
 
 /** Le poste de la brume des failles du 5e (./mist5e.ts) : un maillage transparent, caché sur la Carte. */
-export type OpenWorldCost5e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'failles' | 'départ' | 'habitants' };
+export type OpenWorldCost5e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'failles' | 'départ' };
 
 /**
- * Les habitants du 5e hors de leur scénette (choix du mainteneur du 21 octobre 2026, « Garder au 5e » ;
- * ./worldHabitants.ts) : le pion de chaque lieu fini près de sa porte, tous à la fois, dans le maillage des lieux (aucun
- * appel de plus). Ni sur la Carte, ni pendant une scénette : le monde hors scénette et le départ seuls les comptent.
+ * Les habitants hors de leur scénette, près de leur porte (choix du mainteneur du 23 octobre 2026 : en modèle 3D, aux
+ * quatre niveaux ; ./worldHabitants.ts) : la version de loin de chaque lieu fini, au plus `WORLD_HABITANT_TRIANGLES`
+ * chacune, tous à la fois, dans un maillage à part, sous une seule texture par niveau (un appel). Ni sur la Carte, ni
+ * pendant une scénette : le monde hors scénette et le départ seuls les comptent.
  */
-export function worldHabitantsCost5e(): { triangles: number; calls: number } {
-  const triangles = PLAN_5E.places.reduce((s, p) => s + (hasWorldHabitant(p.id) ? (habitantPawn(p.id)?.triangles ?? 0) : 0), 0);
-  return { triangles, calls: 0 };
+export function worldHabitantsCost(level: OpenWorldLevel): { triangles: number; calls: number } {
+  const count = planFor(level).places.filter((p) => hasWorldHabitant(p.id)).length;
+  return { triangles: count * WORLD_HABITANT_TRIANGLES, calls: count ? 1 : 0 };
 }
 
 /** Le sol du 5e, compté comme celui du 6e (`groundCost`) : autour des points de son réseau, dans huit directions. */
@@ -589,8 +595,8 @@ function scenetteCost5e(): { triangles: number; calls: number } {
  * La faune de chaque terre (./wildlife5e.ts), un maillage. Les Détours du 5e, le Creux (lot 6, ./creux5e.ts), la Hutte
  * (lot 8, ./hutte5e.ts), la Faille (lot 11, ./faille5e.ts) et le Perchoir (lot 16, ./perchoir5e.ts), leurs sentes tracées
  * comprises, dans le maillage des lieux ; pas encore d'aménagements. Les câbles des Nacelles (lot 16, `reachCost5e`) vont
- * avec les lieux. Hors scénette et au départ, les habitants près de leur porte (`worldHabitantsCost5e`), dans le même
- * maillage ; cachés pendant une scénette.
+ * avec les lieux. Hors scénette et au départ, les habitants près de leur porte (`worldHabitantsCost`), dans un
+ * maillage à part ; cachés pendant une scénette.
  */
 export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenette'): OpenWorldCost5e[] {
   const field = buildHeightField5e();
@@ -614,9 +620,9 @@ export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenett
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost5e() },
     ...(view === 'depart'
-      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost5e() }]
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('5e') }]
       : view === 'monde'
-      ? [{ poste: 'pose' as const, ...poseCost5e() }, { poste: 'habitants' as const, ...worldHabitantsCost5e() }]
+      ? [{ poste: 'pose' as const, ...poseCost5e() }, { poste: 'habitants' as const, ...worldHabitantsCost('5e') }]
       : [
           { poste: 'question' as const, ...questionCost5e() },
           { poste: 'scénette' as const, ...scenetteCost5e() },
@@ -794,13 +800,13 @@ export function openWorldCost4e(view: 'monde' | 'scenette' | 'depart' = 'monde')
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost4e() },
     ...(view === 'depart'
-      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }]
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('4e') }]
       : view === 'scenette'
       ? [
           { poste: 'question' as const, ...questionCost4e() },
           { poste: 'scénette' as const, ...scenetteCost4e() },
         ]
-      : [{ poste: 'pose' as const, ...poseCost4e() }]),
+      : [{ poste: 'pose' as const, ...poseCost4e() }, { poste: 'habitants' as const, ...worldHabitantsCost('4e') }]),
   ];
 }
 
@@ -959,15 +965,15 @@ export function openWorldCost3e(view: 'monde' | 'scenette' | 'depart' | 'finale'
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost3e() },
     ...(view === 'depart'
-      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }]
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }]
       : view === 'finale'
-      ? [{ poste: 'vue finale' as const, triangles: farArchipelagos3e().triangles, calls: 1 }]
+      ? [{ poste: 'vue finale' as const, triangles: farArchipelagos3e().triangles, calls: 1 }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }]
       : view === 'scenette'
       ? [
           { poste: 'question' as const, ...questionCost3e() },
           { poste: 'scénette' as const, ...scenetteCost3e() },
         ]
-      : [{ poste: 'pose' as const, ...poseCost3e() }]),
+      : [{ poste: 'pose' as const, ...poseCost3e() }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }]),
   ];
 }
 

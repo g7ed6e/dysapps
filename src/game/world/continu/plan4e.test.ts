@@ -3,7 +3,7 @@
 // cuvette, les rails, ses couleurs (jamais presque noires), la marche libre, et son budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { EPAULE_BRIDGE_TRIANGLES, OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_4E, RAVIN_BRIDGE_TRIANGLES_MAX_4E, mapCost4e, openWorldCost4e } from './budget';
+import { EPAULE_BRIDGE_TRIANGLES, OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_4E, RAVIN_BRIDGE_TRIANGLES_MAX_4E, mapCost4e, openWorldCost4e, worldHabitantsCost } from './budget';
 import { BRIDGE, bridgeSite } from './bridges';
 import { CRIQUE_SITE, NEF_4E, criqueDecorFacets, nef4eFlight } from './crique4e';
 import { DALLE_BUDGET } from './dalle4e';
@@ -314,9 +314,20 @@ describe('Le budget du 4e', () => {
     const total = (list: { triangles: number; calls: number }[]) => list.reduce((s, p) => ({ triangles: s.triangles + p.triangles, calls: s.calls + p.calls }), { triangles: 0, calls: 0 });
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
-    for (const cost of [total(openWorldCost4e('monde')), total(openWorldCost4e('scenette')), total(openWorldCost4e('depart')), mapCost4e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(CRIQUE_CEILING.triangles);
-      expect(cost.calls).toBeLessThanOrEqual(CRIQUE_CEILING.calls);
+    // Hors scénette et au départ, les habitants près de leur porte en plus (choix du mainteneur, 23 octobre 2026 : en
+    // modèle 3D, aux quatre niveaux ; `worldHabitantsCost`, un maillage, un appel) ; ni dans la scénette, ni sur la Carte.
+    const habitants = worldHabitantsCost('4e');
+    const none = { triangles: 0, calls: 0 };
+    for (const [cost, added] of [
+      [total(openWorldCost4e('monde')), habitants],
+      [total(openWorldCost4e('scenette')), none],
+      [total(openWorldCost4e('depart')), habitants],
+      [mapCost4e(), none],
+    ] as const) {
+      expect(cost.triangles).toBeLessThanOrEqual(CRIQUE_CEILING.triangles + added.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(CRIQUE_CEILING.calls + added.calls);
+      expect(cost.triangles).toBeLessThanOrEqual(env.triangles);
+      expect(cost.calls).toBeLessThanOrEqual(env.calls);
     }
   });
 });
