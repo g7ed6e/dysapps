@@ -94,6 +94,28 @@ describe('la fiche de la Nef du monde continu (GD-21)', () => {
     expect(onReturn).toHaveBeenCalledWith('6e');
   });
 
+  it('dit « Aller » vers un niveau d’après déjà atteint, et donne le focus à la rangée quand la Nef est partie', () => {
+    // Au 5e, la Nef est partie vers le 4e : la fiche dit son voyage, la rangée est sa seule action.
+    localStorage.clear();
+    localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo', autoRead: false, sounds: false }));
+    const parts = Object.fromEntries(VEHICLE_STAGES.slice(0, 2).map((s) => [s.id, planCells(s).map((c) => c.key)]));
+    localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, world: { parts, links: VEHICLE_STAGES.slice(0, 2).map((s) => voyageId(s.to)) } }));
+    render(
+      <SettingsProvider>
+        <ProgressProvider>
+          <BloclandProvider>
+            <MemoryRouter>
+              <NefSheet stage={VEHICLE_STAGES[1]} kit missing={0} onDepart={() => {}} onMap={() => {}} onReturn={() => {}} onClose={() => {}} />
+            </MemoryRouter>
+          </BloclandProvider>
+        </ProgressProvider>
+      </SettingsProvider>,
+    );
+    const row = within(screen.getByRole('list', { name: 'Voyager avec la Nef' }));
+    expect(row.getAllByRole('button').map((b) => b.textContent?.trim())).toEqual(['Revenir en 6e', 'Aller en 4e']);
+    expect(document.activeElement).toBe(row.getAllByRole('button')[0]);
+  });
+
   it('au 6e, sans voyage fait, n’a pas de rangée « Revenir »', () => {
     show(false, 1);
     expect(screen.queryByRole('list', { name: 'Voyager avec la Nef' })).toBeNull();

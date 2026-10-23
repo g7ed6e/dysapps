@@ -14,7 +14,7 @@
 // lieux : aucun appel de plus. Code pur.
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import { NEF_BAND, buoyAt, type NefFlight, type NefLook, type NefSite } from './nef';
+import { BUOY_TOUCH, NEF_BAND, buoyAt, type NefFlight, type NefLook, type NefSite } from './nef';
 import { C4E, brickCourse, brickCourseHeights } from './place4eKit';
 import { COLORS_4E, CRIQUE, CRIQUE_DIGUE, CRIQUE_LEVEL, CRIQUE_PAD, CRIQUE_PAVING, CRIQUE_QUAY_SPOT, RAFIOT_4E, VOLCANO_4E } from './plan4e';
 import type { PortSite } from './port';
@@ -732,7 +732,6 @@ export function nef4eFlight(u: number, out: NefFlight): NefFlight {
 
 /** La bouée du 4e dans le monde, et la marge d'un toucher sur elle (une cible large). */
 const BUOY_WORLD = CRIQUE.toWorld(DEPOSIT_SPOTS.buoy.x, DEPOSIT_SPOTS.buoy.z);
-const BUOY_TOUCH = 1.4;
 
 /** Un toucher sur l'aéronef : sur son aire, ou sur la bouée (après le départ, elle ouvre la rangée « Revenir »). */
 function nef4eTouched(p: Vec2): boolean {

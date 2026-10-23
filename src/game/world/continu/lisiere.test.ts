@@ -181,6 +181,12 @@ describe('Le dirigeable en trois temps', () => {
     expect(wallTouched(NEF_5E.berth)).toBe(false);
   });
 
+  it('ouvre la fiche de la Nef quand on touche la bouée du ber vide, à l’est du ber (voyage entre niveaux)', () => {
+    const l = ANSE_5E.toLocal(NEF_5E.berth);
+    expect(nef5eTouched(ANSE_5E.toWorld(l.x + 2.1, l.z))).toBe(true);
+    expect(nef5eTouched(ANSE_5E.toWorld(l.x + 4, l.z))).toBe(false);
+  });
+
   it('coûte sous ses plafonds : le modèle, son ber et la bouée 1 900 ; le gréement 150 ; le mur et le panache 800', () => {
     const t = nef5eSiteTriangles();
     expect(t.ber).toBeLessThanOrEqual(150 + 196);

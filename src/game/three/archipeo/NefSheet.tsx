@@ -119,17 +119,24 @@ function nefReturnWord(to: ArchipelagoId, here: ArchipelagoId): string {
  * la voix au toucher. Un toucher lance le fondu, puis Kéo arrive au quai du lieu de départ de ce niveau. Même rangée
  * aux quatre niveaux, Nef présente, partie ou au repos.
  */
-function NefReturns({ here, onReturn }: { here: ArchipelagoId; onReturn(to: ArchipelagoId): void }) {
+function NefReturns({ here, onReturn, focus = false }: { here: ArchipelagoId; onReturn(to: ArchipelagoId): void; focus?: boolean }) {
   const { state } = useBlocland();
   const textes = useTextes();
   const levels = nefReturns(state.world.links, here);
+  // Sans action principale (la Nef partie, au repos, ou rien à poser), le focus va au premier bouton de la rangée, la
+  // seule action de la fiche (consultant UX UI).
+  const first = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (focus) first.current?.focus();
+  }, [focus]);
   if (levels.length === 0) return null;
   return (
     <ul className="nef-returns" aria-label="Voyager avec la Nef">
-      {levels.map((to) => (
+      {levels.map((to, i) => (
         <li key={to}>
-          <button type="button" className="button" aria-label={`${nefReturnWord(to, here)} : les ${textes.archipels[to]}`} onClick={() => onReturn(to)}>
-            <Icon name="ship" /> {nefReturnWord(to, here)}
+          {/* L'icône du trajet, pas celle de la Nef : « Partir » garde la sienne (consultant UX UI). */}
+          <button ref={i === 0 ? first : undefined} type="button" className="button" aria-label={`${nefReturnWord(to, here)} : les ${textes.archipels[to]}`} onClick={() => onReturn(to)}>
+            <Icon name="route" /> {nefReturnWord(to, here)}
           </button>
         </li>
       ))}
@@ -176,7 +183,7 @@ export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onRet
         <p className="world-fiche-phrase">
           <Syllabified text={frenchTypography(phrase)} />
         </p>
-        <NefReturns here={building.from} onReturn={onReturn} />
+        <NefReturns here={building.from} onReturn={onReturn} focus />
       </MissionSheet>
     );
   }
@@ -254,10 +261,11 @@ export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onRet
           )
         )}
       </div>
-      <NefReturns here={building.from} onReturn={onReturn} />
+      {/* L'avis sous le bouton qu'il commente, puis la rangée (consultant UX UI). */}
       <p className="build-status" role="status" aria-live="polite">
         {ship.notice ? frenchTypography(ship.notice) : ''}
       </p>
+      <NefReturns here={building.from} onReturn={onReturn} focus={!ready && !waiting && !ship.canFill} />
     </MissionSheet>
   );
 }
@@ -298,10 +306,10 @@ export function NefParuresSheet({ look, feux, missing, onMap, here, onReturn, on
   const titre = NEF_TITLE;
   const status = (
     <>
-      <NefReturns here={here} onReturn={onReturn} />
       <p className="build-status" role="status" aria-live="polite">
         {parures.notice ? frenchTypography(parures.notice) : ''}
       </p>
+      <NefReturns here={here} onReturn={onReturn} focus={complete || (look === 2 && feux)} />
     </>
   );
   if (complete || (look === 2 && feux)) {

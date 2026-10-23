@@ -237,7 +237,7 @@ export function bancTouched(p: Vec2): boolean {
 
 /** L'écart entre le ber et sa bouée (`berLocal`), et la marge d'un toucher sur la bouée (une cible large). */
 const BUOY_OFFSET = 2.1;
-const BUOY_TOUCH = 1.4;
+export const BUOY_TOUCH = 1.4;
 
 /**
  * La bouée touchée, en coordonnées locales du ber (`buoySide`, comme `berLocal`) : après le départ, elle ouvre la fiche
