@@ -89,33 +89,41 @@ function renderPage() {
   );
 }
 
-test('les niveaux atteints, en haut comme dans la grille : le 5e coché, « 6e » lance le fondu vers l’Escale ; rien sur la Carte (demande du mainteneur du 23 octobre 2026)', async () => {
+test('le niveau où l’on est, un seul bouton qui déplie les autres niveaux atteints ; « 6e » lance le fondu vers l’Escale ; rien sur la Carte (choix du mainteneur du 23 octobre 2026)', async () => {
   localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port } }));
   renderPage();
   const user = userEvent.setup();
-  const row = await screen.findByRole('list', { name: 'Changer de classe' });
-  expect(row).toHaveClass('open-world-archipel');
-  expect(row.querySelector('[aria-current="true"]')?.textContent).toContain('5e');
+  const level = await screen.findByRole('button', { name: /^Changer de niveau\. Tu es en 5e/ });
+  expect(level).toHaveAttribute('aria-expanded', 'false');
+  expect(screen.queryByRole('button', { name: /^Aller en 6e/ })).toBeNull();
   await user.click(screen.getByRole('button', { name: /Carte/ }));
-  expect(screen.queryByRole('list', { name: 'Changer de classe' })).toBeNull();
+  expect(screen.queryByRole('button', { name: /^Changer de niveau/ })).toBeNull();
   await user.click(screen.getByRole('button', { name: /Retour/ }));
+  await user.click(screen.getByRole('button', { name: /^Changer de niveau/ }));
+  expect(screen.getByRole('button', { name: /^Changer de niveau/ })).toHaveAttribute('aria-expanded', 'true');
+  // Déplié : le focus va au premier niveau ; Échap replie et rend le focus au bouton.
+  expect(screen.getByRole('button', { name: /^Aller en 6e/ })).toHaveFocus();
+  await user.keyboard('{Escape}');
+  expect(screen.queryByRole('button', { name: /^Aller en 6e/ })).toBeNull();
+  expect(screen.getByRole('button', { name: /^Changer de niveau/ })).toHaveFocus();
+  await user.click(screen.getByRole('button', { name: /^Changer de niveau/ }));
   await user.click(screen.getByRole('button', { name: /^Aller en 6e/ }));
   expect(document.querySelector('.open-world-fondu')).toHaveClass('on');
 });
 
-test('un seul niveau atteint : pas de rangée des niveaux', async () => {
+test('un seul niveau atteint : pas de bouton du niveau', async () => {
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });
-  expect(screen.queryByRole('list', { name: 'Changer de classe' })).toBeNull();
+  expect(screen.queryByRole('button', { name: /^Changer de niveau/ })).toBeNull();
 });
 
-test('en mode bâtisseur, pas de rangée des niveaux : la barre du mode a déjà les siens', async () => {
+test('en mode bâtisseur, pas de bouton du niveau : la barre du mode a déjà les niveaux', async () => {
   localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port } }));
   renderPage();
-  await screen.findByRole('list', { name: 'Changer de classe' });
+  await screen.findByRole('button', { name: /^Changer de niveau/ });
   try {
     act(() => builder.open!());
-    expect(screen.queryByRole('list', { name: 'Changer de classe' })).toBeNull();
+    expect(screen.queryByRole('button', { name: /^Changer de niveau/ })).toBeNull();
   } finally {
     degelerSauvegarde();
   }

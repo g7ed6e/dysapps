@@ -3365,19 +3365,52 @@
 .open-world-needle {
   display: inline-flex;
 }
-/* Les niveaux atteints (la rangée de la grille, ../../ArchipelagoSwitcher.tsx) : en ligne en haut, à gauche de Réglages,
-   la colonne de droite étant celle de la caméra ; sur deux lignes au besoin, sans couvrir la colonne de gauche. */
-.open-world .world-archipel.open-world-archipel {
+/* Le niveau où l'on est (./LevelPicker.tsx) : en haut, à gauche de Réglages, la colonne de droite étant celle de la
+   caméra ; déplié, les autres niveaux s'alignent à sa gauche, sur deux lignes au besoin, sans couvrir la colonne de
+   gauche. */
+.open-world-niveaux {
+  position: absolute;
   top: 0.6rem;
   right: calc(0.6rem + env(safe-area-inset-right, 0px) + 56px + 0.5rem);
   left: calc(0.6rem + env(safe-area-inset-left, 0px) + 56px + 0.5rem);
-  flex-direction: row;
+  z-index: 3;
+  display: flex;
+  flex-direction: row-reverse;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 0.4rem;
   pointer-events: none;
 }
-.open-world .world-archipel.open-world-archipel > li {
+.open-world-niveaux > * {
   pointer-events: auto;
+}
+.open-world-niveau,
+.open-world-niveaux-liste .button {
+  min-width: 56px;
+  min-height: 56px;
+  padding: 0.2rem 0.6rem;
+  justify-content: center;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.open-world-niveau svg {
+  width: 22px;
+  height: 22px;
+}
+/* Déplié, le bouton du niveau se reconnaît à sa forme (bord épais), pas seulement à sa couleur. */
+.open-world-niveau.ouvert {
+  border-width: calc(var(--border-width, 2px) * 2);
+}
+.open-world-niveaux-liste {
+  display: flex;
+  /* Dans l'ordre des niveaux, de gauche à droite (6e, 4e, 3e). */
+  flex-direction: row;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 /* La rangée « Revenir » de la fiche de la Nef (voyage entre niveaux, piste A) : des boutons secondaires, sous l'action
    principale, de 48 px au moins. */

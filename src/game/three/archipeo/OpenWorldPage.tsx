@@ -74,7 +74,7 @@ import { CommandsSheet, HabitantLine } from './HabitantLine';
 import { HabitantSigns, placeSigns } from './HabitantSigns';
 import { Remise } from './Remise';
 import { commandLines, entraideLineOf, entraideListLine, entraideRemiseOf, entraideSuggestion, habitantLineOf, habitantSigns, hasOpenWorldErrands, readyCommande, remiseOf, suggestedAction, type HabitantGo, type RemiseRequest, type SuggestedAction } from './remiseOf';
-import { ArchipelagoSwitcher } from '../../ArchipelagoSwitcher';
+import { LevelPicker } from './LevelPicker';
 import './openWorld.css';
 
 declare global {
@@ -1243,11 +1243,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               question ou une remise. */}
           {!playing && !sheetOpen && <WorldShortcuts a={level} requestsOpen={commandsOpen} onRequests={errands ? openCommands : undefined} resumeFrom={portResume} resumeAt={placeResume} />}
           {!playing && !sheetOpen && <SettingsButton />}
-          {/* Les niveaux atteints, comme dans la grille (../../ArchipelagoSwitcher.tsx, demandé par le mainteneur le 23 octobre
-              2026) : en ligne, à gauche de Réglages, la colonne de droite étant celle de la caméra ; le même fondu que la
+          {/* Le niveau où l'on est, un seul bouton qui déplie les autres niveaux atteints (./LevelPicker.tsx, choix du mainteneur
+              du 23 octobre 2026), à gauche de Réglages, la colonne de droite étant celle de la caméra ; le même fondu que la
               rangée de la fiche de la Nef. Ni pendant une question, un panneau ou la Carte, ni en mode bâtisseur, dont la
               barre a déjà ses niveaux. */}
-          {!playing && !mapOpen && !sheetOpen && !batisseur && <ArchipelagoSwitcher current={level} bridges={state.world.links} onGo={goLevel} className="open-world-archipel" />}
+          {!playing && !mapOpen && !sheetOpen && !batisseur && <LevelPicker here={level} links={state.world.links} onGo={goLevel} />}
           {commandsOpen && !playing && (
             <div ref={panelRef} className="open-world-panel open-world-panel-commandes">
               <CommandsSheet lines={commandLines(plan, state, assemblyAt)} entraide={entraideListLine(plan, vu, (p) => !isClosed(p), assemblyAt)} suggested={suggestedId} onGo={goHabitant} onClose={closeCommands} />
