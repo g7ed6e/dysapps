@@ -457,6 +457,18 @@ const SCENETTES: Record<PlaceId, Scenette> = {
       end: 'Ici, on entendait les voix des autres archipels.',
     },
   },
+  // Le Fanal (le Cirque du 3e, GD-25) : la phrase de métier et la réplique d'après la proposition du consultant
+  // d'Archipéo (§ 7), à valider par le directeur du contenu ; une phrase par partie, sans nom de plan de l'île
+  // (« lanterne », « toit », « jetée »), sans « phare ».
+  fanal: {
+    role: placeArt('fanal')!.role,
+    greeting: 'L’opticienne taille les verres qui portent la lumière.',
+    placement: 'rangee',
+    words: {
+      pose: ['Le socle est refermé.', 'La tour est reprise.', 'Le garde-corps est relevé.', 'Le Fanal est allumé.', 'Le seuil est dallé.'],
+      end: 'Ici, la lumière répondait aux trois autres archipels.',
+    },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -915,6 +927,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   tribune: northSite('tribune'),
   douane: northSite('douane'),
   ermitage: northSite('ermitage'),
+  fanal: northSite('fanal'),
   ondes: northSite('ondes'),
   lutherie: northSite('lutherie'),
   coupole: northSite('coupole'),
@@ -2511,6 +2524,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   lutherie: 'earth',
   // Les Ondes : l'herbe de la Prairie.
   ondes: 'earth',
+  // Le Fanal : l'herbe grise du Cirque.
+  fanal: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

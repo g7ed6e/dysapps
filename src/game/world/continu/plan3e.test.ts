@@ -12,7 +12,7 @@ import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
 import { levelWorld } from './levelWorld';
 import { planFor } from './levelPlan';
 import { modelOfPlace } from './places';
-import { FANAL_TOWER_3E } from './ruins3e';
+import { FANAL_TOWER_3E } from './fanal3e';
 import { CUT_CLEARANCE_3E, NETWORK_3E, pathRibbons3e } from './paths3e';
 import { NEF_3E, PARVIS_SITE, PARVIS_VIEW, nef3eFlight, parvisDecorFacets, zeppelinFacets } from './parvis3e';
 import { veilFacets } from './veil';
@@ -38,6 +38,12 @@ const NOT_BLACK = 0.03;
  * Versant (lot 2) y tient encore, scénette ouverte comprise.
  */
 const LOT1_CEILING = { triangles: 62_000, calls: 16 } as const;
+
+/**
+ * Ce que le Cirque (le dernier lot du 3e) ajoute au plafond du lot 1 : le Fanal, la Rampe, le Standard, le Détour du Lac
+ * et les pièces rendues des Ferrailleurs, chacun sous son plafond de lieu ; sans appel de plus.
+ */
+const CIRQUE_ADDED_3E = 4_000;
 
 describe('Le plan du 3e', () => {
   it('seize lieux, chacun dans une terre et une seule ; quatre terres, le Cirque suggéré en dernier', () => {
@@ -299,12 +305,12 @@ describe('Les couleurs froides du 3e', () => {
 });
 
 describe('Le budget du 3e', () => {
-  it('le monde, le départ et la Carte tiennent dans l’enveloppe du 3e, et sous le plafond du lot 1', () => {
+  it('le monde, le départ et la Carte tiennent dans l’enveloppe du 3e, et sous le plafond du lot 1, le Cirque compris', () => {
     const total = (list: { triangles: number; calls: number }[]) => list.reduce((s, p) => ({ triangles: s.triangles + p.triangles, calls: s.calls + p.calls }), { triangles: 0, calls: 0 });
     const env = OPEN_WORLD_BUDGETS['3e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
     for (const cost of [total(openWorldCost3e('monde')), total(openWorldCost3e('scenette')), total(openWorldCost3e('depart')), mapCost3e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT1_CEILING.triangles);
+      expect(cost.triangles).toBeLessThanOrEqual(LOT1_CEILING.triangles + CIRQUE_ADDED_3E);
       expect(cost.calls).toBeLessThanOrEqual(LOT1_CEILING.calls);
     }
   });

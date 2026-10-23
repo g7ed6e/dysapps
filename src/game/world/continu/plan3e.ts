@@ -266,7 +266,7 @@ const MAP_SIDES_3E: Readonly<Record<PlaceId3e, 'below' | 'left' | 'right'>> = {
 /**
  * Les lieux du 3e déjà construits, et les missions de chacun qui se jouent en scénette, dans l'ordre de leur île : la
  * seule liste, comme `BUILT_PLACES_4E` (./plan4e.ts), que lisent la scénette (./levelPlan.ts, `hasScenette`) et les
- * missions des lieux (`PLACES_3E`). Le Versant (GD-25, lot 2) : le Belvédère, le Grenier, l'Abri, le Jardin ; les Alpages (lot 3) : le Kiosque, la Maquette, la Tribune, la Douane, l'Ermitage ; les Prairies (lot 4) : le Palais, la Coupole, la Lutherie, les Ondes. Aucun habitant du 3e n'a encore son modèle
+ * missions des lieux (`PLACES_3E`). Le Versant (GD-25, lot 2) : le Belvédère, le Grenier, l'Abri, le Jardin ; les Alpages (lot 3) : le Kiosque, la Maquette, la Tribune, la Douane, l'Ermitage ; les Prairies (lot 4) : le Palais, la Coupole, la Lutherie, les Ondes ; le Cirque : le Fanal. Aucun habitant du 3e n'a encore son modèle
  * 3D (./habitants.ts) : il se dessine en pion. Un lieu construit s'ajoute ici, et seulement ici.
  */
 export const BUILT_PLACES_3E = {
@@ -283,6 +283,7 @@ export const BUILT_PLACES_3E = {
   coupole: ['inference', 'figures-of-speech', 'text-connectives', 'voices', 'literary-eras'],
   lutherie: ['verb-moods', 'complex-agreements', 'connotation', 'emphasis-punctuation', 'verb-stems'],
   ondes: ['understanding', 'linking-words', 'false-friends', 'media'],
+  fanal: ['images', 'linear', 'graphs', 'proportions', 'coordinates'],
 } as const satisfies Partial<Record<PlaceId3e, readonly string[]>>;
 
 /** Un lieu du 3e déjà construit. */

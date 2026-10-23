@@ -284,6 +284,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   lutherie: placeArt('lutherie')!.sceneSpot,
   // Les Ondes : sur l'herbe au pied du grand mât, devant le pavillon d'écoute, la mer de nuages au loin.
   ondes: placeArt('ondes')!.sceneSpot,
+  // Le Fanal : sur l'herbe grise du creux, devant la porte des salles du socle, la mer de nuages au nord-ouest.
+  fanal: placeArt('fanal')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -607,6 +609,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   lutherie: 'lieu',
   // Les Ondes : les boutons ronds des postes, en rang sur une petite table.
   ondes: 'lieu',
+  // Le Fanal : les verres taillés, en rang sur une banquette de velours.
+  fanal: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
