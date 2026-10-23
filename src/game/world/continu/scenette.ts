@@ -333,7 +333,7 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     role: placeArt('belvedere')!.role,
     greeting: 'La topographe mesure le terrain et le dessine.',
     placement: 'rangee',
-    words: { pose: ['Le dallage est remis.', 'Le gnomon est debout.', 'Les pierres sont à leur place.', 'La visée est prête.', 'Les flèches sont posées.'], end: 'D’ici, on mesurait la montagne sans la gravir.' },
+    words: { pose: ['Le dallage est remis.', 'Le pilier de l’ombre est debout.', 'Les solides sont sur leurs socles.', 'La visée est prête.', 'Les flèches sont posées.'], end: 'D’ici, on mesurait la montagne sans la gravir.' },
   },
   // Le Grenier (le Versant du 3e, lieu du monde ouvert seulement) : le métier est connu, sans phrase de métier (proposition,
   // § 4) ; une phrase par partie, sans nom de plan (« réserve », « meunier », « toit », « abords ») ni « grenier » en nom
@@ -343,7 +343,7 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     role: placeArt('grenier')!.role,
     greeting: null,
     placement: 'rangee',
-    words: { pose: ['Le plancher est calé.', 'Les sacs sont rangés.', 'Les mesures sont en ordre.', 'Les ardoises sont remises.', 'La meule est prête.'], end: 'Ici, chacun avait sa part des provisions.' },
+    words: { pose: ['La porte est refermée.', 'Les sacs sont rangés.', 'Les mesures sont en ordre.', 'Les ardoises sont remises.', 'La meule est prête.'], end: 'Ici, chacun avait sa part des provisions.' },
   },
   // L'Abri (le Versant du 3e, GD-25) : la phrase de métier et la réplique de la proposition du consultant d'Archipéo (§ 5) ;
   // une phrase par partie (le corps en deux, le haut, les abords), sans nom de plan de l'île (« dôme », « Stat », « toit »,
@@ -352,16 +352,16 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     role: placeArt('abri')!.role,
     greeting: 'La météorologue observe le temps qu’il fait.',
     placement: 'rangee',
-    words: { pose: ['Les persiennes sont remises.', 'Les instruments sont en rang.', 'Le mât est relevé.', 'Le muret est refait.'], end: 'Ici, matin et soir, on regardait le ciel pour savoir le temps du lendemain.' },
+    words: { pose: ['Les persiennes sont remises.', 'Les pluviomètres sont en rang.', 'Le mât est relevé.', 'Le muret est refait.'], end: 'Ici, matin et soir, on notait la pluie et le vent.' },
   },
   // Le Jardin (le Versant du 3e, GD-25) : la phrase de métier et les phrases de pose de la proposition du consultant
   // d'Archipéo (§ 6) ; sa réplique sans « jardin », nom d'un plan de l'île (« Le jardin de l'infirmerie ») : « les plantes
   // qu'on cultivait ici » à la place de « les plantes du jardin ».
   jardin: {
     role: placeArt('jardin')!.role,
-    greeting: 'Le greffeur marie deux arbres pour n’en faire qu’un.',
+    greeting: 'Le greffeur fixe la branche d’un arbre sur un autre arbre.',
     placement: 'rangee',
-    words: { pose: ['Les carrés sont refaits.', 'Les arbres sont palissés.', 'La fontaine est pleine.'], end: 'Ici, on soignait avec les plantes qu’on cultivait.' },
+    words: { pose: ['Les carrés sont refaits.', 'Les arbres sont attachés au mur.', 'La fontaine est pleine.'], end: 'Ici, on cultivait les plantes qui servaient à soigner.' },
   },
   // Le Kiosque (les Alpages du 3e, GD-25) : la phrase de métier et la réplique de la proposition du consultant d'Archipéo
   // (§ 3) ; une phrase par partie, sans nom de plan de l'île (« bibliothèque », « toit », « cour ») ni « kiosque » en nom
@@ -370,7 +370,7 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     role: placeArt('kiosque')!.role,
     greeting: 'La journaliste raconte ce qui se passe dans le monde.',
     placement: 'rangee',
-    words: { pose: ['Les six poteaux sont debout.', 'La coupole est remise.', 'Les nouvelles sont arrivées.'], end: 'Ici, les nouvelles du monde montaient jusqu’au sommet.' },
+    words: { pose: ['Les six poteaux sont debout.', 'Le dôme d’ardoise est remis.', 'Les nouvelles sont arrivées.'], end: 'Ici, les nouvelles du monde montaient jusqu’au sommet.' },
   },
   // La Maquette (les Alpages du 3e, GD-25) : la phrase de métier et la réplique de la proposition du consultant d'Archipéo
   // (§ 4) ; une phrase par partie, sans nom de plan de l'île (« mairie », « toit », « place ») ni « maquette » en nom
@@ -418,7 +418,7 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     role: placeArt('palais')!.role,
     greeting: 'Le majordome reçoit les visiteurs et veille sur la maison.',
     placement: 'rangee',
-    words: { pose: ['L’escalier est refait.', 'L’aile est couverte d’ardoise.', 'Le gong est relevé.', 'L’allée est prête.'], end: 'Ici, on recevait les messagers de tous les archipels.' },
+    words: { pose: ['L’escalier est refait.', 'La grande salle est couverte d’ardoise.', 'Le gong est relevé.', 'L’allée est prête.'], end: 'Ici, on recevait les messagers de tous les archipels.' },
   },
   // La Coupole (les Prairies du 3e, GD-25) : le libraire, sans phrase de métier (proposition du consultant d'Archipéo,
   // § 4 : le métier est connu) ; les phrases de pose et la réplique de la proposition, à valider par le directeur du
@@ -453,7 +453,7 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     greeting: 'L’annonceur lit les nouvelles à la radio.',
     placement: 'rangee',
     words: {
-      pose: ['La station est refaite.', 'Les postes sont en rang.', 'Le pavillon écoute le large.', 'Le chemin est prêt.'],
+      pose: ['La station est refaite.', 'Les postes sont en rang.', 'Le pavillon d’écoute est remonté.', 'Le chemin est prêt.'],
       end: 'Ici, on entendait les voix des autres archipels.',
     },
   },
@@ -462,10 +462,10 @@ const SCENETTES: Record<PlaceId, Scenette> = {
   // (« lanterne », « toit », « jetée »), sans « phare ».
   fanal: {
     role: placeArt('fanal')!.role,
-    greeting: 'L’opticienne taille les verres qui portent la lumière.',
+    greeting: 'L’opticienne taille les verres qui portent la lumière du Fanal.',
     placement: 'rangee',
     words: {
-      pose: ['Le socle est refermé.', 'La tour est reprise.', 'Le garde-corps est relevé.', 'Le Fanal est allumé.', 'Le seuil est dallé.'],
+      pose: ['Le socle est refermé.', 'La tour est réparée.', 'Le muret de pierre est relevé.', 'Le Fanal est allumé.', 'Le seuil est dallé.'],
       end: 'Ici, la lumière répondait aux trois autres archipels.',
     },
   },
@@ -477,7 +477,7 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     greeting: 'La charretière mène les pierres jusqu’au Fanal.',
     placement: 'rangee',
     words: {
-      pose: ['La rampe est refaite.', 'Le cabestan est prêt.', 'Le traîneau est chargé.'],
+      pose: ['La pente de pierre est refaite.', 'Le treuil est prêt.', 'Le traîneau est chargé.'],
       end: 'Ici, on a hissé toutes les pierres du Fanal.',
     },
   },
@@ -489,8 +489,8 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     greeting: 'La télégraphiste envoie les messages par les fils.',
     placement: 'rangee',
     words: {
-      pose: ['Les ardoises sont remises.', 'Le tableau est remis.', 'Les lampes sont allumées.', 'Les fils vont jusqu’au Fanal.'],
-      end: 'Ici, les fils portaient les messages jusqu’au Fanal.',
+      pose: ['La salle est couverte.', 'Le tableau est redressé.', 'Les lampes sont allumées.', 'Les fils vont jusqu’au Fanal.'],
+      end: 'D’ici, les messages partaient vers les autres archipels.',
     },
   },
 };

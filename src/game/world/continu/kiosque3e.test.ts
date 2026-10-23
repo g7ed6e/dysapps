@@ -147,7 +147,7 @@ describe('Le bilan du Kiosque', () => {
     for (const text of [...(s.words?.pose ?? []), s.words?.end ?? '']) expect(text).not.toMatch(wordRe('abords'));
     for (const text of texts) expect(text).not.toMatch(/vide|chute|tomb|vertige|phare/i);
     for (const text of texts) expect(text).not.toMatch(/(?<!\p{L})kiosque/u);
-    expect(s.words?.pose).toEqual(['Les six poteaux sont debout.', 'La coupole est remise.', 'Les nouvelles sont arrivées.']);
+    expect(s.words?.pose).toEqual(['Les six poteaux sont debout.', 'Le dôme d’ardoise est remis.', 'Les nouvelles sont arrivées.']);
     expect(s.words?.end).toBe('Ici, les nouvelles du monde montaient jusqu’au sommet.');
   });
 });

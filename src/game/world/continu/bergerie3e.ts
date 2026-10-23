@@ -123,7 +123,7 @@ export const BERGERIE: Detour = {
   face: Math.atan2(-LOOK.z, -LOOK.x),
   sente: [SENTE_FROM, AT],
   view: BERGERIE_VIEW,
-  says: 'Les moutons passent l’été tout là-haut.',
+  says: 'L’été, les moutons montent jusqu’ici.',
 };
 
 /**

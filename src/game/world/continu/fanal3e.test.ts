@@ -184,7 +184,7 @@ describe('Le bilan du Fanal', () => {
         for (const noun of planNouns(plan.name)) expect(text, noun).not.toMatch(wordRe(noun));
       }
     for (const text of texts) expect(text).not.toMatch(/vide|chute|tomb|vertige|phare|versant|peur|noir/i);
-    expect(s.words?.pose).toEqual(['Le socle est refermé.', 'La tour est reprise.', 'Le garde-corps est relevé.', 'Le Fanal est allumé.', 'Le seuil est dallé.']);
+    expect(s.words?.pose).toEqual(['Le socle est refermé.', 'La tour est réparée.', 'Le muret de pierre est relevé.', 'Le Fanal est allumé.', 'Le seuil est dallé.']);
     expect(s.words?.end).toBe('Ici, la lumière répondait aux trois autres archipels.');
   });
 });
@@ -193,7 +193,7 @@ describe('La scénette du Fanal', () => {
   it('l’opticienne, sans prénom, et sa phrase de métier', () => {
     const s = scenetteOf('fanal');
     expect(s.role).toBe('L’opticienne');
-    expect(s.greeting).toBe('L’opticienne taille les verres qui portent la lumière.');
+    expect(s.greeting).toBe('L’opticienne taille les verres qui portent la lumière du Fanal.');
   });
 
   it('elle se joue devant la porte des salles, hors du chemin, hors du socle, loin de la porte du lieu, le regard dos au pic', () => {

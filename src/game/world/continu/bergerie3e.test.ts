@@ -48,7 +48,7 @@ describe('La Bergerie, le Détour des Alpages', () => {
     expect(SAVED_IDS).toEqual(DETOUR_IDS);
     expect(DETOUR_IDS.slice(-4)).toEqual(['cadran', 'bergerie', 'cedre', 'lac']);
     expect(sanitizeDetours(['bergerie', 'cadran'])).toEqual(['cadran', 'bergerie']);
-    expect(BERGERIE.says).toBe('Les moutons passent l’été tout là-haut.');
+    expect(BERGERIE.says).toBe('L’été, les moutons montent jusqu’ici.');
     expect(BERGERIE.saysAloudOnly).toBeUndefined();
     expect(BERGERIE.says).not.toMatch(/vide|chute|tomb|vertige|phare/i);
   });

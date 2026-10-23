@@ -165,7 +165,7 @@ describe('Le bilan de la Rampe', () => {
         for (const noun of planNouns(plan.name)) expect(text, noun).not.toMatch(wordRe(noun));
       }
     for (const text of texts) expect(text).not.toMatch(/vide|chute|tomb|vertige|phare|versant|peur|noir/i);
-    expect(s.words?.pose).toEqual(['La rampe est refaite.', 'Le cabestan est prêt.', 'Le traîneau est chargé.']);
+    expect(s.words?.pose).toEqual(['La pente de pierre est refaite.', 'Le treuil est prêt.', 'Le traîneau est chargé.']);
     expect(s.words?.end).toBe('Ici, on a hissé toutes les pierres du Fanal.');
     expect(s.role).toBe('La charretière');
     expect(s.greeting).toBe('La charretière mène les pierres jusqu’au Fanal.');

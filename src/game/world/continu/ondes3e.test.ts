@@ -155,7 +155,7 @@ describe('Le bilan des Ondes', () => {
         for (const noun of planNouns(plan.name)) expect(text, noun).not.toMatch(wordRe(noun));
       }
     for (const text of texts) expect(text).not.toMatch(/vide|chute|tomb|vertige|phare|abri|grenier|palais|standard/i);
-    expect(s.words?.pose).toEqual(['La station est refaite.', 'Les postes sont en rang.', 'Le pavillon écoute le large.', 'Le chemin est prêt.']);
+    expect(s.words?.pose).toEqual(['La station est refaite.', 'Les postes sont en rang.', 'Le pavillon d’écoute est remonté.', 'Le chemin est prêt.']);
     expect(s.words?.end).toBe('Ici, on entendait les voix des autres archipels.');
   });
 });

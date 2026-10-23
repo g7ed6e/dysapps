@@ -173,8 +173,8 @@ describe('Le bilan du Jardin', () => {
     // Les phrases du lieu ne disent pas non plus « abords ».
     for (const text of [...(s.words?.pose ?? []), s.words?.end ?? '']) expect(text).not.toMatch(wordRe('abords'));
     for (const text of texts) expect(text).not.toMatch(/vide|chute|tomb|vertige|phare/i);
-    expect(s.words?.pose).toEqual(['Les carrés sont refaits.', 'Les arbres sont palissés.', 'La fontaine est pleine.']);
-    expect(s.words?.end).toBe('Ici, on soignait avec les plantes qu’on cultivait.');
+    expect(s.words?.pose).toEqual(['Les carrés sont refaits.', 'Les arbres sont attachés au mur.', 'La fontaine est pleine.']);
+    expect(s.words?.end).toBe('Ici, on cultivait les plantes qui servaient à soigner.');
     for (const text of texts) expect(text).not.toMatch(/(?<!\p{L})jardin/u);
   });
 });
@@ -183,7 +183,7 @@ describe('La scénette du Jardin', () => {
   it('le greffeur, sans prénom, et sa phrase de métier', () => {
     const s = scenetteOf('jardin');
     expect(s.role).toBe('Le greffeur');
-    expect(s.greeting).toBe('Le greffeur marie deux arbres pour n’en faire qu’un.');
+    expect(s.greeting).toBe('Le greffeur fixe la branche d’un arbre sur un autre arbre.');
   });
 
   it('la caméra arrive par la porte, basse, au nord (0°, le soleil dans le dos) : la fontaine à droite de Kéo, dans le cadre', () => {

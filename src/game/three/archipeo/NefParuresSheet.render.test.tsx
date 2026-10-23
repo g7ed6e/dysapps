@@ -61,7 +61,7 @@ describe('la fiche de la Nef au repos du 3e (GD-25)', () => {
   it('la tête posée : le pavois, 0 sur 10, et le quartz', () => {
     show(keys.slice(0, 6), {}, 0);
     expect(done()).toEqual(['faite', 'en-cours', 'a-venir']);
-    expect(said('.visually-hidden')).toMatch(/^Le pavois\. 0 blocs posés sur 10\. 10 blocs de quartz, à gagner /);
+    expect(said('.visually-hidden')).toMatch(/^Les plaques bleues\. 0 blocs posés sur 10\. 10 blocs de quartz, à gagner /);
     expect(screen.queryByRole('button', { name: /Poser/ })).toBeNull();
   });
 

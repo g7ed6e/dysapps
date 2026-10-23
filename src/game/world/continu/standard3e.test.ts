@@ -176,8 +176,8 @@ describe('Le bilan du Standard', () => {
     for (const text of texts) expect(text).not.toMatch(/vide|chute|tomb|vertige|phare|versant|peur|noir|ruche|piquet/i);
     // « Standard » reste le nom du lieu (« le corps du Standard ») ; jamais un mot commun.
     for (const text of texts) expect(text).not.toMatch(/standard/);
-    expect(s.words?.pose).toEqual(['Les ardoises sont remises.', 'Le tableau est remis.', 'Les lampes sont allumées.', 'Les fils vont jusqu’au Fanal.']);
-    expect(s.words?.end).toBe('Ici, les fils portaient les messages jusqu’au Fanal.');
+    expect(s.words?.pose).toEqual(['La salle est couverte.', 'Le tableau est redressé.', 'Les lampes sont allumées.', 'Les fils vont jusqu’au Fanal.']);
+    expect(s.words?.end).toBe('D’ici, les messages partaient vers les autres archipels.');
     expect(s.role).toBe('La télégraphiste');
     expect(s.greeting).toBe('La télégraphiste envoie les messages par les fils.');
   });

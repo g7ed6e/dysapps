@@ -170,7 +170,7 @@ describe('Le bilan du Palais', () => {
     for (const text of texts) expect(text).not.toMatch(/vide|chute|tomb|vertige|phare/i);
     for (const text of texts) expect(text).not.toMatch(/(?<!\p{L})palais/u);
     for (const text of texts) expect(text).not.toMatch(/Prairie|Parvis/);
-    expect(s.words?.pose).toEqual(['L’escalier est refait.', 'L’aile est couverte d’ardoise.', 'Le gong est relevé.', 'L’allée est prête.']);
+    expect(s.words?.pose).toEqual(['L’escalier est refait.', 'La grande salle est couverte d’ardoise.', 'Le gong est relevé.', 'L’allée est prête.']);
     expect(s.words?.end).toBe('Ici, on recevait les messagers de tous les archipels.');
   });
 });

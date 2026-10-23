@@ -165,7 +165,7 @@ describe('Le bilan du Belvédère', () => {
         for (const noun of planNouns(plan.name)) expect(text, noun).not.toMatch(wordRe(noun));
       }
     for (const text of texts) expect(text).not.toMatch(/vide|chute|tomb|vertige|phare/i);
-    expect(s.words?.pose).toEqual(['Le dallage est remis.', 'Le gnomon est debout.', 'Les pierres sont à leur place.', 'La visée est prête.', 'Les flèches sont posées.']);
+    expect(s.words?.pose).toEqual(['Le dallage est remis.', 'Le pilier de l’ombre est debout.', 'Les solides sont sur leurs socles.', 'La visée est prête.', 'Les flèches sont posées.']);
     expect(s.words?.end).toBe('D’ici, on mesurait la montagne sans la gravir.');
   });
 });

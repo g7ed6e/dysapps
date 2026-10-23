@@ -83,10 +83,10 @@ export function paruresOpenCells(parts: Readonly<Record<string, readonly string[
 }
 
 /** Le nom de chaque parure, dans l'ordre de la pose (les mots de la fiche). */
-export const PARURE_NAMES = ['La figure de proue', 'Le pavois', 'Les feux'] as const;
+export const PARURE_NAMES = ['La figure de proue', 'Les plaques bleues', 'Les feux'] as const;
 
 /** Ce que dit la fiche après la pose de chaque parure. */
-export const PARURE_POSED = ['La figure de proue est posée.', 'Le pavois est posé.', 'Les feux sont posés.'] as const;
+export const PARURE_POSED = ['La figure de proue est posée.', 'Les plaques bleues sont posées.', 'Les feux sont posés.'] as const;
 
 /** Ce que dit la fiche quand les trois parures sont posées. */
 export const NEF_COMPLETE = 'La Nef est complète.';

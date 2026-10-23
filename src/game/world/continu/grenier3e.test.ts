@@ -156,7 +156,7 @@ describe('Le bilan du Grenier', () => {
     // Les phrases du lieu ne disent pas non plus « abords ».
     for (const text of [...(s.words?.pose ?? []), s.words?.end ?? '']) expect(text).not.toMatch(wordRe('abords'));
     for (const text of texts) expect(text).not.toMatch(/vide|chute|tomb|vertige|phare/i);
-    expect(s.words?.pose).toEqual(['Le plancher est calé.', 'Les sacs sont rangés.', 'Les mesures sont en ordre.', 'Les ardoises sont remises.', 'La meule est prête.']);
+    expect(s.words?.pose).toEqual(['La porte est refermée.', 'Les sacs sont rangés.', 'Les mesures sont en ordre.', 'Les ardoises sont remises.', 'La meule est prête.']);
     expect(s.words?.end).toBe('Ici, chacun avait sa part des provisions.');
     for (const text of texts) expect(text).not.toMatch(/(?<!\p{L})grenier/u);
   });

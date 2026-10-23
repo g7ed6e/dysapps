@@ -172,8 +172,8 @@ describe('Le bilan de l’Abri', () => {
     // Les phrases du lieu ne disent pas non plus « abords ».
     for (const text of [...(s.words?.pose ?? []), s.words?.end ?? '']) expect(text).not.toMatch(wordRe('abords'));
     for (const text of texts) expect(text).not.toMatch(/vide|chute|tomb|vertige|phare/i);
-    expect(s.words?.pose).toEqual(['Les persiennes sont remises.', 'Les instruments sont en rang.', 'Le mât est relevé.', 'Le muret est refait.']);
-    expect(s.words?.end).toBe('Ici, matin et soir, on regardait le ciel pour savoir le temps du lendemain.');
+    expect(s.words?.pose).toEqual(['Les persiennes sont remises.', 'Les pluviomètres sont en rang.', 'Le mât est relevé.', 'Le muret est refait.']);
+    expect(s.words?.end).toBe('Ici, matin et soir, on notait la pluie et le vent.');
     for (const text of texts) expect(text).not.toMatch(/(?<!\p{L})abri/u);
   });
 });
