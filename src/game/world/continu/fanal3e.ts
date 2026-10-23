@@ -24,7 +24,7 @@ import type { Stage } from './construction';
 import { drawPosed, FacetBuilder, type Facets } from './facets';
 import { PIECES_3E, ferrailleursPort3e, grappin3e, rack3e } from './ferrailleurs3e';
 import type { Vec3 } from './geometry';
-import { zeppelinPiecesFacets } from './parvis3e';
+import { zeppelinBalcony3e, zeppelinPiecesFacets } from './parvis3e';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
 import { C3E, SINK_3E, bench3e, dryTuft3e, dryTufts3e, habitant3e, pathLantern3e, postLantern3e, scene3e, site3e } from './place3eKit';
 import { capOf, groundPlane4e, once } from './place4eKit';
@@ -576,7 +576,8 @@ function prismGlass(b: FacetBuilder, at: Vec3, s: number): void {
 /**
  * La fin des Ferrailleurs (proposition du Cirque ; ./ferrailleurs3e.ts), jouée une fois, après le bilan de la dernière
  * partie : les pièces quittent la gondole du zeppelin, le râtelier paraît au pied du Fanal, côté Rampe (au sud-est du socle,
- * sa face vers la Rampe, au sud de la rampe et de son cabestan), les pièces s'y rangent l'une après l'autre, puis Grappin, et la lumière du port, au nord. Les
+ * sa face vers la Rampe, au sud de la rampe et de son cabestan), les pièces s'y rangent l'une après l'autre, puis Grappin
+ * (qui quitte alors le balcon de la gondole, où il se tenait avant : restes du 3e, piste 3 A), et la lumière du port, au nord. Les
  * instants (en secondes) ; le râtelier et Grappin, dans le repère du lieu.
  */
 const RETURN = {
@@ -593,6 +594,9 @@ const RETURN = {
 /** Les pièces sur la gondole, dessinées une fois. */
 const gondolaPieces = once(zeppelinPiecesFacets);
 
+/** Où Grappin se tient sur le balcon de la gondole, avant la fin (restes du 3e, piste 3 A). */
+const balcony = once(zeppelinBalcony3e);
+
 /** La fin des Ferrailleurs à `t` secondes de son début (0 : avant ; `Infinity` : jouée), dans le repère du monde (`c` : le centre du lieu à son sol). */
 function returnFacets(c: Vec3, t: number): Facets {
   const R = RETURN;
@@ -607,6 +611,10 @@ function returnFacets(c: Vec3, t: number): Facets {
   if (t >= R.grappin) {
     const { x, z } = R.grappinAt;
     grappin3e(b, { x: c.x + x, y: c.y + planeY(x, z), z: c.z + z });
+  } else {
+    // Avant : sur le balcon de la gondole, immobile, tourné vers le Fanal ; il le quitte quand il paraît au râtelier.
+    const at = balcony();
+    drawPosed(b, { ...at, yaw: Math.atan2(c.x - at.x, c.z - at.z) }, (l) => grappin3e(l, { x: 0, y: 0, z: 0 }));
   }
   return b.build();
 }

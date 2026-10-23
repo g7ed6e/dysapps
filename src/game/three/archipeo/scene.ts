@@ -15,7 +15,7 @@ import { createEquipierModels } from './equipierModels';
 import { guideOf } from '../../world/continu/equipage';
 import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
-import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
+import { blendPose, nefArrivingParts, nefAtBerth, nefModelFacets, nefSheetPose, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, fitArrivalBack, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markPoint, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
@@ -1798,12 +1798,20 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   // La caméra posée à la main (`view`, les captures seulement).
   let manualView: CameraPose | null = null;
+  /**
+   * La vue de la fiche de la Nef (au 3e, `NefSite.sheetView` : l'aéronef de trois quarts avant, restes du 3e, piste 1 B) :
+   * sa pose, faite une fois, et la part où en est la caméra (0 : derrière Kéo ; 1 : toute la vue), qui monte comme la
+   * vue d'un Détour et redescend à la fermeture de la fiche, d'un coup avec « Réduire les animations ».
+   */
+  const nefSheet = nefSite.sheetView ? nefSheetPose(nefSite, nefSite.sheetView, { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 }) : null;
+  let nefSheetView = 0;
   const follow = () => {
     if (manualView) return applyPose(manualView);
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : viewRise(), fifth ? hold : undefined, arrivalBack > 0 ? arrivalShape : viewShape());
     lookUp(pose, lanternTop, keoFeet, look, viewH, ground);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     if (guardFeet) keepFeetAbove(pose, keoFeet, feetRoom, viewH);
+    if (nefSheet && nefSheetView > 0) blendPose(pose, nefSheet, detourRise(nefSheetView));
     applyPose(pose);
   };
   follow();
@@ -1874,11 +1882,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     lookUp(pose, lanternTop, keoFeet, look, viewH, ground);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     if (guardFeet) keepFeetAbove(pose, keoFeet, feetRoom, viewH);
+    // La vue de la fiche de la Nef : le décalage se calcule sur la vue d'arrivée, celle que la caméra rejoint.
+    if (nefSheet && nefSheetWanted()) blendPose(pose, nefSheet, 1);
     const subject = framedNef ? nefFramed : framed && subjectOf(framed);
     const p = subject && screenOf(pose, subject, viewW, viewH);
     setShift(p ? { x: Math.round(p.x - (frameRect.left + frameRect.width / 2)), y: Math.round(p.y - (frameRect.top + frameRect.height / 2)) } : { x: 0, y: 0 });
     follow();
   };
+  /** La vue de la fiche de la Nef est-elle voulue : sa fiche ouverte, Kéo assez près de son poste, rien d'autre en cours. */
+  const nefSheetWanted = (): boolean => !!nefSite.sheetView && framedNef && !!frameRect && !asked && !remise && !mapView && Math.hypot(here.x - nefSite.berth.x, here.z - nefSite.berth.z) <= nefSite.sheetView.near;
   const setFrame = (free: typeof frameRect, place?: PlaceId | 'nef') => {
     frameRect = free;
     framedNef = place === 'nef';
@@ -4469,6 +4481,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     arrivalBack = lookUpStep(arrivalBack, arrivalNow || quayArrival ? 1 : 0, dt, reduceMotion);
     if (back > 0 && !atExit()) back = reduceMotion ? 0 : Math.max(0, back - dt / EXIT_VIEW.down);
     if (back === 0) exit = null;
+    if (nefSheet) nefSheetView = detourViewStep(nefSheetView, nefSheetWanted() ? 1 : 0, dt, reduceMotion);
     follow();
     updateRings();
     if (freeMark.visible) fitFreeMark();

@@ -10,7 +10,7 @@ import type { DetourView } from './camera';
 import { drawPosed, FacetBuilder, placeFacets, type Facets } from './facets';
 import { HANGS_3E, PIECE_HEIGHT_3E, PIECES_3E, piece3e } from './ferrailleurs3e';
 import { distance, type Vec2, type Vec3 } from './geometry';
-import type { NefFlight, NefSite } from './nef';
+import type { NefFlight, NefSheetView, NefSite } from './nef';
 import { type P3, quadOut, triOut } from './place4eKit';
 import { COLORS_3E, PARVIS, PARVIS_CORNERS, PARVIS_LEVEL, PARVIS_PAD, PARVIS_PAVING, PARVIS_QUAY_SPOT, PARVIS_ROUND, PEAK_3E, ZEPPELIN_3E } from './plan3e';
 import type { PortSite } from './port';
@@ -186,6 +186,14 @@ const ZEPPELIN = {
   propeller: { side: 2.3, blade: 1.9, width: 0.6 },
   /** La planche de flanc des pièces, côté sud-ouest (vers le Parvis et les Prairies) : son écart, sa hauteur sous l'axe de la gondole, l'échelle des pièces. */
   shelf: { out: 0.45, drop: 0.35, bar: 1.1, scale: 0.85 },
+  /**
+   * Le balcon de ferraille au bout de la gondole, côté Fanal (vers la queue ; restes du 3e, piste 3 A, choix du mainteneur
+   * du 23 octobre 2026) : où Grappin se tient avant la fin des Ferrailleurs. Son plancher part de `from` avant le bout de
+   * la cabine et va `length` au-delà, large de deux `half` ; son dessus `drop` sous le bas de la cabine, pour passer sous
+   * le bout des pales arrêtées (elles tournent dans le plan à 0,52 au-delà du bout, leur pointe à 0,93 sous l'axe au plus
+   * bas) ; ses deux suspentes, son garde-corps de `rail` de haut ; Grappin à `stand` du bout de la cabine.
+   */
+  balcony: { from: 0.2, length: 1.7, half: 0.6, drop: 0.27, thick: 0.1, rail: 0.5, stand: 1.25 },
 } as const;
 
 /** La couleur des rustines : une prune un cran plus claire que les côtes, jamais vive ; le verre des hublots. */
@@ -325,6 +333,16 @@ export function zeppelinFacets(): Facets {
         else l.quad(q(-0.14, -0.14), q(0.14, -0.14), q(0.14, 0.14), q(-0.14, 0.14), PORTHOLE_3E);
       }
     }
+    // Le balcon au bout de la cabine : le plancher de ferraille, pendu à deux suspentes sous la cabine, et son garde-corps
+    // sur les deux flancs et au bout, plein au bout (un pan bas), en barres sur les flancs.
+    const B = Z.balcony;
+    const deck = gy - G.r - B.drop;
+    const b0 = z1 - B.from,
+      b1 = z1 + B.length;
+    l.box({ x: 0, y: deck - B.thick, z: (b0 + b1) / 2 }, [2 * B.half, B.thick, b1 - b0], COLORS_3E.graphite, COLORS_3E.graphiteSun);
+    for (const sx of [-1, 1]) l.beam({ x: sx * (B.half - 0.08), y: gy - G.r + 0.05, z: b0 + 0.1 }, { x: sx * (B.half - 0.08), y: deck - B.thick / 2, z: b0 + 0.1 }, 0.08, COLORS_3E.graphite);
+    l.box({ x: 0, y: deck, z: b1 - 0.04 }, [2 * B.half, B.rail, 0.08], COLORS_3E.graphite, COLORS_3E.graphiteSun);
+    for (const sx of [-1, 1]) l.beam({ x: sx * (B.half - 0.04), y: deck + B.rail, z: z1 + 0.62 }, { x: sx * (B.half - 0.04), y: deck + B.rail, z: b1 }, 0.07, COLORS_3E.graphiteSun);
     const S = Z.shelf;
     const sx = G.half + S.out;
     l.box({ x: sx, y: gy - S.drop - 0.08, z: (z0 + z1) / 2 }, [0.8, 0.08, z1 - z0 - 0.6], COLORS_3E.graphite);
@@ -374,6 +392,21 @@ export function zeppelinPiecesFacets(): Facets {
   return b.build();
 }
 
+/**
+ * Où Grappin se tient sur le balcon de la gondole, avant la fin des Ferrailleurs (restes du 3e, piste 3 A) : ses pieds,
+ * dans le repère du monde. Le Fanal l'y dessine, immobile, tourné vers lui, tant qu'il n'est pas au râtelier
+ * (./fanal3e.ts, `restoration`).
+ */
+export function zeppelinBalcony3e(): Vec3 {
+  const Z = ZEPPELIN;
+  const { rock, tail } = ZEPPELIN_3E;
+  const len = distance(rock, tail);
+  const yaw = Math.atan2(tail.x - rock.x, tail.z - rock.z);
+  const { gy, z1 } = gondolaFrame(len);
+  const lz = z1 + Z.balcony.stand;
+  return { x: rock.x + lz * Math.sin(yaw), y: Z.rockTop + Z.mast + 0.3 + gy - Z.gondola.r - Z.balcony.drop, z: rock.z + lz * Math.cos(yaw) };
+}
+
 /** Le décor du Parvis qui ne change pas, sur la Carte comme dans le monde : le pic. */
 export const parvisDecorFacets = (): Facets => peakFacets();
 
@@ -421,6 +454,13 @@ function nef3eTouched(p: Vec2): boolean {
   return Math.hypot(p.x - BERTH.x, p.z - BERTH.z) <= PARVIS_PAD.radius;
 }
 
+/**
+ * La vue de la fiche de l'aéronef (restes du 3e, piste 1 B ; choix du mainteneur du 23 octobre 2026) : de trois quarts
+ * avant, à 40° de la proue, du côté du sud (le flanc au soleil, le pic derrière lui), un peu d'en haut ; la tête de
+ * baleine, la bande bleue du flanc et les deux feux se lisent ensemble. Kéo à plus de 40 unités de l'aire : rien ne bouge.
+ */
+const NEF_3E_SHEET_VIEW: NefSheetView = { angle: (40 * Math.PI) / 180, side: -1, distance: 10, height: 5.5, aim: 1.8, near: 40 };
+
 /** L'aéronef du 3e (lot 1, en masses : au repos sur son aire, son départ simple, sans obstacle). */
 export const NEF_3E: NefSite = {
   form: 3,
@@ -439,6 +479,7 @@ export const NEF_3E: NefSite = {
   obstacleDone: 0,
   pointBeyond: NEF_3E_DEPARTURE.pointBeyond,
   flight: nef3eFlight,
+  sheetView: NEF_3E_SHEET_VIEW,
 };
 
 // ---------- Les trois parures de l'aéronef ----------
@@ -448,12 +489,19 @@ export const NEF_3E: NefSite = {
  * corrections 7 à 9), dans le repère de la Nef (la proue vers −z, le pont vers y = 0 ; le modèle `3-aeronef` à l'échelle
  * du monde : son bastingage à 0,87 au-dessus de son origine, sa coque large de 1,45 de chaque côté de 2,5 à 5,5 unités
  * de la proue) : la figure de proue, une tête de baleine de bronze, lisse, sans yeux peints ; le pavois, une rangée de
- * plaques carrées d'émail cobalt, rigides et unies, debout le long du bastingage, de chaque côté ; les deux feux de
- * position, deux lanternes d'ocre identiques, fixes, une de chaque côté, près de la proue (jamais une rouge et une
- * verte). Elles se posent dans l'ordre, la troisième en dernier ; leurs plans et leur fiche se règlent dans GD-25.
+ * plaques d'émail cobalt, rigides et unies, debout le long du bastingage, de chaque côté, en bande ; les deux feux de
+ * position, deux lanternes d'ocre identiques, fixes, au bout de deux perches au-dessus du toit de la cabine (jamais une
+ * rouge et une verte). Elles se posent dans l'ordre, la troisième en dernier ; leurs plans et leur fiche se règlent dans GD-25.
  */
 export const NEF_PARURES = ['proue', 'pavois', 'feux'] as const;
 export type NefParure = (typeof NEF_PARURES)[number];
+
+/** La hauteur du plat-bord de l'aéronef au-dessus de son origine (le modèle `3-aeronef` à l'échelle du monde). */
+export const BULWARK = 0.87;
+
+/** Le haut du toit de la cabine de l'aéronef, au-dessus de son origine ; le bas des pales du rotor. */
+export const CABIN_ROOF = 2.05;
+export const ROTOR_LOW = 3.47;
 
 /** Les mesures des parures, dans le repère de la Nef. */
 const PARURES_LOOK = {
@@ -462,8 +510,10 @@ const PARURES_LOOK = {
   /**
    * Le pavois (relectures du directeur artistique et du consultant d'Archipéo avant la PR : une rangée, pas deux
    * ailerons) : le bord de la coque à hauteur du bastingage, de l'arrière des hélices (`z` −0,35 : leurs pales tournent
-   * entre −0,98 et −0,49) jusqu'au début de la poupe, en `[x, z]` ; le bas et le haut des plaques, qui dépassent le
-   * plat-bord (0,87) ; combien de plaques par flanc, leur écart, leur épaisseur.
+   * entre −0,98 et −0,49) jusqu'au début de la poupe, en `[x, z]` ; le bas et le haut des plaques ; combien de plaques
+   * par flanc, leur écart, leur épaisseur. Leur haut monte à deux fois la hauteur du plat-bord (0,87), pour faire une
+   * vraie bande bleue sur le flanc, lisible depuis l'arrivée au Parvis (restes du 3e, piste 1 A ; choix du mainteneur du
+   * 23 octobre 2026) : la rangée au ras du plat-bord ne se voyait pas de loin, sous les hélices.
    */
   pavois: {
     edge: [
@@ -473,13 +523,18 @@ const PARURES_LOOK = {
       [0.98, 1.95],
     ] as const,
     y0: 0.52,
-    y1: 1.14,
+    y1: 2 * BULWARK,
     plates: 5,
     gap: 0.06,
     thick: 0.06,
   },
-  /** Les feux : leur écart à l'axe, leur hauteur, leur place le long de la coque. */
-  feux: { x: 1.3, y: 1.0, z: -1.2 },
+  /**
+   * Les feux, au bout de deux perches plantées sur le toit de la cabine (restes du 3e, piste 1 A : posés plus bas que la
+   * cabine, ils ne se voyaient pas de loin) : le pied de chaque perche sur le toit (plat à 2,05 jusqu'à 0,5 de l'axe,
+   * de −0,9 à 1,2 le long de la coque), son haut, penché un peu vers le dehors, sous les pales du rotor (3,47 au plus
+   * bas) ; la lanterne posée sur le haut de la perche, son côté.
+   */
+  feux: { foot: { x: 0.42, y: 1.95, z: -0.75 }, top: { x: 0.62, y: 2.8 }, lantern: 0.26 },
 } as const;
 
 /**
@@ -605,11 +660,15 @@ export function nefParuresLocal(posed: readonly NefParure[]): Facets {
     }
   }
   if (posed.includes('feux')) {
+    // Deux perches de fer sur le toit, chacune sur son petit socle, et au bout, une lanterne d'ocre sous son chapeau de
+    // bronze : deux points ocre au-dessus de la cabine.
     const F = L.feux;
+    const s2 = F.lantern / 2;
     for (const s of [-1, 1]) {
-      b.beam({ x: s * (F.x - 0.18), y: F.y - 0.1, z: F.z }, { x: s * F.x, y: F.y - 0.1, z: F.z }, 0.06, PARURE_COLORS.iron);
-      b.box({ x: s * F.x, y: F.y - 0.12, z: F.z }, [0.2, 0.24, 0.2], PARURE_COLORS.lantern);
-      b.prism({ x: s * F.x, y: F.y + 0.12, z: F.z, yaw: Math.PI / 4 }, 0.17, 0, 0.13, 4, PARURE_COLORS.bronze);
+      b.box({ x: s * F.foot.x, y: CABIN_ROOF - 0.02, z: F.foot.z }, [0.18, 0.08, 0.18], PARURE_COLORS.iron);
+      b.beam({ x: s * F.foot.x, y: F.foot.y, z: F.foot.z }, { x: s * F.top.x, y: F.top.y, z: F.foot.z }, 0.07, PARURE_COLORS.iron);
+      b.box({ x: s * F.top.x, y: F.top.y, z: F.foot.z }, [F.lantern, F.lantern, F.lantern], PARURE_COLORS.lantern);
+      b.prism({ x: s * F.top.x, y: F.top.y + F.lantern, z: F.foot.z, yaw: Math.PI / 4 }, s2 * 1.35, 0, 0.15, 4, PARURE_COLORS.bronze);
     }
   }
   return b.build();
