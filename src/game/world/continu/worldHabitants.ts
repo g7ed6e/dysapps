@@ -141,7 +141,7 @@ export function worldHabitantAt(place: PlaceId, ground: (x: number, z: number) =
   const z = c.z + s.dz;
   // Sur une pente, au plus haut du sol sous ses pieds : le sol à facettes ne passe pas devant ses jambes (aux Écluses, il
   // coupait ses tibias, ses chaussures au-dessous : directeur artistique, consultant Archipéo).
-  const y = Math.max(...[[0, 0], [FOOT, 0], [-FOOT, 0], [0, FOOT], [0, -FOOT]].map(([u, v]) => ground(x + u, z + v)));
+  const y = Math.max(ground(x, z), ground(x + FOOT, z), ground(x - FOOT, z), ground(x, z + FOOT), ground(x, z - FOOT));
   return { x, y: y + (s.lift ?? 0), z };
 }
 
