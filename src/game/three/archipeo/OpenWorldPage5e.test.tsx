@@ -106,6 +106,10 @@ test('le niveau où l’on est, un seul bouton qui déplie les autres niveaux at
   await user.keyboard('{Escape}');
   expect(screen.queryByRole('button', { name: /^Aller en 6e/ })).toBeNull();
   expect(screen.getByRole('button', { name: /^Changer de niveau/ })).toHaveFocus();
+  // Un toucher ailleurs replie aussi.
+  await user.click(screen.getByRole('button', { name: /^Changer de niveau/ }));
+  await user.click(document.querySelector('.open-world-canvas')!);
+  expect(screen.queryByRole('button', { name: /^Aller en 6e/ })).toBeNull();
   await user.click(screen.getByRole('button', { name: /^Changer de niveau/ }));
   await user.click(screen.getByRole('button', { name: /^Aller en 6e/ }));
   expect(document.querySelector('.open-world-fondu')).toHaveClass('on');

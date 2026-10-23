@@ -22,21 +22,30 @@ export function LevelPicker({ here, links, onGo }: Props) {
   const first = useRef<HTMLButtonElement>(null);
   const reached = reachedArchipelagos(links).map((a) => a.classe);
   const others = reached.filter((a) => a !== here);
-  // Déplié, le focus va au premier niveau ; Échap replie et rend le focus au bouton.
+  const box = useRef<HTMLDivElement>(null);
+  // Déplié, le focus va au premier niveau ; un toucher ailleurs (le monde, la caméra) le replie (référent dys).
   useEffect(() => {
     if (!open) return;
     first.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      setOpen(false);
-      toggle.current?.focus();
+    const away = (e: PointerEvent) => {
+      if (!box.current?.contains(e.target as Node)) setOpen(false);
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener('pointerdown', away);
+    return () => window.removeEventListener('pointerdown', away);
   }, [open]);
   if (reached.length < 2) return null;
   return (
-    <div className="open-world-niveaux">
+    // Échap, le focus dans le bouton ou ses niveaux, replie et rend le focus au bouton, sans fermer autre chose.
+    <div
+      ref={box}
+      className="open-world-niveaux"
+      onKeyDown={(e) => {
+        if (!open || e.key !== 'Escape') return;
+        e.stopPropagation();
+        setOpen(false);
+        toggle.current?.focus();
+      }}
+    >
       <button
         ref={toggle}
         type="button"
