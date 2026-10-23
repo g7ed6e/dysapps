@@ -411,6 +411,15 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     placement: 'rangee',
     words: { pose: ['La colonnade est debout.', 'Le banc est réparé.', 'La fontaine est pleine.'], end: 'Ici, on venait réfléchir, à l’ombre des pins.' },
   },
+  // Le Palais (les Prairies du 3e, GD-25) : la phrase de métier et la réplique d'après la proposition du consultant
+  // d'Archipéo (§ 3), à valider par le directeur du contenu ; une phrase par partie, sans nom de plan de l'île (« tour »,
+  // « toit », « rempart », « château ») ni « palais » en nom commun.
+  palais: {
+    role: placeArt('palais')!.role,
+    greeting: 'Le majordome reçoit les visiteurs et veille sur la maison.',
+    placement: 'rangee',
+    words: { pose: ['L’escalier est refait.', 'L’aile est couverte d’ardoise.', 'Le gong est relevé.', 'L’allée est prête.'], end: 'Ici, on recevait les messagers de tous les archipels.' },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -869,6 +878,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   tribune: northSite('tribune'),
   douane: northSite('douane'),
   ermitage: northSite('ermitage'),
+  palais: northSite('palais'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2453,6 +2463,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   douane: 'earth',
   // L'Ermitage : les aiguilles de la clairière.
   ermitage: 'earth',
+  // Le Palais : l'herbe de la Prairie.
+  palais: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

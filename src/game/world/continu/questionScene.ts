@@ -276,6 +276,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   douane: placeArt('douane')!.sceneSpot,
   // L'Ermitage : à l'est de la colonnade, sur les aiguilles.
   ermitage: placeArt('ermitage')!.sceneSpot,
+  // Le Palais : sur l'herbe devant l'aile gauche, à gauche de l'escalier, la console des tasses devant.
+  palais: placeArt('palais')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -591,6 +593,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   douane: 'lieu',
   // L'Ermitage : les pommes de pin, sur un rebord de pierre.
   ermitage: 'lieu',
+  // Le Palais : les tasses de porcelaine, sur le plateau d'une console.
+  palais: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */
