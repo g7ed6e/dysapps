@@ -366,45 +366,21 @@ export function detourViewStep(current: number, wanted: 0 | 1, dt: number, reduc
 /** La part de la vue d'un Détour pour une avancée `t` (de 0 à 1) : elle ralentit en arrivant (référent dys). */
 export const detourRise = (t: number): number => t * (2 - t);
 
-/**
- * Garde les pieds de Kéo (`feet`) au-dessus de la rangée du bas (« Y aller »), à `room` pixels au moins du bas d'un
- * écran de `height` pixels, quelle que soit la taille du texte (au 4e : consultant UX UI, deuxième relecture du lot 1) :
- * si la caméra qui suit les y met dessous, son regard plonge un peu plus, sans qu'elle bouge (`pose`, remplie sur place).
- */
-export function keepFeetAbove(pose: CameraPose, feet: Vec3, room: number, height: number): void {
-  if (room <= 0 || height <= 0) return;
-  const p = pose.position;
-  const flat = Math.hypot(pose.target.x - p.x, pose.target.z - p.z) || 1e-9;
-  const fx = (pose.target.x - p.x) / flat;
-  const fz = (pose.target.z - p.z) / flat;
-  const pitch0 = Math.atan2(p.y - pose.target.y, flat);
-  const dFeet = Math.max(0.1, (feet.x - p.x) * fx + (feet.z - p.z) * fz);
-  // L'angle des pieds sous l'axe du regard, et le plus grand qui les laisse au-dessus de la rangée.
-  const below = Math.atan2(p.y - feet.y, dFeet) - pitch0;
-  const most = Math.atan((1 - 2 * Math.min(0.45, room / height)) * tanHalf(pose.fov));
-  if (below <= most) return;
-  const pitch = Math.min(1.4, pitch0 + below - most);
-  pose.target.y = p.y - Math.tan(pitch) * flat;
-}
-
 /** Le pas du recul d'arrivée qui s'ajuste (`fitArrivalBack`), et l'air au-dessus du haut du lieu, en pixels. */
 const ARRIVAL_FIT = { step: 0.1, air: 8 } as const;
 
 /**
  * Le recul du regard d'arrivée devant un lieu haut (`PlaceArt.arrivalView`) : `back`, ou davantage, d'un pas de 0,1,
- * jusqu'à `maxBack`, tant que son haut (`top`) sort du haut de l'écran une fois le regard levé (`lookUp`) et les pieds de
- * Kéo gardés au-dessus de la rangée du bas (`room` pixels, `keepFeetAbove` ; 0 : sans rangée gardée). Au téléphone
- * couché, ou quand la phrase « Aucune mission » s'ajoute au-dessus de « Y aller », la lanterne du Fanal restait coupée
- * (relecture du directeur artistique avant la PR du 3e). Calculé à l'arrivée et quand la rangée ou l'écran changent,
- * jamais à chaque image.
+ * jusqu'à `maxBack`, tant que son haut (`top`) sort du haut de l'écran une fois le regard levé (`lookUp`). Au téléphone
+ * couché, la lanterne du Fanal restait coupée (relecture du directeur artistique avant la PR du 3e). Calculé à
+ * l'arrivée et quand l'écran change, jamais à chaque image.
  */
-export function fitArrivalBack(feet: Vec3, lift: number, yaw: number, top: Vec3, back: number, maxBack: number, room: number, width: number, height: number, ground?: (x: number, z: number) => number): number {
+export function fitArrivalBack(feet: Vec3, lift: number, yaw: number, top: Vec3, back: number, maxBack: number, width: number, height: number, ground?: (x: number, z: number) => number): number {
   const pose: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
   for (let k = 0; back + k * ARRIVAL_FIT.step < maxBack; k++) {
     const b = back + k * ARRIVAL_FIT.step;
     followPose(feet, lift, pose, yaw, 1, undefined, { height: 0, back: b });
     lookUp(pose, top, feet, 1, height, ground);
-    if (room > 0) keepFeetAbove(pose, feet, room, height);
     if (screenOf(pose, top, width, height).y >= ARRIVAL_FIT.air) return b;
   }
   return maxBack;

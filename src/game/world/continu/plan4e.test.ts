@@ -10,7 +10,6 @@ import { DALLE_BUDGET } from './dalle4e';
 import { EPAVE_BUDGET } from './epave4e';
 import { RECOIN_BUDGET } from './recoin4e';
 import { REPLAT_BUDGET } from './replat4e';
-import { followPose, keepFeetAbove, screenOf } from './camera';
 import { distance, distanceToPolyline, insidePolygon, linearRgb, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
 import { levelWorld } from './levelWorld';
@@ -321,18 +320,3 @@ describe('Le budget du 4e', () => {
   });
 });
 
-describe('La caméra du 4e et « Y aller » (deuxième relecture du lot 1, consultant UX UI)', () => {
-  it('les pieds de Kéo restent au-dessus de la rangée du bas, quelle que soit sa hauteur', () => {
-    const feet = { x: 2, y: heightAt4e({ x: 2, z: -36 }), z: -36 };
-    for (const room of [96, 130, 200]) {
-      const pose = followPose(feet, 0, undefined, 0.4);
-      keepFeetAbove(pose, feet, room, 860);
-      expect(screenOf(pose, feet, 1280, 860).y).toBeLessThanOrEqual(860 - room + 1e-6);
-    }
-    // Déjà au-dessus : rien ne bouge.
-    const pose = followPose(feet, 0, undefined, 0.4);
-    const target = { ...pose.target };
-    keepFeetAbove(pose, feet, 20, 860);
-    expect(pose.target).toEqual(target);
-  });
-});

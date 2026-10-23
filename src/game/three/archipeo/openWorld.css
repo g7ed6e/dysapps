@@ -135,6 +135,9 @@
   margin-inline: 0;
   align-items: flex-end;
 }
+.world-stage[data-go-bas='oui'] .open-world-go {
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+}
 .world-stage[data-go-cote='oui'] .open-world-go .button {
   white-space: nowrap;
 }
@@ -184,6 +187,22 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+/* « Rien à faire ici. » à la place de « Aucune mission… » quand même en haut la bulle couvrirait Kéo (`data-go-court`,
+   placeBubble) ; la phrase entière reste aux lecteurs d'écran. */
+.open-world-go-short {
+  display: none;
+}
+.world-stage[data-go-court='oui'] .open-world-go-short {
+  display: inline;
+}
+.world-stage[data-go-court='oui'] .open-world-go-long {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 /* « Y aller » sans mission : délavé, comme un bouton vide du monde (WorldButton), sa raison écrite au-dessus. */
 /* Sur un écran bas (un téléphone couché, au plus grand texte surtout), « Y aller » se tient dans l'espace à droite de
