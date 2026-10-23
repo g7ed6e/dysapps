@@ -3149,6 +3149,12 @@
   width: 26px;
   height: 26px;
 }
+/* Le liseré de l'icône d'un bloc sur le rond clair : le marbre (#F1EEE8, #D6D1C8) n'atteignait que 1,1 à 2,5:1 sur le fond
+   du rond ; le contour, de la couleur du bord du rond, tient la forme à plus de 3:1 (WCAG 1.4.11 ; consultant UX UI, lot 2
+   des restes du 3e). Le rond ne change pas ; la pastille pleine garde son icône telle quelle. */
+.open-world-signs .open-world-sign:not(.suggested) .block-icon {
+  filter: drop-shadow(1px 0 0 var(--text)) drop-shadow(-1px 0 0 var(--text)) drop-shadow(0 1px 0 var(--text)) drop-shadow(0 -1px 0 var(--text));
+}
 .open-world-sign.suggested {
   border-color: #142b38;
   background: #142b38;

@@ -6,14 +6,14 @@
 // apparaissent rangées sur un râtelier de bois au pied du Fanal, côté Rampe ; Grappin se tient à côté, en pion, graphite
 // et prune ; au nord, à l'horizon, leur port répond d'une seule lumière fixe. Ce fichier dessine les pièces, le râtelier,
 // Grappin et le port ; le Fanal les montre à sa restauration (./fanal3e.ts, `restoration`), la gondole les porte avant
-// (./parvis3e.ts, `zeppelinPiecesFacets`). Le bronze n'est qu'aux pièces rendues (relecture des Prairies, (b) 4). Code pur.
+// (./parvis3e.ts, `zeppelinPiecesFacets`). Le bronze n'est qu'aux pièces rendues (relecture des Prairies, (b) 4) :
+// celui de `PIECES_BRONZE`, le même qu'au pont du Rafiot. Code pur.
 import { PIECES_BRONZE, RAFIOT_PIECE_HEIGHT, rafiotPiece, type RafiotPiece } from './crique4e';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { C3E } from './place3eKit';
 import { COLORS_3E } from './plan3e';
 import { rock } from './surroundingsKit';
-
 
 /**
  * Les six pièces du Rafiot (`RAFIOT_PIECES`), dans l'ordre où elles se rangent sur le râtelier, de gauche à droite vues

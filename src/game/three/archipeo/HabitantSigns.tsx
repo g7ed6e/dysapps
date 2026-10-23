@@ -75,36 +75,53 @@ const hits = (left: number, top: number, o: ScreenRect) => left < o.left + o.wid
 /**
  * Le milieu d'une pastille, s'il doit bouger : à 844 × 390, celle d'un lieu hors champ mordait la marque du même lieu et
  * la colonne des boutons (consultant UX UI, avis sur les lots L2 et L3) ; elle se pose alors à côté, comme la marque
- * (juste sous la marque, puis `keepClear` : hors de la colonne, des boutons et de la marque), à `SIGN_GAP` pixels. `null` : sa place est libre
- * (le cas de chaque image, sans rien allouer).
+ * (juste sous la marque, puis `keepClear` : hors de la colonne, des boutons et de la marque), à `SIGN_GAP` pixels. Elle ne
+ * mord pas non plus les pastilles déjà posées (`placed`, les `count` premières : quatre ronds au plus avec celle de la
+ * Nef, GD-25 ; consultant UX UI, lot 2 des restes du 3e). `null` : sa place est libre (le cas de chaque image, sans rien
+ * allouer).
  */
-export function clearSign(x: number, y: number, area: SignArea): { x: number; y: number } | null {
+export function clearSign(x: number, y: number, area: SignArea, placed: readonly ScreenRect[] = [], count = placed.length): { x: number; y: number } | null {
   const [left, top] = [x - SIGN_SIZE / 2, y - SIGN_SIZE / 2];
   const m = area.mark;
   const markHit = m.shown && left < m.left + m.width + SIGN_GAP && m.left - SIGN_GAP < left + SIGN_SIZE && top < m.top + m.height + SIGN_GAP && m.top - SIGN_GAP < top + SIGN_SIZE;
-  if (!markHit && !area.obstacles.some((o) => hits(left, top, o))) return null;
+  let signHit = false;
+  for (let i = 0; i < count && !signHit; i++) signHit = hits(left, top, placed[i]);
+  if (!markHit && !signHit && !area.obstacles.some((o) => hits(left, top, o))) return null;
   // Sur la marque (celle du même lieu, au bord quand il est hors champ) : d'abord juste sous elle, à son bord gauche
-  // (proposition du consultant UX UI) ; puis hors des boutons et de la colonne, comme la marque.
+  // (proposition du consultant UX UI) ; puis hors des boutons, de la colonne et des autres pastilles, comme la marque.
   const from = markHit ? { left: m.left, top: m.top + m.height + SIGN_GAP } : { left, top };
   const obstacles: Obstacle[] = m.shown ? [...area.obstacles, { left: m.left - SIGN_GAP, top: m.top - SIGN_GAP, width: m.width + 2 * SIGN_GAP, height: m.height + 2 * SIGN_GAP - 1 }] : [...area.obstacles];
+  for (let i = 0; i < count; i++) obstacles.push(placed[i]);
   const r = keepClear({ ...from, width: SIGN_SIZE, height: SIGN_SIZE }, obstacles, area.width, area.height, SIGN_GAP, SIGN_GAP);
   return { x: r.left + SIGN_SIZE / 2, y: r.top + SIGN_SIZE / 2 };
 }
 
+/** Les pastilles déjà posées à l'image en cours (trois d'habitants et celle de la Nef au plus), gardées d'une image à l'autre. */
+const placedSigns: ScreenRect[] = Array.from({ length: 4 }, () => ({ left: 0, top: 0, width: SIGN_SIZE, height: SIGN_SIZE }));
+
 /**
  * Pose les pastilles, image par image, sans passer par React : chacune au-dessus de son lieu quand il se voit, cachée
- * sinon ; à côté d'un bouton ou de la marque qu'elle toucherait (`area`).
+ * sinon ; à côté d'un bouton, de la marque ou d'une autre pastille qu'elle toucherait (`area`).
  */
 export function placeSigns(root: HTMLElement | null, signs: readonly SignOnScreen[], area?: SignArea): void {
   if (!root) return;
+  // Dans l'ordre du DOM : les habitants d'abord, la Nef en dernier ; une pastille qui en mordrait une déjà posée se pose à côté.
+  let count = 0;
   for (const el of root.children) {
     if (!(el instanceof HTMLElement)) continue;
     const s = signs.find((x) => x.place === el.dataset.lieu);
     const shown = Boolean(s?.shown);
     if (el.hidden === shown) el.hidden = !shown;
     if (!s || !shown) continue;
-    const moved = area ? clearSign(s.x, s.y, area) : null;
-    const transform = `translate(${Math.round(moved?.x ?? s.x)}px, ${Math.round(moved?.y ?? s.y)}px)`;
+    const moved = area ? clearSign(s.x, s.y, area, placedSigns, count) : null;
+    const cx = moved?.x ?? s.x;
+    const cy = moved?.y ?? s.y;
+    if (count < placedSigns.length) {
+      placedSigns[count].left = cx - SIGN_SIZE / 2;
+      placedSigns[count].top = cy - SIGN_SIZE / 2;
+      count++;
+    }
+    const transform = `translate(${Math.round(cx)}px, ${Math.round(cy)}px)`;
     if (signTransforms.get(el) === transform) continue;
     signTransforms.set(el, transform);
     el.style.transform = transform;

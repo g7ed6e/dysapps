@@ -3,7 +3,7 @@
 // triangles du poste ; le pavois en bande, deux fois plus haut que le plat-bord, et les feux au bout de deux perches,
 // au-dessus de la cabine, se lisent de loin ; la fiche montre l'aéronef de trois quarts avant (restes du 3e, piste 1).
 import { describe, expect, it } from 'vitest';
-import type { CameraPose } from './camera';
+import { detourRise, detourViewStep, type CameraPose } from './camera';
 import { blendPose, nefSheetPose, nefViewAngle } from './nef';
 import { BULWARK, CABIN_ROOF, NEF_3E, NEF_PARURES, ROTOR_LOW, nefParuresFacets, nefParuresLocal } from './parvis3e';
 
@@ -139,5 +139,22 @@ describe('la fiche de l’aéronef (restes du 3e, piste 1 B)', () => {
     blendPose(pose, to, 1);
     expect(pose.position).toEqual(to.position);
     expect(pose.target).toEqual(to.target);
+  });
+
+  it('avec « Réduire les animations », elle monte et redescend d’un coup, en une image (référent dys)', () => {
+    // Le pas de la scène (`scene.ts`) : `nefSheetView` avance par `detourViewStep`, la pose en prend `detourRise`.
+    const to = nefSheetPose(NEF_3E, NEF_3E.sheetView!, fresh());
+    const dt = 1 / 60;
+    const up = detourViewStep(0, 1, dt, true);
+    expect(up).toBe(1);
+    const pose = fresh();
+    blendPose(pose, to, detourRise(up));
+    expect(pose.position).toEqual(to.position);
+    expect(pose.target).toEqual(to.target);
+    // À la fermeture, la vue revient à 0 en une image : la scène ne mélange plus rien, la poursuite reprend telle quelle.
+    expect(detourViewStep(up, 0, dt, true)).toBe(0);
+    // Sans la préférence, la même image n'en fait qu'une part.
+    expect(detourViewStep(0, 1, dt, false)).toBeLessThan(1);
+    expect(detourViewStep(0, 1, dt, false)).toBeGreaterThan(0);
   });
 });
