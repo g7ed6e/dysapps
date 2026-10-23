@@ -239,8 +239,18 @@ describe('La Loge, lieu complet', () => {
     // Restauré, ouvert : rien au milieu de l'arche plus bas que le haut du cintre.
     const hung = curtain(SHOWN[4]);
     expect(hung.length).toBeGreaterThan(0);
-    for (const [x, y] of hung) if (y - L.base < L.arch.crown - 0.4) expect(Math.abs(x), `${x}`).toBeGreaterThan(L.arch.half - 1.3);
+    for (const [x, y] of hung) if (y - L.base < L.arch.crown - 0.4) expect(Math.abs(x), `${x}`).toBeGreaterThan(L.arch.half - 1.6);
     expect(L.colors.curtain).toBe(0x6e2a2c);
+  });
+
+  it('vue de l’arrivée, par la porte des décors : le lambrequin au-dessus du linteau, rien du rideau en travers de l’ouverture (restes du monde ouvert, point 2)', () => {
+    const door = nodes.get('loge')!;
+    const focus = { x: door.x, y: ground(door.x, door.z), z: door.z };
+    const yaw = doorViewOf('loge');
+    const pose = followPose(focus, occlusionLift(focus, ground, yaw), undefined, yaw, 1, undefined, doorFrameOf('loge')!);
+    const at = (x: number, y: number, z: number) => screenOf(pose, { x: PLACE.center.x + x, y: L.base + y, z: PLACE.center.z + z }, 1024, 768);
+    const lintel = at(0, L.door.top, L.cage.z0 - L.cage.wall / 2).y;
+    for (const x of [-L.door.half, 0, L.door.half]) expect(at(x, L.arch.crown - L.curtain.drop, L.cage.z1 - L.cage.wall / 2).y).toBeLessThan(lintel - 5);
   });
 
   it('rien du lieu, en ruine comme restauré, sur le chemin de marche, de la porte à son chemin (à hauteur de Kéo)', () => {
