@@ -9,10 +9,12 @@ import { loadHabitantFar } from '../../importedCharacters';
 import type { ModeleTexture } from '../../world/characters/imported/glb';
 import { habitantModelName } from '../../world/continu/habitants';
 import type { PlaceId } from '../../world/continu/levelPlan';
-import { hasWorldHabitant, placeWorldHabitant } from '../../world/continu/worldHabitants';
+import { WORLD_HABITANTS_PER_LEVEL_MAX, hasWorldHabitant, placeWorldHabitant } from '../../world/continu/worldHabitants';
 
 /** La texture commune : tant de cases de côté, de tant de pixels. */
-const ATLAS = { cells: 4, cell: 256 } as const;
+const ATLAS = { cells: Math.sqrt(WORLD_HABITANTS_PER_LEVEL_MAX), cell: 256 } as const;
+/** La marge gardée au bord de chaque case (en part de la case, un pixel) : de loin, les petites images de la texture ne mêlent pas deux habitants voisins. */
+const INSET = 1 / ATLAS.cell;
 
 interface Placed {
   place: PlaceId;
@@ -32,16 +34,20 @@ export interface WorldHabitantModels {
 /** L'image d'un modèle, décodée telle qu'elle est (la convention de glTF : pas de retournement). */
 const decode = (image: ModeleTexture['image']) => createImageBitmap(new Blob([image.bytes], { type: image.mimeType }), { imageOrientation: 'none', premultiplyAlpha: 'none', colorSpaceConversion: 'none' });
 
+/** Une coordonnée de texture du modèle (de 0 à 1) ramenée dans sa case, sans le bord. */
+const inset = (t: number) => INSET + Math.min(1, Math.max(0, t)) * (1 - 2 * INSET);
+
 /** Un modèle à sa place près de sa porte (../../world/continu/worldHabitants.ts), dans sa case `cell` de la texture commune. */
 function placeModel(place: PlaceId, m: ModeleTexture, cell: number, ground: (x: number, z: number) => number): Placed | null {
   const positions = placeWorldHabitant(place, m.positions, ground);
   if (!positions) return null;
-  // Sa case dans la texture commune (la convention de glTF : v vers le bas de l'image, comme les lignes du canevas).
+  // Sa case dans la texture commune (la convention de glTF : v vers le bas de l'image, comme les lignes du canevas), sans
+  // son bord d'un pixel.
   const [u0, v0] = [cell % ATLAS.cells, Math.floor(cell / ATLAS.cells)];
   const uvs = new Float32Array(m.uvs.length);
   for (let i = 0; i < uvs.length; i += 2) {
-    uvs[i] = (u0 + Math.min(1, Math.max(0, m.uvs[i]))) / ATLAS.cells;
-    uvs[i + 1] = (v0 + Math.min(1, Math.max(0, m.uvs[i + 1]))) / ATLAS.cells;
+    uvs[i] = (u0 + inset(m.uvs[i])) / ATLAS.cells;
+    uvs[i + 1] = (v0 + inset(m.uvs[i + 1])) / ATLAS.cells;
   }
   return { place, positions, uvs, indices: m.indices };
 }
@@ -51,7 +57,7 @@ function placeModel(place: PlaceId, m: ModeleTexture, cell: number, ground: (x: 
  * commune à la carte graphique dès qu'elle est faite.
  */
 export function createWorldHabitantModels(scene: THREE.Scene, places: readonly PlaceId[], ground: (x: number, z: number) => number, prepare: (t: THREE.Texture) => void): WorldHabitantModels {
-  const shown = places.filter(hasWorldHabitant).slice(0, ATLAS.cells * ATLAS.cells);
+  const shown = places.filter(hasWorldHabitant).slice(0, WORLD_HABITANTS_PER_LEVEL_MAX);
   const placed = new Map<PlaceId, Placed>();
   let disposed = false;
   let texture: THREE.Texture | null = null;

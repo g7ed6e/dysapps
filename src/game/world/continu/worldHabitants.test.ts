@@ -24,7 +24,7 @@ import { scenetteHabitant, scenetteKeo } from './scenette';
 import { obstaclesIn3e, walkBlocked3e } from './terrain3e';
 import { obstaclesIn4e, walkBlocked4e } from './terrain4e';
 import { obstaclesIn5e } from './terrain5e';
-import { WORLD_HABITANT_SPOTS, WORLD_HABITANT_TRIANGLES, hasWorldHabitant, placeWorldHabitant, worldHabitantAt, worldHabitantHeight, worldHabitantScale, worldHabitantYaw } from './worldHabitants';
+import { WORLD_HABITANTS_PER_LEVEL_MAX, WORLD_HABITANT_SPOTS, WORLD_HABITANT_TRIANGLES, hasWorldHabitant, placeWorldHabitant, worldHabitantAt, worldHabitantHeight, worldHabitantScale, worldHabitantYaw } from './worldHabitants';
 
 const MODELS = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../docs/univers/archipeo/personnages/modeles');
 
@@ -165,6 +165,10 @@ describe('les habitants hors de leur scénette', () => {
         expect(worldHabitantHeight(id) / keo, p.id).toBeGreaterThan(1);
         expect(worldHabitantHeight(id) / keo, p.id).toBeLessThan(1.3);
       }
+  });
+
+  it('au plus seize par niveau : autant de cases dans la texture qui réunit leurs images', () => {
+    for (const level of OPEN_WORLD_LEVELS) expect(planFor(level).places.filter((p) => hasWorldHabitant(p.id)).length).toBeLessThanOrEqual(WORLD_HABITANTS_PER_LEVEL_MAX);
   });
 
   it('à la Gare maritime et au Fanal, à sa place de la scénette', () => {

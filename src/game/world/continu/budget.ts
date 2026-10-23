@@ -100,12 +100,8 @@ const OPEN_WORLD_BUDGET_6E = { triangles: 111_500, calls: 22 } as const;
 /**
  * L'enveloppe du monde ouvert du 5e : 128 000 triangles, 22 appels, relevée de 10 000 triangles pour les habitants près
  * de leur porte en modèle 3D (choix du mainteneur, 23 octobre 2026, « 1 500 triangles », la hausse à environ 128 000 dite
- * sur la carte ; hors scénette seulement, la scénette ouverte n'en prend rien ; les images par seconde à mesurer sur
- * l'iPad). Avant : 118 000 triangles, 22 appels (choix du mainteneur, 20 octobre 2026, « Relever
- * seulement » : ni la brume ni les racines ne s'allègent). Le chiffre vient de l'étude de l'artiste technique 3D du même
- * jour (lot 5, `economies.md`, piste D) : 83 840 triangles le 20 octobre (scénette ouverte), plus ce qui reste à venir
- * (treize lieux à 1 600 triangles au plus, l'habitant en modèle 3D, la question au niveau du 6e, les Détours, le Rafiot,
- * les aménagements), environ 118 000 au centre ; les appels tiennent dans 22.
+ * sur la carte ; hors scénette seulement ; les images par seconde à mesurer sur l'iPad). Avant : 118 000 (choix du
+ * mainteneur, 20 octobre 2026, « Relever seulement », d'après l'étude du lot 5, `economies.md`, piste D).
  */
 const OPEN_WORLD_BUDGET_5E = { triangles: 128_000, calls: 22 } as const;
 
@@ -147,7 +143,6 @@ const OPEN_WORLD_BUDGET_3E = FICHE_ENVELOPE;
  * plus, dans le maillage du sol, sans appel de plus. Mesurée : +5 733 scénette ouverte.
  */
 export const FOREST_REWORK_MAX_5E = 5_800;
-
 
 /** Le plafond de la ruine d'un lieu du 5e, en triangles (intention du directeur artistique du lot 16 : visée à 1 000). */
 export const PLACE_RUIN_TRIANGLES_MAX_5E = 1_200;

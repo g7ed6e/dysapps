@@ -119,6 +119,9 @@ export const WORLD_HABITANT_SPOTS: Readonly<Partial<Record<PlaceId, WorldHabitan
   palais: { dx: 4.8, dz: 12.1 },
 };
 
+/** Les habitants d'un niveau près de leur porte, au plus : les cases de la texture qui réunit leurs images (quatre sur quatre). */
+export const WORLD_HABITANTS_PER_LEVEL_MAX = 16;
+
 /** Les triangles de la version de loin d'un habitant, au plus (choix du mainteneur, 23 octobre 2026, « 1 500 triangles » ; un test les relit). */
 export const WORLD_HABITANT_TRIANGLES = 1_500;
 
