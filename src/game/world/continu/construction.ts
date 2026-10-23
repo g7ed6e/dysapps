@@ -260,7 +260,7 @@ const POSE_VIEW = { pitch: 0.4, aspect: 4 / 3, margin: 0.06, bottom: 0.14, min: 
 const NETWORKS: Readonly<Record<OpenWorldLevel, Network>> = { '6e': NETWORK_6E, '5e': NETWORK_5E, '4e': NETWORK_4E, '3e': NETWORK_3E };
 
 /** La porte d'un lieu, sur le réseau des chemins de son niveau. */
-const doorOf = (place: PlaceId) => NETWORKS[levelOfPlace(place)].pathNode(placeById(place).door).at;
+export const doorOf = (place: PlaceId) => NETWORKS[levelOfPlace(place)].pathNode(placeById(place).door).at;
 
 /** La direction (au sol, depuis le lieu) d'où la caméra de la pose le regarde : sa porte, ramenée vers le sud. */
 export function poseSide(place: PlaceId): { x: number; z: number } {

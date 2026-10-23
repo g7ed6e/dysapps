@@ -111,6 +111,21 @@ export function loadHabitant(nom: string): Promise<ModeleTexture | null> {
 }
 
 /**
+ * L'adresse de la version de loin de chaque habitant (`habitant-loin.glb`, à côté de son modèle : 1 500 triangles, une
+ * image de 256), qui se tient près de sa porte hors de la scénette (choix du mainteneur, 23 octobre 2026).
+ */
+const HABITANTS_LOIN = import.meta.glob('../../docs/univers/archipeo/personnages/modeles/[3-6]e-habitant-*/habitant-loin.glb', {
+  query: '?url',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
+/** Charge la version de loin d'un habitant (son dossier, « <niveau>-habitant-<lieu> ») : lue, ou rien, comme son modèle. */
+export function loadHabitantFar(nom: string): Promise<ModeleTexture | null> {
+  return loadTextured(`${nom}/loin`, HABITANTS_LOIN[`../../docs/univers/archipeo/personnages/modeles/${nom}/habitant-loin.glb`]);
+}
+
+/**
  * L'adresse du modèle de chaque équipier qui guide une scénette (GD-23, « 6e-equipage-<nom> »), texturé, déjà compacté
  * par sa chaîne, comme les habitants (./world/continu/equipage.ts).
  */
