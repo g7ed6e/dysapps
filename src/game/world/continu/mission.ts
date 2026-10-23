@@ -121,6 +121,11 @@ export interface MarkOnScreen {
    */
   ceiling?: number;
   keo?: ScreenRect;
+  /**
+   * Les repères du niveau à l'écran (au 3e, le Fanal, le pic, le zeppelin ; relecture du Cirque, correction 8) : la marque
+   * s'en écarte ; celle d'un lieu lointain s'efface si elle ne peut que les couvrir.
+   */
+  landmarks?: readonly ScreenRect[];
 }
 
 /**

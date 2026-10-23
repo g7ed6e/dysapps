@@ -72,6 +72,9 @@ describe('Le Lac, le Détour du Cirque', () => {
     expect(Math.abs(offView(fanal))).toBeLessThan(HALF_TABLET - 6);
     expect(Math.abs(offView(PEAK_3E.at))).toBeLessThan(HALF_TABLET);
     expect(Math.abs(offView(LAC_LAYOUT.lake))).toBeLessThan(12);
+    // À travers le lac, vers le Fanal (relecture du Cirque, correction 6) : l'eau entre Kéo et le Fanal, dans sa direction.
+    expect(Math.abs(offView(LAC_LAYOUT.lake) - offView(fanal))).toBeLessThan(15);
+    expect(distanceToPolyline(LAC_LAYOUT.lake, [LAC.at, fanal])).toBeLessThan(LAC_LAYOUT.water.r);
     // Aucun bloc entre Kéo et le Fanal.
     for (const b of LAC_LAYOUT.blocks) expect(distanceToPolyline(b, [LAC.at, fanal]), `${b.x}`).toBeGreaterThan(b.s + 0.8);
     expect(detourViewOf(LAC).height).toBeLessThanOrEqual(COMMON_DETOUR_VIEW.height);

@@ -281,21 +281,43 @@ export function liftStep(current: number, target: number, dt: number, reduceMoti
  */
 export const LOOK_UP = { within: 24, air: 0.08, minAir: 0.02, footRoom: 78, lowest: 2.4, seconds: 0.8, down: 0.4 } as const;
 
+/** Le dégagement de la caméra : au-dessus du sol sous elle, et de la ligne de ses yeux aux pieds de Kéo ; les points vérifiés. */
+const GROUND_CLEAR = { under: 1, sight: 0.25, samples: 10 } as const;
+
+/**
+ * La hauteur la plus basse d'une caméra en `p` (x, z) d'où la ligne vers les pieds de Kéo (`feet`, un peu levés) passe
+ * au-dessus du sol (`ground`), son pied à `GROUND_CLEAR.under` au moins au-dessus de l'herbe.
+ */
+function groundClear(p: Vec3, feet: Vec3, ground: (x: number, z: number) => number): number {
+  const fy = feet.y + GROUND_CLEAR.sight;
+  let need = ground(p.x, p.z) + GROUND_CLEAR.under;
+  for (let s = 1; s < GROUND_CLEAR.samples; s++) {
+    const t = s / GROUND_CLEAR.samples;
+    const g = ground(p.x + (feet.x - p.x) * t, p.z + (feet.z - p.z) * t) + GROUND_CLEAR.sight;
+    // La ligne passe à y + t·(fy − y) : il faut y ≥ (g − t·fy) / (1 − t).
+    need = Math.max(need, (g - t * fy) / (1 - t));
+  }
+  return need;
+}
+
 /**
  * Lève le regard de `pose` (remplie sur place) de la part `amount` (0 : la caméra qui suit, 1 : le regard levé) pour
  * que `top` (le haut de la lanterne) entre à l'écran ; les pieds de Kéo (`feet`) restent au-dessus du bas de l'écran
  * de `footRoom` pixels, sur un écran de `height` pixels. La caméra garde sa direction et ne recule pas : seuls sa
  * hauteur et son angle sous l'horizon changent.
  */
-export function lookUp(pose: CameraPose, top: Vec3, feet: Vec3, amount: number, height: number): void {
+export function lookUp(pose: CameraPose, top: Vec3, feet: Vec3, amount: number, height: number, ground?: (x: number, z: number) => number): void {
   if (amount <= 0) return;
   const p = pose.position;
-  const y0 = p.y;
   // La direction du regard, à plat (vers le nord quand la caméra n'est pas tournée).
   const flat = Math.hypot(pose.target.x - p.x, pose.target.z - p.z) || 1e-9;
   const fx = (pose.target.x - p.x) / flat;
   const fz = (pose.target.z - p.z) / flat;
-  const pitch0 = Math.atan2(y0 - pose.target.y, flat);
+  const pitch0 = Math.atan2(p.y - pose.target.y, flat);
+  // Le plus bas où la caméra voit les pieds de Kéo par-dessus le relief, son pied hors du sol (le Fanal du 3e, retouche 1 :
+  // sur la pente qui monte derrière Kéo, la caméra descendue passait sous l'herbe) ; sans `ground`, rien.
+  const clear = ground ? groundClear(p, feet, ground) : -Infinity;
+  const y0 = Math.max(p.y, clear);
   const t = tanHalf(pose.fov);
   const dTop = Math.max(0.1, (top.x - p.x) * fx + (top.z - p.z) * fz);
   const dFeet = Math.max(0.1, (feet.x - p.x) * fx + (feet.z - p.z) * fz);
@@ -303,7 +325,7 @@ export function lookUp(pose: CameraPose, top: Vec3, feet: Vec3, amount: number, 
   const feetMax = Math.atan((1 - 2 * Math.min(0.45, LOOK_UP.footRoom / Math.max(1, height))) * t);
   // Le regard qui met la lanterne à `air` du haut de l'écran, d'une caméra à la hauteur `y`, et l'angle des pieds.
   const solve = (y: number, air: number) => ({ pitch: Math.atan((1 - 2 * air) * t) - Math.atan2(top.y - y, dTop), feet: Math.atan2(y - feet.y, dFeet) });
-  const low = Math.min(y0, feet.y + LOOK_UP.lowest);
+  const low = Math.max(clear, Math.min(y0, feet.y + LOOK_UP.lowest));
   const STEPS = 16;
   let found: { y: number; pitch: number } | null = null;
   for (let k = 0; k <= STEPS && !found; k++) {
@@ -320,12 +342,12 @@ export function lookUp(pose: CameraPose, top: Vec3, feet: Vec3, amount: number, 
     found = { y: low, pitch: s.feet - feetMax };
   }
   // La lanterne est déjà à l'écran : rien ne change (le regard ne baisse jamais).
-  if (found.y === y0 && found.pitch >= pitch0) return;
+  if (found.y === p.y && found.pitch >= pitch0) return;
   // Un départ et une arrivée en douceur.
   const u = Math.min(1, amount);
   const k = u * u * (3 - 2 * u);
   const a = pitch0 + (found.pitch - pitch0) * k;
-  p.y = y0 + (found.y - y0) * k;
+  p.y = p.y + (found.y - p.y) * k;
   pose.target.x = p.x + LOOK_DISTANCE * Math.cos(a) * fx;
   pose.target.y = p.y - LOOK_DISTANCE * Math.sin(a);
   pose.target.z = p.z + LOOK_DISTANCE * Math.cos(a) * fz;

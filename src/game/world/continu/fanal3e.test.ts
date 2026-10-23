@@ -14,6 +14,7 @@ import { followPose, lookUp, screenOf } from './camera';
 import { posedTraces, type PartShape, type Stage } from './construction';
 import type { Facets } from './facets';
 import { FANAL, FANAL_LAYOUT, FANAL_TOWER_3E } from './fanal3e';
+import { PORT_LAMP_OFF_3E } from './ferrailleurs3e';
 import { distance, distanceToPolyline, linearRgb } from './geometry';
 import { hasHabitantModel } from './habitants';
 import { hasScenette, planFor } from './levelPlan';
@@ -279,7 +280,7 @@ describe('La fin des Ferrailleurs, au Fanal restauré', () => {
     expect(bronze.length).toBeGreaterThan(0);
     for (const p of bronze) expect(distance(p, PLACE.center)).toBeGreaterThan(100);
     expect(countColor(before, C3E.lantern)).toBe(0);
-    expect(countColor(before, C3E.lanternOff)).toBeGreaterThan(0);
+    expect(countColor(before, PORT_LAMP_OFF_3E)).toBeGreaterThan(0);
   });
 
   it('jouée : les pièces rangées sur le râtelier au pied du Fanal, côté Rampe ; la gondole n’en porte plus ; une seule lumière, celle du port, au nord', () => {
@@ -292,14 +293,17 @@ describe('La fin des Ferrailleurs, au Fanal restauré', () => {
       expect(p.x).toBeGreaterThan(PLACE.center.x + FANAL_LAYOUT.socle.low.x);
     }
     expect(distance(FANAL_LAYOUT.ret.rackAt, { x: rampe.x - PLACE.center.x, z: rampe.z - PLACE.center.z })).toBeLessThan(distance({ x: 0, z: 0 }, { x: rampe.x - PLACE.center.x, z: rampe.z - PLACE.center.z }));
-    // Une seule lanterne d'ocre : la lumière fixe du port, au nord du Cirque, loin, sortie du brouillard.
+    // Une seule lanterne d'ocre : la lumière fixe du port, au nord du Cirque, loin et basse sur l'horizon (relecture du
+    // Cirque, correction 2), sur son poteau au ras des nuages.
     expect(countColor(after, C3E.lantern)).toBe(30);
     const [r, g, b] = linearRgb(C3E.lantern);
     for (let i = 0; i < after.colors.length; i += 3)
       if (Math.abs(after.colors[i] - r) < 1e-4 && Math.abs(after.colors[i + 1] - g) < 1e-4 && Math.abs(after.colors[i + 2] - b) < 1e-4) {
         expect(after.positions[i + 2]).toBeLessThan(PLACE.center.z - 120);
-        expect(distance({ x: after.positions[i], z: after.positions[i + 2] }, PLACE.center)).toBeLessThan(200);
-        expect(after.positions[i + 1]).toBeGreaterThan(10);
+        expect(distance({ x: after.positions[i], z: after.positions[i + 2] }, PLACE.center)).toBeGreaterThan(200);
+        expect(distance({ x: after.positions[i], z: after.positions[i + 2] }, PLACE.center)).toBeLessThan(240);
+        expect(after.positions[i + 1]).toBeGreaterThan(3);
+        expect(after.positions[i + 1]).toBeLessThan(7);
         expect(landDistance3e({ x: after.positions[i], z: after.positions[i + 2] })).toBeLessThan(0);
       }
   });

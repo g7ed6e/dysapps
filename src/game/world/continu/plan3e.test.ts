@@ -214,7 +214,13 @@ describe('Le pic, les arêtes et la mer de nuages', () => {
       }
     const rim = shoreRimFacets();
     expect(rim.triangles).toBeGreaterThan(400);
-    expect([...new Set(Array.from({ length: rim.colors.length / 3 }, (_, k) => rim.colors.slice(k * 3, k * 3 + 3).join()))].length).toBe(2);
+    // L'ardoise et son dessus ; et, au dehors des Prairies, la nappe qui monte contre leur liseré (relecture du Cirque,
+    // correction 9), de la teinte des nuages.
+    expect([...new Set(Array.from({ length: rim.colors.length / 3 }, (_, k) => rim.colors.slice(k * 3, k * 3 + 3).join()))].length).toBe(3);
+    const [r, g, b] = linearRgb(COLORS_3E.cloud);
+    let cloud = 0;
+    for (let i = 0; i < rim.colors.length; i += 3) if (Math.abs(rim.colors[i] - r) < 1e-4 && Math.abs(rim.colors[i + 1] - g) < 1e-4 && Math.abs(rim.colors[i + 2] - b) < 1e-4) cloud++;
+    expect(cloud).toBeGreaterThan(0);
   });
 
   it('le zeppelin est amarré sur un rocher à part, dans les nuages, au nord-est de la grande Prairie ; immobile, dans le monde et jamais sur la Carte (retouche 1)', () => {

@@ -118,7 +118,7 @@ try {
   // Le monde ouvert du 3e (lot 1 : les Îles du Ciel en grandes masses) : comme le 4e à son lot 1, le monde (la pose d'un
   // passage, le pire), la Carte, le départ ; pas encore de scénette.
   const troisieme = !demandes || demandes.includes('3e');
-  const mondeOuvert3e = troisieme ? { niveau: '3e', postes: ouvert.openWorldCost3e('scenette'), carte: ouvert.mapCost3e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['3e'], horsScenette: ouvert.openWorldCost3e('monde'), depart: ouvert.openWorldCost3e('depart'), departLibelle: 'l’aéronef dans deux maillages, à la place de la pose' } : null;
+  const mondeOuvert3e = troisieme ? { niveau: '3e', postes: ouvert.openWorldCost3e('scenette'), carte: ouvert.mapCost3e(), enveloppe: ouvert.OPEN_WORLD_BUDGETS['3e'], horsScenette: ouvert.openWorldCost3e('monde'), depart: ouvert.openWorldCost3e('depart'), departLibelle: 'l’aéronef dans deux maillages, à la place de la pose', finale: ouvert.openWorldCost3e('finale') } : null;
 
   if (JSON_SEUL) console.log(JSON.stringify(resultats, null, 2));
   else {
@@ -175,6 +175,13 @@ try {
         const dt = d.reduce((s, p) => s + p.triangles, 0);
         const dc = d.reduce((s, p) => s + p.calls, 0);
         console.log(`Pendant le départ (${monde.departLibelle}) : ${n(dt)} triangles, ${dc} appels${alerte(dt, dc)}.`);
+      }
+      if (monde.finale) {
+        const f = monde.finale;
+        const ft = f.reduce((s, p) => s + p.triangles, 0);
+        const fc = f.reduce((s, p) => s + p.calls, 0);
+        const v = f.find((p) => p.poste === 'vue finale');
+        console.log(`Pendant la vue finale (les archipels au loin dans le maillage de la pose, à sa place) : ${n(ft)} triangles, ${fc} appels${alerte(ft, fc)}${v ? ` (archipels : ${n(v.triangles)} triangles)` : ''}.`);
       }
     }
   }

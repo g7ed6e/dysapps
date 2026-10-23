@@ -15,7 +15,7 @@
 import { SENTE_5E as SENTE } from './creux5e';
 import type { Detour } from './detours';
 import { FacetBuilder, type Facets } from './facets';
-import { distance, distanceToPolyline, type Vec2 } from './geometry';
+import { distance, distanceToPolyline, type Vec2, type Vec3 } from './geometry';
 import { C3E } from './place3eKit';
 import type { P3 } from './place4eKit';
 import { DETOUR_SPOTS_3E, PATH_NODES_3E } from './plan3e';
@@ -196,28 +196,61 @@ function pen(b: FacetBuilder, ground: Ground): void {
 }
 
 /**
- * Un mouton couché (relecture des Alpages, (a) 6, et des Prairies, (a) 11) : le corps de laine presque blanche, un
- * tronc court et gros à sept pans couché dans l'herbe, le dos rond ; la petite tête brune nettement devant et plus
- * basse, le museau penché vers l'herbe, en tronc à trois pans qui s'affine. Aucun angle droit, rien d'une caisse.
+ * Un ellipsoïde à facettes (`rings` anneaux du haut au bas, `sides` pans autour) : centré en `c`, de demi-axes `along`
+ * (le long de `yaw`, penché de `pitch` vers le bas), `up` et `across` ; le haut d'une couleur (`top`), le reste de `color`.
+ * Aucune arête vive : un volume rond, de peu de pans larges.
+ */
+function ellipsoid(b: FacetBuilder, c: Vec3, along: number, up: number, across: number, yaw: number, pitch: number, rings: number, sides: number, color: number, top: number): void {
+  const fx = Math.cos(yaw) * Math.cos(pitch),
+    fy = -Math.sin(pitch),
+    fz = -Math.sin(yaw) * Math.cos(pitch);
+  const ux = Math.cos(yaw) * Math.sin(pitch),
+    uy = Math.cos(pitch),
+    uz = -Math.sin(yaw) * Math.sin(pitch);
+  // Le côté : avant × haut, pour garder le sens des faces (tournées vers le dehors).
+  const sx = fy * uz - fz * uy,
+    sy = fz * ux - fx * uz,
+    sz = fx * uy - fy * ux;
+  const at = (i: number, k: number): P3 => {
+    const phi = (Math.PI * i) / rings;
+    const theta = (2 * Math.PI * k) / sides;
+    const a = Math.sin(phi) * Math.cos(theta) * along,
+      h = Math.cos(phi) * up,
+      w = Math.sin(phi) * Math.sin(theta) * across;
+    return [c.x + a * fx + h * ux + w * sx, c.y + a * fy + h * uy + w * sy, c.z + a * fz + h * uz + w * sz];
+  };
+  for (let i = 0; i < rings; i++)
+    for (let k = 0; k < sides; k++) {
+      const p0 = at(i, k),
+        p1 = at(i, k + 1),
+        p2 = at(i + 1, k + 1),
+        p3 = at(i + 1, k);
+      const tone = i === 0 ? top : color;
+      if (i === 0) b.triangle(p0, p2, p3, tone);
+      else if (i === rings - 1) b.triangle(p0, p1, p3, tone);
+      else b.quad(p0, p1, p2, p3, tone);
+    }
+}
+
+/**
+ * Un mouton couché (relecture des Alpages, (a) 6, des Prairies, (a) 11, et du Cirque, correction 7) : le corps de laine
+ * blanche, un ovale bombé à six larges pans, posé bas dans l'herbe, le dos rond, sans arête ni bout plat ; la petite tête brune,
+ * un ovale à cinq pans qui dépasse nettement en avant et plus bas que le dos, le museau penché vers l'herbe. Aucun angle
+ * droit, rien d'une caisse.
  */
 function sheep(b: FacetBuilder, ground: Ground): void {
-  /** Le corps : un tronc court et gros à sept pans, couché, plus large au poitrail qu'à la croupe ; le dos rond. */
-  const BODY = { r: 0.46, tail: 0.36, len: 0.85, rump: 0.22, sides: 7 } as const;
-  /** La tête, nettement devant le corps et plus bas que le dos, le museau penché vers l'herbe. */
-  const HEAD = { r: 0.2, nose: 0.1, len: 0.5, y: 0.42, out: -0.04, droop: 0.45 } as const;
+  /** Le corps : ses demi-axes (long, haut, large), son milieu au-dessus du sol (le bas enfoncé : il est couché). */
+  const BODY = { along: 0.62, up: 0.42, across: 0.46, y: 0.3, rings: 3, sides: 6 } as const;
+  /** La tête : ses demi-axes, sa place devant le milieu du corps et sa hauteur, son museau penché. */
+  const HEAD = { along: 0.27, up: 0.17, across: 0.17, out: 0.74, y: 0.34, droop: 0.5, rings: 2, sides: 5 } as const;
   for (const m of SHEEP) {
     const p = local(m.f, m.s);
     const g = ground(p.x, p.z);
     const yaw = YAW + m.yaw;
     const dx = Math.cos(yaw),
       dz = -Math.sin(yaw);
-    // Le tronc part de la croupe et va vers le poitrail, fermé devant ; la croupe se ferme en pointe courte, ronde.
-    const y = g + BODY.r * 0.92;
-    b.prism({ x: p.x - dx * (BODY.len / 2), y, z: p.z - dz * (BODY.len / 2), yaw: yaw + Math.PI / 2, pitch: Math.PI / 2 }, BODY.tail, BODY.r, BODY.len, BODY.sides, C.wool, C.woolTop);
-    b.prism({ x: p.x - dx * (BODY.len / 2), y, z: p.z - dz * (BODY.len / 2), yaw: yaw - Math.PI / 2, pitch: Math.PI / 2 }, BODY.tail, 0, BODY.rump, BODY.sides, C.wool);
-    // La tête part juste devant le poitrail, plus bas que le dos, et s'avance en penchant le museau.
-    const h = BODY.len / 2 + HEAD.out;
-    b.prism({ x: p.x + dx * h, y: g + HEAD.y, z: p.z + dz * h, yaw: yaw + Math.PI / 2, pitch: Math.PI / 2 + HEAD.droop }, HEAD.r, HEAD.nose, HEAD.len, 3, C.head, C.head);
+    ellipsoid(b, { x: p.x, y: g + BODY.y, z: p.z }, BODY.along, BODY.up, BODY.across, yaw, 0, BODY.rings, BODY.sides, C.wool, C.woolTop);
+    ellipsoid(b, { x: p.x + dx * HEAD.out, y: g + HEAD.y, z: p.z + dz * HEAD.out }, HEAD.along, HEAD.up, HEAD.across, yaw, HEAD.droop, HEAD.rings, HEAD.sides, C.head, C.head);
   }
 }
 

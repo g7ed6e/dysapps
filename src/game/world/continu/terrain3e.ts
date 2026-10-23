@@ -482,7 +482,15 @@ export function peakFacets(): Facets {
  * `height` : sa largeur et sa hauteur au-dessus du sol ; `foot` : jusqu'où ses flancs descendent ; `step` : le pas de son
  * tracé le long de la rive.
  */
-const RIM_3E = { inset: { mountain: 2.2, prairie: 1.1 }, width: 0.9, height: 0.28, foot: 0.6, step: 4.5, dip: { out: 0.3, y: -0.35 } } as const;
+const RIM_3E = { inset: { mountain: 2.2, prairie: 1.1 }, width: 0.9, height: 0.28, foot: 0.6, step: 4.5 } as const;
+
+/**
+ * Le liseré d'une Prairie (relecture du Cirque, correction 9 : vu de loin, il se lisait comme un haut mur bleu marine,
+ * l'île comme une plaque posée sur la nappe) : plus bas que celui de la montagne (`height`), son flanc du dehors gardé
+ * d'ardoise sur une bande mince (`band`), puis la nappe qui monte contre lui, de la teinte des nuages, de `out` au-delà
+ * de son pied jusqu'à `y` sous leur plan.
+ */
+const PRAIRIE_RIM_3E = { height: 0.16, band: 0.14, cloud: { out: 1.6, y: -0.05 } } as const;
 
 /** Une rive repassée à un pas régulier, fermée. */
 function resampleLoop(loop: readonly Vec2[], step: number): Vec2[] {
@@ -501,6 +509,7 @@ function resampleLoop(loop: readonly Vec2[], step: number): Vec2[] {
  * posé sur le sol ; un dessus et deux flancs par tronçon.
  */
 function rimOf(b: FacetBuilder, loop: readonly Vec2[], inset: number, dip = false): void {
+  const height = dip ? PRAIRIE_RIM_3E.height : RIM_3E.height;
   const pts = resampleLoop(loop, RIM_3E.step);
   const n = pts.length;
   const inward = (i: number): Vec2 => {
@@ -527,15 +536,20 @@ function rimOf(b: FacetBuilder, loop: readonly Vec2[], inset: number, dip = fals
   for (let i = 0; i < n; i++) {
     const p = ring[i],
       q = ring[(i + 1) % n];
-    const tp = p.y + RIM_3E.height,
-      tq = q.y + RIM_3E.height;
+    const tp = p.y + height,
+      tq = q.y + height;
     const m = inward(i);
     up([p.out.x, tp, p.out.z], [q.out.x, tq, q.out.z], [q.in.x, tq, q.in.z], [p.in.x, tp, p.in.z], COLORS_3E.slateTop, [0, 1, 0]);
     if (dip) {
-      // Le flanc du dehors d'une Prairie s'arrondit et plonge sous les nuages, sans rien laisser voir sous lui.
-      const o = RIM_3E.dip.out;
+      // Le flanc du dehors d'une Prairie : une bande mince d'ardoise, puis la nappe qui monte contre elle, de la teinte des
+      // nuages, sans rien laisser voir dessous.
+      const P = PRAIRIE_RIM_3E;
+      const o = P.cloud.out;
       const mq = inward((i + 1) % n);
-      up([p.out.x - m.x * o, RIM_3E.dip.y, p.out.z - m.z * o], [q.out.x - mq.x * o, RIM_3E.dip.y, q.out.z - mq.z * o], [q.out.x, tq, q.out.z], [p.out.x, tp, p.out.z], COLORS_3E.slate, [-m.x, 0.6, -m.z]);
+      const bp = tp - P.band,
+        bq = tq - P.band;
+      up([p.out.x, bp, p.out.z], [q.out.x, bq, q.out.z], [q.out.x, tq, q.out.z], [p.out.x, tp, p.out.z], COLORS_3E.slate, [-m.x, 0, -m.z]);
+      up([p.out.x - m.x * o, P.cloud.y, p.out.z - m.z * o], [q.out.x - mq.x * o, P.cloud.y, q.out.z - mq.z * o], [q.out.x, bq, q.out.z], [p.out.x, bp, p.out.z], COLORS_3E.cloud, [-m.x, 0.6, -m.z]);
     } else up([p.out.x, p.y - RIM_3E.foot, p.out.z], [q.out.x, q.y - RIM_3E.foot, q.out.z], [q.out.x, tq, q.out.z], [p.out.x, tp, p.out.z], COLORS_3E.slate, [-m.x, 0, -m.z]);
     up([p.in.x, p.y - RIM_3E.foot, p.in.z], [q.in.x, q.y - RIM_3E.foot, q.in.z], [q.in.x, tq, q.in.z], [p.in.x, tp, p.in.z], COLORS_3E.slate, [m.x, 0, m.z]);
   }

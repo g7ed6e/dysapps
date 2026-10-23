@@ -160,6 +160,8 @@ export interface OpenWorldOptions {
    * commence (ou se pose d'un coup, avec « Réduire les animations ») ; la page dit son état, écrit et à voix haute.
    */
   onRestored?(place: PlaceId): void;
+  /** La vue finale du niveau commence (`true`) ou finit (`false`) : la page cache ses boutons le temps qu'elle dure. */
+  onFinalView?(playing: boolean): void;
   /**
    * La place à l'écran des pastilles des habitants (GD-20, point 4, lot L1), à chaque image, comme les cadenas (la même
    * liste, remplie sur place ; refaite quand `setSigns` change). Aucune pendant une question, une remise ou sur la Carte.
@@ -346,6 +348,11 @@ export interface OpenWorld {
    * au plus, qu'un toucher termine (d'un coup avec « Réduire les animations ») ; `done` à la fin, par n'importe quel chemin.
    */
   departNef(done: () => void): void;
+  /**
+   * La vue finale du niveau (`LevelWorld.finalView`, au 3e), jouée tout de suite, comme à la fin de l'allumage de son lieu
+   * (les captures seulement) ; rien ailleurs, sur la Carte ou pendant une question.
+   */
+  playFinal(): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
   info(): { calls: number; triangles: number; mapMs: number };
   /** Ce qu'un toucher en ce point de la fenêtre ouvrirait au Port, la Nef comprise, sans rien faire (la mesure des cibles). */
@@ -480,6 +487,8 @@ const CAMERA_TURN = { step: Math.PI / 4, seconds: 0.35, rings: Math.PI / 8, dead
  * lieu haut juste derrière la scène), elle monte d'abord au-dessus, par crans de `climb`, jusqu'à `topElevation`.
  */
 const SCENE_TURN = { clearance: 1, minDistance: 4, keoHead: 1.3, habitantHead: 1.5, margin: 0.3, tries: 8, rise: 0.6, keep: 0.7, climb: (8 * Math.PI) / 180, climbs: 5, topElevation: (65 * Math.PI) / 180 } as const;
+/** Les pas où la margelle des réponses à terre se relève au-dessus du sol (un seul suffit sur le plat). */
+const DECK_RAISES = 4;
 /**
  * La finesse du rendu : l'anticrénelage reste (la scène est légère, quelques milliers de triangles) ; le rapport de
  * pixels est plafonné à 2, puis ramené à 1 si l'appareil peine (des images de plus de 45 ms, trente de suite), comme
@@ -1766,7 +1775,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const follow = () => {
     if (manualView) return applyPose(manualView);
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : viewRise(), fifth ? hold : undefined, arrivalBack > 0 ? arrivalShape : viewShape());
-    lookUp(pose, lanternTop, keoFeet, look, viewH);
+    lookUp(pose, lanternTop, keoFeet, look, viewH, ground);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     if (guardFeet) keepFeetAbove(pose, keoFeet, feetRoom, viewH);
     applyPose(pose);
@@ -1836,7 +1845,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const reframe = () => {
     if (!frameRect || (!framed && !framedNef) || asked || remise || mapView) return;
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : viewRise(), undefined, arrivalBack > 0 ? arrivalShape : viewShape());
-    lookUp(pose, lanternTop, keoFeet, look, viewH);
+    lookUp(pose, lanternTop, keoFeet, look, viewH, ground);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     if (guardFeet) keepFeetAbove(pose, keoFeet, feetRoom, viewH);
     const subject = framedNef ? nefFramed : framed && subjectOf(framed);
@@ -2080,12 +2089,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   /** L'anneau de près : ses tuiles prêtes, ou leur version de loin en attendant (une seule faite par image, `pump`). */
   const setNear = (now: boolean) => nearRing.set(nearIndices.map((i) => (now ? tiles.build(i, 'near') : (tiles.near(i) ?? tiles.build(i, 'far')))));
   /** Les anneaux autour du point suivi ; `now` (le départ, un saut) : les tuiles de près faites tout de suite. */
-  const updateRings = (force = false, now = false) => {
-    // Pendant une scénette, la caméra tourne autour de la scène (`sceneYaw`) : les tuiles suivent son regard.
-    const look = yaw + (scenette && asked ? sceneYaw : 0);
-    if (!force && Math.hypot(focus.x - ringCenter.x, focus.z - ringCenter.z) < RING_MOVE && Math.abs(wrapAngle(look - ringYaw)) < CAMERA_TURN.rings) return;
-    ringCenter.x = focus.x;
-    ringCenter.z = focus.z;
+  const updateRings = (force = false, now = false, from?: { x: number; z: number; look: number }) => {
+    // Pendant une scénette, la caméra tourne autour de la scène (`sceneYaw`) : les tuiles suivent son regard. Pendant la
+    // vue finale (`from`), elles suivent la caméra et son regard.
+    const look = from ? from.look : yaw + (scenette && asked ? sceneYaw : 0);
+    const at = from ?? focus;
+    if (!force && Math.hypot(at.x - ringCenter.x, at.z - ringCenter.z) < RING_MOVE && Math.abs(wrapAngle(look - ringYaw)) < CAMERA_TURN.rings) return;
+    ringCenter.x = at.x;
+    ringCenter.z = at.z;
     ringYaw = look;
     const rings = tileRings(ringCenter, FOG.far, look, world.tiles.grid);
     const k = `${rings.near.join(',')}|${rings.far.join(',')}`;
@@ -2277,7 +2288,43 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const far = distanceSign(here, place ? placeById(place).center : nefSite.berth);
     const m = markOnScreen({ x: sx(projected), y: sy(projected), behind: projected.z > 1 }, viewW, viewH, MARK_MARGIN, far, place !== null && markBeside(place) && whole(place));
     if (m.inside && departure.floor(here.x, here.z) !== null) markAtPort(m);
+    if (landmarks.length) m.landmarks = landmarksOnScreen(place);
     options.onMark(m);
+  };
+  // Les repères du niveau (`LevelWorld.landmarks`, au 3e) : leur boîte à l'écran, remplie sur place à chaque image, sauf
+  // celui qu'est le lieu marqué, ceux derrière la caméra et ceux au-delà du brouillard.
+  const landmarks = world.landmarks ?? [];
+  const landmarkRects = landmarks.map(() => ({ left: 0, top: 0, width: 0, height: 0 }));
+  const landmarkShown: { left: number; top: number; width: number; height: number }[] = [];
+  const landmarkCorner = new THREE.Vector3();
+  const landmarksOnScreen = (place: PlaceId | null) => {
+    landmarkShown.length = 0;
+    landmarks.forEach((l, k) => {
+      if (l.place && l.place === place) return;
+      const cx = (l.min.x + l.max.x) / 2,
+        cz = (l.min.z + l.max.z) / 2;
+      if (Math.hypot(cx - camera.position.x, cz - camera.position.z) > world.fog.far) return;
+      let x0 = Infinity,
+        y0 = Infinity,
+        x1 = -Infinity,
+        y1 = -Infinity;
+      for (let c = 0; c < 8; c++) {
+        landmarkCorner.set(c & 1 ? l.max.x : l.min.x, c & 2 ? l.max.y : l.min.y, c & 4 ? l.max.z : l.min.z).project(camera);
+        if (landmarkCorner.z > 1) return;
+        x0 = Math.min(x0, sx(landmarkCorner));
+        x1 = Math.max(x1, sx(landmarkCorner));
+        y0 = Math.min(y0, sy(landmarkCorner));
+        y1 = Math.max(y1, sy(landmarkCorner));
+      }
+      if (x1 < 0 || y1 < 0 || x0 > viewW || y0 > viewH) return;
+      const r = landmarkRects[k];
+      r.left = x0;
+      r.top = y0;
+      r.width = x1 - x0;
+      r.height = y1 - y0;
+      landmarkShown.push(r);
+    });
+    return landmarkShown;
   };
   /**
    * Au Port (GD-20, lot 2) : la ligne de toit sous laquelle la marque ne descend pas, là où elle se tient (le bas du toit
@@ -2631,6 +2678,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (poseRun.active) return finishPose();
     // Un toucher pendant l'allumage d'un lieu restauré le passe : tout allumé d'un coup.
     if (restoring) return endRestore();
+    // Un toucher pendant la vue finale la termine : la caméra revient derrière Kéo.
+    if (finalRun) return finishFinal();
     // Un toucher pendant le départ de la Nef le termine (GD-21).
     if (nefTrip) return finishNefTrip();
     if (assembly) return finishAssembly();
@@ -3413,9 +3462,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     let points = pointsAt(deckY);
     let landBelow: number | undefined;
     if (deck.onLand && !hang) {
-      const heights = points.flatMap((p) => [-1, 0, 1].flatMap((dx) => [-0.5, 0.5].map((dz) => standingHeight(ground(p.x + dx, p.z + dz)))));
-      const top = Math.max(...heights) + 0.05;
-      if (top > deckY) {
+      // Relevée, la margelle se rapproche de la caméra : si le sol monte vers elle (le Fanal du 3e, retouche 1), elle
+      // s'enfonçait de nouveau ; on la relève jusqu'à ce qu'elle tienne, en quelques pas.
+      for (let k = 0; k < DECK_RAISES; k++) {
+        const heights = points.flatMap((p) => [-1, 0, 1].flatMap((dx) => [-0.5, 0.5].map((dz) => standingHeight(ground(p.x + dx, p.z + dz)))));
+        const top = Math.max(...heights) + 0.05;
+        if (top <= deckY) break;
         deckY = top;
         points = pointsAt(deckY);
       }
@@ -3716,7 +3768,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     turn: () => {
       copyPose(current, poseFrom);
       followPose(focus, lift, poseTo, yaw);
-      lookUp(poseTo, lanternTop, keoFeet, look, viewH);
+      lookUp(poseTo, lanternTop, keoFeet, look, viewH, ground);
       if (exit) exitView(poseTo, exit.keep, keoFeet, back, exit.view);
     },
     back: (e) => tween(poseFrom, poseTo, e),
@@ -3812,7 +3864,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!place) return;
     const art = placeArt(place)?.restoration;
     const at = restoreAt(place);
-    if (!art || !at || reduceMotion || walk || asked || mapView || laying || carRolling) return options.onRestored?.(place);
+    if (!art || !at || reduceMotion || walk || asked || mapView || laying || carRolling) {
+      options.onRestored?.(place);
+      return startFinal(place);
+    }
     restoring = { place, start: performance.now() / 1000, frame: null };
     placeVisibility();
     poseMesh.material = landMaterial;
@@ -3830,7 +3885,57 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     poseMesh.material = poseMaterial;
     placeVisibility();
     options.onRestored?.(place);
+    startFinal(place);
   }
+
+  // La vue finale du niveau (`LevelWorld.finalView`, au 3e : GD-25, relecture du Cirque, correction 1) : une fois, à la
+  // fin de l'allumage de son lieu (la fin des Ferrailleurs, au Fanal restauré), la caméra quitte Kéo, s'élève lentement et
+  // montre ce que la vue seule dessine (les archipels au loin), dans le maillage de la pose (aucun appel de plus) ; elle
+  // revient derrière Kéo à la fin, ou au premier toucher. Avec « Réduire les animations », l'image finale, fixe. Jamais
+  // sur la Carte ni pendant une question.
+  const finalView = world.finalView ?? null;
+  let finalRun: { start: number; from: CameraPose; still: boolean } | null = null;
+  const finalPose: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
+  function startFinal(place: PlaceId | null) {
+    if (!finalView || (place !== null && place !== finalView.place) || finalRun || asked || mapView) return;
+    finishPose();
+    finishLay();
+    endGlow();
+    walk = null;
+    const from: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
+    copyPose(current, from);
+    finalRun = { start: performance.now() / 1000, from, still: reduceMotion };
+    setGeometry(poseMesh, finalView.facets());
+    poseMesh.material = landMaterial;
+    poseMesh.position.set(0, 0, 0);
+    options.onMark(null);
+    options.onFinalView?.(true);
+    stepFinal(finalRun.start);
+  }
+  function finishFinal() {
+    if (!finalRun) return;
+    finalRun = null;
+    poseMesh.visible = false;
+    poseMesh.geometry.dispose();
+    poseMesh.geometry = new THREE.BufferGeometry();
+    poseMesh.material = poseMaterial;
+    updateRings(true);
+    follow();
+    options.onFinalView?.(false);
+  }
+  function stepFinal(t: number) {
+    if (!finalRun || !finalView) return;
+    const u = t - finalRun.start;
+    if (u >= (finalRun.still ? finalView.still : finalView.seconds)) return finishFinal();
+    const p = finalView.pose(u, finalRun.from, finalPose, finalRun.still);
+    applyPose(p);
+    // Les tuiles du sol suivent la caméra et son regard (le cap de la caméra qui suit : 0 vers le nord).
+    finalRings.x = p.position.x;
+    finalRings.z = p.position.z;
+    finalRings.look = Math.atan2(-(p.target.x - p.position.x), -(p.target.z - p.position.z));
+    updateRings(false, finalRun.still, finalRings);
+  }
+  const finalRings = { x: 0, z: 0, look: 0 };
   function stepRestore(t: number) {
     if (!restoring) return;
     const art = placeArt(restoring.place)?.restoration;
@@ -4279,6 +4384,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       meter?.tick(renderer.info, now);
       return;
     }
+    if (finalRun) {
+      // La vue finale : la caméra s'élève et tourne, Kéo attend où il est ; ni marque ni cadenas.
+      stepFinal(t);
+      body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
+      options.onMark(null);
+      hideLocks();
+      renderer.render(scene, camera);
+      meter?.tick(renderer.info, now);
+      return;
+    }
     if (nefTrip) {
       // Le départ de la Nef : la caméra ne bouge pas, Kéo attend où il est ; ni marque ni cadenas.
       stepNefTrip(t);
@@ -4450,6 +4565,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (!first && !reduceMotion && !mapView && !asked && !scenette && look > from) startParuresDrop(from, look);
       placeVisibility();
     },
+    playFinal: () => startFinal(null),
     departNef: (done) => {
       if (nefTrip || nefLookNow === 4) return done();
       startNefTrip(done);

@@ -3,16 +3,18 @@
 // mêmes fonctions, appelées de même) ; le 5e prend les siennes (./terrain5e.ts, ./paths5e.ts, ./sea.ts, ./sky.ts). Ce
 // que le 5e n'a pas encore (l'Escale, la Nef, les Détours, les scénettes) reste du 6e : la vue le coupe par `sixth` ; la
 // faune a celle de chaque niveau (./wildlife.ts, ./wildlife5e.ts). Code pur.
-import { WORLD_FOG, type DetourView } from './camera';
+import { WORLD_FOG, type CameraPose, type DetourView } from './camera';
 import { CRIQUE_LOOK, CRIQUE_SITE, CRIQUE_VIEW, NEF_4E, criqueDecorFacets } from './crique4e';
 import { mergeFacets, type Facets } from './facets';
+import { FANAL_TOWER_3E } from './fanal3e';
+import { FAR_ISLES_3E, FAR_ISLES_FOG_3E, FINAL_VIEW_3E, FINAL_VIEW_SECONDS_3E, farArchipelagos3e, finalViewPose3e } from './finalView3e';
 import { FORGE_GLOW_DRAWN } from './forge4e';
 import { FUMEROLLES_STEAM } from './fumerolles5e';
 import type { Vec2, Vec3 } from './geometry';
 import { LISIERE_SITE, LISIERE_VIEW, PHARE_DARK, lisiereDecorFacets } from './lisiere';
 import { NEF_6E, type NefSite } from './nef';
 import { NEF_5E, PLUME_COLORS, WALL_COLORS } from './nef5e';
-import { NEF_3E, PARVIS_ARRIVAL, PARVIS_LOOK, PARVIS_SITE, PARVIS_VIEW, nefParuresLocal, parvisDecorFacets, zeppelinFacets, type NefParure } from './parvis3e';
+import { NEF_3E, PARVIS_ARRIVAL, PARVIS_LOOK, PARVIS_SITE, PARVIS_VIEW, nefParuresLocal, parvisDecorFacets, zeppelinBox3e, zeppelinFacets, type NefParure } from './parvis3e';
 import { ESCALE, type PortSite } from './port';
 import type { OpenWorldLevel, PlaceId } from './levelPlan';
 import type { Network } from './network';
@@ -22,7 +24,7 @@ import { NETWORK_5E, RIBBONS_5E, pathMapEdges5e, pathRibbons5e } from './paths5e
 import { CLIFF_MAP_COLORS, cliffMapLine } from './mist5e';
 import { NETWORK_6E, RIBBONS_6E, pathRibbons, type RibbonNet } from './paths';
 import { portFloor } from './plan6e';
-import { PARVIS, TERRAIN_3E, parvisFloor } from './plan3e';
+import { PARVIS, PEAK_3E, PLACES_3E, TERRAIN_3E, parvisFloor } from './plan3e';
 import { COLORS_4E, CRIQUE, TERRAIN_4E, criqueFloor } from './plan4e';
 import { COLORS_5E, TERRAIN_5E, lisiereFloor } from './plan5e';
 import { SEA_TEXTURE_3E, WATER_TONES, WATER_TONES_3E, WATER_TONES_4E, WATER_TONES_5E, seaPixels, seaPixels3e, seaPixels4e, seaPixels5e } from './sea';
@@ -156,6 +158,34 @@ export interface LevelWorld {
    * au 4e, les hachures du sommet et le dessin de ses coupures. `ground` : le sol où l'on marche.
    */
   mapOverlay(ground: (x: number, z: number) => number): Facets;
+  /**
+   * Les repères du niveau que la marque d'un lieu lointain ne couvre jamais (au 3e, le Fanal, le pic, le zeppelin ;
+   * relecture du Cirque, correction 8) : leurs boîtes dans le monde, et le lieu qu'est le repère, s'il en est un (sa
+   * propre marque se pose au-dessus de lui). Rien ailleurs.
+   */
+  readonly landmarks?: readonly Landmark[];
+  /**
+   * La vue finale du niveau (au 3e, GD-25 : ./finalView3e.ts), jouée une fois, à la fin de l'allumage du lieu `place` (la
+   * fin des Ferrailleurs, au Fanal restauré) : sa durée, sa pose à chaque instant depuis celle de la caméra, ce qu'elle
+   * seule montre (les archipels au loin), et ce que dure son image fixe avec « Réduire les animations ». Rien ailleurs.
+   */
+  readonly finalView?: FinalView;
+}
+
+/** La vue finale d'un niveau (`LevelWorld.finalView`). */
+interface FinalView {
+  readonly place: PlaceId;
+  readonly seconds: number;
+  readonly still: number;
+  pose(t: number, from: CameraPose, out: CameraPose, still?: boolean): CameraPose;
+  facets(): Facets;
+}
+
+/** Un repère du niveau : sa boîte dans le monde, et le lieu qu'il est, s'il en est un. */
+interface Landmark {
+  readonly min: Vec3;
+  readonly max: Vec3;
+  readonly place?: PlaceId;
 }
 
 const DEPARTURE_6E: Departure = { port: ESCALE, nef: NEF_6E, floor: portFloor, viewYaw: 0, facadeYaw: 0, lookAt: null, decor: () => null };
@@ -265,7 +295,23 @@ const WORLD_4E: LevelWorld = {
   mapOverlay: () => mapOverlay4e(),
 };
 
+/**
+ * Les repères du 3e (relecture du Cirque, correction 8) : le Fanal, sa tour entière ; le pic, de son pied à sa pointe ; le
+ * zeppelin et son rocher.
+ */
+const LANDMARKS_3E: readonly Landmark[] = (() => {
+  const fanal = PLACES_3E.find((p) => p.id === 'fanal')!.center;
+  const T = FANAL_TOWER_3E;
+  const P = PEAK_3E;
+  return [
+    { min: { x: fanal.x - T.r0 - 1, y: 0, z: fanal.z + T.z - T.r0 - 1 }, max: { x: fanal.x + T.r0 + 1, y: T.y1 + 6, z: fanal.z + T.z + T.r0 + 1 }, place: 'fanal' },
+    { min: { x: P.at.x - P.radius, y: 0, z: P.at.z - P.radius }, max: { x: P.at.x + P.radius, y: P.height, z: P.at.z + P.radius } },
+    zeppelinBox3e(),
+  ];
+})();
+
 let decor3e: Facets | null = null;
+let farIsles3e: Facets | null = null;
 let zeppelin3e: Facets | null = null;
 const DEPARTURE_3E_SITE: Departure = {
   port: PARVIS_SITE,
@@ -303,10 +349,20 @@ const WORLD_3E: LevelWorld = {
   horizon: HORIZON_COLOR_3E,
   shadowDir: SHADOW_DIR_3E,
   heightLight: HEIGHT_LIGHT_3E,
-  thinFog: [],
+  // Les archipels de la vue finale, au loin (./finalView3e.ts), et les lanternes d'ocre : la lumière du port des
+  // Ferrailleurs se lit sur l'horizon nord.
+  thinFog: [FAR_ISLES_3E.stone, FAR_ISLES_3E.stoneShade, FAR_ISLES_3E.green, FAR_ISLES_3E.tower, FAR_ISLES_3E.smoke, FAR_ISLES_3E.light].map((color) => ({ color, fog: FAR_ISLES_FOG_3E })),
   departure: DEPARTURE_3E_SITE,
   fog: FOG_3E,
   mapOverlay: () => mapOverlay3e(),
+  landmarks: LANDMARKS_3E,
+  finalView: {
+    place: 'fanal',
+    seconds: FINAL_VIEW_SECONDS_3E,
+    still: FINAL_VIEW_3E.still,
+    pose: finalViewPose3e,
+    facets: () => (farIsles3e ??= farArchipelagos3e()),
+  },
 };
 
 const WORLDS: Readonly<Record<OpenWorldLevel, LevelWorld>> = { '6e': WORLD_6E, '5e': WORLD_5E, '4e': WORLD_4E, '3e': WORLD_3E };

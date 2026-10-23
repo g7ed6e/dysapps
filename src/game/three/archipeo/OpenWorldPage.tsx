@@ -78,7 +78,7 @@ import './openWorld.css';
 declare global {
   interface Window {
     /** Le monde ouvert, pour les captures et les mesures (en développement, ou avec `?mesures`). */
-    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt' | 'remiseView' | 'standAt' | 'turn' | 'ride' | 'view'> & {
+    __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt' | 'remiseView' | 'standAt' | 'turn' | 'ride' | 'view' | 'playFinal'> & {
       /** La dernière partie d'un lieu, posée de nouveau sous les yeux (la pose, puis la lueur de la Montée : les captures). */
       poseAgain(place: PlaceId): boolean;
     };
@@ -267,6 +267,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const [atQuai, setAtQuai] = useState(start === 'quai');
   // La Nef part (GD-21) : la scène seule, comme pendant une question, jusqu'à l'arrivée en 5e.
   const [departing, setDeparting] = useState(false);
+  const [finalPlaying, setFinalPlaying] = useState(false);
   // Le panneau ouvert d'un lieu (GD-20, point 8) : sa liste de missions, et la ligne qui y prend le focus (celle dont on
   // revient) ; pour un lieu d'une terre fermée, la fiche de sa terre ; jamais en même temps qu'un panneau de l'Escale.
   const [lieu, setLieu] = useState<{ place: PlaceId; focus: string | null } | null>(null);
@@ -359,7 +360,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // La scénette d'assemblage se joue (GD-20, lot 2) : les célébrations attendent qu'elle finisse, comme pendant une
   // pose ; un panneau ouvert les retient aussi (PortPanels).
   const [assembling, setAssembling] = useState(false);
-  useHoldCelebrations(posePending || assembling || Boolean(remise));
+  useHoldCelebrations(posePending || assembling || Boolean(remise) || finalPlaying);
 
   // Les dimensions que la marque lit à chaque image, relues seulement quand la page, la marque ou un bouton change de
   // taille (jamais une mise en page forcée par image).
@@ -490,6 +491,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       // Un lieu qui s'anime à sa restauration (la Forge du 4e) : son état, écrit avec son icône et dit, à la fin de
       // l'allumage ou au toucher qui le passe (tout de suite, avec « Réduire les animations ») ; puis la réplique de
       // l'habitant, s'il en a une (« Le feu de la montagne est revenu. »).
+      // La vue finale du niveau (au 3e) : les boutons se cachent le temps qu'elle dure ; un toucher la termine.
+      onFinalView: (on) => setFinalPlaying(on),
       onRestored: (placeId) => {
         const lines = [restoredLine(placeById(placeId), stateWords.current)];
         const end = hasScenette(placeId) ? scenetteOf(placeId).words?.end : undefined;
@@ -527,6 +530,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         turn: w.turn,
         ride: w.ride,
         view: w.view,
+        playFinal: w.playFinal,
         poseAgain: (place) => {
           const now = placesNow.current;
           const parts = now?.built[place] ?? [];
@@ -1049,7 +1053,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const earnPlaces = useMemo(() => earnPlacesOf(plan), [plan]);
 
   // Une question ou une remise : la scène seule, ni marque, ni accès directs, ni panneau.
-  const playing = Boolean(asking) || Boolean(remise) || departing;
+  const playing = Boolean(asking) || Boolean(remise) || departing || finalPlaying;
   // La phrase du monde est à l'écran : la bulle sous « Y aller » se retire le temps qu'elle l'est.
   // La phrase d'un Détour ne reste pas posée sur la Carte : elle se rapporte à la vue de Kéo (retouche 1 de l'Épaule,
   // point 5).
@@ -1419,12 +1423,19 @@ function placeMark(
     if (m.keo && box.left < m.keo.left + m.keo.width && m.keo.left < box.left + w) limit = Math.min(limit, m.keo.top - MARK_EDGE);
     if (box.top + h > limit) box.top = limit - h;
   }
-  const r = keepClear(box, size.obstacles, size.width, size.height, MARK_EDGE, MARK_EDGE);
+  // Les repères du niveau (au 3e, le Fanal, le pic, le zeppelin ; relecture du Cirque, correction 8) : hors champ, la
+  // marque glisse le long du bord pour s'en écarter, les boutons gardant le dernier mot ; une marque lointaine qui ne peut
+  // que les couvrir s'efface (sa flèche aussi), et revient dès qu'elle tient à côté.
+  const landmarks = m.landmarks ?? [];
+  const r = keepClear(box, m.inside ? size.obstacles : [...landmarks, ...size.obstacles], size.width, size.height, MARK_EDGE, MARK_EDGE);
+  const covers = m.far === 3 && landmarks.some((l) => r.left < l.left + l.width && l.left < r.left + w && r.top < l.top + l.height && l.top < r.top + h);
+  const efface = covers ? 'oui' : 'non';
+  if (mark.dataset.efface !== efface) mark.dataset.efface = efface;
   size.mark.left = r.left;
   size.mark.top = r.top;
   size.mark.width = w;
   size.mark.height = h;
-  size.mark.shown = true;
+  size.mark.shown = !covers;
   mark.style.transform = `translate(${Math.round(r.left)}px, ${Math.round(r.top)}px)`;
   if (arrow) arrow.style.transform = m.inside ? '' : `rotate(${m.angle}rad)`;
 }

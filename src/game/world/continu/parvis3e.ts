@@ -9,11 +9,12 @@
 import type { DetourView } from './camera';
 import { drawPosed, FacetBuilder, placeFacets, type Facets } from './facets';
 import { HANGS_3E, PIECE_HEIGHT_3E, PIECES_3E, piece3e } from './ferrailleurs3e';
-import { distance, type Vec2 } from './geometry';
+import { distance, type Vec2, type Vec3 } from './geometry';
 import type { NefFlight, NefSite } from './nef';
 import { type P3, quadOut, triOut } from './place4eKit';
 import { COLORS_3E, PARVIS, PARVIS_CORNERS, PARVIS_LEVEL, PARVIS_PAD, PARVIS_PAVING, PARVIS_QUAY_SPOT, PARVIS_ROUND, PEAK_3E, ZEPPELIN_3E } from './plan3e';
 import type { PortSite } from './port';
+import { rock as rockAt } from './surroundingsKit';
 import { peakFacets } from './terrain3e';
 
 /**
@@ -206,12 +207,32 @@ function gondolaFrame(len: number): { gy: number; z0: number; z1: number } {
   return { gy: -(belly + G.gap + G.r), z0: len * G.from, z1: len * G.to };
 }
 
-/** Le rocher : un granit large et irrégulier, à facettes, son pied sous les nuages, son liseré d'ardoise au ras d'eux. */
+/** Les tons du granit du rocher, en rochers à facettes. */
+const ZEPPELIN_ROCK_TONES = { light: COLORS_3E.graniteSun, shade: COLORS_3E.graniteShade, top: COLORS_3E.granite } as const;
+
+/**
+ * Le rocher : un granit large et irrégulier, en trois rochers à facettes de hauteurs inégales (relecture du Cirque,
+ * correction 3 : le prisme régulier et son bloc se lisaient comme un socle de béton) ; le plus haut porte le mât à sa
+ * pointe ; leur pied sous les nuages. Sans liseré : on n'y marche pas, et son anneau régulier trahissait la forme.
+ */
 function zeppelinRock(b: FacetBuilder, rock: Vec2, r: number, top: number): void {
-  b.prism({ x: rock.x, y: -2, z: rock.z, yaw: 0.3 }, r, r * 0.72, top + 2, 7, COLORS_3E.granite, COLORS_3E.graniteSun);
-  b.prism({ x: rock.x + r * 0.7, y: -2, z: rock.z + r * 0.35, yaw: 1.1 }, r * 0.6, r * 0.3, top + 1.2, 5, COLORS_3E.graniteShade, COLORS_3E.granite);
-  b.prism({ x: rock.x - r * 0.55, y: -2, z: rock.z - r * 0.6, yaw: 2.0 }, r * 0.5, r * 0.25, top + 0.9, 5, COLORS_3E.graniteShade, COLORS_3E.granite);
-  b.annulus({ x: rock.x + 0.2, y: -0.15, z: rock.z }, r * 1.25, r * 1.25 + 0.6, 0.3, 9, COLORS_3E.slate, COLORS_3E.slateTop, false);
+  rockAt(b, { x: rock.x, y: -1.5, z: rock.z }, r * 1.05, top + 1.5, 41, ZEPPELIN_ROCK_TONES);
+  rockAt(b, { x: rock.x + r * 0.75, y: -1.5, z: rock.z + r * 0.4 }, r * 0.7, top + 0.2, 42, ZEPPELIN_ROCK_TONES);
+  rockAt(b, { x: rock.x - r * 0.6, y: -1.5, z: rock.z - r * 0.55 }, r * 0.55, top - 0.6, 43, ZEPPELIN_ROCK_TONES);
+}
+
+/**
+ * La boîte du zeppelin et de son rocher, dans le repère du monde : un repère que la marque d'un lieu lointain ne couvre
+ * pas (relecture du Cirque, correction 8 ; `LevelWorld.landmarks`).
+ */
+export function zeppelinBox3e(): { min: Vec3; max: Vec3 } {
+  const { rock, rockRadius, tail } = ZEPPELIN_3E;
+  const top = ZEPPELIN.rockTop + ZEPPELIN.mast + 0.3 + ZEPPELIN.radius + 0.5;
+  const pad = Math.max(rockRadius, ZEPPELIN.radius + 1);
+  return {
+    min: { x: Math.min(rock.x, tail.x) - pad, y: -0.5, z: Math.min(rock.z, tail.z) - pad },
+    max: { x: Math.max(rock.x, tail.x) + pad, y: top, z: Math.max(rock.z, tail.z) + pad },
+  };
 }
 
 /** Le zeppelin sur son rocher : un décor du monde, jamais sur la Carte (fiche, § 5 bis ; `Departure.offMap`). */
@@ -222,7 +243,8 @@ export function zeppelinFacets(): Facets {
   zeppelinRock(b, rock, rockRadius, Z.rockTop);
   // Le mât : un fût et trois haubans de ferraille, sa tête de ferraille (le bronze n'est qu'aux pièces prises au Rafiot).
   const top = Z.rockTop + Z.mast;
-  b.prism({ x: rock.x, y: Z.rockTop, z: rock.z }, 0.35, 0.22, Z.mast, 5, COLORS_3E.graphite);
+  // Le fût part d'un peu plus bas que la pointe du rocher : il y est planté, jamais posé à côté.
+  b.prism({ x: rock.x, y: Z.rockTop - 0.8, z: rock.z }, 0.35, 0.22, Z.mast + 0.8, 5, COLORS_3E.graphite);
   for (let k = 0; k < 3; k++) {
     const a = (2 * Math.PI * k) / 3 + 0.4;
     b.beam({ x: rock.x + Math.cos(a) * 3, y: Z.rockTop, z: rock.z + Math.sin(a) * 3 }, { x: rock.x, y: top - 1, z: rock.z }, 0.14, COLORS_3E.graphite);

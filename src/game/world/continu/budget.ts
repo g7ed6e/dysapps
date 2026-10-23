@@ -27,6 +27,7 @@ import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene
 import type { ItemScene } from './questions';
 import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_3E, HABITANT_TRIANGLES_4E, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
 import { EQUIPIER_TRIANGLES, guideOf } from './equipage';
+import { farArchipelagos3e } from './finalView3e';
 import { GUIDE_SHADOW_TRIANGLES, bellPlane, habitantHand, habitantPawn, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
 import { hasWorldHabitant } from './worldHabitants';
 import { landTileCounts } from './flora';
@@ -657,7 +658,7 @@ const PLAN_4E = planFor('4e');
 const LINKED_LANDS_4E = linkedLands(PLAN_4E);
 
 /** Le poste du départ du 4e : la Nef dans son maillage à part. */
-export type OpenWorldCost4e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'départ' };
+export type OpenWorldCost4e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'départ' | 'vue finale' };
 
 /** Le sol du 4e, compté comme celui du 6e et du 5e : autour des points de son réseau, dans huit directions. */
 function groundCost4e(): { triangles: number; calls: number; near: number; far: number } {
@@ -929,7 +930,11 @@ function scenetteCost3e(): { triangles: number; calls: number } {
  * scénette ouverte (`scenette`, la question et le décor de près d'un lieu construit, l'habitant en modèle 3D) ou le départ
  * (`depart`, la Nef et l'obstacle dans deux maillages à part). Pas de faune.
  */
-export function openWorldCost3e(view: 'monde' | 'scenette' | 'depart' = 'monde'): OpenWorldCost4e[] {
+/**
+ * Le monde ouvert du 3e : `scenette` (une question ouverte), `monde` (la pose à sa place), `depart` (l'aéronef qui part),
+ * `finale` (la vue finale, GD-25 : les archipels au loin dans le maillage de la pose, à sa place ; ./finalView3e.ts).
+ */
+export function openWorldCost3e(view: 'monde' | 'scenette' | 'depart' | 'finale' = 'monde'): OpenWorldCost4e[] {
   const field = buildHeightField3e();
   const ground = groundCost3e();
   const paths = pathRibbons3e(ground3e(field));
@@ -945,6 +950,8 @@ export function openWorldCost3e(view: 'monde' | 'scenette' | 'depart' = 'monde')
     { poste: 'nef', ...nefCost3e() },
     ...(view === 'depart'
       ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }]
+      : view === 'finale'
+      ? [{ poste: 'vue finale' as const, triangles: farArchipelagos3e().triangles, calls: 1 }]
       : view === 'scenette'
       ? [
           { poste: 'question' as const, ...questionCost3e() },

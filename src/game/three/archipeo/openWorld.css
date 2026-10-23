@@ -35,6 +35,11 @@
 .open-world-mark[hidden] {
   display: none;
 }
+/* Lointaine et posée sur un repère du niveau (au 3e, relecture du Cirque, correction 8) : effacée, sans fondu, et hors
+   d'atteinte du doigt ; elle garde sa taille, que la page mesure. */
+.open-world-mark[data-efface='oui'] {
+  visibility: hidden;
+}
 .open-world-mark svg {
   width: 1.4em;
   height: 1.4em;

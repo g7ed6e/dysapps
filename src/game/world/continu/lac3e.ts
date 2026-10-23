@@ -8,7 +8,7 @@
  *
  * La place : `DETOUR_SPOTS_3E.lac`, descendue au lot du Cirque de la pente de la levée nord, où l'eau ne tiendrait pas à
  * plat, sur le replat du creux, le plus plat des environs (rien n'y pousse : ./terrain3e.ts garde les places réservées). Une eau d'ardoise mate et
- * immobile, sans reflet qui scintille (jamais presque noire), dans sa berge basse d'herbe grise ; quatre blocs ronds de
+ * immobile, sans reflet qui scintille (jamais presque noire), dans sa berge basse de pierre claire ; quatre blocs ronds de
  * granit autour, jamais devant le Fanal ; les trois pierres plates des Détours, de part et d'autre de la sente, jamais
  * dessus. 175 triangles au plus. Le dessin reçoit son sol (`ground`). Code pur.
  */
@@ -19,15 +19,21 @@ import { distance, distanceToPolyline, type Vec2 } from './geometry';
 import type { P3 } from './place4eKit';
 import { COLORS_3E, DETOUR_SPOTS_3E, PATH_NODES_3E } from './plan3e';
 
-/** Le cap de l'arrivée : à l'est-sud-est, à travers le lac, le Fanal à gauche du milieu, le pic à droite. */
-const CAP_DEG = 118;
+/**
+ * Le cap de l'arrivée : à l'est, à travers le lac, vers le Fanal, un peu à gauche du milieu, le pic à droite (relecture
+ * du Cirque, correction 6 : à 118°, le lac était à droite de Kéo et le Fanal à gauche, et le lac se lisait comme une flaque).
+ */
+const CAP_DEG = 106;
 const CAP = (CAP_DEG * Math.PI) / 180;
 /** Devant Kéo, et à sa droite. */
 const LOOK: Vec2 = { x: Math.sin(CAP), z: -Math.cos(CAP) };
 const RIGHT: Vec2 = { x: Math.cos(CAP), z: Math.sin(CAP) };
 
-/** La vue du Lac à l'arrivée : la caméra plus bas que celle des Détours, pour garder le pic entier dans le cadre. */
-const LAC_VIEW = { height: -4.5, back: 1.4, turn: 0 } as const;
+/**
+ * La vue du Lac à l'arrivée : la caméra plus bas que celle des Détours, pour garder le pic dans le cadre, assez haut pour
+ * voir l'eau posée dans sa berge.
+ */
+const LAC_VIEW = { height: -3, back: 1.4, turn: 0 } as const;
 
 /**
  * Le budget du Lac (proposition, § 6) : 175 triangles au plus sans la sente, dans le maillage des lieux, sans appel de
@@ -39,12 +45,15 @@ export const LAC_BUDGET = { triangles: 175, sente: 420 } as const;
 const LAKE: Vec2 = DETOUR_SPOTS_3E.lac;
 
 /** Le lac : le rayon de l'eau, la largeur et la hauteur de sa berge au-dessus de l'eau, ses pans. */
-const WATER = { r: 3.4, bank: 0.55, rim: 0.06, sides: 12 } as const;
+const WATER = { r: 4.2, bank: 0.75, rim: 0.14, sides: 12 } as const;
 
-/** Là où Kéo s'arrête : à l'ouest-nord-ouest du lac, le lac devant lui, à droite, jamais caché derrière lui. */
+/**
+ * Là où Kéo s'arrête : à l'ouest du lac, le lac devant lui, entre lui et le Fanal, un peu à droite pour que Kéo ne le
+ * cache pas.
+ */
 const AT: Vec2 = {
-  x: LAKE.x - LOOK.x * 5.6 - RIGHT.x * 3.2,
-  z: LAKE.z - LOOK.z * 5.6 - RIGHT.z * 3.2,
+  x: LAKE.x - LOOK.x * (WATER.r + 3.4) - RIGHT.x * 1.2,
+  z: LAKE.z - LOOK.z * (WATER.r + 3.4) - RIGHT.z * 1.2,
 };
 
 /** La sente, de la porte du Standard jusqu'à Kéo, au sud de la scène du Standard, puis au sud du lac : la porte, trois coudes, Kéo. */
@@ -78,7 +87,8 @@ export const LAC: Detour = {
  */
 const C = {
   water: 0x6d8299,
-  bank: COLORS_3E.cirque,
+  // La berge : une bordure de pierre claire, que l'herbe grise ne confond pas, posée autour de l'eau.
+  bank: 0xc9c0ae,
   bankSide: 0x7f8d71,
   block: COLORS_3E.granite,
   blockTop: COLORS_3E.graniteSun,
@@ -137,7 +147,7 @@ function waterLevel(ground: Ground): number {
   return hi + 0.03;
 }
 
-/** L'eau, un disque plat à douze pans, et sa berge basse d'herbe grise, qui descend sous le sol tout autour. */
+/** L'eau, un disque plat à douze pans, et sa berge basse de pierre claire, qui descend sous le sol tout autour. */
 function lake(b: FacetBuilder, ground: Ground): void {
   const y = waterLevel(ground);
   b.prism({ x: LAKE.x, y: y - 0.4, z: LAKE.z }, WATER.r + 0.05, WATER.r + 0.05, 0.4, WATER.sides, C.water, C.water);

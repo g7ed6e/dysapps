@@ -10,6 +10,7 @@ import type { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { C3E } from './place3eKit';
 import { COLORS_3E } from './plan3e';
+import { rock } from './surroundingsKit';
 
 /** Le bronze des pièces, au soleil et à l'ombre, et le dedans d'une marmite ou d'une vasque, un brun chaud (jamais presque noir). */
 const BRONZE = { side: C3E.bronze, sun: 0xb98c4c, inside: 0x7a5a36 } as const;
@@ -139,21 +140,61 @@ export function grappin3e(b: FacetBuilder, at: Vec3): void {
 }
 
 /**
- * Le port des Ferrailleurs, au nord, à l'horizon (proposition du Cirque, « La vue finale ») : un rocher de granit dans
- * les nuages, une tour de ferraille, et sa lanterne, éteinte, puis allumée d'ocre, une seule lumière fixe, quand le Fanal
- * est restauré. Assez haute pour sortir du brouillard du lointain (`FOG_3E`, qui s'éclaircit en hauteur), à moins de 200
- * unités du Cirque ; jamais sur la Carte.
+ * Le port des Ferrailleurs, au nord, loin sur l'horizon (proposition du Cirque, « La vue finale » ; relecture du Cirque,
+ * correction 2 : la tour de ferraille se lisait comme un second phare, et seul le Fanal doit se reconnaître de partout).
+ * Une silhouette basse et large, posée au ras des nuages : un récif de granit, une longue jetée de ferraille, une grue,
+ * les mâts de deux coques amarrées, et la lumière sur un poteau bas, au bout de la jetée. Éteinte, une vitre gris-bleu
+ * sombre ; allumée d'ocre, une seule lumière fixe, quand le Fanal est restauré. À environ 215 unités du Fanal, plus loin
+ * que les lieux, dans le brouillard du lointain (`FOG_3E`) ; jamais sur la Carte. `at` : le milieu de la jetée ; `jetty` :
+ * sa longueur (d'ouest en est), sa largeur, son dessus ; `crane`, `masts`, `post`, `lamp` : leurs hauteurs.
  */
-const FERRAILLEURS_PORT_3E = { at: { x: 30, z: -300 } as Vec2, rock: 9, rockTop: 3, tower: 13, lamp: 2.4 } as const;
+export const FERRAILLEURS_PORT_3E = {
+  at: { x: 40, z: -330 } as Vec2,
+  jetty: { length: 36, width: 3, top: 1.4 },
+  crane: { at: -11, h: 8, jib: 8 },
+  masts: [
+    { at: 2, h: 6.5 },
+    { at: 8.5, h: 5.5 },
+  ],
+  post: 2.8,
+  lamp: 2.1,
+} as const;
 
-/** Le port des Ferrailleurs, dans le repère du monde : son rocher, sa tour de ferraille, sa lanterne allumée ou non. */
+/** La vitre éteinte du port, un gris-bleu sombre (jamais presque noir), loin du crème des lanternes éteintes des lieux. */
+export const PORT_LAMP_OFF_3E = 0x56637a;
+
+/** Les tons du granit du récif, en rochers à facettes. */
+const REEF = { light: COLORS_3E.graniteSun, shade: COLORS_3E.graniteShade, top: COLORS_3E.granite } as const;
+
+/** Le port des Ferrailleurs, dans le repère du monde : son récif, sa jetée, sa grue, ses mâts, sa lumière allumée ou non. */
 export function ferrailleursPort3e(b: FacetBuilder, lit: boolean): void {
   const P = FERRAILLEURS_PORT_3E;
   const { x, z } = P.at;
-  b.prism({ x, y: -3, z }, P.rock, P.rock * 0.7, P.rockTop + 3, 7, COLORS_3E.granite, COLORS_3E.graniteSun);
-  b.prism({ x: x + 3, y: -3, z: z + 4 }, P.rock * 0.5, P.rock * 0.3, P.rockTop + 2, 6, COLORS_3E.graniteShade, COLORS_3E.granite);
-  b.prism({ x, y: P.rockTop, z }, 1.6, 0.8, P.tower, 4, COLORS_3E.graphite);
-  const y = P.rockTop + P.tower;
-  b.box({ x, y, z }, [P.lamp, P.lamp, P.lamp], lit ? C3E.lantern : C3E.lanternOff);
-  b.prism({ x, y: y + P.lamp, z, yaw: Math.PI / 4 }, P.lamp * 0.85, 0, P.lamp * 0.6, 4, COLORS_3E.graphite);
+  const J = P.jetty;
+  // Le récif : trois rochers bas, larges, inégaux, sous la jetée et à ses bouts.
+  rock(b, { x: x - 14, y: -0.6, z: z + 1 }, 7, 2.4, 31, REEF);
+  rock(b, { x: x + 1, y: -0.6, z: z - 2 }, 7.5, 1.8, 32, REEF);
+  rock(b, { x: x + 15, y: -0.6, z: z + 1.5 }, 6, 1.8, 33, REEF);
+  // La jetée de ferraille, longue et basse, sur trois piles.
+  b.box({ x, y: J.top - 0.5, z }, [J.length, 0.5, J.width], COLORS_3E.graphite, COLORS_3E.graphiteSun);
+  for (const dx of [-J.length / 2 + 1, 0, J.length / 2 - 1]) b.box({ x: x + dx, y: -0.5, z }, [0.8, J.top - 0.5 + 0.5, 0.8], COLORS_3E.graphite);
+  // La grue : un fût, sa flèche penchée vers le large, son câble pendant.
+  const cx = x + P.crane.at;
+  const top = J.top + P.crane.h;
+  b.box({ x: cx, y: J.top, z }, [0.7, P.crane.h, 0.7], COLORS_3E.graphite, COLORS_3E.graphiteSun);
+  b.beam({ x: cx, y: top - 0.3, z }, { x: cx - P.crane.jib, y: top + 1.2, z: z - 1 }, 0.35, COLORS_3E.graphiteSun);
+  b.beam({ x: cx, y: top - 0.3, z }, { x: cx + 2, y: top - 1.6, z }, 0.3, COLORS_3E.graphite);
+  b.beam({ x: cx - P.crane.jib, y: top + 1.2, z: z - 1 }, { x: cx - P.crane.jib, y: J.top + 1.5, z: z - 1 }, 0.12, COLORS_3E.graphite);
+  // Deux coques basses amarrées au sud de la jetée, leurs mâts et leurs vergues.
+  for (const m of P.masts) {
+    const mx = x + m.at;
+    b.box({ x: mx, y: -0.1, z: z + J.width / 2 + 1.1 }, [5, 1.2, 1.8], COLORS_3E.prune, COLORS_3E.graphite);
+    b.box({ x: mx, y: 1, z: z + J.width / 2 + 1.1 }, [0.22, m.h, 0.22], COLORS_3E.graphite);
+    b.box({ x: mx, y: 1 + m.h * 0.7, z: z + J.width / 2 + 1.1 }, [3, 0.2, 0.2], COLORS_3E.graphite);
+  }
+  // La lumière, sur un poteau bas au bout est de la jetée.
+  const lx = x + J.length / 2 - 1.2;
+  b.box({ x: lx, y: J.top, z }, [0.4, P.post, 0.4], COLORS_3E.graphite);
+  b.box({ x: lx, y: J.top + P.post, z }, [P.lamp, P.lamp, P.lamp], lit ? C3E.lantern : PORT_LAMP_OFF_3E);
+  b.prism({ x: lx, y: J.top + P.post + P.lamp, z, yaw: Math.PI / 4 }, P.lamp * 0.85, 0, P.lamp * 0.45, 4, COLORS_3E.graphite);
 }
