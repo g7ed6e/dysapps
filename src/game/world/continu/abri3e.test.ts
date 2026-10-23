@@ -67,8 +67,8 @@ describe('L’Abri, lieu complet', () => {
     expect(PLACE.scenes).toEqual(MISSIONS);
     expect(MISSIONS).toEqual(['mean', 'probability', 'data', 'ratio-sharing']);
     expect(hasScenette('abri')).toBe(true);
-    // Aucun modèle d'habitant du 3e encore : la météorologue est en pion.
-    expect(hasHabitantModel('abri')).toBe(false);
+    // Son habitant en modèle 3D dans sa scénette, à la place du pion (la météorologue).
+    expect(hasHabitantModel('abri')).toBe(true);
     expect(SHAPES.map((p) => p.map((s) => [s.stage, s.from, s.to]))).toEqual([[[0, 0, 0.5]], [[0, 0.5, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
   });
 

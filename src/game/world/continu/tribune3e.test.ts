@@ -63,7 +63,7 @@ describe('La Tribune, lieu complet', () => {
     expect(PLACE.scenes).toEqual(MISSIONS);
     expect(MISSIONS).toEqual(['constitution', 'information', 'civic-engagement']);
     expect(hasScenette('tribune')).toBe(true);
-    expect(hasHabitantModel('tribune')).toBe(false);
+    expect(hasHabitantModel('tribune')).toBe(true);
     expect(SHAPES.map((p) => p.map((s) => [s.stage, s.from, s.to]))).toEqual([[[0, 0, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
   });
 

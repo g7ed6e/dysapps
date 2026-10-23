@@ -67,7 +67,7 @@ describe('L’Ermitage, lieu d’option complet', () => {
     expect(PLACE.scenes).toEqual(MISSIONS);
     expect(MISSIONS).toHaveLength(6);
     expect(hasScenette('ermitage')).toBe(true);
-    expect(hasHabitantModel('ermitage')).toBe(false);
+    expect(hasHabitantModel('ermitage')).toBe(true);
     for (const lca of ['la', 'gr'] as const) {
       retenirReglages({ ...DEFAULT_SETTINGS, lca });
       expect(

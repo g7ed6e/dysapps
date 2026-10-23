@@ -62,7 +62,7 @@ describe('Le Kiosque, lieu complet', () => {
     expect(PLACE.scenes).toEqual(MISSIONS);
     expect(MISSIONS).toEqual(['total-wars', 'world-since-1945', 'republic']);
     expect(hasScenette('kiosque')).toBe(true);
-    expect(hasHabitantModel('kiosque')).toBe(false);
+    expect(hasHabitantModel('kiosque')).toBe(true);
     expect(SHAPES.map((p) => p.map((s) => [s.stage, s.from, s.to]))).toEqual([[[0, 0, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
   });
 

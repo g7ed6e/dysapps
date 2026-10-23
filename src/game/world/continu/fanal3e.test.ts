@@ -68,7 +68,7 @@ describe('Le Fanal, lieu complet', () => {
     expect(PLACE.scenes).toEqual(MISSIONS);
     expect(MISSIONS).toEqual(['images', 'linear', 'graphs', 'proportions', 'coordinates']);
     expect(hasScenette('fanal')).toBe(true);
-    expect(hasHabitantModel('fanal')).toBe(false);
+    expect(hasHabitantModel('fanal')).toBe(true);
     expect(SHAPES.map((p) => p.map((s) => [s.stage, +s.from.toFixed(3), +s.to.toFixed(3)]))).toEqual([[[0, 0, 0.333]], [[0, 0.333, 0.667]], [[0, 0.667, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
   });
 

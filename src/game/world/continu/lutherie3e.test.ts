@@ -63,7 +63,7 @@ describe('La Lutherie, lieu complet', () => {
     expect(PLACE.scenes).toEqual(MISSIONS);
     expect(MISSIONS).toEqual(['verb-moods', 'complex-agreements', 'connotation', 'emphasis-punctuation', 'verb-stems']);
     expect(hasScenette('lutherie')).toBe(true);
-    expect(hasHabitantModel('lutherie')).toBe(false);
+    expect(hasHabitantModel('lutherie')).toBe(true);
     expect(SHAPES.map((p) => p.map((s) => [s.stage, +s.from.toFixed(3), +s.to.toFixed(3)]))).toEqual([[[0, 0, 0.333]], [[0, 0.333, 0.667]], [[0, 0.667, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
   });
 

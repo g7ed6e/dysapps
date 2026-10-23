@@ -68,7 +68,7 @@ describe('La Douane, lieu d’option complet', () => {
     expect(PLACE.scenes).toEqual(MISSIONS);
     expect(MISSIONS).toHaveLength(10);
     expect(hasScenette('douane')).toBe(true);
-    expect(hasHabitantModel('douane')).toBe(false);
+    expect(hasHabitantModel('douane')).toBe(true);
     for (const lv2 of ['es', 'de'] as const) {
       retenirReglages({ ...DEFAULT_SETTINGS, lv2 });
       expect(

@@ -25,7 +25,7 @@ import { constructionFacets, WHOLE } from './construction';
 import { PORT_WORST, assemblyScene, portFacets } from './port';
 import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
 import type { ItemScene } from './questions';
-import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_4E, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
+import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_3E, HABITANT_TRIANGLES_4E, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
 import { EQUIPIER_TRIANGLES, guideOf } from './equipage';
 import { GUIDE_SHADOW_TRIANGLES, bellPlane, habitantHand, habitantPawn, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
 import { hasWorldHabitant } from './worldHabitants';
@@ -911,12 +911,12 @@ function questionCost3e(): { triangles: number; calls: number } {
 }
 
 /**
- * La scénette du 3e, la plus chargée (le Versant) : son décor de près, abords compris, l'habitant en pion (aucun modèle
- * `3e-habitant-<lieu>` n'existe encore), dans un maillage.
+ * La scénette du 3e, la plus chargée : son décor de près, abords compris, dans un maillage ; l'habitant en modèle 3D
+ * (`3e-habitant-<lieu>`, 23 octobre 2026), au plus `HABITANT_TRIANGLES_3E`, dans un maillage à part : un appel de plus.
  */
 function scenetteCost3e(): { triangles: number; calls: number } {
   const places = PLAN_3E.places.filter((p) => p.scenes.length).map((p) => scenePlace(p.id));
-  const decor = (place: ScenePlaceId, open: boolean) => (hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_4E : scenetteDecor(place, open).triangles);
+  const decor = (place: ScenePlaceId, open: boolean) => (hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_3E : scenetteDecor(place, open).triangles);
   const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true))));
   return { triangles: worst, calls: places.some(hasHabitantModel) ? 2 : 1 };
 }
@@ -926,7 +926,7 @@ function scenetteCost3e(): { triangles: number; calls: number } {
  * de nuages (le plan de l'eau), les chemins (le liseré d'ardoise des rives, les deux petites arches et l'aire de la Nef
  * compris), les lieux et leurs passages, le Parvis et son décor, la brume des terres fermées (au départ, les trois),
  * Kéo, l'aéronef ; puis, selon `view` : le monde (`monde`, un passage qui se relève ou une partie qui descend), la
- * scénette ouverte (`scenette`, la question et le décor de près d'un lieu construit, l'habitant en pion) ou le départ
+ * scénette ouverte (`scenette`, la question et le décor de près d'un lieu construit, l'habitant en modèle 3D) ou le départ
  * (`depart`, la Nef et l'obstacle dans deux maillages à part). Pas de faune.
  */
 export function openWorldCost3e(view: 'monde' | 'scenette' | 'depart' = 'monde'): OpenWorldCost4e[] {

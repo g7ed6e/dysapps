@@ -63,7 +63,7 @@ describe('La Maquette, lieu complet', () => {
     expect(PLACE.scenes).toEqual(MISSIONS);
     expect(MISSIONS).toEqual(['territories', 'planning', 'france-eu']);
     expect(hasScenette('maquette')).toBe(true);
-    expect(hasHabitantModel('maquette')).toBe(false);
+    expect(hasHabitantModel('maquette')).toBe(true);
     expect(SHAPES.map((p) => p.map((s) => [s.stage, s.from, s.to]))).toEqual([[[0, 0, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
   });
 

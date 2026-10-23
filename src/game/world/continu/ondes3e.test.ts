@@ -66,7 +66,7 @@ describe('Les Ondes, lieu complet', () => {
     expect(PLACE.scenes).toEqual(MISSIONS);
     expect(MISSIONS).toEqual(['understanding', 'linking-words', 'false-friends', 'media']);
     expect(hasScenette('ondes')).toBe(true);
-    expect(hasHabitantModel('ondes')).toBe(false);
+    expect(hasHabitantModel('ondes')).toBe(true);
     expect(SHAPES.map((p) => p.map((s) => [s.stage, +s.from.toFixed(3), +s.to.toFixed(3)]))).toEqual([[[0, 0, 0.5]], [[0, 0.5, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
   });
 

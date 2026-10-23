@@ -72,7 +72,7 @@ describe('Le Standard, lieu complet', () => {
     expect(PLACE.scenes).toEqual(MISSIONS);
     expect(MISSIONS).toEqual(['computer-networks', 'connected-objects', 'algorithms', 'data-tables']);
     expect(hasScenette('standard')).toBe(true);
-    expect(hasHabitantModel('standard')).toBe(false);
+    expect(hasHabitantModel('standard')).toBe(true);
     expect(SHAPES.map((p) => p.map((s) => [s.stage, +s.from.toFixed(3), +s.to.toFixed(3)]))).toEqual([[[0, 0, 0.5]], [[0, 0.5, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
   });
 

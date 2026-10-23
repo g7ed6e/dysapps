@@ -3,7 +3,7 @@
 // au 4e : les matières des Passeurs au 3e (le granit bleuté, l'ardoise, la pierre claire, le bois gris, le fer bruni, le
 // bronze des seules ferrures, l'ocre des lanternes), le repère d'un lieu (son centre, le sol sous lui, sa porte), la
 // lanterne pendue, sur son poteau ou sur son bras, le muret de granit à chaperon d'ardoise, la terrasse ronde, l'habitant
-// en pion (aucun modèle `3e-habitant-<lieu>` n'existe encore : ./habitants.ts). Les outils sans niveau (le quadrilatère
+// en pion (sa scénette montre son modèle `3e-habitant-<lieu>` à sa place : ./habitants.ts). Les outils sans niveau (le quadrilatère
 // tourné vers le dehors, le plan du sol, la hauteur d'une scène, le cap d'un regard) restent dans ./place4eKit.ts. Code pur.
 import type { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
@@ -114,7 +114,7 @@ export function dryTuft3e(b: FacetBuilder, x: number, y: number, z: number, s = 
 export const onCircle = (r: number, deg: number, c: Vec2 = { x: 0, z: 0 }): Vec2 => ({ x: c.x + r * Math.sin((deg * Math.PI) / 180), z: c.z - r * Math.cos((deg * Math.PI) / 180) });
 
 /**
- * L'habitant du 3e en pion (son modèle 3D prendra sa place, ./habitants.ts), à hauteur de Kéo : bottes, bas, veste
+ * L'habitant du 3e en pion (son modèle 3D le remplace dans la scénette, ./habitants.ts), à hauteur de Kéo : bottes, bas, veste
  * (`coat`), tête et cheveux ; les bras le long du corps. Une couleur de veste par métier, jamais vive.
  */
 export function habitant3e(b: FacetBuilder, at: Vec3, sphere: Sphere, coat: number, legs = 0x5d6470, hair = 0x6a5444): void {

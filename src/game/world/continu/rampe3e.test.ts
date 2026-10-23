@@ -68,7 +68,7 @@ describe('La Rampe, lieu complet', () => {
     expect(PLACE.scenes).toEqual(MISSIONS);
     expect(MISSIONS).toEqual(['motion-forces', 'energy-power', 'acids-bases']);
     expect(hasScenette('rampe')).toBe(true);
-    expect(hasHabitantModel('rampe')).toBe(false);
+    expect(hasHabitantModel('rampe')).toBe(true);
     expect(SHAPES.map((p) => p.map((s) => [s.stage, s.from, s.to]))).toEqual([[[0, 0, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
   });
 

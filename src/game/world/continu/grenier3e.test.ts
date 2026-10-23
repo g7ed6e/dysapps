@@ -67,8 +67,8 @@ describe('Le Grenier, lieu complet', () => {
     expect(PLACE.scenes).toEqual(MISSIONS);
     expect(MISSIONS).toEqual(['power-rules', 'square-equations', 'prime-factors', 'identities', 'zero-product']);
     expect(hasScenette('grenier')).toBe(true);
-    // Aucun modèle d'habitant du 3e encore : le meunier est en pion.
-    expect(hasHabitantModel('grenier')).toBe(false);
+    // Son habitant en modèle 3D dans sa scénette, à la place du pion (le meunier).
+    expect(hasHabitantModel('grenier')).toBe(true);
     expect(SHAPES.map((p) => p.map((s) => [s.stage, s.from, s.to]))).toEqual([[[0, 0, 1 / 3]], [[0, 1 / 3, 2 / 3]], [[0, 2 / 3, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
   });
 

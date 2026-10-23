@@ -63,7 +63,7 @@ describe('Le Palais, lieu complet', () => {
     expect(PLACE.scenes).toEqual(MISSIONS);
     expect(MISSIONS).toEqual(['for-since', 'if', 'passive', 'messages']);
     expect(hasScenette('palais')).toBe(true);
-    expect(hasHabitantModel('palais')).toBe(false);
+    expect(hasHabitantModel('palais')).toBe(true);
     expect(SHAPES.map((p) => p.map((s) => [s.stage, s.from, s.to]))).toEqual([[[0, 0, 0.5]], [[0, 0.5, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
   });
 
