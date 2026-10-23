@@ -6,9 +6,12 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, vi } from 'vitest';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
-import { BloclandProvider } from '../../BloclandContext';
+import { degelerSauvegarde } from '../../../core/storage';
+import { BloclandProvider, useBlocland } from '../../BloclandContext';
+import { getArchipelago, voyageId } from '../../world/archipelago';
 import type { LinkedLand } from '../../world/continu/lands';
 import type { BridgeLayEvents, OpenWorld, OpenWorldOptions } from './scene';
+import { LEVEL_PICKER_FOLD_MS } from './LevelPicker';
 import OpenWorldPage from './OpenWorldPage';
 
 const scene = vi.hoisted(() => ({
@@ -65,11 +68,19 @@ beforeEach(() => {
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: {} }));
 });
 
+/** Ouvre le mode bâtisseur depuis le test (`open`). */
+const builder = { open: null as (() => void) | null };
+function BuilderHook() {
+  builder.open = useBlocland().ouvrirBatisseur;
+  return null;
+}
+
 function renderPage() {
   render(
     <SettingsProvider>
       <ProgressProvider>
         <BloclandProvider>
+          <BuilderHook />
           <MemoryRouter initialEntries={['/adventure']}>
             <OpenWorldPage level="5e" />
           </MemoryRouter>
@@ -78,6 +89,65 @@ function renderPage() {
     </SettingsProvider>,
   );
 }
+
+test('le niveau où l’on est, une seule pastille qui glisse vers les autres niveaux atteints et se replie seule ; « 6e » lance le fondu vers l’Escale ; rien sur la Carte (choix du mainteneur du 23 octobre 2026)', async () => {
+  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port } }));
+  renderPage();
+  const user = userEvent.setup();
+  const level = await screen.findByRole('button', { name: /^Changer de niveau\. Tu es en 5e/ });
+  expect(level).toHaveAttribute('aria-expanded', 'false');
+  // Repliée, les autres niveaux sont là pour glisser, mais hors d'atteinte.
+  expect(screen.queryByRole('button', { name: /^Aller en 6e/ })).toBeNull();
+  await user.click(screen.getByRole('button', { name: /Carte/ }));
+  expect(screen.queryByRole('button', { name: /^Changer de niveau/ })).toBeNull();
+  await user.click(screen.getByRole('button', { name: /Retour/ }));
+  const toggle = () => screen.getByRole('button', { name: /^Changer de niveau/ });
+  await user.click(toggle());
+  expect(toggle()).toHaveAttribute('aria-expanded', 'true');
+  // Dépliée : le focus va au premier niveau ; Échap replie et rend le focus au bouton.
+  expect(screen.getByRole('button', { name: /^Aller en 6e/ })).toHaveFocus();
+  await user.keyboard('{Escape}');
+  expect(screen.queryByRole('button', { name: /^Aller en 6e/ })).toBeNull();
+  expect(toggle()).toHaveFocus();
+  // Un toucher ailleurs replie aussi.
+  await user.click(toggle());
+  await user.click(document.querySelector('.open-world-canvas')!);
+  expect(toggle()).toHaveAttribute('aria-expanded', 'false');
+  // Elle se replie seule après un moment sans geste.
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  try {
+    await user.click(toggle());
+    expect(toggle()).toHaveAttribute('aria-expanded', 'true');
+    act(() => vi.advanceTimersByTime(LEVEL_PICKER_FOLD_MS - 500));
+    expect(toggle()).toHaveAttribute('aria-expanded', 'true');
+    act(() => vi.advanceTimersByTime(1000));
+    expect(toggle()).toHaveAttribute('aria-expanded', 'false');
+    expect(toggle()).toHaveFocus();
+  } finally {
+    vi.useRealTimers();
+  }
+  await user.click(toggle());
+  await user.click(screen.getByRole('button', { name: /^Aller en 6e/ }));
+  expect(document.querySelector('.open-world-fondu')).toHaveClass('on');
+});
+
+test('un seul niveau atteint : pas de bouton du niveau', async () => {
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  expect(screen.queryByRole('button', { name: /^Changer de niveau/ })).toBeNull();
+});
+
+test('en mode bâtisseur, pas de bouton du niveau : la barre du mode a déjà les niveaux', async () => {
+  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port } }));
+  renderPage();
+  await screen.findByRole('button', { name: /^Changer de niveau/ });
+  try {
+    act(() => builder.open!());
+    expect(screen.queryByRole('button', { name: /^Changer de niveau/ })).toBeNull();
+  } finally {
+    degelerSauvegarde();
+  }
+});
 
 test('la scène reçoit le plan du 5e, la Lisière et le dirigeable (lot 4), et ses Détours (lot 6)', async () => {
   renderPage();

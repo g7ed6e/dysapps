@@ -3365,6 +3365,101 @@
 .open-world-needle {
   display: inline-flex;
 }
+/* Le niveau où l'on est (./LevelPicker.tsx) : une seule pastille, en haut, à gauche de Réglages (la colonne de droite est
+   celle de la caméra). Dépliée, elle glisse vers la gauche et les autres niveaux s'y collent, séparés d'un trait ; d'un
+   coup avec « Réduire les animations ». */
+.open-world-niveaux {
+  position: absolute;
+  top: 0.6rem;
+  right: calc(0.6rem + env(safe-area-inset-right, 0px) + 56px + 0.5rem);
+  z-index: 3;
+  display: flex;
+  align-items: stretch;
+  max-width: calc(100% - 2 * (0.6rem + 56px + 0.5rem));
+  overflow: hidden;
+  border: var(--border-width, 2px) solid var(--ink);
+  border-radius: var(--radius-control, 12px);
+  background: var(--secondary-bg);
+  box-shadow: var(--shadow-float);
+}
+/* Dépliée, elle se reconnaît à sa forme (bord épais), pas seulement à sa couleur. */
+.open-world-niveaux.ouvert {
+  /* Un trait de plus autour, sans changer la hauteur : la pastille reste alignée sur Réglages. */
+  outline: var(--border-width, 2px) solid var(--ink);
+}
+.open-world-niveaux-glisse {
+  /* Glisser de 0 à la largeur réelle des niveaux, sans largeur écrite (expert frontend). */
+  display: grid;
+  grid-template-columns: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-columns 0.25s ease,
+    opacity 0.2s ease;
+}
+.open-world-niveaux.ouvert .open-world-niveaux-glisse {
+  grid-template-columns: 1fr;
+  opacity: 1;
+}
+.open-world-niveaux-liste {
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+/* Un trait entre deux niveaux, et entre le dernier et le niveau où l'on est. */
+.open-world-niveaux-liste li {
+  border-right: var(--border-width, 2px) solid var(--ink);
+}
+.open-world-niveau,
+.open-world-niveaux-choix {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  min-width: 56px;
+  min-height: 52px;
+  margin: 0;
+  padding: 0.2rem 0.7rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--secondary-text);
+  font: inherit;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.open-world-niveau:active,
+.open-world-niveaux-choix:active {
+  background: color-mix(in srgb, var(--secondary-bg) 80%, #000);
+}
+.open-world-niveau:focus-visible,
+.open-world-niveaux-choix:focus-visible {
+  outline: 3px solid var(--focus, var(--ink));
+  outline-offset: -5px;
+}
+/* Le niveau où l'on est, sur sa couleur de sable dépliée, comme la classe cochée de la grille. */
+.open-world-niveaux.ouvert .open-world-niveau {
+  background: var(--sand);
+  color: var(--on-sand);
+}
+.open-world-niveau svg {
+  width: 22px;
+  height: 22px;
+  transform: rotate(180deg);
+  transition: transform 0.25s ease;
+}
+.open-world-niveaux.ouvert .open-world-niveau svg {
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .open-world-niveaux-glisse,
+  .open-world-niveau svg {
+    transition: none;
+  }
+}
 /* La rangée « Revenir » de la fiche de la Nef (voyage entre niveaux, piste A) : des boutons secondaires, sous l'action
    principale, de 48 px au moins. */
 .nef-returns {
